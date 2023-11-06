@@ -476,6 +476,11 @@ class BLINK_EXPORT WebView {
   // Returns the number of live WebView instances in this process.
   static size_t GetWebViewCount();
 
+  // Sets whether web or OS-level Attribution Reporting is supported. See
+  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md
+  virtual void SetPageAttributionSupport(
+      network::mojom::AttributionSupport support) = 0;
+
  protected:
   ~WebView() = default;
 };

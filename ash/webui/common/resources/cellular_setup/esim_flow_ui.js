@@ -38,9 +38,9 @@ export const ESimPageName = {
   PROFILE_DISCOVERY: 'profileDiscoveryPage',
   PROFILE_DISCOVERY_LEGACY: 'profileDiscoveryPageLegacy',
   ACTIVATION_CODE: 'activationCodePage',
-  ACTIVATION_VERIFCATION: 'activationVerificationPage',
   CONFIRMATION_CODE: 'confirmationCodePage',
   CONFIRMATION_CODE_LEGACY: 'confirmationCodePageLegacy',
+  PROFILE_INSTALLING: 'profileInstallingPage',
   FINAL: 'finalPage',
 };
 
@@ -454,7 +454,9 @@ Polymer({
       this.state_ = ESimUiState.CONFIRMATION_CODE_ENTRY_READY;
       return;
     }
-    if (response.result === ProfileInstallResult.kErrorInvalidActivationCode) {
+    if (response.result === ProfileInstallResult.kErrorInvalidActivationCode &&
+        (!this.smdsSupportEnabled_ ||
+         this.state_ !== ESimUiState.PROFILE_SELECTION_INSTALLING)) {
       this.state_ = ESimUiState.ACTIVATION_CODE_ENTRY_READY;
       return;
     }
@@ -490,21 +492,33 @@ Polymer({
         this.selectedESimPageName_ = ESimPageName.ACTIVATION_CODE;
         break;
       case ESimUiState.ACTIVATION_CODE_ENTRY_INSTALLING:
-        this.selectedESimPageName_ = ESimPageName.ACTIVATION_VERIFCATION;
+        this.selectedESimPageName_ = ESimPageName.PROFILE_INSTALLING;
         break;
       case ESimUiState.CONFIRMATION_CODE_ENTRY:
       case ESimUiState.CONFIRMATION_CODE_ENTRY_READY:
-      case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
         if (this.smdsSupportEnabled_) {
           this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE;
         } else {
           this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE_LEGACY;
         }
         break;
+      case ESimUiState.CONFIRMATION_CODE_ENTRY_INSTALLING:
+        if (this.smdsSupportEnabled_) {
+          this.selectedESimPageName_ = ESimPageName.PROFILE_INSTALLING;
+        } else {
+          this.selectedESimPageName_ = ESimPageName.CONFIRMATION_CODE_LEGACY;
+        }
+        break;
       case ESimUiState.PROFILE_SELECTION:
-      case ESimUiState.PROFILE_SELECTION_INSTALLING:
         if (this.smdsSupportEnabled_) {
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY;
+        } else {
+          this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY_LEGACY;
+        }
+        break;
+      case ESimUiState.PROFILE_SELECTION_INSTALLING:
+        if (this.smdsSupportEnabled_) {
+          this.selectedESimPageName_ = ESimPageName.PROFILE_INSTALLING;
         } else {
           this.selectedESimPageName_ = ESimPageName.PROFILE_DISCOVERY_LEGACY;
         }
@@ -533,7 +547,7 @@ Polymer({
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('next');
     let backBtnState = ButtonState.HIDDEN;
-    if (this.profilesFound_()) {
+    if (this.profilesFound_() && !this.smdsSupportEnabled_) {
       backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
     }
     return {
@@ -553,8 +567,12 @@ Polymer({
   generateButtonStateForConfirmationPage_(
       enableForwardBtn, cancelButtonStateIfEnabled, isInstalling) {
     this.forwardButtonLabel = this.i18n('confirm');
+    let backBtnState = isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED;
+    if (this.smdsSupportEnabled_) {
+      backBtnState = ButtonState.HIDDEN;
+    }
     return {
-      backward: isInstalling ? ButtonState.DISABLED : ButtonState.ENABLED,
+      backward: backBtnState,
       cancel: cancelButtonStateIfEnabled,
       forward: enableForwardBtn ? ButtonState.ENABLED : ButtonState.DISABLED,
     };

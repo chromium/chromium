@@ -6,13 +6,13 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 
 namespace ash::standalone_browser {
 
 const std::vector<base::test::FeatureRef>& GetFeatureRefs() {
   static const base::NoDestructor<std::vector<base::test::FeatureRef>> result{
-      {ash::features::kLacrosOnly,
-       ash::features::kLacrosProfileMigrationForceOff}};
+      {features::kLacrosOnly, features::kLacrosProfileMigrationForceOff}};
   return *result;
 }
 

@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AccessCodeCastDeviceDuration": 10
+        },
+        "prefs": {
+          "media_router.access_code_cast.device_duration": {
+            "value": 10
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "media_router.access_code_cast.device_duration": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

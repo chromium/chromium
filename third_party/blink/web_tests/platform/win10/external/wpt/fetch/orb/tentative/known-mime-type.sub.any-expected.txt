@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Script error.
+[FAIL] ORB should block opaque font/ttf: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[PASS] ORB should block opaque font/ttf: <img src=...>
+[PASS] ORB should block opaque font/ttf: <audio src=...>
+[PASS] ORB should block opaque font/ttf: <video src=...>
+[FAIL] ORB should block opaque font/ttf: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque text/plain: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[PASS] ORB should block opaque text/plain: <img src=...>
+[PASS] ORB should block opaque text/plain: <audio src=...>
+[PASS] ORB should block opaque text/plain: <video src=...>
+[FAIL] ORB should block opaque text/plain: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque application/json (non-empty): fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[PASS] ORB should block opaque application/json (non-empty): <img src=...>
+[PASS] ORB should block opaque application/json (non-empty): <audio src=...>
+[PASS] ORB should block opaque application/json (non-empty): <video src=...>
+[PASS] ORB should block opaque application/json (non-empty): <script src=...>
+[FAIL] ORB should block opaque application/json (empty): fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[PASS] ORB should block opaque application/json (empty): <img src=...>
+[PASS] ORB should block opaque application/json (empty): <audio src=...>
+[PASS] ORB should block opaque application/json (empty): <video src=...>
+[FAIL] ORB should block opaque application/json (empty): <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[FAIL] ORB should block opaque application/json which contains non ascii characters: fetch(..., {mode: "no-cors"})
+  assert_unreached: Should have rejected: fetch(..., {mode: "no-cors"}) Reached unreachable code
+[PASS] ORB should block opaque application/json which contains non ascii characters: <img src=...>
+[PASS] ORB should block opaque application/json which contains non ascii characters: <audio src=...>
+[PASS] ORB should block opaque application/json which contains non ascii characters: <video src=...>
+[FAIL] ORB should block opaque application/json which contains non ascii characters: <script src=...>
+  assert_unreached: Should have rejected: <script src=...> Reached unreachable code
+[PASS] ORB shouldn't block opaque image/png: fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block opaque image/png: <img src=...>
+[PASS] ORB shouldn't block opaque text/javascript: fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block opaque text/javascript: <script src=...>
+[PASS] ORB shouldn't block opaque text/javascript (utf16 encoded with BOM): fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block opaque text/javascript (utf16 encoded with BOM): <script src=...>
+[PASS] ORB shouldn't block opaque text/javascript (utf16 encoded without BOM but charset is provided in content-type): fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block opaque text/javascript (utf16 encoded without BOM but charset is provided in content-type): <script src=...>
+[PASS] ORB shouldn't block opaque text/javascript (iso-8559-1 encoded): fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block opaque text/javascript (iso-8559-1 encoded): <script src=...>
+[PASS] ORB shouldn't block text/javascript with valid asm.js: fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block text/javascript with valid asm.js: <script src=...>
+[PASS] ORB shouldn't block text/javascript with invalid asm.js: fetch(..., {mode: "no-cors"})
+[PASS] ORB shouldn't block text/javascript with invalid asm.js: <script src=...>
+Harness: the test ran to completion.
+

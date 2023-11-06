@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 struct AccountInfo;
 struct CoreAccountInfo;
@@ -85,12 +86,13 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 // |restrict_to_accounts_eligible_for_sync| is true, removes the account that
 // are not suitable for sync promos.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    Profile* profile,
+    signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns single account to use in promos.
-AccountInfo GetSingleAccountForPromos(Profile* profile);
+AccountInfo GetSingleAccountForPromos(
+    signin::IdentityManager* identity_manager);
 
 #endif
 

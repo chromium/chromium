@@ -39,7 +39,7 @@ enum RenderBlockingStatusType {
 interface PerformanceResourceTiming : PerformanceEntry {
     [MeasureAs=PerformanceResourceTimingInitiatorType] readonly attribute DOMString initiatorType;
     readonly attribute DOMString nextHopProtocol;
-    [RuntimeEnabled=DeliveryType, Measure] readonly attribute DOMString deliveryType;
+    [Measure] readonly attribute DOMString deliveryType;
     readonly attribute DOMHighResTimeStamp workerStart;
     readonly attribute DOMHighResTimeStamp redirectStart;
     readonly attribute DOMHighResTimeStamp redirectEnd;

@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(
@@ -53,7 +54,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
 
   function step3() {
     var panel = Sources.SourcesPanel.SourcesPanel.instance();
-    var uiSourceCodes = Workspace.workspace.uiSourceCodesForProjectType(Workspace.projectTypes.Network);
+    var uiSourceCodes = Workspace.Workspace.WorkspaceImpl.instance().uiSourceCodesForProjectType(Workspace.Workspace.projectTypes.Network);
     var urls = uiSourceCodes.map(function(uiSourceCode) {
       return uiSourceCode.name();
     });

@@ -17,8 +17,7 @@
       if="[[smdsSupportEnabled_]]" restamp>
       <profile-discovery-list-page id="profileDiscoveryPage"
           pending-profile-properties="[[pendingProfileProperties_]]"
-          selected-profile-properties="{{selectedProfileProperties_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
+          selected-profile-properties="{{selectedProfileProperties_}}">
       </profile-discovery-list-page>
   </template>
   <template is="dom-if"
@@ -35,15 +34,14 @@
       show-error="{{showError_}}"
       show-busy="[[shouldShowSubpageBusy_(state_)]]">
   </activation-code-page>
-  <setup-loading-page id="activationVerificationPage" loading-message="[[i18n('verifyingActivationCode')]]">
+  <setup-loading-page id="profileInstallingPage" loading-message="[[i18n('profileInstallingMessage')]]">
   </setup-loading-page>
   <template is="dom-if"
       if="[[smdsSupportEnabled_]]" restamp>
       <confirmation-code-page id="confirmationCodePage"
           confirmation-code="{{confirmationCode_}}"
           profile-properties="[[selectedProfileProperties_]]"
-          show-error="{{showError_}}"
-          show-busy="[[shouldShowSubpageBusy_(state_)]]">
+          show-error="{{showError_}}">
       </confirmation-code-page>
   </template>
   <template is="dom-if"

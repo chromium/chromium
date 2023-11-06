@@ -6,13 +6,16 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_APP_INSTALL_FEATURES_H_
 
 #include "base/auto_reset.h"
-#include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
-#include "build/build_config.h"
 
 class Profile;
 
 namespace web_app {
+
+// Returns whether preinstalled Google Docs, Sheets, and Slides apps should
+// display as standalone tabbed apps, and Drive as standalone but not
+// tabbed, by default. Always false on non-CrOS.
+bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile);
 
 // Returns the base::Feature in |kPreinstalledAppInstallFeatures| that
 // corresponds to |feature_name|. Used by external app install configs to gate

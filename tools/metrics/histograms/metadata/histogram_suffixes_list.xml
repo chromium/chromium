@@ -101,34 +101,6 @@ chromium-metrics-reviews@google.com.
       name="AutoScreenBrightness.AdapterDecisionAtUserChange.Unknown.AlsStd"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AdResourceMimeTypes" separator=".">
-  <suffix name="CSS" label="Resources identified by text/css."/>
-  <suffix name="HTML" label="Resources identified by text/html."/>
-  <suffix name="Image"
-      label="Resources identified by any supported image mime type."/>
-  <suffix name="JS"
-      label="Resources identified by any supported javascript mime type."/>
-  <suffix name="Other"
-      label="Resources identified by any mime type that did match any
-             supported css, html, image, javascript, or video mime types."/>
-  <suffix name="Video" label="Resources identified by video/*."/>
-  <affected-histogram name="Ads.ResourceUsage.Size.Cache2.Mime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AdResourceSizes" separator=".">
-  <suffix name="Mainframe.AdResource"
-      label="Mainframe resources tagged as ads."/>
-  <suffix name="Mainframe.VanillaResource"
-      label="Mainframe resources not tagged as ads."/>
-  <suffix base="true" name="Mime"
-      label="Size of ad resources identified by the response header mime
-             type."/>
-  <suffix name="Subframe.AdResource" label="Subframe resources tagged as ads."/>
-  <suffix name="Subframe.VanillaResource"
-      label="Subframe resources not tagged as ads."/>
-  <affected-histogram name="Ads.ResourceUsage.Size.Cache2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AdsPageLoadMetricsBytes" separator=".">
   <suffix base="true" name="AdFrames.Aggregate"
       label="Includes resources loaded across all ad frames on a page."/>
@@ -257,12 +229,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.FrameCounts.AdFrames.Total"/>
   <affected-histogram name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"/>
   <affected-histogram name="PageLoad.HeavyAds.InterventionType2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="AnchorElementMetrics" separator="." ordering="prefix">
-  <suffix name="Clicked" label="Clicked by the user, on click"/>
-  <suffix name="Visible" label="Intersects with the viewport, on page load"/>
-  <affected-histogram name="AnchorElementMetrics.IsSameHost"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="AndroidBootTypes" separator=".">
@@ -986,13 +952,16 @@ chromium-metrics-reviews@google.com.
   <suffix name="Ask" label="Ask"/>
   <suffix name="Block" label="Block"/>
   <suffix name="DetectImportantContent" label="Detect important content"/>
-  <suffix name="DomainWildcardAllowThirdParty" label="Third-party cookies allowed for a site group using a domain wildcard"/>
+  <suffix name="DomainWildcardAllowThirdParty"
+      label="Third-party cookies allowed for a site group using a domain
+             wildcard"/>
   <suffix name="MaxRequester"
       label="Maximum number of exceptions per requester"/>
   <suffix name="MaxTopLevel"
       label="Maximum number of exceptions per top-level"/>
   <suffix name="SessionOnly" label="Session only"/>
-  <suffix name="TemporaryAllowThirdParty" label="Third-party cookies temporarily allowed on a domain"/>
+  <suffix name="TemporaryAllowThirdParty"
+      label="Third-party cookies temporarily allowed on a domain"/>
   <affected-histogram name="ContentSettings.Exceptions.cookies">
     <obsolete>
       Removed in M109. See ContentSettings.RegularProfile.Exceptions.cookies
@@ -3647,18 +3616,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Prerender.PrerendersPerSessionCount"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="Previews_Types" separator=".">
-  <suffix name="DeferAllScript" label="Defers execution of script"/>
-  <suffix name="HttpsImageCompression"
-      label="Page Info opened when https image compression was enabled"/>
-  <suffix name="None" label="No preview was served"/>
-  <affected-histogram name="Previews.EligibilityReason"/>
-  <affected-histogram name="Previews.OmniboxAction"/>
-  <affected-histogram name="Previews.OptOut.UserOptedOut"/>
-  <affected-histogram name="Previews.PageEndReason"/>
-  <affected-histogram name="Previews.Triggered.EffectiveConnectionType2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ProcessMemoryAllocator2" separator=".">
   <suffix name="AndroidOtherPrivateDirty"
       label="Other private dirty memory, including GPU memory, as reported by
@@ -4253,6 +4210,10 @@ chromium-metrics-reviews@google.com.
       label="Recorded only for users with &gt;=2 active profiles; recorded
              for all their profiles."/>
   <suffix name="All" label="Recorded for every profile of every user."/>
+  <suffix name="AllManagedDevice"
+      label="Recorded for every profile of every user on managed devices."/>
+  <suffix name="AllUnmanagedDevice"
+      label="Recorded for every profile of every user on unmanaged devices."/>
   <suffix name="LatentMultiProfile"
       label="Recorded only for users with &gt;=2 profiles but only one
              active; recorded for all their profiles."/>
@@ -4653,6 +4614,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="SecurityInterstitialSBWithSourceType" separator=".">
+  <suffix name="from_android_safebrowsing"
+      label="Interstitial for a resource classified as unsafe by the Android
+             Safe Browsing local blocklist API."/>
   <suffix name="from_android_safebrowsing_real_time"
       label="Interstitial for a resource classified as unsafe by the Android
              Safe Browsing hash-prefix real-time API."/>
@@ -4986,18 +4950,22 @@ chromium-metrics-reviews@google.com.
   <suffix name="PrimaryIsEnterprise"
       label="The primary account is enterprise."/>
   <affected-histogram name="Signin.InterceptResult.Enterprise"/>
+  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SigninInterceptSyncState" separator=".">
   <suffix name="NoSync" label="User has not opted in to Sync."/>
   <suffix name="Sync" label="User has opted in to Sync."/>
   <affected-histogram name="Signin.InterceptResult.Enterprise"/>
+  <affected-histogram name="Signin.InterceptResult.EnterpriseForced"/>
   <affected-histogram name="Signin.InterceptResult.MultiUser"/>
   <affected-histogram name="Signin.InterceptResult.Switch"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SigninInterceptType" separator=".">
+  <suffix name="ChromeSignin" label="ChromeSignin bubble."/>
   <suffix name="Enterprise" label="Enterprise bubble."/>
+  <suffix name="EnterpriseForced" label="Enterprise dialog."/>
   <suffix name="MultiUser" label="MultiUser bubble."/>
   <suffix name="Switch" label="Profile-switch bubble."/>
   <affected-histogram name="Signin.InterceptResult"/>
@@ -5023,15 +4991,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Stale" label="The SSOAuth identity list is stale."/>
   <suffix name="Valid" label="The SSOAuth identity list is valid."/>
   <affected-histogram name="Signin.SSOIdentityListRequest.Duration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SkiaDrawScaleFactorFilterQuality" separator=".">
-  <suffix name="AnyFilterQuality" label="Any filter quality was used."/>
-  <suffix name="HighFilterQuality" label="High filter quality was used."/>
-  <suffix name="LowFilterQuality" label="Low filter quality was used."/>
-  <suffix name="MediumFilterQuality" label="Medium filter quality was used."/>
-  <suffix name="NoneFilterQuality" label="None filter quality was used."/>
-  <affected-histogram name="Skia.DrawScaleFactor"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmartLockStatusTypes" separator=".">
@@ -5063,16 +5022,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="Video" label="Video playback"/>
   <suffix name="WheelScroll" label="Mousewheel driven interaction"/>
   <affected-histogram name="CompositorLatency.Type"/>
-  <affected-histogram name="Graphics.Smoothness.Jank.Compositor"/>
-  <affected-histogram name="Graphics.Smoothness.Jank.Main"/>
   <affected-histogram name="Graphics.Smoothness.MaxStale"/>
   <affected-histogram name="Graphics.Smoothness.Stale"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SmoothnessThreadTypes_Jank" separator=".">
-  <suffix name="Compositor" label="Janks from the compositor thread"/>
-  <suffix name="Main" label="Janks from the main thread"/>
-  <affected-histogram name="Graphics.Smoothness.Jank"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="Spellcheck_Windows_LocaleSupportType" separator=".">
@@ -5088,9 +5039,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="NoSupport"
       label="This variation counts the number of locales that are not
              supported by either Hunspell or the OS spell checker."/>
-  <affected-histogram name="Spellcheck.Windows.ChromeLocalesSupport"/>
   <affected-histogram name="Spellcheck.Windows.ChromeLocalesSupport2"/>
-  <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport"/>
   <affected-histogram name="Spellcheck.Windows.SpellcheckLocalesSupport2"/>
 </histogram_suffixes>
 
@@ -5370,13 +5319,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="50fps" label="50 fps"/>
   <suffix name="60fps" label="60 fps"/>
   <affected-histogram name="Media.Video.Roughness"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="VRFreNotCompleteType" separator=".">
-  <suffix name="VrBrowser" label="FRE not complete when starting Chrome"/>
-  <suffix name="WebVRAutopresent"
-      label="FRE not complete when starting WebVR auto-presentation"/>
-  <affected-histogram name="VRFreNotComplete"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="VRSessionType" separator=".">

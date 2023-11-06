@@ -24,9 +24,9 @@ ADDRESS_HOME_STATE | CAProvince | Province |  | CAPostal_2
 ADDRESS_HOME_CITY | INTLCity | City |  | CAPostal_2
 ADDRESS_HOME_STATE | INTLCounty | County |  | CAPostal_2
 ADDRESS_HOME_ZIP | INTLPostal | Postal Code |  | CAPostal_2
-PHONE_HOME_WHOLE_NUMBER | phone1 | Daytime Phone Number (optional) |  | personTitle_1
-PHONE_HOME_WHOLE_NUMBER | intlPhone1Prefix | International Country Code |  | personTitle_1
-PHONE_HOME_WHOLE_NUMBER | intlPhone1 | Daytime Phone Number |  | personTitle_1
+PHONE_HOME_CITY_AND_NUMBER | phone1 | Daytime Phone Number (optional) |  | personTitle_1
+PHONE_HOME_CITY_AND_NUMBER | intlPhone1Prefix | International Country Code |  | personTitle_1
+PHONE_HOME_CITY_AND_NUMBER | intlPhone1 | Daytime Phone Number |  | personTitle_1
 UNKNOWN_TYPE | phone1_Loc | Home | H | personTitle_1
 UNKNOWN_TYPE | phone1_Loc | Work | B | personTitle_1
 UNKNOWN_TYPE | phone1_Loc | Mobile | M | personTitle_1

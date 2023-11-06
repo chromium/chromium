@@ -42,6 +42,7 @@
 #include "ui/gfx/overlay_transform.h"
 
 namespace cc {
+static constexpr int kInvalidSourceFrameNumber = -1;
 
 // CommitState and ThreadUnsafeCommitState contain all of the information from
 // LayerTreeHost that is needed to run compositor commit. CommitState is

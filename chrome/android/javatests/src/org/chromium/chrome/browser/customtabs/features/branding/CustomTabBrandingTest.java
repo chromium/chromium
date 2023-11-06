@@ -73,11 +73,13 @@ public class CustomTabBrandingTest {
         mBrandingSharedPref =
                 appContext.getSharedPreferences(BRANDING_SHARED_PREF_KEY, Context.MODE_PRIVATE);
         String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        mIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                ApplicationProvider.getApplicationContext(), url);
+        mIntent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(), url);
 
         // Set the referrer so branding controller can identify the client app.
-        mIntent.putExtra(Intent.EXTRA_REFERRER,
+        mIntent.putExtra(
+                Intent.EXTRA_REFERRER,
                 new Uri.Builder()
                         .scheme(UrlConstants.APP_INTENT_SCHEME)
                         .authority(appContext.getPackageName())
@@ -94,7 +96,9 @@ public class CustomTabBrandingTest {
     public void showToastBrandingAndStoreBrandingInfo() {
         // TODO(wenyufu): Verify the toast is shown on screen.
         mCctActivityTestRule.startCustomTabActivityWithIntent(mIntent);
-        Assert.assertEquals("Branding launch time should get recorded.", 1,
+        Assert.assertEquals(
+                "Branding launch time should get recorded.",
+                1,
                 mBrandingSharedPref.getAll().size());
     }
 
@@ -114,12 +118,12 @@ public class CustomTabBrandingTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY)
-    // clang-format off
     public void doesntStoreBrandingInfoForIncognito() {
-        // clang-format on
         mIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         mCctActivityTestRule.startCustomTabActivityWithIntent(mIntent);
-        Assert.assertEquals("Branding info should not be stored in Incognito mode.", 0,
+        Assert.assertEquals(
+                "Branding info should not be stored in Incognito mode.",
+                0,
                 mBrandingSharedPref.getAll().size());
     }
 

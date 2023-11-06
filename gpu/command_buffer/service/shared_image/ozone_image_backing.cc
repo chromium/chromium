@@ -19,12 +19,14 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
+#include "gpu/command_buffer/service/shared_image/ozone_image_gl_textures_holder.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -133,6 +135,23 @@ gfx::GpuMemoryBufferHandle OzoneImageBacking::GetGpuMemoryBufferHandle() {
   return handle;
 }
 
+gfx::GpuMemoryBufferHandle
+OzoneImageBacking::GetSinglePlaneGpuMemoryBufferHandle(uint32_t index) {
+  gfx::GpuMemoryBufferHandle gmb_handle = GetGpuMemoryBufferHandle();
+#if BUILDFLAG(IS_FUCHSIA)
+  NOTREACHED() << "Cannot get single plane from GPU memory buffer";
+  return gmb_handle;
+#else
+  DCHECK(gmb_handle.native_pixmap_handle.modifier == 0);
+  auto& planes = gmb_handle.native_pixmap_handle.planes;
+  DCHECK(index < planes.size());
+  gfx::NativePixmapPlane plane = std::move(planes[index]);
+  planes.clear();
+  planes.push_back(std::move(plane));
+  return gmb_handle;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+}
+
 std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,
@@ -153,32 +172,89 @@ std::unique_ptr<DawnImageRepresentation> OzoneImageBacking::ProduceDawn(
 #endif
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
-                                    MemoryTypeTracker* tracker) {
-  if (!cached_texture_holders_.empty() &&
-      cached_texture_holders_[0]->WasContextLost()) {
-    cached_texture_holders_.clear();
+scoped_refptr<OzoneImageGLTexturesHolder> OzoneImageBacking::RetainGLTexture(
+    bool is_passthrough) {
+  if (use_per_context_cache_) {
+    DCHECK(!cached_texture_holder_);
+    gl::GLContext* current_context = gl::GLContext::GetCurrent();
+    if (!current_context) {
+      LOG(ERROR) << "No GLContext current.";
+      return nullptr;
+    }
+
+    const bool has_offscreen_surface = !!current_context->default_surface();
+
+    if (has_offscreen_surface) {
+      auto found = per_context_cached_textures_holders_.find(current_context);
+      if (found != per_context_cached_textures_holders_.end()) {
+        auto& holder = found->second;
+        DCHECK_EQ(holder->is_passthrough(), is_passthrough);
+        CHECK(!holder->WasContextLost());
+        if (!format().PrefersExternalSampler()) {
+          DCHECK_EQ(static_cast<int>(holder->GetNumberOfTextures()),
+                    format().NumberOfPlanes());
+        }
+        return holder;
+      }
+
+      current_context->AddObserver(this);
+    }
+
+    scoped_refptr<OzoneImageGLTexturesHolder> new_holder =
+        OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+            has_offscreen_surface ? current_context : nullptr, this, pixmap_,
+            plane_, is_passthrough);
+    // Cannot cache if the context doesn't have the offscreen surface.
+    if (!has_offscreen_surface) {
+      return new_holder;
+    }
+
+    auto result = per_context_cached_textures_holders_.insert(
+        std::make_pair(current_context, std::move(new_holder)));
+    DCHECK(result.second);
+    return result.first->second;
+  }
+
+  DCHECK(per_context_cached_textures_holders_.empty());
+  if (cached_texture_holder_ && cached_texture_holder_->WasContextLost()) {
+    cached_texture_holder_.reset();
   }
 
   const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
-  return GLTextureOzoneImageRepresentation::Create(
-      manager, this, tracker, pixmap_, plane_,
-      need_cache ? &cached_texture_holders_ : nullptr);
+  if (need_cache && cached_texture_holder_) {
+    DCHECK_EQ(cached_texture_holder_->is_passthrough(), is_passthrough);
+    CHECK(!cached_texture_holder_->WasContextLost());
+    if (!format().PrefersExternalSampler()) {
+      DCHECK_EQ(static_cast<int>(cached_texture_holder_->GetNumberOfTextures()),
+                format().NumberOfPlanes());
+    }
+    return cached_texture_holder_;
+  }
+
+  scoped_refptr<OzoneImageGLTexturesHolder> new_holder =
+      OzoneImageGLTexturesHolder::CreateAndInitTexturesHolder(
+          nullptr, this, pixmap_, plane_, is_passthrough);
+  if (!need_cache) {
+    return new_holder;
+  }
+
+  cached_texture_holder_ = new_holder;
+  return cached_texture_holder_;
+}
+
+std::unique_ptr<GLTextureImageRepresentation>
+OzoneImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                    MemoryTypeTracker* tracker) {
+  return ProduceGLTextureInternal<GLTextureOzoneImageRepresentation>(
+      manager, tracker,
+      /*is_passthrough=*/false);
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 OzoneImageBacking::ProduceGLTexturePassthrough(SharedImageManager* manager,
                                                MemoryTypeTracker* tracker) {
-  if (!cached_texture_holders_.empty() &&
-      cached_texture_holders_[0]->WasContextLost()) {
-    cached_texture_holders_.clear();
-  }
-
-  const bool need_cache = workarounds_.cache_texture_in_ozone_backing;
-  return GLTexturePassthroughOzoneImageRepresentation::Create(
-      manager, this, tracker, pixmap_, plane_,
-      need_cache ? &cached_texture_holders_ : nullptr);
+  return ProduceGLTextureInternal<GLTexturePassthroughOzoneImageRepresentation>(
+      manager, tracker, /*is_passthrough=*/true);
 }
 
 std::unique_ptr<SkiaGaneshImageRepresentation>
@@ -211,26 +287,75 @@ OzoneImageBacking::ProduceSkiaGanesh(
   if (context_state->GrContextIsVulkan()) {
 #if BUILDFLAG(ENABLE_VULKAN)
     auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
-    gmb_handle.native_pixmap_handle = pixmap_->ExportHandle();
     auto* vulkan_implementation =
         context_state->vk_context_provider()->GetVulkanImplementation();
-    // Note: SkiaVkOzoneImageRepresentation does not support per-plane
-    // sampling, so format() must be either multiplanar with external
-    // sampling or single-planar.
-    VkFormat vk_format = format().PrefersExternalSampler()
-                             ? ToVkFormatExternalSampler(format())
-                             : ToVkFormatSinglePlanar(format());
-    auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
-        device_queue, std::move(gmb_handle), size(), vk_format,
-        gfx::ColorSpace());
 
-    if (!vulkan_image)
-      return nullptr;
+    std::vector<std::unique_ptr<VulkanImage>> vulkan_images;
+    // TODO(crbug.com/1366495): Eliminate these branches once we migrate
+    // completely to MultiplanarSharedImage.
+    if (format().is_single_plane()) {
+      DCHECK(!format().IsLegacyMultiplanar() ||
+             plane_ == gfx::BufferPlane::DEFAULT);
+
+      // For single-planar formats, we can usually import the entire GMB.
+      //
+      // However, there is a special case for
+      // RenderableGpuMemoryBufferVideoFramePool which creates a separate
+      // single-planar SharedImage for each plane of the NV12 image but uses a
+      // multi-planar buffer in the backing pixmap. This leads to issues when
+      // importing the buffer into Vulkan (e.g. we tell Vulkan it's a linear
+      // R8 image, but we try to bind 2 planes of data). As a workaround, we
+      // choose the correct plane to pass based off the buffer plane param.
+      gfx::GpuMemoryBufferHandle gmb_handle;
+      if (plane_ == gfx::BufferPlane::Y || plane_ == gfx::BufferPlane::UV) {
+        DCHECK(!format().IsLegacyMultiplanar());
+        gmb_handle = GetSinglePlaneGpuMemoryBufferHandle(
+            plane_ == gfx::BufferPlane::Y ? 0 : 1);
+      } else {
+        gmb_handle = GetGpuMemoryBufferHandle();
+      }
+
+      auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
+          device_queue, std::move(gmb_handle), size(),
+          ToVkFormatSinglePlanar(format()), gfx::ColorSpace());
+      if (!vulkan_image) {
+        return nullptr;
+      }
+      vulkan_images.push_back(std::move(vulkan_image));
+    } else if (format().PrefersExternalSampler()) {
+      // For multi-planar formats that are externally sampled, we import the
+      // entire GMB.
+      DCHECK(plane_ == gfx::BufferPlane::DEFAULT);
+      gfx::GpuMemoryBufferHandle gmb_handle = GetGpuMemoryBufferHandle();
+      auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
+          device_queue, std::move(gmb_handle), size(),
+          ToVkFormatExternalSampler(format()), gfx::ColorSpace());
+      if (!vulkan_image) {
+        return nullptr;
+      }
+      vulkan_images.push_back(std::move(vulkan_image));
+    } else {
+      // For multi-planar SharedImages, we create a VkImage per plane. We also
+      // need to pass the correct plane when creating the VulkanImage.
+      DCHECK_EQ(plane_, gfx::BufferPlane::DEFAULT);
+      for (int i = 0; i < format().NumberOfPlanes(); i++) {
+        gfx::GpuMemoryBufferHandle gmb_handle =
+            GetSinglePlaneGpuMemoryBufferHandle(i);
+        gfx::Size plane_size = format().GetPlaneSize(i, size());
+        VkFormat vk_format = ToVkFormat(format(), i);
+        auto vulkan_image =
+            vulkan_implementation->CreateImageFromGpuMemoryHandle(
+                device_queue, std::move(gmb_handle), plane_size, vk_format,
+                gfx::ColorSpace());
+        if (!vulkan_image) {
+          return nullptr;
+        }
+        vulkan_images.push_back(std::move(vulkan_image));
+      }
+    }
 
     return std::make_unique<SkiaVkOzoneImageRepresentation>(
-        manager, this, std::move(context_state), std::move(vulkan_image),
+        manager, this, std::move(context_state), std::move(vulkan_images),
         tracker);
 #else
     NOTREACHED() << "Vulkan is disabled.";
@@ -274,6 +399,8 @@ OzoneImageBacking::OzoneImageBacking(
                                       std::move(buffer_usage)),
       plane_(plane),
       pixmap_(std::move(pixmap)),
+      use_per_context_cache_(base::FeatureList::IsEnabled(
+          features::kEnablePerContextGLTextureCache)),
       context_state_(std::move(context_state)),
       workarounds_(workarounds),
       use_passthrough_(use_passthrough) {
@@ -303,9 +430,15 @@ OzoneImageBacking::OzoneImageBacking(
 }
 
 OzoneImageBacking::~OzoneImageBacking() {
-  if (context_state_->context_lost()) {
-    for (auto& texture_holder : cached_texture_holders_) {
-      texture_holder->MarkContextLost();
+  if (use_per_context_cache_) {
+    DCHECK(!cached_texture_holder_);
+    for (auto& item : per_context_cached_textures_holders_) {
+      item.first->RemoveObserver(this);
+    }
+  } else {
+    DCHECK(per_context_cached_textures_holders_.empty());
+    if (context_state_->context_lost()) {
+      cached_texture_holder_->MarkContextLost();
     }
   }
 }
@@ -520,6 +653,42 @@ void OzoneImageBacking::EndAccess(bool readonly,
     write_fence_ = std::move(fence);
     last_write_stream_ = access_stream;
   }
+}
+
+template <typename T>
+std::unique_ptr<T> OzoneImageBacking::ProduceGLTextureInternal(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    bool is_passthrough) {
+  auto texture_holder = RetainGLTexture(is_passthrough);
+  if (!texture_holder) {
+    return nullptr;
+  }
+  const bool should_mark_context_lost_textures_holder_ =
+      !texture_holder->has_context();
+  return std::make_unique<T>(manager, this, tracker, std::move(texture_holder),
+                             should_mark_context_lost_textures_holder_);
+}
+
+void OzoneImageBacking::OnGLContextLost(gl::GLContext* context) {
+  OnGLContextLostOrDestroy(context, /*mark_context_lost=*/true);
+}
+
+void OzoneImageBacking::OnGLContextWillDestroy(gl::GLContext* context) {
+  OnGLContextLostOrDestroy(context, /*mark_context_lost=*/false);
+}
+
+void OzoneImageBacking::OnGLContextLostOrDestroy(gl::GLContext* context,
+                                                 bool mark_context_lost) {
+  DCHECK(use_per_context_cache_);
+  auto it = per_context_cached_textures_holders_.find(context);
+  DCHECK(it != per_context_cached_textures_holders_.end());
+
+  if (mark_context_lost) {
+    it->second->MarkContextLost();
+  }
+  per_context_cached_textures_holders_.erase(it);
+  context->RemoveObserver(this);
 }
 
 }  // namespace gpu

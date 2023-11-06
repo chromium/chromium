@@ -286,6 +286,6 @@ test("compositor_unittests") {
   }
 
   if (is_ios) {
-    public_deps = [ "//ui/gfx:unit_tests_bundle_data" ]
+    public_deps = [ "//ui/gfx:compositor_tests_bundle_data" ]
   }
 }

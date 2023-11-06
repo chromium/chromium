@@ -468,11 +468,12 @@ class UnderlayOverlayProcessor : public DefaultOverlayProcessor {
 class TransitionOverlayProcessor : public DefaultOverlayProcessor {
  public:
   TransitionOverlayProcessor() {
+    strategies_.push_back(std::make_unique<OverlayStrategyFullscreen>(this));
     strategies_.push_back(std::make_unique<OverlayStrategySingleOnTop>(this));
     strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(this));
     prioritization_config_.changing_threshold = false;
     prioritization_config_.damage_rate_threshold = false;
-    prioritization_config_.power_gain_sort = false;
+    prioritization_config_.power_gain_sort = true;
   }
 };
 
@@ -778,7 +779,7 @@ void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
                         AggregatedRenderPass* render_pass,
                         const gfx::Rect& rect) {
   auto* color_quad = render_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
-  color_quad->SetNew(shared_quad_state, rect, rect, SkColors::kBlack, false);
+  color_quad->SetNew(shared_quad_state, rect, rect, SkColors::kRed, false);
 }
 
 void CreateOpaqueQuadAt(DisplayResourceProvider* resource_provider,
@@ -937,6 +938,49 @@ TEST(OverlayTest, OverlaysProcessorHasStrategy) {
 }
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+
+TEST_F(FullscreenOverlayTest, DRMDefaultBlackOptimization) {
+  auto pass = CreateRenderPass();
+  auto sub_fullscreen = pass->output_rect;
+  sub_fullscreen.Inset(16);
+  CreateCandidateQuadAt(resource_provider_.get(),
+                        child_resource_provider_.get(), child_provider_.get(),
+                        pass->shared_quad_state_list.back(), pass.get(),
+                        sub_fullscreen);
+
+  // Add a black solid color behind it.
+  CreateSolidColorQuadAt(pass->shared_quad_state_list.back(), SkColors::kBlack,
+                         pass.get(), pass->output_rect);
+
+  // Check for potential candidates.
+  OverlayCandidateList candidate_list;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+  OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+  AggregatedRenderPassList pass_list;
+  AggregatedRenderPass* main_pass = pass.get();
+  pass_list.push_back(std::move(pass));
+  SurfaceDamageRectList surface_damage_rect_list;
+
+  overlay_processor_->ProcessForOverlays(
+      resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+      render_pass_filters, render_pass_backdrop_filters,
+      std::move(surface_damage_rect_list), nullptr, &candidate_list,
+      &damage_rect_, &content_bounds_);
+
+  if (base::FeatureList::IsEnabled(
+          features::kUseDrmBlackFullscreenOptimization)) {
+    // Check that all the quads are gone.
+    EXPECT_EQ(0U, main_pass->quad_list.size());
+    // Check that we have only one overlay.
+    EXPECT_EQ(1U, candidate_list.size());
+    // Check that the candidate has replaced the primary plane.
+    EXPECT_EQ(candidate_list[0].plane_z_order, 0);
+  } else {
+    // No fullscreen promotion is possible.
+    EXPECT_EQ(0U, candidate_list.size());
+  }
+}
+
 TEST_F(FullscreenOverlayTest, SuccessfulOverlay) {
   auto pass = CreateRenderPass();
   gfx::Rect output_rect = pass->output_rect;
@@ -1155,10 +1199,16 @@ TEST_F(FullscreenOverlayTest, NotCoveringFullscreenFail) {
       render_pass_filters, render_pass_backdrop_filters,
       std::move(surface_damage_rect_list), nullptr, &candidate_list,
       &damage_rect_, &content_bounds_);
-  ASSERT_EQ(0U, candidate_list.size());
-
-  // Check that the quad is not gone.
-  EXPECT_EQ(1U, main_pass->quad_list.size());
+  if (base::FeatureList::IsEnabled(
+          features::kUseDrmBlackFullscreenOptimization)) {
+    ASSERT_EQ(1U, candidate_list.size());
+    // Check that the quad is gone.
+    EXPECT_EQ(0U, main_pass->quad_list.size());
+  } else {
+    ASSERT_EQ(0U, candidate_list.size());
+    // Check that the quad is not gone.
+    EXPECT_EQ(1U, main_pass->quad_list.size());
+  }
 }
 
 TEST_F(FullscreenOverlayTest, RemoveFullscreenQuadFromQuadList) {
@@ -3854,6 +3904,7 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
   ResourceIdGenerator id_generator;
   uint64_t frame_counter = 0;
 
+  constexpr bool kIsFullscreen = false;
   // Test the default configuration.
   OverlayCandidateTemporalTracker::Config config;
   float kDamageEpsilon = 1.0f / config.max_num_frames_avg;
@@ -3892,8 +3943,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     }
 
     EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
-    auto opaque_power_gain_60_full =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_60_full = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
 
     EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 1.0f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_60_full, 0);
@@ -3905,8 +3956,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
                       config);
 
-    auto opaque_power_gain_60_stutter =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_60_stutter = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
 
     // A single frame drop even at 60fps should not change our power
     // categorization.
@@ -3917,8 +3968,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
                       config);
 
-    auto opaque_power_gain_60_inactive =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_60_inactive = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_60_inactive, 0);
@@ -3945,8 +3996,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                         id_generator.GenerateNextId(), config);
     }
 
-    auto opaque_power_gain_30_full =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_30_full = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
 
     EXPECT_NEAR(tracker.MeanFrameRatioRate(config), 0.5f, kDamageEpsilon);
     EXPECT_GT(opaque_power_gain_30_full, 0);
@@ -3961,8 +4012,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                       config);
 
     EXPECT_TRUE(tracker.IsActivelyChanging(frame_counter, config));
-    auto opaque_power_gain_30_stutter =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_30_stutter = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
 
     EXPECT_EQ(opaque_power_gain_30_stutter, opaque_power_gain_30_full);
 
@@ -3971,8 +4022,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
     tracker.AddRecord(frame_counter, kFullDamage, id_generator.GenerateNextId(),
                       config);
 
-    auto opaque_power_gain_30_inactive =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_30_inactive = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
     // Simple test to make sure that power categorization is not completely
     // invalidated when candidate becomes inactive.
     EXPECT_GT(opaque_power_gain_30_inactive, 0);
@@ -3985,8 +4036,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                         id_generator.GenerateNextId(), config);
     }
 
-    auto opaque_power_gain_high_damage =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_high_damage = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
 
     EXPECT_GT(opaque_power_gain_high_damage, 0);
     EXPECT_GE(opaque_power_gain_60_full, opaque_power_gain_high_damage);
@@ -3997,8 +4048,8 @@ TEST_F(UnderlayTest, OverlayCandidateTemporalTracker) {
                         id_generator.GenerateNextId(), config);
     }
 
-    auto opaque_power_gain_low_damage =
-        tracker.GetModeledPowerGain(frame_counter, config, fake_display_area);
+    auto opaque_power_gain_low_damage = tracker.GetModeledPowerGain(
+        frame_counter, config, fake_display_area, kIsFullscreen);
     EXPECT_LT(opaque_power_gain_low_damage, 0);
 
     // Test our mean damage ratio computations for our tracker.
@@ -6469,6 +6520,59 @@ TEST_F(TypeAndSizeSortedMultiOverlayTest,
   EXPECT_EQ(gfx::ToRoundedRect(candidate_list[3].display_rect),
             kRoundedDisplayMaskRectSmallest);
   EXPECT_EQ(candidate_list[3].plane_z_order, 2);
+}
+
+// Test that we favor fullscreen even if other strategies have a higher damage
+// rate were previously active.
+TEST_F(TransitionOverlayTypeTest, FullscreenFavored) {
+  constexpr int kLastIter = 10;
+
+  constexpr int kMakeHiddenOccluderIter = 5;
+  for (int i = 0; i <= kLastIter; i++) {
+    auto pass = CreateRenderPass();
+    constexpr gfx::Rect kSmall(66, 128, 32, 32);
+
+    auto* small_quad_sqs = pass->CreateAndAppendSharedQuadState();
+
+    CreateSolidColorQuadAt(small_quad_sqs, SkColors::kWhite, pass.get(),
+                           kSmall);
+
+    auto* fullscreen_sqs = pass->CreateAndAppendSharedQuadState();
+    CreateFullscreenCandidateQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), fullscreen_sqs, pass.get());
+
+    fullscreen_sqs->overlay_damage_index = 0;
+
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+
+    auto damage_rect_surface = pass->output_rect;
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+
+    OverlayCandidateList candidate_list;
+    SurfaceDamageRectList surface_damage_rect_list;
+    if (i >= kMakeHiddenOccluderIter) {
+      damage_rect_surface.Inset(32);
+      small_quad_sqs->opacity = 0.f;
+    }
+
+    surface_damage_rect_list.push_back(damage_rect_surface);
+    overlay_processor_->SetFrameSequenceNumber(static_cast<int64_t>(i));
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), nullptr, &candidate_list,
+        &damage_rect_, &content_bounds_);
+    ASSERT_EQ(candidate_list.size(), 1u);
+    if (i == 0) {
+      EXPECT_EQ(candidate_list[0].plane_z_order, -1);
+    }
+    if (i == kLastIter) {
+      EXPECT_EQ(candidate_list[0].plane_z_order, 0);
+    }
+  }
 }
 
 TEST_F(SizeSortedMultiOverlayTest, OverlaysAreSorted) {

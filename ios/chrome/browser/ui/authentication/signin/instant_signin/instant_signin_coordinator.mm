@@ -66,7 +66,7 @@
 - (void)dealloc {
   // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
   // low.
-  DUMP_WILL_BE_CHECK(!_mediator);
+  DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - ChromeCoordinator

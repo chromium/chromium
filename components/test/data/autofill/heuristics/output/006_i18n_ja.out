@@ -7,7 +7,7 @@ ADDRESS_HOME_CITY | ct | 市区町村: |  | fn_1
 ADDRESS_HOME_ZIP | zc | 郵便番号: |  | fn_1
 ADDRESS_HOME_STATE | st | 都道府県: |  | fn_1
 EMAIL_ADDRESS | em | メールアドレス: |  | fn_1
-PHONE_HOME_WHOLE_NUMBER | ph | 電話番号: |  | fn_1
+PHONE_HOME_CITY_AND_NUMBER | ph | 電話番号: |  | fn_1
 CREDIT_CARD_NAME_FULL | c1 | 名前（フルネーム）: |  | c1_2
 CREDIT_CARD_NUMBER | c2 | カード番号: |  | c1_2
 CREDIT_CARD_EXP_MONTH | c3 | 有効期限: |  | c1_2

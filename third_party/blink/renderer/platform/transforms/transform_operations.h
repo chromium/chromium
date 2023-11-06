@@ -145,13 +145,34 @@ class PLATFORM_EXPORT TransformOperations {
                            const double& max_progress,
                            gfx::BoxF* bounds) const;
 
+  // Registered custom property interpolations cannot currently represent
+  // interpolated values if functions need to be combined into a matrix and
+  // those function values depend on the box size via percentage values, since
+  // percentages need to be converted into numbers and the percentages should
+  // be kept for the computed value. Until there is a standardized mix()
+  // function for representing such transform values, make such interpolations
+  // discrete with BoxSizeDependentMatrixBlending::kDisallow.
+  //
+  // The standard CSS transform property still allows such interpolations, but
+  // the computed value in typed-om incorrectly returns values with percentages
+  // resolved in this case. getComputedStyle().transform returns a resolved
+  // value per spec.
+  enum class BoxSizeDependentMatrixBlending {
+    kAllow,
+    kDisallow,
+  };
+
   scoped_refptr<TransformOperation> BlendRemainingByUsingMatrixInterpolation(
       const TransformOperations& from,
       wtf_size_t matching_prefix_length,
-      double progress) const;
+      double progress,
+      BoxSizeDependentMatrixBlending box_size_dependent =
+          BoxSizeDependentMatrixBlending::kAllow) const;
 
   TransformOperations Blend(const TransformOperations& from,
-                            double progress) const;
+                            double progress,
+                            BoxSizeDependentMatrixBlending box_size_dependent =
+                                BoxSizeDependentMatrixBlending::kAllow) const;
   TransformOperations Add(const TransformOperations& addend) const;
   TransformOperations Zoom(double factor) const;
 

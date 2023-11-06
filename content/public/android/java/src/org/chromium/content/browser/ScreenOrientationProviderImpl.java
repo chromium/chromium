@@ -13,12 +13,13 @@ import android.view.Surface;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.ScreenOrientationDelegate;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -113,7 +114,7 @@ public class ScreenOrientationProviderImpl
             @Nullable WindowAndroid window, Context context) {
         switch (orientation) {
             case ScreenOrientationLockType.DEFAULT:
-                return ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED;
+                return ActivityInfo.SCREEN_ORIENTATION_USER;
             case ScreenOrientationLockType.PORTRAIT_PRIMARY:
                 return ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
             case ScreenOrientationLockType.PORTRAIT_SECONDARY:

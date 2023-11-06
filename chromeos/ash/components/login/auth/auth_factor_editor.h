@@ -107,12 +107,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   void RemoveRecoveryFactor(std::unique_ptr<UserContext> context,
                             AuthOperationCallback callback);
 
-  // Replaces the user's local password with a new value. A local password must
+  // Sets the user's password factor if none already exists.
+  // Session should be authenticated.
+  void SetPasswordFactor(std::unique_ptr<UserContext> context,
+                         cryptohome::RawPassword new_password,
+                         const cryptohome::KeyLabel& label,
+                         AuthOperationCallback callback);
+
+  // Replaces the user's password with a new value. A password must
   // already be configured prior to calling this.
   // Session should be authenticated.
-  void ReplaceLocalPasswordFactor(std::unique_ptr<UserContext> context,
-                                  cryptohome::RawPassword new_password,
-                                  AuthOperationCallback callback);
+  void ReplacePasswordFactor(std::unique_ptr<UserContext> context,
+                             cryptohome::RawPassword new_password,
+                             const cryptohome::KeyLabel& label,
+                             AuthOperationCallback callback);
 
  private:
   void OnListAuthFactors(
@@ -143,10 +151,17 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
       AuthOperationCallback callback,
       absl::optional<user_data_auth::RemoveAuthFactorReply> reply);
 
-  void ReplaceLocalPasswordFactorImpl(std::unique_ptr<UserContext> context,
-                                      cryptohome::RawPassword new_password,
-                                      AuthOperationCallback callback,
-                                      const std::string& system_salt);
+  void SetPasswordFactorImpl(std::unique_ptr<UserContext> context,
+                             cryptohome::RawPassword new_password,
+                             const cryptohome::KeyLabel& label,
+                             AuthOperationCallback calllback,
+                             const std::string& system_salt);
+
+  void ReplacePasswordFactorImpl(std::unique_ptr<UserContext> context,
+                                 cryptohome::RawPassword new_password,
+                                 const cryptohome::KeyLabel& label,
+                                 AuthOperationCallback callback,
+                                 const std::string& system_salt);
 
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
   base::WeakPtrFactory<AuthFactorEditor> weak_factory_{this};

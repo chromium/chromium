@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/unit_conversion/unit_conversion_constants.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_mutator.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_conversion_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/unit_conversion/unit_type_cell.h"
@@ -162,7 +163,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   [super viewDidLoad];
   _targetUnit = ios::provider::GetDefaultTargetUnit(_sourceUnit);
   _unitType = TypeByUnit(_sourceUnit);
-  _sourceUnitValueField = [NSString stringWithFormat:@"%lf", _unitValue];
+  _sourceUnitValueField =
+      [NSString localizedStringWithFormat:@"%lf", _unitValue];
   _unitTypes = ios::provider::GetSupportedUnitTypes();
   _unitTypeTitle = [self titleForUnitType:_unitType];
   _formattedSourceUnit = ios::provider::GetFormattedUnit(_sourceUnit);
@@ -225,6 +227,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
         constraintEqualToAnchor:_tableViewFooterView.leadingAnchor
                        constant:kReportAnIssueButtonLeadingOffset],
   ]];
+
+  self.tableView.accessibilityIdentifier = kUnitConversionTableViewIdentifier;
 }
 
 #pragma mark - Private
@@ -344,8 +348,8 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
   DCHECK([sourceUnitMeasurement canBeConvertedToUnit:_targetUnit]);
   NSMeasurement* targetUnitMeasurement =
       [sourceUnitMeasurement measurementByConvertingToUnit:_targetUnit];
-  _targetUnitValueField =
-      [NSString stringWithFormat:@"%lf", targetUnitMeasurement.doubleValue];
+  _targetUnitValueField = [NSString
+      localizedStringWithFormat:@"%lf", targetUnitMeasurement.doubleValue];
 }
 
 // Returns the title string based on the unit type.
@@ -387,12 +391,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
                     if (section == kSourceSection) {
                       [weakSelf.mutator sourceUnitDidChange:unit
                                                  targetUnit:weakSelf.targetUnit
-                                                  unitValue:weakSelf.unitValue];
+                                                  unitValue:weakSelf.unitValue
+                                                   unitType:weakSelf.unitType];
 
                     } else if (section == kTargetSection) {
                       [weakSelf.mutator targetUnitDidChange:unit
                                                  sourceUnit:weakSelf.sourceUnit
-                                                  unitValue:weakSelf.unitValue];
+                                                  unitValue:weakSelf.unitValue
+                                                   unitType:weakSelf.unitType];
                     }
                   }];
       [unitsSubMenu addObject:unitAction];
@@ -452,8 +458,14 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     cell.unitMenuButton.showsMenuAsPrimaryAction = YES;
     if (indexPath.section == kSourceSection) {
       cell.unitTypeLabel.text = _formattedSourceUnit;
+      cell.unitTypeLabel.accessibilityIdentifier = kSourceUnitLabelIdentifier;
+      cell.unitMenuButton.accessibilityIdentifier =
+          kSourceUnitMenuButtonIdentifier;
     } else if (indexPath.section == kTargetSection) {
       cell.unitTypeLabel.text = _formattedTargetUnit;
+      cell.unitTypeLabel.accessibilityIdentifier = kTargetUnitLabelIdentifier;
+      cell.unitMenuButton.accessibilityIdentifier =
+          kTargetUnitMenuButtonIdentifier;
     } else {
       NOTREACHED_NORETURN();
     }
@@ -466,11 +478,15 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
     cell.unitValueTextField.delegate = self;
     if (indexPath.section == kSourceSection) {
       cell.unitValueTextField.text = _sourceUnitValueField;
+      cell.unitValueTextField.accessibilityIdentifier =
+          kSourceUnitFieldIdentifier;
       [cell.unitValueTextField addTarget:self
                                   action:@selector(textFieldDidChange:)
                         forControlEvents:UIControlEventEditingChanged];
     } else if (indexPath.section == kTargetSection) {
       cell.unitValueTextField.text = _targetUnitValueField;
+      cell.unitValueTextField.accessibilityIdentifier =
+          kTargetUnitFieldIdentifier;
       cell.unitValueTextField.enabled = NO;
     } else {
       NOTREACHED_NORETURN();
@@ -495,13 +511,15 @@ ios::provider::UnitType TypeByUnit(NSUnit* unit) {
 }
 
 - (void)updateSourceUnitValue:(double)sourceUnitValue reload:(BOOL)reload {
-  _sourceUnitValueField = [NSString stringWithFormat:@"%lf", sourceUnitValue];
+  _sourceUnitValueField =
+      [NSString localizedStringWithFormat:@"%lf", sourceUnitValue];
   self.unitValue = sourceUnitValue;
   [self reloadRow:kUnitValueFieldRow section:kSourceSection reload:reload];
 }
 
 - (void)updateTargetUnitValue:(double)targetUnitValue reload:(BOOL)reload {
-  _targetUnitValueField = [NSString stringWithFormat:@"%lf", targetUnitValue];
+  _targetUnitValueField =
+      [NSString localizedStringWithFormat:@"%lf", targetUnitValue];
   [self reloadRow:kUnitValueFieldRow section:kTargetSection reload:reload];
 }
 

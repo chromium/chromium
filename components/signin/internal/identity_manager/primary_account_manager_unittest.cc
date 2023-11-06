@@ -31,6 +31,8 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -53,19 +55,24 @@ struct ExpectedAccessPoints {
 class PrimaryAccountManagerTest : public testing::Test,
                                   public PrimaryAccountManager::Observer {
  public:
-  PrimaryAccountManagerTest()
-      : test_signin_client_(&user_prefs_),
-        token_service_(
-            &user_prefs_,
-            std::make_unique<FakeProfileOAuth2TokenServiceDelegate>()) {
+  PrimaryAccountManagerTest() : test_signin_client_(&user_prefs_) {
+#if BUILDFLAG(IS_ANDROID)
+    // Mock AccountManagerFacade in java code for tests that require its
+    // initialization.
+    signin::SetUpMockAccountManagerFacade();
+#endif
     AccountFetcherService::RegisterPrefs(user_prefs_.registry());
     AccountTrackerService::RegisterPrefs(user_prefs_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(user_prefs_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(user_prefs_.registry());
-    PrimaryAccountManager::RegisterPrefs(local_state_.registry());
-    account_tracker_.Initialize(&user_prefs_, base::FilePath());
-    account_fetcher_.Initialize(
-        &test_signin_client_, &token_service_, &account_tracker_,
+    account_tracker_ = std::make_unique<AccountTrackerService>();
+    account_tracker_->Initialize(&user_prefs_, base::FilePath());
+    token_service_ = std::make_unique<ProfileOAuth2TokenService>(
+        &user_prefs_,
+        std::make_unique<FakeProfileOAuth2TokenServiceDelegate>());
+    account_fetcher_ = std::make_unique<AccountFetcherService>();
+    account_fetcher_->Initialize(
+        &test_signin_client_, token_service_.get(), account_tracker_.get(),
         std::make_unique<image_fetcher::FakeImageDecoder>(),
         std::make_unique<FakeAccountCapabilitiesFetcherFactory>());
   }
@@ -78,8 +85,8 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   TestSigninClient* signin_client() { return &test_signin_client_; }
 
-  AccountTrackerService* account_tracker() { return &account_tracker_; }
-  AccountFetcherService* account_fetcher() { return &account_fetcher_; }
+  AccountTrackerService* account_tracker() { return account_tracker_.get(); }
+  AccountFetcherService* account_fetcher() { return account_fetcher_.get(); }
   PrefService* prefs() { return &user_prefs_; }
 
   // Seed the account tracker with information from logged in user.  Normally
@@ -87,8 +94,8 @@ class PrimaryAccountManagerTest : public testing::Test,
   // Returns the string to use as the account_id.
   CoreAccountId AddToAccountTracker(const std::string& gaia_id,
                                     const std::string& email) {
-    account_tracker_.SeedAccountInfo(gaia_id, email);
-    return account_tracker_.PickAccountIdForAccount(gaia_id, email);
+    account_tracker_->SeedAccountInfo(gaia_id, email);
+    return account_tracker_->PickAccountIdForAccount(gaia_id, email);
   }
 
   void CheckSigninMetrics(ExpectedAccessPoints access_points) {
@@ -122,11 +129,18 @@ class PrimaryAccountManagerTest : public testing::Test,
                 ElementsAreArray(expected_turn_off_sync_buckets));
   }
 
+  void CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState expected_sample) {
+    histogram_tester_.ExpectUniqueSample(
+        "Signin.PAMInitialize.PrimaryAccountInfoState",
+        /*sample=*/expected_sample, /*expected_bucket_count=*/1);
+  }
+
   void CreatePrimaryAccountManager() {
     DCHECK(!manager_);
     manager_ = std::make_unique<PrimaryAccountManager>(
-        &test_signin_client_, &token_service_, &account_tracker_);
-    manager_->Initialize(&local_state_);
+        &test_signin_client_, token_service_.get(), account_tracker_.get());
+    manager_->Initialize();
     manager_->AddObserver(this);
   }
 
@@ -167,11 +181,10 @@ class PrimaryAccountManagerTest : public testing::Test,
 
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  TestingPrefServiceSimple local_state_;
   TestSigninClient test_signin_client_;
-  ProfileOAuth2TokenService token_service_;
-  AccountTrackerService account_tracker_;
-  AccountFetcherService account_fetcher_;
+  std::unique_ptr<AccountTrackerService> account_tracker_;
+  std::unique_ptr<ProfileOAuth2TokenService> token_service_;
+  std::unique_ptr<AccountFetcherService> account_fetcher_;
   std::unique_ptr<PrimaryAccountManager> manager_;
   std::vector<std::string> oauth_tokens_fetched_;
   std::vector<std::string> cookies_;
@@ -221,8 +234,8 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
       AddToAccountTracker("main_id", "user@gmail.com");
   CoreAccountId other_account_id =
       AddToAccountTracker("other_id", "other@gmail.com");
-  token_service_.UpdateCredentials(main_account_id, "token");
-  token_service_.UpdateCredentials(other_account_id, "token");
+  token_service_->UpdateCredentials(main_account_id, "token");
+  token_service_->UpdateCredentials(other_account_id, "token");
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id), ConsentLevel::kSync,
       AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -242,7 +255,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
   // Tokens are revoked.
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
-  EXPECT_TRUE(token_service_.GetAccounts().empty());
+  EXPECT_TRUE(token_service_->GetAccounts().empty());
 }
 
 TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
@@ -671,9 +684,8 @@ TEST_F(PrimaryAccountManagerTest,
       /*expected_count=*/0);
 }
 
-// TODO(crbug.com/1484870): The test was failing on android-12-x64-rel.
 TEST_F(PrimaryAccountManagerTest,
-       DISABLED_DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
+       DoNotRecordExistingPreviousSyncAccountIfCurrentlyConsented) {
   user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
                         "previous_gaia_id");
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
@@ -714,6 +726,8 @@ TEST_F(PrimaryAccountManagerTest,
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
   user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   CreatePrimaryAccountManager();
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::kAccountInfoAvailable);
   ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   ASSERT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
@@ -735,6 +749,8 @@ TEST_F(PrimaryAccountManagerTest,
   user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
   user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
   CreatePrimaryAccountManager();
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::kAccountInfoAvailable);
   ASSERT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   // If sync is currently on, none of the metrics should be recorded.
@@ -744,4 +760,100 @@ TEST_F(PrimaryAccountManagerTest,
   histogram_tester_.ExpectTotalCount(
       "Signin.HadPreviousSyncAccount.SignedOutOnProfileLoad",
       /*expected_count=*/0);
+}
+
+TEST_F(PrimaryAccountManagerTest, RestoreSyncAccountInfo) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                        "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId, "gaia_id");
+  CoreAccountId account_id =
+      account_tracker()->PickAccountIdForAccount("gaia_id", "user@gmail.com");
+  ASSERT_FALSE(account_id.empty());
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+
+  EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
+  CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+  ASSERT_FALSE(account_info.IsEmpty());
+  EXPECT_EQ(account_id, account_info.account_id);
+  EXPECT_EQ("gaia_id", account_info.gaia);
+  EXPECT_EQ("user@gmail.com", account_info.email);
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::
+          kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo);
+}
+
+TEST_F(PrimaryAccountManagerTest, RestoreFailedLastSyncGaiaIDMissing) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                        "user@gmail.com");
+  CoreAccountId account_id =
+      account_tracker()->PickAccountIdForAccount("gaia_id", "user@gmail.com");
+  ASSERT_FALSE(account_id.empty());
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::
+          kEmptyAccountInfo_RestoreFailedNoLastSyncGaiaId);
+}
+
+TEST_F(PrimaryAccountManagerTest, RestoreFailedLastSyncEmailMissing) {
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId, "gaia_id");
+  CoreAccountId account_id =
+      account_tracker()->PickAccountIdForAccount("gaia_id", "user@gmail.com");
+  ASSERT_FALSE(account_id.empty());
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::
+          kEmptyAccountInfo_RestoreFailedNoLastSyncEmail);
+}
+
+TEST_F(PrimaryAccountManagerTest, RestoreFailedNotSyncing) {
+  CoreAccountId account_id =
+      account_tracker()->PickAccountIdForAccount("gaia_id", "user@gmail.com");
+  ASSERT_FALSE(account_id.empty());
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  CreatePrimaryAccountManager();
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::
+          kEmptyAccountInfo_RestoreFailedNotSyncConsented);
+}
+
+TEST_F(PrimaryAccountManagerTest, RestoreFailedFeatureNotEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kRestorePrimaryAccountInfo);
+
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                        "user@gmail.com");
+  user_prefs_.SetString(prefs::kGoogleServicesLastSyncingGaiaId, "gaia_id");
+  CoreAccountId account_id =
+      account_tracker()->PickAccountIdForAccount("gaia_id", "user@gmail.com");
+  ASSERT_FALSE(account_id.empty());
+  ASSERT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  user_prefs_.SetString(prefs::kGoogleServicesAccountId, account_id.ToString());
+  user_prefs_.SetBoolean(prefs::kGoogleServicesConsentedToSync, true);
+  CreatePrimaryAccountManager();
+
+  EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
+  EXPECT_TRUE(account_tracker()->GetAccountInfo(account_id).IsEmpty());
+  CheckInitializeAccountInfoStateHistogram(
+      PrimaryAccountManager::InitializeAccountInfoState::
+          kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
 }

@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceLoginScreenExtensions": [
+            "abcdefghijklmnopabcdefghijklmnop",
+            "aaabbbcccdddeeefffggghhhiiijjjkk;https://url.com/update_manifest.xml"
+          ]
+        },
+        "prefs": {
+          "extensions.install.forcelist": {
+            "location": "signin_profile",
+            "value": {
+              "aaabbbcccdddeeefffggghhhiiijjjkk": {
+                "external_update_url": "https://url.com/update_manifest.xml"
+              },
+              "abcdefghijklmnopabcdefghijklmnop": {
+                "external_update_url": "https://clients2.google.com/service/update2/crx"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

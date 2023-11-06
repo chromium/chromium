@@ -33,9 +33,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for TabObserver.
- */
+/** Tests for TabObserver. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabObserverTest {
@@ -60,11 +58,12 @@ public class TabObserverTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabObserver = new TestTabObserver();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab = mActivityTestRule.getActivity().getActivityTab();
-            mTab.addObserver(mTabObserver);
-            mActivity = mActivityTestRule.getActivity();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTab = mActivityTestRule.getActivity().getActivityTab();
+                    mTab.addObserver(mTabObserver);
+                    mActivity = mActivityTestRule.getActivity();
+                });
     }
 
     @Test
@@ -113,9 +112,10 @@ public class TabObserverTest {
     @Test
     @SmallTest
     public void testTabDetach_observerUnregistered() {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mTab.updateAttachment(null, null);
-            assertFalse(mTab.hasObserver(mTabObserver));
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTab.updateAttachment(null, null);
+                    assertFalse(mTab.hasObserver(mTabObserver));
+                });
     }
 }

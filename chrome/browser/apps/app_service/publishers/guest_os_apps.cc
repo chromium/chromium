@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -146,7 +147,7 @@ AppPtr GuestOSApps::CreateApp(
     if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
       icon_effects |= IconEffects::kGuestOsBadge;
     }
-    app->icon_key = std::move(*icon_key_factory_.CreateIconKey(icon_effects));
+    app->icon_key = IconKey(icon_effects);
   }
 
   app->last_launch_time = registration.LastLaunchTime();

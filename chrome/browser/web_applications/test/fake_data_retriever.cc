@@ -37,7 +37,6 @@ void FakeDataRetriever::GetWebAppInstallInfo(
 
 void FakeDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
-    bool bypass_service_worker_check,
     CheckInstallabilityCallback callback,
     absl::optional<webapps::InstallableParams> params) {
   completion_callback_ =

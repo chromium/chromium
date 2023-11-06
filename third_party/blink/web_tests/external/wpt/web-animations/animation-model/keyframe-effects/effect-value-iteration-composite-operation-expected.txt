@@ -1,35 +1,63 @@
 This is a testharness.js-based test.
-PASS iteration composition of discrete type animation (align-content)
-FAIL iteration composition of <length> type animation assert_equals: Animated margin-left style at 0s of the third iteration expected "20px" but got "0px"
-FAIL iteration composition of <percentage> type animation assert_equals: Animated width style at 0s of the third iteration expected "100px" but got "0px"
-FAIL iteration composition of <color> type animation assert_equals: Animated color style at 0s of the third iteration expected "rgb(240, 240, 240)" but got "rgb(0, 0, 0)"
-FAIL iteration composition of <color> type animation that green component is decreasing assert_equals: Animated color style at 0s of the third iteration expected "rgb(120, 240, 120)" but got "rgb(0, 120, 0)"
-FAIL iteration composition of <number> type animation assert_equals: Animated flex-grow style at 0s of the third iteration expected "20" but got "0"
-FAIL iteration composition of <shape> type animation assert_equals: Animated clip style at 0s of the third iteration expected "rect(20px, 20px, 20px, 20px)" but got "rect(0px, 0px, 0px, 0px)"
-FAIL iteration composition of <calc()> value animation assert_equals: Animated calc width style at 0s of the third iteration expected "20px" but got "0px"
-FAIL iteration composition of <calc()> value animation that the values can'tbe reduced assert_equals: Animated calc width style at 0s of the third iteration expected "40px" but got "0px"
-FAIL iteration composition of opacity animation assert_equals: Animated opacity style at 0s of the third iteration expected "0.8" but got "0"
-FAIL iteration composition of box-shadow animation assert_equals: Animated box-shadow style at 0s of the third iteration expected "rgb(240, 240, 240) 20px 20px 20px 0px" but got "rgb(0, 0, 0) 0px 0px 0px 0px"
-FAIL iteration composition of filter blur animation assert_equals: Animated filter blur style at 0s of the third iteration expected "blur(20px)" but got "blur(0px)"
-FAIL iteration composition of filter brightness for different unit animation assert_equals: Animated filter brightness style at 0s of the third iteration expected "brightness(2.6)" but got "brightness(1)"
-PASS iteration composition of filter brightness animation
-FAIL iteration composition of filter drop-shadow animation assert_equals: Animated filter drop-shadow style at 0s of the third iteration expected "drop-shadow(rgb(240, 240, 240) 20px 20px 20px)" but got "drop-shadow(rgb(0, 0, 0) 0px 0px 0px)"
-FAIL iteration composition of same filter list animation assert_equals: Animated filter list at 0s of the third iteration expected "brightness(3) contrast(3)" but got "brightness(1) contrast(1)"
-FAIL iteration composition of discrete filter list because of mismatch of the order assert_equals: Animated filter list at 50s of the third iteration expected "contrast(4) brightness(4)" but got "contrast(2) brightness(2)"
-FAIL iteration composition of different length filter list animation assert_equals: Animated filter list at 0s of the third iteration expected "sepia(1) contrast(3)" but got "sepia(0) contrast(1)"
-PASS iteration composition of transform(rotate) animation
-PASS iteration composition of transform: [ scale(0), scale(1) ] animation
-FAIL iteration composition of transform: [ scale(1), scale(2) ] animation assert_approx_equals: expected matrix(3, 0, 0, 3, 0, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform(scale) style at 0s of the third iteration expected 3 +/- 0.0001 but got 1
-FAIL iteration composition of transform: scale(2) animation assert_approx_equals: expected matrix(2, 0, 0, 2, 0, 0) but got matrix(0, 0, 0, 0, 0, 0): Animated transform(scale) style at 0s of the third iteration expected 2 +/- 0.0001 but got 0
-FAIL iteration composition of transform list animation assert_approx_equals: expected matrix(1, 0, 0, 1, 20, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 20 +/- 0.0001 but got 0
-FAIL iteration composition of transform of matrix function assert_approx_equals: expected matrix(6, 0, 0, 6, 60, 0) but got matrix(2, 0, 0, 2, 0, 0): Animated transform of matrix function at 0s of the third iteration expected 6 +/- 0.0001 but got 2
-FAIL iteration composition of transform list animation whose order is mismatched assert_approx_equals: expected matrix(6, 0, 0, 6, 60, 0) but got matrix(2, 0, 0, 2, 0, 0): Animated transform list at 0s of the third iteration expected 6 +/- 0.0001 but got 2
-FAIL iteration composition of transform list animation whose order is mismatched because of missing functions assert_approx_equals: expected matrix(3, 0, 0, 3, 40, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 3 +/- 0.0001 but got 1
-FAIL iteration composition of transform from none to translate assert_approx_equals: expected matrix(1, 0, 0, 1, 20, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 20 +/- 0.0001 but got 0
-FAIL iteration composition of transform of matrix3d function assert_approx_equals: expected matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 130, 1) but got matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 30, 1): Animated transform of matrix3d function at 0s of the third iteration expected 130 +/- 0.0001 but got 30
-FAIL iteration composition of transform of rotate3d function assert_equals: dimension of the matrix: Animated transform of rotate3d function at 0s of the third iteration expected 16 but got 6
-FAIL iteration composition starts with non-zero value animation assert_equals: Animated margin-left style at 0s of the third iteration expected "50px" but got "10px"
-FAIL iteration composition with negative final value animation assert_equals: Animated margin-left style at 0s of the third iteration expected "-10px" but got "10px"
-FAIL duration changes with an iteration composition operation of accumulate assert_equals: Animated style at 50s of the third iteration expected "25px" but got "5px"
+[PASS] iteration composition of discrete type animation (align-content)
+[FAIL] iteration composition of <length> type animation
+  assert_equals: Animated margin-left style at 0s of the third iteration expected "20px" but got "0px"
+[FAIL] iteration composition of <percentage> type animation
+  assert_equals: Animated width style at 0s of the third iteration expected "100px" but got "0px"
+[FAIL] iteration composition of <color> type animation
+  assert_equals: Animated color style at 0s of the third iteration expected "rgb(240, 240, 240)" but got "rgb(0, 0, 0)"
+[FAIL] iteration composition of <color> type animation that green component is decreasing
+  assert_equals: Animated color style at 0s of the third iteration expected "rgb(120, 240, 120)" but got "rgb(0, 120, 0)"
+[FAIL] iteration composition of <number> type animation
+  assert_equals: Animated flex-grow style at 0s of the third iteration expected "20" but got "0"
+[FAIL] iteration composition of <shape> type animation
+  assert_equals: Animated clip style at 0s of the third iteration expected "rect(20px, 20px, 20px, 20px)" but got "rect(0px, 0px, 0px, 0px)"
+[FAIL] iteration composition of <calc()> value animation
+  assert_equals: Animated calc width style at 0s of the third iteration expected "20px" but got "0px"
+[FAIL] iteration composition of <calc()> value animation that the values can'tbe reduced
+  assert_equals: Animated calc width style at 0s of the third iteration expected "40px" but got "0px"
+[FAIL] iteration composition of opacity animation
+  assert_equals: Animated opacity style at 0s of the third iteration expected "0.8" but got "0"
+[FAIL] iteration composition of box-shadow animation
+  assert_equals: Animated box-shadow style at 0s of the third iteration expected "rgb(240, 240, 240) 20px 20px 20px 0px" but got "rgb(0, 0, 0) 0px 0px 0px 0px"
+[FAIL] iteration composition of filter blur animation
+  assert_equals: Animated filter blur style at 0s of the third iteration expected "blur(20px)" but got "blur(0px)"
+[FAIL] iteration composition of filter brightness for different unit animation
+  assert_equals: Animated filter brightness style at 0s of the third iteration expected "brightness(2.6)" but got "brightness(1)"
+[PASS] iteration composition of filter brightness animation
+[FAIL] iteration composition of filter drop-shadow animation
+  assert_equals: Animated filter drop-shadow style at 0s of the third iteration expected "drop-shadow(rgb(240, 240, 240) 20px 20px 20px)" but got "drop-shadow(rgb(0, 0, 0) 0px 0px 0px)"
+[FAIL] iteration composition of same filter list animation
+  assert_equals: Animated filter list at 0s of the third iteration expected "brightness(3) contrast(3)" but got "brightness(1) contrast(1)"
+[FAIL] iteration composition of discrete filter list because of mismatch of the order
+  assert_equals: Animated filter list at 50s of the third iteration expected "contrast(4) brightness(4)" but got "contrast(2) brightness(2)"
+[FAIL] iteration composition of different length filter list animation
+  assert_equals: Animated filter list at 0s of the third iteration expected "sepia(1) contrast(3)" but got "sepia(0) contrast(1)"
+[PASS] iteration composition of transform(rotate) animation
+[PASS] iteration composition of transform: [ scale(0), scale(1) ] animation
+[FAIL] iteration composition of transform: [ scale(1), scale(2) ] animation
+  assert_approx_equals: expected matrix(3, 0, 0, 3, 0, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform(scale) style at 0s of the third iteration expected 3 +/- 0.0001 but got 1
+[FAIL] iteration composition of transform: scale(2) animation
+  assert_approx_equals: expected matrix(2, 0, 0, 2, 0, 0) but got matrix(0, 0, 0, 0, 0, 0): Animated transform(scale) style at 0s of the third iteration expected 2 +/- 0.0001 but got 0
+[FAIL] iteration composition of transform list animation
+  assert_approx_equals: expected matrix(1, 0, 0, 1, 20, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 20 +/- 0.0001 but got 0
+[FAIL] iteration composition of transform of matrix function
+  assert_approx_equals: expected matrix(6, 0, 0, 6, 60, 0) but got matrix(2, 0, 0, 2, 0, 0): Animated transform of matrix function at 0s of the third iteration expected 6 +/- 0.0001 but got 2
+[FAIL] iteration composition of transform list animation whose order is mismatched
+  assert_approx_equals: expected matrix(6, 0, 0, 6, 60, 0) but got matrix(2, 0, 0, 2, 0, 0): Animated transform list at 0s of the third iteration expected 6 +/- 0.0001 but got 2
+[FAIL] iteration composition of transform list animation whose order is mismatched because of missing functions
+  assert_approx_equals: expected matrix(3, 0, 0, 3, 40, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 3 +/- 0.0001 but got 1
+[FAIL] iteration composition of transform from none to translate
+  assert_approx_equals: expected matrix(1, 0, 0, 1, 20, 0) but got matrix(1, 0, 0, 1, 0, 0): Animated transform list at 0s of the third iteration expected 20 +/- 0.0001 but got 0
+[FAIL] iteration composition of transform of matrix3d function
+  assert_approx_equals: expected matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 130, 1) but got matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 30, 1): Animated transform of matrix3d function at 0s of the third iteration expected 130 +/- 0.0001 but got 30
+[FAIL] iteration composition of transform of rotate3d function
+  assert_equals: dimension of the matrix: Animated transform of rotate3d function at 0s of the third iteration expected 16 but got 6
+[FAIL] iteration composition starts with non-zero value animation
+  assert_equals: Animated margin-left style at 0s of the third iteration expected "50px" but got "10px"
+[FAIL] iteration composition with negative final value animation
+  assert_equals: Animated margin-left style at 0s of the third iteration expected "-10px" but got "10px"
+[FAIL] duration changes with an iteration composition operation of accumulate
+  assert_equals: Animated style at 50s of the third iteration expected "25px" but got "5px"
 Harness: the test ran to completion.
 

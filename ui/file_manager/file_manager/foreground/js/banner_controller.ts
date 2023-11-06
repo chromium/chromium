@@ -13,14 +13,16 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {RateLimiter} from '../../common/js/async_util.js';
 import {DialogType} from '../../common/js/dialog_type.js';
+import {getTeamDriveName} from '../../common/js/entry_utils.js';
+import {isGoogleOneOfferFilesBannerEligibleAndEnabled} from '../../common/js/flags.js';
 import {storage} from '../../common/js/storage.js';
-import {util} from '../../common/js/util.js';
+import {isNullOrUndefined} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 
@@ -246,9 +248,14 @@ export class BannerController extends EventTarget {
       MIN_INTERVAL_BETWEEN_DIRECTORY_SIZE_CHANGED_EVENTS);
 
   /**
-   * Whether the DriveBulkPinning preference is enabled.
+   * Whether the Drive bulk-pinning feature is available on this device.
    */
-  private isDriveBulkPinningPrefEnabled_ = false;
+  private bulkPinningAvailable_ = false;
+
+  /**
+   * Whether the Drive bulk-pinning feature is currently enabled.
+   */
+  private bulkPinningEnabled_ = false;
 
   constructor(
       private directoryModel_: DirectoryModel,
@@ -275,14 +282,12 @@ export class BannerController extends EventTarget {
 
   private onPreferencesChanged_() {
     chrome.fileManagerPrivate.getPreferences(pref => {
-      if (this.isDriveBulkPinningPrefEnabled_ ===
-          pref.driveFsBulkPinningEnabled) {
-        // The driveFsBulkPinningEnabled preference did not change.
-        return;
+      if (this.bulkPinningAvailable_ !== pref.driveFsBulkPinningAvailable ||
+          this.bulkPinningEnabled_ !== pref.driveFsBulkPinningEnabled) {
+        this.bulkPinningAvailable_ = pref.driveFsBulkPinningAvailable;
+        this.bulkPinningEnabled_ = pref.driveFsBulkPinningEnabled;
+        this.reconcile();
       }
-
-      this.isDriveBulkPinningPrefEnabled_ = pref.driveFsBulkPinningEnabled;
-      this.reconcile();
     });
   }
 
@@ -321,16 +326,13 @@ export class BannerController extends EventTarget {
       ]);
 
       const educationalBanners =
-          util.isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
+          isGoogleOneOfferFilesBannerEligibleAndEnabled() ?
           [GoogleOneOfferBannerTagName] :
           [DriveWelcomeBannerTagName];
-      if (util.isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveBulkPinningBannerTagName);
-      }
+
+      educationalBanners.push(DriveBulkPinningBannerTagName);
       educationalBanners.push(HoldingSpaceWelcomeBannerTagName);
-      if (!util.isDriveFsBulkPinningEnabled()) {
-        educationalBanners.push(DriveOfflinePinningBannerTagName);
-      }
+      educationalBanners.push(DriveOfflinePinningBannerTagName);
       educationalBanners.push(PhotosWelcomeBannerTagName);
       this.setEducationalBannersInOrder(educationalBanners);
 
@@ -365,7 +367,13 @@ export class BannerController extends EventTarget {
       });
 
       this.registerCustomBannerFilter(DriveBulkPinningBannerTagName, {
-        shouldShow: () => !this.isDriveBulkPinningPrefEnabled_,
+        shouldShow: () =>
+            this.bulkPinningAvailable_ && !this.bulkPinningEnabled_,
+        context: () => ({}),
+      });
+
+      this.registerCustomBannerFilter(DriveOfflinePinningBannerTagName, {
+        shouldShow: () => !this.bulkPinningAvailable_,
         context: () => ({}),
       });
 
@@ -472,7 +480,7 @@ export class BannerController extends EventTarget {
     const previousSharedDrive = this.currentSharedDrive_;
     this.currentEntry_ = this.directoryModel_.getCurrentDirEntry();
     if (this.currentEntry_) {
-      this.currentSharedDrive_ = util.getTeamDriveName(this.currentEntry_);
+      this.currentSharedDrive_ = getTeamDriveName(this.currentEntry_);
     }
     this.currentRootType_ = this.directoryModel_.getCurrentRootType();
     this.currentVolume_ = this.directoryModel_.getCurrentVolumeInfo();
@@ -1005,8 +1013,8 @@ export function isBelowThreshold(
   if (!threshold || !sizeStats) {
     return false;
   }
-  if (util.isNullOrUndefined(sizeStats.remainingSize) ||
-      util.isNullOrUndefined(sizeStats.totalSize)) {
+  if (isNullOrUndefined(sizeStats.remainingSize) ||
+      isNullOrUndefined(sizeStats.totalSize)) {
     return false;
   }
   if (('minSize' in threshold) && threshold.minSize < sizeStats.remainingSize) {

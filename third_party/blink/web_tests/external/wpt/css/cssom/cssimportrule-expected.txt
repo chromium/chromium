@@ -1,14 +1,16 @@
 This is a testharness.js-based test.
-PASS CSSRule and CSSImportRule types
-PASS Type of CSSRule#type and constant values
-PASS Existence and writability of CSSRule attributes
-PASS Values of CSSRule attributes
-PASS Existence and writability of CSSImportRule attributes
-PASS Values of CSSImportRule attributes
-PASS CSSImportRule : MediaList mediaText attribute should be updated due to [PutForwards]
-PASS CSSStyleDeclaration cssText attribute should be updated due to [PutForwards]
-PASS StyleSheet : MediaList mediaText attribute should be updated due to [PutForwards]
-FAIL Existence and writability of CSSImportRule supportsText attribute assert_idl_attribute: property "supportsText" not found in prototype chain
-FAIL Value of CSSImportRule supportsText attribute assert_equals: expected (string) "(display: flex) or (display: block)" but got (undefined) undefined
+[PASS] CSSRule and CSSImportRule types
+[PASS] Type of CSSRule#type and constant values
+[PASS] Existence and writability of CSSRule attributes
+[PASS] Values of CSSRule attributes
+[PASS] Existence and writability of CSSImportRule attributes
+[PASS] Values of CSSImportRule attributes
+[PASS] CSSImportRule : MediaList mediaText attribute should be updated due to [PutForwards]
+[PASS] CSSStyleDeclaration cssText attribute should be updated due to [PutForwards]
+[PASS] StyleSheet : MediaList mediaText attribute should be updated due to [PutForwards]
+[FAIL] Existence and writability of CSSImportRule supportsText attribute
+  assert_idl_attribute: property "supportsText" not found in prototype chain
+[FAIL] Value of CSSImportRule supportsText attribute
+  assert_equals: expected (string) "(display: flex) or (display: block)" but got (undefined) undefined
 Harness: the test ran to completion.
 

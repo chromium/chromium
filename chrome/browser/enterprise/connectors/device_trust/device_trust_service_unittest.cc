@@ -11,14 +11,12 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/mock_attestation_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signals/mock_signals_service.h"
 #include "components/device_signals/core/common/signals_constants.h"
@@ -90,15 +88,11 @@ namespace enterprise_connectors {
 using test::MockAttestationService;
 using test::MockSignalsService;
 
-class DeviceTrustServiceTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class DeviceTrustServiceTest : public testing::Test,
+                               public ::testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
     RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
-
-    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
-                                       is_flag_enabled());
 
     levels_.insert(DTCPolicyLevel::kBrowser);
 
@@ -114,16 +108,12 @@ class DeviceTrustServiceTest
                           base::Value(GetOrigins()));
     prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
                           base::Value(GetOrigins()));
-    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
-                          base::Value(GetOrigins()));
   }
 
   void DisableServicePolicy() {
     prefs_.SetManagedPref(kBrowserContextAwareAccessSignalsAllowlistPref,
                           base::Value(base::Value::List()));
     prefs_.SetManagedPref(kUserContextAwareAccessSignalsAllowlistPref,
-                          base::Value(base::Value::List()));
-    prefs_.SetManagedPref(kContextAwareAccessSignalsAllowlistPref,
                           base::Value(base::Value::List()));
   }
 
@@ -142,12 +132,7 @@ class DeviceTrustServiceTest
     return device_trust_service_.get();
   }
 
-  bool is_attestation_flow_enabled() {
-    return is_flag_enabled() && is_policy_enabled();
-  }
-
-  bool is_flag_enabled() { return std::get<0>(GetParam()); }
-  bool is_policy_enabled() { return std::get<1>(GetParam()); }
+  bool is_policy_enabled() { return GetParam(); }
 
   void TestFailToParseChallenge(std::string serialized_signed_challenge) {
     auto* device_trust_service = CreateService();
@@ -170,7 +155,6 @@ class DeviceTrustServiceTest
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<DeviceTrustConnectorService> connector_;
   std::unique_ptr<DeviceTrustService> device_trust_service_;
@@ -181,11 +165,10 @@ class DeviceTrustServiceTest
   std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
 
-// Tests that IsEnabled returns true only when the feature flag is enabled and
-// the policy has some URLs.
+// Tests that IsEnabled returns true only when the policy has some URLs.
 TEST_P(DeviceTrustServiceTest, IsEnabled) {
   auto* device_trust_service = CreateService();
-  EXPECT_EQ(is_attestation_flow_enabled(), device_trust_service->IsEnabled());
+  EXPECT_EQ(is_policy_enabled(), device_trust_service->IsEnabled());
 }
 
 // Tests that the service kicks off the attestation flow properly.
@@ -289,8 +272,6 @@ TEST_P(DeviceTrustServiceTest, JsonInvalidEncode) {
   TestFailToParseChallenge("{\"challenge\": \"%% %% %%\"}");
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeviceTrustServiceTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All, DeviceTrustServiceTest, testing::Bool());
 
 }  // namespace enterprise_connectors

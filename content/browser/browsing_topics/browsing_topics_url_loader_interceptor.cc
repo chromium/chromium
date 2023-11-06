@@ -15,6 +15,15 @@
 
 namespace content {
 
+namespace {
+
+void RecordDocumentPresentUma(bool present) {
+  base::UmaHistogramBoolean(
+      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", present);
+}
+
+}  // namespace
+
 BrowsingTopicsURLLoaderInterceptor::BrowsingTopicsURLLoaderInterceptor(
     WeakDocumentPtr document,
     const network::ResourceRequest& resource_request)
@@ -70,10 +79,11 @@ void BrowsingTopicsURLLoaderInterceptor::PopulateRequestOrRedirectHeaders(
   // request may arrive before the commit confirmation is received (i.e.
   // NavigationRequest::DidCommitNavigation()), or after the document is
   // destroyed. We consider those cases to be ineligible for topics.
-  //
-  // TODO(yaoxia): measure how often this happens.
   RenderFrameHost* request_initiator_frame =
       document_.AsRenderFrameHostIfValid();
+
+  RecordDocumentPresentUma(request_initiator_frame);
+
   if (!request_initiator_frame) {
     return;
   }

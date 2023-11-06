@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 class ChromeAccountManagerService;
 
@@ -16,7 +16,7 @@ class IdentityManager;
 }  // namespace signin
 
 // TableView controller to show the list of identities.
-@interface SignedInAccountsTableViewController : ChromeTableViewController
+@interface SignedInAccountsTableViewController : LegacyChromeTableViewController
 
 - (instancetype)
     initWithIdentityManager:(signin::IdentityManager*)identityManager

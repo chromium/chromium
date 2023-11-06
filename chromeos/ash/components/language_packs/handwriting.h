@@ -61,11 +61,6 @@ bool IsHandwritingDlc(std::string_view dlc_id);
 base::flat_set<std::string> ConvertDlcsWithContentToHandwritingLocales(
     const dlcservice::DlcsWithContent& dlcs_with_content);
 
-// Returns the list of handwriting locales that correspond to the input methods
-// that are currently enabled.
-base::flat_set<std::string> GetHandwritingLocalesFromEnabledInputMethods(
-    input_method::InputMethodManager* input_method_manager);
-
 }  // namespace ash::language_packs
 
 #endif  // CHROMEOS_ASH_COMPONENTS_LANGUAGE_PACKS_HANDWRITING_H_

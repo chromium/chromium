@@ -421,7 +421,7 @@ source_set("web_view_sources") {
   sources += ios_web_view_sources
 
   public_deps = ios_web_view_deps
-
+  deps = [ "//components/version_info:channel" ]
   configs += [ ":config" ]
 }
 

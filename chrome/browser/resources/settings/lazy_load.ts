@@ -30,6 +30,7 @@ import './privacy_page/security_page.js';
 import './safety_hub/safety_hub_page.js';
 import './safety_hub/safety_hub_entry_point.js';
 import './site_settings/all_sites.js';
+import './site_settings/file_system_site_details.js';
 import './site_settings/file_system_site_entry.js';
 import './site_settings/file_system_site_entry_item.js';
 import './site_settings/file_system_site_list.js';
@@ -87,7 +88,11 @@ export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/setti
 export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
 export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
-export {SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+export {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
+export {SecureDnsResolverType, SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+// <if expr="chromeos_ash">
+export {SettingsSecureDnsDialogElement} from '/shared/settings/privacy_page/secure_dns_dialog.js';
+// </if>
 export {SecureDnsInputElement} from '/shared/settings/privacy_page/secure_dns_input.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
@@ -122,7 +127,7 @@ export {PaymentsManagerImpl, PaymentsManagerProxy} from './autofill_page/payment
 export {SettingsPaymentsSectionElement} from './autofill_page/payments_section.js';
 export {SettingsVirtualCardUnenrollDialogElement} from './autofill_page/virtual_card_unenroll_dialog.js';
 export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearBrowsingDataResult, UpdateSyncStateEvent} from './clear_browsing_data_dialog/clear_browsing_data_browser_proxy.js';
-export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
+export {SettingsClearBrowsingDataDialogElement, TimePeriodExperiment} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
@@ -214,6 +219,7 @@ export {ChooserExceptionListElement} from './site_settings/chooser_exception_lis
 export {ChooserExceptionListEntryElement} from './site_settings/chooser_exception_list_entry.js';
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, CookiesExceptionType, SettingsState, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
 export {SettingsEditExceptionDialogElement} from './site_settings/edit_exception_dialog.js';
+export {FileSystemSiteDetailsElement} from './site_settings/file_system_site_details.js';
 export {FileSystemSiteEntryElement} from './site_settings/file_system_site_entry.js';
 export {FileSystemSiteEntryItemElement} from './site_settings/file_system_site_entry_item.js';
 export {FileSystemSiteListElement} from './site_settings/file_system_site_list.js';

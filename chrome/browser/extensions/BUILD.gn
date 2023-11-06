@@ -257,6 +257,8 @@ static_library("extensions") {
     "api/omnibox/omnibox_api.h",
     "api/omnibox/suggestion_parser.cc",
     "api/omnibox/suggestion_parser.h",
+    "api/passwords_private/password_access_auth_timeout_handler.cc",
+    "api/passwords_private/password_access_auth_timeout_handler.h",
     "api/passwords_private/password_check_delegate.cc",
     "api/passwords_private/password_check_delegate.h",
     "api/passwords_private/passwords_private_api.cc",
@@ -596,8 +598,6 @@ static_library("extensions") {
     "external_component_loader.h",
     "external_install_error.cc",
     "external_install_error.h",
-    "external_install_error_constants.cc",
-    "external_install_error_constants.h",
     "external_install_manager.cc",
     "external_install_manager.h",
     "external_loader.cc",
@@ -744,13 +744,6 @@ static_library("extensions") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [
-      "file_handlers/web_file_handlers_permission_handler.cc",
-      "file_handlers/web_file_handlers_permission_handler.h",
-    ]
-  }
-
   configs += [
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
@@ -821,7 +814,6 @@ static_library("extensions") {
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resource_coordinator:intervention_policy_database_proto",
     "//chrome/browser/resource_coordinator:mojo_bindings",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/safe_browsing:metrics_collector",
@@ -830,6 +822,7 @@ static_library("extensions") {
     "//components/cbor:cbor",
     "//components/commerce/core:pref_names",
     "//components/device_reauth",
+    "//components/optimization_guide/core:features",
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -1023,6 +1016,8 @@ static_library("extensions") {
       "api/certificate_provider/certificate_provider_api.h",
       "api/document_scan/document_scan_api.cc",
       "api/document_scan/document_scan_api.h",
+      "api/document_scan/document_scan_api_handler.cc",
+      "api/document_scan/document_scan_api_handler.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.cc",
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
       "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
@@ -1052,12 +1047,17 @@ static_library("extensions") {
       "clipboard_extension_helper_chromeos.h",
       "extension_keeplist_chromeos.cc",
       "extension_keeplist_chromeos.h",
+      "file_handlers/web_file_handlers_permission_handler.cc",
+      "file_handlers/web_file_handlers_permission_handler.h",
       "system_display/display_info_provider_chromeos.cc",
       "system_display/display_info_provider_chromeos.h",
       "system_display/display_info_provider_utils.cc",
       "system_display/display_info_provider_utils.h",
     ]
-    deps += [ "//chromeos/components/kiosk" ]
+    deps += [
+      "//chromeos/components/kiosk",
+      "//chromeos/components/mgs",
+    ]
     if (use_cups) {
       sources += [
         "api/printing/print_job_submitter.cc",
@@ -1128,6 +1128,8 @@ static_library("extensions") {
     sources += [
       "api/crash_report_private/crash_report_private_api.cc",
       "api/crash_report_private/crash_report_private_api.h",
+      "api/enterprise_kiosk_input/enterprise_kiosk_input_api.cc",
+      "api/enterprise_kiosk_input/enterprise_kiosk_input_api.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",

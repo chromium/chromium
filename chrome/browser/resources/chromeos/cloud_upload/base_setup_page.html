@@ -24,7 +24,7 @@
   }
 
   #content.fade-top::before {
-    background: linear-gradient(var(--cros-bg-color) 0,
+    background: linear-gradient(var(--cros-sys-app_base) 0,
                                 transparent 100%);
     bottom: 268px;  /* margin + buttons + content margin and height - height */
     content: '';
@@ -44,7 +44,7 @@
 
   #content.fade-bottom::after {
     background: linear-gradient(transparent 0,
-                                var(--cros-bg-color) 100%);
+                                var(--cros-sys-app_base) 100%);
     bottom: 96px;  /* margin + buttons + content margin */
     content: '';
     height: 20px;
@@ -62,27 +62,12 @@
   }
 
   #header-image {
-    background-color: var(--cros-highlight-color);
+    background-color: var(--cros-sys-app_base_shaded);
     height: 236px;
     width: 512px;
   }
 
-  :host-context([theme='refresh23']) #header-image {
-    background-color: var(--cros-sys-app_base_shaded);
-  }
-
   ::slotted([slot=header-image]) {
-    /* As this surface is a dialog, replace the color palette with its elevated
-     * variant. We also do this for GM3 assets so that they correctly map back
-     * to GM2 tokens when the jelly flag is off. */
-    --cros-illustration-color-1-shade-1: var(
-      --cros-illustration-elevation-color-1-shade-1);
-    --cros-illustration-color-1-shade-2: var(
-      --cros-illustration-elevation-color-1-shade-2);
-    --cros-illustration-base-color: var(
-      --cros-illustration-elevation-base-color);
-    --cros-illustration-secondary-color: var(
-      --cros-illustration-elevation-secondary-color);
     --cros-sys-illo-color1-1: var(--cros-sys-illo-elevated-color1-1);
     --cros-sys-illo-color1-2: var(--cros-sys-illo-elevated-color1-2);
     --cros-sys-illo-base: var(--cros-sys-illo-elevated-base);
@@ -94,12 +79,12 @@
   }
 
   ::slotted([slot=title]) {
-    color: var(--cros-text-color-primary);
+    color: var(--cros-sys-on_surface);
     font: var(--cros-display-6-font);
   }
 
   ::slotted([slot=body]) {
-    color: var(--cros-text-color-secondary);
+    color: var(--cros-sys-on_surface_variant);
     font: var(--cros-body-2-font);
     margin-block-start: 16px;
   }
@@ -126,10 +111,10 @@
   }
 
   div#dots > div.active {
-    background-color: var(--cros-icon-color-prominent);
+    background-color: var(--cros-sys-primary);
   }
 
-  :host-context([theme='refresh23']) cr-button {
+  cr-button {
     --active-bg: transparent;
     --active-shadow: none;
     --active-shadow-action: none;
@@ -153,24 +138,21 @@
     box-shadow: none;
   }
 
-  :host-context([theme='refresh23']) cr-button.cancel-button {
+  cr-button.cancel-button {
     background-color: var(--cros-sys-primary_container);
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.cancel-button:hover::part(hoverBackground) {
+  cr-button.cancel-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_subtle);
     display: block;
   }
 
-  :host-context([theme='refresh23'])
-      cr-button.action-button:hover::part(hoverBackground) {
+  cr-button.action-button:hover::part(hoverBackground) {
     background-color: var(--cros-sys-hover_on_prominent);
     display: block;
   }
 
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      cr-button:focus {
+  :host-context(.focus-outline-visible) cr-button:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }

@@ -4,7 +4,7 @@
 
 package org.chromium.components.embedder_support.util;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 import java.io.IOException;
 import java.io.InputStream;

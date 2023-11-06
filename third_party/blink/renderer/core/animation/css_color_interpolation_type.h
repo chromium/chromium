@@ -33,13 +33,10 @@ class CORE_EXPORT CSSColorInterpolationType : public CSSInterpolationType {
                  const InterpolationValue& value,
                  double interpolation_fraction) const final;
 
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(
-      const Color&);
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(CSSValueID);
-  static std::unique_ptr<InterpolableColor> CreateInterpolableColor(
-      const StyleColor&);
-  static std::unique_ptr<InterpolableColor> MaybeCreateInterpolableColor(
-      const CSSValue&);
+  static InterpolableColor* CreateInterpolableColor(const Color&);
+  static InterpolableColor* CreateInterpolableColor(CSSValueID);
+  static InterpolableColor* CreateInterpolableColor(const StyleColor&);
+  static InterpolableColor* MaybeCreateInterpolableColor(const CSSValue&);
   static Color ResolveInterpolableColor(
       const InterpolableValue& interpolable_color,
       const StyleResolverState&,

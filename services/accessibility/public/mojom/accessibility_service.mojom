@@ -8,6 +8,8 @@ import "sandbox/policy/mojom/sandbox.mojom";
 import "services/accessibility/public/mojom/automation.mojom";
 
 [EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/speech_recognition.mojom";
+[EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/tts.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -15,6 +17,10 @@ import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
 import "services/accessibility/public/mojom/user_interface.mojom";
 [EnableIf=supports_os_accessibility_service]
 import "services/accessibility/public/mojom/assistive_technology_type.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/file_loader.mojom";
+[EnableIf=supports_os_accessibility_service]
+import "services/accessibility/public/mojom/autoclick.mojom";
 
 // Implemented by the accessibility service. Turns on and off features.
 // The caller is the client OS, for example, Chrome OS Ash.
@@ -30,8 +36,7 @@ interface AssistiveTechnologyController {
 // accessibility features. On Chrome OS, the Accessibility Service also
 // hosts accessibility features in a V8 runtime.
 // TODO(crbug.com/1355633): The Accessibility Service will need to run in a
-// sandboxed process that allows V8 execution and access to read local
-// Javascript files in a known directory in Chrome OS and Fushcia.
+// sandboxed process that allows V8 execution.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface AccessibilityService {
   // Binds a AccessibilityServiceClient implemented in the main OS process to
@@ -74,6 +79,17 @@ interface AccessibilityServiceClient {
     pending_associated_remote<Automation> automation,
     pending_receiver<AutomationClient> automation_client);
 
+  // Binds to a Autoclick client implemented in the main OS process, and
+  // an Autoclick implemented in the service process, called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindAutoclickClient(
+      pending_receiver<AutoclickClient> autoclick_client);
+
+  // Binds to a Speech Recognition implementation in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindSpeechRecognition(pending_receiver<SpeechRecognition> sr_receiver);
+
   // Binds to a Text-to-Speech client implemented in the main OS process,
   // called by the service.
   [EnableIf=supports_os_accessibility_service]
@@ -83,4 +99,10 @@ interface AccessibilityServiceClient {
   // called by the service.
   [EnableIf=supports_os_accessibility_service]
   BindUserInterface(pending_receiver<UserInterface> user_interface_receiver);
+
+  // Binds to an AccessibilityFileLoader implemented in the main OS process,
+  // called by the service.
+  [EnableIf=supports_os_accessibility_service]
+  BindAccessibilityFileLoader(
+    pending_receiver<AccessibilityFileLoader> file_loader_receiver);
 };

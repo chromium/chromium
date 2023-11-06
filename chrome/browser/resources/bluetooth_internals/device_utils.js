@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UUID} from './uuid.mojom-webui.js';
+import './uuid.mojom-webui.js';
 
 /**
  * Format in a user readable way service UUIDs.
+ * Note: UUID type is defined in uuid.mojom-webui.ts, however, pure types
+ * are elided by the TS compiler at runtime, so we don't import it here since
+ * this file is in JavaScript. The import can be restored when this file is
+ * migrated to TypeScript.
  * @param ?Array<UUID> uuids
  * @return {string}
  */

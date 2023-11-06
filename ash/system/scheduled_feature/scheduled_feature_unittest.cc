@@ -57,9 +57,12 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::Mock;
 using ::testing::Pair;
+using RefreshReason = ScheduledFeature::RefreshReason;
 
 constexpr char kUser1Email[] = "user1@featuredschedule";
 constexpr char kUser2Email[] = "user2@featuredschedule";
@@ -191,6 +194,8 @@ class TestScheduledFeature : public ScheduledFeature {
   ~TestScheduledFeature() override {}
 
   const char* GetFeatureName() const override { return "TestFeature"; }
+
+  MOCK_METHOD(void, RefreshFeatureState, (RefreshReason reason), (override));
 };
 
 class ScheduledFeatureTest : public NoSessionAshTestBase,
@@ -370,7 +375,7 @@ class ScheduledFeatureTest : public NoSessionAshTestBase,
 
   // Checks if the feature is observing geoposition changes.
   bool IsFeatureObservingGeoposition() {
-    return geolocation_controller()->HasObserverForTesting(feature());
+    return geolocation_controller()->HasObserver(feature());
   }
 
   // Sets the wall clock time at which the test case starts. After calling this,
@@ -527,7 +532,9 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   constexpr ScheduleType kUser1ScheduleType = ScheduleType::kSunsetToSunrise;
   constexpr bool kUser1EnabledState = false;
   constexpr ScheduleCheckpoint kUser1Checkpoint = ScheduleCheckpoint::kMorning;
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   feature()->SetScheduleType(kUser1ScheduleType);
+  Mock::VerifyAndClearExpectations(feature());
   FastForwardTo(MakeTimeOfDay(10, AmPm::kAM));
   EXPECT_EQ(GetScheduleType(), kUser1ScheduleType);
   EXPECT_EQ(user1_pref_service()->GetInteger(kScheduleTypePrefString),
@@ -536,18 +543,24 @@ TEST_F(ScheduledFeatureTest, UserSwitchAndSettingsPersistence) {
   EXPECT_EQ(feature()->current_checkpoint(), kUser1Checkpoint);
 
   // Switch to user 2, and set to custom schedule type.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   SwitchActiveUser(kUser2Email);
+  Mock::VerifyAndClearExpectations(feature());
 
   const ScheduleType user2_schedule_type = ScheduleType::kCustom;
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   user2_pref_service()->SetInteger(kScheduleTypePrefString,
                                    static_cast<int>(user2_schedule_type));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_EQ(GetScheduleType(), user2_schedule_type);
   EXPECT_EQ(user2_pref_service()->GetInteger(kScheduleTypePrefString),
             static_cast<int>(user2_schedule_type));
 
   // Switch back to user 1, to find feature schedule type is restored to
   // sunset-to-sunrise with the correct enabled state and checkpoint.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kSettingsChanged));
   SwitchActiveUser(kUser1Email);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_EQ(GetScheduleType(), kUser1ScheduleType);
   EXPECT_EQ(GetEnabled(), kUser1EnabledState);
   EXPECT_EQ(feature()->current_checkpoint(), kUser1Checkpoint);
@@ -652,10 +665,14 @@ TEST_F(ScheduledFeatureTest, TestCustomScheduleReachingEndTime) {
   //      start                    end & now
   //
   // Now is 8:00 PM.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
   // The feature should be scheduled to start again at 3:00 PM tomorrow.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(MakeTimeOfDay(3, AmPm::kPM));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_THAT(change_log.changes(),
               ElementsAre(Pair(MakeTimeOfDay(8, AmPm::kPM), false),
                           Pair(MakeTimeOfDay(3, AmPm::kPM), true)));
@@ -681,24 +698,36 @@ TEST_F(ScheduledFeatureTest, ExplicitUserTogglesWhileScheduleIsActive) {
   // type says it should be off?
   // User toggles either from the system menu or the System Settings toggle
   // button must override any automatic schedule.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kExternal));
   SetFeatureEnabled(true);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_TRUE(GetEnabled());
 
   PrefChangeObserver change_log(user1_pref_service(), this);
-  // The feature should automatically turn off at 8:00 PM tomorrow.
+  // The feature should automatically turn off at 8:00 PM tomorrow. May refresh
+  // at 3:00 PM with no change in status.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled))
+      .Times(AtLeast(1));
   FastForwardTo(MakeTimeOfDay(8, AmPm::kPM));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
 
   // Manually reset the feature back to on.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kExternal));
   SetFeatureEnabled(true);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_TRUE(GetEnabled());
 
   // Manually turning it back off should also be respected, and this time the
   // start is scheduled at 3:00 PM tomorrow after 19 hours from "now" (8:00
   // PM).
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kExternal));
   SetFeatureEnabled(false);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(MakeTimeOfDay(3, AmPm::kPM));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_TRUE(GetEnabled());
   EXPECT_THAT(
       change_log.changes(),
@@ -775,7 +804,9 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   const PrefChangeObserver change_log(user1_pref_service(), this);
 
   // Set time now to 4:00 PM.
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(MakeTimeOfDay(4, AmPm::kPM));
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
 
   // Firing a timer should to advance the time to sunset and automatically turn
@@ -783,7 +814,9 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   const auto sunset = geolocation_controller()->GetSunsetTime();
   ASSERT_TRUE(sunset.has_value());
   const TimeOfDay sunset_time = TimeOfDay::FromTime(sunset.value());
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(sunset_time);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_TRUE(GetEnabled());
 
   // Firing a timer should advance the time to sunrise and automatically turn
@@ -791,7 +824,9 @@ TEST_F(ScheduledFeatureTest, SunsetSunrise) {
   const auto sunrise = geolocation_controller()->GetSunriseTime();
   ASSERT_TRUE(sunrise.has_value());
   const TimeOfDay sunrise_time = TimeOfDay::FromTime(sunrise.value());
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kScheduled));
   FastForwardTo(sunrise_time);
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_FALSE(GetEnabled());
 
   EXPECT_THAT(change_log.changes(),
@@ -874,7 +909,9 @@ TEST_F(ScheduledFeatureTest, SunsetSunriseGeoposition) {
   factory()->ClearResponses();
   factory()->SetValidPosition(kFakePosition2_Latitude, kFakePosition2_Longitude,
                               Now());
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kReset));
   FireTimerToFetchGeoposition();
+  Mock::VerifyAndClearExpectations(feature());
   EXPECT_TRUE(observer1.possible_change_in_timezone());
   EXPECT_TRUE(IsFeatureObservingGeoposition());
 
@@ -938,7 +975,9 @@ TEST_F(ScheduledFeatureTest, CustomScheduleOnResume) {
   // Now simulate that the device was suspended for 3 hours, and the time now
   // is 7:00 PM when the devices was resumed. Expect that the feature turns on.
   AdvanceTimeBy(base::Hours(3));  // 7:00 PM
+  EXPECT_CALL(*feature(), RefreshFeatureState(RefreshReason::kReset));
   feature()->SuspendDone(base::TimeDelta::Max());
+  Mock::VerifyAndClearExpectations(feature());
 
   EXPECT_TRUE(feature()->GetEnabled());
   // The feature should be disabled at originally scheduled time.

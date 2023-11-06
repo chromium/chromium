@@ -440,6 +440,9 @@ inline constexpr char kAttestationExtensionAllowlist[] =
 inline constexpr char kDeskAPIThirdPartyAccessEnabled[] =
     "desk_api.third_party_access_enabled";
 
+inline constexpr char kDeskAPIDeskSaveAndShareEnabled[] =
+    "desk_api.desk_save_and_share_enabled";
+
 // A list of third party web application domains allowed to use the Desk API.
 inline constexpr char kDeskAPIThirdPartyAllowlist[] =
     "desk_api.third_party_allowlist";
@@ -495,6 +498,7 @@ inline constexpr char kLanguageAllowedInputMethods[] =
 
 // A string pref (comma-separated list) set to the preloaded (active) input
 // method IDs (ex. "pinyin,mozc").
+// TODO: b/308389509 - Remove this constant to complete migration.
 inline constexpr char kLanguagePreloadEngines[] =
     "settings.language.preload_engines";
 inline constexpr char kLanguagePreloadEnginesSyncable[] =
@@ -782,6 +786,16 @@ inline constexpr char kHatsAudioSurveyCycleEndTs[] =
 // A boolean pref. Indicates if the device is selected for the Audio survey
 inline constexpr char kHatsAudioDeviceIsSelected[] =
     "hats_audio_device_is_selected";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicates the end of the most recent Bluetooth Audio survey cycle.
+inline constexpr char kHatsBluetoothAudioSurveyCycleEndTs[] =
+    "hats_bluetooth_audio_cycle_end_timestamp";
+
+// A boolean pref. Indicates if the device is selected for the Bluetooth Audio
+// survey
+inline constexpr char kHatsBluetoothAudioDeviceIsSelected[] =
+    "hats_bluetooth_audio_device_is_selected";
 
 // An int64 pref. This is the timestamp, microseconds after epoch, that
 // indicates the end of the most recent Personalization Avatar survey cycle.
@@ -1844,6 +1858,9 @@ inline constexpr char kGoogleSearchSidePanelEnabled[] =
     "side_panel.google_search_side_panel_enabled";
 #endif
 
+inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
+    "managed_private_network_access_restrictions_enabled";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 
@@ -2069,6 +2086,11 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
 inline constexpr char kMicrosoftOneDriveMount[] =
     "filebrowser.office.microsoft_one_drive_mount";
 
+// Pref that contains the value of the MicrosoftOneDriveAccountRestrictions
+// policy.
+inline constexpr char kMicrosoftOneDriveAccountRestrictions[] =
+    "filebrowser.office.microsoft_one_drive_account_restrictions";
+
 // Pref that contains the value of the MicrosoftOfficeCloudUpload policy.
 inline constexpr char kMicrosoftOfficeCloudUpload[] =
     "filebrowser.office.microsoft_office_cloud_upload";
@@ -2176,6 +2198,8 @@ inline constexpr char kNtpCollapsedSyncPromo[] = "ntp.collapsed_sync_promo";
 inline constexpr char kNtpCustomBackgroundDict[] = "ntp.custom_background_dict";
 inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
     "ntp.custom_background_local_to_device";
+inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =
+    "ntp.custom_background_local_to_device_id";
 // Number of times the user has opened the side panel with the customize chrome
 // button.
 inline constexpr char kNtpCustomizeChromeButtonOpenCount[] =
@@ -2702,9 +2726,12 @@ inline constexpr char kRebootAfterUpdate[] =
 // An any-api scoped refresh token for enterprise-enrolled devices.  Allows
 // for connection to Google APIs when the user isn't logged in.  Currently used
 // for for getting a cloudprint scoped token to allow printing in Guest mode,
-// Public Accounts and kiosks.
-inline constexpr char kDeviceRobotAnyApiRefreshToken[] =
+// Public Accounts and kiosks. The versions are used to distinguish different
+// token formats.
+inline constexpr char kDeviceRobotAnyApiRefreshTokenV1[] =
     "device_robot_refresh_token.any-api";
+inline constexpr char kDeviceRobotAnyApiRefreshTokenV2[] =
+    "device_robot_refresh_token_v2.any-api";
 
 // Device requisition for enterprise enrollment.
 inline constexpr char kDeviceEnrollmentRequisition[] =
@@ -2945,6 +2972,13 @@ inline constexpr char kKioskTroubleshootingToolsEnabled[] =
 // browser window.
 inline constexpr char kNewWindowsInKioskAllowed[] =
     "new_windows_in_kiosk_allowed";
+
+// A boolean pref which determines whether a remote admin can start a CRD
+// connection through the 'start crd session' remote command.
+inline constexpr char
+    kRemoteAccessHostAllowEnterpriseRemoteSupportConnections[] =
+        "enterprise_remote_support_connections_allowed";
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // *************** SERVICE PREFS ***************
@@ -3892,6 +3926,20 @@ inline constexpr char kHoverCardImagesEnabled[] =
 inline constexpr char kCompressionDictionaryTransportEnabled[] =
     "net.compression_dictionary_transport_enabled";
 
+// Boolean that specifies whether Zstd Content-Encoding is enabled.
+inline constexpr char kZstdContentEncodingEnabled[] =
+    "net.zstd_content_encoding_enabled";
+
+// Boolean that specifies whether IPv6 reachability check override is enabled.
+inline constexpr char kIPv6ReachabilityOverrideEnabled[] =
+    "net.ipv6_reachability_override_enabled";
+
+#if BUILDFLAG(IS_WIN)
+// Whether native hosts executables launch directly is enabled or
+// disabled.
+inline constexpr char kNativeHostsExecutablesLaunchDirectly[] =
+    "native_hosts_executables_launch_directly";
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace prefs
 
 #endif  // CHROME_COMMON_PREF_NAMES_H_

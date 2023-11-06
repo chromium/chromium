@@ -407,4 +407,27 @@ void LayoutManagerBase::PropagateInvalidateLayout() {
   OnLayoutChanged();
 }
 
+ManualLayoutUtil::ManualLayoutUtil(LayoutManagerBase* layout_manager)
+    : layout_manager_(layout_manager) {}
+
+ManualLayoutUtil::~ManualLayoutUtil() = default;
+
+void ManualLayoutUtil::SetViewHidden(View* child_view, bool hidden) {
+  // If the child view is visible but we are not allowing visibility, update its
+  // visibility. This doesn't necessarily invalidate anything.
+  if (child_view->GetVisible() && hidden) {
+    layout_manager_->SetViewVisibility(child_view, false);
+  }
+
+  // If the view cannot be visible, it should be ignored by the layout, and
+  // vice-versa. This may invalidate layout data.
+  const auto it = layout_manager_->child_infos_.find(child_view);
+  CHECK(it != layout_manager_->child_infos_.end());
+  const bool can_be_visible = !hidden;
+  if (can_be_visible != it->second.can_be_visible) {
+    layout_manager_->PropagateViewVisibilitySet(layout_manager_->host_view(),
+                                                child_view, can_be_visible);
+  }
+}
+
 }  // namespace views

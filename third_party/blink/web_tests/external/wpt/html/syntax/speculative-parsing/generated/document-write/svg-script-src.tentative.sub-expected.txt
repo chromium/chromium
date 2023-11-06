@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Speculative parsing, document.write(): svg-script-src Unhandled rejection: assert_equals: speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nAccept: */*\r\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html"
+[FAIL] Speculative parsing, document.write(): svg-script-src
+  Unhandled rejection: assert_equals: speculative case incorrectly fetched expected "" but got "param-encodingcheck: %C4%9E\r\nAccept: */*\r\nReferer: http://web-platform.test:8001/html/syntax/speculative-parsing/generated/document-write/svg-script-src.tentative.sub.html"
 Harness: the test ran to completion.
 

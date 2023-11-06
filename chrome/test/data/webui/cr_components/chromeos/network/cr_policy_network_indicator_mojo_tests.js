@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for cr_policy-network-indicator-mojo. */
 
 import 'chrome://resources/ash/common/network/cr_policy_network_indicator_mojo.js';
-import 'chrome://test/cr_components/chromeos/network/cr_policy_strings.js';
+import 'chrome://webui-test/cr_components/chromeos/network/cr_policy_strings.js';
 
 import {PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

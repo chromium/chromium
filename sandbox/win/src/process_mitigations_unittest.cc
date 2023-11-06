@@ -64,8 +64,8 @@ void TestWin10NonSystemFont(bool is_success_test) {
   font_path = font_path.Append(L"arial.ttf");
 
   sandbox::TestRunner runner;
-  EXPECT_TRUE(runner.AddFsRule(sandbox::Semantics::kFilesAllowReadonly,
-                               font_path.value().c_str()));
+  EXPECT_TRUE(runner.AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                     font_path.value().c_str()));
 
   if (!is_success_test) {
     sandbox::TargetPolicy* policy = runner.GetPolicy();
@@ -743,9 +743,7 @@ TEST(ProcessMitigationsTest, DISABLED_CheckWin10MsSignedPolicySuccess) {
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   // Allow all *.dll in current directory to load.
   EXPECT_EQ(sandbox::SBOX_ALL_OK,
-            config2->AddRule(
-                sandbox::SubSystem::kSignedBinary,
-                sandbox::Semantics::kSignedAllowLoad,
+            config2->AllowExtraDlls(
                 exe_path.DirName().AppendASCII("*.dll").value().c_str()));
 #endif  // defined(COMPONENT_BUILD)
 

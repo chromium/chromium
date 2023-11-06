@@ -59,7 +59,7 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
     // vs. when the button as clicked.
     tab_organization_button_ =
         AddChildView(std::make_unique<TabOrganizationButton>(
-            tab_strip_controller,
+            tab_strip_controller, tab_organization_service_,
             // Force hide the button when pressed, bypassing locked expansion
             // mode.
             base::BindRepeating(&TabSearchContainer::ExecuteHideTabOrganization,
@@ -165,8 +165,6 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
                                                bool should_show) {
   CHECK(tab_organization_service_);
   if (should_show) {
-    tab_organization_button_->SetSession(
-        tab_organization_service_->GetSessionForBrowser(browser));
     ShowTabOrganization();
   } else {
     HideTabOrganization();

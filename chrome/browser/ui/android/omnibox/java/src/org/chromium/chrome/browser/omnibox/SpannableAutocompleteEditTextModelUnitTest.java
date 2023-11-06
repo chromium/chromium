@@ -29,9 +29,8 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.concurrent.atomic.AtomicInteger;
-/**
- * Unit tests for {@link SpannableAutocompleteEditTextModel}.
- */
+
+/** Unit tests for {@link SpannableAutocompleteEditTextModel}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SpannableAutocompleteEditTextModelUnitTest {
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
@@ -50,11 +49,17 @@ public class SpannableAutocompleteEditTextModelUnitTest {
         mCurrentState = mModel.getCurrentAutocompleteState();
         clearInvocations(mDelegate);
 
-        doAnswer(inv -> { return mImeCommandNestLevel.incrementAndGet() != 0; })
+        doAnswer(
+                        inv -> {
+                            return mImeCommandNestLevel.incrementAndGet() != 0;
+                        })
                 .when(mConnection)
                 .onBeginImeCommand();
 
-        doAnswer(inv -> { return mImeCommandNestLevel.decrementAndGet() == 0; })
+        doAnswer(
+                        inv -> {
+                            return mImeCommandNestLevel.decrementAndGet() == 0;
+                        })
                 .when(mConnection)
                 .onEndImeCommand();
     }

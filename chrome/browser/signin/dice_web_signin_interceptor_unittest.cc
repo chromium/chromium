@@ -33,6 +33,7 @@
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -482,9 +483,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseAcceptManagement,
-      account_info, account_info, SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/true,
-      /*show_managed_disclaimer=*/true);
+      account_info, account_info, SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -492,6 +492,33 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   TestAsynchronousInterception(
       account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
       SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
+}
+
+TEST_P(
+    DiceWebSigninInterceptorManagedAccountTest,
+    NoForcedInterceptionShowsNoDialogIfFeatureEnabledButDisabledDialogByPolicy) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(
+      kShowEnterpriseDialogForAllManagedAccountsSignin);
+  // Reauth intercepted if enterprise confirmation not shown yet for forced
+  // managed separation.
+  AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
+      "alice@example.com", signin::ConsentLevel::kSignin);
+  MakeValidAccountInfo(&account_info, "example.com");
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  interceptor()->SetInterceptedAccountProfileSeparationPoliciesForTesting(
+      policy::ProfileSeparationPolicies(
+          policy::ProfileSeparationSettings::DISABLED, absl::nullopt));
+
+  if (signin_interception_enabled_) {
+    TestAsynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kAbortAccountInfoNotCompatible);
+  } else {
+    TestAsynchronousInterception(
+        account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+        SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
+  }
 }
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
@@ -535,9 +562,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, account_info, SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      account_info, account_info, SkColor(),
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -561,9 +587,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      account_info, AccountInfo(), SkColor(),
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -586,9 +611,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/true,
-      /*show_managed_disclaimer=*/true);
+      account_info, AccountInfo(), SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -620,8 +644,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -644,9 +667,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
-      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/true,
-      /*show_managed_disclaimer=*/true);
+      account_info, AccountInfo(), SkColor(),
+      /*show_link_data_option=*/true, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -676,8 +698,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -710,9 +731,8 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced,
-      account_info, AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      account_info, AccountInfo(), SkColor(),
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -745,8 +765,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -798,8 +817,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -831,8 +849,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterpriseForced,
       account_info, primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/false);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/false);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -870,8 +887,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/false);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/false);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1124,8 +1140,7 @@ TEST_F(DiceWebSigninInterceptorTest, DeclineCreationRepeatedly) {
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
@@ -1187,8 +1202,7 @@ TEST_F(DiceWebSigninInterceptorTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   for (int i = 0; i < kMaxProfileCreationDeclinedCount; ++i) {
     EXPECT_CALL(*mock_delegate(),
                 ShowSigninInterceptionBubble(
@@ -1359,8 +1373,7 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountInfoAvailable) {
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1383,8 +1396,7 @@ TEST_F(DiceWebSigninInterceptorTest, AccountInfoAlreadyAvailable) {
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1439,8 +1451,7 @@ TEST_F(
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1478,8 +1489,7 @@ TEST_F(
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1515,8 +1525,7 @@ TEST_F(
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
@@ -1575,11 +1584,47 @@ TEST_F(DiceWebSigninInterceptorTest,
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, account_info,
       primary_account_info, SkColor(),
-      /*show_guest_option=*/false, /*show_link_data_option=*/false,
-      /*show_managed_disclaimer=*/true);
+      /*show_link_data_option=*/false, /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*mock_delegate(),
               ShowSigninInterceptionBubble(
                   web_contents(), MatchBubbleParameters(expected_parameters),
                   testing::_));
   task_environment()->FastForwardBy(base::Seconds(5));
+}
+
+class DiceWebSigninInterceptorTestWithUnoEnabled
+    : public DiceWebSigninInterceptorTest {
+ public:
+  DiceWebSigninInterceptorTestWithUnoEnabled() {
+    feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(DiceWebSigninInterceptorTestWithUnoEnabled,
+       InterceptShouldShowChromeSigninBubbleOnAccountSigninAndChromeSignOut) {
+  AccountInfo account_info =
+      identity_test_env()->MakeAccountAvailable("alice@example.com");
+  MakeValidAccountInfo(&account_info);
+  identity_test_env()->UpdateAccountInfoForAccount(account_info);
+
+  // Account is valid.
+  ASSERT_TRUE(account_info.IsValid());
+  // Primary account is not set, Chrome is not signed in.
+  ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+
+  WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
+      WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+      /*intercepted_account=*/account_info,
+      /*primary_account=*/AccountInfo());
+  EXPECT_CALL(*mock_delegate(),
+              ShowSigninInterceptionBubble(
+                  web_contents(), MatchBubbleParameters(expected_parameters),
+                  testing::_));
+  TestSynchronousInterception(
+      account_info, /*is_new_account=*/true, /*is_sync_signin=*/false,
+      SigninInterceptionHeuristicOutcome::kInterceptChromeSignin);
 }

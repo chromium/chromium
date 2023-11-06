@@ -171,7 +171,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {string} methodName
-   * @protected
    */
   methodCalled(methodName) {
     this.getResolver_(methodName).resolve();
@@ -369,7 +368,6 @@ export class FakeNetworkConfig {
 
   /**
    * @param {DeviceStateProperties} deviceState
-   * @private
    */
   setDeviceStateForTest(deviceState) {
     assert(deviceState.type !== undefined);
@@ -807,14 +805,17 @@ export class FakeNetworkConfig {
    * @param {!ApnProperties} apn
    */
   createCustomApn(guid, apn) {
-    const properties = this.managedProperties_.get(guid);
-    assert(properties);
-    apn.id = `${this.apnIdCounter_++}`;
-    if (!properties.typeProperties.cellular.customApnList) {
-      properties.typeProperties.cellular.customApnList = [];
-    }
-    properties.typeProperties.cellular.customApnList.unshift(apn);
-    this.methodCalled('createCustomApn');
+    return new Promise(resolve => {
+      const properties = this.managedProperties_.get(guid);
+      assert(properties);
+      apn.id = `${this.apnIdCounter_++}`;
+      if (!properties.typeProperties.cellular.customApnList) {
+        properties.typeProperties.cellular.customApnList = [];
+      }
+      properties.typeProperties.cellular.customApnList.unshift(apn);
+      this.methodCalled('createCustomApn');
+      resolve(true);
+    });
   }
 
   /**

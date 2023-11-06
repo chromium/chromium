@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-PASS softmax float32 2D tensor all positive / sync
-PASS softmax float32 2D tensor all negative / sync
-FAIL softmax float32 2D tensor all positive / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL softmax float32 2D tensor all negative / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[PASS] softmax float32 2D tensor all positive / sync
+[PASS] softmax float32 2D tensor all negative / sync
+[FAIL] softmax float32 2D tensor all positive / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] softmax float32 2D tensor all negative / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

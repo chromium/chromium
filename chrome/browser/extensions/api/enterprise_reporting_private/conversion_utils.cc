@@ -59,13 +59,13 @@ api::enterprise_reporting_private::PresenceValue ConvertPresenceValue(
     PresenceValue presence) {
   switch (presence) {
     case PresenceValue::kUnspecified:
-      return api::enterprise_reporting_private::PRESENCE_VALUE_UNSPECIFIED;
+      return api::enterprise_reporting_private::PresenceValue::kUnspecified;
     case PresenceValue::kAccessDenied:
-      return api::enterprise_reporting_private::PRESENCE_VALUE_ACCESS_DENIED;
+      return api::enterprise_reporting_private::PresenceValue::kAccessDenied;
     case PresenceValue::kNotFound:
-      return api::enterprise_reporting_private::PRESENCE_VALUE_NOT_FOUND;
+      return api::enterprise_reporting_private::PresenceValue::kNotFound;
     case PresenceValue::kFound:
-      return api::enterprise_reporting_private::PRESENCE_VALUE_FOUND;
+      return api::enterprise_reporting_private::PresenceValue::kFound;
   }
 }
 
@@ -92,13 +92,13 @@ std::vector<std::string> EncodeHashes(
 absl::optional<device_signals::RegistryHive> ConvertHiveFromApi(
     api::enterprise_reporting_private::RegistryHive api_hive) {
   switch (api_hive) {
-    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CLASSES_ROOT:
+    case api::enterprise_reporting_private::RegistryHive::kHkeyClassesRoot:
       return device_signals::RegistryHive::kHkeyClassesRoot;
-    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_LOCAL_MACHINE:
+    case api::enterprise_reporting_private::RegistryHive::kHkeyLocalMachine:
       return device_signals::RegistryHive::kHkeyLocalMachine;
-    case api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER:
+    case api::enterprise_reporting_private::RegistryHive::kHkeyCurrentUser:
       return device_signals::RegistryHive::kHkeyCurrentUser;
-    case api::enterprise_reporting_private::REGISTRY_HIVE_NONE:
+    case api::enterprise_reporting_private::RegistryHive::kNone:
       return absl::nullopt;
   }
 }
@@ -106,17 +106,16 @@ absl::optional<device_signals::RegistryHive> ConvertHiveFromApi(
 api::enterprise_reporting_private::RegistryHive ConvertHiveToApi(
     absl::optional<device_signals::RegistryHive> hive) {
   if (!hive) {
-    return api::enterprise_reporting_private::REGISTRY_HIVE_NONE;
+    return api::enterprise_reporting_private::RegistryHive::kNone;
   }
 
   switch (hive.value()) {
     case device_signals::RegistryHive::kHkeyClassesRoot:
-      return api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CLASSES_ROOT;
+      return api::enterprise_reporting_private::RegistryHive::kHkeyClassesRoot;
     case device_signals::RegistryHive::kHkeyLocalMachine:
-      return api::enterprise_reporting_private::
-          REGISTRY_HIVE_HKEY_LOCAL_MACHINE;
+      return api::enterprise_reporting_private::RegistryHive::kHkeyLocalMachine;
     case device_signals::RegistryHive::kHkeyCurrentUser:
-      return api::enterprise_reporting_private::REGISTRY_HIVE_HKEY_CURRENT_USER;
+      return api::enterprise_reporting_private::RegistryHive::kHkeyCurrentUser;
   }
 }
 
@@ -265,20 +264,20 @@ absl::optional<ParsedSignalsError> ConvertAvProductsResponse(
 
     switch (av_product.state) {
       case device_signals::AvProductState::kOn:
-        api_av_signal.state = api::enterprise_reporting_private::
-            AntiVirusProductState::ANTI_VIRUS_PRODUCT_STATE_ON;
+        api_av_signal.state =
+            api::enterprise_reporting_private::AntiVirusProductState::kOn;
         break;
       case device_signals::AvProductState::kOff:
-        api_av_signal.state = api::enterprise_reporting_private::
-            AntiVirusProductState::ANTI_VIRUS_PRODUCT_STATE_OFF;
+        api_av_signal.state =
+            api::enterprise_reporting_private::AntiVirusProductState::kOff;
         break;
       case device_signals::AvProductState::kSnoozed:
-        api_av_signal.state = api::enterprise_reporting_private::
-            AntiVirusProductState::ANTI_VIRUS_PRODUCT_STATE_SNOOZED;
+        api_av_signal.state =
+            api::enterprise_reporting_private::AntiVirusProductState::kSnoozed;
         break;
       case device_signals::AvProductState::kExpired:
-        api_av_signal.state = api::enterprise_reporting_private::
-            AntiVirusProductState::ANTI_VIRUS_PRODUCT_STATE_EXPIRED;
+        api_av_signal.state =
+            api::enterprise_reporting_private::AntiVirusProductState::kExpired;
         break;
     }
 

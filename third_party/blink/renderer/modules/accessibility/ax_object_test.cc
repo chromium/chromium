@@ -1671,6 +1671,8 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   action_data.child_tree_id = canvas_child_tree_id;
   canvas->PerformAction(action_data);
 
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
+
   ui::AXNodeData div_node_data;
   div->Serialize(&div_node_data, ui::AXMode::kScreenReader);
   ui::AXNodeData button_node_data;

@@ -90,8 +90,8 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
 
   base::Time time_now = base::Time::Now();
   base::Time expiration_time = (time_now + base::Seconds(34560000.));
-  double now = time_now.ToDoubleT();
-  double expiration = expiration_time.ToDoubleT();
+  double now = time_now.InSecondsFSinceUnixEpoch();
+  double expiration = expiration_time.InSecondsFSinceUnixEpoch();
   const std::vector<CanonicalCookie> cookies = {
       *CanonicalCookie::CreateUnsafeCookieForTesting(
           "SID", "vAlUe1", ".google.ru", "/", time_now, time_now,
@@ -178,13 +178,13 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
                           Property(&CanonicalCookie::IsSameParty, Eq(false)),
                           Property(&CanonicalCookie::IsSameParty, Eq(true))));
 
-  EXPECT_THAT(result.cookies()[0].CreationDate().ToDoubleT(),
+  EXPECT_THAT(result.cookies()[0].CreationDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(now, 0.5));
-  EXPECT_THAT(result.cookies()[0].LastAccessDate().ToDoubleT(),
+  EXPECT_THAT(result.cookies()[0].LastAccessDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(now, 0.5));
-  EXPECT_THAT(result.cookies()[0].ExpiryDate().ToDoubleT(),
+  EXPECT_THAT(result.cookies()[0].ExpiryDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(expiration, 0.5));
-  EXPECT_THAT(result.cookies()[0].LastUpdateDate().ToDoubleT(),
+  EXPECT_THAT(result.cookies()[0].LastUpdateDate().InSecondsFSinceUnixEpoch(),
               DoubleNear(now, 0.5));
 }
 

@@ -43,6 +43,7 @@ export class InputKeyElement extends InputKeyElementBase {
         type: String,
         value: '',
         reflectToAttribute: true,
+        observer: InputKeyElement.prototype.onKeyChanged,
       },
 
       keyState: {
@@ -85,11 +86,6 @@ export class InputKeyElement extends InputKeyElementBase {
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-    this.hasIcon = this.key in keyToIconNameMap;
-  }
-
   static get template(): HTMLTemplateElement {
     return getTemplate();
   }
@@ -107,6 +103,10 @@ export class InputKeyElement extends InputKeyElementBase {
     }
     const iconName = keyToIconNameMap[this.key];
     return iconName ? `shortcut-customization-keys:${iconName}` : null;
+  }
+
+  private onKeyChanged(): void {
+    this.hasIcon = this.key in keyToIconNameMap;
   }
 
   /**

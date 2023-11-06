@@ -11,7 +11,7 @@
  * browser_tests --gtest_filter=ShortcutCustomizationAppAcceleratorRowTest.All
  */
 
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ui/base/ui_base_features.h"');
 GEN('#include "content/public/test/browser_test.h"');

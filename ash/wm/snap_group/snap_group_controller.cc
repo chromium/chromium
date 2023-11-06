@@ -9,12 +9,12 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
-#include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
+#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
@@ -49,31 +49,15 @@ SnapGroupController* SnapGroupController::Get() {
   return g_instance;
 }
 
-void SnapGroupController::OnWindowSnapped(aura::Window* window) {
-  if (!IsArm1AutomaticallyLockEnabled()) {
+void SnapGroupController::OnWindowSnapped(
+    aura::Window* window,
+    WindowSnapActionSource snap_action_source) {
+  // If `window` already belongs to a snap group, do nothing.
+  if (!IsArm1AutomaticallyLockEnabled() || GetSnapGroupForGivenWindow(window)) {
     return;
   }
 
-  if (GetSnapGroupForGivenWindow(window)) {
-    // If `window` already belongs to a snap group, do nothing.
-    return;
-  }
-
-  if (!IsInOverviewSession()) {
-    RootWindowController::ForWindow(window)->StartSplitViewOverviewSession(
-        window, OverviewStartAction::kSplitView,
-        OverviewEnterExitType::kNormal);
-    // If this is the second window, SplitViewController will add the snap
-    // group and end overview.
-    // TODO(b/286963080): Move snap group creation here.
-  } else {
-    // If overview has already started, we may need to update the bounds. This
-    // may happen if a snapped window swaps positions or ratios during split
-    // view overview.
-    GetOverviewSession()
-        ->GetGridWithRootWindow(window->GetRootWindow())
-        ->RefreshGridBounds(/*animate=*/false);
-  }
+  window_util::MaybeStartSplitViewOverview(window, snap_action_source);
 }
 
 bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,

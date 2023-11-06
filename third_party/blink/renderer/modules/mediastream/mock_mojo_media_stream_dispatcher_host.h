@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MOJO_MEDIA_STREAM_DISPATCHER_HOST_H_
 
 #include "build/build_config.h"
+#include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,11 +58,12 @@ class MockMojoMediaStreamDispatcherHost
                     KeepDeviceAliveForTransferCallback));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
-  MOCK_METHOD4(Crop,
+  MOCK_METHOD5(ApplySubCaptureTarget,
                void(const base::UnguessableToken&,
+                    media::mojom::blink::SubCaptureTargetType,
                     const base::Token&,
                     uint32_t,
-                    CropCallback));
+                    ApplySubCaptureTargetCallback));
 #endif
   void GetOpenDevice(int32_t request_id,
                      const base::UnguessableToken&,

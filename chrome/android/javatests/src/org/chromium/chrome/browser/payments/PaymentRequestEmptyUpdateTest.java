@@ -38,20 +38,34 @@ public class PaymentRequestEmptyUpdateTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address on disk.
-        String billingAddressId = helper.setProfile(AutofillProfile.builder()
-                                                            .setFullName("Jon Doe")
-                                                            .setCompanyName("Google")
-                                                            .setStreetAddress("340 Main St")
-                                                            .setRegion("CA")
-                                                            .setLocality("Los Angeles")
-                                                            .setPostalCode("90291")
-                                                            .setCountryCode("US")
-                                                            .setPhoneNumber("650-253-0000")
-                                                            .setEmailAddress("en-US")
-                                                            .build());
-        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                billingAddressId, "" /* serverId */));
+        String billingAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("650-253-0000")
+                                .setEmailAddress("en-US")
+                                .build());
+        helper.setCreditCard(
+                new CreditCard(
+                        "",
+                        "https://example.test",
+                        true,
+                        true,
+                        "Jon Doe",
+                        "4111111111111111",
+                        "1111",
+                        "12",
+                        "2050",
+                        "visa",
+                        R.drawable.visa_card,
+                        billingAddressId,
+                        /* serverId= */ ""));
     }
 
     /** Expand the shipping address section and select a valid address. */

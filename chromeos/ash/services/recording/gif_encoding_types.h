@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <vector>
 
-#include "third_party/skia/include/core/SkColor.h"
+#include "chromeos/ash/services/recording/rgb_video_frame.h"
 
 namespace recording {
 
@@ -23,7 +23,7 @@ using ColorIndices = std::vector<ColorIndex>;
 
 // Defines a type for a color palette table which will eventually be written to
 // the GIF file.
-using ColorTable = std::vector<SkColor>;
+using ColorTable = std::vector<RgbColor>;
 
 }  // namespace recording
 

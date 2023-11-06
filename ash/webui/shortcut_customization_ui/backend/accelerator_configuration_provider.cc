@@ -984,6 +984,11 @@ void AcceleratorConfigurationProvider::AddAccelerator(
                                 ShortcutCustomizationAction::kAddAccelerator);
   RecordEncodedAcceleratorHistogram(kAddAcceleratorHistogramName, action_id,
                                     accelerator);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                    GetAcceleratorActionName(
+                        static_cast<AcceleratorAction>(action_id))}),
+      ModificationType::kAdd);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -1015,6 +1020,11 @@ void AcceleratorConfigurationProvider::RemoveAccelerator(
   base::UmaHistogramEnumeration(
       kShortcutCustomizationHistogramName,
       ShortcutCustomizationAction::kRemoveAccelerator);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                    GetAcceleratorActionName(
+                        static_cast<AcceleratorAction>(action_id))}),
+      ModificationType::kRemove);
 
   // Only record this metric if the removed accelerator is a default accelerator
   // for `action_id`.
@@ -1100,6 +1110,11 @@ void AcceleratorConfigurationProvider::ReplaceAccelerator(
       ShortcutCustomizationAction::kReplaceAccelerator);
   RecordEncodedAcceleratorHistogram(kAddAcceleratorHistogramName, action_id,
                                     new_accelerator);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                    GetAcceleratorActionName(
+                        static_cast<AcceleratorAction>(action_id))}),
+      ModificationType::kEdit);
   std::move(callback).Run(std::move(result_data));
 }
 
@@ -1124,6 +1139,11 @@ void AcceleratorConfigurationProvider::RestoreDefault(
   result_data->result = result;
   base::UmaHistogramEnumeration(kShortcutCustomizationHistogramName,
                                 ShortcutCustomizationAction::kResetAction);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                    GetAcceleratorActionName(
+                        static_cast<AcceleratorAction>(action_id))}),
+      ModificationType::kReset);
   LogRestoreDefault(action_id, result_data->result);
   std::move(callback).Run(std::move(result_data));
 }
@@ -1174,6 +1194,29 @@ void AcceleratorConfigurationProvider::RecordUserAction(
           base::UserMetricsAction("ShortcutCustomization_ResetAll"));
       break;
   }
+}
+
+void AcceleratorConfigurationProvider::RecordMainCategoryNavigation(
+    mojom::AcceleratorCategory category) {
+  base::UmaHistogramEnumeration(
+      "Ash.ShortcutCustomization.MainCategoryNavigation", category);
+}
+
+void AcceleratorConfigurationProvider::RecordEditDialogCompletedActions(
+    shortcut_customization::mojom::EditDialogCompletedActions
+        completed_actions) {
+  base::UmaHistogramEnumeration(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      completed_actions);
+}
+
+void AcceleratorConfigurationProvider::RecordAddOrEditSubactions(
+    bool is_add,
+    shortcut_customization::mojom::Subactions subactions) {
+  const std::string histogram_name =
+      is_add ? "Ash.ShortcutCustomization.AddAcceleratorSubactions"
+             : "Ash.ShortcutCustomization.EditAcceleratorSubactions";
+  base::UmaHistogramEnumeration(histogram_name, subactions);
 }
 
 void AcceleratorConfigurationProvider::BindInterface(

@@ -1107,7 +1107,7 @@ void StressUpdateService(UpdaterScope scope) {
 
   // Runs on the main sequence.
   auto loop_closure = [&]() {
-    LOG(ERROR) << __func__ << ": n: " << n;
+    LOG(ERROR) << __func__ << ": n: " << n << ", " << base::Time::Now();
     if (--n) {
       return false;
     }

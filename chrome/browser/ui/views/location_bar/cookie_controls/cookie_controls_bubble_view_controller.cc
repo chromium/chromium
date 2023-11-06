@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -113,23 +114,49 @@ void CookieControlsBubbleViewController::OnFaviconFetched(
 }
 
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
+    CookieControlsEnforcement enforcement,
     base::Time expiration) {
   bool is_permanent_exception = expiration == base::Time();
-  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
-      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE));
+  std::u16string label_title;
+  int bubble_title, label_description;
+  if (latest_blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
+    bubble_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_ALLOWED_TITLE;
+    if (is_permanent_exception) {
+      label_title = l10n_util::GetStringUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE);
+      label_description =
+          IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
+    } else {
+      label_title = l10n_util::GetPluralStringFUTF16(
+          IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
+          content_settings::CookieControlsUtil::GetDaysToExpiration(
+              expiration));
+      label_description =
+          IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY;
+    }
+  } else {
+    bubble_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
+    if (is_permanent_exception ||
+        enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting) {
+      label_title = l10n_util::GetStringUTF16(
+          IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_TITLE);
+      label_description =
+          IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION;
+    } else {
+      label_title = l10n_util::GetPluralStringFUTF16(
+          latest_blocking_status_ == CookieBlocking3pcdStatus::kAll
+              ? IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_TITLE
+              : IDS_TRACKING_PROTECTION_BUBBLE_LIMITING_RESTART_TITLE,
+          content_settings::CookieControlsUtil::GetDaysToExpiration(
+              expiration));
+      label_description =
+          IDS_TRACKING_PROTECTION_BUBBLE_BLOCKING_RESTART_DESCRIPTION;
+    }
+  }
+
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
-      is_permanent_exception
-          ? l10n_util::GetStringUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_TITLE)
-          : l10n_util::GetPluralStringFUTF16(
-                IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_TITLE,
-                content_settings::CookieControlsUtil::GetDaysToExpiration(
-                    expiration)),
-      l10n_util::GetStringUTF16(
-          is_permanent_exception
-              ? IDS_COOKIE_CONTROLS_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION
-              : IDS_COOKIE_CONTROLS_BUBBLE_BLOCKING_RESTART_DESCRIPTION_TODAY));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(true);
+      label_title, l10n_util::GetStringUTF16(label_description));
   bubble_view_->GetContentView()->SetToggleIsOn(true);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
 }
@@ -137,16 +164,24 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
 void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
   auto default_exception_expiration =
       content_settings::features::kUserBypassUIExceptionExpiration.Get();
-  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(
-      IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE));
+  int label_title, label_description;
+  if (latest_blocking_status_ == CookieBlocking3pcdStatus::kNotIn3pcd) {
+    label_title = IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_BLOCKED_TITLE;
+    label_description =
+        default_exception_expiration.is_zero()
+            ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
+            : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY;
+  } else {
+    label_title = IDS_TRACKING_PROTECTION_BUBBLE_TITLE;
+    label_description =
+        IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT;
+  }
+
+  bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(label_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       l10n_util::GetStringUTF16(
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
-      l10n_util::GetStringUTF16(
-          default_exception_expiration.is_zero()
-              ? IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_PERMANENT
-              : IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY));
-  bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
+      l10n_util::GetStringUTF16(label_description));
   bubble_view_->GetContentView()->SetToggleIsOn(false);
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
 }
@@ -157,13 +192,17 @@ CookieControlsBubbleViewController::~CookieControlsBubbleViewController() =
 void CookieControlsBubbleViewController::OnStatusChanged(
     CookieControlsStatus status,
     CookieControlsEnforcement enforcement,
+    CookieBlocking3pcdStatus blocking_status,
     base::Time expiration) {
+  latest_status_ = status;
+  latest_blocking_status_ = blocking_status;
+
   switch (status) {
     case CookieControlsStatus::kEnabled:
       ApplyThirdPartyCookiesBlockedState();
       break;
     case CookieControlsStatus::kDisabledForSite:
-      ApplyThirdPartyCookiesAllowedState(expiration);
+      ApplyThirdPartyCookiesAllowedState(enforcement, expiration);
       break;
     case CookieControlsStatus::kDisabled:
     case CookieControlsStatus::kUninitialized:
@@ -177,14 +216,22 @@ void CookieControlsBubbleViewController::OnStatusChanged(
   switch (enforcement) {
     case CookieControlsEnforcement::kNoEnforcement:
       bubble_view_->GetContentView()->SetContentLabelsVisible(true);
+      bubble_view_->GetContentView()->SetFeedbackSectionVisibility(
+          status == CookieControlsStatus::kDisabledForSite);
       bubble_view_->GetContentView()->SetToggleVisible(true);
       bubble_view_->GetContentView()->SetEnforcedIconVisible(false);
+      break;
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
+      bubble_view_->CloseWidget();
       break;
     case CookieControlsEnforcement::kEnforcedByPolicy:
     case CookieControlsEnforcement::kEnforcedByExtension:
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
+      // In 3PCD, tell the user if they allowed the current site in settings.
+      bubble_view_->GetContentView()->SetContentLabelsVisible(
+          enforcement == CookieControlsEnforcement::kEnforcedByCookieSetting &&
+          blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd);
       bubble_view_->GetContentView()->SetFeedbackSectionVisibility(false);
-      bubble_view_->GetContentView()->SetContentLabelsVisible(false);
       bubble_view_->GetContentView()->SetToggleVisible(false);
       bubble_view_->GetContentView()->SetEnforcedIcon(
           content_settings::CookieControlsUtil::GetEnforcedIcon(enforcement),
@@ -194,13 +241,29 @@ void CookieControlsBubbleViewController::OnStatusChanged(
           bubble_view_->GetContentView()->SetEnforcedIconVisible(true);
       break;
   }
-
-  latest_status_ = status;
+  // If we're in 3PCD, update toggle label based on status.
+  if (latest_blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
+    int label;
+    if (latest_status_ == CookieControlsStatus::kDisabledForSite) {
+      label = IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_ALLOWED_LABEL;
+    } else {
+      label = latest_blocking_status_ == CookieBlocking3pcdStatus::kAll
+                  ? IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_BLOCKED_LABEL
+                  : IDS_TRACKING_PROTECTION_BUBBLE_COOKIES_LIMITED_LABEL;
+    }
+    bubble_view_->GetContentView()->SetToggleLabel(
+        l10n_util::GetStringUTF16(label));
+  }
 }
 
 void CookieControlsBubbleViewController::OnSitesCountChanged(
     int allowed_third_party_sites_count,
     int blocked_third_party_sites_count) {
+  // We don't surface site counts in the UB bubble for 3PCD instead we will set
+  // the label in `OnStatusChange`.
+  if (latest_blocking_status_ != CookieBlocking3pcdStatus::kNotIn3pcd) {
+    return;
+  }
   std::u16string label;
   switch (latest_status_) {
     case CookieControlsStatus::kEnabled:

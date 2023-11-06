@@ -52,6 +52,7 @@ BASE_DECLARE_FEATURE(kZeroSuggestOnNTPForSignedOutUsers);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetching);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnSRP);
 BASE_DECLARE_FEATURE(kZeroSuggestPrefetchingOnWeb);
+BASE_DECLARE_FEATURE(kOmniboxPopulateShortcutsDatabase);
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Suggest.
@@ -79,6 +80,11 @@ BASE_DECLARE_FEATURE(kAdaptiveSuggestionsCount);
 BASE_DECLARE_FEATURE(kClipboardSuggestionContentHidden);
 BASE_DECLARE_FEATURE(kSuppressClipboardSuggestionAfterFirstUsed);
 BASE_DECLARE_FEATURE(kCompanyEntityIconAdjustment);
+enum class CompanyEntityIconAdjustmentGroup {
+  kLeastAggressive,
+  kModerate,
+  kMostAggressive,
+};
 BASE_DECLARE_FEATURE(kCr2023ActionChips);
 BASE_DECLARE_FEATURE(kCr2023ActionChipsIcons);
 BASE_DECLARE_FEATURE(kSuggestionAnswersColorReverse);
@@ -86,6 +92,7 @@ BASE_DECLARE_FEATURE(kMostVisitedTilesHorizontalRenderGroup);
 BASE_DECLARE_FEATURE(kRichAutocompletion);
 BASE_DECLARE_FEATURE(kNtpRealboxPedals);
 BASE_DECLARE_FEATURE(kOmniboxActionsUISimplification);
+BASE_DECLARE_FEATURE(kOmniboxKeywordModeRefresh);
 BASE_DECLARE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor);
 BASE_DECLARE_FEATURE(kSearchReadyOmniboxAllowQueryEdit);
 BASE_DECLARE_FEATURE(kSquareSuggestIcons);
@@ -133,6 +140,9 @@ BASE_DECLARE_FEATURE(kLogUrlScoringSignals);
 BASE_DECLARE_FEATURE(kMlUrlScoring);
 BASE_DECLARE_FEATURE(kUrlScoringModel);
 
+// Inspire Me - additional suggestions based on user's location and interests.
+BASE_DECLARE_FEATURE(kInspireMe);
+
 // Actions in Suggest - Action Chips for Entity Suggestions.
 // Data driven feature; flag helps tune behavior.
 BASE_DECLARE_FEATURE(kActionsInSuggest);
@@ -149,6 +159,10 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature);
 // start prefetching the suggestion. The feature only applies to search
 // suggestions and only controls whether the signal is sent.
 BASE_DECLARE_FEATURE(kOmniboxTouchDownTriggerForPrefetch);
+
+// Enables the |SiteSearchSettings| policy, which allows admins to configure
+// intranet site search engines.
+BASE_DECLARE_FEATURE(kSiteSearchSettingsPolicy);
 
 }  // namespace omnibox
 

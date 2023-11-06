@@ -126,6 +126,26 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
   return false;
 }
 
+void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,
+                                        CanDeferInvalidation defer) {
+  NOT_DESTROYED();
+  for (const FillLayer* layer = &StyleRef().MaskLayers(); layer;
+       layer = layer->Next()) {
+    const StyleImage* style_image = layer->GetImage();
+    if (style_image && image == style_image->Data()) {
+      SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+          PaintInvalidationReason::kImage);
+      if (style_image->IsSVGMaskReference()) {
+        // Since an invalid <mask> reference does not yield a paint property on
+        // SVG content (see CSSMaskPainter), we need to update paint properties
+        // when such a reference changes.
+        SetNeedsPaintPropertyUpdate();
+      }
+      break;
+    }
+  }
+}
+
 void LayoutSVGModelObject::StyleDidChange(StyleDifference diff,
                                           const ComputedStyle* old_style) {
   NOT_DESTROYED();

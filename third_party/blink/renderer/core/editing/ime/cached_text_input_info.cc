@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -141,9 +141,10 @@ void CachedTextInputInfo::EnsureCached(const ContainerNode& container) const {
     unsigned capacity = kInitialCapacity;
     if (auto* block_flow =
             DynamicTo<LayoutBlockFlow>(container.GetLayoutObject())) {
-      if (block_flow->GetNGInlineNodeData()) {
-        if (const auto* mapping = NGInlineNode::GetOffsetMapping(block_flow))
+      if (block_flow->GetInlineNodeData()) {
+        if (const auto* mapping = InlineNode::GetOffsetMapping(block_flow)) {
           capacity = mapping->GetText().length();
+        }
       }
     }
     builder.ReserveCapacity(capacity);

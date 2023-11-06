@@ -33,59 +33,32 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
   {
     blink::ServiceWorkerRouterRule rule;
     {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
       blink::SafeUrlPattern url_pattern;
-      auto parse_result = liburlpattern::Parse(
-          "/test/*",
-          [](base::StringPiece input) { return std::string(input); });
-      ASSERT_TRUE(parse_result.ok());
-      url_pattern.pathname = parse_result.value().PartList();
-      condition.url_pattern = url_pattern;
-      rule.conditions.push_back(condition);
-    }
-    {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      blink::ServiceWorkerRouterRequestCondition request;
-      request.method = "GET";
-      request.mode = network::mojom::RequestMode::kNavigate;
-      request.destination = network::mojom::RequestDestination::kDocument;
-      condition.request = request;
-      rule.conditions.push_back(condition);
-    }
-    {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      blink::ServiceWorkerRouterRequestCondition request;
-      condition.request = request;
-      rule.conditions.push_back(condition);
-    }
-    {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type =
-          blink::ServiceWorkerRouterCondition::Type::kRunningStatus;
-      blink::ServiceWorkerRouterRunningStatusCondition running_status;
-      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
-          RunningStatusEnum::kRunning;
-      condition.running_status = running_status;
-      rule.conditions.push_back(condition);
-    }
-    {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kOr;
-      blink::ServiceWorkerRouterOrCondition or_condition;
-      blink::ServiceWorkerRouterConditionObject fake_object;
       {
-        blink::ServiceWorkerRouterCondition fake;
-        fake.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-        blink::ServiceWorkerRouterRequestCondition request;
-        fake.request = request;
-        fake_object.conditions = std::vector(3, fake);
+        auto parse_result = liburlpattern::Parse(
+            "/test/*",
+            [](base::StringPiece input) { return std::string(input); });
+        ASSERT_TRUE(parse_result.ok());
+        url_pattern.pathname = parse_result.value().PartList();
       }
-      or_condition.objects = std::vector(3, fake_object);
-      condition.or_condition = or_condition;
-      rule.conditions.push_back(condition);
+      blink::ServiceWorkerRouterRequestCondition request;
+      {
+        request.method = "GET";
+        request.mode = network::mojom::RequestMode::kNavigate;
+        request.destination = network::mojom::RequestDestination::kDocument;
+      }
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      {
+        running_status.status =
+            blink::ServiceWorkerRouterRunningStatusCondition::
+                RunningStatusEnum::kRunning;
+      }
+      blink::ServiceWorkerRouterOrCondition or_condition;
+      {
+        or_condition.conditions = std::vector(
+            3, blink::ServiceWorkerRouterCondition::WithRequest({}));
+      }
+      rule.condition = {url_pattern, request, running_status, or_condition};
     }
     {
       blink::ServiceWorkerRouterSource source;

@@ -381,6 +381,8 @@ static_library("common_lib") {
     ]
     public_deps += [ "//ash/keyboard/ui" ]
     deps += [ "//ash/constants" ]
+  } else if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
   }
 
   if (is_chromeos) {
@@ -497,7 +499,7 @@ static_library("common_lib") {
   }
 
   if (enable_bound_session_credentials) {
-    sources += [ "bound_session_request_throttled_listener.h" ]
+    sources += [ "bound_session_request_throttled_handler.h" ]
   }
 }
 
@@ -578,7 +580,6 @@ component("chrome_features") {
 static_library("url_constants") {
   visibility = [ "//chrome/common/*" ]
   sources = [
-    "url_constants.cc",
     "url_constants.h",
     "webui_url_constants.cc",
     "webui_url_constants.h",
@@ -670,6 +671,7 @@ static_library("constants") {
     deps += [
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/lacros:lacros_paths",
+      "//chromeos/startup",
     ]
     public_deps += [ "//chromeos/crosapi/mojom" ]
   } else if (is_linux || is_chromeos) {

@@ -1518,8 +1518,8 @@ void CacheStorageCache::MatchAllDidQueryCache(
 void CacheStorageCache::WriteMetadata(disk_cache::Entry* entry,
                                       const proto::CacheMetadata& metadata,
                                       WriteMetadataCallback callback) {
-  std::unique_ptr<std::string> serialized = std::make_unique<std::string>();
-  if (!metadata.SerializeToString(serialized.get())) {
+  std::string serialized;
+  if (!metadata.SerializeToString(&serialized)) {
     std::move(callback).Run(0, -1);
     return;
   }

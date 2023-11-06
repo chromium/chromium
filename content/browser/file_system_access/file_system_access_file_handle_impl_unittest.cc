@@ -227,7 +227,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
   scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 
   FileSystemURL test_file_url_;
 
@@ -748,8 +748,6 @@ class FileSystemAccessFileHandleSwapFileCloningTest
     kAttemptedAndCompletedAsExpected
   };
 
-  FileSystemAccessFileHandleSwapFileCloningTest()
-      : scoped_feature_list_(features::kFileSystemAccessCowSwapFile) {}
   void SetUp() override {
     SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
   }
@@ -778,9 +776,6 @@ class FileSystemAccessFileHandleSwapFileCloningTest
     // "expected".
     return CloneFileResult::kAttemptedAndCompletedAsExpected;
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, BasicClone) {
@@ -884,7 +879,7 @@ TEST_F(FileSystemAccessFileHandleSwapFileCloningTest, HandleCloneFailure) {
 // destination directory.
 class FileSystemAccessFileHandleImplMovePermissionsTest
     : public FileSystemAccessFileHandleImplTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -892,38 +887,10 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
 
     SetupHelper(storage::kFileSystemTypeLocal, /*is_incognito=*/false);
     manager_->SetPermissionContextForTesting(&permission_context_);
-
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    // TODO(crbug.com/1381621): Remove this alongside the corresponding flag.
-    // This feature controls whether overwrites are NOT allowed. Yes, this is
-    // very confusing. Lesson learned not to name flags as a negative.
-    if (overwrites_disabled()) {
-      enabled_features.push_back(
-          features::kFileSystemAccessDoNotOverwriteOnMove);
-    } else {
-      disabled_features.push_back(
-          features::kFileSystemAccessDoNotOverwriteOnMove);
-    }
-    // TODO(crbug.com/1394837): Remove this alongside the corresponding flag.
-    if (gesture_required()) {
-      enabled_features.push_back(
-          features::
-              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-    } else {
-      disabled_features.push_back(
-          features::
-              kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-    }
-
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool overwrites_disabled() const { return std::get<0>(GetParam()); }
-  bool target_present() const { return std::get<1>(GetParam()); }
-  bool gesture_required() const { return std::get<2>(GetParam()); }
-  bool gesture_present() const { return std::get<3>(GetParam()); }
+  bool target_present() const { return std::get<0>(GetParam()); }
+  bool gesture_present() const { return std::get<1>(GetParam()); }
 
   std::pair<base::FilePath, base::FilePath> CreateSourceAndMaybeTarget() {
     base::FilePath source;
@@ -978,10 +945,7 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
     // On Windows, CreateTemporaryFileInDir() creates files with the '.tmp'
     // extension. When this feature flag is enabled, Safe Browsing checks are
     // not run on same-file-system moves in which the extension does not change.
-    if (!base::FeatureList::IsEnabled(
-            features::
-                kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension) ||
-        source.Extension() != FILE_PATH_LITERAL(".tmp") ||
+    if (source.Extension() != FILE_PATH_LITERAL(".tmp") ||
         target.Extension() != FILE_PATH_LITERAL(".tmp")) {
       EXPECT_CALL(permission_context_,
                   PerformAfterWriteChecks_(testing::_, testing::_, testing::_))
@@ -1155,8 +1119,6 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   scoped_refptr<FixedFileSystemAccessPermissionGrant> ask_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::ASK,
@@ -1173,14 +1135,8 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   auto parent_grant = deny_grant_;
   auto target_grant = allow_grant_;
 
-  if (overwrites_disabled() && target_present()) {
-    ExpectFileRenameFailure(
-        /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant,
-        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
-  } else {
-    ExpectFileRenameSuccess(
-        /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant);
-  }
+  ExpectFileRenameSuccess(
+      /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant);
 }
 
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
@@ -1190,14 +1146,8 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   auto parent_grant = allow_grant_;
   auto target_grant = allow_grant_;
 
-  if (overwrites_disabled() && target_present()) {
-    ExpectFileRenameFailure(
-        /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant,
-        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
-  } else {
-    ExpectFileRenameSuccess(
-        /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant);
-  }
+  ExpectFileRenameSuccess(
+      /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant);
 }
 
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
@@ -1224,7 +1174,7 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   // Cannot overwrite a file without a user gesture or explicit access to the
   // parent or target (even if overwrites are enabled). Reject with a
   // permission error.
-  if (target_present() || (gesture_required() && !gesture_present())) {
+  if (target_present() || !gesture_present()) {
     ExpectFileRenameFailure(
         /*parent=*/dir_.GetPath(), source, target, parent_grant, target_grant,
         blink::mojom::FileSystemAccessStatus::kPermissionDenied);
@@ -1271,14 +1221,8 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
   // The site has not yet asked for access to the target entry.
   auto target_grant = ask_grant_;
 
-  if (overwrites_disabled() && target_present()) {
-    ExpectFileMoveFailure(
-        /*parent=*/dir_.GetPath(), source, target, target_grant,
-        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
-  } else {
-    ExpectFileMoveSuccess(
-        /*parent=*/dir_.GetPath(), source, target, target_grant);
-  }
+  ExpectFileMoveSuccess(
+      /*parent=*/dir_.GetPath(), source, target, target_grant);
 }
 
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
@@ -1297,17 +1241,12 @@ TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest,
        Move_AskTargetWriteAccess) {
   auto [source, target] = CreateSourceAndMaybeTarget();
 
-  // The site has not yet asked for access to the target entry.
+  // The site has not yet asked for access to the target entry, but since it has
+  // access to the parent, the move should still succeed.
   auto target_grant = ask_grant_;
 
-  if (overwrites_disabled() && target_present()) {
-    ExpectFileMoveFailure(
-        /*parent=*/dir_.GetPath(), source, target, target_grant,
-        blink::mojom::FileSystemAccessStatus::kInvalidModificationError);
-  } else {
-    ExpectFileMoveSuccess(
-        /*parent=*/dir_.GetPath(), source, target, target_grant);
-  }
+  ExpectFileMoveSuccess(
+      /*parent=*/dir_.GetPath(), source, target, target_grant);
 }
 
 TEST_P(FileSystemAccessFileHandleImplMovePermissionsTest, Move_SameFile) {
@@ -1337,12 +1276,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     FileSystemAccessFileHandleImplMovePermissionsTest,
     ::testing::Combine(
-        // Is kFileSystemAccessDoNotOverwriteOnMove flag enabled?
-        ::testing::Bool(),
         // Is there a file to be overwritten?
-        ::testing::Bool(),
-        // Is kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation
-        // flag enabled?
         ::testing::Bool(),
         // Does the site have user activation?
         ::testing::Bool()));

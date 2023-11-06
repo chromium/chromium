@@ -189,8 +189,9 @@ class HeaderParser:
   enum_name_re = r'(\w+)'
   optional_fixed_type_re = r'(\:\s*(\w+\s*\w+?))?'
   enum_start_re = re.compile(r'^\s*(?:\[cpp.*\])?\s*enum\s+' +
-      optional_class_or_struct_re + '\s*' + enum_name_re + '\s*' +
-      optional_fixed_type_re + '\s*{\s*')
+                             optional_class_or_struct_re + r'\s*' +
+                             enum_name_re + r'\s*' + optional_fixed_type_re +
+                             r'\s*{\s*')
   enum_single_line_re = re.compile(
       r'^\s*(?:\[cpp.*\])?\s*enum.*{(?P<enum_entries>.*)}.*$')
 

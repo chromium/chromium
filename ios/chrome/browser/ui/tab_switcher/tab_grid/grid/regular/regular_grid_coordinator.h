@@ -8,24 +8,44 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 class Browser;
+@protocol DisabledGridViewControllerDelegate;
+@class GridContainerViewController;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
 @class PinnedTabsMediator;
 @class RegularGridMediator;
+@class RegularGridViewController;
 @class TabGridViewController;
 
 // Coordinator to manage regular grid.
 @interface RegularGridCoordinator : ChromeCoordinator
 
-// Regular view controller.
-// TODO(crbug.com/1457146): Replace this once the regular grid view controller
-// is created.
-@property(nonatomic, weak) TabGridViewController* regularViewController;
+// Grid view controller container.
+@property(nonatomic, readonly, strong)
+    GridContainerViewController* gridContainerViewController;
+// Grid view controller.
+// TODO(crbug.com/1457146): Replace with RegularGridViewController when
+// possible.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong)
+    RegularGridViewController* gridViewController;
+// The view controller to displayed when regular is disabled.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong) UIViewController* disabledViewController;
 // Regular grid mediator.
-@property(nonatomic, readonly, weak) RegularGridMediator* regularGridMediator;
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong) RegularGridMediator* regularGridMediator;
+
+// The overall TabGrid.
+// TODO(crbug.com/1457146): Remove this.
+@property(nonatomic, weak) TabGridViewController* tabGridViewController;
 // Pinned tabs mediator.
 // TODO(crbug.com/1457146): Remove when it is fully moved.
 @property(nonatomic, readonly, weak) PinnedTabsMediator* pinnedTabsMediator;
+// Delegate for when this is presenting the Disable View Controller.
+// TODO(crbug.com/1457146): This protocol should be implemented by this object.
+@property(nonatomic, weak) id<DisabledGridViewControllerDelegate>
+    disabledTabViewControllerDelegate;
 
 // Init method. Parameters can't be nil.
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -36,6 +56,9 @@ class Browser;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Stops all child coordinators.
+- (void)stopChidCoordinators;
 
 @end
 

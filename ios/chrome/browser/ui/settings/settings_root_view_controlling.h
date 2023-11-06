@@ -8,16 +8,27 @@
 #import <Foundation/Foundation.h>
 
 @protocol ApplicationCommands;
+@protocol ApplicationSettingsCommands;
 @protocol BrowserCommands;
 @protocol BrowsingDataCommands;
+@protocol SnackbarCommands;
 
 // Protocol allowing the dispatcher to be passed to the settings ViewController.
 @protocol SettingsRootViewControlling
 
-// The dispatcher used by this ViewController.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
+// BrowserCommands handler.
+@property(nonatomic, weak) id<BrowserCommands> browserHandler;
+
+// BrowsingDataCommands handler.
+@property(nonatomic, weak) id<BrowsingDataCommands> browsingDataHandler;
+
+// ApplicationSettingsCommands handler.
+@property(nonatomic, weak) id<ApplicationSettingsCommands> settingsHandler;
+
+// ApplicationSettingsCommands handler.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarHandler;
 
 @end
 

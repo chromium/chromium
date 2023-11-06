@@ -46,6 +46,8 @@ promise_test(async () => {
     await waitForCompositorCommit();
     const scroller = document.getElementById("scroller");
     const center = pointInElement(scroller, 50, 50);
+    // Mouse click to ensure the element has focus before scrolling.
+    await mouseClick(center.x, center.y);
     // Scroll 1 tick. The actual scroll amount may differ if percent-based
     // scrolling is enabled.
     const adjustedPixelsPerTick = calculateExpectedScroll(

@@ -54,6 +54,8 @@ class WaylandZcrColorManager
   scoped_refptr<WaylandZcrColorSpace> GetColorSpace(
       const gfx::ColorSpace& color_space);
 
+  uint32_t GetVersion() { return version_; }
+
  private:
   void OnColorSpaceCreated(gfx::ColorSpace color_space,
                            scoped_refptr<WaylandZcrColorSpace> zcr_color_space,
@@ -74,6 +76,8 @@ class WaylandZcrColorManager
 
   // Non-owned.
   const raw_ptr<WaylandConnection> connection_;
+
+  uint32_t version_;
 };
 
 }  // namespace ui

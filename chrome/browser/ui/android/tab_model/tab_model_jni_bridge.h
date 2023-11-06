@@ -37,9 +37,6 @@ class TabModelJniBridge : public TabModel {
   ~TabModelJniBridge() override;
 
   // Called by JNI
-  base::android::ScopedJavaLocalRef<jobject> GetProfileAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
   void TabAddedToModel(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj,
                        const base::android::JavaParamRef<jobject>& jtab);

@@ -132,18 +132,18 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
           CGColorSpaceCreateDeviceRGB());
       base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
           /*data=*/nullptr, target_size.width, target_size.height, 8,
-          target_size.width * 4, color_space,
+          target_size.width * 4, color_space.get(),
           kCGImageAlphaPremultipliedFirst |
               static_cast<CGImageAlphaInfo>(kCGBitmapByteOrder32Host)));
 
       CGRect target_rect = CGRectMake(0, 0,
                                       target_size.width, target_size.height);
-      CGContextSetBlendMode(context, kCGBlendModeCopy);
-      CGContextDrawImage(context, target_rect, ui_image.CGImage);
+      CGContextSetBlendMode(context.get(), kCGBlendModeCopy);
+      CGContextDrawImage(context.get(), target_rect, ui_image.CGImage);
 
       base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-          CGBitmapContextCreateImage(context));
-      ui_image = [[UIImage alloc] initWithCGImage:cg_image
+          CGBitmapContextCreateImage(context.get()));
+      ui_image = [[UIImage alloc] initWithCGImage:cg_image.get()
                                             scale:target_scale
                                       orientation:UIImageOrientationUp];
     }

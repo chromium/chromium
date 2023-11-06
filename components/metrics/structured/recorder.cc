@@ -14,17 +14,13 @@
 
 namespace metrics::structured {
 
-Recorder::Recorder() : validators_(std::make_unique<validator::Validators>()) {}
+Recorder::Recorder() = default;
 
 Recorder::~Recorder() = default;
 
 Recorder* Recorder::GetInstance() {
   static base::NoDestructor<Recorder> recorder;
   return recorder.get();
-}
-
-validator::Validators* Recorder::GetValidator() {
-  return validators_.get();
 }
 
 void Recorder::RecordEvent(Event&& event) {
@@ -69,24 +65,9 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
   for (auto& observer : observers_) {
     observer.OnProfileAdded(profile_path);
   }
-}
 
-absl::optional<int> Recorder::LastKeyRotation(const Event& event) {
-  auto project_validator =
-      GetValidator()->GetProjectValidator(event.project_name());
-  if (!project_validator.has_value()) {
-    return absl::nullopt;
-  }
-
-  auto project_name_hash = project_validator.value()->project_hash();
-
-  absl::optional<int> result;
-  // |observers_| will contain at most one observer, despite being an
-  // ObserverList.
-  for (auto& observer : observers_) {
-    result = observer.LastKeyRotation(project_name_hash);
-  }
-  return result;
+  // Notify the event processors.
+  delegating_events_processor_.OnProfileAdded(profile_path);
 }
 
 void Recorder::OnReportingStateChanged(bool enabled) {

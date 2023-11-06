@@ -252,6 +252,11 @@ void ManifestManager::RecordMetrics(const mojom::blink::Manifest& manifest) {
                       WebFeature::kWebAppManifestProtocolHandlers);
   }
 
+  if (!manifest.scope_extensions.empty()) {
+    UseCounter::Count(GetSupplementable(),
+                      WebFeature::kWebAppManifestScopeExtensions);
+  }
+
   for (const mojom::blink::DisplayMode& display_override :
        manifest.display_override) {
     if (display_override == mojom::blink::DisplayMode::kWindowControlsOverlay) {

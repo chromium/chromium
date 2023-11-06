@@ -90,6 +90,9 @@ public class MinidumpUploadCallable implements Callable<Integer> {
             String crashFileName = mFileToUpload.getName();
             Log.i(TAG, "Minidump " + crashFileName + " uploaded successfully, id: " + uploadId);
 
+            // Re-post the crash ID as an error log to make it more visible in crash triaging tools.
+            Log.e(TAG, "Crash with id: " + uploadId + " uploaded successfully.");
+
             // TODO(acleung): MinidumpUploadService is in charge of renaming while this class is
             // in charge of deleting. We should move all the file system operations into
             // MinidumpUploadService instead.

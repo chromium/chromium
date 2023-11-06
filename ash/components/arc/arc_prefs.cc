@@ -6,14 +6,23 @@
 
 #include <string>
 
-#include "ash/components/arc/metrics/arc_daily_metrics_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_vm_data_migration_status.h"
 #include "components/guest_os/guest_os_prefs.h"
+#include "components/metrics/daily_event.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace arc {
 namespace prefs {
+
+namespace {
+
+void RegisterDailyMetricsPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(prefs::kArcDailyMetricsKills);
+  metrics::DailyEvent::RegisterPref(registry, prefs::kArcDailyMetricsSample);
+}
+
+}  // anonymous namespace
 
 // ======== PROFILE PREFS ========
 // See below for local state prefs.

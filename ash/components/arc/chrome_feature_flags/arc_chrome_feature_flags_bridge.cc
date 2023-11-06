@@ -79,8 +79,6 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->jelly_colors = chromeos::features::IsJellyEnabled();
   flags->touchscreen_emulation =
       base::FeatureList::IsEnabled(kTouchscreenEmulation);
-  flags->trackpad_scroll_touchscreen_emulation =
-      base::FeatureList::IsEnabled(kTrackpadScrollTouchscreenEmulation);
   flags->rounded_window_compat_strategy =
       base::FeatureList::IsEnabled(arc::kRoundedWindowCompat)
           ? static_cast<mojom::RoundedWindowCompatStrategy>(

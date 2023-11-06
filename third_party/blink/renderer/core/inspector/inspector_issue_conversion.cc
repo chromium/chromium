@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -59,6 +60,7 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue:
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
+    case mojom::blink::InspectorIssueCode::kCookieDeprecationMetadataIssue:
     case mojom::blink::InspectorIssueCode::kGenericIssue:
     case mojom::blink::InspectorIssueCode::kDeprecationIssue:
     case mojom::blink::InspectorIssueCode::kAttributionReportingIssue:
@@ -142,6 +144,10 @@ protocol::String BuildCookieWarningReason(
       return protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII;
     case blink::mojom::blink::CookieWarningReason::kWarnThirdPartyPhaseout:
       return protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout;
+    case blink::mojom::blink::CookieWarningReason::
+        kWarnCrossSiteRedirectDowngradeChangesInclusion:
+      return protocol::Audits::CookieWarningReasonEnum::
+          WarnCrossSiteRedirectDowngradeChangesInclusion;
   }
 }
 

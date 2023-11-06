@@ -114,7 +114,7 @@ extensions::settings_private::SetPrefResult GeneratedNotificationPref::SetPref(
 settings_api::PrefObject GeneratedNotificationPref::GetPrefObject() const {
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedNotificationPref;
-  pref_object.type = settings_api::PREF_TYPE_NUMBER;
+  pref_object.type = settings_api::PrefType::kNumber;
 
   const auto quieter_pref_enabled =
       profile_->GetPrefs()
@@ -178,7 +178,7 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
   }
 
   if (content_setting_enforced) {
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
 
     if (content_setting == CONTENT_SETTING_BLOCK) {
       // Preference is fully managed by the content setting.
@@ -215,7 +215,7 @@ void GeneratedNotificationPref::ApplyNotificationManagementState(
   if (quieter_ui_enforced) {
     // Quieter ui pref is enforced, but the content setting is not, so the user
     // can choose from 2 options
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     GeneratedPref::ApplyControlledByFromPref(&pref_object, quieter_ui_pref);
     GeneratedPref::AddUserSelectableValue(
         &pref_object,

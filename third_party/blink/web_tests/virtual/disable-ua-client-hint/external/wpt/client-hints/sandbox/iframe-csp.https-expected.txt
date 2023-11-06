@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL CSP sandboxed iframe does not send client hint headers assert_equals: message from opened frame expected "PASS" but got "FAIL sec-ch-ua True None"
+[FAIL] CSP sandboxed iframe does not send client hint headers
+  assert_equals: message from opened frame expected "PASS" but got "FAIL sec-ch-ua True None"
 Harness: the test ran to completion.
 

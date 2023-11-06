@@ -497,6 +497,10 @@ TEST_F(HistoryClustersPageHandlerTest, RecordLayoutTypeShown) {
 }
 
 TEST_F(HistoryClustersPageHandlerTest, NotLoadCartWithoutFeature) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      ntp_features::kNtpChromeCartInHistoryClusterModule);
+
   history_clusters::mojom::ClusterPtr cluster_mojom;
   EXPECT_CALL(mock_cart_service(), LoadAllActiveCarts(testing::_)).Times(0);
   handler().GetCartForCluster(std::move(cluster_mojom), base::DoNothing());

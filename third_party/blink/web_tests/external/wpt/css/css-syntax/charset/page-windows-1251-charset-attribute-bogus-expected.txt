@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL CSS charset: page windows-1251, charset attribute bogus assert_equals: expected "hidden" but got "visible"
+[FAIL] CSS charset: page windows-1251, charset attribute bogus
+  assert_equals: expected "hidden" but got "visible"
 Harness: the test ran to completion.
 

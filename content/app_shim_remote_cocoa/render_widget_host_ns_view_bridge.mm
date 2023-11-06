@@ -159,7 +159,8 @@ void RenderWidgetHostNSViewBridge::SetBackgroundColor(SkColor color) {
   if (display_disabled_)
     return;
   ScopedCAActionDisabler disabler;
-  background_layer_.backgroundColor = skia::CGColorCreateFromSkColor(color);
+  background_layer_.backgroundColor =
+      skia::CGColorCreateFromSkColor(color).get();
 }
 
 void RenderWidgetHostNSViewBridge::SetVisible(bool visible) {

@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
+
+#import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/i18n/number_formatting.h"
-#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -19,61 +22,63 @@ NSString* kStartSurfaceSceneEnterIntoBackgroundTime =
 
 }  // namespace
 
-NSTimeInterval GetTimeSinceMostRecentTabWasOpenForSceneState(
-    SceneState* sceneState) {
-  NSDate* timestamp = (NSDate*)[sceneState
-      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
+base::TimeDelta GetTimeSinceMostRecentTabWasOpenForSceneState(
+    SceneState* scene_state) {
+  NSDate* timestamp = base::apple::ObjCCast<NSDate>([scene_state
+      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
 
   if (timestamp == nil) {
-    return 0;
+    return base::TimeDelta();
   }
-  return [[NSDate date] timeIntervalSinceDate:timestamp];
+
+  return base::Time::Now() - base::Time::FromNSDate(timestamp);
 }
 
-bool ShouldShowStartSurfaceForSceneState(SceneState* sceneState) {
-  NSDate* timestamp = (NSDate*)[sceneState
-      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime];
-  if (timestamp == nil || [[NSDate date] timeIntervalSinceDate:timestamp] <
-                              GetReturnToStartSurfaceDuration()) {
+bool ShouldShowStartSurfaceForSceneState(SceneState* scene_state) {
+  NSDate* timestamp = base::apple::ObjCCast<NSDate>([scene_state
+      sessionObjectForKey:kStartSurfaceSceneEnterIntoBackgroundTime]);
+  if (timestamp == nil) {
     return NO;
   }
 
-  if (sceneState.presentingModalOverlay ||
-      sceneState.startupHadExternalIntent || sceneState.pendingUserActivity ||
-      sceneState.incognitoContentVisible) {
+  const base::TimeDelta elapsed =
+      base::Time::Now() - base::Time::FromNSDate(timestamp);
+  if (elapsed < GetReturnToStartSurfaceDuration()) {
+    return NO;
+  }
+
+  if (scene_state.presentingModalOverlay ||
+      scene_state.startupHadExternalIntent || scene_state.pendingUserActivity ||
+      scene_state.incognitoContentVisible) {
     return NO;
   }
 
   return YES;
 }
 
-NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* sceneState) {
-  NSTimeInterval timeSinceOpen =
-      GetTimeSinceMostRecentTabWasOpenForSceneState(sceneState);
-  if (timeSinceOpen == 0) {
+NSString* GetRecentTabTileTimeLabelForSceneState(SceneState* scene_state) {
+  const base::TimeDelta time_since_open =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(scene_state);
+  if (time_since_open == base::TimeDelta()) {
     return @"";
   }
-  NSInteger time = (NSInteger)timeSinceOpen / 3600;
-  NSString* timeString = [NSString
-      stringWithFormat:@"%@",
-                       base::SysUTF16ToNSString(base::FormatNumber(time))];
-  NSString* timeLabel =
-      l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS,
-                              base::SysNSStringToUTF16(timeString));
-  if (time > 24) {
+  NSString* time_label = nil;
+  if (time_since_open > base::Days(1)) {
     // If it has been at least a day since the most recent tab was opened,
     // then show days since instead of hours.
-    time = time / 24;
-    timeString = [NSString
-        stringWithFormat:@"%@",
-                         base::SysUTF16ToNSString(base::FormatNumber(time))];
-    timeLabel = l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS,
-                                        base::SysNSStringToUTF16(timeString));
+    time_label =
+        l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS,
+                                base::FormatNumber(time_since_open.InDays()));
+  } else {
+    time_label =
+        l10n_util::GetNSStringF(IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS,
+                                base::FormatNumber(time_since_open.InHours()));
   }
-  return [NSString stringWithFormat:@" · %@", timeLabel];
+  DCHECK(time_label);
+  return [NSString stringWithFormat:@" · %@", time_label];
 }
 
-void SetStartSurfaceSessionObjectForSceneState(SceneState* sceneState) {
-  [sceneState setSessionObject:[NSDate date]
-                        forKey:kStartSurfaceSceneEnterIntoBackgroundTime];
+void SetStartSurfaceSessionObjectForSceneState(SceneState* scene_state) {
+  [scene_state setSessionObject:base::Time::Now().ToNSDate()
+                         forKey:kStartSurfaceSceneEnterIntoBackgroundTime];
 }

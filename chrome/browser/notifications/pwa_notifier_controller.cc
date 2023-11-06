@@ -56,7 +56,7 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
             return;
           }
           notifier_dataset.push_back(NotifierDataset{
-              update.AppId() /*app_id*/, update.ShortName() /*app_name*/,
+              update.AppId() /*app_id*/, update.Name() /*app_name*/,
               update.PublisherId() /*publisher_id*/,
               permission->IsPermissionEnabled()});
         }

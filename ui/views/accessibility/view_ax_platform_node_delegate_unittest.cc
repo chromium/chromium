@@ -18,6 +18,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -43,12 +45,17 @@ namespace views::test {
 namespace {
 
 class TestButton : public Button {
+  METADATA_HEADER(TestButton, Button)
+
  public:
   TestButton() : Button(Button::PressedCallback()) {}
   TestButton(const TestButton&) = delete;
   TestButton& operator=(const TestButton&) = delete;
   ~TestButton() override = default;
 };
+
+BEGIN_METADATA(TestButton)
+END_METADATA
 
 class TestAXEventObserver : public AXEventObserver {
  public:
@@ -499,6 +506,32 @@ TEST_F(ViewAXPlatformNodeDelegateTest, OverrideNameAndDescription) {
   // Setting the labelledby View to itself should trigger a DCHECK.
   EXPECT_DCHECK_DEATH_WITH(button_accessibility()->OverrideLabelledBy(button_),
                            "Check failed: labelled_by_view != view_");
+}
+
+TEST_F(ViewAXPlatformNodeDelegateTest, OverrideIsSelected) {
+  View::Views view_ids = SetUpExtraViews();
+
+  view_ids[1]->GetViewAccessibility().OverrideIsSelected(true);
+  view_ids[2]->GetViewAccessibility().OverrideIsSelected(false);
+
+  ui::AXNodeData node_data_0;
+  view_ids[0]->GetViewAccessibility().GetAccessibleNodeData(&node_data_0);
+  EXPECT_FALSE(
+      node_data_0.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ui::AXNodeData node_data_1;
+  view_ids[1]->GetViewAccessibility().GetAccessibleNodeData(&node_data_1);
+  EXPECT_TRUE(
+      node_data_1.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_TRUE(
+      node_data_1.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  ui::AXNodeData node_data_2;
+  view_ids[2]->GetViewAccessibility().GetAccessibleNodeData(&node_data_2);
+  EXPECT_TRUE(
+      node_data_2.HasBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  EXPECT_FALSE(
+      node_data_2.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, IsOrderedSet) {
@@ -1110,12 +1143,17 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
 
 #if defined(USE_AURA)
 class DerivedTestView : public View {
+  METADATA_HEADER(DerivedTestView, View)
+
  public:
   DerivedTestView() = default;
   ~DerivedTestView() override = default;
 
   void OnBlur() override { SetVisible(false); }
 };
+
+BEGIN_METADATA(DerivedTestView)
+END_METADATA
 
 using AXViewTest = ViewsTestBase;
 

@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that injected script isn't reported to frontend.\n`);
   await TestRunner.showPanel('sources');

@@ -149,7 +149,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
   base::FilePath GetFilePathForDownloadFileStatus(
       PredictionModelDownloadFileStatus file_status) {
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     switch (file_status) {
       case PredictionModelDownloadFileStatus::kUnverifiedFile:
         return temp_download_dir_.GetPath().AppendASCII("unverified.crx3");
@@ -196,7 +196,7 @@ class PredictionModelDownloadManagerTest : public testing::Test {
  private:
   void WriteFileForStatus(PredictionModelDownloadFileStatus status) {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     if (status == PredictionModelDownloadFileStatus::
                       kVerifiedCrxWithInvalidPublisher ||
         status == PredictionModelDownloadFileStatus::kUnverifiedFile) {

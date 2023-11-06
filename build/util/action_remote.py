@@ -26,8 +26,13 @@ class CustomProcessor(Enum):
     return self.value
 
 
-def _process_build_metadata_json(bm_file, input_roots, output_root, re_outputs,
-                                 processed_inputs):
+def _normalize_path(path):
+  # Always use posix-style directory separators as GN does it.
+  return os.path.normpath(path).replace("\\", "/")
+
+
+def _process_build_metadata_json(bm_file, input_roots, output_root,
+                                 output_files, processed_inputs):
   """Recursively find mojom_parser inputs from a build_metadata file."""
   # Import Mojo-specific dep here so non-Mojo remote actions don't need it.
   if _MOJOM_DIR not in sys.path:
@@ -46,21 +51,22 @@ def _process_build_metadata_json(bm_file, input_roots, output_root, re_outputs,
 
   # All sources and corresponding module files are inputs.
   for s in bm["sources"]:
-    src = os.path.normpath(os.path.join(bm_dir, s))
+    src = _normalize_path(os.path.join(bm_dir, s))
     if src not in processed_inputs and os.path.exists(src):
       processed_inputs.add(src)
-    src_module = os.path.join(
-        output_root,
-        RebaseAbsolutePath(os.path.abspath(src), input_roots) + "-module")
-    if src_module in re_outputs:
+    src_module = _normalize_path(
+        os.path.join(
+            output_root,
+            RebaseAbsolutePath(os.path.abspath(src), input_roots) + "-module"))
+    if src_module in output_files:
       continue
     if src_module not in processed_inputs and os.path.exists(src_module):
       processed_inputs.add(src_module)
 
   # Recurse into build_metadata deps.
   for d in bm["deps"]:
-    dep = os.path.normpath(os.path.join(bm_dir, d))
-    _process_build_metadata_json(dep, input_roots, output_root, re_outputs,
+    dep = _normalize_path(os.path.join(bm_dir, d))
+    _process_build_metadata_json(dep, input_roots, output_root, output_files,
                                  processed_inputs)
 
 
@@ -89,7 +95,7 @@ def _get_mojom_parser_inputs(exec_root, output_files, extra_args):
                                output_root, output_files, processed_inputs)
 
   # Rebase paths onto rewrapper exec root.
-  return map(lambda dep: os.path.normpath(os.path.relpath(dep, exec_root)),
+  return map(lambda dep: _normalize_path(os.path.relpath(dep, exec_root)),
              processed_inputs)
 
 
@@ -113,7 +119,10 @@ def main():
   output_files = set()
   with open(parsed_args.output_list_paths, 'r') as file:
     for line in file:
-      output_files.add(line.rstrip('\n'))
+      # Output files are relative to exec_root.
+      output_file = _normalize_path(
+          os.path.join(parsed_args.exec_root, line.rstrip('\n')))
+      output_files.add(output_file)
 
   # Scan for and add explicit inputs for rewrapper if necessary.
   # These should be in a new input list paths file, as using --inputs can fail

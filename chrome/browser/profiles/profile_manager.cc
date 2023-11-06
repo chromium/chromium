@@ -164,7 +164,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/startup/browser_params_proxy.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
@@ -2035,13 +2034,6 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
   init_params.gaia_id = account_info.gaia;
   init_params.user_name = username;
   init_params.is_consented_primary_account = is_consented_primary_account;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  init_params.is_omitted =
-      base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppProfileIsolation) &&
-      Profile::IsWebAppProfilePath(profile->GetPath());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   init_params.is_ephemeral = IsForceEphemeralProfilesEnabled(profile);
   init_params.is_signed_in_with_credential_provider =

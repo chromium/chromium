@@ -28,19 +28,19 @@ const char kUnsupportedAshVersion[] = "UNSUPPORTED_ASH_VERSION";
 image_writer_api::Stage FromMojo(crosapi::mojom::Stage mojo_stage) {
   switch (mojo_stage) {
     case crosapi::mojom::Stage::kConfirmation:
-      return image_writer_api::Stage::STAGE_CONFIRMATION;
+      return image_writer_api::Stage::kConfirmation;
     case crosapi::mojom::Stage::kDownload:
-      return image_writer_api::Stage::STAGE_DOWNLOAD;
+      return image_writer_api::Stage::kDownload;
     case crosapi::mojom::Stage::kVerifyDownload:
-      return image_writer_api::Stage::STAGE_VERIFYDOWNLOAD;
+      return image_writer_api::Stage::kVerifyDownload;
     case crosapi::mojom::Stage::kUnzip:
-      return image_writer_api::Stage::STAGE_UNZIP;
+      return image_writer_api::Stage::kUnzip;
     case crosapi::mojom::Stage::kWrite:
-      return image_writer_api::Stage::STAGE_WRITE;
+      return image_writer_api::Stage::kWrite;
     case crosapi::mojom::Stage::kVerifyWrite:
-      return image_writer_api::Stage::STAGE_VERIFYWRITE;
+      return image_writer_api::Stage::kVerifyWrite;
     case crosapi::mojom::Stage::kUnknown:
-      return image_writer_api::Stage::STAGE_UNKNOWN;
+      return image_writer_api::Stage::kUnknown;
   }
 }
 

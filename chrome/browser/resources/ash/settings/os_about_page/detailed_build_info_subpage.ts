@@ -26,9 +26,9 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {AboutPageBrowserProxy, AboutPageBrowserProxyImpl, browserChannelToI18nId, ChannelInfo, VersionInfo} from './about_page_browser_proxy.js';
@@ -353,15 +353,15 @@ class SettingsDetailedBuildInfoSubpageElement extends
 
   private onCopyBuildDetailsToClipBoardClick_(): void {
     const buildInfo: {[key: string]: string|boolean} = {
-      'application_label': loadTimeData.getString('aboutBrowserVersion'),
-      'platform': this.versionInfo_.osVersion,
-      'aboutChannelLabel': this.channelInfo_.targetChannel,
-      'firmware_version': this.versionInfo_.osFirmware,
-      'aboutIsArcStatusTitle': loadTimeData.getBoolean('aboutIsArcEnabled'),
-      'arc_label': this.versionInfo_.arcVersion,
-      'isEnterpriseManagedTitle':
+      application_label: loadTimeData.getString('aboutBrowserVersion'),
+      platform: this.versionInfo_.osVersion,
+      aboutChannelLabel: this.channelInfo_.targetChannel,
+      firmware_version: this.versionInfo_.osFirmware,
+      aboutIsArcStatusTitle: loadTimeData.getBoolean('aboutIsArcEnabled'),
+      arc_label: this.versionInfo_.arcVersion,
+      isEnterpriseManagedTitle:
           loadTimeData.getBoolean('aboutEnterpriseManaged'),
-      'aboutIsDeveloperModeTitle':
+      aboutIsDeveloperModeTitle:
           loadTimeData.getBoolean('aboutIsDeveloperMode'),
     };
 

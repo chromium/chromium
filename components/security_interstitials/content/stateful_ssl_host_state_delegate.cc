@@ -85,7 +85,7 @@ void UpdateRecurrentInterstitialPref(PrefService* pref_service,
                                      base::Clock* clock,
                                      int error,
                                      int threshold) {
-  double now = clock->Now().ToJsTime();
+  double now = clock->Now().InMillisecondsFSinceUnixEpoch();
 
   ScopedDictPrefUpdate pref_update(pref_service,
                                    prefs::kRecurrentSSLInterstitial);
@@ -145,8 +145,10 @@ bool DoesRecurrentInterstitialPrefMeetThreshold(PrefService* pref_service,
   // are more than |threshold| values after the cutoff time.
   const base::Value::List& error_list = *list_value;
   for (size_t i = 0; i < error_list.size(); i++) {
-    if (base::Time::FromJsTime(error_list[i].GetDouble()) >= cutoff_time)
+    if (base::Time::FromMillisecondsSinceUnixEpoch(error_list[i].GetDouble()) >=
+        cutoff_time) {
       return base::MakeStrictNum(error_list.size() - i) >= threshold;
+    }
   }
   return false;
 }

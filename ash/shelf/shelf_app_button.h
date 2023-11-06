@@ -134,11 +134,15 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Return the bounds in the local coordinates enclosing the small ripple area.
   gfx::Rect CalculateSmallRippleArea() const;
 
+  std::unique_ptr<ui::LayerTreeOwner> RequestDuplicateLayer();
+
   void SetNotificationBadgeColor(SkColor color);
 
   float progress() { return progress_; }
 
   AppStatus app_status() { return app_status_; }
+  const std::string& package_id() const { return package_id_; }
+  bool is_promise_app() const { return is_promise_app_; }
 
   ProgressIndicator* GetProgressIndicatorForTest() const;
 
@@ -260,6 +264,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Whether the app is a promise app  (i.e. an app with pending or installing
   // app status).
   bool is_promise_app_ = false;
+
+  // The package id that is associated with this shelf app.
+  std::string package_id_;
 
   // Used to track whether the menu was deleted while running. Must be last.
   base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};

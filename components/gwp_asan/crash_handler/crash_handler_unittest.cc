@@ -22,7 +22,7 @@
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
-#include "components/gwp_asan/client/lightweight_detector.h"
+#include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
 #include "components/gwp_asan/crash_handler/crash.pb.h"
@@ -117,13 +117,12 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   static crashpad::StringAnnotation<24> gpa_annotation(annotation_name);
   gpa_annotation.Set(gpa->GetCrashKey());
 
-  std::unique_ptr<LightweightDetector> lightweight_detector;
   if (cmd_line->HasSwitch("enable-lightweight-detector")) {
-    lightweight_detector = std::make_unique<LightweightDetector>(
-        LightweightDetectorMode::kBrpQuarantine, 1);
+    PoisonMetadataRecorder::Init(LightweightDetectorMode::kBrpQuarantine, 1);
     static crashpad::StringAnnotation<24> lightweight_detector_annotation(
         kLightweightDetectorCrashKey);
-    lightweight_detector_annotation.Set(lightweight_detector->GetCrashKey());
+    lightweight_detector_annotation.Set(
+        PoisonMetadataRecorder::Get()->GetCrashKey());
   }
 
   base::FilePath metrics_dir(FILE_PATH_LITERAL(""));
@@ -135,9 +134,9 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
   static crashpad::SanitizationAllowedMemoryRanges allowed_memory_ranges;
   if (cmd_line->HasSwitch("sanitize")) {
     auto memory_ranges = gpa->GetInternalMemoryRegions();
-    if (lightweight_detector) {
+    if (cmd_line->HasSwitch("enable-lightweight-detector")) {
       auto detector_memory_ranges =
-          lightweight_detector->GetInternalMemoryRegions();
+          PoisonMetadataRecorder::Get()->GetInternalMemoryRegions();
       memory_ranges.insert(memory_ranges.end(), detector_memory_ranges.begin(),
                            detector_memory_ranges.end());
     }
@@ -250,10 +249,9 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     // associated with it.
     *(uint8_t*)(ptrs[0]) = 0;
   } else if (test_name == "LightweightDetectorUseAfterFree") {
-    CHECK(lightweight_detector);
     uint8_t fake_alloc[kAllocationSize];
-    lightweight_detector->RecordLightweightDeallocation(&fake_alloc,
-                                                        sizeof(fake_alloc));
+    PoisonMetadataRecorder::Get()->RecordDeallocation(&fake_alloc,
+                                                      sizeof(fake_alloc));
     **(int**)fake_alloc = 0;
   } else {
     LOG(ERROR) << "Unknown test name " << test_name;

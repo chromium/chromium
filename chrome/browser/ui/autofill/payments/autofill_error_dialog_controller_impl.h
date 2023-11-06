@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_error_dialog_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_error_dialog_view.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
-#include "content/public/browser/web_contents.h"
+#include "components/autofill/core/browser/ui/payments/autofill_error_dialog_controller.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace autofill {
 
@@ -37,7 +40,6 @@ class AutofillErrorDialogControllerImpl : public AutofillErrorDialogController {
   const std::u16string GetTitle() override;
   const std::u16string GetDescription() override;
   const std::u16string GetButtonLabel() override;
-  content::WebContents* GetWebContents() override;
 
   AutofillErrorDialogView* autofill_error_dialog_view() {
     return autofill_error_dialog_view_;

@@ -246,8 +246,66 @@ struct Converter<std::vector<T> > {
   }
 };
 
+template <typename T>
+struct Converter<v8::LocalVector<T>> {
+  static std::conditional_t<ToV8ReturnsMaybe<v8::Local<T>>::value,
+                            v8::MaybeLocal<v8::Value>,
+                            v8::Local<v8::Value>>
+  ToV8(v8::Isolate* isolate, const v8::LocalVector<T>& val) {
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
+    v8::Local<v8::Array> result(
+        v8::Array::New(isolate, static_cast<int>(val.size())));
+    for (uint32_t i = 0; i < val.size(); ++i) {
+      v8::MaybeLocal<v8::Value> maybe =
+          Converter<v8::Local<T>>::ToV8(isolate, val[i]);
+      v8::Local<v8::Value> element;
+      if (!maybe.ToLocal(&element)) {
+        return {};
+      }
+      bool property_created;
+      if (!result->CreateDataProperty(context, i, element)
+               .To(&property_created) ||
+          !property_created) {
+        NOTREACHED() << "CreateDataProperty should always succeed here.";
+      }
+    }
+    return result;
+  }
+
+  static bool FromV8(v8::Isolate* isolate,
+                     v8::Local<v8::Value> val,
+                     v8::LocalVector<T>* out) {
+    if (!val->IsArray()) {
+      return false;
+    }
+
+    v8::LocalVector<T> result(isolate);
+    v8::Local<v8::Array> array(v8::Local<v8::Array>::Cast(val));
+    uint32_t length = array->Length();
+    for (uint32_t i = 0; i < length; ++i) {
+      v8::Local<v8::Value> v8_item;
+      if (!array->Get(isolate->GetCurrentContext(), i).ToLocal(&v8_item)) {
+        return false;
+      }
+      v8::Local<T> item;
+      if (!Converter<v8::Local<T>>::FromV8(isolate, v8_item, &item)) {
+        return false;
+      }
+      result.push_back(item);
+    }
+
+    out->swap(result);
+    return true;
+  }
+};
+
 template<typename T>
 struct ToV8ReturnsMaybe<std::vector<T>> {
+  static const bool value = ToV8ReturnsMaybe<T>::value;
+};
+
+template <typename T>
+struct ToV8ReturnsMaybe<v8::LocalVector<T>> {
   static const bool value = ToV8ReturnsMaybe<T>::value;
 };
 

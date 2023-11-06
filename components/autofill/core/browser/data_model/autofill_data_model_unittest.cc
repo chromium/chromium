@@ -22,7 +22,7 @@ namespace autofill {
 
 namespace {
 
-const base::Time kArbitraryTime = base::Time::FromDoubleT(25);
+const base::Time kArbitraryTime = base::Time::FromSecondsSinceUnixEpoch(25);
 
 }  // namespace
 

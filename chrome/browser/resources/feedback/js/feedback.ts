@@ -1,12 +1,14 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import '../../strings.m.js';
 
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+// <if expr="chromeos_ash">
+import './jelly_colors.js';
+
+// </if>
+
 import {assert} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {domainQuestions, questionnaireBegin, questionnaireNotification} from './questionnaire.js';
@@ -843,11 +845,6 @@ function initialize() {
       feedbackInfo = JSON.parse(dialogArgs);
     }
     applyData(feedbackInfo);
-
-    if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
-      document.body.classList.add('jelly-enabled');
-      ColorChangeUpdater.forDocument().start();
-    }
 
     Object.assign(window, {feedbackInfo, feedbackHelper});
 

@@ -7,9 +7,26 @@
 import argparse
 from collections import defaultdict
 import io
-import json
+import os
 import re
 import sys
+
+_FILE_PATH = os.path.dirname(os.path.realpath(__file__))
+
+_JSON5_PATH = os.path.join(
+    _FILE_PATH,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    os.pardir,
+    "third_party",
+    "pyjson5",
+    "src",
+)
+sys.path.insert(1, _JSON5_PATH)
+
+import json5 as json
 
 # Generates a set of C++ constexpr constants to facilitate lookup of a set of
 # MatchingPatterns by a given tuple (pattern name, language code).

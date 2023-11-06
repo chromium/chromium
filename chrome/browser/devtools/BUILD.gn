@@ -124,6 +124,7 @@ static_library("devtools") {
     "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
+    "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/privileged/mojom/compositing",
     "//third_party/blink/public:buildflags",
     "//ui/events:dom_keycode_converter",
@@ -168,6 +169,9 @@ static_library("devtools") {
     ]
     if (is_chromeos_ash) {
       deps += [ "//ash/constants" ]
+    }
+    if (is_chromeos_ash || is_chromeos_lacros) {
+      deps += [ "//components/metrics/structured:structured_events" ]
     }
     sources += [
       "chrome_devtools_manager_delegate.cc",

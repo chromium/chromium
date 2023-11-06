@@ -164,8 +164,7 @@ TEST_F(PluginVmFilesTest, LaunchPluginVmApp) {
                 return std::make_unique<MockPluginVmManager>();
               })));
   ash::ShelfModel shelf_model;
-  ChromeShelfController chrome_shelf_controller(&profile_, &shelf_model,
-                                                /*shelf_item_factory=*/nullptr);
+  ChromeShelfController chrome_shelf_controller(&profile_, &shelf_model);
   chrome_shelf_controller.SetProfileForTest(&profile_);
   chrome_shelf_controller.SetShelfControllerHelperForTest(
       std::make_unique<ShelfControllerHelper>(&profile_));

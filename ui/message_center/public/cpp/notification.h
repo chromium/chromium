@@ -334,6 +334,9 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
+  void set_display_source(const std::u16string display_source) {
+    display_source_ = display_source;
+  }
 
   bool allow_group() const { return allow_group_; }
   void set_allow_group(bool allow_group) { allow_group_ = allow_group; }

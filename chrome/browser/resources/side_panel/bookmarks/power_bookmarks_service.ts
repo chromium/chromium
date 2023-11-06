@@ -507,8 +507,7 @@ export class PowerBookmarksService {
       return;
     }
 
-    const url: Url = new Url();
-    url.url = bookmark.url;
+    const url: Url = {url: bookmark.url};
 
     // Fetch the representative image for this page, if possible.
     this.activeImageServiceRequestCount_++;

@@ -88,7 +88,6 @@ class WebAppCommandScheduler {
   // and install the web app.
   void FetchManifestAndInstall(webapps::WebappInstallSource install_surface,
                                base::WeakPtr<content::WebContents> contents,
-                               bool bypass_service_worker_check,
                                WebAppInstallDialogCallback dialog_callback,
                                OnceInstallCallback callback,
                                bool use_fallback,

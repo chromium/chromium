@@ -116,8 +116,8 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Updates the window observation, dependent on `game_state`.
   void RefreshWindowTracking(aura::Window* window, WindowGameState game_state);
 
-  // Updates the Game Dashboard button state for a game window.
-  void RefreshGameDashboardButton(aura::Window* window);
+  // Updates the Game Dashboard button state and toolbar for a game window.
+  void RefreshForGameControlsFlags(aura::Window* window);
 
   std::map<aura::Window*, std::unique_ptr<GameDashboardContext>>
       game_window_contexts_;

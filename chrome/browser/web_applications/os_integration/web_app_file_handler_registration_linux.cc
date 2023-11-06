@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/nix/xdg_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/shell_integration_linux.h"
@@ -85,9 +86,9 @@ void RefreshMimeInfoCache() {
   // manually run update-desktop-database on the user applications folder.
   // See this bug on xdg desktop-file-utils.
   // https://gitlab.freedesktop.org/xdg/desktop-file-utils/issues/54
-  base::FilePath user_dir =
-      test_override ? test_override->applications_dir()
-                    : shell_integration_linux::GetDataWriteLocation(env.get());
+  base::FilePath user_dir = test_override
+                                ? test_override->applications_dir()
+                                : base::nix::GetXDGDataWriteLocation(env.get());
   base::FilePath user_applications_dir = user_dir.Append("applications");
 
   argv.push_back("update-desktop-database");

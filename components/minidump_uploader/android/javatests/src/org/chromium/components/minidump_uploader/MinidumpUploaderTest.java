@@ -23,14 +23,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-/**
- * Unittests for {@link MinidumpUploadCallable}.
- */
+/** Unittests for {@link MinidumpUploadCallable}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MinidumpUploaderTest {
-    @Rule
-    public CrashTestRule mTestRule = new CrashTestRule();
+    @Rule public CrashTestRule mTestRule = new CrashTestRule();
     private File mUploadTestFile;
 
     /* package */ static class ErrorCodeHttpURLConnectionFactory
@@ -85,9 +82,12 @@ public class MinidumpUploaderTest {
 
         CrashTestRule.setUpMinidumpFile(mUploadTestFile, boundary);
 
-        HttpURLConnectionFactory httpURLConnectionFactory = new TestHttpURLConnectionFactory() {
-            { mContentType = ""; }
-        };
+        HttpURLConnectionFactory httpURLConnectionFactory =
+                new TestHttpURLConnectionFactory() {
+                    {
+                        mContentType = "";
+                    }
+                };
 
         MinidumpUploader minidumpUploader = new MinidumpUploader(httpURLConnectionFactory);
         MinidumpUploader.Result result = minidumpUploader.upload(mUploadTestFile);
@@ -105,9 +105,12 @@ public class MinidumpUploaderTest {
 
         CrashTestRule.setUpMinidumpFile(mUploadTestFile, boundary);
 
-        HttpURLConnectionFactory httpURLConnectionFactory = new TestHttpURLConnectionFactory() {
-            { mContentType = expectedContentType; }
-        };
+        HttpURLConnectionFactory httpURLConnectionFactory =
+                new TestHttpURLConnectionFactory() {
+                    {
+                        mContentType = expectedContentType;
+                    }
+                };
 
         MinidumpUploader minidumpUploader = new MinidumpUploader(httpURLConnectionFactory);
         MinidumpUploader.Result result = minidumpUploader.upload(mUploadTestFile);

@@ -239,7 +239,6 @@ class DevToolsClientImpl : public DevToolsClient {
   std::map<int, scoped_refptr<ResponseInfo>> response_info_map_;
   int next_id_ = 1;  // The id identifying a particular request.
   bool is_main_page_ = false;
-  bool bidi_server_is_launched_ = false;
   // Event tunneling is temporarily disabled in production.
   // It is enabled only by the unit tests
   // TODO(chromedriver:4181): Enable CDP event tunneling

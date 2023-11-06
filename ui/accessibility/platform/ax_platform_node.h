@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "base/gtest_prod_util.h"
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -131,8 +130,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(AtkUtilAuraLinuxTest, KeySnooping);
-
   // Global ObserverList for AXMode changes.
   static base::LazyInstance<
       base::ObserverList<AXModeObserver>::Unchecked>::Leaky ax_mode_observers_;

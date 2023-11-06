@@ -72,6 +72,7 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void ShowEnrollmentStatus(policy::EnrollmentStatus status) override;
   void ShowOtherError(EnrollmentLauncher::OtherError error_code) override;
   void Shutdown() override;
+  base::WeakPtr<EnrollmentScreenView> AsWeakPtr() override;
 
   // Implements BaseScreenHandler:
   void InitAfterJavascriptAllowed() override;

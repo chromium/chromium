@@ -56,7 +56,7 @@ class MIDIConnectionEvent final : public Event {
         port_(port) {}
   MIDIConnectionEvent(const AtomicString&, const MIDIConnectionEventInit*);
 
-  MIDIPort* port() { return port_; }
+  MIDIPort* port() { return port_.Get(); }
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kMIDIConnectionEvent;

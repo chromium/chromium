@@ -42,9 +42,11 @@ SingleScrollbarAnimationControllerThinning::Create(
     ElementId scroll_element_id,
     ScrollbarOrientation orientation,
     ScrollbarAnimationControllerClient* client,
-    base::TimeDelta thinning_duration) {
+    base::TimeDelta thinning_duration,
+    float idle_thickness_scale) {
   return base::WrapUnique(new SingleScrollbarAnimationControllerThinning(
-      scroll_element_id, orientation, client, thinning_duration));
+      scroll_element_id, orientation, client, thinning_duration,
+      idle_thickness_scale));
 }
 
 SingleScrollbarAnimationControllerThinning::
@@ -52,7 +54,8 @@ SingleScrollbarAnimationControllerThinning::
         ElementId scroll_element_id,
         ScrollbarOrientation orientation,
         ScrollbarAnimationControllerClient* client,
-        base::TimeDelta thinning_duration)
+        base::TimeDelta thinning_duration,
+        float idle_thickness_scale)
     : client_(client),
       is_animating_(false),
       scroll_element_id_(scroll_element_id),
@@ -63,8 +66,9 @@ SingleScrollbarAnimationControllerThinning::
       mouse_is_near_scrollbar_track_(false),
       thickness_change_(AnimationChange::kNone),
       thinning_duration_(thinning_duration),
-      tickmarks_showing_(false) {
-  ApplyThumbThicknessScale(kIdleThicknessScale);
+      tickmarks_showing_(false),
+      idle_thickness_scale_(idle_thickness_scale) {
+  ApplyThumbThicknessScale(idle_thickness_scale_);
 }
 
 ScrollbarLayerImplBase*
@@ -132,15 +136,34 @@ void SingleScrollbarAnimationControllerThinning::DidScrollUpdate() {
     return;
 
   CalculateThicknessShouldChange(device_viewport_last_pointer_location_);
+  // If scrolling with the pointer on top of the scrollbar, force the scrollbar
+  // to expand.
+  if (thickness_change_ == AnimationChange::kNone) {
+    UpdateThumbThicknessScale();
+  }
 }
 
 void SingleScrollbarAnimationControllerThinning::DidMouseDown() {
+  // When invisible, Fluent scrollbars are disabled and their thumb has no
+  // dimensions, which causes mouse_is_over_scrollbar_thumb_ to always be false.
+  // This check updates the thumb variable to cover the cases where you mouse
+  // over the invisible thumb, make it appear by some mechanism (tickmarks,
+  // scrolling, etc.) and press mouse down without moving your pointer.
+  if (client_->IsFluentOverlayScrollbar() && !mouse_is_over_scrollbar_thumb_) {
+    ScrollbarLayerImplBase* scrollbar = GetScrollbar();
+    if (scrollbar) {
+      const float distance_to_scrollbar_thumb =
+          DistanceToScrollbarPart(device_viewport_last_pointer_location_,
+                                  *scrollbar, ScrollbarPart::kThumb);
+      mouse_is_over_scrollbar_thumb_ = distance_to_scrollbar_thumb == 0.0f;
+    }
+  }
+
   if (!mouse_is_over_scrollbar_thumb_)
     return;
 
-  StopAnimation();
   captured_ = true;
-  ApplyThumbThicknessScale(1.f);
+  UpdateThumbThicknessScale();
 }
 
 void SingleScrollbarAnimationControllerThinning::DidMouseUp() {
@@ -169,16 +192,16 @@ void SingleScrollbarAnimationControllerThinning::DidMouseLeave() {
   mouse_is_near_scrollbar_thumb_ = false;
   mouse_is_near_scrollbar_track_ = false;
 
-  // On mouse leave, Fluent scrollbars go straight to the scrollbar
-  // disappearance animation (via ScrollbarAnimationController) without queueing
-  // a thinning animation.
-  if (client_->IsFluentOverlayScrollbar()) {
-    thickness_change_ = AnimationChange::kNone;
+  if (captured_) {
     return;
   }
 
-  if (captured_)
+  // If fully expanded, Fluent scrollbars don't queue a thinning animation and
+  // let the ScrollbarAnimationController make the scrollbars disappear.
+  if (client_->IsFluentOverlayScrollbar() &&
+      thickness_change_ == AnimationChange::kNone) {
     return;
+  }
 
   thickness_change_ = AnimationChange::kDecrease;
   StartAnimation();
@@ -244,27 +267,13 @@ void SingleScrollbarAnimationControllerThinning::CalculateThicknessShouldChange(
   mouse_is_over_scrollbar_thumb_ = mouse_is_over_scrollbar_thumb;
 }
 
-float SingleScrollbarAnimationControllerThinning::CurrentThumbThicknessScale()
-    const {
-  bool thumb_should_be_expanded;
-  if (client_->IsFluentOverlayScrollbar()) {
-    thumb_should_be_expanded =
-        mouse_is_near_scrollbar_track_ || tickmarks_showing_;
-  } else {
-    thumb_should_be_expanded = mouse_is_near_scrollbar_thumb_;
-  }
-  return thumb_should_be_expanded ? 1.f : kIdleThicknessScale;
-}
-
 float SingleScrollbarAnimationControllerThinning::ThumbThicknessScaleAt(
     float progress) const {
-  if (thickness_change_ == AnimationChange::kNone) {
-    return CurrentThumbThicknessScale();
-  }
+  CHECK_NE(thickness_change_, AnimationChange::kNone);
   float factor = thickness_change_ == AnimationChange::kIncrease
                      ? progress
                      : (1.f - progress);
-  return ((1.f - kIdleThicknessScale) * factor) + kIdleThicknessScale;
+  return ((1.f - idle_thickness_scale_) * factor) + idle_thickness_scale_;
 }
 
 float SingleScrollbarAnimationControllerThinning::AdjustScale(
@@ -290,9 +299,28 @@ float SingleScrollbarAnimationControllerThinning::AdjustScale(
   return result;
 }
 
+float SingleScrollbarAnimationControllerThinning::
+    CurrentForcedThumbThicknessScale() const {
+  bool thumb_should_be_expanded;
+  if (client_->IsFluentOverlayScrollbar()) {
+    thumb_should_be_expanded =
+        mouse_is_near_scrollbar_track_ || tickmarks_showing_;
+  } else {
+    thumb_should_be_expanded = mouse_is_near_scrollbar_thumb_;
+  }
+  thumb_should_be_expanded |= captured_;
+  return thumb_should_be_expanded ? 1.f : idle_thickness_scale_;
+}
+
 void SingleScrollbarAnimationControllerThinning::UpdateThumbThicknessScale() {
   StopAnimation();
-  ApplyThumbThicknessScale(CurrentThumbThicknessScale());
+  ApplyThumbThicknessScale(CurrentForcedThumbThicknessScale());
+}
+
+void SingleScrollbarAnimationControllerThinning::DidRequestShow() {
+  if (thickness_change_ == AnimationChange::kNone) {
+    UpdateThumbThicknessScale();
+  }
 }
 
 void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
@@ -304,7 +332,7 @@ void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
 
     float scale = AdjustScale(thumb_thickness_scale,
                               scrollbar->thumb_thickness_scale_factor(),
-                              thickness_change_, kIdleThicknessScale, 1);
+                              thickness_change_, idle_thickness_scale_, 1);
 
     scrollbar->SetThumbThicknessScaleFactor(scale);
   }
@@ -313,6 +341,9 @@ void SingleScrollbarAnimationControllerThinning::ApplyThumbThicknessScale(
 void SingleScrollbarAnimationControllerThinning::UpdateTickmarksVisibility(
     bool show) {
   tickmarks_showing_ = show;
+  if (show) {
+    UpdateThumbThicknessScale();
+  }
 }
 
 float SingleScrollbarAnimationControllerThinning::

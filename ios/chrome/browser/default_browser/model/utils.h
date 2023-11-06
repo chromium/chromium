@@ -141,18 +141,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     feature_engagement::Tracker* tracker,
     syncer::SyncService* syncService);
 
-// Returns true if the user is not in the blue dot default browser experiment,
-// or if they are in the group with all DB promos enabled.
-bool AreDefaultBrowserPromosEnabled();
-
-// Returns true if the user is in the default browser blue dot experiment and in
-// one of the blue dot active/enabled groups.
-bool IsBlueDotPromoEnabled();
-
-// Returns true if the full screen default browser promos are added to the promo
-// manager.
-bool IsDefaultBrowserInPromoManagerEnabled();
-
 // Returns true if the default browser video promo is enabled.
 bool IsDefaultBrowserVideoPromoEnabled();
 

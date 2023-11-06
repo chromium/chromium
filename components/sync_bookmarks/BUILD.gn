@@ -16,6 +16,8 @@ static_library("sync_bookmarks") {
     "bookmark_model_type_controller.h",
     "bookmark_model_type_processor.cc",
     "bookmark_model_type_processor.h",
+    "bookmark_model_view.cc",
+    "bookmark_model_view.h",
     "bookmark_remote_updates_handler.cc",
     "bookmark_remote_updates_handler.h",
     "bookmark_specifics_conversions.cc",
@@ -53,11 +55,14 @@ source_set("unit_tests") {
     "bookmark_model_merger_unittest.cc",
     "bookmark_model_observer_impl_unittest.cc",
     "bookmark_model_type_processor_unittest.cc",
+    "bookmark_model_view_unittest.cc",
     "bookmark_remote_updates_handler_unittest.cc",
     "bookmark_specifics_conversions_unittest.cc",
     "local_bookmark_model_merger_unittest.cc",
     "parent_guid_preprocessing_unittest.cc",
     "synced_bookmark_tracker_unittest.cc",
+    "test_bookmark_model_view.cc",
+    "test_bookmark_model_view.h",
   ]
 
   deps = [

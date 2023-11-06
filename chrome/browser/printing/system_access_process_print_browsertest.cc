@@ -547,9 +547,15 @@ class SystemAccessProcessPrintBrowserTestBase
           PrintBackendServiceManager::GetInstance().GetClientsRegisteredCount(),
           0u);
     }
-    PrintBackendServiceManager::ResetForTesting();
 #endif
     ASSERT_EQ(print_job_construction_count(), print_job_destruction_count());
+  }
+
+  void TearDownOnMainThread() override {
+    PrintBrowserTest::TearDownOnMainThread();
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+    PrintBackendServiceManager::ResetForTesting();
+#endif
   }
 
   // `PrintBackendServiceTestImpl` does a debug check on shutdown that there
@@ -3323,8 +3329,14 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
   EXPECT_EQ(new_document_called_count(), GetExpectedNewDocumentCalledCount());
 }
 
+// TODO(crbug.com/1496991): Timeout on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PrintWithPreviewBeforeLoaded DISABLED_PrintWithPreviewBeforeLoaded
+#else
+#define MAYBE_PrintWithPreviewBeforeLoaded PrintWithPreviewBeforeLoaded
+#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisAfterPrintPreviewBrowserTest,
-                       PrintWithPreviewBeforeLoaded) {
+                       MAYBE_PrintWithPreviewBeforeLoaded) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());

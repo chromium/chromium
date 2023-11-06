@@ -31,6 +31,8 @@
               android:title="@string/menu_algorithmic_darkening_on"/>
     <item android:id="@+id/menu_print"
           android:title="@string/menu_print"/>
+    <item android:id="@+id/menu_multi_profile"
+        android:title="@string/menu_multi_profile_activity"/>
     <item android:id="@+id/start_animation_activity"
           android:title="@string/menu_start_animation_activity"/>
     <item android:id="@+id/menu_about"

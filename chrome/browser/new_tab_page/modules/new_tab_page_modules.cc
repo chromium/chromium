@@ -28,13 +28,14 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
     bool drive_module_enabled) {
   std::vector<std::pair<const std::string, int>> details;
 
-  if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule) &&
+  if (drive_module_enabled) {
+    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
+  }
+
+  if (IsHistoryClustersModuleEnabled() &&
       base::FeatureList::IsEnabled(page_image_service::kImageService)) {
-    details.emplace_back(
-        "history_clusters",
-        base::FeatureList::IsEnabled(history_clusters::kRenameJourneys)
-            ? IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT
-            : IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL);
+    details.emplace_back("history_clusters",
+                         IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT);
   }
 
   if (IsRecipeTasksModuleEnabled()) {
@@ -59,10 +60,6 @@ const std::vector<std::pair<const std::string, int>> MakeModuleIdNames(
        base::FeatureList::IsEnabled(
            ntp_features::kNtpChromeCartHistoryClusterCoexist))) {
     details.emplace_back("chrome_cart", IDS_NTP_MODULES_CART_SENTENCE);
-  }
-
-  if (drive_module_enabled) {
-    details.emplace_back("drive", IDS_NTP_MODULES_DRIVE_SENTENCE);
   }
 
   if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModule)) {

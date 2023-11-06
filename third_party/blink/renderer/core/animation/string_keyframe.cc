@@ -417,14 +417,14 @@ const CSSValue* PropertyResolver::CssValue() {
   DCHECK(IsValid());
 
   if (css_value_)
-    return css_value_;
+    return css_value_.Get();
 
   // For shorthands create a special wrapper value, |CSSKeyframeShorthandValue|,
   // which can be used to correctly serialize it given longhands that are
   // present in this set.
   css_value_ = MakeGarbageCollected<CSSKeyframeShorthandValue>(
       property_id_, css_property_value_set_);
-  return css_value_;
+  return css_value_.Get();
 }
 
 void PropertyResolver::AppendTo(MutableCSSPropertyValueSet* property_value_set,

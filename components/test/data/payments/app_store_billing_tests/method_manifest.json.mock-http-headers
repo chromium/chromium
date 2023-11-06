@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+Content-Type: application/json; charset=utf-8
+Link: </app_store_billing_tests/method_manifest.json>; rel="payment-method-manifest"

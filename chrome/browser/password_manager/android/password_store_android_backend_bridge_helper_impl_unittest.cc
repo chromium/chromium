@@ -81,6 +81,7 @@ class MockPasswordStoreAndroidBackendDispatcherBridge
               (base::android::ScopedJavaGlobalRef<jobject>),
               (override));
   MOCK_METHOD(void, GetAllLogins, (JobId, Account), (override));
+  MOCK_METHOD(void, GetAllLoginsWithBrandingInfo, (JobId, Account), (override));
   MOCK_METHOD(void, GetAutofillableLogins, (JobId, Account), (override));
   MOCK_METHOD(void,
               GetLoginsForSignonRealm,

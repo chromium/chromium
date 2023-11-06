@@ -13,7 +13,6 @@ found in the LICENSE file.
     android:layout_gravity="center_horizontal"
     android:layout_marginEnd="@dimen/account_selection_sheet_horizontal_margin"
     android:layout_marginStart="@dimen/account_selection_sheet_horizontal_margin"
-    android:layout_marginTop="6dp"
+    android:layout_marginTop="4dp"
     android:gravity="start"
-    android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-    android:minHeight="@dimen/account_selection_sheet_title_height"/>
+    android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>

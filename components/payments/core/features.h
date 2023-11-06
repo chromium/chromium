@@ -59,6 +59,10 @@ BASE_DECLARE_FEATURE(kPaymentHandlerWindowInTaskManager);
 // refresh the icon for the app.
 BASE_DECLARE_FEATURE(kPaymentHandlerAlwaysRefreshIcon);
 
+// If enabled, the payment method manifest fetch for Payment Handler must go via
+// a Link header with rel="payment-method-manifest".
+BASE_DECLARE_FEATURE(kPaymentHandlerRequireLinkHeader);
+
 }  // namespace features
 }  // namespace payments
 

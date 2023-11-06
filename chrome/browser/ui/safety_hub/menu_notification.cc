@@ -8,42 +8,74 @@
 #include <string>
 
 #include "base/json/values_util.h"
+#include "base/time/time.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 
 SafetyHubMenuNotification::SafetyHubMenuNotification()
     : is_currently_active_(false),
       impression_count_(0),
       first_impression_time_(absl::nullopt),
-      last_impression_time_(absl::nullopt) {}
+      last_impression_time_(absl::nullopt),
+      show_only_after_(absl::nullopt),
+      all_time_notification_count_(0) {}
 
 SafetyHubMenuNotification::~SafetyHubMenuNotification() = default;
 
 SafetyHubMenuNotification::SafetyHubMenuNotification(
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    safety_hub::SafetyHubModuleType type) {
   is_currently_active_ =
-      dict.FindBool(kSafetyHubMenuNotificationActiveKey).value();
+      dict.FindBool(safety_hub::kSafetyHubMenuNotificationActiveKey).value();
   impression_count_ =
-      dict.FindInt(kSafetyHubMenuNotificationImpressionCountKey).value();
+      dict.FindInt(safety_hub::kSafetyHubMenuNotificationImpressionCountKey)
+          .value_or(0);
+  all_time_notification_count_ =
+      dict.FindInt(safety_hub::kSafetyHubMenuNotificationAllTimeCountKey)
+          .value_or(0);
   first_impression_time_ = base::ValueToTime(
-      dict.Find(kSafetyHubMenuNotificationFirstImpressionKey));
-  last_impression_time_ =
-      base::ValueToTime(dict.Find(kSafetyHubMenuNotificationLastImpressionKey));
+      dict.Find(safety_hub::kSafetyHubMenuNotificationFirstImpressionKey));
+  last_impression_time_ = base::ValueToTime(
+      dict.Find(safety_hub::kSafetyHubMenuNotificationLastImpressionKey));
+  show_only_after_ = base::ValueToTime(
+      dict.Find(safety_hub::kSafetyHubMenuNotificationShowAfterTimeKey));
+  if (dict.contains(safety_hub::kSafetyHubMenuNotificationResultKey)) {
+    result_ = GetResultFromDict(
+        *dict.FindDict(safety_hub::kSafetyHubMenuNotificationResultKey), type);
+  }
 }
 
 base::Value::Dict SafetyHubMenuNotification::ToDictValue() const {
   base::Value::Dict result;
-  result.Set(kSafetyHubMenuNotificationActiveKey, is_currently_active_);
-  result.Set(kSafetyHubMenuNotificationImpressionCountKey, impression_count_);
+  result.Set(safety_hub::kSafetyHubMenuNotificationActiveKey,
+             is_currently_active_);
+  if (impression_count_ != 0) {
+    result.Set(safety_hub::kSafetyHubMenuNotificationImpressionCountKey,
+               impression_count_);
+  }
   if (first_impression_time_.has_value()) {
-    result.Set(kSafetyHubMenuNotificationFirstImpressionKey,
+    result.Set(safety_hub::kSafetyHubMenuNotificationFirstImpressionKey,
                base::TimeToValue(first_impression_time_.value()));
   }
   if (last_impression_time_.has_value()) {
-    result.Set(kSafetyHubMenuNotificationLastImpressionKey,
+    result.Set(safety_hub::kSafetyHubMenuNotificationLastImpressionKey,
                base::TimeToValue(last_impression_time_.value()));
   }
+  if (all_time_notification_count_ != 0) {
+    result.Set(safety_hub::kSafetyHubMenuNotificationAllTimeCountKey,
+               all_time_notification_count_);
+  }
+  if (show_only_after_.has_value()) {
+    result.Set(safety_hub::kSafetyHubMenuNotificationShowAfterTimeKey,
+               base::TimeToValue(show_only_after_.value()));
+  }
   if (result_ != nullptr) {
-    result.Set(kSafetyHubMenuNotificationResultKey, result_->ToDictValue());
+    result.Set(safety_hub::kSafetyHubMenuNotificationResultKey,
+               result_->ToDictValue());
   }
   return result;
 }
@@ -62,15 +94,32 @@ void SafetyHubMenuNotification::Dismiss() {
   is_currently_active_ = false;
   impression_count_ = 0;
   first_impression_time_ = absl::nullopt;
-  // TODO(crbug.com/1443466): Capture lifetime count, and determine whether it
-  // should still be shown. E.g. SafeBrowsing notification should only be shown
-  // 3 times in total.
+  ++all_time_notification_count_;
 }
 
-bool SafetyHubMenuNotification::ShouldBeShown(base::TimeDelta interval) const {
+// The maximum all time impressions for a notification are passed on each call
+// instead of determined in the constructor to make these easier
+// Finch-configurable as the constructor will only called once initially for
+// each Safety Hub module, after which it will always be read from disk.
+bool SafetyHubMenuNotification::ShouldBeShown(
+    base::TimeDelta interval,
+    int max_all_time_impressions) const {
+  // The type of notification has already been shown the maximum number of times
+  // in the total lifetime.
+  if (max_all_time_impressions > 0 &&
+      all_time_notification_count_ >= max_all_time_impressions) {
+    return false;
+  }
+
   // There is no associated result, or the result does not meet the bar for menu
   // notifications.
   if (!result_ || !result_->IsTriggerForMenuNotification()) {
+    return false;
+  }
+
+  // Do not show notification if it is too soon.
+  if (show_only_after_.has_value() &&
+      base::Time::Now() < show_only_after_.value()) {
     return false;
   }
 
@@ -103,11 +152,11 @@ bool SafetyHubMenuNotification::IsShownEnough() const {
   }
 
   bool isShownEnoughDays =
-      (base::Time::Now() - first_impression_time_.value()) >
+      (base::Time::Now() - first_impression_time_.value()) >=
       kSafetyHubMenuNotificationMinNotificationDuration;
 
   bool isShownEnoughTimes =
-      impression_count_ > kSafetyHubMenuNotificationMinImpressionCount;
+      impression_count_ >= kSafetyHubMenuNotificationMinImpressionCount;
 
   return isShownEnoughDays && isShownEnoughTimes;
 }
@@ -118,7 +167,7 @@ bool SafetyHubMenuNotification::HasIntervalPassed(
   if (!HasAnyNotificationBeenShown()) {
     return true;
   }
-  return base::Time::Now() - last_impression_time_.value() > interval;
+  return base::Time::Now() - last_impression_time_.value() >= interval;
 }
 
 bool SafetyHubMenuNotification::HasAnyNotificationBeenShown() const {
@@ -134,18 +183,6 @@ void SafetyHubMenuNotification::UpdateResult(
   result_ = std::move(result);
 }
 
-// static
-std::unique_ptr<SafetyHubMenuNotification>
-SafetyHubMenuNotification::FromDictValue(const base::Value::Dict& dict,
-                                         SafetyHubService* service) {
-  auto notification = std::make_unique<SafetyHubMenuNotification>(dict);
-  if (dict.contains(kSafetyHubMenuNotificationResultKey)) {
-    notification->result_ = service->GetResultFromDictValue(
-        *dict.FindDict(kSafetyHubMenuNotificationResultKey));
-  }
-  return notification;
-}
-
 std::u16string SafetyHubMenuNotification::GetNotificationString() const {
   CHECK(result_);
   return result_->GetNotificationString();
@@ -159,4 +196,32 @@ int SafetyHubMenuNotification::GetNotificationCommandId() const {
 SafetyHubService::Result* SafetyHubMenuNotification::GetResultForTesting()
     const {
   return result_.get();
+}
+
+// static
+std::unique_ptr<SafetyHubService::Result>
+SafetyHubMenuNotification::GetResultFromDict(
+    const base::Value::Dict& dict,
+    safety_hub::SafetyHubModuleType type) {
+  switch (type) {
+    case safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS:
+      return std::make_unique<
+          UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
+    case safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS:
+      return std::make_unique<
+          NotificationPermissionsReviewService::NotificationPermissionsResult>(
+          dict);
+    case safety_hub::SafetyHubModuleType::SAFE_BROWSING:
+      return std::make_unique<SafetyHubSafeBrowsingResult>(dict);
+    case safety_hub::SafetyHubModuleType::EXTENSIONS:
+      return std::make_unique<SafetyHubExtensionsResult>(dict);
+  }
+}
+
+void SafetyHubMenuNotification::SetOnlyShowAfter(base::Time time) {
+  show_only_after_ = time;
+}
+
+void SafetyHubMenuNotification::ResetAllTimeNotificationCount() {
+  all_time_notification_count_ = 0;
 }

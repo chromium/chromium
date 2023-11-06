@@ -1,0 +1,23 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BatterySaverModeAvailability": 2
+        },
+        "prefs": {
+          "performance_tuning.battery_saver_mode.state": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

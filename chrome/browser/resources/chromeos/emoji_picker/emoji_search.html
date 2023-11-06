@@ -26,6 +26,7 @@
     --cr-search-field-clear-icon-fill: var(--emoji-picker-search-field-clear-icon-color);
     --cr-search-field-clear-icon-margin-end: var(--emoji-picker-search-margins);
     --cr-search-field-clear-icon-size: 20px;
+    --cr-search-field-clear-button-size: 32px;
     --cr-search-field-input-border-bottom: none;
     --cr-search-field-input-min-height: var(--emoji-picker-search-height);
     --cr-search-field-input-padding-bottom: 0;
@@ -39,6 +40,7 @@
     --cr-search-field-search-icon-inline-margin-start:
       var(--emoji-picker-search-margins);
     --cr-search-field-underline-display: none;
+    --cr-icon-button-focus-outline-color: var(--emoji-picker-focus-ring-color);
     align-items: center;
     background-color: var(--emoji-picker-search-field-container-color);
     border: 2px solid transparent;
@@ -128,7 +130,7 @@
     padding-inline-start: var(--emoji-picker-side-padding);
     position: sticky;
     top:0;
-    width: var(--search-content-width);
+    width: var(--emoji-picker-width);
   }
 
   :host([gif-support]) #searchShadow {
@@ -143,6 +145,11 @@
     margin-inline-end: var(--emoji-picker-side-padding);
     overflow-y: scroll;
     padding: 13px 2px 2px 2px;
+    /**
+     * We need this to remove the non-transparent gap of topbar's box-shadow.
+     */
+    margin-top: -6px;
+    padding-top: 6px;
   }
 
   #no-emoji-image {
@@ -204,7 +211,7 @@
     </div>
     <div id="search-results">
       <template is="dom-repeat" items="[[searchResults]]">
-        <emoji-group data="[[item.emoji]]" category$="[[item.category]]" gif-support$="[[gifSupport]]">
+        <emoji-group data="[[item.emoji]]" category$="[[item.category]]" gif-support$="[[gifSupport]]" jelly-support$="[[jellySupport]]">
         </emoji-group>
       </template>
     </div>

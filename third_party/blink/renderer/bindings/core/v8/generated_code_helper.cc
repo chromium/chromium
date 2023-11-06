@@ -380,10 +380,10 @@ void InstallUnscopablePropertyNames(
 
 v8::Local<v8::Array> EnumerateIndexedProperties(v8::Isolate* isolate,
                                                 uint32_t length) {
-  Vector<v8::Local<v8::Value>> elements;
+  v8::LocalVector<v8::Value> elements(isolate);
   elements.reserve(length);
   for (uint32_t i = 0; i < length; ++i)
-    elements.UncheckedAppend(v8::Integer::New(isolate, i));
+    elements.push_back(v8::Integer::New(isolate, i));
   return v8::Array::New(isolate, elements.data(), elements.size());
 }
 

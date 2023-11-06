@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL a CSSStyleDeclaration for a CSSFontRule contains a unicode-range attribute assert_idl_attribute: property "unicode-range" found on object expected in prototype chain
-FAIL a CSSStyleDeclaration for a CSSFontRule contains a flex-direction attribute assert_idl_attribute: property "flex-direction" found on object expected in prototype chain
+[FAIL] a CSSStyleDeclaration for a CSSFontRule contains a unicode-range attribute
+  assert_idl_attribute: property "unicode-range" found on object expected in prototype chain
+[FAIL] a CSSStyleDeclaration for a CSSFontRule contains a flex-direction attribute
+  assert_idl_attribute: property "flex-direction" found on object expected in prototype chain
 Harness: the test ran to completion.
 

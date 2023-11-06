@@ -47,8 +47,6 @@ namespace ash {
 namespace {
 
 constexpr char kGaiaURL[] = "chrome://oobe/gaia-signin";
-constexpr int kOobeDialogShadowElevation = 12;
-constexpr int kOobeDialogCornerRadius = 24;
 
 }  // namespace
 
@@ -59,7 +57,7 @@ class OobeWebDialogView : public views::WebDialogView {
                     ui::WebDialogDelegate* delegate,
                     std::unique_ptr<WebContentsHandler> handler)
       : views::WebDialogView(context, delegate, std::move(handler)) {
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       set_use_round_corners(/*round=*/true);
       set_corner_radius(kOobeDialogCornerRadius);
     }
@@ -143,7 +141,7 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
     SetFocusTraversesOut(true);
     AddChildView(oobe_view_.get());
 
-    if (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled()) {
+    if (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled()) {
       // Create a shadow for the OOBE dialog.
       view_shadow_ = std::make_unique<ViewShadow>(oobe_view_.get(),
                                                   kOobeDialogShadowElevation);
@@ -215,7 +213,12 @@ END_METADATA
 OobeUIDialogDelegate::OobeUIDialogDelegate(
     base::WeakPtr<LoginDisplayHostMojo> controller)
     : controller_(controller) {
+  set_allow_default_context_menu(false);
+  set_can_close(true);
   set_can_resize(false);
+  set_dialog_content_url(GURL(kGaiaURL));
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_show_dialog_title(false);
   keyboard_observer_.Observe(ChromeKeyboardControllerClient::Get());
 
   for (size_t i = 0; i < kLoginAcceleratorDataLength; ++i) {
@@ -360,46 +363,8 @@ views::View* OobeUIDialogDelegate::GetWebDialogView() {
   return dialog_view_;
 }
 
-ui::ModalType OobeUIDialogDelegate::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-std::u16string OobeUIDialogDelegate::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL OobeUIDialogDelegate::GetDialogContentURL() const {
-  return GURL(kGaiaURL);
-}
-
-void OobeUIDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void OobeUIDialogDelegate::GetDialogSize(gfx::Size* size) const {
-  // Dialog will be resized externally by LayoutWidgetDelegateView.
-}
-
-std::string OobeUIDialogDelegate::GetDialogArgs() const {
-  return std::string();
-}
-
 void OobeUIDialogDelegate::OnDialogClosed(const std::string& json_retval) {
   widget_->Close();
-}
-
-void OobeUIDialogDelegate::OnCloseContents(content::WebContents* source,
-                                           bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool OobeUIDialogDelegate::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool OobeUIDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  return true;
 }
 
 std::vector<ui::Accelerator> OobeUIDialogDelegate::GetAccelerators() {
@@ -473,7 +438,7 @@ void OobeUIDialogDelegate::OnFocusLeavingSystemTray(bool reverse) {
 
 ui::WebDialogDelegate::FrameKind OobeUIDialogDelegate::GetWebDialogFrameKind()
     const {
-  return (features::IsOobeJellyEnabled() || features::IsOobeSimonEnabled())
+  return (features::IsOobeJellyEnabled() || features::IsBootAnimationEnabled())
              ? ui::WebDialogDelegate::FrameKind::kDialog
              : ui::WebDialogDelegate::FrameKind::kNonClient;
 }

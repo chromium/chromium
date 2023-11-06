@@ -36,8 +36,7 @@ void OnURLFilteringDone(
     GURL request_url,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback policy_decision_callback,
-    supervised_user::SupervisedUserURLFilter::FilteringBehavior
-        filtering_behavior,
+    supervised_user::FilteringBehavior filtering_behavior,
     supervised_user::FilteringBehaviorReason reason,
     bool uncertain) {
   // Allow navigation by default.
@@ -47,8 +46,7 @@ void OnURLFilteringDone(
   if (!web_state) {
     // Cancel the request if the corresponding `web_state` is destroyed.
     decision = PolicyDecision::Cancel();
-  } else if (filtering_behavior == supervised_user::SupervisedUserURLFilter::
-                                       FilteringBehavior::BLOCK) {
+  } else if (filtering_behavior == supervised_user::FilteringBehavior::kBlock) {
     SupervisedUserErrorContainer* container =
         SupervisedUserErrorContainer::FromWebState(web_state);
     CHECK(container);

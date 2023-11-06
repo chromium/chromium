@@ -35,6 +35,8 @@ class ExperimentManagerImpl : public ExperimentManager {
 
   absl::optional<bool> IsClientEligible() const override;
 
+  bool DidVersionChange() const override;
+
  protected:
   static ExperimentManagerImpl* GetInstance();
 
@@ -43,6 +45,8 @@ class ExperimentManagerImpl : public ExperimentManager {
 
  private:
   friend base::NoDestructor<ExperimentManagerImpl>;
+
+  bool did_version_change_ = false;
 
   bool client_is_eligible_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
   std::vector<EligibilityDecisionCallback> callbacks_

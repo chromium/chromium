@@ -32,8 +32,7 @@ constexpr int kMillisecondsPerMinute = 60000;
 
 // The padding in each date cell view.
 constexpr int kDateVerticalPadding = 13;
-constexpr int kDateHorizontalPadding = 14;
-constexpr int kDateHorizontalPaddingJelly = 16;
+constexpr int kDateHorizontalPadding = 16;
 constexpr int kColumnSetPadding = 5;
 
 // The insets for the event list item view.
@@ -42,8 +41,6 @@ constexpr int kEventListItemViewStartEndMargin = 12;
 // The insets within a Date cell.
 const auto kDateCellInsets =
     gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPadding);
-const auto kDateCellInsetsJelly =
-    gfx::Insets::VH(kDateVerticalPadding, kDateHorizontalPaddingJelly);
 
 // Duration of opacity animation for visibility changes.
 constexpr base::TimeDelta kAnimationDurationForVisibility =

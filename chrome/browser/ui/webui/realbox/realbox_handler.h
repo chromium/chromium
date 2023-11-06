@@ -10,6 +10,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/location_bar_model.h"
@@ -19,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class GURL;
@@ -31,6 +34,13 @@ namespace content {
 class WebContents;
 class WebUIDataSource;
 }  // namespace content
+
+// An observer interface for changes to the WebUI Omnibox popup.
+class OmniboxWebUIPopupChangeObserver : public base::CheckedObserver {
+ public:
+  // Called when a ResizeObserver detects the popup element changed size.
+  virtual void OnPopupElementSizeChanged(gfx::Size size) = 0;
+};
 
 // Handles bidirectional communication between NTP realbox JS and the browser.
 class RealboxHandler : public omnibox::mojom::PageHandler,
@@ -71,6 +81,11 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   // Returns true if the page remote is bound and ready to receive calls.
   bool IsRemoteBound() const;
 
+  // Handle observers to be notified of WebUI changes.
+  void AddObserver(OmniboxWebUIPopupChangeObserver* observer);
+  void RemoveObserver(OmniboxWebUIPopupChangeObserver* observer);
+  bool HasObserver(const OmniboxWebUIPopupChangeObserver* observer) const;
+
   // omnibox::mojom::PageHandler:
   void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
   void OnFocusChanged(bool focused) override;
@@ -100,6 +115,7 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
       uint8_t line,
       const GURL& url,
       omnibox::mojom::NavigationPredictor navigation_predictor) override;
+  void PopupElementSizeChanged(const gfx::Size& size) override;
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
@@ -142,6 +158,10 @@ class RealboxHandler : public omnibox::mojom::PageHandler,
   std::atomic<bool> page_set_;
   mojo::Remote<omnibox::mojom::Page> page_;
   mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;
+  base::ObserverList<OmniboxWebUIPopupChangeObserver> observers_;
+
+  // Size of the WebUI popup element, as reported by ResizeObserver.
+  gfx::Size webui_size_;
 
   // This is unused, it's just needed for LocationBarModel implementation.
   gfx::VectorIcon vector_icon_{nullptr, 0u, ""};

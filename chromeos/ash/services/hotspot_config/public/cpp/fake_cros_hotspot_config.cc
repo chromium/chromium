@@ -16,7 +16,13 @@ FakeCrosHotspotConfig::~FakeCrosHotspotConfig() = default;
 
 void FakeCrosHotspotConfig::ObserveEnabledStateChanges(
     mojo::PendingRemote<mojom::HotspotEnabledStateObserver> observer) {
-  hotspot_enabled_state_observers_.Add(std::move(observer));
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler* network_handler = NetworkHandler::Get();
+    network_handler->hotspot_enabled_state_notifier()
+        ->ObserveEnabledStateChanges(std::move(observer));
+  } else {
+    hotspot_enabled_state_observers_.Add(std::move(observer));
+  }
 }
 
 void FakeCrosHotspotConfig::AddObserver(
@@ -68,6 +74,11 @@ void FakeCrosHotspotConfig::NotifyHotspotInfoObservers() {
 }
 
 void FakeCrosHotspotConfig::NotifyHotspotTurnedOn() {
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler* network_handler = NetworkHandler::Get();
+    network_handler->hotspot_enabled_state_notifier()->OnHotspotTurnedOn();
+  }
+
   for (auto& observer : hotspot_enabled_state_observers_) {
     observer->OnHotspotTurnedOn();
   }
@@ -75,6 +86,12 @@ void FakeCrosHotspotConfig::NotifyHotspotTurnedOn() {
 
 void FakeCrosHotspotConfig::NotifyHotspotTurnedOff(
     mojom::DisableReason reason) {
+  if (NetworkHandler::IsInitialized()) {
+    NetworkHandler* network_handler = NetworkHandler::Get();
+    network_handler->hotspot_enabled_state_notifier()->OnHotspotTurnedOff(
+        reason);
+  }
+
   for (auto& observer : hotspot_enabled_state_observers_) {
     observer->OnHotspotTurnedOff(reason);
   }

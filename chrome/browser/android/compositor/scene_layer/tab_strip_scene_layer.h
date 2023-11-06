@@ -63,6 +63,7 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       jint resource_id,
       jint bg_resource_id,
+      jboolean should_apply_hover_highlight,
       jfloat x,
       jfloat y,
       jfloat touch_target_offset,
@@ -98,6 +99,7 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean visible,
       jint tint,
       jint background_tint,
+      jboolean should_apply_hover_highlight,
       jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
@@ -122,10 +124,12 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jobj,
       jint id,
       jint close_resource_id,
+      jint close_hover_bg_resource_id,
       jint divider_resource_id,
       jint handle_resource_id,
       jint handle_outline_resource_id,
       jint close_tint,
+      jint close_hover_bg_tint,
       jint divider_tint,
       jint handle_tint,
       jint handle_outline_tint,

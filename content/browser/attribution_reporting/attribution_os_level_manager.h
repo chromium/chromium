@@ -11,7 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "services/network/public/mojom/attribution.mojom-forward.h"
+#include "content/public/browser/content_browser_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
@@ -31,10 +31,7 @@ struct GlobalRenderFrameHostId;
 // operating system's.
 class CONTENT_EXPORT AttributionOsLevelManager {
  public:
-  enum class ApiState {
-    kDisabled,
-    kEnabled,
-  };
+  using ApiState = ContentBrowserClient::AttributionReportingOsApiState;
 
   class CONTENT_EXPORT ScopedApiStateForTesting {
    public:
@@ -52,8 +49,7 @@ class CONTENT_EXPORT AttributionOsLevelManager {
     const absl::optional<ApiState> previous_;
   };
 
-  static network::mojom::AttributionSupport GetSupport();
-
+  static ApiState GetApiState();
   static void SetApiState(absl::optional<ApiState>);
 
   virtual ~AttributionOsLevelManager() = default;

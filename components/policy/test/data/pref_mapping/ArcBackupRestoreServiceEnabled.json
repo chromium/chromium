@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "BackupAndRestoreDisabled (0) sets pref false.",
+        "policies": {
+          "ArcBackupRestoreServiceEnabled": 0
+        },
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "BackupAndRestoreEnabled (2) sets pref true.",
+        "policies": {
+          "ArcBackupRestoreServiceEnabled": 2
+        },
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

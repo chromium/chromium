@@ -91,7 +91,7 @@ TARGET_DEVICES = {
         'jetstream2': {
             'JetStream2': 5,
         },
-        'jetstream2-minormc': {
+        'jetstream2-nominorms': {
             'JetStream2': 5,
         },
         'system_health.common_desktop': {
@@ -103,7 +103,7 @@ TARGET_DEVICES = {
         'speedometer2': {
             'Speedometer2': 20,
         },
-        'speedometer2-minormc': {
+        'speedometer2-nominorms': {
             'Speedometer2': 20,
         },
     },
@@ -150,19 +150,19 @@ TARGET_DEVICES = {
         'jetstream2': {
             'JetStream2': 5,
         },
-        'jetstream2-minormc': {
+        'jetstream2-nominorms': {
             'JetStream2': 5,
         },
         'speedometer2': {
             'Speedometer2': 20,
         },
-        'speedometer2-minormc': {
+        'speedometer2-nominorms': {
             'Speedometer2': 20,
         },
         'speedometer3': {
             'Speedometer3': 20,
         },
-        'speedometer3-minormc': {
+        'speedometer3-nominorms': {
             'Speedometer3': 20,
         },
     },

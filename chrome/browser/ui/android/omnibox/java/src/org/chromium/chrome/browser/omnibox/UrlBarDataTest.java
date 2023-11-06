@@ -14,9 +14,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link UrlBarData}.
- */
+/** Unit tests for {@link UrlBarData}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UrlBarDataTest {
@@ -70,10 +68,12 @@ public class UrlBarDataTest {
         verifyOriginSpan("https://www.google.com", "/?q=blah", "https://www.google.com/?q=blah");
 
         // crbug.com/414990
-        String testUrl = "https://disneyworld.disney.go.com/special-offers/"
-                + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
-                + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
-        verifyOriginSpan("https://disneyworld.disney.go.com",
+        String testUrl =
+                "https://disneyworld.disney.go.com/special-offers/"
+                    + "?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
+                    + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|1540wwa14043";
+        verifyOriginSpan(
+                "https://disneyworld.disney.go.com",
                 "/special-offers/?CMP=KNC-WDW_FY15_DOM_Q1RO_BR_Gold_SpOffer|G|4141300.RR.AM.01.47"
                         + "&keyword_id=s6JyxRifG_dm|walt%20disney%20world|37174067873|e|"
                         + "1540wwa14043",
@@ -86,8 +86,9 @@ public class UrlBarDataTest {
         verifyOriginSpan("file:///dev/blah", null, "file:///dev/blah");
         verifyOriginSpan(
                 "javascript:window.alert('hello');", null, "javascript:window.alert('hello');");
-        verifyOriginSpan("data:text/html;charset=utf-8,Page%201", null,
-                "data:text/html;charset=utf-8,Page%201");
+        verifyOriginSpan(
+                "data:text/html;charset=utf-8,Page%201",
+                null, "data:text/html;charset=utf-8,Page%201");
 
         // crbug.com/1080395
         verifyOriginSpan("blob:https://origin", "/GUID", "blob:https://origin/GUID");
@@ -219,8 +220,10 @@ public class UrlBarDataTest {
         UrlBarData urlBarData = UrlBarData.forUrl(new GURL(url));
         String displayText =
                 urlBarData.displayText == null ? "" : urlBarData.displayText.toString();
-        Assert.assertEquals(expectedOriginSuffix == null ? expectedOrigin
-                                                         : expectedOrigin + expectedOriginSuffix,
+        Assert.assertEquals(
+                expectedOriginSuffix == null
+                        ? expectedOrigin
+                        : expectedOrigin + expectedOriginSuffix,
                 displayText);
         Assert.assertEquals(
                 "Original start index, end index did not generate expected origin",

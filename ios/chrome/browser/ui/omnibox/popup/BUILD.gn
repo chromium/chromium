@@ -79,7 +79,7 @@ source_set("popup") {
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:util",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/default_browser_promo:default_browser_promo_scene_agent_utils",
     "//ios/chrome/browser/shared/coordinator/layout_guide",

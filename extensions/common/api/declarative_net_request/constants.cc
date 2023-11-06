@@ -60,13 +60,17 @@ const char kRegexSubstitutionKey[] = "regexSubstitution";
 const char kRegexSubstitutionPath[] = "action.redirect.regexSubstitution";
 const char kRequestHeadersKey[] = "requestHeaders";
 const char kResponseHeadersKey[] = "responseHeaders";
-const char kRequestHeadersPath[] = "action.requestHeaders";
-const char kResponseHeadersPath[] = "action.responseHeaders";
+const char kModifyRequestHeadersPath[] = "action.requestHeaders";
+const char kModifyResponseHeadersPath[] = "action.responseHeaders";
 const char kHeaderNameKey[] = "header";
 const char kHeaderOperationKey[] = "operation";
 const char kHeaderValueKey[] = "value";
 const char kTabIdsKey[] = "tabIds";
 const char kExcludedTabIdsKey[] = "excludedTabIds";
+
+const char kMatchResponseHeadersPath[] = "condition.responseHeaders";
+const char kMatchExcludedResponseHeadersPath[] =
+    "condition.excludedResponseHeaders";
 
 }  // namespace declarative_net_request
 }  // namespace extensions

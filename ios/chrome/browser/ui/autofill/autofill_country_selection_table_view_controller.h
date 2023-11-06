@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_COUNTRY_SELECTION_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_COUNTRY_SELECTION_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @class AutofillCountrySelectionTableViewController;
 @class CountryItem;
@@ -22,7 +22,7 @@
 
 // Controller for the UI that allows the user to select a country.
 @interface AutofillCountrySelectionTableViewController
-    : ChromeTableViewController
+    : LegacyChromeTableViewController
 
 // The designated initializer. `delegate` must not be nil and
 // will not be retained.

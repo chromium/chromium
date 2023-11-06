@@ -11,8 +11,8 @@ component("version") {
   defines = [ "IS_CHROMEOS_VERSION_IMPL" ]
   deps = [
     "//base",
+    "//base:i18n",
     "//chromeos/strings",
-    "//ui/base",
   ]
   sources = [
     "version_loader.cc",

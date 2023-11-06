@@ -124,7 +124,8 @@ void AddressAccessoryControllerImpl::OnFillingTriggered(
       autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh);
   if (!driver)
     return;
-  driver->browser_events().RendererShouldFillFieldWithValue(
+  driver->browser_events().ApplyFieldAction(
+      mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
       focused_field_id, selection.display_text());
 }
 
@@ -171,6 +172,11 @@ void AddressAccessoryControllerImpl::RefreshSuggestions() {
     DCHECK(data.has_value());
     GetManualFillingController()->RefreshSuggestions(std::move(data).value());
   }
+}
+
+base::WeakPtr<AddressAccessoryController>
+AddressAccessoryControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void AddressAccessoryControllerImpl::OnPersonalDataChanged() {

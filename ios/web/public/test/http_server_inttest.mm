@@ -40,7 +40,8 @@ class HttpServerTest : public web::WebIntTest {
 
     HttpServer& server = HttpServer::GetSharedInstance();
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     server.StartOrDie(test_data_dir.Append("."));
     server.AddResponseProvider(std::move(provider));
   }

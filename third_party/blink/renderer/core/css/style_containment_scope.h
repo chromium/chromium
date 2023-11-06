@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_CONTAINMENT_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_CONTAINMENT_SCOPE_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 
@@ -34,10 +33,10 @@ class StyleContainmentScope final
   CORE_EXPORT CountersScope* FindCountersScopeForElement(
       const Element&,
       const AtomicString&) const;
-  void CreateCounterNodesForLayoutObject(LayoutObject&);
+  CORE_EXPORT void CreateCounterNodesForLayoutObject(LayoutObject&);
   void CreateCounterNodeForLayoutObject(LayoutObject& object,
                                         const AtomicString& identifier);
-  void CreateCounterNodeForLayoutCounter(LayoutCounter&);
+  CORE_EXPORT void CreateCounterNodeForLayoutCounter(LayoutCounter&);
   void CreateListItemCounterNodeForLayoutObject(LayoutObject&);
   void RemoveCounterNodeForLayoutCounter(LayoutCounter&);
   void ReparentCountersToStyleScope(StyleContainmentScope&);
@@ -48,9 +47,9 @@ class StyleContainmentScope final
   void AppendChild(StyleContainmentScope*);
   void RemoveChild(StyleContainmentScope*);
 
-  const Element* GetElement() { return element_; }
-  CountersScopeTree* GetCountersScopeTree() { return counters_tree_; }
-  StyleContainmentScope* Parent() { return parent_; }
+  const Element* GetElement() { return element_.Get(); }
+  CountersScopeTree* GetCountersScopeTree() { return counters_tree_.Get(); }
+  StyleContainmentScope* Parent() { return parent_.Get(); }
   void SetParent(StyleContainmentScope* parent) { parent_ = parent; }
   const HeapVector<Member<LayoutQuote>>& Quotes() const { return quotes_; }
   const HeapVector<Member<StyleContainmentScope>>& Children() const {
@@ -58,7 +57,7 @@ class StyleContainmentScope final
   }
 
   StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
-    return style_containment_tree_;
+    return style_containment_tree_.Get();
   }
 
   void Trace(Visitor*) const;

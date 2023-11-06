@@ -11,8 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/common/content_export.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -38,14 +40,15 @@ class BiddingAndAuctionSerializer {
   void SetGenerationId(base::Uuid generation_id) {
     generation_id_ = generation_id;
   }
-  void AddGroups(url::Origin owner, std::vector<StorageInterestGroup> groups);
+  void AddGroups(const url::Origin& owner,
+                 scoped_refptr<StorageInterestGroups> groups);
   BiddingAndAuctionData Build();
 
  private:
   base::Uuid generation_id_;
   base::Time start_time_;
   std::string publisher_;
-  std::vector<std::pair<url::Origin, std::vector<StorageInterestGroup>>>
+  std::vector<std::pair<url::Origin, std::vector<SingleStorageInterestGroup>>>
       accumulated_groups_;
 };
 

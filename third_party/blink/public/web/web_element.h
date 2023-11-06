@@ -87,6 +87,21 @@ class BLINK_EXPORT WebElement : public WebNode {
   // https://html.spec.whatwg.org/multipage/interaction.html#attr-contenteditable
   bool IsContentEditable() const;
 
+  // Simulates a paste of `text` event into `this` element.
+  //
+  // There are three different behaviors depending on `replace_all` and which
+  // text is currently selected:
+  // - If `replace_all`, the entire contents of the element is selected first,
+  //   so that the paste action replaces it.
+  // - If `!replace_all` and the selection is not currently in the element, an
+  //   empty range at the end of the element is selected, so that the paste
+  //   action appends to the element.
+  // - Otherwise, the current selection is unchanged, so that the paste replaces
+  //   the selected text.
+  //
+  // This is a no-op if the element is not editable.
+  void PasteText(const WebString& text, bool replace_all);
+
   // Returns all <label> elements associated to this element.
   WebVector<WebLabelElement> Labels() const;
 

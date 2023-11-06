@@ -49,16 +49,18 @@ import org.chromium.url.GURL;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Tests the local website approval flow.  This test suire mocks the natives
- * to allows us to explicitly check the actual completion callback is called.
- * It also confirms the histograms recorded by on the Android specific (Java) part.
- * A verification flow with the actual native methods is captured in
- * {@link org.chromium.chrome.browser.supervised_user.WebsiteParentApprovalNativesTest}.
+ * Tests the local website approval flow. This test suire mocks the natives to allows us to
+ * explicitly check the actual completion callback is called. It also confirms the histograms
+ * recorded by on the Android specific (Java) part. A verification flow with the actual native
+ * methods is captured in {@link
+ * org.chromium.chrome.browser.supervised_user.WebsiteParentApprovalNativesTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Running tests in parallel can interfere with each tests setup."
-                + "The code under tests involes setting static methods and features, "
-                + "which must remain unchanged for the duration of the test.")
+@DoNotBatch(
+        reason =
+                "Running tests in parallel can interfere with each tests setup."
+                        + "The code under tests involes setting static methods and features, "
+                        + "which must remain unchanged for the duration of the test.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebsiteParentApprovalTest {
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
@@ -70,8 +72,9 @@ public class WebsiteParentApprovalTest {
     @Rule
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mTabbedActivityTestRule);
-    @Rule
-    public final JniMocker mocker = new JniMocker();
+
+    @Rule public final JniMocker mocker = new JniMocker();
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -83,28 +86,28 @@ public class WebsiteParentApprovalTest {
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mBottomSheetTestSupport;
 
-    @Mock
-    private WebsiteParentApproval.Natives mWebsiteParentApprovalNativesMock;
-    @Mock
-    private ParentAuthDelegate mParentAuthDelegateMock;
+    @Mock private WebsiteParentApproval.Natives mWebsiteParentApprovalNativesMock;
+    @Mock private ParentAuthDelegate mParentAuthDelegateMock;
 
     @Before
     public void setUp() throws TimeoutException {
         mTestServer = mTabbedActivityTestRule.getEmbeddedTestServerRule().getServer();
         mBlockedUrl = mTestServer.getURL(TEST_PAGE);
         mTabbedActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
-            mBottomSheetController =
-                    activity.getRootUiCoordinatorForTesting().getBottomSheetController();
-            mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeTabbedActivity activity = mTabbedActivityTestRule.getActivity();
+                    mBottomSheetController =
+                            activity.getRootUiCoordinatorForTesting().getBottomSheetController();
+                    mBottomSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
+                });
 
         mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SupervisedUserSettingsBridge.setFilteringBehavior(
-                    Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestBridge.setFilteringBehavior(
+                            Profile.getLastUsedRegularProfile(), FilteringBehavior.BLOCK);
+                });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
         mocker.mock(WebsiteParentApprovalJni.TEST_HOOKS, mWebsiteParentApprovalNativesMock);
@@ -115,11 +118,12 @@ public class WebsiteParentApprovalTest {
     }
 
     private void mockParentAuthDelegateRequestLocalAuthResponse(boolean result) {
-        doAnswer(invocation -> {
-            Callback<Boolean> onCompletionCallback = invocation.getArgument(2);
-            onCompletionCallback.onResult(result);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> onCompletionCallback = invocation.getArgument(2);
+                            onCompletionCallback.onResult(result);
+                            return null;
+                        })
                 .when(mParentAuthDelegateMock)
                 .requestLocalAuth(any(WindowAndroid.class), any(GURL.class), any(Callback.class));
     }
@@ -127,8 +131,11 @@ public class WebsiteParentApprovalTest {
     private void checkParentApprovalScreenClosedAfterClick() {
         // Ensure all animations have ended. Otherwise the following check may fail.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mBottomSheetTestSupport.endAllAnimations(); });
-        ViewUtils.waitForViewCheckingState(withId(R.id.local_parent_approval_layout),
+                () -> {
+                    mBottomSheetTestSupport.endAllAnimations();
+                });
+        ViewUtils.waitForViewCheckingState(
+                withId(R.id.local_parent_approval_layout),
                 ViewUtils.VIEW_INVISIBLE | ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
 
@@ -163,14 +170,16 @@ public class WebsiteParentApprovalTest {
         mTabbedActivityTestRule.loadUrl(mBlockedUrl);
 
         // Verify only histograms recorded in Java.
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                "FamilyLinkUser.LocalWebApprovalOutcome", /* APPROVED_BY_PARENT=*/0);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "FamilyLinkUser.LocalWebApprovalOutcome", /* APPROVED_BY_PARENT= */ 0);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickApprove(mBottomSheetTestSupport);
 
-        verify(mWebsiteParentApprovalNativesMock,
-                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+        verify(
+                        mWebsiteParentApprovalNativesMock,
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onCompletion(AndroidLocalWebApprovalFlowOutcome.APPROVED);
         histogram.assertExpected();
     }
@@ -182,14 +191,16 @@ public class WebsiteParentApprovalTest {
         mTabbedActivityTestRule.loadUrl(mBlockedUrl);
 
         // Verify only histograms recorded in Java.
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                "FamilyLinkUser.LocalWebApprovalOutcome", /* DENIED_BY_PARENT=*/1);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "FamilyLinkUser.LocalWebApprovalOutcome", /* DENIED_BY_PARENT= */ 1);
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
         WebsiteParentApprovalTestUtils.clickDoNotApprove(mBottomSheetTestSupport);
 
-        verify(mWebsiteParentApprovalNativesMock,
-                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+        verify(
+                        mWebsiteParentApprovalNativesMock,
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onCompletion(AndroidLocalWebApprovalFlowOutcome.REJECTED);
         histogram.assertExpected();
     }
@@ -202,8 +213,9 @@ public class WebsiteParentApprovalTest {
 
         WebsiteParentApprovalTestUtils.clickAskInPerson(mWebContents);
 
-        verify(mWebsiteParentApprovalNativesMock,
-                timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+        verify(
+                        mWebsiteParentApprovalNativesMock,
+                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onCompletion(AndroidLocalWebApprovalFlowOutcome.INCOMPLETE);
     }
 }

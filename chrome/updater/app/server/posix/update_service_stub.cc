@@ -44,6 +44,18 @@ namespace {
   request.ap = mojom->ap;
   request.version = base::Version(mojom->version);
   request.existence_checker_path = mojom->existence_checker_path;
+  if (mojom->version_path) {
+    request.version_path = *mojom->version_path;
+  }
+  if (mojom->version_key) {
+    request.version_key = *mojom->version_key;
+  }
+  if (mojom->ap_path) {
+    request.ap_path = *mojom->ap_path;
+  }
+  if (mojom->ap_key) {
+    request.ap_key = *mojom->ap_key;
+  }
   return request;
 }
 

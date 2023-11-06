@@ -34,15 +34,15 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
@@ -164,16 +164,10 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     Parent()->SetNeedsLayout(layout_invalidation_reason::kChildChanged,
                              kMarkContainerChain);
 
+  // Clear our sticky constraints if we are no longer sticky.
   if (Layer() && old_style->HasStickyConstrainedPosition() &&
       !StyleRef().HasStickyConstrainedPosition()) {
-    if (RuntimeEnabledFeatures::LayoutNewStickyLogicEnabled()) {
-      SetStickyConstraints(nullptr);
-    } else {
-      if (const auto* scroll_container =
-              Layer()->ContainingScrollContainerLayer()) {
-        scroll_container->GetScrollableArea()->InvalidateAllStickyConstraints();
-      }
-    }
+    SetStickyConstraints(nullptr);
   }
 
   PaintLayerType type = LayerTypeRequired();
@@ -410,10 +404,10 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 void LayoutBoxModelObject::RecalcVisualOverflow() {
   // |PaintLayer| calls this function when |HasSelfPaintingLayer|. When |this|
   // is an inline box or an atomic inline, its ink overflow is stored in
-  // |NGFragmentItem| in the inline formatting context.
+  // |FragmentItem| in the inline formatting context.
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     DCHECK(HasSelfPaintingLayer());
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     NGInlinePaintContext inline_context;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
@@ -477,40 +471,22 @@ LayoutBlock* LayoutBoxModelObject::StickyContainer() const {
   return ContainingBlock();
 }
 
-bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
+StickyPositionScrollingConstraints*
+LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   NOT_DESTROYED();
+  DCHECK(StyleRef().HasStickyConstrainedPosition());
 
-  if (!StyleRef().HasStickyConstrainedPosition()) {
-    if (StickyConstraints()) {
-      SetStickyConstraints(nullptr);
-      return true;
-    }
-    return false;
-  }
+  StickyPositionScrollingConstraints* constraints =
+      MakeGarbageCollected<StickyPositionScrollingConstraints>();
 
   bool is_fixed_to_view = false;
   const auto* scroll_container_layer =
       Layer()->ContainingScrollContainerLayer(&is_fixed_to_view);
-  auto* scrollable_area = scroll_container_layer->GetScrollableArea();
-  DCHECK(scrollable_area);
-  // Check if sticky constraints are invalidated.
-  if (scrollable_area->HasStickyLayer(Layer()) && StickyConstraints()) {
-    DCHECK_EQ(scroll_container_layer,
-              StickyConstraints()->containing_scroll_container_layer);
-    DCHECK_EQ(is_fixed_to_view, StickyConstraints()->is_fixed_to_view);
-    return false;
-  }
-
-  StickyPositionScrollingConstraints* constraints =
-      MakeGarbageCollected<StickyPositionScrollingConstraints>();
   constraints->containing_scroll_container_layer = scroll_container_layer;
   constraints->is_fixed_to_view = is_fixed_to_view;
 
-  LayoutBlock* sticky_container = StickyContainer();
-  // The location container for boxes is not always the containing block.
-  LayoutObject* location_container =
-      IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
   // Skip anonymous containing blocks except for anonymous fieldset content box.
+  LayoutBlock* sticky_container = StickyContainer();
   while (sticky_container->IsAnonymous()) {
     if (sticky_container->Parent() &&
         sticky_container->Parent()->IsFieldset()) {
@@ -519,59 +495,60 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
     sticky_container = sticky_container->ContainingBlock();
   }
 
-  DCHECK(scroll_container_layer->GetLayoutBox());
-  auto& scroll_container = *scroll_container_layer->GetLayoutBox();
+  const auto* scroll_container = scroll_container_layer->GetLayoutBox();
+  DCHECK(scroll_container);
   const PhysicalOffset scroll_container_border_offset(
-      scroll_container.BorderLeft(), scroll_container.BorderTop());
+      scroll_container->BorderLeft(), scroll_container->BorderTop());
 
-  // The sticky position constraint rects should be independent of the current
-  // scroll position therefore we should ignore the scroll offset when
-  // calculating the quad.
-  // TODO(crbug.com/966131): Is kIgnoreTransforms correct here?
   MapCoordinatesFlags flags =
       kIgnoreTransforms | kIgnoreScrollOffset | kIgnoreStickyOffset;
 
-  // Sticky positioned element ignore any override logical width on the
-  // containing block, as they don't call containingBlockLogicalWidthForContent.
-  // It's unclear whether this is totally fine.
-  // Compute the container-relative area within which the sticky element is
-  // allowed to move.
-  LayoutUnit max_width = sticky_container->AvailableLogicalWidth();
+  // Compute the sticky-container rect.
+  {
+    PhysicalRect scroll_container_relative_containing_block_rect;
+    if (sticky_container == scroll_container) {
+      scroll_container_relative_containing_block_rect =
+          sticky_container->PhysicalLayoutOverflowRect();
+    } else {
+      PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
+      scroll_container_relative_containing_block_rect =
+          sticky_container->LocalToAncestorRect(local_rect, scroll_container,
+                                                flags);
+    }
 
-  // Map the containing block to the inner corner of the scroll ancestor without
-  // transforms.
-  PhysicalRect scroll_container_relative_containing_block_rect;
-  if (sticky_container == &scroll_container) {
-    scroll_container_relative_containing_block_rect =
-        sticky_container->PhysicalLayoutOverflowRect();
-  } else {
-    PhysicalRect local_rect = sticky_container->PhysicalPaddingBoxRect();
-    scroll_container_relative_containing_block_rect =
-        sticky_container->LocalToAncestorRect(local_rect, &scroll_container,
-                                              flags);
+    // Make relative to the padding-box instead of border-box.
+    scroll_container_relative_containing_block_rect.Move(
+        -scroll_container_border_offset);
+
+    // This is removing the padding of the containing block's overflow rect to
+    // get the flow box rectangle and removing the margin of the sticky element
+    // to ensure that space between the sticky element and its containing flow
+    // box. It is an open issue whether the margin should collapse. See
+    // https://www.w3.org/TR/css-position-3/#sticky-pos
+    scroll_container_relative_containing_block_rect.Contract(
+        sticky_container->PaddingOutsets());
+    if (!RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
+      // Sticky positioned element ignore any override logical width on the
+      // containing block, as they don't call
+      // containingBlockLogicalWidthForContent.
+      // It's unclear whether this is totally fine.
+      // Compute the container-relative area within which the sticky element is
+      // allowed to move.
+      LayoutUnit max_width = sticky_container->AvailableLogicalWidth();
+      scroll_container_relative_containing_block_rect.ContractEdges(
+          MinimumValueForLength(StyleRef().MarginTop(), max_width),
+          MinimumValueForLength(StyleRef().MarginRight(), max_width),
+          MinimumValueForLength(StyleRef().MarginBottom(), max_width),
+          MinimumValueForLength(StyleRef().MarginLeft(), max_width));
+    }
+
+    constraints->scroll_container_relative_containing_block_rect =
+        scroll_container_relative_containing_block_rect;
   }
 
-  // Make relative to the padding-box instead of border-box.
-  scroll_container_relative_containing_block_rect.Move(
-      -scroll_container_border_offset);
-
-  // This is removing the padding of the containing block's overflow rect to get
-  // the flow box rectangle and removing the margin of the sticky element to
-  // ensure that space between the sticky element and its containing flow box.
-  // It is an open issue whether the margin should collapse.
-  // See https://www.w3.org/TR/css-position-3/#sticky-pos
-  scroll_container_relative_containing_block_rect.Contract(
-      sticky_container->PaddingOutsets());
-  if (!RuntimeEnabledFeatures::LayoutIgnoreMarginsForStickyEnabled()) {
-    scroll_container_relative_containing_block_rect.ContractEdges(
-        MinimumValueForLength(StyleRef().MarginTop(), max_width),
-        MinimumValueForLength(StyleRef().MarginRight(), max_width),
-        MinimumValueForLength(StyleRef().MarginBottom(), max_width),
-        MinimumValueForLength(StyleRef().MarginLeft(), max_width));
-  }
-
-  constraints->scroll_container_relative_containing_block_rect =
-      scroll_container_relative_containing_block_rect;
+  // The location container for boxes is not always the containing block.
+  LayoutObject* location_container =
+      IsLayoutInline() ? Container() : To<LayoutBox>(this)->LocationContainer();
 
   // Compute the sticky-box rect.
   PhysicalRect sticky_box_rect;
@@ -585,7 +562,7 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
 
     PhysicalRect scroll_container_relative_sticky_box_rect =
         location_container->LocalToAncestorRect(sticky_box_rect,
-                                                &scroll_container, flags);
+                                                scroll_container, flags);
 
     // Make relative to the padding-box instead of border-box.
     scroll_container_relative_sticky_box_rect.Move(
@@ -595,19 +572,18 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
   }
 
   // To correctly compute the offsets, the constraints need to know about any
-  // nested position:sticky elements between themselves and their
-  // location container, and between the location container and their
-  // ContainingScrollContainerLayer.
+  // nested sticky elements between themselves and their sticky-container,
+  // and between the sticky-container and their scroll-container.
   //
-  // The respective search ranges are [container, containingBlock) and
-  // [containingBlock, scrollAncestor).
+  // The respective search ranges are [location_container, sticky_container)
+  // and [sticky_container, scroll_container).
   constraints->nearest_sticky_layer_shifting_sticky_box =
       location_container->FindFirstStickyContainer(sticky_container);
   constraints->nearest_sticky_layer_shifting_containing_block =
-      sticky_container->FindFirstStickyContainer(&scroll_container);
+      sticky_container->FindFirstStickyContainer(scroll_container);
 
   constraints->constraining_rect =
-      scroll_container.ComputeStickyConstrainingRect();
+      scroll_container->ComputeStickyConstrainingRect();
 
   // Compute the insets.
   {
@@ -655,10 +631,7 @@ bool LayoutBoxModelObject::UpdateStickyPositionConstraints() {
     constraints->bottom_inset = bottom;
   }
 
-  scrollable_area->AddStickyLayer(Layer());
-  constraints->ComputeStickyOffset(scrollable_area->ScrollPosition());
-  SetStickyConstraints(constraints);
-  return true;
+  return constraints;
 }
 
 PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {

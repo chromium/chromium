@@ -29,13 +29,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Testcase for {@link MinidumpUploadService}.
- */
+/** Testcase for {@link MinidumpUploadService}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class MinidumpUploadServiceTest {
-    @Rule
-    public CrashTestRule mTestRule = new CrashTestRule();
+    @Rule public CrashTestRule mTestRule = new CrashTestRule();
 
     private static final String BOUNDARY = "TESTBOUNDARY";
 
@@ -46,24 +43,30 @@ public class MinidumpUploadServiceTest {
             throws IOException {
         // Set up prerequisites.
         CrashTestRule.setUpMinidumpFile(
-                new File(mTestRule.getCrashDir(),
+                new File(
+                        mTestRule.getCrashDir(),
                         "chromium-renderer-minidump-f297dbcba7a2d0bb.dmp0.try3"),
                 BOUNDARY);
         AdvancedMockContext context =
-                new MinidumpPreparationContext(InstrumentationRegistry.getInstrumentation()
-                                                       .getTargetContext()
-                                                       .getApplicationContext());
+                new MinidumpPreparationContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
         MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
-        final File expectedRenamedMinidumpFile = new File(mTestRule.getCrashDir(),
-                "chromium-renderer-minidump-f297dbcba7a2d0bb.forced0.try0");
-        Assert.assertTrue("Should have renamed the minidump file for forced upload",
+        final File expectedRenamedMinidumpFile =
+                new File(
+                        mTestRule.getCrashDir(),
+                        "chromium-renderer-minidump-f297dbcba7a2d0bb.forced0.try0");
+        Assert.assertTrue(
+                "Should have renamed the minidump file for forced upload",
                 expectedRenamedMinidumpFile.exists());
-        Assert.assertTrue("Should have tried to schedule an upload job",
+        Assert.assertTrue(
+                "Should have tried to schedule an upload job",
                 context.isFlagSet(TestJobScheduler.SCHEDULE_JOB_FLAG));
     }
 
@@ -74,24 +77,30 @@ public class MinidumpUploadServiceTest {
             throws IOException {
         // Set up prerequisites.
         CrashTestRule.setUpMinidumpFile(
-                new File(mTestRule.getCrashDir(),
+                new File(
+                        mTestRule.getCrashDir(),
                         "chromium-renderer-minidump-f297dbcba7a2d0bb.skipped0.try3"),
                 BOUNDARY);
         AdvancedMockContext context =
-                new MinidumpPreparationContext(InstrumentationRegistry.getInstrumentation()
-                                                       .getTargetContext()
-                                                       .getApplicationContext());
+                new MinidumpPreparationContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
         MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
-        final File expectedRenamedMinidumpFile = new File(mTestRule.getCrashDir(),
-                "chromium-renderer-minidump-f297dbcba7a2d0bb.forced0.try0");
-        Assert.assertTrue("Should have renamed the minidump file for forced upload",
+        final File expectedRenamedMinidumpFile =
+                new File(
+                        mTestRule.getCrashDir(),
+                        "chromium-renderer-minidump-f297dbcba7a2d0bb.forced0.try0");
+        Assert.assertTrue(
+                "Should have renamed the minidump file for forced upload",
                 expectedRenamedMinidumpFile.exists());
-        Assert.assertTrue("Should have tried to schedule an upload job",
+        Assert.assertTrue(
+                "Should have tried to schedule an upload job",
                 context.isFlagSet(TestJobScheduler.SCHEDULE_JOB_FLAG));
     }
 
@@ -101,15 +110,17 @@ public class MinidumpUploadServiceTest {
     public void testHandleForceUploadCrash_FileDoesntExist_WithJobScheduler() {
         // Set up prerequisites.
         AdvancedMockContext context =
-                new MinidumpPreparationContext(InstrumentationRegistry.getInstrumentation()
-                                                       .getTargetContext()
-                                                       .getApplicationContext());
+                new MinidumpPreparationContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
 
         // Run test.
         MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
-        Assert.assertFalse("Should not have tried to schedule an upload job",
+        Assert.assertFalse(
+                "Should not have tried to schedule an upload job",
                 context.isFlagSet(TestJobScheduler.SCHEDULE_JOB_FLAG));
     }
 
@@ -120,19 +131,22 @@ public class MinidumpUploadServiceTest {
             throws IOException {
         // Set up prerequisites.
         CrashTestRule.setUpMinidumpFile(
-                new File(mTestRule.getCrashDir(),
+                new File(
+                        mTestRule.getCrashDir(),
                         "chromium-renderer-minidump-f297dbcba7a2d0bb.up0.try0"),
                 BOUNDARY);
         AdvancedMockContext context =
-                new MinidumpPreparationContext(InstrumentationRegistry.getInstrumentation()
-                                                       .getTargetContext()
-                                                       .getApplicationContext());
+                new MinidumpPreparationContext(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getApplicationContext());
 
         // Run test.
         MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
-        Assert.assertFalse("Should not have tried to schedule an upload job",
+        Assert.assertFalse(
+                "Should not have tried to schedule an upload job",
                 context.isFlagSet(TestJobScheduler.SCHEDULE_JOB_FLAG));
     }
 
@@ -143,7 +157,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "browser");
-        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.BROWSER,
+        Assert.assertEquals(
+                MinidumpUploadServiceImpl.ProcessType.BROWSER,
                 MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
@@ -154,7 +169,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "renderer");
-        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.RENDERER,
+        Assert.assertEquals(
+                MinidumpUploadServiceImpl.ProcessType.RENDERER,
                 MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
@@ -165,7 +181,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "gpu-process");
-        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.GPU,
+        Assert.assertEquals(
+                MinidumpUploadServiceImpl.ProcessType.GPU,
                 MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
@@ -176,14 +193,13 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "weird test type");
-        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.OTHER,
+        Assert.assertEquals(
+                MinidumpUploadServiceImpl.ProcessType.OTHER,
                 MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
     private class MinidumpPreparationContext extends AdvancedMockContext {
-        /**
-         * Field used in overridden versions of startService() so we can support retries.
-         */
+        /** Field used in overridden versions of startService() so we can support retries. */
         protected MinidumpUploadServiceImpl mService;
 
         public MinidumpPreparationContext(Context targetContext) {
@@ -206,9 +222,7 @@ public class MinidumpUploadServiceTest {
         }
     }
 
-    /**
-     * A JobScheduler wrapper that verifies that the expected properties are set correctly.
-     */
+    /** A JobScheduler wrapper that verifies that the expected properties are set correctly. */
     private static class TestJobScheduler extends JobScheduler {
         static final String SCHEDULE_JOB_FLAG = "scheduleJobFlag";
 
@@ -244,9 +258,11 @@ public class MinidumpUploadServiceTest {
         public int schedule(JobInfo job) {
             mContext.setFlag(SCHEDULE_JOB_FLAG);
             Assert.assertEquals(TaskIds.CHROME_MINIDUMP_UPLOADING_JOB_ID, job.getId());
-            Assert.assertEquals(ChromeMinidumpUploadJobService.class.getName(),
+            Assert.assertEquals(
+                    ChromeMinidumpUploadJobService.class.getName(),
                     job.getService().getClassName());
             return JobScheduler.RESULT_SUCCESS;
         }
-    };
+    }
+    ;
 }

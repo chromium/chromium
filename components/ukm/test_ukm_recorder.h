@@ -6,6 +6,7 @@
 #define COMPONENTS_UKM_TEST_UKM_RECORDER_H_
 
 #include <stddef.h>
+#include <iosfwd>
 
 #include <map>
 #include <memory>
@@ -134,6 +135,10 @@ class TestAutoSetUkmRecorder : public TestUkmRecorder {
  private:
   base::WeakPtrFactory<TestAutoSetUkmRecorder> self_ptr_factory_{this};
 };
+
+// Formatter method for Google Test.
+void PrintTo(const TestUkmRecorder::HumanReadableUkmEntry& entry,
+             std::ostream* os);
 
 }  // namespace ukm
 

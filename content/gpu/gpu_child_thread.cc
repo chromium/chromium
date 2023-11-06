@@ -59,6 +59,10 @@
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/child/sandboxed_process_thread_type_handler.h"
+#endif
+
 namespace content {
 namespace {
 
@@ -138,6 +142,10 @@ void GpuChildThread::Init(const base::TimeTicks& process_start_time) {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
 
   viz_main_.gpu_service()->set_start_time(process_start_time);
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  SandboxedProcessThreadTypeHandler::NotifyMainChildThreadCreated();
+#endif
 
   // When running in in-process mode, this has been set in the browser at
   // ChromeBrowserMainPartsAndroid::PreMainMessageLoopRun().

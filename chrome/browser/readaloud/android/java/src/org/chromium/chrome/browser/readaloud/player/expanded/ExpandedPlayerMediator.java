@@ -15,6 +15,7 @@ public class ExpandedPlayerMediator extends EmptyBottomSheetObserver {
 
     public ExpandedPlayerMediator(PropertyModel model) {
         mModel = model;
+        setVisibility(VisibilityState.HIDING);
     }
 
     public void show() {

@@ -38,6 +38,10 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
 // new Stacking Animation.
 BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
 
+// Feature that exposes a listener to notify whether the current message
+// is fully visible.
+BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
+
 bool IsAdsBlockedMessagesUiEnabled();
 
 bool IsOfferNotificationMessagesUiEnabled();

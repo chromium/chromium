@@ -116,13 +116,16 @@ bool NetworkDelegate::AnnotateAndMoveUserBlockedCookies(
   return allowed;
 }
 
-bool NetworkDelegate::CanSetCookie(const URLRequest& request,
-                                   const CanonicalCookie& cookie,
-                                   CookieOptions* options,
-                                   CookieInclusionStatus* inclusion_status) {
+bool NetworkDelegate::CanSetCookie(
+    const URLRequest& request,
+    const CanonicalCookie& cookie,
+    CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
+    CookieInclusionStatus* inclusion_status) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!(request.load_flags() & LOAD_DO_NOT_SAVE_COOKIES));
-  return OnCanSetCookie(request, cookie, options, inclusion_status);
+  return OnCanSetCookie(request, cookie, options, first_party_set_metadata,
+                        inclusion_status);
 }
 
 NetworkDelegate::PrivacySetting NetworkDelegate::ForcePrivacyMode(

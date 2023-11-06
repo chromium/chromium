@@ -21,10 +21,21 @@ if (use_atk) {
     minor = atspi_version[1]
     micro = atspi_version[2]
 
+    # These aren't necessarily used if atspi is not old enough to require them.
+    # Also, gn considers variables unused if the only use of them is
+    # short-circuited away, so for example if major == 2 and minor == 48, micro
+    # would be unused.
+    not_needed([
+                 "major",
+                 "minor",
+                 "micro",
+               ])
+
     # ATSPI 2.49.90 now defines these for us and it's an error for us to
     # redefine them on the compiler command line.
     # See ATSPI 927344a34cd5bf81fc64da4968241735ecb4f03b
-    if (minor < 49 || (minor == 49 && micro < 90)) {
+    if (major < 2 || (major == 2 && minor < 49) ||
+        (major == 2 && minor == 49 && micro < 90)) {
       defines = [
         "ATSPI_MAJOR_VERSION=$major",
         "ATSPI_MINOR_VERSION=$minor",

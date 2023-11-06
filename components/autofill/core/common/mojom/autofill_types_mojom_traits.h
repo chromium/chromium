@@ -332,14 +332,9 @@ struct StructTraits<autofill::mojom::FormFieldDataDataView,
     return r.bounds;
   }
 
-  static const std::vector<std::u16string>& datalist_values(
+  static const std::vector<autofill::SelectOption>& datalist_options(
       const autofill::FormFieldData& r) {
-    return r.datalist_values;
-  }
-
-  static const std::vector<std::u16string>& datalist_labels(
-      const autofill::FormFieldData& r) {
-    return r.datalist_labels;
+    return r.datalist_options;
   }
 
   static bool Read(autofill::mojom::FormFieldDataDataView data,
@@ -497,6 +492,11 @@ struct StructTraits<autofill::mojom::FormDataPredictionsDataView,
 
   static const std::string& signature(const autofill::FormDataPredictions& r) {
     return r.signature;
+  }
+
+  static const std::string& alternative_signature(
+      const autofill::FormDataPredictions& r) {
+    return r.alternative_signature;
   }
 
   static const std::vector<autofill::FormFieldDataPredictions>& fields(

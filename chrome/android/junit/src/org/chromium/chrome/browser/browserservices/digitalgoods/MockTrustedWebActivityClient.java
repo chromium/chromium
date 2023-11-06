@@ -30,11 +30,24 @@ public class MockTrustedWebActivityClient {
     private Runnable mCallback;
     private int mVersion = 2;
 
-    private static final Bundle ITEM1 = GetDetailsConverter.createItemDetailsBundle(
-            "id1", "title 1", "description 1", "GBP", "20");
-    private static final Bundle ITEM2 = GetDetailsConverter.createItemDetailsBundle("id2",
-            "title 2", "description 2", "GBP", "30", "subs", "https://www.example.com/image.png",
-            "2 weeks", "month", "GBP", "20", "week", 2);
+    private static final Bundle ITEM1 =
+            GetDetailsConverter.createItemDetailsBundle(
+                    "id1", "title 1", "description 1", "GBP", "20");
+    private static final Bundle ITEM2 =
+            GetDetailsConverter.createItemDetailsBundle(
+                    "id2",
+                    "title 2",
+                    "description 2",
+                    "GBP",
+                    "30",
+                    "subs",
+                    "https://www.example.com/image.png",
+                    "2 weeks",
+                    "month",
+                    "GBP",
+                    "20",
+                    "week",
+                    2);
 
     private static final Bundle PURCHASE1 =
             ListPurchasesConverter.createPurchaseReferenceBundle("id3", "abc");
@@ -45,24 +58,27 @@ public class MockTrustedWebActivityClient {
         mConnection = Mockito.mock(TrustedWebActivityClientWrappers.Connection.class);
         mClient = Mockito.mock(TrustedWebActivityClient.class);
 
-        doAnswer(invocation -> {
-            TrustedWebActivityClient.ExecutionCallback callback = invocation.getArgument(1);
+        doAnswer(
+                        invocation -> {
+                            TrustedWebActivityClient.ExecutionCallback callback =
+                                    invocation.getArgument(1);
 
-            callback.onConnected(Mockito.mock(Origin.class), mConnection);
+                            callback.onConnected(Mockito.mock(Origin.class), mConnection);
 
-            return null;
-        })
+                            return null;
+                        })
                 .when(mClient)
                 .connectAndExecute(any(), any());
 
         try {
-            doAnswer(invocation -> {
-                String command = invocation.getArgument(0);
-                Bundle args = invocation.getArgument(1);
-                TrustedWebActivityCallback callback = invocation.getArgument(2);
+            doAnswer(
+                            invocation -> {
+                                String command = invocation.getArgument(0);
+                                Bundle args = invocation.getArgument(1);
+                                TrustedWebActivityCallback callback = invocation.getArgument(2);
 
-                return handleWrapper(command, args, callback);
-            })
+                                return handleWrapper(command, args, callback);
+                            })
                     .when(mConnection)
                     .sendExtraCommand(any(), any(), any());
         } catch (RemoteException e) {
@@ -91,45 +107,55 @@ public class MockTrustedWebActivityClient {
         // At this point, pretend we're in the TWA shell.
         switch (command) {
             case "getDetails":
-                mCallback = () -> {
-                    callback.onExtraCallback("getDetails.response",
-                            GetDetailsConverter.createResponseBundle(
-                                    PLAY_BILLING_OK, ITEM1, ITEM2));
-                };
+                mCallback =
+                        () -> {
+                            callback.onExtraCallback(
+                                    "getDetails.response",
+                                    GetDetailsConverter.createResponseBundle(
+                                            PLAY_BILLING_OK, ITEM1, ITEM2));
+                        };
                 return true;
             case "listPurchases":
-                mCallback = () -> {
-                    callback.onExtraCallback("listPurchases.response",
-                            ListPurchasesConverter.createResponseBundle(
-                                    PLAY_BILLING_OK, PURCHASE1, PURCHASE2));
-                };
+                mCallback =
+                        () -> {
+                            callback.onExtraCallback(
+                                    "listPurchases.response",
+                                    ListPurchasesConverter.createResponseBundle(
+                                            PLAY_BILLING_OK, PURCHASE1, PURCHASE2));
+                        };
                 return true;
             case "listPurchaseHistory":
                 // Version 1 clients did not have purchase history.
                 if (mVersion == 1) return false;
-                mCallback = () -> {
-                    // Swap the order of PURCHASE1 and PURCHASE2 as an easy way to make sure the
-                    // correct branch of this switch statement is executed.
-                    callback.onExtraCallback("listPurchaseHistory.response",
-                            ListPurchaseHistoryConverter.createResponseBundle(
-                                    PLAY_BILLING_OK, PURCHASE2, PURCHASE1));
-                };
+                mCallback =
+                        () -> {
+                            // Swap the order of PURCHASE1 and PURCHASE2 as an easy way to make sure
+                            // the correct branch of this switch statement is executed.
+                            callback.onExtraCallback(
+                                    "listPurchaseHistory.response",
+                                    ListPurchaseHistoryConverter.createResponseBundle(
+                                            PLAY_BILLING_OK, PURCHASE2, PURCHASE1));
+                        };
                 return true;
             case "consume":
                 // Version 1 clients did not have consume.
                 if (mVersion == 1) return false;
-                mCallback = () -> {
-                    callback.onExtraCallback("consume.response",
-                            ConsumeConverter.createResponseBundle(PLAY_BILLING_OK));
-                };
+                mCallback =
+                        () -> {
+                            callback.onExtraCallback(
+                                    "consume.response",
+                                    ConsumeConverter.createResponseBundle(PLAY_BILLING_OK));
+                        };
                 return true;
             case "acknowledge":
                 // Only version 1 clients have acknowledge.
                 if (mVersion != 1) return false;
-                mCallback = () -> {
-                    callback.onExtraCallback("acknowledge.response",
-                            AcknowledgeConverter.createResponseBundle(PLAY_BILLING_OK));
-                };
+                mCallback =
+                        () -> {
+                            callback.onExtraCallback(
+                                    "acknowledge.response",
+                                    AcknowledgeConverter.createResponseBundle(PLAY_BILLING_OK));
+                        };
                 return true;
         }
 

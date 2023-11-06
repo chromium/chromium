@@ -349,8 +349,8 @@ void UDPSocket::DoRecvFrom(uint32_t buffer_size) {
   DCHECK_GT(remaining_recv_slots_, 0u);
   DCHECK_GE(kMaxReadSize, buffer_size);
 
-  recvfrom_buffer_ =
-      base::MakeRefCounted<net::IOBuffer>(static_cast<size_t>(buffer_size));
+  recvfrom_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(
+      static_cast<size_t>(buffer_size));
 
   // base::Unretained(this) is safe because socket is owned by |this|.
   int net_result = wrapped_socket_->RecvFrom(

@@ -82,8 +82,7 @@ message ChromeOSDataProto {
   required bool is_disabled = 4;
   optional bool oem_installed = 5;
   optional bool handles_file_open_intents = 6;
-  // See explanation on IsolationDataProto for storing path as bytes.
-  optional bytes app_profile_path = 7;
+  reserved 7;
 }
 
 message ClientDataProto {

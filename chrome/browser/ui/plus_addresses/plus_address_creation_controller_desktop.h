@@ -33,6 +33,9 @@ class PlusAddressCreationControllerDesktop
   // comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
 
+  // Validate storage and clearing of `maybe_plus_profile_`.
+  absl::optional<PlusProfile> get_plus_profile_for_testing();
+
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerDesktop(
@@ -40,13 +43,21 @@ class PlusAddressCreationControllerDesktop
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerDesktop>;
 
+  // Populates `plus_profile_` with `maybe_plus_profile` if it's not an error.
+  void OnPlusAddressReserved(const std::string& primary_email_address,
+                             const PlusProfileOrError& maybe_plus_profile);
+  // Autofills `plus_address` in the targeted field by running callback_.
+  void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
+
   base::WeakPtr<PlusAddressCreationControllerDesktop> GetWeakPtr();
 
   url::Origin relevant_origin_;
   PlusAddressCallback callback_;
   bool ui_modal_showing_ = false;
-
   bool suppress_ui_for_testing_ = false;
+  // This is set by OnPlusAddressReserved and cleared when it's confirmed or
+  // when the dialog is closed or cancelled.
+  absl::optional<PlusProfile> plus_profile_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerDesktop> weak_ptr_factory_{
       this};

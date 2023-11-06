@@ -262,6 +262,8 @@ void FeedbackService::OnLacrosHistogramsFetched(
     feedback_data->AddFile(kLacrosHistogramsFilename,
                            std::move(compressed_histograms));
   }
+  // TODO(b/308196190): Attach Wifi debug logs if params.send_wifi_debug_logs is
+  // true.
   if (params.send_bluetooth_logs) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, {base::MayBlock()},

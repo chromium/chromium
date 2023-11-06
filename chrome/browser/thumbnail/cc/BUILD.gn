@@ -8,18 +8,8 @@ if (is_android) {
   import("//third_party/protobuf/proto_library.gni")
 }
 
-source_set("features") {
-  deps = [ "//base" ]
-
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-}
-
 source_set("cc") {
   deps = [
-    ":features",
     "//base",
     "//cc",
     "//chrome/browser/image_decoder",
@@ -61,7 +51,6 @@ source_set("unit_tests") {
 
   deps = [
     ":cc",
-    ":features",
     "//base",
     "//base/test:test_support",
     "//content/test:test_support",

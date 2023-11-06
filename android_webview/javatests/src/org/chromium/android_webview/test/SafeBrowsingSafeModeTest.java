@@ -19,11 +19,14 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
@@ -33,19 +36,22 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.Set;
 
-/**
- * Tests for AwSafeBrowsingSafeModeAction.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class SafeBrowsingSafeModeTest {
+/** Tests for AwSafeBrowsingSafeModeAction. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
     private static final String WEB_UI_MALWARE_URL = "chrome://safe-browsing/match?type=malware";
 
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwTestContainerView mContainerView;
     private AwContents mAwContents;
+
+    public SafeBrowsingSafeModeTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -66,7 +72,7 @@ public class SafeBrowsingSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(AwSafeBrowsingSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
 
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -84,7 +90,7 @@ public class SafeBrowsingSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(AwSafeBrowsingSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
 
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -113,7 +119,7 @@ public class SafeBrowsingSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(AwSafeBrowsingSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
 
         MockPlatformServiceBridge mockPlatformServiceBridge = new MockPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mockPlatformServiceBridge);
@@ -132,6 +138,7 @@ public class SafeBrowsingSafeModeTest {
 
     private static class MockPlatformServiceBridge extends PlatformServiceBridge {
         private boolean mWarmUpSafeBrowsingCalled;
+
         @Override
         public void warmUpSafeBrowsing(Context context, @NonNull final Callback<Boolean> callback) {
             mWarmUpSafeBrowsingCalled = true;

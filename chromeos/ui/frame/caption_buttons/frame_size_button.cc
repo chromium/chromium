@@ -15,7 +15,6 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -237,10 +236,7 @@ FrameSizeButton::FrameSizeButton(PressedCallback callback,
       long_tap_delay_(kSetButtonsToSnapModeDelay) {
   display_observer_.emplace(this);
 
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    pie_animation_view_ =
-        AddChildView(std::make_unique<PieAnimationView>(this));
-  }
+  pie_animation_view_ = AddChildView(std::make_unique<PieAnimationView>(this));
 }
 
 FrameSizeButton::~FrameSizeButton() = default;
@@ -250,30 +246,24 @@ bool FrameSizeButton::IsMultitaskMenuShown() const {
 }
 
 void FrameSizeButton::ShowMultitaskMenu(MultitaskMenuEntryType entry_type) {
-  // Show Multitask Menu if float is enabled. Note here float flag is also used
-  // to represent other relatable UI/UX changes.
-  if (chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    DCHECK(!chromeos::TabletState::Get()->InTabletMode());
-    RecordMultitaskMenuEntryType(entry_type);
-    // Owned by the bubble which contains this view. If there is an existing
-    // bubble, it will be deactivated and then close and destroy itself.
-    auto menu_delegate = std::make_unique<MultitaskMenu>(
-        /*anchor=*/this, GetWidget(),
-        /*close_on_move_out=*/entry_type ==
-            MultitaskMenuEntryType::kFrameSizeButtonHover);
-    multitask_menu_ = menu_delegate->GetWeakPtr();
-    multitask_menu_widget_ =
-        base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-            std::move(menu_delegate)));
-    multitask_menu_widget_->Show();
-    delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
-        /*tablet_mode=*/false);
-  }
+  CHECK(!chromeos::TabletState::Get()->InTabletMode());
+  RecordMultitaskMenuEntryType(entry_type);
+  // Owned by the bubble which contains this view. If there is an existing
+  // bubble, it will be deactivated and then close and destroy itself.
+  auto menu_delegate = std::make_unique<MultitaskMenu>(
+      /*anchor=*/this, GetWidget(),
+      /*close_on_move_out=*/entry_type ==
+          MultitaskMenuEntryType::kFrameSizeButtonHover);
+  multitask_menu_ = menu_delegate->GetWeakPtr();
+  multitask_menu_widget_ = base::WrapUnique(
+      views::BubbleDialogDelegateView::CreateBubble(std::move(menu_delegate)));
+  multitask_menu_widget_->Show();
+  delegate_->GetMultitaskMenuNudgeController()->OnMenuOpened(
+      /*tablet_mode=*/false);
 }
 
 void FrameSizeButton::ToggleMultitaskMenu() {
-  DCHECK(chromeos::wm::features::IsWindowLayoutMenuEnabled());
-  DCHECK(!chromeos::TabletState::Get()->InTabletMode());
+  CHECK(!chromeos::TabletState::Get()->InTabletMode());
   if (!multitask_menu_widget_) {
     ShowMultitaskMenu(MultitaskMenuEntryType::kAccel);
   } else {
@@ -383,10 +373,6 @@ void FrameSizeButton::OnGestureEvent(ui::GestureEvent* event) {
 void FrameSizeButton::StateChanged(views::Button::ButtonState old_state) {
   views::FrameCaptionButton::StateChanged(old_state);
 
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled()) {
-    return;
-  }
-
   // Ignore if there is no native window, which can happen during widget
   // shutdown.
   if (!GetWidget()->GetNativeWindow()) {
@@ -446,12 +432,11 @@ void FrameSizeButton::StartLongTapDelayTimer(const ui::LocatedEvent& event) {
 
 void FrameSizeButton::StartPieAnimation(base::TimeDelta duration,
                                         MultitaskMenuEntryType entry_type) {
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-      chromeos::TabletState::Get()->InTabletMode() || IsMultitaskMenuShown()) {
+  if (chromeos::TabletState::Get()->InTabletMode() || IsMultitaskMenuShown()) {
     return;
   }
 
-  DCHECK(pie_animation_view_);
+  CHECK(pie_animation_view_);
   pie_animation_view_->Start(duration, entry_type);
 }
 

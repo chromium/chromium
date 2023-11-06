@@ -80,7 +80,7 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
 
   void SetUpShoppingServiceToReturnDiscounts() {
     const double expiry_time_sec =
-        (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+        (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
     auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -119,8 +119,14 @@ class OfferNotificationIconViewInteractiveTest : public InteractiveBrowserTest {
       weak_ptr_factory_{this};
 };
 
+// TODO(crbug.com/1497347): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_IconAutoCollapse DISABLED_IconAutoCollapse
+#else
+#define MAYBE_IconAutoCollapse IconAutoCollapse
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
-                       IconAutoCollapse) {
+                       MAYBE_IconAutoCollapse) {
   base::MockRetainingOneShotTimer timer;
   SetIconAnimationTimer(&timer);
 
@@ -164,8 +170,16 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
                         &OfferNotificationIconView::ShouldShowLabel, true));
 }
 
+// TODO(crbug.com/1498588): Flaky on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_IconCollapseAfterBubbleWidgetIsClosed \
+  DISABLED_IconCollapseAfterBubbleWidgetIsClosed
+#else
+#define MAYBE_IconCollapseAfterBubbleWidgetIsClosed \
+  IconCollapseAfterBubbleWidgetIsClosed
+#endif
 IN_PROC_BROWSER_TEST_F(OfferNotificationIconViewInteractiveTest,
-                       IconCollapseAfterBubbleWidgetIsClosed) {
+                       MAYBE_IconCollapseAfterBubbleWidgetIsClosed) {
   SetUpShoppingServiceToReturnDiscounts();
 
   RunTestSequence(

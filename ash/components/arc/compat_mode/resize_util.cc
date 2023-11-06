@@ -11,6 +11,7 @@
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/components/arc/compat_mode/resize_confirmation_dialog_view.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/arc_compat_mode_util.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -182,28 +183,6 @@ void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate) {
   TurnOffResizeLockWithConfirmationIfNeeded(widget, pref_delegate);
-}
-
-ResizeCompatMode PredictCurrentMode(const views::Widget* widget) {
-  return PredictCurrentMode(widget->GetNativeWindow());
-}
-
-ResizeCompatMode PredictCurrentMode(const aura::Window* window) {
-  const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
-  if (resize_lock_type == ash::ArcResizeLockType::NONE ||
-      resize_lock_type == ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE) {
-    return ResizeCompatMode::kResizable;
-  }
-
-  const int width = window->bounds().width();
-  const int height = window->bounds().height();
-  // We don't use the exact size here to predict tablet or phone size because
-  // the window size might be bigger than it due to the ARC app-side minimum
-  // size constraints.
-  if (width <= height)
-    return ResizeCompatMode::kPhone;
-
-  return ResizeCompatMode::kTablet;
 }
 
 bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate) {

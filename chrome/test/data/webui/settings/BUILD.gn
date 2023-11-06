@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "settings"
-
   files = [
     "about_page_test.ts",
     "advanced_page_test.ts",
@@ -22,6 +20,7 @@ build_webui_tests("build") {
     "battery_page_test.ts",
     "category_setting_exceptions_test.ts",
     "checkbox_test.ts",
+    "checkbox_list_entry_test.ts",
     "chooser_exception_list_entry_test.ts",
     "chooser_exception_list_test.ts",
     "clear_browsing_data_test.ts",
@@ -33,6 +32,7 @@ build_webui_tests("build") {
     "downloads_page_test.ts",
     "dropdown_menu_test.ts",
     "extension_controlled_indicator_test.ts",
+    "file_system_site_details_test.ts",
     "file_system_site_entry_test.ts",
     "file_system_site_entry_item_test.ts",
     "file_system_site_list_test.ts",

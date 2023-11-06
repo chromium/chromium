@@ -78,7 +78,9 @@ class PlaybackCommandForwardingRendererTest : public testing::Test {
             remote_client_.InitWithNewEndpointAndPassReceiver());
   }
 
-  ~PlaybackCommandForwardingRendererTest() override = default;
+  ~PlaybackCommandForwardingRendererTest() override {
+    mock_renderer_ = nullptr;
+  }
 
  protected:
   void CallInitialize() {

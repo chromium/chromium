@@ -1332,7 +1332,7 @@ std::unique_ptr<protocol::Page::OriginTrialToken> CreateOriginTrialToken(
                      ->ToRawString())
       .setIsThirdParty(blink_trial_token.is_third_party())
       .setMatchSubDomains(blink_trial_token.match_subdomains())
-      .setExpiryTime(blink_trial_token.expiry_time().ToDoubleT())
+      .setExpiryTime(blink_trial_token.expiry_time().InSecondsFSinceUnixEpoch())
       .setTrialName(blink_trial_token.feature_name().c_str())
       .setUsageRestriction(CreateOriginTrialUsageRestriction(
           blink_trial_token.usage_restriction()))
@@ -1511,8 +1511,10 @@ InspectorPageAgent::BuildObjectForResourceTree(LocalFrame* frame) {
             .build();
     absl::optional<base::Time> last_modified =
         cached_resource->GetResponse().LastModified();
-    if (last_modified)
-      resource_object->setLastModified(last_modified.value().ToDoubleT());
+    if (last_modified) {
+      resource_object->setLastModified(
+          last_modified.value().InSecondsFSinceUnixEpoch());
+    }
     if (cached_resource->WasCanceled())
       resource_object->setCanceled(true);
     else if (cached_resource->GetStatus() == ResourceStatus::kLoadError)

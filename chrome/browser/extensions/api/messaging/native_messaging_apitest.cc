@@ -31,6 +31,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_profile.h"
 #endif
 
 namespace extensions {
@@ -493,6 +496,64 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchBackgroundModeApiTest,
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN)
+class NativeHostExecutablesLaunchDirectlyPolicyTest
+    : public extensions::NativeMessagingApiTestBase,
+      public testing::WithParamInterface<bool> {
+ public:
+  NativeHostExecutablesLaunchDirectlyPolicyTest() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kLaunchWindowsNativeHostsDirectly,
+        IsDirectLaunchEnabled());
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    profile_ = std::make_unique<TestingProfile>();
+  }
+
+  void TearDownOnMainThread() override {
+    profile_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  bool IsDirectLaunchEnabled() const { return GetParam(); }
+
+ protected:
+  extensions::ScopedTestNativeMessagingHost test_host_;
+  std::unique_ptr<TestingProfile> profile_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NativeHostExecutablesLaunchDirectlyPolicyTest,
+                       PolicyDisabledTest) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kNativeHostsExecutablesLaunchDirectly, true);
+
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
+
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+IN_PROC_BROWSER_TEST_P(NativeHostExecutablesLaunchDirectlyPolicyTest,
+                       PolicyEnabledTest) {
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetBoolean(prefs::kNativeHostsExecutablesLaunchDirectly, false);
+
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(
+      "native_messaging_test_echo_&_host.exe", /*user_level=*/false));
+
+  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
+}
+
+INSTANTIATE_TEST_SUITE_P(NativeHostExecutablesLaunchDirectlyPolicyTestP,
+                         NativeHostExecutablesLaunchDirectlyPolicyTest,
+                         testing::Bool());
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 }  // namespace extensions

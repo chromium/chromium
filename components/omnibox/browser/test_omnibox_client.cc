@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
@@ -45,7 +46,11 @@ TestOmniboxClient::CreateAutocompleteProviderClient() {
   auto template_url_service = std::make_unique<TemplateURLService>(
       nullptr /* PrefService */, std::make_unique<SearchTermsData>(),
       nullptr /* KeywordWebDataService */,
-      std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
+      std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      , false /* for_lacros_main_profile */
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
 
   // Save a reference to the created TemplateURLService for test use.
   template_url_service_ = template_url_service.get();

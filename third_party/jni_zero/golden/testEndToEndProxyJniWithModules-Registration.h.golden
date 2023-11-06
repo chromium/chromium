@@ -14,8 +14,9 @@
 
 #include <iterator>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_int_wrapper.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations (classes).
@@ -23,11 +24,11 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT jboolean Java_J_module_1N_MaOHChCD(
+JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N_MaOHChCD(
     JNIEnv* env,
     jclass jcaller,
     jint a);
-JNI_GENERATOR_EXPORT void Java_J_module_1N_MF1ZO_1It(
+JNI_BOUNDARY_EXPORT void Java_J_module_1N_MF1ZO_1It(
     JNIEnv* env,
     jclass jcaller);
 

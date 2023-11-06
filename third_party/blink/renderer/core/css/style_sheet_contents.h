@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/rule_set_diff.h"
+#include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
@@ -42,7 +43,6 @@
 namespace blink {
 
 class CSSStyleSheet;
-class CSSStyleSheetResource;
 class Document;
 class Node;
 class StyleRuleBase;
@@ -66,7 +66,9 @@ class CORE_EXPORT StyleSheetContents final
 
   // TODO(xiaochengh): |parser_context_| should never be null. Make it return a
   // const reference here to avoid confusion.
-  const CSSParserContext* ParserContext() const { return parser_context_; }
+  const CSSParserContext* ParserContext() const {
+    return parser_context_.Get();
+  }
 
   const AtomicString& DefaultNamespace() const { return default_namespace_; }
   const AtomicString& NamespaceURIFromPrefix(const AtomicString& prefix) const;
@@ -94,18 +96,6 @@ class CORE_EXPORT StyleSheetContents final
   // Gets the first owner document in the list of registered clients, or nullptr
   // if there are none.
   Document* AnyOwnerDocument() const;
-
-  // True if either:
-  //
-  // - The parent element of the stylesheet's owner node is equal
-  //   to `candidate`, or if no such element exists:
-  // - The stylesheet is adopted by a shadow root attached to
-  //   a host equal to `candidate`.
-  //
-  // Note that a single StyleSheetContents can have multiple CSSStyleSheets
-  // associated with it, and this function returns true if the
-  // requirements above are met for *any* CSSStyleSheet.
-  bool HasOwnerParentElementOrAdoptiveHost(Element* candidate) const;
 
   const WTF::TextEncoding& Charset() const {
     return parser_context_->Charset();
@@ -186,7 +176,7 @@ class CORE_EXPORT StyleSheetContents final
   void NotifyLoadedSheet(const CSSStyleSheetResource*);
 
   StyleSheetContents* ParentStyleSheet() const;
-  StyleRuleImport* OwnerRule() const { return owner_rule_; }
+  StyleRuleImport* OwnerRule() const { return owner_rule_.Get(); }
   void ClearOwnerRule() { owner_rule_ = nullptr; }
 
   // The URL that started the redirect chain that led to this
@@ -227,7 +217,9 @@ class CORE_EXPORT StyleSheetContents final
   bool IsUsedFromTextCache() const { return is_used_from_text_cache_; }
   void SetIsUsedFromTextCache() { is_used_from_text_cache_ = true; }
 
-  bool IsReferencedFromResource() const { return referenced_from_resource_; }
+  bool IsReferencedFromResource() const {
+    return referenced_from_resource_ != nullptr;
+  }
   void SetReferencedFromResource(CSSStyleSheetResource*);
   void ClearReferencedFromResource();
 

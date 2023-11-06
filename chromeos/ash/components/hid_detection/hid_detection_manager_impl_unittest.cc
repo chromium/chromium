@@ -1344,4 +1344,42 @@ TEST_F(HidDetectionManagerImplTest,
   StopHidDetection(/*should_be_using_bluetooth=*/false);
 }
 
+TEST_F(HidDetectionManagerImplTest, StartDetection_VirtialMouseConnected) {
+  StartHidDetection();
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/{InputState::kSearching,
+                            /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      {InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false,
+      /*pairing_state=*/absl::nullopt);
+  EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
+  AssertInputDevicesStatus(
+      {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/0,
+                          /*total_count=*/0);
+
+  std::string pointer_id1;
+  AddDevice(TestHidType::kMouse, InputDeviceType::TYPE_BLUETOOTH, &pointer_id1,
+            "VIRTUAL_SUSPEND_UHID");
+  EXPECT_EQ(1u, GetNumHidDetectionStatusChangedCalls());
+  ASSERT_TRUE(GetLastHidDetectionStatus().has_value());
+  AssertHidDetectionStatus(
+      /*pointer_metadata=*/{InputState::kSearching,
+                            /*detected_hid_name=*/""},
+      /*keyboard_metadata=*/
+      {InputState::kSearching, /*detected_hid_name=*/""},
+      /*touchscreen_detected=*/false,
+      /*pairing_state=*/absl::nullopt);
+  EXPECT_EQ(0u, GetNumSetInputDevicesStatusCalls());
+  AssertInputDevicesStatus(
+      {.pointer_is_missing = true, .keyboard_is_missing = true});
+  AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/0,
+                          /*total_count=*/0);
+
+  StopHidDetection(/*should_be_using_bluetooth=*/false);
+}
+
 }  // namespace ash::hid_detection

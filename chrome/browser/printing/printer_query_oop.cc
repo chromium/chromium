@@ -291,7 +291,7 @@ void PrinterQueryOop::SendEstablishPrintingContext(
     PrintBackendServiceManager::ClientId client_id,
     const std::string& printer_name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
 
   DVLOG(1) << "Establishing printing context for system print";
 
@@ -314,7 +314,7 @@ void PrinterQueryOop::SendEstablishPrintingContext(
 
 void PrinterQueryOop::SendUseDefaultSettings(SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
   CHECK(query_with_ui_client_id_.has_value());
 
   PrintBackendServiceManager& service_mgr =
@@ -332,7 +332,7 @@ void PrinterQueryOop::SendAskUserForSettings(uint32_t document_page_count,
                                              bool is_scripted,
                                              SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
 
   if (document_page_count > kMaxPageCount) {
     InvokeSettingsCallback(std::move(callback), mojom::ResultCode::kFailed);

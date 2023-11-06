@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "components/reporting/proto/synced/upload_tracker.pb.h"
 #include "components/reporting/util/status.h"
@@ -240,7 +241,8 @@ TEST_F(FileUploadJobTest, FailToInitiate) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(*mock_delegate_, DoDeleteFile(StrEq(kUploadFileName)))
@@ -274,7 +276,8 @@ TEST_F(FileUploadJobTest, FailToInitiateWithMoreRetries) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   RunAsyncJobAndWait(*job, &FileUploadJob::Initiate);
@@ -356,7 +359,8 @@ TEST_F(FileUploadJobTest, FailToPerformNextStep) {
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             EXPECT_THAT(uploaded, AllOf(Ge(0L), Lt(total)));
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   ScopedReservation scoped_reservation(0uL, memory_resource_);
@@ -414,7 +418,8 @@ TEST_F(FileUploadJobTest, FailToPerformNextStepWithMoreRetries) {
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
             EXPECT_THAT(uploaded, AllOf(Ge(0L), Lt(total)));
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   ScopedReservation scoped_reservation(0uL, memory_resource_);
@@ -476,7 +481,8 @@ TEST_F(FileUploadJobTest, FailToFinalize) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   test::TestCallbackAutoWaiter waiter;
   EXPECT_CALL(*mock_delegate_, DoDeleteFile(StrEq(kUploadFileName)))
@@ -538,7 +544,8 @@ TEST_F(FileUploadJobTest, FailToFinalizeWithMoreRetries) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Declined in test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Declined in test")));
           }));
   EXPECT_CALL(*mock_delegate_, DoDeleteFile).Times(0);
   RunAsyncJobAndWait(*job, &FileUploadJob::Finalize);
@@ -865,15 +872,15 @@ TEST_F(FileUploadJobTest, AttemptToInitiateMultipleJobs) {
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                if (!job_or_error.has_value()) {
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
                 }
-                auto* const job = job_or_error.ValueOrDie();
+                auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Initiate(done.Release());
               },
@@ -950,16 +957,16 @@ TEST_F(FileUploadJobTest, AttemptToNextStepMultipleJobs) {
                  scoped_refptr<ResourceManager> memory_resource,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                if (!job_or_error.has_value()) {
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
                 }
-                EXPECT_OK(job_or_error) << job_or_error.status();
-                auto* const job = job_or_error.ValueOrDie();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
+                auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 ScopedReservation scoped_reservation(0uL, memory_resource);
                 job->NextStep(scoped_reservation, done.Release());
@@ -1030,16 +1037,16 @@ TEST_F(FileUploadJobTest, AttemptToFinalizeMultipleJobs) {
                  std::vector<base::WeakPtr<FileUploadJob>>* jobs_weak_ptrs,
                  std::atomic<size_t>* failures,
                  StatusOr<FileUploadJob*> job_or_error) {
-                if (!job_or_error.ok()) {
-                  EXPECT_THAT(job_or_error.status().error_code(),
+                if (!job_or_error.has_value()) {
+                  EXPECT_THAT(job_or_error.error().error_code(),
                               Eq(error::ALREADY_EXISTS));
-                  EXPECT_THAT(job_or_error.status().error_message(),
+                  EXPECT_THAT(job_or_error.error().error_message(),
                               StrEq("Duplicate event"));
                   ++(*failures);
                   return;
                 }
-                EXPECT_OK(job_or_error) << job_or_error.status();
-                auto* const job = job_or_error.ValueOrDie();
+                EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
+                auto* const job = job_or_error.value();
                 jobs_weak_ptrs->push_back(job->GetWeakPtr());
                 job->Finalize(done.Release());
               },
@@ -1097,8 +1104,8 @@ TEST_F(FileUploadJobTest, MultipleStagesJob) {
             [](base::ScopedClosureRunner done,
                base::WeakPtr<FileUploadJob>* job_weak_ptr,
                StatusOr<FileUploadJob*> job_or_error) {
-              EXPECT_OK(job_or_error) << job_or_error.status();
-              auto* const job = job_or_error.ValueOrDie();
+              EXPECT_TRUE(job_or_error.has_value()) << job_or_error.error();
+              auto* const job = job_or_error.value();
               *job_weak_ptr = job->GetWeakPtr();
               job->Initiate(done.Release());
             },
@@ -1193,7 +1200,7 @@ TEST_F(FileUploadJobTest, FailureRegisteringJobWithNoRetries) {
           [](base::ScopedClosureRunner done,
              StatusOr<FileUploadJob*> job_or_error) {
             EXPECT_THAT(
-                job_or_error.status(),
+                job_or_error.error(),
                 AllOf(Property(&Status::code, Eq(error::INVALID_ARGUMENT)),
                       Property(&Status::error_message,
                                StrEq("Too many upload attempts"))));

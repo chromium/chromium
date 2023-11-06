@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.ContextUtils;
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 public class FastVariationsSeedSafeModeAction implements SafeModeAction {
     private static final String TAG = "FastVariationsSeed";
     // This ID should not be reused.
-    private static final String ID = VariationsFastFetchModeUtils.SAFEMODE_ACTION_ID;
+    private static final String ID = SafeModeActionIds.FAST_VARIATIONS_SEED;
     private final String mWebViewPackageName;
     private static boolean sHasRun;
     private static File sSeedFile = VariationsUtils.getSeedFile();
@@ -142,8 +143,10 @@ public class FastVariationsSeedSafeModeAction implements SafeModeAction {
                                   .path(URI_PATH)
                                   .build();
                 final Context appContext = ContextUtils.getApplicationContext();
-                try (ParcelFileDescriptor pfd = appContext.getContentResolver().openFileDescriptor(
-                             uri, /* mode */ "r", null)) {
+                try (ParcelFileDescriptor pfd =
+                        appContext
+                                .getContentResolver()
+                                .openFileDescriptor(uri, /* mode= */ "r", null)) {
                     if (pfd == null) {
                         Log.e(TAG,
                                 "Failed to query SafeMode seed from: "

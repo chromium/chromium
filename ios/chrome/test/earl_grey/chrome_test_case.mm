@@ -415,8 +415,6 @@ void ResetAuthentication() {
 
   [[self class] enableMockAuthentication];
 
-  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
-
   // Sometimes on start up there can be infobars (e.g. restore session), so
   // ensure the UI is in a clean state.
   if (![ChromeTestCase isStartupTest]) {

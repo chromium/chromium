@@ -107,6 +107,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
         }
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
+            menu.findItem(R.id.menu_multi_profile).setEnabled(false);
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             menu.findItem(R.id.menu_night_mode_on).setEnabled(false);
         }
@@ -230,6 +233,9 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 WebSettingsCompat.setAlgorithmicDarkeningAllowed(mWebView.getSettings(),
                         !WebSettingsCompat.isAlgorithmicDarkeningAllowed(mWebView.getSettings()));
             }
+            return true;
+        } else if (itemId == R.id.menu_multi_profile) {
+            startActivity(new Intent(this, WebViewMultiProfileBrowserActivity.class));
             return true;
         } else if (itemId == R.id.start_animation_activity) {
             startActivity(new Intent(this, WebViewAnimationTestActivity.class));

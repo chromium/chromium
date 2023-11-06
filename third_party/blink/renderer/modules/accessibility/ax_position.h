@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -176,7 +176,7 @@ class MODULES_EXPORT AXPosition final {
   static bool IsIgnoredCharacter(UChar character);
 
   // Returns the number of characters before `content_offset` that are ignored.
-  // NGOffsetMappingUnits have offsets based on characters that we may exclude
+  // OffsetMappingUnits have offsets based on characters that we may exclude
   // from the text we expose to assistive technologies, such as:
   // * break opportunities inserted after preliminary whitespace in elements
   //   with `style= "whitespace: pre-wrap;"`
@@ -193,7 +193,7 @@ class MODULES_EXPORT AXPosition final {
   // * Number of characters in the content: 36
   //
   // The location of these ignored characters can be identified by checking
-  // the NGOffsetMapping for non-contiguous units. For instance, in the case of
+  // the OffsetMapping for non-contiguous units. For instance, in the case of
   // the SVG text, the "H" has a content range of 1-2, the "e" next to it a
   // content range of 4-5.
   //
@@ -201,7 +201,7 @@ class MODULES_EXPORT AXPosition final {
   // have a mapping unit and corresponding node. As a result, its character
   // would not be included in the count returned here. Because it has a node,
   // we are already associating its offsets with the ignored accessible object.
-  int GetLeadingIgnoredCharacterCount(const NGOffsetMapping* mapping,
+  int GetLeadingIgnoredCharacterCount(const OffsetMapping* mapping,
                                       const Node* node,
                                       int container_offset,
                                       int content_offset) const;

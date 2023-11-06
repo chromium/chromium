@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/profiles/ProfileKeyedMap.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileManager.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileManagerUtils.java",
+    "java/src/org/chromium/chrome/browser/profiles/ProfileProvider.java",
     "java/src/org/chromium/chrome/browser/profiles/ProfileResolver.java",
   ]
 }

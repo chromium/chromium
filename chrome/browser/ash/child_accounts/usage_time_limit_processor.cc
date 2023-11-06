@@ -1049,8 +1049,9 @@ Weekday UsageTimeLimitProcessor::GetCurrentWeekday() {
 base::TimeDelta UsageTimeLimitProcessor::GetTimeZoneOffset(base::Time time) {
   int32_t raw_offset, dst_offset;
   UErrorCode status = U_ZERO_ERROR;
-  time_zone_->getOffset(time.ToDoubleT() * base::Time::kMillisecondsPerSecond,
-                        true /* local */, raw_offset, dst_offset, status);
+  time_zone_->getOffset(
+      time.InSecondsFSinceUnixEpoch() * base::Time::kMillisecondsPerSecond,
+      true /* local */, raw_offset, dst_offset, status);
   base::TimeDelta time_zone_offset =
       base::Milliseconds(raw_offset + dst_offset);
   if (U_FAILURE(status)) {

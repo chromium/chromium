@@ -123,6 +123,13 @@
             android:label="@string/title_activity_layout_test"
             android:exported="true">
         </activity>
+        <activity android:name="org.chromium.webview_shell.WebViewMultiProfileBrowserActivity"
+            android:label="@string/title_activity_multi_profile"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize"
+            android:colorMode="wideColorGamut"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|density">
+        </activity>
         <activity
             android:name="org.chromium.webview_shell.WebViewThreadTestActivity"
             android:label="@string/title_activity_thread_test"
@@ -158,6 +165,13 @@
 
         <property android:name="android.adservices.AD_SERVICES_CONFIG"
             android:resource="@xml/ad_services_config" />
+
+        <service android:name="android.webkit.MetaDataHolderService"
+                 android:enabled="false"
+                 android:exported="false">
+            <meta-data android:name="android.webkit.WebView.MultiProfileNameTagKey"
+                android:resource="@id/multi_profile_name_tag_key" />
+        </service>
 
         <uses-library android:name="android.test.runner" />
     </application>

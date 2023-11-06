@@ -131,7 +131,6 @@ class FakeSmartCardDelegate : public SmartCardDelegate {
   // SmartCardDelegate overrides:
   mojo::PendingRemote<device::mojom::SmartCardContextFactory>
   GetSmartCardContextFactory(BrowserContext& browser_context) override;
-  bool SupportsReaderAddedRemovedNotifications() const override { return true; }
 
   MockSmartCardContextFactory mock_context_factory;
 };

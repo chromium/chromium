@@ -501,7 +501,7 @@ void V8ContextTracker::OnRemoteIframeAttachedImpl(
   // committed below it will safely tear itself down.
   auto* process_data = ProcessData::GetOrCreate(frame_node->process_node());
   std::unique_ptr<ExecutionContextData> ec_data;
-  blink::ExecutionContextToken ec_token(frame_node->frame_token());
+  blink::ExecutionContextToken ec_token(frame_node->GetFrameToken());
   auto* raw_ec_data = data_store_->Get(ec_token);
   if (!raw_ec_data) {
     ec_data =

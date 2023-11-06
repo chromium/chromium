@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "VmManagementCliAllowed": false
+        },
+        "prefs": {
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "VmManagementCliAllowed": true
+        },
+        "prefs": {
+          "crostini.vm_management_cli_allowed_by_policy": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

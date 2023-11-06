@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/report/utils/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/private_membership/src/private_membership_rlwe.pb.h"
 
 namespace psm_rlwe = private_membership::rlwe;
 

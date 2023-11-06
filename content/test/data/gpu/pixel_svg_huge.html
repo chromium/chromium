@@ -9,6 +9,14 @@
 }
 </style>
 <script>
+// We manually send heartbeats while the SVG is loading since it can take a
+// long time and we aren't making any function calls that could be wrapped.
+function manuallySendHeartbeat() {
+  if (wrapper !== undefined) {
+    wrapper.sendHeartbeatThrottled();
+  }
+}
+
 function sendResult(status, detail) {
   console.log(detail);
   if (window.domAutomationController) {
@@ -18,13 +26,10 @@ function sendResult(status, detail) {
   }
 }
 
-function ready() {
-  sendResult("READY", "Image loaded, ready for scrolling");
-}
-
 // We do this logic in the page to simplify the page action and make
 // it clearer that it's executed.
 function scrollOutAndBack() {
+  manuallySendHeartbeat();
   requestAnimationFrame(() => {
     window.scrollTo(1000, 1000);
     requestAnimationFrame(() => {
@@ -39,6 +44,6 @@ function scrollOutAndBack() {
 </script>
 </head>
 <body>
-<img src="lots-of-lines.svg" onload="ready()"></img>
+<img src="lots-of-lines.svg" onload="scrollOutAndBack()"></img>
 </body>
 </html>

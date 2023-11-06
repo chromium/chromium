@@ -44,7 +44,7 @@ class BertModelExecutorTest : public testing::Test {
     DCHECK(model_handler_);
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path = source_root_dir.AppendASCII("components")
                                          .AppendASCII("test")
                                          .AppendASCII("data")

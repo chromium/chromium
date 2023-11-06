@@ -36,6 +36,8 @@ class Event;
 // A View representing a button. A Button is focusable by default and will
 // be part of the focus chain.
 class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
+  METADATA_HEADER(Button, View)
+
  public:
   // Button states for various button sub-types.
   enum ButtonState {
@@ -125,8 +127,6 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   static constexpr ButtonState kButtonStates[STATE_COUNT] = {
       ButtonState::STATE_NORMAL, ButtonState::STATE_HOVERED,
       ButtonState::STATE_PRESSED, ButtonState::STATE_DISABLED};
-
-  METADATA_HEADER(Button);
 
   Button(const Button&) = delete;
   Button& operator=(const Button&) = delete;

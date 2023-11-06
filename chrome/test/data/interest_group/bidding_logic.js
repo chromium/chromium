@@ -30,6 +30,9 @@ function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
     'reserved.top_navigation':
         browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
         '/_report_event_server.html',
+    'reserved.top_navigation_commit':
+        browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
+        '/_report_event_server.html',
     'click':
         browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
         '/_report_event_server.html'

@@ -111,7 +111,7 @@ TEST_F(MetricsRenderFrameObserverTest, NoMetrics) {
 }
 
 TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   TestMetricsRenderFrameObserver observer;
 
@@ -136,7 +136,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleMetric) {
 
 TEST_F(MetricsRenderFrameObserverTest,
        MainFrameIntersectionUpdateBeforeMetricsSenderCreated) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   TestMetricsRenderFrameObserver observer;
   observer.OnMainFrameIntersectionChanged(gfx::Rect(1, 2, 3, 4));
@@ -158,7 +158,7 @@ TEST_F(MetricsRenderFrameObserverTest,
 // Verify that when two CpuTimings come in, they're grouped into a single
 // Message with the total being the sum of the two.
 TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
   TestMetricsRenderFrameObserver observer;
   mojom::PageLoadTiming timing;
 
@@ -179,7 +179,7 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
 }
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
   base::TimeDelta dom_event = base::Milliseconds(2);
   base::TimeDelta load_event = base::Milliseconds(2);
 
@@ -269,7 +269,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleMetrics) {
 }
 
 TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
   base::TimeDelta dom_event = base::Milliseconds(2);
   base::TimeDelta load_event = base::Milliseconds(2);
 
@@ -297,7 +297,7 @@ TEST_F(MetricsRenderFrameObserverTest, MultipleNavigations) {
   // part of the test.
   observer.VerifyExpectedTimings();
 
-  base::Time nav_start_2 = base::Time::FromDoubleT(100);
+  base::Time nav_start_2 = base::Time::FromSecondsSinceUnixEpoch(100);
   base::TimeDelta dom_event_2 = base::Milliseconds(20);
   base::TimeDelta load_event_2 = base::Milliseconds(20);
   mojom::PageLoadTiming timing_2;

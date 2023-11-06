@@ -94,9 +94,10 @@ void RenderViewContextMenuMac::AppendPlatformEditableItems() {
 }
 
 void RenderViewContextMenuMac::InitToolkitMenu() {
-  if (params_.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword)
+  if (params_.form_control_type ==
+      blink::mojom::FormControlType::kInputPassword) {
     return;
+  }
 
   if (!params_.selection_text.empty() && params_.link_url.is_empty()) {
     // In case the user has selected a word that triggers spelling suggestions,

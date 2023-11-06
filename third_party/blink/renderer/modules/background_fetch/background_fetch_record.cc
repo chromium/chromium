@@ -61,7 +61,7 @@ ScriptPromise BackgroundFetchRecord::responseReady(ScriptState* script_state) {
 }
 
 Request* BackgroundFetchRecord::request() const {
-  return request_;
+  return request_.Get();
 }
 
 void BackgroundFetchRecord::UpdateState(

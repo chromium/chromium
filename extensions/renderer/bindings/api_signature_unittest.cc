@@ -182,13 +182,12 @@ std::unique_ptr<APISignature> OptionalIntAndInt() {
       std::move(specs), nullptr /*returns_async*/, nullptr /*access_checker*/);
 }
 
-std::vector<v8::Local<v8::Value>> StringToV8Vector(
-    v8::Local<v8::Context> context,
-    const char* args) {
+v8::LocalVector<v8::Value> StringToV8Vector(v8::Local<v8::Context> context,
+                                            const char* args) {
   v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, args);
   EXPECT_FALSE(v8_args.IsEmpty());
   EXPECT_TRUE(v8_args->IsArray());
-  std::vector<v8::Local<v8::Value>> vector_args;
+  v8::LocalVector<v8::Value> vector_args(context->GetIsolate());
   EXPECT_TRUE(gin::ConvertFromV8(context->GetIsolate(), v8_args, &vector_args));
   return vector_args;
 }
@@ -263,7 +262,7 @@ class APISignatureTest : public APIBindingTest {
     v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, arg_values);
     ASSERT_FALSE(v8_args.IsEmpty());
     ASSERT_TRUE(v8_args->IsArray());
-    std::vector<v8::Local<v8::Value>> vector_args;
+    v8::LocalVector<v8::Value> vector_args(isolate());
     ASSERT_TRUE(gin::ConvertFromV8(isolate(), v8_args, &vector_args));
 
     APISignature::JSONParseResult parse_result =
@@ -289,7 +288,7 @@ class APISignatureTest : public APIBindingTest {
     v8::Local<v8::Value> v8_args = V8ValueFromScriptSource(context, arg_values);
     ASSERT_FALSE(v8_args.IsEmpty());
     ASSERT_TRUE(v8_args->IsArray());
-    std::vector<v8::Local<v8::Value>> vector_args;
+    v8::LocalVector<v8::Value> vector_args(isolate());
     ASSERT_TRUE(gin::ConvertFromV8(isolate(), v8_args, &vector_args));
 
     std::string error;
@@ -514,7 +513,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
   {
     // Test with providing an optional callback.
     auto signature = IntAndOptionalCallback();
-    std::vector<v8::Local<v8::Value>> v8_args =
+    v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[1, function() {}]");
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
@@ -528,8 +527,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
   {
     // Test with omitting the optional callback.
     auto signature = IntAndOptionalCallback();
-    std::vector<v8::Local<v8::Value>> v8_args =
-        StringToV8Vector(context, "[1, null]");
+    v8::LocalVector<v8::Value> v8_args = StringToV8Vector(context, "[1, null]");
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
     EXPECT_FALSE(parse_result.error);
@@ -543,7 +541,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     // Test with providing something completely different than the spec, which
     // is (unfortunately) allowed and used.
     auto signature = OneString();
-    std::vector<v8::Local<v8::Value>> v8_args =
+    v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[{not: 'a string'}]");
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
@@ -557,7 +555,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
 
   {
     auto signature = OneObject();
-    std::vector<v8::Local<v8::Value>> v8_args = StringToV8Vector(
+    v8::LocalVector<v8::Value> v8_args = StringToV8Vector(
         context, "[{prop1: 'foo', other: 'bar', nullProp: null}]");
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
@@ -574,7 +572,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchema) {
     // order to match existing JS bindings behavior.
     // See https://crbug.com/924045.
     auto signature = OneString();
-    std::vector<v8::Local<v8::Value>> v8_args =
+    v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[1, undefined, 1/0]");
     APISignature::JSONParseResult parse_result =
         signature->ConvertArgumentsIgnoringSchema(context, v8_args);
@@ -607,7 +605,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
 
   {
     // Test with providing an optional callback.
-    std::vector<v8::Local<v8::Value>> v8_args =
+    v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[1, function() {}]");
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
@@ -622,8 +620,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
 
   {
     // Test with omitting the optional callback.
-    std::vector<v8::Local<v8::Value>> v8_args =
-        StringToV8Vector(context, "[1, null]");
+    v8::LocalVector<v8::Value> v8_args = StringToV8Vector(context, "[1, null]");
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);
@@ -637,7 +634,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
   {
     // Test with providing something completely different than the spec, which
     // is (unfortunately) allowed and used.
-    std::vector<v8::Local<v8::Value>> v8_args =
+    v8::LocalVector<v8::Value> v8_args =
         StringToV8Vector(context, "[{not: 'an int'}, null]");
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
@@ -654,8 +651,7 @@ TEST_F(APISignatureTest, ParseIgnoringSchemaWithPromises) {
     // If promises are not available and the optional callback is omitted, we
     // should not get a promise response type.
     context_allows_promises = false;
-    std::vector<v8::Local<v8::Value>> v8_args =
-        StringToV8Vector(context, "[1, null]");
+    v8::LocalVector<v8::Value> v8_args = StringToV8Vector(context, "[1, null]");
     APISignature::JSONParseResult parse_result =
         int_and_optional_callback->ConvertArgumentsIgnoringSchema(context,
                                                                   v8_args);
@@ -685,8 +681,7 @@ TEST_F(APISignatureTest, ParseArgumentsToV8) {
         },
         prop2: 'baz'
       }])";
-  std::vector<v8::Local<v8::Value>> args =
-      StringToV8Vector(context, kTrickyArgs);
+  v8::LocalVector<v8::Value> args = StringToV8Vector(context, kTrickyArgs);
 
   APISignature::V8ParseResult parse_result =
       signature->ParseArgumentsToV8(context, args, type_refs());
@@ -730,8 +725,7 @@ TEST_F(APISignatureTest, ParseArgumentsToV8WithUnspecifiedOptionalCallback) {
       ReturnsAsyncBuilder().MakeOptional().AddPromiseSupport().Build(),
       &access_checker);
 
-  std::vector<v8::Local<v8::Value>> args =
-      StringToV8Vector(context, R"([1337])");
+  v8::LocalVector<v8::Value> args = StringToV8Vector(context, R"([1337])");
 
   APISignature::V8ParseResult parse_result =
       signature->ParseArgumentsToV8(context, args, type_refs());

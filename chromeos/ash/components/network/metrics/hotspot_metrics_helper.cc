@@ -101,9 +101,10 @@ void HotspotMetricsHelper::RecordCheckTetheringReadinessResult(
 
 // static
 void HotspotMetricsHelper::RecordSetHotspotConfigResult(
-    hotspot_config::mojom::SetHotspotConfigResult result) {
+    hotspot_config::mojom::SetHotspotConfigResult result,
+    const std::string& shill_error) {
   base::UmaHistogramEnumeration(kHotspotSetConfigResultHistogram,
-                                GetSetConfigMetricsResult(result));
+                                GetSetConfigMetricsResult(result, shill_error));
 }
 
 // static
@@ -158,6 +159,14 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
   switch (result) {
     case CheckReadinessResult::kReady:
       return HotspotMetricsCheckReadinessResult::kReady;
+    case CheckReadinessResult::kNotAllowedByCarrier:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedByCarrier;
+    case CheckReadinessResult::kNotAllowedOnFW:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnFW;
+    case CheckReadinessResult::kNotAllowedOnVariant:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedOnVariant;
+    case CheckReadinessResult::kNotAllowedUserNotEntitled:
+      return HotspotMetricsCheckReadinessResult::kNotAllowedUserNotEntitled;
     case CheckReadinessResult::kNotAllowed:
       return HotspotMetricsCheckReadinessResult::kNotAllowed;
     case CheckReadinessResult::kUpstreamNetworkNotAvailable:
@@ -172,7 +181,8 @@ HotspotMetricsHelper::GetCheckReadinessMetricsResult(
 // static
 HotspotMetricsHelper::HotspotMetricsSetConfigResult
 HotspotMetricsHelper::GetSetConfigMetricsResult(
-    const hotspot_config::mojom::SetHotspotConfigResult& result) {
+    const hotspot_config::mojom::SetHotspotConfigResult& result,
+    const std::string& shill_error) {
   using hotspot_config::mojom::SetHotspotConfigResult;
 
   switch (result) {
@@ -182,6 +192,17 @@ HotspotMetricsHelper::GetSetConfigMetricsResult(
       return HotspotMetricsSetConfigResult::kFailedNotLogin;
     case SetHotspotConfigResult::kFailedInvalidConfiguration:
       return HotspotMetricsSetConfigResult::kFailedInvalidConfiguration;
+    case SetHotspotConfigResult::kFailedShillOperation:
+      if (shill_error == shill::kErrorResultInvalidArguments) {
+        return HotspotMetricsSetConfigResult::kFailedInvalidArgument;
+      } else if (shill_error == shill::kErrorResultIllegalOperation) {
+        return HotspotMetricsSetConfigResult::kFailedIllegalOperation;
+      } else if (shill_error == shill::kErrorResultPermissionDenied) {
+        return HotspotMetricsSetConfigResult::kFailedPermissionDenied;
+      } else if (shill_error == shill::kErrorResultFailure) {
+        return HotspotMetricsSetConfigResult::kFailedShillOperation;
+      }
+      return HotspotMetricsSetConfigResult::kFailedUnknownShillError;
   }
 }
 

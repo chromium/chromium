@@ -295,7 +295,8 @@ void EduCoexistenceLoginHandler::SendInitializeEduArgs() {
              chrome::GetChannelName(chrome::WithExtendedStable(false)));
   params.Set("deviceId", GetDeviceIdForActiveUserProfile());
 
-  params.Set("signinTime", GetSigninTime().ToJsTimeIgnoringNull());
+  params.Set("signinTime",
+             GetSigninTime().InMillisecondsFSinceUnixEpochIgnoringNull());
 
   // If the secondary edu account is being reauthenticated, the email address
   // will be provided via the url of the webcontent. Example

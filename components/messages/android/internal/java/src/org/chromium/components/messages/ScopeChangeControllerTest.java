@@ -27,9 +27,7 @@ import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * A test for {@link ScopeChangeController}.
- */
+/** A test for {@link ScopeChangeController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ScopeChangeControllerTest {
@@ -60,73 +58,97 @@ public class ScopeChangeControllerTest {
         expectedOnScopeChangeCalls++;
         ArgumentCaptor<MessageScopeChange> captor =
                 ArgumentCaptor.forClass(MessageScopeChange.class);
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is hidden"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is hidden"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be inactive when page is hidden",
-                ChangeType.INACTIVE, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE,
+                captor.getValue().changeType);
 
         observer.wasShown();
         expectedOnScopeChangeCalls++;
 
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is shown"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is shown"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be active when page is shown", ChangeType.ACTIVE,
+        Assert.assertEquals(
+                "Scope type should be active when page is shown",
+                ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
         observer.wasHidden();
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is hidden"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is hidden"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be inactive when page is hidden",
-                ChangeType.INACTIVE, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE,
+                captor.getValue().changeType);
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandle(!IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for a refresh"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should not be called for a refresh"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for uncommitted navigations"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should not be called for uncommitted"
+                                                + " navigations"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandle(IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for same document navigations"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should not be called for same document"
+                                                + " navigations"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description(
-                                "Delegate should be called when page is navigated to another page"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should be called when page is navigated to"
+                                                + " another page"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be destroy when navigated to another page",
-                ChangeType.DESTROY, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be destroy when navigated to another page",
+                ChangeType.DESTROY,
+                captor.getValue().changeType);
 
         observer.onTopLevelNativeWindowChanged(null);
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description(
-                                "Delegate should be called when top level native window changes"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should be called when top level native window"
+                                                + " changes"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be destroy when top level native window changes",
-                ChangeType.DESTROY, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be destroy when top level native window changes",
+                ChangeType.DESTROY,
+                captor.getValue().changeType);
     }
 
     @Test
@@ -151,13 +173,17 @@ public class ScopeChangeControllerTest {
                 ArgumentCaptor.forClass(MessageScopeChange.class);
         verify(delegate, description("Delegate should be called when page is hidden"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be inactive when page is hidden",
-                ChangeType.INACTIVE, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE,
+                captor.getValue().changeType);
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandle(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT));
-        verify(delegate,
-                times(1).description("Delegate should not be called when navigation is ignored"))
+        verify(
+                        delegate,
+                        times(1).description(
+                                        "Delegate should not be called when navigation is ignored"))
                 .onScopeChange(any());
     }
 
@@ -187,81 +213,107 @@ public class ScopeChangeControllerTest {
         expectedOnScopeChangeCalls++;
         ArgumentCaptor<MessageScopeChange> captor =
                 ArgumentCaptor.forClass(MessageScopeChange.class);
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is hidden"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is hidden"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be inactive when page is hidden",
-                ChangeType.INACTIVE, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE,
+                captor.getValue().changeType);
 
         observer.wasShown();
         expectedOnScopeChangeCalls++;
 
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is shown"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is shown"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be active when page is shown", ChangeType.ACTIVE,
+        Assert.assertEquals(
+                "Scope type should be active when page is shown",
+                ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
         observer.wasHidden();
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should be called when page is hidden"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should be called when page is hidden"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be inactive when page is hidden",
-                ChangeType.INACTIVE, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be inactive when page is hidden",
+                ChangeType.INACTIVE,
+                captor.getValue().changeType);
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, IS_RELOAD, DID_COMMIT, gurl1));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for a refresh"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description("Delegate should not be called for a refresh"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, !DID_COMMIT, gurl1));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for uncommitted navigations"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should not be called for uncommitted"
+                                                + " navigations"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandleWithUrl(IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl1));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description("Delegate should not be called for same document navigations"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should not be called for same document"
+                                                + " navigations"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl2));
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description(
-                                "Delegate should be not called when page is navigated to same domain"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should be not called when page is navigated to"
+                                                + " same domain"))
                 .onScopeChange(any());
 
         observer.didFinishNavigationInPrimaryMainFrame(
                 createNavigationHandleWithUrl(!IS_SAME_DOCUMENT, !IS_RELOAD, DID_COMMIT, gurl3));
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description(
-                                "Delegate should be called when page is navigated to another domain"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should be called when page is navigated to"
+                                                + " another domain"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be destroy when navigated to another domain",
-                ChangeType.DESTROY, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be destroy when navigated to another domain",
+                ChangeType.DESTROY,
+                captor.getValue().changeType);
 
         observer.onTopLevelNativeWindowChanged(null);
         expectedOnScopeChangeCalls++;
-        verify(delegate,
-                times(expectedOnScopeChangeCalls)
-                        .description(
-                                "Delegate should be called when top level native window changes"))
+        verify(
+                        delegate,
+                        times(expectedOnScopeChangeCalls)
+                                .description(
+                                        "Delegate should be called when top level native window"
+                                                + " changes"))
                 .onScopeChange(captor.capture());
-        Assert.assertEquals("Scope type should be destroy when top level native window changes",
-                ChangeType.DESTROY, captor.getValue().changeType);
+        Assert.assertEquals(
+                "Scope type should be destroy when top level native window changes",
+                ChangeType.DESTROY,
+                captor.getValue().changeType);
     }
 
     private NavigationHandle createNavigationHandle(
@@ -271,9 +323,15 @@ public class ScopeChangeControllerTest {
 
     private NavigationHandle createNavigationHandleWithUrl(
             boolean isSameDocument, boolean isReload, boolean didCommit, GURL url) {
-        NavigationHandle handle = NavigationHandle.createForTesting(url,
-                true /* isInPrimaryMainFrame*/, isSameDocument, true /* isRendererInitiated */,
-                0 /* pageTransition */, false /* hasUserGesture */, isReload);
+        NavigationHandle handle =
+                NavigationHandle.createForTesting(
+                        url,
+                        /* isInPrimaryMainFrame= */ true,
+                        isSameDocument,
+                        /* isRendererInitiated= */ true,
+                        /* pageTransition= */ 0,
+                        /* hasUserGesture= */ false,
+                        isReload);
         handle.didFinish(url, false, didCommit, false, false, false, 0, 0, 0, false);
         return handle;
     }

@@ -63,7 +63,7 @@ class CORE_EXPORT DOMViewTransition : public ScriptWrappable,
 
   void InvokeDOMChangeCallback();
 
-  ViewTransition* GetViewTransitionForTest() { return view_transition_; }
+  ViewTransition* GetViewTransitionForTest() { return view_transition_.Get(); }
 
   void Trace(Visitor* visitor) const override;
 

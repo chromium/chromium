@@ -51,7 +51,7 @@ import {StreamManagerChrome} from '../stream_manager_chrome.js';
 
 import {ModeBase, ModeFactory} from './mode_base.js';
 import {PhotoResult} from './photo.js';
-import {GifRecordTime, RecordTime} from './record_time.js';
+import {RecordTime} from './record_time.js';
 
 /**
  * Maps from board name to its default encoding profile and bitrate multiplier.
@@ -240,12 +240,7 @@ export class Video extends ModeBase {
   /**
    * Record-time for the elapsed recording time.
    */
-  private readonly recordTime = new RecordTime();
-
-  /**
-   * Record-time for the elapsed gif recording time.
-   */
-  private readonly gifRecordTime: GifRecordTime;
+  private readonly recordTime = new RecordTime(() => this.stop());
 
   /**
    * Record type of ongoing recording.
@@ -295,9 +290,6 @@ export class Video extends ModeBase {
       const {width, height} = video.getVideoSettings();
       return new Resolution(width, height);
     })();
-
-    this.gifRecordTime = new GifRecordTime(
-        {maxTime: MAX_GIF_DURATION_MS, onMaxTimeout: () => this.stop()});
   }
 
   override async clear(): Promise<void> {
@@ -602,7 +594,7 @@ export class Video extends ModeBase {
         this.recordingType === RecordType.GIF);
     if (this.recordingType === RecordType.GIF) {
       state.set(state.State.RECORDING, true);
-      this.gifRecordTime.start();
+      this.recordTime.start(MAX_GIF_DURATION_MS);
 
       let gifSaver = null;
       try {
@@ -615,7 +607,7 @@ export class Video extends ModeBase {
         throw e;
       } finally {
         state.set(state.State.RECORDING, false);
-        this.gifRecordTime.stop();
+        this.recordTime.stop();
       }
 
       const gifName = (new Filenamer()).newVideoName(VideoType.GIF);
@@ -625,7 +617,7 @@ export class Video extends ModeBase {
         name: gifName,
         gifSaver,
         resolution: this.captureResolution,
-        duration: this.gifRecordTime.inMilliseconds(),
+        duration: this.recordTime.inMilliseconds(),
       })];
     } else if (this.recordingType === RecordType.TIME_LAPSE) {
       // TODO(b/279865370): Don't pause when the confirm dialog is shown.
@@ -785,14 +777,16 @@ export class Video extends ModeBase {
    */
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
-    const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
+    const {width, height} = getVideoTrackSettings(this.getVideoTrack());
+    const resolution = new Resolution(width, height);
+    const encoderConfig = getVideoEncoderConfig(param, resolution);
 
     // Creates a saver given the initial speed.
     const saver = await this.handler.createTimeLapseSaver(
         {
           encoderConfig,
           fps: this.frameRate,
-          resolution: this.captureResolution,
+          resolution,
         },
         TIME_LAPSE_INITIAL_SPEED);
 

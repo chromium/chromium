@@ -27,10 +27,10 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {parseTrashInfoFiles, startIOTask} from './api.js';
-import {isFileSystemDirectoryEntry, isFileSystemFileEntry} from './entry_utils.js';
+import {isDirectoryEntry, isFileEntry} from './entry_utils.js';
 import {FakeEntryImpl} from './files_app_entry_types.js';
 import {recordMediumCount} from './metrics.js';
-import {str} from './util.js';
+import {str} from './translations.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 /**
@@ -317,7 +317,7 @@ export class TrashEntry implements Entry {
    * Pass through to filesEntry. Overrides FileEntry.
    */
   file(success: FileCallback, error: ErrorCallback) {
-    if (isFileSystemFileEntry(this.filesEntry)) {
+    if (isFileEntry(this.filesEntry)) {
       this.filesEntry.file(success, error);
       return;
     }
@@ -330,7 +330,7 @@ export class TrashEntry implements Entry {
   getFile(
       path: string, options: FileSystemFlags, success: FileSystemEntryCallback,
       error: ErrorCallback) {
-    if (isFileSystemDirectoryEntry(this.filesEntry)) {
+    if (isDirectoryEntry(this.filesEntry)) {
       this.filesEntry.getFile(path, options, success, error);
       return;
     }
@@ -341,7 +341,7 @@ export class TrashEntry implements Entry {
    * Remove filesEntry first, then remove infoEntry. Overrides DirectoryEntry.
    */
   removeRecursively(success: VoidCallback, error: ErrorCallback) {
-    if (isFileSystemDirectoryEntry(this.filesEntry)) {
+    if (isDirectoryEntry(this.filesEntry)) {
       this.filesEntry.removeRecursively(
           () => this.infoEntry.remove(success, error), error);
       return;

@@ -9,5 +9,4 @@ assert(is_chromeos_ash, "Enterprise Reporting WebUI is ChromeOS Ash only.")
 mojom("mojo_bindings") {
   sources = [ "enterprise_reporting.mojom" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }

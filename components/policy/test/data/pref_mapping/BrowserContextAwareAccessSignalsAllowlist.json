@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserContextAwareAccessSignalsAllowlist": [
+            "https://example1.com",
+            "https://[*.]example2.com",
+            "https://foo.example3.com/path"
+          ]
+        },
+        "prefs": {
+          "enterprise_connectors.device_trust_browser.origins": {
+            "value": [
+              "https://example1.com",
+              "https://[*.]example2.com",
+              "https://foo.example3.com/path"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

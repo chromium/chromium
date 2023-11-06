@@ -54,20 +54,31 @@ public class ForeignSessionItemViewBinderUnitTest {
     @Before
     public void setUp() throws Exception {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mForeignSessionItemView = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_foreign_session_item, /*root=*/null);
+        mForeignSessionItemView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_foreign_session_item, /* root= */ null);
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(SESSION_PROFILE,
-                                 new ForeignSession("tag", "John's iPhone 6", JAN_1_1970,
-                                         new ArrayList<>(), FormFactor.PHONE))
-                         .with(IS_SELECTED, true)
-                         .with(ON_CLICK_LISTENER,
-                                 () -> { mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)); })
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(
+                                SESSION_PROFILE,
+                                new ForeignSession(
+                                        "tag",
+                                        "John's iPhone 6",
+                                        JAN_1_1970,
+                                        new ArrayList<>(),
+                                        FormFactor.PHONE))
+                        .with(IS_SELECTED, true)
+                        .with(
+                                ON_CLICK_LISTENER,
+                                () -> {
+                                    mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
+                                })
+                        .build();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mForeignSessionItemView, ForeignSessionItemViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mForeignSessionItemView, ForeignSessionItemViewBinder::bind);
 
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
         List<ForeignSessionTab> tabs = new ArrayList<>();
@@ -77,18 +88,29 @@ public class ForeignSessionItemViewBinderUnitTest {
         List<ForeignSessionWindow> windows = new ArrayList<>();
         windows.add(window);
 
-        mForeignSessionItemView2 = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_foreign_session_item, /*root=*/null);
-        mModel2 = new PropertyModel.Builder(ALL_KEYS)
-                          .with(SESSION_PROFILE,
-                                  new ForeignSession("tag2", "John's iPad Air", JAN_1_1970,
-                                          windows, FormFactor.TABLET))
-                          .with(IS_SELECTED, true)
-                          .with(ON_CLICK_LISTENER,
-                                  () -> { mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)); })
-                          .build();
-        mPropertyModelChangeProcessor2 = PropertyModelChangeProcessor.create(
-                mModel2, mForeignSessionItemView2, ForeignSessionItemViewBinder::bind);
+        mForeignSessionItemView2 =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_foreign_session_item, /* root= */ null);
+        mModel2 =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(
+                                SESSION_PROFILE,
+                                new ForeignSession(
+                                        "tag2",
+                                        "John's iPad Air",
+                                        JAN_1_1970,
+                                        windows,
+                                        FormFactor.TABLET))
+                        .with(IS_SELECTED, true)
+                        .with(
+                                ON_CLICK_LISTENER,
+                                () -> {
+                                    mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
+                                })
+                        .build();
+        mPropertyModelChangeProcessor2 =
+                PropertyModelChangeProcessor.create(
+                        mModel2, mForeignSessionItemView2, ForeignSessionItemViewBinder::bind);
     }
 
     @Test
@@ -119,14 +141,16 @@ public class ForeignSessionItemViewBinderUnitTest {
 
     @Test
     public void testSetIsSelected() {
-        ImageView selectedIcon1 = mForeignSessionItemView.findViewById(
-                R.id.restore_tabs_detail_sheet_device_item_selected_icon);
+        ImageView selectedIcon1 =
+                mForeignSessionItemView.findViewById(
+                        R.id.restore_tabs_detail_sheet_device_item_selected_icon);
         Assert.assertEquals(View.VISIBLE, selectedIcon1.getVisibility());
 
         mModel.set(IS_SELECTED, false);
 
-        ImageView selectedIcon2 = mForeignSessionItemView.findViewById(
-                R.id.restore_tabs_detail_sheet_device_item_selected_icon);
+        ImageView selectedIcon2 =
+                mForeignSessionItemView.findViewById(
+                        R.id.restore_tabs_detail_sheet_device_item_selected_icon);
         Assert.assertEquals(View.GONE, selectedIcon2.getVisibility());
     }
 

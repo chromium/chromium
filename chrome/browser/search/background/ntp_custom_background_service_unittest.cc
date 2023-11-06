@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -340,27 +341,6 @@ TEST_F(NtpCustomBackgroundServiceTest, SetLocalImage) {
   base::ThreadPoolInstance::Get()->FlushForTesting();
 
   custom_background_service_->SelectLocalBackgroundImage(path);
-  task_environment_.RunUntilIdle();
-
-  auto custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_TRUE(
-      base::StartsWith(custom_background->custom_background_url.spec(),
-                       chrome::kChromeUIUntrustedNewTabPageBackgroundUrl,
-                       base::CompareCase::SENSITIVE));
-  EXPECT_TRUE(
-      pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
-  EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
-  EXPECT_EQ(true, custom_background->is_uploaded_image);
-}
-
-TEST_F(NtpCustomBackgroundServiceTest, SetLocalImageWithFileString) {
-  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(1);
-  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
-
-  sync_preferences::TestingPrefServiceSyncable* pref_service =
-      profile().GetTestingPrefService();
-
-  custom_background_service_->SelectLocalBackgroundImage("background_image");
   task_environment_.RunUntilIdle();
 
   auto custom_background = custom_background_service_->GetCustomBackground();
@@ -1072,49 +1052,25 @@ TEST_F(NtpCustomBackgroundServiceTest, LocalImageURLsDoNotGetVerified) {
   EXPECT_EQ(true, custom_background->is_uploaded_image);
 }
 
-class NtpCustomBackgroundServiceWithWallpaperSearchTest
-    : public NtpCustomBackgroundServiceTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch},
-        /*disabled_features=*/{});
-    NtpCustomBackgroundServiceTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(NtpCustomBackgroundServiceWithWallpaperSearchTest,
-       SetLocalImageWithSkBitmap) {
-  EXPECT_CALL(observer_, OnCustomBackgroundImageUpdated).Times(1);
-  ASSERT_FALSE(custom_background_service_->IsCustomBackgroundSet());
-
-  SkColor color = SK_ColorBLUE;
-  EXPECT_CALL(mock_theme_service(), SetUserColorAndBrowserColorVariant)
-      .WillOnce(SaveArg<0>(&color));
-
+TEST_F(NtpCustomBackgroundServiceTest, SetBackgroundToLocalResourceWithId) {
   sync_preferences::TestingPrefServiceSyncable* pref_service =
       profile().GetTestingPrefService();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(32, 32);
-  bitmap.eraseColor(SK_ColorRED);
 
-  custom_background_service_->SelectLocalBackgroundImage(bitmap);
+  base::Token token = base::Token::CreateRandom();
+  custom_background_service_->SetBackgroundToLocalResourceWithId(token);
   task_environment_.RunUntilIdle();
 
   // Check that local background image was set.
   auto custom_background = custom_background_service_->GetCustomBackground();
-  EXPECT_TRUE(
-      base::StartsWith(custom_background->custom_background_url.spec(),
-                       chrome::kChromeUIUntrustedNewTabPageBackgroundUrl,
-                       base::CompareCase::SENSITIVE));
+  EXPECT_TRUE(base::StartsWith(
+      custom_background->custom_background_url.spec(),
+      chrome::kChromeUIUntrustedNewTabPageUrl + token.ToString() +
+          chrome::kChromeUIUntrustedNewTabPageBackgroundFilename,
+      base::CompareCase::SENSITIVE));
   EXPECT_TRUE(
       pref_service->GetBoolean(prefs::kNtpCustomBackgroundLocalToDevice));
+  EXPECT_EQ(pref_service->GetString(prefs::kNtpCustomBackgroundLocalToDeviceId),
+            token.ToString());
   EXPECT_TRUE(custom_background_service_->IsCustomBackgroundSet());
   EXPECT_EQ(true, custom_background->is_uploaded_image);
-
-  // Check that the color is correct.
-  EXPECT_EQ(SK_ColorRED, color);
 }

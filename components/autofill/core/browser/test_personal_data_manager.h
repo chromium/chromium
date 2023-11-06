@@ -56,7 +56,6 @@ class TestPersonalDataManager : public PersonalDataManager {
   std::string UpdateIban(const Iban& iban) override;
   void DeleteLocalCreditCards(const std::vector<CreditCard>& cards) override;
   void UpdateCreditCard(const CreditCard& credit_card) override;
-  void AddFullServerCreditCard(const CreditCard& credit_card) override;
   const std::string& GetDefaultCountryCodeForNewAddress() const override;
   void LoadProfiles() override;
   void LoadCreditCards() override;
@@ -79,6 +78,9 @@ class TestPersonalDataManager : public PersonalDataManager {
       const override;
   bool IsPaymentMethodsMandatoryReauthEnabled() override;
   void SetPaymentMethodsMandatoryReauthEnabled(bool enabled) override;
+  void AddServerCvc(int64_t instrument_id, const std::u16string& cvc) override;
+  void ClearServerCvcs() override;
+  void ClearLocalCvcs() override;
 
   // Unique to TestPersonalDataManager:
 
@@ -94,8 +96,9 @@ class TestPersonalDataManager : public PersonalDataManager {
   // Clears |autofill_offer_data_|.
   void ClearCreditCardOfferData();
 
-  // Adds a card to |server_credit_cards_|.  Functionally identical to
-  // AddFullServerCreditCard().
+  // Adds a card to `server_credit_cards_`. This test class treats masked and
+  // full server cards equally, relying on their preset RecordType to
+  // differentiate them.
   void AddServerCreditCard(const CreditCard& credit_card);
 
   // Adds a cloud token data to |server_credit_card_cloud_token_data_|.
@@ -103,6 +106,9 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Adds offer data to |autofill_offer_data_|.
   void AddAutofillOfferData(const AutofillOfferData& offer_data);
+
+  // Adds an `iban` to `server_ibans_`.
+  void AddServerIban(const Iban& iban);
 
   // Adds a `url` to `image` mapping to the local `credit_card_art_images_`
   // cache.

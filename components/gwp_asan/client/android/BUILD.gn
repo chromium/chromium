@@ -23,9 +23,9 @@ android_library("gwp_asan_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/gwp_asan/client:features",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   sources = [ "org/chromium/components/gwp_asan/GwpAsanFeatureMap.java" ]
 }

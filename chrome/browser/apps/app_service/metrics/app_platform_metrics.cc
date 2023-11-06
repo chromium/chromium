@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -262,6 +263,12 @@ void RecordAppLaunchPerAppTypeV2(apps::AppTypeNameV2 app_type_name_v2) {
                                 app_type_name_v2);
 }
 
+base::TimeDelta GetDurationAndResetStartTime(base::TimeTicks& start_time) {
+  base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+  start_time = base::TimeTicks::Now();
+  return duration;
+}
+
 }  // namespace
 
 namespace apps {
@@ -445,6 +452,10 @@ AppPlatformMetrics::AppPlatformMetrics(
     : profile_(profile), app_registry_cache_(app_registry_cache) {
   app_registry_cache_observer_.Observe(&app_registry_cache);
   instance_registry_observation_.Observe(&instance_registry);
+  if (chromeos::IsManagedGuestSession()) {
+    CHECK(ukm::UkmRecorder::Get());
+    ukm_recorder_observer_.Observe(ukm::UkmRecorder::Get());
+  }
   user_type_by_device_type_ = GetUserTypeByDeviceTypeMetrics();
   InitRunningDuration();
   LoadAppsUsageTimeUkmFromPref();
@@ -452,13 +463,8 @@ AppPlatformMetrics::AppPlatformMetrics(
 }
 
 AppPlatformMetrics::~AppPlatformMetrics() {
-  for (auto it : running_start_time_) {
-    running_duration_[it.second.app_type_name] +=
-        base::TimeTicks::Now() - it.second.start_time;
-  }
-
+  UpdateMetricsBeforeShutdown();
   OnTenMinutes();
-  RecordAppsUsageTime();
 
   // Notify registered observers.
   for (auto& observer : observers_) {
@@ -939,6 +945,12 @@ void AppPlatformMetrics::OnInstanceRegistryWillBeDestroyed(
   instance_registry_observation_.Reset();
 }
 
+void AppPlatformMetrics::OnStartingShutdown() {
+  CHECK(chromeos::IsManagedGuestSession());
+  UpdateMetricsBeforeShutdown();
+  RecordAppsUsageTimeUkm();
+}
+
 void AppPlatformMetrics::GetBrowserInstanceInfo(
     const aura::Window* browser_window,
     base::UnguessableToken& browser_id,
@@ -1147,8 +1159,7 @@ void AppPlatformMetrics::RecordAppsCount(AppType app_type) {
 void AppPlatformMetrics::RecordAppsRunningDuration() {
   for (auto& it : running_start_time_) {
     running_duration_[it.second.app_type_name] +=
-        base::TimeTicks::Now() - it.second.start_time;
-    it.second.start_time = base::TimeTicks::Now();
+        GetDurationAndResetStartTime(it.second.start_time);
   }
 
   base::TimeDelta total_running_duration;
@@ -1179,14 +1190,13 @@ void AppPlatformMetrics::RecordAppsRunningDuration() {
 void AppPlatformMetrics::RecordAppsUsageTime() {
   for (auto& it : start_time_per_five_minutes_) {
     base::TimeDelta running_time =
-        base::TimeTicks::Now() - it.second.start_time;
+        GetDurationAndResetStartTime(it.second.start_time);
     app_type_running_time_per_five_minutes_[it.second.app_type_name] +=
         running_time;
     app_type_v2_running_time_per_five_minutes_[it.second.app_type_name_v2] +=
         running_time;
     UpdateUsageTime(it.first, it.second.app_id, it.second.app_type_name,
                     running_time);
-    it.second.start_time = base::TimeTicks::Now();
   }
 
   for (auto it : app_type_running_time_per_five_minutes_) {
@@ -1416,6 +1426,15 @@ void AppPlatformMetrics::ClearAppsUsageTimeForInstance(
   if (instance_dict) {
     instance_dict->Set(kUsageTimeDurationKey, base::Int64ToValue(0));
   }
+}
+
+void AppPlatformMetrics::UpdateMetricsBeforeShutdown() {
+  for (auto& it : running_start_time_) {
+    running_duration_[it.second.app_type_name] +=
+        GetDurationAndResetStartTime(it.second.start_time);
+  }
+
+  RecordAppsUsageTime();
 }
 
 }  // namespace apps

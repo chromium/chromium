@@ -527,9 +527,10 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                                       : omnibox::kPageIcon;
 
     case Type::SEARCH_SUGGEST: {
-      if (subtypes.contains(/*SUBTYPE_TRENDS=*/143))
+      if (IsTrendSuggestion()) {
         return use_chrome_refresh_icons ? omnibox::kTrendingUpChromeRefreshIcon
                                         : omnibox::kTrendingUpIcon;
+      }
       return use_chrome_refresh_icons ? vector_icons::kSearchChromeRefreshIcon
                                       : vector_icons::kSearchIcon;
     }
@@ -1088,6 +1089,19 @@ bool AutocompleteMatch::IsActionCompatible() const {
          type != AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
 }
 
+bool AutocompleteMatch::HasInstantKeyword(
+    TemplateURLService* template_url_service) const {
+  if (!associated_keyword) {
+    return false;
+  }
+  TemplateURL* turl =
+      associated_keyword->GetTemplateURL(template_url_service, false);
+  if (!turl) {
+    return false;
+  }
+  return turl->starter_pack_id() != 0;
+}
+
 void AutocompleteMatch::GetKeywordUIState(
     TemplateURLService* template_url_service,
     std::u16string* keyword_out,
@@ -1139,6 +1153,11 @@ void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
                                              int value) {
+  RecordAdditionalInfo(property, base::NumberToString(value));
+}
+
+void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
+                                             double value) {
   RecordAdditionalInfo(property, base::NumberToString(value));
 }
 
@@ -1302,6 +1321,10 @@ bool AutocompleteMatch::IsOnDeviceSearchSuggestion() const {
 bool AutocompleteMatch::IsUrlScoringEligible() const {
   return scoring_signals.has_value() &&
          type != AutocompleteMatchType::URL_WHAT_YOU_TYPED;
+}
+
+bool AutocompleteMatch::IsTrendSuggestion() const {
+  return subtypes.contains(/*omnibox::SUBTYPE_TRENDS=*/143);
 }
 
 void AutocompleteMatch::FilterOmniboxActions(
@@ -1528,6 +1551,18 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 }
 
 void AutocompleteMatch::MergeScoringSignals(const AutocompleteMatch& other) {
+  // Keep consistent:
+  // - omnibox_event.proto `ScoringSignals`
+  // - autocomplete_scoring_model_handler.cc
+  //   `AutocompleteScoringModelHandler::ExtractInputFromScoringSignals()`
+  // - autocomplete_match.cc `AutocompleteMatch::MergeScoringSignals()`
+  // - omnibox.mojom `struct Signals`
+  // - omnibox_page_handler.cc `TypeConverter<AutocompleteMatch::ScoringSignals,
+  //   mojom::SignalsPtr>`
+  // - omnibox_page_handler.cc `TypeConverter<mojom::SignalsPtr,
+  //   AutocompleteMatch::ScoringSignals>`
+  // - omnibox_util.ts `signalNames`
+
   if (!other.scoring_signals.has_value()) {
     return;
   }

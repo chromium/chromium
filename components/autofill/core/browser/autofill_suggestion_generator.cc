@@ -299,17 +299,18 @@ void AddAddressChildSuggestions(FieldTypeGroup trigger_field_type_group,
 }
 
 // Adds contact related child suggestions (i.e email and phone number) to
-// build autofill popup submenu. The param `type` refers to the triggering field
-// type (clicked by the users) and is used to define  whether the phone number
-// suggestion will behave as `PopupItemId::kFieldByFieldFilling` or as
-// `PopupItemId::kFillFullPhoneNumber`.
+// build autofill popup submenu. The param `trigger_field_type_group` refers to
+// the triggering field group (clicked by the users) and is used to define
+// whether the phone number and email suggestions  will behave as
+// `PopupItemId::kFieldByFieldFilling` or as
+// `PopupItemId::kFillFullPhoneNumber`/`PopupItemId::kFillFullEmail`
+// respectively. When the triggering field group matches the type of the field
+// we are adding, the suggestion will be of group filling type, other field by
+// field.
 void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
                                 const AutofillProfile& profile,
                                 const std::string& app_locale,
                                 Suggestion& suggestion) {
-  // Creates a phone number suggestion for the autofill submenu. When triggered
-  // from a phone number field this suggestion will fill every phone number
-  // field. Otherwise it fills a specific field.
   bool phone_number_suggestion_added = false;
   if (profile.HasInfo(PHONE_HOME_WHOLE_NUMBER)) {
     Suggestion phone_number_suggestion(
@@ -323,9 +324,22 @@ void AddContactChildSuggestions(FieldTypeGroup trigger_field_type_group,
     suggestion.children.push_back(std::move(phone_number_suggestion));
     phone_number_suggestion_added = true;
   }
-  if (AddFieldByFieldSuggestions({EMAIL_ADDRESS}, profile, app_locale,
-                                 suggestion.children) ||
-      phone_number_suggestion_added) {
+
+  bool email_address_suggestion_added = false;
+  if (profile.HasInfo(EMAIL_ADDRESS)) {
+    Suggestion email_address_suggestion(
+        profile.GetInfo(EMAIL_ADDRESS, app_locale));
+    const bool is_email_field =
+        trigger_field_type_group == FieldTypeGroup::kEmail;
+    email_address_suggestion.popup_item_id =
+        is_email_field ? PopupItemId::kFillFullEmail
+                       : PopupItemId::kFieldByFieldFilling;
+    email_address_suggestion.payload = Suggestion::BackendId(profile.guid());
+    suggestion.children.push_back(std::move(email_address_suggestion));
+    email_address_suggestion_added = true;
+  }
+
+  if (email_address_suggestion_added || phone_number_suggestion_added) {
     suggestion.children.push_back(
         AutofillSuggestionGenerator::CreateSeparator());
   }
@@ -354,7 +368,6 @@ void AddFooterChildSuggestions(
 // `last_filling_granularity`.
 // `last_targeted_fields` specified the last set of fields target by the user.
 // When not present, we default to full form.
-// TODO(crbug.com/1466116): Add tests when this is actually used.
 PopupItemId GetProfileSuggestionPopupItemId(
     absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
     FieldTypeGroup triggering_field_type_group) {
@@ -362,10 +375,10 @@ PopupItemId GetProfileSuggestionPopupItemId(
           features::kAutofillGranularFillingAvailable)) {
     return PopupItemId::kAddressEntry;
   }
-  const ServerFieldTypeSet& last_targeted_fields =
-      optional_last_targeted_fields.value_or(kAllServerFieldTypes);
 
-  if (AreFieldsGranularFillingGroup(last_targeted_fields)) {
+  // Lambda to return the expected `PopupItemId` when
+  // `optional_last_targeted_fields` matches one of the granular filling groups.
+  auto get_popup_item_id_for_group_filling = [&] {
     switch (triggering_field_type_group) {
       case FieldTypeGroup::kName:
         return PopupItemId::kFillFullName;
@@ -374,35 +387,74 @@ PopupItemId GetProfileSuggestionPopupItemId(
         return PopupItemId::kFillFullAddress;
       case FieldTypeGroup::kPhone:
         return PopupItemId::kFillFullPhoneNumber;
+      case FieldTypeGroup::kEmail:
+        return PopupItemId::kFillFullEmail;
       default:
         // If the 'current_granularity' is group filling, BUT the current
-        // focused field is not one for which group we offer group filling
-        // (kName, kAddress and kPhone), we default back to fill full form
-        // behaviour/pre-granular filling popup id.
+        // focused field is not one for which group we offer group filling,
+        // we default back to fill full form behaviour/pre-granular filling
+        // popup id.
         return PopupItemId::kAddressEntry;
     }
+  };
+
+  switch (GetFillingMethodFromTargetedFields(
+      optional_last_targeted_fields.value_or(kAllServerFieldTypes))) {
+    case AutofillFillingMethod::kGroupFilling:
+      return get_popup_item_id_for_group_filling();
+    case AutofillFillingMethod::kFullForm:
+      return PopupItemId::kAddressEntry;
+    case AutofillFillingMethod::kFieldByFieldFilling:
+      return PopupItemId::kFieldByFieldFilling;
+    case AutofillFillingMethod::kNone:
+      NOTREACHED_NORETURN();
   }
-  if (last_targeted_fields == kAllServerFieldTypes) {
-    return PopupItemId::kAddressEntry;
-  }
-  if (last_targeted_fields.size() == 1) {
-    // Note: This does not affect SingleFieldFormFillers such
-    // Autocomplete, IBANs and merchand promo. Even though they also fill only
-    // one field, they have different code paths, therefore their suggestions
-    // are not generated here. Furthermore, we do not store
-    // `last_targeted_fields` for them.
-    return PopupItemId::kFieldByFieldFilling;
-  }
-  NOTREACHED_NORETURN();
 }
 
-// Returns for each profile in `profiles` one label string to be used as a
-// secondary text in the corresponding suggestion bubble. `field_types` the
-// types of the fields that will be filled by the suggestion
-std::vector<std::u16string> GetProfileSuggestionLabels(
+// Creates a specific granular filling label when the `last_filling_granularity`
+// for a certain form was group filling. This is done to give users feedback
+// about the filling behaviour.
+std::optional<Suggestion::Text> GetGranularFillingLabel(
+    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
+    FieldTypeGroup triggering_field_type_group) {
+  if (!optional_last_targeted_fields ||
+      !AreFieldsGranularFillingGroup(*optional_last_targeted_fields)) {
+    return absl::nullopt;
+  }
+  switch (triggering_field_type_group) {
+    case FieldTypeGroup::kName:
+      return Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_NAME_GROUP_POPUP_OPTION_SELECTED));
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kAddress:
+      return Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_FILL_ADDRESS_GROUP_POPUP_OPTION_SELECTED));
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kPhone:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
+    case FieldTypeGroup::kBirthdateField:
+    case FieldTypeGroup::kIban:
+      return absl::nullopt;
+  }
+}
+
+// Returns for each profile in `profiles` label `Suggestion::Text`s to be used
+// as a secondary text in the corresponding suggestion bubble. The last label in
+// the label's vector is used to differentiate profiles, while the others are a
+// granular filling specific label and an optional separator label ("-"), which
+// exists when both a granular filling and a differentiating label exists. The
+// Granular filling label is added depending on `optional_last_targeted_fields`
+// and the `trigger_field_type`. See `GetProfileSuggestionLabels()` for details.
+std::vector<std::vector<Suggestion::Text>> GetProfileSuggestionLabels(
     const std::vector<const AutofillProfile*>& profiles,
     const ServerFieldTypeSet& field_types,
     ServerFieldType trigger_field_type,
+    absl::optional<ServerFieldTypeSet> optional_last_targeted_fields,
     const std::string& app_locale) {
   std::unique_ptr<LabelFormatter> formatter;
   bool use_formatter;
@@ -423,30 +475,59 @@ std::vector<std::u16string> GetProfileSuggestionLabels(
                   : nullptr;
 
   // Generate disambiguating labels based on the list of matches.
-  std::vector<std::u16string> labels;
+  std::vector<std::u16string> differentiating_labels;
   if (formatter) {
-    labels = formatter->GetLabels();
+    differentiating_labels = formatter->GetLabels();
   } else {
-    AutofillProfile::CreateInferredLabels(
-        profiles, field_types, trigger_field_type, 1, app_locale, &labels);
+    AutofillProfile::CreateInferredLabels(profiles, field_types,
+                                          trigger_field_type, 1, app_locale,
+                                          &differentiating_labels);
   }
 
   if (use_formatter && !profiles.empty()) {
     AutofillMetrics::LogProfileSuggestionsMadeWithFormatter(formatter !=
                                                             nullptr);
   }
-  return labels;
+
+  std::optional<Suggestion::Text> granular_filling_label =
+      base::FeatureList::IsEnabled(features::kAutofillGranularFillingAvailable)
+          ? GetGranularFillingLabel(
+                optional_last_targeted_fields,
+                GroupTypeOfServerFieldType(trigger_field_type))
+          : absl::nullopt;
+  // Creates a list of `Suggestion::Text` to be used as labels.
+  std::vector<std::vector<Suggestion::Text>> suggestions_labels;
+  for (const std::u16string& differentiating_label : differentiating_labels) {
+    suggestions_labels.emplace_back();
+    // Add granular filling specific labels if it exists.
+    if (granular_filling_label) {
+      suggestions_labels.back().emplace_back(
+          std::move(*granular_filling_label));
+      // Add a separator if the `differentiating_label` is not empty.
+      // This will lead to a suggestion rendered as:
+      // "Fill address - Sansa Stark".
+      if (!differentiating_label.empty()) {
+        suggestions_labels.back().emplace_back(u"-");
+      }
+    }
+    if (!differentiating_label.empty()) {
+      suggestions_labels.back().emplace_back(differentiating_label);
+    }
+  }
+
+  return suggestions_labels;
 }
 
-// Assigns for each suggestion one label to be used as secondary text in the
+// Assigns for each suggestion labels to be used as secondary text in the
 // suggestion bubble, and deduplicates suggestions having the same main text
-// and label.
-// TODO(crbug.com/1477646): Investigate AssignLabelsAndDeduplicate and remove
-// it if it is not needed, since `GetProfilesForSuggestions()` should already
-// filter out duplicates.
-void AssignLabelsAndDeduplicate(std::vector<Suggestion>& suggestions,
-                                const std::vector<std::u16string>& labels,
-                                const std::string& app_locale) {
+// and label. For each vector in `labels`, the last value is used to
+// differentiate profiles, while the others are granular filling specific
+// labels, see `GetGranularFillingLabel()`. In the case where `labels` is empty,
+// we have no differentiating label for the profile.
+void AssignLabelsAndDeduplicate(
+    std::vector<Suggestion>& suggestions,
+    const std::vector<std::vector<Suggestion::Text>>& labels,
+    const std::string& app_locale) {
   DCHECK_EQ(suggestions.size(), labels.size());
   std::set<std::u16string> suggestion_text;
   size_t index_to_add_suggestion = 0;
@@ -461,14 +542,17 @@ void AssignLabelsAndDeduplicate(std::vector<Suggestion>& suggestions,
   // the normalized text "john400oakrd", and the Suggestion with the lower
   // ranking should be discarded.
   for (size_t i = 0; i < labels.size(); ++i) {
-    std::u16string label = labels[i];
+    // If there are no labels, consider the `differentiating_label` as an empty
+    // string.
+    const std::u16string& differentiating_label =
+        !labels[i].empty() ? labels[i].back().value : std::u16string();
 
     // For example, a Suggestion with the value "John" and the label "400 Oak
     // Rd" has the normalized text "john400oakrd".
     bool text_inserted =
         suggestion_text
             .insert(AutofillProfileComparator::NormalizeForComparison(
-                suggestions[i].main_text.value + label,
+                suggestions[i].main_text.value + differentiating_label,
                 AutofillProfileComparator::DISCARD_WHITESPACE))
             .second;
 
@@ -486,10 +570,19 @@ void AssignLabelsAndDeduplicate(std::vector<Suggestion>& suggestions,
       // produced for it may both be a zip code.
       if (!comparator.Compare(
               suggestions[index_to_add_suggestion].main_text.value,
-              labels[i]) &&
-          !labels[i].empty()) {
-        suggestions[index_to_add_suggestion].labels = {
-            {Suggestion::Text(labels[i])}};
+              differentiating_label)) {
+        if (!base::FeatureList::IsEnabled(
+                features::kAutofillGranularFillingAvailable)) {
+          if (!differentiating_label.empty()) {
+            suggestions[index_to_add_suggestion].labels = {
+                {Suggestion::Text(differentiating_label)}};
+          }
+        } else {
+          // Note that `labels[i]` can be empty, this is possible for example in
+          // the field by field filling case.
+          suggestions[index_to_add_suggestion].labels.emplace_back(
+              std::move(labels[i]));
+        }
       }
       ++index_to_add_suggestion;
     }
@@ -560,6 +653,31 @@ std::u16string NormalizeForComparisonForType(const std::u16string& text,
   return AutofillProfileComparator::NormalizeForComparison(text);
 }
 
+absl::optional<Suggestion> GetSuggestionForTestAddresses(
+    base::span<const AutofillProfile> test_addresses,
+    const std::string& locale) {
+  if (test_addresses.empty()) {
+    return absl::nullopt;
+  }
+
+  Suggestion suggestion(u"Devtools", PopupItemId::kDevtoolsTestAddresses);
+  suggestion.labels = {{Suggestion::Text(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_TEST_DATA))}};
+  suggestion.icon = "codeIcon";
+  for (const AutofillProfile& test_address : test_addresses) {
+    const std::u16string test_address_country =
+        test_address.GetInfo(ADDRESS_HOME_COUNTRY, locale);
+    suggestion.children.emplace_back(test_address_country,
+                                     PopupItemId::kDevtoolsTestAddressEntry);
+    suggestion.children.back().payload =
+        Suggestion::BackendId(test_address.guid());
+    suggestion.children.back().acceptance_a11y_announcement =
+        l10n_util::GetStringFUTF16(IDS_AUTOFILL_TEST_ADDRESS_SELECTED_A11Y_HINT,
+                                   test_address_country);
+  }
+  return suggestion;
+}
+
 }  // namespace
 
 AutofillSuggestionGenerator::AutofillSuggestionGenerator(
@@ -579,8 +697,7 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForProfiles(
   // available profiles should be shown. Selecting a suggestion overwrites the
   // triggering field's value.
   const std::u16string field_value_for_filtering =
-      trigger_source != AutofillSuggestionTriggerSource::
-                            kManualFallbackForAutocompleteUnrecognized
+      trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress
           ? triggering_field.value
           : u"";
 
@@ -703,8 +820,22 @@ AutofillSuggestionGenerator::CreateSuggestionsFromProfiles(
   AssignLabelsAndDeduplicate(
       suggestions,
       GetProfileSuggestionLabels(profiles, field_types, trigger_field_type,
-                                 app_locale),
+                                 last_targeted_fields, app_locale),
       app_locale);
+
+  // Add devtools test addresses suggestion if it exists. A suggestion will
+  // exist if devtools is open and therefore test addresses were set.
+  if (absl::optional<Suggestion> test_addresses_suggestion =
+          GetSuggestionForTestAddresses(personal_data_->test_addresses(),
+                                        app_locale)) {
+    std::vector<Suggestion> suggestions_with_test_address;
+    suggestions_with_test_address.push_back(
+        std::move(*test_addresses_suggestion));
+    suggestions_with_test_address.insert(suggestions_with_test_address.end(),
+                                         suggestions.begin(),
+                                         suggestions.end());
+    return suggestions_with_test_address;
+  }
 
   return suggestions;
 }
@@ -837,9 +968,7 @@ std::u16string AutofillSuggestionGenerator::GetProfileSuggestionMainText(
     const AutofillProfile* profile,
     ServerFieldType trigger_field_type) {
   std::string app_locale = personal_data_->app_locale();
-  ::i18n::addressinput::AddressField address_field;
-  if (i18n::FieldForType(trigger_field_type, &address_field) &&
-      address_field == ::i18n::addressinput::STREET_ADDRESS) {
+  if (trigger_field_type == ADDRESS_HOME_STREET_ADDRESS) {
     std::string street_address_line;
     ::i18n::addressinput::GetStreetAddressLinesAsSingleLine(
         *i18n::CreateAddressDataFromAutofillProfile(*profile, app_locale),
@@ -1073,13 +1202,18 @@ std::vector<Suggestion> AutofillSuggestionGenerator::GetSuggestionsForIbans(
   std::vector<Suggestion> suggestions;
   suggestions.reserve(ibans.size() + 2);
   for (const Iban* iban : ibans) {
-    Suggestion& suggestion = suggestions.emplace_back(iban->value());
+    Suggestion& suggestion =
+        suggestions.emplace_back(iban->GetIdentifierStringForAutofillDisplay());
     suggestion.custom_icon =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(
             IDR_AUTOFILL_IBAN);
     suggestion.popup_item_id = PopupItemId::kIbanEntry;
-    suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
-    suggestion.main_text.value = iban->GetIdentifierStringForAutofillDisplay();
+    if (iban->record_type() == Iban::kLocalIban) {
+      suggestion.payload = Suggestion::ValueToFill(iban->GetStrippedValue());
+    } else {
+      CHECK(iban->record_type() == Iban::kServerIban);
+      suggestion.payload = Suggestion::BackendId(iban->instrument_id());
+    }
     if (!iban->nickname().empty())
       suggestion.labels = {{Suggestion::Text(iban->nickname())}};
   }

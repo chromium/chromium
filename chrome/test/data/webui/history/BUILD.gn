@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "history"
-
   files = [
     "history_clusters/utils.ts",
     "history_drawer_test.ts",

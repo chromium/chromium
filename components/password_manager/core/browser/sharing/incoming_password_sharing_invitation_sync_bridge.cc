@@ -50,6 +50,8 @@ IncomingSharingInvitation InvitationFromSpecifics(
       base::UTF8ToUTF16(specifics.sender_info().user_display_info().email());
   invitation.sender_display_name = base::UTF8ToUTF16(
       specifics.sender_info().user_display_info().display_name());
+  invitation.sender_profile_image_url =
+      GURL(specifics.sender_info().user_display_info().profile_image_url());
 
   // TODO(crbug.com/1445868): fill in creation date and verify incoming
   // invitations.

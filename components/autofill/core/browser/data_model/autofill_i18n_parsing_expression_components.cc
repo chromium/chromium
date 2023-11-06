@@ -53,7 +53,13 @@ absl::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
     if (results[index - 1].empty()) {
       continue;
     }
-    matches.emplace_back(RemoveVersionSuffix(name), results[index - 1]);
+    // TODO(crbug.com/1464568): Remove unknown type special handling once field
+    // types for unit-type and unit-name tokens are introduced.
+    std::string parsed_name = RemoveVersionSuffix(name);
+    if (parsed_name == "UNKNOWN_TYPE") {
+      continue;
+    }
+    matches.emplace_back(parsed_name, results[index - 1]);
   }
 
   return base::MakeFlatMap<std::string, std::string>(std::move(matches));

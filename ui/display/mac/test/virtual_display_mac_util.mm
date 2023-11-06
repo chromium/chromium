@@ -254,8 +254,8 @@ void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
                                  const gfx::Size& size) {
   base::apple::ScopedCFTypeRef<CGDisplayModeRef> current_display_mode(
       CGDisplayCopyDisplayMode(display_id));
-  if (gfx::Size(CGDisplayModeGetWidth(current_display_mode),
-                CGDisplayModeGetHeight(current_display_mode)) == size) {
+  if (gfx::Size(CGDisplayModeGetWidth(current_display_mode.get()),
+                CGDisplayModeGetHeight(current_display_mode.get())) == size) {
     return;
   }
 
@@ -264,9 +264,9 @@ void EnsureDisplayWithResolution(CGDirectDisplayID display_id,
   DCHECK(display_modes);
 
   CGDisplayModeRef preferred_display_mode = nullptr;
-  for (CFIndex i = 0; i < CFArrayGetCount(display_modes); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(display_modes.get()); ++i) {
     CGDisplayModeRef display_mode =
-        (CGDisplayModeRef)CFArrayGetValueAtIndex(display_modes, i);
+        (CGDisplayModeRef)CFArrayGetValueAtIndex(display_modes.get(), i);
     if (gfx::Size(CGDisplayModeGetWidth(display_mode),
                   CGDisplayModeGetHeight(display_mode)) == size) {
       preferred_display_mode = display_mode;

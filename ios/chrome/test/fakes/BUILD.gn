@@ -32,7 +32,7 @@ source_set("fakes") {
     "//base",
     "//components/language/ios/browser",
     "//components/translate/core/common",
-    "//ios/chrome/browser/download",
+    "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/store_kit/model",

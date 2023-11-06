@@ -23,9 +23,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 
-/**
- * Tests for the {@link ContextualSearchInternalStateController} class.
- */
+/** Tests for the {@link ContextualSearchInternalStateController} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchInternalStateTest {
     private ContextualSearchInternalStateController mInternalStateController;
@@ -202,13 +200,14 @@ public class ContextualSearchInternalStateTest {
     @Test(expected = AssertionError.class)
     @Feature({"ContextualSearch"})
     public void testFinishedWithoutStartingFails() {
-        mHandlerStub = new ContextualSearchInternalStateHandlerStub() {
-            @Override
-            public void startShowingTapUi() {
-                // Finish without starting on this arbitrary transitional step.
-                mInternalStateController.notifyFinishedWorkOn(InternalState.RESOLVING);
-            }
-        };
+        mHandlerStub =
+                new ContextualSearchInternalStateHandlerStub() {
+                    @Override
+                    public void startShowingTapUi() {
+                        // Finish without starting on this arbitrary transitional step.
+                        mInternalStateController.notifyFinishedWorkOn(InternalState.RESOLVING);
+                    }
+                };
         mInternalStateController =
                 new ContextualSearchInternalStateController(mMockedPolicy, mHandlerStub);
         mocksForTap();

@@ -2,25 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PerformancePageCallbackRouter, PerformancePageHandlerFactory, PerformancePageHandlerRemote} from './performance.mojom-webui.js';
+import {PerformancePageCallbackRouter, PerformancePageHandlerFactory, PerformancePageHandlerInterface, PerformancePageHandlerRemote} from './performance.mojom-webui.js';
 
 let instance: PerformanceApiProxy|null = null;
 
 export interface PerformanceApiProxy {
   getCallbackRouter(): PerformancePageCallbackRouter;
+  showUi(): void;
 }
 
 export class PerformanceApiProxyImpl implements PerformanceApiProxy {
-  private callbackRouter: PerformancePageCallbackRouter =
-      new PerformancePageCallbackRouter();
-  private handler: PerformancePageHandlerRemote =
-      new PerformancePageHandlerRemote();
+  private callbackRouter: PerformancePageCallbackRouter;
+  private handler: PerformancePageHandlerInterface;
 
-  constructor() {
-    const factory = PerformancePageHandlerFactory.getRemote();
-    factory.createPerformancePageHandler(
-        this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        this.handler.$.bindNewPipeAndPassReceiver());
+  constructor(
+      callbackRouter: PerformancePageCallbackRouter,
+      handler: PerformancePageHandlerInterface) {
+    this.callbackRouter = callbackRouter;
+    this.handler = handler;
+  }
+
+  showUi() {
+    this.handler.showUI();
   }
 
   getCallbackRouter() {
@@ -28,7 +31,17 @@ export class PerformanceApiProxyImpl implements PerformanceApiProxy {
   }
 
   static getInstance(): PerformanceApiProxy {
-    return instance || (instance = new PerformanceApiProxyImpl());
+    if (!instance) {
+      const callbackRouter = new PerformancePageCallbackRouter();
+      const handler = new PerformancePageHandlerRemote();
+
+      const factory = PerformancePageHandlerFactory.getRemote();
+      factory.createPerformancePageHandler(
+          callbackRouter.$.bindNewPipeAndPassRemote(),
+          handler.$.bindNewPipeAndPassReceiver());
+      instance = new PerformanceApiProxyImpl(callbackRouter, handler);
+    }
+    return instance;
   }
 
   static setInstance(obj: PerformanceApiProxy) {

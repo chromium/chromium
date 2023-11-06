@@ -92,9 +92,9 @@ class WebGpuCtsIntegrationTest(
           'initMethod="WriteTexture";checkMethod="PartialCopyT2B";format="%s";*'
       ) % f)
 
-    # Run shader tests in serial if backend validation is enabled on Mac.
-    # The validation layers significantly slow down shader compilation.
-    if sys.platform == 'darwin' and self._enable_dawn_backend_validation:
+    # Run shader tests in serial on Mac.
+    # The Metal shader compiler tends to be slow.
+    if sys.platform == 'darwin':
       globs.add('webgpu:shader,execution*')
 
     # Run limit tests in serial if backend validation is enabled on Windows.
@@ -102,6 +102,7 @@ class WebGpuCtsIntegrationTest(
     # many browsers and tests run in parallel.
     if sys.platform == 'win32' and self._enable_dawn_backend_validation:
       globs.add('webgpu:api,validation,capability_checks,limits*')
+      globs.add('webgpu:api,validation,state,device_lost*')
 
     return globs
 

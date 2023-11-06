@@ -133,16 +133,24 @@ void WebAppCommandManager::OnLockAcquired(WebAppCommand::Id command_id,
   // this task is being run in response to a call to
   // NotifySyncSourceRemoved.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&WebAppCommandManager::StartCommand,
-                     weak_ptr_factory_.GetWeakPtr(), command_it->second.get(),
-                     std::move(start_command)));
+      FROM_HERE, base::BindOnce(&WebAppCommandManager::StartCommand,
+                                weak_ptr_factory_.GetWeakPtr(),
+                                command_it->second->AsWeakPtr(),
+                                std::move(start_command)));
 }
 
-void WebAppCommandManager::StartCommand(WebAppCommand* command,
+void WebAppCommandManager::StartCommand(base::WeakPtr<WebAppCommand> command,
                                         base::OnceClosure start_command) {
-  if (is_in_shutdown_)
+  if (is_in_shutdown_) {
     return;
+  }
+
+  // Commands can destroy themselves before they are started, see
+  // crbug.com/1495279 for more information.
+  // TODO(b/303115173): Do a more holistic fix here.
+  if (!command) {
+    return;
+  }
 #if DCHECK_IS_ON()
   DCHECK(command);
   auto command_it = commands_.find(command->id());
@@ -221,6 +229,21 @@ bool WebAppCommandManager::IsInstallingForWebContents(
     }
   }
   return false;
+}
+
+std::size_t WebAppCommandManager::GetCommandCountForTesting() {
+  return commands_.size();
+}
+
+std::size_t
+WebAppCommandManager::GetCommandsInstallingForWebContentsForTesting() {
+  std::size_t num = 0;
+  for (const auto& [id, command] : commands_) {
+    if (command->GetInstallingWebContents() != nullptr) {
+      ++num;
+    }
+  }
+  return num;
 }
 
 void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {

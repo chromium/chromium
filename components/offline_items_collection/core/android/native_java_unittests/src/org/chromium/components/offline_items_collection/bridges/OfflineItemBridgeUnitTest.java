@@ -4,9 +4,9 @@
 
 package org.chromium.components.offline_items_collection.bridges;
 
+import org.jni_zero.CalledByNative;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;

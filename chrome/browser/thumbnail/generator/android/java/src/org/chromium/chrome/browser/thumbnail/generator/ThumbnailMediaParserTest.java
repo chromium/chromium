@@ -28,22 +28,19 @@ import java.io.File;
 /**
  * Tests to verify ThumbnailMediaParser, which retrieves media metadata and thumbnails.
  *
- * Most of the work is done in utility process and GPU process.
+ * <p>Most of the work is done in utility process and GPU process.
  *
- * All  media parser usage must be called on UI thread in this test to get message loop and
+ * <p>All media parser usage must be called on UI thread in this test to get message loop and
  * threading contexts in native.
  *
- * Because each media parser call may perform multiple process and thread hops, it can be slow.
+ * <p>Because each media parser call may perform multiple process and thread hops, it can be slow.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ThumbnailMediaParserTest {
-    @Rule
-    public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
+    @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
-    /**
-     * Wraps result from  media parser.
-     */
+    /** Wraps result from media parser. */
     public static class MediaParserResult {
         public boolean done;
         public ThumbnailMediaData mediaData;
@@ -61,12 +58,16 @@ public class ThumbnailMediaParserTest {
         MediaParserResult result = new MediaParserResult();
 
         // The native MediaParser needs to be created on UI thread.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ThumbnailMediaParserBridge.parse(mimeType, filePath, (ThumbnailMediaData mediaData) -> {
-                result.mediaData = mediaData;
-                result.done = true;
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ThumbnailMediaParserBridge.parse(
+                            mimeType,
+                            filePath,
+                            (ThumbnailMediaData mediaData) -> {
+                                result.mediaData = mediaData;
+                                result.done = true;
+                            });
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> result.done, 10000, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
@@ -78,6 +79,7 @@ public class ThumbnailMediaParserTest {
     @Feature({"MediaParser"})
     /**
      * Verify that the metadata from audio file can be retrieved correctly.
+     *
      * @throws InterruptedException
      */
     public void testParseAudioMetatadata() {
@@ -92,6 +94,7 @@ public class ThumbnailMediaParserTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     /**
      * Verify metadata and thumbnail can be retrieved correctly from h264 video file.
+     *
      * @throws InterruptedException
      */
     public void testParseVideoH264() {
@@ -109,6 +112,7 @@ public class ThumbnailMediaParserTest {
     @Feature({"MediaParser"})
     /**
      * Verify metadata and thumbnail can be retrieved correctly from vp8 video file.
+     *
      * @throws InterruptedException
      */
     public void testParseVideoThumbnailVp8() {
@@ -127,6 +131,7 @@ public class ThumbnailMediaParserTest {
     /**
      * Verify metadata and thumbnail can be retrieved correctly from vp8 video file with alpha
      * plane.
+     *
      * @throws InterruptedException
      */
     public void testParseVideoThumbnailVp8WithAlphaPlane() {
@@ -144,6 +149,7 @@ public class ThumbnailMediaParserTest {
     @Feature({"MediaParser"})
     /**
      * Verify graceful failure on parsing invalid video file.
+     *
      * @throws InterruptedException
      */
     public void testParseInvalidVideoFile() throws Exception {

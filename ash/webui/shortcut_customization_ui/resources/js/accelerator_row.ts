@@ -75,11 +75,6 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
         value: 0,
         observer: AcceleratorRowElement.prototype.onSourceChanged,
       },
-
-      selected: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -88,7 +83,6 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
-  selected: boolean;
   private isLocked: boolean;
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
@@ -162,12 +156,8 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     return !isCustomizationAllowed() ? -1 : 0;
   }
 
-  protected onRowFocused(): void {
-    this.selected = true;
-  }
-
-  protected onRowBlur(): void {
-    this.selected = false;
+  protected onFocusOrMouseEnter(): void {
+    (this.shadowRoot!.querySelector('#container')! as HTMLElement).focus();
   }
 
   private getAriaLabel(): string {

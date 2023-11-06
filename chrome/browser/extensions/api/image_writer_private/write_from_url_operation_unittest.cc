@@ -180,13 +180,11 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, DownloadFile) {
                                              &download_target_path));
   operation->SetImagePath(download_target_path);
 
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_DOWNLOAD, 0))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kDownload, 0))
       .Times(AnyNumber());
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_DOWNLOAD, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kDownload, 100))
       .Times(AnyNumber());
 
   operation->Download(runloop.QuitClosure());
@@ -211,18 +209,16 @@ TEST_F(ImageWriterWriteFromUrlOperationTest, VerifyFile) {
   scoped_refptr<WriteFromUrlOperationForTest> operation =
       CreateOperation(GURL(""), expected_hash);
 
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYDOWNLOAD, _))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload, _))
       .Times(AtLeast(1));
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYDOWNLOAD, 0))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyDownload, 0))
       .Times(AtLeast(1));
   EXPECT_CALL(manager_,
               OnProgress(kDummyExtensionId,
-                         image_writer_api::STAGE_VERIFYDOWNLOAD,
-                         100)).Times(AtLeast(1));
+                         image_writer_api::Stage::kVerifyDownload, 100))
+      .Times(AtLeast(1));
 
   operation->SetImagePath(test_utils_.GetImagePath());
   {

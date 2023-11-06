@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DnsOverHttpsMode": "automatic",
+          "DnsOverHttpsSalt": "test-salt",
+          "DnsOverHttpsTemplatesWithIdentifiers": "https://dns.quad9.net/dns-query{?dns}"
+        },
+        "prefs": {
+          "dns_over_https.salt": {
+            "location": "local_state",
+            "value": "test-salt"
+          }
+        }
+      }
+    ]
+  }
+]

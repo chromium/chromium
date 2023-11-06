@@ -11,8 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.omnibox.R;
 
 /**
@@ -34,23 +35,33 @@ public abstract class OmniboxAction {
             this.tintWithTextColor = tintWithTextColor;
         }
     }
+
     /** The default action icon. */
     @VisibleForTesting
     public static final ChipIcon DEFAULT_ICON =
-            new ChipIcon(R.drawable.action_default, /*tintWithTextColor=*/false);
+            new ChipIcon(R.drawable.action_default, /* tintWithTextColor= */ false);
+
     /** The type of an underlying action. */
     public final @OmniboxActionId int actionId;
+
     /** The string to present/announce to the user when the action is shown. */
     public final @NonNull String hint;
+
     /** The text to announce when the action chip is focused. */
     public final @NonNull String accessibilityHint;
+
     /** The icon to use to decorate the Action chip. */
     public final @NonNull ChipIcon icon;
+
     /** The corresponding native instance, or 0 if the native instance is not available. */
     private long mNativeInstance;
 
-    public OmniboxAction(@OmniboxActionId int actionId, long nativeInstance, @NonNull String hint,
-            @NonNull String accessibilityHint, @Nullable ChipIcon icon) {
+    public OmniboxAction(
+            @OmniboxActionId int actionId,
+            long nativeInstance,
+            @NonNull String hint,
+            @NonNull String accessibilityHint,
+            @Nullable ChipIcon icon) {
         assert !TextUtils.isEmpty(hint);
         this.actionId = actionId;
         this.hint = hint;

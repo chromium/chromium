@@ -19,9 +19,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
+
+using SidePanelWebUIViewT_BookmarksSidePanelUI =
+    SidePanelWebUIViewT<BookmarksSidePanelUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_BookmarksSidePanelUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 BookmarksSidePanelCoordinator::BookmarksSidePanelCoordinator(Browser* browser)
     : BrowserUserData<BookmarksSidePanelCoordinator>(*browser) {}

@@ -106,8 +106,9 @@ void FakeTargetDeviceConnectionBroker::InitiateConnection(
 }
 
 void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
-    const std::string& source_device_id) {
-  connection_->MarkConnectionAuthenticated();
+    const std::string& source_device_id,
+    Connection::AuthenticationMethod auth_method) {
+  connection_->MarkConnectionAuthenticated(auth_method);
 }
 
 void FakeTargetDeviceConnectionBroker::RejectConnection() {

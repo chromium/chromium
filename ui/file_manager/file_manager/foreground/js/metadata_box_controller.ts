@@ -8,10 +8,10 @@
  * @suppress {checkTypes}
  */
 
-import {isFileSystemDirectoryEntry} from '../../common/js/entry_utils.js';
+import {isDirectoryEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
+import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
@@ -77,7 +77,7 @@ export class MetadataBoxController {
     }
 
     const entry = this.quickViewModel_.getSelectedEntry()!;
-    const isSameEntry = util.isSameEntry(entry, this.previousEntry_);
+    const sameEntry = isSameEntry(entry, this.previousEntry_);
     this.previousEntry_ = entry;
 
     if (!entry) {
@@ -93,12 +93,12 @@ export class MetadataBoxController {
     }
 
     // Do not clear isSizeLoading and size fields when the entry is not changed.
-    this.metadataBox.clear(isSameEntry);
+    this.metadataBox.clear(sameEntry);
 
     const metadata = GENERAL_METADATA_NAMES.concat(
         ['alternateUrl', 'externalFileUrl', 'hosted']);
     this.metadataModel_.get([entry], metadata)
-        .then(this.onGeneralMetadataLoaded_.bind(this, entry, isSameEntry));
+        .then(this.onGeneralMetadataLoaded_.bind(this, entry, sameEntry));
   }
 
   /**
@@ -118,7 +118,7 @@ export class MetadataBoxController {
     const type = FileType.getType(entry).type;
     const item = items[0];
 
-    if (isFileSystemDirectoryEntry(entry)) {
+    if (isDirectoryEntry(entry)) {
       this.setDirectorySize_(entry, isSameEntry);
     } else if (item?.size) {
       this.metadataBox.size =
@@ -152,7 +152,7 @@ export class MetadataBoxController {
             const newType = FileType.getType(entry, mimeType);
             if (newType.encrypted) {
               mimeType =
-                  util.strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
+                  strf('METADATA_BOX_ENCRYPTED', newType.originalMimeType);
             }
             this.metadataBox.mediaMimeType = mimeType;
             this.metadataBox.metadataRendered('mime');
@@ -227,33 +227,33 @@ export class MetadataBoxController {
    * `isSameEntry` is True if the entry is not changed from the last time. False
    * enables the loading animation.
    */
-  private setDirectorySize_(entry: DirectoryEntry, isSameEntry: boolean) {
-    if (!isFileSystemDirectoryEntry(entry)) {
+  private setDirectorySize_(entry: DirectoryEntry, sameEntry: boolean) {
+    if (!isDirectoryEntry(entry)) {
       return;
     }
-    const directoryEntry = util.unwrapEntry(entry) as DirectoryEntry;
+    const directoryEntry = unwrapEntry(entry);
 
     if (this.metadataBox.size === '') {
       this.metadataBox.size = ' ';  // Provide a dummy size value.
     }
 
     if (this.isDirectorySizeLoading_) {
-      if (!isSameEntry) {
+      if (!sameEntry) {
         this.metadataBox.isSizeLoading = true;
       }
 
       // Store the new setDirectorySize_ request and return.
       this.onDirectorySizeLoaded_ = lastEntry => {
-        this.setDirectorySize_(entry, util.isSameEntry(entry, lastEntry));
+        this.setDirectorySize_(entry, isSameEntry(entry, lastEntry));
       };
       return;
     }
 
-    this.metadataBox.isSizeLoading = !isSameEntry;
+    this.metadataBox.isSizeLoading = !sameEntry;
 
     this.isDirectorySizeLoading_ = true;
     chrome.fileManagerPrivate.getDirectorySize(
-        directoryEntry, (size: number|undefined) => {
+        directoryEntry as DirectoryEntry, (size: number|undefined) => {
           this.isDirectorySizeLoading_ = false;
 
           if (this.onDirectorySizeLoaded_) {

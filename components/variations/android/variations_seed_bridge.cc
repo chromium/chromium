@@ -41,7 +41,8 @@ std::unique_ptr<variations::SeedResponse> GetVariationsFirstRunSeed() {
   }
   seed->signature = ConvertJavaStringToUTF8(j_seed_signature);
   seed->country = ConvertJavaStringToUTF8(j_seed_country);
-  seed->date = base::Time::FromJavaTime(static_cast<long>(j_response_date));
+  seed->date = base::Time::FromMillisecondsSinceUnixEpoch(
+      static_cast<int64_t>(j_response_date));
   seed->is_gzip_compressed = static_cast<bool>(j_is_gzip_compressed);
   return seed;
 }
@@ -59,7 +60,7 @@ void MarkVariationsSeedAsStored() {
 void SetJavaFirstRunPrefsForTesting(const std::string& seed_data,
                                     const std::string& seed_signature,
                                     const std::string& seed_country,
-                                    long response_date,
+                                    int64_t response_date,
                                     bool is_gzip_compressed) {
   JNIEnv* env = AttachCurrentThread();
   Java_VariationsSeedBridge_setVariationsFirstRunSeed(

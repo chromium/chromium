@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -114,10 +114,10 @@ class LayoutTextTest : public RenderingTest {
     if (block_flow.NeedsCollectInlines()) {
       return "LayoutBlockFlow has NeedsCollectInlines";
     }
-    const NGInlineNodeData& data = *block_flow.GetNGInlineNodeData();
+    const InlineNodeData& data = *block_flow.GetInlineNodeData();
     std::ostringstream stream;
-    for (const NGInlineItem& item : data.items) {
-      if (item.Type() != NGInlineItem::kText) {
+    for (const InlineItem& item : data.items) {
+      if (item.Type() != InlineItem::kText) {
         continue;
       }
       if (item.GetLayoutObject() == layout_text) {
@@ -151,9 +151,9 @@ class LayoutTextTest : public RenderingTest {
   }
 
   unsigned CountNumberOfGlyphs(const LayoutText& layout_text) {
-    auto* const items = layout_text.GetNGInlineItems();
+    auto* const items = layout_text.GetInlineItems();
     return std::accumulate(items->begin(), items->end(), 0u,
-                           [](unsigned sum, const NGInlineItem& item) {
+                           [](unsigned sum, const InlineItem& item) {
                              return sum + item.TextShapeResult()->NumGlyphs();
                            });
   }
@@ -220,7 +220,7 @@ TEST_F(LayoutTextTest, PrewarmGenericFamily) {
 }
 #endif
 
-struct NGOffsetMappingTestData {
+struct OffsetMappingTestData {
   const char* text;
   unsigned dom_start;
   unsigned dom_end;
@@ -240,7 +240,7 @@ struct NGOffsetMappingTestData {
     {"<div id=target> a  b  </div>", 6, 7, true, 3, 3},
     {"<div>a <span id=target> </span>b</div>", 0, 1, false, 0, 1}};
 
-std::ostream& operator<<(std::ostream& out, NGOffsetMappingTestData data) {
+std::ostream& operator<<(std::ostream& out, OffsetMappingTestData data) {
   return out << "\"" << data.text << "\" " << data.dom_start << ","
              << data.dom_end << " => " << (data.success ? "true " : "false ")
              << data.text_start << "," << data.text_end;
@@ -248,7 +248,7 @@ std::ostream& operator<<(std::ostream& out, NGOffsetMappingTestData data) {
 
 class MapDOMOffsetToTextContentOffset
     : public LayoutTextTest,
-      public testing::WithParamInterface<NGOffsetMappingTestData> {};
+      public testing::WithParamInterface<OffsetMappingTestData> {};
 
 INSTANTIATE_TEST_SUITE_P(LayoutTextTest,
                          MapDOMOffsetToTextContentOffset,
@@ -258,7 +258,7 @@ TEST_P(MapDOMOffsetToTextContentOffset, Basic) {
   const auto data = GetParam();
   SetBodyInnerHTML(data.text);
   LayoutText* layout_text = GetBasicText();
-  const NGOffsetMapping* mapping = layout_text->GetNGOffsetMapping();
+  const OffsetMapping* mapping = layout_text->GetOffsetMapping();
   ASSERT_TRUE(mapping);
   unsigned start = data.dom_start;
   unsigned end = data.dom_end;

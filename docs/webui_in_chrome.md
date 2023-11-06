@@ -274,9 +274,51 @@ static_library("ui") {
 }
 ```
 
-### Adding your WebUI request handler to the Chrome WebUI factory
+### Option 1: Add a WebUIConfig class and put it in the WebUIConfigMap
+`WebUIConfig`s contain minimal information about the host and scheme served
+by the `WebUIController` subclass. You can create a `WebUIConfig` subclass
+and register it in the `WebUIConfigMap` to ensure your request handler is
+instantiated and used to handle any requests to the desired scheme + host.
 
-The Chrome WebUI factory is where you setup your new request handler.
+`chrome/browser/ui/webui/hello_world/hello_world_ui.h`
+```c++
+class HelloWorldUIConfig : public content::WebUIConfig {
+ public:
+  HelloWorldUIConfig();
+  ~HelloWorldUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
+
+```
+
+`chrome/browser/ui/webui/hello_world/hello_world_ui.cc`
+```c++
+HelloWorldUIConfig::HelloWorldUIConfig()
+    : WebUIConfig(content::kChromeUIScheme, chrome::kChromeUIHelloWorldHost) {}
+
+HelloWorldUIConfig::~HelloWorldUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+HelloWorldUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                         const GURL& url) {
+  return std::make_unique<HelloWorldUI>(web_ui);
+}
+```
+
+`chrome/browser/ui/webui/chrome_web_ui_configs.cc`
+```c++
++ #include "chrome/browser/ui/webui/hello_world/hello_world_ui.h"
+...
++map.AddWebUIConfig(std::make_unique<hello_world::HelloWorldUIConfig>());
+```
+
+### Option 2: Add your WebUI request handler to the Chrome WebUI factory
+
+The Chrome WebUI factory is another way to setup your new request handler.
 
 `chrome/browser/ui/webui/chrome_web_ui_controller_factory.cc:`
 ```c++

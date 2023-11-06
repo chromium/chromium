@@ -10,8 +10,9 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+
 import {getTemplate} from './permission_heading.html.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 import {openAppDetailPage} from './util.js';
 
 const AppManagementPermissionHeadingElementBase =

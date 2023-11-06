@@ -43,13 +43,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-/**
- * CachedZeroSuggestionsManager manages caching and restoring zero suggestions.
- */
+/** CachedZeroSuggestionsManager manages caching and restoring zero suggestions. */
 public class CachedZeroSuggestionsManager {
-    /**
-     * Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache.
-     */
+    /** Save the content of the CachedZeroSuggestionsManager to SharedPreferences cache. */
     public static void saveToCache(AutocompleteResult resultToCache) {
         final SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
         cacheSuggestionList(manager, resultToCache.getSuggestionsList());
@@ -58,6 +54,7 @@ public class CachedZeroSuggestionsManager {
 
     /**
      * Read previously stored AutocompleteResult from cache.
+     *
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
     static AutocompleteResult readFromCache() {
@@ -85,14 +82,17 @@ public class CachedZeroSuggestionsManager {
             AutocompleteMatch suggestion = suggestions.get(i);
             if (!shouldCacheSuggestion(suggestion)) continue;
 
-            prefs.writeString(KEY_ZERO_SUGGEST_URL_PREFIX.createKey(numCachableSuggestions),
+            prefs.writeString(
+                    KEY_ZERO_SUGGEST_URL_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getUrl().serialize());
             prefs.writeString(
                     KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getDisplayText());
-            prefs.writeString(KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX.createKey(numCachableSuggestions),
+            prefs.writeString(
+                    KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getDescription());
-            prefs.writeInt(KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(numCachableSuggestions),
+            prefs.writeInt(
+                    KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getType());
             prefs.writeStringSet(
                     KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(numCachableSuggestions),
@@ -111,7 +111,8 @@ public class CachedZeroSuggestionsManager {
                     suggestion.getPostData() == null
                             ? null
                             : Base64.encodeToString(suggestion.getPostData(), Base64.DEFAULT));
-            prefs.writeInt(KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(numCachableSuggestions),
+            prefs.writeInt(
+                    KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(numCachableSuggestions),
                     suggestion.getGroupId());
             numCachableSuggestions++;
         }
@@ -147,14 +148,17 @@ public class CachedZeroSuggestionsManager {
                     prefs.readString(KEY_ZERO_SUGGEST_ANSWER_TEXT_PREFIX.createKey(i), null);
             if (!TextUtils.isEmpty(answerText)) continue;
 
-            GURL url = GURL.deserialize(
-                    prefs.readString(KEY_ZERO_SUGGEST_URL_PREFIX.createKey(i), null));
+            GURL url =
+                    GURL.deserialize(
+                            prefs.readString(KEY_ZERO_SUGGEST_URL_PREFIX.createKey(i), null));
             String displayText =
                     prefs.readString(KEY_ZERO_SUGGEST_DISPLAY_TEXT_PREFIX.createKey(i), null);
             String description =
                     prefs.readString(KEY_ZERO_SUGGEST_DESCRIPTION_PREFIX.createKey(i), null);
-            int nativeType = prefs.readInt(KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(i),
-                    AutocompleteMatch.INVALID_TYPE);
+            int nativeType =
+                    prefs.readInt(
+                            KEY_ZERO_SUGGEST_NATIVE_TYPE_PREFIX.createKey(i),
+                            AutocompleteMatch.INVALID_TYPE);
             boolean isSearchType =
                     prefs.readBoolean(KEY_ZERO_SUGGEST_IS_SEARCH_TYPE_PREFIX.createKey(i), false);
             boolean isDeletable =
@@ -165,13 +169,16 @@ public class CachedZeroSuggestionsManager {
                     prefs.readString(KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX.createKey(i), null);
             byte[] postData =
                     postDataStr == null ? null : Base64.decode(postDataStr, Base64.DEFAULT);
-            int groupId = prefs.readInt(
-                    KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(i), AutocompleteMatch.INVALID_GROUP);
+            int groupId =
+                    prefs.readInt(
+                            KEY_ZERO_SUGGEST_GROUP_ID_PREFIX.createKey(i),
+                            AutocompleteMatch.INVALID_GROUP);
 
             Set<Integer> subtypes = null;
             try {
-                Set<String> subtypeStrings = prefs.readStringSet(
-                        KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(i), null);
+                Set<String> subtypeStrings =
+                        prefs.readStringSet(
+                                KEY_ZERO_SUGGEST_NATIVE_SUBTYPES_PREFIX.createKey(i), null);
                 subtypes = convertSet(subtypeStrings, v -> Integer.parseInt(v));
             } catch (NumberFormatException e) {
                 // Subtype information contains malformed elements, suggesting that the
@@ -179,10 +186,31 @@ public class CachedZeroSuggestionsManager {
                 return Collections.emptyList();
             }
 
-            AutocompleteMatch suggestion = new AutocompleteMatch(nativeType, subtypes, isSearchType,
-                    0, 0, displayText, classifications, description, classifications, null, null,
-                    url, GURL.emptyGURL(), null, isDeletable, postContentType, postData, groupId,
-                    null, null, false, null, null);
+            AutocompleteMatch suggestion =
+                    new AutocompleteMatch(
+                            nativeType,
+                            subtypes,
+                            isSearchType,
+                            0,
+                            0,
+                            displayText,
+                            classifications,
+                            description,
+                            classifications,
+                            null,
+                            null,
+                            url,
+                            GURL.emptyGURL(),
+                            null,
+                            isDeletable,
+                            postContentType,
+                            postData,
+                            groupId,
+                            null,
+                            null,
+                            false,
+                            null,
+                            null);
             suggestions.add(suggestion);
         }
 
@@ -197,7 +225,8 @@ public class CachedZeroSuggestionsManager {
      */
     private static void cacheGroupsDetails(
             SharedPreferencesManager prefs, GroupsInfo groupsDetails) {
-        prefs.writeString(ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
+        prefs.writeString(
+                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO,
                 Base64.encodeToString(groupsDetails.toByteArray(), Base64.DEFAULT));
     }
 
@@ -210,8 +239,9 @@ public class CachedZeroSuggestionsManager {
     @NonNull
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static GroupsInfo readCachedGroupsDetails(SharedPreferencesManager prefs) {
-        var encoded = prefs.readString(
-                ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null);
+        var encoded =
+                prefs.readString(
+                        ChromePreferenceKeys.OMNIBOX_CACHED_ZERO_SUGGEST_GROUPS_INFO, null);
 
         if (encoded != null) {
             try {
@@ -241,7 +271,8 @@ public class CachedZeroSuggestionsManager {
         for (int index = suggestions.size() - 1; index >= 0; index--) {
             final AutocompleteMatch suggestion = suggestions.get(index);
             final int groupId = suggestion.getGroupId();
-            if (!suggestion.getUrl().isValid() || suggestion.getUrl().isEmpty()
+            if (!suggestion.getUrl().isValid()
+                    || suggestion.getUrl().isEmpty()
                     || (groupId != AutocompleteMatch.INVALID_GROUP
                             && !groupsDetails.containsKey(groupId))) {
                 suggestions.remove(index);

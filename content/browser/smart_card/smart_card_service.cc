@@ -4,9 +4,9 @@
 
 #include "content/browser/smart_card/smart_card_service.h"
 
-#include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/smart_card_delegate.h"
 #include "services/device/public/mojom/smart_card.mojom.h"
@@ -66,7 +66,7 @@ void SmartCardService::Create(
     return;
   }
 
-  if (!IsFrameSufficientlyIsolated(render_frame_host)) {
+  if (!HasIsolatedContextCapability(render_frame_host)) {
     mojo::ReportBadMessage(
         "Frame is not sufficiently isolated to use the Smart Card API.");
     return;

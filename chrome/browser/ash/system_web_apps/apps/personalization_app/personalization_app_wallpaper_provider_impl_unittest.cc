@@ -289,12 +289,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-               "collection_id",
+              {GetTestAccountId(), "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/false, /*from_user=*/true,
-               /*daily_refresh_enabled=*/false, image_info.unit_id,
-               variants})));
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SelectWallpaperWhenBanned) {
@@ -336,12 +335,11 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, PreviewWallpaper) {
   EXPECT_TRUE(
       test_wallpaper_controller()->wallpaper_info().value().MatchesSelection(
           ash::WallpaperInfo(
-              {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-               "collection_id",
+              {GetTestAccountId(), "collection_id",
                ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
                /*preview_mode=*/true, /*from_user=*/true,
-               /*daily_refresh_enabled=*/false, image_info.unit_id,
-               variants})));
+               /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
+              variants.front())));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest,
@@ -357,8 +355,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
   AddWallpaperImage(image_info);
 
   test_wallpaper_controller()->SetOnlineWallpaper(
-      {GetTestAccountId(), image_info.asset_id, image_info.image_url,
-       "collection_id", ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
+      {GetTestAccountId(), "collection_id",
+       ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
        /*preview_mode=*/false, /*from_user=*/true,
        /*daily_refresh_enabled=*/false, image_info.unit_id, variants},
       base::DoNothing());

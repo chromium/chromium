@@ -60,7 +60,7 @@ bool ReadFile(const base::FilePath& file, std::string* content) {
 const base::FilePath GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data");
@@ -71,7 +71,7 @@ const base::FilePath GetTestDataDir() {
 const base::FilePath GetInputDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("third_party")
         .AppendASCII("text-fragments-polyfill")
         .AppendASCII("src")

@@ -7,7 +7,7 @@
 
 #include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 
 namespace content {

@@ -254,16 +254,16 @@ bool MatchesBool(const absl::optional<bool>& boolean, bool value) {
 
 ui::WindowShowState ConvertToWindowShowState(windows::WindowState state) {
   switch (state) {
-    case windows::WINDOW_STATE_NORMAL:
+    case windows::WindowState::kNormal:
       return ui::SHOW_STATE_NORMAL;
-    case windows::WINDOW_STATE_MINIMIZED:
+    case windows::WindowState::kMinimized:
       return ui::SHOW_STATE_MINIMIZED;
-    case windows::WINDOW_STATE_MAXIMIZED:
+    case windows::WindowState::kMaximized:
       return ui::SHOW_STATE_MAXIMIZED;
-    case windows::WINDOW_STATE_FULLSCREEN:
-    case windows::WINDOW_STATE_LOCKED_FULLSCREEN:
+    case windows::WindowState::kFullscreen:
+    case windows::WindowState::kLockedFullscreen:
       return ui::SHOW_STATE_FULLSCREEN;
-    case windows::WINDOW_STATE_NONE:
+    case windows::WindowState::kNone:
       return ui::SHOW_STATE_DEFAULT;
   }
   NOTREACHED();
@@ -279,16 +279,16 @@ bool IsValidStateForWindowsCreateFunction(
                    create_data->width || create_data->height;
 
   switch (create_data->state) {
-    case windows::WINDOW_STATE_MINIMIZED:
+    case windows::WindowState::kMinimized:
       // If minimised, default focused state should be unfocused.
       return !(create_data->focused && *create_data->focused) && !has_bound;
-    case windows::WINDOW_STATE_MAXIMIZED:
-    case windows::WINDOW_STATE_FULLSCREEN:
-    case windows::WINDOW_STATE_LOCKED_FULLSCREEN:
+    case windows::WindowState::kMaximized:
+    case windows::WindowState::kFullscreen:
+    case windows::WindowState::kLockedFullscreen:
       // If maximised/fullscreen, default focused state should be focused.
       return !(create_data->focused && !*create_data->focused) && !has_bound;
-    case windows::WINDOW_STATE_NORMAL:
-    case windows::WINDOW_STATE_NONE:
+    case windows::WindowState::kNormal:
+    case windows::WindowState::kNone:
       return true;
   }
   NOTREACHED();
@@ -472,20 +472,20 @@ void ZoomModeToZoomSettings(ZoomController::ZoomMode zoom_mode,
   DCHECK(zoom_settings);
   switch (zoom_mode) {
     case ZoomController::ZOOM_MODE_DEFAULT:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_AUTOMATIC;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kAutomatic;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerOrigin;
       break;
     case ZoomController::ZOOM_MODE_ISOLATED:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_AUTOMATIC;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kAutomatic;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
     case ZoomController::ZOOM_MODE_MANUAL:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_MANUAL;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kManual;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
     case ZoomController::ZOOM_MODE_DISABLED:
-      zoom_settings->mode = api::tabs::ZOOM_SETTINGS_MODE_DISABLED;
-      zoom_settings->scope = api::tabs::ZOOM_SETTINGS_SCOPE_PER_TAB;
+      zoom_settings->mode = api::tabs::ZoomSettingsMode::kDisabled;
+      zoom_settings->scope = api::tabs::ZoomSettingsScope::kPerTab;
       break;
   }
 }
@@ -683,14 +683,14 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     // bounds can be set according to the window type.
     switch (create_data->type) {
       // TODO(stevenjb): Remove 'panel' from windows.json.
-      case windows::CREATE_TYPE_PANEL:
-      case windows::CREATE_TYPE_POPUP:
+      case windows::CreateType::kPanel:
+      case windows::CreateType::kPopup:
         window_type = Browser::TYPE_POPUP;
         if (extension())
           extension_id = extension()->id();
         break;
-      case windows::CREATE_TYPE_NONE:
-      case windows::CREATE_TYPE_NORMAL:
+      case windows::CreateType::kNone:
+      case windows::CreateType::kNormal:
         break;
       default:
         return RespondNow(Error(tabs_constants::kInvalidWindowTypeError));
@@ -763,8 +763,8 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
         user_gesture());
   }
   create_params.initial_show_state = ui::SHOW_STATE_NORMAL;
-  if (create_data && create_data->state) {
-    if (create_data->state == windows::WINDOW_STATE_LOCKED_FULLSCREEN &&
+  if (create_data && create_data->state != windows::WindowState::kNone) {
+    if (create_data->state == windows::WindowState::kLockedFullscreen &&
         !ExtensionHasLockedFullscreenPermission(extension())) {
       return RespondNow(
           Error(tabs_constants::kMissingLockWindowFullscreenPrivatePermission));
@@ -876,7 +876,7 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
   // (otherwise the tabstrip is empty), and window()->show() has been called
   // (otherwise that resets the locked mode for devices in tablet mode).
   if (create_data &&
-      create_data->state == windows::WINDOW_STATE_LOCKED_FULLSCREEN) {
+      create_data->state == windows::WindowState::kLockedFullscreen) {
     SetLockedFullscreenState(new_window, /*pinned=*/true);
   }
 
@@ -912,7 +912,7 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   // extension doesn't have the permission).
   const bool is_locked_fullscreen =
       platform_util::IsBrowserLockedFullscreen(browser);
-  if ((params->update_info.state == windows::WINDOW_STATE_LOCKED_FULLSCREEN ||
+  if ((params->update_info.state == windows::WindowState::kLockedFullscreen ||
        is_locked_fullscreen) &&
       !ExtensionHasLockedFullscreenPermission(extension())) {
     return RespondNow(
@@ -973,12 +973,12 @@ ExtensionFunction::ResponseAction WindowsUpdateFunction::Run() {
   // state will be WINDOW_STATE_NONE if the state parameter wasn't passed from
   // the JS side, and in that case we don't want to change the locked state.
   if (is_locked_fullscreen &&
-      params->update_info.state != windows::WINDOW_STATE_LOCKED_FULLSCREEN &&
-      params->update_info.state != windows::WINDOW_STATE_NONE) {
+      params->update_info.state != windows::WindowState::kLockedFullscreen &&
+      params->update_info.state != windows::WindowState::kNone) {
     SetLockedFullscreenState(browser, /*pinned=*/false);
   } else if (!is_locked_fullscreen &&
              params->update_info.state ==
-                 windows::WINDOW_STATE_LOCKED_FULLSCREEN) {
+                 windows::WindowState::kLockedFullscreen) {
     SetLockedFullscreenState(browser, /*pinned=*/true);
   }
 
@@ -1115,7 +1115,7 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
       tabs::Query::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  bool loading_status_set = params->query_info.status != tabs::TAB_STATUS_NONE;
+  bool loading_status_set = params->query_info.status != tabs::TabStatus::kNone;
 
   URLPatternSet url_patterns;
   if (params->query_info.url) {
@@ -1149,8 +1149,9 @@ ExtensionFunction::ResponseAction TabsQueryFunction::Run() {
     index = *params->query_info.index;
 
   std::string window_type;
-  if (params->query_info.window_type != tabs::WINDOW_TYPE_NONE)
+  if (params->query_info.window_type != tabs::WindowType::kNone) {
     window_type = tabs::ToString(params->query_info.window_type);
+  }
 
   base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
@@ -2663,9 +2664,9 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   // "per-origin" scope is only available in "automatic" mode.
-  if (params->zoom_settings.scope == tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN &&
-      params->zoom_settings.mode != tabs::ZOOM_SETTINGS_MODE_AUTOMATIC &&
-      params->zoom_settings.mode != tabs::ZOOM_SETTINGS_MODE_NONE) {
+  if (params->zoom_settings.scope == tabs::ZoomSettingsScope::kPerOrigin &&
+      params->zoom_settings.mode != tabs::ZoomSettingsMode::kAutomatic &&
+      params->zoom_settings.mode != tabs::ZoomSettingsMode::kNone) {
     return RespondNow(Error(tabs_constants::kPerOriginOnlyInAutomaticError));
   }
 
@@ -2673,21 +2674,21 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
   // user-specified |zoom_settings|.
   ZoomController::ZoomMode zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
   switch (params->zoom_settings.mode) {
-    case tabs::ZOOM_SETTINGS_MODE_NONE:
-    case tabs::ZOOM_SETTINGS_MODE_AUTOMATIC:
+    case tabs::ZoomSettingsMode::kNone:
+    case tabs::ZoomSettingsMode::kAutomatic:
       switch (params->zoom_settings.scope) {
-        case tabs::ZOOM_SETTINGS_SCOPE_NONE:
-        case tabs::ZOOM_SETTINGS_SCOPE_PER_ORIGIN:
+        case tabs::ZoomSettingsScope::kNone:
+        case tabs::ZoomSettingsScope::kPerOrigin:
           zoom_mode = ZoomController::ZOOM_MODE_DEFAULT;
           break;
-        case tabs::ZOOM_SETTINGS_SCOPE_PER_TAB:
+        case tabs::ZoomSettingsScope::kPerTab:
           zoom_mode = ZoomController::ZOOM_MODE_ISOLATED;
       }
       break;
-    case tabs::ZOOM_SETTINGS_MODE_MANUAL:
+    case tabs::ZoomSettingsMode::kManual:
       zoom_mode = ZoomController::ZOOM_MODE_MANUAL;
       break;
-    case tabs::ZOOM_SETTINGS_MODE_DISABLED:
+    case tabs::ZoomSettingsMode::kDisabled:
       zoom_mode = ZoomController::ZOOM_MODE_DISABLED;
   }
 

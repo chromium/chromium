@@ -657,8 +657,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VisibleSecurityStateSecureState) {
   if (entry->GetSSL().certificate) {
     page_subject_name = entry->GetSSL().certificate->subject().common_name;
     page_issuer_name = entry->GetSSL().certificate->issuer().common_name;
-    page_valid_from = entry->GetSSL().certificate->valid_start().ToDoubleT();
-    page_valid_to = entry->GetSSL().certificate->valid_expiry().ToDoubleT();
+    page_valid_from =
+        entry->GetSSL().certificate->valid_start().InSecondsFSinceUnixEpoch();
+    page_valid_to =
+        entry->GetSSL().certificate->valid_expiry().InSecondsFSinceUnixEpoch();
   }
 
   std::string page_certificate_network_error;

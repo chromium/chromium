@@ -4,11 +4,9 @@
 
 #include "components/invalidation/impl/fake_invalidation_service.h"
 
-#include "base/functional/callback.h"
-#include "base/values.h"
 #include "components/invalidation/impl/invalidation_service_util.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 
 namespace invalidation {
 
@@ -23,9 +21,13 @@ FakeInvalidationService::FakeInvalidationService()
 
 FakeInvalidationService::~FakeInvalidationService() = default;
 
-void FakeInvalidationService::RegisterInvalidationHandler(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->RegisterHandler(handler);
+void FakeInvalidationService::AddObserver(InvalidationHandler* handler) {
+  invalidator_registrar_->AddObserver(handler);
+}
+
+bool FakeInvalidationService::HasObserver(
+    const InvalidationHandler* handler) const {
+  return invalidator_registrar_->HasObserver(handler);
 }
 
 bool FakeInvalidationService::UpdateInterestedTopics(
@@ -38,14 +40,9 @@ bool FakeInvalidationService::UpdateInterestedTopics(
   return invalidator_registrar_->UpdateRegisteredTopics(handler, topic_set);
 }
 
-void FakeInvalidationService::UnsubscribeFromUnregisteredTopics(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->RemoveUnregisteredTopics(handler);
-}
-
-void FakeInvalidationService::UnregisterInvalidationHandler(
-    InvalidationHandler* handler) {
-  invalidator_registrar_->UnregisterHandler(handler);
+void FakeInvalidationService::RemoveObserver(
+    const InvalidationHandler* handler) {
+  invalidator_registrar_->RemoveObserver(handler);
 }
 
 InvalidatorState FakeInvalidationService::GetInvalidatorState() const {
@@ -67,7 +64,7 @@ void FakeInvalidationService::EmitInvalidationForTest(
   Invalidation invalidation_copy(invalidation);
 
   // If no one is listening to this invalidation, do not send it out.
-  Topics subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
+  TopicMap subscribed_topics = invalidator_registrar_->GetAllSubscribedTopics();
   if (subscribed_topics.find(invalidation.topic()) == subscribed_topics.end()) {
     fake_ack_handler_.RegisterUnsentInvalidation(&invalidation_copy);
     return;
@@ -76,9 +73,7 @@ void FakeInvalidationService::EmitInvalidationForTest(
   // Otherwise, register the invalidation with the fake_ack_handler_ and deliver
   // it to the appropriate consumer.
   fake_ack_handler_.RegisterInvalidation(&invalidation_copy);
-  TopicInvalidationMap invalidation_map;
-  invalidation_map.Insert(invalidation_copy);
-  invalidator_registrar_->DispatchInvalidationsToHandlers(invalidation_map);
+  invalidator_registrar_->DispatchInvalidationToHandlers(invalidation_copy);
 }
 
 FakeAckHandler* FakeInvalidationService::GetFakeAckHandler() {

@@ -270,13 +270,6 @@
         return matches ? matches[1] : null;
     }
 
-    function shouldUseNewFormat() {
-        if (location.hostname == 'web-platform.test') {
-            return false;
-        }
-        return true;
-    }
-
     /** Converts the testharness test status into the corresponding string. */
     function convertResult(resultStatus) {
         let retVal = '';
@@ -300,10 +293,7 @@
                 retVal = 'NOTRUN';
                 break;
         }
-        if (shouldUseNewFormat()) {
-            return '[' + retVal + ']'
-        }
-        return retVal
+        return '[' + retVal + ']';
     }
 
     /**
@@ -353,12 +343,8 @@
         let result = `${convertResult(test.status)} ${sanitize(test.name)}`;
         // include error message when test result is FAIL or PRECONDITION_FAILED
         if (test.message) {
-            if (shouldUseNewFormat()) {
-                if (test.status == 1 || test.status == 4) {
-                    result += '\n  ' + sanitize(test.message).trim();
-                }
-            } else {
-                result += ' ' + sanitize(test.message).trim();
+            if (test.status == 1 || test.status == 4) {
+                result += '\n  ' + sanitize(test.message).trim();
             }
         }
         return result + '\n';

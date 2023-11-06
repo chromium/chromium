@@ -99,8 +99,8 @@ bool FilePathWatcherFSEvents::Watch(const FilePath& path,
   // captured by the block's scope.
   const FilePath path_copy(path);
 
-  dispatch_async(queue_, ^{
-      StartEventStream(start_event, path_copy);
+  dispatch_async(queue_.get(), ^{
+    StartEventStream(start_event, path_copy);
   });
   return true;
 }
@@ -113,7 +113,7 @@ void FilePathWatcherFSEvents::Cancel() {
   // Switch to the dispatch queue to tear down the event stream. As the queue is
   // owned by |this|, and this method is called from the destructor, execute the
   // block synchronously.
-  dispatch_sync(queue_, ^{
+  dispatch_sync(queue_.get(), ^{
     if (fsevent_stream_) {
       DestroyEventStream();
       target_.clear();
@@ -166,7 +166,7 @@ void FilePathWatcherFSEvents::FSEventsCallback(
                          if (!weak_watcher)
                            return;
                          FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         dispatch_async(watcher->queue_, ^{
+                         dispatch_async(watcher->queue_.get(), ^{
                            watcher->UpdateEventStream(root_change_at);
                          });
                        },
@@ -230,12 +230,10 @@ void FilePathWatcherFSEvents::UpdateEventStream(
   context.release = NULL;
   context.copyDescription = NULL;
 
-  fsevent_stream_ = FSEventStreamCreate(NULL, &FSEventsCallback, &context,
-                                        watched_paths,
-                                        start_event,
-                                        kEventLatencySeconds,
-                                        kFSEventStreamCreateFlagWatchRoot);
-  FSEventStreamSetDispatchQueue(fsevent_stream_, queue_);
+  fsevent_stream_ = FSEventStreamCreate(
+      NULL, &FSEventsCallback, &context, watched_paths.get(), start_event,
+      kEventLatencySeconds, kFSEventStreamCreateFlagWatchRoot);
+  FSEventStreamSetDispatchQueue(fsevent_stream_, queue_.get());
 
   if (!FSEventStreamStart(fsevent_stream_)) {
     task_runner()->PostTask(FROM_HERE,

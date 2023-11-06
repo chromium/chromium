@@ -261,6 +261,31 @@ AXTreeManager::~AXTreeManager() {
   ParentConnectionChanged(parent);
 }
 
+std::unique_ptr<AXTree> AXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
+  if (!tree) {
+    NOTREACHED_NORETURN()
+        << "Attempting to set a new tree, but no tree has been provided.";
+  }
+
+  if (tree->GetAXTreeID().type() == ax::mojom::AXTreeIDType::kUnknown) {
+    NOTREACHED_NORETURN() << "Invalid tree ID.\n" << tree->ToString();
+  }
+
+  if (ax_tree_) {
+    ax_tree_->NotifyTreeManagerWillBeRemoved(GetTreeID());
+    GetMap().RemoveTreeManager(GetTreeID());
+  }
+
+  std::swap(ax_tree_, tree);
+  GetMap().AddTreeManager(GetTreeID(), this);
+  return tree;
+}
+
+std::unique_ptr<AXTree> AXTreeManager::SetTree(
+    const AXTreeUpdate& initial_state) {
+  return SetTree(std::make_unique<AXTree>(initial_state));
+}
+
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
                                       const AXTreeData& old_data,
                                       const AXTreeData& new_data) {

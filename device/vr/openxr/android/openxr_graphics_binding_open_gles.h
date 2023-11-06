@@ -37,13 +37,14 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
   int64_t GetSwapchainFormat(XrSession session) const override;
   XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) override;
-  void ClearSwapChainImages() override;
+  void ClearSwapchainImages() override;
   base::span<SwapChainInfo> GetSwapChainImages() override;
   bool CanUseSharedImages() const override;
   void CreateSharedImages(gpu::SharedImageInterface* sii) override;
   const SwapChainInfo& GetActiveSwapchainImage() override;
   bool Render() override;
   bool WaitOnFence(gfx::GpuFence& gpu_fence) override;
+  bool ShouldFlipSubmittedImage() override;
 
  private:
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;

@@ -15,6 +15,7 @@
 
 class Browser;
 @protocol GridConsumer;
+@protocol GridItemProvider;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsConfigurationProvider;
 @protocol GridToolbarsMutator;
@@ -50,11 +51,7 @@ class WebStateList;
 @property(nonatomic, weak) id<GridConsumer> gridConsumer;
 // Delegate to handle presenting tab UI.
 @property(nonatomic, weak) id<TabPresentationDelegate> tabPresentationDelegate;
-
-// Initializer with `consumer` as the receiver of model layer updates.
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+@property(nonatomic, weak) id<GridItemProvider> itemProvider;
 
 @end
 

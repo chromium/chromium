@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Chromium मध्ये आवाज वापरून शोधा.</translation>
 <translation id="1047130070405668746">Chromium निवडा</translation>
 <translation id="1091252999271033193">याचा अर्थ असा, की Chromium हे प्रत्येक वेळी मोबाइल साइटची विनंती करेल.</translation>
+<translation id="1115463765356382667">Chromium चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा.</translation>
 <translation id="1171824629317156389">iOS मध्ये Chromium सेटिंग्ज उघडा, त्यानंतर "डीफॉल्ट ब्राउझर ॲप" वर टॅप करा आणि Chromium निवडा.</translation>
 <translation id="1185134272377778587">Chromium बद्दल</translation>
 <translation id="1257458525759135959">इमेज सेव्ह करण्यासाठी, तुमच्या फोटोंमध्ये Chromium ला जोडण्यासाठी सेटिंग्ज वर टॅप करा</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">Chromium तुमचा कॅमेरा वापरू शकत नाही कारण दुसरा ॲप्स तो वापरत आहे</translation>
 <translation id="2784449251446768092">Chromium सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="2798503587425057129">Chromium वाचन सूची उघडते.</translation>
+<translation id="2843571538056574338">ऑटोफिलसाठी Chromium वापरा</translation>
 <translation id="2915596697727466327">तुमच्या पासवर्डच्या परवानगी दिलेल्या ॲक्सेसची खात्री करण्यासाठी Chromium फेस आयडी वापरते.</translation>
 <translation id="2918709798697875261">तुमच्या संस्थेनुसार, तुम्ही Chromium मधून साइन आउट केलेले राहणे आवश्यक आहे.</translation>
 <translation id="2942241131342758843">लिंक उघडण्यासाठी, विजेटमध्ये शोधण्यासाठी आणि इतर ॲप्समध्ये पासवर्ड ऑटोफिल करण्यासाठी बाय डीफॉल्ट Chromium वापरा</translation>
@@ -94,6 +96,7 @@
 <translation id="4654936625574199632">अ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chromium हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_LINK" />व्यवस्थापित करा<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium स्कॅनर सुरू करा</translation>
 <translation id="4736424910885271643">तुमचे खाते <ph name="HOSTED_DOMAIN" /> द्वारे व्यवस्थापित केले जात असल्याने, या डिव्हाइसवरून तुमचा Chromium डेटा साफ केला जाईल</translation>
+<translation id="4773487571745795781">तुम्ही Chromium साइन-इन बंद केले आहे.</translation>
 <translation id="4790638144988730920">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा.</translation>
 <translation id="4828317641996116749">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="4985291216379576555">ऑफलाइन, Chromium अपडेट तपासू शकत नाही</translation>
@@ -140,10 +143,12 @@
 १. सेटिंग्ज उघडा
 २. डीफॉल्ट ब्राउझर अ‍ॅप वर टॅप करा
 ३. Chromium निवडा.</translation>
+<translation id="6154098560469640583">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर क्लिक करता, तेव्हा Chromium कधीही वापरा.</translation>
 <translation id="6197255575340902638">तुम्ही "<ph name="MODULE_NAME" />" लपवल्यास, Chromium यापुढे तुमची भविष्यातील पॅकेज ऑटो-ट्रॅक करणार नाही आणि तुमचा मागील पॅकेज ट्रॅकिंगसंबंधित सर्व देता हटवेल.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6268381023930128611">Chromium मधून साइन आउट करायचे?</translation>
 <translation id="6324041800010509197">Chromium मध्ये टॅब ग्रिडला भेट द्या</translation>
+<translation id="6325378625795868881">तुम्ही मेसेज आणि इतर ॲप्समध्ये लिंकवर टॅप करता, तेव्हा कधीही Chromium वापरा.</translation>
 <translation id="632825460376924298">Chromium मध्ये साइन-इन करण्याची अनुमती द्या</translation>
 <translation id="6337530241089703714">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा की ठेवायचा ते निवडा</translation>
 <translation id="6407399265324739055">पेमेंट पद्धती आणि पत्ते एन्क्रिप्ट केले जाणार नाहीत. Chromium वरील ब्राउझिंग इतिहास सिंक होणार नाही.
@@ -156,9 +161,11 @@
 <translation id="6752854822223394465">तुमची संस्था Chromium सेट करत आहे...</translation>
 <translation id="6794054469102824109">Chromium Dino गेम उघडते.</translation>
 <translation id="6820823224820483452">Chromium ला सर्व पासवर्ड तपासता आले नाहीत. उद्या पुन्हा प्रयत्न करा.</translation>
+<translation id="6852799557929001644">डिव्हाइसवरील इतर सर्व अ‍ॅप्सवर तुमचे Chromium पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="6911341667534646387">तुमच्या Google खाते मधील Chromium डेटा वापरणे सुरू ठेवा</translation>
 <translation id="7006920032187763988">तुम्ही पासवर्ड व्यवस्थापक यामध्ये सेव्ह केलेले पासवर्ड तुमच्या iPad वरील इतर अ‍ॅप्समध्ये वापरू शकता.</translation>
 <translation id="7018284295775193585">Chromium अपडेट करू शकत नाही</translation>
+<translation id="7025471822960602362">Chromium वर डिटेक्ट केलेली पॅकेज ट्रॅक करा</translation>
 <translation id="7045244423563602563">Chromium ला तुमचे हक्काचे ठिकाण बनवा</translation>
 <translation id="7055269218854630176">तुमची संस्था, <ph name="DOMAIN" />, तुम्ही साइन इन करत असलेले खाते आणि Chromium कसे वापरले जाऊ शकते हे व्यवस्थापित करते. तुमचा अ‍ॅडमिनिस्ट्रेटर काही वैशिष्ट्ये सेट करू शकतो किंवा प्रतिबंधित करू शकतो.</translation>
 <translation id="7099326575020694068">Chromium विभाजित दृश्य मोड मध्ये तुमचा कॅमेरा वापरू शकत नाही</translation>
@@ -169,6 +176,7 @@
 <translation id="7208566199746267865">तुमची खाती वेबवर आणून Chromium तुमचा वेळ वाचविते. तुम्ही सेटिंग्जमध्ये खाती जोडू किंवा काढू शकता.</translation>
 <translation id="725427773388857052">Chromium तुम्हाला डेटा भंग, असुरक्षित वेबसाइट आणि आणखी बर्‍याच गोष्टींपासून सुरक्षित ठेवण्यात मदत करू शकते.</translation>
 <translation id="7269362888766543920">काही ॲड-ऑनमुळे Chromium क्रॅश होते. कृपया ते अनइंस्टॉल करून पहा.</translation>
+<translation id="7285031092584344905">इतर सर्व अ‍ॅप्सवर तुमचे Chromium पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="7313655110045230863">Chromium ला तुमचे डीफॉल्ट ब्राउझर करण्यासाठी, सेटिंग्ज उघडा. डीफॉल्ट ब्राउझर अ‍ॅपवर टॅप करा आणि त्यानंतर Chromium निवडा.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">निवडलेला डेटा Chromium आणि सिंक केलेल्या डिव्हाइसमधून काढला गेला आहे. तुमच्या Google खात्यामध्ये history.google.com येथे Google च्या इतर सेवांमधील शोध आणि ॲक्टिव्हिटी यासारख्या ब्राउझिंग इतिहासाची इतर रूपे असू शकतात.</translation>
@@ -183,14 +191,18 @@
 <translation id="786327964234957808">तुम्ही संकालित केलेली खाती <ph name="USER_EMAIL1" /> वरून <ph name="USER_EMAIL2" /> वर स्विच करीत आहात. तुमचा विद्यमान Chromium डेटा <ph name="DOMAIN" /> द्वारे व्यवस्थापित केला आहे. हे तुमचा डेटा या डिव्हाइस वरून हटवेल परंतु तुमचा डेटा <ph name="USER_EMAIL1" /> मध्ये असेल.</translation>
 <translation id="7890287942691234100">Chromium स्कॅनर वापरण्यास सुरुवात करा</translation>
 <translation id="7905064834449738336">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chromium तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
+<translation id="7917424453593305610">इतर अ‍ॅप्समध्ये Chromium वापरा.</translation>
 <translation id="7928628054454574139">तुम्ही इतर अ‍ॅप्सवरील लिंकवर जेव्हा टॅप करता तेव्हा Chromium उघडा</translation>
 <translation id="7931842119211730154">तुम्ही Chromium बंद करता तेव्हा गुप्त टॅब लॉक करा</translation>
 <translation id="7934404985878918282">Chromium वाचन सूची पहा</translation>
 <translation id="7980860476903281594">Chromium तुमचे स्थान तुम्ही अनुमती दिलेल्या साइटसोबत शेअर करते.</translation>
+<translation id="7995166854192397899">सूचना या तुमच्या इतर डिव्हाइसवरील तुमच्या ब्राउझिंग ॲक्टिव्हिटीवर आधारित असतात. सूचना मिळवण्यासाठी, तुमच्या सर्व डिव्हाइसवर Chromium मध्ये साइन इन करा.</translation>
+<translation id="800195749539500647">Chromium चा पुरेपूर वापर करा</translation>
 <translation id="8013573822802650211">तुम्ही जेथून Chromium वापरत असाल तेथून तुमचे टॅब पाहण्यासाठी, तुमच्या सर्व डिव्हाइसवर साइन इन करा</translation>
 <translation id="8071041515667087705">Chromium सेटिंग्ज वर जा.</translation>
 <translation id="8073677936375100957">या डिव्हाइसवरून तुमचा Chromium डेटा साफ करायचा?</translation>
 <translation id="8115308261377517697">तुमचा डीफॉल्ट ब्राउझर म्हणून Chromium सेट करा</translation>
+<translation id="8197822717502700527">तुम्ही आता तुमच्या डिव्हाइसवर Chromium चा पुरेपूर वापर करू शकता.</translation>
 <translation id="8235427517854598594">Chromium ला तुमचा डीफॉल्‍ट ब्राउझर करायचे आहे का?</translation>
 <translation id="8240981428553046115">Chromium ला अपडेट तपासता आली नाहीत. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="8303579360494576778">Chromium मध्ये पेमेंट पद्धती व्यवस्थापित करा</translation>
@@ -217,6 +229,7 @@
 <translation id="894437814105052438">तुम्ही साइन आउट करता तेव्हा, Chromium तुमच्या Google खाते मध्ये कोणताही नवीन डेटा सिंक करणार नाही. याआधी सिंक केलेला डेटा खात्यामध्ये राहील.</translation>
 <translation id="8963279154877372067">Chromium सूचनांना किंमत कमी होण्याच्या सूचना मिळवण्याची अनुमती द्या</translation>
 <translation id="9022552996538154597">Chromium वर साइन इन करा</translation>
+<translation id="9050790730841755540">तुम्ही इतर अ‍ॅप्समधील लिंकवर टॅप करता, तेव्हा Chromium कधीही वापरा.</translation>
 <translation id="9059693977935746710">तुम्ही हा पासवर्ड लक्षात ठेवण्याची आवश्यकता नाही. तो <ph name="EMAIL" /> साठी पासवर्ड व्यवस्थापक यामध्ये सेव्ह केला जाईल</translation>
 <translation id="9089354809943900324">Chromium कालबाह्य आहे</translation>
 <translation id="9110075932708282655">बाय डीफॉल्ट Chromium वापरा</translation>

@@ -104,8 +104,12 @@ component("report") {
     "//chromeos/ash/components/report/device_metrics/churn/cohort_impl.h",
     "//chromeos/ash/components/report/device_metrics/churn/observation_impl.cc",
     "//chromeos/ash/components/report/device_metrics/churn/observation_impl.h",
-    "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.cc",
-    "//chromeos/ash/components/report/device_metrics/use_case/fake_psm_delegate.h",
+    "//chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.cc",
+    "//chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h",
+    "//chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.cc",
+    "//chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h",
+    "//chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.cc",
+    "//chromeos/ash/components/report/device_metrics/use_case/stub_psm_client_manager.h",
     "//chromeos/ash/components/report/device_metrics/use_case/use_case.cc",
     "//chromeos/ash/components/report/device_metrics/use_case/use_case.h",
     "//chromeos/ash/components/report/report_controller.cc",
@@ -157,6 +161,5 @@ source_set("unit_tests") {
   data = [
     # TODO(crbug/1393862): Script should binarypb from textpb.
     "//chromeos/ash/components/report/device_metrics/testing/preserved_file_test_data.binarypb",
-    "//third_party/private_membership/src/internal/testing/regression_test_data/test_data.binarypb",
   ]
 }

@@ -53,9 +53,7 @@ public class SerializationTest {
         struct.serialize(null);
     }
 
-    /**
-     * Verifies that serializing a struct with a null struct pointer throws an exception.
-     */
+    /** Verifies that serializing a struct with a null struct pointer throws an exception. */
     @Test
     @SmallTest
     public void testStructPointer() {
@@ -111,9 +109,7 @@ public class SerializationTest {
         struct.serialize(null);
     }
 
-    /**
-     * Verifies that serializing a struct with a null string throws an exception.
-     */
+    /** Verifies that serializing a struct with a null string throws an exception. */
     @Test
     @SmallTest
     public void testString() {
@@ -140,9 +136,7 @@ public class SerializationTest {
         struct.serialize(null);
     }
 
-    /**
-     * Verifies that a struct can be serialized to and deserialized from a ByteBuffer.
-     */
+    /** Verifies that a struct can be serialized to and deserialized from a ByteBuffer. */
     @Test
     @SmallTest
     public void testByteBufferSerialization() {
@@ -159,9 +153,7 @@ public class SerializationTest {
         Assert.assertEquals(0x7F, output.i);
     }
 
-    /**
-     * Verifies that a struct with handles cannot be serialized to a ByteBuffer.
-     */
+    /** Verifies that a struct with handles cannot be serialized to a ByteBuffer. */
     @Test
     @SmallTest
     public void testByteBufferSerializationWithHandles() {
@@ -177,8 +169,9 @@ public class SerializationTest {
 
         try {
             struct.serialize();
-            Assert.fail("Serializing a struct with handles to a ByteBuffer should have thrown an "
-                    + "exception.");
+            Assert.fail(
+                    "Serializing a struct with handles to a ByteBuffer should have thrown an "
+                            + "exception.");
         } catch (UnsupportedOperationException ex) {
             // Expected.
         }

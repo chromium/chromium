@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL PaymentRequest.show() cannot be triggered from a hidden context promise_rejects_dom: function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
+[FAIL] PaymentRequest.show() cannot be triggered from a hidden context
+  promise_rejects_dom: function "function() { throw e }" threw object "InvalidStateError: Failed to execute 'show' on 'PaymentRequest': Already called show() once" that is not a DOMException AbortError: property "code" is equal to 11, expected 20
 Harness: the test ran to completion.
 

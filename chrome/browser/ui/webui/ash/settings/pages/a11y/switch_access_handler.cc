@@ -105,13 +105,26 @@ void SwitchAccessHandler::RegisterMessages() {
           base::Unretained(this)));
 }
 
+void SwitchAccessHandler::AddPreTargetHandler() {
+  CHECK(IsJavascriptAllowed());
+
+  if (on_pre_target_handler_added_for_testing_) {
+    std::move(on_pre_target_handler_added_for_testing_).Run();
+  }
+  if (skip_pre_target_handler_for_testing_) {
+    return;
+  }
+
+  gfx::NativeView native_view = web_ui()->GetWebContents()->GetNativeView();
+
+  // Ensure we don't add the handler twice.
+  native_view->RemovePreTargetHandler(this);
+  native_view->AddPreTargetHandler(this);
+}
+
 void SwitchAccessHandler::OnJavascriptAllowed() {
   if (action_assignment_pane_active_) {
-    gfx::NativeView native_view = web_ui()->GetWebContents()->GetNativeView();
-
-    // Ensure we don't add the handler twice.
-    native_view->RemovePreTargetHandler(this);
-    native_view->AddPreTargetHandler(this);
+    AddPreTargetHandler();
   }
 
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
@@ -174,7 +187,11 @@ void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
     const base::Value::List& args) {
   action_assignment_pane_active_ = true;
-  AllowJavascript();
+  if (!IsJavascriptAllowed()) {
+    AllowJavascript();
+  } else {
+    AddPreTargetHandler();
+  }
   OnSwitchAccessAssignmentsUpdated();
   AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(true);
 }
@@ -182,7 +199,9 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
     const base::Value::List& args) {
   action_assignment_pane_active_ = false;
-  web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
+  if (!skip_pre_target_handler_for_testing_) {
+    web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
+  }
   AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }
 

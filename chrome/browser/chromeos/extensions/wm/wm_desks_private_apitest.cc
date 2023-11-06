@@ -131,11 +131,11 @@ IN_PROC_BROWSER_TEST_F(WmDesksPrivateApiTest, LaunchAndAttemptUndo) {
 
   // Checks for if there are any other toasts running besides
   // the undo toast. Waits for other toasts to expire.
-  if (!ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1")) {
+  if (!ash::ToastManager::Get()->IsToastShown("UndoCloseAllToast_1")) {
     LOG(INFO) << "Non-undo toast running, must wait for other toasts :(";
     SPIN_FOR_TIMEDELTA_OR_UNTIL_TRUE(
         base::Seconds(45),
-        ash::ToastManager::Get()->IsRunning("UndoCloseAllToast_1"));
+        ash::ToastManager::Get()->IsToastShown("UndoCloseAllToast_1"));
   }
 
   ash::WaitForMilliseconds(

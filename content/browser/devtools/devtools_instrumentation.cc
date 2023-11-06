@@ -5,6 +5,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/traced_value.h"
 #include "components/download/public/common/download_create_info.h"
@@ -36,11 +37,11 @@
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/public/browser/browser_context.h"
@@ -48,6 +49,7 @@
 #include "devtools_instrumentation.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -323,6 +325,14 @@ FederatedAuthRequestResultToProtocol(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
     }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenIdpErrorResponse;
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse: {
+      return FederatedAuthRequestIssueReasonEnum::
+          IdTokenCrossSiteIdpErrorResponse;
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidContentType;
     }
@@ -510,6 +520,31 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildBounceTrackingIssue(
   return issue;
 }
 
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildCookieDeprecationMetadataIssue(
+    const blink::mojom::CookieDeprecationMetadataIssueDetailsPtr&
+        issue_details) {
+  auto metadata_issue_details =
+      protocol::Audits::CookieDeprecationMetadataIssueDetails::Create()
+          .SetAllowedSites(std::make_unique<protocol::Array<protocol::String>>(
+              issue_details->allowed_sites))
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetCookieDeprecationMetadataIssueDetails(
+              std::move(metadata_issue_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                CookieDeprecationMetadataIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+
+  return issue;
+}
+
 void UpdateChildFrameTrees(FrameTreeNode* ftn, bool update_target_info) {
   if (auto* agent_host = WebContentsDevToolsAgentHost::GetFor(
           WebContentsImpl::FromFrameTreeNode(ftn))) {
@@ -570,7 +605,9 @@ void WillSwapFrameTreeNode(FrameTreeNode& old_node, FrameTreeNode& new_node) {
   scoped_refptr<RenderFrameDevToolsAgentHost> previous_host =
       static_cast<RenderFrameDevToolsAgentHost*>(
           RenderFrameDevToolsAgentHost::GetFor(&new_node));
-  previous_host->SetFrameTreeNode(nullptr);
+  // Disconnect old host entirely, so it detaches from renderer and does not
+  // cause problem if renderer comes back from the BFCache.
+  previous_host->DisconnectWebContents();
   host->SetFrameTreeNode(&new_node);
 }
 
@@ -646,7 +683,8 @@ void DidUpdatePrerenderStatus(
     absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
-    absl::optional<std::string> disallowed_mojo_interface) {
+    absl::optional<std::string> disallowed_mojo_interface,
+    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers) {
   auto* ftn = FrameTreeNode::GloballyFindByID(initiator_frame_tree_node_id);
   // ftn will be null if this is browser-initiated, which has no initiator.
   if (!ftn) {
@@ -656,7 +694,7 @@ void DidUpdatePrerenderStatus(
   DispatchToAgents(ftn, &protocol::PreloadHandler::DidUpdatePrerenderStatus,
                    initiator_devtools_navigation_token, prerender_url,
                    target_hint, status, prerender_status,
-                   disallowed_mojo_interface);
+                   disallowed_mojo_interface, mismatched_headers);
 }
 
 namespace {
@@ -1686,6 +1724,18 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
         protocol::Audits::CookieWarningReasonEnum::WarnThirdPartyPhaseout);
   }
 
+  // This warning only affects cookies when the corresponding feature is
+  // enabled, therefore we should only create an issue for it then.
+  if (base::FeatureList::IsEnabled(
+          net::features::kCookieSameSiteConsidersRedirectChain) &&
+      status.HasWarningReason(
+          net::CookieInclusionStatus::
+              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
+    warning_reasons->push_back(
+        protocol::Audits::CookieWarningReasonEnum::
+            WarnCrossSiteRedirectDowngradeChangesInclusion);
+  }
+
   return warning_reasons;
 }
 
@@ -1812,6 +1862,10 @@ void BuildAndReportBrowserInitiatedIssue(
     issue =
         BuildBounceTrackingIssue(info->details->bounce_tracking_issue_details);
   } else if (info->code == blink::mojom::InspectorIssueCode::
+                               kCookieDeprecationMetadataIssue) {
+    issue = BuildCookieDeprecationMetadataIssue(
+        info->details->cookie_deprecation_metadata_issue_details);
+  } else if (info->code == blink::mojom::InspectorIssueCode::
                                kFederatedAuthUserInfoRequestIssue) {
     issue = BuildFederatedAuthUserInfoRequestIssue(
         info->details->federated_auth_user_info_request_details);
@@ -1840,12 +1894,13 @@ void OnWebTransportHandshakeFailed(
     text += net::WebTransportErrorToString(*error);
   }
   text += ".";
-  auto entry = protocol::Log::LogEntry::Create()
-                   .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
-                   .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
-                   .SetText(text)
-                   .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
-                   .Build();
+  auto entry =
+      protocol::Log::LogEntry::Create()
+          .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
+          .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
+          .SetText(text)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
+          .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
 
@@ -1878,12 +1933,13 @@ void OnServiceWorkerMainScriptFetchingFailed(
     return;
   }
 
-  auto entry = protocol::Log::LogEntry::Create()
-                   .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
-                   .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
-                   .SetText(error)
-                   .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
-                   .Build();
+  auto entry =
+      protocol::Log::LogEntry::Create()
+          .SetSource(protocol::Log::LogEntry::SourceEnum::Network)
+          .SetLevel(protocol::Log::LogEntry::LevelEnum::Error)
+          .SetText(error)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
+          .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 
   ServiceWorkerDevToolsAgentHost* agent_host =
@@ -2059,12 +2115,13 @@ void LogWorkletMessage(RenderFrameHostImpl& frame_host,
 
   DCHECK(!log_level_string.empty());
 
-  auto entry = protocol::Log::LogEntry::Create()
-                   .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
-                   .SetLevel(log_level_string)
-                   .SetText(message)
-                   .SetTimestamp(base::Time::Now().ToDoubleT() * 1000.0)
-                   .Build();
+  auto entry =
+      protocol::Log::LogEntry::Create()
+          .SetSource(protocol::Log::LogEntry::SourceEnum::Other)
+          .SetLevel(log_level_string)
+          .SetText(message)
+          .SetTimestamp(base::Time::Now().InMillisecondsFSinceUnixEpoch())
+          .Build();
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 
   // Manually trigger RenderFrameHostImpl::DidAddMessageToConsole, so that the

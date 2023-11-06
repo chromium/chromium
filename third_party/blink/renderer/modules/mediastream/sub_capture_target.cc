@@ -12,7 +12,7 @@
 
 namespace blink {
 
-SubCaptureTarget::SubCaptureTarget(SubCaptureTargetType type, String id)
+SubCaptureTarget::SubCaptureTarget(Type type, String id)
     : type_(type), id_(std::move(id)) {
   CHECK(!id_.empty());
 }
@@ -20,7 +20,7 @@ SubCaptureTarget::SubCaptureTarget(SubCaptureTargetType type, String id)
 ScriptPromise SubCaptureTarget::fromElement(ScriptState* script_state,
                                             Element* element,
                                             ExceptionState& exception_state,
-                                            SubCaptureTargetType type) {
+                                            Type type) {
   DCHECK(IsMainThread());
 
 #if BUILDFLAG(IS_ANDROID)

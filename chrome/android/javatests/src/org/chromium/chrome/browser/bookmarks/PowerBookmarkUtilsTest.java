@@ -33,8 +33,7 @@ import org.chromium.components.power_bookmarks.ShoppingSpecifics;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PowerBookmarkUtilsTest {
-    @Mock
-    private BookmarkModel mMockBookmarkModel;
+    @Mock private BookmarkModel mMockBookmarkModel;
 
     @Before
     public void setup() {
@@ -92,8 +91,12 @@ public class PowerBookmarkUtilsTest {
      * @return A user-managed subscription with the specified ID.
      */
     private CommerceSubscription buildSubscription(String clusterId) {
-        return new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        return new CommerceSubscription(
+                SubscriptionType.PRICE_TRACK,
+                IdentifierType.PRODUCT_CLUSTER_ID,
+                clusterId,
+                ManagementType.USER_MANAGED,
+                null);
     }
 
     /**
@@ -112,6 +115,7 @@ public class PowerBookmarkUtilsTest {
 
     /**
      * Create a mock bookmark and set up the mock model to have shopping meta for it.
+     *
      * @param bookmarkId The bookmark's ID.
      * @param clusterId The cluster ID for the product.
      * @param isPriceTracked Whether the product is price tracked.

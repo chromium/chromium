@@ -178,6 +178,8 @@ void SyncEngineBackend::DoInitialize(
   args.cache_guid = restored_local_transport_data.cache_guid;
   args.birthday = restored_local_transport_data.birthday;
   args.bag_of_chips = restored_local_transport_data.bag_of_chips;
+  args.sync_poll_immediately_on_every_startup =
+      params.sync_poll_immediately_on_every_startup;
   sync_manager_->Init(&args);
 
   LoadAndConnectNigoriController();
@@ -463,6 +465,11 @@ void SyncEngineBackend::DoOnActiveDevicesChanged(
 void SyncEngineBackend::GetNigoriNodeForDebugging(AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   nigori_controller_->GetAllNodes(std::move(callback));
+}
+
+void SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  nigori_controller_->RecordMemoryUsageAndCountsHistograms();
 }
 
 bool SyncEngineBackend::HasUnsyncedItemsForTest() const {

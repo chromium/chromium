@@ -4,8 +4,12 @@
 
 #include "device/vr/openxr/openxr_graphics_binding.h"
 
+#include "components/viz/common/gpu/context_provider.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
+
 namespace device {
 
 #if BUILDFLAG(IS_WIN)
@@ -40,6 +44,60 @@ bool OpenXrGraphicsBinding::Render() {
   return true;
 }
 
+void OpenXrGraphicsBinding::PrepareViewConfigForRender(
+    const XrSwapchain& color_swapchain,
+    OpenXrViewConfiguration& view_config) {
+  DCHECK(view_config.Active());
+
+  uint32_t x_offset = view_config.Viewport().x();
+  for (uint32_t view_index = 0; view_index < view_config.Views().size();
+       view_index++) {
+    const XrView& view = view_config.Views()[view_index];
+
+    XrCompositionLayerProjectionView& projection_view =
+        view_config.GetProjectionView(view_index);
+    const XrViewConfigurationView& properties =
+        view_config.Properties()[view_index];
+    projection_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+    projection_view.pose = view.pose;
+    projection_view.fov.angleLeft = view.fov.angleLeft;
+    projection_view.fov.angleRight = view.fov.angleRight;
+    projection_view.subImage.swapchain = color_swapchain;
+    // Since we're in double wide mode, the texture array only has one texture
+    // and is always index 0. If secondary views are enabled, those views are
+    // also in this same texture array.
+    projection_view.subImage.imageArrayIndex = 0;
+    projection_view.subImage.imageRect.extent.width =
+        properties.recommendedImageRectWidth;
+    projection_view.subImage.imageRect.extent.height =
+        properties.recommendedImageRectHeight;
+    projection_view.subImage.imageRect.offset.x = x_offset;
+    x_offset += properties.recommendedImageRectWidth;
+
+    projection_view.subImage.imageRect.offset.y =
+        GetSwapchainImageSize().height() -
+        properties.recommendedImageRectHeight;
+    projection_view.fov.angleUp = view.fov.angleUp;
+    projection_view.fov.angleDown = view.fov.angleDown;
+
+    // WebGL layers may give us flipped content. We need to instruct OpenXR
+    // to flip the content before showing it to the user. Some XR runtimes
+    // are able to efficiently do this as part of existing post processing
+    // steps.
+    if (ShouldFlipSubmittedImage()) {
+      projection_view.subImage.imageRect.offset.y = 0;
+      projection_view.fov.angleUp = view.fov.angleDown;
+      projection_view.fov.angleDown = view.fov.angleUp;
+    }
+  }
+}
+
+bool OpenXrGraphicsBinding::IsUsingSharedImages() {
+  const auto swapchain_info = GetSwapChainImages();
+  return ((swapchain_info.size() > 1) &&
+          !swapchain_info[0].mailbox_holder.mailbox.IsZero());
+}
+
 gfx::Size OpenXrGraphicsBinding::GetSwapchainImageSize() {
   return swapchain_image_size_;
 }
@@ -63,6 +121,28 @@ gfx::Size OpenXrGraphicsBinding::GetTransferSize() {
 
 void OpenXrGraphicsBinding::SetTransferSize(const gfx::Size& transfer_size) {
   transfer_size_ = transfer_size;
+}
+
+void OpenXrGraphicsBinding::DestroySwapchainImages(
+    viz::ContextProvider* context_provider) {
+  // As long as we have a context provider we need to destroy any SharedImages
+  // that may exist.
+  if (context_provider) {
+    gpu::SharedImageInterface* shared_image_interface =
+        context_provider->SharedImageInterface();
+    for (SwapChainInfo& info : GetSwapChainImages()) {
+      if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
+          info.mailbox_holder.sync_token.HasData()) {
+        shared_image_interface->DestroySharedImage(
+            info.mailbox_holder.sync_token, info.mailbox_holder.mailbox);
+      }
+      info.Clear();
+    }
+  }
+
+  // Regardless of if we had a context provider or any shared images, we need to
+  // clear the list of SwapchainImages.
+  ClearSwapchainImages();
 }
 
 XrResult OpenXrGraphicsBinding::ActivateSwapchainImage(

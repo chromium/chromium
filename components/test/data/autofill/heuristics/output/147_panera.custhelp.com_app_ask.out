@@ -53,7 +53,7 @@ UNKNOWN_TYPE | Incident.Subject | Subject Optional Optional |  | Incident.Custom
 NAME_FIRST | Contact.Name.First | First Name * Required |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
 NAME_LAST | Contact.Name.Last | Last Name * Required |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
 EMAIL_ADDRESS | Contact.Emails.PRIMARY.Address | Email Address * Required |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
-PHONE_HOME_WHOLE_NUMBER | Contact.Phones.HOME.Number | Phone Number Optional Optional |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
+PHONE_HOME_CITY_AND_NUMBER | Contact.Phones.HOME.Number | Phone Number Optional Optional |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | Contact.CustomFields.c.panera_my_panera_number | MyPanera Card Number Optional Optional |  | Incident.CustomFields.c.escalated_gift_card_devalue_1
 UNKNOWN_TYPE | Incident.CustomFields.c.pertains_to_cafe | Does your question pertain to a specific bakery-cafe? | 1 | Incident.CustomFields.c.escalated_gift_card_devalue_1
 ADDRESS_HOME_STATE | Z.CafeInfo.CafeState.ID | Screen Reader users press enter to select a Please share a bit more detail. This will help us assist you more quickly.. Please share a bit more detail. This will help us assist you more quickly. * Required This button does not work with screen readers. Please use the previous link instead. Details |  | Incident.CustomFields.c.escalated_gift_card_devalue_1

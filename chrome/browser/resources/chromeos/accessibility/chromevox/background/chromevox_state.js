@@ -8,7 +8,6 @@
  *     object and to facilitate mocking for tests.
  */
 import {constants} from '../../common/constants.js';
-import {CursorRange} from '../../common/cursors/range.js';
 import {BrailleKeyEvent} from '../common/braille/braille_key_types.js';
 import {NavBraille} from '../common/braille/nav_braille.js';
 import {TtsSpeechProperties} from '../common/tts_types.js';
@@ -36,17 +35,6 @@ export class ChromeVoxState {
    * @param {boolean} newValue
    */
   set isReadingContinuously(newValue) {}
-
-  /**
-   * Restores the last valid ChromeVox range.
-   */
-  restoreLastValidRangeIfNeeded() {}
-
-  /**
-   * @param {!CursorRange} range
-   * @param {CursorRange} prevRange
-   */
-  setFocusToRange(range, prevRange) {}
 
   /**
    * Handles a braille command.

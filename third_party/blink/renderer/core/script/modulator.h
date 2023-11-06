@@ -188,7 +188,7 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
     DCHECK(!import_map_);
     import_map_ = import_map;
   }
-  const ImportMap* GetImportMapForTest() const { return import_map_; }
+  const ImportMap* GetImportMapForTest() const { return import_map_.Get(); }
 
   // https://wicg.github.io/import-maps/#document-acquiring-import-maps
   enum class AcquiringImportMapsState {

@@ -192,7 +192,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
-    "//ios/chrome/browser/ssl",
+    "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model:model",
     "//ios/chrome/browser/ui/autofill",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",

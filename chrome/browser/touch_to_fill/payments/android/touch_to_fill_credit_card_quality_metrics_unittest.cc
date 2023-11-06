@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <algorithm>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/touch_to_fill/payments//android/touch_to_fill_delegate_android_impl.h"
 #include "components/autofill/core/browser/field_types.h"

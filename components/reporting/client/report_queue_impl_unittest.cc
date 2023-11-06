@@ -4,8 +4,7 @@
 
 #include "components/reporting/client/report_queue_impl.h"
 
-#include <stdio.h>
-
+#include <cstddef>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -14,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
@@ -79,15 +79,15 @@ class ReportQueueImplTest : public testing::Test {
             .SetDMToken(dm_token_)
             .SetPolicyCheckCallback(policy_check_callback_)
             .Build();
-    ASSERT_OK(config_result) << config_result.status();
+    ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-    ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                            storage_module_, report_queue_event.cb());
+    ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                            report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
-    ASSERT_OK(report_queue_result) << report_queue_result.status();
+    ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
-    report_queue_ = std::move(report_queue_result.ValueOrDie());
+    report_queue_ = std::move(report_queue_result.value());
   }
 
   Status EnqueueTestRecord(
@@ -97,9 +97,9 @@ class ReportQueueImplTest : public testing::Test {
     ReportQueueImpl::Create(std::move(config), storage_module_,
                             report_queue_event.cb());
     auto report_queue_result = report_queue_event.result();
-    CHECK(report_queue_result.ok()) << report_queue_result.status();
+    CHECK(report_queue_result.has_value()) << report_queue_result.error();
 
-    report_queue_ = std::move(report_queue_result.ValueOrDie());
+    report_queue_ = std::move(report_queue_result.value());
 
     test::TestEvent<Status> a;
     report_queue_->Enqueue(std::make_unique<test::TestMessage>(test_message),
@@ -189,11 +189,11 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.ValueOrDie()), test::TestMessage())));
+      std::move(config_result.value()), test::TestMessage())));
 }
 
 // Verifies that records sent to `Destination::TELEMETRY_METRIC` are
@@ -205,11 +205,11 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.ValueOrDie()), test::TestMessage())));
+      std::move(config_result.value()), test::TestMessage())));
 }
 
 // Verifies that records sent to `Destination::INFO_METRIC` are
@@ -221,11 +221,11 @@ TEST_F(ReportQueueImplTest,
                            .SetDMToken(dm_token_)
                            .SetPolicyCheckCallback(policy_check_callback_)
                            .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   // Test records are not MetricData so they should trigger CHECK.
   EXPECT_CHECK_DEATH(static_cast<void>(EnqueueTestRecord(
-      std::move(config_result.ValueOrDie()), test::TestMessage())));
+      std::move(config_result.value()), test::TestMessage())));
 }
 
 TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
@@ -237,15 +237,15 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithRateLimiter) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                          storage_module_, report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                          report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
@@ -288,13 +288,13 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithReservedSpace) {
           .SetDMToken(dm_token_)
           .SetPolicyCheckCallback(policy_check_callback_)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
 
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
+      EnqueueTestRecord(std::move(config_result.value()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -316,12 +316,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSource) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
+      EnqueueTestRecord(std::move(config_result.value()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -345,12 +345,12 @@ TEST_F(ReportQueueImplTest, SuccessfulProtoRecordWithSourceVersion) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestMessage test_message;
   test_message.set_test(kTestMessage);
   const auto a_result =
-      EnqueueTestRecord(std::move(config_result.ValueOrDie()), test_message);
+      EnqueueTestRecord(std::move(config_result.value()), test_message);
   EXPECT_OK(a_result) << a_result;
 
   EXPECT_THAT(test_storage_module()->priority(), Eq(priority_));
@@ -489,15 +489,15 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithRateLimiter) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetRateLimiter(std::move(rate_limiter))
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                          storage_module_, report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                          report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
 
   EXPECT_CALL(*mock_rate_limiter, Acquire(_)).WillOnce(Return(false));
 
@@ -541,15 +541,15 @@ TEST_F(ReportQueueImplTest,
           .SetDMToken(dm_token_)
           .SetPolicyCheckCallback(policy_check_callback_)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                          storage_module_, report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                          report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_OK(report_queue_result) << report_queue_result.status();
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -580,14 +580,14 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecordWithSource) {
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                          storage_module_, report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                          report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_OK(report_queue_result) << report_queue_result.status();
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
+  report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -620,14 +620,14 @@ TEST_F(ReportQueueImplTest,
           .SetPolicyCheckCallback(policy_check_callback_)
           .SetSourceInfo(source_info)
           .Build();
-  ASSERT_OK(config_result) << config_result.status();
+  ASSERT_TRUE(config_result.has_value()) << config_result.error();
 
   test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> report_queue_event;
-  ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
-                          storage_module_, report_queue_event.cb());
+  ReportQueueImpl::Create(std::move(config_result.value()), storage_module_,
+                          report_queue_event.cb());
   auto report_queue_result = report_queue_event.result();
-  ASSERT_OK(report_queue_result) << report_queue_result.status();
-  report_queue_ = std::move(report_queue_result.ValueOrDie());
+  ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
+  report_queue_ = std::move(report_queue_result.value());
 
   test::TestEvent<Status> a;
   auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
@@ -686,7 +686,7 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailedToCreate) {
 
     // Fail to attach queue before calling `Enqueue`.
     speculative_report_queue->PrepareToAttachActualQueue().Run(
-        Status(error::UNKNOWN, "Failed for Test"));
+        base::unexpected(Status(error::UNKNOWN, "Failed for Test")));
     task_environment_.RunUntilIdle();  // Let `AttachActualQueue` finish.
 
     speculative_report_queue->Enqueue(kTestMessage, Priority::IMMEDIATE,
@@ -709,7 +709,7 @@ TEST_F(ReportQueueImplTest, SpeculativeQueueEnqueueAndCreationFailed) {
 
   // Fail to attach queue after calling `Enqueue`.
   speculative_report_queue->PrepareToAttachActualQueue().Run(
-      Status(error::UNKNOWN, "Failed for Test"));
+      base::unexpected(Status(error::UNKNOWN, "Failed for Test")));
   task_environment_.RunUntilIdle();  // Let `AttachActualQueue` finish.
 
   // Unfulfilled pending Enqueue returns the queue failure status.
@@ -766,7 +766,7 @@ TEST_F(ReportQueueImplTest, FlushFailedSpeculativeReportQueue) {
     auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
 
     speculative_report_queue->PrepareToAttachActualQueue().Run(
-        Status(error::UNKNOWN, "Failed for Test"));
+        base::unexpected(Status(error::UNKNOWN, "Failed for Test")));
     task_environment_.RunUntilIdle();  // Let `AttachActualQueue` finish.
 
     speculative_report_queue->Flush(priority_, event.cb());

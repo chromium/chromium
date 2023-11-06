@@ -253,31 +253,6 @@ class TextInputTestWithConsumedByIme
 
 INSTANTIATE_TEST_SUITE_P(, TextInputTestWithConsumedByIme, ::testing::Bool());
 
-// Test for both kExoExtendedConfirmComposition enabled and disabled.
-class TextInputTestWithExtendedConfirmComposition
-    : public TextInputTest,
-      public testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(
-          ash::features::kExoExtendedConfirmComposition);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          ash::features::kExoExtendedConfirmComposition);
-    }
-
-    TextInputTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         TextInputTestWithExtendedConfirmComposition,
-                         ::testing::Bool());
-
 TEST_F(TextInputTest, Activate) {
   EXPECT_EQ(ui::TEXT_INPUT_TYPE_NONE, text_input()->GetTextInputType());
   EXPECT_EQ(ui::TEXT_INPUT_MODE_DEFAULT, text_input()->GetTextInputMode());
@@ -562,16 +537,12 @@ TEST_F(TextInputTest, CompositionTextEmpty) {
   text_input()->ClearCompositionText();
 }
 
-TEST_P(TextInputTestWithExtendedConfirmComposition,
-       ConfirmCompositionTextDontKeepSelection) {
+TEST_F(TextInputTest, ConfirmCompositionTextDontKeepSelection) {
   SetCompositionText(u"composition");
 
-  if (GetParam()) {
-    EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/false))
-        .Times(1);
-  } else {
-    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(u"composition")));
-  }
+  EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/false))
+      .Times(1);
+
   const size_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/false);
   EXPECT_EQ(composition_text_length, 11u);
@@ -582,23 +553,16 @@ TEST_P(TextInputTestWithExtendedConfirmComposition,
   EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
-TEST_P(TextInputTestWithExtendedConfirmComposition,
-       ConfirmCompositionTextKeepSelection) {
+TEST_F(TextInputTest, ConfirmCompositionTextKeepSelection) {
   constexpr char16_t kCompositionText[] = u"composition";
   SetCompositionText(kCompositionText);
   text_input()->SetEditableSelectionRange(gfx::Range(2, 3));
   text_input()->SetSurroundingText(kCompositionText, 0u, gfx::Range(2, 3),
                                    absl::nullopt, absl::nullopt);
 
-  if (GetParam()) {
-    EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/true))
-        .Times(1);
-  } else {
-    EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
-                                       gfx::Range(2, 3)))
-        .Times(1);
-    EXPECT_CALL(*delegate(), Commit(base::StringPiece16(kCompositionText)));
-  }
+  EXPECT_CALL(*delegate(), ConfirmComposition(/*keep_selection=*/true))
+      .Times(1);
+
   const uint32_t composition_text_length =
       text_input()->ConfirmCompositionText(/*keep_selection=*/true);
   EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));

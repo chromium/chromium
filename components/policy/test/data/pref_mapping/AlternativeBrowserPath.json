@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AlternativeBrowserPath": "foobarbaz"
+        },
+        "prefs": {
+          "browser_switcher.alternative_browser_path": {}
+        }
+      }
+    ]
+  }
+]

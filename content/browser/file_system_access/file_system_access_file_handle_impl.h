@@ -109,11 +109,19 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   // Find an unused swap file. We cannot use a swap file which is locked or
   // which already exists on disk.
   void StartCreateSwapFile(
+      int start_count,
+      bool keep_existing_data,
+      bool auto_close,
+      CreateFileWriterCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
+  void DidTakeSwapLock(
       int count,
+      const storage::FileSystemURL& swap_url,
       bool keep_existing_data,
       bool auto_close,
       scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
-      CreateFileWriterCallback callback);
+      CreateFileWriterCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock);
   void DidCheckSwapFileExists(
       int count,
       const storage::FileSystemURL& swap_url,
@@ -158,6 +166,9 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
       scoped_refptr<FileSystemAccessLockManager::LockHandle> swap_lock,
       CreateFileWriterCallback callback,
       base::File::Error result);
+  void DidTakeAccessHandleLock(
+      OpenAccessHandleCallback callback,
+      scoped_refptr<FileSystemAccessLockManager::LockHandle> lock);
   void DoOpenIncognitoFile(
       scoped_refptr<FileSystemAccessLockManager::LockHandle> lock,
       OpenAccessHandleCallback callback);

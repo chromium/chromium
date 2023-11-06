@@ -271,7 +271,7 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct PbufferClobberEvent {
-    static constexpr int type_id = 1;
+    static constexpr uint8_t type_id = 1;
     static constexpr uint8_t opcode = 0;
     uint16_t sequence{};
     uint16_t event_type{};
@@ -287,7 +287,7 @@ class COMPONENT_EXPORT(X11) Glx {
   };
 
   struct BufferSwapCompleteEvent {
-    static constexpr int type_id = 2;
+    static constexpr uint8_t type_id = 2;
     static constexpr uint8_t opcode = 1;
     uint16_t sequence{};
     uint16_t event_type{};

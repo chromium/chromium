@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shelf/login_shelf_button.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "skia/ext/image_operations.h"
@@ -36,10 +37,20 @@ class KioskAppsButton::KioskAppsMenuModel
   bool IsLaunchEnabled() const { return is_launch_enabled_; }
   void SetLaunchEnabled(bool enabled) { is_launch_enabled_ = enabled; }
 
-  bool LaunchApp(const std::string& app_id) {
+  bool LaunchApp(const std::string& chrome_app_id) {
     for (size_t i = 0; i < kiosk_apps_.size(); ++i) {
-      if (kiosk_apps_[i].app_id == app_id) {
-        ExecuteCommand(i, 0);
+      if (kiosk_apps_[i].chrome_app_id == chrome_app_id) {
+        ExecuteCommand(/*command_id=*/i, /*event_flags=*/0);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  bool LaunchApp(const AccountId& account_id) {
+    for (size_t i = 0; i < kiosk_apps_.size(); ++i) {
+      if (kiosk_apps_[i].account_id == account_id) {
+        ExecuteCommand(/*command_id=*/i, /*event_flags=*/0);
         return true;
       }
     }
@@ -123,8 +134,12 @@ KioskAppsButton::KioskAppsButton()
 
 KioskAppsButton::~KioskAppsButton() = default;
 
-bool KioskAppsButton::LaunchAppForTesting(const std::string& app_id) {
-  return menu_model_->LaunchApp(app_id);
+bool KioskAppsButton::LaunchAppForTesting(const std::string& chrome_app_id) {
+  return menu_model_->LaunchApp(chrome_app_id);
+}
+
+bool KioskAppsButton::LaunchAppForTesting(const AccountId& account_id) {
+  return menu_model_->LaunchApp(account_id);
 }
 
 void KioskAppsButton::SetApps(

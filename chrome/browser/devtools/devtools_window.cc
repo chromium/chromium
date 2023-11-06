@@ -39,7 +39,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
-#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -74,6 +73,9 @@
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "content/public/common/url_constants.h"
 #include "net/cert/x509_certificate.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -82,11 +84,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/version_info/channel.h"
-#include "third_party/cros_system_api/switches/chrome_switches.h"
-#endif
 
 // This should be after all other #includes.
 #if defined(_WINDOWS_)  // Detect whether windows.h was included.
@@ -820,8 +817,10 @@ void DevToolsWindow::ToggleDevToolsWindow(
       return;
     window->bindings_->AttachTo(agent.get());
     do_open = true;
-    if (opened_by != DevToolsOpenedByAction::kUnknown)
+    if (opened_by != DevToolsOpenedByAction::kUnknown) {
       LogDevToolsOpenedByAction(opened_by);
+      LogDevToolsOpenedUKM(inspected_web_contents);
+    }
   }
 
   // Update toolbar to reflect DevTools changes.
@@ -851,6 +850,7 @@ void DevToolsWindow::InspectElement(
   // renderer. Otherwise, we still can hit a race condition here.
   OpenDevToolsWindow(web_contents, DevToolsToggleAction::ShowElementsPanel());
   LogDevToolsOpenedByAction(DevToolsOpenedByAction::kContextMenuInspect);
+  LogDevToolsOpenedUKM(web_contents);
   DevToolsWindow* window = FindDevToolsWindow(agent.get());
   if (window && should_measure_time)
     window->inspect_element_start_time_ = start_time;
@@ -860,6 +860,14 @@ void DevToolsWindow::InspectElement(
 void DevToolsWindow::LogDevToolsOpenedByAction(
     DevToolsOpenedByAction opened_by) {
   base::UmaHistogramEnumeration("DevTools.OpenedByAction", opened_by);
+}
+
+// static
+void DevToolsWindow::LogDevToolsOpenedUKM(content::WebContents* web_contents) {
+  ukm::SourceId source_id =
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::DevTools_Opened(source_id).SetHasOccurred(true).Record(
+      ukm::UkmRecorder::Get());
 }
 
 // static
@@ -1165,9 +1173,8 @@ DevToolsWindow* DevToolsWindow::Create(
   }
 
   // Create WebContents with devtools.
-  GURL url(GetDevToolsURL(profile, frontend_type, chrome::GetChannel(),
-                          frontend_url, can_dock, panel, has_other_clients,
-                          browser_connection));
+  GURL url(GetDevToolsURL(profile, frontend_type, frontend_url, can_dock, panel,
+                          has_other_clients, browser_connection));
   std::unique_ptr<WebContents> main_web_contents =
       WebContents::Create(WebContents::CreateParams(profile));
   main_web_contents->GetController().LoadURL(
@@ -1188,7 +1195,6 @@ DevToolsWindow* DevToolsWindow::Create(
 // static
 GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
                                     FrontendType frontend_type,
-                                    version_info::Channel channel,
                                     const std::string& frontend_url,
                                     bool can_dock,
                                     const std::string& panel,
@@ -1222,13 +1228,6 @@ GURL DevToolsWindow::GetDevToolsURL(Profile* profile,
       }
 #if defined(AIDA_SCOPE)
         url += "&enableAida=true";
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      if (channel >= version_info::Channel::DEV &&
-          !base::CommandLine::ForCurrentProcess()->HasSwitch(
-              chromeos::switches::kSystemInDevMode)) {
-        url += "&consolePaste=blockwebui";
-      }
 #endif
       break;
     case kFrontendWorker:

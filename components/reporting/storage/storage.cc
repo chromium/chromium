@@ -28,6 +28,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
@@ -105,13 +106,14 @@ class Storage::QueueUploaderInterface : public UploaderInterface {
       Priority priority,
       UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
-      std::move(start_uploader_cb).Run(uploader_result.status());
+    if (!uploader_result.has_value()) {
+      std::move(start_uploader_cb)
+          .Run(base::unexpected(uploader_result.error()));
       return;
     }
     std::move(start_uploader_cb)
         .Run(std::make_unique<QueueUploaderInterface>(
-            priority, std::move(uploader_result.ValueOrDie())));
+            priority, std::move(uploader_result.value())));
   }
 
   const Priority priority_;
@@ -193,22 +195,23 @@ class Storage::KeyDelivery {
       Priority priority,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb,
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
-      std::move(start_uploader_cb).Run(uploader_result.status());
+    if (!uploader_result.has_value()) {
+      std::move(start_uploader_cb)
+          .Run(base::unexpected(uploader_result.error()));
       return;
     }
     std::move(start_uploader_cb)
         .Run(std::make_unique<QueueUploaderInterface>(
-            priority, std::move(uploader_result.ValueOrDie())));
+            priority, std::move(uploader_result.value())));
   }
 
   void EncryptionKeyReceiverReady(
       StatusOr<std::unique_ptr<UploaderInterface>> uploader_result) {
-    if (!uploader_result.ok()) {
-      OnCompletion(uploader_result.status());
+    if (!uploader_result.has_value()) {
+      OnCompletion(uploader_result.error());
       return;
     }
-    uploader_result.ValueOrDie()->Completed(Status::StatusOK());
+    uploader_result.value()->Completed(Status::StatusOK());
   }
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
@@ -236,7 +239,8 @@ class Storage::KeyInStorage {
     // Atomically reserve file index (none else will get the same index).
     uint64_t new_file_index = next_key_file_index_.fetch_add(1);
     // Write into file.
-    RETURN_IF_ERROR(WriteKeyInfoFile(new_file_index, signed_encryption_key));
+    RETURN_IF_ERROR_STATUS(
+        WriteKeyInfoFile(new_file_index, signed_encryption_key));
 
     // Enumerate data files and delete all files with lower index.
     RemoveKeyFilesWithLowerIndexes(new_file_index);
@@ -252,11 +256,11 @@ class Storage::KeyInStorage {
     // Make sure the assigned directory exists.
     base::File::Error error;
     if (!base::CreateDirectoryAndGetError(directory_, &error)) {
-      return Status(
+      return base::unexpected(Status(
           error::UNAVAILABLE,
           base::StrCat(
               {"Storage directory '", directory_.MaybeAsASCII(),
-               "' does not exist, error=", base::File::ErrorToString(error)}));
+               "' does not exist, error=", base::File::ErrorToString(error)})));
     }
 
     // Enumerate possible key files, collect the ones that have valid name,
@@ -270,7 +274,8 @@ class Storage::KeyInStorage {
 
     // If not found, return error.
     if (!signed_encryption_key_result.has_value()) {
-      return Status(error::NOT_FOUND, "No valid encryption key found");
+      return base::unexpected(
+          Status(error::NOT_FOUND, "No valid encryption key found"));
     }
 
     // Found and validated, delete all other files.
@@ -356,8 +361,9 @@ class Storage::KeyInStorage {
             [](uint64_t new_file_index, const base::FilePath& full_name) {
               const auto file_index =
                   StorageQueue::GetFileSequenceIdFromPath(full_name);
-              if (!file_index.ok() ||  // Should not happen, will remove file.
-                  file_index.ValueOrDie() <
+              if (!file_index
+                       .has_value() ||  // Should not happen, will remove file.
+                  file_index.value() <
                       static_cast<int64_t>(
                           new_file_index)) {  // Lower index file, will remove
                                               // it.
@@ -386,12 +392,11 @@ class Storage::KeyInStorage {
       }
       const auto file_index =
           StorageQueue::GetFileSequenceIdFromPath(full_name);
-      if (!file_index.ok()) {  // Shouldn't happen, something went wrong.
+      if (!file_index.has_value()) {  // Shouldn't happen, something went wrong.
         continue;
       }
       if (!found_key_files
-               ->emplace(static_cast<uint64_t>(file_index.ValueOrDie()),
-                         full_name)
+               ->emplace(static_cast<uint64_t>(file_index.value()), full_name)
                .second) {
         // Duplicate extension (e.g., 01 and 001). Should not happen (file is
         // corrupt).
@@ -399,9 +404,9 @@ class Storage::KeyInStorage {
       }
       // Set 'next_key_file_index_' to a number which is definitely not used.
       if (static_cast<int64_t>(next_key_file_index_.load()) <=
-          file_index.ValueOrDie()) {
+          file_index.value()) {
         next_key_file_index_.store(
-            static_cast<uint64_t>(file_index.ValueOrDie() + 1));
+            static_cast<uint64_t>(file_index.value() + 1));
       }
     }
   }
@@ -513,17 +518,16 @@ void Storage::Create(
       // with matching key signature after deserialization.
       const auto download_key_result =
           storage_->key_in_storage_->DownloadKeyFile();
-      if (!download_key_result.ok()) {
+      if (!download_key_result.has_value()) {
         // Key not found or corrupt. Proceed with queues creation directly.
         // We will download the key on the first Enqueue.
-        EncryptionSetUp(download_key_result.status());
+        EncryptionSetUp(download_key_result.error());
         return;
       }
 
       // Key found, verified and downloaded.
       storage_->encryption_module_->UpdateAsymmetricKey(
-          download_key_result.ValueOrDie().first,
-          download_key_result.ValueOrDie().second,
+          download_key_result.value().first, download_key_result.value().second,
           base::BindOnce(&StorageInitContext::ScheduleEncryptionSetUp,
                          base::Unretained(this)));
     }
@@ -581,15 +585,15 @@ void Storage::Create(
                   StatusOr<scoped_refptr<StorageQueue>> storage_queue_result) {
       CheckOnValidSequence();
       DCHECK_CALLED_ON_VALID_SEQUENCE(storage_->sequence_checker_);
-      if (storage_queue_result.ok()) {
-        auto add_result = storage_->queues_.emplace(
-            priority, storage_queue_result.ValueOrDie());
+      if (storage_queue_result.has_value()) {
+        auto add_result =
+            storage_->queues_.emplace(priority, storage_queue_result.value());
         CHECK(add_result.second);
       } else {
         LOG(ERROR) << "Could not create queue, priority=" << priority
-                   << ", status=" << storage_queue_result.status();
+                   << ", status=" << storage_queue_result.error();
         if (final_status_.ok()) {
-          final_status_ = storage_queue_result.status();
+          final_status_ = storage_queue_result.error();
         }
       }
       CHECK_GT(count_, 0u);
@@ -597,7 +601,7 @@ void Storage::Create(
         return;
       }
       if (!final_status_.ok()) {
-        Response(final_status_);
+        Response(base::unexpected(final_status_));
         return;
       }
       // Now all queues are ready, assign degradation vectors to them
@@ -607,11 +611,10 @@ void Storage::Create(
       CHECK_EQ(storage_->queues_.size(), queues_options_.size());
       for (const auto& queue_options : queues_options_) {
         const auto queue_or_error = storage_->GetQueue(queue_options.first);
-        CHECK_OK(queue_or_error) << queue_or_error.status();
-        queue_or_error.ValueOrDie()->AssignDegradationQueues(
-            degradation_queues);
+        CHECK(queue_or_error.has_value()) << queue_or_error.error();
+        queue_or_error.value()->AssignDegradationQueues(degradation_queues);
         // Add newly created queue to the list to be used by all the later ones.
-        degradation_queues.emplace_back(queue_or_error.ValueOrDie());
+        degradation_queues.emplace_back(queue_or_error.value());
       }
 
       Response(std::move(storage_));
@@ -775,15 +778,15 @@ void Storage::AsyncGetQueueAndProceed(
              base::OnceCallback<void(Status)> completion_cb) {
             // Attempt to get queue by priority on the Storage task runner.
             auto queue_result = self->GetQueue(priority);
-            if (!queue_result.ok()) {
+            if (!queue_result.has_value()) {
               // Queue not found, abort.
-              std::move(completion_cb).Run(queue_result.status());
+              std::move(completion_cb).Run(queue_result.error());
               return;
             }
             // Queue found, execute the action (it should relocate on
             // queue thread soon, to not block Storage task runner).
             std::move(queue_action)
-                .Run(queue_result.ValueOrDie(), std::move(completion_cb));
+                .Run(queue_result.value(), std::move(completion_cb));
           },
           base::WrapRefCounted(this), priority, std::move(queue_action),
           std::move(completion_cb)));
@@ -794,9 +797,9 @@ StatusOr<scoped_refptr<StorageQueue>> Storage::GetQueue(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = queues_.find(priority);
   if (it == queues_.end()) {
-    return Status(
+    return base::unexpected(Status(
         error::NOT_FOUND,
-        base::StrCat({"Undefined priority=", base::NumberToString(priority)}));
+        base::StrCat({"Undefined priority=", base::NumberToString(priority)})));
   }
   return it->second;
 }

@@ -240,6 +240,10 @@ class SessionStarter : public CancellableJob,
     std::move(on_done_).Run(CHECK_DEREF(profile));
   }
 
+  base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   ResultCallback on_done_;
   base::WeakPtrFactory<SessionStarter> weak_ptr_factory_{this};
 };

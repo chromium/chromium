@@ -37,6 +37,11 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
     const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     base::TimeDelta timestamp);
+
+// Returns true if |modifier| is known to correspond to the Intel media
+// compression feature.
+bool IsIntelMediaCompressedModifier(uint64_t modifier);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_CHROMEOS_CHROMEOS_COMPRESSED_GPU_MEMORY_BUFFER_VIDEO_FRAME_UTILS_H_

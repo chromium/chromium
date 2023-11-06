@@ -14,7 +14,7 @@ namespace blink {
 typedef uint64_t EpochTimeStamp;
 
 inline EpochTimeStamp ConvertTimeToEpochTimeStamp(base::Time time) {
-  return static_cast<EpochTimeStamp>(time.ToDoubleT() * 1000.0);
+  return static_cast<EpochTimeStamp>(time.InMillisecondsSinceUnixEpoch());
 }
 
 }  // namespace blink

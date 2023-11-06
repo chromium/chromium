@@ -11,10 +11,10 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/policy_namespace.mojom.h"
 #include "components/account_id/account_id.h"
@@ -39,7 +39,7 @@ mojom::SessionType EnvironmentProvider::GetSessionType() {
   if (profile->IsGuestSession()) {
     return mojom::SessionType::kGuestSession;
   }
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return mojom::SessionType::kPublicSession;
   }
   if (user->GetType() == user_manager::USER_TYPE_WEB_KIOSK_APP) {

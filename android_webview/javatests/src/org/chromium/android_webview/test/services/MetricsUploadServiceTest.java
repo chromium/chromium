@@ -95,7 +95,7 @@ public class MetricsUploadServiceTest {
         Intent intent =
                 new Intent(ContextUtils.getApplicationContext(), MetricsUploadService.class);
         try (ServiceConnectionHelper helper =
-                        new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
+                new ServiceConnectionHelper(intent, Context.BIND_AUTO_CREATE)) {
             IMetricsUploadService service =
                     IMetricsUploadService.Stub.asInterface(helper.getBinder());
             int returnedStatus = service.uploadMetricsLog(mMetricsLog.toByteArray(), false);

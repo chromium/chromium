@@ -1,16 +1,29 @@
 This is a testharness.js-based test.
-FAIL audio metadata: timestamp promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL audio metadata: synchronizationSource promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL audio metadata: payloadType promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL audio metadata: contributingSources promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL audio metadata: sequenceNumber promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: timestamp promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: ssrc promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: csrcs promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: width and height promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: spatial and temporal index promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: dependencies promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: frameId promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL video metadata: type promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] audio metadata: timestamp
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] audio metadata: synchronizationSource
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] audio metadata: payloadType
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] audio metadata: contributingSources
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] audio metadata: sequenceNumber
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: timestamp
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: ssrc
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: csrcs
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: width and height
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: spatial and temporal index
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: dependencies
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: frameId
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] video metadata: type
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
 Harness: the test ran to completion.
 

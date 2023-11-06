@@ -4,17 +4,15 @@
 
 #include "extensions/renderer/feature_cache.h"
 
-#include <algorithm>
-
 #include "base/command_line.h"
+#include "base/containers/map_util.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
-#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_provider.h"
 #include "extensions/renderer/dispatcher.h"
-#include "extensions/renderer/renderer_context_data.h"
 
 namespace extensions {
 
@@ -90,6 +88,10 @@ void FeatureCache::InvalidateExtension(const ExtensionId& extension_id) {
   }
 }
 
+void FeatureCache::InvalidateAllExtensions() {
+  extension_cache_.clear();
+}
+
 const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
     Feature::Context context_type,
     const Extension* extension,
@@ -98,9 +100,9 @@ const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
     const ContextData& context_data) {
   if (context_type == Feature::WEBUI_CONTEXT ||
       context_type == Feature::WEBUI_UNTRUSTED_CONTEXT) {
-    auto iter = webui_cache_.find(origin);
-    if (iter != webui_cache_.end())
-      return iter->second;
+    if (auto* data = base::FindOrNull(webui_cache_, origin)) {
+      return *data;
+    }
     return webui_cache_
         .emplace(origin, CreateCacheEntry(context_type, extension, origin,
                                           context_id, context_data))
@@ -109,9 +111,9 @@ const FeatureCache::ExtensionFeatureData& FeatureCache::GetFeaturesFromCache(
 
   DCHECK(extension);
   ExtensionCacheMapKey key(extension->id(), context_type);
-  auto iter = extension_cache_.find(key);
-  if (iter != extension_cache_.end())
-    return iter->second;
+  if (auto* data = base::FindOrNull(extension_cache_, key)) {
+    return *data;
+  }
   return extension_cache_
       .emplace(key, CreateCacheEntry(context_type, extension, origin,
                                      context_id, context_data))
@@ -137,8 +139,7 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
       (context_type == Feature::WEBUI_CONTEXT ||
        context_type == Feature::WEBUI_UNTRUSTED_CONTEXT);
   const GURL& url_to_use = should_use_url ? origin : empty_url;
-  for (const auto& map_entry : api_feature_provider->GetAllFeatures()) {
-    const Feature* feature = map_entry.second.get();
+  for (const auto& [name, feature] : api_feature_provider->GetAllFeatures()) {
     // Exclude internal APIs.
     if (feature->IsInternal())
       continue;
@@ -151,9 +152,8 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
       continue;
 
     // Skip chrome.test if this isn't a test.
-    if (map_entry.first == "test" &&
-        !base::CommandLine::ForCurrentProcess()->HasSwitch(
-            ::switches::kTestType)) {
+    if (name == "test" && !base::CommandLine::ForCurrentProcess()->HasSwitch(
+                              ::switches::kTestType)) {
       continue;
     }
 
@@ -165,26 +165,21 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
                   extension, context_type, url_to_use,
                   Feature::GetCurrentPlatform(), context_id, context_data)
               .is_available()) {
-        features.dev_mode_restricted_features.push_back(feature);
+        features.dev_mode_restricted_features.push_back(feature.get());
       }
       continue;
     }
 
-    features.available_features.push_back(feature);
+    features.available_features.push_back(feature.get());
   }
 
-  std::sort(
-      features.dev_mode_restricted_features.begin(),
-      features.dev_mode_restricted_features.end(),
-      [](const Feature* a, const Feature* b) { return a->name() < b->name(); });
-  std::sort(
-      features.available_features.begin(), features.available_features.end(),
-      [](const Feature* a, const Feature* b) { return a->name() < b->name(); });
-  DCHECK(std::unique(features.dev_mode_restricted_features.begin(),
-                     features.dev_mode_restricted_features.end()) ==
+  base::ranges::sort(features.dev_mode_restricted_features,
+                     base::ranges::less{}, &Feature::name);
+  base::ranges::sort(features.available_features, base::ranges::less{},
+                     &Feature::name);
+  DCHECK(base::ranges::unique(features.dev_mode_restricted_features) ==
          features.dev_mode_restricted_features.end());
-  DCHECK(std::unique(features.available_features.begin(),
-                     features.available_features.end()) ==
+  DCHECK(base::ranges::unique(features.available_features) ==
          features.available_features.end());
 
   return features;

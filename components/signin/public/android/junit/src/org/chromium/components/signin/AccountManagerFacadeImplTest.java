@@ -59,8 +59,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Robolectric tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {CustomShadowAsyncTask.class, ShadowUserManager.class,
-                ShadowAccountManager.class})
+@Config(
+        shadows = {
+            CustomShadowAsyncTask.class,
+            ShadowUserManager.class,
+            ShadowAccountManager.class
+        })
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
@@ -72,14 +76,11 @@ public class AccountManagerFacadeImplTest {
     public final GrantPermissionRule mGrantPermissionRule =
             GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS);
 
-    @Mock
-    ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock ExternalAuthUtils mExternalAuthUtilsMock;
 
-    @Mock
-    private AccountsChangeObserver mObserverMock;
+    @Mock private AccountsChangeObserver mObserverMock;
 
-    @Mock
-    private ChildAccountStatusListener mChildAccountStatusListenerMock;
+    @Mock private ChildAccountStatusListener mChildAccountStatusListenerMock;
 
     private final Context mContext = RuntimeEnvironment.application;
     private ShadowUserManager mShadowUserManager;
@@ -302,8 +303,9 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testCheckChildAccount() {
-        final Account account = setFeaturesForAccount(
-                "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
+        final Account account =
+                setFeaturesForAccount(
+                        "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
@@ -324,7 +326,8 @@ public class AccountManagerFacadeImplTest {
         final CoreAccountInfo coreAccountInfo = addTestAccount("test@gmail.com");
         final AccessTokenData originalToken =
                 mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
-        Assert.assertEquals("The same token should be returned before invalidating the token.",
+        Assert.assertEquals(
+                "The same token should be returned before invalidating the token.",
                 mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE).getToken(),
                 originalToken.getToken());
 
@@ -333,7 +336,8 @@ public class AccountManagerFacadeImplTest {
         final AccessTokenData newToken = mFacade.getAccessToken(coreAccountInfo, TEST_TOKEN_SCOPE);
         Assert.assertNotEquals(
                 "A different token should be returned since the original token is invalidated.",
-                newToken.getToken(), originalToken.getToken());
+                newToken.getToken(),
+                originalToken.getToken());
     }
 
     @Test(expected = IllegalStateException.class)

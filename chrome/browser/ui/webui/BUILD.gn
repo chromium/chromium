@@ -8,8 +8,6 @@ source_set("configs") {
   sources = [
     "chrome_untrusted_web_ui_configs.cc",
     "chrome_untrusted_web_ui_configs.h",
-    "chrome_untrusted_web_ui_configs_common.cc",
-    "chrome_untrusted_web_ui_configs_common.h",
     "chrome_web_ui_configs.cc",
     "chrome_web_ui_configs.h",
   ]
@@ -17,25 +15,13 @@ source_set("configs") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//chrome/browser/ui:ui",
     "//components/lens:buildflags",
     "//content/public/browser",
     "//printing/buildflags",
     "//skia",
     "//third_party/abseil-cpp:absl",
   ]
-
-  if (is_mac || is_win || is_linux || is_chromeos || is_fuchsia) {
-    sources += [
-      "chrome_untrusted_web_ui_configs_desktop.cc",
-      "chrome_untrusted_web_ui_configs_desktop.h",
-    ]
-
-    deps += [
-      "//build:branding_buildflags",
-      "//chrome/browser/companion/core",
-      "//chrome/browser/companion/core/mojom:mojo_bindings",
-    ]
-  }
 
   # Includes Ash Chrome and Lacros Chrome
   if (is_chromeos) {

@@ -39,8 +39,7 @@ const CGFloat kTopSpacingMaterial = 24;
 
 // Top margin for the doodle.
 const CGFloat kDoodleTopMarginRegularXRegular = 162;
-const CGFloat kDoodleTopMarginOther = 48;
-const CGFloat kShrunkDoodleTopMarginOther = 65;
+const CGFloat kDoodleTopMarginOther = 65;
 // Size of the doodle top margin which is multiplied by the scaled font factor,
 // and added to `kDoodleTopMarginOther` on non Regular x Regular form factors.
 const CGFloat kDoodleScaledTopMarginOther = 10;
@@ -88,6 +87,16 @@ CGFloat FakeToolbarVerticalMargin() {
        kAdaptiveLocationBarVerticalMargin);
   return vertical_margin + dynamic_type_vertical_adjustment;
 }
+
+// Returns the color to use for the Lens and Voice icons in the Fakebox.
+UIColor* FakeboxIconColor() {
+  if (IsIOSLargeFakeboxEnabled()) {
+    return [UIColor colorNamed:kGrey700Color];
+  } else if (IsMagicStackEnabled()) {
+    return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
+  }
+  return [UIColor colorNamed:kTextfieldPlaceholderColor];
+}
 }
 
 namespace content_suggestions {
@@ -130,11 +139,7 @@ CGFloat DoodleTopMargin(CGFloat top_inset,
   if (IsIOSLargeFakeboxEnabled()) {
     top_margin += kLargeFakeboxExtraDoodleTopMargin;
   }
-  if (!IsCompactHeight(trait_collection)) {
-    top_margin += kShrunkDoodleTopMarginOther;
-  } else {
-    top_margin += kDoodleTopMarginOther;
-  }
+  top_margin += kDoodleTopMarginOther;
   return top_margin;
 }
 
@@ -248,18 +253,14 @@ void ConfigureVoiceSearchButton(UIButton* voice_search_button,
   [voice_search_button setTranslatesAutoresizingMaskIntoConstraints:NO];
   [search_tab_target addSubview:voice_search_button];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfig =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    voice_search_button.configuration = buttonConfig;
-  } else {
-    SetAdjustsImageWhenHighlighted(voice_search_button, NO);
-  }
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  voice_search_button.configuration = buttonConfig;
 
   UIImage* mic_image = DefaultSymbolWithPointSize(
       kMicrophoneSymbol, kSymbolContentSuggestionsPointSize);
-  voice_search_button.tintColor = SearchHintLabelColor();
+  voice_search_button.tintColor = FakeboxIconColor();
 
   [voice_search_button setImage:mic_image forState:UIControlStateNormal];
   [voice_search_button setAccessibilityLabel:l10n_util::GetNSString(
@@ -276,20 +277,16 @@ void ConfigureLensButton(UIButton* lens_button, UIView* search_tap_target) {
   lens_button.translatesAutoresizingMaskIntoConstraints = NO;
   [search_tap_target addSubview:lens_button];
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfig =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
-    lens_button.configuration = buttonConfig;
-  } else {
-    SetAdjustsImageWhenHighlighted(lens_button, NO);
-  }
+  UIButtonConfiguration* buttonConfig =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfig.contentInsets = NSDirectionalEdgeInsetsMake(0, 0, 0, 0);
+  lens_button.configuration = buttonConfig;
 
   UIImage* camera_image = CustomSymbolWithPointSize(
       kCameraLensSymbol, kSymbolContentSuggestionsPointSize);
 
   [lens_button setImage:camera_image forState:UIControlStateNormal];
-  lens_button.tintColor = SearchHintLabelColor();
+  lens_button.tintColor = FakeboxIconColor();
   lens_button.accessibilityLabel = l10n_util::GetNSString(IDS_IOS_ACCNAME_LENS);
   lens_button.accessibilityIdentifier = @"Lens";
 
@@ -320,7 +317,7 @@ BOOL ShouldShowWiderMagicStackLayer(UITraitCollection* traitCollection,
 
 UIColor* SearchHintLabelColor() {
   if (IsIOSLargeFakeboxEnabled()) {
-    return [UIColor colorNamed:kGrey700Color];
+    return [UIColor colorNamed:kGrey800Color];
   } else if (IsMagicStackEnabled()) {
     return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
   }

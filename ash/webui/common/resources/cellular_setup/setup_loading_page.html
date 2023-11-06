@@ -38,7 +38,7 @@
     height: 222px;
   }
 
-  cr-lottie {
+  cros-lottie-renderer {
     height: 85%;
   }
 
@@ -53,10 +53,10 @@
     </iron-media-query>
     <template is="dom-if" if="[[!isSimDetectError]]" restamp>
       <div id="animationContainer">
-        <cr-lottie id="spinner"
-            animation-url="[[getAnimationUrl_(isDarkModeActive_)]]"
-            autoplay>
-        </cr-lottie>
+        <cros-lottie-renderer id="spinner"
+            asset-url="chrome://resources/ash/common/cellular_setup/spinner.json"
+            autoplay dynamic aria-hidden>
+        </cros-lottie-renderer>
       </div>
     </template>
     <div id="simDetectError" hidden$="[[!isSimDetectError]]">

@@ -60,6 +60,7 @@ bool NetworkDelegateImpl::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   return true;
 }

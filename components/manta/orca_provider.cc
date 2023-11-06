@@ -8,11 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -29,7 +31,7 @@ constexpr char kHttpContentType[] = "application/x-protobuf";
 constexpr char kEndpointUrl[] =
     "https://autopush-aratea-pa.sandbox.googleapis.com/generate";
 constexpr char kOAuthScope[] = "https://www.googleapis.com/auth/mdi.aratea";
-constexpr base::TimeDelta kTimeoutMs = base::Seconds(90);
+constexpr base::TimeDelta kTimeoutMs = base::Seconds(30);
 
 using Tone = proto::RequestConfig::Tone;
 
@@ -46,7 +48,7 @@ absl::optional<Tone> GetTone(const std::string& tone) {
           {"FREEFORM_WRITE", proto::RequestConfig::FREEFORM_WRITE},
 
       });
-  auto* iter = tone_map.find(tone);
+  const auto* iter = tone_map.find(tone);
 
   return iter != tone_map.end() ? absl::optional<Tone>(iter->second)
                                 : absl::nullopt;
@@ -54,7 +56,7 @@ absl::optional<Tone> GetTone(const std::string& tone) {
 
 absl::optional<proto::Request> ComposeRequest(
     const std::map<std::string, std::string>& input) {
-  auto tone_iter = input.find("tone");
+  const auto& tone_iter = input.find("tone");
   if (tone_iter == input.end()) {
     DVLOG(1) << "Tone not found in the parameters";
     return absl::nullopt;
@@ -116,13 +118,21 @@ void OnServerResponseOrErrorReceived(
 OrcaProvider::OrcaProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+    : url_loader_factory_(url_loader_factory) {
+  CHECK(identity_manager);
+  identity_manager_observation_.Observe(identity_manager);
+}
 
 OrcaProvider::~OrcaProvider() = default;
 
 void OrcaProvider::Call(const std::map<std::string, std::string>& input,
                         MantaGenericCallback done_callback) {
+  if (!identity_manager_observation_.IsObserving()) {
+    std::move(done_callback)
+        .Run(base::Value::Dict(), {MantaStatusCode::kNoIdentityManager});
+    return;
+  }
+
   absl::optional<proto::Request> request = ComposeRequest(input);
   if (request == absl::nullopt) {
     std::move(done_callback)
@@ -145,10 +155,18 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
                                     std::move(fetcher)));
 }
 
+void OrcaProvider::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (identity_manager_observation_.IsObservingSource(identity_manager)) {
+    identity_manager_observation_.Reset();
+  }
+}
+
 std::unique_ptr<EndpointFetcher> OrcaProvider::CreateEndpointFetcher(
     const GURL& url,
     const std::vector<std::string>& scopes,
     const std::string& post_data) {
+  CHECK(identity_manager_observation_.IsObserving());
   // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
   // launch.
   return std::make_unique<EndpointFetcher>(
@@ -161,7 +179,7 @@ std::unique_ptr<EndpointFetcher> OrcaProvider::CreateEndpointFetcher(
       /*timeout_ms=*/kTimeoutMs.InMilliseconds(),
       /*post_data=*/post_data,
       /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
-      /*identity_manager=*/identity_manager_,
+      /*identity_manager=*/identity_manager_observation_.GetSource(),
       /*consent_level=*/signin::ConsentLevel::kSignin);
 }
 

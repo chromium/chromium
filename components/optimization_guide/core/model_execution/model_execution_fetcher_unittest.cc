@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
+#include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/signin/public/base/consent_level.h"
@@ -20,6 +21,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/url_util.h"
+#include "optimization_guide_model_execution_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -50,6 +52,9 @@ proto::ExecuteResponse BuildTestExecuteResponse(const TestMessage& message) {
 }
 
 }  // namespace
+
+using ModelExecutionError =
+    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 class ModelExecutionFetcherTest : public testing::Test {
  public:
@@ -129,10 +134,13 @@ class ModelExecutionFetcherTest : public testing::Test {
   }
 
   void OnModelExecutionReceived(
-      base::optional_ref<const proto::ExecuteResponse> response) {
+      base::expected<const proto::ExecuteResponse,
+                     OptimizationGuideModelExecutionError> response) {
     last_execute_response_.reset();
     if (response.has_value()) {
       last_execute_response_ = *response;
+    } else {
+      last_execute_response_ = base::unexpected(response.error());
     }
   }
 
@@ -146,7 +154,9 @@ class ModelExecutionFetcherTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
   absl::optional<proto::ExecuteRequest> last_execute_request_;
-  absl::optional<proto::ExecuteResponse> last_execute_response_;
+  absl::optional<base::expected<proto::ExecuteResponse,
+                                OptimizationGuideModelExecutionError>>
+      last_execute_response_;
   std::string last_authorization_request_header_;
 };
 
@@ -169,13 +179,14 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponse) {
   EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
             last_execute_request_->request_metadata().type_url());
   EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
-            last_execute_response_->response_metadata().type_url());
+            last_execute_response_->value().response_metadata().type_url());
   EXPECT_EQ("foo request", ParsedAnyMetadata<TestMessage>(
                                last_execute_request_->request_metadata())
                                ->test());
-  EXPECT_EQ("foo response", ParsedAnyMetadata<TestMessage>(
-                                last_execute_response_->response_metadata())
-                                ->test());
+  EXPECT_EQ("foo response",
+            ParsedAnyMetadata<TestMessage>(
+                last_execute_response_->value().response_metadata())
+                ->test());
 
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
@@ -214,6 +225,8 @@ TEST_F(ModelExecutionFetcherTest, TestNetErrorResponse) {
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
       0);
+  EXPECT_EQ(ModelExecutionError::kGenericFailure,
+            last_execute_response_->error().error());
 }
 
 TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
@@ -240,6 +253,8 @@ TEST_F(ModelExecutionFetcherTest, TestBadResponse) {
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
       0);
+  EXPECT_EQ(ModelExecutionError::kGenericFailure,
+            last_execute_response_->error().error());
 }
 
 TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
@@ -257,6 +272,8 @@ TEST_F(ModelExecutionFetcherTest, TestRequestCanceled) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       FetcherRequestStatus::kRequestCanceled, 1);
+  EXPECT_EQ(ModelExecutionError::kGenericFailure,
+            last_execute_response_->error().error());
 }
 
 TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
@@ -276,6 +293,8 @@ TEST_F(ModelExecutionFetcherTest, TestMultipleParallelRequests) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "TabOrganization",
       FetcherRequestStatus::kFetcherBusy, 1);
+  EXPECT_EQ(ModelExecutionError::kGenericFailure,
+            last_execute_response_->error().error());
 
   VerifyHasPendingFetchRequest();
   SimulateSuccessfulResponse(
@@ -313,13 +332,14 @@ TEST_F(ModelExecutionFetcherTest, TestSuccessfulResponseWithLogin) {
   EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
             last_execute_request_->request_metadata().type_url());
   EXPECT_EQ("type.googleapis.com/base.test.TestMessage",
-            last_execute_response_->response_metadata().type_url());
+            last_execute_response_->value().response_metadata().type_url());
   EXPECT_EQ("foo request", ParsedAnyMetadata<TestMessage>(
                                last_execute_request_->request_metadata())
                                ->test());
-  EXPECT_EQ("foo response", ParsedAnyMetadata<TestMessage>(
-                                last_execute_response_->response_metadata())
-                                ->test());
+  EXPECT_EQ("foo response",
+            ParsedAnyMetadata<TestMessage>(
+                last_execute_response_->value().response_metadata())
+                ->test());
 
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecutionFetcher.FetchLatency.WallpaperSearch",
@@ -349,6 +369,8 @@ TEST_F(ModelExecutionFetcherTest, TestAccessTokenFailureWithLogin) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       FetcherRequestStatus::kUserNotSignedIn, 1);
+  EXPECT_EQ(ModelExecutionError::kPermissionDenied,
+            last_execute_response_->error().error());
 }
 
 TEST_F(ModelExecutionFetcherTest, TestNoUserSignIn) {
@@ -361,6 +383,8 @@ TEST_F(ModelExecutionFetcherTest, TestNoUserSignIn) {
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "WallpaperSearch",
       FetcherRequestStatus::kUserNotSignedIn, 1);
+  EXPECT_EQ(ModelExecutionError::kPermissionDenied,
+            last_execute_response_->error().error());
 }
 
 }  // namespace optimization_guide

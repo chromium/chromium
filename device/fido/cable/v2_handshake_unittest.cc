@@ -386,8 +386,8 @@ TEST(CableV2Encoding, Digits) {
     absl::optional<std::vector<uint8_t>> test_data_again =
         qr::DigitsToBytes(digits);
     ASSERT_TRUE(test_data_again.has_value());
-    ASSERT_EQ(test_data_again->size(), i);
-    ASSERT_EQ(0, memcmp(test_data_again->data(), test_data, i));
+    ASSERT_EQ(test_data_again.value(),
+              std::vector<uint8_t>(test_data, test_data + i));
   }
 
   // |DigitsToBytes| should reject non-digit inputs.

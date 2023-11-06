@@ -20,12 +20,28 @@ interface AutofillAgent {
   // while another TriggerFormExtractionWithResponse() was ongoing.
   TriggerFormExtractionWithResponse() => (bool success);
 
-  // Fills or Previews the active form with some of `forms` data.
+  // Fills or previews the form identified by `form.unique_renderer_id` with
+  // the data in `form`.
   // `action_type` denotes if the action is a Fill or Undo.
   // `action_persistence` denotes if the operation is a Fill or Preview.
-  ApplyAutofillAction(AutofillActionType action_type,
-                      AutofillActionPersistence action_persistence,
-                      FormData form);
+  ApplyFormAction(ActionType action_type,
+                  ActionPersistence action_persistence,
+                  FormData form);
+
+  // Fills or previews the field identified by `field` with `value`.
+  // `action_persistence` denotes if the operation is a Fill or Preview.
+  // `text_replacement` indicates whether to replace the field's entire value
+  // or only the current selection. For non-text fields, this parameter has no
+  // effect. This must not be `kReplaceSelection` if `action_persistence` is
+  // `kPreview`. Enabling this is desirable but not implemented, yet.
+  ApplyFieldAction(ActionPersistence action_persistence,
+                   TextReplacement text_replacement,
+                   FieldRendererId field,
+                   mojo_base.mojom.String16 value);
+
+  // Extracts the given form and responds with the FormData if that form can
+  // be found and extracted.
+  ExtractForm(FormRendererId form) => (FormData? form);
 
   // Sends the heuristic and server field type predictions to the renderer.
   FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
@@ -52,16 +68,11 @@ interface AutofillAgent {
   TriggerSuggestions(FieldRendererId field,
                      AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the value of |field| (if it is still the currently selected node).
-  FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
-
-  // Sets the suggested value of |field| (if it is still the currently selected
-  // node).
-  PreviewFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
-
   // Sets the autofill/autocomplete suggestion availability of |field| (if it is
   // still the currently selected node).
-  SetSuggestionAvailability(FieldRendererId field, AutofillState type);
+  SetSuggestionAvailability(
+    FieldRendererId field,
+    AutofillSuggestionAvailability suggestion_availability);
 
   // Sets the value of |field| (if it is still the currently selected node).
   // to the given data list value.

@@ -733,13 +733,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionDevToolsProtocolTest,
   ASSERT_EQ(*cookie_value, "cookieValue");
 }
 
-// TODO(crbug.com/1177120) The test is flaky on Linux and ChromeOS bots.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WebRequestTypes DISABLED_WebRequestTypes
-#else
-#define MAYBE_WebRequestTypes WebRequestTypes
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, MAYBE_WebRequestTypes) {
+// TODO(crbug.com/1177120) The test is flaky on multiple bots.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, DISABLED_WebRequestTypes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("webrequest/test_types")) << message_;
 }
@@ -3889,7 +3884,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  auto* router = ExtensionWebRequestEventRouter::GetInstance();
+  auto* router = WebRequestEventRouter::Get(profile());
   ASSERT_TRUE(router);
 
   static constexpr char kEventName[] = "webRequest.onBeforeRequest";
@@ -5413,6 +5408,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
       << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, LoadIntoNewTab) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(RunExtensionTest(
+      "webrequest", {.extension_url = "test_prerendering_into_new_tab.html"}))
+      << message_;
+}
+
 // A clunky test suite class to allow for waiting for a message to be sent from
 // the extension's background context when it starts up. We need this because
 // we don't currently have a good way of waiting for a service worker context to
@@ -5542,8 +5544,8 @@ class ManifestV3WebRequestApiTest : public ExtensionWebRequestApiTest {
     return extension;
   }
 
-  ExtensionWebRequestEventRouter* web_request_router() {
-    return ExtensionWebRequestEventRouter::GetInstance();
+  WebRequestEventRouter* web_request_router() {
+    return WebRequestEventRouter::Get(profile());
   }
 };
 

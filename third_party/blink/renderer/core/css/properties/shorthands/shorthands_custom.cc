@@ -24,9 +24,9 @@
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
-#include "third_party/blink/renderer/core/css/style_property_serializer.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
@@ -191,6 +191,32 @@ const CSSValue* CSSValueFromComputedAnimation(
   list->Append(*ComputedStyleUtils::ValueForAnimationPlayState(
       CSSAnimationData::InitialPlayState()));
   return list;
+}
+
+bool ParseBackgroundOrMaskPosition(
+    const StylePropertyShorthand& shorthand,
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    absl::optional<WebFeature> three_value_position,
+    HeapVector<CSSPropertyValue, 64>& properties) {
+  const CSSValue* result_x = nullptr;
+  const CSSValue* result_y = nullptr;
+  if (!css_parsing_utils::ConsumeBackgroundPosition(
+          range, context, css_parsing_utils::UnitlessQuirk::kAllow,
+          three_value_position, result_x, result_y) ||
+      !range.AtEnd()) {
+    return false;
+  }
+  const CSSProperty** longhands = shorthand.properties();
+  DCHECK_EQ(2u, shorthand.length());
+  css_parsing_utils::AddProperty(
+      longhands[0]->PropertyID(), shorthand.id(), *result_x, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  css_parsing_utils::AddProperty(
+      longhands[1]->PropertyID(), shorthand.id(), *result_y, important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+  return true;
 }
 
 }  // namespace
@@ -519,26 +545,9 @@ bool BackgroundPosition::ParseShorthand(
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-
-  if (!css_parsing_utils::ConsumeBackgroundPosition(
-          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
-          result_y) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundPositionX, CSSPropertyID::kBackgroundPosition,
-      *result_x, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundPositionY, CSSPropertyID::kBackgroundPosition,
-      *result_y, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
+  return ParseBackgroundOrMaskPosition(
+      backgroundPositionShorthand(), important, range, context,
+      WebFeature::kThreeValuedPositionBackground, properties);
 }
 
 const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
@@ -547,45 +556,6 @@ const CSSValue* BackgroundPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
       *this, style, &style.BackgroundLayers());
-}
-
-bool BackgroundRepeat::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-  bool implicit = false;
-  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
-                                             implicit) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundRepeatX, CSSPropertyID::kBackgroundRepeat,
-      *result_x, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kBackgroundRepeatY, CSSPropertyID::kBackgroundRepeat,
-      *result_y, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  return true;
-}
-
-const CSSValue* BackgroundRepeat::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-      &style.BackgroundLayers());
 }
 
 bool BorderBlockColor::ParseShorthand(
@@ -2195,7 +2165,7 @@ bool Grid::ParseShorthand(bool important,
 
 bool Grid::IsLayoutDependent(const ComputedStyle* style,
                              LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutNGGrid();
+  return layout_object && layout_object->IsLayoutGrid();
 }
 
 const CSSValue* Grid::CSSValueFromComputedStyleInternal(
@@ -2338,7 +2308,7 @@ bool GridTemplate::ParseShorthand(
 
 bool GridTemplate::IsLayoutDependent(const ComputedStyle* style,
                                      LayoutObject* layout_object) const {
-  return layout_object && layout_object->IsLayoutNGGrid();
+  return layout_object && layout_object->IsLayoutGrid();
 }
 
 const CSSValue* GridTemplate::CSSValueFromComputedStyleInternal(
@@ -3813,7 +3783,7 @@ bool WebkitMask::ParseShorthand(
                                                   local_context, properties);
 }
 
-bool WebkitAlternativeMask::ParseShorthand(
+bool AlternativeMask::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -3824,32 +3794,45 @@ bool WebkitAlternativeMask::ParseShorthand(
                                                   local_context, properties);
 }
 
+const CSSValue* AlternativeMask::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValuesForMaskShorthand(
+      alternativeMaskShorthand(), style, layout_object, allow_visited_style);
+}
+
+bool MaskPosition::ParseShorthand(
+    bool important,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context,
+    HeapVector<CSSPropertyValue, 64>& properties) const {
+  return ParseBackgroundOrMaskPosition(
+      maskPositionShorthand(), important, range, context,
+      local_context.UseAliasParsing()
+          ? WebFeature::kThreeValuedPositionBackground
+          : absl::optional<WebFeature>(),
+      properties);
+}
+
+const CSSValue* MaskPosition::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
+      *this, style, &style.MaskLayers());
+}
+
 bool WebkitMaskPosition::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-
-  if (!css_parsing_utils::ConsumeBackgroundPosition(
-          range, context, css_parsing_utils::UnitlessQuirk::kAllow, result_x,
-          result_y) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskPositionX, CSSPropertyID::kWebkitMaskPosition,
-      *result_x, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskPositionY, CSSPropertyID::kWebkitMaskPosition,
-      *result_y, important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  return true;
+  return ParseBackgroundOrMaskPosition(
+      webkitMaskPositionShorthand(), important, range, context,
+      WebFeature::kThreeValuedPositionBackground, properties);
 }
 
 const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(
@@ -3858,45 +3841,6 @@ const CSSValue* WebkitMaskPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   return ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
       *this, style, &style.MaskLayers());
-}
-
-bool WebkitMaskRepeat::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext& local_context,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  CSSValue* result_x = nullptr;
-  CSSValue* result_y = nullptr;
-  bool implicit = false;
-  if (!css_parsing_utils::ConsumeRepeatStyle(range, result_x, result_y,
-                                             implicit) ||
-      !range.AtEnd()) {
-    return false;
-  }
-
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskRepeatX, CSSPropertyID::kWebkitMaskRepeat,
-      *result_x, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-  css_parsing_utils::AddProperty(
-      CSSPropertyID::kWebkitMaskRepeatY, CSSPropertyID::kWebkitMaskRepeat,
-      *result_y, important,
-      implicit ? css_parsing_utils::IsImplicitProperty::kImplicit
-               : css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
-
-  return true;
-}
-
-const CSSValue* WebkitMaskRepeat::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style) const {
-  return ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-      &style.MaskLayers());
 }
 
 bool TextEmphasis::ParseShorthand(
@@ -4032,63 +3976,6 @@ bool WebkitTextStroke::ParseShorthand(
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
       webkitTextStrokeShorthand(), important, context, range, properties);
-}
-
-bool Toggle::ParseShorthand(
-    bool important,
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    const CSSParserLocalContext&,
-    HeapVector<CSSPropertyValue, 64>& properties) const {
-  const CSSValue* toggle_root = css_parsing_utils::ParseLonghand(
-      CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, context, range);
-  if (!toggle_root || !range.AtEnd()) {
-    return false;
-  }
-
-  const CSSValue* toggle_trigger;
-  if (const auto* ident = DynamicTo<CSSIdentifierValue>(toggle_root)) {
-    DCHECK_EQ(ident->GetValueID(), CSSValueID::kNone);
-    toggle_trigger = CSSIdentifierValue::Create(CSSValueID::kNone);
-  } else {
-    const auto* toggle_root_list = To<CSSValueList>(toggle_root);
-    CSSValueList* toggle_trigger_list = CSSValueList::CreateCommaSeparated();
-    for (const auto& item : *toggle_root_list) {
-      CSSValueList* item_list = CSSValueList::CreateSpaceSeparated();
-      item_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(
-          To<CSSCustomIdentValue>(To<CSSValueList>(item.Get())->Item(0))
-              .Value()));
-      toggle_trigger_list->Append(*item_list);
-    }
-    toggle_trigger = toggle_trigger_list;
-  }
-
-  AddProperty(CSSPropertyID::kToggleRoot, CSSPropertyID::kToggle, *toggle_root,
-              important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-              properties);
-  AddProperty(CSSPropertyID::kToggleTrigger, CSSPropertyID::kToggle,
-              *toggle_trigger, important,
-              css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  return true;
-}
-
-const CSSValue* Toggle::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject* layout_object,
-    bool allow_visited_style) const {
-  const CSSValue* toggle_root =
-      GetCSSPropertyToggleRoot().CSSValueFromComputedStyle(style, layout_object,
-                                                           allow_visited_style);
-  const CSSValue* toggle_trigger =
-      GetCSSPropertyToggleTrigger().CSSValueFromComputedStyle(
-          style, layout_object, allow_visited_style);
-
-  if (!StylePropertySerializer::IsValidToggleShorthand(toggle_root,
-                                                       toggle_trigger)) {
-    return nullptr;
-  }
-
-  return toggle_root;
 }
 
 bool WhiteSpace::ParseShorthand(

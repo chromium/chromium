@@ -26,6 +26,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -271,9 +273,9 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
       // force an update by clearing the existing permission views here.
       bubble_view->GetFocusManager()->SetFocusedView(nullptr);
 
-        auto* main_page = static_cast<PageInfoMainView*>(current_ui);
-        main_page->toggle_rows_.clear();
-        main_page->permissions_view_->RemoveAllChildViews();
+      auto* main_page = static_cast<PageInfoMainView*>(current_ui);
+      main_page->toggle_rows_.clear();
+      main_page->permissions_view_->RemoveAllChildViews();
 
       current_ui->SetPermissionInfo(permissions_list,
                                     std::move(chosen_object_list));
@@ -310,15 +312,17 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
   }
 
   bool VerifyUi() override {
-    if (!DialogBrowserTest::VerifyUi())
+    if (!DialogBrowserTest::VerifyUi()) {
       return false;
+    }
     // Check that each expected View is present in the Page Info bubble.
     views::View* page_info_bubble_view =
         PageInfoBubbleView::GetPageInfoBubbleForTesting()->GetContentsView();
     for (auto id : expected_identifiers_) {
       views::View* view = GetView(browser(), id);
-      if (!page_info_bubble_view->Contains(view))
+      if (!page_info_bubble_view->Contains(view)) {
         return false;
+      }
     }
     return true;
   }
@@ -425,8 +429,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_AllowAllPermissions) {
-  // Last updated in crrev.com/c/4150491.
-  set_baseline("4150491");
+  // Last updated in crrev.com/c/4804826.
+  set_baseline("4804826");
   ShowAndVerifyUi();
 }
 
@@ -434,8 +438,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
 // set. All permissions will show regardless of its factory default value.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewDialogBrowserTest,
                        InvokeUi_BlockAllPermissions) {
-  // Last updated in crrev.com/c/4150491.
-  set_baseline("4150491");
+  // Last updated in crrev.com/c/4804826.
+  set_baseline("4804826");
   ShowAndVerifyUi();
 }
 
@@ -690,7 +694,6 @@ enum class UserBypassFeatureState {
   kOff = 0,
   kOnTemporaryExceptions = 1,
   kOnPermanentExceptions = 2,
-  kOn3pcdCookiesLimited = 3,
 };
 
 class PageInfoBubbleViewCookiesSubpageBrowserTest
@@ -716,13 +719,15 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
         enabled_features.push_back({content_settings::features::kUserBypassUI,
                                     {{"expiration", "0d"}}});
         break;
-      case UserBypassFeatureState::kOn3pcdCookiesLimited:
-        enabled_features.push_back(
-            {content_settings::features::kTrackingProtection3pcd, {{}}});
-        break;
     }
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
+  }
+
+  static base::Time GetReferenceTime() {
+    base::Time time;
+    EXPECT_TRUE(base::Time::FromString("Sat, 1 Sep 2023 11:00:00 UTC", &time));
+    return time;
   }
 
   // DialogBrowserTest:
@@ -759,6 +764,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     cookie_info.blocked_third_party_sites_count = 8;
     cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
     cookie_info.status = CookieControlsStatus::kEnabled;
+    cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
     // TODO(crbug.com/1346305): Add fps enforcement info when finished
     // implementing it.
     if (name == kCookiesSubpageFpsAllowed3pcAllowed ||
@@ -770,8 +776,9 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
       cookie_info.fps_info = {PageInfoUI::CookiesFpsInfo(kSiteOrigin)};
 
       // Otherwise it's by default false
-      if (name == kCookiesSubpageFpsManaged3pcAllowed)
+      if (name == kCookiesSubpageFpsManaged3pcAllowed) {
         cookie_info.fps_info->is_managed = true;
+      }
 
     }  // Otherwise by default it's null
 
@@ -797,7 +804,7 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
     }
 
     if (GetParam() == UserBypassFeatureState::kOnTemporaryExceptions) {
-      cookie_info.expiration = base::Time::Now() + base::Days(30);
+      cookie_info.expiration = GetReferenceTime() + base::Days(30);
     }
     cookie_info.confidence = CookieControlsBreakageConfidenceLevel::kMedium;
 
@@ -836,37 +843,46 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
         cookies_subpage_content->third_party_cookies_description_->GetText();
     if (cookie_info.status != CookieControlsStatus::kDisabled &&
         cookie_info.status != CookieControlsStatus::kEnabled) {
-      if (presenter->IsTrackingProtection3pcdEnabled()) {
-        EXPECT_EQ(
-            third_party_cookies_title,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_LIMITING_RESTART_TITLE,
-                30));
-        EXPECT_EQ(
-            third_party_cookies_description,
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_COOKIES_RESTART_DESCRIPTION));
-      } else {
-        EXPECT_EQ(third_party_cookies_title,
-                  l10n_util::GetPluralStringFUTF16(
-                      IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE, 30));
-        EXPECT_EQ(
-            third_party_cookies_description,
-            l10n_util::GetStringUTF16(
-                IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY));
-      }
+      EXPECT_EQ(third_party_cookies_title,
+                l10n_util::GetPluralStringFUTF16(
+                    IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE, 30));
+      EXPECT_EQ(third_party_cookies_description,
+                l10n_util::GetStringUTF16(
+                    IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_DESCRIPTION_TODAY));
     }
   }
 
  private:
+  // Overriding `base::Time::Now()` to obtain a consistent X days until
+  // exception expiration calculation regardless of the time the test runs.
+  base::subtle::ScopedTimeClockOverrides time_override_{
+      &PageInfoBubbleViewCookiesSubpageBrowserTest::GetReferenceTime,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr};
   base::test::ScopedFeatureList feature_list_;
 };
+
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig
+    : public PageInfoBubbleViewCookiesSubpageBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PageInfoBubbleViewCookiesSubpageBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+INSTANTIATE_TEST_SUITE_P(
+    /*no prefix*/,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
+    testing::ValuesIn({UserBypassFeatureState::kOff,
+                       UserBypassFeatureState::kOnTemporaryExceptions,
+                       UserBypassFeatureState::kOnPermanentExceptions}));
 
 // Show different sets of buttons in cookies subpage with different
 // enforcements:
 
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
+IN_PROC_BROWSER_TEST_P(
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
+    InvokeUi_CookiesSubpageFpsBlocked3pcAllowed) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
@@ -886,21 +902,17 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(
-    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByExtension) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(
-    PageInfoBubbleViewCookiesSubpageBrowserTest,
+    PageInfoBubbleViewCookiesSubpageBrowserTestNoTestingConfig,
     InvokeUi_CookiesSubpageFpsAllowed3pcEnforcedByCookieSetting) {
   ShowAndVerifyUi();
 }
 IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
                        InvokeUi_CookiesSubpageFpsManaged3pcAllowed) {
-  ShowAndVerifyUi();
-}
-IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewCookiesSubpageBrowserTest,
-                       InvokeUi_CookiesSubpageFpsTrackingProtection3pcd) {
   ShowAndVerifyUi();
 }
 
@@ -909,8 +921,7 @@ INSTANTIATE_TEST_SUITE_P(
     PageInfoBubbleViewCookiesSubpageBrowserTest,
     testing::ValuesIn({UserBypassFeatureState::kOff,
                        UserBypassFeatureState::kOnTemporaryExceptions,
-                       UserBypassFeatureState::kOnPermanentExceptions,
-                       UserBypassFeatureState::kOn3pcdCookiesLimited}));
+                       UserBypassFeatureState::kOnPermanentExceptions}));
 
 class PageInfoBubbleViewIsolatedWebAppBrowserTest : public DialogBrowserTest {
  public:

@@ -12,6 +12,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -28,10 +29,10 @@ import java.lang.ref.WeakReference;
 class MessageCardView extends LinearLayout {
     private static WeakReference<Bitmap> sCloseButtonBitmapWeakRef;
 
-    /**
-     * An interface to get the icon to be shown inside the message card.
-     */
-    public interface IconProvider { Drawable getIconDrawable(); }
+    /** An interface to get the icon to be shown inside the message card. */
+    public interface IconProvider {
+        void fetchIconDrawable(Callback<Drawable> drawable);
+    }
 
     /**
      * An interface to handle the review action.

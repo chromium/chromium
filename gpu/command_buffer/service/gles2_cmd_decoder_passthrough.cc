@@ -1010,7 +1010,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 
   if (offscreen_) {
 #if BUILDFLAG(IS_ANDROID)
-    const bool alpha_channel_requested = attrib_helper.alpha_size > 0;
+    const bool alpha_channel_requested = attrib_helper.need_alpha;
 #else
     const bool alpha_channel_requested = false;
 #endif

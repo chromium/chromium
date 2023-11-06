@@ -14,13 +14,14 @@ import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resource
 
 import {castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
-import {PageDisplayerElement} from './page_displayer.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {SettingsIdleLoadElement} from '../os_settings_page/settings_idle_load.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {isAboutRoute, isAdvancedRoute, Route, Router, routes} from '../router.js';
+
+import {PageDisplayerElement} from './page_displayer.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing

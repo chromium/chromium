@@ -35,8 +35,7 @@ class AutofillPopupControllerImplMac : public AutofillPopupControllerImpl {
 
   // Updates the data list values currently shown with the popup. Calls
   // -invalidateTouchBar from |touchBarController_|.
-  void UpdateDataListValues(const std::vector<std::u16string>& values,
-                            const std::vector<std::u16string>& labels) override;
+  void UpdateDataListValues(base::span<const SelectOption> options) override;
 
  protected:
   // Hides the popup and destroys the controller. This also invalidates

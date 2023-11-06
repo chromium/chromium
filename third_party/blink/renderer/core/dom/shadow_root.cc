@@ -153,11 +153,23 @@ String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
 void ShadowRoot::setInnerHTML(const String& html,
                               ExceptionState& exception_state) {
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          html, &host(), kAllowScriptingContent, "innerHTML",
+          html, &host(), kAllowScriptingContent,
           /*include_shadow_roots=*/false, exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
     if (auto* element = DynamicTo<HTMLElement>(host()))
       element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
+  }
+}
+
+void ShadowRoot::setHTMLUnsafe(const String& html,
+                               ExceptionState& exception_state) {
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent,
+          /*include_shadow_roots=*/true, exception_state)) {
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+    if (auto* element = DynamicTo<HTMLElement>(host())) {
+      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
+    }
   }
 }
 
@@ -239,13 +251,30 @@ bool ShadowRoot::NeedsSlotAssignmentRecalc() const {
 void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
   ContainerNode::ChildrenChanged(change);
 
-  if (change.IsChildElementChange()) {
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    // No need to call CheckForSiblingStyleChanges() as at this point the
+    // node is not in the active document (CheckForSiblingStyleChanges() does
+    // nothing when not in the active document).
+    DCHECK(!InActiveDocument());
+  } else if (change.IsChildElementChange()) {
     CheckForSiblingStyleChanges(
         change.type == ChildrenChangeType::kElementRemoved
             ? kSiblingElementRemoved
             : kSiblingElementInserted,
         To<Element>(change.sibling_changed), change.sibling_before_change,
         change.sibling_after_change);
+  }
+
+  // In the case of input types like button where the child element is not
+  // in a container, we need to explicit adjust directionality.
+  if (RuntimeEnabledFeatures::CSSPseudoDirEnabled() &&
+      RuntimeEnabledFeatures::DirnameMoreInputTypesEnabled()) {
+    if (TextControlElement* text_element =
+            HTMLElement::ElementIfAutoDirectionalityFormAssociatedOrNull(
+                &host())) {
+      text_element->AdjustDirectionalityIfNeededAfterChildrenChanged(change);
+    }
   }
 }
 

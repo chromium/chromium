@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,8 +25,8 @@ namespace {
 
 class ObjectToDelete : public RefCounted<ObjectToDelete> {
  public:
-  // |delete_flag| is set to true when this object is deleted
-  ObjectToDelete(bool* delete_flag) : delete_flag_(delete_flag) {
+  // `delete_flag` is set to true when this object is deleted
+  explicit ObjectToDelete(bool* delete_flag) : delete_flag_(delete_flag) {
     EXPECT_FALSE(*delete_flag_);
   }
 
@@ -48,6 +49,13 @@ class MockObject {
 
   MOCK_METHOD1(Task, void(scoped_refptr<ObjectToDelete>));
   MOCK_METHOD1(Reply, void(scoped_refptr<ObjectToDelete>));
+
+  WeakPtr<MockObject> GetWeakPtr() { return weak_factory_.GetWeakPtr(); }
+
+  void InvalidateWeakPtrs() { weak_factory_.InvalidateWeakPtrs(); }
+
+ private:
+  WeakPtrFactory<MockObject> weak_factory_{this};
 };
 
 class MockRunsTasksInCurrentSequenceTaskRunner : public TestMockTimeTaskRunner {
@@ -104,23 +112,31 @@ class PostTaskAndReplyImplTest : public testing::Test {
  protected:
   PostTaskAndReplyImplTest() = default;
 
-  bool PostTaskAndReplyToMockObject() {
+  bool PostTaskAndReplyToMockObject(bool task_uses_weak_ptr = false) {
+    OnceClosure task;
+    if (task_uses_weak_ptr) {
+      task = BindOnce(&MockObject::Task, mock_object_.GetWeakPtr(),
+                      MakeRefCounted<ObjectToDelete>(&delete_task_flag_));
+    } else {
+      task = BindOnce(&MockObject::Task, Unretained(&mock_object_),
+                      MakeRefCounted<ObjectToDelete>(&delete_task_flag_));
+    }
+
     return PostTaskAndReplyImpl(
         [this](const Location& location, OnceClosure task) {
           return post_runner_->PostTask(location, std::move(task));
         },
-        FROM_HERE,
-        BindOnce(&MockObject::Task, Unretained(&mock_object_),
-                 MakeRefCounted<ObjectToDelete>(&delete_task_flag_)),
+        FROM_HERE, std::move(task),
         BindOnce(&MockObject::Reply, Unretained(&mock_object_),
                  MakeRefCounted<ObjectToDelete>(&delete_reply_flag_)));
   }
 
-  void ExpectPostTaskAndReplyToMockObjectSucceeds() {
+  void ExpectPostTaskAndReplyToMockObjectSucceeds(
+      bool task_uses_weak_ptr = false) {
     // Expect the post to succeed.
-    EXPECT_TRUE(PostTaskAndReplyToMockObject());
+    EXPECT_TRUE(PostTaskAndReplyToMockObject(task_uses_weak_ptr));
 
-    // Expect the first task to be posted to |post_runner_|.
+    // Expect the first task to be posted to `post_runner_`.
     EXPECT_TRUE(post_runner_->HasPendingTask());
     EXPECT_FALSE(reply_runner_->HasPendingTask());
     EXPECT_FALSE(delete_task_flag_);
@@ -149,7 +165,7 @@ TEST_F(PostTaskAndReplyImplTest, PostTaskAndReply) {
   EXPECT_TRUE(delete_task_flag_);
   EXPECT_FALSE(delete_reply_flag_);
 
-  // Expect the reply to be posted to |reply_runner_|.
+  // Expect the reply to be posted to `reply_runner_`.
   EXPECT_FALSE(post_runner_->HasPendingTask());
   EXPECT_TRUE(reply_runner_->HasPendingTask());
 
@@ -160,7 +176,7 @@ TEST_F(PostTaskAndReplyImplTest, PostTaskAndReply) {
   // The reply should have been deleted right after being run.
   EXPECT_TRUE(delete_reply_flag_);
 
-  // Expect no pending task in |post_runner_| and |reply_runner_|.
+  // Expect no pending task in `post_runner_` and `reply_runner_`.
   EXPECT_FALSE(post_runner_->HasPendingTask());
   EXPECT_FALSE(reply_runner_->HasPendingTask());
 }
@@ -168,15 +184,15 @@ TEST_F(PostTaskAndReplyImplTest, PostTaskAndReply) {
 TEST_F(PostTaskAndReplyImplTest, TaskDoesNotRun) {
   ExpectPostTaskAndReplyToMockObjectSucceeds();
 
-  // Clear the |post_runner_|. Both callbacks should be scheduled for deletion
-  // on the |reply_runner_|.
+  // Clear the `post_runner_`. Both callbacks should be scheduled for deletion
+  // on the `reply_runner_`.
   post_runner_->ClearPendingTasksWithRunsTasksInCurrentSequence();
   EXPECT_FALSE(post_runner_->HasPendingTask());
   EXPECT_TRUE(reply_runner_->HasPendingTask());
   EXPECT_FALSE(delete_task_flag_);
   EXPECT_FALSE(delete_reply_flag_);
 
-  // Run the |reply_runner_|. Both callbacks should be deleted.
+  // Run the `reply_runner_`. Both callbacks should be deleted.
   reply_runner_->RunUntilIdleWithRunsTasksInCurrentSequence();
   EXPECT_TRUE(delete_task_flag_);
   EXPECT_TRUE(delete_reply_flag_);
@@ -192,11 +208,11 @@ TEST_F(PostTaskAndReplyImplTest, ReplyDoesNotRun) {
   EXPECT_TRUE(delete_task_flag_);
   EXPECT_FALSE(delete_reply_flag_);
 
-  // Expect the reply to be posted to |reply_runner_|.
+  // Expect the reply to be posted to `reply_runner_`.
   EXPECT_FALSE(post_runner_->HasPendingTask());
   EXPECT_TRUE(reply_runner_->HasPendingTask());
 
-  // Clear the |reply_runner_| queue without running tasks. The reply callback
+  // Clear the `reply_runner_` queue without running tasks. The reply callback
   // should be deleted.
   reply_runner_->ClearPendingTasksWithRunsTasksInCurrentSequence();
   EXPECT_TRUE(delete_task_flag_);
@@ -216,6 +232,37 @@ TEST_F(PostTaskAndReplyImplTest,
   // Expect all tasks to be deleted.
   EXPECT_TRUE(delete_task_flag_);
   EXPECT_TRUE(delete_reply_flag_);
+}
+
+// Demonstrate that even if a task is not run because a weak pointer is
+// invalidated, the reply still runs.
+TEST_F(PostTaskAndReplyImplTest, ReplyStilRunsAfterInvalidatedWeakPtrTask) {
+  ExpectPostTaskAndReplyToMockObjectSucceeds(/*task_uses_weak_ptr=*/true);
+
+  // The task will not run when the provided weak pointer is invalidated.
+  EXPECT_CALL(mock_object_, Task(_)).Times(0);
+  mock_object_.InvalidateWeakPtrs();
+  post_runner_->RunUntilIdleWithRunsTasksInCurrentSequence();
+  testing::Mock::VerifyAndClear(&mock_object_);
+  // The task should have been deleted as part of dropping the run because of
+  // invalidated weak pointer.
+  EXPECT_TRUE(delete_task_flag_);
+  EXPECT_FALSE(delete_reply_flag_);
+
+  // Still expect a reply to be posted to `reply_runner_`.
+  EXPECT_FALSE(post_runner_->HasPendingTask());
+  EXPECT_TRUE(reply_runner_->HasPendingTask());
+
+  EXPECT_CALL(mock_object_, Reply(_)).Times(1);
+  reply_runner_->RunUntilIdleWithRunsTasksInCurrentSequence();
+  testing::Mock::VerifyAndClear(&mock_object_);
+  EXPECT_TRUE(delete_task_flag_);
+  // The reply should have been deleted right after being run.
+  EXPECT_TRUE(delete_reply_flag_);
+
+  // Expect no pending task in `post_runner_` and `reply_runner_`.
+  EXPECT_FALSE(post_runner_->HasPendingTask());
+  EXPECT_FALSE(reply_runner_->HasPendingTask());
 }
 
 }  // namespace base::internal

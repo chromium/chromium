@@ -52,9 +52,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -118,8 +115,6 @@ absl::optional<PlayStoreIntent> GetPlayStoreIntentFromManifest(
 bool ShouldInteractWithArc() {
   auto* lacros_service = chromeos::LacrosService::Get();
   return lacros_service &&
-         // Check if the feature is enabled.
-         chromeos::BrowserParamsProxy::Get()->WebAppsEnabled() &&
          // Only use ARC installation flow if we know that remote ash-chrome is
          // capable of installing from Play Store in lacros-chrome, to avoid
          // redirecting users to the Play Store if they cannot install
@@ -144,7 +139,6 @@ mojo::Remote<crosapi::mojom::Arc>* GetArcRemoteWithMinVersion(
 FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
@@ -154,7 +148,6 @@ FetchManifestAndInstallCommand::FetchManifestAndInstallCommand(
       noop_lock_description_(std::make_unique<NoopLockDescription>()),
       install_surface_(install_surface),
       web_contents_(contents),
-      bypass_service_worker_check_(bypass_service_worker_check),
       dialog_callback_(std::move(dialog_callback)),
       install_callback_(std::move(callback)),
       use_fallback_(use_fallback),
@@ -327,7 +320,7 @@ void FetchManifestAndInstallCommand::FetchManifest() {
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), bypass_service_worker_check_,
+      web_contents_.get(),
       base::BindOnce(
           &FetchManifestAndInstallCommand::OnDidPerformInstallableCheck,
           weak_ptr_factory_.GetWeakPtr()));
@@ -556,15 +549,6 @@ void FetchManifestAndInstallCommand::OnDialogCompleted(
   finalize_options.add_to_desktop = true;
   finalize_options.add_to_quick_launch_bar = kAddAppsToQuickLaunchBarByDefault;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ResolveExperimentalWebAppIsolationFeature() ==
-      ExperimentalWebAppIsolationMode::kProfile) {
-    app_profile_path_ = absl::make_optional(GenerateWebAppProfilePath(app_id_));
-    finalize_options.chromeos_data.emplace();
-    finalize_options.chromeos_data->app_profile_path = app_profile_path_;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   DCHECK(app_lock_);
   app_lock_->install_finalizer().FinalizeInstall(
       *web_app_info_, finalize_options,
@@ -623,32 +607,6 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
     }
   }
   debug_log_.Set("result_code", base::ToString(code));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // `web_app_info_` might be moved after this point. This is ok since we don't
-  // need it here any more.
-  if (app_profile_path_) {
-    CHECK(ResolveExperimentalWebAppIsolationFeature() ==
-          ExperimentalWebAppIsolationMode::kProfile);
-    // Create the app profile and install the same app inside it too.
-    g_browser_process->profile_manager()->CreateProfileAsync(
-        app_profile_path_.value(),
-        /*initialized_callback=*/
-        base::BindOnce(
-            [](std::unique_ptr<WebAppInstallInfo> web_app_info,
-               webapps::WebappInstallSource install_surface,
-               Profile* app_profile) {
-              CHECK(app_profile) << "failed to create app profile";
-              auto* provider = WebAppProvider::GetForWebApps(app_profile);
-              provider->scheduler().InstallFromInfo(
-                  std::move(web_app_info),
-                  /*overwrite_existing_manifest_fields=*/true, install_surface,
-                  base::DoNothing());
-            },
-            std::move(web_app_info_), install_surface_),
-        /*created_callback=*/base::DoNothing());
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
   SignalCompletionAndSelfDestruct(

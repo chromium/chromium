@@ -86,7 +86,9 @@ std::unique_ptr<WorkerIdSet> CreateWorkerIdSet(
 
 class WorkerIdSetTest : public testing::Test {
  public:
-  WorkerIdSetTest() = default;
+  WorkerIdSetTest()
+      : allow_multiple_workers_per_extension_(
+            WorkerIdSet::AllowMultipleWorkersPerExtensionForTesting()) {}
 
   WorkerIdSetTest(const WorkerIdSetTest&) = delete;
   WorkerIdSetTest& operator=(const WorkerIdSetTest&) = delete;
@@ -102,6 +104,9 @@ class WorkerIdSetTest : public testing::Test {
     std::sort(actual_copy.begin(), actual_copy.end());
     return expected_copy == actual_copy;
   }
+
+ private:
+  base::AutoReset<bool> allow_multiple_workers_per_extension_;
 };
 
 TEST_F(WorkerIdSetTest, GetAllForExtension) {

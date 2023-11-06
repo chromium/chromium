@@ -8,11 +8,16 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/android/webapk/fake_webapk_database_factory.h"
+#include "base/time/time.h"
+#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
+#include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
 #include "components/webapps/common/web_app_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,6 +85,12 @@ void InsertAppIntoRegistry(Registry* registry,
   registry->emplace(std::move(app_id), std::move(app));
 }
 
+int64_t UnixTsSecToWindowsTsMsec(double unix_ts_sec) {
+  return base::Time::FromSecondsSinceUnixEpoch(unix_ts_sec)
+      .ToDeltaSinceWindowsEpoch()
+      .InMicroseconds();
+}
+
 class WebApkSyncBridgeTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -93,9 +104,15 @@ class WebApkSyncBridgeTest : public ::testing::Test {
 
   void InitSyncBridge() {
     base::RunLoop loop;
+
+    std::unique_ptr<base::SimpleTestClock> clock =
+        std::make_unique<base::SimpleTestClock>();
+    clock->SetNow(base::Time::FromSecondsSinceUnixEpoch(
+        1136232245.0));  // Mon Jan 02 2006 15:04:05 GMT-0500
+
     sync_bridge_ = std::make_unique<WebApkSyncBridge>(
         database_factory_.get(), loop.QuitClosure(),
-        mock_processor_.CreateForwardingProcessor());
+        mock_processor_.CreateForwardingProcessor(), std::move(clock));
     loop.Run();
   }
 
@@ -120,6 +137,293 @@ class WebApkSyncBridgeTest : public ::testing::Test {
 
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> mock_processor_;
 };
+
+TEST_F(WebApkSyncBridgeTest, AppWasUsedRecently) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  InitSyncBridge();
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app1 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app1->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly before
+                       // clock_.Now() (recent enough)
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app2 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app2->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1136318645.0));  // Tue Jan 03 2006 15:04:05 GMT-0500 - slightly after
+                       // clock_.Now() (recent enough)
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app3 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app3->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
+                       // clock_.Now() (recent enough)
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app4 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app4->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133640244.0));  // Sat Dec 03 2005 15:04:04 GMT-0500 - 30 days and 1
+                       // second before clock_.Now() (not recent enough)
+
+  EXPECT_TRUE(sync_bridge().AppWasUsedRecently(app1.get()));
+  EXPECT_TRUE(sync_bridge().AppWasUsedRecently(app2.get()));
+  EXPECT_TRUE(sync_bridge().AppWasUsedRecently(app3.get()));
+  EXPECT_FALSE(sync_bridge().AppWasUsedRecently(app4.get()));
+}
+
+TEST_F(WebApkSyncBridgeTest, PrepareSyncUpdateFromInstalledApps) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  InitSyncBridge();
+
+  const std::string manifest_id_1 = "https://example.com/app1";
+  const std::string manifest_id_2 = "https://example.com/app2";
+  const std::string manifest_id_3 = "https://example.com/app3";
+  const std::string manifest_id_4 = "https://example.com/app4";
+  const std::string manifest_id_5 = "https://example.com/app5";
+  const std::string manifest_id_6 = "https://example.com/app6";
+
+  // app1 makes it into the output (it's recent enough and the only matching
+  // sync change is a deletion)
+  std::unique_ptr<sync_pb::WebApkSpecifics> app1 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app1->set_manifest_id(manifest_id_1);
+  app1->set_name("app1_installed");
+  app1->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1136145845.0));  // Sun Jan 01 2006 15:04:05 GMT-0500 - slightly before
+                       // clock_.Now() (recent enough)
+
+  // app2 doesn't make it into the output (it's recent enough but there's a
+  // newer matching sync change)
+  std::unique_ptr<sync_pb::WebApkSpecifics> app2 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app2->set_manifest_id(manifest_id_2);
+  app2->set_name("app2_installed");
+  app2->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
+                       // clock_.Now() (recent enough)
+
+  // app3 makes it into the output (it's recent enough and there's a matching
+  // sync change, but it's older)
+  std::unique_ptr<sync_pb::WebApkSpecifics> app3 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app3->set_manifest_id(manifest_id_3);
+  app3->set_name("app3_installed");
+  app3->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
+                       // clock_.Now() (recent enough)
+
+  // app4 doesn't make it into the output (it's not recent enough)
+  std::unique_ptr<sync_pb::WebApkSpecifics> app4 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app4->set_manifest_id(manifest_id_4);
+  app4->set_name("app4_installed");
+  app4->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133640244.0));  // Sat Dec 03 2005 15:04:04 GMT-0500 - 30 days and 1
+                       // second before clock_.Now() (not recent enough)
+
+  // app5 makes it into the output (it's recent enough and there's no matching
+  // sync change)
+  std::unique_ptr<sync_pb::WebApkSpecifics> app5 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app5->set_manifest_id(manifest_id_5);
+  app5->set_name("app5_installed");
+  app5->set_last_used_time_windows_epoch_micros(UnixTsSecToWindowsTsMsec(
+      1133726645.0));  // Sun Dec 04 2005 15:04:05 GMT-0500 - 29 days before
+                       // clock_.Now() (recent enough)
+
+  std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>> installed_apps;
+  installed_apps.push_back(std::move(app1));
+  installed_apps.push_back(std::move(app2));
+  installed_apps.push_back(std::move(app3));
+  installed_apps.push_back(std::move(app4));
+  installed_apps.push_back(std::move(app5));
+
+  // app that isn't installed - no effect
+  syncer::EntityData sync_data_1;
+  sync_pb::WebApkSpecifics* sync_specifics_1 =
+      sync_data_1.specifics.mutable_web_apk();
+  sync_specifics_1->set_manifest_id(manifest_id_6);
+  sync_specifics_1->set_name("app6_sync");
+  sync_specifics_1->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1136232245.0));  // Mon Jan 02 2006 15:04:05 GMT-0500
+  std::unique_ptr<syncer::EntityChange> sync_change_1 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_6),
+                                      std::move(sync_data_1));
+
+  // deletion - no effect
+  std::unique_ptr<syncer::EntityChange> sync_change_2 =
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_1));
+
+  // app that's installed, but newer - prevents app2 from being in the result
+  syncer::EntityData sync_data_3;
+  sync_pb::WebApkSpecifics* sync_specifics_3 =
+      sync_data_3.specifics.mutable_web_apk();
+  sync_specifics_3->set_manifest_id(manifest_id_2);
+  sync_specifics_3->set_name("app2_sync");
+  sync_specifics_3->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(1136145845.0));  // Sun Jan 01 2006 15:04:05
+                                                // GMT-0500 - more recent than
+                                                // the installed version
+  std::unique_ptr<syncer::EntityChange> sync_change_3 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_2),
+                                      std::move(sync_data_3));
+
+  // app that's installed, but older - no effect
+  syncer::EntityData sync_data_4;
+  sync_pb::WebApkSpecifics* sync_specifics_4 =
+      sync_data_4.specifics.mutable_web_apk();
+  sync_specifics_4->set_manifest_id(manifest_id_3);
+  sync_specifics_4->set_name("app3_sync");
+  sync_specifics_4->set_last_used_time_windows_epoch_micros(
+      UnixTsSecToWindowsTsMsec(
+          1133640244.0));  // Sat Dec 03 2005 15:04:04 GMT-0500 - older than
+                           // the installed version
+  std::unique_ptr<syncer::EntityChange> sync_change_4 =
+      syncer::EntityChange::CreateUpdate(ManifestIdStrToAppId(manifest_id_3),
+                                         std::move(sync_data_4));
+
+  syncer::EntityChangeList sync_changes;
+  sync_changes.push_back(std::move(sync_change_1));
+  sync_changes.push_back(std::move(sync_change_2));
+  sync_changes.push_back(std::move(sync_change_3));
+  sync_changes.push_back(std::move(sync_change_4));
+
+  std::vector<const sync_pb::WebApkSpecifics*> sync_update_from_installed;
+  sync_bridge().PrepareSyncUpdateFromInstalledApps(installed_apps, sync_changes,
+                                                   &sync_update_from_installed);
+
+  EXPECT_EQ(3u, sync_update_from_installed.size());
+
+  EXPECT_EQ(manifest_id_1, sync_update_from_installed.at(0)->manifest_id());
+  EXPECT_EQ("app1_installed", sync_update_from_installed.at(0)->name());
+
+  EXPECT_EQ(manifest_id_3, sync_update_from_installed.at(1)->manifest_id());
+  EXPECT_EQ("app3_installed", sync_update_from_installed.at(1)->name());
+
+  EXPECT_EQ(manifest_id_5, sync_update_from_installed.at(2)->manifest_id());
+  EXPECT_EQ("app5_installed", sync_update_from_installed.at(2)->name());
+}
+
+TEST_F(WebApkSyncBridgeTest, PrepareRegistryUpdateFromInstalledAndSyncApps) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  const std::string manifest_id_1 = "https://example.com/app1";
+  const std::string manifest_id_2 = "https://example.com/app2";
+  const std::string manifest_id_3 = "https://example.com/app3";
+  const std::string manifest_id_4 = "https://example.com/app4";
+  const std::string manifest_id_5 = "https://example.com/app5";
+
+  Registry registry;
+
+  std::unique_ptr<WebApkProto> synced_app1 = CreateWebApkProto(manifest_id_5);
+  InsertAppIntoRegistry(&registry, std::move(synced_app1));
+
+  database_factory().WriteRegistry(registry);
+
+  EXPECT_CALL(processor(), ModelReadyToSync(_)).Times(1);
+  InitSyncBridge();
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app1 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app1->set_manifest_id(manifest_id_1);
+  app1->set_name("app1_installed");
+
+  std::unique_ptr<sync_pb::WebApkSpecifics> app2 =
+      std::make_unique<sync_pb::WebApkSpecifics>();
+  app2->set_manifest_id(manifest_id_2);
+  app2->set_name("app2_installed");
+
+  std::vector<const sync_pb::WebApkSpecifics*> sync_update_from_installed;
+  sync_update_from_installed.push_back(app1.get());
+  sync_update_from_installed.push_back(app2.get());
+
+  // same as app1 -> doesn't get included in output
+  syncer::EntityData sync_data_1;
+  sync_pb::WebApkSpecifics* sync_specifics_1 =
+      sync_data_1.specifics.mutable_web_apk();
+  sync_specifics_1->set_manifest_id(manifest_id_1);
+  sync_specifics_1->set_name("app1_sync");
+  std::unique_ptr<syncer::EntityChange> sync_change_1 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_1),
+                                      std::move(sync_data_1));
+
+  // same as app2 -> doesn't get included in output
+  std::unique_ptr<syncer::EntityChange> sync_change_2 =
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_2));
+
+  // not found in sync_update_from_installed -> included in output
+  syncer::EntityData sync_data_3;
+  sync_pb::WebApkSpecifics* sync_specifics_3 =
+      sync_data_3.specifics.mutable_web_apk();
+  sync_specifics_3->set_manifest_id(manifest_id_3);
+  sync_specifics_3->set_name("app3_sync");
+  std::unique_ptr<syncer::EntityChange> sync_change_3 =
+      syncer::EntityChange::CreateAdd(ManifestIdStrToAppId(manifest_id_3),
+                                      std::move(sync_data_3));
+
+  // not found in sync_update_from_installed, but there's no entry in the
+  // registry to delete, so we ignore it anyway
+  std::unique_ptr<syncer::EntityChange> sync_change_4 =
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_4));
+
+  // not found in sync_update_from_installed, but there IS an entry in the
+  // registry to delete -> included in output
+  std::unique_ptr<syncer::EntityChange> sync_change_5 =
+      syncer::EntityChange::CreateDelete(ManifestIdStrToAppId(manifest_id_5));
+
+  syncer::EntityChangeList sync_changes;
+  sync_changes.push_back(std::move(sync_change_1));
+  sync_changes.push_back(std::move(sync_change_2));
+  sync_changes.push_back(std::move(sync_change_3));
+  sync_changes.push_back(std::move(sync_change_4));
+  sync_changes.push_back(std::move(sync_change_5));
+
+  RegistryUpdateData registry_update_from_installed_and_sync;
+  sync_bridge().PrepareRegistryUpdateFromInstalledAndSyncApps(
+      sync_update_from_installed, sync_changes,
+      &registry_update_from_installed_and_sync);
+
+  EXPECT_EQ(3u, registry_update_from_installed_and_sync.apps_to_create.size());
+
+  EXPECT_TRUE(registry_update_from_installed_and_sync.apps_to_create.at(0)
+                  ->is_locally_installed());
+  EXPECT_EQ(manifest_id_1,
+            registry_update_from_installed_and_sync.apps_to_create.at(0)
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app1_installed",
+            registry_update_from_installed_and_sync.apps_to_create.at(0)
+                ->sync_data()
+                .name());
+
+  EXPECT_TRUE(registry_update_from_installed_and_sync.apps_to_create.at(1)
+                  ->is_locally_installed());
+  EXPECT_EQ(manifest_id_2,
+            registry_update_from_installed_and_sync.apps_to_create.at(1)
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app2_installed",
+            registry_update_from_installed_and_sync.apps_to_create.at(1)
+                ->sync_data()
+                .name());
+
+  EXPECT_FALSE(registry_update_from_installed_and_sync.apps_to_create.at(2)
+                   ->is_locally_installed());
+  EXPECT_EQ(manifest_id_3,
+            registry_update_from_installed_and_sync.apps_to_create.at(2)
+                ->sync_data()
+                .manifest_id());
+  EXPECT_EQ("app3_sync",
+            registry_update_from_installed_and_sync.apps_to_create.at(2)
+                ->sync_data()
+                .name());
+
+  EXPECT_EQ(1u, registry_update_from_installed_and_sync.apps_to_delete.size());
+  EXPECT_EQ(ManifestIdStrToAppId(manifest_id_5),
+            registry_update_from_installed_and_sync.apps_to_delete.at(0));
+}
 
 // Tests that the WebApkSyncBridge correctly reports data from the
 // WebApkDatabase.

@@ -26,7 +26,7 @@ const PageSizeSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
         AbstractConstructor<SelectMixinInterface<PageSize>>&
     {new (): PolymerElement & I18nMixinInterface};
 
-class PageSizeSelectElement extends PageSizeSelectElementBase {
+export class PageSizeSelectElement extends PageSizeSelectElementBase {
   static get is() {
     return 'page-size-select' as const;
   }

@@ -27,7 +27,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/components/webui:url_constants",
     "//ios/web",
     "//ui/base",

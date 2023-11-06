@@ -8,7 +8,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"

@@ -29,9 +29,10 @@ class PaymentResponseHelperTest : public testing::Test,
   PaymentResponseHelperTest()
       : test_payment_request_delegate_(
             std::make_unique<base::SingleThreadTaskExecutor>(),
-            &test_personal_data_manager_),
-        address_(autofill::test::GetFullProfile()) {
-    test_personal_data_manager_.AddProfile(address_);
+            &test_personal_data_manager_) {
+    address_ = std::make_unique<autofill::AutofillProfile>(
+        autofill::test::GetFullProfile());
+    test_personal_data_manager_.AddProfile(*address_);
     test_app_ = std::make_unique<TestPaymentApp>("method-name");
   }
   ~PaymentResponseHelperTest() override {}
@@ -83,7 +84,7 @@ class PaymentResponseHelperTest : public testing::Test,
 
   base::WeakPtr<PaymentRequestSpec> spec() { return spec_->AsWeakPtr(); }
   const mojom::PaymentResponsePtr& response() { return payment_response_; }
-  autofill::AutofillProfile* test_address() { return &address_; }
+  autofill::AutofillProfile* test_address() { return address_.get(); }
   base::WeakPtr<PaymentApp> test_app() { return test_app_->AsWeakPtr(); }
   base::WeakPtr<PaymentRequestDelegate> test_payment_request_delegate() {
     return test_payment_request_delegate_.GetWeakPtr();
@@ -100,7 +101,7 @@ class PaymentResponseHelperTest : public testing::Test,
   TestPaymentRequestDelegate test_payment_request_delegate_;
 
   // Test data.
-  autofill::AutofillProfile address_;
+  std::unique_ptr<autofill::AutofillProfile> address_;
   std::unique_ptr<PaymentApp> test_app_;
 
   base::WeakPtrFactory<PaymentResponseHelperTest> weak_ptr_factory_{this};

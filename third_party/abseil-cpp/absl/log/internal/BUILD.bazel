@@ -26,6 +26,7 @@ package(
         "//absl/log:__pkg__",
     ],
     features = [
+        "header_modules",
         "layering_check",
         "parse_headers",
     ],

@@ -62,6 +62,7 @@
 //components/test/data/password_manager/login_db_v3_broken.sql
 //components/test/data/password_manager/login_db_v4.sql
 //components/test/data/password_manager/login_db_v40.sql
+//components/test/data/password_manager/login_db_v41.sql
 //components/test/data/password_manager/login_db_v5.sql
 //components/test/data/password_manager/login_db_v6.sql
 //components/test/data/password_manager/login_db_v7.sql

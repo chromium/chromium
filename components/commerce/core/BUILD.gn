@@ -197,6 +197,8 @@ static_library("shopping_service") {
     "shopping_power_bookmark_data_provider.h",
     "shopping_service.cc",
     "shopping_service.h",
+    "web_extractor.cc",
+    "web_extractor.h",
     "web_wrapper.cc",
     "web_wrapper.h",
   ]
@@ -420,7 +422,10 @@ source_set("commerce_constants") {
 }
 
 source_set("commerce_types") {
-  sources = [ "commerce_types.h" ]
+  sources = [
+    "commerce_types.cc",
+    "commerce_types.h",
+  ]
 
   deps = [
     ":proto",
@@ -436,6 +441,8 @@ source_set("utils") {
   ]
   deps = [
     ":commerce_constants",
+    ":commerce_types",
+    ":feature_list",
     "//net:net",
   ]
 }

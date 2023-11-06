@@ -59,10 +59,10 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -74,6 +74,8 @@
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 namespace {
 
@@ -411,7 +413,7 @@ bool HTMLSelectElement::CanSelectAll() const {
 LayoutObject* HTMLSelectElement::CreateLayoutObject(
     const ComputedStyle& style) {
   if (UsesMenuList()) {
-    return MakeGarbageCollected<LayoutNGFlexibleBox>(this);
+    return MakeGarbageCollected<LayoutFlexibleBox>(this);
   }
   return MakeGarbageCollected<LayoutNGBlockFlow>(this);
 }
@@ -744,15 +746,13 @@ void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,
 
 void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLFormControlElementWithState::ChildrenChanged(change);
-  if (change.type == ChildrenChangeType::kElementInserted) {
-    if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
-      OptionInserted(*option, option->Selected());
-    } else if (auto* optgroup =
-                   DynamicTo<HTMLOptGroupElement>(change.sibling_changed)) {
-      for (auto& child_option :
-           Traversal<HTMLOptionElement>::ChildrenOf(*optgroup))
-        OptionInserted(child_option, child_option.Selected());
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    for (Node& node : NodeTraversal::ChildrenOf(*this)) {
+      ElementInserted(node);
     }
+  } else if (change.type == ChildrenChangeType::kElementInserted) {
+    ElementInserted(*change.sibling_changed);
   } else if (change.type == ChildrenChangeType::kElementRemoved) {
     if (auto* option = DynamicTo<HTMLOptionElement>(change.sibling_changed)) {
       OptionRemoved(*option);
@@ -777,6 +777,17 @@ void HTMLSelectElement::ChildrenChanged(const ChildrenChange& change) {
 
 bool HTMLSelectElement::ChildrenChangedAllChildrenRemovedNeedsList() const {
   return true;
+}
+
+void HTMLSelectElement::ElementInserted(Node& node) {
+  if (auto* option = DynamicTo<HTMLOptionElement>(&node)) {
+    OptionInserted(*option, option->Selected());
+  } else if (auto* optgroup = DynamicTo<HTMLOptGroupElement>(&node)) {
+    for (auto& child_option :
+         Traversal<HTMLOptionElement>::ChildrenOf(*optgroup)) {
+      OptionInserted(child_option, child_option.Selected());
+    }
+  }
 }
 
 void HTMLSelectElement::OptionInserted(HTMLOptionElement& option,
@@ -1459,7 +1470,8 @@ const ComputedStyle* HTMLSelectElement::OptionStyle() const {
 // Show the option list for this select element.
 // https://github.com/whatwg/html/pull/9754
 void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
-  LocalFrame* frame = GetDocument().GetFrame();
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
   // In cross-origin iframes it should throw a "SecurityError" DOMException
   if (frame) {
     if (!frame->IsSameOrigin()) {
@@ -1482,9 +1494,36 @@ void HTMLSelectElement::showPicker(ExceptionState& exception_state) {
     return;
   }
 
-  if (UsesMenuList()) {
-    ShowPopup();
+  select_type_->ShowPicker();
+}
+
+bool HTMLSelectElement::HandleInvokeInternal(HTMLElement& invoker,
+                                             AtomicString& action) {
+  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+    return true;
   }
+
+  if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
+    return false;
+  }
+
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
+  if (frame && !frame->IsSameOrigin()) {
+    String message = "Select cannot be invoked from cross-origin iframe.";
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning, message));
+    return false;
+  }
+
+  if (IsDisabledFormControl()) {
+    return false;
+  }
+
+  select_type_->ShowPicker();
+
+  return true;
 }
 
 }  // namespace blink

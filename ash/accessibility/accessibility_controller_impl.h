@@ -395,16 +395,6 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // features is going to be visible in the accessibility tray menu.
   bool IsPrimarySettingsViewVisibleInTray();
 
-  // Returns true if at least one of the additional settings of the
-  // accessibility features is going to be visible in the accessibility tray
-  // menu.
-  bool IsAdditionalSettingsViewVisibleInTray();
-
-  // Returns true if there exist one of the additional accessibility features
-  // and one of the primary accessibility features which are going to visible on
-  // accessibility tray menu.
-  bool IsAdditionalSettingsSeparatorVisibleInTray();
-
   // Starts point scanning, to select a point onscreen without using a mouse
   // (as used by Switch Access).
   void StartPointScanning();
@@ -540,6 +530,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void AddShowToastCallbackForTesting(
       base::RepeatingCallback<void(AccessibilityToastType)> callback);
 
+  void AddShowConfirmationDialogCallbackForTesting(
+      base::RepeatingCallback<void()> callback);
+
  private:
   // Populate |features_| with the feature of the correct type.
   void CreateAccessibilityFeatures();
@@ -672,6 +665,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   // The current AccessibilityConfirmationDialog, if one exists.
   base::WeakPtr<AccessibilityConfirmationDialog> confirmation_dialog_;
+
+  base::RepeatingCallback<void()>
+      show_confirmation_dialog_callback_for_testing_;
 
   base::WeakPtrFactory<AccessibilityControllerImpl> weak_ptr_factory_{this};
 };

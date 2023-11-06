@@ -89,4 +89,31 @@ test(function () {
     assert_equals(rule.cssText, "@view-transitions { }");
   });
 }, "navigation-trigger with !important flag should fail to parse.");
+
+test(function () {
+  resetStateAndTest(() => {
+    document.styleSheets[0].insertRule(`
+      @view-transitions {
+        navigation-trigger: none;
+      }
+    `);
+    let rule = document.styleSheets[0].cssRules[0];
+    rule.navigationTrigger = "cross-document-same-origin";
+    assert_equals(rule.navigationTrigger, "cross-document-same-origin");
+  });
+}, "navigation-trigger attribute can be set.");
+
+test(function () {
+  resetStateAndTest(() => {
+    document.styleSheets[0].insertRule(`
+      @view-transitions {
+        navigation-trigger: none;
+      }
+    `);
+    let rule = document.styleSheets[0].cssRules[0];
+    rule.navigationTrigger = "foo";
+    assert_equals(rule.navigationTrigger, "none");
+  });
+}, "navigation-trigger doesn't set invalid token.");
+
 </script>

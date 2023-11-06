@@ -65,7 +65,7 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
     return image_gradient_value->ComputedCSSValue(style, allow_visited_style);
   }
   DCHECK(IsA<CSSPaintValue>(image_generator_value_.Get()));
-  return image_generator_value_;
+  return image_generator_value_.Get();
 }
 
 IntrinsicSizingInfo StyleGeneratedImage::GetNaturalSizingInfo(

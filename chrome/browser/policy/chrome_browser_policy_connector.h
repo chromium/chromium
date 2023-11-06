@@ -32,6 +32,7 @@ class PrefService;
 
 namespace policy {
 class ConfigurationPolicyProvider;
+class LocalTestPolicyProvider;
 class ProxyPolicyProvider;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -71,15 +72,14 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   ConfigurationPolicyProvider* GetPlatformProvider();
 
-  ConfigurationPolicyProvider* local_test_policy_provider() {
-    return local_test_provider_;
-  }
-
+  ConfigurationPolicyProvider* local_test_policy_provider();
   void SetLocalTestPolicyProviderForTesting(
       ConfigurationPolicyProvider* provider);
 
   // If the kLocalTestPoliciesForNextStartup pref is non-empty, read and apply
-  // the policies stored in it, and then clear the pref.
+  // the policies stored in it, and then clear the pref. This must be called
+  // right after the `local_state` is created to ensure policies are applied
+  // at the right time.
   void MaybeApplyLocalTestPolicies(PrefService* local_state);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -198,8 +198,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
   // Owned by base class.
   raw_ptr<ConfigurationPolicyProvider> command_line_provider_ = nullptr;
 
-  // Owned by base class.
-  raw_ptr<ConfigurationPolicyProvider> local_test_provider_ = nullptr;
+  raw_ptr<ConfigurationPolicyProvider> local_test_provider_for_testing_ =
+      nullptr;
+  std::unique_ptr<LocalTestPolicyProvider> local_test_provider_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<DeviceSettingsLacros> device_settings_ = nullptr;

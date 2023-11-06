@@ -22,7 +22,7 @@
 
 namespace ui {
 class DisplayCALayerTree;
-enum class DomCode;
+enum class DomCode : uint32_t;
 }  // namespace ui
 
 namespace content {
@@ -102,6 +102,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
   void UpdateBackgroundColor() override;
+  bool HasFallbackSurface() const override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;

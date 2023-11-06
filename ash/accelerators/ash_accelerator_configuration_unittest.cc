@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ui_base_features.h"
@@ -162,17 +163,20 @@ class AshAcceleratorConfigurationTest : public AshTestBase {
     AshTestBase::SetUp();
     config_ = std::make_unique<AshAcceleratorConfiguration>();
     config_->AddObserver(&observer_);
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   void TearDown() override {
     config_->RemoveObserver(&observer_);
     AshTestBase::TearDown();
+    histogram_tester_.reset();
   }
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   UpdatedAcceleratorsObserver observer_;
   std::unique_ptr<AshAcceleratorConfiguration> config_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_F(AshAcceleratorConfigurationTest, VerifyAcceleratorMappingPopulated) {
@@ -1524,6 +1528,15 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
 
 TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   SimulateNewUserFirstLogin(kFakeUserEmail);
+
+  // Check histogram. There are two counts initially since there has been
+  // two separate logins in this test.
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 2);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll", 1, 0);
+
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
        AcceleratorAction::kSwitchToLastUsedIme},
@@ -1586,6 +1599,9 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
        AcceleratorAction::kCycleBackwardMru},
   };
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+  // `SimuateUserLogin` triggers the metric twice in tests.
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 1, 2);
 
   // Now reset all to default.
   result = config_->RestoreAllDefaults();
@@ -1600,6 +1616,13 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
   EXPECT_TRUE(reset_pref_overrides.empty());
   // `test_data` is the default state of accelerators.
   ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+  // Expect increases in the `0` bucket, it gets incremented by 2 due to
+  // `SimulateUserLogin`.
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 4);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll", 1, 1);
 }
 
 TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
@@ -1692,6 +1715,8 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefs) {
   };
 
   config_->Initialize(test_data);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 2);
 
   // Expect that there are no entries stored in the override pref.
   const base::Value::Dict& pref_overrides = GetOverridePref();
@@ -1751,6 +1776,8 @@ TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithPrefs) {
   EXPECT_EQ(1u, relogin_overrides.size());
   // Verify pref overrides were loaded correctly.
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 1, 2);
 }
 
 TEST_F(AshAcceleratorConfigurationTest, AddAcceleratorWithConflictWithPrefs) {
@@ -1846,6 +1873,8 @@ TEST_F(AshAcceleratorConfigurationTest,
   };
 
   config_->Initialize(test_data);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 2);
 
   // Expect that there are no entries stored in the override pref.
   const base::Value::Dict& pref_overrides = GetOverridePref();
@@ -1933,6 +1962,8 @@ TEST_F(AshAcceleratorConfigurationTest,
   SimulateNewUserFirstLogin(kFakeUserEmail2);
   const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
   EXPECT_TRUE(other_user_pref_overrides.empty());
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 4);
 
   // Now re-login to the original profile.
   GetSessionControllerClient()->LockScreen();
@@ -1952,6 +1983,8 @@ TEST_F(AshAcceleratorConfigurationTest,
   // accelerators.
   ExpectAllAcceleratorsEqual(expected_test_data_2,
                              config_->GetAllAccelerators());
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 1, 2);
 }
 
 TEST_F(AshAcceleratorConfigurationTest,
@@ -1967,6 +2000,8 @@ TEST_F(AshAcceleratorConfigurationTest,
   };
 
   config_->Initialize(test_data);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 0, 2);
 
   // Expect that there are no entries stored in the override pref.
   const base::Value::Dict& pref_overrides = GetOverridePref();
@@ -2115,6 +2150,8 @@ TEST_F(AshAcceleratorConfigurationTest,
   // accelerators.
   ExpectAllAcceleratorsEqual(expected_test_data_3,
                              config_->GetAllAccelerators());
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup", 1, 2);
 }
 
 TEST_F(AshAcceleratorConfigurationTest, RemoveThenAddAcceleratorWithPrefs) {
@@ -2523,6 +2560,78 @@ TEST_F(AshAcceleratorConfigurationTest, SwitchUserPrefsAreSeparate) {
   EXPECT_EQ(1u, relogin_overrides.size());
   // Verify pref overrides were loaded correctly.
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+}
+
+TEST_F(AshAcceleratorConfigurationTest, PrefsResetWithFlag) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{::features::kShortcutCustomization,
+                            features::kResetShortcutCustomizations},
+      /*disabled_features=*/{});
+  SimulateNewUserFirstLogin(kFakeUserEmail);
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+  };
+
+  config_->Initialize(test_data);
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
+  const ui::Accelerator new_accelerator(ui::VKEY_A, ui::EF_COMMAND_DOWN);
+  AcceleratorConfigResult result = config_->AddUserAccelerator(
+      AcceleratorAction::kSwitchToLastUsedIme, new_accelerator);
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `AcceleratorAction::kSwitchToLastUsedIme`.
+  const base::Value::List* accelerator_overrides = updated_overrides.FindList(
+      base::NumberToString(AcceleratorAction::kSwitchToLastUsedIme));
+  // Expect 1 override accelerator for
+  // `AcceleratorAction::kSwitchToLastUsedIme`.
+  EXPECT_EQ(1u, accelerator_overrides->size());
+
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+      {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+  };
+
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  EXPECT_TRUE(CompareAccelerators(
+      {/*trigger_on_press=*/true, ui::VKEY_A, ui::EF_COMMAND_DOWN,
+       AcceleratorAction::kSwitchToLastUsedIme},
+      override_data.accelerator));
+  EXPECT_EQ(AcceleratorModificationAction::kAdd, override_data.action);
+
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+
+  // Simulate login on another account, expect the pref to not be present.
+  GetSessionControllerClient()->LockScreen();
+  SimulateNewUserFirstLogin(kFakeUserEmail2);
+  const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(other_user_pref_overrides.empty());
+
+  // Now re-login to the original profile. Since #reset-shortcut-customizations
+  // is enabled, expect that no prefs were saved.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& original_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(original_pref_overrides.empty());
 }
 
 }  // namespace ash

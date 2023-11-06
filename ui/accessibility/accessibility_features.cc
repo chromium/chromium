@@ -165,7 +165,7 @@ bool IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled() {
 
 BASE_FEATURE(kAccessibilityDictationKeyboardImprovements,
              "AccessibilityDictationKeyboardImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsAccessibilityDictationKeyboardImprovementsEnabled() {
   return base::FeatureList::IsEnabled(
@@ -320,6 +320,14 @@ bool IsReadAnythingReadAloudEnabled() {
   return base::FeatureList::IsEnabled(::features::kReadAnythingReadAloud);
 }
 
+BASE_FEATURE(kReadAnythingOmniboxIcon,
+             "ReadAnythingOmniboxIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsReadAnythingOmniboxIconEnabled() {
+  return base::FeatureList::IsEnabled(::features::kReadAnythingOmniboxIcon);
+}
+
 BASE_FEATURE(kPdfOcr, "PdfOcr", base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsPdfOcrEnabled() {
@@ -345,5 +353,17 @@ bool IsAccessibilityServiceEnabled() {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+
+BASE_FEATURE(kAccessibilityRemoteUIApp,
+             "AccessibilityRemoteUIApp",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsAccessibilityRemoteUIAppEnabled() {
+  return base::FeatureList::IsEnabled(::features::kAccessibilityRemoteUIApp);
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features

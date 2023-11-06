@@ -1,7 +1,9 @@
 This is a testharness.js-based test.
-PASS Opaque origin should be serialized to "null"
-PASS BroadcastChannel messages from opaque origins should be self-contained
-FAIL BroadcastChannel messages from data URL dedicated workers should be self-contained promise_test: Unhandled rejection with value: "Received message from an opaque origin"
-FAIL BroadcastChannel messages from data URL shared workers should be self-contained promise_test: Unhandled rejection with value: "Received message from an opaque origin"
+[PASS] Opaque origin should be serialized to "null"
+[PASS] BroadcastChannel messages from opaque origins should be self-contained
+[FAIL] BroadcastChannel messages from data URL dedicated workers should be self-contained
+  promise_test: Unhandled rejection with value: "Received message from an opaque origin"
+[FAIL] BroadcastChannel messages from data URL shared workers should be self-contained
+  promise_test: Unhandled rejection with value: "Received message from an opaque origin"
 Harness: the test ran to completion.
 

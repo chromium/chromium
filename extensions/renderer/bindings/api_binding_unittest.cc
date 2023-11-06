@@ -907,7 +907,7 @@ TEST_F(APIBindingUnittest, TestCustomHooks) {
   bool did_call = false;
   auto hook = [](bool* did_call, const APISignature* signature,
                  v8::Local<v8::Context> context,
-                 std::vector<v8::Local<v8::Value>>* arguments,
+                 v8::LocalVector<v8::Value>* arguments,
                  const APITypeReferenceMap& ref_map) {
     *did_call = true;
     APIBindingHooks::RequestResult result(
@@ -1452,7 +1452,7 @@ TEST_F(APIBindingUnittest,
   bool did_call = false;
   auto hook = [](bool* did_call, const APISignature* signature,
                  v8::Local<v8::Context> context,
-                 std::vector<v8::Local<v8::Value>>* arguments,
+                 v8::LocalVector<v8::Value>* arguments,
                  const APITypeReferenceMap& ref_map) {
     APIBindingHooks::RequestResult result(
         APIBindingHooks::RequestResult::HANDLED);
@@ -1775,12 +1775,10 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
 
   using RequestResult = APIBindingHooks::RequestResult;
 
-  auto basic_handler = [](RequestResult::ResultCode code, const APISignature*,
-                          v8::Local<v8::Context> context,
-                          std::vector<v8::Local<v8::Value>>* arguments,
-                          const APITypeReferenceMap& map) {
-    return RequestResult(code);
-  };
+  auto basic_handler =
+      [](RequestResult::ResultCode code, const APISignature*,
+         v8::Local<v8::Context> context, v8::LocalVector<v8::Value>* arguments,
+         const APITypeReferenceMap& map) { return RequestResult(code); };
 
   auto hooks = std::make_unique<APIBindingHooksTestDelegate>();
   hooks->AddHandler(
@@ -1798,7 +1796,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
       "test.throwException",
       base::BindRepeating([](const APISignature*,
                              v8::Local<v8::Context> context,
-                             std::vector<v8::Local<v8::Value>>* arguments,
+                             v8::LocalVector<v8::Value>* arguments,
                              const APITypeReferenceMap& map) {
         context->GetIsolate()->ThrowException(
             gin::StringToV8(context->GetIsolate(), "some error"));
@@ -1808,7 +1806,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
       "test.handleWithArgs",
       base::BindRepeating([](const APISignature*,
                              v8::Local<v8::Context> context,
-                             std::vector<v8::Local<v8::Value>>* arguments,
+                             v8::LocalVector<v8::Value>* arguments,
                              const APITypeReferenceMap& map) {
         arguments->push_back(v8::Integer::New(context->GetIsolate(), 42));
         return RequestResult(RequestResult::HANDLED);
@@ -1816,8 +1814,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
 
   auto handle_and_send_request =
       [](APIRequestHandler* handler, const APISignature*,
-         v8::Local<v8::Context> context,
-         std::vector<v8::Local<v8::Value>>* arguments,
+         v8::Local<v8::Context> context, v8::LocalVector<v8::Value>* arguments,
          const APITypeReferenceMap& map) {
         handler->StartRequest(
             context, "test.handleAndSendRequest", base::Value::List(),
@@ -1835,7 +1832,7 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
       [](absl::optional<std::string>* name_out,
          absl::optional<std::vector<std::string>>* args_out,
          v8::Local<v8::Context> context, const std::string& call_name,
-         const std::vector<v8::Local<v8::Value>>& arguments) {
+         const v8::LocalVector<v8::Value>& arguments) {
         *name_out = call_name;
         *args_out = std::vector<std::string>();
         (*args_out)->reserve(arguments.size());
@@ -1937,7 +1934,7 @@ TEST_F(APIBindingUnittest, TestHooksWithCustomCallback) {
   auto hooks = std::make_unique<APIBindingHooksTestDelegate>();
   auto hook_with_custom_callback =
       [](const APISignature* signature, v8::Local<v8::Context> context,
-         std::vector<v8::Local<v8::Value>>* arguments,
+         v8::LocalVector<v8::Value>* arguments,
          const APITypeReferenceMap& ref_map) {
         constexpr char kCustomCallback[] =
             "(function() { this.calledCustomCallback = true; })";
@@ -1985,26 +1982,26 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifier) {
   // that changes the result when the async response type is callback based.
   auto hooks = std::make_unique<APIBindingHooksTestDelegate>();
   int total_modifier_call_count = 0;
-  auto result_modifier =
-      [&total_modifier_call_count](
-          const std::vector<v8::Local<v8::Value>>& result_args,
-          v8::Local<v8::Context> context,
-          binding::AsyncResponseType async_type) {
-        total_modifier_call_count++;
-        if (async_type == binding::AsyncResponseType::kCallback) {
-          // For callback based calls change the result to a vector with
-          // multiple arguments by appending "bar" to the end.
-          std::vector<v8::Local<v8::Value>> new_args{
-              result_args[0], gin::StringToV8(context->GetIsolate(), "bar")};
-          return new_args;
-        }
-        return result_args;
-      };
+  auto result_modifier = [&total_modifier_call_count](
+                             const v8::LocalVector<v8::Value>& result_args,
+                             v8::Local<v8::Context> context,
+                             binding::AsyncResponseType async_type) {
+    total_modifier_call_count++;
+    if (async_type == binding::AsyncResponseType::kCallback) {
+      // For callback based calls change the result to a vector with
+      // multiple arguments by appending "bar" to the end.
+      v8::LocalVector<v8::Value> new_args(
+          context->GetIsolate(),
+          {result_args[0], gin::StringToV8(context->GetIsolate(), "bar")});
+      return new_args;
+    }
+    return result_args;
+  };
 
   auto hook_with_result_modifier =
       [&result_modifier](const APISignature* signature,
                          v8::Local<v8::Context> context,
-                         std::vector<v8::Local<v8::Value>>* arguments,
+                         v8::LocalVector<v8::Value>* arguments,
                          const APITypeReferenceMap& ref_map) {
         APIBindingHooks::RequestResult result(
             APIBindingHooks::RequestResult::NOT_HANDLED,
@@ -2119,24 +2116,24 @@ TEST_F(APIBindingUnittest, TestHooksWithResultModifierAndJSHook) {
   // Register a native hook for test.supportsPromises with a result modifier
   // that changes the result when the async response type is callback based.
   auto hooks = std::make_unique<APIBindingHooksTestDelegate>();
-  auto result_modifier =
-      [](const std::vector<v8::Local<v8::Value>>& result_args,
-         v8::Local<v8::Context> context,
-         binding::AsyncResponseType async_type) {
-        if (async_type == binding::AsyncResponseType::kCallback) {
-          // For callback based calls change the result to a vector with
-          // multiple arguments by appending "bar" to the end.
-          std::vector<v8::Local<v8::Value>> new_args{
-              result_args[0], gin::StringToV8(context->GetIsolate(), "bar")};
-          return new_args;
-        }
-        return result_args;
-      };
+  auto result_modifier = [](const v8::LocalVector<v8::Value>& result_args,
+                            v8::Local<v8::Context> context,
+                            binding::AsyncResponseType async_type) {
+    if (async_type == binding::AsyncResponseType::kCallback) {
+      // For callback based calls change the result to a vector with
+      // multiple arguments by appending "bar" to the end.
+      v8::LocalVector<v8::Value> new_args(
+          context->GetIsolate(),
+          {result_args[0], gin::StringToV8(context->GetIsolate(), "bar")});
+      return new_args;
+    }
+    return result_args;
+  };
 
   auto hook_with_result_modifier =
       [&result_modifier](const APISignature* signature,
                          v8::Local<v8::Context> context,
-                         std::vector<v8::Local<v8::Value>>* arguments,
+                         v8::LocalVector<v8::Value>* arguments,
                          const APITypeReferenceMap& ref_map) {
         APIBindingHooks::RequestResult result(
             APIBindingHooks::RequestResult::NOT_HANDLED,

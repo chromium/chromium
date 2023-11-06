@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDomainExceptionList": []
+        },
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "ProfileSeparationDomainExceptionList": [
+            "domain",
+            "otherdomain"
+          ]
+        },
+        "prefs": {
+          "profile_separation.domain_exception_list": {
+            "value": [
+              "domain",
+              "otherdomain"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

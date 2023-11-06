@@ -4,6 +4,7 @@
 
 #include "ui/gfx/win/d3d_shared_fence.h"
 
+#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 
@@ -22,6 +23,20 @@ Microsoft::WRL::ComPtr<ID3D11DeviceContext4> GetDeviceContext4(
     return nullptr;
   }
   return context4;
+}
+
+base::win::ScopedHandle DuplicateSharedHandle(HANDLE shared_handle) {
+  const base::ProcessHandle process = ::GetCurrentProcess();
+  HANDLE duplicated_handle = INVALID_HANDLE_VALUE;
+  const BOOL result =
+      ::DuplicateHandle(process, shared_handle, process, &duplicated_handle, 0,
+                        FALSE, DUPLICATE_SAME_ACCESS);
+  if (!result) {
+    const DWORD last_error = ::GetLastError();
+    base::debug::Alias(&last_error);
+    CHECK(false);
+  }
+  return base::win::ScopedHandle(duplicated_handle);
 }
 }  // namespace
 
@@ -51,8 +66,8 @@ scoped_refptr<D3DSharedFence> D3DSharedFence::CreateForD3D11(
                 << std::hex << hr;
     return nullptr;
   }
-  auto fence = base::WrapRefCounted(
-      new D3DSharedFence(base::win::ScopedHandle(shared_handle)));
+  auto fence = base::WrapRefCounted(new D3DSharedFence(
+      base::win::ScopedHandle(shared_handle), DXGIHandleToken()));
   fence->d3d11_device_ = std::move(d3d11_device);
   fence->d3d11_signal_fence_ = std::move(d3d11_fence);
   return fence;
@@ -71,21 +86,23 @@ bool D3DSharedFence::IsSupported(ID3D11Device* d3d11_device) {
 }
 
 // static
-scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromHandle(
-    HANDLE shared_handle) {
-  HANDLE dup_handle = nullptr;
-  if (!::DuplicateHandle(::GetCurrentProcess(), shared_handle,
-                         ::GetCurrentProcess(), &dup_handle, 0, FALSE,
-                         DUPLICATE_SAME_ACCESS)) {
-    DLOG(ERROR) << "DuplicateHandle failed: 0x" << std::hex << ::GetLastError();
-    return nullptr;
-  }
+scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromScopedHandle(
+    base::win::ScopedHandle fence_handle,
+    const DXGIHandleToken& fence_token) {
   return base::WrapRefCounted(
-      new D3DSharedFence(base::win::ScopedHandle(dup_handle)));
+      new D3DSharedFence(std::move(fence_handle), fence_token));
 }
 
-D3DSharedFence::D3DSharedFence(base::win::ScopedHandle shared_handle)
+scoped_refptr<D3DSharedFence> D3DSharedFence::CreateFromUnownedHandle(
+    HANDLE shared_handle) {
+  return base::WrapRefCounted(new D3DSharedFence(
+      DuplicateSharedHandle(shared_handle), DXGIHandleToken()));
+}
+
+D3DSharedFence::D3DSharedFence(base::win::ScopedHandle shared_handle,
+                               const DXGIHandleToken& dxgi_token)
     : shared_handle_(std::move(shared_handle)),
+      dxgi_token_(dxgi_token),
       d3d11_wait_fence_map_(kMaxD3D11FenceMapSize) {}
 
 D3DSharedFence::~D3DSharedFence() = default;
@@ -94,8 +111,16 @@ HANDLE D3DSharedFence::GetSharedHandle() const {
   return shared_handle_.get();
 }
 
+base::win::ScopedHandle D3DSharedFence::CloneSharedHandle() {
+  return DuplicateSharedHandle(shared_handle_.get());
+}
+
 uint64_t D3DSharedFence::GetFenceValue() const {
   return fence_value_;
+}
+
+const DXGIHandleToken& D3DSharedFence::GetDXGIHandleToken() const {
+  return dxgi_token_;
 }
 
 Microsoft::WRL::ComPtr<ID3D11Device> D3DSharedFence::GetD3D11Device() const {

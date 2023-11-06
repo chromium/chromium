@@ -318,8 +318,8 @@ class JourneyLogger {
   // logging of all the journey metrics.
   void SetCompleted();
 
-  // Records that the Payment Request was aborted along with the reason. Also
-  // starts the logging of all the journey metrics.
+  // Records that the Payment Request was aborted. This counts as a completion,
+  // starting the logging of all the journey metrics.
   void SetAborted(AbortReason reason);
 
   // Records that the Payment Request was not shown to the user, along with the

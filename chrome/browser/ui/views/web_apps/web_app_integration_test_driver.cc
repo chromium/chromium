@@ -1655,18 +1655,7 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   ASSERT_TRUE(intent_picker_view()->GetVisible());
   BrowserAddedWaiter browser_added_waiter;
 
-  if (IntentPickerBubbleView::intent_picker_bubble()) {
-    // This means that the intent_picker_bubble has shown up before the scoped
-    // response was provided. Manually accept the bubble.
-    IntentPickerBubbleView::intent_picker_bubble()->AcceptDialog();
-  } else {
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        IntentPickerBubbleView::kViewClassName);
-    intent_picker_view()->ExecuteForTesting();
-    waiter.WaitIfNeededAndGet();
-  }
-
+  intent_picker_view()->ExecuteForTesting();
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
@@ -3418,7 +3407,7 @@ void WebAppIntegrationTestDriver::CheckWindowCreated() {
       GetStateForProfile(before_state_change_action_state_.get(), profile());
   ASSERT_TRUE(after_action_profile.has_value());
   ASSERT_TRUE(before_action_profile.has_value());
-  EXPECT_GT(after_action_profile->browsers.size(),
+  ASSERT_GT(after_action_profile->browsers.size(),
             before_action_profile->browsers.size())
       << "Before: \n"
       << *before_state_change_action_state_ << "\nAfter:\n"

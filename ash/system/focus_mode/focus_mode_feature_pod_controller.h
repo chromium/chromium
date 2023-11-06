@@ -13,7 +13,6 @@
 
 namespace ash {
 
-class FeaturePodButton;
 class UnifiedSystemTrayController;
 
 // Controller of the feature pod button that allows users to toggle whether
@@ -31,7 +30,6 @@ class ASH_EXPORT FocusModeFeaturePodController
   ~FocusModeFeaturePodController() override;
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;

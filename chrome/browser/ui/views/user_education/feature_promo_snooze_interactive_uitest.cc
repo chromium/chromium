@@ -312,7 +312,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, EndPromoSetsPrefs) {
       AttemptIPH(true), Do(base::BindLambdaForTesting([this]() {
         promo_controller_->EndPromo(
             kSnoozeTestFeature,
-            user_education::FeaturePromoCloseReason::kAbortPromo);
+            user_education::EndFeaturePromoReason::kAbortPromo);
       })),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),

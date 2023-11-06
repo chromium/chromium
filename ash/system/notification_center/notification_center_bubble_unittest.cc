@@ -7,7 +7,6 @@
 #include <cstdint>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -18,16 +17,12 @@
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/notification_center/notification_list_view.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
-#include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 
@@ -43,21 +38,14 @@ class NotificationCenterBubbleTest : public AshTestBase {
   ~NotificationCenterBubbleTest() override = default;
 
   void SetUp() override {
-    // Enable quick settings revamp feature.
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
-
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 

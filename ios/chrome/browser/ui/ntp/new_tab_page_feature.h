@@ -30,13 +30,6 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 // TODO(crbug.com/1262536): Remove this when it is fixed.
 BASE_DECLARE_FEATURE(kEnableNTPViewHierarchyRepair);
 
-// Feature flag to enable checking feed visibility on attention log start.
-BASE_DECLARE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart);
-
-// Feature flag to enable refining data source reload reporting when having a
-// very short attention log.
-BASE_DECLARE_FEATURE(kEnableRefineDataSourceReloadReporting);
-
 // Flag to modify the feed header through the server. Enabling this feature on
 // its own does nothing; relies on feature parameters.
 BASE_DECLARE_FEATURE(kFeedHeaderSettings);
@@ -117,13 +110,6 @@ int FeedSyncPromoAutodismissCount();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
-
-// YES if enabled checking feed visibility on attention log start.
-bool IsCheckVisibilityOnAttentionLogStartEnabled();
-
-// YES if enabled refining data source reload reporting when having a very short
-// attention log.
-bool IsRefineDataSourceReloadReportingEnabled();
 
 // YES if the Following feed header should not be sticky.
 bool IsStickyHeaderDisabledForFollowingFeed();

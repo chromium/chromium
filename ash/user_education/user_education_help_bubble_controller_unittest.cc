@@ -113,8 +113,7 @@ class UserEducationHelpBubbleControllerTest : public UserEducationAshTestBase {
     // education feature is enabled. Controller existence is verified in test
     // coverage for the controller's owner.
     std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.emplace_back(features::kCaptureModeTour);
-    enabled_features.emplace_back(features::kHoldingSpaceTour);
+    enabled_features.emplace_back(features::kHoldingSpaceWallpaperNudge);
     enabled_features.emplace_back(features::kWelcomeTour);
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }

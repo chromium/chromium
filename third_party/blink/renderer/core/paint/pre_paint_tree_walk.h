@@ -71,10 +71,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
     PaintInvalidatorContext paint_invalidator_context;
 
-    // The ancestor in the PaintLayer tree which is a scroll container. Note
-    // that it is tree ancestor, not containing block or stacking ancestor.
-    PaintLayer* ancestor_scroll_container_paint_layer = nullptr;
-
     // Whether there is a blocking touch event handler on any ancestor.
     bool inside_blocking_touch_event_handler = false;
 
@@ -206,6 +202,7 @@ class CORE_EXPORT PrePaintTreeWalk final {
   // Walk any missed children (i.e. those collected by CollectMissableChildren()
   // and not walked by Walk()) after child object traversal.
   void WalkMissedChildren(const NGPhysicalBoxFragment&,
+                          bool is_in_fragment_traversal,
                           const PrePaintTreeWalkContext&);
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,

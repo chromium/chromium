@@ -1,0 +1,61 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "check_for_mandatory": false,
+            "check_for_recommended": true,
+            "value": false
+          },
+          "ash.dark_mode.schedule_type": {
+            "check_for_mandatory": false,
+            "check_for_recommended": true,
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "dark"
+        },
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "value": true
+          },
+          "ash.dark_mode.schedule_type": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "light"
+        },
+        "prefs": {
+          "ash.dark_mode.enabled": {
+            "value": false
+          },
+          "ash.dark_mode.schedule_type": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "OsColorMode": "auto"
+        },
+        "prefs": {
+          "ash.dark_mode.schedule_type": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

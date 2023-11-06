@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget_utils.h"
 
 // Check that the location bar background (and the background of the textfield
 // it contains) changes when it receives focus, and matches the popup background
@@ -56,4 +59,23 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
     EXPECT_EQ(color_before_focus, location_bar()->background()->get_color());
     EXPECT_EQ(color_before_focus, omnibox_view()->GetBackgroundColor());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       ClosePopupOnInactiveAreaClick) {
+  if (!base::FeatureList::IsEnabled(
+          features::kCloseOmniboxPopupOnInactiveAreaClick)) {
+    return;
+  }
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ui::test::EventGenerator event_generator(
+      views::GetRootWindow(browser_view->GetWidget()),
+      browser_view->GetNativeWindow());
+  CreatePopupForTestQuery();
+  event_generator.MoveMouseTo(
+      browser_view->tabstrip()->tab_at(0)->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
+  EXPECT_TRUE(omnibox_view()->HasFocus());
+  EXPECT_FALSE(omnibox_view()->GetText().empty());
+  EXPECT_FALSE(popup_view()->IsOpen());
 }

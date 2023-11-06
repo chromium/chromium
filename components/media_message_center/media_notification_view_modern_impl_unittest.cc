@@ -209,20 +209,6 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
     view()->GetFocusManager()->OnKeyEvent(pressed_tab);
   }
 
-  void ExpectHistogramArtworkRecorded(bool present, int count) {
-    histogram_tester_.ExpectBucketCount(
-        MediaNotificationViewModernImpl::kArtworkHistogramName,
-        static_cast<base::HistogramBase::Sample>(present), count);
-  }
-
-  void ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata metadata,
-      int count) {
-    histogram_tester_.ExpectBucketCount(
-        MediaNotificationViewModernImpl::kMetadataHistogramName,
-        static_cast<base::HistogramBase::Sample>(metadata), count);
-  }
-
  private:
   void NotifyUpdatedActions() { view_->UpdateWithMediaActions(actions_); }
 
@@ -469,13 +455,6 @@ TEST_F(MediaNotificationViewModernImplTest, MetadataIsDisplayed) {
 TEST_F(MediaNotificationViewModernImplTest, UpdateMetadata_FromObserver) {
   EnableAllActions();
 
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kTitle, 1);
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kSource, 1);
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kCount, 1);
-
   media_session::MediaMetadata metadata;
   metadata.title = u"title2";
   metadata.source_title = u"source title2";
@@ -493,13 +472,6 @@ TEST_F(MediaNotificationViewModernImplTest, UpdateMetadata_FromObserver) {
   EXPECT_EQ(metadata.source_title, subtitle_label()->GetText());
 
   EXPECT_EQ(u"title2 - artist2 - album", accessible_name());
-
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kTitle, 2);
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kSource, 2);
-  ExpectHistogramMetadataRecorded(
-      MediaNotificationViewModernImpl::Metadata::kCount, 2);
 }
 
 TEST_F(MediaNotificationViewModernImplTest, ActionButtonsHiddenByDefault) {
@@ -536,8 +508,6 @@ TEST_F(MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
 
   view()->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(image));
 
-  ExpectHistogramArtworkRecorded(true, 1);
-
   // The size of the labels container should not change when there is artwork.
   EXPECT_EQ(labels_container_width, title_label()->parent()->width());
 
@@ -553,8 +523,6 @@ TEST_F(MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
 
   view()->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(SkBitmap()));
-
-  ExpectHistogramArtworkRecorded(false, 1);
 
   // Ensure the labels container goes back to the original width now that we
   // do not have any artwork.

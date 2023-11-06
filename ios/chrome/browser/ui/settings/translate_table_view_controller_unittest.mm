@@ -18,7 +18,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -35,17 +35,18 @@ const char kBlockedSite[] = "http://blockedsite.com";
 const char kLanguage1[] = "klingon";
 const char kLanguage2[] = "pirate";
 
-class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
+class TranslateTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   TranslateTableViewControllerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
 
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     pref_service_ = CreateLocalState();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[TranslateTableViewController alloc]
         initWithPrefs:pref_service_.get()];
   }
@@ -66,7 +67,7 @@ class TranslateTableViewControllerTest : public ChromeTableViewControllerTest {
   void TearDown() override {
     [base::apple::ObjCCastStrict<TranslateTableViewController>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
   base::test::TaskEnvironment task_environment_;

@@ -55,12 +55,6 @@ bool BrowsingDataLifetimePolicyHandler::CheckPolicySettings(
     return true;
   }
 
-  if (!browsing_data::IsPolicyDependencyEnabled()) {
-    errors->AddError(policy_name(), IDS_POLICY_DEPENDENCY_ERROR,
-                     policy::key::kSyncDisabled, "true");
-    return false;
-  }
-
 // BrowserSignin policy is not available on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
   const auto* browser_signin_disabled = policies.GetValue(
@@ -88,12 +82,12 @@ void BrowsingDataLifetimePolicyHandler::ApplyPolicySettings(
     PrefValueMap* prefs) {
   SimpleSchemaValidatingPolicyHandler::ApplyPolicySettings(policies, prefs);
 
-  if (browsing_data::IsPolicyDependencyEnabled()) {
-    std::string log_message = browsing_data::DisableSyncTypes(
-        forced_disabled_sync_types_, prefs, policy_name());
-    if (!log_message.empty()) {
-      LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
-    }
+  // `forced_disabled_sync_types_` will be empty if either SyncDisabled or
+  // BrowserSignin policy was set.
+  std::string log_message = browsing_data::DisableSyncTypes(
+      forced_disabled_sync_types_, prefs, policy_name());
+  if (!log_message.empty()) {
+    LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
   }
 }
 

@@ -38,9 +38,7 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
 
-/**
- * Tests for {@link NotificationPermissionUpdater}.
- */
+/** Tests for {@link NotificationPermissionUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -50,8 +48,7 @@ public class NotificationPermissionUpdaterTest {
     private static final String PACKAGE_NAME = "com.package.name";
     private static final String OTHER_PACKAGE_NAME = "com.other.package.name";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock public InstalledWebappPermissionManager mPermissionManager;
     @Mock public TrustedWebActivityClient mTrustedWebActivityClient;
@@ -59,8 +56,7 @@ public class NotificationPermissionUpdaterTest {
     private NotificationPermissionUpdater mNotificationPermissionUpdater;
     private ShadowPackageManager mShadowPackageManager;
 
-    @ContentSettingValues
-    private int mNotificationPermission;
+    @ContentSettingValues private int mNotificationPermission;
 
     @Before
     public void setUp() {
@@ -183,12 +179,15 @@ public class NotificationPermissionUpdaterTest {
     /** "Installs" a Trusted Web Activity Service for the origin. */
     @SuppressWarnings("unchecked")
     private void installTrustedWebActivityService(Origin origin, String packageName) {
-        doAnswer(invocation -> {
-            TrustedWebActivityClient.PermissionCallback callback = invocation.getArgument(1);
-            callback.onPermission(
-                    new ComponentName(packageName, "FakeClass"), mNotificationPermission);
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            TrustedWebActivityClient.PermissionCallback callback =
+                                    invocation.getArgument(1);
+                            callback.onPermission(
+                                    new ComponentName(packageName, "FakeClass"),
+                                    mNotificationPermission);
+                            return true;
+                        })
                 .when(mTrustedWebActivityClient)
                 .checkNotificationPermission(eq(origin.toString()), any());
     }
@@ -198,11 +197,13 @@ public class NotificationPermissionUpdaterTest {
     }
 
     private void uninstallTrustedWebActivityService(Origin origin) {
-        doAnswer(invocation -> {
-            TrustedWebActivityClient.PermissionCallback callback = invocation.getArgument(1);
-            callback.onNoTwaFound();
-            return true;
-        })
+        doAnswer(
+                        invocation -> {
+                            TrustedWebActivityClient.PermissionCallback callback =
+                                    invocation.getArgument(1);
+                            callback.onNoTwaFound();
+                            return true;
+                        })
                 .when(mTrustedWebActivityClient)
                 .checkNotificationPermission(eq(origin.toString()), any());
     }
@@ -218,8 +219,11 @@ public class NotificationPermissionUpdaterTest {
 
     private void verifyPermissionUpdated(String packageName, @ContentSettingValues int permission) {
         verify(mPermissionManager)
-                .updatePermission(eq(ORIGIN), eq(packageName),
-                        eq(ContentSettingsType.NOTIFICATIONS), eq(permission));
+                .updatePermission(
+                        eq(ORIGIN),
+                        eq(packageName),
+                        eq(ContentSettingsType.NOTIFICATIONS),
+                        eq(permission));
     }
 
     private void verifyPermissionUnregistered() {

@@ -20,6 +20,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+namespace x11 {
+class Connection;
+}
+
 namespace ui {
 
 class OSExchangeDataProviderX11Test;
@@ -133,7 +137,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XOSExchangeDataProvider
   gfx::Vector2d drag_image_offset_;
 
   // Our X11 state.
-  raw_ptr<x11::Connection> connection_;
+  raw_ref<x11::Connection> connection_;
   x11::Window x_root_window_;
 
   // In X11, because the IPC parts of drag operations are implemented by

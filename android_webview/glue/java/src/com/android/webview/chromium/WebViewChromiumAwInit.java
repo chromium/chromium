@@ -239,9 +239,9 @@ public class WebViewChromiumAwInit {
                 mAwProxyController = new AwProxyController();
             }
 
-            if (BuildInfo.isAtLeastT()
-                            ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
-                            : BuildInfo.targetsAtLeastT()) {
+            if ((Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    ? CompatChanges.isChangeEnabled(WebSettings.ENABLE_SIMPLIFIED_DARK_MODE)
+                    : BuildInfo.targetsAtLeastT()) {
                 AwDarkMode.enableSimplifiedDarkMode();
             }
 

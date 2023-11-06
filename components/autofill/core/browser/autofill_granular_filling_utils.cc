@@ -39,14 +39,14 @@ ServerFieldTypeSet GetServerFieldsForFieldGroup(FieldTypeGroup group) {
 }  // namespace
 
 AutofillFillingMethod GetFillingMethodFromTargetedFields(
-    const ServerFieldTypeSet& targeted_fields) {
-  if (targeted_fields == kAllServerFieldTypes) {
+    const ServerFieldTypeSet& targeted_field_types) {
+  if (targeted_field_types == kAllServerFieldTypes) {
     return AutofillFillingMethod::kFullForm;
   }
-  if (AreFieldsGranularFillingGroup(targeted_fields)) {
+  if (AreFieldsGranularFillingGroup(targeted_field_types)) {
     return AutofillFillingMethod::kGroupFilling;
   }
-  if (targeted_fields.size() == 1) {
+  if (targeted_field_types.size() == 1) {
     return AutofillFillingMethod::kFieldByFieldFilling;
   }
   return AutofillFillingMethod::kNone;
@@ -59,16 +59,17 @@ ServerFieldTypeSet GetAddressFieldsForGroupFilling() {
   return fields;
 }
 
-bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& fields) {
-  return fields == GetAddressFieldsForGroupFilling() ||
-         fields == GetServerFieldTypesOfGroup(FieldTypeGroup::kName) ||
-         fields == GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
+bool AreFieldsGranularFillingGroup(const ServerFieldTypeSet& field_types) {
+  return field_types == GetAddressFieldsForGroupFilling() ||
+         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kName) ||
+         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail) ||
+         field_types == GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone);
 }
 
 ServerFieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(
-    const ServerFieldTypeSet& last_targeted_fields,
+    const ServerFieldTypeSet& last_targeted_field_types,
     ServerFieldType triggering_field_type) {
-  switch (GetFillingMethodFromTargetedFields(last_targeted_fields)) {
+  switch (GetFillingMethodFromTargetedFields(last_targeted_field_types)) {
     case AutofillFillingMethod::kGroupFilling:
       return GetServerFieldsForFieldGroup(
           GroupTypeOfServerFieldType(triggering_field_type));

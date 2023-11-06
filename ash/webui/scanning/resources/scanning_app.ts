@@ -68,7 +68,7 @@ const ScanningAppElementBase = CrContainerShadowMixin(
   new (): PolymerElement & I18nMixinInterface & CrContainerShadowMixinInterface,
 };
 
-class ScanningAppElement extends ScanningAppElementBase implements
+export class ScanningAppElement extends ScanningAppElementBase implements
     ScanJobObserverInterface {
   static get is() {
     return 'scanning-app' as const;

@@ -13,6 +13,7 @@ source_set("bulk_upload") {
   ]
   deps = [
     ":bulk_upload_ui",
+    ":constants",
     "//base",
     "//components/signin/public/identity_manager/objc",
     "//components/sync/base",
@@ -25,16 +26,22 @@ source_set("bulk_upload") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/common/ui/reauthentication",
     "//ios/third_party/material_components_ios",
     "//ui/base",
   ]
 }
 
-source_set("bulk_upload_ui") {
+source_set("constants") {
   sources = [
     "bulk_upload_constants.h",
     "bulk_upload_constants.mm",
+  ]
+}
+
+source_set("bulk_upload_ui") {
+  sources = [
     "bulk_upload_consumer.h",
     "bulk_upload_mutator.h",
     "bulk_upload_table_view_controller.h",
@@ -44,6 +51,7 @@ source_set("bulk_upload_ui") {
     "bulk_upload_view_controller_presentation_delegate.h",
   ]
   deps = [
+    ":constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",

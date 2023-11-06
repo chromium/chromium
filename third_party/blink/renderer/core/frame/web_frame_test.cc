@@ -5931,7 +5931,8 @@ TEST_F(WebFrameTest, SelectRangeDefaultHandleVisibility) {
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   frame->SelectRange(WebRange(0, 5), WebLocalFrame::kHideSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
   EXPECT_FALSE(frame->SelectionRange().IsNull());
 
   EXPECT_FALSE(frame->GetFrame()->Selection().IsHandleVisible())
@@ -5947,7 +5948,8 @@ TEST_F(WebFrameTest, SelectRangeHideHandle) {
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   frame->SelectRange(WebRange(0, 5), WebLocalFrame::kHideSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
 
   EXPECT_FALSE(frame->GetFrame()->Selection().IsHandleVisible())
       << "Selection handle should not be visible with kHideSelectionHandle";
@@ -5962,7 +5964,8 @@ TEST_F(WebFrameTest, SelectRangeShowHandle) {
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   frame->SelectRange(WebRange(0, 5), WebLocalFrame::kShowSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
 
   EXPECT_TRUE(frame->GetFrame()->Selection().IsHandleVisible())
       << "Selection handle should be visible with kShowSelectionHandle";
@@ -5977,17 +5980,21 @@ TEST_F(WebFrameTest, SelectRangePreserveHandleVisibility) {
 
   WebLocalFrameImpl* frame = web_view_helper.LocalMainFrame();
   frame->SelectRange(WebRange(0, 5), WebLocalFrame::kHideSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
   frame->SelectRange(WebRange(0, 6), WebLocalFrame::kPreserveHandleVisibility,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
 
   EXPECT_FALSE(frame->GetFrame()->Selection().IsHandleVisible())
       << "kPreserveHandleVisibility should keep handles invisible";
 
   frame->SelectRange(WebRange(0, 5), WebLocalFrame::kShowSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
   frame->SelectRange(WebRange(0, 6), WebLocalFrame::kPreserveHandleVisibility,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
 
   EXPECT_TRUE(frame->GetFrame()->Selection().IsHandleVisible())
       << "kPreserveHandleVisibility should keep handles visible";
@@ -7009,7 +7016,8 @@ TEST_F(WebFrameTest, ReplaceMisspelledRange) {
   const int kAllTextLength = 11;
   frame->SelectRange(WebRange(kAllTextBeginOffset, kAllTextLength),
                      WebLocalFrame::kHideSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
   EphemeralRange selection_range = frame->GetFrame()
                                        ->Selection()
                                        .ComputeVisibleSelectionInDOMTree()
@@ -7057,7 +7065,8 @@ TEST_F(WebFrameTest, RemoveSpellingMarkers) {
   const int kAllTextLength = 11;
   frame->SelectRange(WebRange(kAllTextBeginOffset, kAllTextLength),
                      WebLocalFrame::kHideSelectionHandle,
-                     SelectionMenuBehavior::kHide);
+                     SelectionMenuBehavior::kHide,
+                     WebLocalFrame::kSelectionSetFocus);
   EphemeralRange selection_range = frame->GetFrame()
                                        ->Selection()
                                        .ComputeVisibleSelectionInDOMTree()
@@ -7306,9 +7315,7 @@ class TestAccessInitialDocumentLocalFrameHost
                      SetWindowRectCallback callback) override {
     std::move(callback).Run();
   }
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void SetResizable(bool resizable) override {}
-#endif
   void DidFirstVisuallyNonEmptyPaint() override {}
   void DidAccessInitialMainDocument() override {
     ++did_access_initial_main_document_;
@@ -13464,8 +13471,8 @@ TEST_F(WebFrameTest, ContextMenuDataPasswordSelectedText) {
 
   RunPendingTasks();
   web_view_helper.Reset();
-  EXPECT_EQ(frame.GetMenuData().input_field_type,
-            blink::mojom::ContextMenuDataInputFieldType::kPassword);
+  EXPECT_EQ(frame.GetMenuData().form_control_type,
+            blink::mojom::FormControlType::kInputPassword);
   EXPECT_FALSE(frame.GetMenuData().selected_text.empty());
 }
 
@@ -14506,8 +14513,8 @@ TEST_F(WebFrameSimTest, SetModifiedFeaturesInOverrideContext) {
 
   // Create a modified features value map and give it a value that we can check.
   auto modified_features =
-      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
-  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = true;
+      base::flat_map<::blink::mojom::RuntimeFeature, bool>();
+  modified_features[blink::mojom::RuntimeFeature::kTestFeature] = true;
   params->modified_runtime_features = modified_features;
 
   // Commit the navigation
@@ -14522,9 +14529,8 @@ TEST_F(WebFrameSimTest, SetModifiedFeaturesInOverrideContext) {
   // Do the same thing for a value of "false"
   params = std::make_unique<WebNavigationParams>();
   params->url = url_test_helpers::ToKURL("http://www.example2.com");
-  modified_features =
-      base::flat_map<::blink::mojom::RuntimeFeatureState, bool>();
-  modified_features[blink::mojom::RuntimeFeatureState::kTestFeature] = false;
+  modified_features = base::flat_map<::blink::mojom::RuntimeFeature, bool>();
+  modified_features[blink::mojom::RuntimeFeature::kTestFeature] = false;
   params->modified_runtime_features = modified_features;
   frame->CommitNavigation(std::move(params), nullptr);
   override_context =

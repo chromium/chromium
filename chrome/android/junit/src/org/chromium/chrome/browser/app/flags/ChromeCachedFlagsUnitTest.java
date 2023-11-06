@@ -14,13 +14,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.BaseFlagTestRule;
 
-/**
- * Unit Tests for {@link ChromeCachedFlags}.
- */
+/** Unit Tests for {@link ChromeCachedFlags}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeCachedFlagsUnitTest {
-    @Rule
-    public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
 
     @Test
     public void testGetLastCachedMinimalBrowserFlagsTimeMillis() {

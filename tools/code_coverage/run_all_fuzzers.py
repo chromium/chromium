@@ -22,8 +22,9 @@ def _run_fuzzer_target(args):
   Parameters:
     args[0]: Name of the fuzzer target.
     args[1]: Command to be run.
-    args[2]: A multiprocessing.Manager.list for names of successful fuzzers.
-    args[3]: A multiprocessing.Manager.list for names of failed fuzzers.
+    args[2]: Environment variables.
+    args[3]: A multiprocessing.Manager.list for names of successful fuzzers.
+    args[4]: A multiprocessing.Manager.list for names of failed fuzzers.
 
   Returns:
     None.
@@ -129,7 +130,12 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
     incomplete_targets.append(fuzzer_target)
   else:
     subprocess_cmd = [
-        fuzzer_target_binpath, '-runs=0', fuzzer_target_corporadir
+        # RSS limit 8GB. Some of our fuzzers which involve running significant
+        # chunks of Chromium code require more than the 2GB default.
+        fuzzer_target_binpath,
+        '-runs=0',
+        '-rss_limit_mb=8192',
+        fuzzer_target_corporadir
     ]
     profraw_file = fuzzer_target + ".profraw"
     profraw_path = os.path.join(reportdir, profraw_file)
@@ -137,6 +143,23 @@ for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
     targets.append(fuzzer_target)
     commands.append(subprocess_cmd)
     envs.append(env)
+
+# We also want to run ./chrome without a valid X server.
+# It will almost immediately exit.
+# This runs essentially no Chrome code, so will result in all the lines
+# of code in the Chrome binary being marked as 0 in the code coverage
+# report. Without doing this step, many of the files of Chrome source
+# code simply don't appear in the coverage report at all.
+chrome_target_binpath = os.path.join(args.fuzzer_binaries_dir, "chrome")
+if not os.path.isfile(chrome_target_binpath):
+  print('Could not find binary file for Chrome itself')
+else:
+  profraw_file = chrome_target_binpath + ".profraw"
+  profraw_path = os.path.join(reportdir, profraw_file)
+  env = {'LLVM_PROFILE_FILE': profraw_path, 'DISPLAY': 'not-a-real-display'}
+  targets.append(chrome_target_binpath)
+  commands.append([chrome_target_binpath])
+  envs.append(env)
 
 # Run the fuzzers in parallel.
 cpu_count = int(cpu_count())

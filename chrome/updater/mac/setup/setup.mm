@@ -174,7 +174,8 @@ bool EnsureWakeLaunchItemPresence(UpdaterScope scope, NSDictionary* contents) {
       OSStatus ls_result = LSRegisterURL(
           base::apple::FilePathToCFURL(
               install_path->Append("Current").Append(base::StrCat(
-                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"}))),
+                  {PRODUCT_FULLNAME_STRING, kExecutableSuffix, ".app"})))
+              .get(),
           true);
       VLOG_IF(1, ls_result != noErr) << "LSRegisterURL failed: " << ls_result;
     } else {
@@ -343,6 +344,10 @@ int Uninstall(UpdaterScope scope) {
         base::DeleteFile(launch_agent_dir.Append(base::ToLowerASCII(
             LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
   }
+
+  // Delete the updater's caches. On Mac, this is different from the
+  // install directory.
+  DeleteFolder(GetCacheBaseDirectory(scope));
   // Deleting the install folder is best-effort. Current running processes such
   // as the crash handler process may still write to the updater log file, thus
   // it is not always possible to delete the data folder.

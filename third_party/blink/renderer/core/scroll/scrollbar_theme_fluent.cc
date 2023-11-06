@@ -6,6 +6,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
+#include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -40,28 +41,25 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
   }
   // Hit testable invisible border around the scrollbar's track.
   scrollbar_track_inset_ = theme_engine->GetPaintedScrollbarTrackInset();
-  scrollbar_track_thickness_ -= 2 * scrollbar_track_inset_;
+
+  WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
+      &style_);
+  if (WebTestSupport::IsRunningWebTest()) {
+    style_.fade_out_delay = base::TimeDelta();
+    style_.fade_out_duration = base::TimeDelta();
+  }
 }
 
-int ScrollbarThemeFluent::ScrollbarThickness(float scale_from_dip,
-                                             EScrollbarWidth scrollbar_width) {
-  // The difference between track's and thumb's thicknesses should always be
-  // even to have equal thumb offsets from both sides so the thumb can remain
-  // in the middle of the track. Add one pixel if the difference is odd.
-  // TODO(https://crbug.com/1479169): Use ClampRound instead of ClampFloor.
-  int scrollbar_thickness =
-      base::ClampFloor(scrollbar_track_thickness_ * scale_from_dip);
-  if (UsesOverlayScrollbars()) {
-    scrollbar_thickness += 2 * ScrollbarTrackInsetPx(scale_from_dip);
-  }
-  return (scrollbar_thickness - ThumbThickness(scale_from_dip)) % 2 != 0
-             ? scrollbar_thickness + 1
-             : scrollbar_thickness;
+int ScrollbarThemeFluent::ScrollbarThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
+  return base::ClampRound(scrollbar_track_thickness_ * scale_from_dip);
 }
 
 gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) {
   gfx::Rect thumb_rect = ScrollbarTheme::ThumbRect(scrollbar);
-  const int thumb_thickness = ThumbThickness(scrollbar.ScaleFromDIP());
+  const int thumb_thickness =
+      ThumbThickness(scrollbar.ScaleFromDIP(), scrollbar.CSSScrollbarWidth());
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     thumb_rect.set_height(thumb_thickness);
   } else {
@@ -88,34 +86,55 @@ gfx::Rect ScrollbarThemeFluent::ThumbRect(const Scrollbar& scrollbar) {
   return thumb_rect;
 }
 
-int ScrollbarThemeFluent::ThumbThickness(const float scale_from_dip) const {
-  return static_cast<int>(scrollbar_thumb_thickness_ * scale_from_dip);
-}
-
 gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
   // In cases when scrollbar's frame rect is too small to contain buttons and
   // track, buttons should take all the available space.
   if (scrollbar.Orientation() == kVerticalScrollbar) {
     const int button_width = scrollbar.Width();
-    const int button_height_unclamped =
-        scrollbar_button_length_ * scrollbar.ScaleFromDIP();
-    const int button_height = scrollbar.Height() < 2 * button_height_unclamped
-                                  ? base::ClampFloor(scrollbar.Height() / 2.0f)
-                                  : button_height_unclamped;
+    const int desired_button_height =
+        base::ClampRound(scrollbar_button_length_ * scrollbar.ScaleFromDIP());
+    const int button_height = scrollbar.Height() < 2 * desired_button_height
+                                  ? scrollbar.Height() / 2
+                                  : desired_button_height;
     return gfx::Size(button_width, button_height);
   } else {
     const int button_height = scrollbar.Height();
-    const int button_width_unclamped =
-        scrollbar_button_length_ * scrollbar.ScaleFromDIP();
-    const int button_width = scrollbar.Width() < 2 * button_width_unclamped
-                                 ? base::ClampFloor(scrollbar.Width() / 2.0f)
-                                 : button_width_unclamped;
+    const int desired_button_width =
+        base::ClampRound(scrollbar_button_length_ * scrollbar.ScaleFromDIP());
+    const int button_width = scrollbar.Width() < 2 * desired_button_width
+                                 ? scrollbar.Width() / 2
+                                 : desired_button_width;
     return gfx::Size(button_width, button_height);
   }
 }
 
 bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
   return is_fluent_overlay_scrollbar_enabled_;
+}
+
+bool ScrollbarThemeFluent::UsesFluentOverlayScrollbars() const {
+  return UsesOverlayScrollbars();
+}
+
+base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDelay() const {
+  return style_.fade_out_delay;
+}
+
+base::TimeDelta ScrollbarThemeFluent::OverlayScrollbarFadeOutDuration() const {
+  return style_.fade_out_duration;
+}
+
+int ScrollbarThemeFluent::ThumbThickness(
+    const float scale_from_dip,
+    const EScrollbarWidth scrollbar_width) const {
+  // The difference between track's and thumb's thicknesses should always be
+  // even to have equal thumb offsets from both sides so the thumb can remain
+  // in the middle of the track. Subtract one pixel if the difference is odd.
+  const int thumb_thickness =
+      base::ClampRound(scrollbar_thumb_thickness_ * scale_from_dip);
+  const int scrollbar_thickness =
+      ScrollbarThickness(scale_from_dip, scrollbar_width);
+  return thumb_thickness - ((scrollbar_thickness - thumb_thickness) % 2);
 }
 
 void ScrollbarThemeFluent::PaintTrack(GraphicsContext& context,
@@ -140,7 +159,7 @@ void ScrollbarThemeFluent::PaintButton(GraphicsContext& context,
 }
 
 gfx::Rect ScrollbarThemeFluent::InsetTrackRect(const Scrollbar& scrollbar,
-                                               gfx::Rect rect) {
+                                               gfx::Rect rect) const {
   int scaled_track_inset = ScrollbarTrackInsetPx(scrollbar.ScaleFromDIP());
   if (scrollbar.Orientation() == kHorizontalScrollbar) {
     rect.Inset(gfx::Insets::TLBR(scaled_track_inset, 0, scaled_track_inset, 0));
@@ -152,7 +171,7 @@ gfx::Rect ScrollbarThemeFluent::InsetTrackRect(const Scrollbar& scrollbar,
 
 gfx::Rect ScrollbarThemeFluent::InsetButtonRect(const Scrollbar& scrollbar,
                                                 gfx::Rect rect,
-                                                ScrollbarPart part) {
+                                                ScrollbarPart part) const {
   int scaled_track_inset = ScrollbarTrackInsetPx(scrollbar.ScaleFromDIP());
   // Inset all sides of the button *except* the one that borders with the
   // scrollbar track.
@@ -176,8 +195,25 @@ gfx::Rect ScrollbarThemeFluent::InsetButtonRect(const Scrollbar& scrollbar,
   return rect;
 }
 
-int ScrollbarThemeFluent::ScrollbarTrackInsetPx(float scale) {
+int ScrollbarThemeFluent::ScrollbarTrackInsetPx(float scale) const {
   return base::ClampRound(scale * scrollbar_track_inset_);
+}
+
+gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
+    Scrollbar& scrollbar,
+    gfx::Rect& rect) const {
+  CHECK(UsesOverlayScrollbars());
+  const float idle_thickness_scale = style_.idle_thickness_scale;
+  if (scrollbar.Orientation() == kHorizontalScrollbar) {
+    rect.set_y(rect.y() + rect.height() * (1 - idle_thickness_scale));
+    rect.set_height(rect.height() * idle_thickness_scale);
+  } else {
+    if (!scrollbar.IsLeftSideVerticalScrollbar()) {
+      rect.set_x(rect.x() + rect.width() * (1 - idle_thickness_scale));
+    }
+    rect.set_width(rect.width() * idle_thickness_scale);
+  }
+  return rect;
 }
 
 }  // namespace blink

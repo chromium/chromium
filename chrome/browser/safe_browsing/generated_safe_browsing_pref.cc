@@ -87,7 +87,7 @@ extensions::api::settings_private::PrefObject
 GeneratedSafeBrowsingPref::GetPrefObject() const {
   extensions::api::settings_private::PrefObject pref_object;
   pref_object.key = kGeneratedSafeBrowsingPref;
-  pref_object.type = extensions::api::settings_private::PREF_TYPE_NUMBER;
+  pref_object.type = extensions::api::settings_private::PrefType::kNumber;
 
   auto safe_browsing_enabled =
       profile_->GetPrefs()->GetBoolean(prefs::kSafeBrowsingEnabled);
@@ -153,7 +153,7 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
 
   if (enabled_enforced) {
     // Preference is fully controlled.
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
         &pref_object, enabled_pref);
     return;
@@ -162,8 +162,7 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
   if (enabled_recommended) {
     // Set enforcement to recommended. This may be upgraded to enforced later
     // in this function.
-    pref_object.enforcement =
-        settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
+    pref_object.enforcement = settings_api::Enforcement::kRecommended;
     if (enhanced_recommended_on) {
       pref_object.recommended_value =
           base::Value(static_cast<int>(SafeBrowsingSetting::ENHANCED));
@@ -179,7 +178,7 @@ void GeneratedSafeBrowsingPref::ApplySafeBrowsingManagementState(
   if (reporting_enforced && !reporting_on) {
     // Reporting has been forcefully disabled by policy. Enhanced protection is
     // thus also implicitly disabled by the same policy.
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
         &pref_object, reporting_pref);
 

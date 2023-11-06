@@ -6,8 +6,11 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
+#include "ash/shell.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
+#include "ash/wm/window_util.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -32,6 +35,13 @@ constexpr char kWindowMinimizedTimeHistogramPrefix[] =
 // Histogram of the delay for window closing operation.
 constexpr char kWindowClosedTimeHistogramPrefix[] =
     "Arc.WM.WindowClosedDelayTime.";
+// Histogram of the delay for window state transition when entering into tablet
+// mode.
+constexpr char kWindowEnterTabletModeTimeHistogramPrefix[] =
+    "Arc.WM.WindowEnterTabletModeDelayTime.";
+// Histogram of the delay for window state transition when exiting tablet mode.
+constexpr char kWindowExitTabletModeTimeHistogramPrefix[] =
+    "Arc.WM.WindowExitTabletModeDelayTime.";
 
 constexpr char kArcHistogramName[] = "ArcApp";
 constexpr char kBrowserHistogramName[] = "Browser";
@@ -83,8 +93,13 @@ class ArcWmMetrics::WindowStateChangeObserver
   void OnPostWindowStateTypeChange(
       ash::WindowState* new_window_state,
       chromeos::WindowStateType old_window_state_type) override {
-    if (old_window_state_type ==
-        chromeos::ToWindowStateType(old_window_show_state_)) {
+    // For non-client-controlled windows, if the window remain maximized after
+    // leaving tablet mode, `OnPostWindowStateTypeChange` is called with both
+    // old state type and new state type equal to `kMaximized`. The histogram
+    // does not record data in this case.
+    if (old_window_state_type != new_window_state->GetStateType() &&
+        old_window_state_type ==
+            chromeos::ToWindowStateType(old_window_show_state_)) {
       RecordWindowStateChangeDelay(new_window_state);
     }
 
@@ -95,18 +110,35 @@ class ArcWmMetrics::WindowStateChangeObserver
   void RecordWindowStateChangeDelay(ash::WindowState* state) {
     const ash::AppType app_type =
         static_cast<ash::AppType>(window_->GetProperty(aura::client::kAppType));
-    if (state->IsMaximized()) {
-      base::UmaHistogramCustomTimes(
-          ArcWmMetrics::GetWindowMaximizedTimeHistogramName(app_type),
-          window_operation_elapsed_timer_.Elapsed(),
-          /*minimum=*/base::Milliseconds(1),
-          /*maximum=*/base::Seconds(2), 100);
-    } else if (state->IsMinimized()) {
-      base::UmaHistogramCustomTimes(
-          ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type),
-          window_operation_elapsed_timer_.Elapsed(),
-          /*minimum=*/base::Milliseconds(1),
-          /*maximum=*/base::Seconds(2), 100);
+    if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+      // When entering tablet mode, we only collect the data of visible window.
+      if (state->IsMaximized() && window_->IsVisible()) {
+        base::UmaHistogramCustomTimes(
+            ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(app_type),
+            window_operation_elapsed_timer_.Elapsed(),
+            /*minimum=*/base::Milliseconds(1),
+            /*maximum=*/base::Seconds(2), 100);
+      }
+    } else {
+      if (state->IsMaximized()) {
+        base::UmaHistogramCustomTimes(
+            ArcWmMetrics::GetWindowMaximizedTimeHistogramName(app_type),
+            window_operation_elapsed_timer_.Elapsed(),
+            /*minimum=*/base::Milliseconds(1),
+            /*maximum=*/base::Seconds(2), 100);
+      } else if (state->IsMinimized()) {
+        base::UmaHistogramCustomTimes(
+            ArcWmMetrics::GetWindowMinimizedTimeHistogramName(app_type),
+            window_operation_elapsed_timer_.Elapsed(),
+            /*minimum=*/base::Milliseconds(1),
+            /*maximum=*/base::Seconds(2), 100);
+      } else if (state->IsNormalStateType()) {
+        base::UmaHistogramCustomTimes(
+            ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(app_type),
+            window_operation_elapsed_timer_.Elapsed(),
+            /*minimum=*/base::Milliseconds(1),
+            /*maximum=*/base::Seconds(2), 100);
+      }
     }
   }
 
@@ -164,6 +196,11 @@ ArcWmMetrics::ArcWmMetrics() {
   if (aura::Env::HasInstance()) {
     env_observation_.Observe(aura::Env::GetInstance());
   }
+
+  if (ash::Shell::HasInstance()) {
+    tablet_mode_observation_.Observe(
+        ash::Shell::Get()->tablet_mode_controller());
+  }
 }
 
 ArcWmMetrics::~ArcWmMetrics() = default;
@@ -186,6 +223,21 @@ std::string ArcWmMetrics::GetWindowMinimizedTimeHistogramName(
 std::string ArcWmMetrics::GetArcWindowClosedTimeHistogramName() {
   const std::string arc_app_type_str = GetAppTypeName(ash::AppType::ARC_APP);
   return base::StrCat({kWindowClosedTimeHistogramPrefix, arc_app_type_str});
+}
+
+// static
+std::string ArcWmMetrics::GetWindowEnterTabletModeTimeHistogramName(
+    ash::AppType app_type) {
+  const std::string app_type_str = GetAppTypeName(app_type);
+  return base::StrCat(
+      {kWindowEnterTabletModeTimeHistogramPrefix, app_type_str});
+}
+
+// static
+std::string ArcWmMetrics::GetWindowExitTabletModeTimeHistogramName(
+    ash::AppType app_type) {
+  const std::string app_type_str = GetAppTypeName(app_type);
+  return base::StrCat({kWindowExitTabletModeTimeHistogramPrefix, app_type_str});
 }
 
 void ArcWmMetrics::OnWindowInitialized(aura::Window* new_window) {
@@ -224,6 +276,10 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
+  if (ash::Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return;
+  }
+
   const auto new_window_show_state =
       window->GetProperty(aura::client::kShowStateKey);
   const auto old_window_show_state = static_cast<ui::WindowShowState>(old);
@@ -234,34 +290,89 @@ void ArcWmMetrics::OnWindowPropertyChanged(aura::Window* window,
     return;
   }
 
-  // When an ARC window is launched, the window show state will be changed from
-  // `SHOW_STATE_DEFAULT` to the target window state. We do not measure this
-  // case.
-  if (static_cast<ash::AppType>(window->GetProperty(aura::client::kAppType)) ==
-          ash::AppType::ARC_APP &&
-      old_window_show_state == ui::WindowShowState::SHOW_STATE_DEFAULT) {
+  if (chromeos::ToWindowShowState(
+          ash::WindowState::Get(window)->GetStateType()) ==
+      new_window_show_state) {
     return;
   }
 
-  if (new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED ||
-      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED) {
+  const bool from_normal_to_maximized =
+      IsNormalWindowStateType(
+          chromeos::ToWindowStateType(old_window_show_state)) &&
+      new_window_show_state == ui::WindowShowState::SHOW_STATE_MAXIMIZED;
+  const bool from_any_to_minimized =
+      new_window_show_state == ui::WindowShowState::SHOW_STATE_MINIMIZED;
+  if (from_normal_to_maximized || from_any_to_minimized) {
     state_change_observing_windows_.emplace(
         window, std::make_unique<WindowStateChangeObserver>(
                     window, old_window_show_state,
                     base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
                                    base::Unretained(this), window)));
   }
+
+  // The WindowExitTabletModeDelayTime histogram only records data when a
+  // maximized window becomes a normal window when exiting tablet mode.
+  // Therefore, if a window remains maximized after entering into clamshell
+  // mode, we do not need to collect data for that window. This filter is only
+  // for client-controlled windows.
+  if (exiting_tablet_mode_observing_windows_.contains(window) &&
+      ash::WindowState::Get(window)->GetStateType() ==
+          chromeos::WindowStateType::kMaximized) {
+    exiting_tablet_mode_observing_windows_.erase(window);
+  }
 }
 
 void ArcWmMetrics::OnWindowDestroying(aura::Window* window) {
   state_change_observing_windows_.erase(window);
+  exiting_tablet_mode_observing_windows_.erase(window);
   if (window_observations_.IsObservingSource(window)) {
     window_observations_.RemoveObservation(window);
   }
 }
 
+void ArcWmMetrics::OnTabletModeStarting() {
+  aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
+  if (!top_window) {
+    return;
+  }
+
+  chromeos::WindowStateType window_state_type =
+      ash::WindowState::Get(top_window)->GetStateType();
+  if (IsNormalWindowStateType(window_state_type)) {
+    state_change_observing_windows_.emplace(
+        top_window,
+        std::make_unique<WindowStateChangeObserver>(
+            top_window, top_window->GetProperty(aura::client::kShowStateKey),
+            base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
+                           base::Unretained(this), top_window)));
+  }
+}
+
+void ArcWmMetrics::OnTabletModeEnding() {
+  aura::Window* top_window = ash::window_util::GetTopNonFloatedWindow();
+  if (!top_window) {
+    return;
+  }
+
+  chromeos::WindowStateType window_state_type =
+      ash::WindowState::Get(top_window)->GetStateType();
+  if (window_state_type == chromeos::WindowStateType::kMaximized) {
+    exiting_tablet_mode_observing_windows_.emplace(
+        top_window,
+        std::make_unique<WindowStateChangeObserver>(
+            top_window, top_window->GetProperty(aura::client::kShowStateKey),
+            base::BindOnce(&ArcWmMetrics::OnOperationCompleted,
+                           base::Unretained(this), top_window)));
+  }
+}
+
+void ArcWmMetrics::OnTabletControllerDestroyed() {
+  tablet_mode_observation_.Reset();
+}
+
 void ArcWmMetrics::OnOperationCompleted(aura::Window* window) {
   state_change_observing_windows_.erase(window);
+  exiting_tablet_mode_observing_windows_.erase(window);
 }
 
 void ArcWmMetrics::OnWindowCloseRequested(aura::Window* window) {

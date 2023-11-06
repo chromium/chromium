@@ -104,7 +104,8 @@ bool IsTesting() {
     // policy is manual.
     if (state.last_vk_visibility_request ==
         ui::mojom::VirtualKeyboardVisibilityRequest::SHOW) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     } else if (state.last_vk_visibility_request ==
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
       [self hideKeyboard];
@@ -116,7 +117,8 @@ bool IsTesting() {
     if (hide) {
       [self hideKeyboard];
     } else if (state.show_ime_if_needed) {
-      [self showKeyboard:!state.value->empty() withBounds:bounds];
+      [self showKeyboard:(state.value && !state.value->empty())
+              withBounds:bounds];
     }
   }
 }
@@ -548,6 +550,10 @@ void RenderWidgetHostViewIOS::Hide() {
 }
 
 bool RenderWidgetHostViewIOS::IsShowing() {
+  // In testing, `view_` is not attached to the window.
+  if (IsTesting()) {
+    return is_visible_;
+  }
   return is_visible_ && [ui_view_->view_ window];
 }
 
@@ -705,6 +711,10 @@ bool RenderWidgetHostViewIOS::RequestRepaintForTesting() {
 
 void RenderWidgetHostViewIOS::TransformPointToRootSurface(gfx::PointF* point) {
   browser_compositor_->TransformPointToRootSurface(point);
+}
+
+bool RenderWidgetHostViewIOS::HasFallbackSurface() const {
+  return browser_compositor_->GetDelegatedFrameHost()->HasFallbackSurface();
 }
 
 bool RenderWidgetHostViewIOS::TransformPointToCoordSpaceForView(
@@ -959,6 +969,10 @@ void RenderWidgetHostViewIOS::GestureEventAck(
     const blink::WebGestureEvent& event,
     blink::mojom::InputEventResultState ack_result,
     blink::mojom::ScrollResultDataPtr scroll_result_data) {
+  // Stop flinging if a GSU event with momentum phase is sent to the renderer
+  // but not consumed.
+  StopFlingingIfNecessary(event, ack_result);
+
   UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin:

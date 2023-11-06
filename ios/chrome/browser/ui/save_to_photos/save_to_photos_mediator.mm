@@ -13,8 +13,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/photos/photos_metrics.h"
-#import "ios/chrome/browser/photos/photos_service.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
+#import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
@@ -26,13 +26,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-NSString* const kGooglePhotosAppProductIdentifier = @"962194608";
-
-NSString* const kGooglePhotosRecentlyAddedURLString =
-    @"https://photos.google.com/search/_tra_?obfsgid=";
-
-NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 NSURL* GetGooglePhotosAppURL() {
   NSURLComponents* photosAppURLComponents = [[NSURLComponents alloc] init];
@@ -58,6 +51,15 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
 }
 
 }  // namespace
+
+NSString* const kGooglePhotosAppProductIdentifier = @"962194608";
+
+NSString* const kGooglePhotosStoreKitCampaignToken = @"chrome-x-photos";
+
+NSString* const kGooglePhotosRecentlyAddedURLString =
+    @"https://photos.google.com/search/_tra_?obfsgid=";
+
+NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 @implementation SaveToPhotosMediator {
   PhotosService* _photosService;
@@ -140,12 +142,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       SaveToPhotosAccountPickerActions::kSelectedIdentity);
   [self.delegate hideAccountPicker];
 
-  // Memorize the account that was picked if the user does not want to be asked
-  // every time.
-  if (!askEveryTime) {
-    _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                            base::SysNSStringToUTF8(identity.gaiaID));
-  }
+  // Memorize the account that was picked and whether to ask which account to
+  // use every time.
+  _prefService->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
+                          base::SysNSStringToUTF8(identity.gaiaID));
+  _prefService->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                           !askEveryTime);
 
   _identity = identity;
 }
@@ -208,10 +210,12 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       _prefService->GetString(prefs::kIosSaveToPhotosDefaultGaiaId);
   id<SystemIdentity> defaultIdentity =
       _accountManagerService->GetIdentityWithGaiaID(defaultGaiaId);
+  bool skipAccountPicker =
+      _prefService->GetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // If the user has already selected a default account to save images to
-  // Photos, use that default.
-  if (defaultIdentity) {
+  // Photos and opted to skip the account picker, use that default.
+  if (skipAccountPicker && defaultIdentity) {
     _identity = defaultIdentity;
     base::UmaHistogramEnumeration(kSaveToPhotosAccountPickerActionsHistogram,
                                   SaveToPhotosAccountPickerActions::kSkipped);
@@ -220,8 +224,9 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   }
 
   // If the memorized account is not found on the device, unmemorize it.
-  if (!defaultGaiaId.empty()) {
+  if (skipAccountPicker) {
     _prefService->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+    _prefService->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
   }
 
   // If no default account can be used, present the account picker instead.
@@ -238,7 +243,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT);
   configuration.askEveryTimeSwitchLabelText = l10n_util::GetNSString(
       IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_ASK_EVERY_TIME);
-  [self.delegate showAccountPickerWithConfiguration:configuration];
+  [self.delegate showAccountPickerWithConfiguration:configuration
+                                   selectedIdentity:defaultIdentity];
 }
 
 // Once the destination account is known, tries to upload the image using the
@@ -402,7 +408,8 @@ void StartMediatorHelper(__weak SaveToPhotosMediator* mediator,
   // If the Photos app is not installed, show StoreKit.
   if (![UIApplication.sharedApplication canOpenURL:GetGooglePhotosAppURL()]) {
     [self.delegate
-        showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier];
+        showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier
+                            campaignToken:kGooglePhotosStoreKitCampaignToken];
     return;
   }
 

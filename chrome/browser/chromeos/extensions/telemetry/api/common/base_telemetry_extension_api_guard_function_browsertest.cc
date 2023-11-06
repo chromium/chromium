@@ -184,6 +184,18 @@ std::string GetServiceWorkerForError(const std::string& error) {
         );
         chrome.test.succeed();
       },
+      async function createVolumeButtonRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.createVolumeButtonRoutine({
+              button_type: "volume_up",
+              timeout_seconds: 10,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.createVolumeButtonRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
       async function getAvailableRoutines() {
         await chrome.test.assertPromiseRejects(
             chrome.os.diagnostics.getAvailableRoutines(),
@@ -214,6 +226,18 @@ std::string GetServiceWorkerForError(const std::string& error) {
             }),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.isMemoryRoutineArgumentSupported. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function isVolumeButtonRoutineArgumentSupported() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported({
+              button_type: "volume_up",
+              timeout_seconds: 10,
+            }),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.isVolumeButtonRoutineArgumentSupported. ' +
             '%s'
         );
         chrome.test.succeed();
@@ -421,6 +445,15 @@ std::string GetServiceWorkerForError(const std::string& error) {
             chrome.os.diagnostics.runEmmcLifetimeRoutine(),
             'Error: Unauthorized access to ' +
             'chrome.os.diagnostics.runEmmcLifetimeRoutine. ' +
+            '%s'
+        );
+        chrome.test.succeed();
+      },
+      async function runFanRoutine() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.diagnostics.runFanRoutine(),
+            'Error: Unauthorized access to ' +
+            'chrome.os.diagnostics.runFanRoutine. ' +
             '%s'
         );
         chrome.test.succeed();

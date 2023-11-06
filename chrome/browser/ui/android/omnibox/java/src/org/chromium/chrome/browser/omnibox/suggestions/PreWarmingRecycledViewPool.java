@@ -22,8 +22,11 @@ import java.util.List;
 
 /**
  * RecyclerView pool that:
- * 1. Pre-creates a hardcoded set of ViewHolders.
- * 2. Records the performance of the view recycling mechanism.
+ *
+ * <ul>
+ *   <li>Pre-creates a hardcoded set of ViewHolders.
+ *   <li>Records the performance of the view recycling mechanism.
+ * </ul>
  */
 public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private static final long STEP_MILLIS = 50;
@@ -31,6 +34,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     private static class ViewTypeAndCount {
         public final int viewType;
         public final int count;
+
         public ViewTypeAndCount(int viewType, int count) {
             this.viewType = viewType;
             assert count > 0;
@@ -38,13 +42,15 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         }
     }
 
-    private final ViewTypeAndCount[] mViewsToCreate = new ViewTypeAndCount[] {
-            new ViewTypeAndCount(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, 1),
-            new ViewTypeAndCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1),
-            new ViewTypeAndCount(OmniboxSuggestionUiType.HEADER, 1),
-            new ViewTypeAndCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1),
-            new ViewTypeAndCount(OmniboxSuggestionUiType.DEFAULT, 15),
-            new ViewTypeAndCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 3)};
+    private final ViewTypeAndCount[] mViewsToCreate =
+            new ViewTypeAndCount[] {
+                new ViewTypeAndCount(OmniboxSuggestionUiType.EDIT_URL_SUGGESTION, 1),
+                new ViewTypeAndCount(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1),
+                new ViewTypeAndCount(OmniboxSuggestionUiType.HEADER, 1),
+                new ViewTypeAndCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION, 1),
+                new ViewTypeAndCount(OmniboxSuggestionUiType.DEFAULT, 15),
+                new ViewTypeAndCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 3)
+            };
 
     private OmniboxSuggestionsDropdownAdapter mAdapter;
     private final Handler mHandler;
@@ -89,14 +95,16 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     /**
      * Starts creating views. This will immediately post a separate delayed task for every view we
      * intend to create with a delay equal to STEP_MILLIS * order_of_view_creation.
-     * */
+     */
     public void startCreatingViews() {
         if (mStopCreatingViews) return;
         for (var viewTypeAndCount : mViewsToCreate) {
             for (int index = 0; index < viewTypeAndCount.count; ++index) {
-                mHandler.postDelayed(() -> {
-                    createViewHolder(viewTypeAndCount.viewType);
-                }, STEP_MILLIS * (index + 1));
+                mHandler.postDelayed(
+                        () -> {
+                            createViewHolder(viewTypeAndCount.viewType);
+                        },
+                        STEP_MILLIS * (index + 1));
             }
         }
     }

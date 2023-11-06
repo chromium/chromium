@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -18,7 +20,6 @@
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_status.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
-#include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -31,7 +32,8 @@ class UserContext;
 // This implementation is only compatible with AuthSession-based API.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
  public:
-  explicit AuthPerformer(UserDataAuthClient* client);
+  AuthPerformer(UserDataAuthClient* client,
+                const base::Clock* clock = base::DefaultClock::GetInstance());
 
   AuthPerformer(const AuthPerformer&) = delete;
   AuthPerformer& operator=(const AuthPerformer&) = delete;
@@ -62,6 +64,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   // Utility method, copies data relevant for authentidated session
   // into UserContext: authenticated intents, remaining lifetime.
   static void FillAuthenticationData(
+      const base::Time& reference_time,
       const user_data_auth::AuthSessionProperties& session_properties,
       UserContext& out_context);
 
@@ -102,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
   // After attempting authentication with `AuthenticateUsingKnowledgeKey`, if
   // attempt failed, record it in `AuthEventsRecorder`.
   void MaybeRecordKnowledgeFactorAuthFailure(
+      base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
@@ -139,6 +143,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
 
   void GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                             AuthSessionStatusCallback callback);
+
+  void ExtendAuthSessionLifetime(std::unique_ptr<UserContext> context,
+                                 AuthOperationCallback callback);
 
   void GetRecoveryRequest(const std::string& access_token,
                           const CryptohomeRecoveryEpochResponse& epoch,
@@ -191,11 +198,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                                    const std::string& system_salt);
 
   void OnAuthenticateAuthFactor(
+      base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,
       absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply);
 
   void OnGetAuthSessionStatus(
+      base::Time request_start,
       std::unique_ptr<UserContext> context,
       AuthSessionStatusCallback callback,
       absl::optional<user_data_auth::GetAuthSessionStatusReply> reply);
@@ -205,7 +214,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
       std::unique_ptr<UserContext> context,
       absl::optional<user_data_auth::GetRecoveryRequestReply> reply);
 
+  void OnExtendAuthSession(
+      base::Time request_start,
+      std::unique_ptr<UserContext> context,
+      AuthOperationCallback callback,
+      absl::optional<user_data_auth::ExtendAuthSessionReply> reply);
+
   const raw_ptr<UserDataAuthClient, DanglingUntriaged> client_;
+  const raw_ptr<const base::Clock> clock_;
   base::WeakPtrFactory<AuthPerformer> weak_factory_{this};
 };
 

@@ -24,7 +24,7 @@ class FocusClient;
 }  // namespace aura
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 class InputMethod;
 class KeyboardHook;
 }  // namespace ui

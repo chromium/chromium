@@ -17,7 +17,6 @@ namespace ash {
 namespace {
 
 constexpr const char kUserActionCancelClicked[] = "cancel";
-constexpr const char kUserActionWifiConnected[] = "wifi_connected";
 
 base::Value::List ConvertQrCode(quick_start::QRCode::PixelData qr_code) {
   base::Value::List qr_code_list;
@@ -38,6 +37,8 @@ std::string QuickStartScreen::GetResultString(Result result) {
       return "CancelAndReturnToNetwork";
     case Result::CANCEL_AND_RETURN_TO_SIGNIN:
       return "CancelAndReturnToSignin";
+    case Result::WIFI_CREDENTIALS_RECEIVED:
+      return "WifiCredentialsReceived";
     case Result::WIFI_CONNECTED:
       return "WifiConnected";
   }
@@ -81,10 +82,11 @@ void QuickStartScreen::HideImpl() {
 void QuickStartScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionCancelClicked) {
-    CancelAndExitScreen();
-  } else if (action_id == kUserActionWifiConnected) {
-    // TODO(b:283965994) - Remove this once WiFi transfer is implemented.
-    exit_callback_.Run(Result::WIFI_CONNECTED);
+    controller_->DetachFrontend(this);
+    controller_->AbortFlow();
+    ExitScreen();
+  } else {
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -110,8 +112,8 @@ void QuickStartScreen::OnUiUpdateRequested(
     case quick_start::QuickStartController::UiState::CONNECTING_TO_WIFI:
       view_->ShowConnectingToWifi();
       break;
-    case quick_start::QuickStartController::UiState::CONNECTED_TO_WIFI_DEBUG:
-      view_->ShowConnectedToWifi(controller_->GetWiFiName(), "**PWD**");
+    case quick_start::QuickStartController::UiState::WIFI_CREDENTIALS_RECEIVED:
+      exit_callback_.Run(Result::WIFI_CREDENTIALS_RECEIVED);
       break;
     case ash::quick_start::QuickStartController::UiState::
         TRANSFERRING_GAIA_CREDENTIALS:
@@ -120,13 +122,16 @@ void QuickStartScreen::OnUiUpdateRequested(
     case ash::quick_start::QuickStartController::UiState::LOADING:
       // TODO(b:283724988) - Add method to view to show the loading spinner.
       break;
+    case ash::quick_start::QuickStartController::UiState::EXIT_SCREEN:
+      // Controller requested the flow to be aborted.
+      controller_->DetachFrontend(this);
+      ExitScreen();
   }
 }
 
-void QuickStartScreen::CancelAndExitScreen() {
+void QuickStartScreen::ExitScreen() {
   // Get exit point before cancelling the whole flow.
   const auto return_entry_point = controller_->GetExitPoint();
-  controller_->HandleFlowCancellationRequest();
   switch (return_entry_point) {
     case ash::quick_start::QuickStartController::EntryPoint::WELCOME_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_WELCOME);

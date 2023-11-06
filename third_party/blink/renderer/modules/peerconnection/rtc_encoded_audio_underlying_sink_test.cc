@@ -78,10 +78,19 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
   RTCEncodedAudioFrame* CreateEncodedAudioFrame(
       ScriptState* script_state,
       webrtc::TransformableFrameInterface::Direction direction =
-          webrtc::TransformableFrameInterface::Direction::kSender) {
+          webrtc::TransformableFrameInterface::Direction::kSender,
+      size_t payload_length = 100,
+      bool expect_data_read = false) {
     auto mock_frame =
         std::make_unique<NiceMock<webrtc::MockTransformableAudioFrame>>();
     ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
+    if (expect_data_read) {
+      EXPECT_CALL(*mock_frame.get(), GetData)
+          .WillOnce(
+              Return(rtc::ArrayView<const uint8_t>(buffer, payload_length)));
+    } else {
+      EXPECT_CALL(*mock_frame.get(), GetData).Times(0);
+    }
     std::unique_ptr<webrtc::TransformableAudioFrameInterface> audio_frame =
         base::WrapUnique(static_cast<webrtc::TransformableAudioFrameInterface*>(
             mock_frame.release()));
@@ -104,6 +113,7 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   rtc::scoped_refptr<MockWebRtcTransformedFrameCallback> webrtc_callback_;
   RTCEncodedAudioStreamTransformer transformer_;
+  uint8_t buffer[1500];
 };
 
 TEST_F(RTCEncodedAudioUnderlyingSinkTest,
@@ -205,6 +215,48 @@ TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteTooLargeFrameFails) {
                       .ToLocalChecked()),
       /*controller=*/nullptr, dummy_exception_state);
   EXPECT_TRUE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest, WriteOfUnmodifiedLargeFrameSucceeds) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(script_state);
+  RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender,
+      /*data_length=*/1001);
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+  sink->write(
+      script_state,
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+                      .ToLocalChecked()),
+      /*controller=*/nullptr, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
+}
+
+TEST_F(RTCEncodedAudioUnderlyingSinkTest,
+       WriteOfReadUnmodifiedLargeFrameSucceeds) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(script_state);
+  RTCEncodedAudioFrame* frame = CreateEncodedAudioFrame(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender,
+      /*data_length=*/1001, /*expect_data_read=*/true);
+
+  // Trigger a copy of the payload data to a JS ArrayBuffer.
+  frame->data();
+
+  DummyExceptionStateForTesting dummy_exception_state;
+  EXPECT_CALL(*webrtc_callback_, OnTransformedFrame(_));
+  sink->write(
+      script_state,
+      ScriptValue(script_state->GetIsolate(),
+                  ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+                      .ToLocalChecked()),
+      /*controller=*/nullptr, dummy_exception_state);
+  EXPECT_FALSE(dummy_exception_state.HadException());
 }
 
 }  // namespace blink

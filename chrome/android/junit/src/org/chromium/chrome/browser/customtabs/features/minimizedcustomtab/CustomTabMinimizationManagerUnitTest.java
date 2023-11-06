@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.customtabs.features.minimizedcustomtab;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,6 +22,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.PictureInPictureModeChangedInfo;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
@@ -35,6 +38,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -46,34 +50,30 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link CustomTabMinimizationManager}.
- */
+/** Unit tests for {@link CustomTabMinimizationManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
 public class CustomTabMinimizationManagerUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final String TITLE = "Google";
     private static final String HOST = JUnitTestGURLs.GOOGLE_URL.getHost();
 
-    @Spy
-    private AppCompatActivity mActivity;
-    @Mock
-    private ActivityTabProvider mTabProvider;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContents mWebContents;
+    @Spy private AppCompatActivity mActivity;
+    @Mock private ActivityTabProvider mTabProvider;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
 
     private CustomTabMinimizationManager mManager;
 
@@ -88,13 +88,20 @@ public class CustomTabMinimizationManagerUnitTest {
         when(mTabProvider.get()).thenReturn(mTab);
         when(mActivity.enterPictureInPictureMode(any(PictureInPictureParams.class)))
                 .thenReturn(true);
-        mManager = new CustomTabMinimizationManager(mActivity, mTabProvider);
+        mManager =
+                new CustomTabMinimizationManager(
+                        mActivity, mTabProvider, mFeatureEngagementDelegate);
     }
 
     @Test
     public void testMinimize() {
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.MINIMIZE);
         mManager.minimize();
         verify(mActivity).enterPictureInPictureMode(any(PictureInPictureParams.class));
+        verify(mFeatureEngagementDelegate).notifyUserEngaged();
 
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
@@ -103,6 +110,9 @@ public class CustomTabMinimizationManagerUnitTest {
         verify(mTab).hide(eq(TabHidingType.ACTIVITY_HIDDEN));
         verify(mWebContents).suspendAllMediaPlayers();
         verify(mWebContents).setAudioMuted(eq(true));
+
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.MINIMIZE should be recorded once");
 
         assertEquals(TITLE, ((TextView) mActivity.findViewById(R.id.title)).getText());
         assertEquals(HOST, ((TextView) mActivity.findViewById(R.id.url)).getText());
@@ -114,9 +124,44 @@ public class CustomTabMinimizationManagerUnitTest {
         // Simulate Activity entering PiP.
         mManager.accept(new PictureInPictureModeChangedInfo(true));
         // Now, simulate Activity exiting PiP.
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.MAXIMIZE);
+        var timeElapsedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.TimeElapsedSinceMinimized.Maximized");
         mManager.accept(new PictureInPictureModeChangedInfo(false));
 
         verify(mTab).show(eq(FROM_USER), eq(ON_ACTIVITY_SHOWN_THEN_SHOW));
         verify(mWebContents).setAudioMuted(false);
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.MAXIMIZE should be recorded once");
+        timeElapsedWatcher.assertExpected(
+                "CustomTabs.TimeElapsedSinceMinimized.Maximized should be recorded once");
+    }
+
+    @Test
+    public void testDismiss() {
+        mManager.minimize();
+        // Simulate Activity entering PiP.
+        mManager.accept(new PictureInPictureModeChangedInfo(true));
+        // Now, simulate PiP being dismissed.
+        var minimizationEventsWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.MinimizedEvents",
+                        CustomTabMinimizationManager.MinimizationEvents.DESTROY);
+        var timeElapsedWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "CustomTabs.TimeElapsedSinceMinimized.Destroyed");
+        mActivityScenarioRule.getScenario().moveToState(State.CREATED);
+        mManager.accept(new PictureInPictureModeChangedInfo(false));
+
+        verify(mTab, never()).show(anyInt(), anyInt());
+
+        minimizationEventsWatcher.assertExpected(
+                "CustomTabs.MinimizedEvents.DESTROY should be recorded once");
+        timeElapsedWatcher.assertExpected(
+                "CustomTabs.TimeElapsedSinceMinimized.Destroyed should be recorded once");
     }
 }

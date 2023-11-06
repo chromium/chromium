@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Makes sure that preloaded resources trigger the onload event Uncaught Error: assert_true: video triggered load event expected true got false
+[FAIL] Makes sure that preloaded resources trigger the onload event
+  Uncaught Error: assert_true: video triggered load event expected true got false
 Harness: the test ran to completion.
 

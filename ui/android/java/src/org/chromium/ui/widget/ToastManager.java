@@ -11,7 +11,7 @@ import android.text.TextUtils;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.JNINamespace;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;

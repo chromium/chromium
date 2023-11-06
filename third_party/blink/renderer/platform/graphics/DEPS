@@ -6,17 +6,14 @@ include_rules = [
     "+third_party/blink/renderer/platform/graphics",
 
     # Dependencies.
-    "+base/no_destructor.h",
-    "+base/strings/string_number_conversions.h",
-    "+base/strings/string_split.h",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
-    "+base/threading/thread_restrictions.h",
     "+cc",
     "+components/paint_preview/common",
     "+components/viz/client",
     "+components/viz/common",
     "+gpu/config",
+    "+gpu/command_buffer/client/client_shared_image.h",
     "+gpu/command_buffer/client/context_support.h",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/gpu_memory_buffer_manager.h",
@@ -31,7 +28,6 @@ include_rules = [
     "+gpu/command_buffer/common/shared_image_capabilities.h",
     "+gpu/command_buffer/common/shared_image_trace_utils.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
-    "+gpu/command_buffer/common/sync_token.h",
     "+gpu/ipc/common/mailbox.mojom-blink.h",
     "+media/base/limits.h",
     "+media/base/media_switches.h",
@@ -81,7 +77,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin/kurl.h",
     "+third_party/blink/renderer/platform/web_task_runner.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+ui/gfx/geometry",
 ]
 
 specific_include_rules = {
@@ -94,9 +89,6 @@ specific_include_rules = {
   ],
   "image_frame_generator_test.cc": [
     "+base/features.h",
-  ],
-  "rw_buffer_test.cc": [
-    "+base/threading/platform_thread.h",
   ],
   "video_frame_image_util_test.cc": [
     "+media/renderers/shared_image_video_frame_test_utils.h",

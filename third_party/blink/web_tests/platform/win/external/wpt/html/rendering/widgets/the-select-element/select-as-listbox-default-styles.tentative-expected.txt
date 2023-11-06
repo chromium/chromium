@@ -1,197 +1,236 @@
 This is a testharness.js-based test.
 Found 193 tests; 154 PASS, 39 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS <select multiple=""><option>1 - display
-PASS <select multiple=""><option>1 - margin-top
-PASS <select multiple=""><option>1 - margin-right
-PASS <select multiple=""><option>1 - margin-bottom
-PASS <select multiple=""><option>1 - margin-left
-PASS <select multiple=""><option>1 - padding-top
-PASS <select multiple=""><option>1 - padding-right
-PASS <select multiple=""><option>1 - padding-bottom
-PASS <select multiple=""><option>1 - padding-left
-PASS <select multiple=""><option>1 - letter-spacing
-PASS <select multiple=""><option>1 - word-spacing
-PASS <select multiple=""><option>1 - text-transform
-PASS <select multiple=""><option>1 - text-indent
-PASS <select multiple=""><option>1 - text-shadow
-PASS <select multiple=""><option>1 - appearance
-PASS <select multiple=""><option>1 - box-sizing
-FAIL <select multiple=""><option>1 - border-top-width assert_equals: expected "0px" but got "1px"
-FAIL <select multiple=""><option>1 - border-right-width assert_equals: expected "0px" but got "1px"
-FAIL <select multiple=""><option>1 - border-bottom-width assert_equals: expected "0px" but got "1px"
-FAIL <select multiple=""><option>1 - border-left-width assert_equals: expected "0px" but got "1px"
-FAIL <select multiple=""><option>1 - border-top-style assert_equals: expected "none" but got "solid"
-FAIL <select multiple=""><option>1 - border-right-style assert_equals: expected "none" but got "solid"
-FAIL <select multiple=""><option>1 - border-bottom-style assert_equals: expected "none" but got "solid"
-FAIL <select multiple=""><option>1 - border-left-style assert_equals: expected "none" but got "solid"
-FAIL <select multiple=""><option>1 - border-top-color assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
-FAIL <select multiple=""><option>1 - border-right-color assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
-FAIL <select multiple=""><option>1 - border-bottom-color assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
-FAIL <select multiple=""><option>1 - border-left-color assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
-FAIL <select multiple=""><option>1 - align-items assert_equals: expected "normal" but got "flex-start"
-FAIL <select multiple=""><option>1 - white-space assert_equals: expected "normal" but got "nowrap"
-PASS <select multiple=""><option>1 - color
-FAIL <select multiple=""><option>1 - background-color assert_equals: expected "rgba(0, 0, 0, 0)" but got "rgb(255, 255, 255)"
-FAIL <select multiple=""><option>1 - cursor assert_equals: expected "auto" but got "default"
-PASS <select multiple=""><option>1 - font-style
-PASS <select multiple=""><option>1 - font-weight
-FAIL <select multiple=""><option>1 - font-size assert_equals: expected "16px" but got "13.3333px"
-FAIL <select multiple=""><option>1 - font-family assert_equals: expected "\"times new roman\"" but got "Arial"
-PASS <select multiple=""><option>1 - writing-mode
-PASS <select multiple=""><option>1 - scrollbar-width
-FAIL <select multiple=""><option>1 - overflow assert_equals: expected "visible" but got "hidden scroll"
-FAIL <select multiple=""><option>1 - vertical-align assert_equals: expected "baseline" but got "text-bottom"
-PASS <select multiple=""><option>1 - user-select
-PASS <select multiple=""><option>1 - page-break-inside
-PASS <select multiple=""><option>1 - overflow-clip-box
-PASS <select multiple=""><option>1 - font-variant-ligatures
-PASS <select multiple=""><option>1 - font-variant-caps
-PASS <select multiple=""><option>1 - font-variant-numeric
-PASS <select multiple=""><option>1 - font-variant-east-asian
-PASS <select multiple=""><option>1 - text-rendering
-PASS <option>1 (in <select multiple="">) - margin-top
-PASS <option>1 (in <select multiple="">) - margin-right
-PASS <option>1 (in <select multiple="">) - margin-bottom
-PASS <option>1 (in <select multiple="">) - margin-left
-PASS <option>1 (in <select multiple="">) - padding-top
-FAIL <option>1 (in <select multiple="">) - padding-right assert_equals: expected "0px" but got "2px"
-FAIL <option>1 (in <select multiple="">) - padding-bottom assert_equals: expected "0px" but got "1px"
-FAIL <option>1 (in <select multiple="">) - padding-left assert_equals: expected "0px" but got "2px"
-PASS <option>1 (in <select multiple="">) - letter-spacing
-PASS <option>1 (in <select multiple="">) - word-spacing
-PASS <option>1 (in <select multiple="">) - text-transform
-PASS <option>1 (in <select multiple="">) - text-indent
-PASS <option>1 (in <select multiple="">) - text-shadow
-PASS <option>1 (in <select multiple="">) - appearance
-PASS <option>1 (in <select multiple="">) - box-sizing
-PASS <option>1 (in <select multiple="">) - border-top-width
-PASS <option>1 (in <select multiple="">) - border-right-width
-PASS <option>1 (in <select multiple="">) - border-bottom-width
-PASS <option>1 (in <select multiple="">) - border-left-width
-PASS <option>1 (in <select multiple="">) - border-top-style
-PASS <option>1 (in <select multiple="">) - border-right-style
-PASS <option>1 (in <select multiple="">) - border-bottom-style
-PASS <option>1 (in <select multiple="">) - border-left-style
-PASS <option>1 (in <select multiple="">) - border-top-color
-PASS <option>1 (in <select multiple="">) - border-right-color
-PASS <option>1 (in <select multiple="">) - border-bottom-color
-PASS <option>1 (in <select multiple="">) - border-left-color
-PASS <option>1 (in <select multiple="">) - align-items
-FAIL <option>1 (in <select multiple="">) - white-space assert_equals: expected "normal" but got "nowrap"
-PASS <option>1 (in <select multiple="">) - color
-PASS <option>1 (in <select multiple="">) - background-color
-FAIL <option>1 (in <select multiple="">) - cursor assert_equals: expected "auto" but got "default"
-PASS <option>1 (in <select multiple="">) - font-style
-PASS <option>1 (in <select multiple="">) - font-weight
-FAIL <option>1 (in <select multiple="">) - font-size assert_equals: expected "16px" but got "13.3333px"
-FAIL <option>1 (in <select multiple="">) - font-family assert_equals: expected "\"times new roman\"" but got "Arial"
-PASS <option>1 (in <select multiple="">) - writing-mode
-PASS <option>1 (in <select multiple="">) - scrollbar-width
-PASS <option>1 (in <select multiple="">) - overflow
-PASS <option>1 (in <select multiple="">) - vertical-align
-PASS <option>1 (in <select multiple="">) - user-select
-PASS <option>1 (in <select multiple="">) - page-break-inside
-PASS <option>1 (in <select multiple="">) - overflow-clip-box
-PASS <option>1 (in <select multiple="">) - font-variant-ligatures
-PASS <option>1 (in <select multiple="">) - font-variant-caps
-PASS <option>1 (in <select multiple="">) - font-variant-numeric
-PASS <option>1 (in <select multiple="">) - font-variant-east-asian
-PASS <option>1 (in <select multiple="">) - text-rendering
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - margin-top
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - margin-right
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - margin-bottom
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - margin-left
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - padding-top
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - padding-right
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - padding-bottom
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - padding-left
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - letter-spacing
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - word-spacing
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - text-transform
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - text-indent
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - text-shadow
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - appearance
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - box-sizing
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-top-width
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-right-width
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-width
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-left-width
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-top-style
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-right-style
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-style
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-left-style
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-top-color
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-right-color
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-color
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - border-left-color
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - align-items
-FAIL <optgroup label="2"><option>3 (in <select multiple="">) - white-space assert_equals: expected "normal" but got "nowrap"
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - color
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - background-color
-FAIL <optgroup label="2"><option>3 (in <select multiple="">) - cursor assert_equals: expected "auto" but got "default"
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - font-style
-FAIL <optgroup label="2"><option>3 (in <select multiple="">) - font-weight assert_equals: expected "400" but got "700"
-FAIL <optgroup label="2"><option>3 (in <select multiple="">) - font-size assert_equals: expected "16px" but got "13.3333px"
-FAIL <optgroup label="2"><option>3 (in <select multiple="">) - font-family assert_equals: expected "\"times new roman\"" but got "Arial"
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - writing-mode
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - scrollbar-width
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - overflow
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - vertical-align
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - user-select
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - page-break-inside
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - overflow-clip-box
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-ligatures
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-caps
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-numeric
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-east-asian
-PASS <optgroup label="2"><option>3 (in <select multiple="">) - text-rendering
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - margin-top
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - margin-right
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - margin-bottom
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - margin-left
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - padding-top
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-right assert_equals: expected "0px" but got "2px"
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-bottom assert_equals: expected "0px" but got "1px"
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - padding-left assert_equals: expected "0px" but got "20px"
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - letter-spacing
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - word-spacing
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - text-transform
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - text-indent
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - text-shadow
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - appearance
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - box-sizing
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-top-width
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-right-width
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-width
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-left-width
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-top-style
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-right-style
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-style
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-left-style
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-top-color
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-right-color
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-color
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - border-left-color
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - align-items
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - white-space assert_equals: expected "normal" but got "nowrap"
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - color
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - background-color
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - cursor assert_equals: expected "auto" but got "default"
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-style
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-weight
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - font-size assert_equals: expected "16px" but got "13.3333px"
-FAIL <option>3 (in <select multiple=""><optgroup label="2">) - font-family assert_equals: expected "\"times new roman\"" but got "Arial"
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - writing-mode
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - scrollbar-width
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - overflow
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - vertical-align
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - user-select
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - page-break-inside
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - overflow-clip-box
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-ligatures
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-caps
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-numeric
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-east-asian
-PASS <option>3 (in <select multiple=""><optgroup label="2">) - text-rendering
+[PASS] <select multiple=""><option>1 - display
+[PASS] <select multiple=""><option>1 - margin-top
+[PASS] <select multiple=""><option>1 - margin-right
+[PASS] <select multiple=""><option>1 - margin-bottom
+[PASS] <select multiple=""><option>1 - margin-left
+[PASS] <select multiple=""><option>1 - padding-top
+[PASS] <select multiple=""><option>1 - padding-right
+[PASS] <select multiple=""><option>1 - padding-bottom
+[PASS] <select multiple=""><option>1 - padding-left
+[PASS] <select multiple=""><option>1 - letter-spacing
+[PASS] <select multiple=""><option>1 - word-spacing
+[PASS] <select multiple=""><option>1 - text-transform
+[PASS] <select multiple=""><option>1 - text-indent
+[PASS] <select multiple=""><option>1 - text-shadow
+[PASS] <select multiple=""><option>1 - appearance
+[PASS] <select multiple=""><option>1 - box-sizing
+[FAIL] <select multiple=""><option>1 - border-top-width
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <select multiple=""><option>1 - border-right-width
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <select multiple=""><option>1 - border-bottom-width
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <select multiple=""><option>1 - border-left-width
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <select multiple=""><option>1 - border-top-style
+  assert_equals: expected "none" but got "solid"
+[FAIL] <select multiple=""><option>1 - border-right-style
+  assert_equals: expected "none" but got "solid"
+[FAIL] <select multiple=""><option>1 - border-bottom-style
+  assert_equals: expected "none" but got "solid"
+[FAIL] <select multiple=""><option>1 - border-left-style
+  assert_equals: expected "none" but got "solid"
+[FAIL] <select multiple=""><option>1 - border-top-color
+  assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
+[FAIL] <select multiple=""><option>1 - border-right-color
+  assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
+[FAIL] <select multiple=""><option>1 - border-bottom-color
+  assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
+[FAIL] <select multiple=""><option>1 - border-left-color
+  assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
+[FAIL] <select multiple=""><option>1 - align-items
+  assert_equals: expected "normal" but got "flex-start"
+[FAIL] <select multiple=""><option>1 - white-space
+  assert_equals: expected "normal" but got "nowrap"
+[PASS] <select multiple=""><option>1 - color
+[FAIL] <select multiple=""><option>1 - background-color
+  assert_equals: expected "rgba(0, 0, 0, 0)" but got "rgb(255, 255, 255)"
+[FAIL] <select multiple=""><option>1 - cursor
+  assert_equals: expected "auto" but got "default"
+[PASS] <select multiple=""><option>1 - font-style
+[PASS] <select multiple=""><option>1 - font-weight
+[FAIL] <select multiple=""><option>1 - font-size
+  assert_equals: expected "16px" but got "13.3333px"
+[FAIL] <select multiple=""><option>1 - font-family
+  assert_equals: expected "\"times new roman\"" but got "Arial"
+[PASS] <select multiple=""><option>1 - writing-mode
+[PASS] <select multiple=""><option>1 - scrollbar-width
+[FAIL] <select multiple=""><option>1 - overflow
+  assert_equals: expected "visible" but got "hidden scroll"
+[FAIL] <select multiple=""><option>1 - vertical-align
+  assert_equals: expected "baseline" but got "text-bottom"
+[PASS] <select multiple=""><option>1 - user-select
+[PASS] <select multiple=""><option>1 - page-break-inside
+[PASS] <select multiple=""><option>1 - overflow-clip-box
+[PASS] <select multiple=""><option>1 - font-variant-ligatures
+[PASS] <select multiple=""><option>1 - font-variant-caps
+[PASS] <select multiple=""><option>1 - font-variant-numeric
+[PASS] <select multiple=""><option>1 - font-variant-east-asian
+[PASS] <select multiple=""><option>1 - text-rendering
+[PASS] <option>1 (in <select multiple="">) - margin-top
+[PASS] <option>1 (in <select multiple="">) - margin-right
+[PASS] <option>1 (in <select multiple="">) - margin-bottom
+[PASS] <option>1 (in <select multiple="">) - margin-left
+[PASS] <option>1 (in <select multiple="">) - padding-top
+[FAIL] <option>1 (in <select multiple="">) - padding-right
+  assert_equals: expected "0px" but got "2px"
+[FAIL] <option>1 (in <select multiple="">) - padding-bottom
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <option>1 (in <select multiple="">) - padding-left
+  assert_equals: expected "0px" but got "2px"
+[PASS] <option>1 (in <select multiple="">) - letter-spacing
+[PASS] <option>1 (in <select multiple="">) - word-spacing
+[PASS] <option>1 (in <select multiple="">) - text-transform
+[PASS] <option>1 (in <select multiple="">) - text-indent
+[PASS] <option>1 (in <select multiple="">) - text-shadow
+[PASS] <option>1 (in <select multiple="">) - appearance
+[PASS] <option>1 (in <select multiple="">) - box-sizing
+[PASS] <option>1 (in <select multiple="">) - border-top-width
+[PASS] <option>1 (in <select multiple="">) - border-right-width
+[PASS] <option>1 (in <select multiple="">) - border-bottom-width
+[PASS] <option>1 (in <select multiple="">) - border-left-width
+[PASS] <option>1 (in <select multiple="">) - border-top-style
+[PASS] <option>1 (in <select multiple="">) - border-right-style
+[PASS] <option>1 (in <select multiple="">) - border-bottom-style
+[PASS] <option>1 (in <select multiple="">) - border-left-style
+[PASS] <option>1 (in <select multiple="">) - border-top-color
+[PASS] <option>1 (in <select multiple="">) - border-right-color
+[PASS] <option>1 (in <select multiple="">) - border-bottom-color
+[PASS] <option>1 (in <select multiple="">) - border-left-color
+[PASS] <option>1 (in <select multiple="">) - align-items
+[FAIL] <option>1 (in <select multiple="">) - white-space
+  assert_equals: expected "normal" but got "nowrap"
+[PASS] <option>1 (in <select multiple="">) - color
+[PASS] <option>1 (in <select multiple="">) - background-color
+[FAIL] <option>1 (in <select multiple="">) - cursor
+  assert_equals: expected "auto" but got "default"
+[PASS] <option>1 (in <select multiple="">) - font-style
+[PASS] <option>1 (in <select multiple="">) - font-weight
+[FAIL] <option>1 (in <select multiple="">) - font-size
+  assert_equals: expected "16px" but got "13.3333px"
+[FAIL] <option>1 (in <select multiple="">) - font-family
+  assert_equals: expected "\"times new roman\"" but got "Arial"
+[PASS] <option>1 (in <select multiple="">) - writing-mode
+[PASS] <option>1 (in <select multiple="">) - scrollbar-width
+[PASS] <option>1 (in <select multiple="">) - overflow
+[PASS] <option>1 (in <select multiple="">) - vertical-align
+[PASS] <option>1 (in <select multiple="">) - user-select
+[PASS] <option>1 (in <select multiple="">) - page-break-inside
+[PASS] <option>1 (in <select multiple="">) - overflow-clip-box
+[PASS] <option>1 (in <select multiple="">) - font-variant-ligatures
+[PASS] <option>1 (in <select multiple="">) - font-variant-caps
+[PASS] <option>1 (in <select multiple="">) - font-variant-numeric
+[PASS] <option>1 (in <select multiple="">) - font-variant-east-asian
+[PASS] <option>1 (in <select multiple="">) - text-rendering
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - margin-top
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - margin-right
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - margin-bottom
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - margin-left
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - padding-top
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - padding-right
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - padding-bottom
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - padding-left
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - letter-spacing
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - word-spacing
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - text-transform
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - text-indent
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - text-shadow
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - appearance
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - box-sizing
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-top-width
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-right-width
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-width
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-left-width
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-top-style
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-right-style
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-style
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-left-style
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-top-color
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-right-color
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-bottom-color
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - border-left-color
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - align-items
+[FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - white-space
+  assert_equals: expected "normal" but got "nowrap"
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - color
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - background-color
+[FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - cursor
+  assert_equals: expected "auto" but got "default"
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - font-style
+[FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - font-weight
+  assert_equals: expected "400" but got "700"
+[FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - font-size
+  assert_equals: expected "16px" but got "13.3333px"
+[FAIL] <optgroup label="2"><option>3 (in <select multiple="">) - font-family
+  assert_equals: expected "\"times new roman\"" but got "Arial"
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - writing-mode
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - scrollbar-width
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - overflow
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - vertical-align
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - user-select
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - page-break-inside
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - overflow-clip-box
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-ligatures
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-caps
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-numeric
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - font-variant-east-asian
+[PASS] <optgroup label="2"><option>3 (in <select multiple="">) - text-rendering
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - margin-top
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - margin-right
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - margin-bottom
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - margin-left
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - padding-top
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - padding-right
+  assert_equals: expected "0px" but got "2px"
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - padding-bottom
+  assert_equals: expected "0px" but got "1px"
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - padding-left
+  assert_equals: expected "0px" but got "20px"
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - letter-spacing
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - word-spacing
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - text-transform
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - text-indent
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - text-shadow
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - appearance
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - box-sizing
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-top-width
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-right-width
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-width
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-left-width
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-top-style
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-right-style
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-style
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-left-style
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-top-color
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-right-color
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-bottom-color
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - border-left-color
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - align-items
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - white-space
+  assert_equals: expected "normal" but got "nowrap"
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - color
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - background-color
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - cursor
+  assert_equals: expected "auto" but got "default"
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-style
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-weight
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - font-size
+  assert_equals: expected "16px" but got "13.3333px"
+[FAIL] <option>3 (in <select multiple=""><optgroup label="2">) - font-family
+  assert_equals: expected "\"times new roman\"" but got "Arial"
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - writing-mode
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - scrollbar-width
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - overflow
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - vertical-align
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - user-select
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - page-break-inside
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - overflow-clip-box
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-ligatures
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-caps
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-numeric
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - font-variant-east-asian
+[PASS] <option>3 (in <select multiple=""><optgroup label="2">) - text-rendering
 Harness: the test ran to completion.
 

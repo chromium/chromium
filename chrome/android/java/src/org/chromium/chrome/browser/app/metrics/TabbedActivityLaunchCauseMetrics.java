@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.app.metrics;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.nfc.NfcAdapter;
 import android.speech.RecognizerResultsIntent;
 
 import org.chromium.base.IntentUtils;
@@ -97,6 +98,10 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         if (Intent.ACTION_VIEW.equals(launchIntent.getAction())
                 && intentSender != IntentHandler.ExternalAppId.CHROME) {
             return LaunchCause.EXTERNAL_VIEW_INTENT;
+        }
+
+        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(launchIntent.getAction())) {
+            return LaunchCause.NFC;
         }
 
         if (intentSender == IntentHandler.ExternalAppId.CHROME) return LaunchCause.OTHER_CHROME;

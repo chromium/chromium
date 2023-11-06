@@ -161,6 +161,40 @@ GetCustomFactoryFunction() {
   return *g_custom_factory;
 }
 
+void OnUrlDownloaded(
+    base::OnceCallback<void(std::string&&)> callback,
+    std::unique_ptr<network::SimpleURLLoader> simple_loader,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    std::unique_ptr<std::string> response_body) {
+  if (simple_loader->NetError() == net::OK && response_body) {
+    std::move(callback).Run(std::move(*response_body));
+    return;
+  }
+
+  LOG(ERROR) << "Downloading to string failed with error code: "
+             << GetResponseCode(simple_loader.get()) << " with network error "
+             << simple_loader->NetError();
+  std::move(callback).Run(std::string());
+}
+
+void DownloadPhotoInternal(
+    const std::string& url,
+    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    base::OnceCallback<void(std::string&&)> callback,
+    const std::string& gaia_id,
+    const std::string& access_token) {
+  std::unique_ptr<network::SimpleURLLoader> simple_loader =
+      CreateSimpleURLLoader(url, access_token);
+  auto* loader_ptr = simple_loader.get();
+  auto* loader_factory_ptr = loader_factory.get();
+
+  loader_ptr->DownloadToString(
+      loader_factory_ptr,
+      base::BindOnce(&OnUrlDownloaded, std::move(callback),
+                     std::move(simple_loader), std::move(loader_factory)),
+      kMaxImageSizeInBytes);
+}
+
 // -----------------AmbientPhotoCacheImpl---------------------------------------
 
 class AmbientPhotoCacheImpl : public AmbientPhotoCache {
@@ -176,15 +210,6 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
         access_token_controller_(access_token_controller) {}
 
   ~AmbientPhotoCacheImpl() override = default;
-
-  // AmbientPhotoCache:
-  void DownloadPhoto(
-      const std::string& url,
-      base::OnceCallback<void(std::string&&)> callback) override {
-    access_token_controller_->RequestAccessToken(
-        base::BindOnce(&AmbientPhotoCacheImpl::DownloadPhotoInternal,
-                       weak_factory_.GetWeakPtr(), url, std::move(callback)));
-  }
 
   void DownloadPhotoToFile(const std::string& url,
                            int cache_index,
@@ -277,25 +302,6 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
   }
 
  private:
-  void DownloadPhotoInternal(const std::string& url,
-                             base::OnceCallback<void(std::string&&)> callback,
-                             const std::string& gaia_id,
-                             const std::string& access_token) {
-    std::unique_ptr<network::SimpleURLLoader> simple_loader =
-        CreateSimpleURLLoader(url, access_token);
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory =
-        ambient_client_->GetURLLoaderFactory();
-    auto* loader_ptr = simple_loader.get();
-    auto* loader_factory_ptr = loader_factory.get();
-
-    loader_ptr->DownloadToString(
-        loader_factory_ptr,
-        base::BindOnce(&AmbientPhotoCacheImpl::OnUrlDownloaded,
-                       weak_factory_.GetWeakPtr(), std::move(callback),
-                       std::move(simple_loader), std::move(loader_factory)),
-        kMaxImageSizeInBytes);
-  }
-
   void DownloadPhotoToFileInternal(const std::string& url,
                                    base::OnceCallback<void(bool)> callback,
                                    const base::FilePath& file_path,
@@ -322,22 +328,6 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
                        std::move(simple_loader), std::move(loader_factory),
                        file_path),
         temp_path);
-  }
-
-  void OnUrlDownloaded(
-      base::OnceCallback<void(std::string&&)> callback,
-      std::unique_ptr<network::SimpleURLLoader> simple_loader,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      std::unique_ptr<std::string> response_body) {
-    if (simple_loader->NetError() == net::OK && response_body) {
-      std::move(callback).Run(std::move(*response_body));
-      return;
-    }
-
-    LOG(ERROR) << "Downloading to string failed with error code: "
-               << GetResponseCode(simple_loader.get()) << " with network error "
-               << simple_loader->NetError();
-    std::move(callback).Run(std::string());
   }
 
   void OnUrlDownloadedToFile(
@@ -421,6 +411,16 @@ std::unique_ptr<AmbientPhotoCache> AmbientPhotoCache::Create(
 void AmbientPhotoCache::SetFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> create_cb) {
   GetCustomFactoryFunction() = std::move(create_cb);
+}
+
+// static
+void AmbientPhotoCache::DownloadPhoto(
+    const std::string& url,
+    AmbientAccessTokenController& access_token_controller,
+    base::OnceCallback<void(std::string&&)> callback) {
+  access_token_controller.RequestAccessToken(base::BindOnce(
+      &DownloadPhotoInternal, url, AmbientClient::Get()->GetURLLoaderFactory(),
+      std::move(callback)));
 }
 
 }  // namespace ash

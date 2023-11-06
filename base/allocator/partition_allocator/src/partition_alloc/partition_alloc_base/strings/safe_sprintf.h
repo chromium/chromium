@@ -219,7 +219,7 @@ struct Arg {
 
 // This is the internal function that performs the actual formatting of
 // an snprintf()-style format string.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 ssize_t SafeSNPrintf(char* buf,
                      size_t sz,
                      const char* fmt,
@@ -230,9 +230,10 @@ ssize_t SafeSNPrintf(char* buf,
 // In debug builds, allow unit tests to artificially lower the kSSizeMax
 // constant that is used as a hard upper-bound for all buffers. In normal
 // use, this constant should always be std::numeric_limits<ssize_t>::max().
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void SetSafeSPrintfSSizeMaxForTest(size_t max);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetSafeSPrintfSSizeMaxForTest();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+size_t GetSafeSPrintfSSizeMaxForTest();
 #endif
 
 }  // namespace internal
@@ -254,7 +255,7 @@ ssize_t SafeSPrintf(char (&buf)[N], const char* fmt, Args... args) {
 }
 
 // Fast-path when we don't actually need to substitute any arguments.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 ssize_t SafeSNPrintf(char* buf, size_t N, const char* fmt);
 template <size_t N>
 inline ssize_t SafeSPrintf(char (&buf)[N], const char* fmt) {

@@ -64,7 +64,7 @@ void OverviewGridEventHandler::OnMouseEvent(ui::MouseEvent* event) {
   // ui::GESTURE_END_EVENT which may cause a bad state.
   if (event->type() == ui::ET_MOUSE_PRESSED &&
       !overview_session_->CanProcessEvent()) {
-    Shell::Get()->overview_controller()->EndOverview(
+    OverviewController::Get()->EndOverview(
         OverviewEndAction::kClickingOutsideWindowsInOverview);
     event->StopPropagation();
     event->SetHandled();
@@ -162,7 +162,7 @@ void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
       Shell::Get()->app_list_controller()->GoHome(display_id);
     }
   } else {
-    Shell::Get()->overview_controller()->EndOverview(
+    OverviewController::Get()->EndOverview(
         OverviewEndAction::kClickingOutsideWindowsInOverview);
   }
   event->StopPropagation();

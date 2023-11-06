@@ -124,6 +124,10 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
     return true;
   }
 
+  if (!assistant::features::IsOnboardingEnabled()) {
+    return false;
+  }
+
   // Once a user has had an interaction with Assistant, we will no longer show
   // onboarding in that user session.
   auto* interaction_controller = AssistantInteractionController::Get();
@@ -151,6 +155,13 @@ bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
   // who haven't had an interaction with Assistant in the last 28 days.
   return interaction_controller->GetTimeDeltaSinceLastInteraction() >=
          base::Days(28);
+}
+
+void AssistantViewDelegateImpl::OnLauncherSearchChipPressed(
+    const std::u16string& query) {
+  for (auto& observer : view_delegate_observers_) {
+    observer.OnLauncherSearchChipPressed(query);
+  }
 }
 
 }  // namespace ash

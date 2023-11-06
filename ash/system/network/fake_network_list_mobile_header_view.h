@@ -6,10 +6,8 @@
 #define ASH_SYSTEM_NETWORK_FAKE_NETWORK_LIST_MOBILE_HEADER_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/style/icon_button.h"
 #include "ash/system/network/network_list_mobile_header_view.h"
 #include "ash/system/network/network_list_network_header_view.h"
-#include "ash/system/tray/tri_view.h"
 
 namespace ash {
 
@@ -31,28 +29,14 @@ class ASH_EXPORT FakeNetworkListMobileHeaderView
 
   size_t set_toggle_state_count() { return set_toggle_state_count_; }
 
-  bool is_add_esim_enabled() { return is_add_esim_enabled_; }
-
-  bool is_add_esim_visible() { return is_add_esim_visible_; }
-
-  size_t set_add_esim_button_state_count() {
-    return set_add_esim_button_state_count_;
-  }
-
  private:
   // NetworkListNetworkHeaderView:
   void SetToggleState(bool enabled, bool is_on, bool animate_toggle) override;
 
-  // NetworkListMobileHeaderView:
-  void SetAddESimButtonState(bool enabled, bool visible) override;
 
   bool is_toggle_enabled_;
   bool is_toggle_on_;
   size_t set_toggle_state_count_;
-
-  bool is_add_esim_enabled_;
-  bool is_add_esim_visible_;
-  size_t set_add_esim_button_state_count_;
 };
 
 }  // namespace ash

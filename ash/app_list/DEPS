@@ -4,6 +4,7 @@ include_rules = [
   "+ash/assistant/util",
   "+ash/resources/vector_icons",
   "+ash/strings",
+  "+chromeos/utils",
   "+components/keyed_service/core",
   "+components/sync",
   "+mojo/public/cpp",

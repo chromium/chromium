@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -360,9 +361,13 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // container due to portal activation. The |predecessor_contents| is now a
   // portal pending adoption. |predecessor_contents| is non-null, but may
   // subsequently be destroyed if it is not adopted.
-  // |activation_time| is the time the activation happened.
+  // `activation_time` is the time the activation happened.
   virtual void DidActivatePortal(WebContents* predecessor_web_contents,
                                  base::TimeTicks activation_time) {}
+
+  // Called after the WebContents completes the previewed page activation steps.
+  // `activation_time` is the time the activation happened.
+  virtual void DidActivatePreviewedPage(base::TimeTicks activation_time) {}
 
   // Document load events ------------------------------------------------------
 
@@ -688,6 +693,19 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
 
   // Called when the audio state of an individual frame changes.
   virtual void OnFrameAudioStateChanged(RenderFrameHost* rfh, bool audible) {}
+
+  // Called when an individual frame's visibility inside the viewport of the
+  // page changes. Note that this value is independent from the visibility of
+  // the page.
+  virtual void OnFrameVisibilityChanged(
+      RenderFrameHost* rfh,
+      blink::mojom::FrameVisibility visibility) {}
+
+  // Called when an individual frame starts/stops capturing at least one video
+  // stream. An example is capturing another window using getDisplayMedia().
+  virtual void OnFrameIsCapturingVideoStreamChanged(
+      RenderFrameHost* rfh,
+      bool is_capturing_video_stream) {}
 
   // Called when the connected to USB device state changes.
   virtual void OnIsConnectedToUsbDeviceChanged(

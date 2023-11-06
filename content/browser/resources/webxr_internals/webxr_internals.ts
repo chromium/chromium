@@ -8,7 +8,7 @@ import './runtime_changelog_table.js';
 import './session_info_table.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {ActiveRuntimeInfoTableElement} from './active_runtime_info_table.js';
 import {BrowserProxy} from './browser_proxy.js';

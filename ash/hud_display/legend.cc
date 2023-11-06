@@ -4,6 +4,8 @@
 
 #include "ash/hud_display/legend.h"
 
+#include <string_view>
+
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/hud_constants.h"
 #include "ash/hud_display/solid_source_background.h"
@@ -181,8 +183,10 @@ void Legend::Layout() {
   gfx::Size max_size;
   bool updated = false;
   for (auto* view : children()) {
-    if (view->GetClassName() != LegendEntry::kViewClassName)
+    if (std::string_view(view->GetClassName()) !=
+        std::string_view(LegendEntry::kViewClassName)) {
       continue;
+    }
 
     views::View* value = static_cast<LegendEntry*>(view)->value();
     max_size.SetToMax(value->GetPreferredSize());
@@ -190,8 +194,10 @@ void Legend::Layout() {
   }
   if (updated) {
     for (auto* view : children()) {
-      if (view->GetClassName() != LegendEntry::kViewClassName)
+      if (std::string_view(view->GetClassName()) !=
+          std::string_view(LegendEntry::kViewClassName)) {
         continue;
+      }
 
       static_cast<LegendEntry*>(view)->value()->SetPreferredSize(max_size);
     }
@@ -201,8 +207,10 @@ void Legend::Layout() {
 
 void Legend::SetValuesIndex(size_t index) {
   for (auto* view : children()) {
-    if (view->GetClassName() != LegendEntry::kViewClassName)
+    if (std::string_view(view->GetClassName()) !=
+        std::string_view(LegendEntry::kViewClassName)) {
       continue;
+    }
 
     static_cast<LegendEntry*>(view)->SetValueIndex(index);
   }
@@ -210,8 +218,10 @@ void Legend::SetValuesIndex(size_t index) {
 
 void Legend::RefreshValues() {
   for (auto* view : children()) {
-    if (view->GetClassName() != LegendEntry::kViewClassName)
+    if (std::string_view(view->GetClassName()) !=
+        std::string_view(LegendEntry::kViewClassName)) {
       continue;
+    }
 
     static_cast<LegendEntry*>(view)->RefreshValue();
   }

@@ -15,6 +15,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -24,13 +25,6 @@ struct PasswordForm;
 }
 
 namespace password_manager::metrics_util {
-
-using IsUsernameChanged = base::StrongAlias<class IsUsernameChangedTag, bool>;
-using IsDisplayNameChanged =
-    base::StrongAlias<class IsDisplayNameChangedTag, bool>;
-using IsPasswordChanged = base::StrongAlias<class IsPasswordChangedTag, bool>;
-using IsPasswordNoteChanged =
-    base::StrongAlias<class IsPasswordNoteChangedTag, bool>;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -226,18 +220,6 @@ enum AccessPasswordInSettingsEvent {
   ACCESS_PASSWORD_COPIED = 1,
   ACCESS_PASSWORD_EDITED = 2,
   ACCESS_PASSWORD_COUNT
-};
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. Needs to stay in sync with
-// "PasswordManager.ReauthResult" in enums.xml.
-// Metrics: PasswordManager.ReauthToAccessPasswordInSettings
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.password_manager
-enum class ReauthResult {
-  kSuccess = 0,
-  kFailure = 1,
-  kSkipped = 2,
-  kMaxValue = kSkipped,
 };
 
 // Specifies the type of PasswordFormManagers and derived classes to distinguish
@@ -675,6 +657,21 @@ enum class ProcessIncomingPasswordSharingInvitationResult {
   kMaxValue = kSharedCredentialsExistWithDifferentSenderAndDifferentPassword,
 };
 
+#if BUILDFLAG(IS_ANDROID)
+// Enum that describes different outcomes on the attempt of triggering the
+// Touch-To-Fill bottom sheet for password generation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TouchToFillPasswordGenerationTriggerOutcome {
+  kShown = 0,
+  kHasSavedCredentials = 1,
+  kDismissed4TimesInARow = 2,
+  kShownBefore = 3,
+  kFailedToDisplay = 4,
+  kMaxValue = kFailedToDisplay
+};
+#endif
+
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
     password_manager::features_util::PasswordAccountStorageUsageLevel
         usage_level);
@@ -802,7 +799,7 @@ void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
     int blocklist_entries_count);
 
 // Logs the result of a re-auth challenge in the password settings.
-void LogPasswordSettingsReauthResult(ReauthResult result);
+void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result);
 
 // Log a return value of LoginDatabase::DeleteUndecryptableLogins method.
 void LogDeleteUndecryptableLoginsReturnValue(
@@ -878,6 +875,11 @@ base::OnceCallback<R(Args...)> TimeCallback(
       },
       histogram, base::ElapsedTimer(), std::move(callback));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void LogTouchToFillPasswordGenerationTriggerOutcome(
+    TouchToFillPasswordGenerationTriggerOutcome outcome);
+#endif
 
 #if BUILDFLAG(IS_IOS)
 // This enum indicates migration status from Keychain to OSCrypt for passwords

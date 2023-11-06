@@ -19,6 +19,7 @@
 namespace blink {
 
 class CanvasResourceProvider;
+class ExceptionState;
 
 class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     : public CanvasRenderingContext,
@@ -116,7 +117,8 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   }
   void LoseContext(LostContextMode) override;
 
-  ImageBitmap* TransferToImageBitmap(ScriptState*) final;
+  ImageBitmap* TransferToImageBitmap(ScriptState* script_state,
+                                     ExceptionState& exception_state) final;
 
   void Trace(Visitor*) const override;
 

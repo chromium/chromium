@@ -16,6 +16,7 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/reporting/resources/resource_manager.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -151,7 +152,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
                           callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_OK(response);
+  EXPECT_TRUE(response.has_value());
 }
 
 TEST_P(DmServerUploaderTest, ProcessesRecords) {
@@ -209,7 +210,7 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
                           callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_OK(response);
+  EXPECT_TRUE(response.has_value());
 }
 
 TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
@@ -221,8 +222,8 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
 
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([](CompletionCallback callback) {
-        std::move(callback).Run(
-            Status(error::FAILED_PRECONDITION, "Fail for test"));
+        std::move(callback).Run(base::unexpected(
+            Status(error::FAILED_PRECONDITION, "Fail for test")));
       })));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
@@ -243,7 +244,7 @@ TEST_P(DmServerUploaderTest, ReportsFailureToProcess) {
                           callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_THAT(response.status(),
+  EXPECT_THAT(response.error(),
               Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
@@ -290,9 +291,9 @@ TEST_P(DmServerUploaderTest, ReprotWithZeroRecords) {
 
   const auto response = callback_waiter.result();
   if (need_encryption_key()) {
-    EXPECT_OK(response);
+    EXPECT_TRUE(response.has_value());
   } else {
-    EXPECT_THAT(response.status(),
+    EXPECT_THAT(response.error(),
                 Property(&Status::error_code, Eq(error::INVALID_ARGUMENT)));
   }
 }
@@ -308,7 +309,8 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
 
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _, _, _))
       .WillOnce(WithArgs<4>(Invoke([error_code](CompletionCallback callback) {
-        std::move(callback).Run(Status(error_code, "Failing for test"));
+        std::move(callback).Run(
+            base::unexpected(Status(error_code, "Failing for test")));
       })));
 
   StrictMock<TestSuccessfulUpload> successful_upload;
@@ -329,7 +331,7 @@ TEST_P(DmServerFailureTest, ReportsFailureToUpload) {
       callback_waiter.cb(), sequenced_task_runner_);
 
   const auto response = callback_waiter.result();
-  EXPECT_THAT(response.status(), Property(&Status::code, Eq(error_code)));
+  EXPECT_THAT(response.error(), Property(&Status::code, Eq(error_code)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

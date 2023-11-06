@@ -210,7 +210,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   // Pulling causes a pending pull since there are no frames available for
   // reading.
   EXPECT_EQ(source->NumPendingPullsForTesting(), 0);
-  source->pull(script_state);
+  source->Pull(script_state, ASSERT_NO_EXCEPTION);
   EXPECT_EQ(source->NumPendingPullsForTesting(), 1);
 
   source->Close();

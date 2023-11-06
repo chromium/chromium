@@ -54,9 +54,7 @@ import org.chromium.ui.widget.ButtonCompat;
 
 import java.util.concurrent.TimeoutException;
 
-/**
-  Integration tests for the payments bottom sheet.
- */
+/** Integration tests for the payments bottom sheet. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
@@ -65,8 +63,7 @@ public class TouchToFillCreditCardTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String FORM_URL =
             "/chrome/test/data/autofill/autofill_creditcard_form.html";
@@ -83,27 +80,39 @@ public class TouchToFillCreditCardTest {
     private static final String MASKED_NUMBER = "• • • • 1111";
     private static final String NETWORK_NAME = "visa";
     private static final String CARD_NAME_FOR_AUTOFILL_DISPLAY = "Visa";
-    private static final CreditCard VISA = createCreditCard(CARD_NAME, CARD_NUMBER, CARD_EXP_MONTH,
-            CARD_EXP_YEAR, /*isLocal=*/true, CARD_NAME_FOR_AUTOFILL_DISPLAY, MASKED_NUMBER, 0,
-            NETWORK_NAME);
+    private static final CreditCard VISA =
+            createCreditCard(
+                    CARD_NAME,
+                    CARD_NUMBER,
+                    CARD_EXP_MONTH,
+                    CARD_EXP_YEAR,
+                    /* isLocal= */ true,
+                    CARD_NAME_FOR_AUTOFILL_DISPLAY,
+                    MASKED_NUMBER,
+                    0,
+                    NETWORK_NAME);
 
     private BottomSheetController mBottomSheetController;
     private WebContents mWebContents;
     private EmbeddedTestServer mServer;
     TestInputMethodManagerWrapper mInputMethodWrapper;
+
     @Before
     public void setup() throws TimeoutException {
-        mServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        mServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
         mActivityTestRule.startMainActivityWithURL(mServer.getURL(FORM_URL));
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         new AutofillTestHelper().setCreditCard(VISA);
 
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController = BottomSheetControllerProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController =
+                            BottomSheetControllerProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                });
         mWebContents = mActivityTestRule.getWebContents();
 
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
@@ -119,18 +128,22 @@ public class TouchToFillCreditCardTest {
         // Wait for TTF.
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         // Check that keyboard is not displayed.
-        pollUiThread(() -> { checkThat(mInputMethodWrapper.getShowSoftInputCounter(), is(0)); });
+        pollUiThread(
+                () -> {
+                    checkThat(mInputMethodWrapper.getShowSoftInputCounter(), is(0));
+                });
 
         // The item with the index 1 in the recycler view is supposed to be the credit card.
         // Click on it to simulate user selection.
-        runOnUiThreadBlocking(() -> {
-            View creditCardItemLayout = getItemsList().getChildAt(1);
-            verifyCardIsCorrectlyDisplayed(creditCardItemLayout);
-            // Check that continue button is present
-            Assert.assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
+        runOnUiThreadBlocking(
+                () -> {
+                    View creditCardItemLayout = getItemsList().getChildAt(1);
+                    verifyCardIsCorrectlyDisplayed(creditCardItemLayout);
+                    // Check that continue button is present
+                    Assert.assertTrue(getItemsList().getChildAt(2) instanceof ButtonCompat);
 
-            creditCardItemLayout.performClick();
-        });
+                    creditCardItemLayout.performClick();
+                });
         // Wait until the bottom sheet is closed
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
 
@@ -138,9 +151,11 @@ public class TouchToFillCreditCardTest {
         checkThat(DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_NAME_FIELD_ID), is(CARD_NAME));
         checkThat(
                 DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID), is(CARD_NUMBER));
-        checkThat(DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_EXP_YEAR_FIELD_ID),
+        checkThat(
+                DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_EXP_YEAR_FIELD_ID),
                 is(CARD_EXP_YEAR));
-        checkThat(DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_EXP_MONTH_FIELD_ID),
+        checkThat(
+                DOMUtils.getNodeValue(mWebContents, CREDIT_CARD_EXP_MONTH_FIELD_ID),
                 is(CARD_EXP_MONTH));
     }
 
@@ -155,7 +170,8 @@ public class TouchToFillCreditCardTest {
         // Check that the card name is displayed
         checkThat(cardNameLayout.getText().toString(), is(CARD_NAME));
         // Check that the last four digits of the card are displayed
-        checkThat(cardNumberLayout.getText().toString(),
+        checkThat(
+                cardNumberLayout.getText().toString(),
                 containsString(CARD_NUMBER.substring(CARD_NUMBER.length() - 4)));
         // Check that the expiration month and year are present in the card description
         checkThat(cardDescLayout.getText().toString(), containsString(CARD_EXP_MONTH));

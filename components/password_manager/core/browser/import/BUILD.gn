@@ -24,7 +24,7 @@ if (use_blink) {
     ]
 
     deps = [
-      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser/ui",
       "//components/password_manager/core/common:features",
       "//components/password_manager/services/csv_password:service",
       "//components/sync/base:base",

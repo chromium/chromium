@@ -7,6 +7,7 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
+import "third_party/blink/public/mojom/forms/form_control_type.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -34,26 +35,6 @@ enum ContextMenuDataMediaType {
 
   // A plugin node is selected.
   kPlugin,
-};
-
-enum ContextMenuDataInputFieldType {
-  // Not an input field.
-  kNone,
-
-  // type = text, search, email, url
-  kPlainText,
-
-  // type = password
-  kPassword,
-
-  // type = number
-  kNumber,
-
-  // type = tel
-  kTelephone,
-
-  // type = <etc.>
-  kOther,
 };
 
 enum CustomContextMenuItemType {
@@ -192,13 +173,6 @@ struct UntrustworthyContextMenuParams {
 
   ui.mojom.MenuSourceType source_type;
 
-  // If this node is an input field, the type of that field.
-  ContextMenuDataInputFieldType input_field_type;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name attribute
-  // contains 'password' as a substring) recognize it as a password field.
-  bool is_password_type_by_heuristics;
-
   // Rect representing the coordinates in the document space of the selection.
   gfx.mojom.Rect selection_rect;
 
@@ -209,13 +183,31 @@ struct UntrustworthyContextMenuParams {
   // See TextFragmentAnchor.
   bool opened_from_highlight;
 
-  // The renderer id of the form that contains the input or textarea field.
-  // Not set if the initiating field is not an input or textarea field.
-  FormRendererId? form_renderer_id;
+  // The type of the form control element on which the context menu is invoked,
+  // if any.
+  FormControlType? form_control_type;
 
-  // The renderer id of the input or textarea field from where the context menu
-  // is opened. Not set if it is not an input or text area field.
-  FieldRendererId? field_renderer_id;
+  // Indicates whether the context menu is invoked on a non-form,
+  // non-form-control element that is contenteditable. Thus, it is mutually
+  // exclusive with `form_control_type`.
+  // Only true if AutofillUseDomNodeIdForRendererId (crbug.com/1427131) is
+  // enabled.
+  bool is_content_editable_for_autofill;
+
+  // Identifies the element the context menu was invoked on if either
+  // `form_control_type` is engaged or `is_content_editable_for_autofill` is
+  // true.
+  // See `autofill::FieldRendererId` for the semantics of renderer IDs.
+  FieldRendererId field_renderer_id;
+
+  // Identifies form to which the field identified by `field_renderer_id` is
+  // associated.
+  // See `autofill::FormRendererId` for the semantics of renderer IDs.
+  FormRendererId form_renderer_id;
+
+  // True iff a field's type is plain text but heuristics (e.g. the name attribute
+  // contains 'password' as a substring) recognize it as a password field.
+  bool is_password_type_by_heuristics;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

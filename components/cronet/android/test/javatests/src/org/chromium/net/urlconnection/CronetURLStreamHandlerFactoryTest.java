@@ -24,16 +24,15 @@ import org.chromium.net.NativeTestServer;
 
 import java.net.URL;
 
-/**
- * Test for CronetURLStreamHandlerFactory.
- */
+/** Test for CronetURLStreamHandlerFactory. */
 @DoNotBatch(
         reason = "URL#setURLStreamHandlerFactory can be called at most once during JVM lifetime")
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK}, reason = "See crrev.com/c/4590329")
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK},
+        reason = "See crrev.com/c/4590329")
 @RunWith(AndroidJUnit4.class)
 public class CronetURLStreamHandlerFactoryTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private CronetHttpURLConnection mUrlConnection;
 
@@ -48,16 +47,23 @@ public class CronetURLStreamHandlerFactoryTest {
     @Test
     @SmallTest
     public void testRequireConfig() throws Exception {
-        NullPointerException e = assertThrows(
-                NullPointerException.class, () -> new CronetURLStreamHandlerFactory(null));
+        NullPointerException e =
+                assertThrows(
+                        NullPointerException.class, () -> new CronetURLStreamHandlerFactory(null));
         assertThat(e).hasMessageThat().isEqualTo("CronetEngine is null.");
     }
 
     @Test
     @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "crbug.com/1494845: setURLStreamHandlerFactory fails with 'factory already"
+                            + " defined'")
     public void testSetUrlStreamFactoryUsesCronet() throws Exception {
         assertThat(
-                NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext()))
+                        NativeTestServer.startNativeTestServer(
+                                mTestRule.getTestFramework().getContext()))
                 .isTrue();
 
         URL.setURLStreamHandlerFactory(

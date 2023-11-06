@@ -7,8 +7,8 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -178,10 +178,10 @@ TEST_F(LayoutInlineTest, RegionHitTest) {
   ASSERT_TRUE(lots_of_boxes->IsInLayoutNGInlineFormattingContext());
 
   const auto* div = To<LayoutBlockFlow>(lots_of_boxes->Parent());
-  NGInlineCursor cursor(*div);
+  InlineCursor cursor(*div);
   for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
     DCHECK(cursor.Current().IsLineBox());
-    NGInlineCursor line_cursor = cursor.CursorForDescendants();
+    InlineCursor line_cursor = cursor.CursorForDescendants();
     bool hit_outcome = lots_of_boxes->HitTestCulledInline(
         hit_result, location, hit_offset, line_cursor);
     EXPECT_FALSE(hit_outcome);

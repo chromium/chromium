@@ -13,11 +13,11 @@ import android.text.style.TextAppearanceSpan;
 import android.text.style.UpdateAppearance;
 
 /**
- * SpannableString that supplies .equals method for content comparison.
- * This code assumes the use of a limited subset of span types in suggestion text
- * and may need revisiting if/when the scope of these types expands (eg. different colors are
- * introduced). With the limited set of Span features we use this code is working well.
- * When this is done, consider sharing this with UrlBarMediator#isNewTextEquivalentToExistingText.
+ * SpannableString that supplies .equals method for content comparison. This code assumes the use of
+ * a limited subset of span types in suggestion text and may need revisiting if/when the scope of
+ * these types expands (eg. different colors are introduced). With the limited set of Span features
+ * we use this code is working well. When this is done, consider sharing this with
+ * UrlBarMediator#isNewTextEquivalentToExistingText.
  */
 public class SuggestionSpannable extends SpannableString {
     public SuggestionSpannable(CharSequence text) {
@@ -26,12 +26,15 @@ public class SuggestionSpannable extends SpannableString {
 
     /**
      * Custom equals method that addresses some of the issues found in SpannableStringInternal:
-     * 1. getSpan may reorder returned spans that was not reflected in original code until
-     *    http://b2/73359036 (http://shortn/_vKcawFBIoL)
-     * 2. Individual Span objects still do not necessarily override .equals themselves
-     *    (eg. ForegroundColorSpan), making them always fail the comparison.
      *
-     * This code simply addresses some issues in SpannableString.equals() method, therefore does
+     * <ul>
+     *   <li>getSpan may reorder returned spans that was not reflected in original code until
+     *       http://b2/73359036 (http://shortn/_vKcawFBIoL)
+     *   <li>Individual Span objects still do not necessarily override .equals themselves (eg.
+     *       ForegroundColorSpan), making them always fail the comparison.
+     * </ul>
+     *
+     * <p>This code simply addresses some issues in SpannableString.equals() method, therefore does
      * not come paired with hashCode() call. hashCode() is correctly supplied by SpannableString.
      */
     @Override

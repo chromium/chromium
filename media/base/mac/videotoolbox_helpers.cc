@@ -257,8 +257,8 @@ bool CopySampleBufferToAnnexBBuffer(VideoCodec codec,
   // Copy all the NAL units. In the process convert them from AVCC/HVCC format
   // (length header) to AnnexB format (start code).
   char* bb_data;
-  status =
-      CMBlockBufferGetDataPointer(contiguous_bb, 0, nullptr, nullptr, &bb_data);
+  status = CMBlockBufferGetDataPointer(contiguous_bb.get(), 0, nullptr, nullptr,
+                                       &bb_data);
   if (status != noErr) {
     DLOG(ERROR) << " CMBlockBufferGetDataPointer failed: " << status;
     return false;
@@ -307,40 +307,42 @@ bool SessionPropertySetter::IsSupported(CFStringRef key) {
   DCHECK(session_);
   if (!supported_keys_) {
     CFDictionaryRef dict_ref;
-    if (VTSessionCopySupportedPropertyDictionary(session_, &dict_ref) == noErr)
+    if (VTSessionCopySupportedPropertyDictionary(session_.get(), &dict_ref) ==
+        noErr) {
       supported_keys_.reset(dict_ref);
+    }
   }
-  return supported_keys_ && CFDictionaryContainsKey(supported_keys_, key);
+  return supported_keys_ && CFDictionaryContainsKey(supported_keys_.get(), key);
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, int32_t value) {
   DCHECK(session_);
   base::apple::ScopedCFTypeRef<CFNumberRef> cfvalue(
       CFNumberCreate(nullptr, kCFNumberSInt32Type, &value));
-  return VTSessionSetProperty(session_, key, cfvalue) == noErr;
+  return VTSessionSetProperty(session_.get(), key, cfvalue.get()) == noErr;
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, bool value) {
   DCHECK(session_);
   CFBooleanRef cfvalue = (value) ? kCFBooleanTrue : kCFBooleanFalse;
-  return VTSessionSetProperty(session_, key, cfvalue) == noErr;
+  return VTSessionSetProperty(session_.get(), key, cfvalue) == noErr;
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, double value) {
   DCHECK(session_);
   base::apple::ScopedCFTypeRef<CFNumberRef> cfvalue(
       CFNumberCreate(nullptr, kCFNumberDoubleType, &value));
-  return VTSessionSetProperty(session_, key, cfvalue) == noErr;
+  return VTSessionSetProperty(session_.get(), key, cfvalue.get()) == noErr;
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, CFStringRef value) {
   DCHECK(session_);
-  return VTSessionSetProperty(session_, key, value) == noErr;
+  return VTSessionSetProperty(session_.get(), key, value) == noErr;
 }
 
 bool SessionPropertySetter::Set(CFStringRef key, CFArrayRef value) {
   DCHECK(session_);
-  return VTSessionSetProperty(session_, key, value) == noErr;
+  return VTSessionSetProperty(session_.get(), key, value) == noErr;
 }
 
 }  // namespace video_toolbox

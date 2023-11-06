@@ -70,7 +70,7 @@ OSStatus Keychain::ItemDelete(CFDictionaryRef query) {
 OSStatus Keychain::ItemUpdate(
     CFDictionaryRef query,
     base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> keychain_data) {
-  return SecItemUpdate(query, keychain_data);
+  return SecItemUpdate(query, keychain_data.get());
 }
 
 }  // namespace device::fido::mac

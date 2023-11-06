@@ -20,7 +20,7 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/cart/cart_handler.h"
 #include "chrome/browser/image_service/image_service_factory.h"
-#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive_handler.h"
 #include "chrome/browser/new_tab_page/modules/feed/feed_handler.h"
 #include "chrome/browser/new_tab_page/modules/history_clusters/history_clusters.mojom.h"
@@ -29,6 +29,7 @@
 #include "chrome/browser/new_tab_page/modules/photos/photos_handler.h"
 #include "chrome/browser/new_tab_page/modules/recipes/recipes_handler.h"
 #include "chrome/browser/new_tab_page/modules/v2/history_clusters/history_clusters_page_handler_v2.h"
+#include "chrome/browser/new_tab_page/modules/v2/tab_resumption/tab_resumption_page_handler.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
@@ -107,6 +108,9 @@ using content::WebContents;
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
                                       kCustomizeChromeButtonElementId);
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(NewTabPageUI,
+                                      kModulesCustomizeIPHAnchorElement);
+
 namespace {
 
 constexpr char kPrevNavigationTimePrefName[] = "NewTabPage.PrevNavigationTime";
@@ -115,7 +119,7 @@ bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   return
       /* Can be null if Chrome signin is disabled. */ identity_manager &&
-      identity_manager->GetAccountsInCookieJar().signed_in_accounts.size() > 0;
+      !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
 }
 
 void AddRawStringOrDefault(content::WebUIDataSource* source,
@@ -216,12 +220,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
   source->AddBoolean(
       "singleRowShortcutsEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpSingleRowShortcuts));
+      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpSingleRowShortcuts));
   source->AddBoolean("logoEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
       "reducedLogoSpaceEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpReducedLogoSpace));
+      IsEnUSLocaleOnlyFeatureEnabled(ntp_features::kNtpReducedLogoSpace));
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo) &&
@@ -415,11 +419,17 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesCartLowerYour", IDS_NTP_MODULES_CART_LOWER_YOUR},
       {"modulesDisableToastMessage",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_TOAST_MESSAGE},
+      {"modulesDriveDisableButtonText",
+       IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT},
+      {"modulesDriveDisableButtonTextV2",
+       IDS_NTP_MODULES_DRIVE_DISABLE_BUTTON_TEXT_V2},
+      {"modulesDriveDismissButtonText",
+       IDS_NTP_MODULES_DRIVE_DISMISS_BUTTON_TEXT},
+      {"modulesDriveMoreActionsButtonText",
+       IDS_NTP_MODULES_DRIVE_MORE_ACTIONS_BUTTON_TEXT},
       {"modulesDriveSentence", IDS_NTP_MODULES_DRIVE_SENTENCE},
-      {"modulesDriveSentenceV2", IDS_NTP_MODULES_DRIVE_SENTENCE_V2},
       {"modulesDriveSentence2", IDS_NTP_MODULES_DRIVE_SENTENCE2},
       {"modulesDriveFilesSentence", IDS_NTP_MODULES_DRIVE_FILES_SENTENCE},
-      {"modulesDriveFilesLower", IDS_NTP_MODULES_DRIVE_FILES_LOWER},
       {"modulesDummyLower", IDS_NTP_MODULES_DUMMY_LOWER},
       {"modulesDriveTitle", IDS_NTP_MODULES_DRIVE_TITLE},
       {"modulesDriveTitleV2", IDS_NTP_MODULES_DRIVE_TITLE_V2},
@@ -504,6 +514,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_FIRST_RUN_EXPERIENCE_OPT_OUT_TOAST},
       {"modulesJourneysShowAll", IDS_NTP_MODULES_SHOW_ALL},
       {"modulesJourneysInfo", IDS_NTP_MODULES_HISTORY_CLUSTERS_INFO},
+      {"modulesHistoryDoneButton",
+       IDS_NTP_MODULES_HISTORY_CLUSTERS_DONE_BUTTON},
       {"modulesHistoryWithDiscountInfo",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_WITH_DISCOUNT_INFO},
       {"modulesHistoryResumeBrowsingTitle",
@@ -516,8 +528,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISABLE_DROPDOWN_TEXT},
       {"modulesJourneysDismissButton",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_DISMISS_BUTTON},
-      {"modulesJourneysDoneButton",
-       IDS_NTP_MODULES_HISTORY_CLUSTERS_DONE_BUTTON},
       {"modulesJourneysShowAllButton",
        IDS_NTP_MODULES_HISTORY_CLUSTERS_SHOW_ALL_BUTTON},
       {"modulesJourneysShowAllAcc", IDS_ACCNAME_SHOW_ALL},
@@ -884,6 +894,13 @@ void NewTabPageUI::BindInterface(
 }
 
 void NewTabPageUI::BindInterface(
+    mojo::PendingReceiver<ntp::tab_resumption::mojom::PageHandler>
+        pending_page_handler) {
+  tab_resumption_handler_ = std::make_unique<TabResumptionPageHandler>(
+      std::move(pending_page_handler), profile_, web_contents());
+}
+
+void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<page_image_service::mojom::PageImageServiceHandler>
         pending_page_handler) {
   base::WeakPtr<page_image_service::ImageService> image_service_weak;
@@ -916,8 +933,8 @@ void NewTabPageUI::CreatePageHandler(
       std::move(pending_page_handler), std::move(pending_page), profile_,
       ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
-      std::make_unique<CustomizeChromeFeaturePromoHelper>(),
-      navigation_start_time_, module_id_names_);
+      std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
+      module_id_names_);
 }
 
 void NewTabPageUI::CreateCustomizeThemesHandler(
@@ -962,7 +979,8 @@ void NewTabPageUI::CreateHelpBubbleHandler(
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{
-          NewTabPageUI::kCustomizeChromeButtonElementId});
+          NewTabPageUI::kCustomizeChromeButtonElementId,
+          NewTabPageUI::kModulesCustomizeIPHAnchorElement});
 }
 
 // OnColorProviderChanged can be called during the destruction process and
@@ -1049,7 +1067,8 @@ void NewTabPageUI::OnTilesVisibilityPrefChanged() {
 
 void NewTabPageUI::OnLoad() {
   base::Value::Dict update;
-  update.Set("navigationStartTime", navigation_start_time_.ToJsTime());
+  update.Set("navigationStartTime",
+             navigation_start_time_.InMillisecondsFSinceUnixEpoch());
   update.Set(
       "modulesEnabled",
       ntp::HasModulesEnabled(module_id_names_,

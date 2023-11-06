@@ -1,0 +1,54 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.url_blocklist": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisabledSchemes": [
+            "file"
+          ]
+        },
+        "prefs": {
+          "policy.url_blocklist": {
+            "value": [
+              "file://*"
+            ]
+          }
+        }
+      },
+      {
+        "note": "If both DisabledSchemes and URLBlocklist are set, their values are merged in the pref.",
+        "policies": {
+          "DisabledSchemes": [
+            "file"
+          ],
+          "URLBlocklist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_blocklist": {
+            "value": [
+              "file://*",
+              "google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

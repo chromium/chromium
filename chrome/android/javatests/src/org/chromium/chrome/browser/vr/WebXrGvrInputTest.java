@@ -46,22 +46,23 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-/**
- * End-to-end tests for sending input while using WebXR.
- */
+/** End-to-end tests for sending input while using WebXR. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
 // failures has been fixed.
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=LogJsConsoleMessages",
-        "allow-pre-commit-input", "force-webxr-runtime=gvr"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "allow-pre-commit-input",
+    "force-webxr-runtime=gvr"
+})
 public class WebXrGvrInputTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrGvrTestFramework mWebXrVrTestFramework;
@@ -77,7 +78,9 @@ public class WebXrGvrInputTest {
     }
 
     private void assertAppButtonEffect(boolean shouldHaveExited, WebXrGvrTestFramework framework) {
-        Assert.assertEquals("App button effect matched expectation", shouldHaveExited,
+        Assert.assertEquals(
+                "App button effect matched expectation",
+                shouldHaveExited,
                 mWebXrVrTestFramework.pollJavaScriptBoolean(
                         "sessionInfos[sessionTypes.IMMERSIVE].currentSession == null",
                         POLL_TIMEOUT_SHORT_MS));
@@ -91,8 +94,9 @@ public class WebXrGvrInputTest {
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisableIf.
-    Build(sdk_is_less_than = Build.VERSION_CODES.O, message = "https://crbug.com/1409794")
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.O,
+            message = "https://crbug.com/1409794")
     public void testScreenTapsNotRegistered_WebXr() throws InterruptedException {
         screenTapsNotRegisteredImpl("webxr_test_screen_taps_not_registered", mWebXrVrTestFramework);
     }
@@ -105,33 +109,34 @@ public class WebXrGvrInputTest {
         // Wait on VrShell to say that its parent consumed the touch event.
         // Set to 2 because there's an ACTION_DOWN followed by ACTION_UP
         final CountDownLatch touchRegisteredLatch = new CountDownLatch(2);
-        TestVrShellDelegate.getVrShellForTesting().setOnDispatchTouchEventForTesting(
-                new OnDispatchTouchEventCallback() {
-                    @Override
-                    public void onDispatchTouchEvent(boolean parentConsumed) {
-                        if (!parentConsumed) Assert.fail("Parent did not consume event");
-                        touchRegisteredLatch.countDown();
-                    }
-                });
+        TestVrShellDelegate.getVrShellForTesting()
+                .setOnDispatchTouchEventForTesting(
+                        new OnDispatchTouchEventCallback() {
+                            @Override
+                            public void onDispatchTouchEvent(boolean parentConsumed) {
+                                if (!parentConsumed) Assert.fail("Parent did not consume event");
+                                touchRegisteredLatch.countDown();
+                            }
+                        });
         TouchCommon.singleClickView(mTestRule.getActivity().getWindow().getDecorView());
-        Assert.assertTrue("VrShell did not dispatch touches",
+        Assert.assertTrue(
+                "VrShell did not dispatch touches",
                 touchRegisteredLatch.await(POLL_TIMEOUT_LONG_MS * 10, TimeUnit.MILLISECONDS));
         framework.executeStepAndWait("stepVerifyNoAdditionalTaps()");
         framework.endTest();
     }
 
-    /**
-     * Tests that Daydream controller clicks are registered as XR input in an immersive session.
-     */
+    /** Tests that Daydream controller clicks are registered as XR input in an immersive session. */
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
+    @DisableIf.Build(
+            sdk_is_greater_than = VERSION_CODES.P,
+            sdk_is_less_than = VERSION_CODES.R,
             message = "Flaky on android-10-arm64-rel, crbug.com/1455242")
-    public void
-    testControllerClicksRegisteredOnDaydream_WebXr() {
+    public void testControllerClicksRegisteredOnDaydream_WebXr() {
         EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_input", PAGE_LOAD_TIMEOUT_S);
@@ -155,19 +160,19 @@ public class WebXrGvrInputTest {
     }
 
     /**
-     * Tests that Daydream controller is exposed as a Gamepad on an
-     * XRInputSource in an immersive session and that button clicks and touchpad
-     * movements are registered.
+     * Tests that Daydream controller is exposed as a Gamepad on an XRInputSource in an immersive
+     * session and that button clicks and touchpad movements are registered.
      */
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
+    @DisableIf.Build(
+            sdk_is_greater_than = VERSION_CODES.P,
+            sdk_is_less_than = VERSION_CODES.R,
             message = "https://crbug.com/1420205")
-    public void
-    testControllerExposedAsGamepadOnDaydream_WebXr() {
+    public void testControllerExposedAsGamepadOnDaydream_WebXr() {
         EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_gamepad_support", PAGE_LOAD_TIMEOUT_S);
@@ -248,19 +253,22 @@ public class WebXrGvrInputTest {
 
     private long sendScreenTouchDown(final View view, final int x, final int y) {
         long downTime = SystemClock.uptimeMillis();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            view.dispatchTouchEvent(
-                    MotionEvent.obtain(downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.dispatchTouchEvent(
+                            MotionEvent.obtain(
+                                    downTime, downTime, MotionEvent.ACTION_DOWN, x, y, 0));
+                });
         return downTime;
     }
 
     private void sendScreenTouchUp(final View view, final int x, final int y, final long downTime) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            long now = SystemClock.uptimeMillis();
-            view.dispatchTouchEvent(
-                    MotionEvent.obtain(downTime, now, MotionEvent.ACTION_UP, x, y, 0));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    long now = SystemClock.uptimeMillis();
+                    view.dispatchTouchEvent(
+                            MotionEvent.obtain(downTime, now, MotionEvent.ACTION_UP, x, y, 0));
+                });
     }
 
     private void spamScreenTaps(final View view, final int x, final int y, final int iterations) {
@@ -280,8 +288,8 @@ public class WebXrGvrInputTest {
     }
 
     /**
-     * Tests that screen touches are registered as XR input in immersive sessions,
-     *  when the viewer is Cardboard.
+     * Tests that screen touches are registered as XR input in immersive sessions, when the viewer
+     * is Cardboard.
      */
     @Test
     @MediumTest
@@ -304,8 +312,8 @@ public class WebXrGvrInputTest {
     }
 
     /**
-     * Tests that screen touches are registered as transient XR input in inline sessions,
-     * when the viewer is Cardboard.
+     * Tests that screen touches are registered as transient XR input in inline sessions, when the
+     * viewer is Cardboard.
      */
     @Test
     @MediumTest
@@ -340,8 +348,8 @@ public class WebXrGvrInputTest {
     }
 
     /**
-     * Tests that focus is locked to the device with an immersive session for the purposes of
-     * VR input.
+     * Tests that focus is locked to the device with an immersive session for the purposes of VR
+     * input.
      */
     @Test
     @MediumTest
@@ -359,9 +367,8 @@ public class WebXrGvrInputTest {
     }
 
     /**
-     * Verifies that a Gamepad API gamepad is returned on the XRSession's input
-     * source instead of the navigator array when using WebXR and a Daydream
-     * headset.
+     * Verifies that a Gamepad API gamepad is returned on the XRSession's input source instead of
+     * the navigator array when using WebXR and a Daydream headset.
      */
     @Test
     @MediumTest
@@ -369,13 +376,12 @@ public class WebXrGvrInputTest {
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrInputSourceHasGamepad() {
-        webxrGamepadSupportImpl(true /* daydream */);
+        webxrGamepadSupportImpl(/* daydream= */ true);
     }
 
     /**
-     * Verifies that the XRSession has an input source when using WebXR and
-     * Cardboard. There should be no gamepads on the input source or navigator
-     * array.
+     * Verifies that the XRSession has an input source when using WebXR and Cardboard. There should
+     * be no gamepads on the input source or navigator array.
      */
     @Test
     @MediumTest
@@ -383,7 +389,7 @@ public class WebXrGvrInputTest {
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     public void testWebXrInputSourceWithoutGamepad_Cardboard() {
-        webxrGamepadSupportImpl(false /* daydream */);
+        webxrGamepadSupportImpl(/* daydream= */ false);
     }
 
     private void webxrGamepadSupportImpl(boolean daydream) {

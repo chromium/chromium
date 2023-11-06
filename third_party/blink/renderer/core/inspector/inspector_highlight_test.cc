@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -273,6 +274,8 @@ TEST_F(InspectorHighlightTest, BuildIsolatedElementInfo) {
 
 static std::string GetBackgroundColorFromElementInfo(Element* element) {
   EXPECT_TRUE(element);
+  AXContext ax_context(element->GetDocument(), ui::kAXModeBasic);
+  element->GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   auto info = BuildElementInfo(element);
   EXPECT_TRUE(info);
   AppendStyleInfo(element, info.get(), {}, {});

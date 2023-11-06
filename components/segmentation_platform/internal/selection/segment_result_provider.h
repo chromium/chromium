@@ -69,6 +69,9 @@ class SegmentResultProvider {
     // Contains the raw scores along with output config.
     proto::PredictionResult result;
 
+    // If model was executed, the processed feature list.
+    absl::optional<ModelProvider::Request> model_inputs;
+
     // TODO(shaktisahu): Delete this after full migration.
     absl::optional<float> rank;
   };

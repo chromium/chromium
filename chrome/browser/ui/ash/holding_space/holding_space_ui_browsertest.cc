@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
@@ -25,9 +24,11 @@
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
+#include "ash/system/progress_indicator/progress_ring_animation.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -74,6 +75,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -102,6 +104,7 @@ using ::testing::Conditional;
 using ::testing::Eq;
 using ::testing::Matches;
 using ::testing::Optional;
+using ::testing::Property;
 
 // Matchers --------------------------------------------------------------------
 
@@ -240,7 +243,7 @@ void MouseDrag(const views::View* from,
 }
 
 // Moves mouse to `view` over `count` number of events.
-void MoveMouseTo(const views::View* view, size_t count = 1u) {
+void MoveMouseToView(const views::View* view, size_t count = 1u) {
   auto* root_window = HoldingSpaceBrowserTestBase::GetRootWindowForNewWindows();
   ui::test::EventGenerator event_generator(root_window);
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint(), count);
@@ -497,6 +500,33 @@ class DropTargetView : public views::WidgetDelegateView {
   }
 
   base::FilePath copied_file_path_;
+};
+
+// NextMainFrameWaiter ---------------------------------------------------------
+
+// A helper class that waits until the next main frame is processed.
+class NextMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
+    observation_.Observe(compositor);
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running());
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
+      this};
 };
 
 // HoldingSpaceUiBrowserTest ---------------------------------------------------
@@ -1298,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceUiBrowserTest, UnpinItem) {
   // so move the mouse and wait for the pin button to be drawn. Note that the
   // mouse is moved over multiple events to ensure that the appropriate mouse
   // enter event is also generated.
-  MoveMouseTo(pinned_file_chip, /*count=*/10);
+  MoveMouseToView(pinned_file_chip, /*count=*/10);
   auto* pin_btn = pinned_file_chip->GetViewByID(kHoldingSpaceItemPinButtonId);
   ViewDrawnWaiter().Wait(pin_btn);
 
@@ -2118,6 +2148,19 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   std::vector<views::View*> download_chips = test_api().GetDownloadChips();
   ASSERT_EQ(download_chips.size(), 1u);
 
+  // Wait for the download chip to be drawn with an indeterminate progress ring
+  // animation.
+  NextMainFrameWaiter(Shell::GetPrimaryRootWindow()->GetHost()->compositor())
+      .Wait();
+  EXPECT_THAT(
+      HoldingSpaceAnimationRegistry::GetInstance()
+          ->GetProgressRingAnimationForKey(
+              ProgressIndicatorAnimationRegistry::AsAnimationKey(
+                  HoldingSpaceController::Get()->model()->GetItem(
+                      test_api().GetHoldingSpaceItemId(download_chips[0])))),
+      Property(&ProgressRingAnimation::type,
+               Eq(ProgressRingAnimation::Type::kIndeterminate)));
+
   // Cache pointers to the `primary_label` and `secondary_label`.
   auto* primary_label = static_cast<views::Label*>(
       download_chips[0]->GetViewByID(kHoldingSpaceItemPrimaryChipLabelId));
@@ -2570,7 +2613,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should contain a visible primary action for "Pin".
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  MoveMouseToView(completed_download_chip, /*count=*/10);
   auto* primary_action_container = completed_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   auto* primary_action_cancel =
@@ -2584,7 +2627,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible primary action for
   // "Cancel".
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  MoveMouseToView(in_progress_download_chip, /*count=*/10);
   primary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemPrimaryActionContainerId);
   primary_action_cancel =
@@ -2939,7 +2982,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
 
   // Hover over the `completed_download_chip`. Because the underlying download
   // is completed, the chip should not contain a visible secondary action.
-  MoveMouseTo(completed_download_chip, /*count=*/10);
+  MoveMouseToView(completed_download_chip, /*count=*/10);
   ASSERT_FALSE(completed_download_chip
                    ->GetViewByID(kHoldingSpaceItemSecondaryActionContainerId)
                    ->GetVisible());
@@ -2947,7 +2990,7 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
   // Hover over the `in_progress_download_chip`. Because the underlying download
   // is in-progress, the chip should contain a visible secondary action for
   // either "Pause" or "Resume", depending on test parameterization.
-  MoveMouseTo(in_progress_download_chip, /*count=*/10);
+  MoveMouseToView(in_progress_download_chip, /*count=*/10);
   auto* secondary_action_container = in_progress_download_chip->GetViewByID(
       kHoldingSpaceItemSecondaryActionContainerId);
   auto* secondary_action_pause =
@@ -3102,8 +3145,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceScreenRecordingUiBrowserTest,
   MessagePopupAnimationWaiter(ash::Shell::GetPrimaryRootWindowController()
                                   ->shelf()
                                   ->GetStatusAreaWidget()
-                                  ->unified_system_tray()
-                                  ->GetMessagePopupCollection())
+                                  ->notification_center_tray()
+                                  ->popup_collection())
       .Wait();
 
   // Verify that the screen recording appears in holding space UI.

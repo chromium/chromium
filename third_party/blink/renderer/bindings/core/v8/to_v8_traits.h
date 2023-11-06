@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -388,21 +389,21 @@ template <typename ElementIDLType, typename ContainerType>
 [[nodiscard]] inline v8::MaybeLocal<v8::Value> ToV8HelperSequence(
     ScriptState* script_state,
     const ContainerType& sequence) {
-  Vector<v8::Local<v8::Value>> converted_vector;
-  converted_vector.ReserveInitialCapacity(sequence.size());
-  typename ContainerType::const_iterator end = sequence.end();
-  wtf_size_t i = 0;
-  for (typename ContainerType::const_iterator iter = sequence.begin();
-       iter != end; ++iter, ++i) {
-    v8::Local<v8::Value> v8_value;
-    if (!ToV8Traits<ElementIDLType>::ToV8(script_state, *iter)
-             .ToLocal(&v8_value)) {
-      return {};
+  auto current_it = sequence.begin();
+  const auto end_it = sequence.end();
+  const auto callback = [&current_it, end_it, script_state]() {
+    DCHECK(end_it != current_it);
+    std::ignore = end_it;
+    if constexpr (WTF::IsAnyMemberType<decltype(*current_it)>::value) {
+      return ToV8Traits<ElementIDLType>::ToV8(script_state,
+                                              (current_it++)->Get());
+    } else {
+      return ToV8Traits<ElementIDLType>::ToV8(script_state, *(current_it++));
     }
-    converted_vector.push_back(std::move(v8_value));
-  }
-  return v8::Array::New(script_state->GetIsolate(), converted_vector.data(),
-                        base::checked_cast<int>(converted_vector.size()));
+  };
+  return v8::Array::New(script_state->GetContext(),
+                        base::checked_cast<size_t>(sequence.size()), callback)
+      .template As<v8::Value>();
 }
 
 // Helper function for IDLSequence in order to reduce code size. This avoids
@@ -449,18 +450,33 @@ template <typename ValueIDLType, typename ContainerType>
   for (typename ContainerType::const_iterator iter = record.begin();
        iter != end; ++iter) {
     v8::Local<v8::Value> v8_value;
-    if (!ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second)
-             .ToLocal(&v8_value)) {
+    v8::MaybeLocal<v8::Value> maybe_v8_value;
+    if constexpr (WTF::IsAnyMemberType<decltype(iter->second)>::value) {
+      maybe_v8_value =
+          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second.Get());
+    } else {
+      maybe_v8_value =
+          ToV8Traits<ValueIDLType>::ToV8(script_state, iter->second);
+    }
+    if (!maybe_v8_value.ToLocal(&v8_value)) {
       return v8::MaybeLocal<v8::Value>();
     }
     bool is_property_created;
     if (!object
              ->CreateDataProperty(context, V8AtomicString(isolate, iter->first),
                                   v8_value)
-             .To(&is_property_created) ||
-        !is_property_created) {
-      return v8::Local<v8::Value>();
+             .To(&is_property_created)) {
+      return {};
     }
+    // `!is_property_created` at this point means that the property wasn't
+    // created although v8::Object::CreateDataProperty has succeeded. ---
+    // it must not happen because the object has just been created newly, so
+    // there must be no existing property with the same property name.
+    //
+    // Note that we must not return v8::Nothing because CreateDataProperty
+    // didn't throw (the convention is that v8::Nothing comes with an
+    // exception).
+    CHECK(is_property_created);
   }
   return object;
 }
@@ -489,7 +505,7 @@ struct ToV8Traits<
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) {
+      const v8::LocalVector<v8::Value>& value) {
     return bindings::ToV8HelperSequence<IDLAny>(script_state, value);
   }
 };
@@ -573,7 +589,7 @@ struct ToV8Traits<IDLArray<T>> {
   // TODO(crbug.com/1185046): Remove this overload.
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(
       ScriptState* script_state,
-      const Vector<v8::Local<v8::Value>>& value) {
+      const v8::LocalVector<v8::Value>& value) {
     v8::Local<v8::Value> v8_value;
     if (!ToV8Traits<IDLSequence<IDLAny>>::ToV8(script_state, value)
              .ToLocal(&v8_value)) {
@@ -843,7 +859,7 @@ struct ToV8Traits<IDLNullable<IDLDate>> {
     if (!date)
       return v8::Null(script_state->GetIsolate());
     return v8::Date::New(script_state->GetContext(),
-                         date->ToJsTimeIgnoringNull())
+                         date->InMillisecondsFSinceUnixEpochIgnoringNull())
         .ToLocalChecked();
   }
 };

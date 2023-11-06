@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class NGExclusionSpace;
+class ExclusionSpace;
 struct NGPositionedFloat;
 struct NGUnpositionedFloat;
 
@@ -22,7 +22,7 @@ typedef HeapVector<NGPositionedFloat, 8> NGPositionedFloatVector;
 LayoutUnit ComputeMarginBoxInlineSizeForUnpositionedFloat(NGUnpositionedFloat*);
 
 // Position and lay out a float.
-NGPositionedFloat PositionFloat(NGUnpositionedFloat*, NGExclusionSpace*);
+NGPositionedFloat PositionFloat(NGUnpositionedFloat*, ExclusionSpace*);
 
 }  // namespace blink
 

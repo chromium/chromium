@@ -42,9 +42,11 @@ public final class TabHelpers {
 
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
-        if (!tab.isIncognito() && !((TabImpl) tab).isCustomTab()
-                && PriceTrackingFeatures.isPriceTrackingEligible()
-                && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
+        if (!tab.isIncognito()
+                && !((TabImpl) tab).isCustomTab()
+                && PriceTrackingFeatures.isPriceTrackingEligible(tab.getProfile())
+                && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
+                        tab.getProfile())) {
             ShoppingPersistedTabData.initialize(tab);
         }
     }

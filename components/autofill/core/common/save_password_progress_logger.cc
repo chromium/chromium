@@ -46,6 +46,7 @@ std::string FormSignatureToDebugString(FormSignature form_signature) {
 void SavePasswordProgressLogger::LogFormData(
     SavePasswordProgressLogger::StringID label,
     const FormData& form_data) {
+  CHECK(!form_data.url.is_empty());
   std::string message = GetStringFromID(label) + ": {\n";
   message += GetStringFromID(STRING_FORM_SIGNATURE) + ": " +
              FormSignatureToDebugString(CalculateFormSignature(form_data)) +

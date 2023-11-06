@@ -1,0 +1,40 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+include "tab_state_common.fbs";
+
+namespace org.chromium.chrome.browser.tab.flatbuffer;
+
+// Version 1 places all fields together. The intention
+// is to experiment with different refactorings (e.g. move
+// WebcontentsState to its own Table for delayed acquisition).
+table TabStateFlatBufferV1 {
+    // Parent Tab identifier.
+    parent_id:int;
+
+    // Root Tab identifier.
+    root_id:int;
+
+    // Timestamp when Tab was last accessed.
+    timestamp_millis:long;
+
+    // WebContentsState.
+    web_contents_state_bytes:[byte];
+
+    // Identifier for app which opened the Tab.
+    opener_app_id:string;
+
+    // Theme color.
+    theme_color:int;
+
+    // Launch type at creation.
+    launch_type_at_creation:TabLaunchTypeAtCreation;
+
+    // User Agent.
+    user_agent:UserAgentType=DEFAULT;
+
+    // Timestamp of the last committed navigation done in the Tab.
+    last_navigation_committed_timestamp_millis:long;
+}
+

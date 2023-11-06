@@ -450,8 +450,6 @@ UpdaterScope/InstallerAPITest.ClientStateAppKeyOpen/0
 UpdaterScope/InstallerAPITest.ClientStateAppKeyOpen/1
 UpdaterScope/InstallerAPITest.GetInstallerOutcome/0
 UpdaterScope/InstallerAPITest.GetInstallerOutcome/1
-UpdaterScope/InstallerAPITest.GetTextForSystemError/0
-UpdaterScope/InstallerAPITest.GetTextForSystemError/1
 UpdaterScope/InstallerAPITest.InstallerProgress/0
 UpdaterScope/InstallerAPITest.InstallerProgress/1
 UpdaterScope/InstallerAPITest.MakeInstallerResult/0

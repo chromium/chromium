@@ -48,7 +48,7 @@ class PriorityQueue {
   wtf_size_t size() const { return heap_.size(); }
   bool IsEmpty() const { return heap_.empty(); }
   const PriorityType& Min() const { return heap_.front().first; }
-  ElementType* MinElement() const { return heap_.front().second; }
+  ElementType* MinElement() const { return heap_.front().second.Get(); }
 
   iterator begin() { return heap_.begin(); }
   iterator end() { return heap_.end(); }

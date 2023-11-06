@@ -13,7 +13,6 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/synchronization/lock.h"
-#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
@@ -144,9 +143,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   static constexpr const char* const kExtensions[] = {
       XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
       XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
-      device::kExtSamsungOdysseyControllerExtensionName,
-      device::kExtHPMixedRealityControllerExtensionName,
-      device::kMSFTHandInteractionExtensionName,
+      XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME,
+      XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
+      XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
   };

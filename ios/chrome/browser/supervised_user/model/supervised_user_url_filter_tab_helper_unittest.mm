@@ -15,6 +15,7 @@
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
+#import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -135,7 +136,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
     hosts["example.com"] = true;
     supervised_user_service->GetURLFilter()->SetManualHosts(hosts);
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::SupervisedUserURLFilter::ALLOW);
+        supervised_user::FilteringBehavior::kAllow);
   }
 
   void RestrictAllSitesForSupervisedUser() {
@@ -143,7 +144,7 @@ class SupervisedUserURLFilterTabHelperTest : public PlatformTest {
         SupervisedUserServiceFactory::GetForBrowserState(
             chrome_browser_state_.get());
     supervised_user_service->GetURLFilter()->SetDefaultFilteringBehavior(
-        supervised_user::SupervisedUserURLFilter::BLOCK);
+        supervised_user::FilteringBehavior::kBlock);
   }
 
  private:

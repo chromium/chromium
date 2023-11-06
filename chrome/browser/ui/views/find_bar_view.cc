@@ -76,11 +76,12 @@ class FindBarMatchCountLabel : public views::Label {
 
   ~FindBarMatchCountLabel() override = default;
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
     // We need to return at least 1dip so that box layout adds padding on either
     // side (otherwise there will be a jump when our size changes between empty
     // and non-empty).
-    gfx::Size size = views::Label::CalculatePreferredSize();
+    gfx::Size size = views::Label::CalculatePreferredSize(available_size);
     size.set_width(std::max(1, size.width()));
     return size;
   }

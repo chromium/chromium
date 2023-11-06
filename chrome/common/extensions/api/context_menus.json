@@ -6,6 +6,9 @@
   {
     "namespace": "contextMenus",
     "description": "Use the <code>chrome.contextMenus</code> API to add items to Google Chrome's context menu. You can choose what types of objects your context menu additions apply to, such as images, hyperlinks, and pages.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "properties": {
       "ACTION_MENU_TOP_LEVEL_LIMIT": {
         "value": 6,

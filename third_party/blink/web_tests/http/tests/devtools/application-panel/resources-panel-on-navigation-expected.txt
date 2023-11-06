@@ -35,9 +35,9 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
-Preloading
-  Speculation rules
-  Preloads
+Speculative loads
+  Rules
+  Speculations
   This page
 Frames
   top
@@ -79,9 +79,9 @@ Background services
   Periodic background sync
   Push messaging
   Reporting API
-Preloading
-  Speculation rules
-  Preloads
+Speculative loads
+  Rules
+  Speculations
   This page
 Frames
   top

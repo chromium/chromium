@@ -225,7 +225,7 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 46
+// Next available id: 48
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
@@ -368,11 +368,34 @@ message AutofillUploadContents {
       // Votes with high confidence (i.e. recorded if Save/Update prompt was
       // accepted after username edits) for forgot password form classifier.
       STRONG_FORGOT_PASSWORD = 4;
+      // If positive (`autofill_type` is `SINGLE_USERNAME`), votes signal that
+      // user was prompted with a Save/Update bubble with a username value found
+      // inside the password form and edited it to one of the values that was
+      // found outside of the password form. If negative (`autofill_type` is
+      // `NOT_USERNAME`), user was prompted with a username value outside the
+      // password form and edited it to one of the values that is found inside
+      // the password form.
+      IN_FORM_OVERRULE = 5;
     }
 
     // The type of the username first flow vote signal, set iff |autofill_type|
     // is SINGLE_USERNAME, SINGLE_USERNAME_FORGOT_PASSWORD or NOT_USERNAME.
     optional SingleUsernameVoteType single_username_vote_type = 41;
+
+    // Only set for Username First Flow votes (`autofill_type` is
+    // `SINGLE_USERNAME` or `NOT_USERNAME`). Otherwise, set to `std::nullopt`.
+    // If set to true, the field is username candidate in Username First Flow
+    // and the field has no intermediate fields (like OTP/Captcha) between the
+    // candidate and the password form.
+    // If set to false, the field is username candidate in Username First Flow,
+    // but has intermediate fields between the candidate and the password
+    // form.
+    optional bool is_most_recent_single_username_candidate = 46;
+
+    // Set to `true` if the field had a value on page load and it was changed
+    // between then and form submission. Set to `false` if the pre-filled value
+    // wasn't changed. Not set if the field didn't have a pre-filled value.
+    optional bool initial_value_changed = 47;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;

@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/keyboard/key_command_actions.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
@@ -16,20 +17,23 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_animation_layout_providing.h"
 
 @protocol ApplicationCommands;
+@class GridContainerViewController;
 @protocol GridCommands;
-@protocol PriceCardDataSource;
-@protocol GridShareableItemsProvider;
 class GURL;
 @protocol InactiveTabsInfoConsumer;
+@class IncognitoGridViewController;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
 @class LayoutGuideCenter;
+@protocol PriceCardDataSource;
 @protocol RecentTabsConsumer;
 @class RecentTabsTableViewController;
+@class RegularGridViewController;
 @class TabGridBottomToolbar;
 @protocol TabCollectionCommands;
 @protocol TabCollectionConsumer;
 @protocol TabCollectionDragDropHandler;
+@protocol TabGridActivityObserver;
 @protocol TabGridConsumer;
 @protocol TabContextMenuProvider;
 @protocol TabGridMutator;
@@ -74,7 +78,8 @@ enum class TabGridPageConfiguration {
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and remote tabs.
 @interface TabGridViewController
-    : UIViewController <GridConsumer,
+    : UIViewController <DisabledGridViewControllerDelegate,
+                        GridConsumer,
                         IncognitoReauthObserver,
                         KeyCommandActions,
                         TabGridConsumer,
@@ -84,7 +89,7 @@ enum class TabGridPageConfiguration {
                         UISearchBarDelegate>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
-@property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
+// TODO(crbug.com/1457146): Move to Incognito Coordinator.
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 
 // Delegate for this view controller to handle presenting tab UI.
@@ -92,16 +97,13 @@ enum class TabGridPageConfiguration {
 
 @property(nonatomic, weak) id<TabGridViewControllerDelegate> delegate;
 
+// Delegate to notify when activity has to be updated.
+@property(nonatomic, weak) id<TabGridActivityObserver> activityObserver;
+
 // Mutator to apply all user change in the model.
 @property(nonatomic, weak) id<TabGridMutator> mutator;
 
 // Consumers send updates from the model layer to the UI layer.
-@property(nonatomic, readonly)
-    id<TabCollectionConsumer, InactiveTabsInfoConsumer>
-        regularTabsConsumer;
-@property(nonatomic, readonly)
-    id<TabCollectionConsumer, IncognitoReauthConsumer>
-        incognitoTabsConsumer;
 @property(nonatomic, readonly) id<RecentTabsConsumer> remoteTabsConsumer;
 @property(nonatomic, readonly) id<TabCollectionConsumer> pinnedTabsConsumer;
 
@@ -113,25 +115,21 @@ enum class TabGridPageConfiguration {
 
 // Handles drag and drop interactions that require the model layer.
 @property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    regularTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
-    incognitoTabsDragDropHandler;
-@property(nonatomic, weak) id<TabCollectionDragDropHandler>
     pinnedTabsDragDropHandler;
 
 // Data source for acquiring data which power the PriceCardView
 @property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
-
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    regularTabsShareableItemsProvider;
-@property(nonatomic, weak) id<GridShareableItemsProvider>
-    incognitoTabsShareableItemsProvider;
 
 // Readwrite override of the UIViewController property. This object will ignore
 // the value supplied by UIViewController.
 @property(nonatomic, weak, readwrite)
     UIViewController* childViewControllerForStatusBarStyle;
 
+// Child view controllers.
+@property(nonatomic, strong)
+    RegularGridViewController* regularTabsViewController;
+@property(nonatomic, strong)
+    IncognitoGridViewController* incognitoTabsViewController;
 // The view controller for remote tabs.
 // TODO(crbug.com/845192) : This was only exposed in the public interface so
 // that TabGridViewController does not need to know about model objects. The
@@ -142,8 +140,6 @@ enum class TabGridPageConfiguration {
 // Provides the context menu for the tabs on the grid.
 @property(nonatomic, weak) id<TabContextMenuProvider>
     regularTabsContextMenuProvider;
-@property(nonatomic, weak) id<TabContextMenuProvider>
-    incognitoTabsContextMenuProvider;
 
 // The layout guide center to use to refer to the bottom toolbar.
 @property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
@@ -155,10 +151,18 @@ enum class TabGridPageConfiguration {
 // Whether the primary signed-in account is subject to parental controls.
 @property(nonatomic, assign) BOOL isSubjectToParentalControls;
 
-// Temporary handler for sending commands to the toolbar.
-// TODO(crbug.com/1456659): Remove this.
-@property(nonatomic, weak) id<TabGridToolbarsCommandsWrangler>
-    toolbarCommandsWrangler;
+// Disabled tab view controllers only available when a certain browser mode is
+// disabled.
+@property(nonatomic, weak) UIViewController* regularDisabledGridViewController;
+@property(nonatomic, weak)
+    UIViewController* incognitoDisabledGridViewController;
+
+// Contains grids (available or disabled one).
+@property(nonatomic, weak) UIViewController* regularGridContainerViewController;
+@property(nonatomic, weak)
+    UIViewController* incognitoGridContainerViewController;
+@property(nonatomic, weak)
+    GridContainerViewController* remoteGridContainerViewController;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.

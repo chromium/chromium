@@ -24,8 +24,8 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   }
 
   async function testPatternList() {
-    ignoreListWidget.list.appendItem('test*', true);
-    TestRunner.addResult(`Added a pattern in the list: ${ignoreListWidget.list.items}`);
+    ignoreListWidget.list.appendItem({pattern: 'test*'}, true);
+    TestRunner.addResult(`Added a pattern in the list: ${ignoreListWidget.list.items.map(x => x.pattern).join(',')}`);
     await AxeCoreTestRunner.runValidation(ignoreListWidget.contentElement);
   }
 

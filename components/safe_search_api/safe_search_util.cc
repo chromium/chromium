@@ -55,6 +55,16 @@ std::string AddSafeSearchParameters(const std::string& query) {
   return base::JoinString(new_parameters, "&");
 }
 
+bool IsSafeSearchSettingUrl(const GURL& url) {
+  if (!google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    return false;
+  }
+
+  return url.path_piece() == "/safesearch";
+}
+
 }  // namespace
 
 namespace safe_search_api {
@@ -71,7 +81,7 @@ const char kGoogleAppsAllowedDomains[] = "X-GoogApps-Allowed-Domains";
 // Sets the query part of |new_url| with the new value of the parameters.
 void ForceGoogleSafeSearch(const GURL& url, GURL* new_url) {
   if (!google_util::IsGoogleSearchUrl(url) &&
-      !google_util::IsGoogleHomePageUrl(url)) {
+      !google_util::IsGoogleHomePageUrl(url) && !IsSafeSearchSettingUrl(url)) {
     return;
   }
 

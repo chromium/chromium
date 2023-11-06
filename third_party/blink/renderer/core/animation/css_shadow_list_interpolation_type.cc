@@ -208,24 +208,24 @@ CSSShadowListInterpolationType::PreInterpolationCompositeIfNeeded(
   // TODO(crbug.com/1009230): Remove this once our interpolation code isn't
   // caching composited values.
   conversion_checkers.push_back(std::make_unique<AlwaysInvalidateChecker>());
-  auto interpolable_list = std::unique_ptr<InterpolableList>(
-      To<InterpolableList>(value.interpolable_value.release()));
+  auto* interpolable_list =
+      To<InterpolableList>(value.interpolable_value.Release());
   if (composite == EffectModel::CompositeOperation::kCompositeAdd) {
-    return PerformAdditiveComposition(std::move(interpolable_list), underlying);
+    return PerformAdditiveComposition(interpolable_list, underlying);
   }
   DCHECK_EQ(composite, EffectModel::CompositeOperation::kCompositeAccumulate);
-  return PerformAccumulativeComposition(std::move(interpolable_list),
+  return PerformAccumulativeComposition(interpolable_list,
                                         std::move(underlying));
 }
 
 InterpolationValue CSSShadowListInterpolationType::PerformAdditiveComposition(
-    std::unique_ptr<InterpolableList> interpolable_list,
+    InterpolableList* interpolable_list,
     const InterpolationValue& underlying) const {
   // Per the spec, addition of shadow lists is defined as concatenation.
   // https://w3.org/TR/web-animations-1/#combining-shadow-lists
   const InterpolableList& underlying_list =
       To<InterpolableList>(*underlying.interpolable_value);
-  auto composited_list = std::make_unique<InterpolableList>(
+  auto* composited_list = MakeGarbageCollected<InterpolableList>(
       underlying_list.length() + interpolable_list->length());
   for (wtf_size_t i = 0; i < composited_list->length(); i++) {
     if (i < underlying_list.length()) {
@@ -235,13 +235,12 @@ InterpolationValue CSSShadowListInterpolationType::PerformAdditiveComposition(
           i, interpolable_list->Get(i - underlying_list.length())->Clone());
     }
   }
-  return InterpolationValue(std::move(composited_list),
-                            underlying.non_interpolable_value);
+  return InterpolationValue(composited_list, underlying.non_interpolable_value);
 }
 
 InterpolationValue
 CSSShadowListInterpolationType::PerformAccumulativeComposition(
-    std::unique_ptr<InterpolableList> interpolable_list,
+    InterpolableList* interpolable_list,
     const InterpolationValue& underlying) const {
   // Per the spec, accumulation of shadow lists operates on pairwise addition of
   // the underlying components.
@@ -255,14 +254,14 @@ CSSShadowListInterpolationType::PerformAccumulativeComposition(
   for (wtf_size_t i = 0; i < underlying_length && i < length; i++) {
     if (To<InterpolableShadow>(underlying_list.Get(i))->GetShadowStyle() !=
         To<InterpolableShadow>(interpolable_list->Get(i))->GetShadowStyle()) {
-      return InterpolationValue(std::move(interpolable_list));
+      return InterpolationValue(interpolable_list);
     }
   }
 
   // Otherwise, arithmetically combine the matching prefix of the lists then
   // concatenate the remainder of the longer one.
   wtf_size_t max_length = std::max(length, underlying_length);
-  auto composited_list = std::make_unique<InterpolableList>(max_length);
+  auto* composited_list = MakeGarbageCollected<InterpolableList>(max_length);
   for (wtf_size_t i = 0; i < max_length; i++) {
     if (i < underlying_length) {
       composited_list->Set(i, underlying_list.Get(i)->Clone());
@@ -272,8 +271,7 @@ CSSShadowListInterpolationType::PerformAccumulativeComposition(
       composited_list->Set(i, interpolable_list->Get(i)->Clone());
     }
   }
-  return InterpolationValue(std::move(composited_list),
-                            underlying.non_interpolable_value);
+  return InterpolationValue(composited_list, underlying.non_interpolable_value);
 }
 
 }  // namespace blink

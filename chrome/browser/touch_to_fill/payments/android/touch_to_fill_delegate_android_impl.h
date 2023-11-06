@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PAYMENTS_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -102,7 +100,8 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   // Checks whether TTF is eligible for the given web form data.
   // Only if this is true, the controller will show the view.
   bool IntendsToShowTouchToFill(FormGlobalId form_id,
-                                FieldGlobalId field_id) override;
+                                FieldGlobalId field_id,
+                                const FormData& form) override;
 
   // Checks whether TTF is eligible for the given web form data and, if
   // successful, triggers the corresponding surface and returns |true|.
@@ -156,15 +155,12 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   //
   // If the DryRunResult::outcome is TriggerOutcome::kShow, the
   // DryRun::cards_to_suggest contains the cards; otherwise it is empty.
-  // TODO(crbug.com/1331312): Remove the optional_received_form. The
-  // implementation currently fetches the FormStructure corresponding to
-  // form_id. The fields' values of this form structure correspond to the
-  // initial and so probably stale values. optional_received_form is the form
-  // received from the renderer, so it contains the current values. This is
+  // TODO(crbug.com/1485693): Remove received FormData. received_form is the
+  // form received from the renderer, so it contains the current values. This is
   // needed for the non-empty checks.
   DryRunResult DryRun(FormGlobalId form_id,
                       FieldGlobalId field_id,
-                      const FormData* optional_received_form = nullptr);
+                      const FormData& received_form);
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 

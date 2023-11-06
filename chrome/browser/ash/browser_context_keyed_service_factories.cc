@@ -119,12 +119,11 @@
 #include "chrome/browser/ui/ash/global_media_controls/cast_media_notification_producer_keyed_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
+#include "chrome/browser/ui/webui/ash/settings/services/settings_manager/os_settings_manager_factory.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_proxy_service_manager_factory.h"
-#include "chrome/browser/extensions/api/printing/printing_api_handler.h"
 #endif
 
 namespace ash {
@@ -177,9 +176,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   EventBasedStatusReportingServiceFactory::GetInstance();
   extensions::InputMethodAPI::GetFactoryInstance();
   extensions::MediaPlayerAPI::GetFactoryInstance();
-#if BUILDFLAG(USE_CUPS)
-  extensions::PrintingAPIHandler::GetFactoryInstance();
-#endif
   FamilyUserMetricsServiceFactory::GetInstance();
   file_manager::EventRouterFactory::GetInstance();
   file_manager::VolumeManagerFactory::GetInstance();

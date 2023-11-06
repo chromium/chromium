@@ -9,12 +9,14 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/session/connection_holder.h"
+#include "ash/constants/ash_features.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/ash/apps/apk_web_app_service_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -752,6 +754,12 @@ void ApkWebAppService::AddInstallingWebApkPackageName(
 
 void ApkWebAppService::RemoveInstallingWebApkPackageName(
     const std::string& app_id) {
+  std::string package_name = currently_installing_apks_[app_id];
+  if (ash::features::ArePromiseIconsEnabled()) {
+    apps::AppServiceProxyFactory::GetForProfile(profile_)
+        ->PromiseAppService()
+        ->OnApkWebAppInstallationFinished(package_name);
+  }
   currently_installing_apks_.erase(app_id);
 }
 

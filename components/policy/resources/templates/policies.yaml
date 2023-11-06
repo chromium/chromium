@@ -1154,7 +1154,7 @@ policies:
   1153: ProfileSeparationDataMigrationSettings
   1154: ProfileSeparationDomainExceptionList
   1155: FullRestoreMode
-  1156: MicrosoftOneDriveAccountRestriction
+  1156: ''
   1157: SafeBrowsingDeepScanningEnabled
   1158: DriveFileSyncAvailable
   1159: DeviceSwitchFunctionKeysBehaviorEnabled
@@ -1169,6 +1169,19 @@ policies:
   1168: RelatedWebsiteSetsOverrides
   1169: ShowHumanPresenceSensorScreenEnabled
   1170: PasswordSharingEnabled
+  1171: ZstdContentEncodingEnabled
+  1172: IPv6ReachabilityOverrideEnabled
+  1173: UserFeedbackWithLowLevelDebugDataAllowed
+  1174: MicrosoftOneDriveAccountRestrictions
+  1175: DeviceFlexHwDataForProductImprovementEnabled
+  1176: SiteSearchSettings
+  1177: PrivateNetworkAccessRestrictionsEnabled
+  1178: ContextMenuPhotoSharingSettings
+  1179: ExtensionInstallTypeBlocklist
+  1180: ParcelTrackingEnabled
+  1181: NativeHostsExecutablesLaunchDirectly
+  1182: FeedbackSurveysEnabled
+  1183: DeskAPIDeskSaveAndShareEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

@@ -31,9 +31,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.settings.test.R;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
-/**
- * Tests of {@link ChromeImageViewPreference}.
- */
+/** Tests of {@link ChromeImageViewPreference}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ChromeImageViewPreferenceTest {
@@ -45,6 +43,7 @@ public class ChromeImageViewPreferenceTest {
     @ClassRule
     public static final DisableAnimationsTestRule disableAnimationsRule =
             new DisableAnimationsTestRule();
+
     @Rule
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
@@ -89,8 +88,12 @@ public class ChromeImageViewPreferenceTest {
         Assert.assertFalse(preference.isEnabled());
 
         getTitleView().check(matches(allOf(withText(TITLE), isDisplayed())));
-        getSummaryView().check(
-                matches(allOf(withText(R.string.managed_by_your_organization), isDisplayed())));
+        getSummaryView()
+                .check(
+                        matches(
+                                allOf(
+                                        withText(R.string.managed_by_your_organization),
+                                        isDisplayed())));
         getImageViewWidget().check(matches(isDisplayed()));
     }
 

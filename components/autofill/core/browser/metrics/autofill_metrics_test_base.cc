@@ -241,7 +241,7 @@ void AutofillMetricsBaseTest::CreateCreditCards(
                                        "server_id_2");
     full_server_credit_card.set_guid("10000000-0000-0000-0000-000000000003");
     full_server_credit_card.set_instrument_id(2);
-    personal_data().AddFullServerCreditCard(full_server_credit_card);
+    personal_data().AddServerCreditCard(full_server_credit_card);
   }
   personal_data().Refresh();
 }

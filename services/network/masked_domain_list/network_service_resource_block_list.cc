@@ -6,6 +6,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 
 namespace network {
@@ -42,10 +43,12 @@ bool NetworkServiceResourceBlockList::IsPopulated() {
 bool NetworkServiceResourceBlockList::Matches(
     const GURL& request_url,
     const absl::optional<net::IsolationInfo>& isolation_info) {
-  // If there is no isolation_info, it is not possible to determine if the
-  // request is in a 3rd party context and it should not be blocked.
+  // If there is no isolation_info or a non-opaque top_frame_origin has no URL,
+  // it is not possible to determine if the request is in a 3rd party context
+  // and it should not be blocked.
   if (!isolation_info || isolation_info->IsEmpty() ||
-      isolation_info->top_frame_origin()->GetURL().is_empty()) {
+      (!isolation_info->top_frame_origin()->opaque() &&
+       isolation_info->top_frame_origin()->GetURL().is_empty())) {
     VLOG(3) << "NSRBL::Matches(" << request_url
             << ") - false (empty isolation_info)";
     return false;
@@ -53,8 +56,14 @@ bool NetworkServiceResourceBlockList::Matches(
 
   VLOG(3) << "NSRBL::Matches(" << request_url << ", "
           << isolation_info->top_frame_origin()->GetURL() << ")";
-  return url_matcher_with_bypass_.Matches(
-      request_url, isolation_info->top_frame_origin()->GetURL());
+
+  net::SchemefulSite top_frame_site(isolation_info->top_frame_origin().value());
+  // If the top_frame_site is opaque, we should skip the first party check and
+  // match only on the request_url.
+  UrlMatcherWithBypass::MatchResult result = url_matcher_with_bypass_.Matches(
+      request_url, top_frame_site,
+      isolation_info->network_anonymization_key().IsTransient());
+  return result.matches && result.is_third_party;
 }
 
 void NetworkServiceResourceBlockList::UseMaskedDomainList(

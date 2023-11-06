@@ -21,7 +21,7 @@ XRTransientInputHitTestResult::XRTransientInputHitTestResult(
 }
 
 XRInputSource* XRTransientInputHitTestResult::inputSource() {
-  return input_source_;
+  return input_source_.Get();
 }
 
 HeapVector<Member<XRHitTestResult>> XRTransientInputHitTestResult::results() {

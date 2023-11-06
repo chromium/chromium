@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Sync XHR should not have a timeout Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://web-platform.test:8001/xhr/resources/trickle.py?ms=1000&count=12'.
-Harness: the test ran to completion.
-

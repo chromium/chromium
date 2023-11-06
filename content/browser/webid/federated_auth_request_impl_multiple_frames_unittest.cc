@@ -64,6 +64,7 @@ constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kTopFrameUrl[] = "https://top-frame.example/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
 constexpr char kNonce[] = "nonce123";
 constexpr char kAccountId[] = "1234";
@@ -76,7 +77,7 @@ static const std::vector<IdentityRequestAccount> kAccounts{{
     "Ken",                       // given_name
     GURL(),                      // picture
     std::vector<std::string>(),  // login_hints
-    std::vector<std::string>()   // hosted_domains
+    std::vector<std::string>()   // domain_hints
 }};
 
 // IdpNetworkRequestManager which returns valid data from IdP.
@@ -101,9 +102,12 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     endpoints.token = GURL(kTokenEndpoint);
     endpoints.accounts = GURL(kAccountsEndpoint);
 
+    IdentityProviderMetadata idp_metadata;
+    idp_metadata.idp_login_url = GURL(kLoginUrl);
+
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), kFetchStatusSuccess,
-                                  endpoints, IdentityProviderMetadata()));
+                                  endpoints, idp_metadata));
   }
 
   void SendAccountsRequest(const GURL& accounts_url,
@@ -114,11 +118,13 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
         base::BindOnce(std::move(callback), kFetchStatusSuccess, kAccounts));
   }
 
-  void SendTokenRequest(const GURL& token_url,
-                        const std::string& account,
-                        const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback,
-                        ContinueOnCallback continue_on) override {
+  void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on,
+      RecordErrorMetricsCallback record_error_metrics_callback) override {
     TokenResult result;
     result.token = kToken;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -269,10 +275,12 @@ class FederatedAuthRequestImplMultipleFramesTest
     auto config_ptr = blink::mojom::IdentityProviderConfig::New();
     config_ptr->config_url = GURL(kProviderUrlFull);
     config_ptr->client_id = kClientId;
-    config_ptr->nonce = kNonce;
+    auto federated = blink::mojom::IdentityProviderRequestOptions::New();
+    federated->config = std::move(config_ptr);
+    federated->nonce = kNonce;
     std::vector<blink::mojom::IdentityProviderPtr> idp_ptrs;
     blink::mojom::IdentityProviderPtr idp_ptr =
-        blink::mojom::IdentityProvider::NewFederated(std::move(config_ptr));
+        blink::mojom::IdentityProvider::NewFederated(std::move(federated));
     idp_ptrs.push_back(std::move(idp_ptr));
     auto get_params = blink::mojom::IdentityProviderGetParameters::New(
         std::move(idp_ptrs),

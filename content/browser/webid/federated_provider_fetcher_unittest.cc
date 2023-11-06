@@ -275,11 +275,14 @@ TEST_F(FederatedProviderFetcherTest, ValidFetchResult) {
   // (a) both the well-known and the config files were loaded successfully
   // (b) there is an accounts and token endpoint in the config file
   // (c) the well-known file contains the configURL
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/sign-in");
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {GURL("https://idp.example/fedcm.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  result.metadata = std::move(metadata);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
@@ -380,12 +383,16 @@ TEST_F(FederatedProviderFetcherTest, InvalidCrossOriginSigninUrl) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInProviders) {
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
+
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
       GURL("https://another-idp.example/fedcm.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  result.metadata = std::move(metadata);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
@@ -400,12 +407,16 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInProviders) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInWellKnown) {
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
+
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
       GURL("https://idp.example/another-file.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  result.metadata = std::move(metadata);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
@@ -420,6 +431,9 @@ TEST_F(FederatedProviderFetcherTest, InvalidConfigUrlNotInWellKnown) {
 }
 
 TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
+
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
@@ -427,6 +441,7 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
       GURL("https://idp.example/fedcm.json"),
       GURL("https://idp.example/another-one.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  result.metadata = std::move(metadata);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();
@@ -442,12 +457,17 @@ TEST_F(FederatedProviderFetcherTest, InvalidWellKnownTooManyProviders) {
 TEST_F(FederatedProviderFetcherTest, SkippingTheChecksWithTheWellKnownFlag) {
   feature_list_.InitAndEnableFeature(
       features::kFedCmWithoutWellKnownEnforcement);
+
+  IdentityProviderMetadata metadata;
+  metadata.idp_login_url = GURL("https://idp.example/idp_login_url.php");
+
   FederatedProviderFetcher::FetchResult result;
   result.endpoints.accounts = GURL("https://idp.example/accounts");
   result.endpoints.token = GURL("https://idp.example/token");
   result.wellknown.provider_urls = {
       GURL("https://idp.example/another-file.json")};
   result.identity_provider_config_url = GURL("https://idp.example/fedcm.json");
+  result.metadata = std::move(metadata);
 
   auto network_manager =
       std::make_unique<StrictMock<MockIdpNetworkRequestManager>>();

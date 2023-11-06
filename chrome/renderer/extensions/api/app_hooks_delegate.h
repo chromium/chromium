@@ -35,7 +35,7 @@ class AppHooksDelegate : public APIBindingHooksDelegate {
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
   void InitializeTemplate(v8::Isolate* isolate,
                           v8::Local<v8::ObjectTemplate> object_template,

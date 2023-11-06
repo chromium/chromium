@@ -45,8 +45,8 @@ namespace ash {
 BEGIN_METADATA(MessageCenterScrollBar, RoundedScrollBar)
 END_METADATA
 
-MessageCenterScrollBar::MessageCenterScrollBar(Observer* observer)
-    : RoundedScrollBar(false), observer_(observer) {
+MessageCenterScrollBar::MessageCenterScrollBar()
+    : RoundedScrollBar(/*horizontal=*/false) {
   GetThumb()->layer()->SetVisible(features::IsNotificationScrollBarEnabled());
   GetThumb()->layer()->CompleteAllAnimations();
 }
@@ -69,9 +69,6 @@ bool MessageCenterScrollBar::OnMouseWheel(const ui::MouseWheelEvent& event) {
   }
 
   const bool result = RoundedScrollBar::OnMouseWheel(event);
-
-  if (observer_)
-    observer_->OnMessageCenterScrolled();
 
   return result;
 }
@@ -98,16 +95,10 @@ void MessageCenterScrollBar::OnGestureEvent(ui::GestureEvent* event) {
     presentation_time_recorder_.reset();
 
   RoundedScrollBar::OnGestureEvent(event);
-
-  if (observer_)
-    observer_->OnMessageCenterScrolled();
 }
 
 bool MessageCenterScrollBar::OnScroll(float dx, float dy) {
   const bool result = RoundedScrollBar::OnScroll(dx, dy);
-  if (observer_)
-    observer_->OnMessageCenterScrolled();
-
   // Widget might be null in tests.
   if (GetWidget() && !presentation_time_recorder_) {
     // Create a recorder if needed. We stop and record metrics when the

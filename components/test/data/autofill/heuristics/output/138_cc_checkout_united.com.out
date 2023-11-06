@@ -39,7 +39,7 @@ ADDRESS_HOME_CITY | BmlModel.BMLCity | City* |  | CreditCardViewModels[0].Addres
 ADDRESS_HOME_STATE | BmlModel.BMLStateCode | State/territory/province* |  | CreditCardViewModels[0].AddressLine1_2
 ADDRESS_HOME_ZIP | BmlModel.BMLPostalCode | Zip/Postal code* |  | CreditCardViewModels[0].AddressLine1_2
 ADDRESS_HOME_COUNTRY | BmlModel.BMLPhoneCountryAccessCode | Phone Country | US | CreditCardViewModels[0].AddressLine1_2
-PHONE_HOME_WHOLE_NUMBER | BmlModel.BMLPhoneNumber | Phone number* |  | CreditCardViewModels[0].AddressLine1_2
+PHONE_HOME_CITY_AND_NUMBER | BmlModel.BMLPhoneNumber | Phone number* |  | CreditCardViewModels[0].AddressLine1_2
 PHONE_HOME_EXTENSION | BmlModel.BMLPhoneExtension | Extension (Optional) |  | CreditCardViewModels[0].AddressLine1_2
 EMAIL_ADDRESS | BmlModel.BMLEmail | Email address* |  | CreditCardViewModels[0].AddressLine1_2
 UNKNOWN_TYPE | BmlModel.DobMonth | Date Of Birth Month |  | CreditCardViewModels[0].AddressLine1_2

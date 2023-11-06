@@ -22,7 +22,6 @@ public class LegacyChromePreferenceKeys {
      *     format.
      */
     static List<String> getKeysInUse() {
-        // clang-format off
         return Arrays.asList(
                 ChromePreferenceKeys.APP_LOCALE,
                 ChromePreferenceKeys.AUTOFILL_ASSISTANT_ENABLED,
@@ -138,11 +137,9 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.WEBAPK_UNINSTALLED_PACKAGES,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_LIST_SIZE
         );
-        // clang-format on
     }
 
     static List<KeyPrefix> getPrefixesInUse() {
-        // clang-format off
         return Arrays.asList(
                 ChromePreferenceKeys.CUSTOM_TABS_DEX_LAST_UPDATE_TIME_PREF_PREFIX,
                 ChromePreferenceKeys.PAYMENTS_PAYMENT_INSTRUMENT_USE_COUNT,
@@ -160,6 +157,5 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_TYPE_PREFIX,
                 ChromePreferenceKeys.KEY_ZERO_SUGGEST_POST_CONTENT_DATA_PREFIX
         );
-        // clang-format on
     }
 }

@@ -841,11 +841,10 @@ gfx::RectF AXTree::RelativeToTreeBoundsInternal(const AXNode* node,
     if (bounds.IsEmpty() && !GetTreeUpdateInProgressState() &&
         allow_recursion) {
       for (auto* child : node->children()) {
-        bool ignore_offscreen;
-        gfx::RectF child_bounds =
-            RelativeToTreeBoundsInternal(child, gfx::RectF(), &ignore_offscreen,
-                                         clip_bounds, skip_container_offset,
-                                         /* allow_recursion = */ false);
+        gfx::RectF child_bounds = RelativeToTreeBoundsInternal(
+            child, gfx::RectF(), /*offscreen=*/nullptr, clip_bounds,
+            skip_container_offset,
+            /*allow_recursion=*/false);
         bounds.Union(child_bounds);
       }
       if (bounds.width() > 0 && bounds.height() > 0) {
@@ -2803,7 +2802,7 @@ void AXTree::RecordError(const AXTreeUpdateState& update_state,
   LOG_IF(FATAL, is_fatal) << verbose_error.str();
 
   // If this is the first error, will dump without crashing in
-  // RenderAccessibilityImpl::OnFatalError().
+  // RenderFrameHostImpl::AccessibilityFatalError().
   static auto* const ax_tree_error_key = base::debug::AllocateCrashKeyString(
       "ax_tree_error", base::debug::CrashKeySize::Size256);
   static auto* const ax_tree_update_key = base::debug::AllocateCrashKeyString(

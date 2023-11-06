@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_handler.h"
 #include "chrome/browser/accessibility/media_app/ax_media_app_handler_factory.h"
 #include "chrome/browser/accessibility/media_app/test/fake_ax_media_app.h"
 #include "components/services/screen_ai/buildflags/buildflags.h"
@@ -48,7 +47,9 @@ class AXMediaAppHandlerTest : public testing::Test {
   AXMediaAppHandlerTest& operator=(const AXMediaAppHandlerTest&) = delete;
   ~AXMediaAppHandlerTest() override = default;
 
+ protected:
   void SetUp() override {
+    testing::Test::SetUp();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     ASSERT_NE(nullptr, screen_ai::ScreenAIInstallState::GetInstance());
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -59,9 +60,8 @@ class AXMediaAppHandlerTest : public testing::Test {
     ASSERT_NE(nullptr, handler_.get());
   }
 
- protected:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  TestScreenAIInstallState install_state;
+  TestScreenAIInstallState install_state_;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   FakeAXMediaApp fake_media_app_;
   std::unique_ptr<AXMediaAppHandler> handler_;

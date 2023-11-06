@@ -67,7 +67,7 @@ class NET_EXPORT NetworkIsolationKey {
   // origin. This prevents the NetworkIsolationKey from sharing data with other
   // NetworkIsolationKeys. Data for transient NetworkIsolationKeys is not
   // persisted to disk.
-  static NetworkIsolationKey CreateTransient();
+  static NetworkIsolationKey CreateTransientForTesting();
 
   // Creates a new key using |top_frame_site_| and |new_frame_site|.
   NetworkIsolationKey CreateWithNewFrameSite(

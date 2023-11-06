@@ -394,6 +394,9 @@ template("cargo_crate") {
         if (defined(invoker.build_deps)) {
           deps = invoker.build_deps
         }
+        if (defined(invoker.build_script_inputs)) {
+          inputs = invoker.build_script_inputs
+        }
 
         # The ${_build_script_name}_output target looks for the exe in this
         # location. Due to how the Windows component build works, this has to

@@ -39,6 +39,9 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
+  // Parses `format` as a web custom format type string. If successful, it
+  // returns just the (normalized) MIME type without the "web " prefix;
+  // otherwise returns an empty string.
   static String ParseWebCustomFormat(const String& format);
 
   void Trace(Visitor*) const override;

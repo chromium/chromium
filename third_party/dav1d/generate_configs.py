@@ -21,7 +21,7 @@ CHROMIUM_ROOT_DIR = os.path.abspath(os.path.join(BASE_DIR, '..', '..'))
 sys.path.append(os.path.join(CHROMIUM_ROOT_DIR, 'build'))
 import gn_helpers
 
-MESON = ['meson.py']
+MESON = ['meson']
 
 DEFAULT_BUILD_ARGS = [
     '-Denable_tools=false', '-Denable_tests=false', '-Ddefault_library=static',

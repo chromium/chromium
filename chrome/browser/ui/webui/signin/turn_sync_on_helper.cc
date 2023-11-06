@@ -411,7 +411,6 @@ void TurnSyncOnHelper::CreateNewSignedInProfile() {
       std::make_unique<DiceSignedInProfileCreator>(
           profile_, account_info_.account_id,
           /*local_profile_name=*/std::u16string(), /*icon_index=*/absl::nullopt,
-          /*use_guest=*/false,
           base::BindOnce(&TurnSyncOnHelper::OnNewSignedInProfileCreated,
                          base::Unretained(this)));
 #else

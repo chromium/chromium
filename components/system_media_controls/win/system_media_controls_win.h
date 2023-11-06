@@ -22,14 +22,12 @@ namespace internal {
 // Transport Controls.
 class SystemMediaControlsWin : public SystemMediaControls {
  public:
-  SystemMediaControlsWin();
+  SystemMediaControlsWin(int window);
 
   SystemMediaControlsWin(const SystemMediaControlsWin&) = delete;
   SystemMediaControlsWin& operator=(const SystemMediaControlsWin&) = delete;
 
   ~SystemMediaControlsWin() override;
-
-  static SystemMediaControlsWin* GetInstance();
 
   // Connects to the SystemMediaTransportControls. Returns true if connection
   // is successful. If already connected, does nothing and returns true.
@@ -56,16 +54,14 @@ class SystemMediaControlsWin : public SystemMediaControls {
   void UpdateDisplay() override;
 
  private:
-  static HRESULT ButtonPressed(
+  HRESULT ButtonPressed(
       ABI::Windows::Media::ISystemMediaTransportControls* sender,
       ABI::Windows::Media::ISystemMediaTransportControlsButtonPressedEventArgs*
           args);
 
-  static HRESULT PlaybackPositionChangeRequested(
+  HRESULT PlaybackPositionChangeRequested(
       ABI::Windows::Media::ISystemMediaTransportControls* sender,
       ABI::Windows::Media::IPlaybackPositionChangeRequestedEventArgs* args);
-
-  static SystemMediaControlsWin* instance_;
 
   // Called by ButtonPressed when the particular key is pressed.
   void OnPlay();
@@ -114,7 +110,15 @@ class SystemMediaControlsWin : public SystemMediaControls {
   // True if we've successfully connected to the SystemMediaTransportControls.
   bool initialized_ = false;
 
+  // True if this instance is for controlling a web app's media session.
+  const bool is_for_web_app_;
+
+  // Web app's window handle to pass to Windows OS. Will be invalid (-1) for non
+  // web apps.
+  const HWND web_app_window_;
+
   base::ObserverList<SystemMediaControlsObserver> observers_;
+  base::WeakPtrFactory<SystemMediaControlsWin> weak_factory_{this};
 };
 
 }  // namespace internal

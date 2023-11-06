@@ -51,7 +51,7 @@ void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {
-  virtual_card_enrollment_fields_ = virtual_card_enrollment_fields;
+  ui_model_ = VirtualCardEnrollUiModel::Create(virtual_card_enrollment_fields);
   accept_virtual_card_callback_ = std::move(accept_virtual_card_callback);
   decline_virtual_card_callback_ = std::move(decline_virtual_card_callback);
 
@@ -59,8 +59,8 @@ void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
   Show();
 
   LogVirtualCardEnrollBubbleCardArtAvailable(
-      virtual_card_enrollment_fields_.card_art_image,
-      virtual_card_enrollment_fields_.virtual_card_enrollment_source);
+      ui_model_.enrollment_fields.card_art_image,
+      ui_model_.enrollment_fields.virtual_card_enrollment_source);
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
@@ -74,50 +74,15 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
   Show();
 }
 
-std::u16string VirtualCardEnrollBubbleControllerImpl::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_TITLE_LABEL);
-}
-
-std::u16string VirtualCardEnrollBubbleControllerImpl::GetExplanatoryMessage()
-    const {
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DIALOG_CONTENT_LABEL,
-      GetLearnMoreLinkText());
-}
-
-std::u16string VirtualCardEnrollBubbleControllerImpl::GetAcceptButtonText()
-    const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_ACCEPT_BUTTON_LABEL);
-}
-
-std::u16string VirtualCardEnrollBubbleControllerImpl::GetDeclineButtonText()
-    const {
-  return l10n_util::GetStringUTF16(
-      virtual_card_enrollment_fields_.virtual_card_enrollment_source ==
-              VirtualCardEnrollmentSource::kSettingsPage
-          ? IDS_CANCEL
-      : virtual_card_enrollment_fields_.last_show
-          ? IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_NO_THANKS
-          : IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_DECLINE_BUTTON_LABEL_SKIP);
-}
-
-std::u16string VirtualCardEnrollBubbleControllerImpl::GetLearnMoreLinkText()
-    const {
-  return l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_LEARN_MORE_LINK_LABEL);
-}
-
-const VirtualCardEnrollmentFields
-VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollmentFields() const {
-  return virtual_card_enrollment_fields_;
+const VirtualCardEnrollUiModel&
+VirtualCardEnrollBubbleControllerImpl::GetUiModel() const {
+  return ui_model_;
 }
 
 VirtualCardEnrollmentBubbleSource
 VirtualCardEnrollBubbleControllerImpl::GetVirtualCardEnrollmentBubbleSource()
     const {
-  switch (virtual_card_enrollment_fields_.virtual_card_enrollment_source) {
+  switch (ui_model_.enrollment_fields.virtual_card_enrollment_source) {
     case VirtualCardEnrollmentSource::kUpstream:
       return VirtualCardEnrollmentBubbleSource::
           VIRTUAL_CARD_ENROLLMENT_UPSTREAM_SOURCE;
@@ -220,7 +185,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnBubbleClosed(
   if (!reprompt_required_) {
     LogVirtualCardEnrollmentBubbleResultMetric(
         result, GetVirtualCardEnrollmentBubbleSource(), is_user_gesture_,
-        virtual_card_enrollment_fields_.previously_declined);
+        ui_model_.enrollment_fields.previously_declined);
   }
 }
 

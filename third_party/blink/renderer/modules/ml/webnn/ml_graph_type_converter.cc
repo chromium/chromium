@@ -7,8 +7,12 @@
 #include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_reduce_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_resample_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_transpose_options.h"
@@ -94,10 +98,10 @@ namespace blink {
 
 namespace {
 
+using blink_mojom::ActivationPtr;
+using blink_mojom::ElementWiseBinary;
 using blink_mojom::Operation;
 using blink_mojom::OperationPtr;
-using blink_mojom::Operator;
-using blink_mojom::OperatorPtr;
 using blink_mojom::Size2d;
 
 // Maps MLOperand to its id which is used to identify the `mojo::Operand` across
@@ -122,23 +126,60 @@ uint64_t GetOperatorOutputId(const MLOperator* op,
   return operand_to_id_map.at(output);
 }
 
-OperationPtr CreateClampOperation(const OperandToIdMap& operand_to_id_map,
+blink_mojom::ClampPtr CreateClamp(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* clamp,
-                                  bool activation = false) {
-  auto clamp_mojo = webnn::mojom::blink::Clamp::New();
+                                  bool is_activation) {
+  auto clamp_mojo = blink_mojom::Clamp::New();
   // Activation has no input and output operand.
-  if (!activation) {
+  if (!is_activation) {
     clamp_mojo->input_operand_id = GetOperatorInputId(clamp, operand_to_id_map);
     clamp_mojo->output_operand_id =
         GetOperatorOutputId(clamp, operand_to_id_map);
   }
+
   const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
   CHECK(options);
   clamp_mojo->min_value =
       options->getMinValueOr(-std::numeric_limits<float>::infinity());
   clamp_mojo->max_value =
       options->getMaxValueOr(+std::numeric_limits<float>::infinity());
-  return webnn::mojom::blink::Operation::NewClamp(std::move(clamp_mojo));
+  return clamp_mojo;
+}
+
+blink_mojom::EluPtr CreateElu(const OperandToIdMap& operand_to_id_map,
+                              const MLOperator* elu,
+                              bool is_activation) {
+  auto elu_mojo = blink_mojom::Elu::New();
+  // Activation has no input and output operand.
+  if (!is_activation) {
+    elu_mojo->input_operand_id = GetOperatorInputId(elu, operand_to_id_map);
+    elu_mojo->output_operand_id = GetOperatorOutputId(elu, operand_to_id_map);
+  }
+
+  const auto* options = static_cast<const MLEluOptions*>(elu->Options());
+  CHECK(options);
+  elu_mojo->alpha = options->alpha();
+  return elu_mojo;
+}
+
+blink_mojom::LeakyReluPtr CreateLeakyRelu(
+    const OperandToIdMap& operand_to_id_map,
+    const MLOperator* leaky_relu,
+    bool is_activation) {
+  auto leaky_relu_mojo = blink_mojom::LeakyRelu::New();
+  // Activation has no input and output operand.
+  if (!is_activation) {
+    leaky_relu_mojo->input_operand_id =
+        GetOperatorInputId(leaky_relu, operand_to_id_map);
+    leaky_relu_mojo->output_operand_id =
+        GetOperatorOutputId(leaky_relu, operand_to_id_map);
+  }
+
+  const auto* options =
+      static_cast<const MLLeakyReluOptions*>(leaky_relu->Options());
+  CHECK(options);
+  leaky_relu_mojo->alpha = options->alpha();
+  return leaky_relu_mojo;
 }
 
 blink_mojom::InputOperandLayout BlinkInputOperandLayoutToMojo(
@@ -163,20 +204,20 @@ OperationPtr CreateConcatOperation(const OperandToIdMap& operand_to_id_map,
                             return operand_to_id_map.at(input);
                           });
 
-  auto concat_mojo = webnn::mojom::blink::Concat::New();
+  auto concat_mojo = blink_mojom::Concat::New();
   concat_mojo->input_operand_ids = std::move(input_operand_ids);
   concat_mojo->output_operand_id =
       GetOperatorOutputId(concat, operand_to_id_map);
   const auto* concat_operator = static_cast<const MLConcatOperator*>(concat);
 
   concat_mojo->axis = concat_operator->Axis();
-  return webnn::mojom::blink::Operation::NewConcat(std::move(concat_mojo));
+  return blink_mojom::Operation::NewConcat(std::move(concat_mojo));
 }
 
 base::expected<OperationPtr, String> CreateConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
     const MLOperator* conv2d) {
-  auto conv2d_mojo = webnn::mojom::blink::Conv2d::New();
+  auto conv2d_mojo = blink_mojom::Conv2d::New();
   conv2d_mojo->input_operand_id =
       GetOperatorInputId(conv2d, operand_to_id_map, 0);
   conv2d_mojo->filter_operand_id =
@@ -247,7 +288,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
       conv2d_mojo->dilations->height, conv2d_mojo->dilations->width);
   // The order of sequence array is [beginning_height, ending_height,
   // beginning_width, ending_width].
-  conv2d_mojo->padding = webnn::mojom::blink::Padding2d::New(
+  conv2d_mojo->padding = blink_mojom::Padding2d::New(
       /*beginning padding*/ Size2d::New(padding.beginning.height,
                                         padding.beginning.width),
       /*ending padding*/ Size2d::New(padding.ending.height,
@@ -258,13 +299,36 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
     auto operator_kind = options->activation()->Operator()->Kind();
     switch (operator_kind) {
       case blink::MLOperator::OperatorKind::kClamp: {
-        conv2d_mojo->activation = CreateClampOperation(
-            operand_to_id_map, options->activation()->Operator(), true);
+        conv2d_mojo->activation = blink_mojom::Activation::NewClamp(CreateClamp(
+            operand_to_id_map, options->activation()->Operator(), true));
+        break;
+      }
+      case blink::MLOperator::OperatorKind::kElu: {
+        conv2d_mojo->activation = blink_mojom::Activation::NewElu(CreateElu(
+            operand_to_id_map, options->activation()->Operator(), true));
+        break;
+      }
+      case blink::MLOperator::OperatorKind::kLeakyRelu: {
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewLeakyRelu(CreateLeakyRelu(
+                operand_to_id_map, options->activation()->Operator(), true));
         break;
       }
       case blink::MLOperator::OperatorKind::kRelu:
-        conv2d_mojo->activation = webnn::mojom::blink::Operation::NewRelu(
-            webnn::mojom::blink::Relu::New());
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewRelu(blink_mojom::Relu::New());
+        break;
+      case blink::MLOperator::OperatorKind::kSigmoid:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewSigmoid(blink_mojom::Sigmoid::New());
+        break;
+      case blink::MLOperator::OperatorKind::kSoftmax:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewSoftmax(blink_mojom::Softmax::New());
+        break;
+      case blink::MLOperator::OperatorKind::kTanh:
+        conv2d_mojo->activation =
+            blink_mojom::Activation::NewTanh(blink_mojom::Tanh::New());
         break;
       default:
         return base::unexpected(
@@ -272,7 +336,7 @@ base::expected<OperationPtr, String> CreateConv2dOperation(
             " is not converted to mojo as activation.");
     }
   }
-  return webnn::mojom::blink::Operation::NewConv2d(std::move(conv2d_mojo));
+  return blink_mojom::Operation::NewConv2d(std::move(conv2d_mojo));
 }
 
 OperationPtr CreateElementWiseBinaryOperator(
@@ -285,74 +349,109 @@ OperationPtr CreateElementWiseBinaryOperator(
   const uint64_t output_operand_id =
       GetOperatorOutputId(binary, operand_to_id_map);
 
-  auto operator_mojo = blink_mojom::Operator::New();
+  auto operator_mojo = ElementWiseBinary::New();
   switch (binary->Kind()) {
     case MLOperator::OperatorKind::kAdd:
-      operator_mojo->kind = Operator::Kind::kAdd;
+      operator_mojo->kind = ElementWiseBinary::Kind::kAdd;
       break;
     case MLOperator::OperatorKind::kSub:
-      operator_mojo->kind = Operator::Kind::kSub;
+      operator_mojo->kind = ElementWiseBinary::Kind::kSub;
       break;
     case MLOperator::OperatorKind::kMul:
-      operator_mojo->kind = Operator::Kind::kMul;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMul;
       break;
     case MLOperator::OperatorKind::kDiv:
-      operator_mojo->kind = Operator::Kind::kDiv;
+      operator_mojo->kind = ElementWiseBinary::Kind::kDiv;
       break;
     case MLOperator::OperatorKind::kMax:
-      operator_mojo->kind = Operator::Kind::kMax;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMax;
       break;
     case MLOperator::OperatorKind::kMin:
-      operator_mojo->kind = Operator::Kind::kMin;
+      operator_mojo->kind = ElementWiseBinary::Kind::kMin;
+      break;
+    case MLOperator::OperatorKind::kPow:
+      operator_mojo->kind = ElementWiseBinary::Kind::kPow;
       break;
     default:
       NOTREACHED();
   }
-  operator_mojo->input_operands = {lhs_operand_id, rhs_operand_id};
-  operator_mojo->output_operands = {output_operand_id};
-  return blink_mojom::Operation::NewGenericOperator(std::move(operator_mojo));
+  operator_mojo->lhs_operand = lhs_operand_id;
+  operator_mojo->rhs_operand = rhs_operand_id;
+  operator_mojo->output_operand = output_operand_id;
+  return webnn::mojom::blink::Operation::NewElementWiseBinary(
+      std::move(operator_mojo));
 }
 
-blink_mojom::GemmAttributesPtr ConvertToGemmAttributes(
-    const OperandToIdMap& operand_to_id_map,
-    const blink::MLGemmOptions* options) {
-  CHECK(options);
-  auto attributes = blink_mojom::GemmAttributes::New();
-  if (options->hasC()) {
-    attributes->c_operand_id = operand_to_id_map.at(options->c());
-  }
-  attributes->alpha = options->alpha();
-  attributes->beta = options->beta();
-  attributes->a_transpose = options->aTranspose();
-  attributes->b_transpose = options->bTranspose();
-  return attributes;
-}
+OperationPtr CreateGemmOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* gemm) {
+  auto gemm_mojo = webnn::mojom::blink::Gemm::New();
+  gemm_mojo->a_operand_id = GetOperatorInputId(gemm, operand_to_id_map, 0);
+  gemm_mojo->b_operand_id = GetOperatorInputId(gemm, operand_to_id_map, 1);
+  gemm_mojo->output_operand_id = GetOperatorOutputId(gemm, operand_to_id_map);
 
-OperationPtr CreateGemmOperator(const OperandToIdMap& operand_to_id_map,
-                                const MLOperator* gemm) {
-  const uint64_t a_operand_id = GetOperatorInputId(gemm, operand_to_id_map, 0);
-  const uint64_t b_operand_id = GetOperatorInputId(gemm, operand_to_id_map, 1);
-  const uint64_t output_operand_id =
-      GetOperatorOutputId(gemm, operand_to_id_map);
-
-  auto operator_mojo = blink_mojom::Operator::New();
-  operator_mojo->kind = Operator::Kind::kGemm;
-  operator_mojo->input_operands = {a_operand_id, b_operand_id};
-  operator_mojo->output_operands = {output_operand_id};
   const auto* options = static_cast<const MLGemmOptions*>(gemm->Options());
   CHECK(options);
-  operator_mojo->attributes = blink_mojom::OperatorAttributes::NewGemm(
-      ConvertToGemmAttributes(operand_to_id_map, options));
-  return blink_mojom::Operation::NewGenericOperator(std::move(operator_mojo));
+  if (options->hasC()) {
+    gemm_mojo->c_operand_id = operand_to_id_map.at(options->c());
+  }
+  gemm_mojo->alpha = options->alpha();
+  gemm_mojo->beta = options->beta();
+  gemm_mojo->a_transpose = options->aTranspose();
+  gemm_mojo->b_transpose = options->bTranspose();
+
+  return webnn::mojom::blink::Operation::NewGemm(std::move(gemm_mojo));
+}
+
+OperationPtr CreateMatmulOperation(const OperandToIdMap& operand_to_id_map,
+                                   const MLOperator* matmul) {
+  auto matmul_mojo = blink_mojom::Matmul::New();
+  matmul_mojo->a_operand_id = GetOperatorInputId(matmul, operand_to_id_map, 0);
+  matmul_mojo->b_operand_id = GetOperatorInputId(matmul, operand_to_id_map, 1);
+  matmul_mojo->output_operand_id =
+      GetOperatorOutputId(matmul, operand_to_id_map);
+
+  return blink_mojom::Operation::NewMatmul(std::move(matmul_mojo));
+}
+
+OperationPtr CreatePadOperation(const OperandToIdMap& operand_to_id_map,
+                                const MLOperator* op) {
+  const auto* pad = static_cast<const blink::MLPadOperator*>(op);
+  CHECK(pad);
+  auto pad_mojo = blink_mojom::Pad::New();
+  pad_mojo->input_operand_id = GetOperatorInputId(pad, operand_to_id_map);
+  pad_mojo->output_operand_id = GetOperatorOutputId(pad, operand_to_id_map);
+  pad_mojo->beginning_padding = pad->BeginningPadding();
+  pad_mojo->ending_padding = pad->EndingPadding();
+
+  const auto* options = static_cast<const blink::MLPadOptions*>(pad->Options());
+  CHECK(options);
+  switch (options->mode().AsEnum()) {
+    case blink::V8MLPaddingMode::Enum::kConstant: {
+      auto constant_padding = blink_mojom::ConstantPadding::New();
+      constant_padding->value = options->value();
+      pad_mojo->mode =
+          blink_mojom::PaddingMode::NewConstant(std::move(constant_padding));
+      break;
+    }
+    case blink::V8MLPaddingMode::Enum::kEdge:
+      pad_mojo->mode =
+          blink_mojom::PaddingMode::NewEdge(blink_mojom::EdgePadding::New());
+      break;
+    case blink::V8MLPaddingMode::Enum::kReflection:
+      pad_mojo->mode = blink_mojom::PaddingMode::NewReflection(
+          blink_mojom::ReflectionPadding::New());
+      break;
+    case blink::V8MLPaddingMode::Enum::kSymmetric:
+      pad_mojo->mode = blink_mojom::PaddingMode::NewSymmetric(
+          blink_mojom::SymmetricPadding::New());
+      break;
+  }
+
+  return blink_mojom::Operation::NewPad(std::move(pad_mojo));
 }
 
 OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
                                    const MLOperator* pool2d) {
-  const uint64_t input_operand_id =
-      GetOperatorInputId(pool2d, operand_to_id_map);
-  const uint64_t output_operand_id =
-      GetOperatorOutputId(pool2d, operand_to_id_map);
-
   auto pool2d_mojo = blink_mojom::Pool2d::New();
   switch (pool2d->Kind()) {
     case MLOperator::OperatorKind::kAveragePool2d:
@@ -364,8 +463,9 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
     default:
       NOTREACHED();
   }
-  pool2d_mojo->input_operand_id = input_operand_id;
-  pool2d_mojo->output_operand_id = output_operand_id;
+  pool2d_mojo->input_operand_id = GetOperatorInputId(pool2d, operand_to_id_map);
+  pool2d_mojo->output_operand_id =
+      GetOperatorOutputId(pool2d, operand_to_id_map);
 
   const auto* options =
       static_cast<const blink::MLPool2dOptions*>(pool2d->Options());
@@ -414,9 +514,74 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
   return blink_mojom::Operation::NewPool2d(std::move(pool2d_mojo));
 }
 
+OperationPtr CreatePreluOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* prelu) {
+  auto prelu_mojo = blink_mojom::Prelu::New();
+  prelu_mojo->input_operand_id =
+      GetOperatorInputId(prelu, operand_to_id_map, 0);
+  prelu_mojo->slope_operand_id =
+      GetOperatorInputId(prelu, operand_to_id_map, 1);
+  prelu_mojo->output_operand_id = GetOperatorOutputId(prelu, operand_to_id_map);
+
+  return blink_mojom::Operation::NewPrelu(std::move(prelu_mojo));
+}
+
+OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* reduce) {
+  auto reduce_mojo = blink_mojom::Reduce::New();
+  switch (reduce->Kind()) {
+    case MLOperator::OperatorKind::kReduceL1:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kL1;
+      break;
+    case MLOperator::OperatorKind::kReduceL2:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kL2;
+      break;
+    case MLOperator::OperatorKind::kReduceLogSum:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kLogSum;
+      break;
+    case MLOperator::OperatorKind::kReduceLogSumExp:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kLogSumExp;
+      break;
+    case MLOperator::OperatorKind::kReduceMax:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMax;
+      break;
+    case MLOperator::OperatorKind::kReduceMean:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMean;
+      break;
+    case MLOperator::OperatorKind::kReduceMin:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kMin;
+      break;
+    case MLOperator::OperatorKind::kReduceProduct:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kProduct;
+      break;
+    case MLOperator::OperatorKind::kReduceSum:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kSum;
+      break;
+    case MLOperator::OperatorKind::kReduceSumSquare:
+      reduce_mojo->kind = blink_mojom::Reduce::Kind::kSumSquare;
+      break;
+    default:
+      NOTREACHED();
+  }
+  reduce_mojo->input_operand_id = GetOperatorInputId(reduce, operand_to_id_map);
+  reduce_mojo->output_operand_id =
+      GetOperatorOutputId(reduce, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLReduceOptions*>(reduce->Options());
+  CHECK(options);
+  const auto input_rank = reduce->Inputs()[0]->Dimensions().size();
+  const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
+  CHECK_LE(axes.size(), input_rank);
+  reduce_mojo->axes = axes;
+  reduce_mojo->keep_dimensions = options->keepDimensions();
+
+  return blink_mojom::Operation::NewReduce(std::move(reduce_mojo));
+}
+
 OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
                                        const MLOperator* resample2d) {
-  auto resample2d_mojo = webnn::mojom::blink::Resample2d::New();
+  auto resample2d_mojo = blink_mojom::Resample2d::New();
 
   resample2d_mojo->input_operand_id =
       GetOperatorInputId(resample2d, operand_to_id_map);
@@ -429,64 +594,91 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
   switch (options->mode().AsEnum()) {
     case blink::V8MLInterpolationMode::Enum::kNearestNeighbor:
       resample2d_mojo->mode =
-          webnn::mojom::blink::Resample2d::InterpolationMode::kNearestNeighbor;
+          blink_mojom::Resample2d::InterpolationMode::kNearestNeighbor;
       break;
     case blink::V8MLInterpolationMode::Enum::kLinear:
       resample2d_mojo->mode =
-          webnn::mojom::blink::Resample2d::InterpolationMode::kLinear;
+          blink_mojom::Resample2d::InterpolationMode::kLinear;
       break;
   }
 
-  return webnn::mojom::blink::Operation::NewResample2d(
-      std::move(resample2d_mojo));
+  // When the target sizes are specified, the scales argument is ignored.
+  if (!options->hasSizes()) {
+    // If scales are not present, the values are assumed to be [1.0, 1.0].
+    auto scales = options->getScalesOr({1.0, 1.0});
+    CHECK_EQ(scales.size(), 2u);
+    resample2d_mojo->scales = {scales[0], scales[1]};
+  }
+
+  // If axes are not present, the values are assumed to be [2, 3].
+  auto axes = options->getAxesOr({2, 3});
+  CHECK_EQ(axes.size(), 2u);
+  resample2d_mojo->axes = {axes[0], axes[1]};
+
+  return blink_mojom::Operation::NewResample2d(std::move(resample2d_mojo));
 }
 
 OperationPtr CreateReluOperation(const OperandToIdMap& operand_to_id_map,
                                  const MLOperator* relu) {
-  const uint64_t input_operand_id = GetOperatorInputId(relu, operand_to_id_map);
-  const uint64_t output_operand_id =
-      GetOperatorOutputId(relu, operand_to_id_map);
-
-  auto relu_mojo = webnn::mojom::blink::Relu::New();
-  relu_mojo->input_operand_id = input_operand_id;
-  relu_mojo->output_operand_id = output_operand_id;
-  return webnn::mojom::blink::Operation::NewRelu(std::move(relu_mojo));
+  auto relu_mojo = blink_mojom::Relu::New();
+  relu_mojo->input_operand_id = GetOperatorInputId(relu, operand_to_id_map);
+  relu_mojo->output_operand_id = GetOperatorOutputId(relu, operand_to_id_map);
+  return blink_mojom::Operation::NewRelu(std::move(relu_mojo));
 }
 
-OperationPtr CreateReshapeOperator(const OperandToIdMap& operand_to_id_map,
-                                   const MLOperator* reshape) {
-  const uint64_t input_operand_id =
+OperationPtr CreateReshapeOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* reshape) {
+  auto reshape_mojo = blink_mojom::Reshape::New();
+  reshape_mojo->input_operand_id =
       GetOperatorInputId(reshape, operand_to_id_map);
-  const uint64_t output_operand_id =
+  reshape_mojo->output_operand_id =
       GetOperatorOutputId(reshape, operand_to_id_map);
+  return blink_mojom::Operation::NewReshape(std::move(reshape_mojo));
+}
 
-  auto operator_mojo = blink_mojom::Operator::New();
-  operator_mojo->kind = Operator::Kind::kReshape;
-  operator_mojo->input_operands = {input_operand_id};
-  operator_mojo->output_operands = {output_operand_id};
-  return blink_mojom::Operation::NewGenericOperator(std::move(operator_mojo));
+OperationPtr CreateSigmoidOperation(const OperandToIdMap& operand_to_id_map,
+                                    const MLOperator* sigmoid) {
+  auto sigmoid_mojo = blink_mojom::Sigmoid::New();
+  sigmoid_mojo->input_operand_id =
+      GetOperatorInputId(sigmoid, operand_to_id_map);
+  sigmoid_mojo->output_operand_id =
+      GetOperatorOutputId(sigmoid, operand_to_id_map);
+  return blink_mojom::Operation::NewSigmoid(std::move(sigmoid_mojo));
+}
+
+OperationPtr CreateSliceOperation(const OperandToIdMap& operand_to_id_map,
+                                  const MLOperator* slice) {
+  auto slice_mojo = webnn::mojom::blink::Slice::New();
+  slice_mojo->input_operand_id = GetOperatorInputId(slice, operand_to_id_map);
+  slice_mojo->output_operand_id = GetOperatorOutputId(slice, operand_to_id_map);
+  const MLSliceOperator* slice_operator =
+      static_cast<const MLSliceOperator*>(slice);
+  CHECK_EQ(slice_operator->Sizes().size(), slice_operator->Starts().size());
+  slice_mojo->starts_and_sizes.reserve(slice_operator->Starts().size());
+  for (uint32_t i = 0; i < slice_operator->Starts().size(); ++i) {
+    webnn::mojom::blink::StartAndSizePtr start_and_size =
+        webnn::mojom::blink::StartAndSize::New();
+    start_and_size->start = slice_operator->Starts()[i];
+    start_and_size->size = slice_operator->Sizes()[i];
+    slice_mojo->starts_and_sizes.push_back(std::move(start_and_size));
+  }
+  return webnn::mojom::blink::Operation::NewSlice(std::move(slice_mojo));
 }
 
 OperationPtr CreateSoftmaxOperation(const OperandToIdMap& operand_to_id_map,
                                     const MLOperator* softmax) {
-  const uint64_t input_operand_id =
+  auto softmax_mojo = blink_mojom::Softmax::New();
+  softmax_mojo->input_operand_id =
       GetOperatorInputId(softmax, operand_to_id_map);
-  const uint64_t output_operand_id =
+  softmax_mojo->output_operand_id =
       GetOperatorOutputId(softmax, operand_to_id_map);
-
-  auto softmax_mojo = webnn::mojom::blink::Softmax::New();
-  softmax_mojo->input_operand_id = input_operand_id;
-  softmax_mojo->output_operand_id = output_operand_id;
-  return webnn::mojom::blink::Operation::NewSoftmax(std::move(softmax_mojo));
+  return blink_mojom::Operation::NewSoftmax(std::move(softmax_mojo));
 }
 
 OperationPtr CreateSplitOperation(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* split) {
-  const uint64_t input_operand_id =
-      GetOperatorInputId(split, operand_to_id_map);
-
-  auto split_mojo = webnn::mojom::blink::Split::New();
-  split_mojo->input_operand_id = input_operand_id;
+  auto split_mojo = blink_mojom::Split::New();
+  split_mojo->input_operand_id = GetOperatorInputId(split, operand_to_id_map);
   const wtf_size_t number_of_splits = split->Outputs().size();
   split_mojo->output_operand_ids.reserve(number_of_splits);
   for (uint32_t i = 0; i < number_of_splits; ++i) {
@@ -499,19 +691,24 @@ OperationPtr CreateSplitOperation(const OperandToIdMap& operand_to_id_map,
   if (options->hasAxis()) {
     split_mojo->axis = options->axis();
   }
-  return webnn::mojom::blink::Operation::NewSplit(std::move(split_mojo));
+  return blink_mojom::Operation::NewSplit(std::move(split_mojo));
+}
+
+OperationPtr CreateTanhOperation(const OperandToIdMap& operand_to_id_map,
+                                 const MLOperator* tanh) {
+  auto tanh_mojo = blink_mojom::Tanh::New();
+  tanh_mojo->input_operand_id = GetOperatorInputId(tanh, operand_to_id_map);
+  tanh_mojo->output_operand_id = GetOperatorOutputId(tanh, operand_to_id_map);
+  return blink_mojom::Operation::NewTanh(std::move(tanh_mojo));
 }
 
 OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
                                       const MLOperator* transpose) {
-  const uint64_t input_operand_id =
-      GetOperatorInputId(transpose, operand_to_id_map);
-  const uint64_t output_operand_id =
-      GetOperatorOutputId(transpose, operand_to_id_map);
-
   auto transpose_mojo = blink_mojom::Transpose::New();
-  transpose_mojo->input_operand_id = input_operand_id;
-  transpose_mojo->output_operand_id = output_operand_id;
+  transpose_mojo->input_operand_id =
+      GetOperatorInputId(transpose, operand_to_id_map);
+  transpose_mojo->output_operand_id =
+      GetOperatorOutputId(transpose, operand_to_id_map);
   const auto* options =
       static_cast<const MLTransposeOptions*>(transpose->Options());
   CHECK(options);
@@ -531,51 +728,83 @@ base::expected<OperationPtr, String> ConvertToMojoOperation(
     const MLOperator* op) {
   switch (op->Kind()) {
     case MLOperator::OperatorKind::kClamp:
-      return CreateClampOperation(operand_to_id_map, op);
+      return blink_mojom::Operation::NewClamp(
+          CreateClamp(operand_to_id_map, op, false));
     case MLOperator::OperatorKind::kConcat:
       return CreateConcatOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kConv2d:
       return CreateConv2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAdd:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kSub:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMul:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kDiv:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMin:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMax:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kPow:
       return CreateElementWiseBinaryOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kElu:
+      return blink_mojom::Operation::NewElu(
+          CreateElu(operand_to_id_map, op, false));
+    case MLOperator::OperatorKind::kGemm:
+      return CreateGemmOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kLeakyRelu:
+      return blink_mojom::Operation::NewLeakyRelu(
+          CreateLeakyRelu(operand_to_id_map, op, false));
+    case MLOperator::OperatorKind::kMatmul:
+      return CreateMatmulOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kPad:
+      return CreatePadOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAveragePool2d:
+      [[fallthrough]];
     case MLOperator::OperatorKind::kMaxPool2d:
       return CreatePool2dOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kGemm:
-      return CreateGemmOperator(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kPRelu:
+      return CreatePreluOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kReduceL1:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceL2:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceLogSum:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceLogSumExp:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceMax:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceMean:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceMin:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceProduct:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceSum:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kReduceSumSquare:
+      return CreateReduceOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kResample2d:
       return CreateResample2dOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kRelu:
       return CreateReluOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kReshape:
-      return CreateReshapeOperator(operand_to_id_map, op);
+      return CreateReshapeOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSigmoid:
+      return CreateSigmoidOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kSlice:
+      return CreateSliceOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSplit:
       return CreateSplitOperation(operand_to_id_map, op);
+    case MLOperator::OperatorKind::kTanh:
+      return CreateTanhOperation(operand_to_id_map, op);
     case MLOperator::OperatorKind::kTranspose:
       return CreateTransposeOperation(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kHardSwish:
-    case MLOperator::OperatorKind::kReduceMean:
-    case MLOperator::OperatorKind::kReduceSum:
-    case MLOperator::OperatorKind::kSigmoid:
-    case MLOperator::OperatorKind::kLeakyRelu:
-    case MLOperator::OperatorKind::kConvTranspose2d:
-    case MLOperator::OperatorKind::kPRelu:
-    case MLOperator::OperatorKind::kPad:
-    case MLOperator::OperatorKind::kElu:
-    case MLOperator::OperatorKind::kAbs:
-    case MLOperator::OperatorKind::kCeil:
-    case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg:
-    case MLOperator::OperatorKind::kSlice:
-    case MLOperator::OperatorKind::kTanh:
+    default:
       return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
                               " is not implemented.");
   }

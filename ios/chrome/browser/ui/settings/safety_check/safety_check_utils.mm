@@ -11,7 +11,7 @@
 bool PreviousSafetyCheckIssueFound() {
   // Verify if the last safety check found issues.
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  base::Time lastCompletedCheck = base::Time::FromDoubleT(
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
       [defaults doubleForKey:kTimestampOfLastIssueFoundKey]);
   return lastCompletedCheck != base::Time();
 }

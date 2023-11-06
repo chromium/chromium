@@ -36,11 +36,13 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
   void SendAccountsRequest(const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override;
-  void SendTokenRequest(const GURL& token_url,
-                        const std::string& account,
-                        const std::string& url_encoded_post_data,
-                        TokenRequestCallback callback,
-                        ContinueOnCallback continue_on_callback) override;
+  void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on_callback,
+      RecordErrorMetricsCallback record_error_metrics_callback) override;
   void SendSuccessfulTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
       base::TimeDelta api_call_to_show_dialog_time,
@@ -51,6 +53,10 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       const GURL& metrics_endpoint_url,
       MetricsEndpointErrorCode error_code) override;
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
+  void SendRevokeRequest(const GURL& revoke_url,
+                         const std::string& account_hint,
+                         const std::string& client_id,
+                         RevokeCallback callback) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

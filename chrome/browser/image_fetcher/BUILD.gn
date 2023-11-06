@@ -1,0 +1,27 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("image_fetcher") {
+  sources = [
+    "image_decoder_impl.cc",
+    "image_decoder_impl.h",
+    "image_fetcher_service_factory.cc",
+    "image_fetcher_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/image_decoder",
+    "//chrome/browser/profiles",
+    "//chrome/common:constants",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/core/cache",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/image_fetcher:android" ]
+  }
+}

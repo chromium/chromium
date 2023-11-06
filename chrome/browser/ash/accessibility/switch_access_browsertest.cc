@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/window_tree_host_lookup.h"
+#include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/automation_test_utils.h"
 #include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -15,7 +19,7 @@
 
 namespace ash {
 
-class SwitchAccessTest : public InProcessBrowserTest {
+class SwitchAccessTest : public AccessibilityFeatureBrowserTest {
  protected:
   SwitchAccessTest() = default;
   ~SwitchAccessTest() override = default;
@@ -23,20 +27,13 @@ class SwitchAccessTest : public InProcessBrowserTest {
   SwitchAccessTest& operator=(const SwitchAccessTest&) = delete;
 
   void SetUpOnMainThread() override {
-    switch_access_test_utils_ =
-        std::make_unique<SwitchAccessTestUtils>(browser()->profile());
+    switch_access_test_utils_ = std::make_unique<SwitchAccessTestUtils>(
+        AccessibilityManager::Get()->profile());
   }
 
   void SendVirtualKeyPress(ui::KeyboardCode key) {
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, key, false, false, false, false)));
-  }
-
-  std::string GetInputString() {
-    std::string script = "document.getElementById('in').value";
-    return content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
-                           script)
-        .ExtractString();
   }
 
   // Returns cursor client for root window at location (in DIPs) |x| and |y|.
@@ -80,9 +77,12 @@ class SwitchAccessTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
+  AutomationTestUtils test_utils(extension_misc::kSwitchAccessExtensionId);
+  test_utils.SetUpTestSupport();
+
   // Load a webpage with a text box.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GURL("data:text/html;charset=utf-8,<input type=text id=in>")));
+  NavigateToUrl(GURL(
+      "data:text/html;charset=utf-8,<input type='text' class='sa-input'>"));
 
   // Put focus in the text box.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_TAB);
@@ -91,13 +91,14 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
 
   // Check that the text field did not receive the character.
-  EXPECT_STREQ("", GetInputString().c_str());
+  EXPECT_STREQ("", test_utils.GetValueForNodeWithClassName("sa_input").c_str());
 
   // Send a key event for a character not consumed by Switch Access.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_X);
 
   // Check that the text field received the character.
-  EXPECT_STREQ("x", GetInputString().c_str());
+  EXPECT_STREQ("x",
+               test_utils.GetValueForNodeWithClassName("sa_input").c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
@@ -105,8 +106,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
                               {'3', 'C'} /* previous */);
 
   // Load a webpage with two groups of controls.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(R"HTML(data:text/html,
+  NavigateToUrl(GURL(R"HTML(data:text/html,
       <div role="group" aria-label="Top">
         <button autofocus>Northwest</button>
         <button>Northeast</button>
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
         <button>Southwest</button>
         <button>Southeast</button>
       </div>
-      )HTML")));
+      )HTML"));
 
   // Wait for switch access to focus on the first button.
   utils()->WaitForFocusRing("primary", "button", "Northwest");
@@ -157,12 +157,15 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
                               {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
+  NavigateToUrl(
+      GURL("data:text/html,<input autofocus aria-label=MyTextField>"));
 
   // Wait for switch access to focus on the text field.
   utils()->WaitForFocusRing("primary", "textField", "MyTextField");
+
+  // TODO(b/301253962): This fails in Lacros because the virtual keyboard is
+  // automatically opened when focus reached the text field, so the key press of
+  // "select" does not open the switch access menu.
 
   // Send "select", which opens the switch access menu.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
@@ -208,21 +211,14 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   utils()->WaitForFocusRing("primary", "button", "Keyboard");
 }
 
-// TODO(crbug.com/1472440): Enable after fixing flakiness on Linux ChromiumOS
-// MSAN.
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_TypeIntoVirtualKeyboard DISABLED_TypeIntoVirtualKeyboard
-#else
-#define MAYBE_TypeIntoVirtualKeyboard TypeIntoVirtualKeyboard
-#endif
-IN_PROC_BROWSER_TEST_F(SwitchAccessTest, MAYBE_TypeIntoVirtualKeyboard) {
+// TODO(crbug.com/1472440): Enable after fixing flakiness.
+IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_TypeIntoVirtualKeyboard) {
   utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
                               {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
+  NavigateToUrl(
+      GURL("data:text/html,<input autofocus aria-label=MyTextField>"));
 
   // Wait for switch access to focus on the text field.
   utils()->WaitForFocusRing("primary", "textField", "MyTextField");
@@ -262,10 +258,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
                               {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  NavigateToUrl(
       GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
-           "style='width: 800px; height: 800px;'>")));
+           "style='width: 800px; height: 800px;'>"));
 
   // Wait for switch access to focus on the checkbox.
   utils()->WaitForFocusRing("primary", "checkBox", "checkbox");
@@ -302,10 +297,9 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
                               {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
+  NavigateToUrl(
       GURL("data:text/html,<input autofocus type=checkbox title='checkbox'"
-           "style='width: 800px; height: 800px;'>")));
+           "style='width: 800px; height: 800px;'>"));
 
   // Wait for switch access to focus on the checkbox.
   utils()->WaitForFocusRing("primary", "checkBox", "checkbox");

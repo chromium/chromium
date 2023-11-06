@@ -73,7 +73,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
       back_inserter(address.fields), [&profile](auto field_type) {
         autofill_private::AddressField field;
         field.type = autofill_private::ParseServerFieldType(
-            FieldTypeToStringPiece(field_type));
+            FieldTypeToStringView(field_type));
         field.value = GetStringFromProfile(profile, field_type);
         return field;
       });
@@ -159,70 +159,6 @@ std::string CardNetworkToIconResourceIdString(const std::string& network) {
                        : "chrome://theme/IDR_AUTOFILL_CC_GENERIC";
 }
 
-autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
-    const autofill::CreditCard& credit_card,
-    const autofill::PersonalDataManager& personal_data) {
-  autofill_private::CreditCardEntry card;
-
-  // Add all credit card fields to the entry.
-  card.guid =
-      credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard
-          ? credit_card.guid()
-          : credit_card.server_id();
-  if (credit_card.record_type() ==
-      autofill::CreditCard::RecordType::kMaskedServerCard) {
-    card.instrument_id = base::NumberToString(credit_card.instrument_id());
-  }
-  card.name = base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
-  card.card_number =
-      base::UTF16ToUTF8(credit_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER));
-  card.expiration_month = base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH));
-  card.expiration_year = base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR));
-  card.network = base::UTF16ToUTF8(credit_card.NetworkForDisplay());
-  if (!credit_card.nickname().empty()) {
-    card.nickname = base::UTF16ToUTF8(credit_card.nickname());
-  }
-  gfx::Image* card_art_image = nullptr;
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardArtImage)) {
-    card_art_image =
-        personal_data.GetCreditCardArtImageForUrl(credit_card.card_art_url());
-  }
-  card.image_src =
-      card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
-                     : CardNetworkToIconResourceIdString(credit_card.network());
-
-  // Create card metadata and add it to |card|.
-  card.metadata.emplace();
-  std::pair<std::u16string, std::u16string> label_pieces =
-      credit_card.LabelPieces();
-  card.metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
-  card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
-  card.metadata->is_local =
-      credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard;
-  card.metadata->is_cached = credit_card.record_type() ==
-                             autofill::CreditCard::RecordType::kFullServerCard;
-  // IsValid() checks if both card number and expiration date are valid.
-  // IsServerCard() checks whether there is a duplicated server card in
-  // |personal_data|.
-  card.metadata->is_migratable =
-      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
-  card.metadata->is_virtual_card_enrollment_eligible =
-      credit_card.virtual_card_enrollment_state() ==
-          autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled ||
-      credit_card.virtual_card_enrollment_state() ==
-          autofill::CreditCard::VirtualCardEnrollmentState::
-              kUnenrolledAndEligible;
-  card.metadata->is_virtual_card_enrolled =
-      credit_card.virtual_card_enrollment_state() ==
-      autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled;
-
-  return card;
-}
-
 autofill_private::IbanEntry IbanToIbanEntry(
     const autofill::Iban& iban,
     const autofill::PersonalDataManager& personal_data) {
@@ -293,8 +229,10 @@ CreditCardEntryList GenerateCreditCardList(
       personal_data.GetCreditCards();
 
   CreditCardEntryList list;
-  for (const autofill::CreditCard* card : cards)
-    list.push_back(CreditCardToCreditCardEntry(*card, personal_data));
+  for (const autofill::CreditCard* card : cards) {
+    list.push_back(CreditCardToCreditCardEntry(*card, personal_data,
+                                               /*mask_local_cards=*/true));
+  }
 
   return list;
 }
@@ -324,6 +262,89 @@ absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
   api_account.is_eligible_for_address_account_storage =
       personal_data.IsEligibleForAddressAccountStorage();
   return std::move(api_account);
+}
+
+autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
+    const autofill::CreditCard& credit_card,
+    const autofill::PersonalDataManager& personal_data,
+    bool mask_local_cards) {
+  autofill_private::CreditCardEntry card;
+
+  // Add all credit card fields to the entry.
+  card.guid =
+      credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard
+          ? credit_card.guid()
+          : credit_card.server_id();
+  if (credit_card.record_type() ==
+      autofill::CreditCard::RecordType::kMaskedServerCard) {
+    card.instrument_id = base::NumberToString(credit_card.instrument_id());
+  }
+  card.name = base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL));
+  std::string full_card_number =
+      base::UTF16ToUTF8(credit_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER));
+  card.card_number =
+      (credit_card.record_type() ==
+           autofill::CreditCard::RecordType::kLocalCard &&
+       full_card_number.length() > 4 && mask_local_cards)
+          ? full_card_number.substr(full_card_number.length() - 4)
+          : full_card_number;
+  card.expiration_month = base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH));
+  card.expiration_year = base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR));
+  card.network = base::UTF16ToUTF8(credit_card.NetworkForDisplay());
+  if (!credit_card.nickname().empty()) {
+    card.nickname = base::UTF16ToUTF8(credit_card.nickname());
+  }
+  gfx::Image* card_art_image = nullptr;
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillEnableCardArtImage)) {
+    card_art_image =
+        personal_data.GetCreditCardArtImageForUrl(credit_card.card_art_url());
+  }
+  card.image_src =
+      card_art_image ? webui::GetBitmapDataUrl(card_art_image->AsBitmap())
+                     : CardNetworkToIconResourceIdString(credit_card.network());
+
+  // Create card metadata and add it to |card|.
+  card.metadata.emplace();
+  std::pair<std::u16string, std::u16string> label_pieces =
+      credit_card.LabelPieces();
+  card.metadata->summary_label = base::UTF16ToUTF8(label_pieces.first);
+  card.metadata->summary_sublabel = base::UTF16ToUTF8(label_pieces.second);
+  card.metadata->is_local =
+      credit_card.record_type() == autofill::CreditCard::RecordType::kLocalCard;
+  card.metadata->is_cached = credit_card.record_type() ==
+                             autofill::CreditCard::RecordType::kFullServerCard;
+  // IsValid() checks if both card number and expiration date are valid.
+  // IsServerCard() checks whether there is a duplicated server card in
+  // |personal_data|.
+  card.metadata->is_migratable =
+      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card);
+  card.metadata->is_virtual_card_enrollment_eligible =
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled ||
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::
+              kUnenrolledAndEligible;
+  card.metadata->is_virtual_card_enrolled =
+      credit_card.virtual_card_enrollment_state() ==
+      autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled;
+
+  if (!credit_card.cvc().empty()) {
+    // Replace all the chars in the CVC with "•" for security when
+    // the `credit_card` type is a `kMaskedServerCard` or `mask_local_cards` is
+    // true.
+    card.cvc = base::UTF16ToUTF8(credit_card.cvc());
+    if (credit_card.record_type() ==
+            autofill::CreditCard::RecordType::kMaskedServerCard ||
+        mask_local_cards) {
+      card.cvc = base::UTF16ToUTF8(std::u16string(card.cvc->size(), u'•'));
+    }
+  }
+
+  return card;
 }
 
 }  // namespace extensions::autofill_util

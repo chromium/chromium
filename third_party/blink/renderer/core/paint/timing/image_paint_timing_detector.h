@@ -154,7 +154,7 @@ class CORE_EXPORT ImageRecordsManager {
 
   inline ImageRecord* GetPendingImage(MediaRecordIdHash record_id_hash) {
     auto it = pending_images_.find(record_id_hash);
-    return it == pending_images_.end() ? nullptr : it->value;
+    return it == pending_images_.end() ? nullptr : it->value.Get();
   }
   bool OnFirstAnimatedFramePainted(MediaRecordIdHash,
                                    unsigned current_frame_index);

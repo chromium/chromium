@@ -15,8 +15,6 @@
 @class AppState;
 class ChromeBrowserState;
 @class CommandDispatcher;
-@protocol ConnectionInformation;
-typedef NS_ENUM(NSUInteger, DefaultPromoType);
 @class SceneState;
 @class MemoryWarningHelper;
 @class MetricsMediator;
@@ -68,14 +66,6 @@ enum class PostCrashAction {
 // YES if the sign-in upgrade promo has been presented to the user, once.
 @property(nonatomic) BOOL signinUpgradePromoPresentedOnce;
 
-// YES if the default browser fullscreen promo has met the qualifications to be
-// shown after the last cold start.
-@property(nonatomic) BOOL shouldShowDefaultBrowserPromo;
-
-// The type of default browser fullscreen promo that should be shown to the
-// user.
-@property(nonatomic) DefaultPromoType defaultBrowserPromoTypeToShow;
-
 // YES if the sign-out prompt should be shown to the user when the scene becomes
 // active and enters the foreground. This can happen if the policies have
 // changed since the last cold start, meaning the user was signed out during
@@ -88,9 +78,6 @@ enum class PostCrashAction {
 
 // YES if the app is resuming from safe mode.
 @property(nonatomic) BOOL resumingFromSafeMode;
-
-// The last window which received a tap.
-@property(nonatomic, weak) UIWindow* lastTappedWindow;
 
 // The SceneSession ID for the last session, where the Device doesn't support
 // multiple windows.

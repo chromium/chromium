@@ -1,0 +1,21 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DataLeakPreventionReportingEnabled": true
+        },
+        "prefs": {
+          "policy.dlp_reporting_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

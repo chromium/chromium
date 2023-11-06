@@ -54,6 +54,8 @@ class COMPONENT_EXPORT(ASH_LOGIN_INTEGRITY) MisconfiguredUserCleaner {
   void DoCleanup(user_manager::UserDirectoryIntegrityManager&,
                  const AccountId&);
 
+  void OnStartDeviceWipe(bool result);
+
   const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
 
   // We expect `SessionController` to always outlive this class as it is owned

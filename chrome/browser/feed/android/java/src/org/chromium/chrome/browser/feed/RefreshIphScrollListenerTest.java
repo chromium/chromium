@@ -38,43 +38,106 @@ public final class RefreshIphScrollListenerTest {
         public Iterable<ParameterSet> getParameters() {
             List<ParameterSet> parameters = new ArrayList<>();
             // Trigger the IPH when the user is signed in.
-            parameters.add(new ParameterSet().value(true, 10, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, true, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    true,
+                                    10,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Trigger the IPH when the user is not signed in.
-            parameters.add(new ParameterSet().value(true, 10, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, false, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    true,
+                                    10,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    false,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Don't trigger the IPH because the state is not set to has been displayed.
-            parameters.add(new ParameterSet().value(false, 10, TriggerState.HAS_BEEN_DISPLAYED,
-                    true, true, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    10,
+                                    TriggerState.HAS_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Don't trigger the IPH because the feed is not expanded.
-            parameters.add(new ParameterSet().value(false, 10, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    false, true, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    10,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    false,
+                                    true,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Don't trigger the IPH because the scrollY is 0.
-            parameters.add(new ParameterSet().value(false, 0, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, true, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    0,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Don't trigger the IPH because the last fetch time is not available.
-            parameters.add(new ParameterSet().value(false, 10, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, true, 0, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS + 1,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    10,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    0,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS + 1,
+                                    false));
             // Don't trigger the IPH because the last fetch time is still within the threshold.
-            parameters.add(new ParameterSet().value(false, 10, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, true, 100, 99 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    false));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    10,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    100,
+                                    99 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    false));
             // Don't trigger the IPH because the page can still scroll up.
-            parameters.add(new ParameterSet().value(false, 0, TriggerState.HAS_NOT_BEEN_DISPLAYED,
-                    true, true, 100, 100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
-                    true));
+            parameters.add(
+                    new ParameterSet()
+                            .value(
+                                    false,
+                                    0,
+                                    TriggerState.HAS_NOT_BEEN_DISPLAYED,
+                                    true,
+                                    true,
+                                    100,
+                                    100 + RefreshIphScrollListener.FETCH_TIME_AGE_THREASHOLD_MS,
+                                    true));
             return parameters;
         }
     }
 
-    @Mock
-    private Tracker mTracker;
+    @Mock private Tracker mTracker;
 
     private boolean mHasShownIPH;
 
@@ -86,79 +149,101 @@ public final class RefreshIphScrollListenerTest {
     @Test
     @Feature({"Feed"})
     @ParameterAnnotations.UseMethodParameter(TestParams.class)
-    public void triggerIph(boolean expectEnabled, int scrollY, int triggerState,
-            boolean isFeedExpanded, boolean isSignedIn, long lastFetchTimeMs, long currentTimeMs,
+    public void triggerIph(
+            boolean expectEnabled,
+            int scrollY,
+            int triggerState,
+            boolean isFeedExpanded,
+            boolean isSignedIn,
+            long lastFetchTimeMs,
+            long currentTimeMs,
             boolean canScrollUp) {
         // Set Tracker mock.
         when(mTracker.getTriggerState(FeatureConstants.FEED_SWIPE_REFRESH_FEATURE))
                 .thenReturn(triggerState);
 
-        FeedBubbleDelegate delegate = new FeedBubbleDelegate() {
-            @Override
-            public Tracker getFeatureEngagementTracker() {
-                return mTracker;
-            }
-            @Override
-            public boolean isFeedExpanded() {
-                return isFeedExpanded;
-            }
-            @Override
-            public boolean isSignedIn() {
-                return isSignedIn;
-            }
-            @Override
-            public boolean isFeedHeaderPositionInContainerSuitableForIPH(
-                    float headerMaxPosFraction) {
-                return false;
-            }
-            @Override
-            public long getCurrentTimeMs() {
-                return currentTimeMs;
-            }
-            @Override
-            public long getLastFetchTimeMs() {
-                return lastFetchTimeMs;
-            }
-            @Override
-            public boolean canScrollUp() {
-                return canScrollUp;
-            }
-            @Override
-            public boolean isShowingBackToTopBubble() {
-                return false;
-            }
-            @Override
-            public int getHeaderCount() {
-                return 0;
-            }
-            @Override
-            public int getItemCount() {
-                return 0;
-            }
-            @Override
-            public int getFirstVisiblePosition() {
-                return 0;
-            }
-            @Override
-            public int getLastVisiblePosition() {
-                return 0;
-            }
-        };
+        FeedBubbleDelegate delegate =
+                new FeedBubbleDelegate() {
+                    @Override
+                    public Tracker getFeatureEngagementTracker() {
+                        return mTracker;
+                    }
+
+                    @Override
+                    public boolean isFeedExpanded() {
+                        return isFeedExpanded;
+                    }
+
+                    @Override
+                    public boolean isSignedIn() {
+                        return isSignedIn;
+                    }
+
+                    @Override
+                    public boolean isFeedHeaderPositionInContainerSuitableForIPH(
+                            float headerMaxPosFraction) {
+                        return false;
+                    }
+
+                    @Override
+                    public long getCurrentTimeMs() {
+                        return currentTimeMs;
+                    }
+
+                    @Override
+                    public long getLastFetchTimeMs() {
+                        return lastFetchTimeMs;
+                    }
+
+                    @Override
+                    public boolean canScrollUp() {
+                        return canScrollUp;
+                    }
+
+                    @Override
+                    public boolean isShowingBackToTopBubble() {
+                        return false;
+                    }
+
+                    @Override
+                    public int getHeaderCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getItemCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getFirstVisiblePosition() {
+                        return 0;
+                    }
+
+                    @Override
+                    public int getLastVisiblePosition() {
+                        return 0;
+                    }
+                };
 
         ScrollableContainerDelegate scrollableContainerDelegate =
                 new ScrollableContainerDelegate() {
                     @Override
                     public void addScrollListener(ScrollListener listener) {}
+
                     @Override
                     public void removeScrollListener(ScrollListener listener) {}
+
                     @Override
                     public int getVerticalScrollOffset() {
                         return 10;
                     }
+
                     @Override
                     public int getRootViewHeight() {
                         return 100;
                     }
+
                     @Override
                     public int getTopPositionRelativeToContainerView(View childView) {
                         return 0;
@@ -166,8 +251,13 @@ public final class RefreshIphScrollListenerTest {
                 };
 
         // Trigger IPH through the scroll listener.
-        RefreshIphScrollListener listener = new RefreshIphScrollListener(
-                delegate, scrollableContainerDelegate, () -> { mHasShownIPH = true; });
+        RefreshIphScrollListener listener =
+                new RefreshIphScrollListener(
+                        delegate,
+                        scrollableContainerDelegate,
+                        () -> {
+                            mHasShownIPH = true;
+                        });
         listener.onScrolled(0, scrollY);
 
         if (expectEnabled) {

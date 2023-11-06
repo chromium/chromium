@@ -22,6 +22,7 @@ class BrowserContext;
 namespace net {
 class FirstPartySetsCacheFilter;
 class FirstPartySetsContextConfig;
+class FirstPartySetEntry;
 class SchemefulSite;
 }  // namespace net
 
@@ -120,6 +121,21 @@ class FirstPartySetsPolicyService : public KeyedService {
   absl::optional<net::FirstPartySetEntry> FindEntry(
       const net::SchemefulSite& site);
 
+  // Synchronously iterate over the effective First-Party Sets entries in use by
+  // this profile (i.e. all the entries that could be returned by `FindEntry`,
+  // including the manual set, policy sets, and public sets).
+  //
+  // Returns early if any of the iterations returns false.
+  // Returns false if service is not ready, or First-Party Sets was not yet
+  // initialized, or iteration was incomplete;
+  // Returns true if all iterations returned true. No guarantees are made re:
+  // iteration order.
+  //
+  // This also logs metrics that track how often this is queried before ready.
+  bool ForEachEffectiveSetEntry(
+      base::FunctionRef<bool(const net::SchemefulSite&,
+                             const net::FirstPartySetEntry&)> f) const;
+
   // Checks if ownership of `site` is managed by an enterprise.
   //
   // Note: this doesn't consider `site` as managed if it was removed by an
@@ -207,7 +223,8 @@ class FirstPartySetsPolicyService : public KeyedService {
 
   // Tracks the number of queries to the First-Party Sets in the browser process
   // are received before the `global_sets_` are initialized.
-  int num_queries_before_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+  mutable int num_queries_before_sets_ready_
+      GUARDED_BY_CONTEXT(sequence_checker_) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

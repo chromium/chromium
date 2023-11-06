@@ -12,9 +12,9 @@
 
 namespace blink {
 
+class InlineItem;
+class InlineNode;
 class LayoutBlockFlow;
-class NGInlineItem;
-class NGInlineNode;
 
 // This class builds a list of <addressable character offset,
 // its attribute values> for the specified SVG <text>.
@@ -22,7 +22,7 @@ class NGInlineNode;
 // This is almost an implementation of '3. Resolve character positioning'
 // in the algorithm [1]. However this runs during PrepareLayout() rather
 // than during the SVG text layout algorithm because we'd like to use the
-// result of this class in NGInlineNode::CollectInlines().
+// result of this class in InlineNode::CollectInlines().
 //
 // Also, this is responsible to make lists of index ranges for <textPath> and
 // textLength.
@@ -32,10 +32,10 @@ class SvgTextLayoutAttributesBuilder final {
   STACK_ALLOCATED();
 
  public:
-  explicit SvgTextLayoutAttributesBuilder(NGInlineNode ifc);
+  explicit SvgTextLayoutAttributesBuilder(InlineNode ifc);
 
   void Build(const String& ifc_text_content,
-             const HeapVector<NGInlineItem>& items);
+             const HeapVector<InlineItem>& items);
 
   // This function can be called just once after Build().
   SvgInlineNodeData* CreateSvgInlineNodeData();

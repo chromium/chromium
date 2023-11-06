@@ -132,7 +132,7 @@ AutofillWalletUsageDataSyncBridge::ApplyIncrementalSyncChanges(
   // Since such false positives are fine, and since AutofillTable's API
   // currently doesn't provide a way to detect such cases, we don't distinguish.
   if (!entity_data.empty()) {
-    web_data_backend_->NotifyOfMultipleAutofillChanges(
+    web_data_backend_->NotifyOnAutofillChangedBySync(
         syncer::AUTOFILL_WALLET_USAGE);
   }
 
@@ -186,7 +186,7 @@ void AutofillWalletUsageDataSyncBridge::ApplyDisableSyncChanges(
         {FROM_HERE, "Failed to delete usage data from table."});
   }
   web_data_backend_->CommitChanges();
-  web_data_backend_->NotifyOfMultipleAutofillChanges(
+  web_data_backend_->NotifyOnAutofillChangedBySync(
       syncer::AUTOFILL_WALLET_USAGE);
 }
 

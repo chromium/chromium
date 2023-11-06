@@ -381,7 +381,7 @@ void BluetoothSerialPortImpl::WriteMore() {
   write_pending_ = true;
   // Copying the buffer because we might want to close in_stream_, thus
   // invalidating |buffer|, which is passed to Send().
-  auto io_buffer = base::MakeRefCounted<net::IOBuffer>(buffer_size);
+  auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer_size);
   std::copy(static_cast<const char*>(buffer),
             static_cast<const char*>(buffer) + buffer_size, io_buffer->data());
 

@@ -444,7 +444,7 @@ public class ApplicationStatus {
      * @param newState New state value.
      */
     private static void onStateChange(Activity activity, @ActivityState int newState) {
-        if (activity == null) throw new IllegalArgumentException("null activity is not supported");
+        assert activity != null;
 
         if (sActivity == null
                 || newState == ActivityState.CREATED
@@ -682,6 +682,8 @@ public class ApplicationStatus {
         assert activity != null;
 
         ActivityInfo info = sActivityInfo.get(activity);
+        assert info != null
+                : "destroyed: " + activity.isDestroyed() + " finishing: " + activity.isFinishing();
         assert info.getStatus() != ActivityState.DESTROYED;
         info.getListeners().addObserver(listener);
     }

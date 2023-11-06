@@ -9,8 +9,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/bar_button_activity_indicator.h"
@@ -60,7 +59,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 @implementation SettingsRootTableViewController
 
-@synthesize dispatcher = _dispatcher;
+@synthesize applicationHandler = _applicationHandler;
+@synthesize browserHandler = _browserHandler;
+@synthesize browsingDataHandler = _browsingDataHandler;
+@synthesize settingsHandler = _settingsHandler;
+@synthesize snackbarHandler = _snackbarHandler;
 
 #pragma mark - Public
 
@@ -134,6 +137,15 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   [self.tableView reloadData];
 }
 
+- (void)configureHandlersForRootViewController:
+    (id<SettingsRootViewControlling>)controller {
+  controller.applicationHandler = self.applicationHandler;
+  controller.browserHandler = self.browserHandler;
+  controller.browsingDataHandler = self.browsingDataHandler;
+  controller.settingsHandler = self.settingsHandler;
+  controller.snackbarHandler = self.snackbarHandler;
+}
+
 #pragma mark - Property
 
 - (UIBarButtonItem*)deleteButton {
@@ -194,16 +206,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
   // can leave the new top view controller with a toolbar when it doesn't
   // require one. Disabling editing mode to avoid this. See crbug.com/1404111 as
   // an example.
-  if (!parent) {
-    if (!base::FeatureList::IsEnabled(
-            kSettingsWillBeDismissedBugFixKillSwitch) &&
-        [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
-      [self performSelector:@selector(settingsWillBeDismissed)];
-    }
-
-    if (self.isEditing) {
-      [self setEditing:NO animated:NO];
-    }
+  if (!parent && self.isEditing) {
+    [self setEditing:NO animated:NO];
   }
 
   [self.navigationController setToolbarHidden:YES animated:YES];
@@ -211,9 +215,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
   [super didMoveToParentViewController:parent];
-  if (!parent &&
-      base::FeatureList::IsEnabled(kSettingsWillBeDismissedBugFixKillSwitch) &&
-      [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
+  if (!parent && [self respondsToSelector:@selector(settingsWillBeDismissed)]) {
     [self performSelector:@selector(settingsWillBeDismissed)];
   }
 }
@@ -269,10 +271,10 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   // Subclass must have a valid dispatcher assigned.
-  DCHECK(self.dispatcher);
+  DCHECK(self.applicationHandler);
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [self.dispatcher closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 #pragma mark - Private

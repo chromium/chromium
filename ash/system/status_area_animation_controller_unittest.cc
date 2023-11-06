@@ -4,7 +4,6 @@
 
 #include "ash/system/status_area_animation_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/notification_center_test_api.h"
@@ -17,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -62,7 +60,6 @@ class StatusAreaAnimationControllerTest : public AshTestBase {
  public:
   StatusAreaAnimationControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list.InitAndEnableFeature(features::kQsRevamp);
   }
   StatusAreaAnimationControllerTest(const StatusAreaAnimationControllerTest&) =
       delete;
@@ -73,9 +70,7 @@ class StatusAreaAnimationControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    test_api = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api = std::make_unique<NotificationCenterTestApi>();
     // Tray visibility animations may still be disabled due to changes in
     // session state not fully propagating. Running all pending tasks guarantees
     // that the necessary scoped closure runners are executed, thus ensuring
@@ -107,7 +102,6 @@ class StatusAreaAnimationControllerTest : public AshTestBase {
         .back();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list;
   std::unique_ptr<NotificationCenterTestApi> test_api;
 };
 

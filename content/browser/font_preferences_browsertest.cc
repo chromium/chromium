@@ -74,6 +74,8 @@ class FontPreferencesBrowserTest : public DevToolsProtocolTest {
     const std::string non_default_system_font = "Lucida Console";
 #elif BUILDFLAG(IS_MAC)
     const std::string non_default_system_font = "Monaco";
+#elif BUILDFLAG(IS_IOS)
+    const std::string non_default_system_font = "Verdana";
 #elif BUILDFLAG(IS_FUCHSIA)
     // Fuchsia platforms don't seem to have many pre-installed fonts besides the
     // default Roboto families. Let's instead choose the default monospace

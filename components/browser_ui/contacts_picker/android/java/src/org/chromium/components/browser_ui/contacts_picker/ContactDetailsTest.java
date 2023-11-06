@@ -26,9 +26,7 @@ import org.chromium.payments.mojom.PaymentAddress;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for the ContactDetails class.
- */
+/** Tests for the ContactDetails class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class ContactDetailsTest {
@@ -39,7 +37,8 @@ public class ContactDetailsTest {
         mContext = InstrumentationRegistry.getTargetContext();
     }
 
-    private void compareAbbreviatedContactDetails(ContactDetails.AbbreviatedContactDetails expected,
+    private void compareAbbreviatedContactDetails(
+            ContactDetails.AbbreviatedContactDetails expected,
             ContactDetails.AbbreviatedContactDetails actual) {
         Assert.assertEquals(expected.primaryEmail, actual.primaryEmail);
         Assert.assertEquals(expected.overflowEmailCount, actual.overflowEmailCount);
@@ -76,9 +75,13 @@ public class ContactDetailsTest {
         address2.recipient = "";
         address2.phone = "";
 
-        ContactDetails contact = new ContactDetails("id", "Display Name",
-                Arrays.asList("email@example.com", "email2@example.com"),
-                Arrays.asList("555 123-4567", "555 765-4321"), Arrays.asList(address1, address2));
+        ContactDetails contact =
+                new ContactDetails(
+                        "id",
+                        "Display Name",
+                        Arrays.asList("email@example.com", "email2@example.com"),
+                        Arrays.asList("555 123-4567", "555 765-4321"),
+                        Arrays.asList(address1, address2));
 
         Assert.assertEquals("id", contact.getId());
         Assert.assertEquals("Display Name", contact.getDisplayName());
@@ -113,18 +116,30 @@ public class ContactDetailsTest {
         Assert.assertEquals(true, contact.isSelf());
         Assert.assertTrue(null != contact.getSelfIcon());
 
-        Assert.assertEquals("",
-                contact.getContactDetailsAsString(/*includeAddresses=*/false,
-                        /*includeEmails=*/false, /*includeTels=*/false));
-        Assert.assertEquals("email@example.com\nemail2@example.com",
+        Assert.assertEquals(
+                "",
                 contact.getContactDetailsAsString(
-                        /*includeAddresses=*/false, /*includeEmails=*/true, /*includeTels=*/false));
-        Assert.assertEquals("555 123-4567\n555 765-4321",
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false));
+        Assert.assertEquals(
+                "email@example.com\nemail2@example.com",
                 contact.getContactDetailsAsString(
-                        /*includeAddresses=*/false, /*includeEmails=*/false, /*includeTels=*/true));
-        Assert.assertEquals("formattedAddress1\nformattedAddress2",
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ true,
+                        /* includeTels= */ false));
+        Assert.assertEquals(
+                "555 123-4567\n555 765-4321",
                 contact.getContactDetailsAsString(
-                        /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false));
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ true));
+        Assert.assertEquals(
+                "formattedAddress1\nformattedAddress2",
+                contact.getContactDetailsAsString(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false));
 
         Resources resources = mContext.getResources();
         ContactDetails.AbbreviatedContactDetails expected =
@@ -137,14 +152,21 @@ public class ContactDetailsTest {
         expected.overflowAddressCount = "(+ 1 more)";
 
         // Test with full details.
-        ContactDetails.AbbreviatedContactDetails actual = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/true, /*includeTels=*/true, resources);
+        ContactDetails.AbbreviatedContactDetails actual =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ true,
+                        /* includeTels= */ true,
+                        resources);
         compareAbbreviatedContactDetails(expected, actual);
 
         // Test with only email details.
-        actual = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/false, /*includeEmails=*/true, /*includeTels=*/false,
-                resources);
+        actual =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ true,
+                        /* includeTels= */ false,
+                        resources);
         expected.primaryTelephoneNumber = "";
         expected.overflowTelephoneNumberCount = "";
         expected.primaryAddress = "";
@@ -152,25 +174,34 @@ public class ContactDetailsTest {
         compareAbbreviatedContactDetails(expected, actual);
 
         // Test with no details.
-        actual = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/false, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        actual =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         expected.primaryEmail = "";
         expected.overflowEmailCount = "";
         compareAbbreviatedContactDetails(expected, actual);
 
         // Test with only telephone details.
-        actual = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/false, /*includeEmails=*/false, /*includeTels=*/true,
-                resources);
+        actual =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ false,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ true,
+                        resources);
         expected.primaryTelephoneNumber = "555 123-4567";
         expected.overflowTelephoneNumberCount = "(+ 1 more)";
         compareAbbreviatedContactDetails(expected, actual);
 
         // Test with only address details.
-        actual = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        actual =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         expected.primaryTelephoneNumber = "";
         expected.overflowTelephoneNumberCount = "";
         expected.primaryAddress = "formattedAddress1";
@@ -198,33 +229,45 @@ public class ContactDetailsTest {
         // Odd number of multiple consecutive new-lines.
         ContactDetails contact =
                 new ContactDetails("id", "Display Name", null, null, Arrays.asList(address));
-        ContactDetails.AbbreviatedContactDetails abbreviated = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        ContactDetails.AbbreviatedContactDetails abbreviated =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // Even number of multiple consecutive new-lines.
         address.addressLine = new String[] {"Street\n\n\n\nCity\n\n\n\nCountry"};
         contact = new ContactDetails("id", "Display Name", null, null, Arrays.asList(address));
-        abbreviated = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        abbreviated =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // New lines included, but none consecutive.
         address.addressLine = new String[] {"Street\nCity\nCountry"};
         contact = new ContactDetails("id", "Display Name", null, null, Arrays.asList(address));
-        abbreviated = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        abbreviated =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         Assert.assertEquals("Street, City, Country", abbreviated.primaryAddress);
 
         // No new-lines.
         address.addressLine = new String[] {"Street City Country"};
         contact = new ContactDetails("id", "Display Name", null, null, Arrays.asList(address));
-        abbreviated = contact.getAbbreviatedContactDetails(
-                /*includeAddresses=*/true, /*includeEmails=*/false, /*includeTels=*/false,
-                resources);
+        abbreviated =
+                contact.getAbbreviatedContactDetails(
+                        /* includeAddresses= */ true,
+                        /* includeEmails= */ false,
+                        /* includeTels= */ false,
+                        resources);
         Assert.assertEquals("Street City Country", abbreviated.primaryAddress);
     }
 }

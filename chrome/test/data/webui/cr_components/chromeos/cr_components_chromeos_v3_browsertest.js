@@ -5,7 +5,7 @@
 /** @fileoverview Tests for shared Polymer 3 cr_components. */
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -66,7 +66,7 @@ GEN('#include "content/public/test/browser_test.h"');
  ['NetworkSelect', 'network/network_select_test.js'],
  ['NetworkSiminfo', 'network/network_siminfo_test.js'],
  ['SimLockDialogs', 'network/sim_lock_dialogs_test.js'],
-].forEach(test => registerTest('NetworkComponents', 'os-settings', ...test));
+].forEach(test => registerWebUiTest('NetworkComponents', 'os-settings', ...test));
 
 [['NetworkDiagnostics', 'network_health/network_diagnostics_test.js'],
  ['RoutineGroup', 'network_health/routine_group_test.js'],
@@ -96,24 +96,6 @@ GEN('#include "content/public/test/browser_test.h"');
  ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js'],
 ].forEach(test => registerWebUiTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
-
-// Prefer registerWebUiTest, which uses the non-deprecated chrome://webui-test
-// data source, for new tests.
-function registerTest(componentName, webuiHost, testName, module) {
-  const className = `${componentName}${testName}TestV3`;
-  this[className] = class extends PolymerTest {
-    /** @override */
-    get browsePreload() {
-      // TODO(jhawkins): Set up test_loader.html for internet-config-dialog
-      // and use it here instead of os-settings.
-      return `chrome://${
-          webuiHost}/test_loader.html?module=cr_components/chromeos/${
-          module}&host=test`;
-    }
-  };
-
-  TEST_F(className, 'All', () => mocha.run());
-}
 
 function registerWebUiTest(componentName, webuiHost, testName, module) {
   const className = `${componentName}${testName}TestV3`;

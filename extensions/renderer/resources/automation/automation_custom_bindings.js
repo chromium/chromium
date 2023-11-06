@@ -249,7 +249,7 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
 
   privates(targetTree).impl.onAccessibilityEvent(eventParams);
 
-  // If we're not waiting on a callback to getTree(), we can early out here.
+  // If we're not waiting on a callback, we can early out here.
   if (!(id in idToCallback)) {
     return;
   }
@@ -262,9 +262,8 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
     return;
   }
 
-  // If the tree wasn't available when getTree() was called, the callback will
-  // have been cached in idToCallback, so call and delete it now that we
-  // have the complete tree.
+  // If the tree wasn't available, the callback will have been cached in
+  // idToCallback, so call and delete it now that we have the complete tree.
   for (let i = 0; i < idToCallback[id].length; i++) {
     const callback = idToCallback[id][i];
     callback(targetTree);

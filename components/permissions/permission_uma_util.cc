@@ -122,6 +122,10 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #endif
     case RequestType::kTopLevelStorageAccess:
       return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
+#if !BUILDFLAG(IS_ANDROID)
+    case RequestType::kFileSystemAccess:
+      return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+#endif
   }
 }
 
@@ -175,6 +179,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "IdleDetection";
     case RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS:
       return "AccessibilityEvents";
+    case RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS:
+      return "FileSystemAccess";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::PERMISSION_FLASH:
@@ -250,6 +256,8 @@ PermissionHeaderPolicyForUMA GetTopLevelPermissionHeaderPolicyForUMA(
 void RecordEngagementMetric(const std::vector<PermissionRequest*>& requests,
                             content::WebContents* web_contents,
                             const std::string& action) {
+  CHECK(!requests.empty());
+
   RequestTypeForUma type =
       GetUmaValueForRequestType(requests[0]->request_type());
   if (requests.size() > 1)
@@ -1312,7 +1320,11 @@ void PermissionUmaUtil::RecordPageInfoDialogAccessType(
 // static
 std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
     ContentSettingsType type) {
-  DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(type));
+  // `FILE_SYSTEM_WRITE_GUARD` is not part of `OneTimePermission`,
+  // (i.e. `CanPermissionBeAllowedOnce()`), but it uses its background expiry
+  // flow. As a result, allow logging for this event.
+  DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(type) ||
+         type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
 
   std::string permission_type = GetPermissionRequestString(
       GetUmaValueForRequestType(ContentSettingsTypeToRequestType(type)));

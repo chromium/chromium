@@ -21,6 +21,7 @@ struct FeatureConfig;
 class AvailabilityModel;
 class DisplayLockController;
 class EventModel;
+class TimeProvider;
 
 // A ConditionValidator checks the requred conditions for a given feature,
 // and checks if all conditions are met.
@@ -101,7 +102,7 @@ class ConditionValidator {
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,
-      uint32_t current_day) const = 0;
+      const TimeProvider& time_provider) const = 0;
 
   // Must be called to notify that the |feature| is currently showing.
   virtual void NotifyIsShowing(

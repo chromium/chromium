@@ -16,7 +16,7 @@
 
 namespace blink {
 
-class IdentityProviderConfig;
+class IdentityProviderRequestOptions;
 class WebIdentityWindowOnloadEventListener;
 
 using MediationRequirement = mojom::blink::CredentialMediationRequirement;
@@ -32,14 +32,14 @@ class MODULES_EXPORT WebIdentityRequester final
                       const absl::optional<KURL>& selected_idp_config_url,
                       const WTF::String& token,
                       const mojom::blink::TokenErrorPtr error,
-                      bool is_identity_credential_auto_selected);
+                      bool is_auto_selected);
 
   // Invoked at most once per token request.
   void RequestToken();
   // Invoked at least once per token request, can be multiple times.
   void AppendGetCall(
       ScriptPromiseResolver* resolver,
-      const HeapVector<Member<IdentityProviderConfig>>& providers,
+      const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
       mojom::blink::RpContext rp_context,
       mojom::blink::RpMode rp_mode);
   void InsertScopedAbortState(

@@ -19,6 +19,7 @@
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
 #include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -124,6 +125,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   void OnGetDomFeatures(mojom::PhishingDetectorResult result,
                         const std::string& verdict);
 
+  void ExtractClientPhishingRequestFeatures(ClientPhishingRequest verdict);
+
   // Called when the DOM feature extraction times out.
   void OnGetDomFeatureTimeout();
 
@@ -132,6 +135,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // If appropriate, collects visual features, otherwise continues on to sending
   // the request.
   void MaybeCollectVisualFeatures() override;
+
+  bool ShouldCollectVisualFeatures();
 
   // Collects visual features from the current login page.
   void CollectVisualFeatures();
@@ -142,6 +147,7 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // Called when the visual feature extraction is complete.
   void OnVisualFeatureCollectionDone(
       std::unique_ptr<VisualFeatures> visual_features);
+
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -166,7 +172,8 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   base::TimeTicks visual_feature_start_time_;
 
   // The Mojo pipe used for extracting DOM features from the renderer.
-  mojo::Remote<safe_browsing::mojom::PhishingDetector> phishing_detector_;
+  mojo::AssociatedRemote<safe_browsing::mojom::PhishingDetector>
+      phishing_detector_;
 
   // Whether the DOM features collection is finished, either by timeout or by
   // successfully gathering the features.

@@ -42,8 +42,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
-using content_settings::URLToSchemefulSitePattern;
-
 namespace {
 
 // `kPermissionStorageAccessAPI` enables StorageAccessAPIwithPrompts
@@ -317,39 +315,32 @@ void StorageAccessGrantPermissionContext::CheckForAutoGrantOrAutoDenial(
 
   if (metadata.AreSitesInSameFirstPartySet()) {
     if (blink::features::kStorageAccessAPIAutoGrantInFPS.Get()) {
-      // Service domains are not allowed to request storage access on behalf
-      // of other domains, even in the same First-Party Set.
-      if (metadata.top_frame_entry()->site_type() == net::SiteType::kService) {
-        NotifyPermissionSetInternal(
-            request_data.id, request_data.requesting_origin,
-            request_data.embedding_origin, std::move(callback),
-            /*persist=*/false, CONTENT_SETTING_BLOCK,
-            RequestOutcome::kDeniedByPrerequisites);
-        return;
+      switch (metadata.top_frame_entry()->site_type()) {
+        case net::SiteType::kPrimary:
+        case net::SiteType::kAssociated:
+          // Since the sites are in the same First-Party Set, risk of abuse due
+          // to allowing access is considered to be low.
+          NotifyPermissionSetInternal(
+              request_data.id, request_data.requesting_origin,
+              request_data.embedding_origin, std::move(callback),
+              /*persist=*/true, CONTENT_SETTING_ALLOW,
+              RequestOutcome::kGrantedByFirstPartySet);
+          return;
+        case net::SiteType::kService:
+          break;
       }
-      // Since the sites are in the same First-Party Set, risk of abuse due to
-      // allowing access is considered to be low.
-      NotifyPermissionSetInternal(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_ALLOW,
-          RequestOutcome::kGrantedByFirstPartySet);
-      return;
     }
-    // Not autogranting; fall back to implicit grants or prompt.
-  } else {
-    if (ShouldAutoDenyOutsideFPS()) {
-      NotifyPermissionSetInternal(
-          request_data.id, request_data.requesting_origin,
-          request_data.embedding_origin, std::move(callback),
-          /*persist=*/true, CONTENT_SETTING_BLOCK,
-          RequestOutcome::kDeniedByFirstPartySet);
-      return;
-    }
-    // Not autodenying; fall back to implicit grants or prompt.
   }
-
-  return UseImplicitGrantOrPrompt(std::move(request_data), std::move(callback));
+  if (ShouldAutoDenyOutsideFPS()) {
+    NotifyPermissionSetInternal(request_data.id, request_data.requesting_origin,
+                                request_data.embedding_origin,
+                                std::move(callback),
+                                /*persist=*/true, CONTENT_SETTING_BLOCK,
+                                RequestOutcome::kDeniedByFirstPartySet);
+    return;
+  }
+  // Not autodenying; fall back to implicit grants or prompt.
+  UseImplicitGrantOrPrompt(std::move(request_data), std::move(callback));
 }
 
 void StorageAccessGrantPermissionContext::UseImplicitGrantOrPrompt(

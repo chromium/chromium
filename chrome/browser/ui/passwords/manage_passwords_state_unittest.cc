@@ -350,7 +350,8 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSave) {
       CreateFormManager(&best_matches, {}));
 
   passwords_data().OnAutomaticPasswordSave(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, passwords_data().state());
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            passwords_data().state());
   EXPECT_EQ(url::Origin::Create(GURL(kTestOrigin)), passwords_data().origin());
   ASSERT_TRUE(passwords_data().form_manager());
   TestAllUpdates();
@@ -500,7 +501,8 @@ TEST_F(ManagePasswordsStateTest, AutomaticPasswordSaveAddBlocklisted) {
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager(
       CreateFormManager(&best_matches, {}));
   passwords_data().OnAutomaticPasswordSave(std::move(test_form_manager));
-  EXPECT_EQ(password_manager::ui::CONFIRMATION_STATE, passwords_data().state());
+  EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
+            passwords_data().state());
 
   TestBlocklistedUpdates();
 }

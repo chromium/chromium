@@ -1,0 +1,3 @@
+Tests removing a virtual sensor in use delivers an error
+error message: Could not connect to a sensor
+

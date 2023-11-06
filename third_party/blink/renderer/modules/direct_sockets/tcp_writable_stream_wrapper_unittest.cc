@@ -52,7 +52,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
         script_state, base::DoNothing(), std::move(data_pipe_producer));
-    return stream_wrapper_;
+    return stream_wrapper_.Get();
   }
 
   void ResetPipe() { data_pipe_consumer_.reset(); }

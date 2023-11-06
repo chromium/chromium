@@ -1,8 +1,19 @@
 <style>
+  #historyGraph {
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]) #historyGraph {
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
   .tick {
     fill: var(--cr-secondary-text-color);
     font-size: 11px;
     line-height: 20px;
+    user-select: none;
   }
 
   .axis,
@@ -55,6 +66,11 @@
     stroke: var(--google-blue-700);
   }
 
+  :host-context([chrome-refresh-2023]) .tick,
+  :host-context([chrome-refresh-2023]) .tooltip-text {
+    line-height: 16px;
+  }
+
   @media (prefers-color-scheme: dark) {
     .axis,
     .divider {
@@ -74,6 +90,25 @@
     .bubble {
       fill: var(--google-grey-700);
     }
+  }
+
+  :host-context([chrome-refresh-2023]) .axis,
+  :host-context([chrome-refresh-2023]) .divider {
+    stroke: var(--color-side-panel-commerce-graph-axis);
+  }
+
+  :host-context([chrome-refresh-2023]) .bubble {
+    fill: var(--color-side-panel-commerce-graph-bubble-background);
+  }
+
+  :host-context([chrome-refresh-2023]) .circle {
+    fill: var(--color-side-panel-card-background);
+  }
+
+  :host-context([chrome-refresh-2023]) .path,
+  :host-context([chrome-refresh-2023]) .dash-line,
+  :host-context([chrome-refresh-2023]) .circle {
+    stroke: var(--color-side-panel-commerce-graph-line);
   }
 </style>
 

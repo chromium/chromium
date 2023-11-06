@@ -95,9 +95,8 @@ constexpr int kSystemDialogCornerRadiusDp = 12;
 
 // The default width, height without footnote, height with footnote for the
 // dialog container.
-const int kDialogWidthDefault = 448;
-const int kDialogHeightDefault = 295;
-const int kDialogHeightFootnote = 330;
+constexpr gfx::Size kDialogSizeWithoutFootnote{448, 295};
+constexpr gfx::Size kDialogSizeWithFootnote{448, 330};
 
 // static
 bool AccessCodeCastDialog::block_widget_activation_changed_for_test_ = false;
@@ -116,12 +115,19 @@ AccessCodeCastDialog::AccessCodeCastDialog(
          web_contents_)
       << "Web contents must be set for non desktop-mode casting!";
   set_can_resize(false);
+  set_dialog_args("{}");
+  set_dialog_content_url(GURL(chrome::kChromeUIAccessCodeCastURL));
+  set_dialog_frame_kind(FrameKind::kDialog);
+  set_show_close_button(false);
+  set_show_dialog_title(false);
+
+  base::TimeDelta duration = GetAccessCodeDeviceDurationPref(context_);
+  const bool remember_devices = duration != base::Seconds(0);
+  set_dialog_size(remember_devices ? kDialogSizeWithFootnote
+                                   : kDialogSizeWithoutFootnote);
 }
 
-AccessCodeCastDialog::~AccessCodeCastDialog() {
-  if (dialog_widget_)
-    dialog_widget_->RemoveObserver(this);
-}
+AccessCodeCastDialog::~AccessCodeCastDialog() = default;
 
 void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
   // After a dialog is shown, |media_route_starter_| is transferred to the
@@ -139,12 +145,12 @@ void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
       GetParentView(), context_, this,
       absl::make_optional<views::Widget::InitParams>(std::move(extra_params)));
 
-  auto* dialog_widget = views::Widget::GetWidgetForNativeWindow(dialog_window);
-  ObserveWidget(dialog_widget);
+  dialog_widget_ = views::Widget::GetWidgetForNativeWindow(dialog_window);
+  widget_observation_.Observe(dialog_widget_.get());
 
   if (dialog_mode == AccessCodeCastDialogMode::kBrowserStandard &&
       web_contents_) {
-    UpdateDialogPosition(dialog_widget, web_contents_);
+    UpdateDialogPosition(dialog_widget_, web_contents_);
   }
 }
 
@@ -219,36 +225,6 @@ void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
   }
 }
 
-ui::ModalType AccessCodeCastDialog::GetDialogModalType() const {
-  // Make our dialog have no modality, so it will always close if another
-  // window is focused.
-  return ui::MODAL_TYPE_NONE;
-}
-
-std::u16string AccessCodeCastDialog::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL AccessCodeCastDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUIAccessCodeCastURL);
-}
-
-void AccessCodeCastDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void AccessCodeCastDialog::GetDialogSize(gfx::Size* size) const {
-  base::TimeDelta duration_pref = GetAccessCodeDeviceDurationPref(context_);
-  bool rememberDevices = duration_pref != base::Seconds(0);
-  size->SetSize(kDialogWidthDefault,
-                rememberDevices ? kDialogHeightFootnote : kDialogHeightDefault);
-}
-
-std::string AccessCodeCastDialog::GetDialogArgs() const {
-  std::string json;
-  base::JSONWriter::Write(base::Value::Dict(), &json);
-  return json;
-}
-
 void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
   AccessCodeCastUI* controller =
@@ -258,27 +234,10 @@ void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   controller->SetMediaRouteStarter(std::move(media_route_starter_));
 }
 
-void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
-  delete this;
-}
-
 void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
                                            bool* out_close_dialog) {
   *out_close_dialog = true;
   closing_dialog_ = true;
-}
-
-bool AccessCodeCastDialog::ShouldShowDialogTitle() const {
-  return false;
-}
-
-bool AccessCodeCastDialog::ShouldShowCloseButton() const {
-  return false;
-}
-
-AccessCodeCastDialog::FrameKind AccessCodeCastDialog::GetWebDialogFrameKind()
-    const {
-  return FrameKind::kDialog;
 }
 
 // Ensure the WebUI dialog has camera access
@@ -309,12 +268,6 @@ gfx::NativeView AccessCodeCastDialog::GetParentView() {
   }
 
   return parent;
-}
-
-void AccessCodeCastDialog::ObserveWidget(views::Widget* widget) {
-  DCHECK(widget) << "Observed dialog widget must not be null";
-  dialog_widget_ = widget;
-  dialog_widget_->AddObserver(this);
 }
 
 }  // namespace media_router

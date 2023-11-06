@@ -40,7 +40,7 @@ TEST(SpecificsTranslationTest, SpecificsToPrinter) {
   specifics.set_make_and_model(kMakeAndModel);
   specifics.set_uri(kUri);
   specifics.set_uuid(kUuid);
-  specifics.set_updated_timestamp(kUpdateTime.ToJavaTime());
+  specifics.set_updated_timestamp(kUpdateTime.InMillisecondsSinceUnixEpoch());
 
   sync_pb::PrinterPPDReference ppd;
   ppd.set_effective_make_and_model(kEffectiveMakeAndModel);
@@ -67,7 +67,7 @@ TEST(SpecificsTranslationTest, SpecificsToPrinterSocketUriWithPath) {
   specifics.set_make_and_model(kMakeAndModel);
   specifics.set_uri("socket://abc.def:1234/path1/path2");
   specifics.set_uuid(kUuid);
-  specifics.set_updated_timestamp(kUpdateTime.ToJavaTime());
+  specifics.set_updated_timestamp(kUpdateTime.InMillisecondsSinceUnixEpoch());
 
   sync_pb::PrinterPPDReference ppd;
   ppd.set_effective_make_and_model(kEffectiveMakeAndModel);

@@ -1659,7 +1659,7 @@ TEST_F(TabletModeWindowManagerTest, ClamshellTabletTransitionTest) {
 
   // 1. Clamshell -> tablet. If overview is active, it should still be kept
   // active after transition.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();
@@ -1756,7 +1756,7 @@ TEST_F(TabletModeWindowManagerTest,
   gfx::Rect rect(10, 10, 200, 50);
   std::unique_ptr<aura::Window> window(
       CreateWindow(aura::client::WINDOW_TYPE_NORMAL, rect));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
 
   // First test 1 window case.
   const WindowSnapWMEvent left_snap_event(WM_EVENT_SNAP_PRIMARY);
@@ -1813,7 +1813,7 @@ TEST_F(TabletModeWindowManagerTest,
 TEST_F(TabletModeWindowManagerTest, PartialClamshellTabletTransitionTest) {
   // 1. Create a window and snap to primary 2/3.
   auto window1 = CreateTestWindow();
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   const WindowSnapWMEvent snap_primary_two_third(WM_EVENT_SNAP_PRIMARY,
                                                  chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window1.get())->OnWMEvent(&snap_primary_two_third);
@@ -1885,7 +1885,7 @@ TEST_F(TabletModeWindowManagerTest, HomeLauncherVisibilityTest) {
 
   // Clamshell -> Tablet mode transition. If overview is active, it will remain
   // in overview.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EXPECT_TRUE(EnterOverview());
   EXPECT_TRUE(overview_controller->InOverviewSession());
   TabletModeWindowManager* manager = CreateTabletModeWindowManager();

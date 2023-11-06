@@ -24,6 +24,8 @@
 #include "components/metrics/structured/storage.pb.h"
 #include "components/metrics/structured/structured_metrics_features.h"
 #include "components/metrics/structured/structured_metrics_validator.h"
+#include "event_validator.h"
+#include "project_validator.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics::structured {
@@ -63,7 +65,9 @@ StructuredMetricsRecorder::StructuredMetricsRecorder(
 
 StructuredMetricsRecorder::~StructuredMetricsRecorder() {
   Recorder::GetInstance()->RemoveObserver(this);
-  DCHECK(!IsInObserverList());
+  if (key_data_provider_) {
+    key_data_provider_->RemoveObserver(this);
+  }
 }
 
 void StructuredMetricsRecorder::EnableRecording() {
@@ -92,9 +96,32 @@ void StructuredMetricsRecorder::DisableRecording() {
   disallowed_projects_.clear();
 }
 
+void StructuredMetricsRecorder::OnKeyReady() {
+  DCHECK(base::CurrentUIThread::IsSet());
+
+  // If key data has not been initialized, it is highly likely that the key data
+  // is initialized.
+  if (!init_state_.Has(State::kKeyDataInitialized)) {
+    init_state_.Put(State::kKeyDataInitialized);
+  }
+
+  // If kKeyDataInitialized, then this is the second time this callback is being
+  // called, which must be the profile keys.
+  else if (init_state_.Has(State::kProfileAdded)) {
+    init_state_.Put(State::kProfileKeyDataInitialized);
+  }
+
+  // If recorder is now ready then hash events in-memory and store them in
+  // persistent storage.
+  if (CanProvideMetrics()) {
+    HashUnhashedEventsAndPersist();
+    std::move(on_ready_callback_).Run();
+  }
+}
+
 void StructuredMetricsRecorder::ProvideUmaEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
-  if (!can_provide_metrics()) {
+  if (!CanProvideMetrics()) {
     return;
   }
 
@@ -108,7 +135,7 @@ void StructuredMetricsRecorder::ProvideUmaEventMetrics(
 
 void StructuredMetricsRecorder::ProvideEventMetrics(
     ChromeUserMetricsExtension& uma_proto) {
-  if (!can_provide_metrics()) {
+  if (!CanProvideMetrics()) {
     return;
   }
 
@@ -129,19 +156,20 @@ void StructuredMetricsRecorder::ProvideEventMetrics(
   Recorder::GetInstance()->OnProvideIndependentMetrics(&uma_proto);
 }
 
+bool StructuredMetricsRecorder::CanProvideMetrics() {
+  return recording_enabled() && IsInitialized();
+}
+
+bool StructuredMetricsRecorder::IsInitialized() {
+  return init_state_.HasAll(InitState{State::kKeyDataInitialized,
+                                      State::kEventStorageInitialized,
+                                      State::kProfileKeyDataInitialized});
+}
+
 void StructuredMetricsRecorder::InitializeKeyDataProvider(
     std::unique_ptr<KeyDataProvider> key_data_provider) {
   key_data_provider_ = std::move(key_data_provider);
-
-  key_data_provider_->InitializeDeviceKey(
-      base::BindOnce(&StructuredMetricsRecorder::OnKeyDataInitialized,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void StructuredMetricsRecorder::OnKeyDataInitialized() {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  UpdateAndCheckInitState();
+  key_data_provider_->AddObserver(this);
 }
 
 void StructuredMetricsRecorder::OnRead(const ReadStatus status) {
@@ -159,7 +187,14 @@ void StructuredMetricsRecorder::OnRead(const ReadStatus status) {
       break;
   }
 
-  UpdateAndCheckInitState();
+  init_state_.Put(State::kEventStorageInitialized);
+
+  // If recorder is now ready then hash events in-memory and store them in
+  // persistent storage.
+  if (CanProvideMetrics()) {
+    HashUnhashedEventsAndPersist();
+    std::move(on_ready_callback_).Run();
+  }
 }
 
 void StructuredMetricsRecorder::OnWrite(const WriteStatus status) {
@@ -194,11 +229,10 @@ void StructuredMetricsRecorder::OnExternalMetricsCollected(
 
 void StructuredMetricsRecorder::Purge() {
   // Only purge if the recorder has been initialized.
-  if (!is_init_state(InitState::kInitialized)) {
+  if (!IsInitialized()) {
     return;
   }
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
   DCHECK(events_);
   events_->Purge();
@@ -211,17 +245,12 @@ void StructuredMetricsRecorder::OnProfileAdded(
 
   // We do not handle multiprofile, instead initializing with the state stored
   // in the first logged-in user's cryptohome. So if a second profile is added
-  // we should ignore it. All init state beyond |InitState::kUninitialized|
-  // mean a profile has already been added.
-  if (init_state_ != InitState::kUninitialized) {
+  // we should ignore it.
+  if (init_state_.Has(State::kProfileAdded)) {
     return;
   }
-  init_state_ = InitState::kProfileAdded;
-
-  key_data_provider_->InitializeProfileKey(
-      profile_path,
-      base::BindOnce(&StructuredMetricsRecorder::OnKeyDataInitialized,
-                     weak_factory_.GetWeakPtr()));
+  key_data_provider_->OnProfileAdded(profile_path);
+  init_state_.Put(State::kProfileAdded);
 
   // The directory used to store unsent logs. Relative to the user's cryptohome.
   // This file is created by chromium.
@@ -259,49 +288,24 @@ void StructuredMetricsRecorder::OnEventRecord(const Event& event) {
 
   // One more state for the EventRecordingState exists: kMetricsProviderMissing.
   // This is recorded in Recorder::Record.
-  if (!recording_enabled_) {
+  if (!recording_enabled_ && !CanForceRecord(event)) {
     // Events should be ignored if recording is disabled.
     LogEventRecordingState(EventRecordingState::kRecordingDisabled);
     return;
-  } else if (init_state_ != InitState::kInitialized) {
-    // If keys have not loaded yet, then hold the data in memory until the
-    // keys have been loaded.
+  } else if (!IsInitialized()) {
+    // If recorder is not ready to record metrics, then store the events
+    // in-memory until they are ready to be persisted.
     LogEventRecordingState(EventRecordingState::kProviderUninitialized);
     RecordEventBeforeInitialization(event);
     return;
   }
 
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
   RecordEvent(event);
 
   events_->QueueWrite();
   test_callback_on_record_.Run();
-}
-
-absl::optional<int> StructuredMetricsRecorder::LastKeyRotation(
-    const uint64_t project_name_hash) {
-  DCHECK(base::CurrentUIThread::IsSet());
-  if (init_state_ != InitState::kInitialized) {
-    return absl::nullopt;
-  }
-
-  KeyData* device_key_data = key_data_provider_->GetDeviceKeyData();
-  KeyData* profile_key_data = key_data_provider_->GetProfileKeyData();
-
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
-
-  // |project_name_hash| could store its keys in either the profile or device
-  // key data, so check both. As they cannot both contain the same name hash,
-  // at most one will return a non-nullopt value.
-  absl::optional<int> profile_day =
-      profile_key_data->LastKeyRotation(project_name_hash);
-  absl::optional<int> device_day =
-      device_key_data->LastKeyRotation(project_name_hash);
-  DCHECK(!(profile_day && device_day));
-  return profile_day ? profile_day : device_day;
 }
 
 void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
@@ -311,6 +315,11 @@ void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
   // handle enabling.
   if (enabled) {
     return;
+  }
+
+  // Clean up any events that were recording during the pre-user.
+  if (!recording_enabled_ && !enabled) {
+    Purge();
   }
 
   // When reporting is disabled, OnRecordingDisabled is also called. Disabling
@@ -328,7 +337,7 @@ void StructuredMetricsRecorder::OnReportingStateChanged(bool enabled) {
   //
   // Note that Purge will ensure the events are deleted from disk even if the
   // PersistentProto hasn't itself finished being read.
-  if (init_state_ == InitState::kUninitialized) {
+  if (!IsInitialized()) {
     purge_state_on_init_ = true;
   } else {
     Purge();
@@ -352,7 +361,7 @@ void StructuredMetricsRecorder::ProvideSystemProfile(
 void StructuredMetricsRecorder::WriteNowForTest() {
   // The event proto may not be initialized yet. Check that the proto is ready
   // before attempting to write.
-  if (can_provide_metrics()) {
+  if (CanProvideMetrics()) {
     events_->StartWrite();
   }
 }
@@ -371,43 +380,35 @@ void StructuredMetricsRecorder::SetExternalMetricsDirForTest(
 void StructuredMetricsRecorder::SetOnReadyToRecord(base::OnceClosure callback) {
   on_ready_callback_ = std::move(callback);
 
-  if (init_state_ == InitState::kInitialized) {
+  if (IsInitialized()) {
     std::move(on_ready_callback_).Run();
   }
 }
 
 void StructuredMetricsRecorder::RecordEventBeforeInitialization(
     const Event& event) {
-  DCHECK_NE(init_state_, InitState::kInitialized);
+  DCHECK(!IsInitialized());
   unhashed_events_.emplace_back(event.Clone());
 }
 
 void StructuredMetricsRecorder::RecordEvent(const Event& event) {
-  DCHECK(IsDeviceKeyDataInitialized());
-  DCHECK(IsProfileKeyDataInitialized());
+  DCHECK(IsKeyDataInitialized());
 
-  // Retrieve keys.
-  KeyData* device_key_data = key_data_provider_->GetDeviceKeyData();
-  KeyData* profile_key_data = key_data_provider_->GetProfileKeyData();
+  // Retrieve key for the project.
+  KeyData* key_data = key_data_provider_->GetKeyData(event.project_name());
+  if (!key_data) {
+    return;
+  }
 
   // Validates the event. If valid, retrieve the metadata associated
   // with the event.
-  auto maybe_project_validator =
-      Recorder::GetInstance()->GetValidator()->GetProjectValidator(
-          event.project_name());
+  const auto validators = GetEventValidators(event);
+  if (!validators) {
+    return;
+  }
 
-  DCHECK(maybe_project_validator.has_value());
-  if (!maybe_project_validator.has_value()) {
-    return;
-  }
-  const auto* project_validator = maybe_project_validator.value();
-  const auto maybe_event_validator =
-      project_validator->GetEventValidator(event.event_name());
-  DCHECK(maybe_event_validator.has_value());
-  if (!maybe_event_validator.has_value()) {
-    return;
-  }
-  const auto* event_validator = maybe_event_validator.value();
+  const auto* project_validator = validators->first;
+  const auto* event_validator = validators->second;
 
   if (!CanUploadProject(project_validator->project_hash())) {
     LogEventRecordingState(EventRecordingState::kProjectDisallowed);
@@ -450,51 +451,33 @@ void StructuredMetricsRecorder::RecordEvent(const Event& event) {
     event_sequence_metadata->set_event_unique_id(
         base::HashMetricName(event.event_sequence_metadata().event_unique_id));
 
-    int days_since_rotation =
-        profile_key_data->LastKeyRotation(project_validator->project_hash())
+    const int rotation_age =
+        key_data->GetKeyAgeInWeeks(project_validator->project_hash())
             .value_or(0);
-    event_sequence_metadata->set_client_id_rotation_weeks(days_since_rotation /
-                                                          7);
+    event_sequence_metadata->set_client_id_rotation_weeks(rotation_age);
 
-    event_proto->set_device_project_id(
-        device_key_data->Id(project_validator->project_hash(),
-                            project_validator->key_rotation_period()));
-    event_proto->set_user_project_id(
-        profile_key_data->Id(project_validator->project_hash(),
-                             project_validator->key_rotation_period()));
-  }
+    absl::optional<uint64_t> primary_id =
+        key_data_provider_->GetId(event.project_name());
+    if (primary_id.has_value()) {
+      event_proto->set_user_project_id(primary_id.value());
+    }
 
-  // Choose which KeyData to use for this event.
-  KeyData* key_data;
-  switch (project_validator->id_scope()) {
-    case IdScope::kPerProfile:
-      key_data = profile_key_data;
-      break;
-    case IdScope::kPerDevice:
-      // For event sequence, use the profile key for now to hash strings.
-      //
-      // TODO(crbug/1399632): Event sequence is considered a structured
-      // metrics project. Once the client supports device/profile split of
-      // events like structured metrics, remove this.
-      if (project_validator->event_type() ==
-          StructuredEventProto_EventType_SEQUENCE) {
-        key_data = profile_key_data;
-      } else {
-        key_data = device_key_data;
-      }
-      break;
-    default:
-      // In case id_scope is uninitialized.
-      NOTREACHED();
+    absl::optional<uint64_t> secondary_id =
+        key_data_provider_->GetSecondaryId(event.project_name());
+    if (secondary_id.has_value()) {
+      event_proto->set_device_project_id(secondary_id.value());
+    }
   }
 
   // Set the ID for this event, if any.
   switch (project_validator->id_type()) {
-    case IdType::kProjectId:
-      event_proto->set_profile_event_id(
-          key_data->Id(project_validator->project_hash(),
-                       project_validator->key_rotation_period()));
-      break;
+    case IdType::kProjectId: {
+      absl::optional<uint64_t> primary_id =
+          key_data_provider_->GetId(event.project_name());
+      if (primary_id.has_value()) {
+        event_proto->set_profile_event_id(primary_id.value());
+      }
+    } break;
     case IdType::kUmaId:
       // TODO(crbug.com/1148168): Unimplemented.
       break;
@@ -613,28 +596,41 @@ void StructuredMetricsRecorder::AddDisallowedProjectForTest(
   disallowed_projects_.insert(project_name_hash);
 }
 
-bool StructuredMetricsRecorder::IsDeviceKeyDataInitialized() {
-  return key_data_provider_ && key_data_provider_->GetDeviceKeyData() &&
-         key_data_provider_->GetDeviceKeyData()->is_initialized();
-}
-
-bool StructuredMetricsRecorder::IsProfileKeyDataInitialized() {
-  return key_data_provider_ && key_data_provider_->GetProfileKeyData() &&
-         key_data_provider_->GetProfileKeyData()->is_initialized();
-}
-
-void StructuredMetricsRecorder::UpdateAndCheckInitState() {
-  ++init_count_;
-  if (init_count_ == kTargetInitCount) {
-    init_state_ = InitState::kInitialized;
-    HashUnhashedEventsAndPersist();
-    std::move(on_ready_callback_).Run();
-  }
+bool StructuredMetricsRecorder::IsKeyDataInitialized() {
+  return key_data_provider_ && key_data_provider_->IsReady();
 }
 
 void StructuredMetricsRecorder::SetEventRecordCallbackForTest(
     base::RepeatingClosure callback) {
   test_callback_on_record_ = std::move(callback);
+}
+
+bool StructuredMetricsRecorder::CanForceRecord(const Event& event) const {
+  const auto validators = GetEventValidators(event);
+  if (!validators) {
+    return false;
+  }
+  return validators->second->can_force_record();
+}
+
+absl::optional<std::pair<const ProjectValidator*, const EventValidator*>>
+StructuredMetricsRecorder::GetEventValidators(const Event& event) const {
+  auto maybe_project_validator =
+      validator::Validators::Get()->GetProjectValidator(event.project_name());
+
+  DCHECK(maybe_project_validator.has_value());
+  if (!maybe_project_validator.has_value()) {
+    return {};
+  }
+  const auto* project_validator = maybe_project_validator.value();
+  const auto maybe_event_validator =
+      project_validator->GetEventValidator(event.event_name());
+  DCHECK(maybe_event_validator.has_value());
+  if (!maybe_event_validator.has_value()) {
+    return {};
+  }
+  const auto* event_validator = maybe_event_validator.value();
+  return std::make_pair(project_validator, event_validator);
 }
 
 }  // namespace metrics::structured

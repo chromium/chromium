@@ -77,8 +77,11 @@ class AwComponentUpdateService {
       const component_updater::ComponentRegistration& component) const;
   absl::optional<component_updater::ComponentRegistration> GetComponent(
       const std::string& id) const;
-  std::vector<absl::optional<update_client::CrxComponent>> GetCrxComponents(
-      const std::vector<std::string>& ids);
+  void GetCrxComponents(
+      const std::vector<std::string>& ids,
+      base::OnceCallback<
+          void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+          callback);
   void ScheduleUpdatesOfRegisteredComponents(UpdateCallback on_finished_updates,
                                              bool on_demand_update);
 

@@ -202,7 +202,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
 
     std::string Debug() {
       return base::StringPrintf("Event(%p, %s, %f)", profile_.get(),
-                                event_name_.c_str(), caught_.ToJsTime());
+                                event_name_.c_str(),
+                                caught_.InMillisecondsFSinceUnixEpoch());
     }
 
    private:
@@ -4517,7 +4518,7 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
       safe_browsing::ScopedMarkAllFilesDangerousForTesting();
 
   // Download a file that will be marked dangerous; click the browser action
-  // button; the browser action poup will call acceptDanger(); when the
+  // button; the browser action popup will call acceptDanger(); when the
   // DownloadDangerPrompt is created, pretend that the user clicks the Accept
   // button; wait until the download completes.
   LoadExtension("downloads_split");

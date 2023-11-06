@@ -39,7 +39,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -52,7 +52,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -76,7 +76,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2024-02-25">
+    units="ms" expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -332,7 +332,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
-    enum="Boolean" expires_after="2024-02-25">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -352,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AdPersonalizationRowShown" enum="Boolean"
-    expires_after="2023-11-12">
+    expires_after="2024-04-26">
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -411,6 +411,32 @@ chromium-metrics-reviews@google.com.
     Result of the Private Network Access Check on a new connection. Recorded
     once per call to network::URLLoader::OnConnected(), which may be more than
     once per URL request.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.PermissionDeviceValidity"
+    enum="PrivateNetworkDeviceValidity" expires_after="M125">
+  <owner>lyf@chromium.org</owner>
+  <owner>phao@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <summary>
+    The device validity when calling Private Network Permission Prompt. Recorded
+    once per call for Private Network Access device chooser, which may be more
+    than once per URL request.
+  </summary>
+</histogram>
+
+<histogram name="Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType"
+    enum="NewAcceptedDeviceType" expires_after="M125">
+  <owner>lyf@chromium.org</owner>
+  <owner>phao@chromium.org</owner>
+  <owner>clamy@chromium.org</owner>
+  <owner>src/chrome/browser/private_network_access/OWNERS</owner>
+  <summary>
+    The device type of a user accepted request to Private Network device. The
+    device is stored permenantly when it has valid name and ID. Otherwise, the
+    device is stored temporarily with IP address.
   </summary>
 </histogram>
 
@@ -507,7 +533,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.SCTAuditing.OptIn.ReportCompletionStatus"
-    enum="SCTAuditingReportCompletionStatus" expires_after="2024-02-11">
+    enum="SCTAuditingReportCompletionStatus" expires_after="2024-04-28">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -903,7 +929,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.BlockReason"
     enum="ProcessPerSiteWithMainFrameThresholdBlockReason"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -949,7 +975,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ReusePendingOrCommittedSite.TimeSinceReusableProcessDestroyed"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>jessemckenna@google.com</owner>
   <owner>olivierli@chromium.org</owner>
   <summary>

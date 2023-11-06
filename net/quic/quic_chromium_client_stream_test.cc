@@ -125,7 +125,6 @@ class MockQuicClientSessionBase : public quic::QuicSpdyClientSessionBase {
       const quic::QuicCryptoClientConfig::CachedState& cached) override {}
   void OnProofVerifyDetailsAvailable(
       const quic::ProofVerifyDetails& verify_details) override {}
-  bool IsAuthorized(const std::string& hostname) override { return true; }
 
  protected:
   MOCK_METHOD1(ShouldCreateIncomingStream, bool(quic::QuicStreamId id));

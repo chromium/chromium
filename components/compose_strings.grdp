@@ -1,13 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- TODO(b/301510467): Mark strings as translateable once all strings are aligned. -->
+  <!-- Nudge -->
   <message name="IDS_COMPOSE_SUGGESTION_MAIN_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element." translateable="false">
-  Autofill text
+  Lorem ipsum
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees adter interacting with a supported text element." translateable="false">
   Powered by Google
   </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Progress saved
+  </message>
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved." translateable="false">
+  Select to Autofill
+  </message>
+
+  <!-- Input dialog -->
+  <message name="IDS_COMPOSE_TITLE" desc="The title of the input dialog." translateable="false">
+  Lorem ipsum
+  </message>
+  <message name="IDS_COMPOSE_INPUT_PLACEHOLDER" desc="A placeholder text used in the input textfield." translateable="false">
+  We can Autofill many things (e.g., adresses, passwords, user names, credit card.). You can autofill any fields you want.
+  </message>
+  <message name="IDS_COMPOSE_INPUT_FOOTER" desc="The footer text for the input dialog." translateable="false">
+  <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Tip:<ph name="END_BOLD">&lt;/b&gt;</ph> You can activate Autofill in any text field when you right click.
+  </message>
+  <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to submit the input." translateable="false">
+  Submit
+  </message>
+
+  <!-- Result dialog -->
+  <message name="IDS_COMPOSE_RESULT_FOOTER" desc="The footer text for the result." translateable="false">
+  Autofill relies on the information that you save.
+  <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_INSERT_BUTTON" desc="The button that inserts the result into the input textfield." translateable="false">
+  Insert
+  </message>
+  <message name="IDS_COMPOSE_MENU_1_TITLE" desc="The first style menu title." translateable="false">
+  Distance
+  </message>
+  <message name="IDS_COMPOSE_MENU_1_OPTION_1" desc="The first option for the first style." translateable="false">
+  Close
+  </message>
+  <message name="IDS_COMPOSE_MENU_1_OPTION_2" desc="The second option for the first style." translateable="false">
+  Far
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_TITLE" desc="The second style menu title." translateable="false">
+  Style
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_OPTION_1" desc="The first option for the second style." translateable="false">
+  Low
+  </message>
+  <message name="IDS_COMPOSE_MENU_2_OPTION_2" desc="The second option for the second style." translateable="false">
+  High
+  </message>
+
+  <!-- Errors -->
   <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
   Configuration error. Try again later.
   </message>
+  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
+  Input is too long. Cannot use Autofill.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
+  Something went wrong. Try again.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
+  Something went wrong. Try again later.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
+    Autofill does not work in this field. Try a different field.
+  </message>
+  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
+  Something went wrong. Are you signed in?
+  </message>
+  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
+  Something went wrong.
+  </message>
+  <message name="IDS_COMPOSE_EDIT_UPDATE_BUTTON" desc="The button that confirms the edited input." translateable="false">
+    Update
+  </message>
+
+  <!-- Cross-dialog -->
+  <message name="IDS_COMPOSE_FOOTER_FISHFOOD" desc="The footer text used for Fishfood in the input and result dialogs." translateable="false">
+    This feature is experimental.
+  </message>
+  <message name="IDS_COMPOSE_FILE_BUG" desc="The text used as a clickable link to open the Compose bug-reporting page. Used for Fishfood only." translateable="false">
+    File a bug
+  </message>
+
 </grit-part>

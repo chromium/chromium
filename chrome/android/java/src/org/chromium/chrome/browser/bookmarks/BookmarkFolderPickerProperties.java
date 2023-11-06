@@ -34,8 +34,13 @@ class BookmarkFolderPickerProperties {
     // initialized by the activity. Since we have no control over it, it could get instantiated
     // after the property is already set.
     static final WritableObjectPropertyKey<Boolean> ADD_NEW_FOLDER_BUTTON_ENABLED =
-            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
-    static final PropertyKey[] ALL_KEYS = {TOOLBAR_TITLE, CANCEL_CLICK_LISTENER,
-            MOVE_CLICK_LISTENER, MOVE_BUTTON_ENABLED, ADD_NEW_FOLDER_BUTTON_ENABLED};
+    static final PropertyKey[] ALL_KEYS = {
+        TOOLBAR_TITLE,
+        CANCEL_CLICK_LISTENER,
+        MOVE_CLICK_LISTENER,
+        MOVE_BUTTON_ENABLED,
+        ADD_NEW_FOLDER_BUTTON_ENABLED
+    };
 }

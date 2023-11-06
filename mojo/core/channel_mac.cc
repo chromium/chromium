@@ -153,6 +153,10 @@ class ChannelMac : public Channel,
     return true;
   }
 
+  // Unlike GetReadPlatformHandles(), this does not validate the underlying
+  // PlatformHandle type here. Instead, ipcz does this in
+  // ipcz::Message::DeserializeFromTransport(), which is called by
+  // the AcceptParcel message deserializer (OnAcceptParcel).
   bool GetReadPlatformHandlesForIpcz(
       size_t num_handles,
       std::vector<PlatformHandle>& handles) override {

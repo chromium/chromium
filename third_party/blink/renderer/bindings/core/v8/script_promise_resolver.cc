@@ -169,7 +169,7 @@ void ScriptPromiseResolver::ResolveOrRejectDeferred() {
     return;
   }
 
-  ScriptState::Scope scope(script_state_);
+  ScriptState::Scope scope(script_state_.Get());
   ResolveOrRejectImmediately();
 }
 

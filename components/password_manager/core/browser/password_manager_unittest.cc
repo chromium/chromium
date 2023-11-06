@@ -48,12 +48,12 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -89,6 +89,7 @@ using ::autofill::test::CreateFieldPrediction;
 using base::ASCIIToUTF16;
 using base::Feature;
 using base::TestMockTimeTaskRunner;
+using base::test::FeatureRef;
 using testing::_;
 using testing::AllOf;
 using testing::AnyNumber;
@@ -151,8 +152,6 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
 class MockStoreResultFilter : public StubCredentialsFilter {
  public:
   MOCK_CONST_METHOD1(ShouldSave, bool(const PasswordForm& form));
-  MOCK_CONST_METHOD1(ReportFormLoginSuccess,
-                     void(const PasswordFormManager& form_manager));
   MOCK_CONST_METHOD1(IsSyncAccountEmail, bool(const std::string&));
   MOCK_CONST_METHOD1(ShouldSaveGaiaPasswordHash, bool(const PasswordForm&));
   MOCK_CONST_METHOD1(ShouldSaveEnterprisePasswordHash,
@@ -221,7 +220,8 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(void, ResetSubmissionTrackingAfterTouchToFill, (), (override));
   MOCK_METHOD(void,
               AutomaticPasswordSave,
-              (std::unique_ptr<PasswordFormManagerForUI>),
+              (std::unique_ptr<PasswordFormManagerForUI>,
+               bool is_update_confirmation),
               (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
   MOCK_METHOD(PrefService*, GetLocalStatePrefs, (), (const, override));
@@ -755,7 +755,8 @@ class PasswordManagerTest : public testing::Test {
   const GURL test_form_url_{"https://www.google.com/a/LoginAuth"};
   const GURL test_form_action_{"https://www.google.com/a/Login"};
   const std::string test_signon_realm_ = "https://www.google.com/";
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   FakeAffiliationService fake_affiliation_service_;
   scoped_refptr<TestPasswordStore> store_;
   scoped_refptr<TestPasswordStore> account_store_;
@@ -1555,10 +1556,9 @@ TEST_F(PasswordManagerTest,
   manager()->DidNavigateMainFrame(false);
 }
 
-// On a successful login with an updated password,
-// CredentialsFilter::ReportFormLoginSuccess and CredentialsFilter::ShouldSave
+// On a successful login with an updated password, CredentialsFilter::ShouldSave
 // should be called. The argument of ShouldSave should be the submitted form.
-TEST_F(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
+TEST_F(PasswordManagerTest, ShouldSaveCalled) {
   PasswordForm stored_form(MakeSimpleForm());
   store_->AddLogin(stored_form);
 
@@ -1579,10 +1579,6 @@ TEST_F(PasswordManagerTest, ReportFormLoginSuccessAndShouldSaveCalled) {
       .WillRepeatedly(Return(true));
 
   OnPasswordFormSubmitted(observed_form.form_data);
-
-  // Chrome should recognise the successful login and call
-  // ReportFormLoginSuccess.
-  EXPECT_CALL(*client_.GetStoreResultFilter(), ReportFormLoginSuccess(_));
 
   PasswordForm submitted_form = observed_form;
   submitted_form.date_last_used = base::Time::Now();
@@ -3168,6 +3164,10 @@ TEST_F(PasswordManagerTest,
 // server predictions are not ignored and used for filling in case there are
 // multiple forms on a page, including forms that have UsernameFirstFlow votes.
 TEST_F(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
+#if BUILDFLAG(IS_IOS)
+  feature_list_.InitAndEnableFeature(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3760,10 +3760,12 @@ TEST_F(PasswordManagerTest, StartLeakDetection) {
   task_environment_.RunUntilIdle();
 }
 
-// Filling on username first flow is not supported on iOS.
-#if !BUILDFLAG(IS_IOS)
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_F(PasswordManagerTest, FillSingleUsername) {
+#if BUILDFLAG(IS_IOS)
+  feature_list_.InitAndEnableFeature(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+
   base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -3797,8 +3799,13 @@ TEST_F(PasswordManagerTest, FillSingleUsername) {
 // Check that a non-password form with SINGLE_USERNAME_FORGOT_PASSWORD
 // prediction is filled.
 TEST_F(PasswordManagerTest, FillSingleUsernameForgotPassword) {
-  feature_list_.InitAndEnableFeature(
-      password_manager::features::kForgotPasswordFormSupport);
+  std::vector<FeatureRef> enabled_features = {
+      password_manager::features::kForgotPasswordFormSupport};
+#if BUILDFLAG(IS_IOS)
+  enabled_features.push_back(features::kIOSPasswordSignInUff);
+#endif  // BUIDFLAG(IS_IOS)
+  feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
+
   base::HistogramTester histogram_tester;
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
@@ -3828,7 +3835,6 @@ TEST_F(PasswordManagerTest, FillSingleUsernameForgotPassword) {
       "PasswordManager.SingleUsername.ForgotPasswordServerPredictionUsed", true,
       1);
 }
-#endif  // !BUILDFLAG(IS_IOS)
 
 // Checks that a password form with a clear-text account creation field results
 // in marking the password field as eligible for password generation.
@@ -4257,6 +4263,71 @@ TEST_F(PasswordManagerTest,
                        UnorderedElementsAre(FormMatches(expected_form)))));
 }
 
+// This test simulates the user journey consisting of single username form that
+// user typed in a long time ago, followed by sign-in form (without a username
+// field). Checks that for the simulated user journey password manager will not
+// show username in save password prompt.
+TEST_F(PasswordManagerTest,
+       UsernameFirstFlowSavingSignInFormWithStaleServerOverride) {
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
+       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
+      /*disabled_features=*/{});
+
+  // Simulate that user typed into a text field outside of the password form.
+  PasswordForm stale_username_form(MakeSimpleFormWithOnlyUsernameField());
+  const std::u16string stale_single_username = u"stale_single_username";
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillRepeatedly(ReturnRef(stale_username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, stale_username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/stale_single_username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  // Make single username form stale by fast forwarding time.
+  task_environment_.FastForwardBy(kPossibleUsernameExtendedExpirationTimeout +
+                                  base::Seconds(5));
+  EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
+
+  // Simulate that a password form which contains no username, but other text
+  // field, that can be parsed as username.
+  PasswordForm signin_form(MakeSimpleFormWithOnlyPasswordField());
+
+  manager()->OnPasswordFormsParsed(&driver_, {signin_form.form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {signin_form.form_data});
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(signin_form.url))
+      .WillRepeatedly(Return(true));
+
+  // Set up an override prediction for the stale single username field.
+  manager()->ProcessAutofillPredictions(
+      &driver_, stale_username_form.form_data,
+      CreateServerPredictions(stale_username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/true));
+
+  // Simulate successful submission and expect a save prompt.
+  task_environment_.RunUntilIdle();
+  OnPasswordFormSubmitted(signin_form.form_data);
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
+  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
+  ASSERT_TRUE(form_manager);
+
+  // Simulate accepting the prompt and expect saving the new credential.
+  form_manager->Save();
+  task_environment_.RunUntilIdle();
+
+  PasswordForm expected_form(signin_form);
+  EXPECT_THAT(expected_form.username_value, IsEmpty());
+  EXPECT_THAT(
+      store_->stored_passwords(),
+      ElementsAre(Pair(expected_form.signon_realm,
+                       UnorderedElementsAre(FormMatches(expected_form)))));
+}
+
 // Tests complex case of UFF on sign-in form that also has intermediary fields.
 // This test asserts that possible username with autocomplete="username" is
 // prioritized, even if there is more recently user typed possible username
@@ -4377,6 +4448,68 @@ TEST_F(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(saved_form.signon_realm,
                                ElementsAre(FormMatches(saved_form)))));
+}
+
+// Tests that Password Manager's behavior on usernames outside of the password
+// form can be controlled by Finch config param. Modifies LRU cache's size that
+// stores possible single usernames by a finch param. Then, single username
+// override will not be considered as a candidate for password form with
+// username and password fields.
+TEST_F(PasswordManagerTest, UsernameFirstFlowCacheSizeFromFinchParam) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
+      .WillRepeatedly(Return(true));
+  base::test::ScopedFeatureList features;
+  base::FieldTrialParams feature_parameters{
+      {features::kMaxSingleUsernameFieldsToStore.name, "1"}};
+  features.InitAndEnableFeatureWithParameters(
+      features::kUsernameFirstFlowStoreSeveralValues, feature_parameters);
+  // Reinitialize `PasswordManager` class, so that cache size is picked from the
+  // finch feature param.
+  manager_ = std::make_unique<PasswordManager>(&client_);
+  manager_->set_leak_factory(
+      std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
+
+  // Simulate the user typed in a username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  const std::u16string username = u"newusername@gmail.com";
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillRepeatedly(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/username,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+  manager()->ProcessAutofillPredictions(
+      &driver_, username_form.form_data,
+      CreateServerPredictions(username_form.form_data,
+                              {{0, ServerFieldType::SINGLE_USERNAME}},
+                              /*is_override=*/true));
+
+  // Simulate that a form which contains username and password fields is added
+  // to the page.
+  PasswordForm password_form(MakeSimpleForm());
+  manager()->OnPasswordFormsParsed(&driver_, {password_form.form_data});
+  manager()->OnPasswordFormsRendered(
+      &driver_, /*visible_forms_data=*/{password_form.form_data});
+
+  // Simulate user modifying the text fields inside password form.
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, password_form.form_data.fields[0].unique_renderer_id,
+      /*value=*/password_form.form_data.fields[0].value,
+      /*autocomplete_attribute_has_username=*/false,
+      /*is_likely_otp=*/false);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
+      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
+  task_environment_.RunUntilIdle();
+  OnPasswordFormSubmitted(password_form.form_data);
+  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
+  ASSERT_TRUE(form_manager);
+  // Even though there was a text field with single username override, it
+  // wasn't picked since the LRU cache size is limited to 1.
+  EXPECT_THAT(form_manager->GetPendingCredentials(),
+              FormMatches(password_form));
 }
 
 // Tests submitting an OTP password form after a single username form.

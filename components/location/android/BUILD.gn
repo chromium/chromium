@@ -26,8 +26,8 @@ android_library("settings_java") {
   deps = [
     ":location_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   srcjar_deps = [ ":jni_headers" ]

@@ -9,7 +9,7 @@
 
 namespace blink {
 
-struct NGCaretPosition;
+struct CaretPosition;
 class LayoutBlockFlow;
 
 // This file contains shorthands that converts FlatTree-variants of editing
@@ -18,7 +18,7 @@ class LayoutBlockFlow;
 
 const LayoutBlockFlow* NGInlineFormattingContextOf(const PositionInFlatTree&);
 
-NGCaretPosition ComputeNGCaretPosition(const PositionInFlatTreeWithAffinity&);
+CaretPosition ComputeCaretPosition(const PositionInFlatTreeWithAffinity&);
 
 bool InSameNGLineBox(const PositionInFlatTreeWithAffinity&,
                      const PositionInFlatTreeWithAffinity&);

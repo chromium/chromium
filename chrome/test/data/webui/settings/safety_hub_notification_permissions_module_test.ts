@@ -365,8 +365,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
     // Check header string for plural case.
     let entries = getEntries();
     assertEquals(2, entries.length);
-    await assertPluralString(
-        'safetyCheckNotificationPermissionReviewPrimaryLabel', 2);
+    await assertPluralString('safetyHubNotificationPermissionsPrimaryLabel', 2);
 
     // Check header string for singular case.
     webUIListenerCallback(
@@ -378,8 +377,7 @@ suite('CrSettingsSafetyHubNotificationPermissionsTest', function() {
 
     entries = getEntries();
     assertEquals(1, entries.length);
-    await assertPluralString(
-        'safetyCheckNotificationPermissionReviewPrimaryLabel', 1);
+    await assertPluralString('safetyHubNotificationPermissionsPrimaryLabel', 1);
 
     // Check visibility of buttons
     assertTrue(isVisible(testElement.$.blockAllButton));

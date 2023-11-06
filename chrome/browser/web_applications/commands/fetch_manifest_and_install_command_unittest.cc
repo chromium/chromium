@@ -51,11 +51,6 @@
 #include "components/arc/test/fake_intent_helper_instance.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace web_app {
 namespace {
 
@@ -182,8 +177,7 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
         install_future;
     provider()->scheduler().FetchManifestAndInstall(
         install_surface, web_contents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false, std::move(dialog_callback),
-        install_future.GetCallback(), use_fallback);
+        std::move(dialog_callback), install_future.GetCallback(), use_fallback);
     EXPECT_TRUE(install_future.Wait());
     return install_future.Get<webapps::InstallResultCode>();
   }
@@ -199,10 +193,6 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
 };
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const auto profile_count =
-      g_browser_process->profile_manager()->GetNumberOfProfiles();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   SetupPageState();
   EXPECT_EQ(
       InstallAndWait(
@@ -212,17 +202,6 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
   auto& registrar = provider()->registrar_unsafe();
   EXPECT_TRUE(registrar.IsLocallyInstalled(kWebAppId));
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sanity check to confirm the experimental web app profile feature logic is
-  // not running.
-  auto* web_app = registrar.GetAppById(kWebAppId);
-  ASSERT_NE(web_app, nullptr);
-  EXPECT_TRUE(web_app->chromeos_data().has_value() &&
-              !web_app->chromeos_data()->app_profile_path.has_value());
-  EXPECT_EQ(g_browser_process->profile_manager()->GetNumberOfProfiles(),
-            profile_count);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 TEST_F(FetchManifestAndInstallCommandTest,
@@ -310,8 +289,7 @@ TEST_F(FetchManifestAndInstallCommandTest, Shutdown) {
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, std::move(dialog_callback),
+      web_contents()->GetWeakPtr(), std::move(dialog_callback),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& id, webapps::InstallResultCode code) {
             result_populated = true;
@@ -334,8 +312,7 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsDestroyed) {
       install_future;
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(), /*use_fallback=*/false);
 
   DeleteContents();
@@ -358,8 +335,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(),
       /*use_fallback=*/false);
 
@@ -390,8 +366,7 @@ TEST_F(FetchManifestAndInstallCommandTest,
 
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-      web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents()->GetWeakPtr(), CreateDialogCallback(),
       install_future.GetCallback(), /*use_fallback=*/false);
 
   // Wait till we reach an async process, then trigger navigation to another url
@@ -700,8 +675,8 @@ TEST_F(FetchManifestAndInstallCommandTest, WebContentsNavigates) {
   provider()->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
-      CreateDialogCallback(/*accept=*/true, mojom::UserDisplayMode::kStandalone),
+      CreateDialogCallback(/*accept=*/true,
+                           mojom::UserDisplayMode::kStandalone),
       install_future.GetCallback(), /*use_fallback=*/false);
   // The command is always started asynchronously, so this immediate
   // navigation should test that it correctly handles navigation before

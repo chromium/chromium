@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
-#include "chrome/browser/apps/app_service/package_id.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;

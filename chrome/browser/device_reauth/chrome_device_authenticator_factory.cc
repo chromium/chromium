@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "components/device_reauth/device_authenticator_common.h"
 #include "content/public/browser/network_service_instance.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -22,17 +23,6 @@
 
 using content::BrowserContext;
 using device_reauth::DeviceAuthenticator;
-
-DeviceAuthenticatorProxy::DeviceAuthenticatorProxy() {
-#if BUILDFLAG(IS_WIN)
-  // Here we cache the biometric availability. If cached value is wrong(eg. user
-  // disable biometrics while chrome is running) then standard password prompt
-  // will appear.
-  DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
-      std::make_unique<AuthenticatorWin>().get());
-#endif
-}
-DeviceAuthenticatorProxy::~DeviceAuthenticatorProxy() = default;
 
 ChromeDeviceAuthenticatorFactory::ChromeDeviceAuthenticatorFactory()
     : ProfileKeyedServiceFactory(
@@ -82,5 +72,13 @@ ChromeDeviceAuthenticatorFactory::GetForProfile(
 std::unique_ptr<KeyedService>
 ChromeDeviceAuthenticatorFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
+#if BUILDFLAG(IS_WIN)
+  // Here we cache the biometric availability. If cached value is wrong(eg. user
+  // disable biometrics while chrome is running) then standard password prompt
+  // will appear.
+  DeviceAuthenticatorWin::CacheIfBiometricsAvailable(
+      std::make_unique<AuthenticatorWin>().get());
+#endif
+
   return std::make_unique<DeviceAuthenticatorProxy>();
 }

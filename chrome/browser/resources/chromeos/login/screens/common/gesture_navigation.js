@@ -154,7 +154,7 @@ class GestureNavigation extends GestureScreenElementBase {
    * @private
    */
   setPlayCurrentScreenAnimation(enabled) {
-    var animation = this.$[this.uiStep].querySelector('.gesture-animation');
+    const animation = this.$[this.uiStep].querySelector('.gesture-animation');
     if (animation) {
       animation.playing = enabled;
     }

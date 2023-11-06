@@ -29,24 +29,9 @@ class ASH_EXPORT NetworkListWifiHeaderViewImpl
  private:
   friend class NetworkListWifiHeaderViewTest;
 
-  // Used for testing.
-  static constexpr int kJoinWifiButtonId =
-      NetworkListNetworkHeaderView::kToggleButtonId + 2;
-
   // NetworkListNetworkHeaderView:
-  void AddExtraButtons() override;
   void SetToggleState(bool enabled, bool is_on, bool animate_toggle) override;
   void OnToggleToggled(bool is_on) override;
-
-  // NetworkListWifiHeaderView:
-  void SetJoinWifiButtonState(bool enabled, bool visible) override;
-
-  void JoinWifiButtonPressed();
-
-  // A button to invoke "Join Wi-Fi network" dialog.
-  raw_ptr<IconButton, ExperimentalAsh> join_wifi_button_ = nullptr;
-
-  base::WeakPtrFactory<NetworkListWifiHeaderViewImpl> weak_factory_{this};
 };
 
 }  // namespace ash

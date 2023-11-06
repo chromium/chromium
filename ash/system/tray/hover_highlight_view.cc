@@ -233,7 +233,6 @@ void HoverHighlightView::SetAccessibilityState(
 }
 
 void HoverHighlightView::Reset() {
-  RemoveAllChildViews();
   icon_ = nullptr;
   text_label_ = nullptr;
   sub_text_label_ = nullptr;
@@ -241,6 +240,9 @@ void HoverHighlightView::Reset() {
   right_view_ = nullptr;
   sub_row_ = nullptr;
   tri_view_ = nullptr;
+
+  RemoveAllChildViews();
+
   is_populated_ = false;
 }
 

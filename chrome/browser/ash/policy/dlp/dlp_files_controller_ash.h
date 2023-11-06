@@ -26,7 +26,6 @@
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-#include "url/gurl.h"
 
 namespace storage {
 class FileSystemURL;

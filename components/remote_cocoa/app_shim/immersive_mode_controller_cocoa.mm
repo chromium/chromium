@@ -206,6 +206,11 @@ ImmersiveModeControllerCocoa::ImmersiveModeControllerCocoa(
     : weak_ptr_factory_(this) {
   browser_window_ = browser_window;
   overlay_window_ = overlay_window;
+  // Record this now, since it will be 0 at the end of the transition if the
+  // menu bar is set to autohide.
+  menu_bar_height_ =
+      [[[NSApplication sharedApplication] mainMenu] menuBarHeight];
+
   overlay_window_.commandDispatchParentOverride = browser_window_;
   // A style of NSTitlebarSeparatorStyleAutomatic (default) will show a black
   // line separator when removing the NSWindowStyleMaskFullSizeContentView style
@@ -314,6 +319,24 @@ void ImmersiveModeControllerCocoa::FullscreenTransitionCompleted() {
   ObserveChildWindows(overlay_window_);
 
   NotifyBrowserWindowAboutToolbarRevealChanged();
+  if (NativeWidgetNSWindowBridge* bridge =
+          NativeWidgetNSWindowBridge::GetFromNativeWindow(browser_window_)) {
+    NSScreen* screen = browser_window_.screen;
+    // We have an autohiding menu bar if:
+    // - We don't have a notch AND
+    // - "Automatically Hide and Show the Menu Bar" in settings is "Always" or
+    //    "In Full Screen Only".
+    // There's no good API, public or private to test the latter. Instead, we
+    // can infer it if the screen's visible frame is shorter than the frame.
+    // Since we hide the dock in fullscreen, this is relatively reliable. It
+    // would be even better if we could verify that the difference is the height
+    // of the menu bar, but in practice, it's one pixel off, so let's not
+    // encode that.
+    BOOL autohiding_menu =
+        screen.frame.size.height == screen.visibleFrame.size.height;
+    bridge->OnAutohidingMenuBarHeightChanged(autohiding_menu ? menu_bar_height_
+                                                             : 0);
+  }
 }
 
 void ImmersiveModeControllerCocoa::OnTopViewBoundsChanged(

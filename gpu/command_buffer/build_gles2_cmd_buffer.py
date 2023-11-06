@@ -4022,14 +4022,6 @@ _FUNCTION_INFO = {
     'extension': 'KHRParallelShaderCompile',
     'extension_flag': 'khr_parallel_shader_compile',
   },
-  'TexImage2DSharedImageCHROMIUM': {
-    'decoder_func': 'DoTexImage2DSharedImageCHROMIUM',
-    'type': 'PUT',
-    'extension': "CHROMIUM_shared_image",
-    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
-    'unit_test': False,
-    'trace_level': 2,
-  },
   'CreateAndTexStorage2DSharedImageCHROMIUM': {
     'type': 'NoCommand',
     'extension': "CHROMIUM_shared_image",
@@ -4079,6 +4071,16 @@ _FUNCTION_INFO = {
     'internal': False,
     'type': 'PUT',
     'count': 144, #GL_MAILBOX_SIZE_CHROMIUM x5 + 16 floats
+    'impl_func': True,
+    'unit_test': False,
+    'trace_level': 2,
+  },
+  'ConvertYUVAMailboxesToTextureINTERNAL': {
+    'decoder_func': 'DoConvertYUVAMailboxesToTextureINTERNAL',
+    'extension': 'CHROMIUM_shared_image',
+    'internal': False,
+    'type': 'PUT',
+    'count': 64, #GL_MAILBOX_SIZE_CHROMIUM x4
     'impl_func': True,
     'unit_test': False,
     'trace_level': 2,

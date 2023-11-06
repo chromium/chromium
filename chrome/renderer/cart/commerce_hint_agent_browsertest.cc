@@ -61,7 +61,7 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
   proto.set_key(domain);
   proto.set_merchant(domain);
   proto.set_merchant_cart_url(cart_url);
-  proto.set_timestamp(base::Time::Now().ToDoubleT());
+  proto.set_timestamp(base::Time::Now().InSecondsFSinceUnixEpoch());
   return proto;
 }
 
@@ -204,6 +204,8 @@ class CommerceHintAgentTest : public PlatformBrowserTest {
     // HTTPS server only serves a valid cert for localhost, so this is needed
     // to load pages from other hosts without an error.
     command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+    // TODO(crbug.com/1491942): This fails with the field trial testing config.
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
   void SetUpOnMainThread() override {

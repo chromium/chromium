@@ -21,11 +21,6 @@
 
 namespace {
 
-absl::optional<AccountInfo>& GetPreRestoreIdentity() {
-  static base::NoDestructor<absl::optional<AccountInfo>> pre_restore_identity;
-  return *pre_restore_identity;
-}
-
 const char kAccountInfoKeyAccountId[] = "account_id";
 const char kAccountInfoKeyGaia[] = "gaia";
 const char kAccountInfoKeyEmail[] = "email";
@@ -108,8 +103,6 @@ signin::Tribool IsFirstSessionAfterDeviceRestore() {
 }
 
 void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
-  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
-  pre_restore_identity = account;
   ScopedDictPrefUpdate update(local_state, prefs::kIosPreRestoreAccountInfo);
   update->Set(kAccountInfoKeyAccountId, account.account_id.ToString());
   update->Set(kAccountInfoKeyGaia, account.gaia);
@@ -120,19 +113,14 @@ void StorePreRestoreIdentity(PrefService* local_state, AccountInfo account) {
 }
 
 void ClearPreRestoreIdentity(PrefService* local_state) {
-  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
-  pre_restore_identity.reset();
   local_state->ClearPref(prefs::kIosPreRestoreAccountInfo);
 }
 
 absl::optional<AccountInfo> GetPreRestoreIdentity(PrefService* local_state) {
-  absl::optional<AccountInfo>& pre_restore_identity = GetPreRestoreIdentity();
-  if (!pre_restore_identity.has_value()) {
-    const base::Value::Dict& dict =
-        local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
-    if (!dict.empty()) {
-      pre_restore_identity = DictToAccountInfo(dict);
-    }
+  const base::Value::Dict& dict =
+      local_state->GetDict(prefs::kIosPreRestoreAccountInfo);
+  if (dict.empty()) {
+    return absl::optional<AccountInfo>();
   }
-  return pre_restore_identity;
+  return DictToAccountInfo(dict);
 }

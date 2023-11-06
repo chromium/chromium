@@ -1,11 +1,13 @@
 This is a testharness.js-based test.
-PASS e.style['text-align'] = "start" should set the property value
-PASS e.style['text-align'] = "end" should set the property value
-PASS e.style['text-align'] = "left" should set the property value
-PASS e.style['text-align'] = "right" should set the property value
-PASS e.style['text-align'] = "center" should set the property value
-PASS e.style['text-align'] = "justify" should set the property value
-FAIL e.style['text-align'] = "match-parent" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['text-align'] = "justify-all" should set the property value assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['text-align'] = "start" should set the property value
+[PASS] e.style['text-align'] = "end" should set the property value
+[PASS] e.style['text-align'] = "left" should set the property value
+[PASS] e.style['text-align'] = "right" should set the property value
+[PASS] e.style['text-align'] = "center" should set the property value
+[PASS] e.style['text-align'] = "justify" should set the property value
+[FAIL] e.style['text-align'] = "match-parent" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['text-align'] = "justify-all" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

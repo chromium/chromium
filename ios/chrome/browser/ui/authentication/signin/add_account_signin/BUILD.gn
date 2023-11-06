@@ -22,9 +22,11 @@ source_set("add_account_signin") {
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity_manager",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin:signin_protected",
     "//ui/base",
   ]

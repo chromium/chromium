@@ -46,6 +46,8 @@ SYMBOLS_GROUPS = {
     'Currency': [
         # Currency Unicode Block.
         (0x20a0, 0x20bf),
+        # Currency from Latin-1 Supplement.
+        (0x00A2, 0x00A5),
     ],
     'Letterlike': [
         # Letterlike Symbols Unicode Block.
@@ -61,10 +63,16 @@ SYMBOLS_GROUPS = {
         # Mathematical Operators
         (0x2200, 0x2235),
         (0x2260, 0x228b),
+        # Fractions from Latin-1 Supplement
+        (0x00BC, 0x00BE),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
-        (0x2600, 0x26ff)
+        (0x2600, 0x26ff),
+        # Copyright
+        (0x00A9, 0x00A9),
+        # Registered
+        (0x00AE, 0x00AE),
     ],
 }
 
@@ -86,10 +94,22 @@ SEARCH_ONLY_SYMBOLS_GROUPS = {
         # Mathematical Operators
         (0x2236, 0x225f),
         (0x228c, 0x22df),
+        # Number Forms.
+        (0x2150, 0x218B),
     ],
     'Miscellaneous': [
         # Miscellaneous Symbols Unicode Block.
-        (0x2300, 0x23cf)
+        (0x2300, 0x23CF),
+        # Thaana.
+        (0x0780, 0x07B1),
+    ],
+    'Modifier Letter': [
+        # Spacing Modifier Letters.
+        (0x02B0, 0x02FF),
+    ],
+    'Phonetic': [
+        # Phonetic Extensions.
+        (0x1D00, 0x1D7F),
     ],
 }
 
@@ -104,6 +124,52 @@ INVALID_SYMBOLS = set([
     '\U0001F8B0',
     '\U0001F8B1',
 ])
+
+
+# Custom search keywords for symbols.
+# By default, symbols do not have search keywords.
+# These are "shortcut" style search keywords based off compose key to provide a
+# fast way to access common symbols.
+CUSTOM_KEYWORDS = {
+    '⅐':['17'],
+    '⅓':['13'],
+    '⅔':['23'],
+    '½':['12'],
+    '¼':['14'],
+    '¾':['34'],
+    '⅕':['15'],
+    '⅖':['25'],
+    '⅗':['35'],
+    '⅘':['45'],
+    '⅙':['16'],
+    '⅛':['18'],
+    '⅜':['38'],
+    '⅝':['58'],
+    '⅞':['78'],
+    '©':['oc', 'co'],
+    '®':['or', 'ro'],
+    '₠':['CE'],
+    '₡':['C/','/C'],
+    '₢':['Cr'],
+    '₣':['Fr'],
+    '¢':['|c', 'c|', 'c/', '/c'],
+    '£': ['L-', '-L'],
+    '₥': ['m/', '/m'],
+    '₦': ['N=', '=N'],
+    '₧': ['P', 't'],
+    '₨': ['R', 's'],
+    '₩': ['W=', '=W'],
+    '₫': ['=d', 'd='],
+    '€': ['C=', '=C', '=E', 'E='],
+    '¥': ['Y=', '=Y', 'Y-', '-Y'],
+    '♩': ['#q'],
+    '♪': ['#e'],
+    '♫': ['#E'],
+    '♬': ['#S'],
+    '♭': ['#b'],
+    '♮': ['#f'],
+    '♯': ['##'],
+}
 
 
 @dataclasses.dataclass
@@ -245,7 +311,8 @@ def _convert_unicode_ranges_to_emoji_chars(
                 unicode_character = chr(code_point)
                 yield EmojiPickerChar(
                     string=unicode_character,
-                    name=unicodedata.name(unicode_character).lower())
+                    name=unicodedata.name(unicode_character).lower(),
+                    keywords=CUSTOM_KEYWORDS.get(unicode_character, []))
             except ValueError:
                 # If ignore_errors is False, raise the exception.
                 if not ignore_errors:

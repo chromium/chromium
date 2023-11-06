@@ -103,6 +103,7 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
 using ui::mojom::blink::DragOperation;
 
 static const int kMaxOriginalImageArea = 1500 * 1500;
@@ -370,8 +371,9 @@ static HTMLInputElement* AsFileInput(Node* node) {
   for (; node; node = node->OwnerShadowHost()) {
     auto* html_input_element = DynamicTo<HTMLInputElement>(node);
     if (html_input_element &&
-        html_input_element->type() == input_type_names::kFile)
+        html_input_element->FormControlType() == FormControlType::kInputFile) {
       return html_input_element;
+    }
   }
   return nullptr;
 }

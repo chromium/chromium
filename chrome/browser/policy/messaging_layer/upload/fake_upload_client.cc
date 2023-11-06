@@ -61,25 +61,25 @@ void FakeUploadClient::OnUploadComplete(
     ReportSuccessfulUploadCallback report_upload_success_cb,
     EncryptionKeyAttachedCallback encryption_key_attached_cb,
     StatusOr<base::Value::Dict> response) {
-  if (!response.ok()) {
+  if (!response.has_value()) {
     return;
   }
   const base::Value::Dict* last_success =
-      response.ValueOrDie().FindDict("lastSucceedUploadedRecord");
+      response.value().FindDict("lastSucceedUploadedRecord");
   if (last_success != nullptr) {
     const auto force_confirm_flag = last_success->FindBool("forceConfirm");
     bool force_confirm =
         force_confirm_flag.has_value() && force_confirm_flag.value();
     auto seq_info_result =
         RecordHandlerImpl::SequenceInformationValueToProto(*last_success);
-    if (seq_info_result.ok()) {
+    if (seq_info_result.has_value()) {
       std::move(report_upload_success_cb)
-          .Run(seq_info_result.ValueOrDie(), force_confirm);
+          .Run(seq_info_result.value(), force_confirm);
     }
   }
 
   const base::Value::Dict* signed_encryption_key_record =
-      response.ValueOrDie().FindDict("encryptionSettings");
+      response.value().FindDict("encryptionSettings");
   if (signed_encryption_key_record != nullptr) {
     const std::string* public_key_str =
         signed_encryption_key_record->FindString("publicKey");

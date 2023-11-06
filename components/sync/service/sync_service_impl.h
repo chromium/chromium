@@ -24,6 +24,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/configure_reason.h"
+#include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/events/protocol_event_observer.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
 #include "components/sync/engine/shutdown_reason.h"
@@ -57,6 +58,7 @@ namespace syncer {
 
 class BackendMigrator;
 class SyncAuthManager;
+class SyncFeatureStatusForMigrationsRecorder;
 
 // Look at the SyncService interface for information on how to use this class.
 // You should not need to know about SyncServiceImpl directly.
@@ -90,6 +92,7 @@ class SyncServiceImpl : public SyncService,
         nullptr;
     version_info::Channel channel = version_info::Channel::UNKNOWN;
     std::string debug_identifier;
+    bool sync_poll_immediately_on_every_startup;
   };
 
   explicit SyncServiceImpl(InitParams init_params);
@@ -505,6 +508,8 @@ class SyncServiceImpl : public SyncService,
   // recorded or trusted vault passphrase type wasn't used on startup.
   bool should_record_trusted_vault_error_shown_on_startup_;
 
+  const bool sync_poll_immediately_on_every_startup_;
+
   // Whether we want to receive invalidations for the SESSIONS data type. This
   // is typically false on Android (to save network traffic), but true on all
   // other platforms.
@@ -517,6 +522,8 @@ class SyncServiceImpl : public SyncService,
 
   // Used to track download status changes during browser startup.
   std::unique_ptr<DownloadStatusRecorder> download_status_recorder_;
+
+  std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
   base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
       this};

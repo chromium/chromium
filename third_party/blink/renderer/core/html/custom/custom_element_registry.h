@@ -70,7 +70,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                             ExceptionState&);
   void upgrade(Node* root);
 
-  const LocalDOMWindow* GetOwnerWindow() const { return owner_; }
+  const LocalDOMWindow* GetOwnerWindow() const { return owner_.Get(); }
 
   bool IsGlobalRegistry() const;
 

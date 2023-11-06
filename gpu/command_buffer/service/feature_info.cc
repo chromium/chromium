@@ -1911,6 +1911,7 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
   }
 
   if (enable_texture_half_float) {
+    oes_texture_float_available_ = true;
     validators_.pixel_type.AddValue(GL_HALF_FLOAT_OES);
     validators_.read_pixel_type.AddValue(GL_HALF_FLOAT_OES);
     AddExtensionString("GL_OES_texture_half_float");

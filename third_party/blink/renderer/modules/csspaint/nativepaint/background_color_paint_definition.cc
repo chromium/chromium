@@ -120,7 +120,7 @@ bool GetColorsFromKeyframe(const PropertySpecificKeyframe* frame,
     const auto* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
-        keyframe->GetValue()->Value().interpolable_value.get();
+        keyframe->GetValue()->Value().interpolable_value.Get();
 
     const auto& list = To<InterpolableList>(*value);
     DCHECK(CSSColorInterpolationType::IsNonKeywordColor(*(list.Get(0))));
@@ -260,17 +260,15 @@ PaintRecord BackgroundColorPaintDefinition::Paint(
   // Because the progress is a global one, we need to adjust it with offsets.
   float adjusted_progress = (progress - offsets[result_index]) /
                             (offsets[result_index + 1] - offsets[result_index]);
-  std::unique_ptr<InterpolableValue> from =
-      CSSColorInterpolationType::CreateInterpolableColor(
-          animated_colors[result_index]);
-  std::unique_ptr<InterpolableValue> to =
-      CSSColorInterpolationType::CreateInterpolableColor(
-          animated_colors[result_index + 1]);
-  std::unique_ptr<InterpolableValue> result =
+  InterpolableValue* from = CSSColorInterpolationType::CreateInterpolableColor(
+      animated_colors[result_index]);
+  InterpolableValue* to = CSSColorInterpolationType::CreateInterpolableColor(
+      animated_colors[result_index + 1]);
+  InterpolableValue* result =
       CSSColorInterpolationType::CreateInterpolableColor(
           animated_colors[result_index + 1]);
   from->Interpolate(*to, adjusted_progress, *result);
-  Color color = CSSColorInterpolationType::GetColor(*(result.get()));
+  Color color = CSSColorInterpolationType::GetColor(*result);
   // TODO(crbug/1308932): Remove toSkColor4f and make all SkColor4f.
   SkColor4f current_color = color.toSkColor4f();
 

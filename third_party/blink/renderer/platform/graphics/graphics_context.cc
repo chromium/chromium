@@ -260,9 +260,13 @@ void GraphicsContext::BeginLayer(SkBlendMode xfermode) {
   BeginLayer(flags);
 }
 
-void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter) {
+void GraphicsContext::BeginLayer(sk_sp<cc::ColorFilter> color_filter,
+                                 const SkBlendMode* blend_mode) {
   cc::PaintFlags flags;
   flags.setColorFilter(std::move(color_filter));
+  if (blend_mode) {
+    flags.setBlendMode(*blend_mode);
+  }
   BeginLayer(flags);
 }
 

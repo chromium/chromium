@@ -18,10 +18,20 @@ public class CommerceSubscriptionTest {
     @Test
     public void testEqualityForDifferentObjects() {
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         Assert.assertTrue(sub1.equals(sub2));
         Assert.assertTrue(sub2.equals(sub1));
@@ -30,20 +40,40 @@ public class CommerceSubscriptionTest {
     @Test
     public void testHashEqualityForDifferentObjects() {
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         Assert.assertEquals(sub1.hashCode(), sub2.hashCode());
     }
 
     @Test
     public void testNotEqual_ID() {
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, "1234", ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, "5678", ManagementType.USER_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        "1234",
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        "5678",
+                        ManagementType.USER_MANAGED,
+                        null);
 
         Assert.assertFalse(sub1.equals(sub2));
         Assert.assertNotEquals(sub1.hashCode(), sub2.hashCode());
@@ -52,10 +82,20 @@ public class CommerceSubscriptionTest {
     @Test
     public void testNotEqual_ManagementType() {
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.CHROME_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.CHROME_MANAGED,
+                        null);
 
         Assert.assertFalse(sub1.equals(sub2));
         Assert.assertNotEquals(sub1.hashCode(), sub2.hashCode());
@@ -64,10 +104,20 @@ public class CommerceSubscriptionTest {
     @Test
     public void testNotEqual_IdentifierType() {
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.OFFER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.OFFER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         Assert.assertFalse(sub1.equals(sub2));
         Assert.assertNotEquals(sub1.hashCode(), sub2.hashCode());
@@ -76,10 +126,20 @@ public class CommerceSubscriptionTest {
     @Test
     public void testNotEqual_SubscriptionType() {
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.TYPE_UNSPECIFIED,
-                IdentifierType.OFFER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.TYPE_UNSPECIFIED,
+                        IdentifierType.OFFER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         Assert.assertFalse(sub1.equals(sub2));
         Assert.assertNotEquals(sub1.hashCode(), sub2.hashCode());
@@ -91,10 +151,20 @@ public class CommerceSubscriptionTest {
                 new CommerceSubscription.UserSeenOffer("5678", 100, "us");
 
         String clusterId = "1234";
-        CommerceSubscription sub1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription sub2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, seen);
+        CommerceSubscription sub1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription sub2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        seen);
 
         Assert.assertEquals(sub1.hashCode(), sub2.hashCode());
         Assert.assertTrue(sub1.equals(sub2));

@@ -4,27 +4,28 @@
 
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
+#include <memory>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
-#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_personalization_app_resources.h"
 #include "ash/webui/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/mojom/sea_pen.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
+#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 #include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -34,7 +35,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "content/public/common/url_constants.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -204,8 +205,6 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR},
       {"ambientModeDurationForever",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER},
-      {"ambientModeDurationDescription",
-       IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION},
       {"ambientModeTopicSourceTitle",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
       {"ambientModeTopicSourceGooglePhotos",
@@ -243,9 +242,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"ambientModeAlbumsSubpageAlbumUnselected",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_UNSELECTED},
       {"ambientModeLastArtAlbumMessage",
-       IDS_PERONSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE},
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE},
       {"ambientModeArtAlbumDialogCloseButtonLabel",
-       IDS_PERONSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL},
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL},
       {"ambientModeAnimationTitle",
        IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE},
       {"ambientModeAnimationSlideshowLabel",
@@ -393,12 +392,14 @@ PersonalizationAppUI::PersonalizationAppUI(
     std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
     std::unique_ptr<PersonalizationAppKeyboardBacklightProvider>
         keyboard_backlight_provider,
+    std::unique_ptr<PersonalizationAppSeaPenProvider> sea_pen_provider,
     std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
     std::unique_ptr<PersonalizationAppUserProvider> user_provider,
     std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
     : ui::MojoWebUIController(web_ui),
       ambient_provider_(std::move(ambient_provider)),
       keyboard_backlight_provider_(std::move(keyboard_backlight_provider)),
+      sea_pen_provider_(std::move(sea_pen_provider)),
       theme_provider_(std::move(theme_provider)),
       user_provider_(std::move(user_provider)),
       wallpaper_provider_(std::move(wallpaper_provider)) {
@@ -446,6 +447,12 @@ void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::KeyboardBacklightProvider>
         receiver) {
   keyboard_backlight_provider_->BindInterface(std::move(receiver));
+}
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<::ash::personalization_app::mojom::SeaPenProvider>
+        receiver) {
+  sea_pen_provider_->BindInterface(std::move(receiver));
 }
 
 void PersonalizationAppUI::BindInterface(

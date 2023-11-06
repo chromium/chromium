@@ -131,4 +131,7 @@ struct ResourceLoadInfo {
   // The list of redirects that led to this resource load. Empty if there were
   // no redirects.
   array<RedirectInfo> redirect_info_chain;
+
+  // The HTTP Status Code
+  int32 http_status_code;
 };

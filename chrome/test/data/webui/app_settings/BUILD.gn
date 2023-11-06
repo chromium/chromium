@@ -7,8 +7,6 @@ import("../build_webui_tests.gni")
 assert(is_win || is_mac || is_linux || is_fuchsia)
 
 build_webui_tests("build") {
-  resource_path_prefix = "app_settings"
-
   files = [
     "app_test.ts",
     "test_app_management_browser_proxy.ts",

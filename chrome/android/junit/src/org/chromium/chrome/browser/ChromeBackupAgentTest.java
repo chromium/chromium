@@ -68,18 +68,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-/**
- * Unit tests for {@link org.chromium.chrome.browser.ChromeBackupAgent}.
- */
+/** Unit tests for {@link org.chromium.chrome.browser.ChromeBackupAgent}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ChromeBackupAgentTest.BackupManagerShadow.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ChromeBackupAgentTest.BackupManagerShadow.class})
 public class ChromeBackupAgentTest {
-    @Rule
-    public TemporaryFolder mTempDir = new TemporaryFolder();
+    @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
-    /**
-     * Shadow to allow counting of dataChanged calls.
-     */
+    /** Shadow to allow counting of dataChanged calls. */
     @Implements(BackupManager.class)
     public static class BackupManagerShadow {
         private static int sDataChangedCalls;
@@ -98,16 +95,14 @@ public class ChromeBackupAgentTest {
         }
     }
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-    @Mock
-    private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-    @Mock
-    private Profile mProfile;
+
+    @Mock private ChromeBackupAgentImpl.Natives mChromeBackupAgentJniMock;
+    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private Profile mProfile;
 
     private ChromeBackupAgentImpl mAgent;
     private AsyncInitTaskRunner mTaskRunner;
@@ -137,13 +132,15 @@ public class ChromeBackupAgentTest {
     public void setUp() {
         // Create the agent to test; override fetching the task runner, and spy on the agent to
         // allow us to validate calls to these methods.
-        mAgent = spy(new ChromeBackupAgentImpl() {
-            @Override
-            AsyncInitTaskRunner createAsyncInitTaskRunner(CountDownLatch latch) {
-                latch.countDown();
-                return mTaskRunner;
-            }
-        });
+        mAgent =
+                spy(
+                        new ChromeBackupAgentImpl() {
+                            @Override
+                            AsyncInitTaskRunner createAsyncInitTaskRunner(CountDownLatch latch) {
+                                latch.countDown();
+                                return mTaskRunner;
+                            }
+                        });
 
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mProfile);
@@ -183,8 +180,8 @@ public class ChromeBackupAgentTest {
         setUpTestPrefs(prefs);
 
         File stateFile = mTempDir.newFile();
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     stateFile, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(stateFile, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Run the test function.
             mAgent.onBackup(null, backupData, newState);
         }
@@ -199,17 +196,20 @@ public class ChromeBackupAgentTest {
                 .writeEntityHeader(
                         "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, 1);
         verify(backupData)
-                .writeEntityHeader("AndroidDefault."
+                .writeEntityHeader(
+                        "AndroidDefault."
                                 + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
                         1);
         verify(backupData)
-                .writeEntityHeader("AndroidDefault."
+                .writeEntityHeader(
+                        "AndroidDefault."
                                 + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                         1);
         verify(backupData, times(3)).writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         verify(backupData)
-                .writeEntityHeader("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY,
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY,
                         unameBytes.length);
         verify(backupData).writeEntityData(unameBytes, unameBytes.length);
 
@@ -218,22 +218,31 @@ public class ChromeBackupAgentTest {
 
         // Check that the state was saved correctly
         try (ObjectInputStream newStateStream =
-                        new ObjectInputStream(new FileInputStream(stateFile))) {
+                new ObjectInputStream(new FileInputStream(stateFile))) {
             ArrayList<String> names = (ArrayList<String>) newStateStream.readObject();
             assertThat(names.size(), equalTo(6));
             assertThat(names, hasItem("native.pref1"));
-            assertThat(names,
+            assertThat(
+                    names,
                     hasItem("AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
-            assertThat(names,
-                    hasItem("AndroidDefault."
-                            + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
-            assertThat(names,
-                    hasItem("AndroidDefault."
-                            + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
-            assertThat(names,
-                    hasItem("AndroidDefault."
-                            + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
-            assertThat(names,
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED));
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE));
+            assertThat(
+                    names,
+                    hasItem(
+                            "AndroidDefault."
+                                    + ChromePreferenceKeys
+                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER));
+            assertThat(
+                    names,
                     hasItem("AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY));
             ArrayList<byte[]> values = (ArrayList<byte[]>) newStateStream.readObject();
             assertThat(values.size(), equalTo(6));
@@ -246,9 +255,7 @@ public class ChromeBackupAgentTest {
         }
     }
 
-    /**
-     * Test method for {@link ChromeBackupAgent#onBackup} a second backup with the same data
-     */
+    /** Test method for {@link ChromeBackupAgent#onBackup} a second backup with the same data */
     @Test
     @SuppressWarnings("unchecked")
     public void testOnBackup_duplicateBackup()
@@ -261,8 +268,8 @@ public class ChromeBackupAgentTest {
         setUpTestPrefs(prefs);
 
         File stateFile1 = mTempDir.newFile();
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a first backup.
             mAgent.onBackup(null, backupData, newState);
         }
@@ -274,9 +281,9 @@ public class ChromeBackupAgentTest {
         File stateFile2 = mTempDir.newFile();
         try (ParcelFileDescriptor oldState =
                         ParcelFileDescriptor.open(stateFile1, ParcelFileDescriptor.MODE_READ_ONLY);
-
-                ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                        stateFile2, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+                ParcelFileDescriptor newState =
+                        ParcelFileDescriptor.open(
+                                stateFile2, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Try a second backup without changing any data
             mAgent.onBackup(oldState, backupData, newState);
         }
@@ -298,9 +305,7 @@ public class ChromeBackupAgentTest {
         }
     }
 
-    /**
-     * Test method for {@link ChromeBackupAgent#onBackup} a second backup with different data
-     */
+    /** Test method for {@link ChromeBackupAgent#onBackup} a second backup with different data */
     @Test
     @SuppressWarnings("unchecked")
     public void testOnBackup_dataChanged()
@@ -314,8 +319,8 @@ public class ChromeBackupAgentTest {
 
         // Create a state file.
         File stateFile1 = mTempDir.newFile();
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a first backup.
             mAgent.onBackup(null, backupData, newState);
         }
@@ -331,9 +336,11 @@ public class ChromeBackupAgentTest {
 
         File stateFile2 = mTempDir.newFile();
         try (ParcelFileDescriptor oldState =
-                        ParcelFileDescriptor.open(stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY);
-                ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                        stateFile2, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+                        ParcelFileDescriptor.open(
+                                stateFile1, ParcelFileDescriptor.MODE_WRITE_ONLY);
+                ParcelFileDescriptor newState =
+                        ParcelFileDescriptor.open(
+                                stateFile2, ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a second backup.
             mAgent.onBackup(oldState, backupData, newState);
         }
@@ -357,9 +364,7 @@ public class ChromeBackupAgentTest {
         }
     }
 
-    /**
-     * Test method for {@link ChromeBackupAgent#onBackup} when browser startup fails
-     */
+    /** Test method for {@link ChromeBackupAgent#onBackup} when browser startup fails */
     @Test
     public void testOnBackup_browserStartupFails() throws IOException {
         BackupDataOutput backupData = mock(BackupDataOutput.class);
@@ -377,7 +382,8 @@ public class ChromeBackupAgentTest {
 
         // Check that the backup agent gives up retrying after too many failures
         prefs.edit()
-                .putInt(ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT,
+                .putInt(
+                        ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT,
                         ChromeBackupAgentImpl.MAX_BACKUP_FAILURES)
                 .apply();
         mAgent.onBackup(null, backupData, mockState);
@@ -386,8 +392,9 @@ public class ChromeBackupAgentTest {
         // Check that a successful backup resets the failure count
         doReturn(true).when(mAgent).initializeBrowser();
         // A successful backup needs a real state file, or lots more mocking.
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             mAgent.onBackup(null, backupData, newState);
         }
         assertThat(prefs.getInt(ChromeBackupAgentImpl.BACKUP_FAILURE_COUNT, 0), equalTo(0));
@@ -397,52 +404,62 @@ public class ChromeBackupAgentTest {
         // Mock the backup data
         BackupDataInput backupData = mock(BackupDataInput.class);
 
-        final String[] keys = {"native.pref1", "native.pref2",
-                "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
-                "AndroidDefault.junk",
-                "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY};
+        final String[] keys = {
+            "native.pref1",
+            "native.pref2",
+            "AndroidDefault." + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
+            "AndroidDefault.junk",
+            "AndroidDefault." + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_KEY
+        };
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
         final byte[][] values = {{0}, {1}, {1}, {23, 42}, unameBytes};
-        when(backupData.getKey()).thenAnswer(new Answer<String>() {
-            private int mPos;
+        when(backupData.getKey())
+                .thenAnswer(
+                        new Answer<String>() {
+                            private int mPos;
 
-            @Override
-            public String answer(InvocationOnMock invocation) {
-                return keys[mPos++];
-            }
-        });
+                            @Override
+                            public String answer(InvocationOnMock invocation) {
+                                return keys[mPos++];
+                            }
+                        });
 
-        when(backupData.getDataSize()).thenAnswer(new Answer<Integer>() {
-            private int mPos;
+        when(backupData.getDataSize())
+                .thenAnswer(
+                        new Answer<Integer>() {
+                            private int mPos;
 
-            @Override
-            public Integer answer(InvocationOnMock invocation) {
-                return values[mPos++].length;
-            }
-        });
+                            @Override
+                            public Integer answer(InvocationOnMock invocation) {
+                                return values[mPos++].length;
+                            }
+                        });
 
         when(backupData.readEntityData(any(byte[].class), anyInt(), anyInt()))
-                .thenAnswer(new Answer<Integer>() {
-                    private int mPos;
+                .thenAnswer(
+                        new Answer<Integer>() {
+                            private int mPos;
 
-                    @Override
-                    public Integer answer(InvocationOnMock invocation) {
-                        byte[] buffer = invocation.getArgument(0);
-                        for (int i = 0; i < values[mPos].length; i++) {
-                            buffer[i] = values[mPos][i];
-                        }
-                        return values[mPos++].length;
-                    }
-                });
+                            @Override
+                            public Integer answer(InvocationOnMock invocation) {
+                                byte[] buffer = invocation.getArgument(0);
+                                for (int i = 0; i < values[mPos].length; i++) {
+                                    buffer[i] = values[mPos][i];
+                                }
+                                return values[mPos++].length;
+                            }
+                        });
 
-        when(backupData.readNextHeader()).thenAnswer(new Answer<Boolean>() {
-            private int mPos;
+        when(backupData.readNextHeader())
+                .thenAnswer(
+                        new Answer<Boolean>() {
+                            private int mPos;
 
-            @Override
-            public Boolean answer(InvocationOnMock invocation) {
-                return mPos++ < 5;
-            }
-        });
+                            @Override
+                            public Boolean answer(InvocationOnMock invocation) {
+                                return mPos++ < 5;
+                            }
+                        });
         return backupData;
     }
 
@@ -456,8 +473,9 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData = createMockBackupData();
         mAccountManagerTestRule.addAccount(mAccountInfo.getEmail());
 
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
             mAgent.onRestore(backupData, 0, newState);
         }
@@ -469,10 +487,11 @@ public class ChromeBackupAgentTest {
                         mAgent, new String[] {"pref1", "pref2"}, new boolean[] {false, true});
         verify(mTaskRunner)
                 .startBackgroundTasks(
-                        false /* allocateChildConnection */, true /* initVariationSeed */);
+                        /* allocateChildConnection= */ false, /* initVariationSeed= */ true);
 
         // Test that the status of the restore has been recorded.
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
     }
 
@@ -485,8 +504,9 @@ public class ChromeBackupAgentTest {
     @Test
     public void testOnRestore_badUser() throws IOException {
         BackupDataInput backupData = createMockBackupData();
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
             mAgent.onRestore(backupData, 0, newState);
         }
@@ -496,10 +516,11 @@ public class ChromeBackupAgentTest {
                 .setBoolBackupPrefs(eq(mAgent), any(String[].class), any(boolean[].class));
         verify(mTaskRunner)
                 .startBackgroundTasks(
-                        false /* allocateChildConnection */, true /* initVariationSeed */);
+                        /* allocateChildConnection= */ false, /* initVariationSeed= */ true);
 
         // Test that the status of the restore has been recorded.
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN));
     }
 
@@ -513,8 +534,9 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData = createMockBackupData();
         doReturn(false).when(mAgent).initializeBrowser();
 
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
             mAgent.onRestore(backupData, 0, newState);
         }
@@ -522,7 +544,8 @@ public class ChromeBackupAgentTest {
         assertFalse(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
 
         // Test that the status of the restore has been recorded.
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.BROWSER_STARTUP_FAILED));
     }
 
@@ -536,8 +559,9 @@ public class ChromeBackupAgentTest {
         BackupDataInput backupData = createMockBackupData();
         FirstRunStatus.setFirstRunFlowComplete(true);
 
-        try (ParcelFileDescriptor newState = ParcelFileDescriptor.open(
-                     mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
             // Do a restore.
             mAgent.onRestore(backupData, 0, newState);
         }
@@ -545,48 +569,54 @@ public class ChromeBackupAgentTest {
         assertTrue(prefs.contains(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE));
 
         // Test that the status of the restore has been recorded.
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_AFTER_FIRST_RUN));
     }
 
-    /**
-     * Test of {@link ChromeBackupAgent#getRestoreStatus}
-     */
+    /** Test of {@link ChromeBackupAgent#getRestoreStatus} */
     @Test
     public void testGetRestoreStatus() {
         // Test default value
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE));
 
         // Test that the value can be changed
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.RESTORE_AFTER_FIRST_RUN);
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_AFTER_FIRST_RUN));
 
         // Prove that the value equalTo held in the app preferences (and not, for example, in a
         // static).
         ContextUtils.getAppSharedPreferences().edit().clear().apply();
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE));
 
         // Test that ChromeBackupAgentImpl.setRestoreStatus really looks at the argument.
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.BROWSER_STARTUP_FAILED);
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.BROWSER_STARTUP_FAILED));
 
         // Test the remaining values are implemented
         ChromeBackupAgentImpl.setRestoreStatus(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN);
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.NOT_SIGNED_IN));
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED));
         ChromeBackupAgentImpl.setRestoreStatus(
                 ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED);
-        assertThat(ChromeBackupAgentImpl.getRestoreStatus(),
+        assertThat(
+                ChromeBackupAgentImpl.getRestoreStatus(),
                 equalTo(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED));
     }
 

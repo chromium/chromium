@@ -51,6 +51,22 @@ compiled_action("generate_top_domains_trie") {
 
 # TODO(crbug/915921): Combine this and the previous one into a
 # compiled_action_foreach target.
+compiled_action("generate_idn_top_domains_test_trie") {
+  tool = ":top_domain_generator"
+
+  # Inputs in order expected by the command line of the tool.
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/idn_test_domains.skeletons",
+    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
+  ]
+  outputs = [ "$target_gen_dir/idn_test_domains-trie-inc.cc" ]
+
+  args =
+      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
+}
+
+# TODO(crbug/915921): Combine this and the previous one into a
+# compiled_action_foreach target.
 compiled_action("generate_top_domains_test_trie") {
   tool = ":top_domain_generator"
 
@@ -60,22 +76,6 @@ compiled_action("generate_top_domains_test_trie") {
     "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
   ]
   outputs = [ "$target_gen_dir/test_domains-trie-inc.cc" ]
-
-  args =
-      rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
-}
-
-# TODO(crbug/915921): Combine this and the previous one into a
-# compiled_action_foreach target.
-compiled_action("generate_top_domains_browsertest_trie") {
-  tool = ":top_domain_generator"
-
-  # Inputs in order expected by the command line of the tool.
-  inputs = [
-    "//components/url_formatter/spoof_checks/top_domains/browsertest_domains.skeletons",
-    "//components/url_formatter/spoof_checks/top_domains/top_domains_trie.template",
-  ]
-  outputs = [ "$target_gen_dir/browsertest_domains-trie-inc.cc" ]
 
   args =
       rebase_path(inputs, root_build_dir) + rebase_path(outputs, root_build_dir)
@@ -131,12 +131,14 @@ compiled_action("generate_top_domain_list_variables_file") {
 
 # TODO(crbug/915921): Combine this and the previous one into a
 # compiled_action_foreach target.
-compiled_action("generate_browsertest_top_domain_list_variables_file") {
+compiled_action("generate_test_top_domain_list_variables_file") {
   tool = ":make_top_domain_list_variables"
 
   # Inputs in order expected by the command line of the tool.
-  inputs = [ "//components/url_formatter/spoof_checks/top_domains/browsertest_domains.list" ]
-  outputs = [ "$target_gen_dir/browsertest-top-bucket-domains-inc.cc" ]
+  inputs = [
+    "//components/url_formatter/spoof_checks/top_domains/test_domains.list",
+  ]
+  outputs = [ "$target_gen_dir/test-top-bucket-domains-inc.cc" ]
   args = rebase_path(inputs, root_build_dir) + [ "test_top_bucket_domains" ] +
          rebase_path(outputs, root_build_dir)
 }
@@ -160,18 +162,18 @@ source_set("top_bucket_domains_header") {
   sources = [ "top_bucket_domains.h" ]
 }
 
-source_set("browsertest_top_bucket_domains") {
+source_set("test_top_bucket_domains") {
   # This empty public is intentional to remove unnecessary build dependency.
   public = []
 
-  sources = [ "$target_gen_dir/browsertest-top-bucket-domains-inc.cc" ]
+  sources = [ "$target_gen_dir/test-top-bucket-domains-inc.cc" ]
 
   deps = [
-    ":browsertest_top_bucket_domains_header",
-    ":generate_browsertest_top_domain_list_variables_file",
+    ":generate_test_top_domain_list_variables_file",
+    ":test_top_bucket_domains_header",
   ]
 }
 
-source_set("browsertest_top_bucket_domains_header") {
+source_set("test_top_bucket_domains_header") {
   sources = [ "test_top_bucket_domains.h" ]
 }

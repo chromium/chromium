@@ -34,6 +34,8 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
+#include "sql/database.h"
+#include "sql/meta_table.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,6 +53,8 @@ const GURL kUrl("https://origin.test/");
 const net::SchemefulSite kSite(kUrl);
 const std::string kTestData1 = "Hello world";
 const std::string kTestData2 = "Bonjour le monde";
+
+const int kCurrentVersionNumber = 1;
 
 base::OnceCallback<bool()> DummyAccessAllowedCheckCallback() {
   return base::BindOnce([]() { return true; });
@@ -185,7 +189,7 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
     return SharedDictionaryManager::CreateOnDisk(
         database_path_, cache_directory_path_, cache_max_size, cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-        /*app_status_listener=*/nullptr,
+        disk_cache::ApplicationStatusListenerGetter(),
 #endif  // BUILDFLAG(IS_ANDROID)
         /*file_operations_factory=*/nullptr);
   }
@@ -212,6 +216,20 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 
   void CorruptDatabase() {
     CHECK(sql::test::CorruptSizeInHeader(database_path_));
+  }
+
+  void ManipulateDatabase(const std::vector<std::string>& queries) {
+    std::unique_ptr<sql::Database> db =
+        std::make_unique<sql::Database>(sql::DatabaseOptions{});
+    ASSERT_TRUE(db->Open(database_path_));
+
+    sql::MetaTable meta_table;
+    ASSERT_TRUE(meta_table.Init(db.get(), kCurrentVersionNumber,
+                                kCurrentVersionNumber));
+    for (const std::string& query : queries) {
+      ASSERT_TRUE(db->Execute(query.c_str()));
+    }
+    db->Close();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -709,6 +727,75 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
 
     EXPECT_FALSE(DiskCacheEntryExists(manager.get(), token1));
     EXPECT_TRUE(DiskCacheEntryExists(manager.get(), token2));
+  }
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, MetadataBrokenDatabase) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  base::UnguessableToken token1;
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    // Write the first test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin1.test/dict"),
+                    "testfile*", kTestData1);
+    FlushCacheTasks();
+    {
+      const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+      ASSERT_EQ(1u, dictionary_map.size());
+      ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      token1 =
+          dictionary_map.begin()->second.begin()->second.disk_cache_key_token();
+    }
+  }
+  ManipulateDatabase({"DELETE FROM meta WHERE key='total_dict_size'"});
+  // Test that metadata database corruption can be recovered after reboot.
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    FlushCacheTasks();
+    // Write the second test data to the dictionary.
+    WriteDictionary(storage.get(), GURL("https://origin2.test/dict"),
+                    "testfile*", kTestData2);
+    FlushCacheTasks();
+    // We can't write the second data.
+    {
+      const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+      ASSERT_EQ(1u, dictionary_map.size());
+      ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      EXPECT_EQ(GURL("https://origin1.test/dict"),
+                dictionary_map.begin()->second.begin()->second.url());
+    }
+    // SetCacheMaxSize() triggers CacheEvictionTask which reset the storage
+    // when `total_dict_size` is not available.
+    manager->SetCacheMaxSize(10000);
+
+    // RunUntilIdle() to load from the database.
+    task_environment_.RunUntilIdle();
+    FlushCacheTasks();
+    // The data must be cleared.
+    EXPECT_TRUE(GetOnDiskDictionaryMap(storage.get()).empty());
+
+    // Now we can write the data.
+    WriteDictionary(storage.get(), GURL("https://origin2.test/dict"),
+                    "testfile*", kTestData2);
+    FlushCacheTasks();
+    // We can't write the second data.
+    {
+      const auto& dictionary_map = GetOnDiskDictionaryMap(storage.get());
+      ASSERT_EQ(1u, dictionary_map.size());
+      ASSERT_EQ(1u, dictionary_map.begin()->second.size());
+      EXPECT_EQ(GURL("https://origin2.test/dict"),
+                dictionary_map.begin()->second.begin()->second.url());
+    }
   }
 }
 

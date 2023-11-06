@@ -45,8 +45,7 @@ PairedBluetoothDevicePropertiesPtr CreatePairedDevice(
 class BluetoothDetailedViewImplPixelTest : public AshTestBase {
  public:
   BluetoothDetailedViewImplPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
+    feature_list_.InitWithFeatures({chromeos::features::kJelly}, {});
   }
 
   // AshTestBase:

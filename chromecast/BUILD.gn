@@ -706,11 +706,11 @@ if (is_android) {
     deps = [
       ":cast_shell_apk_assets",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//chromecast/android:libcast_shell_android",
       "//chromecast/browser/android:cast_shell_java",
       "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     loadable_modules = [ "$root_out_dir/libchrome_crashpad_handler.so" ]
@@ -744,12 +744,12 @@ if (is_android) {
             [ "//chromecast/android:libcast_browser_android__jni_registration" ]
         deps = [
           "//base:base_java",
-          "//base:jni_java",
           "//build/android:build_java",
           "//chromecast/browser/android:cast_browser_java",
           "//components/crash/core/app:chrome_crashpad_handler_named_as_so",
           "//components/viz/service:service_java",
           "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
+          "//third_party/jni_zero:jni_zero_java",
         ]
 
         loadable_modules = [

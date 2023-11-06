@@ -88,6 +88,8 @@ blink_modules_sources("mediastream") {
     "processed_local_audio_source.h",
     "remote_media_stream_track_adapter.cc",
     "remote_media_stream_track_adapter.h",
+    "restriction_target.cc",
+    "restriction_target.h",
     "screen_capture_media_stream_track.cc",
     "screen_capture_media_stream_track.h",
     "sub_capture_target.cc",

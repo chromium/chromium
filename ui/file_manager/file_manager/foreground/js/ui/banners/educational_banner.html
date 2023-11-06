@@ -29,19 +29,7 @@
     margin-top: 8px;
   }
 
-  :host-context([theme='legacy']) .feature-icon {
-    -webkit-mask-image: var(--feature-icon-src, none);
-    -webkit-mask-position: center;
-    -webkit-mask-repeat: no-repeat;
-    background-color: var(--feature-icon-bg, var(--cros-color-prominent));
-    flex: none;
-    height: 32px;
-    margin-inline-end: 20px;
-    margin-inline-start: 16px;
-    width: 32px;
-  }
-
-  :host-context([theme='refresh23']) .feature-icon {
+  .feature-icon {
     -webkit-mask-image: var(--feature-icon-src, none);
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
@@ -58,20 +46,7 @@
     width: 32px;
   }
 
-  :host-context([theme='legacy']) .title {
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    color: var(--cros-text-color-primary);
-    display: -webkit-box;
-    font-family: Roboto;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 22px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  :host-context([theme='refresh23']) .title {
+  .title {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     color: var(--cros-sys-on_surface);
@@ -81,31 +56,12 @@
     text-overflow: ellipsis;
   }
 
-  :host-context([theme='legacy']) .subtitle {
-    color: var(--cros-text-color-secondary);
-    font-family: Roboto;
-    font-size: 13px;
-    line-height: 20px;
-  }
-
-  :host-context([theme='refresh23']) .subtitle {
+  .subtitle {
     color: var(--cros-sys-on_surface);
     font: var(--cros-body-2-font);
   }
 
-  :host-context([theme='legacy']) .button-group {
-    align-items: center;
-    display: flex;
-    flex: 0 0 auto;
-    flex-direction: var(--buttons-direction, row);
-    height: 32px;
-    margin-bottom: 8px;
-    margin-inline-start: auto;
-    margin-top: 8px;
-    padding-inline-start: 40px;
-  }
-
-  :host-context([theme='refresh23']) .button-group {
+  .button-group {
     align-items: center;
     display: flex;
     flex: 0 0 auto;
@@ -117,23 +73,8 @@
     padding-inline-start: 32px;
   }
 
-  :host-context([theme='legacy']) ::slotted(cr-button),
-  :host-context([theme='legacy']) #dismiss-button-old {
-    --active-bg: var(--cros-button-background-color-secondary-hover);
-    --hover-bg-color: var(--cros-button-background-color-secondary-hover);
-    --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
-    --paper-ripple-opacity: 100%;
-    --text-color: var(--cros-button-label-color-secondary);
-    border: none;
-    box-shadow: none;
-    height: 32px;
-    margin-inline: 4px;
-    padding-inline: 16px;
-    position: relative;
-  }
-
-  :host-context([theme='refresh23']) ::slotted(cr-button),
-  :host-context([theme='refresh23']) #dismiss-button-old {
+  ::slotted(cr-button),
+  #dismiss-button-old {
     --active-bg: none;
     --bg-action: var(--cros-sys-primary);
     /* Use the default bg color as hover color because we
@@ -159,18 +100,8 @@
     margin-inline: 4px;
   }
 
-  :host-context([theme='legacy']):host-context(.focus-outline-visible)
-      ::slotted(cr-button:focus),
-  :host-context([theme='legacy']):host-context(.focus-outline-visible)
-      #dismiss-button-old:focus {
-    outline: 2px solid var(--cros-focus-ring-color);
-    outline-offset: 2px;
-  }
-
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      ::slotted(cr-button:focus),
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      #dismiss-button-old:focus {
+  :host-context(.focus-outline-visible) ::slotted(cr-button:focus),
+  :host-context(.focus-outline-visible) #dismiss-button-old:focus {
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }

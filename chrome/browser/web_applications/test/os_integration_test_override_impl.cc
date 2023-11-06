@@ -790,17 +790,17 @@ SkColor OsIntegrationTestOverrideImpl::GetIconTopLeftColorFromShortcutFile(
   base::apple::ScopedCFTypeRef<CFURLRef> url =
       base::apple::FilePathToCFURL(icon_path);
   base::apple::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, nullptr));
+      CGImageSourceCreateWithURL(url.get(), nullptr));
   if (!source) {
     return 0;
   }
   // Get the first icon in the .icns file (index 0)
   base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-      CGImageSourceCreateImageAtIndex(source, 0, empty_dict));
+      CGImageSourceCreateImageAtIndex(source.get(), 0, empty_dict.get()));
   if (!cg_image) {
     return 0;
   }
-  SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
+  SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image.get());
   if (bitmap.empty()) {
     return 0;
   }

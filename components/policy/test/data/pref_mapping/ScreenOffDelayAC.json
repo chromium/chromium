@@ -1,0 +1,56 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ScreenOffDelayAC": 480000
+        },
+        "prefs": {
+          "power.ac_screen_off_delay_ms": {
+            "value": 480000
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "power.ac_screen_off_delay_ms": {
+            "default_value": 450000
+          }
+        }
+      },
+      {
+        "note": "negative values are clamped to 0",
+        "policies": {
+          "ScreenOffDelayAC": -1
+        },
+        "prefs": {
+          "power.ac_screen_off_delay_ms": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "This policy is deprecated, and the new policy takes precedence",
+        "policies": {
+          "PowerManagementIdleSettings": {
+            "AC": {
+              "Delays": {
+                "ScreenOff": 222
+              }
+            }
+          },
+          "ScreenOffDelayAC": 111
+        },
+        "prefs": {
+          "power.ac_screen_off_delay_ms": {
+            "value": 222
+          }
+        }
+      }
+    ]
+  }
+]

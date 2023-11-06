@@ -11,36 +11,24 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_service_callbacks.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace manta {
 
 // The Orca provider for the Manta project. Provides a method for clients to
 // call the relevant google API, handling OAuth and http fetching.
-//
-// IMPORTANT: This class depends on `IdentityManager`, a
-// `ProfileKeyedServiceFactory`. You should ensure you do not call
-// `OrcaProvider::Call` post `IdentityManager`'s destruction.
-// There are several ways to ensure this. You can:
-// 1. Make the owner of `OrcaProvider` a `ProfileKeyedServiceFactory` that
-// `DependsOn` `IdentityManager`. See
-// https://www.chromium.org/developers/design-documents/profile-architecture/#dependency-management-overview
-// for more information.
-// 2. Register an `IdentityManager::Observer` that listens to
-// `OnIdentityManagerShutdown`.
-// 3. Manually ensure OrcaProvider isn't used past `IdentityManager`'s
-// lifetime.
-class COMPONENT_EXPORT(MANTA) OrcaProvider {
+// IMPORTANT: This class depends on `IdentityManager`.
+// `OrcaProvider::Call` will return an empty response after `IdentityManager`
+// destruction.
+class COMPONENT_EXPORT(MANTA) OrcaProvider
+    : public signin::IdentityManager::Observer {
  public:
   // Returns a `OrcaProvider` instance tied to the profile of the passed
   // arguments.
@@ -51,16 +39,19 @@ class COMPONENT_EXPORT(MANTA) OrcaProvider {
   OrcaProvider(const OrcaProvider&) = delete;
   OrcaProvider& operator=(const OrcaProvider&) = delete;
 
-  virtual ~OrcaProvider();
+  ~OrcaProvider() override;
 
   // Calls the google service endpoint with the http POST request payload
   // populated with the `input` parameters.
   // The fetched response is processed and returned to the caller via an
   // `MantaGenericCallback` callback.
-  //
-  // NOTE: This methods internally depends on a valid `IdentityManager`.
+  // Will give an empty response if `IdentityManager` is no longer valid.
   void Call(const std::map<std::string, std::string>& input,
             MantaGenericCallback done_callback);
+
+  // signin::IdentityManager::Observer:
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   friend class FakeOrcaProvider;
@@ -73,8 +64,11 @@ class COMPONENT_EXPORT(MANTA) OrcaProvider {
       const std::vector<std::string>& scopes,
       const std::string& post_data);
 
-  const raw_ptr<signin::IdentityManager> identity_manager_;
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   base::WeakPtrFactory<OrcaProvider> weak_ptr_factory_{this};
 };

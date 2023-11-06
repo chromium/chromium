@@ -419,61 +419,43 @@ void ClearRenderSurfaceCommonAncestorClip(LayerImpl* layer) {
 }
 
 template <typename LayerType>
-int TransformTreeIndexForBackfaceVisibility(LayerType* layer,
-                                            const TransformTree& tree) {
-  return layer->transform_tree_index();
+const TransformNode& TransformNodeForBackfaceVisibility(
+    LayerType* layer,
+    const TransformTree& tree) {
+  const TransformNode* node = tree.Node(layer->transform_tree_index());
+  while (node->delegates_to_parent_for_backface) {
+    const TransformNode* parent = tree.Node(node->parent_id);
+    CHECK(node);
+    // Backface visibility inheritance should not cross 3d sorting contexts.
+    DCHECK(!node->sorting_context_id ||
+           parent->sorting_context_id == node->sorting_context_id);
+    node = parent;
+  }
+  return *node;
 }
 
 bool IsTargetSpaceTransformBackFaceVisible(
-    Layer* layer,
-    int transform_tree_index,
+    const LayerImpl* layer,
     const PropertyTrees* property_trees) {
-  // We do not skip back face invisible layers on main thread as target space
-  // transform will not be available here.
-  return false;
-}
-
-bool IsTargetSpaceTransformBackFaceVisible(
-    LayerImpl* layer,
-    int transform_tree_index,
-    const PropertyTrees* property_trees) {
-  const TransformTree& transform_tree = property_trees->transform_tree();
-  const TransformNode& transform_node =
-      *transform_tree.Node(transform_tree_index);
-  if (transform_node.delegates_to_parent_for_backface)
-    transform_tree_index = transform_node.parent_id;
-
+  const TransformNode& transform_node = TransformNodeForBackfaceVisibility(
+      layer, property_trees->transform_tree());
   gfx::Transform to_target;
-  property_trees->GetToTarget(transform_tree_index,
-                              layer->render_target_effect_tree_index(),
-                              &to_target);
+  property_trees->GetToTarget(
+      transform_node.id, layer->render_target_effect_tree_index(), &to_target);
+
   return to_target.IsBackFaceVisible();
 }
 
 bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
-    Layer* layer,
-    int transform_tree_index,
-    const PropertyTrees* property_trees) {
-  // We do not skip back face invisible layers on main thread as target space
-  // transform will not be available here.
-  return false;
-}
-
-bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
-    LayerImpl* layer,
-    int transform_tree_index,
+    const LayerImpl* layer,
     const PropertyTrees* property_trees) {
   const TransformTree& transform_tree = property_trees->transform_tree();
 
   const TransformNode& transform_node =
-      *transform_tree.Node(transform_tree_index);
+      TransformNodeForBackfaceVisibility(layer, transform_tree);
   const TransformNode* root_node = &transform_node;
-  if (transform_node.delegates_to_parent_for_backface) {
-    transform_tree_index = transform_node.parent_id;
-    root_node = transform_tree.Node(transform_tree_index);
-  }
 
-  int root_id = transform_tree_index;
+  int root_id = transform_node.id;
   int sorting_context_id = transform_node.sorting_context_id;
 
   while (root_id > kRootPropertyNodeId) {
@@ -488,24 +470,35 @@ bool IsTransformToRootOf3DRenderingContextBackFaceVisible(
   // TODO(chrishtr): cache this on the transform trees if needed, similar to
   // |to_target| and |to_screen|.
   gfx::Transform to_3d_root;
-  if (transform_tree_index != root_id)
+  if (transform_node.id != root_id) {
     property_trees->transform_tree().CombineTransformsBetween(
-        transform_tree_index, root_id, &to_3d_root);
+        transform_node.id, root_id, &to_3d_root);
+  }
   to_3d_root.PreConcat(root_node->to_parent);
   return to_3d_root.IsBackFaceVisible();
 }
 
-inline bool TransformToScreenIsKnown(Layer* layer,
-                                     int transform_tree_index,
-                                     const TransformTree& tree) {
-  const TransformNode* node = tree.Node(transform_tree_index);
-  return !node->to_screen_is_potentially_animated;
+bool IsLayerBackFaceVisible(const Layer* layer,
+                            const PropertyTrees* property_trees) {
+  // We do not skip back face invisible layers on main thread as target space
+  // transform will not be available here.
+  return false;
 }
 
-inline bool TransformToScreenIsKnown(LayerImpl* layer,
-                                     int transform_tree_index,
-                                     const TransformTree& tree) {
-  return true;
+bool IsLayerBackFaceVisible(const LayerImpl* layer,
+                            const PropertyTrees* property_trees) {
+  // A layer with singular transform is not drawn. So, we can assume that its
+  // backface is not visible.
+  if (HasSingularTransform(layer->transform_tree_index(),
+                           property_trees->transform_tree())) {
+    return false;
+  }
+  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
+    return IsTransformToRootOf3DRenderingContextBackFaceVisible(layer,
+                                                                property_trees);
+  } else {
+    return IsTargetSpaceTransformBackFaceVisible(layer, property_trees);
+  }
 }
 
 template <typename LayerType>
@@ -536,18 +529,9 @@ bool LayerNeedsUpdate(LayerType* layer,
 
   // The layer should not be drawn if (1) it is not double-sided and (2) the
   // back of the layer is known to be facing the screen.
-  const TransformTree& tree = property_trees->transform_tree();
-  if (layer->should_check_backface_visibility()) {
-    int backface_transform_id =
-        TransformTreeIndexForBackfaceVisibility(layer, tree);
-    // A layer with singular transform is not drawn. So, we can assume that its
-    // backface is not visible.
-    if (TransformToScreenIsKnown(layer, backface_transform_id, tree) &&
-        !HasSingularTransform(backface_transform_id, tree) &&
-        draw_property_utils::IsLayerBackFaceVisible(
-            layer, backface_transform_id, property_trees)) {
-      return false;
-    }
+  if (layer->should_check_backface_visibility() &&
+      IsLayerBackFaceVisible(layer, property_trees)) {
+    return false;
   }
 
   return true;
@@ -1377,7 +1361,7 @@ bool NodeMayContainBackdropBlurFilter(const EffectNode& node) {
 
 }  // namespace
 
-bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
+bool LayerShouldBeSkippedForDrawPropertiesComputation(
     LayerImpl* layer,
     const PropertyTrees* property_trees) {
   const TransformTree& transform_tree = property_trees->transform_tree();
@@ -1403,37 +1387,15 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
     return true;
   if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
     return layer->should_check_backface_visibility() &&
-           IsLayerBackFaceVisible(layer, layer->transform_tree_index(),
-                                  property_trees);
+           IsLayerBackFaceVisible(layer, property_trees);
   } else {
     return effect_node->hidden_by_backface_visibility;
   }
 }
 
-bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
-                                      int transform_tree_index,
+bool IsLayerBackFaceVisibleForTesting(const LayerImpl* layer,  // IN-TEST
                                       const PropertyTrees* property_trees) {
-  if (layer->layer_tree_impl()->settings().enable_backface_visibility_interop) {
-    return IsTransformToRootOf3DRenderingContextBackFaceVisible(
-        layer, transform_tree_index, property_trees);
-  } else {
-    return IsTargetSpaceTransformBackFaceVisible(layer, transform_tree_index,
-                                                 property_trees);
-  }
-}
-
-bool CC_EXPORT IsLayerBackFaceVisible(Layer* layer,
-                                      int transform_tree_index,
-                                      const PropertyTrees* property_trees) {
-  if (layer->layer_tree_host()
-          ->GetSettings()
-          .enable_backface_visibility_interop) {
-    return IsTransformToRootOf3DRenderingContextBackFaceVisible(
-        layer, transform_tree_index, property_trees);
-  } else {
-    return IsTargetSpaceTransformBackFaceVisible(layer, transform_tree_index,
-                                                 property_trees);
-  }
+  return IsLayerBackFaceVisible(layer, property_trees);
 }
 
 void ConcatInverseSurfaceContentsScale(const EffectNode* effect_node,

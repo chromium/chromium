@@ -31,7 +31,7 @@ SysInternalsUI::SysInternalsUI(content::WebUI* web_ui)
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   html_source->AddResourcePath("", IDR_SYS_INTERNALS_HTML);
   html_source->AddResourcePath("index.html", IDR_SYS_INTERNALS_HTML);

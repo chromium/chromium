@@ -21,6 +21,12 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/flex_layout.h"
 
+using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
+    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
+                        SidePanelWebUIViewT)
+END_METADATA
+
 ReadAnythingContainerView::ReadAnythingContainerView(
     ReadAnythingCoordinator* coordinator,
     std::unique_ptr<ReadAnythingToolbarView> toolbar,

@@ -62,7 +62,7 @@ int CascadeLayerMap::CompareLayerOrder(const CascadeLayer* lhs,
 }
 
 const CascadeLayer* CascadeLayerMap::GetRootLayer() const {
-  return canonical_root_layer_;
+  return canonical_root_layer_.Get();
 }
 
 void CascadeLayerMap::Trace(blink::Visitor* visitor) const {

@@ -8,8 +8,14 @@ assert(is_chromeos_ash)
 
 build_webui("build") {
   grd_prefix = "enterprise_reporting"
-  static_files = [ "enterprise_reporting.html" ]
-  web_component_files = [ "reporting_history.ts" ]
+  static_files = [
+    "enterprise_reporting.html",
+    "enterprise_reporting.css",
+  ]
+  web_component_files = [
+    "reporting_history.ts",
+    "device_info.ts",
+  ]
   non_web_component_files = [ "browser_proxy.ts" ]
 
   ts_composite = true

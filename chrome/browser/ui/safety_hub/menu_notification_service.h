@@ -10,16 +10,18 @@
 #include <memory>
 
 #include "base/time/time.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/ui/safety_hub/menu_notification.h"
 #include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 #include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-enum SafetyHubServiceType {
-  UNUSED_SITE_PERMISSIONS,
-  NOTIFICATION_PERMISSIONS,
+struct MenuNotificationEntry {
+  int command = 0;
+  std::u16string label;
 };
 
 namespace {
@@ -30,23 +32,27 @@ enum MenuNotificationPriority {
   HIGH,
 };
 
-struct SafetyHubServiceInfoElement {
-  SafetyHubServiceInfoElement();
-  ~SafetyHubServiceInfoElement();
-  SafetyHubServiceInfoElement(
+struct SafetyHubModuleInfoElement {
+  SafetyHubModuleInfoElement();
+  ~SafetyHubModuleInfoElement();
+  SafetyHubModuleInfoElement(
       MenuNotificationPriority priority,
       base::TimeDelta interval,
-      raw_ptr<SafetyHubService> service,
+      base::RepeatingCallback<
+          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+          result_getter,
       std::unique_ptr<SafetyHubMenuNotification> notification);
 
   MenuNotificationPriority priority;
   base::TimeDelta interval;
-  raw_ptr<SafetyHubService> service;
+  base::RepeatingCallback<
+      std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+      result_getter;
   std::unique_ptr<SafetyHubMenuNotification> notification;
 };
 
-using ResultMap =
-    std::map<SafetyHubServiceType, std::unique_ptr<SafetyHubService::Result>>;
+using ResultMap = std::map<safety_hub::SafetyHubModuleType,
+                           std::unique_ptr<SafetyHubService::Result>>;
 
 }  // namespace
 
@@ -60,7 +66,9 @@ class SafetyHubMenuNotificationService : public KeyedService {
   explicit SafetyHubMenuNotificationService(
       PrefService* pref_service,
       UnusedSitePermissionsService* unused_site_permissions_service,
-      NotificationPermissionsReviewService* notification_permissions_service);
+      NotificationPermissionsReviewService* notification_permissions_service,
+      extensions::CWSInfoService* extension_info_service,
+      Profile* profile);
   SafetyHubMenuNotificationService(const SafetyHubMenuNotificationService&) =
       delete;
   SafetyHubMenuNotificationService& operator=(
@@ -71,16 +79,16 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Returns the CommandID and notification string that should be shown in the
   // three-dot menu. When no notification should be shown, absl::nullopt will be
   // returned.
-  absl::optional<std::pair<int, std::u16string>> GetNotificationToShow();
+  absl::optional<MenuNotificationEntry> GetNotificationToShow();
 
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(
-      SafetyHubServiceType service_type);
+      safety_hub::SafetyHubModuleType service_type);
 
  private:
   // Gets the latest result from each Safety Hub service. Will return
   // absl::nullopt when there is no result from one of the services.
-  absl::optional<ResultMap> GetResultsFromAllServices();
+  absl::optional<ResultMap> GetResultsFromAllModules();
 
   // Stores the notifications (which should have their results updated) as a
   // dict in the prefs.
@@ -90,29 +98,45 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Safety Hub service type.
   std::unique_ptr<SafetyHubMenuNotification> GetNotificationFromDict(
       const base::Value::Dict& dict,
-      SafetyHubServiceType type,
-      SafetyHubService* service) const;
+      safety_hub::SafetyHubModuleType& type) const;
 
-  void SetServiceInfoElement(SafetyHubServiceType type,
-                             MenuNotificationPriority priority,
-                             base::TimeDelta interval,
-                             SafetyHubService* service,
-                             const base::Value::Dict& stored_notifications);
+  // Sets the relevant, static meta information for the three-dot menu
+  // (priority, interval, and method to retrieve the relevant result) for a
+  // specific type of Safety Hub module provided the dictionary that stores the
+  // notifications.
+  void SetInfoElement(
+      safety_hub::SafetyHubModuleType type,
+      MenuNotificationPriority priority,
+      base::TimeDelta interval,
+      base::RepeatingCallback<
+          std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+          result_getter,
+      const base::Value::Dict& stored_notifications);
 
-  const std::map<SafetyHubServiceType, const char*> pref_dict_key_map_ = {
-      {SafetyHubServiceType::UNUSED_SITE_PERMISSIONS,
-       "unused-site-permissions"},
-      {SafetyHubServiceType::NOTIFICATION_PERMISSIONS,
-       "notification-permissions"},
-  };
+  // Called when the pref for Safe Browsing has been updated.
+  void OnSafeBrowsingPrefUpdate();
 
-  void Shutdown() override;
+  const std::map<safety_hub::SafetyHubModuleType, const char*>
+      pref_dict_key_map_ = {
+          {safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
+           "unused-site-permissions"},
+          {safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
+           "notification-permissions"},
+          {safety_hub::SafetyHubModuleType::SAFE_BROWSING, "safe-browsing"},
+          {safety_hub::SafetyHubModuleType::EXTENSIONS, "extensions"},
+      };
 
   // Preference service that persists the notifications.
   raw_ptr<PrefService> pref_service_;
 
-  std::map<SafetyHubServiceType, std::unique_ptr<SafetyHubServiceInfoElement>>
-      service_info_map_;
+  // A map that captures the meta information about menu notifications for each
+  // Safety Hub module.
+  std::map<safety_hub::SafetyHubModuleType,
+           std::unique_ptr<SafetyHubModuleInfoElement>>
+      module_info_map_;
+
+  // Registrar to record the pref changes to Safe Browsing.
+  PrefChangeRegistrar registrar_;
 };
 
 #endif  // CHROME_BROWSER_UI_SAFETY_HUB_MENU_NOTIFICATION_SERVICE_H_

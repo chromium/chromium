@@ -1,6 +1,7 @@
 // Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+// @ts-nocheck
 
 import {getFileTypeForName} from 'chrome://file-manager/common/js/file_types_base.js';
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';

@@ -17,7 +17,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 
 import {Bookmark} from './bookmark_type.js';
 import {BrowserApi} from './browser_api.js';
@@ -40,7 +40,7 @@ import {NavigatorDelegateImpl, PdfNavigator, WindowOpenDisposition} from './navi
 import {deserializeKeyEvent, LoadState} from './pdf_scripting_api.js';
 import {getTemplate} from './pdf_viewer.html.js';
 import {KeyEventData, PdfViewerBaseElement} from './pdf_viewer_base.js';
-import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {DestinationMessageData, DocumentDimensionsMessageData, hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 
 interface EmailMessageData {
   type: string;
@@ -366,7 +366,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     switch (e.key) {
       case 'a':
-        if (hasCtrlModifier(e)) {
+        // Take over Ctrl+A (but not other combinations like Ctrl-Shift-A).
+        // Note that on macOS, "Ctrl" is Command.
+        if (hasCtrlModifierOnly(e)) {
           this.pluginController_!.selectAll();
           // Since we do selection ourselves.
           e.preventDefault();

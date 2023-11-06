@@ -23,9 +23,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetSwipeDetector.S
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for the {@link BottomSheetSwipeDetector} class.
- */
+/** Unit tests for the {@link BottomSheetSwipeDetector} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public final class BottomSheetSwipeDetectorTest {
@@ -117,8 +115,9 @@ public final class BottomSheetSwipeDetectorTest {
     }
 
     /**
-     * Create a list of motion events simulating a scroll event stream from (x1, y1) to (x2, y2)
-     * and apply it to the provided swipe detector.
+     * Create a list of motion events simulating a scroll event stream from (x1, y1) to (x2, y2) and
+     * apply it to the provided swipe detector.
+     *
      * @param x1 The start x.
      * @param y1 The start y.
      * @param x2 The end x.
@@ -127,8 +126,13 @@ public final class BottomSheetSwipeDetectorTest {
      * @param endScroll Whether or not to include the up event at the end of the stream.
      * @return A list of motion events.
      */
-    private static void performScroll(float x1, float y1, float x2, float y2,
-            BottomSheetSwipeDetector detector, boolean endScroll) {
+    private static void performScroll(
+            float x1,
+            float y1,
+            float x2,
+            float y2,
+            BottomSheetSwipeDetector detector,
+            boolean endScroll) {
         int moveEventCount = 10;
 
         ArrayList<MotionEvent> eventStream = new ArrayList<>();
@@ -136,8 +140,14 @@ public final class BottomSheetSwipeDetectorTest {
         float yInterval = (y2 - y1) / moveEventCount;
         eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, x1, y1, 0));
         for (int i = 0; i < moveEventCount; i++) {
-            eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE,
-                    x1 + ((i + 1) * xInterval), y1 + ((i + 1) * yInterval), 0));
+            eventStream.add(
+                    MotionEvent.obtain(
+                            0,
+                            0,
+                            MotionEvent.ACTION_MOVE,
+                            x1 + ((i + 1) * xInterval),
+                            y1 + ((i + 1) * yInterval),
+                            0));
         }
         if (endScroll) eventStream.add(MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, x2, y2, 0));
 
@@ -146,6 +156,7 @@ public final class BottomSheetSwipeDetectorTest {
 
     /**
      * Apply a list of events to a swipe detector.
+     *
      * @param stream The list of motion events to apply to the detector.
      * @param detector The detector to apply the swipe to.
      */
@@ -163,15 +174,21 @@ public final class BottomSheetSwipeDetectorTest {
     /** Test that the sheet moves when scrolled up from min height. */
     @Test
     public void testScrollToolbarUp_minHeight() {
-        assertEquals("The sheet should be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         final float halfScreenHeight = SCREEN_HEIGHT / 2f;
 
         // Scrolling up half the screen should put the sheet at half + the min offset.
         performScroll(0, SCREEN_HEIGHT, 0, halfScreenHeight, mSwipeDetector, true);
 
-        assertEquals("The sheet is not at the correct height.", halfScreenHeight + MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet is not at the correct height.",
+                halfScreenHeight + MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertTrue("The sheet should be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
 
@@ -182,8 +199,11 @@ public final class BottomSheetSwipeDetectorTest {
 
         performScroll(0, SCREEN_HEIGHT, 0, halfScreenHeight, mSwipeDetector, false);
 
-        assertEquals("The sheet is not at the correct height.", halfScreenHeight + MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet is not at the correct height.",
+                halfScreenHeight + MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertFalse(
                 "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
@@ -194,13 +214,19 @@ public final class BottomSheetSwipeDetectorTest {
         // Init the sheet to be full height.
         mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
 
-        assertEquals("The sheet should be at the maximum state.", SCREEN_HEIGHT,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the maximum state.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
 
         performScroll(0, 0, 0, -500, mSwipeDetector, true);
 
-        assertEquals("The sheet should still be at the maximum state.", SCREEN_HEIGHT,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should still be at the maximum state.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertFalse(
                 "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
@@ -208,13 +234,19 @@ public final class BottomSheetSwipeDetectorTest {
     /** Test that the sheet does not move when scrolled down from min height. */
     @Test
     public void testScrollToolbarDown_minHeight() {
-        assertEquals("The sheet should be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
 
         performScroll(0, SCREEN_HEIGHT, 0, SCREEN_HEIGHT + 500, mSwipeDetector, true);
 
-        assertEquals("The sheet should still be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should still be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertFalse(
                 "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
@@ -225,15 +257,21 @@ public final class BottomSheetSwipeDetectorTest {
         // Init the sheet to be full height.
         mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
 
-        assertEquals("The sheet should be at the maximum state.", SCREEN_HEIGHT,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the maximum state.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         final float halfScreenHeight = SCREEN_HEIGHT / 2f;
 
         // Scrolling down half the screen should put the sheet at half height.
         performScroll(0, 0, 0, halfScreenHeight, mSwipeDetector, true);
 
-        assertEquals("The sheet is not at the correct height.", halfScreenHeight,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet is not at the correct height.",
+                halfScreenHeight,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertTrue("The sheet should be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
 
@@ -246,31 +284,43 @@ public final class BottomSheetSwipeDetectorTest {
         // Init the sheet to be full height.
         mSwipeableBottomSheet.setSheetOffset(SCREEN_HEIGHT, false);
 
-        assertEquals("The sheet should be at the maximum state.", SCREEN_HEIGHT,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the maximum state.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         final float halfScreenHeight = SCREEN_HEIGHT / 2f;
 
         // Scrolling down half the screen should put the sheet at half height, regardless of the
         // state of the content.
         performScroll(0, 0, 0, halfScreenHeight, mSwipeDetector, true);
 
-        assertEquals("The sheet is not at the correct height.", halfScreenHeight,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet is not at the correct height.",
+                halfScreenHeight,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertTrue("The sheet should be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
 
     /** Test that the sheet does not move when a scroll is not sufficiently in the up direction. */
     @Test
     public void testScrollToolbarDiagonal_minHeight() {
-        assertEquals("The sheet should be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         final float halfScreenHeight = SCREEN_HEIGHT / 2f;
 
         performScroll(
                 0, halfScreenHeight, halfScreenHeight, halfScreenHeight, mSwipeDetector, true);
 
-        assertEquals("The sheet should still be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should still be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
         assertFalse(
                 "The sheet should not be set to animate.", mSwipeableBottomSheet.shouldBeAnimating);
     }
@@ -292,8 +342,11 @@ public final class BottomSheetSwipeDetectorTest {
         // Scroll down half the screen. The sheet should not move since the content is scrolled.
         performScroll(0, halfScreenHeight, 0, SCREEN_HEIGHT, mSwipeDetector, true);
 
-        assertEquals("The sheet should still be at the maximum state.", SCREEN_HEIGHT,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should still be at the maximum state.",
+                SCREEN_HEIGHT,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
     }
 
     /**
@@ -313,7 +366,10 @@ public final class BottomSheetSwipeDetectorTest {
         // Scroll down on the content, the sheet should move.
         performScroll(0, halfScreenHeight / 2f, 0, SCREEN_HEIGHT, mSwipeDetector, true);
 
-        assertEquals("The sheet should be at the minimum state.", MIN_SHEET_OFFSET,
-                mSwipeableBottomSheet.getCurrentOffsetPx(), MathUtils.EPSILON);
+        assertEquals(
+                "The sheet should be at the minimum state.",
+                MIN_SHEET_OFFSET,
+                mSwipeableBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
     }
 }

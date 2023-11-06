@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceWiFiFastTransitionEnabled": true
+        },
+        "prefs": {
+          "net.device_wifi_fast_transition_enabled": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

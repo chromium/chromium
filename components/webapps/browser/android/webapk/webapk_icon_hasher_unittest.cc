@@ -132,7 +132,8 @@ TEST_F(WebApkIconHasherTest, Success) {
   GURL icon_url("http://www.google.com/chrome/test/data/android/google.png");
   base::FilePath source_path;
   base::FilePath icon_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
@@ -172,7 +173,8 @@ TEST_F(WebApkIconHasherTest, MultipleIconUrls) {
       "http://www.google.com/chrome/test/data/android/google.png";
   base::FilePath source_path;
   base::FilePath icon_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
@@ -221,7 +223,8 @@ TEST_F(WebApkIconHasherTest, SVGImage) {
   GURL icon_url("http://www.google.com/chrome/test/data/android/icon.svg");
   base::FilePath source_path;
   base::FilePath icon_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
@@ -264,7 +267,8 @@ TEST_F(WebApkIconHasherTest, WebpImage) {
   GURL icon_url("http://www.google.com/chrome/test/data/android/splash.webp");
   base::FilePath source_path;
   base::FilePath icon_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")
@@ -307,7 +311,8 @@ TEST_F(WebApkIconHasherTest, Favicon) {
   GURL icon_url("http://www.google.com/chrome/test/data/android/favicon_1.ico");
   base::FilePath source_path;
   base::FilePath icon_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path));
   icon_path = source_path.AppendASCII("components")
                   .AppendASCII("test")
                   .AppendASCII("data")

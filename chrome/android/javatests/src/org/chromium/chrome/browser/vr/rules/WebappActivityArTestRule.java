@@ -18,13 +18,20 @@ import org.chromium.chrome.browser.webapps.WebappActivityTestRule;
 public class WebappActivityArTestRule extends WebappActivityTestRule implements ArTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                ArTestRuleUtils.evaluateArTestRuleImpl(base, desc, WebappActivityArTestRule.this,
-                        () -> { startWebappActivity(); });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        ArTestRuleUtils.evaluateArTestRuleImpl(
+                                base,
+                                desc,
+                                WebappActivityArTestRule.this,
+                                () -> {
+                                    startWebappActivity();
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

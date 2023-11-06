@@ -84,6 +84,18 @@ class FormField {
       FieldCandidatesMap& field_candidates,
       LogManager* log_manager = nullptr);
 
+  // Search for standalone email fields inside `fields`. Used because email
+  // fields are commonly the only recognized field on account registration
+  // sites. Currently called only when `kAutofillEnableEmailOnlyAddressForms` is
+  // enabled.
+  static void ParseStandaloneEmailFields(
+      const std::vector<std::unique_ptr<AutofillField>>& fields,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& page_language,
+      PatternSource pattern_source,
+      FieldCandidatesMap& field_candidates,
+      LogManager* log_manager = nullptr);
+
 #if defined(UNIT_TEST)
   static bool MatchForTesting(const AutofillField* field,
                               base::StringPiece16 pattern,
@@ -185,12 +197,10 @@ class FormField {
   static bool MatchesFormControlType(base::StringPiece type,
                                      DenseSet<MatchFieldType> match_type);
 
-  // TODO(crbug.com/1352826) Undo making this temporarily a public function.
- public:
+ protected:
   // Returns true if |field_type| is a single field parseable type.
   static bool IsSingleFieldParseableType(ServerFieldType field_type);
 
- protected:
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction
   // of types from an input vector of |AutofillField| objects and delegates

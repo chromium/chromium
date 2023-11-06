@@ -14,18 +14,19 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
+#import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
-
-BASE_FEATURE(kIOSParcelTracking,
-             "IOSParcelTracking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
 bool IsIOSParcelTrackingEnabled() {
-  return base::FeatureList::IsEnabled(kIOSParcelTracking);
+  return base::FeatureList::IsEnabled(kIOSParcelTracking) &&
+         GetApplicationContext()->GetLocalState()->GetBoolean(
+             prefs::kIosParcelTrackingPolicyEnabled);
 }
 
 bool IsUserEligibleParcelTrackingOptInPrompt(
@@ -66,6 +67,8 @@ void TrackParcels(
              std::unique_ptr<std::vector<commerce::ParcelTrackingStatus>>
                  parcel_status) {
             if (success && display_infobar) {
+              RecordModuleFreshnessSignal(
+                  ContentSuggestionsModuleType::kParcelTracking);
               [parcel_tracking_commands_handler
                   showParcelTrackingInfobarWithParcels:parcels
                                                forStep:ParcelTrackingStep::

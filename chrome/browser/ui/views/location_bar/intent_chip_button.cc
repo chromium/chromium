@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -101,7 +100,7 @@ void IntentChipButton::HandlePressed() {
   content::WebContents* web_contents =
       delegate_->GetWebContentsForPageActionIconView();
   const GURL& url = web_contents->GetURL();
-  IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(web_contents, url);
+  GetTabHelper()->ShowIntentPickerBubbleOrLaunchApp(url);
 }
 
 IntentPickerTabHelper* IntentChipButton::GetTabHelper() const {

@@ -197,6 +197,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsViewValue() const { return class_type_ == kViewClass; }
   bool IsRatioValue() const { return class_type_ == kRatioClass; }
 
+  bool IsRepeatStyleValue() const { return class_type_ == kRepeatStyleClass; }
+
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
   void ReResolveUrl(const Document&) const;
@@ -220,6 +222,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {}
   void Trace(Visitor*) const;
+
+  static const size_t kValueListSeparatorBits = 2;
+  enum ValueListSeparator { kSpaceSeparator, kCommaSeparator, kSlashSeparator };
 
  protected:
   enum ClassType {
@@ -302,6 +307,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kImageSetOptionClass,
     kImageSetTypeClass,
 
+    kRepeatStyleClass,
+
     // List class types must appear after ValueListClass.
     kValueListClass,
     kFunctionClass,
@@ -312,9 +319,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kAxisClass,
     // Do not append non-list class types here.
   };
-
-  static const size_t kValueListSeparatorBits = 2;
-  enum ValueListSeparator { kSpaceSeparator, kCommaSeparator, kSlashSeparator };
 
   ClassType GetClassType() const { return static_cast<ClassType>(class_type_); }
 

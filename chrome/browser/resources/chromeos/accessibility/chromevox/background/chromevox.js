@@ -34,12 +34,10 @@ BridgeHelper.registerHandler(
     cells => Promise.resolve(ChromeVox.braille?.backTranslate(cells)));
 
 BridgeHelper.registerHandler(
-    BridgeConstants.Braille.TARGET,
-    BridgeConstants.Braille.Action.ENABLE_COMMAND_HANDLER, async enable => {
+    BridgeConstants.Braille.TARGET, BridgeConstants.Braille.Action.SET_BYPASS,
+    async bypass => {
       await ChromeVoxState.ready();
-      if (BrailleCommandHandler.instance) {
-        BrailleCommandHandler.setEnabled(enable);
-      }
+      BrailleCommandHandler.setBypass(bypass);
     });
 
 BridgeHelper.registerHandler(

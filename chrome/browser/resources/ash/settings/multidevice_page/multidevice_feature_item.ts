@@ -22,7 +22,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {MultiDeviceFeature} from './multidevice_constants.js';

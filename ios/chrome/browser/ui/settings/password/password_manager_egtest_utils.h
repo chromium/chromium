@@ -22,8 +22,17 @@ constexpr int kScrollAmount = 150;
 
 // Error message for when a new password form wasn't successfully saved in the
 // password store.
-constexpr NSString* kPasswordStoreErrorMessage =
+inline constexpr NSString* kPasswordStoreErrorMessage =
     @"Stored form was not found in the PasswordStore results.";
+
+// Default username used for password creation.
+inline constexpr NSString* kDefaultUsername = @"concrete username";
+
+// Default password used for password creation.
+inline constexpr NSString* kDefaultPassword = @"concrete password";
+
+// Default site used for password creation.
+inline constexpr NSString* kDefaultSite = @"https://example.com/";
 
 // Matcher for a specific state of the Password Checkup cell in the
 // Password Manager.
@@ -79,20 +88,19 @@ GREYElementInteraction* GetInteractionForPasswordIssueEntry(
     NSString* compromised_description = nil);
 
 // Saves a password form in the store.
-void SavePasswordForm(NSString* password = @"concrete password",
-                      NSString* username = @"concrete username",
-                      NSString* origin = @"https://example.com");
+void SavePasswordForm(NSString* password = kDefaultPassword,
+                      NSString* username = kDefaultUsername,
+                      NSString* origin = kDefaultSite);
 
 // Saves a compromised password form in the store.
-void SaveCompromisedPasswordForm(NSString* password = @"concrete password",
-                                 NSString* username = @"concrete username",
-                                 NSString* origin = @"https://example.com");
+void SaveCompromisedPasswordForm(NSString* password = kDefaultPassword,
+                                 NSString* username = kDefaultUsername,
+                                 NSString* origin = kDefaultSite);
 
 // Saves a muted compromised password form in the store.
-void SaveMutedCompromisedPasswordForm(
-    NSString* origin = @"https://example.com",
-    NSString* username = @"concrete username",
-    NSString* password = @"concrete password");
+void SaveMutedCompromisedPasswordForm(NSString* origin = kDefaultSite,
+                                      NSString* username = kDefaultUsername,
+                                      NSString* password = kDefaultPassword);
 
 // Opens the Password Manager page from the NTP.
 void OpenPasswordManager();

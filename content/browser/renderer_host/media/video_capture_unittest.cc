@@ -79,12 +79,12 @@ ACTION_P2(ExitMessageLoop, task_runner, quit_closure) {
   task_runner->PostTask(FROM_HERE, quit_closure);
 }
 
-class MockRenderProcessHostDelegate
-    : public VideoCaptureHost::RenderProcessHostDelegate {
+class MockRenderFrameHostDelegate
+    : public VideoCaptureHost::RenderFrameHostDelegate {
  public:
   MOCK_METHOD0(NotifyStreamAdded, void());
   MOCK_METHOD0(NotifyStreamRemoved, void());
-  MOCK_METHOD0(GetBrowserContext, content::BrowserContext*());
+  MOCK_CONST_METHOD0(GetRenderFrameHostId, GlobalRenderFrameHostId());
 };
 
 // This is an integration test of VideoCaptureHost in conjunction with
@@ -115,8 +115,9 @@ class VideoCaptureTest : public testing::Test,
         &VideoCaptureTest::CreateFakeUI, base::Unretained(this)));
 
     // Create a Host and connect it to a simulated IPC channel.
-    host_ = std::make_unique<VideoCaptureHost>(0 /* render_process_id */,
-                                               media_stream_manager_.get());
+    host_ = std::make_unique<VideoCaptureHost>(
+        GlobalRenderFrameHostId() /* render_frame_host_id */,
+        media_stream_manager_.get());
 
     OpenSession();
   }
@@ -127,14 +128,11 @@ class VideoCaptureTest : public testing::Test,
 
     CloseSession();
 
-    // Release the reference to the mock object. The object will be destructed
-    // on the current message loop.
-    host_ = nullptr;
+    host_.reset();
   }
 
   void OpenSession() {
-    const int render_process_id = 1;
-    const int render_frame_id = 1;
+    const GlobalRenderFrameHostId render_frame_host_id{1, 1};
     const int requester_id = 1;
     const int page_request_id = 1;
     const url::Origin security_origin =
@@ -150,9 +148,7 @@ class VideoCaptureTest : public testing::Test,
       devices_to_enumerate[static_cast<size_t>(
           blink::mojom::MediaDeviceType::kMediaVideoInput)] = true;
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
-      GetMediaDeviceSaltAndOrigin(
-          GlobalRenderFrameHostId(render_process_id, render_frame_id),
-          future.GetCallback());
+      GetMediaDeviceSaltAndOrigin(render_frame_host_id, future.GetCallback());
       MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
       media_stream_manager_->media_devices_manager()->EnumerateDevices(
           devices_to_enumerate,
@@ -165,14 +161,12 @@ class VideoCaptureTest : public testing::Test,
     // Open the first device.
     {
       base::test::TestFuture<const MediaDeviceSaltAndOrigin&> future;
-      GetMediaDeviceSaltAndOrigin(
-          GlobalRenderFrameHostId(render_process_id, render_frame_id),
-          future.GetCallback());
+      GetMediaDeviceSaltAndOrigin(render_frame_host_id, future.GetCallback());
       MediaDeviceSaltAndOrigin salt_and_origin = future.Get();
 
       base::RunLoop run_loop;
       media_stream_manager_->OpenDevice(
-          render_process_id, render_frame_id, requester_id, page_request_id,
+          render_frame_host_id, requester_id, page_request_id,
           video_devices[0].device_id,
           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE, salt_and_origin,
           base::BindOnce(&VideoCaptureTest::OnDeviceOpened,
@@ -213,7 +207,7 @@ class VideoCaptureTest : public testing::Test,
   MOCK_METHOD1(DoOnBufferReady, void(int32_t));
   MOCK_METHOD1(OnBufferDestroyed, void(int32_t));
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
-  MOCK_METHOD1(OnNewCropVersion, void(uint32_t));
+  MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
 
   void StartCapture() {
     base::RunLoop run_loop;
@@ -426,9 +420,9 @@ TEST_F(VideoCaptureTest, CloseSessionWithoutStopping) {
 // Tests if RenderProcessHostDelegate methods are called as often as as
 // expected.
 TEST_F(VideoCaptureTest, IncrementMatchesDecrementCalls) {
-  std::unique_ptr<MockRenderProcessHostDelegate> mock_delegate =
-      std::make_unique<MockRenderProcessHostDelegate>();
-  MockRenderProcessHostDelegate* const mock_delegate_ptr = mock_delegate.get();
+  std::unique_ptr<MockRenderFrameHostDelegate> mock_delegate =
+      std::make_unique<MockRenderFrameHostDelegate>();
+  MockRenderFrameHostDelegate* const mock_delegate_ptr = mock_delegate.get();
   std::unique_ptr<VideoCaptureHost> host =
       std::make_unique<VideoCaptureHost>(std::move(mock_delegate), nullptr);
 
@@ -448,8 +442,9 @@ TEST_F(VideoCaptureTest, IncrementMatchesDecrementCalls) {
 TEST_F(VideoCaptureTest, RegisterAndUnregisterWithMediaStreamManager) {
   {
     mojo::Remote<media::mojom::VideoCaptureHost> client;
-    VideoCaptureHost::Create(0 /* render_process_id */, media_stream_manager(),
-                             client.BindNewPipeAndPassReceiver());
+    VideoCaptureHost::Create(
+        GlobalRenderFrameHostId() /* render_frame_host_id */,
+        media_stream_manager(), client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());
     EXPECT_EQ(media_stream_manager()->num_video_capture_hosts(), 1u);
   }

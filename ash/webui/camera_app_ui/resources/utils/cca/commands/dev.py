@@ -9,6 +9,7 @@ import logging
 import mimetypes
 import os
 import re
+from urllib import parse as urllib_parse
 from typing import Callable, Dict, List, NamedTuple, Optional, Union
 from xml.dom import minidom
 
@@ -22,11 +23,15 @@ def _get_root_relative_path(request_path: str) -> str:
     return os.path.relpath('/', f'/{request_path}')
 
 
-# Replaces all chrome:// reference to /chrome_stub/
+# Replaces all chrome:// reference to /chrome_stub/.
+# Also replaces all //resources/ references to /chrome_stub/resources/, since
+# some imports in cros_component and mwc use // instead of chrome://, but
+# replacing all '//' is too broad.
 def _stub_chrome_url(request_path: str, s: str) -> str:
-    return s.replace(
-        'chrome://',
-        os.path.join(_get_root_relative_path(request_path), 'chrome_stub/'))
+    chrome_stub_path = os.path.join(_get_root_relative_path(request_path),
+                                    'chrome_stub/')
+    return s.replace('chrome://', chrome_stub_path).replace(
+        '//resources/', os.path.join(chrome_stub_path, 'resources/'))
 
 
 class _Route(NamedTuple):
@@ -47,6 +52,7 @@ class RequestHandler:
         self._cca_root = cca_root
         self._tsc_root = tsc_root
         self._gen_dir = gen_dir
+        self._dev_static_dir = os.path.join(self._cca_root, "utils/cca/static")
         self._directory = self._cca_root
         self.routes = self._build_routes()
 
@@ -80,10 +86,6 @@ class RequestHandler:
             "browser_version": "unknown",
             "device_type": "unknown",
             "is_test_image": True,
-            # TODO(pihsun): After jelly is enabled by default and
-            # colors_default.css is removed, we need to inject a static copy of
-            # the colors / typography css.
-            "jelly": False,
             "textdirection": "ltr",
             "timeLapse": True,
         }
@@ -176,24 +178,29 @@ class RequestHandler:
             for export in exports)
         return js
 
-    def _handle_theme_typography_css(self, request_path: str) -> bytes:
-        del request_path  # Unused.
-        return b""
-
     def _handle_color_css_updater_js(self, request_path: str) -> bytes:
         del request_path  # Unused.
-        return b"export const ColorChangeUpdater = null;"
+        return (b"export const ColorChangeUpdater = "
+                b"{forDocument: () => ({start: () => {}})};")
 
     def _handle_static_file(
         self,
         request_path: str,
         *,
         root: Optional[str] = None,
-        path: Optional[str] = None,
+        path: Optional[Union[str, Callable[[str], str]]] = None,
         transform: Optional[Callable[[str, str], str]] = None,
     ) -> bytes:
+        def calculate_path():
+            if callable(path):
+                return path(request_path)
+            elif path is not None:
+                return path
+            else:
+                return request_path.lstrip('/')
+
         root = root or self._cca_root
-        path = path or request_path[1:]
+        path = calculate_path()
 
         with open(os.path.join(root, path), "rb") as f:
             content = f.read()
@@ -233,23 +240,31 @@ class RequestHandler:
                 ),
             ),
             _Route(
-                "/chrome_stub/resources/js/assert_ts.js",
+                re.compile("/chrome_stub/resources/(mwc|cros_components)/.*"),
                 functools.partial(
                     self._handle_static_file,
-                    root=self._gen_dir,
-                    path="ui/webui/resources/tsc/js/assert_ts.js",
+                    root=os.path.join(self._gen_dir,
+                                      "ui/webui/resources/tsc/"),
+                    path=lambda path: '/'.join(path.split('/')[3:]),
+                    transform=_stub_chrome_url,
                 ),
             ),
             _Route(
-                "/chrome_stub/resources/mwc/lit/index.js",
+                "/chrome_stub/theme/typography.css",
                 functools.partial(
                     self._handle_static_file,
-                    root=self._gen_dir,
-                    path="ui/webui/resources/tsc/mwc/lit/index.js",
+                    root=self._dev_static_dir,
+                    path="typography.css",
                 ),
             ),
-            _Route("/chrome_stub/theme/typography.css",
-                   self._handle_theme_typography_css),
+            _Route(
+                "/chrome_stub/theme/colors.css",
+                functools.partial(
+                    self._handle_static_file,
+                    root=self._dev_static_dir,
+                    path="colors.css",
+                ),
+            ),
             # strings are generated dynamically from grd file.
             _Route("/strings.m.js", self._handle_strings_m_js),
             # All mojo imports are stubbed.
@@ -336,7 +351,8 @@ class DevServerHandler(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        path = self.path
+        # Remove query parameters
+        path = urllib_parse.urlparse(self.path).path
 
         if path == "/":
             return self._handle_root()

@@ -9,7 +9,7 @@
 namespace blink {
 
 bool InterpolableNumber::Equals(const InterpolableValue& other) const {
-  return value_ == To<InterpolableNumber>(other).value_;
+  return value_.Value() == To<InterpolableNumber>(other).value_.Value();
 }
 
 bool InterpolableList::Equals(const InterpolableValue& other) const {
@@ -23,6 +23,17 @@ bool InterpolableList::Equals(const InterpolableValue& other) const {
   return true;
 }
 
+double InlinedInterpolableNumber::Interpolate(double to,
+                                              const double progress) const {
+  if (progress == 0 || value_ == to) {
+    return value_;
+  } else if (progress == 1) {
+    return to;
+  } else {
+    return value_ * (1 - progress) + to * progress;
+  }
+}
+
 void InterpolableNumber::AssertCanInterpolateWith(
     const InterpolableValue& other) const {
   DCHECK(other.IsNumber());
@@ -34,13 +45,7 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
   const auto& to_number = To<InterpolableNumber>(to);
   auto& result_number = To<InterpolableNumber>(result);
 
-  if (progress == 0 || value_ == to_number.value_)
-    result_number.value_ = value_;
-  else if (progress == 1)
-    result_number.value_ = to_number.value_;
-  else
-    result_number.value_ =
-        value_ * (1 - progress) + to_number.value_ * progress;
+  result_number.Set(value_.Interpolate(to_number.Value(), progress));
 }
 
 void InterpolableList::AssertCanInterpolateWith(
@@ -64,14 +69,15 @@ void InterpolableList::Interpolate(const InterpolableValue& to,
 }
 
 InterpolableList* InterpolableList::RawCloneAndZero() const {
-  auto* result = new InterpolableList(length());
-  for (wtf_size_t i = 0; i < length(); i++)
+  auto* result = MakeGarbageCollected<InterpolableList>(length());
+  for (wtf_size_t i = 0; i < length(); i++) {
     result->Set(i, values_[i]->CloneAndZero());
+  }
   return result;
 }
 
 void InterpolableNumber::Scale(double scale) {
-  value_ = value_ * scale;
+  value_.Scale(scale);
 }
 
 void InterpolableList::Scale(double scale) {
@@ -80,7 +86,7 @@ void InterpolableList::Scale(double scale) {
 }
 
 void InterpolableNumber::Add(const InterpolableValue& other) {
-  value_ += To<InterpolableNumber>(other).value_;
+  value_.Add(To<InterpolableNumber>(other).value_.Value());
 }
 
 void InterpolableList::Add(const InterpolableValue& other) {

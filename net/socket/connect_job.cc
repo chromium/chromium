@@ -41,7 +41,8 @@ CommonConnectJobParams::CommonConnectJobParams(
     SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log,
-    WebSocketEndpointLockManager* websocket_endpoint_lock_manager)
+    WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
+    HttpServerProperties* http_server_properties)
     : client_socket_factory(client_socket_factory),
       host_resolver(host_resolver),
       http_auth_cache(http_auth_cache),
@@ -55,7 +56,8 @@ CommonConnectJobParams::CommonConnectJobParams(
       socket_performance_watcher_factory(socket_performance_watcher_factory),
       network_quality_estimator(network_quality_estimator),
       net_log(net_log),
-      websocket_endpoint_lock_manager(websocket_endpoint_lock_manager) {}
+      websocket_endpoint_lock_manager(websocket_endpoint_lock_manager),
+      http_server_properties(http_server_properties) {}
 
 CommonConnectJobParams::CommonConnectJobParams(
     const CommonConnectJobParams& other) = default;

@@ -47,9 +47,7 @@ public class DownloadMetrics {
         // Below there are metrics per profile type, so there should be a tab to get profile.
         if (tab == null) return;
 
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return;
-
+        Profile profile = tab.getProfile();
         @BrowserProfileType
         int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(

@@ -278,10 +278,27 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
 
   std::stringstream debug_info;
   debug_info << "has_policy: " << (policy_data != nullptr);
-  if (policy_data) {
-    debug_info << ", has_managed_by: " << policy_data->has_managed_by();
-    if (policy_data->has_policy_type()) {
-      debug_info << ", policy_type: " << policy_data->policy_type();
+  // Log the value of the data from policy_fetch_response.
+  const em::PolicyFetchResponse* policy_fetch_response =
+      device_settings_service_->policy_fetch_response();
+  debug_info << ", has_fetch_response: " << (policy_fetch_response != nullptr);
+  if (policy_fetch_response) {
+    debug_info << ", has_signature: "
+               << policy_fetch_response->has_policy_data_signature();
+    debug_info << ", size = " << policy_fetch_response->ByteSize();
+    std::unique_ptr<em::PolicyData> poldata =
+        std::make_unique<em::PolicyData>();
+    if (!policy_fetch_response->has_policy_data() ||
+        !poldata->ParseFromString(policy_fetch_response->policy_data()) ||
+        !poldata->IsInitialized()) {
+      debug_info << ", parse policy failed";
+    } else {
+      debug_info << ", has_dm_token: " << poldata->has_request_token();
+      if (poldata->has_request_token()) {
+        debug_info << ", dm_token size: " << poldata->request_token().size();
+      }
+      debug_info << ", has_device_id: " << poldata->has_device_id()
+                 << ", has_device_state: " << poldata->has_device_state();
     }
   }
   debug_info << ", attrs mode: " << install_attributes_->GetMode()
@@ -289,14 +306,6 @@ void DeviceCloudPolicyStoreAsh::CheckDMToken() {
   LOG(ERROR) << "Device policy read on enrolled device yields "
              << "no DM token! Status: " << service_status
              << ", debug_info: " << debug_info.str() << ".";
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce([]() {
-        base::FilePath key_path;
-        bool path_found = base::PathService::Get(
-            chromeos::dbus_paths::FILE_OWNER_KEY, &key_path);
-        LOG(ERROR) << "Device policy has_key: "
-                   << (path_found && base::PathExists(key_path)) << ".";
-      }));
 
   // At the time LoginDisplayHostWebUI decides whether enrollment flow is to
   // be started, policy hasn't been read yet.  To work around this, once the

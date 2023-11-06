@@ -35,9 +35,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-/**
- * Tests for the Settings menu.
- */
+/** Tests for the Settings menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
 public class SettingsActivityTest {
@@ -55,18 +53,20 @@ public class SettingsActivityTest {
     // Setting BrowserSignin suppresses the sync promo so the password settings preference
     // is visible without scrolling.
     @Policies.Add({
-        @Policies.Item(key = "PasswordManagerEnabled", string = "false")
-        , @Policies.Item(key = "BrowserSignin", string = "0")
+        @Policies.Item(key = "PasswordManagerEnabled", string = "false"),
+        @Policies.Item(key = "BrowserSignin", string = "0")
     })
-    public void
-    testPasswordSettings_ManagedAndDisabled() {
+    public void testPasswordSettings_ManagedAndDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { ChromeBrowserInitializer.getInstance().handleSynchronousStartup(); });
+                () -> {
+                    ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            return UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE);
+                });
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -74,16 +74,16 @@ public class SettingsActivityTest {
         onView(withText(R.string.password_settings_save_passwords)).check(matches(isDisplayed()));
     }
 
-    /**
-     * Test status bar is always black in Automotive devices.
-     */
+    /** Test status bar is always black in Automotive devices. */
     @Test
     @SmallTest
     @Feature({"StatusBar, Automotive Toolbar"})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testStatusBarBlackInAutomotive() {
         mSettingsActivityTestRule.startSettingsActivity();
-        assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
+        assertEquals(
+                "Status bar should always be black in automotive devices.",
+                Color.BLACK,
                 mSettingsActivityTestRule.getActivity().getWindow().getStatusBarColor());
     }
 }

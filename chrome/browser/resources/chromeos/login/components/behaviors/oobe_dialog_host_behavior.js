@@ -16,7 +16,7 @@ import {invokePolymerMethod} from '../../display_manager.js';
  */
 
 /** @polymerBehavior */
-export var OobeDialogHostBehavior = {
+export const OobeDialogHostBehavior = {
   properties: {},
 
   /**
@@ -45,8 +45,8 @@ export var OobeDialogHostBehavior = {
    * @param {string} selector CSS selector (optional).
    */
   propagateUpdateLocalizedContent(selector) {
-    var screens = dom(this.root).querySelectorAll(selector);
-    for (var i = 0; i < screens.length; ++i) {
+    const screens = dom(this.root).querySelectorAll(selector);
+    for (let i = 0; i < screens.length; ++i) {
       /** @type {{updateLocalizedContent: function()}}}*/ (screens[i])
           .updateLocalizedContent();
     }

@@ -1,0 +1,70 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DataLeakPreventionRulesList": [
+            {
+              "description": "Allow copy and paste for work purposes but block screenshots, screen share and printing",
+              "destinations": {
+                "components": [],
+                "urls": [
+                  "salesforce.com",
+                  "gmail.com",
+                  "docs.google.com",
+                  "drive.google.com",
+                  "*.company.com"
+                ]
+              },
+              "name": "Support agent work flows",
+              "restrictions": [
+                {
+                  "class": "CLIPBOARD",
+                  "level": "ALLOW"
+                },
+                {
+                  "class": "SCREENSHOT",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "PRINTING",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "PRIVACY_SCREEN",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "SCREEN_SHARE",
+                  "level": "BLOCK"
+                },
+                {
+                  "class": "FILES",
+                  "level": "WARN"
+                }
+              ],
+              "sources": {
+                "urls": [
+                  "salesforce.com",
+                  "gmail.com",
+                  "docs.google.com",
+                  "drive.google.com",
+                  "*.company.com"
+                ]
+              }
+            }
+          ]
+        },
+        "prefs": {
+          "policy.dlp_rules_list": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

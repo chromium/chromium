@@ -214,13 +214,9 @@ TEST_F(InsertTextCommandTest, WhitespaceFixupAfterParagraph) {
 TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   InsertStyleElement(
-#if BUILDFLAG(IS_FUCHSIA)
-      // TODO(https://crbug.com/1463890): LineBreaker somehow fails if
-      // text-autospace is enabled. Tentatively opt out for now..
-      "div {text-autospace: no-autospace;}"
-#endif
-      "ruby {display: inline-block; height: 100%}"
-      "navi {float: left}");
+      ":root { font-size: 10px; }"
+      "ruby { display: inline-block; height: 100%; }"
+      "navi { float: left; }");
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable>"
                              "  <ruby><strike>"

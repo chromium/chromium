@@ -464,7 +464,7 @@ suite('DestinationStoreTest', function() {
 
   // Tests that the destination store adds printers from the
   // 'local-printers-updated' event.
-  test('LocalPrintersUpdatedEvent', function() {
+  test('LocalPrintersUpdatedEventPrintersAdded', function() {
     const printer1 = {
       printerName: 'localPrinter1',
       deviceName: 'localPrinter1',
@@ -485,14 +485,55 @@ suite('DestinationStoreTest', function() {
 
       // Fire the event and expect the destination store to add the local
       // printers.
-      webUIListenerCallback(
-          'local-printers-updated', PrinterType.LOCAL_PRINTER,
-          [printer1, printer2]);
+      webUIListenerCallback('local-printers-updated', [printer1, printer2]);
       assertTrue(!!destinationStore.destinations().find(
           destination => destination.id === printer1.printerName));
       assertTrue(!!destinationStore.destinations().find(
           destination => destination.id === printer2.printerName));
     });
+  });
+
+  // Tests that the destination store updates printer statuses from the
+  // 'local-printers-updated' event.
+  test('LocalPrintersUpdatedEventStatusUpdate', function() {
+    const printer1 = {
+      printerName: 'localPrinter1',
+      deviceName: 'localPrinter1',
+      printerStatus: {},
+    };
+    const expectedPrinterStatus = {
+      printerId: 'localPrinter1',
+      statusReasons: [{reason: 6, severity: 2}],
+    };
+
+    loadTimeData.overrideValues({isLocalPrinterObservingEnabled: true});
+    return setInitialSettings(/*expectPrinterFailure=*/ false)
+        .then(() => {
+          // Fire the event and expect the destination to not have a printer
+          // status.
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          const destination = destinationStore.destinations().find(
+              destination => destination.id === printer1.printerName);
+          assertTrue(!!destination);
+          assertEquals(null, destination.printerStatusReason);
+
+          // Add a printer status then trigger the event again. The printer
+          // status should be parsed and appended to the existing destination.
+          printer1.printerStatus = expectedPrinterStatus;
+          const onPrinterStatusUpdatePromise = eventToPromise(
+              DestinationStoreEventType.DESTINATION_PRINTER_STATUS_UPDATE,
+              destinationStore);
+          webUIListenerCallback('local-printers-updated', [printer1]);
+          return onPrinterStatusUpdatePromise;
+        })
+        .then(() => {
+          const destination = destinationStore.destinations().find(
+              destination => destination.id === printer1.printerName);
+          assertTrue(!!destination);
+          assertEquals(
+              expectedPrinterStatus.statusReasons[0]!.reason,
+              destination.printerStatusReason);
+        });
   });
   // </if>
 });

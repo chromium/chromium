@@ -263,7 +263,8 @@ TEST_P(BodyStreamBufferTest, DrainAsBlobDataHandle) {
   EXPECT_EQ(side_data_blob, buffer->GetSideDataBlobForTest());
   scoped_refptr<BlobDataHandle> output_blob_data_handle =
       buffer->DrainAsBlobDataHandle(
-          BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize);
+          BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize,
+          ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(buffer->IsStreamLocked());
   EXPECT_TRUE(buffer->IsStreamDisturbed());
@@ -287,7 +288,8 @@ TEST_P(BodyStreamBufferTest, DrainAsBlobDataHandleReturnsNull) {
   EXPECT_EQ(side_data_blob, buffer->GetSideDataBlobForTest());
 
   EXPECT_FALSE(buffer->DrainAsBlobDataHandle(
-      BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize));
+      BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize,
+      ASSERT_NO_EXCEPTION));
 
   EXPECT_FALSE(buffer->IsStreamLocked());
   EXPECT_FALSE(buffer->IsStreamDisturbed());
@@ -309,7 +311,8 @@ TEST_P(BodyStreamBufferTest,
   EXPECT_TRUE(buffer->IsStreamReadable());
 
   EXPECT_FALSE(buffer->DrainAsBlobDataHandle(
-      BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize));
+      BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize,
+      ASSERT_NO_EXCEPTION));
 
   EXPECT_FALSE(buffer->IsStreamLocked());
   EXPECT_FALSE(buffer->IsStreamDisturbed());
@@ -335,7 +338,8 @@ TEST_P(BodyStreamBufferTest, DrainAsFormData) {
   EXPECT_FALSE(buffer->IsStreamLocked());
   EXPECT_FALSE(buffer->IsStreamDisturbed());
   EXPECT_EQ(side_data_blob, buffer->GetSideDataBlobForTest());
-  scoped_refptr<EncodedFormData> output_form_data = buffer->DrainAsFormData();
+  scoped_refptr<EncodedFormData> output_form_data =
+      buffer->DrainAsFormData(ASSERT_NO_EXCEPTION);
 
   EXPECT_TRUE(buffer->IsStreamLocked());
   EXPECT_TRUE(buffer->IsStreamDisturbed());
@@ -359,7 +363,7 @@ TEST_P(BodyStreamBufferTest, DrainAsFormDataReturnsNull) {
   EXPECT_FALSE(buffer->IsStreamDisturbed());
   EXPECT_EQ(side_data_blob, buffer->GetSideDataBlobForTest());
 
-  EXPECT_FALSE(buffer->DrainAsFormData());
+  EXPECT_FALSE(buffer->DrainAsFormData(ASSERT_NO_EXCEPTION));
 
   EXPECT_FALSE(buffer->IsStreamLocked());
   EXPECT_FALSE(buffer->IsStreamDisturbed());
@@ -379,7 +383,7 @@ TEST_P(BodyStreamBufferTest,
   EXPECT_FALSE(buffer->IsStreamDisturbed());
   EXPECT_TRUE(buffer->IsStreamReadable());
 
-  EXPECT_FALSE(buffer->DrainAsFormData());
+  EXPECT_FALSE(buffer->DrainAsFormData(ASSERT_NO_EXCEPTION));
 
   EXPECT_FALSE(buffer->IsStreamLocked());
   EXPECT_FALSE(buffer->IsStreamDisturbed());
@@ -826,7 +830,7 @@ TEST_P(BodyStreamBufferTest, CachedMetadataHandler) {
     EXPECT_EQ(handler, buffer->GetCachedMetadataHandler());
     EXPECT_NE(weak_handler.Get(), nullptr);
 
-    buffer->CloseAndLockAndDisturb();
+    buffer->CloseAndLockAndDisturb(ASSERT_NO_EXCEPTION);
   }
 
   ThreadState::Current()->CollectAllGarbageForTesting();

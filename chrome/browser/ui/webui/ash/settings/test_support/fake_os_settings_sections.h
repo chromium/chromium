@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_OS_SETTINGS_SECTIONS_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_TEST_SUPPORT_FAKE_OS_SETTINGS_SECTIONS_H_
 
-#include "chrome/browser/ui/webui/settings/ash/os_settings_sections.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 
 namespace ash::settings {
 

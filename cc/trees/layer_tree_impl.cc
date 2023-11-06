@@ -1926,8 +1926,6 @@ const gfx::Rect LayerTreeImpl::ViewportRectForTilePriority() const {
 std::unique_ptr<ScrollbarAnimationController>
 LayerTreeImpl::CreateScrollbarAnimationController(ElementId scroll_element_id,
                                                   float initial_opacity) {
-  DCHECK(!settings().scrollbar_fade_delay.is_zero());
-  DCHECK(!settings().scrollbar_fade_duration.is_zero());
   base::TimeDelta fade_delay = settings().scrollbar_fade_delay;
   base::TimeDelta fade_duration = settings().scrollbar_fade_duration;
   switch (settings().scrollbar_animator) {
@@ -1940,10 +1938,11 @@ LayerTreeImpl::CreateScrollbarAnimationController(ElementId scroll_element_id,
     case LayerTreeSettings::AURA_OVERLAY: {
       base::TimeDelta thinning_duration =
           settings().scrollbar_thinning_duration;
+      float idle_thickness_scale = settings().idle_thickness_scale;
       return ScrollbarAnimationController::
           CreateScrollbarAnimationControllerAuraOverlay(
               scroll_element_id, host_impl_, fade_delay, fade_duration,
-              thinning_duration, initial_opacity);
+              thinning_duration, initial_opacity, idle_thickness_scale);
     }
     case LayerTreeSettings::NO_ANIMATOR:
       NOTREACHED();

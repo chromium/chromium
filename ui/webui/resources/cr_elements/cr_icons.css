@@ -15,6 +15,14 @@
   --cr-icon-image: url(chrome://resources/images/icon_arrow_dropdown.svg);
 }
 
+.icon-arrow-drop-down-cr23 {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_drop_down_cr23.svg);
+}
+
+.icon-arrow-drop-up-cr23 {
+  --cr-icon-image: url(chrome://resources/images/icon_arrow_drop_up_cr23.svg);
+}
+
 .icon-cancel {
   --cr-icon-image: url(chrome://resources/images/icon_cancel.svg);
 }

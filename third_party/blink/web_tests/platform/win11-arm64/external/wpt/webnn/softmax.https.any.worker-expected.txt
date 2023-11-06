@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL softmax float32 2D tensor all positive / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL softmax float32 2D tensor all negative / sync Failed to execute 'buildSync' on 'MLGraphBuilder': Not implemented
-FAIL softmax float32 2D tensor all positive / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL softmax float32 2D tensor all negative / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-Harness: the test ran to completion.
-

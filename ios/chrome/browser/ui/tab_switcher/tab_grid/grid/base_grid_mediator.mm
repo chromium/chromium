@@ -48,12 +48,13 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_storage.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_storage_observer.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service.h"
 #import "ios/chrome/browser/tabs_search/model/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -65,10 +66,6 @@
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
 #import "ui/gfx/image/image.h"
-
-// To get access to UseSessionSerializationOptimizations().
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
-#import "ios/web/common/features.h"
 
 using PinnedState = WebStateSearchCriteria::PinnedState;
 
@@ -158,11 +155,11 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   // ItemID of the dragged tab. Used to check if the dropped tab is from the
   // same Chrome window.
   web::WebStateID _dragItemID;
+  base::WeakPtr<Browser> _browser;
 }
 
-- (instancetype)initWithConsumer:(id<TabCollectionConsumer>)consumer {
+- (instancetype)init {
   if (self = [super init]) {
-    _consumer = consumer;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _scopedWebStateListObservation = std::make_unique<
@@ -180,12 +177,19 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 #pragma mark - Public properties
 
+- (Browser*)browser {
+  return _browser.get();
+}
+
 - (void)setBrowser:(Browser*)browser {
   [self.snapshotStorage removeObserver:self];
   _scopedWebStateListObservation->RemoveAllObservations();
   _scopedWebStateObservation->RemoveAllObservations();
 
-  _browser = browser;
+  _browser.reset();
+  if (browser) {
+    _browser = browser->AsWeakPtr();
+  }
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _browserState = browser ? browser->GetBrowserState() : nullptr;
@@ -210,7 +214,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 #pragma mark - Subclassing
 
 - (void)disconnect {
-  _browser = nil;
+  _browser.reset();
   _browserState = nil;
   _consumer = nil;
   _delegate = nil;
@@ -645,40 +649,6 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   NOTREACHED_NORETURN() << "Should be implemented in a subclass.";
 }
 
-- (void)showCloseItemsConfirmationActionSheetWithItems:
-            (const std::set<web::WebStateID>&)itemIDs
-                                                anchor:(UIBarButtonItem*)
-                                                           buttonAnchor {
-  [self.delegate dismissPopovers];
-
-  [self.delegate
-      showCloseItemsConfirmationActionSheetWithBaseGridMediator:self
-                                                        itemIDs:itemIDs
-                                                         anchor:buttonAnchor];
-}
-
-- (void)shareItems:(const std::set<web::WebStateID>&)itemIDs
-            anchor:(UIBarButtonItem*)buttonAnchor {
-  [self.delegate dismissPopovers];
-
-  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
-  for (const web::WebStateID itemID : itemIDs) {
-    TabItem* item = GetTabItem(self.webStateList,
-                               WebStateSearchCriteria{
-                                   .identifier = itemID,
-                                   .pinned_state = PinnedState::kNonPinned,
-                               });
-    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
-                                                    title:item.title];
-    [URLs addObject:URL];
-  }
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
-  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs",
-                              itemIDs.size());
-  [self.delegate baseGridMediator:self shareURLs:URLs anchor:buttonAnchor];
-}
-
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForItems:
     (const std::set<web::WebStateID>&)itemIDs {
   if (!self.browser) {
@@ -944,6 +914,9 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
 // Calls `-populateItems:selectedItemID:` on the consumer.
 - (void)populateConsumerItems {
+  if (!self.webStateList) {
+    return;
+  }
   [self.consumer populateItems:CreateItems(self.webStateList)
                 selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
 }
@@ -1106,11 +1079,39 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 }
 
 - (void)closeSelectedTabs:(id)sender {
-  [self.actionWrangler closeSelectedTabs:sender];
+  const std::set<web::WebStateID> itemIDs =
+      [self.itemProvider selectedItemIDsForEditing];
+
+  [self.delegate dismissPopovers];
+
+  [self.delegate
+      showCloseItemsConfirmationActionSheetWithBaseGridMediator:self
+                                                        itemIDs:itemIDs
+                                                         anchor:sender];
 }
 
 - (void)shareSelectedTabs:(id)sender {
-  [self.actionWrangler shareSelectedTabs:sender];
+  const std::set<web::WebStateID> itemIDs =
+      [self.itemProvider selectedShareableItemIDsForEditing];
+
+  [self.delegate dismissPopovers];
+
+  NSMutableArray<URLWithTitle*>* URLs = [[NSMutableArray alloc] init];
+  for (const web::WebStateID itemID : itemIDs) {
+    TabItem* item = GetTabItem(self.webStateList,
+                               WebStateSearchCriteria{
+                                   .identifier = itemID,
+                                   .pinned_state = PinnedState::kNonPinned,
+                               });
+    URLWithTitle* URL = [[URLWithTitle alloc] initWithURL:item.URL
+                                                    title:item.title];
+    [URLs addObject:URL];
+  }
+  base::RecordAction(
+      base::UserMetricsAction("MobileTabGridSelectionShareTabs"));
+  base::UmaHistogramCounts100("IOS.TabGrid.Selection.ShareTabs",
+                              itemIDs.size());
+  [self.delegate baseGridMediator:self shareURLs:URLs anchor:sender];
 }
 
 - (void)selectTabsButtonTapped:(id)sender {

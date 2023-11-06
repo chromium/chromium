@@ -88,7 +88,7 @@ class AdbSideloading extends AdbSideloadingBase {
     this.i18nUpdateLocale();
   }
 
-  onBeforeShow(data) {
+  onBeforeShow() {
     this.setScreenState(ADB_SIDELOADING_SCREEN_STATE.SETUP);
   }
 

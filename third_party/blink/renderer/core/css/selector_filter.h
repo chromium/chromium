@@ -90,16 +90,19 @@ class CORE_EXPORT SelectorFilter {
   void PushParent(Element& parent);
   void PopParent(Element& parent);
 
-  bool ParentStackIsConsistent(const ContainerNode* parent_node) const {
-    return !parent_stack_.empty() && parent_stack_.back() == parent_node;
+  bool ParentStackIsConsistent(const Element* parent) const {
+    if (parent == nullptr) {
+      return parent_stack_.empty();
+    } else {
+      return !parent_stack_.empty() && parent_stack_.back() == parent;
+    }
   }
 
-  template <unsigned maximumIdentifierCount>
-  inline bool FastRejectSelector(const unsigned* identifier_hashes) const;
+  inline bool FastRejectSelector(
+      const base::span<const unsigned> identifier_hashes) const;
   static void CollectIdentifierHashes(const CSSSelector&,
                                       const StyleScope*,
-                                      unsigned* identifier_hashes,
-                                      unsigned maximum_identifier_count);
+                                      Vector<unsigned>& bloom_hash_backing);
 
   void Trace(Visitor*) const;
 
@@ -116,13 +119,14 @@ class CORE_EXPORT SelectorFilter {
   std::unique_ptr<IdentifierFilter> ancestor_identifier_filter_;
 };
 
-template <unsigned maximumIdentifierCount>
 inline bool SelectorFilter::FastRejectSelector(
-    const unsigned* identifier_hashes) const {
-  DCHECK(ancestor_identifier_filter_);
-  for (unsigned n = 0; n < maximumIdentifierCount && identifier_hashes[n];
-       ++n) {
-    if (!ancestor_identifier_filter_->MayContain(identifier_hashes[n])) {
+    const base::span<const unsigned> identifier_hashes) const {
+  if (!ancestor_identifier_filter_) {
+    DCHECK(parent_stack_.empty());
+    return false;
+  }
+  for (unsigned hash : identifier_hashes) {
+    if (!ancestor_identifier_filter_->MayContain(hash)) {
       return true;
     }
   }

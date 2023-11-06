@@ -6,9 +6,9 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Network from 'devtools/panels/network/network.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that resources with JSON MIME types are previewed with the JSON viewer.\n`);

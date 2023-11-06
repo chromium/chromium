@@ -43,21 +43,19 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link IncognitoTabLauncher}.
- */
+/** Tests for {@link IncognitoTabLauncher}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ALLOW_NEW_INCOGNITO_TAB_INTENTS})
-// clang-format off
-@DisableIf.
-    Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "Flaky, see crbug.com/1246132")
+@DisableIf.Build(
+        sdk_is_greater_than = Build.VERSION_CODES.O,
+        message = "Flaky, see crbug.com/1246132")
 public class IncognitoTabLauncherTest {
-    // clang-format on
     private boolean mIsCurrentTestFirstParty;
 
-    private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
-            AppHooksModule.Factory.class, AppHooksModuleForTest::new);
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule()
+                    .setOverride(AppHooksModule.Factory.class, AppHooksModuleForTest::new);
 
     private final ChromeTabbedActivityTestRule mActivityRule = new ChromeTabbedActivityTestRule();
 
@@ -66,8 +64,8 @@ public class IncognitoTabLauncherTest {
             RuleChain.outerRule(mModuleOverridesRule).around(mActivityRule);
 
     /**
-     * To load a fake module in tests we need to bypass a check if package name of module
-     * is Google-signed. This class overrides this check for testing.
+     * To load a fake module in tests we need to bypass a check if package name of module is
+     * Google-signed. This class overrides this check for testing.
      */
     /* package */ class AppHooksModuleForTest extends AppHooksModule {
         @Override
@@ -185,7 +183,9 @@ public class IncognitoTabLauncherTest {
         intent.setPackage(context.getPackageName());
 
         Bundle extras = new Bundle();
-        BundleCompat.putBinder(extras, CustomTabsIntent.EXTRA_SESSION,
+        BundleCompat.putBinder(
+                extras,
+                CustomTabsIntent.EXTRA_SESSION,
                 custom_tab_intent.intent.getExtras().getBinder(CustomTabsIntent.EXTRA_SESSION));
 
         intent.putExtras(extras);

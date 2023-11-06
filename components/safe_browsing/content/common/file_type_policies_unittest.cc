@@ -222,4 +222,22 @@ TEST_F(FileTypePoliciesTest, BadUpdateFromExisting) {
   EXPECT_EQ(FileTypePolicies::UpdateResult::FAILED_VERSION_CHECK,
             policies_.PopulateFromBinaryPb(cfg.SerializeAsString()));
 }
+
+TEST_F(FileTypePoliciesTest, NoInspectionTypeReturnsDefault) {
+  policies_.PopulateFromResourceBundle();
+  EXPECT_EQ(policies_.GetMaxFileSizeToAnalyze(
+                base::FilePath(FILE_PATH_LITERAL("/path/to/test.pdf"))),
+            static_cast<uint64_t>(-1));
+}
+
+TEST_F(FileTypePoliciesTest, ChecksInspectionTypeNotDefault) {
+  policies_.PopulateFromResourceBundle();
+  // r01 is inspected as a RAR, so the max file size should match
+  EXPECT_EQ(policies_.GetMaxFileSizeToAnalyze("r01"),
+            policies_.GetMaxFileSizeToAnalyze("rar"));
+  EXPECT_EQ(policies_.GetMaxFileSizeToAnalyze(
+                base::FilePath(FILE_PATH_LITERAL("/path/to/test.r01"))),
+            policies_.GetMaxFileSizeToAnalyze("rar"));
+}
+
 }  // namespace safe_browsing

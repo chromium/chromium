@@ -7,12 +7,14 @@
 #include <cstddef>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -23,7 +25,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
                                     public SupervisedUserURLFilter::Observer {
  public:
   SupervisedUserURLFilterTest() {
-    filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+    filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
     filter_.AddObserver(this);
   }
 
@@ -32,7 +34,7 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   // SupervisedUserURLFilter::Observer:
   void OnSiteListUpdated() override { run_loop_.Quit(); }
   void OnURLChecked(const GURL& url,
-                    SupervisedUserURLFilter::FilteringBehavior behavior,
+                    supervised_user::FilteringBehavior behavior,
                     supervised_user::FilteringBehaviorReason reason,
                     bool uncertain) override {
     behavior_ = behavior;
@@ -42,26 +44,26 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
  protected:
   bool IsURLAllowlisted(const std::string& url) {
     return filter_.GetFilteringBehaviorForURL(GURL(url)) ==
-           SupervisedUserURLFilter::ALLOW;
+           FilteringBehavior::kAllow;
   }
 
   void ExpectURLInDefaultAllowlist(const std::string& url) {
-    ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
+    ExpectURLCheckMatches(url, FilteringBehavior::kAllow,
                           supervised_user::FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInDefaultDenylist(const std::string& url) {
-    ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
+    ExpectURLCheckMatches(url, FilteringBehavior::kBlock,
                           supervised_user::FilteringBehaviorReason::DEFAULT);
   }
 
   void ExpectURLInManualAllowlist(const std::string& url) {
-    ExpectURLCheckMatches(url, SupervisedUserURLFilter::ALLOW,
+    ExpectURLCheckMatches(url, FilteringBehavior::kAllow,
                           supervised_user::FilteringBehaviorReason::MANUAL);
   }
 
   void ExpectURLInManualDenylist(const std::string& url) {
-    ExpectURLCheckMatches(url, SupervisedUserURLFilter::BLOCK,
+    ExpectURLCheckMatches(url, FilteringBehavior::kBlock,
                           supervised_user::FilteringBehaviorReason::MANUAL);
   }
 
@@ -70,13 +72,13 @@ class SupervisedUserURLFilterTest : public ::testing::Test,
   SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
       base::BindRepeating([](const GURL& url) { return false; }),
       std::make_unique<FakeURLFilterDelegate>());
-  SupervisedUserURLFilter::FilteringBehavior behavior_;
+  supervised_user::FilteringBehavior behavior_;
   supervised_user::FilteringBehaviorReason reason_;
 
  private:
   void ExpectURLCheckMatches(
       const std::string& url,
-      SupervisedUserURLFilter::FilteringBehavior expected_behavior,
+      supervised_user::FilteringBehavior expected_behavior,
       supervised_user::FilteringBehaviorReason expected_reason,
       bool skip_manual_parent_filter = false) {
     bool called_synchronously =
@@ -94,7 +96,7 @@ TEST_F(SupervisedUserURLFilterTest, Basic) {
   hosts["*.google.com"] = true;
 
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   EXPECT_TRUE(IsURLAllowlisted("http://google.com"));
   EXPECT_TRUE(IsURLAllowlisted("http://google.com/"));
@@ -119,7 +121,7 @@ TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
   hosts["example.com"] = true;
 
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   ASSERT_TRUE(IsURLAllowlisted("http://example.com"));
   ASSERT_TRUE(IsURLAllowlisted("https://example.com"));
@@ -192,7 +194,7 @@ TEST_F(SupervisedUserURLFilterTest, EffectiveURL) {
 }
 
 TEST_F(SupervisedUserURLFilterTest, Inactive) {
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
   std::map<std::string, bool> hosts;
   hosts["google.com"] = true;
 
@@ -208,7 +210,7 @@ TEST_F(SupervisedUserURLFilterTest, IPAddress) {
   hosts["123.123.123.123"] = true;
 
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   EXPECT_TRUE(IsURLAllowlisted("http://123.123.123.123/"));
   EXPECT_FALSE(IsURLAllowlisted("http://123.123.123.124/"));
@@ -358,14 +360,14 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithoutConflicts) {
   hosts["mail.google.com"] = true;
 
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
   EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
   EXPECT_TRUE(IsURLAllowlisted("http://mail.google.com/moose/"));
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.co.uk/blurp/"));
 
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
 
   EXPECT_TRUE(IsURLAllowlisted("http://www.google.com/foo/"));
   EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
@@ -386,7 +388,7 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
   hosts["www.google.*"] = false;
 
   filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
   histogram_tester.ExpectBucketCount(
@@ -410,7 +412,7 @@ TEST_F(SupervisedUserURLFilterTest, PatternsWithConflicts) {
       SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
       0, 2);
 
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
 
   EXPECT_FALSE(IsURLAllowlisted("http://www.google.com/foo/"));
   EXPECT_FALSE(IsURLAllowlisted("http://calendar.google.com/bar/"));
@@ -441,7 +443,7 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
   filter_.SetManualHosts(std::move(hosts));
   filter_.SetManualURLs(std::move(urls));
 
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
 
   ExpectURLInDefaultDenylist("https://m.youtube.com/feed/trending");
   ExpectURLInDefaultDenylist("https://com.google");
@@ -450,7 +452,7 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
   ExpectURLInManualDenylist("https://youtube.com/robots.txt");
   ExpectURLInManualDenylist("https://google.co.uk/robots.txt");
 
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::ALLOW);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kAllow);
 
   ExpectURLInDefaultAllowlist("https://m.youtube.com/feed/trending");
   ExpectURLInDefaultAllowlist("https://com.google");
@@ -461,7 +463,7 @@ TEST_F(SupervisedUserURLFilterTest, Reason) {
 }
 
 TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com"));
   EXPECT_TRUE(IsURLAllowlisted("https://families.google.com/something"));
@@ -482,7 +484,7 @@ TEST_F(SupervisedUserURLFilterTest, UrlsNotRequiringGuardianApprovalAllowed) {
 }
 
 TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
-  filter_.SetDefaultFilteringBehavior(SupervisedUserURLFilter::BLOCK);
+  filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
   EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms"));
   EXPECT_TRUE(IsURLAllowlisted("https://play.google.com/about/play-terms/"));
   EXPECT_TRUE(IsURLAllowlisted(
@@ -496,4 +498,177 @@ TEST_F(SupervisedUserURLFilterTest, PlayTermsAlwaysAllowed) {
   EXPECT_FALSE(IsURLAllowlisted("https://play.google.com/about"));
 }
 
+class SupervisedUserURLFilteringWithConflictsTest
+    : public testing::TestWithParam<std::tuple<
+          std::map<std::string, bool>,
+          std::optional<
+              SupervisedUserURLFilter::FilteringSubdomainConflictType>>> {
+ public:
+  SupervisedUserURLFilteringWithConflictsTest() {
+    filter_.SetDefaultFilteringBehavior(FilteringBehavior::kBlock);
+  }
+
+ protected:
+  bool IsURLAllowlisted(const std::string& url) {
+    GURL gurl = GURL(url);
+    CHECK(gurl.is_valid());
+    return filter_.GetFilteringBehaviorForURL(gurl) ==
+           FilteringBehavior::kAllow;
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  SupervisedUserURLFilter filter_ = SupervisedUserURLFilter(
+      base::BindRepeating([](const GURL& url) { return false; }),
+      std::make_unique<FakeURLFilterDelegate>());
+};
+
+// Tests that the new histogram that records www-subdomain conflicts
+// increases only when the corresponding conflict types occurs.
+TEST_P(SupervisedUserURLFilteringWithConflictsTest,
+       PatternsWithSubdomainConflicts) {
+  base::HistogramTester histogram_tester;
+
+  auto host_map = std::get<0>(GetParam());
+  auto conflict_type = std::get<1>(GetParam());
+  filter_.SetManualHosts(std::move(host_map));
+
+  EXPECT_FALSE(IsURLAllowlisted("https://www.google.com"));
+
+  if (conflict_type.has_value()) {
+    histogram_tester.ExpectBucketCount(
+        SupervisedUserURLFilter::
+            GetManagedSiteListConflictTypeHistogramNameForTest(),
+        /*sample=*/conflict_type.value(), /*expected_count=*/1);
+  } else {
+    // When there is no conflict, no entries are recorded.
+    histogram_tester.ExpectTotalCount(
+        SupervisedUserURLFilter::
+            GetManagedSiteListConflictTypeHistogramNameForTest(),
+        /*expected_count=*/0);
+  }
+}
+
+// Tests that conflict tracking histogram records a result for no conflicts
+// even for paths that determine a result and exit early.
+TEST_F(SupervisedUserURLFilteringWithConflictsTest,
+       PatterWithoutConflictOnEarlyExit) {
+  base::HistogramTester histogram_tester;
+  // The host map is empty but the url map contains an exact match.
+  std::map<std::string, bool> host_map;
+  std::map<GURL, bool> url_map =
+      std::map<GURL, bool>({{GURL("https://www.google.com"), true}});
+  filter_.SetManualHosts(std::move(host_map));
+  filter_.SetManualURLs(std::move(url_map));
+
+  EXPECT_TRUE(IsURLAllowlisted("https://www.google.com"));
+
+  // When there is no conflict, no entries as recorded in the conflict type
+  // histogram. A non-conflict entry is recorded on the conflict tracking histogram.
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::
+          GetManagedSiteListConflictTypeHistogramNameForTest(),
+      /*expected_count=*/0);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest(),
+      /*sample=*/0, /*expected_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SubdomainConflicts,
+    SupervisedUserURLFilteringWithConflictsTest,
+    testing::Values(
+        /* Only trivial subdomain conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", true}, {"https://google.com", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"www.google.com", false}, {"https://google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.*", false}, {"google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between google.com and other entries.
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", false},
+                 {"google.com", true},
+                 {"www.google.com", false},
+                 {"http://www.google.com", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between https://google.com and www.google.com.
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.*", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        std::make_tuple(
+            // The collision happens because of the trivial subdomain collision
+            // between https://google.com and www.google.com.
+            std::map<std::string, bool>({{"https://www.google.com", false},
+                                         {"www.google.*", false},
+                                         {"google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictOnly),
+        /* Only other conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"*.google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"*.google.com", false}, {"www.google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://www.google.com", false}, {"www.google.*", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false},
+                 {"https://google.com", true},
+                 {"*.google.com", true}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kOtherConflictOnly),
+        /* No conflicts: */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"http://google.com", false}, {"www.google.com", false}}),
+            std::nullopt),
+        /* Mix of www-subdomain conflicts and other conflicts */
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", false},
+                 {"www.google.com", true},
+                 {"*.google.com", true}}),  // Other conflict entry
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://google.com", true},
+                 {"www.google.com", false},
+                 {"*.google.*", true}}),  // Other conflict entry
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict),
+        std::make_tuple(
+            /* host_map= */ std::map<std::string, bool>(
+                {{"https://www.google.com", true},
+                 {"google.com", false},
+                 {"google.*", true},  // Other conflict entry
+                 {"*.google.*", false}}),
+            SupervisedUserURLFilter::FilteringSubdomainConflictType::
+                kTrivialSubdomainConflictAndOtherConflict)));
 }  // namespace supervised_user

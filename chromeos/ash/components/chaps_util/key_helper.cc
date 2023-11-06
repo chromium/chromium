@@ -7,14 +7,17 @@
 namespace chromeos {
 
 crypto::ScopedSECItem MakeIdFromPubKeyNss(
-    std::vector<CK_BYTE>& public_key_bytes) {
+    const std::vector<uint8_t>& public_key_bytes) {
   SECItem secitem_modulus;
-  secitem_modulus.data = public_key_bytes.data();
+  secitem_modulus.data = const_cast<uint8_t*>(public_key_bytes.data());
   secitem_modulus.len = public_key_bytes.size();
   return crypto::ScopedSECItem(PK11_MakeIDFromPubKey(&secitem_modulus));
 }
 
 std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
+  if (!id || id->len == 0) {
+    return {};
+  }
   return std::vector<uint8_t>(id->data, id->data + id->len);
 }
 

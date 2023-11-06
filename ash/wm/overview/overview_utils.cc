@@ -47,57 +47,25 @@
 namespace ash {
 
 bool IsInOverviewSession() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   return overview_controller && overview_controller->InOverviewSession();
 }
 
 OverviewSession* GetOverviewSession() {
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   return overview_controller && overview_controller->InOverviewSession()
              ? overview_controller->overview_session()
              : nullptr;
 }
 
 bool CanCoverAvailableWorkspace(aura::Window* window) {
+  if (!window) {
+    return false;
+  }
   SplitViewController* split_view_controller = SplitViewController::Get(window);
   if (split_view_controller->InSplitViewMode())
     return split_view_controller->CanSnapWindow(window);
   return WindowState::Get(window)->IsMaximizedOrFullscreenOrPinned();
-}
-
-bool ShouldAnimateWallpaper(aura::Window* root_window) {
-  // |overview_session| will be null on overview exit because we call this
-  // after the animations are done running. Check the mru window list windows in
-  // this case to see if they cover the workspace.
-  OverviewSession* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
-  if (overview_session) {
-    // Never animate when doing app dragging or when immediately exiting.
-    const auto enter_exit_type = overview_session->enter_exit_overview_type();
-    if (enter_exit_type == OverviewEnterExitType::kImmediateEnter ||
-        enter_exit_type == OverviewEnterExitType::kImmediateEnterWithoutFocus ||
-        enter_exit_type == OverviewEnterExitType::kImmediateExit) {
-      return false;
-    }
-
-    OverviewGrid* grid = overview_session->GetGridWithRootWindow(root_window);
-    // If one of the windows covers the workspace, we do not need to animate.
-    for (const auto& overview_item : grid->window_list()) {
-      if (CanCoverAvailableWorkspace(overview_item->GetWindow()))
-        return false;
-    }
-
-    return true;
-  }
-
-  auto windows =
-      Shell::Get()->mru_window_tracker()->BuildWindowForCycleList(kActiveDesk);
-  for (auto* window : windows) {
-    if (window->GetRootWindow() == root_window &&
-        CanCoverAvailableWorkspace(window))
-      return false;
-  }
-  return true;
 }
 
 void FadeInWidgetToOverview(views::Widget* widget,
@@ -115,7 +83,7 @@ void FadeInWidgetToOverview(views::Widget* widget,
   if (observe) {
     auto enter_observer = std::make_unique<EnterAnimationObserver>();
     scoped_overview_animation_settings.AddObserver(enter_observer.get());
-    Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+    OverviewController::Get()->AddEnterAnimationObserver(
         std::move(enter_observer));
   }
 }
@@ -127,7 +95,7 @@ void FadeOutWidgetFromOverview(std::unique_ptr<views::Widget> widget,
   widget->widget_delegate()->SetCanActivate(false);
 
   // The overview controller may be nullptr on shutdown.
-  OverviewController* controller = Shell::Get()->overview_controller();
+  OverviewController* controller = OverviewController::Get();
   if (!controller) {
     widget->SetOpacity(0.f);
     return;
@@ -155,7 +123,7 @@ void ImmediatelyCloseWidgetOnExit(std::unique_ptr<views::Widget> widget) {
   widget.reset();
 }
 
-gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
+gfx::RectF GetUnionScreenBoundsForWindow(aura::Window* window) {
   gfx::RectF bounds;
   for (auto* window_iter :
        window_util::GetVisibleTransientTreeIterator(window)) {
@@ -166,7 +134,7 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
       continue;
     }
     gfx::RectF target_bounds(window_iter->GetTargetBounds());
-    ::wm::TranslateRectToScreen(window_iter->parent(), &target_bounds);
+    wm::TranslateRectToScreen(window_iter->parent(), &target_bounds);
     bounds.Union(target_bounds);
   }
 
@@ -174,7 +142,8 @@ gfx::RectF GetTargetBoundsInScreen(aura::Window* window) {
 }
 
 void SetTransform(aura::Window* window, const gfx::Transform& transform) {
-  const gfx::PointF target_origin(GetTargetBoundsInScreen(window).origin());
+  const gfx::PointF target_origin(
+      GetUnionScreenBoundsForWindow(window).origin());
   for (auto* window_iter :
        window_util::GetVisibleTransientTreeIterator(window)) {
     aura::Window* parent_window = window_iter->parent();
@@ -213,20 +182,6 @@ gfx::Rect GetGridBoundsInScreen(
   auto* split_view_controller = SplitViewController::Get(target_root);
   SplitViewController::State state = split_view_controller->state();
 
-  // `split_view_overview_session` may have started without updating
-  // `split_view_controller->state()`, i.e. from SnapGroupController. Convert
-  // the split view overview session window to a split view state.
-  // TODO(sophiewen): See if we can remove `state` and just check this.
-  if (auto* split_view_overview_session =
-          RootWindowController::ForWindow(target_root)
-              ->split_view_overview_session()) {
-    const chromeos::WindowStateType window_state_type =
-        split_view_overview_session->GetWindowStateType();
-    state = window_state_type == chromeos::WindowStateType::kPrimarySnapped
-                ? SplitViewController::State::kPrimarySnapped
-                : SplitViewController::State::kSecondarySnapped;
-  }
-
   // If we are in splitview mode already just use the given state, otherwise
   // convert `window_dragging_state` to a split view state. Note this will
   // override `state` from `split_view_overview_session` if there is any.
@@ -253,26 +208,43 @@ gfx::Rect GetGridBoundsInScreen(
   // 2. On one window snapped in clamshell mode with feature flag `kSnapGroup`
   // is enabled and feature param `kAutomaticallyLockGroup` is true;
   // 3. On one window snapped in clamshell in overview session.
-  switch (state) {
-    case SplitViewController::State::kPrimarySnapped:
-      bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::SnapPosition::kSecondary,
-          /*window_for_minimum_size=*/nullptr);
-      opposite_position = SplitViewController::SnapPosition::kSecondary;
-      break;
-    case SplitViewController::State::kSecondarySnapped:
-      bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
-          SplitViewController::SnapPosition::kPrimary,
-          /*window_for_minimum_size=*/nullptr);
-      opposite_position = SplitViewController::SnapPosition::kPrimary;
-      break;
-    case SplitViewController::State::kNoSnap:
-      bounds = work_area;
-      break;
-    case SplitViewController::State::kBothSnapped:
-      // When this function is called, SplitViewController should have already
-      // handled the state change.
-      NOTREACHED();
+
+  // When `kFasterSplitScreenSetup` or `kSnapGroup` is enabled, we would only
+  // reach here if overview is in session and there is no divider.
+  // TODO(b/296935443): Consolidate split view bounds calculations.
+  if (window_util::IsFasterSplitScreenOrSnapGroupArm1Enabled() &&
+      !Shell::Get()->IsInTabletMode()) {
+    bounds = work_area;
+    if (auto* split_view_overview_session =
+            RootWindowController::ForWindow(target_root)
+                ->split_view_overview_session()) {
+      gfx::Rect target_bounds_in_screen(
+          split_view_overview_session->window()->GetTargetBounds());
+      wm::ConvertRectToScreen(target_root, &target_bounds_in_screen);
+      bounds.Subtract(target_bounds_in_screen);
+    }
+  } else {
+    switch (state) {
+      case SplitViewController::State::kPrimarySnapped:
+        bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
+            SplitViewController::SnapPosition::kSecondary,
+            /*window_for_minimum_size=*/nullptr);
+        opposite_position = SplitViewController::SnapPosition::kSecondary;
+        break;
+      case SplitViewController::State::kSecondarySnapped:
+        bounds = split_view_controller->GetSnappedWindowBoundsInScreen(
+            SplitViewController::SnapPosition::kPrimary,
+            /*window_for_minimum_size=*/nullptr);
+        opposite_position = SplitViewController::SnapPosition::kPrimary;
+        break;
+      case SplitViewController::State::kNoSnap:
+        bounds = work_area;
+        break;
+      case SplitViewController::State::kBothSnapped:
+        // When this function is called, SplitViewController should have already
+        // handled the state change.
+        NOTREACHED();
+    }
   }
 
   // Hotseat overlaps the work area / split view bounds when extended, but in
@@ -288,8 +260,7 @@ gfx::Rect GetGridBoundsInScreen(
     // the hotseat state does not get updated until the window gets dragged a
     // bit. In this case, determine whether the hotseat will be extended to
     // avoid doing a expensive double grid layout.
-    auto* overview_session =
-        Shell::Get()->overview_controller()->overview_session();
+    auto* overview_session = OverviewController::Get()->overview_session();
     const bool hotseat_will_extend =
         overview_session && overview_session->ShouldEnterWithoutAnimations() &&
         !split_view_controller->InSplitViewMode();
@@ -341,8 +312,7 @@ absl::optional<gfx::RectF> GetSplitviewBoundsMaintainingAspectRatio() {
     return absl::nullopt;
   if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
     return absl::nullopt;
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   DCHECK(overview_session);
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   DCHECK(overview_session->GetGridWithRootWindow(root_window)
@@ -374,14 +344,33 @@ gfx::Rect ToStableSizeRoundedRect(const gfx::RectF& rect) {
 }
 
 void MoveFocusToView(OverviewFocusableView* target_view) {
-  auto* overview_session =
-      Shell::Get()->overview_controller()->overview_session();
+  auto* overview_session = OverviewController::Get()->overview_session();
   CHECK(overview_session);
 
   auto* focus_cycler = overview_session->focus_cycler();
   CHECK(focus_cycler);
 
   focus_cycler->MoveFocusToView(target_view);
+}
+
+void SetWindowsVisibleDuringItemDragging(const aura::Window::Windows& windows,
+                                         bool visible,
+                                         bool animate) {
+  float new_opacity = visible ? 1.f : 0.f;
+  for (auto* window : windows) {
+    ui::Layer* layer = window->layer();
+    if (layer->GetTargetOpacity() == new_opacity) {
+      continue;
+    }
+
+    if (animate) {
+      ScopedOverviewAnimationSettings settings(
+          OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG, window);
+      layer->SetOpacity(new_opacity);
+    } else {
+      layer->SetOpacity(new_opacity);
+    }
+  }
 }
 
 }  // namespace ash

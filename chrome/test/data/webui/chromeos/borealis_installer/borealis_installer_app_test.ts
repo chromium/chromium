@@ -8,6 +8,7 @@ import {BorealisInstallerAppElement} from 'chrome://borealis-installer/app.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://borealis-installer/borealis_installer.mojom-webui.js';
 import {InstallResult} from 'chrome://borealis-installer/borealis_types.mojom-webui.js';
 import {BrowserProxy} from 'chrome://borealis-installer/browser_proxy.js';
+import {BorealisInstallerErrorDialogElement} from 'chrome://borealis-installer/error_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
@@ -98,6 +99,78 @@ suite('<borealis-installer-app>', async () => {
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 0);
     await clickButton('launch');
     assertEquals(fakeBrowserProxy.handler.getCallCount('launch'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+  });
+
+  test('errorAndRetry', async () => {
+    await clickButton('install');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
+    await flushTasks();
+    fakeBrowserProxy.page.onInstallFinished(InstallResult.kOffline);
+    await flushTasks();
+    const errorDialog: BorealisInstallerErrorDialogElement =
+        shadowRoot().querySelector('borealis-installer-error-dialog')!;
+    assertTrue(errorDialog.isDialogOpen);
+    errorDialog.shadowRoot!.getElementById('retry')!.click();
+    await flushTasks();
+    assertFalse(errorDialog.isDialogOpen);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 2);
+  });
+
+  test('errorOpenStorage', async () => {
+    await clickButton('install');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
+    await flushTasks();
+    fakeBrowserProxy.page.onInstallFinished(InstallResult.kDlcNeedSpaceError);
+    await flushTasks();
+    const errorDialog: BorealisInstallerErrorDialogElement =
+        shadowRoot().querySelector('borealis-installer-error-dialog')!;
+    assertTrue(errorDialog.isDialogOpen);
+    errorDialog.shadowRoot!.getElementById('storage')!.click();
+    assertFalse(errorDialog.isDialogOpen);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('openStoragePage'), 1);
+  });
+
+  test('errorAndCancel', async () => {
+    await clickButton('install');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    fakeBrowserProxy.page.onProgressUpdate(0.5, '3 seconds left');
+    await flushTasks();
+    fakeBrowserProxy.page.onInstallFinished(InstallResult.kOffline);
+    await flushTasks();
+    const errorDialog: BorealisInstallerErrorDialogElement =
+        shadowRoot().querySelector('borealis-installer-error-dialog')!;
+    assertTrue(errorDialog.isDialogOpen);
+    errorDialog.shadowRoot!.getElementById('cancel')!.click();
+    await flushTasks();
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+  });
+
+  test('cancelBeforeLaunch', async () => {
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
+
+    await clickButton('install');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+
+    fakeBrowserProxy.page.onInstallFinished(InstallResult.kSuccess);
+    await flushTasks();
+    await clickButton('cancel');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
+    assertEquals(fakeBrowserProxy.handler.getCallCount('shutDown'), 1);
+  });
+
+  test('cancelDuringInstall', async () => {
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 0);
+
+    await clickButton('install');
+    assertEquals(fakeBrowserProxy.handler.getCallCount('install'), 1);
+
+    await clickButton('cancel');
+    await flushTasks();
+    assertEquals(fakeBrowserProxy.handler.getCallCount('cancelInstall'), 1);
     assertEquals(fakeBrowserProxy.handler.getCallCount('onPageClosed'), 1);
   });
 });

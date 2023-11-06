@@ -231,6 +231,7 @@ ChromeCameraAppUIDelegate::StorageMonitor::GetCurrentStatus() {
   auto current_storage = base::SysInfo::AmountOfFreeDiskSpace(monitor_path_);
   auto status = StorageMonitorStatus::NORMAL;
   if (current_storage < 0) {
+    LOG(ERROR) << "Failed to get the amount of free disk space.";
     status = StorageMonitorStatus::ERROR;
   } else if (current_storage < kStorageCriticallyLowThreshold) {
     status = StorageMonitorStatus::CRITICALLY_LOW;
@@ -328,10 +329,6 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
   source->AddString("board_name", base::SysInfo::GetLsbReleaseBoard());
   source->AddString("device_type",
                     DeviceTypeToString(chromeos::GetDeviceType()));
-  source->AddBoolean("timeLapse", base::FeatureList::IsEnabled(
-                                      ash::features::kCameraAppTimeLapse));
-  source->AddBoolean("jelly",
-                     base::FeatureList::IsEnabled(chromeos::features::kJelly));
 
   const PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
   source->AddBoolean("video_capture_disallowed",
@@ -348,6 +345,7 @@ void ChromeCameraAppUIDelegate::PopulateLoadTimeData(
 
   source->AddString("browser_version",
                     std::string(version_info::GetVersionNumber()));
+  source->AddString("os_version", base::SysInfo::OperatingSystemVersion());
 }
 
 bool ChromeCameraAppUIDelegate::IsMetricsAndCrashReportingEnabled() {
@@ -450,6 +448,8 @@ void ChromeCameraAppUIDelegate::MaybeTriggerSurvey() {
 void ChromeCameraAppUIDelegate::StartStorageMonitor(
     base::RepeatingCallback<void(StorageMonitorStatus)> monitor_callback) {
   if (!storage_monitor_) {
+    LOG(ERROR) << "Failed to start monitoring storage due to missing monitor "
+                  "instance.";
     monitor_callback.Run(StorageMonitorStatus::ERROR);
     return;
   }

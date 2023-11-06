@@ -393,7 +393,7 @@ TEST(CookieUtilTest, TestCookieDateParsing) {
       continue;
     }
     EXPECT_TRUE(!parsed_time.is_null()) << test.str;
-    EXPECT_EQ(test.epoch, parsed_time.ToDoubleT()) << test.str;
+    EXPECT_EQ(test.epoch, parsed_time.InSecondsFSinceUnixEpoch()) << test.str;
   }
 }
 

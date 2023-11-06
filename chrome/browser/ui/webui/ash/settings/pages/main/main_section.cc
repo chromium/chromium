@@ -18,13 +18,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/main/send_search_feedback_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
 #include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/main/send_search_feedback_handler.h"
 #include "chrome/browser/ui/webui/settings/browser_lifetime_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -140,6 +140,7 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"endTime", IDS_SETTINGS_END_TIME},
       {"extensionsLinkTooltip", IDS_SETTINGS_MENU_EXTENSIONS_LINK_TOOLTIP},
       {"learnMore", IDS_LEARN_MORE},
+      {"listSeparator", IDS_OS_SETTINGS_LIST_SEPARATOR},
       {"shortcutBannerDismissed", IDS_SETTINGS_SHORTCUT_BANNER_DISMISSED},
       {"manage", IDS_SETTINGS_MANAGE},
       {"menu", IDS_MENU},

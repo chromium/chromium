@@ -127,11 +127,6 @@ constexpr int kSystemMenuCollapseExpandAnimationDurationMs = 500;
 
 constexpr auto kUnifiedMenuItemPadding = gfx::Insets::TLBR(0, 16, 16, 16);
 constexpr auto kUnifiedSystemInfoViewPadding = gfx::Insets::TLBR(0, 16, 16, 16);
-constexpr auto kUnifiedSliderRowPadding = gfx::Insets::TLBR(0, 12, 8, 16);
-constexpr auto kUnifiedSliderBubblePadding = gfx::Insets::TLBR(12, 0, 4, 0);
-constexpr auto kUnifiedSliderPadding = gfx::Insets::VH(0, 16);
-constexpr auto kMicGainSliderViewPadding = gfx::Insets::TLBR(0, 52, 8, 0);
-constexpr auto kMicGainSliderPadding = gfx::Insets::TLBR(0, 8, 0, 48);
 constexpr int kSliderChildrenViewSpacing = 8;
 
 // Constants used in the QuickSettingsSlider of the `QuickSettingsView`.

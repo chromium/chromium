@@ -34,7 +34,7 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
   base::TimeDelta contentful_paint = base::Milliseconds(1);
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = contentful_paint;
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.parse_timing->parse_stop = base::Milliseconds(100);
@@ -75,7 +75,7 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, NoPossibleBlock) {
   base::TimeDelta contentful_paint = base::Milliseconds(1);
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = contentful_paint;
   PopulateRequiredTimingFields(&timing);
 

@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/price_notifications/cells/price_notifications_table_view_item.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_consumer.h"
 #import "ios/chrome/browser/ui/price_notifications/test_price_notifications_mutator.h"
@@ -29,7 +29,7 @@ NSUInteger ItemTypeListItem = 102;
 
 template <typename T>
 // Returns the TableViewHeaderFooterItem `T` from `section_id`.
-T* GetHeaderItemFromSection(ChromeTableViewController* controller,
+T* GetHeaderItemFromSection(LegacyChromeTableViewController* controller,
                             NSUInteger section_id) {
   return base::apple::ObjCCastStrict<T>([controller.tableViewModel
       headerForSectionIndex:[controller.tableViewModel
@@ -53,9 +53,9 @@ NSArray<PriceNotificationsTableViewItem*>* GetItemsFromSection(
 }  // namespace
 
 class PriceNotificationsTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  public:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[PriceNotificationsTableViewController alloc]
         initWithStyle:UITableViewStylePlain];
   }

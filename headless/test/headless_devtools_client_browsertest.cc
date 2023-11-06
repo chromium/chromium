@@ -530,7 +530,7 @@ class DomTreeExtractionBrowserTest : public HeadlessDevTooledBrowserTest {
 
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
 
     CompareToGolden(
         dom_nodes,

@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="1178581264944972037">Пауза</translation>
+<translation id="2558806128245168542">Навигиране назад</translation>
 <translation id="3523426587027570423">Докоснете, за да затворите плейъра „Слушане на тази страница“.</translation>
+<translation id="4431240646217225907">Открояване на текст и автоматично превъртане</translation>
 <translation id="4654641641922242357">Плейър „Слушане на тази страница“.</translation>
 <translation id="4731877163452936634">Скорост на възпроизвеждане: <ph name="PLAYBACK_SPEED" />. Кликнете за промяна.</translation>
 <translation id="5234971936051226002">Плейърът „Слушане на тази страница“ е намален.</translation>
 <translation id="5596627076506792578">Още опции</translation>
+<translation id="6315170314923504164">Глас</translation>
+<translation id="6550675742724504774">Опции</translation>
 <translation id="6790428901817661496">Пускане</translation>
+<translation id="6831043979455480757">Превод</translation>
 <translation id="6846298663435243399">Зарежда се…</translation>
 <translation id="7587250070160020374">Сега слушате Chrome</translation>
 <translation id="7945822420239537236">Превъртане с(ъс) <ph name="NUMBER_OF_SECONDS" /> секунди напред</translation>

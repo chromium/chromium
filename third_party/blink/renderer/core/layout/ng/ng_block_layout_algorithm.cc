@@ -11,12 +11,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_positioned_float.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_utils.h"
+#include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -62,7 +62,7 @@ bool HasLineEvenIfEmpty(LayoutBox* box) {
   }
   if (AreNGBlockFlowChildrenInline(block_flow)) {
     return block_flow->HasLineIfEmpty() &&
-           NGInlineNode(block_flow).IsBlockLevel();
+           InlineNode(block_flow).IsBlockLevel();
   }
   if (const auto* const flow_thread = block_flow->MultiColumnFlowThread()) {
     DCHECK(!flow_thread->ChildrenInline());
@@ -108,8 +108,8 @@ inline const NGLayoutResult* LayoutInflow(
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path,
     NGLayoutInputNode* node,
-    NGInlineChildLayoutContext* context) {
-  if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
+    InlineChildLayoutContext* context) {
+  if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     return inline_node->Layout(space, break_token, column_spanner_path,
                                context);
   }
@@ -248,7 +248,7 @@ NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
       ignore_line_clamp_(false),
       is_line_clamp_context_(params.space.IsLineClampContext()),
       lines_until_clamp_(params.space.LinesUntilClamp()) {
-  container_builder_.SetExclusionSpace(params.space.ExclusionSpace());
+  container_builder_.SetExclusionSpace(params.space.GetExclusionSpace());
 
   // If this node has a column spanner inside, we'll force it to stay within the
   // current fragmentation flow, so that it doesn't establish a parallel flow,
@@ -352,13 +352,13 @@ MinMaxSizesResult NGBlockLayoutAlgorithm::ComputeMinMaxSizes(
 
     MinMaxSizesResult child_result;
     if (child.IsInline()) {
-      // From |NGBlockLayoutAlgorithm| perspective, we can handle |NGInlineNode|
-      // almost the same as |NGBlockNode|, because an |NGInlineNode| includes
+      // From |NGBlockLayoutAlgorithm| perspective, we can handle |InlineNode|
+      // almost the same as |NGBlockNode|, because an |InlineNode| includes
       // all inline nodes following |child| and their descendants, and produces
       // an anonymous box that contains all line boxes.
       // |NextSibling| returns the next block sibling, or nullptr, skipping all
       // following inline siblings and descendants.
-      child_result = To<NGInlineNode>(child).ComputeMinMaxSizes(
+      child_result = To<InlineNode>(child).ComputeMinMaxSizes(
           Style().GetWritingMode(), space, child_float_input);
     } else {
       child_result = ComputeMinAndMaxContentContribution(
@@ -475,7 +475,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // Inline children require an inline child layout context to be
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
-  NGInlineNode inline_child(nullptr);
+  InlineNode inline_child(nullptr);
   if (Node().IsInlineFormattingContextRoot(&inline_child)) {
     result = LayoutInlineChild(inline_child);
   } else {
@@ -520,7 +520,7 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
 }
 
 const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
-    const NGInlineNode& node) {
+    const InlineNode& node) {
   const TextWrap wrap = node.Style().GetTextWrap();
   if (UNLIKELY(wrap == TextWrap::kPretty)) {
     DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
@@ -542,8 +542,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
 
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
-    const NGInlineNode& child) {
-  NGSimpleInlineChildLayoutContext context(child, &container_builder_);
+    const InlineNode& child) {
+  SimpleInlineChildLayoutContext context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
@@ -551,9 +551,8 @@ NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
 template <wtf_size_t capacity>
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
-    const NGInlineNode& child) {
-  NGOptimalInlineChildLayoutContext<capacity> context(child,
-                                                      &container_builder_);
+    const InlineNode& child) {
+  OptimalInlineChildLayoutContext<capacity> context(child, &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
@@ -572,7 +571,7 @@ NGBlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
 }
 
 inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
-    NGInlineChildLayoutContext* inline_child_layout_context) {
+    InlineChildLayoutContext* inline_child_layout_context) {
   DCHECK_EQ(!!inline_child_layout_context,
             Node().IsInlineFormattingContextRoot());
   container_builder_.SetIsInlineFormattingContext(inline_child_layout_context);
@@ -702,7 +701,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // Try to reuse line box fragments from cached fragments if possible.
   // When possible, this adds fragments to |container_builder_| and update
   // |previous_inflow_position| and |BreakToken()|.
-  const NGInlineBreakToken* previous_inline_break_token = nullptr;
+  const InlineBreakToken* previous_inline_break_token = nullptr;
 
   NGBlockChildIterator child_iterator(Node().FirstChild(), BreakToken());
 
@@ -851,7 +850,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
   // all parallel flows from incoming break tokens means that we'll never get
   // the opportunity to handle them again. We don't repropagate unhandled
   // incoming break tokens, and there should be no need to.
-  if (auto* inline_token = DynamicTo<NGInlineBreakToken>(entry.token)) {
+  if (auto* inline_token = DynamicTo<InlineBreakToken>(entry.token)) {
     DCHECK(!inline_token->IsInParallelBlockFlow());
   } else if (auto* block_token = DynamicTo<NGBlockBreakToken>(entry.token)) {
     // A column spanner forces all content preceding it to stay in the same
@@ -909,7 +908,7 @@ inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
 
 const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context) {
+    InlineChildLayoutContext* inline_child_layout_context) {
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
   MarginStrut end_margin_strut = previous_inflow_position->margin_strut;
 
@@ -949,9 +948,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
   // If the current layout is a new formatting context, we need to encapsulate
   // all of our floats.
   if (ConstraintSpace().IsNewFormattingContext()) {
-    intrinsic_block_size_ = std::max(
-        intrinsic_block_size_,
-        ExclusionSpace().ClearanceOffsetIncludingInitialLetter(EClear::kBoth));
+    intrinsic_block_size_ =
+        std::max(intrinsic_block_size_,
+                 GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+                     EClear::kBoth));
   }
 
   LayoutUnit block_end_border_padding = BorderScrollbarPadding().block_end;
@@ -1148,8 +1148,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   // At this point, perform any final table-cell adjustments needed.
   if (ConstraintSpace().IsTableCell()) {
-    NGTableAlgorithmUtils::FinalizeTableCellLayout(intrinsic_block_size_,
-                                                   &container_builder_);
+    FinalizeTableCellLayout(intrinsic_block_size_, &container_builder_);
   }
 
   if (Style().AlignContentBlockCenter() &&
@@ -1169,7 +1168,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 
   // An exclusion space is confined to nodes within the same formatting context.
   if (ConstraintSpace().IsNewFormattingContext())
-    container_builder_.SetExclusionSpace(NGExclusionSpace());
+    container_builder_.SetExclusionSpace(ExclusionSpace());
   else
     container_builder_.SetLinesUntilClamp(lines_until_clamp_);
 
@@ -1180,9 +1179,9 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
 }
 
 bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
-    NGInlineNode inline_node,
+    InlineNode inline_node,
     NGPreviousInflowPosition* previous_inflow_position,
-    const NGInlineBreakToken** inline_break_token_out) {
+    const InlineBreakToken** inline_break_token_out) {
   DCHECK(previous_result_);
 
   // No lines are reusable if this block uses `NGParagraphLineBreaker`.
@@ -1192,14 +1191,14 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   const auto& previous_fragment =
       To<NGPhysicalBoxFragment>(previous_result_->PhysicalFragment());
-  const NGFragmentItems* previous_items = previous_fragment.Items();
+  const FragmentItems* previous_items = previous_fragment.Items();
   DCHECK(previous_items);
 
   // Find reusable lines. Fail if no items are reusable.
   // TODO(kojii): |DirtyLinesFromNeedsLayout| is needed only once for a
   // |LayoutBlockFlow|, not for every fragment.
-  NGFragmentItems::DirtyLinesFromNeedsLayout(*inline_node.GetLayoutBlockFlow());
-  const NGFragmentItem* end_item =
+  FragmentItems::DirtyLinesFromNeedsLayout(*inline_node.GetLayoutBlockFlow());
+  const FragmentItem* end_item =
       previous_items->EndOfReusableItems(previous_fragment);
   DCHECK(end_item);
   if (!end_item || end_item == &previous_items->front())
@@ -1216,7 +1215,7 @@ bool NGBlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
   const auto& children = container_builder_.Children();
   const wtf_size_t children_before = children.size();
-  NGFragmentItemsBuilder* items_builder = container_builder_.ItemsBuilder();
+  FragmentItemsBuilder* items_builder = container_builder_.ItemsBuilder();
   const NGConstraintSpace& space = ConstraintSpace();
   DCHECK_EQ(items_builder->GetWritingDirection(), space.GetWritingDirection());
   const auto result =
@@ -1303,7 +1302,7 @@ void NGBlockLayoutAlgorithm::HandleOutOfFlowPositioned(
         origin_bfc_block_offset};
 
     static_offset.inline_offset += CalculateOutOfFlowStaticInlineLevelOffset(
-        Style(), origin_bfc_offset, ExclusionSpace(),
+        Style(), origin_bfc_offset, GetExclusionSpace(),
         ChildAvailableSize().inline_size);
   }
 
@@ -1366,7 +1365,7 @@ void NGBlockLayoutAlgorithm::HandleFloat(
   }
 
   NGPositionedFloat positioned_float =
-      PositionFloat(&unpositioned_float, &ExclusionSpace());
+      PositionFloat(&unpositioned_float, &GetExclusionSpace());
 
   if (positioned_float.minimum_space_shortage > LayoutUnit()) {
     container_builder_.PropagateSpaceShortage(
@@ -1436,7 +1435,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   // margin non-adjoining. This is akin to clearance.
   MarginStrut adjoining_margin_strut(previous_inflow_position->margin_strut);
   adjoining_margin_strut.Append(child_data.margins.block_start,
-                                child_style.HasMarginBeforeQuirk());
+                                child_style.HasMarginBlockStartQuirk());
   LayoutUnit adjoining_bfc_offset_estimate =
       child_data.bfc_offset_estimate.block_offset +
       adjoining_margin_strut.Sum();
@@ -1493,7 +1492,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
     // position if it is adjoining.
     if (!child_margin_got_separated) {
       SetSubtreeModifiedMarginStrutIfNeeded(
-          &child_style.MarginBeforeUsing(Style()));
+          &child_style.MarginBlockStartUsing(Style()));
     }
 
     if (!ResolveBfcBlockOffset(previous_inflow_position,
@@ -1610,10 +1609,12 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   container_builder_.AddResult(*layout_result, logical_offset,
                                resolved_margins);
 
-  *previous_inflow_position = ComputeInflowPosition(
-      *previous_inflow_position, child, child_data,
-      child_bfc_offset.block_offset, logical_offset, *layout_result, fragment,
-      /* self_collapsing_child_had_clearance */ false);
+  if (!child_break_token || !child_break_token->IsInParallelFlow()) {
+    *previous_inflow_position = ComputeInflowPosition(
+        *previous_inflow_position, child, child_data,
+        child_bfc_offset.block_offset, logical_offset, *layout_result, fragment,
+        /* self_collapsing_child_had_clearance */ false);
+  }
 
   if (ConstraintSpace().HasBlockFragmentation() &&
       !has_break_opportunity_before_next_child_) {
@@ -1641,15 +1642,15 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
   if (!IsBreakInside(child_break_token)) {
     // The origin offset is where we should start looking for layout
     // opportunities. It needs to be adjusted by the child's clearance.
-    AdjustToClearance(ExclusionSpace().ClearanceOffsetIncludingInitialLetter(
+    AdjustToClearance(GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
                           child_style.Clear(style)),
                       &origin_offset);
   }
   DCHECK(container_builder_.BfcBlockOffset());
 
   LayoutOpportunityVector opportunities =
-      ExclusionSpace().AllLayoutOpportunities(origin_offset,
-                                              ChildAvailableSize().inline_size);
+      GetExclusionSpace().AllLayoutOpportunities(
+          origin_offset, ChildAvailableSize().inline_size);
 
   // We should always have at least one opportunity.
   DCHECK_GT(opportunities.size(), 0u);
@@ -1726,7 +1727,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
 
     // All formatting context roots (like this child) should start with an empty
     // exclusion space.
-    DCHECK(child_space.ExclusionSpace().IsEmpty());
+    DCHECK(child_space.GetExclusionSpace().IsEmpty());
 
     const NGLayoutResult* layout_result = LayoutBlockChild(
         child_space, child_break_token, early_break_,
@@ -1734,7 +1735,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
 
     // Since this child establishes a new formatting context, no exclusion space
     // should be returned.
-    DCHECK(layout_result->ExclusionSpace().IsEmpty());
+    DCHECK(layout_result->GetExclusionSpace().IsEmpty());
 
     DCHECK_EQ(layout_result->Status(), NGLayoutResult::kSuccess);
 
@@ -1767,8 +1768,8 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
                                 fragment.InlineSize() -
                                 auto_margins.inline_start;
     } else {
-      if (child_style.MarginStartUsing(style).IsAuto() ||
-          child_style.MarginEndUsing(style).IsAuto()) {
+      if (child_style.MarginInlineStartUsing(style).IsAuto() ||
+          child_style.MarginInlineEndUsing(style).IsAuto()) {
         has_auto_margins = true;
         ResolveInlineAutoMargins(child_style, style,
                                  child_available_inline_size,
@@ -1827,10 +1828,10 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
                                    fragment.InlineSize(),
                                    container_builder_.InlineSize(), direction) -
           BorderScrollbarPadding().inline_start;
-      if (child_style.MarginStartUsing(style).IsAuto()) {
+      if (child_style.MarginInlineStartUsing(style).IsAuto()) {
         resolved_margins.inline_start = inline_offset;
       }
-      if (child_style.MarginEndUsing(style).IsAuto()) {
+      if (child_style.MarginInlineEndUsing(style).IsAuto()) {
         resolved_margins.inline_end = ChildAvailableSize().inline_size -
                                       inline_offset - fragment.InlineSize();
       }
@@ -1849,14 +1850,14 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     NGLayoutInputNode child,
     const NGBreakToken* child_break_token,
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    InlineChildLayoutContext* inline_child_layout_context,
+    const InlineBreakToken** previous_inline_break_token) {
   DCHECK(child);
   DCHECK(!child.IsFloating());
   DCHECK(!child.IsOutOfFlowPositioned());
   DCHECK(!child.CreatesNewFormattingContext());
 
-  auto* child_inline_node = DynamicTo<NGInlineNode>(child);
+  auto* child_inline_node = DynamicTo<InlineNode>(child);
   if (child_inline_node) {
     // Add reusable line boxes from |previous_result_| if any.
     if (!abort_when_bfc_block_offset_updated_ && !child_break_token &&
@@ -1896,7 +1897,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
     // force this placement of this child.
     if (has_clearance_past_adjoining_floats) {
       forced_bfc_block_offset =
-          ExclusionSpace().ClearanceOffset(child.Style().Clear(Style()));
+          GetExclusionSpace().ClearanceOffset(child.Style().Clear(Style()));
       is_pushed_by_floats = true;
     }
   }
@@ -1933,8 +1934,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     const NGLayoutResult* layout_result,
     NGInflowChildData* child_data,
     NGPreviousInflowPosition* previous_inflow_position,
-    NGInlineChildLayoutContext* inline_child_layout_context,
-    const NGInlineBreakToken** previous_inline_break_token) {
+    InlineChildLayoutContext* inline_child_layout_context,
+    const InlineBreakToken** previous_inline_break_token) {
   absl::optional<LayoutUnit> child_bfc_block_offset =
       layout_result->BfcBlockOffset();
 
@@ -2070,7 +2071,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
   if (self_collapsing_child_had_clearance) {
     MarginStrut margin_strut;
     margin_strut.Append(child_data->margins.block_start,
-                        child.Style().HasMarginBeforeQuirk());
+                        child.Style().HasMarginBlockStartQuirk());
 
     // We only need to relayout if the new margin strut is different to the
     // previous one.
@@ -2176,7 +2177,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
 
   // It is now safe to update our version of the exclusion space, and any
   // propagated adjoining floats.
-  container_builder_.SetExclusionSpace(layout_result->ExclusionSpace());
+  container_builder_.SetExclusionSpace(layout_result->GetExclusionSpace());
 
   // Only self-collapsing children should have adjoining objects.
   DCHECK(!layout_result->AdjoiningObjectTypes() || is_self_collapsing);
@@ -2237,14 +2238,16 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     container_builder_.AddResult(*layout_result, logical_offset);
   }
 
-  *previous_inflow_position = ComputeInflowPosition(
-      *previous_inflow_position, child, *child_data, child_bfc_block_offset,
-      logical_offset, *layout_result, fragment,
-      self_collapsing_child_had_clearance);
+  if (!child_break_token || !child_break_token->IsInParallelFlow()) {
+    *previous_inflow_position = ComputeInflowPosition(
+        *previous_inflow_position, child, *child_data, child_bfc_block_offset,
+        logical_offset, *layout_result, fragment,
+        self_collapsing_child_had_clearance);
+  }
 
   if (child.IsInline()) {
     *previous_inline_break_token =
-        To<NGInlineBreakToken>(physical_fragment.BreakToken());
+        To<InlineBreakToken>(physical_fragment.BreakToken());
   } else {
     *previous_inline_break_token = nullptr;
   }
@@ -2316,9 +2319,9 @@ NGInflowChildData NGBlockLayoutAlgorithm::ComputeChildData(
   }
 
   margin_strut.Append(margins.block_start,
-                      child.Style().HasMarginBeforeQuirk());
+                      child.Style().HasMarginBlockStartQuirk());
   if (child.IsBlock())
-    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBefore());
+    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBlockStart());
 
   BfcOffset child_bfc_offset = {
       ConstraintSpace().GetBfcOffset().line_offset +
@@ -2407,7 +2410,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     //  - There are no following child boxes and this container has block-end
     //    padding.
     //
-    // See NGInlineLayoutAlgorithm::CreateLine() and
+    // See InlineLayoutAlgorithm::CreateLine() and
     // BlockLayoutAlgorithm::Layout().
     logical_block_offset = logical_offset.block_offset + fragment.BlockSize() +
                            std::max(layout_result.AnnotationOverflow(),
@@ -2420,11 +2423,11 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
   // margin. E.g.
   // <ol style="margin-bottom: 20px"></ol>
   bool is_quirky =
-      (is_self_collapsing && child.Style().HasMarginBeforeQuirk()) ||
-      child.Style().HasMarginAfterQuirk();
+      (is_self_collapsing && child.Style().HasMarginBlockStartQuirk()) ||
+      child.Style().HasMarginBlockEndQuirk();
   margin_strut.Append(child_data.margins.block_end, is_quirky);
   if (child.IsBlock())
-    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginAfter());
+    SetSubtreeModifiedMarginStrutIfNeeded(&child.Style().MarginBlockEnd());
 
   if (UNLIKELY(ConstraintSpace().HasBlockFragmentation())) {
     // If the child broke inside, don't apply any trailing margin, since it's
@@ -2758,8 +2761,8 @@ BoxStrut NGBlockLayoutAlgorithm::CalculateMargins(
   const LayoutUnit available_space = ChildAvailableSize().inline_size;
 
   LayoutUnit text_align_offset;
-  if (child_style.MarginStartUsing(style).IsAuto() ||
-      child_style.MarginEndUsing(style).IsAuto()) {
+  if (child_style.MarginInlineStartUsing(style).IsAuto() ||
+      child_style.MarginInlineEndUsing(style).IsAuto()) {
     // Resolve auto-margins.
     ResolveInlineAutoMargins(child_style, style, available_space,
                              ChildInlineSize(), &margins);
@@ -2888,7 +2891,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
       clearance_offset = ConstraintSpace().ClearanceOffset();
     if (child.IsBlock()) {
       LayoutUnit child_clearance_offset =
-          ExclusionSpace().ClearanceOffset(child_style.Clear(Style()));
+          GetExclusionSpace().ClearanceOffset(child_style.Clear(Style()));
       clearance_offset = std::max(clearance_offset, child_clearance_offset);
     }
   }
@@ -2905,7 +2908,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (!is_new_fc) {
     builder.SetMarginStrut(child_data.margin_strut);
     builder.SetBfcOffset(child_data.bfc_offset_estimate);
-    builder.SetExclusionSpace(ExclusionSpace());
+    builder.SetExclusionSpace(GetExclusionSpace());
     if (!has_bfc_block_offset) {
       builder.SetAdjoiningObjectTypes(
           container_builder_.AdjoiningObjectTypes());
@@ -2947,7 +2950,7 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
 void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
     const NGPhysicalFragment& child,
     LayoutUnit block_offset) {
-  const auto& line_box = To<NGPhysicalLineBoxFragment>(child);
+  const auto& line_box = To<PhysicalLineBoxFragment>(child);
 
   // Skip over a line-box which is empty. These don't have any baselines
   // which should be added.
@@ -2961,8 +2964,8 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromLineBox(
   if (UNLIKELY(line_box.IsBlockInInline())) {
     // Block-in-inline may have different first/last baselines.
     DCHECK(container_builder_.ItemsBuilder());
-    const NGLogicalLineItems& items =
-        container_builder_.ItemsBuilder()->LogicalLineItems(line_box);
+    const auto& items =
+        container_builder_.ItemsBuilder()->GetLogicalLineItems(line_box);
     const NGLayoutResult* result = items.BlockInInlineLayoutResult();
     DCHECK(result);
     PropagateBaselineFromBlockChild(result->PhysicalFragment(),
@@ -2990,7 +2993,7 @@ void NGBlockLayoutAlgorithm::PropagateBaselineFromBlockChild(
 
   // When computing baselines for an inline-block, table's don't contribute any
   // baselines.
-  if (child.IsTableNG() &&
+  if (child.IsTable() &&
       baseline_algorithm == NGBaselineAlgorithmType::kInlineBlock) {
     return;
   }
@@ -3116,7 +3119,7 @@ NGBlockLayoutAlgorithm::CalculateQuirkyBodyMarginBlockSum(
     return end_margin_strut.Sum() + block_end_margin;
 
   MarginStrut body_strut = end_margin_strut;
-  body_strut.Append(block_end_margin, Style().HasMarginAfterQuirk());
+  body_strut.Append(block_end_margin, Style().HasMarginBlockEndQuirk());
   return *container_builder_.BfcBlockOffset() -
          ConstraintSpace().GetBfcOffset().block_offset + body_strut.Sum();
 }

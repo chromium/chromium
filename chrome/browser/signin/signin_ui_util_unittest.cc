@@ -404,12 +404,91 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithOneTab) {
 }
 
 TEST_F(SigninUiUtilTest, GetOrderedAccountsForDisplay) {
-  // Should start off with no accounts.
-  std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
-      profile(), /*restrict_to_accounts_eligible_for_sync=*/true);
-  EXPECT_TRUE(accounts.empty());
+  signin::IdentityManager* identity_manager_empty =
+      IdentityManagerFactory::GetForProfile(profile());
+  std::vector<AccountInfo> accounts_empty = GetOrderedAccountsForDisplay(
+      identity_manager_empty, /*restrict_to_accounts_eligible_for_sync=*/true);
+  EXPECT_TRUE(accounts_empty.empty());
 
-  // TODO(tangltom): Flesh out this test.
+  // Fill with accounts.
+  const char kTestEmail1[] = "me1@gmail.com";
+  const char kTestEmail2[] = "me2@gmail.com";
+  const char kTestEmail3[] = "me3@gmail.com";
+  const char kTestEmail4[] = "me4@gmail.com";
+
+  network::TestURLLoaderFactory url_loader_factory_ =
+      network::TestURLLoaderFactory();
+  signin::IdentityTestEnvironment identity_test_env(&url_loader_factory_);
+  signin::IdentityManager* identity_manager =
+      identity_test_env.identity_manager();
+
+  // The cookies are added separately in order to show behaviour in the case
+  // that refresh tokens and cookies are not added at the same time.
+  identity_test_env.MakeAccountAvailable(kTestEmail1);
+  identity_test_env.MakeAccountAvailable(kTestEmail2);
+  identity_test_env.MakeAccountAvailable(kTestEmail3);
+  identity_test_env.MakeAccountAvailable(kTestEmail4);
+
+  identity_test_env.SetCookieAccounts(
+      {{kTestEmail4, signin::GetTestGaiaIdForEmail(kTestEmail4)},
+       {kTestEmail3, signin::GetTestGaiaIdForEmail(kTestEmail3)},
+       {kTestEmail2, signin::GetTestGaiaIdForEmail(kTestEmail2)},
+       {kTestEmail1, signin::GetTestGaiaIdForEmail(kTestEmail1)}});
+
+  // No primary account set.
+  std::vector<AccountInfo> accounts =
+      GetOrderedAccountsForDisplay(identity_manager, false);
+
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[3].account_id.ToString());
+
+  // Set a primary account.
+  identity_test_env.SetPrimaryAccount(kTestEmail3,
+                                      signin::ConsentLevel::kSignin);
+  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[3].account_id.ToString());
+
+  // Set a different primary account.
+  identity_test_env.SetPrimaryAccount(kTestEmail1,
+                                      signin::ConsentLevel::kSignin);
+  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail3),
+            accounts[2].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[3].account_id.ToString());
+
+  // Primary account should still be included if not in cookies, other accounts
+  // should not.
+  identity_test_env.SetCookieAccounts(
+      {{kTestEmail4, signin::GetTestGaiaIdForEmail(kTestEmail4)},
+       {kTestEmail2, signin::GetTestGaiaIdForEmail(kTestEmail2)}});
+  accounts = GetOrderedAccountsForDisplay(identity_manager, false);
+
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail1),
+            accounts[0].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail4),
+            accounts[1].account_id.ToString());
+  EXPECT_EQ(signin::GetTestGaiaIdForEmail(kTestEmail2),
+            accounts[2].account_id.ToString());
 }
 
 TEST_F(SigninUiUtilTest, MergeDiceSigninTab) {

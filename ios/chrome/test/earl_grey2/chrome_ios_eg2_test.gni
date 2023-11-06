@@ -6,6 +6,7 @@ import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
+import("//build/ios/extension_bundle_data.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/app/chrome_app.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
@@ -66,6 +67,16 @@ template("chrome_ios_eg2_test_app_host") {
     }
   }
 
+  if (defined(invoker.eg_extension_target)) {
+    assert(defined(invoker.eg_extension_name),
+           "eg_extension_name must be defined too")
+    _eg_extension_bundle_data_target = target_name + "_appex_bundle_data"
+    extension_bundle_data(_eg_extension_bundle_data_target) {
+      extension_name = invoker.eg_extension_name
+      extension_target = invoker.eg_extension_target
+    }
+  }
+
   ios_eg2_test_app_host(target_name) {
     forward_variables_from(invoker,
                            [
@@ -81,17 +92,7 @@ template("chrome_ios_eg2_test_app_host") {
     testonly = true
     target_type = "chrome_app"
 
-    _output_name = target_name
-    if (defined(output_name)) {
-      _output_name = output_name
-    }
-
-    if (ios_use_shared_bundle_id_for_test_apps) {
-      bundle_identifier = shared_bundle_id_for_test_apps
-    } else {
-      bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
-                          string_replace(_output_name, "_", "-")
-    }
+    bundle_identifier = shared_bundle_id_for_test_apps
 
     if (defined(_tweak_entitlements)) {
       entitlements_target = ":$_tweak_entitlements"
@@ -118,6 +119,10 @@ template("chrome_ios_eg2_test_app_host") {
       ios_provider_target,
     ]
 
+    if (defined(invoker.eg_extension_target)) {
+      deps += [ ":$_eg_extension_bundle_data_target" ]
+    }
+
     if (!defined(bundle_deps)) {
       bundle_deps = []
     }
@@ -132,7 +137,7 @@ template("chrome_ios_eg2_test_app_host") {
       "CHROMIUM_BUNDLE_ID=$bundle_identifier",
       "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
       "CHROMIUM_SHORT_NAME=$target_name",
-      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
+      "CHROMIUM_URL_CHANNEL_SCHEME=${url_channel_scheme}-eg",
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",

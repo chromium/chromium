@@ -8,23 +8,33 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
+#include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#include "extensions/browser/l10n_file_util.h"
 #include "extensions/browser/network_permissions_updater.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/service_worker_task_queue.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extensions_client.h"
@@ -32,6 +42,9 @@
 #include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/default_locale_handler.h"
+#include "extensions/common/manifest_handlers/shared_module_info.h"
+#include "extensions/common/message_bundle.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -86,6 +99,13 @@ mojom::ExtensionLoadedParamsPtr CreateExtensionLoadedParams(
       GetWorkerActivationToken(browser_context, extension),
       extension.creation_flags(), extension.guid());
 }
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+base::flat_map<std::string, std::string> ToFlatMap(
+    const std::map<std::string, std::string>& map) {
+  return {map.begin(), map.end()};
+}
+#endif
 
 }  // namespace
 
@@ -193,6 +213,11 @@ void RendererStartupHelper::InitializeProcess(
     loaded_extensions.push_back(CreateExtensionLoadedParams(
         *ext, true /* include tab permissions*/, renderer_context));
     extension_process_map_[ext->id()].insert(process);
+
+    // Each extension needs to know its user script world configuration.
+    mojom::UserScriptWorldInfoPtr info =
+        util::GetUserScriptWorldInfo(ext->id(), browser_context_);
+    renderer->UpdateUserScriptWorld(std::move(info));
   }
 
   // Activate pending extensions.
@@ -447,6 +472,138 @@ void RendererStartupHelper::BindForRenderer(
                                           std::move(receiver), process_id);
 }
 
+void RendererStartupHelper::WakeEventPage(const ExtensionId& extension_id,
+                                          WakeEventPageCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  auto* process =
+      content::RenderProcessHost::FromID(receivers_.current_context());
+  if (!process) {
+    return;
+  }
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+  return;
+#else
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const Extension* extension = ExtensionRegistry::Get(browser_context)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
+  if (!extension) {
+    // Don't kill the renderer, it might just be some context which hasn't
+    // caught up to extension having been uninstalled.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(browser_context);
+
+  if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
+    // Wake the event page if it's asleep, or immediately repond with success
+    // if it's already awake.
+    if (process_manager->IsEventPageSuspended(extension_id)) {
+      process_manager->WakeEventPage(extension_id, std::move(callback));
+    } else {
+      std::move(callback).Run(true);
+    }
+    return;
+  }
+
+  if (BackgroundInfo::HasPersistentBackgroundPage(extension)) {
+    // No point in trying to wake a persistent background page. If it's open,
+    // immediately return and call it a success. If it's closed, fail.
+    std::move(callback).Run(process_manager->GetBackgroundHostForExtension(
+                                extension_id) != nullptr);
+    return;
+  }
+
+  // The extension has no background page, so there is nothing to wake.
+  std::move(callback).Run(false);
+#endif
+}
+
+void RendererStartupHelper::GetMessageBundle(
+    const std::string& extension_id,
+    GetMessageBundleCallback callback) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  auto* process =
+      content::RenderProcessHost::FromID(receivers_.current_context());
+  if (!process) {
+    return;
+  }
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+  return;
+#else
+  auto* browser_context = GetRendererBrowserContext();
+  if (!browser_context) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  const ExtensionSet& extension_set =
+      ExtensionRegistry::Get(browser_context)->enabled_extensions();
+  const Extension* extension = extension_set.GetByID(extension_id);
+
+  if (!extension) {  // The extension has gone.
+    std::move(callback).Run({});
+    return;
+  }
+
+  const std::string& default_locale = LocaleInfo::GetDefaultLocale(extension);
+  if (default_locale.empty()) {
+    // A little optimization: send the answer here to avoid an extra thread hop.
+    std::unique_ptr<MessageBundle::SubstitutionMap> dictionary_map(
+        l10n_file_util::LoadNonLocalizedMessageBundleSubstitutionMap(
+            extension_id));
+    std::move(callback).Run(ToFlatMap(*dictionary_map));
+    return;
+  }
+
+  std::vector<base::FilePath> paths_to_load;
+  paths_to_load.push_back(extension->path());
+
+  auto imports = SharedModuleInfo::GetImports(extension);
+  // Iterate through the imports in reverse.  This will allow later imported
+  // modules to override earlier imported modules, as the list order is
+  // maintained from the definition in manifest.json of the imports.
+  for (const SharedModuleInfo::ImportInfo& import : base::Reversed(imports)) {
+    const Extension* imported_extension =
+        extension_set.GetByID(import.extension_id);
+    if (!imported_extension) {
+      NOTREACHED() << "Missing shared module " << import.extension_id;
+      continue;
+    }
+    paths_to_load.push_back(imported_extension->path());
+  }
+
+  // This blocks tab loading. Priority is inherited from the calling context.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](const std::vector<base::FilePath>& extension_paths,
+             const std::string& main_extension_id,
+             const std::string& default_locale,
+             extension_l10n_util::GzippedMessagesPermission gzip_permission) {
+            return base::WrapUnique<MessageBundle::SubstitutionMap>(
+                l10n_file_util::LoadMessageBundleSubstitutionMapFromPaths(
+                    extension_paths, main_extension_id, default_locale,
+                    gzip_permission));
+          },
+          paths_to_load, extension_id, default_locale,
+          extension_l10n_util::GetGzippedMessagesPermissionForExtension(
+              extension)),
+      base::BindOnce(
+          [](GetMessageBundleCallback callback,
+             std::unique_ptr<MessageBundle::SubstitutionMap> dictionary_map) {
+            std::move(callback).Run(ToFlatMap(*dictionary_map));
+          },
+          std::move(callback)));
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // static
@@ -465,7 +622,7 @@ RendererStartupHelperFactory::RendererStartupHelperFactory()
     : BrowserContextKeyedServiceFactory(
           "RendererStartupHelper",
           BrowserContextDependencyManager::GetInstance()) {
-  // No dependencies on other services.
+  DependsOn(ProcessManagerFactory::GetInstance());
 }
 
 RendererStartupHelperFactory::~RendererStartupHelperFactory() = default;

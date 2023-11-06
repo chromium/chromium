@@ -55,11 +55,11 @@ import org.chromium.components.omnibox.OmniboxUrlEmphasizerJni;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for the LocationBarModel.
- */
+/** Unit tests for the LocationBarModel. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowTrustedCdn.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowTrustedCdn.class})
 @DisableFeatures(ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
@@ -70,45 +70,29 @@ public class LocationBarModelUnitTest {
         }
     }
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private Tab mIncognitoTabMock;
+    @Mock private Tab mIncognitoTabMock;
 
-    @Mock
-    private Tab mRegularTabMock;
+    @Mock private Tab mRegularTabMock;
 
-    @Mock
-    private WindowAndroid mWindowAndroidMock;
+    @Mock private WindowAndroid mWindowAndroidMock;
 
-    @Mock
-    private IncognitoCctProfileManager mIncognitoCctProfileManagerMock;
+    @Mock private IncognitoCctProfileManager mIncognitoCctProfileManagerMock;
 
-    @Mock
-    private Profile mRegularProfileMock;
+    @Mock private Profile mRegularProfileMock;
 
-    @Mock
-    private Profile mPrimaryOTRProfileMock;
+    @Mock private Profile mPrimaryOTRProfileMock;
 
-    @Mock
-    private Profile mNonPrimaryOTRProfileMock;
-    @Mock
-    private LocationBarDataProvider.Observer mLocationBarDataObserver;
-    @Mock
-    private SearchEngineLogoUtils mSearchEngineLogoUtils;
-    @Mock
-    private LocationBarModel.Natives mLocationBarModelJni;
-    @Mock
-    private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
-    @Mock
-    private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
-    @Mock
-    private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
+    @Mock private Profile mNonPrimaryOTRProfileMock;
+    @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
+    @Mock private SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock private LocationBarModel.Natives mLocationBarModelJni;
+    @Mock private ChromeAutocompleteSchemeClassifier.Natives mChromeAutocompleteSchemeClassifierJni;
+    @Mock private DomDistillerUrlUtilsJni mDomDistillerUrlUtilsJni;
+    @Mock private OmniboxUrlEmphasizerJni mOmniboxUrlEmphasizerJni;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
 
     private GURL mExampleGurl = new GURL("http://www.example.com/");
 
@@ -116,7 +100,8 @@ public class LocationBarModelUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         Profile.setLastUsedProfileForTesting(mRegularProfileMock);
-        mJniMocker.mock(ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+        mJniMocker.mock(
+                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
                 mChromeAutocompleteSchemeClassifierJni);
         mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
         mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
@@ -125,7 +110,7 @@ public class LocationBarModelUnitTest {
                 mIncognitoCctProfileManagerMock);
         when(mIncognitoCctProfileManagerMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
         when(mRegularProfileMock.hasPrimaryOTRProfile()).thenReturn(true);
-        when(mRegularProfileMock.getPrimaryOTRProfile(/*createIfNeeded=*/true))
+        when(mRegularProfileMock.getPrimaryOTRProfile(/* createIfNeeded= */ true))
                 .thenReturn(mPrimaryOTRProfileMock);
         when(mIncognitoTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         when(mIncognitoTabMock.isIncognito()).thenReturn(true);
@@ -144,29 +129,33 @@ public class LocationBarModelUnitTest {
                 }
             };
 
-    // clang-format off
     private static class TestIncognitoLocationBarModel extends LocationBarModel {
         public TestIncognitoLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
-            super(new ContextThemeWrapper(
-                          ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
-                    NewTabPageDelegate.EMPTY, url -> url.getSpec(),
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
+            super(
+                    new ContextThemeWrapper(
+                            ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
+                    NewTabPageDelegate.EMPTY,
+                    url -> url.getSpec(),
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
+                    OFFLINE_STATUS,
                     searchEngineLogoUtils);
-            setTab(tab, /*incognito=*/true);
+            setTab(tab, /* incognito= */ true);
         }
     }
 
     private static class TestRegularLocationBarModel extends LocationBarModel {
         public TestRegularLocationBarModel(Tab tab, SearchEngineLogoUtils searchEngineLogoUtils) {
-            super(new ContextThemeWrapper(
-                          ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
-                    NewTabPageDelegate.EMPTY, url -> url.getSpec(),
-                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid, OFFLINE_STATUS,
+            super(
+                    new ContextThemeWrapper(
+                            ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight),
+                    NewTabPageDelegate.EMPTY,
+                    url -> url.getSpec(),
+                    IncognitoUtils::getNonPrimaryOTRProfileFromWindowAndroid,
+                    OFFLINE_STATUS,
                     searchEngineLogoUtils);
-            setTab(tab, /*incognito=*/false);
+            setTab(tab, /* incognito= */ false);
         }
     }
-    // clang-format on
 
     @Test
     @MediumTest

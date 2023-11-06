@@ -8,8 +8,6 @@ import("../build_webui_tests.gni")
 assert(enable_search_engine_choice)
 
 build_webui_tests("build") {
-  resource_path_prefix = "search_engine_choice"
-
   files = [ "search_engine_choice_test.ts" ]
 
   ts_path_mappings =

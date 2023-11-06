@@ -35,7 +35,7 @@ constexpr int kMaxRetryCount = 1 << 24;
 #define V4L2_REQUEST_CODE_AND_STRING(x) \
   { x, #x }
 
-constexpr uint32_t kMaximumDeviceNumber = 40;
+constexpr uint32_t kMaximumDeviceNumber = 150;
 
 constexpr base::StringPiece kDecoderDevicePrefix = "/dev/video";
 constexpr base::StringPiece kMediaDevicePrefix = "/dev/media";

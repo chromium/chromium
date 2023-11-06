@@ -1,45 +1,59 @@
 This is a testharness.js-based test.
-PASS Magnetometer: Test that onerror is sent when sensor is not supported.
-PASS Magnetometer: Test that onerror is sent when permissions are not granted.
-PASS Magnetometer: Test that onerror is send when start() call has failed.
-PASS Magnetometer: Test that frequency is capped to allowed maximum.
-PASS Magnetometer: Test that frequency is capped to the maximum supported frequency.
-PASS Magnetometer: Test that frequency is limited to the minimum supported frequency.
-PASS Magnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
-PASS Magnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy.
-PASS Magnetometer: Test that 'onreading' is called and sensor reading is valid.
-PASS Magnetometer: sensor reading is correct.
-PASS Magnetometer: Test that readings are all mapped to expectedReadings correctly.
-PASS Magnetometer: sensor timestamp is updated when time passes.
-PASS Magnetometer: Test that sensor can be successfully created and its states are correct.
-PASS Magnetometer: no exception is thrown when calling start() on already started sensor.
-PASS Magnetometer: no exception is thrown when calling stop() on already stopped sensor.
-PASS Magnetometer: Test that fresh reading is fetched on start().
-PASS Magnetometer: Losing visibility must cause readings to be suspended.
-PASS Magnetometer: frequency hint works.
-PASS Magnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
-PASS Magnetometer: throw 'TypeError' if frequency is invalid.
-PASS Magnetometer: sensor reading is correct when options.referenceFrame is 'screen'.
-FAIL UncalibratedMagnetometer: Test that onerror is sent when sensor is not supported. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that onerror is sent when permissions are not granted. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that onerror is send when start() call has failed. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that frequency is capped to allowed maximum. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that frequency is capped to the maximum supported frequency. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that frequency is limited to the minimum supported frequency. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that 'onreading' is called and sensor reading is valid. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: sensor reading is correct. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that readings are all mapped to expectedReadings correctly. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: sensor timestamp is updated when time passes. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that sensor can be successfully created and its states are correct. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: no exception is thrown when calling start() on already started sensor. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Test that fresh reading is fetched on start(). assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Losing visibility must cause readings to be suspended. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: frequency hint works. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid. assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: sensor reading is correct when options.referenceFrame is 'screen'. assert_implements: UncalibratedMagnetometer is not supported. undefined
+[PASS] Magnetometer: Test that onerror is sent when permissions are not granted.
+[PASS] Magnetometer: Test that onerror is send when start() call has failed.
+[PASS] Magnetometer: Test that frequency is capped to allowed maximum.
+[PASS] Magnetometer: Test that frequency is capped to the maximum supported frequency.
+[PASS] Magnetometer: Test that frequency is limited to the minimum supported frequency.
+[PASS] Magnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
+[PASS] Magnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy.
+[PASS] Magnetometer: Test that 'onreading' is called and sensor reading is valid.
+[PASS] Magnetometer: sensor reading is correct.
+[PASS] Magnetometer: Test that readings are all mapped to expectedReadings correctly.
+[PASS] Magnetometer: sensor timestamp is updated when time passes.
+[PASS] Magnetometer: Test that sensor can be successfully created and its states are correct.
+[PASS] Magnetometer: no exception is thrown when calling start() on already started sensor.
+[PASS] Magnetometer: no exception is thrown when calling stop() on already stopped sensor.
+[PASS] Magnetometer: Test that fresh reading is fetched on start().
+[PASS] Magnetometer: Readings are not delivered when the page has no visibility
+[PASS] Magnetometer: frequency hint works.
+[PASS] Magnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
+[PASS] Magnetometer: throw 'TypeError' if frequency is invalid.
+[FAIL] UncalibratedMagnetometer: Test that onerror is sent when permissions are not granted.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that onerror is send when start() call has failed.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that frequency is capped to allowed maximum.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that frequency is capped to the maximum supported frequency.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that frequency is limited to the minimum supported frequency.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that sensor cannot be constructed within iframe disallowed to use feature policy.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that sensor can be constructed within an iframe allowed to use feature policy.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that 'onreading' is called and sensor reading is valid.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: sensor reading is correct.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that readings are all mapped to expectedReadings correctly.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: sensor timestamp is updated when time passes.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that sensor can be successfully created and its states are correct.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: no exception is thrown when calling start() on already started sensor.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: no exception is thrown when calling stop() on already stopped sensor.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Test that fresh reading is fetched on start().
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Readings are not delivered when the page has no visibility
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: frequency hint works.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: Readings delivered by shared platform sensor are immediately accessible to all sensors.
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[PASS] UncalibratedMagnetometer: throw 'TypeError' if frequency is invalid.
 Harness: the test ran to completion.
 

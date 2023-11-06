@@ -11,6 +11,8 @@
 #include "base/trace_event/trace_event.h"
 #include "components/services/font/public/cpp/font_service_thread.h"
 #include "pdf/buildflags.h"
+#include "skia/ext/font_utils.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
 
 namespace font_service {
 
@@ -64,7 +66,7 @@ SkStreamAsset* FontLoader::openStream(const FontIdentity& identity) {
 
 sk_sp<SkTypeface> FontLoader::makeTypeface(const FontIdentity& identity) {
   TRACE_EVENT0("fonts", "FontServiceThread::makeTypeface");
-  return SkFontConfigInterface::makeTypeface(identity);
+  return SkFontConfigInterface::makeTypeface(identity, skia::GetFontMgr());
 }
 
 // Additional cross-thread accessible methods.

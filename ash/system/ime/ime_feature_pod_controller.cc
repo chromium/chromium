@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -14,7 +13,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/system_tray_notifier.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -70,23 +68,7 @@ IMEFeaturePodController::~IMEFeaturePodController() {
   Shell::Get()->system_tray_notifier()->RemoveIMEObserver(this);
 }
 
-FeaturePodButton* IMEFeaturePodController::CreateButton() {
-  DCHECK(!features::IsQsRevampEnabled());
-  button_ = new FeaturePodButton(this, /*is_togglable=*/false);
-  button_->SetVectorIcon(kUnifiedMenuKeyboardIcon);
-  button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_IME_SHORT));
-  button_->SetIconAndLabelTooltips(GetTooltipString());
-  button_->ShowDetailedViewArrow();
-  button_->DisableLabelButtonFocus();
-  // Init the button with invisible state. The `Update` method will update the
-  // visibility based on the current condition.
-  button_->SetVisible(false);
-  Update();
-  return button_;
-}
-
 std::unique_ptr<FeatureTile> IMEFeaturePodController::CreateTile(bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&IMEFeaturePodController::OnIconPressed,
                           weak_factory_.GetWeakPtr()),
@@ -123,30 +105,19 @@ void IMEFeaturePodController::Update() {
   bool is_button_visible = IsButtonVisible();
   const std::u16string tooltip = GetTooltipString();
   std::u16string label_string = GetLabelString();
-  if (features::IsQsRevampEnabled()) {
-    if (label_string.empty()) {
-      tile_->SetSubLabelVisibility(false);
-    } else {
-      tile_->SetSubLabel(label_string);
-      tile_->SetSubLabelVisibility(true);
-    }
-    tile_->SetTooltipText(tooltip);
-    // If the tile's visibility changes from invisible to visible, log its
-    // visibility.
-    if (!tile_->GetVisible() && is_button_visible) {
-      TrackVisibilityUMA();
-    }
-    tile_->SetVisible(is_button_visible);
+  if (label_string.empty()) {
+    tile_->SetSubLabelVisibility(false);
   } else {
-    button_->SetSubLabel(label_string);
-    button_->SetLabelTooltip(tooltip);
-    // If the button's visibility changes from invisible to visible, log its
-    // visibility.
-    if (!button_->GetVisible() && is_button_visible) {
-      TrackVisibilityUMA();
-    }
-    button_->SetVisible(is_button_visible);
+    tile_->SetSubLabel(label_string);
+    tile_->SetSubLabelVisibility(true);
   }
+  tile_->SetTooltipText(tooltip);
+  // If the tile's visibility changes from invisible to visible, log its
+  // visibility.
+  if (!tile_->GetVisible() && is_button_visible) {
+    TrackVisibilityUMA();
+  }
+  tile_->SetVisible(is_button_visible);
 }
 
 }  // namespace ash

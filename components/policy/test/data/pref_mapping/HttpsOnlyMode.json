@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HttpsOnlyMode": "disallowed"
+        },
+        "prefs": {
+          "https_only_mode_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpsOnlyMode": "allowed"
+        },
+        "prefs": {
+          "https_only_mode_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "HttpsOnlyMode": "force_enabled"
+        },
+        "prefs": {
+          "https_only_mode_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

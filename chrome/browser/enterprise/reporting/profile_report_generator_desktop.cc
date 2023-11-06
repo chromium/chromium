@@ -73,7 +73,7 @@ void ProfileReportGeneratorDesktop::GetExtensionRequest(
     absl::optional<base::Time> timestamp = ::base::ValueToTime(
         request_data_dict.Find(extension_misc::kExtensionRequestTimestamp));
     if (timestamp)
-      request->set_request_timestamp(timestamp->ToJavaTime());
+      request->set_request_timestamp(timestamp->InMillisecondsSinceUnixEpoch());
 
     const std::string* justification = request_data_dict.FindString(
         extension_misc::kExtensionWorkflowJustification);

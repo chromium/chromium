@@ -31,6 +31,7 @@ build_webui("build") {
     "fake_update_controller.ts",
     "fake_update_provider.ts",
     "firmware_update_types.ts",
+    "firmware_update_utils.ts",
     "mojo_interface_provider.ts",
   ]
 

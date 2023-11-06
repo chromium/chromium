@@ -43,6 +43,11 @@ void ProxyInfo::UseProxyServer(const ProxyServer& proxy_server) {
   proxy_list_.SetSingleProxyServer(proxy_server);
 }
 
+void ProxyInfo::UseProxyChain(const ProxyChain& proxy_chain) {
+  Reset();
+  proxy_list_.SetSingleProxyChain(proxy_chain);
+}
+
 void ProxyInfo::UsePacString(const std::string& pac_string) {
   Reset();
   proxy_list_.SetFromPacString(pac_string);
@@ -65,9 +70,9 @@ bool ProxyInfo::Fallback(int net_error, const NetLogWithSource& net_log) {
   return proxy_list_.Fallback(&proxy_retry_info_, net_error, net_log);
 }
 
-void ProxyInfo::DeprioritizeBadProxies(
+void ProxyInfo::DeprioritizeBadProxyChains(
     const ProxyRetryInfoMap& proxy_retry_info) {
-  proxy_list_.DeprioritizeBadProxies(proxy_retry_info);
+  proxy_list_.DeprioritizeBadProxyChains(proxy_retry_info);
 }
 
 void ProxyInfo::RemoveProxiesWithoutScheme(int scheme_bit_field) {

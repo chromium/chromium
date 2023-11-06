@@ -89,7 +89,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
   void UpdateSelectedButton();
 
-  void ApplyResizeCompatMode(ResizeCompatMode mode);
+  void ApplyResizeCompatMode(ash::ResizeCompatMode mode);
 
   gfx::Rect GetAnchorRect() const;
 
@@ -98,7 +98,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
   std::unique_ptr<views::BubbleDialogDelegateView> MakeBubbleDelegateView(
       views::Widget* parent,
       gfx::Rect anchor_rect,
-      base::RepeatingCallback<void(ResizeCompatMode)> command_handler);
+      base::RepeatingCallback<void(ash::ResizeCompatMode)> command_handler);
 
   void CloseBubble();
 

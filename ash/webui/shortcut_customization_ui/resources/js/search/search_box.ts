@@ -21,6 +21,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {SearchResultsAvailabilityObserverInterface, SearchResultsAvailabilityObserverReceiver} from '../../mojom-webui/ash/webui/shortcut_customization_ui/backend/search/search.mojom-webui.js';
 import {AcceleratorState, MojoSearchResult, ShortcutSearchHandlerInterface} from '../shortcut_types.js';
+import {isCustomizationAllowed} from '../shortcut_utils.js';
 
 import {getTemplate} from './search_box.html.js';
 import {SearchResultRowElement} from './search_result_row.js';
@@ -410,6 +411,7 @@ export class SearchBoxElement extends SearchBoxElementBase implements
     }
 
     this.spinnerActive = false;
+
     this.searchResults = this.filterSearchResults(results);
 
     // In `this.fetchSearchResults`, we queried for a multiple of
@@ -423,25 +425,35 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
   /**
    * Filter the given search results to hide accelerators and results that are
-   * disabled because their keys are unavailable. This filtering matches the
-   * behavior of the Shortcut app's main list of shortcuts.
+   * disabled because their keys are unavailable or they are disabled by user.
+   * This filtering matches the behavior of the Shortcut app's main list of
+   * shortcuts.
    * @param searchResults the search results to filter.
    * @returns the given search results with disabled keys and results with no
    *     keys filtered out.
    */
   private filterSearchResults(searchResults: MojoSearchResult[]):
       MojoSearchResult[] {
-    return searchResults
-        // Hide accelerators that are disabled because the keys are
-        // unavailable.
-        .map(
-            result => ({
-              ...result,
-              acceleratorInfos: result.acceleratorInfos.filter(
-                  a => a.state !== AcceleratorState.kDisabledByUnavailableKeys),
-            }))
-        // Hide results that don't contain any accelerators.
-        .filter(result => result.acceleratorInfos.length > 0);
+    const enabledSearchResults =
+        searchResults
+            // Hide accelerators that are disabled because the keys are
+            // unavailable.
+            .map(result => ({
+                   ...result,
+                   acceleratorInfos: result.acceleratorInfos.filter(
+                       a => a.state !==
+                               AcceleratorState.kDisabledByUnavailableKeys &&
+                           a.state !== AcceleratorState.kDisabledByUser),
+                 }));
+
+    // If customization is not allowed, hide results that don't contain any
+    // accelerators.
+    if (!isCustomizationAllowed()) {
+      return enabledSearchResults.filter(
+          result => result.acceleratorInfos.length > 0);
+    }
+
+    return enabledSearchResults;
   }
 }
 

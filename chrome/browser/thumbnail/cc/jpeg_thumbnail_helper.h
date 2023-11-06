@@ -28,7 +28,6 @@ class JpegThumbnailHelper {
   // `post_processing_task` will run on the thread that created this
   // JpegThumbnailHelper.
   void Compress(
-      double jpeg_aspect_ratio,
       const SkBitmap& bitmap,
       base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task);
   // `post_write_task` will run on the thread that created this

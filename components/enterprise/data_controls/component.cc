@@ -11,14 +11,6 @@ namespace data_controls {
 
 namespace {
 
-// String equivalents of the `Component` enum, used for parsing JSON.
-constexpr char kArc[] = "ARC";
-constexpr char kCrostini[] = "CROSTINI";
-constexpr char kPluginVm[] = "PLUGIN_VM";
-constexpr char kDrive[] = "DRIVE";
-constexpr char kOneDrive[] = "ONEDRIVE";
-constexpr char kUsb[] = "USB";
-
 static constexpr auto kStringToComponentMap =
     base::MakeFixedFlatMap<base::StringPiece, Component>(
         {{kArc, Component::kArc},
@@ -55,6 +47,20 @@ std::string GetComponentMapping(Component component) {
     case Component::kUnknownComponent:
       return "";
   }
+}
+
+::dlp::DlpComponent GetComponentProtoMapping(const std::string& component) {
+  static constexpr auto kComponentsMap =
+      base::MakeFixedFlatMap<base::StringPiece, ::dlp::DlpComponent>(
+          {{kArc, ::dlp::DlpComponent::ARC},
+           {kCrostini, ::dlp::DlpComponent::CROSTINI},
+           {kPluginVm, ::dlp::DlpComponent::PLUGIN_VM},
+           {kDrive, ::dlp::DlpComponent::GOOGLE_DRIVE},
+           {kUsb, ::dlp::DlpComponent::USB}});
+
+  auto* it = kComponentsMap.find(component);
+  return (it == kComponentsMap.end()) ? ::dlp::DlpComponent::UNKNOWN_COMPONENT
+                                      : it->second;
 }
 
 }  // namespace data_controls

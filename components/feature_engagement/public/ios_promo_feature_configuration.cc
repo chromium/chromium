@@ -26,9 +26,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("app_store_promo_used", Comparator(EQUAL, 0), 365, 365);
     config->trigger =
@@ -42,11 +40,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
-        EventConfig("whats_new_promo_used", Comparator(LESS_THAN, 1), 30, 365);
+        EventConfig("whats_new_promo_used", Comparator(ANY, 0), 365, 365);
     // What's New promo should be trigger no more than once a month.
     config->trigger = EventConfig("whats_new_promo_trigger",
                                   Comparator(LESS_THAN, 1), 30, 365);
@@ -59,10 +55,7 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
-
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used =
         EventConfig("default_browser_promo_used", Comparator(ANY, 0), 365, 365);
     if (base::FeatureList::IsEnabled(kDefaultBrowserEligibilitySlidingWindow)) {
@@ -95,11 +88,9 @@ absl::optional<FeatureConfig> GetStandardPromoConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
-    if (base::FeatureList::IsEnabled(kIPHGroups)) {
-      config->groups.push_back(kiOSFullscreenPromosGroup.name);
-    }
+    config->groups.push_back(kiOSFullscreenPromosGroup.name);
     config->used = EventConfig("credential_provider_extension_promo_used",
-                               Comparator(EQUAL, 0), 365, 365);
+                               Comparator(ANY, 0), 365, 365);
     config->trigger = EventConfig("credential_provider_extension_promo_trigger",
                                   Comparator(LESS_THAN, 3), 365, 365);
     // To track the fake snoozing, the snooze event must have happened once, but
@@ -131,7 +122,7 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->used =
-        EventConfig("post_restore_promo_used", Comparator(EQUAL, 0), 365, 365);
+        EventConfig("post_restore_promo_used", Comparator(ANY, 0), 365, 365);
     // Should not be subject to impression limits, as it helps users recover
     // from being signed-out after restoring their device.
     config->trigger =
@@ -187,7 +178,7 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->trigger = EventConfig("default_browser_promo_reminder_trigger",
                                   Comparator(EQUAL, 0), 360, 360);
     config->used = EventConfig("default_browser_promo_reminder_used",
-                               Comparator(EQUAL, 0), 360, 360);
+                               Comparator(ANY, 0), 360, 360);
     config->event_configs.insert(EventConfig(
         "default_browser_promo_remind_me_later", Comparator(EQUAL, 0), 1, 360));
     config->event_configs.insert(
@@ -202,7 +193,7 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->used = EventConfig("post_restore_default_browser_promo_used",
-                               Comparator(EQUAL, 0), 365, 365);
+                               Comparator(ANY, 0), 365, 365);
     // Should not be subject to impression limits, as it helps users recover
     // from losing default browser status after restoring their device.
     config->trigger = EventConfig("post_restore_default_browser_promo_trigger",
@@ -216,7 +207,7 @@ absl::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->used =
-        EventConfig("choice_screen_used", Comparator(EQUAL, 0), 365, 365);
+        EventConfig("choice_screen_used", Comparator(ANY, 0), 365, 365);
     // Should not be subject to impression limits, as it is a choice the user
     // has to make.
     config->trigger =

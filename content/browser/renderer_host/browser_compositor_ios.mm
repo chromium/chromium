@@ -439,7 +439,8 @@ void BrowserCompositorIOS::UpdateSurface(
 void BrowserCompositorIOS::InvalidateSurface() {
   size_pixels_ = gfx::Size();
   scale_factor_ = 1.f;
-  local_surface_id_allocator_.Invalidate();
+  local_surface_id_allocator_.Invalidate(
+      /*also_invalidate_allocation_group=*/true);
 }
 
 void BrowserCompositorIOS::Suspend() {

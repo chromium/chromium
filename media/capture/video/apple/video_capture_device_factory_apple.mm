@@ -34,7 +34,7 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
   if (!has_checked_cfrunloop_for_video_capture) {
     base::apple::ScopedCFTypeRef<CFRunLoopMode> mode(
         CFRunLoopCopyCurrentMode(CFRunLoopGetCurrent()));
-    CHECK(mode != nullptr)
+    CHECK(mode)
         << "The MacOS video capture code must be run on a CFRunLoop-enabled "
            "thread";
     has_checked_cfrunloop_for_video_capture = true;

@@ -50,8 +50,8 @@
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_resource_info.h"
@@ -177,11 +177,11 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Returns |GetLayoutBox()| if it exists and has fragments.
   const LayoutBox* GetLayoutBoxWithBlockFragments() const;
 
-  PaintLayer* Parent() const { return parent_; }
-  PaintLayer* PreviousSibling() const { return previous_; }
-  PaintLayer* NextSibling() const { return next_; }
-  PaintLayer* FirstChild() const { return first_; }
-  PaintLayer* LastChild() const { return last_; }
+  PaintLayer* Parent() const { return parent_.Get(); }
+  PaintLayer* PreviousSibling() const { return previous_.Get(); }
+  PaintLayer* NextSibling() const { return next_.Get(); }
+  PaintLayer* FirstChild() const { return first_.Get(); }
+  PaintLayer* LastChild() const { return last_.Get(); }
 
   // TODO(wangxianzhu): Find a better name for it. 'paintContainer' might be
   // good but we can't use it for now because it conflicts with
@@ -223,8 +223,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool IsRootLayer() const { return is_root_layer_; }
 
   void UpdateScrollingAfterLayout();
-
-  void UpdateLayerPositionsAfterLayout();
 
   void UpdateTransform();
 
@@ -359,7 +357,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return has_filter_that_moves_pixels_;
   }
 
-  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_; }
+  PaintLayerResourceInfo* ResourceInfo() const { return resource_info_.Get(); }
   PaintLayerResourceInfo& EnsureResourceInfo();
 
   // Filter reference box is the area over which the filter is computed, in the
@@ -534,8 +532,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // Bounding box in the coordinates of this layer.
   PhysicalRect LocalBoundingBox() const;
 
-  void UpdateLayerPositionRecursive();
-
   void SetNextSibling(PaintLayer* next) { next_ = next; }
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }
   void SetFirstChild(PaintLayer* first) { first_ = first; }
@@ -668,7 +664,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
 
   // This is private because PaintLayerStackingNode is only for PaintLayer and
   // PaintLayerPaintOrderIterator.
-  PaintLayerStackingNode* StackingNode() const { return stacking_node_; }
+  PaintLayerStackingNode* StackingNode() const { return stacking_node_.Get(); }
 
   void SetNeedsReorderOverlayOverflowControls(bool);
 

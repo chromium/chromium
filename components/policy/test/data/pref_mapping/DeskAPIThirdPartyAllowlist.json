@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeskAPIThirdPartyAllowlist": [
+            "https://*.example.org/*",
+            "https://*.google.com/*"
+          ]
+        },
+        "prefs": {
+          "desk_api.third_party_allowlist": {
+            "value": [
+              "https://*.example.org/*",
+              "https://*.google.com/*"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "desk_api.third_party_allowlist": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

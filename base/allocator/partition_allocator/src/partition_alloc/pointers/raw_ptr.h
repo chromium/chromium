@@ -160,7 +160,7 @@ struct IsSupportedType {
 // raw_ptr<T> is not compatible with function pointer types. Also, they don't
 // even need the raw_ptr protection, because they don't point on heap.
 template <typename T>
-struct IsSupportedType<T, std::enable_if_t<std::is_function<T>::value>> {
+struct IsSupportedType<T, std::enable_if_t<std::is_function_v<T>>> {
   static constexpr bool value = false;
 };
 
@@ -188,8 +188,7 @@ struct IsSupportedType<content::responsiveness::Calculator> {
 //
 // Such pointers are detected by checking if they're convertible to |id| type.
 template <typename T>
-struct IsSupportedType<T,
-                       std::enable_if_t<std::is_convertible<T*, id>::value>> {
+struct IsSupportedType<T, std::enable_if_t<std::is_convertible_v<T*, id>>> {
   static constexpr bool value = false;
 };
 #endif  // __OBJC__
@@ -458,8 +457,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
             typename Unused = std::enable_if_t<
-                std::is_convertible<U*, T*>::value &&
-                !std::is_void<typename std::remove_cv<T>::type>::value>>
+                std::is_convertible_v<U*, T*> &&
+                !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(const raw_ptr<U, Traits>& ptr) noexcept
       : wrapped_ptr_(
@@ -467,8 +466,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
             typename Unused = std::enable_if_t<
-                std::is_convertible<U*, T*>::value &&
-                !std::is_void<typename std::remove_cv<T>::type>::value>>
+                std::is_convertible_v<U*, T*> &&
+                !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   PA_ALWAYS_INLINE constexpr raw_ptr(raw_ptr<U, Traits>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
@@ -491,8 +490,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Upcast assignment
   template <typename U,
             typename Unused = std::enable_if_t<
-                std::is_convertible<U*, T*>::value &&
-                !std::is_void<typename std::remove_cv<T>::type>::value>>
+                std::is_convertible_v<U*, T*> &&
+                !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<U, Traits>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
@@ -510,8 +509,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
   template <typename U,
             typename Unused = std::enable_if_t<
-                std::is_convertible<U*, T*>::value &&
-                !std::is_void<typename std::remove_cv<T>::type>::value>>
+                std::is_convertible_v<U*, T*> &&
+                !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       raw_ptr<U, Traits>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
@@ -570,7 +569,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   template <typename U = T,
             typename Unused = std::enable_if_t<
-                !std::is_void<typename std::remove_cv<U>::type>::value>>
+                !std::is_void_v<typename std::remove_cv<U>::type>>>
   PA_ALWAYS_INLINE constexpr U& operator*() const {
     return *GetForDereference();
   }
@@ -643,7 +642,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             typename U = T,
             RawPtrTraits CopyTraits = Traits,
             typename Unused = std::enable_if_t<
-                !std::is_void<typename std::remove_cv<U>::type>::value &&
+                !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
   U& operator[](Z delta_elems) const {
     static_assert(

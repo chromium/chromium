@@ -109,6 +109,7 @@ namespace content {
 class BrowserContext;
 class DocumentRef;
 struct GlobalRenderFrameHostId;
+struct GlobalRenderFrameHostToken;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
@@ -134,12 +135,10 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   static RenderFrameHost* FromID(const GlobalRenderFrameHostId& id);
   static RenderFrameHost* FromID(int render_process_id, int render_frame_id);
 
-  // Returns the RenderFrameHost given its frame token and its process
-  // ID. Returns nullptr if the frame token does not correspond to a live
-  // RenderFrameHost.
+  // Returns the RenderFrameHost given its global frame token. Returns nullptr
+  // if the frame token does not correspond to a live RenderFrameHost.
   static RenderFrameHost* FromFrameToken(
-      int initiator_process_id,
-      const blink::LocalFrameToken& frame_token);
+      const GlobalRenderFrameHostToken& frame_token);
 
   // Globally allows for injecting JavaScript into the main world. This feature
   // is present only to support Android WebView, WebLayer, Fuchsia web.Contexts,
@@ -215,8 +214,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual RenderProcessHost* GetProcess() const = 0;
 
   // Returns the GlobalRenderFrameHostId for this frame. Embedders should store
-  // this instead of a raw RenderFrameHost pointer.
+  // this instead of a raw RenderFrameHost pointer. This API is based on routing
+  // IDs from legacy IPC. The renderer may not have routing IDs for frames so it
+  // is preferred to use `GetGlobalFrameToken` over this API.
   virtual GlobalRenderFrameHostId GetGlobalId() const = 0;
+
+  // Returns the GlobalRenderFrameHostToken for this frame. Embedders should
+  // store this instead of a raw RenderFrameHost pointer.
+  virtual GlobalRenderFrameHostToken GetGlobalFrameToken() const = 0;
 
   // Returns a StoragePartition associated with this RenderFrameHost.
   // Associated StoragePartition never changes.
@@ -467,6 +472,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // of this, this function should generally be used instead of
   // RenderProcessHost::GetWebExposedIsolationLevel() when making decisions
   // based on the isolation level, such as API availability.
+  //
+  // Note that this function doesn't account for API availability for certain
+  // documents and URLs that might be force-enabled by the embedder even if they
+  // lack the necessary privilege; in order for this matter to be taken into
+  // consideration, use content::HasIsolatedContextCapability(RenderFrameHost*).
   //
   // TODO(https://936696): Once RenderDocument ships this should be exposed as
   // an invariant of the document host.

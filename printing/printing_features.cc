@@ -90,12 +90,23 @@ const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
 
 const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
     &kEnableOopPrintDrivers, "Sandbox", false};
+
+#if BUILDFLAG(IS_WIN)
+const base::FeatureParam<bool> kEnableOopPrintDriversSingleProcess{
+    &kEnableOopPrintDrivers, "SingleProcess", true};
+#endif
+
+bool ShouldPrintJobOop() {
+  return base::FeatureList::IsEnabled(features::kEnableOopPrintDrivers) &&
+         kEnableOopPrintDriversJobPrint.Get();
+}
+
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 BASE_FEATURE(kEnableCloudScanAfterPreview,
              "EnableCloudScanAfterPreview",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The naming mismatch below is intentional to preserve compatibility while
 // making code usage clearer. This is temporary and will be removed once

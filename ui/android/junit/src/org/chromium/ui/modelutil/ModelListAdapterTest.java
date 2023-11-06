@@ -25,9 +25,7 @@ import org.chromium.ui.R;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests to ensure/validate ModelListAdapter behavior.
- */
+/** Tests to ensure/validate ModelListAdapter behavior. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ModelListAdapterTest {
@@ -70,6 +68,7 @@ public class ModelListAdapterTest {
 
     private class TestObject {
         private String mId;
+
         public TestObject(String id) {
             mId = id;
         }
@@ -77,7 +76,8 @@ public class ModelListAdapterTest {
         @Override
         public boolean equals(Object other) {
             return other == this
-                    || (other != null && other instanceof TestObject
+                    || (other != null
+                            && other instanceof TestObject
                             && TextUtils.equals(((TestObject) other).mId, mId));
         }
     }
@@ -104,8 +104,10 @@ public class ModelListAdapterTest {
         mModelListAdapter = new ModelListAdapter(testData);
         mModelListAdapter.registerType(VIEW_TYPE_1, new TestViewBuilder(), new TestViewBinder());
         mModelListAdapter.registerType(VIEW_TYPE_2, new TestViewBuilder(), new TestViewBinder());
-        mModelListAdapter.registerType(VIEW_TYPE_3_INFLATED,
-                new LayoutViewBuilder(R.layout.layout_view_builder_test), new TestViewBinder());
+        mModelListAdapter.registerType(
+                VIEW_TYPE_3_INFLATED,
+                new LayoutViewBuilder(R.layout.layout_view_builder_test),
+                new TestViewBinder());
     }
 
     @Test
@@ -152,15 +154,18 @@ public class ModelListAdapterTest {
         // Set up a convertView with the same type, the test model, and a test MCP.
         View convertView = new View(RuntimeEnvironment.application);
         PropertyModelChangeProcessor convertViewMcp =
-                Mockito.spy(PropertyModelChangeProcessor.create(
-                        convertViewModel, convertView, new TestViewBinder(), false));
+                Mockito.spy(
+                        PropertyModelChangeProcessor.create(
+                                convertViewModel, convertView, new TestViewBinder(), false));
         convertView.setTag(R.id.view_type, VIEW_TYPE_1);
         convertView.setTag(R.id.view_model, convertViewModel);
         convertView.setTag(R.id.view_mcp, convertViewMcp);
 
         View view = mModelListAdapter.getView(0, convertView, mList);
 
-        Assert.assertEquals("Incorrect callback count for boolean property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for boolean property",
+                0,
                 mBindBooleanCallbackHelper.getCallCount());
         Assert.assertEquals("convertView not reused", convertView, view);
         Assert.assertEquals("Incorrect view type", VIEW_TYPE_1, view.getTag(R.id.view_type));
@@ -173,12 +178,16 @@ public class ModelListAdapterTest {
         // Set a property on the new view's model and assert the ViewBinder is invoked.
         mModel.set(BOOLEAN_PROPERTY, false);
         mBindBooleanCallbackHelper.waitForCallback(0);
-        Assert.assertEquals("Incorrect callback count for boolean property", 1,
+        Assert.assertEquals(
+                "Incorrect callback count for boolean property",
+                1,
                 mBindBooleanCallbackHelper.getCallCount());
 
         // Set a property on the convertView's model and assert the ViewBinder is not invoked.
         convertViewModel.set(BOOLEAN_PROPERTY, true);
-        Assert.assertEquals("Incorrect callback count for boolean property", 1,
+        Assert.assertEquals(
+                "Incorrect callback count for boolean property",
+                1,
                 mBindBooleanCallbackHelper.getCallCount());
     }
 
@@ -228,7 +237,8 @@ public class ModelListAdapterTest {
         View view = mModelListAdapter.getView(VIEW_TYPE_3_INFLATED, null, mList);
         Assert.assertNotNull("No View inflated", view);
         Assert.assertNotNull("Wrong View inflated", view.findViewById(R.id.lvb_inflated_view));
-        Assert.assertTrue("View inflated with wrong LayoutParams",
+        Assert.assertTrue(
+                "View inflated with wrong LayoutParams",
                 view.getLayoutParams() instanceof LinearLayout.LayoutParams);
         LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
 
@@ -261,13 +271,21 @@ public class ModelListAdapterTest {
         ModelListAdapter.bindNewModel(
                 mModel, null, new View(RuntimeEnvironment.application), new TestViewBinder());
 
-        Assert.assertEquals("Incorrect callback count for boolean property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for boolean property",
+                0,
                 mBindBooleanCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for float property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for float property",
+                0,
                 mBindFloatCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for int property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for int property",
+                0,
                 mBindIntCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for object property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for object property",
+                0,
                 mBindObjectCallbackHelper.getCallCount());
     }
 
@@ -288,13 +306,21 @@ public class ModelListAdapterTest {
         ModelListAdapter.bindNewModel(
                 mModel, oldModel, new View(RuntimeEnvironment.application), new TestViewBinder());
 
-        Assert.assertEquals("Incorrect callback count for boolean property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for boolean property",
+                0,
                 mBindBooleanCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for float property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for float property",
+                0,
                 mBindFloatCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for int property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for int property",
+                0,
                 mBindIntCallbackHelper.getCallCount());
-        Assert.assertEquals("Incorrect callback count for object property", 0,
+        Assert.assertEquals(
+                "Incorrect callback count for object property",
+                0,
                 mBindObjectCallbackHelper.getCallCount());
     }
 

@@ -20,7 +20,7 @@ suite('ApnSubpageTest', function() {
   /** @type {?CrosNetworkConfigRemote} */
   let mojoApi_ = null;
 
-  setup(function() {
+  setup(async function() {
     // Disable animations so sub-pages open within one event loop.
     testing.Test.disableAnimationsAndTransitions();
     PolymerTest.clearBody();
@@ -29,6 +29,12 @@ suite('ApnSubpageTest', function() {
     mojoApi_.setManagedPropertiesForTest(OncMojo.getDefaultManagedProperties(
         NetworkType.kCellular, 'cellular_guid', 'cellular'));
     MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+
+    // Start at BASIC route so that if the APN subpage navigates backwards, it
+    // goes back to BASIC and not the previous tests' last page (crbug/1497312).
+    Router.getInstance().navigateTo(routes.BASIC);
+    await flushTasks();
+
     apnSubpage = document.createElement('apn-subpage');
     document.body.appendChild(apnSubpage);
     const params = new URLSearchParams();
@@ -40,7 +46,6 @@ suite('ApnSubpageTest', function() {
 
   teardown(function() {
     return flushTasks().then(() => {
-      apnSubpage.close();
       apnSubpage.remove();
       apnSubpage = null;
       Router.getInstance().resetRouteForTesting();
@@ -145,30 +150,6 @@ suite('ApnSubpageTest', function() {
         await flushTasks();
         // When scanning and type is cellular we always call getNetworkDetails
         assertEquals(4, counter);
-      });
-
-  test(
-      'Keep same cellular properties while network is updating and' +
-          ' scanning is in process',
-      async function() {
-        let props = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular_guid', 'cellular');
-        props.typeProperties.cellular = {testProp: true};
-        mojoApi_.setManagedPropertiesForTest(props);
-        await flushTasks();
-        const getApnList = () =>
-            apnSubpage.shadowRoot.querySelector('apn-list');
-        assertTrue(getApnList().managedCellularProperties.testProp);
-        apnSubpage.deviceState_ = {
-          type: NetworkType.kCellular,
-          scanning: true,
-        };
-        props = OncMojo.getDefaultManagedProperties(
-            NetworkType.kCellular, 'cellular_guid', 'cellular');
-        props.typeProperties.cellular = {testProp: false};
-        mojoApi_.setManagedPropertiesForTest(props);
-        await flushTasks();
-        assertTrue(getApnList().managedCellularProperties.testProp);
       });
 
   test('Error state is propagated to <apn-list>', async function() {

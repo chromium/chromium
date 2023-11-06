@@ -22,7 +22,7 @@ base::FilePath GinShellPath() {
 
 base::FilePath HelloWorldPath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path
     .AppendASCII("gin")
     .AppendASCII("shell")

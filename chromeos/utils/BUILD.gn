@@ -5,14 +5,20 @@
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
 source_set("utils") {
+  defines = [ "IS_CHROMEOS_UTILS_IMPL" ]
+
   deps = [
     "//base",
     "//printing:printing_base",
     "//skia",
+    "//ui/events/devices:devices",
     "//ui/gfx",
+    "//ui/ozone:ozone",
   ]
 
   sources = [
+    "haptics_util.cc",
+    "haptics_util.h",
     "pdf_conversion.cc",
     "pdf_conversion.h",
   ]

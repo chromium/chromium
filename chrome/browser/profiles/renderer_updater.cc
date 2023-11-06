@@ -136,20 +136,20 @@ void RendererUpdater::InitializeRenderer(
       render_process_host,
       content_settings_manager.InitWithNewPipeAndPassReceiver(),
       std::make_unique<chrome::ContentSettingsManagerDelegate>());
-  mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
-      bound_session_request_throttled_listener;
+  mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
+      bound_session_request_throttled_handler;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (bound_session_cookie_refresh_service_) {
     bound_session_cookie_refresh_service_
-        ->AddBoundSessionRequestThrottledListenerReceiver(
-            bound_session_request_throttled_listener
+        ->AddBoundSessionRequestThrottledHandlerReceiver(
+            bound_session_request_throttled_handler
                 .InitWithNewPipeAndPassReceiver());
   }
 #endif
   renderer_configuration->SetInitialConfiguration(
       is_off_the_record_, std::move(chromeos_listener_receiver),
       std::move(content_settings_manager),
-      std::move(bound_session_request_throttled_listener));
+      std::move(bound_session_request_throttled_handler));
 
   renderer_configuration->SetConfiguration(CreateRendererDynamicParams());
 }

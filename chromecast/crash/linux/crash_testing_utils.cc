@@ -161,7 +161,8 @@ bool SetRatelimitPeriodStart(const std::string& metadata_path,
   if (!ratelimit_params)
     return false;
 
-  ratelimit_params->Set(kRatelimitPeriodStartKey, start.ToDoubleT());
+  ratelimit_params->Set(kRatelimitPeriodStartKey,
+                        start.InSecondsFSinceUnixEpoch());
   return WriteMetadataFile(metadata_path, contents->GetDict()) == 0;
 }
 

@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "chrome/browser/browser_process.h"
@@ -61,6 +62,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/performance/largest_contentful_paint_type.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/events/blink/blink_features.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -72,6 +74,8 @@ using page_load_metrics::PageVisitFinalStatus;
 namespace {
 
 const char kOfflinePreviewsMimeType[] = "multipart/related";
+
+static constexpr uint64_t kInstantPageLoadEventsTraceTrackId = 14878427190820;
 
 template <size_t N>
 uint64_t PackBytes(base::span<const uint8_t, N> bytes) {
@@ -387,7 +391,6 @@ UkmPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     RecordPageLoadMetrics(current_time);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
@@ -415,7 +418,6 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnHidden(
     RecordPageLoadMetrics(base::TimeTicks() /* no app_background_time */);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
     was_hidden_ = true;
   }
 
@@ -480,7 +482,6 @@ void UkmPageLoadMetricsObserver::OnComplete(
     RecordPageLoadMetrics(current_time /* no app_background_time */);
     RecordRendererUsageMetrics();
     RecordSiteEngagement();
-    RecordInputTimingMetrics();
   }
   if (GetDelegate().StartedInForeground())
     RecordTimingMetrics(timing);
@@ -922,19 +923,6 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
         first_input_timestamp.InMilliseconds());
   }
 
-  if (timing.interactive_timing->longest_input_delay) {
-    base::TimeDelta longest_input_delay =
-        timing.interactive_timing->longest_input_delay.value();
-    builder.SetInteractiveTiming_LongestInputDelay4(
-        longest_input_delay.InMilliseconds());
-  }
-  if (timing.interactive_timing->longest_input_timestamp) {
-    base::TimeDelta longest_input_timestamp =
-        timing.interactive_timing->longest_input_timestamp.value();
-    builder.SetInteractiveTiming_LongestInputTimestamp4(
-        longest_input_timestamp.InMilliseconds());
-  }
-
   if (timing.interactive_timing->first_scroll_delay &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_scroll_timestamp, GetDelegate())) {
@@ -953,25 +941,23 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
             first_scroll_timestamp.InMilliseconds()));
   }
 
-  if (timing.interactive_timing->first_input_processing_time &&
-      WasStartedInForegroundOptionalEventInForeground(
-          timing.interactive_timing->first_input_timestamp, GetDelegate())) {
-    base::TimeDelta first_input_processing_time =
-        timing.interactive_timing->first_input_processing_time.value();
-    builder.SetInteractiveTiming_FirstInputProcessingTimes(
-        first_input_processing_time.InMilliseconds());
-  }
   if (timing.user_timing_mark_fully_loaded) {
     builder.SetPageTiming_UserTimingMarkFullyLoaded(
         timing.user_timing_mark_fully_loaded.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_loaded.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyLoaded");
   }
   if (timing.user_timing_mark_fully_visible) {
     builder.SetPageTiming_UserTimingMarkFullyVisible(
         timing.user_timing_mark_fully_visible.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_fully_visible.value(),
+                        "PageLoadMetrics.UserTimingMarkFullyVisible");
   }
   if (timing.user_timing_mark_interactive) {
     builder.SetPageTiming_UserTimingMarkInteractive(
         timing.user_timing_mark_interactive.value().InMilliseconds());
+    EmitUserTimingEvent(timing.user_timing_mark_interactive.value(),
+                        "PageLoadMetrics.UserTimingMarkInteractive");
   }
   builder.SetCpuTime(total_foreground_cpu_time_.InMilliseconds());
 
@@ -1457,19 +1443,6 @@ void UkmPageLoadMetricsObserver::RecordPageLoadTimestampMetrics(
   builder.SetHourOfDay(exploded.hour);
 }
 
-void UkmPageLoadMetricsObserver::RecordInputTimingMetrics() {
-  ukm::builders::PageLoad(GetDelegate().GetPageUkmSourceId())
-      .SetInteractiveTiming_NumInputEvents(
-          GetDelegate().GetPageInputTiming().num_input_events)
-      .SetInteractiveTiming_TotalInputDelay(
-          GetDelegate().GetPageInputTiming().total_input_delay.InMilliseconds())
-      .SetInteractiveTiming_TotalAdjustedInputDelay(
-          GetDelegate()
-              .GetPageInputTiming()
-              .total_adjusted_input_delay.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
-}
-
 void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   auto* smoothness =
       ukm_smoothness_data_.GetMemoryAs<cc::UkmSmoothnessDataShared>();
@@ -1793,4 +1766,19 @@ void UkmPageLoadMetricsObserver::RecordGeneratedNavigationUKM(
   builder.SetFirstURLIsHomePage(start_url_is_home_page_);
   builder.SetFirstURLIsDefaultSearchEngine(start_url_is_default_search_);
   builder.Record(ukm::UkmRecorder::Get());
+}
+
+void UkmPageLoadMetricsObserver::EmitUserTimingEvent(base::TimeDelta duration,
+                                                     const char event_name[]) {
+  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  const perfetto::Track track(kInstantPageLoadEventsTraceTrackId,
+                              perfetto::ProcessTrack::Current());
+  TRACE_EVENT_INSTANT(
+      "loading,interactions", perfetto::StaticString{event_name}, track,
+      navigation_start + duration, [&](perfetto::EventContext ctx) {
+        auto* page_load_proto =
+            ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_page_load();
+        page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
+      });
 }

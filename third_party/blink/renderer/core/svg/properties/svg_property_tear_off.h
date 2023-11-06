@@ -57,8 +57,8 @@ class SVGPropertyTearOffBase : public ScriptWrappable {
 
   virtual void CommitChange();
 
-  SVGAnimatedPropertyBase* GetBinding() { return binding_; }
-  SVGElement* ContextElement() const { return context_element_; }
+  SVGAnimatedPropertyBase* GetBinding() { return binding_.Get(); }
+  SVGElement* ContextElement() const { return context_element_.Get(); }
 
   void Bind(SVGAnimatedPropertyBase* binding);
 

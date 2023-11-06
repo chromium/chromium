@@ -172,10 +172,11 @@ void AutofillHandler::FinishTrigger(
   tmp_autofill_card.SetRawInfo(autofill::CREDIT_CARD_VERIFICATION_CODE,
                                base::UTF8ToUTF16(card->GetCvc()));
 
-  autofill_driver->GetAutofillManager().FillCreditCardForm(
-      field_data->first, field_data->second, tmp_autofill_card,
-      base::UTF8ToUTF16(card->GetCvc()),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+  static_cast<autofill::BrowserAutofillManager&>(
+      autofill_driver->GetAutofillManager())
+      .FillCreditCardForm(field_data->first, field_data->second,
+                          tmp_autofill_card, base::UTF8ToUTF16(card->GetCvc()),
+                          {.trigger_source = AutofillTriggerSource::kPopup});
 
   std::move(callback)->sendSuccess();
 }
@@ -216,14 +217,16 @@ void AutofillHandler::SetAddresses(
 
   static_cast<autofill::BrowserAutofillManager&>(
       autofill_driver->GetAutofillManager())
-      .set_test_addresses(test_address_for_countries);
+      .client()
+      .GetPersonalDataManager()
+      ->set_test_addresses(test_address_for_countries);
   std::move(callback)->sendSuccess();
 }
 
 void AutofillHandler::OnFillOrPreviewDataModelForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
-    autofill::mojom::AutofillActionPersistence action_persistence,
+    autofill::mojom::ActionPersistence action_persistence,
     base::span<const FormFieldData* const> filled_fields,
     absl::variant<const autofill::AutofillProfile*, const autofill::CreditCard*>
         profile_or_credit_card) {
@@ -233,7 +236,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
   }
 
   // We only care about address forms that were filled.
-  if (action_persistence != autofill::mojom::AutofillActionPersistence::kFill ||
+  if (action_persistence != autofill::mojom::ActionPersistence::kFill ||
       !absl::holds_alternative<const autofill::AutofillProfile*>(
           profile_or_credit_card)) {
     return;
@@ -311,7 +314,7 @@ void AutofillHandler::OnFillOrPreviewDataModelForm(
     for (const autofill::AutofillAddressUIComponent& component : line) {
       profile_values->push_back(
           protocol::Autofill::AddressField::Create()
-              .SetName(std::string(FieldTypeToStringPiece(component.field)))
+              .SetName(FieldTypeToString(component.field))
               .SetValue(base::UTF16ToASCII(
                   profile_used_to_fill_form->GetInfo(component.field, locale)))
               .Build());
@@ -348,11 +351,11 @@ Response AutofillHandler::Enable() {
       observation_.Observe(&autofill_driver->GetAutofillManager());
     }
   }
-  return Response::FallThrough();
+  return Response::Success();
 }
 
 Response AutofillHandler::Disable() {
   enabled_ = false;
   observation_.Reset();
-  return Response::FallThrough();
+  return Response::Success();
 }

@@ -34,13 +34,7 @@ namespace chromeos {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kKeyboardDiagnosticsUrl[] = "chrome://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kKeyboardDiagnosticsUrl[] = "os://diagnostics?input";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace cx_events = ::chromeos::api::os_events;
 namespace crosapi = ::crosapi::mojom;
@@ -110,24 +104,20 @@ void OsEventsIsEventSupportedFunction::OnEventManagerResult(
   }
 
   switch (status->which()) {
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kUnmappedUnionField:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnmappedUnionField:
       Respond(Error("API internal error."));
       break;
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kException:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kException:
       Respond(Error(status->get_exception()->debug_message));
       break;
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kSupported: {
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kSupported: {
       cx_events::EventSupportStatusInfo success;
       success.status = cx_events::EventSupportStatus::kSupported;
       Respond(
           ArgumentList(cx_events::IsEventSupported::Results::Create(success)));
       break;
     }
-    case crosapi::internal::TelemetryExtensionSupportStatus_Data::
-        TelemetryExtensionSupportStatus_Tag::kUnsupported:
+    case crosapi::TelemetryExtensionSupportStatus::Tag::kUnsupported:
       cx_events::EventSupportStatusInfo result;
       result.status = cx_events::EventSupportStatus::kUnsupported;
 

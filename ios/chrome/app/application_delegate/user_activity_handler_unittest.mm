@@ -13,7 +13,11 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
+#import "base/values.h"
 #import "components/handoff/handoff_utility.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
@@ -26,6 +30,7 @@
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
+#import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_connection_information.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
@@ -141,6 +146,29 @@ class UserActivityHandlerTest : public PlatformTest {
     return browserProviderInterface_;
   }
 
+  // Set pref kIncognitoModeAvailability to kForced and make it a managed pref.
+  void ForceIncognitoMode() {
+    test_pref_service_.SetManagedPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        std::make_unique<base::Value>(true));
+    test_pref_service_.registry()->RegisterIntegerPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        static_cast<int>(IncognitoModePrefs::kForced));
+  }
+
+  // Set pref kIncognitoModeAvailability to kDisabled and make it a managed
+  // pref.
+  void DisableIncognitoMode() {
+    test_pref_service_.SetManagedPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        std::make_unique<base::Value>(true));
+    test_pref_service_.registry()->RegisterIntegerPref(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        static_cast<int>(IncognitoModePrefs::kDisabled));
+  }
+
+  TestingPrefServiceSimple test_pref_service_;
+
  private:
   __block BOOL block_executed_;
   __block BOOL block_argument_;
@@ -152,6 +180,97 @@ class UserActivityHandlerTest : public PlatformTest {
 };
 
 #pragma mark - Tests.
+
+// Tests that method canProceedWithUserActivity returns true when incognito mode
+// is forced and when userActivity supports incognito browser.
+TEST_F(UserActivityHandlerTest,
+       CanProceedWithUserActivityWithIncognitoBrowser) {
+  // UserActivityTypes to test.
+  NSArray* userActivityTypes = @[
+    kShortcutNewIncognitoSearch, kSiriShortcutOpenInIncognito,
+    kShortcutLensFromSpotlight
+  ];
+
+  ForceIncognitoMode();
+  EXPECT_TRUE(IsIncognitoModeForced(&test_pref_service_));
+
+  for (NSString* userActivityType in userActivityTypes) {
+    NSUserActivity* userActivity =
+        [[NSUserActivity alloc] initWithActivityType:userActivityType];
+
+    EXPECT_TRUE([UserActivityHandler
+        canProceedWithUserActivity:userActivity
+                       prefService:&test_pref_service_]);
+  }
+}
+
+// Tests that method canProceedWithUserActivity returns false when incognito
+// mode is forced and when userActivity does not support incognito browser.
+TEST_F(UserActivityHandlerTest,
+       CanProceedWithWrongUserActivityWithIncognitoBrowser) {
+  ForceIncognitoMode();
+  EXPECT_TRUE(IsIncognitoModeForced(&test_pref_service_));
+
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:kSiriShortcutOpenInChrome];
+  EXPECT_FALSE([UserActivityHandler
+      canProceedWithUserActivity:userActivity
+                     prefService:&test_pref_service_]);
+}
+
+// Tests that method canProceedWithUserActivity returns true when incognito mode
+// is disabled and when userActivity supports regular browser.
+TEST_F(UserActivityHandlerTest, CanProceedWithUserActivityWithRegularBrowser) {
+  // UserActivityTypes to test.
+  NSArray* userActivityTypes = @[
+    kShortcutNewSearch, kShortcutVoiceSearch, kSiriShortcutSearchInChrome,
+    kSiriShortcutOpenInChrome
+  ];
+
+  DisableIncognitoMode();
+  EXPECT_TRUE(IsIncognitoModeDisabled(&test_pref_service_));
+
+  for (NSString* userActivityType in userActivityTypes) {
+    NSUserActivity* userActivity =
+        [[NSUserActivity alloc] initWithActivityType:userActivityType];
+
+    EXPECT_TRUE([UserActivityHandler
+        canProceedWithUserActivity:userActivity
+                       prefService:&test_pref_service_]);
+  }
+}
+
+// Tests that method canProceedWithUserActivity returns false when incognito
+// mode is disabled and when userActivity does not support regular browser.
+TEST_F(UserActivityHandlerTest,
+       CanProceedWithWrongUserActivityWithRegularBrowser) {
+  // UserActivityTypes to test.
+  NSArray* userActivityTypes =
+      @[ kShortcutNewIncognitoSearch, kSiriShortcutOpenInIncognito ];
+
+  DisableIncognitoMode();
+  EXPECT_TRUE(IsIncognitoModeDisabled(&test_pref_service_));
+
+  for (NSString* userActivityType in userActivityTypes) {
+    NSUserActivity* userActivity =
+        [[NSUserActivity alloc] initWithActivityType:userActivityType];
+
+    EXPECT_FALSE([UserActivityHandler
+        canProceedWithUserActivity:userActivity
+                       prefService:&test_pref_service_]);
+  }
+}
+
+// Tests that method canProceedWithUserActivity returns false if the activity
+// type is unknown.
+TEST_F(UserActivityHandlerTest,
+       CanProceedWithUserActivityWithWrongActivityType) {
+  NSUserActivity* userActivity =
+      [[NSUserActivity alloc] initWithActivityType:@"not_an_activity_type"];
+  EXPECT_FALSE([UserActivityHandler
+      canProceedWithUserActivity:userActivity
+                     prefService:&test_pref_service_]);
+}
 
 // Tests that Chrome does not continue the activity is the activity type is
 // random.

@@ -13,8 +13,9 @@ namespace ash {
 
 // Test input controller that can be used to track haptics events sent out in
 // tests. The input controller will be set as the input controller that should
-// be used by haptics util using `haptics_util::SetInputControllerForTesting()`.
-// Only one should be initialized at a time.
+// be used by haptics util using
+// `chromeos::haptics_util::SetInputControllerForTesting()`. Only one should be
+// initialized at a time.
 class HapticsTrackingTestInputController : public ui::InputController {
  public:
   HapticsTrackingTestInputController();

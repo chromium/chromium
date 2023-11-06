@@ -353,6 +353,22 @@ class MetaBuildWrapper:
                       default=None,
                       help=('Optional service account to run the swarming '
                             'tasks as.'))
+    subp.add_argument('--named-cache',
+                      default=[],
+                      dest='named_cache',
+                      action='append',
+                      metavar='{NAME}={VALUE}',
+                      help=('Additional named cache for test, example: '
+                            '"runtime_ios_16_4=Runtime-ios-16.4"'))
+    subp.add_argument(
+        '--cipd-package',
+        default=[],
+        dest='cipd_package',
+        action='append',
+        metavar='{LOCATION}:{CIPD_PACKAGE}:{REVISION}',
+        help=("Additional cipd packages to fetch for test, example: "
+              "'.:infra/tools/mac_toolchain/${platform}="
+              "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce'"))
     subp.add_argument('--tags', default=[], action='append', metavar='FOO:BAR',
                       help='Tags to assign to the swarming task')
     subp.add_argument('--no-default-dimensions', action='store_false',
@@ -630,6 +646,10 @@ class MetaBuildWrapper:
           '-dump-json',
           json_file,
       ]
+      for cipd_package in self.args.cipd_package:
+        cmd.extend(['-cipd-package', cipd_package])
+      for named_cache in self.args.named_cache:
+        cmd.extend(['-named-cache', named_cache])
       if realm:
         cmd += ['--realm', realm]
       cmd += tags + dimensions + ['--'] + list(isolate_cmd)
@@ -1206,21 +1226,6 @@ class MetaBuildWrapper:
         if self.Exists(path):
           self.RemoveFile(path)
 
-  def _FilterOutUnneededSkylabDeps(self, deps):
-    """Filter out the runtime dependencies not used by Skylab.
-
-    Skylab is CrOS infra facilities for us to run hardware tests. These files
-    may appear in the test target's runtime_deps for browser lab, but
-    unnecessary for CrOS lab.
-    """
-    file_ignore_list = [
-        re.compile(r'.*build/chromeos.*'),
-        re.compile(r'.*build/cros_cache.*'),
-        # No test target should rely on files in [output_dir]/gen.
-        re.compile(r'^gen/.*'),
-    ]
-    return [f for f in deps if not any(r.match(f) for r in file_ignore_list)]
-
   def _DedupDependencies(self, deps):
     """Remove the deps already contained by other paths."""
 
@@ -1281,12 +1286,6 @@ class MetaBuildWrapper:
       command, extra_files = self.GetSwarmingCommand(target, vals)
       runtime_deps = self.ReadFile(path_to_use).splitlines()
       runtime_deps = self._DedupDependencies(runtime_deps)
-      # TODO(crbug.com/1481305): Lacros gtest may need files from folders
-      # filtered out here. Eventually, we should move the filter to builder
-      # specific config. Before that, leave the filter only for Ash.
-      if ('is_skylab=true' in vals['gn_args']
-          and not 'chromeos_is_browser_only=true' in vals['gn_args']):
-        runtime_deps = self._FilterOutUnneededSkylabDeps(runtime_deps)
 
       canonical_target = target.replace(':','_').replace('/','_')
       ret = self.WriteIsolateFiles(build_dir, command, canonical_target,
@@ -1383,7 +1382,11 @@ class MetaBuildWrapper:
         self.Print(out)
       return ret
 
-    runtime_deps = out.splitlines()
+    runtime_deps = []
+    for l in out.splitlines():
+      # FIXME: Can remove this check if/when use_goma is removed.
+      if 'The gn arg use_goma=true will be deprecated by EOY 2023' not in l:
+        runtime_deps.append(l)
 
     ret = self.WriteIsolateFiles(build_dir, command, target, runtime_deps, vals,
                                  extra_files)

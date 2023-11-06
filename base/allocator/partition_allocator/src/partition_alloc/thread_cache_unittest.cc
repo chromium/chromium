@@ -190,7 +190,7 @@ TEST_P(PartitionAllocThreadCacheTest, Simple) {
   // There is a cache.
   auto* tcache = root()->thread_cache_for_testing();
   EXPECT_TRUE(tcache);
-  DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
+  DeltaCounter batch_fill_counter(tcache->stats_for_testing().batch_fill_count);
 
   void* ptr =
       root()->Alloc(root()->AdjustSizeForExtrasSubtract(kSmallSize), "");
@@ -246,7 +246,7 @@ TEST_P(PartitionAllocThreadCacheTest, InexactSizeMatch) {
 
 TEST_P(PartitionAllocThreadCacheTest, MultipleObjectsCachedPerBucket) {
   auto* tcache = root()->thread_cache_for_testing();
-  DeltaCounter batch_fill_counter{tcache->stats_.batch_fill_count};
+  DeltaCounter batch_fill_counter{tcache->stats_for_testing().batch_fill_count};
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kFillCountForMediumBucket + 2);
   EXPECT_EQ(2 * kFillCountForMediumBucket,
@@ -297,11 +297,12 @@ TEST_P(PartitionAllocThreadCacheTest, NoCrossPartitionCache) {
 #if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 TEST_P(PartitionAllocThreadCacheTest, LargeAllocationsAreNotCached) {
   auto* tcache = root()->thread_cache_for_testing();
-  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_counter{tcache->stats_for_testing().alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
-      tcache->stats_.alloc_miss_too_large};
-  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
-  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+      tcache->stats_for_testing().alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_for_testing().cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{
+      tcache->stats_for_testing().cache_fill_misses};
 
   FillThreadCacheAndReturnIndex(100 * 1024);
   tcache = root()->thread_cache_for_testing();
@@ -526,8 +527,8 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
   // an assumption that there exists only main thread here.
   {
     internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
-    EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
-    EXPECT_EQ(parent_thread_tcache->next_, nullptr);
+    EXPECT_EQ(parent_thread_tcache->prev_for_testing(), nullptr);
+    EXPECT_EQ(parent_thread_tcache->next_for_testing(), nullptr);
   }
 #endif
 
@@ -543,23 +544,26 @@ TEST_P(PartitionAllocThreadCacheTest, ThreadCacheRegistry) {
       BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && \
     BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   internal::ScopedGuard lock(ThreadCacheRegistry::GetLock());
-  EXPECT_EQ(parent_thread_tcache->prev_, nullptr);
-  EXPECT_EQ(parent_thread_tcache->next_, nullptr);
+  EXPECT_EQ(parent_thread_tcache->prev_for_testing(), nullptr);
+  EXPECT_EQ(parent_thread_tcache->next_for_testing(), nullptr);
 #endif
 }
 
 #if PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 TEST_P(PartitionAllocThreadCacheTest, RecordStats) {
   auto* tcache = root()->thread_cache_for_testing();
-  DeltaCounter alloc_counter{tcache->stats_.alloc_count};
-  DeltaCounter alloc_hits_counter{tcache->stats_.alloc_hits};
-  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_counter{tcache->stats_for_testing().alloc_count};
+  DeltaCounter alloc_hits_counter{tcache->stats_for_testing().alloc_hits};
+  DeltaCounter alloc_miss_counter{tcache->stats_for_testing().alloc_misses};
 
-  DeltaCounter alloc_miss_empty_counter{tcache->stats_.alloc_miss_empty};
+  DeltaCounter alloc_miss_empty_counter{
+      tcache->stats_for_testing().alloc_miss_empty};
 
-  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
-  DeltaCounter cache_fill_hits_counter{tcache->stats_.cache_fill_hits};
-  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+  DeltaCounter cache_fill_counter{tcache->stats_for_testing().cache_fill_count};
+  DeltaCounter cache_fill_hits_counter{
+      tcache->stats_for_testing().cache_fill_hits};
+  DeltaCounter cache_fill_misses_counter{
+      tcache->stats_for_testing().cache_fill_misses};
 
   // Cache has been purged, first allocation is a miss.
   void* data =
@@ -671,7 +675,8 @@ TEST_P(PartitionAllocThreadCacheTest, MultipleThreadCachesAccounting) {
   }
 #endif
   FillThreadCacheAndReturnIndex(kMediumSize);
-  uint64_t alloc_count = root()->thread_cache_for_testing()->stats_.alloc_count;
+  uint64_t alloc_count =
+      root()->thread_cache_for_testing()->stats_for_testing().alloc_count;
 
   ThreadDelegateForMultipleThreadCachesAccounting delegate(
       root(), wqthread_stats, alloc_count, GetParam());
@@ -946,33 +951,35 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_DynamicCountPerBucket) {
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kMediumSize, kDefaultCountForMediumBucket);
 
-  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+  EXPECT_EQ(kDefaultCountForMediumBucket,
+            tcache->bucket_for_testing(bucket_index).count);
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
       ThreadCache::kDefaultMultiplier / 2);
   // No immediate batch deallocation.
-  EXPECT_EQ(kDefaultCountForMediumBucket, tcache->buckets_[bucket_index].count);
+  EXPECT_EQ(kDefaultCountForMediumBucket,
+            tcache->bucket_for_testing(bucket_index).count);
   void* data =
       root()->Alloc(root()->AdjustSizeForExtrasSubtract(kMediumSize), "");
   // Not triggered by allocations.
   EXPECT_EQ(kDefaultCountForMediumBucket - 1,
-            tcache->buckets_[bucket_index].count);
+            tcache->bucket_for_testing(bucket_index).count);
 
   // Free() triggers the purge within limits.
   root()->Free(data);
-  EXPECT_LE(tcache->buckets_[bucket_index].count,
+  EXPECT_LE(tcache->bucket_for_testing(bucket_index).count,
             kDefaultCountForMediumBucket / 2);
 
   // Won't go above anymore.
   FillThreadCacheAndReturnIndex(kMediumSize, 1000);
-  EXPECT_LE(tcache->buckets_[bucket_index].count,
+  EXPECT_LE(tcache->bucket_for_testing(bucket_index).count,
             kDefaultCountForMediumBucket / 2);
 
   // Limit can be raised.
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
       ThreadCache::kDefaultMultiplier * 2);
   FillThreadCacheAndReturnIndex(kMediumSize, 1000);
-  EXPECT_GT(tcache->buckets_[bucket_index].count,
+  EXPECT_GT(tcache->bucket_for_testing(bucket_index).count,
             kDefaultCountForMediumBucket / 2);
 }
 
@@ -983,22 +990,26 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicCountPerBucketClamping) {
       ThreadCache::kDefaultMultiplier / 1000.);
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
-    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+    if (!tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed)) {
       EXPECT_EQ(root()->buckets[i].active_slot_spans_head, nullptr);
       continue;
     }
-    EXPECT_GE(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 1u);
+    EXPECT_GE(
+        tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed),
+        1u);
   }
 
   ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
       ThreadCache::kDefaultMultiplier * 1000.);
   for (size_t i = 0; i < ThreadCache::kBucketCount; i++) {
     // Invalid bucket.
-    if (!tcache->buckets_[i].limit.load(std::memory_order_relaxed)) {
+    if (!tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed)) {
       EXPECT_EQ(root()->buckets[i].active_slot_spans_head, nullptr);
       continue;
     }
-    EXPECT_LT(tcache->buckets_[i].limit.load(std::memory_order_relaxed), 0xff);
+    EXPECT_LT(
+        tcache->bucket_for_testing(i).limit.load(std::memory_order_relaxed),
+        0xff);
   }
 }
 
@@ -1067,7 +1078,8 @@ TEST_P(PartitionAllocThreadCacheTest,
   auto* tcache = root()->thread_cache_for_testing();
   size_t bucket_index =
       FillThreadCacheAndReturnIndex(kSmallSize, kDefaultCountForSmallBucket);
-  EXPECT_EQ(kDefaultCountForSmallBucket, tcache->buckets_[bucket_index].count);
+  EXPECT_EQ(kDefaultCountForSmallBucket,
+            tcache->bucket_for_testing(bucket_index).count);
 
   // Change the ratio before starting the threads, checking that it will applied
   // to newly-created threads.
@@ -1093,11 +1105,12 @@ TEST_P(PartitionAllocThreadCacheTest,
 
 TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
   auto* tcache = root()->thread_cache_for_testing();
-  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_counter{tcache->stats_for_testing().alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
-      tcache->stats_.alloc_miss_too_large};
-  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
-  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+      tcache->stats_for_testing().alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_for_testing().cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{
+      tcache->stats_for_testing().cache_fill_misses};
 
   // Default threshold at first.
   ThreadCache::SetLargestCachedSize(ThreadCache::kDefaultSizeThreshold);
@@ -1131,11 +1144,12 @@ TEST_P(PartitionAllocThreadCacheTest, DynamicSizeThreshold) {
 // Disabled due to flakiness: crbug.com/1287811
 TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
   auto* tcache = root()->thread_cache_for_testing();
-  DeltaCounter alloc_miss_counter{tcache->stats_.alloc_misses};
+  DeltaCounter alloc_miss_counter{tcache->stats_for_testing().alloc_misses};
   DeltaCounter alloc_miss_too_large_counter{
-      tcache->stats_.alloc_miss_too_large};
-  DeltaCounter cache_fill_counter{tcache->stats_.cache_fill_count};
-  DeltaCounter cache_fill_misses_counter{tcache->stats_.cache_fill_misses};
+      tcache->stats_for_testing().alloc_miss_too_large};
+  DeltaCounter cache_fill_counter{tcache->stats_for_testing().cache_fill_count};
+  DeltaCounter cache_fill_misses_counter{
+      tcache->stats_for_testing().cache_fill_misses};
 
   // Cache large allocations.
   size_t large_allocation_size = ThreadCache::kLargeSizeThreshold;
@@ -1149,20 +1163,20 @@ TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
   EXPECT_EQ(1u, alloc_miss_too_large_counter.Delta());
 
   // There is memory trapped in the cache bucket.
-  EXPECT_GT(tcache->buckets_[index].count, 0u);
+  EXPECT_GT(tcache->bucket_for_testing(index).count, 0u);
 
   // Which is reclaimed by Purge().
   tcache->Purge();
-  EXPECT_EQ(0u, tcache->buckets_[index].count);
+  EXPECT_EQ(0u, tcache->bucket_for_testing(index).count);
 }
 
 TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
   auto count_items = [](ThreadCache* tcache, size_t index) {
     uint8_t count = 0;
-    auto* head = tcache->buckets_[index].freelist_head;
+    auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-      head =
-          head->GetNextForThreadCache<true>(tcache->buckets_[index].slot_size);
+      head = head->GetNextForThreadCache<true>(
+          tcache->bucket_for_testing(index).slot_size);
       count++;
     }
     return count;
@@ -1171,15 +1185,17 @@ TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
   auto* tcache = root()->thread_cache_for_testing();
   size_t index = FillThreadCacheAndReturnIndex(kSmallSize, 10);
   ASSERT_GE(count_items(tcache, index), 10);
-  void* head = tcache->buckets_[index].freelist_head;
+  void* head = tcache->bucket_for_testing(index).freelist_head;
 
   for (size_t limit : {8, 3, 1}) {
-    tcache->ClearBucket(tcache->buckets_[index], limit);
-    EXPECT_EQ(head, static_cast<void*>(tcache->buckets_[index].freelist_head));
+    tcache->ClearBucketForTesting(tcache->bucket_for_testing(index), limit);
+    EXPECT_EQ(head, static_cast<void*>(
+                        tcache->bucket_for_testing(index).freelist_head));
     EXPECT_EQ(count_items(tcache, index), limit);
   }
-  tcache->ClearBucket(tcache->buckets_[index], 0);
-  EXPECT_EQ(nullptr, static_cast<void*>(tcache->buckets_[index].freelist_head));
+  tcache->ClearBucketForTesting(tcache->bucket_for_testing(index), 0);
+  EXPECT_EQ(nullptr, static_cast<void*>(
+                         tcache->bucket_for_testing(index).freelist_head));
 }
 
 // TODO(https://crbug.com/1287799): Flaky on IOS.

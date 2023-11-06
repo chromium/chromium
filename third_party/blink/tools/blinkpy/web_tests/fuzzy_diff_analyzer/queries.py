@@ -66,6 +66,38 @@ WHERE
   image_diff_total_pixels IS NOT NULL
 """
 
+# Gets all web test flaky bugs and their flaky tests from the past |sample_period|
+# days.
+# List of data selected from the database:
+# bug_id - bug id for the flaky tests, like chromium/1493418
+# create_time - the creation time of this bug, like 2023-10-16 21:55:00.474-07:00
+# test_ids - list of the test ids, like [ninja://:testA,ninja://:testB]
+WEB_TEST_FLAKY_BUGS_QUERY = """
+WITH
+  blink_flaky_bugs AS (
+    SELECT
+      bug.id,
+      create_time,
+      rule_id
+    FROM `luci-analysis.chromium.failure_association_rules`
+    WHERE project = "chromium" AND
+      is_active = TRUE AND
+    DATE(create_time) > DATE_SUB(CURRENT_DATE(), INTERVAL @sample_period DAY)
+  )
+  SELECT
+    blink_flaky_bugs.id AS bug_id,
+    blink_flaky_bugs.create_time,
+    ARRAY_AGG(DISTINCT failures_table.test_id LIMIT 10) AS test_ids
+  FROM blink_flaky_bugs JOIN `luci-analysis.chromium.clustered_failures` AS failures_table
+  ON failures_table.cluster_id = blink_flaky_bugs.rule_id
+  WHERE REGEXP_CONTAINS(
+          (SELECT value FROM UNNEST(failures_table.variant) WHERE key = 'test_suite' LIMIT 1),
+            'blink_w(pt|eb)_tests')
+    AND cluster_algorithm LIKE 'rules-%'
+  GROUP BY blink_flaky_bugs.id, blink_flaky_bugs.create_time
+"""
+
+
 class FuzzyDiffAnalyzerQuerier:
     def __init__(self, sample_period: int, billing_project: str):
         """Class for making calls to BigQuery for Fuzzy Diff Analyzer.
@@ -99,6 +131,16 @@ class FuzzyDiffAnalyzerQuerier:
         return self._get_json_results(
             CI_FAILED_IMAGE_COMPARISON_TEST_QUERY.format(
                 test_path_selector=test_path_selector))
+
+    def get_web_test_flaky_bugs(self) -> ct.QueryJsonType:
+        """Gets all web test flaky bugs from the database.
+
+        Returns:
+          A JSON representation of the BigQuery results containing all found
+          web test flaky bug information.
+        """
+
+        return self._get_json_results(WEB_TEST_FLAKY_BUGS_QUERY)
 
     def _get_json_results(self, query: str) -> ct.QueryJsonType:
         """Gets the JSON results from an input BigQuery query.

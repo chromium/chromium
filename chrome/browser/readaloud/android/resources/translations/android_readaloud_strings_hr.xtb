@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hr">
 <translation id="1178581264944972037">Pauziraj</translation>
+<translation id="2558806128245168542">Povratak na prethodnu stranicu</translation>
 <translation id="3523426587027570423">Dodirnite da biste zatvorili player Poslušajte ovu stranicu.</translation>
+<translation id="4431240646217225907">Isticanje teksta i automatsko pomicanje</translation>
 <translation id="4654641641922242357">Player Poslušajte ovu stranicu.</translation>
 <translation id="4731877163452936634">Brzina reprodukcije: <ph name="PLAYBACK_SPEED" /> Kliknite za promjenu.</translation>
 <translation id="5234971936051226002">Player Poslušajte ovu stranicu je minimiziran.</translation>
 <translation id="5596627076506792578">Više opcija</translation>
+<translation id="6315170314923504164">Glasovno</translation>
+<translation id="6550675742724504774">Opcije</translation>
 <translation id="6790428901817661496">Reproduciraj</translation>
+<translation id="6831043979455480757">Prevedi</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
 <translation id="7587250070160020374">Chrome sada reproducira</translation>
 <translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> s unaprijed</translation>

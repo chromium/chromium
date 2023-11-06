@@ -65,7 +65,7 @@ struct DowncastTraits<CSSSizeNonInterpolableValue> {
 };
 
 static InterpolationValue ConvertKeyword(CSSValueID keyword) {
-  return InterpolationValue(std::make_unique<InterpolableList>(0),
+  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
                             CSSSizeNonInterpolableValue::Create(keyword));
 }
 

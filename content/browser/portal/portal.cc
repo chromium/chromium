@@ -471,7 +471,7 @@ void Portal::NavigationStateChanged(WebContents* source,
   outer_contents->GetDelegate()->NavigationStateChanged(source, changed_flags);
 }
 
-bool Portal::ShouldFocusPageAfterCrash() {
+bool Portal::ShouldFocusPageAfterCrash(WebContents* source) {
   return false;
 }
 

@@ -63,6 +63,7 @@ MultiBufferDataSourceFactory::MultiBufferDataSourceFactory(
 }
 
 void MultiBufferDataSourceFactory::CreateDataSource(GURL uri, DataSourceCb cb) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto download_cb =
 #if DCHECK_IS_ON()
       base::BindRepeating(
@@ -84,6 +85,7 @@ void MultiBufferDataSourceFactory::OnUrlData(
     DataSourceCb cb,
     base::RepeatingCallback<void(bool)> download_cb,
     scoped_refptr<UrlData> data) {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
   std::move(cb).Run(std::make_unique<MultiBufferDataSource>(
       main_task_runner_, std::move(data), media_log_.get(),
       buffered_data_source_host_.get(), std::move(download_cb)));
@@ -125,9 +127,9 @@ void HlsDataSourceProviderImpl::ReadFromUrl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_source_factory_->CreateDataSource(
       std::move(uri),
-      base::BindPostTaskToCurrentDefault(base::BindOnce(
-          &HlsDataSourceProviderImpl::OnDataSourceReady,
-          weak_factory_.GetWeakPtr(), std::move(range), std::move(callback))));
+      base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceReady,
+                     weak_factory_.GetWeakPtr(), std::move(range),
+                     std::move(callback)));
 }
 
 void HlsDataSourceProviderImpl::ReadFromExistingStream(

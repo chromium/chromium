@@ -13,16 +13,18 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char kClassPath_org_jni_1zero_samples_SampleProxyEdgeCases[];
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
+    kClassPath_org_jni_1zero_samples_SampleProxyEdgeCases[];
 const char kClassPath_org_jni_1zero_samples_SampleProxyEdgeCases[] =
     "org/jni_zero/samples/SampleProxyEdgeCases";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass>
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
     g_org_jni_1zero_samples_SampleProxyEdgeCases_clazz(nullptr);
 #ifndef org_jni_1zero_samples_SampleProxyEdgeCases_clazz_defined
 #define org_jni_1zero_samples_SampleProxyEdgeCases_clazz_defined
@@ -41,7 +43,7 @@ static jint JNI_SampleProxyEdgeCases_AddStructB(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& caller,
     const base::android::JavaParamRef<jobject>& b);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1addStructB(
     JNIEnv* env,
     jclass jcaller,
@@ -55,7 +57,7 @@ static base::android::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_
     env, const base::android::JavaParamRef<jintArray>& a,
     const base::android::JavaParamRef<jobjectArray>& b);
 
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1arrayTypes1(
     JNIEnv* env,
     jclass jcaller,
@@ -69,7 +71,7 @@ static base::android::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_Arr
     env, const base::android::JavaParamRef<jintArray>& a,
     const base::android::JavaParamRef<jobjectArray>& b);
 
-JNI_GENERATOR_EXPORT jintArray
+JNI_BOUNDARY_EXPORT jintArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1arrayTypes2(
     JNIEnv* env,
     jclass jcaller,
@@ -81,7 +83,7 @@ JNI_GENERATOR_EXPORT jintArray
 
 static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1fooForTest(
     JNIEnv* env,
     jclass jcaller) {
@@ -90,7 +92,7 @@ JNI_GENERATOR_EXPORT void
 
 static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1fooForTesting(
     JNIEnv* env,
     jclass jcaller) {
@@ -99,7 +101,7 @@ JNI_GENERATOR_EXPORT void
 
 static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1fooForTests(
     JNIEnv* env,
     jclass jcaller) {
@@ -108,7 +110,7 @@ JNI_GENERATOR_EXPORT void
 
 static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
     JNIEnv* env,
     jclass jcaller) {
@@ -119,7 +121,7 @@ static base::android::ScopedJavaLocalRef<jobjectArray>
     JNI_SampleProxyEdgeCases_GenericsWithNestedClassArray(JNIEnv* env, const
     base::android::JavaParamRef<jobjectArray>& arg);
 
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
     jclass jcaller,
@@ -132,7 +134,7 @@ static void JNI_SampleProxyEdgeCases_SetBool(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& b,
     const base::android::JavaParamRef<jobject>& i);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1setBool(
     JNIEnv* env,
     jclass jcaller,
@@ -145,7 +147,7 @@ JNI_GENERATOR_EXPORT void
 static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& sb);
 
-JNI_GENERATOR_EXPORT jboolean
+JNI_BOUNDARY_EXPORT jboolean
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
@@ -156,7 +158,7 @@ JNI_GENERATOR_EXPORT jboolean
 
 static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
@@ -164,7 +166,7 @@ JNI_GENERATOR_EXPORT jint
   return JNI_SampleProxyEdgeCases_SetStringBuilder(env, sb);
 }
 
-JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeInstanceMethod(
+JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance) {
@@ -175,7 +177,7 @@ JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_native
 
 static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeStaticMethod(
+JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller) {
   return JNI_SampleProxyEdgeCases_StaticMethod(env);

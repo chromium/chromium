@@ -9,6 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
+#include "components/sync/protocol/web_apk_specifics.pb.h"
 
 class GURL;
 
@@ -40,6 +41,11 @@ class WebappRegistry {
 
   // Returns all origins that have a WebAPK or TWA installed.
   virtual std::vector<std::string> GetOriginsWithInstalledApp();
+
+  // Returns a vector of |sync_pb::WebApkSpecifics| with information for each
+  // installed WebAPK.
+  virtual std::vector<std::unique_ptr<sync_pb::WebApkSpecifics>>
+  GetWebApkSpecifics() const;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_WEBAPPS_WEBAPP_REGISTRY_H_

@@ -66,6 +66,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
@@ -731,17 +732,19 @@ base::AutoReset<const GURL*> ChromeContentBrowserClientExtensionsPart::
 
 void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
-  int id = host->GetID();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
   if (AreExtensionsDisabledForProfile(profile)) {
     return;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
+  int id = host->GetID();
   host->AddFilter(new ExtensionMessageFilter(id, profile));
   host->AddFilter(new ExtensionServiceWorkerMessageFilter(
       id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
   host->AddFilter(new MessagingAPIMessageFilter(id, profile));
+#endif
 }
 
 void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(

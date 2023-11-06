@@ -173,6 +173,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
       ->SetAllPrivacySandboxAllowedForTesting();
 
   // We do not add an attestation for the reporting origin.
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting({});
 
   ExpectedReportWaiter expected_report(GURL(kReportEndpoint), &server_);
   ASSERT_TRUE(server_.Start());

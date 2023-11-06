@@ -38,6 +38,14 @@ namespace {
 
 constexpr gfx::Size kMinWindowSize(200, 100);
 
+// Reported minimum bubble size for the setting view.  The pip window should be
+// larger than this when the setting view is shown.
+constexpr gfx::Size kBubbleSize(300, 200);
+
+// Size that's big enough to accommodate a `kBubbleSize`-sized bubble without
+// being further adjusted upwards for margin.
+constexpr gfx::Size kSizeBigEnoughForBubble(400, 300);
+
 }  // namespace
 
 using testing::_;
@@ -51,7 +59,21 @@ class MockOverlayView : public AutoPipSettingOverlayView {
                                   gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}
-  MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
+  MOCK_METHOD(void,
+              ShowBubble,
+              (gfx::NativeView parent, PipWindowType pip_window_type),
+              (override));
+
+  bool WantsEvent(const gfx::Point& point_in_screen) override {
+    // Consume any event we're given.  The goal is to make sure we're given the
+    // opportunity to take an event.
+    return true;
+  }
+
+  gfx::Size GetBubbleSize() const override {
+    // Return something that's bigger than the minimum.
+    return kBubbleSize;
+  }
 };
 
 class TestVideoPictureInPictureWindowController
@@ -151,7 +173,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
     return pip_window_controller_;
   }
 
-  views::View* SetOverlayView() {
+  MockOverlayView* SetOverlayView() {
     std::unique_ptr<MockOverlayView> mock_overlay_view =
         std::make_unique<MockOverlayView>(
             overlay_window().window_background_view_for_testing());
@@ -181,7 +203,7 @@ class VideoOverlayWindowViewsTest : public ChromeViewsTestBase {
   display::test::TestScreen test_screen_;
 
   // Overlay view that we'll send to the window.  May be null.
-  std::unique_ptr<AutoPipSettingOverlayView> overlay_view_;
+  std::unique_ptr<MockOverlayView> overlay_view_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
@@ -561,14 +583,19 @@ TEST_F(VideoOverlayWindowViewsTest,
 
 TEST_F(VideoOverlayWindowViewsTest, OverlayViewIsSizedCorrectly) {
   // Set the bound of the window before showing it, to make sure the size
-  // propagates to the overlay view.
-  const gfx::Rect bounds(0, 0, 200, 200);
-  overlay_window().UpdateNaturalSize(bounds.size());
-  overlay_window().SetBounds(bounds);
+  // propagates to the overlay view.  We use the larger-than-bubble size so that
+  // it should be an exact match.  If it were too small, then the overlay window
+  // might have to be even larger than we request to fit the bubble.
+
   // Setting the overlay view before show should be sufficient for it to take
   // effect when shown.
   auto* overlay_view = SetOverlayView();
   overlay_window().ShowInactive();
+  // Do this after showing it, else the window will size to a default size,
+  // rather than the bounds we request.
+  const gfx::Rect bounds(gfx::Point(0, 0), kSizeBigEnoughForBubble);
+  overlay_window().UpdateNaturalSize(bounds.size());
+  overlay_window().SetBounds(bounds);
   EXPECT_TRUE(overlay_view->GetVisible());
   EXPECT_EQ(overlay_view->bounds(), bounds);
 }
@@ -607,4 +634,20 @@ TEST_F(VideoOverlayWindowViewsTest, OverlayWindowBlocksInput) {
   event_generator()->MoveMouseTo(
       overlay_window().GetCloseControlsBounds().CenterPoint());
   event_generator()->ClickLeftButton();
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OverlayWindowFitsInMinimumSize) {
+  auto* overlay_view = SetOverlayView();
+  overlay_window().ShowInactive();
+
+  // The window size should be strictly greater than the bubble size so that
+  // there's some nonzero margin.
+  auto window_min_size = overlay_window().GetMinimumSize();
+  auto bubble_min_size = overlay_view->GetBubbleSize();
+  EXPECT_GT(window_min_size.width(), bubble_min_size.width());
+  EXPECT_GT(window_min_size.height(), bubble_min_size.height());
+
+  // When the overlay view is hidden, the minimum size should return to normal.
+  overlay_view->SetVisible(false);
+  EXPECT_EQ(overlay_window().GetMinimumSize(), kMinWindowSize);
 }

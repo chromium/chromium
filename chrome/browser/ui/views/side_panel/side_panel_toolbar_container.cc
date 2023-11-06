@@ -86,7 +86,7 @@ void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::ButtonPressed() {
       "companion_side_panel_accessed_via_toolbar_button");
   browser_view_->CloseFeaturePromo(
       feature_engagement::kIPHCompanionSidePanelFeature,
-      user_education::FeaturePromoCloseReason::kFeatureEngaged);
+      user_education::EndFeaturePromoReason::kFeatureEngaged);
 }
 
 void SidePanelToolbarContainer::PinnedSidePanelToolbarButton::

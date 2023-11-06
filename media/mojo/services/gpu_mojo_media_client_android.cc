@@ -4,9 +4,7 @@
 
 #include "media/mojo/services/gpu_mojo_media_client.h"
 
-#include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/android/android_cdm_factory.h"
@@ -20,11 +18,12 @@
 #include "media/gpu/android/media_codec_video_decoder.h"
 #include "media/gpu/android/pooled_shared_image_video_provider.h"
 #include "media/gpu/android/video_frame_factory_impl.h"
-#include "media/mojo/mojom/media_drm_storage.mojom.h"
-#include "media/mojo/mojom/provision_fetcher.mojom.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/services/android_mojo_util.h"
-#include "media/mojo/services/mojo_media_drm_storage.h"
-#include "media/mojo/services/mojo_provision_fetcher.h"
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/gpu/android/ndk_audio_encoder.h"
+#endif
 
 using media::android_mojo_util::CreateMediaDrmStorage;
 using media::android_mojo_util::CreateProvisionFetcher;
@@ -100,7 +99,15 @@ std::unique_ptr<AudioDecoder> CreatePlatformAudioDecoder(
 
 std::unique_ptr<AudioEncoder> CreatePlatformAudioEncoder(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+  if (!NdkAudioEncoder::IsSupported()) {
+    return nullptr;
+  }
+
+  return std::make_unique<NdkAudioEncoder>(std::move(task_runner));
+#else
   return nullptr;
+#endif
 }
 
 std::unique_ptr<CdmFactory> CreatePlatformCdmFactory(

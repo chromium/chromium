@@ -41,6 +41,7 @@ const PREFERENCES = {
   trashEnabled: false,
   officeFileMovedOneDrive: 0,
   officeFileMovedGoogleDrive: 0,
+  driveFsBulkPinningAvailable: true,
   driveFsBulkPinningEnabled: true,
 };
 

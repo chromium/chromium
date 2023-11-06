@@ -9,8 +9,10 @@
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/gl/gl_features.h"
 
 namespace {
@@ -75,9 +77,26 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       ::features::kDefaultPassthroughCommandDecoder);
 
+  // HDR does not support webview yet. See crbug.com/1493153 for an explanation.
+  aw_feature_overrides.DisableFeature(ui::kAndroidHDR);
+
   // Disable Reducing User Agent minor version on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kReduceUserAgentMinorVersion);
+
+  // Disable skip Safe Browsing subresource checks on WebView since WebView's
+  // rollout schedule is behind Clank's schedule.
+  aw_feature_overrides.DisableFeature(
+      safe_browsing::kSafeBrowsingSkipSubresources);
+
+  // Disable Shared Storage on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kSharedStorageAPI);
+
+  // Disable scrollbar-color on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kScrollbarColor);
+
+  // Disable scrollbar-width on WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kScrollbarWidth);
 
   aw_feature_overrides.RegisterOverrides(feature_list);
 }

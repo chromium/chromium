@@ -124,11 +124,15 @@ scoped_refptr<TransformOperation>
 TransformOperations::BlendRemainingByUsingMatrixInterpolation(
     const TransformOperations& from,
     wtf_size_t matching_prefix_length,
-    double progress) const {
+    double progress,
+    BoxSizeDependentMatrixBlending box_size_dependent) const {
   // Not safe to use a cached transform if any of the operations are size
   // dependent.
   if (BoxSizeDependencies(matching_prefix_length) ||
       from.BoxSizeDependencies(matching_prefix_length)) {
+    if (box_size_dependent == BoxSizeDependentMatrixBlending::kDisallow) {
+      return nullptr;
+    }
     return InterpolatedTransformOperation::Create(
         from, *this, matching_prefix_length, progress);
   }
@@ -154,8 +158,10 @@ TransformOperations::BlendRemainingByUsingMatrixInterpolation(
 // https://drafts.csswg.org/css-transforms-1/#interpolation-of-transforms
 // TODO(crbug.com/914397): Consolidate blink and cc implementations of transform
 // interpolation.
-TransformOperations TransformOperations::Blend(const TransformOperations& from,
-                                               double progress) const {
+TransformOperations TransformOperations::Blend(
+    const TransformOperations& from,
+    double progress,
+    BoxSizeDependentMatrixBlending box_size_dependent) const {
   if (from == *this || (!from.size() && !size()))
     return *this;
 
@@ -178,7 +184,7 @@ TransformOperations TransformOperations::Blend(const TransformOperations& from,
   if (success && matching_prefix_length < max_path_length) {
     scoped_refptr<TransformOperation> matrix_op =
         BlendRemainingByUsingMatrixInterpolation(from, matching_prefix_length,
-                                                 progress);
+                                                 progress, box_size_dependent);
     if (matrix_op)
       result.Operations().push_back(matrix_op);
     else

@@ -114,7 +114,8 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowIbanBubble(
   // TODO(crbug.com/1416270): Add Show() to AutofillBubbleBase and refactor
   // below.
   switch (bubble_type) {
-    case IbanBubbleType::kLocalSave: {
+    case IbanBubbleType::kLocalSave:
+    case IbanBubbleType::kUploadSave: {
       SaveIbanBubbleView* bubble =
           new SaveIbanBubbleView(anchor_view, web_contents, controller);
 

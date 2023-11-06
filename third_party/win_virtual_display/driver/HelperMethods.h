@@ -15,7 +15,6 @@
 #include <iddcx.h>
 
 namespace display::test {
-namespace Methods {
 void FillSignalInfo(DISPLAYCONFIG_VIDEO_SIGNAL_INFO&,
                     DWORD,
                     DWORD,
@@ -26,7 +25,6 @@ IDDCX_MONITOR_MODE CreateIddCxMonitorMode(DWORD,
                                           DWORD,
                                           IDDCX_MONITOR_MODE_ORIGIN);
 IDDCX_TARGET_MODE CreateIddCxTargetMode(DWORD, DWORD, DWORD);
-}  // namespace Methods
 }  // namespace display::test
 
 #endif  // THIRD_PARTY_WIN_VIRTUAL_DISPLAY_DRIVER_HELPERMETHODS_H_

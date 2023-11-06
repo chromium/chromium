@@ -6,8 +6,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {castExists} from './assert_extras.js';
+import {RouteObserverMixinInterface} from './common/route_observer_mixin.js';
 import {createRoutes, OsSettingsRoutes, Route} from './os_settings_routes.js';
-import {RouteObserverMixinInterface} from './route_observer_mixin.js';
 
 export {Route};
 

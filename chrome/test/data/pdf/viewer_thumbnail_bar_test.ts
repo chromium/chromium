@@ -22,9 +22,7 @@ function getTestThumbnailBarHeight(): number {
   const sizerThumbnail = document.createElement('viewer-thumbnail');
   sizerThumbnail.pageNumber = 1;
   document.body.appendChild(sizerThumbnail);
-  // Add 24 to cover padding between thumbnails.
-  const thumbnailBarHeight = sizerThumbnail.offsetHeight + 24;
-  return thumbnailBarHeight;
+  return sizerThumbnail.offsetHeight;
 }
 
 function keydown(element: HTMLElement, key: string) {
@@ -119,7 +117,8 @@ const tests = [
     for (let i = 2; i < 7; i++) {
       whenRequestedPaintingNext.push(whenThumbnailPainted(thumbnails[i]!));
     }
-    scroller.scrollTop = 5 * thumbnailBarHeight;
+    const thumbnailHeight = thumbnailBarHeight + 24;  // Including padding.
+    scroller.scrollTop = 5 * thumbnailHeight;
     await Promise.all(whenRequestedPaintingNext);
 
     // First seven thumbnails should be painted.
@@ -135,7 +134,7 @@ const tests = [
       whenThumbnailCleared(thumbnails[0]!),
       whenThumbnailCleared(thumbnails[1]!),
     ];
-    scroller.scrollTop = 7 * thumbnailBarHeight;
+    scroller.scrollTop = 7 * thumbnailHeight;
     await Promise.all(whenRequestedPaintingLast);
 
     // Only first two thumbnails should not be painted.

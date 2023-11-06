@@ -133,7 +133,7 @@ constexpr Lock::Lock() = default;
 
 // We want PartitionRoot to not have a global destructor, so this should not
 // have one.
-static_assert(std::is_trivially_destructible<Lock>::value, "");
+static_assert(std::is_trivially_destructible_v<Lock>, "");
 
 }  // namespace partition_alloc::internal
 

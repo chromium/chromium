@@ -45,9 +45,10 @@ static_assert(sizeof(kLocalBillingAddressId) == sizeof(kLocalBillingAddressId2),
               "|kLocalBillingAddressId2| has to have the right length to be "
               "considered a local guid");
 
-const base::Time kArbitraryDefaultTime = base::Time::FromDoubleT(25);
-const base::Time kLaterTime = base::Time::FromDoubleT(5000);
-const base::Time kEvenLaterTime = base::Time::FromDoubleT(6000);
+const base::Time kArbitraryDefaultTime =
+    base::Time::FromSecondsSinceUnixEpoch(25);
+const base::Time kLaterTime = base::Time::FromSecondsSinceUnixEpoch(5000);
+const base::Time kEvenLaterTime = base::Time::FromSecondsSinceUnixEpoch(6000);
 
 class TwoClientWalletSyncTest : public SyncTest {
  public:

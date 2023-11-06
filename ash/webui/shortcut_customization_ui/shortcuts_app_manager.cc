@@ -74,20 +74,8 @@ void ShortcutsAppManager::SetSearchConcepts(
       if (const auto& map_iterator =
               config_iterator->second.find(layout_info->action);
           map_iterator != config_iterator->second.end()) {
-        // Filter accelerators that state is 'kDisabledByUser' from
-        // map_iterator->second
-        auto& accelerators = map_iterator->second;
-        accelerators.erase(
-            std::remove_if(accelerators.begin(), accelerators.end(),
-                           [](const auto& accel_ptr) {
-                             return accel_ptr->state ==
-                                    mojom::AcceleratorState::kDisabledByUser;
-                           }),
-            accelerators.end());
-        if (!accelerators.empty()) {
-          search_concepts.emplace_back(std::move(layout_info),
-                                       std::move(accelerators));
-        }
+        search_concepts.emplace_back(std::move(layout_info),
+                                     std::move(map_iterator->second));
       }
     }
   }

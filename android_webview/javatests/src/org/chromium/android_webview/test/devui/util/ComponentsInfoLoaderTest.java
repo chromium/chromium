@@ -21,21 +21,20 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Unit tests for ComponentsInfoLoader.
- */
+/** Unit tests for ComponentsInfoLoader. */
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ComponentsInfoLoaderTest {
-    @Rule
-    public TemporaryFolder mTempDir = new TemporaryFolder();
+    @Rule public TemporaryFolder mTempDir = new TemporaryFolder();
 
     @Test
     @SmallTest
     public void testMultipleComponents_withOneVersionSubDirectory() throws IOException {
         ComponentInfo[] expectedList =
-                new ComponentInfo[] {new ComponentInfo("MockComponent A", "1.0.2.1"),
-                        new ComponentInfo("MockComponent B", "2021.1.2.1")};
+                new ComponentInfo[] {
+                    new ComponentInfo("MockComponent A", "1.0.2.1"),
+                    new ComponentInfo("MockComponent B", "2021.1.2.1")
+                };
 
         for (ComponentInfo mockComponent : expectedList) {
             mTempDir.newFolder(

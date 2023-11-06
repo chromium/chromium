@@ -194,9 +194,10 @@ bool ProcessHasEntitlement() {
 
   base::apple::ScopedCFTypeRef<CFTypeRef> entitlement_value_cftype(
       SecTaskCopyValueForEntitlement(
-          task, CFSTR("com.apple.developer.web-browser.public-key-credential"),
+          task.get(),
+          CFSTR("com.apple.developer.web-browser.public-key-credential"),
           nullptr));
-  return entitlement_value_cftype;
+  return !!entitlement_value_cftype;
 }
 
 API_AVAILABLE(macos(13.3))

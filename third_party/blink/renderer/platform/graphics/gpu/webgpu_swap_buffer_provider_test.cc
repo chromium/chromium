@@ -30,6 +30,12 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
     procs()->deviceRelease = [](WGPUDevice) {};
     procs()->textureReference = [](WGPUTexture) {};
     procs()->textureRelease = [](WGPUTexture) {};
+
+    procs()->deviceGetLimits =
+        [](WGPUDevice, WGPUSupportedLimits* supportedLimits) -> WGPUBool {
+      supportedLimits->limits.maxTextureDimension2D = 8192;
+      return 1;
+    };
   }
 
   MOCK_METHOD(gpu::webgpu::ReservedTexture,

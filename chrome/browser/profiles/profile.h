@@ -445,13 +445,6 @@ class Profile : public content::BrowserContext {
 
   // Returns true if this is the main profile as defined above.
   virtual bool IsMainProfile() const = 0;
-
-  // Returns true if the profile path is for an web app profile.
-  static bool IsWebAppProfilePath(const base::FilePath& profile_path);
-
-  // Returns true if the name of the profile (i.e. `profile_path.BaseName()`) is
-  // for an web app profile.
-  static bool IsWebAppProfileName(const std::string& profile_path);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool CanUseDiskWhenOffTheRecord() override;

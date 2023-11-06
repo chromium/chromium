@@ -85,7 +85,7 @@ class ScopedBOMapping {
 
   explicit operator bool() const { return IsValid(); }
 
-  ScopedAccess BeginAccess();
+  ScopedAccess BeginAccess() const;
 
  private:
   // Contains metadata for each element of a plane retrieved from minigbm.

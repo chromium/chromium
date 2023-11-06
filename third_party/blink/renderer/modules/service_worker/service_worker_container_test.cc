@@ -43,6 +43,8 @@ namespace {
 // Promise-related test support.
 
 struct StubScriptFunction {
+  DISALLOW_NEW();
+
  public:
   StubScriptFunction() : call_count_(0) {}
 

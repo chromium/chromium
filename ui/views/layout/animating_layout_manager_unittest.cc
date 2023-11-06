@@ -17,6 +17,8 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -44,6 +46,8 @@ gfx::Size ConstrainSizeToBounds(const gfx::Size& size,
 
 // View that allows directly setting minimum size.
 class TestView : public View {
+  METADATA_HEADER(TestView, View)
+
  public:
   using View::View;
   ~TestView() override = default;
@@ -67,6 +71,9 @@ class TestView : public View {
   absl::optional<gfx::Size> minimum_size_;
   bool fix_area_ = false;
 };
+
+BEGIN_METADATA(TestView)
+END_METADATA
 
 // Layout that provides a predictable target layout for an
 // AnimatingLayoutManager.

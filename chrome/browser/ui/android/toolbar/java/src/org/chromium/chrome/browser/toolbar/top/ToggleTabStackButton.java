@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.widget.Toast;
 
 /**

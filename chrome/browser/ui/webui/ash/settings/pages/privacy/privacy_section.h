@@ -8,9 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/sync_section.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -45,6 +47,8 @@ class PrivacySection : public OsSettingsSection {
  private:
   bool AreFingerprintSettingsAllowed();
   void UpdateRemoveFingerprintSearchTags();
+
+  absl::optional<SyncSection> sync_subsection_;
 
   raw_ptr<PrefService, ExperimentalAsh> pref_service_;
   PrefChangeRegistrar fingerprint_pref_change_registrar_;

@@ -101,6 +101,7 @@ component("binder_overrides") {
     "binder_overrides.cc",
     "binder_overrides.h",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [
     "//base",
     "//mojo/public/cpp/bindings",
@@ -379,7 +380,10 @@ source_set("tests") {
   }
 
   if (is_mac) {
-    sources += [ "compute_pressure/cpu_probe_mac_unittest.cc" ]
+    sources += [
+      "compute_pressure/core_times_unittest.cc",
+      "compute_pressure/cpu_probe_mac_unittest.cc",
+    ]
   }
 
   # UsbContext is a libusb-specific object.
@@ -464,7 +468,6 @@ if (is_android) {
     ]
     srcjar_deps = [ ":device_service_jni_headers" ]
     deps = [
-      "//base:jni_java",
       "//mojo/public/java:bindings_java",
       "//mojo/public/java:system_java",
       "//mojo/public/java/system:system_impl_java",
@@ -481,6 +484,7 @@ if (is_android) {
       "//services/device/wake_lock/power_save_blocker:java",
       "//services/service_manager/public/java:service_manager_java",
       "//services/service_manager/public/mojom:mojom_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

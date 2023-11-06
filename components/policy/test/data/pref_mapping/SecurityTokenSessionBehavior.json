@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SecurityTokenSessionBehavior": "LOGOUT"
+        },
+        "prefs": {
+          "security_token_session_behavior": {
+            "location": "local_state",
+            "value": "LOGOUT"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "security_token_session_behavior": {
+            "default_value": "IGNORE",
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

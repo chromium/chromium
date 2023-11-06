@@ -85,47 +85,21 @@ function conditionHolds(condition, error_message = 'Condition is not true anymor
   });
 }
 
-// TODO: Frames are animated every 1ms for testing. It may be better to have the
-// timeout based on time rather than frame count.
+// Waits until scrolling has stopped for a period of time.
 // @deprecated:
 //    If a scroll is expected then use waitForScrollendEvent.
-//    If asserting that no scroll tales place then:
+//    TODO(kevers): Not possible in all cases, e.g. an input field does not
+//    fire a scrollend event when scrolled. This is the exception rather than
+//    the rule. Once each remaining call has been reviewed, we can see if
+//    there are enough special cases to warrant a waitForScrollend with
+//    "polyfilled"  behavior in cases where a scrollend event is not expected.
+//    If asserting that no scroll takes place then:
 //        Add a scroll listener with assert_unreached(message)
 //        If possible, wait on a sentinel event that indicates when handling of
 //        the gesture is complete. Otherwise, wait a few animation frames.
 //        Pointerup is an example of a suitable sentinel event if the test
 //        is driven by pointer events since pointerup is replace by
 //        pointercancel if scrolling occurs.
-function waitForAnimationEnd(getValue, max_frame, max_unchanged_frame) {
-  const MAX_FRAME = max_frame;
-  const MAX_UNCHANGED_FRAME = max_unchanged_frame;
-  var last_changed_frame = 0;
-  var last_position = getValue();
-  return new Promise((resolve, reject) => {
-    function tick(frames) {
-    // We requestAnimationFrame either for MAX_FRAME or until
-    // MAX_UNCHANGED_FRAME with no change have been observed.
-      if (frames >= MAX_FRAME || frames - last_changed_frame > MAX_UNCHANGED_FRAME) {
-        resolve();
-      } else {
-        current_value = getValue();
-        if (last_position != current_value) {
-          last_changed_frame = frames;
-          last_position = current_value;
-        }
-        requestAnimationFrame(tick.bind(this, frames + 1));
-      }
-    }
-    tick(0);
-  })
-}
-
-// Waits until scrolling has stopped for a period of time.
-// @deprecated:
-//   For a scrolling test use waitForScrollend if expecting a scroll
-//   and use a scroll listener with assert_unreached if no scrolling is
-//   expected. See comments on waitForAnimationEnd for a more complete
-//   description of the recommended alternatives.
 function waitForAnimationEndTimeBased(getValue) {
   // Give up if the animation still isn't done after this many milliseconds.
   const TIMEOUT_MS = 1000;
@@ -897,52 +871,86 @@ function assert_point_within_viewport(x, y, origin = "viewport") {
               'y coordinate outside viewport');
 }
 
-// Performs a touch drag from a starting point (x,y) which may be relative to
-// the viewport or the center of an element as determined by the origin
-// parameter. Verifies that both ends of the drag are inside the viewport. The
-// returned promise is resolved when a pointerup or pointercancel event is
-// received. Pointercancel replaces pointerup when scrolling takes place. Thus,
-// any scrolling decisions has been made prior to dispatching either of these
-// events.
+// Performs a drag operation from a starting point (x,y) which may be relative
+// to the viewport or the center of an element as determined by the origin
+// option, or "viewport" if missing. Verifies that both ends of the drag are
+//  inside the viewport. The returned promise is resolved when a pointerup or
+// pointercancel event is received. Pointercancel replaces pointerup when
+// scrolling takes place. Thus, any scrolling decisions has been made prior to
+// dispatching either of these events.
 // Supported options:
-//    origin: May be the string "viewport" or an element.
+//    origin: May be the string "viewport" (default) or an element.
 //    eventTarget: Indicates the target for the pointerup or pointercancel
-//                 event.
+//                 event. Defaults to  document.
+//    pointerType: 'mouse' (default), 'pen' or 'touch'
 //    prevent_fling_pause_ms: How long to wait after the move to avoid a
-//                            momentum fling.
-function touchDrag(x, y, deltaX, deltaY, options = {}) {
+//                            momentum fling. Default to 0ms.
+//    adjust_for_touch_slop: Indicates if we should adjust to drag range to
+//                           compensate for touch slop. At the start of a touch
+//                           drag, we do not know if we are scrolling or not.
+//                           Once scrolled past the slop region, a touch
+//                           scroll will stick to the finger position.
+//                           Defaults to false.
+function pointerDrag(x, y, deltaX, deltaY, options = {}) {
   const origin = options.origin || "viewport";
   const eventTarget = options.eventTarget || document;
-  const prevent_fling_pause_ms = options.prevent_fling_pause_ms || 100;
+  const pointerType = options.pointerType || 'mouse';
+  const prevent_fling_pause_ms = options.prevent_fling_pause_ms || 0;
+  if (options.adjust_for_touch_slop) {
+    // TODO(kevers): This value may become platform specific, in which case
+    // we may need to perform a test to measure the slop and then apply in
+    // subsequent tests.
+    const TOUCH_SLOP_AMOUNT = 15;
+    if (deltaX) {
+      deltaX += TOUCH_SLOP_AMOUNT * Math.sign(deltaX);
+    }
+    if (deltaY) {
+      deltaY += TOUCH_SLOP_AMOUNT * Math.sign(deltaY);
+    }
+  }
   verifyTestDriverLoaded();
   assert_point_within_viewport(x, y, origin);
   assert_point_within_viewport(x + deltaX, y + deltaY, origin);
-  return new Promise((resolve,reject) => {
-    // Expect a pointerup or pointercancel event depending on whether scrolling
-    // actually took place.
-    const pointerListener = (event) => {
-      if (event.type == 'pointerup' || event.type == 'pointercancel') {
+  // Expect a pointerup or pointercancel event depending on whether scrolling
+  // actually took place.
+  return new Promise(resolve => {
+    const pointerPromise = new Promise(resolve => {
+      const pointerListener = (event) => {
         eventTarget.removeEventListener('pointerup', pointerListener);
         eventTarget.removeEventListener('pointercancel', pointerListener);
         resolve(event.type);
-      }
-    };
-    eventTarget.addEventListener('pointerup', pointerListener);
-    eventTarget.addEventListener('pointercancel', pointerListener);
-    new test_driver.Actions()
-      .addPointer("pointer1", "touch")
+      };
+      eventTarget.addEventListener('pointerup', pointerListener);
+      eventTarget.addEventListener('pointercancel', pointerListener);
+    });
+    const actionPromise = new test_driver.Actions()
+      .addPointer("pointer1", pointerType)
       .pointerMove(x, y, { origin: origin })
       .pointerDown()
       .pointerMove(x + deltaX, y + deltaY, { origin: origin })
       .pause(prevent_fling_pause_ms)
       .pointerUp()
       .send();
+    Promise.all([actionPromise, pointerPromise]).then(responses => {
+      resolve(responses[1]);
+    });
   });
+}
+
+
+// Performs a touch drag gesture. The prevent_fling_pause_ms options is used
+// to prevent the drag from having fling momentum.
+function touchDrag(x, y, deltaX, deltaY, options = {}) {
+  options.pointerType = 'touch';
+  if (options.prevent_fling_pause_ms === undefined) {
+    options.prevent_fling_pause_ms = 100;
+  }
+  return pointerDrag(x, y, deltaX, deltaY, options);
 }
 
 // Performs a touch scroll operations.  The promise is resolved when the
 // pointer cancel and scrollend events are received.
-// The supported options are documented in touchDrag.
+// The supported options are documented in pointerDrag.
 function touchScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   if (!options.eventTarget) {
     options.eventTarget = scroller.ownerDocument;
@@ -950,11 +958,21 @@ function touchScroll(x, y, deltaX, deltaY, scroller, options = {}) {
   const scrollPromise =
       waitForScrollendEvent(scrollendEventTarget(scroller));
   const dragGesturePromise =
-      touchDrag(x, y, deltaX, deltaY, options).then(value => {
-         assert_equals(value, 'pointercancel',
-                       'Expect scrolling to trigger poitnercancel');
-      });
+      touchDrag(x, y, deltaX, deltaY, options);
   return Promise.all([dragGesturePromise, scrollPromise]);
+}
+
+function mouseDrag(x, y, deltaX, deltaY, scroller, options = {}) {
+  return pointerDrag(x, y, deltaX, deltaY, scroller, options);
+}
+
+function mouseDragScroll(x, y, deltaX, deltaY, scroller, options = {}) {
+  if (!options.eventTarget) {
+    options.eventTarget = scroller.ownerDocument;
+  }
+  const scrollPromise = waitForScrollendEvent(scroller);
+  const dragPromise = mouseDrag(x, y, deltaX, deltaY, options);
+  return Promise.all([scrollPromise, dragPromise]);
 }
 
 function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
@@ -967,6 +985,35 @@ function wheelScroll(x, y, deltaX, deltaY, origin =-"viewport",
         .scroll(x, y, deltaX, deltaY, origin, duration_ms)
         .send();
   return Promise.all([gesturePromise, wheelPromise]);
+}
+
+function mouseClick(x, y, options = {}) {
+  const origin = options.origin || "viewport";
+  verifyTestDriverLoaded();
+  assert_point_within_viewport(x, y, origin);
+  return new Promise((resolve) => {
+    const pointerListener = (event) => {
+      if (event.type == 'pointerup') {
+        document.removeEventListener('pointerup', pointerListener);
+        resolve(event.type);
+      }
+    };
+    document.addEventListener('pointerup', pointerListener);
+    var actions = new test_driver.Actions();
+    return actions.pointerMove(x, y, { origin: origin })
+                  .pointerDown({button: actions.ButtonType.LEFT})
+                  .pointerUp({button: actions.ButtonType.LEFT})
+                  .send();
+  });
+}
+
+// Perform a click action where a scroll is expected such as on a scrollbar
+// arrow or on a scrollbar track. The promise will timeout if no scrolling is
+// triggered.
+function clickScroll(x, y, scroller, options = {}) {
+  const scrollPromise = waitForScrollendEvent(scroller);
+  const clickPromise = mouseClick(x, y, options);
+  return Promise.all([scrollPromise, clickPromise]);
 }
 
 function waitForStableScrollOffset(scroller, timeout) {

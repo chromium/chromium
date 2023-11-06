@@ -3330,7 +3330,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoOpInOverview) {
       window2.get(), SplitViewController::SnapPosition::kSecondary);
   EnterOverview();
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   StartScroll(shelf_widget_bounds.bottom_right());
   UpdateScroll(
       gfx::Vector2d(0, -shelf_size - hotseat_size - hotseat_padding_size));
@@ -3367,7 +3367,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, SwipeToExitOverview) {
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
   // We should exit overview mode after completing the fling gesture.
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 }
 
 // Test that upward fling in overview transitions from overview to home.
@@ -3394,7 +3394,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
 
   watcher.WaitUntilStateChanged();
   watcher.CheckEqual({HotseatState::kShownHomeLauncher});
@@ -3419,7 +3419,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverviewHomeShelf) {
   // This will ensure we enter overview in home shelf mode.
   WindowState::Get(window1.get())->Minimize();
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   base::HistogramTester histogram_tester;
@@ -3462,7 +3462,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest,
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
 
   base::HistogramTester histogram_tester;
   HotseatStateWatcher watcher(GetShelfLayoutManager());
@@ -3539,7 +3539,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingHomeInSplitModeWithOverview) {
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   split_view_controller->SnapWindow(
       window2.get(), SplitViewController::SnapPosition::kSecondary);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(HotseatState::kExtended, GetShelfLayoutManager()->hotseat_state());
@@ -3606,7 +3606,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInSplitView) {
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   watcher.CheckEqual({HotseatState::kExtended});
@@ -3650,7 +3650,7 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, ShortFlingInSplitView) {
       true /* is_fling */,
       -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
 
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(split_view_controller->InSplitViewMode());
 
   watcher.CheckEqual({HotseatState::kExtended});

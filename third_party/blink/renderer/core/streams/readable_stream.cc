@@ -221,16 +221,17 @@ void ReadableStream::InitWithCountQueueingStrategy(
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer,
     ExceptionState& exception_state) {
-  auto* isolate = script_state->GetIsolate();
+  Initialize(this);
+  auto* controller =
+      MakeGarbageCollected<ReadableStreamDefaultController>(script_state);
 
-  auto strategy = CreateTrivialQueuingStrategy(isolate, high_water_mark);
-
-  v8::Local<v8::Value> underlying_source_v8 =
-      ToV8Traits<UnderlyingSourceBase>::ToV8(script_state, underlying_source)
-          .ToLocalChecked();
-
-  InitInternal(script_state, ScriptValue(isolate, underlying_source_v8),
-               strategy, true, exception_state);
+  ReadableStreamDefaultController::SetUp(
+      script_state, this, controller,
+      MakeGarbageCollected<UnderlyingStartAlgorithm>(underlying_source,
+                                                     controller),
+      MakeGarbageCollected<UnderlyingPullAlgorithm>(underlying_source),
+      MakeGarbageCollected<UnderlyingCancelAlgorithm>(underlying_source),
+      high_water_mark, CreateDefaultSizeAlgorithm(), exception_state);
 
   allow_per_chunk_transferring_ = allow_per_chunk_transferring;
   transferring_optimizer_ = std::move(optimizer);
@@ -1084,7 +1085,8 @@ void ReadableStream::Error(ScriptState* script_state,
 void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
                                             ReadableStream* stream,
                                             DOMArrayBufferView* chunk,
-                                            bool done) {
+                                            bool done,
+                                            ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-into-request
   // 1. Assert: ! ReadableStreamHasBYOBReader(stream) is true.
   DCHECK(HasBYOBReader(stream));
@@ -1102,14 +1104,15 @@ void ReadableStream::FulfillReadIntoRequest(ScriptState* script_state,
     read_into_request->CloseSteps(script_state, chunk);
   } else {
     // 7. Otherwise, perform readIntoRequest’s chunk steps, given chunk.
-    read_into_request->ChunkSteps(script_state, chunk);
+    read_into_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 
 void ReadableStream::FulfillReadRequest(ScriptState* script_state,
                                         ReadableStream* stream,
                                         v8::Local<v8::Value> chunk,
-                                        bool done) {
+                                        bool done,
+                                        ExceptionState& exception_state) {
   // https://streams.spec.whatwg.org/#readable-stream-fulfill-read-request
   // 1. Assert: ! ReadableStreamHasDefaultReader(stream) is true.
   DCHECK(HasDefaultReader(stream));
@@ -1133,7 +1136,7 @@ void ReadableStream::FulfillReadRequest(ScriptState* script_state,
     read_request->CloseSteps(script_state);
   } else {
     // 7. Otherwise, perform readRequest’s chunk steps, given chunk.
-    read_request->ChunkSteps(script_state, chunk);
+    read_request->ChunkSteps(script_state, chunk, exception_state);
   }
 }
 

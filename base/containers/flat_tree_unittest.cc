@@ -211,14 +211,14 @@ TEST(FlatTree, NoExcept) {
   using MoveThrowsTree = flat_tree<MoveThrows, base::identity, std::less<>,
                                    std::array<MoveThrows, 1>>;
 
-  static_assert(std::is_nothrow_move_constructible<IntTree>::value,
+  static_assert(std::is_nothrow_move_constructible_v<IntTree>,
                 "Error: IntTree is not nothrow move constructible");
-  static_assert(std::is_nothrow_move_assignable<IntTree>::value,
+  static_assert(std::is_nothrow_move_assignable_v<IntTree>,
                 "Error: IntTree is not nothrow move assignable");
 
-  static_assert(!std::is_nothrow_move_constructible<MoveThrowsTree>::value,
+  static_assert(!std::is_nothrow_move_constructible_v<MoveThrowsTree>,
                 "Error: MoveThrowsTree is nothrow move constructible");
-  static_assert(!std::is_nothrow_move_assignable<MoveThrowsTree>::value,
+  static_assert(!std::is_nothrow_move_assignable_v<MoveThrowsTree>,
                 "Error: MoveThrowsTree is nothrow move assignable");
 }
 
@@ -291,14 +291,13 @@ TEST(FlatTree, Stability) {
 
 TEST(FlatTree, Types) {
   // These are guaranteed to be portable.
-  static_assert((std::is_same<int, IntTree::key_type>::value), "");
-  static_assert((std::is_same<int, IntTree::value_type>::value), "");
-  static_assert((std::is_same<std::less<>, IntTree::key_compare>::value), "");
-  static_assert((std::is_same<int&, IntTree::reference>::value), "");
-  static_assert((std::is_same<const int&, IntTree::const_reference>::value),
-                "");
-  static_assert((std::is_same<int*, IntTree::pointer>::value), "");
-  static_assert((std::is_same<const int*, IntTree::const_pointer>::value), "");
+  static_assert((std::is_same_v<int, IntTree::key_type>), "");
+  static_assert((std::is_same_v<int, IntTree::value_type>), "");
+  static_assert((std::is_same_v<std::less<>, IntTree::key_compare>), "");
+  static_assert((std::is_same_v<int&, IntTree::reference>), "");
+  static_assert((std::is_same_v<const int&, IntTree::const_reference>), "");
+  static_assert((std::is_same_v<int*, IntTree::pointer>), "");
+  static_assert((std::is_same_v<const int*, IntTree::const_pointer>), "");
 }
 
 // ----------------------------------------------------------------------------

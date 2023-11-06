@@ -156,10 +156,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean shouldResumeRequestsForCreatedWindow() {
-        // Pause the WebContents if an Activity has to be created for it first.
-        TabCreator tabCreator = mTabCreatorManager.getTabCreator(mTab.isIncognito());
-        assert tabCreator != null;
-        return !tabCreator.createsTabsAsynchronously();
+        return true;
     }
 
     @Override
@@ -179,9 +176,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Creating new Tabs asynchronously requires starting a new Activity to create the Tab,
         // so the Tab returned will always be null.  There's no way to know synchronously
         // whether the Tab is created, so assume it's always successful.
-        boolean createdSuccessfully = tabCreator.createTabWithWebContents(
-                mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
-        boolean success = tabCreator.createsTabsAsynchronously() || createdSuccessfully;
+        boolean success =
+                tabCreator.createTabWithWebContents(
+                        mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
 
         if (success) {
             if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
@@ -419,10 +416,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (webContents == null) {
             return false;
         }
-        Profile profile = Profile.fromWebContents(mTab.getWebContents());
-        if (profile == null) {
-            return false;
-        }
+        Profile profile = mTab.getProfile();
         return isNightModeEnabled()
                 && WebContentsDarkModeController.isEnabledForUrl(
                         profile, webContents.getVisibleUrl());

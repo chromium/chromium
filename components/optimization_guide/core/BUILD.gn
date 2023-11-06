@@ -22,6 +22,7 @@ static_library("bloomfilter") {
     "//base",
     "//third_party/smhasher:murmurhash3",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("entities") {
@@ -37,6 +38,7 @@ static_library("entities") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [ ":features" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("model_executor") {
@@ -88,6 +90,8 @@ static_library("model_executor") {
     "//url",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (build_with_tflite_lib) {
     public_deps += [
       "//components/optimization_guide/core:machine_learning",
@@ -129,6 +133,7 @@ if (build_with_tflite_lib) {
       "//third_party/tflite",
       "//third_party/tflite:tflite_public_headers",
     ]
+    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
 }
 
@@ -156,6 +161,7 @@ static_library("features") {
     "//net",
     "//ui/base",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("core") {
@@ -179,11 +185,27 @@ static_library("core") {
     "hints_processing_util.h",
     "memory_hint.cc",
     "memory_hint.h",
+    "model_execution/model_execution_features.cc",
+    "model_execution/model_execution_features.h",
+    "model_execution/model_execution_features_controller.cc",
+    "model_execution/model_execution_features_controller.h",
     "model_execution/model_execution_fetcher.cc",
     "model_execution/model_execution_fetcher.h",
     "model_execution/model_execution_manager.cc",
     "model_execution/model_execution_manager.h",
+    "model_execution/on_device_model_execution_config_interpreter.cc",
+    "model_execution/on_device_model_execution_config_interpreter.h",
+    "model_execution/on_device_model_service_controller.cc",
+    "model_execution/on_device_model_service_controller.h",
+    "model_execution/on_device_model_stream_receiver.cc",
+    "model_execution/on_device_model_stream_receiver.h",
+    "model_execution/optimization_guide_model_execution_error.cc",
+    "model_execution/optimization_guide_model_execution_error.h",
     "model_handler.h",
+    "model_quality/feature_type_map.h",
+    "model_quality/model_quality_log_entry.cc",
+    "model_quality/model_quality_log_entry.h",
+    "model_quality/model_quality_logs_uploader.h",
     "noisy_metrics_recorder.cc",
     "noisy_metrics_recorder.h",
     "optimization_filter.cc",
@@ -283,8 +305,12 @@ static_library("core") {
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network/public/cpp",
+    "//services/on_device_model/public/mojom",
     "//url:url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   if (!is_android && build_with_tflite_lib &&
       build_with_internal_optimization_guide) {
     data_deps = [
@@ -321,6 +347,7 @@ static_library("prediction") {
     "//net/traffic_annotation",
     "//services/network/public/cpp",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_ios) {
     deps += [ "//components/services/unzip:in_process" ]
   } else {
@@ -407,7 +434,11 @@ source_set("unit_tests") {
     "hints_processing_util_unittest.cc",
     "insertion_ordered_set_unittest.cc",
     "model_execution/model_execution_fetcher_unittest.cc",
+    "model_execution/model_execution_manager_unittest.cc",
+    "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
+    "model_execution/on_device_model_service_controller_unittest.cc",
     "model_handler_unittest.cc",
+    "model_quality/model_quality_log_entry_unittest.cc",
     "model_store_metadata_entry_unittest.cc",
     "model_util_unittest.cc",
     "noisy_metrics_recorder_unittest.cc",

@@ -259,7 +259,7 @@
       "chrome_pgo_phase": 0,
       "is_chrome_branded": true,
       "is_official_build": true,
-      "rbe_cfg_dir": "../../buildtools/reclient_cfgs/win-cross",
+      "rbe_cfg_dir": "//buildtools/reclient_cfgs/win-cross",
       "strip_absolute_paths_from_debug_symbols": true,
       "symbol_level": 1,
       "use_remoteexec": true

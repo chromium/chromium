@@ -19,9 +19,7 @@
 //     PasswordAccessoryController::GetOrCreate(web_contents);
 // On the first call, an instance is attached to |web_contents|, so it can be
 // returned by subsequent calls.
-class PasswordAccessoryController
-    : public base::SupportsWeakPtr<PasswordAccessoryController>,
-      public AccessoryController {
+class PasswordAccessoryController : public AccessoryController {
  public:
   PasswordAccessoryController() = default;
 
@@ -63,6 +61,9 @@ class PasswordAccessoryController
   // CredMan conditional UI.
   virtual void UpdateCredManReentryUi(
       autofill::mojom::FocusedFieldType focused_field_type) = 0;
+
+  // Returns a WeakPtr to the instance.
+  virtual base::WeakPtr<PasswordAccessoryController> AsWeakPtr() = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_

@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL permissions policy on enumerateDevices() after getUserMedia() assert_equals: number of output devices. expected 0 but got 3
+[FAIL] permissions policy on enumerateDevices() after getUserMedia()
+  assert_equals: number of output devices. expected 0 but got 3
 Harness: the test ran to completion.
 

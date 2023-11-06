@@ -10,6 +10,8 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
@@ -29,7 +31,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
-#include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
@@ -43,7 +44,6 @@
 #include "content/browser/indexed_db/indexed_db_active_blob_registry.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
-#include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -408,10 +408,9 @@ bool DecodeExternalObjects(const std::string& data,
   return true;
 }
 
-bool IsPathTooLong(storage::FilesystemProxy* filesystem,
-                   const base::FilePath& leveldb_dir) {
+bool IsPathTooLong(const base::FilePath& leveldb_dir) {
   absl::optional<int> limit =
-      filesystem->GetMaximumPathComponentLength(leveldb_dir.DirName());
+      base::GetMaximumPathComponentLength(leveldb_dir.DirName());
   if (!limit.has_value()) {
     DLOG(WARNING) << "GetMaximumPathComponentLength returned -1";
 // In limited testing, ChromeOS returns 143, other OSes 255.
@@ -944,7 +943,6 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
-    std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner)
@@ -952,15 +950,11 @@ IndexedDBBackingStore::IndexedDBBackingStore(
       bucket_locator_(bucket_locator),
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
                                                        : blob_path),
-      filesystem_proxy_(std::move(filesystem_proxy)),
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
       idb_task_runner_(std::move(idb_task_runner)),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)) {
   DCHECK(idb_task_runner_->RunsTasksInCurrentSequence());
-  if (backing_store_mode != Mode::kInMemory)
-    DCHECK(filesystem_proxy_) << "On disk databases must have a filesystem";
-
   active_blob_registry_ = std::make_unique<IndexedDBActiveBlobRegistry>(
       std::move(report_outstanding_blobs),
       base::BindRepeating(&IndexedDBBackingStore::ReportBlobUnused,
@@ -1029,8 +1023,7 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
         PutInt(write_batch.get(), data_version_key, db_data_version.Encode());
     // If a blob directory already exists for this database, blow it away.  It's
     // leftover from a partially-purged previous generation of data.
-    if (filesystem_proxy_ &&
-        !filesystem_proxy_->DeletePathRecursively(blob_path_)) {
+    if (!in_memory() && !base::DeletePathRecursively(blob_path_)) {
       INTERNAL_WRITE_ERROR(SET_UP_METADATA);
       return IOErrorStatus();
     }
@@ -1178,7 +1171,6 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
     LevelDBWriteBatch* write_batch,
     std::vector<base::FilePath>* empty_blobs_to_delete) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(filesystem_proxy_);
 
   std::vector<std::u16string> names;
   leveldb::Status status = GetDatabaseNames(&names);
@@ -1229,16 +1221,16 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
           base::FilePath path =
               GetBlobFileName(metadata.id, object.blob_number());
 
-          absl::optional<base::File::Info> info =
-              filesystem_proxy_->GetFileInfo(path);
-          if (!info.has_value()) {
+          base::File::Info info;
+          if (!base::GetFileInfo(path, &info)) {
             return leveldb::Status::Corruption(
                 "Unable to upgrade to database version 4.", "");
           }
-          object.set_size(info->size);
-          object.set_last_modified(info->last_modified);
-          if (info->size == 0)
+          object.set_size(info.size);
+          object.set_last_modified(info.last_modified);
+          if (info.size == 0) {
             empty_blobs_to_delete->push_back(path);
+          }
         }
         if (!needs_rewrite)
           continue;
@@ -1261,7 +1253,6 @@ Status IndexedDBBackingStore::UpgradeBlobEntriesToV4(
 
 Status IndexedDBBackingStore::ValidateBlobFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(filesystem_proxy_);
 
   std::vector<std::u16string> names;
   leveldb::Status status = GetDatabaseNames(&names);
@@ -1313,9 +1304,8 @@ Status IndexedDBBackingStore::ValidateBlobFiles() {
 
           base::FilePath path =
               GetBlobFileName(metadata.id, object.blob_number());
-          absl::optional<base::File::Info> info =
-              filesystem_proxy_->GetFileInfo(path);
-          if (!info.has_value()) {
+          base::File::Info info;
+          if (!base::GetFileInfo(path, &info)) {
             return leveldb::Status::Corruption(
                 "Unable to upgrade to database version 5.", "");
           }
@@ -1426,18 +1416,19 @@ bool IndexedDBBackingStore::RecordCorruptionInfo(
     const base::FilePath& path_base,
     const storage::BucketLocator& bucket_locator,
     const std::string& message) {
-  auto filesystem = storage::CreateFilesystemProxy();
   const base::FilePath info_path =
       path_base.Append(indexed_db::ComputeCorruptionFileName(bucket_locator));
-  if (IsPathTooLong(filesystem.get(), info_path))
+  if (IsPathTooLong(info_path)) {
     return false;
+  }
 
   base::Value::Dict root_dict;
   root_dict.Set("message", message);
   std::string output_js;
 
   base::JSONWriter::Write(root_dict, &output_js);
-  return filesystem->WriteFileAtomically(info_path, std::move(output_js));
+  return base::ImportantFileWriter::WriteFileAtomically(info_path,
+                                                        std::move(output_js));
 }
 
 Status IndexedDBBackingStore::CreateDatabase(
@@ -1939,7 +1930,7 @@ int64_t IndexedDBBackingStore::GetInMemoryBlobSize() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int64_t total_size = 0;
-  for (const auto& kvp : incognito_external_object_map_) {
+  for (const auto& kvp : in_memory_external_object_map_) {
     for (const IndexedDBExternalObject& object :
          kvp.second->external_objects()) {
       if (object.object_type() == IndexedDBExternalObject::ObjectType::kBlob) {
@@ -2413,21 +2404,19 @@ base::FilePath IndexedDBBackingStore::GetBlobFileName(
 bool IndexedDBBackingStore::RemoveBlobFile(int64_t database_id,
                                            int64_t blob_number) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(filesystem_proxy_) << "Only call this for on disk databases";
   base::FilePath path = GetBlobFileName(database_id, blob_number);
 #if DCHECK_IS_ON()
   ++num_blob_files_deleted_;
   DVLOG(1) << "Deleting blob " << blob_number << " from IndexedDB database "
            << database_id << " at path " << path.value();
 #endif
-  return filesystem_proxy_->DeleteFile(path);
+  return base::DeleteFile(path);
 }
 
 bool IndexedDBBackingStore::RemoveBlobDirectory(int64_t database_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(filesystem_proxy_) << "Only call this for on disk databases";
   base::FilePath path = GetBlobDirectoryName(blob_path_, database_id);
-  return filesystem_proxy_->DeletePathRecursively(path);
+  return base::DeletePathRecursively(path);
 }
 
 Status IndexedDBBackingStore::CleanUpBlobJournal(
@@ -2453,8 +2442,9 @@ Status IndexedDBBackingStore::CleanUpBlobJournal(
   s = journal_transaction->Commit();
   // Notify blob files cleaned even if commit fails, as files could still be
   // deleted.
-  if (!is_incognito())
+  if (!in_memory()) {
     blob_files_cleaned_.Run();
+  }
   return s;
 }
 
@@ -2462,10 +2452,9 @@ Status IndexedDBBackingStore::CleanUpBlobJournalEntries(
     const BlobJournalType& journal) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB", "IndexedDBBackingStore::CleanUpBlobJournalEntries");
-  if (journal.empty())
+  if (journal.empty() || in_memory()) {
     return Status::OK();
-  if (!filesystem_proxy_)
-    return Status::OK();
+  }
   for (const auto& entry : journal) {
     int64_t database_id = entry.first;
     int64_t blob_number = entry.second;
@@ -2508,12 +2497,13 @@ Status IndexedDBBackingStore::Transaction::GetExternalObjectsForRecord(
   if (object_iter != external_object_change_map_.end()) {
     change_record = object_iter->second.get();
   } else {
-    object_iter = incognito_external_object_map_.find(object_store_data_key);
-    if (object_iter != incognito_external_object_map_.end())
+    object_iter = in_memory_external_object_map_.find(object_store_data_key);
+    if (object_iter != in_memory_external_object_map_.end()) {
       change_record = object_iter->second.get();
+    }
   }
   if (change_record) {
-    // Either we haven't written the blob to disk yet or we're in incognito
+    // Either we haven't written the blob to disk yet or we're in in_memory
     // mode, so we have to send back the one they sent us.  This change record
     // includes the original UUID.
     value->external_objects = change_record->external_objects();
@@ -3863,10 +3853,11 @@ void IndexedDBBackingStore::Transaction::Begin(
               backing_store_->db_.get(),
               backing_store_->db_->scopes()->CreateScope(std::move(locks)));
 
-  // If incognito, this snapshots blobs just as the above transaction_
+  // If in_memory, this snapshots blobs just as the above transaction_
   // constructor snapshots the leveldb.
-  for (const auto& iter : backing_store_->incognito_external_object_map_)
-    incognito_external_object_map_[iter.first] = iter.second->Clone();
+  for (const auto& iter : backing_store_->in_memory_external_object_map_) {
+    in_memory_external_object_map_[iter.first] = iter.second->Clone();
+  }
 }
 
 Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
@@ -3973,10 +3964,8 @@ Status IndexedDBBackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {
 
   // Delete all empty files that resulted from the migration to v4. If this
   // fails it's not a big deal.
-  if (filesystem_proxy_) {
     for (const auto& path : empty_blobs_to_delete) {
-      filesystem_proxy_->DeleteFile(path);
-    }
+      base::DeleteFile(path);
   }
 
   return s;
@@ -4010,8 +3999,9 @@ Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {
   DCHECK(backing_store_);
   DCHECK(blobs_to_write_.empty());
 
-  if (backing_store_->is_incognito())
+  if (backing_store_->in_memory()) {
     return Status::OK();
+  }
 
   if (external_object_change_map_.empty())
     return Status::OK();
@@ -4031,7 +4021,7 @@ Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {
   // m78 and m79, they need to be checked. See https://crbug.com/1039446
   base::FilePath blob_path =
       backing_store_->GetBlobFileName(database_id_, next_blob_number);
-  while (backing_store_->filesystem_proxy_->PathExists(blob_path)) {
+  while (base::PathExists(blob_path)) {
     ++next_blob_number;
     blob_path = backing_store_->GetBlobFileName(database_id_, next_blob_number);
   }
@@ -4065,8 +4055,9 @@ bool IndexedDBBackingStore::Transaction::CollectBlobFilesToRemove() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backing_store_);
 
-  if (backing_store_->is_incognito())
+  if (backing_store_->in_memory()) {
     return true;
+  }
 
   // Look up all old files to remove as part of the transaction, store their
   // names in blobs_to_remove_, and remove their old blob data entries.
@@ -4159,7 +4150,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseOne(
   committing_ = true;
   backing_store_->WillCommitTransaction();
 
-  if (!external_object_change_map_.empty() && !backing_store_->is_incognito()) {
+  if (!external_object_change_map_.empty() && !backing_store_->in_memory()) {
     // This kicks off the writes of the new blobs, if any.
     return WriteNewBlobs(std::move(callback));
   } else {
@@ -4193,7 +4184,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
   BlobJournalType recovery_journal, active_journal, saved_recovery_journal,
       inactive_blobs;
   if (!external_object_change_map_.empty()) {
-    if (!backing_store_->is_incognito()) {
+    if (!backing_store_->in_memory()) {
       for (auto& iter : external_object_change_map_) {
         BlobEntryKey blob_entry_key;
         StringPiece key_piece(iter.second->object_store_data_key());
@@ -4242,7 +4233,7 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     saved_recovery_journal = recovery_journal;
     BlobJournalType active_blobs;
     if (!blobs_to_remove_.empty()) {
-      DCHECK(!backing_store_->is_incognito());
+      DCHECK(!backing_store_->in_memory());
       PartitionBlobsToRemove(&inactive_blobs, &active_blobs);
     }
     recovery_journal.insert(recovery_journal.end(), inactive_blobs.begin(),
@@ -4269,9 +4260,9 @@ Status IndexedDBBackingStore::Transaction::CommitPhaseTwo() {
     return s;
   }
 
-  if (backing_store_->is_incognito()) {
+  if (backing_store_->in_memory()) {
     if (!external_object_change_map_.empty()) {
-      auto& target_map = backing_store_->incognito_external_object_map_;
+      auto& target_map = backing_store_->in_memory_external_object_map_;
       for (auto& iter : external_object_change_map_) {
         auto target_record = target_map.find(iter.first);
         if (target_record != target_map.end())
@@ -4310,7 +4301,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
     BlobWriteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(backing_store_);
-  DCHECK(!backing_store_->is_incognito());
+  DCHECK(!backing_store_->in_memory());
   DCHECK(!external_object_change_map_.empty());
   DCHECK_GT(database_id_, 0);
 
@@ -4391,7 +4382,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           // will fail. So there is no need to special-case handle it here.
           base::FilePath path = GetBlobDirectoryNameForKey(
               backing_store_->blob_path_, database_id_, entry.blob_number());
-          backing_store_->filesystem_proxy_->CreateDirectory(path);
+          base::CreateDirectory(path);
           // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
           // SharedRemote, so this code can just move the remote, instead of
           // cloning.
@@ -4506,7 +4497,7 @@ Status IndexedDBBackingStore::Transaction::PutExternalObjectsIfNeeded(
 
   if (!external_objects || external_objects->empty()) {
     external_object_change_map_.erase(object_store_data_key);
-    incognito_external_object_map_.erase(object_store_data_key);
+    in_memory_external_object_map_.erase(object_store_data_key);
 
     BlobEntryKey blob_entry_key;
     StringPiece leveldb_key_piece(object_store_data_key);

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/paint/block_flow_paint_invalidator.h"
 
+#include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
@@ -19,7 +19,7 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
   ObjectPaintInvalidator object_paint_invalidator(block_flow_);
   object_paint_invalidator.InvalidateDisplayItemClient(block_flow_, reason);
 
-  NGInlineCursor cursor(block_flow_);
+  InlineCursor cursor(block_flow_);
   if (cursor) {
     // Line boxes record hit test data (see NGBoxFragmentPainter::PaintLineBox)
     // and should be invalidated if they change.

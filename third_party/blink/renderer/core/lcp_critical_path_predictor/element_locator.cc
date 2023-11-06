@@ -14,23 +14,24 @@
 
 namespace blink::element_locator {
 
-absl::optional<ElementLocator> OfElement(Element* element) {
+ElementLocator OfElement(const Element& element) {
   ElementLocator locator;
 
-  while (element) {
-    Element* parent = element->parentElement();
+  Element* element_ptr = const_cast<Element*>(&element);
+  while (element_ptr) {
+    Element* parent = element_ptr->parentElement();
 
-    if (element->HasID()) {
+    if (element_ptr->HasID()) {
       // Peg on element id if that exists
 
       ElementLocator_Component_Id* id_comp =
           locator.add_components()->mutable_id();
-      id_comp->set_id_attr(element->GetIdAttribute().Utf8());
+      id_comp->set_id_attr(element_ptr->GetIdAttribute().Utf8());
       break;
     } else if (parent) {
       // Last resort: n-th element that has the `tag_name`.
 
-      AtomicString tag_name = element->localName();
+      AtomicString tag_name = element_ptr->localName();
 
       int nth = 0;
       for (Node* sibling = parent->firstChild(); sibling;
@@ -40,7 +41,7 @@ absl::optional<ElementLocator> OfElement(Element* element) {
           continue;
         }
 
-        if (sibling_el == element) {
+        if (sibling_el == element_ptr) {
           ElementLocator_Component_NthTagName* nth_comp =
               locator.add_components()->mutable_nth();
           nth_comp->set_tag_name(tag_name.Utf8());
@@ -52,7 +53,7 @@ absl::optional<ElementLocator> OfElement(Element* element) {
       }
     }
 
-    element = parent;
+    element_ptr = parent;
   }
 
   return locator;

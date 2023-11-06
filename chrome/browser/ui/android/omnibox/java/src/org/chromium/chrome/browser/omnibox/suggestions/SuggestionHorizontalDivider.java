@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
+import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.chrome.browser.omnibox.R;
@@ -21,9 +22,9 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 /**
- * Horizontal divider item decoration that clips the bottom of items with a rect of height  1dp.
- * Only clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER
- * == true.
+ * Horizontal divider item decoration that clips the bottom of items with a rect of height 1dp. Only
+ * clips for items with an associated property model with DropdownCommonProperties.SHOW_DIVIDER ==
+ * true.
  */
 public class SuggestionHorizontalDivider extends ItemDecoration {
     private final Rect mBounds = new Rect();
@@ -41,7 +42,12 @@ public class SuggestionHorizontalDivider extends ItemDecoration {
             View child = parent.getChildAt(i);
             if (!shouldDrawDivider(child, parent)) continue;
             parent.getDecoratedBoundsWithMargins(child, mBounds);
-            canvas.clipRect(mBounds.left, mBounds.bottom - mHeight, mBounds.right, mBounds.bottom,
+            LayoutParams lp = (LayoutParams) child.getLayoutParams();
+            canvas.clipRect(
+                    mBounds.left + lp.leftMargin,
+                    mBounds.bottom - mHeight,
+                    mBounds.right - lp.rightMargin,
+                    mBounds.bottom,
                     Op.DIFFERENCE);
         }
     }

@@ -54,7 +54,7 @@ qr_code = "2"
 quote = "1"
 serde = "1"
 static_assertions = "1"
-syn = {version = "1", features = ["full"]}
+syn = {version = "2", features = ["full"]}
 read-fonts = "0.11"
 font-types = "0.4"
 skrifa = "0.10"

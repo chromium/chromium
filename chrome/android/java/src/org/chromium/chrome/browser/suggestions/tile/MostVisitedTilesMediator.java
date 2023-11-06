@@ -8,7 +8,7 @@ import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesPrope
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.HORIZONTAL_INTERVAL_PADDINGS;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_CONTAINER_VISIBLE;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_MVT_LAYOUT_VISIBLE;
-import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ENABLED;
+import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_NTP_AS_HOME_SURFACE_ON_TABLET;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.IS_SURFACE_POLISH_ENABLED;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.PLACEHOLDER_VIEW;
 import static org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesProperties.UPDATE_INTERVAL_PADDINGS_TABLET;
@@ -57,7 +57,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
     private final PropertyModel mModel;
     private final boolean mIsScrollableMVTEnabled;
     private final boolean mIsTablet;
-    private final boolean mIsNtpAsHomeSurfaceEnabled;
+    private final boolean mIsNtpAsHomeSurfaceOnTablet;
     private final boolean mIsSurfacePolishEnabled;
     private final int mTileViewLandscapePadding;
     private final int mTileViewPortraitEdgePadding;
@@ -108,8 +108,8 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
 
         if (shouldShowSkeletonUIPreNative) maybeShowMvTilesPreNative();
 
-        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
-        mModel.set(IS_NTP_AS_HOME_SURFACE_ENABLED, mIsNtpAsHomeSurfaceEnabled);
+        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceEnabled && mIsTablet;
+        mModel.set(IS_NTP_AS_HOME_SURFACE_ON_TABLET, mIsNtpAsHomeSurfaceOnTablet);
         if (mIsScrollableMVTEnabled) {
             mModel.set(IS_SURFACE_POLISH_ENABLED, mIsSurfacePolishEnabled);
         }
@@ -272,7 +272,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
         // {@link MostVisitedTilesGridLayout}
         if (!mIsScrollableMVTEnabled || mMvTilesLayout.getChildCount() < 1) return;
 
-        if (mIsNtpAsHomeSurfaceEnabled && !mIsSurfacePolishEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet && !mIsSurfacePolishEnabled) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, 0);
             mModel.set(UPDATE_INTERVAL_PADDINGS_TABLET,
                     mResources.getConfiguration().orientation
@@ -280,7 +280,7 @@ public class MostVisitedTilesMediator implements TileGroup.Observer, TemplateUrl
             return;
         }
 
-        if (mIsNtpAsHomeSurfaceEnabled && mIsSurfacePolishEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet && mIsSurfacePolishEnabled) {
             mModel.set(HORIZONTAL_EDGE_PADDINGS, mTileViewEdgePaddingForTabletPolish);
             mModel.set(HORIZONTAL_INTERVAL_PADDINGS, mTileViewIntervalPaddingForTabletPolish);
             return;

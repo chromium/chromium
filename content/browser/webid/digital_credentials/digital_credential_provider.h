@@ -16,7 +16,7 @@
 
 #include <string>
 
-using blink::mojom::WalletFieldRequirementPtr;
+using blink::mojom::DigitalCredentialFieldRequirementPtr;
 
 namespace content {
 

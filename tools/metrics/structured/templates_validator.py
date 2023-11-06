@@ -14,6 +14,7 @@ HEADER_FILE_TEMPLATE = """\
 #include <string>
 #include <unordered_map>
 
+#include "base/no_destructor.h"
 #include "base/strings/string_piece.h"
 #include "components/metrics/structured/project_validator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -35,7 +36,11 @@ public:
   absl::optional<const ProjectValidator*>
     GetProjectValidator(const std::string& project_name);
 
+  static Validators* Get();
+
 private:
+  friend class base::NoDestructor<Validators>;
+
   std::unordered_map<base::StringPiece, std::unique_ptr<ProjectValidator>>
       validators_;
 }};
@@ -91,6 +96,12 @@ absl::optional<const ProjectValidator*>
      if (it == validators_.end())
         return absl::nullopt;
      return it->second.get();
+}}
+
+// static
+Validators* Validators::Get() {{
+  static base::NoDestructor<Validators> validators;
+  return validators.get();
 }}
 
 }} // namespace validator
@@ -170,7 +181,8 @@ class {event.validator_name} final :
 }};
 
 {event.validator_name}::{event.validator_name}() :
-  ::metrics::structured::EventValidator({event.validator_name}::kEventNameHash)
+  ::metrics::structured::EventValidator({event.validator_name}::kEventNameHash,
+                                        {event.force_record})
   {{
   Initialize();
 }}

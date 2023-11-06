@@ -24,7 +24,7 @@ class ContentPasswordManagerDriver;
 // interaction with Credential Manager UI is delegated to WebAuthnCredMan class.
 // Its lifecycle is tied to ChromePasswordManagerClient. CredManController is
 // used in Android U+ only.
-class CredManController : public base::SupportsWeakPtr<CredManController> {
+class CredManController {
  public:
   explicit CredManController(
       base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
@@ -51,6 +51,7 @@ class CredManController : public base::SupportsWeakPtr<CredManController> {
   base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
   std::unique_ptr<PasswordCredentialFiller> filler_;
+  base::WeakPtrFactory<CredManController> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

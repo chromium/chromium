@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 
+#include <memory>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -13,18 +14,18 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_service.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
+#include "chrome/browser/apps/app_service/publishers/browser_shortcuts_crosapi_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/shortcut_publisher.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_apps.h"
 #include "chrome/browser/apps/app_service/shortcut_removal_dialog.h"
@@ -37,10 +38,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_save_handler.h"
@@ -49,6 +50,8 @@
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 #include "components/services/app_service/public/cpp/preferred_apps_list.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
@@ -64,6 +67,16 @@ constexpr int32_t kAppDialogIconBadgeSize = 24;
 }  // namespace
 
 namespace apps {
+
+AppServiceProxyAsh::OnAppsRequest::OnAppsRequest(std::vector<AppPtr> deltas,
+                                                 AppType app_type,
+                                                 bool should_notify_initialized)
+    : deltas_(std::move(deltas)),
+      app_type_(app_type),
+      should_notify_initialized_(should_notify_initialized) {}
+
+AppServiceProxyAsh::OnAppsRequest::~OnAppsRequest() = default;
+
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
     : AppServiceProxyBase(profile),
       shortcut_inner_icon_loader_(this),
@@ -116,8 +129,16 @@ void AppServiceProxyAsh::Initialize() {
   }
 
   if (base::FeatureList::IsEnabled(kAppServiceStorage)) {
-    app_storage_ = std::make_unique<apps::AppStorage>(profile_->GetPath(),
-                                                      app_registry_cache_);
+    on_ready_ = std::make_unique<base::OneShotEvent>();
+
+    // After reading the app info data from the AppStorage file, call
+    // OnAppsReady to init `publisher_host_` and other OnApps tasks to prevent
+    // AppStorage overwriting the `fresh` apps from publishers during the system
+    // init phase.
+    app_storage_ = std::make_unique<apps::AppStorage>(
+        profile_->GetPath(), app_registry_cache_,
+        base::BindOnce(&AppServiceProxyAsh::OnAppsReady,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   const user_manager::User* user =
@@ -151,7 +172,9 @@ void AppServiceProxyAsh::Initialize() {
     app_registry_cache_observer_.Observe(cache);
   }
 
-  publisher_host_ = std::make_unique<PublisherHost>(this);
+  if (!base::FeatureList::IsEnabled(kAppServiceStorage)) {
+    publisher_host_ = std::make_unique<PublisherHost>(this);
+  }
 
   if (crosapi::browser_util::IsLacrosEnabled() &&
       ash::ProfileHelper::IsPrimaryProfile(profile_) &&
@@ -176,9 +199,10 @@ void AppServiceProxyAsh::Initialize() {
     promise_app_service_ = std::make_unique<apps::PromiseAppService>(
         profile_, app_registry_cache_);
   }
-  if (base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     shortcut_registry_cache_ = std::make_unique<apps::ShortcutRegistryCache>();
   }
+  app_install_service_ = std::make_unique<apps::AppInstallService>(*profile_);
 }
 
 apps::InstanceRegistry& AppServiceProxyAsh::InstanceRegistry() {
@@ -207,8 +231,18 @@ AppServiceProxyAsh::BrowserAppInstanceRegistry() {
   return browser_app_instance_registry_.get();
 }
 
+apps::BrowserShortcutsCrosapiPublisher*
+AppServiceProxyAsh::BrowserShortcutsCrosapiPublisher() {
+  return publisher_host_ ? publisher_host_->BrowserShortcutsCrosapiPublisher()
+                         : nullptr;
+}
+
 apps::StandaloneBrowserApps* AppServiceProxyAsh::StandaloneBrowserApps() {
   return publisher_host_ ? publisher_host_->StandaloneBrowserApps() : nullptr;
+}
+
+apps::AppInstallService& AppServiceProxyAsh::AppInstallService() {
+  return *app_install_service_;
 }
 
 void AppServiceProxyAsh::RegisterCrosApiSubScriber(
@@ -234,14 +268,29 @@ void AppServiceProxyAsh::Uninstall(const std::string& app_id,
 void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
                                 AppType app_type,
                                 bool should_notify_initialized) {
+  if (base::FeatureList::IsEnabled(kAppServiceStorage) && !is_on_apps_ready_) {
+    // Add the OnApps request to `pending_on_apps_requests_`, and wait for the
+    // AppStorage file reading finished to execute the OnApps request.
+    //
+    // We don't queue these on the OneShotEvent to guarantee that these requests
+    // are loaded in AppRegistryCache following the requested sequence before
+    // any queued events are posted.
+    pending_on_apps_requests_.push_back(std::make_unique<OnAppsRequest>(
+        std::move(deltas), app_type, should_notify_initialized));
+    return;
+  }
+
   // Delete app icon folders for uninstalled apps or the icon updated app.
   std::vector<std::string> app_ids;
   for (const auto& delta : deltas) {
     if ((delta->readiness != Readiness::kUnknown &&
          !apps_util::IsInstalled(delta->readiness)) ||
-        (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated)) {
+        (delta->icon_key.has_value() && delta->icon_key->HasUpdatedVersion())) {
       // If there's already a deletion in progress, skip the deletion request.
-      if (base::Contains(pending_read_icon_requests_, delta->app_id)) {
+      // For app types, not using AppService icon cache, e.g. remote apps, skip
+      // the deletion request.
+      if (base::Contains(pending_read_icon_requests_, delta->app_id) ||
+          !ShouldReadIcons(app_type)) {
         continue;
       }
 
@@ -264,6 +313,25 @@ void AppServiceProxyAsh::OnApps(std::vector<AppPtr> deltas,
         !apps_util::IsInstalled(delta->readiness) &&
         base::Contains(uninstall_dialogs_, delta->app_id)) {
       uninstall_dialogs_[delta->app_id]->CloseDialog();
+    }
+  }
+
+  // Remove shortcut if the user installed a web app with the same start_url
+  // over a shortcut. Currently the browser created shortcut is still based on
+  // the web app system, which means if the user installs a web app and shortcut
+  // with the same start url, they will replace each other and share the same
+  // ID. We have to remove the replaced shortcut when publishing the new app
+  // before the app gets published so that it will not create duplicated item in
+  // the launcher and shelf. This should be temporary and should be removed once
+  // we remove the shortcut from the web app system.
+  if (chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
+    for (const auto& delta : deltas) {
+      if (delta->app_type == AppType::kWeb &&
+          ShortcutRegistryCache()->HasShortcut(ShortcutId(delta->app_id))) {
+        // Use the app service proxy interface here to also clean up the icon
+        // folder and the shortcut removal dialogs.
+        ShortcutRemoved(ShortcutId(delta->app_id));
+      }
     }
   }
 
@@ -457,9 +525,38 @@ apps::ShortcutRegistryCache* AppServiceProxyAsh::ShortcutRegistryCache() {
 }
 
 void AppServiceProxyAsh::PublishShortcut(ShortcutPtr delta) {
-  if (delta->icon_key.has_value() && delta->icon_key->raw_icon_updated) {
+  if (delta->icon_key.has_value() && delta->icon_key->HasUpdatedVersion()) {
     MaybeScheduleIconFolderDeletionForShortcut(delta->shortcut_id);
   }
+
+  // Remove web app if the user created a shortcut with the same start_url
+  // over a web app. Currently the browser created shortcut is still based on
+  // the web app system, which means if the user installs a web app and shortcut
+  // with the same start url, they will replace each other and share the same
+  // ID. We have to remove the replaced app when publishing the new shortcut
+  // before the shortcut gets published so that it will not create duplicated
+  // item in the launcher and shelf. This should be temporary and should be
+  // removed once we remove the shortcut from the web app system.
+  if (AppRegistryCache().GetAppType(delta->shortcut_id.value()) ==
+      AppType::kWeb) {
+    auto uninstall_delta =
+        std::make_unique<apps::App>(AppType::kWeb, delta->shortcut_id.value());
+    uninstall_delta->readiness = Readiness::kUninstalledByUser;
+    std::vector<AppPtr> apps;
+    apps.push_back(std::move(uninstall_delta));
+    auto remove_delta =
+        std::make_unique<apps::App>(AppType::kWeb, delta->shortcut_id.value());
+    remove_delta->readiness = Readiness::kRemoved;
+    apps.push_back(std::move(remove_delta));
+
+    // Use the app service proxy interface here to also clean up the icon folder
+    // and the app uninstall dialogs.
+    OnApps(std::move(apps), apps::AppType::kWeb, false);
+
+    // TODO(b/305872222): Clean up / copy the capability access status, pause
+    // status, notification status, etc.
+  }
+
   ShortcutRegistryCache()->UpdateShortcut(std::move(delta));
 }
 
@@ -533,7 +630,7 @@ std::unique_ptr<IconLoader::Releaser> AppServiceProxyAsh::LoadShortcutIcon(
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadIconCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;
   }
@@ -556,7 +653,7 @@ AppServiceProxyAsh::LoadShortcutIconWithBadge(
     int32_t badge_size_hint_in_dip,
     bool allow_placeholder_icon,
     apps::LoadShortcutIconWithBadgeCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate)) {
+  if (!chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled()) {
     std::move(callback).Run(std::make_unique<IconValue>(),
                             std::make_unique<IconValue>());
     return nullptr;
@@ -913,6 +1010,21 @@ void AppServiceProxyAsh::OnAppUpdate(const apps::AppUpdate& update) {
 void AppServiceProxyAsh::OnAppRegistryCacheWillBeDestroyed(
     apps::AppRegistryCache* cache) {
   app_registry_cache_observer_.Reset();
+}
+
+void AppServiceProxyAsh::OnAppsReady() {
+  is_on_apps_ready_ = true;
+
+  // Read and execute OnApps requests from `pending_on_apps_requests_`.
+  for (auto& request : pending_on_apps_requests_) {
+    OnApps(std::move(request->deltas_), request->app_type_,
+           request->should_notify_initialized_);
+  }
+  pending_on_apps_requests_.clear();
+
+  publisher_host_ = std::make_unique<PublisherHost>(this);
+  CHECK(on_ready_);
+  on_ready_->Signal();
 }
 
 void AppServiceProxyAsh::RecordAppPlatformMetrics(

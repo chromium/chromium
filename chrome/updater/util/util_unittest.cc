@@ -109,6 +109,14 @@ TEST(Util, GetCrashDatabasePath) {
             FILE_PATH_LITERAL("Crashpad"));
 }
 
+TEST(Util, GetCrxDiffCacheDirectory) {
+  absl::optional<base::FilePath> diff_cache_directory(
+      GetCrxDiffCacheDirectory(GetTestScope()));
+  ASSERT_TRUE(diff_cache_directory);
+  EXPECT_EQ(diff_cache_directory->BaseName().value(),
+            FILE_PATH_LITERAL("crx_cache"));
+}
+
 TEST(Util, StreamEnumValue) {
   std::stringstream output;
   output << "First: " << TestEnum::kEnumValue1

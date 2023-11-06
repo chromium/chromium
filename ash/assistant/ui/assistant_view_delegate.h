@@ -46,6 +46,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegateObserver
   // Invoked when a suggestion UI element is pressed.
   virtual void OnSuggestionPressed(
       const base::UnguessableToken& suggestion_id) {}
+
+  // Invoked when a launcher search chip is pressed.
+  virtual void OnLauncherSearchChipPressed(const std::u16string& query) {}
 };
 
 // A delegate of views in assistant/ui that handles views related actions e.g.
@@ -107,6 +110,9 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantViewDelegate {
 
   // Returns true if Assistant onboarding should be shown.
   virtual bool ShouldShowOnboarding() const = 0;
+
+  // Invoked when a launcher search chip is pressed.
+  virtual void OnLauncherSearchChipPressed(const std::u16string& query) = 0;
 };
 
 }  // namespace ash

@@ -21,8 +21,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
-
 BASE_DECLARE_FEATURE(kSeedAccountsRevamp);
 #endif
 
@@ -45,6 +43,9 @@ enum class EnableBoundSessionCredentialsDiceSupport {
 };
 extern const base::FeatureParam<EnableBoundSessionCredentialsDiceSupport>
     kEnableBoundSessionCredentialsDiceSupport;
+
+BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBinding);
+bool IsChromeRefreshTokenBindingEnabled();
 #endif
 
 BASE_DECLARE_FEATURE(kEnableFetchingAccountCapabilities);

@@ -6,9 +6,10 @@ package org.chromium.content_public.browser.test.util;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.content.browser.input.SelectPopup;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;

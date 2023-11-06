@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "extensions/common/extension_messages.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "ipc/ipc_sender.h"
 
 namespace extensions {
@@ -20,11 +21,11 @@ SharedL10nMap& SharedL10nMap::GetInstance() {
 
 std::string SharedL10nMap::GetMessage(const ExtensionId& extension_id,
                                       const std::string& message_name,
-                                      IPC::Sender* message_sender) {
+                                      IPCTarget* ipc_target) {
   base::AutoLock auto_lock(lock_);
 
   const L10nMessagesMap* extension_map =
-      GetMapForExtension(extension_id, message_sender);
+      GetMapForExtension(extension_id, ipc_target);
   if (!extension_map)
     return std::string();
 
@@ -33,11 +34,11 @@ std::string SharedL10nMap::GetMessage(const ExtensionId& extension_id,
 
 bool SharedL10nMap::ReplaceMessages(const ExtensionId& extension_id,
                                     std::string* text,
-                                    IPC::Sender* message_sender) {
+                                    IPCTarget* ipc_target) {
   base::AutoLock auto_lock(lock_);
 
   const L10nMessagesMap* extension_map =
-      GetMapForExtension(extension_id, message_sender);
+      GetMapForExtension(extension_id, ipc_target);
   if (!extension_map)
     return false;
 
@@ -59,23 +60,30 @@ void SharedL10nMap::SetMessagesForTesting(const ExtensionId& id,
 
 const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
     const ExtensionId& extension_id,
-    IPC::Sender* message_sender) {
+    IPCTarget* ipc_target) {
   lock_.AssertAcquired();
 
   auto iter = map_.find(extension_id);
   if (iter != map_.end())
     return &iter->second;
 
-  if (!message_sender)
+  if (!ipc_target) {
     return nullptr;
+  }
 
   L10nMessagesMap& l10n_messages = map_[extension_id];
 
   // A sync call to load message catalogs for current extension.
   // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
   // potentially blocking work reading files from disk? That's Bad.
-  message_sender->Send(
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  ipc_target->Send(
       new ExtensionHostMsg_GetMessageBundle(extension_id, &l10n_messages));
+#else
+  base::flat_map<std::string, std::string> table;
+  ipc_target->GetMessageBundle(extension_id, &table);
+  l10n_messages = L10nMessagesMap(table.begin(), table.end());
+#endif
 
   return &l10n_messages;
 }

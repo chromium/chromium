@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_coordinator.h"
 
+#import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/follow/follow_browser_agent.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_follow_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_view_controller.h"
@@ -64,8 +66,14 @@
   [self.feedMetricsRecorder recordHeaderMenuManageFollowingTapped];
 
   if (!self.followManagementMediator) {
-    self.followManagementMediator =
-        [[FollowManagementMediator alloc] initWithBrowser:self.browser];
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    FollowBrowserAgent* followBrowserAgent =
+        FollowBrowserAgent::FromBrowser(self.browser);
+    self.followManagementMediator = [[FollowManagementMediator alloc]
+        initWithBrowserAgent:followBrowserAgent
+               faviconLoader:faviconLoader];
   }
 
   FollowManagementViewController* followManagementViewController =

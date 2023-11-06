@@ -8,6 +8,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
@@ -24,11 +25,13 @@ const base::TimeDelta kTokenRateMeasurementInterval = base::Minutes(5);
 
 IpProtectionTokenCacheManagerImpl::IpProtectionTokenCacheManagerImpl(
     mojo::Remote<network::mojom::IpProtectionConfigGetter>* config_getter,
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     bool disable_cache_management_for_testing)
     : batch_size_(net::features::kIpPrivacyAuthTokenCacheBatchSize.Get()),
       cache_low_water_mark_(
           net::features::kIpPrivacyAuthTokenCacheLowWaterMark.Get()),
       config_getter_(config_getter),
+      proxy_layer_(proxy_layer),
       disable_cache_management_for_testing_(
           disable_cache_management_for_testing) {
   last_token_rate_measurement_ = base::TimeTicks::Now();
@@ -77,7 +80,7 @@ void IpProtectionTokenCacheManagerImpl::MaybeRefillCache() {
     fetching_auth_tokens_ = true;
     VLOG(2) << "IPPATC::MaybeRefillCache calling TryGetAuthTokens";
     config_getter_->get()->TryGetAuthTokens(
-        batch_size_,
+        batch_size_, proxy_layer_,
         base::BindOnce(&IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -234,7 +237,7 @@ void IpProtectionTokenCacheManagerImpl::CallTryGetAuthTokensForTesting() {
   CHECK(config_getter_);
   CHECK(on_try_get_auth_tokens_completed_for_testing_);
   config_getter_->get()->TryGetAuthTokens(
-      batch_size_,
+      batch_size_, proxy_layer_,
       base::BindOnce(&IpProtectionTokenCacheManagerImpl::OnGotAuthTokens,
                      weak_ptr_factory_.GetWeakPtr()));
 }

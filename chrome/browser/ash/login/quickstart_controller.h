@@ -54,10 +54,11 @@ class QuickStartController : public OobeUI::Observer,
       SHOWING_QR,
       SHOWING_PIN,
       CONNECTING_TO_WIFI,
-      // TODO(b:283965994) - Remove this state
-      CONNECTED_TO_WIFI_DEBUG,
+      WIFI_CREDENTIALS_RECEIVED,
       TRANSFERRING_GAIA_CREDENTIALS,
       SHOWING_FIDO,
+      // Exits the screen.
+      EXIT_SCREEN,
     };
 
     virtual void OnUiUpdateRequested(UiState desired_state) = 0;
@@ -85,8 +86,9 @@ class QuickStartController : public OobeUI::Observer,
   void DetermineEntryPointVisibility(
       EntryPointButtonVisibilityCallback callback);
 
-  // Invoked by the frontend whenever the user cancels the flow.
-  void HandleFlowCancellationRequest();
+  // Invoked by the frontend whenever the user cancels the flow or we encounter
+  // an error.
+  void AbortFlow();
 
   // Whether QuickStart is ongoing and orchestrating the flow.
   bool IsSetupOngoing() {
@@ -148,8 +150,8 @@ class QuickStartController : public OobeUI::Observer,
   // Source of truth of OOBE's current state via OobeUI::Observer
   absl::optional<OobeScreenId> current_screen_, previous_screen_;
 
-  // Bookkeeping where the quick start flow started.
-  absl::optional<EntryPoint> entry_point_;
+  // Bookkeeping where the quick start flow started and ended.
+  absl::optional<EntryPoint> entry_point_, exit_point_;
 
   // Discoverable name to be used on the UI. e.g.: Chromebook (123)
   absl::optional<std::string> discoverable_name_;

@@ -8,7 +8,7 @@ ADDRESS_HOME_LINE2 | ADDRESS<>address2 | address line 2 |  | ADDRESS<>country_cd
 ADDRESS_HOME_CITY | ADDRESS<>city | city * |  | ADDRESS<>country_cd_1
 ADDRESS_HOME_STATE | ADDRESS<>state_cd | state/province * |  | ADDRESS<>country_cd_1
 ADDRESS_HOME_ZIP | ADDRESS<>postal | zip code * |  | ADDRESS<>country_cd_1
-PHONE_HOME_WHOLE_NUMBER | ADDRESS<>phone | phone number (numbers only) * |  | ADDRESS<>country_cd_1
+PHONE_HOME_CITY_AND_NUMBER | ADDRESS<>phone | phone number (numbers only) * |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPassword | create password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordConfirm | confirm password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordHint | create password hint |  | ADDRESS<>country_cd_1

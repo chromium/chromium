@@ -38,7 +38,7 @@ const char* kDistilledPagePath = "/distilled_page.html";
 
 void SetUpTestServerWithoutStarting(EmbeddedTestServer* server) {
   FilePath root_dir;
-  PathService::Get(base::DIR_SOURCE_ROOT, &root_dir);
+  PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_dir);
 
   server->ServeFilesFromDirectory(
       root_dir.AppendASCII("components/dom_distiller/core/javascript"));

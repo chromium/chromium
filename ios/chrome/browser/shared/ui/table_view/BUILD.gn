@@ -4,9 +4,10 @@
 
 source_set("table_view") {
   sources = [
-    "chrome_table_view_consumer.h",
-    "chrome_table_view_controller.h",
-    "chrome_table_view_controller.mm",
+    "legacy_chrome_table_view_consumer.h",
+    "legacy_chrome_table_view_controller.h",
+    "legacy_chrome_table_view_controller.mm",
+    "legacy_chrome_table_view_styler.h",
     "table_view_favicon_data_source.h",
     "table_view_model.h",
     "table_view_model.mm",
@@ -39,8 +40,8 @@ source_set("constants") {
 
 source_set("styler") {
   sources = [
-    "chrome_table_view_styler.h",
-    "chrome_table_view_styler.mm",
+    "legacy_chrome_table_view_styler.h",
+    "legacy_chrome_table_view_styler.mm",
   ]
   public_deps = [
     "//ios/chrome/browser/shared/public/features",
@@ -71,8 +72,8 @@ source_set("views") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "chrome_table_view_controller_test.h",
-    "chrome_table_view_controller_test.mm",
+    "legacy_chrome_table_view_controller_test.h",
+    "legacy_chrome_table_view_controller_test.mm",
   ]
   deps = [
     ":table_view",
@@ -86,7 +87,7 @@ source_set("test_support") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chrome_table_view_controller_unittest.mm" ]
+  sources = [ "legacy_chrome_table_view_controller_unittest.mm" ]
   deps = [
     ":table_view",
     ":test_support",

@@ -114,15 +114,6 @@ class FormEventLoggerBase {
   virtual void LogWillSubmitForm(const FormStructure& form);
   virtual void LogFormSubmitted(const FormStructure& form);
 
-  // This is a temporary analysis for crbug.com/1352826. We apply local
-  // heuristics to forms if >= 3 fields are discovered by local heuristics. The
-  // working hypothesis is that we should change this to ">= 3 distinct field
-  // types are discovered by local heuristics". To test this hypothesis we want
-  // to calculate the FillingAcceptance for forms for which the stricter
-  // rule would make a difference.
-  // TODO(crbug.com/1352826): Remove this after investigating the impact.
-  void LogImpactOfHeuristicsThreshold(const FormStructure& form);
-
   // Only used for UKM backward compatibility since it depends on IsCreditCard.
   // TODO (crbug.com/925913): Remove IsCreditCard from UKM logs amd replace with
   // |form_type_name_|.
@@ -201,6 +192,7 @@ class FormEventLoggerBase {
   bool has_logged_autofilled_field_was_cleared_by_javascript_after_fill_ =
       false;
   bool has_called_on_destoryed_ = false;
+  bool is_heuristic_only_email_form_ = false;
   AblationGroup ablation_group_ = AblationGroup::kDefault;
   AblationGroup conditional_ablation_group_ = AblationGroup::kDefault;
   absl::optional<base::TimeDelta> time_from_interaction_to_submission_;

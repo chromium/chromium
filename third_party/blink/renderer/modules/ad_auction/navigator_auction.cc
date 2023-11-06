@@ -17,6 +17,8 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "mojo/public/cpp/bindings/map_traits_wtf_hash_map.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_ad_interest_group_size.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_additional_bid_signature.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_auction_report_buyers_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_protected_audience_private_aggregation_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_adproperties_adpropertiessequence.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -933,29 +936,58 @@ bool CopyAdditionalBidKeyFromIdlToMojo(
   return true;
 }
 
-bool CopyAggregationCoordinatorOriginFromIdlToMojo(
-    const ExecutionContext& execution_context,
+bool GetAggregationCoordinatorFromConfig(
     ExceptionState& exception_state,
-    const AuctionAdInterestGroup& input,
-    mojom::blink::InterestGroup& output) {
-  if (!input.hasAggregationCoordinatorOrigin()) {
+    const ProtectedAudiencePrivateAggregationConfig& config,
+    scoped_refptr<const SecurityOrigin>& aggregation_coordinator_origin_out) {
+  if (!config.hasAggregationCoordinatorOrigin()) {
+    return true;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Ignore the specified aggregation coordinator unless the feature is
+    // enabled.
     return true;
   }
 
   scoped_refptr<const SecurityOrigin> aggregation_coordinator_origin =
-      ParseOrigin(input.aggregationCoordinatorOrigin());
+      ParseOrigin(config.aggregationCoordinatorOrigin());
   if (!aggregation_coordinator_origin) {
-    exception_state.ThrowTypeError(String::Format(
-        "aggregationCoordinatorOrigin '%s' for AuctionAdInterestGroup with "
-        "name '%s' must be a valid https origin.",
-        input.aggregationCoordinatorOrigin().Utf8().c_str(),
-        input.name().Utf8().c_str()));
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        String::Format(
+            "aggregationCoordinatorOrigin '%s' must be a valid https origin.",
+            config.aggregationCoordinatorOrigin().Utf8().c_str()));
     return false;
   }
-
-  output.aggregation_coordinator_origin =
+  if (!aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          aggregation_coordinator_origin->ToUrlOrigin())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        String::Format("aggregationCoordinatorOrigin '%s' is not a recognized "
+                       "coordinator origin.",
+                       config.aggregationCoordinatorOrigin().Utf8().c_str()));
+    return false;
+  }
+  aggregation_coordinator_origin_out =
       std::move(aggregation_coordinator_origin);
   return true;
+}
+
+bool CopyAggregationCoordinatorOriginFromIdlToMojo(
+    ExceptionState& exception_state,
+    const AuctionAdInterestGroup& input,
+    mojom::blink::InterestGroup& output) {
+  if (!input.hasPrivateAggregationConfig()) {
+    return true;
+  }
+
+  return GetAggregationCoordinatorFromConfig(
+      exception_state, *input.privateAggregationConfig(),
+      output.aggregation_coordinator_origin);
 }
 
 // createAdRequest copy functions.
@@ -1540,22 +1572,13 @@ bool CopyAggregationCoordinatorOriginFromIdlToMojo(
     ExceptionState& exception_state,
     const AuctionAdConfig& input,
     mojom::blink::AuctionAdConfig& output) {
-  if (!input.hasAggregationCoordinatorOrigin()) {
+  if (!input.hasPrivateAggregationConfig()) {
     return true;
   }
 
-  scoped_refptr<const SecurityOrigin> aggregation_coordinator_origin =
-      ParseOrigin(input.aggregationCoordinatorOrigin());
-  if (!aggregation_coordinator_origin) {
-    exception_state.ThrowTypeError(String::Format(
-        "aggregationCoordinatorOrigin '%s' must be a valid https origin.",
-        input.aggregationCoordinatorOrigin().Utf8().c_str()));
-    return false;
-  }
-
-  output.aggregation_coordinator_origin =
-      std::move(aggregation_coordinator_origin);
-  return true;
+  return GetAggregationCoordinatorFromConfig(
+      exception_state, *input.privateAggregationConfig(),
+      output.aggregation_coordinator_origin);
 }
 
 // Returns nullopt + sets exception on failure, or returns a concrete value.
@@ -2975,8 +2998,8 @@ ScriptPromise NavigatorAuction::joinAdInterestGroup(
                                          *mojo_group)) {
     return ScriptPromise();
   }
-  if (!CopyAggregationCoordinatorOriginFromIdlToMojo(*context, exception_state,
-                                                     *group, *mojo_group)) {
+  if (!CopyAggregationCoordinatorOriginFromIdlToMojo(exception_state, *group,
+                                                     *mojo_group)) {
     return ScriptPromise();
   }
 
@@ -3090,11 +3113,6 @@ ScriptPromise NavigatorAuction::leaveAdInterestGroupForDocument(
       url::kHttpsScheme) {
     exception_state.ThrowSecurityError(
         "May only leaveAdInterestGroup from an https origin.");
-    return ScriptPromise();
-  }
-  if (!window->GetFrame()->IsInFencedFrameTree()) {
-    exception_state.ThrowTypeError(
-        "owner and name are required outside of a fenced frame.");
     return ScriptPromise();
   }
   // The renderer does not have enough information to verify that this document

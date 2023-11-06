@@ -51,6 +51,7 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
 
   void TearDown() override {
     disk_cache::FlushCacheThreadForTesting();
+    backend_ = nullptr;
     generated_code_cache_.reset();
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(cache_dir_.Delete()) << cache_dir_.GetPath();
@@ -78,6 +79,7 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
   // to test the pending operaions path.
   void InitializeCacheAndReOpen(GeneratedCodeCache::CodeCacheType cache_type) {
     InitializeCache(cache_type);
+    backend_ = nullptr;
     generated_code_cache_ = std::make_unique<GeneratedCodeCache>(
         cache_path_, kMaxSizeInBytes, cache_type);
   }
@@ -140,7 +142,7 @@ class GeneratedCodeCacheTest : public testing::TestWithParam<bool> {
   bool received_;
   bool received_null_;
   base::FilePath cache_path_;
-  raw_ptr<disk_cache::Backend, DanglingUntriaged> backend_;
+  raw_ptr<disk_cache::Backend> backend_ = nullptr;
 };
 
 constexpr char GeneratedCodeCacheTest::kInitialUrl[];

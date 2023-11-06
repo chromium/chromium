@@ -69,21 +69,44 @@ public class DarkModeHelper {
     public static int getLightTheme(Context context) {
         if (sLightThemeForTesting != null) return sLightThemeForTesting;
         int lightTheme = LightTheme.LIGHT_THEME_UNDEFINED;
-        int resId = android.R.attr.isLightTheme;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            // android.R.attr.isLightTheme is added in Q, for pre-Q platform, WebView
-            // checks if app has isLightTheme attr which could be added by Android X
-            // and wasn't stripped out.
-            resId = context.getApplicationContext().getResources().getIdentifier(
-                    "isLightTheme", "attr", context.getApplicationContext().getPackageName());
-            if (resId == 0) return lightTheme;
+        try {
+            int resId = android.R.attr.isLightTheme;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                // android.R.attr.isLightTheme is added in Q, for pre-Q platform, WebView
+                // checks if app has isLightTheme attr which could be added by Android X
+                // and wasn't stripped out.
+                resId =
+                        context.getApplicationContext()
+                                .getResources()
+                                .getIdentifier(
+                                        "isLightTheme",
+                                        "attr",
+                                        context.getApplicationContext().getPackageName());
+                if (resId == 0) return lightTheme;
+            }
+            TypedArray a = context.getTheme().obtainStyledAttributes(new int[] {resId});
+            // TODO: use try-with-resources once minSdkVersion>=31 instead of recycle
+            try {
+                if (a.hasValue(0)) {
+                    lightTheme =
+                            a.getBoolean(0, true)
+                                    ? LightTheme.LIGHT_THEME_TRUE
+                                    : LightTheme.LIGHT_THEME_FALSE;
+                }
+            } finally {
+                a.recycle();
+            }
+        } catch (RuntimeException e) {
+            // The AssetManager may have been shut down, possibly due to the WebView outliving the
+            // Activity it was associated with, but this just throws a generic RuntimeException.
+            // Check the message to be sure.
+            if ("AssetManager has been destroyed".equals(e.getMessage())) {
+                // just fall through so we return the default
+            } else {
+                // rethrow if the message doesn't match
+                throw e;
+            }
         }
-        TypedArray a = context.getTheme().obtainStyledAttributes(new int[] {resId});
-        if (a.hasValue(0)) {
-            lightTheme = a.getBoolean(0, true) ? LightTheme.LIGHT_THEME_TRUE
-                                               : LightTheme.LIGHT_THEME_FALSE;
-        }
-        a.recycle();
         return lightTheme;
     }
 

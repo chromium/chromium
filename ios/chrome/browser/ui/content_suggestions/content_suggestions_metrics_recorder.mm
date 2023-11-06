@@ -24,6 +24,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
+namespace {
+
+const float kMaxModuleEngagementIndex = 50;
+
+}
+
 @implementation ContentSuggestionsMetricsRecorder {
   PrefService* _localState;
 }
@@ -115,8 +121,48 @@
 }
 
 - (void)recordMagicStackModuleEngagementForType:
-    (ContentSuggestionsModuleType)type {
+            (ContentSuggestionsModuleType)type
+                                        atIndex:(int)index {
   UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleEngagementHistogram, type);
+  switch (type) {
+    case ContentSuggestionsModuleType::kMostVisited:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementMostVisitedIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kShortcuts:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementShortcutsIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRow:
+    case ContentSuggestionsModuleType::kSafetyCheckMultiRowOverflow:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSafetyCheckIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kTabResumption:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementTabResumptionIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kParcelTracking:
+    case ContentSuggestionsModuleType::kParcelTrackingSeeMore:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementParcelTrackingIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+    case ContentSuggestionsModuleType::kSetUpListSync:
+    case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
+    case ContentSuggestionsModuleType::kSetUpListAutofill:
+    case ContentSuggestionsModuleType::kCompactedSetUpList:
+    case ContentSuggestionsModuleType::kSetUpListAllSet:
+      UMA_HISTOGRAM_EXACT_LINEAR(
+          kMagicStackModuleEngagementSetUpListIndexHistogram, index,
+          kMaxModuleEngagementIndex);
+      break;
+  }
 }
 
 - (void)recordReturnToRecentTabTileShown {
@@ -124,10 +170,6 @@
 }
 
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType {
-  if (IsMagicStackEnabled()) {
-    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                      kShortcuts];
-  }
   switch (shortcutType) {
     case NTPCollectionShortcutTypeBookmark:
       base::RecordAction(base::UserMetricsAction(kShowBookmarksAction));
@@ -155,10 +197,8 @@
                             kMaxTrendingQueries);
 }
 
-- (void)recordMostRecentTabOpened {
+- (void)recordTabResumptionTabOpened {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
-  [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                    kTabResumption];
 }
 
 - (void)recordMostVisitedTilesShown {
@@ -185,11 +225,6 @@
 
   new_tab_page_uma::RecordAction(
       false, webState, new_tab_page_uma::ACTION_OPENED_MOST_VISITED_ENTRY);
-
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
-    [self recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                      kMostVisited];
-  }
 }
 
 - (void)recordMostVisitedTileRemoved {
@@ -205,15 +240,6 @@
 }
 
 - (void)recordSetUpListItemSelected:(SetUpListItemType)type {
-  if (IsMagicStackEnabled()) {
-    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
-      [self recordMagicStackModuleEngagementForType:
-                ContentSuggestionsModuleType::kCompactedSetUpList];
-    } else {
-      [self recordMagicStackModuleEngagementForType:
-                SetUpListModuleTypeForSetUpListType(type)];
-    }
-  }
   set_up_list_metrics::RecordItemSelected(type);
 }
 

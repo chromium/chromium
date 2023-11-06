@@ -407,13 +407,13 @@ ACMatchClassifications StyleTypesToACMatchClassifications(
 
       int type_class;
       switch (style.type) {
-        case omnibox::DESCRIPTION_STYLE_TYPE_URL:
+        case omnibox::DescriptionStyleType::kUrl:
           type_class = AutocompleteMatch::ACMatchClassification::URL;
           break;
-        case omnibox::DESCRIPTION_STYLE_TYPE_MATCH:
+        case omnibox::DescriptionStyleType::kMatch:
           type_class = AutocompleteMatch::ACMatchClassification::MATCH;
           break;
-        case omnibox::DESCRIPTION_STYLE_TYPE_DIM:
+        case omnibox::DescriptionStyleType::kDim:
           type_class = AutocompleteMatch::ACMatchClassification::DIM;
           break;
         default:

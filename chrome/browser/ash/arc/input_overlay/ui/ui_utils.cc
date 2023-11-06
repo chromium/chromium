@@ -133,22 +133,6 @@ std::u16string GetDisplayTextAccessibleName(const std::u16string& text) {
   }
 }
 
-int GetIndexOfActionName(const std::vector<std::u16string>& action_names,
-                         const std::u16string& action_name) {
-  auto it = std::find(action_names.begin(), action_names.end(), action_name);
-  return it == action_names.end() ? -1 : it - action_names.begin();
-}
-
-std::u16string GetActionNameAtIndex(
-    const std::vector<std::u16string>& action_names,
-    int index) {
-  if (index < 0 || index >= static_cast<int>(action_names.size())) {
-    // TODO(b/274690042): Replace placeholder text with localized strings.
-    return u"Unassigned";
-  }
-  return action_names[index];
-}
-
 gfx::Rect CalculateAvailableBounds(aura::Window* root_window) {
   DCHECK(root_window->IsRootWindow());
 

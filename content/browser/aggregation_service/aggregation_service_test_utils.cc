@@ -293,22 +293,27 @@ AggregatableReport CloneAggregatableReport(const AggregatableReport& report) {
                             report.aggregation_coordinator_origin());
 }
 
-TestHpkeKey GenerateKey(std::string key_id) {
-  bssl::ScopedEVP_HPKE_KEY key;
-  EXPECT_TRUE(EVP_HPKE_KEY_generate(key.get(), EVP_hpke_x25519_hkdf_sha256()));
+TestHpkeKey::TestHpkeKey(std::string key_id) : key_id_(std::move(key_id)) {
+  EXPECT_TRUE(EVP_HPKE_KEY_generate(full_hpke_key_.get(),
+                                    EVP_hpke_x25519_hkdf_sha256()));
+}
 
+TestHpkeKey::TestHpkeKey(TestHpkeKey&&) = default;
+TestHpkeKey& TestHpkeKey::operator=(TestHpkeKey&&) = default;
+TestHpkeKey::~TestHpkeKey() = default;
+
+PublicKey TestHpkeKey::GetPublicKey() const {
   std::vector<uint8_t> public_key(X25519_PUBLIC_VALUE_LEN);
   size_t public_key_len;
   EXPECT_TRUE(EVP_HPKE_KEY_public_key(
-      /*key=*/key.get(), /*out=*/public_key.data(),
+      /*key=*/full_hpke_key_.get(), /*out=*/public_key.data(),
       /*out_len=*/&public_key_len, /*max_out=*/public_key.size()));
   EXPECT_EQ(public_key.size(), public_key_len);
+  return PublicKey(key_id_, std::move(public_key));
+}
 
-  TestHpkeKey hpke_key{
-      {}, PublicKey(key_id, public_key), base::Base64Encode(public_key)};
-  EVP_HPKE_KEY_copy(&hpke_key.full_hpke_key, key.get());
-
-  return hpke_key;
+std::string TestHpkeKey::GetPublicKeyBase64() const {
+  return base::Base64Encode(GetPublicKey().key);
 }
 
 base::expected<PublicKeyset, std::string> ReadAndParsePublicKeys(

@@ -656,7 +656,8 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
       while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
         std::string text;
         base::StringAppendF(&text, "%s",
-                            sqlite3_column_text(sqlite_statement, 0));
+                            reinterpret_cast<const char*>(
+                                sqlite3_column_text(sqlite_statement, 0)));
         debug_info += text + "\n";
         if (diagnostics) {
           diagnostics->schema_sql_rows.push_back(text);
@@ -683,7 +684,8 @@ std::string Database::CollectErrorInfo(int sqlite_error_code,
       while ((rc = sqlite3_step(sqlite_statement)) == SQLITE_ROW) {
         std::string text;
         base::StringAppendF(&text, "%s",
-                            sqlite3_column_text(sqlite_statement, 0));
+                            reinterpret_cast<const char*>(
+                                sqlite3_column_text(sqlite_statement, 0)));
         debug_info += text + "\n";
         if (diagnostics) {
           diagnostics->schema_other_row_names.push_back(text);

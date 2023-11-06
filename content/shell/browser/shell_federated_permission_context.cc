@@ -28,10 +28,6 @@ ShellFederatedPermissionContext::GetApiPermissionStatus(
     return PermissionStatus::BLOCKED_EMBARGO;
   }
 
-  if (third_party_cookies_blocked_) {
-    return PermissionStatus::BLOCKED_THIRD_PARTY_COOKIES_BLOCKED;
-  }
-
   return PermissionStatus::GRANTED;
 }
 
@@ -178,7 +174,7 @@ void ShellFederatedPermissionContext::SetIdpSigninStatus(
     bool idp_signin_status) {
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
-    observer.OnIdpSigninStatusChanged(idp_origin, idp_signin_status);
+    observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
   }
 
   // TODO(crbug.com/1382989): Replace this with AddIdpSigninStatusObserver.

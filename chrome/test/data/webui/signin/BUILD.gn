@@ -9,8 +9,6 @@ import("../build_webui_tests.gni")
 assert(!is_chromeos_ash)
 
 build_webui_tests("build") {
-  resource_path_prefix = "signin"
-
   files = [
     "profile_card_menu_test.ts",
     "profile_picker_app_test.ts",
@@ -31,6 +29,7 @@ build_webui_tests("build") {
   if (enable_dice_support) {
     files += [
       "dice_web_signin_intercept_test.ts",
+      "dice_web_signin_intercept_chrome_signin_test.ts",
       "test_dice_web_signin_intercept_browser_proxy.ts",
     ]
   }

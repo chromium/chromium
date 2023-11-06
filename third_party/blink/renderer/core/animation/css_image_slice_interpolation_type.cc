@@ -139,7 +139,7 @@ class InheritedSliceTypesChecker
 };
 
 InterpolationValue ConvertImageSlice(const ImageSlice& slice, double zoom) {
-  auto list = std::make_unique<InterpolableList>(kSideIndexCount);
+  auto* list = MakeGarbageCollected<InterpolableList>(kSideIndexCount);
   const Length* sides[kSideIndexCount] = {};
   sides[kSideTop] = &slice.slices.Top();
   sides[kSideRight] = &slice.slices.Right();
@@ -148,7 +148,7 @@ InterpolationValue ConvertImageSlice(const ImageSlice& slice, double zoom) {
 
   for (wtf_size_t i = 0; i < kSideIndexCount; i++) {
     const Length& side = *sides[i];
-    list->Set(i, std::make_unique<InterpolableNumber>(
+    list->Set(i, MakeGarbageCollected<InterpolableNumber>(
                      side.IsFixed() ? side.Pixels() / zoom : side.Percent()));
   }
 
@@ -208,7 +208,7 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
 
   const cssvalue::CSSBorderImageSliceValue& slice =
       To<cssvalue::CSSBorderImageSliceValue>(value);
-  auto list = std::make_unique<InterpolableList>(kSideIndexCount);
+  auto* list = MakeGarbageCollected<InterpolableList>(kSideIndexCount);
   const CSSValue* sides[kSideIndexCount];
   sides[kSideTop] = slice.Slices().Top();
   sides[kSideRight] = slice.Slices().Right();
@@ -218,12 +218,12 @@ InterpolationValue CSSImageSliceInterpolationType::MaybeConvertValue(
   for (wtf_size_t i = 0; i < kSideIndexCount; i++) {
     const auto& side = *To<CSSPrimitiveValue>(sides[i]);
     DCHECK(side.IsNumber() || side.IsPercentage());
-    list->Set(i, std::make_unique<InterpolableNumber>(side.GetDoubleValue()));
+    list->Set(i,
+              MakeGarbageCollected<InterpolableNumber>(side.GetDoubleValue()));
   }
 
   return InterpolationValue(
-      std::move(list),
-      CSSImageSliceNonInterpolableValue::Create(SliceTypes(slice)));
+      list, CSSImageSliceNonInterpolableValue::Create(SliceTypes(slice)));
 }
 
 InterpolationValue

@@ -68,7 +68,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   // From Request.idl:
   String method() const;
   const KURL& url() const;
-  Headers* getHeaders() const { return headers_; }
+  Headers* getHeaders() const { return headers_.Get(); }
   String destination() const;
   String referrer() const;
   String getReferrerPolicy() const;
@@ -79,14 +79,14 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   String integrity() const;
   bool keepalive() const;
   bool isHistoryNavigation() const;
-  AbortSignal* signal() const { return signal_; }
+  AbortSignal* signal() const { return signal_.Get(); }
   String targetAddressSpace() const;
 
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.
   Request* clone(ScriptState*, ExceptionState&);
 
-  FetchRequestData* PassRequestData(ScriptState*);
+  FetchRequestData* PassRequestData(ScriptState*, ExceptionState&);
   mojom::blink::FetchAPIRequestPtr CreateFetchAPIRequest() const;
   bool HasBody() const;
   BodyStreamBuffer* BodyBuffer() override { return request_->Buffer(); }
@@ -101,7 +101,7 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   void Trace(Visitor*) const override;
 
  private:
-  const FetchRequestData* GetRequest() const { return request_; }
+  const FetchRequestData* GetRequest() const { return request_.Get(); }
   static Request* CreateRequestWithRequestOrString(ScriptState*,
                                                    Request*,
                                                    const String&,

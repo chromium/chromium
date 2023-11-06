@@ -11,10 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -83,8 +85,29 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kFailedToInitializeSchema = 4,
     kMaxValue = kFailedToInitializeSchema,
   };
+  enum class ReportCorruptionStatus {
+    // Tracks total number of corrupted reports for analysis purposes.
+    kAnyFieldCorrupted = 0,
+    kInvalidFailedSendAttempts = 1,
+    kInvalidExternalReportID = 2,
+    kInvalidContextOrigin = 3,
+    kInvalidReportingOrigin = 4,
+    kInvalidReportType = 5,
+    kReportingOriginMismatch = 6,
+    kMetadataAsStringFailed = 7,
+    kSourceDataMissingEventLevel = 8,
+    kSourceDataMissingAggregatable = 9,
+    kSourceDataFoundNullAggregatable = 10,
+    kInvalidMetadata = 11,
+    kMaxValue = kInvalidMetadata,
+  };
 
  private:
+  using ReportCorruptionStatusSet =
+      base::EnumSet<ReportCorruptionStatus,
+                    ReportCorruptionStatus::kAnyFieldCorrupted,
+                    ReportCorruptionStatus::kMaxValue>;
+
   struct StoredSourceData;
 
   enum class DbStatus {
@@ -107,7 +130,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage:
-  StoreSourceResult StoreSource(const StorableSource& source) override;
+  StoreSourceResult StoreSource(const StorableSource& source,
+                                bool debug_cookie_set) override;
   CreateReportResult MaybeCreateAndStoreReport(
       const AttributionTrigger& trigger) override;
   std::vector<AttributionReport> GetAttributionReports(
@@ -195,7 +219,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       int num_conversions,
-      int max_event_level_reports,
       int64_t conversion_priority,
       absl::optional<AttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
@@ -213,7 +236,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  absl::optional<AttributionReport> ReadReportFromStatement(sql::Statement&)
+  base::expected<AttributionReport, ReportCorruptionStatusSet>
+  ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<StoredSourceData> ReadSourceFromStatement(sql::Statement&)
@@ -361,10 +385,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Randomly assigns trigger verification data to the given reports.
   void AssignTriggerVerificationData(std::vector<AttributionReport>&,
                                      const AttributionTrigger&)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  uint64_t SanitizeTriggerData(uint64_t trigger_data,
-                               attribution_reporting::mojom::SourceType)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // If set, database errors will not crash the client when run in debug mode.

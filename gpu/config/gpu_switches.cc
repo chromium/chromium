@@ -144,6 +144,11 @@ const char kSkiaGraphiteBackendDawnSwiftshader[] = "dawn-swiftshader";
 const char kSkiaGraphiteBackendDawnVulkan[] = "dawn-vulkan";
 const char kSkiaGraphiteBackendMetal[] = "metal";
 
+// Force disabling/enabling Skia Graphite. Disabling will take precedence over
+// enabling if both are specified.
+const char kDisableSkiaGraphite[] = "disable-skia-graphite";
+const char kEnableSkiaGraphite[] = "enable-skia-graphite";
+
 const char kShaderCachePath[] = "shader-cache-path";
 
 }  // namespace switches

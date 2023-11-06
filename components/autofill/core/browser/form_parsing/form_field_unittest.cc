@@ -57,6 +57,13 @@ class FormFieldTest
     return field_candidates_map_.size();
   }
 
+  int ParseStandaloneEmailFields() {
+    FormField::ParseStandaloneEmailFields(
+        list_, GeoIpCountryCode(""), LanguageCode(""),
+        GetActivePatternSource().value(), field_candidates_map_);
+    return field_candidates_map_.size();
+  }
+
   // FormFieldTestBase:
   // This function is unused in these unit tests, because FormField is not a
   // parser itself, but the infrastructure combining them.
@@ -192,7 +199,11 @@ TEST_P(FormFieldTest, TestParseableLabels) {
 
 // Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
 TEST_P(FormFieldTest, ParseSingleFieldFormsInsideParseFormField) {
-  AddTextFormFieldData("", "Phone", PHONE_HOME_WHOLE_NUMBER);
+  AddTextFormFieldData(
+      "", "Phone",
+      base::FeatureList::IsEnabled(features::kAutofillDefaultToCityAndNumber)
+          ? PHONE_HOME_CITY_AND_NUMBER
+          : PHONE_HOME_WHOLE_NUMBER);
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
 
@@ -357,6 +368,19 @@ TEST_P(FormFieldTest, ParseStandaloneZipEnabledForBR) {
       features::kAutofillEnableZipOnlyAddressForms};
   AddTextFormFieldData("cep", "CEP", ADDRESS_HOME_ZIP);
   EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode("BR")));
+  TestClassificationExpectations();
+}
+
+TEST_P(FormFieldTest, ParseStandaloneEmail) {
+  AddTextFormFieldData("email", "email", EMAIL_ADDRESS);
+  AddTextFormFieldData("unknown", "Horseradish", UNKNOWN_TYPE);
+  EXPECT_EQ(1, ParseStandaloneEmailFields());
+  TestClassificationExpectations();
+}
+
+TEST_P(FormFieldTest, ParseStandaloneEmailWithNoEmailFields) {
+  AddTextFormFieldData("unknown", "Horseradish", UNKNOWN_TYPE);
+  EXPECT_EQ(0, ParseStandaloneEmailFields());
   TestClassificationExpectations();
 }
 

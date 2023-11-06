@@ -37,6 +37,7 @@ struct SameSizeAsFillLayer {
   Length position_y_;
 
   LengthSize size_length_;
+  FillRepeat repeat_;
 
   unsigned bitfields1_;
   unsigned bitfields2_;
@@ -50,13 +51,13 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       position_x_(FillLayer::InitialFillPositionX(type)),
       position_y_(FillLayer::InitialFillPositionY(type)),
       size_length_(FillLayer::InitialFillSizeLength(type)),
+      repeat_(FillLayer::InitialFillRepeat(type)),
       attachment_(
           static_cast<unsigned>(FillLayer::InitialFillAttachment(type))),
       clip_(static_cast<unsigned>(FillLayer::InitialFillClip(type))),
       origin_(static_cast<unsigned>(FillLayer::InitialFillOrigin(type))),
-      repeat_x_(static_cast<unsigned>(FillLayer::InitialFillRepeatX(type))),
-      repeat_y_(static_cast<unsigned>(FillLayer::InitialFillRepeatY(type))),
-      composite_(FillLayer::InitialFillComposite(type)),
+      compositing_operator_(static_cast<unsigned>(
+          FillLayer::InitialFillCompositingOperator(type))),
       size_type_(
           use_initial_values
               ? static_cast<unsigned>(FillLayer::InitialFillSizeType(type))
@@ -64,17 +65,19 @@ FillLayer::FillLayer(EFillLayerType type, bool use_initial_values)
       blend_mode_(static_cast<unsigned>(FillLayer::InitialFillBlendMode(type))),
       background_x_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kLeft)),
       background_y_origin_(static_cast<unsigned>(BackgroundEdgeOrigin::kTop)),
+      mask_mode_(static_cast<unsigned>(FillLayer::InitialFillMaskMode(type))),
       image_set_(use_initial_values),
       attachment_set_(use_initial_values),
       clip_set_(use_initial_values),
       origin_set_(use_initial_values),
-      repeat_x_set_(use_initial_values),
-      repeat_y_set_(use_initial_values),
+      repeat_set_(use_initial_values),
+      mask_mode_set_(use_initial_values),
       pos_x_set_(use_initial_values),
       pos_y_set_(use_initial_values),
       background_x_origin_set_(false),
       background_y_origin_set_(false),
-      composite_set_(use_initial_values || type == EFillLayerType::kMask),
+      compositing_operator_set_(use_initial_values ||
+                                type == EFillLayerType::kMask),
       blend_mode_set_(use_initial_values),
       type_(static_cast<unsigned>(type)),
       layers_clip_max_(0),
@@ -93,27 +96,27 @@ FillLayer::FillLayer(const FillLayer& o)
       position_x_(o.position_x_),
       position_y_(o.position_y_),
       size_length_(o.size_length_),
+      repeat_(o.repeat_),
       attachment_(o.attachment_),
       clip_(o.clip_),
       origin_(o.origin_),
-      repeat_x_(o.repeat_x_),
-      repeat_y_(o.repeat_y_),
-      composite_(o.composite_),
+      compositing_operator_(o.compositing_operator_),
       size_type_(o.size_type_),
       blend_mode_(o.blend_mode_),
       background_x_origin_(o.background_x_origin_),
       background_y_origin_(o.background_y_origin_),
+      mask_mode_(o.mask_mode_),
       image_set_(o.image_set_),
       attachment_set_(o.attachment_set_),
       clip_set_(o.clip_set_),
       origin_set_(o.origin_set_),
-      repeat_x_set_(o.repeat_x_set_),
-      repeat_y_set_(o.repeat_y_set_),
+      repeat_set_(o.repeat_set_),
+      mask_mode_set_(o.mask_mode_set_),
       pos_x_set_(o.pos_x_set_),
       pos_y_set_(o.pos_y_set_),
       background_x_origin_set_(o.background_x_origin_set_),
       background_y_origin_set_(o.background_y_origin_set_),
-      composite_set_(o.composite_set_),
+      compositing_operator_set_(o.compositing_operator_set_),
       blend_mode_set_(o.blend_mode_set_),
       type_(o.type_),
       layers_clip_max_(0),
@@ -141,26 +144,26 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
   position_y_ = o.position_y_;
   background_x_origin_ = o.background_x_origin_;
   background_y_origin_ = o.background_y_origin_;
+  mask_mode_ = o.mask_mode_;
   background_x_origin_set_ = o.background_x_origin_set_;
   background_y_origin_set_ = o.background_y_origin_set_;
   size_length_ = o.size_length_;
   attachment_ = o.attachment_;
   clip_ = o.clip_;
-  composite_ = o.composite_;
+  compositing_operator_ = o.compositing_operator_;
   blend_mode_ = o.blend_mode_;
   origin_ = o.origin_;
-  repeat_x_ = o.repeat_x_;
-  repeat_y_ = o.repeat_y_;
+  repeat_ = o.repeat_;
   size_type_ = o.size_type_;
 
   image_set_ = o.image_set_;
   attachment_set_ = o.attachment_set_;
   clip_set_ = o.clip_set_;
-  composite_set_ = o.composite_set_;
+  compositing_operator_set_ = o.compositing_operator_set_;
   blend_mode_set_ = o.blend_mode_set_;
   origin_set_ = o.origin_set_;
-  repeat_x_set_ = o.repeat_x_set_;
-  repeat_y_set_ = o.repeat_y_set_;
+  repeat_set_ = o.repeat_set_;
+  mask_mode_set_ = o.mask_mode_set_;
   pos_x_set_ = o.pos_x_set_;
   pos_y_set_ = o.pos_y_set_;
 
@@ -176,10 +179,10 @@ bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
          position_x_ == o.position_x_ && position_y_ == o.position_y_ &&
          background_x_origin_ == o.background_x_origin_ &&
          background_y_origin_ == o.background_y_origin_ &&
-         attachment_ == o.attachment_ && clip_ == o.clip_ &&
-         composite_ == o.composite_ && blend_mode_ == o.blend_mode_ &&
-         origin_ == o.origin_ && repeat_x_ == o.repeat_x_ &&
-         repeat_y_ == o.repeat_y_ && size_type_ == o.size_type_ &&
+         mask_mode_ == o.mask_mode_ && attachment_ == o.attachment_ &&
+         clip_ == o.clip_ && compositing_operator_ == o.compositing_operator_ &&
+         blend_mode_ == o.blend_mode_ && origin_ == o.origin_ &&
+         repeat_ == o.repeat_ && size_type_ == o.size_type_ &&
          size_length_ == o.size_length_ && type_ == o.type_;
 }
 
@@ -268,12 +271,13 @@ void FillLayer::FillUnsetProperties() {
     }
   }
 
-  for (curr = this; curr && curr->IsCompositeSet(); curr = curr->Next()) {
+  for (curr = this; curr && curr->IsCompositingOperatorSet();
+       curr = curr->Next()) {
   }
   if (curr && curr != this) {
     // We need to fill in the remaining values with the pattern specified.
     for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->composite_ = pattern->composite_;
+      curr->compositing_operator_ = pattern->compositing_operator_;
       pattern = pattern->Next();
       if (pattern == curr || !pattern) {
         pattern = this;
@@ -307,25 +311,12 @@ void FillLayer::FillUnsetProperties() {
     }
   }
 
-  for (curr = this; curr && curr->IsRepeatXSet(); curr = curr->Next()) {
+  for (curr = this; curr && curr->IsRepeatSet(); curr = curr->Next()) {
   }
   if (curr && curr != this) {
     // We need to fill in the remaining values with the pattern specified.
     for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->repeat_x_ = pattern->repeat_x_;
-      pattern = pattern->Next();
-      if (pattern == curr || !pattern) {
-        pattern = this;
-      }
-    }
-  }
-
-  for (curr = this; curr && curr->IsRepeatYSet(); curr = curr->Next()) {
-  }
-  if (curr && curr != this) {
-    // We need to fill in the remaining values with the pattern specified.
-    for (FillLayer* pattern = this; curr; curr = curr->Next()) {
-      curr->repeat_y_ = pattern->repeat_y_;
+      curr->repeat_ = pattern->repeat_;
       pattern = pattern->Next();
       if (pattern == curr || !pattern) {
         pattern = this;
@@ -346,6 +337,19 @@ void FillLayer::FillUnsetProperties() {
       }
     }
   }
+
+  for (curr = this; curr && curr->IsMaskModeSet(); curr = curr->Next()) {
+  }
+  if (curr && curr != this) {
+    // We need to fill in the remaining values with the pattern specified.
+    for (FillLayer* pattern = this; curr; curr = curr->Next()) {
+      curr->mask_mode_ = pattern->mask_mode_;
+      pattern = pattern->Next();
+      if (pattern == curr || !pattern) {
+        pattern = this;
+      }
+    }
+  }
 }
 
 void FillLayer::CullEmptyLayers() {
@@ -359,12 +363,25 @@ void FillLayer::CullEmptyLayers() {
   }
 }
 
+EFillBox FillLayer::EffectiveClip() const {
+  // When the layer is for a mask and the image is an SVG <mask> reference, the
+  // effective clip value is no-clip.
+  if (GetType() == EFillLayerType::kMask) {
+    auto* image = GetImage();
+    if (image && image->IsSVGMaskReference()) {
+      return EFillBox::kNoClip;
+    }
+  }
+  return Clip();
+}
+
 void FillLayer::ComputeCachedProperties() const {
   DCHECK(!cached_properties_computed_);
 
-  layers_clip_max_ = static_cast<unsigned>(Clip());
+  const EFillBox effective_clip = EffectiveClip();
+  layers_clip_max_ = static_cast<unsigned>(effective_clip);
   any_layer_uses_content_box_ =
-      Clip() == EFillBox::kContent || Origin() == EFillBox::kContent;
+      effective_clip == EFillBox::kContent || Origin() == EFillBox::kContent;
   any_layer_has_image_ = !!GetImage();
   any_layer_has_url_image_ =
       any_layer_has_image_ && GetImage()->CssValue()->MayContainUrl();
@@ -401,7 +418,7 @@ bool FillLayer::ClipOccludesNextLayers() const {
 bool FillLayer::ImageIsOpaque(const Document& document,
                               const ComputedStyle& style) const {
   // Returns whether we have an image that will cover the content below it when
-  // composite_ == CompositeSourceOver && blend_mode_ == BlendMode::kNormal.
+  // Composite() == CompositeSourceOver && GetBlendMode() == BlendMode::kNormal.
   // Note that it doesn't matter what orientation we use because we are only
   // checking for IsEmpty.
   return image_->KnownToBeOpaque(document, style) &&
@@ -416,10 +433,12 @@ bool FillLayer::ImageTilesLayer() const {
   // rectangle. We could relax the repeat mode requirement if we also knew
   // the rect we had to fill, and the portion of the image we need to use, and
   // know that the latter covers the former.
-  return (RepeatX() == EFillRepeat::kRepeatFill ||
-          RepeatX() == EFillRepeat::kRoundFill) &&
-         (RepeatY() == EFillRepeat::kRepeatFill ||
-          RepeatY() == EFillRepeat::kRoundFill);
+  FillRepeat repeat = Repeat();
+
+  return (repeat.x == EFillRepeat::kRepeatFill ||
+          repeat.x == EFillRepeat::kRoundFill) &&
+         (repeat.y == EFillRepeat::kRepeatFill ||
+          repeat.y == EFillRepeat::kRoundFill);
 }
 
 bool FillLayer::ImageOccludesNextLayers(const Document& document,
@@ -429,7 +448,7 @@ bool FillLayer::ImageOccludesNextLayers(const Document& document,
     return false;
   }
 
-  switch (composite_) {
+  switch (Composite()) {
     case kCompositeClear:
     case kCompositeCopy:
       return ImageTilesLayer();
@@ -458,6 +477,46 @@ bool FillLayer::ImagesIdentical(const FillLayer* layer1,
   }
 
   return !layer1 && !layer2;
+}
+
+CompositeOperator FillLayer::Composite() const {
+  switch (CompositingOperator()) {
+    case CompositingOperator::kAdd:
+      return kCompositeSourceOver;
+    case CompositingOperator::kSubtract:
+      return kCompositeSourceOut;
+    case CompositingOperator::kIntersect:
+      return kCompositeSourceIn;
+    case CompositingOperator::kExclude:
+      return kCompositeXOR;
+    case CompositingOperator::kClear:
+      return kCompositeClear;
+    case CompositingOperator::kCopy:
+      return kCompositeCopy;
+    case CompositingOperator::kSourceOver:
+      return kCompositeSourceOver;
+    case CompositingOperator::kSourceIn:
+      return kCompositeSourceIn;
+    case CompositingOperator::kSourceOut:
+      return kCompositeSourceOut;
+    case CompositingOperator::kSourceAtop:
+      return kCompositeSourceAtop;
+    case CompositingOperator::kDestinationOver:
+      return kCompositeDestinationOver;
+    case CompositingOperator::kDestinationIn:
+      return kCompositeDestinationIn;
+    case CompositingOperator::kDestinationOut:
+      return kCompositeDestinationOut;
+    case CompositingOperator::kDestinationAtop:
+      return kCompositeDestinationAtop;
+    case CompositingOperator::kXOR:
+      return kCompositeXOR;
+    case CompositingOperator::kPlusLighter:
+      return kCompositePlusLighter;
+    default:
+      NOTREACHED();
+      break;
+  }
 }
 
 }  // namespace blink

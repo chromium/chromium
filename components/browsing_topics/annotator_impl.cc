@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/dcheck_is_on.h"
 #include "base/files/file_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -162,14 +163,26 @@ AnnotatorImpl::AnnotatorImpl(
 AnnotatorImpl::~AnnotatorImpl() = default;
 
 void AnnotatorImpl::NotifyWhenModelAvailable(base::OnceClosure callback) {
-  AddOnModelUpdatedCallback(std::move(callback));
+  if (GetBrowsingTopicsModelInfo().has_value()) {
+    std::move(callback).Run();
+    return;
+  }
+  model_available_callbacks_.AddUnsafe(std::move(callback));
 }
 
 absl::optional<optimization_guide::ModelInfo>
 AnnotatorImpl::GetBrowsingTopicsModelInfo() const {
-  if (!is_valid_model_) {
-    return absl::nullopt;
+#if DCHECK_IS_ON()
+  if (GetModelInfo()) {
+    DCHECK(GetModelInfo()->GetModelMetadata());
+    absl::optional<optimization_guide::proto::PageTopicsModelMetadata>
+        model_metadata = optimization_guide::ParsedAnyMetadata<
+            optimization_guide::proto::PageTopicsModelMetadata>(
+            *GetModelInfo()->GetModelMetadata());
+    DCHECK(model_metadata);
+    DCHECK(IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version()));
   }
+#endif  // DCHECK_IS_ON()
   return GetModelInfo();
 }
 
@@ -451,7 +464,6 @@ void AnnotatorImpl::OnModelUpdated(
   // First invoke parent to update internal status.
   optimization_guide::BertModelHandler::OnModelUpdated(optimization_target,
                                                        model_info);
-  is_valid_model_ = false;
 
   if (optimization_target !=
       optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2) {
@@ -466,21 +478,23 @@ void AnnotatorImpl::OnModelUpdated(
       model_metadata = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::PageTopicsModelMetadata>(
           *model_info->GetModelMetadata());
-
-  if (!model_metadata ||
-      !IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version())) {
+  if (!model_metadata) {
     return;
   }
 
+  if (!IsModelTaxonomyVersionSupported(model_metadata->taxonomy_version())) {
+    // Also clear the model in the underlying model executor code so that it
+    // cannot be accidentally called on the wrong taxonomy version.
+    optimization_guide::BertModelHandler::OnModelUpdated(
+        optimization_guide::proto::OPTIMIZATION_TARGET_PAGE_TOPICS_V2,
+        absl::nullopt);
+    return;
+  }
+  version_ = model_metadata->version();
+
   // New model, new override list.
-  is_valid_model_ = true;
   override_list_file_path_ = absl::nullopt;
   override_list_ = absl::nullopt;
-
-  if (model_metadata) {
-    version_ = model_metadata->version();
-  }
-
   for (const base::FilePath& path : model_info->GetAdditionalFiles()) {
     DCHECK(path.IsAbsolute());
     if (path.BaseName() == base::FilePath(kOverrideListBasePath)) {
@@ -488,6 +502,13 @@ void AnnotatorImpl::OnModelUpdated(
       break;
     }
   }
+
+  // Run any callbacks that were waiting for an updated model.
+  //
+  // This should always be the last statement in this method, after all internal
+  // state has been updated because these callbacks may trigger an immediate
+  // annotation request.
+  model_available_callbacks_.Notify();
 }
 
 }  // namespace browsing_topics

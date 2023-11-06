@@ -51,11 +51,12 @@ public class DropdownFieldViewTest {
     @Before
     public void setUpTest() throws Exception {
         mActivityTestRule.launchActivity(null);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mOtherFocusableField = new TextInputEditText(mActivityTestRule.getActivity());
-            mContentView.addView(mOtherFocusableField);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mOtherFocusableField = new TextInputEditText(mActivityTestRule.getActivity());
+                    mContentView.addView(mOtherFocusableField);
+                });
     }
 
     /**
@@ -65,12 +66,15 @@ public class DropdownFieldViewTest {
     @MediumTest
     @UiThreadTest
     public void testFocus() {
-        List<DropdownKeyValue> keyValues = Arrays.asList(
-                new DropdownKeyValue("key1", "value1"), new DropdownKeyValue("key2", "value2"));
-        PropertyModel model = new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
-                                      .with(DROPDOWN_KEY_VALUE_LIST, keyValues)
-                                      .with(LABEL, "label")
-                                      .build();
+        List<DropdownKeyValue> keyValues =
+                Arrays.asList(
+                        new DropdownKeyValue("key1", "value1"),
+                        new DropdownKeyValue("key2", "value2"));
+        PropertyModel model =
+                new PropertyModel.Builder(DROPDOWN_ALL_KEYS)
+                        .with(DROPDOWN_KEY_VALUE_LIST, keyValues)
+                        .with(LABEL, "label")
+                        .build();
 
         DropdownFieldView dropdown =
                 new DropdownFieldView(mActivityTestRule.getActivity(), mContentView, model);

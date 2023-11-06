@@ -103,7 +103,8 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
   // Timestamp.
   base::Time policy_timestamp;
   if (policy && policy->has_timestamp())
-    policy_timestamp = base::Time::FromJavaTime(policy->timestamp());
+    policy_timestamp =
+        base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp());
 
   const base::Time& old_timestamp = client_->last_policy_timestamp();
   if (!policy_timestamp.is_null() && !old_timestamp.is_null() &&

@@ -217,7 +217,7 @@
           <div class="label" i18n-text="label_record_gif_video_option"
                aria-hidden="true"></div>
         </div>
-        <div class="item hidden" id="time-lapse-mode">
+        <div class="item" id="time-lapse-mode">
           <input type="radio" tabindex="0" name="record-type"
                  data-state="record-type-time-lapse"
                  i18n-aria="record_time_lapse_video_option">
@@ -306,11 +306,7 @@
           <img alt="">
         </button>
       </div>
-      <div id="record-time" class="top-stripe horizontal-center-stripe" hidden>
-        <div class="icon"></div>
-        <div id="paused-msg" i18n-text="record_video_paused_msg"></div>
-        <div id="record-time-msg"></div>
-      </div>
+      <record-time-chip hidden></record-time-chip>
       <div class="centered-overlay">
         <div id="timer-tick-msg"></div>
       </div>

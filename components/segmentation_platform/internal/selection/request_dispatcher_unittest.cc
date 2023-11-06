@@ -107,7 +107,7 @@ class RequestDispatcherTest : public testing::Test {
                                           std::string());
     client_result_prefs_ = std::make_unique<ClientResultPrefs>(&prefs_);
     auto cached_result_writer = std::make_unique<CachedResultWriter>(
-        std::make_unique<ClientResultPrefs>(&prefs_), &clock_);
+        client_result_prefs_.get(), &clock_);
     cached_result_writer_ = cached_result_writer.get();
     storage_service_ = std::make_unique<StorageService>(
         nullptr, nullptr, nullptr, nullptr, std::move(config_holder),
@@ -330,18 +330,6 @@ TEST_F(RequestDispatcherTest,
   // The last request should be dispatched.
   run_loop_2.Run();
   EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
-
-  absl::optional<proto::ClientResult> result1_from_pref =
-      client_result_prefs_->ReadClientResultFromPrefs(kDeviceSwitcherClient);
-  ASSERT_TRUE(result1_from_pref);
-  EXPECT_EQ(result1_from_pref->client_result().SerializeAsString(),
-            raw_result1.result.SerializeAsString());
-
-  absl::optional<proto::ClientResult> result2_from_pref =
-      client_result_prefs_->ReadClientResultFromPrefs(kAdaptiveToolbarClient);
-  ASSERT_TRUE(result2_from_pref);
-  EXPECT_EQ(result2_from_pref->client_result().SerializeAsString(),
-            raw_result2.result.SerializeAsString());
 }
 
 TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {

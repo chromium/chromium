@@ -102,6 +102,7 @@ class AuthenticatorRequestSheetView : public views::View {
     raw_ptr<NonAccessibleImageView> step_illustration_image_ = nullptr;
     raw_ptr<views::AnimatedImageView> step_illustration_animation_ = nullptr;
     raw_ptr<views::Label> error_label_ = nullptr;
+    raw_ptr<views::Label> title_label_ = nullptr;
   };
 
   // Creates the upper half of the sheet, consisting of a pretty illustration

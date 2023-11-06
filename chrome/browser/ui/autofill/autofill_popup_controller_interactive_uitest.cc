@@ -209,15 +209,17 @@ IN_PROC_BROWSER_TEST_F(AutofillPopupControllerBrowserTest, ResetSelectedLine) {
   ASSERT_TRUE(controller);
 
   // Push some suggestions and select the line #3.
-  std::vector<std::u16string> rows = {u"suggestion1", u"suggestion2",
-                                      u"suggestion3", u"suggestion4"};
-  client->UpdateAutofillPopupDataListValues(rows, rows);
+  std::vector<SelectOption> rows = {{u"suggestion1", u"suggestion1"},
+                                    {u"suggestion2", u"suggestion2"},
+                                    {u"suggestion3", u"suggestion3"},
+                                    {u"suggestion4", u"suggestion4"}};
+  client->UpdateAutofillPopupDataListValues(rows);
   int original_suggestions_count = controller->GetLineCount();
   controller->SelectSuggestion(3u);
 
   // Replace the list with the smaller one.
-  rows = {u"suggestion1"};
-  client->UpdateAutofillPopupDataListValues(rows, rows);
+  rows = {{u"suggestion1", u"suggestion1"}};
+  client->UpdateAutofillPopupDataListValues(rows);
   // Make sure that previously selected line #3 doesn't exist.
   ASSERT_LT(controller->GetLineCount(), original_suggestions_count);
   // Selecting a new line should not crash.

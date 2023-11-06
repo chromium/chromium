@@ -67,9 +67,10 @@ base::WeakPtr<OneDayImpl> OneDayImpl::GetWeakPtr() {
 }
 
 void OneDayImpl::CheckMembershipOprf() {
-  SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
+  PsmClientManager* psm_client_manager = GetParams()->GetPsmClientManager();
+  psm_client_manager->SetPsmRlweClient(kPsmUseCase, GetPsmIdentifiersToQuery());
 
-  if (!GetPsmRlweClient()) {
+  if (!psm_client_manager->GetPsmRlweClient()) {
     LOG(ERROR) << "Check membership failed since the PSM RLWE client could "
                << "not be initialized.";
     std::move(callback_).Run();
@@ -77,7 +78,7 @@ void OneDayImpl::CheckMembershipOprf() {
   }
 
   // Generate PSM Oprf request body.
-  const auto status_or_oprf_request = GetPsmRlweClient()->CreateOprfRequest();
+  const auto status_or_oprf_request = psm_client_manager->CreateOprfRequest();
   if (!status_or_oprf_request.ok()) {
     LOG(ERROR) << "Failed to create OPRF request.";
     utils::RecordCheckMembershipCases(
@@ -164,9 +165,11 @@ void OneDayImpl::OnCheckMembershipOprfComplete(
 
 void OneDayImpl::CheckMembershipQuery(
     const psm_rlwe::PrivateMembershipRlweOprfResponse& oprf_response) {
+  PsmClientManager* psm_client_manager = GetParams()->GetPsmClientManager();
+
   // Generate PSM Query request body.
   const auto status_or_query_request =
-      GetPsmRlweClient()->CreateQueryRequest(oprf_response);
+      psm_client_manager->CreateQueryRequest(oprf_response);
   if (!status_or_query_request.ok()) {
     LOG(ERROR) << "Failed to create Query request.";
     utils::RecordCheckMembershipCases(
@@ -241,7 +244,7 @@ void OneDayImpl::OnCheckMembershipQueryComplete(
   psm_rlwe::PrivateMembershipRlweQueryResponse query_response =
       psm_query_response.rlwe_query_response();
   auto status_or_response =
-      GetPsmRlweClient()->ProcessQueryResponse(query_response);
+      GetParams()->GetPsmClientManager()->ProcessQueryResponse(query_response);
 
   if (!status_or_response.ok()) {
     LOG(ERROR) << "Failed to process query response.";

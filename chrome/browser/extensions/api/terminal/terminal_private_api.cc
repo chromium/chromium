@@ -366,7 +366,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     auto status_printer = std::make_unique<StartupStatusPrinter>(
         base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
                             api::terminal_private::ToString(
-                                api::terminal_private::OUTPUT_TYPE_STDOUT)),
+                                api::terminal_private::OutputType::kStdout)),
         verbose);
     if (provider) {
       startup_status_ =

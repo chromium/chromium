@@ -25,6 +25,36 @@
 
 namespace safe_browsing {
 
+namespace {
+
+class WriterDelegate : public zip::FileWriterDelegate {
+ public:
+  explicit WriterDelegate(base::File* file)
+      : zip::FileWriterDelegate(file), has_disk_error_(false) {}
+  WriterDelegate(const WriterDelegate&) = delete;
+  WriterDelegate& operator=(const WriterDelegate&) = delete;
+
+  ~WriterDelegate() override = default;
+
+  bool PrepareOutput() override {
+    bool success = zip::FileWriterDelegate::PrepareOutput();
+    has_disk_error_ |= !success;
+    return success;
+  }
+  bool WriteBytes(const char* data, int num_bytes) override {
+    bool success = zip::FileWriterDelegate::WriteBytes(data, num_bytes);
+    has_disk_error_ |= !success;
+    return success;
+  }
+
+  bool has_disk_error() const { return has_disk_error_; }
+
+ private:
+  bool has_disk_error_;
+};
+
+}  // namespace
+
 ZipAnalyzer::ZipAnalyzer() = default;
 ZipAnalyzer::~ZipAnalyzer() = default;
 
@@ -47,12 +77,13 @@ bool ZipAnalyzer::ResumeExtraction() {
     if (!temp_file_.SetLength(0)) {
       PLOG(WARNING) << "Failed truncate";
     }
-    zip::FileWriterDelegate writer(&temp_file_);
+    WriterDelegate writer(&temp_file_);
     bool extract_success = reader_.ExtractCurrentEntry(
         &writer, std::numeric_limits<uint64_t>::max());
 
     has_encrypted_ |= entry->is_encrypted;
     has_aes_encrypted_ |= entry->uses_aes_encryption;
+    has_disk_error_ |= writer.has_disk_error();
 
     if (!extract_success && entry->is_encrypted) {
       results()->encryption_info.password_status =
@@ -80,13 +111,15 @@ bool ZipAnalyzer::ResumeExtraction() {
     }
   }
 
-  if (reader_.ok()) {
+  if (has_disk_error_) {
+    results()->analysis_result = ArchiveAnalysisResult::kDiskError;
+  } else if (reader_.ok()) {
     results()->analysis_result = ArchiveAnalysisResult::kValid;
   } else {
     results()->analysis_result = ArchiveAnalysisResult::kFailedDuringIteration;
   }
 
-  results()->success = reader_.ok();
+  results()->success = reader_.ok() && !has_disk_error_;
   return true;
 }
 

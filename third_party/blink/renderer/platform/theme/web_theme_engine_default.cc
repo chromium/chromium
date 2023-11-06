@@ -146,6 +146,11 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
           absl::get<WebThemeEngine::InnerSpinButtonExtraParams>(*extra_params);
       native_inner_spin.spin_up = inner_spin.spin_up;
       native_inner_spin.read_only = inner_spin.read_only;
+      //  Need to explicit cast so we can assign enum to enum.
+      ui::NativeTheme::SpinArrowsDirection dir =
+          ui::NativeTheme::SpinArrowsDirection(
+              inner_spin.spin_arrows_direction);
+      native_inner_spin.spin_arrows_direction = dir;
       return ui::NativeTheme::ExtraParams(native_inner_spin);
     }
     case WebThemeEngine::kPartProgressBar: {
@@ -180,6 +185,8 @@ static ui::NativeTheme::ExtraParams GetNativeThemeExtraParams(
       const auto& scrollbar_button =
           absl::get<WebThemeEngine::ScrollbarButtonExtraParams>(*extra_params);
       native_scrollbar_arrow.zoom = scrollbar_button.zoom;
+      native_scrollbar_arrow.needs_rounded_corner =
+          scrollbar_button.needs_rounded_corner;
       native_scrollbar_arrow.right_to_left = scrollbar_button.right_to_left;
       native_scrollbar_arrow.thumb_color = scrollbar_button.thumb_color;
       native_scrollbar_arrow.track_color = scrollbar_button.track_color;
@@ -260,6 +267,7 @@ void WebThemeEngineDefault::Paint(
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   style->fade_out_delay = ui::kOverlayScrollbarFadeDelay;
   style->fade_out_duration = ui::kOverlayScrollbarFadeDuration;
+  style->idle_thickness_scale = ui::kOverlayScrollbarIdleThicknessScale;
   // The other fields in this struct are used only on Android to draw solid
   // color scrollbars. On other platforms the scrollbars are painted in
   // NativeTheme so these fields are unused.

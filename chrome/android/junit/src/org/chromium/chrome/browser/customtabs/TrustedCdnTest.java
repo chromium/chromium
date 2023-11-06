@@ -53,29 +53,20 @@ import org.chromium.url.GURL;
 public class TrustedCdnTest {
     private static final GURL PUBLISHER_URL = new GURL("https://www.publisher.com/");
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    TrustedCdn.Natives mTrustedCdnNatives;
-    @Mock
-    SecurityStateModel.Natives mSecurityStateModelNatives;
-    @Mock
-    Tab mTab;
-    @Mock
-    WindowAndroid mWindowAndroid;
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock TrustedCdn.Natives mTrustedCdnNatives;
+    @Mock SecurityStateModel.Natives mSecurityStateModelNatives;
+    @Mock Tab mTab;
+    @Mock WindowAndroid mWindowAndroid;
+    @Mock WebContents mWebContents;
+    @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final UserDataHost mTabUserDataHost = new UserDataHost();
     private final UnownedUserDataHost mWindowUserDataHost = new UnownedUserDataHost();
 
     boolean mShouldPackageShowPublisherUrl = true;
-    @ConnectionSecurityLevel
-    int mConnectionSecurityLevel = ConnectionSecurityLevel.SECURE;
+    @ConnectionSecurityLevel int mConnectionSecurityLevel = ConnectionSecurityLevel.SECURE;
     CustomTabTrustedCdnPublisherUrlVisibility mCustomTabTrustedCdnPublisherUrlVisibility;
 
     @Before
@@ -92,8 +83,9 @@ public class TrustedCdnTest {
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mWindowUserDataHost);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
 
-        mCustomTabTrustedCdnPublisherUrlVisibility = new CustomTabTrustedCdnPublisherUrlVisibility(
-                mWindowAndroid, mLifecycleDispatcher, () -> mShouldPackageShowPublisherUrl);
+        mCustomTabTrustedCdnPublisherUrlVisibility =
+                new CustomTabTrustedCdnPublisherUrlVisibility(
+                        mWindowAndroid, mLifecycleDispatcher, () -> mShouldPackageShowPublisherUrl);
         doReturn(PUBLISHER_URL)
                 .when(mTrustedCdnNatives)
                 .getPublisherUrl(ArgumentMatchers.anyLong());

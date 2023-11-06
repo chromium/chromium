@@ -54,25 +54,23 @@ void UpdateAppRegistryCache(Profile* profile,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
-void UpdateAppNameInRegistryCache(Profile* profile,
-                                  const std::string& app_id,
-                                  const std::string& app_name) {
+void UpdateShortNameInRegistryCache(Profile* profile,
+                                    const std::string& app_id,
+                                    const std::string& short_name) {
   apps::AppPtr app =
       std::make_unique<apps::App>(apps::AppType::kChromeApp, app_id);
-  app->name = app_name;
+  app->short_name = short_name;
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .OnApps(std::move(apps), apps::AppType::kChromeApp,
-              false /* should_notify_initialized */);
+  apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(
+      std::move(apps), apps::AppType::kChromeApp,
+      false /* should_notify_initialized */);
 }
 
 ash::AppListItem* GetAppListItem(const std::string& id) {
@@ -203,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest, UpdateAppNameInLauncher) {
   ash::AppListTestApi app_list_test_api;
   app_list_test_api.WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
 
-  UpdateAppNameInRegistryCache(profile(), extension_app->id(), "Updated Name");
+  UpdateShortNameInRegistryCache(profile(), extension_app->id(),
+                                 "Updated Name");
 
   EXPECT_EQ(u"Updated Name",
             app_list_test_api.GetAppListItemViewName(extension_app->id()));

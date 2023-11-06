@@ -319,6 +319,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   // follows an EOS NALU.
   bool first_picture_ = true;
 
+  // Used to keep NoRaslOutputFlag state since last IRAP, to decide if we
+  // drop a RASL picture.
+  bool no_rasl_output_flag_ = true;
+
   // Global state values, needed in decoding. See spec.
   scoped_refptr<H265Picture> prev_tid0_pic_;
   int max_pic_order_cnt_lsb_;

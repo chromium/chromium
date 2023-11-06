@@ -977,8 +977,51 @@ TEST_F(ImageDecoderTest, DecodeYuv) {
   }
 }
 
-// TODO(crbug.com/1073995): Add tests for each format, partial decoding,
-// reduced resolution decoding, premultiply, and ignored color behavior.
+TEST_F(ImageDecoderTest, TransferBuffer) {
+  V8TestingScope v8_scope;
+  constexpr char kImageType[] = "image/gif";
+  EXPECT_TRUE(IsTypeSupported(&v8_scope, kImageType));
+
+  auto* init = MakeGarbageCollected<ImageDecoderInit>();
+  init->setType(kImageType);
+
+  auto data = ReadFile("images/resources/animated.gif");
+  DCHECK(!data->empty());
+
+  auto* buffer = DOMArrayBuffer::Create(std::move(data));
+  init->setData(MakeGarbageCollected<V8ImageBufferSource>(buffer));
+
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(buffer));
+  init->setTransfer(std::move(transfer));
+
+  auto* decoder = ImageDecoderExternal::Create(v8_scope.GetScriptState(), init,
+                                               v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder);
+  EXPECT_TRUE(buffer->IsDetached());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  {
+    auto promise = decoder->completed(v8_scope.GetScriptState());
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+  }
+
+  {
+    auto promise = decoder->decode(MakeOptions(0, true));
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
+    auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
+    EXPECT_TRUE(result->complete());
+
+    auto* frame = result->image();
+    EXPECT_EQ(frame->duration(), 0u);
+    EXPECT_EQ(frame->displayWidth(), 16u);
+    EXPECT_EQ(frame->displayHeight(), 16u);
+  }
+}
 
 }  // namespace
 

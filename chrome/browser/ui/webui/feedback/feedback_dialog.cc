@@ -32,8 +32,7 @@ using content::WebUIMessageHandler;
 namespace {
 
 // Default width/height of the Feedback Window.
-const int kDefaultWidth = 500;
-const int kDefaultHeight = 628;
+constexpr gfx::Size kDefaultSize{500, 628};
 
 }  // namespace
 
@@ -94,9 +93,7 @@ void FeedbackDialog::CreateOrShow(
 FeedbackDialog::FeedbackDialog(
     Profile* profile,
     const extensions::api::feedback_private::FeedbackInfo& info)
-    : feedback_info_(info.ToValue()),
-      feedback_flow_(info.flow),
-      widget_(nullptr),
+    : widget_(nullptr),
       // We need to use GetOriginalProfile() here because `profile` may be an
       // OTR Profile (when opening Feedback dialog on ChromeOS login screen, for
       // example), and ScopedProfileKeepAlive only supports non-OTR Profiles.
@@ -110,50 +107,32 @@ FeedbackDialog::FeedbackDialog(
       profile_keep_alive_(profile->GetOriginalProfile(),
                           ProfileKeepAliveOrigin::kFeedbackDialog) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  set_can_close(true);
   set_can_resize(false);
   set_can_minimize(true);
+  set_dialog_args(base::WriteJson(info.ToValue()).value());
+  set_dialog_content_url(GURL(chrome::kChromeUIFeedbackURL));
+  // On the login screen, set to Modal mode. Otherwise, this is not visible.
+  // For other cases, set to none Modal mode so the user can navigate to
+  // other windows.
+  set_dialog_modal_type(info.flow == FeedbackFlow::kLogin
+                            ? ui::MODAL_TYPE_SYSTEM
+                            : ui::MODAL_TYPE_NONE);
+  set_dialog_size(kDefaultSize);
+  set_dialog_title(l10n_util::GetStringUTF16(
+      info.flow == FeedbackFlow::kSadTabCrash
+          ? IDS_FEEDBACK_REPORT_PAGE_TITLE_SAD_TAB_FLOW
+          : IDS_FEEDBACK_REPORT_PAGE_TITLE));
+  set_show_dialog_title(true);
+
+  AddWebUIMessageHandler(std::make_unique<FeedbackHandler>(this));
 }
 
 FeedbackDialog::~FeedbackDialog() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (attached_to_current_instance_)
+  if (attached_to_current_instance_) {
     current_instance_ = nullptr;
-}
-
-ui::ModalType FeedbackDialog::GetDialogModalType() const {
-  // On the login screen, set to Modal mode. Otherwise, this is not visible.
-  // For other cases, set to none Modal mode so the user can navigate to
-  // other windows.
-  return (feedback_flow_ == FeedbackFlow::kLogin) ? ui::MODAL_TYPE_SYSTEM
-                                                  : ui::MODAL_TYPE_NONE;
-}
-
-std::u16string FeedbackDialog::GetDialogTitle() const {
-  return l10n_util::GetStringUTF16(
-      (feedback_flow_ == FeedbackFlow::kSadTabCrash)
-          ? IDS_FEEDBACK_REPORT_PAGE_TITLE_SAD_TAB_FLOW
-          : IDS_FEEDBACK_REPORT_PAGE_TITLE);
-}
-
-GURL FeedbackDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUIFeedbackURL);
-}
-
-void FeedbackDialog::GetDialogSize(gfx::Size* size) const {
-  size->SetSize(kDefaultWidth, kDefaultHeight);
-}
-
-void FeedbackDialog::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {
-  handlers->push_back(new FeedbackHandler(this));
-}
-
-// The feedbackInfo will be available to JS via
-// chrome.getVariableValue('dialogArguments')
-std::string FeedbackDialog::GetDialogArgs() const {
-  std::string data;
-  base::JSONWriter::Write(feedback_info_, &data);
-  return data;
+  }
 }
 
 void FeedbackDialog::Show() const {
@@ -180,19 +159,5 @@ bool FeedbackDialog::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
     blink::mojom::MediaStreamType type) {
-  return true;
-}
-
-void FeedbackDialog::OnDialogClosed(const std::string& json_retval) {
-  DCHECK(this == current_instance_ || !attached_to_current_instance_);
-  delete this;
-}
-
-void FeedbackDialog::OnCloseContents(WebContents* source,
-                                     bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool FeedbackDialog::ShouldShowDialogTitle() const {
   return true;
 }

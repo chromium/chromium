@@ -53,6 +53,7 @@ class ServiceWorkerInternalsHandler : public WebUIMessageHandler {
 
   void OnRunningStateChanged();
   void OnVersionStateChanged(int partition_id, int64_t version_id);
+  void OnVersionRouterRulesChanged();
   void OnErrorEvent(const std::string& event_name,
                     int partition_id,
                     int64_t version_id,

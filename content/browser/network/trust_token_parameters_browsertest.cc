@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_P(TrustTokenParametersBrowsertest,
 
   EXPECT_TRUE(
       ExecJs(shell(),
-             base::StringPrintf(
+             base::StringPrintfNonConstexpr(
                  JsReplace("let request = new XMLHttpRequest();"
                            "request.open($1, $2);"
                            "request.setPrivateToken(%s);"

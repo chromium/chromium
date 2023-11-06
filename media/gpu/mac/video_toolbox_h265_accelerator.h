@@ -114,9 +114,6 @@ class MEDIA_GPU_EXPORT VideoToolboxH265Accelerator
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxSessionMetadata active_session_metadata_;
 
-  // Tracks NoRaslOutputFlag for the current RAP, used to drop RASL frames.
-  bool no_rasl_output_flag_ = false;
-
   // Accumulated data for the current frame.
   base::flat_set<int> frame_vps_ids_;  // Note: there should be exactly one VPS.
   base::flat_set<int> frame_sps_ids_;

@@ -12,6 +12,7 @@
 #include "base/system/sys_info.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/context_result.h"
@@ -368,10 +369,12 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       }
 #endif
       CHECK_EQ(buffer_planes_.size(), 1u);
-      mailboxes_[0] = shared_image_interface->CreateSharedImage(
+      auto client_shared_image = shared_image_interface->CreateSharedImage(
           format, gmb->GetSize(), frame_info->color_space,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
           "CameraVideoFrame", gmb->CloneHandle());
+      CHECK(client_shared_image);
+      mailboxes_[0] = client_shared_image->mailbox();
     } else {
       gpu::GpuMemoryBufferManager* gmb_manager =
           context_factory_->GetGpuMemoryBufferManager();
@@ -651,7 +654,8 @@ void CameraVideoFrameHandler::OnFrameDropped(
               << static_cast<int>(reason);
 }
 
-void CameraVideoFrameHandler::OnNewCropVersion(uint32_t crop_version) {}
+void CameraVideoFrameHandler::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {}
 
 void CameraVideoFrameHandler::OnFrameWithEmptyRegionCapture() {}
 

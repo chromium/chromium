@@ -46,6 +46,12 @@ bool RemoveQuarantineAttributes(const base::FilePath& path);
 
 std::string GetDomain(UpdaterScope scope);
 
+// Reads the value associated with `key` from the plist at `path`. Returns
+// nullopt if `path` or `key` are empty, if the plist does not contain `key`, or
+// if there are any errors.
+absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
+                                               const std::string& key);
+
 }  // namespace updater
 
 #endif  // CHROME_UPDATER_UTIL_MAC_UTIL_H_

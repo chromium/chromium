@@ -33,6 +33,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
@@ -50,27 +51,25 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 public class FirstRunFlowSequencerTest {
     private static final String ADULT_ACCOUNT_NAME = "adult.account@gmail.com";
     private static final String CHILD_ACCOUNT_NAME =
-            AccountManagerTestRule.generateChildEmail(/*baseName=*/"account@gmail.com");
+            AccountManagerTestRule.generateChildEmail(/* baseName= */ "account@gmail.com");
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    /**
-     * Testing version of FirstRunFlowSequencer that allows us to override all needed checks.
-     */
+    /** Testing version of FirstRunFlowSequencer that allows us to override all needed checks. */
     private static class TestFirstRunFlowSequencerDelegate
             extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
         private final boolean mIsSyncAllowed;
         private final boolean mShouldShowSearchEnginePage;
 
-        TestFirstRunFlowSequencerDelegate(OneshotSupplier<Profile> profileSupplier,
-                boolean isSyncAllowed, boolean shouldShowSearchEnginePage) {
+        TestFirstRunFlowSequencerDelegate(
+                OneshotSupplier<ProfileProvider> profileSupplier,
+                boolean isSyncAllowed,
+                boolean shouldShowSearchEnginePage) {
             super(profileSupplier);
             mIsSyncAllowed = isSyncAllowed;
             mShouldShowSearchEnginePage = shouldShowSearchEnginePage;
@@ -92,9 +91,12 @@ public class FirstRunFlowSequencerTest {
         public boolean calledOnFlowIsKnown;
 
         public TestFirstRunFlowSequencer(
-                Activity activity, OneshotSupplier<Profile> profileSupplier) {
-            super(activity, profileSupplier,
-                    new ChildAccountStatusSupplier(AccountManagerFacadeProvider.getInstance(),
+                Activity activity, OneshotSupplier<ProfileProvider> profileSupplier) {
+            super(
+                    activity,
+                    profileSupplier,
+                    new ChildAccountStatusSupplier(
+                            AccountManagerFacadeProvider.getInstance(),
                             FirstRunAppRestrictionInfo.takeMaybeInitialized()));
         }
 
@@ -106,16 +108,16 @@ public class FirstRunFlowSequencerTest {
         }
     }
 
-    @Mock
-    private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityManager mIdentityManagerMock;
 
     private ActivityController<Activity> mActivityController;
     private Activity mActivity;
-    private OneshotSupplierImpl<Profile> mProfileSupplier;
+    private OneshotSupplierImpl<ProfileProvider> mProfileSupplier;
 
     @Before
     public void setUp() {
         Profile profile = mock(Profile.class);
+        ProfileProvider profileProvider = mock(ProfileProvider.class);
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(profile))
                 .thenReturn(mIdentityManagerMock);
@@ -125,7 +127,8 @@ public class FirstRunFlowSequencerTest {
         mActivityController = Robolectric.buildActivity(Activity.class);
         mActivity = mActivityController.setup().get();
         mProfileSupplier = new OneshotSupplierImpl<>();
-        mProfileSupplier.set(profile);
+        when(profileProvider.getOriginalProfile()).thenReturn(profile);
+        mProfileSupplier.set(profileProvider);
     }
 
     @After
@@ -134,10 +137,11 @@ public class FirstRunFlowSequencerTest {
     }
 
     private void setDelegateFactory(boolean isSyncAllowed, boolean shouldShowSearchEnginePage) {
-        FirstRunFlowSequencer.setDelegateFactoryForTesting((profileSupplier) -> {
-            return new TestFirstRunFlowSequencerDelegate(
-                    profileSupplier, isSyncAllowed, shouldShowSearchEnginePage);
-        });
+        FirstRunFlowSequencer.setDelegateFactoryForTesting(
+                (profileSupplier) -> {
+                    return new TestFirstRunFlowSequencerDelegate(
+                            profileSupplier, isSyncAllowed, shouldShowSearchEnginePage);
+                });
     }
 
     @Test
@@ -145,8 +149,9 @@ public class FirstRunFlowSequencerTest {
     public void testFlowOneChildAccount() {
         mAccountManagerTestRule.addAccount(CHILD_ACCOUNT_NAME);
         setDelegateFactory(true, false);
-        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
+        HistogramWatcher numberOfAccountsHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
 
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
@@ -166,8 +171,9 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     public void testFlowShowSearchEnginePage() {
         setDelegateFactory(true, true);
-        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
+        HistogramWatcher numberOfAccountsHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
 
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
@@ -187,8 +193,9 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     public void testFlowHideSyncConsentPageWhenUserIsNotSignedIn() {
         setDelegateFactory(true, false);
-        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
+        HistogramWatcher numberOfAccountsHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 0);
 
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);
@@ -209,8 +216,9 @@ public class FirstRunFlowSequencerTest {
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_NAME);
         when(mIdentityManagerMock.hasPrimaryAccount(ConsentLevel.SIGNIN)).thenReturn(true);
         setDelegateFactory(true, false);
-        HistogramWatcher numberOfAccountsHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
+        HistogramWatcher numberOfAccountsHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", 1);
 
         TestFirstRunFlowSequencer sequencer =
                 new TestFirstRunFlowSequencer(mActivity, mProfileSupplier);

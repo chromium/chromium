@@ -335,7 +335,8 @@ void CastDemoBindings::VolumeChanged(float level) {
   v8::Local<v8::Function> handler =
       v8::Local<v8::Function>::New(isolate, std::move(volume_change_handler_));
 
-  std::vector<v8::Local<v8::Value>> args{gin::ConvertToV8(isolate, level)};
+  auto args =
+      v8::to_array<v8::Local<v8::Value>>({gin::ConvertToV8(isolate, level)});
 
   v8::MaybeLocal<v8::Value> maybe_result =
       handler->Call(context, context->Global(), args.size(), args.data());

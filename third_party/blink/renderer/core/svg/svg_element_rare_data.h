@@ -81,7 +81,7 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
     return web_animated_attributes_;
   }
 
-  ElementSMILAnimations* GetSMILAnimations() { return smil_animations_; }
+  ElementSMILAnimations* GetSMILAnimations() { return smil_animations_.Get(); }
   ElementSMILAnimations& EnsureSMILAnimations();
 
   MutableCSSPropertyValueSet* AnimatedSMILStyleProperties() const {
@@ -96,7 +96,9 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
     needs_override_computed_style_update_ = true;
   }
 
-  SVGElementResourceClient* GetSVGResourceClient() { return resource_client_; }
+  SVGElementResourceClient* GetSVGResourceClient() {
+    return resource_client_.Get();
+  }
   SVGElementResourceClient& EnsureSVGResourceClient(SVGElement*);
 
   AffineTransform* AnimateMotionTransform();

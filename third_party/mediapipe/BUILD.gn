@@ -58,15 +58,15 @@ config("mediapipe_internal_config") {
   cflags = [
     "-Wno-unused-function",
     "-Wno-deprecated-declarations",
+
+    # MediaPipe's CHECK macros are redefined from absl's.
+    "-Wno-macro-redefined",
   ]
 }
 
 config("mediapipe_flags") {
-  cflags = [
-    # MediaPipe's CHECK macros are redefined from absl's.
-    "-Wno-macro-redefined",
-  ]
-
+  # This config is added to the public_config. Don't add cflags that disable
+  # warnings here.
   defines = [ "MEDIAPIPE_PROTO_LITE=1" ]
 
   if (!mediapipe_build_with_gpu_support) {
@@ -75,6 +75,10 @@ config("mediapipe_flags") {
     # When building with GPU support on Windows, we don't want MediaPipe to try
     # and use pthreads, since they will be unavailable.
     defines += [ "MEDIAPIPE_DISABLE_PTHREADS=1" ]
+  }
+
+  if (is_android) {
+    defines += [ "MEDIAPIPE_NO_JNI=1" ]
   }
 }
 
@@ -125,6 +129,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/framework/tool/field_data.proto",
     "src/mediapipe/framework/tool/packet_generator_wrapper_calculator.proto",
     "src/mediapipe/gpu/gl_context_options.proto",
+    "src/mediapipe/gpu/gpu_origin.proto",
     "src/mediapipe/tasks/cc/components/calculators/classification_aggregation_calculator.proto",
     "src/mediapipe/tasks/cc/components/calculators/score_calibration_calculator.proto",
     "src/mediapipe/tasks/cc/components/containers/proto/classifications.proto",
@@ -132,6 +137,7 @@ proto_library("mediapipe_proto") {
     "src/mediapipe/tasks/cc/components/processors/proto/classifier_options.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/detection_postprocessing_graph_options.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/detector_options.proto",
+    "src/mediapipe/tasks/cc/components/processors/proto/llm_params.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/text_model_type.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/text_preprocessing_graph_options.proto",
     "src/mediapipe/tasks/cc/components/processors/proto/transformer_params.proto",

@@ -66,6 +66,14 @@ PageLoadMetricsForwardObserver::OnPrerenderStart(
   return STOP_OBSERVING;
 }
 
+PageLoadMetricsObserverInterface::ObservePolicy
+PageLoadMetricsForwardObserver::OnPreviewStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  NOTREACHED();
+  return STOP_OBSERVING;
+}
+
 // Main frame events will be converted as sub-frame events on forwarding, and
 // OnRedirect is an event only for the main frame. We just mask it here.
 PageLoadMetricsObserverInterface::ObservePolicy
@@ -149,8 +157,7 @@ void PageLoadMetricsForwardObserver::OnInputTimingUpdate(
     const mojom::InputTiming& input_timing_delta) {}
 
 void PageLoadMetricsForwardObserver::OnPageInputTimingUpdate(
-    uint64_t num_interactions,
-    uint64_t num_input_events) {}
+    uint64_t num_interactions) {}
 
 void PageLoadMetricsForwardObserver::OnPageRenderDataUpdate(
     const mojom::FrameRenderDataUpdate& render_data,
@@ -349,24 +356,26 @@ void PageLoadMetricsForwardObserver::OnRenderFrameDeleted(
 void PageLoadMetricsForwardObserver::OnSubFrameDeleted(int frame_tree_node_id) {
 }
 
-void PageLoadMetricsForwardObserver::OnCookiesRead(
-    const GURL& url,
-    const GURL& first_party_url,
-    bool blocked_by_policy) {
+void PageLoadMetricsForwardObserver::OnCookiesRead(const GURL& url,
+                                                   const GURL& first_party_url,
+                                                   bool blocked_by_policy,
+                                                   bool is_ad_tagged) {
   if (!parent_observer_)
     return;
-  parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy);
+  parent_observer_->OnCookiesRead(url, first_party_url, blocked_by_policy,
+                                  is_ad_tagged);
 }
 
 void PageLoadMetricsForwardObserver::OnCookieChange(
     const GURL& url,
     const GURL& first_party_url,
     const net::CanonicalCookie& cookie,
-    bool blocked_by_policy) {
+    bool blocked_by_policy,
+    bool is_ad_tagged) {
   if (!parent_observer_)
     return;
   parent_observer_->OnCookieChange(url, first_party_url, cookie,
-                                   blocked_by_policy);
+                                   blocked_by_policy, is_ad_tagged);
 }
 
 void PageLoadMetricsForwardObserver::OnStorageAccessed(
@@ -392,6 +401,9 @@ void PageLoadMetricsForwardObserver::DidActivatePortal(
 
 void PageLoadMetricsForwardObserver::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {}
+
+void PageLoadMetricsForwardObserver::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {}
 
 void PageLoadMetricsForwardObserver::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {

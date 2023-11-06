@@ -43,7 +43,7 @@ namespace {
 
 std::unique_ptr<KeyedService> CreateTemplateURLService(
     content::BrowserContext* context) {
-  Profile* profile = static_cast<Profile*>(context);
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TemplateURLService>(
       profile->GetPrefs(), std::make_unique<UIThreadSearchTermsData>(),
       WebDataServiceFactory::GetKeywordWebDataForProfile(
@@ -51,12 +51,16 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
       std::make_unique<ChromeTemplateURLServiceClient>(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
-      base::RepeatingClosure());
+      base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      , profile->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
 }
 
 std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
     content::BrowserContext* context) {
-  Profile* profile = static_cast<Profile*>(context);
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<AutocompleteClassifier>(
       std::make_unique<AutocompleteController>(
           std::make_unique<ChromeAutocompleteProviderClient>(profile),

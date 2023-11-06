@@ -235,6 +235,16 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
                                            .InSeconds());
   signal1->set_storage_length_s(base::Days(2).InSeconds());
 
+  // Expired UKM signal.
+  proto::SignalStorageConfig* ukm_signal = config.add_signals();
+  ukm_signal->set_name_hash(base::HashMetricName("4"));
+  ukm_signal->set_signal_type(proto::SignalType::UKM_EVENT);
+  ukm_signal->set_event_hash(base::HashMetricName("4"));
+  ukm_signal->set_collection_start_time_s((test_clock_.Now() - base::Days(3))
+                                              .ToDeltaSinceWindowsEpoch()
+                                              .InSeconds());
+  ukm_signal->set_storage_length_s(base::Days(2).InSeconds());
+
   // Unknown.
   proto::SignalStorageConfig* signal2 = config.add_signals();
   signal2->set_name_hash(base::HashMetricName("2"));
@@ -264,12 +274,16 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
 
   // Run cleanup to find expired signals
   std::set<std::pair<uint64_t, proto::SignalType>> known_signals;
-  std::vector<std::tuple<uint64_t, proto::SignalType, base::Time>> result;
+  std::vector<CleanupItem> result;
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
-  EXPECT_EQ(1u, result.size());
-  // The first element in result tuple is the name hash.
-  EXPECT_EQ(base::HashMetricName("1"), std::get<0>(result[0]));
-  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[0]));
+  EXPECT_EQ(2u, result.size());
+  EXPECT_EQ(base::HashMetricName("1"), result[0].name_hash);
+  EXPECT_EQ(0u, result[0].event_hash);
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, result[0].signal_type);
+
+  EXPECT_EQ(base::HashMetricName("4"), result[1].name_hash);
+  EXPECT_EQ(base::HashMetricName("4"), result[1].event_hash);
+  EXPECT_EQ(proto::SignalType::UKM_EVENT, result[1].signal_type);
 
   // Run cleanup to find expired and unknown signals.
   result.clear();
@@ -278,10 +292,18 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
   known_signals.insert(
       {base::HashMetricName("3"), proto::SignalType::HISTOGRAM_VALUE});
   signal_storage_config_->GetSignalsForCleanup(known_signals, result);
-  EXPECT_EQ(2u, result.size());
-  // The first element in result tuple is the name hash.
-  EXPECT_EQ(base::HashMetricName("2"), std::get<0>(result[1]));
-  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, std::get<1>(result[1]));
+  EXPECT_EQ(3u, result.size());
+  EXPECT_EQ(base::HashMetricName("1"), result[0].name_hash);
+  EXPECT_EQ(0u, result[0].event_hash);
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, result[0].signal_type);
+
+  EXPECT_EQ(base::HashMetricName("4"), result[1].name_hash);
+  EXPECT_EQ(base::HashMetricName("4"), result[1].event_hash);
+  EXPECT_EQ(proto::SignalType::UKM_EVENT, result[1].signal_type);
+
+  EXPECT_EQ(base::HashMetricName("2"), result[2].name_hash);
+  EXPECT_EQ(0u, result[2].event_hash);
+  EXPECT_EQ(proto::SignalType::HISTOGRAM_VALUE, result[2].signal_type);
 
   // Cleanup the signals from this DB. The collection start time should be
   // updated.
@@ -292,6 +314,12 @@ TEST_F(SignalStorageConfigTest, CleanupSignals) {
                 .ToDeltaSinceWindowsEpoch()
                 .InSeconds(),
             signal.collection_start_time_s());
+
+  auto ukm_signal1 = db_entries_[kDatabaseKey].signals(1);
+  EXPECT_EQ((test_clock_.Now() - base::Days(2))
+                .ToDeltaSinceWindowsEpoch()
+                .InSeconds(),
+            ukm_signal1.collection_start_time_s());
 }
 
 }  // namespace segmentation_platform

@@ -1,1 +1,3 @@
-mixins: "//chrome/browser/resources/print_preview/COMMON_METADATA"
+monorail: {
+  component: "UI>Browser>PrintPreview"
+}

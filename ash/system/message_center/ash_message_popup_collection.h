@@ -12,7 +12,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
-#include "ash/shell_observer.h"
 #include "ash/system/tray/system_tray_observer.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "base/functional/callback_forward.h"
@@ -67,7 +66,7 @@ class ASH_EXPORT AshMessagePopupCollection
     kMaxValue = kSliderBubbleAndExtendedHotseat
   };
 
-  explicit AshMessagePopupCollection(Shelf* shelf);
+  AshMessagePopupCollection(display::Screen* screen, Shelf* shelf);
 
   AshMessagePopupCollection(const AshMessagePopupCollection&) = delete;
   AshMessagePopupCollection& operator=(const AshMessagePopupCollection&) =
@@ -93,6 +92,7 @@ class ASH_EXPORT AshMessagePopupCollection
       const message_center::Notification& notification) const override;
   void NotifyPopupAdded(message_center::MessagePopupView* popup) override;
   void NotifyPopupClosed(message_center::MessagePopupView* popup) override;
+  void NotifySilentNotification(const std::string& notification_id) override;
   void NotifyPopupCollectionHeightChanged() override;
   void AnimationStarted() override;
   void AnimationFinished() override;
@@ -182,6 +182,10 @@ class ASH_EXPORT AshMessagePopupCollection
     int baseline_offset_ = 0;
     NotifierCollisionSurfaceType surface_type_ =
         NotifierCollisionSurfaceType::kNone;
+
+    // True if bubble changes are being handled in
+    // `HandleBubbleVisibilityOrBoundsChanged()`.
+    bool is_handling_bubble_change_ = false;
   };
 
   // message_center::MessageView::Observer:

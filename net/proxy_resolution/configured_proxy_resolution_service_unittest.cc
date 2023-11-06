@@ -22,11 +22,13 @@
 #include "base/time/time.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
@@ -206,12 +208,13 @@ class MockProxyConfigService : public ProxyConfigService {
 class TestResolveProxyDelegate : public ProxyDelegate {
  public:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
     method_ = method;
     num_resolve_proxy_called_++;
+    network_anonymization_key_ = network_anonymization_key;
     proxy_retry_info_ = proxy_retry_info;
     DCHECK(!add_proxy_ || !remove_proxy_);
     if (add_proxy_) {
@@ -229,17 +232,23 @@ class TestResolveProxyDelegate : public ProxyDelegate {
 
   void set_remove_proxy(bool remove_proxy) { remove_proxy_ = remove_proxy; }
 
+  NetworkAnonymizationKey network_anonymization_key() const {
+    return network_anonymization_key_;
+  }
+
   const ProxyRetryInfoMap& proxy_retry_info() const {
     return proxy_retry_info_;
   }
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {}
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
@@ -249,6 +258,7 @@ class TestResolveProxyDelegate : public ProxyDelegate {
   bool add_proxy_ = false;
   bool remove_proxy_ = false;
   std::string method_;
+  NetworkAnonymizationKey network_anonymization_key_;
   ProxyRetryInfoMap proxy_retry_info_;
 };
 
@@ -257,29 +267,31 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
  public:
   // ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {}
 
-  void OnFallback(const ProxyServer& bad_proxy, int net_error) override {
-    proxy_server_ = bad_proxy;
+  void OnFallback(const ProxyChain& bad_chain, int net_error) override {
+    proxy_chain_ = bad_chain;
     last_proxy_fallback_net_error_ = net_error;
     num_proxy_fallback_called_++;
   }
 
-  void OnBeforeTunnelRequest(const ProxyServer& proxy_server,
+  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
+                             size_t chain_index,
                              HttpRequestHeaders* extra_headers) override {}
 
   Error OnTunnelHeadersReceived(
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
+      size_t chain_index,
       const HttpResponseHeaders& response_headers) override {
     return OK;
   }
 
   bool num_proxy_fallback_called() const { return num_proxy_fallback_called_; }
 
-  const ProxyServer& proxy_server() const { return proxy_server_; }
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
 
   int last_proxy_fallback_net_error() const {
     return last_proxy_fallback_net_error_;
@@ -287,7 +299,7 @@ class TestProxyFallbackProxyDelegate : public ProxyDelegate {
 
  private:
   int num_proxy_fallback_called_ = 0;
-  ProxyServer proxy_server_;
+  ProxyChain proxy_chain_;
   int last_proxy_fallback_net_error_ = OK;
 };
 
@@ -437,7 +449,9 @@ TEST_F(ConfiguredProxyResolutionServiceTest, OnResolveProxyCallbackAddProxy) {
   rv = service.ResolveProxy(url, "GET", NetworkAnonymizationKey(), &info,
                             callback.callback(), &request, net_log_with_source);
   EXPECT_EQ(1, delegate.num_resolve_proxy_called());
-  EXPECT_THAT(delegate.proxy_retry_info(), ElementsAre(Key("badproxy:8080")));
+  EXPECT_THAT(delegate.proxy_retry_info(),
+              ElementsAre(Key(ProxyChain(ProxyUriToProxyChain(
+                  "badproxy:8080", ProxyServer::SCHEME_HTTP)))));
   EXPECT_EQ(delegate.method(), "GET");
 
   // Verify that the ProxyDelegate's behavior is stateless across
@@ -513,6 +527,31 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   rv = service.ResolveProxy(bypass_url, "GET", NetworkAnonymizationKey(), &info,
                             callback.callback(), &request, net_log_with_source);
   EXPECT_TRUE(info.is_direct());
+}
+
+TEST_F(ConfiguredProxyResolutionServiceTest, OnResolveProxyHasNak) {
+  auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
+  ConfiguredProxyResolutionService service(
+      std::make_unique<MockProxyConfigService>(ProxyConfig::CreateDirect()),
+      std::move(factory), nullptr, /*quick_check_enabled=*/true);
+
+  auto proxy_delegate = TestResolveProxyDelegate();
+  service.SetProxyDelegate(&proxy_delegate);
+
+  GURL url("http://www.google.com/");
+  NetworkAnonymizationKey network_anonymization_key =
+      NetworkAnonymizationKey::CreateCrossSite(
+          SchemefulSite(GURL("http://example.com")));
+
+  ProxyInfo info;
+  TestCompletionCallback callback;
+  std::unique_ptr<ProxyResolutionRequest> request;
+  service.ResolveProxy(url, std::string(), network_anonymization_key, &info,
+                       callback.callback(), &request,
+                       NetLogWithSource::Make(NetLogSourceType::NONE));
+
+  EXPECT_EQ(network_anonymization_key,
+            proxy_delegate.network_anonymization_key());
 }
 
 // Test callback that deletes an item when called.  This is used to test various
@@ -1621,7 +1660,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, ProxyFallback) {
   TestProxyFallbackProxyDelegate test_delegate;
   service.SetProxyDelegate(&test_delegate);
   service.ReportSuccess(info);
-  EXPECT_EQ("foopy1:8080", ProxyServerToProxyUri(test_delegate.proxy_server()));
+  EXPECT_EQ("[foopy1:8080]", test_delegate.proxy_chain().ToDebugString());
   EXPECT_EQ(ERR_PROXY_CONNECTION_FAILED,
             test_delegate.last_proxy_fallback_net_error());
   service.SetProxyDelegate(nullptr);
@@ -2013,14 +2052,14 @@ TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   config.set_auto_detect(false);
 
   ProxyList proxy_list;
-  std::vector<ProxyServer> additional_bad_proxies;
+  std::vector<ProxyChain> additional_bad_proxies;
   for (const ProxyServer& proxy_server :
        config.proxy_rules().proxies_for_http.GetAll()) {
     proxy_list.AddProxyServer(proxy_server);
     if (proxy_server == config.proxy_rules().proxies_for_http.Get())
       continue;
 
-    additional_bad_proxies.push_back(proxy_server);
+    additional_bad_proxies.emplace_back(ProxyChain(proxy_server));
   }
 
   EXPECT_EQ(3u, additional_bad_proxies.size());
@@ -2036,7 +2075,7 @@ TEST_F(ConfiguredProxyResolutionServiceTest, MarkProxiesAsBadTests) {
   ASSERT_EQ(4u, retry_info.size());
   for (const ProxyServer& proxy_server :
        config.proxy_rules().proxies_for_http.GetAll()) {
-    auto i = retry_info.find(proxy_server.host_port_pair().ToString());
+    auto i = retry_info.find(ProxyChain(proxy_server));
     ASSERT_TRUE(i != retry_info.end());
   }
 }

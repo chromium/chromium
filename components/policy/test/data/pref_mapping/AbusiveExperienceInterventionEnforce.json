@@ -1,0 +1,64 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value when SafeBrowsingEnabled is disabled.",
+        "policies": {
+          "SafeBrowsingEnabled": false
+        },
+        "prefs": {
+          "abusive_experience_intervention_enforce": {
+            "default_value": true
+          },
+          "safebrowsing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Default value when SafeBrowsingEnabled is on.",
+        "policies": {
+          "SafeBrowsingEnabled": true
+        },
+        "prefs": {
+          "abusive_experience_intervention_enforce": {
+            "default_value": true
+          },
+          "safebrowsing.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "AbusiveExperienceInterventionEnforce is false.",
+        "policies": {
+          "AbusiveExperienceInterventionEnforce": false
+        },
+        "prefs": {
+          "abusive_experience_intervention_enforce": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "AbusiveExperienceInterventionEnforce is true.",
+        "policies": {
+          "AbusiveExperienceInterventionEnforce": true
+        },
+        "prefs": {
+          "abusive_experience_intervention_enforce": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

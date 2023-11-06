@@ -4,10 +4,10 @@
 
 package org.chromium.components.policy.test;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 import org.junit.Assert;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.components.policy.PolicyMap;
 
 /**

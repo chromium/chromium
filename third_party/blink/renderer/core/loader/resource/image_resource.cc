@@ -535,11 +535,11 @@ bool ImageResource::IsAccessAllowed(
 }
 
 ImageResourceContent* ImageResource::GetContent() {
-  return content_;
+  return content_.Get();
 }
 
 const ImageResourceContent* ImageResource::GetContent() const {
-  return content_;
+  return content_.Get();
 }
 
 std::pair<ResourcePriority, ResourcePriority>

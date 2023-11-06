@@ -29,6 +29,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -39,6 +40,7 @@
 #include "media/base/data_buffer.h"
 #include "media/base/video_frame.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
+#include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -703,60 +705,6 @@ bool ValidFormatForDirectUploading(
   }
 }
 
-// Valid gl texture internal format that can try to use direct uploading path
-// via SharedImage. This is a subset of the formats supported by
-// ValidFormatForDirectUploading(), as IOSurfaceImageBacking cannot support
-// shorts (either 4444 or 565).
-bool ValidFormatForDirectUploadingViaSharedImage(
-    viz::RasterContextProvider* raster_context_provider,
-    GrGLenum format,
-    unsigned int type) {
-  const gpu::Capabilities& context_caps =
-      raster_context_provider->ContextCapabilities();
-  switch (format) {
-    case GL_RGBA:
-      return type == GL_UNSIGNED_BYTE;
-    case GL_RGB:
-      return type == GL_UNSIGNED_BYTE;
-    // WebGL2 supported sized formats
-    case GL_RGBA8:
-    case GL_RGBA16F:
-    case GL_RGB8:
-    case GL_RGB10_A2:
-      return context_caps.major_version >= 3;
-    default:
-      return false;
-  }
-}
-
-// SharedImageFormat corresponding to GL texture format/type, which must be
-// valid for direct uploading via SharedImage.
-viz::SharedImageFormat SharedImageFormatForDirectUploading(
-    viz::RasterContextProvider* raster_context_provider,
-    GrGLenum format,
-    unsigned int type) {
-  CHECK(ValidFormatForDirectUploadingViaSharedImage(raster_context_provider,
-                                                    format, type));
-  switch (format) {
-    case GL_RGBA:
-      CHECK(type == GL_UNSIGNED_BYTE);
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case GL_RGB:
-      CHECK(type == GL_UNSIGNED_BYTE);
-      return viz::SinglePlaneFormat::kRGBX_8888;
-    // WebGL2 supported sized formats
-    case GL_RGBA8:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case GL_RGBA16F:
-      return viz::SinglePlaneFormat::kRGBA_F16;
-    case GL_RGB8:
-      return viz::SinglePlaneFormat::kRGBX_8888;
-    case GL_RGB10_A2:
-      return viz::SinglePlaneFormat::kRGBA_1010102;
-  }
-  NOTREACHED_NORETURN();
-}
-
 std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   // The 9, 10, and 12 bit formats could be added here if GetYUVAPlanes() were
@@ -778,10 +726,51 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
   }
 }
 
-// Whether SharedImage is used to perform direct GPU-GPU VideoFrame to GL
-// texture uploads (when allowed) rather than legacy mailboxes.
-BASE_FEATURE(kUseSharedImageForDirectUpload,
-             "UseSharedImageForDirectUpload",
+// Controls whether the one-copy path when copying a VideoFrame to a GL texture
+// is enabled or disabled. This codepath is disabled on Android by default
+// pending the full transition of the codebase to the passthrough decoder and
+// the transition of this function away from using legacy mailboxes to do 1-copy
+// upload (see crbug.com/1494365 for details). On Android, this Feature serves
+// as a reverse-killswitch while we roll out the complete disabling of this
+// codepath.
+// TODO(crbug.com/1494365): Remove the usage of this feature for Android once
+// explicit disabling has safely rolled out and make
+// UploadOfVideoFrameToGLTexture() unconditionally disabled on Android.
+// On all other platforms, the one-copy path being enabled is the default
+// production state, with this Feature being used to be able to disable this
+// path for performance testing.
+BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
+             "OneCopyUploadOfVideoFrameToGLTexture",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+// Controls whether the one-copy path when copying a pure software VideoFrame
+// (i.e., a VideoFrame with no textures) to a GL texture is enabled or disabled.
+// It is not possible to support this codepath via MultiplanarSharedImage: these
+// VideoFrames have format I420, and it is not possible across all platforms to
+// upload the VideoFrame's data via raster to a MultiplanarSI with format I420
+// that is accessible by WebGL. Such an SI must be backed by a native buffer to
+// be accessible to WebGL, and native buffer-backed I420 SharedImages are in
+// general not supported (and *cannot* be supported on Windows). 1-copy of pure
+// software VideoFrames *is* supported in the legacy 1-copy implementation that
+// uses legacy mailboxes to perform the copy, but we are in the process of
+// eliminating this implementation. Whether 1 GPU-GPU copy or 2 GPU-GPU copies
+// are performed for pure video software upload should not be a significant
+// factor in performance, as dominant factor in terms of performance will be the
+// fact that the VideoFrame's data needs to be uploaded from the CPU to the GPU.
+// This Feature serves as a reverse-killswitch while we roll out the complete
+// disabling of this codepath.
+// TODO(crbug.com/1410164): Remove the usage of this feature disabling has
+// safely rolled out.
+BASE_FEATURE(kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture,
+             "OneCopyUploadOfPureSoftwareVideoFrameToGLTexture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kOneCopyLegacyMPVideoFrameUploadViaSI,
+             "OneCopyLegacyMPVideoFrameUploadViaSI",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // anonymous namespace
@@ -1491,6 +1480,7 @@ viz::SharedImageFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1499,8 +1489,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     unsigned int type,
     int level,
     bool premultiply_alpha,
-    bool flip_y,
-    bool allow_shared_image_for_direct_upload) {
+    bool flip_y) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
   DCHECK(video_frame->HasTextures());
@@ -1526,17 +1515,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
         (video_frame->NumTextures() > 1 ||
          video_frame->shared_image_format_type() ==
              SharedImageFormatType::kSharedImageFormat)) {
-      if (allow_shared_image_for_direct_upload &&
-          base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
-        if (UploadVideoFrameToGLTextureViaSharedImage(
-                raster_context_provider, destination_gl, video_frame, target,
-                texture, internal_format, format, type, flip_y)) {
-          return true;
-        }
-      } else {
+      if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
         if (UploadVideoFrameToGLTexture(
-                raster_context_provider, destination_gl, video_frame.get(),
-                target, texture, internal_format, format, type, flip_y)) {
+                raster_context_provider, destination_gl,
+                destination_gl_capabilities, video_frame.get(), target, texture,
+                internal_format, format, type, flip_y)) {
           return true;
         }
       }
@@ -1607,95 +1590,10 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   return true;
 }
 
-bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTextureViaSharedImage(
-    viz::RasterContextProvider* raster_context_provider,
-    gpu::gles2::GLES2Interface* destination_gl,
-    scoped_refptr<VideoFrame> video_frame,
-    unsigned int target,
-    unsigned int texture,
-    unsigned int internal_format,
-    unsigned int format,
-    unsigned int type,
-    bool flip_y) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(video_frame);
-  if (!VideoFrameYUVConverter::IsVideoFrameFormatSupported(*video_frame)) {
-    return false;
-  }
-
-  // TODO(crbug.com/1108154): Support more texture target, e.g.
-  // 2d array, 3d etc.
-  if (target != GL_TEXTURE_2D) {
-    return false;
-  }
-
-  if (flip_y) {
-    // CopyVideoFrameToSharedImage() cannot handle `flip_y` being true.
-    return false;
-  }
-
-  if (!ValidFormatForDirectUploadingViaSharedImage(
-          raster_context_provider, static_cast<GLenum>(internal_format),
-          type)) {
-    return false;
-  }
-
-  DCHECK(video_frame->metadata().texture_origin_is_top_left);
-
-  if (!raster_context_provider) {
-    return false;
-  }
-
-  auto* sii = raster_context_provider->SharedImageInterface();
-
-  auto shared_image_format = SharedImageFormatForDirectUploading(
-      raster_context_provider, static_cast<GLenum>(internal_format), type);
-
-  // Create a SharedImage to associate with `texture`.
-  uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER;
-  if (raster_context_provider->ContextCapabilities().supports_oop_raster) {
-    usage |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  }
-
-  gpu::MailboxHolder destination_holder;
-  destination_holder.texture_target = target;
-  destination_holder.mailbox = sii->CreateSharedImage(
-      shared_image_format, video_frame->visible_rect().size(),
-      GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "PaintCanvasVideoRenderer_DirectUpload", gpu::kNullSurfaceHandle);
-
-  // Copy the VideoFrame's textures to the SI.
-  destination_holder.sync_token = sii->GenUnverifiedSyncToken();
-  auto copy_token = CopyVideoFrameToSharedImage(raster_context_provider,
-                                                video_frame, destination_holder,
-                                                /*use_visible_rect=*/true);
-
-  // Ensure that GL waits for the SI to be created and have its contents updated
-  // before accessing it.
-  destination_gl->WaitSyncTokenCHROMIUM(copy_token.GetConstData());
-
-  // Attach the SI to the destination texture and bring the SI's contents into
-  // that destination texture (note that WebGL can potentially render to this
-  // texture as well as reading from it, hence access mode READWRITE).
-  destination_gl->TexImage2DSharedImageCHROMIUM(
-      texture, destination_holder.mailbox.name);
-  destination_gl->BeginSharedImageAccessDirectCHROMIUM(
-      texture, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
-
-  // Drop the SharedImage factory ref once GL has finished accessing it - the
-  // SI will stay alive until the client destroys `texture`.
-  gpu::SyncToken gl_token;
-  destination_gl->GenUnverifiedSyncTokenCHROMIUM(gl_token.GetData());
-  sii->DestroySharedImage(gl_token, destination_holder.mailbox);
-
-  return true;
-}
-
 bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1722,10 +1620,38 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     return false;
   }
 
+  if (!video_frame->HasTextures() &&
+      !base::FeatureList::IsEnabled(
+          kOneCopyUploadOfPureSoftwareVideoFrameToGLTexture)) {
+    return false;
+  }
+
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
-  if (!video_frame->HasTextures() || video_frame->shared_image_format_type() ==
-                                         SharedImageFormatType::kLegacy) {
+  // Determine whether to use legacy mailboxes to perform the upload.
+  // We use legacy mailboxes iff one of the following is true:
+  // * `destination_gl` does not support YUV-RGB conversion.
+  // * The VideoFrame is holding a legacy mailbox.
+  // * The VideoFrame is pure software.
+  // * The Video is not MultiplanarSI and the codepath to handle legacy
+  //   multiplanar via ConvertYUVAMailboxesToTexture() is not enabled.
+  bool yuv_rgb_conversion_not_supported =
+      !destination_gl_capabilities.supports_yuv_rgb_conversion;
+  bool video_frame_is_legacy_mailbox =
+      video_frame->HasTextures() &&
+      !video_frame->mailbox_holder(0).mailbox.IsSharedImage();
+  bool video_frame_is_pure_sw = !video_frame->HasTextures();
+  bool video_frame_is_not_mp_si =
+      video_frame_is_pure_sw ||
+      video_frame->shared_image_format_type() == SharedImageFormatType::kLegacy;
+
+  bool use_legacy_mailboxes_for_upload =
+      yuv_rgb_conversion_not_supported || video_frame_is_legacy_mailbox ||
+      video_frame_is_pure_sw ||
+      (video_frame_is_not_mp_si &&
+       !base::FeatureList::IsEnabled(kOneCopyLegacyMPVideoFrameUploadViaSI));
+
+  if (use_legacy_mailboxes_for_upload) {
     // TODO(nazabris): Support OOP-R code path here that does not have
     // GrContext.
     if (!raster_context_provider || !raster_context_provider->GrContext()) {
@@ -1777,18 +1703,54 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     // Dst texture size should equal to video frame visible rect.
     BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
                       type, /*level=*/0, video_frame->visible_rect().size());
-    gpu::MailboxHolder mailbox_holder =
-        GetVideoFrameMailboxHolder(video_frame.get());
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
 
-    // Copy shared image to gl texture for hardware video decode with
-    // multiplanar shared image formats.
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, internal_format, type, video_frame->visible_rect().x(),
-        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
-        mailbox_holder.mailbox.name);
+    if (video_frame->NumTextures() == 1) {
+      gpu::MailboxHolder mailbox_holder =
+          GetVideoFrameMailboxHolder(video_frame.get());
+      destination_gl->WaitSyncTokenCHROMIUM(
+          mailbox_holder.sync_token.GetConstData());
+
+      // Copy shared image to gl texture for hardware video decode with
+      // multiplanar shared image formats.
+      destination_gl->CopySharedImageToTextureINTERNAL(
+          texture, target, internal_format, type,
+          video_frame->visible_rect().x(), video_frame->visible_rect().y(),
+          video_frame->visible_rect().width(),
+          video_frame->visible_rect().height(), flip_y,
+          mailbox_holder.mailbox.name);
+    } else {
+      CHECK(video_frame->HasTextures());
+      CHECK_LE(static_cast<int>(video_frame->NumTextures()),
+               SkYUVAInfo::kMaxPlanes);
+
+      // Copy YUVA mailboxes to gl texture for hardware video decode with
+      // one SharedImage per plane.
+      gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
+      for (size_t i = 0; i < video_frame->NumTextures(); i++) {
+        auto mailbox_holder = video_frame->mailbox_holder(i);
+        destination_gl->WaitSyncTokenCHROMIUM(
+            mailbox_holder.sync_token.GetConstData());
+        mailboxes[i] = mailbox_holder.mailbox;
+      }
+
+      auto mailbox_name_size = sizeof(mailboxes[0].name);
+      GLbyte mailbox_names[mailbox_name_size * SkYUVAInfo::kMaxPlanes];
+      for (int i = 0; i < SkYUVAInfo::kMaxPlanes; i++) {
+        memcpy(mailbox_names + mailbox_name_size * i, mailboxes[i].name,
+               mailbox_name_size);
+      }
+
+      auto yuva_info = VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
+          video_frame.get());
+      destination_gl->ConvertYUVAMailboxesToTextureINTERNAL(
+          texture, target, internal_format, type,
+          video_frame->visible_rect().x(), video_frame->visible_rect().y(),
+          video_frame->visible_rect().width(),
+          video_frame->visible_rect().height(), flip_y,
+          yuva_info.yuvColorSpace(),
+          static_cast<GLenum>(yuva_info.planeConfig()),
+          static_cast<GLenum>(yuva_info.subsampling()), mailbox_names);
+    }
 
     SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                               raster_context_provider->ContextSupport());
@@ -1800,6 +1762,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
+    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1808,8 +1771,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     unsigned int type,
     int level,
     bool premultiply_alpha,
-    bool flip_y,
-    bool allow_shared_image_for_direct_upload) {
+    bool flip_y) {
   if (!raster_context_provider)
     return false;
 #if BUILDFLAG(IS_ANDROID)
@@ -1840,17 +1802,11 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // accurate.
   if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
       level == 0) {
-    if (allow_shared_image_for_direct_upload &&
-        base::FeatureList::IsEnabled(kUseSharedImageForDirectUpload)) {
-      if (UploadVideoFrameToGLTextureViaSharedImage(
-              raster_context_provider, destination_gl, video_frame, target,
-              texture, internal_format, format, type, flip_y)) {
-        return true;
-      }
-    } else {
+    if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
       if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      video_frame, target, texture,
-                                      internal_format, format, type, flip_y)) {
+                                      destination_gl_capabilities, video_frame,
+                                      target, texture, internal_format, format,
+                                      type, flip_y)) {
         return true;
       }
     }
@@ -1878,11 +1834,13 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
                gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
     }
 
-    yuv_cache_.mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         SHARED_IMAGE_FORMAT, video_frame->coded_size(),
         GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
         "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    yuv_cache_.mailbox = client_shared_image->mailbox();
     token = sii->GenUnverifiedSyncToken();
   }
 
@@ -2103,11 +2061,13 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         if (supports_oop_raster) {
           flags |= gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
         }
-        mailbox = sii->CreateSharedImage(
+        auto client_shared_image = sii->CreateSharedImage(
             SHARED_IMAGE_FORMAT, video_frame->coded_size(),
             GetVideoFrameRGBColorSpacePreferringSRGB(video_frame.get()),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
             "PaintCanvasVideoRenderer", gpu::kNullSurfaceHandle);
+        CHECK(client_shared_image);
+        mailbox = client_shared_image->mailbox();
         ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
       }
 

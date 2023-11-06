@@ -24,9 +24,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Tests for the reached code profiler feature setup.
- */
+/** Tests for the reached code profiler feature setup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class ReachedCodeProfilerTest {
@@ -53,13 +51,19 @@ public final class ReachedCodeProfilerTest {
      */
     @Test
     @SmallTest
-    @CommandLineFlags.Add({"enable-features=" + ChromeFeatureList.REACHED_CODE_PROFILER + "<"
-                    + ChromeFeatureList.REACHED_CODE_PROFILER,
-            "force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME,
-            "force-fieldtrial-params=" + ChromeFeatureList.REACHED_CODE_PROFILER + "."
-                    + FAKE_GROUP_NAME + ":sampling_interval_us/42"})
-    public void
-    testEnabledViaCachedSharedPreference() {
+    @CommandLineFlags.Add({
+        "enable-features="
+                + ChromeFeatureList.REACHED_CODE_PROFILER
+                + "<"
+                + ChromeFeatureList.REACHED_CODE_PROFILER,
+        "force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME,
+        "force-fieldtrial-params="
+                + ChromeFeatureList.REACHED_CODE_PROFILER
+                + "."
+                + FAKE_GROUP_NAME
+                + ":sampling_interval_us/42"
+    })
+    public void testEnabledViaCachedSharedPreference() {
         LibraryLoader.setReachedCodeProfilerEnabledOnNextRuns(true, 42);
         mActivityTestRule.startMainActivityFromLauncher();
         assertReachedCodeProfilerIsEnabled();
@@ -103,13 +107,14 @@ public final class ReachedCodeProfilerTest {
      */
     @Test
     @SmallTest
-    @CommandLineFlags.
-    Add("force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME)
+    @CommandLineFlags.Add(
+            "force-fieldtrials=" + ChromeFeatureList.REACHED_CODE_PROFILER + "/" + FAKE_GROUP_NAME)
     public void testSharedPreferenceTrialGroupIsCached() {
         mActivityTestRule.startMainActivityFromLauncher();
-        Assert.assertEquals(FAKE_GROUP_NAME,
-                ChromeSharedPreferences.getInstance().readString(
-                        ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, null));
+        Assert.assertEquals(
+                FAKE_GROUP_NAME,
+                ChromeSharedPreferences.getInstance()
+                        .readString(ChromePreferenceKeys.REACHED_CODE_PROFILER_GROUP, null));
     }
 
     /**

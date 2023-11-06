@@ -116,7 +116,7 @@ ImageResourceObserver* CSSCrossfadeValue::GetObserverProxy() {
   if (!observer_proxy_) {
     observer_proxy_ = MakeGarbageCollected<ObserverProxy>(this);
   }
-  return observer_proxy_;
+  return observer_proxy_.Get();
 }
 
 void CSSCrossfadeValue::TraceAfterDispatch(Visitor* visitor) const {

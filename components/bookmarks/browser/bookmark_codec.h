@@ -47,7 +47,6 @@ class BookmarkCodec {
       const BookmarkNode* other_folder_node,
       const BookmarkNode* mobile_folder_node,
       const BookmarkNode::MetaInfoMap* model_meta_info_map,
-      const BookmarkNode::MetaInfoMap* model_unsynced_meta_info_map,
       std::string sync_metadata_str);
 
   // Decodes the previously encoded value to the specified nodes as well as
@@ -77,11 +76,6 @@ class BookmarkCodec {
     return model_meta_info_map_;
   }
 
-  // Return the unsynced meta info of bookmark model root.
-  const BookmarkNode::MetaInfoMap& model_unsynced_meta_info_map() const {
-    return model_unsynced_meta_info_map_;
-  }
-
   // Returns whether the IDs were reassigned during decoding. Always returns
   // false after encoding.
   bool ids_reassigned() const { return ids_reassigned_; }
@@ -106,7 +100,6 @@ class BookmarkCodec {
   static const char kDateModifiedKey[];
   static const char kChildrenKey[];
   static const char kMetaInfo[];
-  static const char kUnsyncedMetaInfo[];
   // Allows the BookmarkClient to read and a write a string blob from the JSON
   // file. That string captures the bookmarks sync metadata.
   static const char kSyncMetadata[];
@@ -156,11 +149,6 @@ class BookmarkCodec {
   // nullptr.
   bool DecodeMetaInfo(const base::Value::Dict& value,
                       BookmarkNode::MetaInfoMap* meta_info_map);
-
-  // Decodes the unsynced meta info from the supplied value. meta_info_map must
-  // not be nullptr.
-  bool DecodeUnsyncedMetaInfo(const base::Value::Dict& value,
-                              BookmarkNode::MetaInfoMap* meta_info_map);
 
   // Decodes the meta info from the supplied sub-node dictionary. The values
   // found will be inserted in meta_info_map with the given prefix added to the
@@ -219,9 +207,6 @@ class BookmarkCodec {
 
   // Meta info set on bookmark model root.
   BookmarkNode::MetaInfoMap model_meta_info_map_;
-
-  // Unsynced meta info set on bookmark model root.
-  BookmarkNode::MetaInfoMap model_unsynced_meta_info_map_;
 };
 
 }  // namespace bookmarks

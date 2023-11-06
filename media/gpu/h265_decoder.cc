@@ -160,6 +160,7 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
 
 void H265Decoder::Reset() {
   first_picture_ = true;
+  no_rasl_output_flag_ = true;
 
   curr_pic_ = nullptr;
   curr_nalu_ = nullptr;
@@ -689,8 +690,9 @@ void H265Decoder::CalcPicOutputFlags(const H265SliceHeader* slice_hdr) {
         (curr_nalu_->nal_unit_type >= H265NALU::BLA_W_LP &&
          curr_nalu_->nal_unit_type <= H265NALU::IDR_N_LP) ||
         curr_pic_->first_picture_;
+    no_rasl_output_flag_ = curr_pic_->no_rasl_output_flag_;
   } else {
-    curr_pic_->no_rasl_output_flag_ = false;
+    curr_pic_->no_rasl_output_flag_ = no_rasl_output_flag_;
   }
 
   // C.5.2.2
@@ -1039,6 +1041,7 @@ H265Decoder::H265Accelerator::Status H265Decoder::StartNewFrame(
     if (!PerformDpbOperations(sps)) {
       return H265Accelerator::Status::kFail;
     }
+
     curr_pic_->processed_ = true;
   }
 

@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CloudPrintSubmitEnabled": false
+        },
+        "prefs": {
+          "cloud_print.submit_enabled": {}
+        }
+      }
+    ]
+  }
+]

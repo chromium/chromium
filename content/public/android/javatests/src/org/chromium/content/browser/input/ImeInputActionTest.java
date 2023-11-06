@@ -22,14 +22,11 @@ import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.base.ime.TextInputAction;
 import org.chromium.ui.base.ime.TextInputType;
 
-/**
- * IME (input method editor) and text input tests for enterkeyhint attribute.
- */
+/** IME (input method editor) and text input tests for enterkeyhint attribute. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(ImeTest.IME_BATCH)
 public class ImeInputActionTest {
-    @Rule
-    public ImeActivityTestRule mRule = new ImeActivityTestRule();
+    @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -51,7 +48,8 @@ public class ImeInputActionTest {
         mRule.clearEventLogs();
         mRule.waitForEditorAction(editorAction);
         mRule.performEditorAction(editorAction);
-        mRule.waitForEventLogState(type == TextInputType.TEXT
+        mRule.waitForEventLogState(
+                type == TextInputType.TEXT
                         ? "keydown(13),keypress(13),keyup(13)"
                         : "keydown(13),keypress(13),keyup(13),selectionchange");
         mRule.clearEventLogs();
@@ -64,39 +62,90 @@ public class ImeInputActionTest {
     @DisabledTest(message = "crbug.com/1426226")
     public void testShowAndHideInputAction() throws Throwable {
         Assert.assertNotNull(mRule.getInputMethodManagerWrapper().getInputConnection());
-        checkInputAction("contenteditable_default", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.DEFAULT, EditorInfo.IME_ACTION_NONE);
-        checkInputAction("contenteditable_enter", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.ENTER, EditorInfo.IME_ACTION_NONE);
-        checkInputAction("contenteditable_go", TextInputType.CONTENT_EDITABLE, TextInputAction.GO,
-                EditorInfo.IME_ACTION_GO);
-        checkInputAction("contenteditable_done", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.DONE, EditorInfo.IME_ACTION_DONE);
-        checkInputAction("contenteditable_next", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.NEXT, EditorInfo.IME_ACTION_NEXT);
-        checkInputAction("contenteditable_previous", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.PREVIOUS, EditorInfo.IME_ACTION_PREVIOUS);
-        checkInputAction("contenteditable_search", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.SEARCH, EditorInfo.IME_ACTION_SEARCH);
-        checkInputAction("contenteditable_send", TextInputType.CONTENT_EDITABLE,
-                TextInputAction.SEND, EditorInfo.IME_ACTION_SEND);
-        checkInputAction("textarea_default", TextInputType.TEXT_AREA, TextInputAction.DEFAULT,
+        checkInputAction(
+                "contenteditable_default",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.DEFAULT,
                 EditorInfo.IME_ACTION_NONE);
-        checkInputAction("textarea_enter", TextInputType.TEXT_AREA, TextInputAction.ENTER,
+        checkInputAction(
+                "contenteditable_enter",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.ENTER,
                 EditorInfo.IME_ACTION_NONE);
-        checkInputAction("textarea_go", TextInputType.TEXT_AREA, TextInputAction.GO,
+        checkInputAction(
+                "contenteditable_go",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.GO,
                 EditorInfo.IME_ACTION_GO);
-        checkInputAction("textarea_done", TextInputType.TEXT_AREA, TextInputAction.DONE,
+        checkInputAction(
+                "contenteditable_done",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.DONE,
                 EditorInfo.IME_ACTION_DONE);
-        checkInputAction("textarea_next", TextInputType.TEXT_AREA, TextInputAction.NEXT,
+        checkInputAction(
+                "contenteditable_next",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.NEXT,
                 EditorInfo.IME_ACTION_NEXT);
-        checkInputAction("textarea_previous", TextInputType.TEXT_AREA, TextInputAction.PREVIOUS,
+        checkInputAction(
+                "contenteditable_previous",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.PREVIOUS,
                 EditorInfo.IME_ACTION_PREVIOUS);
-        checkInputAction("textarea_search", TextInputType.TEXT_AREA, TextInputAction.SEARCH,
+        checkInputAction(
+                "contenteditable_search",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.SEARCH,
                 EditorInfo.IME_ACTION_SEARCH);
-        checkInputAction("textarea_send", TextInputType.TEXT_AREA, TextInputAction.SEND,
+        checkInputAction(
+                "contenteditable_send",
+                TextInputType.CONTENT_EDITABLE,
+                TextInputAction.SEND,
                 EditorInfo.IME_ACTION_SEND);
-        checkInputAction("input_enter", TextInputType.TEXT, TextInputAction.ENTER,
+        checkInputAction(
+                "textarea_default",
+                TextInputType.TEXT_AREA,
+                TextInputAction.DEFAULT,
+                EditorInfo.IME_ACTION_NONE);
+        checkInputAction(
+                "textarea_enter",
+                TextInputType.TEXT_AREA,
+                TextInputAction.ENTER,
+                EditorInfo.IME_ACTION_NONE);
+        checkInputAction(
+                "textarea_go",
+                TextInputType.TEXT_AREA,
+                TextInputAction.GO,
+                EditorInfo.IME_ACTION_GO);
+        checkInputAction(
+                "textarea_done",
+                TextInputType.TEXT_AREA,
+                TextInputAction.DONE,
+                EditorInfo.IME_ACTION_DONE);
+        checkInputAction(
+                "textarea_next",
+                TextInputType.TEXT_AREA,
+                TextInputAction.NEXT,
+                EditorInfo.IME_ACTION_NEXT);
+        checkInputAction(
+                "textarea_previous",
+                TextInputType.TEXT_AREA,
+                TextInputAction.PREVIOUS,
+                EditorInfo.IME_ACTION_PREVIOUS);
+        checkInputAction(
+                "textarea_search",
+                TextInputType.TEXT_AREA,
+                TextInputAction.SEARCH,
+                EditorInfo.IME_ACTION_SEARCH);
+        checkInputAction(
+                "textarea_send",
+                TextInputType.TEXT_AREA,
+                TextInputAction.SEND,
+                EditorInfo.IME_ACTION_SEND);
+        checkInputAction(
+                "input_enter",
+                TextInputType.TEXT,
+                TextInputAction.ENTER,
                 EditorInfo.IME_ACTION_NONE);
         checkInputAction(
                 "input_go", TextInputType.TEXT, TextInputAction.GO, EditorInfo.IME_ACTION_GO);
@@ -104,9 +153,15 @@ public class ImeInputActionTest {
                 "input_done", TextInputType.TEXT, TextInputAction.DONE, EditorInfo.IME_ACTION_DONE);
         checkInputAction(
                 "input_next", TextInputType.TEXT, TextInputAction.NEXT, EditorInfo.IME_ACTION_NEXT);
-        checkInputAction("input_previous", TextInputType.TEXT, TextInputAction.PREVIOUS,
+        checkInputAction(
+                "input_previous",
+                TextInputType.TEXT,
+                TextInputAction.PREVIOUS,
                 EditorInfo.IME_ACTION_PREVIOUS);
-        checkInputAction("input_search", TextInputType.TEXT, TextInputAction.SEARCH,
+        checkInputAction(
+                "input_search",
+                TextInputType.TEXT,
+                TextInputAction.SEARCH,
                 EditorInfo.IME_ACTION_SEARCH);
         checkInputAction(
                 "input_send", TextInputType.TEXT, TextInputAction.SEND, EditorInfo.IME_ACTION_SEND);
@@ -115,7 +170,11 @@ public class ImeInputActionTest {
         // presses and focus moves to next node.
         mRule.focusElement("input_text");
         mRule.waitAndVerifyUpdateSelection(0, 0, 0, -1, -1);
-        mRule.waitForKeyboardInputActionStates(1, 0, 1, new Integer[] {TextInputType.TEXT},
+        mRule.waitForKeyboardInputActionStates(
+                1,
+                0,
+                1,
+                new Integer[] {TextInputType.TEXT},
                 new Integer[] {TextInputAction.DEFAULT});
         mRule.waitForEventLogs("selectionchange");
         mRule.clearEventLogs();

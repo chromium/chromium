@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwDisplayCutoutController.Insets;
@@ -27,14 +29,13 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
-/**
- * Tests for DisplayCutout.
- */
-@RunWith(AwJUnit4ClassRunner.class)
+/** Tests for DisplayCutout. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 @CommandLineFlags.Add({"enable-features=" + AwFeatures.WEBVIEW_DISPLAY_CUTOUT})
 @RequiresApi(Build.VERSION_CODES.P)
-public class AwDisplayCutoutTest {
+public class AwDisplayCutoutTest extends AwParameterizedTest {
     private static final String TEST_HTML = "<html><head><style>\n"
             + "body {\n"
             + " margin: 0;\n"
@@ -55,13 +56,17 @@ public class AwDisplayCutoutTest {
             + "</body></html>";
 
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsHideActionBar() {
-            // If action bar is showing, WebView cannot be fully occupying the screen.
-            return true;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule;
+
+    public AwDisplayCutoutTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsHideActionBar() {
+                // If action bar is showing, WebView cannot be fully occupying the screen.
+                return true;
+            }
+        };
+    }
 
     private TestWebServer mWebServer;
     private TestAwContentsClient mContentsClient;
@@ -78,11 +83,12 @@ public class AwDisplayCutoutTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
         // In pre-R, we need to explicitly set this to draw under notch.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = mActivityTestRule.getActivity();
-            activity.getWindow().getAttributes().layoutInDisplayCutoutMode =
-                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = mActivityTestRule.getActivity();
+                    activity.getWindow().getAttributes().layoutInDisplayCutoutMode =
+                            WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                });
     }
 
     @After
@@ -91,24 +97,30 @@ public class AwDisplayCutoutTest {
     }
 
     private void setFullscreen(boolean fullscreen) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = mActivityTestRule.getActivity();
-            View decor = activity.getWindow().getDecorView();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = mActivityTestRule.getActivity();
+                    View decor = activity.getWindow().getDecorView();
 
-            int systemUiVisibility = decor.getSystemUiVisibility();
-            int flags = View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-            if (fullscreen) {
-                activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                systemUiVisibility |= flags;
-            } else {
-                activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-                systemUiVisibility &= flags;
-            }
-            decor.setSystemUiVisibility(systemUiVisibility);
-        });
+                    int systemUiVisibility = decor.getSystemUiVisibility();
+                    int flags =
+                            View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                    if (fullscreen) {
+                        activity.getWindow()
+                                .setFlags(
+                                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                                        WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        systemUiVisibility |= flags;
+                    } else {
+                        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                        systemUiVisibility &= flags;
+                    }
+                    decor.setSystemUiVisibility(systemUiVisibility);
+                });
     }
 
     @Test
@@ -119,12 +131,15 @@ public class AwDisplayCutoutTest {
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), TEST_HTML);
         // Reset safe area just in case we have a notch.
         Insets insets = new Insets(0, 0, 0, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
-        });
-        final String code = "window.getComputedStyle(document.getElementById('text'))"
-                + ".getPropertyValue('padding-top')";
-        Assert.assertEquals("\"0px\"",
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
+                });
+        final String code =
+                "window.getComputedStyle(document.getElementById('text'))"
+                        + ".getPropertyValue('padding-top')";
+        Assert.assertEquals(
+                "\"0px\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, code));
     }
@@ -136,12 +151,15 @@ public class AwDisplayCutoutTest {
         mActivityTestRule.loadHtmlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), TEST_HTML);
         Insets insets = new Insets(0, 130, 0, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
-        });
-        final String code = "window.getComputedStyle(document.getElementById('text'))"
-                + ".getPropertyValue('padding-top')";
-        Assert.assertNotEquals("\"0px\"",
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
+                });
+        final String code =
+                "window.getComputedStyle(document.getElementById('text'))"
+                        + ".getPropertyValue('padding-top')";
+        Assert.assertNotEquals(
+                "\"0px\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
                         mAwContents, mContentsClient, code));
     }

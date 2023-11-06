@@ -1,15 +1,17 @@
 This is a testharness.js-based test.
-PASS Property break-after value 'auto'
-PASS Property break-after value 'avoid'
-PASS Property break-after value 'avoid-page'
-PASS Property break-after value 'page'
-PASS Property break-after value 'left'
-PASS Property break-after value 'right'
-PASS Property break-after value 'recto'
-PASS Property break-after value 'verso'
-PASS Property break-after value 'avoid-column'
-PASS Property break-after value 'column'
-FAIL Property break-after value 'avoid-region' assert_true: 'avoid-region' is a supported value for break-after. expected true got false
-FAIL Property break-after value 'region' assert_true: 'region' is a supported value for break-after. expected true got false
+[PASS] Property break-after value 'auto'
+[PASS] Property break-after value 'avoid'
+[PASS] Property break-after value 'avoid-page'
+[PASS] Property break-after value 'page'
+[PASS] Property break-after value 'left'
+[PASS] Property break-after value 'right'
+[PASS] Property break-after value 'recto'
+[PASS] Property break-after value 'verso'
+[PASS] Property break-after value 'avoid-column'
+[PASS] Property break-after value 'column'
+[FAIL] Property break-after value 'avoid-region'
+  assert_true: 'avoid-region' is a supported value for break-after. expected true got false
+[FAIL] Property break-after value 'region'
+  assert_true: 'region' is a supported value for break-after. expected true got false
 Harness: the test ran to completion.
 

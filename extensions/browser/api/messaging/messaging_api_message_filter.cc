@@ -15,14 +15,16 @@
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/bad_message.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/message_port.mojom-shared.h"
 #include "extensions/common/trace_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 
 using content::BrowserThread;
 using content::RenderProcessHost;
@@ -58,344 +60,6 @@ class ShutdownNotifierFactory
         context, /*force_guest_profile=*/true);
   }
 };
-
-// Returns true if `source_endpoint` can be legitimately claimed/used by
-// `process`.  Otherwise reports a bad IPC message and returns false (expecting
-// the caller to not take any action based on the rejected, untrustworthy
-// `source_endpoint`).
-bool IsValidMessagingSource(RenderProcessHost& process,
-                            const MessagingEndpoint& source_endpoint) {
-  switch (source_endpoint.type) {
-    case MessagingEndpoint::Type::kNativeApp:
-      // Requests for channels initiated by native applications don't originate
-      // from renderer processes.
-      bad_message::ReceivedBadMessage(
-          &process, bad_message::EMF_INVALID_CHANNEL_SOURCE_TYPE);
-      return false;
-
-    case MessagingEndpoint::Type::kExtension:
-      if (!source_endpoint.extension_id.has_value()) {
-        if (!base::FeatureList::IsEnabled(
-                extensions_features::kCheckingNoExtensionIdInExtensionIpcs)) {
-          base::UmaHistogramSparse(
-              "Stability.BadMessageTerminated.Extensions",
-              bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
-          return true;
-        }
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE);
-        return false;
-      }
-      if (!util::CanRendererHostExtensionOrigin(
-              process.GetID(), source_endpoint.extension_id.value())) {
-        bad_message::ReceivedBadMessage(
-            &process,
-            bad_message::EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE);
-        return false;
-      }
-      return true;
-
-    case MessagingEndpoint::Type::kContentScript: {
-      if (!source_endpoint.extension_id) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
-        return false;
-      }
-      bool is_content_script_expected =
-          ContentScriptTracker::DidProcessRunContentScriptFromExtension(
-              process, *source_endpoint.extension_id);
-      if (!is_content_script_expected) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT);
-        return false;
-      }
-      return true;
-    }
-
-    case MessagingEndpoint::Type::kUserScript: {
-      if (!source_endpoint.extension_id) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
-        return false;
-      }
-      bool is_user_script_expected =
-          ContentScriptTracker::DidProcessRunUserScriptFromExtension(
-              process, *source_endpoint.extension_id);
-      if (!is_user_script_expected) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_USER_SCRIPT);
-        return false;
-      }
-
-      return true;
-    }
-
-    case MessagingEndpoint::Type::kWebPage:
-      // NOTE: We classify hosted apps as kWebPage, but we don't include
-      // the extension ID in the source for those messages.
-      if (source_endpoint.extension_id) {
-        bad_message::ReceivedBadMessage(
-            &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WEB_PAGE);
-        return false;
-      }
-      return true;
-  }
-}
-
-bool IsValidMessagingTarget(RenderProcessHost& process,
-                            const MessagingEndpoint& source_endpoint,
-                            const ExtensionId& target_id) {
-  switch (source_endpoint.type) {
-    case MessagingEndpoint::Type::kNativeApp:
-    case MessagingEndpoint::Type::kExtension:
-    case MessagingEndpoint::Type::kWebPage:
-    case MessagingEndpoint::Type::kContentScript:
-      // The API allows these to target any source. The connection may be
-      // refused (e.g. if the target extension isn't installed or doesn't accept
-      // a connection from the source), but it isn't a sign of a bad IPC.
-      return true;
-    case MessagingEndpoint::Type::kUserScript:
-      // User scripts can only target their own corresponding extension.
-      // `source_endpoint.extension_id` should have been validated above in
-      // `IsValidMessagingSource()`.
-      CHECK(source_endpoint.extension_id);
-      if (source_endpoint.extension_id != target_id) {
-        bad_message::ReceivedBadMessage(
-            &process,
-            bad_message::EMF_INVALID_EXTERNAL_EXTENSION_ID_FOR_USER_SCRIPT);
-        return false;
-      }
-      return true;
-  }
-}
-
-// Returns true if `source_context` can be legitimately claimed/used by
-// `render_process_id`.  Otherwise reports a bad IPC message and returns false
-// (expecting the caller to not take any action based on the rejected,
-// untrustworthy `source_context`).
-bool IsValidSourceContext(RenderProcessHost& process,
-                          const PortContext& source_context) {
-  if (source_context.is_for_service_worker()) {
-    const PortContext::WorkerContext& worker_context =
-        source_context.worker.value();
-
-    // Only crude checks via CanRendererHostExtensionOrigin are done here,
-    // because more granular, worker-specific checks (e.g. checking if a worker
-    // exists using ProcessManager::HasServiceWorker) might incorrectly return
-    // false=invalid-IPC for IPCs from workers that were recently torn down /
-    // made inactive.
-    if (!util::CanRendererHostExtensionOrigin(process.GetID(),
-                                              worker_context.extension_id)) {
-      bad_message::ReceivedBadMessage(
-          &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
-      return false;
-    }
-  }
-
-  // This function doesn't validate frame-flavoured `source_context`s, because
-  // PortContext::FrameContext only contains frame's `routing_id` and therefore
-  // inherently cannot spoof frames in another process (a frame is identified
-  // by its `routing_id` *and* the `process_id` of the Renderer process hosting
-  // the frame;  the latter is trustworthy / doesn't come from an IPC payload).
-
-  // This function doesn't validate native app `source_context`s, because
-  // `PortContext::ForNativeHost()` is called with trustoworthy inputs (e.g. it
-  // doesn't take input from IPCs sent by a Renderer process).
-
-  return true;
-}
-
-// Returns true if `source_url` can be legitimately claimed/used by `process`.
-// Otherwise reports a bad IPC message and returns false (expecting the caller
-// to not take any action based on the rejected, untrustworthy `source_url`).
-bool IsValidSourceUrl(content::RenderProcessHost& process,
-                      const GURL& source_url,
-                      const PortContext& source_context) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSourceUrlEnforcement)) {
-    return true;
-  }
-
-  // Some scenarios may end up with an empty `source_url` (e.g. this may have
-  // been triggered by the ExtensionApiTabTest.TabConnect test).
-  //
-  // TODO(https://crbug.com/1370079): Remove this workaround once the bug is
-  // fixed.
-  if (source_url.is_empty())
-    return true;
-
-  // Extract the `base_origin`.
-  //
-  // We don't use `ChildProcessSecurityPolicy::CanCommitURL` because: 1) it
-  // doesn't cover service workers (e.g. see https://crbug.com/1038996#c35), 2)
-  // it has bugs (e.g. https://crbug.com/1380576), and 3) we *can* extract the
-  // `base_origin` (via `source_context.worker->extension_id` or
-  // `GetLastCommittedOrigin`) and therefore *can* use the more fundamental
-  // `CanAccessDataForOrigin` (whereas `CanCommitURL` tries to work even if the
-  // base origin is not available).
-  url::Origin base_origin;
-  if (source_context.is_for_render_frame()) {
-    content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-        process.GetID(), source_context.frame->routing_id);
-    if (!frame) {
-      // Not calling ReceivedBadMessage because it is possible that the frame
-      // got deleted before the IPC arrived.
-      // Returning `false` will result in dropping the IPC by the caller - this
-      // is okay, because sending of the IPC was inherently racing with the
-      // deletion of the frame.
-      return false;
-    }
-
-    if (frame->GetLastCommittedURL() == source_url) {
-      // If the trustworthy, browser-side URL matches `source_url` from the IPC
-      // payload, then report that the IPC is valid.  If the URLs don't match
-      // then we can't assume that the IPC is malformed and `return false`,
-      // because the renderer-side and browser-side URLs may differ in some
-      // scenarios (e.g. see https://crbug.com/1197308 or `document.write`).  In
-      // such scenarios we want to fall back to `base_origin`-based /
-      // `source_url_origin``-based checks, but these checks are not 100%
-      // correct (see https://crbug.com/1449796), so `GetLastCommittedURL` is
-      // consulted first.
-      return true;
-    }
-
-    base_origin = frame->GetLastCommittedOrigin();
-  } else if (source_context.is_for_service_worker()) {
-    // Validate `source_context` before using it to validate `source_url`.
-    // IsValidSourceContext will call ReceivedBadMessage if needed.
-    if (!IsValidSourceContext(process, source_context))
-      return false;
-
-    // `base_origin` can be considered trustworthy, because `source_context` has
-    // been validated above.
-    base_origin = Extension::CreateOriginFromExtensionId(
-        source_context.worker->extension_id);
-  } else {
-    DCHECK(source_context.is_for_native_host());
-    // `ExtensionHostMsg_OpenChannelToExtension` is sent in
-    // `//extensions/renderer/ipc_message_sender.cc` only for frames and
-    // workers (and never for native hosts).
-    bad_message::ReceivedBadMessage(
-        &process,
-        bad_message::EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST);
-    return false;
-  }
-
-  // Verify `source_url` via CanAccessDataForOrigin.
-  //
-  // TODO(https://crbug.com/1449796): Stop partially/not-100%-correctly
-  // replicating checks from `RenderFrameHostImpl::CanCommitOriginAndUrl`.
-  // The code below correctly handles URLs like `about:blank`, but may diverge
-  // from //content checks in some cases (e.g. WebUI checks are not replicated
-  // here;  MHTML divergence is avoided via GetLastCommittedURL() check above).
-  url::Origin source_url_origin = url::Origin::Resolve(source_url, base_origin);
-  auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->CanAccessDataForOrigin(process.GetID(), source_url_origin)) {
-    SCOPED_CRASH_KEY_STRING256(
-        "EMF_INVALID_SOURCE_URL", "base_origin",
-        base_origin.GetDebugString(false /* include_nonce */));
-    bad_message::ReceivedBadMessage(&process,
-                                    bad_message::EMF_INVALID_SOURCE_URL);
-    return false;
-  }
-
-  return true;
-}
-
-base::debug::CrashKeyString* GetTargetIdCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo-target_id", base::debug::CrashKeySize::Size64);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetSourceOriginCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo-source_origin",
-      base::debug::CrashKeySize::Size256);
-  return crash_key;
-}
-
-base::debug::CrashKeyString* GetSourceUrlCrashKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "ExternalConnectionInfo-source_url", base::debug::CrashKeySize::Size256);
-  return crash_key;
-}
-
-class ScopedExternalConnectionInfoCrashKeys {
- public:
-  explicit ScopedExternalConnectionInfoCrashKeys(
-      const ExtensionMsg_ExternalConnectionInfo& info)
-      : target_id_(GetTargetIdCrashKey(), info.target_id),
-        source_endpoint_(info.source_endpoint),
-        source_origin_(GetSourceOriginCrashKey(),
-                       base::OptionalToPtr(info.source_origin)),
-        source_url_(GetSourceUrlCrashKey(),
-                    info.source_url.possibly_invalid_spec()) {}
-
-  ~ScopedExternalConnectionInfoCrashKeys() = default;
-
-  ScopedExternalConnectionInfoCrashKeys(
-      const ScopedExternalConnectionInfoCrashKeys&) = delete;
-  ScopedExternalConnectionInfoCrashKeys& operator=(
-      const ScopedExternalConnectionInfoCrashKeys&) = delete;
-
- private:
-  base::debug::ScopedCrashKeyString target_id_;
-  extensions::debug::ScopedMessagingEndpointCrashKeys source_endpoint_;
-  url::debug::ScopedOriginCrashKey source_origin_;
-  base::debug::ScopedCrashKeyString source_url_;
-};
-
-// Validates whether `source_context` can be legitimately used in the IPC
-// messages sent from the given renderer `process`.  If the validation fails, or
-// the sender is not associated with an extension, then `nullopt` is returned.
-// The sender should ignore the IPC when `nullopt` is returned.
-absl::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
-    content::RenderProcessHost& process,
-    const PortContext& source_context) {
-  if (!IsValidSourceContext(process, source_context))
-    return absl::nullopt;
-
-  if (source_context.is_for_service_worker())
-    return source_context.worker->extension_id;
-
-  if (source_context.is_for_render_frame()) {
-    content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-        process.GetID(), source_context.frame->routing_id);
-    if (!frame) {
-      // Not calling ReceivedBadMessage because it is possible that the frame
-      // got deleted before the IPC arrived.
-      return absl::nullopt;
-    }
-
-    // These extension IPCs are on the same pipe as DidCommit() (and thus can't
-    // arrive out-of-order), and therefore we can rely on
-    // `frame->GetLastCommittedOrigin()` to return the origin of the IPC sender.
-    const url::Origin& origin = frame->GetLastCommittedOrigin();
-    // Sandboxed extension URLs have access to extension APIs (this is a bit
-    // unusual - typically an opaque origin has no capabilities associated with
-    // the original, precursor origin).  To avoid breaking such scenarios we
-    // need to look at the precursor origin.  See https://crbug.com/1407087 for
-    // an example of breakage avoided by GetTupleOrPrecursorTupleIfOpaque call.
-    const url::SchemeHostPort& scheme_host_port =
-        origin.GetTupleOrPrecursorTupleIfOpaque();
-    if (scheme_host_port.scheme() != kExtensionScheme) {
-      SCOPED_CRASH_KEY_STRING256(
-          "EMF_NON_EXTENSION_SENDER_FRAME", "origin",
-          origin.GetDebugString(false /* include_nonce */));
-      bad_message::ReceivedBadMessage(
-          &process, bad_message::EMF_NON_EXTENSION_SENDER_FRAME);
-      return absl::nullopt;
-    }
-
-    return scheme_host_port.host();
-  }
-
-  DCHECK(source_context.is_for_native_host());
-  bad_message::ReceivedBadMessage(
-      &process, bad_message::EMF_NON_EXTENSION_SENDER_NATIVE_HOST);
-  return absl::nullopt;
-}
 
 }  // namespace
 
@@ -484,24 +148,17 @@ void MessagingAPIMessageFilter::OnOpenChannelToExtension(
     return;
   TRACE_EVENT("extensions", "MessageFilter::OnOpenChannelToExtension",
               ChromeTrackEvent::kRenderProcessHost, *process);
-
-  ScopedExternalConnectionInfoCrashKeys info_crash_keys(info);
-  debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
-  if (!IsValidMessagingSource(*process, info.source_endpoint) ||
-      !IsValidMessagingTarget(*process, info.source_endpoint, info.target_id) ||
-      !IsValidSourceUrl(*process, info.source_url, source_context) ||
-      !IsValidSourceContext(*process, source_context)) {
-    // No need to call ReceivedBadMessage here, because it will be called (when
-    // appropriate) within IsValidSourceContext and/or IsValidMessagingSource.
+  if (source_context.is_for_native_host()) {
+    bad_message::ReceivedBadMessage(
+        process,
+        bad_message::EMF_INVALID_OPEN_CHANNEL_TO_EXTENSION_FROM_NATIVE_HOST);
     return;
   }
-
-  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+  ChannelEndpoint source_endpoint(browser_context_, process->GetID(),
                                   source_context);
   MessageService::Get(browser_context_)
-      ->OpenChannelToExtension(source_endpoint, port_id, info.source_endpoint,
-                               nullptr /* opener_port */, info.target_id,
-                               info.source_url, channel_type, channel_name);
+      ->OpenChannelToExtension(source_endpoint, port_id, info, channel_type,
+                               channel_name, {}, {});
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
@@ -514,18 +171,17 @@ void MessagingAPIMessageFilter::OnOpenChannelToNativeApp(
     return;
   TRACE_EVENT("extensions", "MessageFilter::OnOpenChannelToNativeApp",
               ChromeTrackEvent::kRenderProcessHost, *process);
-
-  debug::ScopedPortContextCrashKeys port_context_crash_keys(source_context);
-  if (!IsValidSourceContext(*process, source_context)) {
-    // No need to call ReceivedBadMessage here, because it will be called (when
-    // appropriate) within IsValidSourceContext.
+  if (source_context.is_for_native_host()) {
+    bad_message::ReceivedBadMessage(
+        process,
+        bad_message::EMF_INVALID_OPEN_CHANNEL_TO_NATIVE_APP_FROM_NATIVE_HOST);
     return;
   }
-
-  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+  ChannelEndpoint source_endpoint(browser_context_, process->GetID(),
                                   source_context);
   MessageService::Get(browser_context_)
-      ->OpenChannelToNativeApp(source_endpoint, port_id, native_app_name);
+      ->OpenChannelToNativeApp(source_endpoint, port_id, native_app_name, {},
+                               {});
 }
 
 void MessagingAPIMessageFilter::OnOpenChannelToTab(
@@ -540,21 +196,16 @@ void MessagingAPIMessageFilter::OnOpenChannelToTab(
     return;
   TRACE_EVENT("extensions", "MessageFilter::OnOpenChannelToTab",
               ChromeTrackEvent::kRenderProcessHost, *process);
-
-  absl::optional<ExtensionId> extension_id =
-      ValidateSourceContextAndExtractExtensionId(*process, source_context);
-  if (!extension_id) {
-    // No need to call ReceivedBadMessage here, because it will be called (when
-    // appropriate) within ValidateSourceContextAndExtractExtensionId.
+  if (source_context.is_for_native_host()) {
+    bad_message::ReceivedBadMessage(
+        process, bad_message::EMF_NON_EXTENSION_SENDER_NATIVE_HOST);
     return;
   }
-
-  ChannelEndpoint source_endpoint(browser_context_, render_process_id_,
+  ChannelEndpoint source_endpoint(browser_context_, process->GetID(),
                                   source_context);
   MessageService::Get(browser_context_)
       ->OpenChannelToTab(source_endpoint, port_id, info.tab_id, info.frame_id,
-                         info.document_id, *extension_id, channel_type,
-                         channel_name);
+                         info.document_id, channel_type, channel_name, {}, {});
 }
 
 void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,
@@ -566,13 +217,7 @@ void MessagingAPIMessageFilter::OnOpenMessagePort(const PortContext& source,
   }
   TRACE_EVENT("extensions", "MessageFilter::OnOpenMessagePort",
               ChromeTrackEvent::kRenderProcessHost, *process);
-
-  if (!IsValidSourceContext(*process, source)) {
-    return;
-  }
-
-  MessageService::Get(browser_context_)
-      ->OpenPort(port_id, render_process_id_, source);
+  MessageService::Get(browser_context_)->OpenPort(process, port_id, source);
 }
 
 void MessagingAPIMessageFilter::OnCloseMessagePort(
@@ -587,19 +232,8 @@ void MessagingAPIMessageFilter::OnCloseMessagePort(
   TRACE_EVENT("extensions", "MessageFilter::OnCloseMessagePort",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-  if (!port_context.is_for_render_frame() &&
-      !port_context.is_for_service_worker()) {
-    bad_message::ReceivedBadMessage(render_process_id_,
-                                    bad_message::EMF_INVALID_PORT_CONTEXT);
-    return;
-  }
-
-  if (!IsValidSourceContext(*process, port_context)) {
-    return;
-  }
-
   MessageService::Get(browser_context_)
-      ->ClosePort(port_id, render_process_id_, port_context, force_close);
+      ->ClosePort(process, port_id, port_context, force_close);
 }
 
 void MessagingAPIMessageFilter::OnPostMessage(const PortId& port_id,
@@ -622,12 +256,8 @@ void MessagingAPIMessageFilter::OnResponsePending(
   TRACE_EVENT("extensions", "MessageFilter::OnResponsePending",
               ChromeTrackEvent::kRenderProcessHost, *process);
 
-  if (!IsValidSourceContext(*process, port_context)) {
-    return;
-  }
-
   MessageService::Get(browser_context_)
-      ->NotifyResponsePending(port_id, render_process_id_, port_context);
+      ->NotifyResponsePending(process, port_id, port_context);
 }
 
 // static
@@ -636,3 +266,5 @@ void MessagingAPIMessageFilter::EnsureAssociatedFactoryBuilt() {
 }
 
 }  // namespace extensions
+
+#endif

@@ -117,7 +117,7 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
   EXPECT_EQ(kFileSystemId, options.file_system_id);
   EXPECT_EQ(kRequestId, options.request_id);
   EXPECT_EQ(kFilePath, options.file_path);
-  EXPECT_EQ(extensions::api::file_system_provider::OPEN_FILE_MODE_READ,
+  EXPECT_EQ(extensions::api::file_system_provider::OpenFileMode::kRead,
             options.mode);
 }
 

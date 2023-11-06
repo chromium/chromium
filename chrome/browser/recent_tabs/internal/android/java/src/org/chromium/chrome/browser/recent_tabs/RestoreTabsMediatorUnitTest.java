@@ -69,22 +69,14 @@ import java.util.List;
 public class RestoreTabsMediatorUnitTest {
     private static final String RESTORE_TABS_USED = EventConstants.RESTORE_TABS_PROMO_USED;
 
-    @Mock
-    private RestoreTabsControllerDelegate mDelegate;
-    @Mock
-    private ForeignSessionHelper mForeignSessionHelper;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private BottomSheetContent mBottomSheetContent;
-    @Mock
-    private BooleanCachedFieldTrialParameter mParam;
+    @Mock private RestoreTabsControllerDelegate mDelegate;
+    @Mock private ForeignSessionHelper mForeignSessionHelper;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Profile mProfile;
+    @Mock private Tracker mTracker;
+    @Mock private BottomSheetContent mBottomSheetContent;
+    @Mock private BooleanCachedFieldTrialParameter mParam;
 
     private PropertyModel mModel = RestoreTabsProperties.createDefaultModel();
     private RestoreTabsMediator mMediator = new RestoreTabsMediator();
@@ -107,7 +99,8 @@ public class RestoreTabsMediatorUnitTest {
     public void testRestoreTabsMediator_initCreatesValidDefaultModel() {
         Assert.assertEquals(mModel.get(VISIBLE), false);
         Assert.assertNotNull(mModel.get(HOME_SCREEN_DELEGATE));
-        assertThat(mModel.get(HOME_SCREEN_DELEGATE),
+        assertThat(
+                mModel.get(HOME_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsPromoScreenCoordinator.Delegate.class));
         Assert.assertNotNull(mModel.get(DETAIL_SCREEN_BACK_CLICK_HANDLER));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), UNINITIALIZED);
@@ -116,8 +109,9 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_onDismissed() {
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
@@ -151,8 +145,9 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_showOptionsUpdatesModel() {
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session);
 
@@ -183,10 +178,10 @@ public class RestoreTabsMediatorUnitTest {
 
         ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        PropertyModel model1 = TabItemProperties.create(/*tab=*/tab1, /*isSelected=*/true);
+        PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
-        PropertyModel model2 = TabItemProperties.create(/*tab=*/tab2, /*isSelected=*/true);
+        PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 
         // Only add the selected tab
@@ -220,10 +215,12 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_setDeviceListItemsNoSelection() {
-        ForeignSession session1 = new ForeignSession(
-                "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
-        ForeignSession session2 = new ForeignSession(
-                "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session1 =
+                new ForeignSession(
+                        "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session2 =
+                new ForeignSession(
+                        "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session1);
         testSessions.add(session2);
@@ -235,10 +232,12 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_setDeviceListItemsSelection() {
-        ForeignSession session1 = new ForeignSession(
-                "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
-        ForeignSession session2 = new ForeignSession(
-                "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session1 =
+                new ForeignSession(
+                        "tag1", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session2 =
+                new ForeignSession(
+                        "tag2", "John's iPhone 7", 33L, new ArrayList<>(), FormFactor.PHONE);
         List<ForeignSession> testSessions = new ArrayList<>();
         testSessions.add(session1);
         testSessions.add(session2);
@@ -257,8 +256,9 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_setSelectedDeviceItem() {
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         mMediator.setSelectedDeviceItem(session);
 
         Assert.assertEquals(mModel.get(SELECTED_DEVICE), session);
@@ -315,9 +315,11 @@ public class RestoreTabsMediatorUnitTest {
         Assert.assertEquals(
                 mModel.get(DETAIL_SCREEN_MODEL_LIST), mModel.get(REVIEW_TABS_MODEL_LIST));
         Assert.assertNotNull(mModel.get(REVIEW_TABS_SCREEN_DELEGATE));
-        Assert.assertEquals(mModel.get(DETAIL_SCREEN_TITLE),
+        Assert.assertEquals(
+                mModel.get(DETAIL_SCREEN_TITLE),
                 R.string.restore_tabs_review_tabs_screen_sheet_title);
-        assertThat(mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
+        assertThat(
+                mModel.get(REVIEW_TABS_SCREEN_DELEGATE),
                 instanceOf(RestoreTabsDetailScreenCoordinator.Delegate.class));
         Assert.assertEquals(mModel.get(CURRENT_SCREEN), REVIEW_TABS_SCREEN);
     }
@@ -382,7 +384,7 @@ public class RestoreTabsMediatorUnitTest {
         // Testing the onChangeSelectionStateForAllTabs function with no deselected tabs.
         ForeignSessionTab tab = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        PropertyModel model = TabItemProperties.create(/*tab=*/tab, /*isSelected=*/true);
+        PropertyModel model = TabItemProperties.create(/* tab= */ tab, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model));
         delegate.onChangeSelectionStateForAllTabs();
         Assert.assertEquals(mModel.get(NUM_TABS_DESELECTED), tabItems.size());
@@ -398,10 +400,10 @@ public class RestoreTabsMediatorUnitTest {
 
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
         ForeignSessionTab tab1 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
-        PropertyModel model1 = TabItemProperties.create(/*tab=*/tab1, /*isSelected=*/true);
+        PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 = new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0);
-        PropertyModel model2 = TabItemProperties.create(/*tab=*/tab2, /*isSelected=*/false);
+        PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ false);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 
         // Only add the selected tab

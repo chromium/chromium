@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {ElementsTestRunner} from 'elements_test_runner';
+
+import * as Animation from 'devtools/panels/animation/animation.js';
 
 (async function() {
   TestRunner.addResult(`Tests the matching of groups in AnimationModel.\n`);
-  await TestRunner.loadLegacyModule('animation');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -47,7 +47,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
   startTransition();
 
   function startTransition() {
-    var model = TestRunner.mainTarget.model(Animation.AnimationModel);
+    var model = TestRunner.mainTarget.model(Animation.AnimationModel.AnimationModel);
     model.ensureEnabled();
     model.addEventListener(Animation.AnimationModel.Events.AnimationGroupStarted, groupStarted);
     TestRunner.evaluateInPage('startCSSTransition()');

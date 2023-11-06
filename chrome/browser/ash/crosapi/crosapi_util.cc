@@ -64,6 +64,7 @@
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/desk.mojom.h"
+#include "chromeos/crosapi/mojom/desk_profiles.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/device_local_account_extension_service.mojom.h"
@@ -90,6 +91,7 @@
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/fullscreen_controller.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
+#include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
 #include "chromeos/crosapi/mojom/identity_manager.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
@@ -188,8 +190,6 @@ constexpr char kSharedStoragePrefsCapability[] = "b/231890240";
 // Capability to register observers for extension controlled prefs via the
 // prefs api.
 constexpr char kExtensionControlledPrefObserversCapability[] = "crbug/1334985";
-// Capability to always use ConfirmComposition for input methods.
-constexpr char kAlwaysConfirmCompositionCapability[] = "b/265853952";
 // Capability to pass testing ash extension keeplist data via ash
 // commandline switch.
 constexpr char kAshExtensionKeeplistCmdlineSwitchCapability[] = "crbug/1409199";
@@ -296,7 +296,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 120,
+static_assert(crosapi::mojom::Crosapi::Version_ == 123,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -308,12 +308,13 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<chromeos::sensors::mojom::SensorHalClient>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Arc>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AudioService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::Authentication>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AuthenticationDeprecated>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Automation>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AutomationFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AccountManager>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppServiceProxy>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::AppShortcutPublisher>(),
     MakeInterfaceVersionEntry<crosapi::mojom::AppWindowTracker>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserAppInstanceRegistry>(),
     MakeInterfaceVersionEntry<crosapi::mojom::BrowserServiceHost>(),
@@ -327,6 +328,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::CrosDisplayConfigController>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Crosapi>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Desk>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DeskProfileObserver>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeskTemplate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceAttributes>(),
     MakeInterfaceVersionEntry<
@@ -384,6 +386,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetrics>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetricsForProfile>(),
     MakeInterfaceVersionEntry<
         crosapi::mojom::TelemetryDiagnosticRoutinesService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TelemetryEventService>(),
@@ -429,6 +432,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
         crosapi::mojom::EmbeddedAccessibilityHelperClient>(),
     MakeInterfaceVersionEntry<
         crosapi::mojom::EmbeddedAccessibilityHelperClientFactory>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::GuestOsSkForwarderFactory>(),
 };
 
 constexpr bool HasDuplicatedUuid() {
@@ -537,6 +541,10 @@ void InjectBrowserInitParams(
     if (!client_id.empty()) {
       params->metrics_service_client_id = client_id;
     }
+    params->entropy_source = crosapi::mojom::EntropySource::New(
+        metrics_service->GetLowEntropySource(),
+        metrics_service->GetOldLowEntropySource(),
+        metrics_service->GetPseudoLowEntropySource());
   }
 
   if (auto* metrics_services_manager =
@@ -603,11 +611,6 @@ void InjectBrowserInitParams(
       kExtensionControlledPrefObserversCapability,
       kAshExtensionKeeplistCmdlineSwitchCapability,
   };
-  // TODO(b/265853952): Remove this once kAlwaysConfirmComposition is enabled by
-  // default.
-  if (base::FeatureList::IsEnabled(features::kAlwaysConfirmComposition)) {
-    ash_capabilities.push_back(kAlwaysConfirmCompositionCapability);
-  }
   params->ash_capabilities = {std::move(ash_capabilities)};
 
   params->lacros_selection = GetLacrosSelection(lacros_selection);
@@ -661,8 +664,8 @@ void InjectBrowserInitParams(
   params->enable_clipboard_history_refresh =
       chromeos::features::IsClipboardHistoryRefreshEnabled();
 
-  params->is_variable_refresh_rate_enabled =
-      ::features::IsVariableRefreshRateEnabled();
+  params->is_variable_refresh_rate_always_on =
+      ::features::IsVariableRefreshRateAlwaysOn();
 
   params->is_pdf_ocr_enabled = ::features::IsPdfOcrEnabled();
 
@@ -674,6 +677,15 @@ void InjectBrowserInitParams(
 
   params->is_cros_battery_saver_available =
       ash::features::IsBatterySaverAvailable();
+
+  params->is_app_install_service_uri_enabled =
+      chromeos::features::IsAppInstallServiceUriEnabled();
+
+  params->is_desk_profiles_enabled =
+      chromeos::features::IsDeskProfilesEnabled();
+
+  params->is_cros_web_app_shortcut_ui_update_enabled =
+      chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled();
 }
 
 template <typename BrowserParams>
@@ -701,11 +713,6 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
       environment_provider->GetLastPolicyFetchAttemptTimestamp().ToTimeT();
 
   params->initial_browser_action = initial_browser_action.action;
-
-  // TODO(crbug.com/1448575): These three are redundant. Remove them in M120.
-  params->web_apps_enabled = true;
-  params->standalone_browser_is_primary = true;
-  params->standalone_browser_is_only_browser = true;
 
   params->publish_chrome_apps = browser_util::IsLacrosChromeAppsEnabled();
   params->publish_hosted_apps = crosapi::IsStandaloneBrowserHostedAppsEnabled();

@@ -73,6 +73,7 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -107,9 +108,6 @@ constexpr char kExtensionsKey[] = "extensions";
 PolicyUIHandler::PolicyUIHandler() = default;
 
 PolicyUIHandler::~PolicyUIHandler() {
-  if (export_policies_select_file_dialog_) {
-    export_policies_select_file_dialog_->ListenerDestroyed();
-  }
   policy::RecordPolicyUIButtonUsage(reload_policies_count_,
                                     export_to_json_count_, copy_to_json_count_,
                                     upload_report_count_);
@@ -228,61 +226,15 @@ void PolicyUIHandler::OnPolicyValueAndStatusChanged() {
   SendStatus();
 }
 
-void PolicyUIHandler::FileSelected(const base::FilePath& path,
-                                   int index,
-                                   void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-
-  WritePoliciesToJSONFile(path);
-
-  export_policies_select_file_dialog_ = nullptr;
-}
-
-void PolicyUIHandler::FileSelectionCanceled(void* params) {
-  DCHECK(export_policies_select_file_dialog_);
-  export_policies_select_file_dialog_ = nullptr;
-}
-
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {
   export_to_json_count_ += 1;
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1228691): Unify download logic between all platforms to
-  // use the WebUI download solution (and remove the Android check).
   if (!IsJavascriptAllowed()) {
     DVLOG(1) << "Tried to export policies as JSON but executing JavaScript is "
                 "not allowed.";
     return;
   }
 
-  // Since file selection doesn't work as well on Android as on other platforms,
-  // simply download the JSON as a file via JavaScript.
   FireWebUIListener("download-json", base::Value(GetPoliciesAsJson()));
-#else
-  // If the "select file" dialog window is already opened, we don't want to open
-  // it again.
-  if (export_policies_select_file_dialog_) {
-    return;
-  }
-
-  content::WebContents* webcontents = web_ui()->GetWebContents();
-
-  // Building initial path based on download preferences.
-  base::FilePath initial_dir =
-      DownloadPrefs::FromBrowserContext(webcontents->GetBrowserContext())
-          ->DownloadPath();
-  base::FilePath initial_path =
-      initial_dir.Append(FILE_PATH_LITERAL("policies.json"));
-
-  export_policies_select_file_dialog_ = ui::SelectFileDialog::Create(
-      this,
-      std::make_unique<ChromeSelectFilePolicy>(web_ui()->GetWebContents()));
-  ui::SelectFileDialog::FileTypeInfo file_type_info;
-  file_type_info.extensions = {{FILE_PATH_LITERAL("json")}};
-  gfx::NativeWindow owning_window = webcontents->GetTopLevelNativeWindow();
-  export_policies_select_file_dialog_->SelectFile(
-      ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), initial_path,
-      &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
-#endif
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(
@@ -330,7 +282,7 @@ void PolicyUIHandler::HandleCopyPoliciesJson(const base::Value::List& args) {
 
 void PolicyUIHandler::HandleSetLocalTestPolicies(
     const base::Value::List& args) {
-  std::string json_policies_string = args[1].GetString();
+  std::string policies = args[1].GetString();
 
   policy::LocalTestPolicyProvider* local_test_provider =
       static_cast<policy::LocalTestPolicyProvider*>(
@@ -339,17 +291,28 @@ void PolicyUIHandler::HandleSetLocalTestPolicies(
 
   CHECK(local_test_provider);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  std::string profile_separation_policy_response = args[2].GetString();
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetString(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage,
+      profile_separation_policy_response);
+#endif
+
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->UseLocalTestPolicyProvider();
 
-  local_test_provider->LoadJsonPolicies(json_policies_string);
+  local_test_provider->LoadJsonPolicies(policies);
   AllowJavascript();
   ResolveJavascriptCallback(args[0], true);
 }
 
 void PolicyUIHandler::HandleRevertLocalTestPolicies(
     const base::Value::List& args) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  Profile::FromWebUI(web_ui())->GetPrefs()->ClearPref(
+      prefs::kUserCloudSigninPolicyResponseFromPolicyTestPage);
+#endif
   Profile::FromWebUI(web_ui())
       ->GetProfilePolicyConnector()
       ->RevertUseLocalTestPolicyProvider();
@@ -381,7 +344,6 @@ void PolicyUIHandler::HandleSetUserAffiliated(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
-  DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   AllowJavascript();
   ResolveJavascriptCallback(args[0],
                             policy::PolicyLogger::GetInstance()->GetAsList());
@@ -478,17 +440,4 @@ std::string PolicyUIHandler::GetPoliciesAsJson() {
       /*params=*/
       policy::GetChromeMetadataParams(
           /*application_name=*/l10n_util::GetStringUTF8(IDS_PRODUCT_NAME)));
-}
-
-void PolicyUIHandler::WritePoliciesToJSONFile(const base::FilePath& path) {
-  std::string json_policies = GetPoliciesAsJson();
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(
-          [](const base::FilePath& path, base::StringPiece content) {
-            base::WriteFile(path, content);
-          },
-          path, json_policies));
 }

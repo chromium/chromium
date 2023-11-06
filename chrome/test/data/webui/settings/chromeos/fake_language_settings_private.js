@@ -201,7 +201,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * @return {!Promise<!Array<!chrome.languageSettingsPrivate.Language>>}
    */
   getLanguageList() {
-    return Promise.resolve(JSON.parse(JSON.stringify(this.languages)));
+    return Promise.resolve(structuredClone(this.languages));
   }
 
   /**
@@ -415,7 +415,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
     return Promise.resolve({
       componentExtensionImes:
           /** @type {!Array<!chrome.languageSettingsPrivate.InputMethod>} */ (
-              JSON.parse(JSON.stringify(this.componentExtensionImes))),
+              structuredClone(this.componentExtensionImes)),
       thirdPartyExtensionImes: [],
     });
   }

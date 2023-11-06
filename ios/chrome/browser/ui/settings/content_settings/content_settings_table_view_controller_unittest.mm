@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -17,7 +17,7 @@
 namespace {
 
 class ContentSettingsTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   ContentSettingsTableViewControllerTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
@@ -27,10 +27,10 @@ class ContentSettingsTableViewControllerTest
   void TearDown() override {
     [base::apple::ObjCCastStrict<ContentSettingsTableViewController>(
         controller()) settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[ContentSettingsTableViewController alloc]
         initWithBrowser:browser_.get()];
   }

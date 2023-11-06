@@ -99,7 +99,7 @@ TEST(CSSPropertyNamesTest, WebkitAlternativeMaskSize) {
   }
 }
 
-TEST(CSSPropertyNamesTest, WebkitAlternativeMask) {
+TEST(CSSPropertyNamesTest, AlternativeMask) {
   {
     ScopedCSSMaskingInteropForTest scoped_feature(false);
     CSSPropertyID property_id = UnresolvedCSSPropertyID(
@@ -111,7 +111,7 @@ TEST(CSSPropertyNamesTest, WebkitAlternativeMask) {
     ScopedCSSMaskingInteropForTest scoped_feature(true);
     CSSPropertyID property_id = UnresolvedCSSPropertyID(
         /* execution_context */ nullptr, "-webkit-mask");
-    EXPECT_EQ(CSSPropertyID::kWebkitAlternativeMask, property_id);
+    EXPECT_EQ(CSSPropertyID::kAliasWebkitAlternativeMask, property_id);
   }
 }
 

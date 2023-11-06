@@ -242,9 +242,15 @@ class AccountSelectionViewBinder {
             mDescription = new SpannableString(description);
         }
 
-        ErrorText(String summary, SpannableString description) {
+        ErrorText(String summary, String description, Context context, Runnable runnable) {
             mSummary = summary;
-            mDescription = description;
+            SpanApplier.SpanInfo moreDetailsSpan =
+                    new SpanApplier.SpanInfo(
+                            "<link_more_details>",
+                            "</link_more_details>",
+                            new NoUnderlineClickableSpan(
+                                    context, (View clickedView) -> runnable.run()));
+            mDescription = SpanApplier.applySpans(description, moreDetailsSpan);
         }
     }
 
@@ -298,31 +304,42 @@ class AccountSelectionViewBinder {
                     context.getString(R.string.signin_generic_error_dialog_summary, idpForDisplay));
             description = String.format(
                     context.getString(R.string.signin_generic_error_dialog_description));
-            // Generic errors do not need extra description to be displayed.
-            return new ErrorText(summary, description);
+
+            if (url.isEmpty()) {
+                return new ErrorText(summary, description);
+            }
+
+            description += ". ";
+            description +=
+                    String.format(
+                            context.getString(
+                                    R.string.signin_generic_error_dialog_more_details_prompt));
+            return new ErrorText(
+                    summary, description, context, properties.mMoreDetailsClickRunnable);
         }
 
         if (url.isEmpty()) {
-            description += " "
-                    + String.format(
-                            context.getString(R.string.signin_error_dialog_try_other_ways_prompt,
+            description += " ";
+            description +=
+                    String.format(
+                            context.getString(
+                                    TEMPORARILY_UNAVAILABLE.equals(code)
+                                            ? R.string
+                                                    .signin_error_dialog_try_other_ways_retry_prompt
+                                            : R.string.signin_error_dialog_try_other_ways_prompt,
                                     topFrameForDisplay));
             return new ErrorText(summary, description);
         }
 
-        description += " "
-                + String.format(context.getString(
-                        R.string.signin_error_dialog_more_details_prompt, idpForDisplay));
-
-        SpanApplier.SpanInfo moreDetailsSpan =
-                new SpanApplier.SpanInfo(
-                        "<link_more_details>",
-                        "</link_more_details>",
-                        new NoUnderlineClickableSpan(
-                                context,
-                                (View clickedView) -> properties.mMoreDetailsClickRunnable.run()));
-
-        return new ErrorText(summary, SpanApplier.applySpans(description, moreDetailsSpan));
+        description += " ";
+        description +=
+                String.format(
+                        context.getString(
+                                TEMPORARILY_UNAVAILABLE.equals(code)
+                                        ? R.string.signin_error_dialog_more_details_retry_prompt
+                                        : R.string.signin_error_dialog_more_details_prompt,
+                                idpForDisplay));
+        return new ErrorText(summary, description, context, properties.mMoreDetailsClickRunnable);
     }
 
     /**

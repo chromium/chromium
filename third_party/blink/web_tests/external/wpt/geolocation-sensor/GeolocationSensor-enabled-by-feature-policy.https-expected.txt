@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL GeolocationSensor: Feature-Policy header geolocation * allows the top-level document. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: Feature-Policy header geolocation * allows same-origin iframes. assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: Feature-Policy header geolocation * allows cross-origin iframes. assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy header geolocation * allows the top-level document.
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy header geolocation * allows same-origin iframes.
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy header geolocation * allows cross-origin iframes.
+  assert_implements: GeolocationSensor is not supported. undefined
 Harness: the test ran to completion.
 

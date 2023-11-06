@@ -23,6 +23,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -127,33 +128,43 @@ HttpProxyTimeoutExperiments* GetProxyTimeoutExperiments() {
 HttpProxySocketParams::HttpProxySocketParams(
     scoped_refptr<TransportSocketParams> transport_params,
     scoped_refptr<SSLSocketParams> ssl_params,
-    bool is_quic,
     const HostPortPair& endpoint,
+    const ProxyChain& proxy_chain,
+    size_t proxy_chain_index,
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
-    const NetworkAnonymizationKey& network_anonymization_key)
+    const NetworkAnonymizationKey& network_anonymization_key,
+    SecureDnsPolicy secure_dns_policy)
     : transport_params_(std::move(transport_params)),
       ssl_params_(std::move(ssl_params)),
-      is_quic_(is_quic),
       endpoint_(endpoint),
+      proxy_chain_(proxy_chain),
+      proxy_chain_index_(proxy_chain_index),
       tunnel_(tunnel),
       network_anonymization_key_(network_anonymization_key),
-      traffic_annotation_(traffic_annotation) {
+      traffic_annotation_(traffic_annotation),
+      secure_dns_policy_(secure_dns_policy) {
   // This is either a connection to an HTTP proxy or an SSL/QUIC proxy.
   DCHECK(transport_params_ || ssl_params_);
   DCHECK(!transport_params_ || !ssl_params_);
+  DCHECK(!proxy_chain_.is_direct());
+  DCHECK(proxy_chain_.IsValid());
+
+  CHECK(proxy_chain_index_ < proxy_chain_.length());
 
   // If connecting to a QUIC proxy, and |ssl_params_| must be valid. This also
   // implies |transport_params_| is null, per the above DCHECKs.
-  if (is_quic_)
+  if (proxy_server().is_quic()) {
     DCHECK(ssl_params_);
+  }
 
   // Only supports proxy endpoints without scheme for now.
   // TODO(crbug.com/1206799): Handle scheme.
   if (transport_params_) {
     DCHECK(absl::holds_alternative<HostPortPair>(
         transport_params_->destination()));
-  } else {
+  } else if (ssl_params_->GetConnectionType() ==
+             SSLSocketParams::ConnectionType::DIRECT) {
     DCHECK(absl::holds_alternative<HostPortPair>(
         ssl_params_->GetDirectConnectionParams()->destination()));
   }
@@ -194,7 +205,7 @@ HttpProxyConnectJob::HttpProxyConnectJob(
               ? base::MakeRefCounted<HttpAuthController>(
                     HttpAuth::AUTH_PROXY,
                     GURL((params_->ssl_params() ? "https://" : "http://") +
-                         GetDestination().ToString()),
+                         params_->proxy_server().host_port_pair().ToString()),
                     params_->network_anonymization_key(),
                     common_connect_job_params->http_auth_cache,
                     common_connect_job_params->http_auth_handler_factory,
@@ -286,10 +297,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   default_alternate_timeout = kHttpProxyConnectJobTunnelTimeout;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  bool is_https = params.ssl_params() != nullptr;
-  // HTTP proxy connections can't be on top of proxy connections.
-  DCHECK(!is_https ||
-         params.ssl_params()->GetConnectionType() == SSLSocketParams::DIRECT);
+  bool is_https = params.proxy_server().is_https();
 
   if (!network_quality_estimator)
     return default_alternate_timeout;
@@ -325,13 +333,7 @@ int HttpProxyConnectJob::ConnectInternal() {
 }
 
 ProxyServer::Scheme HttpProxyConnectJob::GetProxyServerScheme() const {
-  if (params_->is_quic())
-    return ProxyServer::SCHEME_QUIC;
-
-  if (params_->transport_params())
-    return ProxyServer::SCHEME_HTTP;
-
-  return ProxyServer::SCHEME_HTTPS;
+  return params_->proxy_server().scheme();
 }
 
 void HttpProxyConnectJob::OnIOComplete(int result) {
@@ -532,7 +534,7 @@ int HttpProxyConnectJob::DoHttpProxyConnect() {
   // Add a HttpProxy connection on top of the tcp socket.
   transport_socket_ = std::make_unique<HttpProxyClientSocket>(
       nested_connect_job_->PassSocket(), GetUserAgent(), params_->endpoint(),
-      ProxyServer(GetProxyServerScheme(), GetDestination()),
+      params_->proxy_chain(), params_->proxy_chain_index(),
       http_auth_controller_, common_connect_job_params()->proxy_delegate,
       params_->traffic_annotation());
   nested_connect_job_.reset();
@@ -624,7 +626,7 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStreamComplete(int result) {
   DCHECK(stream.get());
   // |transport_socket_| will set itself as |stream|'s delegate.
   transport_socket_ = std::make_unique<SpdyProxyClientSocket>(
-      stream, ProxyServer(GetProxyServerScheme(), GetDestination()),
+      stream, params_->proxy_chain(), params_->proxy_chain_index(),
       GetUserAgent(), params_->endpoint(), net_log(), http_auth_controller_,
       common_connect_job_params()->proxy_delegate);
   return transport_socket_->Connect(base::BindOnce(
@@ -643,7 +645,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   ResetTimer(kHttpProxyConnectJobTunnelTimeout);
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM;
-  const HostPortPair& proxy_server = GetDestination();
+  const HostPortPair& proxy_server = params_->proxy_server().host_port_pair();
   quic_stream_request_ = std::make_unique<QuicStreamRequest>(
       common_connect_job_params()->quic_stream_factory);
 
@@ -657,7 +659,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
                           proxy_server.port()),
       quic_version, ssl_params->privacy_mode(), kH2QuicTunnelPriority,
       socket_tag(), params_->network_anonymization_key(),
-      ssl_params->GetDirectConnectionParams()->secure_dns_policy(),
+      params_->secure_dns_policy(),
       /*use_dns_aliases=*/false, /*require_dns_https_alpn=*/false,
       ssl_params->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
@@ -697,9 +699,9 @@ int HttpProxyConnectJob::DoQuicProxyCreateStreamComplete(int result) {
       quic::HttpStreamPriority{urgency, kDefaultPriorityIncremental}));
 
   transport_socket_ = std::make_unique<QuicProxyClientSocket>(
-      std::move(quic_stream), std::move(quic_session_),
-      ProxyServer(GetProxyServerScheme(), GetDestination()), GetUserAgent(),
-      params_->endpoint(), net_log(), http_auth_controller_,
+      std::move(quic_stream), std::move(quic_session_), params_->proxy_chain(),
+      params_->proxy_chain_index(), GetUserAgent(), params_->endpoint(),
+      net_log(), http_auth_controller_,
       common_connect_job_params()->proxy_delegate);
   return transport_socket_->Connect(base::BindOnce(
       &HttpProxyConnectJob::OnIOComplete, base::Unretained(this)));
@@ -790,20 +792,6 @@ void HttpProxyConnectJob::OnAuthChallenge() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-const HostPortPair& HttpProxyConnectJob::GetDestination() const {
-  const TransportSocketParams* transport_params;
-  if (params_->transport_params()) {
-    transport_params = params_->transport_params().get();
-  } else {
-    transport_params = params_->ssl_params()->GetDirectConnectionParams().get();
-  }
-
-  // TODO(crbug.com/1206799): Handle proxy destination with scheme.
-  DCHECK(
-      absl::holds_alternative<HostPortPair>(transport_params->destination()));
-  return absl::get<HostPortPair>(transport_params->destination());
-}
-
 std::string HttpProxyConnectJob::GetUserAgent() const {
   if (!http_user_agent_settings())
     return std::string();
@@ -811,11 +799,14 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 }
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
-  return SpdySessionKey(
-      GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
-      SpdySessionKey::IsProxySession::kTrue, socket_tag(),
-      params_->network_anonymization_key(),
-      params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());
+  // TODO(https://crbug.com/1491092): For supporting nested proxies we will want
+  // to construct a new ProxyChain here that contains the current proxy server
+  // (based on `proxy_chain_index_`) and all previous hops in the chain.
+  return SpdySessionKey(params_->proxy_chain().proxy_server().host_port_pair(),
+                        ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
+                        SpdySessionKey::IsProxySession::kTrue, socket_tag(),
+                        params_->network_anonymization_key(),
+                        params_->secure_dns_policy());
 }
 
 }  // namespace net

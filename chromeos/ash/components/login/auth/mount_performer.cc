@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -26,7 +27,7 @@ bool ShouldUseOldEncryptionForTesting() {
 
 }  // namespace
 
-MountPerformer::MountPerformer() = default;
+MountPerformer::MountPerformer(const base::Clock* clock) : clock_(clock) {}
 MountPerformer::~MountPerformer() = default;
 
 void MountPerformer::InvalidateCurrentAttempts() {
@@ -44,8 +45,8 @@ void MountPerformer::CreateNewUser(std::unique_ptr<UserContext> context,
   request.set_auth_session_id(context->GetAuthSessionId());
   UserDataAuthClient::Get()->CreatePersistentUser(
       request, base::BindOnce(&MountPerformer::OnCreatePersistentUser,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void MountPerformer::MountPersistentDirectory(
@@ -85,8 +86,8 @@ void MountPerformer::MountEphemeralDirectory(
   request.set_auth_session_id(context->GetAuthSessionId());
   UserDataAuthClient::Get()->PrepareEphemeralVault(
       request, base::BindOnce(&MountPerformer::OnPrepareEphemeralVault,
-                              weak_factory_.GetWeakPtr(), std::move(context),
-                              std::move(callback)));
+                              weak_factory_.GetWeakPtr(), clock_->Now(),
+                              std::move(context), std::move(callback)));
 }
 
 void MountPerformer::MountGuestDirectory(std::unique_ptr<UserContext> context,
@@ -175,6 +176,7 @@ void MountPerformer::MigrateToDircrypto(std::unique_ptr<UserContext> context,
 /// ---- private callbacks ----
 
 void MountPerformer::OnCreatePersistentUser(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<user_data_auth::CreatePersistentUserReply> reply) {
@@ -186,7 +188,8 @@ void MountPerformer::OnCreatePersistentUser(
   }
   CHECK(reply.has_value());
   CHECK(reply->has_auth_properties());
-  AuthPerformer::FillAuthenticationData(reply->auth_properties(), *context);
+  AuthPerformer::FillAuthenticationData(request_start, reply->auth_properties(),
+                                        *context);
   std::move(callback).Run(std::move(context), absl::nullopt);
 }
 
@@ -209,6 +212,7 @@ void MountPerformer::OnPrepareGuestVault(
 }
 
 void MountPerformer::OnPrepareEphemeralVault(
+    base::Time request_start,
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback,
     absl::optional<user_data_auth::PrepareEphemeralVaultReply> reply) {
@@ -223,7 +227,8 @@ void MountPerformer::OnPrepareEphemeralVault(
   }
   CHECK(reply.has_value());
   CHECK(reply->has_auth_properties());
-  AuthPerformer::FillAuthenticationData(reply->auth_properties(), *context);
+  AuthPerformer::FillAuthenticationData(request_start, reply->auth_properties(),
+                                        *context);
   context->SetUserIDHash(reply->sanitized_username());
   std::move(callback).Run(std::move(context), absl::nullopt);
 }

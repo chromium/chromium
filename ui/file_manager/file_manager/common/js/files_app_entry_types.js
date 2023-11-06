@@ -22,7 +22,6 @@
  */
 
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {vmTypeToIconName} from './icon_util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
@@ -82,6 +81,8 @@ export class CombinedReaders {
     this.readers_ = readers.reverse();
 
     /** @private @type {!DirectoryReader} */
+    // @ts-ignore: error TS2322: Type 'DirectoryReader | undefined' is not
+    // assignable to type 'DirectoryReader'.
     this.currentReader_ = readers.pop();
   }
 
@@ -111,9 +112,14 @@ export class CombinedReaders {
           return;
         }
         // Move to next reader and start consuming it.
+        // @ts-ignore: error TS2322: Type 'DirectoryReader | undefined' is not
+        // assignable to type 'DirectoryReader'.
         this.currentReader_ = this.readers_.pop();
         this.readEntries(success, error);
       }
+      // @ts-ignore: error TS2345: Argument of type '((arg0: FileError) => any)
+      // | undefined' is not assignable to parameter of type 'ErrorCallback |
+      // undefined'.
     }, error);
   }
 }
@@ -162,7 +168,7 @@ export class EntryList {
     this.fullPath = '/';
 
     /**
-     * @public @type {?FileSystem}
+     * @type {?FileSystem}
      */
     this.filesystem = null;
 
@@ -195,6 +201,10 @@ export class EntryList {
     return this.label_;
   }
 
+  get devicePath() {
+    return this.devicePath_;
+  }
+
   get isNativeType() {
     return false;
   }
@@ -210,7 +220,6 @@ export class EntryList {
 
   /**
    * @return {string} used to compare entries.
-   * @override
    */
   toURL() {
     // There may be multiple entry lists. Append the device path to return
@@ -256,7 +265,8 @@ export class EntryList {
   }
 
   /**
-   * @param {!VolumeInfo} volumeInfo that's desired to be removed.
+   * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo
+   *     that's desired to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    * Note: we compare the volumeId instead of the whole volumeInfo reference
    * because the same volume could be mounted multiple times and every time a
@@ -354,6 +364,7 @@ export class EntryList {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   copyTo(newParent, newName, success, error) {}
 
   /**
@@ -362,12 +373,14 @@ export class EntryList {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   moveTo(newParent, newName, success, error) {}
 
   /**
-   * @param {function(Entry)|function(FilesAppEntry)} success
+   * @param {function(Entry):void|function(FilesAppEntry):void} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   remove(success, error) {}
 
   /**
@@ -376,6 +389,7 @@ export class EntryList {
    * @param {(function(!FileEntry)|function(!FilesAppEntry))=} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getFile(path, options, success, error) {}
 
   /**
@@ -384,12 +398,14 @@ export class EntryList {
    * @param {(function(!DirectoryEntry)|function(!FilesAppDirEntry))=} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getDirectory(path, options, success, error) {}
 
   /**
-   * @param {function()} success
+   * @param {function():void} success
    * @param {function(!Error)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   removeRecursively(success, error) {}
 }
 
@@ -406,19 +422,20 @@ export class EntryList {
  */
 export class VolumeEntry {
   /**
-   * @param {!VolumeInfo} volumeInfo: VolumeInfo for this entry.
+   * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo:
+   *     VolumeInfo for this entry.
    */
   constructor(volumeInfo) {
     /**
-     * @private @type {!VolumeInfo} holds a reference to VolumeInfo to delegate
-     *     some
+     * @private @type {!import('../../externs/volume_info.js').VolumeInfo} holds
+     *     a reference to VolumeInfo to delegate some
      * method calls to it.
      */
     this.volumeInfo_ = volumeInfo;
 
     /**
-     * @private{!Array<!Entry|!FilesAppEntry>} additional entries that will be
-     * displayed together with this Volume's entries.
+     * @private @type{!Array<!Entry|!FilesAppEntry>} additional entries that
+     *     will be displayed together with this Volume's entries.
      */
     this.children_ = [];
 
@@ -441,7 +458,8 @@ export class VolumeEntry {
   }
 
   /**
-   * @return {!VolumeInfo} for this entry. This method is only valid for
+   * @return {!import('../../externs/volume_info.js').VolumeInfo} for this
+   *     entry. This method is only valid for
    * VolumeEntry instances.
    */
   get volumeInfo() {
@@ -517,6 +535,7 @@ export class VolumeEntry {
       error && setTimeout(error, 0, new Error('root entry not resolved yet.'));
       return;
     }
+    // @ts-ignore: error TS2769: No overload matches this call.
     this.rootEntry_.getDirectory(path, options, success, error);
   }
 
@@ -533,6 +552,7 @@ export class VolumeEntry {
       error && setTimeout(error, 0, new Error('root entry not resolved yet.'));
       return;
     }
+    // @ts-ignore: error TS2769: No overload matches this call.
     this.rootEntry_.getFile(path, options, success, error);
   }
 
@@ -583,6 +603,9 @@ export class VolumeEntry {
    * @param {function(FileError)=} error
    */
   getMetadata(success, error) {
+    // @ts-ignore: error TS2345: Argument of type '((arg0: FileError) => any) |
+    // undefined' is not assignable to parameter of type 'ErrorCallback |
+    // undefined'.
     this.rootEntry_.getMetadata(success, error);
   }
 
@@ -637,7 +660,8 @@ export class VolumeEntry {
   }
 
   /**
-   * @param {!VolumeInfo} volumeInfo that's desired to be removed.
+   * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo
+   *     that's desired to be removed.
    * This method is specific to VolumeEntry/EntryList instance.
    * Note: we compare the volumeId instead of the whole volumeInfo reference
    * because the same volume could be mounted multiple times and every time a
@@ -714,6 +738,7 @@ export class VolumeEntry {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   copyTo(newParent, newName, success, error) {}
 
   /**
@@ -722,18 +747,21 @@ export class VolumeEntry {
    * @param {(function(!Entry)|function(!FilesAppEntry))=} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   moveTo(newParent, newName, success, error) {}
 
   /**
-   * @param {function(!Entry)|function(!FilesAppEntry)} success
+   * @param {function(!Entry):void|function(!FilesAppEntry):void} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   remove(success, error) {}
 
   /**
-   * @param {function()} success
+   * @param {function():void} success
    * @param {function(!Error)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   removeRecursively(success, error) {}
 }
 
@@ -801,7 +829,7 @@ export class FakeEntryImpl {
     this.fullPath = '/';
 
     /**
-     * @public @type {?FileSystem}
+     * @type {?FileSystem}
      */
     this.filesystem = null;
   }
@@ -816,7 +844,8 @@ export class FakeEntryImpl {
    *     implementation.
    */
   getParent(success, _error) {
-    setTimeout((self) => success(self), 0, this);
+    const self = /** @type {!FilesAppDirEntry} */ (this);
+    setTimeout(() => success && success(self), 0, this);
   }
 
   toURL() {
@@ -895,6 +924,7 @@ export class FakeEntryImpl {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   copyTo(newParent, newName, success, error) {}
 
   /**
@@ -903,12 +933,14 @@ export class FakeEntryImpl {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   moveTo(newParent, newName, success, error) {}
 
   /**
-   * @param {function(Entry)|function(FilesAppEntry)} success
+   * @param {function(Entry):void|function(FilesAppEntry):void} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   remove(success, error) {}
 
   /**
@@ -917,6 +949,7 @@ export class FakeEntryImpl {
    * @param {(function(!FileEntry)|function(!FilesAppEntry))=} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getFile(path, options, success, error) {}
 
   /**
@@ -925,12 +958,14 @@ export class FakeEntryImpl {
    * @param {(function(!DirectoryEntry)|function(!FilesAppDirEntry))=} success
    * @param {function(!FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getDirectory(path, options, success, error) {}
 
   /**
-   * @param {function()} success
+   * @param {function():void} success
    * @param {function(!Error)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   removeRecursively(success, error) {}
 }
 
@@ -968,6 +1003,7 @@ export class GuestOsPlaceholder extends FakeEntryImpl {
   /**
    * String used to determine the icon.
    * @return {string}
+   * @override
    */
   get iconName() {
     return vmTypeToIconName(this.vm_type);

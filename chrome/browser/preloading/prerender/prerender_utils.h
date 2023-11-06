@@ -31,9 +31,6 @@ bool IsSearchSuggestionPrerenderEnabled();
 
 bool ShouldUpdateCacheEntryManually();
 
-// Whether supporting upgrading a prefetch response to prerender page.
-bool SearchPrefetchUpgradeToPrerenderIsEnabled();
-
 // Whether supporting shareable search prefetch cache. By enabling this feature,
 // prerender won't take the prefetched response away. Instead, it turns to read
 // the response stored in StreamingSearchPrefetchURLLoader.

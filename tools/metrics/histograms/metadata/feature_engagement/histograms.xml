@@ -75,6 +75,7 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_BatterySaverMode" summary="battery saver mode"/>
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
+  <variant name="IPH_CCTMinimized" summary="CCT minimize action"/>
   <variant name="IPH_ChromeDuet"
       summary="notifying users that search accelerator is at the bottom of
                the screen"/>
@@ -128,6 +129,8 @@ chromium-metrics-reviews@google.com.
       summary="customizing new tab page"/>
   <variant name="IPH_DesktopCustomizeChromeRefresh"
       summary="customizing new tab page for refresh"/>
+  <variant name="IPH_DesktopNewTabPageModulesCustomizeFeature"
+      summary="customizing new tab page modules"/>
   <variant name="IPH_DesktopPwaInstall" summary="desktop PWA install icon"/>
   <variant name="IPH_DesktopTabGroupsNewGroup"
       summary="creating a new tab group"/>
@@ -208,6 +211,8 @@ chromium-metrics-reviews@google.com.
       summary="history item on the overflow menu on iOS"/>
   <variant name="IPH_iOSNewTabToolbarItemFeature"
       summary="the new tab tool bar item (bottom on iPhone, top on iPad)"/>
+  <variant name="IPH_iOSParcelTrackingFeature"
+      summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"
       summary="showing the iOS password promo on desktop"/>
   <variant name="IPH_iOSPromoAppStore"
@@ -255,6 +260,9 @@ chromium-metrics-reviews@google.com.
       summary="Password Manager shortcut."/>
   <variant name="IPH_PasswordsAccountStorage"
       summary="passwords account storage"/>
+  <variant name="IPH_PasswordSharingFeature"
+      summary="educating the users about password sharing when they open
+               password details page"/>
   <variant name="IPH_PasswordsManagementBubbleAfterSave"
       summary="educating the users about the password management bubble after
                saving a password"/>
@@ -323,6 +331,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_RequestDesktopSiteOptIn"
       summary="the in product help message to let users turn on the desktop
                site global settings"/>
+  <variant name="IPH_RequestDesktopSiteWindowSetting"
+      summary="educating users about using the desktop site window setting"/>
   <variant name="IPH_RestoreTabsOnFRE"
       summary="the in product help sheet to let users know they can restore
                tabs from other synced devices on a fresh Chrome install"/>
@@ -418,6 +428,8 @@ chromium-metrics-reviews@google.com.
       summary="tab switcher cards with multiple tab thumbnails"/>
   <variant name="IPH_TabSearch" summary="tab search discovery"/>
   <variant name="IPH_TabSwitcherButton" summary="tab switcher button"/>
+  <variant name="IPH_TrackingProtectionOffboarding"
+      summary="tracking protection offboarding notice"/>
   <variant name="IPH_TrackingProtectionOnboarding"
       summary="tracking protection onboarding notice"/>
   <variant name="IPH_TranslateMenuButton" summary="translate menu button"/>
@@ -469,7 +481,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.Init.{IPHDatabase}" enum="BooleanSuccess"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if {IPHDatabase} database initialization succeeds for in-product
@@ -479,7 +491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.Load.{IPHDatabase}" enum="BooleanSuccess"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if {IPHDatabase} database successfully loads the data for in-product
@@ -489,7 +501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.TotalEvents" units="events"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records the total number of event records in the database for in-product
@@ -498,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.Db.Update.{IPHDatabase}" enum="BooleanSuccess"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if {IPHDatabase} database update succeeds for in-product help.
@@ -516,7 +528,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.NotifyEventReadyState.{IPHFeature}"
-    enum="BooleanSuccess" expires_after="2024-02-25">
+    enum="BooleanSuccess" expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if the model is ready when in-product help event happens for
@@ -526,7 +538,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.ShouldTriggerHelpUI.{IPHFeature}"
-    enum="TriggerHelpUIResult" expires_after="2024-02-25">
+    enum="TriggerHelpUIResult" expires_after="2024-04-28">
   <owner>nyquist@chromium.org</owner>
   <summary>
     Records if in-product help for {IPHFeature} is shown to the user, and the
@@ -560,7 +572,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InProductHelp.TextBubble.ShownTime" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>haileywang@chromium.org</owner>
   <owner>shaktisahu@chromium.org</owner>
   <summary>

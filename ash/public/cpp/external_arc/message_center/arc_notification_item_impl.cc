@@ -105,7 +105,14 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
         base::UTF8ToUTF16(data->accessible_name.value());
   }
 
-  if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+
+  if (render_on_chrome) {
+    rich_data.settings_button_handler =
+        message_center::SettingsButtonHandler::INLINE;
+  } else if (manager_->IsOpeningSettingsSupported() && !is_setting_shown) {
     rich_data.settings_button_handler =
         message_center::SettingsButtonHandler::DELEGATE;
   } else {
@@ -128,10 +135,6 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
     notifier_id.group_key = data->group_key;
   }
 
-  const bool render_on_chrome =
-      features::IsRenderArcNotificationsByChromeEnabled() &&
-      data->render_on_chrome;
-
   const auto notification_type =
       render_on_chrome
           ? ((data->indeterminate_progress || data->progress_max != -1)
@@ -143,7 +146,8 @@ void ArcNotificationItemImpl::OnUpdatedFromAndroid(
       notification_type, notification_id_, data.get(), notifier_id, rich_data,
       new ArcNotificationDelegate(weak_ptr_factory_.GetWeakPtr()));
 
-  notification->set_timestamp(base::Time::FromJavaTime(data->time));
+  notification->set_timestamp(
+      base::Time::FromMillisecondsSinceUnixEpoch(data->time));
 
   if (notification_type == message_center::NOTIFICATION_TYPE_CUSTOM) {
     notification->set_custom_view_type(kArcNotificationCustomViewType);

@@ -31,14 +31,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
  public:
   METADATA_HEADER(OverviewItemView);
 
-  // The visibility of the header. It may be fully visible or invisible, or
-  // everything but the close button is visible.
-  enum class HeaderVisibility {
-    kInvisible,
-    kCloseButtonInvisibleOnly,
-    kVisible,
-  };
-
   // If `show_preview` is true, this class will contain a child view which
   // mirrors `window`.
   OverviewItemView(OverviewItem* overview_item,
@@ -48,15 +40,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   OverviewItemView(const OverviewItemView&) = delete;
   OverviewItemView& operator=(const OverviewItemView&) = delete;
   ~OverviewItemView() override;
-
-  // Fades the app icon and title out if `visibility` is kInvisible, in
-  // otherwise. If `close_button_` is not null, also fades the close button in
-  // if `visibility` is kVisible, out otherwise. Sets
-  // `current_header_visibility_` to `visibility`. Fades in if `animate` is
-  // true, otherwise shows immediately.
-  // TODO(https://b/291622042): Remove this function and the layer associated
-  // with the header once Jelly cannot be disabled.
-  void SetHeaderVisibility(HeaderVisibility visibility, bool animate);
 
   void SetCloseButtonVisible(bool visible);
 
@@ -75,7 +58,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   void RefreshPreviewView();
 
   // WindowMiniView:
-  gfx::Rect GetHeaderBounds() const override;
   gfx::Size GetPreviewViewSize() const override;
 
   // WindowMiniViewBase:
@@ -110,8 +92,6 @@ class ASH_EXPORT OverviewItemView : public WindowMiniView,
   raw_ptr<OverviewItem, ExperimentalAsh> overview_item_;
 
   raw_ptr<CloseButton, ExperimentalAsh> close_button_;
-
-  HeaderVisibility current_header_visibility_ = HeaderVisibility::kVisible;
 };
 
 }  // namespace ash

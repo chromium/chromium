@@ -1,0 +1,43 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": false
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": true
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

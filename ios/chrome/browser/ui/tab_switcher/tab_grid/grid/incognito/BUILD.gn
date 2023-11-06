@@ -12,6 +12,7 @@ source_set("incognito") {
 
   deps = [
     ":incognito_grid_mediator_delegate",
+    ":incognito_ui",
     "//base",
     "//components/prefs",
     "//components/prefs/ios",
@@ -28,10 +29,28 @@ source_set("incognito") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+  ]
+}
+
+source_set("incognito_ui") {
+  sources = [
+    "incognito_grid_view_controller.h",
+    "incognito_grid_view_controller.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/common:timing",
+    "//ios/chrome/common/ui/util",
   ]
 }
 

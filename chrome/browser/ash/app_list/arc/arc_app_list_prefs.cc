@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
@@ -71,6 +72,7 @@ constexpr char kFrameworkPackageName[] = "android";
 constexpr char kResizeLockState[] = "resize_lock_state";
 constexpr char kResizeLockNeedsConfirmation[] =
     "resize_lock_needs_confirmation";
+constexpr char kGameControlsOptOut[] = "game_controls_opt_out";
 constexpr char kIconResourceId[] = "icon_resource_id";
 constexpr char kIconVersion[] = "icon_version";
 constexpr char kInstallTime[] = "install_time";
@@ -113,6 +115,9 @@ constexpr char kVersionName[] = "version_name";
 constexpr char kAppSizeBytesString[] = "app_size_bytes_string";
 constexpr char kDataSizeBytesString[] = "data_size_bytes_string";
 constexpr char kAppCategory[] = "app_category";
+constexpr char kLocaleInfo[] = "locale_info";
+constexpr char kSupportedLocales[] = "supported_locales";
+constexpr char kSelectedLocale[] = "selected_locale";
 // Deprecated perfs fields.
 constexpr char kDeprecatePackagePrefsSystem[] = "system";
 
@@ -892,14 +897,31 @@ std::unique_ptr<ArcAppListPrefs::PackageInfo> ArcAppListPrefs::GetPackage(
       web_app_info->certificate_sha256_fingerprint = *fingerprint;
     }
   }
+  arc::mojom::PackageLocaleInfoPtr locale_info;
+  if (const base::Value* locale_info_value = package->Find(kLocaleInfo)) {
+    const base::Value::Dict& locale_info_dict = locale_info_value->GetDict();
+    if (const base::Value::List* supported_locales =
+            locale_info_dict.FindList(kSupportedLocales)) {
+      locale_info = arc::mojom::PackageLocaleInfo::New();
+
+      locale_info->supported_locales.reserve(supported_locales->size());
+      for (const base::Value& locale : *supported_locales) {
+        locale_info->supported_locales.emplace_back(locale.GetString());
+      }
+
+      locale_info->selected_locale =
+          *locale_info_dict.FindString(kSelectedLocale);
+    }
+  }
 
   return std::make_unique<PackageInfo>(
       package_name, package->FindInt(kPackageVersion).value_or(0),
       last_backup_android_id, last_backup_time,
       package->FindBool(kShouldSync).value_or(false),
       package->FindBool(kVPNProvider).value_or(false),
-      package->FindBool(kPreinstalled).value_or(false), std::move(permissions),
-      std::move(web_app_info));
+      package->FindBool(kPreinstalled).value_or(false),
+      package->FindBool(kGameControlsOptOut).value_or(false),
+      std::move(permissions), std::move(web_app_info), std::move(locale_info));
 }
 
 bool ArcAppListPrefs::IsPackageInstalled(
@@ -1790,6 +1812,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
   package_dict.Set(kUninstalled, false);
   package_dict.Set(kVPNProvider, package.vpn_provider);
   package_dict.Set(kPreinstalled, package.preinstalled);
+  package_dict.Set(kGameControlsOptOut, package.game_controls_opt_out);
   if (package.version_name)
     package_dict.Set(kVersionName, package.version_name.value());
   else
@@ -1837,6 +1860,27 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
     package_dict.Set(kWebAppInfo, std::move(web_app_info_dict));
   } else {
     package_dict.Remove(kWebAppInfo);
+  }
+
+  if (package.locale_info &&
+      base::FeatureList::IsEnabled(arc::kPerAppLanguage)) {
+    // TODO(nergi): For on-boot package refresh, conditionally accepts package
+    // locale info from ARC. Accept if current pref is null, else reject and
+    // sends back CrOS prefs to ARC.
+    const arc::mojom::PackageLocaleInfo& package_locale_info =
+        *package.locale_info;
+    base::Value::List supported_locales;
+    for (const std::string& supported_locale :
+         package_locale_info.supported_locales) {
+      supported_locales.Append(supported_locale);
+    }
+    package_dict.Set(
+        kLocaleInfo,
+        base::Value::Dict()
+            .Set(kSupportedLocales, std::move(supported_locales))
+            .Set(kSelectedLocale, package_locale_info.selected_locale));
+  } else {
+    package_dict.Remove(kLocaleInfo);
   }
 
   if (old_package_version == -1 ||
@@ -2606,9 +2650,11 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
     bool should_sync,
     bool vpn_provider,
     bool preinstalled,
+    bool game_controls_opt_out,
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions,
-    arc::mojom::WebAppInfoPtr web_app_info)
+    arc::mojom::WebAppInfoPtr web_app_info,
+    arc::mojom::PackageLocaleInfoPtr locale_info)
     : package_name(package_name),
       package_version(package_version),
       last_backup_android_id(last_backup_android_id),
@@ -2616,8 +2662,10 @@ ArcAppListPrefs::PackageInfo::PackageInfo(
       should_sync(should_sync),
       vpn_provider(vpn_provider),
       preinstalled(preinstalled),
+      game_controls_opt_out(game_controls_opt_out),
       permissions(std::move(permissions)),
-      web_app_info(std::move(web_app_info)) {}
+      web_app_info(std::move(web_app_info)),
+      locale_info(std::move(locale_info)) {}
 
 // Need to add explicit destructor for chromium style checker error:
 // Complex class/struct needs an explicit out-of-line destructor

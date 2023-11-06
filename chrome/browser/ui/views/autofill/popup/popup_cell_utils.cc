@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -64,6 +65,10 @@ constexpr int kAdjacentLabelsVerticalSpacing = 2;
 // The icon size used in the suggestion dropdown for displaying the Google
 // Password Manager icon in the Manager Passwords entry.
 constexpr int kGooglePasswordManagerIconSize = 20;
+
+// Metric to measure the duration of getting the image for the Autofill pop-up.
+constexpr char kHistogramGetImageViewByName[] =
+    "Autofill.PopupGetImageViewTime";
 
 // Returns the name of the network for payment method icons, empty string
 // otherwise.
@@ -142,6 +147,10 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(vector_icons::kEditIcon, kIconSize);
   }
 
+  if (icon_str == "codeIcon") {
+    return ImageViewFromVectorIcon(vector_icons::kCodeIcon, kIconSize);
+  }
+
   if (icon_str == "locationIcon") {
     return ImageViewFromVectorIcon(vector_icons::kLocationOnIcon, kIconSize);
   }
@@ -162,10 +171,8 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
   }
 
-  // TODO(crbug.com/1459990): Use proper icon. The magic_button icon does not
-  // exist yet, I will introduce it in a follow up cl.
   if (icon_str == "magicIcon") {
-    return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
+    return ImageViewFromVectorIcon(vector_icons::kMagicButtonIcon, kIconSize);
   }
 
   if (icon_str == "accountIcon") {
@@ -275,9 +282,7 @@ std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
 gfx::Insets GetMarginsForContentCell(bool has_control_element) {
   int left_margin = PopupBaseView::GetHorizontalMargin();
   int right_margin = left_margin;
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
+  if (ShouldApplyNewAutofillPopupStyle()) {
     // If the feature is enabled, then the row already adds some extra
     // horizontal margin on the left - deduct that.
     left_margin = std::max(
@@ -295,16 +300,28 @@ gfx::Insets GetMarginsForContentCell(bool has_control_element) {
 
 std::unique_ptr<views::ImageView> GetIconImageView(
     const Suggestion& suggestion) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
+
   if (!suggestion.custom_icon.IsEmpty()) {
     return ImageViewFromImageSkia(suggestion.custom_icon.AsImageSkia());
   }
+  std::unique_ptr<views::ImageView> icon_image_view =
+      GetIconImageViewByName(suggestion.icon);
+  base::UmaHistogramTimes(kHistogramGetImageViewByName,
+                          base::TimeTicks::Now() - start_time);
 
-  return GetIconImageViewByName(suggestion.icon);
+  return icon_image_view;
 }
 
 std::unique_ptr<views::ImageView> GetTrailingIconImageView(
     const Suggestion& suggestion) {
-  return GetIconImageViewByName(suggestion.trailing_icon);
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  std::unique_ptr<views::ImageView> icon_image_view =
+      GetIconImageViewByName(suggestion.trailing_icon);
+  base::UmaHistogramTimes(kHistogramGetImageViewByName,
+                          base::TimeTicks::Now() - start_time);
+
+  return icon_image_view;
 }
 
 // Adds a spacer with `spacer_width` to `view`. `layout` must be the
@@ -522,8 +539,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
 
   for (const std::vector<Suggestion::Text>& label_row :
        controller->GetSuggestionAt(line_number).labels) {
-    DCHECK_LE(label_row.size(), 2u);
-    DCHECK(!label_row.empty());
     if (base::ranges::all_of(label_row, &std::u16string::empty,
                              &Suggestion::Text::value)) {
       // If a row is empty, do not include any further rows.
@@ -553,17 +568,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
   return result;
 }
 
-// Adds the callbacks for the content area to `content_view`.
-void AddCallbacksToContentView(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    PopupCellView& content_view) {
-  content_view.SetOnSelectedCallback(base::BindRepeating(
-      &AutofillPopupController::SelectSuggestion, controller, line_number));
-  content_view.SetOnUnselectedCallback(base::BindRepeating(
-      &AutofillPopupController::SelectSuggestion, controller, absl::nullopt));
-}
-
 void AddSuggestionStrategyContentCellChildren(
     PopupCellView* view,
     base::WeakPtr<AutofillPopupController> controller,
@@ -579,9 +583,6 @@ void AddSuggestionStrategyContentCellChildren(
       CreateMinorTextLabel(kSuggestion.minor_text),
       /*description_label=*/nullptr,
       CreateAndTrackSubtextViews(*view, controller, line_number), *view);
-
-  // Prepare the callbacks to the controller.
-  AddCallbacksToContentView(controller, line_number, *view);
 }
 
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(

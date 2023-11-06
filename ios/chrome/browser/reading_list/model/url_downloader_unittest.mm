@@ -13,7 +13,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/reading_list/core/offline_url_utils.h"
-#import "ios/chrome/browser/dom_distiller/distiller_viewer.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_viewer.h"
 #import "ios/chrome/browser/reading_list/model/offline_url_utils.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_distiller_page.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"

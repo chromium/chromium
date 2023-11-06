@@ -42,14 +42,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Test suite for the open tabs (sessions) sync data type.
- */
+/** Test suite for the open tabs (sessions) sync data type. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OpenTabsTest {
-    @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private static final String OPEN_TABS_TYPE = "Sessions";
 
@@ -78,8 +75,11 @@ public class OpenTabsTest {
         public final ArrayList<String> tabClientTagHashes;
         public final ArrayList<String> urls;
 
-        private OpenTabs(String headerServerId, String headerClientTagHash,
-                ArrayList<String> tabServerIds, ArrayList<String> tabClientTagHashes,
+        private OpenTabs(
+                String headerServerId,
+                String headerClientTagHash,
+                ArrayList<String> tabServerIds,
+                ArrayList<String> tabClientTagHashes,
                 ArrayList<String> urls) {
             this.headerServerId = headerServerId;
             this.headerClientTagHash = headerClientTagHash;
@@ -129,10 +129,11 @@ public class OpenTabsTest {
         waitForLocalTabsForClient(mClientName, URL, URL2);
         waitForServerTabs(URL, URL2);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
-            Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
+                    Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
+                });
 
         waitForLocalTabsForClient(mClientName, URL);
         waitForServerTabs(URL);
@@ -197,12 +198,15 @@ public class OpenTabsTest {
     private void addFakeServerTabs(String clientName, String... urls) {
         String tag = makeSessionTag();
         EntitySpecifics header = makeSessionEntity(tag, clientName, urls.length);
-        mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
-                "" /* nonUniqueName */, tag /* clientTag */, header);
+        mSyncTestRule
+                .getFakeServerHelper()
+                .injectUniqueClientEntity(/* nonUniqueName= */ "", /* clientTag= */ tag, header);
         for (int i = 0; i < urls.length; i++) {
             EntitySpecifics tab = makeTabEntity(tag, urls[i], i);
-            mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
-                    "" /* nonUniqueName */, tag + " " + i /* clientTag */, tab);
+            mSyncTestRule
+                    .getFakeServerHelper()
+                    .injectUniqueClientEntity(
+                            /* nonUniqueName= */ "", /* clientTag= */ tag + " " + i, tab);
         }
     }
 
@@ -219,11 +223,12 @@ public class OpenTabsTest {
         SessionSpecifics session =
                 SessionSpecifics.newBuilder()
                         .setSessionTag(tag)
-                        .setHeader(SessionHeader.newBuilder()
-                                           .setClientName(clientName)
-                                           .setDeviceType(SyncEnums.DeviceType.TYPE_PHONE)
-                                           .addWindow(makeSessionWindow(numTabs))
-                                           .build())
+                        .setHeader(
+                                SessionHeader.newBuilder()
+                                        .setClientName(clientName)
+                                        .setDeviceType(SyncEnums.DeviceType.TYPE_PHONE)
+                                        .addWindow(makeSessionWindow(numTabs))
+                                        .build())
                         .build();
         return EntitySpecifics.newBuilder().setSession(session).build();
     }
@@ -233,12 +238,14 @@ public class OpenTabsTest {
                 SessionSpecifics.newBuilder()
                         .setSessionTag(tag)
                         .setTabNodeId(id)
-                        .setTab(SessionTab.newBuilder()
+                        .setTab(
+                                SessionTab.newBuilder()
                                         .setTabId(id + 1)
                                         .setCurrentNavigationIndex(0)
-                                        .addNavigation(TabNavigation.newBuilder()
-                                                               .setVirtualUrl(url)
-                                                               .build())
+                                        .addNavigation(
+                                                TabNavigation.newBuilder()
+                                                        .setVirtualUrl(url)
+                                                        .build())
                                         .build())
                         .build();
         return EntitySpecifics.newBuilder().setSession(session).build();
@@ -246,45 +253,52 @@ public class OpenTabsTest {
 
     private void deleteServerTabsForClient(String clientName) throws JSONException {
         OpenTabs openTabs = getLocalTabsForClient(clientName);
-        mSyncTestRule.getFakeServerHelper().deleteEntity(
-                openTabs.headerServerId, openTabs.headerClientTagHash);
+        mSyncTestRule
+                .getFakeServerHelper()
+                .deleteEntity(openTabs.headerServerId, openTabs.headerClientTagHash);
         for (int i = 0; i < openTabs.tabServerIds.size(); i++) {
-            mSyncTestRule.getFakeServerHelper().deleteEntity(
-                    openTabs.tabServerIds.get(i), openTabs.tabClientTagHashes.get(i));
+            mSyncTestRule
+                    .getFakeServerHelper()
+                    .deleteEntity(openTabs.tabServerIds.get(i), openTabs.tabClientTagHashes.get(i));
         }
     }
 
     private void waitForLocalTabsForClient(final String clientName, String... urls) {
         final List<String> urlList = new ArrayList<>(urls.length);
         for (String url : urls) urlList.add(url);
-        mSyncTestRule.pollInstrumentationThread(() -> {
-            try {
-                Criteria.checkThat(getLocalTabsForClient(clientName).urls, Matchers.is(urlList));
-            } catch (JSONException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        });
+        mSyncTestRule.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                getLocalTabsForClient(clientName).urls, Matchers.is(urlList));
+                    } catch (JSONException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
     }
 
     private void waitForServerTabs(final String... urls) {
         mSyncTestRule.pollInstrumentationThread(
-                ()
-                        -> mSyncTestRule.getFakeServerHelper().verifySessions(urls),
+                () -> mSyncTestRule.getFakeServerHelper().verifySessions(urls),
                 "Expected server open tabs: " + Arrays.toString(urls));
     }
 
     private String getClientName() throws Exception {
-        mSyncTestRule.pollInstrumentationThread(() -> {
-            try {
-                int size =
-                        SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), OPEN_TABS_TYPE)
-                                .size();
-                Criteria.checkThat("Expected at least one tab entity to exist.", size,
-                        Matchers.greaterThan(0));
-            } catch (JSONException ex) {
-                throw new CriteriaNotSatisfiedException(ex);
-            }
-        });
+        mSyncTestRule.pollInstrumentationThread(
+                () -> {
+                    try {
+                        int size =
+                                SyncTestUtil.getLocalData(
+                                                mSyncTestRule.getTargetContext(), OPEN_TABS_TYPE)
+                                        .size();
+                        Criteria.checkThat(
+                                "Expected at least one tab entity to exist.",
+                                size,
+                                Matchers.greaterThan(0));
+                    } catch (JSONException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
         List<Pair<String, JSONObject>> tabEntities =
                 SyncTestUtil.getLocalData(mSyncTestRule.getTargetContext(), OPEN_TABS_TYPE);
         for (Pair<String, JSONObject> tabEntity : tabEntities) {
@@ -300,7 +314,11 @@ public class OpenTabsTest {
         public final String headerServerId;
         public final String headerClientTagHash;
         public final List<String> tabIds;
-        public HeaderInfo(String sessionTag, String headerServerId, String headerClientTagHash,
+
+        public HeaderInfo(
+                String sessionTag,
+                String headerServerId,
+                String headerClientTagHash,
                 List<String> tabIds) {
             this.sessionTag = sessionTag;
             this.headerServerId = headerServerId;
@@ -325,7 +343,11 @@ public class OpenTabsTest {
         Map<String, String> tabIdsToUrls = new HashMap<>();
         Map<String, String> tabIdsToServerIds = new HashMap<>();
         Map<String, String> tabIdsToClientTagHashes = new HashMap<>();
-        findTabMappings(info.sessionTag, tabEntities, tabIdsToUrls, tabIdsToServerIds,
+        findTabMappings(
+                info.sessionTag,
+                tabEntities,
+                tabIdsToUrls,
+                tabIdsToServerIds,
                 tabIdsToClientTagHashes);
         // Convert the tabId list to the url list.
         for (String tabId : info.tabIds) {
@@ -333,8 +355,12 @@ public class OpenTabsTest {
             tabServerIds.add(tabIdsToServerIds.get(tabId));
             tabClientTagHashes.add(tabIdsToClientTagHashes.get(tabId));
         }
-        return new OpenTabs(info.headerServerId, info.headerClientTagHash, tabServerIds,
-                tabClientTagHashes, urls);
+        return new OpenTabs(
+                info.headerServerId,
+                info.headerClientTagHash,
+                tabServerIds,
+                tabClientTagHashes,
+                urls);
     }
 
     // Find the header entity for clientName and extract its sessionTag and tabId list.
@@ -368,10 +394,14 @@ public class OpenTabsTest {
     }
 
     // Find the associated tabs and record their tabId -> url and entityId mappings.
-    private void findTabMappings(String sessionTag, List<Pair<String, JSONObject>> tabEntities,
+    private void findTabMappings(
+            String sessionTag,
+            List<Pair<String, JSONObject>> tabEntities,
             // Populating these maps is the output of this function.
-            Map<String, String> tabIdsToUrls, Map<String, String> tabIdsToServerIds,
-            Map<String, String> tabIdsToClientTagHashes) throws JSONException {
+            Map<String, String> tabIdsToUrls,
+            Map<String, String> tabIdsToServerIds,
+            Map<String, String> tabIdsToClientTagHashes)
+            throws JSONException {
         for (Pair<String, JSONObject> tabEntity : tabEntities) {
             JSONObject json = tabEntity.second;
             if (json.has("tab") && json.getString("session_tag").equals(sessionTag)) {

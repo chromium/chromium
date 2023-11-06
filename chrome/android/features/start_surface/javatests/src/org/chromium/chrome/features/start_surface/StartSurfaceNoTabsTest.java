@@ -60,12 +60,16 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Restriction(
-        {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@Restriction({
+    UiRestriction.RESTRICTION_TYPE_PHONE,
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
+})
 @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
 public class StartSurfaceNoTabsTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
@@ -98,9 +102,7 @@ public class StartSurfaceNoTabsTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    // clang-format off
     public void testShow_SingleAsHomepage_NoTabs() {
-        // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
 

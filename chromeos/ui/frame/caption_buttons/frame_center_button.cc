@@ -10,6 +10,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
@@ -200,8 +201,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
                     std::min(text_->GetStringSize().width(), max_text_width),
                     text_->GetStringSize().height());
       text_->SetDisplayRect(text_bounds);
-      text_->SetColor(
-          SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlphaf()));
+      text_->SetColor(SkColorSetA(GetButtonColor(GetBackgroundColor()),
+                                  flags.getAlphaf() * SK_AlphaOPAQUE));
       text_->Draw(canvas);
       offset += text_bounds.width();
     }
@@ -246,8 +247,8 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
         std::min(text_->GetStringSize().width(), available_text_width),
         text_->GetStringSize().height());
     text_->SetDisplayRect(text_bounds);
-    text_->SetColor(
-        SkColorSetA(GetButtonColor(GetBackgroundColor()), flags.getAlphaf()));
+    text_->SetColor(SkColorSetA(GetButtonColor(GetBackgroundColor()),
+                                flags.getAlphaf() * SK_AlphaOPAQUE));
     text_->Draw(canvas);
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }

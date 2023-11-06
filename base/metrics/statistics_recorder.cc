@@ -22,12 +22,26 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 
 namespace base {
 namespace {
 
 // Whether a 50/50 trial for using a R/W lock should be run.
+// Restrict it to Windows for now as other platforms show poor results.
+#if BUILDFLAG(IS_WIN)
 constexpr bool kRunRwLockTrial = true;
+#else
+constexpr bool kRunRwLockTrial = false;
+#endif  // BUILDFLAG(IS_WIN)
+
+// Whether the R/W lock should be used when the trial is not active.
+// Only enabled on Windows for now, since other platforms show poor results.
+#if BUILDFLAG(IS_WIN)
+constexpr bool kUseRwLockByDefault = true;
+#else
+constexpr bool kUseRwLockByDefault = false;
+#endif  // BUILDFLAG(IS_WIN)
 
 bool EnableBenchmarking() {
   // TODO(asvitkine): If this code ends up not being temporary, refactor it to
@@ -344,7 +358,7 @@ bool StatisticsRecorder::SrLock::ShouldUseSharedMutex() {
   if (kRunRwLockTrial && !EnableBenchmarking()) {
     return RandInt(0, 1) == 1;
   }
-  return true;
+  return kUseRwLockByDefault;
 }
 
 HistogramBase* StatisticsRecorder::FindHistogramByHashInternal(

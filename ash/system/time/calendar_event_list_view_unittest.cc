@@ -4,18 +4,15 @@
 
 #include "ash/system/time/calendar_event_list_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/time/calendar_event_list_item_view.h"
-#include "ash/system/time/calendar_event_list_item_view_jelly.h"
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/common/api_error_codes.h"
@@ -86,8 +83,6 @@ class CalendarViewEventListViewTest : public AshTestBase,
   ~CalendarViewEventListViewTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(features::kCalendarJelly,
-                                              IsCalendarJellyEnabled());
     AshTestBase::SetUp();
     controller_ = std::make_unique<CalendarViewController>();
     widget_ = CreateFramelessTestWidget();
@@ -150,15 +145,10 @@ class CalendarViewEventListViewTest : public AshTestBase,
   }
 
   views::Label* GetSummary(int child_index) {
-    return features::IsCalendarJellyEnabled()
-               ? static_cast<views::Label*>(
-                     static_cast<CalendarEventListItemViewJelly*>(
-                         GetSameDayEventsContainer()->children()[child_index])
-                         ->GetViewByID(kSummaryLabelID))
-               : static_cast<views::Label*>(
-                     static_cast<CalendarEventListItemView*>(
-                         content_view()->children()[child_index])
-                         ->summary_);
+    return static_cast<views::Label*>(
+        static_cast<CalendarEventListItemView*>(
+            GetSameDayEventsContainer()->children()[child_index])
+            ->GetViewByID(kSummaryLabelID));
   }
 
   std::u16string GetEmptyLabel() {
@@ -168,20 +158,14 @@ class CalendarViewEventListViewTest : public AshTestBase,
   }
 
   views::View* GetHighlightView(int child_index) {
-    return features::IsCalendarJellyEnabled()
-               ? GetSameDayEventsContainer()->children()[child_index]
-               : content_view()->children()[child_index];
+    return GetSameDayEventsContainer()->children()[child_index];
   }
 
   size_t GetContentViewSize() {
-    return features::IsCalendarJellyEnabled()
-               ? GetSameDayEventsContainer()->children().size()
-               : content_view()->children().size();
+    return GetSameDayEventsContainer()->children().size();
   }
 
   size_t GetEmptyContentViewSize() { return content_view()->children().size(); }
-
-  bool IsCalendarJellyEnabled() { return GetParam(); }
 
   static base::Time FakeTimeNow() { return fake_time_; }
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
@@ -191,7 +175,6 @@ class CalendarViewEventListViewTest : public AshTestBase,
   std::unique_ptr<CalendarEventListView> event_list_view_;
   std::unique_ptr<CalendarViewController> controller_;
   static base::Time fake_time_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 base::Time CalendarViewEventListViewTest::fake_time_;
@@ -256,7 +239,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchEmptyList) {
   histogram_tester.ExpectTotalCount(
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
   EXPECT_EQ(histogram_tester.GetTotalSum(
-                "Ash.Calendar.EventListView.EventDisplayedCount"),
+                "Ash.Calendar.EventListViewJelly.EventDisplayedCount"),
             0);
 }
 
@@ -265,9 +248,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchItem) {
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   CreateEventListView(date);
-  if (features::IsCalendarJellyEnabled()) {
-    SetEventListIsShowingForMetrics();
-  }
+  SetEventListIsShowingForMetrics();
   EXPECT_EQ(3u, GetContentViewSize());
 
   // Launch the first item.
@@ -279,9 +260,7 @@ TEST_P(CalendarViewEventListViewTest, LaunchItem) {
       "Ash.Calendar.UserJourneyTime.EventLaunched", 1);
   histogram_tester.ExpectTotalCount("Ash.Calendar.EventListItem.Activated", 1);
   EXPECT_EQ(histogram_tester.GetTotalSum(
-                features::IsCalendarJellyEnabled()
-                    ? "Ash.Calendar.EventListViewJelly.EventDisplayedCount"
-                    : "Ash.Calendar.EventListView.EventDisplayedCount"),
+                "Ash.Calendar.EventListViewJelly.EventDisplayedCount"),
             3);
 }
 
@@ -321,10 +300,6 @@ TEST_P(CalendarViewEventListViewTest, RefreshEvents) {
 }
 
 TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
-  if (!features::IsCalendarJellyEnabled()) {
-    return;
-  }
-
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -361,10 +336,6 @@ TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
 
 TEST_P(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_WithMultiDayEvents) {
-  if (!features::IsCalendarJellyEnabled()) {
-    return;
-  }
-
   // Sets the timezone to HST. The first two events become multi-day events, and
   // will be ignored when calculating index.
   ash::system::ScopedTimezoneSettings timezone_settings(u"Pacific/Honolulu");
@@ -400,10 +371,6 @@ TEST_P(CalendarViewEventListViewTest,
 
 TEST_P(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_PassedDatesStayAtTop) {
-  if (!features::IsCalendarJellyEnabled()) {
-    return;
-  }
-
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
@@ -437,10 +404,6 @@ TEST_P(CalendarViewEventListViewTest,
 
 TEST_P(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_FutureDatesStaysAtTop) {
-  if (!features::IsCalendarJellyEnabled()) {
-    return;
-  }
-
   // Sets the timezone to GMT. Otherwise in other timezones events can become
   // multi-day events that will be ignored when calculating index.
   ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");

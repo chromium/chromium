@@ -18,11 +18,12 @@ build_webui_tests("build_webui_tests") {
   files = [
     "fake_update_controller_test.ts",
     "fake_update_provider_test.ts",
-    "firmware_update_dialog_test.js",
-    "firmware_update_test.js",
-    "firmware_update_unified_test.js",
-    "peripheral_updates_list_test.js",
-    "update_card_test.js",
+    "firmware_update_dialog_test.ts",
+    "firmware_update_test.ts",
+    "firmware_update_unified_test.ts",
+    "firmware_update_utils_test.ts",
+    "peripheral_updates_list_test.ts",
+    "update_card_test.ts",
   ]
 
   ts_deps = [
@@ -34,6 +35,4 @@ build_webui_tests("build_webui_tests") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-
-  resource_path_prefix = "chromeos_firmware_update_ui"
 }

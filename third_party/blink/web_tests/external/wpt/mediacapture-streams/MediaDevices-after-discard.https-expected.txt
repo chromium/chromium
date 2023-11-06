@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL getUserMedia() in a discarded browsing context assert_throws_dom: function "() => { throw rejected_reason }" threw object "NotSupportedError: Failed to execute 'getUserMedia' on 'MediaDevices': No media device client available; is this a detached window?" that is not a DOMException InvalidStateError: property "code" is equal to 9, expected 11
-FAIL enumerateDevices() in a discarded browsing context assert_equals: Promise state expected "pending" but got "rejected"
+[FAIL] getUserMedia() in a discarded browsing context
+  assert_throws_dom: function "() => { throw rejected_reason }" threw object "NotSupportedError: Failed to execute 'getUserMedia' on 'MediaDevices': No media device client available; is this a detached window?" that is not a DOMException InvalidStateError: property "code" is equal to 9, expected 11
+[FAIL] enumerateDevices() in a discarded browsing context
+  assert_equals: Promise state expected "pending" but got "rejected"
 Harness: the test ran to completion.
 

@@ -37,12 +37,12 @@ using ::blink::mojom::MediaStreamType;
 
 namespace {
 
-std::string GetDefaultMediaDeviceIDOnUIThread(MediaDeviceType device_type,
-                                              int render_process_id,
-                                              int render_frame_id) {
+std::string GetDefaultMediaDeviceIDOnUIThread(
+    MediaDeviceType device_type,
+    GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
-      RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+      RenderFrameHostImpl::FromID(render_frame_host_id);
   if (!frame_host)
     return std::string();
 
@@ -193,8 +193,7 @@ MediaDeviceSaltAndOrigin MediaDeviceSaltAndOrigin::Empty() {
 }
 
 void GetDefaultMediaDeviceID(MediaDeviceType device_type,
-                             int render_process_id,
-                             int render_frame_id,
+                             GlobalRenderFrameHostId render_frame_host_id,
                              DeviceIdCallback callback) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseFakeDeviceForMediaStream)) {
@@ -209,7 +208,7 @@ void GetDefaultMediaDeviceID(MediaDeviceType device_type,
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&GetDefaultMediaDeviceIDOnUIThread, device_type,
-                     render_process_id, render_frame_id),
+                     render_frame_host_id),
       std::move(callback));
 }
 

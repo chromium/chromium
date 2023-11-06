@@ -5,6 +5,6 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <color name="readaloud_button_primary_light">@color/baseline_primary_40_alpha_10</color>
-    <color name="readaloud_button_secondary_light">@color/baseline_primary_40_alpha_6</color>
+    <color name="readaloud_button_primary">@color/color_primary_with_alpha_10</color>
+    <color name="readaloud_button_secondary">@color/color_primary_with_alpha_5</color>
 </resources>

@@ -4,6 +4,9 @@
 
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
+#include <utility>
+
+#include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -32,7 +35,20 @@ GURL WebDialogDelegate::GetDialogContentURL() const {
 }
 
 void WebDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
+    std::vector<content::WebUIMessageHandler*>* handlers) {
+  // Note: even though this function returns a vector of WebUIMessageHandler*,
+  // those are actually owning raw pointers. See the documentation for this
+  // method in the header file.
+  for (auto& handler : added_message_handlers_) {
+    handlers->push_back(std::move(handler).release());
+  }
+  added_message_handlers_.clear();
+}
+
+void WebDialogDelegate::AddWebUIMessageHandler(
+    std::unique_ptr<content::WebUIMessageHandler> handler) {
+  added_message_handlers_.emplace_back(std::move(handler));
+}
 
 void WebDialogDelegate::GetDialogSize(gfx::Size* size) const {
   *size = size_;
@@ -75,7 +91,17 @@ bool WebDialogDelegate::ShouldShowDialogTitle() const {
 }
 
 void WebDialogDelegate::OnDialogClosed(const std::string& json_retval) {
-  delete this;
+  if (closed_callback_) {
+    std::move(closed_callback_).Run(json_retval);
+  }
+  if (delete_on_close_) {
+    delete this;
+  }
+}
+
+void WebDialogDelegate::RegisterOnDialogClosedCallback(
+    OnDialogClosedCallback callback) {
+  closed_callback_ = std::move(callback);
 }
 
 void WebDialogDelegate::OnDialogCloseFromWebUI(

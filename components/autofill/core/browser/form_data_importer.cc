@@ -80,7 +80,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
        field_type_group != FieldTypeGroup::kPhone)) {
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
-        << "Multiple fields of type " << FieldTypeToStringPiece(field_type)
+        << "Multiple fields of type " << FieldTypeToStringView(field_type)
         << "." << CTag{};
     return false;
   }
@@ -90,7 +90,7 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
     LOG_AF(import_log_buffer)
         << LogMessage::kImportAddressProfileFromFormFailed
         << "Email address found in field of different type: "
-        << FieldTypeToStringPiece(field_type) << CTag{};
+        << FieldTypeToStringView(field_type) << CTag{};
     return false;
   }
 
@@ -156,7 +156,7 @@ FormDataImporter::FormDataImporter(AutofillClient* client,
                                                       personal_data_manager)),
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       iban_save_manager_(
-          std::make_unique<IbanSaveManager>(client, personal_data_manager)),
+          std::make_unique<IbanSaveManager>(personal_data_manager, client)),
       local_card_migration_manager_(
           std::make_unique<LocalCardMigrationManager>(client,
                                                       payments_client,
@@ -775,56 +775,11 @@ bool FormDataImporter::ProcessExtractedCreditCard(
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-  // Local card migration will not be offered. We check to see if it is valid to
-  // offer upload save or local card save, which will happen below if we do not
-  // early return false in this if-statement. It will also check to see if it is
-  // valid to offer CVC local or upload save.
-  if (!ShouldOfferCreditCardSave(extracted_credit_card,
-                                 is_credit_card_upstream_enabled)) {
-    return false;
-  }
-
-  // We have a card to save; decide what type of save flow to display.
-  if (is_credit_card_upstream_enabled) {
-    // If the card extracted from the form is the server card, and
-    // `ShouldOfferCreditCardSave` call above allowed a CVC upload save, attempt
-    // to offer CVC upload save. CVC upload save should only be offered if the
-    // upstream is enabled, as this implies Chrome Sync is enabled, which is a
-    // requirement for any flow that involves server cards. Otherwise the users
-    // will be saving a CVC to a card that is not currently autofillable or
-    // present in the settings page.
-    if (credit_card_import_type_ == CreditCardImportType::kServerCard) {
-      credit_card_save_manager_->AttemptToOfferCvcUploadSave(
-          *extracted_credit_card);
-    } else {
-      // Attempt to offer upload save. This block can be reached on observing
-      // either a new card or one already stored locally which doesn't match an
-      // existing server card. If Google Payments declines allowing upload,
-      // `credit_card_save_manager_` is tasked with deciding if we should fall
-      // back to local save or not.
-      credit_card_save_manager_->AttemptToOfferCardUploadSave(
-          submitted_form, *extracted_credit_card,
-          /*uploading_local_card=*/credit_card_import_type_ ==
-              CreditCardImportType::kLocalCard);
-    }
-    return true;
-  }
-
-  // We should offer CVC local save for local cards.
-  if (credit_card_import_type_ == CreditCardImportType::kLocalCard) {
-    credit_card_save_manager_->AttemptToOfferCvcLocalSave(
-        *extracted_credit_card);
-    return true;
-  }
-
-  // If upload save is not allowed, new cards should be saved locally.
-  DCHECK(credit_card_import_type_ == CreditCardImportType::kNewCard);
-  if (credit_card_save_manager_->AttemptToOfferCardLocalSave(
-          *extracted_credit_card)) {
-    return true;
-  }
-
-  return false;
+  // Proceed with card or CVC saving if applicable.
+  return extracted_credit_card &&
+         credit_card_save_manager_->ProceedWithSavingIfApplicable(
+             submitted_form, *extracted_credit_card, credit_card_import_type_,
+             is_credit_card_upstream_enabled);
 }
 
 bool FormDataImporter::ProcessIbanImportCandidate(

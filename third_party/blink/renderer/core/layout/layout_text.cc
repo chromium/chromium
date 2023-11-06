@@ -46,16 +46,16 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -83,7 +83,7 @@ struct SameSizeAsLayoutText : public LayoutObject {
   float widths[4];
   String text;
   LogicalOffset previous_starting_point;
-  NGInlineItemSpan inline_items;
+  InlineItemSpan inline_items;
   wtf_size_t first_fragment_item_index_;
 };
 
@@ -275,7 +275,7 @@ void LayoutText::RemoveAndDestroyTextBoxes() {
     }
     if (FirstInlineFragmentItemIndex()) {
       DetachAbstractInlineTextBoxesIfNeeded();
-      NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+      FragmentItems::LayoutObjectWillBeDestroyed(*this);
       ClearFirstInlineFragmentItemIndex();
     }
   } else if (FirstInlineFragmentItemIndex()) {
@@ -318,14 +318,14 @@ void LayoutText::DetachAbstractInlineTextBoxes() {
   NOT_DESTROYED();
   // TODO(layout-dev): Because We should call |WillDestroy()| once for
   // associated fragments, when you reuse fragments, you should construct
-  // NGAbstractInlineTextBox for them.
+  // AbstractInlineTextBox for them.
   DCHECK(has_abstract_inline_text_box_);
   has_abstract_inline_text_box_ = false;
   // TODO(yosin): Make sure we call this function within valid containg block
   // of |this|.
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
-    NGAbstractInlineTextBox::WillDestroy(cursor);
+    AbstractInlineTextBox::WillDestroy(cursor);
 }
 
 void LayoutText::ClearFirstInlineFragmentItemIndex() {
@@ -338,7 +338,7 @@ void LayoutText::ClearFirstInlineFragmentItemIndex() {
 void LayoutText::SetFirstInlineFragmentItemIndex(wtf_size_t index) {
   NOT_DESTROYED();
   CHECK(IsInLayoutNGInlineFormattingContext());
-  // TODO(yosin): Call |NGAbstractInlineTextBox::WillDestroy()|.
+  // TODO(yosin): Call |AbstractInlineTextBox::WillDestroy()|.
   DCHECK_NE(index, 0u);
   DetachAbstractInlineTextBoxesIfNeeded();
   // Changing the first fragment item index causes
@@ -372,12 +372,12 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
   FontCachePurgePreventer fontCachePurgePreventer;
 
   Vector<TextBoxInfo> results;
-  if (const NGOffsetMapping* mapping = GetNGOffsetMapping()) {
+  if (const OffsetMapping* mapping = GetOffsetMapping()) {
     bool in_hidden_for_paint = false;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-      // TODO(yosin): We should introduce |NGFragmentItem::IsTruncated()| to
+      // TODO(yosin): We should introduce |FragmentItem::IsTruncated()| to
       // skip them instead of using |IsHiddenForPaint()| with ordering of
       // fragments.
       if (cursor.Current().IsHiddenForPaint()) {
@@ -395,13 +395,14 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
       // produces one fragment but legacy produces multiple text boxes broken at
       // collapsed whitespaces. We break the fragment at collapsed whitespaces
       // to match the legacy output.
-      const NGTextOffsetRange offset = cursor.Current().TextOffset();
-      for (const NGOffsetMappingUnit& unit :
+      const TextOffsetRange offset = cursor.Current().TextOffset();
+      for (const OffsetMappingUnit& unit :
            mapping->GetMappingUnitsForTextContentOffsetRange(offset.start,
                                                              offset.end)) {
         DCHECK_EQ(unit.GetLayoutObject(), this);
-        if (unit.GetType() == NGOffsetMappingUnitType::kCollapsed)
+        if (unit.GetType() == OffsetMappingUnitType::kCollapsed) {
           continue;
+        }
         // [clamped_start, clamped_end] of |fragment| matches a legacy text box.
         const unsigned clamped_start =
             std::max(unit.TextContentStart(), offset.start);
@@ -426,7 +427,7 @@ Vector<LayoutText::TextBoxInfo> LayoutText::GetTextBoxInfo() const {
           continue;
         }
         // Handle CSS generated content, e.g. ::before/::after
-        const NGOffsetMappingUnit* const mapping_unit =
+        const OffsetMappingUnit* const mapping_unit =
             mapping->GetLastMappingUnit(clamped_start);
         DCHECK(mapping_unit) << this << " at " << clamped_start;
         const unsigned dom_offset =
@@ -456,9 +457,9 @@ String LayoutText::OriginalText() const {
 String LayoutText::PlainText() const {
   NOT_DESTROYED();
   if (GetNode()) {
-    if (const NGOffsetMapping* mapping = GetNGOffsetMapping()) {
+    if (const OffsetMapping* mapping = GetOffsetMapping()) {
       StringBuilder result;
-      for (const NGOffsetMappingUnit& unit :
+      for (const OffsetMappingUnit& unit :
            mapping->GetMappingUnitsForNode(*GetNode())) {
         result.Append(
             StringView(mapping->GetText(), unit.TextContentStart(),
@@ -499,7 +500,7 @@ void LayoutText::CollectLineBoxRects(const PhysicalRectCollector& yield,
                                      ClippingOption option) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (UNLIKELY(option != ClippingOption::kNoClipping)) {
@@ -521,7 +522,7 @@ void LayoutText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
   });
 }
 
-bool LayoutText::MapDOMOffsetToTextContentOffset(const NGOffsetMapping& mapping,
+bool LayoutText::MapDOMOffsetToTextContentOffset(const OffsetMapping& mapping,
                                                  unsigned* start,
                                                  unsigned* end) const {
   NOT_DESTROYED();
@@ -581,7 +582,7 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
   start = std::min(start, static_cast<unsigned>(INT_MAX));
   end = std::min(end, static_cast<unsigned>(INT_MAX));
 
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     if (!MapDOMOffsetToTextContentOffset(*mapping, &start, &end))
       return;
 
@@ -601,15 +602,15 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
 
     // Find fragments that have text for the specified range.
     DCHECK_LE(start, end);
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     bool is_last_end_included = false;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.Current();
+      const FragmentItem& item = *cursor.Current();
       DCHECK(item.IsText());
       bool is_collapsed = false;
       PhysicalRect rect;
       if (!item.IsGeneratedText()) {
-        const NGTextOffsetRange& offset = item.TextOffset();
+        const TextOffsetRange& offset = item.TextOffset();
         if (start > offset.end || end < offset.start) {
           is_last_end_included = false;
           continue;
@@ -630,9 +631,9 @@ void LayoutText::AbsoluteQuadsForRange(Vector<gfx::QuadF>& quads,
       if (UNLIKELY(text_combine))
         rect = text_combine->AdjustRectForBoundingBox(rect);
       gfx::QuadF quad;
-      if (item.Type() == NGFragmentItem::kSvgText) {
+      if (item.Type() == FragmentItem::kSvgText) {
         gfx::RectF float_rect(rect);
-        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
+        float_rect.Offset(item.GetSvgFragmentData()->rect.OffsetFromOrigin());
         quad = item.BuildSvgTransformForBoundingBox().MapQuad(
             gfx::QuadF(float_rect));
         const float scaling_factor = item.SvgScalingFactor();
@@ -684,7 +685,7 @@ PositionWithAffinity LayoutText::PositionForPoint(
     // attempt to find a fragment containing |point|.
     // See All/LayoutViewHitTestTest.HitTestHorizontal/* and
     // All/LayoutViewHitTestTest.HitTestVerticalRL/*
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     const LayoutBlockFlow* containing_block_flow = cursor.GetLayoutBlockFlow();
     DCHECK(containing_block_flow);
@@ -765,7 +766,7 @@ bool LayoutText::ContainsOnlyWhitespace(unsigned from, unsigned len) const {
 UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
@@ -778,7 +779,7 @@ UChar32 LayoutText::FirstCharacterAfterWhitespaceCollapsing() const {
 UChar32 LayoutText::LastCharacterAfterWhitespaceCollapsing() const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (cursor) {
       const StringView text = cursor.Current().Text(cursor);
@@ -795,7 +796,7 @@ PhysicalOffset LayoutText::FirstLineBoxTopLeft() const {
     // are not safe to read for dirty-tree. crbug.com/963103
     if (UNLIKELY(!IsFirstInlineFragmentSafe()))
       return PhysicalOffset();
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     return cursor ? cursor.Current().OffsetInContainerFragment()
                   : PhysicalOffset();
@@ -808,7 +809,7 @@ void LayoutText::LogicalStartingPointAndHeight(
     LayoutUnit& logical_height) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     if (!cursor)
       return;
@@ -842,7 +843,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
     return;
   }
 
-  if (NGInlineNode::SetTextWithOffset(this, text, offset, len)) {
+  if (InlineNode::SetTextWithOffset(this, text, offset, len)) {
     DCHECK(!NeedsCollectInlines());
     // Prevent |TextDidChange()| to propagate |NeedsCollectInlines|
     SetNeedsCollectInlines(true);
@@ -864,7 +865,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
   ForceSetText(std::move(text));
 
   // TODO(layout-dev): Invalidation is currently all or nothing in LayoutNG,
-  // this is probably fine for NGInlineItem reuse as recreating the individual
+  // this is probably fine for InlineItem reuse as recreating the individual
   // items is relatively cheap. If partial relayout performance improvement are
   // needed partial re-shapes are likely to be sufficient. Revisit as needed.
   valid_ng_items_ = false;
@@ -1079,7 +1080,7 @@ PhysicalRect LayoutText::PhysicalLinesBoundingBox() const {
 PhysicalRect LayoutText::VisualOverflowRect() const {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  return NGFragmentItem::LocalVisualRectFor(*this);
+  return FragmentItem::LocalVisualRectFor(*this);
 }
 
 PhysicalRect LayoutText::LocalVisualRectIgnoringVisibility() const {
@@ -1100,7 +1101,7 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
     float scaling_factor =
         svg_inline_text ? svg_inline_text->ScalingFactor() : 1.0f;
     PhysicalRect rect;
-    NGInlineCursor cursor(*FragmentItemsContainer());
+    InlineCursor cursor(*FragmentItemsContainer());
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject()) {
       if (cursor.Current().IsHiddenForPaint())
         continue;
@@ -1111,8 +1112,8 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
       PhysicalRect item_rect = cursor.CurrentLocalSelectionRectForText(status);
       if (svg_inline_text) {
         gfx::RectF float_rect(item_rect);
-        const NGFragmentItem& item = *cursor.CurrentItem();
-        float_rect.Offset(item.SvgFragmentData()->rect.OffsetFromOrigin());
+        const FragmentItem& item = *cursor.CurrentItem();
+        float_rect.Offset(item.GetSvgFragmentData()->rect.OffsetFromOrigin());
         if (item.HasSvgTransformForBoundingBox()) {
           float_rect =
               item.BuildSvgTransformForBoundingBox().MapRect(float_rect);
@@ -1139,14 +1140,14 @@ PhysicalRect LayoutText::LocalSelectionVisualRect() const {
 
 void LayoutText::InvalidateVisualOverflow() {
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
     cursor.Current()->GetMutableForPainting().InvalidateInkOverflow();
 }
 
-const NGOffsetMapping* LayoutText::GetNGOffsetMapping() const {
+const OffsetMapping* LayoutText::GetOffsetMapping() const {
   NOT_DESTROYED();
-  return NGOffsetMapping::GetFor(this);
+  return OffsetMapping::GetFor(this);
 }
 
 Position LayoutText::PositionForCaretOffset(unsigned offset) const {
@@ -1199,7 +1200,7 @@ int LayoutText::CaretMinOffset() const {
   NOT_DESTROYED();
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     const Position first_position = PositionForCaretOffset(0);
     if (first_position.IsNull())
       return 0;
@@ -1218,7 +1219,7 @@ int LayoutText::CaretMaxOffset() const {
   NOT_DESTROYED();
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     const Position last_position = PositionForCaretOffset(TextLength());
     if (last_position.IsNull())
       return TextLength();
@@ -1235,7 +1236,7 @@ int LayoutText::CaretMaxOffset() const {
 
 unsigned LayoutText::ResolvedTextLength() const {
   NOT_DESTROYED();
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     const Position start_position = PositionForCaretOffset(0);
     const Position end_position = PositionForCaretOffset(TextLength());
     if (start_position.IsNull()) {
@@ -1260,15 +1261,16 @@ unsigned LayoutText::ResolvedTextLength() const {
 
 bool LayoutText::HasNonCollapsedText() const {
   NOT_DESTROYED();
-  if (GetNGOffsetMapping())
+  if (GetOffsetMapping()) {
     return ResolvedTextLength();
+  }
   return false;
 }
 
 bool LayoutText::ContainsCaretOffset(int text_offset) const {
   NOT_DESTROYED();
   DCHECK_GE(text_offset, 0);
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     if (text_offset > static_cast<int>(TextLength()))
       return false;
     const Position position = PositionForCaretOffset(text_offset);
@@ -1287,7 +1289,7 @@ bool LayoutText::ContainsCaretOffset(int text_offset) const {
 
 bool LayoutText::IsBeforeNonCollapsedCharacter(unsigned text_offset) const {
   NOT_DESTROYED();
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     if (text_offset >= TextLength())
       return false;
     const Position position = PositionForCaretOffset(text_offset);
@@ -1301,7 +1303,7 @@ bool LayoutText::IsBeforeNonCollapsedCharacter(unsigned text_offset) const {
 
 bool LayoutText::IsAfterNonCollapsedCharacter(unsigned text_offset) const {
   NOT_DESTROYED();
-  if (auto* mapping = GetNGOffsetMapping()) {
+  if (auto* mapping = GetOffsetMapping()) {
     if (!text_offset)
       return false;
     const Position position = PositionForCaretOffset(text_offset);
@@ -1326,12 +1328,12 @@ void LayoutText::MomentarilyRevealLastTypedCharacter(
   secure_text_timer->RestartWithNewText(last_typed_character_offset);
 }
 
-NGAbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
+AbstractInlineTextBox* LayoutText::FirstAbstractInlineTextBox() {
   NOT_DESTROYED();
   DCHECK(IsInLayoutNGInlineFormattingContext());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*this);
-  return NGAbstractInlineTextBox::GetOrCreate(cursor);
+  return AbstractInlineTextBox::GetOrCreate(cursor);
 }
 
 void LayoutText::InvalidatePaint(const PaintInvalidatorContext& context) const {
@@ -1352,7 +1354,7 @@ void LayoutText::InvalidateDisplayItemClients(
 
   if (IsInLayoutNGInlineFormattingContext()) {
 #if DCHECK_IS_ON()
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveTo(*this); cursor; cursor.MoveToNextForSameLayoutObject())
       DCHECK_EQ(cursor.Current().GetDisplayItemClient(), this);
 #endif
@@ -1407,7 +1409,7 @@ ContentCaptureManager* LayoutText::GetOrResetContentCaptureManager() {
   return nullptr;
 }
 
-void LayoutText::SetInlineItems(NGInlineItemsData* data,
+void LayoutText::SetInlineItems(InlineItemsData* data,
                                 wtf_size_t begin,
                                 wtf_size_t size) {
   NOT_DESTROYED();
@@ -1416,7 +1418,7 @@ void LayoutText::SetInlineItems(NGInlineItemsData* data,
     DCHECK_EQ(data->items[i].GetLayoutObject(), this);
   }
 #endif
-  auto* items = GetNGInlineItems();
+  auto* items = GetInlineItems();
   if (!items)
     return;
   valid_ng_items_ = true;
@@ -1427,23 +1429,24 @@ void LayoutText::ClearInlineItems() {
   NOT_DESTROYED();
   has_bidi_control_items_ = false;
   valid_ng_items_ = false;
-  if (auto* items = GetNGInlineItems())
+  if (auto* items = GetInlineItems()) {
     items->Clear();
+  }
 }
 
-const NGInlineItemSpan& LayoutText::InlineItems() const {
+const InlineItemSpan& LayoutText::InlineItems() const {
   NOT_DESTROYED();
   DCHECK(valid_ng_items_);
-  DCHECK(GetNGInlineItems());
-  DCHECK(!GetNGInlineItems()->empty());
-  return *GetNGInlineItems();
+  DCHECK(GetInlineItems());
+  DCHECK(!GetInlineItems()->empty());
+  return *GetInlineItems();
 }
 
 #if DCHECK_IS_ON()
 void LayoutText::RecalcVisualOverflow() {
   // We should never reach here, because |PaintLayer| calls
   // |RecalcVisualOverflow| for each layer, and the containing |LayoutObject|
-  // should recalculate its |NGFragmentItem|s without traversing descendant
+  // should recalculate its |FragmentItem|s without traversing descendant
   // |LayoutObject|s.
   if (IsInline() && IsInLayoutNGInlineFormattingContext())
     NOTREACHED();

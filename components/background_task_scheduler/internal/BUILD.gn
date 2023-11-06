@@ -55,9 +55,9 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//components/background_task_scheduler:factory_java",
       "//components/background_task_scheduler:public_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 

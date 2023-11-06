@@ -42,10 +42,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
-char kURL1[] = "http://firstURL";
-char kTitle1[] = "Page 1";
-char kResponse1[] = "Test Page 1 content";
-char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
+constexpr char kURL1[] = "http://firstURL";
+constexpr char kTitle1[] = "Page 1";
+constexpr char kResponse1[] = "Test Page 1 content";
+constexpr char kPageFormat[] = "<head><title>%s</title></head><body>%s</body>";
 
 // Matcher for the add bookmark button in the tools menu.
 id<GREYMatcher> AddBookmarkButton() {

@@ -117,6 +117,7 @@ interface WilcoDtcSupportdService {
 // this is the browser.
 //
 // NextMinVersion: 1, NextIndex: 6
+[Stable]
 interface WilcoDtcSupportdClient {
   // Performs a web request, originating from the wilco_dtc daemon, using the
   // browser's network stack.

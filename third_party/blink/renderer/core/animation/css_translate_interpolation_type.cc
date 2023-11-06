@@ -19,7 +19,7 @@ namespace blink {
 namespace {
 
 InterpolationValue CreateNoneValue() {
-  return InterpolationValue(std::make_unique<InterpolableList>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0));
 }
 
 bool IsNoneValue(const InterpolationValue& value) {
@@ -57,13 +57,13 @@ enum TranslateComponentIndex : unsigned {
   kTranslateComponentIndexCount,
 };
 
-std::unique_ptr<InterpolableValue> CreateTranslateIdentity() {
-  auto result =
-      std::make_unique<InterpolableList>(kTranslateComponentIndexCount);
+InterpolableValue* CreateTranslateIdentity() {
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kTranslateComponentIndexCount);
   result->Set(kTranslateX, InterpolableLength::CreateNeutral());
   result->Set(kTranslateY, InterpolableLength::CreateNeutral());
   result->Set(kTranslateZ, InterpolableLength::CreateNeutral());
-  return std::move(result);
+  return result;
 }
 
 InterpolationValue ConvertTranslateOperation(
@@ -72,15 +72,15 @@ InterpolationValue ConvertTranslateOperation(
   if (!translate)
     return CreateNoneValue();
 
-  auto result =
-      std::make_unique<InterpolableList>(kTranslateComponentIndexCount);
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kTranslateComponentIndexCount);
   result->Set(kTranslateX,
               InterpolableLength::MaybeConvertLength(translate->X(), zoom));
   result->Set(kTranslateY,
               InterpolableLength::MaybeConvertLength(translate->Y(), zoom));
   result->Set(kTranslateZ, InterpolableLength::MaybeConvertLength(
                                Length::Fixed(translate->Z()), zoom));
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 }  // namespace
@@ -120,8 +120,8 @@ InterpolationValue CSSTranslateInterpolationType::MaybeConvertValue(
   if (list.length() < 1 || list.length() > 3)
     return nullptr;
 
-  auto result =
-      std::make_unique<InterpolableList>(kTranslateComponentIndexCount);
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kTranslateComponentIndexCount);
   for (wtf_size_t i = 0; i < kTranslateComponentIndexCount; i++) {
     InterpolationValue component = nullptr;
     if (i < list.length()) {
@@ -134,7 +134,7 @@ InterpolationValue CSSTranslateInterpolationType::MaybeConvertValue(
     }
     result->Set(i, std::move(component.interpolable_value));
   }
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 PairwiseInterpolationValue CSSTranslateInterpolationType::MaybeMergeSingles(

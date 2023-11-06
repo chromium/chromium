@@ -21,7 +21,6 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/embedder_support/android:util_java",
     "//components/messages/android:java",
@@ -33,6 +32,7 @@ android_library("java") {
     "//services/network/public/mojom:url_loader_base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]
@@ -106,10 +106,10 @@ android_library("test_support_java") {
   deps = [
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

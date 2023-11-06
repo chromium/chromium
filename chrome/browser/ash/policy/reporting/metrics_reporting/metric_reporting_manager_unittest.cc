@@ -700,7 +700,7 @@ INSTANTIATE_TEST_SUITE_P(
           /*is_affiliated=*/true, app_event_settings,
           /*has_init_delay=*/false,
           /*expected_count_before_login=*/0,
-          /*expected_count_after_login=*/0},
+          /*expected_count_after_login=*/1},
          {"AppEvents_FeatureFlagEnabled",
           /*enabled_features=*/{kEnableAppEventsObserver},
           /*disabled_features=*/{},

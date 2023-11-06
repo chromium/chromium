@@ -5,7 +5,6 @@
 #ifndef ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
 #define ASH_SYSTEM_NOTIFICATION_CENTER_STACKED_NOTIFICATION_BAR_H_
 
-#include "ash/system/notification_center/notification_center_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center_observer.h"
@@ -17,10 +16,13 @@ class Notification;
 
 namespace views {
 class BoxLayout;
+class Button;
 class Label;
 }  // namespace views
 
 namespace ash {
+
+class NotificationCenterView;
 
 // The header shown above the notification list displaying the number of hidden
 // notifications. Has a dynamic list of icons which hide/show as notifications
@@ -42,15 +44,6 @@ class StackedNotificationBar : public views::View,
   bool Update(int total_notification_count,
               int pinned_notification_count,
               std::vector<message_center::Notification*> stacked_notifications);
-
-  // Sets the current animation state.
-  void SetAnimationState(NotificationCenterAnimationState animation_state);
-
-  // Set notification bar state to collapsed.
-  void SetCollapsed();
-
-  // Set notification bar state to expanded.
-  void SetExpanded();
 
   // views::View:
   const char* GetClassName() const override;
@@ -98,16 +91,12 @@ class StackedNotificationBar : public views::View,
   int pinned_notification_count_ = 0;
   int stacked_notification_count_ = 0;
 
-  NotificationCenterAnimationState animation_state_ =
-      NotificationCenterAnimationState::kIdle;
-
   const raw_ptr<NotificationCenterView, ExperimentalAsh>
       notification_center_view_;
   raw_ptr<views::View, ExperimentalAsh> notification_icons_container_;
   const raw_ptr<views::Label, ExperimentalAsh> count_label_;
   const raw_ptr<views::View, ExperimentalAsh> spacer_;
   const raw_ptr<views::Button, ExperimentalAsh> clear_all_button_;
-  const raw_ptr<views::Button, ExperimentalAsh> expand_all_button_;
   const raw_ptr<views::BoxLayout, ExperimentalAsh> layout_manager_;
 
   base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};

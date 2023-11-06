@@ -232,7 +232,6 @@ EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK)
 //   {
 //     "extraction_error": <The DnsResponseResultExtractor::ExtractionError>
 //     "dns_query_type": <The DnsQueryType requested from the extractor>
-//     "results": <The HostCache::Entry returned by the extractor>
 //   }
 EVENT_TYPE(HOST_RESOLVER_MANAGER_DNS_TASK_EXTRACTION_FAILURE)
 

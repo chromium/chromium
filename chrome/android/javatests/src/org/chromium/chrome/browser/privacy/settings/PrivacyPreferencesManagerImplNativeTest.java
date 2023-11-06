@@ -23,13 +23,10 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-/**
- *  Tests "Usage and Crash reporting" settings screen.
- */
+/** Tests "Usage and Crash reporting" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class PrivacyPreferencesManagerImplNativeTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     @Test
     @SmallTest
@@ -49,7 +46,8 @@ public class PrivacyPreferencesManagerImplNativeTest {
                 .apply();
 
         preferenceManager.syncUsageAndCrashReportingPrefs();
-        Assert.assertTrue("Native preference should be True ",
+        Assert.assertTrue(
+                "Native preference should be True ",
                 PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
     }
 
@@ -65,15 +63,19 @@ public class PrivacyPreferencesManagerImplNativeTest {
                 new PrivacyPreferencesManagerImpl(context);
 
         preferenceManager.setUsageAndCrashReporting(true);
-        Assert.assertTrue(pref.getBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false));
-        Assert.assertTrue("Native preference should be True ",
+        Assert.assertTrue(
+                pref.getBoolean(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false));
+        Assert.assertTrue(
+                "Native preference should be True ",
                 PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
 
         preferenceManager.setUsageAndCrashReporting(false);
-        Assert.assertFalse(pref.getBoolean(
-                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false));
-        Assert.assertFalse("Native preference should be False ",
+        Assert.assertFalse(
+                pref.getBoolean(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false));
+        Assert.assertFalse(
+                "Native preference should be False ",
                 PrivacyPreferencesManagerImpl.getInstance().isMetricsReportingEnabled());
     }
 

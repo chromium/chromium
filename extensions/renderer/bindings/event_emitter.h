@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_BINDINGS_EVENT_EMITTER_H_
 
 #include <map>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
@@ -47,7 +46,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   void Fire(v8::Local<v8::Context> context,
-            std::vector<v8::Local<v8::Value>>* args,
+            v8::LocalVector<v8::Value>* args,
             mojom::EventFilteringInfoPtr filter,
             JSRunner::ResultCallback callback);
 
@@ -57,7 +56,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Warning: This can run arbitrary JS code, so the |context| may be
   // invalidated after this!
   v8::Local<v8::Value> FireSync(v8::Local<v8::Context> context,
-                                std::vector<v8::Local<v8::Value>>* args,
+                                v8::LocalVector<v8::Value>* args,
                                 mojom::EventFilteringInfoPtr filter);
 
   // Removes all listeners and marks this object as invalid so that no more
@@ -78,12 +77,12 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
 
   // Dispatches an event synchronously to listeners, returning the result.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
-                                    std::vector<v8::Local<v8::Value>>* args,
+                                    v8::LocalVector<v8::Value>* args,
                                     mojom::EventFilteringInfoPtr filter);
 
   // Dispatches an event asynchronously to listeners.
   void DispatchAsync(v8::Local<v8::Context> context,
-                     std::vector<v8::Local<v8::Value>>* args,
+                     v8::LocalVector<v8::Value>* args,
                      mojom::EventFilteringInfoPtr filter,
                      JSRunner::ResultCallback callback);
   static void DispatchAsyncHelper(

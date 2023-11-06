@@ -34,6 +34,7 @@ buildflag_header("media_buildflags") {
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CHROME_WIDE_ECHO_CANCELLATION=$chrome_wide_echo_cancellation_supported",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
+    "ENABLE_PLATFORM_AC4_AUDIO=$enable_platform_ac4_audio",
     "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
     "ENABLE_AV1_DECODER=$enable_av1_decoder",
@@ -364,6 +365,7 @@ component("shared_memory_support") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//media:media_buildflags",
     "//ui/gfx/geometry",
   ]
 }

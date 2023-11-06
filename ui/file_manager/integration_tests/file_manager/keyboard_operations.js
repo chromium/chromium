@@ -44,7 +44,7 @@ async function keyboardCopy(path) {
       'copyFile failed');
   // Check: the copied file should appear in the file list.
   const expectedEntryRows = [ENTRIES.world.getExpectedRow()].concat(
-      [['world (1).ogv', '59 KB', 'OGG video']]);
+      [['world (1).ogv', '56 KB', 'OGG video']]);
   await remoteCall.waitForFiles(
       appId, expectedEntryRows, {ignoreLastModifiedTime: true});
   const files = await remoteCall.callRemoteTestUtil('getFileList', appId, []);

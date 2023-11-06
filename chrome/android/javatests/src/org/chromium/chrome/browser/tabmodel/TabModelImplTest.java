@@ -34,19 +34,20 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-/**
- * Tests for {@link TabModelImpl}.
- */
+/** Tests for {@link TabModelImpl}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_STARTUP_PROMOS
+})
 @Batch(Batch.PER_CLASS)
 public class TabModelImplTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    @ClassRule
-    public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
+
+    @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
+
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
@@ -68,8 +69,12 @@ public class TabModelImplTest {
 
     private void createTabs(int tabsCount, boolean isIncognito, String url) {
         for (int i = 0; i < tabsCount; i++) {
-            Tab tab = ChromeTabUtils.fullyLoadUrlInNewTab(
-                    InstrumentationRegistry.getInstrumentation(), mActivity, url, isIncognito);
+            Tab tab =
+                    ChromeTabUtils.fullyLoadUrlInNewTab(
+                            InstrumentationRegistry.getInstrumentation(),
+                            mActivity,
+                            url,
+                            isIncognito);
         }
     }
 
@@ -149,22 +154,23 @@ public class TabModelImplTest {
     public void hasOtherRelatedTabs_detectMergedTabs() throws Exception {
         createTabs(3, false, mTestUrl);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModel tabModel =
-                    sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-            final Tab tab1 = tabModel.getTabAt(0);
-            final Tab tab2 = tabModel.getTabAt(1);
-            final Tab tab3 = tabModel.getTabAt(2);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    final Tab tab1 = tabModel.getTabAt(0);
+                    final Tab tab2 = tabModel.getTabAt(1);
+                    final Tab tab3 = tabModel.getTabAt(2);
 
-            assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-            assertFalse(TabModelImpl.hasOtherRelatedTabs(tab2));
-            assertFalse(TabModelImpl.hasOtherRelatedTabs(tab3));
+                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
+                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab2));
+                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab3));
 
-            ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
+                    ChromeTabUtils.mergeTabsToGroup(tab2, tab3);
 
-            assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
-            assertTrue(TabModelImpl.hasOtherRelatedTabs(tab2));
-            assertTrue(TabModelImpl.hasOtherRelatedTabs(tab3));
-        });
+                    assertFalse(TabModelImpl.hasOtherRelatedTabs(tab1));
+                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab2));
+                    assertTrue(TabModelImpl.hasOtherRelatedTabs(tab3));
+                });
     }
 }

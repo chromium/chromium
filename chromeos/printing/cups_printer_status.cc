@@ -64,7 +64,7 @@ void CupsPrinterStatus::SetAuthenticationInfo(
 base::Value::Dict CupsPrinterStatus::ConvertToValue() const {
   base::Value::Dict dict;
   dict.Set("printerId", printer_id_);
-  dict.Set("timestamp", timestamp_.ToJsTimeIgnoringNull());
+  dict.Set("timestamp", timestamp_.InMillisecondsFSinceUnixEpochIgnoringNull());
   base::Value::List status_reasons;
   for (const CupsPrinterStatusReason& reason : status_reasons_) {
     base::Value::Dict status_reason;

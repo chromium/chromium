@@ -570,6 +570,7 @@ source_set("tests") {
     "network_connection_tracker_unittest.cc",
     "network_isolation_key_mojom_traits_unittest.cc",
     "network_mojom_traits_unittest.cc",
+    "network_param_mojom_traits_unittest.cc",
     "network_quality_tracker_unittest.cc",
     "optional_trust_token_params_unittest.cc",
     "origin_agent_cluster_parser_unittest.cc",

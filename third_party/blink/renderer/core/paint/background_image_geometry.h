@@ -18,7 +18,7 @@ class FillLayer;
 class ImageResourceObserver;
 class LayoutBox;
 class LayoutBoxModelObject;
-class LayoutNGTableCell;
+class LayoutTableCell;
 class LayoutView;
 class NGPhysicalBoxFragment;
 struct PaintInfo;
@@ -36,12 +36,18 @@ class BackgroundImageGeometry {
   explicit BackgroundImageGeometry(const LayoutBoxModelObject&);
 
   // Constructor for TablesNG table parts.
-  BackgroundImageGeometry(const LayoutNGTableCell& cell,
+  BackgroundImageGeometry(const LayoutTableCell& cell,
                           PhysicalOffset cell_offset,
                           const LayoutBox& table_part,
                           PhysicalSize table_part_size);
 
   explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
+
+  // Compute the initial position area based on the geometry for the object
+  // this BackgroundImageGeometry was created for.
+  PhysicalRect ComputePositioningArea(const PaintInfo& paint_info,
+                                      const FillLayer& fill_layer,
+                                      const PhysicalRect& paint_rect) const;
 
   // Calculates data members. This must be called before any of the following
   // getters is called. The document lifecycle phase must be at least
@@ -63,8 +69,9 @@ class BackgroundImageGeometry {
   const PhysicalRect& UnsnappedDestRect() const { return unsnapped_dest_rect_; }
   const PhysicalRect& SnappedDestRect() const { return snapped_dest_rect_; }
 
-  // Compute the phase relative to the (snapped) destination offset.
-  PhysicalOffset ComputeDestPhase() const;
+  // Compute the phase of the image accounting for the size and spacing of the
+  // image.
+  PhysicalOffset ComputePhase() const;
 
   // Tile size is the area into which to draw one copy of the image. It
   // need not be the same as the intrinsic size of the image; if not,
@@ -147,13 +154,13 @@ class BackgroundImageGeometry {
                                          PhysicalBoxStrut&,
                                          PhysicalBoxStrut&) const;
 
-  void ComputePositioningArea(const PaintInfo&,
-                              const FillLayer&,
-                              const PhysicalRect&,
-                              PhysicalRect&,
-                              PhysicalRect&,
-                              PhysicalOffset&,
-                              PhysicalOffset&);
+  void AdjustPositioningArea(const PaintInfo&,
+                             const FillLayer&,
+                             const PhysicalRect&,
+                             PhysicalRect&,
+                             PhysicalRect&,
+                             PhysicalOffset&,
+                             PhysicalOffset&);
   void CalculateFillTileSize(const FillLayer&,
                              const PhysicalSize&,
                              const PhysicalSize&);

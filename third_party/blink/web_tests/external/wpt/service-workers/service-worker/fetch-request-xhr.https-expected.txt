@@ -1,16 +1,20 @@
 This is a testharness.js-based test.
-PASS initialize global state
-FAIL event.request has the expected headers for same-origin GET. promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin GET. lengths differ, expected array ["accept"] length 1, got ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 5"
-FAIL event.request has the expected headers for same-origin POST. promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got ["accept", "content-type", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 6"
-FAIL event.request has the expected headers for cross-origin GET. promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin GET. lengths differ, expected array ["accept"] length 1, got ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 5"
-FAIL event.request has the expected headers for cross-origin POST. promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got ["accept", "content-type", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 6"
-PASS FetchEvent#request.body contains XHR request data (string)
-PASS FetchEvent#request.body contains XHR request data (blob)
-PASS FetchEvent#request.method is set to XHR method
-PASS XHR using OPTIONS method
-PASS XHR with form data
-PASS XHR with mode/credentials set
-PASS XHR to data URL
-PASS restore global state
+[PASS] initialize global state
+[FAIL] event.request has the expected headers for same-origin GET.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin GET. lengths differ, expected array ["accept"] length 1, got ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 5"
+[FAIL] event.request has the expected headers for same-origin POST.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for same-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got ["accept", "content-type", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 6"
+[FAIL] event.request has the expected headers for cross-origin GET.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin GET. lengths differ, expected array ["accept"] length 1, got ["accept", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 5"
+[FAIL] event.request has the expected headers for cross-origin POST.
+  promise_test: Unhandled rejection with value: object "Error: assert_array_equals: event.request has the expected headers for cross-origin POST. lengths differ, expected array ["accept", "content-type"] length 2, got ["accept", "content-type", "sec-ch-ua", "sec-ch-ua-mobile", "sec-ch-ua-platform", "user-agent"] length 6"
+[PASS] FetchEvent#request.body contains XHR request data (string)
+[PASS] FetchEvent#request.body contains XHR request data (blob)
+[PASS] FetchEvent#request.method is set to XHR method
+[PASS] XHR using OPTIONS method
+[PASS] XHR with form data
+[PASS] XHR with mode/credentials set
+[PASS] XHR to data URL
+[PASS] restore global state
 Harness: the test ran to completion.
 

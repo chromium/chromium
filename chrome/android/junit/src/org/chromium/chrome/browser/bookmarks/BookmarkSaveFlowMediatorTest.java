@@ -36,37 +36,37 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 /** Unit tests for {@link BookmarkSaveFlowMediator}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowAppCompatResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAppCompatResources.class})
 @DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkSaveFlowMediatorTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
 
     private BookmarkSaveFlowMediator mMediator;
     private PropertyModel mPropertyModel =
             new PropertyModel(ImprovedBookmarkSaveFlowProperties.ALL_KEYS);
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private Runnable mCloseRunnable;
-    @Mock
-    private BookmarkModel mModel;
-    @Mock
-    private ShoppingService mShoppingService;
-    @Mock
-    private CommerceSubscription mSubscription;
-    @Mock
-    private BookmarkImageFetcher mBookmarkImageFetcher;
-    @Mock
-    private Profile mProfile;
+    @Mock private Context mContext;
+    @Mock private Runnable mCloseRunnable;
+    @Mock private BookmarkModel mModel;
+    @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceSubscription mSubscription;
+    @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    @Mock private Profile mProfile;
 
     @Before
     public void setup() {
-        mMediator = new BookmarkSaveFlowMediator(mModel, mPropertyModel, mContext, mCloseRunnable,
-                mShoppingService, mBookmarkImageFetcher, mProfile);
+        mMediator =
+                new BookmarkSaveFlowMediator(
+                        mModel,
+                        mPropertyModel,
+                        mContext,
+                        mCloseRunnable,
+                        mShoppingService,
+                        mBookmarkImageFetcher,
+                        mProfile);
         mMediator.setSubscriptionForTesting(mSubscription);
     }
 
@@ -75,16 +75,20 @@ public class BookmarkSaveFlowMediatorTest {
         mMediator.setPriceTrackingToggleVisualsOnly(false);
         Assert.assertFalse(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_disabled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_disabled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
         mMediator.onSubscribe(mSubscription, true);
         Assert.assertTrue(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_enabled_filled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_enabled_filled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())
@@ -95,12 +99,14 @@ public class BookmarkSaveFlowMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testSubscribedInBackground_improved() {
         mMediator.setPriceTrackingToggleVisualsOnly(false);
-        Assert.assertFalse(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertFalse(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
 
         mMediator.onSubscribe(mSubscription, true);
-        Assert.assertTrue(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertTrue(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())
@@ -112,26 +118,40 @@ public class BookmarkSaveFlowMediatorTest {
     @Test
     public void testSubscribed_differentObjects() {
         String clusterId = "1234";
-        CommerceSubscription original = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription clone = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription original =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription clone =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         mMediator.setSubscriptionForTesting(original);
 
         mMediator.setPriceTrackingToggleVisualsOnly(false);
         Assert.assertFalse(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_disabled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_disabled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
         mMediator.onSubscribe(clone, true);
         Assert.assertTrue(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_enabled_filled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_enabled_filled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())
@@ -142,20 +162,32 @@ public class BookmarkSaveFlowMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testSubscribed_differentObjects_improved() {
         String clusterId = "1234";
-        CommerceSubscription original = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
-        CommerceSubscription clone = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.PRODUCT_CLUSTER_ID, clusterId, ManagementType.USER_MANAGED, null);
+        CommerceSubscription original =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
+        CommerceSubscription clone =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.PRODUCT_CLUSTER_ID,
+                        clusterId,
+                        ManagementType.USER_MANAGED,
+                        null);
 
         mMediator.setSubscriptionForTesting(original);
 
         mMediator.setPriceTrackingToggleVisualsOnly(false);
-        Assert.assertFalse(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertFalse(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
 
         mMediator.onSubscribe(clone, true);
-        Assert.assertTrue(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertTrue(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())
@@ -167,16 +199,20 @@ public class BookmarkSaveFlowMediatorTest {
         mMediator.setPriceTrackingToggleVisualsOnly(true);
         Assert.assertTrue(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_enabled_filled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_enabled_filled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
 
         mMediator.onUnsubscribe(mSubscription, true);
         Assert.assertFalse(
                 mPropertyModel.get(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED));
-        Assert.assertEquals(R.drawable.price_tracking_disabled,
-                (int) mPropertyModel.get(
-                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
+        Assert.assertEquals(
+                R.drawable.price_tracking_disabled,
+                (int)
+                        mPropertyModel.get(
+                                BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())
@@ -187,12 +223,14 @@ public class BookmarkSaveFlowMediatorTest {
     @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testUnsubscribedInBackground_improved() {
         mMediator.setPriceTrackingToggleVisualsOnly(true);
-        Assert.assertTrue(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertTrue(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
 
         mMediator.onUnsubscribe(mSubscription, true);
-        Assert.assertFalse(mPropertyModel.get(
-                ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
+        Assert.assertFalse(
+                mPropertyModel.get(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED));
         Mockito.verify(mShoppingService, Mockito.never())
                 .subscribe(Mockito.any(CommerceSubscription.class), Mockito.any());
         Mockito.verify(mShoppingService, Mockito.never())

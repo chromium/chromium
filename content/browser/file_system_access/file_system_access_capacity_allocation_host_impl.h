@@ -89,7 +89,7 @@ class CONTENT_EXPORT FileSystemAccessCapacityAllocationHostImpl
 
   // Raw pointer use is safe, since the manager owns the
   // FileSystemAccessAccessHandleHostImpl which owns this class.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
 
   // URL of the file whose capacity is managed through this host.
   const storage::FileSystemURL url_;

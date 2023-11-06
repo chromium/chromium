@@ -19,14 +19,17 @@ TEST_F(ShortcutTest, CreateShortcut) {
   auto shortcut = std::make_unique<Shortcut>(host_app_id, local_id);
   shortcut->name = "name";
   shortcut->shortcut_source = ShortcutSource::kUser;
-  shortcut->icon_key = IconKey(100, 0, 0);
+  shortcut->icon_key = IconKey();
+  shortcut->icon_key->update_version = 100;
 
   EXPECT_EQ(shortcut->shortcut_id, GenerateShortcutId(host_app_id, local_id));
   EXPECT_EQ(shortcut->name, "name");
   EXPECT_EQ(shortcut->shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(shortcut->host_app_id, host_app_id);
   EXPECT_EQ(shortcut->local_id, local_id);
-  EXPECT_EQ(shortcut->icon_key, IconKey(100, 0, 0));
+  IconKey icon_key(0, 0);
+  icon_key.update_version = 100;
+  EXPECT_EQ(shortcut->icon_key, icon_key);
 }
 
 TEST_F(ShortcutTest, CloneShortcut) {
@@ -36,7 +39,8 @@ TEST_F(ShortcutTest, CloneShortcut) {
   ShortcutId shortcut_id = shortcut->shortcut_id;
   shortcut->name = "name";
   shortcut->shortcut_source = ShortcutSource::kUser;
-  shortcut->icon_key = IconKey(100, 0, 0);
+  shortcut->icon_key = IconKey();
+  shortcut->icon_key->update_version = 100;
 
   auto cloned_shortcut = shortcut->Clone();
 
@@ -45,7 +49,9 @@ TEST_F(ShortcutTest, CloneShortcut) {
   EXPECT_EQ(cloned_shortcut->shortcut_source, ShortcutSource::kUser);
   EXPECT_EQ(cloned_shortcut->host_app_id, host_app_id);
   EXPECT_EQ(cloned_shortcut->local_id, local_id);
-  EXPECT_EQ(cloned_shortcut->icon_key, IconKey(100, 0, 0));
+  IconKey icon_key;
+  icon_key.update_version = 100;
+  EXPECT_EQ(cloned_shortcut->icon_key, icon_key);
 }
 
 TEST_F(ShortcutTest, CloneShortcutWithNoIconKey) {

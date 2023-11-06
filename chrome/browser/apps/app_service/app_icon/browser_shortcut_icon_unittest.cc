@@ -21,9 +21,10 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -75,7 +76,7 @@ class BrowserShortcutIconTest : public testing::Test {
   void SetUp() override {
     testing::Test::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
     TestingProfile::Builder builder;
     profile_ = builder.Build();
     web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
@@ -90,9 +91,8 @@ class BrowserShortcutIconTest : public testing::Test {
         AppType::kChromeApp, app_constants::kChromeAppId,
         apps::Readiness::kReady, "Some App Name", apps::InstallReason::kUser,
         apps::InstallSource::kSystem));
-    app_service_proxy()->AppRegistryCache().OnApps(
-        std::move(app_deltas), AppType::kChromeApp,
-        /* should_notify_initialized */ true);
+    app_service_proxy()->OnApps(std::move(app_deltas), AppType::kChromeApp,
+                                /* should_notify_initialized */ true);
   }
 
   AppServiceProxy* app_service_proxy() { return proxy_; }
@@ -100,7 +100,7 @@ class BrowserShortcutIconTest : public testing::Test {
   apps::ShortcutId RegisterShortcut(std::unique_ptr<web_app::WebApp> web_app) {
     ShortcutPtr shortcut = std::make_unique<Shortcut>(
         app_constants::kChromeAppId, web_app->app_id());
-    shortcut->icon_key = IconKey(0, 0, 0);
+    shortcut->icon_key = IconKey();
     test_helper().RegisterApp(std::move(web_app));
     apps::ShortcutId shortcut_id = shortcut->shortcut_id;
     app_service_proxy()->PublishShortcut(std::move(shortcut));
@@ -316,8 +316,8 @@ TEST_F(BrowserShortcutIconTest, IconUpdated) {
 
   auto delta =
       std::make_unique<Shortcut>(app_constants::kChromeAppId, web_app_id);
-  delta->icon_key = IconKey(0, 0, 0);
-  delta->icon_key->raw_icon_updated = true;
+  delta->icon_key = IconKey(/*raw_icon_updated=*/true, IconEffects::kNone);
+  delta->icon_key->update_version = true;
   app_service_proxy()->PublishShortcut(std::move(delta));
 
   apps::IconValuePtr iv2 = LoadShortcutIcon(shortcut_id, IconType::kStandard);
@@ -362,7 +362,7 @@ TEST_F(BrowserShortcutIconTest, ShortcutRemovedAndCreatedAgain) {
   app_service_proxy()->ShortcutRemoved(shortcut_id);
   ShortcutPtr shortcut =
       std::make_unique<Shortcut>(app_constants::kChromeAppId, web_app_id);
-  shortcut->icon_key = IconKey(0, 0, 0);
+  shortcut->icon_key = IconKey();
   app_service_proxy()->PublishShortcut(std::move(shortcut));
 
   apps::IconValuePtr iv2 = LoadShortcutIcon(shortcut_id, IconType::kStandard);

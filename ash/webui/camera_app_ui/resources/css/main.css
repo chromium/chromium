@@ -20,6 +20,7 @@
   --fixed-width-font-family: 'Cousine', monospace;
   --left-line: 44px;
   --right-line: 50px;
+  --top-line: 48px;
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
   --border-radius-rounded-with-short-side: 9999999px;
@@ -129,7 +130,7 @@ input[type=radio].icon {
 
 .top-stripe {
   position: absolute;
-  top: 48px;
+  top: var(--top-line);
   transform: translateY(-50%);
 }
 
@@ -161,12 +162,6 @@ body.taking.video #options-group :not(#open-ptz-panel) {
   transform: translateX(50%);
 }
 
-.horizontal-center-stripe {
-  left: 50%;
-  position: absolute;
-  transform: translateX(-50%);
-}
-
 .vertical-center-stripe {
   position: absolute;
   top: 50%;
@@ -178,10 +173,6 @@ body.taking.video #options-group :not(#open-ptz-panel) {
 }
 
 .top-stripe.left-stripe {
-  transform: translate(-50%, -50%);
-}
-
-.top-stripe.horizontal-center-stripe {
   transform: translate(-50%, -50%);
 }
 
@@ -1042,18 +1033,12 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
   transition: width 500ms;
 }
 
-#record-time {
-  align-items: center;
-  background-color: var(--cros-sys-base_elevated);
-  border-radius: var(--border-radius-rounded-with-short-side);
-  box-sizing: border-box;
-  display: flex;
-  font: var(--cros-button-2-font);
-  font-variant-numeric: tabular-nums;
-  height: 32px;
-  justify-content: flex-start;
-  padding: 6px 12px;
+record-time-chip {
+  left: 50%;
   pointer-events: none;
+  position: absolute;
+  top: var(--top-line);
+  transform: translate(-50%, -50%);
 }
 
 /*
@@ -1066,33 +1051,6 @@ body.grid.grid-4x4 #preview-grid-vertical::before {
  */
 [hidden] {
   display: none !important;
-}
-
-#record-time .icon {
-  background-color: var(--cros-ref-error40);
-  border-radius: 50%;
-  flex-shrink: 0;
-  height: 6px;
-  width: 6px;
-}
-
-body.recording-ui-paused #record-time .icon,
-body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] {
-  display: none;
-}
-
-#record-time #record-time-msg {
-  color: var(--cros-sys-on_surface);
-  flex-shrink: 0;
-}
-
-#record-time [i18n-text=record_video_paused_msg] {
-  color: var(--cros-sys-on_surface);
-  flex-shrink: 0;
-}
-
-#record-time #record-time-msg {
-  margin-inline-start: 8px;
 }
 
 #spoken_msg {

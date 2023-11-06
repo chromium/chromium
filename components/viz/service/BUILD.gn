@@ -201,8 +201,6 @@ viz_component("service") {
     "performance_hint/boost_manager.h",
     "performance_hint/hint_session.cc",
     "performance_hint/hint_session.h",
-    "performance_hint/utils.cc",
-    "performance_hint/utils.h",
     "surfaces/frame_index_constants.h",
     "surfaces/latest_local_surface_id_lookup_delegate.h",
     "surfaces/pending_copy_output_request.cc",
@@ -674,8 +672,8 @@ if (is_android) {
   android_library("service_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
 

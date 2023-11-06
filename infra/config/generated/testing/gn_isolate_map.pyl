@@ -264,7 +264,7 @@
   },
   "cast_base_junit_tests": {
     "label": "//chromecast/base:cast_base_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "cast_base_unittests": {
     "label": "//chromecast/base:cast_base_unittests",
@@ -304,7 +304,7 @@
   },
   "cast_shell_junit_tests": {
     "label": "//chromecast/browser/android:cast_shell_junit_tests",
-    "type": "junit_test",
+    "type": "generated_script",
   },
   "cast_shell_unittests": {
     "label": "//chromecast:cast_shell_unittests",
@@ -665,10 +665,6 @@
     "label": "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk",
     "type": "console_test_launcher",
   },
-  "cronet_test": {
-    "label": "//components/cronet/ios/test:cronet_test",
-    "type": "generated_script",
-  },
   "cronet_test_instrumentation_apk": {
     "label": "//components/cronet/android:cronet_test_instrumentation_apk",
     "type": "console_test_launcher",
@@ -1011,8 +1007,8 @@
       "--logs-dir=${ISOLATED_OUTDIR}",
     ],
   },
-  "lacros_chrome_browsertests_run_in_series": {
-    "label": "//chrome/test:lacros_chrome_browsertests_run_in_series",
+  "lacros_chrome_browsertests": {
+    "label": "//chrome/test:lacros_chrome_browsertests",
     "type": "windowed_test_launcher",
     "args": [
       "--test-launcher-jobs=1",
@@ -1467,10 +1463,6 @@
   "services_junit_tests": {
     "label": "//services:services_junit_tests",
     "type": "generated_script",
-  },
-  "service_manager_unittests": {
-    "label": "//services/service_manager/tests:service_manager_unittests",
-    "type": "console_test_launcher",
   },
   "services_unittests": {
     "label": "//services:services_unittests",

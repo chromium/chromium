@@ -83,7 +83,7 @@ enum class DefaultAppName {
 enum class BuiltInAppName {
   kKeyboardShortcutViewer = 0,
   kSettings = 1,
-  kContinueReading = 2,
+  // kContinueReading = 2, obsolete
   kCameraDeprecated = 3,
   // kDiscover = 4, obsolete
   kPluginVm = 5,

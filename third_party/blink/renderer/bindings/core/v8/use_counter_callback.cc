@@ -357,6 +357,9 @@ void UseCounterCallback(v8::Isolate* isolate,
     case v8::Isolate::kTemporalObject:
       blink_feature = WebFeature::kV8TemporalObject;
       break;
+    case v8::Isolate::kWasmModuleCompilation:
+      blink_feature = WebFeature::kWebAssemblyModuleCompilation;
+      break;
     default:
       // This can happen if V8 has added counters that this version of Blink
       // does not know about. It's harmless.

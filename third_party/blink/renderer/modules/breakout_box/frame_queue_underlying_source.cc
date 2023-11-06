@@ -47,7 +47,6 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     std::string device_id,
     wtf_size_t frame_pool_size)
     : UnderlyingSourceBase(script_state),
-      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(
@@ -71,7 +70,6 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
     ScriptState* script_state,
     FrameQueueUnderlyingSource<NativeFrameType>* other_source)
     : UnderlyingSourceBase(script_state),
-      ActiveScriptWrappable<FrameQueueUnderlyingSource<NativeFrameType>>({}),
       realm_task_runner_(ExecutionContext::From(script_state)
                              ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
       frame_queue_handle_(other_source->frame_queue_handle_.Queue()),
@@ -81,8 +79,9 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
 }
 
 template <typename NativeFrameType>
-ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
-    ScriptState* script_state) {
+ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Pull(
+    ScriptState* script_state,
+    ExceptionState&) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   {
     base::AutoLock locker(lock_);
@@ -108,7 +107,8 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::pull(
 
 template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   if (is_closed_) {
     // This was intended to be closed before Start() was called.
@@ -117,11 +117,9 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
       // implementations should return their own failure messages.
-      return ScriptPromise::Reject(
-          script_state,
-          V8ThrowDOMException::CreateOrEmpty(
-              script_state->GetIsolate(), DOMExceptionCode::kInvalidStateError,
-              "Invalid track"));
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid track");
+      return ScriptPromise();
     }
   }
 
@@ -136,12 +134,6 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   Close();
   return ScriptPromise::CastUndefined(script_state);
-}
-
-template <typename NativeFrameType>
-bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
-  base::AutoLock locker(lock_);
-  return (num_pending_pulls_ > 0) && GetExecutionContext();
 }
 
 template <typename NativeFrameType>
@@ -330,11 +322,8 @@ void FrameQueueUnderlyingSource<
       realm_task_runner_->PostTask(
           FROM_HERE,
           WTF::BindOnce(
-              [](ReadableStreamDefaultControllerWithScriptScope* controller,
-                 ScriptWrappable* blink_frame) {
-                controller->Enqueue(blink_frame);
-              },
-              WrapPersistent(Controller()),
+              &FrameQueueUnderlyingSource::EnqueueBlinkFrame,
+              WrapPersistent(this),
               WrapPersistent(MakeBlinkFrame(std::move(media_frame.value())))));
     } else {
       Controller()->Enqueue(MakeBlinkFrame(std::move(media_frame.value())));
@@ -347,6 +336,15 @@ void FrameQueueUnderlyingSource<
       if (--num_pending_pulls_ == 0)
         return;
     }
+  }
+}
+
+template <typename NativeFrameType>
+void FrameQueueUnderlyingSource<NativeFrameType>::EnqueueBlinkFrame(
+    ScriptWrappable* blink_frame) const {
+  DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  if (GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed()) {
+    Controller()->Enqueue(blink_frame);
   }
 }
 

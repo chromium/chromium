@@ -1,0 +1,38 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SensorsAllowedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_sensors_allowed_for_urls": {
+            "value": [
+              "[*.]google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "profile.managed_sensors_allowed_for_urls": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

@@ -59,8 +59,6 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
                     // properly. E.g. allocate buffers with the new resolution.
     kRanOutOfStreamData,  // Need more stream data to proceed.
     kRanOutOfSurfaces,    // Waiting for the client to free up output surfaces.
-    kNeedContextUpdate,   // Waiting for the client to update decoding context
-                          // with data acquired from the accelerator.
     kTryAgain,  // The accelerator needs additional data (independently
     // provided) in order to proceed. This may be a new key in order to decrypt
     // encrypted data, or existing hardware resources freed so that they can be

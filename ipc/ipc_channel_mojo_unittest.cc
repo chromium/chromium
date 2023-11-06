@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
+#include <cstdint>
 #include <memory>
 #include <utility>
 
@@ -46,10 +48,12 @@
 #include "ipc/ipc_test.mojom.h"
 #include "ipc/ipc_test_base.h"
 #include "ipc/ipc_test_channel_listener.h"
+#include "ipc/urgent_message_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/urgent_message_scope.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -797,12 +801,15 @@ class ChannelProxyRunner {
   ChannelProxyRunner(const ChannelProxyRunner&) = delete;
   ChannelProxyRunner& operator=(const ChannelProxyRunner&) = delete;
 
-  void CreateProxy(IPC::Listener* listener) {
+  void CreateProxy(
+      IPC::Listener* listener,
+      IPC::UrgentMessageObserver* urgent_message_observer = nullptr) {
     io_thread_.StartWithOptions(
         base::Thread::Options(base::MessagePumpType::IO, 0));
     proxy_ = IPC::SyncChannel::Create(
         listener, io_thread_.task_runner(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), &never_signaled_);
+    proxy_->SetUrgentMessageObserver(urgent_message_observer);
   }
 
   void RunProxy() {
@@ -836,10 +843,17 @@ class IPCChannelProxyMojoTest : public IPCChannelMojoTestBase {
     IPCChannelMojoTestBase::Init(client_name);
     runner_ = std::make_unique<ChannelProxyRunner>(TakeHandle(), true);
   }
-  void CreateProxy(IPC::Listener* listener) { runner_->CreateProxy(listener); }
+
+  void CreateProxy(
+      IPC::Listener* listener,
+      IPC::UrgentMessageObserver* urgent_message_observer = nullptr) {
+    runner_->CreateProxy(listener, urgent_message_observer);
+  }
+
   void RunProxy() {
     runner_->RunProxy();
   }
+
   void DestroyProxy() {
     runner_.reset();
     base::RunLoop().RunUntilIdle();
@@ -1763,5 +1777,166 @@ DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(IPCChannelMojoTestVerifyGlobalPidClient) {
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+class ListenerWithUrgentMessageAssociatedInterface
+    : public IPC::mojom::InterfaceWithUrgentMethod,
+      public IPC::Listener,
+      public IPC::UrgentMessageObserver {
+ public:
+  explicit ListenerWithUrgentMessageAssociatedInterface(
+      base::OnceClosure quit_closure)
+      : quit_closure_(std::move(quit_closure)) {}
+
+  ListenerWithUrgentMessageAssociatedInterface(
+      const ListenerWithUrgentMessageAssociatedInterface&) = delete;
+  ListenerWithUrgentMessageAssociatedInterface& operator=(
+      const ListenerWithUrgentMessageAssociatedInterface&) = delete;
+
+  ~ListenerWithUrgentMessageAssociatedInterface() override = default;
+
+  uint32_t num_maybe_urgent_messages_received() const {
+    return num_maybe_urgent_messages_received_;
+  }
+
+  uint32_t num_urgent_messages_received() const {
+    return num_urgent_messages_received_;
+  }
+
+  uint32_t num_non_urgent_messages_received() const {
+    return num_non_urgent_messages_received_;
+  }
+
+  uint32_t num_observer_urgent_messages_received() const {
+    return num_observer_urgent_messages_received_.load(
+        std::memory_order_relaxed);
+  }
+
+  uint32_t num_observer_urgent_messages_processed() const {
+    return num_observer_urgent_messages_processed_.load(
+        std::memory_order_relaxed);
+  }
+
+  bool was_process_callback_pending_during_ipc_dispatch() const {
+    return was_process_callback_pending_during_ipc_dispatch_;
+  }
+
+ private:
+  // IPC::mojom::InterfaceWithUrgentMethod:
+  void MaybeUrgentMessage(bool is_urgent) override {
+    ++num_maybe_urgent_messages_received_;
+    if (!is_urgent) {
+      return;
+    }
+    ++num_urgent_messages_received_;
+    uint32_t received =
+        num_observer_urgent_messages_received_.load(std::memory_order_relaxed);
+    uint32_t processed =
+        num_observer_urgent_messages_processed_.load(std::memory_order_relaxed);
+    // The "processed" observer callback should run after the IPC is dispatched,
+    // so there should always be at least one less processed callback here.
+    was_process_callback_pending_during_ipc_dispatch_ =
+        was_process_callback_pending_during_ipc_dispatch_ &&
+        (processed < received);
+  }
+
+  void NonUrgentMessage() override { ++num_non_urgent_messages_received_; }
+
+  void RequestQuit(RequestQuitCallback callback) override {
+    std::move(quit_closure_).Run();
+    std::move(callback).Run();
+  }
+
+  // IPC::Listener:
+  bool OnMessageReceived(const IPC::Message& message) override { return true; }
+
+  void OnAssociatedInterfaceRequest(
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle handle) override {
+    CHECK(!receiver_.is_bound());
+    CHECK_EQ(interface_name, IPC::mojom::InterfaceWithUrgentMethod::Name_);
+    receiver_.Bind(
+        mojo::PendingAssociatedReceiver<IPC::mojom::InterfaceWithUrgentMethod>(
+            std::move(handle)));
+  }
+
+  // IPC::UrgentMessageObserver:
+  void OnUrgentMessageReceived() override {
+    std::atomic_fetch_add_explicit(&num_observer_urgent_messages_received_,
+                                   uint32_t(1), std::memory_order_relaxed);
+  }
+
+  void OnUrgentMessageProcessed() override {
+    std::atomic_fetch_add_explicit(&num_observer_urgent_messages_processed_,
+                                   uint32_t(1), std::memory_order_relaxed);
+  }
+
+  base::OnceClosure quit_closure_;
+  mojo::AssociatedReceiver<IPC::mojom::InterfaceWithUrgentMethod> receiver_{
+      this};
+  uint32_t num_maybe_urgent_messages_received_{0};
+  uint32_t num_urgent_messages_received_{0};
+  uint32_t num_non_urgent_messages_received_{0};
+  std::atomic<uint32_t> num_observer_urgent_messages_received_{0};
+  std::atomic<uint32_t> num_observer_urgent_messages_processed_{0};
+  bool was_process_callback_pending_during_ipc_dispatch_{true};
+};
+
+TEST_F(IPCChannelProxyMojoTest, UrgentMessageObserver) {
+  Init("UrgentMessageObserverClient");
+
+  base::RunLoop run_loop;
+  ListenerWithUrgentMessageAssociatedInterface listener(run_loop.QuitClosure());
+  CreateProxy(&listener, /*urgent_message_observer=*/&listener);
+  RunProxy();
+
+  run_loop.Run();
+
+  EXPECT_TRUE(WaitForClientShutdown());
+
+  EXPECT_EQ(listener.num_maybe_urgent_messages_received(), 5u);
+  EXPECT_EQ(listener.num_urgent_messages_received(), 3u);
+  EXPECT_EQ(listener.num_non_urgent_messages_received(), 2u);
+
+  EXPECT_EQ(listener.num_observer_urgent_messages_received(), 3u);
+  EXPECT_EQ(listener.num_observer_urgent_messages_processed(), 3u);
+  EXPECT_TRUE(listener.was_process_callback_pending_during_ipc_dispatch());
+
+  DestroyProxy();
+}
+
+DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT_WITH_CUSTOM_FIXTURE(
+    UrgentMessageObserverClient,
+    ChannelProxyClient) {
+  DummyListener listener;
+  CreateProxy(&listener);
+  RunProxy();
+
+  mojo::AssociatedRemote<IPC::mojom::InterfaceWithUrgentMethod> remote;
+  proxy()->GetRemoteAssociatedInterface(
+      remote.BindNewEndpointAndPassReceiver());
+
+  {
+    mojo::UrgentMessageScope scope;
+    remote->MaybeUrgentMessage(/*is_urgent=*/true);
+  }
+  remote->NonUrgentMessage();
+  remote->MaybeUrgentMessage(/*is_urgent=*/false);
+  {
+    mojo::UrgentMessageScope scope;
+    remote->MaybeUrgentMessage(/*is_urgent=*/true);
+  }
+  remote->NonUrgentMessage();
+  remote->MaybeUrgentMessage(/*is_urgent=*/false);
+  {
+    mojo::UrgentMessageScope scope;
+    remote->MaybeUrgentMessage(/*is_urgent=*/true);
+  }
+
+  base::RunLoop run_loop;
+  remote->RequestQuit(run_loop.QuitClosure());
+  run_loop.Run();
+
+  DestroyProxy();
+}
 
 }  // namespace

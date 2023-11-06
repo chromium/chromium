@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Verify that automapping is sane.\n`);
@@ -26,7 +27,7 @@ import * as Common from 'devtools/core/common/common.js';
   var sources_module_json = {content: 'module descriptor 2'};
   var bazContent = 'alert(1);';
 
-  var automappingTest = new BindingsTestRunner.AutomappingTest(new Workspace.Workspace());
+  var automappingTest = new BindingsTestRunner.AutomappingTest(new Workspace.Workspace.WorkspaceImpl());
   automappingTest.addNetworkResources({
     // Make sure main resource gets mapped.
     'http://example.com': index_html,

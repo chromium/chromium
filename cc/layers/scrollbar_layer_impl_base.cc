@@ -290,6 +290,10 @@ ScrollbarLayerImplBase::GetScrollbarAnimator() const {
   return layer_tree_impl()->settings().scrollbar_animator;
 }
 
+float ScrollbarLayerImplBase::GetIdleThicknessScale() const {
+  return layer_tree_impl()->settings().idle_thickness_scale;
+}
+
 void ScrollbarLayerImplBase::SetHasFindInPageTickmarks(
     bool has_find_in_page_tickmarks) {
   if (has_find_in_page_tickmarks_ == has_find_in_page_tickmarks) {

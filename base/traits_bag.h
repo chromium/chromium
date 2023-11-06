@@ -111,7 +111,7 @@ struct InvalidTrait {};
 template <class TraitFilterType,
           class ArgType,
           class CheckArgumentIsCompatible = std::enable_if_t<
-              std::is_constructible<TraitFilterType, ArgType>::value>>
+              std::is_constructible_v<TraitFilterType, ArgType>>>
 constexpr TraitFilterType GetTraitFromArg(CallFirstTag, ArgType arg) {
   return TraitFilterType(arg);
 }
@@ -127,8 +127,8 @@ constexpr InvalidTrait GetTraitFromArg(CallSecondTag, ArgType arg) {
 // disambiguation tag.
 template <class TraitFilterType,
           class... ArgTypes,
-          class TestCompatibleArgument = std::enable_if_t<any_of(
-              {std::is_constructible<TraitFilterType, ArgTypes>::value...})>>
+          class TestCompatibleArgument = std::enable_if_t<
+              any_of({std::is_constructible_v<TraitFilterType, ArgTypes>...})>>
 constexpr TraitFilterType GetTraitFromArgListImpl(CallFirstTag,
                                                   ArgTypes... args) {
   return std::get<TraitFilterType>(std::make_tuple(
@@ -138,7 +138,7 @@ constexpr TraitFilterType GetTraitFromArgListImpl(CallFirstTag,
 template <class TraitFilterType, class... ArgTypes>
 constexpr TraitFilterType GetTraitFromArgListImpl(CallSecondTag,
                                                   ArgTypes... args) {
-  static_assert(std::is_constructible<TraitFilterType>::value,
+  static_assert(std::is_constructible_v<TraitFilterType>,
                 "The traits bag is missing a required trait.");
   return TraitFilterType();
 }
@@ -151,8 +151,7 @@ template <class TraitFilterType, class... ArgTypes>
 constexpr typename TraitFilterType::ValueType GetTraitFromArgList(
     ArgTypes... args) {
   static_assert(
-      count({std::is_constructible<TraitFilterType, ArgTypes>::value...},
-            true) <= 1,
+      count({std::is_constructible_v<TraitFilterType, ArgTypes>...}, true) <= 1,
       "The traits bag contains multiple traits of the same type.");
   return GetTraitFromArgListImpl<TraitFilterType>(CallFirstTag(), args...);
 }
@@ -239,9 +238,8 @@ static constexpr absl::optional<Enum> GetOptionalEnum(Args... args) {
 // Helper to make checking for the presence of a trait more readable.
 template <typename Trait, typename... Args>
 struct HasTrait : ParameterPack<Args...>::template HasType<Trait> {
-  static_assert(
-      count({std::is_constructible<Trait, Args>::value...}, true) <= 1,
-      "The traits bag contains multiple traits of the same type.");
+  static_assert(count({std::is_constructible_v<Trait, Args>...}, true) <= 1,
+                "The traits bag contains multiple traits of the same type.");
 };
 
 // If you need a template vararg constructor to delegate to a private

@@ -63,7 +63,7 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
+    bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     delegate = new TestPowerBookmarksDelegate();

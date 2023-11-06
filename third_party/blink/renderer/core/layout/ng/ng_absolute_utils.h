@@ -52,19 +52,60 @@ ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
                        NGAnchorEvaluatorImpl* anchor_evaluator);
 
-// Computes the inset-modified containing block without the final step of
-// clamping negative sizes to zero.
+struct CORE_EXPORT InsetModifiedContainingBlock {
+  // The original containing block size that the insets refer to.
+  LogicalSize available_size;
+
+  // Resolved insets of the IMCB.
+  LayoutUnit inline_start;
+  LayoutUnit inline_end;
+  LayoutUnit block_start;
+  LayoutUnit block_end;
+
+  // Indicates how the insets were calculated. Besides, when we need to clamp
+  // the IMCB size, the stronger inset (i.e., the inset we are biased towards)
+  // stays at the same place, and the weaker inset is moved; If both insets are
+  // equally strong, both are moved by the same amount.
+  enum class InsetBias { kStart, kEnd, kEqual };
+  InsetBias inline_inset_bias = InsetBias::kStart;
+  InsetBias block_inset_bias = InsetBias::kStart;
+
+  LayoutUnit InlineEndOffset() const {
+    return available_size.inline_size - inline_end;
+  }
+  LayoutUnit BlockEndOffset() const {
+    return available_size.block_size - block_end;
+  }
+  LayoutUnit InlineSize() const {
+    return available_size.inline_size - inline_start - inline_end;
+  }
+  LayoutUnit BlockSize() const {
+    return available_size.block_size - block_start - block_end;
+  }
+  LogicalSize Size() const { return LogicalSize(InlineSize(), BlockSize()); }
+};
+
+// Computes the inset-modified containing block for resolving size, margins and
+// final position of the out-of-flow node.
 // https://www.w3.org/TR/css-position-3/#inset-modified-containing-block
-CORE_EXPORT LogicalRect
-ComputeOutOfFlowAvailableRect(const NGBlockNode&,
-                              const NGConstraintSpace&,
-                              const NGLogicalOutOfFlowInsets&,
-                              const LogicalStaticPosition&);
-CORE_EXPORT LogicalRect
-ComputeOutOfFlowAvailableRect(const NGBlockNode&,
-                              const LogicalSize& available_size,
-                              const NGLogicalOutOfFlowInsets&,
-                              const LogicalStaticPosition&);
+CORE_EXPORT InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(
+    const NGBlockNode& node,
+    const LogicalSize& available_size,
+    const NGLogicalOutOfFlowInsets&,
+    const LogicalStaticPosition&,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction);
+
+// Similar to `ComputeInsetModifiedContainingBlock`, but returns the
+// scroll-adjusted IMCB at the initial scroll position, which is for the
+// position fallback algorithm only.
+// https://www.w3.org/TR/css-anchor-position-1/#fallback-apply
+CORE_EXPORT InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
+    const LogicalSize& available_size,
+    const NGLogicalOutOfFlowInsets&,
+    const LogicalStaticPosition&,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction);
 
 // The following routines implement the absolute size resolution algorithm.
 // https://www.w3.org/TR/css-position-3/#abs-non-replaced-width
@@ -84,10 +125,8 @@ CORE_EXPORT bool ComputeOutOfFlowInlineDimensions(
     const NGBlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
-    const NGLogicalOutOfFlowInsets&,
+    const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
-    const LogicalStaticPosition&,
-    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,
@@ -99,10 +138,8 @@ CORE_EXPORT const NGLayoutResult* ComputeOutOfFlowBlockDimensions(
     const NGBlockNode&,
     const ComputedStyle& style,
     const NGConstraintSpace&,
-    const NGLogicalOutOfFlowInsets&,
+    const InsetModifiedContainingBlock&,
     const BoxStrut& border_padding,
-    const LogicalStaticPosition&,
-    LogicalSize computed_available_size,
     const absl::optional<LogicalSize>& replaced_size,
     const WritingDirectionMode container_writing_direction,
     const Length::AnchorEvaluator* anchor_evaluator,

@@ -51,29 +51,28 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
     private final ArgumentCaptor<BottomSheetObserver> mObserverCaptor =
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private BottomSheetController mController;
-    @Mock
-    private MandatoryReauthOptInBottomSheetControllerBridge.Natives mControllerBridgeJniMock;
+    @Mock private BottomSheetController mController;
+    @Mock private MandatoryReauthOptInBottomSheetControllerBridge.Natives mControllerBridgeJniMock;
 
     private static final long sPlaceholderNativePointer = 1;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mJniMocker.mock(MandatoryReauthOptInBottomSheetControllerBridgeJni.TEST_HOOKS,
+        mJniMocker.mock(
+                MandatoryReauthOptInBottomSheetControllerBridgeJni.TEST_HOOKS,
                 mControllerBridgeJniMock);
         setUpBottomSheetController();
-        mViewBridge = new MandatoryReauthOptInBottomSheetViewBridge(
-                new MandatoryReauthOptInBottomSheetCoordinator(
-                        Robolectric.buildActivity(Activity.class).get(), mController,
-                        new MandatoryReauthOptInBottomSheetControllerBridge(
-                                sPlaceholderNativePointer)));
+        mViewBridge =
+                new MandatoryReauthOptInBottomSheetViewBridge(
+                        new MandatoryReauthOptInBottomSheetCoordinator(
+                                Robolectric.buildActivity(Activity.class).get(),
+                                mController,
+                                new MandatoryReauthOptInBottomSheetControllerBridge(
+                                        sPlaceholderNativePointer)));
     }
 
     private void setUpBottomSheetController() {
@@ -100,8 +99,11 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
 
         // Check that the custom view contains the expected title and explanation.
         assertThat(titleView.getText(), is("Always verify?"));
-        assertThat(explanationView.getText(),
-                is("For added security on shared devices, turn on verification every time you pay using autofill."));
+        assertThat(
+                explanationView.getText(),
+                is(
+                        "For added security on shared devices, turn on verification every time you"
+                                + " pay using autofill."));
 
         Button acceptButton = (Button) getView(R.id.mandatory_reauth_opt_in_accept_button);
         Button cancelButton = (Button) getView(R.id.mandatory_reauth_opt_in_cancel_button);

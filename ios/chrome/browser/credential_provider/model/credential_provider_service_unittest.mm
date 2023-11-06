@@ -16,7 +16,7 @@
 #import "components/favicon/core/large_icon_service.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -389,6 +389,43 @@ TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
 
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+}
+
+TEST_F(CredentialProviderServiceTest, AddCredentialsWithValidURL) {
+  CreateCredentialProviderService();
+
+  ASSERT_EQ(credential_store_.credentials.count, 0u);
+
+  // Add password with valid URL to store.
+  password_manager::PasswordForm valid_password_form;
+  valid_password_form.url = GURL("http://g.com");
+  valid_password_form.username_value = u"user1";
+  valid_password_form.password_value = u"pwd1";
+  password_store_->AddLogin(valid_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Don't add password with invalid URL to store.
+  password_manager::PasswordForm invalid_password_form;
+  invalid_password_form.url = GURL("");
+  invalid_password_form.username_value = u"user2";
+  invalid_password_form.password_value = u"pwd2";
+  password_store_->AddLogin(invalid_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 1u);
+
+  // Add password with valid Android facet URI to store.
+  password_manager::PasswordForm android_password_form;
+  android_password_form.url = GURL(android_password_form.signon_realm);
+  android_password_form.signon_realm = "android://hash@com.example.my.app";
+  android_password_form.password_element = u"pwd";
+  android_password_form.password_value = u"example";
+  password_store_->AddLogin(android_password_form);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
 }
 
 }  // namespace

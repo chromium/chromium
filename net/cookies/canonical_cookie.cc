@@ -983,6 +983,10 @@ bool CanonicalCookie::IsFirstPartyPartitioned() const {
                            DomainWithoutDot()}))) == partition_key_->site();
 }
 
+bool CanonicalCookie::IsThirdPartyPartitioned() const {
+  return IsPartitioned() && !IsFirstPartyPartitioned();
+}
+
 std::string CanonicalCookie::DomainWithoutDot() const {
   return cookie_util::CookieDomainAsHost(domain_);
 }

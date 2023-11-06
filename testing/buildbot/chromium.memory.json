@@ -1168,23 +1168,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -2486,20 +2469,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -3068,8 +3037,9 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 120
+          "shards": 140
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -3983,23 +3953,6 @@
         },
         "test": "sandbox_linux_unittests",
         "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
         "args": [
@@ -5682,24 +5635,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-20.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "shell_dialogs_unittests",
         "swarming": {
           "dimensions": {
@@ -6491,7 +6426,7 @@
             "os": "Ubuntu-20.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 8
+          "shards": 10
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -7299,24 +7234,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Ubuntu-20.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "shell_dialogs_unittests",
         "swarming": {
           "dimensions": {
@@ -8006,6 +7923,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -8405,6 +8323,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -8415,7 +8334,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 40
+          "shards": 41
         },
         "test": "interactive_ui_tests",
         "test_id_prefix": "ninja://chrome/test:interactive_ui_tests/"
@@ -8770,23 +8689,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -8886,6 +8788,7 @@
         "args": [
           "--test-launcher-print-test-stdio=always"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -9077,7 +8980,7 @@
             "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 2
         },
         "test": "blink_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests/"
@@ -10226,24 +10129,6 @@
         },
         "test": "sandbox_unittests",
         "test_id_prefix": "ninja://sandbox:sandbox_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always"
-        ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": "x86-64",
-            "os": "Mac-12"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
         "args": [
@@ -13232,7 +13117,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13280,7 +13165,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13328,7 +13213,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13376,7 +13261,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13424,7 +13309,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13472,7 +13357,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13520,7 +13405,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13568,7 +13453,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13616,7 +13501,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13664,7 +13549,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13712,7 +13597,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13760,7 +13645,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13808,7 +13693,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13856,7 +13741,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13904,7 +13789,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -13952,7 +13837,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14000,7 +13885,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14048,7 +13933,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14096,7 +13981,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14144,7 +14029,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14192,7 +14077,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14240,7 +14125,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14288,7 +14173,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14337,7 +14222,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14386,7 +14271,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14434,7 +14319,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14482,7 +14367,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14530,7 +14415,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14578,7 +14463,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14626,7 +14511,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14674,7 +14559,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14722,7 +14607,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14770,7 +14655,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14818,7 +14703,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14866,7 +14751,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14914,7 +14799,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -14962,7 +14847,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15010,7 +14895,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15058,7 +14943,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15106,7 +14991,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15154,7 +15039,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15202,7 +15087,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15250,7 +15135,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15298,7 +15183,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15346,7 +15231,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15394,7 +15279,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15442,7 +15327,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -15490,7 +15375,7 @@
             {
               "cipd_package": "infra/tools/mac_toolchain/${platform}",
               "location": ".",
-              "revision": "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb"
+              "revision": "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce"
             }
           ],
           "dimensions": {
@@ -16332,12 +16217,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.60/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.104/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 118.0.5993.60",
+        "description": "Run with ash-chrome version 119.0.6045.104",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16347,8 +16232,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v118.0.5993.60",
-              "revision": "version:118.0.5993.60"
+              "location": "lacros_version_skew_tests_v119.0.6045.104",
+              "revision": "version:119.0.6045.104"
             }
           ],
           "dimensions": {
@@ -16364,12 +16249,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6070.0/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v121.0.6110.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 120.0.6070.0",
+        "description": "Run with ash-chrome version 121.0.6110.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16379,8 +16264,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v120.0.6070.0",
-              "revision": "version:120.0.6070.0"
+              "location": "lacros_version_skew_tests_v121.0.6110.0",
+              "revision": "version:121.0.6110.0"
             }
           ],
           "dimensions": {
@@ -16396,12 +16281,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.16/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6085.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 119.0.6045.16",
+        "description": "Run with ash-chrome version 120.0.6085.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16411,8 +16296,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v119.0.6045.16",
-              "revision": "version:119.0.6045.16"
+              "location": "lacros_version_skew_tests_v120.0.6085.0",
+              "revision": "version:120.0.6085.0"
             }
           ],
           "dimensions": {
@@ -16428,12 +16313,12 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.filter;../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v117.0.5938.157/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.124/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 117.0.5938.157",
+        "description": "Run with ash-chrome version 118.0.5993.124",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -16443,8 +16328,8 @@
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v117.0.5938.157",
-              "revision": "version:117.0.5938.157"
+              "location": "lacros_version_skew_tests_v118.0.5993.124",
+              "revision": "version:118.0.5993.124"
             }
           ],
           "dimensions": {
@@ -16488,7 +16373,7 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series",
+        "name": "lacros_chrome_browsertests",
         "swarming": {
           "dimensions": {
             "os": "Ubuntu-22.04"
@@ -16496,29 +16381,29 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
-        "test": "lacros_chrome_browsertests_run_in_series",
-        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/"
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/"
       },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.60/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.104/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 118.0.5993.60",
+        "description": "Run with ash-chrome version 119.0.6045.104",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta",
+        "name": "lacros_chrome_browsertests Lacros version skew testing ash beta",
         "swarming": {
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v118.0.5993.60",
-              "revision": "version:118.0.5993.60"
+              "location": "lacros_version_skew_tests_v119.0.6045.104",
+              "revision": "version:119.0.6045.104"
             }
           ],
           "dimensions": {
@@ -16527,30 +16412,30 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
-        "test": "lacros_chrome_browsertests_run_in_series",
-        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/",
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/",
         "variant_id": "Lacros version skew testing ash beta"
       },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6070.0/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v121.0.6110.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 120.0.6070.0",
+        "description": "Run with ash-chrome version 121.0.6110.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary",
+        "name": "lacros_chrome_browsertests Lacros version skew testing ash canary",
         "swarming": {
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v120.0.6070.0",
-              "revision": "version:120.0.6070.0"
+              "location": "lacros_version_skew_tests_v121.0.6110.0",
+              "revision": "version:121.0.6110.0"
             }
           ],
           "dimensions": {
@@ -16559,30 +16444,30 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
-        "test": "lacros_chrome_browsertests_run_in_series",
-        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/",
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/",
         "variant_id": "Lacros version skew testing ash canary"
       },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v119.0.6045.16/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v120.0.6085.0/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 119.0.6045.16",
+        "description": "Run with ash-chrome version 120.0.6085.0",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev",
+        "name": "lacros_chrome_browsertests Lacros version skew testing ash dev",
         "swarming": {
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v119.0.6045.16",
-              "revision": "version:119.0.6045.16"
+              "location": "lacros_version_skew_tests_v120.0.6085.0",
+              "revision": "version:120.0.6085.0"
             }
           ],
           "dimensions": {
@@ -16591,30 +16476,30 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
-        "test": "lacros_chrome_browsertests_run_in_series",
-        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/",
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/",
         "variant_id": "Lacros version skew testing ash dev"
       },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.filter;../../testing/buildbot/filters/linux-lacros.lacros_chrome_browsertests.skew.filter",
-          "--ash-chrome-path-override=../../lacros_version_skew_tests_v117.0.5938.157/test_ash_chrome",
+          "--ash-chrome-path-override=../../lacros_version_skew_tests_v118.0.5993.124/test_ash_chrome",
           "--test-launcher-print-test-stdio=always",
           "--combine-ash-logs-on-bots",
           "--asan-symbolize-output"
         ],
-        "description": "Run with ash-chrome version 117.0.5938.157",
+        "description": "Run with ash-chrome version 118.0.5993.124",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable",
+        "name": "lacros_chrome_browsertests Lacros version skew testing ash stable",
         "swarming": {
           "cipd_packages": [
             {
               "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-              "location": "lacros_version_skew_tests_v117.0.5938.157",
-              "revision": "version:117.0.5938.157"
+              "location": "lacros_version_skew_tests_v118.0.5993.124",
+              "revision": "version:118.0.5993.124"
             }
           ],
           "dimensions": {
@@ -16623,8 +16508,8 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
-        "test": "lacros_chrome_browsertests_run_in_series",
-        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests_run_in_series/",
+        "test": "lacros_chrome_browsertests",
+        "test_id_prefix": "ninja://chrome/test:lacros_chrome_browsertests/",
         "variant_id": "Lacros version skew testing ash stable"
       },
       {
@@ -17028,26 +16913,6 @@
         },
         "test": "sandbox_linux_unittests",
         "test_id_prefix": "ninja://sandbox/linux:sandbox_linux_unittests/"
-      },
-      {
-        "args": [
-          "--test-launcher-print-test-stdio=always",
-          "--combine-ash-logs-on-bots",
-          "--asan-symbolize-output"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
         "args": [
@@ -18356,20 +18221,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Ubuntu-22.04"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "services_unittests",
         "swarming": {
           "dimensions": {
@@ -19654,20 +19505,6 @@
         },
         "test": "sbox_validation_tests",
         "test_id_prefix": "ninja://sandbox/win:sbox_validation_tests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "os": "Windows-10-19045"
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
       },
       {
         "merge": {

@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -88,7 +89,7 @@ class BrowserDataBackMigratorOnSignIn : public ash::LoginManagerTest {
   void SetUpInProcessBrowserTestFixture() override {
     feature_list_.InitWithFeatures(
         {ash::features::kLacrosProfileBackwardMigration},
-        {ash::features::kLacrosOnly});
+        {ash::standalone_browser::features::kLacrosOnly});
 
     SessionManagerClient::InitializeFakeInMemory();
   }

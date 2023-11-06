@@ -32,7 +32,6 @@
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -282,10 +281,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
   style::mojom::ColorScheme GetColorScheme(
       const AccountId& account_id) const override {
-    if (!chromeos::features::IsJellyEnabled()) {
-      // Pre-Jelly, this is always Tonal Spot.
-      return style::mojom::ColorScheme::kTonalSpot;
-    }
     PrefService* pref_service = GetUserPrefService(account_id);
     if (pref_service) {
       const PrefService::Preference* pref =
@@ -380,9 +375,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   }
 
   void SelectLocalAccount(const AccountId& account_id) override {
-    if (!chromeos::features::IsJellyEnabled()) {
-      return;
-    }
     NotifyObservers(GetColorPaletteSeed(account_id));
   }
 
@@ -393,9 +385,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
 
   // SessionObserver overrides:
   void OnActiveUserPrefServiceChanged(PrefService* prefs) override {
-    if (!chromeos::features::IsJellyEnabled()) {
-      return;
-    }
     MaybeSetUseKMeansPref(prefs);
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
 
@@ -461,8 +450,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (session) {
       account_id = AccountFromSession(session);
     }
-    if (!chromeos::features::IsJellyEnabled() ||
-        (account_id.has_value() && ShouldUseKMeans(*account_id))) {
+
+    // Return KMeans if the account is kept in legacy mode i.e. they haven't
+    // changed their wallpaper since the new sampling algorithm was introduced.
+    if (account_id.has_value() && ShouldUseKMeans(*account_id)) {
       return GetCurrentKMeanColor();
     }
 
@@ -495,10 +486,6 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   // Gets the user's current wallpaper color.
   // TODO(b/289106519): Combine this function with |GetUserWallpaperColor|.
   absl::optional<SkColor> CurrentWallpaperColor(bool dark) const {
-    if (!chromeos::features::IsJellyEnabled()) {
-      const SkColor default_color = dark ? gfx::kGoogleGrey900 : SK_ColorWHITE;
-      return GetUserWallpaperColorOrDefault(default_color);
-    }
     const absl::optional<WallpaperCalculatedColors>& calculated_colors =
         wallpaper_controller_->calculated_colors();
     if (!calculated_colors) {
@@ -572,6 +559,7 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (session) {
       return GetColorPaletteSeed(AccountFromSession(session));
     }
+
     session_manager::SessionState session_state =
         Shell::Get()->session_controller()->GetSessionState();
     const bool is_oobe =
@@ -579,23 +567,19 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
          oobe_state_ != OobeDialogState::HIDDEN);
 
-    if (chromeos::features::IsJellyEnabled() && !is_oobe) {
-      // This early return prevents overwriting colors. When Jelly is disabled,
-      // it is always safe to return the k means color. OOBE has a special
-      // wallpaper and always uses celebi. In any other case, like on the login
-      // screen, the calculated colors may not have been updated and so the
-      // colors should not be updated.
+    if (!is_oobe) {
+      // This early return prevents overwriting colors. OOBE has a special
+      // wallpaper and needs to sample the color. In any other case, like on the
+      // login screen, the calculated colors may not have been updated and so
+      // the colors should not be updated.
       return {};
     }
+
     // Generate a seed where we assume TonalSpot and ignore static colors.
     ColorPaletteSeed seed;
     bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
-    // If Jelly is enabled, then the user is in OOBE and should see the celebi
-    // color. If Jelly is not enabled, then users have no access to celebi and
-    // should see the k means color.
-    absl::optional<SkColor> seed_color = chromeos::features::IsJellyEnabled()
-                                             ? GetCurrentCelebiColor()
-                                             : GetCurrentKMeanColor();
+    // The user is in OOBE and should see the celebi color.
+    absl::optional<SkColor> seed_color = GetCurrentCelebiColor();
     if (!seed_color) {
       // If `seed_color` is not available, we expect to have it shortly
       // the color computation is done and this will be called again.

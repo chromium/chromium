@@ -25,7 +25,7 @@ _CACHED_POLICY_CHANGE_LIST = []
 
 _COMPONENTS_POLICY_PATH = os.path.join('components', 'policy')
 _TEST_CASES_DEPOT_PATH = os.path.join(
-    _COMPONENTS_POLICY_PATH, 'test' , 'data', 'policy_test_cases.json')
+    _COMPONENTS_POLICY_PATH, 'test' , 'data', 'pref_mapping')
 _PRESUBMIT_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'PRESUBMIT.py')
 _TOOLS_PATH = os.path.join(_COMPONENTS_POLICY_PATH, 'tools')
 _SYNTAX_CHECK_SCRIPT_PATH = os.path.join(_TOOLS_PATH,
@@ -52,6 +52,14 @@ _LEGACY_DEVICE_POLICY_PROTO_MAP_PATH = os.path.join(
 # device policy, but be aware that too heavy policies could result in user
 # profiles not having enough space on the device.
 TOTAL_DEVICE_POLICY_EXTERNAL_DATA_MAX_SIZE = 1024 * 1024 * 100
+
+
+def _SafeListDir(directory):
+  '''Wrapper around os.listdir() that ignores files created by Finder.app.'''
+  # On macOS, Finder.app creates .DS_Store files when a user visit a
+  # directory causing failure of the script laters on because there
+  # are no such group as .DS_Store. Skip the file to prevent the error.
+  return filter(lambda name:(name != '.DS_Store'),os.listdir(directory))
 
 
 def _SkipPresubmitChecks(input_api, files_watchlist):
@@ -172,7 +180,9 @@ def _GetPolicyChangeList(input_api):
     filename = os.path.basename(path)
     policy_name = os.path.splitext(filename)[0]
     if (filename == '.group.details.yaml' or
-        filename == 'policy_atomic_groups.yaml'):
+        filename == 'policy_atomic_groups.yaml' or
+        filename == 'OWNERS' or
+        filename == 'DIR_METADATA'):
       continue
     old_policy = None
     new_policy = None
@@ -223,38 +233,43 @@ def CheckPolicyTestCases(input_api, output_api):
   results = []
   if _SkipPresubmitChecks(
       input_api,
-      [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _PRESUBMIT_PATH]):
+      [_TEST_CASES_DEPOT_PATH, _POLICIES_YAML_PATH, _POLICIES_DEFINITIONS_PATH,
+       _PRESUBMIT_PATH]):
     return results
 
-  # Read list of policies in components/policy/test/data/policy_test_cases.json.
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _TEST_CASES_DEPOT_PATH), encoding='utf-8') as f:
-    test_names = input_api.json.load(f).keys()
-  tested_policies = frozenset(name.partition('.')[0]
-                              for name in test_names
-                              if name[:2] != '--')
+
+  # Gather expected test files
   policies_yaml = _LoadYamlFile(root, _POLICIES_YAML_PATH)
   policies = policies_yaml['policies']
-  policy_names = frozenset(name for name in policies.values() if name)
+  policy_names = set(name for name in policies.values() if name)
+
+  test_case_depot_path = os.path.join(
+    root, _TEST_CASES_DEPOT_PATH)
+
+  # Gather actual test files
+  tested_policies = set()
+  for file in _SafeListDir(test_case_depot_path):
+    filename = os.fsdecode(file)
+    policy_name = os.path.splitext(filename)[0]
+    tested_policies.add(policy_name)
 
   # Finally check if any policies are missing.
   missing = policy_names - tested_policies
   extra = tested_policies - policy_names
-  error_missing = ("Policy '%s' was added to "
-                   "//components/policy/resources/templates/policy_definitions/"
-                   " but not to "
-                   "//components/policy/test/data/policy_test_cases.json. "
-                   "Please update both places.")
-  error_extra = ("Policy '%s' is tested by "
-                 "//components/policy/test/policy_test_cases.json but is not"
-                 " defined in "
-                 "//components/policy/resources/templates/policy_definitions/."
-                 " Please update both places.")
+  error_missing = ("Policy '%s' was added but test file '%s' was not "
+                  "found. Please update accordingly.")
+  error_extra = ("Policy '%s' is tested at '%s' but policy definition not "
+                 "found. Please update accordingly.")
   results = []
   for policy in missing:
-    results.append(output_api.PresubmitError(error_missing % policy))
+    results.append(output_api.PresubmitError(
+      error_missing % (
+        policy, os.path.join(test_case_depot_path, f'{policy}.json'))))
   for policy in extra:
-    results.append(output_api.PresubmitError(error_extra % policy))
+    results.append(output_api.PresubmitError(
+      error_extra % (
+        policy, os.path.join(test_case_depot_path, f'{policy}.json'))))
 
   results.extend(
       input_api.canned_checks.CheckChangeHasNoTabs(
@@ -329,8 +344,12 @@ def CheckPolicyAtomicGroupsHistograms(input_api, output_api):
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
                .getElementsByTagName('enum'))
-  atomic_group_enum = [e for e in enums
-                 if e.getAttribute('name') == 'PolicyAtomicGroups'][0]
+  atomic_group_enums = [e for e in enums
+                        if e.getAttribute('name') == 'PolicyAtomicGroups']
+  if not atomic_group_enums:
+    return results
+
+  atomic_group_enum = atomic_group_enums[0]
   atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
                               for e in atomic_group_enum
                                 .getElementsByTagName('int'))
@@ -638,7 +657,8 @@ def CheckPoliciesYamlOrdering(input_api, output_api):
     return results
 
   root = input_api.change.RepositoryRoot()
-  with open(os.path.join(root, _POLICIES_YAML_PATH), 'r', encoding='utf-8') as f:
+  with open(os.path.join(root, _POLICIES_YAML_PATH),
+            'r', encoding='utf-8') as f:
     policies_yaml_lines = f.readlines()
 
   previous_id = 0
@@ -765,7 +785,7 @@ def CheckDevicePolicies(input_api, output_api):
   root = input_api.change.RepositoryRoot()
   policy_changelist = _GetPolicyChangeList(input_api)
   if not any(policy_change['new_policy'].get('device_only', False)
-             and policy_change['new_policy']['type'] == 'external'
+             or policy_change['new_policy']['type'] == 'external'
              for policy_change in policy_changelist
              if policy_change['new_policy'] != None):
     return results
@@ -796,6 +816,21 @@ def CheckDevicePolicies(input_api, output_api):
       results.append(output_api.PresubmitError(
           f"Please add '{policy_name}' to device_policy_proto_map.yaml and map "
           "it to the corresponding field in chrome_device_policy.proto."))
+
+  # Check that the proto field is equal to the policy name for new policies
+  for policy_change in policy_changelist:
+    if ('old_policy' in policy_change and
+        policy_change['old_policy'] is not None):
+      # Ignore existing policies
+      continue
+    policy_name = policy_change['policy']
+
+    field_name = policy_name + ".value"
+
+    if proto_map[policy_name] != field_name:
+      results.append(output_api.PresubmitError(
+        f"The proto field in chrome_device_policy.proto for '{policy_name}' "
+        "must equal the policy name itself."))
 
   # Check external data max size
   total_device_policy_external_data_max_size = 0

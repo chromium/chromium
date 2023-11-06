@@ -81,24 +81,31 @@ void DateTimeChooserImpl::EndChooser() {
   frame_->View()->GetChromeClient()->ClosePagePopup(popup_);
 }
 
-AXObject* DateTimeChooserImpl::RootAXObject() {
-  return popup_ ? popup_->RootAXObject() : nullptr;
+AXObject* DateTimeChooserImpl::RootAXObject(Element* popup_owner) {
+  return popup_ ? popup_->RootAXObject(popup_owner) : nullptr;
 }
 
-static String ValueToDateTimeString(double value, AtomicString type) {
+static String ValueToDateTimeString(double value, InputType::Type type) {
   DateComponents components;
-  if (type == input_type_names::kDate)
-    components.SetMillisecondsSinceEpochForDate(value);
-  else if (type == input_type_names::kDatetimeLocal)
-    components.SetMillisecondsSinceEpochForDateTimeLocal(value);
-  else if (type == input_type_names::kMonth)
-    components.SetMonthsSinceEpoch(value);
-  else if (type == input_type_names::kTime)
-    components.SetMillisecondsSinceMidnight(value);
-  else if (type == input_type_names::kWeek)
-    components.SetMillisecondsSinceEpochForWeek(value);
-  else
-    NOTREACHED();
+  switch (type) {
+    case InputType::Type::kDate:
+      components.SetMillisecondsSinceEpochForDate(value);
+      break;
+    case InputType::Type::kDateTimeLocal:
+      components.SetMillisecondsSinceEpochForDateTimeLocal(value);
+      break;
+    case InputType::Type::kMonth:
+      components.SetMonthsSinceEpoch(value);
+      break;
+    case InputType::Type::kTime:
+      components.SetMillisecondsSinceMidnight(value);
+      break;
+    case InputType::Type::kWeek:
+      components.SetMillisecondsSinceEpochForWeek(value);
+      break;
+    default:
+      NOTREACHED();
+  }
   return components.GetType() == DateComponents::kInvalid
              ? String()
              : components.ToString();
@@ -109,18 +116,21 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
   String step_base_string = String::Number(parameters_->step_base, 11);
   String today_label_string;
   String other_date_label_string;
-  if (parameters_->type == input_type_names::kMonth) {
-    today_label_string = GetLocale().QueryString(IDS_FORM_THIS_MONTH_LABEL);
-    other_date_label_string =
-        GetLocale().QueryString(IDS_FORM_OTHER_MONTH_LABEL);
-  } else if (parameters_->type == input_type_names::kWeek) {
-    today_label_string = GetLocale().QueryString(IDS_FORM_THIS_WEEK_LABEL);
-    other_date_label_string =
-        GetLocale().QueryString(IDS_FORM_OTHER_WEEK_LABEL);
-  } else {
-    today_label_string = GetLocale().QueryString(IDS_FORM_CALENDAR_TODAY);
-    other_date_label_string =
-        GetLocale().QueryString(IDS_FORM_OTHER_DATE_LABEL);
+  switch (parameters_->type) {
+    case InputType::Type::kMonth:
+      today_label_string = GetLocale().QueryString(IDS_FORM_THIS_MONTH_LABEL);
+      other_date_label_string =
+          GetLocale().QueryString(IDS_FORM_OTHER_MONTH_LABEL);
+      break;
+    case InputType::Type::kWeek:
+      today_label_string = GetLocale().QueryString(IDS_FORM_THIS_WEEK_LABEL);
+      other_date_label_string =
+          GetLocale().QueryString(IDS_FORM_OTHER_WEEK_LABEL);
+      break;
+    default:
+      today_label_string = GetLocale().QueryString(IDS_FORM_CALENDAR_TODAY);
+      other_date_label_string =
+          GetLocale().QueryString(IDS_FORM_OTHER_DATE_LABEL);
   }
 
   AddString(
@@ -135,8 +145,8 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
         ChooserResourceLoader::GetSuggestionPickerDarkModeStyleSheet());
   }
   data->Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
-  if (parameters_->type == input_type_names::kTime ||
-      parameters_->type == input_type_names::kDatetimeLocal) {
+  if (parameters_->type == InputType::Type::kTime ||
+      parameters_->type == InputType::Type::kDateTimeLocal) {
     data->Append(ChooserResourceLoader::GetTimePickerStyleSheet());
   }
   AddString(
@@ -184,7 +194,8 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
 #if BUILDFLAG(IS_MAC)
   AddProperty("isBorderTransparent", true, data);
 #endif
-  AddProperty("mode", parameters_->type.GetString(), data);
+  AddProperty("mode", InputType::TypeToString(parameters_->type).GetString(),
+              data);
   AddProperty("isAMPMFirst", parameters_->is_ampm_first, data);
   AddProperty("hasAMPM", parameters_->has_ampm, data);
   AddProperty("hasSecond", parameters_->has_second, data);
@@ -233,9 +244,9 @@ void DateTimeChooserImpl::WriteDocument(SharedBuffer* data) {
   data->Append(ChooserResourceLoader::GetPickerCommonJS());
   data->Append(ChooserResourceLoader::GetSuggestionPickerJS());
   data->Append(ChooserResourceLoader::GetMonthPickerJS());
-  if (parameters_->type == input_type_names::kTime) {
+  if (parameters_->type == InputType::Type::kTime) {
     data->Append(ChooserResourceLoader::GetTimePickerJS());
-  } else if (parameters_->type == input_type_names::kDatetimeLocal) {
+  } else if (parameters_->type == InputType::Type::kDateTimeLocal) {
     data->Append(ChooserResourceLoader::GetTimePickerJS());
     data->Append(ChooserResourceLoader::GetDateTimeLocalPickerJS());
   }

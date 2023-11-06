@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
+#include "base/base_paths.h"
 #include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
@@ -1709,8 +1710,9 @@ class DocumentsProviderTestVolume : public TestVolume {
     arc::FakeFileSystemInstance::Document document(
         authority_, entry.name_text, root_document_id_, entry.name_text,
         GetMimeType(entry), GetFileSize(entry),
-        entry.last_modified_time.ToJavaTime(), entry.capabilities.can_delete,
-        entry.capabilities.can_rename, entry.capabilities.can_add_children,
+        entry.last_modified_time.InMillisecondsSinceUnixEpoch(),
+        entry.capabilities.can_delete, entry.capabilities.can_rename,
+        entry.capabilities.can_add_children,
         !entry.thumbnail_file_name.empty());
     file_system_instance_->AddDocument(document);
 
@@ -2287,20 +2289,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kDriveFsMirroring);
   }
 
-  if (options.enable_inline_sync_status) {
-    enabled_features.push_back(ash::features::kFilesInlineSyncStatus);
-  } else {
-    disabled_features.push_back(ash::features::kFilesInlineSyncStatus);
-  }
-
-  if (options.enable_inline_sync_status_progress_events) {
-    enabled_features.push_back(
-        ash::features::kFilesInlineSyncStatusProgressEvents);
-  } else {
-    disabled_features.push_back(
-        ash::features::kFilesInlineSyncStatusProgressEvents);
-  }
-
   if (options.enable_upload_office_to_cloud) {
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
   } else {
@@ -2327,12 +2315,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
   } else {
     disabled_features.push_back(features::kFileTransferEnterpriseConnectorUI);
-  }
-
-  if (options.enable_search_v2) {
-    enabled_features.push_back(ash::features::kFilesSearchV2);
-  } else {
-    disabled_features.push_back(ash::features::kFilesSearchV2);
   }
 
   if (options.enable_local_image_search) {
@@ -2367,12 +2349,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     disabled_features.push_back(ash::features::kDriveFsBulkPinning);
     disabled_features.push_back(
         ash::features::kFeatureManagementDriveFsBulkPinning);
-  }
-
-  if (options.enable_drive_shortcuts) {
-    enabled_features.push_back(ash::features::kFilesDriveShortcuts);
-  } else {
-    disabled_features.push_back(ash::features::kFilesDriveShortcuts);
   }
 
   if (options.enable_cros_components) {
@@ -2621,9 +2597,10 @@ void FileManagerBrowserTestBase::StartTest() {
       ->InstallSystemAppsForTesting();
   const std::string full_test_name = GetFullTestCaseName();
   LOG(INFO) << "FileManagerBrowserTest::StartTest " << full_test_name;
-  static const base::FilePath test_extension_dir =
-      base::FilePath(FILE_PATH_LITERAL("ui/file_manager/integration_tests"));
-  LaunchExtension(test_extension_dir, GetTestExtensionManifestName());
+  static const base::FilePath test_extension_dir = base::FilePath(
+      FILE_PATH_LITERAL("ui/file_manager/integration_tests/tsc"));
+  LaunchExtension(base::DIR_GEN_TEST_DATA_ROOT, test_extension_dir,
+                  GetTestExtensionManifestName());
   RunTestMessageLoop();
 
   if (devtools_code_coverage_dir_.empty()) {
@@ -2651,15 +2628,17 @@ void FileManagerBrowserTestBase::StartTest() {
   content::RunAllTasksUntilIdle();
 }
 
-void FileManagerBrowserTestBase::LaunchExtension(const base::FilePath& path,
+void FileManagerBrowserTestBase::LaunchExtension(base::BasePathKey root,
+                                                 const base::FilePath& path,
                                                  const char* manifest_name) {
-  base::FilePath source_dir;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_dir));
+  base::FilePath root_dir;
+  CHECK(base::PathService::Get(root, &root_dir));
 
-  const base::FilePath source_path = source_dir.Append(path);
+  const base::FilePath source_path = root_dir.Append(path);
   const extensions::Extension* const extension_launched =
       LoadExtensionAsComponentWithManifest(source_path, manifest_name);
-  CHECK(extension_launched) << "Launching: " << manifest_name;
+  CHECK(extension_launched)
+      << "Launching: " << source_path << "/" << manifest_name;
 }
 
 void FileManagerBrowserTestBase::RunTestMessageLoop() {
@@ -2732,7 +2711,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       return;
     }
     base::Time modification_time =
-        base::Time::FromJsTime(modification_date.value());
+        base::Time::FromMillisecondsSinceUnixEpoch(modification_date.value());
     if (!base::TouchFile(full_path, modification_time, modification_time)) {
       *output = "false";
       return;
@@ -3358,8 +3337,9 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "setPrefOfficeFileMovedToGoogleDrive") {
     absl::optional<int64_t> timestamp = value.FindDouble("timestamp");
     ASSERT_TRUE(timestamp.has_value());
-    profile()->GetPrefs()->SetTime(prefs::kOfficeFileMovedToGoogleDrive,
-                                   base::Time::FromJsTime(timestamp.value()));
+    profile()->GetPrefs()->SetTime(
+        prefs::kOfficeFileMovedToGoogleDrive,
+        base::Time::FromMillisecondsSinceUnixEpoch(timestamp.value()));
     return;
   }
 
@@ -3538,7 +3518,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   if (name == "launchProviderExtension") {
     const std::string* manifest = value.FindString("manifest");
     ASSERT_TRUE(manifest);
-    LaunchExtension(base::FilePath(FILE_PATH_LITERAL(
+    LaunchExtension(base::DIR_SRC_TEST_DATA_ROOT,
+                    base::FilePath(FILE_PATH_LITERAL(
                         "ui/file_manager/integration_tests/testing_provider")),
                     (*manifest).c_str());
     return;
@@ -3675,22 +3656,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
-  if (name == "isInlineSyncStatusEnabled") {
-    *output = options.enable_inline_sync_status ? "true" : "false";
-    return;
-  }
-
-  if (name == "isInlineSyncStatusProgressEventsEnabled") {
-    *output =
-        options.enable_inline_sync_status_progress_events ? "true" : "false";
-    return;
-  }
-
-  if (name == "isDriveShortcutsEnabled") {
-    *output = options.enable_drive_shortcuts ? "true" : "false";
-    return;
-  }
-
   if (name == "isFilesExperimentalEnabled") {
     *output = options.files_experimental ? "true" : "false";
     return;
@@ -3816,23 +3781,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     drive_volume_->DisplayConfirmDialog(drivefs::mojom::DialogReason::New(
         drivefs::mojom::DialogReason::Type::kEnableDocsOffline,
         base::FilePath()));
-    return;
-  }
-
-  if (name == "setDriveFileSyncStatus") {
-    auto* sync_status = value.FindString("syncStatus");
-    auto* path = value.FindString("path");
-    ASSERT_TRUE(sync_status);
-    ASSERT_TRUE(path);
-    drive_volume_->SetFileSyncStatus(
-        path,
-        *sync_status == "in_progress"
-            ? drivefs::mojom::ItemEvent::State::kInProgress
-        : *sync_status == "queued" ? drivefs::mojom::ItemEvent::State::kQueued
-        : *sync_status == "completed"
-            ? drivefs::mojom::ItemEvent::State::kCompleted
-            : drivefs::mojom::ItemEvent::State::kFailed,
-        drivefs::mojom::ItemEventReason::kTransfer, 50, 100);
     return;
   }
 
@@ -3969,6 +3917,18 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       }
     }
     base::JSONWriter::Write(result, output);
+    return;
+  }
+
+  if (name == "focusWindow") {
+    const std::string* app_id = value.FindString("appId");
+    ASSERT_TRUE(app_id);
+
+    content::WebContents* web_contents;
+    CHECK(base::Contains(swa_web_contents_, *app_id))
+        << "Couldn't find the SWA WebContents for appId: " << *app_id;
+    web_contents = swa_web_contents_[*app_id];
+    web_contents->Focus();
     return;
   }
 

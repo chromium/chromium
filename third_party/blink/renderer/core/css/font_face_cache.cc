@@ -184,7 +184,7 @@ FontFaceCache::CapabilitiesSet* FontFaceCache::SegmentedFacesByFamily::Find(
   if (it == map_.end()) {
     return nullptr;
   }
-  return it->value;
+  return it->value.Get();
 }
 
 CSSSegmentedFontFace* FontFaceCache::Get(
@@ -216,7 +216,7 @@ CSSSegmentedFontFace* FontFaceCache::FontSelectionQueryResult::GetOrCreate(
     const CapabilitiesSet& family_faces) {
   const auto face_entry = map_.insert(request, nullptr);
   if (!face_entry.is_new_entry) {
-    return face_entry.stored_value->value;
+    return face_entry.stored_value->value.Get();
   }
 
   // If we don't have a previously cached result for this request, we now need
@@ -243,7 +243,7 @@ CSSSegmentedFontFace* FontFaceCache::FontSelectionQueryResult::GetOrCreate(
       face_entry.stored_value->value = candidate_value;
     }
   }
-  return face_entry.stored_value->value;
+  return face_entry.stored_value->value.Get();
 }
 
 size_t FontFaceCache::GetNumSegmentedFacesForTesting() {

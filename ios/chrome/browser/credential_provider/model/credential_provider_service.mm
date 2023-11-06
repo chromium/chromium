@@ -248,6 +248,8 @@ void CredentialProviderService::AddCredentials(
 
   for (const auto& form : forms) {
     NSString* favicon_key;
+    // Only fetch favicon for valid URL. FaviconLoader::FaviconForPageUrl does
+    // not take Android facet URI.
     if (form->url.is_valid()) {
       favicon_key = GetFaviconFileKey(form->url);
       // Fetch the favicon and save it to the storage.
@@ -255,11 +257,16 @@ void CredentialProviderService::AddCredentials(
                                should_skip_max_verification,
                                fallback_to_google_server);
     }
-    ArchivableCredential* credential =
-        [[ArchivableCredential alloc] initWithPasswordForm:*form
-                                                   favicon:favicon_key];
-    DCHECK(credential);
-    [store addCredential:credential];
+
+    // Only store password with valid Android facet URI or valid URL.
+    if (password_manager::IsValidAndroidFacetURI(form->signon_realm) ||
+        form->url.is_valid()) {
+      ArchivableCredential* credential =
+          [[ArchivableCredential alloc] initWithPasswordForm:*form
+                                                     favicon:favicon_key];
+      DCHECK(credential);
+      [store addCredential:credential];
+    }
   }
 }
 

@@ -441,6 +441,7 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   webui::LocalizedString kLocalizedStrings[] = {
       {"appsPageTitle", IDS_SETTINGS_APPS_TITLE},
+      {"appsMenuItemDescription", IDS_OS_SETTINGS_APPS_MENU_ITEM_DESCRIPTION},
       {"appManagementTitle", IDS_SETTINGS_APPS_LINK_TEXT},
       {"appNotificationsTitle", IDS_SETTINGS_APP_NOTIFICATIONS_LINK_TEXT},
       {"doNotDisturbToggleTitle",
@@ -512,9 +513,8 @@ void AppsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(profile()));
   html_source->AddString(
       "isolatedWebAppsDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kIsolatedWebAppsLearnMoreUrl)));
+      l10n_util::GetStringFUTF16(IDS_SETTINGS_ISOLATED_WEB_APPS_DESCRIPTION,
+                                 chrome::kIsolatedWebAppsLearnMoreUrl));
 
   AddAppManagementStrings(html_source);
   AddGuestOsStrings(html_source);

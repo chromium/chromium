@@ -144,12 +144,6 @@ BASE_FEATURE(kCrosCompUpdates,
              "CrosCompUpdates",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the behaviour difference between web apps and browser created
-// shortcut backed by the web app system on Chrome OS.
-BASE_FEATURE(kCrosShortstand,
-             "CrosShortstand",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable project Crostini, Linux VMs on Chrome OS.
 BASE_FEATURE(kCrostini, "Crostini", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -181,12 +175,6 @@ BASE_FEATURE(kCrostiniAnsibleSoftwareManagement,
 BASE_FEATURE(kCrostiniArcSideload,
              "CrostiniArcSideload",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the new UI for browser created shortcut backed by web app system
-// on Chrome OS.
-BASE_FEATURE(kCrosWebAppShortcutUiUpdate,
-             "CrosWebAppShortcutUiUpdate",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
@@ -278,12 +266,6 @@ BASE_FEATURE(kDesktopTaskManagerEndProcessDisabledForExtension,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Generates customised default offline page that is shown when web app is
-// offline if no custom page is provided by developer.
-BASE_FEATURE(kPWAsDefaultOfflinePage,
-             "PWAsDefaultOfflinePage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When installing default installed PWAs, we wait for service workers
 // to cache resources.
 BASE_FEATURE(kDesktopPWAsCacheDuringDefaultInstall,
@@ -332,6 +314,13 @@ BASE_FEATURE(kDesktopPWAsPreventClose,
 BASE_FEATURE(kDesktopPWAsIconHealthChecks,
              "DesktopPWAsIconHealthChecks",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDesktopPWAsLinkCapturing,
+             "DesktopPWAsLinkCapturing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(dmurph): Change the default to "true". https://b/305031270.
+const base::FeatureParam<bool> kLinksCapturedByDefault{
+    &kDesktopPWAsLinkCapturing, "on_by_default", false};
 
 // Adds a user settings that allows PWAs to be opened with a tab strip.
 BASE_FEATURE(kDesktopPWAsTabStripSettings,
@@ -453,13 +442,6 @@ BASE_FEATURE(kExtensionDeferredIndividualSettings,
              "ExtensionDeferredIndividualSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
-
-// If enabled, this feature's |kExternalInstallDefaultButtonKey| field trial
-// parameter value controls which |ExternalInstallBubbleAlert| button is the
-// default.
-BASE_FEATURE(kExternalExtensionDefaultButtonControl,
-             "ExternalExtensionDefaultButtonControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kFileTransferEnterpriseConnector,
@@ -646,6 +628,19 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopM1AdMeasurementSubpage,
         "settings-time", base::Seconds(20)};
 
+// Enables or disables the Happiness Tracking System for Chrome security page.
+BASE_FEATURE(kHappinessTrackingSurveysForSecurityPage,
+             "HappinessTrackingSurveysForSecurityPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<base::TimeDelta>
+    kHappinessTrackingSurveysForSecurityPageTime{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-time",
+        base::Seconds(15)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysForSecurityPageTriggerId{
+        &kHappinessTrackingSurveysForSecurityPage, "security-page-trigger-id",
+        ""};
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -699,6 +694,10 @@ BASE_FEATURE(kHappinessTrackingSystemArcGames,
 // Enables or disables the Happiness Tracking System for Audio survey.
 BASE_FEATURE(kHappinessTrackingSystemAudio,
              "HappinessTrackingAudio",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables or disables the Happiness Tracking System for Bluetooth Audio survey.
+BASE_FEATURE(kHappinessTrackingSystemBluetoothAudio,
+             "HappinessTrackingBluetoothAudio",
              base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables the Happiness Tracking System for Personalization Avatar survey.
 BASE_FEATURE(kHappinessTrackingPersonalizationAvatar,
@@ -905,7 +904,7 @@ BASE_FEATURE(kKAnonymityServiceStorage,
 // Place Lacros's browser components in a location shared across users.
 BASE_FEATURE(kLacrosSharedComponentsDir,
              "LacrosSharedComponentsDir",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
@@ -1228,7 +1227,7 @@ BASE_FEATURE(kTPMFirmwareUpdate,
 #if !BUILDFLAG(IS_ANDROID)
 // Enables the demo version of the Support Tool. The tool will be available in
 // chrome://support-tool. See go/support-tool-v1-design for more details.
-BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kSupportTool, "SupportTool", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Support Tool to include a screenshot in the exported support tool
 // packet.
@@ -1265,6 +1264,53 @@ BASE_FEATURE(kTreatUnsafeDownloadsAsActive,
 BASE_FEATURE(kInsecureDownloadWarnings,
              "InsecureDownloadWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// TrackingProtectionSentimentSurvey
+#if !BUILDFLAG(IS_ANDROID)
+
+BASE_FEATURE(kTrackingProtectionSentimentSurvey,
+             "TrackingProtectionSentimentSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyImmediateOverDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-immediate-over-delayed-probability", 0.5};
+
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyControlDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-probability", 0.0};
+extern const base::FeatureParam<double>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedProbability{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-probability", 0.0};
+
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-immediate-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyControlDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-control-delayed-trigger-id", ""};
+extern const base::FeatureParam<std::string>
+    kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId{
+        &kTrackingProtectionSentimentSurvey,
+        "tracking-protection-treatment-delayed-trigger-id", ""};
+#endif
 
 // TrustSafetySentimentSurvey
 #if !BUILDFLAG(IS_ANDROID)
@@ -1545,7 +1591,7 @@ const base::FeatureParam<base::TimeDelta>
 #if BUILDFLAG(IS_MAC)
 BASE_FEATURE(kUseChromiumUpdater,
              "UseChromiumUpdater",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1585,23 +1631,6 @@ BASE_FEATURE(kWebAppSyncGeneratedIconUpdateFix,
 BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the Chrome app Kiosk session uses Lacros-chrome as the web browser to
-// launch Chrome apps. When disabled, the Ash-chrome will be used instead.
-BASE_FEATURE(kChromeKioskEnableLacros,
-             "ChromeKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// When this feature flag is enabled together with the LacrosAvailability
-// policy, the web (PWA) Kiosk session uses Lacros-chrome as the web browser to
-// launch web (PWA) applications. When disabled, the Ash-chrome will be used
-// instead.
-BASE_FEATURE(kWebKioskEnableLacros,
-             "WebKioskEnableLacros",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables Isolated context APIs (Coralfish/IWA APIs) in web kiosk sessions.

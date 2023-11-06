@@ -13,6 +13,8 @@ import {NavigationModelItem, NavigationModelVolumeItem} from './navigation_list_
  * given volumeInfo.
  */
 class MockNavigationListItem {
+  // @ts-ignore: error TS7006: Parameter 'volumeInfo' implicitly has an 'any'
+  // type.
   constructor(volumeInfo) {
     this.volumeInfo_ = volumeInfo;
     this.item_ = new NavigationModelVolumeItem(volumeInfo.label, volumeInfo);
@@ -38,6 +40,8 @@ export class MockNavigationListModel extends EventTarget {
   constructor(volumeManager) {
     super();
     this.volumeManager_ = volumeManager;
+    // @ts-ignore: error TS7008: Member 'entries_' implicitly has an 'any[]'
+    // type.
     this.entries_ = [];
   }
 

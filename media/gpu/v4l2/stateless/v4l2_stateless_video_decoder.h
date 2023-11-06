@@ -59,11 +59,15 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   size_t GetMaxOutputFramePoolSize() const override;
 
   // StatelessDecodeSurfaceHandler implementation.
-  scoped_refptr<V4L2DecodeSurface> CreateSurface() override;
-  void SurfaceReady(scoped_refptr<V4L2DecodeSurface> dec_surface,
+  scoped_refptr<StatelessDecodeSurface> CreateSurface() override;
+  void SurfaceReady(scoped_refptr<StatelessDecodeSurface> dec_surface,
                     int32_t bitstream_id,
                     const gfx::Rect& visible_rect,
                     const VideoColorSpace& color_space) override;
+  bool SubmitFrame(void* ctrls,
+                   const uint8_t* data,
+                   size_t size,
+                   int32_t bitstream_id) override;
 
  private:
   V4L2StatelessVideoDecoder(

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_anchor_query_map.h"
 
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_logical_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -165,13 +165,13 @@ struct NGStitchedAnchorQueries {
         root_(root) {}
 
   void AddChildren(base::span<const NGLogicalLink> children,
-                   const NGFragmentItemsBuilder::ItemWithOffsetList* items,
+                   const FragmentItemsBuilder::ItemWithOffsetList* items,
                    const WritingModeConverter& converter) {
     const FragmentainerContext fragmentainer{{}, {}, converter};
     if (items) {
-      for (const NGFragmentItemsBuilder::ItemWithOffset& item_with_offset :
+      for (const FragmentItemsBuilder::ItemWithOffset& item_with_offset :
            *items) {
-        const NGFragmentItem& item = item_with_offset.item;
+        const FragmentItem& item = item_with_offset.item;
         if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
           AddBoxChild(*fragment, item.OffsetInContainerFragment(),
                       fragmentainer);
@@ -252,9 +252,8 @@ struct NGStitchedAnchorQueries {
     }
 
     // Add inline children if any.
-    if (const NGFragmentItems* items = fragment.Items()) {
-      for (NGInlineCursor cursor(fragment, *items); cursor;
-           cursor.MoveToNext()) {
+    if (const FragmentItems* items = fragment.Items()) {
+      for (InlineCursor cursor(fragment, *items); cursor; cursor.MoveToNext()) {
         if (cursor.Current().IsInlineBox()) {
           DCHECK(cursor.Current().BoxFragment());
           AddBoxChild(*cursor.Current().BoxFragment(),
@@ -365,7 +364,7 @@ struct NGStitchedAnchorQueries {
 NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
     const LayoutBox& root_box,
     const NGLogicalLinkVector& children,
-    const NGFragmentItemsBuilder::ItemWithOffsetList* items,
+    const FragmentItemsBuilder::ItemWithOffsetList* items,
     const WritingModeConverter& converter)
     : root_box_(root_box),
       converter_(converter),
@@ -385,7 +384,7 @@ NGLogicalAnchorQueryMap::NGLogicalAnchorQueryMap(
 
 void NGLogicalAnchorQueryMap::SetChildren(
     const NGLogicalLinkVector& children,
-    const NGFragmentItemsBuilder::ItemWithOffsetList* items) {
+    const FragmentItemsBuilder::ItemWithOffsetList* items) {
   children_ = &children;
   items_ = items;
 

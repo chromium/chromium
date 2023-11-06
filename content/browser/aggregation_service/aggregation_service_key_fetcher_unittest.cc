@@ -98,7 +98,7 @@ class AggregationServiceKeyFetcherTest : public testing::Test {
 
 TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysFromStorage_Succeed) {
   GURL url(kExampleUrl);
-  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
+  PublicKey expected_key = aggregation_service::TestHpkeKey().GetPublicKey();
 
   SetPublicKeysInStorage(
       url, PublicKeyset(/*keys=*/{expected_key}, /*fetch_time=*/clock().Now(),
@@ -133,7 +133,7 @@ TEST_F(AggregationServiceKeyFetcherTest, GetPublicKeysWithNoKeysForUrl_Failed) {
 
 TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
   GURL url(kExampleUrl);
-  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
+  PublicKey expected_key = aggregation_service::TestHpkeKey().GetPublicKey();
 
   base::RunLoop run_loop;
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
@@ -156,7 +156,7 @@ TEST_F(AggregationServiceKeyFetcherTest, FetchPublicKeysFromNetwork_Succeed) {
 TEST_F(AggregationServiceKeyFetcherTest,
        FetchPublicKeysFromNetworkNoStore_NotStored) {
   GURL url(kExampleUrl);
-  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
+  PublicKey expected_key = aggregation_service::TestHpkeKey().GetPublicKey();
 
   base::RunLoop run_loop;
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))
@@ -182,7 +182,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
   GURL url(kExampleUrl);
   base::Time now = clock().Now();
 
-  PublicKey key = aggregation_service::GenerateKey().public_key;
+  PublicKey key = aggregation_service::TestHpkeKey().GetPublicKey();
   SetPublicKeysInStorage(url,
                          PublicKeyset(/*keys=*/{key}, /*fetch_time=*/now,
                                       /*expiry_time=*/now + base::Days(1)));
@@ -208,7 +208,7 @@ TEST_F(AggregationServiceKeyFetcherTest,
 TEST_F(AggregationServiceKeyFetcherTest,
        SimultaneousFetches_NoDuplicateNetworkRequest) {
   GURL url(kExampleUrl);
-  PublicKey expected_key = aggregation_service::GenerateKey().public_key;
+  PublicKey expected_key = aggregation_service::TestHpkeKey().GetPublicKey();
 
   base::RunLoop run_loop;
   EXPECT_CALL(*network_fetcher_, FetchPublicKeys(url, _))

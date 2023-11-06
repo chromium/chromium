@@ -25,15 +25,11 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
-/**
- * Tests HostBrowserClassLoader.
- */
+/** Tests HostBrowserClassLoader. */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class HostBrowserClassLoaderTest {
-    /**
-     * Mock package name for the remote host browser.
-     */
+    /** Mock package name for the remote host browser. */
     private static final String REMOTE_PACKAGE_NAME = "remote_package";
 
     private static final int REMOTE_DEX_VERSION = 1;
@@ -67,9 +63,7 @@ public class HostBrowserClassLoaderTest {
         mMockDexLoader = Mockito.mock(DexLoader.class);
     }
 
-    /**
-     * Test upgrading to a new runtime dex version.
-     */
+    /** Test upgrading to a new runtime dex version. */
     @Test
     public void testNewRuntimeDexVersion() {
         HostBrowserClassLoader.createClassLoader(mContext, mRemoteContext, mMockDexLoader, null);
@@ -127,17 +121,13 @@ public class HostBrowserClassLoaderTest {
                 HostBrowserClassLoader.canReuseClassLoaderInstance(mContext, mRemoteContext));
     }
 
-    /**
-     * Creates an InputStream with {@link value} as its data.
-     */
+    /** Creates an InputStream with {@link value} as its data. */
     public InputStream createIntInputStream(int value) {
         String stringValue = "" + value;
         return new ByteArrayInputStream(stringValue.getBytes());
     }
 
-    /**
-     * Sets the remote host browser's version code.
-     */
+    /** Sets the remote host browser's version code. */
     public void setRemoteVersionCode(int versionCode) {
         PackageInfo packageInfo = new PackageInfo();
         packageInfo.packageName = REMOTE_PACKAGE_NAME;
@@ -165,7 +155,10 @@ public class HostBrowserClassLoaderTest {
      */
     public void verifyDexLoaderLoadCall(String expectedDexName) {
         Mockito.verify(mMockDexLoader)
-                .load(Mockito.any(Context.class), Mockito.eq(expectedDexName),
-                        (String) Mockito.isNull(), Mockito.any(File.class));
+                .load(
+                        Mockito.any(Context.class),
+                        Mockito.eq(expectedDexName),
+                        (String) Mockito.isNull(),
+                        Mockito.any(File.class));
     }
 }

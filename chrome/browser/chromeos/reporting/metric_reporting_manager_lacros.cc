@@ -20,6 +20,9 @@
 #include "chrome/browser/chromeos/reporting/user_reporting_settings.h"
 #include "chrome/browser/chromeos/reporting/websites/website_events_observer.h"
 #include "chrome/browser/chromeos/reporting/websites/website_metrics_retriever_lacros.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_observer.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_periodic_collector_lacros.h"
+#include "chrome/browser/chromeos/reporting/websites/website_usage_telemetry_sampler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/policy_constants.h"
@@ -139,6 +142,7 @@ void MetricReportingManagerLacros::OnDeviceSettingsUpdated() {
 
 void MetricReportingManagerLacros::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  website_usage_observer_.reset();
   samplers_.clear();
   event_observer_managers_.clear();
   periodic_collectors_.clear();
@@ -182,17 +186,32 @@ void MetricReportingManagerLacros::InitNetworkCollectors() {
 
 void MetricReportingManagerLacros::InitWebsiteMetricCollectors() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto website_metrics_retriever =
-      std::make_unique<WebsiteMetricsRetrieverLacros>(profile_->GetWeakPtr());
-  auto website_events_observer = std::make_unique<WebsiteEventsObserver>(
-      std::move(website_metrics_retriever), user_reporting_settings_.get());
+  CHECK(profile_);
+  const auto profile_weak_ptr = profile_->GetWeakPtr();
 
-  // Website events observer.
+  // Website events.
+  auto website_events_observer = std::make_unique<WebsiteEventsObserver>(
+      std::make_unique<WebsiteMetricsRetrieverLacros>(profile_weak_ptr),
+      user_reporting_settings_.get());
   InitEventObserverManager(
       std::move(website_events_observer), event_report_queue_.get(),
       user_reporting_settings_.get(), kReportWebsiteActivityAllowlist,
       kReportWebsiteActivityEnabledDefaultValue,
       /*init_delay=*/base::TimeDelta());
+
+  // Website telemetry.
+  website_usage_observer_ = std::make_unique<WebsiteUsageObserver>(
+      profile_weak_ptr, user_reporting_settings_.get(),
+      std::make_unique<WebsiteMetricsRetrieverLacros>(profile_weak_ptr));
+  auto website_usage_telemetry_sampler =
+      std::make_unique<WebsiteUsageTelemetrySampler>(profile_weak_ptr);
+  auto website_usage_telemetry_periodic_collector =
+      std::make_unique<WebsiteUsageTelemetryPeriodicCollectorLacros>(
+          profile_, website_usage_telemetry_sampler.get(),
+          telemetry_report_queue_.get(), user_reporting_settings_.get());
+  samplers_.emplace_back(std::move(website_usage_telemetry_sampler));
+  periodic_collectors_.emplace_back(
+      std::move(website_usage_telemetry_periodic_collector));
 }
 
 void MetricReportingManagerLacros::InitPeriodicCollector(

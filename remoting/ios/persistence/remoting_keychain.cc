@@ -94,7 +94,8 @@ void RemotingKeychain::SetData(Key key,
         CreateScopedMutableDictionary();
     CFDictionarySetValue(updated_attributes.get(), kSecValueData,
                          CFDataFromStdString(data).get());
-    OSStatus status = SecItemUpdate(update_query, updated_attributes);
+    OSStatus status =
+        SecItemUpdate(update_query.get(), updated_attributes.get());
     if (status != errSecSuccess) {
       LOG(FATAL) << "Failed to update keychain item. Status: " << status;
     }
@@ -117,7 +118,7 @@ std::string RemotingKeychain::GetData(Key key,
   ScopedMutableDictionary query = CreateQueryForLookup(service, account);
   base::apple::ScopedCFTypeRef<CFDataRef> cf_result;
   OSStatus status =
-      SecItemCopyMatching(query, (CFTypeRef*)cf_result.InitializeInto());
+      SecItemCopyMatching(query.get(), (CFTypeRef*)cf_result.InitializeInto());
   if (status == errSecItemNotFound) {
     return "";
   }
@@ -135,7 +136,7 @@ void RemotingKeychain::RemoveData(Key key, const std::string& account) {
   std::string service = KeyToService(key);
 
   ScopedMutableDictionary query = CreateQueryForUpdate(service, account);
-  OSStatus status = SecItemDelete(query);
+  OSStatus status = SecItemDelete(query.get());
   if (status != errSecSuccess && status != errSecItemNotFound) {
     LOG(FATAL) << "Failed to delete a keychain item. Status: " << status;
   }

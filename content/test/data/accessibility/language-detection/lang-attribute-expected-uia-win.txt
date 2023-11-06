@@ -1,0 +1,5 @@
+Document Culture=3082
+++Group Culture=3082 IsControlElement=false
+++++Text Name='Este documento es excelente. ' Culture=3082
+++++Text Name='Ce document est excellent. ' Culture=12
+++++Text Name='This document is excellent.' Culture=9

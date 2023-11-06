@@ -52,7 +52,7 @@ FakeEditor = class {
     this.text_ = text;
     this.selectionStart_ = selectionStart;
     this.selectionEnd_ =
-        goog.isDef(opt_selectionEnd) ? opt_selectionEnd : selectionStart;
+        (opt_selectionEnd !== undefined) ? opt_selectionEnd : selectionStart;
     this.callOnDisplayContentChanged_();
   }
 
@@ -114,7 +114,7 @@ FakeEditor = class {
    */
   assertContentIs(text, selectionStart, opt_selectionEnd) {
     const selectionEnd =
-        goog.isDef(opt_selectionEnd) ? opt_selectionEnd : selectionStart;
+        (opt_selectionEnd !== undefined) ? opt_selectionEnd : selectionStart;
     assertEquals(text, this.text_);
     assertEquals(selectionStart, this.selectionStart_);
     assertEquals(selectionEnd, this.selectionEnd_);
@@ -150,8 +150,8 @@ FakeEditor = class {
 
   createValue(text, opt_selStart, opt_selEnd, opt_textOffset) {
     const spannable = new Spannable(text, new ValueSpan(opt_textOffset || 0));
-    if (goog.isDef(opt_selStart)) {
-      opt_selEnd = goog.isDef(opt_selEnd) ? opt_selEnd : opt_selStart;
+    if (opt_selStart !== undefined) {
+      opt_selEnd = (opt_selEnd !== undefined) ? opt_selEnd : opt_selStart;
       // TODO(plundblad): This looses the distinction between the selection
       // anchor (start) and focus (end).  We should use that information to
       // decide where to pan the braille display.
@@ -538,7 +538,7 @@ ChromeVoxBrailleInputHandlerTest = class extends ChromeVoxE2ETest {
       assertTrue(this.keyEvents.length > 0);
       assertEqualsJSON(storedCopy, this.keyEvents[this.keyEvents.length - 1]);
     }
-    if (goog.isDef(opt_callback)) {
+    if (opt_callback !== undefined) {
       callback();
     }
   }

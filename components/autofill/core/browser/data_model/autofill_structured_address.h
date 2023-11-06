@@ -77,7 +77,7 @@ class FloorNode : public AddressComponent {
 };
 
 // The number of the apartment.
-class ApartmentNode : public AddressComponent {
+class ApartmentNode : public FeatureGuardedAddressComponent {
  public:
   explicit ApartmentNode(SubcomponentsList children);
   ~ApartmentNode() override;

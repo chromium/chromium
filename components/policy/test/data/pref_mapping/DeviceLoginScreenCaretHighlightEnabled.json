@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "default_value": false,
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenCaretHighlightEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenCaretHighlightEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.caret_highlight": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

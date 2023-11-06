@@ -6,6 +6,7 @@
 
 import collections
 import fnmatch
+import functools
 import importlib
 import inspect
 import json
@@ -82,6 +83,7 @@ class GpuIntegrationTest(
   _extra_intel_device_id_with_overlays: Optional[str] = None
   _skip_post_test_cleanup_and_debug_info = False
   _skip_post_failure_browser_restart = False
+  _enforce_browser_version = False
 
   # Several of the tests in this directory need to be able to relaunch
   # the browser on demand with a new set of command line arguments
@@ -174,6 +176,7 @@ class GpuIntegrationTest(
     cls._disable_log_uploads = options.disable_log_uploads
     cls._extra_intel_device_id_with_overlays = (
         options.extra_intel_device_id_with_overlays)
+    cls._enforce_browser_version = options.enforce_browser_version
 
   @classmethod
   def SetUpProcess(cls) -> None:
@@ -209,6 +212,14 @@ class GpuIntegrationTest(
                             'failing tests. This can speed up local testing at '
                             'the cost of potentially leaving bad state around '
                             'after a test fails.'))
+    parser.add_option('--enforce-browser-version',
+                      default=False,
+                      action='store_true',
+                      help=('Enforces that the started browser version is '
+                            'the same as what the current Chromium revision '
+                            'would build, i.e. that the browser being used '
+                            'is one that was built at the current Chromium '
+                            'revision.'))
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
@@ -431,6 +442,7 @@ class GpuIntegrationTest(
         # before every test since the overhead can be non-trivial, particularly
         # when running many small tests like for WebGPU.
         cls._EnsureScreenOn()
+        cls._CheckBrowserVersion()
         return
       except Exception as e:  # pylint: disable=broad-except
         last_exception = e
@@ -459,6 +471,17 @@ class GpuIntegrationTest(
   def StopBrowser(cls):
     super(GpuIntegrationTest, cls).StopBrowser()
     cls._RestoreBrowserEnvironment()
+
+  @classmethod
+  def _CheckBrowserVersion(cls) -> None:
+    if not cls._enforce_browser_version:
+      return
+    version_info = cls.browser.GetVersionInfo()
+    actual_version = version_info['Browser']
+    expected_version = _GetExpectedBrowserVersion()
+    if expected_version not in actual_version:
+      raise RuntimeError(f'Expected browser version {expected_version} not in '
+                         f'actual browser version {actual_version}')
 
   @classmethod
   def _ModifyBrowserEnvironment(cls):
@@ -700,7 +723,7 @@ class GpuIntegrationTest(
     # GPU devices list is the active GPU.
     return gpu_helper.IsIntel(gpu.devices[0].vendor_id)
 
-  def _IsDualGPUMacLaptop(self) -> bool:
+  def IsDualGPUMacLaptop(self) -> bool:
     if sys.platform != 'darwin':
       return False
     system_info = self.browser.GetSystemInfo()
@@ -718,6 +741,16 @@ class GpuIntegrationTest(
         and gpu_helper.IsIntel(gpu.devices[1].vendor_id)):
       return True
     return False
+
+  def AssertLowPowerGPU(self) -> None:
+    if self.IsDualGPUMacLaptop():
+      if not self._IsIntelGPUActive():
+        self.fail("Low power GPU should have been active but wasn't")
+
+  def AssertHighPerformanceGPU(self) -> None:
+    if self.IsDualGPUMacLaptop():
+      if self._IsIntelGPUActive():
+        self.fail("High performance GPU should have been active but wasn't")
 
   # pylint: disable=too-many-return-statements
   def _ClearExpectedCrashes(self, expected_crashes: Dict[str, int]) -> bool:
@@ -1068,6 +1101,22 @@ def GenerateTestNameMapping() -> Dict[str, Type[GpuIntegrationTest]]:
           and obj.Name() != name):
         mapping[obj.Name()] = obj
   return mapping
+
+
+@functools.lru_cache(maxsize=1)
+def _GetExpectedBrowserVersion() -> str:
+  version_file = os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'chrome',
+                              'VERSION')
+  with open(version_file, encoding='utf-8') as infile:
+    contents = infile.read()
+  version_info = {}
+  for line in contents.splitlines():
+    if not line:
+      continue
+    k, v = line.split('=')
+    version_info[k] = v
+  return (f'{version_info["MAJOR"]}.{version_info["MINOR"]}.'
+          f'{version_info["BUILD"]}.{version_info["PATCH"]}')
 
 
 def LoadAllTestsInModule(module: types.ModuleType) -> unittest.TestSuite:

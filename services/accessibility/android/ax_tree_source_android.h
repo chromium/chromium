@@ -6,7 +6,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
@@ -149,6 +148,8 @@ class AXTreeSourceAndroid
 
   // The window id of this tree.
   absl::optional<int32_t> window_id() const { return window_id_; }
+  // The root id of this tree.
+  absl::optional<int32_t> root_id() const { return root_id_; }
 
   void set_automation_event_router_for_test(
       extensions::AutomationEventRouterInterface* router) {

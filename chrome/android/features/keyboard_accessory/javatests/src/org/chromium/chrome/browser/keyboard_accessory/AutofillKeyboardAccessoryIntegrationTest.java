@@ -56,9 +56,7 @@ import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for autofill keyboard accessory.
- */
+/** Integration tests for autofill keyboard accessory. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures({ChromeFeatureList.PORTALS, ChromeFeatureList.PORTALS_CROSS_ORIGIN})
@@ -72,18 +70,18 @@ public class AutofillKeyboardAccessoryIntegrationTest {
             "/chrome/test/data/autofill/portal_wrapper.html?url=autofill_test_form.html";
 
     private ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
+
     /** Parameter provider for enabling/disabling triggering-related Features. */
     public static class FeatureParamProvider implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
+            return Arrays.asList(
+                    new ParameterSet().value(EnabledFeature.NONE).name("default"),
                     new ParameterSet().value(EnabledFeature.PORTALS).name("enablePortals"));
         }
     }
 
-    /**
-     * A WebContentsObserver for watching for web contents swaps.
-     */
+    /** A WebContentsObserver for watching for web contents swaps. */
     private static class SwapWebContentsObserver extends EmptyTabObserver {
         public CallbackHelper mCallbackHelper;
 
@@ -109,7 +107,8 @@ public class AutofillKeyboardAccessoryIntegrationTest {
      * being the upper half in multi-window mode.
      */
     private static class MultiWindowKeyboard extends FakeKeyboard {
-        public MultiWindowKeyboard(WeakReference<Activity> activity,
+        public MultiWindowKeyboard(
+                WeakReference<Activity> activity,
                 Supplier<ManualFillingComponent> manualFillingComponentSupplier) {
             super(activity, manualFillingComponentSupplier);
         }
@@ -125,17 +124,22 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         loadTestPage(keyboardDelegate, EnabledFeature.NONE);
     }
 
-    private void loadTestPage(ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate,
-            @EnabledFeature int enabledFeature) throws TimeoutException {
+    private void loadTestPage(
+            ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate,
+            @EnabledFeature int enabledFeature)
+            throws TimeoutException {
         if (enabledFeature == EnabledFeature.PORTALS) {
             mHelper.loadTestPage(PORTAL_TEST_PAGE, false, false, keyboardDelegate);
             SwapWebContentsObserver observer = new SwapWebContentsObserver();
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mActivityTestRule.getActivity().getActivityTab().addObserver(observer);
+                    });
             DOMUtils.clickNode(mHelper.getWebContents(), "ACTIVATE");
             CriteriaHelper.pollUiThread(
-                    () -> { return observer.mCallbackHelper.getCallCount() == 1; });
+                    () -> {
+                        return observer.mCallbackHelper.getCallCount() == 1;
+                    });
             // After activation, the web contents has changed. Inform |mHelper|.
             mHelper.updateWebContentsDependentState();
         } else {
@@ -145,22 +149,20 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         DOMUtils.waitForNonZeroNodeBounds(mHelper.getWebContents(), "NAME_FIRST");
     }
 
-    /**
-     * Autofocused fields should not show a keyboard accessory.
-     */
+    /** Autofocused fields should not show a keyboard accessory. */
     @Test
     @MediumTest
     public void testAutofocusedFieldDoesNotShowKeyboardAccessory() throws TimeoutException {
         loadTestPage(FakeKeyboard::new);
-        CriteriaHelper.pollUiThread(() -> {
-            View accessory = mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory);
-            return accessory == null || !accessory.isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View accessory =
+                            mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory);
+                    return accessory == null || !accessory.isShown();
+                });
     }
 
-    /**
-     * Tapping on an input field should show a keyboard and its keyboard accessory.
-     */
+    /** Tapping on an input field should show a keyboard and its keyboard accessory. */
     @Test
     @MediumTest
     public void testTapInputFieldShowsKeyboardAccessory() throws TimeoutException {
@@ -169,9 +171,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
     }
 
-    /**
-     * Switching fields should re-scroll the keyboard accessory to the left.
-     */
+    /** Switching fields should re-scroll the keyboard accessory to the left. */
     @Test
     @MediumTest
     public void testSwitchFieldsRescrollsKeyboardAccessory() throws TimeoutException {
@@ -181,16 +181,22 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
         // Scroll to the second position and check it actually happened.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mHelper.getAccessoryBarView().scrollToPosition(2); });
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() > 0;
-        }, "Should keep the manual scroll position.");
+                () -> {
+                    mHelper.getAccessoryBarView().scrollToPosition(2);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() > 0;
+                },
+                "Should keep the manual scroll position.");
 
         // Clicking any other node should now scroll the items back to the initial position.
         mHelper.clickNodeAndShowKeyboard("NAME_LAST", 2);
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() == 0;
-        }, "Should be scrolled back to position 0.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mHelper.getAccessoryBarView().computeHorizontalScrollOffset() == 0;
+                },
+                "Should be scrolled back to position 0.");
     }
 
     /**
@@ -239,13 +245,15 @@ public class AutofillKeyboardAccessoryIntegrationTest {
 
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
 
-        assertTrue(TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mHelper.getManualFillingCoordinator()
-                                   .getHandleBackPressChangedSupplier()
-                                   .get()));
-        assertTrue(TestThreadUtils.runOnUiThreadBlocking(
-                () -> mHelper.getManualFillingCoordinator().onBackPressed()));
+        assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mHelper.getManualFillingCoordinator()
+                                        .getHandleBackPressChangedSupplier()
+                                        .get()));
+        assertTrue(
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> mHelper.getManualFillingCoordinator().onBackPressed()));
 
         waitToBeHidden(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
     }
@@ -259,21 +267,27 @@ public class AutofillKeyboardAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown(true);
 
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
                         actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
-        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame)).check((sheetView, exception) -> {
-            assertTrue(sheetView.isShown() && sheetView.getHeight() > 0);
-        });
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
+                .check(
+                        (sheetView, exception) -> {
+                            assertTrue(sheetView.isShown() && sheetView.getHeight() > 0);
+                        });
 
         // Click the back arrow.
         whenDisplayed(withId(R.id.show_keyboard)).perform(click());
         waitToBeHidden(withId(R.id.keyboard_accessory_sheet_container));
 
-        CriteriaHelper.pollUiThread(() -> {
-            View sheetView = mActivityTestRule.getActivity().findViewById(
-                    R.id.keyboard_accessory_sheet_frame);
-            return sheetView.getHeight() == 0 || !sheetView.isShown();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View sheetView =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.keyboard_accessory_sheet_frame);
+                    return sheetView.getHeight() == 0 || !sheetView.isShown();
+                });
     }
 }

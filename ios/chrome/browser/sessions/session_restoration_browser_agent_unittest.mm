@@ -8,6 +8,7 @@
 #import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
@@ -26,7 +27,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
-#import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -54,6 +55,7 @@ struct TabInfo {
   int opener_index = -1;
   bool pinned = false;
   bool with_navigation = true;
+  const web::WebStateID unique_identifier;
 };
 
 // Information about a collection of N tabs that needs to be restored.
@@ -92,7 +94,9 @@ CRWSessionUserData* CreateSessionUserData(TabInfo tab_info) {
 CRWSessionStorage* CreateSessionStorage(TabInfo tab_info) {
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
   session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = web::WebStateID::NewUnique();
+  session_storage.uniqueIdentifier = tab_info.unique_identifier.valid()
+                                         ? tab_info.unique_identifier
+                                         : web::WebStateID::NewUnique();
   if (tab_info.with_navigation) {
     session_storage.lastCommittedItemIndex = 0;
     session_storage.itemStorages = CreateNavigationStorage();
@@ -154,7 +158,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
     // constructor.
     browser_ = std::make_unique<TestBrowser>(
         chrome_browser_state_.get(),
-        std::make_unique<BrowserWebStateListDelegate>());
+        std::make_unique<BrowserWebStateListDelegate>(
+            /* force_realization_on_activation */ true));
   }
 
   void TearDown() override {
@@ -216,6 +221,8 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   __strong NSString* session_identifier_ = nil;
   TestSessionService* test_session_service_;
   SessionRestorationBrowserAgent* session_restoration_agent_;
+  // Used to verify histogram logging.
+  base::HistogramTester histogram_tester_;
 };
 
 // Tests that restoring a session where all items have no navigation items
@@ -236,6 +243,10 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSession_AllNoNavigation) {
   session_restoration_agent_->RestoreSessionWindow(
       window, SessionRestorationScope::kAll);
   ASSERT_EQ(0, browser_->GetWebStateList()->count());
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session where some items have no navigation items
@@ -271,6 +282,10 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSesssion_MixedNoNavigation) {
   EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(1).opener, nullptr);
   EXPECT_EQ(web_state_list->GetOpenerOfWebStateAt(2).opener,
             web_state_list->GetWebStateAt(0));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session works correctly on empty WebStateList.
@@ -299,9 +314,13 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
 
   // Check that the first tab is pinned.
   ASSERT_TRUE(browser_->GetWebStateList()->IsWebStatePinnedAt(0));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
-// Tests that restoring a session works correctly on non empty WebStatelist.
+// Tests that restoring a session works correctly on non empty WebStateList.
 TEST_F(SessionRestorationBrowserAgentTest,
        RestoreSessionWithNonEmptyWebStateList) {
   CreateSessionRestorationBrowserAgent(true);
@@ -327,6 +346,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(1));
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(2));
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(3));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kAll` works correctly on non
@@ -380,10 +403,14 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreAllWebStatesInSession) {
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(6));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(7));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(8));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kPinnedOnly` works correctly on
-// non empty WebStatelist with pinned WebStates present.
+// non empty WebStateList with pinned WebStates present.
 TEST_F(SessionRestorationBrowserAgentTest,
        RestorePinnedWebStatesOnlyInSession) {
   CreateSessionRestorationBrowserAgent(true);
@@ -434,6 +461,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(6));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(7));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(8));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kRegularOnly` works correctly on
@@ -488,6 +519,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(4));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(5));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(6));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kAll` but disabled pinned tabs
@@ -542,6 +577,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(4));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(5));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(6));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kPinnedOnly` but disabled pinned
@@ -597,6 +636,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(4));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(5));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(6));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that restoring a session with scope `kRegularOnly` but disabled
@@ -652,6 +695,10 @@ TEST_F(SessionRestorationBrowserAgentTest,
   EXPECT_EQ(regular_web_state_1, browser_->GetWebStateList()->GetWebStateAt(4));
   EXPECT_EQ(regular_web_state_2, browser_->GetWebStateList()->GetWebStateAt(5));
   EXPECT_EQ(regular_web_state_3, browser_->GetWebStateList()->GetWebStateAt(6));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // TODO(crbug.com/888674): This test requires commiting item to
@@ -685,6 +732,10 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(0));
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(1));
   EXPECT_NE(web_state, browser_->GetWebStateList()->GetWebStateAt(2));
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that saving a non-empty session, then saving an empty session, then
@@ -716,6 +767,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
       session_window, SessionRestorationScope::kAll);
 
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that saving a session with web states, then clearing the WebStatelist
@@ -756,10 +811,14 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
 
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
             browser_->GetWebStateList()->GetActiveWebState());
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that saving a session with web states that are being restored, then
-// clearing the WebStatelist and restoring the session will restore the web
+// clearing the WebStateList and restoring the session will restore the web
 // states correctly.
 TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
   CreateSessionRestorationBrowserAgent(true);
@@ -779,6 +838,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
       window, SessionRestorationScope::kAll);
   [test_session_service_ setPerformIO:NO];
 
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
+
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
             browser_->GetWebStateList()->GetActiveWebState());
@@ -796,6 +859,10 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
   ASSERT_EQ(5, browser_->GetWebStateList()->count());
   EXPECT_EQ(browser_->GetWebStateList()->GetWebStateAt(1),
             browser_->GetWebStateList()->GetActiveWebState());
+
+  // Expect a second log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 2);
 }
 
 // Tests that SessionRestorationObserver methods are called when sessions is
@@ -825,6 +892,10 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
   EXPECT_TRUE(observer.restore_started());
   EXPECT_EQ(observer.restored_web_states_count(), 3);
   session_restoration_agent_->RemoveObserver(&observer);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 0, 1);
 }
 
 // Tests that SessionRestorationAgent saves session when the active webState
@@ -876,6 +947,38 @@ TEST_F(SessionRestorationBrowserAgentTest,
                     /*background=*/true);
   browser_->GetWebStateList()->CloseAllWebStates(WebStateList::CLOSE_NO_FLAGS);
   EXPECT_EQ(test_session_service_.saveSessionCallsCount, 7);
+}
+
+// Tests that SessionRestorationAgent doesn't restore duplicates in a session.
+TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
+  CreateSessionRestorationBrowserAgent(true);
+
+  const web::WebStateID quadruplet_id = web::WebStateID::NewUnique();
+  const web::WebStateID twin_id = web::WebStateID::NewUnique();
+  const web::WebStateID single_id = web::WebStateID::NewUnique();
+  SessionWindowIOS* window = CreateSessionWindow(SessionInfo<7>{
+      .active_index = 1,
+      .tab_infos =
+          {
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.pinned = true, .unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = quadruplet_id},
+              TabInfo{.unique_identifier = twin_id},
+              TabInfo{.unique_identifier = single_id},
+          },
+  });
+
+  session_restoration_agent_->RestoreSessionWindow(
+      window, SessionRestorationScope::kAll);
+  EXPECT_EQ(3, browser_->GetWebStateList()->count());
+  EXPECT_EQ(1, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+
+  // Expect a log of 4 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionRestore", 4, 1);
 }
 
 }  // anonymous namespace

@@ -115,7 +115,7 @@ class MockBaseFetchContext final : public BaseFetchContext {
   }
 
   ExecutionContext* GetExecutionContext() const override {
-    return execution_context_;
+    return execution_context_.Get();
   }
 
  private:

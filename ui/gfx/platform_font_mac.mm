@@ -97,7 +97,7 @@ Weight GetFontWeightFromCTFont(CTFontRef font) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> traits(CTFontCopyTraits(font));
   DCHECK(traits);
   CFNumberRef cf_weight = base::apple::GetValueFromDictionary<CFNumberRef>(
-      traits, kCTFontWeightTrait);
+      traits.get(), kCTFontWeightTrait);
   // A missing weight attribute just means 0 -> NORMAL.
   if (!cf_weight)
     return Weight::NORMAL;
@@ -288,7 +288,8 @@ PlatformFontMac::PlatformFontMac(CTFontRef ct_font)
 
 PlatformFontMac::PlatformFontMac(const std::string& font_name, int font_size)
     : PlatformFontMac(
-          CTFontWithSpec({font_name, font_size, Font::NORMAL, Weight::NORMAL}),
+          CTFontWithSpec({font_name, font_size, Font::NORMAL, Weight::NORMAL})
+              .get(),
           absl::nullopt,
           {font_name, font_size, Font::NORMAL, Weight::NORMAL}) {}
 
@@ -355,7 +356,7 @@ Font PlatformFontMac::DeriveFont(int size_delta,
     base::apple::ScopedCFTypeRef<CTFontRef> derived = CTFontWithSpec(
         {font_spec_.name, font_spec_.size + size_delta, style, weight});
     return Font(new PlatformFontMac(
-        derived, absl::nullopt,
+        derived.get(), absl::nullopt,
         {font_spec_.name, font_spec_.size + size_delta, style, weight}));
   }
 }
@@ -382,7 +383,7 @@ int PlatformFontMac::GetExpectedTextWidth(int length) {
     NSAttributedString* attr_string = [[NSAttributedString alloc]
         initWithString:@"abcdefghijklmnopqrstuvwxyz"
             attributes:@{
-              NSFontAttributeName : base::apple::CFToNSPtrCast(ct_font_)
+              NSFontAttributeName : base::apple::CFToNSPtrCast(ct_font_.get())
             }];
     average_width_ = attr_string.size.width / attr_string.length;
     DCHECK_NE(0, average_width_);
@@ -404,7 +405,7 @@ const std::string& PlatformFontMac::GetFontName() const {
 
 std::string PlatformFontMac::GetActualFontName() const {
   return base::SysNSStringToUTF8(
-      base::apple::CFToNSPtrCast(ct_font_).familyName);
+      base::apple::CFToNSPtrCast(ct_font_.get()).familyName);
 }
 
 int PlatformFontMac::GetFontSize() const {
@@ -462,7 +463,7 @@ PlatformFontMac::PlatformFontMac(
 PlatformFontMac::~PlatformFontMac() = default;
 
 void PlatformFontMac::CalculateMetricsAndInitRenderParams() {
-  NSFont* font = base::apple::CFToNSPtrCast(ct_font_);
+  NSFont* font = base::apple::CFToNSPtrCast(ct_font_.get());
   DCHECK(font);
   ascent_ = ceil(font.ascender);
   cap_height_ = ceil(font.capHeight);

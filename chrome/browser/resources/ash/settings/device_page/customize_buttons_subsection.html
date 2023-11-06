@@ -1,13 +1,6 @@
 <style include="settings-shared input-device-settings-shared">
-  #header {
-    display: flex;
-    height: 24px;
-    padding: 12px 0;
-  }
-
-  #deviceName {
-    color: var(--cros-text-color-secondary);
-    margin-inline-start: 20px;
+  .subsection {
+    padding-inline-start: 20px;
   }
 
   #inputContainer {
@@ -16,6 +9,23 @@
 
   #renamingDialog {
     --cr-dialog-width: 320px;
+  }
+
+  :host([button-name-invalid_]) #inputSuffix {
+    color: var(--cros-text-color-alert);
+  }
+
+  #inputSuffix {
+    display: flex;
+    font-size: var(--cr-form-field-label-font-size);
+    height: var(--cr-form-field-label-height);
+    justify-content: flex-end;
+    line-height: var(--cr-form-field-label-line-height);
+    margin: 8px 0;
+    position: absolute;
+    top: 130px;
+    white-space: var(--cr-input-error-white-space);
+    width: 256px;
   }
 </style>
 <div class="subsection">
@@ -37,10 +47,21 @@
     <div slot="body">
       <div id="inputContainer">
         <cr-input id="renamingDialogInput"
+          autofocus
           label="$i18n{buttonRemappingDialogInputLabel}"
+          on-keydown="onKeyDownInRenamingDialog_"
+          invalid="[[buttonNameInvalid_]]"
           value="{{selectedButtonName_}}"
           aria-label="$i18n{buttonRenamingDialogTitle}">
         </cr-input>
+        <div id="inputSuffix">
+          <span id="duplicateNameError" hidden="[[!duplicateButtonName_]]">
+            $i18n{buttonRenamingDialogErrorMessage}
+          </span>
+          <span id="inputCount" aria-hidden="true">
+            [[getInputCountString_(selectedButtonName_)]]
+          </span>
+        </div>
       </div>
     </div>
     <div slot="button-container">
@@ -52,7 +73,8 @@
       </div>
       <div>
         <cr-button id="saveButton" class="action-button"
-            on-click="saveRenamingDialogClicked_">
+            on-click="saveRenamingDialogClicked_"
+            disabled="[[isSaveButtonDisabled_]]">
           $i18n{buttonRemappingDialogSaveLabel}
         </cr-button>
       </div>

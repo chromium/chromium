@@ -19,6 +19,7 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_switches.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -349,7 +350,7 @@ TEST_F(WebContentsFrameTrackerTest, NotifiesOfTargetChanges) {
   EXPECT_CALL(
       *device(),
       OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(kNewId),
-                      /*crop_version=*/0))
+                      /*sub_capture_target_version=*/0))
       .Times(1);
 
   // The tracker doesn't actually use the frame host information, just
@@ -364,10 +365,11 @@ TEST_F(WebContentsFrameTrackerTest,
 
   // Expect the callback handed to Crop() to be invoke with kSuccess.
   bool success = false;
-  base::OnceCallback<void(media::mojom::CropRequestResult)> callback =
+  base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)> callback =
       base::BindOnce(
-          [](bool* success, media::mojom::CropRequestResult result) {
-            *success = (result == media::mojom::CropRequestResult::kSuccess);
+          [](bool* success, media::mojom::ApplySubCaptureTargetResult result) {
+            *success =
+                (result == media::mojom::ApplySubCaptureTargetResult::kSuccess);
           },
           &success);
 
@@ -375,10 +377,12 @@ TEST_F(WebContentsFrameTrackerTest,
   EXPECT_CALL(*device(),
               OnTargetChanged(absl::make_optional<viz::VideoCaptureTarget>(
                                   kInitSinkId, kCropId),
-                              /*crop_version=*/1))
+                              /*sub_capture_target_version=*/1))
       .Times(1);
 
-  tracker()->Crop(kCropId, /*crop_version=*/1, std::move(callback));
+  tracker()->ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType::kCropTarget, kCropId,
+      /*sub_capture_target_version=*/1, std::move(callback));
 
   RunAllTasksUntilIdle();
   EXPECT_TRUE(success);

@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * The properties controlling the state of the list of suggestion items.
- */
+/** The properties controlling the state of the list of suggestion items. */
 @interface SuggestionListProperties {
     /** Whether the suggestion list is visible. */
     static final WritableBooleanPropertyKey VISIBLE = new WritableBooleanPropertyKey();
@@ -23,15 +21,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
             new WritableObjectPropertyKey<>();
 
     /**
-     * The list of models controlling the state of the suggestion items. This should never be
-     * bound to the same view more than once.
+     * The list of models controlling the state of the suggestion items. This should never be bound
+     * to the same view more than once.
      */
     static final WritableObjectPropertyKey<ModelList> SUGGESTION_MODELS =
             new WritableObjectPropertyKey<>(true);
 
-    /**
-     * Whether the list encompasses the final set of suggestions for the current user query.
-     */
+    /** Whether the list encompasses the final set of suggestions for the current user query. */
     static final WritableBooleanPropertyKey LIST_IS_FINAL = new WritableBooleanPropertyKey();
 
     /**
@@ -41,8 +37,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
 
     /**
-     * The observer that will receive notifications that the user is interacting with an item on
-     * the Suggestions list.
+     * The observer that will receive notifications that the user is interacting with an item on the
+     * Suggestions list.
      */
     static final WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver>
             GESTURE_OBSERVER = new WritableObjectPropertyKey<>();
@@ -59,7 +55,20 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     static final WritableObjectPropertyKey<Runnable> DROPDOWN_SCROLL_TO_TOP_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    static final PropertyKey[] ALL_KEYS = new PropertyKey[] {VISIBLE, EMBEDDER, SUGGESTION_MODELS,
-            COLOR_SCHEME, GESTURE_OBSERVER, DROPDOWN_HEIGHT_CHANGE_LISTENER,
-            DROPDOWN_SCROLL_LISTENER, DROPDOWN_SCROLL_TO_TOP_LISTENER, LIST_IS_FINAL};
+    /** Whether the dropdown should draw over top of the anchor view. */
+    static final WritableBooleanPropertyKey DRAW_OVER_ANCHOR = new WritableBooleanPropertyKey();
+
+    static final PropertyKey[] ALL_KEYS =
+            new PropertyKey[] {
+                VISIBLE,
+                EMBEDDER,
+                SUGGESTION_MODELS,
+                COLOR_SCHEME,
+                GESTURE_OBSERVER,
+                DROPDOWN_HEIGHT_CHANGE_LISTENER,
+                DROPDOWN_SCROLL_LISTENER,
+                DROPDOWN_SCROLL_TO_TOP_LISTENER,
+                LIST_IS_FINAL,
+                DRAW_OVER_ANCHOR
+            };
 }

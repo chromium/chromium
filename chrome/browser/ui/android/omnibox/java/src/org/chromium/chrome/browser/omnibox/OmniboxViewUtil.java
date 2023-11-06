@@ -6,9 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import org.jni_zero.NativeMethods;
 
-/**
- * Utilities for the Omnibox view component.
- */
+/** Utilities for the Omnibox view component. */
 public class OmniboxViewUtil {
 
     /**

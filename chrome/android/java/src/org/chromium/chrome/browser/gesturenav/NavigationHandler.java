@@ -153,7 +153,7 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     @Override
-    public boolean shouldInterceptTouchEvent(MotionEvent e) {
+    public boolean onInterceptTouchEvent(MotionEvent e) {
         // Forward gesture events only for native pages/start surface. Rendered pages receive events
         // from SwipeRefreshHandler.
         if (!shouldProcessTouchEvents()) return false;
@@ -161,11 +161,12 @@ class NavigationHandler implements TouchEventObserver {
     }
 
     @Override
-    public void handleTouchEvent(MotionEvent e) {
+    public boolean dispatchTouchEvent(MotionEvent e) {
         assert e != null : "The motion event in NavigationHandler shouldn't be null!";
-        if (e == null || !shouldProcessTouchEvents()) return;
+        if (e == null || !shouldProcessTouchEvents()) return false;
         mDetector.onTouchEvent(e);
         if (e.getAction() == MotionEvent.ACTION_UP) release(true);
+        return false;
     }
 
     private boolean shouldProcessTouchEvents() {

@@ -72,12 +72,12 @@ struct AXRelativeBounds;
 
 namespace blink {
 
+class AbstractInlineTextBox;
 class AccessibleNodeList;
 class AXObject;
 class AXObjectCacheImpl;
 class LayoutObject;
 class LocalFrameView;
-class NGAbstractInlineTextBox;
 class Node;
 class ScrollableArea;
 
@@ -358,7 +358,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool HasAOMPropertyOrARIAAttribute(AOMStringProperty,
                                      AtomicString& result) const;
   virtual AccessibleNode* GetAccessibleNode() const;
-  virtual NGAbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
+  virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   static void TokenVectorFromAttribute(Element* element,
                                        Vector<String>&,
@@ -1100,7 +1100,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Get the parent of this object if it has already been created.
   // Works for all nodes, and may return nodes that are accessibility ignored,
   // including nodes that might not be in the tree.
-  AXObject* CachedParentObject() const { return parent_; }
+  AXObject* CachedParentObject() const { return parent_.Get(); }
 
   // Get the current unignored children without refreshing them, even if
   // children_dirty_ aka NeedsToUpdateChildren() is true.
@@ -1324,7 +1324,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // TODO(accessibility): Remove virtual -- the only override is in a unit test.
   virtual void ChildrenChangedWithCleanLayout();
   virtual void HandleActiveDescendantChanged() {}
-  virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
+  virtual void HandleAutofillSuggestionAvailabilityChanged(
+      WebAXAutofillSuggestionAvailability) {}
   virtual void HandleAriaExpandedChanged() {}
 
   // Static helper functions.

@@ -7,8 +7,6 @@ package org.chromium.base;
 import android.text.TextUtils;
 import android.util.Patterns;
 
-import org.jni_zero.CalledByNative;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -231,14 +229,5 @@ public class PiiElider {
             }
         }
         return TextUtils.join("\n", frames);
-    }
-
-    /**
-     * Returns a sanitized stacktrace (per {@link #sanitizeStacktrace(String)}) for the given
-     * throwable.
-     */
-    @CalledByNative
-    public static String getSanitizedStacktrace(Throwable throwable) {
-        return sanitizeStacktrace(Log.getStackTraceString(throwable));
     }
 }

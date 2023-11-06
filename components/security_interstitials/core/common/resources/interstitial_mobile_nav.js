@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-let mobileNav = false;
+import {HIDDEN_CLASS} from './interstitial_common.js';
+
+export let mobileNav = false;
 
 /**
  * For small screen mobile the navigation buttons are moved

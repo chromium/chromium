@@ -36,17 +36,18 @@ public class PaymentRequestExtraShippingOptionsTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("en-US")
+                        .build());
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
@@ -55,7 +56,6 @@ public class PaymentRequestExtraShippingOptionsTest {
      * Submit the payment information without shipping address or shipping options to the merchant
      * when the user clicks "Pay."
      */
-
     @Test
     @MediumTest
     @Feature({"Payments"})

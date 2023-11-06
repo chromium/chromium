@@ -557,11 +557,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     mutable_chromeos_data->set_oem_installed(chromeos_data.oem_installed);
     mutable_chromeos_data->set_handles_file_open_intents(
         chromeos_data.handles_file_open_intents);
-    if (chromeos_data.app_profile_path.has_value()) {
-      CHECK(!chromeos_data.app_profile_path.value().empty());
-      mutable_chromeos_data->set_app_profile_path(
-          FilePathToProto(chromeos_data.app_profile_path.value()));
-    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1039,13 +1034,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     chromeos_data->oem_installed = chromeos_data_proto.oem_installed();
     chromeos_data->handles_file_open_intents =
         chromeos_data_proto.handles_file_open_intents();
-    if (chromeos_data_proto.has_app_profile_path()) {
-      auto parsed_path =
-          ProtoToFilePath(chromeos_data_proto.app_profile_path());
-      CHECK(parsed_path.has_value());
-      CHECK(!parsed_path.value().empty());
-      chromeos_data->app_profile_path = std::move(parsed_path);
-    }
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 

@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERY_RESULTS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_RESOURCE_ATTRIBUTION_QUERY_RESULTS_H_
 
+#include <map>
+
 #include "base/time/time.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 
 namespace performance_manager::resource_attribution {
 
@@ -37,6 +40,8 @@ struct CPUTimeResult {
   // ProcessMetrics::GetPlatformIndependentCPUUsage().
   base::TimeDelta cumulative_cpu;
 };
+
+using QueryResultMap = std::map<ResourceContext, CPUTimeResult>;
 
 }  // namespace performance_manager::resource_attribution
 

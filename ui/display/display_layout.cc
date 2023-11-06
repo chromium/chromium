@@ -16,6 +16,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "components/device_event_log/device_event_log.h"
 #include "ui/display/display.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
@@ -532,8 +533,8 @@ bool DisplayLayout::Validate(const DisplayIdList& list,
                              const DisplayLayout& layout) {
   // The primary display should be in the list.
   if (!base::Contains(list, layout.primary_id)) {
-    LOG(ERROR) << "The primary id: " << layout.primary_id
-               << " is not in the id list.";
+    DISPLAY_LOG(ERROR) << "The primary id: " << layout.primary_id
+                       << " is not in the id list.";
     return false;
   }
 
@@ -548,37 +549,39 @@ bool DisplayLayout::Validate(const DisplayIdList& list,
   for (const auto& placement : layout.placement_list) {
     // Placements are sorted by display_id.
     if (prev_id >= (placement.display_id & 0xFF)) {
-      LOG(ERROR) << "PlacementList must be sorted by first 8 bits of"
-                 << " display_id ";
+      DISPLAY_LOG(ERROR) << "PlacementList must be sorted by first 8 bits of"
+                         << " display_id ";
       return false;
     }
     prev_id = (placement.display_id & 0xFF);
     if (placement.display_id == kInvalidDisplayId) {
-      LOG(ERROR) << "display_id is not initialized";
+      DISPLAY_LOG(ERROR) << "display_id is not initialized";
       return false;
     }
     if (placement.parent_display_id == kInvalidDisplayId) {
-      LOG(ERROR) << "display_parent_id is not initialized";
+      DISPLAY_LOG(ERROR) << "display_parent_id is not initialized";
       return false;
     }
     if (placement.display_id == placement.parent_display_id) {
-      LOG(ERROR) << "display_id must not be same as parent_display_id";
+      DISPLAY_LOG(ERROR) << "display_id must not be same as parent_display_id";
       return false;
     }
     if (!base::Contains(list, placement.display_id)) {
-      LOG(ERROR) << "display_id is not in the id list:" << placement.ToString();
+      DISPLAY_LOG(ERROR) << "display_id is not in the id list:"
+                         << placement.ToString();
       return false;
     }
 
     if (!base::Contains(list, placement.parent_display_id)) {
-      LOG(ERROR) << "parent_display_id is not in the id list:"
-                 << placement.ToString();
+      DISPLAY_LOG(ERROR) << "parent_display_id is not in the id list:"
+                         << placement.ToString();
       return false;
     }
     has_primary_as_parent |= layout.primary_id == placement.parent_display_id;
   }
   if (!has_primary_as_parent)
-    LOG(ERROR) << "At least, one placement must have the primary as a parent.";
+    DISPLAY_LOG(ERROR)
+        << "At least, one placement must have the primary as a parent.";
   return has_primary_as_parent;
 }
 

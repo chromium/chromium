@@ -130,8 +130,11 @@ class DualReadingListModel : public ReadingListModel,
     std::unique_ptr<ScopedReadingListBatchUpdate> account_model_batch_;
   };
 
-  ReadingListModel* GetLocalOrSyncableModel();
-  ReadingListModel* GetAccountModel();
+  // Returns the list of reading list entries which exists in the local-only
+  // storage and need explicit upload to the sync server.
+  // Note: This should only be called if `account_model_` is the one used for
+  // sync.
+  base::flat_set<GURL> GetKeysThatNeedUploadToSyncServer() const;
 
   StorageStateForTesting GetStorageStateForURLForTesting(const GURL& url);
 

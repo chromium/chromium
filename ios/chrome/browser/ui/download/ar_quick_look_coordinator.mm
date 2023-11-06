@@ -12,10 +12,10 @@
 #import "base/ios/block_types.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/download/ar_quick_look_tab_helper.h"
-#import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
+#import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 
 const char kIOSPresentQLPreviewControllerHistogram[] =
     "Download.IOSPresentQLPreviewControllerResult";

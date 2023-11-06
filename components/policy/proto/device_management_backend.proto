@@ -77,6 +77,9 @@ enum CrdSessionAvailability {
   UNAVAILABLE_UNMANAGED_ENVIRONMENT = 3;
   // The CRD session type is unsupported by device os version
   UNAVAILABLE_UNSUPPORTED_DEVICE_OS_VERSION = 4;
+  // CRD is disabled on the device by the 'enterprise remote support connection'
+  // policy.
+  UNAVAILABLE_DISABLED_BY_POLICY = 5;
 }
 
 // Data along with a cryptographic signature verifying their authenticity.

@@ -2884,7 +2884,8 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
-        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
+            Profile::FromBrowserContext(context));
     rules_manager_ = dlp_rules_manager.get();
     return dlp_rules_manager;
   }

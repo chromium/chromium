@@ -373,10 +373,11 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
                             mojom::SerializationFormat::kJson);
     MessageTarget expected_target(
         MessageTarget::ForNativeApp(expected_app_name));
-    EXPECT_CALL(*ipc_message_sender(),
-                SendOpenMessageChannel(
-                    script_context(), expected_port_id, expected_target,
-                    mojom::ChannelType::kNative, kEmptyExpectedChannel));
+    EXPECT_CALL(
+        *ipc_message_sender(),
+        SendOpenMessageChannel(script_context(), expected_port_id,
+                               expected_target, mojom::ChannelType::kNative,
+                               kEmptyExpectedChannel, testing::_, testing::_));
 
     v8::Local<v8::Function> add_port = FunctionFromString(
         context, base::StringPrintf(kAddPortTemplate, args.c_str()));

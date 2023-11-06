@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -55,8 +54,7 @@ namespace content {
 
 class MediaCapabilitiesTest : public ContentBrowserTest {
  public:
-  MediaCapabilitiesTest()
-      : scoped_feature_list_(media::kSupportSmpteSt2086HdrMetadata) {}
+  MediaCapabilitiesTest() = default;
 
   MediaCapabilitiesTest(const MediaCapabilitiesTest&) = delete;
   MediaCapabilitiesTest& operator=(const MediaCapabilitiesTest&) = delete;
@@ -146,9 +144,6 @@ class MediaCapabilitiesTest : public ContentBrowserTest {
     title_watcher.AlsoWaitForTitle(std::u16string(kError16));
     return base::UTF16ToASCII(title_watcher.WaitAndGetTitle());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Adds param for query type (file vs media-source) to
@@ -418,12 +413,15 @@ IN_PROC_BROWSER_TEST_P(MediaCapabilitiesTestWithConfigType,
                                               "'video/webm; codecs=\"vp8\"'",
                                               color_gamut, transfer_function));
 
-      // HdrMetadataType smpteSt2086 is supported
-      EXPECT_EQ(is_invalid ? kError : type_supported,
-                CanDecodeVideoWithHdrMetadata(
-                    config_type, "'video/webm; codecs=\"vp8\"'", color_gamut,
-                    transfer_function,
-                    /* hdrMetadataType */ kSmpteSt2086));
+      // HdrMetadataType smpteSt2086 is supported w/ PQ transfer functions.
+      auto can_use_hdr_metadata = transfer_function == kPq;
+      EXPECT_EQ(
+          is_invalid ? kError
+                     : (can_use_hdr_metadata ? type_supported : kUnsupported),
+          CanDecodeVideoWithHdrMetadata(config_type,
+                                        "'video/webm; codecs=\"vp8\"'",
+                                        color_gamut, transfer_function,
+                                        /*hdr_metadata_type=*/kSmpteSt2086));
 
       // No other HdrMetadataType is currently supported.
       for (auto hdr_metadata_type :

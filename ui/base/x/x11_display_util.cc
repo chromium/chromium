@@ -24,9 +24,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace ui {
@@ -44,8 +44,9 @@ std::map<x11::RandR::Output, int> GetMonitors(int version,
   if (version >= 105) {
     if (auto reply = randr->GetMonitors({window}).Sync()) {
       for (size_t monitor = 0; monitor < reply->monitors.size(); monitor++) {
-        for (x11::RandR::Output output : reply->monitors[monitor].outputs)
+        for (x11::RandR::Output output : reply->monitors[monitor].outputs) {
           output_to_monitor[output] = monitor;
+        }
       }
     }
   }
@@ -60,7 +61,8 @@ void ClipWorkArea(std::vector<display::Display>* displays,
   x11::Window x_root_window = ui::GetX11RootWindow();
 
   std::vector<int32_t> value;
-  if (!GetArrayProperty(x_root_window, x11::GetAtom("_NET_WORKAREA"), &value) ||
+  if (!x11::Connection::Get()->GetArrayProperty(
+          x_root_window, x11::GetAtom("_NET_WORKAREA"), &value) ||
       value.size() < 4) {
     return;
   }
@@ -95,18 +97,21 @@ void ClipWorkArea(std::vector<display::Display>* displays,
 
   gfx::Rect work_area = get_work_area(primary);
   work_area.Intersect(primary.work_area());
-  if (!work_area.IsEmpty())
+  if (!work_area.IsEmpty()) {
     primary.set_work_area(work_area);
+  }
 }
 
 float GetRefreshRateFromXRRModeInfo(
     const std::vector<x11::RandR::ModeInfo>& modes,
     x11::RandR::Mode current_mode_id) {
   for (const auto& mode_info : modes) {
-    if (static_cast<x11::RandR::Mode>(mode_info.id) != current_mode_id)
+    if (static_cast<x11::RandR::Mode>(mode_info.id) != current_mode_id) {
       continue;
-    if (!mode_info.htotal || !mode_info.vtotal)
+    }
+    if (!mode_info.htotal || !mode_info.vtotal) {
       return 0;
+    }
 
     // Refresh Rate = Pixel Clock / (Horizontal Total * Vertical Total)
     return mode_info.dot_clock /
@@ -132,14 +137,16 @@ int DefaultBitsPerComponent() {
     size_t red_bits = bits(visual.red_mask);
     size_t green_bits = bits(visual.green_mask);
     size_t blue_bits = bits(visual.blue_mask);
-    if (red_bits == green_bits && red_bits == blue_bits)
+    if (red_bits == green_bits && red_bits == blue_bits) {
       return red_bits;
+    }
   }
 
   // Next, try getting the number of colormap entries per subfield.  If it's a
   // power of 2, log2 is a possible guess for the number of bits per component.
-  if (base::bits::IsPowerOfTwo(visual.colormap_entries))
+  if (base::bits::IsPowerOfTwo(visual.colormap_entries)) {
     return base::bits::Log2Ceiling(visual.colormap_entries);
+  }
 
   // |bits_per_rgb| can sometimes be unreliable (may be 11 for 30bpp visuals),
   // so only use it as a last resort.
@@ -155,8 +162,9 @@ std::vector<uint8_t> GetEDIDProperty(x11::RandR* randr,
       .long_length = 128});
   auto response = future.Sync();
   std::vector<uint8_t> edid;
-  if (response && response->format == 8 && response->type != x11::Atom::None)
+  if (response && response->format == 8 && response->type != x11::Atom::None) {
     edid = std::move(response->data);
+  }
   return edid;
 }
 
@@ -205,8 +213,9 @@ int GetXrandrVersion() {
   auto impl = []() -> int {
     auto future = x11::Connection::Get()->randr().QueryVersion(
         {x11::RandR::major_version, x11::RandR::minor_version});
-    if (auto response = future.Sync())
+    if (auto response = future.Sync()) {
       return response->major_version * 100 + response->minor_version;
+    }
     return 0;
   };
   static int version = impl();
@@ -270,8 +279,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
   std::map<x11::RandR::Output, int> output_to_monitor =
       GetMonitors(version, &randr, x_root_window);
   auto output_primary = randr.GetOutputPrimary({x_root_window}).Sync();
-  if (!output_primary)
+  if (!output_primary) {
     return GetFallbackDisplayList(primary_scale, primary_display_index_out);
+  }
   x11::RandR::Output primary_display_id = output_primary->output;
 
   int explicit_primary_display_index = -1;
@@ -281,22 +291,26 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
     x11::RandR::Output output_id = resources->outputs[i];
     auto output_info =
         randr.GetOutputInfo({output_id, resources->config_timestamp}).Sync();
-    if (!output_info)
+    if (!output_info) {
       continue;
+    }
 
-    if (output_info->connection != x11::RandR::RandRConnection::Connected)
+    if (output_info->connection != x11::RandR::RandRConnection::Connected) {
       continue;
+    }
 
     bool is_primary_display = (output_id == primary_display_id);
 
-    if (output_info->crtc == static_cast<x11::RandR::Crtc>(0))
+    if (output_info->crtc == static_cast<x11::RandR::Crtc>(0)) {
       continue;
+    }
 
     auto crtc =
         randr.GetCrtcInfo({output_info->crtc, resources->config_timestamp})
             .Sync();
-    if (!crtc)
+    if (!crtc) {
       continue;
+    }
 
     display::EdidParser edid_parser(
         GetEDIDProperty(&randr, static_cast<x11::RandR::Output>(output_id)));
@@ -305,8 +319,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
         output_32 > 0xff ? 0 : edid_parser.GetIndexBasedDisplayId(output_32);
     // It isn't ideal, but if we can't parse the EDID data, fall back on the
     // display number.
-    if (!display_id)
+    if (!display_id) {
       display_id = i;
+    }
 
     gfx::Rect crtc_bounds(crtc->x, crtc->y, crtc->width, crtc->height);
     const size_t display_index = displays.size();
@@ -332,8 +347,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
         NOTIMPLEMENTED();
     }
 
-    if (is_primary_display)
+    if (is_primary_display) {
       explicit_primary_display_index = display_index;
+    }
 
     const std::string name(output_info->name.begin(), output_info->name.end());
     if (base::StartsWith(name, "eDP") || base::StartsWith(name, "LVDS")) {
@@ -347,8 +363,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
 
     auto monitor_iter =
         output_to_monitor.find(static_cast<x11::RandR::Output>(output_id));
-    if (monitor_iter != output_to_monitor.end() && monitor_iter->second == 0)
+    if (monitor_iter != output_to_monitor.end() && monitor_iter->second == 0) {
       monitor_order_primary_display_index = display_index;
+    }
 
     if (!display::HasForceDisplayColorProfile()) {
       gfx::ICCProfile icc_profile = ui::GetICCProfileForMonitor(
@@ -359,8 +376,9 @@ std::vector<display::Display> BuildDisplaysFromXRandRInfo(
       // detect if a display has a wide color gamut so that HDR videos can be
       // enabled.  Only do this if |bits_per_component| > 8 or else SDR
       // screens may have washed out colors.
-      if (bits_per_component > 8 && !color_space.IsValid())
+      if (bits_per_component > 8 && !color_space.IsValid()) {
         color_space = display::GetColorSpaceFromEdid(edid_parser);
+      }
 
       display.SetColorSpaces(
           gfx::DisplayColorSpaces(color_space, gfx::BufferFormat::BGRA_8888));
@@ -405,25 +423,29 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
   x11::RandR randr = x11::Connection::Get()->randr();
   auto root = ui::GetX11RootWindow();
   auto resources = randr.GetScreenResourcesCurrent({root}).Sync();
-  if (!resources)
+  if (!resources) {
     return kDefaultInterval;
+  }
   // TODO(crbug.com/726842): It might make sense here to pick the output that
   // the window is on. On the other hand, if compositing is enabled, all drawing
   // might be synced to the primary output anyway. Needs investigation.
   auto output_primary = randr.GetOutputPrimary({root}).Sync();
-  if (!output_primary)
+  if (!output_primary) {
     return kDefaultInterval;
+  }
   x11::RandR::Output primary_output = output_primary->output;
   bool disconnected_primary = false;
   for (size_t i = 0; i < resources->outputs.size(); i++) {
-    if (!disconnected_primary && resources->outputs[i] != primary_output)
+    if (!disconnected_primary && resources->outputs[i] != primary_output) {
       continue;
+    }
 
     auto output_info =
         randr.GetOutputInfo({primary_output, resources->config_timestamp})
             .Sync();
-    if (!output_info)
+    if (!output_info) {
       continue;
+    }
 
     if (output_info->connection != x11::RandR::RandRConnection::Connected) {
       // If the primary monitor is disconnected, then start over and choose the
@@ -437,12 +459,14 @@ base::TimeDelta GetPrimaryDisplayRefreshIntervalFromXrandr() {
     auto crtc =
         randr.GetCrtcInfo({output_info->crtc, resources->config_timestamp})
             .Sync();
-    if (!crtc)
+    if (!crtc) {
       continue;
+    }
     float refresh_rate =
         GetRefreshRateFromXRRModeInfo(resources->modes, crtc->mode);
-    if (refresh_rate == 0)
+    if (refresh_rate == 0) {
       continue;
+    }
 
     return base::Seconds(1. / refresh_rate);
   }

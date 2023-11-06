@@ -92,8 +92,8 @@ class KioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
     app->app_type = kTestAppType;
     app->readiness = readiness;
     apps.push_back(std::move(app));
-    app_service_->AppRegistryCache().OnApps(
-        std::move(apps), kTestAppType, /*should_notify_initialized=*/false);
+    app_service_->OnApps(std::move(apps), kTestAppType,
+                         /*should_notify_initialized=*/false);
   }
 
   apps::AppServiceTest app_service_test_;

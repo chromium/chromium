@@ -29,18 +29,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Unit tests for WebViewCrashLogParser.
- */
+/** Unit tests for WebViewCrashLogParser. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
 public class WebViewCrashLogParserTest {
     private static final String TEST_LOG_ENTRY =
             "{'crash-local-id':'123456abc','crash-capture-time':1234567890,"
-            + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
+                + "'crash-keys':{'app-package-name':'test.package','variations':'123456,7890'}}";
 
-    @Rule
-    public TemporaryFolder mTestLogDir = new TemporaryFolder();
+    @Rule public TemporaryFolder mTestLogDir = new TemporaryFolder();
 
     // Write the given string to a new file in the temp test folder.
     private File writeLogFile(String fileName, String content) throws IOException {
@@ -56,7 +53,8 @@ public class WebViewCrashLogParserTest {
     public void testParseMultipleFiles() throws Exception {
         final String[] expectedLocalIds = new String[] {"crash1", "crash2", "crash3", "crash4"};
         for (String localId : expectedLocalIds) {
-            writeLogFile("crash_file_" + localId + ".json",
+            writeLogFile(
+                    "crash_file_" + localId + ".json",
                     "{'crash-local-id':'" + localId + "','app-package-name':'test.package'}");
         }
 
@@ -94,14 +92,20 @@ public class WebViewCrashLogParserTest {
     public void testdeleteOldFiles() throws Exception {
         final long oldTimeStamp =
                 System.currentTimeMillis() - TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
-        File oldFile1 = writeLogFile("crash_file_crash1.json",
-                "{'crash-local-id':'crash1','app-package-name':'test.package'}");
+        File oldFile1 =
+                writeLogFile(
+                        "crash_file_crash1.json",
+                        "{'crash-local-id':'crash1','app-package-name':'test.package'}");
         oldFile1.setLastModified(oldTimeStamp);
-        File oldFile2 = writeLogFile("crash_file_crash2.json",
-                "{'crash-local-id':'crash2','app-package-name':'test.package'}");
+        File oldFile2 =
+                writeLogFile(
+                        "crash_file_crash2.json",
+                        "{'crash-local-id':'crash2','app-package-name':'test.package'}");
         oldFile2.setLastModified(oldTimeStamp - 1000);
-        File newFile = writeLogFile("crash_file_crash3.json",
-                "{'crash-local-id':'crash3','app-package-name':'test.package'}");
+        File newFile =
+                writeLogFile(
+                        "crash_file_crash3.json",
+                        "{'crash-local-id':'crash3','app-package-name':'test.package'}");
 
         List<CrashInfo> crashInfoList =
                 new WebViewCrashLogParser(mTestLogDir.getRoot()).loadCrashesInfo();
@@ -112,7 +116,8 @@ public class WebViewCrashLogParserTest {
                 "Log file should be deleted because it's more than 30 days old", oldFile1.exists());
         Assert.assertFalse(
                 "Log file should be deleted because it's more than 30 days old", oldFile2.exists());
-        Assert.assertTrue("Log file should not be deleted because it's less than 30 days old",
+        Assert.assertTrue(
+                "Log file should not be deleted because it's less than 30 days old",
                 newFile.exists());
     }
 }

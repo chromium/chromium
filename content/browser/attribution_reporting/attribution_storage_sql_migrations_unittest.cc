@@ -92,7 +92,7 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
   // successfully, false otherwise.
   bool GetDatabaseData(const base::FilePath& file, std::string* contents) {
     base::FilePath source_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path);
     source_path = source_path.AppendASCII(
         "content/test/data/attribution_reporting/databases");
     source_path = source_path.Append(file);
@@ -362,7 +362,9 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion55ToCurrent) {
         db.GetUniqueStatement("SELECT read_only_source_data FROM sources"));
     ASSERT_TRUE(s.Step());
     proto::AttributionReadOnlySourceData msg;
-    ASSERT_TRUE(msg.ParseFromString(s.ColumnString(0)));
+    std::string blob;
+    ASSERT_TRUE(s.ColumnBlobAsString(0, &blob));
+    ASSERT_TRUE(msg.ParseFromString(blob));
     EXPECT_EQ(3, msg.max_event_level_reports());
     EXPECT_FALSE(msg.has_randomized_response_rate());
     EXPECT_EQ(0, msg.event_level_report_window_start_time());

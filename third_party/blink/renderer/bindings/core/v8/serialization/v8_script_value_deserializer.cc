@@ -795,8 +795,10 @@ File* V8ScriptValueDeserializer::ReadFile() {
   if (!blob_handle)
     return nullptr;
   absl::optional<base::Time> last_modified;
-  if (has_snapshot && std::isfinite(last_modified_ms))
-    last_modified = base::Time::FromJsTime(last_modified_ms);
+  if (has_snapshot && std::isfinite(last_modified_ms)) {
+    last_modified =
+        base::Time::FromMillisecondsSinceUnixEpoch(last_modified_ms);
+  }
   return File::CreateFromSerialization(path, name, relative_path,
                                        user_visibility, has_snapshot, size,
                                        last_modified, std::move(blob_handle));

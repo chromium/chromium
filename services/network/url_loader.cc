@@ -95,6 +95,7 @@
 #include "services/network/sec_header_helpers.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
+#include "services/network/slop_bucket.h"
 #include "services/network/throttling/scoped_throttling_token.h"
 #include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/url_loader_factory.h"
@@ -467,7 +468,7 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
     net::CookieSettingOverrides cookie_setting_overrides,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
-    bool shared_storage_writable)
+    bool shared_storage_writable_eligible)
     : url_request_context_(context.GetUrlRequestContext()),
       network_context_client_(context.GetNetworkContextClient()),
       delete_callback_(std::move(delete_callback)),
@@ -481,6 +482,7 @@ URLLoader::URLLoader(
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
+      is_ad_tagged_(request.is_ad_tagged),
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client),
                          std::move(sync_url_loader_client)),
@@ -526,7 +528,7 @@ URLLoader::URLLoader(
                                        context.GetDevToolsObserver())),
       shared_storage_request_helper_(
           std::make_unique<SharedStorageRequestHelper>(
-              shared_storage_writable,
+              shared_storage_writable_eligible,
               url_loader_network_observer_)),
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
@@ -1099,11 +1101,12 @@ void URLLoader::FollowRedirect(
     private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
   }
 
-  // Propagate removal of shared storage eligiblity to the helper if the
-  // "Shared-Storage-Writable" request header has been removed.
+  // Propagate removal or restoration of shared storage eligiblity to the helper
+  // if the "Sec-Shared-Storage-Writable" request header has been removed or
+  // restored.
   DCHECK(shared_storage_request_helper_);
-  shared_storage_request_helper_
-      ->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
+  shared_storage_request_helper_->UpdateSharedStorageWritableEligible(
+      removed_headers, modified_headers);
 
   deferred_redirect_url_.reset();
   new_redirect_url_ = new_url;
@@ -1278,7 +1281,7 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->was_fetched_via_cache = url_request_->was_cached();
   response->is_validated = (response_info.cache_entry_status ==
                             net::HttpResponseInfo::ENTRY_VALIDATED);
-  response->proxy_server = url_request_->proxy_server();
+  response->proxy_server = url_request_->proxy_chain().proxy_server();
   response->network_accessed = response_info.network_accessed;
   response->async_revalidation_requested =
       response_info.async_revalidation_requested;
@@ -1765,26 +1768,80 @@ void URLLoader::ReadMore() {
     // TODO: we should use the abstractions in MojoAsyncResourceHandler.
     DCHECK_EQ(0u, pending_write_buffer_offset_);
     MojoResult result = NetToMojoPendingBuffer::BeginWrite(
-        &response_body_stream_, &pending_write_, &pending_write_buffer_size_);
-    if (result != MOJO_RESULT_OK && result != MOJO_RESULT_SHOULD_WAIT) {
-      // The response body stream is in a bad state. Bail.
-      NotifyCompleted(net::ERR_FAILED);
-      return;
+        &response_body_stream_, &pending_write_);
+    switch (result) {
+      case MOJO_RESULT_OK:
+        break;
+      case MOJO_RESULT_SHOULD_WAIT:
+        CHECK(!pending_write_);
+        // SlopBucket is incompatible with the network service memory cache,
+        // so don't use it if the memory cache is in use.
+        if (base::FeatureList::IsEnabled(kSlopBucket) && !slop_bucket_ &&
+            !memory_cache_) {
+          slop_bucket_ = SlopBucket::RequestSlopBucket(url_request_.get());
+        }
+        if (slop_bucket_ && !slop_bucket_->read_in_progress() &&
+            !slop_bucket_->IsComplete()) {
+          // Read into the slop bucket while we're waiting for the mojo data
+          // pipe to empty out.
+          absl::optional<int> bytes_read_maybe = slop_bucket_->AttemptRead();
+          if (bytes_read_maybe.has_value()) {
+            int bytes_read = bytes_read_maybe.value();
+            if (bytes_read != net::ERR_IO_PENDING) {
+              // DidRead() will not delete `this` when `into_slop_bucket` is
+              // true, so it is safe to access member variables after this call.
+              DidRead(bytes_read, /*completed_synchronously=*/true,
+                      /*into_slop_bucket=*/true);
+            }
+          }
+        }  // The pipe is full. We need to wait for it to have more space.
+        writable_handle_watcher_.ArmOrNotify();
+        return;
+      default:
+        // The response body stream is in a bad state. Bail.
+        NotifyCompleted(net::ERR_FAILED);
+        return;
     }
-
+    pending_write_buffer_size_ = pending_write_->size();
     DCHECK_GT(static_cast<uint32_t>(std::numeric_limits<int>::max()),
               pending_write_buffer_size_);
     if (consumer_handle_.is_valid()) {
       DCHECK_GE(pending_write_buffer_size_,
                 static_cast<uint32_t>(net::kMaxBytesToSniff));
     }
-    if (result == MOJO_RESULT_SHOULD_WAIT) {
-      // The pipe is full. We need to wait for it to have more space.
-      writable_handle_watcher_.ArmOrNotify();
-      return;
+
+    // We may be able to fill up the buffer from the slop bucket.
+    if (slop_bucket_) {
+      const size_t consumed = slop_bucket_->Consume(pending_write_->buffer(),
+                                                    pending_write_buffer_size_);
+      if (consumed) {
+        // TODO(ricea): Refactor the way pending writes work so we don't need to
+        // poke a value into `pending_write_buffer_offset_` here.
+        pending_write_buffer_offset_ = consumed;
+        CompletePendingWrite(true);
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(&URLLoader::ReadMore,
+                                      weak_ptr_factory_.GetWeakPtr()));
+        return;
+      } else if (slop_bucket_->read_in_progress()) {
+        // There were no bytes available, but a read is in progress. Need to
+        // prevent starting another read until it completes.
+        CompletePendingWrite(true);
+        return;
+      } else if (slop_bucket_->IsComplete()) {
+        // The SlopBucket didn't have any bytes available. It has finished
+        // reading from the URLRequest and now the render process has caught up,
+        // so we can notify completion.
+        CompletePendingWrite(true);
+        NotifyCompleted(slop_bucket_->completion_code());
+        // `this` is deleted.
+        return;
+      }
+      // Nothing was available. Read from `url_request_` as usual.
     }
   }
 
+  CHECK(!slop_bucket_ || !slop_bucket_->IsComplete());
   auto buf = base::MakeRefCounted<NetToMojoIOBuffer>(
       pending_write_.get(), pending_write_buffer_offset_);
   read_in_progress_ = true;
@@ -1792,16 +1849,25 @@ void URLLoader::ReadMore() {
       buf.get(), static_cast<int>(pending_write_buffer_size_ -
                                   pending_write_buffer_offset_));
   if (bytes_read != net::ERR_IO_PENDING) {
-    DidRead(bytes_read, true);
+    DidRead(bytes_read, /*completed_synchronously=*/true,
+            /*into_slop_bucket=*/false);
     // |this| may have been deleted.
   }
 }
 
-void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
-  DCHECK(read_in_progress_);
+// Handles the completion of a read. `num_bytes` is the number of bytes read, 0
+// if we reached the end of the response body, or a net::Error otherwise.
+// `completed_synchronously` is true if the call to URLRequest::Read did not
+// return net::ERR_IO_PENDING. `into_slop_bucket` is true if this was actually a
+// read into `slop_bucket_` and not into our own buffer.
+void URLLoader::DidRead(int num_bytes,
+                        bool completed_synchronously,
+                        bool into_slop_bucket) {
+  DCHECK(read_in_progress_ || into_slop_bucket);
   read_in_progress_ = false;
 
   if (memory_cache_writer_ && pending_write_ && num_bytes > 0) {
+    CHECK(!into_slop_bucket);
     if (!memory_cache_writer_->OnDataRead(
             pending_write_->buffer() + pending_write_buffer_offset_,
             num_bytes)) {
@@ -1811,7 +1877,9 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 
   size_t new_data_offset = pending_write_buffer_offset_;
   if (num_bytes > 0) {
-    pending_write_buffer_offset_ += num_bytes;
+    if (!into_slop_bucket) {
+      pending_write_buffer_offset_ += num_bytes;
+    }
 
     // Only notify client of download progress if we're done sniffing and
     // started sending response.
@@ -1827,6 +1895,13 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 
   bool complete_read = true;
   if (consumer_handle_.is_valid()) {
+    // `consumer_handle_` is only valid when we are sniffing. Sniffing is only
+    // applied to the first 1024 bytes. The mojo data pipe is always larger than
+    // 1024 bytes, therefore it will never fill up while we are sniffing.
+    // Therefore a SlopBucket will not have been created yet and
+    // `into_slop_bucket` can't be true.
+    CHECK(!into_slop_bucket);
+
     // |pending_write_| may be null if the job self-aborts due to a suspend;
     // this will have |consumer_handle_| valid when the loader is paused.
     if (pending_write_) {
@@ -1893,14 +1968,21 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
     // reads when there's a pending read), and to cover all TCP socket uses,
     // since the concern is the effect that entering suspend mode has on
     // sockets. See https://crbug.com/651120.
-    if (pending_write_)
+    if (pending_write_) {
+      CHECK(!into_slop_bucket);
       CompletePendingWrite(num_bytes == 0);
-    NotifyCompleted(num_bytes);
-    // |this| will have been deleted.
+    }
+    // If we are reading into the SlopBucket then notification of completion
+    // will be postponed until the data has been forwarded to the mojo data
+    // pipe.
+    if (!into_slop_bucket) {
+      NotifyCompleted(num_bytes);
+      // |this| will have been deleted.
+    }
     return;
   }
 
-  if (complete_read) {
+  if (complete_read && !into_slop_bucket) {
     CompletePendingWrite(true /* success */);
   }
   if (completed_synchronously) {
@@ -1915,7 +1997,13 @@ void URLLoader::DidRead(int num_bytes, bool completed_synchronously) {
 void URLLoader::OnReadCompleted(net::URLRequest* url_request, int bytes_read) {
   DCHECK(url_request == url_request_.get());
 
-  DidRead(bytes_read, false);
+  bool into_slop_bucket = false;
+  if (slop_bucket_ && slop_bucket_->read_in_progress()) {
+    slop_bucket_->OnReadCompleted(bytes_read);
+    into_slop_bucket = true;
+  }
+
+  DidRead(bytes_read, /*completed_synchronously=*/false, into_slop_bucket);
   // |this| may have been deleted.
 }
 
@@ -2105,7 +2193,7 @@ void URLLoader::NotifyCompleted(int error_code) {
     status.encoded_data_length = url_request_->GetTotalReceivedBytes();
     status.encoded_body_length = url_request_->GetRawBodyBytes();
     status.decoded_body_length = total_written_bytes_;
-    status.proxy_server = url_request_->proxy_server();
+    status.proxy_server = url_request_->proxy_chain().proxy_server();
     status.resolve_error_info =
         url_request_->response_info().resolve_error_info;
     if (trust_token_status_)
@@ -2240,7 +2328,7 @@ void URLLoader::SetRawRequestHeadersAndNotify(
       cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
-          devtools_request_id(), 1));
+          devtools_request_id(), /*count=*/1, is_ad_tagged_));
     }
   }
 }
@@ -2593,7 +2681,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
     cookie_access_details_.emplace_back(mojom::CookieAccessDetails::New(
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
         url_request_->site_for_cookies(), std::move(reported_cookies),
-        devtools_request_id(), 1));
+        devtools_request_id(), /*count=*/1, is_ad_tagged_));
     if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
     }

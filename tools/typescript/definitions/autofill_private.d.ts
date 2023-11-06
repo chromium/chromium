@@ -114,6 +114,8 @@ declare global {
         ADDRESS_HOME_BETWEEN_STREETS_1,
         ADDRESS_HOME_BETWEEN_STREETS_2,
         SINGLE_USERNAME_FORGOT_PASSWORD,
+        ADDRESS_HOME_APT,
+        ADDRESS_HOME_APT_TYPE,
       }
 
       export enum AddressSource {
@@ -178,6 +180,7 @@ declare global {
         nickname?: string;
         network?: string;
         imageSrc?: string;
+        cvc?: string;
         metadata?: AutofillMetadata;
       }
 
@@ -215,7 +218,7 @@ declare global {
       export function addVirtualCard(cardId: string): void;
       export function removeVirtualCard(cardId: string): void;
       export function authenticateUserAndFlipMandatoryAuthToggle(): void;
-      export function authenticateUserToEditLocalCard(): Promise<boolean>;
+      export function getLocalCard(guid: string): Promise<CreditCardEntry|null>;
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
 
       export const onPersonalDataChanged: ChromeEvent<

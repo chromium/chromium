@@ -15,9 +15,12 @@
 // Opens the "Data from Chrome sync" web page.
 - (void)openDataFromChromeSyncWebPage;
 
-// Presents the data options available when turning off Sync.
-// `targetRect` rect in table view system coordinate to display the signout
-// popover dialog.
+// If the sync feature is disabled, sign-out and display a toast.
+// Otherwise, if the sync feature is enabled, presents the data options
+// available when turning off Sync. `targetRect` rect in table view system
+// coordinate to display the signout popover dialog.
+// When `kReplaceSyncPromosWithSignInPromos` will be removed, the sync feature
+// won't be enabled anymore.
 - (void)signOutFromTargetRect:(CGRect)targetRect;
 
 // Shows a dialog to warn users that addresses are not encrypted by custom

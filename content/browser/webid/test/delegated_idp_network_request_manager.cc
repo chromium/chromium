@@ -49,9 +49,11 @@ void DelegatedIdpNetworkRequestManager::SendTokenRequest(
     const std::string& account,
     const std::string& url_encoded_post_data,
     TokenRequestCallback callback,
-    ContinueOnCallback continue_on) {
+    ContinueOnCallback continue_on,
+    RecordErrorMetricsCallback record_error_metrics_callback) {
   delegate_->SendTokenRequest(token_url, account, url_encoded_post_data,
-                              std::move(callback), std::move(continue_on));
+                              std::move(callback), std::move(continue_on),
+                              std::move(record_error_metrics_callback));
 }
 
 void DelegatedIdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(
@@ -75,6 +77,15 @@ void DelegatedIdpNetworkRequestManager::SendFailedTokenRequestMetrics(
 void DelegatedIdpNetworkRequestManager::SendLogout(const GURL& logout_url,
                                                    LogoutCallback callback) {
   delegate_->SendLogout(logout_url, std::move(callback));
+}
+
+void DelegatedIdpNetworkRequestManager::SendRevokeRequest(
+    const GURL& revoke_url,
+    const std::string& account_hint,
+    const std::string& client_id,
+    RevokeCallback callback) {
+  delegate_->SendRevokeRequest(revoke_url, account_hint, client_id,
+                               std::move(callback));
 }
 
 }  // namespace content

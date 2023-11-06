@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -16,6 +17,7 @@
 namespace blink {
 
 class Element;
+class LayoutBox;
 class LayoutObject;
 class Node;
 
@@ -57,8 +59,9 @@ class CORE_EXPORT IntersectionGeometry {
 
    public:
     RootGeometry(const LayoutObject* root, const Vector<Length>& margin);
+    bool operator==(const RootGeometry&) const;
 
-    float zoom;
+    float zoom = 1.0f;
     // The root object's content rect in the root object's own coordinate system
     PhysicalRect local_root_rect;
     gfx::Transform root_to_document_transform;
@@ -84,6 +87,10 @@ class CORE_EXPORT IntersectionGeometry {
 
   static const LayoutObject* GetExplicitRootLayoutObject(const Node& root_node);
 
+  // If `root_geometry` is nullopt, it will be emplaced with `root` and
+  // `root_margin`. The caller can call this constructor again with the same
+  // `root_geometry` as long as `root` and `root_margin` are the same as the
+  // first call.
   IntersectionGeometry(const Node* root,
                        const Element& target,
                        const Vector<Length>& root_margin,
@@ -91,15 +98,7 @@ class CORE_EXPORT IntersectionGeometry {
                        const Vector<Length>& target_margin,
                        const Vector<Length>& scroll_margin,
                        unsigned flags,
-                       CachedRects* cached_rects = nullptr);
-
-  IntersectionGeometry(const RootGeometry& root_geometry,
-                       const Node& explicit_root,
-                       const Element& target,
-                       const Vector<float>& thresholds,
-                       const Vector<Length>& target_margin,
-                       const Vector<Length>& scroll_margin,
-                       unsigned flags,
+                       absl::optional<RootGeometry>& root_geometry,
                        CachedRects* cached_rects = nullptr);
 
   IntersectionGeometry(const IntersectionGeometry&) = default;
@@ -131,7 +130,7 @@ class CORE_EXPORT IntersectionGeometry {
   gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
 
   double IntersectionRatio() const { return intersection_ratio_; }
-  unsigned ThresholdIndex() const { return threshold_index_; }
+  wtf_size_t ThresholdIndex() const { return threshold_index_; }
 
   bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
@@ -154,7 +153,9 @@ class CORE_EXPORT IntersectionGeometry {
     STACK_ALLOCATED();
 
    public:
-    RootAndTarget(const Node* root_node, const Element& target_element);
+    RootAndTarget(const Node* root_node,
+                  const Element& target_element,
+                  bool has_scroll_margin);
     const LayoutObject* target;
     const LayoutObject* root;
     enum Relationship {
@@ -173,16 +174,18 @@ class CORE_EXPORT IntersectionGeometry {
     Relationship relationship = kInvalid;
     // This is used only when relationship is kScrollable*.
     bool has_filter = false;
+    // This is collected only if has_scroll_margin is true.
+    HeapVector<Member<const LayoutBox>, 2> intermediate_scrollers;
 
    private:
     static const LayoutObject* GetTargetLayoutObject(
         const Element& target_element);
     const LayoutObject* GetRootLayoutObject(const Node* root_node) const;
-    void ComputeRelationship(bool root_is_implicit);
+    void ComputeRelationship(bool root_is_implicit, bool has_scroll_margin);
   };
-  RootAndTarget PrepareComputeGeometry(const Node* root_node,
-                                       const Element& target_element,
-                                       CachedRects* cached_rects);
+
+  void UpdateShouldUseCachedRects(const RootAndTarget& root_and_target,
+                                  CachedRects* cached_rects);
 
   void ComputeGeometry(const RootGeometry& root_geometry,
                        const RootAndTarget& root_and_target,
@@ -193,13 +196,21 @@ class CORE_EXPORT IntersectionGeometry {
 
   // Map intersection_rect from the coordinate system of the target to the
   // coordinate system of the root, applying intervening clips.
-  bool ClipToRoot(const LayoutObject* root,
-                  const LayoutObject* target,
+  bool ClipToRoot(const RootAndTarget& root_and_target,
                   const PhysicalRect& root_rect,
                   PhysicalRect& unclipped_intersection_rect,
                   PhysicalRect& intersection_rect,
                   const Vector<Length>& scroll_margin,
-                  CachedRects* cached_rects = nullptr);
+                  CachedRects* cached_rects);
+  bool ApplyClip(const LayoutObject* target,
+                 const LayoutObject* root,
+                 const PhysicalRect& root_rect,
+                 PhysicalRect& unclipped_intersection_rect,
+                 PhysicalRect& intersection_rect,
+                 const Vector<Length>& scroll_margin,
+                 bool ignore_local_clip_path,
+                 CachedRects* cached_rects);
+
   unsigned FirstThresholdGreaterThan(float ratio,
                                      const Vector<float>& thresholds) const;
 
@@ -217,7 +228,7 @@ class CORE_EXPORT IntersectionGeometry {
   gfx::Vector2dF min_scroll_delta_to_update_;
   unsigned flags_;
   double intersection_ratio_ = 0;
-  unsigned threshold_index_ = 0;
+  wtf_size_t threshold_index_ = 0;
 };
 
 }  // namespace blink

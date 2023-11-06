@@ -30,11 +30,30 @@ void PrerenderWebContentsDelegateImpl::ActivateContents(
   NOTREACHED_NORETURN();
 }
 
+void PrerenderWebContentsDelegateImpl::LoadingStateChanged(
+    content::WebContents* source,
+    bool should_show_loading_ui) {
+  // Loading events should be deferred until prerender activation.
+  NOTREACHED_NORETURN();
+}
+
 bool PrerenderWebContentsDelegateImpl::ShouldSuppressDialogs(
     content::WebContents* source) {
   // Dialogs (JS dialogs and BeforeUnload confirm) should not be shown on a
   // prerendered page.
   NOTREACHED_NORETURN();
+}
+
+bool PrerenderWebContentsDelegateImpl::ShouldFocusPageAfterCrash(
+    content::WebContents* source) {
+  // A prerendered page cannot be focused.
+  return false;
+}
+
+bool PrerenderWebContentsDelegateImpl::TakeFocus(content::WebContents* source,
+                                                 bool reverse) {
+  // A prerendered page cannot be focused.
+  return false;
 }
 
 void PrerenderWebContentsDelegateImpl::WebContentsCreated(
@@ -66,6 +85,38 @@ void PrerenderWebContentsDelegateImpl::WebContentsBecamePortal(
     content::WebContents* portal_web_contents) {
   // Portal is not available on a prerendered page.
   NOTREACHED_NORETURN();
+}
+
+bool PrerenderWebContentsDelegateImpl::CanEnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::EnterFullscreenModeForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::FullscreenStateChangedForTab(
+    content::RenderFrameHost* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+void PrerenderWebContentsDelegateImpl::ExitFullscreenModeForTab(
+    content::WebContents*) {
+  // This should not be called for a prerendered page.
+  NOTREACHED_NORETURN();
+}
+
+bool PrerenderWebContentsDelegateImpl::IsFullscreenForTabOrPending(
+    const content::WebContents* web_contents) {
+  return false;
 }
 
 void PrerenderWebContentsDelegateImpl::OnDidBlockNavigation(

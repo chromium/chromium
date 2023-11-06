@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <functional>
 #include <initializer_list>
 #include <iterator>
 #include <type_traits>
@@ -32,6 +33,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
+#include "base/functional/identity.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
@@ -166,9 +168,17 @@ struct VectorTypeOperations {
 
   static void Initialize(T* begin, T* end) {
     if constexpr (VectorTraits<T>::kCanInitializeWithMemset) {
-      // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-      memset(begin, 0,
-             reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin));
+      size_t size =
+          reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin);
+      if constexpr (!Allocator::kIsGarbageCollected ||
+                    !IsTraceableInCollectionTrait<VectorTraits<T>>::value) {
+        if (size != 0) {
+          // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
+          memset(begin, 0, size);
+        }
+      } else {
+        AtomicMemzero(begin, size);
+      }
     } else {
       for (T* cur = begin; cur != end; ++cur)
         ConstructTraits::Construct(cur);
@@ -307,30 +317,37 @@ struct VectorTypeOperations {
     } else {
       static_assert(VectorTraits<T>::kCanCopyWithMemcpy);
       // NOLINTNEXTLINE(bugprone-undefined-memory-manipulation)
-      memcpy(dst, src,
-             reinterpret_cast<const char*>(src_end) -
-                 reinterpret_cast<const char*>(src));
+      if (src != src_end) {
+        memcpy(dst, src,
+               reinterpret_cast<const char*>(src_end) -
+                   reinterpret_cast<const char*>(src));
+      }
     }
   }
 
-  template <typename U>
+  template <typename U, typename Proj = base::identity>
   static void UninitializedCopy(const U* src,
                                 const U* src_end,
                                 T* dst,
-                                VectorOperationOrigin origin) {
-    if (!LIKELY(dst && src))
+                                VectorOperationOrigin origin,
+                                Proj proj = {}) {
+    if (!LIKELY(dst && src)) {
       return;
-    if constexpr (std::is_same_v<T, U> && VectorTraits<T>::kCanCopyWithMemcpy) {
+    }
+    if constexpr (std::is_same_v<T, U> &&
+                  std::is_same_v<Proj, base::identity> &&
+                  VectorTraits<T>::kCanCopyWithMemcpy) {
       Copy(src, src_end, dst, origin);
     } else if (origin == VectorOperationOrigin::kConstruction) {
       while (src != src_end) {
-        ConstructTraits::Construct(dst, *src);
+        ConstructTraits::Construct(dst, std::invoke(proj, *src));
         ++dst;
         ++src;
       }
     } else {
       while (src != src_end) {
-        ConstructTraits::ConstructAndNotifyElement(dst, *src);
+        ConstructTraits::ConstructAndNotifyElement(dst,
+                                                   std::invoke(proj, *src));
         ++dst;
         ++src;
       }
@@ -1117,6 +1134,18 @@ class Vector
   template <wtf_size_t otherCapacity>
   Vector& operator=(const Vector<T, otherCapacity, Allocator>&);
 
+  // Copying with projection.
+  template <
+      typename Proj,
+      typename = std::enable_if<std::is_invocable_v<Proj, const_reference>>>
+  Vector(const Vector&, Proj);
+  template <
+      typename U,
+      wtf_size_t otherCapacity,
+      typename Proj,
+      typename = std::enable_if<std::is_invocable_v<Proj, const_reference>>>
+  explicit Vector(const Vector<U, otherCapacity, Allocator>&, Proj);
+
   // Creates a vector with items copied from a collection. |Collection| must
   // have size(), begin() and end() methods.
   template <typename Collection,
@@ -1532,6 +1561,17 @@ Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other)
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+template <typename Proj, typename>
+Vector<T, inlineCapacity, Allocator>::Vector(const Vector& other, Proj proj)
+    : Base(other.capacity()) {
+  ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
+  size_ = other.size();
+  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+                                    VectorOperationOrigin::kConstruction,
+                                    std::move(proj));
+}
+
+template <typename T, wtf_size_t inlineCapacity, typename Allocator>
 template <wtf_size_t otherCapacity>
 Vector<T, inlineCapacity, Allocator>::Vector(
     const Vector<T, otherCapacity, Allocator>& other)
@@ -1543,8 +1583,22 @@ Vector<T, inlineCapacity, Allocator>::Vector(
 }
 
 template <typename T, wtf_size_t inlineCapacity, typename Allocator>
-Vector<T, inlineCapacity, Allocator>& Vector<T, inlineCapacity, Allocator>::
-operator=(const Vector<T, inlineCapacity, Allocator>& other) {
+template <typename U, wtf_size_t otherCapacity, typename Proj, typename>
+Vector<T, inlineCapacity, Allocator>::Vector(
+    const Vector<U, otherCapacity, Allocator>& other,
+    Proj proj)
+    : Base(other.capacity()) {
+  ANNOTATE_NEW_BUFFER(begin(), capacity(), other.size());
+  size_ = other.size();
+  TypeOperations::UninitializedCopy(other.begin(), other.end(), begin(),
+                                    VectorOperationOrigin::kConstruction,
+                                    std::move(proj));
+}
+
+template <typename T, wtf_size_t inlineCapacity, typename Allocator>
+Vector<T, inlineCapacity, Allocator>&
+Vector<T, inlineCapacity, Allocator>::operator=(
+    const Vector<T, inlineCapacity, Allocator>& other) {
   if (UNLIKELY(&other == this))
     return *this;
 

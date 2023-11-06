@@ -1,0 +1,44 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceAdvancedBatteryChargeModeDayConfig": {
+            "entries": [
+              {
+                "charge_end_time": {
+                  "hour": 20,
+                  "minute": 15
+                },
+                "charge_start_time": {
+                  "hour": 10,
+                  "minute": 0
+                },
+                "day": "MONDAY"
+              },
+              {
+                "charge_end_time": {
+                  "hour": 15,
+                  "minute": 45
+                },
+                "charge_start_time": {
+                  "hour": 8,
+                  "minute": 30
+                },
+                "day": "FRIDAY"
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "ash.power.advanced_battery_charge_mode_day_config": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

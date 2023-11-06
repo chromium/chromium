@@ -631,12 +631,6 @@ void HardwareRenderer::DrawAndSwap(const HardwareRendererDrawParams& params,
   TRACE_EVENT1("android_webview", "HardwareRenderer::Draw", "vulkan",
                IsUsingVulkan());
 
-  if (!IsUsingVulkan()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Android.WebView.Gfx.GLDrawWasToFBO",
-        output_surface_provider_.gl_surface()->IsDrawingToFBO());
-  }
-
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
 
   // Ensure that the context is synced from external and synced back before

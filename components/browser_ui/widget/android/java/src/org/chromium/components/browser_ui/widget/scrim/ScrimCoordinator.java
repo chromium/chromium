@@ -148,6 +148,11 @@ public class ScrimCoordinator {
         return mMediator.isActive();
     }
 
+    /** Forces the current scrim fade animation to complete if one is running. */
+    public void forceAnimationToFinish() {
+        mMediator.forceAnimationToFinish();
+    }
+
     /**
      * Manually set the alpha for the scrim.
      * @param alpha The alpha in range [0, 1].

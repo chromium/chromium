@@ -324,12 +324,12 @@
   OP(SetReadbackBufferShadowAllocationINTERNAL)                /* 565 */ \
   OP(FramebufferTextureMultiviewOVR)                           /* 566 */ \
   OP(MaxShaderCompilerThreadsKHR)                              /* 567 */ \
-  OP(TexImage2DSharedImageCHROMIUMImmediate)                   /* 568 */ \
-  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 569 */ \
-  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 570 */ \
-  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 571 */ \
-  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate)              /* 572 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)               /* 573 */ \
+  OP(CreateAndTexStorage2DSharedImageINTERNALImmediate)        /* 568 */ \
+  OP(BeginSharedImageAccessDirectCHROMIUM)                     /* 569 */ \
+  OP(EndSharedImageAccessDirectCHROMIUM)                       /* 570 */ \
+  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate)              /* 571 */ \
+  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)               /* 572 */ \
+  OP(ConvertYUVAMailboxesToTextureINTERNALImmediate)           /* 573 */ \
   OP(CopySharedImageINTERNALImmediate)                         /* 574 */ \
   OP(CopySharedImageToTextureINTERNALImmediate)                /* 575 */ \
   OP(ReadbackARGBImagePixelsINTERNAL)                          /* 576 */ \

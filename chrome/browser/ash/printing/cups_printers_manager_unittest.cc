@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/printing/synced_printers_manager.h"
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -1240,6 +1241,41 @@ TEST_F(CupsPrintersManagerTest, LocalPrintersDetected) {
   usb_detector_->AddDetections({usb_detected_printer});
   task_environment_.RunUntilIdle();
   EXPECT_EQ(3u, observer1.num_observer_calls());
+}
+
+// Tests that the polling printer status requests trigger the local printers
+// observer up until the max time allocated for polling statuses.
+TEST_F(CupsPrintersManagerTest, PrinterStatusPolling) {
+  feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
+
+  // Add `RecentPrinter` to the Print Preview sticky settings so it'll get
+  // polled for status. `OldPrinter` will not get queried.
+  ::printing::PrintPreviewStickySettings* sticky_settings =
+      ::printing::PrintPreviewStickySettings::GetInstance();
+  sticky_settings->StoreAppState(R"({
+    "recentDestinations": [
+      {
+        "id": "RecentPrinter"
+      }
+    ]
+  })");
+
+  // Add a saved printer to be queried for status.
+  Printer saved_printer("SavedPrinter");
+  saved_printer.SetUri("ipp://discovered.printer/");
+  synced_printers_manager_.AddSavedPrinters({saved_printer});
+  zeroconf_detector_->AddDetections({MakeDiscoveredPrinter("RecentPrinter"),
+                                     MakeDiscoveredPrinter("OldPrinter")});
+  task_environment_.RunUntilIdle();
+
+  // Add the observer to capture the triggers from printer status queries.
+  FakeLocalPrintersObserver observer;
+  manager_->AddLocalPrintersObserver(&observer);
+  task_environment_.FastForwardUntilNoTasksRemain();
+
+  // 1 call when the observer is added + 2 calls for initial printer status
+  // queries to the Saved and Recent printer
+  EXPECT_EQ(3u, observer.num_observer_calls());
 }
 
 }  // namespace

@@ -63,6 +63,11 @@ static_library("base") {
     "//url",
   ]
 
+  if (is_android) {
+    sources += [ "signin_feature_map.cc" ]
+    deps += [ "//components/signin/public/android:jni_headers" ]
+  }
+
   if (is_chromeos_ash) {
     deps += [ "//components/user_manager" ]
     public_deps += [ "//components/account_manager_core" ]

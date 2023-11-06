@@ -23,7 +23,7 @@ void WebIdentityRequester::OnRequestToken(
     const absl::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
     mojom::blink::TokenErrorPtr error,
-    bool is_identity_credential_auto_selected) {
+    bool is_auto_selected) {
   for (const auto& provider_resolver_pair : provider_to_resolver_) {
     KURL provider = provider_resolver_pair.key;
     ScriptPromiseResolver* resolver = provider_resolver_pair.value;
@@ -63,8 +63,8 @@ void WebIdentityRequester::OnRequestToken(
               "Error retrieving a token.", error->code, error->url));
           continue;
         }
-        IdentityCredential* credential = IdentityCredential::Create(
-            token, is_identity_credential_auto_selected);
+        IdentityCredential* credential =
+            IdentityCredential::Create(token, is_auto_selected);
         resolver->Resolve(credential);
         continue;
       }
@@ -91,7 +91,7 @@ void WebIdentityRequester::RequestToken() {
 
 void WebIdentityRequester::AppendGetCall(
     ScriptPromiseResolver* resolver,
-    const HeapVector<Member<IdentityProviderConfig>>& providers,
+    const HeapVector<Member<IdentityProviderRequestOptions>>& providers,
     mojom::blink::RpContext rp_context,
     mojom::blink::RpMode rp_mode) {
   if (is_requesting_token_) {
@@ -103,9 +103,9 @@ void WebIdentityRequester::AppendGetCall(
 
   Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
   for (const auto& provider : providers) {
-    mojom::blink::IdentityProviderConfigPtr config =
-        blink::mojom::blink::IdentityProviderConfig::From(*provider);
-    if (provider_to_resolver_.Contains(KURL(config->config_url))) {
+    mojom::blink::IdentityProviderRequestOptionsPtr options =
+        blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+    if (provider_to_resolver_.Contains(KURL(options->config->config_url))) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError,
           "More than one navigator.credentials.get calls to the same "
@@ -113,13 +113,14 @@ void WebIdentityRequester::AppendGetCall(
       return;
     }
     mojom::blink::IdentityProviderPtr idp =
-        mojom::blink::IdentityProvider::NewFederated(std::move(config));
+        mojom::blink::IdentityProvider::NewFederated(std::move(options));
     idp_ptrs.push_back(std::move(idp));
   }
 
   for (const auto& idp_ptr : idp_ptrs) {
-    provider_to_resolver_.insert(KURL(idp_ptr->get_federated()->config_url),
-                                 WrapPersistent(resolver));
+    provider_to_resolver_.insert(
+        KURL(idp_ptr->get_federated()->config->config_url),
+        WrapPersistent(resolver));
   }
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =
@@ -212,8 +213,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 
   if (!is_requesting_token_) {
     OnRequestToken(mojom::blink::RequestTokenStatus::kErrorCanceled,
-                   absl::nullopt, "", nullptr,
-                   /*is_identity_credential_auto_selected=*/false);
+                   absl::nullopt, "", nullptr, /*is_auto_selected=*/false);
     return;
   }
 

@@ -35,6 +35,9 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "extensions/common/extension_features.h"
 #include "ui/views/win/hwnd_util.h"
 #endif
 
@@ -50,7 +53,8 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
                             const base::FilePath& profile_directory,
                             bool require_native_initiated_connections,
                             const std::string& connect_id,
-                            const std::string& error_arg);
+                            const std::string& error_arg,
+                            bool native_hosts_executables_launch_directly);
 
   NativeProcessLauncherImpl(const NativeProcessLauncherImpl&) = delete;
   NativeProcessLauncherImpl& operator=(const NativeProcessLauncherImpl&) =
@@ -70,7 +74,8 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
          const base::FilePath& profile_directory,
          bool require_native_initiated_connections,
          const std::string& connect_id,
-         const std::string& error_arg);
+         const std::string& error_arg,
+         bool native_hosts_executables_launch_directly);
 
     Core(const Core&) = delete;
     Core& operator=(const Core&) = delete;
@@ -108,6 +113,7 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
 
     const std::string connect_id_;
     const std::string error_arg_;
+    const bool native_hosts_executables_launch_directly_;
 
 #if BUILDFLAG(IS_WIN)
     // Handle of the native window corresponding to the extension.
@@ -118,19 +124,23 @@ class NativeProcessLauncherImpl : public NativeProcessLauncher {
   scoped_refptr<Core> core_;
 };
 
-NativeProcessLauncherImpl::Core::Core(bool allow_user_level_hosts,
-                                      intptr_t window_handle,
-                                      const base::FilePath& profile_directory,
-                                      bool require_native_initiated_connections,
-                                      const std::string& connect_id,
-                                      const std::string& error_arg)
+NativeProcessLauncherImpl::Core::Core(
+    bool allow_user_level_hosts,
+    intptr_t window_handle,
+    const base::FilePath& profile_directory,
+    bool require_native_initiated_connections,
+    const std::string& connect_id,
+    const std::string& error_arg,
+    bool native_hosts_executables_launch_directly)
     : detached_(false),
       allow_user_level_hosts_(allow_user_level_hosts),
       profile_directory_(profile_directory),
       require_native_initiated_connections_(
           require_native_initiated_connections),
       connect_id_(connect_id),
-      error_arg_(error_arg)
+      error_arg_(error_arg),
+      native_hosts_executables_launch_directly_(
+          native_hosts_executables_launch_directly)
 #if BUILDFLAG(IS_WIN)
       ,
       window_handle_(window_handle)
@@ -297,7 +307,8 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
   base::File read_file;
   base::File write_file;
   if (NativeProcessLauncher::LaunchNativeProcess(
-          command_line, &process, &read_file, &write_file)) {
+          command_line, &process, &read_file, &write_file,
+          native_hosts_executables_launch_directly_)) {
     PostResult(std::move(callback), std::move(process), std::move(read_file),
                std::move(write_file));
   } else {
@@ -346,13 +357,16 @@ NativeProcessLauncherImpl::NativeProcessLauncherImpl(
     const base::FilePath& profile_directory,
     bool require_native_initiated_connections,
     const std::string& connect_id,
-    const std::string& error_arg)
-    : core_(base::MakeRefCounted<Core>(allow_user_level_hosts,
-                                       window_handle,
-                                       profile_directory,
-                                       require_native_initiated_connections,
-                                       connect_id,
-                                       error_arg)) {}
+    const std::string& error_arg,
+    bool native_hosts_executables_launch_directly)
+    : core_(base::MakeRefCounted<Core>(
+          allow_user_level_hosts,
+          window_handle,
+          profile_directory,
+          require_native_initiated_connections,
+          connect_id,
+          error_arg,
+          native_hosts_executables_launch_directly)) {}
 
 NativeProcessLauncherImpl::~NativeProcessLauncherImpl() {
   core_->Detach();
@@ -373,15 +387,28 @@ std::unique_ptr<NativeProcessLauncher> NativeProcessLauncher::CreateDefault(
     const base::FilePath& profile_directory,
     bool require_native_initiated_connections,
     const std::string& connect_id,
-    const std::string& error_arg) {
+    const std::string& error_arg,
+    Profile* profile) {
   intptr_t window_handle = 0;
+  bool native_hosts_executables_launch_directly = false;
 #if BUILDFLAG(IS_WIN)
   window_handle = reinterpret_cast<intptr_t>(
       views::HWNDForNativeView(native_view));
-#endif
+
+  if (profile && profile->GetPrefs()->IsManagedPreference(
+                     prefs::kNativeHostsExecutablesLaunchDirectly)) {
+    native_hosts_executables_launch_directly = profile->GetPrefs()->GetBoolean(
+        prefs::kNativeHostsExecutablesLaunchDirectly);
+  } else {
+    native_hosts_executables_launch_directly = base::FeatureList::IsEnabled(
+        extensions_features::kLaunchWindowsNativeHostsDirectly);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   return std::make_unique<NativeProcessLauncherImpl>(
       allow_user_level_hosts, window_handle, profile_directory,
-      require_native_initiated_connections, connect_id, error_arg);
+      require_native_initiated_connections, connect_id, error_arg,
+      native_hosts_executables_launch_directly);
 }
 
 }  // namespace extensions

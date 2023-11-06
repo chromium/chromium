@@ -155,7 +155,7 @@ class CORE_EXPORT MessagePort : public EventTarget,
       PostMessageTask() = default;
       explicit PostMessageTask(scheduler::TaskAttributionInfo* task)
           : task_(task) {}
-      scheduler::TaskAttributionInfo* GetTask() { return task_; }
+      scheduler::TaskAttributionInfo* GetTask() { return task_.Get(); }
       size_t DecrementAndReturnCounter() { return --counter_; }
       void IncrementCounter() { ++counter_; }
       void Trace(Visitor* visitor) const { visitor->Trace(task_); }

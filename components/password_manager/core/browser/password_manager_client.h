@@ -211,7 +211,7 @@ class PasswordManagerClient {
 
   // Instructs the client to show a keyboard replacing surface UI (e.g.
   // TouchToFill).
-  virtual void ShowKeyboardReplacingSurface(
+  virtual bool ShowKeyboardReplacingSurface(
       PasswordManagerDriver* driver,
       const SubmissionReadinessParams& submission_readiness_params,
       bool is_webauthn_form);
@@ -278,7 +278,8 @@ class PasswordManagerClient {
   // Called when a password is saved in an automated fashion. Embedder may
   // inform the user that this save has occurred.
   virtual void AutomaticPasswordSave(
-      std::unique_ptr<PasswordFormManagerForUI> saved_form_manager) = 0;
+      std::unique_ptr<PasswordFormManagerForUI> saved_form_manager,
+      bool is_update_confirmation) = 0;
 
   // Called when a password is autofilled. |best_matches| contains the
   // PasswordForm into which a password was filled: the client may choose to

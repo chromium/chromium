@@ -65,7 +65,7 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_read_context.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -726,11 +726,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_EQ(context.IsTestFeatureEnabled(), !is_test_feature_enabled);
 
   // Check the override value map as well.
-  base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
+  base::flat_map<::blink::mojom::RuntimeFeature, bool>
       expected_feature_overrides = context.GetFeatureOverrides();
-  EXPECT_EQ(expected_feature_overrides
-                [blink::mojom::RuntimeFeatureState::kTestFeature],
-            !is_test_feature_enabled);
+  EXPECT_EQ(
+      expected_feature_overrides[blink::mojom::RuntimeFeature::kTestFeature],
+      !is_test_feature_enabled);
 
   // Continue with the navigation until completion.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
@@ -771,11 +771,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
   EXPECT_EQ(context.IsTestFeatureEnabled(), is_test_feature_enabled);
 
   // Check the override value map as well.
-  base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
+  base::flat_map<::blink::mojom::RuntimeFeature, bool>
       expected_feature_overrides = context.GetFeatureOverrides();
-  EXPECT_EQ(expected_feature_overrides
-                [blink::mojom::RuntimeFeatureState::kTestFeature],
-            is_test_feature_enabled);
+  EXPECT_EQ(
+      expected_feature_overrides[blink::mojom::RuntimeFeature::kTestFeature],
+      is_test_feature_enabled);
 
   // Continue with the navigation until completion.
   ASSERT_TRUE(manager.WaitForNavigationFinished());
@@ -4886,7 +4886,7 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
                 ~network::mojom::WebSandboxFlags::kAutomaticFeatures);
   EXPECT_EQ(
       manager.GetNavigationHandle()->SandboxFlagsInherited(),
-      //`allow-scripts allow-poupups`:
+      //`allow-scripts allow-popups`:
       network::mojom::WebSandboxFlags::kAll &
           ~network::mojom::WebSandboxFlags::kScripts &
           ~network::mojom::WebSandboxFlags::kPopups &

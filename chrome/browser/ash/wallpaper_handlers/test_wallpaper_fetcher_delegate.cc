@@ -8,8 +8,10 @@
 #include <string>
 
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ash/wallpaper_handlers/mock_sea_pen_fetcher.h"
 #include "chrome/browser/ash/wallpaper_handlers/mock_wallpaper_handlers.h"
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
+#include "chrome/browser/profiles/profile.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace wallpaper_handlers {
@@ -73,6 +75,11 @@ void TestWallpaperFetcherDelegate::FetchGooglePhotosAccessToken(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), "fake_google_photos_access_token"));
+}
+
+std::unique_ptr<SeaPenFetcher>
+TestWallpaperFetcherDelegate::CreateSeaPenFetcher(Profile* profile) const {
+  return std::make_unique<testing::NiceMock<MockSeaPenFetcher>>();
 }
 
 }  // namespace wallpaper_handlers

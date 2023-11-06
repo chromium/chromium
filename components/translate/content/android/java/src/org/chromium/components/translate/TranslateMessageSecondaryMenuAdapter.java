@@ -104,8 +104,12 @@ final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         switch (getItemViewType(position)) {
             case ViewType.DIVIDER:
-                convertView = reuseOrCreateView(
-                        convertView, ViewType.DIVIDER, R.layout.app_menu_divider, parent);
+                convertView =
+                        reuseOrCreateView(
+                                convertView,
+                                ViewType.DIVIDER,
+                                R.layout.list_section_divider,
+                                parent);
                 break;
 
             case ViewType.MENU_ITEM:

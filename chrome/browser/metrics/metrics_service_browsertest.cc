@@ -33,9 +33,11 @@
 #include "components/metrics/enabled_state_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
+#include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/metrics/stability_metrics_helper.h"
+#include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
@@ -54,6 +56,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace {
@@ -501,3 +507,27 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserSampledOutTest,
   // SetUp() has provided consent and made metrics "sampled-out" (disabled).
   EXPECT_FALSE(HasNonPMAFiles());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, EntropyTransfer) {
+  // While creating, the EntropyState should have been transferred from the
+  // Ash init params to the Entropy values.
+  auto* init_params = chromeos::BrowserParamsProxy::Get();
+  metrics::MetricsService* metrics_service =
+      g_browser_process->GetMetricsServicesManager()->GetMetricsService();
+  // Due to version skew it could be that the used version of Ash does not
+  // support this yet.
+  if (init_params->EntropySource()) {
+    EXPECT_EQ(metrics_service->GetLowEntropySource(),
+              init_params->EntropySource()->low_entropy);
+    EXPECT_NE(init_params->EntropySource()->low_entropy, -1);
+    EXPECT_EQ(metrics_service->GetOldLowEntropySource(),
+              init_params->EntropySource()->old_low_entropy);
+    EXPECT_EQ(metrics_service->GetPseudoLowEntropySource(),
+              init_params->EntropySource()->pseudo_low_entropy);
+  } else {
+    LOG(WARNING) << "MetricsReportingLacrosBrowserTest.EntropyTransfer "
+                 << "- Ash version does not support entropy transfer yet";
+  }
+}
+#endif

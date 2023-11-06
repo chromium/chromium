@@ -17,25 +17,26 @@ InterpolationValue
 SVGNumberOptionalNumberInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  auto result = std::make_unique<InterpolableList>(2);
-  result->Set(0, std::make_unique<InterpolableNumber>(0));
-  result->Set(1, std::make_unique<InterpolableNumber>(0));
-  return InterpolationValue(std::move(result));
+  auto* result = MakeGarbageCollected<InterpolableList>(2);
+  result->Set(0, MakeGarbageCollected<InterpolableNumber>(0));
+  result->Set(1, MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(result);
 }
 
 InterpolationValue
 SVGNumberOptionalNumberInterpolationType::MaybeConvertSVGValue(
     const SVGPropertyBase& svg_value) const {
-  if (svg_value.GetType() != kAnimatedNumberOptionalNumber)
+  if (svg_value.GetType() != kAnimatedNumberOptionalNumber) {
     return nullptr;
+  }
 
   const auto& number_optional_number = To<SVGNumberOptionalNumber>(svg_value);
-  auto result = std::make_unique<InterpolableList>(2);
-  result->Set(0, std::make_unique<InterpolableNumber>(
+  auto* result = MakeGarbageCollected<InterpolableList>(2);
+  result->Set(0, MakeGarbageCollected<InterpolableNumber>(
                      number_optional_number.FirstNumber()->Value()));
-  result->Set(1, std::make_unique<InterpolableNumber>(
+  result->Set(1, MakeGarbageCollected<InterpolableNumber>(
                      number_optional_number.SecondNumber()->Value()));
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 SVGPropertyBase* SVGNumberOptionalNumberInterpolationType::AppliedSVGValue(

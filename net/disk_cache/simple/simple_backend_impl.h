@@ -141,9 +141,12 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
 #if BUILDFLAG(IS_ANDROID)
-  void set_app_status_listener(
-      base::android::ApplicationStatusListener* app_status_listener) {
-    app_status_listener_ = app_status_listener;
+  // Note: null callback is OK, and will make the cache use a
+  // base::android::ApplicationStatusListener. Callback returning nullptr
+  // means to not use an app status listener at all.
+  void set_app_status_listener_getter(
+      ApplicationStatusListenerGetter app_status_listener_getter) {
+    app_status_listener_getter_ = std::move(app_status_listener_getter);
   }
 #endif
 
@@ -230,15 +233,6 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   net::Error DoomEntryFromHash(uint64_t entry_hash,
                                CompletionOnceCallback callback);
 
-  // Called when we tried to open an entry with hash alone. When a blank entry
-  // has been created and filled in with information from the disk - based on a
-  // hash alone - this checks that a duplicate active entry was not created
-  // using a key in the meantime.
-  void OnEntryOpenedFromHash(uint64_t hash,
-                             const scoped_refptr<SimpleEntryImpl>& simple_entry,
-                             EntryResultCallback callback,
-                             EntryResult result);
-
   // Called when we tried to open an entry from key. When the entry has been
   // opened, a check for key mismatch is performed.
   void OnEntryOpenedFromKey(const std::string key,
@@ -286,8 +280,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
   uint32_t entry_count_ = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-  raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
-      app_status_listener_ = nullptr;
+  ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
 };
 

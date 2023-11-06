@@ -118,6 +118,7 @@ enum class MessageIdentifier {
   // Removed: UNDO_CUSTOM_TAB_RESTORATION = 38,
   CVC_SAVE = 39,
   TRACKING_PROTECTION_NOTICE = 40,
+  DESKTOP_SITE_WINDOW_SETTING = 41,
   // Insert new values before this line.
   COUNT
 };

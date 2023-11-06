@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // TTS api test running from ash with lacros.
-// browser_tests --lacros-chrome-path={your_build_path}/lacros_clang_x64
+// browser_tests
+//     --lacros-chrome-path={your_build_path}/lacros_clang_x64/test_lacros_chrome
 //     --gtest_filter="AshTtsApiTest.SpeakLacrosUtteranceWithAshSpeechEngine"
 
 chrome.test.runTests([

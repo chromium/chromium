@@ -26,9 +26,7 @@ Boolean MockPreferences::AppSynchronize(CFStringRef application_id) {
 CFPropertyListRef MockPreferences::CopyAppValue(CFStringRef key,
                                                 CFStringRef application_id) {
   CFPropertyListRef value;
-  Boolean found = CFDictionaryGetValueIfPresent(values_,
-                                                key,
-                                                &value);
+  Boolean found = CFDictionaryGetValueIfPresent(values_.get(), key, &value);
   if (!found || !value)
     return NULL;
   CFRetain(value);
@@ -37,21 +35,21 @@ CFPropertyListRef MockPreferences::CopyAppValue(CFStringRef key,
 
 Boolean MockPreferences::AppValueIsForced(CFStringRef key,
                                           CFStringRef application_id) {
-  return CFSetContainsValue(forced_, key);
+  return CFSetContainsValue(forced_.get(), key);
 }
 
 Boolean MockPreferences::IsManagedPolicyAvailableForMachineScope(
     CFStringRef key) {
-  return CFSetContainsValue(machine_, key);
+  return CFSetContainsValue(machine_.get(), key);
 }
 
 void MockPreferences::AddTestItem(CFStringRef key,
                                   CFPropertyListRef value,
                                   bool is_forced,
                                   bool is_machine) {
-  CFDictionarySetValue(values_, key, value);
+  CFDictionarySetValue(values_.get(), key, value);
   if (is_forced)
-    CFSetAddValue(forced_, key);
+    CFSetAddValue(forced_.get(), key);
   if (is_machine)
-    CFSetAddValue(machine_, key);
+    CFSetAddValue(machine_.get(), key);
 }

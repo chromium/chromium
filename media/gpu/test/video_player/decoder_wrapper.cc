@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/waiting.h"
 #include "media/gpu/macros.h"
@@ -366,7 +367,9 @@ void DecoderWrapper::OnDecodeDoneTask(DecoderStatus status) {
       FROM_HERE,
       base::BindOnce(&DecoderWrapper::DecodeNextFragmentTask, weak_this_),
 #if BUILDFLAG(USE_V4L2_CODEC)
-      base::Milliseconds(1)
+      base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)
+          ? base::Milliseconds(5)
+          : base::Milliseconds(1)
 #else
       base::Milliseconds(0)
 #endif

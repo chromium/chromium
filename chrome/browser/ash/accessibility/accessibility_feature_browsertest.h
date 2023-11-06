@@ -28,6 +28,7 @@ class AccessibilityFeatureBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
+  void TearDownInProcessBrowserTestFixture() override;
 
   // Navigates to the given URL in Ash or Lacros. Does not wait for the load to
   // complete.

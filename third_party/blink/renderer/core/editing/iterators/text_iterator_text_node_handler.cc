@@ -8,9 +8,9 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_text_state.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 
 namespace blink {
 
@@ -56,8 +56,8 @@ struct StringAndOffsetRange {
 };
 
 StringAndOffsetRange ComputeTextAndOffsetsForEmission(
-    const NGOffsetMapping& mapping,
-    const NGOffsetMappingUnit& unit,
+    const OffsetMapping& mapping,
+    const OffsetMappingUnit& unit,
     const TextIteratorBehavior& behavior) {
   StringAndOffsetRange result{mapping.GetText(), unit.TextContentStart(),
                               unit.TextContentEnd()};
@@ -109,7 +109,7 @@ void TextIteratorTextNodeHandler::HandleTextNodeWithLayoutNG() {
 
     // We may go through multiple mappings, which happens when there is
     // ::first-letter and blockifying style.
-    auto* mapping = NGOffsetMapping::ForceGetFor(range_to_emit.StartPosition());
+    auto* mapping = OffsetMapping::ForceGetFor(range_to_emit.StartPosition());
     if (!mapping) {
       offset_ = end_offset_;
       return;
@@ -169,8 +169,8 @@ void TextIteratorTextNodeHandler::HandleTextNodeInRange(const Text* node,
   end_offset_ = end_offset;
   mapping_units_.clear();
 
-  const NGOffsetMapping* const mapping =
-      NGOffsetMapping::ForceGetFor(Position(node, offset_));
+  const OffsetMapping* const mapping =
+      OffsetMapping::ForceGetFor(Position(node, offset_));
   if (UNLIKELY(!mapping)) {
     NOTREACHED() << "We have LayoutText outside LayoutBlockFlow " << text_node_;
     return;

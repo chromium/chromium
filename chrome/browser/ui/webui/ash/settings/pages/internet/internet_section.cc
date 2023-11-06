@@ -434,16 +434,24 @@ const std::vector<SearchConcept>& GetCellularMeteredSearchConcepts() {
 }
 
 const std::vector<SearchConcept>& GetInstantTetheringSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
-       mojom::kMobileDataNetworksSubpagePath,
-       mojom::SearchResultIcon::kInstantTethering,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kMobileDataNetworks},
-       {IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1,
-        SearchConcept::kAltTagEnd}},
-  });
+  static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
+    SearchConcept instant_tethering_concept{
+        IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS,
+        mojom::kMobileDataNetworksSubpagePath,
+        mojom::SearchResultIcon::kInstantTethering,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kMobileDataNetworks},
+    };
+
+    if (ash::features::IsInstantHotspotRebrandEnabled()) {
+      instant_tethering_concept.alt_tag_ids[0] =
+          IDS_OS_SETTINGS_TAG_INSTANT_MOBILE_NETWORKS_ALT1;
+      instant_tethering_concept.alt_tag_ids[1] = SearchConcept::kAltTagEnd;
+    }
+
+    return std::vector<SearchConcept>{instant_tethering_concept};
+  }());
   return *tags;
 }
 
@@ -1032,6 +1040,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_SAVE_BUTTON},
       {"hotspotConfigCancelButton",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_CANCEL_BUTTON},
+      {"hotspotConfigGeneralErrorMessage",
+       IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_GENERAL_ERROR_MESSAGE},
       {"hotspotConfigInvalidConfigurationErrorMessage",
        IDS_SETTINGS_INTERNET_HOTSPOT_CONFIG_INVALID_CONFIGURATION_ERROR_MESSAGE},
       {"hotspotConfigNotLoginErrorMessage",
@@ -1140,17 +1150,17 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotMobileDataNotSupportedSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_MOBILE_DATA_NOT_SUPPORTED_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotNoMobileDataSublabelWithLink",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_NO_MOBILE_DATA_SUBLABEL_WITH_LEARN_MORE_LINK,
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddString(
       "hotspotSettingsTitle",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_TITLE,
@@ -1160,7 +1170,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_INTERNET_HOTSPOT_SETTINGS_SUBTITLE_WITH_LEARN_MORE_LINK,
           ui::GetChromeOSDeviceName(),
-          GetHelpUrlWithBoard(chrome::kInstantTetheringLearnMoreURL)));
+          GetHelpUrlWithBoard(chrome::kChromebookHotspotLearnMoreURL)));
   html_source->AddBoolean("isUserLoggedIn", IsUserLoggedIn());
 }
 

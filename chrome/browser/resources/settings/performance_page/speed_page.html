@@ -15,18 +15,19 @@
     pref="{{prefs.net.network_prediction_options}}"
     label="$i18n{preloadingPageTitle}"
     sub-label="$i18n{preloadingToggleSummary}"
-    numeric-unchecked-value="[[networkPredictionOptionsEnum_.DISABLED]]"
+    learn-more-url="$i18n{preloadingLearnMoreUrl}"
+    numeric-unchecked-values="[[numericUncheckedValues_]]"
     numeric-checked-value="[[networkPredictionOptionsEnum_.STANDARD]]"
-    on-change="onPreloadingRadioChange_">
+    on-change="onPreloadingStateChange_">
 </settings-toggle-button>
 <iron-collapse
     opened="[[isPreloadingEnabled_(
         prefs.net.network_prediction_options.value)]]">
   <div class="cr-row continuation settings-section-bottom-padding">
-    <settings-radio-group id="preloadingRadioGroup" no-set-pref
+    <settings-radio-group id="preloadingRadioGroup"
         pref="{{prefs.net.network_prediction_options}}"
         selectable-elements="settings-collapse-radio-button"
-        on-change="onPreloadingRadioChange_">
+        on-change="onPreloadingStateChange_">
       <settings-collapse-radio-button id="preloadingExtended"
           name="[[networkPredictionOptionsEnum_.EXTENDED]]"
           pref="[[prefs.net.network_prediction_options]]"
@@ -35,9 +36,9 @@
           no-automatic-collapse>
         <div slot="collapse" class="settings-columned-section">
           <div class="column">
-            <div class="description-header">
+            <h2 class="description-header">
               $i18n{privacyGuideFeatureDescriptionHeader}
-            </div>
+            </h2>
             <ul>
               <li class="secondary">
                 $i18n{preloadingPageExtendedPreloadingWhenOnBulletOne}
@@ -48,9 +49,9 @@
             </ul>
           </div>
           <div class="column">
-            <div class="description-header">
+            <h2 class="description-header">
               $i18n{privacyGuideThingsToConsider}
-            </div>
+            </h2>
             <ul>
               <li class="secondary">
                 $i18n{preloadingPageThingsToConsiderBulletOne}
@@ -71,9 +72,9 @@
           no-automatic-collapse>
         <div slot="collapse" class="settings-columned-section">
           <div class="column">
-            <div class="description-header">
+            <h2 class="description-header">
               $i18n{privacyGuideFeatureDescriptionHeader}
-            </div>
+            </h2>
             <ul>
               <li class="secondary">
                 $i18n{preloadingPageStandardPreloadingWhenOnBulletOne}
@@ -84,9 +85,9 @@
             </ul>
           </div>
           <div class="column">
-            <div class="description-header">
+            <h2 class="description-header">
               $i18n{privacyGuideThingsToConsider}
-            </div>
+            </h2>
             <ul>
               <li class="secondary">
                 $i18n{preloadingPageThingsToConsiderBulletOne}

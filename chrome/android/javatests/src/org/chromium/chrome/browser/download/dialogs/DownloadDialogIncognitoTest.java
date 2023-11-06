@@ -46,9 +46,7 @@ import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * Test to verify download dialog scenarios.
- */
+/** Test to verify download dialog scenarios. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @EnableFeatures({ChromeFeatureList.INCOGNITO_DOWNLOADS_WARNING})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -70,14 +68,18 @@ public class DownloadDialogIncognitoTest {
     public void setUpTest() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppModalPresenter mAppModalPresenter =
-                    new AppModalPresenter(mActivityTestRule.getActivity());
-            mModalDialogManager = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                return new ModalDialogManager(
-                        mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppModalPresenter mAppModalPresenter =
+                            new AppModalPresenter(mActivityTestRule.getActivity());
+                    mModalDialogManager =
+                            TestThreadUtils.runOnUiThreadBlockingNoException(
+                                    () -> {
+                                        return new ModalDialogManager(
+                                                mAppModalPresenter,
+                                                ModalDialogManager.ModalDialogType.APP);
+                                    });
+                });
         ModalDialogTestUtils.overrideEnableButtonTapProtection(false);
     }
 
@@ -152,38 +154,63 @@ public class DownloadDialogIncognitoTest {
 
     private void showDuplicateDialog(OTRProfileID otrProfileID) {
         Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            new DuplicateDownloadDialog().show(mContext, mModalDialogManager, DOWNLOAD_PATH,
-                    PAGE_URL, TOTAL_BYTES, true, otrProfileID, mResultCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new DuplicateDownloadDialog()
+                            .show(
+                                    mContext,
+                                    mModalDialogManager,
+                                    DOWNLOAD_PATH,
+                                    PAGE_URL,
+                                    TOTAL_BYTES,
+                                    true,
+                                    otrProfileID,
+                                    mResultCallback);
+                });
     }
 
     private void showInsecureDownloadDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-            new InsecureDownloadDialog().show(
-                    mContext, mModalDialogManager, FILE_NAME, TOTAL_BYTES, mResultCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+                    new InsecureDownloadDialog()
+                            .show(
+                                    mContext,
+                                    mModalDialogManager,
+                                    FILE_NAME,
+                                    TOTAL_BYTES,
+                                    mResultCallback);
+                });
     }
 
     private void showDangerousContentDialog() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-            new DangerousDownloadDialog().show(mContext, mModalDialogManager, FILE_NAME,
-                    TOTAL_BYTES, ICON_ID, mResultCallback);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+                    new DangerousDownloadDialog()
+                            .show(
+                                    mContext,
+                                    mModalDialogManager,
+                                    FILE_NAME,
+                                    TOTAL_BYTES,
+                                    ICON_ID,
+                                    mResultCallback);
+                });
     }
 
     private void waitForWarningVisibilityToBe(Visibility visibility) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            try {
-                onView(withId(R.id.message_paragraph_2))
-                        .check(matches(withEffectiveVisibility(visibility)));
-            } catch (NoMatchingViewException | AssertionError e) {
-                throw new CriteriaNotSatisfiedException(
-                        "Timeout while waiting for warning to have visibility: "
-                        + (visibility == VISIBLE ? "VISIBLE" : "GONE"));
-            }
-        }, DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        onView(withId(R.id.message_paragraph_2))
+                                .check(matches(withEffectiveVisibility(visibility)));
+                    } catch (NoMatchingViewException | AssertionError e) {
+                        throw new CriteriaNotSatisfiedException(
+                                "Timeout while waiting for warning to have visibility: "
+                                        + (visibility == VISIBLE ? "VISIBLE" : "GONE"));
+                    }
+                },
+                DEFAULT_MAX_TIME_TO_POLL * 10,
+                DEFAULT_POLLING_INTERVAL);
     }
 }

@@ -34,6 +34,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
+#include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -99,6 +100,8 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
       // Enable that back when the issue is resolved.
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+    // TODO(b/297885530): Change buffer format to RGBA_F16 once that format is
+    //  supported for overlay delegation to Ash.
     if (format == gfx::BufferFormat::RGBA_1010102)
       image_format_hdr_ = format;
 
@@ -233,11 +236,12 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
       connection_->wayland_output_manager()->GetOutput(metrics.output_id);
   auto* color_management_output =
       wayland_output ? wayland_output->color_management_output() : nullptr;
-  // (b/298432994): Temporarily disable HDR content until we are able to handle
-  // RGBA_F16 buffers. Currently F16 images break pages and apps and make them
-  // blank.
-  bool enable_hdr = false;
-  if (enable_hdr && color_management_output &&
+  auto srgb_hdr_supported =
+      connection_->zcr_color_manager()->GetVersion() >=
+      ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION;
+  // Disable lacros HDR feature due to crbug.com/1497481
+  srgb_hdr_supported = false;
+  if (srgb_hdr_supported && color_management_output &&
       color_management_output->gfx_color_space() &&
       color_management_output->gfx_color_space()->IsHDR()) {
     // Only use display color space to determine if HDR is supported.

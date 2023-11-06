@@ -682,7 +682,7 @@ interface CSSScale : CSSTransformComponent
     setter x
     setter y
     setter z
-interface CSSScopeRule : CSSConditionRule
+interface CSSScopeRule : CSSGroupingRule
     attribute @@toStringTag
     getter end
     getter start
@@ -978,6 +978,7 @@ interface ClipboardEvent : Event
     getter clipboardData
     method constructor
 interface ClipboardItem
+    static method supports
     attribute @@toStringTag
     getter types
     method constructor
@@ -988,6 +989,16 @@ interface CloseEvent : Event
     getter reason
     getter wasClean
     method constructor
+interface CloseWatcher : EventTarget
+    attribute @@toStringTag
+    getter oncancel
+    getter onclose
+    method close
+    method constructor
+    method destroy
+    method requestClose
+    setter oncancel
+    setter onclose
 interface Comment : CharacterData
     attribute @@toStringTag
     method constructor
@@ -2644,6 +2655,7 @@ interface GPUSupportedFeatures
 interface GPUSupportedLimits
     attribute @@toStringTag
     getter maxBindGroups
+    getter maxBindGroupsPlusVertexBuffers
     getter maxBindingsPerBindGroup
     getter maxBufferSize
     getter maxColorAttachmentBytesPerSample
@@ -4645,9 +4657,16 @@ interface IIRFilterNode : AudioNode
     method getFrequencyResponse
 interface IdentityCredential : Credential
     attribute @@toStringTag
+    getter isAutoSelected
     getter token
     method constructor
+interface IdentityCredentialError : DOMException
+    attribute @@toStringTag
+    getter code
+    getter url
+    method constructor
 interface IdentityProvider
+    static method close
     static method getUserInfo
     attribute @@toStringTag
     method constructor
@@ -4793,6 +4812,7 @@ interface IntersectionObserver
     getter delay
     getter root
     getter rootMargin
+    getter scrollMargin
     getter thresholds
     getter trackVisibility
     method constructor
@@ -5417,6 +5437,7 @@ interface MediaStreamTrack : EventTarget
     getter onmute
     getter onunmute
     getter readyState
+    getter stats
     method applyConstraints
     method clone
     method constructor
@@ -5443,6 +5464,13 @@ interface MediaStreamTrackProcessor
     attribute @@toStringTag
     getter readable
     method constructor
+interface MediaStreamTrackVideoStats
+    attribute @@toStringTag
+    getter deliveredFrames
+    getter discardedFrames
+    getter totalFrames
+    method constructor
+    method toJSON
 interface MessageChannel
     attribute @@toStringTag
     getter port1
@@ -5648,6 +5676,7 @@ interface Navigator
     getter language
     getter languages
     getter locks
+    getter login
     getter managed
     getter maxTouchPoints
     getter mediaCapabilities
@@ -5694,6 +5723,10 @@ interface Navigator
     method unregisterProtocolHandler
     method vibrate
     method webkitGetUserMedia
+interface NavigatorLogin
+    attribute @@toStringTag
+    method constructor
+    method setStatus
 interface NavigatorManagedData : EventTarget
     attribute @@toStringTag
     getter onmanagedconfigurationchange
@@ -8679,6 +8712,7 @@ interface UIEvent : Event
     method constructor
     method initUIEvent
 interface URL
+    static method canParse
     static method createObjectURL
     static method revokeObjectURL
     attribute @@toStringTag
@@ -10974,6 +11008,7 @@ interface webkitSpeechRecognitionEvent : Event
     getter resultIndex
     getter results
 interface webkitURL
+    static method canParse
     static method createObjectURL
     static method revokeObjectURL
     attribute @@toStringTag

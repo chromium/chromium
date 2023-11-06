@@ -169,11 +169,6 @@ inline constexpr char kPrivacySandboxTopicsConsentLastUpdateReason[] =
 inline constexpr char kPrivacySandboxTopicsConsentTextAtLastUpdate[] =
     "privacy_sandbox.topics_consent.text_at_last_update";
 
-// Boolean that indicates whether the user's anti-abuse preference has been
-// initialized.
-inline constexpr char kPrivacySandboxAntiAbuseInitialized[] =
-    "privacy_sandbox.anti_abuse_initialized";
-
 }  // namespace prefs
 
 namespace privacy_sandbox {

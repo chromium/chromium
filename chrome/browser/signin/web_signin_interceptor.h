@@ -78,11 +78,17 @@ enum class SigninInterceptionHeuristicOutcome {
   // The interceptor is not triggered if the tab has already been closed.
   kAbortTabClosed = 18,
 
-  kMaxValue = kAbortTabClosed,
+  // Interception succeeded:
+  // Interception happens when the first account signs in to the web and no
+  // account is yet signed in to the Chrome Profile, the prompt suggests signing
+  // in to Chrome.
+  kInterceptChromeSignin = 19,
+
+  kMaxValue = kInterceptChromeSignin,
 };
 
 // User selection in the interception bubble.
-enum class SigninInterceptionUserChoice { kAccept, kDecline, kGuest };
+enum class SigninInterceptionUserChoice { kAccept, kDecline };
 
 // User action resulting from the interception bubble.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -95,8 +101,7 @@ enum class SigninInterceptionResult {
   // Used when the bubble was not shown because it's not implemented.
   kNotDisplayed = 3,
 
-  // Accepted to be opened in Guest profile.
-  kAcceptedWithGuest = 4,
+  // Deprecated(10/23): kAcceptedWithGuest = 4,
 
   kAcceptedWithExistingProfile = 5,
 
@@ -124,7 +129,8 @@ class WebSigninInterceptor {
     kMultiUser,
     kEnterpriseForced,
     kEnterpriseAcceptManagement,
-    kProfileSwitchForced
+    kProfileSwitchForced,
+    kChromeSignin,
   };
 
   // Delegate class responsible for showing the various interception UIs.
@@ -136,7 +142,6 @@ class WebSigninInterceptor {
                        AccountInfo intercepted_account,
                        AccountInfo primary_account,
                        SkColor profile_highlight_color = SkColor(),
-                       bool show_guest_option = false,
                        bool show_link_data_option = false,
                        bool show_managed_disclaimer = false);
 
@@ -148,7 +153,6 @@ class WebSigninInterceptor {
       AccountInfo intercepted_account;
       AccountInfo primary_account;
       SkColor profile_highlight_color;
-      bool show_guest_option;
       bool show_link_data_option;
       bool show_managed_disclaimer;
     };

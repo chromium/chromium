@@ -8,11 +8,9 @@
 #include <stddef.h>
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -52,7 +50,6 @@ enum class WebappUninstallSource;
 namespace web_app {
 
 class AppLock;
-class IsolatedWebAppInstallerCoordinator;
 
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
 // Allows //c/b/web_applications code to call into //c/b/ui without directly
@@ -76,8 +73,9 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   bool CanAddAppToQuickLaunchBar() const override;
   void AddAppToQuickLaunchBar(const webapps::AppId& app_id) override;
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
-  bool IsInAppWindow(content::WebContents* web_contents,
-                     const webapps::AppId* app_id) const override;
+  bool IsInAppWindow(content::WebContents* web_contents) const override;
+  const webapps::AppId* GetAppIdForWindow(
+      content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const absl::optional<webapps::AppId>& previous_app_id,
@@ -102,11 +100,11 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       content::WebContents* web_contents,
       web_app::AppIdentityDialogCallback callback) override;
   void ShowWebAppSettings(const webapps::AppId& app_id) override;
-  base::Value LaunchWebApp(apps::AppLaunchParams params,
-                           LaunchWebAppWindowSetting launch_setting,
-                           Profile& profile,
-                           LaunchWebAppCallback callback,
-                           AppLock& lock) override;
+  void WaitForFirstRunAndLaunchWebApp(apps::AppLaunchParams params,
+                                      LaunchWebAppWindowSetting launch_setting,
+                                      Profile& profile,
+                                      LaunchWebAppCallback callback,
+                                      AppLock& lock) override;
 #if BUILDFLAG(IS_CHROMEOS)
   void MigrateLauncherState(const webapps::AppId& from_app_id,
                             const webapps::AppId& to_app_id,
@@ -118,7 +116,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 #endif
   content::WebContents* CreateNewTab() override;
   bool IsWebContentsActiveTabInBrowser(
-       content::WebContents* web_contents) override;
+      content::WebContents* web_contents) override;
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
   void PresentUserUninstallDialog(
@@ -142,6 +140,10 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   void LaunchIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
+
+  void MaybeCreateEnableSupportedLinksInfobar(
+      content::WebContents* web_contents,
+      const std::string& launch_name) override;
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -188,17 +190,10 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
       UninstallCompleteCallback uninstall_complete_callback,
       webapps::UninstallResultCode uninstall_code);
 
-  void OnIsolatedWebAppInstallerClosed(
-      IsolatedWebAppInstallerCoordinator* installer,
-      absl::optional<webapps::AppId> result);
-
   const raw_ptr<Profile> profile_;
   std::map<webapps::AppId, std::vector<base::OnceClosure>>
       windows_closed_requests_map_;
   std::map<webapps::AppId, size_t> num_windows_for_apps_map_;
-  std::set<std::unique_ptr<IsolatedWebAppInstallerCoordinator>,
-           base::UniquePtrComparator>
-      isolated_web_app_installers_;
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppUiManagerImpl> weak_ptr_factory_{this};

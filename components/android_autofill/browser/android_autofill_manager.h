@@ -12,6 +12,7 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/common/dense_set.h"
 
@@ -50,18 +51,6 @@ class AndroidAutofillManager : public AutofillManager,
 
   bool ShouldClearPreviewedForm() override;
 
-  void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) override;
-  void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const autofill::AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) override;
-
   void OnFocusNoLongerOnFormImpl(bool had_interacted_form) override;
 
   void OnDidFillAutofillFormDataImpl(const FormData& form,
@@ -90,10 +79,17 @@ class AndroidAutofillManager : public AutofillManager,
   // |triggered_origin| is the origin of the field from which the autofill is
   // triggered; this affects the security policy for cross-frame fills. See
   // AutofillDriver::FillOrPreviewForm() for further details.
-  void FillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
+  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
                          const FormData& form,
                          const FieldTypeGroup field_type_group,
                          const url::Origin& triggered_origin);
+
+  void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                          mojom::TextReplacement text_replacement,
+                          const FormData& form,
+                          const FormFieldData& field,
+                          const std::u16string& value,
+                          PopupItemId popup_item_id) override;
 
  protected:
   friend void AndroidDriverInitHook(AutofillClient* client,

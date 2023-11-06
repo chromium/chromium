@@ -19,14 +19,20 @@ CONTENT_EXPORT void ForceCreateNetworkServiceDirectlyForTesting();
 // Resets the interface ptr to the network service.
 CONTENT_EXPORT void ResetNetworkServiceForTesting();
 
+using NetworkServiceProcessGoneHandler =
+    base::RepeatingCallback<void(bool crashed)>;
+
 // Registers |handler| to run (on UI thread) after mojo::Remote<NetworkService>
-// encounters an error.  Note that there are no ordering guarantees wrt error
+// encounters an error, in which case `crashed` will be true, or after the
+// NetworkService is purposely restarted by the browser, in which case `crashed`
+// will be false.  Note that there are no ordering guarantees wrt error
 // handlers for other interfaces (e.g. mojo::Remote<NetworkContext> and/or
 // mojo::Remote<URLLoaderFactory>).
 //
 // Can only be called on the UI thread.  No-op if NetworkService is disabled.
 CONTENT_EXPORT base::CallbackListSubscription
-RegisterNetworkServiceCrashHandler(base::RepeatingClosure handler);
+RegisterNetworkServiceProcessGoneHandler(
+    NetworkServiceProcessGoneHandler handler);
 
 constexpr char kSSLKeyLogFileHistogram[] = "Net.SSLKeyLogFileUse";
 

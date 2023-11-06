@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_text_inserter.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -25,9 +26,12 @@ class EditorTextActuator : public orca::mojom::TextActuator {
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;
+    virtual EditorMode GetEditorMode() const = 0;
+    virtual size_t GetSelectedTextLength() = 0;
   };
 
   EditorTextActuator(
+      Profile* profile,
       mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
       Delegate* delegate);
   ~EditorTextActuator() override;
@@ -39,11 +43,13 @@ class EditorTextActuator : public orca::mojom::TextActuator {
   void OpenUrlInNewWindow(const GURL& url) override;
   void ShowUI() override;
   void CloseUI() override;
+  void SubmitFeedback(const std::string& description) override;
 
   void OnFocus(int context_id);
   void OnBlur();
 
  private:
+  raw_ptr<Profile> profile_;
   mojo::AssociatedReceiver<orca::mojom::TextActuator> text_actuator_receiver_;
 
   // Not owned by this class.

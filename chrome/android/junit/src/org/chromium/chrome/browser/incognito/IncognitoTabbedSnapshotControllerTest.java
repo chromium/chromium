@@ -47,36 +47,27 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Unit tests for {@link IncognitoTabbedSnapshotController}.
- */
+/** Unit tests for {@link IncognitoTabbedSnapshotController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class IncognitoTabbedSnapshotControllerTest {
-    @Mock
-    private Window mWindowMock;
-    @Mock
-    private Activity mActivityMock;
-    @Mock
-    private TabModelSelector mTabModelSelectorMock;
-    @Mock
-    private TabModel mTabModelMock;
-    @Mock
-    private TabModel mIncognitoTabModelMock;
-    @Mock
-    private LayoutManagerChrome mLayoutManagerMock;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+    @Mock private Window mWindowMock;
+    @Mock private Activity mActivityMock;
+    @Mock private TabModelSelector mTabModelSelectorMock;
+    @Mock private TabModel mTabModelMock;
+    @Mock private TabModel mIncognitoTabModelMock;
+    @Mock private LayoutManagerChrome mLayoutManagerMock;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+
+    @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
 
     @Captor
-    private ArgumentCaptor<LifecycleObserver> mLifecycleObserverArgumentCaptor;
-    @Captor
     private ArgumentCaptor<FilterLayoutStateObserver> mFilterLayoutStateObserverArgumentCaptor;
+
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverArgumentCaptor;
 
-    @Rule
-    public TestRule mJunitProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mJunitProcessor = new Features.JUnitProcessor();
 
     private IncognitoTabbedSnapshotController mController;
     private WindowManager.LayoutParams mParams;
@@ -91,7 +82,9 @@ public class IncognitoTabbedSnapshotControllerTest {
     @Before
     public void before() {
         MockitoAnnotations.initMocks(this);
-        doReturn(mIncognitoTabModelMock).when(mTabModelSelectorMock).getModel(/*incognito=*/true);
+        doReturn(mIncognitoTabModelMock)
+                .when(mTabModelSelectorMock)
+                .getModel(/* incognito= */ true);
 
         mIsInOverviewModeSupplier = () -> mIsInOverviewMode;
 
@@ -103,9 +96,13 @@ public class IncognitoTabbedSnapshotControllerTest {
         doReturn(mParams).when(mWindowMock).getAttributes();
         doReturn(mWindowMock).when(mActivityMock).getWindow();
 
-        mController = new IncognitoTabbedSnapshotController(mActivityMock, mLayoutManagerMock,
-                mTabModelSelectorMock, mActivityLifecycleDispatcherMock,
-                mIsIncognitoShowingSupplier);
+        mController =
+                new IncognitoTabbedSnapshotController(
+                        mActivityMock,
+                        mLayoutManagerMock,
+                        mTabModelSelectorMock,
+                        mActivityLifecycleDispatcherMock,
+                        mIsIncognitoShowingSupplier);
 
         verify(mActivityLifecycleDispatcherMock, times(1))
                 .register(mLifecycleObserverArgumentCaptor.capture());

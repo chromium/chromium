@@ -99,8 +99,11 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_CountryNodeHasValue) {
   for (const auto& [country_code, tree_def] : kAutofillModelRules) {
     std::unique_ptr<AddressComponent> model = CreateAddressComponentModel(
         AddressCountryCode(std::string(country_code)));
-    EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY),
-              base::UTF8ToUTF16(country_code));
+    std::u16string expected_country =
+        country_code != kLegacyHierarchyCountryCodeString
+            ? base::UTF8ToUTF16(country_code)
+            : u"";
+    EXPECT_EQ(model->GetValueForType(ADDRESS_HOME_COUNTRY), expected_country);
   }
 }
 
@@ -113,8 +116,8 @@ TEST_F(AutofillI18nApiTest, GetLegacyAddressHierarchy) {
   auto legacy_address_hierarchy_es =
       CreateAddressComponentModel(AddressCountryCode("ES"));
 
-  auto legacy_address_hierarchy_xx = CreateAddressComponentModel(
-      AddressCountryCode(std::string(kLegacyHierarchyCountryCode)));
+  auto legacy_address_hierarchy_xx =
+      CreateAddressComponentModel(kLegacyHierarchyCountryCode);
   legacy_address_hierarchy_xx->SetValueForType(ADDRESS_HOME_COUNTRY, u"ES",
                                                VerificationStatus::kObserved);
   EXPECT_TRUE(
@@ -125,28 +128,34 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
   CountryDataMap* country_data_map = CountryDataMap::GetInstance();
   for (const std::string& country_code : country_data_map->country_codes()) {
     AddressCountryCode address_country_code{country_code};
+
     for (std::underlying_type_t<ServerFieldType> i = 0;
          i < MAX_VALID_FIELD_TYPE; ++i) {
       if (ServerFieldType field_type = ToSafeServerFieldType(i, NO_SERVER_DATA);
           field_type != NO_SERVER_DATA) {
-        auto* it = kAutofillFormattingRulesMap.find({country_code, field_type});
-        // The expected value is contained in `kAutofillFormattingRulesMap`. If
-        // no entry is found, it is expected to fallback to the legacy string
-        // (country XX).
-        if (it != kAutofillFormattingRulesMap.end()) {
-          EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
-                    std::u16string(it->second));
-        } else {
-          auto* legacy_it = kAutofillFormattingRulesMap.find(
-              {kLegacyHierarchyCountryCode, field_type});
-          std::u16string expected =
-              legacy_it != kAutofillFormattingRulesMap.end()
-                  ? std::u16string(legacy_it->second)
-                  : StructuredAddressesFormatProvider::GetInstance()
-                        ->GetPattern(field_type, country_code);
+        std::u16string expected;
+        if (IsCustomHierarchyAvailableForCountry(address_country_code)) {
+          // The expected value is contained in `kAutofillFormattingRulesMap`.
+          // If no entry is found, it should *not* fallback to a legacy
+          // expression.
+          auto* it =
+              kAutofillFormattingRulesMap.find({country_code, field_type});
+          expected = it != kAutofillFormattingRulesMap.end()
+                         ? std::u16string(it->second)
+                         : u"";
+
           EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
                     expected);
+
+        } else {
+          auto* legacy_it = kAutofillFormattingRulesMap.find(
+              {kLegacyHierarchyCountryCode.value(), field_type});
+          expected = legacy_it != kAutofillFormattingRulesMap.end()
+                         ? std::u16string(legacy_it->second)
+                         : u"";
         }
+        EXPECT_EQ(GetFormattingExpression(field_type, address_country_code),
+                  expected);
       }
     }
   }
@@ -154,10 +163,10 @@ TEST_F(AutofillI18nApiTest, GetFormattingExpressions) {
 
 TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
   std::string apt_str = "sala 10";
-  auto* it = kAutofillParsingRulesMap.find({"BR", ADDRESS_HOME_APT_NUM});
+  auto* it = kAutofillParsingRulesMap.find({"BR", ADDRESS_HOME_APT});
 
   ASSERT_TRUE(it != kAutofillParsingRulesMap.end());
-  EXPECT_EQ(ParseValueByI18nRegularExpression(apt_str, ADDRESS_HOME_APT_NUM,
+  EXPECT_EQ(ParseValueByI18nRegularExpression(apt_str, ADDRESS_HOME_APT,
                                               AddressCountryCode("BR")),
             it->second->Parse(apt_str));
 
@@ -171,9 +180,9 @@ TEST_F(AutofillI18nApiTest, ParseValueByI18nRegularExpression) {
   EXPECT_EQ(ParseValueByI18nRegularExpression(street_address,
                                               ADDRESS_HOME_STREET_ADDRESS,
                                               AddressCountryCode("DE")),
-            ParseValueByI18nRegularExpression(
-                street_address, ADDRESS_HOME_STREET_ADDRESS,
-                AddressCountryCode(std::string(kLegacyHierarchyCountryCode))));
+            ParseValueByI18nRegularExpression(street_address,
+                                              ADDRESS_HOME_STREET_ADDRESS,
+                                              kLegacyHierarchyCountryCode));
 }
 
 TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
@@ -190,7 +199,7 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
         continue;
       }
       SCOPED_TRACE(testing::Message()
-                   << "Testing type " << FieldTypeToStringPiece(field_type)
+                   << "Testing type " << FieldTypeToStringView(field_type)
                    << " in country " << address_country_code);
 
       if (!kAutofillModelRules.contains(country_code)) {

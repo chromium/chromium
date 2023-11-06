@@ -189,7 +189,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
                 initWithBrowser:self.browser];
-        controller.dispatcher = self.dispatcher;
+        [self configureHandlersForRootViewController:controller];
         [self.navigationController pushViewController:controller animated:YES];
       }
       break;
@@ -215,7 +215,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)settingsWillBeDismissed {
-  DCHECK(!_settingsAreDismissed);
+  if (_settingsAreDismissed) {
+    // This method can be called twice when the account is removed. Related to
+    // crbug.com/1480441.
+    return;
+  }
 
   // Remove observer bridges.
   _syncObserver.reset();

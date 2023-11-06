@@ -28,6 +28,4 @@ declare_args() {
                 !is_android && !is_fuchsia && !is_castos && !is_win && !is_mac
 }
 
-assert(!(is_win && host_os != "win") || !enable_nacl,
-       "NaCl doesn't work in win cross builds, crbug.com/774186")
 assert(!enable_nacl || checkout_nacl)

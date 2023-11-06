@@ -1,68 +1,73 @@
 This is a testharness.js-based test.
 Found 64 tests; 59 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS ORB should allow the response if Content-Type is: 'text/css'.  
-PASS ORB should allow the response if Content-Type is: 'image/svg+xml'.  
-PASS ORB should allow the response if Content-Type is: 'application/ecmascript'.  
-PASS ORB should allow the response if Content-Type is: 'application/javascript'.  
-PASS ORB should allow the response if Content-Type is: 'application/x-ecmascript'.  
-PASS ORB should allow the response if Content-Type is: 'application/x-javascript'.  
-PASS ORB should allow the response if Content-Type is: 'text/ecmascript'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.0'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.1'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.2'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.3'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.4'.  
-PASS ORB should allow the response if Content-Type is: 'text/javascript1.5'.  
-PASS ORB should allow the response if Content-Type is: 'text/jscript'.  
-PASS ORB should allow the response if Content-Type is: 'text/livescript'.  
-PASS ORB should allow the response if Content-Type is: 'text/x-ecmascript'.  
-PASS ORB should allow the response if Content-Type is: 'text/x-javascript'.  
-PASS ORB should block the response if Content-Type is: 'text/html'.  
-PASS ORB should block the response if Content-Type is: 'application/json'.  
-PASS ORB should block the response if Content-Type is: 'text/json'.  
-PASS ORB should block the response if Content-Type is: 'application/ld+json'.  
-PASS ORB should block the response if Content-Type is: 'text/xml'.  
-PASS ORB should block the response if Content-Type is: 'application/xml'.  
-PASS ORB should block the response if Content-Type is: 'application/xhtml+xml'.  
-FAIL ORB should block the response if Content-Type is: 'application/dash+xml'.   assert_unreached: Unexpected load event Reached unreachable code
-PASS ORB should block the response if Content-Type is: 'application/gzip'.  
-PASS ORB should block the response if Content-Type is: 'application/msexcel'.  
-PASS ORB should block the response if Content-Type is: 'application/mspowerpoint'.  
-PASS ORB should block the response if Content-Type is: 'application/msword'.  
-PASS ORB should block the response if Content-Type is: 'application/msword-template'.  
-PASS ORB should block the response if Content-Type is: 'application/pdf'.  
-FAIL ORB should block the response if Content-Type is: 'application/vnd.apple.mpegurl'.   assert_unreached: Unexpected load event Reached unreachable code
-PASS ORB should block the response if Content-Type is: 'application/vnd.ces-quickpoint'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ces-quicksheet'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ces-quickword'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-excel'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-excel.sheet.macroenabled.12'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-powerpoint'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-powerpoint.presentation.macroenabled.12'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-word'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-word.document.12'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.ms-word.document.macroenabled.12'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.msword'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.presentationml.template'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.spreadsheetml.template'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.wordprocessingml.template'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.presentation-openxml'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.presentation-openxmlm'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.spreadsheet-openxml'.  
-PASS ORB should block the response if Content-Type is: 'application/vnd.wordprocessing-openxml'.  
-PASS ORB should block the response if Content-Type is: 'application/x-gzip'.  
-PASS ORB should block the response if Content-Type is: 'application/x-protobuf'.  
-FAIL ORB should block the response if Content-Type is: 'application/x-protobuffer'.   assert_unreached: Unexpected load event Reached unreachable code
-PASS ORB should block the response if Content-Type is: 'application/zip'.  
-FAIL ORB should block the response if Content-Type is: 'audio/mpegurl'.   assert_unreached: Unexpected load event Reached unreachable code
-PASS ORB should block the response if Content-Type is: 'multipart/byteranges'.  
-PASS ORB should block the response if Content-Type is: 'multipart/signed'.  
-PASS ORB should block the response if Content-Type is: 'text/event-stream'.  
-PASS ORB should block the response if Content-Type is: 'text/csv'.  
-FAIL ORB should block the response if Content-Type is: 'text/vtt'.   assert_unreached: Unexpected load event Reached unreachable code
+[PASS] ORB should allow the response if Content-Type is: 'text/css'.  
+[PASS] ORB should allow the response if Content-Type is: 'image/svg+xml'.  
+[PASS] ORB should allow the response if Content-Type is: 'application/ecmascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'application/javascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'application/x-ecmascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'application/x-javascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/ecmascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.0'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.1'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.2'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.3'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.4'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/javascript1.5'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/jscript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/livescript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/x-ecmascript'.  
+[PASS] ORB should allow the response if Content-Type is: 'text/x-javascript'.  
+[PASS] ORB should block the response if Content-Type is: 'text/html'.  
+[PASS] ORB should block the response if Content-Type is: 'application/json'.  
+[PASS] ORB should block the response if Content-Type is: 'text/json'.  
+[PASS] ORB should block the response if Content-Type is: 'application/ld+json'.  
+[PASS] ORB should block the response if Content-Type is: 'text/xml'.  
+[PASS] ORB should block the response if Content-Type is: 'application/xml'.  
+[PASS] ORB should block the response if Content-Type is: 'application/xhtml+xml'.  
+[FAIL] ORB should block the response if Content-Type is: 'application/dash+xml'.  
+  assert_unreached: Unexpected load event Reached unreachable code
+[PASS] ORB should block the response if Content-Type is: 'application/gzip'.  
+[PASS] ORB should block the response if Content-Type is: 'application/msexcel'.  
+[PASS] ORB should block the response if Content-Type is: 'application/mspowerpoint'.  
+[PASS] ORB should block the response if Content-Type is: 'application/msword'.  
+[PASS] ORB should block the response if Content-Type is: 'application/msword-template'.  
+[PASS] ORB should block the response if Content-Type is: 'application/pdf'.  
+[FAIL] ORB should block the response if Content-Type is: 'application/vnd.apple.mpegurl'.  
+  assert_unreached: Unexpected load event Reached unreachable code
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ces-quickpoint'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ces-quicksheet'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ces-quickword'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-excel'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-excel.sheet.macroenabled.12'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-powerpoint'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-powerpoint.presentation.macroenabled.12'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-word'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-word.document.12'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.ms-word.document.macroenabled.12'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.msword'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.presentationml.presentation'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.presentationml.template'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.spreadsheetml.template'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.openxmlformats-officedocument.wordprocessingml.template'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.presentation-openxml'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.presentation-openxmlm'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.spreadsheet-openxml'.  
+[PASS] ORB should block the response if Content-Type is: 'application/vnd.wordprocessing-openxml'.  
+[PASS] ORB should block the response if Content-Type is: 'application/x-gzip'.  
+[PASS] ORB should block the response if Content-Type is: 'application/x-protobuf'.  
+[FAIL] ORB should block the response if Content-Type is: 'application/x-protobuffer'.  
+  assert_unreached: Unexpected load event Reached unreachable code
+[PASS] ORB should block the response if Content-Type is: 'application/zip'.  
+[FAIL] ORB should block the response if Content-Type is: 'audio/mpegurl'.  
+  assert_unreached: Unexpected load event Reached unreachable code
+[PASS] ORB should block the response if Content-Type is: 'multipart/byteranges'.  
+[PASS] ORB should block the response if Content-Type is: 'multipart/signed'.  
+[PASS] ORB should block the response if Content-Type is: 'text/event-stream'.  
+[PASS] ORB should block the response if Content-Type is: 'text/csv'.  
+[FAIL] ORB should block the response if Content-Type is: 'text/vtt'.  
+  assert_unreached: Unexpected load event Reached unreachable code
 Harness: the test ran to completion.
 

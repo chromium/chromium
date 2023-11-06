@@ -11,6 +11,8 @@ source_set("sharing") {
     "incoming_password_sharing_invitation_model_type_controller.h",
     "incoming_password_sharing_invitation_sync_bridge.cc",
     "incoming_password_sharing_invitation_sync_bridge.h",
+    "outgoing_password_sharing_invitation_model_type_controller.cc",
+    "outgoing_password_sharing_invitation_model_type_controller.h",
     "outgoing_password_sharing_invitation_sync_bridge.cc",
     "outgoing_password_sharing_invitation_sync_bridge.h",
     "password_receiver_service.h",
@@ -31,9 +33,12 @@ source_set("sharing") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser/features:password_features",
+    "//components/password_manager/core/browser/features:utils",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/sync/base",

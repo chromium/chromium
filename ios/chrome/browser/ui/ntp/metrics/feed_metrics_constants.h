@@ -32,25 +32,25 @@ extern const int kMinutesBetweenSessions;
 extern const int kMaxCardsInFeed;
 
 // Stores the time when the user visits an article on the feed.
-extern NSString* const kArticleVisitTimestampKey;
+extern const char kArticleVisitTimestampKey[];
 // Stores the time elapsed on the feed when the user leaves.
-extern NSString* const kLongFeedVisitTimeAggregateKey;
-extern NSString* const kLongFollowingFeedVisitTimeAggregateKey;
-extern NSString* const kLongDiscoverFeedVisitTimeAggregateKey;
-extern NSString* const kLastUsedFeedForGoodVisitsKey;
+extern const char kLongFeedVisitTimeAggregateKey[];
+extern const char kLongFollowingFeedVisitTimeAggregateKey[];
+extern const char kLongDiscoverFeedVisitTimeAggregateKey[];
+extern const char kLastUsedFeedForGoodVisitsKey[];
 // Stores the last interaction time for Good Visits (NSDate).
-extern NSString* const kLastInteractionTimeForGoodVisits;
-extern NSString* const kLastInteractionTimeForDiscoverGoodVisits;
-extern NSString* const kLastInteractionTimeForFollowingGoodVisits;
+extern const char kLastInteractionTimeForGoodVisits[];
+extern const char kLastInteractionTimeForDiscoverGoodVisits[];
+extern const char kLastInteractionTimeForFollowingGoodVisits[];
 // Stores the last day the Time in Feed was reported on UMA. It stores the
 // midnight (beginning of the day) of the last interaction.
-extern NSString* const kLastDayTimeInFeedReportedKey;
+extern const char kLastDayTimeInFeedReportedKey[];
 // Stores the time spent on the feed for a day.
 extern const char kTimeSpentInFeedAggregateKey[];
 // Stores the last time the activity bucket was reported.
 extern const char kActivityBucketLastReportedDateKey[];
 // Stores the last 28 days of activity bucket reported days.
-extern NSString* const kActivityBucketLastReportedDateArrayKey;
+extern const char kActivityBucketLastReportedDateArrayKey[];
 
 #pragma mark - Enums
 

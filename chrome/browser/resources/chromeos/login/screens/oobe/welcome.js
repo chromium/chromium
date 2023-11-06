@@ -77,6 +77,15 @@ const OobeWelcomeScreenBase = mixinBehaviors(
  * }}
  */
 OobeWelcomeScreenBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isDeveloperMode: boolean,
+ * }}
+ */
+let WelcomeScreenData;
+
 /**
  * @polymer
  */
@@ -244,8 +253,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * TODO (https://crbug.com/948932): Define this type.
-   * @param {Object} data Screen init payload.
+   * @param {WelcomeScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     this.debuggingLinkVisible_ =
@@ -295,12 +303,12 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     this.$.welcomeScreen.i18nUpdateLocale();
     this.i18nUpdateLocale();
 
-    var currentLanguage = loadTimeData.getString('language');
+    const currentLanguage = loadTimeData.getString('language');
 
     // We might have changed language via configuration. In this case
     // we need to proceed with rest of configuration after language change
     // was fully resolved.
-    var configuration = Oobe.getInstance().getOobeConfiguration();
+    const configuration = Oobe.getInstance().getOobeConfiguration();
     if (configuration && configuration.language &&
         configuration.language == currentLanguage) {
       window.setTimeout(() => void this.applyOobeConfiguration_(), 0);
@@ -326,13 +334,13 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
     if (this.configuration_applied_) {
       return;
     }
-    var configuration = Oobe.getInstance().getOobeConfiguration();
+    const configuration = Oobe.getInstance().getOobeConfiguration();
     if (!configuration) {
       return;
     }
 
     if (configuration.language) {
-      var currentLanguage = loadTimeData.getString('language');
+      const currentLanguage = loadTimeData.getString('language');
       if (currentLanguage != configuration.language) {
         this.applySelectedLanguage_(configuration.language);
         // Trigger language change without marking it as applied.
@@ -447,8 +455,8 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   onLanguageSelected_(event) {
-    var item = event.detail;
-    var languageId = item.value;
+    const item = event.detail;
+    const languageId = item.value;
     this.currentLanguage = item.title;
     this.applySelectedLanguage_(languageId);
   }
@@ -470,8 +478,8 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   onKeyboardSelected_(event) {
-    var item = event.detail;
-    var inputMethodId = item.value;
+    const item = event.detail;
+    const inputMethodId = item.value;
     this.currentKeyboard = item.title;
     this.applySelectedLkeyboard_(inputMethodId);
   }
@@ -492,8 +500,8 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
   }
 
   onInputMethodIdSetFromBackend(keyboard_id) {
-    var found = false;
-    for (var i = 0; i < this.keyboards.length; ++i) {
+    let found = false;
+    for (let i = 0; i < this.keyboards.length; ++i) {
       if (this.keyboards[i].value != keyboard_id) {
         this.keyboards[i].selected = false;
         continue;
@@ -642,8 +650,9 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @param {!Event} event
    */
   onA11yOptionChanged_(event) {
-    var a11ytarget = /** @type {{chromeMessage: string, checked: boolean}} */ (
-        event.currentTarget);
+    const a11ytarget =
+        /** @type {{chromeMessage: string, checked: boolean}} */ (
+            event.currentTarget);
     if (a11ytarget.checked) {
       this.userActed(a11ytarget.id + '-enable');
     } else {
@@ -669,7 +678,7 @@ class OobeWelcomeScreen extends OobeWelcomeScreenBase {
    * @private
    */
   onTimezoneSelected_(event) {
-    var item = event.detail;
+    const item = event.detail;
     if (!item) {
       return;
     }

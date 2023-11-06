@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "phone_hub_camera_roll.allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubCameraRollAllowed": false
+        },
+        "prefs": {
+          "phone_hub_camera_roll.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PhoneHubCameraRollAllowed": true
+        },
+        "prefs": {
+          "phone_hub_camera_roll.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

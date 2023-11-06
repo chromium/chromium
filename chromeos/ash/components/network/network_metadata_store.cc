@@ -453,17 +453,16 @@ base::Time NetworkMetadataStore::UpdateAndRetrieveWiFiTimestamp(
 
   if (!creation_timestamp_pref) {
     SetPref(network_guid, kCreationTimestamp,
-            base::Value(current_timestamp.ToDoubleT()));
+            base::Value(current_timestamp.InSecondsFSinceUnixEpoch()));
     return current_timestamp;
   }
 
-  const base::Time creation_timestamp =
-      base::Time::FromDoubleT(creation_timestamp_pref->GetDouble());
+  const base::Time creation_timestamp = base::Time::FromSecondsSinceUnixEpoch(
+      creation_timestamp_pref->GetDouble());
   const base::TimeDelta minimum_age = ComputeMigrationMinimumAge();
 
   if (creation_timestamp + minimum_age <= current_timestamp) {
-    SetPref(network_guid, kCreationTimestamp,
-            base::Value(base::Time::UnixEpoch().ToDoubleT()));
+    SetPref(network_guid, kCreationTimestamp, base::Value(0.0));
     return base::Time::UnixEpoch();
   }
   return creation_timestamp;

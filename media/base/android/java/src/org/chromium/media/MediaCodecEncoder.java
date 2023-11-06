@@ -7,8 +7,9 @@ package org.chromium.media;
 import android.media.MediaCodec;
 import android.util.SparseArray;
 
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.nio.ByteBuffer;
 

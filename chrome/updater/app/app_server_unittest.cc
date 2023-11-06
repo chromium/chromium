@@ -26,6 +26,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_WIN)
+#include <shlobj.h>
+
+#include "base/win/registry.h"
+#include "chrome/updater/win/win_constants.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 using testing::Invoke;
 using testing::Return;
 
@@ -85,7 +92,25 @@ class AppServerTestCase : public testing::Test {
       GTEST_SKIP();
     }
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+    if (!::IsUserAnAdmin()) {
+      GTEST_SKIP() << "Need admin privileges to run this test";
+    }
+
+    // Skips `DUMP_WILL_BE_CHECK` when running these tests.
+    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, KEY_WRITE)
+        .WriteValue(kRegValueIntegrationTestMode, 1);
+#endif  // BUILDFLAG(IS_WIN)
+
     ClearPrefs();
+  }
+
+  void TearDown() override {
+#if BUILDFLAG(IS_WIN)
+    base::win::RegKey(HKEY_LOCAL_MACHINE, UPDATER_DEV_KEY, DELETE)
+        .DeleteValue(kRegValueIntegrationTestMode);
+#endif  // BUILDFLAG(IS_WIN)
   }
 
  private:

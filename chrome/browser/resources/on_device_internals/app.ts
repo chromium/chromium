@@ -6,13 +6,16 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
+import '//resources/cr_elements/cr_textarea/cr_textarea.js';
+import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
+import '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
 import {BrowserProxy} from './browser_proxy.js';
-import {OnDeviceModelRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
+import {OnDeviceModelRemote, PerformanceClass, SessionRemote, StreamingResponderCallbackRouter} from './on_device_model.mojom-webui.js';
 
 interface Response {
   text: string;
@@ -24,6 +27,23 @@ interface OnDeviceInternalsAppElement {
     modelInput: CrInputElement,
     textInput: CrInputElement,
   };
+}
+
+function getPerformanceClassText(performanceClass: PerformanceClass): string {
+  switch (performanceClass) {
+    case PerformanceClass.kVeryLow:
+      return 'Very Low';
+    case PerformanceClass.kLow:
+      return 'Low';
+    case PerformanceClass.kMedium:
+      return 'Medium';
+    case PerformanceClass.kHigh:
+      return 'High';
+    case PerformanceClass.kVeryHigh:
+      return 'Very High';
+    default:
+      return 'Error';
+  }
 }
 
 class OnDeviceInternalsAppElement extends PolymerElement {
@@ -59,6 +79,13 @@ class OnDeviceInternalsAppElement extends PolymerElement {
         type: Object,
         value: null,
       },
+      performanceClassText_: {
+        type: String,
+        value: 'Loading...',
+      },
+      contextExpanded_: Boolean,
+      contextLength_: Number,
+      contextText_: String,
     };
   }
 
@@ -68,16 +95,34 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     ];
   }
 
+  private contextExpanded_: boolean = false;
+  private contextLength_: number = 0;
+  private contextText_: string;
   private currentResponse_: Response|null;
   private error_: string;
   private loadModelDuration_: number;
   private loadModelStart_: number;
   private modelPath_: string;
   private model_: OnDeviceModelRemote|null;
+  private performanceClassText_: string;
   private responses_: Response[];
+  private session_: SessionRemote|null = null;
   private text_: string;
 
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
+  private responseRouter_: StreamingResponderCallbackRouter =
+      new StreamingResponderCallbackRouter();
+
+  override ready() {
+    super.ready();
+    this.getPerformanceClass_();
+  }
+
+  private async getPerformanceClass_() {
+    this.performanceClassText_ = getPerformanceClassText(
+        (await this.proxy_.handler.getEstimatedPerformanceClass())
+            .performanceClass);
+  }
 
   private onModelOrErrorChanged_() {
     if (this.model_ !== null) {
@@ -103,38 +148,66 @@ class OnDeviceInternalsAppElement extends PolymerElement {
     // <if expr="not is_win">
     const processedPath = modelPath;
     // </if>
-    const {result} =
-        await this.proxy_.handler.loadModel({path: {path: processedPath}});
+    const {result} = await this.proxy_.handler.loadModel({path: processedPath});
     if (result.error) {
       this.error_ = result.error;
     } else {
       this.model_ = result.model || null;
+      this.startNewSession_();
       this.modelPath_ = modelPath;
     }
+  }
+
+  private onAddContextClick_() {
+    if (this.session_ === null) {
+      return;
+    }
+    this.session_.addContext({text: this.contextText_});
+    this.contextLength_ += this.contextText_.split(/(\s+)/).length;
+    this.contextText_ = '';
+  }
+
+  private startNewSession_() {
+    if (this.model_ === null) {
+      return;
+    }
+    this.contextLength_ = 0;
+    this.session_ = new SessionRemote();
+    this.model_.startSession(this.session_.$.bindNewPipeAndPassReceiver());
+  }
+
+  private onCancelClick_() {
+    this.responseRouter_.$.close();
+    this.responseRouter_ = new StreamingResponderCallbackRouter();
+    this.addResponse_();
   }
 
   private onExecuteClick_() {
     this.onExecute_();
   }
 
+  private addResponse_() {
+    this.unshift('responses_', this.currentResponse_);
+    this.currentResponse_ = null;
+    this.$.textInput.focus();
+  }
+
   private onExecute_() {
-    if (this.model_ === null) {
+    if (this.session_ === null) {
       return;
     }
-    const router = new StreamingResponderCallbackRouter();
-    this.model_.execute(this.text_, router.$.bindNewPipeAndPassRemote());
-    const onResponseId = router.onResponse.addListener((text: string) => {
-      this.set(
-          'currentResponse_.response',
-          (this.currentResponse_?.response + text).trimStart());
-    });
-    const onCompleteId = router.onComplete.addListener(() => {
-      this.unshift('responses_', this.currentResponse_);
-      this.currentResponse_ = null;
-      this.$.textInput.focus();
-
-      router.removeListener(onResponseId);
-      router.removeListener(onCompleteId);
+    this.session_.execute(
+        {text: this.text_}, this.responseRouter_.$.bindNewPipeAndPassRemote());
+    const onResponseId =
+        this.responseRouter_.onResponse.addListener((text: string) => {
+          this.set(
+              'currentResponse_.response',
+              (this.currentResponse_?.response + text).trimStart());
+        });
+    const onCompleteId = this.responseRouter_.onComplete.addListener(() => {
+      this.addResponse_();
+      this.responseRouter_.removeListener(onResponseId);
+      this.responseRouter_.removeListener(onCompleteId);
     });
     this.currentResponse_ = {text: this.text_, response: ''};
     this.text_ = '';

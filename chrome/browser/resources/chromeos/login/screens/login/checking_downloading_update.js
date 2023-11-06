@@ -174,7 +174,7 @@ export class CheckingDownloadingUpdate extends CheckingDownloadingUpdateBase {
   computeEstimatedTimeLeftMsg_(estimatedTimeLeft) {
     const seconds = estimatedTimeLeft;
     const minutes = Math.ceil(seconds / 60);
-    var message = '';
+    let message = '';
     if (minutes > 60) {
       message = loadTimeData.getString('downloadingTimeLeftLong');
     } else if (minutes > 55) {

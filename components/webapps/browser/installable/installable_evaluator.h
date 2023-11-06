@@ -44,7 +44,7 @@ class InstallableEvaluator {
   static bool IsOriginConsideredSecure(const GURL& url);
 
   // Check if the web content is an incognito window or insecure context.
-  std::vector<InstallableStatusCode> CheckEligiblity(
+  std::vector<InstallableStatusCode> CheckEligibility(
       content::WebContents*) const;
 
   // Check if the web site has provided all information required for install,

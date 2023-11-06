@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_context_state.h"
 
+#include "base/immediate_crash.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -101,6 +102,17 @@ void SharedContextState::compileError(const char* shader, const char* errors) {
                << "------------------------\n"
                << shader << "\nErrors:\n"
                << errors;
+
+    static crash_reporter::CrashKeyString<2048> error_key("skia-compile-error");
+    error_key.Set(errors);
+    // https://crbug.com/1442633 Sometimes we would fail to compile a cached
+    // GLSL shader because of GL driver change. Increase shader cache shm
+    // count and crash the GPU process so that the browser process would clear
+    // the cache.
+    GpuProcessShmCount::ScopedIncrement increment(
+        use_shader_cache_shm_count_.get());
+
+    base::ImmediateCrash();
   }
 }
 
@@ -305,6 +317,7 @@ bool SharedContextState::InitializeGanesh(
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
   gr_shader_cache_ = cache;
+  use_shader_cache_shm_count_ = use_shader_cache_shm_count;
 
   size_t max_resource_cache_bytes;
   size_t glyph_cache_max_texture_bytes;
@@ -318,17 +331,11 @@ bool SharedContextState::InitializeGanesh(
   GrContextOptions options = GetDefaultGrContextOptions();
 
   options.fAllowMSAAOnNewIntel = !gles2::MSAAIsSlow(workarounds);
+  options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
   options.fPersistentCache = cache;
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
-
-  if (base::FeatureList::IsEnabled(features::kReduceOpsTaskSplitting) &&
-      !workarounds.disable_skia_reduce_ops_task_splitting) {
-    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kYes;
-  } else {
-    options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
-  }
 
   if (gr_context_type_ == GrContextType::kGL) {
     DCHECK(context_->IsCurrent(nullptr));

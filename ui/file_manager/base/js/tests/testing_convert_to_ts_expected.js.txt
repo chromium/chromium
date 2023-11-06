@@ -1,0 +1,122 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {assert} from 'chrome://resources/js/assert.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+
+import {FileManagerBaseInterface} from '../../../file_manager/externs/background/file_manager_base.js';
+
+
+/** @type {!Array} */
+let directoryChangedListeners;
+
+/**
+ * Root class of the former background page.
+ */
+export class FileManagerBase implements FileManagerBaseInterface extends Base {
+  constructor() {
+    /**
+     * Map of all currently open file dialogs. The key is an app ID.
+     */
+    this.dialogs: Record<string, Window> = {};
+
+    /** @private @type {number} */
+    this.index_;
+
+    /**
+     * some description.
+     */
+    private this.bla: string = '';
+
+    /**
+     * some description.
+     */
+    protected this.ble: string = '';
+  }
+
+  /**
+   */
+  async getVolumeManager(): Promise<VolumeManager> {
+    return volumeManagerFactory.getInstance();
+  }
+
+  /**
+   */
+  getVolumeManager2(): null|VolumeManager {
+    return /** @type {!VolumeManager} */ (this.bla);
+  }
+
+  /**
+   */
+  private async getVolumeManager3_(): Promise<VolumeManager> {
+    return volumeManagerFactory.getInstance();
+  }
+
+  /**
+   * Register callback to be invoked after initialization.
+   * If the initialization is already done, the callback is invoked immediately.
+   *
+   * @param callback Initialize callback to be registered.
+   */
+  ready(callback: VoidCallback) {
+    this.initializationPromise_.then(callback);
+  }
+
+  /**
+   * Launches a new File Manager window.
+   *
+   * @param appState App state.
+   * @return Resolved when the new window is opened.
+   */
+  async launchFileManager(appState?: FilesAppState = {}): Promise<void> {
+    return launchFileManager(appState);
+  }
+
+  /**
+   * Opens the volume root (or opt directoryPath) in main UI.
+   *
+   * @param event An event with the volumeId or
+   *     devicePath.
+   */
+  private handleViewEvent_(event: Event) {
+    util.doIfPrimaryContext(() => {
+      this.handleViewEventInternal_(event);
+    });
+  }
+
+  /**
+   * Retrieves the root file entry of the volume on the requested device.
+   *
+   * @param volumeId ID of the volume to navigate to.
+   */
+  private retrieveVolumeInfo_(volumeId: string, _toBeRemoved: string): Promise<VolumeInfo> {
+    return volumeManagerFactory.getInstance().then(
+        (/**
+          */
+         (volumeManager: VolumeManager) => {
+           return volumeManager.whenVolumeInfoReady(volumeId).catch((e) => {
+             console.warn(
+                 'Unable to find volume for id: ' + volumeId +
+                 '. Error: ' + e.message);
+           });
+         }));
+  }
+
+  /**
+   * Creates a new list item.
+   * @param dataItem The value to use for the item.
+   */
+  override createItem(dataItem: unknown) {
+    console.log(dataItem);
+  }
+
+  /**
+   * Shows or hides vertical scroll bar.
+   * @param show True to show.
+   * @return True if visibility changed.
+   */
+  showVerticalScrollBar_(show: boolean): boolean {
+    return show;
+  }
+}

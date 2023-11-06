@@ -55,12 +55,12 @@ testInner("-webkit-mask", "bottom right", "right bottom");
 testInner("-webkit-mask", "left bottom", "left bottom");
 testInner("-webkit-mask", "right top", "right top");
 testInner("-webkit-mask", "center", "center center");
-testInner("-webkit-mask", "none top", "none center top");
-testInner("-webkit-mask", "none bottom", "none center bottom");
-testInner("-webkit-mask", "none right", "none right center");
-testInner("-webkit-mask", "none top right", "none right top");
-testInner("-webkit-mask", "none bottom left", "none left bottom");
-testInner("-webkit-mask", "none left", "none left center");
+testInner("-webkit-mask", "none top", "center top");
+testInner("-webkit-mask", "none bottom", "center bottom");
+testInner("-webkit-mask", "none right", "right center");
+testInner("-webkit-mask", "none top right", "right top");
+testInner("-webkit-mask", "none bottom left", "left bottom");
+testInner("-webkit-mask", "none left", "left center");
 testInner("-webkit-mask", "center 50%", "center 50%");
 testInner("-webkit-mask", "50px 50%", "50px 50%");
 testInner("-webkit-mask", "center left", "left center");
@@ -85,48 +85,48 @@ testInner("-webkit-mask-position", "left 20% top", "left 20% top");
 // test mask-repeat
 testInner("-webkit-mask", "repeat-x", "repeat-x");
 testInner("-webkit-mask", "repeat-y", "repeat-y");
-testInner("-webkit-mask", "repeat", "repeat");
+testInner("-webkit-mask", "repeat", "none");
 testInner("-webkit-mask", "space", "space");
 testInner("-webkit-mask", "no-repeat", "no-repeat");
 testInner("-webkit-mask", "repeat space", "repeat space");
 testInner("-webkit-mask", "repeat round", "repeat round");
 testInner("-webkit-mask", "repeat no-repeat", "repeat-x");
 testInner("-webkit-mask", "repeat space, repeat-x", "repeat space, repeat-x");
-testInner("-webkit-mask", "repeat none", "none repeat");
-testInner("-webkit-mask", "none repeat", "none repeat");
+testInner("-webkit-mask", "repeat none", "none");
+testInner("-webkit-mask", "none repeat", "none");
 
 // test mask-origin / mask-clip
-testInner("-webkit-mask", "padding-box", "padding-box padding-box");
-testInner("-webkit-mask", "border-box", "border-box border-box");
-testInner("-webkit-mask", "content-box", "content-box content-box");
-testInner("-webkit-mask", "padding-box none", "none padding-box padding-box");
-testInner("-webkit-mask", "none padding-box", "none padding-box padding-box");
+testInner("-webkit-mask", "padding-box", "padding-box");
+testInner("-webkit-mask", "border-box", "none");
+testInner("-webkit-mask", "content-box", "content-box");
+testInner("-webkit-mask", "padding-box none", "padding-box");
+testInner("-webkit-mask", "none padding-box", "padding-box");
 testInner("-webkit-mask", "padding-box content-box", "padding-box content-box");
-testInner("-webkit-mask", "content-box content-box", "content-box content-box");
+testInner("-webkit-mask", "content-box content-box", "content-box");
 testInner("-webkit-mask", "padding-box border-box", "padding-box border-box");
-testInner("-webkit-mask", "padding-box border-box none", "none padding-box border-box");
-testInner("-webkit-mask", "none padding-box border-box", "none padding-box border-box");
+testInner("-webkit-mask", "padding-box border-box none", "padding-box border-box");
+testInner("-webkit-mask", "none padding-box border-box", "padding-box border-box");
 
 // test mask-size
-testInner("-webkit-mask", "none left top / auto", "none left top / auto");
-testInner("-webkit-mask", "none left top / auto auto", "none left top / auto");
-testInner("-webkit-mask", "none left top / 100%", "none left top / 100%");
-testInner("-webkit-mask", "none left top / 100% 100%", "none left top / 100% 100%");
-testInner("-webkit-mask", "none left top / 0%", "none left top / 0%");
-testInner("-webkit-mask", "none left top / auto 0%", "none left top / auto 0%");
-testInner("-webkit-mask", "none left top / cover", "none left top / cover");
-testInner("-webkit-mask", "none left top / contain", "none left top / contain");
-testInner("-webkit-mask", "none left 20px top 10px / contain", "none left 20px top 10px / contain");
-testInner("-webkit-mask", "none left 20px top / contain", "none left 20px top / contain");
+testInner("-webkit-mask", "none left top / auto", "left top");
+testInner("-webkit-mask", "none left top / auto auto", "left top");
+testInner("-webkit-mask", "none left top / 100%", "left top / 100%");
+testInner("-webkit-mask", "none left top / 100% 100%", "left top / 100% 100%");
+testInner("-webkit-mask", "none left top / 0%", "left top / 0%");
+testInner("-webkit-mask", "none left top / auto 0%", "left top / auto 0%");
+testInner("-webkit-mask", "none left top / cover", "left top / cover");
+testInner("-webkit-mask", "none left top / contain", "left top / contain");
+testInner("-webkit-mask", "none left 20px top 10px / contain", "left 20px top 10px / contain");
+testInner("-webkit-mask", "none left 20px top / contain", "left 20px top / contain");
 
 // combinations
-testInner("-webkit-mask", "none padding-box content-box", "none padding-box content-box");
-testInner("-webkit-mask", "none center right 20px", "none right 20px center");
-testInner("-webkit-mask", "none border-box left top", "none left top border-box border-box");
-testInner("-webkit-mask", "none border-box left top 20px", "none left top 20px border-box border-box");
-testInner("-webkit-mask", "none border-box content-box left top repeat-x", "none left top repeat-x border-box content-box");
-testInner("-webkit-mask", "none border-box content-box left top / auto repeat-x", "none left top / auto repeat-x border-box content-box");
-testInner("-webkit-mask", "none border-box content-box right 0px center / auto repeat-x", "none right 0px center / auto repeat-x border-box content-box");
+testInner("-webkit-mask", "none padding-box content-box", "padding-box content-box");
+testInner("-webkit-mask", "none center right 20px", "right 20px center");
+testInner("-webkit-mask", "none border-box left top", "left top");
+testInner("-webkit-mask", "none border-box left top 20px", "left top 20px");
+testInner("-webkit-mask", "none border-box content-box left top repeat-x", "left top repeat-x border-box content-box");
+testInner("-webkit-mask", "none border-box content-box left top / auto repeat-x", "left top repeat-x border-box content-box");
+testInner("-webkit-mask", "none border-box content-box right 0px center / auto repeat-x", "right 0px center repeat-x border-box content-box");
 
 // FIXME: Computed style not yet implemented.
 // testComputed("-webkit-mask", "", "");

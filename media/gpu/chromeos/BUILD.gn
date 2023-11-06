@@ -162,6 +162,7 @@ source_set("video_frame_mapper") {
   ]
 
   deps = [
+    ":common",
     "//base",
     "//media",
     "//media/gpu:command_buffer_helper",
@@ -257,6 +258,7 @@ if (use_v4l2_codec) {
       "//base/test:test_support",
       "//media:test_support",
       "//media/gpu:video_frame_mapper_common",
+      "//media/gpu/test:helpers",
       "//media/gpu/test:video_test_environment",
       "//testing/gtest",
       "//testing/perf",

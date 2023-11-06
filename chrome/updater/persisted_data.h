@@ -48,6 +48,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   base::Version GetProductVersion(const std::string& id) const;
   void SetProductVersion(const std::string& id, const base::Version& pv);
 
+  // These functions access the version path for the specified id.
+  base::FilePath GetProductVersionPath(const std::string& id) const;
+  void SetProductVersionPath(const std::string& id, const base::FilePath& path);
+
+  // These functions access the version key for the specified id.
+  std::string GetProductVersionKey(const std::string& id) const;
+  void SetProductVersionKey(const std::string& id, const std::string& value);
+
   // These functions access |fingerprint| data for the specified |id|.
   std::string GetFingerprint(const std::string& id) const;
   void SetFingerprint(const std::string& id, const std::string& fp);
@@ -68,6 +76,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   // These functions access the AP for the specified id.
   std::string GetAP(const std::string& id);
   void SetAP(const std::string& id, const std::string& ap);
+
+  // These functions access the AP path for the specified id.
+  base::FilePath GetAPPath(const std::string& id) const;
+  void SetAPPath(const std::string& id, const base::FilePath& path);
+
+  // These functions access the AP key for the specified id.
+  std::string GetAPKey(const std::string& id) const;
+  void SetAPKey(const std::string& id, const std::string& value);
 
   // These functions get/set the client-regulated-counting data for the
   // specified id. The functions are for app migration only.

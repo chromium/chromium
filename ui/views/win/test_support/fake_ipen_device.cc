@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
 

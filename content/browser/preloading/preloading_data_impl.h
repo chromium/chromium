@@ -10,8 +10,8 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/public/browser/preloading_data.h"
-
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
@@ -21,7 +21,6 @@ namespace content {
 class PreloadingAttemptImpl;
 class PreloadingPrediction;
 class ExperimentalPreloadingPrediction;
-class PrefetchDocumentManager;
 
 // Defines predictors confusion matrix enums used by UMA records. Entries should
 // not be renumbered and numeric values should never be reused. Please update
@@ -56,12 +55,13 @@ class CONTENT_EXPORT PreloadingDataImpl
       WebContents* web_contents);
 
   // NoVarySearch is a `/content/browser` feature so is the matcher getter.
-  // The matcher first checks if `destination_url` is the same as the
-  // prediction; if not, the matcher checks if the `destination_url` matches
-  // any NoVarySearch query using `NoVarySearchHelper`.
-  static PreloadingURLMatchCallback GetSameURLAndNoVarySearchURLMatcher(
-      base::WeakPtr<PrefetchDocumentManager> manager,
-      const GURL& destination_url);
+  // The matcher first checks if the navigated URL is the same as the
+  // prediction; if not, the matcher checks if the navigated URL matches
+  // any NoVarySearch query using `PrefetchService` if No-Vary-Search feature is
+  // enabled.
+  static PreloadingURLMatchCallback GetPrefetchServiceMatcher(
+      PrefetchService* prefetch_service,
+      const PrefetchContainer::Key& predicted);
 
   // Disallow copy and assign.
   PreloadingDataImpl(const PreloadingDataImpl& other) = delete;

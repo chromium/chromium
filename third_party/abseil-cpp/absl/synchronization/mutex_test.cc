@@ -1709,6 +1709,33 @@ TEST(Mutex, Logging) {
   logged_cv.SignalAll();
 }
 
+TEST(Mutex, LoggingAddressReuse) {
+  // Repeatedly re-create a Mutex with debug logging at the same address.
+  alignas(absl::Mutex) char storage[sizeof(absl::Mutex)];
+  auto invariant =
+      +[](void *alive) { EXPECT_TRUE(*static_cast<bool *>(alive)); };
+  constexpr size_t kIters = 10;
+  bool alive[kIters] = {};
+  for (size_t i = 0; i < kIters; ++i) {
+    absl::Mutex *mu = new (storage) absl::Mutex;
+    alive[i] = true;
+    mu->EnableDebugLog("Mutex");
+    mu->EnableInvariantDebugging(invariant, &alive[i]);
+    mu->Lock();
+    mu->Unlock();
+    mu->~Mutex();
+    alive[i] = false;
+  }
+}
+
+TEST(Mutex, LoggingBankrupcy) {
+  // Test the case with too many live Mutexes with debug logging.
+  std::vector<absl::Mutex> mus(1 << 20);
+  for (auto &mu : mus) {
+    mu.EnableDebugLog("Mutex");
+  }
+}
+
 // --------------------------------------------------------
 
 // Generate the vector of thread counts for tests parameterized on thread count.

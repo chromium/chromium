@@ -2020,27 +2020,39 @@ void QuotaManagerImpl::NotifyBucketAccessed(const BucketLocator& bucket,
 
 void QuotaManagerImpl::NotifyBucketModified(QuotaClientType client_id,
                                             const BucketLocator& bucket,
-                                            int64_t delta,
+                                            absl::optional<int64_t> delta,
                                             base::Time modification_time,
                                             base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
 
+  GetUsageTracker(bucket.type)
+      ->UpdateBucketUsageCache(client_id, bucket, delta);
+  // Return once usage cache is updated for callers waiting for quota changes to
+  // be reflected before querying for usage.
+  std::move(callback).Run();
+
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](BucketLocator bucket, QuotaDatabase* database) {
+          [](BucketLocator bucket, base::Time modification_time,
+             QuotaDatabase* database) {
             DCHECK(database);
-            if (bucket.is_default) {
-              return database->GetBucket(bucket.storage_key, kDefaultBucketName,
-                                         bucket.type);
+            BucketId id = bucket.id;
+            if (!id) {
+              CHECK(bucket.is_default);
+              QuotaErrorOr<BucketInfo> result = database->GetBucket(
+                  bucket.storage_key, kDefaultBucketName, bucket.type);
+              if (!result.has_value()) {
+                return QuotaError::kNotFound;
+              }
+
+              id = result->id;
             }
-            return database->GetBucketById(bucket.id);
+            return database->SetBucketLastModifiedTime(id, modification_time);
           },
-          bucket),
-      base::BindOnce(&QuotaManagerImpl::DidGetBucketForUsage,
-                     weak_factory_.GetWeakPtr(), client_id, delta,
-                     modification_time, std::move(callback)));
+          bucket, modification_time),
+      base::DoNothing());
 }
 
 void QuotaManagerImpl::DumpBucketTable(DumpBucketTableCallback callback) {
@@ -2964,40 +2976,6 @@ void QuotaManagerImpl::DidGetBucketForDeletion(
   DeleteBucketDataInternal(result->ToBucketLocator(), AllQuotaClientTypes(),
                            std::move(result_callback));
   return;
-}
-
-void QuotaManagerImpl::DidGetBucketForUsage(QuotaClientType client_type,
-                                            int64_t delta,
-                                            base::Time modification_time,
-                                            base::OnceClosure callback,
-                                            QuotaErrorOr<BucketInfo> result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(callback);
-
-  if (!result.has_value()) {
-    std::move(callback).Run();
-    return;
-  }
-
-  BucketLocator bucket(result->id, result->storage_key, result->type,
-                       result->is_default());
-  GetUsageTracker(bucket.type)
-      ->UpdateBucketUsageCache(client_type, bucket, delta);
-
-  // Return once usage cache is updated for callers waiting for quota changes to
-  // be reflected before querying for usage.
-  std::move(callback).Run();
-
-  PostTaskAndReplyWithResultForDBThread(
-      base::BindOnce(
-          [](BucketId bucket_id, base::Time modified_time,
-             QuotaDatabase* database) {
-            DCHECK(database);
-            return database->SetBucketLastModifiedTime(bucket_id,
-                                                       modified_time);
-          },
-          bucket.id, modification_time),
-      base::DoNothing());
 }
 
 void QuotaManagerImpl::DidGetBucketForUsageAndQuota(

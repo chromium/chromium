@@ -362,8 +362,7 @@ bool SVGLayoutSupport::IsLayoutableTextNode(const LayoutObject* object) {
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForStyle(
     const ComputedStyle& style) {
-  return style.HasGroupingProperty(style.BoxReflect()) ||
-         style.MaskerResource();
+  return style.HasGroupingProperty(style.BoxReflect()) || style.HasMaskForSVG();
 }
 
 bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
@@ -376,8 +375,9 @@ bool SVGLayoutSupport::WillIsolateBlendingDescendantsForObject(
 }
 
 bool SVGLayoutSupport::IsIsolationRequired(const LayoutObject* object) {
-  if (object->StyleRef().MaskerResource())
+  if (object->StyleRef().HasMaskForSVG()) {
     return true;
+  }
   return WillIsolateBlendingDescendantsForObject(object) &&
          object->HasNonIsolatedBlendingDescendants();
 }

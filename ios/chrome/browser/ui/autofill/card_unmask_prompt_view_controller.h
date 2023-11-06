@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_AUTOFILL_CARD_UNMASK_PROMPT_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 namespace autofill {
 class CardUnmaskPromptViewBridge;
@@ -21,7 +21,7 @@ class CardUnmaskPromptViewBridge;
 // dismissed and the operation requiring the card verification is continued
 // (e.g: the card is autofilled in a payment form).
 @interface CardUnmaskPromptViewController
-    : ChromeTableViewController <UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <UIAdaptivePresentationControllerDelegate>
 // Designated initializer. `bridge` must not be null.
 - (instancetype)initWithBridge:(autofill::CardUnmaskPromptViewBridge*)bridge
     NS_DESIGNATED_INITIALIZER;

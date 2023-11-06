@@ -125,7 +125,8 @@ struct Suggestion {
       case PopupItemId::kSeePromoCodeDetails:
         return absl::holds_alternative<GURL>(payload);
       case PopupItemId::kIbanEntry:
-        return absl::holds_alternative<ValueToFill>(payload);
+        return absl::holds_alternative<ValueToFill>(payload) ||
+               absl::holds_alternative<BackendId>(payload);
       default:
         return absl::holds_alternative<BackendId>(payload);
     }

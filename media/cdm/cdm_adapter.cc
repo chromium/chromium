@@ -681,7 +681,7 @@ void CdmAdapter::TimerExpired(void* context) {
 
 cdm::Time CdmAdapter::GetCurrentWallTime() {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  return base::Time::Now().ToDoubleT();
+  return base::Time::Now().InSecondsFSinceUnixEpoch();
 }
 
 void CdmAdapter::OnInitialized(bool success) {
@@ -806,7 +806,8 @@ void CdmAdapter::OnExpirationChange(const char* session_id,
            << ", new_expiry_time = " << new_expiry_time;
   DCHECK(task_runner_->BelongsToCurrentThread());
 
-  base::Time expiration = base::Time::FromDoubleT(new_expiry_time);
+  base::Time expiration =
+      base::Time::FromSecondsSinceUnixEpoch(new_expiry_time);
   TRACE_EVENT2("media", "CdmAdapter::OnExpirationChange", "session_id",
                session_id_str, "new_expiry_time", expiration);
   session_expiration_update_cb_.Run(session_id_str, expiration);

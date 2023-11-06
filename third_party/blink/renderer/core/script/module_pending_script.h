@@ -28,7 +28,7 @@ class ModulePendingScriptTreeClient final : public ModuleTreeClient {
 
   void SetPendingScript(ModulePendingScript* client);
 
-  ModuleScript* GetModuleScript() const { return module_script_; }
+  ModuleScript* GetModuleScript() const { return module_script_.Get(); }
 
   void Trace(Visitor*) const override;
 

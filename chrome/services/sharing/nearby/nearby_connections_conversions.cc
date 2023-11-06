@@ -10,8 +10,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 
-namespace nearby {
-namespace connections {
+namespace nearby::connections {
 
 Strategy StrategyFromMojom(mojom::Strategy strategy) {
   switch (strategy) {
@@ -140,5 +139,17 @@ BooleanMediumSelector MediumSelectorFromMojom(
   };
 }
 
-}  // namespace connections
-}  // namespace nearby
+mojom::BandwidthQuality BandwidthQualityToMojom(v3::Quality quality) {
+  switch (quality) {
+    case v3::Quality::kUnknown:
+      return mojom::BandwidthQuality::kUnknown;
+    case v3::Quality::kLow:
+      return mojom::BandwidthQuality::kLow;
+    case v3::Quality::kMedium:
+      return mojom::BandwidthQuality::kMedium;
+    case v3::Quality::kHigh:
+      return mojom::BandwidthQuality::kHigh;
+  }
+}
+
+}  // namespace nearby::connections

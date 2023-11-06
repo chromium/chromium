@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
 #define COMPONENTS_VARIATIONS_SERVICE_GOOGLE_GROUPS_UPDATER_SERVICE_H_
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -28,8 +27,6 @@ inline constexpr char kDogfoodGroupsSyncPrefName[] = "sync.dogfood_groups";
 
 inline constexpr char kDogfoodGroupsSyncPrefGaiaIdKey[] = "gaia_id";
 }  // namespace variations
-
-BASE_DECLARE_FEATURE(kVariationsGoogleGroupFiltering);
 
 // Service responsible for one-way synchronization of Google group information
 // from per-profile sync data to local-state.

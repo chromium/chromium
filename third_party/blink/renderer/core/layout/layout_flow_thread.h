@@ -135,8 +135,6 @@ class CORE_EXPORT LayoutFlowThread : public LayoutBlockFlow {
   virtual void AddColumnSetToThread(LayoutMultiColumnSet*) = 0;
   virtual void RemoveColumnSetFromThread(LayoutMultiColumnSet*);
 
-  virtual void UpdateLogicalWidth() = 0;
-
   bool HasColumnSets() const {
     NOT_DESTROYED();
     return multi_column_set_list_.size();

@@ -100,56 +100,12 @@ found in the LICENSE file.
             android:minHeight="@dimen/min_touch_target_size"
             android:gravity="center_vertical"/>
 
-        <RelativeLayout
-            android:id="@+id/revamped_cookie_controls_card"
-            style="@style/CardTransparentForDark"
-            android:layout_gravity="center"
+        <!-- Placeholder for a Cookie Controls or a Tracking Protection card. -->
+        <ViewStub
+            android:id="@+id/cookie_card_stub"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/revamped_cookie_controls_card_managed_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:ignore="ContentDescription"
-                android:layout_marginEnd="10dp"
-                android:layout_centerVertical="true"
-                android:layout_alignParentStart="true"
-                app:tint="@color/default_icon_color_light" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/revamped_cookie_controls_card_toggle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:theme="@style/SwitchMaterialDark"
-                android:layout_alignParentEnd="true"
-                android:contentDescription="@string/revamped_incognito_ntp_otr_third_party_cookie"
-                app:showText="false" />
-
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/revamped_cookie_controls_card_title"
-                android:text="@string/revamped_incognito_ntp_otr_third_party_cookie"
-                android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline.Light"
-                android:layout_toStartOf="@id/revamped_cookie_controls_card_toggle"
-                android:layout_toEndOf="@id/revamped_cookie_controls_card_managed_icon"
-                android:layout_marginBottom="@dimen/md_incognito_ntp_line_spacing"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent" />
-
-            <org.chromium.ui.widget.TextViewWithLeading
-                android:id="@+id/revamped_cookie_controls_card_subtitle"
-                android:text="@string/revamped_incognito_ntp_otr_third_party_cookie_sublabel"
-                android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-                android:layout_toStartOf="@id/revamped_cookie_controls_card_toggle"
-                android:layout_toEndOf="@id/revamped_cookie_controls_card_managed_icon"
-                android:layout_below="@id/revamped_cookie_controls_card_title"
-                app:leading="@dimen/text_size_medium_leading"
-                android:layout_height="wrap_content"
-                android:layout_width="match_parent" />
-
-        </RelativeLayout>
+            android:layout_marginTop="12dp" />
 
     </LinearLayout>
 

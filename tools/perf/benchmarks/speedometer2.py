@@ -194,15 +194,15 @@ class V8Speedometer2Future(Speedometer2):
 @benchmark.Info(emails=['omerkatz@chromium.org'],
                 component='Blink>JavaScript>GarbageCollection',
                 documentation_url='https://browserbench.org/Speedometer2.1')
-class Speedometer2MinorMC(Speedometer2):
-  """The latest Speedometer2 benchmark with the MinorMC flag.
+class Speedometer2NoMinorMS(Speedometer2):
+  """The latest Speedometer2 benchmark without the MinorMS flag.
 
-  Shows the performance of upcoming MinorMC young generation GC in V8.
+  Shows the performance of Scavenger young generation GC in V8.
   """
 
   @classmethod
   def Name(cls):
-    return 'speedometer2-minormc'
+    return 'speedometer2-nominorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')

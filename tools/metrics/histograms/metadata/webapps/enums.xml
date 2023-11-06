@@ -1,0 +1,469 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AppBannersBeforeInstallEvent">
+  <int value="1" label="Event created and dispatched"/>
+  <int value="2" label="Showing the banner"/>
+  <int value="3" label="preventDefault() not called"/>
+  <int value="4" label="preventDefault() called"/>
+  <int value="5" label="prompt() called after preventDefault() (deprecated)"/>
+  <int value="6"
+      label="prompt() not called after preventDefault() (deprecated)"/>
+  <int value="7" label="prompt() called early"/>
+  <int value="8" label="prompt() called after preventDefault()"/>
+  <int value="9" label="prompt() called without preventDefault()"/>
+  <int value="10" label="prompt() not called after preventDefault()"/>
+  <int value="11" label="prompt() not called without preventDefault()"/>
+</enum>
+
+<enum name="AppBannersDismissEvent">
+  <int value="41" label="Error/unknown reason for dismissal"/>
+  <int value="42" label="User opened the application after installing it"/>
+  <int value="43" label="User clicked on the banner"/>
+  <int value="44" label="(Obsolete) User swiped the banner away"/>
+  <int value="45" label="User hit the X button"/>
+  <int value="46"
+      label="User began app install, but it didn't finish in time
+             (deprecated)"/>
+  <int value="47" label="Banner was dismissed for any reason"/>
+  <int value="48" label="Ambient badge infobar was dismissed (deprecated)"/>
+</enum>
+
+<enum name="AppBannersDisplayEvent">
+  <int value="1" label="Banner was requested by the site"/>
+  <int value="2" label="User previously blocked the same banner"/>
+  <int value="3" label="User blocked too many other banners from the site"/>
+  <int value="4" label="Banner created"/>
+  <int value="5" label="User already installed the app"/>
+  <int value="6" label="User ignored the banner last time"/>
+  <int value="7" label="Manifest lacks a service worker"/>
+  <int value="8" label="Site hasn't been visited frequently enough"/>
+  <int value="9" label="Native app banner was requested by the site"/>
+  <int value="10" label="Web app banner was requested by the site"/>
+  <int value="11" label="Native app banner created"/>
+  <int value="12" label="Web app banner created"/>
+</enum>
+
+<enum name="AppBannersInstallEvent">
+  <int value="21" label="(Native app) User triggered the app install dialog"/>
+  <int value="22"
+      label="(Native app) User began installing the app (deprecated)"/>
+  <int value="23"
+      label="(Native app) User waited for the app to finish installing
+             (deprecated)"/>
+  <int value="24" label="(Web app) User installed a web app"/>
+</enum>
+
+<enum name="AppBannersUserResponse">
+  <int value="1" label="Native app install dialog was accepted by the user"/>
+  <int value="2"
+      label="Web app add-to-homescreen dialog was accepted by the user"/>
+  <int value="3" label="Native app install dialog was dismissed by the user"/>
+  <int value="4"
+      label="Web app add-to-homescreen dialog was dismissed by the user"/>
+  <int value="5"
+      label="Native app banner was ignored by the user (deprecated)"/>
+  <int value="6" label="Web app banner was ignored by the user (deprecated)"/>
+</enum>
+
+<enum name="AppIdentityDisplayMetric">
+  <int value="0" label="No App Identity Change."/>
+  <int value="1" label="Icon changing."/>
+  <int value="2" label="Mask changing."/>
+  <int value="3" label="Mask and Icon changing."/>
+  <int value="4" label="App name changing."/>
+  <int value="5" label="App name and Icon changing."/>
+  <int value="6" label="App name and Mask changing."/>
+  <int value="7" label="App name, Mask, and Icon changing."/>
+  <int value="8" label="Short name changing."/>
+  <int value="9" label="Short name and Icon changing."/>
+  <int value="10" label="Short name and Mask changing."/>
+  <int value="11" label="Short name, Mask, and Icon changing."/>
+  <int value="12" label="Short name and App name changing."/>
+  <int value="13" label="Short name, App name, and Icon changing."/>
+  <int value="14" label="Short name, App name, and Mask changing."/>
+  <int value="15" label="Short name, App name, Mask and Icon changing."/>
+</enum>
+
+<enum name="AppSettingsPageEntryPoints">
+  <int value="0" label="From page info view in app window/tab"/>
+  <int value="1" label="From chrome://apps page"/>
+  <int value="2"
+      label="From a browser command, currently the App Menu in the menu bar
+             on Mac OS"/>
+  <int value="3" label="From a sub apps install dialog"/>
+</enum>
+
+<enum name="AppTypeToMenuEntry">
+  <int value="0" label="WebApk install, menu item unknown (failure mode)"/>
+  <int value="1"
+      label="WebApk install, menu showed 'Add To Homescreen' (failure mode)"/>
+  <int value="2" label="WebApk install, menu showed 'Install'"/>
+  <int value="3" label="Shortcut install, menu item unknown (failure mode)"/>
+  <int value="4" label="Shortcut install, menu showed 'Add To Homescreen'"/>
+  <int value="5"
+      label="Shortcut install, menu showed 'Install' (failure mode)"/>
+</enum>
+
+<enum name="CalculatorAppErasureScanResult">
+  <obsolete>
+    Code removed 2023-06.
+  </obsolete>
+  <int value="0" label="NoWebAppsForProcess"/>
+  <int value="1" label="BothAppsInstalled"/>
+  <int value="2" label="WebAppInstalled"/>
+  <int value="3" label="ChromeAppInstalled"/>
+  <int value="4" label="BothAppsNotUserUninstalled"/>
+  <int value="5" label="WebAppNotUserUninstalled"/>
+  <int value="6" label="ChromeAppNotUserUninstalled"/>
+  <int value="7" label="FixAlreadyAppliedAndWantedToApplyAgain"/>
+  <int value="8" label="FixApplied"/>
+</enum>
+
+<enum name="DefaultOfflineClosingReason">
+  <int value="0" label="Network re-established"/>
+  <int value="1" label="New navigation"/>
+  <int value="2" label="Tab/App closed"/>
+</enum>
+
+<enum name="GeneratedIconFixResult">
+  <int value="0" label="kAppUninstalled"/>
+  <int value="1" label="kShutdown"/>
+  <int value="2" label="kDownloadFailure"/>
+  <int value="3" label="kStillGenerated"/>
+  <int value="4" label="kWriteFailure"/>
+  <int value="5" label="kSuccess"/>
+</enum>
+
+<enum name="GeneratedIconFixScheduleDecision">
+  <int value="0" label="kNotSynced"/>
+  <int value="1" label="kTimeWindowExpired"/>
+  <int value="2" label="kNotRequired"/>
+  <int value="3" label="kAttemptLimitReached"/>
+  <int value="4" label="kAlreadyScheduled"/>
+  <int value="5" label="kSchedule"/>
+</enum>
+
+<enum name="HttpStatusCodeClass">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="1XX"/>
+  <int value="2" label="2XX"/>
+  <int value="3" label="3XX"/>
+  <int value="4" label="4XX"/>
+  <int value="5" label="5XX"/>
+</enum>
+
+<enum name="InstallableAmbientBadgeState">
+  <int value="0" label="Pipeline not started"/>
+  <int value="1" label="Pipeline is running"/>
+  <int value="2" label="blocked due to recently dismissed"/>
+  <int value="3" label="Waiting for service worker"/>
+  <int value="4" label="Waiting for site engagement"/>
+  <int value="5" label="Showing ambient badge"/>
+  <int value="6" label="Ambient badge dismissed"/>
+</enum>
+
+<enum name="InstallAmbientBadgeAppType">
+  <int value="0" label="Native app"/>
+  <int value="1" label="WebAPK"/>
+  <int value="2" label="Shortcut"/>
+</enum>
+
+<enum name="IsolatedWebAppReadResponseHeadError">
+  <int value="1" label="Response head parsing: Internal error"/>
+  <int value="2" label="Response head parsing: Format error"/>
+  <int value="3" label="Response not found"/>
+</enum>
+
+<enum name="IsolatedWebAppResponseReaderCacheState">
+  <int value="0" label="Not cached"/>
+  <int value="1" label="Cached and ready"/>
+  <int value="2"
+      label="Cached but still processing integrity block, signatures, or
+             metadata"/>
+</enum>
+
+<enum name="IsolatedWebAppSwbnFileUsabilityError">
+  <int value="1" label="Integrity Block parsing: Internal error"/>
+  <int value="2" label="Integrity Block parsing: Format error"/>
+  <int value="3" label="Integrity Block parsing: Version error"/>
+  <int value="4" label="Integrity Block validation error"/>
+  <int value="5" label="Signature verification error"/>
+  <int value="6" label="Metadata parsing: Internal error"/>
+  <int value="7" label="Metadata parsing: Format error"/>
+  <int value="8" label="Metadata parsing: Version error"/>
+  <int value="9" label="Metadata validation error"/>
+</enum>
+
+<enum name="LaunchFromHomeScreen">
+  <int value="0" label="Launched as standalone web app"/>
+  <int value="1" label="Launched as a tab"/>
+</enum>
+
+<enum name="PreinstalledAppDisabledReason">
+  <int value="0" label="kNotDisabled"/>
+  <int value="1" label="kUninstallPreinstalledAppsNotEnabled"/>
+  <int value="2" label="kUninstallUserTypeNotAllowed"/>
+  <int value="3" label="kUninstallGatedFeatureNotEnabled"/>
+  <int value="4" label="kIgnoreGatedFeatureNotEnabled"/>
+  <int value="5" label="kIgnoreArcAvailable"/>
+  <int value="6" label="kIgnoreTabletFormFactor"/>
+  <int value="7" label="kIgnoreNotNewUser"/>
+  <int value="8" label="kIgnoreNotPreviouslyPreinstalled"/>
+  <int value="9" label="kUninstallReplacingAppBlockedByPolicy"/>
+  <int value="10" label="kUninstallReplacingAppForceInstalled"/>
+  <int value="11" label="kInstallReplacingAppStillInstalled"/>
+  <int value="12" label="kUninstallDefaultAppAndAppsToReplaceUninstalled"/>
+  <int value="13" label="kIgnoreReplacingAppUninstalledByUser"/>
+  <int value="14" label="kIgnoreStylusRequired"/>
+  <int value="15" label="kInstallOverridePreviousUserUninstall"/>
+  <int value="16" label="kIgnoreStylusRequiredNoDeviceData"/>
+  <int value="17" label="kIgnorePreviouslyUninstalledByUser"/>
+</enum>
+
+<enum name="RunOnOSLoginCommandCompletionState">
+  <int value="0" label="Run On OS Login command successfully completed"/>
+  <int value="1"
+      label="Run On OS Login command failed due to a shutdown of the command
+             system"/>
+  <int value="2"
+      label="Run On OS Login command failed because setting of command is not
+             allowed by policy."/>
+  <int value="3"
+      label="Run On OS Login command shutdown during sync because login mode
+             already matched what is set."/>
+  <int value="4"
+      label="Run On OS Login command failed because app is not locally
+             installed"/>
+  <int value="5"
+      label="Run On OS Login command failed because OS Hooks were not
+             properly set."/>
+</enum>
+
+<enum name="ServiceWorkerOfflineCapability">
+  <int value="0" label="kNoServiceWorker"/>
+  <int value="1" label="kServiceWorkerNoFetchHandler"/>
+  <int value="2" label="kServiceWorkerNoOfflineSupport"/>
+  <int value="3" label="kServiceWorkerWithOfflineSupport"/>
+</enum>
+
+<enum name="ShortcutsCreationResult">
+  <summary>Result of creating shortcuts for PWA.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to create shortcut"/>
+</enum>
+
+<enum name="ShortcutsMenuIconAndDataDifference">
+  <int value="0" label="Number of icons match number of shortcuts menu items"/>
+  <int value="1"
+      label="Number of icons lower than number of shortcuts menu items"/>
+  <int value="2"
+      label="Number of shortcuts menu items lower than number of icons"/>
+</enum>
+
+<enum name="ShortcutsMenuWinRegistrationResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to create shortcuts menu icons directory"/>
+  <int value="2" label="Failed to create icon from image family"/>
+  <int value="3" label="Failed to begin jump list update"/>
+  <int value="4" label="Failed to add link items to jump list"/>
+  <int value="5" label="Failed to commit update to jump list"/>
+</enum>
+
+<enum name="WebAppIconDownloaderResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="PrimaryPageChanged"/>
+  <int value="2" label="Failure"/>
+  <int value="3" label="TimeoutFailure"/>
+  <int value="4" label="TimeoutWithPartialDownloadSuccess"/>
+</enum>
+
+<enum name="WebAppIconsDownloadedResult">
+  <int value="0" label="Completed"/>
+  <int value="1" label="PrimaryPageChanged"/>
+  <int value="2" label="AbortedDueToFailure"/>
+</enum>
+
+<enum name="WebAppInstallIphResult">
+  <int value="0" label="Installed"/>
+  <int value="1" label="Clicked Install icon then canceled install"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
+<enum name="WebAppLauncherLaunchResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Started">
+    Terminated unexpectedly after starting launch.
+  </int>
+  <int value="2" label="Error">Launching the Chrome process failed.</int>
+</enum>
+
+<enum name="WebAppLaunchHandlerClientMode">
+  <summary>
+    The manifest launch_handler.client_mode of a web app as defined in:
+    https://wicg.github.io/web-app-launch/
+  </summary>
+  <int value="0" label="Auto"/>
+  <int value="1" label="NavigateNew"/>
+  <int value="2" label="NavigateExisting"/>
+  <int value="3" label="FocusExisting"/>
+</enum>
+
+<enum name="WebAppManifestUpdateResult">
+  <int value="0" label="No app in scope"/>
+  <int value="1" label="Updating throttled"/>
+  <int value="2" label="WebContents destroyed"/>
+  <int value="3" label="App uninstalled during update"/>
+  <int value="4" label="App is placeholder"/>
+  <int value="5" label="App is up to date"/>
+  <int value="6" label="App not eligible"/>
+  <int value="7" label="App update failed"/>
+  <int value="8" label="App updated"/>
+  <int value="9" label="App is system web app"/>
+  <int value="10" label="Icon download failed"/>
+  <int value="11" label="Icon read from disk failed"/>
+  <int value="12" label="App ID mismatch"/>
+  <int value="13" label="Web app origin associations update failed"/>
+  <int value="14" label="Web app origin associations updated"/>
+  <int value="15" label="Main frame navigation cancelled manifest update"/>
+</enum>
+
+<enum name="WebAppMlInstallResponse">
+  <int value="0" label="Install accepted"/>
+  <int value="1" label="Dialog ignored without interaction"/>
+  <int value="2" label="Dialog cancelled via user interaction"/>
+  <int value="3"
+      label="Guardrails prevented usage of (any) ML response, no dialog shown"/>
+  <int value="4"
+      label="The reporter was destroyed, likely on page navigation or close."/>
+</enum>
+
+<enum name="WebAppMoverResult">
+  <summary>Result of executing the WebAppMover on Chrome startup.</summary>
+  <int value="0" label="Invalid Finch Configuration"/>
+  <int value="1" label="App-to-install already installed"/>
+  <int value="2" label="Apps-to-uninstall not installed"/>
+  <int value="3" label="App-to-install is not installable"/>
+  <int value="4" label="Failure during uninstall"/>
+  <int value="5" label="Failure during install"/>
+  <int value="6" label="Success"/>
+</enum>
+
+<enum name="WebAppOpenMode">
+  <int value="0" label="kInWindowOther">
+    Launched installed web app in standalone window by any method other than
+    command line or a platform shortcut.
+  </int>
+  <int value="1" label="kInTab">
+    Launched as an installed web application in a browser tab
+  </int>
+  <int value="2" label="kUnknown">
+    The requested web application was not installed
+  </int>
+  <int value="3" label="kInWindowByUrl">
+    Launched installed web app in standalone window from command line, using
+    --app flag.
+  </int>
+  <int value="4" label="kInWindowByAppId">
+    Launched installed web app in standalone window from command line, using
+    --app-id flag.
+  </int>
+</enum>
+
+<enum name="WebAppOriginAssociationFetchResult">
+  <summary>Result of web app origin association file fetch.</summary>
+  <int value="0" label="FetchSucceed"/>
+  <int value="1" label="FailedNoResponseBody"/>
+  <int value="2" label="FetchFailedInvalidUrl"/>
+</enum>
+
+<enum name="WebAppOriginAssociationParseResult">
+  <summary>Result of web app origin association file fetch.</summary>
+  <int value="0" label="ParseSucceed"/>
+  <int value="1" label="ParseFailedNotADictionary"/>
+  <int value="2" label="ParseFailedInvalidJson"/>
+</enum>
+
+<enum name="WebappUninstallDialogAction">
+  <int value="0" label="Uninstall only"/>
+  <int value="1" label="Uninstall and remove data"/>
+  <int value="2" label="Dialog canceled"/>
+</enum>
+
+<enum name="WebappUninstallSource">
+  <int value="0" label="Unknown surface, potentially in ChromeOS"/>
+  <int value="1" label="Menu item from the 3-dot menu of a WebApp window"/>
+  <int value="2" label="Context menu for a WebApp in chrome://apps"/>
+  <int value="3" label="Via OS Settings or Controls"/>
+  <int value="4" label="Uninstalled from Sync"/>
+  <int value="5" label="App management surface, currently ChromeOS-only"/>
+  <int value="6" label="Migration"/>
+  <int value="7" label="App List (Launcher in ChromeOS)"/>
+  <int value="8" label="Shelf (in ChromeOS)"/>
+  <int value="9" label="Internally managed pre-installed app management"/>
+  <int value="10" label="Externally managed pre-installed app management"/>
+  <int value="11" label="Enterprise policy app management"/>
+  <int value="12" label="System app management on ChromeOS"/>
+  <int value="13" label="Placeholder app management for preinstalled apps"/>
+  <int value="14" label="Externally managed Arc apps"/>
+  <int value="15" label="SubApps API"/>
+  <int value="16" label="Incomplete uninstall cleanup on startup."/>
+  <int value="17" label="Sub apps uninstall kicked off by parent app"/>
+  <int value="18" label="Lock screen app infrastructure"/>
+</enum>
+
+<enum name="WebAppUrlLoaderResult">
+  <int value="0" label="UrlLoaded"/>
+  <int value="1" label="RedirectedUrlLoaded"/>
+  <int value="2" label="FailedUnknownReason"/>
+  <int value="3" label="FailedPageTookTooLong"/>
+  <int value="4" label="FailedWebContentsDestroyed"/>
+  <int value="5" label="FailedErrorPageLoaded"/>
+</enum>
+
+<enum name="WinRegistryErrorCode">
+  <int value="0" label="ERROR_OTHER"/>
+  <int value="1" label="ERROR_SUCCESS"/>
+  <int value="2" label="ERROR_FILE_NOT_FOUND"/>
+  <int value="3" label="ERROR_ACCESS_DENIED"/>
+  <int value="4" label="ERROR_INVALID_HANDLE"/>
+  <int value="5" label="ERROR_SHARING_VIOLATION"/>
+  <int value="6" label="ERROR_LOCK_VIOLATION"/>
+  <int value="7" label="ERROR_MORE_DATA"/>
+  <int value="8" label="ERROR_REGISTRY_RECOVERED"/>
+  <int value="9" label="ERROR_REGISTRY_CORRUPT"/>
+  <int value="10" label="ERROR_REGISTRY_IO_FAILED"/>
+  <int value="11" label="ERROR_NOT_REGISTRY_FILE"/>
+  <int value="12" label="ERROR_REGISTRY_QUOTA_LIMIT"/>
+  <int value="13" label="ERROR_REGISTRY_HIVE_RECOVERED"/>
+  <int value="14" label="ERROR_CLUSTER_REGISTRY_INVALID_FUNCTION"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

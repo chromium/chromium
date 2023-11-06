@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/text_auto_space.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 
 namespace blink {
@@ -62,7 +63,7 @@ bool ShouldHyphenate(const String& text,
 
 inline void CheckBreakOffset(unsigned offset, unsigned start, unsigned end) {
   // It is critical to move the offset forward, or NGLineBreaker may keep adding
-  // NGInlineItemResult until all the memory is consumed.
+  // InlineItemResult until all the memory is consumed.
   CHECK_GT(offset, start);
   // The offset must be within the given range, or NGLineBreaker will fail to
   // sync item with offset.
@@ -95,7 +96,9 @@ inline ShapingLineBreaker::EdgeOffset ShapingLineBreaker::FirstSafeOffset(
     return {start};
   }
   if (UNLIKELY(RuntimeEnabledFeatures::CSSTextSpacingTrimEnabled()) &&
-      UNLIKELY(HanKerning::IsOpen(GetText()[start])) &&
+      // TODO(crbug.com/1463891): `MaybeOpen` is likely to hit the performance
+      // for non-CJK documents. We should try harder not to require reshaping.
+      UNLIKELY(HanKerning::MaybeOpen(GetText()[start])) &&
       text_spacing_trim_ == TextSpacingTrim::kSpaceFirst) {
     // `HanKerning` wants to apply kerning to `kOpen` characters at the start of
     // the line. Reshape it to resolve the `SimpleFontData` and apply
@@ -290,6 +293,13 @@ scoped_refptr<const ShapeResultView> ShapingLineBreaker::ShapeLine(
             LayoutUnit(0));
   unsigned candidate_break =
       result_->CachedOffsetForPosition(end_position) + range_start;
+  if (candidate_break < range_end &&
+      UNLIKELY(result_->HasAutoSpacingAfter(candidate_break))) {
+    // If there's an auto-space after the `candidate_break`, check if it can fit
+    // without the auto-space.
+    candidate_break =
+        result_->AdjustOffsetForAutoSpacing(candidate_break, end_position);
+  }
   if (candidate_break >= range_end) {
     // The |result_| does not have glyphs to fill the available space,
     // and thus unable to compute. Return the result up to range_end.

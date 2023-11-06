@@ -7,6 +7,7 @@
 
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,7 +25,14 @@ enum class IdpSigninStatus;
 
 namespace webid {
 
-void SetIdpSigninStatus(content::BrowserContext* context,
+// Returns true if |origin| is same-origin with |render_frame_host| and
+// all its ancestors. Also returns true if there are no ancestors or
+// if |render_frame_host| is null.
+bool IsSameOriginWithAncestors(const url::Origin& origin,
+                               RenderFrameHost* render_frame_host);
+
+void SetIdpSigninStatus(BrowserContext* context,
+                        int frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status);
 

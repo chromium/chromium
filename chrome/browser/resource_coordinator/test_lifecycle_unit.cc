@@ -67,6 +67,9 @@ int TestLifecycleUnit::GetEstimatedMemoryFreedOnDiscardKB() const {
 
 bool TestLifecycleUnit::CanDiscard(mojom::LifecycleUnitDiscardReason reason,
                                    DecisionDetails* decision_details) const {
+  if (failure_reason_) {
+    decision_details->AddReason(*failure_reason_);
+  }
   return can_discard_;
 }
 

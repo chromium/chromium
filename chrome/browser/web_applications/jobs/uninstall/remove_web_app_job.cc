@@ -28,16 +28,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/feature_list.h"
-#include "base/functional/callback_helpers.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_metrics.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace web_app {
 
 namespace {
@@ -172,29 +162,6 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
       app_id_, base::BindOnce(&RemoveWebAppJob::OnTranslationDataDeleted,
                               weak_ptr_factory_.GetWeakPtr()));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ResolveExperimentalWebAppIsolationFeature() ==
-      ExperimentalWebAppIsolationMode::kProfile) {
-    if (app->chromeos_data() && app->chromeos_data()->app_profile_path) {
-      const base::FilePath& app_profile_path =
-          app->chromeos_data()->app_profile_path.value();
-      CHECK(Profile::IsWebAppProfilePath(app_profile_path));
-      if (g_browser_process->profile_manager()
-              ->GetProfileAttributesStorage()
-              .GetProfileAttributesWithPath(app_profile_path)) {
-        pending_app_profile_deletion_ = true;
-        g_browser_process->profile_manager()
-            ->GetDeleteProfileHelper()
-            .MaybeScheduleProfileForDeletion(
-                app_profile_path,
-                base::BindOnce(&RemoveWebAppJob::OnWebAppProfileDeleted,
-                               weak_ptr_factory_.GetWeakPtr()),
-                ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
-      } else {
-      }
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 base::Value RemoveWebAppJob::ToDebugValue() const {
@@ -206,7 +173,6 @@ base::Value RemoveWebAppJob::ToDebugValue() const {
   dict.Set("app_data_deleted", app_data_deleted_);
   dict.Set("translation_data_deleted", translation_data_deleted_);
   dict.Set("hooks_uninstalled", hooks_uninstalled_);
-  dict.Set("pending_app_profile_deletion", pending_app_profile_deletion_);
   dict.Set("errors", errors_);
   dict.Set("primary_removal_result",
            primary_removal_result_
@@ -233,7 +199,6 @@ void RemoveWebAppJob::OnOsHooksUninstalled(OsHooksErrors errors) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!hooks_uninstalled_);
   hooks_uninstalled_ = true;
-  base::UmaHistogramBoolean("WebApp.Uninstall.OsHookSuccess", errors.none());
   errors_ = errors_ || errors.any();
   MaybeFinishPrimaryRemoval();
 }
@@ -242,7 +207,6 @@ void RemoveWebAppJob::OnIconDataDeleted(bool success) {
   CHECK(!primary_removal_result_.has_value());
   CHECK(!app_data_deleted_);
   app_data_deleted_ = true;
-  base::UmaHistogramBoolean("WebApp.Uninstall.IconDataSuccess", success);
   errors_ = errors_ || !success;
   MaybeFinishPrimaryRemoval();
 }
@@ -252,16 +216,6 @@ void RemoveWebAppJob::OnTranslationDataDeleted(bool success) {
   CHECK(!translation_data_deleted_);
   translation_data_deleted_ = true;
   errors_ = errors_ || !success;
-  MaybeFinishPrimaryRemoval();
-}
-
-void RemoveWebAppJob::OnWebAppProfileDeleted(Profile* profile) {
-  CHECK(!primary_removal_result_.has_value());
-  CHECK(pending_app_profile_deletion_);
-  // This must be an isolated web app profile rather than the WebAppProvider
-  // profile.
-  CHECK_NE(&profile_.get(), profile);
-  pending_app_profile_deletion_ = false;
   MaybeFinishPrimaryRemoval();
 }
 
@@ -277,7 +231,6 @@ void RemoveWebAppJob::OnIsolatedWebAppBrowsingDataCleared() {
 void RemoveWebAppJob::MaybeFinishPrimaryRemoval() {
   CHECK(!primary_removal_result_.has_value());
   if (!hooks_uninstalled_ || !app_data_deleted_ || !translation_data_deleted_ ||
-      pending_app_profile_deletion_ ||
       (has_isolated_storage_ && !isolated_web_app_browsing_data_cleared_)) {
     return;
   }

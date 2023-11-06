@@ -29,9 +29,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}.
- */
+/** Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountManagerFacadeTest {
@@ -61,10 +59,11 @@ public class AccountManagerFacadeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountManagerFacadeProvider.setInstanceForTests(
-                    new AccountManagerFacadeImpl(mDelegate));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountManagerFacadeProvider.setInstanceForTests(
+                            new AccountManagerFacadeImpl(mDelegate));
+                });
     }
 
     @After
@@ -120,7 +119,9 @@ public class AccountManagerFacadeTest {
                                         firstCounter.countDown();
                                     });
                 });
-        assertEquals("Callback shouldn't be invoked until cache is populated", 1,
+        assertEquals(
+                "Callback shouldn't be invoked until cache is populated",
+                1,
                 firstCounter.getCount());
 
         mDelegate.unblockGetAccounts();

@@ -54,7 +54,7 @@ import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.download.DownloadState;
@@ -70,7 +70,6 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.widget.Toast;
@@ -90,13 +89,6 @@ public class DownloadUtils {
     private static final String DOCUMENTS_UI_PACKAGE_NAME = "com.android.documentsui";
     public static final String EXTRA_SHOW_PREFETCHED_CONTENT =
             "org.chromium.chrome.browser.download.SHOW_PREFETCHED_CONTENT";
-
-    // TODO(crbug/1483735): Remove this once robolectric support is added.
-    private static Integer sMinSdkVersionForUserInitiatedJobsForTesting;
-
-    public static void setMinSdkVersionForUserInitiatedJobsForTesting(Integer minVersion) {
-        sMinSdkVersionForUserInitiatedJobsForTesting = minVersion;
-    }
 
     /**
      * Displays the download manager UI. Note the UI is different on tablets and on phones.
@@ -143,8 +135,7 @@ public class DownloadUtils {
 
         // Use tab's profile if a valid tab exists.
         if (otrProfileID == null && tab != null) {
-            Profile profile = Profile.fromWebContents(tab.getWebContents());
-            otrProfileID = profile != null ? profile.getOTRProfileID() : otrProfileID;
+            otrProfileID = tab.getProfile().getOTRProfileID();
         }
 
         // If the profile is off-the-record and it does not exist, then do not start the activity.
@@ -158,8 +149,8 @@ public class DownloadUtils {
             LoadUrlParams params = new LoadUrlParams(UrlConstants.DOWNLOADS_URL);
             if (tab == null || !tab.isInitialized()) {
                 // Open a new tab, which pops Chrome into the foreground.
-                TabDelegate delegate = new TabDelegate(false);
-                delegate.createNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
+                ChromeAsyncTabLauncher delegate = new ChromeAsyncTabLauncher(false);
+                delegate.launchNewTab(params, TabLaunchType.FROM_CHROME_UI, null);
             } else {
                 // Download Home shows up inside an existing tab, but only if the last Activity was
                 // the ChromeTabbedActivity.
@@ -246,11 +237,8 @@ public class DownloadUtils {
      * @return True for using Jobs. False for using Foreground service.
      */
     public static boolean shouldUseUserInitiatedJobs() {
-        int minSupportedVersion = sMinSdkVersionForUserInitiatedJobsForTesting == null
-                ? 34
-                : sMinSdkVersionForUserInitiatedJobsForTesting;
         return ChromeFeatureList.sDownloadsMigrateToJobsAPI.isEnabled()
-                && Build.VERSION.SDK_INT >= minSupportedVersion;
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
     }
 
     /**
@@ -324,8 +312,7 @@ public class DownloadUtils {
         if (tab.isShowingErrorPage()) {
             // The download needs to be scheduled to happen at later time due to current network
             // error.
-            final OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.fromWebContents(tab.getWebContents()));
+            final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
             bridge.scheduleDownload(tab.getWebContents(), OfflinePageBridge.ASYNC_NAMESPACE,
                     tab.getUrl().getSpec(), DownloadUiActionFlags.PROMPT_DUPLICATE, origin);
         } else {
@@ -333,13 +320,7 @@ public class DownloadUtils {
             OfflinePageDownloadBridge.startDownload(tab, origin);
             DownloadUtils.recordDownloadPageMetrics(tab);
         }
-
-        WebContents webContents = tab.getWebContents();
-        if (webContents == null) return;
-
-        Profile profile = Profile.fromWebContents(webContents);
-        if (profile == null) return;
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
+        Tracker tracker = TrackerFactory.getTrackerForProfile(tab.getProfile());
         tracker.notifyEvent(EventConstants.DOWNLOAD_PAGE_STARTED);
     }
 
@@ -361,8 +342,7 @@ public class DownloadUtils {
 
         // Download will only be allowed for the error page if download button is shown in the page.
         if (tab.isShowingErrorPage()) {
-            final OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.fromWebContents(tab.getWebContents()));
+            final OfflinePageBridge bridge = OfflinePageBridge.getForProfile(tab.getProfile());
             return bridge.isShowingDownloadButtonInErrorPage(tab.getWebContents());
         }
 
@@ -460,9 +440,16 @@ public class DownloadUtils {
 
             // Sharing for media files is disabled on automotive.
             boolean isAutomotive = BuildInfo.getInstance().isAutomotive;
-            Intent intent = MediaViewerUtils.getMediaViewerIntent(fileUri /*displayUri*/,
-                    contentUri /*contentUri*/, normalizedMimeType, !isAutomotive, !isAutomotive,
-                    context);
+            Intent intent =
+                    MediaViewerUtils.getMediaViewerIntent(
+                            fileUri
+                            /* displayUri= */ ,
+                            contentUri
+                            /* contentUri= */ ,
+                            normalizedMimeType,
+                            !isAutomotive,
+                            !isAutomotive,
+                            context);
             IntentHandler.startActivityForTrustedIntent(context, intent);
             service.updateLastAccessTime(downloadGuid, otrProfileID);
             return true;
@@ -471,8 +458,10 @@ public class DownloadUtils {
         // Check if any apps can open the file.
         try {
             // TODO(qinmin): Move this to an AsyncTask so we don't need to temper with strict mode.
-            Uri uri = ContentUriUtils.isContentUri(filePath) ? Uri.parse(filePath)
-                                                             : getUriForOtherApps(filePath);
+            Uri uri =
+                    ContentUriUtils.isContentUri(filePath)
+                            ? Uri.parse(filePath)
+                            : getUriForOtherApps(filePath);
             Intent viewIntent =
                     MediaViewerUtils.createViewIntentForUri(uri, mimeType, originalUrl, referrer);
             context.startActivity(viewIntent);
@@ -485,8 +474,10 @@ public class DownloadUtils {
         // If this is a zip file, check if Android Files app exists.
         if (MIME_TYPE_ZIP.equals(mimeType)) {
             try {
-                PackageInfo packageInfo = context.getPackageManager().getPackageInfo(
-                        DOCUMENTS_UI_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
+                PackageInfo packageInfo =
+                        context.getPackageManager()
+                                .getPackageInfo(
+                                        DOCUMENTS_UI_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
                 if (packageInfo != null) {
                     Intent viewDownloadsIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                     viewDownloadsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -500,8 +491,10 @@ public class DownloadUtils {
         }
         // Can't launch the Intent.
         if (source != DownloadOpenSource.DOWNLOAD_PROGRESS_INFO_BAR) {
-            Toast.makeText(context, context.getString(R.string.download_cant_open_file),
-                         Toast.LENGTH_SHORT)
+            Toast.makeText(
+                            context,
+                            context.getString(R.string.download_cant_open_file),
+                            Toast.LENGTH_SHORT)
                     .show();
         }
         return false;
@@ -509,6 +502,7 @@ public class DownloadUtils {
 
     /**
      * Opens a completed download.
+     *
      * @param filePath File path on disk of the download to open.
      * @param mimeType MIME type of the downloaded file.
      * @param downloadGuid Unique GUID of the download.
@@ -518,8 +512,13 @@ public class DownloadUtils {
      * @param source Where this download was initiated from.
      */
     @CalledByNative
-    public static void openDownload(String filePath, String mimeType, String downloadGuid,
-            OTRProfileID otrProfileID, String originalUrl, String referer,
+    public static void openDownload(
+            String filePath,
+            String mimeType,
+            String downloadGuid,
+            OTRProfileID otrProfileID,
+            String originalUrl,
+            String referer,
             @DownloadOpenSource int source) {
         // Mapping generic MIME type to android openable type based on URL and file extension.
         String newMimeType = MimeUtils.remapGenericMimeType(mimeType, originalUrl, filePath);
@@ -533,9 +532,16 @@ public class DownloadUtils {
                 return;
             }
         }
-        boolean canOpen = DownloadUtils.openFile(filePath, newMimeType, downloadGuid, otrProfileID,
-                originalUrl, referer, source,
-                activity == null ? ContextUtils.getApplicationContext() : activity);
+        boolean canOpen =
+                DownloadUtils.openFile(
+                        filePath,
+                        newMimeType,
+                        downloadGuid,
+                        otrProfileID,
+                        originalUrl,
+                        referer,
+                        source,
+                        activity == null ? ContextUtils.getApplicationContext() : activity);
         if (!canOpen) {
             DownloadUtils.showDownloadManager(null, null, otrProfileID, source);
         }
@@ -543,8 +549,9 @@ public class DownloadUtils {
 
     /**
      * Fires an Intent to open a downloaded item.
+     *
      * @param context Context to use.
-     * @param intent  Intent that can be fired.
+     * @param intent Intent that can be fired.
      * @return Whether an Activity was successfully started for the Intent.
      */
     static boolean fireOpenIntentForDownload(Context context, Intent intent) {
@@ -556,8 +563,13 @@ public class DownloadUtils {
             }
             return true;
         } catch (ActivityNotFoundException ex) {
-            Log.d(TAG, "Activity not found for " + intent.getType() + " over "
-                    + intent.getData().getScheme(), ex);
+            Log.d(
+                    TAG,
+                    "Activity not found for "
+                            + intent.getType()
+                            + " over "
+                            + intent.getData().getScheme(),
+                    ex);
         } catch (SecurityException ex) {
             Log.d(TAG, "cannot open intent: " + intent, ex);
         } catch (Exception ex) {
@@ -571,6 +583,7 @@ public class DownloadUtils {
      * Get the resume mode based on the current fail state, to distinguish the case where download
      * cannot be resumed at all or can be resumed in the middle, or should be restarted from the
      * beginning.
+     *
      * @param url URL of the download.
      * @param failState Why the download failed.
      * @return The resume mode for the current fail state.
@@ -582,7 +595,7 @@ public class DownloadUtils {
     /**
      * Query the Download backends about whether a download is paused.
      *
-     * The Java-side contains more information about the status of a download than is persisted
+     * <p>The Java-side contains more information about the status of a download than is persisted
      * by the native backend, so it is queried first.
      *
      * @param item Download to check the status of.
@@ -608,6 +621,7 @@ public class DownloadUtils {
 
     /**
      * Return whether a download is pending.
+     *
      * @param item Download to check the status of.
      * @return Whether the download is pending or not.
      */
@@ -615,12 +629,14 @@ public class DownloadUtils {
         DownloadSharedPreferenceHelper helper = DownloadSharedPreferenceHelper.getInstance();
         DownloadSharedPreferenceEntry entry =
                 helper.getDownloadSharedPreferenceEntry(item.getContentId());
-        return entry != null && item.getDownloadInfo().state() == DownloadState.INTERRUPTED
+        return entry != null
+                && item.getDownloadInfo().state() == DownloadState.INTERRUPTED
                 && entry.isAutoResumable;
     }
 
     /**
      * Gets the duplicate infobar or dialog text for regular downloads.
+     *
      * @param context Context to be used.
      * @param template Template of the text to be displayed.
      * @param filePath Suggested file path of the download.
@@ -629,28 +645,48 @@ public class DownloadUtils {
      * @param clickableSpan Action to perform when clicking on the file name.
      * @return message to be displayed on the infobar or dialog.
      */
-    public static CharSequence getDownloadMessageText(final Context context, final String template,
-            final String filePath, boolean addSizeStringIfAvailable, long totalBytes,
+    public static CharSequence getDownloadMessageText(
+            final Context context,
+            final String template,
+            final String filePath,
+            boolean addSizeStringIfAvailable,
+            long totalBytes,
             final ClickableSpan clickableSpan) {
-        return getMessageText(template, new File(filePath).getName(), addSizeStringIfAvailable,
-                totalBytes, clickableSpan);
+        return getMessageText(
+                template,
+                new File(filePath).getName(),
+                addSizeStringIfAvailable,
+                totalBytes,
+                clickableSpan);
     }
 
     /**
      * Gets the infobar or dialog text for offline page downloads.
+     *
      * @param context Context to be used.
      * @param filePath Path of the file to be displayed.
      * @param duplicateRequestExists Whether a duplicate request exists.
      * @param clickableSpan Action to perform when clicking on the page link.
      * @return message to be displayed on the infobar or dialog.
      */
-    public static CharSequence getOfflinePageMessageText(final Context context, String filePath,
-            boolean duplicateRequestExists, ClickableSpan clickableSpan) {
-        String template = context.getString(duplicateRequestExists
-                        ? R.string.duplicate_download_request_infobar_text
-                        : R.string.duplicate_download_infobar_text);
-        return getMessageText(template, filePath, false /*addSizeStringIfAvailable*/,
-                0 /*totalBytes*/, clickableSpan);
+    public static CharSequence getOfflinePageMessageText(
+            final Context context,
+            String filePath,
+            boolean duplicateRequestExists,
+            ClickableSpan clickableSpan) {
+        String template =
+                context.getString(
+                        duplicateRequestExists
+                                ? R.string.duplicate_download_request_infobar_text
+                                : R.string.duplicate_download_infobar_text);
+        return getMessageText(
+                template,
+                filePath,
+                false
+                /* addSizeStringIfAvailable= */ ,
+                0
+                /* totalBytes= */ ,
+                clickableSpan);
     }
 
     /**

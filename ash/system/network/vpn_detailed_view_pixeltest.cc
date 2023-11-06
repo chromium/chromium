@@ -5,7 +5,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/system/network/vpn_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
@@ -15,8 +14,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom.h"
 #include "ui/views/view.h"
@@ -45,10 +42,7 @@ constexpr char kExtensionProviderName[] = "extension_provider_name";
 // Pixel test for the VPN list that is shown in the quick settings VPN sub-page.
 class VpnDetailedViewPixelTest : public AshTestBase {
  public:
-  VpnDetailedViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  VpnDetailedViewPixelTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -118,7 +112,6 @@ class VpnDetailedViewPixelTest : public AshTestBase {
     vpn_detailed_view_->OnGetNetworkStateList(std::move(networks));
   }
 
-  base::test::ScopedFeatureList feature_list_;
   raw_ptr<VpnDetailedView, DanglingUntriaged | ExperimentalAsh>
       vpn_detailed_view_ = nullptr;
 };

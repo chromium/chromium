@@ -25,6 +25,7 @@ class QuickStartScreen : public BaseScreen,
     CANCEL_AND_RETURN_TO_WELCOME,
     CANCEL_AND_RETURN_TO_NETWORK,
     CANCEL_AND_RETURN_TO_SIGNIN,
+    WIFI_CREDENTIALS_RECEIVED,
     WIFI_CONNECTED
   };
 
@@ -54,7 +55,7 @@ class QuickStartScreen : public BaseScreen,
 
   // Exits the screen and returns to the appropriate entry point. This is called
   // whenever the user aborts the flow, or when an error occurs.
-  void CancelAndExitScreen();
+  void ExitScreen();
 
   base::WeakPtr<TView> view_;
   raw_ptr<quick_start::QuickStartController> controller_;

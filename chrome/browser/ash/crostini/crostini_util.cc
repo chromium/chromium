@@ -48,22 +48,6 @@
 #include "ui/base/l10n/time_format.h"
 
 namespace crostini {
-
-const char kCrostiniImageAliasPattern[] = "debian/%s";
-const char kCrostiniContainerDefaultVersion[] = "bullseye";
-const char kCrostiniContainerFlag[] = "crostini-container-install-version";
-
-const guest_os::VmType kCrostiniDefaultVmType = guest_os::VmType::TERMINA;
-const char kCrostiniDefaultVmName[] = "termina";
-const char kCrostiniDefaultContainerName[] = "penguin";
-const char kCrostiniDefaultUsername[] = "emperor";
-const char kCrostiniDefaultImageServerUrl[] =
-    "https://storage.googleapis.com/cros-containers/%d";
-const char kCrostiniDlcName[] = "termina-dlc";
-
-const base::FilePath::CharType kHomeDirectory[] =
-    FILE_PATH_LITERAL("/home/chronos/user");
-
 namespace {
 
 constexpr char kCrostiniAppLaunchHistogram[] = "Crostini.AppLaunch";

@@ -110,7 +110,11 @@ void WebContentsModalDialogManager::BlockWebContentsInteraction(bool blocked) {
     return;
   }
 
-  contents->SetIgnoreInputEvents(blocked);
+  if (blocked) {
+    scoped_ignore_input_events_ = contents->IgnoreInputEvents();
+  } else {
+    scoped_ignore_input_events_.reset();
+  }
   if (delegate_)
     delegate_->SetWebContentsBlocked(contents, blocked);
 }

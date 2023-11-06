@@ -71,7 +71,7 @@ class CORE_EXPORT HighlightStyleUtils {
                                              DocumentMarker::MarkerType type);
 
   static bool CustomHighlightHasVisualOverflow(
-      const Node* node,
+      const Node& node,
       const AtomicString& pseudo_argument = g_null_atom);
 };
 

@@ -123,7 +123,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   LoadStatusType LoadStatus() const { return status_; }
   void SetLoadStatus(LoadStatusType);
   void SetError(DOMException* = nullptr);
-  DOMException* GetError() const { return error_; }
+  DOMException* GetError() const { return error_.Get(); }
   FontSelectionCapabilities GetFontSelectionCapabilities() const;
   CSSFontFace* CssFontFace() { return css_font_face_.Get(); }
   size_t ApproximateBlankCharacterCount() const;
@@ -154,12 +154,12 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   }
   FontMetricsOverride GetFontMetricsOverride() const;
 
-  bool HasSizeAdjust() const { return size_adjust_; }
+  bool HasSizeAdjust() const { return size_adjust_ != nullptr; }
   float GetSizeAdjust() const;
 
   Document* GetDocument() const;
 
-  const StyleRuleFontFace* GetStyleRule() const { return style_rule_; }
+  const StyleRuleFontFace* GetStyleRule() const { return style_rule_.Get(); }
   bool IsUserStyle() const { return is_user_style_; }
 
  private:

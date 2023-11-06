@@ -68,13 +68,15 @@ absl::optional<SiteDerivedFeatures> ParseSiteDerivedFeatures(
 // Reads a JSON "{[....]}" into a base::Value::List. Returns an empty
 // list in case of failure.
 base::Value::List ReadJsonList(const std::string& file_name) {
-  base::FilePath dir_source_root;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &dir_source_root))
+  base::FilePath dir_src_test_data_root;
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                              &dir_src_test_data_root)) {
     return base::Value::List();
+  }
 
   std::string raw_content;
   bool read_success = base::ReadFileToString(
-      dir_source_root.AppendASCII(file_name), &raw_content);
+      dir_src_test_data_root.AppendASCII(file_name), &raw_content);
   if (!read_success)
     return base::Value::List();
 

@@ -7,6 +7,7 @@
 
 #include "components/browsing_topics/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "content/public/browser/interest_group_api_operation.h"
 
 #include "base/time/time.h"
@@ -90,11 +91,12 @@ class PrivacySandboxSettings : public KeyedService {
     // applies for both mode A and mode B experiments.
     virtual bool IsCookieDeprecationExperimentEligible() const = 0;
 
-    // Whether the profile is currently eligible for 3PCD experiment. The
+    // Returns the profile's computed eligibility for 3PCD experiment. The
     // eligibility applies for both mode A and mode B experiments. Unlike
     // `IsCookieDeprecationExperimentEligible` this method returns the real time
     // eligibility.
-    virtual bool IsCookieDeprecationExperimentCurrentlyEligible() const = 0;
+    virtual TpcdExperimentEligibility
+    GetCookieDeprecationExperimentCurrentEligibility() const = 0;
   };
 
   // Returns whether the Topics API is allowed at all. If false, Topics API
@@ -166,6 +168,13 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& reporting_origin,
       content::RenderFrameHost* console_frame = nullptr) const = 0;
 
+  // Determines whether Attribution Reporting API's transitional debug reporting
+  // is allowable in a particular context. Note that
+  // `IsAttributionReportingAllowed()` should be called prior to this.
+  virtual bool IsAttributionReportingTransitionalDebuggingAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& reporting_origin) const = 0;
+
   // Sets the ability for |top_frame_etld_plus1| to join the profile to interest
   // groups to |allowed|. This information is stored in preferences, and is made
   // available to the API via IsFledgeJoiningAllowed(). |top_frame_etld_plus1|
@@ -236,10 +245,11 @@ class PrivacySandboxSettings : public KeyedService {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin) const = 0;
 
-  // Returns whether the profile is currently eligible for 3PCD experiments.
+  // Returns the profile computed eligibility for 3PCD experiments.
   // This consults the delegate for the real time eligibility of the profile.
   // The eligibility applies for both mode A and mode B experiments.
-  virtual bool IsCookieDeprecationExperimentCurrentlyEligible() const = 0;
+  virtual TpcdExperimentEligibility
+  GetCookieDeprecationExperimentCurrentEligibility() const = 0;
 
   // Determines whether cookie deprecation label is allowable. This consults
   // whether the profile is eligible for 3PCD experiments. If true, the more

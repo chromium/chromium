@@ -53,12 +53,14 @@ constexpr auto kSmoothnessTakesPriorityExpirationDelay =
 class ScopedCommitCompletionEvent {
  public:
   ScopedCommitCompletionEvent(
+      int source_frame_number,
       CompletionEvent* event,
       base::TimeTicks start_time,
       base::SingleThreadTaskRunner* main_thread_task_runner,
       bool notify_main,
       base::WeakPtr<ProxyMain> proxy_main_weak_ptr)
-      : event_(event),
+      : source_frame_number_(source_frame_number),
+        event_(event),
         commit_timestamps_({start_time, base::TimeTicks()}),
         main_thread_task_runner_(main_thread_task_runner),
         notify_main_(notify_main),
@@ -68,8 +70,9 @@ class ScopedCommitCompletionEvent {
     event_.ExtractAsDangling()->Signal();
     if (notify_main_) {
       main_thread_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&ProxyMain::DidCompleteCommit,
-                                    proxy_main_weak_ptr_, commit_timestamps_));
+          FROM_HERE,
+          base::BindOnce(&ProxyMain::DidCompleteCommit, proxy_main_weak_ptr_,
+                         source_frame_number_, commit_timestamps_));
     }
   }
   ScopedCommitCompletionEvent& operator=(const ScopedCommitCompletionEvent&) =
@@ -80,6 +83,7 @@ class ScopedCommitCompletionEvent {
   }
 
  private:
+  const int source_frame_number_;
   raw_ptr<CompletionEvent> event_;
   CommitTimestamps commit_timestamps_;
   raw_ptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
@@ -368,13 +372,14 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
   scheduler_->NotifyBeginMainFrameStarted(main_thread_start_time);
 
   auto& begin_main_frame_metrics = commit_state->begin_main_frame_metrics;
-
   host_impl_->ReadyToCommit(commit_args, scroll_and_viewport_changes_synced,
                             begin_main_frame_metrics.get(), commit_timeout);
 
+  int source_frame_number = commit_state->source_frame_number;
   data_for_commit_ = std::make_unique<DataForCommit>(
       std::make_unique<ScopedCommitCompletionEvent>(
-          completion_event, start_time, MainThreadTaskRunner(),
+          source_frame_number, completion_event, start_time,
+          MainThreadTaskRunner(),
           /*notify_main*/ !commit_timestamps, proxy_main_weak_ptr_),
       std::move(commit_state), unsafe_state, commit_timestamps);
 
@@ -654,13 +659,14 @@ void ProxyImpl::NotifyThroughputTrackerResults(CustomTrackerResults results) {
 }
 
 void ProxyImpl::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
   DCHECK(IsImplThread());
   MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyMain::DidObserveFirstScrollDelay,
-                                proxy_main_weak_ptr_, first_scroll_delay,
-                                first_scroll_timestamp));
+                                proxy_main_weak_ptr_, source_frame_number,
+                                first_scroll_delay, first_scroll_timestamp));
 }
 
 bool ProxyImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {

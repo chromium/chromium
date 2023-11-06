@@ -206,22 +206,24 @@ void MojoBlobReader::ReadMore() {
   DCHECK(!pending_write_.get());
   DCHECK(response_body_stream_);
 
-  uint32_t num_bytes = 0;
   // TODO: we should use the abstractions in MojoAsyncResourceHandler.
   MojoResult result = network::NetToMojoPendingBuffer::BeginWrite(
-      &response_body_stream_, &pending_write_, &num_bytes);
-  if (result == MOJO_RESULT_SHOULD_WAIT) {
-    // The pipe is full. We need to wait for it to have more space.
-    writable_handle_watcher_.ArmOrNotify();
-    return;
-  } else if (result != MOJO_RESULT_OK) {
-    // The response body stream is in a bad state. Bail.
-    writable_handle_watcher_.Cancel();
-    response_body_stream_.reset();
-    NotifyCompletedAndDeleteIfNeeded(net::ERR_UNEXPECTED);
-    return;
+      &response_body_stream_, &pending_write_);
+  switch (result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_SHOULD_WAIT:
+      // The pipe is full. We need to wait for it to have more space.
+      writable_handle_watcher_.ArmOrNotify();
+      return;
+    default:
+      // The response body stream is in a bad state. Bail.
+      writable_handle_watcher_.Cancel();
+      response_body_stream_.reset();
+      NotifyCompletedAndDeleteIfNeeded(net::ERR_UNEXPECTED);
+      return;
   }
-
+  uint32_t num_bytes = pending_write_->size();
   num_bytes = std::min(num_bytes, blink::BlobUtils::GetDataPipeChunkSize());
 
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("Blob", "BlobReader::ReadMore",

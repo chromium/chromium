@@ -32,9 +32,7 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for Tab class.
- */
+/** Tests for Tab class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TabTest {
@@ -44,12 +42,13 @@ public class TabTest {
     private Tab mTab;
     private CallbackHelper mOnTitleUpdatedHelper;
 
-    private final TabObserver mTabObserver = new EmptyTabObserver() {
-        @Override
-        public void onTitleUpdated(Tab tab) {
-            mOnTitleUpdatedHelper.notifyCalled();
-        }
-    };
+    private final TabObserver mTabObserver =
+            new EmptyTabObserver() {
+                @Override
+                public void onTitleUpdated(Tab tab) {
+                    mOnTitleUpdatedHelper.notifyCalled();
+                }
+            };
 
     private boolean isShowingSadTab() throws Exception {
         return TestThreadUtils.runOnUiThreadBlocking(() -> SadTab.isShowing(mTab));
@@ -67,9 +66,11 @@ public class TabTest {
     @SmallTest
     @Feature({"Tab"})
     public void testTabContext() {
-        Assert.assertFalse("The tab context cannot be an activity",
+        Assert.assertFalse(
+                "The tab context cannot be an activity",
                 mTab.getContentView().getContext() instanceof Activity);
-        Assert.assertNotSame("The tab context's theme should have been updated",
+        Assert.assertNotSame(
+                "The tab context's theme should have been updated",
                 mTab.getContentView().getContext().getTheme(),
                 mActivityTestRule.getActivity().getApplication().getTheme());
     }
@@ -81,9 +82,13 @@ public class TabTest {
         final String oldTitle = "oldTitle";
         final String newTitle = "newTitle";
 
-        mActivityTestRule.loadUrl("data:text/html;charset=utf-8,<html><head><title>" + oldTitle
-                + "</title></head><body/></html>");
-        Assert.assertEquals("title does not match initial title", oldTitle,
+        mActivityTestRule.loadUrl(
+                "data:text/html;charset=utf-8,<html><head><title>"
+                        + oldTitle
+                        + "</title></head><body/></html>");
+        Assert.assertEquals(
+                "title does not match initial title",
+                oldTitle,
                 ChromeTabUtils.getTitleOnUiThread(mTab));
         int currentCallCount = mOnTitleUpdatedHelper.getCallCount();
         mActivityTestRule.runJavaScriptCodeInCurrentTab("document.title='" + newTitle + "';");
@@ -93,10 +98,9 @@ public class TabTest {
     }
 
     /**
-     * Verifies a Tab's contents is restored when the Tab is foregrounded
-     * after its contents have been destroyed while backgrounded.
-     * Note that document mode is explicitly disabled, as the document activity
-     * may be fully recreated if its contents is killed while in the background.
+     * Verifies a Tab's contents is restored when the Tab is foregrounded after its contents have
+     * been destroyed while backgrounded. Note that document mode is explicitly disabled, as the
+     * document activity may be fully recreated if its contents is killed while in the background.
      */
     @Test
     @SmallTest

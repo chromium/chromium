@@ -2,7 +2,9 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-/* This file should only contain <html> or <body> level styles. */
+/* This file should only contain <html> or <body> level styles. Element-level
+ * styles belong in the element's template HTML or in a shared CSS style module.
+ */
 
 /* Override default values from settings_vars.css. The :not(body) selector
  * produces higher specificity and allows the variable definitions below to
@@ -20,14 +22,10 @@ html:not(body) {
 }
 
 html {
-  background-color: var(--cros-bg-color);
+  background-color: var(--cros-sys-app_base_shaded);
   overflow: hidden;
   /* Remove 300ms delay for 'click' event, when using touch interface. */
   touch-action: manipulation;
-}
-
-html:has(body.jelly-enabled) {
-  background-color: var(--cros-sys-app_base_shaded);
 }
 
 html,

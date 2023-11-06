@@ -4,15 +4,22 @@
 
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/url_loading/model/new_tab_animation_tab_helper.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 namespace {
 
@@ -22,9 +29,27 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
  public:
   TabInsertionBrowserAgentTest() {
     browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(
+        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>(
+                                  /* force_realization_on_activation */ true));
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
+  }
+
+  void SetUp() override {
+    PlatformTest::SetUp();
+    if (web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+          ->SetSessionID(browser_.get(), "browser");
+    }
+  }
+
+  void TearDown() override {
+    if (web::features::UseSessionSerializationOptimizations()) {
+      SessionRestorationServiceFactory::GetForBrowserState(browser_state_.get())
+          ->Disconnect(browser_.get());
+    }
+    PlatformTest::TearDown();
   }
 
   const web::NavigationManager::WebLoadParams LoadParams(GURL url) {

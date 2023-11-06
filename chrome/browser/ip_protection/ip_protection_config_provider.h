@@ -83,6 +83,7 @@ class IpProtectionConfigProvider
   // It is forbidden for two calls to this method to be outstanding at the same
   // time.
   void TryGetAuthTokens(uint32_t batch_size,
+                        network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
 
   // Get the list of IP Protection proxies.
@@ -148,6 +149,8 @@ class IpProtectionConfigProvider
       base::TimeTicks bsa_get_tokens_start_time,
       TryGetAuthTokensCallback callback,
       absl::StatusOr<absl::Span<quiche::BlindSignToken>>);
+  static network::mojom::BlindSignedAuthTokenPtr CreateBlindSignedAuthToken(
+      quiche::BlindSignToken bsa_token);
 
   void ClearOAuthTokenProblemBackoff();
 

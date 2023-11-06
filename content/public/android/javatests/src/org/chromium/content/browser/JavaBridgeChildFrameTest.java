@@ -45,8 +45,7 @@ import java.util.concurrent.TimeoutException;
 @UseRunnerDelegate(ContentJUnit4RunnerDelegate.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeChildFrameTest {
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestController extends Controller {
         private String mStringValue;
@@ -83,14 +82,20 @@ public class JavaBridgeChildFrameTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
     public void testInjectedObjectPresentInChildFrame(boolean useMojo) throws Throwable {
-        loadDataSync(mActivityTestRule.getWebContents().getNavigationController(),
-                "<html><body><iframe></iframe></body></html>", "text/html", false);
+        loadDataSync(
+                mActivityTestRule.getWebContents().getNavigationController(),
+                "<html><body><iframe></iframe></body></html>",
+                "text/html",
+                false);
         // We are not executing this code as a part of page loading routine to avoid races
         // with internal Blink events that notify Java Bridge about window object updates.
-        Assert.assertEquals("\"object\"",
-                executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(),
+        Assert.assertEquals(
+                "\"object\"",
+                executeJavaScriptAndGetResult(
+                        mActivityTestRule.getWebContents(),
                         "typeof window.frames[0].testController"));
-        executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(),
+        executeJavaScriptAndGetResult(
+                mActivityTestRule.getWebContents(),
                 "window.frames[0].testController.setStringValue('PASS')");
         Assert.assertEquals("PASS", mTestController.waitForStringValue());
     }
@@ -102,16 +107,21 @@ public class JavaBridgeChildFrameTest {
     @Feature({"AndroidWebView", "Android-JavaBridge"})
     @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testMainPageWrapperIsNotBrokenByChildFrame(boolean useMojo) throws Throwable {
-        loadDataSync(mActivityTestRule.getWebContents().getNavigationController(),
-                "<html><body><iframe></iframe></body></html>", "text/html", false);
+        loadDataSync(
+                mActivityTestRule.getWebContents().getNavigationController(),
+                "<html><body><iframe></iframe></body></html>",
+                "text/html",
+                false);
         // In case there is anything wrong with the JS wrapper, an attempt
         // to look up its properties will result in an exception being thrown.
-        String script = "(function(){ try {"
-                + "  return typeof testController.setStringValue;"
-                + "} catch (e) {"
-                + "  return e.toString();"
-                + "} })()";
-        Assert.assertEquals("\"function\"",
+        String script =
+                "(function(){ try {"
+                        + "  return typeof testController.setStringValue;"
+                        + "} catch (e) {"
+                        + "  return e.toString();"
+                        + "} })()";
+        Assert.assertEquals(
+                "\"function\"",
                 executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(), script));
         // Make sure calling a method also works.
         executeJavaScriptAndGetResult(
@@ -129,7 +139,8 @@ public class JavaBridgeChildFrameTest {
     public void testWrapperIsNotSharedWithChildFrame(boolean useMojo) throws Throwable {
         // Test by setting a custom property on the parent page's injected
         // object and then checking that child frame doesn't see the property.
-        loadDataSync(mActivityTestRule.getWebContents().getNavigationController(),
+        loadDataSync(
+                mActivityTestRule.getWebContents().getNavigationController(),
                 "<html><head>"
                         + "<script>"
                         + "  window.wProperty = 42;"
@@ -139,11 +150,14 @@ public class JavaBridgeChildFrameTest {
                         + "  }"
                         + "</script>"
                         + "</head><body><iframe></iframe></body></html>",
-                "text/html", false);
-        Assert.assertEquals("\"42 / 42\"",
+                "text/html",
+                false);
+        Assert.assertEquals(
+                "\"42 / 42\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "queryProperties(window)"));
-        Assert.assertEquals("\"undefined / undefined\"",
+        Assert.assertEquals(
+                "\"undefined / undefined\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "queryProperties(window.frames[0])"));
     }
@@ -161,11 +175,13 @@ public class JavaBridgeChildFrameTest {
             private Object mInner = new Object();
             // Expecting the inner object to be retrieved twice.
             private CountDownLatch mLatch = new CountDownLatch(2);
+
             @JavascriptInterface
             public Object getInner() {
                 mLatch.countDown();
                 return mInner;
             }
+
             public void waitForInjection() throws Throwable {
                 if (!mLatch.await(5, TimeUnit.SECONDS)) {
                     throw new TimeoutException();
@@ -179,7 +195,8 @@ public class JavaBridgeChildFrameTest {
         // all the frames got created, then inject the object.
         // Thus, the script code fails on the first execution (as no Java object is
         // injected yet), but then works just fine after reload.
-        loadDataSync(mActivityTestRule.getWebContents().getNavigationController(),
+        loadDataSync(
+                mActivityTestRule.getWebContents().getNavigationController(),
                 "<html>"
                         + "<head><script>window.inner_ref = test.getInner()</script></head>"
                         + "<body>"
@@ -187,25 +204,31 @@ public class JavaBridgeChildFrameTest {
                         + "       srcdoc='<script>window.inner_ref = test.getInner()</script>'>"
                         + "   </iframe>"
                         + "</body></html>",
-                "text/html", false);
+                "text/html",
+                false);
         mActivityTestRule.injectObjectAndReload(testObject, "test");
         testObject.waitForInjection();
         // Just in case, check that the object wrappers are in place.
-        Assert.assertEquals("\"object\"",
+        Assert.assertEquals(
+                "\"object\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "typeof inner_ref"));
-        Assert.assertEquals("\"object\"",
+        Assert.assertEquals(
+                "\"object\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "typeof window.frames[0].inner_ref"));
         // Remove the iframe, this will trigger a removal of RenderFrame, which was causing
         // the bug condition, as the transient object still has a holder -- the main window.
-        Assert.assertEquals("\"object\"",
-                executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(),
+        Assert.assertEquals(
+                "\"object\"",
+                executeJavaScriptAndGetResult(
+                        mActivityTestRule.getWebContents(),
                         "(function(){ "
                                 + "var f = document.getElementById('frame');"
                                 + "f.parentNode.removeChild(f); return typeof f; })()"));
         // Just in case, check that the remaining wrapper is still accessible.
-        Assert.assertEquals("\"object\"",
+        Assert.assertEquals(
+                "\"object\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "typeof inner_ref"));
     }
@@ -223,6 +246,7 @@ public class JavaBridgeChildFrameTest {
         class Test {
             WeakReference<Object> mWeakRefForInner;
             private CountDownLatch mLatch = new CountDownLatch(1);
+
             @JavascriptInterface
             public Object getInner() {
                 mLatch.countDown();
@@ -230,6 +254,7 @@ public class JavaBridgeChildFrameTest {
                 mWeakRefForInner = new WeakReference<Object>(inner);
                 return inner;
             }
+
             public void waitForInjection() throws Throwable {
                 if (!mLatch.await(5, TimeUnit.SECONDS)) {
                     throw new TimeoutException();
@@ -238,11 +263,13 @@ public class JavaBridgeChildFrameTest {
         }
         final Test testObject = new Test();
 
-        Assert.assertEquals("\"function\"",
+        Assert.assertEquals(
+                "\"function\"",
                 executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(), "typeof gc"));
         // The page executes in the second frame code which creates a wrapper for a transient
         // injected object, but makes the first frame the owner of the object.
-        loadDataSync(mActivityTestRule.getWebContents().getNavigationController(),
+        loadDataSync(
+                mActivityTestRule.getWebContents().getNavigationController(),
                 "<html>"
                         + "<head></head>"
                         + "<body>"
@@ -255,18 +282,22 @@ public class JavaBridgeChildFrameTest {
                         + "       </script>'>"
                         + "   </iframe>"
                         + "</body></html>",
-                "text/html", false);
+                "text/html",
+                false);
         mActivityTestRule.injectObjectAndReload(testObject, "test");
         testObject.waitForInjection();
         // Check that the object wrappers are in place.
         Assert.assertTrue(testObject.mWeakRefForInner.get() != null);
-        Assert.assertEquals("\"object\"",
+        Assert.assertEquals(
+                "\"object\"",
                 executeJavaScriptAndGetResult(
                         mActivityTestRule.getWebContents(), "typeof window.frames[0].inner_ref"));
         // Remove the second frame. This must not toggle the deletion of the inner
         // object.
-        Assert.assertEquals("\"object\"",
-                executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(),
+        Assert.assertEquals(
+                "\"object\"",
+                executeJavaScriptAndGetResult(
+                        mActivityTestRule.getWebContents(),
                         "(function(){ "
                                 + "var f = document.getElementById('frame2');"
                                 + "f.parentNode.removeChild(f); return typeof f; })()"));
@@ -282,8 +313,10 @@ public class JavaBridgeChildFrameTest {
         // Now, remove the first frame and GC. As it was the only holder of the
         // inner object's wrapper, the wrapper must be collected. Then, the death
         // of the wrapper must cause removal of the inner object.
-        Assert.assertEquals("\"object\"",
-                executeJavaScriptAndGetResult(mActivityTestRule.getWebContents(),
+        Assert.assertEquals(
+                "\"object\"",
+                executeJavaScriptAndGetResult(
+                        mActivityTestRule.getWebContents(),
                         "(function(){ "
                                 + "var f = document.getElementById('frame1');"
                                 + "f.parentNode.removeChild(f); return typeof f; })()"));
@@ -304,22 +337,27 @@ public class JavaBridgeChildFrameTest {
             }
         }
         final ResultCallback resultCallback = new ResultCallback();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                webContents.evaluateJavaScriptForTests(script, resultCallback);
-            }
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                webContents.evaluateJavaScriptForTests(script, resultCallback);
+                            }
+                        });
         resultCallback.waitForResult();
         return result[0];
     }
 
-    /**
-     * Loads data on the UI thread and blocks until onPageFinished is called.
-     */
-    private void loadDataSync(final NavigationController navigationController, final String data,
-            final String mimeType, final boolean isBase64Encoded) throws Throwable {
-        mActivityTestRule.loadUrl(navigationController,
+    /** Loads data on the UI thread and blocks until onPageFinished is called. */
+    private void loadDataSync(
+            final NavigationController navigationController,
+            final String data,
+            final String mimeType,
+            final boolean isBase64Encoded)
+            throws Throwable {
+        mActivityTestRule.loadUrl(
+                navigationController,
                 mActivityTestRule.getTestCallBackHelperContainer(),
                 LoadUrlParams.createLoadDataParams(data, mimeType, isBase64Encoded));
     }

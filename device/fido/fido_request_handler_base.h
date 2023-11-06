@@ -412,10 +412,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   std::unique_ptr<TransportAvailabilityCallbackReadiness>
       transport_availability_callback_readiness_;
 
-  // internal_authenticator_found_ is used to check that at most one kInternal
-  // authenticator is discovered.
-  bool internal_authenticator_found_ = false;
-
   base::WeakPtrFactory<FidoRequestHandlerBase> weak_factory_{this};
 };
 

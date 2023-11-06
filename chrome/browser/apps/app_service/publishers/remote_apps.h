@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
@@ -94,7 +93,6 @@ class RemoteApps : public AppPublisher {
 
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   const raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 };
 
 }  // namespace apps

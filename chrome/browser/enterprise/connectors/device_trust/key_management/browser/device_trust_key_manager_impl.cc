@@ -80,6 +80,11 @@ RotationStatusToPermanentFailure(KeyRotationCommand::Status status,
       return DeviceTrustKeyManager::PermanentFailure::kInvalidInstallation;
     case KeyRotationCommand::Status::SUCCEEDED:
     case KeyRotationCommand::Status::FAILED:
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN_STORAGE:
+    case KeyRotationCommand::Status::FAILED_INVALID_DMTOKEN:
+    case KeyRotationCommand::Status::FAILED_INVALID_MANAGEMENT_SERVICE:
+    case KeyRotationCommand::Status::FAILED_INVALID_DMSERVER_URL:
+    case KeyRotationCommand::Status::FAILED_INVALID_COMMAND:
     case KeyRotationCommand::Status::TIMED_OUT:
       return absl::nullopt;
   }

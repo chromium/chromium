@@ -339,8 +339,8 @@ GURL TestPageURL() {
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];
@@ -572,8 +572,8 @@ GURL TestPageURL() {
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       assertWithMatcher:grey_notNil()];
   // Accept History Sync.
-  [[[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                           HistoryOptInPrimaryButtonMatcher()]
+  [[[EarlGrey selectElementWithMatcher:
+                  chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
          usingSearchAction:chrome_test_util::HistoryOptInScrollDown()
       onElementWithMatcher:chrome_test_util::HistoryOptInPromoMatcher()]
       performAction:grey_tap()];

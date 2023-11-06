@@ -13,7 +13,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
@@ -21,21 +22,22 @@ import org.chromium.components.security_state.ConnectionSecurityLevel;
 import java.util.Locale;
 
 /**
- * A helper class that emphasizes the various components of a URL. Useful in the
- * Omnibox and Page Info popup where different parts of the URL should appear
- * in different colours depending on the scheme, host and connection.
+ * A helper class that emphasizes the various components of a URL. Useful in the Omnibox and Page
+ * Info popup where different parts of the URL should appear in different colours depending on the
+ * scheme, host and connection.
  */
 public class OmniboxUrlEmphasizer {
-    /**
-     * Describes the components of a URL that should be emphasized.
-     */
+    /** Describes the components of a URL that should be emphasized. */
     public static class EmphasizeComponentsResponse {
         /** The start index of the scheme. */
         public final int schemeStart;
+
         /** The length of the scheme. */
         public final int schemeLength;
+
         /** The start index of the host. */
         public final int hostStart;
+
         /** The length of the host. */
         public final int hostLength;
 
@@ -73,19 +75,19 @@ public class OmniboxUrlEmphasizer {
     }
 
     /**
-     * Parses the |text| passed in and determines the location of the scheme and
-     * host components to be emphasized.
+     * Parses the |text| passed in and determines the location of the scheme and host components to
+     * be emphasized.
      *
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier to be used for
-     *         parsing.
+     *     parsing.
      * @param text The text to be parsed for emphasis components.
-     * @return The response object containing the locations of the emphasis
-     *         components.
+     * @return The response object containing the locations of the emphasis components.
      */
     public static EmphasizeComponentsResponse parseForEmphasizeComponents(
             String text, AutocompleteSchemeClassifier autocompleteSchemeClassifier) {
-        int[] emphasizeValues = OmniboxUrlEmphasizerJni.get().parseForEmphasizeComponents(
-                text, autocompleteSchemeClassifier);
+        int[] emphasizeValues =
+                OmniboxUrlEmphasizerJni.get()
+                        .parseForEmphasizeComponents(text, autocompleteSchemeClassifier);
         assert emphasizeValues != null;
         assert emphasizeValues.length == 4;
 
@@ -93,18 +95,14 @@ public class OmniboxUrlEmphasizer {
                 emphasizeValues[0], emphasizeValues[1], emphasizeValues[2], emphasizeValues[3]);
     }
 
-    /**
-     * Denotes that a span is used for emphasizing the URL.
-     */
+    /** Denotes that a span is used for emphasizing the URL. */
     @VisibleForTesting
     public interface UrlEmphasisSpan {}
 
-    /**
-     * Used for emphasizing the URL text by changing the text color.
-     */
+    /** Used for emphasizing the URL text by changing the text color. */
     @VisibleForTesting
-    public static class UrlEmphasisColorSpan
-            extends ForegroundColorSpan implements UrlEmphasisSpan {
+    public static class UrlEmphasisColorSpan extends ForegroundColorSpan
+            implements UrlEmphasisSpan {
         private int mEmphasisColor;
 
         /**
@@ -127,12 +125,10 @@ public class OmniboxUrlEmphasizer {
         }
     }
 
-    /**
-     * Used for emphasizing the URL text by striking through the https text.
-     */
+    /** Used for emphasizing the URL text by striking through the https text. */
     @VisibleForTesting
-    public static class UrlEmphasisSecurityErrorSpan
-            extends StrikethroughSpan implements UrlEmphasisSpan {
+    public static class UrlEmphasisSecurityErrorSpan extends StrikethroughSpan
+            implements UrlEmphasisSpan {
         @Override
         public boolean equals(Object obj) {
             return obj instanceof UrlEmphasisSecurityErrorSpan;
@@ -141,56 +137,70 @@ public class OmniboxUrlEmphasizer {
 
     /**
      * Modifies the given URL to emphasize the host and scheme.
-     *  @param url The URL spannable to add emphasis to. This variable is
-     *            modified.
+     *
+     * @param url The URL spannable to add emphasis to. This variable is modified.
      * @param context Context to resolve colors against.
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier used to emphasize the
-     *         given URL.
-     * @param securityLevel A valid ConnectionSecurityLevel for the specified
-     *                      web contents.
-     * @param useDarkForegroundColors Whether the text colors should be dark (i.e.
-     *                      appropriate for use on a light background).
+     *     given URL.
+     * @param securityLevel A valid ConnectionSecurityLevel for the specified web contents.
+     * @param useDarkForegroundColors Whether the text colors should be dark (i.e. appropriate for
+     *     use on a light background).
      * @param emphasizeScheme Whether the scheme should be emphasized.
      */
-    public static void emphasizeUrl(Spannable url, Context context,
-            AutocompleteSchemeClassifier autocompleteSchemeClassifier, int securityLevel,
-            boolean useDarkForegroundColors, boolean emphasizeScheme) {
-        final @ColorRes int nonEmphasizedColorId = useDarkForegroundColors
-                ? R.color.url_emphasis_non_emphasized_text
-                : R.color.url_emphasis_light_non_emphasized_text;
-        final @ColorRes int emphasizedColorId = useDarkForegroundColors
-                ? R.color.url_emphasis_emphasized_text
-                : R.color.url_emphasis_light_emphasized_text;
+    public static void emphasizeUrl(
+            Spannable url,
+            Context context,
+            AutocompleteSchemeClassifier autocompleteSchemeClassifier,
+            int securityLevel,
+            boolean useDarkForegroundColors,
+            boolean emphasizeScheme) {
+        final @ColorRes int nonEmphasizedColorId =
+                useDarkForegroundColors
+                        ? R.color.url_emphasis_non_emphasized_text
+                        : R.color.url_emphasis_light_non_emphasized_text;
+        final @ColorRes int emphasizedColorId =
+                useDarkForegroundColors
+                        ? R.color.url_emphasis_emphasized_text
+                        : R.color.url_emphasis_light_emphasized_text;
         final @ColorRes int dangerColorId =
                 useDarkForegroundColors ? R.color.default_red_dark : R.color.default_red_light;
         final @ColorRes int secureColorId =
                 useDarkForegroundColors ? R.color.default_green_dark : R.color.default_green_light;
 
-        emphasizeUrl(url, autocompleteSchemeClassifier, securityLevel, emphasizeScheme,
-                context.getColor(nonEmphasizedColorId), context.getColor(emphasizedColorId),
-                context.getColor(dangerColorId), context.getColor(secureColorId));
+        emphasizeUrl(
+                url,
+                autocompleteSchemeClassifier,
+                securityLevel,
+                emphasizeScheme,
+                context.getColor(nonEmphasizedColorId),
+                context.getColor(emphasizedColorId),
+                context.getColor(dangerColorId),
+                context.getColor(secureColorId));
     }
 
     /**
-     * Modifies the given URL to emphasize the host and scheme.
-     * TODO(sashab): Make this take an EmphasizeComponentsResponse object to
-     *               prevent calling parseForEmphasizeComponents() again.
-     *  @param url The URL spannable to add emphasis to. This variable is
-     *            modified.
+     * Modifies the given URL to emphasize the host and scheme. TODO(sashab): Make this take an
+     * EmphasizeComponentsResponse object to prevent calling parseForEmphasizeComponents() again.
+     *
+     * @param url The URL spannable to add emphasis to. This variable is modified.
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier used to emphasize the
-     *         given URL.
-     * @param securityLevel A valid ConnectionSecurityLevel for the specified
-     *                      web contents.
+     *     given URL.
+     * @param securityLevel A valid ConnectionSecurityLevel for the specified web contents.
      * @param emphasizeScheme Whether the scheme should be emphasized.
      * @param nonEmphasizedColor Color of the non-emphasized components.
      * @param emphasizedColor Color of the emphasized components.
      * @param dangerColor Color of the scheme that denotes danger.
      * @param secureColor Color of the scheme that denotes security.
      */
-    public static void emphasizeUrl(Spannable url,
-            AutocompleteSchemeClassifier autocompleteSchemeClassifier, int securityLevel,
-            boolean emphasizeScheme, @ColorInt int nonEmphasizedColor,
-            @ColorInt int emphasizedColor, @ColorInt int dangerColor, @ColorInt int secureColor) {
+    public static void emphasizeUrl(
+            Spannable url,
+            AutocompleteSchemeClassifier autocompleteSchemeClassifier,
+            int securityLevel,
+            boolean emphasizeScheme,
+            @ColorInt int nonEmphasizedColor,
+            @ColorInt int emphasizedColor,
+            @ColorInt int dangerColor,
+            @ColorInt int secureColor) {
         String urlString = url.toString();
         EmphasizeComponentsResponse emphasizeResponse =
                 parseForEmphasizeComponents(urlString, autocompleteSchemeClassifier);
@@ -215,7 +225,7 @@ public class OmniboxUrlEmphasizer {
                     case ConnectionSecurityLevel.WARNING:
                         // Draw attention to the data: URI scheme for anti-spoofing reasons.
                         if (UrlConstants.DATA_SCHEME.equals(
-                                    emphasizeResponse.extractScheme(urlString))) {
+                                emphasizeResponse.extractScheme(urlString))) {
                             color = emphasizedColor;
                         }
                         break;
@@ -236,7 +246,10 @@ public class OmniboxUrlEmphasizer {
 
                 if (strikeThroughScheme) {
                     UrlEmphasisSecurityErrorSpan ss = new UrlEmphasisSecurityErrorSpan();
-                    url.setSpan(ss, startSchemeIndex, endSchemeIndex,
+                    url.setSpan(
+                            ss,
+                            startSchemeIndex,
+                            endSchemeIndex,
                             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                 }
             }
@@ -266,16 +279,18 @@ public class OmniboxUrlEmphasizer {
         } else if (UrlConstants.DATA_SCHEME.equals(emphasizeResponse.extractScheme(urlString))) {
             // Dim the remainder of the URL for anti-spoofing purposes.
             span = new UrlEmphasisColorSpan(nonEmphasizedColor);
-            url.setSpan(span, emphasizeResponse.schemeStart + emphasizeResponse.schemeLength,
-                    urlString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            url.setSpan(
+                    span,
+                    emphasizeResponse.schemeStart + emphasizeResponse.schemeLength,
+                    urlString.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
     }
 
     /**
      * Reset the modifications done to emphasize components of the URL.
      *
-     * @param url The URL spannable to remove emphasis from. This variable is
-     *            modified.
+     * @param url The URL spannable to remove emphasis from. This variable is modified.
      */
     public static void deEmphasizeUrl(Spannable url) {
         UrlEmphasisSpan[] emphasisSpans = getEmphasisSpans(url);
@@ -306,33 +321,27 @@ public class OmniboxUrlEmphasizer {
     }
 
     /**
-     * Returns the index of the first character containing non-origin
-     * information, or 0 if the URL does not contain an origin.
+     * Returns the index of the first character containing non-origin information, or 0 if the URL
+     * does not contain an origin.
      *
-     * For "data" URLs, the URL is not considered to contain an origin.
-     * For non-http and https URLs, the whole URL is considered the origin.
+     * <p>For "data" URLs, the URL is not considered to contain an origin. For non-http and https
+     * URLs, the whole URL is considered the origin.
      *
-     * For example, HTTP and HTTPS urls return the index of the first character
-     * after the domain:
-     *   http://www.google.com/?q=foo => 21 (up to the 'm' in google.com)
-     *   https://www.google.com/?q=foo => 22
+     * <p>For example, HTTP and HTTPS urls return the index of the first character after the domain:
+     * http://www.google.com/?q=foo => 21 (up to the 'm' in google.com)
+     * https://www.google.com/?q=foo => 22
      *
-     * Data urls always return 0, since they do not contain an origin:
-     *   data:kf94hfJEj#N => 0
+     * <p>Data urls always return 0, since they do not contain an origin: data:kf94hfJEj#N => 0
      *
-     * Other URLs treat the whole URL as an origin:
-     *   file://my/pc/somewhere/foo.html => 31
-     *   about:blank => 11
-     *   chrome://version => 18
-     *   chrome-native://bookmarks => 25
-     *   invalidurl => 10
+     * <p>Other URLs treat the whole URL as an origin: file://my/pc/somewhere/foo.html => 31
+     * about:blank => 11 chrome://version => 18 chrome-native://bookmarks => 25 invalidurl => 10
      *
-     * TODO(sashab): Make this take an EmphasizeComponentsResponse object to
-     *               prevent calling parseForEmphasizeComponents() again.
+     * <p>TODO(sashab): Make this take an EmphasizeComponentsResponse object to prevent calling
+     * parseForEmphasizeComponents() again.
      *
      * @param url The URL to find the last origin character in.
      * @param autocompleteSchemeClassifier The autocomplete scheme classifier used for parsing the
-     *         URL.
+     *     URL.
      * @return The index of the last character containing origin information.
      */
     public static int getOriginEndIndex(

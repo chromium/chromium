@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL StorageKey: test 3P about:blank window opened from a 3P iframe assert_true: about:blank window opened by 3P iframe does not inherit 3P iframe's StorageKey expected true got false
+[FAIL] StorageKey: test 3P about:blank window opened from a 3P iframe
+  assert_true: about:blank window opened by 3P iframe does not inherit 3P iframe's StorageKey expected true got false
 Harness: the test ran to completion.
 

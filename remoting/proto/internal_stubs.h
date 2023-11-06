@@ -34,6 +34,8 @@ class DoNothingProto : public google::protobuf::MessageLite {
 
 // Aliases for internal protos.
 using RemoteAccessHostV1Proto = DoNothingProto;
+using ReportProvisioningErrorRequest = DoNothingProto;
+using SendHeartbeatRequest = DoNothingProto;
 
 // RemoteAccessHost helpers.
 extern const std::string& GetAuthorizationCode(const RemoteAccessHostV1Proto&);
@@ -47,6 +49,15 @@ extern std::unique_ptr<RemoteAccessHostV1Proto> GetMachineProvisioningRequest(
     const std::string& fqdn,
     const std::string& public_key,
     absl::optional<std::string> existing_host_id);
+
+extern std::string GetReportProvisioningErrorRequestPath();
+extern std::unique_ptr<ReportProvisioningErrorRequest>
+GetReportProvisioningErrorRequest(const std::string& host_id,
+                                  const std::string& error_message);
+
+extern std::string GetSendHeartbeatRequestPath();
+extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
+    const std::string& host_id);
 
 }  // namespace remoting::internal
 

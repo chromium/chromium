@@ -22,10 +22,12 @@
 #include "cc/test/pixel_test_utils.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_skcanvas.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/gfx/geometry/rect.h"
@@ -1149,11 +1151,12 @@ TEST_F(DisplayItemListTest, AreaOfDrawText) {
   auto list = base::MakeRefCounted<DisplayItemList>();
   auto sub_list = base::MakeRefCounted<DisplayItemList>();
 
-  auto text_blob1 = SkTextBlob::MakeFromString("ABCD", SkFont());
+  SkFont font = skia::DefaultFont();
+  auto text_blob1 = SkTextBlob::MakeFromString("ABCD", font);
   gfx::Size text_blob1_size(ceilf(text_blob1->bounds().width()),
                             ceilf(text_blob1->bounds().height()));
   auto text_blob1_area = text_blob1_size.width() * text_blob1_size.height();
-  auto text_blob2 = SkTextBlob::MakeFromString("EFG", SkFont());
+  auto text_blob2 = SkTextBlob::MakeFromString("EFG", font);
   gfx::Size text_blob2_size(ceilf(text_blob2->bounds().width()),
                             ceilf(text_blob2->bounds().height()));
   auto text_blob2_area = text_blob2_size.width() * text_blob2_size.height();

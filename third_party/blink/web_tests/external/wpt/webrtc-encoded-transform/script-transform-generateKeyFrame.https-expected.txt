@@ -1,13 +1,23 @@
 This is a testharness.js-based test.
-FAIL generateKeyFrame() throws for audio promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame(null) resolves for video sender, and throws for video receiver promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame throws NotAllowedError for invalid rid promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame throws NotFoundError for unknown rid promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame throws for unset transforms promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame timestamp should advance promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL await generateKeyFrame, await generateKeyFrame should see an increase in count of keyframes promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame rejects when the sender is negotiated inactive, and resumes succeeding when negotiated back to active promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame rejects when the sender is stopped, even without negotiation promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
-FAIL generateKeyFrame rejects with a null track promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame() throws for audio
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame(null) resolves for video sender, and throws for video receiver
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame throws NotAllowedError for invalid rid
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame throws NotFoundError for unknown rid
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame throws for unset transforms
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame timestamp should advance
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] await generateKeyFrame, await generateKeyFrame should see an increase in count of keyframes
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame rejects when the sender is negotiated inactive, and resumes succeeding when negotiated back to active
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame rejects when the sender is stopped, even without negotiation
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
+[FAIL] generateKeyFrame rejects with a null track
+  promise_test: Unhandled rejection with value: object "ReferenceError: RTCRtpScriptTransform is not defined"
 Harness: the test ran to completion.
 

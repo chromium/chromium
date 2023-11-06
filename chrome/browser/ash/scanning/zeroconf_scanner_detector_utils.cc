@@ -82,7 +82,9 @@ absl::optional<Scanner> CreateSaneScanner(const std::string& name,
                                           const std::string& service_type,
                                           const std::string& manufacturer,
                                           const std::string& model,
+                                          const std::string& uuid,
                                           const absl::optional<std::string>& rs,
+                                          const std::vector<std::string>& pdl,
                                           const net::IPAddress& ip_address,
                                           int port,
                                           bool usable) {
@@ -109,6 +111,8 @@ absl::optional<Scanner> CreateSaneScanner(const std::string& name,
   scanner.display_name = name;
   scanner.manufacturer = manufacturer;
   scanner.model = model;
+  scanner.uuid = uuid;
+  scanner.pdl = pdl;
   scanner.device_names[protocol].emplace(
       ScannerDeviceName(device_name, usable));
   scanner.ip_addresses.insert(ip_address);

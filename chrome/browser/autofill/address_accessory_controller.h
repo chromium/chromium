@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -18,9 +17,7 @@ namespace autofill {
 //     AddressAccessoryController::GetOrCreate(web_contents);
 // On the first call, an instance is attached to |web_contents|, so it can be
 // returned by subsequent calls.
-class AddressAccessoryController
-    : public base::SupportsWeakPtr<AddressAccessoryController>,
-      public AccessoryController {
+class AddressAccessoryController : public AccessoryController {
  public:
   AddressAccessoryController() = default;
 
@@ -39,6 +36,9 @@ class AddressAccessoryController
 
   // Fetches suggestions and propagates them to the frontend.
   virtual void RefreshSuggestions() = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<AddressAccessoryController> AsWeakPtr() = 0;
 };
 
 }  // namespace autofill

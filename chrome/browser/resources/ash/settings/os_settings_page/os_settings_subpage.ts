@@ -20,15 +20,15 @@ import {FindShortcutMixin, FindShortcutMixinInterface} from '//resources/cr_elem
 import {I18nMixin, I18nMixinInterface} from '//resources/cr_elements/i18n_mixin.js';
 import {assert} from '//resources/js/assert.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
-import {listenOnce} from '//resources/js/util_ts.js';
+import {listenOnce} from '//resources/js/util.js';
 import {IronResizableBehavior} from '//resources/polymer/v3_0/iron-resizable-behavior/iron-resizable-behavior.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
 import {Constructor} from '../common/types.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_subpage.html.js';

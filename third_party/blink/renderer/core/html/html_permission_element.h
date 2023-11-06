@@ -7,11 +7,14 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -19,7 +22,9 @@
 
 namespace blink {
 
-class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
+class CORE_EXPORT HTMLPermissionElement final
+    : public HTMLElement,
+      public mojom::blink::PermissionObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -29,8 +34,8 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
 
   const AtomicString& GetType() const;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolved, kResolved)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismissed, kDismissed)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
 
   void Trace(Visitor*) const override;
 
@@ -42,6 +47,10 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // only.
   static Vector<mojom::blink::PermissionDescriptorPtr>
   ParsePermissionDescriptorsForTesting(const AtomicString& type);
+
+  const Member<HTMLSpanElement>& permission_text_span_for_testing() const {
+    return permission_text_span_;
+  }
 
  private:
   enum class DisableReason {
@@ -60,8 +69,25 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   void DefaultEventHandler(Event&) override;
 
   // Trigger permissions requesting in browser side by calling mojo
-  // PermissionService's API
+  // PermissionService's API.
   void RequestPageEmbededPermissions();
+
+  void RegisterPermissionObserver(
+      const mojom::blink::PermissionDescriptorPtr& descriptor,
+      mojom::blink::PermissionStatus current_status);
+
+  // mojom::blink::PermissionObserver override.
+  void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
+
+  // Callback triggered when <permission>  element is registered from browser
+  // process.
+  void OnPageEmbeddedPermissionControlRegistered(
+      bool allowed,
+      const absl::optional<Vector<mojom::blink::PermissionStatus>>& statuses);
+
+  // Callback triggered when permission is decided from browser side.
+  void OnEmbeddedPermissionsDecided(
+      mojom::blink::EmbeddedPermissionControlResult result);
 
   // Checks whether clicking is enabled at the moment. Clicking is disabled if
   // either:
@@ -87,15 +113,29 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // Removes any existing (temporary or indefinite) disable reasons.
   void EnableClicking(DisableReason reason);
 
-  // Callback triggered when permission is decided from browser side
-  void OnEmbededPermissionsDecided(
-      mojom::blink::EmbeddedPermissionControlResult result);
+  void UpdateAppearance();
 
   void UpdateText();
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner();
 
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
+
+  // Holds all `PermissionObserver` receivers connected with remotes in browser
+  // process. Each of them corresponds to a permission observer of one
+  // descriptor in `permission_descriptors_`.
+  // This set uses `PermissionName` as context type. Once a receiver call is
+  // triggered, we look into its name to determine which permission is changed.
+  HeapMojoReceiverSet<mojom::blink::PermissionObserver,
+                      HTMLPermissionElement,
+                      HeapMojoWrapperMode::kWithContextObserver,
+                      mojom::blink::PermissionName>
+      receivers_;
+
+  //  Map holds all current permission statuses, keyed by permission name.
+  using PermissionStatusMap =
+      HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>;
+  PermissionStatusMap permission_status_map_;
 
   AtomicString type_;
 
@@ -104,8 +144,8 @@ class CORE_EXPORT HTMLPermissionElement final : public HTMLElement {
   // |base::TimeTicks::Max()| if it's indefinite.
   HashMap<DisableReason, base::TimeTicks> clicking_disabled_reasons_;
 
-  Member<HTMLDivElement> inner_element_;
-  Member<HTMLSpanElement> permission_text_;
+  Member<PermissionShadowElement> shadow_element_;
+  Member<HTMLSpanElement> permission_text_span_;
 
   // Set to true only if all the corresponding permissions (from `type`
   // attribute) are granted.

@@ -35,7 +35,8 @@ const PreloadingType kTypes[] = {
     PreloadingType::kNoStatePrefetch,
 };
 
-const char* kUmaTriggerOutcome = "Preloading.%s.Attempt.%s.TriggeringOutcome";
+constexpr char kUmaTriggerOutcome[] =
+    "Preloading.%s.Attempt.%s.TriggeringOutcome";
 
 }  // namespace
 

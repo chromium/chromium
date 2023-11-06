@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control_inner_editor.h"
+#include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
 
@@ -289,5 +291,16 @@ bool PasswordRevealButtonElement::WillRespondToMouseClickEvents() {
     return true;
 
   return HTMLDivElement::WillRespondToMouseClickEvents();
+}
+
+// ----------------------------
+
+PasswordStrongLabelElement::PasswordStrongLabelElement(Document& document)
+    : HTMLDivElement(document) {
+  SetShadowPseudoId(AtomicString("-internal-strong"));
+  setAttribute(html_names::kIdAttr,
+               shadow_element_names::kIdPasswordStrongLabel);
+  setTextContent(
+      Locale::DefaultLocale().QueryString(IDS_STRONG_PASSWORD_LABEL));
 }
 }  // namespace blink

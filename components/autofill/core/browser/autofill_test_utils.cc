@@ -96,7 +96,7 @@ void VerifyFormGroupValues(const FormGroup& form_group,
                            bool ignore_status) {
   for (const auto& value : values) {
     SCOPED_TRACE(testing::Message()
-                 << "Expected for type " << FieldTypeToStringPiece(value.type)
+                 << "Expected for type " << FieldTypeToStringView(value.type)
                  << "\n\t" << value.value << " with status "
                  << (ignore_status ? "(ignored)" : "")
                  << value.verification_status << "\nFound:"
@@ -322,14 +322,14 @@ std::string GetStrippedValue(const char* value) {
   return base::UTF16ToUTF8(stripped_value);
 }
 
-Iban GetIban() {
+Iban GetLocalIban() {
   Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue)));
   iban.set_nickname(u"Nickname for Iban");
   return iban;
 }
 
-Iban GetIban2() {
+Iban GetLocalIban2() {
   Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_1)));
   iban.set_nickname(u"My doctor's IBAN");
@@ -360,12 +360,6 @@ Iban GetServerIban3() {
   iban.set_suffix(u"6789");
   iban.set_length(22);
   iban.set_nickname(u"My IBAN");
-  return iban;
-}
-
-Iban GetIbanWithoutNickname() {
-  Iban iban(Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
-  iban.set_value(base::UTF8ToUTF16(std::string(kIbanValue_2)));
   return iban;
 }
 
@@ -839,29 +833,11 @@ void InitializePossibleTypesAndValidities(
   }
 }
 
-void BasicFillUploadField(AutofillUploadContents::Field* field,
-                          unsigned signature,
-                          const char* name,
-                          const char* control_type,
-                          const char* autocomplete) {
-  field->set_signature(signature);
-  if (name)
-    field->set_name(name);
-  if (control_type)
-    field->set_type(control_type);
-  if (autocomplete)
-    field->set_autocomplete(autocomplete);
-}
-
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      unsigned autofill_type,
                      unsigned validity_state) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
-
+  field->set_signature(signature);
   field->add_autofill_type(autofill_type);
 
   auto* type_validities = field->add_autofill_type_validities();
@@ -871,12 +847,9 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      const std::vector<unsigned>& autofill_types,
                      const std::vector<unsigned>& validity_states) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
+  field->set_signature(signature);
 
   for (unsigned i = 0; i < autofill_types.size(); ++i) {
     field->add_autofill_type(autofill_types[i]);
@@ -893,14 +866,11 @@ void FillUploadField(AutofillUploadContents::Field* field,
 
 void FillUploadField(AutofillUploadContents::Field* field,
                      unsigned signature,
-                     const char* name,
-                     const char* control_type,
-                     const char* autocomplete,
                      unsigned autofill_type,
                      const std::vector<unsigned>& validity_states) {
-  BasicFillUploadField(field, signature, name, control_type, autocomplete);
-
+  field->set_signature(signature);
   field->add_autofill_type(autofill_type);
+
   auto* type_validities = field->add_autofill_type_validities();
   type_validities->set_type(autofill_type);
   for (unsigned i = 0; i < validity_states.size(); ++i)
@@ -965,6 +935,20 @@ std::vector<FormSignature> GetEncodedSignatures(
   std::vector<FormSignature> all_signatures;
   for (const FormStructure* form : forms)
     all_signatures.push_back(form->form_signature());
+  return all_signatures;
+}
+
+std::vector<FormSignature> GetEncodedAlternativeSignatures(
+    const FormStructure& form) {
+  return std::vector<FormSignature>{form.alternative_form_signature()};
+}
+
+std::vector<FormSignature> GetEncodedAlternativeSignatures(
+    const std::vector<FormStructure*>& forms) {
+  std::vector<FormSignature> all_signatures;
+  for (const FormStructure* form : forms) {
+    all_signatures.push_back(form->alternative_form_signature());
+  }
   return all_signatures;
 }
 

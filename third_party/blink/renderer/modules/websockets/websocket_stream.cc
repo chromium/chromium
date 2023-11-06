@@ -42,7 +42,7 @@ class WebSocketStream::UnderlyingSource final : public UnderlyingSourceBase {
       : UnderlyingSourceBase(script_state), creator_(creator) {}
 
   // UnderlyingSourceBase implementation.
-  ScriptPromise pull(ScriptState*) override;
+  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
   ScriptPromise Cancel(ScriptState*,
                        ScriptValue reason,
                        ExceptionState&) override;
@@ -117,9 +117,9 @@ class WebSocketStream::UnderlyingSink final : public UnderlyingSinkBase {
   bool is_writing_ = false;
 };
 
-ScriptPromise WebSocketStream::UnderlyingSource::pull(
-    ScriptState* script_state) {
-  DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " pull()";
+ScriptPromise WebSocketStream::UnderlyingSource::Pull(ScriptState* script_state,
+                                                      ExceptionState&) {
+  DVLOG(1) << "WebSocketStream::UnderlyingSource " << this << " Pull()";
   creator_->channel_->RemoveBackpressure();
   return ScriptPromise::CastUndefined(script_state);
 }
@@ -592,7 +592,7 @@ void WebSocketStream::ContextDestroyed() {
 }
 
 bool WebSocketStream::HasPendingActivity() const {
-  return channel_;
+  return channel_ != nullptr;
 }
 
 void WebSocketStream::Trace(Visitor* visitor) const {

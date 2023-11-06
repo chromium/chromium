@@ -179,36 +179,42 @@ public class NativePageFactory {
         }
 
         protected NativePage buildDownloadsPage(Tab tab) {
-            // For preloaded tabs, the tab model might not be initialized yet. Use tab to figure
-            // out if it is a regular profile.
-            Profile profile = tab.isIncognito() ? mTabModelSelector.getCurrentModel().getProfile()
-                                                : Profile.getLastUsedRegularProfile();
+            Profile profile = tab.getProfile();
             return new DownloadPage(mActivity, mSnackbarManagerSupplier.get(),
                     mWindowAndroid.getModalDialogManager(), profile.getOTRProfileID(),
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
         }
 
         protected NativePage buildHistoryPage(Tab tab, String url) {
-            return new HistoryPage(mActivity,
+            return new HistoryPage(
+                    mActivity,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    mSnackbarManagerSupplier.get(), Profile.fromWebContents(tab.getWebContents()),
-                    mCurrentTabSupplier, url);
+                    mSnackbarManagerSupplier.get(),
+                    tab.getProfile(),
+                    mCurrentTabSupplier,
+                    url);
         }
 
         protected NativePage buildRecentTabsPage(Tab tab) {
-            RecentTabsManager recentTabsManager = new RecentTabsManager(tab, mTabModelSelector,
-                    Profile.fromWebContents(tab.getWebContents()), mActivity,
-                    ()
-                            -> HistoryManagerUtils.showHistoryManager(
-                                    mActivity, tab, mTabModelSelector.isIncognitoSelected()));
+            RecentTabsManager recentTabsManager =
+                    new RecentTabsManager(
+                            tab,
+                            mTabModelSelector,
+                            tab.getProfile(),
+                            mActivity,
+                            () ->
+                                    HistoryManagerUtils.showHistoryManager(
+                                            mActivity,
+                                            tab,
+                                            mTabModelSelector.isIncognitoSelected()));
             return new RecentTabsPage(mActivity, recentTabsManager,
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
                     mBrowserControlsManager);
         }
 
         protected NativePage buildManagementPage(Tab tab) {
-            return new ManagementPage(new TabShim(tab, mBrowserControlsManager, mTabModelSelector),
-                    Profile.fromWebContents(tab.getWebContents()));
+            return new ManagementPage(
+                    new TabShim(tab, mBrowserControlsManager, mTabModelSelector), tab.getProfile());
         }
     }
 

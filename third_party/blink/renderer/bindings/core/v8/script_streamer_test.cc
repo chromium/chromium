@@ -98,7 +98,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
     void LoadSynchronously(
         std::unique_ptr<network::ResourceRequest> request,
         scoped_refptr<const SecurityOrigin> top_frame_origin,
-        bool pass_response_pipe_to_client,
+        bool download_to_blob,
         bool no_mime_sniffing,
         base::TimeDelta timeout_interval,
         URLLoaderClient*,
@@ -118,6 +118,7 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
         bool no_mime_sniffing,
         std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
             resource_load_info_notifier_wrapper,
+        CodeCacheHost* code_cache_host,
         URLLoaderClient*) override {}
     void Freeze(LoaderFreezeMode) override {}
     void DidChangePriority(WebURLRequest::Priority, int) override {
@@ -168,9 +169,9 @@ class ScriptStreamingTest : public testing::Test {
     response.SetHttpStatusCode(200);
     resource_->SetResponse(response);
 
-    resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response));
-    resource_->Loader()->DidStartLoadingResponseBody(
-        std::move(consumer_handle_));
+    resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response),
+                                            std::move(consumer_handle_),
+                                            /*cached_metadata=*/absl::nullopt);
   }
 
   ClassicScript* CreateClassicScript() const {

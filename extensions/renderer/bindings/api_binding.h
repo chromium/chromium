@@ -53,7 +53,7 @@ class APIBinding {
   using OnSilentRequest = base::RepeatingCallback<void(
       v8::Local<v8::Context>,
       const std::string& name,
-      const std::vector<v8::Local<v8::Value>>& arguments)>;
+      const v8::LocalVector<v8::Value>& arguments)>;
 
   // The callback type for handling an API call.
   using HandlerCallback = base::RepeatingCallback<void(gin::Arguments*)>;

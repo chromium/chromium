@@ -8,9 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/queue.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/raw_ptr.h"
@@ -18,10 +16,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
-#include "chrome/browser/screen_ai/screen_ai_service_router.h"
-#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
-#include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/image_content_annotator.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/optical_character_recognizer.h"
 
 namespace base {
 class FilePathWatcher;
@@ -48,6 +44,7 @@ class ImageAnnotationWorker {
   explicit ImageAnnotationWorker(
       const base::FilePath& root_path,
       const std::vector<base::FilePath>& excluded_paths,
+      bool use_file_watchers,
       bool use_ocr,
       bool use_ica);
   ~ImageAnnotationWorker();
@@ -66,30 +63,36 @@ class ImageAnnotationWorker {
  private:
   void OnFileChange(const base::FilePath& path, bool error);
 
-  // Processes the next image from the `images_being_processed_`.
+  // Processes the next item from the `files_to_process_` queue.
+  void ProcessNextItem();
+
+  // Processes the next directory from the `files_to_process_` queue.
+  void ProcessNextDirectory();
+
+  // Processes the next image from the `files_to_process_` queue.
   void ProcessNextImage();
 
-  // Removes deleted images from the annotation storage.
-  void FindAndRemoveDeletedImages(const std::vector<ImageInfo> images);
+  // Remove all the files from a deleted directory.
+  void RemoveOldDirectory();
 
-  void ConnectToImageAnnotator();
-  void RunImageAnnotator(ImageInfo image_info,
-                         base::MappedReadOnlyRegion mapped_region);
+  // Removes deleted images from the annotation storage.
+  void FindAndRemoveDeletedFiles(const std::vector<base::FilePath> images);
+
   // For testing. File name annotator.
   void RunFakeImageAnnotator(ImageInfo image_info);
 
-  void EnsureIcaAnnotatorIsConnected();
   void EnsureOcrAnnotatorIsConnected();
 
   // Initializes the `file_watcher_` and does initial data checks.
   void OnDlcInstalled();
 
-  void CallIca(ImageInfo image_info);
+  void OnDecodeImageFile(ImageInfo image_info,
+                         const gfx::ImageSkia& image_skia);
+
   void OnPerformIca(
       ImageInfo image_info,
       chromeos::machine_learning::mojom::ImageAnnotationResultPtr ptr);
-  void OnDecodeImageFile(ImageInfo image_info,
-                         const gfx::ImageSkia& image_skia);
+
   void OnPerformOcr(ImageInfo image_info,
                     screen_ai::mojom::VisualAnnotationPtr visual_annotation);
 
@@ -98,25 +101,21 @@ class ImageAnnotationWorker {
   // Excludes any path matching the prefixes.
   std::vector<base::FilePath> excluded_paths_;
 
-  mojo::Remote<chromeos::machine_learning::mojom::MachineLearningService>
-      ml_service_;
-  mojo::Remote<chromeos::machine_learning::mojom::ImageContentAnnotator>
-      image_content_annotator_;
-  mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
-
   base::FilePathWatcher::Callback on_file_change_callback_;
 
   // AnnotationStorage owns this ImageAnnotationWorker. All the methods must
   // be called from the main sequence.
   raw_ptr<AnnotationStorage, DanglingUntriaged | ExperimentalAsh>
       annotation_storage_;
-  // Controls the OCR library.
-  screen_ai::ScreenAIServiceRouter screen_ai_service_router_;
 
+  // ML models used as DLCs.
+  ImageContentAnnotator image_content_annotator_;
+  OpticalCharacterRecognizer optical_character_recognizer_;
+
+  const bool use_file_watchers_;
   const bool use_ica_;
   const bool use_ocr_;
-  bool ica_dlc_initialized_ = false;
-  base::queue<base::FilePath> images_being_processed_;
+  base::queue<base::FilePath> files_to_process_;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

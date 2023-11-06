@@ -19,14 +19,12 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test suite for MIDI permissions requests.
- */
+/** Test suite for MIDI permissions requests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MIDITest {
     @Rule
-    public PermissionTestRule mPermissionRule = new PermissionTestRule(true /* useHttpsServer */);
+    public PermissionTestRule mPermissionRule = new PermissionTestRule(/* useHttpsServer= */ true);
 
     private static final String TEST_FILE = "/content/test/data/android/midi_permissions.html";
 

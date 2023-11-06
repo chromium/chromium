@@ -119,7 +119,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback) override {
+      JavaShutdownCallback destroyed_callback) override {
     // Return arbitrary screen geometry as stand-in for the expected
     // drawing surface. It's not actually a surface, hence the nullptr
     // instead of a WindowAndroid.
@@ -134,7 +134,7 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback,
+      JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) override {
     NOTREACHED();
   }

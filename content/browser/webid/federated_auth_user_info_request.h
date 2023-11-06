@@ -82,8 +82,6 @@ class CONTENT_EXPORT FederatedAuthUserInfoRequest {
   void AddDevToolsIssue(FederatedAuthUserInfoRequestResult error);
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
-  raw_ptr<FederatedIdentityApiPermissionContextDelegate>
-      api_permission_delegate_ = nullptr;
   // Owned by |BrowserContext|
   raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
       nullptr;

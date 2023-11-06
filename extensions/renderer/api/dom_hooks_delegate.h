@@ -26,13 +26,13 @@ class DOMHooksDelegate : public APIBindingHooksDelegate {
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
 
  private:
   v8::Local<v8::Value> OpenOrClosedShadowRoot(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const v8::LocalVector<v8::Value>& parsed_arguments);
 };
 
 }  // namespace extensions

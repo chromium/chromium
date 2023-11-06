@@ -87,6 +87,7 @@ export const fakeFeedbackContext = {
   fromSettingsSearch: false,
   fromAutofill: false,
   autofillMetadata: '',
+  wifiDebugLogsAllowed: false,
   traceId: 1,
   categoryTag: 'MediaApp',
   hasLinkedCrossDevicePhone: false,
@@ -102,12 +103,16 @@ export const fakeEmptyFeedbackContext = {
   fromSettingsSearch: false,
   fromAutofill: false,
   autofillMetadata: '',
+  wifiDebugLogsAllowed: false,
   traceId: 0,
   hasLinkedCrossDevicePhone: false,
 };
 
-/** @type {!FeedbackContext} */
-export const fakeLoginFeedbackContext = {
+/**
+ * Feedback context for login flow, i.e., on oobe or login screen.
+ * @type {!FeedbackContext}
+ */
+export const fakeLoginFlowFeedbackContext = {
   email: '',
   pageUrl: {url: ''},
   isInternalAccount: false,
@@ -116,6 +121,7 @@ export const fakeLoginFeedbackContext = {
   fromSettingsSearch: false,
   fromAutofill: false,
   autofillMetadata: '',
+  wifiDebugLogsAllowed: false,
   traceId: 0,
   categoryTag: 'Login',
   hasLinkedCrossDevicePhone: false,
@@ -131,6 +137,7 @@ export const fakeInternalUserFeedbackContext = {
   fromSettingsSearch: true,
   fromAutofill: false,
   autofillMetadata: '',
+  wifiDebugLogsAllowed: false,
   traceId: 1,
   hasLinkedCrossDevicePhone: true,
 };
@@ -145,6 +152,7 @@ export const fakeFeedbackContextWithoutLinkedCrossDevicePhone = {
   fromSettingsSearch: true,
   fromAutofill: false,
   autofillMetadata: '',
+  wifiDebugLogsAllowed: false,
   traceId: 1,
   hasLinkedCrossDevicePhone: false,
 };

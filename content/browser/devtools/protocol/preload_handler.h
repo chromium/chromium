@@ -21,6 +21,7 @@ namespace content {
 
 class DevToolsAgentHostImpl;
 class RenderFrameHostImpl;
+struct PrerenderMismatchedHeaders;
 
 namespace protocol {
 
@@ -47,7 +48,8 @@ class PreloadHandler : public DevToolsDomainHandler, public Preload::Backend {
       absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
       PreloadingTriggeringOutcome status,
       absl::optional<PrerenderFinalStatus> prerender_status,
-      absl::optional<std::string> disallowed_mojo_interface);
+      absl::optional<std::string> disallowed_mojo_interface,
+      absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers);
 
  private:
   Response Enable() override;

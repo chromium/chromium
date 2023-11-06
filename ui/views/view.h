@@ -870,6 +870,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // group.
   virtual View* GetSelectedViewForGroup(int group);
 
+  // Returns the name of this particular instance of the class. This is useful
+  // to identify multiple instances of the same class within the same view
+  // hierarchy. The default value returned is GetClassName().
+  // Note: GetClassName() will eventually be made non-virtual. Override this
+  // method instead to provide a more unique object name for the instance.
+  virtual std::string GetObjectName() const;
+
   // Coordinate conversion -----------------------------------------------------
 
   // Note that the utility coordinate conversions functions always operate on
@@ -1350,6 +1357,15 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   // |p| provides the coordinates of the mouse (relative to this view).
   virtual std::u16string GetTooltipText(const gfx::Point& p) const;
 
+  // Views will normally display tooltips (if any) when they are focused
+  // (which usually happens via a keyboard event). Because they are both
+  // visible and displayed asynchronously, some tests may wish to disable
+  // them so that they don't interfere with whatever is being tested. If the
+  // tooltips are disabled via a feature flag, these routines will have no
+  // effect (i.e., the feature flag overrides them).
+  static void DisableKeyboardTooltipsForTesting();
+  static void EnableKeyboardTooltipsForTesting();
+
   // Context menus -------------------------------------------------------------
 
   // Sets the ContextMenuController. Setting this to non-null makes the View
@@ -1808,6 +1824,11 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // Views must invoke this when the tooltip text they are to display changes.
   void TooltipTextChanged();
+
+  // Propagates UpdateTooltipForFocus() to the TooltipManager for the Widget.
+  // This must be invoked whenever the focus changes in the View hierarchy.
+  // Subclasses may override this to disable keyboard-based tooltips.
+  virtual void UpdateTooltipForFocus();
 
   // Drag and drop -------------------------------------------------------------
 
@@ -2336,6 +2357,12 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // The focus behavior of the view in regular and accessibility mode.
   FocusBehavior focus_behavior_ = FocusBehavior::NEVER;
+
+  // By default, we should show tooltips when a View is focused via a
+  // key event. For testing purposes, we may not want that behavior.
+  // This is controlled by DisableKeyboardTooltipsForTesting() and
+  // EnableKeyboardTooltipsForTesting(), above.
+  static bool kShouldDisableKeyboardTooltipsForTesting;
 
   // This is set when focus events should be skipped after focus reaches this
   // View.

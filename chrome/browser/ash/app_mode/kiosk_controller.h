@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_KIOSK_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CONTROLLER_H_
 
+#include <vector>
+
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
@@ -27,6 +29,7 @@ class KioskController {
   KioskController& operator=(const KioskController&) = delete;
   ~KioskController();
 
+  std::vector<KioskApp> GetApps() const;
   absl::optional<KioskApp> GetAutoLaunchApp() const;
 
  private:

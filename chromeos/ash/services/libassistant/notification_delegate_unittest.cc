@@ -3,16 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ref.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/test_support/libassistant_service_tester.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash::libassistant {
@@ -99,11 +96,6 @@ class NotificationDelegateTest : public ::testing::Test {
         .OnAssistantClientRunning(&service_tester_.assistant_client());
   }
 
-  assistant_client::AssistantManagerDelegate& assistant_manager_delegate() {
-    return *service_tester_.assistant_manager_internal()
-                .assistant_manager_delegate();
-  }
-
   NotificationDelegateMock& delegate_mock() { return delegate_mock_; }
 
   CrosActionModuleHelper& action_module_helper() {
@@ -111,23 +103,17 @@ class NotificationDelegateTest : public ::testing::Test {
   }
 
   void OnNotificationRemoved(const std::string& grouping_id) {
-    if (assistant::features::IsLibAssistantV2Enabled()) {
-      ::assistant::api::OnDeviceStateEventRequest request;
-      auto* notification_removed =
-          request.mutable_event()->mutable_on_notification_removed();
-      notification_removed->set_grouping_id(grouping_id);
+    ::assistant::api::OnDeviceStateEventRequest request;
+    auto* notification_removed =
+        request.mutable_event()->mutable_on_notification_removed();
+    notification_removed->set_grouping_id(grouping_id);
 
-      service_tester_.service()
-          .conversation_controller()
-          .OnGrpcMessageForTesting(std::move(request));
-    } else {
-      assistant_manager_delegate().OnNotificationRemoved(grouping_id);
-    }
+    service_tester_.service().conversation_controller().OnGrpcMessageForTesting(
+        std::move(request));
   }
 
  private:
   base::test::SingleThreadTaskEnvironment environment_;
-  base::test::ScopedFeatureList feature_list_;
   ::testing::StrictMock<NotificationDelegateMock> delegate_mock_;
   LibassistantServiceTester service_tester_;
   std::unique_ptr<CrosActionModuleHelper> action_module_helper_;
@@ -159,7 +145,7 @@ TEST_F(NotificationDelegateTest, ShouldInvokeAddOrUpdateNotification) {
             EXPECT_EQ("grouping_key", output_notification.grouping_key);
             EXPECT_EQ("obfuscated_gaia_id",
                       output_notification.obfuscated_gaia_id);
-            EXPECT_EQ(base::Time::FromJavaTime(100),
+            EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(100),
                       output_notification.expiry_time);
             EXPECT_EQ(true, output_notification.from_server);
           }));

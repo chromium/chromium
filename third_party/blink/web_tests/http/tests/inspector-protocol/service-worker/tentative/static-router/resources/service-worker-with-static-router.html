@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Test registering static router rules.</title>
+  <script>
+    function installSW() {
+      navigator.serviceWorker.register('service-worker-with-static-router.js');
+    }
+  </script>
+</head>
+
+<body onload="installSW()"></body>
+
+</html>

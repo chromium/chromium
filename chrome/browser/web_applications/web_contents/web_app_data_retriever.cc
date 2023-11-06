@@ -141,7 +141,6 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
 
 void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     content::WebContents* web_contents,
-    bool bypass_service_worker_check,
     CheckInstallabilityCallback callback,
     absl::optional<webapps::InstallableParams> params) {
   DCHECK(!web_contents->IsBeingDestroyed());
@@ -166,8 +165,6 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
     data_params.valid_primary_icon = true;
     data_params.installable_criteria =
         webapps::InstallableCriteria::kValidManifestIgnoreDisplay;
-    // Do not wait for a service worker if it doesn't exist.
-    data_params.has_worker = !bypass_service_worker_check;
     params = data_params;
   }
 

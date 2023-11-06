@@ -68,6 +68,19 @@ enum AutoPad { kExplicit, kSameUpper, kSameLower };
 // Represents the `MLRoundingType` that is used to compute the output shape.
 enum RoundingType { kFloor, kCeil };
 
+enum ReduceKind {
+  kL1,
+  kL2,
+  kLogSum,
+  kLogSumExp,
+  kMax,
+  kMean,
+  kMin,
+  kProduct,
+  kSum,
+  kSumSquare
+};
+
 // A size has height and width values.
 template <typename T>
 struct Size2d {
@@ -161,6 +174,24 @@ struct GemmAttributes {
   bool b_transpose = false;
 };
 
+struct SliceAttributes {
+  SliceAttributes();
+  ~SliceAttributes();
+
+  SliceAttributes(SliceAttributes&& other);
+  SliceAttributes& operator=(SliceAttributes&& other);
+
+  SliceAttributes(const SliceAttributes&) = delete;
+  SliceAttributes& operator=(const SliceAttributes&) = delete;
+
+  // The sequence of unsigned integer values indicating the starting index to
+  // slice of each input dimension.
+  std::vector<uint32_t> starts;
+  // The sequence of unsigned integer values indicating the number of elements
+  // to slice of each input dimension.
+  std::vector<uint32_t> sizes;
+};
+
 // Validate softmax operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-softmax
 base::expected<Operand, std::string> ValidateSoftmaxAndInferOutput(
@@ -192,11 +223,32 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
     const Operand& filter,
     const Conv2dAttributes& attributes);
 
+// Validate and infer output information of pad operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pad
+base::expected<Operand, std::string> ValidatePadAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> beginning_padding,
+    base::span<const uint32_t> ending_padding);
+
+// Validate and infer output information of matmul operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-matmul
+base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
+    const Operand& a,
+    const Operand& b);
+
 // Validate and infer output information of 2-D pooling operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes);
+
+// Validate and infer output information of 2-D resample operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d
+base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
+    const Operand& input,
+    const absl::variant<base::span<const float>, base::span<const uint32_t>>&
+        scales_or_sizes,
+    base::span<const uint32_t> axes);
 
 // Validate gemm operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gemm
@@ -211,11 +263,31 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
     const std::vector<Operand>& input,
     const uint32_t axis);
 
+// Validate prelu operator defined in WebIDL here:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-prelu
+base::expected<Operand, std::string> ValidatePreluAndInferOutput(
+    const Operand& input,
+    const Operand& slope);
+
 // Validate transpose operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-transpose
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> permutation);
+
+// Validate slice operator defined in WebIDL here:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-slice
+base::expected<Operand, std::string> ValidateSliceAndInferOutput(
+    const Operand& input,
+    const SliceAttributes& attributes);
+
+// Validate and infer output information of reduce operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-reduce
+base::expected<Operand, std::string> ValidateReduceAndInferOutput(
+    ReduceKind kind,
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    bool keepDimensions = false);
 
 base::expected<size_t, std::string> ValidateAndCalculateElementsNumber(
     base::span<const uint32_t> dimensions);
@@ -255,6 +327,8 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
                                                     const uint32_t filter_size,
                                                     const uint32_t stride,
                                                     const uint32_t dilation);
+
+bool IsFloatingPointType(Operand::DataType data_type);
 
 }  // namespace webnn
 

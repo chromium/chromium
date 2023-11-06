@@ -1,0 +1,41 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSelection": "user_choice"
+        },
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSelection": "rootfs"
+        },
+        "prefs": {
+          "lacros_selection": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

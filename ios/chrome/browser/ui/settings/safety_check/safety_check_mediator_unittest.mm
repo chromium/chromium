@@ -19,7 +19,7 @@
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -72,7 +72,6 @@
 namespace {
 
 using l10n_util::GetNSString;
-using password_manager::InsecureCredential;
 using password_manager::InsecureType;
 using password_manager::TestPasswordStore;
 using password_manager::features::IsPasswordCheckupEnabled;
@@ -348,8 +347,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampSetIfIssueFound) {
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  base::Time lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
@@ -363,8 +362,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
       PasswordCheckRowStateUnmutedCompromisedPasswords;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  base::Time lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_GE(lastCompletedCheck, base::Time::Now() - base::Seconds(1));
   EXPECT_LE(lastCompletedCheck, base::Time::Now() + base::Seconds(1));
@@ -373,8 +372,8 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
   mediator_.passwordCheckRowState = PasswordCheckRowStateSafe;
   [mediator_ resetsCheckStartItemIfNeeded];
 
-  lastCompletedCheck =
-      base::Time::FromDoubleT([[NSUserDefaults standardUserDefaults]
+  lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
+      [[NSUserDefaults standardUserDefaults]
           doubleForKey:kTimestampOfLastIssueFoundKey]);
   EXPECT_EQ(base::Time(), lastCompletedCheck);
 

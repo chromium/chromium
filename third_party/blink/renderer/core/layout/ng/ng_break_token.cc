@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -21,6 +21,16 @@ struct SameSizeAsNGBreakToken : GarbageCollected<NGBreakToken> {
 ASSERT_SIZE(NGBreakToken, SameSizeAsNGBreakToken);
 
 }  // namespace
+
+bool NGBreakToken::IsInParallelFlow() const {
+  if (const auto* block_break_token = DynamicTo<NGBlockBreakToken>(this)) {
+    return block_break_token->IsAtBlockEnd();
+  }
+  if (const auto* inline_break_token = DynamicTo<InlineBreakToken>(this)) {
+    return inline_break_token->IsInParallelBlockFlow();
+  }
+  return false;
+}
 
 #if DCHECK_IS_ON()
 
@@ -42,7 +52,7 @@ void AppendBreakTokenToString(const NGBreakToken* token,
     const auto children = block_break_token->ChildBreakTokens();
     for (const auto& child : children)
       AppendBreakTokenToString(child, string_builder, indent + 2);
-  } else if (auto* inline_break_token = DynamicTo<NGInlineBreakToken>(token)) {
+  } else if (auto* inline_break_token = DynamicTo<InlineBreakToken>(token)) {
     if (auto* child_block_break_token = inline_break_token->BlockBreakToken()) {
       AppendBreakTokenToString(child_block_break_token, string_builder,
                                indent + 2);
@@ -56,7 +66,7 @@ String NGBreakToken::ToString() const {
     case kBlockBreakToken:
       return To<NGBlockBreakToken>(this)->ToString();
     case kInlineBreakToken:
-      return To<NGInlineBreakToken>(this)->ToString();
+      return To<InlineBreakToken>(this)->ToString();
   }
   NOTREACHED();
 }
@@ -75,7 +85,7 @@ void NGBreakToken::Trace(Visitor* visitor) const {
       To<NGBlockBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
     case kInlineBreakToken:
-      To<NGInlineBreakToken>(this)->TraceAfterDispatch(visitor);
+      To<InlineBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
   }
   NOTREACHED();

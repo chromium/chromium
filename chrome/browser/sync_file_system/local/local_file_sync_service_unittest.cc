@@ -534,7 +534,7 @@ TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_MultipleChanges) {
 
 TEST_F(LocalFileSyncServiceTest, ProcessLocalChange_GetLocalMetadata) {
   const FileSystemURL kURL(file_system_->URL("foo"));
-  const base::Time kTime = base::Time::FromDoubleT(333);
+  const base::Time kTime = base::Time::FromSecondsSinceUnixEpoch(333);
   const int kSize = 555;
 
   base::RunLoop run_loop;

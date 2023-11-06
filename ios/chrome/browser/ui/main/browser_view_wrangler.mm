@@ -12,7 +12,11 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
+#import "ios/chrome/browser/sessions/session_restoration_service.h"
+#import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -27,8 +31,8 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/utils.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
@@ -358,6 +362,12 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
     browserList->RemoveBrowser(browser);
   }
 
+  // Stop serializing the state of `browser`.
+  if (web::features::UseSessionSerializationOptimizations()) {
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->Disconnect(browser);
+  }
+
   WebStateList* webStateList = browser->GetWebStateList();
   crash_report_helper::StopMonitoringTabStateForWebStateList(webStateList);
   if (!browser->GetBrowserState()->IsOffTheRecord()) {
@@ -384,7 +394,23 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
   SnapshotBrowserAgent::FromBrowser(browser)->SetSessionID(browserSessionID);
 
-  if (!web::features::UseSessionSerializationOptimizations()) {
+  ChromeBrowserState* browserState = browser->GetBrowserState();
+  const base::FilePath browserStatePath = browserState->GetStatePath();
+  const std::string sessionID = base::SysNSStringToUTF8(browserSessionID);
+  if (web::features::UseSessionSerializationOptimizations()) {
+    // Migrate the storage to optimized format before trying to load.
+    ios::sessions::MigrateNamedSessionToOptimized(
+        browserStatePath, sessionID,
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState));
+
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->SetSessionID(browser, sessionID);
+  } else {
+    // Migrate the storage to legacy format before trying to load.
+    ios::sessions::MigrateNamedSessionToLegacy(
+        browserStatePath, sessionID,
+        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState));
+
     SessionRestorationBrowserAgent::FromBrowser(browser)->SetSessionID(
         browserSessionID);
   }
@@ -392,7 +418,11 @@ NSString* kInactiveSessionIDSuffix = @"-Inactive";
 
 // Load session for `browser`.
 - (void)loadSessionForBrowser:(Browser*)browser {
-  if (!web::features::UseSessionSerializationOptimizations()) {
+  if (web::features::UseSessionSerializationOptimizations()) {
+    ChromeBrowserState* browserState = browser->GetBrowserState();
+    SessionRestorationServiceFactory::GetForBrowserState(browserState)
+        ->LoadSession(browser);
+  } else {
     SessionRestorationBrowserAgent::FromBrowser(browser)->RestoreSession();
   }
 }

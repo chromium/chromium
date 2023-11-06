@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -25,8 +24,9 @@ class BookmarkToolbarViewBinder {
         } else if (key == BookmarkToolbarProperties.TITLE) {
             bookmarkToolbar.setTitle(model.get(BookmarkToolbarProperties.TITLE));
         } else if (key == BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE) {
-            bookmarkToolbar.setSoftKeyboardVisible(Boolean.TRUE.equals(
-                    model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));
+            bookmarkToolbar.setSoftKeyboardVisible(
+                    Boolean.TRUE.equals(
+                            model.get(BookmarkToolbarProperties.SOFT_KEYBOARD_VISIBLE)));
         } else if (key == BookmarkToolbarProperties.IS_DIALOG_UI) {
             bookmarkToolbar.setIsDialogUi(model.get(BookmarkToolbarProperties.IS_DIALOG_UI));
         } else if (key == BookmarkToolbarProperties.DRAG_ENABLED) {

@@ -127,7 +127,7 @@ void StyleRecalcRoot::SubtreeModified(ContainerNode& parent) {
   Clear();
 }
 
-void StyleRecalcRoot::RemovedFromFlatTree(const Node& node) {
+void StyleRecalcRoot::FlatTreePositionChanged(const Node& node) {
   if (!GetRootNode()) {
     return;
   }

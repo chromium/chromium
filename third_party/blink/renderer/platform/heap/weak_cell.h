@@ -101,7 +101,7 @@ class WeakCellFactory {
             MakeGarbageCollected<WeakCell<T>>(base::PassKey<WeakCellFactory>(),
                                               ptr)) {}
 
-  WeakCell<T>* GetWeakCell() const { return weak_cell_; }
+  WeakCell<T>* GetWeakCell() const { return weak_cell_.Get(); }
 
   // Invalidates the previous `WeakCell<T>` so that `previous_cell->Get()`
   // returns null. Future calls to `GetWeakCell()` will return a *new* and

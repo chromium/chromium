@@ -81,10 +81,8 @@ NTSTATUS NtCreateFileInTarget(HANDLE* target_file_handle,
 }  // namespace.
 
 bool FileSystemPolicy::GenerateRules(const wchar_t* name,
-                                     Semantics semantics,
+                                     FileSemantics semantics,
                                      LowLevelPolicy* policy) {
-  CHECK(semantics == Semantics::kFilesAllowReadonly ||
-        semantics == Semantics::kFilesAllowAny);
   std::wstring mod_name(name);
   if (mod_name.empty()) {
     return false;
@@ -113,7 +111,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   PolicyRule query(result);
   PolicyRule query_full(result);
 
-  if (semantics == Semantics::kFilesAllowReadonly) {
+  if (semantics == FileSemantics::kAllowReadonly) {
     // We consider all flags that are not known to be readonly as potentially
     // used for write.
     DWORD allowed_flags = FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA |
@@ -126,30 +124,30 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
     create.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
   }
 
-  if (!create.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+  if (!create.AddStringMatch(IF, OpenFile::NAME, name) ||
       !policy->AddRule(IpcTag::NTCREATEFILE, &create)) {
     return false;
   }
 
-  if (!open.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+  if (!open.AddStringMatch(IF, OpenFile::NAME, name) ||
       !policy->AddRule(IpcTag::NTOPENFILE, &open)) {
     return false;
   }
 
-  if (!query.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+  if (!query.AddStringMatch(IF, OpenFile::NAME, name) ||
       !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &query)) {
     return false;
   }
 
-  if (!query_full.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+  if (!query_full.AddStringMatch(IF, OpenFile::NAME, name) ||
       !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &query_full)) {
     return false;
   }
 
   // Rename is not allowed for read-only and does not make sense for pipes.
-  if (semantics == Semantics::kFilesAllowAny && !is_pipe) {
+  if (semantics == FileSemantics::kAllowAny && !is_pipe) {
     PolicyRule rename(result);
-    if (!rename.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
+    if (!rename.AddStringMatch(IF, OpenFile::NAME, name) ||
         !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename)) {
       return false;
     }

@@ -102,7 +102,7 @@ DocumentMarker* UnsortedDocumentMarkerListEditor::FirstMarkerIntersectingRange(
 
   if (it == list.end())
     return nullptr;
-  return *it;
+  return it->Get();
 }
 
 HeapVector<Member<DocumentMarker>>

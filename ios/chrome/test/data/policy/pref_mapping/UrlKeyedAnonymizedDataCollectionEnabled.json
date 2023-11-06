@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": true
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "UrlKeyedAnonymizedDataCollectionEnabled": false
+        },
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import android.Manifest;
+import android.os.Build;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -167,7 +168,8 @@ public class NotificationPermissionController implements UnownedUserData {
      * @return True if any UI was shown (either rationale dialog or OS prompt), false otherwise.
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
-        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
+                || !BuildInfo.targetsAtLeastT()
                 || ApiCompatibilityUtils.isDemoUser()) {
             return false;
         }
@@ -215,7 +217,7 @@ public class NotificationPermissionController implements UnownedUserData {
     int shouldRequestPermission() {
         // Notifications only require permission starting at Android T. And apps targeting < T can't
         // request permission as the OS prompts the user automatically.
-        if (!BuildInfo.isAtLeastT() || !BuildInfo.targetsAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !BuildInfo.targetsAtLeastT()) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
@@ -263,7 +265,9 @@ public class NotificationPermissionController implements UnownedUserData {
         NotificationManagerCompat manager =
                 NotificationManagerCompat.from(ContextUtils.getApplicationContext());
         boolean notificationsEnabledAtAppLevel = manager.areNotificationsEnabled();
-        if (!BuildInfo.isAtLeastT()) return notificationsEnabledAtAppLevel;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            return notificationsEnabledAtAppLevel;
+        }
 
         if (mAndroidPermissionDelegate.hasPermission(Manifest.permission.POST_NOTIFICATIONS)) {
             return true;

@@ -19,16 +19,16 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * This class collects a variety of different Omnibox related metrics.
- */
+/** This class collects a variety of different Omnibox related metrics. */
 public class OmniboxMetrics {
     /**
-     * Maximum number of suggest tile types we want to record.
-     * Anything beyond this will be reported in the overflow bucket.
+     * Maximum number of suggest tile types we want to record. Anything beyond this will be reported
+     * in the overflow bucket.
      */
     private static final int MAX_SUGGEST_TILE_TYPE_POSITION = 15;
+
     public static final int MAX_AUTOCOMPLETE_POSITION = 30;
+
     /**
      * Duration between the request for suggestions and the time the first (synchronous) reply is
      * converted to the UI model.
@@ -36,6 +36,7 @@ public class OmniboxMetrics {
     @VisibleForTesting
     public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.First";
+
     /**
      * Duration between the request for suggestions and the time the last (asynchronous) reply is
      * converted to the UI model.
@@ -59,21 +60,21 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PROCESS_TIME =
             "Android.Omnibox.SearchPrefetch.TouchDownProcessTime.NavigationPrefetch";
 
-    /**
-     * The number of prefetches started in an omnibox session via the touch down trigger.
-     */
+    /** The number of prefetches started in an omnibox session via the touch down trigger. */
     public static final String HISTOGRAM_SEARCH_PREFETCH_NUM_PREFETCHES_STARTED_IN_OMNIBOX_SESSION =
             "Android.Omnibox.SearchPrefetch.NumPrefetchesStartedInOmniboxSession.NavigationPrefetch";
 
-    /**
-     * The result of prefetches started by touch down events within an omnibox session
-     */
+    /** The result of prefetches started by touch down events within an omnibox session */
     public static final String HISTOGRAM_SEARCH_PREFETCH_TOUCH_DOWN_PREFETCH_RESULT =
             "Android.Omnibox.SearchPrefetch.TouchDownPrefetchResult.NavigationPrefetch";
 
-    @IntDef({RefineActionUsage.NOT_USED, RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
-            RefineActionUsage.SEARCH_WITH_PREFIX, RefineActionUsage.SEARCH_WITH_BOTH,
-            RefineActionUsage.COUNT})
+    @IntDef({
+        RefineActionUsage.NOT_USED,
+        RefineActionUsage.SEARCH_WITH_ZERO_PREFIX,
+        RefineActionUsage.SEARCH_WITH_PREFIX,
+        RefineActionUsage.SEARCH_WITH_BOTH,
+        RefineActionUsage.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface RefineActionUsage {
         int NOT_USED = 0; // User did not interact with Refine button.
@@ -83,8 +84,12 @@ public class OmniboxMetrics {
         int COUNT = 4;
     }
 
-    @IntDef({ActionInSuggestIntentResult.SUCCESS, ActionInSuggestIntentResult.BAD_URI_SYNTAX,
-            ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND, ActionInSuggestIntentResult.COUNT})
+    @IntDef({
+        ActionInSuggestIntentResult.SUCCESS,
+        ActionInSuggestIntentResult.BAD_URI_SYNTAX,
+        ActionInSuggestIntentResult.ACTIVITY_NOT_FOUND,
+        ActionInSuggestIntentResult.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActionInSuggestIntentResult {
         /// Intent started successfully.
@@ -96,8 +101,12 @@ public class OmniboxMetrics {
         int COUNT = 3;
     }
 
-    @IntDef({PrefetchResult.HIT, PrefetchResult.MISS, PrefetchResult.NO_PREFETCH,
-            PrefetchResult.COUNT})
+    @IntDef({
+        PrefetchResult.HIT,
+        PrefetchResult.MISS,
+        PrefetchResult.NO_PREFETCH,
+        PrefetchResult.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface PrefetchResult {
         // The last prefetch started matches the suggestion navigated to.
@@ -132,24 +141,21 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record how long the Suggestion List needed to measure its content and children in wall
-     * time.
+     * Record how long the Suggestion List needed to measure its content and children in wall time.
      */
     public static TimingMetric recordSuggestionListMeasureWallTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionList.MeasureTime3");
     }
 
     /**
-     * Record the amount of time needed to create a new suggestion view.
-     * The type of view is intentionally ignored for this call.
+     * Record the amount of time needed to create a new suggestion view. The type of view is
+     * intentionally ignored for this call.
      */
     public static TimingMetric recordSuggestionViewCreateTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime2");
     }
 
-    /**
-     * Record the amount of wall time needed to create a new suggestion view.
-     */
+    /** Record the amount of wall time needed to create a new suggestion view. */
     public static TimingMetric recordSuggestionViewCreateWallTime() {
         return TimingMetric.shortThreadTime("Android.Omnibox.SuggestionView.CreateTime3");
     }
@@ -158,9 +164,9 @@ public class OmniboxMetrics {
      * Record whether suggestion view was successfully reused.
      *
      * @param viewsCreated Number of views created during the input session. This should not be
-     *         higher than the sum of all limits in HistogramRecordingRecycledViewPool.
+     *     higher than the sum of all limits in HistogramRecordingRecycledViewPool.
      * @param viewsReused Ratio of views re-used to total views bound. Effectively captures the
-     *         efficiency of view recycling.
+     *     efficiency of view recycling.
      */
     public static void recordSuggestionViewReuseStats(int viewsCreated, int viewsReused) {
         RecordHistogram.recordCount100Histogram(
@@ -170,10 +176,9 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the type of the suggestion view that had to be constructed.
-     * Recorded view type could not be retrieved from the Recycled View Pool and had to
-     * be re-created.
-     * Relevant for Omnibox recycler view improvements.
+     * Record the type of the suggestion view that had to be constructed. Recorded view type could
+     * not be retrieved from the Recycled View Pool and had to be re-created. Relevant for Omnibox
+     * recycler view improvements.
      *
      * @param type The type of view that needed to be recreated.
      */
@@ -183,9 +188,8 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the type of the suggestion view that was re-used.
-     * Recorded view type was retrieved from the Recycled View Pool.
-     * Relevant for Omnibox recycler view improvements.
+     * Record the type of the suggestion view that was re-used. Recorded view type was retrieved
+     * from the Recycled View Pool. Relevant for Omnibox recycler view improvements.
      *
      * @param type The type of view that was reused from pool.
      */
@@ -224,10 +228,9 @@ public class OmniboxMetrics {
     }
 
     /**
-     * Record the Refine action button usage.
-     * Unlike the MobileOmniobxRefineSuggestion UserAction, this is recorded only once at the end of
-     * an Omnibox interaction, and includes the cases where the user has not interacted with the
-     * Refine button at all.
+     * Record the Refine action button usage. Unlike the MobileOmniobxRefineSuggestion UserAction,
+     * this is recorded only once at the end of an Omnibox interaction, and includes the cases where
+     * the user has not interacted with the Refine button at all.
      *
      * @param refineActionUsage Whether - and how Refine action button was used.
      */
@@ -255,8 +258,7 @@ public class OmniboxMetrics {
      * @param isSearchTile Whether tile being opened is a Search tile.
      */
     public static void recordSuggestTileTypeUsed(int position, boolean isSearchTile) {
-        @SuggestTileType
-        int tileType = isSearchTile ? SuggestTileType.SEARCH : SuggestTileType.URL;
+        @SuggestTileType int tileType = isSearchTile ? SuggestTileType.SEARCH : SuggestTileType.URL;
         RecordHistogram.recordExactLinearHistogram(
                 "Omnibox.SuggestTiles.SelectedTileIndex", position, MAX_SUGGEST_TILE_TYPE_POSITION);
         RecordHistogram.recordEnumeratedHistogram(
@@ -285,18 +287,25 @@ public class OmniboxMetrics {
 
     /**
      * Records the time elapsed between the two events:
-     * - the suggestions were requested (as a result of User input), and
-     * - the suggestions response was transformed to a UI model.
+     *
+     * <ul>
+     *   <li>the suggestions were requested (as a result of User input), and
+     *   <li>the suggestions response was transformed to a UI model.
+     * </ul>
      *
      * @param isFirst specifies whether this is the first (synchronous), or the last (final)
-     *         asynchronous, suggestions response received from the AutocompleteController
+     *     asynchronous, suggestions response received from the AutocompleteController
      * @param elapsedTimeMs specifies how much time has elapsed between the two events
      */
     public static void recordSuggestionRequestToModelTime(boolean isFirst, long elapsedTimeMs) {
-        RecordHistogram.recordCustomTimesHistogram(isFirst
+        RecordHistogram.recordCustomTimesHistogram(
+                isFirst
                         ? HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST
                         : HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
-                elapsedTimeMs, 1, 1000, 50);
+                elapsedTimeMs,
+                1,
+                1000,
+                50);
     }
 
     /**
@@ -306,15 +315,17 @@ public class OmniboxMetrics {
      */
     public static final void recordActionInSuggestIntentResult(
             @ActionInSuggestIntentResult int intentResult) {
-        RecordHistogram.recordEnumeratedHistogram("Android.Omnibox.ActionInSuggest.IntentResult",
-                intentResult, ActionInSuggestIntentResult.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Omnibox.ActionInSuggest.IntentResult",
+                intentResult,
+                ActionInSuggestIntentResult.COUNT);
     }
 
     /**
      * Record whether an OmniboxAction was still valid when the user finished the interaction with
      * the Omnibox.
      *
-     * Recorded once for every action currently offered to the user at the time when the user
+     * <p>Recorded once for every action currently offered to the user at the time when the user
      * completed the interaction with the Omnibox.
      */
     public static void recordOmniboxActionIsValid(boolean isValid) {
@@ -325,8 +336,8 @@ public class OmniboxMetrics {
      * Record whether any OmniboxAction was used by the User to complete interaction with the
      * Omnibox.
      *
-     * Recorded once for *every interaction with the Omnibox* where OmniboxActions were shown to the
-     * user at the final stage of interaction.
+     * <p>Recorded once for *every interaction with the Omnibox* where OmniboxActions were shown to
+     * the user at the final stage of interaction.
      */
     public static void recordOmniboxActionIsUsed(boolean wasUsed) {
         RecordHistogram.recordBooleanHistogram(HISTOGRAM_OMNIBOX_ACTION_USED, wasUsed);
@@ -356,18 +367,19 @@ public class OmniboxMetrics {
      *
      * @param navSuggestion the suggestion that was navigated to.
      * @param prefetchSuggestion the most recent suggestion that a prefetch was started for. This
-     *         value is null if no prefetches have been started in the current omnibox session.
+     *     value is null if no prefetches have been started in the current omnibox session.
      */
-    public static void recordTouchDownPrefetchResult(@NonNull AutocompleteMatch navSuggestion,
+    public static void recordTouchDownPrefetchResult(
+            @NonNull AutocompleteMatch navSuggestion,
             @Nullable AutocompleteMatch prefetchSuggestion) {
-        @PrefetchResult
-        int result = PrefetchResult.NO_PREFETCH;
+        @PrefetchResult int result = PrefetchResult.NO_PREFETCH;
         if (prefetchSuggestion != null) {
-            result = navSuggestion.getNativeObjectRef() != 0
-                            && navSuggestion.getNativeObjectRef()
-                                    == prefetchSuggestion.getNativeObjectRef()
-                    ? PrefetchResult.HIT
-                    : PrefetchResult.MISS;
+            result =
+                    navSuggestion.getNativeObjectRef() != 0
+                                    && navSuggestion.getNativeObjectRef()
+                                            == prefetchSuggestion.getNativeObjectRef()
+                            ? PrefetchResult.HIT
+                            : PrefetchResult.MISS;
         }
 
         RecordHistogram.recordEnumeratedHistogram(

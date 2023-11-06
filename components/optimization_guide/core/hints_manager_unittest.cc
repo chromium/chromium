@@ -3223,6 +3223,9 @@ TEST_F(HintsManagerFetchingTest,
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
 TEST_F(HintsManagerFetchingTest,
@@ -3268,6 +3271,12 @@ TEST_F(HintsManagerFetchingTest,
 
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.HintsManager.ConcurrentBatchUpdateFetches", 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.NoScript",
+      OptimizationTypeDecision::kAllowedByHint, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kAllowedByHint, 1);
 }
 
 TEST_F(
@@ -3342,6 +3351,13 @@ TEST_F(HintsManagerFetchingTest,
           },
           run_loop.get()));
   run_loop->Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.NoScript",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.CompressPublicImages",
+      OptimizationTypeDecision::kNoHintAvailable, 1);
 }
 
 class HintsManagerFetchingNoBatchUpdateTest : public HintsManagerTest {

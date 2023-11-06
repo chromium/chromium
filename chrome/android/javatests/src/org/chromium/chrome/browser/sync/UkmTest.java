@@ -23,17 +23,14 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 
-/**
- * Tests for UKM Sync integration.
- */
+/** Tests for UKM Sync integration. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // Note we do not use the 'force-enable-metrics-reporting' flag for these tests as they would
 // ignore the Sync setting we are verifying.
 
 public class UkmTest {
-    @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private static final String DEBUG_PAGE = "chrome://ukm/";
 
@@ -52,7 +49,8 @@ public class UkmTest {
     public String getElementContent(Tab normalTab, String elementId) throws Exception {
         mSyncTestRule.loadUrlInTab(
                 DEBUG_PAGE, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, normalTab);
-        return JavaScriptUtils.executeJavaScriptAndWaitForResult(normalTab.getWebContents(),
+        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                normalTab.getWebContents(),
                 "document.getElementById('" + elementId + "').textContent");
     }
 

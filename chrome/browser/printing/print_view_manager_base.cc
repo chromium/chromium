@@ -201,7 +201,7 @@ PrintViewManagerBase::~PrintViewManagerBase() {
 // static
 void PrintViewManagerBase::DisableThirdPartyBlocking() {
 #if BUILDFLAG(ENABLE_OOP_PRINTING) && BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
-  if (!printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (!features::ShouldPrintJobOop()) {
     ModuleDatabase::DisableThirdPartyBlocking();
   }
 #else
@@ -244,8 +244,7 @@ void PrintViewManagerBase::PrintForPrintPreview(
       job_settings.FindBool(kSettingShowSystemDialog).value_or(false);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-      show_system_dialog) {
+  if (features::ShouldPrintJobOop() && show_system_dialog) {
     if (!RegisterSystemPrintClient()) {
       // Platform unable to support system print dialog at this time, treat
       // this as a cancel.
@@ -385,8 +384,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   // dialog is cancelled.
   if (printer_query->last_status() == mojom::ResultCode::kCanceled) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-        query_with_ui_client_id_.has_value()) {
+    if (features::ShouldPrintJobOop() && query_with_ui_client_id_.has_value()) {
       UnregisterSystemPrintClient();
     }
 #endif
@@ -479,7 +477,7 @@ void PrintViewManagerBase::GetDefaultPrintSettingsReply(
     mojom::PrintParamsPtr params) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get() && !params) {
+  if (features::ShouldPrintJobOop() && !params) {
     // The attempt to use the default settings failed.  There should be no
     // subsequent call to get settings from the user that would normally be
     // shared as part of this client registration.  Immediately notify the
@@ -503,7 +501,7 @@ void PrintViewManagerBase::ScriptedPrintReply(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (features::ShouldPrintJobOop()) {
     // Finished getting all settings (defaults and from user), no further need
     // to be registered as a system print client.
     UnregisterSystemPrintClient();
@@ -652,7 +650,7 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
     return;
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
+  if (features::ShouldPrintJobOop() &&
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
       !analyzing_content_ &&
 #endif
@@ -813,8 +811,7 @@ void PrintViewManagerBase::ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
     return;
   }
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get() &&
-      !query_with_ui_client_id_.has_value()) {
+  if (features::ShouldPrintJobOop() && !query_with_ui_client_id_.has_value()) {
     // Renderer process has requested settings outside of the expected setup.
     std::move(callback).Run(nullptr);
     return;
@@ -1087,7 +1084,7 @@ void PrintViewManagerBase::ReleasePrintJob() {
   printing_rfh_ = nullptr;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (features::ShouldPrintJobOop()) {
     // Ensure that any residual registration of printing client is released.
     // This might be necessary in some abnormal cases, such as the associated
     // render process having terminated.
@@ -1235,7 +1232,7 @@ bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh) {
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+  if (features::ShouldPrintJobOop()) {
     // Register this worker so that the service persists as long as the user
     // keeps the system print dialog UI displayed.
     if (!RegisterSystemPrintClient()) {
@@ -1251,7 +1248,7 @@ bool PrintViewManagerBase::StartPrintCommon(content::RenderFrameHost* rfh) {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 bool PrintViewManagerBase::RegisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
   DCHECK(!query_with_ui_client_id_.has_value());
   query_with_ui_client_id_ =
       PrintBackendServiceManager::GetInstance().RegisterQueryWithUiClient();
@@ -1267,7 +1264,7 @@ bool PrintViewManagerBase::RegisterSystemPrintClient() {
 
 void PrintViewManagerBase::UnregisterSystemPrintClient() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(printing::features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
   if (!query_with_ui_client_id_.has_value()) {
     return;
   }

@@ -15,7 +15,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 class KeyEvent;
 
 // Intercepts keyboard events typically handled by the OS or browser.

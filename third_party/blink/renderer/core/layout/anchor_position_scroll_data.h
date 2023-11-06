@@ -62,7 +62,7 @@ class AnchorPositionScrollData
     bool scroll_containers_include_viewport = false;
   };
 
-  Element* OwnerElement() const { return owner_; }
+  Element* OwnerElement() const { return owner_.Get(); }
 
   bool NeedsScrollAdjustment() const { return scroll_container_ids_.size(); }
   bool NeedsScrollAdjustmentInX() const {

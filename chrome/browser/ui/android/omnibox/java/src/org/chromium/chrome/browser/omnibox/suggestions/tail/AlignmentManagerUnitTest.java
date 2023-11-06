@@ -20,9 +20,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for {@link AlignmentManager}.
- */
+/** Tests for {@link AlignmentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AlignmentManagerUnitTest {
     private static final int TEXT_AREA_WIDTH = 100;

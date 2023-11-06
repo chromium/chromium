@@ -8,13 +8,11 @@
 #include <pkcs11.h>
 #include <pkcs11t.h>
 
-#include "base/check.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -71,13 +69,14 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     CK_C_OpenSession open_session = function_list->C_OpenSession;
     CK_C_CloseSession close_session = function_list->C_CloseSession;
     CK_C_CreateObject create_object = function_list->C_CreateObject;
+    CK_C_GenerateKey generate_key = function_list->C_GenerateKey;
     CK_C_GenerateKeyPair generate_key_pair = function_list->C_GenerateKeyPair;
     CK_C_GetAttributeValue get_attribute_value =
         function_list->C_GetAttributeValue;
     CK_C_SetAttributeValue set_attribute_value =
         function_list->C_SetAttributeValue;
 
-    if (!open_session || !close_session || !create_object ||
+    if (!open_session || !close_session || !create_object || !generate_key ||
         !generate_key_pair || !get_attribute_value || !set_attribute_value) {
       LogError(ErrorCode::kRequiredFunctionMissing);
       return nullptr;
@@ -99,7 +98,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
       return nullptr;
     }
     return base::WrapUnique(new ChapsSlotSessionImpl(
-        chaps_handle, open_session, close_session, create_object,
+        chaps_handle, open_session, close_session, create_object, generate_key,
         generate_key_pair, get_attribute_value, set_attribute_value, slot_id,
         session_handle));
   }
@@ -158,6 +157,16 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     return create_object_(session_handle_, pTemplate, ulCount, phObject);
   }
 
+  CK_RV GenerateKey(CK_MECHANISM_PTR pMechanism,
+                    CK_ATTRIBUTE_PTR pTemplate,
+                    CK_ULONG ulCount,
+                    CK_OBJECT_HANDLE_PTR phKey) override {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+    return generate_key_(session_handle_, pMechanism, pTemplate, ulCount,
+                         phKey);
+  }
+
   CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,
                         CK_ATTRIBUTE_PTR pPublicKeyTemplate,
                         CK_ULONG ulPublicKeyAttributeCount,
@@ -194,6 +203,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
                        CK_C_OpenSession open_session,
                        CK_C_CloseSession close_session,
                        CK_C_CreateObject create_object,
+                       CK_C_GenerateKey generate_key,
                        CK_C_GenerateKeyPair generate_key_pair,
                        CK_C_GetAttributeValue get_attribute_value,
                        CK_C_SetAttributeValue set_attribute_value,
@@ -203,12 +213,13 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
         open_session_(open_session),
         close_session_(close_session),
         create_object_(create_object),
+        generate_key_(generate_key),
         generate_key_pair_(generate_key_pair),
         get_attribute_value_(get_attribute_value),
         set_attribute_value_(set_attribute_value),
         slot_id_(slot_id),
         session_handle_(session_handle) {}
-  // Pass CKF_RW_SESSION because the intention is to generate key pairs.
+  // Pass CKF_RW_SESSION because the intention is to generate keys.
   // CKF_SERIAL_SESSION should always be set according to
   // http://docs.oasis-open.org/pkcs11/pkcs11-base/v2.40/os/pkcs11-base-v2.40-os.html#_Toc416959688
   // and chaps verifies that.
@@ -219,6 +230,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   CK_C_OpenSession open_session_ = nullptr;
   CK_C_CloseSession close_session_ = nullptr;
   CK_C_CreateObject create_object_ = nullptr;
+  CK_C_GenerateKey generate_key_ = nullptr;
   CK_C_GenerateKeyPair generate_key_pair_ = nullptr;
   CK_C_GetAttributeValue get_attribute_value_ = nullptr;
   CK_C_SetAttributeValue set_attribute_value_ = nullptr;

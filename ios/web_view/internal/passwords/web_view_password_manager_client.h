@@ -81,7 +81,8 @@ class WebViewPasswordManagerClient
       CredentialsCallback callback) override;
   void AutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI>
-          saved_form_manager) override;
+          saved_form_manager,
+      bool is_update_confirmation) override;
   void PromptUserToEnableAutosignin() override;
   bool IsOffTheRecord() const override;
   const password_manager::PasswordManager* GetPasswordManager() const override;

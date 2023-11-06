@@ -82,7 +82,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   // Returns the target element. If the animation targets a pseudo-element,
   // this returns the originating element.
-  Element* target() const { return target_element_; }
+  Element* target() const { return target_element_.Get(); }
   void setTarget(Element*);
   const String& pseudoElement() const;
   void setPseudoElement(String, ExceptionState&);
@@ -95,7 +95,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
 
   // Returns blink's representation of the effect target.
   // This can be a blink::PseudoElement which should not be web-exposed.
-  Element* EffectTarget() const { return effect_target_; }
+  Element* EffectTarget() const { return effect_target_.Get(); }
   void SetKeyframes(StringKeyframeVector keyframes);
 
   bool Affects(const PropertyHandle&) const override;

@@ -35,10 +35,8 @@
 
 #include <stdint.h>
 
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -1064,30 +1062,6 @@ TEST(KURLTest, SetFileProtocolToNonSpecial) {
   EXPECT_EQ(url.GetPath(), "/path");
 }
 
-TEST(KURLTest, SetNonSpecialSchemeOnSpecialSchemeHistogram) {
-  ASSERT_TRUE(SchemeRegistry::IsSpecialScheme("http"));
-  ASSERT_FALSE(SchemeRegistry::IsSpecialScheme("non-special"));
-
-  struct TestCase {
-    const char* url;
-    const char* protocol;
-    base::HistogramBase::Count cnt;
-  } cases[] = {
-      {"http://example.com", "http", 0},
-      {"http://example.com", "non-special", 1},
-      {"non-special://example.com", "http", 0},
-      {"non-special://example.com", "non-special", 0},
-  };
-
-  for (const auto& c : cases) {
-    base::HistogramTester histogram_tester;
-    KURL url(c.url);
-    url.SetProtocol(c.protocol);
-    histogram_tester.ExpectBucketCount(
-        "URL.Scheme.SetNonSpecialSchemeOnSpecialScheme", 1, c.cnt);
-  }
-}
-
 TEST(KURLTest, InvalidKURLToGURL) {
   // This contains an invalid percent escape (%T%) and also a valid
   // percent escape that's not 7-bit ascii (%ae), so that the unescaped
@@ -1135,43 +1109,15 @@ TEST(KURLTest, HasIDNA2008DeviationCharacters) {
   EXPECT_FALSE(url2.HasIDNA2008DeviationCharacter());
 }
 
-class KURLIPv4EmbeddedIPv6Test : public ::testing::Test,
-                                 public ::testing::WithParamInterface<bool> {
- public:
-  KURLIPv4EmbeddedIPv6Test() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         KURLIPv4EmbeddedIPv6Test,
-                         ::testing::Bool());
-
-TEST_P(KURLIPv4EmbeddedIPv6Test, IPv4EmbeddedIPv6Address) {
+TEST(KURLTest, IPv4EmbeddedIPv6Address) {
   EXPECT_TRUE(KURL(u"http://[::1.2.3.4]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::1.2.3.4.5]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::.1.2]/").IsValid());
   EXPECT_FALSE(KURL(u"http://[::.]/").IsValid());
 
-  if (base::FeatureList::IsEnabled(
-          url::kStrictIPv4EmbeddedIPv6AddressParsing)) {
-    EXPECT_FALSE(KURL(u"http://[::1.2.3.4.]/").IsValid());
-    EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
-    EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
-  } else {
-    EXPECT_TRUE(KURL(u"http://[::1.2.3.4.]/").IsValid());
-    EXPECT_TRUE(KURL(u"http://[::1.2]/").IsValid());
-    EXPECT_TRUE(KURL(u"http://[::1.2.]/").IsValid());
-  }
+  EXPECT_FALSE(KURL(u"http://[::1.2.3.4.]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::1.2]/").IsValid());
+  EXPECT_FALSE(KURL(u"http://[::1.2.]/").IsValid());
 }
 
 enum class PortIsValid {
@@ -1198,7 +1144,6 @@ struct PortTestCase {
   const char* input;
   const uint16_t constructor_output;
   const uint16_t set_port_output;
-  const uint16_t set_port_output_disallow_overflow;
   const PortIsValid is_valid;
 };
 
@@ -1208,37 +1153,36 @@ constexpr int kNoopPort = 8888;
 // The tested behaviour matches the implementation. It doesn't necessarily match
 // the URL Standard.
 const PortTestCase port_test_cases[] = {
-    {"80", 0, 0, 0, PortIsValid::kAlways},  // 0 because scheme is http.
-    {"443", 443, 443, 443, PortIsValid::kAlways},
-    {"8000", 8000, 8000, 8000, PortIsValid::kAlways},
-    {"0", 0, 0, 0, PortIsValid::kAlways},
-    {"1", 1, 1, 1, PortIsValid::kAlways},
-    {"00000000000000000000000000000000000443", 443, 443, 443,
-     PortIsValid::kAlways},
-    {"+80", 0, kNoopPort, kNoopPort, PortIsValid::kInSetPort},
-    {"-80", 0, kNoopPort, kNoopPort, PortIsValid::kInSetPort},
-    {"443e0", 0, 443, 443, PortIsValid::kInSetHostAndPort},
-    {"0x80", 0, 0, 0, PortIsValid::kInSetHostAndPort},
-    {"8%30", 0, 8, 8, PortIsValid::kInSetHostAndPort},
-    {" 443", 0, kNoopPort, kNoopPort, PortIsValid::kInSetPort},
-    {"443 ", 0, 443, 443, PortIsValid::kInSetHostAndPort},
-    {":443", 0, kNoopPort, kNoopPort, PortIsValid::kInSetPort},
-    {"65534", 65534, 65534, 65534, PortIsValid::kAlways},
-    {"65535", 65535, 65535, 65535, PortIsValid::kAlways},
-    {"65535junk", 0, 65535, 65535, PortIsValid::kInSetHostAndPort},
-    {"65536", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"65537", 0, 1, kNoopPort, PortIsValid::kInSetPort},
-    {"65537junk", 0, 1, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483647", 0, 65535, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483648", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"2147483649", 0, 1, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967295", 0, 65535, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967296", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"4294967297", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551615", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551616", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"18446744073709551617", 0, 0, kNoopPort, PortIsValid::kInSetPort},
-    {"9999999999999999999999999999990999999999", 0, 0, kNoopPort,
+    {"80", 0, 0, PortIsValid::kAlways},  // 0 because scheme is http.
+    {"443", 443, 443, PortIsValid::kAlways},
+    {"8000", 8000, 8000, PortIsValid::kAlways},
+    {"0", 0, 0, PortIsValid::kAlways},
+    {"1", 1, 1, PortIsValid::kAlways},
+    {"00000000000000000000000000000000000443", 443, 443, PortIsValid::kAlways},
+    {"+80", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"-80", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"443e0", 0, 443, PortIsValid::kInSetHostAndPort},
+    {"0x80", 0, 0, PortIsValid::kInSetHostAndPort},
+    {"8%30", 0, 8, PortIsValid::kInSetHostAndPort},
+    {" 443", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"443 ", 0, 443, PortIsValid::kInSetHostAndPort},
+    {":443", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"65534", 65534, 65534, PortIsValid::kAlways},
+    {"65535", 65535, 65535, PortIsValid::kAlways},
+    {"65535junk", 0, 65535, PortIsValid::kInSetHostAndPort},
+    {"65536", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"65537", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"65537junk", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"2147483647", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"2147483648", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"2147483649", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"4294967295", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"4294967296", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"4294967297", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"18446744073709551615", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"18446744073709551616", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"18446744073709551617", 0, kNoopPort, PortIsValid::kInSetPort},
+    {"9999999999999999999999999999990999999999", 0, kNoopPort,
      PortIsValid::kInSetPort},
 };
 
@@ -1246,30 +1190,13 @@ void PrintTo(const PortTestCase& port_test_case, ::std::ostream* os) {
   *os << '"' << port_test_case.input << '"';
 }
 
-class KURLPortTest
-    : public ::testing::TestWithParam<std::tuple<PortTestCase, bool>> {
- public:
-  KURLPortTest() {
-    auto [_, disallow_port_overflow] = GetParam();
-    if (disallow_port_overflow) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kURLSetPortCheckOverflow);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kURLSetPortCheckOverflow);
-    }
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+class KURLPortTest : public ::testing::TestWithParam<PortTestCase> {};
 
 TEST_P(KURLPortTest, Construct) {
   const auto& param = GetParam();
-  auto [port_test_case, _] = param;
-  const KURL url(String("http://a:") + port_test_case.input + "/");
-  EXPECT_EQ(url.Port(), port_test_case.constructor_output);
-  if (port_test_case.is_valid == PortIsValid::kAlways) {
+  const KURL url(String("http://a:") + param.input + "/");
+  EXPECT_EQ(url.Port(), param.constructor_output);
+  if (param.is_valid == PortIsValid::kAlways) {
     EXPECT_EQ(url.IsValid(), true);
   } else {
     EXPECT_EQ(url.IsValid(), false);
@@ -1278,11 +1205,10 @@ TEST_P(KURLPortTest, Construct) {
 
 TEST_P(KURLPortTest, ConstructRelative) {
   const auto& param = GetParam();
-  auto [port_test_case, _] = param;
   const KURL base("http://a/");
-  const KURL url(base, String("//a:") + port_test_case.input + "/");
-  EXPECT_EQ(url.Port(), port_test_case.constructor_output);
-  if (port_test_case.is_valid == PortIsValid::kAlways) {
+  const KURL url(base, String("//a:") + param.input + "/");
+  EXPECT_EQ(url.Port(), param.constructor_output);
+  if (param.is_valid == PortIsValid::kAlways) {
     EXPECT_EQ(url.IsValid(), true);
   } else {
     EXPECT_EQ(url.IsValid(), false);
@@ -1291,29 +1217,23 @@ TEST_P(KURLPortTest, ConstructRelative) {
 
 TEST_P(KURLPortTest, SetPort) {
   const auto& param = GetParam();
-  auto [port_test_case, disallow_port_overflow] = param;
   KURL url("http://a:" + String::Number(kNoopPort) + "/");
-  url.SetPort(port_test_case.input);
-  if (disallow_port_overflow) {
-    EXPECT_EQ(url.Port(), port_test_case.set_port_output_disallow_overflow);
-  } else {
-    EXPECT_EQ(url.Port(), port_test_case.set_port_output);
-  }
+  url.SetPort(param.input);
+  EXPECT_EQ(url.Port(), param.set_port_output);
   EXPECT_EQ(url.IsValid(), true);
 }
 
 TEST_P(KURLPortTest, SetHostAndPort) {
   const auto& param = GetParam();
   KURL url("http://a:" + String::Number(kNoopPort) + "/");
-  auto [port_test_case, disallow_port_overflow] = param;
-  url.SetHostAndPort(String("a:") + port_test_case.input);
-  switch (port_test_case.is_valid) {
+  url.SetHostAndPort(String("a:") + param.input);
+  switch (param.is_valid) {
     case PortIsValid::kAlways:
-      EXPECT_EQ(url.Port(), port_test_case.constructor_output);
+      EXPECT_EQ(url.Port(), param.constructor_output);
       break;
 
     case PortIsValid::kInSetHostAndPort:
-      EXPECT_EQ(url.Port(), port_test_case.set_port_output);
+      EXPECT_EQ(url.Port(), param.set_port_output);
       break;
 
     case PortIsValid::kInSetPort:
@@ -1323,11 +1243,9 @@ TEST_P(KURLPortTest, SetHostAndPort) {
   EXPECT_EQ(url.IsValid(), true);
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    KURLPortTest,
-    ::testing::Combine(::testing::ValuesIn(port_test_cases),
-                       ::testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         KURLPortTest,
+                         ::testing::ValuesIn(port_test_cases));
 
 }  // namespace blink
 

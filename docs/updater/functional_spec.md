@@ -43,6 +43,14 @@ Google-branded builds assume the first case.
 The brand code is a string of up to 4 characters long. The brand code is
 persisted during the install, over-installs, and updates.
 
+On macOS, the brand code (as well as AP parameter and the app version) can be
+specified using a path to a plist file and a key within that plist file. When
+so specified, the updater will read the associated value from the plist and use
+it rather than the updater's built-in `pv` value. This allows the updater to
+detect and properly represent any overinstallations of an application, which are
+done by users or third-party software on macOS (and don't otherwise interact
+with the updater).
+
 #### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
 installing an application with `needsadmin=true` or `needsadmin=prefers`.
@@ -413,10 +421,11 @@ Some of these actions accept parameters:
 
 #### Omaha Shims
 On Windows, the updater replaces Omaha's files with a copy of the updater, and
-keeps the Omaha registry entry
-(`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the latest
-`pv` value. Additionally, the updater replaces the Omaha uninstall command line
-with its own.
+keeps the Omaha registry entries
+(`CLIENTS/{430FD4D0-B729-4F61-AA34-91526481799D}` and
+`CLIENTSTATE/{430FD4D0-B729-4F61-AA34-91526481799D}`) up-to-date with the
+latest `pv` value. Additionally, the updater replaces the Omaha uninstall
+command line with its own.
 
 The updater takes over the COM registration for the following classes:
 * GoogleUpdate3WebUserClass

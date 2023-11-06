@@ -112,6 +112,10 @@ class WEB_MODAL_EXPORT WebContentsModalDialogManager
   // True while closing the dialogs on WebContents close.
   bool closing_all_dialogs_ = false;
 
+  // Optional closure to re-enable input events, if we're ignored them.
+  absl::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

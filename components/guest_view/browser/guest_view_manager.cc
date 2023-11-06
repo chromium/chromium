@@ -152,6 +152,10 @@ int GuestViewManager::GetNextInstanceID() {
   return ++current_instance_id_;
 }
 
+base::WeakPtr<GuestViewManager> GuestViewManager::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void GuestViewManager::CreateGuest(const std::string& view_type,
                                    content::RenderFrameHost* owner_rfh,
                                    const base::Value::Dict& create_params,

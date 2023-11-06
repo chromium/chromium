@@ -1,14 +1,24 @@
 This is a testharness.js-based test.
-FAIL .table assert_equals: .table height expected "40px" but got "60px"
-FAIL .caption assert_equals: .caption display expected "table-caption" but got "block"
-FAIL .col assert_equals: .col display expected "table-column" but got "block"
-FAIL .tbody assert_equals: .tbody display expected "table-row-group" but got "block"
-FAIL .tr assert_equals: .tr display expected "table-row" but got "block"
-FAIL .td assert_equals: .td display expected "table-cell" but got "block"
-PASS .li
-FAIL .inline assert_equals: .inline display expected "inline" but got "block"
-FAIL .inline-block assert_equals: .inline-block display expected "inline-block" but got "block"
-FAIL .ruby assert_equals: .ruby display expected "inline" but got "block"
-FAIL .rt assert_equals: .rt width expected "29px" but got "800px"
+[FAIL] .table
+  assert_equals: .table height expected "40px" but got "60px"
+[FAIL] .caption
+  assert_equals: .caption display expected "table-caption" but got "block"
+[FAIL] .col
+  assert_equals: .col display expected "table-column" but got "block"
+[FAIL] .tbody
+  assert_equals: .tbody display expected "table-row-group" but got "block"
+[FAIL] .tr
+  assert_equals: .tr display expected "table-row" but got "block"
+[FAIL] .td
+  assert_equals: .td display expected "table-cell" but got "block"
+[PASS] .li
+[FAIL] .inline
+  assert_equals: .inline display expected "inline" but got "block"
+[FAIL] .inline-block
+  assert_equals: .inline-block display expected "inline-block" but got "block"
+[FAIL] .ruby
+  assert_equals: .ruby display expected "inline" but got "block"
+[FAIL] .rt
+  assert_equals: .rt width expected "29px" but got "800px"
 Harness: the test ran to completion.
 

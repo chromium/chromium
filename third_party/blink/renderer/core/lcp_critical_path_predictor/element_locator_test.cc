@@ -67,12 +67,10 @@ TEST_F(ElementLocatorTest, OfElement) {
         Traversal<Element>::FirstWithin(GetDocument(), HasDataLocateMe);
     ASSERT_TRUE(target);
 
-    auto maybe_locator = element_locator::OfElement(target);
+    auto locator = element_locator::OfElement(*target);
 
     if (test_case.expected_locator_string) {
-      ASSERT_TRUE(maybe_locator.has_value());
-
-      String locator_string = element_locator::ToString(maybe_locator.value());
+      String locator_string = element_locator::ToString(locator);
       EXPECT_EQ(String(test_case.expected_locator_string), locator_string);
     }
   }

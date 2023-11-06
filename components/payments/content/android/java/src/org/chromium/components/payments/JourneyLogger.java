@@ -4,8 +4,9 @@
 
 package org.chromium.components.payments;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
@@ -179,8 +180,8 @@ public class JourneyLogger {
     }
 
     /**
-     * Records that the Payment Request was aborted and for what reason. Also starts the logging of
-     * all the journey logger metrics.
+     * Records that the Payment Request was aborted. This counts as a completion, starting the
+     * logging of all the journey metrics.
      *
      * @param reason An int indicating why the payment request was aborted.
      */

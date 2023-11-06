@@ -7,8 +7,8 @@ package org.chromium.android_webview.gfx;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
 
 /**
  * Provides auxiliary methods related to Picture objects and native SkPictures.

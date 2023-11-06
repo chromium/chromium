@@ -12,14 +12,17 @@ namespace autofill {
 TEST(
     AutofillGranularFillingUtilsTest,
     AreFieldsGranularFillingGroup_ReturnsTrueWhenFieldsMatchAGroupFillingGroup) {
-  // Test name fields.
+  // Test `FieldTypeGroup::kName` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(
       GetServerFieldTypesOfGroup(FieldTypeGroup::kName)));
-  // Test phone fields.
+  // Test `FieldTypeGroup::kPhone` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(
       GetServerFieldTypesOfGroup(FieldTypeGroup::kPhone)));
+  // Test `FieldTypeGroup::kEmail` fields.
+  EXPECT_TRUE(AreFieldsGranularFillingGroup(
+      GetServerFieldTypesOfGroup(FieldTypeGroup::kEmail)));
   // Tests address fields, which in the context of granular filling
-  // are both `FieldTypeGroup::kName` and `FieldTypeGroup::kCompany` fields.
+  // are both `FieldTypeGroup::kAddress` and `FieldTypeGroup::kCompany` fields.
   EXPECT_TRUE(AreFieldsGranularFillingGroup(GetAddressFieldsForGroupFilling()));
 }
 

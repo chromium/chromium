@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.MotionEvent;
-import android.view.View;
 
 import androidx.annotation.Nullable;
 
@@ -16,8 +15,8 @@ import org.chromium.base.Callback;
 
 /**
  * Delegate that provides the toolbar with the info of the NTP for the current tab.
- * TODO(crbug.com/1127732): Consider moving this out of toolbar/ into
- *     its own target for omnibox as well.
+ * TODO(crbug.com/1127732): Consider moving this out of toolbar/ into its own target for omnibox as
+ * well.
  */
 public interface NewTabPageDelegate {
     /**
@@ -59,6 +58,7 @@ public interface NewTabPageDelegate {
 
     /**
      * Set the listener for NTP to handle the scroll event.
+     *
      * @param scrollCallback Callback to be invoked when the event occurs.
      */
     default void setSearchBoxScrollListener(@Nullable Callback<Float> scrollCallback) {}
@@ -68,7 +68,7 @@ public interface NewTabPageDelegate {
      *
      * @param bounds The current drawing location of the search box.
      * @param translation The translation applied to the search box by the parent view hierarchy up
-     *                    to the NewTabPage view.
+     *     to the NewTabPage view.
      */
     default void getSearchBoxBounds(Rect bounds, Point translation) {}
 
@@ -94,8 +94,8 @@ public interface NewTabPageDelegate {
     default void setSearchBoxBackground(Drawable drawable) {}
 
     /**
-     * Specifies the percentage the URL is focused during an animation.  1.0 specifies that the URL
-     * bar has focus and has completed the focus animation.  0 is when the URL bar is does not have
+     * Specifies the percentage the URL is focused during an animation. 1.0 specifies that the URL
+     * bar has focus and has completed the focus animation. 0 is when the URL bar is does not have
      * any focus.
      *
      * @param percent The percentage of the URL bar focus animation.
@@ -111,8 +111,6 @@ public interface NewTabPageDelegate {
         return false;
     }
 
-    /**
-     * Empty implementation of NewTabDelegate. Used for a default before initialization.
-     */
+    /** Empty implementation of NewTabDelegate. Used for a default before initialization. */
     public static final NewTabPageDelegate EMPTY = new NewTabPageDelegate() {};
 }

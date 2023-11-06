@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div"]
+++++View text:"span-2" textSize:16.00 style:0 bundle:[aria-label="span-2", display="inline", htmlTag="span", id="s2"]
+++++View text:"span-4" textSize:16.00 style:0 bundle:[aria-hidden="false", aria-label="span-3", aria-labelledby="s4", display="inline", htmlTag="span", id="s3"]
+++++View text:"span-1" textSize:16.00 style:0 bundle:[aria-label="span-A", aria-labelledby="s1", display="inline", htmlTag="span", role="group"]
+++++View text:"span-2" textSize:16.00 style:0 bundle:[aria-label="span-B", aria-labelledby="s2", display="inline", htmlTag="span", role="group"]
+++++View text:"span-3" textSize:16.00 style:0 bundle:[aria-label="span-C", aria-labelledby="s3", display="inline", htmlTag="span", role="group"]
+++++View text:"span-4" textSize:16.00 style:0 bundle:[aria-label="span-D", aria-labelledby="s4", display="inline", htmlTag="span", role="group"]

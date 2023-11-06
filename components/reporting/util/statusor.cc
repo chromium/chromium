@@ -1,34 +1,26 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/reporting/util/statusor.h"
 
-#include "base/logging.h"
-#include "base/no_destructor.h"
+#include <utility>
 
-namespace reporting {
-namespace internal {
+#include "base/check.h"
 
-// static
-const Status& StatusOrHelper::NotInitializedStatus() {
-  static base::NoDestructor<Status> status_not_initialized(error::UNKNOWN,
-                                                           "Not initialized");
-  return *status_not_initialized;
+namespace reporting::internal {
+ErrorStatus::ErrorStatus(const ErrorStatus&) = default;
+ErrorStatus& ErrorStatus::operator=(const ErrorStatus& x) = default;
+ErrorStatus::ErrorStatus(ErrorStatus&&) = default;
+ErrorStatus& ErrorStatus::operator=(ErrorStatus&& x) = default;
+ErrorStatus::~ErrorStatus() = default;
+
+ErrorStatus::ErrorStatus(const Status& status) : Status(status) {
+  CHECK(!ok()) << "The status must not be OK";
 }
 
-// static
-const Status& StatusOrHelper::MovedOutStatus() {
-  static base::NoDestructor<Status> status_moved_out(error::UNKNOWN,
-                                                     "Value moved out");
-  return *status_moved_out;
+ErrorStatus::ErrorStatus(Status&& status) : Status(std::move(status)) {
+  CHECK(!ok()) << "The status must not be OK";
 }
 
-// static
-void StatusOrHelper::Crash(const Status& status) {
-  LOG(FATAL) << "Attempting to fetch value instead of handling error "
-             << status.ToString();
-}
-
-}  // namespace internal
-}  // namespace reporting
+}  // namespace reporting::internal

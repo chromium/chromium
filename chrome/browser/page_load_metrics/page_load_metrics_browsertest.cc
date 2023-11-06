@@ -36,6 +36,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_test_utils.h"
+#include "chrome/browser/preloading/preview/preview_test_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
@@ -3286,6 +3287,41 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+class PageLoadMetricsPreviewBrowserTest : public PageLoadMetricsBrowserTest {
+ public:
+  PageLoadMetricsPreviewBrowserTest() {
+    helper_ = std::make_unique<test::PreviewTestHelper>(
+        base::BindRepeating(&PageLoadMetricsPreviewBrowserTest::web_contents,
+                            base::Unretained(this)));
+  }
+
+ protected:
+  std::unique_ptr<test::PreviewTestHelper> helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsPreviewBrowserTest,
+                       PreviewPrimaryPageType) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadTrackerPageType,
+      page_load_metrics::internal::PageLoadTrackerPageType::kPrimaryPage, 1);
+
+  helper_->InitiatePreview(embedded_test_server()->GetURL("/title2.html"));
+  helper_->WaitUntilLoadFinished();
+
+  histogram_tester_->ExpectBucketCount(
+      page_load_metrics::internal::kPageLoadTrackerPageType,
+      page_load_metrics::internal::PageLoadTrackerPageType::kPreviewPrimaryPage,
+      1);
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PageLoadMetricsBrowserTestTerminatedPage
     : public PageLoadMetricsBrowserTest {
  protected:
@@ -3606,7 +3642,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
 
   // Create a portal to a.com.
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  std::string script = R"(
+  static constexpr char kScript[] = R"(
     var portal = document.createElement('portal');
     portal.src = '%s';
     document.body.appendChild(portal);
@@ -3615,7 +3651,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DISABLED_PortalActivation) {
   content::TestNavigationObserver portal_nav_observer(a_url);
   portal_nav_observer.StartWatchingNewWebContents();
   EXPECT_TRUE(ExecJs(outer_contents,
-                     base::StringPrintf(script.c_str(), a_url.spec().c_str())));
+                     base::StringPrintf(kScript, a_url.spec().c_str())));
   portal_nav_observer.WaitForNavigationFinished();
   content::WebContents* portal_contents = contents_observer.GetWebContents();
 

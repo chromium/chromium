@@ -7,13 +7,12 @@ import {MockEntry} from '../../common/js/mock_entry.js';
 
 import {FolderShortcutsDataModel} from './folder_shortcuts_data_model.js';
 
-
 /**
  * Mock FolderShortcutDataModel.
  */
 export class MockFolderShortcutDataModel extends ArrayDataModel {
   /**
-   * @param {!Array} array
+   * @param {!Array<*>} array
    */
   constructor(array) {
     super(array);

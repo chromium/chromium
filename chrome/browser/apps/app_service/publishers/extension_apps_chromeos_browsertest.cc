@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -21,7 +21,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
@@ -134,8 +133,6 @@ class ExtensionAppsChromeOsBrowserTest
   }
 
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel current_channel_{
-      version_info::Channel::BETA};
 };
 
 // Open the extension action url when opening a matching file type.
@@ -161,6 +158,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, LaunchWithFileIntent) {
   const extensions::Extension* extension =
       InstallDefaultInstalledExtension(extension_dir.UnpackedPath());
   ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(extensions::WebFileHandlers::SupportsWebFileHandlers(*extension));
   LaunchExtensionAndCatchResult(*extension);
 }
 
@@ -263,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionAppsChromeOsBrowserTest, NavigateExisting) {
     web_contents[i] = browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  // SessionID::InvalidValue() is -1 beyond the int of GetWindowIdOfTab.
+  // GetWindowIdOfTab() returns -1 for SessionID::InvalidValue().
   ASSERT_NE(extensions::ExtensionTabUtil::GetWindowIdOfTab(web_contents[0]),
             -1);
 

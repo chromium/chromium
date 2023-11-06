@@ -21,14 +21,11 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Test AnimationLooper class.
- */
+/** Test AnimationLooper class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AnimationLooperTest {
-    @Mock
-    private AnimatedVectorDrawable mAnimatableMock;
+    @Mock private AnimatedVectorDrawable mAnimatableMock;
 
     private AnimationLooper mAnimationLooper;
 

@@ -684,7 +684,7 @@ HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
     style &= ~PBS_MARQUEE;
   }
   progress_bar.SetWindowLongPtr(GWL_STYLE, style);
-  progress_bar.SendMessage(PBM_SETMARQUEE, !!is_marquee, 0);
+  progress_bar.SendMessage(PBM_SETMARQUEE, is_marquee, 0);
 
   return S_OK;
 }

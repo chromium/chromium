@@ -47,7 +47,6 @@ void RecordingSource::FinishDisplayItemListUpdate() {
   TRACE_EVENT0("cc", "RecordingSource::FinishDisplayItemListUpdate");
   DetermineIfSolidColor();
   display_list_->EmitTraceSnapshot();
-  display_list_->GenerateDiscardableImagesMetadata();
 }
 
 void RecordingSource::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {

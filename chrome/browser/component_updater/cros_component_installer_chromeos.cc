@@ -207,7 +207,8 @@ void EnvVersionInstallerPolicy::ComponentReady(const base::Version& version,
   if (!IsCompatible(env_version_, *min_env_version))
     return;
 
-  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+  cros_component_installer_->RegisterCompatiblePath(
+      GetName(), CompatibleComponentInfo(path, version));
 }
 
 update_client::InstallerAttributes
@@ -254,7 +255,8 @@ void LacrosInstallerPolicy::ComponentReady(const base::Version& version,
     // Current lacros install is not compatible.
     return;
   }
-  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+  cros_component_installer_->RegisterCompatiblePath(
+      GetName(), CompatibleComponentInfo(path, version));
 
   // Clear the load cache for the newly installed component version to avoid
   // loading stale components on successive loads, causing a version update
@@ -288,7 +290,8 @@ DemoAppInstallerPolicy::~DemoAppInstallerPolicy() = default;
 void DemoAppInstallerPolicy::ComponentReady(const base::Version& version,
                                             const base::FilePath& path,
                                             base::Value::Dict manifest) {
-  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+  cros_component_installer_->RegisterCompatiblePath(
+      GetName(), CompatibleComponentInfo(path, version));
 }
 
 update_client::InstallerAttributes
@@ -315,7 +318,8 @@ void GrowthCampaignsInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& path,
     base::Value::Dict manifest) {
-  cros_component_installer_->RegisterCompatiblePath(GetName(), path);
+  cros_component_installer_->RegisterCompatiblePath(
+      GetName(), CompatibleComponentInfo(path, version));
 }
 
 update_client::InstallerAttributes
@@ -381,13 +385,21 @@ void CrOSComponentInstaller::GetVersion(
     return;
   }
 
-  // Path compatible to `name` must exist.
-  CHECK(!GetCompatiblePath(name).empty());
+  auto component_iter = compatible_components_.find(name);
 
-  ash::ImageLoaderClient::Get()->RequestComponentVersion(
-      name,
-      base::BindOnce(&CrOSComponentInstaller::FinishGetVersion,
-                     weak_factory_.GetWeakPtr(), std::move(version_callback)));
+  // Path compatible to `name` must exist.
+  CHECK(component_iter != compatible_components_.end() &&
+        !(component_iter->second.path.empty()));
+  if (component_iter->second.version.has_value()) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(version_callback),
+                                  component_iter->second.version.value()));
+  } else {
+    ash::ImageLoaderClient::Get()->RequestComponentVersion(
+        name, base::BindOnce(&CrOSComponentInstaller::FinishGetVersion,
+                             weak_factory_.GetWeakPtr(),
+                             std::move(version_callback)));
+  }
 }
 
 void CrOSComponentInstaller::RegisterInstalled() {
@@ -399,8 +411,8 @@ void CrOSComponentInstaller::RegisterInstalled() {
 
 void CrOSComponentInstaller::RegisterCompatiblePath(
     const std::string& name,
-    const base::FilePath& path) {
-  compatible_components_[name] = path;
+    CompatibleComponentInfo info) {
+  compatible_components_[name] = std::move(info);
 }
 
 void CrOSComponentInstaller::UnregisterCompatiblePath(const std::string& name) {
@@ -412,7 +424,8 @@ void CrOSComponentInstaller::UnregisterCompatiblePath(const std::string& name) {
 base::FilePath CrOSComponentInstaller::GetCompatiblePath(
     const std::string& name) const {
   const auto it = compatible_components_.find(name);
-  return it == compatible_components_.end() ? base::FilePath() : it->second;
+  return it == compatible_components_.end() ? base::FilePath()
+                                            : it->second.path;
 }
 
 void CrOSComponentInstaller::EmitInstalledSignal(const std::string& component) {

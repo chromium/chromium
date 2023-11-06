@@ -176,6 +176,9 @@ interface NativeWidgetNSWindowHost {
   // and the browser window traffic lights.
   OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
 
+  // Returns height of the menubar if the menubar autohides, otherwise 0.
+  OnAutohidingMenuBarHeightChanged(int32 menu_bar_height);
+
   // Accept or cancel the current dialog window (depending on the value of
   // |button|), if a current dialog exists.
   DoDialogButtonAction(ui.mojom.DialogButton button);

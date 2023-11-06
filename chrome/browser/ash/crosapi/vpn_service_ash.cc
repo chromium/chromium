@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "ash/public/cpp/network_config_service.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -156,12 +158,16 @@ void VpnConfigurationImpl::OnPacketReceived(const std::vector<char>& data) {
 
 void VpnConfigurationImpl::OnPlatformMessage(uint32_t platform_message) {
   DCHECK(vpn_service_);
-  DCHECK_GE(api_vpn::PLATFORM_MESSAGE_LAST, platform_message);
+  DCHECK_GE(static_cast<uint32_t>(api_vpn::PlatformMessage::kMaxValue),
+            platform_message);
 
-  if (platform_message == api_vpn::PLATFORM_MESSAGE_CONNECTED) {
+  if (platform_message ==
+      base::to_underlying(api_vpn::PlatformMessage::kConnected)) {
     vpn_service_->SetActiveConfiguration(this);
-  } else if (platform_message == api_vpn::PLATFORM_MESSAGE_DISCONNECTED ||
-             platform_message == api_vpn::PLATFORM_MESSAGE_ERROR) {
+  } else if (platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kDisconnected) ||
+             platform_message ==
+                 base::to_underlying(api_vpn::PlatformMessage::kError)) {
     vpn_service_->SetActiveConfiguration(nullptr);
     if (pepper_vpn_proxy_observer_) {
       pepper_vpn_proxy_observer_->OnUnbind();
@@ -221,15 +227,16 @@ void VpnServiceForExtensionAsh::CreateConfiguration(
   VpnConfiguration* configuration =
       CreateConfigurationInternal(configuration_name);
 
-  base::Value::Dict properties;
-  properties.Set(shill::kTypeProperty, shill::kTypeVPN);
-  properties.Set(shill::kNameProperty, configuration_name);
-  properties.Set(shill::kProviderHostProperty, extension_id());
-  properties.Set(shill::kObjectPathSuffixProperty, key);
-  properties.Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn);
-  properties.Set(shill::kProfileProperty, profile->path);
-  properties.Set(shill::kGuidProperty,
-                 base::Uuid::GenerateRandomV4().AsLowercaseString());
+  auto properties =
+      base::Value::Dict()
+          .Set(shill::kTypeProperty, shill::kTypeVPN)
+          .Set(shill::kNameProperty, configuration_name)
+          .Set(shill::kProviderHostProperty, extension_id())
+          .Set(shill::kObjectPathSuffixProperty, key)
+          .Set(shill::kProviderTypeProperty, shill::kProviderThirdPartyVpn)
+          .Set(shill::kProfileProperty, profile->path)
+          .Set(shill::kGuidProperty,
+               base::Uuid::GenerateRandomV4().AsLowercaseString());
 
   auto [success, failure] = AdaptCallback(std::move(callback));
   ash::NetworkHandler::Get()
@@ -248,13 +255,14 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
     const std::string& configuration_name,
     DestroyConfigurationCallback callback) {
   const std::string key = GetKey(extension_id(), configuration_name);
-  auto it = key_to_configuration_map_.find(key);
-  if (it == key_to_configuration_map_.end()) {
+
+  VpnConfiguration* configuration =
+      base::FindPtrOrNull(key_to_configuration_map_, key);
+  if (!configuration) {
     RunFailureCallback(std::move(callback), /*error_name=*/{},
                        "Unauthorized access.");
     return;
   }
-  VpnConfiguration* configuration = it->second.get();
 
   // Avoid const ref here since configuration gets removed before service_path
   // is used.
@@ -268,7 +276,8 @@ void VpnServiceForExtensionAsh::DestroyConfiguration(
   }
 
   if (active_configuration_ == configuration) {
-    configuration->OnPlatformMessage(api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+    configuration->OnPlatformMessage(
+        base::to_underlying(api_vpn::PlatformMessage::kDisconnected));
   }
 
   DestroyConfigurationInternal(configuration);
@@ -336,8 +345,8 @@ void VpnServiceForExtensionAsh::NotifyConnectionStateChanged(
   ash::ShillThirdPartyVpnDriverClient::Get()->UpdateConnectionState(
       active_configuration_->object_path(),
       connection_success
-          ? api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_CONNECTED
-          : api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_FAILURE,
+          ? base::to_underlying(api_vpn::VpnConnectionState::kConnected)
+          : base::to_underlying(api_vpn::VpnConnectionState::kFailure),
       std::move(success), std::move(failure));
 }
 
@@ -347,15 +356,16 @@ void VpnServiceForExtensionAsh::BindPepperVpnProxyObserver(
         pepper_vpn_proxy_observer,
     BindPepperVpnProxyObserverCallback callback) {
   const std::string key = GetKey(extension_id(), configuration_name);
-  auto it = key_to_configuration_map_.find(key);
-  if (it == key_to_configuration_map_.end()) {
+
+  VpnConfiguration* configuration =
+      base::FindPtrOrNull(key_to_configuration_map_, key);
+  if (!configuration) {
     RunFailureCallback(
         std::move(callback), /*error_name=*/{},
         "Unauthorized access. The configuration does not exist.");
     return;
   }
 
-  VpnConfiguration* configuration = it->second.get();
   if (active_configuration_ != configuration) {
     RunFailureCallback(std::move(callback), /*error_name=*/{},
                        "Unauthorized access. The configuration is not active.");
@@ -398,15 +408,14 @@ void VpnServiceForExtensionAsh::DispatchConfigureDialogEvent(
 void VpnServiceForExtensionAsh::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
-  auto it = service_path_to_configuration_map_.find(service_path);
-  if (it == service_path_to_configuration_map_.end()) {
+  VpnConfiguration* configuration =
+      base::FindPtrOrNull(service_path_to_configuration_map_, service_path);
+  if (!configuration) {
     // Ignore removal of a configuration unknown to VPN service, which means
     // the configuration was created internally by the platform or already
     // removed by the extension.
     return;
   }
-
-  VpnConfiguration* configuration = it->second;
 
   DispatchConfigRemovedEvent(configuration->configuration_name());
   DestroyConfigurationInternal(configuration);
@@ -572,12 +581,11 @@ void VpnServiceAsh::RegisterVpnServiceForExtension(
 void VpnServiceAsh::MaybeFailActiveConnectionAndDestroyConfigurations(
     const std::string& extension_id,
     bool destroy_configurations) {
-  auto it = extension_id_to_service_.find(extension_id);
-  if (it == extension_id_to_service_.end()) {
+  VpnServiceForExtensionAsh* service =
+      base::FindPtrOrNull(extension_id_to_service_, extension_id);
+  if (!service) {
     return;
   }
-  auto& service = it->second;
-
   service->NotifyConnectionStateChanged(
       /*connection_success=*/false, base::DoNothing());
 

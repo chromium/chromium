@@ -62,6 +62,7 @@ void ChannelProxy::Context::CreateChannel(
   DCHECK(!channel_);
   DCHECK_EQ(factory->GetIPCTaskRunner(), ipc_task_runner_);
   channel_ = factory->BuildChannel(this);
+  channel_->SetUrgentMessageObserver(urgent_message_observer_);
 
   Channel::AssociatedInterfaceSupport* support =
       channel_->GetAssociatedInterfaceSupport();
@@ -423,6 +424,12 @@ void ChannelProxy::Context::Send(Message* message) {
                                 base::WrapUnique(message)));
 }
 
+// Called on the listener's thread.
+void ChannelProxy::Context::SetUrgentMessageObserver(
+    UrgentMessageObserver* observer) {
+  urgent_message_observer_ = observer;
+}
+
 //-----------------------------------------------------------------------------
 
 // static
@@ -594,6 +601,12 @@ void ChannelProxy::ClearIPCTaskRunner() {
 }
 
 void ChannelProxy::OnChannelInit() {
+}
+
+void ChannelProxy::SetUrgentMessageObserver(UrgentMessageObserver* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!did_init_);
+  context_->SetUrgentMessageObserver(observer);
 }
 
 //-----------------------------------------------------------------------------

@@ -40,8 +40,6 @@ namespace {
 // Returns the actual value of `base_value` with corresponding post auction
 // signal such as `winning_bid`. Returns absl::nullopt if corresponding signal
 // is not available.
-// TODO(crbug.com/1385549): Pass in signals for script run time and signals
-// fetch time.
 absl::optional<double> GetBaseValue(
     auction_worklet::mojom::BaseValue base_value,
     double winning_bid,
@@ -82,8 +80,6 @@ absl::optional<absl::uint128> CalculateBucket(
     const auction_worklet::mojom::SignalBucketPtr& bucket_obj,
     absl::optional<double> base) {
   if (!base.has_value()) {
-    // Once kScriptRunTime and kSignalsFetchTime are supported, this should not
-    // happen.
     return absl::nullopt;
   }
 
@@ -358,12 +354,16 @@ void SplitContributionsIntoBatchesThenSendToHost(
   for (auto& [debug_mode_details, contributions] : contributions_map) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote_host;
 
+    // TODO(crbug.com/1481254): Allow specifying the
+    // `aggregation_coordinator_origin`.
     bool bound = pa_manager.BindNewReceiver(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
         PrivateAggregationBudgetKey::Api::kProtectedAudience,
         /*context_id=*/absl::nullopt,
-        /*timeout=*/absl::nullopt, remote_host.BindNewPipeAndPassReceiver());
+        /*timeout=*/absl::nullopt,
+        /*aggregation_coordinator_origin=*/absl::nullopt,
+        remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID
     // is set), so this should always succeed.

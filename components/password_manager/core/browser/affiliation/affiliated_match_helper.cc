@@ -133,7 +133,7 @@ void AffiliatedMatchHelper::GetAffiliatedAndGroupedRealms(
 
 void AffiliatedMatchHelper::InjectAffiliationAndBrandingInformation(
     std::vector<std::unique_ptr<PasswordForm>> forms,
-    PasswordFormsOrErrorCallback result_callback) {
+    base::OnceCallback<void(LoginsResultOrError)> result_callback) {
   std::vector<PasswordForm*> android_credentials;
   for (const auto& form : forms) {
     if (IsValidAndroidCredential(form.get())) {

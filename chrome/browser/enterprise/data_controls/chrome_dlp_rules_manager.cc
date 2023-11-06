@@ -4,6 +4,12 @@
 
 #include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 
+#include "base/feature_list.h"
+#include "base/notreached.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/prefs.h"
+#include "components/prefs/pref_service.h"
 #include "url/origin.h"
 
 namespace data_controls {
@@ -18,7 +24,19 @@ constexpr char kWildCardMatching[] = "*";
 
 }  // namespace
 
-ChromeDlpRulesManager::ChromeDlpRulesManager() = default;
+ChromeDlpRulesManager::ChromeDlpRulesManager(Profile* profile)
+    : profile_(profile) {
+  DCHECK(profile_);
+  if (base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
+    data_controls_rules_registrar_.Init(profile_->GetPrefs());
+    data_controls_rules_registrar_.Add(
+        kDataControlsRulesPref,
+        base::BindRepeating(&ChromeDlpRulesManager::OnDataControlsRulesUpdate,
+                            base::Unretained(this)));
+    OnDataControlsRulesUpdate();
+  }
+}
+
 ChromeDlpRulesManager::~ChromeDlpRulesManager() = default;
 
 Level ChromeDlpRulesManager::IsRestricted(const GURL& source,
@@ -286,6 +304,35 @@ ChromeDlpRulesManager::GetMaxJoinRestrictionLevelAndRuleId(
   }
 
   return MatchedRuleInfo(max_level, matched_rule_id, url_condition);
+}
+
+void ChromeDlpRulesManager::OnDataControlsRulesUpdate() {
+  DCHECK(profile_);
+  if (!base::FeatureList::IsEnabled(kEnableDesktopDataControls)) {
+    return;
+  }
+
+  rules_.clear();
+
+  const base::Value::List& rules_list =
+      profile_->GetPrefs()->GetList(kDataControlsRulesPref);
+
+  for (const base::Value& rule_value : rules_list) {
+    auto rule = Rule::Create(rule_value);
+
+    if (!rule) {
+      continue;
+    }
+
+    rules_.push_back(std::move(*rule));
+  }
+}
+
+void ChromeDlpRulesManager::OnDataLeakPreventionRulesUpdate() {
+  // Not supported on non-CrOS platforms, see
+  // `DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate()` for the CrOS
+  // implementation.
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace data_controls

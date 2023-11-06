@@ -10,6 +10,9 @@
 #include <string_view>
 
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace reporting {
@@ -226,8 +229,7 @@ bool RequestIdMatcher::MatchAndExplain(const base::Value::Dict& arg,
     *listener << "Request ID is empty.";
     return false;
   }
-  if (request_id->find_first_not_of("0123456789abcdefABCDEF") !=
-      std::string::npos) {
+  if (!base::ranges::all_of(*request_id, base::IsHexDigit<char>)) {
     *listener << "Request ID is not a hexadecimal number.";
     return false;
   }
@@ -399,6 +401,19 @@ bool SequenceInformationRecordMatcher::MatchAndExplainRecord(
       return false;
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (SequenceInformationDictionaryBuilder::GenerationGuidIsRequired()) {
+    const auto* generation_guid =
+        sequence_information->FindString("generationGuid");
+    if ((!generation_guid || generation_guid->empty())) {
+      *listener << "No key named \"sequenceInformation/generationGuid\" or the "
+                   "value is not a string in record "
+                << record << '.';
+      return false;
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return true;
 }
 

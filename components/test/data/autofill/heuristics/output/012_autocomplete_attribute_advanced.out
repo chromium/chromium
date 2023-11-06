@@ -9,7 +9,7 @@ UNKNOWN_TYPE | 3.name |  |  | 3.name_1
 EMAIL_ADDRESS | 3.email |  |  | 3.name_1
 UNKNOWN_TYPE | 3.o |  |  | 3.name_1
 UNKNOWN_TYPE | 3.address |  |  | 3.name_1
-PHONE_HOME_WHOLE_NUMBER | 4.phone |  |  | 4.phone_1
+PHONE_HOME_CITY_AND_NUMBER | 4.phone |  |  | 4.phone_1
 EMAIL_ADDRESS | 4.email |  |  | 4.phone_1
 UNKNOWN_TYPE | 4.a |  |  | 4.phone_1
 UNKNOWN_TYPE | 4.b |  |  | 4.phone_1

@@ -5,14 +5,13 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {VolumeInfo} from '../../externs/volume_info.js';
-
 import {CombinedReaders, EntryList, FakeEntryImpl, StaticReader, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
 import {reportPromise, waitUntil} from './test_error_reporting.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
 
+// @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any' type.
 function notreached(error) {
   assertTrue(false, 'NOTREACHED(): ' + (error.stack || error));
 }
@@ -37,11 +36,16 @@ function fakeVolumeEntry(volumeType, displayRoot, additionalProperties) {
   };
   Object.assign(fakeVolumeInfo, additionalProperties || {});
   // Create the VolumeEntry via casting (duck typing).
-  return new VolumeEntry(/** @type{!VolumeInfo} */ (fakeVolumeInfo));
+  return new VolumeEntry(
+      /** @type{!import("../../externs/volume_info.js").VolumeInfo} */ (
+          fakeVolumeInfo));
 }
 
-/**  Test constructor and default public attributes. */
-export function testEntryList(testReportCallback) {
+/**
+ * Test constructor and default public attributes.
+ * @param {()=>void} done
+ */
+export function testEntryList(done) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   assertEquals('My files', entryList.label);
@@ -62,6 +66,8 @@ export function testEntryList(testReportCallback) {
   let callCounter = 0;
   // How many times it was called with results?
   let resultCouter = 0;
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
     // It's called with readerResult==[] a last time to indicate no more files.
     callCounter++;
@@ -82,11 +88,14 @@ export function testEntryList(testReportCallback) {
         assertEquals(2, callCounter);
         assertEquals(1, resultCouter);
       }),
-      testReportCallback);
+      done);
 }
 
-/** Tests method EntryList.getParent. */
-export function testEntryListGetParent(testReportCallback) {
+/**
+ * Tests method EntryList.getParent.
+ * @param {()=>void} done
+ */
+export function testEntryListGetParent(done) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
   let callbackTriggered = false;
@@ -96,7 +105,7 @@ export function testEntryListGetParent(testReportCallback) {
     callbackTriggered = true;
     assertEquals(parentEntry, entryList);
   }, notreached /* error */);
-  reportPromise(waitUntil(() => callbackTriggered), testReportCallback);
+  reportPromise(waitUntil(() => callbackTriggered), done);
 }
 
 /** Tests method EntryList.addEntry. */
@@ -122,6 +131,11 @@ export function testEntryFindIndex() {
   const downloads = fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS);
   const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
 
+  // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: true;
+  // rootType: string; name: string; toURL: () => string; }' to type
+  // 'FileSystemEntry' may be a mistake because neither type sufficiently
+  // overlaps with the other. If this was intentional, convert the expression to
+  // 'unknown' first.
   const fakeEntry = /** @type{!Entry} */ ({
     isDirectory: true,
     rootType: VolumeManagerCommon.RootType.CROSTINI,
@@ -154,6 +168,9 @@ export function testEntryFindIndex() {
   assertEquals(1, entryList.getUIChildren().length);
 
   // Test removeChildEntry.
+  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
+  // | undefined' is not assignable to parameter of type 'FileSystemEntry |
+  // FilesAppEntry'.
   assertTrue(entryList.removeChildEntry(entryList.getUIChildren()[0]));
   assertEquals(0, entryList.getUIChildren().length);
   // Nothing left to remove.
@@ -173,6 +190,11 @@ export function testVolumeEntryFindIndex() {
   const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
   const android = fakeVolumeEntry(VolumeManagerCommon.VolumeType.ANDROID_FILES);
 
+  // @ts-ignore: error TS2352: Conversion of type '{ isDirectory: true;
+  // rootType: string; name: string; toURL: () => string; }' to type
+  // 'FileSystemEntry' may be a mistake because neither type sufficiently
+  // overlaps with the other. If this was intentional, convert the expression to
+  // 'unknown' first.
   const fakeEntry = /** @type{!Entry} */ ({
     isDirectory: true,
     rootType: VolumeManagerCommon.RootType.CROSTINI,
@@ -195,6 +217,8 @@ export function testVolumeEntryFindIndex() {
   // Test removeByVolumeType.
   assertTrue(
       volumeEntry.removeByVolumeType(VolumeManagerCommon.VolumeType.CROSTINI));
+  // @ts-ignore: error TS2341: Property 'children_' is private and only
+  // accessible within class 'VolumeEntry'.
   assertEquals(1, volumeEntry.children_.length);
   // Now crostini volume doesn't exist anymore, so should return False.
   assertFalse(
@@ -203,22 +227,34 @@ export function testVolumeEntryFindIndex() {
   // Test removeAllByRootType.
   volumeEntry.addEntry(fakeEntry);
   volumeEntry.addEntry(fakeEntry);
+  // @ts-ignore: error TS2341: Property 'children_' is private and only
+  // accessible within class 'VolumeEntry'.
   assertEquals(3, volumeEntry.children_.length);
   volumeEntry.removeAllByRootType(VolumeManagerCommon.RootType.CROSTINI);
+  // @ts-ignore: error TS2341: Property 'children_' is private and only
+  // accessible within class 'VolumeEntry'.
   assertEquals(1, volumeEntry.children_.length);
 
   // Test removeChildEntry.
+  // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry | FilesAppEntry
+  // | undefined' is not assignable to parameter of type 'FileSystemEntry |
+  // FilesAppEntry'.
   assertTrue(volumeEntry.removeChildEntry(volumeEntry.getUIChildren()[0]));
   assertEquals(0, volumeEntry.getUIChildren().length);
   // Nothing left to remove.
   assertFalse(volumeEntry.removeChildEntry(/** @type {Entry} */ ({})));
 }
 
-/** Tests method EntryList.getMetadata. */
-export function testEntryListGetMetadata(testReportCallback) {
+/**
+ * Tests method EntryList.getMetadata.
+ * @param {()=>void} done
+ */
+export function testEntryListGetMetadata(done) {
   const entryList =
       new EntryList('My files', VolumeManagerCommon.RootType.MY_FILES);
 
+  // @ts-ignore: error TS7034: Variable 'modificationTime' implicitly has type
+  // 'any' in some locations where its type cannot be determined.
   let modificationTime = null;
   entryList.getMetadata(metadata => {
     modificationTime = metadata.modificationTime;
@@ -227,25 +263,41 @@ export function testEntryListGetMetadata(testReportCallback) {
   // getMetadata runs asynchronously, so let's wait it to be called.
   reportPromise(
       waitUntil(() => {
+        // @ts-ignore: error TS7005: Variable 'modificationTime' implicitly has
+        // an 'any' type.
         return modificationTime !== null;
       }).then(() => {
         // Now we can check the final result, it returns "now", so let's just
         // check the type and 1 attribute here.
+        // @ts-ignore: error TS7005: Variable 'modificationTime' implicitly has
+        // an 'any' type.
         assertTrue(modificationTime instanceof Date);
+        // @ts-ignore: error TS7005: Variable 'modificationTime' implicitly has
+        // an 'any' type.
         assertTrue(!!modificationTime.getUTCFullYear());
       }),
-      testReportCallback);
+      done);
 }
 
-/** Tests StaticReader.readEntries. */
-export function testStaticReader(testReportCallback) {
+/**
+ * Tests StaticReader.readEntries.
+ * @param {()=>void} done
+ */
+export function testStaticReader(done) {
+  // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+  // 'FileSystemEntry | FilesAppEntry'.
   const reader = new StaticReader(['file1', 'file2']);
+  // @ts-ignore: error TS7034: Variable 'testResults' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const testResults = [];
   // How many times the reader callback |accumulateResults| has been called?
   let callCounter = 0;
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
     callCounter++;
     // merge on testResults.
+    // @ts-ignore: error TS7006: Parameter 'f' implicitly has an 'any' type.
     readerResult.map(f => testResults.push(f));
     if (readerResult.length > 0) {
       reader.readEntries(accumulateResults, () => {});
@@ -262,25 +314,41 @@ export function testStaticReader(testReportCallback) {
         // Now we can check the final result.
         assertEquals(2, callCounter);
         assertEquals(2, testResults.length);
+        // @ts-ignore: error TS7005: Variable 'testResults' implicitly has an
+        // 'any[]' type.
         assertEquals('file1', testResults[0]);
+        // @ts-ignore: error TS7005: Variable 'testResults' implicitly has an
+        // 'any[]' type.
         assertEquals('file2', testResults[1]);
       }),
-      testReportCallback);
+      done);
 }
 
-/** Tests CombinedReader.readEntries. */
-export function testCombinedReader(testReportCallback) {
+/**
+ * Tests CombinedReader.readEntries.
+ * @param {()=>void} done
+ */
+export function testCombinedReader(done) {
   const innerReaders = [
+    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+    // 'FileSystemEntry | FilesAppEntry'.
     new StaticReader(['file1']),
+    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+    // 'FileSystemEntry | FilesAppEntry'.
     new StaticReader(['file2']),
   ];
   const reader = new CombinedReaders(innerReaders);
+  // @ts-ignore: error TS7034: Variable 'testResults' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const testResults = [];
   // How many times the reader callback |accumulateResults| has been called?
   let callCounter = 0;
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
     callCounter++;
     // merge on testResults.
+    // @ts-ignore: error TS7006: Parameter 'f' implicitly has an 'any' type.
     readerResult.map(f => testResults.push(f));
     if (readerResult.length > 0) {
       reader.readEntries(accumulateResults, () => {});
@@ -297,34 +365,52 @@ export function testCombinedReader(testReportCallback) {
         // Now we can check the final result.
         assertEquals(3, callCounter);
         assertEquals(2, testResults.length);
+        // @ts-ignore: error TS7005: Variable 'testResults' implicitly has an
+        // 'any[]' type.
         assertEquals('file1', testResults[0]);
+        // @ts-ignore: error TS7005: Variable 'testResults' implicitly has an
+        // 'any[]' type.
         assertEquals('file2', testResults[1]);
       }),
-      testReportCallback);
+      done);
 }
 
-export function testCombinedReaderError(testReportCallback) {
+/**
+ * @param {()=>void} done
+ */
+export function testCombinedReaderError(done) {
   const expectedError = new Error('a fake error');
   const alwaysFailReader = {
+    // @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any' type.
     readEntries: (success, error) => {
       error(expectedError);
     },
   };
   const innerReaders = [
+    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+    // 'FileSystemEntry | FilesAppEntry'.
     new StaticReader(['file1']),
     alwaysFailReader,
   ];
   const reader = new CombinedReaders(innerReaders);
+  // @ts-ignore: error TS7034: Variable 'errors' implicitly has type 'any[]' in
+  // some locations where its type cannot be determined.
   const errors = [];
+  // @ts-ignore: error TS7006: Parameter 'error' implicitly has an 'any' type.
   const accumulateFailures = (error) => {
     errors.push(error);
   };
 
   let callCounter = 0;
+  // @ts-ignore: error TS7034: Variable 'testResults' implicitly has type
+  // 'any[]' in some locations where its type cannot be determined.
   const testResults = [];
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
     callCounter++;
     // merge on testResults.
+    // @ts-ignore: error TS7006: Parameter 'f' implicitly has an 'any' type.
     readerResult.map(f => testResults.push(f));
     if (readerResult.length > 0) {
       reader.readEntries(accumulateResults, accumulateFailures);
@@ -342,12 +428,16 @@ export function testCombinedReaderError(testReportCallback) {
         // Now we can check the final result.
         assertEquals(1, callCounter);
         assertEquals(1, testResults.length);
+        // @ts-ignore: error TS7005: Variable 'testResults' implicitly has an
+        // 'any[]' type.
         assertEquals('file1', testResults[0]);
 
         assertEquals(1, errors.length);
+        // @ts-ignore: error TS7005: Variable 'errors' implicitly has an 'any[]'
+        // type.
         assertEquals(expectedError, errors[0]);
       }),
-      testReportCallback);
+      done);
 }
 
 /**
@@ -370,6 +460,8 @@ export function testVolumeEntry() {
   assertEquals(fakeRootEntry, volumeEntry.getNativeEntry());
   // Downloads volume is displayed with MyFiles icon.
   assertEquals(VolumeManagerCommon.VolumeType.MY_FILES, volumeEntry.iconName);
+  // @ts-ignore: error TS2339: Property 'rootURL' does not exist on type
+  // 'FileSystem'.
   assertEquals('filesystem:fake-fs/', volumeEntry.filesystem.rootURL);
   assertEquals('/', volumeEntry.fullPath);
   assertEquals('filesystem:fake-fs/', volumeEntry.toURL());
@@ -380,8 +472,13 @@ export function testVolumeEntry() {
   assertFalse(volumeEntry.isFile);
 }
 
-export function testVolumeEntryCreateReader(testReportCallback) {
+/**
+ * @param {()=>void} done
+ */
+export function testVolumeEntryCreateReader(done) {
   const fakeRootEntry = createFakeDisplayRoot();
+  // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+  // 'FileSystemEntry | FilesAppEntry'.
   fakeRootEntry.createReader = () => new StaticReader(['file1']);
   const volumeEntry =
       fakeVolumeEntry(VolumeManagerCommon.VolumeType.DOWNLOADS, fakeRootEntry);
@@ -392,8 +489,13 @@ export function testVolumeEntryCreateReader(testReportCallback) {
   volumeEntry.addEntry(android);
   const reader = volumeEntry.createReader();
 
+  // @ts-ignore: error TS7034: Variable 'readFiles' implicitly has type 'any[]'
+  // in some locations where its type cannot be determined.
   const readFiles = [];
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
+    // @ts-ignore: error TS7006: Parameter 'f' implicitly has an 'any' type.
     readerResult.map((f) => readFiles.push(f));
     if (readerResult.length > 0) {
       reader.readEntries(accumulateResults);
@@ -408,24 +510,43 @@ export function testVolumeEntryCreateReader(testReportCallback) {
       }).then(() => {
         // Now we can check the final result.
         assertEquals(3, readFiles.length);
+        // @ts-ignore: error TS7005: Variable 'readFiles' implicitly has an
+        // 'any[]' type.
         assertEquals('file1', readFiles[0]);
+        // @ts-ignore: error TS7005: Variable 'readFiles' implicitly has an
+        // 'any[]' type.
         assertEquals(crostini, readFiles[1]);
+        // @ts-ignore: error TS7005: Variable 'readFiles' implicitly has an
+        // 'any[]' type.
         assertEquals(android, readFiles[2]);
       }),
-      testReportCallback);
+      done);
 }
 
-/** Tests VolumeEntry createReader when root entry isn't resolved yet. */
-export function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
+/**
+ * Tests VolumeEntry createReader when root entry isn't resolved yet.
+ * @param {()=>void} done
+ */
+export function testVolumeEntryCreateReaderUnresolved(done) {
   // A VolumeInfo that doesn't resolve the display root.
-  const fakeVolumeInfo = /** @type{!VolumeInfo} */ ({
-    displayRoot: null,
-    label: 'Fake Filesystem label',
-    volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
-    resolveDisplayRoot: (successCallback, errorCallback) => {
-        // Do nothing here.
-    },
-  });
+  const fakeVolumeInfo =
+      // @ts-ignore: error TS2352: Conversion of type '{ displayRoot: null;
+      // label: string; volumeType: string; resolveDisplayRoot:
+      // (successCallback: ((entry: FileSystemDirectoryEntry) => void) |
+      // undefined, errorCallback: ((_: any) => void) | undefined) => void; }'
+      // to type 'VolumeInfo' may be a mistake because neither type sufficiently
+      // overlaps with the other. If this was intentional, convert the
+      // expression to 'unknown' first.
+      /** @type{!import("../../externs/volume_info.js").VolumeInfo} */ ({
+        displayRoot: null,
+        label: 'Fake Filesystem label',
+        volumeType: VolumeManagerCommon.VolumeType.DOWNLOADS,
+        // @ts-ignore: error TS6133: 'errorCallback' is declared but its value
+        // is never read.
+        resolveDisplayRoot: (successCallback, errorCallback) => {
+            // Do nothing here.
+        },
+      });
 
   const volumeEntry = new VolumeEntry(fakeVolumeInfo);
   const crostini = fakeVolumeEntry(VolumeManagerCommon.VolumeType.CROSTINI);
@@ -441,8 +562,13 @@ export function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
   volumeEntry.addEntry(android);
   const reader = volumeEntry.createReader();
 
+  // @ts-ignore: error TS7034: Variable 'readFiles' implicitly has type 'any[]'
+  // in some locations where its type cannot be determined.
   const readFiles = [];
+  // @ts-ignore: error TS7006: Parameter 'readerResult' implicitly has an 'any'
+  // type.
   const accumulateResults = (readerResult) => {
+    // @ts-ignore: error TS7006: Parameter 'f' implicitly has an 'any' type.
     readerResult.map((f) => readFiles.push(f));
     if (readerResult.length > 0) {
       reader.readEntries(accumulateResults);
@@ -457,21 +583,32 @@ export function testVolumeEntryCreateReaderUnresolved(testReportCallback) {
       }).then(() => {
         // Now we can check the final result.
         assertEquals(2, readFiles.length);
+        // @ts-ignore: error TS7005: Variable 'readFiles' implicitly has an
+        // 'any[]' type.
         assertEquals(crostini, readFiles[0]);
+        // @ts-ignore: error TS7005: Variable 'readFiles' implicitly has an
+        // 'any[]' type.
         assertEquals(android, readFiles[1]);
       }),
-      testReportCallback);
+      done);
 }
 
 /**
  * Tests VolumeEntry getFile and getDirectory methods.
+ * @param {()=>void} done
  */
-export function testVolumeEntryGetDirectory(testReportCallback) {
+export function testVolumeEntryGetDirectory(done) {
   const root = createFakeDisplayRoot();
+  // @ts-ignore: error TS2339: Property 'populate' does not exist on type
+  // 'FileSystem'.
   root.filesystem.populate(['/bla/', '/bla.txt']);
 
   const volumeEntry = fakeVolumeEntry(null, root);
+  // @ts-ignore: error TS7034: Variable 'foundDir' implicitly has type 'any' in
+  // some locations where its type cannot be determined.
   let foundDir = null;
+  // @ts-ignore: error TS7034: Variable 'foundFile' implicitly has type 'any' in
+  // some locations where its type cannot be determined.
   let foundFile = null;
   volumeEntry.getDirectory('/bla', {create: false}, (entry) => {
     foundDir = entry;
@@ -482,20 +619,27 @@ export function testVolumeEntryGetDirectory(testReportCallback) {
 
   reportPromise(
       waitUntil(() => {
+        // @ts-ignore: error TS7005: Variable 'foundFile' implicitly has an
+        // 'any' type.
         return foundDir !== null && foundFile !== null;
       }),
-      testReportCallback);
+      done);
 }
 
 /**
  * Tests VolumeEntry which initially doesn't have displayRoot.
+ * @param {()=>void} done
  */
-export function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
+export function testVolumeEntryDelayedDisplayRoot(done) {
   let callbackTriggered = false;
   const fakeRootEntry = createFakeDisplayRoot();
 
   // Create an entry using a VolumeInfo without displayRoot.
+  // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
+  // parameter of type 'FileSystemDirectoryEntry | undefined'.
   const volumeEntry = fakeVolumeEntry(null, null, {
+    // @ts-ignore: error TS7006: Parameter 'errorCallback' implicitly has an
+    // 'any' type.
     resolveDisplayRoot: function(successCallback, errorCallback) {
       setTimeout(() => {
         successCallback(fakeRootEntry);
@@ -512,11 +656,14 @@ export function testVolumeEntryDelayedDisplayRoot(testReportCallback) {
         // Eventually rootEntry_ gets the value.
         assertEquals(fakeRootEntry, volumeEntry.getNativeEntry());
       }),
-      testReportCallback);
+      done);
 }
 
-/** Tests VolumeEntry.getParent */
-export function testVolumeEntryGetParent(testReportCallback) {
+/**
+ * Tests VolumeEntry.getParent
+ * @param {()=>void} done
+ */
+export function testVolumeEntryGetParent(done) {
   const volumeEntry = fakeVolumeEntry(null);
   let callbackTriggered = false;
   volumeEntry.getParent(parentEntry => {
@@ -525,12 +672,17 @@ export function testVolumeEntryGetParent(testReportCallback) {
     // web spec says.
     assertEquals(parentEntry, volumeEntry);
   }, notreached /* error */);
-  reportPromise(waitUntil(() => callbackTriggered), testReportCallback);
+  reportPromise(waitUntil(() => callbackTriggered), done);
 }
 
-/**  Tests VolumeEntry.getMetadata */
-export function testVolumeEntryGetMetadata(testReportCallback) {
+/**
+ * Tests VolumeEntry.getMetadata
+ * @param {()=>void} done
+ */
+export function testVolumeEntryGetMetadata(done) {
   const volumeEntry = fakeVolumeEntry(null);
+  // @ts-ignore: error TS7034: Variable 'modificationTime' implicitly has type
+  // 'any' in some locations where its type cannot be determined.
   let modificationTime = null;
   volumeEntry.getMetadata(metadata => {
     modificationTime = metadata.modificationTime;
@@ -539,9 +691,11 @@ export function testVolumeEntryGetMetadata(testReportCallback) {
   // getMetadata runs asynchronously, so let's wait it to be called.
   reportPromise(
       waitUntil(() => {
+        // @ts-ignore: error TS7005: Variable 'modificationTime' implicitly has
+        // an 'any' type.
         return modificationTime !== null;
       }),
-      testReportCallback);
+      done);
 }
 
 /**
@@ -560,8 +714,9 @@ export function testEntryListAddEntrySetsPrefix() {
 
 /**
  * Test FakeEntry, which is only static data.
+ * @param {()=>void} done
  */
-export function testFakeEntry(testReportCallback) {
+export function testFakeEntry(done) {
   let fakeEntry =
       new FakeEntryImpl('label', VolumeManagerCommon.RootType.CROSTINI);
 
@@ -603,5 +758,5 @@ export function testFakeEntry(testReportCallback) {
         // It should be called for getMetadata and for getParent.
         return callCounter == 2;
       }),
-      testReportCallback);
+      done);
 }

@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+[PASS] Link preload "as" value for "Image" should be "image".
+[PASS] Link preload "as" value for "images" should be "".
+[PASS] Link preload "as" value for "scripT" should be "script".
+[PASS] Link preload "as" value for "style" should be "style".
+[PASS] Link preload "as" value for "" should be "".
+[PASS] Link preload "as" value for "foNt" should be "font".
+[PASS] Link preload "as" value for "foobar" should be "".
+[FAIL] Link preload "as" value for "video" should be "video".
+  assert_equals: expected "video" but got ""
+[FAIL] Link preload "as" value for "audio" should be "audio".
+  assert_equals: expected "audio" but got ""
+[PASS] Link preload "as" value for "track" should be "track".
+[PASS] Link preload "as" value for "fetch" should be "fetch".
+Harness: the test ran to completion.
+

@@ -41,6 +41,18 @@ source_set("constants") {
   frameworks = [ "Foundation.framework" ]
 }
 
+source_set("extension_open_url") {
+  sources = [
+    "extension_open_url.h",
+    "extension_open_url.mm",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}
+
 source_set("string_util") {
   sources = [
     "string_util.h",

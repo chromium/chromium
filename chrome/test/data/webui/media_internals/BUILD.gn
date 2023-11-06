@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "media_internals"
-
   files = [
     "integration_test.js",
     "manager_test.js",

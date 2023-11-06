@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, SuccessInstall) {
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      CreateDialogCallback(),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      CreateDialogCallback(),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -92,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, MultipleInstalls) {
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      CreateDialogCallback(),
       base::BindLambdaForTesting([&](const webapps::AppId& app_id,
                                      webapps::InstallResultCode code) {
         EXPECT_EQ(
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, InvalidManifest) {
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      CreateDialogCallback(),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code,
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest, UserDeclineInstall) {
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
+
       CreateDialogCallback(/*accept=*/false),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
@@ -163,8 +163,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      web_contents->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents->GetWeakPtr(), CreateDialogCallback(),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kWebContentsDestroyed);
@@ -194,8 +193,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
 
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
-      web_contents->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
+      web_contents->GetWeakPtr(), CreateDialogCallback(),
       base::BindLambdaForTesting(
           [&](const webapps::AppId& app_id, webapps::InstallResultCode code) {
             EXPECT_EQ(code, webapps::InstallResultCode::kSuccessNewInstall);
@@ -235,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       web_contents->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
+
       CreateDialogCallback(
           /*accept=*/true,
           /*user_display_mode=*/mojom::UserDisplayMode::kStandalone),
@@ -262,8 +260,7 @@ IN_PROC_BROWSER_TEST_F(FetchManifestAndInstallCommandTest,
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false, CreateDialogCallback(),
-      install_future.GetCallback(),
+      CreateDialogCallback(), install_future.GetCallback(),
       /*use_fallback=*/false);
   ASSERT_TRUE(install_future.Wait());
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),

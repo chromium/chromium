@@ -12,7 +12,9 @@
 #include <vector>
 
 #include "net/base/net_export.h"
+#include "net/base/proxy_server.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -21,12 +23,15 @@ class Value;
 
 namespace net {
 
-class ProxyServer;
+class ProxyChain;
 class NetLogWithSource;
 
-// This class is used to hold a list of proxies returned by GetProxyForUrl or
-// manually configured. It handles proxy fallback if multiple servers are
-// specified.
+// This class is used to hold a prioritized list of proxy chains. It handles
+// fallback to lower-priority chains if multiple chains are specified.
+//
+// TODO(crbug.com/1491092): For compatibility until proxy chains are used
+// everywhere, this class can also provide a list of ProxyServers only when
+// there are no multi-proxy chains in the list. This support will be removed.
 class NET_EXPORT_PRIVATE ProxyList {
  public:
   ProxyList();
@@ -36,22 +41,32 @@ class NET_EXPORT_PRIVATE ProxyList {
   ProxyList& operator=(ProxyList&& other);
   ~ProxyList();
 
-  // Initializes the proxy list to a string containing one or more proxy servers
-  // delimited by a semicolon.
+  // Initializes the ProxyList to contain one or more ProxyChains.
+  // `proxy_uri_list` is a semicolon-delimited list of proxy URIs. Note that
+  // multi-proxy chains cannot be represented in this format.
   void Set(const std::string& proxy_uri_list);
 
-  // Set the proxy list to a single entry, |proxy_server|.
+  // Set the proxy list to a single entry, |proxy_chain|.
+  void SetSingleProxyChain(const ProxyChain& proxy_chain);
+
+  // Set the proxy list to a single entry, a chain containing |proxy_server|.
   void SetSingleProxyServer(const ProxyServer& proxy_server);
 
-  // Append a single proxy server to the end of the proxy list.
+  // Append a single proxy chain to the end of the proxy list.
+  void AddProxyChain(const ProxyChain& proxy_chain);
+
+  // Append a single proxy chain containing the given server to the end of the
+  // proxy list.
   void AddProxyServer(const ProxyServer& proxy_server);
 
-  // De-prioritizes the proxies that are cached as not working but are allowed
-  // to be reconsidered, by moving them to the end of the fallback list.
-  void DeprioritizeBadProxies(const ProxyRetryInfoMap& proxy_retry_info);
+  // De-prioritizes the proxy chains that are cached as not working but are
+  // allowed to be reconsidered, by moving them to the end of the fallback list.
+  void DeprioritizeBadProxyChains(const ProxyRetryInfoMap& proxy_retry_info);
 
-  // Delete any entry which doesn't have one of the specified proxy schemes.
-  // |scheme_bit_field| is a bunch of ProxyServer::Scheme bitwise ORed together.
+  // Deletes all chains which don't exclusively consist of proxy servers with
+  // the specified schemes. `scheme_bit_field` is a bunch of
+  // `ProxyServer::Scheme` bitwise ORed together. This is used to remove proxies
+  // that do not support specific functionality such as websockets.
   void RemoveProxiesWithoutScheme(int scheme_bit_field);
 
   // Clear the proxy list.
@@ -66,12 +81,21 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns true if |*this| lists the same proxies as |other|.
   bool Equals(const ProxyList& other) const;
 
-  // Returns the first proxy server in the list. It is only valid to call
-  // this if !IsEmpty().
+  // Returns the single server of the first proxy chain in the list. It is only
+  // valid to call this if !IsEmpty() and no chains in the list are multi-proxy.
+  // TODO(crbug.com/1491092): Remove this method.
   const ProxyServer& Get() const;
 
-  // Returns all proxy servers in the list.
+  // Returns the first proxy chain in the list.
+  const ProxyChain& First() const;
+
+  // Returns all proxy servers in the list. It is only valid to call this
+  // if no chain in the list is multi-proxy.
+  // TODO(crbug.com/1491092): Remove this method in favor of `AllChains()`.
   const std::vector<ProxyServer>& GetAll() const;
+
+  // Returns all proxy chains in the list.
+  const std::vector<ProxyChain>& AllChains() const;
 
   // Sets the list by parsing the PAC result |pac_string|.
   // Some examples for |pac_string|:
@@ -88,30 +112,30 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns a serialized value for the list.
   base::Value ToValue() const;
 
-  // Marks the current proxy server as bad and deletes it from the list. The
+  // Marks the current proxy chain as bad and deletes it from the list. The
   // list of known bad proxies is given by |proxy_retry_info|. |net_error|
-  // should contain the network error encountered when this proxy was tried, if
-  // any. If this fallback is not because of a network error, then |OK| should
-  // be passed in (eg. for reasons such as local policy). Returns true if there
-  // is another server available in the list.
+  // should contain the network error encountered when this proxy chain was
+  // tried, if any. If this fallback is not because of a network error, then
+  // |OK| should be passed in (eg. for reasons such as local policy). Returns
+  // true if there is another chain available in the list.
   bool Fallback(ProxyRetryInfoMap* proxy_retry_info,
                 int net_error,
                 const NetLogWithSource& net_log);
 
-  // Updates |proxy_retry_info| to indicate that the first proxy in the list
-  // is bad. This is distinct from Fallback(), above, to allow updating proxy
-  // retry information without modifying a given transction's proxy list. Will
-  // retry after |retry_delay| if positive, and will use the default proxy retry
-  // duration otherwise. It may reconsider the proxy beforehand if |reconsider|
-  // is true. Additionally updates |proxy_retry_info| with
+  // Updates |proxy_retry_info| to indicate that the first proxy chain in the
+  // list is bad. This is distinct from Fallback(), above, to allow updating
+  // proxy retry information without modifying a given transction's proxy list.
+  // Will retry after |retry_delay| if positive, and will use the default proxy
+  // retry duration otherwise. It may reconsider the proxy beforehand if
+  // |reconsider| is true. Additionally updates |proxy_retry_info| with
   // |additional_proxies_to_bypass|. |net_error| should contain the network
-  // error countered when this proxy was tried, or OK if the proxy retry info is
-  // being updated for a non-network related reason (e.g. local policy).
+  // error countered when this proxy chain was tried, or OK if the proxy retry
+  // info is being updated for a non-network related reason (e.g. local policy).
   void UpdateRetryInfoOnFallback(
       ProxyRetryInfoMap* proxy_retry_info,
       base::TimeDelta retry_delay,
       bool reconsider,
-      const std::vector<ProxyServer>& additional_proxies_to_bypass,
+      const std::vector<ProxyChain>& additional_proxies_to_bypass,
       int net_error,
       const NetLogWithSource& net_log) const;
 
@@ -121,15 +145,24 @@ class NET_EXPORT_PRIVATE ProxyList {
   // |try_while_bad| is true. |net_error| should contain the network error
   // countered when this proxy was tried, or OK if the proxy retry info is
   // being updated for a non-network related reason (e.g. local policy).
-  void AddProxyToRetryList(ProxyRetryInfoMap* proxy_retry_info,
-                           base::TimeDelta retry_delay,
-                           bool try_while_bad,
-                           const ProxyServer& proxy_to_retry,
-                           int net_error,
-                           const NetLogWithSource& net_log) const;
+  void AddProxyChainToRetryList(ProxyRetryInfoMap* proxy_retry_info,
+                                base::TimeDelta retry_delay,
+                                bool try_while_bad,
+                                const ProxyChain& proxy_chain_to_retry,
+                                int net_error,
+                                const NetLogWithSource& net_log) const;
 
-  // List of proxies.
-  std::vector<ProxyServer> proxies_;
+  // Update `proxy_servers_` based on `proxy_chains_`.
+  void UpdateProxyServers();
+
+  // List of proxy chains.
+  std::vector<ProxyChain> proxy_chains_;
+
+  // List of ProxyServers, or nullopt if any chains in `proxy_chains_` are
+  // multi-proxy. This is kept in sync with `proxy_chains_`. This begins as an
+  // empty vector and becomes `nullopt` when a multi-proxy chain is added.
+  absl::optional<std::vector<ProxyServer>> proxy_servers_ =
+      std::vector<ProxyServer>();
 };
 
 }  // namespace net

@@ -320,12 +320,11 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"bluetoothEnabledA11YLabel", IDS_SETTINGS_BLUETOOTH_ENABLED_A11Y_LABEL},
       {"bluetoothDisabledA11YLabel",
        IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL},
-
       {"savedDeviceItemA11yLabel", IDS_SAVED_DEVICE_ITEM_A11Y_LABEL},
-
       {"savedDeviceItemButtonA11yLabel",
-       IDS_SAVED_DEVICE_LIST_ITEM_BUTTON_A11Y_LABEL}
-
+       IDS_SAVED_DEVICE_LIST_ITEM_BUTTON_A11Y_LABEL},
+      {"bluetoothMenuItemDescriptionMultipleDevicesConnected",
+       IDS_OS_SETTINGS_BLUETOOTH_MENU_ITEM_DESCRIPTION_MULTIPLE_DEVICES_CONNECTED},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("enableFastPairFlag", features::IsFastPairEnabled());

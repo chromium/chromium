@@ -18,7 +18,7 @@
 namespace partition_alloc::internal::base::bits {
 
 // Returns true iff |value| is a power of 2.
-template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
+template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr bool IsPowerOfTwo(T value) {
   // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
   //
@@ -75,8 +75,7 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // do better, but we'll avoid doing that unless we see proof that we need to.
 template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE constexpr
-    typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            int>::type
+    typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountLeadingZeroBits(T value) {
   static_assert(bits > 0, "invalid instantiation");
 #if defined(COMPILER_MSVC) && !defined(__clang__)
@@ -101,8 +100,7 @@ PA_ALWAYS_INLINE constexpr
 
 template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE constexpr
-    typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            int>::type
+    typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountTrailingZeroBits(T value) {
 #if defined(COMPILER_MSVC) && !defined(__clang__)
   // We would prefer to use the _BitScanForward(64) intrinsics, but they
@@ -145,7 +143,7 @@ constexpr int Log2Ceiling(uint32_t n) {
 // Can be used instead of manually shifting a 1 to the left.
 template <typename T>
 constexpr T LeftmostBit() {
-  static_assert(std::is_integral<T>::value,
+  static_assert(std::is_integral_v<T>,
                 "This function can only be used with integral types.");
   T one(1u);
   return one << (8 * sizeof(T) - 1);

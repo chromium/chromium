@@ -126,7 +126,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
           compression_session,
           kVTCompressionPropertyKey_UsingHardwareAcceleratedVideoEncoder,
           kCFAllocatorDefault, cf_using_hardware.InitializeInto()) == 0) {
-    info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware);
+    info.is_hardware_accelerated = CFBooleanGetValue(cf_using_hardware.get());
   }
 #else
   // iOS is always hardware-accelerated.
@@ -139,7 +139,7 @@ VideoEncoderInfo GetVideoEncoderInfo(VTSessionRef compression_session,
           compression_session, kVTCompressionPropertyKey_MaxFrameDelayCount,
           kCFAllocatorDefault, max_frame_delay_count.InitializeInto()) == 0) {
     int32_t frame_delay;
-    if (CFNumberGetValue(max_frame_delay_count, kCFNumberSInt32Type,
+    if (CFNumberGetValue(max_frame_delay_count.get(), kCFNumberSInt32Type,
                          &frame_delay) &&
         frame_delay != kVTUnlimitedFrameDelayCount) {
       max_frame_delay_property = frame_delay;
@@ -387,7 +387,7 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
     return false;
   }
 
-  auto encoder_info = GetVideoEncoderInfo(compression_session_, profile_);
+  auto encoder_info = GetVideoEncoderInfo(compression_session_.get(), profile_);
 
   // Report whether hardware encode is being used.
   if (!encoder_info.is_hardware_accelerated) {
@@ -423,11 +423,11 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     //   * If we're uploading to a new pixel buffer and the provided frame color
     //     space is valid that'll be set on the pixel buffer.
     //   * If the frame color space is not valid, BT709 will be assumed.
-    auto frame_cs = GetImageBufferColorSpace(pixel_buffer);
+    auto frame_cs = GetImageBufferColorSpace(pixel_buffer.get());
     if (encoder_color_space_ && frame_cs != encoder_color_space_) {
       if (pending_encodes_) {
-        auto status = VTCompressionSessionCompleteFrames(compression_session_,
-                                                         kCMTimeInvalid);
+        auto status = VTCompressionSessionCompleteFrames(
+            compression_session_.get(), kCMTimeInvalid);
         if (status != noErr) {
           NotifyErrorStatus(
               {EncoderStatus::Codes::kEncoderFailedFlush,
@@ -472,8 +472,8 @@ void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   // We can pass the ownership of |request| to the encode callback if
   // successful. Otherwise let it fall out of scope.
   OSStatus status = VTCompressionSessionEncodeFrame(
-      compression_session_, pixel_buffer, timestamp_cm, duration_cm,
-      frame_props, reinterpret_cast<void*>(request.get()), nullptr);
+      compression_session_.get(), pixel_buffer.get(), timestamp_cm, duration_cm,
+      frame_props.get(), reinterpret_cast<void*>(request.get()), nullptr);
   if (status != noErr) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "VTCompressionSessionEncodeFrame failed: " +
@@ -576,8 +576,8 @@ void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
   // Even though this will block until all frames are returned, the frames will
   // be posted to the current task runner, so we can't run the flush callback
   // at this time.
-  OSStatus status =
-      VTCompressionSessionCompleteFrames(compression_session_, kCMTimeInvalid);
+  OSStatus status = VTCompressionSessionCompleteFrames(
+      compression_session_.get(), kCMTimeInvalid);
 
   if (status != noErr) {
     OSSTATUS_DLOG(ERROR, status)
@@ -773,7 +773,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
   // are guaranteed that the output callback will not execute again.
   OSStatus status = VTCompressionSessionCreate(
       kCFAllocatorDefault, input_size.width(), input_size.height(),
-      VideoCodecToCMVideoCodec(codec), encoder_spec,
+      VideoCodecToCMVideoCodec(codec), encoder_spec.get(),
       nullptr /* sourceImageBufferAttributes */,
       nullptr /* compressedDataAllocator */,
       &VTVideoEncodeAccelerator::CompressionCallback,
@@ -890,7 +890,7 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
 
 void VTVideoEncodeAccelerator::DestroyCompressionSession() {
   if (compression_session_) {
-    VTCompressionSessionInvalidate(compression_session_);
+    VTCompressionSessionInvalidate(compression_session_.get());
     compression_session_.reset();
   }
 }

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_auth_cache.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -44,6 +45,17 @@ const std::u16string kWileCoyote(u"wilecoyote");
 AuthCredentials CreateASCIICredentials(const char* username,
                                        const char* password) {
   return AuthCredentials(ASCIIToUTF16(username), ASCIIToUTF16(password));
+}
+
+bool DoesUrlMatchFilter(const std::set<std::string>& domains, const GURL& url) {
+  std::string url_registerable_domain =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  bool found_domain = (domains.find(url_registerable_domain != ""
+                                        ? url_registerable_domain
+                                        : url.host()) != domains.end());
+
+  return found_domain;
 }
 
 }  // namespace
@@ -776,7 +788,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
   ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:05", &test_time1));
   base::Time test_time2;
   ASSERT_TRUE(base::Time::FromString("30 May 2018 12:00:15", &test_time2));
-  cache.ClearEntriesAddedBetween(test_time1, test_time2);
+  cache.ClearEntriesAddedBetween(test_time1, test_time2,
+                                 base::RepeatingCallback<bool(const GURL&)>());
 
   // Realms 1 and 2 are older than 12:00:05 and should not be cleared
   EXPECT_NE(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
@@ -805,7 +818,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
                                   NetworkAnonymizationKey()));
 
   cache.ClearEntriesAddedBetween(start_time - base::Seconds(1),
-                                 base::Time::Max());
+                                 base::Time::Max(),
+                                 base::RepeatingCallback<bool(const GURL&)>());
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,
                                   kRealm1, HttpAuth::AUTH_SCHEME_BASIC,
                                   NetworkAnonymizationKey()));
@@ -814,6 +828,37 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetween) {
                                   NetworkAnonymizationKey()));
   EXPECT_EQ(nullptr, cache.LookupByPath(scheme_host_port, HttpAuth::AUTH_SERVER,
                                         NetworkAnonymizationKey(), "/baz/"));
+}
+
+TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenByFilter) {
+  url::SchemeHostPort scheme_host_port_1(GURL("http://foobar.com"));
+  url::SchemeHostPort scheme_host_port_2(GURL("http://foobar2.com"));
+
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::Now());
+
+  HttpAuthCache cache(false /* key_entries_by_network_anonymization_key */);
+  cache.set_clock_for_testing(&test_clock);
+
+  cache.Add(scheme_host_port_1, HttpAuth::AUTH_SERVER, kRealm1,
+            HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+            "basic realm=Realm1", AuthCredentials(kAlice, k123), "/");
+  cache.Add(scheme_host_port_2, HttpAuth::AUTH_SERVER, kRealm1,
+            HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
+            "basic realm=Realm1", AuthCredentials(kRoot, kWileCoyote), "/");
+
+  cache.ClearEntriesAddedBetween(
+      base::Time::Min(), base::Time::Max(),
+      base::BindRepeating(&DoesUrlMatchFilter,
+                          std::set<std::string>({scheme_host_port_1.host()})));
+
+  // Only foobar.com should be cleared while foobar2.com remains.
+  EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port_1, HttpAuth::AUTH_SERVER,
+                                  kRealm1, HttpAuth::AUTH_SCHEME_BASIC,
+                                  NetworkAnonymizationKey()));
+  EXPECT_NE(nullptr, cache.Lookup(scheme_host_port_2, HttpAuth::AUTH_SERVER,
+                                  kRealm1, HttpAuth::AUTH_SCHEME_BASIC,
+                                  NetworkAnonymizationKey()));
 }
 
 TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
@@ -844,7 +889,8 @@ TEST(HttpAuthCacheTest, ClearEntriesAddedBetweenWithAllTimeValues) {
             HttpAuth::AUTH_SCHEME_BASIC, NetworkAnonymizationKey(),
             "basic realm=Realm2", AuthCredentials(kAdmin, kPassword), "/baz/");
 
-  cache.ClearEntriesAddedBetween(base::Time::Min(), base::Time::Max());
+  cache.ClearEntriesAddedBetween(base::Time::Min(), base::Time::Max(),
+                                 base::RepeatingCallback<bool(const GURL&)>());
 
   // All entries should be cleared.
   EXPECT_EQ(nullptr, cache.Lookup(scheme_host_port, HttpAuth::AUTH_SERVER,

@@ -14,10 +14,10 @@
 
 namespace blink {
 
-struct AutoDarkMode;
+class FragmentItem;
 class LayoutObject;
 class LayoutSVGInlineText;
-class NGFragmentItem;
+struct AutoDarkMode;
 struct NGTextFragmentPaintInfo;
 
 // Text painter for LayoutNG, logic shared between legacy layout and LayoutNG
@@ -100,14 +100,14 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
 
   void PaintDecorationsExceptLineThrough(
       const NGTextFragmentPaintInfo& fragment_paint_info,
-      const NGFragmentItem& text_item,
+      const FragmentItem& text_item,
       const PaintInfo& paint_info,
       const ComputedStyle& style,
       const TextPaintStyle& text_style,
       TextDecorationInfo& decoration_info,
       TextDecorationLine lines_to_paint);
 
-  void PaintDecorationsOnlyLineThrough(const NGFragmentItem& text_item,
+  void PaintDecorationsOnlyLineThrough(const FragmentItem& text_item,
                                        const PaintInfo& paint_info,
                                        const ComputedStyle& style,
                                        const TextPaintStyle& text_style,

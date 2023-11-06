@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -20,11 +21,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.intThat;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Build.VERSION_CODES;
+import android.os.Looper;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,7 +61,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 
 /**
  * Tests the EdgeToEdgeController code. Ideally this would include {@link EdgeToEdgeController},
- *  {@link EdgeToEdgeControllerFactory},  along with {@link EdgeToEdgeControllerImpl}
+ * {@link EdgeToEdgeControllerFactory}, along with {@link EdgeToEdgeControllerImpl}
  */
 @DisableIf.Build(sdk_is_less_than = VERSION_CODES.R)
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,6 +69,7 @@ import org.chromium.content_public.browser.WebContentsObserver;
 public class EdgeToEdgeControllerTest {
     @SuppressLint("NewApi")
     private static final Insets SYSTEM_INSETS = Insets.of(0, 113, 0, 59); // Typical.
+
     private static final int SYSTEM_BARS = 519; // Actual value of WindowInsets.Type.systemBars().
 
     private Activity mActivity;
@@ -75,24 +79,19 @@ public class EdgeToEdgeControllerTest {
 
     private UserDataHost mTabDataHost = new UserDataHost();
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
 
     @Mock private WebContents mWebContents;
 
-    @Mock
-    private EdgeToEdgeOSWrapper mOsWrapper;
+    @Mock private EdgeToEdgeOSWrapper mOsWrapper;
 
-    @Captor
-    private ArgumentCaptor<OnApplyWindowInsetsListener> mWindowInsetsListenerCaptor;
+    @Captor private ArgumentCaptor<OnApplyWindowInsetsListener> mWindowInsetsListenerCaptor;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverArgumentCaptor;
 
-    @Mock
-    private View mViewMock;
+    @Mock private View mViewMock;
 
-    @Mock
-    private WindowInsetsCompat mWindowInsetsMock;
+    @Mock private WindowInsetsCompat mWindowInsetsMock;
 
     @Before
     public void setUp() {
@@ -145,9 +144,7 @@ public class EdgeToEdgeControllerTest {
                 AssertionError.class, () -> mEdgeToEdgeControllerImpl.drawToEdge(badId, true));
     }
 
-    /**
-     * Test nothing is done when the Feature is not enabled.
-     */
+    /** Test nothing is done when the Feature is not enabled. */
     @Test
     public void onObservingDifferentTab_default() {
         when(mTab.isNativePage()).thenReturn(false);
@@ -183,14 +180,15 @@ public class EdgeToEdgeControllerTest {
     @Test
     @SuppressLint("NewApi")
     public void onObservingDifferentTab_changeToWebDisabled() {
+        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
         // First go ToEdge by invoking the changeToTabSwitcher test logic.
         mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
 
         // Now test that a Web page causes a transition ToNormal (when Web forcing is disabled).
-        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(false);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         when(mTab.isNativePage()).thenReturn(false);
         mObservableSupplierImpl.set(mTab);
-        verify(mTab).isNativePage(); // Verify it was false.
+        verify(mTab).isNativePage(); // Verify isNativePage() returned false.
         assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
         assertToNormalExpectations();
     }
@@ -200,7 +198,17 @@ public class EdgeToEdgeControllerTest {
         ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
         mObservableSupplierImpl.set(mTab);
-        verify(mTab).isNativePage();
+        verify(mTab).isNativePage(); // Verify isNativePage() returned false.
+        assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
+        assertToEdgeExpectations();
+    }
+
+    @Test
+    public void onObservingDifferentTab_changeToWebEnabled_SetsDecor() {
+        ChromeFeatureList.sDrawWebEdgeToEdge.setForTesting(true);
+        when(mTab.isNativePage()).thenReturn(false);
+        mObservableSupplierImpl.set(mTab);
+        verify(mTab).isNativePage(); // Verify isNativePage() returned false.
         assertTrue(mEdgeToEdgeControllerImpl.isToEdge());
         assertToEdgeExpectations();
     }
@@ -231,16 +239,21 @@ public class EdgeToEdgeControllerTest {
     /** Test the OSWrapper implementation without mocking it. Native ToEdge. */
     @Test
     public void onObservingDifferentTab_osWrapperImpl() {
+        // Force a shift ToEdge by enabling all native and saying it is native.
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
         EdgeToEdgeControllerImpl liveController =
-                (EdgeToEdgeControllerImpl) EdgeToEdgeControllerFactory.create(
-                        mActivity, mObservableSupplierImpl);
+                (EdgeToEdgeControllerImpl)
+                        EdgeToEdgeControllerFactory.create(mActivity, mObservableSupplierImpl);
         assertNotNull(liveController);
+        liveController.setToEdgeForTesting(false);
         when(mTab.isNativePage()).thenReturn(true);
         mObservableSupplierImpl.set(mTab);
+        // Process the WindowInsetsListener callback.
+        shadowOf(Looper.getMainLooper()).idle();
         verify(mTab, times(2)).isNativePage();
         assertTrue(liveController.isToEdge());
-        // Check the Navigation Bar color, as an indicator that we really changed the window.
+        // Check the Navigation Bar color, as an indicator that we really changed the window,
+        // since we didn't use the OS Wrapper mock.
         assertEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
     }
 
@@ -248,14 +261,17 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void onObservingDifferentTab_osWrapperImplToNormal() {
         EdgeToEdgeControllerImpl liveController =
-                (EdgeToEdgeControllerImpl) EdgeToEdgeControllerFactory.create(
-                        mActivity, mObservableSupplierImpl);
+                (EdgeToEdgeControllerImpl)
+                        EdgeToEdgeControllerFactory.create(mActivity, mObservableSupplierImpl);
         assertNotNull(liveController);
-        when(mTab.isNativePage()).thenReturn(true);
+        liveController.setToEdgeForTesting(true);
+        liveController.setSystemInsetsForTesting(SYSTEM_INSETS);
+        when(mTab.isNativePage()).thenReturn(false);
         mObservableSupplierImpl.set(mTab);
         verify(mTab, times(2)).isNativePage();
         assertFalse(liveController.isToEdge());
-        // Check the Navigation Bar color, as an indicator that we really changed the window.
+        // Check the Navigation Bar color, as an indicator that we really changed the window,
+        // since we didn't use the OS Wrapper mock.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
     }
 
@@ -263,11 +279,22 @@ public class EdgeToEdgeControllerTest {
     @Test
     public void onObservingDifferentTab_nullTabSwitcher() {
         mEdgeToEdgeControllerImpl.setToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
         mEdgeToEdgeControllerImpl.onTabSwitched(null);
         assertFalse(mEdgeToEdgeControllerImpl.isToEdge());
         // Check the Navigation Bar color, as an indicator that we really changed the window.
         assertNotEquals(Color.TRANSPARENT, mActivity.getWindow().getNavigationBarColor());
-        assertToNormalExpectations();
+        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.BLACK));
+        verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
+        verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
+        // Pad the top and the bottom to keep it all normal.
+        verify(mOsWrapper, times(1))
+                .setPadding(
+                        any(),
+                        eq(0),
+                        intThat(Matchers.greaterThan(0)),
+                        eq(0),
+                        intThat(Matchers.greaterThan(0)));
     }
 
     /** Test that we update WebContentsObservers when a Tab changes WebContents. */
@@ -298,23 +325,65 @@ public class EdgeToEdgeControllerTest {
                 mEdgeToEdgeControllerImpl.getWebContentsObserver());
     }
 
+    @Test
+    public void onTabSwitched_onContentChanged() {
+        // Start with a Tab with no WebContents
+        when(mTab.getWebContents()).thenReturn(null);
+        doNothing().when(mTab).addObserver(mTabObserverArgumentCaptor.capture());
+
+        // When onTabSwitched is called, we capture the TabObserver created for the Tab.
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        TabObserver tabObserver = mTabObserverArgumentCaptor.getValue();
+        assertNotNull(tabObserver);
+        WebContentsObserver initialWebContentsObserver =
+                mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNull(initialWebContentsObserver);
+
+        // Simulate the tab getting new WebContents.
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        tabObserver.onContentChanged(mTab);
+        WebContentsObserver firstObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNotNull(firstObserver);
+
+        // Make sure we can still swap to another WebContents.
+        tabObserver.onWebContentsSwapped(mTab, true, true);
+        WebContentsObserver secondObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
+        assertNotNull(secondObserver);
+        assertNotEquals(firstObserver, secondObserver);
+    }
+
+    @Test
+    public void onObservingDifferentTab_simple() {
+        ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(true);
+        // For the Tab Switcher we need to switch from some non-null Tab to null.
+        when(mTab.isNativePage()).thenReturn(true);
+        mObservableSupplierImpl.set(mTab);
+        verify(mTab).isNativePage();
+        verify(mOsWrapper)
+                .setOnApplyWindowInsetsListener(any(), mWindowInsetsListenerCaptor.capture());
+        assertToEdgeExpectations();
+    }
+
     void assertToEdgeExpectations() {
-        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.TRANSPARENT));
-        verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
-        verify(mOsWrapper).setOnApplyWindowInsetsListener(any(), any());
         mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
         // Pad the top only, bottom is ToEdge.
         verify(mOsWrapper).setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0), eq(0));
+        verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.TRANSPARENT));
+        verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(false));
+        verify(mOsWrapper).setOnApplyWindowInsetsListener(any(), any());
     }
 
     void assertToNormalExpectations() {
         verify(mOsWrapper).setNavigationBarColor(any(), eq(Color.BLACK));
-        verify(mOsWrapper).setDecorFitsSystemWindows(any(), eq(true));
-        verify(mOsWrapper).setOnApplyWindowInsetsListener(any(), any());
-        mWindowInsetsListenerCaptor.getValue().onApplyWindowInsets(mViewMock, mWindowInsetsMock);
+        verify(mOsWrapper, times(0)).setDecorFitsSystemWindows(any(), anyBoolean());
+        verify(mOsWrapper, times(0)).setOnApplyWindowInsetsListener(any(), any());
         // Pad the top and the bottom to keep it all normal.
         verify(mOsWrapper)
-                .setPadding(any(), eq(0), intThat(Matchers.greaterThan(0)), eq(0),
+                .setPadding(
+                        any(),
+                        eq(0),
+                        intThat(Matchers.greaterThan(0)),
+                        eq(0),
                         intThat(Matchers.greaterThan(0)));
     }
 

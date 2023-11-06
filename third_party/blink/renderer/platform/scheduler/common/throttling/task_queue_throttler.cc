@@ -82,11 +82,13 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
     // for delayed tasks, see below). Otherwise, schedule a delayed wake up to
     // update the fence in the future.
     if (!allowed_run_time.is_null()) {
-      // WakeUpResolution::kLow is always used for throttled tasks since those
-      // tasks can tolerate having their execution being delayed.
+      // WakeUpResolution::kLow and DelayPolicy::kFlexibleNoSooner are always
+      // used for throttled tasks since those tasks can tolerate having their
+      // execution being delayed.
       return base::sequence_manager::WakeUp{
           allowed_run_time, base::GetTaskLeewayForCurrentThread(),
-          base::sequence_manager::WakeUpResolution::kLow};
+          base::sequence_manager::WakeUpResolution::kLow,
+          base::subtle::DelayPolicy::kFlexibleNoSooner};
     }
   }
   if (!next_wake_up.has_value())
@@ -98,10 +100,14 @@ TaskQueueThrottler::GetNextAllowedWakeUpImpl(
   if (allowed_run_time.is_null())
     allowed_run_time = desired_run_time;
 
+  // Throttled tasks can tolerate having their execution being delayed, so
+  // transform "precise" delay policy into "flexible no sooner".
   return base::sequence_manager::WakeUp{
       allowed_run_time, next_wake_up->leeway,
       base::sequence_manager::WakeUpResolution::kLow,
-      next_wake_up->delay_policy};
+      next_wake_up->delay_policy == base::subtle::DelayPolicy::kPrecise
+          ? base::subtle::DelayPolicy::kFlexibleNoSooner
+          : next_wake_up->delay_policy};
 }
 
 void TaskQueueThrottler::OnHasImmediateTask() {

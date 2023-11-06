@@ -70,7 +70,7 @@ export class FilesTooltip extends PolymerElement {
   /**
    * Adds targets to tooltip.
    */
-  addTargets(targets: NodeList) {
+  addTargets(targets: NodeList|HTMLElement[]) {
     for (let i = 0; i < targets.length; i++) {
       this.addTarget(targets[i]!);
     }

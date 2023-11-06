@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_swap_buffer_provider.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -61,6 +63,13 @@ WebGPUSwapBufferProvider::WebGPUSwapBufferProvider(
   layer_->SetHdrMetadata(hdr_metadata);
 
   dawn_control_client_->GetProcs().deviceReference(device_);
+
+  WGPUSupportedLimits limits = {};
+  auto get_limits_succeeded =
+      dawn_control_client_->GetProcs().deviceGetLimits(device_, &limits);
+  CHECK(get_limits_succeeded);
+
+  max_texture_size_ = limits.limits.maxTextureDimension2D;
 }
 
 WebGPUSwapBufferProvider::~WebGPUSwapBufferProvider() {
@@ -176,10 +185,12 @@ WebGPUSwapBufferProvider::NewOrRecycledSwapBuffer(
     if (usage_ & WGPUTextureUsage_StorageBinding) {
       usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE;
     }
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         Format(), size, PredefinedColorSpaceToGfxColorSpace(color_space_),
         kTopLeft_GrSurfaceOrigin, alpha_mode, usage, "WebGPUSwapBufferProvider",
         gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    gpu::Mailbox mailbox = client_shared_image->mailbox();
     gpu::SyncToken creation_token = sii->GenUnverifiedSyncToken();
 
     unused_swap_buffers_.push_back(base::MakeRefCounted<SwapBuffer>(
@@ -223,6 +234,12 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
 
   gfx::Size size(desc.size.width, desc.size.height);
   if (size.IsEmpty()) {
+    return nullptr;
+  }
+
+  if (size.width() > max_texture_size_ || size.height() > max_texture_size_) {
+    LOG(ERROR) << "GetNewTexture(): invalid size " << size.width() << "x"
+               << size.height();
     return nullptr;
   }
 
@@ -317,7 +334,7 @@ bool WebGPUSwapBufferProvider::CopyToVideoFrame(
     const gfx::ColorSpace& dst_color_space,
     WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback) {
   DCHECK(!neutered_);
-  if (neutered_ || !GetContextProviderWeakPtr()) {
+  if (!current_swap_buffer_ || neutered_ || !GetContextProviderWeakPtr()) {
     return false;
   }
 

@@ -216,6 +216,14 @@ class Command(object):
   SET_RPH_REGISTRATION_MODE = (
       _Method.POST,
       '/session/:sessionId/custom-handlers/set-mode')
+  CREATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor')
+  UPDATE_VIRTUAL_SENSOR = (
+      _Method.POST, '/session/:sessionId/sensor/:type')
+  REMOVE_VIRTUAL_SENSOR = (
+      _Method.DELETE, '/session/:sessionId/sensor/:type')
+  GET_VIRTUAL_SENSOR_INFORMATION = (
+      _Method.GET, '/session/:sessionId/sensor/:type')
   SET_PERMISSION = (
       _Method.POST, '/session/:sessionId/permissions')
   GET_CAST_SINKS = (

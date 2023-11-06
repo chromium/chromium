@@ -54,6 +54,47 @@ const char kPreviouslyRegisteredOptimizationTypes[] =
 const char kStoreFilePathsToDelete[] =
     "optimization_guide.store_file_paths_to_delete";
 
+// An integer pref that contains the user's setting state of the opt-in
+// main toggle. Changing this toggle affects the state of the per-feature
+// toggles.
+const char kModelExecutionMainToggleSettingState[] =
+    "optimization_guide.model_execution_main_toggle_setting_state";
+
+// Pref that contains user opt-in state for different features.
+std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
+  switch (feature) {
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE:
+      return "optimization_guide.compose_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
+      return "optimization_guide.tab_organization_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
+      return "optimization_guide.wallpaper_search_setting_state";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+      NOTREACHED();
+      return "Invalid";
+  }
+}
+
+void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kModelExecutionMainToggleSettingState,
+      static_cast<int>(FeatureOptInState::kNotInitialized));
+
+  for (int i = proto::ModelExecutionFeature_MIN;
+       i <= proto::ModelExecutionFeature_MAX; ++i) {
+    proto::ModelExecutionFeature feature =
+        static_cast<proto::ModelExecutionFeature>(i);
+    switch (feature) {
+      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
+        continue;
+      default:
+        registry->RegisterIntegerPref(
+            GetSettingEnabledPrefName(feature),
+            static_cast<int>(FeatureOptInState::kNotInitialized));
+    }
+  }
+}
+
 namespace localstate {
 
 // A dictionary pref that stores the lightweight metadata of all the models in
@@ -93,6 +134,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                    PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kStoreFilePathsToDelete,
                                    PrefRegistry::LOSSY_PREF);
+
+  RegisterSettingsEnabledPrefs(registry);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

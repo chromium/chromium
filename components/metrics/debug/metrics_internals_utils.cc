@@ -88,6 +88,8 @@ std::string FormFactorToString(variations::Study::FormFactor form_factor) {
       return "TV";
     case variations::Study::AUTOMOTIVE:
       return "Automotive";
+    case variations::Study::FOLDABLE:
+      return "Foldable";
   }
   NOTREACHED();
 }

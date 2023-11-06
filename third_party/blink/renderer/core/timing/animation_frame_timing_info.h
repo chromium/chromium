@@ -78,7 +78,7 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
   void SetPropertyLikeName(const AtomicString& name) {
     property_like_name_ = name;
   }
-  LocalDOMWindow* Window() const { return window_; }
+  LocalDOMWindow* Window() const { return window_.Get(); }
   const SecurityOrigin* GetSecurityOrigin() const {
     return security_origin_.get();
   }

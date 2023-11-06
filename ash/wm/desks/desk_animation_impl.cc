@@ -6,7 +6,6 @@
 
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -14,6 +13,7 @@
 #include "ash/wm/window_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 
@@ -190,14 +190,14 @@ bool DeskActivationAnimation::UpdateSwipeAnimation(float scroll_delta_x) {
     visible_desk_index_ = first_animator->GetIndexOfMostVisibleDeskScreenshot();
     if (visible_desk_index_ != old_visible_desk_index) {
       ++visible_desk_changes_;
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kTick,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
 
     const bool reached_edge = first_animator->reached_edge();
     if (reached_edge && !old_reached_edge) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kKnock,
           ui::HapticTouchpadEffectStrength::kMedium);
     }

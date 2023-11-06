@@ -13,6 +13,8 @@
 
 @property(nonatomic, copy) NSString* selectedIdentityGaiaID;
 
+@property(nonatomic, assign) BOOL askWhichAccountToUseEveryTime;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_FAKE_SAVE_TO_PHOTOS_SETTINGS_MUTATOR_H_

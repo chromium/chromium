@@ -201,7 +201,8 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
                               size_t estimated_size,
                               bool is_thread_safe,
                               base::ScopedFD initial_upload_fd,
-                              bool use_passthrough);
+                              bool use_passthrough,
+                              bool use_half_float_oes);
 
   AHardwareBufferImageBacking(const AHardwareBufferImageBacking&) = delete;
   AHardwareBufferImageBacking& operator=(const AHardwareBufferImageBacking&) =
@@ -248,6 +249,7 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
 
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
   const bool use_passthrough_;
+  const bool use_half_float_oes_;
 };
 
 // Vk backed Skia representation of AHardwareBufferImageBacking.
@@ -326,7 +328,8 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
     size_t estimated_size,
     bool is_thread_safe,
     base::ScopedFD initial_upload_fd,
-    bool use_passthrough)
+    bool use_passthrough,
+    bool use_half_float_oes)
     : AndroidImageBacking(mailbox,
                           format,
                           size,
@@ -338,7 +341,8 @@ AHardwareBufferImageBacking::AHardwareBufferImageBacking(
                           is_thread_safe,
                           std::move(initial_upload_fd)),
       hardware_buffer_handle_(std::move(handle)),
-      use_passthrough_(use_passthrough) {
+      use_passthrough_(use_passthrough),
+      use_half_float_oes_(use_half_float_oes) {
   DCHECK(hardware_buffer_handle_.is_valid());
 }
 
@@ -390,8 +394,9 @@ AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
 
   // Android documentation states that right GL format for RGBX AHardwareBuffer
   // is GL_RGB8, so we don't use angle rgbx.
-  auto gl_format_desc = ToGLFormatDesc(format(), /*plane_index=*/0,
-                                       /*use_angle_rgbx_format=*/false);
+  auto gl_format_desc = ToGLFormatDescOverrideHalfFloatType(
+      format(), /*plane_index=*/0,
+      /*use_angle_rgbx_format=*/false, use_half_float_oes_);
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
 
@@ -423,8 +428,9 @@ AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
 
   // Android documentation states that right GL format for RGBX AHardwareBuffer
   // is GL_RGB8, so we don't use angle rgbx.
-  auto gl_format_desc = ToGLFormatDesc(format(), /*plane_index=*/0,
-                                       /*use_angle_rgbx_format=*/false);
+  auto gl_format_desc = ToGLFormatDescOverrideHalfFloatType(
+      format(), /*plane_index=*/0,
+      /*use_angle_rgbx_format=*/false, use_half_float_oes_);
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
 
@@ -558,7 +564,8 @@ void AHardwareBufferImageBacking::EndOverlayAccess() {
 AHardwareBufferImageBackingFactory::FormatInfo
 AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
     viz::SharedImageFormat format,
-    const gles2::Validators* validators) {
+    const gles2::Validators* validators,
+    bool use_half_float_oes) {
   CHECK(AHardwareBufferSupportedFormat(format));
 
   FormatInfo info;
@@ -576,21 +583,30 @@ AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
   // Check if AHB backed GL texture can be created using this format and
   // gather GL related format info.
   // TODO(vikassoni): Add vulkan related information in future.
-  GLFormatDesc format_desc = ToGLFormatDesc(format, /*plane_index=*/0,
-                                            /*use_angle_rgbx_format=*/false);
+  GLFormatDesc format_desc = ToGLFormatDescOverrideHalfFloatType(
+      format, /*plane_index=*/0,
+      /*use_angle_rgbx_format=*/false, use_half_float_oes);
   GLuint internal_format = format_desc.image_internal_format;
   GLenum gl_format = format_desc.data_format;
   GLenum gl_type = format_desc.data_type;
 
   // AHardwareBufferImageBacking supports internal format GL_RGBA and GL_RGB.
-  if (internal_format != GL_RGBA && internal_format != GL_RGB) {
+  if (internal_format != GL_RGBA && internal_format != GL_RGB &&
+      internal_format != GL_RGBA16F) {
     return info;
   }
 
+  // kRGBA_F16 is a core part of ES3.
+  const bool at_least_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
+  bool supports_data_type = (gl_type == GL_HALF_FLOAT && at_least_es3) ||
+                            validators->pixel_type.IsValid(gl_type);
+  bool supports_internal_format =
+      (internal_format == GL_RGBA16F && at_least_es3) ||
+      validators->texture_internal_format.IsValid(internal_format);
+
   // Validate if GL format, type and internal format is supported.
-  if (validators->texture_internal_format.IsValid(internal_format) &&
-      validators->texture_format.IsValid(gl_format) &&
-      validators->pixel_type.IsValid(gl_type)) {
+  if (supports_internal_format &&
+      validators->texture_format.IsValid(gl_format) && supports_data_type) {
     info.gl_supported = true;
     info.gl_format = gl_format;
     info.gl_type = gl_type;
@@ -604,13 +620,14 @@ AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const GpuPreferences& gpu_preferences)
     : SharedImageBackingFactory(kSupportedUsage),
       use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gl::PassthroughCommandDecoderSupported()) {
+                       gl::PassthroughCommandDecoderSupported()),
+      use_half_float_oes_(feature_info->oes_texture_float_available()) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
 
   // Build the feature info for all the supported formats.
   for (auto format : kSupportedFormats) {
-    format_infos_[format] =
-        FormatInfoForSupportedFormat(format, feature_info->validators());
+    format_infos_[format] = FormatInfoForSupportedFormat(
+        format, feature_info->validators(), use_half_float_oes_);
   }
 
   // TODO(vikassoni): We are using below GL api calls for now as Vulkan mode
@@ -642,30 +659,6 @@ bool AHardwareBufferImageBackingFactory::ValidateUsage(
     LOG(ERROR) << "viz::SharedImageFormat " << format.ToString()
                << " not supported by AHardwareBuffer";
     return false;
-  }
-
-  const FormatInfo& format_info = GetFormatInfo(format);
-
-  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
-  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
-  // want to read from skia representation.
-  // TODO(vikassoni): Also check gpu_preferences.enable_vulkan to figure out
-  // if skia is using vulkan backing or GL backing.
-  const bool use_gles2 =
-      (usage &
-       (SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER |
-        SHARED_IMAGE_USAGE_DISPLAY_READ | SHARED_IMAGE_USAGE_DISPLAY_WRITE));
-
-  // If usage flags indicated this backing can be used as a GL texture, then
-  // do below gl related checks.
-  if (use_gles2) {
-    // Check if the GL texture can be created from AHB with this format.
-    if (!format_info.gl_supported) {
-      LOG(ERROR)
-          << "viz::SharedImageFormat " << format.ToString()
-          << " can not be used to create a GL texture from AHardwareBuffer.";
-      return false;
-    }
   }
 
   // Check if AHB can be created with the current size restrictions.
@@ -787,7 +780,7 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle), estimated_size.value(), is_thread_safe,
-      std::move(initial_upload_fd), use_passthrough_);
+      std::move(initial_upload_fd), use_passthrough_, use_half_float_oes_);
 
   // If we uploaded initial data, set the backing as cleared.
   if (!pixel_data.empty())
@@ -852,6 +845,29 @@ bool AHardwareBufferImageBackingFactory::IsSupported(
     return false;
   }
 
+  const FormatInfo& format_info = GetFormatInfo(format);
+
+  // SHARED_IMAGE_USAGE_RASTER is set when we want to write on Skia
+  // representation and SHARED_IMAGE_USAGE_DISPLAY_READ is used for cases we
+  // want to read from skia representation.
+  bool used_by_skia = (usage & SHARED_IMAGE_USAGE_RASTER) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_READ) ||
+                      (usage & SHARED_IMAGE_USAGE_DISPLAY_WRITE);
+  bool used_by_gl = (usage & SHARED_IMAGE_USAGE_GLES2) ||
+                    (used_by_skia && gr_context_type == GrContextType::kGL);
+
+  // If usage flags indicated this backing can be used as a GL texture, then
+  // do below gl related checks.
+  if (used_by_gl) {
+    // Check if the GL texture can be created from AHB with this format.
+    if (!format_info.gl_supported) {
+      LOG(ERROR)
+          << "viz::SharedImageFormat " << format.ToString()
+          << " can not be used to create a GL texture from AHardwareBuffer.";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -884,7 +900,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(handle.android_hardware_buffer), estimated_size.value(), false,
-      base::ScopedFD(), use_passthrough_);
+      base::ScopedFD(), use_passthrough_, use_half_float_oes_);
 
   backing->SetCleared();
   return backing;

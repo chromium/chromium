@@ -8,7 +8,6 @@ import("../build_webui_tests.gni")
 assert(!is_android && !is_ios)
 
 build_webui_tests("build") {
-  resource_path_prefix = "cr_components"
   files = [
     "app_management/app_management_test_support.ts",
     "app_management/file_handling_item_test.ts",

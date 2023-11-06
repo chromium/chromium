@@ -176,12 +176,14 @@ message ServiceWorkerRegistrationData {
           }
           optional Status status = 1;
         }
+        // TODO(crbug.com/1492871): Remove and replace this to `condition`
         message ConditionObject {
           repeated Condition conditions = 1;
         }
         message OrCondition {
           repeated ConditionObject objects = 1;
         }
+        // TODO(crbug.com/1492871): Make this a `message` to fit WebIDL
         oneof condition {
           // Used for representing URLPattern.
           URLPattern url_pattern = 1;

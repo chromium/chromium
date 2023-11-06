@@ -14,8 +14,10 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/socket/connect_job.h"
@@ -46,11 +48,13 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   HttpProxySocketParams(
       scoped_refptr<TransportSocketParams> transport_params,
       scoped_refptr<SSLSocketParams> ssl_params,
-      bool is_quic,
       const HostPortPair& endpoint,
+      const ProxyChain& proxy_chain,
+      size_t proxy_chain_index,
       bool tunnel,
       const NetworkTrafficAnnotationTag traffic_annotation,
-      const NetworkAnonymizationKey& network_anonymization_key);
+      const NetworkAnonymizationKey& network_anonymization_key,
+      SecureDnsPolicy secure_dns_policy);
 
   HttpProxySocketParams(const HttpProxySocketParams&) = delete;
   HttpProxySocketParams& operator=(const HttpProxySocketParams&) = delete;
@@ -61,8 +65,12 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   const scoped_refptr<SSLSocketParams>& ssl_params() const {
     return ssl_params_;
   }
-  bool is_quic() const { return is_quic_; }
   const HostPortPair& endpoint() const { return endpoint_; }
+  const ProxyChain& proxy_chain() const { return proxy_chain_; }
+  const ProxyServer& proxy_server() const {
+    return proxy_chain_.GetProxyServer(proxy_chain_index_);
+  }
+  size_t proxy_chain_index() const { return proxy_chain_index_; }
   bool tunnel() const { return tunnel_; }
   const NetworkAnonymizationKey& network_anonymization_key() const {
     return network_anonymization_key_;
@@ -70,6 +78,7 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   const NetworkTrafficAnnotationTag traffic_annotation() const {
     return traffic_annotation_;
   }
+  SecureDnsPolicy secure_dns_policy() { return secure_dns_policy_; }
 
  private:
   friend class base::RefCounted<HttpProxySocketParams>;
@@ -77,11 +86,13 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
 
   const scoped_refptr<TransportSocketParams> transport_params_;
   const scoped_refptr<SSLSocketParams> ssl_params_;
-  bool is_quic_;
   const HostPortPair endpoint_;
+  const ProxyChain proxy_chain_;
+  const size_t proxy_chain_index_;
   const bool tunnel_;
   const NetworkAnonymizationKey network_anonymization_key_;
   const NetworkTrafficAnnotationTag traffic_annotation_;
+  const SecureDnsPolicy secure_dns_policy_;
 };
 
 // HttpProxyConnectJob optionally establishes a tunnel through the proxy

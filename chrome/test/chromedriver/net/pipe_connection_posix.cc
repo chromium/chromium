@@ -240,7 +240,7 @@ class PipeWriter {
       : owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()),
         pipe_connection_(std::move(pipe_connection)),
         write_buffer_(base::MakeRefCounted<net::DrainableIOBuffer>(
-            base::MakeRefCounted<net::IOBuffer>(0),
+            base::MakeRefCounted<net::IOBuffer>(),
             0)),
         thread_(new base::Thread("PipeConnectionPosixWriteThread")) {
     DETACH_FROM_THREAD(io_thread_checker_);
@@ -283,8 +283,10 @@ class PipeWriter {
     queued_.insert(queued_.end(), message.c_str(),
                    message.c_str() + message.size() + 1);
     if (!write_buffer_->BytesRemaining()) {
+      const size_t queued_size = queued_.size();
       write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::StringIOBuffer>(queued_), queued_.size());
+          base::MakeRefCounted<net::StringIOBuffer>(std::move(queued_)),
+          queued_size);
       queued_ = std::string();
       WriteFromBuffer();
     }
@@ -328,8 +330,10 @@ class PipeWriter {
     write_buffer_->DidConsume(rv);
     int sent = WriteFromBuffer();
     if (sent >= 0 && !write_buffer_->BytesRemaining() && !queued_.empty()) {
+      const size_t queued_size = queued_.size();
       write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::StringIOBuffer>(queued_), queued_.size());
+          base::MakeRefCounted<net::StringIOBuffer>(std::move(queued_)),
+          queued_size);
       queued_ = std::string();
       WriteFromBuffer();
     }

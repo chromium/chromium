@@ -261,13 +261,6 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
 #endif
 }
 
-const void *const *StackTrace::Addresses(size_t* count) const {
-  *count = count_;
-  if (count_)
-    return trace_;
-  return nullptr;
-}
-
 void StackTrace::Print() const {
   PrintWithPrefix(nullptr);
 }

@@ -43,19 +43,20 @@ public class AutofillSaveCardUiInfoTest {
 
     @Test
     public void testConstructor_createsEmptyListWhenLegalMessageLinesIsNull() {
-        var uiInfo = new AutofillSaveCardUiInfo(
-                /*isForUpload=*/false,
-                /*logoIcon=*/0,
-                /*issuerIcon=*/0,
-                /*legalMessageLines=*/null,
-                /*cardLabel=*/null,
-                /*cardSubLabel=*/null,
-                /*cardDescription=*/null,
-                /*titleText=*/null,
-                /*confirmText=*/null,
-                /*cancelText=*/null,
-                /*isGooglePayBrandingEnabled=*/false,
-                /*descriptionText=*/null);
+        var uiInfo =
+                new AutofillSaveCardUiInfo(
+                        /* isForUpload= */ false,
+                        /* logoIcon= */ 0,
+                        /* issuerIcon= */ 0,
+                        /* legalMessageLines= */ null,
+                        /* cardLabel= */ null,
+                        /* cardSubLabel= */ null,
+                        /* cardDescription= */ null,
+                        /* titleText= */ null,
+                        /* confirmText= */ null,
+                        /* cancelText= */ null,
+                        /* isGooglePayBrandingEnabled= */ false,
+                        /* descriptionText= */ null);
 
         assertThat(uiInfo.getLegalMessageLines(), empty());
     }
@@ -80,7 +81,8 @@ public class AutofillSaveCardUiInfoTest {
         @SuppressLint("ResourceType")
         AutofillSaveCardUiInfo uiInfo =
                 defaultBuilder()
-                        .withCardDetail(new CardDetail(/*iconId=*/1, "cardLabel", "cardSubLabel"))
+                        .withCardDetail(
+                                new CardDetail(/* iconId= */ 1, "cardLabel", "cardSubLabel"))
                         .build();
 
         assertThat(uiInfo.getCardDetail().issuerIconDrawableId, equalTo(1));
@@ -98,16 +100,21 @@ public class AutofillSaveCardUiInfoTest {
 
     @Test
     public void testBuilder_setsLegalMessageLine() {
-        List<LegalMessageLine> legalMessageLines = Arrays.asList(new LegalMessageLine("abc"),
-                new LegalMessageLine("xyz"), new LegalMessageLine("uvw"));
+        List<LegalMessageLine> legalMessageLines =
+                Arrays.asList(
+                        new LegalMessageLine("abc"),
+                        new LegalMessageLine("xyz"),
+                        new LegalMessageLine("uvw"));
 
         AutofillSaveCardUiInfo uiInfo =
                 defaultBuilder().withLegalMessageLines(legalMessageLines).build();
 
-        assertThat(uiInfo.getLegalMessageLines(),
-                Matchers.contains(legalMessageLines.stream()
-                                          .map(line -> equalToLegalMessageLineWithText(line.text))
-                                          .collect(Collectors.toList())));
+        assertThat(
+                uiInfo.getLegalMessageLines(),
+                Matchers.contains(
+                        legalMessageLines.stream()
+                                .map(line -> equalToLegalMessageLineWithText(line.text))
+                                .collect(Collectors.toList())));
     }
 
     private static Matcher<LegalMessageLine> equalToLegalMessageLineWithText(String text) {
@@ -125,7 +132,8 @@ public class AutofillSaveCardUiInfoTest {
             @Override
             protected void describeMismatchSafely(
                     LegalMessageLine item, Description mismatchDescription) {
-                mismatchDescription.appendText("LegalLineMessage with text of ")
+                mismatchDescription
+                        .appendText("LegalLineMessage with text of ")
                         .appendValue(item.text);
             }
         };

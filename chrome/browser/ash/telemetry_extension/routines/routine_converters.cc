@@ -33,6 +33,11 @@ crosapi::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
       input->bytes_tested, ConvertRoutinePtr(std::move(input->result)));
 }
 
+crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr UncheckedConvertPtr(
+    healthd::VolumeButtonRoutineDetailPtr input) {
+  return crosapi::TelemetryDiagnosticVolumeButtonRoutineDetail::New();
+}
+
 crosapi::TelemetryDiagnosticRoutineStateInitializedPtr UncheckedConvertPtr(
     healthd::RoutineStateInitializedPtr input) {
   return crosapi::TelemetryDiagnosticRoutineStateInitialized::New();
@@ -52,13 +57,15 @@ crosapi::TelemetryDiagnosticRoutineStateWaitingPtr UncheckedConvertPtr(
 crosapi::TelemetryDiagnosticRoutineDetailPtr UncheckedConvertPtr(
     healthd::RoutineDetailPtr input) {
   switch (input->which()) {
-    case healthd::internal::RoutineDetail_Data::RoutineDetail_Tag::
-        kUnrecognizedArgument:
+    case healthd::RoutineDetail::Tag::kUnrecognizedArgument:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewUnrecognizedArgument(
           input->get_unrecognizedArgument());
-    case healthd::internal::RoutineDetail_Data::RoutineDetail_Tag::kMemory:
+    case healthd::RoutineDetail::Tag::kMemory:
       return crosapi::TelemetryDiagnosticRoutineDetail::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
+    case healthd::RoutineDetail::Tag::kVolumeButton:
+      return crosapi::TelemetryDiagnosticRoutineDetail::NewVolumeButton(
+          ConvertRoutinePtr(std::move(input->get_volume_button())));
   }
   NOTREACHED_NORETURN();
 }
@@ -72,24 +79,19 @@ crosapi::TelemetryDiagnosticRoutineStateFinishedPtr UncheckedConvertPtr(
 crosapi::TelemetryDiagnosticRoutineStateUnionPtr UncheckedConvertPtr(
     healthd::RoutineStateUnionPtr input) {
   switch (input->which()) {
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kUnrecognizedArgument:
+    case healthd::RoutineStateUnion::Tag::kUnrecognizedArgument:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::
           NewUnrecognizedArgument(input->get_unrecognizedArgument());
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kInitialized:
+    case healthd::RoutineStateUnion::Tag::kInitialized:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewInitialized(
           ConvertRoutinePtr(std::move(input->get_initialized())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kRunning:
+    case healthd::RoutineStateUnion::Tag::kRunning:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewRunning(
           ConvertRoutinePtr(std::move(input->get_running())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kWaiting:
+    case healthd::RoutineStateUnion::Tag::kWaiting:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewWaiting(
           ConvertRoutinePtr(std::move(input->get_waiting())));
-    case healthd::internal::RoutineStateUnion_Data::RoutineStateUnion_Tag::
-        kFinished:
+    case healthd::RoutineStateUnion::Tag::kFinished:
       return crosapi::TelemetryDiagnosticRoutineStateUnion::NewFinished(
           ConvertRoutinePtr(std::move(input->get_finished())));
   }
@@ -105,14 +107,16 @@ crosapi::TelemetryDiagnosticRoutineStatePtr UncheckedConvertPtr(
 healthd::RoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticRoutineArgumentPtr input) {
   switch (input->which()) {
-    case crosapi::internal::TelemetryDiagnosticRoutineArgument_Data::
-        TelemetryDiagnosticRoutineArgument_Tag::kUnrecognizedArgument:
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::
+        kUnrecognizedArgument:
       return healthd::RoutineArgument::NewUnrecognizedArgument(
           std::move(input->get_unrecognizedArgument()));
-    case crosapi::internal::TelemetryDiagnosticRoutineArgument_Data::
-        TelemetryDiagnosticRoutineArgument_Tag::kMemory:
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kMemory:
       return healthd::RoutineArgument::NewMemory(
           ConvertRoutinePtr(std::move(input->get_memory())));
+    case crosapi::TelemetryDiagnosticRoutineArgument::Tag::kVolumeButton:
+      return healthd::RoutineArgument::NewVolumeButton(
+          ConvertRoutinePtr(std::move(input->get_volume_button())));
   }
 }
 
@@ -120,6 +124,28 @@ healthd::MemoryRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::TelemetryDiagnosticMemoryRoutineArgumentPtr input) {
   return healthd::MemoryRoutineArgument::New(
       std::move(input->max_testing_mem_kib));
+}
+
+healthd::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticVolumeButtonRoutineArgumentPtr input) {
+  auto arg = healthd::VolumeButtonRoutineArgument::New();
+  switch (input->type) {
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kUnmappedEnumField:
+      arg->type =
+          healthd::VolumeButtonRoutineArgument::ButtonType::kUnmappedEnumField;
+      break;
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kVolumeUp:
+      arg->type = healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeUp;
+      break;
+    case crosapi::TelemetryDiagnosticVolumeButtonRoutineArgument::ButtonType::
+        kVolumeDown:
+      arg->type = healthd::VolumeButtonRoutineArgument::ButtonType::kVolumeDown;
+      break;
+  }
+  arg->timeout = input->timeout;
+  return arg;
 }
 
 }  // namespace unchecked

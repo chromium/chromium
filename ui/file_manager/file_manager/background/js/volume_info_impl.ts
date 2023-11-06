@@ -5,19 +5,16 @@
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, util} from '../../common/js/util.js';
+import {isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
+import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 
-// To avoid the import being elided, closure requires this name here because of
-// the @implements.
-export const _unused = VolumeInfo;
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
  * flush storage", or "mounted zip archive" etc.
- * @implements {VolumeInfo}
  */
 export class VolumeInfoImpl implements VolumeInfo {
   private displayRoot_: DirectoryEntry|null = null;
@@ -92,7 +89,7 @@ export class VolumeInfoImpl implements VolumeInfo {
     this.fakeEntries_ = {};
 
     if (volumeType_ === VolumeManagerCommon.VolumeType.DRIVE) {
-      if (!util.isDriveFsBulkPinningEnabled()) {
+      if (!isDriveFsBulkPinningEnabled()) {
         this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
             new FakeEntryImpl(
                 str('DRIVE_OFFLINE_COLLECTION_LABEL'),

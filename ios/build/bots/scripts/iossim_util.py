@@ -9,16 +9,22 @@ import subprocess
 import time
 import typing
 
+import constants
 import test_runner
 import test_runner_errors
 import mac_util
 
+from collections import OrderedDict
+
 LOGGER = logging.getLogger(__name__)
 
-MAX_WAIT_TIME_TO_DELETE_RUNTIME = 15  # 15 seconds
+MAX_WAIT_TIME_TO_DELETE_RUNTIME = 45  # 45 seconds
 
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
+
+# TODO(crbug.com/1441931): remove Legacy Download once iOS 15.5 is deprecated
+IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
 
 
 def _compose_simulator_name(platform, version):
@@ -313,6 +319,32 @@ def get_simulator_runtime_match_list():
            '-j']).decode('utf-8'))
 
 
+def get_simulator_runtime_info_by_build(runtime_build):
+  """Gets runtime object based on the runtime build.
+
+  Args:
+    runtime_build: (str) build id of the runtime, e.g. "20C52"
+
+  Returns:
+    a simulator runtime json object that contains all the info of an
+    iOS runtime
+    e.g.
+    {
+      "build" : "19F70",
+      "deletable" : true,
+      "identifier" : "FD9ED7F9-96A7-4621-B328-4C317893EC8A",
+      etc...
+    }
+    if no runtime for the corresponding build id is found, then
+    return None.
+  """
+  runtimes = get_simulator_runtime_list()
+  for runtime in runtimes.values():
+    if runtime['build'].lower() == runtime_build.lower():
+      return runtime
+  return None
+
+
 def get_simulator_runtime_info(ios_version):
   """Gets runtime object based on iOS version.
 
@@ -340,6 +372,12 @@ def get_simulator_runtime_info(ios_version):
     if runtime['version'].startswith(ios_version):
       return runtime
   return None
+
+
+def is_simulator_runtime_builtin(runtime):
+  if (runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):
+    return False
+  return True
 
 
 def override_default_iphonesim_runtime(runtime_id, ios_version):
@@ -392,16 +430,62 @@ def add_simulator_runtime(runtime_dmg_path):
   return subprocess.check_output(cmd).decode('utf-8')
 
 
-def delete_simulator_runtime(runtime_id):
+def delete_simulator_runtime(runtime_id, shoud_wait=False):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
   LOGGER.debug('Deleting runtime with command %s' % cmd)
   subprocess.check_output(cmd)
+
+  if shoud_wait:
+    # runtime takes a few seconds to delete
+    time_waited = 0
+    while (runtime_to_delete is not None):
+      LOGGER.debug('Waiting for runtime to be deleted. Current state is %s' %
+                   runtime_to_delete['state'])
+      runtime_to_delete = get_simulator_runtime_info(ios_version)
+      time.sleep(1)
+      time_waited += 1
+      if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
+        raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
+    LOGGER.debug('Runtime successfully deleted!')
 
 
 def delete_simulator_runtime_after_days(days):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', '--notUsedSinceDays', days]
   LOGGER.debug('Deleting unused runtime with command %s' % cmd)
   subprocess.run(cmd, check=False)
+
+
+def delete_least_recently_used_simulator_runtimes(
+    max_to_keep=constants.MAX_RUNTIME_KETP_COUNT):
+  """Delete least recently used simulator runtimes.
+
+  Delete simulator runtimes that are least recently used, based
+  on the lastUsedAt field. iOS15.5 and runtimes bundled within Xcode
+  are excluded.
+
+  Args:
+    max_to_keep: (int) max number of simulator runtimes to keep.
+      All other simulator runtimes will be deleted based on lastUsedAt field.
+  """
+
+  runtimes = get_simulator_runtime_list()
+  sorted_runtime_values = sorted(
+      runtimes.values(), key=lambda x: x.get("lastUsedAt", ""), reverse=True)
+  sorted_runtimes = OrderedDict(
+      (item["identifier"], item) for item in sorted_runtime_values)
+
+  keep_count = 0
+  for runtime_id, value in sorted_runtimes.items():
+    if is_simulator_runtime_builtin(value):
+      LOGGER.debug('Built-in Runtime %s with iOS %s should not be deleted' %
+                   (runtime_id, value['version']))
+      continue
+    if keep_count < max_to_keep:
+      LOGGER.debug('Runtime %s with iOS %s should be kept undeleted' %
+                   (runtime_id, value['version']))
+      keep_count += 1
+    else:
+      delete_simulator_runtime(runtime_id, True)
 
 
 def delete_simulator_runtime_and_wait(ios_version):
@@ -411,18 +495,7 @@ def delete_simulator_runtime_and_wait(ios_version):
                  ios_version)
     return
 
-  delete_simulator_runtime(runtime_to_delete['identifier'])
-  # runtime takes a few seconds to delete
-  time_waited = 0
-  while (runtime_to_delete != None):
-    LOGGER.debug('Waiting for runtime to be deleted. Current state is %s' %
-                 runtime_to_delete['state'])
-    runtime_to_delete = get_simulator_runtime_info(ios_version)
-    time.sleep(1)
-    time_waited += 1
-    if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
-      raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
-  LOGGER.debug('Runtime successfully deleted!')
+  delete_simulator_runtime(runtime_to_delete['identifier'], True)
 
 
 def disable_hardware_keyboard(udid: str) -> None:

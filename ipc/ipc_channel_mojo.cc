@@ -392,4 +392,8 @@ void ChannelMojo::GetRemoteAssociatedInterface(
   }
 }
 
+void ChannelMojo::SetUrgentMessageObserver(UrgentMessageObserver* observer) {
+  bootstrap_->SetUrgentMessageObserver(observer);
+}
+
 }  // namespace IPC

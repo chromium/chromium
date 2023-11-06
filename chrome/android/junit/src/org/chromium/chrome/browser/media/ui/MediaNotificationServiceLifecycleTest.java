@@ -46,7 +46,9 @@ import org.chromium.services.media_session.MediaMetadata;
  * cycle correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationServiceLifecycleTest extends MediaNotificationTestBase {
     @Test
     public void testServiceLifeCycle() {
@@ -195,7 +197,8 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         order.verify(getController(), times(1)).onServiceStarted(mService);
         order.verify(getController(), times(1)).updateNotification(anyBoolean(), eq(true));
         verify(mMockUmaTracker)
-                .onNotificationShown(eq(NotificationUmaTracker.SystemNotificationType.MEDIA),
+                .onNotificationShown(
+                        eq(NotificationUmaTracker.SystemNotificationType.MEDIA),
                         any(Notification.class));
     }
 
@@ -247,7 +250,10 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         getController().updateNotification(false, false);
 
         verify(mMockForegroundServiceUtils)
-                .startForeground(eq(mService), eq(getNotificationId()), any(Notification.class),
+                .startForeground(
+                        eq(mService),
+                        eq(getNotificationId()),
+                        any(Notification.class),
                         eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
     }
 
@@ -260,7 +266,10 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
         getController().updateNotification(false, false);
 
         verify(mMockForegroundServiceUtils)
-                .startForeground(eq(mService), eq(getNotificationId()), any(Notification.class),
+                .startForeground(
+                        eq(mService),
+                        eq(getNotificationId()),
+                        any(Notification.class),
                         eq(ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK));
     }
 

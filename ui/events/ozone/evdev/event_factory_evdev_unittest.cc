@@ -11,11 +11,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
+#include "ui/events/ozone/evdev/mouse_button_property.h"
 #include "ui/events/ozone/features.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform_event.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
@@ -84,6 +87,68 @@ TEST_F(EventFactoryEvdevTest, NoOrdinalImpliesNoFlag) {
                            /*ordinal_movement=*/nullptr,
                            PointerDetails(EventPointerType::kMouse),
                            EventTimeForNow()});
+}
+
+TEST_F(EventFactoryEvdevTest, MouseSideButtonRemapsToBack) {
+  EXPECT_CALL(event_observer_, WillProcessEvent)
+      .WillOnce([](const PlatformEvent& platform_event) {
+        MouseEvent mouse_event(platform_event);
+        EXPECT_TRUE(mouse_event.changed_button_flags() & EF_BACK_MOUSE_BUTTON);
+        auto button = GetForwardBackMouseButtonProperty(mouse_event);
+        ASSERT_TRUE(button);
+        EXPECT_EQ(static_cast<uint32_t>(BTN_SIDE), *button);
+      });
+
+  event_factory_.DispatchMouseButtonEvent(MouseButtonEventParams{
+      0, 0, gfx::PointF{}, BTN_SIDE, true, MouseButtonMapType::kMouse,
+      PointerDetails(EventPointerType::kMouse), EventTimeForNow()});
+}
+
+TEST_F(EventFactoryEvdevTest, MouseBackButtonRemapsToBack) {
+  EXPECT_CALL(event_observer_, WillProcessEvent)
+      .WillOnce([](const PlatformEvent& platform_event) {
+        MouseEvent mouse_event(platform_event);
+        EXPECT_TRUE(mouse_event.changed_button_flags() & EF_BACK_MOUSE_BUTTON);
+        auto button = GetForwardBackMouseButtonProperty(mouse_event);
+        ASSERT_TRUE(button);
+        EXPECT_EQ(static_cast<uint32_t>(BTN_BACK), *button);
+      });
+
+  event_factory_.DispatchMouseButtonEvent(MouseButtonEventParams{
+      0, 0, gfx::PointF{}, BTN_BACK, true, MouseButtonMapType::kMouse,
+      PointerDetails(EventPointerType::kMouse), EventTimeForNow()});
+}
+
+TEST_F(EventFactoryEvdevTest, MouseExtraButtonRemapsToForward) {
+  EXPECT_CALL(event_observer_, WillProcessEvent)
+      .WillOnce([](const PlatformEvent& platform_event) {
+        MouseEvent mouse_event(platform_event);
+        EXPECT_TRUE(mouse_event.changed_button_flags() &
+                    EF_FORWARD_MOUSE_BUTTON);
+        auto button = GetForwardBackMouseButtonProperty(mouse_event);
+        ASSERT_TRUE(button);
+        EXPECT_EQ(static_cast<uint32_t>(BTN_EXTRA), *button);
+      });
+
+  event_factory_.DispatchMouseButtonEvent(MouseButtonEventParams{
+      0, 0, gfx::PointF{}, BTN_EXTRA, true, MouseButtonMapType::kMouse,
+      PointerDetails(EventPointerType::kMouse), EventTimeForNow()});
+}
+
+TEST_F(EventFactoryEvdevTest, MouseForwardButtonRemapsToForward) {
+  EXPECT_CALL(event_observer_, WillProcessEvent)
+      .WillOnce([](const PlatformEvent& platform_event) {
+        MouseEvent mouse_event(platform_event);
+        EXPECT_TRUE(mouse_event.changed_button_flags() &
+                    EF_FORWARD_MOUSE_BUTTON);
+        auto button = GetForwardBackMouseButtonProperty(mouse_event);
+        ASSERT_TRUE(button);
+        EXPECT_EQ(static_cast<uint32_t>(BTN_FORWARD), *button);
+      });
+
+  event_factory_.DispatchMouseButtonEvent(MouseButtonEventParams{
+      0, 0, gfx::PointF{}, BTN_FORWARD, true, MouseButtonMapType::kMouse,
+      PointerDetails(EventPointerType::kMouse), EventTimeForNow()});
 }
 
 }  // namespace

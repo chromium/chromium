@@ -312,6 +312,11 @@ class VIZ_HOST_EXPORT HostFrameSinkManager
   void OnAggregatedHitTestRegionListUpdated(
       const FrameSinkId& frame_sink_id,
       const std::vector<AggregatedHitTestRegion>& hit_test_data) override;
+#if BUILDFLAG(IS_ANDROID)
+  void VerifyThreadIdsDoNotBelongToHost(
+      const std::vector<int32_t>& thread_ids,
+      VerifyThreadIdsDoNotBelongToHostCallback callback) override;
+#endif
 
   // Connections to/from FrameSinkManagerImpl.
   mojo::Remote<mojom::FrameSinkManager> frame_sink_manager_remote_;

@@ -17,23 +17,28 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.Map;
 
-/**
- * Tests for {@link CommandLine}.
- */
+/** Tests for {@link CommandLine}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CommandLineTest {
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]
-    static final String[] INIT_SWITCHES = {"init_command", "--SWITCH", "Arg", "--switch2=brea\\d",
-            "--switch3=and \"butter\"", "--switch4=a \"quoted\" 'food'!", "--",
-            "--actually_an_arg"};
+    static final String[] INIT_SWITCHES = {
+        "init_command",
+        "--SWITCH",
+        "Arg",
+        "--switch2=brea\\d",
+        "--switch3=and \"butter\"",
+        "--switch4=a \"quoted\" 'food'!",
+        "--",
+        "--actually_an_arg"
+    };
 
     // The same command line, but in quoted string format.
     static final char[] INIT_SWITCHES_BUFFER =
             ("init_command --SWITCH Arg --switch2=brea\\d --switch3=\"and \\\"butt\"er\\\"   "
-                    + "--switch4='a \"quoted\" \\'food\\'!' "
-                    + "-- --actually_an_arg")
+                            + "--switch4='a \"quoted\" \\'food\\'!' "
+                            + "-- --actually_an_arg")
                     .toCharArray();
 
     static final String CL_ADDED_SWITCH = "zappo-dappo-doggy-trainer";
@@ -132,8 +137,9 @@ public class CommandLineTest {
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testBufferInitialization() {
-        mCommandLine = new CommandLine.JavaCommandLine(
-                CommandLine.tokenizeQuotedArguments(INIT_SWITCHES_BUFFER));
+        mCommandLine =
+                new CommandLine.JavaCommandLine(
+                        CommandLine.tokenizeQuotedArguments(INIT_SWITCHES_BUFFER));
         checkInitSwitches();
         checkSettingThenGettingThenRemoving();
     }
@@ -153,10 +159,12 @@ public class CommandLineTest {
         toParse = " \t\n";
         checkTokenizer(expected, toParse);
 
-        toParse = " \"a'b\" 'c\"d' \"e\\\"f\" 'g\\'h' \"i\\'j\" 'k\\\"l'"
-                + " m\"n\\'o\"p q'r\\\"s't";
-        expected = new String[] {
-                "a'b", "c\"d", "e\"f", "g'h", "i\\'j", "k\\\"l", "mn\\'op", "qr\\\"st"};
+        toParse =
+                " \"a'b\" 'c\"d' \"e\\\"f\" 'g\\'h' \"i\\'j\" 'k\\\"l'" + " m\"n\\'o\"p q'r\\\"s't";
+        expected =
+                new String[] {
+                    "a'b", "c\"d", "e\"f", "g'h", "i\\'j", "k\\\"l", "mn\\'op", "qr\\\"st"
+                };
         checkTokenizer(expected, toParse);
     }
 
@@ -170,20 +178,23 @@ public class CommandLineTest {
         cl.appendSwitchWithValue(CL_ADDED_SWITCH_2, "updatedValue");
 
         final String[] expectedValueForBothSwitches = {
-                "",
-                "--" + CL_ADDED_SWITCH,
-                "--" + CL_ADDED_SWITCH_2 + "=" + CL_ADDED_VALUE_2,
-                "--" + CL_ADDED_SWITCH_2 + "=updatedValue",
+            "",
+            "--" + CL_ADDED_SWITCH,
+            "--" + CL_ADDED_SWITCH_2 + "=" + CL_ADDED_VALUE_2,
+            "--" + CL_ADDED_SWITCH_2 + "=updatedValue",
         };
-        Assert.assertArrayEquals("Appending a switch multiple times should add multiple args",
-                expectedValueForBothSwitches, mCommandLine.getCommandLineArguments());
+        Assert.assertArrayEquals(
+                "Appending a switch multiple times should add multiple args",
+                expectedValueForBothSwitches,
+                mCommandLine.getCommandLineArguments());
 
         cl.removeSwitch(CL_ADDED_SWITCH_2);
         final String[] expectedValueWithSecondSwitchRemoved = {
-                "",
-                "--" + CL_ADDED_SWITCH,
+            "", "--" + CL_ADDED_SWITCH,
         };
-        Assert.assertArrayEquals("Removing a switch should remove all its args",
-                expectedValueWithSecondSwitchRemoved, mCommandLine.getCommandLineArguments());
+        Assert.assertArrayEquals(
+                "Removing a switch should remove all its args",
+                expectedValueWithSecondSwitchRemoved,
+                mCommandLine.getCommandLineArguments());
     }
 }

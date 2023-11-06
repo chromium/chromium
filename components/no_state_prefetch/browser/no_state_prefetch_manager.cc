@@ -731,7 +731,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
     return nullptr;
   }
 
-  DCHECK(!no_state_prefetch_contents_ptr->prerendering_has_started());
+  DCHECK(!no_state_prefetch_contents_ptr->prefetching_has_started());
 
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
       base::WrapUnique(
@@ -746,7 +746,7 @@ NoStatePrefetchManager::StartPrefetchingWithPreconnectFallback(
   no_state_prefetch_contents_ptr->StartPrerendering(
       contents_bounds, session_storage_namespace, attempt);
 
-  DCHECK(no_state_prefetch_contents_ptr->prerendering_has_started());
+  DCHECK(no_state_prefetch_contents_ptr->prefetching_has_started());
 
   StartSchedulingPeriodicCleanups();
   return no_state_prefetch_handle;
@@ -1005,7 +1005,7 @@ void NoStatePrefetchManager::ScheduleDeleteOldWebContents(
 }
 
 void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
-  NoStatePrefetchHistory::Entry entry(contents->prerender_url(),
+  NoStatePrefetchHistory::Entry entry(contents->prefetch_url(),
                                       contents->final_status(),
                                       contents->origin(), base::Time::Now());
   prefetch_history_->AddEntry(entry);

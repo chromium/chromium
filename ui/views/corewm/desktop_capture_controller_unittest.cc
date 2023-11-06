@@ -8,6 +8,8 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/native_widget_factory.h"
@@ -29,6 +31,8 @@ using DesktopCaptureControllerTest = test::DesktopWidgetTestInteractive;
 // This class provides functionality to verify whether the View instance
 // received the gesture event.
 class DesktopViewInputTest : public View {
+  METADATA_HEADER(DesktopViewInputTest, View)
+
  public:
   DesktopViewInputTest() = default;
 
@@ -48,6 +52,9 @@ class DesktopViewInputTest : public View {
  private:
   bool received_gesture_event_ = false;
 };
+
+BEGIN_METADATA(DesktopViewInputTest)
+END_METADATA
 
 views::Widget* CreateWidget() {
   views::Widget* widget = new views::Widget;

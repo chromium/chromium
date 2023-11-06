@@ -103,13 +103,16 @@ class SharedStorageWorkletDevToolsAgentHostTest
     contents()->NavigateAndCommit(GURL("http://www.google.com"));
     RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
 
+    mojo::PendingAssociatedReceiver<blink::mojom::SharedStorageWorkletHost>
+        worklet_host;
+
     SharedStorageDocumentServiceImpl* document_service =
         SharedStorageDocumentServiceImpl::GetOrCreateForCurrentDocument(
             main_rfh);
-    document_service->AddModuleOnWorklet(
+    document_service->CreateWorklet(
         GURL("http://www.google.com/script.js"),
         {blink::mojom::OriginTrialFeature::kSharedStorageAPI},
-        base::DoNothing());
+        std::move(worklet_host), base::DoNothing());
 
     SharedStorageWorkletHostManager* manager =
         GetSharedStorageWorkletHostManagerForStoragePartition(

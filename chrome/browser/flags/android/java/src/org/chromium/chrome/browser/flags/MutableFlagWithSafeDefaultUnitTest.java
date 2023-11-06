@@ -17,13 +17,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit Tests for {@link MutableFlagWithSafeDefault}.
- */
+/** Unit Tests for {@link MutableFlagWithSafeDefault}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MutableFlagWithSafeDefaultUnitTest {
-    @Rule
-    public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {

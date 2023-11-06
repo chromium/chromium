@@ -21,7 +21,7 @@ const char kCloudExtensionRequestUploadedIds[] =
     "enterprise_reporting.extension_request.pending.ids";
 
 const char kCloudLegacyTechReportAllowlist[] =
-    "enterprise_reporting.legachy_tech.urls";
+    "enterprise_reporting.legacy_tech.urls";
 
 const base::TimeDelta kDefaultReportFrequency = base::Hours(24);
 

@@ -17,6 +17,11 @@ import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.android_webview.AwIntegrityApiStatusConfig.ApiStatus;
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.client_hints.AwUserAgentMetadata;
 import org.chromium.android_webview.common.AwFeatures;
@@ -28,9 +33,6 @@ import org.chromium.android_webview.settings.ForceDarkMode;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.content_public.browser.WebContents;
 
@@ -187,6 +189,7 @@ public class AwSettings {
     private boolean mSupportZoom = true;
     private boolean mBuiltInZoomControls;
     private boolean mDisplayZoomControls = true;
+    private final AwIntegrityApiStatusConfig mIntegrityApiStatusConfig;
 
     // Cache default user agent string obtained through JNI, since it will not change during the
     // process lifetime. This saves a JNI call when creating new AwSettings objects after the first
@@ -349,6 +352,7 @@ public class AwSettings {
             } else {
                 mRequestedWithHeaderAllowedOriginRules = Collections.emptySet();
             }
+            mIntegrityApiStatusConfig = new AwIntegrityApiStatusConfig();
         }
         // Defer initializing the native side until a native WebContents instance is set.
     }
@@ -2116,6 +2120,25 @@ public class AwSettings {
             assert mNativeAwSettings != 0;
             return AwSettingsJni.get().getEnterpriseAuthenticationAppLinkPolicyEnabled(
                     mNativeAwSettings, AwSettings.this);
+        }
+    }
+
+    public void setWebViewIntegrityApiStatus(
+            @ApiStatus int defaultStatus, Map<String, @ApiStatus Integer> permissionConfig) {
+        synchronized (mAwSettingsLock) {
+            mIntegrityApiStatusConfig.setApiStatus(defaultStatus, permissionConfig);
+        }
+    }
+
+    public @ApiStatus int getWebViewIntegrityApiDefaultStatus() {
+        synchronized (mAwSettingsLock) {
+            return mIntegrityApiStatusConfig.getDefaultStatus();
+        }
+    }
+
+    public Map<String, @ApiStatus Integer> getWebViewIntegrityApiOverrideRules() {
+        synchronized (mAwSettingsLock) {
+            return mIntegrityApiStatusConfig.getOverrideRules();
         }
     }
 

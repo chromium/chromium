@@ -1,8 +1,11 @@
 This is a testharness.js-based test.
-FAIL createOffer() with no argument from newly created RTCPeerConnection should succeed assert_false: Expect offer to not be instance of RTCSessionDescription expected false got true
-PASS createOffer() and then setLocalDescription() should succeed
-PASS createOffer() after connection is closed should reject with InvalidStateError
-FAIL When media stream is added when createOffer() is running in parallel, the result offer should contain the new media stream assert_equals: Expect m=audio line to be found in offer SDP expected 1 but got 0
-FAIL createOffer() should fail when signaling state is not stable or have-local-offer assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] createOffer() with no argument from newly created RTCPeerConnection should succeed
+  assert_false: Expect offer to not be instance of RTCSessionDescription expected false got true
+[PASS] createOffer() and then setLocalDescription() should succeed
+[PASS] createOffer() after connection is closed should reject with InvalidStateError
+[FAIL] When media stream is added when createOffer() is running in parallel, the result offer should contain the new media stream
+  assert_equals: Expect m=audio line to be found in offer SDP expected 1 but got 0
+[FAIL] createOffer() should fail when signaling state is not stable or have-local-offer
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

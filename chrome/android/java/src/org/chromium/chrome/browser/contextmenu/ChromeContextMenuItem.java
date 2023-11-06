@@ -19,7 +19,6 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
@@ -133,45 +132,43 @@ class ChromeContextMenuItem {
             R.id.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
-    /**
-     * Mapping from {@link Item} to the ID of the string that describes the action of the item.
-     */
+    /** Mapping from {@link Item} to the ID of the string that describes the action of the item. */
     private static final int[] STRING_IDS = {
-            R.string.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB:
-            R.string.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB:
-            0, // Item.OPEN_IN_BROWSER_ID is not handled by this mapping.
-            R.string.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB:
-            R.string.contextmenu_open_in_new_tab_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
-            R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
-            R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
-            R.string.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW:
-            R.string.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB:
-            R.string.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS:
-            R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:
-            R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:
-            R.string.contextmenu_share_link, // Item.SHARE_LINK
-            0, // Item.DIRECT_SHARE_LINK is not handled by this mapping.
-            R.string.contextmenu_read_later, // Item.READ_LATER
-            R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
-            R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
-            R.string.contextmenu_open_image, // Item.OPEN_IMAGE:
-            R.string.contextmenu_open_image_in_new_tab, // Item.OPEN_IMAGE_IN_NEW_TAB:
-            R.string.contextmenu_open_image_in_ephemeral_tab, // Item.OPEN_IMAGE_IN_EPHEMERAL_TAB:
-            R.string.contextmenu_copy_image, // Item.COPY_IMAGE:
-            R.string.contextmenu_search_web_for_image, // Item.SEARCH_BY_IMAGE:
-            LensUtils.getLensContextMenuText(), // Item.SEARCH_WITH_GOOGLE_LENS:
-            R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
-            R.string.contextmenu_share_image, // Item.SHARE_IMAGE
-            0, // Item.DIRECT_SHARE_IMAGE is not handled by this mapping.
-            R.string.contextmenu_call, // Item.CALL:
-            R.string.contextmenu_send_message, // Item.SEND_MESSAGE:
-            R.string.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS:
-            R.string.contextmenu_copy, // Item.COPY:
-            R.string.contextmenu_save_video, // Item.SAVE_VIDEO:
-            R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
-            R.string.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
-            R.string.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
-            R.string.contextmenu_learn_more, // Item.LEARN_MORE
+        R.string.contextmenu_open_in_new_chrome_tab, // Item.OPEN_IN_NEW_CHROME_TAB:
+        R.string.contextmenu_open_in_chrome_incognito_tab, // Item.OPEN_IN_CHROME_INCOGNITO_TAB:
+        0, // Item.OPEN_IN_BROWSER_ID is not handled by this mapping.
+        R.string.contextmenu_open_in_new_tab, // Item.OPEN_IN_NEW_TAB:
+        R.string.contextmenu_open_in_new_tab_group, // Item.OPEN_IN_NEW_TAB_IN_GROUP
+        R.string.contextmenu_open_in_incognito_tab, // Item.OPEN_IN_INCOGNITO_TAB:
+        R.string.contextmenu_open_in_other_window, // Item.OPEN_IN_OTHER_WINDOW:
+        R.string.contextmenu_open_in_new_window, // Item.OPEN_IN_NEW_WINDOW:
+        R.string.contextmenu_open_in_ephemeral_tab, // Item.OPEN_IN_EPHEMERAL_TAB:
+        R.string.contextmenu_copy_link_address, // Item.COPY_LINK_ADDRESS:
+        R.string.contextmenu_copy_link_text, // Item.COPY_LINK_TEXT:
+        R.string.contextmenu_save_link, // Item.SAVE_LINK_AS:
+        R.string.contextmenu_share_link, // Item.SHARE_LINK
+        0, // Item.DIRECT_SHARE_LINK is not handled by this mapping.
+        R.string.contextmenu_read_later, // Item.READ_LATER
+        R.string.contextmenu_load_original_image, // Item.LOAD_ORIGINAL_IMAGE:
+        R.string.contextmenu_save_image, // Item.SAVE_IMAGE:
+        R.string.contextmenu_open_image, // Item.OPEN_IMAGE:
+        R.string.contextmenu_open_image_in_new_tab, // Item.OPEN_IMAGE_IN_NEW_TAB:
+        R.string.contextmenu_open_image_in_ephemeral_tab, // Item.OPEN_IMAGE_IN_EPHEMERAL_TAB:
+        R.string.contextmenu_copy_image, // Item.COPY_IMAGE:
+        R.string.contextmenu_search_web_for_image, // Item.SEARCH_BY_IMAGE:
+        R.string.contextmenu_search_image_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS:
+        R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
+        R.string.contextmenu_share_image, // Item.SHARE_IMAGE
+        0, // Item.DIRECT_SHARE_IMAGE is not handled by this mapping.
+        R.string.contextmenu_call, // Item.CALL:
+        R.string.contextmenu_send_message, // Item.SEND_MESSAGE:
+        R.string.contextmenu_add_to_contacts, // Item.ADD_TO_CONTACTS:
+        R.string.contextmenu_copy, // Item.COPY:
+        R.string.contextmenu_save_video, // Item.SAVE_VIDEO:
+        R.string.menu_open_in_chrome, // Item.OPEN_IN_CHROME:
+        R.string.contextmenu_share_highlight, // Item.SHARE_HIGHLIGHT
+        R.string.contextmenu_remove_highlight, // Item.REMOVE_HIGHLIGHT
+        R.string.contextmenu_learn_more, // Item.LEARN_MORE
     };
 
     /**

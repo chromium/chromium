@@ -100,9 +100,10 @@ using ::testing::Optional;
 using ::testing::Pointee;
 using ::testing::Property;
 
-MATCHER_P(IsInDir, directory, "") {
-  *result_listener << "where the directory is " << directory;
-  return arg.DirName() == directory;
+MATCHER_P(IsInIwaRandomDir, profile_directory, "") {
+  *result_listener << "where the profile directory is " << profile_directory;
+  return arg.DirName().DirName() == profile_directory.Append(kIwaDirName) &&
+         arg.BaseName() == base::FilePath(kMainSwbnFileName);
 }
 
 MATCHER_P2(IwaIs, untranslated_name, isolation_data, "") {

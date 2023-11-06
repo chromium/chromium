@@ -29,7 +29,6 @@ namespace page_load_metrics {
 
 namespace {
 const int kInitialTimerDelayMillis = 50;
-const int64_t kInputDelayAdjustmentMillis = int64_t(50);
 
 mojom::UserInteractionType UserInteractionTypeForMojom(
     blink::UserInteractionType interaction_type) {
@@ -374,16 +373,6 @@ void PageTimingMetricsSender::SendNow() {
   // As PageTimingMetricsSender is owned by MetricsRenderFrameObserver, which is
   // instantiated for each frame, there's no need to make soft_navigation_count_
   // zero here, as its value only increments through the lifetime of the frame.
-}
-
-void PageTimingMetricsSender::DidObserveInputDelay(
-    base::TimeDelta input_delay) {
-  input_timing_delta_->num_input_events++;
-  input_timing_delta_->total_input_delay += input_delay;
-  input_timing_delta_->total_adjusted_input_delay +=
-      base::Milliseconds(std::max(int64_t(0), input_delay.InMilliseconds() -
-                                                  kInputDelayAdjustmentMillis));
-  EnsureSendTimer();
 }
 
 void PageTimingMetricsSender::InsertPageResourceDataUse(

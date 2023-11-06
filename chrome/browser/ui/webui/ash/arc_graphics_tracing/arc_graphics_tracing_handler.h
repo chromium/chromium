@@ -29,6 +29,10 @@ class Surface;
 class WMHelper;
 }  // namespace exo
 
+namespace gfx {
+struct PresentationFeedback;
+}  // namespace gfx
+
 namespace aura {
 class Window;
 }  // namespace aura
@@ -110,6 +114,7 @@ class ArcGraphicsTracingHandler : public content::WebUIMessageHandler,
   void OnTracingStarted();
   void OnTracingStopped(std::unique_ptr<ActiveTrace> trace,
                         std::unique_ptr<std::string> trace_data);
+  void RecordPresentedFrame(const gfx::PresentationFeedback& present);
 
   // Called when graphics model is built or load. Extra string parameter
   // contains a status. In case model cannot be built/load empty |base::Value|

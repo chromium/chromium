@@ -86,6 +86,12 @@ class FormStructureRationalizer {
   // address predictions.
   void RationalizeStreetAddressAndAddressLine(LogManager* log_manager);
 
+  // Rewrites sequences of (home_between_street,
+  // home_between_street_1) or (home_between_street, home_between_street_2) to
+  // (home_between_street_1, home_between_street_2) as these fields can be
+  // wrongly classified by the heuristics.
+  void RationalizeBetweenStreetFields(LogManager* log_manager);
+
   // Depending on the existence of a preceding PHONE_HOME_COUNTRY_CODE field,
   // a phone number's city code and city-and-number representation needs to be
   // prefixed with a trunk prefix. Autofill treats trunk prefixes as separate

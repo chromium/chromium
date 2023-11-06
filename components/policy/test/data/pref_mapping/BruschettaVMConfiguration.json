@@ -1,0 +1,611 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "No policy set, prefs go to default value",
+        "policies": {},
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "Policy violates schema (spaces aren't allowed in ids) and is rejected",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "schema violation": true
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "Check that INSTALL_ALLOWED is downgraded if no downloadable objects are set",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "name": "Standard Virtual Machine"
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that RUN_ALLOWED is *not* downgraded if no downloadable objects are set, and also that runtime policies are defaulted correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "RUN_ALLOWED",
+              "name": "Standard Virtual Machine"
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that BLOCKED is translated to enabled_state 0",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "BLOCKED",
+              "name": "Standard Virtual Machine"
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 0,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check vtpm.policy_update_action maps NONE correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "RUN_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "vtpm": {
+                "enabled": true,
+                "policy_update_action": "NONE"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": true,
+                  "policy_update_action": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check vtpm.policy_update_action maps FORCE_SHUTDOWN_IF_MORE_RESTRICTED correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "RUN_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "vtpm": {
+                "enabled": true,
+                "policy_update_action": "FORCE_SHUTDOWN_IF_MORE_RESTRICTED"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": true,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check vtpm.policy_update_action maps FORCE_SHUTDOWN_ALWAYS correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "RUN_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "vtpm": {
+                "enabled": true,
+                "policy_update_action": "FORCE_SHUTDOWN_ALWAYS"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": true,
+                  "policy_update_action": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that OEM strings are translated correctly",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "oem_strings": [
+                "oem string 1",
+                "oem string 2"
+              ]
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [
+                  "oem string 1",
+                  "oem string 2"
+                ],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that OEM strings must be strings",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "oem_strings": [
+                1
+              ]
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is downgraded if no installer_image is set",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6",
+                "url": "https://example.com/uefi_pflash"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is *not* downgraded if no uefi_pflash is set",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de",
+                "url": "https://example.com/installer_image"
+              },
+              "name": "Standard Virtual Machine"
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 2,
+                "installer_image": {
+                  "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de",
+                  "url": "https://example.com/installer_image"
+                },
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that missing URLs are rejected by schema",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is downgraded if URLs are invalid",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de",
+                "url": "invalid url"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6",
+                "url": "invalid url"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Check that missing hashes are rejected by schema",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "url": "https://example.com/installer_image"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "url": "https://example.com/uefi_pflash"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "default_value": {}
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is downgraded if hashes are invalid (invalid characters)",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+                "url": "https://example.com/installer_image"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+                "url": "https://example.com/uefi_pflash"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "INSTALL_ALLOWED is downgraded if hashes are invalid (wrong length)",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "vm-type": {
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc58267",
+                "url": "https://example.com/installer_image"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e9434",
+                "url": "https://example.com/uefi_pflash"
+              }
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "note": "Big test with multiple different configurations",
+        "policies": {
+          "BruschettaVMConfiguration": {
+            "another-vm-type": {
+              "display_order": 2,
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "75cd9ce860dc65e71c4088fab33ffc54bcb29d8215ff2cd3a8c5f489ed7b246c",
+                "url": "https://example.com/installer_image_2"
+              },
+              "name": "Weird Virtual Machine",
+              "oem_strings": [
+                "some weird config"
+              ],
+              "uefi_pflash_x86_64": {
+                "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82",
+                "url": "https://example.com/uefi_pflash_2"
+              },
+              "vtpm": {
+                "enabled": false,
+                "policy_update_action": "FORCE_SHUTDOWN_ALWAYS"
+              }
+            },
+            "old-vm-type": {
+              "enabled_state": "RUN_ALLOWED",
+              "name": "Legacy VM"
+            },
+            "old-vm-type-2": {
+              "enabled_state": "RUN_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "75cd9ce860dc65e71c4088fab33ffc54bcb29d8215ff2cd3a8c5f489ed7b246c",
+                "url": "https://example.com/installer_image_2"
+              },
+              "name": "Legacy VM",
+              "uefi_pflash_x86_64": {
+                "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82",
+                "url": "https://example.com/uefi_pflash_2"
+              }
+            },
+            "vm-type": {
+              "display_order": 0,
+              "enabled_state": "INSTALL_ALLOWED",
+              "installer_image_x86_64": {
+                "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de",
+                "url": "https://example.com/installer_image"
+              },
+              "name": "Standard Virtual Machine",
+              "uefi_pflash_x86_64": {
+                "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6",
+                "url": "https://example.com/uefi_pflash"
+              },
+              "vtpm": {
+                "enabled": true
+              }
+            },
+            "vulnerable-vm-type": {
+              "display_order": 1,
+              "enabled_state": "BLOCKED",
+              "name": "Forbidden VM"
+            }
+          }
+        },
+        "prefs": {
+          "bruschetta.vm_configuration": {
+            "value": {
+              "another-vm-type": {
+                "display_order": 2,
+                "enabled_state": 2,
+                "installer_image": {
+                  "hash": "75cd9ce860dc65e71c4088fab33ffc54bcb29d8215ff2cd3a8c5f489ed7b246c",
+                  "url": "https://example.com/installer_image_2"
+                },
+                "name": "Weird Virtual Machine",
+                "oem_strings": [
+                  "some weird config"
+                ],
+                "uefi_pflash": {
+                  "hash": "0923a3ddb53b9f1be54e0486322c8315e25a678a64941e15276d17ad2c63ee82",
+                  "url": "https://example.com/uefi_pflash_2"
+                },
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 2
+                }
+              },
+              "old-vm-type": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Legacy VM",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              },
+              "old-vm-type-2": {
+                "display_order": 0,
+                "enabled_state": 1,
+                "name": "Legacy VM",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              },
+              "vm-type": {
+                "display_order": 0,
+                "enabled_state": 2,
+                "installer_image": {
+                  "hash": "761b22509ee7bd3e1a3da9eb9e37c6443acfc582670b733601ca5a1de44b99de",
+                  "url": "https://example.com/installer_image"
+                },
+                "name": "Standard Virtual Machine",
+                "oem_strings": [],
+                "uefi_pflash": {
+                  "hash": "4d9a81e8feb96abb6da0d92642996a26edea6e94345da12a19999470c57bb0a6",
+                  "url": "https://example.com/uefi_pflash"
+                },
+                "vtpm": {
+                  "enabled": true,
+                  "policy_update_action": 1
+                }
+              },
+              "vulnerable-vm-type": {
+                "display_order": 1,
+                "enabled_state": 0,
+                "name": "Forbidden VM",
+                "oem_strings": [],
+                "vtpm": {
+                  "enabled": false,
+                  "policy_update_action": 1
+                }
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+]

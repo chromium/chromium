@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesInfo, SearchEnginesInteractions, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 // clang-format on
 
@@ -33,8 +33,9 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
         {defaults: [], actives: [], others: [], extensions: []};
   }
 
-  setDefaultSearchEngine(modelIndex: number) {
-    this.methodCalled('setDefaultSearchEngine', modelIndex);
+  setDefaultSearchEngine(
+      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation) {
+    this.methodCalled('setDefaultSearchEngine', modelIndex, choiceMadeLocation);
   }
 
   setIsActiveSearchEngine(modelIndex: number, isActive: boolean) {
@@ -93,6 +94,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         default: false,
         displayName: 'Google',
         iconURL: 'http://www.google.com/favicon.ico',
+        iconPath: 'images/foo.png',
         id: 0,
         isOmniboxExtension: false,
         keyword: 'google.com',

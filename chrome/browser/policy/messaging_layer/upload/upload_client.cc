@@ -18,6 +18,7 @@
 #include "components/reporting/util/statusor.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace reporting {
@@ -62,7 +63,7 @@ Status UploadClient::EnqueueUpload(
 }
 
 UploadClient::UploadClient()
-    : sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
+    : sequenced_task_runner_(content::GetUIThreadTaskRunner()),
       handler_(
           std::make_unique<RecordHandlerImpl>(sequenced_task_runner_,
                                               CreateFileUploadDelegate())) {}

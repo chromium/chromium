@@ -112,7 +112,6 @@ class OpenXrApiWrapper {
   void OnContextProviderLost();
 
   bool CanEnableAntiAliasing() const;
-  bool IsUsingSharedImages() const;
 
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
@@ -141,7 +140,6 @@ class OpenXrApiWrapper {
   XrResult UpdateSecondaryViewConfigStates(
       const std::vector<XrSecondaryViewConfigurationStateMSFT>& states);
   XrResult UpdateViewConfigurations();
-  XrResult PrepareViewConfigForRender(OpenXrViewConfiguration& view_config);
   XrResult LocateViews(XrReferenceSpaceType space_type,
                        OpenXrViewConfiguration& view_config) const;
 

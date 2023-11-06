@@ -78,6 +78,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     // Swap the WebContents's delegate back to its usual delegate.
     contents()->SetDelegate(normal_delegate_);
+    normal_delegate_ = nullptr;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -161,7 +162,7 @@ class FindRequestManagerTestBase : public ContentBrowserTest {
   }
 
   FindTestWebContentsDelegate test_delegate_;
-  raw_ptr<WebContentsDelegate, DanglingUntriaged> normal_delegate_;
+  raw_ptr<WebContentsDelegate> normal_delegate_;
 
   // The ID of the last find request requested.
   int last_request_id_;
@@ -1659,7 +1660,8 @@ INSTANTIATE_TEST_SUITE_P(
 // new results from the new document when we navigate the subframe that
 // hasn't finished the find-in-page session to the new document.
 // TODO(crbug.com/1311444): Fix flakiness and reenable the test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_ANDROID)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind
 #else
 #define MAYBE_NavigateFrameDuringFind NavigateFrameDuringFind

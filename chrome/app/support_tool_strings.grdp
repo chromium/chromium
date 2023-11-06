@@ -98,6 +98,12 @@
         <message name="IDS_SUPPORT_TOOL_SELECT_DATA_COLLECTOR_ERROR" desc="The error message that user will see in a toast message when they don't select any data sources and wants to move to the next stage.">
             No data collector selected. Please select at least one data collector.
         </message>
+        <message name="IDS_SUPPORT_TOOL_SELECT_ALL" desc="The button label that will enable user to select all data collector checkboxes so everything will be included.">
+            Select all
+        </message>
+        <message name="IDS_SUPPORT_TOOL_SELECT_NONE" desc="The button label that will enable user to deselect all data collector checkboxes so nothing will be included.">
+            Select none
+        </message>
         <!-- DataCollector strings -->
         <message name="IDS_SUPPORT_TOOL_CHROME_SYSTEM_INFO" desc="This is a data source name for internal Chrome logs.">
             Chrome System Information

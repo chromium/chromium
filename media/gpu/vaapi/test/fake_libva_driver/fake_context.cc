@@ -4,6 +4,9 @@
 
 #include "media/gpu/vaapi/test/fake_libva_driver/fake_context.h"
 
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_buffer.h"
+#include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
+
 namespace media::internal {
 
 FakeContext::FakeContext(FakeContext::IdType id,
@@ -17,7 +20,12 @@ FakeContext::FakeContext(FakeContext::IdType id,
       picture_width_(picture_width),
       picture_height_(picture_height),
       flag_(flag),
-      render_targets_(std::move(render_targets)) {}
+      render_targets_(std::move(render_targets)),
+      delegate_(std::make_unique<VpxDecoderDelegate>(picture_width_,
+                                                     picture_height_)) {
+  // TODO(bchoobineh): Add codec specific logic to create the proper
+  // decoder delegate.
+}
 FakeContext::~FakeContext() = default;
 
 FakeContext::IdType FakeContext::GetID() const {
@@ -42,6 +50,19 @@ int FakeContext::GetFlag() const {
 
 const std::vector<VASurfaceID>& FakeContext::GetRenderTargets() const {
   return render_targets_;
+}
+
+void FakeContext::BeginPicture(const FakeSurface& surface) const {
+  delegate_->SetRenderTarget(surface);
+}
+
+void FakeContext::RenderPicture(
+    const std::vector<raw_ptr<const FakeBuffer>>& buffers) const {
+  delegate_->EnqueueWork(buffers);
+}
+
+void FakeContext::EndPicture() const {
+  delegate_->Run();
 }
 
 }  // namespace media::internal

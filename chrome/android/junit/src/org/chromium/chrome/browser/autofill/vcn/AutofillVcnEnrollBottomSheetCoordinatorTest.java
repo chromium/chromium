@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -43,15 +42,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private ManagedBottomSheetController mBottomSheetController;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetCoordinator mCoordinator;
@@ -68,24 +63,28 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
 
         Activity activity = buildActivity(Activity.class).create().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
-        mCoordinator = new AutofillVcnEnrollBottomSheetCoordinator(mWindow.getContext().get(),
-                new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS),
-                mLayoutStateProvider, mTabModelSelectorSupplier,
-                new AutofillVcnEnrollBottomSheetCoordinator.Delegate() {
-                    @Override
-                    public void onAccept() {
-                        mAcceptClicked = true;
-                    }
-                    @Override
-                    public void onCancel() {
-                        mCancelClicked = true;
-                    }
-                    @Override
-                    public void onDismiss() {}
-                });
+        mCoordinator =
+                new AutofillVcnEnrollBottomSheetCoordinator(
+                        mWindow.getContext().get(),
+                        new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS),
+                        mLayoutStateProvider,
+                        mTabModelSelectorSupplier,
+                        new AutofillVcnEnrollBottomSheetCoordinator.Delegate() {
+                            @Override
+                            public void onAccept() {
+                                mAcceptClicked = true;
+                            }
+
+                            @Override
+                            public void onCancel() {
+                                mCancelClicked = true;
+                            }
+
+                            @Override
+                            public void onDismiss() {}
+                        });
     }
 
     @After
@@ -101,8 +100,8 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mCoordinator.requestShowContent(mWindow);
 
         verify(mBottomSheetController)
-                .requestShowContent(any(AutofillVcnEnrollBottomSheetContent.class),
-                        /*animate=*/eq(true));
+                .requestShowContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
     }
 
     @Test
@@ -121,8 +120,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
         mCoordinator.hide();
 
         verify(mBottomSheetController)
-                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
-                        /*animate=*/eq(true),
+                .hideContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class),
+                        /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
@@ -141,8 +141,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
         assertTrue(mAcceptClicked);
         verify(mBottomSheetController)
-                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
-                        /*animate=*/eq(true),
+                .hideContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class),
+                        /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 
@@ -154,8 +155,9 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
         assertTrue(mCancelClicked);
         verify(mBottomSheetController)
-                .hideContent(any(AutofillVcnEnrollBottomSheetContent.class),
-                        /*animate=*/eq(true),
+                .hideContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class),
+                        /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 }

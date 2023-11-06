@@ -23,7 +23,7 @@ namespace {
 
 FilePath GetTestDataPath() {
   FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.AppendASCII("base");
   path = path.AppendASCII("test");
   path = path.AppendASCII("data");

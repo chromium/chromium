@@ -25,11 +25,24 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kTrackingProtectionNoticeLastShown,
                              base::Time());
 
+  registry->RegisterTimePref(prefs::kTrackingProtectionOnboardingAckedSince,
+                             base::Time());
+
   registry->RegisterBooleanPref(prefs::kTrackingProtectionOnboardingAcked,
                                 false);
 
   registry->RegisterIntegerPref(
       prefs::kTrackingProtectionOnboardingAckAction,
+      static_cast<int>(TrackingProtectionOnboardingAckAction::kNotSet));
+
+  // Offboarding
+  registry->RegisterBooleanPref(prefs::kTrackingProtectionOffboarded, false);
+
+  registry->RegisterTimePref(prefs::kTrackingProtectionOffboardedSince,
+                             base::Time());
+
+  registry->RegisterIntegerPref(
+      prefs::kTrackingProtectionOffboardingAckAction,
       static_cast<int>(TrackingProtectionOnboardingAckAction::kNotSet));
 
   // Tracking Protection Settings Prefs
@@ -44,6 +57,17 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kEnableDoNotTrack, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
+  // Sentiment Survey
+  registry->RegisterIntegerPref(
+      prefs::kTrackingProtectionSentimentSurveyGroup,
+      static_cast<int>(TrackingProtectionSentimentSurveyGroup::kNotSet));
+
+  registry->RegisterTimePref(prefs::kTrackingProtectionSentimentSurveyStartTime,
+                             base::Time());
+
+  registry->RegisterTimePref(prefs::kTrackingProtectionSentimentSurveyEndTime,
+                             base::Time());
 }
 
 }  // namespace privacy_sandbox::tracking_protection

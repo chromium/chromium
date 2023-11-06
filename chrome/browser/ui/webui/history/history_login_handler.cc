@@ -66,13 +66,14 @@ void HistoryLoginHandler::ProfileInfoChanged() {
 void HistoryLoginHandler::HandleTurnOnSyncFlow(
     const base::Value::List& /*args*/) {
   Profile* profile = Profile::FromWebUI(web_ui());
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountInfo account_info =
-      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
-          signin::ConsentLevel::kSignin);
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
       account_info.IsEmpty()) {
-    account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+    account_info = signin_ui_util::GetSingleAccountForPromos(identity_manager);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   signin_ui_util::EnableSyncFromSingleAccountPromo(

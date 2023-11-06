@@ -997,9 +997,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
           GetSyncService(0)));
   EXPECT_NE(absl::nullopt,
             password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
-  EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
-                GetSyncService(0),
-                IdentityManagerFactory::GetForProfile(GetProfile(0))),
+  EXPECT_EQ(password_manager::sync_util::
+                GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+                    GetSyncService(0),
+                    IdentityManagerFactory::GetForProfile(GetProfile(0))),
             kExpectedUsername);
   EXPECT_EQ(
       password_manager::sync_util::GetPasswordSyncState(GetSyncService(0)),
@@ -1024,9 +1025,10 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerSyncTest, SyncUtilApis) {
           GetSyncService(0)));
   EXPECT_NE(absl::nullopt,
             password_manager::sync_util::GetSyncingAccount(GetSyncService(0)));
-  EXPECT_EQ(password_manager::sync_util::GetSyncUsernameIfSyncingPasswords(
-                GetSyncService(0),
-                IdentityManagerFactory::GetForProfile(GetProfile(0))),
+  EXPECT_EQ(password_manager::sync_util::
+                GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+                    GetSyncService(0),
+                    IdentityManagerFactory::GetForProfile(GetProfile(0))),
             kExpectedUsername);
 }
 

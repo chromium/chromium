@@ -2714,19 +2714,19 @@ TEST_F(AppListSyncableServiceTest, SortMixedPositionValidityItems) {
 
   using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
-  auto item1 =
-      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item1 = std::make_unique<SyncItem>(
+      kItemId1, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item1->item_name = "a";
   item1->item_ordinal = syncer::StringOrdinal(GetLastPositionString());
 
   const std::string kItemId2 = CreateNextAppId(kItemId1);
-  auto item2 =
-      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item2 = std::make_unique<SyncItem>(
+      kItemId2, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/true);
   item2->item_name = "b";
 
   const std::string kItemId3 = CreateNextAppId(kItemId2);
-  auto item3 =
-      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item3 = std::make_unique<SyncItem>(
+      kItemId3, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item3->item_name = "c";
 
   std::vector<std::unique_ptr<SyncItem>> sync_items;
@@ -2764,18 +2764,18 @@ TEST_F(AppListSyncableServiceTest, SortInvalidPositionItems) {
 
   using SyncItem = AppListSyncableService::SyncItem;
   const std::string kItemId1 = CreateNextAppId(extensions::kWebStoreAppId);
-  auto item1 =
-      std::make_unique<SyncItem>(kItemId1, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item1 = std::make_unique<SyncItem>(
+      kItemId1, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item1->item_name = "a";
 
   const std::string kItemId2 = CreateNextAppId(kItemId1);
-  auto item2 =
-      std::make_unique<SyncItem>(kItemId2, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item2 = std::make_unique<SyncItem>(
+      kItemId2, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item2->item_name = "b";
 
   const std::string kItemId3 = CreateNextAppId(kItemId2);
-  auto item3 =
-      std::make_unique<SyncItem>(kItemId3, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item3 = std::make_unique<SyncItem>(
+      kItemId3, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/true);
   item3->item_name = "c";
 
   std::vector<std::unique_ptr<SyncItem>> sync_items;

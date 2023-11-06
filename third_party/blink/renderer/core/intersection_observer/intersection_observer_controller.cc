@@ -103,7 +103,9 @@ IntersectionUpdateResult IntersectionObserverController::ComputeIntersections(
     for (auto& observation : observations_to_process) {
       if (metrics_timer)
         metrics_timer->StartInterval(observation->Observer()->GetUkmMetricId());
-      int64_t count = observation->ComputeIntersection(flags, monotonic_time);
+      absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
+      int64_t count = observation->ComputeIntersection(flags, monotonic_time,
+                                                       root_geometry);
       if (observation->Observer()->IsInternal())
         internal_observation_count += count;
       else

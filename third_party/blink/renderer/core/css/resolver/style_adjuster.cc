@@ -79,6 +79,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool IsOverflowClipOrVisible(EOverflow overflow) {
@@ -117,7 +119,7 @@ bool HostIsInputFile(const Element* element) {
   }
   if (const Element* shadow_host = element->OwnerShadowHost()) {
     if (const auto* input = DynamicTo<HTMLInputElement>(shadow_host)) {
-      return input->type() == input_type_names::kFile;
+      return input->FormControlType() == FormControlType::kInputFile;
     }
   }
   return false;
@@ -163,6 +165,7 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kFlex:
     case EDisplay::kGrid:
     case EDisplay::kBlockMath:
+    case EDisplay::kBlockRuby:
     case EDisplay::kListItem:
     case EDisplay::kFlowRoot:
     case EDisplay::kLayoutCustom:
@@ -177,6 +180,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
       return EDisplay::kGrid;
     case EDisplay::kMath:
       return EDisplay::kBlockMath;
+    case EDisplay::kRuby:
+      return EDisplay::kBlockRuby;
     case EDisplay::kInlineLayoutCustom:
       return EDisplay::kLayoutCustom;
     case EDisplay::kInlineListItem:
@@ -195,6 +200,8 @@ static EDisplay EquivalentBlockDisplay(EDisplay display) {
     case EDisplay::kTableColumn:
     case EDisplay::kTableCell:
     case EDisplay::kTableCaption:
+    case EDisplay::kRubyBase:
+    case EDisplay::kRubyText:
       return EDisplay::kBlock;
     case EDisplay::kNone:
       NOTREACHED();
@@ -530,15 +537,13 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
                       WebFeature::kOverflowClipAlongEitherAxis);
   }
 
-  if (RuntimeEnabledFeatures::OverflowOverlayAliasesAutoEnabled()) {
-    // overlay is a legacy alias of auto.
-    // https://drafts.csswg.org/css-overflow-3/#valdef-overflow-auto
-    if (builder.OverflowY() == EOverflow::kOverlay) {
-      builder.SetOverflowY(EOverflow::kAuto);
-    }
-    if (builder.OverflowX() == EOverflow::kOverlay) {
-      builder.SetOverflowX(EOverflow::kAuto);
-    }
+  // overlay is a legacy alias of auto.
+  // https://drafts.csswg.org/css-overflow-3/#valdef-overflow-auto
+  if (builder.OverflowY() == EOverflow::kOverlay) {
+    builder.SetOverflowY(EOverflow::kAuto);
+  }
+  if (builder.OverflowX() == EOverflow::kOverlay) {
+    builder.SetOverflowX(EOverflow::kAuto);
   }
 }
 
@@ -620,7 +625,7 @@ bool StyleAdjuster::IsPasswordFieldWithUnrevealedPassword(Element* element) {
     return false;
   }
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    return (input->type() == input_type_names::kPassword) &&
+    return input->FormControlType() == FormControlType::kInputPassword &&
            !input->ShouldRevealPassword();
   }
   return false;
@@ -881,7 +886,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForDisplay(builder, layout_parent_style, element,
                           element ? &element->GetDocument() : nullptr);
 
-    // If this is a child of a LayoutNGCustom, we need the name of the parent
+    // If this is a child of a LayoutCustom, we need the name of the parent
     // layout function for invalidation purposes.
     if (layout_parent_style.IsDisplayLayoutCustomBox()) {
       builder.SetDisplayLayoutCustomParentName(

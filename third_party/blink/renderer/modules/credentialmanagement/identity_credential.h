@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_logout_r_ps_request.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_revoke_options.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -19,33 +20,33 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IdentityCredential* Create(const String& token,
-                                    bool is_identity_credential_auto_selected);
+  static IdentityCredential* Create(const String& token, bool is_auto_selected);
 
   static bool IsRejectingPromiseDueToCSP(ContentSecurityPolicy* policy,
                                          ScriptPromiseResolver* resolver,
                                          const KURL& provider_url);
 
-  explicit IdentityCredential(
-      const String& token,
-      bool is_identity_credential_auto_selected = false);
+  explicit IdentityCredential(const String& token,
+                              bool is_auto_selected = false);
 
   // Credential:
   bool IsIdentityCredential() const override;
 
   // IdentityCredential.idl
   const String& token() const { return token_; }
-  const bool& isIdentityCredentialAutoSelected() const {
-    return is_identity_credential_auto_selected_;
-  }
+  const bool& isAutoSelected() const { return is_auto_selected_; }
 
   static ScriptPromise logoutRPs(
       ScriptState*,
       const HeapVector<Member<IdentityCredentialLogoutRPsRequest>>&);
 
+  static ScriptPromise revoke(ScriptState*,
+                              const IdentityCredentialRevokeOptions* options,
+                              ExceptionState&);
+
  private:
   const String token_;
-  const bool is_identity_credential_auto_selected_{false};
+  const bool is_auto_selected_{false};
 };
 
 }  // namespace blink

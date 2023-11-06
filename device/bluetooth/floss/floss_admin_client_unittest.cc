@@ -62,6 +62,10 @@ class FlossAdminClientTest : public testing::Test,
  public:
   FlossAdminClientTest() = default;
 
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUp() override {
     ::dbus::Bus::Options options;
     options.bus_type = ::dbus::Bus::BusType::SYSTEM;
@@ -145,7 +149,7 @@ class FlossAdminClientTest : public testing::Test,
         });
     ASSERT_FALSE(IsClientRegistered());
     client_->Init(bus_.get(), kAdapterInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
 
     // Test exported callbacks are correctly parsed
     ASSERT_TRUE(!!method_handler_on_device_policy_effect_changed);

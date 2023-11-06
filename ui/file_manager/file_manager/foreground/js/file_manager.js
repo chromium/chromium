@@ -6,14 +6,17 @@ import '../../definitions/file_manager_private.js';
 import '../../widgets/xf_jellybean.js';
 import 'chrome://resources/cros_components/switch/switch.js';
 import '../../background/js/test_util.js';
+import '../../background/js/file_manager_base.js';
 
 import {assert, assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+// @ts-ignore: error TS2792: Cannot find module
+// 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js'.
+// Did you mean to set the 'moduleResolution' option to 'nodenext', or to add
+// aliases to the 'paths' option?
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {background} from '../../background/js/file_manager_base.js';
-import {VolumeManagerImpl} from '../../background/js/volume_manager_impl.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
@@ -21,10 +24,12 @@ import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../.
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
+import {isDlpEnabled, isGuestOsEnabled, isJellyEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum, recordInterval, startInterval} from '../../common/js/metrics.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
+import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/js/util.js';
 import {AllowedPaths, VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
@@ -83,7 +88,6 @@ import {QuickViewController} from './quick_view_controller.js';
 import {QuickViewModel} from './quick_view_model.js';
 import {QuickViewUma} from './quick_view_uma.js';
 import {ScanController} from './scan_controller.js';
-import {SearchController} from './search_controller.js';
 import {SelectionMenuController} from './selection_menu_controller.js';
 import {SortMenuController} from './sort_menu_controller.js';
 import {SpinnerController} from './spinner_controller.js';
@@ -186,12 +190,16 @@ export class FileManager extends EventTarget {
      * Controller for actions for current selection.
      * @private @type {ActionsController}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'ActionsController'.
     this.actionsController_ = null;
 
     /**
      * Handler for command events.
      * @private @type {CommandHandler}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'CommandHandler'.
     this.commandHandler_ = null;
 
     /**
@@ -240,13 +248,9 @@ export class FileManager extends EventTarget {
      * Directory tree naming controller.
      * @private @type {DirectoryTreeNamingController}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'DirectoryTreeNamingController'.
     this.directoryTreeNamingController_ = null;
-
-    /**
-     * Controller for search UI.
-     * @private @type {?SearchController}
-     */
-    this.searchController_ = null;
 
     /**
      * Controller for directory scan.
@@ -307,6 +311,8 @@ export class FileManager extends EventTarget {
      * Last modified controller.
      * @private @type {LastModifiedController}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'LastModifiedController'.
     this.lastModifiedController_ = null;
 
     /**
@@ -378,9 +384,22 @@ export class FileManager extends EventTarget {
 
     /**
      * Whether Drive is enabled. Retrieved from user preferences.
-     * @private @type {?boolean}
+     * @private @type {boolean}
      */
     this.driveEnabled_ = false;
+
+    /**
+     * Whether Drive bulk-pinning is available on this device. Retrieved from
+     * user preferences.
+     * @private @type {boolean}
+     */
+    this.bulkPinningAvailable_ = false;
+
+    /**
+     * Whether Drive bulk-pinning has been initialized in Files App.
+     * @private @type {boolean}
+     */
+    this.bulkPinningInitialized_ = false;
 
     /**
      * A fake Drive placeholder item.
@@ -425,6 +444,7 @@ export class FileManager extends EventTarget {
    * @return {!ProgressCenter}
    */
   get progressCenter() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return assert(this.fileBrowserBackground_.progressCenter);
   }
 
@@ -432,6 +452,8 @@ export class FileManager extends EventTarget {
    * @return {DirectoryModel}
    */
   get directoryModel() {
+    // @ts-ignore: error TS2322: Type 'DirectoryModel | null' is not assignable
+    // to type 'DirectoryModel'.
     return this.directoryModel_;
   }
 
@@ -446,6 +468,8 @@ export class FileManager extends EventTarget {
    * @return {FileFilter}
    */
   get fileFilter() {
+    // @ts-ignore: error TS2322: Type 'FileFilter | null' is not assignable to
+    // type 'FileFilter'.
     return this.fileFilter_;
   }
 
@@ -453,6 +477,8 @@ export class FileManager extends EventTarget {
    * @return {FolderShortcutsDataModel}
    */
   get folderShortcutsModel() {
+    // @ts-ignore: error TS2322: Type 'FolderShortcutsDataModel | null' is not
+    // assignable to type 'FolderShortcutsDataModel'.
     return this.folderShortcutsModel_;
   }
 
@@ -474,6 +500,8 @@ export class FileManager extends EventTarget {
    * @return {ProvidersModel}
    */
   get providersModel() {
+    // @ts-ignore: error TS2322: Type 'ProvidersModel | null' is not assignable
+    // to type 'ProvidersModel'.
     return this.providersModel_;
   }
 
@@ -481,6 +509,8 @@ export class FileManager extends EventTarget {
    * @return {MetadataModel}
    */
   get metadataModel() {
+    // @ts-ignore: error TS2322: Type 'MetadataModel | null' is not assignable
+    // to type 'MetadataModel'.
     return this.metadataModel_;
   }
 
@@ -488,6 +518,8 @@ export class FileManager extends EventTarget {
    * @return {FileSelectionHandler}
    */
   get selectionHandler() {
+    // @ts-ignore: error TS2322: Type 'FileSelectionHandler | null' is not
+    // assignable to type 'FileSelectionHandler'.
     return this.selectionHandler_;
   }
 
@@ -495,6 +527,8 @@ export class FileManager extends EventTarget {
    * @return {Document}
    */
   get document() {
+    // @ts-ignore: error TS2322: Type 'Document | null' is not assignable to
+    // type 'Document'.
     return this.document_;
   }
 
@@ -502,6 +536,8 @@ export class FileManager extends EventTarget {
    * @return {FileTransferController}
    */
   get fileTransferController() {
+    // @ts-ignore: error TS2322: Type 'FileTransferController | null' is not
+    // assignable to type 'FileTransferController'.
     return this.fileTransferController_;
   }
 
@@ -509,6 +545,8 @@ export class FileManager extends EventTarget {
    * @return {NamingController}
    */
   get namingController() {
+    // @ts-ignore: error TS2322: Type 'NamingController | null' is not
+    // assignable to type 'NamingController'.
     return this.namingController_;
   }
 
@@ -516,6 +554,8 @@ export class FileManager extends EventTarget {
    * @return {TaskController}
    */
   get taskController() {
+    // @ts-ignore: error TS2322: Type 'TaskController | null' is not assignable
+    // to type 'TaskController'.
     return this.taskController_;
   }
 
@@ -523,6 +563,8 @@ export class FileManager extends EventTarget {
    * @return {SpinnerController}
    */
   get spinnerController() {
+    // @ts-ignore: error TS2322: Type 'SpinnerController | null' is not
+    // assignable to type 'SpinnerController'.
     return this.spinnerController_;
   }
 
@@ -530,6 +572,8 @@ export class FileManager extends EventTarget {
    * @return {FileOperationManager}
    */
   get fileOperationManager() {
+    // @ts-ignore: error TS2322: Type 'FileOperationManager | null' is not
+    // assignable to type 'FileOperationManager'.
     return this.fileOperationManager_;
   }
 
@@ -544,6 +588,8 @@ export class FileManager extends EventTarget {
    * @return {Crostini}
    */
   get crostini() {
+    // @ts-ignore: error TS2322: Type 'Crostini | null' is not assignable to
+    // type 'Crostini'.
     return this.crostini_;
   }
 
@@ -551,6 +597,8 @@ export class FileManager extends EventTarget {
    * @return {FileManagerUI}
    */
   get ui() {
+    // @ts-ignore: error TS2322: Type 'FileManagerUI | null' is not assignable
+    // to type 'FileManagerUI'.
     return this.ui_;
   }
 
@@ -566,6 +614,7 @@ export class FileManager extends EventTarget {
    * @param {!FilesAppState=} appState App state.
    */
   launchFileManager(appState) {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.fileBrowserBackground_.launchFileManager(appState);
   }
 
@@ -575,7 +624,7 @@ export class FileManager extends EventTarget {
    * @return {string}
    */
   getLastVisitedURL() {
-    return util.getLastVisitedURL();
+    return getLastVisitedURL();
   }
 
   /**
@@ -601,13 +650,13 @@ export class FileManager extends EventTarget {
   }
 
   /**
-   * Updates guestMode_ field based on what the result of the util.isInGuestMode
+   * Updates guestMode_ field based on what the result of the isInGuestMode
    * helper function. It errs on the side of not-in-guestmode, if the util
    * function fails. The worse this causes are extra notifications.
    */
   async setGuestMode_() {
     try {
-      const guest = await util.isInGuestMode();
+      const guest = await isInGuestMode();
       if (guest !== null) {
         this.guestMode_ = guest;
       }
@@ -623,6 +672,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   async initFileSystemUI_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.startBatchUpdates();
 
     const fileListPromise = this.initFileList_();
@@ -630,30 +680,49 @@ export class FileManager extends EventTarget {
 
     const self = this;
 
+    // @ts-ignore: error TS7034: Variable 'listBeingUpdated' implicitly has type
+    // 'any' in some locations where its type cannot be determined.
     let listBeingUpdated = null;
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.directoryModel_.addEventListener('begin-update-files', () => {
+      // @ts-ignore: error TS2339: Property 'startBatchUpdates' does not exist
+      // on type 'List'.
       self.ui_.listContainer.currentList.startBatchUpdates();
       // Remember the list which was used when updating files started, so
       // endBatchUpdates() is called on the same list.
+      // @ts-ignore: error TS18047: 'self.ui_' is possibly 'null'.
       listBeingUpdated = self.ui_.listContainer.currentList;
     });
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.directoryModel_.addEventListener('end-update-files', () => {
+      // @ts-ignore: error TS18047: 'self.namingController_' is possibly 'null'.
       self.namingController_.restoreItemBeingRenamed();
+      // @ts-ignore: error TS7005: Variable 'listBeingUpdated' implicitly has an
+      // 'any' type.
       listBeingUpdated.endBatchUpdates();
       listBeingUpdated = null;
     });
     this.volumeManager_.addEventListener(
         VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE, event => {
+          // @ts-ignore: error TS2339: Property 'detail' does not exist on type
+          // 'Event'.
           assert(event.detail.mountPoint);
+          // @ts-ignore: error TS2339: Property 'isFocused' does not exist on
+          // type 'Window & typeof globalThis'.
           if (window.isFocused()) {
+            // @ts-ignore: error TS2339: Property 'detail' does not exist on
+            // type 'Event'.
             this.directoryModel_.changeDirectoryEntry(event.detail.mountPoint);
           }
         });
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.directoryModel_.addEventListener(
         'directory-changed',
         /** @param {!Event} event */
         event => {
+          // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on
+          // type 'Event'.
           this.navigationUma_.onDirectoryChanged(event.newDirEntry);
         });
 
@@ -668,44 +737,64 @@ export class FileManager extends EventTarget {
     assert(this.fileOperationManager_);
     assert(this.dialogDom_);
 
-    if (util.isInlineSyncStatusEnabled()) {
-      this.fileBrowserBackground_.driveSyncHandler.metadataModel =
-          assert(this.metadataModel_);
-    }
+    // @ts-ignore: error TS2322: Type 'MetadataModel | null' is not assignable
+    // to type 'Object'.
+    this.fileBrowserBackground_.driveSyncHandler.metadataModel =
+        assert(this.metadataModel_);
     this.scanController_ = new ScanController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_, this.ui_.listContainer, this.spinnerController_,
         this.selectionHandler_);
     this.sortMenuController_ = new SortMenuController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.sortButton, assert(this.directoryModel_.getFileList()));
     this.gearMenuController_ = new GearMenuController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.gearButton, this.ui_.gearMenu, this.ui_.providersMenu,
+        // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null' is
+        // not assignable to parameter of type 'DirectoryModel'.
         this.directoryModel_, this.commandHandler_,
         assert(this.providersModel_));
     this.selectionMenuController_ = new SelectionMenuController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.selectionMenuButton,
+        // @ts-ignore: error TS2345: Argument of type '(arg0?: Object |
+        // undefined) => Element' is not assignable to parameter of type 'new
+        // (...args: any) => Menu'.
         queryDecoratedElement('#file-context-menu', Menu));
     this.toolbarController_ = new ToolbarController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.toolbar, this.ui_.dialogNavigationList, this.ui_.listContainer,
         this.selectionHandler_, this.directoryModel_, this.volumeManager_,
         this.fileOperationManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
     this.actionsController_ = new ActionsController(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         this.volumeManager_, assert(this.metadataModel_), this.directoryModel_,
         assert(this.folderShortcutsModel_), this.selectionHandler_,
         assert(this.ui_));
     this.lastModifiedController_ = new LastModifiedController(
+        // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null' is
+        // not assignable to parameter of type 'DirectoryModel'.
         this.ui_.listContainer.table, this.directoryModel_);
 
     this.quickViewModel_ = new QuickViewModel();
     const fileListSelectionModel = /** @type {!FileListSelectionModel} */ (
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_.getFileListSelection());
     this.quickViewUma_ =
         new QuickViewUma(assert(this.volumeManager_), assert(this.dialogType));
     const metadataBoxController = new MetadataBoxController(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         this.metadataModel_, this.quickViewModel_, this.fileMetadataFormatter_,
         assert(this.volumeManager_));
     this.quickViewController_ = new QuickViewController(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         this, assert(this.metadataModel_), assert(this.selectionHandler_),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.listContainer), assert(this.ui_.selectionMenuButton),
         assert(this.quickViewModel_), assert(this.taskController_),
         fileListSelectionModel, assert(this.quickViewUma_),
@@ -717,55 +806,69 @@ export class FileManager extends EventTarget {
     assert(this.appStateController_);
     assert(this.taskController_);
     this.mainWindowComponent_ = new MainWindowComponent(
+        // @ts-ignore: error TS2345: Argument of type 'FileManagerUI | null' is
+        // not assignable to parameter of type 'FileManagerUI'.
         this.dialogType, this.ui_, this.volumeManager_, this.directoryModel_,
         this.fileFilter_, this.selectionHandler_, this.namingController_,
         this.appStateController_, this.taskController_);
 
     this.initDataTransferOperations_();
     fileListPromise.then(() => {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.taskController_.setFileTransferController(
+          // @ts-ignore: error TS2345: Argument of type 'FileTransferController
+          // | null' is not assignable to parameter of type
+          // 'FileTransferController'.
           this.fileTransferController_);
     });
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.selectionHandler_.onFileSelectionChanged();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.endBatchUpdates();
 
     const bannerController = new BannerController(
+        // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null' is
+        // not assignable to parameter of type 'DirectoryModel'.
         this.directoryModel_, this.volumeManager_, assert(this.crostini_),
         this.dialogType);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.initBanners(bannerController);
     bannerController.initialize();
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.attachFilesTooltip();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.decorateFilesMenuItems();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.selectionMenuButton.hidden = false;
 
     await Promise.all([
       fileListPromise,
       currentDirectoryPromise,
       this.setGuestMode_(),
-      this.initBulkPinning_(),
     ]);
   }
 
   /**
    * Subscribes to bulk-pinning events to ensure the store is kept up to date.
    * Also tries to retrieve a first bulk pinning progress to populate the store.
-   * Does nothing if bulk-pinning is disabled.
    * @private
    */
   async initBulkPinning_() {
-    if (!util.isDriveFsBulkPinningEnabled()) {
-      return;
-    }
-
     try {
       const promise = getBulkPinProgress();
 
-      chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
-        console.debug('Got bulk-pinning event:', progress);
-        this.store_.dispatch(updateBulkPinProgress(progress));
-      });
+      if (!this.bulkPinningInitialized_) {
+        // @ts-ignore: error TS7006: Parameter 'progress' implicitly has an
+        // 'any' type.
+        chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
+          console.debug('Got bulk-pinning event:', progress);
+          this.store_.dispatch(updateBulkPinProgress(progress));
+        });
+
+        this.bulkPinningInitialized_ = true;
+      }
 
       const progress = await promise;
       if (progress) {
@@ -788,11 +891,15 @@ export class FileManager extends EventTarget {
     }
 
     this.fileTransferController_ = new FileTransferController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.document_), assert(this.ui_.listContainer),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.directoryTree),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.showConfirmationDialog.bind(this.ui_), this.progressCenter,
         assert(this.fileOperationManager_), assert(this.metadataModel_),
         assert(this.directoryModel_), assert(this.volumeManager_),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.selectionHandler_), this.ui_.toast);
   }
 
@@ -801,25 +908,35 @@ export class FileManager extends EventTarget {
    * @private
    */
   initCommands_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     assert(this.ui_.textContextMenu);
 
     this.commandHandler_ =
+        // @ts-ignore: error TS2345: Argument of type 'FileSelectionHandler |
+        // null' is not assignable to parameter of type 'FileSelectionHandler'.
         new CommandHandler(this, assert(this.selectionHandler_));
 
     // TODO(hirono): Move the following block to the UI part.
+    // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
+    // '[Symbol.iterator]()' method that returns an iterator.
     for (const button of this.dialogDom_.querySelectorAll('button[command]')) {
       CommandButton.decorate(button);
     }
     // Hook up the cr-button commands.
+    // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
+    // '[Symbol.iterator]()' method that returns an iterator.
     for (const crButton of this.dialogDom_.querySelectorAll(
              'cr-button[command]')) {
       CommandButton.decorate(crButton);
     }
 
+    // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
+    // '[Symbol.iterator]()' method that returns an iterator.
     for (const input of this.getDomInputs_()) {
       this.setContextMenuForInput_(input);
     }
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.setContextMenuForInput_(this.ui_.listContainer.renameInput);
     this.setContextMenuForInput_(
         this.directoryTreeNamingController_.getInputElement());
@@ -830,6 +947,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   getDomInputs_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.dialogDom_.querySelectorAll(
         'input[type=text], input[type=search], textarea, cr-input');
   }
@@ -838,23 +956,28 @@ export class FileManager extends EventTarget {
    * Set context menu and handlers for an input element.
    * @private
    */
+  // @ts-ignore: error TS7006: Parameter 'input' implicitly has an 'any' type.
   setContextMenuForInput_(input) {
     let touchInduced = false;
 
     // stop contextmenu propagation for touch-induced events.
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     input.addEventListener('touchstart', (e) => {
       touchInduced = true;
     });
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     input.addEventListener('contextmenu', (e) => {
       if (touchInduced) {
         e.stopImmediatePropagation();
       }
       touchInduced = false;
     });
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     input.addEventListener('click', (e) => {
       touchInduced = false;
     });
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     contextMenuHandler.setContextMenu(input, this.ui_.textContextMenu);
     this.registerInputCommands_(input);
   }
@@ -871,6 +994,8 @@ export class FileManager extends EventTarget {
     CommandUtil.forceDefaultHandler(node, 'paste');
     CommandUtil.forceDefaultHandler(node, 'delete');
     node.addEventListener('keydown', e => {
+      // @ts-ignore: error TS2339: Property 'keyCode' does not exist on type
+      // 'Event'.
       const key = getKeyModifiers(e) + e.keyCode;
       if (key === '190' /* '/' */ || key === '191' /* '.' */) {
         // If this key event is propagated, this is handled search command,
@@ -896,9 +1021,12 @@ export class FileManager extends EventTarget {
   /**
    * @return {!Promise<void>}
    */
+  // @ts-ignore: error TS7006: Parameter 'dialogDom' implicitly has an 'any'
+  // type.
   async initializeUI(dialogDom) {
     console.warn(`Files app starting up: ${this.dialogType}`);
     this.dialogDom_ = dialogDom;
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.document_ = this.dialogDom_.ownerDocument;
 
     startInterval('Load.InitDocuments');
@@ -910,13 +1038,15 @@ export class FileManager extends EventTarget {
 
     startInterval('Load.InitUI');
     this.document_.documentElement.classList.add('files-ng');
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.dialogDom_.classList.add('files-ng');
 
     // Add theme attribute so widgets can render different styles based on
     // this attribute:
     // [theme="legacy"] -> Legacy style, [theme="refresh23"] -> Refresh23 style
-    const theme = util.isJellyEnabled() ? 'refresh23' : 'legacy';
+    const theme = isJellyEnabled() ? 'refresh23' : 'legacy';
     this.document_.documentElement.setAttribute('theme', theme);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.dialogDom_.setAttribute('theme', theme);
 
     chrome.fileManagerPrivate.isTabletModeEnabled(
@@ -950,13 +1080,21 @@ export class FileManager extends EventTarget {
   initGeneral_() {
     // Initialize the application state.
     // TODO(mtomasz): Unify window.appState with location.search format.
+    // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+    // 'Window & typeof globalThis'.
     if (window.appState) {
       const params = {};
 
+      // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+      // 'Window & typeof globalThis'.
       for (const name in window.appState) {
+        // @ts-ignore: error TS2339: Property 'appState' does not exist on type
+        // 'Window & typeof globalThis'.
         params[name] = window.appState[name];
       }
 
+      // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+      // parameter of type 'FilesAppState'.
       this.launchParams_ = new LaunchParam(params);
     } else {
       // Used by the select dialog and SWA.
@@ -970,6 +1108,8 @@ export class FileManager extends EventTarget {
           console.debug(`Error parsing location.search "${query}" due to ${e}`);
         }
       }
+      // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+      // parameter of type 'FilesAppState'.
       this.launchParams_ = new LaunchParam(json);
     }
 
@@ -986,8 +1126,14 @@ export class FileManager extends EventTarget {
     startInterval('Load.InitBackgroundPage');
 
     this.fileBrowserBackground_ =
+        // @ts-ignore: error TS2352: Conversion of type 'Window & typeof
+        // globalThis' to type 'ForegroundWindow' may be a mistake because
+        // neither type sufficiently overlaps with the other. If this was
+        // intentional, convert the expression to 'unknown' first.
         /** @type {!ForegroundWindow} */ (window).background;
 
+    // @ts-ignore: error TS2345: Argument of type '(value: any) => void' is not
+    // assignable to parameter of type '() => void'.
     await new Promise(resolve => this.fileBrowserBackground_.ready(resolve));
 
     // For the SWA, we load background and foreground in the same Window, avoid
@@ -995,7 +1141,7 @@ export class FileManager extends EventTarget {
     if (!loadTimeData.isInitialized()) {
       loadTimeData.data = this.fileBrowserBackground_.stringData;
     }
-    if (util.runningInBrowser()) {
+    if (runningInBrowser()) {
       this.fileBrowserBackground_.registerDialog(window);
     }
     this.fileOperationManager_ =
@@ -1012,6 +1158,7 @@ export class FileManager extends EventTarget {
   async initVolumeManager_() {
     const allowedPaths = this.getAllowedPaths_();
     const writableOnly =
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.launchParams_.type === DialogType.SELECT_SAVEAS_FILE;
     const disabledVolumes =
         /** @type {!Array<!VolumeManagerCommon.VolumeType>} */ (
@@ -1028,9 +1175,12 @@ export class FileManager extends EventTarget {
     // DriveIntegrationService, so here we don't need to take care about it.
     this.volumeManager_ = new FilteredVolumeManager(
         allowedPaths, writableOnly,
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.fileBrowserBackground_.getVolumeManager(),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.launchParams_.volumeFilter, disabledVolumes);
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     await this.fileBrowserBackground_.getVolumeManager();
   }
 
@@ -1070,6 +1220,8 @@ export class FileManager extends EventTarget {
     assert(this.dialogDom_);
     assert(this.launchParams_);
     this.ui_ = new FileManagerUI(
+        // @ts-ignore: error TS2345: Argument of type 'HTMLBodyElement | null'
+        // is not assignable to parameter of type 'HTMLElement'.
         assert(this.providersModel_), this.dialogDom_, this.launchParams_);
   }
 
@@ -1089,25 +1241,39 @@ export class FileManager extends EventTarget {
     const dom = this.dialogDom_;
     assert(dom);
 
+    // @ts-ignore: error TS2345: Argument of type 'HTMLBodyElement | null' is
+    // not assignable to parameter of type 'Document | Element | HTMLElement |
+    // DocumentFragment | undefined'.
     const table = queryRequiredElement('.detail-table', dom);
     FileTable.decorate(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         table, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_),
         this.dialogType == DialogType.FULL_PAGE);
+    // @ts-ignore: error TS2345: Argument of type 'HTMLBodyElement | null' is
+    // not assignable to parameter of type 'Document | Element | HTMLElement |
+    // DocumentFragment | undefined'.
     const grid = queryRequiredElement('.thumbnail-grid', dom);
     FileGrid.decorate(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         grid, this.metadataModel_, this.volumeManager_,
         /** @type {!A11yAnnounce} */ (this.ui_));
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.initAdditionalUI(
         assertInstanceof(table, FileTable), assertInstanceof(grid, FileGrid),
         this.volumeManager_);
 
     // Handle UI events.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.progressCenter.addPanel(this.ui_.progressCenterPanel);
 
     // Arrange the file list.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.table.normalizeColumns();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.table.redraw();
   }
 
@@ -1117,6 +1283,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   initUIFocus_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.initUIFocus();
   }
 
@@ -1135,6 +1302,8 @@ export class FileManager extends EventTarget {
     assert(this.fileOperationManager_);
     assert(this.metadataModel_);
     this.directoryModel_ = new DirectoryModel(
+        // @ts-ignore: error TS2345: Argument of type 'FileFilter | null' is not
+        // assignable to parameter of type 'FileFilter'.
         singleSelection, this.fileFilter_, this.metadataModel_,
         this.volumeManager_, this.fileOperationManager_);
 
@@ -1142,82 +1311,108 @@ export class FileManager extends EventTarget {
         new FolderShortcutsDataModel(this.volumeManager_);
 
     this.androidAppListModel_ = new AndroidAppListModel(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.launchParams_.showAndroidPickerApps,
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.launchParams_.includeAllFiles, this.launchParams_.typeList);
 
     this.recentEntry_ = new FakeEntryImpl(
         str('RECENT_ROOT_LABEL'), VolumeManagerCommon.RootType.RECENT,
         this.getSourceRestriction_(),
         chrome.fileManagerPrivate.FileCategory.ALL);
+    // @ts-ignore: error TS2741: Property 'getUIChildren' is missing in type
+    // 'FakeEntry' but required in type 'FakeEntryImpl'.
     this.store_.dispatch(addUiEntry({entry: this.recentEntry_}));
     assert(this.launchParams_);
     this.selectionHandler_ = new FileSelectionHandler(
+        // @ts-ignore: error TS2345: Argument of type 'FileOperationManager |
+        // null' is not assignable to parameter of type 'FileOperationManager'.
         assert(this.directoryModel_), assert(this.fileOperationManager_),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.listContainer), assert(this.metadataModel_),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.volumeManager_), this.launchParams_.allowedPaths);
 
     // TODO(mtomasz, yoshiki): Create navigation list earlier, and here just
     // attach the directory model.
     const directoryTreePromise = this.initDirectoryTree_();
 
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.listThumbnailLoader = new ListThumbnailLoader(
+        // @ts-ignore: error TS2345: Argument of type 'ThumbnailModel | null' is
+        // not assignable to parameter of type 'ThumbnailModel'.
         this.directoryModel_, assert(this.thumbnailModel_),
         this.volumeManager_);
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.dataModel = this.directoryModel_.getFileList();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.emptyDataModel =
         this.directoryModel_.getEmptyFileList();
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.ui_.listContainer.selectionModel =
         this.directoryModel_.getFileListSelection();
 
+    // @ts-ignore: error TS2345: Argument of type 'FileManagerUI | null' is not
+    // assignable to parameter of type 'FileManagerUI'.
     this.appStateController_.initialize(this.ui_, this.directoryModel_);
 
     // Create metadata update controller.
     this.metadataUpdateController_ = new MetadataUpdateController(
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         this.ui_.listContainer, this.directoryModel_, this.metadataModel_,
         this.fileMetadataFormatter_);
 
     // Create naming controller.
     this.namingController_ = new NamingController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.listContainer, assert(this.ui_.alertDialog),
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(this.ui_.confirmDialog), this.directoryModel_,
         assert(this.fileFilter_), this.selectionHandler_);
 
     // Create task controller.
     this.taskController_ = new TaskController(
+        // @ts-ignore: error TS2345: Argument of type 'FileManagerUI | null' is
+        // not assignable to parameter of type 'FileManagerUI'.
         this.volumeManager_, this.ui_, this.metadataModel_,
         this.directoryModel_, this.selectionHandler_,
         this.metadataUpdateController_, assert(this.crostini_),
         this.progressCenter);
 
-    // Create search controller.
-    this.searchController_ = new SearchController(
-        this.ui_.searchContainer,
-        this.directoryModel_,
-        assert(this.ui_),
-    );
-
     // Create directory tree naming controller.
     this.directoryTreeNamingController_ = new DirectoryTreeNamingController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.directoryModel_, assert(this.ui_.directoryTree),
-        this.ui_.alertDialog);
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
+        this.ui_.directoryTreeContainer, this.ui_.alertDialog);
+
 
     // Create spinner controller.
     this.spinnerController_ =
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         new SpinnerController(this.ui_.listContainer.spinner);
     this.spinnerController_.blink();
 
     // Create dialog action controller.
     this.dialogActionController_ = new DialogActionController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.dialogType, this.ui_.dialogFooter, this.directoryModel_,
+        // @ts-ignore: error TS2345: Argument of type 'MetadataModel | null' is
+        // not assignable to parameter of type 'MetadataModel'.
         this.metadataModel_, this.volumeManager_, this.fileFilter_,
         this.namingController_, this.selectionHandler_, this.launchParams_);
 
     // Create file-type filter controller.
     this.fileTypeFiltersController_ = new FileTypeFiltersController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.fileTypeFilterContainer, this.directoryModel_,
         this.recentEntry_, /** @type {!A11yAnnounce} */ (this.ui_));
     this.emptyFolderController_ = new EmptyFolderController(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.ui_.emptyFolder, this.directoryModel_,
+        // @ts-ignore: error TS2345: Argument of type 'ProvidersModel | null' is
+        // not assignable to parameter of type 'ProvidersModel'.
         assert(this.providersModel_), this.recentEntry_);
 
 
@@ -1230,8 +1425,7 @@ export class FileManager extends EventTarget {
    * @return {Promise<!Array<!VolumeManagerCommon.VolumeType>>}
    */
   async getDisabledVolumes_() {
-    if (this.dialogType !== DialogType.SELECT_SAVEAS_FILE ||
-        !util.isDlpEnabled()) {
+    if (this.dialogType !== DialogType.SELECT_SAVEAS_FILE || !isDlpEnabled()) {
       return [];
     }
     const caller = await getDialogCaller();
@@ -1255,33 +1449,47 @@ export class FileManager extends EventTarget {
     this.navigationUma_ = new NavigationUma(assert(this.volumeManager_));
 
     const directoryTree = /** @type {DirectoryTree} */
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         (this.dialogDom_.querySelector('#directory-tree'));
 
-    if (util.isNewDirectoryTreeEnabled()) {
+    if (isNewDirectoryTreeEnabled()) {
       const treeContainer = directoryTree.parentElement;
       directoryTree.remove();
       const directoryTreeContainer = new DirectoryTreeContainer(
+          // @ts-ignore: error TS2345: Argument of type 'HTMLElement | null' is
+          // not assignable to parameter of type 'HTMLElement'.
           treeContainer, this.directoryModel_, this.volumeManager_,
           this.metadataModel_);
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.initDirectoryTree(directoryTreeContainer);
     } else {
       const fakeEntriesVisible =
           this.dialogType !== DialogType.SELECT_SAVEAS_FILE;
 
       DirectoryTree.decorate(
+          // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null'
+          // is not assignable to parameter of type 'DirectoryModel'.
           directoryTree, assert(this.directoryModel_),
           assert(this.volumeManager_), assert(this.metadataModel_),
           assert(this.fileOperationManager_), fakeEntriesVisible);
 
       directoryTree.dataModel = new NavigationListModel(
+          // @ts-ignore: error TS2345: Argument of type
+          // 'FolderShortcutsDataModel | null' is not assignable to parameter of
+          // type 'FolderShortcutsDataModel'.
           assert(this.volumeManager_), assert(this.folderShortcutsModel_),
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           fakeEntriesVisible && !isFolderDialogType(this.launchParams_.type) ?
               new NavigationModelFakeItem(
                   str('RECENT_ROOT_LABEL'), NavigationModelItemType.RECENT,
+                  // @ts-ignore: error TS2345: Argument of type 'FakeEntry |
+                  // null' is not assignable to parameter of type
+                  // 'FilesAppEntry'.
                   assert(this.recentEntry_)) :
               null,
           assert(this.directoryModel_), assert(this.androidAppListModel_),
           this.dialogType);
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.initDirectoryTree(directoryTree);
     }
 
@@ -1317,9 +1525,12 @@ export class FileManager extends EventTarget {
     chrome.fileManagerPrivate.onCrostiniChanged.addListener(
         this.onCrostiniChanged_.bind(this));
     this.crostiniController_ = new CrostiniController(
+        // @ts-ignore: error TS2345: Argument of type 'Crostini | null' is not
+        // assignable to parameter of type 'Crostini'.
         assert(this.crostini_), assert(this.directoryModel_),
         // TODO(b/285977941): `DirectoryTree` is only used when FileExperimental
         // flag is off, remove it after the tree replacement.
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         assert(/** @type {DirectoryTree} */ (this.ui_.directoryTree)),
         this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.CROSTINI));
@@ -1327,13 +1538,17 @@ export class FileManager extends EventTarget {
     // Never show toast in an open-file dialog.
     const maybeShowToast = this.dialogType === DialogType.FULL_PAGE;
     await this.crostiniController_.loadSharedPaths(
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         maybeShowToast, this.ui_.toast);
 
-    if (util.isGuestOsEnabled()) {
+    if (isGuestOsEnabled()) {
       this.guestOsController_ = new GuestOsController(
+          // @ts-ignore: error TS2345: Argument of type 'DirectoryModel | null'
+          // is not assignable to parameter of type 'DirectoryModel'.
           assert(this.directoryModel_),
           // TODO(b/285977941): `DirectoryTree` is only used when
           // FileExperimental flag is off, remove it after the tree replacement.
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           assert(/** @type {DirectoryTree} */ (this.ui_.directoryTree)),
           this.volumeManager_);
       await this.guestOsController_.refresh();
@@ -1356,11 +1571,15 @@ export class FileManager extends EventTarget {
     // enabled status from it to determine whether 'Linux files' is shown.
     switch (event.eventType) {
       case chrome.fileManagerPrivate.CrostiniEventType.ENABLE:
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.crostini_.setEnabled(event.vmName, event.containerName, true);
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         return this.crostiniController_.redraw();
 
       case chrome.fileManagerPrivate.CrostiniEventType.DISABLE:
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.crostini_.setEnabled(event.vmName, event.containerName, false);
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         return this.crostiniController_.redraw();
 
       // Event is sent when a user drops an unshared file on Plugin VM.
@@ -1368,6 +1587,7 @@ export class FileManager extends EventTarget {
       // directory.
       case chrome.fileManagerPrivate.CrostiniEventType
           .DROP_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED:
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         if (this.ui_.dragInProcess) {
           const moveMessage =
               str('UNABLE_TO_DROP_IN_PLUGIN_VM_DIRECTORY_NOT_SHARED_MESSAGE');
@@ -1375,6 +1595,8 @@ export class FileManager extends EventTarget {
               str('UNABLE_TO_DROP_IN_PLUGIN_VM_EXTERNAL_DRIVE_MESSAGE');
           FileTasks.showPluginVmNotSharedDialog(
               this.selectionHandler.selection.entries, this.volumeManager_,
+              // @ts-ignore: error TS2345: Argument of type 'MetadataModel |
+              // null' is not assignable to parameter of type 'MetadataModel'.
               assert(this.metadataModel_), assert(this.ui_), moveMessage,
               copyMessage, this.fileTransferController_,
               assert(this.directoryModel_));
@@ -1389,25 +1611,35 @@ export class FileManager extends EventTarget {
    * @private
    */
   async setupCurrentDirectory_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const tracker = this.directoryModel_.createDirectoryChangeTracker();
     tracker.start();
 
     // Wait until the volume manager is initialized.
     await new Promise(
+        // @ts-ignore: error TS2345: Argument of type '(value: any) => void' is
+        // not assignable to parameter of type '() => any'.
         resolve => this.volumeManager_.ensureInitialized(resolve));
 
+    // @ts-ignore: error TS7034: Variable 'nextCurrentDirEntry' implicitly has
+    // type 'any' in some locations where its type cannot be determined.
     let nextCurrentDirEntry;
+    // @ts-ignore: error TS7034: Variable 'selectionEntry' implicitly has type
+    // 'any' in some locations where its type cannot be determined.
     let selectionEntry;
 
     // Resolve the selectionURL to selectionEntry or to currentDirectoryEntry in
     // case of being a display root or a default directory to open files.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (this.launchParams_.selectionURL) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       if (this.launchParams_.selectionURL == this.recentEntry_.toURL()) {
         nextCurrentDirEntry = this.recentEntry_;
       } else {
         try {
           const inEntry = await new Promise((resolve, reject) => {
             window.webkitResolveLocalFileSystemURL(
+                // @ts-ignore: error TS2531: Object is possibly 'null'.
                 this.launchParams_.selectionURL, resolve, reject);
           });
           const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
@@ -1435,7 +1667,9 @@ export class FileManager extends EventTarget {
         } catch (error) {
           // If `selectionURL` doesn't exist we just don't select it, thus we
           // don't need to log the failure.
+          // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
           if (error.name !== 'NotFoundError') {
+            // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
             console.warn(error.stack || error);
           }
         }
@@ -1444,18 +1678,22 @@ export class FileManager extends EventTarget {
 
     // If searchQuery param is set, find the first directory that matches the
     // query, and select it if exists.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     const searchQuery = this.launchParams_.searchQuery;
     if (searchQuery) {
       startInterval('Load.ProcessInitialSearchQuery');
       this.store_.dispatch(updateSearch({
         query: searchQuery,
         status: PropStatus.STARTED,
-        options: undefined,
+        options: getDefaultSearchOptions(),
       }));
       // Show a spinner, as the crossover search function call could be slow.
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       const hideSpinnerCallback = this.spinnerController_.show();
       const queryMatchedDirEntry =
           await crossoverSearchUtils.findQueryMatchedDirectoryEntry(
+              // @ts-ignore: error TS2345: Argument of type 'DirectoryModel |
+              // null' is not assignable to parameter of type 'DirectoryModel'.
               this.ui_.directoryTree.dataModel_, this.directoryModel_,
               searchQuery);
       if (queryMatchedDirEntry) {
@@ -1467,10 +1705,12 @@ export class FileManager extends EventTarget {
 
     // Resolve the currentDirectoryURL to currentDirectoryEntry (if not done by
     // the previous step).
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (!nextCurrentDirEntry && this.launchParams_.currentDirectoryURL) {
       try {
         const inEntry = await new Promise((resolve, reject) => {
           window.webkitResolveLocalFileSystemURL(
+              // @ts-ignore: error TS2531: Object is possibly 'null'.
               this.launchParams_.currentDirectoryURL, resolve, reject);
         });
         const locationInfo = this.volumeManager_.getLocationInfo(inEntry);
@@ -1478,6 +1718,7 @@ export class FileManager extends EventTarget {
           nextCurrentDirEntry = inEntry;
         }
       } catch (error) {
+        // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
         console.warn(error.stack || error);
       }
     }
@@ -1486,6 +1727,8 @@ export class FileManager extends EventTarget {
     // to the parent of the selection entry.
     if (!nextCurrentDirEntry && selectionEntry) {
       nextCurrentDirEntry = await new Promise(resolve => {
+        // @ts-ignore: error TS7005: Variable 'selectionEntry' implicitly has an
+        // 'any' type.
         selectionEntry.getParent(resolve);
       });
     }
@@ -1512,6 +1755,7 @@ export class FileManager extends EventTarget {
             try {
               nextCurrentDirEntry = await volumeInfo.resolveDisplayRoot();
             } catch (error) {
+              // @ts-ignore: error TS18046: 'error' is of type 'unknown'.
               console.warn(error.stack || error);
               nextCurrentDirEntry = null;
             }
@@ -1522,7 +1766,7 @@ export class FileManager extends EventTarget {
 
     // If the resolved directory to be changed is blocked by DLP, we should
     // fallback to the default display root.
-    if (nextCurrentDirEntry && util.isDlpEnabled()) {
+    if (nextCurrentDirEntry && isDlpEnabled()) {
       const volumeInfo = this.volumeManager_.getVolumeInfo(nextCurrentDirEntry);
       if (volumeInfo && this.volumeManager_.isDisabled(volumeInfo.volumeType)) {
         console.warn('Target directory is DLP blocked, redirecting to MyFiles');
@@ -1542,28 +1786,39 @@ export class FileManager extends EventTarget {
     // file, or in case of a fallback of the current directory, then try to
     // resolve again using the target name.
     if (!selectionEntry && nextCurrentDirEntry &&
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         this.launchParams_.targetName) {
       // Try to resolve as a file first. If it fails, then as a directory.
       try {
         selectionEntry = await new Promise((resolve, reject) => {
+          // @ts-ignore: error TS7005: Variable 'nextCurrentDirEntry' implicitly
+          // has an 'any' type.
           nextCurrentDirEntry.getFile(
+              // @ts-ignore: error TS2531: Object is possibly 'null'.
               this.launchParams_.targetName, {}, resolve, reject);
         });
       } catch (error1) {
         // Failed to resolve as a file. Try to resolve as a directory.
         try {
           selectionEntry = await new Promise((resolve, reject) => {
+            // @ts-ignore: error TS7005: Variable 'nextCurrentDirEntry'
+            // implicitly has an 'any' type.
             nextCurrentDirEntry.getDirectory(
+                // @ts-ignore: error TS2531: Object is possibly 'null'.
                 this.launchParams_.targetName, {}, resolve, reject);
           });
         } catch (error2) {
           // If `targetName` doesn't exist we just don't select it, thus we
           // don't need to log the failure.
+          // @ts-ignore: error TS18046: 'error1' is of type 'unknown'.
           if (error1.name !== 'NotFoundError') {
+            // @ts-ignore: error TS18046: 'error1' is of type 'unknown'.
             console.warn(error1.stack || error1);
             console.log(error1);
           }
+          // @ts-ignore: error TS18046: 'error2' is of type 'unknown'.
           if (error2.name !== 'NotFoundError') {
+            // @ts-ignore: error TS18046: 'error2' is of type 'unknown'.
             console.warn(error2.stack || error2);
           }
         }
@@ -1572,11 +1827,15 @@ export class FileManager extends EventTarget {
 
     // If there is no target select MyFiles by default.
     if (!nextCurrentDirEntry) {
-      if (util.isNewDirectoryTreeEnabled()) {
+      if (isNewDirectoryTreeEnabled()) {
         const myFiles = getMyFiles(this.store_.getState());
         nextCurrentDirEntry = myFiles.myFilesEntry;
+        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+        // 'XfTree | DirectoryTree'.
       } else if (this.ui_.directoryTree.dataModel.myFilesModel_) {
         nextCurrentDirEntry =
+            // @ts-ignore: error TS2339: Property 'dataModel' does not exist on
+            // type 'XfTree | DirectoryTree'.
             this.ui_.directoryTree.dataModel.myFilesModel_.entry;
       }
     }
@@ -1586,6 +1845,7 @@ export class FileManager extends EventTarget {
     if (!tracker.hasChanged) {
       // Finish setup current directory.
       await this.finishSetupCurrentDirectory_(
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           nextCurrentDirEntry, selectionEntry, this.launchParams_.targetName);
     }
   }
@@ -1605,24 +1865,33 @@ export class FileManager extends EventTarget {
       console.warn('Files app has started');
       if (directoryEntry) {
         await new Promise(resolve => {
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.directoryModel_.changeDirectoryEntry(
+              // @ts-ignore: error TS2345: Argument of type '(value: any) =>
+              // void' is not assignable to parameter of type '() => any'.
               assert(directoryEntry), resolve);
         });
         if (opt_selectionEntry) {
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.directoryModel_.selectEntry(opt_selectionEntry);
         }
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         if (this.launchParams_.searchQuery) {
-          this.searchController_.setSearchQuery(
-              this.launchParams_.searchQuery, getDefaultSearchOptions());
+          this.store_.dispatch(
+              // @ts-ignore: error TS2531: Object is possibly 'null'.
+              updateSearch({query: this.launchParams_.searchQuery}));
         }
       } else {
         console.warn('No entry for finishSetupCurrentDirectory_');
       }
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.addLoadedAttribute();
     })();
 
     if (this.dialogType === DialogType.SELECT_SAVEAS_FILE) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.dialogFooter.filenameInput.value = opt_suggestedName || '';
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.dialogFooter.selectTargetNameInFilenameInput();
     }
 
@@ -1637,6 +1906,9 @@ export class FileManager extends EventTarget {
    *     directory is not set.
    */
   getCurrentDirectoryEntry() {
+    // @ts-ignore: error TS2322: Type 'FileSystemDirectoryEntry |
+    // FilesAppDirEntry | FakeEntry | null' is not assignable to type
+    // 'FileSystemDirectoryEntry | FilesAppDirEntry | FakeEntry'.
     return this.directoryModel_ && this.directoryModel_.getCurrentDirEntry();
   }
 
@@ -1657,8 +1929,12 @@ export class FileManager extends EventTarget {
       for (const taskId of assert(
                this.fileTransferController_.pendingTaskIds)) {
         const item = this.progressCenter.getItemById(taskId);
+        // @ts-ignore: error TS18047: 'item' is possibly 'null'.
         item.message = '';
+        // @ts-ignore: error TS18047: 'item' is possibly 'null'.
         item.state = ProgressItemState.CANCELED;
+        // @ts-ignore: error TS2345: Argument of type 'ProgressCenterItem |
+        // null' is not assignable to parameter of type 'ProgressCenterItem'.
         this.progressCenter.updateItem(item);
       }
     }
@@ -1676,12 +1952,15 @@ export class FileManager extends EventTarget {
    * @returns {AllowedPaths}
    */
   getAllowedPaths_() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     let allowedPaths = this.launchParams_.allowedPaths;
     // The native implementation of the Files app creates snapshot files for
     // non-native files. But it does not work for folders (e.g., dialog for
     // loading unpacked extensions).
     if (allowedPaths === AllowedPaths.NATIVE_PATH &&
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         !isFolderDialogType(this.launchParams_.type)) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       if (this.launchParams_.type == DialogType.SELECT_SAVEAS_FILE) {
         allowedPaths = AllowedPaths.NATIVE_PATH;
       } else {
@@ -1708,6 +1987,7 @@ export class FileManager extends EventTarget {
    * @return {FileSelection} Selection object.
    */
   getSelection() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.selectionHandler_.selection;
   }
 
@@ -1715,6 +1995,7 @@ export class FileManager extends EventTarget {
    * @return {ArrayDataModel} File list.
    */
   getFileList() {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     return this.directoryModel_.getFileList();
   }
 
@@ -1735,7 +2016,7 @@ export class FileManager extends EventTarget {
     try {
       prefs = await getPreferences();
     } catch (e) {
-      console.error('Failed to retrieve preferences:', e);
+      console.error('Cannot get preferences:', e);
       return;
     }
 
@@ -1748,18 +2029,32 @@ export class FileManager extends EventTarget {
       redraw = true;
     }
 
+    if (this.bulkPinningAvailable_ !== prefs.driveFsBulkPinningAvailable) {
+      this.bulkPinningAvailable_ = prefs.driveFsBulkPinningAvailable;
+      console.debug(`Bulk-pinning is now ${
+          this.bulkPinningAvailable_ ? 'available' : 'unavailable'}`);
+      if (this.bulkPinningAvailable_) {
+        await this.initBulkPinning_();
+      }
+    }
+
     if (this.trashEnabled !== prefs.trashEnabled) {
       this.trashEnabled = prefs.trashEnabled;
       this.toggleTrashRootOnPreferencesUpdate_();
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.toolbarController_.moveToTrashCommand.disabled = !this.trashEnabled;
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.toolbarController_.moveToTrashCommand.canExecuteChange(
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.ui_.listContainer.currentList);
       redraw = true;
     }
 
-    this.updateOfficePrefs_(prefs);
+    await this.updateOfficePrefs_(prefs);
 
-    if (redraw && !util.isNewDirectoryTreeEnabled()) {
+    if (redraw && !isNewDirectoryTreeEnabled()) {
+      // @ts-ignore: error TS2339: Property 'redraw' does not exist on type
+      // 'XfTree | DirectoryTree'.
       this.ui_.directoryTree.redraw(false);
     }
   }
@@ -1783,25 +2078,31 @@ export class FileManager extends EventTarget {
     // These prefs starts with value 0. We only want to display when they're
     // non-zero and show the most recent (larger value).
     if (prefs.officeFileMovedOneDrive > prefs.officeFileMovedGoogleDrive) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.nudgeContainer.showNudge(
           NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']);
     } else if (
         prefs.officeFileMovedOneDrive < prefs.officeFileMovedGoogleDrive) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.nudgeContainer.showNudge(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
     }
     // Reset the seen state for office nudge. For normal users these 2 prefs
     // will never reset to 0, however for manual tests it can be reset in
     // chrome://files-internals.
     if (prefs.officeFileMovedOneDrive === 0 &&
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         await this.ui_.nudgeContainer.checkSeen(
             NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE'])) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.nudgeContainer.clearSeen(
           NudgeType['ONE_DRIVE_MOVED_FILE_NUDGE']);
       console.debug('Reset OneDrive move to cloud nudge');
     }
     if (prefs.officeFileMovedGoogleDrive === 0 &&
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         await this.ui_.nudgeContainer.checkSeen(
             NudgeType['DRIVE_MOVED_FILE_NUDGE'])) {
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       this.ui_.nudgeContainer.clearSeen(NudgeType['DRIVE_MOVED_FILE_NUDGE']);
       console.debug('Reset Google Drive move to cloud nudge');
     }
@@ -1828,15 +2129,22 @@ export class FileManager extends EventTarget {
             str('TRASH_ROOT_LABEL'), NavigationModelItemType.TRASH,
             new TrashRootEntry());
       }
+      // @ts-ignore: error TS2740: Type 'FilesAppEntry' is missing the following
+      // properties from type 'FakeEntryImpl': label, disabled,
+      // sourceRestriction, fileCategory, and 7 more.
       this.store_.dispatch(addUiEntry({entry: this.fakeTrashItem_.entry}));
-      if (!util.isNewDirectoryTreeEnabled()) {
+      if (!isNewDirectoryTreeEnabled()) {
+        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+        // 'XfTree | DirectoryTree'.
         this.ui_.directoryTree.dataModel.fakeTrashItem = this.fakeTrashItem_;
       }
       return;
     }
 
     this.store_.dispatch(removeUiEntry({key: trashRootKey}));
-    if (!util.isNewDirectoryTreeEnabled()) {
+    if (!isNewDirectoryTreeEnabled()) {
+      // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+      // 'XfTree | DirectoryTree'.
       this.ui_.directoryTree.dataModel.fakeTrashItem = null;
     }
     this.navigateAwayFromDisabledRoot_(this.fakeTrashItem_);
@@ -1859,12 +2167,16 @@ export class FileManager extends EventTarget {
         this.fakeDriveItem_.disabled = this.volumeManager_.isDisabled(
             VolumeManagerCommon.VolumeType.DRIVE);
       }
-      if (!util.isNewDirectoryTreeEnabled()) {
+      if (!isNewDirectoryTreeEnabled()) {
+        // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+        // 'XfTree | DirectoryTree'.
         this.ui_.directoryTree.dataModel.fakeDriveItem = this.fakeDriveItem_;
       }
       return;
     }
-    if (!util.isNewDirectoryTreeEnabled()) {
+    if (!isNewDirectoryTreeEnabled()) {
+      // @ts-ignore: error TS2339: Property 'dataModel' does not exist on type
+      // 'XfTree | DirectoryTree'.
       this.ui_.directoryTree.dataModel.fakeDriveItem = null;
     }
     this.navigateAwayFromDisabledRoot_(this.fakeDriveItem_);
@@ -1882,10 +2194,15 @@ export class FileManager extends EventTarget {
     }
     // The fake root item is being hidden so navigate away if it's the
     // current directory.
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     if (this.directoryModel_.getCurrentDirEntry() === rootItem.entry) {
+      // @ts-ignore: error TS7006: Parameter 'displayRoot' implicitly has an
+      // 'any' type.
       this.volumeManager_.getDefaultDisplayRoot((displayRoot) => {
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         if (this.directoryModel_.getCurrentDirEntry() === rootItem.entry &&
             displayRoot) {
+          // @ts-ignore: error TS2531: Object is possibly 'null'.
           this.directoryModel_.changeDirectoryEntry(displayRoot);
         }
       });
@@ -1898,6 +2215,7 @@ export class FileManager extends EventTarget {
    * @private
    */
   onTabletModeChanged_(enabled) {
+    // @ts-ignore: error TS2531: Object is possibly 'null'.
     this.dialogDom_.classList.toggle('tablet-mode-enabled', enabled);
   }
 }

@@ -42,18 +42,19 @@ public class PaymentRequestEmailAndFreeShippingTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid email on disk.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
@@ -68,9 +69,20 @@ public class PaymentRequestEmailAndFreeShippingTest {
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
-        mPaymentRequestTestRule.expectResultContains(new String[] {"jon.doe@google.com", "Jon Doe",
-                "https://bobpay.test", "Google", "340 Main St", "CA", "Los Angeles", "90291", "US",
-                "en", "freeShippingOption"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "jon.doe@google.com",
+                    "Jon Doe",
+                    "https://bobpay.test",
+                    "Google",
+                    "340 Main St",
+                    "CA",
+                    "Los Angeles",
+                    "90291",
+                    "US",
+                    "en",
+                    "freeShippingOption"
+                });
     }
 
     /**
@@ -81,13 +93,19 @@ public class PaymentRequestEmailAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
-        int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_PAYER_EMAIL
-                | Event.REQUEST_SHIPPING | Event.REQUEST_METHOD_OTHER
-                | Event.AVAILABLE_METHOD_OTHER;
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectIntRecord("PaymentRequest.Events", expectedSample)
-                                       .build();
+        int expectedSample =
+                Event.SHOWN
+                        | Event.USER_ABORTED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_PAYER_EMAIL
+                        | Event.REQUEST_SHIPPING
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("PaymentRequest.Events", expectedSample)
+                        .build();
 
         // Start and cancel the Payment Request.
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
@@ -117,8 +135,15 @@ public class PaymentRequestEmailAndFreeShippingTest {
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
         mPaymentRequestTestRule.setTextInEditorAndWait(
-                new String[] {"Bob", "Google", "1600 Amphitheatre Pkwy", "Mountain View", "CA",
-                        "94043", "650-253-0000"},
+                new String[] {
+                    "Bob",
+                    "Google",
+                    "1600 Amphitheatre Pkwy",
+                    "Mountain View",
+                    "CA",
+                    "94043",
+                    "650-253-0000"
+                },
                 mPaymentRequestTestRule.getEditorTextUpdate());
         mPaymentRequestTestRule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyForInput());

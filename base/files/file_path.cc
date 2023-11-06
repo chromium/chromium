@@ -17,6 +17,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/base_tracing.h"
 
@@ -1275,16 +1276,16 @@ StringType FilePath::GetHFSDecomposedForm(StringPieceType string) {
     // Query the maximum length needed to store the result. In most cases this
     // will overestimate the required space. The return value also already
     // includes the space needed for a terminating 0.
-    CFIndex length = CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring);
+    CFIndex length =
+        CFStringGetMaximumSizeOfFileSystemRepresentation(cfstring.get());
     DCHECK_GT(length, 0);  // should be at least 1 for the 0-terminator.
     // Reserve enough space for CFStringGetFileSystemRepresentation to write
     // into. Also set the length to the maximum so that we can shrink it later.
     // (Increasing rather than decreasing it would clobber the string contents!)
     result.reserve(static_cast<size_t>(length));
     result.resize(static_cast<size_t>(length) - 1);
-    Boolean success = CFStringGetFileSystemRepresentation(cfstring,
-                                                          &result[0],
-                                                          length);
+    Boolean success =
+        CFStringGetFileSystemRepresentation(cfstring.get(), &result[0], length);
     if (success) {
       // Reduce result.length() to actual string length.
       result.resize(strlen(result.c_str()));
@@ -1331,8 +1332,8 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
       return 0;
     }
 
-    return static_cast<int>(
-        CFStringCompare(cfstring1, cfstring2, kCFCompareCaseInsensitive));
+    return static_cast<int>(CFStringCompare(cfstring1.get(), cfstring2.get(),
+                                            kCFCompareCaseInsensitive));
   }
 
   return HFSFastUnicodeCompare(hfs1, hfs2);

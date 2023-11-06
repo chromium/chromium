@@ -39,7 +39,7 @@ type HtmlElementWithData<T extends HTMLElement = HTMLElement> = T&{
   'dataContainerId': GuestId,
 };
 
-interface CrostiniPortForwardingElement {
+export interface CrostiniPortForwardingElement {
   $: {
     errorToast: CrToastElement,
     removeAllPortsMenu: CrLazyRenderElement<CrActionMenuElement>,
@@ -49,7 +49,7 @@ interface CrostiniPortForwardingElement {
 const CrostiniPortForwardingBase =
     PrefsMixin(WebUiListenerMixin(PolymerElement));
 
-class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
+export class CrostiniPortForwardingElement extends CrostiniPortForwardingBase {
   static get is() {
     return 'settings-crostini-port-forwarding';
   }

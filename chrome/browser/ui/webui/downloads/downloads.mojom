@@ -38,8 +38,10 @@ enum State {
   kDangerous,
   kInterrupted,
   kInsecure,
+  // See download::DownloadDangerType for more details on the scanning States.
   kAsyncScanning,
   kPromptForScanning,
+  kPromptForLocalPasswordScanning,
 };
 
 // This corresponds to safe_browsing::SafeBrowsingState.

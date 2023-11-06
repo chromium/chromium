@@ -4,7 +4,6 @@
 
 #include "remoting/host/chromeos/frame_sink_desktop_capturer.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "media/base/video_types.h"
@@ -21,15 +20,6 @@ constexpr int kMaxFrameRate = 60;
 constexpr auto kPixelFormat = media::VideoPixelFormat::PIXEL_FORMAT_ARGB;
 constexpr bool kAutoThrottle = false;
 
-const char kUmaKeyForCapturerCreated[] =
-    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Created";
-const char kUmaKeyForCapturerDestroyed[] =
-    "Enterprise.DeviceRemoteCommand.Crd.Capturer.FrameSink.Destroyed";
-
-void SendEventToUma(const char* event_name) {
-  base::UmaHistogramBoolean(event_name, true);
-}
-
 bool IsEqual(gfx::Size lhs, webrtc::DesktopSize rhs) {
   return (lhs.width() == rhs.width()) && (lhs.height() == rhs.height());
 }
@@ -42,14 +32,12 @@ FrameSinkDesktopCapturer::FrameSinkDesktopCapturer()
 FrameSinkDesktopCapturer::FrameSinkDesktopCapturer(AshProxy& ash_proxy)
     : ash_(ash_proxy) {
   LOG(INFO) << "CRD: Starting frame sink desktop capturer";
-  SendEventToUma(kUmaKeyForCapturerCreated);
 }
 
 FrameSinkDesktopCapturer::~FrameSinkDesktopCapturer() {
   if (video_capturer_) {
     video_capturer_->Stop();
   }
-  SendEventToUma(kUmaKeyForCapturerDestroyed);
 }
 
 void FrameSinkDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
@@ -126,7 +114,7 @@ bool FrameSinkDesktopCapturer::SelectSource(SourceId id) {
   video_capturer_->ChangeTarget(
       viz::VideoCaptureTarget(ash_->GetFrameSinkId(source_display_id_),
                               scoped_window_capture_request_.GetCaptureId()),
-      /*crop_version=*/0);
+      /*sub_capture_target_version=*/0);
   return true;
 }
 

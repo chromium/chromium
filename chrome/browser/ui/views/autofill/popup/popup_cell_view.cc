@@ -9,14 +9,12 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
@@ -50,67 +48,15 @@ void PopupCellView::SetSelected(bool selected) {
 
   selected_ = selected;
   RefreshStyle();
-  if (base::RepeatingClosure callback =
-          selected_ ? on_selected_callback_ : on_unselected_callback_) {
-    callback.Run();
-  }
-}
-
-void PopupCellView::SetPermanentlyHighlighted(bool permanently_highlighted) {
-  if (permanently_highlighted_ != permanently_highlighted) {
-    permanently_highlighted_ = permanently_highlighted;
-    RefreshStyle();
-    NotifyAccessibilityEvent(ax::mojom::Event::kCheckedStateChanged,
-                             /*send_native_event=*/true);
-  }
-}
-
-bool PopupCellView::IsHighlighted() const {
-  return selected_ || permanently_highlighted_;
-}
-
-void PopupCellView::SetTooltipText(std::u16string tooltip_text) {
-  if (tooltip_text_ == tooltip_text) {
-    return;
-  }
-
-  tooltip_text_ = std::move(tooltip_text);
-  TooltipTextChanged();
-}
-
-std::u16string PopupCellView::GetTooltipText(const gfx::Point& p) const {
-  return tooltip_text_;
-}
-
-void PopupCellView::SetAccessibilityDelegate(
-    std::unique_ptr<AccessibilityDelegate> a11y_delegate) {
-  a11y_delegate_ = std::move(a11y_delegate);
-}
-
-
-void PopupCellView::SetOnSelectedCallback(base::RepeatingClosure callback) {
-  on_selected_callback_ = std::move(callback);
-}
-
-void PopupCellView::SetOnUnselectedCallback(base::RepeatingClosure callback) {
-  on_unselected_callback_ = std::move(callback);
 }
 
 void PopupCellView::TrackLabel(views::Label* label) {
   tracked_labels_.push_back(label);
 }
 
-void PopupCellView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (a11y_delegate_) {
-    a11y_delegate_->GetAccessibleNodeData(GetSelected(),
-                                          permanently_highlighted_, node_data);
-  }
-}
-
 void PopupCellView::RefreshStyle() {
-  if (IsHighlighted()) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillShowAutocompleteDeleteButton)) {
+  if (GetSelected()) {
+    if (ShouldApplyNewAutofillPopupStyle()) {
       SetBackground(views::CreateThemedRoundedRectBackground(
           ui::kColorDropdownBackgroundSelected,
           ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
@@ -144,7 +90,6 @@ void PopupCellView::RefreshStyle() {
 
 BEGIN_METADATA(PopupCellView, views::View)
 ADD_PROPERTY_METADATA(bool, Selected)
-ADD_PROPERTY_METADATA(std::u16string, TooltipText)
 END_METADATA
 
 }  // namespace autofill

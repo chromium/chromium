@@ -58,8 +58,8 @@ namespace base {
 template <typename B>
 class BufferIterator {
  public:
-  static_assert(std::is_same<std::remove_const_t<B>, char>::value ||
-                    std::is_same<std::remove_const_t<B>, unsigned char>::value,
+  static_assert(std::is_same_v<std::remove_const_t<B>, char> ||
+                    std::is_same_v<std::remove_const_t<B>, unsigned char>,
                 "Underlying buffer type must be char-type.");
 
   BufferIterator() {}

@@ -2746,7 +2746,7 @@ bool PushSubscriptionWithExpirationTimeTest::IsExpirationTimeValid(
   int64_t output;
   if (!base::StringToInt64(expiration_time, &output))
     return false;
-  return base::Time::Now().ToJsTimeIgnoringNull() < output;
+  return base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull() < output;
 }
 
 IN_PROC_BROWSER_TEST_F(PushSubscriptionWithExpirationTimeTest,

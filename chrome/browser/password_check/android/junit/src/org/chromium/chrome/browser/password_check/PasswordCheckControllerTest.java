@@ -78,14 +78,47 @@ import org.chromium.url.GURL;
 @SuppressWarnings("DoNotMock") // Mocks GURL.
 public class PasswordCheckControllerTest {
     private static final CompromisedCredential ANA =
-            new CompromisedCredential("https://m.a.xyz/signin", mock(GURL.class), "Ana", "m.a.xyz",
-                    "Ana", "password", "", "xyz.a.some.package", 2, 2, true, false);
-    private static final CompromisedCredential BOB = new CompromisedCredential(
-            "http://www.b.ch/signin", mock(GURL.class), "", "http://www.b.ch", "(No username)",
-            "DoneSth", "http://www.b.ch/.well-known/change-password", "", 1, 1, true, false);
-    private static final CompromisedCredential CHARLIE = new CompromisedCredential(
-            "http://www.c.de/login", mock(GURL.class), "", "http://www.c.de", "user1", "secret",
-            "http://www.c.de/.well-known/change-password", "", 1, 1, true, false);
+            new CompromisedCredential(
+                    "https://m.a.xyz/signin",
+                    mock(GURL.class),
+                    "Ana",
+                    "m.a.xyz",
+                    "Ana",
+                    "password",
+                    "",
+                    "xyz.a.some.package",
+                    2,
+                    2,
+                    true,
+                    false);
+    private static final CompromisedCredential BOB =
+            new CompromisedCredential(
+                    "http://www.b.ch/signin",
+                    mock(GURL.class),
+                    "",
+                    "http://www.b.ch",
+                    "(No username)",
+                    "DoneSth",
+                    "http://www.b.ch/.well-known/change-password",
+                    "",
+                    1,
+                    1,
+                    true,
+                    false);
+    private static final CompromisedCredential CHARLIE =
+            new CompromisedCredential(
+                    "http://www.c.de/login",
+                    mock(GURL.class),
+                    "",
+                    "http://www.c.de",
+                    "user1",
+                    "secret",
+                    "http://www.c.de/.well-known/change-password",
+                    "",
+                    1,
+                    1,
+                    true,
+                    false);
     private static final Pair<Integer, Integer> PROGRESS_UPDATE = new Pair<>(2, 19);
     private static final String PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON =
             "PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton";
@@ -96,23 +129,15 @@ public class PasswordCheckControllerTest {
     private static final String PASSWORD_CHECK_COMPROMISED_CREDENTIALS_AFTER_CHECK_HISTOGRAM =
             "PasswordManager.BulkCheck.CompromisedCredentialsCountAfterCheckAndroid";
 
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private PasswordCheckComponentUi.Delegate mDelegate;
-    @Mock
-    private PasswordCheckChangePasswordHelper mChangePasswordDelegate;
-    @Mock
-    private PasswordCheck mPasswordCheck;
-    @Mock
-    private PasswordAccessReauthenticationHelper mReauthenticationHelper;
-    @Mock
-    private SettingsLauncher mSettingsLauncher;
-    @Mock
-    private PasswordCheckIconHelper mIconHelper;
-    @Captor
-    private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
+    @Mock private PasswordCheckComponentUi.Delegate mDelegate;
+    @Mock private PasswordCheckChangePasswordHelper mChangePasswordDelegate;
+    @Mock private PasswordCheck mPasswordCheck;
+    @Mock private PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private PasswordCheckIconHelper mIconHelper;
+    @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
     // DO NOT INITIALIZE HERE! The objects would be shared here which leaks state between tests.
     private PasswordCheckMediator mMediator;
@@ -123,8 +148,12 @@ public class PasswordCheckControllerTest {
         UmaRecorderHolder.resetForTesting();
         MockitoAnnotations.initMocks(this);
         mModel = PasswordCheckProperties.createDefaultModel();
-        mMediator = new PasswordCheckMediator(
-                mChangePasswordDelegate, mReauthenticationHelper, mSettingsLauncher, mIconHelper);
+        mMediator =
+                new PasswordCheckMediator(
+                        mChangePasswordDelegate,
+                        mReauthenticationHelper,
+                        mSettingsLauncher,
+                        mIconHelper);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
         mMediator.initialize(mModel, mDelegate, PasswordCheckReferrer.PASSWORD_SETTINGS, () -> {});
         PasswordCheckMediator.setStatusUpdateDelayMillis(0);
@@ -135,9 +164,10 @@ public class PasswordCheckControllerTest {
         // In order to start another check, the status of the current check needs to be IDLE.
         mMediator.onPasswordCheckStatusChanged(IDLE);
         mModel.get(ITEMS).get(0).model.get(RESTART_BUTTON_ACTION).run();
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.START_CHECK_MANUALLY),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.START_CHECK_MANUALLY),
                 is(1));
     }
 
@@ -211,18 +241,20 @@ public class PasswordCheckControllerTest {
     @Test
     public void testOnViewRecordsViewClick() {
         mMediator.onView(ANA);
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.VIEW_PASSWORD_CLICK),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.VIEW_PASSWORD_CLICK),
                 is(1));
     }
 
     @Test
     public void testOnEditRecordsEditClick() {
         mMediator.onEdit(ANA, ApplicationProvider.getApplicationContext());
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.EDIT_PASSWORD_CLICK),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.EDIT_PASSWORD_CLICK),
                 is(1));
     }
 
@@ -368,8 +400,10 @@ public class PasswordCheckControllerTest {
         CompromisedCredential leakedLate = makeCredential("site.com", "john", 4, 4, true, false);
 
         when(mPasswordCheck.getCompromisedCredentials())
-                .thenReturn(new CompromisedCredential[] {
-                        phishedEarly, leakedEarly, leakedLate, phishedLeakedLate});
+                .thenReturn(
+                        new CompromisedCredential[] {
+                            phishedEarly, leakedEarly, leakedLate, phishedLeakedLate
+                        });
         mMediator.onCompromisedCredentialsFetchCompleted();
 
         assertThat(mModel.get(ITEMS).size(), is(5));
@@ -394,8 +428,10 @@ public class PasswordCheckControllerTest {
 
         // Send the initial set of credentials (to simulate loading them from disk).
         when(mPasswordCheck.getCompromisedCredentials())
-                .thenReturn(new CompromisedCredential[] {
-                        phishedEarly, leakedEarly, leakedLate, phishedLeakedLate});
+                .thenReturn(
+                        new CompromisedCredential[] {
+                            phishedEarly, leakedEarly, leakedLate, phishedLeakedLate
+                        });
         mMediator.onCompromisedCredentialsFetchCompleted();
 
         // Send an updated list simulating credentials found in the current check.
@@ -406,8 +442,16 @@ public class PasswordCheckControllerTest {
         CompromisedCredential leakedNewLate =
                 makeCredential("site.org", "alice", 6, 6, true, false);
         when(mPasswordCheck.getCompromisedCredentials())
-                .thenReturn(new CompromisedCredential[] {phishedEarly, leakedEarly, leakedLate,
-                        leakedNewEarly2, leakedNewLate, leakedNewEarly1, phishedLeakedLate});
+                .thenReturn(
+                        new CompromisedCredential[] {
+                            phishedEarly,
+                            leakedEarly,
+                            leakedLate,
+                            leakedNewEarly2,
+                            leakedNewLate,
+                            leakedNewEarly1,
+                            phishedLeakedLate
+                        });
         mMediator.onCompromisedCredentialsFetchCompleted();
 
         // Expect that the order of the original set has been maintained and that the newly found
@@ -427,9 +471,10 @@ public class PasswordCheckControllerTest {
     @Test
     public void testOnRemoveRecordsDeleteClick() {
         mMediator.onRemove(ANA);
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.DELETE_PASSWORD_CLICK),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.DELETE_PASSWORD_CLICK),
                 is(1));
     }
 
@@ -455,12 +500,14 @@ public class PasswordCheckControllerTest {
         mModel.get(DELETION_CONFIRMATION_HANDLER)
                 .onClick(mock(DialogInterface.class), AlertDialog.BUTTON_POSITIVE);
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.DELETED_PASSWORD),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.DELETED_PASSWORD),
                 is(1));
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(
-                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON),
                 is(1));
     }
 
@@ -470,13 +517,15 @@ public class PasswordCheckControllerTest {
         verify(mDelegate).onManualPasswordChangeStarted(eq(ANA));
         verify(mChangePasswordDelegate).launchAppOrCctWithChangePasswordUrl(eq(ANA));
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
-                           PasswordCheckUserAction.CHANGE_PASSWORD),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_USER_ACTION_HISTOGRAM,
+                        PasswordCheckUserAction.CHANGE_PASSWORD),
                 is(1));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
-                           PasswordCheckResolutionAction.OPENED_SITE),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                        PasswordCheckResolutionAction.OPENED_SITE),
                 is(1));
     }
 
@@ -509,9 +558,10 @@ public class PasswordCheckControllerTest {
 
         mMediator.onUserLeavesCheckPage();
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
-                           PasswordCheckResolutionAction.DID_NOTHING),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_RESOLUTION_HISTOGRAM_WITHOUT_AUTO_BUTTON,
+                        PasswordCheckResolutionAction.DID_NOTHING),
                 is(3));
     }
 
@@ -528,8 +578,9 @@ public class PasswordCheckControllerTest {
 
         mMediator.onUserLeavesCheckPage();
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           PASSWORD_CHECK_COMPROMISED_CREDENTIALS_AFTER_CHECK_HISTOGRAM, 3),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECK_COMPROMISED_CREDENTIALS_AFTER_CHECK_HISTOGRAM, 3),
                 is(1));
     }
 
@@ -556,10 +607,26 @@ public class PasswordCheckControllerTest {
         assertNotNull(header.model.get(LAUNCH_ACCOUNT_CHECKUP_ACTION));
     }
 
-    private CompromisedCredential makeCredential(String origin, String username, long creationTime,
-            long lastUsedTime, boolean leaked, boolean phished) {
-        return new CompromisedCredential(origin, mock(GURL.class), username, origin, username,
-                "password", origin, new String(), creationTime, lastUsedTime, leaked, phished);
+    private CompromisedCredential makeCredential(
+            String origin,
+            String username,
+            long creationTime,
+            long lastUsedTime,
+            boolean leaked,
+            boolean phished) {
+        return new CompromisedCredential(
+                origin,
+                mock(GURL.class),
+                username,
+                origin,
+                username,
+                "password",
+                origin,
+                new String(),
+                creationTime,
+                lastUsedTime,
+                leaked,
+                phished);
     }
 
     private PropertyModel getHeaderModel() {

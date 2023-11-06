@@ -38,20 +38,20 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for transitioning between WebXR's magic window and
- * presentation modes.
- */
+/** End-to-end tests for transitioning between WebXR's magic window and presentation modes. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=cardboard"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=cardboard"
+})
 public class WebXrVrCardboardTransitionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
@@ -68,9 +68,7 @@ public class WebXrVrCardboardTransitionTest {
         CardboardUtils.useCardboardV1DeviceParamsForTesting();
     }
 
-    /**
-     * Tests that WebXR is not exposed if the flag is not on.
-     */
+    /** Tests that WebXR is not exposed if the flag is not on. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
@@ -83,9 +81,7 @@ public class WebXrVrCardboardTransitionTest {
         mWebXrVrTestFramework.endTest();
     }
 
-    /**
-     * Tests that the omnibox reappears after exiting an immersive session.
-     */
+    /** Tests that the omnibox reappears after exiting an immersive session. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
@@ -100,13 +96,16 @@ public class WebXrVrCardboardTransitionTest {
         // to propagate. In the worst case this test will erroneously pass, but should never
         // erroneously fail, and should only be flaky if omnibox showing is broken.
         Thread.sleep(100);
-        CriteriaHelper.pollUiThread(()
-                                            -> mWebXrVrTestFramework.getRule()
-                                                       .getActivity()
-                                                       .getBrowserControlsManager()
-                                                       .getBrowserControlHiddenRatio()
-                        == 0.0,
-                "Browser controls did not unhide after exiting VR", POLL_TIMEOUT_SHORT_MS,
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mWebXrVrTestFramework
+                                        .getRule()
+                                        .getActivity()
+                                        .getBrowserControlsManager()
+                                        .getBrowserControlHiddenRatio()
+                                == 0.0,
+                "Browser controls did not unhide after exiting VR",
+                POLL_TIMEOUT_SHORT_MS,
                 POLL_CHECK_INTERVAL_SHORT_MS);
         mWebXrVrTestFramework.assertNoJavaScriptErrors();
     }
@@ -131,9 +130,7 @@ public class WebXrVrCardboardTransitionTest {
         mWebXrVrTestFramework.endTest();
     }
 
-    /**
-     * Tests that window.rAF continues to fire when we have a non-immersive session.
-     */
+    /** Tests that window.rAF continues to fire when we have a non-immersive session. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
@@ -168,8 +165,8 @@ public class WebXrVrCardboardTransitionTest {
     }
 
     /**
-     * Tests that a permission prompt dismisses by itself when the page navigates away from
-     * the current page.
+     * Tests that a permission prompt dismisses by itself when the page navigates away from the
+     * current page.
      */
     @Test
     @MediumTest
@@ -191,10 +188,11 @@ public class WebXrVrCardboardTransitionTest {
         PermissionUtils.waitForPermissionPromptDismissal();
     }
 
-    /**
-     * Forces Chrome out of VR mode.
-     */
+    /** Forces Chrome out of VR mode. */
     private static void forceExitVr() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { XrSessionCoordinator.endActiveSession(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    XrSessionCoordinator.endActiveSession();
+                });
     }
 }

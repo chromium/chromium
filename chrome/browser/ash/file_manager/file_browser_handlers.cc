@@ -223,8 +223,8 @@ void FileBrowserHandlerExecutor::ExecuteDoneOnUIThread(
     // TASK_RESULT_MESSAGE_SENT.
     std::move(done_).Run(
         success
-            ? extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT
-            : extensions::api::file_manager_private::TASK_RESULT_FAILED,
+            ? extensions::api::file_manager_private::TaskResult::kMessageSent
+            : extensions::api::file_manager_private::TaskResult::kFailed,
         failure_reason);
   }
   delete this;

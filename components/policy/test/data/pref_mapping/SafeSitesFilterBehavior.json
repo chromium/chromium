@@ -1,0 +1,45 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "value for disabled",
+        "policies": {
+          "SafeSitesFilterBehavior": 0
+        },
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "value for enabled",
+        "policies": {
+          "SafeSitesFilterBehavior": 1
+        },
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "policy.safe_sites_filter_behavior": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

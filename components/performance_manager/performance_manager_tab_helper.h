@@ -77,6 +77,9 @@ class PerformanceManagerTabHelper
   void OnAudioStateChanged(bool audible) override;
   void OnFrameAudioStateChanged(content::RenderFrameHost* render_frame_host,
                                 bool is_audible) override;
+  void OnFrameVisibilityChanged(
+      content::RenderFrameHost* render_frame_host,
+      blink::mojom::FrameVisibility visibility) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
@@ -89,6 +92,7 @@ class PerformanceManagerTabHelper
   void DidUpdateFaviconURL(
       content::RenderFrameHost* render_frame_host,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override;
+  void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
   void OnWebContentsFocused(
       content::RenderWidgetHost* render_widget_host) override;
   void OnWebContentsLostFocus(
@@ -136,6 +140,11 @@ class PerformanceManagerTabHelper
   using WebContentsUserData<PerformanceManagerTabHelper>::CreateForWebContents;
 
   void OnMainFrameNavigation(int64_t navigation_id, bool same_doc);
+
+  // Returns the FrameNodeImpl* associated with `render_frame_host`. This
+  // CHECKs that it exists.
+  FrameNodeImpl* GetExistingFrameNode(
+      content::RenderFrameHost* render_frame_host) const;
 
   // Data that is tracked per page.
   struct PageData {

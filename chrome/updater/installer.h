@@ -62,6 +62,17 @@ AppInstallerResult RunApplicationInstaller(
     const base::TimeDelta& timeout,
     InstallProgressCallback progress_callback);
 
+// Retrieves the value of `keyname` from `path` (a plist, on macOS). If the
+// file does not exist, or the key does not exist, or the key or path are
+// empty, or the platform does not support this functionality (Windows, Linux),
+// `default_value` is returned.
+std::string LookupString(const base::FilePath& path,
+                         const std::string& keyname,
+                         const std::string& default_value);
+base::Version LookupVersion(const base::FilePath& path,
+                            const std::string& keyname,
+                            const base::Version& default_value);
+
 // Manages the install of one application. Some of the functions of this
 // class are blocking and can't be invoked on the main sequence.
 //
@@ -101,7 +112,8 @@ class Installer final : public update_client::CrxInstaller {
   // callback from update_client::Install or from update_client::Update. This
   // ensure that prefs has been updated with the most recent values, including
   // |pv| and |fingerprint|.
-  update_client::CrxComponent MakeCrxComponent();
+  void MakeCrxComponent(
+      base::OnceCallback<void(update_client::CrxComponent)> callback);
 
  private:
   ~Installer() override;
@@ -128,11 +140,9 @@ class Installer final : public update_client::CrxInstaller {
                                  ProgressCallback progress_callback,
                                  Callback callback);
 
-  // Deletes recursively the install paths not matching the |pv_| version.
-  void DeleteOlderInstallPaths();
-
-  // Returns an install directory matching the |pv_| version.
-  absl::optional<base::FilePath> GetCurrentInstallDir() const;
+  void MakeCrxComponentFromAppInfo(
+      base::OnceCallback<void(update_client::CrxComponent)> callback,
+      const AppInfo& app_info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -150,12 +160,9 @@ class Installer final : public update_client::CrxInstaller {
   const crx_file::VerifierFormat crx_verifier_format_;
   const bool usage_stats_enabled_;
 
-  // These members are not updated when the installer succeeds.
-  base::Version pv_;
-  std::string ap_;
-  std::string brand_;
-  base::FilePath checker_path_;
-  std::string fingerprint_;
+  // AppInfo is set only after MakeCrxComponent is called, and is not updated
+  // when the installer succeeds.
+  AppInfo app_info_;
 };
 
 }  // namespace updater

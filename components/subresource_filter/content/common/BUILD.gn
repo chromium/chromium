@@ -17,6 +17,7 @@ static_library("common") {
     "//services/network/public/cpp",
     "//url",
   ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

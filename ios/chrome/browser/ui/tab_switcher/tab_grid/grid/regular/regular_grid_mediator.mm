@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/tabs/features.h"
+#import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_configuration_provider.h"
@@ -23,6 +23,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
+
+// To get access to UseSessionSerializationOptimizations().
+// TODO(crbug.com/1383087): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
 
 // TODO(crbug.com/1457146): Needed for `TabPresentationDelegate`, should be
 // refactored.
@@ -64,11 +68,15 @@
       return;
     }
 
-    _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllNonPinnedWebStates(
         WebStateList::CLOSE_USER_ACTION);
   } else {
-    _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    if (!web::features::UseSessionSerializationOptimizations()) {
+      _closedSessionWindow = SerializeWebStateList(self.webStateList);
+    }
     self.webStateList->CloseAllWebStates(WebStateList::CLOSE_USER_ACTION);
   }
 
@@ -81,13 +89,15 @@
 - (void)undoCloseAllItems {
   base::RecordAction(
       base::UserMetricsAction("MobileTabGridUndoCloseAllRegularTabs"));
-  if (!_closedSessionWindow) {
-    return;
+  if (!web::features::UseSessionSerializationOptimizations()) {
+    if (!_closedSessionWindow) {
+      return;
+    }
+    SessionRestorationBrowserAgent::FromBrowser(self.browser)
+        ->RestoreSessionWindow(_closedSessionWindow,
+                               SessionRestorationScope::kRegularOnly);
+    _closedSessionWindow = nil;
   }
-  SessionRestorationBrowserAgent::FromBrowser(self.browser)
-      ->RestoreSessionWindow(_closedSessionWindow,
-                             SessionRestorationScope::kRegularOnly);
-  _closedSessionWindow = nil;
   [self removeEntriesFromTabRestoreService];
   _syncedClosedTabsCount = 0;
 }
@@ -180,12 +190,17 @@
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
+  if (IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs())) {
+    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
+                                                      disabledConfiguration]];
+    return;
+  }
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
   toolbarsConfiguration.closeAllButton = [self canCloseAll];
-  toolbarsConfiguration.doneButton = YES;
-  toolbarsConfiguration.newTabButton = IsAddNewTabAllowedByPolicy(
-      self.browser->GetBrowserState()->GetPrefs(), NO);
+  toolbarsConfiguration.doneButton = !self.webStateList->empty();
+  toolbarsConfiguration.newTabButton = YES;
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.selectTabsButton = [self isTabsInGrid];
   toolbarsConfiguration.undoButton = [self canUndo];

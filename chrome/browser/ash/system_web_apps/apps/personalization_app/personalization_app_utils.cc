@@ -4,10 +4,17 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 
+#include <memory>
+#include <string_view>
+
+#include "ash/webui/personalization_app/personalization_app_ui.h"
+#include "base/base64.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_ambient_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_keyboard_backlight_provider_impl.h"
+#include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_sea_pen_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_theme_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_user_provider_impl.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_wallpaper_provider_impl.h"
@@ -16,6 +23,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
+#include "url/gurl.h"
 
 namespace ash::personalization_app {
 
@@ -36,10 +44,15 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
       web_ui,
       std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
+  auto sea_pen_provider = std::make_unique<
+      ash::personalization_app::PersonalizationAppSeaPenProviderImpl>(
+      web_ui,
+      std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
   return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),
-      std::move(keyboard_backlight_provider), std::move(theme_provider),
-      std::move(user_provider), std::move(wallpaper_provider));
+      std::move(keyboard_backlight_provider), std::move(sea_pen_provider),
+      std::move(theme_provider), std::move(user_provider),
+      std::move(wallpaper_provider));
 }
 
 const user_manager::User* GetUser(const Profile* profile) {
@@ -78,6 +91,11 @@ bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile) {
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
       return true;
   }
+}
+
+GURL GetJpegDataUrl(const std::string_view encoded_jpg_data) {
+  return GURL(base::StrCat(
+      {"data:image/jpeg;base64,", base::Base64Encode(encoded_jpg_data)}));
 }
 
 }  // namespace ash::personalization_app

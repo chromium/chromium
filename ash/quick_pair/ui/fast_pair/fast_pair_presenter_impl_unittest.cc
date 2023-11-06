@@ -76,11 +76,18 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   ~TestMessageCenter() override = default;
 
+  void SetAddNotificationCallback(base::OnceClosure add_notification_callback) {
+    add_notification_callback_ = std::move(add_notification_callback);
+  }
+
   // message_center::FakeMessageCenter:
   void AddNotification(
       std::unique_ptr<message_center::Notification> notification) override {
     EXPECT_FALSE(notification_);
     notification_ = std::move(notification);
+    if (add_notification_callback_) {
+      std::move(add_notification_callback_).Run();
+    }
   }
 
   void RemoveNotification(const std::string& id, bool by_user) override {
@@ -134,6 +141,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   bool remove_notifications_for_notifier_id_;
   bool close_ = false;
   std::unique_ptr<message_center::Notification> notification_;
+  base::OnceClosure add_notification_callback_;
 };
 
 }  // namespace
@@ -1137,12 +1145,16 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionAppEnabled) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
+
+  base::RunLoop show_notification_loop;
+  test_message_center_.SetAddNotificationCallback(
+      show_notification_loop.QuitClosure());
   fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
                           initially_paired_device_));
-  base::RunLoop().RunUntilIdle();
+  show_notification_loop.Run();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairApplicationInstalledNotificationId));
@@ -1155,12 +1167,16 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_SetupClicked) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
+
+  base::RunLoop show_notification_loop;
+  test_message_center_.SetAddNotificationCallback(
+      show_notification_loop.QuitClosure());
   fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
                           initially_paired_device_));
-  base::RunLoop().RunUntilIdle();
+  show_notification_loop.Run();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairApplicationInstalledNotificationId));
@@ -1183,12 +1199,16 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_NoDeviceMetadata) {
 
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
+
+  base::RunLoop show_notification_loop;
+  test_message_center_.SetAddNotificationCallback(
+      show_notification_loop.QuitClosure());
   fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
                           initially_paired_device_));
-  base::RunLoop().RunUntilIdle();
+  show_notification_loop.RunUntilIdle();
 
   EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
       kFastPairApplicationInstalledNotificationId));
@@ -1201,12 +1221,16 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByUser) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
+
+  base::RunLoop show_notification_loop;
+  test_message_center_.SetAddNotificationCallback(
+      show_notification_loop.QuitClosure());
   fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
                           initially_paired_device_));
-  base::RunLoop().RunUntilIdle();
+  show_notification_loop.Run();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairApplicationInstalledNotificationId));
@@ -1224,12 +1248,16 @@ TEST_F(FastPairPresenterImplTest, ShowCompanionApp_DismissedByOS) {
   SetIdentityManager(identity_manager_);
   Login(user_manager::UserType::USER_TYPE_REGULAR);
   base::RunLoop().RunUntilIdle();
+
+  base::RunLoop show_notification_loop;
+  test_message_center_.SetAddNotificationCallback(
+      show_notification_loop.QuitClosure());
   fast_pair_presenter_->ShowLaunchCompanionApp(
       initially_paired_device_,
       base::BindRepeating(&FastPairPresenterImplTest::OnCompanionAppAction,
                           weak_pointer_factory_.GetWeakPtr(),
                           initially_paired_device_));
-  base::RunLoop().RunUntilIdle();
+  show_notification_loop.Run();
 
   EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
       kFastPairApplicationInstalledNotificationId));

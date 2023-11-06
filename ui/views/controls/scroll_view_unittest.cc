@@ -21,6 +21,8 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -126,6 +128,8 @@ const int kMinHeight = 50;
 const int kMaxHeight = 100;
 
 class FixedView : public View {
+  METADATA_HEADER(FixedView, View)
+
  public:
   FixedView() = default;
 
@@ -142,7 +146,12 @@ class FixedView : public View {
   void SetFocus() { Focus(); }
 };
 
+BEGIN_METADATA(FixedView)
+END_METADATA
+
 class CustomView : public View {
+  METADATA_HEADER(CustomView, View)
+
  public:
   CustomView() = default;
 
@@ -173,6 +182,9 @@ class CustomView : public View {
   gfx::Point last_location_;
 };
 
+BEGIN_METADATA(CustomView)
+END_METADATA
+
 void CheckScrollbarVisibility(const ScrollView* scroll_view,
                               ScrollBarOrientation orientation,
                               bool should_be_visible) {
@@ -196,6 +208,8 @@ ui::MouseEvent TestLeftMouseAt(const gfx::Point& location, ui::EventType type) {
 // height. This is similar to a TableView that has many columns showing, but
 // very few rows.
 class VerticalResizingView : public View {
+  METADATA_HEADER(VerticalResizingView, View)
+
  public:
   VerticalResizingView() = default;
 
@@ -210,8 +224,13 @@ class VerticalResizingView : public View {
   }
 };
 
+BEGIN_METADATA(VerticalResizingView)
+END_METADATA
+
 // Same as VerticalResizingView, but horizontal instead.
 class HorizontalResizingView : public View {
+  METADATA_HEADER(HorizontalResizingView, View)
+
  public:
   HorizontalResizingView() = default;
 
@@ -226,7 +245,12 @@ class HorizontalResizingView : public View {
   }
 };
 
+BEGIN_METADATA(HorizontalResizingView)
+END_METADATA
+
 class TestScrollBarThumb : public BaseScrollBarThumb {
+  METADATA_HEADER(TestScrollBarThumb, BaseScrollBarThumb)
+
  public:
   using BaseScrollBarThumb::BaseScrollBarThumb;
 
@@ -235,7 +259,12 @@ class TestScrollBarThumb : public BaseScrollBarThumb {
   void OnPaint(gfx::Canvas* canvas) override {}
 };
 
+BEGIN_METADATA(TestScrollBarThumb)
+END_METADATA
+
 class TestScrollBar : public ScrollBar {
+  METADATA_HEADER(TestScrollBar, ScrollBar)
+
  public:
   TestScrollBar(bool horizontal, bool overlaps_content, int thickness)
       : ScrollBar(horizontal),
@@ -257,6 +286,9 @@ class TestScrollBar : public ScrollBar {
   const bool overlaps_content_ = false;
   const int thickness_ = 0;
 };
+
+BEGIN_METADATA(TestScrollBar)
+END_METADATA
 
 }  // namespace
 

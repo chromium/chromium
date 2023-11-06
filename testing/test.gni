@@ -41,9 +41,9 @@ if (is_android) {
 } else if (is_fuchsia) {
   import("//build/config/chromecast_build.gni")
   import("//build/config/fuchsia/generate_runner_scripts.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/cmc.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+  import("//third_party/fuchsia-gn-sdk/src/cmc.gni")
+  import("//third_party/fuchsia-gn-sdk/src/component.gni")
+  import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_chromeos && is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
   import("//build/config/sanitizers/sanitizers.gni")
@@ -199,6 +199,10 @@ template("mixed_test") {
 #      for build targets.
 #   allow_cleartext_traffic: (Android, optional) whether to allow cleartext
 #      network requests during the test.
+#   enable_fuzztest: whether to allow the use of the FUZZ_TEST macro to
+#      include fuzzing tests alongside unit tests. This introduces an
+#      extra dependency and also creates additional metadata so that our
+#      fuzzing infrastructure can find and run such tests.
 template("test") {
   testonly = true
   if (!is_ios) {
@@ -208,6 +212,33 @@ template("test") {
   if (!is_android) {
     assert(!defined(invoker.allow_cleartext_traffic),
            "allow_cleartext_traffic can be set only for Android tests")
+  }
+
+  _fuzztest_deps = []
+  if (defined(invoker.enable_fuzztest) && invoker.enable_fuzztest) {
+    _output_name = invoker.target_name
+    _fuzzer_options_target = "${_output_name}__fuzzer_options"
+    _fuzztest_deps = [
+      ":${_fuzzer_options_target}",
+      "//third_party/fuzztest",
+    ]
+
+    # Generate minimal .options file so that ClusterFuzz knows to pass the
+    # -fuzz= argument. It's possible that in future we would want more
+    # fuzzing parameters to be configurable for FUZZ_TESTS, in which case
+    # perhaps we would want to abstract more of the logic from
+    # //testing/libfuzzer/fuzzer_test.gni.
+    config_file_name = _output_name + ".options"
+    action(_fuzzer_options_target) {
+      script = "//testing/libfuzzer/gen_fuzzer_config.py"
+      args = [
+        "--config",
+        rebase_path("$root_build_dir/" + config_file_name, root_build_dir),
+        "--libfuzzer_options",
+        "fuzz=",
+      ]
+      outputs = [ "$root_build_dir/$config_file_name" ]
+    }
   }
 
   if (is_android) {
@@ -291,6 +322,10 @@ template("test") {
         if (tests_have_location_tags) {
           data += [ "//testing/location_tags.json" ]
         }
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += _fuzztest_deps
 
         # Don't output to the root or else conflict with the group() below.
         output_name = rebase_path(_exec_output, root_out_dir)
@@ -390,9 +425,9 @@ template("test") {
         # Native targets do not need to depend on java targets. Filter them out
         # so that the shared library can be built without needing to wait for
         # dependent java targets.
-        deps = []
+        deps = _fuzztest_deps
         if (defined(invoker.deps)) {
-          deps = filter_exclude(invoker.deps, java_target_patterns)
+          deps += filter_exclude(invoker.deps, java_target_patterns)
         }
 
         if (_use_default_launcher) {
@@ -659,6 +694,11 @@ template("test") {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       output_name = _exec_target
 
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += _fuzztest_deps
+
       # Use a crate name that avoids creating a warning due to double
       # underscore (ie. `__`).
       crate_name = _crate_name
@@ -674,10 +714,6 @@ template("test") {
     }
 
     _test_target = target_name
-    _output_name = target_name
-    if (defined(invoker.output_name)) {
-      _output_name = invoker.output_name
-    }
 
     _wrapper_output_name = "run_${target_name}"
     ios_test_runner_wrapper(_wrapper_output_name) {
@@ -741,13 +777,7 @@ template("test") {
         info_plist = "//testing/gtest_ios/unittest-Info.plist"
       }
 
-      if (ios_use_shared_bundle_id_for_test_apps) {
-        bundle_identifier = shared_bundle_id_for_test_apps
-        not_needed([ "_output_name" ])
-      } else {
-        bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
-                            string_replace(_output_name, "_", "-")
-      }
+      bundle_identifier = shared_bundle_id_for_test_apps
 
       if (!defined(bundle_deps)) {
         bundle_deps = []
@@ -763,6 +793,10 @@ template("test") {
       # Include the generate_wrapper as part of data_deps
       data_deps += [ ":${_wrapper_output_name}" ]
       write_runtime_deps = _runtime_deps_file
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += _fuzztest_deps
     }
   } else if ((is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) &&
              cros_board != "") {
@@ -815,6 +849,7 @@ template("test") {
       write_runtime_deps = _runtime_deps_file
       data += [ _runtime_deps_file ]
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []
@@ -906,6 +941,7 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
       if (_use_ash_chrome && also_build_ash_chrome) {
         data_deps += [ "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)" ]
       }
@@ -978,6 +1014,7 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []
@@ -998,6 +1035,7 @@ template("test") {
       if (!defined(deps)) {
         deps = []
       }
+      deps += _fuzztest_deps
 
       if (!defined(data_deps)) {
         data_deps = []

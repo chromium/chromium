@@ -15,10 +15,11 @@
 
 namespace trusted_vault {
 
+enum class SecurityDomainId;
 class SecureBoxKeyPair;
 
-// Helper class to extract and validate trusted vault keys from
-// GetSecurityDomainMember response.
+// Helper class to extract and validate trusted vault keys for a specific
+// security domain from a GetSecurityDomainMember response.
 class DownloadKeysResponseHandler {
  public:
   struct ProcessedResponse {
@@ -50,6 +51,7 @@ class DownloadKeysResponseHandler {
   // |device_key_pair| must not be null. It will be verified that the new keys
   // are result of rotating |last_trusted_vault_key_and_version|.
   DownloadKeysResponseHandler(
+      SecurityDomainId security_domain,
       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
       std::unique_ptr<SecureBoxKeyPair> device_key_pair);
   DownloadKeysResponseHandler(const DownloadKeysResponseHandler& other) =
@@ -62,6 +64,7 @@ class DownloadKeysResponseHandler {
                                     const std::string& response_body) const;
 
  private:
+  const SecurityDomainId security_domain_;
   const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
   const std::unique_ptr<SecureBoxKeyPair> device_key_pair_;
 };

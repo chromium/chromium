@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
       "      B = http://b.com/",
       DepictFrameTree(root));
 
-  const char* get_element_location_script_fmt =
+  static constexpr char kGetElementLocationScriptFmt[] =
       "var rect = "
       "document.getElementById('%s').getBoundingClientRect();\n"
       "var point = {\n"
@@ -965,18 +965,18 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
   // with the parent frame, we need to query element offsets in both documents
   // before converting to root space coordinates for the wheel event.
   gfx::PointF nested_point_f;
-  ConvertJSONToPoint(EvalJs(nested_iframe_node->current_frame_host(),
-                            base::StringPrintf(get_element_location_script_fmt,
-                                               "scrollable_div"))
-                         .ExtractString(),
-                     &nested_point_f);
+  ConvertJSONToPoint(
+      EvalJs(nested_iframe_node->current_frame_host(),
+             base::StringPrintf(kGetElementLocationScriptFmt, "scrollable_div"))
+          .ExtractString(),
+      &nested_point_f);
 
   gfx::PointF parent_offset_f;
-  ConvertJSONToPoint(EvalJs(parent_iframe_node->current_frame_host(),
-                            base::StringPrintf(get_element_location_script_fmt,
-                                               "nested_frame"))
-                         .ExtractString(),
-                     &parent_offset_f);
+  ConvertJSONToPoint(
+      EvalJs(parent_iframe_node->current_frame_host(),
+             base::StringPrintf(kGetElementLocationScriptFmt, "nested_frame"))
+          .ExtractString(),
+      &parent_offset_f);
 
   // Compute location for wheel event.
   gfx::PointF point_f(parent_offset_f.x() + nested_point_f.x() + 5.f,
@@ -1066,7 +1066,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
       "      B = http://b.com/",
       DepictFrameTree(root));
 
-  const char* get_element_location_script_fmt =
+  static constexpr char kGetElementLocationScriptFmt[] =
       "var rect = "
       "document.getElementById('%s').getBoundingClientRect();\n"
       "var point = {\n"
@@ -1079,11 +1079,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
   // with the parent frame, we need to query element offsets in both documents
   // before converting to root space coordinates for the wheel event.
   gfx::PointF nested_point_f;
-  ConvertJSONToPoint(EvalJs(nested_iframe_node->current_frame_host(),
-                            base::StringPrintf(get_element_location_script_fmt,
-                                               "scrollable_div"))
-                         .ExtractString(),
-                     &nested_point_f);
+  ConvertJSONToPoint(
+      EvalJs(nested_iframe_node->current_frame_host(),
+             base::StringPrintf(kGetElementLocationScriptFmt, "scrollable_div"))
+          .ExtractString(),
+      &nested_point_f);
 
   EXPECT_EQ(
       1,
@@ -1105,11 +1105,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
                     &non_fast_scrollable_rect_before_scroll);
 
   gfx::PointF parent_offset_f;
-  ConvertJSONToPoint(EvalJs(parent_iframe_node->current_frame_host(),
-                            base::StringPrintf(get_element_location_script_fmt,
-                                               "nested_frame"))
-                         .ExtractString(),
-                     &parent_offset_f);
+  ConvertJSONToPoint(
+      EvalJs(parent_iframe_node->current_frame_host(),
+             base::StringPrintf(kGetElementLocationScriptFmt, "nested_frame"))
+          .ExtractString(),
+      &parent_offset_f);
 
   // Compute location for wheel event to scroll the parent with respect to the
   // mainframe.
@@ -4460,7 +4460,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
     set_cursor_interceptor->Wait();
     EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
     EXPECT_EQ(ui::mojom::CursorType::kPointer,
-              set_cursor_interceptor->cursor());
+              set_cursor_interceptor->cursor()->type());
   }
 }
 
@@ -4528,7 +4528,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestBrowserTest,
   set_cursor_interceptor->Wait();
   EXPECT_TRUE(set_cursor_interceptor->cursor().has_value());
   EXPECT_EQ(ui::mojom::CursorType::kPointer,
-            set_cursor_interceptor->cursor());
+            set_cursor_interceptor->cursor()->type());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

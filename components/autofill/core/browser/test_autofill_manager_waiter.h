@@ -165,7 +165,8 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
                                   FieldGlobalId field) override;
   void OnAfterTextFieldDidChange(AutofillManager& manager,
                                  FormGlobalId form,
-                                 FieldGlobalId field) override;
+                                 FieldGlobalId field,
+                                 std::u16string text_value) override;
 
   void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                   FormGlobalId form,
@@ -183,7 +184,9 @@ class TestAutofillManagerWaiter : public AutofillManager::Observer {
 
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
-                                  FieldGlobalId field) override;
+                                  FieldGlobalId field,
+                                  const FormData& form_data) override;
+
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form,
                                  FieldGlobalId field) override;
@@ -293,8 +296,10 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   }
   void OnAfterTextFieldDidChange(AutofillManager& manager,
                                  FormGlobalId form,
-                                 FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field);
+                                 FieldGlobalId field,
+                                 std::u16string text_value) override {
+    MaybeQuit(&Observer::OnAfterTextFieldDidChange, manager, form, field,
+              text_value);
   }
   void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                   FormGlobalId form,
@@ -318,8 +323,10 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   }
   void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                   FormGlobalId form,
-                                  FieldGlobalId field) override {
-    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field);
+                                  FieldGlobalId field,
+                                  const FormData& form_data) override {
+    MaybeQuit(&Observer::OnBeforeAskForValuesToFill, manager, form, field,
+              form_data);
   }
   void OnAfterAskForValuesToFill(AutofillManager& manager,
                                  FormGlobalId form,
@@ -364,7 +371,7 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
   void OnFillOrPreviewDataModelForm(
       AutofillManager& manager,
       autofill::FormGlobalId form,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData* const> filled_fields,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card) override {
@@ -409,7 +416,7 @@ class AutofillManagerSingleEventWaiter : public AutofillManager::Observer {
 //   base::OnceCallback<bool()> preview_waiter = WaitForEvent(
 //      *autofill_manager,
 //      &AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-//      testing::Args<2>(mojom::AutofillActionPersistence::kPreview));
+//      testing::Args<2>(mojom::ActionPersistence::kPreview));
 //   ...
 //   EXPECT_TRUE(std::move(preview_waiter).Run());
 template <typename Matcher, typename R, typename... Args>

@@ -4,17 +4,24 @@
 
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
 
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/values.h"
-#include "chrome/browser/manta/manta_service.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "components/manta/features.h"
+#include "components/manta/manta_service.h"
 #include "components/manta/manta_status.h"
 
 namespace ash::input_method {
 
 namespace {
+
+std::string GetConfigLabelFromFieldTrialConfig() {
+  return base::GetFieldTrialParamValue("OrcaEnabled", "config_label");
+}
+
 std::unique_ptr<manta::OrcaProvider> CreateProvider(Profile* profile) {
   if (!manta::features::IsMantaServiceEnabled()) {
     return nullptr;
@@ -38,6 +45,11 @@ std::map<std::string, std::string> CreateProviderRequest(
   }
 
   provider_request["tone"] = request->text_query_id;
+
+  if (auto config_label = GetConfigLabelFromFieldTrialConfig();
+      !config_label.empty()) {
+    provider_request["config_label"] = config_label;
+  }
   return provider_request;
 }
 
@@ -46,6 +58,7 @@ orca::mojom::TextQueryErrorCode ConvertErrorCode(
   switch (status_code) {
     case manta::MantaStatusCode::kGenericError:
     case manta::MantaStatusCode::kMalformedResponse:
+    case manta::MantaStatusCode::kNoIdentityManager:
       return orca::mojom::TextQueryErrorCode::kUnknown;
     case manta::MantaStatusCode::kInvalidInput:
       return orca::mojom::TextQueryErrorCode::kInvalidArgument;
@@ -72,6 +85,7 @@ orca::mojom::TextQueryErrorPtr ConvertErrorResponse(manta::MantaStatus status) {
 }
 
 std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
+    const std::string& request_id,
     base::Value::Dict& response) {
   std::vector<orca::mojom::TextQueryResultPtr> results;
   if (auto* output_data_list = response.FindList("outputData")) {
@@ -79,7 +93,8 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
     for (const auto& data : *output_data_list) {
       if (const auto* text = data.GetDict().FindString("text")) {
         results.push_back(orca::mojom::TextQueryResult::New(
-            base::NumberToString(result_id), *text));
+            base::StrCat({request_id, ":", base::NumberToString(result_id)}),
+            *text));
         ++result_id;
       }
     }
@@ -91,9 +106,11 @@ std::vector<orca::mojom::TextQueryResultPtr> ParseSuccessResponse(
 
 EditorTextQueryProvider::EditorTextQueryProvider(
     mojo::PendingAssociatedReceiver<orca::mojom::TextQueryProvider> receiver,
-    Profile* profile)
+    Profile* profile,
+    EditorSwitch* editor_switch)
     : text_query_provider_receiver_(this, std::move(receiver)),
-      orca_provider_(CreateProvider(profile)) {}
+      orca_provider_(CreateProvider(profile)),
+      editor_switch_(editor_switch) {}
 
 EditorTextQueryProvider::~EditorTextQueryProvider() = default;
 
@@ -112,18 +129,27 @@ void EditorTextQueryProvider::Process(orca::mojom::TextQueryRequestPtr request,
     std::move(callback).Run(std::move(response));
     return;
   }
+
+  ++request_id_;
   orca_provider_->Call(
       CreateProviderRequest(std::move(request)),
       base::BindOnce(
-          [](ProcessCallback process_callback, base::Value::Dict dict,
-             manta::MantaStatus status) {
+          [](const std::string& request_id, EditorMode editor_mode,
+             ProcessCallback process_callback,
+             base::Value::Dict dict, manta::MantaStatus status) {
             std::move(process_callback)
                 .Run(status.status_code == manta::MantaStatusCode::kOk
                          ? orca::mojom::TextQueryResponse::NewResults(
-                               ParseSuccessResponse(dict))
+                               ParseSuccessResponse(request_id, dict))
                          : orca::mojom::TextQueryResponse::NewError(
                                ConvertErrorResponse(status)));
+
+            LogEditorState(status.status_code == manta::MantaStatusCode::kOk
+                               ? EditorStates::kSuccessResponse
+                               : EditorStates::kErrorResponse,
+                           editor_mode);
           },
+          base::NumberToString(request_id_), editor_switch_->GetEditorMode(),
           std::move(callback)));
 }
 

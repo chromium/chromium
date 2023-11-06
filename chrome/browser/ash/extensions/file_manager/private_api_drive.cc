@@ -148,23 +148,23 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
 
     ProvidedFileSystemInterface::MetadataFieldMask field_mask =
         ProvidedFileSystemInterface::METADATA_FIELD_NONE;
-    if (names_.find(api::file_manager_private::ENTRY_PROPERTY_NAME_SIZE) !=
+    if (names_.find(api::file_manager_private::EntryPropertyName::kSize) !=
         names_.end()) {
       field_mask |= ProvidedFileSystemInterface::METADATA_FIELD_SIZE;
     }
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_MODIFICATIONTIME) !=
+            api::file_manager_private::EntryPropertyName::kModificationTime) !=
         names_.end()) {
       field_mask |=
           ProvidedFileSystemInterface::METADATA_FIELD_MODIFICATION_TIME;
     }
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_CONTENTMIMETYPE) !=
+            api::file_manager_private::EntryPropertyName::kContentMimeType) !=
         names_.end()) {
       field_mask |= ProvidedFileSystemInterface::METADATA_FIELD_MIME_TYPE;
     }
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_THUMBNAILURL) !=
+            api::file_manager_private::EntryPropertyName::kThumbnailUrl) !=
         names_.end()) {
       field_mask |= ProvidedFileSystemInterface::METADATA_FIELD_THUMBNAIL;
     }
@@ -189,26 +189,27 @@ class SingleEntryPropertiesGetterForFileSystemProvider {
       return;
     }
 
-    if (names_.find(api::file_manager_private::ENTRY_PROPERTY_NAME_SIZE) !=
+    if (names_.find(api::file_manager_private::EntryPropertyName::kSize) !=
         names_.end()) {
       properties_->size = *metadata->size;
     }
 
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_MODIFICATIONTIME) !=
+            api::file_manager_private::EntryPropertyName::kModificationTime) !=
         names_.end()) {
-      properties_->modification_time = metadata->modification_time->ToJsTime();
+      properties_->modification_time =
+          metadata->modification_time->InMillisecondsFSinceUnixEpoch();
     }
 
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_CONTENTMIMETYPE) !=
+            api::file_manager_private::EntryPropertyName::kContentMimeType) !=
             names_.end() &&
         metadata->mime_type.get()) {
       properties_->content_mime_type = *metadata->mime_type;
     }
 
     if (names_.find(
-            api::file_manager_private::ENTRY_PROPERTY_NAME_THUMBNAILURL) !=
+            api::file_manager_private::EntryPropertyName::kThumbnailUrl) !=
             names_.end() &&
         metadata->thumbnail.get()) {
       properties_->thumbnail_url = *metadata->thumbnail;
@@ -319,7 +320,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
     properties_->can_add_children = metadata.dir_supports_create;
     if (!metadata.last_modified.is_null()) {
       properties_->modification_time =
-          metadata.last_modified.ToJsTimeIgnoringNull();
+          metadata.last_modified.InMillisecondsFSinceUnixEpochIgnoringNull();
     }
     properties_->size = metadata.size;
     CompleteGetEntryProperties(base::File::FILE_OK);
@@ -634,8 +635,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
   auto query = drivefs::mojom::QueryParameters::New();
   query->text_content = params->search_params.query;
   if (params->search_params.modified_timestamp.has_value()) {
-    query->modified_time =
-        base::Time::FromJsTime(*params->search_params.modified_timestamp);
+    query->modified_time = base::Time::FromMillisecondsSinceUnixEpoch(
+        *params->search_params.modified_timestamp);
     query->modified_time_operator =
         drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
   }
@@ -722,8 +723,8 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
         drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   }
   if (params->search_params.modified_timestamp.has_value()) {
-    query->modified_time =
-        base::Time::FromJsTime(*params->search_params.modified_timestamp);
+    query->modified_time = base::Time::FromMillisecondsSinceUnixEpoch(
+        *params->search_params.modified_timestamp);
     query->modified_time_operator =
         drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
   }
@@ -741,21 +742,21 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   query->page_size = params->search_params.max_results;
   bool filter_dirs = false;
   switch (params->search_params.types) {
-    case api::file_manager_private::SEARCH_TYPE_EXCLUDE_DIRECTORIES:
+    case api::file_manager_private::SearchType::kExcludeDirectories:
       filter_dirs = true;
       search_type_ = SearchType::kText;
       break;
-    case api::file_manager_private::SEARCH_TYPE_SHARED_WITH_ME:
+    case api::file_manager_private::SearchType::kSharedWithMe:
       query->shared_with_me = true;
       search_type_ = SearchType::kSharedWithMe;
       break;
-    case api::file_manager_private::SEARCH_TYPE_OFFLINE:
+    case api::file_manager_private::SearchType::kOffline:
       query->available_offline = true;
       query->query_source =
           drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
       search_type_ = SearchType::kOffline;
       break;
-    case api::file_manager_private::SEARCH_TYPE_ALL:
+    case api::file_manager_private::SearchType::kAll:
       search_type_ = SearchType::kText;
       break;
     default:
@@ -829,27 +830,30 @@ FileManagerPrivateGetDriveConnectionStateFunction::Run() {
   api::file_manager_private::DriveConnectionState result;
 
   using enum drive::util::ConnectionStatus;
-  using enum api::file_manager_private::DriveConnectionStateType;
-  using enum api::file_manager_private::DriveOfflineReason;
   switch (drive::util::GetDriveConnectionStatus(
       Profile::FromBrowserContext(browser_context()))) {
     case kNoService:
-      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason = DRIVE_OFFLINE_REASON_NO_SERVICE;
+      result.type =
+          api::file_manager_private::DriveConnectionStateType::kOffline;
+      result.reason = api::file_manager_private::DriveOfflineReason::kNoService;
       break;
     case kNoNetwork:
-      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason = DRIVE_OFFLINE_REASON_NO_NETWORK;
+      result.type =
+          api::file_manager_private::DriveConnectionStateType::kOffline;
+      result.reason = api::file_manager_private::DriveOfflineReason::kNoNetwork;
       break;
     case kNotReady:
-      result.type = DRIVE_CONNECTION_STATE_TYPE_OFFLINE;
-      result.reason = DRIVE_OFFLINE_REASON_NOT_READY;
+      result.type =
+          api::file_manager_private::DriveConnectionStateType::kOffline;
+      result.reason = api::file_manager_private::DriveOfflineReason::kNotReady;
       break;
     case kMetered:
-      result.type = DRIVE_CONNECTION_STATE_TYPE_METERED;
+      result.type =
+          api::file_manager_private::DriveConnectionStateType::kMetered;
       break;
     case kConnected:
-      result.type = DRIVE_CONNECTION_STATE_TYPE_ONLINE;
+      result.type =
+          api::file_manager_private::DriveConnectionStateType::kOnline;
       break;
   }
 
@@ -870,17 +874,17 @@ FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   if (event_router) {
     drivefs::mojom::DialogResult result;
     switch (params->result) {
-      case api::file_manager_private::DRIVE_DIALOG_RESULT_NONE:
-      case api::file_manager_private::DRIVE_DIALOG_RESULT_NOT_DISPLAYED:
+      case api::file_manager_private::DriveDialogResult::kNone:
+      case api::file_manager_private::DriveDialogResult::kNotDisplayed:
         result = drivefs::mojom::DialogResult::kNotDisplayed;
         break;
-      case api::file_manager_private::DRIVE_DIALOG_RESULT_ACCEPT:
+      case api::file_manager_private::DriveDialogResult::kAccept:
         result = drivefs::mojom::DialogResult::kAccept;
         break;
-      case api::file_manager_private::DRIVE_DIALOG_RESULT_REJECT:
+      case api::file_manager_private::DriveDialogResult::kReject:
         result = drivefs::mojom::DialogResult::kReject;
         break;
-      case api::file_manager_private::DRIVE_DIALOG_RESULT_DISMISS:
+      case api::file_manager_private::DriveDialogResult::kDismiss:
         result = drivefs::mojom::DialogResult::kDismiss;
         break;
     }

@@ -6,3 +6,10 @@ include_rules = [
     "+third_party/blink/renderer/modules/modules_export.h",
     "+third_party/blink/renderer/modules/worklet",
 ]
+
+specific_include_rules = {
+    "paint_rendering_context_2d_test.cc" : [
+        "+cc/test/paint_op_matchers.h",
+        "+third_party/blink/renderer/modules/canvas/canvas2d/recording_test_utils.h",
+    ]
+}

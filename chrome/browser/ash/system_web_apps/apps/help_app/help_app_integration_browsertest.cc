@@ -506,7 +506,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2DirectNavigation) {
 }
 
 // Test that the Help App can open the feedback dialog.
-IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
+//
+// Flaky on Linux Chromium OS ASan LSan Tests (1)
+//
+// TODO(1499768): Reenable it.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       DISABLED_HelpAppV2OpenFeedbackDialog) {
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
 

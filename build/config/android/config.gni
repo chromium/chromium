@@ -67,7 +67,7 @@ if (is_android || is_chromeos) {
 
     # The default to use for android:minSdkVersion for targets that do
     # not explicitly set it.
-    default_min_sdk_version = 24
+    default_min_sdk_version = 26
 
     # Static analysis can be either "on" or "off" or "build_server". This
     # controls how android lint, error-prone, bytecode checks are run. This
@@ -176,8 +176,6 @@ if (is_android || is_chromeos) {
 
   if (!defined(android_protoc_bin)) {
     android_protoc_bin = "//third_party/android_protoc/protoc"
-    android_proto_runtime =
-        "//third_party/android_deps:com_google_protobuf_protobuf_javalite_java"
   }
 
   webview_public_framework_dep =
@@ -329,8 +327,7 @@ if (is_android || is_chromeos) {
          "incremental_install=true && is_java_debug=false is not supported.")
 
   # We overwrite system_webview_apk_target if it is an alias
-  # TODO(smaier): Remove downstream_64bit_aliased_targets once safe to do so.
-  if (android_64bit_target_cpu && defined(downstream_64bit_aliased_targets)) {
+  if (android_64bit_target_cpu) {
     system_webview_apk_target =
         string_replace(system_webview_apk_target,
                        "system_webview_google_apk",
@@ -410,4 +407,7 @@ if (is_android || is_chromeos) {
   # Actions that use java should add this as an input so that they are rebuilt
   # when the JDK changes.
   java_path_for_inputs = "//third_party/jdk/current/bin/java.chromium"
+
+  # TODO(crbug.com/1426605): Remove.
+  use_upstream_errorprone_annotations_threadsafe = true
 }

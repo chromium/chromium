@@ -63,8 +63,7 @@ export class PrintPreviewDpiSettingsElement extends
       return null;
     }
 
-    const result =
-        JSON.parse(JSON.stringify(this.capability)) as LabelledDpiCapability;
+    const result: LabelledDpiCapability = structuredClone(this.capability);
     this.capability.option.forEach((dpiOption, index) => {
       const hDpi = dpiOption.horizontal_dpi || 0;
       const vDpi = dpiOption.vertical_dpi || 0;

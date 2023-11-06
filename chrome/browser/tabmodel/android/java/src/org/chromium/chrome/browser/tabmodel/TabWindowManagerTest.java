@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
@@ -23,6 +24,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -34,7 +36,7 @@ import java.util.List;
 /**
  * Test for {@link TabWindowManagerImpl}.
  *
- * Makes sure the class handles multiple {@link Activity}s requesting {@link TabModelSelector}s,
+ * <p>Makes sure the class handles multiple {@link Activity}s requesting {@link TabModelSelector}s,
  * {@link Activity}s getting destroyed, etc.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -42,31 +44,41 @@ import java.util.List;
 public class TabWindowManagerTest {
     private TabWindowManager mSubject;
     private AsyncTabParamsManager mAsyncTabParamsManager;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private Profile mProfile;
+    @Mock private Profile mIncognitoProfile;
     private NextTabPolicySupplier mNextTabPolicySupplier = () -> NextTabPolicy.HIERARCHICAL;
-
-    private static final TabModelSelectorFactory sMockTabModelSelectorFactory =
-            new TabModelSelectorFactory() {
-                @Override
-                public TabModelSelector buildSelector(Activity activity,
-                        TabCreatorManager tabCreatorManager,
-                        NextTabPolicySupplier nextTabPolicySupplier, int selectorIndex) {
-                    return new MockTabModelSelector(0, 0, null);
-                }
-            };
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-            int maxInstances =
-                    (Build.VERSION.SDK_INT >= 31 /*S*/ ? TabWindowManager.MAX_SELECTORS_S
-                                                       : TabWindowManager.MAX_SELECTORS_LEGACY);
-            mSubject = TabWindowManagerFactory.createInstance(
-                    sMockTabModelSelectorFactory, mAsyncTabParamsManager, maxInstances);
-        });
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        TabModelSelectorFactory mockTabModelSelectorFactory =
+                new TabModelSelectorFactory() {
+                    @Override
+                    public TabModelSelector buildSelector(
+                            Activity activity,
+                            TabCreatorManager tabCreatorManager,
+                            NextTabPolicySupplier nextTabPolicySupplier,
+                            int selectorIndex) {
+                        return new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+                    }
+                };
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAsyncTabParamsManager =
+                            AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
+                    int maxInstances =
+                            (Build.VERSION.SDK_INT >= 31 /*S*/
+                                    ? TabWindowManager.MAX_SELECTORS_S
+                                    : TabWindowManager.MAX_SELECTORS_LEGACY);
+                    mSubject =
+                            TabWindowManagerFactory.createInstance(
+                                    mockTabModelSelectorFactory,
+                                    mAsyncTabParamsManager,
+                                    maxInstances);
+                });
     }
 
     private ActivityController<Activity> createActivity() {
@@ -79,9 +91,7 @@ public class TabWindowManagerTest {
         controller.destroy();
     }
 
-    /**
-     * Test that a single {@link Activity} can request a {@link TabModelSelector}.
-     */
+    /** Test that a single {@link Activity} can request a {@link TabModelSelector}. */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})
@@ -99,9 +109,7 @@ public class TabWindowManagerTest {
         destroyActivity(activityController0);
     }
 
-    /**
-     * Test that two {@link Activity}s can request different {@link TabModelSelector}s.
-     */
+    /** Test that two {@link Activity}s can request different {@link TabModelSelector}s. */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})
@@ -140,14 +148,16 @@ public class TabWindowManagerTest {
         for (int i = 0; i < mSubject.getMaxSimultaneousSelectors(); i++) {
             ActivityController<Activity> c = createActivity();
             activityControllerList.add(c);
-            Assert.assertNotNull("Could not build selector",
+            Assert.assertNotNull(
+                    "Could not build selector",
                     mSubject.requestSelector(
                             c.get(), mTabCreatorManager, mNextTabPolicySupplier, 0));
         }
 
         ActivityController<Activity> activityController = createActivity();
         activityControllerList.add(activityController);
-        Assert.assertNull("Built selectors past the max number supported",
+        Assert.assertNull(
+                "Built selectors past the max number supported",
                 mSubject.requestSelector(
                         activityController.get(), mTabCreatorManager, mNextTabPolicySupplier, 0));
 
@@ -158,7 +168,7 @@ public class TabWindowManagerTest {
 
     /**
      * Test that requesting the same {@link TabModelSelector} index will fall back and return a
-     * model for a different available index instead.  In this case, a higher index (0 -> 1).
+     * model for a different available index instead. In this case, a higher index (0 -> 1).
      */
     @Test
     @SmallTest
@@ -189,7 +199,7 @@ public class TabWindowManagerTest {
 
     /**
      * Test that requesting the same {@link TabModelSelector} index will fall back and return a
-     * model for a different available index instead.  In this case, a lower index (2 -> 0).
+     * model for a different available index instead. In this case, a lower index (2 -> 0).
      */
     @Test
     @SmallTest
@@ -237,7 +247,9 @@ public class TabWindowManagerTest {
 
         destroyActivity(activityController0);
 
-        Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
+        Assert.assertEquals(
+                "Still found model",
+                TabWindowManager.INVALID_WINDOW_INDEX,
                 mSubject.getIndexForWindow(activity0));
     }
 
@@ -260,7 +272,9 @@ public class TabWindowManagerTest {
 
         destroyActivity(activityController0);
 
-        Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
+        Assert.assertEquals(
+                "Still found model",
+                TabWindowManager.INVALID_WINDOW_INDEX,
                 mSubject.getIndexForWindow(activity0));
 
         ActivityController<Activity> activityController1 = createActivity();
@@ -277,8 +291,8 @@ public class TabWindowManagerTest {
 
     /**
      * Test that an {@link Activity} requesting an index that was previously assigned to a destroyed
-     * {@link Activity} can take that {@link TabModelSelector} when there are other
-     * {@link Activity}s assigned {@link TabModelSelector}s.
+     * {@link Activity} can take that {@link TabModelSelector} when there are other {@link
+     * Activity}s assigned {@link TabModelSelector}s.
      */
     @Test
     @SmallTest
@@ -304,7 +318,9 @@ public class TabWindowManagerTest {
 
         destroyActivity(activityController1);
 
-        Assert.assertEquals("Still found model", TabWindowManager.INVALID_WINDOW_INDEX,
+        Assert.assertEquals(
+                "Still found model",
+                TabWindowManager.INVALID_WINDOW_INDEX,
                 mSubject.getIndexForWindow(activity1));
 
         ActivityController<Activity> activityController2 = createActivity();
@@ -321,9 +337,7 @@ public class TabWindowManagerTest {
         destroyActivity(activityController2);
     }
 
-    /**
-     * Tests that tabExistsInAnySelector() functions properly.
-     */
+    /** Tests that tabExistsInAnySelector() functions properly. */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})
@@ -349,7 +363,7 @@ public class TabWindowManagerTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null);
+                new TabReparentingParams(new MockTab(0, mProfile), null);
         Assert.assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
@@ -362,9 +376,7 @@ public class TabWindowManagerTest {
         destroyActivity(activityController1);
     }
 
-    /**
-     * Tests that getTabById() functions properly.
-     */
+    /** Tests that getTabById() functions properly. */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})
@@ -390,7 +402,7 @@ public class TabWindowManagerTest {
         mAsyncTabParamsManager.getAsyncTabParams().clear();
         final int asyncTabId = 123;
         final TabReparentingParams dummyParams =
-                new TabReparentingParams(new MockTab(0, false), null);
+                new TabReparentingParams(new MockTab(0, mProfile), null);
         Assert.assertNull(mSubject.getTabById(asyncTabId));
         mAsyncTabParamsManager.add(asyncTabId, dummyParams);
         try {
@@ -403,9 +415,7 @@ public class TabWindowManagerTest {
         destroyActivity(activityController1);
     }
 
-    /**
-     * Tests that getTabModelForTab(...) functions properly.
-     */
+    /** Tests that getTabModelForTab(...) functions properly. */
     @Test
     @SmallTest
     @Feature({"Multiwindow"})

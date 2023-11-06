@@ -76,7 +76,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void SetEmbeddedContentView(EmbeddedContentView*);
   EmbeddedContentView* ReleaseEmbeddedContentView();
   EmbeddedContentView* OwnedEmbeddedContentView() const {
-    return embedded_content_view_;
+    return embedded_content_view_.Get();
   }
 
   void SetColorScheme(mojom::blink::ColorScheme);
@@ -102,7 +102,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   };
 
   // FrameOwner overrides:
-  Frame* ContentFrame() const final { return content_frame_; }
+  Frame* ContentFrame() const final { return content_frame_.Get(); }
   void SetContentFrame(Frame&) final;
   void ClearContentFrame() final;
   void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr) final;

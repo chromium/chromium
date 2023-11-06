@@ -13,6 +13,9 @@ mojom("annotator_mojo_bindings") {
   sources = [ "untrusted_annotator.mojom" ]
   deps = [ "//ash/webui/projector_app/public/mojom:annotator_mojo_bindings" ]
   webui_module_path = "/$cur_dir"
+
+  # Projector app is still using JS + Closure Compiler.
+  use_typescript_sources = false
 }
 
 mojom("projector_mojo_bindings") {
@@ -23,4 +26,7 @@ mojom("projector_mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
   webui_module_path = "/$cur_dir"
+
+  # Projector app is still using JS + Closure Compiler.
+  use_typescript_sources = false
 }

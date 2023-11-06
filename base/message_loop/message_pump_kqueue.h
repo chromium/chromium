@@ -115,7 +115,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   void ScheduleWork() override;
   void ScheduleDelayedWork(
       const Delegate::NextWorkInfo& next_work_info) override;
-  TimeTicks AjdustDelayedRunTime(TimeTicks earliest_time,
+  TimeTicks AdjustDelayedRunTime(TimeTicks earliest_time,
                                  TimeTicks run_time,
                                  TimeTicks latest_time) override;
 

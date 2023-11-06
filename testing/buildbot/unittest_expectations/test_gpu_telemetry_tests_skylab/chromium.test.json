@@ -10,11 +10,13 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs"
+          "--stable-jobs",
+          "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "foo_tests",
+        "shards": 2,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }

@@ -212,21 +212,17 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
 ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     const sync_pb::ThemeSpecifics& current_specs,
     const syncer::SyncData& sync_data) {
-  const sync_pb::ThemeSpecifics& sync_theme = sync_data.GetSpecifics().theme();
-  use_system_theme_by_default_ = sync_theme.use_system_theme_by_default();
+  const sync_pb::ThemeSpecifics& theme_specifics =
+      sync_data.GetSpecifics().theme();
+  use_system_theme_by_default_ = theme_specifics.use_system_theme_by_default();
   DVLOG(1) << "Set current theme from specifics: " << sync_data.ToString();
   if (AreThemeSpecificsEqual(
-          current_specs, sync_theme,
+          current_specs, theme_specifics,
           theme_service_->IsSystemThemeDistinctFromDefaultTheme())) {
     DVLOG(1) << "Skip setting theme because specs are equal";
     return ThemeSyncState::kApplied;
   }
-  return SetCurrentThemeFromThemeSpecifics(sync_theme);
-}
 
-ThemeSyncableService::ThemeSyncState
-ThemeSyncableService::SetCurrentThemeFromThemeSpecifics(
-    const sync_pb::ThemeSpecifics& theme_specifics) {
   if (theme_specifics.use_custom_theme()) {
     // TODO(akalin): Figure out what to do about third-party themes
     // (i.e., those not on either Google gallery).
@@ -247,18 +243,23 @@ ThemeSyncableService::SetCurrentThemeFromThemeSpecifics(
         DVLOG(1) << "Extension " << id << " is not a theme; aborting";
         return ThemeSyncState::kFailed;
       }
-      int disabled_reasons =
-          extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
-      if (!extension_service->IsExtensionEnabled(id) &&
-          disabled_reasons != extensions::disable_reason::DISABLE_USER_ACTION) {
-        DVLOG(1) << "Theme " << id << " is disabled with reason "
-                 << disabled_reasons << "; aborting";
-        return ThemeSyncState::kFailed;
+      if (extension_service->IsExtensionEnabled(id)) {
+        // An enabled theme extension with the given id was found, so
+        // just set the current theme to it.
+        theme_service_->SetTheme(extension);
+        return ThemeSyncState::kApplied;
       }
-      // An enabled theme extension with the given id was found, so
-      // just set the current theme to it.
-      theme_service_->SetTheme(extension);
-      return ThemeSyncState::kApplied;
+      const auto disabled_reasons =
+          extensions::ExtensionPrefs::Get(profile_)->GetDisableReasons(id);
+      if (disabled_reasons == extensions::disable_reason::DISABLE_USER_ACTION) {
+        // The user had installed this theme but disabled it (by installing
+        // another atop it); re-enable.
+        theme_service_->RevertToExtensionTheme(id);
+        return ThemeSyncState::kApplied;
+      }
+      DVLOG(1) << "Theme " << id << " is disabled with reason "
+               << disabled_reasons << "; aborting";
+      return ThemeSyncState::kFailed;
     }
 
     // No extension with this id exists -- we must install it; we do

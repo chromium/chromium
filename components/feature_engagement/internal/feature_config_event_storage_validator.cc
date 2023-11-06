@@ -62,10 +62,6 @@ void FeatureConfigEventStorageValidator::InitializeFeatures(
     InitializeFeatureConfig(configuration.GetFeatureConfig(*feature));
   }
 
-  if (!base::FeatureList::IsEnabled(kIPHGroups)) {
-    return;
-  }
-
   for (const auto* group : groups) {
     if (!base::FeatureList::IsEnabled(*group)) {
       continue;

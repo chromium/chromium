@@ -50,6 +50,12 @@ BASE_DECLARE_FEATURE(kFlushPersistentSystemProfileOnWrite);
 // marking them as logged on the main thread).
 BASE_DECLARE_FEATURE(kMetricsServiceDeltaSnapshotInBg);
 
+// Determines whether to always flush Local State immediately after an UMA/UKM
+// log upload. If this is disabled, Local State is only immediately flushed
+// after an upload if this is a mobile platform and the browser is in the
+// background.
+BASE_DECLARE_FEATURE(kReportingServiceAlwaysFlush);
+
 }  // namespace metrics::features
 
 #endif  // COMPONENTS_METRICS_METRICS_FEATURES_H_

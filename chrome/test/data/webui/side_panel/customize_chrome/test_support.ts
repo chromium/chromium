@@ -43,6 +43,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
     url: {url},
     snapshotUrl: {url},
     isUploadedImage: false,
+    localBackgroundId: undefined,
     title: '',
     collectionId: '',
     dailyRefreshEnabled: false,

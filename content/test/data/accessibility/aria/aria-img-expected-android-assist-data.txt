@@ -1,0 +1,7 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++Image textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="img"]
+++++Image text:"composite-part-1" textSize:16.00 style:0 bundle:[display="inline", htmlTag="img", src="composite-part-1.jpg"]
+++++Image text:"composite-part-2" textSize:16.00 style:0 bundle:[display="inline", htmlTag="img", src="composite-part-2.jpg"]
+++Image textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="image"]
+++++Image text:"composite-part-1" textSize:16.00 style:0 bundle:[display="inline", htmlTag="img", src="composite-part-1.jpg"]
+++++Image text:"composite-part-2" textSize:16.00 style:0 bundle:[display="inline", htmlTag="img", src="composite-part-2.jpg"]

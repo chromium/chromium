@@ -8,12 +8,12 @@
  * @suppress {checkTypes}
  */
 
-import {str, strf, util} from '../common/js/util.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+
+import {getCurrentLocaleOrDefault, secondsToRemainingTimeString, str, strf} from '../common/js/translations.js';
 import {constants} from '../foreground/js/constants.js';
 
 import {css, customElement, html, property, query, XfBase} from './xf_base.js';
-
-import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 /**
  * These type indicate static states that the cloud panel can enter. If one of
@@ -104,8 +104,7 @@ export class XfCloudPanel extends XfBase {
   /**
    * Provide a number formatter that matches the users locale.
    */
-  private numberFormatter_ =
-      new Intl.NumberFormat(util.getCurrentLocaleOrDefault());
+  private numberFormatter_ = new Intl.NumberFormat(getCurrentLocaleOrDefault());
 
   static get events() {
     return {
@@ -198,7 +197,7 @@ export class XfCloudPanel extends XfBase {
           <div class="progress-description">
           ${
         this.seconds && this.seconds > 0 ?
-            util.secondsToRemainingTimeString(this.seconds) :
+            secondsToRemainingTimeString(this.seconds) :
             str('DRIVE_BULK_PINNING_CALCULATING')}
           </div>
         </div>

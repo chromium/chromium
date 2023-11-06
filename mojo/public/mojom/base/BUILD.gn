@@ -55,6 +55,10 @@ mojom_component("base") {
 
   webui_module_path = "chrome://resources/mojo/mojo/public/mojom/base"
 
+  # Still widely used by Closure Compiler targets on ChromeOS, so generate
+  # WebUI bindings in JavaScript.
+  use_typescript_sources = false
+
   output_prefix = "mojo_base_mojom"
   macro_prefix = "MOJO_BASE_MOJOM"
 
@@ -130,6 +134,10 @@ mojom_component("base") {
       types = [
         {
           mojom = "mojo_base.mojom.FilePath"
+          cpp = "::base::FilePath"
+        },
+        {
+          mojom = "mojo_base.mojom.RelativeFilePath"
           cpp = "::base::FilePath"
         },
       ]

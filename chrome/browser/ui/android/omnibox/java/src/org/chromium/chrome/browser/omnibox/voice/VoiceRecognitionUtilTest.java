@@ -25,9 +25,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit Test for {@link VoiceRecognitionUtil}.
- */
+/** Unit Test for {@link VoiceRecognitionUtil}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class VoiceRecognitionUtilTest {
     private IntentTestMockContext mContextWithSpeech;

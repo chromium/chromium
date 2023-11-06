@@ -125,6 +125,10 @@ void ResourceLoadInfoNotifierWrapper::NotifyResourceResponseReceived(
       network_utils::AlwaysAccessNetwork(response_head->headers);
   resource_load_info_->network_info->remote_endpoint =
       response_head->remote_endpoint;
+  if (response_head->headers) {
+    resource_load_info_->http_status_code =
+        response_head->headers->response_code();
+  }
 
   if (task_runner_->BelongsToCurrentThread()) {
     if (weak_wrapper_resource_load_info_notifier_) {

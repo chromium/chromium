@@ -7,14 +7,12 @@
 
 #include <dawn/webgpu.h>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
-
-class DOMException;
 
 class GPUSupportedLimits final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,8 +21,11 @@ class GPUSupportedLimits final : public ScriptWrappable {
   explicit GPUSupportedLimits(const WGPUSupportedLimits& limits);
 
   static void MakeUndefined(WGPURequiredLimits* out);
-  static DOMException* Populate(WGPURequiredLimits* out,
-                                const Vector<std::pair<String, uint64_t>>& in);
+  // Returns true if populated, false if not and the ScriptPromiseResolver has
+  // been rejected.
+  static bool Populate(WGPURequiredLimits* out,
+                       const Vector<std::pair<String, uint64_t>>& in,
+                       ScriptPromiseResolver*);
 
   GPUSupportedLimits(const GPUSupportedLimits&) = delete;
   GPUSupportedLimits& operator=(const GPUSupportedLimits&) = delete;
@@ -34,6 +35,7 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxTextureDimension3D() const;
   unsigned maxTextureArrayLayers() const;
   unsigned maxBindGroups() const;
+  unsigned maxBindGroupsPlusVertexBuffers() const;
   unsigned maxBindingsPerBindGroup() const;
   unsigned maxDynamicUniformBuffersPerPipelineLayout() const;
   unsigned maxDynamicStorageBuffersPerPipelineLayout() const;
@@ -60,9 +62,14 @@ class GPUSupportedLimits final : public ScriptWrappable {
   unsigned maxComputeWorkgroupSizeY() const;
   unsigned maxComputeWorkgroupSizeZ() const;
   unsigned maxComputeWorkgroupsPerDimension() const;
+  unsigned minSubgroupSize() const;
+  unsigned maxSubgroupSize() const;
 
  private:
   WGPULimits limits_;
+
+  bool subgroup_limits_initialized_;
+  WGPUDawnExperimentalSubgroupLimits subgroup_limits_;
 };
 
 }  // namespace blink

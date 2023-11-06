@@ -97,6 +97,37 @@ class TestUpdateProductBundles(unittest.TestCase):
                     check=True)
       ])
 
+  @mock.patch('common.get_hash_from_sdk', return_value='abc')
+  # Disallow reading sdk_override.
+  @mock.patch('os.path.isfile', return_value=False)
+  def testLookupAndDownloadWithAuth(self, get_hash_mock, isfile_mock):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    auth_file = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), 'get_auth_token.py'))
+    self._ffx_mock.return_value.stdout = 'http://download-url'
+    with mock.patch('sys.argv',
+                    ['update_product_bundles.py', 'terminal.x64', '--auth']):
+      update_product_bundles.main()
+    self._ffx_mock.assert_has_calls([
+        mock.call(cmd=[
+            'product', 'lookup', 'terminal.x64', 'abc', '--base-url',
+            'gs://fuchsia/development/abc', '--auth', auth_file
+        ],
+                  capture_output=True,
+                  check=True),
+        mock.call(cmd=[
+            'product', 'download', 'http://download-url',
+            os.path.join(common.IMAGES_ROOT, 'terminal', 'x64'), '--auth',
+            auth_file
+        ],
+                  check=True)
+    ])
+
 
 if __name__ == '__main__':
   unittest.main()

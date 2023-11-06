@@ -415,6 +415,10 @@ void BookmarkModel::Move(const BookmarkNode* node,
   DCHECK(!is_permanent_node(node));
   DCHECK(!new_parent->HasAncestor(node));
 
+  SCOPED_CRASH_KEY_NUMBER("BookmarkModelMove", "newParentType",
+                          new_parent->type());
+  DUMP_WILL_BE_CHECK(new_parent->is_folder());
+
   const BookmarkNode* old_parent = node->parent();
   size_t old_index = old_parent->GetIndexOf(node).value();
 
@@ -445,7 +449,12 @@ void BookmarkModel::Move(const BookmarkNode* node,
   }
 
   if (old_parent != new_parent) {
-    metrics::RecordBookmarkMovedTo(GetFolderType(new_parent));
+    // TODO(crbug.com/1491227): Remove if check once the root cause of this
+    // crash is identified and addressed, and new_parent->is_folder() is
+    // checked at the top of this method.
+    if (new_parent->is_folder()) {
+      metrics::RecordBookmarkMovedTo(GetFolderType(new_parent));
+    }
   }
 }
 
@@ -684,59 +693,6 @@ void BookmarkModel::DeleteNodeMetaInfo(const BookmarkNode* node,
   for (BookmarkModelObserver& observer : observers_) {
     observer.BookmarkMetaInfoChanged(this, node);
   }
-}
-
-void BookmarkModel::SetNodeUnsyncedMetaInfo(const BookmarkNode* node,
-                                            const std::string& key,
-                                            const std::string& value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::string old_value;
-  if (node->GetUnsyncedMetaInfo(key, &old_value) && old_value == value) {
-    return;
-  }
-
-  if (AsMutable(node)->SetUnsyncedMetaInfo(key, value) && store_.get()) {
-    store_->ScheduleSave();
-  }
-}
-
-void BookmarkModel::SetNodeUnsyncedMetaInfoMap(
-    const BookmarkNode* node,
-    const BookmarkNode::MetaInfoMap& meta_info_map) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const BookmarkNode::MetaInfoMap* old_meta_info_map =
-      node->GetUnsyncedMetaInfoMap();
-  if ((!old_meta_info_map && meta_info_map.empty()) ||
-      (old_meta_info_map && meta_info_map == *old_meta_info_map)) {
-    return;
-  }
-
-  AsMutable(node)->SetUnsyncedMetaInfoMap(meta_info_map);
-  if (store_) {
-    store_->ScheduleSave();
-  }
-}
-
-void BookmarkModel::DeleteUnsyncedNodeMetaInfo(const BookmarkNode* node,
-                                               const std::string& key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const BookmarkNode::MetaInfoMap* meta_info_map =
-      node->GetUnsyncedMetaInfoMap();
-  if (!meta_info_map || meta_info_map->find(key) == meta_info_map->end()) {
-    return;
-  }
-
-  if (AsMutable(node)->DeleteUnsyncedMetaInfo(key) && store_.get()) {
-    store_->ScheduleSave();
-  }
-}
-
-void BookmarkModel::AddNonClonedKey(const std::string& key) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  non_cloned_keys_.insert(key);
 }
 
 void BookmarkModel::OnFaviconsChanged(const std::set<GURL>& page_urls,

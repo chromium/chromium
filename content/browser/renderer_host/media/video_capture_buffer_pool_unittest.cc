@@ -476,11 +476,11 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternal) {
             media::VideoCaptureDevice::Client::ReserveResult::kSucceeded);
   EXPECT_NE(buffer_id0, kInvalidId);
   EXPECT_EQ(buffer_id_to_drop, kInvalidId);
-  EXPECT_FALSE(
-      IOSurfaceIsInUse(pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface));
+  EXPECT_FALSE(IOSurfaceIsInUse(
+      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface.get()));
   pool_->HoldForConsumers(buffer_id0, 1);
-  EXPECT_TRUE(
-      IOSurfaceIsInUse(pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface));
+  EXPECT_TRUE(IOSurfaceIsInUse(
+      pool_->GetGpuMemoryBufferHandle(buffer_id0).io_surface.get()));
   pool_->RelinquishProducerReservation(buffer_id0);
   // We should get a new buffer for handle1.
   int buffer_id1 = kInvalidId;

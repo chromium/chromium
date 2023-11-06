@@ -23,7 +23,9 @@ enum class OverviewStartAction {
   kTests,
   kOverviewDeskSwitch,
   kDeskButton,
-  kMaxValue = kDeskButton,
+  // Partial overview shows automatically on one window snapped.
+  kFasterSplitScreenSetup,
+  kMaxValue = kFasterSplitScreenSetup,
 };
 void RecordOverviewStartAction(OverviewStartAction type);
 
@@ -53,7 +55,8 @@ enum class OverviewEndAction {
   kDevTools,
   kTests,
   kShowGlanceables_DEPRECATED,
-  kMaxValue = kShowGlanceables_DEPRECATED,
+  kWindowDeactivating,
+  kMaxValue = kWindowDeactivating,
 };
 void RecordOverviewEndAction(OverviewEndAction type);
 

@@ -16,9 +16,9 @@ namespace blink {
 
 class Element;
 class LayoutObject;
-class LayoutNGTable;
-class LayoutNGTableCell;
-class LayoutNGTableRow;
+class LayoutTable;
+class LayoutTableCell;
+class LayoutTableRow;
 
 // This interface is used to expose the grid focusgroup navigation functions
 // while hiding the type of grid we're in. A grid focusgroup can either be
@@ -89,7 +89,7 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
 
   void Trace(Visitor*) const;
 
-  const LayoutNGTable* Table();
+  const LayoutTable* Table();
 
   Element* Root() override;
   FocusgroupFlags Flags() override;
@@ -118,12 +118,12 @@ class CORE_EXPORT AutomaticGridFocusgroupStructureInfo final
                             NoCellFoundAtIndexBehavior behavior) override;
 
  private:
-  LayoutNGTableRow* PreviousRow(LayoutNGTableRow* current_row);
-  LayoutNGTableRow* NextRow(LayoutNGTableRow* current_row);
+  LayoutTableRow* PreviousRow(LayoutTableRow* current_row);
+  LayoutTableRow* NextRow(LayoutTableRow* current_row);
 
-  LayoutNGTableCell* TableCellAtIndexInRowRecursive(
+  LayoutTableCell* TableCellAtIndexInRowRecursive(
       unsigned index,
-      LayoutNGTableRow* row,
+      LayoutTableRow* row,
       absl::optional<unsigned> expected_rowspan = absl::nullopt);
 
   Member<LayoutObject> table_;

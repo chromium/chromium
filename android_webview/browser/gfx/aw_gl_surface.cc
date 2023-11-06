@@ -49,7 +49,7 @@ void AwGLSurface::Destroy() {
 }
 
 bool AwGLSurface::IsOffscreen() {
-  return false;
+  return true;
 }
 
 unsigned int AwGLSurface::GetBackingFramebufferObject() {

@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_CONFIGURABLE_STORAGE_DELEGATE_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_TEST_CONFIGURABLE_STORAGE_DELEGATE_H_
 
-#include <stdint.h>
-
 #include <vector>
 
 #include "base/thread_annotations.h"
@@ -40,11 +38,11 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports) const override;
+      attribution_reporting::MaxEventLevelReports) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
@@ -80,8 +78,6 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   void set_randomized_response(RandomizedResponse);
   void set_exceeds_channel_capacity_limit(bool);
-
-  void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
 
   void set_null_aggregatable_reports(std::vector<NullAggregatableReport>);
 

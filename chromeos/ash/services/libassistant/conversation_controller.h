@@ -59,7 +59,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
       mojo::PendingRemote<mojom::AuthenticationStateObserver> observer);
 
   // AssistantClientObserver:
-  void OnAssistantClientCreated(AssistantClient* assistant_client) override;
   void OnAssistantClientRunning(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
 

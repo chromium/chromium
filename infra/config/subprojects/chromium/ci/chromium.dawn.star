@@ -784,6 +784,9 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Intel",
         short_name = "x64",
     ),
+    # Building DXC from source + ASAN results in longer run times, so
+    # increase default timeout.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
@@ -813,6 +816,9 @@ ci.thin_tester(
         category = "ToT|Windows|ASAN|Nvidia",
         short_name = "x64",
     ),
+    # Building DXC from source + ASAN results in longer run times, so
+    # increase default timeout.
+    execution_timeout = 4 * time.hour,
 )
 
 ci.gpu.windows_builder(

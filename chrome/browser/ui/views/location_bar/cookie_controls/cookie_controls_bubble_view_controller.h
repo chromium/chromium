@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/favicon_base/favicon_types.h"
@@ -34,6 +35,7 @@ class CookieControlsBubbleViewController
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;
@@ -56,7 +58,8 @@ class CookieControlsBubbleViewController
   void OnReloadingViewTimeout();
 
   void SwitchToReloadingView();
-  void ApplyThirdPartyCookiesAllowedState(base::Time expiration);
+  void ApplyThirdPartyCookiesAllowedState(CookieControlsEnforcement enforcement,
+                                          base::Time expiration);
   void ApplyThirdPartyCookiesBlockedState();
   void CloseBubble();
 
@@ -70,6 +73,10 @@ class CookieControlsBubbleViewController
   // The most recent status provided by the CookieControlsController. Cached
   // so that updates to site counts can use the appropriate label.
   CookieControlsStatus latest_status_ = CookieControlsStatus::kUninitialized;
+  // The most recent status provided by the CookieControlsController, used to
+  // determine the user's 3PCD status.
+  CookieBlocking3pcdStatus latest_blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   raw_ptr<CookieControlsBubbleView> bubble_view_ = nullptr;
 

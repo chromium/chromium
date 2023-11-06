@@ -83,7 +83,7 @@ class BASE_EXPORT MemoryDumpPartitionStatsDumper final
                                  ProcessMemoryDump* memory_dump,
                                  MemoryDumpLevelOfDetail level_of_detail);
 
-  static const char* kPartitionsDumpName;
+  static constexpr char kPartitionsDumpName[] = "partitions";
 
   // PartitionStatsDumper implementation.
   void PartitionDumpTotals(

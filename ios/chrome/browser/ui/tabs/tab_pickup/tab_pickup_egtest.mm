@@ -7,12 +7,12 @@
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
+#import "ios/chrome/browser/ui/infobars/modals/tab_pickup/infobar_tab_pickup_constants.h"
 #import "ios/chrome/browser/ui/tabs/tests/distant_tabs_app_interface.h"
 #import "ios/chrome/browser/ui/tabs/tests/fake_distant_tab.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -63,6 +63,12 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
   NSString* titleText = l10n_util::GetNSStringF(
       IDS_IOS_TAB_PICKUP_BANNER_TITLE, base::SysNSStringToUTF16(session_name));
   return grey_accessibilityLabel(titleText);
+}
+
+// GREYMatcher for the tab pickup switch item in the tab pickup modal.
+id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
+  return chrome_test_util::TableViewSwitchCell(kTabPickupModalSwitchItemId,
+                                               is_toggled_on, enabled);
 }
 
 }  // namespace
@@ -192,8 +198,8 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
 }
 
 // Verifies that tapping on the wheel icon correctly opens the tab pickup
-// settings screen.
-- (void)testOpenSettingsFromBanner {
+// modal.
+- (void)testOpenModalFromBanner {
   // Create a distant session with 4 tabs.
   [DistantTabsAppInterface
       addSessionToFakeSyncServer:@"Desktop"
@@ -215,9 +221,14 @@ id<GREYMatcher> BannerTitleMatcher(NSString* session_name) {
                                    kInfobarBannerOpenModalButtonIdentifier)]
       performAction:grey_tap()];
 
-  // Check that the tab pickup settings screen is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTabPickupSettingsTableViewId)]
+  // Check that the tab pickup modal is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kTabPickupModalTableViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [[EarlGrey
+      selectElementWithMatcher:TabPickupSwitchItem(
+                                   /*is_toggled_on=*/true, /*enabled=*/true)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 

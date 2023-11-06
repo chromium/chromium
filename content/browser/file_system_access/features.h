@@ -16,19 +16,8 @@ namespace content::features {
 
 // Alphabetical:
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessMoveLocalFiles);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessRemove);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(
-    kFileSystemAccessSkipAfterWriteChecksIfUnchangingExtension);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessDirectoryIterationSymbolicLinkCheck);
-
-#if BUILDFLAG(IS_MAC)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessCowSwapFile);
-#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content::features
 

@@ -80,8 +80,9 @@ MockRenderWidgetHost::MockRenderWidgetHost(
     mojo::PendingAssociatedRemote<blink::mojom::Widget> pending_blink_widget)
     : RenderWidgetHostImpl(frame_tree,
                            /*self_owned=*/false,
+                           DefaultFrameSinkId(*site_instance_group, routing_id),
                            delegate,
-                           std::move(site_instance_group),
+                           site_instance_group,
                            routing_id,
                            /*hidden=*/false,
                            /*renderer_initiated_creation=*/false,

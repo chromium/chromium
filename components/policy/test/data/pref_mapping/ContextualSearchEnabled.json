@@ -1,0 +1,8 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

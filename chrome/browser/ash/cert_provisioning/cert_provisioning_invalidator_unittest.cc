@@ -11,6 +11,8 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
+#include "components/invalidation/public/invalidation.h"
+#include "components/invalidation/public/invalidation_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -64,7 +66,7 @@ class CertProvisioningInvalidationHandlerTest
 
   invalidation::Invalidation CreateInvalidation(
       const invalidation::Topic& topic) {
-    return invalidation::Invalidation::Init(topic, 42, "foo");
+    return invalidation::Invalidation(topic, 42, "foo");
   }
 
   invalidation::Invalidation FireInvalidation(
@@ -184,7 +186,7 @@ TEST_P(CertProvisioningInvalidationHandlerTest,
   EXPECT_EQ(0, incoming_invalidations_count_);
 
   // Ensure that topic is still subscribed.
-  const invalidation::Topics topics =
+  const invalidation::TopicMap topics =
       invalidation_service_.invalidator_registrar().GetAllSubscribedTopics();
   EXPECT_NE(topics.end(), topics.find(kInvalidatorTopic));
 }

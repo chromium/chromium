@@ -79,15 +79,16 @@ import android.view.inputmethod.EditorInfo;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.BuildConfig;
 import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
@@ -170,6 +171,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private int mCursorIndex;
     private String mSupportedHtmlElementTypes;
     private final AccessibilityNodeInfoBuilder mAccessibilityNodeInfoBuilder;
+    private boolean mHasFinishedLatestAccessibilitySnapshot;
 
     // Observer for WebContents, used to update state when |this| is shown/hidden.
     private WebContentsObserver mWebContentsObserver;
@@ -536,6 +538,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.recordAccessibilityUsageHistograms();
     }
 
+    public boolean hasFinishedLatestAccessibilitySnapshotForTesting() {
+        return mHasFinishedLatestAccessibilitySnapshot;
+    }
+
     @CalledByNative
     public void handleEndOfTestSignal() {
         // We have received a signal that we have reached the end of a unit test. If we have a
@@ -767,6 +773,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mAutoDisableAccessibilityHandler.cancelDisableTimer();
                     mAutoDisableAccessibilityHandler.startDisableTimer(
                             NO_ACCESSIBILITY_SERVICES_ENABLED_DELAY_MS);
+                } else {
+                    mAutoDisableAccessibilityHandler.cancelDisableTimer();
                 }
             }
         }
@@ -1032,12 +1040,16 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             extras.putCharSequence(EXTRAS_KEY_URL, webContents.getVisibleUrl().getSpec());
         }
 
-        mDelegate.requestAccessibilitySnapshot(viewRoot, new Runnable() {
-            @Override
-            public void run() {
-                viewRoot.asyncCommit();
-            }
-        });
+        mHasFinishedLatestAccessibilitySnapshot = false;
+        mDelegate.requestAccessibilitySnapshot(
+                viewRoot,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        viewRoot.asyncCommit();
+                        mHasFinishedLatestAccessibilitySnapshot = true;
+                    }
+                });
     }
 
     @Override

@@ -17,10 +17,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -37,7 +37,7 @@ class ShortcutRemovalDialogViewBrowserTest
  public:
   ShortcutRemovalDialogViewBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
   }
   ~ShortcutRemovalDialogViewBrowserTest() override = default;
   AppDialogView* LastCreatedView() {
@@ -77,9 +77,10 @@ class ShortcutRemovalDialogViewBrowserTest
                           const std::string& host_app_id) {
     proxy()->OverrideShortcutInnerIconLoaderForTesting(
         &shortcut_stub_icon_loader_);
-    shortcut_stub_icon_loader_.timelines_by_app_id_[shortcut_id.value()] = 1;
+    shortcut_stub_icon_loader_.update_version_by_app_id_[shortcut_id.value()] =
+        1;
     proxy()->OverrideInnerIconLoaderForTesting(&app_stub_icon_loader_);
-    app_stub_icon_loader_.timelines_by_app_id_[host_app_id] = 1;
+    app_stub_icon_loader_.update_version_by_app_id_[host_app_id] = 1;
   }
 
   int NumLoadShortcutIcon() {
@@ -131,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(ShortcutRemovalDialogViewBrowserTest, InvokeUi) {
   proxy()->AppRegistryCache().ForOneApp(
       app_constants::kChromeAppId,
       [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.ShortName());
+        host_app_name = base::UTF8ToUTF16(update.Name());
       });
 
   std::u16string expected_title =

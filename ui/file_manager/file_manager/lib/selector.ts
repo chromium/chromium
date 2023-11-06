@@ -5,7 +5,6 @@
 /**
  * @fileoverview A Selector implementation for redux, bundled with a
  * SelectorEmitter helper class that allows selectors to be efficiently updated.
- * @suppress {checkTypes} closure can't recognize LitElement
  */
 
 import {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';

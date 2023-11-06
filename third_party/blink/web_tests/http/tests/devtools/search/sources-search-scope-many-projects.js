@@ -12,7 +12,6 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
 (async function() {
   TestRunner.addResult(`Tests that ScriptSearchScope sorts network and dirty results correctly.\n`);
-  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
   const workspace = Workspace.Workspace.WorkspaceImpl.instance();

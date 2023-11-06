@@ -119,10 +119,10 @@ static_library("renderer") {
 
   if (enable_bound_session_credentials) {
     sources += [
+      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.cc",
+      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h",
       "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
       "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
-      "bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.cc",
-      "bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h",
     ]
   }
 

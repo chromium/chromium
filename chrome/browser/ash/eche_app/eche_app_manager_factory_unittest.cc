@@ -255,7 +255,8 @@ TEST_F(EcheAppManagerFactoryTest, GetSystemInfo) {
   const char kLsbRelease[] =
       "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
       "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
   base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
   std::unique_ptr<SystemInfo> system_info =
       EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
@@ -273,7 +274,8 @@ TEST_F(EcheAppManagerFactoryTest, GetSystemInfo_flagDisabled) {
   const char kLsbRelease[] =
       "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
       "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
-  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  const base::Time lsb_release_time(
+      base::Time::FromSecondsSinceUnixEpoch(12345.6));
   base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
   std::unique_ptr<SystemInfo> system_info =
       EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());

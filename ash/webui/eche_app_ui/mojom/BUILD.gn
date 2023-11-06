@@ -10,7 +10,6 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [ "eche_app.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
-  use_typescript_sources = true
   cpp_typemaps = [
     {
       types = [

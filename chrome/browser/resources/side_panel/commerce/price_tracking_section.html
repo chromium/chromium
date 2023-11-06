@@ -2,7 +2,6 @@
   #toggleSection {
     align-items: center;
     display: flex;
-    margin-top: 16px;
     max-width: 100%;
   }
 
@@ -11,6 +10,11 @@
     font-size: 13px;
     font-weight: 500;
     margin-bottom: 4px;
+  }
+
+  :host-context([chrome-refresh-2023]) #toggleTitle {
+    font-size: 14px;
+    margin-bottom: 8px;
   }
 
   #toggleAnnotationButton {
@@ -25,17 +29,26 @@
     white-space: initial;
   }
 
+  :host-context([chrome-refresh-2023]) #toggleAnnotation {
+    font-size: 12px;
+    line-height: 16px;
+  }
+
   #toggleText {
     align-items: flex-start;
     display: flex;
     flex-direction: column;
     line-height: 20px;
-    margin: 0 16px;
+    margin-right: 16px;
     max-width: 100%;
   }
 
+  :host-context([chrome-refresh-2023]) #toggleText {
+    margin-right: 10px;
+  }
+
   #toggle {
-    margin-inline-end: 16px;
+    margin-inline-end: 0px;
     margin-inline-start: auto;
   }
 </style>

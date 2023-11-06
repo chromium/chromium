@@ -194,7 +194,7 @@ class JavaType:
     """Returns a valid C return value for the given java type."""
     if self.is_primitive():
       return _DEFAULT_VALUE_BY_PRIMITIVE_TYPE[self.primitive_name]
-    return 'NULL'
+    return 'nullptr'
 
   def to_proxy(self):
     """Converts to types used over JNI boundary."""

@@ -157,19 +157,39 @@ size_t V4L2StatelessVideoDecoder::GetMaxOutputFramePoolSize() const {
   return 0;
 }
 
-scoped_refptr<V4L2DecodeSurface> V4L2StatelessVideoDecoder::CreateSurface() {
+scoped_refptr<StatelessDecodeSurface>
+V4L2StatelessVideoDecoder::CreateSurface() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTIMPLEMENTED();
-  return nullptr;
+  DVLOGF(4);
+
+  return base::MakeRefCounted<StatelessDecodeSurface>();
+}
+
+bool V4L2StatelessVideoDecoder::SubmitFrame(void* ctrls,
+                                            const uint8_t* data,
+                                            size_t size,
+                                            int32_t bitstream_id) {
+  DVLOGF(4);
+  if (!input_queue_->PrepareBuffers()) {
+    return false;
+  }
+  input_queue_->StartStreaming();
+
+  // The header needs to be parsed before the video resolution and format
+  // can be decided.
+  if (!device_->SetHeaders(ctrls, base::ScopedFD(-1))) {
+    return false;
+  }
+
+  return true;
 }
 
 void V4L2StatelessVideoDecoder::SurfaceReady(
-    scoped_refptr<V4L2DecodeSurface> dec_surface,
+    scoped_refptr<StatelessDecodeSurface> dec_surface,
     int32_t bitstream_id,
     const gfx::Rect& visible_rect,
     const VideoColorSpace& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  NOTREACHED();
   NOTIMPLEMENTED();
 }
 
@@ -224,6 +244,9 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
   // receive compressed data. Because the lifetime of the |compressed_buffer|
   // is only for this function every time through the decoder should
   // be requesting more data.
+  // TODO(frkoenig): There is the possibility of this function being called
+  // and |decode_result| being a decode error.  Should that be handled
+  // here?  or else where?
   CHECK_EQ(decode_result, AcceleratedVideoDecoder::kRanOutOfStreamData);
 
   if (!compressed_buffer->end_of_stream()) {
@@ -249,22 +272,19 @@ void V4L2StatelessVideoDecoder::ProcessCompressedBuffer(
           break;
         case AcceleratedVideoDecoder::kRanOutOfSurfaces:
           VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
-          NOTIMPLEMENTED();
-          break;
-        case AcceleratedVideoDecoder::kNeedContextUpdate:
-          VLOGF(2) << "AcceleratedVideoDecoder::kNeedContextUpdate";
-          NOTIMPLEMENTED();
+          NOTREACHED();
           break;
         case AcceleratedVideoDecoder::kDecodeError:
           VLOGF(2) << "AcceleratedVideoDecoder::kDecodeError";
-          NOTIMPLEMENTED();
+          NOTREACHED();
           break;
         case AcceleratedVideoDecoder::kTryAgain:
           VLOGF(2) << "AcceleratedVideoDecoder::kTryAgain";
           NOTIMPLEMENTED();
           break;
       }
-    } while (AcceleratedVideoDecoder::kRanOutOfStreamData != decode_result);
+    } while (AcceleratedVideoDecoder::kRanOutOfStreamData != decode_result &&
+             AcceleratedVideoDecoder::kDecodeError != decode_result);
   }
 
   // TODO: This PostTask is blindly sending a positive status. Errors need

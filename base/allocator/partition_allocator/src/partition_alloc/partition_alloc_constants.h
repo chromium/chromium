@@ -61,7 +61,9 @@ enum class FreeFlags {
   kNoMemoryToolOverride = 1 << 0,
   // Don't allow any hooks (override or observers).
   kNoHooks = 1 << 1,  // Internal.
-  kMaxValue = kNoHooks,
+  // Quarantine for a while to ensure no UaF from on-stack pointers.
+  kSchedulerLoopQuarantine = 1 << 2,
+  kMaxValue = kSchedulerLoopQuarantine,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
 }  // namespace internal

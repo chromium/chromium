@@ -16,6 +16,9 @@ Disable input element:
 PASS input.value is "123"
 Read-only input element:
 PASS input.value is "123"
+Moving caret by pressing arrow keys:
+PASS input.value is "123"
+PASS input.value is "123"
 
 Test starts for <input type=number style="writing-mode: vertical-lr">
 Inserting "ab123cd":
@@ -30,6 +33,9 @@ Disable input element:
 PASS input.value is "1000"
 Read-only input element:
 PASS input.value is "1000"
+Moving caret by pressing arrow keys:
+PASS input.value is "1000"
+PASS input.value is "1000"
 
 Test starts for <input type=number style="writing-mode: vertical-rl">
 Inserting "ab123cd":
@@ -43,6 +49,9 @@ PASS input.value is "5"
 Disable input element:
 PASS input.value is "5"
 Read-only input element:
+PASS input.value is "5"
+Moving caret by pressing arrow keys:
+PASS input.value is "5"
 PASS input.value is "5"
 PASS successfullyParsed is true
 

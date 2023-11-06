@@ -56,7 +56,6 @@ void CredentialModelTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   sync_service_observation_.Observe(sync_service_);
-  sync_mode_ = configure_context.sync_mode;
   ModelTypeController::LoadModels(configure_context, model_load_callback);
 }
 
@@ -64,14 +63,6 @@ void CredentialModelTypeController::Stop(syncer::SyncStopMetadataFate fate,
                                          StopCallback callback) {
   DCHECK(CalledOnValidThread());
   sync_service_observation_.Reset();
-  // In transport-only mode, our storage is scoped to the Gaia account. That
-  // means it should be cleared if Sync is stopped for any reason (other than
-  // just browser shutdown). E.g. when switching to full-Sync mode, we don't
-  // want to end up with two copies of the passwords (one in the profile DB, one
-  // in the account DB).
-  if (sync_mode_ == syncer::SyncMode::kTransportOnly) {
-    fate = syncer::SyncStopMetadataFate::CLEAR_METADATA;
-  }
   ModelTypeController::Stop(fate, std::move(callback));
 }
 

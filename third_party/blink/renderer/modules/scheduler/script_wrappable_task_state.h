@@ -35,8 +35,8 @@ class MODULES_EXPORT ScriptWrappableTaskState final : public ScriptWrappable {
 
   scheduler::TaskAttributionInfo* GetTask() const { return task_.Get(); }
 
-  AbortSignal* GetAbortSource() { return abort_source_; }
-  DOMTaskSignal* GetPrioritySource() { return priority_source_; }
+  AbortSignal* GetAbortSource() { return abort_source_.Get(); }
+  DOMTaskSignal* GetPrioritySource() { return priority_source_.Get(); }
 
   void Trace(Visitor*) const override;
 

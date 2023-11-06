@@ -338,7 +338,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   }
 
   void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override {
+      std::vector<content::WebUIMessageHandler*>* handlers) override {
     // The WebDialogUI will own and delete this message handler.
     DCHECK(!handler_);
     handler_ = new CredentialProviderWebUIMessageHandler(

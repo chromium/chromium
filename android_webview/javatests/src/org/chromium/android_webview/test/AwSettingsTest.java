@@ -111,9 +111,11 @@ public class AwSettingsTest {
         protected final TestAwContentsClient mContentViewClient;
         protected final AwSettings mAwSettings;
 
-        AwSettingsTestHelper(AwTestContainerView containerView,
-                             TestAwContentsClient contentViewClient,
-                             boolean requiresJsEnabled) throws Throwable {
+        AwSettingsTestHelper(
+                AwTestContainerView containerView,
+                TestAwContentsClient contentViewClient,
+                boolean requiresJsEnabled)
+                throws Throwable {
             mAwContents = containerView.getAwContents();
             mContext = containerView.getContext();
             mContentViewClient = contentViewClient;
@@ -154,8 +156,12 @@ public class AwSettingsTest {
         }
 
         protected void loadDataSync(String data) throws Throwable {
-            mActivityTestRule.loadDataSync(mAwContents,
-                    mContentViewClient.getOnPageFinishedHelper(), data, "text/html", false);
+            mActivityTestRule.loadDataSync(
+                    mAwContents,
+                    mContentViewClient.getOnPageFinishedHelper(),
+                    data,
+                    "text/html",
+                    false);
         }
 
         protected void loadUrlSync(String url) throws Throwable {
@@ -164,13 +170,15 @@ public class AwSettingsTest {
         }
 
         protected void loadUrlSyncAndExpectError(String url) throws Throwable {
-            mActivityTestRule.loadUrlSyncAndExpectError(mAwContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    mAwContents,
                     mContentViewClient.getOnPageFinishedHelper(),
-                    mContentViewClient.getOnReceivedErrorHelper(), url);
+                    mContentViewClient.getOnReceivedErrorHelper(),
+                    url);
         }
 
         protected String executeJavaScriptAndWaitForResult(String script) throws Exception {
-            return executeJavaScriptAndWaitForResult(script, /*shouldCheckSettings=*/true);
+            return executeJavaScriptAndWaitForResult(script, /* shouldCheckSettings= */ true);
         }
 
         protected String executeJavaScriptAndWaitForResult(
@@ -189,8 +197,9 @@ public class AwSettingsTest {
         private static final String JS_ENABLED_STRING = "JS Enabled";
         private static final String JS_DISABLED_STRING = "JS Disabled";
 
-        AwSettingsJavaScriptTestHelper(AwTestContainerView containerView,
-                                       TestAwContentsClient contentViewClient) throws Throwable {
+        AwSettingsJavaScriptTestHelper(
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, false);
         }
 
@@ -217,13 +226,17 @@ public class AwSettingsTest {
         @Override
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             loadDataSync(getData());
-            Assert.assertEquals(value == ENABLED ? JS_ENABLED_STRING : JS_DISABLED_STRING,
+            Assert.assertEquals(
+                    value == ENABLED ? JS_ENABLED_STRING : JS_DISABLED_STRING,
                     getTitleOnUiThread());
         }
 
         private String getData() {
-            return "<html><head><title>" + JS_DISABLED_STRING + "</title>"
-                    + "</head><body onload=\"document.title='" + JS_ENABLED_STRING
+            return "<html><head><title>"
+                    + JS_DISABLED_STRING
+                    + "</title>"
+                    + "</head><body onload=\"document.title='"
+                    + JS_ENABLED_STRING
                     + "';\"></body></html>";
         }
     }
@@ -232,8 +245,8 @@ public class AwSettingsTest {
     // JavaScript state.
     class AwSettingsJavaScriptDynamicTestHelper extends AwSettingsJavaScriptTestHelper {
         AwSettingsJavaScriptDynamicTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient);
             // Load the page.
             super.doEnsureSettingHasValue(getInitialValue());
@@ -245,7 +258,8 @@ public class AwSettingsTest {
             String newTitle = oldTitle + "_modified";
             // Do not check if JavaScript is enabled, since the point of this test is to verify that
             // when JavaScript is disabled the script does not execute and cannot change the title.
-            executeJavaScriptAndWaitForResult(getScript(newTitle), /*shouldCheckSettings=*/false);
+            executeJavaScriptAndWaitForResult(
+                    getScript(newTitle), /* shouldCheckSettings= */ false);
             Assert.assertEquals(value == ENABLED ? newTitle : oldTitle, getTitleOnUiThread());
         }
 
@@ -256,8 +270,8 @@ public class AwSettingsTest {
 
     class AwSettingsStandardFontFamilyTestHelper extends AwSettingsTestHelper<String> {
         AwSettingsStandardFontFamilyTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
         }
 
@@ -296,8 +310,8 @@ public class AwSettingsTest {
 
     class AwSettingsDefaultFontSizeTestHelper extends AwSettingsTestHelper<Integer> {
         AwSettingsDefaultFontSizeTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
         }
 
@@ -340,7 +354,8 @@ public class AwSettingsTest {
         AwSettingsLoadImagesAutomaticallyTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                ImagePageGenerator generator) throws Throwable {
+                ImagePageGenerator generator)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mGenerator = generator;
         }
@@ -368,12 +383,13 @@ public class AwSettingsTest {
         @Override
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             loadDataSync(mGenerator.getPageSource());
-            Assert.assertEquals(value == ENABLED ? ImagePageGenerator.IMAGE_LOADED_STRING
-                                                 : ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
+            Assert.assertEquals(
+                    value == ENABLED
+                            ? ImagePageGenerator.IMAGE_LOADED_STRING
+                            : ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
                     getTitleOnUiThread());
         }
     }
-
 
     class AwSettingsImagesEnabledHelper extends AwSettingsTestHelper<Boolean> {
 
@@ -381,7 +397,8 @@ public class AwSettingsTest {
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
                 TestWebServer webServer,
-                ImagePageGenerator generator) throws Throwable {
+                ImagePageGenerator generator)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mWebServer = webServer;
             mGenerator = generator;
@@ -412,8 +429,10 @@ public class AwSettingsTest {
             final String httpImageUrl = mGenerator.getPageUrl(mWebServer);
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentViewClient.getOnPageFinishedHelper(), httpImageUrl);
-            Assert.assertEquals(value == ENABLED ? ImagePageGenerator.IMAGE_LOADED_STRING
-                                                 : ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
+            Assert.assertEquals(
+                    value == ENABLED
+                            ? ImagePageGenerator.IMAGE_LOADED_STRING
+                            : ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
                     getTitleOnUiThread());
         }
 
@@ -423,8 +442,8 @@ public class AwSettingsTest {
 
     class AwSettingsDefaultTextEncodingTestHelper extends AwSettingsTestHelper<String> {
         AwSettingsDefaultTextEncodingTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
         }
 
@@ -457,14 +476,17 @@ public class AwSettingsTest {
             loadDataSync(getData());
 
             if ("UTF-8".equals(value)) {
-                Assert.assertEquals("Title should be decoded correctly when charset is UTF-8",
-                        NON_LATIN_TEXT, getTitleOnUiThread());
+                Assert.assertEquals(
+                        "Title should be decoded correctly when charset is UTF-8",
+                        NON_LATIN_TEXT,
+                        getTitleOnUiThread());
             } else {
                 // The content seems to decode as "ä½ å¥½ä¸–ç•Œ", but it's sufficient to just
                 // enforce the text decodes incorrectly.
                 Assert.assertNotEquals(
                         "Title should be garbled (decoded incorrectly) when charset is Latin-1",
-                        NON_LATIN_TEXT, getTitleOnUiThread());
+                        NON_LATIN_TEXT,
+                        getTitleOnUiThread());
             }
         }
 
@@ -479,8 +501,8 @@ public class AwSettingsTest {
         private static final String CUSTOM_UA = "ChromeViewTest";
 
         AwSettingsUserAgentStringTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mDefaultUa = mAwSettings.getUserAgentString();
         }
@@ -529,8 +551,8 @@ public class AwSettingsTest {
         private static final String HAS_LOCAL_STORAGE = "Has localStorage";
 
         AwSettingsDomStorageEnabledTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             AwSettingsTest.assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(TEST_FILE));
         }
@@ -571,8 +593,8 @@ public class AwSettingsTest {
         private static final String HAS_DATABASE = "Has database";
 
         AwSettingsDatabaseTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             AwSettingsTest.assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(TEST_FILE));
         }
@@ -615,8 +637,8 @@ public class AwSettingsTest {
         private static final String ACCESS_DENIED_TITLE = "Exception";
 
         AwSettingsUniversalAccessFromFilesTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             AwSettingsTest.assertFileIsReadable(
                     UrlUtils.getIsolatedTestFilePath(TEST_CONTAINER_FILE));
@@ -669,8 +691,8 @@ public class AwSettingsTest {
         private static final String ACCESS_DENIED_TITLE = "Exception";
 
         AwSettingsFileAccessFromFilesIframeTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             AwSettingsTest.assertFileIsReadable(
                     UrlUtils.getIsolatedTestFilePath(TEST_CONTAINER_FILE));
@@ -719,8 +741,8 @@ public class AwSettingsTest {
         private static final String ACCESS_DENIED_TITLE = "Exception";
 
         AwSettingsFileAccessFromFilesXhrTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(TEST_FILE));
             mXhrContainerUrl = UrlUtils.getIsolatedTestFileUrl(TEST_FILE);
@@ -752,7 +774,8 @@ public class AwSettingsTest {
         @Override
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             loadUrlSync(mXhrContainerUrl);
-            Assert.assertEquals(value == ENABLED ? ACCESS_GRANTED_TITLE : ACCESS_DENIED_TITLE,
+            Assert.assertEquals(
+                    value == ENABLED ? ACCESS_GRANTED_TITLE : ACCESS_DENIED_TITLE,
                     getTitleOnUiThread());
         }
 
@@ -766,7 +789,8 @@ public class AwSettingsTest {
         AwSettingsFileUrlAccessTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                int startIndex) throws Throwable {
+                int startIndex)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mIndex = startIndex;
             AwSettingsTest.assertFileIsReadable(UrlUtils.getIsolatedTestFilePath(TEST_FILE));
@@ -813,7 +837,8 @@ public class AwSettingsTest {
         AwSettingsContentUrlAccessTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                int index) throws Throwable {
+                int index)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mTarget = "content_access_" + index;
         }
@@ -845,7 +870,8 @@ public class AwSettingsTest {
                 loadUrlSync(createContentUrl(mTarget));
                 String title = getTitleOnUiThread();
                 Assert.assertNotNull(title);
-                Assert.assertTrue("[" + mTarget + "] Actual title: \"" + title + "\"",
+                Assert.assertTrue(
+                        "[" + mTarget + "] Actual title: \"" + title + "\"",
                         title.contains(mTarget));
                 ensureResourceRequestCountInContentProvider(mTarget, 1);
             } else {
@@ -863,13 +889,15 @@ public class AwSettingsTest {
         AwSettingsContentUrlAccessFromFileTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                int index) throws Throwable {
+                int index)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mIndex = index;
-            mTempDir = InstrumentationRegistry.getInstrumentation()
-                               .getTargetContext()
-                               .getCacheDir()
-                               .getPath();
+            mTempDir =
+                    InstrumentationRegistry.getInstrumentation()
+                            .getTargetContext()
+                            .getCacheDir()
+                            .getPath();
         }
 
         @Override
@@ -897,12 +925,15 @@ public class AwSettingsTest {
             resetResourceRequestCountInContentProvider(TARGET);
             final String fileName = mTempDir + "/" + TARGET + ".html";
             try {
-                TestFileUtil.createNewHtmlFile(fileName, TARGET,
+                TestFileUtil.createNewHtmlFile(
+                        fileName,
+                        TARGET,
                         "<img src=\""
                                 // Adding a query avoids hitting a cached image, and also verifies
                                 // that content URL query parameters are ignored when accessing
                                 // a content provider.
-                                + createContentUrl(TARGET + "?id=" + mIndex) + "\">");
+                                + createContentUrl(TARGET + "?id=" + mIndex)
+                                + "\">");
                 mIndex += 2;
                 loadUrlSync("file://" + fileName);
                 if (value == ENABLED) {
@@ -925,8 +956,8 @@ public class AwSettingsTest {
         protected static final float PARAGRAPH_FONT_SIZE = 14.0f;
 
         AwSettingsTextAutosizingTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mNeedToWaitForFontSizeChange = false;
             loadDataSync(getData());
@@ -946,11 +977,12 @@ public class AwSettingsTest {
                 executeJavaScriptAndWaitForResult("setTitleToActualFontSize()");
             } else {
                 final float oldFontSize = mOldFontSize;
-                AwActivityTestRule.pollInstrumentationThread(() -> {
-                    executeJavaScriptAndWaitForResult("setTitleToActualFontSize()");
-                    float newFontSize = Float.parseFloat(getTitleOnUiThread());
-                    return newFontSize != oldFontSize;
-                });
+                AwActivityTestRule.pollInstrumentationThread(
+                        () -> {
+                            executeJavaScriptAndWaitForResult("setTitleToActualFontSize()");
+                            float newFontSize = Float.parseFloat(getTitleOnUiThread());
+                            return newFontSize != oldFontSize;
+                        });
                 mNeedToWaitForFontSizeChange = false;
             }
             return Float.parseFloat(getTitleOnUiThread());
@@ -960,20 +992,25 @@ public class AwSettingsTest {
             int displayWidth = calcDisplayWidthDp(mContext);
             int layoutWidth = (int) (displayWidth * 2.5f); // Use 2.5 as autosizing layout tests do.
             StringBuilder sb = new StringBuilder();
-            sb.append("<html>"
-                    + "<head>"
-                    + "<meta name=\"viewport\" content=\"width=" + layoutWidth + "\">"
-                    + "<style>"
-                    + "body { width: " + layoutWidth + "px; margin: 0; overflow-y: hidden; }"
-                    + "</style>"
-                    + "<script>"
-                    + "function setTitleToActualFontSize() {"
-                    // parseFloat is used to trim out the "px" suffix.
-                    + "  document.title = parseFloat(getComputedStyle("
-                    + "    document.getElementById('par')).getPropertyValue('font-size'));"
-                    + "}</script></head>"
-                    + "<body>"
-                    + "<p id=\"par\" style=\"font-size:");
+            sb.append(
+                    "<html>"
+                            + "<head>"
+                            + "<meta name=\"viewport\" content=\"width="
+                            + layoutWidth
+                            + "\">"
+                            + "<style>"
+                            + "body { width: "
+                            + layoutWidth
+                            + "px; margin: 0; overflow-y: hidden; }"
+                            + "</style>"
+                            + "<script>"
+                            + "function setTitleToActualFontSize() {"
+                            // parseFloat is used to trim out the "px" suffix.
+                            + "  document.title = parseFloat(getComputedStyle("
+                            + "    document.getElementById('par')).getPropertyValue('font-size'));"
+                            + "}</script></head>"
+                            + "<body>"
+                            + "<p id=\"par\" style=\"font-size:");
             sb.append(PARAGRAPH_FONT_SIZE);
             sb.append("px;\">");
             // Make the paragraph wide enough for being processed by the font autosizer.
@@ -990,8 +1027,8 @@ public class AwSettingsTest {
 
     class AwSettingsLayoutAlgorithmTestHelper extends AwSettingsTextAutosizingTestHelper<Integer> {
         AwSettingsLayoutAlgorithmTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient);
             // Font autosizing doesn't step in for narrow layout widths.
             mAwSettings.setUseWideViewPort(true);
@@ -1025,10 +1062,12 @@ public class AwSettingsTest {
         protected void doEnsureSettingHasValue(@LayoutAlgorithm Integer value) throws Throwable {
             final float actualFontSize = getActualFontSize();
             if (value == AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING) {
-                Assert.assertFalse("Actual font size: " + actualFontSize,
+                Assert.assertFalse(
+                        "Actual font size: " + actualFontSize,
                         actualFontSize == PARAGRAPH_FONT_SIZE);
             } else {
-                Assert.assertTrue("Actual font size: " + actualFontSize,
+                Assert.assertTrue(
+                        "Actual font size: " + actualFontSize,
                         actualFontSize == PARAGRAPH_FONT_SIZE);
             }
         }
@@ -1039,8 +1078,8 @@ public class AwSettingsTest {
         private final float mInitialActualFontSize;
 
         AwSettingsTextZoomTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient);
             mInitialActualFontSize = getActualFontSize();
         }
@@ -1071,11 +1110,21 @@ public class AwSettingsTest {
             final float actualFontSize = getActualFontSize();
             // Ensure that actual vs. initial font size ratio is similar to actual vs. initial
             // text zoom values ratio.
-            final float ratiosDelta = Math.abs(
-                    (actualFontSize / mInitialActualFontSize)
-                    - (value / (float) INITIAL_TEXT_ZOOM));
-            Assert.assertTrue("|(" + actualFontSize + " / " + mInitialActualFontSize + ") - ("
-                            + value + " / " + INITIAL_TEXT_ZOOM + ")| = " + ratiosDelta,
+            final float ratiosDelta =
+                    Math.abs(
+                            (actualFontSize / mInitialActualFontSize)
+                                    - (value / (float) INITIAL_TEXT_ZOOM));
+            Assert.assertTrue(
+                    "|("
+                            + actualFontSize
+                            + " / "
+                            + mInitialActualFontSize
+                            + ") - ("
+                            + value
+                            + " / "
+                            + INITIAL_TEXT_ZOOM
+                            + ")| = "
+                            + ratiosDelta,
                     ratiosDelta <= 0.2f);
         }
     }
@@ -1086,8 +1135,8 @@ public class AwSettingsTest {
         private final float mInitialActualFontSize;
 
         AwSettingsTextZoomAutosizingTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient);
             mAwSettings.setLayoutAlgorithm(AwSettings.LAYOUT_ALGORITHM_TEXT_AUTOSIZING);
             // The initial font size can be adjusted by font autosizer depending on the page's
@@ -1121,11 +1170,21 @@ public class AwSettingsTest {
             final float actualFontSize = getActualFontSize();
             // Ensure that actual vs. initial font size ratio is similar to actual vs. initial
             // text zoom values ratio.
-            final float ratiosDelta = Math.abs(
-                    (actualFontSize / mInitialActualFontSize)
-                    - (value / (float) INITIAL_TEXT_ZOOM));
-            Assert.assertTrue("|(" + actualFontSize + " / " + mInitialActualFontSize + ") - ("
-                            + value + " / " + INITIAL_TEXT_ZOOM + ")| = " + ratiosDelta,
+            final float ratiosDelta =
+                    Math.abs(
+                            (actualFontSize / mInitialActualFontSize)
+                                    - (value / (float) INITIAL_TEXT_ZOOM));
+            Assert.assertTrue(
+                    "|("
+                            + actualFontSize
+                            + " / "
+                            + mInitialActualFontSize
+                            + ") - ("
+                            + value
+                            + " / "
+                            + INITIAL_TEXT_ZOOM
+                            + ")| = "
+                            + ratiosDelta,
                     ratiosDelta <= 0.2f);
         }
     }
@@ -1134,8 +1193,11 @@ public class AwSettingsTest {
         private static final String POPUP_ENABLED = "Popup enabled";
         private static final String POPUP_BLOCKED = "Popup blocked";
 
-        AwSettingsJavaScriptPopupsTestHelper(AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient, boolean openTwice) throws Throwable {
+        AwSettingsJavaScriptPopupsTestHelper(
+                AwTestContainerView containerView,
+                TestAwContentsClient contentViewClient,
+                boolean openTwice)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mOpenTwice = openTwice;
         }
@@ -1164,19 +1226,22 @@ public class AwSettingsTest {
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             loadDataSync(getData());
             final boolean expectPopupEnabled = value;
-            AwActivityTestRule.pollInstrumentationThread(() -> {
-                String title = getTitleOnUiThread();
-                // When popup is enabled, expect the title to be either POPUP_ENABLED or
-                // "about:blank". The latter is possible if the document.write() that sets the
-                // title finishes before the "about:blank" navigation commits. After that
-                // navigation commits, the title will be set to "about:blank".
-                return expectPopupEnabled
-                        ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
-                        : POPUP_BLOCKED.equals(title);
-            });
+            AwActivityTestRule.pollInstrumentationThread(
+                    () -> {
+                        String title = getTitleOnUiThread();
+                        // When popup is enabled, expect the title to be either POPUP_ENABLED or
+                        // "about:blank". The latter is possible if the document.write() that sets
+                        // the title finishes before the "about:blank" navigation commits. After
+                        // that navigation commits, the title will be set to "about:blank".
+                        return expectPopupEnabled
+                                ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
+                                : POPUP_BLOCKED.equals(title);
+                    });
             String title = getTitleOnUiThread();
-            Assert.assertTrue(value ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
-                                    : POPUP_BLOCKED.equals(title));
+            Assert.assertTrue(
+                    value
+                            ? (POPUP_ENABLED.equals(title) || "about:blank".equals(title))
+                            : POPUP_BLOCKED.equals(title));
         }
 
         private String getData() {
@@ -1189,16 +1254,21 @@ public class AwSettingsTest {
                     + "            if (newWindow === window) {"
                     + "                if (newWindow.opener != null) {"
                     + "                    newWindow.document.write("
-                    + "                        '<html><head><title>" + POPUP_ENABLED
+                    + "                        '<html><head><title>"
+                    + POPUP_ENABLED
                     + "</title></head></html>');"
                     + "                } else {"
                     + "                    newWindow.document.write('failed to set opener');"
                     + "                }"
                     + "            } else {"
-                    + "                document.title = '" + POPUP_ENABLED + "';"
+                    + "                document.title = '"
+                    + POPUP_ENABLED
+                    + "';"
                     + "            }"
                     + "        } else {"
-                    + "          document.title = '" + POPUP_BLOCKED + "';"
+                    + "          document.title = '"
+                    + POPUP_BLOCKED
+                    + "';"
                     + "        }"
                     + "    }"
                     + "</script></head>"
@@ -1214,7 +1284,8 @@ public class AwSettingsTest {
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
                 int index,
-                TestWebServer webServer) throws Throwable {
+                TestWebServer webServer)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mIndex = index;
             mWebServer = webServer;
@@ -1269,8 +1340,8 @@ public class AwSettingsTest {
         private static final String VIEWPORT_TAG_LAYOUT_WIDTH = "3000";
 
         AwSettingsUseWideViewportTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
         }
 
@@ -1307,7 +1378,9 @@ public class AwSettingsTest {
 
         private String getData() {
             return "<html><head>"
-                    + "<meta name='viewport' content='width=" + VIEWPORT_TAG_LAYOUT_WIDTH + "' />"
+                    + "<meta name='viewport' content='width="
+                    + VIEWPORT_TAG_LAYOUT_WIDTH
+                    + "' />"
                     + "</head>"
                     + "<body onload='document.title=document.body.clientWidth'></body></html>";
         }
@@ -1319,7 +1392,8 @@ public class AwSettingsTest {
         AwSettingsLoadWithOverviewModeTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                boolean withViewPortTag) throws Throwable {
+                boolean withViewPortTag)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mWithViewPortTag = withViewPortTag;
             mAwSettings.setUseWideViewPort(true);
@@ -1344,8 +1418,9 @@ public class AwSettingsTest {
         protected void setCurrentValue(Boolean value) {
             // On tablets, viewport width will default to device width without viewport tag; so the
             // page will not have any overflowing content to zoom out.
-            mExpectScaleChange = mAwSettings.getLoadWithOverviewMode() != value
-                    && (!isTablet() || mWithViewPortTag);
+            mExpectScaleChange =
+                    mAwSettings.getLoadWithOverviewMode() != value
+                            && (!isTablet() || mWithViewPortTag);
             if (mExpectScaleChange) {
                 mOnScaleChangedCallCount =
                         mContentViewClient.getOnScaleChangedHelper().getCallCount();
@@ -1357,7 +1432,8 @@ public class AwSettingsTest {
         protected void doEnsureSettingHasValue(Boolean value) throws Throwable {
             loadDataSync(getData());
             if (mExpectScaleChange) {
-                mContentViewClient.getOnScaleChangedHelper()
+                mContentViewClient
+                        .getOnScaleChangedHelper()
                         .waitForCallback(mOnScaleChangedCallCount);
                 mExpectScaleChange = false;
             }
@@ -1365,7 +1441,8 @@ public class AwSettingsTest {
             // On tablets, viewport width will default to device width without viewport tag; so the
             // page will not have any overflowing content to zoom out.
             if (value && (!isTablet() || mWithViewPortTag)) {
-                Assert.assertTrue("Expected: " + currentScale + " < " + DEFAULT_PAGE_SCALE,
+                Assert.assertTrue(
+                        "Expected: " + currentScale + " < " + DEFAULT_PAGE_SCALE,
                         currentScale < DEFAULT_PAGE_SCALE);
             } else {
                 Assert.assertEquals(DEFAULT_PAGE_SCALE, currentScale, 0);
@@ -1394,7 +1471,8 @@ public class AwSettingsTest {
         AwSettingsForceZeroLayoutHeightTestHelper(
                 AwTestContainerView containerView,
                 TestAwContentsClient contentViewClient,
-                boolean withViewPortTag) throws Throwable {
+                boolean withViewPortTag)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mWithViewPortTag = withViewPortTag;
             mAwSettings.setUseWideViewPort(true);
@@ -1449,12 +1527,12 @@ public class AwSettingsTest {
         private final boolean mWithViewPortTag;
     }
 
-    class AwSettingsZeroLayoutHeightDisablesViewportQuirkTestHelper extends
-            AwSettingsTestHelper<Boolean> {
+    class AwSettingsZeroLayoutHeightDisablesViewportQuirkTestHelper
+            extends AwSettingsTestHelper<Boolean> {
 
         AwSettingsZeroLayoutHeightDisablesViewportQuirkTestHelper(
-                AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mAwSettings.setUseWideViewPort(true);
             mAwSettings.setForceZeroLayoutHeight(true);
@@ -1514,8 +1592,9 @@ public class AwSettingsTest {
         private static final int MAX_TIME_LOADING_ERROR_PAGE = 1000;
         private final AwContents mAwContents;
 
-        AwSettingsWillSuppressErrorPageTestHelper(AwTestContainerView containerView,
-                TestAwContentsClient contentViewClient) throws Throwable {
+        AwSettingsWillSuppressErrorPageTestHelper(
+                AwTestContainerView containerView, TestAwContentsClient contentViewClient)
+                throws Throwable {
             super(containerView, contentViewClient, true);
             mAwContents = containerView.getAwContents();
         }
@@ -1547,13 +1626,15 @@ public class AwSettingsTest {
 
             final WebContents webContents = mAwContents.getWebContents();
             final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
-            final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(
-                    () -> new WebContentsObserver(webContents) {
-                        @Override
-                        public void titleWasSet(String title) {
-                            onTitleUpdatedHelper.notifyCalled();
-                        }
-                    });
+            final WebContentsObserver observer =
+                    TestThreadUtils.runOnUiThreadBlocking(
+                            () ->
+                                    new WebContentsObserver(webContents) {
+                                        @Override
+                                        public void titleWasSet(String title) {
+                                            onTitleUpdatedHelper.notifyCalled();
+                                        }
+                                    });
             int callCount = onTitleUpdatedHelper.getCallCount();
 
             loadUrlSync(BAD_SCHEME_URL);
@@ -1569,9 +1650,11 @@ public class AwSettingsTest {
                         "Showing an error page should change the page title, "
                                 + "but no change happened",
                         callCount);
-                Assert.assertNotEquals("Showing an error page should change the page title, "
+                Assert.assertNotEquals(
+                        "Showing an error page should change the page title, "
                                 + "but no change happened",
-                        PREV_TITLE, getTitleOnUiThread());
+                        PREV_TITLE,
+                        getTitleOnUiThread());
             } else {
                 // Suppressing the error page should mean nothing changes (no callbacks). However,
                 // verifying that the error page actually never loads isn't straight-forward,
@@ -1581,23 +1664,26 @@ public class AwSettingsTest {
                 Assert.assertEquals(
                         "Suppressing an error page should leave the page title unchanged, "
                                 + "but a change still happened",
-                        PREV_TITLE, getTitleOnUiThread());
+                        PREV_TITLE,
+                        getTitleOnUiThread());
             }
 
             TestThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
         }
 
         private String getData() {
-            return "<html><head><title>" + PREV_TITLE
+            return "<html><head><title>"
+                    + PREV_TITLE
                     + "</title></head><body>Page Text</body></html>";
         }
     }
 
     public static int calcDisplayWidthDp(Context context) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
-            return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
+                    return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());
+                });
     }
 
     class AwSettingsCorsTestHelper {
@@ -1625,9 +1711,12 @@ public class AwSettingsTest {
             mAwContents = mTestContainerView.getAwContents();
             mAwSettings = mActivityTestRule.getAwSettingsOnUiThread(mAwContents);
 
-            TestContentProvider.register(TEST_HTML_CONTENT_PATH, "text/html",
-                    FileUtils.readStream(new FileInputStream(
-                            UrlUtils.getIsolatedTestFilePath(TEST_HTML_FILE_PATH))));
+            TestContentProvider.register(
+                    TEST_HTML_CONTENT_PATH,
+                    "text/html",
+                    FileUtils.readStream(
+                            new FileInputStream(
+                                    UrlUtils.getIsolatedTestFilePath(TEST_HTML_FILE_PATH))));
             AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
             mAwSettings.setAllowFileAccess(true);
             mAwSettings.setAllowContentAccess(true);
@@ -1681,15 +1770,22 @@ public class AwSettingsTest {
         final String jsEnabledString = "JS has run";
         final String jsDisabledString = "JS has not run";
         final String testPageHtml =
-                "<html><head><title>" + jsDisabledString + "</title>"
-                + "</head><body onload=\"document.title='" + jsEnabledString
-                + "';\"></body></html>";
+                "<html><head><title>"
+                        + jsDisabledString
+                        + "</title>"
+                        + "</head><body onload=\"document.title='"
+                        + jsEnabledString
+                        + "';\"></body></html>";
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
         final AwContents awContents = testContainerView.getAwContents();
-        mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
-                testPageHtml, "text/html", false);
+        mActivityTestRule.loadDataSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
+                testPageHtml,
+                "text/html",
+                false);
         Assert.assertEquals(jsDisabledString, mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
@@ -1733,10 +1829,8 @@ public class AwSettingsTest {
     public void testDefaultFontSizeWithTwoViews() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
-                new AwSettingsDefaultFontSizeTestHelper(
-                        views.getContainer0(), views.getClient0()),
-                new AwSettingsDefaultFontSizeTestHelper(
-                        views.getContainer1(), views.getClient1()));
+                new AwSettingsDefaultFontSizeTestHelper(views.getContainer0(), views.getClient0()),
+                new AwSettingsDefaultFontSizeTestHelper(views.getContainer1(), views.getClient1()));
     }
 
     // The test verifies that after changing the LoadsImagesAutomatically
@@ -1754,15 +1848,22 @@ public class AwSettingsTest {
         settings.setJavaScriptEnabled(true);
         ImagePageGenerator generator = new ImagePageGenerator(0, false);
         settings.setLoadsImagesAutomatically(false);
-        mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
-                generator.getPageSource(), "text/html", false);
-        Assert.assertEquals(ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
+        mActivityTestRule.loadDataSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
+                generator.getPageSource(),
+                "text/html",
+                false);
+        Assert.assertEquals(
+                ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
                 mActivityTestRule.getTitleOnUiThread(awContents));
         settings.setLoadsImagesAutomatically(true);
         AwActivityTestRule.pollInstrumentationThread(
-                () -> !ImagePageGenerator.IMAGE_NOT_LOADED_STRING.equals(
-                        mActivityTestRule.getTitleOnUiThread(awContents)));
-        Assert.assertEquals(ImagePageGenerator.IMAGE_LOADED_STRING,
+                () ->
+                        !ImagePageGenerator.IMAGE_NOT_LOADED_STRING.equals(
+                                mActivityTestRule.getTitleOnUiThread(awContents)));
+        Assert.assertEquals(
+                ImagePageGenerator.IMAGE_LOADED_STRING,
                 mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
@@ -1773,9 +1874,11 @@ public class AwSettingsTest {
         ViewPair views = createViews();
         runPerViewSettingsTest(
                 new AwSettingsLoadImagesAutomaticallyTestHelper(
-                    views.getContainer0(), views.getClient0(), new ImagePageGenerator(0, true)),
+                        views.getContainer0(), views.getClient0(), new ImagePageGenerator(0, true)),
                 new AwSettingsLoadImagesAutomaticallyTestHelper(
-                    views.getContainer1(), views.getClient1(), new ImagePageGenerator(1, true)));
+                        views.getContainer1(),
+                        views.getClient1(),
+                        new ImagePageGenerator(1, true)));
     }
 
     @Test
@@ -1809,14 +1912,15 @@ public class AwSettingsTest {
         Assert.assertEquals(actualUserAgentString, AwSettings.getDefaultUserAgent());
         final String patternString =
                 "Mozilla/5\\.0 \\(Linux;( U;)? Android ([^;]+);( (\\w+)-(\\w+);)?"
-                + "\\s?(.*)\\sBuild/(.+); wv\\) "
-                + "AppleWebKit/(\\d+)\\.(\\d+) \\(KHTML, like Gecko\\) "
-                + "Version/\\d+\\.\\d Chrome/\\d+\\.\\d+\\.\\d+\\.\\d+"
-                + "( Mobile)? Safari/(\\d+)\\.(\\d+)";
+                        + "\\s?(.*)\\sBuild/(.+); wv\\) "
+                        + "AppleWebKit/(\\d+)\\.(\\d+) \\(KHTML, like Gecko\\) "
+                        + "Version/\\d+\\.\\d Chrome/\\d+\\.\\d+\\.\\d+\\.\\d+"
+                        + "( Mobile)? Safari/(\\d+)\\.(\\d+)";
         final Pattern userAgentExpr = Pattern.compile(patternString);
         Matcher patternMatcher = userAgentExpr.matcher(actualUserAgentString);
         Assert.assertTrue(
-                String.format("User agent string did not match expected pattern. %nExpected "
+                String.format(
+                        "User agent string did not match expected pattern. %nExpected "
                                 + "pattern:%n%s%nActual:%n%s",
                         patternString, actualUserAgentString),
                 patternMatcher.find());
@@ -1836,8 +1940,9 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testWillSuppressErrorPage() throws Throwable {
         ViewPair views = createViews();
-        runPerViewSettingsTest(new AwSettingsWillSuppressErrorPageTestHelper(
-                                       views.getContainer0(), views.getClient0()),
+        runPerViewSettingsTest(
+                new AwSettingsWillSuppressErrorPageTestHelper(
+                        views.getContainer0(), views.getClient0()),
                 new AwSettingsWillSuppressErrorPageTestHelper(
                         views.getContainer1(), views.getClient1()));
     }
@@ -1902,30 +2007,35 @@ public class AwSettingsTest {
         // going back and forward between them.
         final String pageTemplate =
                 "<html><head><title>%s</title></head>"
-                + "<body onload='document.title+=navigator.userAgent'></body>"
-                + "</html>";
+                        + "<body onload='document.title+=navigator.userAgent'></body>"
+                        + "</html>";
         final String page1Title = "Page1";
         final String page2Title = "Page2";
         final String page1 = String.format(pageTemplate, page1Title);
         final String page2 = String.format(pageTemplate, page2Title);
         settings.setUserAgentString(customUserAgentString);
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page1, "text/html", false);
-        Assert.assertEquals(page1Title + customUserAgentString,
+        Assert.assertEquals(
+                page1Title + customUserAgentString,
                 mActivityTestRule.getTitleOnUiThread(awContents));
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page2, "text/html", false);
-        Assert.assertEquals(page2Title + customUserAgentString,
+        Assert.assertEquals(
+                page2Title + customUserAgentString,
                 mActivityTestRule.getTitleOnUiThread(awContents));
         settings.setUserAgentString(null);
         // Must not cause any changes until the next page loading.
-        Assert.assertEquals(page2Title + customUserAgentString,
+        Assert.assertEquals(
+                page2Title + customUserAgentString,
                 mActivityTestRule.getTitleOnUiThread(awContents));
         HistoryUtils.goBackSync(
                 InstrumentationRegistry.getInstrumentation(), webContents, onPageFinishedHelper);
-        Assert.assertEquals(page1Title + defaultUserAgentString,
+        Assert.assertEquals(
+                page1Title + defaultUserAgentString,
                 mActivityTestRule.getTitleOnUiThread(awContents));
         HistoryUtils.goForwardSync(
                 InstrumentationRegistry.getInstrumentation(), webContents, onPageFinishedHelper);
-        Assert.assertEquals(page2Title + defaultUserAgentString,
+        Assert.assertEquals(
+                page2Title + defaultUserAgentString,
                 mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
@@ -1946,12 +2056,12 @@ public class AwSettingsTest {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
-        final String customUserAgentString =
-                "testUserAgentWithTestServerUserAgent";
+        final String customUserAgentString = "testUserAgentWithTestServerUserAgent";
         AwContents awContents = testContainerView.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
@@ -1977,14 +2087,17 @@ public class AwSettingsTest {
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         settings.setUserAgentString(customUserAgentString);
 
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html") + "?url="
-                + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Platform&User-Agent");
+        String targetUrl =
+                testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                        + "?url="
+                        + URLEncoder.encode("/echoheader?Sec-CH-UA&Sec-CH-UA-Platform&User-Agent");
         mActivityTestRule.loadUrlSync(
                 awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
         AwActivityTestRule.pollInstrumentationThread(
@@ -1994,8 +2107,11 @@ public class AwSettingsTest {
         // Here we can't directly validate the exact value for the client hints: Sec-CH-UA and
         // Sec-CH-UA-Platform since they change over release version. Try best to validate the value
         // ends with platform string and user-agent string.
-        Assert.assertTrue(actualTitleContent.endsWith(
-                /*sec-ch-ua-platform=*/"\"Android\" " + /*user-agent=*/customUserAgentString));
+        Assert.assertTrue(
+                actualTitleContent.endsWith(
+                        /*sec-ch-ua-platform=*/ "\"Android\" "
+                                +
+                                /*user-agent=*/ customUserAgentString));
         // Sec-ch-ua value has brand AndroidWebview.
         Assert.assertTrue(actualTitleContent.indexOf("\"Android WebView\";v=\"") != -1);
     }
@@ -2014,14 +2130,18 @@ public class AwSettingsTest {
                 settings.getUserAgentString() + "UserAgentOverrideSuffix";
         settings.setUserAgentString(customUserAgentString);
 
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
 
-        String targetUrl = testServer.getURL("/android_webview/test/data/fetch-echo.html") + "?url="
-                + URLEncoder.encode("/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
+        String targetUrl =
+                testServer.getURL("/android_webview/test/data/fetch-echo.html")
+                        + "?url="
+                        + URLEncoder.encode(
+                                "/echoheader?Sec-CH-UA-Mobile&Sec-CH-UA-Platform&User-Agent");
         mActivityTestRule.loadUrlSync(
                 awContents, contentClient.getOnPageFinishedHelper(), targetUrl);
         AwActivityTestRule.pollInstrumentationThread(
@@ -2030,10 +2150,12 @@ public class AwSettingsTest {
         // value. If use the mobile user agent, Sec-CH-UA-Mobile should return true, otherwise
         // false.
         if (customUserAgentString.indexOf(" Mobile") != -1) {
-            Assert.assertEquals("?1 \"Android\" " + customUserAgentString,
+            Assert.assertEquals(
+                    "?1 \"Android\" " + customUserAgentString,
                     mActivityTestRule.getTitleOnUiThread(awContents));
         } else {
-            Assert.assertEquals("?0 \"Android\" " + customUserAgentString,
+            Assert.assertEquals(
+                    "?0 \"Android\" " + customUserAgentString,
                     mActivityTestRule.getTitleOnUiThread(awContents));
         }
     }
@@ -2159,8 +2281,7 @@ public class AwSettingsTest {
     public void testFileUrlAccessWithTwoViews() throws Throwable {
         ViewPair views = createViews();
         runPerViewSettingsTest(
-                new AwSettingsFileUrlAccessTestHelper(
-                        views.getContainer0(), views.getClient0(), 0),
+                new AwSettingsFileUrlAccessTestHelper(views.getContainer0(), views.getClient0(), 0),
                 new AwSettingsFileUrlAccessTestHelper(
                         views.getContainer1(), views.getClient1(), 1));
     }
@@ -2186,10 +2307,12 @@ public class AwSettingsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
         final AwContents awContents = testContainerView.getAwContents();
         final String target = "content_from_data";
-        final String page = "<html><body>"
-                + "<img src=\""
-                + createContentUrl(target) + "\">"
-                + "</body></html>";
+        final String page =
+                "<html><body>"
+                        + "<img src=\""
+                        + createContentUrl(target)
+                        + "\">"
+                        + "</body></html>";
         resetResourceRequestCountInContentProvider(target);
         mActivityTestRule.loadDataSync(
                 awContents, contentClient.getOnPageFinishedHelper(), page, "text/html", false);
@@ -2217,43 +2340,59 @@ public class AwSettingsTest {
         final AwSettingsCorsTestHelper corsTestHelper = new AwSettingsCorsTestHelper();
 
         // Case a) content:// to content:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case b) content:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case b') content:// to file:///android_res/ should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", corsTestHelper.mContentMainUrl,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        corsTestHelper.mContentMainUrl,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
 
         // Case c) file:// to content:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case c') file:///android_asset/ to content:// should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d) file:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case d') file:///android_asset/ to file:// should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
 
         // Case d'') file:///android_asset/ to file:///android_res/ should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
     }
 
@@ -2266,43 +2405,59 @@ public class AwSettingsTest {
         corsTestHelper.allowFileAccessFromFileURLs();
 
         // Case a) content:// to content:// should pass.
-        Assert.assertEquals("load",
+        Assert.assertEquals(
+                "load",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case b) content:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case b') content:// to file:///android_res/ should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", corsTestHelper.mContentMainUrl,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        corsTestHelper.mContentMainUrl,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
 
         // Case c) file:// to content:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case c') file:///android_asset/ to content:// should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d) file:// to file:// should pass.
-        Assert.assertEquals("load",
+        Assert.assertEquals(
+                "load",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case d') file:///android_asset/ to file:// should also pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
 
         // Case d'') file:///android_asset/ to file:///android_res/ should also pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
     }
 
@@ -2315,43 +2470,59 @@ public class AwSettingsTest {
         corsTestHelper.allowUniversalAccessFromFileURLs();
 
         // Case a) content:// to content:// should pass.
-        Assert.assertEquals("load",
+        Assert.assertEquals(
+                "load",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case b) content:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mContentMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case b') content:// to file:///android_res/ should also fail.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", corsTestHelper.mContentMainUrl,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        corsTestHelper.mContentMainUrl,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
 
         // Case c) file:// to content:// should pass.
-        Assert.assertEquals("load",
+        Assert.assertEquals(
+                "load",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case c') file:///android_asset/ to content:// should also pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d) file:// to file:// should pass.
-        Assert.assertEquals("load",
+        Assert.assertEquals(
+                "load",
                 corsTestHelper.getTestResult(
                         "xhr", corsTestHelper.mFileMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case d') file:///android_asset/ to file:// should also pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
 
         // Case d'') file:///android_asset/ to file:///android_res/ should also pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
     }
 
@@ -2366,22 +2537,26 @@ public class AwSettingsTest {
         corsTestHelper.allowUniversalAccessFromFileURLs();
 
         // Case a) content:// to content:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "fetch", corsTestHelper.mContentMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case b) content:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "fetch", corsTestHelper.mContentMainUrl, corsTestHelper.mFileImageUrl));
 
         // Case c) file:// to content:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "fetch", corsTestHelper.mFileMainUrl, corsTestHelper.mContentImageUrl));
 
         // Case d) file:// to file:// should fail.
-        Assert.assertEquals("error",
+        Assert.assertEquals(
+                "error",
                 corsTestHelper.getTestResult(
                         "fetch", corsTestHelper.mFileMainUrl, corsTestHelper.mFileImageUrl));
     }
@@ -2401,19 +2576,28 @@ public class AwSettingsTest {
 
         // Case c') file:///android_asset/ to content:// should fail as
         // content:// is still disallowed by AllowContentAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d') file:///android_asset/ to file:// should fail as file://
         // is still disallowed by AllowFileAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
 
         // Case d'') file:///android_asset/ to file:///android_res/ should pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
 
         // AllowUniversalAccessFromFileURLs should not help.
@@ -2421,14 +2605,20 @@ public class AwSettingsTest {
 
         // Case c') file:///android_asset/ to content:// should fail as
         // content:// is still disallowed by AllowContentAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d') file:///android_asset/ to file:// should fail as file://
         // is still disallowed by AllowFileAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
     }
 
@@ -2446,19 +2636,28 @@ public class AwSettingsTest {
 
         // Case c') file:///android_asset/ to content:// should fail as
         // content:// is still accessible but CORS is not permitted.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d') file:///android_asset/ to file:// should fail as file://
         // is still disallowed by AllowFileAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
 
         // Case d'') file:///android_asset/ to file:///android_res/ should pass.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         AwSettingsCorsTestHelper.RESOURCE_IMAGE_URL));
 
         // AllowUniversalAccessFromFileURLs should not help.
@@ -2466,14 +2665,20 @@ public class AwSettingsTest {
 
         // Case c') file:///android_asset/ to content:// pass as CORS accesses
         // are permitted now.
-        Assert.assertEquals("load",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "load",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mContentImageUrl));
 
         // Case d') file:///android_asset/ to file:// should fail as file://
         // is still disallowed by AllowFileAccess.
-        Assert.assertEquals("error",
-                corsTestHelper.getTestResult("xhr", AwSettingsCorsTestHelper.ASSET_MAIN_URL,
+        Assert.assertEquals(
+                "error",
+                corsTestHelper.getTestResult(
+                        "xhr",
+                        AwSettingsCorsTestHelper.ASSET_MAIN_URL,
                         corsTestHelper.mFileImageUrl));
     }
 
@@ -2490,9 +2695,14 @@ public class AwSettingsTest {
 
         settings.setJavaScriptEnabled(true);
         settings.setImagesEnabled(false);
-        mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
-                generator.getPageSource(), "text/html", false);
-        Assert.assertEquals(ImagePageGenerator.IMAGE_LOADED_STRING,
+        mActivityTestRule.loadDataSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
+                generator.getPageSource(),
+                "text/html",
+                false);
+        Assert.assertEquals(
+                ImagePageGenerator.IMAGE_LOADED_STRING,
                 mActivityTestRule.getTitleOnUiThread(awContents));
     }
 
@@ -2515,13 +2725,15 @@ public class AwSettingsTest {
             settings.setImagesEnabled(false);
             mActivityTestRule.loadUrlSync(
                     awContents, contentClient.getOnPageFinishedHelper(), httpImageUrl);
-            Assert.assertEquals(ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
+            Assert.assertEquals(
+                    ImagePageGenerator.IMAGE_NOT_LOADED_STRING,
                     mActivityTestRule.getTitleOnUiThread(awContents));
 
             settings.setImagesEnabled(true);
             AwActivityTestRule.pollInstrumentationThread(
-                    () -> ImagePageGenerator.IMAGE_LOADED_STRING.equals(
-                            mActivityTestRule.getTitleOnUiThread(awContents)));
+                    () ->
+                            ImagePageGenerator.IMAGE_LOADED_STRING.equals(
+                                    mActivityTestRule.getTitleOnUiThread(awContents)));
         } finally {
             webServer.shutdown();
         }
@@ -2567,17 +2779,22 @@ public class AwSettingsTest {
         try {
             // Set up http image.
             final String httpPath = "/image.png";
-            final String imageUrl = webServer.setResponseBase64(
-                    httpPath, generator.getImageSourceNoAdvance(),
-                    CommonResources.getImagePngHeaders(true));
+            final String imageUrl =
+                    webServer.setResponseBase64(
+                            httpPath,
+                            generator.getImageSourceNoAdvance(),
+                            CommonResources.getImagePngHeaders(true));
 
             // Set up file html that loads http iframe.
-            String pageHtml = "<img src='" + imageUrl + "' "
-                      + "onload=\"document.title='img_onload_fired';\" "
-                      + "onerror=\"document.title='img_onerror_fired';\" />";
+            String pageHtml =
+                    "<img src='"
+                            + imageUrl
+                            + "' "
+                            + "onload=\"document.title='img_onload_fired';\" "
+                            + "onerror=\"document.title='img_onerror_fired';\" />";
             Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
             fileName = context.getCacheDir() + "/block_network_loads_test.html";
-            TestFileUtil.deleteFile(fileName);  // Remove leftover file if any.
+            TestFileUtil.deleteFile(fileName); // Remove leftover file if any.
             TestFileUtil.createNewHtmlFile(fileName, "unset", pageHtml);
 
             // Actual test. Blocking should trigger onerror handler.
@@ -2603,6 +2820,7 @@ public class AwSettingsTest {
 
     private static class AudioEvent {
         private CallbackHelper mCallback;
+
         public AudioEvent(CallbackHelper callback) {
             mCallback = callback;
         }
@@ -2637,19 +2855,26 @@ public class AwSettingsTest {
             // to know whether Url is accessed.
             final String audioUrl = webServer.setResponse(httpPath, "1", null);
 
-            String pageHtml = "<html><body><audio id=\"audio\" controls src='" + audioUrl + "' "
-                    + "oncanplay=\"AudioEvent.onCanPlay();\" "
-                    + "onerror=\"AudioEvent.onError();\"></audio>"
-                    + "<button id=\"play\""
-                    + "onclick=\"document.getElementById('audio').play();\"></button>"
-                    + "</body></html>";
+            String pageHtml =
+                    "<html><body><audio id=\"audio\" controls src='"
+                            + audioUrl
+                            + "' "
+                            + "oncanplay=\"AudioEvent.onCanPlay();\" "
+                            + "onerror=\"AudioEvent.onError();\"></audio>"
+                            + "<button id=\"play\""
+                            + "onclick=\"document.getElementById('audio').play();\"></button>"
+                            + "</body></html>";
             // Actual test. Blocking should trigger onerror handler.
             awSettings.setBlockNetworkLoads(true);
             AwActivityTestRule.addJavascriptInterfaceOnUiThread(
                     awContents, new AudioEvent(callback), "AudioEvent");
             int count = callback.getCallCount();
-            mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
-                    pageHtml, "text/html", false);
+            mActivityTestRule.loadDataSync(
+                    awContents,
+                    contentClient.getOnPageFinishedHelper(),
+                    pageHtml,
+                    "text/html",
+                    false);
             JSUtils.clickNodeWithUserGesture(testContainer.getWebContents(), "play");
             callback.waitForCallback(count, 1);
             Assert.assertEquals(0, webServer.getRequestCount(httpPath));
@@ -2682,7 +2907,9 @@ public class AwSettingsTest {
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
         final AwContents awContents = testContainerView.getAwContents();
-        mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
                 "file:///android_asset/asset_file.html");
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
@@ -2699,7 +2926,9 @@ public class AwSettingsTest {
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
         final AwContents awContents = testContainerView.getAwContents();
-        mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
                 "file:///android_res/raw/resource_file.html");
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
@@ -2718,7 +2947,9 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         settings.setAllowFileAccess(false);
-        mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
                 "file:///android_asset/asset_file.html");
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
@@ -2737,7 +2968,9 @@ public class AwSettingsTest {
         final AwContents awContents = testContainerView.getAwContents();
         final AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         settings.setAllowFileAccess(false);
-        mActivityTestRule.loadUrlSync(awContents, contentClient.getOnPageFinishedHelper(),
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                contentClient.getOnPageFinishedHelper(),
                 "file:///android_res/raw/resource_file.html");
         Assert.assertEquals(expectedTitle, mActivityTestRule.getTitleOnUiThread(awContents));
     }
@@ -2779,8 +3012,9 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testJavaScriptPopupsWithTwoViews() throws Throwable {
         ViewPair views = createViews();
-        runPerViewSettingsTest(new AwSettingsJavaScriptPopupsTestHelper(
-                                       views.getContainer0(), views.getClient0(), false),
+        runPerViewSettingsTest(
+                new AwSettingsJavaScriptPopupsTestHelper(
+                        views.getContainer0(), views.getClient0(), false),
                 new AwSettingsJavaScriptPopupsTestHelper(
                         views.getContainer1(), views.getClient1(), false));
     }
@@ -2790,16 +3024,19 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testJavaScriptPopupsAndMultiWindowsWithTwoViews() throws Throwable {
         final ViewPair views = createViews();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            AwSettings awSettings = views.getContents0().getSettings();
-            awSettings.setSupportMultipleWindows(true);
-            awSettings = views.getContents1().getSettings();
-            awSettings.setSupportMultipleWindows(true);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            AwSettings awSettings = views.getContents0().getSettings();
+                            awSettings.setSupportMultipleWindows(true);
+                            awSettings = views.getContents1().getSettings();
+                            awSettings.setSupportMultipleWindows(true);
+                        });
         views.getClient0().getOnCreateWindowHelper().setReturnValue(true);
         views.getClient1().getOnCreateWindowHelper().setReturnValue(true);
-        runPerViewSettingsTest(new AwSettingsJavaScriptPopupsTestHelper(
-                                       views.getContainer0(), views.getClient0(), false),
+        runPerViewSettingsTest(
+                new AwSettingsJavaScriptPopupsTestHelper(
+                        views.getContainer0(), views.getClient0(), false),
                 new AwSettingsJavaScriptPopupsTestHelper(
                         views.getContainer1(), views.getClient1(), false));
     }
@@ -2809,8 +3046,9 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testJavaScriptPopupsOpenTwice() throws Throwable {
         final ViewPair views = createViews();
-        runPerViewSettingsTest(new AwSettingsJavaScriptPopupsTestHelper(
-                                       views.getContainer0(), views.getClient0(), true),
+        runPerViewSettingsTest(
+                new AwSettingsJavaScriptPopupsTestHelper(
+                        views.getContainer0(), views.getClient0(), true),
                 new AwSettingsJavaScriptPopupsTestHelper(
                         views.getContainer1(), views.getClient1(), true));
     }
@@ -2852,9 +3090,11 @@ public class AwSettingsTest {
 
             final String htmlNotInCachePath = "/testCacheMode-not-in-cache.html";
             final String urlNotInCache = webServer.setResponse(htmlNotInCachePath, "", null);
-            mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), urlNotInCache);
+                    contentClient.getOnReceivedErrorHelper(),
+                    urlNotInCache);
             Assert.assertEquals(0, webServer.getRequestCount(htmlNotInCachePath));
         } finally {
             webServer.shutdown();
@@ -2882,27 +3122,35 @@ public class AwSettingsTest {
         try {
             final String htmlPath = "/testCacheModeWithBlockedNetworkLoads.html";
             final String url = webServer.setResponse(htmlPath, "response", null);
-            mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedErrorHelper(),
+                    url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
-            mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedErrorHelper(),
+                    url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-            mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedErrorHelper(),
+                    url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
 
             awSettings.setCacheMode(WebSettings.LOAD_CACHE_ONLY);
-            mActivityTestRule.loadUrlSyncAndExpectError(awContents,
+            mActivityTestRule.loadUrlSyncAndExpectError(
+                    awContents,
                     contentClient.getOnPageFinishedHelper(),
-                    contentClient.getOnReceivedErrorHelper(), url);
+                    contentClient.getOnReceivedErrorHelper(),
+                    url);
             Assert.assertEquals(0, webServer.getRequestCount(htmlPath));
         } finally {
             webServer.shutdown();
@@ -2932,12 +3180,12 @@ public class AwSettingsTest {
         private final String mHtmlUrl;
         private final String mManifestPath;
 
-        ManifestTestHelper(
-                TestWebServer webServer, String htmlPageName, String manifestName) {
+        ManifestTestHelper(TestWebServer webServer, String htmlPageName, String manifestName) {
             mWebServer = webServer;
             mHtmlPath = "/" + htmlPageName;
-            mHtmlUrl = webServer.setResponse(
-                    mHtmlPath, "<html manifest=\"" + manifestName + "\"></html>", null);
+            mHtmlUrl =
+                    webServer.setResponse(
+                            mHtmlPath, "<html manifest=\"" + manifestName + "\"></html>", null);
             mManifestPath = "/" + manifestName;
             webServer.setResponse(
                     mManifestPath,
@@ -2998,16 +3246,20 @@ public class AwSettingsTest {
         final AwContents awContents = testContainer.getAwContents();
         AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
 
-        final String pageTemplate = "<html><head>%s</head>"
-                + "<body onload='document.title=document.body.clientWidth'></body></html>";
+        final String pageTemplate =
+                "<html><head>%s</head>"
+                        + "<body onload='document.title=document.body.clientWidth'></body></html>";
         final String pageNoViewport = String.format(pageTemplate, "");
-        final String pageViewportDeviceWidth = String.format(
-                pageTemplate,
-                "<meta name='viewport' content='width=device-width' />");
+        final String pageViewportDeviceWidth =
+                String.format(
+                        pageTemplate, "<meta name='viewport' content='width=device-width' />");
         final String viewportTagSpecifiedWidth = "3000";
-        final String pageViewportSpecifiedWidth = String.format(
-                pageTemplate,
-                "<meta name='viewport' content='width=" + viewportTagSpecifiedWidth + "' />");
+        final String pageViewportSpecifiedWidth =
+                String.format(
+                        pageTemplate,
+                        "<meta name='viewport' content='width="
+                                + viewportTagSpecifiedWidth
+                                + "' />");
 
         int displayWidth = calcDisplayWidthDp(testContainer.getContext());
 
@@ -3020,17 +3272,20 @@ public class AwSettingsTest {
                 awContents, onPageFinishedHelper, pageNoViewport, "text/html", false);
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         // Avoid rounding errors.
-        Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+        Assert.assertTrue(
+                "Expected: " + displayWidth + ", Actual: " + actualWidth,
                 Math.abs(displayWidth - actualWidth) <= 1);
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageViewportDeviceWidth, "text/html", false);
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
-        Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+        Assert.assertTrue(
+                "Expected: " + displayWidth + ", Actual: " + actualWidth,
                 Math.abs(displayWidth - actualWidth) <= 1);
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageViewportSpecifiedWidth, "text/html", false);
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
-        Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+        Assert.assertTrue(
+                "Expected: " + displayWidth + ", Actual: " + actualWidth,
                 Math.abs(displayWidth - actualWidth) <= 1);
 
         settings.setUseWideViewPort(true);
@@ -3042,7 +3297,8 @@ public class AwSettingsTest {
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         if (isTablet()) {
             // On tablets, viewport width will default to device width without viewport tag.
-            Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+            Assert.assertTrue(
+                    "Expected: " + displayWidth + ", Actual: " + actualWidth,
                     Math.abs(displayWidth - actualWidth) <= 1);
         } else {
             Assert.assertTrue("Expected: >= 980 , Actual: " + actualWidth, actualWidth >= 980);
@@ -3050,7 +3306,8 @@ public class AwSettingsTest {
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageViewportDeviceWidth, "text/html", false);
         actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
-        Assert.assertTrue("Expected: " + displayWidth + ", Actual: " + actualWidth,
+        Assert.assertTrue(
+                "Expected: " + displayWidth + ", Actual: " + actualWidth,
                 Math.abs(displayWidth - actualWidth) <= 1);
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, pageViewportSpecifiedWidth, "text/html", false);
@@ -3092,10 +3349,15 @@ public class AwSettingsTest {
 
         int displayWidth = calcDisplayWidthDp(testContainerView.getContext());
         int layoutWidth = displayWidth * 2;
-        final String page = "<html>"
-                + "<head><meta name='viewport' content='width=" + layoutWidth + "'>"
-                + "<style> body { width: " + layoutWidth + "px; }</style></head>"
-                + "<body>Page Text</body></html>";
+        final String page =
+                "<html>"
+                        + "<head><meta name='viewport' content='width="
+                        + layoutWidth
+                        + "'>"
+                        + "<style> body { width: "
+                        + layoutWidth
+                        + "px; }</style></head>"
+                        + "<body>Page Text</body></html>";
 
         Assert.assertFalse(settings.getUseWideViewPort());
         // Without wide viewport the <meta viewport> tag will be ignored by WebView,
@@ -3112,7 +3374,8 @@ public class AwSettingsTest {
         simulateDoubleTapCenterOfWebViewOnUiThread(testContainerView);
         contentClient.getOnScaleChangedHelper().waitForCallback(onScaleChangedCallCount);
         final float zoomedOutScale = mActivityTestRule.getScaleOnUiThread(awContents);
-        Assert.assertTrue("zoomedOut: " + zoomedOutScale + ", initial: " + initialScale,
+        Assert.assertTrue(
+                "zoomedOut: " + zoomedOutScale + ", initial: " + initialScale,
                 zoomedOutScale < initialScale);
     }
 
@@ -3188,22 +3451,30 @@ public class AwSettingsTest {
         final AwSettings awSettings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
         CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
 
-        WindowManager wm = (WindowManager) InstrumentationRegistry.getInstrumentation()
-                                   .getTargetContext()
-                                   .getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm =
+                (WindowManager)
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getSystemService(Context.WINDOW_SERVICE);
         Point screenSize = new Point();
         wm.getDefaultDisplay().getSize(screenSize);
         // Make sure after 50% scale, page width still larger than screen.
         int height = screenSize.y * 2 + 1;
         int width = screenSize.x * 2 + 1;
-        final String page = "<html><body>"
-                + "<p style='height:" + height + "px;width:" + width + "px'>"
-                + "testSetInitialScale</p></body></html>";
-        final float defaultScale = InstrumentationRegistry.getInstrumentation()
-                                           .getTargetContext()
-                                           .getResources()
-                                           .getDisplayMetrics()
-                                           .density;
+        final String page =
+                "<html><body>"
+                        + "<p style='height:"
+                        + height
+                        + "px;width:"
+                        + width
+                        + "px'>"
+                        + "testSetInitialScale</p></body></html>";
+        final float defaultScale =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getResources()
+                        .getDisplayMetrics()
+                        .density;
 
         Assert.assertEquals(
                 defaultScale, mActivityTestRule.getPixelScaleOnUiThread(awContents), .01f);
@@ -3236,8 +3507,12 @@ public class AwSettingsTest {
     @LargeTest
     @Feature({"AndroidWebView", "Preferences"})
     public void testMediaPlaybackWithoutUserGesture() throws Throwable {
-        Assert.assertTrue(VideoTestUtil.runVideoTest(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule, false, WAIT_TIMEOUT_MS));
+        Assert.assertTrue(
+                VideoTestUtil.runVideoTest(
+                        InstrumentationRegistry.getInstrumentation(),
+                        mActivityTestRule,
+                        false,
+                        WAIT_TIMEOUT_MS));
     }
 
     @Test
@@ -3246,8 +3521,12 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testMediaPlaybackWithUserGesture() throws Throwable {
         // Wait for 5 second to see if video played.
-        Assert.assertFalse(VideoTestUtil.runVideoTest(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule, true, 5000L));
+        Assert.assertFalse(
+                VideoTestUtil.runVideoTest(
+                        InstrumentationRegistry.getInstrumentation(),
+                        mActivityTestRule,
+                        true,
+                        5000L));
     }
 
     @Test
@@ -3256,26 +3535,32 @@ public class AwSettingsTest {
     public void testDefaultVideoPosterURL() throws Throwable {
         final CallbackHelper videoPosterAccessedCallbackHelper = new CallbackHelper();
         final String defaultVideoPosterUrl = "http://default_video_poster/";
-        TestAwContentsClient client = new TestAwContentsClient() {
-            @Override
-            public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
-                if (request.url.equals(defaultVideoPosterUrl)) {
-                    videoPosterAccessedCallbackHelper.notifyCalled();
-                }
-                return null;
-            }
-        };
+        TestAwContentsClient client =
+                new TestAwContentsClient() {
+                    @Override
+                    public WebResourceResponseInfo shouldInterceptRequest(
+                            AwWebResourceRequest request) {
+                        if (request.url.equals(defaultVideoPosterUrl)) {
+                            videoPosterAccessedCallbackHelper.notifyCalled();
+                        }
+                        return null;
+                    }
+                };
         final AwContents awContents =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client).getAwContents();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            AwSettings awSettings = awContents.getSettings();
-            awSettings.setDefaultVideoPosterURL(defaultVideoPosterUrl);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            AwSettings awSettings = awContents.getSettings();
+                            awSettings.setDefaultVideoPosterURL(defaultVideoPosterUrl);
+                        });
         VideoTestWebServer webServer = new VideoTestWebServer();
         try {
-            String data = "<html><head><body>"
-                    + "<video id='video' control src='"
-                    + webServer.getOnePixelOneFrameWebmURL() + "' /> </body></html>";
+            String data =
+                    "<html><head><body>"
+                            + "<video id='video' control src='"
+                            + webServer.getOnePixelOneFrameWebmURL()
+                            + "' /> </body></html>";
             mActivityTestRule.loadDataAsync(awContents, data, "text/html", false);
             videoPosterAccessedCallbackHelper.waitForCallback(0, 1, 20, TimeUnit.SECONDS);
         } finally {
@@ -3291,15 +3576,13 @@ public class AwSettingsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = view.getAwContents();
         CallbackHelper onPageFinishedHelper = client.getOnPageFinishedHelper();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> awContents.getSettings().setScrollTopLeftInteropEnabled(state));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> awContents.getSettings().setScrollTopLeftInteropEnabled(state));
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        final String page = "<!doctype html>"
-                + "<script>"
-                + "window.onload = function() {"
-                + "  document.title = document.scrollingElement === document.documentElement;"
-                + "};"
-                + "</script>";
+        final String page =
+                "<!doctype html><script>window.onload = function() {  document.title ="
+                        + " document.scrollingElement === document.documentElement;};</script>";
         mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
         String actualTitle = mActivityTestRule.getTitleOnUiThread(awContents);
         Assert.assertEquals(state ? "true" : "false", actualTitle);
@@ -3323,12 +3606,13 @@ public class AwSettingsTest {
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
     public void testAllowMixedMode() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient() {
-            @Override
-            public void onReceivedSslError(Callback<Boolean> callback, SslError error) {
-                callback.onResult(true);
-            }
-        };
+        final TestAwContentsClient contentClient =
+                new TestAwContentsClient() {
+                    @Override
+                    public void onReceivedSslError(Callback<Boolean> callback, SslError error) {
+                        callback.onResult(true);
+                    }
+                };
         final AwTestContainerView testContainerView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(contentClient);
         final AwContents awContents = testContainerView.getAwContents();
@@ -3350,8 +3634,8 @@ public class AwSettingsTest {
             httpServer.setResponse(jsUrl, "window.loaded_js = 42;", null);
             httpServer.setResponseBase64(imageUrl, CommonResources.FAVICON_DATA_BASE64, null);
 
-            final String jsHtml = "<script src=\"" + httpServer.getResponseUrl(jsUrl)
-                    + "\"></script>";
+            final String jsHtml =
+                    "<script src=\"" + httpServer.getResponseUrl(jsUrl) + "\"></script>";
             final String imageHtml = "<img src=\"" + httpServer.getResponseUrl(imageUrl) + "\" />";
             final String secureHtml = "<body>" + imageHtml + " " + jsHtml + "</body>";
 
@@ -3376,8 +3660,9 @@ public class AwSettingsTest {
                 // COMPATIBILITY_MODE enables autoupgrades for passive mixed content (including
                 // images), so we set the image url to the HTTP version of the HTTPS server, and
                 // check it was autoupgraded by expecting the HTTPS server to be hit.
-                String httpImageUrl = httpsServer.setResponseBase64(
-                        imageUrl, CommonResources.FAVICON_DATA_BASE64, null);
+                String httpImageUrl =
+                        httpsServer.setResponseBase64(
+                                imageUrl, CommonResources.FAVICON_DATA_BASE64, null);
                 httpImageUrl = httpImageUrl.replaceFirst("https", "http");
                 final String autoupgradedImageHtml = "<img src=\"" + httpImageUrl + "\" />";
                 final String htmlForAutoupgrade =
@@ -3419,13 +3704,15 @@ public class AwSettingsTest {
         try {
             httpServer = TestWebServer.start();
 
-            String url = httpServer.setResponseWithRunnableAction(
-                    "/about.html", "Hello, World!", null,
-                    () -> {
-                        // This will update the UA string on the UI thread synchronously.
-                        awSettings.setUserAgentString("UA Override");
-                    }
-            );
+            String url =
+                    httpServer.setResponseWithRunnableAction(
+                            "/about.html",
+                            "Hello, World!",
+                            null,
+                            () -> {
+                                // This will update the UA string on the UI thread synchronously.
+                                awSettings.setUserAgentString("UA Override");
+                            });
 
             DoUpdateVisitedHistoryHelper doUpdateVisitedHistoryHelper =
                     contentClient.getDoUpdateVisitedHistoryHelper();
@@ -3451,15 +3738,20 @@ public class AwSettingsTest {
     private static class EmptyDocumentPersistenceTestDependencyFactory
             extends TestDependencyFactory {
         private boolean mAllow;
+
         public EmptyDocumentPersistenceTestDependencyFactory(boolean allow) {
             mAllow = allow;
         }
 
         @Override
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
-            return new AwSettings(context, false /* isAccessFromFileURLsGrantedByDefault */,
-                    supportsLegacyQuirks, mAllow, true /* allowGeolocationOnInsecureOrigins */,
-                    false /* doNotUpdateSelectionOnMutatingSelectionRange */);
+            return new AwSettings(
+                    context,
+                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    supportsLegacyQuirks,
+                    mAllow,
+                    /* allowGeolocationOnInsecureOrigins= */ true,
+                    /* doNotUpdateSelectionOnMutatingSelectionRange= */ false);
         }
     }
 
@@ -3471,15 +3763,21 @@ public class AwSettingsTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client);
         final AwContents awContents = mContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                awContents, client.getOnEvaluateJavaScriptResultHelper(),
-                "window.emptyDocumentPersistenceTest = true;");
-        mActivityTestRule.loadUrlSync(awContents, client.getOnPageFinishedHelper(),
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
-        String result = JSUtils.executeJavaScriptAndWaitForResult(
-                InstrumentationRegistry.getInstrumentation(), awContents,
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents,
                 client.getOnEvaluateJavaScriptResultHelper(),
-                "window.emptyDocumentPersistenceTest ? 'set' : 'not set';");
+                "window.emptyDocumentPersistenceTest = true;");
+        mActivityTestRule.loadUrlSync(
+                awContents,
+                client.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        String result =
+                JSUtils.executeJavaScriptAndWaitForResult(
+                        InstrumentationRegistry.getInstrumentation(),
+                        awContents,
+                        client.getOnEvaluateJavaScriptResultHelper(),
+                        "window.emptyDocumentPersistenceTest ? 'set' : 'not set';");
         Assert.assertEquals(allow ? "\"set\"" : "\"not set\"", result);
     }
 
@@ -3508,12 +3806,13 @@ public class AwSettingsTest {
         CallbackHelper onPageFinishedHelper = client.getOnPageFinishedHelper();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         final String expectedTitle = "false"; // https://crbug.com/618472
-        final String page = "<!doctype html>"
-                + "<script>"
-                + "window.onload = function() {"
-                + "  document.title = CSS.supports('color', '#AABBCCDD');"
-                + "};"
-                + "</script>";
+        final String page =
+                "<!doctype html>"
+                        + "<script>"
+                        + "window.onload = function() {"
+                        + "  document.title = CSS.supports('color', '#AABBCCDD');"
+                        + "};"
+                        + "</script>";
         // Loading the html via a data URI requires us to encode '#' symbols as '%23'.
         mActivityTestRule.loadDataSync(
                 awContents, onPageFinishedHelper, page.replace("#", "%23"), "text/html", false);
@@ -3523,16 +3822,20 @@ public class AwSettingsTest {
 
     private static class SelectionRangeTestDependencyFactory extends TestDependencyFactory {
         private boolean mDoNotUpdate;
+
         public SelectionRangeTestDependencyFactory(boolean doNotUpdate) {
             mDoNotUpdate = doNotUpdate;
         }
 
         @Override
         public AwSettings createAwSettings(Context context, boolean supportsLegacyQuirks) {
-            return new AwSettings(context, false /* isAccessFromFileURLsGrantedByDefault */,
-                    supportsLegacyQuirks, false /* allowEmptyDocumentPersistence */,
-                    true /* allowGeolocationOnInsecureOrigins */,
-                    mDoNotUpdate /* doNotUpdateSelectionOnMutatingSelectionRange */);
+            return new AwSettings(
+                    context,
+                    /* isAccessFromFileURLsGrantedByDefault= */ false,
+                    supportsLegacyQuirks,
+                    /* allowEmptyDocumentPersistence= */ false,
+                    /* allowGeolocationOnInsecureOrigins= */ true,
+                    /* doNotUpdateSelectionOnMutatingSelectionRange= */ mDoNotUpdate);
         }
     }
 
@@ -3546,24 +3849,29 @@ public class AwSettingsTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         final String testPageHtml =
                 "<html><head></head><body><div id='a' contenteditable></div><script>"
-                + "var cnt = 0;"
-                + "var a = document.getElementById('a');"
-                + "document.addEventListener('selectionchange', onSelectionChange, false);"
-                + "function onSelectionChange(event) {"
-                + "  cnt++;"
-                + "}"
-                + "</script></body></html>";
+                        + "var cnt = 0;"
+                        + "var a = document.getElementById('a');"
+                        + "document.addEventListener('selectionchange', onSelectionChange, false);"
+                        + "function onSelectionChange(event) {"
+                        + "  cnt++;"
+                        + "}"
+                        + "</script></body></html>";
         mActivityTestRule.loadDataSync(
                 awContents, client.getOnPageFinishedHelper(), testPageHtml, "text/html", false);
 
         // Focus on an empty DIV.
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                awContents, client.getOnEvaluateJavaScriptResultHelper(), "window.a.focus();");
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents,
+                client.getOnEvaluateJavaScriptResultHelper(),
+                "window.a.focus();");
         Assert.assertEquals(1, getSelectionChangeCountForSelectionUpdateTest(awContents, client));
 
         // Create and delete a zero-width space. See crbug.com/698752 for details.
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                awContents, client.getOnEvaluateJavaScriptResultHelper(),
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents,
+                client.getOnEvaluateJavaScriptResultHelper(),
                 "(function() {"
                         + "var sel = window.getSelection();"
                         + "var range = sel.getRangeAt(0);"
@@ -3590,17 +3898,25 @@ public class AwSettingsTest {
         String expectedTitle = Integer.toString(mTitleIdx);
         // Since selectionchange event is posted on a message loop, we run another message loop
         // before we get the result. On Chromium both run on the same message loop.
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                awContents, client.getOnEvaluateJavaScriptResultHelper(),
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents,
+                client.getOnEvaluateJavaScriptResultHelper(),
                 "setTimeout(function() { document.title = '" + expectedTitle + "'; });");
         pollTitleAs(expectedTitle, awContents);
 
-        String result = JSUtils.executeJavaScriptAndWaitForResult(
-                InstrumentationRegistry.getInstrumentation(), awContents,
-                client.getOnEvaluateJavaScriptResultHelper(), "window.cnt");
+        String result =
+                JSUtils.executeJavaScriptAndWaitForResult(
+                        InstrumentationRegistry.getInstrumentation(),
+                        awContents,
+                        client.getOnEvaluateJavaScriptResultHelper(),
+                        "window.cnt");
         // Clean up
-        JSUtils.executeJavaScriptAndWaitForResult(InstrumentationRegistry.getInstrumentation(),
-                awContents, client.getOnEvaluateJavaScriptResultHelper(), "window.cnt = 0;");
+        JSUtils.executeJavaScriptAndWaitForResult(
+                InstrumentationRegistry.getInstrumentation(),
+                awContents,
+                client.getOnEvaluateJavaScriptResultHelper(),
+                "window.cnt = 0;");
         return Integer.parseInt(result);
     }
 
@@ -3661,8 +3977,11 @@ public class AwSettingsTest {
         private final AwTestContainerView mContainer1;
         private final TestAwContentsClient mClient1;
 
-        ViewPair(AwTestContainerView container0, TestAwContentsClient client0,
-                 AwTestContainerView container1, TestAwContentsClient client1) {
+        ViewPair(
+                AwTestContainerView container0,
+                TestAwContentsClient client0,
+                AwTestContainerView container1,
+                TestAwContentsClient client1) {
             this.mContainer0 = container0;
             this.mClient0 = client0;
             this.mContainer1 = container1;
@@ -3750,8 +4069,9 @@ public class AwSettingsTest {
     private ViewPair createViews(boolean supportsLegacyQuirks) {
         TestAwContentsClient client0 = new TestAwContentsClient();
         TestAwContentsClient client1 = new TestAwContentsClient();
-        return new ViewPair(mActivityTestRule.createAwTestContainerViewOnMainSync(
-                                    client0, supportsLegacyQuirks),
+        return new ViewPair(
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        client0, supportsLegacyQuirks),
                 client0,
                 mActivityTestRule.createAwTestContainerViewOnMainSync(
                         client1, supportsLegacyQuirks),
@@ -3761,7 +4081,10 @@ public class AwSettingsTest {
     static void assertFileIsReadable(String filePath) {
         File file = new File(filePath);
         try {
-            Assert.assertTrue("Test file \"" + filePath + "\" is not readable."
+            Assert.assertTrue(
+                    "Test file \""
+                            + filePath
+                            + "\" is not readable."
                             + "Please make sure that files from "
                             + "android_webview/test/data/device_files/ has been pushed to the "
                             + "device before testing",
@@ -3795,9 +4118,13 @@ public class AwSettingsTest {
         final int x = (webView.getRight() - webView.getLeft()) / 2;
         final int y = (webView.getBottom() - webView.getTop()) / 2;
         final AwContents awContents = webView.getAwContents();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> awContents.getWebContents().getEventForwarder().doubleTapForTest(
-                                SystemClock.uptimeMillis(), x, y));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () ->
+                                awContents
+                                        .getWebContents()
+                                        .getEventForwarder()
+                                        .doubleTapForTest(SystemClock.uptimeMillis(), x, y));
     }
 
     private boolean isTablet() {

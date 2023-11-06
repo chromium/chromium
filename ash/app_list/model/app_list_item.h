@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "components/sync/model/string_ordinal.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/view.h"
 
 namespace ash {
 enum class AppListConfigType;
@@ -45,7 +44,8 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // for the config has not been set using `SetIcon()`. The icon color is
   // associated with the icon so set the icon color when the icon is set.
   void SetDefaultIconAndColor(const gfx::ImageSkia& icon,
-                              const IconColor& color);
+                              const IconColor& color,
+                              bool is_placeholder_icon);
   const gfx::ImageSkia& GetDefaultIcon() const;
 
   // Returns the icon color associated with the default icon.
@@ -59,16 +59,25 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // and UI would be updated since it also observe ItemIconChanged.
   void SetIconVersion(int icon_version);
 
+  const gfx::ImageSkia& GetHostBadgeIcon() const;
+  void SetHostBadgeIcon(const gfx::ImageSkia bage_icon);
+
   SkColor GetNotificationBadgeColor() const;
   void SetNotificationBadgeColor(const SkColor color);
 
-  const std::string& GetDisplayName() const {
-    return short_name_.empty() ? name() : short_name_;
+  // TODO(b/306077411): Refactor all calls to this method to just use the name
+  // directly then delete this method.
+  const std::string& GetDisplayName() const { return name(); }
+
+  // Returns the name to be used as the accessible label for the item.
+  const std::string& GetAccessibleName() {
+    return accessible_name().empty() ? name() : accessible_name();
   }
 
   const std::string& name() const { return metadata_->name; }
-  // Should only be used in tests; otherwise use GetDisplayName().
-  const std::string& short_name() const { return short_name_; }
+  const std::string& accessible_name() const {
+    return metadata_->accessible_name;
+  }
 
   bool IsInFolder() const { return !folder_id().empty(); }
 
@@ -153,6 +162,9 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // Sets the full name of the item. Clears any shortened name.
   void SetName(const std::string& name);
 
+  // Sets the name to be used as the accessible name for the item.
+  void SetAccessibleName(const std::string& accessible_name);
+
   // Updates whether the notification badge is shown on the view.
   void UpdateNotificationBadge(bool has_badge);
 
@@ -177,9 +189,6 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   // This is currently used for folder icons only (which are all generated in
   // ash).
   std::map<AppListConfigType, gfx::ImageSkia> per_config_icons_;
-
-  // A shortened name for the item, used for display.
-  std::string short_name_;
 
   // Whether this item currently has a notification badge that should be shown.
   bool has_notification_badge_ = false;

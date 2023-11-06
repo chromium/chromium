@@ -46,14 +46,24 @@ namespace {
 class ShelfItemFactoryFake : public ShelfModel::ShelfItemFactory {
  public:
   virtual ~ShelfItemFactoryFake() = default;
-  bool CreateShelfItemForAppId(
-      const std::string& app_id,
-      ShelfItem* item,
-      std::unique_ptr<ShelfItemDelegate>* delegate) override {
-    *item = ShelfItem();
-    item->id = ShelfID(app_id);
-    *delegate = std::make_unique<TestShelfItemDelegate>(item->id);
-    return true;
+
+  // ShelfModel::ShelfItemFactory:
+  std::unique_ptr<ShelfItem> CreateShelfItemForApp(
+      const ShelfID& shelf_id,
+      ShelfItemStatus status,
+      ShelfItemType shelf_item_type,
+      const std::u16string& title) override {
+    auto item = std::make_unique<ShelfItem>();
+    item->id = shelf_id;
+    item->status = status;
+    item->type = shelf_item_type;
+    item->title = title;
+    return item;
+  }
+
+  std::unique_ptr<ShelfItemDelegate> CreateShelfItemDelegateForAppId(
+      const std::string& app_id) override {
+    return std::make_unique<TestShelfItemDelegate>(ShelfID(app_id));
   }
 };
 

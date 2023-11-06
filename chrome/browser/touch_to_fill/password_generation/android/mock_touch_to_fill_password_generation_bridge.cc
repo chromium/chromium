@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/touch_to_fill/password_generation/android/mock_touch_to_fill_password_generation_bridge.h"
-#include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_delegate.h"
+
 #include "testing/gmock/include/gmock/gmock.h"
 
 MockTouchToFillPasswordGenerationBridge::

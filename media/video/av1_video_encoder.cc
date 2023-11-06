@@ -255,8 +255,13 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   CALL_AOM_CONTROL(AV1E_SET_INTRA_DEFAULT_TX_ONLY, 1);
   CALL_AOM_CONTROL(AV1E_SET_SVC_PARAMS, &svc_params_);
 
-  if (config_.rc_end_usage == AOM_CBR)
+  if (config_.rc_end_usage == AOM_CBR) {
     CALL_AOM_CONTROL(AV1E_SET_AQ_MODE, 3);
+  }
+
+  if (options.content_hint == ContentHint::Screen) {
+    CALL_AOM_CONTROL(AV1E_SET_TUNE_CONTENT, AOM_CONTENT_SCREEN);
+  }
 
   // Keep in mind that AV1E_SET_TILE_[COLUMNS|ROWS] uses log2 units.
   int log2_threads = std::log2(config_.g_threads);
@@ -293,8 +298,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   // two sides of realtime range for our 'realtime' and 'quality' modes
   // because we don't want encoding speed to drop into single digit fps
   // even in quality mode.
-  const int cpu_speed =
-      (options.latency_mode == VideoEncoder::LatencyMode::Realtime) ? 9 : 7;
+  const int cpu_speed = (options.latency_mode == LatencyMode::Realtime) ? 9 : 7;
   CALL_AOM_CONTROL(AOME_SET_CPUUSED, cpu_speed);
 #undef CALL_AOM_CONTROL
 

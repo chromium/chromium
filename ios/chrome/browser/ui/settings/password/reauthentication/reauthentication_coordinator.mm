@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/check.h"
+#import "base/debug/dump_without_crashing.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -206,7 +207,15 @@
         // Reauth vc should have been pushed on
         // `SceneActivationLevelForegroundInactive` when the scene was moving to
         // the background.
-        DCHECK(_reauthViewController);
+        if (!_reauthViewController) {
+          // TODO(crbug.com/1492017): Fix scenario where the scene is active but
+          // reauth vc wasn't pushed when inactive.
+          base::debug::DumpWithoutCrashing();
+          // Gracefully handling this scenario by pushing the reauth vc and
+          // request auth.
+          [self pushReauthenticationViewControllerWithRequestAuth:YES];
+          return;
+        }
 
         [_reauthViewController requestAuthentication];
       } else {

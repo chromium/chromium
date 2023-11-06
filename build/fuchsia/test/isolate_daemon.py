@@ -30,6 +30,10 @@ class IsolateDaemon(AbstractContextManager):
         def __exit__(self, exc_type, exc_value, traceback):
             return self._temp_dir.__exit__(exc_type, exc_value, traceback)
 
+        def name(self):
+            """Returns the location of the isolate dir."""
+            return self._temp_dir.name
+
     def __init__(self, extra_inits: List[AbstractContextManager] = None):
         self._extra_inits = [
             self.IsolateDir(),
@@ -54,11 +58,18 @@ class IsolateDaemon(AbstractContextManager):
             extra_init.__exit__(exc_type, exc_value, traceback)
         stop_ffx_daemon()
 
+    def isolate_dir(self):
+        """Returns the location of the isolate dir."""
+        return self._extra_inits[0].name()
+
 
 def main():
     """Executes the IsolateDaemon and waits for the sigterm."""
     catch_sigterm()
-    with IsolateDaemon():
+    with IsolateDaemon() as daemon:
+        # Clients can assume the daemon is up and running when the output is
+        # captured. Note, the client may rely on the printed isolate_dir.
+        print(daemon.isolate_dir(), flush=True)
         wait_for_sigterm('shutting down the daemon.')
 
 

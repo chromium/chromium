@@ -61,11 +61,12 @@ void MockQuotaClient::AddBucketToErrorSet(const BucketLocator& bucket) {
 
 base::Time MockQuotaClient::IncrementMockTime() {
   ++mock_time_counter_;
-  return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
+  return base::Time::FromSecondsSinceUnixEpoch(mock_time_counter_ * 10.0);
 }
 
 void MockQuotaClient::GetBucketUsage(const BucketLocator& bucket,
                                      GetBucketUsageCallback callback) {
+  ++get_bucket_usage_call_count_;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockQuotaClient::RunGetBucketUsage,

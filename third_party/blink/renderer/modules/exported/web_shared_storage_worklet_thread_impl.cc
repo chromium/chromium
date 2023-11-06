@@ -25,7 +25,8 @@ mojom::blink::WorkletGlobalScopeCreationParamsPtr ToBlinkMojomType(
           global_scope_creation_params->origin_trial_features),
       global_scope_creation_params->devtools_token,
       CrossVariantMojoRemote<mojom::WorkletDevToolsHostInterfaceBase>(
-          std::move(global_scope_creation_params->devtools_host)));
+          std::move(global_scope_creation_params->devtools_host)),
+      global_scope_creation_params->wait_for_debugger);
 }
 
 }  // namespace

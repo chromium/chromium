@@ -235,15 +235,11 @@ FormFieldData CreateTestDatalistField(std::string_view label,
   FormFieldData field =
       CreateTestFormField(label, name, value, FormControlType::kInputText);
 
-  field.datalist_values.reserve(values.size());
-  for (const auto* x : values) {
-    field.datalist_values.emplace_back(base::UTF8ToUTF16(x));
+  field.datalist_options.reserve(std::min(values.size(), labels.size()));
+  for (size_t i = 0; i < std::min(values.size(), labels.size()); ++i) {
+    field.datalist_options.push_back({.value = base::UTF8ToUTF16(values[i]),
+                                      .content = base::UTF8ToUTF16(labels[i])});
   }
-  field.datalist_labels.reserve(labels.size());
-  for (const auto* x : values) {
-    field.datalist_labels.emplace_back(base::UTF8ToUTF16(x));
-  }
-
   return field;
 }
 

@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/desk_profiles_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
@@ -449,4 +450,8 @@ void ChromeShellDelegate::ShouldExitFullscreenBeforeLock(
       ->crosapi_ash()
       ->fullscreen_controller_ash()
       ->ShouldExitFullscreenBeforeLock(std::move(callback));
+}
+
+ash::DeskProfilesDelegate* ChromeShellDelegate::GetDeskProfilesDelegate() {
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->desk_profiles_ash();
 }

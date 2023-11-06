@@ -502,7 +502,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
     // ListValue stores Value type and Value does not support base::Time,
     // so we store double and convert to base::Time here.
     const base::Time current_item_time =
-        base::Time::FromDoubleT(item.GetDouble());
+        base::Time::FromSecondsSinceUnixEpoch(item.GetDouble());
 
     // Logs are valid only if they occur in previous kLogThrottleWindowDuration
     // time window.
@@ -525,7 +525,7 @@ base::Time SystemLogUploader::UpdateLocalStateForLogs() {
   // Create a list to be updated for the pref.
   base::Value::List updated_prev_log_uploads;
   for (auto it : updated_log_uploads) {
-    updated_prev_log_uploads.Append(it.ToDoubleT());
+    updated_prev_log_uploads.Append(it.InSecondsFSinceUnixEpoch());
   }
   local_state->SetList(prefs::kStoreLogStatesAcrossReboots,
                        std::move(updated_prev_log_uploads));

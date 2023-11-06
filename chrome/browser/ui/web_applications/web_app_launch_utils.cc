@@ -79,6 +79,10 @@
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/constants/chromeos_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace web_app {
 
 namespace {
@@ -503,8 +507,8 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Highly experimental feature to isolate web app application with a different
   // storage partition.
-  if (ResolveExperimentalWebAppIsolationFeature() ==
-      ExperimentalWebAppIsolationMode::kStoragePartition) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kExperimentalWebAppStoragePartitionIsolation)) {
     // TODO(crbug.com/1425284): Cover other app launch paths (e.g. restore
     // apps).
     auto partition_config = content::StoragePartitionConfig::Create(

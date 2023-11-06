@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -72,7 +73,16 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
-
+    ASSERT_TRUE(SetupClients());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    // We need to enable the Apps toggle for both Client
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    }
+#endif
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   }
@@ -443,6 +453,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+// On Lacros, syncing of Apps is only enabled in the "main" profile.
+// TwoClientWebAppsSyncTest (via WebAppsSyncTestBase) bypasses the "main profile"
+// check, so that syncing actually happens. This class does not, so that the
+// Lacros restriction (Apps sync only in main profile) applies.
 class TwoClientLacrosWebAppsSyncTest : public SyncTest {
  public:
   TwoClientLacrosWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
@@ -458,6 +472,16 @@ class TwoClientLacrosWebAppsSyncTest : public SyncTest {
 
 IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
                        SyncDisabledUnlessPrimary) {
+  ASSERT_TRUE(SetupClients());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Apps sync is controlled by a dedicated preference on Lacros,
+  // corresponding to the Apps toggle in OS Sync settings.
+  // Enable the Apps toggle for both clients.
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+  }
+#endif
   ASSERT_TRUE(SetupSync());
 
   {

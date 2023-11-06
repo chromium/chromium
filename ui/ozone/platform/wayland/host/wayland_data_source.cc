@@ -38,7 +38,7 @@ DataSource<T>::~DataSource() {
 template <typename T>
 void DataSource<T>::HandleFinishEvent(bool completed) {
   VLOG(1) << "OnDataSourceFinish in WaylandDataSource";
-  delegate_->OnDataSourceFinish(completed);
+  delegate_->OnDataSourceFinish(this, completed);
 }
 
 // Writes |data_str| to file descriptor |fd| assuming it is flagged as
@@ -65,7 +65,7 @@ bool WriteDataNonBlocking(int fd, const std::string& data_str) {
 template <typename T>
 void DataSource<T>::HandleSendEvent(const std::string& mime_type, int32_t fd) {
   std::string contents;
-  delegate_->OnDataSourceSend(mime_type, &contents);
+  delegate_->OnDataSourceSend(this, mime_type, &contents);
   bool done = WriteDataNonBlocking(fd, contents);
   VPLOG_IF(1, !done) << "Failed to write";
   close(fd);

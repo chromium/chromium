@@ -1,24 +1,38 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Enterprise Reporting</title>
-  <script type="module"
-          src="chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js">
+  <script type="module" src="chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js">
   </script>
   <script type="module" src="reporting_history.js"></script>
-  <style>
-    cr-tab-box {
-      --tabs-background-color: white;
-    }
-  </style>
+  <script type="module" src="device_info.js"></script>
+  <link rel="stylesheet" href="enterprise_reporting.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 </head>
+
 <body>
+  <header>
+    <div id="topbar">
+      <div id="left-content" class="topbar-item">
+        <div id="topbar-brand">
+          <div id="topbar-brand-logo"></div>
+          <h1 id="topbar-title">Enterprise Reporting</h1>
+        </div>
+      </div>
+    </div>
+  </header>
   <cr-tab-box>
     <div slot="tab">Events History</div>
     <div slot="panel">
       <reporting-history-element></reporting-history-element>
     </div>
+    <div slot="tab">Device Information</div>
+    <div slot="panel">
+      <device-info-element></device-info-element>
+    </div>
   </cr-tab-box>
 </body>
+
 </html>

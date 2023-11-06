@@ -47,7 +47,7 @@ void ActionTypeButtonGroup::Init() {
       base::BindRepeating(&ActionTypeButtonGroup::OnActionMoveButtonPressed,
                           base::Unretained(this)),
       // TODO(b/274690042): Replace placeholder text with localized strings.
-      u"Dpad", kGameControlsDpadKeyboardIcon);
+      u"Joystick", kGameControlsDpadKeyboardIcon);
 
   selected_action_type_ = action_->GetType();
   switch (selected_action_type_) {
@@ -89,7 +89,7 @@ void ActionTypeButtonGroup::OnButtonSelected(ash::OptionButtonBase* button) {
       b->SetSelected(false);
     }
     auto* action_type_button = static_cast<ActionTypeButton*>(b);
-    action_type_button->RefreshTextColor();
+    action_type_button->RefreshColors();
   }
 }
 

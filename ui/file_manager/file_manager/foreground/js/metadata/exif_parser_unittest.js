@@ -7,8 +7,8 @@ import {assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert
 import {ExifEntry} from '../../../externs/exif_entry.js';
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
-import {ByteReader} from './byte_reader.js';
-import {Exif} from './exif_constants.js';
+import {ByteOrder, ByteReader} from './byte_reader.js';
+import {ExifTag} from './exif_constants.js';
 import {ExifParser} from './exif_parser.js';
 
 class ByteWriter {
@@ -27,7 +27,7 @@ class ByteWriter {
 
   /**
    * If key is a number, format it in hex style.
-   * @param {!(string|Exif.Tag)} key A key.
+   * @param {!(string|ExifTag)} key A key.
    * @return {string} Formatted representation.
    */
   static prettyKeyFormat(key) {
@@ -40,11 +40,11 @@ class ByteWriter {
 
   /**
    * Set the byte ordering for future writes.
-   * @param {ByteWriter.ByteOrder} order ByteOrder to use
-   *     {ByteWriter.LITTLE_ENDIAN} or {ByteWriter.BIG_ENDIAN}.
+   * @param {ByteOrder} order ByteOrder to use
+   *     {ByteOrder.LITTLE_ENDIAN} or {ByteOrder.BIG_ENDIAN}.
    */
   setByteOrder(order) {
-    this.littleEndian_ = (order === ByteWriter.ByteOrder.LITTLE_ENDIAN);
+    this.littleEndian_ = (order === ByteOrder.LITTLE_ENDIAN);
   }
 
   /**
@@ -104,10 +104,11 @@ class ByteWriter {
 
       default:
         throw new Error('Invalid width: ' + width);
-        break;
     }
 
     this.validateWrite(width);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type 'DataView'.
     this.view_[method](this.pos_, value, this.littleEndian_);
     this.pos_ += width;
   }
@@ -126,7 +127,7 @@ class ByteWriter {
   /**
    * Allocate the space for 'width' bytes for the value that will be set later.
    * To be followed by a 'resolve' call with the same key.
-   * @param {(string|Exif.Tag)} key A key to identify the value.
+   * @param {(string|ExifTag)} key A key to identify the value.
    * @param {number} width Width of the value in bytes.
    */
   forward(key, width) {
@@ -134,6 +135,8 @@ class ByteWriter {
       throw new Error('Duplicate forward key ' + key);
     }
     this.validateWrite(width);
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     this.forwards_[key] = {
       pos: this.pos_,
       width: width,
@@ -143,24 +146,28 @@ class ByteWriter {
 
   /**
    * Set the value previously allocated with a 'forward' call.
-   * @param {(string|Exif.Tag)} key A key to identify the value.
+   * @param {(string|ExifTag)} key A key to identify the value.
    * @param {number} value value to write in pre-allocated space.
    */
   resolve(key, value) {
     if (!(key in this.forwards_)) {
       throw new Error('Undeclared forward key ' + key.toString(16));
     }
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     const forward = this.forwards_[key];
     const curPos = this.pos_;
     this.pos_ = forward.pos;
     this.writeScalar(value, forward.width);
     this.pos_ = curPos;
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string | number' can't be used to index type '{}'.
     delete this.forwards_[key];
   }
 
   /**
    * A shortcut to resolve the value to the current write position.
-   * @param {(string|Exif.Tag)} key A key to identify pre-allocated position.
+   * @param {(string|ExifTag)} key A key to identify pre-allocated position.
    */
   resolveOffset(key) {
     this.resolve(key, this.tell());
@@ -178,20 +185,9 @@ class ByteWriter {
 }
 
 /**
- * Byte order.
- * @enum {number}
- */
-ByteWriter.ByteOrder = {
-  // Little endian byte order.
-  LITTLE_ENDIAN: 0,
-  // Big endian byte order.
-  BIG_ENDIAN: 1,
-};
-
-/**
  * Creates a directory with specified tag. This method only supports string
  * format tag, which is longer than 4 characters.
- * @param {!TypedArray} bytes Bytes to be written.
+ * @param {!ArrayBufferView} bytes Bytes to be written.
  * @param {!ExifEntry} tag An exif entry which will be written.
  */
 function writeDirectory_(bytes, tag) {
@@ -224,14 +220,17 @@ class ConsoleLogger {
     this.verbose = true;
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   error(arg) {
     console.error(arg);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   log(arg) {
     console.log(arg);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'arg' implicitly has an 'any' type.
   vlog(arg) {
     console.log(arg);
   }
@@ -239,14 +238,16 @@ class ConsoleLogger {
 
 /**
  * Parses exif data bytes (with logging) and returns the parsed tags.
- * @param {!TypedArray} bytes Bytes to be read.
- * @return {!Object<!Exif.Tag, !ExifEntry>} Tags.
+ * @param {!ArrayBufferView} bytes Bytes to be read.
+ * @return {!Object<!ExifTag, !ExifEntry>} Tags.
  */
 function parseExifData_(bytes) {
   const exifParser = new ExifParser(new ConsoleLogger());
 
   const tags = {};
   const byteReader = new ByteReader(bytes.buffer);
+  // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+  // parameter of type '{ [x: number]: Object; }'.
   assertEquals(0, exifParser.readDirectory(byteReader, tags));
   return tags;
 }
@@ -258,7 +259,7 @@ export function testWithoutNullCharacterTermination() {
   // Create exif with a value that does not end with null character.
   const data = new Uint8Array(0x10000);
   writeDirectory_(data, /** @type {!ExifEntry} */ ({
-                    id: 0x10f,          // Manufacturer Id.
+                    id: ExifTag.MAKE,   // Manufacturer Id.
                     format: 2,          // String format.
                     componentCount: 8,  // Length of value 'Manufact'.
                     value: 'Manufact',
@@ -268,7 +269,7 @@ export function testWithoutNullCharacterTermination() {
   const tags = parseExifData_(data);
 
   // The parsed value should end in a null character.
-  const parsedTag = tags[/** @type {!Exif.Tag<number>} */ (0x10f)];
+  const parsedTag = tags[ExifTag.MAKE];
   assertEquals(9, parsedTag.componentCount);
   assertEquals('Manufact\0', parsedTag.value);
 }

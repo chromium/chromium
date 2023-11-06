@@ -122,21 +122,21 @@ class NearbyPresenceTest : public testing::Test,
   void OnDeviceFound(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_found_++;
-    last_device_found_name_ = device->device_name;
+    last_device_found_name_ = device->metadata->device_name;
     std::move(next_on_device_found_callback_).Run();
   }
 
   void OnDeviceChanged(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_changed_++;
-    last_device_changed_name_ = device->device_name;
+    last_device_changed_name_ = device->metadata->device_name;
     std::move(next_on_device_changed_callback_).Run();
   }
 
   void OnDeviceLost(
       ash::nearby::presence::mojom::PresenceDevicePtr device) override {
     num_devices_lost_++;
-    last_device_lost_name_ = device->device_name;
+    last_device_lost_name_ = device->metadata->device_name;
     std::move(next_on_device_lost_callback_).Run();
   }
 

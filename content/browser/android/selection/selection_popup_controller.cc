@@ -4,6 +4,8 @@
 
 #include "content/browser/android/selection/selection_popup_controller.h"
 
+#include <cstdlib>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -30,6 +32,27 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
+namespace {
+
+const int kMaxOffsetAdjust = 50;
+const int kMaxOffsetExtendedAdjust = 250;
+
+bool IsOffsetAdjustValid(
+    int startOffset,
+    int endOffset,
+    int surroundingTextLength,
+    const blink::mojom::SelectAroundCaretResultPtr& result) {
+  return std::abs(result->word_start_adjust) < kMaxOffsetAdjust &&
+         std::abs(result->word_end_adjust) < kMaxOffsetAdjust &&
+         std::abs(result->extended_start_adjust) < kMaxOffsetExtendedAdjust &&
+         std::abs(result->extended_end_adjust) < kMaxOffsetExtendedAdjust &&
+         startOffset + result->extended_start_adjust >= 0 &&
+         startOffset + result->extended_start_adjust <= surroundingTextLength &&
+         endOffset + result->extended_end_adjust >= 0 &&
+         endOffset + result->extended_end_adjust <= surroundingTextLength;
+}
+
+}  // namespace
 
 namespace {
 
@@ -228,8 +251,7 @@ bool SelectionPopupController::ShowSelectionMenu(
   const bool can_edit_richly =
       !!(params.edit_flags & blink::ContextMenuDataEditFlags::kCanEditRichly);
   const bool is_password_type =
-      params.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+      params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
   const bool should_suggest = params.source_type == ui::MENU_SOURCE_TOUCH ||
@@ -246,18 +268,24 @@ bool SelectionPopupController::ShowSelectionMenu(
 }
 
 void SelectionPopupController::OnSelectAroundCaretAck(
+    int startOffset,
+    int endOffset,
+    int surroundingTextLength,
     blink::mojom::SelectAroundCaretResultPtr result) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
-  if (result.is_null()) {
-    Java_SelectionPopupControllerImpl_onSelectAroundCaretFailure(env, obj);
-  } else {
-    Java_SelectionPopupControllerImpl_onSelectAroundCaretSuccess(
-        env, obj, result->extended_start_adjust, result->extended_end_adjust,
-        result->word_start_adjust, result->word_end_adjust);
   }
+  if (result.is_null() || !IsOffsetAdjustValid(startOffset, endOffset,
+                                               surroundingTextLength, result)) {
+    Java_SelectionPopupControllerImpl_onSelectAroundCaretFailure(env, obj);
+    return;
+  }
+
+  Java_SelectionPopupControllerImpl_onSelectAroundCaretSuccess(
+      env, obj, result->extended_start_adjust, result->extended_end_adjust,
+      result->word_start_adjust, result->word_end_adjust);
 }
 
 void SelectionPopupController::HidePopupsAndPreserveSelection() {

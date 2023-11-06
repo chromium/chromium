@@ -15,6 +15,7 @@
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/ios_module_ranker.h"
 #import "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
+#import "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #import "components/segmentation_platform/embedder/default_model/password_manager_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/search_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
@@ -47,6 +48,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
   configs.emplace_back(IosModuleRanker::GetConfig());
+  configs.emplace_back(MostVisitedTilesUser::GetConfig());
 
   // Add new configs here.
   base::EraseIf(configs, [](const auto& config) { return !config.get(); });
@@ -73,9 +75,6 @@ void IOSFieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   // Per target checks should be replaced by making this as a ModelProvider
   // method.
   absl::optional<std::string> group_name;
-  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
-  }
 
   if (!group_name) {
     return;

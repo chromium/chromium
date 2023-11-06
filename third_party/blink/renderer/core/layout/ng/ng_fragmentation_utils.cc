@@ -598,7 +598,7 @@ NGBreakStatus FinishFragmentation(NGBlockNode node,
 
   bool was_broken_by_child = builder->HasInflowChildBreakInside();
   if (!was_broken_by_child && space.IsNewFormattingContext())
-    was_broken_by_child = builder->ExclusionSpace().HasFragmentainerBreak();
+    was_broken_by_child = builder->GetExclusionSpace().HasFragmentainerBreak();
 
   if (space_left == kIndefiniteSize) {
     // We don't know how space is available (initial column balancing pass), so
@@ -984,9 +984,10 @@ bool MovePastBreakpoint(const NGConstraintSpace& space,
 
     // If clearance forces the child to the next fragmentainer, we cannot move
     // past the breakpoint, but rather retry in the next fragmentainer.
-    if (builder && builder->ExclusionSpace().NeedsClearancePastFragmentainer(
-                       child.Style().Clear(space.Direction())))
+    if (builder && builder->GetExclusionSpace().NeedsClearancePastFragmentainer(
+                       child.Style().Clear(space.Direction()))) {
       return false;
+    }
   }
 
   if (!space.HasKnownFragmentainerBlockSize() &&
@@ -1358,6 +1359,12 @@ const NGBlockBreakToken* FindPreviousBreakToken(
   return previous_fragment->BreakToken();
 }
 
+wtf_size_t BoxFragmentIndex(const NGPhysicalBoxFragment& fragment) {
+  DCHECK(!fragment.IsInlineBox());
+  const NGBlockBreakToken* token = FindPreviousBreakToken(fragment);
+  return token ? token->SequenceNumber() + 1 : 0;
+}
+
 wtf_size_t PreviousInnerFragmentainerIndex(
     const NGPhysicalBoxFragment& fragment) {
   // This should be a fragmentation context root, typically a multicol
@@ -1399,33 +1406,45 @@ PhysicalOffset OffsetInStitchedFragments(
   auto writing_direction = fragment.Style().GetWritingDirection();
   LayoutUnit stitched_block_size;
   LayoutUnit fragment_block_offset;
-#if DCHECK_IS_ON()
-  bool found_self = false;
-#endif
-  for (const NGPhysicalBoxFragment& walker :
-       To<LayoutBox>(fragment.GetLayoutObject())->PhysicalFragments()) {
-    if (&walker == &fragment) {
-      fragment_block_offset = stitched_block_size;
-#if DCHECK_IS_ON()
-      found_self = true;
-#endif
+  const LayoutBox* layout_box = To<LayoutBox>(fragment.GetLayoutObject());
+  const auto& first_fragment = *layout_box->GetPhysicalFragment(0);
+  if (first_fragment.BreakToken() &&
+      first_fragment.BreakToken()->IsRepeated()) {
+    // Repeated content isn't stitched.
+    stitched_block_size =
+        NGFragment(writing_direction, first_fragment).BlockSize();
+  } else {
+    if (const auto* previous_break_token = FindPreviousBreakToken(fragment)) {
+      fragment_block_offset = previous_break_token->ConsumedBlockSize();
     }
-    stitched_block_size += NGFragment(writing_direction, walker).BlockSize();
+    if (fragment.IsOnlyForNode()) {
+      stitched_block_size = NGFragment(writing_direction, fragment).BlockSize();
+    } else {
+      wtf_size_t idx = layout_box->PhysicalFragmentCount();
+      DCHECK_GT(idx, 1u);
+      idx--;
+      // Calculating the stitched size is straight-forward if the node isn't
+      // overflowed: Just add the consumed block-size of the last break token
+      // and the block-size of the last fragment. If it is overflowed, on the
+      // other hand, we need to search backwards until we find the end of the
+      // block-end border edge.
+      while (idx) {
+        const NGPhysicalBoxFragment* walker =
+            layout_box->GetPhysicalFragment(idx);
+        stitched_block_size =
+            NGFragment(writing_direction, *walker).BlockSize();
 
-    // Repeated content isn't stitched, so just stop when we have processed one
-    // fragment.
-    if (walker.BreakToken() && walker.BreakToken()->IsRepeated()) {
-#if DCHECK_IS_ON()
-      // We haven't necessarily found |fragment|, but it doesn't matter in this
-      // case. Just silence the DHCECK below.
-      found_self = true;
-#endif
-      break;
+        // Look at the preceding break token.
+        idx--;
+        const NGBlockBreakToken* break_token =
+            layout_box->GetPhysicalFragment(idx)->BreakToken();
+        if (!break_token->IsAtBlockEnd()) {
+          stitched_block_size += break_token->ConsumedBlockSize();
+          break;
+        }
+      }
     }
   }
-#if DCHECK_IS_ON()
-  DCHECK(found_self);
-#endif
   LogicalSize stitched_fragments_logical_size(
       NGFragment(writing_direction, fragment).InlineSize(),
       stitched_block_size);
@@ -1477,10 +1496,7 @@ bool CanPaintMultipleFragments(const LayoutObject& layout_object) {
   if (!layout_box)
     return true;
 
-  // If the object has been laid out inside the legacy engine, always return
-  // true.
-  if (!layout_box->PhysicalFragmentCount())
-    return true;
+  DCHECK(!layout_box->IsFragmentLessBox());
 
   // If the object isn't monolithic, we're good.
   if (!layout_box->IsMonolithic()) {

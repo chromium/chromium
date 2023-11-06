@@ -45,7 +45,7 @@ class FakeCryptAuthSchedulerUpdatedByDeviceSyncResults
       set_num_consecutive_device_sync_failures(0);
       set_time_to_next_device_sync_request(absl::nullopt);
       set_last_successful_device_sync_time(
-          base::Time::FromDoubleT(kFakeLastSuccessTimeSeconds));
+          base::Time::FromSecondsSinceUnixEpoch(kFakeLastSuccessTimeSeconds));
     } else {
       set_num_consecutive_device_sync_failures(
           GetNumConsecutiveDeviceSyncFailures() + 1);
@@ -394,7 +394,7 @@ TEST_F(DeviceSyncCryptAuthV2DeviceManagerImplTest, FailureRetry) {
           true /* did_device_registry_change */,
           cryptauthv2::GetClientDirectiveForTest() /* client_directive */));
   EXPECT_EQ(absl::nullopt, device_manager()->GetTimeToNextAttempt());
-  EXPECT_EQ(base::Time::FromDoubleT(kFakeLastSuccessTimeSeconds),
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(kFakeLastSuccessTimeSeconds),
             device_manager()->GetLastDeviceSyncTime());
   EXPECT_FALSE(device_manager()->IsRecoveringFromFailure());
 }

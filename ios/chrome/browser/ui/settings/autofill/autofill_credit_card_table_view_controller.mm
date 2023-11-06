@@ -140,7 +140,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationController.toolbarHidden = NO;
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -445,7 +445,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:*creditCards[indexPath.item]
           personalDataManager:_personalDataManager];
-  controller.dispatcher = self.dispatcher;
+  [self configureHandlersForRootViewController:controller];
   [self.navigationController pushViewController:controller animated:YES];
 }
 

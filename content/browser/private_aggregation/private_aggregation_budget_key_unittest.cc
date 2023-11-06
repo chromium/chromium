@@ -14,11 +14,12 @@ namespace content {
 
 namespace {
 
-constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr auto kExampleTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 // `kExampleTime` floored to a minute boundary.
-constexpr base::Time kExampleMinuteBoundary =
-    base::Time::FromJavaTime(1652984880000);
+constexpr auto kExampleMinuteBoundary =
+    base::Time::FromMillisecondsSinceUnixEpoch(1652984880000);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
 
@@ -129,14 +130,13 @@ TEST(PrivateAggregationBudgetKeyTest, ExtremeStartTimes_HandledCorrectly) {
 TEST(PrivateAggregationBudgetKeyTest, UntrustworthyOrigin_KeyCreationFailed) {
   absl::optional<PrivateAggregationBudgetKey> opaque_origin_budget_key =
       PrivateAggregationBudgetKey::Create(
-          url::Origin(), base::Time::FromJavaTime(1652984901234),
+          url::Origin(), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   EXPECT_FALSE(opaque_origin_budget_key.has_value());
 
   absl::optional<PrivateAggregationBudgetKey> insecure_origin_budget_key =
       PrivateAggregationBudgetKey::Create(
-          url::Origin::Create(GURL("http://origin.example")),
-          base::Time::FromJavaTime(1652984901234),
+          url::Origin::Create(GURL("http://origin.example")), kExampleTime,
           PrivateAggregationBudgetKey::Api::kProtectedAudience);
   EXPECT_FALSE(insecure_origin_budget_key.has_value());
 }

@@ -57,8 +57,9 @@ class PwaRestoreBottomSheetMediator {
 
         // TODO(finnur): Replace with actual apps, queried from profile.
         ArrayList apps = new ArrayList();
-        apps.add(new PwaRestoreProperties.AppInfo("foo", "bar"));
-        apps.add(new PwaRestoreProperties.AppInfo("bar", "foo"));
+        apps.add(new PwaRestoreProperties.AppInfo("foo", "Bar"));
+        apps.add(new PwaRestoreProperties.AppInfo("bar", "Foo"));
+        apps.add(new PwaRestoreProperties.AppInfo("foobar", "Barfoo"));
         mModel.set(PwaRestoreProperties.APPS, apps);
     }
 

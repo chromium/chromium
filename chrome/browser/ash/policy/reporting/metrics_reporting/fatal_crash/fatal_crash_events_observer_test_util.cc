@@ -7,9 +7,14 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 namespace reporting {
 
@@ -19,8 +24,11 @@ FatalCrashEventsObserver::TestEnvironment::~TestEnvironment() = default;
 std::unique_ptr<FatalCrashEventsObserver>
 FatalCrashEventsObserver::TestEnvironment::CreateFatalCrashEventsObserver()
     const {
-  return base::WrapUnique(new FatalCrashEventsObserver(
-      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath()));
+  auto observer = base::WrapUnique(new FatalCrashEventsObserver(
+      GetReportedLocalIdSaveFilePath(), GetUploadedCrashInfoSaveFilePath(),
+      // Don't delay any tasks in unit tests.
+      /*backoff_time_for_loading=*/base::TimeDelta()));
+  return observer;
 }
 
 const base::FilePath&
@@ -50,6 +58,19 @@ size_t FatalCrashEventsObserver::TestEnvironment::GetLocalIdEntryQueueSize(
   DCHECK_CALLED_ON_VALID_SEQUENCE(
       observer.reported_local_id_manager_->sequence_checker_);
   return observer.reported_local_id_manager_->local_id_entry_queue_.size();
+}
+
+// static
+void FatalCrashEventsObserver::TestEnvironment::FlushIoTasks(
+    FatalCrashEventsObserver& observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(observer.sequence_checker_);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(
+      observer.reported_local_id_manager_->sequence_checker_);
+
+  base::RunLoop run_loop;
+  observer.reported_local_id_manager_->io_task_runner_->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), run_loop.QuitClosure());
+  run_loop.Run();
 }
 
 }  // namespace reporting

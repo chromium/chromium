@@ -113,7 +113,8 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
   std::unique_ptr<GinJavaBridgeValueConverter> converter(
       new GinJavaBridgeValueConverter());
 
-  const char* source_template = "(function() {"
+  static constexpr char kSourceTemplate[] =
+      "(function() {"
       "var array_buffer = new ArrayBuffer(%s);"
       "var array_view = new %s(array_buffer);"
       "array_view[0] = 42;"
@@ -131,7 +132,7 @@ TEST_F(GinJavaBridgeValueConverterTest, TypedArrays) {
         v8::Script::Compile(
             context,
             v8::String::NewFromUtf8(
-                isolate_, base::StringPrintf(source_template, array_types[i],
+                isolate_, base::StringPrintf(kSourceTemplate, array_types[i],
                                              typed_array_type)
                               .c_str())
                 .ToLocalChecked())

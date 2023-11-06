@@ -5,6 +5,7 @@
 /**
  * @fileoverview Classes that handle the ChromeVox range.
  */
+import {AutomationPredicate} from '../../common/automation_predicate.js';
 import {AutomationUtil} from '../../common/automation_util.js';
 import {constants} from '../../common/constants.js';
 import {CursorRange} from '../../common/cursors/range.js';
@@ -38,15 +39,7 @@ export class ChromeVoxRangeObserver {
   onCurrentRangeChanged(range, opt_fromEditing = undefined) {}
 }
 
-/**
- * A class that handles tracking and changes to the ChromeVox range.
- *
- * ================ THIS CLASS IS MID-MIGRATION ================
- *
- * The logic relating to the ChromeVox range is being moved here from
- * ChromeVoxState in small chunks. During this transition, the logic will be
- * split between those two locations.
- */
+/** Handles tracking of and changes to the ChromeVox range. */
 export class ChromeVoxRange {
   /** @private */
   constructor() {
@@ -86,11 +79,6 @@ export class ChromeVoxRange {
     ChromeVoxRange.instance.pageSel_ = newPageSel;
   }
 
-  /** @return {?CursorRange} */
-  static get previous() {
-    return ChromeVoxRange.instance.previous_;
-  }
-
   /**
    * Return the current range, but focus recovery is not applied to it.
    * @return {?CursorRange}
@@ -117,6 +105,11 @@ export class ChromeVoxRange {
   static navigateTo(
       range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
     ChromeVoxRange.instance.navigateTo_(...arguments);
+  }
+
+  /** Restores the last valid ChromeVox range. */
+  static restoreLastValidRangeIfNeeded() {
+    ChromeVoxRange.instance.restoreLastValidRangeIfNeeded_();
   }
 
   /**
@@ -186,6 +179,7 @@ export class ChromeVoxRange {
    * @param {TtsSpeechProperties=} opt_speechProps Speech properties.
    * @param {boolean=} opt_skipSettingSelection If true, does not set
    *     the selection, otherwise it does by default.
+   * @private
    */
   navigateTo_(range, opt_focus, opt_speechProps, opt_skipSettingSelection) {
     opt_focus = opt_focus ?? true;
@@ -201,7 +195,7 @@ export class ChromeVoxRange {
     }
 
     if (opt_focus) {
-      ChromeVoxState.instance.setFocusToRange(range, prevRange);
+      this.setFocusToRange_(range, prevRange);
     }
 
     ChromeVoxRange.set(range);
@@ -287,6 +281,19 @@ export class ChromeVoxRange {
     }
   }
 
+  /** @private */
+  restoreLastValidRangeIfNeeded_() {
+    // Never restore range when TalkBack is enabled as commands such as
+    // Search+Left, go directly to TalkBack.
+    if (ChromeVoxState.instance.talkBackEnabled) {
+      return;
+    }
+
+    if (!this.current_?.isValid()) {
+      this.current_ = this.previous_;
+    }
+  }
+
   /**
    * @param {?CursorRange} newRange
    * @param {boolean=} opt_fromEditing
@@ -329,6 +336,75 @@ export class ChromeVoxRange {
     let url = root.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
     ChromeVoxState.position[url] = position;
+  }
+
+  /**
+   * @param {!CursorRange} range
+   * @param {CursorRange} prevRange
+   * @private
+   */
+  setFocusToRange_(range, prevRange) {
+    const start = range.start.node;
+    const end = range.end.node;
+
+    // First, see if we've crossed a root. Remove once webview handles focus
+    // correctly.
+    if (prevRange && prevRange.start.node && start) {
+      const entered =
+          AutomationUtil.getUniqueAncestors(prevRange.start.node, start);
+
+      entered
+          .filter(
+              ancestor => ancestor.role === RoleType.PLUGIN_OBJECT ||
+                  ancestor.role === RoleType.IFRAME)
+          .forEach(container => {
+            if (!container.state[StateType.FOCUSED]) {
+              container.focus();
+            }
+          });
+    }
+
+    if (start.state[StateType.FOCUSED] || end.state[StateType.FOCUSED]) {
+      return;
+    }
+
+    const isFocusableLinkOrControl = node => node.state[StateType.FOCUSABLE] &&
+        AutomationPredicate.linkOrControl(node);
+
+    // Next, try to focus the start or end node.
+    if (!AutomationPredicate.structuralContainer(start) &&
+        start.state[StateType.FOCUSABLE]) {
+      if (!start.state[StateType.FOCUSED]) {
+        start.focus();
+      }
+      return;
+    } else if (
+        !AutomationPredicate.structuralContainer(end) &&
+        end.state[StateType.FOCUSABLE]) {
+      if (!end.state[StateType.FOCUSED]) {
+        end.focus();
+      }
+      return;
+    }
+
+    // If a common ancestor of |start| and |end| is a link, focus that.
+    let ancestor = AutomationUtil.getLeastCommonAncestor(start, end);
+    while (ancestor && ancestor.root === start.root) {
+      if (isFocusableLinkOrControl(ancestor)) {
+        if (!ancestor.state[StateType.FOCUSED]) {
+          ancestor.focus();
+        }
+        return;
+      }
+      ancestor = ancestor.parent;
+    }
+
+    // If nothing is focusable, set the sequential focus navigation starting
+    // point, which ensures that the next time you press Tab, you'll reach
+    // the next or previous focusable node from |start|.
+    if (!start.state[StateType.OFFSCREEN]) {
+      start.setSequentialFocusNavigationStartingPoint();
+    }
   }
 }
 

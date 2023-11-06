@@ -73,7 +73,7 @@ class WebApiHandshakeChecker::CheckerOnSB
     url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
         network::mojom::RequestDestination::kEmpty, /*has_user_gesture=*/false,
-        url_checker_delegate, web_contents_getter_,
+        url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
         /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
         /*render_frame_id=*/MSG_ROUTING_NONE, frame_tree_node_id_,
         /*url_real_time_lookup_enabled=*/false,

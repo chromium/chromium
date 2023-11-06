@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -22,10 +21,8 @@ class Image;
 // model state has changed and can tell the status icon to update the menu. This
 // is necessary some platforms which do not notify us before showing the menu
 // (like Ubuntu Unity).
-class StatusIconMenuModel
-    : public ui::SimpleMenuModel,
-      public ui::SimpleMenuModel::Delegate,
-      public base::SupportsWeakPtr<StatusIconMenuModel> {
+class StatusIconMenuModel : public ui::SimpleMenuModel,
+                            public ui::SimpleMenuModel::Delegate {
  public:
   class Delegate {
    public:

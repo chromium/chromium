@@ -351,6 +351,24 @@ enum class TruncatingCharacterInCookieStringType {
   kMaxValue = kTruncatingCharLineFeed,  // Keep as the last value.
 };
 
+// Enum for measuring usage patterns of CookiesAllowedForUrls.
+// The policy supports wildcards in the primary or secondary content setting
+// pattern, and explicit patterns for both. Each variant of this enum represents
+// policies set with each possible combination of rule types. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class CookiesAllowedForUrlsUsage {
+  kExplicitOnly = 0,
+  kWildcardPrimaryOnly = 1,
+  kWildcardSecondaryOnly = 2,
+  kExplicitAndPrimaryWildcard = 3,
+  kExplicitAndSecondaryWildcard = 4,
+  kWildcardOnly = 5,
+  kAllPresent = 6,
+
+  kMaxValue = kAllPresent,
+};
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_

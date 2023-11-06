@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_consumer.h"
 
 @protocol IdentityChooserViewControllerPresentationDelegate;
@@ -16,7 +16,7 @@
 // identity. IdentityChooserViewController also displays "Add Account…" cell
 // at the end.
 @interface IdentityChooserViewController
-    : ChromeTableViewController<IdentityChooserConsumer>
+    : LegacyChromeTableViewController <IdentityChooserConsumer>
 
 // Presentation delegate.
 @property(nonatomic, weak) id<IdentityChooserViewControllerPresentationDelegate>

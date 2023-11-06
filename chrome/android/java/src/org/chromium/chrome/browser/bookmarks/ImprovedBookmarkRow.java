@@ -21,31 +21,25 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewBase;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton.PopupMenuShownListener;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
-/**
- * Common logic for improved bookmark and folder rows.
- */
-// TODO(crbug.com/): Make selection delegate optional for this class and remove
-// SelectableItemViewBase inheritance. It's no longer needed.
-public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
+/** Common logic for improved bookmark and folder rows. */
+public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
+        implements CancelableAnimator {
     /**
      * The base duration of the settling animation of the sheet. 218 ms is a spec for material
      * design (this is the minimum time a user is guaranteed to pay attention to something).
      */
-    @VisibleForTesting
-    static final int BASE_ANIMATION_DURATION_MS = 218;
+    @VisibleForTesting static final int BASE_ANIMATION_DURATION_MS = 218;
 
     private ViewGroup mContainer;
     // The start image view which is shows the favicon.
     private ImageView mStartImageView;
-    private View mStartImageContainer;
     private ImprovedBookmarkFolderView mFolderIconView;
     // Displays the title of the bookmark.
     private TextView mTitleView;
@@ -59,21 +53,26 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     // 3-dot menu which displays contextual actions.
     private ListMenuButton mMoreButton;
     private ImageView mEndImageView;
+    private @Nullable ViewPropertyAnimator mFadeAnimator;
 
     private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
+    private boolean mEndImageViewVisible;
     private boolean mMoreButtonVisible;
     private boolean mSelectionEnabled;
+    private boolean mIsSelected;
 
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param context The calling context, usually the parent view.
      * @param isVisual Whether the visual row should be used.
      */
     public static ImprovedBookmarkRow buildView(Context context, boolean isVisual) {
         ImprovedBookmarkRow row = new ImprovedBookmarkRow(context, null);
-        row.setLayoutParams(new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        row.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         LayoutInflater.from(context)
                 .inflate(
@@ -91,13 +90,25 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         super(context, attrs);
     }
 
+    @Override
+    public void cancelAnimation() {
+        if (mFadeAnimator != null) {
+            mFadeAnimator.cancel();
+            mFadeAnimator = null;
+        }
+    }
+
     void setStartImageRoundedCornerOutlineProvider(boolean isVisual) {
         assert mStartImageView != null;
 
         mStartImageView.setOutlineProvider(
-                new RoundedCornerOutlineProvider(getContext().getResources().getDimensionPixelSize(
-                        isVisual ? R.dimen.improved_bookmark_row_outer_corner_radius
-                                 : R.dimen.improved_bookmark_icon_radius)));
+                new RoundedCornerOutlineProvider(
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        isVisual
+                                                ? R.dimen.improved_bookmark_row_outer_corner_radius
+                                                : R.dimen.improved_bookmark_icon_radius)));
         mStartImageView.setClipToOutline(true);
     }
 
@@ -108,7 +119,6 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
         mContainer = findViewById(R.id.container);
 
         mStartImageView = findViewById(R.id.start_image);
-        mStartImageContainer = findViewById(R.id.start_image_container);
         mFolderIconView = findViewById(R.id.folder_view);
 
         mTitleView = findViewById(R.id.title);
@@ -123,7 +133,10 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
 
     void setTitle(String title) {
         mTitleView.setText(title);
-        SelectableListUtils.setContentDescriptionContext(getContext(), mMoreButton, title,
+        SelectableListUtils.setContentDescriptionContext(
+                getContext(),
+                mMoreButton,
+                title,
                 SelectableListUtils.ContentDescriptionSource.MENU_BUTTON);
     }
 
@@ -136,7 +149,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setStartImageVisible(boolean visible) {
-        mStartImageContainer.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mStartImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     void setFolderViewVisible(boolean visible) {
@@ -144,17 +157,16 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setStartIconDrawable(@Nullable Drawable drawable) {
+        cancelAnimation();
+
         mStartImageView.setImageDrawable(drawable);
         // No need to fade-in a null drawable.
         if (drawable == null) return;
 
         mStartImageView.setAlpha(0f);
 
-        // Using a local variable to facilitate testing.
-        ViewPropertyAnimator anim = mStartImageView.animate();
-        anim.setDuration(BASE_ANIMATION_DURATION_MS);
-        anim.alpha(1f);
-        anim.start();
+        mFadeAnimator = mStartImageView.animate().setDuration(BASE_ANIMATION_DURATION_MS).alpha(1f);
+        mFadeAnimator.start();
     }
 
     void setStartIconTint(ColorStateList tint) {
@@ -187,30 +199,30 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setIsSelected(boolean selected) {
-        setChecked(selected);
+        mIsSelected = selected;
+        updateView();
     }
 
     void setSelectionEnabled(boolean selectionEnabled) {
         mSelectionEnabled = selectionEnabled;
         mMoreButton.setClickable(!selectionEnabled);
         mMoreButton.setEnabled(!selectionEnabled);
-        mMoreButton.setImportantForAccessibility(!selectionEnabled
+        mMoreButton.setImportantForAccessibility(
+                !selectionEnabled
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
-        updateView(false);
+        updateView();
     }
 
+    // TODO: Maybe this can be removed.
     void setDragEnabled(boolean dragEnabled) {
         mDragEnabled = dragEnabled;
     }
 
+    // TODO: Maybe this can be removed.
     void setBookmarkIdEditable(boolean bookmarkIdEditable) {
         mBookmarkIdEditable = bookmarkIdEditable;
-        updateView(false);
-    }
-
-    void setFolderCoordinator(ImprovedBookmarkFolderViewCoordinator folderCoordinator) {
-        folderCoordinator.setView(mFolderIconView);
+        updateView();
     }
 
     void setRowClickListener(View.OnClickListener listener) {
@@ -222,34 +234,32 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     }
 
     void setEndImageVisible(boolean visible) {
-        mEndImageView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        mEndImageViewVisible = visible;
+        updateView();
     }
 
     void setEndMenuVisible(boolean visible) {
         mMoreButtonVisible = visible;
-        mMoreButton.setVisibility(visible ? View.VISIBLE : View.GONE);
-        updateView(false);
+        updateView();
     }
 
     void setEndImageRes(int res) {
         mEndImageView.setImageResource(res);
     }
 
-    // SelectableItemViewBase implementation.
+    void updateView() {
+        mContainer.setBackgroundResource(
+                mIsSelected
+                        ? R.drawable.rounded_rectangle_surface_1
+                        : R.drawable.rounded_rectangle_surface_0);
 
-    @Override
-    protected void updateView(boolean animate) {
-        boolean selected = isChecked();
-        mContainer.setBackgroundResource(selected ? R.drawable.rounded_rectangle_surface_1
-                                                  : R.drawable.rounded_rectangle_surface_0);
-
-        boolean checkVisible = mSelectionEnabled && selected;
-        boolean moreVisible = mMoreButtonVisible && !selected && mBookmarkIdEditable;
+        boolean checkVisible = mSelectionEnabled && mIsSelected;
+        boolean moreVisible = mMoreButtonVisible && !mIsSelected && mBookmarkIdEditable;
         mCheckImageView.setVisibility(checkVisible ? View.VISIBLE : View.GONE);
         mMoreButton.setVisibility(moreVisible ? View.VISIBLE : View.GONE);
+        mEndImageView.setVisibility(
+                !moreVisible && mEndImageViewVisible ? View.VISIBLE : View.GONE);
     }
-    @Override
-    protected void onClick() {}
 
     ImprovedBookmarkFolderView getFolderView() {
         return mFolderIconView;

@@ -341,6 +341,10 @@
       light: '$cros.ref.yellow80',
       dark: '$cros.ref.yellow80',
     },
+    'system-warning-inverse': {
+      light: '$cros.ref.yellow10',
+      dark: '$cros.ref.yellow80',
+    },
     'warning': {
       light: '$cros.ref.yellow50',
       dark: '$cros.ref.yellow80',

@@ -525,6 +525,7 @@ bool TestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   RecordCookieSettingOverrides(request.cookie_setting_overrides());
   bool allow = true;
@@ -565,6 +566,7 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
     const URLRequest& request,
     const net::CanonicalCookie& cookie,
     CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     CookieInclusionStatus* inclusion_status) {
   // Filter out cookies with the same name as |cookie_name_filter_| and
   // combine with |allowed_from_caller|.
@@ -577,6 +579,7 @@ bool FilteringTestNetworkDelegate::OnCanSetCookie(
 
   // Call the nested delegate's method first to avoid a short circuit.
   return TestNetworkDelegate::OnCanSetCookie(request, cookie, options,
+                                             first_party_set_metadata,
                                              inclusion_status) &&
          allowed;
 }

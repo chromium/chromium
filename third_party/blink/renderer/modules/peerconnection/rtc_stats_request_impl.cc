@@ -47,11 +47,11 @@ RTCStatsResponseBase* RTCStatsRequestImpl::CreateResponse() {
 }
 
 bool RTCStatsRequestImpl::HasSelector() {
-  return component_;
+  return component_ != nullptr;
 }
 
 MediaStreamComponent* RTCStatsRequestImpl::Component() {
-  return component_;
+  return component_.Get();
 }
 
 void RTCStatsRequestImpl::RequestSucceeded(RTCStatsResponseBase* response) {

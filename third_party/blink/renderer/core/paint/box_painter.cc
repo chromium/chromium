@@ -29,7 +29,12 @@ void BoxPainter::RecordRegionCaptureData(
 
 void BoxPainter::RecordScrollHitTestData(
     const PaintInfo& paint_info,
-    const DisplayItemClient& background_client) {
+    const DisplayItemClient& background_client,
+    const FragmentData* fragment) {
+  if (!fragment) {
+    return;
+  }
+
   // Scroll hit test data are only needed for compositing. This flag is used for
   // printing and drag images which do not need hit testing.
   if (paint_info.ShouldOmitCompositingInfo())
@@ -42,10 +47,6 @@ void BoxPainter::RecordScrollHitTestData(
   }
 
   if (!layout_box_.GetScrollableArea())
-    return;
-
-  const auto* fragment = paint_info.FragmentToPaint(layout_box_);
-  if (!fragment)
     return;
 
   // If an object does scroll overflow, but it is not itself visible to

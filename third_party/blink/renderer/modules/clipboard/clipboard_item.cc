@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
 
-#include "net/base/mime_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -35,7 +35,11 @@ ClipboardItem::ClipboardItem(
   DCHECK(items.size());
   for (const auto& item : items) {
     String web_custom_format = Clipboard::ParseWebCustomFormat(item.first);
-    if (!web_custom_format.empty()) {
+    if (web_custom_format.empty()) {
+      // Any arbitrary type can be added to ClipboardItem, but there may not be
+      // any read/write support for that type.
+      items_.push_back(item);
+    } else {
       // Types with "web " prefix are special, so we do some level of MIME type
       // parsing here to get a valid web custom format type.
       // We want to ensure that the string after removing the "web " prefix is
@@ -43,22 +47,12 @@ ClipboardItem::ClipboardItem(
       // e.g. "web text/html" is a web custom MIME type & "text/html" is a
       // well-known MIME type. Removing the "web " prefix makes it hard to
       // differentiate between the two.
-      std::string web_top_level_mime_type;
-      std::string web_mime_sub_type;
-      if (net::ParseMimeTypeWithoutParameter(web_custom_format.Utf8(),
-                                             &web_top_level_mime_type,
-                                             &web_mime_sub_type)) {
-        String web_custom_format_string = String::Format(
-            "%s%s/%s", ui::kWebClipboardFormatPrefix,
-            web_top_level_mime_type.c_str(), web_mime_sub_type.c_str());
-        items_.emplace_back(web_custom_format_string, item.second);
-        custom_format_items_.push_back(web_custom_format_string);
-        continue;
-      }
+      String web_custom_format_string =
+          String::Format("%s%s", ui::kWebClipboardFormatPrefix,
+                         web_custom_format.Utf8().c_str());
+      items_.emplace_back(web_custom_format_string, item.second);
+      custom_format_items_.push_back(web_custom_format_string);
     }
-    // Any arbitrary type can be added to ClipboardItem, but there may not be
-    // any read/write support for that type.
-    items_.push_back(item);
   }
 }
 
@@ -82,6 +76,15 @@ ScriptPromise ClipboardItem::getType(ScriptState* script_state,
   exception_state.ThrowDOMException(DOMExceptionCode::kNotFoundError,
                                     "The type was not found");
   return ScriptPromise();
+}
+
+// static
+bool ClipboardItem::supports(const String& type) {
+  if (type == kMimeTypeImagePng || type == kMimeTypeTextPlain ||
+      type == kMimeTypeTextHTML) {
+    return true;
+  }
+  return !Clipboard::ParseWebCustomFormat(type).empty();
 }
 
 void ClipboardItem::Trace(Visitor* visitor) const {

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/settings/pages/main/os_settings_hats_handler.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager.h"
 #include "chrome/browser/ui/webui/ash/settings/services/hats/os_settings_hats_manager_factory.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
 #include "content/public/browser/web_ui.h"
 
 namespace ash::settings {

@@ -52,16 +52,34 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "averagePool2d";
     case MLOperator::OperatorKind::kMaxPool2d:
       return "maxPool2d";
+    case MLOperator::OperatorKind::kMatmul:
+      return "matmul";
     case MLOperator::OperatorKind::kPad:
       return "pad";
     case MLOperator::OperatorKind::kPow:
       return "pow";
     case MLOperator::OperatorKind::kPRelu:
       return "prelu";
+    case MLOperator::OperatorKind::kReduceL1:
+      return "reduceL1";
+    case MLOperator::OperatorKind::kReduceL2:
+      return "reduceL2";
+    case MLOperator::OperatorKind::kReduceLogSum:
+      return "reduceLogSum";
+    case MLOperator::OperatorKind::kReduceLogSumExp:
+      return "reduceLogSumExp";
+    case MLOperator::OperatorKind::kReduceMax:
+      return "reduceMax";
     case MLOperator::OperatorKind::kReduceMean:
       return "reduceMean";
+    case MLOperator::OperatorKind::kReduceMin:
+      return "reduceMin";
+    case MLOperator::OperatorKind::kReduceProduct:
+      return "reduceProduct";
     case MLOperator::OperatorKind::kReduceSum:
       return "reduceSum";
+    case MLOperator::OperatorKind::kReduceSumSquare:
+      return "reduceSumSquare";
     case MLOperator::OperatorKind::kRelu:
       return "relu";
     case MLOperator::OperatorKind::kReshape:
@@ -102,7 +120,7 @@ MLOperator::OperatorKind MLOperator::Kind() const {
 }
 
 const bindings::DictionaryBase* MLOperator::Options() const {
-  return options_;
+  return options_.Get();
 }
 
 bool MLOperator::IsConnected() const {

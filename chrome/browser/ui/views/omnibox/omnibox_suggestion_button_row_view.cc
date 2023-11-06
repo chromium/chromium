@@ -133,8 +133,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SetEnabledTextColors(color_provider->GetColor(
         selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
     if (Cr2023ExpandedStateColorsEnabled()) {
-      ConfigureInkDropForRefresh2023(this, kColorOmniboxResultsButtonInkDrop,
-                                     kColorOmniboxResultsButtonInkDropSelected);
+      ConfigureInkDropForRefresh2023(
+          this,
+          /*hover_color_id=*/
+          selected ? kColorOmniboxResultsButtonInkDropRowSelected
+                   : kColorOmniboxResultsButtonInkDropRowHovered,
+          /*ripple_color_id=*/
+          selected ? kColorOmniboxResultsButtonInkDropSelectedRowSelected
+                   : kColorOmniboxResultsButtonInkDropSelectedRowHovered);
     } else {
       views::InkDrop::Get(this)->SetBaseColorId(
           selected ? kColorOmniboxResultsButtonInkDropSelected
@@ -299,21 +305,29 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   // the row, which can then be used to apply different layout/styling.
   OmniboxSuggestionRowButton* first_button = nullptr;
 
-  SetPillButtonVisibility(keyword_button_, OmniboxPopupSelection::KEYWORD_MODE);
-  if (keyword_button_->GetVisible()) {
-    first_button = keyword_button_;
+  if (OmniboxFieldTrial::IsKeywordModeRefreshEnabled() &&
+      match().HasInstantKeyword(
+          popup_view_->controller()->client()->GetTemplateURLService())) {
+    keyword_button_->SetVisible(false);
+  } else {
+    SetPillButtonVisibility(keyword_button_,
+                            OmniboxPopupSelection::KEYWORD_MODE);
+    if (keyword_button_->GetVisible()) {
+      first_button = keyword_button_;
 
-    std::u16string keyword;
-    bool is_keyword_hint = false;
-    match().GetKeywordUIState(
-        popup_view_->controller()->client()->GetTemplateURLService(), &keyword,
-        &is_keyword_hint);
+      std::u16string keyword;
+      bool is_keyword_hint = false;
+      match().GetKeywordUIState(
+          popup_view_->controller()->client()->GetTemplateURLService(),
+          &keyword, &is_keyword_hint);
 
-    const auto names = SelectedKeywordView::GetKeywordLabelNames(
-        keyword, popup_view_->controller()->client()->GetTemplateURLService());
-    keyword_button_->SetText(names.full_name);
-    keyword_button_->SetAccessibleName(
-        l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
+      const auto names = SelectedKeywordView::GetKeywordLabelNames(
+          keyword,
+          popup_view_->controller()->client()->GetTemplateURLService());
+      keyword_button_->SetText(names.full_name);
+      keyword_button_->SetAccessibleName(
+          l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
+    }
   }
 
   for (const auto& action_button : action_buttons_) {

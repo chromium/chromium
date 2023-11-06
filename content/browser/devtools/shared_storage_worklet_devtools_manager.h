@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/singleton.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
@@ -18,10 +19,23 @@ namespace content {
 
 class SharedStorageWorkletDevToolsAgentHost;
 class SharedStorageWorkletHost;
+class RenderFrameHostImpl;
 
 // Manages `SharedStorageWorkletDevToolsAgentHost`s for Shared Storage Worklets.
 class SharedStorageWorkletDevToolsManager {
  public:
+  class Observer {
+   public:
+    virtual void SharedStorageWorkletCreated(
+        SharedStorageWorkletDevToolsAgentHost* host,
+        bool& should_pause_on_start) {}
+
+    virtual void SharedStorageWorkletDestroyed(
+        SharedStorageWorkletDevToolsAgentHost* host) {}
+
+    virtual ~Observer() = default;
+  };
+
   // Returns the SharedStorageWorkletDevToolsManager singleton.
   static SharedStorageWorkletDevToolsManager* GetInstance();
 
@@ -33,7 +47,8 @@ class SharedStorageWorkletDevToolsManager {
   void AddAllAgentHosts(std::vector<scoped_refptr<DevToolsAgentHost>>* result);
 
   void WorkletCreated(SharedStorageWorkletHost& worklet_host,
-                      const base::UnguessableToken& devtools_worklet_token);
+                      const base::UnguessableToken& devtools_worklet_token,
+                      bool& wait_for_debugger);
   void WorkletReadyForInspection(
       SharedStorageWorkletHost& worklet_host,
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
@@ -41,12 +56,19 @@ class SharedStorageWorkletDevToolsManager {
           agent_host_receiver);
   void WorkletDestroyed(SharedStorageWorkletHost& worklet_host);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
+  void GetAllForFrame(RenderFrameHostImpl* frame, DevToolsAgentHost::List* out);
+
  private:
   friend struct base::DefaultSingletonTraits<
       SharedStorageWorkletDevToolsManager>;
 
   SharedStorageWorkletDevToolsManager();
   ~SharedStorageWorkletDevToolsManager();
+
+  base::ObserverList<Observer>::Unchecked observer_list_;
 
   // We retatin agent hosts as long as the shared storage worklet is alive.
   std::map<SharedStorageWorkletHost*,

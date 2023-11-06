@@ -238,7 +238,8 @@ void MaybeRecordLatencyHistogram(const char* fmt,
                                  const char* streaming_type,
                                  absl::optional<double> value) {
   if (value) {
-    const std::string name = base::StringPrintf(fmt, streaming_type);
+    const std::string name =
+        base::StringPrintfNonConstexpr(fmt, streaming_type);
     base::UmaHistogramTimes(name, base::Milliseconds(*value));
   }
 }
@@ -247,7 +248,8 @@ void MaybeRecordMemoryHistogram(const char* fmt,
                                 const char* streaming_type,
                                 absl::optional<double> value) {
   if (value) {
-    const std::string name = base::StringPrintf(fmt, streaming_type);
+    const std::string name =
+        base::StringPrintfNonConstexpr(fmt, streaming_type);
     base::UmaHistogramMemoryKB(name, *value);
   }
 }

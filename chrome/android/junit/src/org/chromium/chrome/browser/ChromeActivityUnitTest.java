@@ -26,6 +26,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -43,23 +45,16 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.TestActivity;
 
-/**
- * Unit tests for ChromeActivity.
- */
+/** Unit tests for ChromeActivity. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChromeActivityUnitTest {
     Activity mActivity;
 
-    @Mock
-    RootUiCoordinator mRootUiCoordinatorMock;
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    Profile mProfile;
-    @Mock
-    Tab mActivityTab;
-    @Mock
-    ReadAloudController mReadAloudController;
+    @Mock RootUiCoordinator mRootUiCoordinatorMock;
+    @Mock TabModel mTabModel;
+    @Mock Profile mProfile;
+    @Mock Tab mActivityTab;
+    @Mock ReadAloudController mReadAloudController;
 
     ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
@@ -73,25 +68,36 @@ public class ChromeActivityUnitTest {
         protected TabModelOrchestrator createTabModelOrchestrator() {
             return null;
         }
+
         @Override
         protected void createTabModels() {}
+
         @Override
         protected void destroyTabModels() {}
+
         @Override
         protected Pair<? extends TabCreator, ? extends TabCreator> createTabCreators() {
             return null;
         }
+
         @Override
         protected LaunchCauseMetrics createLaunchCauseMetrics() {
             return null;
         }
+
         @Override
         public @ActivityType int getActivityType() {
             return ActivityType.TABBED;
         }
+
         @Override
         protected boolean handleBackPressed() {
             return true;
+        }
+
+        @Override
+        protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+            return null;
         }
     }
 
@@ -113,10 +119,14 @@ public class ChromeActivityUnitTest {
         Assert.assertNull("Snackbar controller should be null.", snackbar.getController());
         Assert.assertEquals(
                 "Snackbar text should match.", errorString, snackbar.getTextForTesting());
-        Assert.assertEquals("Snackbar identifier should match.", Snackbar.UMA_WINDOW_ERROR,
+        Assert.assertEquals(
+                "Snackbar identifier should match.",
+                Snackbar.UMA_WINDOW_ERROR,
                 snackbar.getIdentifierForTesting());
-        Assert.assertEquals("Snackbar dismiss duration is incorrect.",
-                SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS, snackbar.getDuration());
+        Assert.assertEquals(
+                "Snackbar dismiss duration is incorrect.",
+                SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS,
+                snackbar.getDuration());
         snackbarManager.dismissSnackbars(null);
     }
 
@@ -132,7 +142,8 @@ public class ChromeActivityUnitTest {
                 .thenReturn(mReadAloudControllerSupplier);
 
         assertTrue(
-                chromeActivity.onMenuOrKeyboardAction(R.id.readaloud_menu_id, /*fromMenu=*/true));
+                chromeActivity.onMenuOrKeyboardAction(
+                        R.id.readaloud_menu_id, /* fromMenu= */ true));
         verify(mReadAloudController, times(1)).playTab(eq(mActivityTab));
     }
 }

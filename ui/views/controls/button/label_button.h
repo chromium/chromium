@@ -132,6 +132,11 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   // subclasses.
   virtual std::unique_ptr<LabelButtonBorder> CreateDefaultBorder() const;
 
+  // Normally a LabelButton only appears as disabled in an inactive widget if
+  // PlatformStyle::kInactiveWidgetControlsAppearDisabled is true. This method
+  // overrides the default PlatformStyle behavior for this button.
+  void SetAppearDisabledInInactiveWidget(bool appear_disabled);
+
   // Button:
   void SetBorder(std::unique_ptr<Border> border) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -289,6 +294,8 @@ class VIEWS_EXPORT LabelButton : public Button, public NativeThemeDelegate {
   float focus_ring_corner_radius_ = FocusRing::kDefaultCornerRadiusDp;
 
   base::CallbackListSubscription paint_as_active_subscription_;
+
+  bool appear_disabled_in_inactive_widget_ = false;
 
   base::CallbackListSubscription flip_canvas_on_paint_subscription_ =
       AddFlipCanvasOnPaintForRTLUIChangedCallback(

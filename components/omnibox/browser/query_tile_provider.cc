@@ -6,9 +6,11 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/query_tiles/tile_service.h"
 #include "components/search/search.h"
@@ -52,6 +54,13 @@ void QueryTileProvider::StartPrefetch(const AutocompleteInput& input) {
     return;
   }
 
+  // Verify tiles age. Re-use previously cached response unless expired.
+  if (!tiles_.empty() &&
+      (base::TimeTicks::Now() - tiles_creation_timestamp_ <=
+       base::Hours(OmniboxFieldTrial::kQueryTilesCacheMaxAge.Get()))) {
+    return;
+  }
+
   // Drop results, the contents will be served on Start().
   client_->GetQueryTileService()->GetQueryTiles(
       base::BindOnce(&QueryTileProvider::OnTilesFetched,
@@ -88,6 +97,7 @@ bool QueryTileProvider::IsAllowedInContext(const AutocompleteInput& input) {
 void QueryTileProvider::OnTilesFetched(bool is_prefetch,
                                        std::vector<query_tiles::Tile> tiles) {
   tiles_ = std::move(tiles);
+  tiles_creation_timestamp_ = base::TimeTicks::Now();
   if (!is_prefetch) {
     BuildSuggestions();
   }

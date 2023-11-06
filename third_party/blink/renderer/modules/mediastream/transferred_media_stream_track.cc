@@ -171,13 +171,12 @@ MediaTrackSettings* TransferredMediaStreamTrack::getSettings() const {
   return MediaTrackSettings::Create();
 }
 
-MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats(
-    ExceptionState& exception_state) {
+MediaStreamTrackVideoStats* TransferredMediaStreamTrack::stats() {
   if (track_) {
-    return track_->stats(exception_state);
+    return track_->stats();
   }
   // TODO(https://crbug.com/1288839): return the transferred value.
-  return MakeGarbageCollected<MediaStreamTrackVideoStats>(nullptr);
+  return nullptr;
 }
 
 CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
@@ -288,7 +287,7 @@ MediaStreamComponent* TransferredMediaStreamTrack::Component() const {
   if (track_) {
     return track_->Component();
   }
-  return transferred_component_;
+  return transferred_component_.Get();
 }
 
 bool TransferredMediaStreamTrack::Ended() const {
@@ -321,7 +320,7 @@ const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
 }
 
 ExecutionContext* TransferredMediaStreamTrack::GetExecutionContext() const {
-  return execution_context_;
+  return execution_context_.Get();
 }
 
 void TransferredMediaStreamTrack::AddedEventListener(

@@ -1319,7 +1319,7 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
             const MenuConfig& config = MenuConfig::instance();
             AddChipToProfileMenuItem(
                 browser_, item, profile_attributes->GetLocalProfileName(),
-                config.arrow_to_edge_padding + views::kSubmenuArrowSize,
+                config.arrow_to_edge_padding + config.arrow_size,
                 profile_menu_item_selected_subscription_list_);
           }
         }

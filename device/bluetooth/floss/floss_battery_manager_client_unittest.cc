@@ -37,6 +37,10 @@ const uint32_t kTestCallbackId = 42;
 class FlossBatteryManagerClientTest : public testing::Test,
                                       public FlossBatteryManagerClientObserver {
  public:
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUpMocks() {
     battery_manager_path_ =
         FlossDBusClient::GenerateBatteryManagerPath(adapter_index_);
@@ -126,7 +130,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
                     testing::_, testing::_))
         .Times(1);
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
     EXPECT_EQ(client_->battery_manager_callback_id_, kTestCallbackId);
     // Expected call to UnregisterCallback when client is destroyed
     EXPECT_CALL(*battery_manager_object_proxy_.get(),
@@ -147,7 +151,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
   void TestForwardsCallbacks() {
     EXPECT_EQ(callback_count_, 0);
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
     client_->BatteryInfoUpdated("11:11:11:11:11:11", BatterySet());
     EXPECT_EQ(callback_count_, 1);
   }
@@ -164,7 +168,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
             DoAll(testing::SaveArg<2>(&method_handler_on_battery_info_updated),
                   &FakeExportMethod));
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
     ASSERT_TRUE(!!method_handler_on_battery_info_updated);
 
     // Set up DBus message
@@ -203,7 +207,7 @@ class FlossBatteryManagerClientTest : public testing::Test,
         .Times(1);
     EXPECT_EQ(callback_count_, 0);
     client_->Init(bus_.get(), kBatteryManagerInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
     FlossDeviceId test_device{};
     test_device.address = "11:11:11:11:11:11";
     client_->GetBatteryInformation(

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
 #include <utility>
+#include <vector>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -22,6 +23,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -77,6 +79,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(USE_CUPS)
 #include "chrome/browser/ash/printing/cups_print_job.h"
@@ -234,7 +237,10 @@ class TestControllerAsh::SelfOwnedAshBrowserWindowOpenWaiter
   base::OneShotTimer timer_;
 };
 
-TestControllerAsh::TestControllerAsh() = default;
+TestControllerAsh::TestControllerAsh() {
+  CHECK_IS_TEST();
+}
+
 TestControllerAsh::~TestControllerAsh() = default;
 
 void TestControllerAsh::BindReceiver(
@@ -923,6 +929,18 @@ void TestControllerAsh::CheckAtLeastOneAshBrowserWindowOpen(
   SelfOwnedAshBrowserWindowOpenWaiter* window_waiter =
       new SelfOwnedAshBrowserWindowOpenWaiter(std::move(callback));
   window_waiter->CheckIfAtLeastOneWindowOpen();
+}
+
+void TestControllerAsh::GetAllOpenTabURLs(GetAllOpenTabURLsCallback callback) {
+  std::vector<GURL> result;
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      result.emplace_back(browser->tab_strip_model()
+                              ->GetWebContentsAt(i)
+                              ->GetLastCommittedURL());
+    }
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

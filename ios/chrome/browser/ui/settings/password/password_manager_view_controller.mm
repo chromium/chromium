@@ -17,7 +17,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/google/core/common/google_util.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/password_manager/core/browser/password_list_sorter.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
@@ -433,7 +432,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // viewWillDisappear is also called if you drag the sheet down then release
   // without actually closing.
   if (!_faviconMetricLogged) {
-    [self logMetricsForFavicons];
+    [self logPercentageMetricForFavicons];
     _faviconMetricLogged = YES;
   }
 }
@@ -1797,8 +1796,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
               IDS_IOS_PASSWORD_CHECKUP_SAFE_STATE_ACCESSIBILITY_LABEL)];
 }
 
-// Logs metrics related to favicons for the Password Manager.
-- (void)logMetricsForFavicons {
+// Logs favicon percentage metric for the Password Manager.
+- (void)logPercentageMetricForFavicons {
   DCHECK(!_faviconMetricLogged);
 
   int n_monograms = 0;
@@ -1835,12 +1834,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
     }
   }
 
-  base::UmaHistogramCounts10000(
-      "IOS.PasswordManager.PasswordsWithFavicons.Count",
-      n_images + n_monograms);
   if (n_images + n_monograms > 0) {
-    base::UmaHistogramCounts10000("IOS.PasswordManager.Favicons.Count",
-                                  n_images);
     base::UmaHistogramPercentage("IOS.PasswordManager.Favicons.Percentage",
                                  100.0f * n_images / (n_images + n_monograms));
   }

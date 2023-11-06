@@ -22,23 +22,21 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for SubKeyRequesterFactory/SubKeyRequester.
- */
+/** Integration tests for SubKeyRequesterFactory/SubKeyRequester. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class SubKeyRequesterIntegrationTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
-    @Rule
-    public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
+    @Rule public final TestRule mFeaturesProcessorRule = new Features.InstrumentationProcessor();
 
     private SubKeyRequester mSubKeyRequester;
 
     @Before
     public void setUp() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSubKeyRequester = SubKeyRequesterFactory.getInstance(); });
+                () -> {
+                    mSubKeyRequester = SubKeyRequesterFactory.getInstance();
+                });
     }
 
     @Test
@@ -47,7 +45,9 @@ public class SubKeyRequesterIntegrationTest {
     public void testLoadSubKeysForRegion() {
         // Trivial test to ensure this API does not crash.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSubKeyRequester.loadRulesForSubKeys("CA"); });
+                () -> {
+                    mSubKeyRequester.loadRulesForSubKeys("CA");
+                });
     }
 
     @Test
@@ -63,7 +63,9 @@ public class SubKeyRequesterIntegrationTest {
                     }
                 };
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mSubKeyRequester.getRegionSubKeys("MX", delegate); });
+                () -> {
+                    mSubKeyRequester.getRegionSubKeys("MX", delegate);
+                });
         callbackHelper.waitForFirst();
     }
 }

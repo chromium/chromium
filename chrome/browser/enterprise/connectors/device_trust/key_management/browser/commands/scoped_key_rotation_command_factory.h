@@ -24,8 +24,14 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
   ScopedKeyRotationCommandFactory();
   ~ScopedKeyRotationCommandFactory() override;
 
+  // Will set `mock_key_rotation_command` to be the next value returned by the
+  // KeyRotationCommandFactory. If nullptr, will clear all settings and default
+  // to the original implementation.
   void SetMock(
       std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command);
+
+  // Will force the factory to return nullptr as the next commands.
+  void ReturnInvalidCommand();
 
   // KeyRotationCommandFactory:
   std::unique_ptr<KeyRotationCommand> CreateCommand(
@@ -33,6 +39,8 @@ class ScopedKeyRotationCommandFactory : public KeyRotationCommandFactory {
       override;
 
  private:
+  bool return_invalid_command = false;
+
   std::unique_ptr<test::MockKeyRotationCommand> mock_key_rotation_command_;
 };
 

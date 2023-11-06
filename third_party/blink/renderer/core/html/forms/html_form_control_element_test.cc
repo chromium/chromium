@@ -16,6 +16,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 class MockFormValidationMessageClient
     : public GarbageCollected<MockFormValidationMessageClient>,

@@ -1,4 +1,5 @@
 include_rules = [
-	"+components/compose"
+	"+components/compose",
+	"+components/optimization_guide"
 ]
 

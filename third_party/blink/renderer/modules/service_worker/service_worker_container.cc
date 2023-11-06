@@ -615,7 +615,7 @@ ServiceWorker* ServiceWorkerContainer::GetOrCreateServiceWorker(
 
   auto it = service_worker_objects_.find(info.version_id);
   if (it != service_worker_objects_.end())
-    return it->value;
+    return it->value.Get();
 
   const int64_t version_id = info.version_id;
   ServiceWorker* worker = ServiceWorker::Create(

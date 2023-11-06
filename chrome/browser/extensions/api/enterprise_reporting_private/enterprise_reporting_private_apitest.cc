@@ -993,7 +993,7 @@ static std::string CreateValidRecord() {
   reporting::Record record;
   record.set_data(serialized_data);
   record.set_destination(reporting::Destination::TELEMETRY_METRIC);
-  record.set_timestamp_us(base::Time::Now().ToJavaTime() *
+  record.set_timestamp_us(base::Time::Now().InMillisecondsSinceUnixEpoch() *
                           base::Time::kMicrosecondsPerMillisecond);
   serialized_record_data.resize(record.SerializeAsString().size());
   record.SerializeToArray(serialized_record_data.data(),

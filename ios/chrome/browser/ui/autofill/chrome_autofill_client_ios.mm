@@ -34,6 +34,7 @@
 #import "components/infobars/core/infobar_manager.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/plus_addresses/plus_address_service.h"
 #import "components/security_state/ios/security_state_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
@@ -45,9 +46,12 @@
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/strike_database_factory.h"
+#import "ios/chrome/browser/device_reauth/ios_device_authenticator.h"
+#import "ios/chrome/browser/device_reauth/ios_device_authenticator_factory.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_utils.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/plus_addresses/model/plus_address_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -274,6 +278,15 @@ void ChromeAutofillClientIOS::OnUnmaskVerificationResult(
   unmask_controller_.OnVerificationResult(result);
 }
 
+payments::MandatoryReauthManager*
+ChromeAutofillClientIOS::GetOrCreatePaymentsMandatoryReauthManager() {
+  if (!payments_reauth_manager_) {
+    payments_reauth_manager_ =
+        std::make_unique<payments::MandatoryReauthManager>(this);
+  }
+  return payments_reauth_manager_.get();
+}
+
 void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,
@@ -432,9 +445,26 @@ void ChromeAutofillClientIOS::ShowAutofillPopup(
   [bridge_ showAutofillPopup:open_args.suggestions popupDelegate:delegate];
 }
 
+plus_addresses::PlusAddressService*
+ChromeAutofillClientIOS::GetPlusAddressService() {
+  return PlusAddressServiceFactory::GetForBrowserState(browser_state_);
+}
+
+void ChromeAutofillClientIOS::OfferPlusAddressCreation(
+    const url::Origin& main_frame_origin,
+    plus_addresses::PlusAddressCallback callback) {
+  plus_addresses::PlusAddressService* service = GetPlusAddressService();
+  // This code path should have set up the service. If not, something is badly
+  // wrong, so bail out.
+  CHECK(service);
+  // TODO(crbug.com/1467623): Run UI orchestration here rather than filling
+  // directly in response to the eventual service call. This will eventually
+  // trigger a bottom sheet.
+  service->OfferPlusAddressCreation(main_frame_origin, std::move(callback));
+}
+
 void ChromeAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
 
@@ -474,7 +504,7 @@ bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -506,6 +536,15 @@ LogManager* ChromeAutofillClientIOS::GetLogManager() const {
 
 bool ChromeAutofillClientIOS::IsLastQueriedField(FieldGlobalId field_id) {
   return [bridge_ isLastQueriedField:field_id];
+}
+
+std::unique_ptr<device_reauth::DeviceAuthenticator>
+ChromeAutofillClientIOS::GetDeviceAuthenticator() {
+  device_reauth::DeviceAuthParams params(
+      base::Seconds(60), device_reauth::DeviceAuthSource::kAutofill);
+  id<ReauthenticationProtocol> reauthModule =
+      [[ReauthenticationModule alloc] init];
+  return CreateIOSDeviceAuthenticator(reauthModule, browser_state_, params);
 }
 
 void ChromeAutofillClientIOS::LoadRiskData(

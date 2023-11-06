@@ -114,9 +114,6 @@ class StorageAccessGrantPermissionContextTest
                },
            }});
     } else {
-      // TODO(crbug.com/1485248) Handle first party sets (related website sets)
-      // more deliberately in the tests now that it is enabled by default
-      disabled.push_back(features::kFirstPartySets);
       disabled.push_back(blink::features::kStorageAccessAPI);
     }
 
@@ -284,6 +281,7 @@ class StorageAccessGrantPermissionContextTest
       mock_permission_prompt_factory_;
   permissions::PermissionRequestID::RequestLocalId::Generator
       request_id_generator_;
+  first_party_sets::ScopedMockFirstPartySetsHandler first_party_sets_handler_;
 };
 
 class StorageAccessGrantPermissionContextAPIDisabledTest

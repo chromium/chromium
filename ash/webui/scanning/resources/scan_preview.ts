@@ -45,7 +45,7 @@ const ScanPreviewElementBase = I18nMixin(PolymerElement);
 
 type DialogAction = 'rescan-page'|'remove-page';
 
-class ScanPreviewElement extends ScanPreviewElementBase implements
+export class ScanPreviewElement extends ScanPreviewElementBase implements
     ForceHiddenElementsVisibleObserverInterface {
   static get is() {
     return 'scan-preview' as const;
@@ -773,6 +773,14 @@ class ScanPreviewElement extends ScanPreviewElementBase implements
   private getReadyToScanSvgSrc(): string {
     return this.isDarkModeEnabled ? 'svg/ready_to_scan_dark.svg' :
                                     'svg/ready_to_scan.svg';
+  }
+
+  setIsMultiPageScanForTesting(isMultiPageScan: boolean): void {
+    this.isMultiPageScan = isMultiPageScan;
+  }
+
+  setPageNumberForTesting(pageNumber: number): void {
+    this.pageNumber = pageNumber;
   }
 }
 

@@ -129,11 +129,6 @@ struct ExternalInstallOptions {
   // Whether this should not be installed for tablet devices.
   bool disable_if_tablet_form_factor = false;
 
-  // This must only be used by pre-installed default or system apps that are
-  // valid PWAs if loading the real service worker is too costly to verify
-  // programmatically.
-  bool bypass_service_worker_check = false;
-
   // When set to true this will fail installation with
   // |kNotValidManifestForWebApp| if the |install_url| doesn't have a manifest
   // that passes basic validity checks. This is ignored when |app_info_factory|

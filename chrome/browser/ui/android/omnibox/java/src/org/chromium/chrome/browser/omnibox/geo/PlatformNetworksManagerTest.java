@@ -62,9 +62,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Robolectric tests for {@link PlatformNetworksManager}.
- */
+/** Robolectric tests for {@link PlatformNetworksManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 29, manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -76,35 +74,39 @@ public class PlatformNetworksManagerTest {
     private static final long CONNECTED_WIFI_AGE = 1000L;
     private static final long NOT_CONNECTED_WIFI_AGE = 2000L;
 
-    private static final VisibleCell CDMA_CELL = VisibleCell.builder(RadioType.CDMA)
-                                                         .setCellId(40)
-                                                         .setLocationAreaCode(41)
-                                                         .setMobileNetworkCode(43)
-                                                         .setTimestamp(47L)
-                                                         .build();
-    private static final VisibleCell LTE_CELL = VisibleCell.builder(RadioType.LTE)
-                                                        .setCellId(50)
-                                                        .setMobileCountryCode(52)
-                                                        .setMobileNetworkCode(53)
-                                                        .setPhysicalCellId(55)
-                                                        .setTrackingAreaCode(56)
-                                                        .setTimestamp(57L)
-                                                        .build();
-    private static final VisibleCell WCDMA_CELL = VisibleCell.builder(RadioType.WCDMA)
-                                                          .setCellId(60)
-                                                          .setLocationAreaCode(61)
-                                                          .setMobileCountryCode(62)
-                                                          .setMobileNetworkCode(63)
-                                                          .setPrimaryScramblingCode(64)
-                                                          .setTimestamp(67L)
-                                                          .build();
-    private static final VisibleCell GSM_CELL = VisibleCell.builder(RadioType.GSM)
-                                                        .setCellId(70)
-                                                        .setLocationAreaCode(71)
-                                                        .setMobileCountryCode(72)
-                                                        .setMobileNetworkCode(73)
-                                                        .setTimestamp(77L)
-                                                        .build();
+    private static final VisibleCell CDMA_CELL =
+            VisibleCell.builder(RadioType.CDMA)
+                    .setCellId(40)
+                    .setLocationAreaCode(41)
+                    .setMobileNetworkCode(43)
+                    .setTimestamp(47L)
+                    .build();
+    private static final VisibleCell LTE_CELL =
+            VisibleCell.builder(RadioType.LTE)
+                    .setCellId(50)
+                    .setMobileCountryCode(52)
+                    .setMobileNetworkCode(53)
+                    .setPhysicalCellId(55)
+                    .setTrackingAreaCode(56)
+                    .setTimestamp(57L)
+                    .build();
+    private static final VisibleCell WCDMA_CELL =
+            VisibleCell.builder(RadioType.WCDMA)
+                    .setCellId(60)
+                    .setLocationAreaCode(61)
+                    .setMobileCountryCode(62)
+                    .setMobileNetworkCode(63)
+                    .setPrimaryScramblingCode(64)
+                    .setTimestamp(67L)
+                    .build();
+    private static final VisibleCell GSM_CELL =
+            VisibleCell.builder(RadioType.GSM)
+                    .setCellId(70)
+                    .setLocationAreaCode(71)
+                    .setMobileCountryCode(72)
+                    .setMobileNetworkCode(73)
+                    .setTimestamp(77L)
+                    .build();
     private static final VisibleCell UNKNOWN_VISIBLE_CELL =
             VisibleCell.builder(RadioType.UNKNOWN).build();
     private static final VisibleCell UNKNOWN_MISSING_LOCATION_PERMISSION_VISIBLE_CELL =
@@ -119,72 +121,51 @@ public class PlatformNetworksManagerTest {
     private static final long CURRENT_TIME_MS = 90000000L;
     private static final long CURRENT_ELAPSED_TIME_MS = 7000L;
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private TelephonyManager mTelephonyManager;
-    @Mock
-    private WifiManager mWifiManager;
-    @Mock
-    private ConnectivityManager mConnectivityManager;
-    @Mock
-    private Network mNetwork;
-    @Mock
-    private NetworkCapabilities mNetworkCapabilitites;
-    @Mock
-    private NetworkInfo mCellNetworkInfo;
-    @Mock
-    private NetworkInfo mWifiNetworkInfo;
-    @Mock
-    private NetworkInfo mEthernetNetworkInfo;
+    @Mock private Context mContext;
+    @Mock private TelephonyManager mTelephonyManager;
+    @Mock private WifiManager mWifiManager;
+    @Mock private ConnectivityManager mConnectivityManager;
+    @Mock private Network mNetwork;
+    @Mock private NetworkCapabilities mNetworkCapabilitites;
+    @Mock private NetworkInfo mCellNetworkInfo;
+    @Mock private NetworkInfo mWifiNetworkInfo;
+    @Mock private NetworkInfo mEthernetNetworkInfo;
+
     @Mock(extraInterfaces = {TransportInfo.class})
     private WifiInfo mWifiInfo;
-    @Mock
-    private ScanResult mWifiScanResult;
-    @Mock
-    private ScanResult mWifiScanResultNotConnected;
-    @Mock
-    private ScanResult mWifiScanResultUnknown;
-    @Mock
-    private CellInfoLte mCellInfoLte;
-    @Mock
-    private CellInfoWcdma mCellInfoWcdma;
-    @Mock
-    private CellInfoGsm mCellInfoGsm;
-    @Mock
-    private CellInfoCdma mCellInfoCdma;
-    @Mock
-    private CellIdentityLte mCellIdentityLte;
-    @Mock
-    private CellIdentityWcdma mCellIdentityWcdma;
-    @Mock
-    private CellIdentityGsm mCellIdentityGsm;
-    @Mock
-    private CellIdentityCdma mCellIdentityCdma;
-    @Mock
-    private Intent mNetworkStateChangedIntent;
-    @Mock
-    private Callback<Set<VisibleCell>> mVisibleCellCallback;
-    @Captor
-    ArgumentCaptor<Set<VisibleCell>> mVisibleCellsArgument;
-    @Mock
-    private Callback<VisibleNetworks> mVisibleNetworksCallback;
-    @Captor
-    ArgumentCaptor<VisibleNetworks> mVisibleNetworksArgument;
+
+    @Mock private ScanResult mWifiScanResult;
+    @Mock private ScanResult mWifiScanResultNotConnected;
+    @Mock private ScanResult mWifiScanResultUnknown;
+    @Mock private CellInfoLte mCellInfoLte;
+    @Mock private CellInfoWcdma mCellInfoWcdma;
+    @Mock private CellInfoGsm mCellInfoGsm;
+    @Mock private CellInfoCdma mCellInfoCdma;
+    @Mock private CellIdentityLte mCellIdentityLte;
+    @Mock private CellIdentityWcdma mCellIdentityWcdma;
+    @Mock private CellIdentityGsm mCellIdentityGsm;
+    @Mock private CellIdentityCdma mCellIdentityCdma;
+    @Mock private Intent mNetworkStateChangedIntent;
+    @Mock private Callback<Set<VisibleCell>> mVisibleCellCallback;
+    @Captor ArgumentCaptor<Set<VisibleCell>> mVisibleCellsArgument;
+    @Mock private Callback<VisibleNetworks> mVisibleNetworksCallback;
+    @Captor ArgumentCaptor<VisibleNetworks> mVisibleNetworksArgument;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        PlatformNetworksManager.sTimeProvider = new PlatformNetworksManager.TimeProvider() {
-            @Override
-            public long getCurrentTime() {
-                return CURRENT_TIME_MS;
-            }
-            @Override
-            public long getElapsedRealtime() {
-                return CURRENT_ELAPSED_TIME_MS;
-            }
-        };
+        PlatformNetworksManager.sTimeProvider =
+                new PlatformNetworksManager.TimeProvider() {
+                    @Override
+                    public long getCurrentTime() {
+                        return CURRENT_TIME_MS;
+                    }
+
+                    @Override
+                    public long getElapsedRealtime() {
+                        return CURRENT_ELAPSED_TIME_MS;
+                    }
+                };
         when(mContext.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(mTelephonyManager);
         when(mContext.getSystemService(Context.WIFI_SERVICE)).thenReturn(mWifiManager);
         when(mContext.getApplicationContext()).thenReturn(mContext);
@@ -221,8 +202,11 @@ public class PlatformNetworksManagerTest {
         mWifiScanResultUnknown.BSSID = null; // This is what makes it unknown.
         mWifiScanResultUnknown.level = 0;
         when(mWifiManager.getScanResults())
-                .thenReturn(Arrays.asList(
-                        mWifiScanResult, mWifiScanResultNotConnected, mWifiScanResultUnknown));
+                .thenReturn(
+                        Arrays.asList(
+                                mWifiScanResult,
+                                mWifiScanResultNotConnected,
+                                mWifiScanResultUnknown));
 
         when(mCellIdentityLte.getCi()).thenReturn(LTE_CELL.cellId().intValue());
         when(mCellIdentityLte.getPci()).thenReturn(LTE_CELL.physicalCellId().intValue());
@@ -266,7 +250,7 @@ public class PlatformNetworksManagerTest {
         when(mContext.registerReceiver(eq(null), any(IntentFilter.class), isNull(), isNull()))
                 .thenReturn(mNetworkStateChangedIntent);
         when(mContext.registerReceiver(
-                     eq(null), any(IntentFilter.class), isNull(), isNull(), eq(0)))
+                        eq(null), any(IntentFilter.class), isNull(), isNull(), eq(0)))
                 .thenReturn(mNetworkStateChangedIntent);
         when(mNetworkStateChangedIntent.getParcelableExtra(eq(WifiManager.EXTRA_WIFI_INFO)))
                 .thenReturn(mWifiInfo);
@@ -373,11 +357,13 @@ public class PlatformNetworksManagerTest {
         for (VisibleWifi visibleWifi : visibleWifis) {
             if (visibleWifi.bssid().equals(CONNECTED_WIFI.bssid())) {
                 assertEquals(CONNECTED_WIFI, visibleWifi);
-                assertEquals(Long.valueOf(CURRENT_TIME_MS - CONNECTED_WIFI_AGE),
+                assertEquals(
+                        Long.valueOf(CURRENT_TIME_MS - CONNECTED_WIFI_AGE),
                         visibleWifi.timestampMs());
             } else {
                 assertEquals(NOT_CONNECTED_WIFI, visibleWifi);
-                assertEquals(Long.valueOf(CURRENT_TIME_MS - NOT_CONNECTED_WIFI_AGE),
+                assertEquals(
+                        Long.valueOf(CURRENT_TIME_MS - NOT_CONNECTED_WIFI_AGE),
                         visibleWifi.timestampMs());
             }
         }
@@ -429,8 +415,9 @@ public class PlatformNetworksManagerTest {
                 new HashSet<VisibleCell>(Arrays.asList(LTE_CELL, WCDMA_CELL, GSM_CELL, CDMA_CELL));
         Set<VisibleWifi> expectedVisibleWifis =
                 new HashSet<VisibleWifi>(Arrays.asList(CONNECTED_WIFI, NOT_CONNECTED_WIFI));
-        VisibleNetworks expectedVisibleNetworks = VisibleNetworks.create(
-                CONNECTED_WIFI, LTE_CELL, expectedVisibleWifis, expectedVisibleCells);
+        VisibleNetworks expectedVisibleNetworks =
+                VisibleNetworks.create(
+                        CONNECTED_WIFI, LTE_CELL, expectedVisibleWifis, expectedVisibleCells);
         PlatformNetworksManager.computeVisibleNetworks(mContext, mVisibleNetworksCallback);
         verify(mVisibleNetworksCallback).onResult(mVisibleNetworksArgument.capture());
         assertEquals(expectedVisibleNetworks, mVisibleNetworksArgument.getValue());
@@ -452,8 +439,9 @@ public class PlatformNetworksManagerTest {
         Set<VisibleCell> expectedVisibleCells =
                 new HashSet<VisibleCell>(Arrays.asList(LTE_CELL, WCDMA_CELL, GSM_CELL, CDMA_CELL));
         Set<VisibleWifi> expectedVisibleWifis = Collections.emptySet();
-        VisibleNetworks expectedVisibleNetworks = VisibleNetworks.create(
-                CONNECTED_WIFI, LTE_CELL, expectedVisibleWifis, expectedVisibleCells);
+        VisibleNetworks expectedVisibleNetworks =
+                VisibleNetworks.create(
+                        CONNECTED_WIFI, LTE_CELL, expectedVisibleWifis, expectedVisibleCells);
         locationGrantedWifiDenied();
 
         PlatformNetworksManager.computeVisibleNetworks(mContext, mVisibleNetworksCallback);
@@ -495,37 +483,51 @@ public class PlatformNetworksManagerTest {
 
     private void setPermissions(
             boolean coarseLocationGranted, boolean fineLocationGranted, boolean wifiStateGranted) {
-        int coarseLocationPermission = (coarseLocationGranted) ? PackageManager.PERMISSION_GRANTED
-                                                               : PackageManager.PERMISSION_DENIED;
-        int fineLocationPermission = (fineLocationGranted) ? PackageManager.PERMISSION_GRANTED
-                                                           : PackageManager.PERMISSION_DENIED;
-        int wifiStatePermission = (wifiStateGranted) ? PackageManager.PERMISSION_GRANTED
-                                                     : PackageManager.PERMISSION_DENIED;
+        int coarseLocationPermission =
+                (coarseLocationGranted)
+                        ? PackageManager.PERMISSION_GRANTED
+                        : PackageManager.PERMISSION_DENIED;
+        int fineLocationPermission =
+                (fineLocationGranted)
+                        ? PackageManager.PERMISSION_GRANTED
+                        : PackageManager.PERMISSION_DENIED;
+        int wifiStatePermission =
+                (wifiStateGranted)
+                        ? PackageManager.PERMISSION_GRANTED
+                        : PackageManager.PERMISSION_DENIED;
 
-        when(mContext.checkPermission(eq(Manifest.permission.ACCESS_COARSE_LOCATION),
-                     any(Integer.class), any(Integer.class)))
+        when(mContext.checkPermission(
+                        eq(Manifest.permission.ACCESS_COARSE_LOCATION),
+                        any(Integer.class),
+                        any(Integer.class)))
                 .thenReturn(coarseLocationPermission);
-        when(mContext.checkPermission(eq(Manifest.permission.ACCESS_FINE_LOCATION),
-                     any(Integer.class), any(Integer.class)))
+        when(mContext.checkPermission(
+                        eq(Manifest.permission.ACCESS_FINE_LOCATION),
+                        any(Integer.class),
+                        any(Integer.class)))
                 .thenReturn(fineLocationPermission);
-        when(mContext.checkPermission(eq(Manifest.permission.ACCESS_WIFI_STATE), any(Integer.class),
-                     any(Integer.class)))
+        when(mContext.checkPermission(
+                        eq(Manifest.permission.ACCESS_WIFI_STATE),
+                        any(Integer.class),
+                        any(Integer.class)))
                 .thenReturn(wifiStatePermission);
     }
 
     private void verifyNetworkStateAction() {
-        ArgumentMatcher<IntentFilter> argumentMatcher = new ArgumentMatcher<IntentFilter>() {
-            @Override
-            public boolean matches(IntentFilter intentFilter) {
-                return intentFilter.hasAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-            }
-        };
+        ArgumentMatcher<IntentFilter> argumentMatcher =
+                new ArgumentMatcher<IntentFilter>() {
+                    @Override
+                    public boolean matches(IntentFilter intentFilter) {
+                        return intentFilter.hasAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
+                    }
+                };
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            verify(mContext).registerReceiver(
-                    eq(null), argThat(argumentMatcher), isNull(), isNull(), eq(0));
+            verify(mContext)
+                    .registerReceiver(
+                            eq(null), argThat(argumentMatcher), isNull(), isNull(), eq(0));
         } else {
-            verify(mContext).registerReceiver(
-                    eq(null), argThat(argumentMatcher), isNull(), isNull());
+            verify(mContext)
+                    .registerReceiver(eq(null), argThat(argumentMatcher), isNull(), isNull());
         }
     }
 }

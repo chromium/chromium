@@ -24,7 +24,9 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -343,16 +345,17 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   // 3. If the window is not the mru window in snap group i.e. the corresponding
   // overview item representation for the snap group has been created.
   auto should_exclude_in_clamshell = [&]() -> bool {
-    if (auto* snap_group_controller = SnapGroupController::Get()) {
+    if (IsFasterSplitScreenOrSnapGroupArm1Enabled()) {
       if (auto* split_view_overview_session =
               RootWindowController::ForWindow(window)
                   ->split_view_overview_session();
-          snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
           split_view_overview_session &&
           split_view_overview_session->window() == window) {
         return true;
       }
+    }
 
+    if (auto* snap_group_controller = SnapGroupController::Get()) {
       if (SnapGroup* snap_group =
               snap_group_controller->GetSnapGroupForGivenWindow(window)) {
         return window != snap_group->GetTopMostWindowInGroup();
@@ -648,6 +651,42 @@ bool ShouldRoundThumbnailWindow(views::View* backdrop_view,
       gfx::RRectF(gfx::RectF(backdrop_view->GetBoundsInScreen()),
                   backdrop_view->layer()->rounded_corner_radii()));
   return !backdrop_bounds_in_screen.Contains(thumbnail_bounds_in_screen);
+}
+
+bool IsFasterSplitScreenOrSnapGroupArm1Enabled() {
+  if (Shell::Get()->IsInTabletMode()) {
+    // FasterSplitScreen is not supported in tablet mode.
+    return false;
+  }
+  if (features::IsFasterSplitScreenSetupEnabled()) {
+    return true;
+  }
+  auto* snap_group_controller = SnapGroupController::Get();
+  return snap_group_controller &&
+         snap_group_controller->IsArm1AutomaticallyLockEnabled();
+}
+
+void MaybeStartSplitViewOverview(aura::Window* window,
+                                 WindowSnapActionSource snap_action_source) {
+  auto* root_window_controller = RootWindowController::ForWindow(window);
+  if (root_window_controller->split_view_overview_session()) {
+    // If split view overview is already active, which may be the case if this
+    // was the selected window from overview, return.
+    return;
+  }
+
+  if (!IsInOverviewSession()) {
+    root_window_controller->StartSplitViewOverviewSession(
+        window, OverviewStartAction::kFasterSplitScreenSetup,
+        OverviewEnterExitType::kNormal, snap_action_source);
+  } else {
+    // If overview has already started, we may need to update the bounds. This
+    // may happen if a snapped window swaps positions or ratios during split
+    // view overview.
+    GetOverviewSession()
+        ->GetGridWithRootWindow(window->GetRootWindow())
+        ->RefreshGridBounds(/*animate=*/false);
+  }
 }
 
 }  // namespace ash::window_util

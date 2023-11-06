@@ -43,7 +43,6 @@ NSString* const kDictionaryHeroBannerImageKey = @"HeroBannerImageName";
 NSString* const kDictionaryIconImageKey = @"IconImageName";
 NSString* const kDictionaryBackgroundColorKey = @"IconBackgroundColor";
 NSString* const kDictionaryInstructionsKey = @"InstructionSteps";
-NSString* const kDictionaryPrimaryActionTitleKey = @"PrimaryActionTitle";
 NSString* const kDictionaryPrimaryActionKey = @"PrimaryAction";
 NSString* const kDictionaryLearnMoreURLKey = @"LearnMoreUrlString";
 
@@ -62,6 +61,24 @@ UIColor* GenerateColor(NSString* color) {
   } else {
     return nil;
   }
+}
+
+// Returns the string for the primary button corresponding to the primary
+// action.
+NSString* GetPrimaryActionTitle(WhatsNewPrimaryAction action) {
+  switch (action) {
+    case WhatsNewPrimaryAction::kIOSSettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kPrivacySettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kChromeSettings:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_CHROME_SETTINGS);
+    case WhatsNewPrimaryAction::kIOSSettingsPasswords:
+      return l10n_util::GetNSString(IDS_IOS_OPEN_IOS_SETTINGS);
+    case WhatsNewPrimaryAction::kNoAction:
+    case WhatsNewPrimaryAction::kError:
+      return nil;
+  };
 }
 
 // Returns a UIImage given an image name.
@@ -242,16 +259,6 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     whats_new_item.instructionSteps = instructions;
   }
 
-  // Load the entry primary action title.
-  NSNumber* primary_action_title =
-      base::apple::ObjCCast<NSNumber>(entry[kDictionaryPrimaryActionTitleKey]);
-  if (!primary_action_title) {
-    whats_new_item.primaryActionTitle = nil;
-  } else {
-    whats_new_item.primaryActionTitle =
-        l10n_util::GetNSString([primary_action_title intValue]);
-  }
-
   // Load the entry primary action.
   NSNumber* primary_action =
       base::apple::ObjCCast<NSNumber>(entry[kDictionaryPrimaryActionKey]);
@@ -265,6 +272,10 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
   if (whats_new_item.primaryAction == WhatsNewPrimaryAction::kError) {
     return nil;
   }
+
+  // Load the entry primary action title.
+  whats_new_item.primaryActionTitle =
+      GetPrimaryActionTitle(whats_new_item.primaryAction);
 
   // Load the entry learn more url.
   NSString* url = entry[kDictionaryLearnMoreURLKey];

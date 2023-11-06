@@ -47,11 +47,9 @@ public class JSUtils {
             Criteria.checkThat(linkIsNotNull, Matchers.is("true"));
         }, WAIT_TIMEOUT_MS, CHECK_INTERVAL);
 
-        // clang-format off
         instrumentation.runOnMainSync(
                 () -> awContents.getWebContents().evaluateJavaScriptForTests(
                         createScriptToClickNode(linkId), null));
-        // clang-format on
     }
 
     public static void clickNodeWithUserGesture(WebContents webContents, String nodeId) {

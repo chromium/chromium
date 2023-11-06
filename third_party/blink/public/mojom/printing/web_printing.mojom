@@ -1,0 +1,11 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Interface for accessing printers from the render process.
+// The implementation is responsible for checking access permissions.
+interface WebPrintingService {
+  // TODO(b/302505962): Add necessary methods.
+};

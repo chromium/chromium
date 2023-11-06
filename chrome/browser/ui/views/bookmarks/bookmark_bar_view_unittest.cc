@@ -153,12 +153,16 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
 
  private:
   static std::unique_ptr<KeyedService> CreateTemplateURLService(
-      content::BrowserContext* profile) {
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
     return std::make_unique<TemplateURLService>(
-        static_cast<Profile*>(profile)->GetPrefs(),
-        std::make_unique<SearchTermsData>(),
+        profile->GetPrefs(), std::make_unique<SearchTermsData>(),
         nullptr /* KeywordWebDataService */,
-        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure());
+        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , profile->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
   }
 };
 

@@ -112,8 +112,7 @@ public class TabUsageTracker
             mModelSelector.addObserver(mTabModelSelectorObserver);
         }
 
-        Tab currentlySelectedTab =
-                mModelSelector.getCurrentModel().getTabAt(mModelSelector.getCurrentModelIndex());
+        Tab currentlySelectedTab = mModelSelector.getCurrentTab();
         if (currentlySelectedTab != null) mTabsUsed.add(currentlySelectedTab.getId());
 
         mTabModelSelectorTabModelObserver = new TabModelSelectorTabModelObserver(mModelSelector) {

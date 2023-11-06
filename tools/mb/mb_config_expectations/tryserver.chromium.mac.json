@@ -287,30 +287,6 @@
       "use_remoteexec": true
     }
   },
-  "ios-m1-simulator-cronet": {
-    "gn_args": {
-      "disable_brotli_filter": false,
-      "disable_file_support": true,
-      "enable_remoting": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "enable_websockets": false,
-      "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "11.0",
-      "ios_stack_profiler_enabled": false,
-      "is_component_build": false,
-      "is_cronet_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_allocator_shim": false,
-      "use_crash_key_stubs": true,
-      "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true,
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -351,31 +327,6 @@
       "use_goma": true
     }
   },
-  "ios-simulator-cronet": {
-    "gn_args": {
-      "disable_brotli_filter": false,
-      "disable_file_support": true,
-      "enable_remoting": false,
-      "enable_run_ios_unittests_with_xctest": true,
-      "enable_websockets": false,
-      "include_transport_security_state_preload_list": false,
-      "ios_deployment_target": "11.0",
-      "ios_stack_profiler_enabled": false,
-      "is_component_build": false,
-      "is_cronet_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
-      "use_allocator_shim": false,
-      "use_crash_key_stubs": true,
-      "use_dummy_lastchange": true,
-      "use_partition_alloc": false,
-      "use_platform_icu_alternatives": true,
-      "use_remoteexec": true
-    }
-  },
   "ios-simulator-full-configs": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
@@ -388,19 +339,6 @@
       "target_os": "ios",
       "use_clang_coverage": true,
       "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
-  "ios-simulator-inverse-fieldtrials-fyi": {
-    "gn_args": {
-      "enable_run_ios_unittests_with_xctest": true,
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_environment": "simulator",
-      "target_os": "ios",
       "use_remoteexec": true
     }
   },
@@ -597,19 +535,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-inverse-fieldtrials-fyi-rel": {
-    "gn_args": {
-      "dcheck_always_on": true,
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "mac-osxbeta-rel": {
     "gn_args": {
       "dcheck_always_on": true,
@@ -671,11 +596,12 @@
   },
   "mac10.15-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -694,22 +620,24 @@
   },
   "mac11-arm64-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
   "mac11-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -728,12 +656,13 @@
   },
   "mac12-arm64-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -749,11 +678,12 @@
   },
   "mac12-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -785,12 +715,13 @@
   },
   "mac13-arm64-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "symbol_level": 0,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
       "target_cpu": "arm64",
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },
@@ -806,11 +737,12 @@
   },
   "mac13-wpt-content-shell-fyi-rel": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
+      "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
+      "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_dummy_lastchange": true,
       "use_remoteexec": true
     }
   },

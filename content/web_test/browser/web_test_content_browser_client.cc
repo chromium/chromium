@@ -55,6 +55,7 @@
 #include "content/web_test/browser/web_test_fedcm_manager.h"
 #include "content/web_test/browser/web_test_origin_trial_throttle.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "content/web_test/browser/web_test_sensor_provider_manager.h"
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
@@ -86,6 +87,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
@@ -476,18 +478,17 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
 
     // The list of schemes below is based on
     // //third_party/blink/web_tests/external/wpt/config.json
-    const char* kOriginTemplates[] = {
-        "http://%s/",
-        "https://%s/",
+    const char* kSchemes[] = {
+        url::kHttpScheme,
+        url::kHttpsScheme,
     };
 
     origins_to_isolate.reserve(origins_to_isolate.size() +
-                               std::size(kWptHostnames) *
-                                   std::size(kOriginTemplates));
-    for (const char* kWptHostname : kWptHostnames) {
-      for (const char* kOriginTemplate : kOriginTemplates) {
-        std::string origin = base::StringPrintf(kOriginTemplate, kWptHostname);
-        origins_to_isolate.push_back(origin);
+                               std::size(kWptHostnames) * std::size(kSchemes));
+    for (const char* hostname : kWptHostnames) {
+      for (const char* scheme : kSchemes) {
+        origins_to_isolate.push_back(
+            base::StringPrintf("%s://%s/", scheme, hostname));
       }
     }
   }
@@ -547,6 +548,9 @@ void WebTestContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
   map->Add<blink::test::mojom::FederatedAuthRequestAutomation>(
       base::BindRepeating(&WebTestContentBrowserClient::BindFedCmAutomation,
                           base::Unretained(this)));
+  map->Add<blink::test::mojom::WebSensorProviderAutomation>(base::BindRepeating(
+      &WebTestContentBrowserClient::BindWebSensorProviderAutomation,
+      base::Unretained(this)));
 }
 
 bool WebTestContentBrowserClient::CanAcceptUntrustedExchangesIfNeeded() {
@@ -605,6 +609,17 @@ void WebTestContentBrowserClient::BindFedCmAutomation(
         receiver) {
   fedcm_managers_.Add(std::make_unique<WebTestFedCmManager>(render_frame_host),
                       std::move(receiver));
+}
+
+void WebTestContentBrowserClient::BindWebSensorProviderAutomation(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::test::mojom::WebSensorProviderAutomation>
+        receiver) {
+  if (!sensor_provider_manager_) {
+    sensor_provider_manager_ = std::make_unique<WebTestSensorProviderManager>(
+        WebContents::FromRenderFrameHost(render_frame_host));
+  }
+  sensor_provider_manager_->Bind(std::move(receiver));
 }
 
 std::unique_ptr<LoginDelegate> WebTestContentBrowserClient::CreateLoginDelegate(
@@ -696,7 +711,8 @@ bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
 bool WebTestContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
   return true;
 }
 

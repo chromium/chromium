@@ -42,8 +42,8 @@ if (is_android) {
 
 if (is_fuchsia) {
   import("//build/config/fuchsia/generate_runner_scripts.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/component.gni")
-  import("//third_party/fuchsia-sdk/sdk/build/package.gni")
+  import("//third_party/fuchsia-gn-sdk/src/component.gni")
+  import("//third_party/fuchsia-gn-sdk/src/package.gni")
 }
 
 if (is_linux) {
@@ -102,6 +102,7 @@ group("gn_all") {
       "//services/service_manager/public/cpp",
       "//skia:skia_unittests",
       "//sql:sql_unittests",
+      "//testing/libfuzzer/tests",
       "//third_party/angle/src/tests:angle_end2end_tests",
       "//third_party/angle/src/tests:angle_unittests",
       "//third_party/angle/src/tests:angle_white_box_tests",
@@ -167,9 +168,7 @@ group("gn_all") {
     }
 
     if (is_chromeos_lacros) {
-      deps += [
-        "//chrome/test:lacros_chrome_unittests",
-      ]
+      deps += [ "//chrome/test:lacros_chrome_unittests" ]
     }
 
     if (!is_ios && !is_castos) {
@@ -767,13 +766,6 @@ group("gn_all") {
       if (is_chromeos_ash) {
         deps += [ "//chrome/services/ipp_parser/public/cpp:fuzzers" ]
       }
-
-      # TODO(crbug.com/906751): Get the libFuzzer tests working on Windows.
-      # Disable them for now because they cause the Windows clang ToT builder to
-      # fail.
-      if (!is_win) {
-        deps += [ "//testing/libfuzzer/tests:libfuzzer_tests" ]
-      }
     }
 
     # TODO(https://crbug.com/1299021): Remove the special case for arm64.
@@ -818,8 +810,8 @@ group("gn_all") {
         "//third_party/dawn/src/dawn/fuzzers:fuzzers",
         "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
         "//third_party/dawn/src/dawn/tests:dawn_unittests",
-        "//third_party/dawn/src/tint:tint_unittests",
-        "//third_party/dawn/src/tint/fuzzers",
+        "//third_party/dawn/src/tint:fuzzers",
+        "//third_party/dawn/src/tint:tests",
       ]
     }
 
@@ -1101,7 +1093,9 @@ if (use_blink && !is_cronet_build) {
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
+      data = [ "//third_party/blink/web_tests/platform/linux-chrome/" ]
       data_deps = [
+        ":blink_web_tests_expectations",
         "//chrome:chrome",
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
@@ -1110,10 +1104,17 @@ if (use_blink && !is_cronet_build) {
     script_test("content_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
+        "--test-type",
+        "testharness",
+        "reftest",
+        "crashtest",
+        "print-reftest",
+        "--product=content_shell",
         "--no-show-results",
         "--zero-tests-executed-ok",
       ]
       data_deps = [
+        ":blink_web_tests_expectations",
         ":blink_web_tests_support_data",
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
@@ -1285,20 +1286,13 @@ if (use_blink && !is_cronet_build) {
 
     args = _common_web_test_args
 
-    data_deps = [ ":blink_web_tests_support_data" ]
+    data_deps = [
+      ":blink_web_tests_expectations",
+      ":blink_web_tests_support_data",
+    ]
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/VirtualTestSuites",
-
-      # List all test expectations here
-      "//third_party/blink/web_tests/ASANExpectations",
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MSANExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-      "//third_party/blink/web_tests/WebGPUExpectations",
 
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/accessibility/",
@@ -1387,6 +1381,24 @@ if (use_blink && !is_cronet_build) {
 
       # === Test Case Folders Ends ===
     ]
+  }
+
+  group("blink_web_tests_expectations") {
+    testonly = true
+
+    data = [
+      # Include virtual baselines.
+      "//third_party/blink/web_tests/virtual/",
+
+      # List all test expectations here
+      "//third_party/blink/web_tests/ASANExpectations",
+      "//third_party/blink/web_tests/LeakExpectations",
+      "//third_party/blink/web_tests/MSANExpectations",
+      "//third_party/blink/web_tests/NeverFixTests",
+      "//third_party/blink/web_tests/SlowTests",
+      "//third_party/blink/web_tests/StaleTestExpectations",
+      "//third_party/blink/web_tests/TestExpectations",
+    ]
 
     if (is_win || is_linux || is_fuchsia) {
       data += [
@@ -1433,59 +1445,20 @@ if (use_blink && !is_cronet_build) {
     # Use --wpt-only to skip tests under web_tests/virtual/
     args += [ "--wpt-only" ]
 
-    data_deps = [ ":blink_web_tests_support_data" ]
+    data_deps = [
+      ":blink_web_tests_expectations",
+      ":blink_web_tests_support_data",
+    ]
     data = [
       "//third_party/blink/perf_tests/",
       "//third_party/blink/web_tests/VirtualTestSuites",
 
-      # List all test expectations here
-      "//third_party/blink/web_tests/ASANExpectations",
-      "//third_party/blink/web_tests/LeakExpectations",
-      "//third_party/blink/web_tests/MSANExpectations",
-      "//third_party/blink/web_tests/NeverFixTests",
-      "//third_party/blink/web_tests/SlowTests",
-      "//third_party/blink/web_tests/StaleTestExpectations",
-      "//third_party/blink/web_tests/TestExpectations",
-      "//third_party/blink/web_tests/WebGPUExpectations",
-
       # === List Test Cases folders here ===
       "//third_party/blink/web_tests/external/",
       "//third_party/blink/web_tests/wpt_internal/",
-      "//third_party/blink/web_tests/virtual/",
 
       # === Test Case Folders Ends ===
     ]
-
-    if (is_win || is_linux || is_fuchsia) {
-      data += [
-        "//third_party/blink/web_tests/platform/win/",
-        "//third_party/blink/web_tests/platform/win10/",
-      ]
-      if (is_linux || is_fuchsia) {
-        data += [ "//third_party/blink/web_tests/platform/linux/" ]
-      }
-      if (is_fuchsia) {
-        data += [
-          "//third_party/blink/web_tests/platform/fuchsia/",
-          "$root_gen_dir/package_metadata/content_shell.meta",
-        ]
-      }
-    } else if (is_mac) {
-      data += [
-        "//third_party/blink/web_tests/platform/mac/",
-        "//third_party/blink/web_tests/platform/mac-mac10.15/",
-        "//third_party/blink/web_tests/platform/mac-mac11-arm64/",
-      ]
-    }
-
-    # flag-specific tests only runs on linux as of now
-    if (is_linux) {
-      data += [
-        "//third_party/blink/web_tests/FlagSpecificConfig",
-        "//third_party/blink/web_tests/FlagExpectations/",
-        "//third_party/blink/web_tests/flag-specific/",
-      ]
-    }
   }
 
   script_test("devtools_web_tests") {
@@ -1604,6 +1577,10 @@ if (use_blink && !is_cronet_build) {
       "//tools/idl_parser/",
     ]
 
+    if (is_ios) {
+      data += [ "//third_party/blink/web_tests/IOSTestExpectations" ]
+    }
+
     data_deps = [ "//ui/base:goldctl" ]
   }
 }
@@ -1701,7 +1678,7 @@ if (!is_ios && !is_android && !is_castos && !is_cronet_build) {
     }
 
     if (build_dawn_tests) {
-      deps += [ "//third_party/dawn/src/tint/fuzzers:fuzzers" ]
+      deps += [ "//third_party/dawn/src/tint:fuzzers" ]
     }
   }
 }

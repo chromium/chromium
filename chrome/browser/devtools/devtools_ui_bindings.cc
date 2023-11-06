@@ -30,6 +30,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -49,6 +50,9 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/metrics/structured/structured_events.h"
+#endif
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -343,10 +347,6 @@ std::string SanitizeFrontendQueryParam(
 
   if (key == "targetType" && value == "tab")
     return value;
-
-  if (key == "consolePaste" && value == "blockwebui") {
-    return value;
-  }
 
   if (key == "noJavaScriptCompletion" && value == "true") {
     return value;
@@ -665,7 +665,8 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       delegate_(new DefaultBindingsDelegate(web_contents_)),
       devices_updates_enabled_(false),
       frontend_loaded_(false),
-      settings_(profile_) {
+      settings_(profile_),
+      last_action_time_(base::TimeTicks::Now()) {
   DevToolsUIBindings::GetDevToolsUIBindings().push_back(this);
   frontend_contents_observer_ =
       std::make_unique<FrontendWebContentsObserver>(this);
@@ -1411,10 +1412,70 @@ void DevToolsUIBindings::RecordUserMetricsAction(const std::string& name) {
   base::RecordComputedAction(name);
 }
 
-void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {}
-void DevToolsUIBindings::RecordClick(const ClickEvent& event) {}
-void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {}
-void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {}
+base::TimeDelta DevToolsUIBindings::GetTimeSinceLastAction() {
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta time_since_last_action = (now - last_action_time_);
+  last_action_time_ = now;
+  return time_since_last_action;
+}
+
+void DevToolsUIBindings::RecordImpression(const ImpressionEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  for (const auto& ve : event.impressions) {
+    metrics::structured::events::v2::dev_tools::Impression()
+        .SetVeId(ve.id)
+        .SetVeType(ve.type)
+        .SetVeParent(ve.parent)
+        .SetVeContext(ve.context)
+        .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+        .Record();
+  }
+#endif
+}
+
+void DevToolsUIBindings::RecordClick(const ClickEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  metrics::structured::events::v2::dev_tools::Click()
+      .SetVeId(event.veid)
+      .SetMouseButton(event.mouse_button)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .Record();
+#endif
+}
+
+void DevToolsUIBindings::RecordChange(const ChangeEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  metrics::structured::events::v2::dev_tools::Change()
+      .SetVeId(event.veid)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .Record();
+#endif
+}
+
+void DevToolsUIBindings::RecordKeyDown(const KeyDownEvent& event) {
+  if (!base::FeatureList::IsEnabled(::features::kDevToolsVeLogging)) {
+    return;
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  metrics::structured::events::v2::dev_tools::KeyDown()
+      .SetVeId(event.veid)
+      .SetContext(event.context)
+      .SetTimeSinceLastAction(GetTimeSinceLastAction().InMilliseconds())
+      .Record();
+#endif
+}
+
 void DevToolsUIBindings::SendJsonRequest(DispatchCallback callback,
                                          const std::string& browser_id,
                                          const std::string& url) {

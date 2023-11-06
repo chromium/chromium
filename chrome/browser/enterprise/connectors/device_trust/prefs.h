@@ -10,10 +10,6 @@
 
 namespace enterprise_connectors {
 
-// Pref that maps to the "ContextAwareAccessSignalsAllowlist" policy.
-// TODO(b/279840937): Clean up this policy and its references.
-extern const char kContextAwareAccessSignalsAllowlistPref[];
-
 // Pref that maps to the "UserContextAwareAccessSignalsAllowlist" policy.
 extern const char kUserContextAwareAccessSignalsAllowlistPref[];
 

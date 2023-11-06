@@ -5,4 +5,6 @@
   <dimen name="page_insights_loading_indicator_size">48dp</dimen>
   <dimen name="page_insights_loading_indicator_margin">60dp</dimen>
   <dimen name="page_insights_loading_indicator_padding">6dp</dimen>
+  <dimen name="page_insights_toolbar_height">64dp</dimen>
+  <dimen name="page_insights_max_width">500dp</dimen>
 </resources>

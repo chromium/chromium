@@ -1,12 +1,14 @@
 This is a testharness.js-based test.
-PASS Property dominant-baseline value 'auto'
-FAIL Property dominant-baseline value 'text-bottom' assert_true: 'text-bottom' is a supported value for dominant-baseline. expected true got false
-PASS Property dominant-baseline value 'alphabetic'
-PASS Property dominant-baseline value 'ideographic'
-PASS Property dominant-baseline value 'middle'
-PASS Property dominant-baseline value 'central'
-PASS Property dominant-baseline value 'mathematical'
-PASS Property dominant-baseline value 'hanging'
-FAIL Property dominant-baseline value 'text-top' assert_true: 'text-top' is a supported value for dominant-baseline. expected true got false
+[PASS] Property dominant-baseline value 'auto'
+[FAIL] Property dominant-baseline value 'text-bottom'
+  assert_true: 'text-bottom' is a supported value for dominant-baseline. expected true got false
+[PASS] Property dominant-baseline value 'alphabetic'
+[PASS] Property dominant-baseline value 'ideographic'
+[PASS] Property dominant-baseline value 'middle'
+[PASS] Property dominant-baseline value 'central'
+[PASS] Property dominant-baseline value 'mathematical'
+[PASS] Property dominant-baseline value 'hanging'
+[FAIL] Property dominant-baseline value 'text-top'
+  assert_true: 'text-top' is a supported value for dominant-baseline. expected true got false
 Harness: the test ran to completion.
 

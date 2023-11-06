@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
@@ -93,8 +92,6 @@ class PluginVmApps : public AppPublisher,
   const raw_ptr<Profile, ExperimentalAsh> profile_;
   raw_ptr<guest_os::GuestOsRegistryService, ExperimentalAsh> registry_ =
       nullptr;
-
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Whether the Plugin VM app is allowed by policy.
   bool is_allowed_ = false;

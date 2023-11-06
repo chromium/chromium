@@ -6,17 +6,18 @@ android_library("java") {
     "$google_play_services_package:google_play_services_auth_base_java",
     "$google_play_services_package:google_play_services_base_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
     "//net/android:net_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [
     ":account_capabilities_constants_javagen",
     ":jni_headers",
+    ":signin_java_features_srcjar",
     ":tribool_javagen",
     "//components/signin/public/base:consent_level_enum_javagen",
     "//components/signin/public/base:signin_metrics_enum_javagen",
@@ -40,6 +41,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
     "java/src/org/chromium/components/signin/ConnectionRetry.java",
     "java/src/org/chromium/components/signin/PatternMatcher.java",
+    "java/src/org/chromium/components/signin/SigninFeatureMap.java",
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
@@ -61,6 +63,13 @@ android_library("java") {
   jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability.class" ]
 }
 
+# Expose Signin feature flags to Java code
+java_cpp_features("signin_java_features_srcjar") {
+  visibility = [ ":*" ]
+  sources = [ "//components/signin/public/base/signin_switches.cc" ]
+  template = "java/src/org/chromium/components/signin/SigninFeatures.java.tmpl"
+}
+
 android_library("account_email_domain_displayability_java") {
   deps = [ ":java" ]
   sources = [ "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java" ]
@@ -70,8 +79,8 @@ generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
-    "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
+    "java/src/org/chromium/components/signin/SigninFeatureMap.java",
     "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
@@ -112,10 +121,10 @@ android_library("signin_java_test_support") {
     ":test_support_jni_headers",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/mockito:mockito_java",
   ]
   sources = [
@@ -149,10 +158,10 @@ android_library("unit_device_javatests") {
     ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
@@ -183,13 +192,13 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//components/externalauth/android:google_delegate_public_impl_java",
     "//components/externalauth/android:java",
     "//testing/android/junit:junit_test_support",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

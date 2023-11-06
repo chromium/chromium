@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.external_greylist_url": {
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BrowserSwitcherExternalGreylistUrl": "file:///C:/src/greylist.xml"
+        },
+        "prefs": {
+          "browser_switcher.external_greylist_url": {
+            "value": "file:///C:/src/greylist.xml"
+          }
+        }
+      }
+    ]
+  }
+]

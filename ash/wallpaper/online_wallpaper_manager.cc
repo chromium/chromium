@@ -5,7 +5,6 @@
 #include "ash/wallpaper/online_wallpaper_manager.h"
 
 #include "ash/public/cpp/image_util.h"
-#include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
@@ -33,25 +32,28 @@ OnlineWallpaperManager::~OnlineWallpaperManager() = default;
 
 void OnlineWallpaperManager::GetOnlineWallpaper(
     const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback) {
   auto on_load = base::BindOnce(
       &OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete,
-      weak_factory_.GetWeakPtr(), wallpaper_dir, params, std::move(callback));
-  wallpaper_file_manager_->LoadWallpaper(
-      params.daily_refresh_enabled ? WallpaperType::kDaily
-                                   : WallpaperType::kOnline,
-      wallpaper_dir, params.url.spec(), std::move(on_load));
+      weak_factory_.GetWeakPtr(), wallpaper_dir, account_id, wallpaper_info,
+      std::move(callback));
+  wallpaper_file_manager_->LoadWallpaper(wallpaper_info.type, wallpaper_dir,
+                                         wallpaper_info.location,
+                                         std::move(on_load));
 }
 
 void OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete(
     const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback,
     const gfx::ImageSkia& image) {
   DCHECK(callback);
   if (image.isNull()) {
-    DownloadAndSaveAllVariants(wallpaper_dir, params, std::move(callback));
+    DownloadAndSaveAllVariants(wallpaper_dir, account_id, wallpaper_info,
+                               std::move(callback));
   } else {
     std::move(callback).Run(image);
   }
@@ -59,16 +61,17 @@ void OnlineWallpaperManager::OnLoadExistingOnlineWallpaperComplete(
 
 void OnlineWallpaperManager::DownloadAndSaveAllVariants(
     const base::FilePath& wallpaper_dir,
-    const OnlineWallpaperParams& params,
+    const AccountId& account_id,
+    const WallpaperInfo& wallpaper_info,
     LoadOnlineWallpaperCallback callback) {
-  std::vector<OnlineWallpaperVariant> variants = params.variants;
+  std::vector<OnlineWallpaperVariant> variants = wallpaper_info.variants;
   if (variants.empty()) {
     // `variants` can be empty for users who have just migrated from the old
     // wallpaper picker to the new one.
     //
     // OnlineWallpaperVariant's `asset_id` and `type` are not actually used in
     // this function, so they can have dummy values here.
-    variants.emplace_back(/*asset_id=*/0, params.url,
+    variants.emplace_back(/*asset_id=*/0, GURL(wallpaper_info.location),
                           backdrop::Image::IMAGE_TYPE_UNKNOWN);
   }
 
@@ -88,14 +91,13 @@ void OnlineWallpaperManager::DownloadAndSaveAllVariants(
                      std::move(callback)));
   for (const OnlineWallpaperVariant& variant : variants) {
     wallpaper_image_downloader_->DownloadBackdropImage(
-        variant.raw_url, params.account_id,
+        variant.raw_url, account_id,
         base::BindOnce(
             &OnlineWallpaperManager::OnVariantDownloaded,
-            weak_factory_.GetWeakPtr(),
-            params.daily_refresh_enabled ? WallpaperType::kDaily
-                                         : WallpaperType::kOnline,
-            wallpaper_dir, variant.raw_url, params.layout,
-            /*is_target_variant=*/params.url == variant.raw_url,
+            weak_factory_.GetWeakPtr(), wallpaper_info.type, wallpaper_dir,
+            variant.raw_url, wallpaper_info.layout,
+            /*is_target_variant=*/wallpaper_info.location ==
+                variant.raw_url.spec(),
             // Since `downloads_result`'s lifetime matches the
             // OnAllVariantsDownloaded() callback, and OnAllVariantsDownloaded()
             // is guaranteed to be run after OnVariantDownloaded(), there's no

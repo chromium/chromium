@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -44,7 +46,7 @@ constexpr char kCompleteMetadataTemplate[] = R"({
         "endOffset": 3000,
         "hypothesisParts": [
           {
-            "offset": 1000,
+            "offset": 0,
             "text": [
               "transcript"
             ]
@@ -63,19 +65,19 @@ constexpr char kCompleteMetadataTemplate[] = R"({
         "endOffset": 5000,
         "hypothesisParts": [
           {
-            "offset": 3200,
+            "offset": 0,
             "text": [
               "transcript"
             ]
           },
           {
-            "offset": 4200,
+            "offset": 1000,
             "text": [
               "text"
             ]
           },
           {
-            "offset": 4500,
+            "offset": 1500,
             "text": [
               "2"
             ]
@@ -94,6 +96,279 @@ constexpr char kCompleteMetadataTemplate[] = R"({
         "text": ""
       }
     ]
+  })";
+
+constexpr char
+
+    kCompleteMetadataV2Template[] = R"({
+    "captions": [
+      {
+        "endOffset": 3000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "transcript"
+            ]
+          },
+          {
+            "offset": 2000,
+            "text": [
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 1000,
+        "groupId": 1000,
+        "text": "transcript text"
+      },
+      {
+        "endOffset": 5000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text"
+            ]
+          },
+          {
+            "offset": 1500,
+            "text": [
+              "2"
+            ]
+          }
+        ],
+        "startOffset": 3000,
+        "groupId": 3000,
+        "text": "transcript text 2"
+      }
+    ],
+    "captionLanguage": "en",
+    "recognitionStatus": 1,
+    "version": 2,
+    "tableOfContent": []
+  })";
+
+constexpr char kCompleteMetadataV2MultipleSentenceTemplate[] = R"({
+    "captions": [
+      {
+        "endOffset": 2000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text.",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 0,
+        "groupId": 0,
+        "text": "Transcript text."
+      },
+      {
+        "endOffset": 4000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text?",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 2000,
+        "groupId": 0,
+        "text": "Transcript text?"
+      },
+      {
+        "endOffset": 6000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text!",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 4000,
+        "groupId": 0,
+        "text": "Transcript text!"
+      },
+      {
+        "endOffset": 8000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text.",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 6000,
+        "groupId": 0,
+        "text": "Transcript text."
+      },
+
+      {
+        "endOffset": 10000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text.",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 8000,
+        "groupId": 8000,
+        "text": "Transcript text."
+      },
+      {
+        "endOffset": 12000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text?",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 10000,
+        "groupId": 8000,
+        "text": "Transcript text?"
+      },
+      {
+        "endOffset": 14000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text!",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 12000,
+        "groupId": 8000,
+        "text": "Transcript text!"
+      },
+      {
+        "endOffset": 16000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "Transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text.",
+              "text"
+            ]
+          }
+        ],
+        "startOffset": 14000,
+        "groupId": 8000,
+        "text": "Transcript text."
+      },
+
+      {
+        "endOffset": 25000,
+        "hypothesisParts": [
+          {
+            "offset": 0,
+            "text": [
+              "transcript",
+              "transcript"
+            ]
+          },
+          {
+            "offset": 1000,
+            "text": [
+              "text",
+              "text"
+            ]
+          },
+          {
+            "offset": 1500,
+            "text": [
+              "2",
+              "2"
+            ]
+          }
+        ],
+        "startOffset": 19000,
+        "groupId": 19000,
+        "text": "transcript text 2"
+      }
+    ],
+    "captionLanguage": "en",
+    "recognitionStatus": 1,
+    "version": 2,
+    "tableOfContent": []
   })";
 
 void AssertSerializedString(const std::string& expected,
@@ -151,6 +426,96 @@ std::string BuildTranscriptJson(
                             BuildHypothesisPartsList(hypothesis_part).c_str());
 }
 
+std::unique_ptr<ProjectorMetadata> populateMetadata() {
+  std::unique_ptr<ProjectorMetadata> metadata =
+      std::make_unique<ProjectorMetadata>();
+  metadata->SetCaptionLanguage("en");
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  std::vector<media::HypothesisParts> first_transcript;
+  first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
+                                base::Milliseconds(0));
+  first_transcript.emplace_back(std::vector<std::string>({"text"}),
+                                base::Milliseconds(2000));
+
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      /*start_time=*/base::Milliseconds(1000),
+      /*end_time=*/base::Milliseconds(3000), 1000, "transcript text",
+      std::move(first_transcript)));
+
+  metadata->MarkKeyIdea();
+
+  std::vector<media::HypothesisParts> second_transcript;
+  second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
+                                 base::Milliseconds(0));
+  second_transcript.emplace_back(std::vector<std::string>({"text"}),
+                                 base::Milliseconds(1000));
+  second_transcript.emplace_back(std::vector<std::string>({"2"}),
+                                 base::Milliseconds(1500));
+
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      /*start_time=*/base::Milliseconds(3000),
+      /*end_time=*/base::Milliseconds(5000), 3000, "transcript text 2",
+      std::move(second_transcript)));
+  return metadata;
+}
+
+std::unique_ptr<ProjectorMetadata> populateMetadataWithSentences() {
+  std::unique_ptr<ProjectorMetadata> metadata =
+      std::make_unique<ProjectorMetadata>();
+  metadata->SetCaptionLanguage("en");
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  const std::vector<std::string> paragraph_words = {
+      "Transcript", "text.", "Transcript", "text?",
+      "Transcript", "text!", "Transcript", "text."};
+  const std::vector<std::string> noromalized_paragraph_words = {
+      "transcript", "text", "transcript", "text",
+      "transcript", "text", "transcript", "text"};
+  std::string paragraph_text =
+      "Transcript text. Transcript text? Transcript text! Transcript text.";
+  std::vector<media::HypothesisParts> paragraph_hypothesis_parts;
+  for (uint i = 0; i < paragraph_words.size(); i++) {
+    paragraph_hypothesis_parts.emplace_back(
+        std::vector<std::string>(
+            {paragraph_words[i], noromalized_paragraph_words[i]}),
+        base::Milliseconds(i * 1000));
+  }
+  const base::TimeDelta paragraph_start_offset = base::Milliseconds(0);
+  const base::TimeDelta paragraph_end_offset =
+      base::Milliseconds(paragraph_words.size() * 1000);
+
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      paragraph_start_offset, paragraph_end_offset,
+      paragraph_start_offset.InMilliseconds(),
+      base::JoinString(paragraph_words, " "), paragraph_hypothesis_parts));
+
+  // Add another paragraph with the same text and length.
+  // The group id for the new paragraph should be paragraph_end_offset (8000),
+  // start timestamp should be 8000 + hypothesiePart offset.
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      paragraph_end_offset, paragraph_end_offset + paragraph_end_offset,
+      paragraph_end_offset.InMilliseconds(),
+      base::JoinString(paragraph_words, " "), paragraph_hypothesis_parts));
+
+  metadata->MarkKeyIdea();
+
+  std::vector<media::HypothesisParts> second_transcript;
+  second_transcript.emplace_back(
+      std::vector<std::string>({"transcript", "transcript"}),
+      base::Milliseconds(0));
+  second_transcript.emplace_back(std::vector<std::string>({"text", "text"}),
+                                 base::Milliseconds(1000));
+  second_transcript.emplace_back(std::vector<std::string>({"2", "2"}),
+                                 base::Milliseconds(1500));
+
+  metadata->AddTranscript(std::make_unique<ProjectorTranscript>(
+      /*start_time=*/base::Milliseconds(19000),
+      /*end_time=*/base::Milliseconds(25000), 9000, "transcript text 2",
+      std::move(second_transcript)));
+  return metadata;
+}
+
 }  // namespace
 
 class ProjectorKeyIdeaTest : public testing::Test {
@@ -205,7 +570,7 @@ TEST_F(ProjectorTranscriptTest, ToJson) {
 
   ProjectorTranscript transcript(
       /*start_time=*/base::Milliseconds(1000),
-      /*end_time=*/base::Milliseconds(3000), "transcript text",
+      /*end_time=*/base::Milliseconds(3000), 1000, "transcript text",
       std::move(hypothesis_parts));
 
   std::string transcript_str;
@@ -220,55 +585,77 @@ class ProjectorMetadataTest : public testing::Test {
 
   ProjectorMetadataTest(const ProjectorMetadataTest&) = delete;
   ProjectorMetadataTest& operator=(const ProjectorMetadataTest&) = delete;
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorMetadataTest, Serialize) {
-  ProjectorMetadata metadata;
-  metadata.SetCaptionLanguage("en");
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{ash::features::kProjectorV2});
+  std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
 
-  std::vector<media::HypothesisParts> first_transcript;
-  first_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                base::Milliseconds(1000));
-  first_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                base::Milliseconds(2000));
-
-  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::Milliseconds(1000),
-      /*end_time=*/base::Milliseconds(3000), "transcript text",
-      std::move(first_transcript)));
-
-  metadata.MarkKeyIdea();
-
-  std::vector<media::HypothesisParts> second_transcript;
-  second_transcript.emplace_back(std::vector<std::string>({"transcript"}),
-                                 base::Milliseconds(3200));
-  second_transcript.emplace_back(std::vector<std::string>({"text"}),
-                                 base::Milliseconds(4200));
-  second_transcript.emplace_back(std::vector<std::string>({"2"}),
-                                 base::Milliseconds(4500));
-
-  metadata.AddTranscript(std::make_unique<ProjectorTranscript>(
-      /*start_time=*/base::Milliseconds(3000),
-      /*end_time=*/base::Milliseconds(5000), "transcript text 2",
-      std::move(second_transcript)));
-
-  metadata.SetSpeechRecognitionStatus(RecognitionStatus::kIncomplete);
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kIncomplete);
   AssertSerializedString(
       base::StringPrintf(kCompleteMetadataTemplate,
                          static_cast<int>(RecognitionStatus::kIncomplete)),
-      metadata.Serialize());
+      metadata->Serialize());
 
-  metadata.SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
   AssertSerializedString(
       base::StringPrintf(kCompleteMetadataTemplate,
                          static_cast<int>(RecognitionStatus::kComplete)),
-      metadata.Serialize());
+      metadata->Serialize());
 
-  metadata.SetSpeechRecognitionStatus(RecognitionStatus::kError);
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kError);
   AssertSerializedString(
       base::StringPrintf(kCompleteMetadataTemplate,
                          static_cast<int>(RecognitionStatus::kError)),
-      metadata.Serialize());
+      metadata->Serialize());
+
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+  // V2 feature flag not enabled, setting version number has no effort.
+  AssertSerializedString(
+      base::StringPrintf(kCompleteMetadataTemplate,
+                         static_cast<int>(RecognitionStatus::kError)),
+      metadata->Serialize());
+}
+
+TEST_F(ProjectorMetadataTest, SerializeV2) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kProjectorV2},
+      /*disabled_features=*/{});
+  std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  AssertSerializedString(kCompleteMetadataV2Template, metadata->Serialize());
+}
+
+TEST_F(ProjectorMetadataTest, AddSingleSentenceTranscriptForV2) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kProjectorV2},
+      /*disabled_features=*/{});
+  std::unique_ptr<ProjectorMetadata> metadata = populateMetadata();
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  AssertSerializedString(kCompleteMetadataV2Template, metadata->Serialize());
+}
+
+TEST_F(ProjectorMetadataTest, AddMultiSentenceTranscriptForV2) {
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kProjectorV2},
+      /*disabled_features=*/{});
+  std::unique_ptr<ProjectorMetadata> metadata = populateMetadataWithSentences();
+  metadata->SetMetadataVersionNumber(MetadataVersionNumber::kV2);
+  metadata->SetSpeechRecognitionStatus(RecognitionStatus::kComplete);
+  // There are 4 sentences in first and second paragraph transcript, 1 in third
+  // making total count 4*2 + 1 = 9.
+  EXPECT_EQ(metadata->GetTranscriptsCount(), 9ul);
+  AssertSerializedString(kCompleteMetadataV2MultipleSentenceTemplate,
+                         metadata->Serialize());
 }
 
 }  // namespace ash

@@ -79,7 +79,8 @@ template("fuchsia_sdk_pkg") {
     public_configs = [ ":${invoker.target_name}_config" ]
 
     if (defined(invoker.shared_libs)) {
-      configs += [ "${fuchsia_sdk}/build/config:sdk_lib_dirs_config" ]
+      configs +=
+          [ "//third_party/fuchsia-gn-sdk/src/config:sdk_lib_dirs_config" ]
       libs = invoker.shared_libs
       data_deps = [ ":${target_name}_dist_libs" ]
     } else if (defined(invoker.static_libs)) {

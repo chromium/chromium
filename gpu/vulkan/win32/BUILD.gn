@@ -24,6 +24,8 @@ component("win32") {
 
   defines = [ "IS_VULKAN_WIN32_IMPL" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_configs = [ ":vulkan_win32" ]
 
   deps = [

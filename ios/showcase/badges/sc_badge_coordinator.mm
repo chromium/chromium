@@ -55,6 +55,9 @@
   [self.consumer markDisplayedBadgeAsRead:YES];
 }
 
+- (void)parcelTrackingBadgeButtonTapped:(id)sender {
+}
+
 - (void)showModalForBadgeType:(BadgeType)badgeType {
 }
 

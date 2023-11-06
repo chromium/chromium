@@ -12,6 +12,7 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_states.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -115,6 +116,8 @@ class RenderViewHostDelegate {
   virtual absl::optional<SkColor> GetBaseBackgroundColor();
 
   virtual const base::Location& GetCreatorLocation() = 0;
+
+  virtual network::mojom::AttributionSupport GetAttributionSupport() = 0;
 
  protected:
   virtual ~RenderViewHostDelegate() {}

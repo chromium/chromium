@@ -349,6 +349,9 @@ void HoldingSpaceTray::CloseBubble() {
   holding_space_metrics::RecordPodAction(
       holding_space_metrics::PodAction::kCloseBubble);
 
+  HoldingSpaceController::Get()->OnHoldingSpaceTrayBubbleVisibilityChanged(
+      this, /*visible=*/false);
+
   widget_observer_.Reset();
 
   bubble_.reset();
@@ -366,6 +369,9 @@ void HoldingSpaceTray::ShowBubble() {
 
   bubble_ = std::make_unique<HoldingSpaceTrayBubble>(this);
   bubble_->Init();
+
+  HoldingSpaceController::Get()->OnHoldingSpaceTrayBubbleVisibilityChanged(
+      this, /*visible=*/true);
 
   // Observe the bubble widget so that we can close the bubble when a holding
   // space item is being dragged.

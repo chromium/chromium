@@ -543,12 +543,12 @@ testcase.searchPartitionedRemovableDevice = async () => {
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
   const partitionOne = await directoryTree.waitForItemByLabel('partition-1');
   chrome.test.assertEq(
-      'removable', directoryTree.getItemIconType(partitionOne));
+      'removable', directoryTree.getItemVolumeType(partitionOne));
 
   // Wait for removable partition-2 to appear in the directory tree.
   const partitionTwo = await directoryTree.waitForItemByLabel('partition-2');
   chrome.test.assertEq(
-      'removable', directoryTree.getItemIconType(partitionTwo));
+      'removable', directoryTree.getItemVolumeType(partitionTwo));
 
   // Navigate to the root of the USB.
   await directoryTree.selectItemByLabel(getUsbVolumeQuery(true));
@@ -1117,4 +1117,18 @@ testcase.searchImageByContent = async () => {
   await remoteCall.waitForFiles(
       appId, TestEntryInfo.getExpectedRows([ENTRIES.image3]),
       {ignoreLastModifiedTime: true});
+};
+
+/**
+ * Checks that any search, regardless if it has results or not, is closed if we
+ * navigate to another directory.
+ */
+testcase.changingDirectoryClosesSearch = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await remoteCall.typeSearchText(appId, 'hello');
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows([ENTRIES.hello]));
+  const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
+  await directoryTree.navigateToPath('/My files/Downloads/photos');
+  await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
 };

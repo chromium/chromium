@@ -46,20 +46,23 @@ TEST(VideoFrameMac, CheckBasicAttributes) {
   const gfx::Size coded_size = frame->coded_size();
   const VideoPixelFormat format = frame->format();
 
-  EXPECT_EQ(coded_size.width(), static_cast<int>(CVPixelBufferGetWidth(pb)));
-  EXPECT_EQ(coded_size.height(), static_cast<int>(CVPixelBufferGetHeight(pb)));
-  EXPECT_EQ(VideoFrame::NumPlanes(format), CVPixelBufferGetPlaneCount(pb));
+  EXPECT_EQ(coded_size.width(),
+            static_cast<int>(CVPixelBufferGetWidth(pb.get())));
+  EXPECT_EQ(coded_size.height(),
+            static_cast<int>(CVPixelBufferGetHeight(pb.get())));
+  EXPECT_EQ(VideoFrame::NumPlanes(format),
+            CVPixelBufferGetPlaneCount(pb.get()));
 
-  CVPixelBufferLockBaseAddress(pb, 0);
+  CVPixelBufferLockBaseAddress(pb.get(), 0);
   for (size_t i = 0; i < VideoFrame::NumPlanes(format); ++i) {
     const gfx::Size plane_size = VideoFrame::PlaneSize(format, i, coded_size);
     EXPECT_EQ(plane_size.width(),
-              static_cast<int>(CVPixelBufferGetWidthOfPlane(pb, i)));
+              static_cast<int>(CVPixelBufferGetWidthOfPlane(pb.get(), i)));
     EXPECT_EQ(plane_size.height(),
-              static_cast<int>(CVPixelBufferGetHeightOfPlane(pb, i)));
-    EXPECT_EQ(frame->data(i), CVPixelBufferGetBaseAddressOfPlane(pb, i));
+              static_cast<int>(CVPixelBufferGetHeightOfPlane(pb.get(), i)));
+    EXPECT_EQ(frame->data(i), CVPixelBufferGetBaseAddressOfPlane(pb.get(), i));
   }
-  CVPixelBufferUnlockBaseAddress(pb, 0);
+  CVPixelBufferUnlockBaseAddress(pb.get(), 0);
 }
 
 TEST(VideoFrameMac, CheckFormats) {
@@ -79,7 +82,8 @@ TEST(VideoFrameMac, CheckFormats) {
     ASSERT_TRUE(frame.get());
     auto pb = WrapVideoFrameInCVPixelBuffer(frame);
     if (format_pair.corevideo) {
-      EXPECT_EQ(format_pair.corevideo, CVPixelBufferGetPixelFormatType(pb));
+      EXPECT_EQ(format_pair.corevideo,
+                CVPixelBufferGetPixelFormatType(pb.get()));
     } else {
       EXPECT_EQ(nullptr, pb.get());
     }
@@ -159,25 +163,26 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
   auto pb = WrapVideoFrameInCVPixelBuffer(frame);
   ASSERT_TRUE(pb.get());
   EXPECT_EQ(kCVPixelFormatType_420YpCbCr8Planar,
-            CVPixelBufferGetPixelFormatType(pb));
-  EXPECT_EQ(visible_rect.width(), static_cast<int>(CVPixelBufferGetWidth(pb)));
+            CVPixelBufferGetPixelFormatType(pb.get()));
+  EXPECT_EQ(visible_rect.width(),
+            static_cast<int>(CVPixelBufferGetWidth(pb.get())));
   EXPECT_EQ(visible_rect.height(),
-            static_cast<int>(CVPixelBufferGetHeight(pb)));
+            static_cast<int>(CVPixelBufferGetHeight(pb.get())));
 
-  CVPixelBufferLockBaseAddress(pb, 0);
+  CVPixelBufferLockBaseAddress(pb.get(), 0);
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame->format()); ++i) {
     const gfx::Size plane_size =
         VideoFrame::PlaneSize(frame->format(), i, visible_rect.size());
     EXPECT_EQ(plane_size.width(),
-              static_cast<int>(CVPixelBufferGetWidthOfPlane(pb, i)));
+              static_cast<int>(CVPixelBufferGetWidthOfPlane(pb.get(), i)));
     EXPECT_EQ(plane_size.height(),
-              static_cast<int>(CVPixelBufferGetHeightOfPlane(pb, i)));
+              static_cast<int>(CVPixelBufferGetHeightOfPlane(pb.get(), i)));
 
-    uint8_t* plane_ptr =
-        reinterpret_cast<uint8_t*>(CVPixelBufferGetBaseAddressOfPlane(pb, i));
+    uint8_t* plane_ptr = reinterpret_cast<uint8_t*>(
+        CVPixelBufferGetBaseAddressOfPlane(pb.get(), i));
     EXPECT_EQ(frame->visible_data(i), plane_ptr);
     const int stride =
-        static_cast<int>(CVPixelBufferGetBytesPerRowOfPlane(pb, i));
+        static_cast<int>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
     EXPECT_EQ(frame->stride(i), stride);
     const int offset = kVisibleRectOffset / ((i == 0) ? 1 : 2);
     for (int h = 0; h < plane_size.height(); ++h) {
@@ -189,7 +194,7 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
       }
     }
   }
-  CVPixelBufferUnlockBaseAddress(pb, 0);
+  CVPixelBufferUnlockBaseAddress(pb.get(), 0);
 }
 
 }  // namespace media

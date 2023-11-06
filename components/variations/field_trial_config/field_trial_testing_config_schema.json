@@ -24,18 +24,20 @@
               {
                 "field": "platforms",
                 "type": "array",
-                "contents": {"type": "enum", "ctype": "Study::Platform"}
+                "contents": {"type": "enum", "ctype": "Study::Platform", "javatype":  "String"}
               },
               {
                 "field": "form_factors",
                 "type": "array",
-                "contents": {"type": "enum", "ctype": "Study::FormFactor"}
+                "contents": {"type": "enum", "ctype": "Study::FormFactor", "javatype":  "String"}
               },
               {
                 "field": "is_low_end_device",
                 "type": "class",
                 "ctype": "absl::optional<bool>",
+                "javatype": "Boolean",
                 "default": "absl::nullopt",
+                "java_default": "null",
                 "optional": "True"
               },
               {

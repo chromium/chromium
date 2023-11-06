@@ -309,7 +309,7 @@ TrustedTypePolicyFactory* LocalDOMWindow::GetTrustedTypesForWorld(
   DCHECK(IsMainThread());
   auto iter = trusted_types_map_.find(&world);
   if (iter != trusted_types_map_.end())
-    return iter->value;
+    return iter->value.Get();
   return trusted_types_map_
       .insert(&world, MakeGarbageCollected<TrustedTypePolicyFactory>(
                           GetExecutionContext()))
@@ -379,7 +379,7 @@ ContentSecurityPolicy* LocalDOMWindow::GetContentSecurityPolicyForWorld(
   int32_t world_id = world->GetWorldId();
   auto it = isolated_world_csp_map_->find(world_id);
   if (it != isolated_world_csp_map_->end())
-    return it->value;
+    return it->value.Get();
 
   ContentSecurityPolicy* policy =
       IsolatedWorldCSP::Get().CreateIsolatedWorldCSP(*this, world_id);
@@ -577,10 +577,12 @@ void LocalDOMWindow::ReportPermissionsPolicyViolation(
         feature, UseCounterImpl::PermissionsPolicyUsageType::kViolation);
   }
 
-  if (!RuntimeEnabledFeatures::FeaturePolicyReportingEnabled(this))
+  if (!RuntimeEnabledFeatures::PermissionsPolicyReportingEnabled(this)) {
     return;
-  if (!GetFrame())
+  }
+  if (!GetFrame()) {
     return;
+  }
 
   // Construct the permissions policy violation report.
   const String& feature_name = GetNameForFeature(feature);
@@ -693,7 +695,7 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
     absl::optional<mojom::blink::ConsoleMessageCategory> category =
         console_message->Category();
     console_message = MakeGarbageCollected<ConsoleMessage>(
-        console_message->Source(), console_message->Level(),
+        console_message->GetSource(), console_message->GetLevel(),
         console_message->Message(),
         std::make_unique<SourceLocation>(Url().GetString(), String(),
                                          line_number, 0, nullptr));
@@ -800,7 +802,7 @@ Document* LocalDOMWindow::InstallNewDocument(const DocumentInit& init) {
 
   GetFrame()->GetPage()->GetChromeClient().InstallSupplements(*GetFrame());
 
-  return document_;
+  return document_.Get();
 }
 
 void LocalDOMWindow::EnqueueWindowEvent(Event& event, TaskType task_type) {
@@ -1634,7 +1636,7 @@ double LocalDOMWindow::scrollY() const {
 }
 
 DOMVisualViewport* LocalDOMWindow::visualViewport() {
-  return visualViewport_;
+  return visualViewport_.Get();
 }
 
 const AtomicString& LocalDOMWindow::name() const {
@@ -1938,17 +1940,17 @@ CustomElementRegistry* LocalDOMWindow::customElements() const {
     custom_elements_ = MakeGarbageCollected<CustomElementRegistry>(this);
     custom_elements_->AssociatedWith(*document_);
   }
-  return custom_elements_;
+  return custom_elements_.Get();
 }
 
 CustomElementRegistry* LocalDOMWindow::MaybeCustomElements() const {
-  return custom_elements_;
+  return custom_elements_.Get();
 }
 
 External* LocalDOMWindow::external() {
   if (!external_)
     external_ = MakeGarbageCollected<External>();
-  return external_;
+  return external_.Get();
 }
 
 bool LocalDOMWindow::isSecureContext() const {
@@ -2198,7 +2200,6 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
 
   bool has_user_gesture = LocalFrame::HasTransientUserActivation(GetFrame());
   frame_request.GetResourceRequest().SetHasUserGesture(has_user_gesture);
-  GetFrame()->MaybeLogAdClickNavigation();
 
   if (window_features.attribution_srcs.has_value()) {
     // An impression must be attached prior to the

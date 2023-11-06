@@ -239,7 +239,7 @@ void PerUserTopicSubscriptionManager::Init() {
 }
 
 void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
-    const Topics& topics,
+    const TopicMap& topics,
     const std::string& instance_id_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   instance_id_token_ = instance_id_token;

@@ -9,6 +9,8 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/user_manager/user.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -95,6 +97,14 @@ LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
   }
 
   return result.value();
+}
+
+LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
+                                         const policy::PolicyMap& policy_map) {
+  const base::Value* value = policy_map.GetValue(
+      policy::key::kLacrosAvailability, base::Value::Type::STRING);
+  return DetermineLacrosAvailabilityFromPolicyValue(
+      user, value ? value->GetString() : base::StringPiece());
 }
 
 }  // namespace ash::standalone_browser

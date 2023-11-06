@@ -16,6 +16,7 @@
 
 class SearchProvider;
 class AutocompleteInput;
+class AutocompleteProviderClient;
 
 // Caches recent calculator matches from the search provider and displays them
 // if the user is likely still in 'calculator mode'. Thus, users can reference
@@ -38,7 +39,8 @@ class AutocompleteInput;
 class CalculatorProvider : public AutocompleteProvider,
                            public AutocompleteProviderListener {
  public:
-  CalculatorProvider(AutocompleteProviderListener* listener,
+  CalculatorProvider(AutocompleteProviderClient* client,
+                     AutocompleteProviderListener* listener,
                      SearchProvider* search_provider);
 
   // AutocompleteProvider:
@@ -67,7 +69,7 @@ class CalculatorProvider : public AutocompleteProvider,
   bool Show();
 
   // The recent search calc suggestions.
-  std::vector<AutocompleteMatch> cache_;
+  std::vector<AutocompleteMatch>& Cache();
 
   // The current input.
   std::u16string input_;
@@ -81,6 +83,8 @@ class CalculatorProvider : public AutocompleteProvider,
   // Whether the previous input is prefixed by the current input. E.g. '1+1' ->
   // '1+'.
   bool shrunk_input_ = false;
+
+  raw_ptr<AutocompleteProviderClient> client_;
 
   // Never null.
   const raw_ptr<SearchProvider> search_provider_;

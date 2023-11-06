@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -17,13 +17,13 @@
 
 // Test fixture for testing InfobarSaveAddressProfileTableViewController class.
 class InfobarSaveAddressProfileTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   InfobarSaveAddressProfileTableViewControllerTest()
       : modal_delegate_(OCMProtocolMock(
             @protocol(InfobarSaveAddressProfileModalDelegate))) {}
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[InfobarSaveAddressProfileTableViewController alloc]
         initWithModalDelegate:modal_delegate_];
   }

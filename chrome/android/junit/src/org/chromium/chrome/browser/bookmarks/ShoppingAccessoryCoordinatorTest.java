@@ -38,19 +38,16 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ShoppingAccessoryCoordinatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
-    @Mock
-    private ShoppingService mShoppingService;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Mock private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock private ShoppingService mShoppingService;
 
     Activity mActivity;
 
@@ -64,16 +61,19 @@ public class ShoppingAccessoryCoordinatorTest {
     @Test
     public void testSetupAndSetModel() {
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
-                                              .setCurrentPrice(ProductPrice.newBuilder()
-                                                                       .setCurrencyCode("USD")
-                                                                       .setAmountMicros(100)
-                                                                       .build())
-                                              .setPreviousPrice(ProductPrice.newBuilder()
-                                                                        .setCurrencyCode("USD")
-                                                                        .setAmountMicros(100)
-                                                                        .build())
-                                              .build();
+        ShoppingSpecifics specifics =
+                ShoppingSpecifics.newBuilder()
+                        .setCurrentPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(100)
+                                        .build())
+                        .setPreviousPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(100)
+                                        .build())
+                        .build();
         ShoppingAccessoryCoordinator coordinator =
                 new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
         Assert.assertNotNull(coordinator.getView());
@@ -88,16 +88,19 @@ public class ShoppingAccessoryCoordinatorTest {
     @Test
     public void testSetPriceTrackingEnabled() {
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
-                                              .setCurrentPrice(ProductPrice.newBuilder()
-                                                                       .setCurrencyCode("USD")
-                                                                       .setAmountMicros(100)
-                                                                       .build())
-                                              .setPreviousPrice(ProductPrice.newBuilder()
-                                                                        .setCurrencyCode("USD")
-                                                                        .setAmountMicros(100)
-                                                                        .build())
-                                              .build();
+        ShoppingSpecifics specifics =
+                ShoppingSpecifics.newBuilder()
+                        .setCurrentPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(100)
+                                        .build())
+                        .setPreviousPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(100)
+                                        .build())
+                        .build();
         ShoppingAccessoryCoordinator coordinator =
                 new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
 
@@ -111,16 +114,19 @@ public class ShoppingAccessoryCoordinatorTest {
     @Test
     public void testPriceDrop() {
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        ShoppingSpecifics specifics = ShoppingSpecifics.newBuilder()
-                                              .setCurrentPrice(ProductPrice.newBuilder()
-                                                                       .setCurrencyCode("USD")
-                                                                       .setAmountMicros(50)
-                                                                       .build())
-                                              .setPreviousPrice(ProductPrice.newBuilder()
-                                                                        .setCurrencyCode("USD")
-                                                                        .setAmountMicros(100)
-                                                                        .build())
-                                              .build();
+        ShoppingSpecifics specifics =
+                ShoppingSpecifics.newBuilder()
+                        .setCurrentPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(50)
+                                        .build())
+                        .setPreviousPrice(
+                                ProductPrice.newBuilder()
+                                        .setCurrencyCode("USD")
+                                        .setAmountMicros(100)
+                                        .build())
+                        .build();
         ShoppingAccessoryCoordinator coordinator =
                 new ShoppingAccessoryCoordinator(mActivity, specifics, mShoppingService);
 

@@ -31,16 +31,14 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Tests for {@link ConnectivityTask}.
- */
+/** Tests for {@link ConnectivityTask}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ConnectivityTaskTest {
     @Rule
     public ConnectivityCheckerTestRule mConnectivityCheckerTestRule =
             new ConnectivityCheckerTestRule();
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     private static final int RESULT_CHECK_INTERVAL_MS = 10;
 
@@ -49,23 +47,28 @@ public class ConnectivityTaskTest {
     @Feature({"Feedback"})
     public void testNormalCaseShouldWork() {
         final ConnectivityTask task =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<ConnectivityTask>() {
-                    @Override
-                    public ConnectivityTask call() {
-                        // Intentionally make HTTPS-connection fail which should result in
-                        // NOT_CONNECTED.
-                        ConnectivityChecker.overrideUrlsForTest(
-                                mConnectivityCheckerTestRule.getGenerated204Url(),
-                                mConnectivityCheckerTestRule.getGenerated404Url());
-                        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                        return ConnectivityTask.create(Profile.getLastUsedRegularProfile(), TIMEOUT_MS,
-                                null);
-                    }
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<ConnectivityTask>() {
+                            @Override
+                            public ConnectivityTask call() {
+                                // Intentionally make HTTPS-connection fail which should result in
+                                // NOT_CONNECTED.
+                                ConnectivityChecker.overrideUrlsForTest(
+                                        mConnectivityCheckerTestRule.getGenerated204Url(),
+                                        mConnectivityCheckerTestRule.getGenerated404Url());
+                                // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                                return ConnectivityTask.create(
+                                        Profile.getLastUsedRegularProfile(), TIMEOUT_MS, null);
+                            }
+                        });
 
-        CriteriaHelper.pollUiThread(() -> {
-            return task.isDone();
-        }, "Should be finished by now.", TIMEOUT_MS, RESULT_CHECK_INTERVAL_MS);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return task.isDone();
+                },
+                "Should be finished by now.",
+                TIMEOUT_MS,
+                RESULT_CHECK_INTERVAL_MS);
         FeedbackData feedback = getResult(task);
         verifyConnections(feedback, ConnectivityCheckResult.NOT_CONNECTED);
         Assert.assertEquals("The timeout value is wrong.", TIMEOUT_MS, feedback.getTimeoutMs());
@@ -93,7 +96,8 @@ public class ConnectivityTaskTest {
     }
 
     private static void assertResult(int expectedValue, Map.Entry<Integer, Integer> actualEntry) {
-        Assert.assertEquals("Wrong result for " + actualEntry.getKey(),
+        Assert.assertEquals(
+                "Wrong result for " + actualEntry.getKey(),
                 ConnectivityTask.getHumanReadableResult(expectedValue),
                 ConnectivityTask.getHumanReadableResult(actualEntry.getValue()));
     }
@@ -106,20 +110,23 @@ public class ConnectivityTaskTest {
         final AtomicReference<FeedbackData> feedbackRef = new AtomicReference<>();
         final ConnectivityTask.ConnectivityResult callback =
                 new ConnectivityTask.ConnectivityResult() {
-            @Override
-            public void onResult(FeedbackData feedbackData) {
-                feedbackRef.set(feedbackData);
-                semaphore.release();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Intentionally make HTTPS-connection fail which should result in NOT_CONNECTED.
-            ConnectivityChecker.overrideUrlsForTest(
-                    mConnectivityCheckerTestRule.getGenerated204Url(),
-                    mConnectivityCheckerTestRule.getGenerated404Url());
-            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-            ConnectivityTask.create(Profile.getLastUsedRegularProfile(), TIMEOUT_MS, callback);
-        });
+                    @Override
+                    public void onResult(FeedbackData feedbackData) {
+                        feedbackRef.set(feedbackData);
+                        semaphore.release();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Intentionally make HTTPS-connection fail which should result in
+                    // NOT_CONNECTED.
+                    ConnectivityChecker.overrideUrlsForTest(
+                            mConnectivityCheckerTestRule.getGenerated204Url(),
+                            mConnectivityCheckerTestRule.getGenerated404Url());
+                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                    ConnectivityTask.create(
+                            Profile.getLastUsedRegularProfile(), TIMEOUT_MS, callback);
+                });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
         }
@@ -137,20 +144,22 @@ public class ConnectivityTaskTest {
         final AtomicReference<FeedbackData> feedbackRef = new AtomicReference<>();
         final ConnectivityTask.ConnectivityResult callback =
                 new ConnectivityTask.ConnectivityResult() {
-            @Override
-            public void onResult(FeedbackData feedbackData) {
-                feedbackRef.set(feedbackData);
-                semaphore.release();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Intentionally make HTTPS connections slow which should result in TIMEOUT.
-            ConnectivityChecker.overrideUrlsForTest(
-                    mConnectivityCheckerTestRule.getGenerated204Url(),
-                    mConnectivityCheckerTestRule.getGeneratedSlowUrl());
-            // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-            ConnectivityTask.create(Profile.getLastUsedRegularProfile(), checkTimeoutMs, callback);
-        });
+                    @Override
+                    public void onResult(FeedbackData feedbackData) {
+                        feedbackRef.set(feedbackData);
+                        semaphore.release();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Intentionally make HTTPS connections slow which should result in TIMEOUT.
+                    ConnectivityChecker.overrideUrlsForTest(
+                            mConnectivityCheckerTestRule.getGenerated204Url(),
+                            mConnectivityCheckerTestRule.getGeneratedSlowUrl());
+                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                    ConnectivityTask.create(
+                            Profile.getLastUsedRegularProfile(), checkTimeoutMs, callback);
+                });
         if (!semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
             Assert.fail("Failed to acquire semaphore.");
         }
@@ -167,22 +176,27 @@ public class ConnectivityTaskTest {
     @SuppressWarnings("TryFailThrowable") // TODO(tedchoc): Remove after fixing timeout.
     public void testTwoTimeoutsShouldFillInTheRest() {
         final ConnectivityTask task =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<ConnectivityTask>() {
-                    @Override
-                    public ConnectivityTask call() {
-                        // Intentionally make HTTPS connections slow which should result in
-                        // UNKNOWN.
-                        ConnectivityChecker.overrideUrlsForTest(
-                                mConnectivityCheckerTestRule.getGenerated204Url(),
-                                mConnectivityCheckerTestRule.getGeneratedSlowUrl());
-                        // TODO (https://crbug.com/1063807):  Add incognito mode tests.
-                        return ConnectivityTask.create(Profile.getLastUsedRegularProfile(), TIMEOUT_MS,
-                                null);
-                    }
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<ConnectivityTask>() {
+                            @Override
+                            public ConnectivityTask call() {
+                                // Intentionally make HTTPS connections slow which should result in
+                                // UNKNOWN.
+                                ConnectivityChecker.overrideUrlsForTest(
+                                        mConnectivityCheckerTestRule.getGenerated204Url(),
+                                        mConnectivityCheckerTestRule.getGeneratedSlowUrl());
+                                // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                                return ConnectivityTask.create(
+                                        Profile.getLastUsedRegularProfile(), TIMEOUT_MS, null);
+                            }
+                        });
         thrown.expect(AssertionError.class);
         CriteriaHelper.pollUiThread(
-                () -> { return task.isDone(); }, TIMEOUT_MS / 5, RESULT_CHECK_INTERVAL_MS);
+                () -> {
+                    return task.isDone();
+                },
+                TIMEOUT_MS / 5,
+                RESULT_CHECK_INTERVAL_MS);
         FeedbackData feedback = getResult(task);
         verifyConnections(feedback, ConnectivityCheckResult.UNKNOWN);
         Assert.assertEquals("The timeout value is wrong.", TIMEOUT_MS, feedback.getTimeoutMs());
@@ -219,12 +233,13 @@ public class ConnectivityTaskTest {
 
     private static FeedbackData getResult(final ConnectivityTask task) {
         final FeedbackData result =
-                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<FeedbackData>() {
-                    @Override
-                    public FeedbackData call() {
-                        return task.get();
-                    }
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        new Callable<FeedbackData>() {
+                            @Override
+                            public FeedbackData call() {
+                                return task.get();
+                            }
+                        });
         return result;
     }
 }

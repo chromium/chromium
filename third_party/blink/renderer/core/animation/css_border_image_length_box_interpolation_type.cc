@@ -219,20 +219,19 @@ class InheritedSideTypesChecker
 
 InterpolationValue ConvertBorderImageNumberSide(double number) {
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(number),
+      MakeGarbageCollected<InterpolableNumber>(number),
       CSSBorderImageLengthBoxSideNonInterpolableValue::Create(
           SideType::kNumber));
 }
 
 InterpolationValue ConvertBorderImageAutoSide() {
   return InterpolationValue(
-      std::make_unique<InterpolableList>(0),
+      MakeGarbageCollected<InterpolableList>(0),
       CSSBorderImageLengthBoxSideNonInterpolableValue::Create(SideType::kAuto));
 }
 
 InterpolationValue ConvertBorderImageLengthBox(const BorderImageLengthBox& box,
                                                double zoom) {
-  auto list = std::make_unique<InterpolableList>(kSideIndexCount);
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       kSideIndexCount);
   const BorderImageLength* sides[kSideIndexCount] = {};
@@ -319,7 +318,6 @@ InterpolationValue CSSBorderImageLengthBoxInterpolationType::MaybeConvertValue(
   if (!quad)
     return nullptr;
 
-  auto list = std::make_unique<InterpolableList>(kSideIndexCount);
   Vector<scoped_refptr<const NonInterpolableValue>> non_interpolable_values(
       kSideIndexCount);
   const CSSValue* sides[kSideIndexCount] = {};

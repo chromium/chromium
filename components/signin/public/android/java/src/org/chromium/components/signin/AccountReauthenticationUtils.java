@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,6 +39,33 @@ public class AccountReauthenticationUtils {
         int SUCCESS = 0;
         int REJECTED = 1;
         int ERROR = 2;
+    }
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({
+        AccountReauthenticationEvent.STARTED,
+        AccountReauthenticationEvent.SUCCESS,
+        AccountReauthenticationEvent.SUCCESS_RECENT_AUTHENTICATION,
+        AccountReauthenticationEvent.REJECTED,
+        AccountReauthenticationEvent.ERROR,
+        AccountReauthenticationEvent.COUNT
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AccountReauthenticationEvent {
+        int STARTED = 0;
+        int SUCCESS = 1;
+        int SUCCESS_RECENT_AUTHENTICATION = 2;
+        int REJECTED = 3;
+        int ERROR = 4;
+        int COUNT = 5;
+    }
+
+    static final String ACCOUNT_REAUTHENTICATION_HISTOGRAM = "Signin.AndroidAccountReauth.Event";
+
+    private static void logAccountReauthenticationEvent(@AccountReauthenticationEvent int event) {
+        RecordHistogram.recordEnumeratedHistogram(
+                ACCOUNT_REAUTHENTICATION_HISTOGRAM, event, AccountReauthenticationEvent.COUNT);
     }
 
     /**
@@ -90,24 +118,39 @@ public class AccountReauthenticationUtils {
     public void confirmCredentialsOrRecentAuthentication(AccountManagerFacade accountManagerFacade,
             Account account, Activity activity, @ConfirmationResult Callback<Integer> callback,
             long recentTimeWindowMillis) {
+        logAccountReauthenticationEvent(AccountReauthenticationEvent.STARTED);
         confirmRecentAuthentication(
-                accountManagerFacade, account, (recentAuthenticationResult) -> {
+                accountManagerFacade,
+                account,
+                (recentAuthenticationResult) -> {
                     if (RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION
                             == recentAuthenticationResult) {
+                        logAccountReauthenticationEvent(
+                                AccountReauthenticationEvent.SUCCESS_RECENT_AUTHENTICATION);
                         callback.onResult(ConfirmationResult.SUCCESS);
                         return;
                     }
-                    accountManagerFacade.confirmCredentials(account, activity, (response) -> {
-                        if (response == null) {
-                            callback.onResult(ConfirmationResult.ERROR);
-                            return;
-                        }
-                        if (response.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)) {
-                            callback.onResult(ConfirmationResult.SUCCESS);
-                        } else {
-                            callback.onResult(ConfirmationResult.REJECTED);
-                        }
-                    });
-                }, recentTimeWindowMillis);
+                    accountManagerFacade.confirmCredentials(
+                            account,
+                            activity,
+                            (response) -> {
+                                if (response == null) {
+                                    logAccountReauthenticationEvent(
+                                            AccountReauthenticationEvent.ERROR);
+                                    callback.onResult(ConfirmationResult.ERROR);
+                                    return;
+                                }
+                                if (response.getBoolean(AccountManager.KEY_BOOLEAN_RESULT)) {
+                                    logAccountReauthenticationEvent(
+                                            AccountReauthenticationEvent.SUCCESS);
+                                    callback.onResult(ConfirmationResult.SUCCESS);
+                                } else {
+                                    logAccountReauthenticationEvent(
+                                            AccountReauthenticationEvent.REJECTED);
+                                    callback.onResult(ConfirmationResult.REJECTED);
+                                }
+                            });
+                },
+                recentTimeWindowMillis);
     }
 }

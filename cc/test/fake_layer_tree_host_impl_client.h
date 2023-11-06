@@ -53,6 +53,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
       Scheduler::PaintWorkletState state) override {}
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
   bool IsInSynchronousComposite() const override;

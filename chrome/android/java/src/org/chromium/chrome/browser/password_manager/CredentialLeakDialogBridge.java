@@ -100,7 +100,7 @@ public class CredentialLeakDialogBridge {
         Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(mWindowAndroid);
         if (currentTab == null) return;
 
-        Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+        Profile profile = currentTab.getProfile();
         HelpAndFeedbackLauncherImpl.getForProfile(profile).show(
                 activity, activity.getString(R.string.help_context_password_leak_detection), null);
     }

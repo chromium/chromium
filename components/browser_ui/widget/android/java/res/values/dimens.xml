@@ -41,14 +41,6 @@ found in the LICENSE file.
     <dimen name="radio_button_with_description_and_aux_button_aux_button_length"
         tools:ignore="UnusedResources">61dp</dimen>
 
-    <!-- List menu item dimensions -->
-    <dimen name="list_menu_width">180dp</dimen>
-    <dimen name="list_menu_item_icon_size">24dp</dimen>
-
-    <!-- Custom Menu dimensions -->
-    <dimen name="menu_divider_padding">8dp</dimen>
-    <dimen name="menu_padding_start">16dp</dimen>
-
     <!-- Drag-Reorderable List dimensions -->
     <dimen name="list_item_dragged_elevation">6dp</dimen>
 
@@ -110,9 +102,6 @@ found in the LICENSE file.
     <dimen name="text_bubble_with_snooze_padding_horizontal">24dp</dimen>
     <dimen name="text_bubble_with_snooze_padding_end">4dp</dimen>
 
-    <!-- Default list dimensions -->
-    <dimen name="default_list_row_padding">16dp</dimen>
-
     <!-- Swipe gesture listener dimensions -->
     <dimen name="swipe_vertical_drag_threshold">5dp</dimen>
     <dimen name="swipe_horizontal_drag_threshold">10dp</dimen>
@@ -130,6 +119,9 @@ found in the LICENSE file.
     <dimen name="tile_view_min_height">86dp</dimen>
     <dimen name="tile_view_icon_size">48dp</dimen>
     <dimen name="tile_view_icon_size_modern">24dp</dimen>
+    <!-- QueryTile view dimensions -->
+    <dimen name="query_tile_view_width">86dp</dimen>
+    <dimen name="query_tile_view_height">86dp</dimen>
     <!-- TODO(crbug.com/900912): Fix and remove lint ignore -->
     <dimen tools:ignore="PxUsage" name="tile_view_icon_min_size">24px</dimen>
     <dimen name="tile_view_icon_corner_radius">4dp</dimen>
@@ -199,9 +191,6 @@ found in the LICENSE file.
     <!-- Surface color elevations -->
     <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
     <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
-
-    <!-- Vertical divider dimens -->
-    <dimen name="horizontal_divider_vertical_margin">8dp</dimen>
 
     <!-- Empty view layout dimensions -->
     <dimen name="empty_state_text_width">341dp</dimen>

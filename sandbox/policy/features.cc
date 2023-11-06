@@ -126,6 +126,20 @@ BASE_FEATURE(kForceSpectreVariant2Mitigation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Enabling the kNetworkServiceSandbox feature automatically enables Spectre
+// variant 2 mitigations in the network service. This can lead to performance
+// regressions, so enabling this feature will turn off the Spectre Variant 2
+// mitigations.
+//
+// On ChromeOS Ash, this overrides the system-wide kSpectreVariant2Mitigation
+// feature above, but not the user-controlled kForceSpectreVariant2Mitigation
+// feature.
+BASE_FEATURE(kForceDisableSpectreVariant2MitigationInNetworkService,
+             "kForceDisableSpectreVariant2MitigationInNetworkService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_MAC)
 // Enables caching compiled sandbox profiles. Only some profiles support this,
 // as controlled by CanCacheSandboxPolicy().
@@ -138,6 +152,11 @@ BASE_FEATURE(kCacheMacSandboxProfiles,
 // Enables the renderer on Android to use a separate seccomp policy.
 BASE_FEATURE(kUseRendererProcessPolicy,
              "UseRendererProcessPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// When enabled, this features restricts a set of syscalls in
+// BaselinePolicyAndroid that are used by RendererProcessPolicy.
+BASE_FEATURE(kRestrictRendererPoliciesInBaseline,
+             "RestrictRendererPoliciesInBaseline",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 

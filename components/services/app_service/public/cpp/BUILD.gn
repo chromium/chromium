@@ -19,12 +19,15 @@ component("app_types") {
     "capability_access.h",
     "features.cc",
     "features.h",
+    "icon_effects.h",
     "icon_types.cc",
     "icon_types.h",
     "intent_filter.cc",
     "intent_filter.h",
     "menu.cc",
     "menu.h",
+    "package_id.cc",
+    "package_id.h",
     "permission.cc",
     "permission.h",
     "preferred_app.cc",
@@ -296,8 +299,6 @@ source_set("unit_tests") {
     "app_capability_access_cache_wrapper_unittest.cc",
     "app_registry_cache_unittest.cc",
     "app_registry_cache_wrapper_unittest.cc",
-    "app_storage/app_storage_file_handler_unittest.cc",
-    "app_storage/app_storage_unittest.cc",
     "app_types_unittest.cc",
     "app_update_unittest.cc",
     "capability_access_update_unittest.cc",
@@ -305,6 +306,7 @@ source_set("unit_tests") {
     "icon_coalescer_unittest.cc",
     "intent_filter_util_unittest.cc",
     "intent_util_unittest.cc",
+    "package_id_unittest.cc",
     "preferred_apps_converter_unittest.cc",
     "preferred_apps_list_unittest.cc",
   ]
@@ -322,9 +324,12 @@ source_set("unit_tests") {
 
   if (is_chromeos_ash) {
     sources += [
+      "app_storage/app_storage_file_handler_unittest.cc",
+      "app_storage/app_storage_unittest.cc",
       "instance_registry_unittest.cc",
       "instance_unittest.cc",
       "instance_update_unittest.cc",
+      "permission_unittest.cc",
     ]
 
     deps += [

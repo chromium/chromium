@@ -45,6 +45,7 @@ dictionary MediaTrackSettings {
 
     // W3C Media Capture Extensions
     [RuntimeEnabled=MediaCaptureBackgroundBlur] boolean backgroundBlur;
+    [RuntimeEnabled=MediaCaptureCameraControls] boolean faceFraming;
 
     // Screen Capture API
     // https://w3c.github.io/mediacapture-screen-share/#extensions-to-mediatracksettings

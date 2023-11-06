@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -376,8 +377,8 @@ bool ShouldRecordUkm(Profile* profile) {
     return true;
   }
 
-  // Bypass AppKM App Sync check for Kiosk devices to collect app metrics.
-  if (chromeos::IsKioskSession()) {
+  // Bypass AppKM App Sync check in Kiosk and MGS to collect app metrics.
+  if (chromeos::IsKioskSession() || chromeos::IsManagedGuestSession()) {
     return true;
   }
 

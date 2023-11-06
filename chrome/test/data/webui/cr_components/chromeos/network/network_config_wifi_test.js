@@ -10,7 +10,7 @@ import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {CrosNetworkConfigRemote, HiddenSsidMode, SecurityType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType, OncSource, PolicySource} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 
 suite('network-config-wifi', function() {
   let networkConfig;
@@ -125,12 +125,7 @@ suite('network-config-wifi', function() {
       });
     });
 
-    test('New networks are explicitly not hidden when logged in', async () => {
-      // Simulate the dialog being opened while a user is logged in.
-      networkConfig.isLoggedIn_ = true;
-
-      await flushAsync();
-
+    test('New networks are explicitly not hidden', async () => {
       networkConfig.save();
 
       await flushAsync();
@@ -138,23 +133,6 @@ suite('network-config-wifi', function() {
       const props = mojoApi_.getPropertiesToSetForTest();
       assertEquals(props.typeConfig.wifi.hiddenSsid, HiddenSsidMode.kDisabled);
     });
-
-    test(
-        'New networks are explicitly not hidden when not logged in',
-        async () => {
-          // Simulate the dialog being opened when the user is not logged in.
-          networkConfig.isLoggedIn_ = false;
-
-          await flushAsync();
-
-          networkConfig.save();
-
-          await flushAsync();
-
-          assertEquals(
-              mojoApi_.getPropertiesToSetForTest().typeConfig.wifi.hiddenSsid,
-              HiddenSsidMode.kAutomatic);
-        });
   });
 
   suite('Existing WiFi Config', function() {

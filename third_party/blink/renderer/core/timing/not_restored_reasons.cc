@@ -79,7 +79,8 @@ ScriptValue NotRestoredReasons::toJSON(ScriptState* script_state) const {
     builder.AddNull("reasons");
   }
   if (children().has_value()) {
-    Vector<v8::Local<v8::Value>> children_result;
+    v8::LocalVector<v8::Value> children_result(script_state->GetIsolate());
+    children_result.reserve(children_.size());
     for (Member<NotRestoredReasons> child : children_) {
       children_result.push_back(child->toJSON(script_state).V8Value());
     }

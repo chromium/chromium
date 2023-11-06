@@ -88,10 +88,10 @@ RemapPolicyDefaultHandlerStatus(
     case file_manager::file_tasks::PolicyDefaultHandlerStatus::
         kDefaultHandlerAssignedByPolicy:
       return api_fmp::PolicyDefaultHandlerStatus::
-          POLICY_DEFAULT_HANDLER_STATUS_DEFAULT_HANDLER_ASSIGNED_BY_POLICY;
+          kDefaultHandlerAssignedByPolicy;
     case file_manager::file_tasks::PolicyDefaultHandlerStatus::
         kIncorrectAssignment:
-      return api_fmp::POLICY_DEFAULT_HANDLER_STATUS_INCORRECT_ASSIGNMENT;
+      return api_fmp::PolicyDefaultHandlerStatus::kIncorrectAssignment;
   }
 }
 
@@ -116,7 +116,7 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
       params->descriptor.app_id, task_type, params->descriptor.action_id);
 
   if (params->urls.empty()) {
-    return RespondNow(ArgumentList(Create(api_fmp::TASK_RESULT_EMPTY)));
+    return RespondNow(ArgumentList(Create(api_fmp::TaskResult::kEmpty)));
   }
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
@@ -155,7 +155,7 @@ void FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted(
     api_fmp::TaskResult result,
     std::string failure_reason) {
   auto result_list = api_fmp_internal::ExecuteTask::Results::Create(result);
-  if (result == api_fmp::TASK_RESULT_FAILED) {
+  if (result == api_fmp::TaskResult::kFailed) {
     Respond(Error("Task result failed: " + failure_reason));
   } else {
     Respond(ArgumentList(std::move(result_list)));

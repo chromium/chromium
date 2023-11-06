@@ -62,13 +62,12 @@ void ContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       }));
 }
 
-void ContentBrowserClient::ExposeInterfacesToRenderer(
-    service_manager::BinderRegistry* registry,
-    blink::AssociatedInterfaceRegistry* associated_registry,
-    content::RenderProcessHost* render_process_host) {
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
+void ContentBrowserClient::RegisterAssociatedInterfaceBindersForRenderFrameHost(
+    content::RenderFrameHost& render_frame_host,
+    blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
       base::BindRepeating(&WebshellGuestView::Create,
-                          render_process_host->GetID()));
+                          render_frame_host.GetGlobalId()));
 }
 
 std::string ContentBrowserClient::GetUserAgent() {

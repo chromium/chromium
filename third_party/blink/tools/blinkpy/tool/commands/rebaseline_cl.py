@@ -92,11 +92,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         selected_builders = getattr(parser.values, option.dest, set())
         # This set includes CQ builders, whereas `builder_for_rebaselining()`
         # does not.
-        allowed_builders = {
-            builder
-            for builder in self._tool.builders.all_try_builder_names()
-            if self._tool.builders.has_rwt_steps(builder)
-        }
+        allowed_builders = self._tool.builders.all_try_builder_names()
         for builder in value.split(','):
             if builder in allowed_builders:
                 selected_builders.add(builder)
@@ -270,8 +266,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool.builders)
-        port = self._tool.port_factory.get()
-        tests = resolve_test_patterns(port, test_patterns)
+        tests = resolve_test_patterns(self._host_port, test_patterns)
         for test, (build, builder_results) in itertools.product(
                 tests, builds_to_results.items()):
             for step_results in builder_results:

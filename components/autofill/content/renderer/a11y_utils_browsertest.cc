@@ -18,7 +18,7 @@ namespace autofill {
 
 using A11yUtilsTest = content::RenderViewTest;
 
-TEST_F(A11yUtilsTest, SetAutofillState) {
+TEST_F(A11yUtilsTest, SetAutofillSuggestionAvailability) {
   LoadHTML("<input id='input_id'>");
   blink::WebDocument document = GetMainFrame()->GetDocument();
 
@@ -41,7 +41,10 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kAutofillAvailable.
-  SetAutofillState(element, mojom::AutofillState::kAutofillAvailable);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kAutofillAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_TRUE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
@@ -49,7 +52,10 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kAutocompleteAvailable.
-  SetAutofillState(element, mojom::AutofillState::kAutocompleteAvailable);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
@@ -57,7 +63,10 @@ TEST_F(A11yUtilsTest, SetAutofillState) {
       node_data.HasStringAttribute(ax::mojom::StringAttribute::kAutoComplete));
 
   // kNoSuggestions.
-  SetAutofillState(element, mojom::AutofillState::kNoSuggestions);
+  SetAutofillSuggestionAvailability(
+      element, mojom::AutofillSuggestionAvailability::kNoSuggestions);
+  ax_context->UpdateAXForAllDocuments();
+
   node_data = ui::AXNodeData();
   element_ax_object.Serialize(&node_data, ui::AXMode::kScreenReader);
   EXPECT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));

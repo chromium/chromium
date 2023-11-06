@@ -189,36 +189,36 @@ std::string AccessibilityPrivateEnumForAction(SelectToSpeakPanelAction action) {
   switch (action) {
     case SelectToSpeakPanelAction::kPreviousSentence:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_PREVIOUSSENTENCE);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kPreviousSentence);
     case SelectToSpeakPanelAction::kPreviousParagraph:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_PREVIOUSPARAGRAPH);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kPreviousParagraph);
     case SelectToSpeakPanelAction::kPause:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_PAUSE);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kPause);
     case SelectToSpeakPanelAction::kResume:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_RESUME);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kResume);
     case SelectToSpeakPanelAction::kNextSentence:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_NEXTSENTENCE);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kNextSentence);
     case SelectToSpeakPanelAction::kNextParagraph:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_NEXTPARAGRAPH);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kNextParagraph);
     case SelectToSpeakPanelAction::kChangeSpeed:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_CHANGESPEED);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kChangeSpeed);
     case SelectToSpeakPanelAction::kExit:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SELECT_TO_SPEAK_PANEL_ACTION_EXIT);
+          extensions::api::accessibility_private::SelectToSpeakPanelAction::
+              kExit);
     case SelectToSpeakPanelAction::kNone:
       NOTREACHED();
       return "";
@@ -900,6 +900,12 @@ void AccessibilityManager::RequestAutoclickScrollableBoundsForPoint(
     const gfx::Point& point_in_screen) {
   if (!profile_)
     return;
+
+  if (::features::IsAccessibilityServiceEnabled()) {
+    accessibility_service_client_->RequestScrollableBoundsForPoint(
+        point_in_screen);
+    return;
+  }
 
   extensions::EventRouter* event_router =
       extensions::EventRouter::Get(profile_);
@@ -2348,18 +2354,18 @@ void AccessibilityManager::SendMouseEventToSelectToSpeak(
   switch (type) {
     case ui::EventType::ET_MOUSE_PRESSED:
       event_type = extensions::api::accessibility_private::
-          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_PRESS;
+          SyntheticMouseEventType::kPress;
       break;
     case ui::EventType::ET_MOUSE_RELEASED:
       event_type = extensions::api::accessibility_private::
-          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_RELEASE;
+          SyntheticMouseEventType::kRelease;
       break;
     case ui::EventType::ET_MOUSE_MOVED:
     case ui::EventType::ET_MOUSE_ENTERED:
     case ui::EventType::ET_MOUSE_EXITED:
     case ui::EventType::ET_MOUSE_DRAGGED:
       event_type = extensions::api::accessibility_private::
-          SyntheticMouseEventType::SYNTHETIC_MOUSE_EVENT_TYPE_MOVE;
+          SyntheticMouseEventType::kMove;
       break;
     case ui::EventType::ET_MOUSEWHEEL:
       // Mouse wheel not handled.
@@ -2709,39 +2715,23 @@ void AccessibilityManager::GetDlcContents(DlcType dlc,
   // DLCs.
   static constexpr auto kTtsDlcTypeToLocale =
       base::MakeFixedFlatMap<DlcType, const char*>(
-          {{DlcType::DLC_TYPE_TTSBNBD, "bn-bd"},
-           {DlcType::DLC_TYPE_TTSCSCZ, "cs-cz"},
-           {DlcType::DLC_TYPE_TTSDADK, "da-dk"},
-           {DlcType::DLC_TYPE_TTSDEDE, "de-de"},
-           {DlcType::DLC_TYPE_TTSELGR, "el-gr"},
-           {DlcType::DLC_TYPE_TTSENAU, "en-au"},
-           {DlcType::DLC_TYPE_TTSENGB, "en-gb"},
-           {DlcType::DLC_TYPE_TTSENUS, "en-us"},
-           {DlcType::DLC_TYPE_TTSESES, "es-es"},
-           {DlcType::DLC_TYPE_TTSESUS, "es-us"},
-           {DlcType::DLC_TYPE_TTSFIFI, "fi-fi"},
-           {DlcType::DLC_TYPE_TTSFILPH, "fil-ph"},
-           {DlcType::DLC_TYPE_TTSFRFR, "fr-fr"},
-           {DlcType::DLC_TYPE_TTSHIIN, "hi-in"},
-           {DlcType::DLC_TYPE_TTSHUHU, "hu-hu"},
-           {DlcType::DLC_TYPE_TTSIDID, "id-id"},
-           {DlcType::DLC_TYPE_TTSITIT, "it-it"},
-           {DlcType::DLC_TYPE_TTSJAJP, "ja-jp"},
-           {DlcType::DLC_TYPE_TTSKMKH, "km-kh"},
-           {DlcType::DLC_TYPE_TTSKOKR, "ko-kr"},
-           {DlcType::DLC_TYPE_TTSNBNO, "nb-no"},
-           {DlcType::DLC_TYPE_TTSNENP, "ne-np"},
-           {DlcType::DLC_TYPE_TTSNLNL, "nl-nl"},
-           {DlcType::DLC_TYPE_TTSPLPL, "pl-pl"},
-           {DlcType::DLC_TYPE_TTSPTBR, "pt-br"},
-           {DlcType::DLC_TYPE_TTSSILK, "si-lk"},
-           {DlcType::DLC_TYPE_TTSSKSK, "sk-sk"},
-           {DlcType::DLC_TYPE_TTSSVSE, "sv-se"},
-           {DlcType::DLC_TYPE_TTSTHTH, "th-th"},
-           {DlcType::DLC_TYPE_TTSTRTR, "tr-tr"},
-           {DlcType::DLC_TYPE_TTSUKUA, "uk-ua"},
-           {DlcType::DLC_TYPE_TTSVIVN, "vi-vn"},
-           {DlcType::DLC_TYPE_TTSYUEHK, "yue-hk"}});
+          {{DlcType::kTtsBnBd, "bn-bd"},  {DlcType::kTtsCsCz, "cs-cz"},
+           {DlcType::kTtsDaDk, "da-dk"},  {DlcType::kTtsDeDe, "de-de"},
+           {DlcType::kTtsElGr, "el-gr"},  {DlcType::kTtsEnAu, "en-au"},
+           {DlcType::kTtsEnGb, "en-gb"},  {DlcType::kTtsEnUs, "en-us"},
+           {DlcType::kTtsEsEs, "es-es"},  {DlcType::kTtsEsUs, "es-us"},
+           {DlcType::kTtsFiFi, "fi-fi"},  {DlcType::kTtsFilPh, "fil-ph"},
+           {DlcType::kTtsFrFr, "fr-fr"},  {DlcType::kTtsHiIn, "hi-in"},
+           {DlcType::kTtsHuHu, "hu-hu"},  {DlcType::kTtsIdId, "id-id"},
+           {DlcType::kTtsItIt, "it-it"},  {DlcType::kTtsJaJp, "ja-jp"},
+           {DlcType::kTtsKmKh, "km-kh"},  {DlcType::kTtsKoKr, "ko-kr"},
+           {DlcType::kTtsNbNo, "nb-no"},  {DlcType::kTtsNeNp, "ne-np"},
+           {DlcType::kTtsNlNl, "nl-nl"},  {DlcType::kTtsPlPl, "pl-pl"},
+           {DlcType::kTtsPtBr, "pt-br"},  {DlcType::kTtsSiLk, "si-lk"},
+           {DlcType::kTtsSkSk, "sk-sk"},  {DlcType::kTtsSvSe, "sv-se"},
+           {DlcType::kTtsThTh, "th-th"},  {DlcType::kTtsTrTr, "tr-tr"},
+           {DlcType::kTtsUkUa, "uk-ua"},  {DlcType::kTtsViVn, "vi-vn"},
+           {DlcType::kTtsYueHk, "yue-hk"}});
 
   // Use LanguagePackManager to get the path of the DLC.
   std::string locale = kTtsDlcTypeToLocale.find(dlc)->second;

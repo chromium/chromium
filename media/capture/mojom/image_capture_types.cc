@@ -26,6 +26,7 @@ media::mojom::PhotoStatePtr CreateEmptyPhotoState() {
   photo_capabilities->torch = false;
   photo_capabilities->red_eye_reduction = media::mojom::RedEyeReduction::NEVER;
   photo_capabilities->supported_background_blur_modes = {};
+  photo_capabilities->supported_face_framing_modes = {};
   return photo_capabilities;
 }
 

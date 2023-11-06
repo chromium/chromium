@@ -83,8 +83,10 @@ class SearchBoxViewBase : public views::View,
       const gfx::Rect& rect) const;
 
   views::ImageButton* assistant_button();
+  views::View* assistant_button_container();
   views::ImageButton* close_button();
   views::ImageButton* filter_button();
+  views::View* filter_and_close_button_container();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
 
@@ -180,14 +182,14 @@ class SearchBoxViewBase : public views::View,
   // Updates the visibility of the close and assistant buttons.
   void UpdateButtonsVisibility();
 
-  // When necessary, starts the fade in animation for the button.
-  void MaybeFadeButtonIn(SearchBoxImageButton* button);
+  // When necessary, starts the fade in animation for the button container.
+  void MaybeFadeContainerIn(views::View* container);
 
-  // When necessary, starts the fade out animation for the button.
-  void MaybeFadeButtonOut(SearchBoxImageButton* button);
+  // When necessary, starts the fade out animation for the button container.
+  void MaybeFadeContainerOut(views::View* container);
 
-  // Used as a callback to set the button's visibility to false.
-  void SetVisibilityHidden(SearchBoxImageButton* button);
+  // Used as a callback to set the button container's visibility to false.
+  void SetContainerVisibilityHidden(views::View* container);
 
   // Overridden from views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
@@ -227,6 +229,10 @@ class SearchBoxViewBase : public views::View,
   void SetPreferredStyleForSearchboxText(const gfx::FontList& font_list,
                                          ui::ColorId text_color_id);
 
+  // Initializes `filter_and_close_button_container_` if it has not already been
+  // done.
+  void MaybeCreateFilterAndCloseButtonContainer();
+
  private:
   void OnEnabledChanged();
 
@@ -237,6 +243,10 @@ class SearchBoxViewBase : public views::View,
   raw_ptr<SearchBoxImageButton, ExperimentalAsh> assistant_button_ = nullptr;
   raw_ptr<SearchBoxImageButton, ExperimentalAsh> close_button_ = nullptr;
   raw_ptr<SearchBoxImageButton, ExperimentalAsh> filter_button_ = nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh> assistant_button_container_ =
+      nullptr;
+  raw_ptr<views::BoxLayoutView, ExperimentalAsh>
+      filter_and_close_button_container_ = nullptr;
   raw_ptr<views::BoxLayoutView, ExperimentalAsh> text_container_ = nullptr;
 
   raw_ptr<views::Textfield, ExperimentalAsh> search_box_;

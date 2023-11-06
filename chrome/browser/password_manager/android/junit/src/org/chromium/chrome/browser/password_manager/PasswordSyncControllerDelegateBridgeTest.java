@@ -37,8 +37,7 @@ import org.chromium.chrome.test.util.browser.Features;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordSyncControllerDelegateBridgeTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final long sFakeNativePointer = 4;
 
@@ -48,13 +47,10 @@ public class PasswordSyncControllerDelegateBridgeTest {
     private static final Exception EXPECTED_API_EXCEPTION =
             new ApiException(new Status(EXPECTED_API_ERROR_CODE, ""));
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
-    @Mock
-    private PasswordSyncControllerDelegate mDelegateMock;
+    @Mock private PasswordSyncControllerDelegateBridgeImpl.Natives mBridgeJniMock;
+    @Mock private PasswordSyncControllerDelegate mDelegateMock;
 
     private PasswordSyncControllerDelegateBridgeImpl mDelegateBridge;
 
@@ -107,8 +103,10 @@ public class PasswordSyncControllerDelegateBridgeTest {
         assertNotNull(failureCallback.getValue());
         failureCallback.getValue().onResult(EXPECTED_API_EXCEPTION);
         verify(mBridgeJniMock)
-                .onCredentialManagerError(sFakeNativePointer,
-                        AndroidBackendErrorType.EXTERNAL_ERROR, EXPECTED_API_ERROR_CODE);
+                .onCredentialManagerError(
+                        sFakeNativePointer,
+                        AndroidBackendErrorType.EXTERNAL_ERROR,
+                        EXPECTED_API_ERROR_CODE);
     }
 
     @Test

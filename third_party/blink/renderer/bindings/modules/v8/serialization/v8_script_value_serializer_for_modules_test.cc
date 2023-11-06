@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
@@ -1451,7 +1453,7 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
   EXPECT_EQ(data.content_hint,
             WebMediaStreamTrack::ContentHintType::kVideoMotion);
   EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
-  EXPECT_EQ(data.crop_version, absl::optional<uint32_t>(0));
+  EXPECT_EQ(data.sub_capture_target_version, absl::optional<uint32_t>(0));
 }
 
 TEST(V8ScriptValueSerializerForModulesTest,
@@ -1483,7 +1485,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   const auto& data = mock_impl.last_argument;
   EXPECT_EQ(data.track_impl_subtype,
             MediaStreamTrack::GetStaticWrapperTypeInfo());
-  EXPECT_FALSE(data.crop_version.has_value());
+  EXPECT_FALSE(data.sub_capture_target_version.has_value());
 }
 
 TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
@@ -1832,7 +1834,7 @@ TEST(V8ScriptValueSerializerForModulesTest,
   EXPECT_FALSE(blink_track->Ended());
 }
 
-#if !BUILDFLAG(IS_ANDROID)  // CropTarget is not exposed on Android.
+#if !BUILDFLAG(IS_ANDROID)  // SubCaptureTargets are not exposed on Android.
 TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
   V8TestingScope scope;
 
@@ -1847,6 +1849,25 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
       V8CropTarget::ToWrappable(scope.GetIsolate(), result);
   ASSERT_NE(new_crop_target, nullptr);
   EXPECT_EQ(new_crop_target->GetId(), crop_id);
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripRestrictionTarget) {
+  V8TestingScope scope;
+  ScopedElementCaptureForTest element_capture(true);
+
+  const String restriction_id("8e7e0c22-67a0-4c39-b4dc-a20433262f8e");
+
+  RestrictionTarget* const restriction_target =
+      MakeGarbageCollected<RestrictionTarget>(restriction_id);
+
+  v8::Local<v8::Value> wrapper =
+      ToV8(restriction_target, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+
+  RestrictionTarget* const new_restriction_target =
+      V8RestrictionTarget::ToWrappable(scope.GetIsolate(), result);
+  ASSERT_NE(new_restriction_target, nullptr);
+  EXPECT_EQ(new_restriction_target->GetId(), restriction_id);
 }
 #endif
 

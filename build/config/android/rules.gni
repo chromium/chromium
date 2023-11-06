@@ -1025,6 +1025,9 @@ if (enable_java_templates && is_android) {
         deps = []
       }
       deps += [ ":$target_name$build_config_target_suffix" ]
+      metadata = {
+        target_type = [ "java_library" ]
+      }
     }
   }
 

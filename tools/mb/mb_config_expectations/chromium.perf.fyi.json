@@ -60,18 +60,5 @@
       "test_isolate_uses_emulator": false,
       "use_remoteexec": true
     }
-  },
-  "fuchsia-builder-perf-x64": {
-    "gn_args": {
-      "ffmpeg_branding": "Chrome",
-      "is_chrome_branded": true,
-      "is_official_build": true,
-      "proprietary_codecs": true,
-      "symbol_level": 1,
-      "target_cpu": "x64",
-      "target_os": "fuchsia",
-      "test_isolate_uses_emulator": false,
-      "use_remoteexec": true
-    }
   }
 }

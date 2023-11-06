@@ -31,10 +31,20 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       /*has_remaining_local_changes=*/false);
 }
 
+CoreAccountInfo GetDefaultAccountInfo() {
+  CoreAccountInfo account;
+  account.email = "foo@bar.com";
+  account.gaia = "foo-gaia-id";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+  return account;
+}
+
 }  // namespace
 
 TestSyncService::TestSyncService()
-    : user_settings_(this), last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
+    : user_settings_(this),
+      account_info_(GetDefaultAccountInfo()),
+      last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
 
 TestSyncService::~TestSyncService() = default;
 

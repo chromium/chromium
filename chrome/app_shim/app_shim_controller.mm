@@ -134,8 +134,6 @@ AppShimController::AppShimController(const Params& params)
       application_dock_menu_target_(
           [[ApplicationDockMenuTarget alloc] initWithController:this]) {
   screen_ = std::make_unique<display::ScopedNativeScreen>();
-  // Since AppShimController is created before the main message loop starts,
-  // NSApp will not be set, so use sharedApplication.
   NSApp.delegate = delegate_;
 }
 

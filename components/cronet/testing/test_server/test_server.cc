@@ -188,7 +188,7 @@ bool TestServer::StartServeFilesFromDirectory(
 /* static */
 bool TestServer::Start() {
   base::FilePath src_root;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root));
   return StartServeFilesFromDirectory(src_root.Append(kTestDataRelativePath));
 }
 

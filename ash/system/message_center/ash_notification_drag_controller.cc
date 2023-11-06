@@ -160,13 +160,7 @@ void AshNotificationDragController::OnNotificationDragWillStart(
             dragged_view->GetWidget()->GetNativeView())
             ->GetStatusAreaWidget();
     TrayBackgroundView* message_center_bubble = nullptr;
-    if (features::IsQsRevampEnabled()) {
-      message_center_bubble = status_area_widget->notification_center_tray();
-    } else {
-      // If the quick setting revamp feature is not enabled, we should hide the
-      // unified system tray bubble.
-      message_center_bubble = status_area_widget->unified_system_tray();
-    }
+    message_center_bubble = status_area_widget->notification_center_tray();
 
     // We cannot destroy the message center bubble instantly. Otherwise, if
     // `dragged_view` is under gesture drag, the gesture state will be reset

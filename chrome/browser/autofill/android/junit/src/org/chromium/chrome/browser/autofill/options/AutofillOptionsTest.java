@@ -61,19 +61,13 @@ public class AutofillOptionsTest {
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int USE_3P =
             RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER;
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private UserPrefsJni mMockUserPrefsJni;
-    @Mock
-    private PrefService mPrefs;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
+    @Mock private UserPrefsJni mMockUserPrefsJni;
+    @Mock private PrefService mPrefs;
+    @Mock private Profile mProfile;
+    @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
 
     private AutofillOptionsFragment mFragment;
     private AutoCloseable mCloseableMocks;
@@ -86,14 +80,20 @@ public class AutofillOptionsTest {
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
 
-        mScenario = FragmentScenario.launchInContainer(AutofillOptionsFragment.class,
-                AutofillOptionsFragment.createRequiredArgs(AutofillOptionsReferrer.SETTINGS),
-                R.style.Theme_MaterialComponents);
-        mScenario.onFragment(fragment -> {
-            mFragment = (AutofillOptionsFragment) fragment; // Valid until scenario is recreated.
-            mFragment.setProfile(mProfile);
-            mFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
-        });
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        AutofillOptionsFragment.class,
+                        AutofillOptionsFragment.createRequiredArgs(
+                                AutofillOptionsReferrer.SETTINGS),
+                        R.style.Theme_MaterialComponents);
+        mScenario.onFragment(
+                fragment -> {
+                    mFragment =
+                            (AutofillOptionsFragment)
+                                    fragment; // Valid until scenario is recreated.
+                    mFragment.setProfile(mProfile);
+                    mFragment.setHelpAndFeedbackLauncher(mHelpAndFeedbackLauncher);
+                });
     }
 
     @After
@@ -117,8 +117,9 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void toggledOptionRecordedInHistogram() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, true);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, true);
         AutofillOptionsCoordinator autofillOptions = new AutofillOptionsCoordinator(mFragment);
         PropertyModel model = autofillOptions.initializeNow();
 
@@ -131,8 +132,9 @@ public class AutofillOptionsTest {
         histogramWatcher.assertExpected();
 
         // Disabling the option should be recorded again.
-        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillOptionsMediator.HISTOGRAM_USE_THIRD_PARTY_FILLING, false);
         getRadioButtonComponent().getDefaultButton().performClick();
         histogramWatcher.assertExpected();
     }
@@ -186,15 +188,20 @@ public class AutofillOptionsTest {
 
         assertEquals(
                 mFragment.getActivity().getTitle(), getString(R.string.autofill_options_title));
-        assertEquals(getRadioButtonComponent().getKey(),
+        assertEquals(
+                getRadioButtonComponent().getKey(),
                 AutofillOptionsFragment.PREF_AUTOFILL_THIRD_PARTY_FILLING);
-        assertEquals(getRadioButtonComponent().getDefaultButton().getPrimaryText(),
+        assertEquals(
+                getRadioButtonComponent().getDefaultButton().getPrimaryText(),
                 getString(R.string.autofill_third_party_filling_default));
-        assertEquals(getRadioButtonComponent().getDefaultButton().getDescriptionText(),
+        assertEquals(
+                getRadioButtonComponent().getDefaultButton().getDescriptionText(),
                 getString(R.string.autofill_third_party_filling_default_description));
-        assertEquals(getRadioButtonComponent().getOptInButton().getPrimaryText(),
+        assertEquals(
+                getRadioButtonComponent().getOptInButton().getPrimaryText(),
                 getString(R.string.autofill_third_party_filling_opt_in));
-        assertEquals(getRadioButtonComponent().getOptInButton().getDescriptionText(),
+        assertEquals(
+                getRadioButtonComponent().getOptInButton().getDescriptionText(),
                 getString(R.string.autofill_third_party_filling_opt_in_description));
     }
 
@@ -203,8 +210,9 @@ public class AutofillOptionsTest {
     public void injectedHelpTriggersAutofillHelp() {
         Menu helpMenu = mock(Menu.class);
         MenuItem helpItem = mock(MenuItem.class);
-        doReturn(helpItem).when(helpMenu).add(
-                Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
+        doReturn(helpItem)
+                .when(helpMenu)
+                .add(Menu.NONE, R.id.menu_id_targeted_help, Menu.NONE, R.string.menu_help);
         doReturn(R.id.menu_id_targeted_help).when(helpItem).getItemId();
 
         // Create completely replaces the menu with only the help icon.
@@ -221,8 +229,10 @@ public class AutofillOptionsTest {
     @Test
     @SmallTest
     public void passedReferrerRecordedInHistogram() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                AutofillOptionsMediator.HISTOGRAM_REFERRER, AutofillOptionsReferrer.SETTINGS);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        AutofillOptionsMediator.HISTOGRAM_REFERRER,
+                        AutofillOptionsReferrer.SETTINGS);
 
         // Component initialization triggers the recording.
         AutofillOptionsCoordinator.createFor(mFragment);

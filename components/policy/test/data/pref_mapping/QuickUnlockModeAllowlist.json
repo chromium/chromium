@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "quick_unlock_mode_allowlist": {
+            "value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickUnlockModeAllowlist": [
+            "PIN"
+          ]
+        },
+        "prefs": {
+          "quick_unlock_mode_allowlist": {
+            "value": [
+              "PIN"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

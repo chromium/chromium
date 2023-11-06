@@ -35,6 +35,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
@@ -62,24 +63,23 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private boolean mSlideDownAnimation; // Slide down to bottom when closing the sheet.
     private boolean mSheetOnRight;
 
-    public PartialCustomTabSideSheetStrategy(Activity activity, @Px int initialWidth,
+    public PartialCustomTabSideSheetStrategy(Activity activity,
+            BrowserServicesIntentDataProvider intentData,
             CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
             CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
-            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
-            boolean showMaximizeButton, boolean startMaximized, int position, int slideInBehavior,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory, int decorationType,
-            int roundedCornersPosition) {
-        super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
-                interactWithBackground, handleStrategyFactory);
+            FullscreenManager fullscreenManager, boolean isTablet, boolean startMaximized,
+            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
+        super(activity, intentData, onResizedCallback, onActivityLayoutCallback, fullscreenManager,
+                isTablet, handleStrategyFactory);
 
-        mUnclampedInitialWidth = initialWidth;
-        mShowMaximizeButton = showMaximizeButton;
+        mUnclampedInitialWidth = intentData.getInitialActivityWidth();
+        mShowMaximizeButton = intentData.showSideSheetMaximizeButton();
         mPositionUpdater = this::updatePosition;
-        mDecorationType = decorationType;
-        mRoundedCornersPosition = roundedCornersPosition;
+        mDecorationType = intentData.getActivitySideSheetDecorationType();
+        mRoundedCornersPosition = intentData.getActivitySideSheetRoundedCornersPosition();
         mIsMaximized = startMaximized;
-        mSheetOnRight = isSheetOnRight(position);
-        mSlideDownAnimation = slideInBehavior
+        mSheetOnRight = isSheetOnRight(intentData.getSideSheetPosition());
+        mSlideDownAnimation = intentData.getSideSheetSlideInBehavior()
                 == CustomTabIntentDataProvider.ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_BOTTOM;
         setupAnimator();
     }

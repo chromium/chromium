@@ -297,12 +297,6 @@
   opacity: var(--cros-disabled-opacity);
 }
 
-.duration-description {
-  color: var(--cros-text-color-secondary);
-  font: var(--cros-body-2-font);
-  margin: 0 8px;
-}
-
 img.disabled {
   /**
    * Use 50% for image instead of default cros-disabled-opacity.

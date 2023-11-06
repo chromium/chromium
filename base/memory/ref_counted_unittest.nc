@@ -15,7 +15,7 @@ class InitialRefCountIsZero : public base::RefCounted<InitialRefCountIsZero> {
   ~InitialRefCountIsZero() {}
 };
 
-#if defined(NCTEST_ADOPT_REF_TO_ZERO_START)  // [r"fatal error: static assertion failed due to requirement 'std::is_same<base::subtle::StartRefCountFromOneTag, base::subtle::StartRefCountFromZeroTag>::value': Use AdoptRef only if the reference count starts from one\."]
+#if defined(NCTEST_ADOPT_REF_TO_ZERO_START)  // [r"fatal error: static assertion failed due to requirement 'std::is_same_v<base::subtle::StartRefCountFromOneTag, base::subtle::StartRefCountFromZeroTag>': Use AdoptRef only if the reference count starts from one\."]
 
 void WontCompile() {
   AdoptRef(new InitialRefCountIsZero());

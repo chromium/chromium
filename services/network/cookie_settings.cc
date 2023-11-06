@@ -156,6 +156,7 @@ bool CookieSettings::IsCookieAccessible(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieSettingOverrides overrides,
     net::CookieInclusionStatus* cookie_inclusion_status) const {
   const CookieSettingWithMetadata setting_with_metadata =
@@ -175,7 +176,8 @@ bool CookieSettings::IsCookieAccessible(
       }
     } else {
       if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled(),
+              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+                  tracking_protection_enabled_for_3pcd_,
               is_third_party_request, cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie_inclusion_status->AddExclusionReason(
@@ -183,6 +185,12 @@ bool CookieSettings::IsCookieAccessible(
       } else {
         cookie_inclusion_status->AddExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+      }
+      if (setting_with_metadata.BlockedByThirdPartyCookieBlocking() &&
+          first_party_set_metadata.AreSitesInSameFirstPartySet()) {
+        cookie_inclusion_status->AddExclusionReason(
+            net::CookieInclusionStatus::
+                EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
       }
     }
   }
@@ -262,7 +270,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     } else {
       // Use a different exclusion reason when the 3pc is blocked by browser.
       if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled(),
+              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+                  tracking_protection_enabled_for_3pcd_,
               is_third_party_request, cookie.cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(
@@ -284,7 +293,8 @@ bool CookieSettings::AnnotateAndMoveUserBlockedCookies(
     if (!IsCookieAllowed(cookie.cookie, setting_with_metadata)) {
       // Use a different exclusion reason when the 3pc is blocked by browser.
       if (ShouldExcludeThirdPartyCookiePhaseout(
-              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled(),
+              net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() ||
+                  tracking_protection_enabled_for_3pcd_,
               is_third_party_request, cookie.cookie.IsPartitioned(),
               setting_with_metadata.is_explicit_setting())) {
         cookie.access_result.status.AddExclusionReason(

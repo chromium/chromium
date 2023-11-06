@@ -48,7 +48,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
   // Called on the UI thread.
   void AddRoutingIdForHost(GinJavaBridgeDispatcherHost* host,
                            RenderFrameHost* render_frame_host);
-  void RemoveHost(GinJavaBridgeDispatcherHost* host);
+  void RemoveRoutingIdForHost(RenderFrameHost* render_frame_host);
 
   static scoped_refptr<GinJavaBridgeMessageFilter> FromHost(
       AgentSchedulingGroupHost& agent_scheduling_group,
@@ -88,7 +88,7 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
                       const std::string& method_name,
                       const base::Value::List& arguments,
                       base::Value::List* result,
-                      content::GinJavaBridgeError* error_code);
+                      mojom::GinJavaBridgeError* error_code);
   void OnObjectWrapperDeleted(GinJavaBoundObject::ObjectID object_id);
 
   // Accessed both from UI and background threads.
@@ -104,7 +104,8 @@ class GinJavaBridgeMessageFilter : public BrowserMessageFilter,
 
   // The routing id of the RenderFrameHost whose request we are processing.
   // Used on the background thread.
-  int32_t current_routing_id_;
+  int32_t current_routing_id_ = MSG_ROUTING_NONE;
+  const int32_t render_process_id_;
 };
 
 }  // namespace content

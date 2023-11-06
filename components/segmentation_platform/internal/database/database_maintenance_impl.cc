@@ -22,7 +22,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
-#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
@@ -34,7 +33,6 @@ constexpr uint64_t kMaxSignalStorageDays = 60;
 
 namespace segmentation_platform {
 using SignalIdentifier = DatabaseMaintenanceImpl::SignalIdentifier;
-using CleanupItem = DatabaseMaintenanceImpl::CleanupItem;
 
 namespace {
 // Gets the end of the UTC day time for `current_time`.
@@ -154,8 +152,13 @@ void DatabaseMaintenanceImpl::CleanupSignalStorage(
   auto cleanup_state = std::make_unique<CleanupState>();
   // Convert the vector of cleanup items to a deque so we can easily handle
   // the state by popping the first one until it is empty.
-  for (auto& item : signals_to_cleanup)
-    cleanup_state->signals_to_cleanup_.emplace_back(item);
+  for (auto& signal : signals_to_cleanup) {
+    // If UKM signal, skip deleting it as it is not present in signal database.
+    if (signal.event_hash != CleanupItem::kNonUkmEventHash) {
+      continue;
+    }
+    cleanup_state->signals_to_cleanup_.emplace_back(signal);
+  }
 
   CleanupSignalStorageProcessNext(
       std::move(cleanup_state),
@@ -181,9 +184,10 @@ void DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext(
   CleanupItem cleanup_item = cleanup_state->signals_to_cleanup_.front();
   cleanup_state->signals_to_cleanup_.pop_front();
 
-  proto::SignalType signal_type = std::get<1>(cleanup_item);
-  uint64_t name_hash = std::get<0>(cleanup_item);
-  base::Time end_time = std::get<2>(cleanup_item);
+  proto::SignalType signal_type = cleanup_item.signal_type;
+  uint64_t name_hash = cleanup_item.name_hash;
+  base::Time end_time = cleanup_item.timestamp;
+
   signal_database_->DeleteSamples(
       signal_type, name_hash, end_time,
       base::BindOnce(&DatabaseMaintenanceImpl::CleanupSignalStorageProcessNext,

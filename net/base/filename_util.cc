@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,10 +45,8 @@ GURL FilePathToFileURL(const base::FilePath& path) {
         c == '\\' ||
 #endif
         c <= ' ') {
-      static const char kHexChars[] = "0123456789ABCDEF";
       url_string += '%';
-      url_string += kHexChars[(c >> 4) & 0xf];
-      url_string += kHexChars[c & 0xf];
+      base::AppendHexEncodedByte(static_cast<uint8_t>(c), url_string);
     } else {
       url_string += c;
     }

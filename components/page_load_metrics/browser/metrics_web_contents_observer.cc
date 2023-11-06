@@ -505,12 +505,12 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
   switch (details.type) {
     case content::CookieAccessDetails::Type::kRead:
       tracker.OnCookiesRead(details.url, details.first_party_url,
-                            details.blocked_by_policy);
+                            details.blocked_by_policy, details.is_ad_tagged);
       break;
     case content::CookieAccessDetails::Type::kChange:
       for (const auto& cookie : details.cookie_list) {
         tracker.OnCookieChange(details.url, details.first_party_url, cookie,
-                               details.blocked_by_policy);
+                               details.blocked_by_policy, details.is_ad_tagged);
       }
       break;
   }
@@ -530,6 +530,11 @@ void MetricsWebContentsObserver::DidActivatePortal(
     return;
   }
   primary_page_->DidActivatePortal(activation_time);
+}
+
+void MetricsWebContentsObserver::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  primary_page_->DidActivatePreviewedPage(activation_time);
 }
 
 void MetricsWebContentsObserver::OnStorageAccessed(

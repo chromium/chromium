@@ -29,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {
@@ -79,6 +80,7 @@ void ReadError<RandR::BadOutputError>(RandR::BadOutputError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string RandR::BadCrtcError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadCrtcError{";
@@ -122,6 +124,7 @@ void ReadError<RandR::BadCrtcError>(RandR::BadCrtcError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string RandR::BadModeError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadModeError{";
@@ -165,6 +168,7 @@ void ReadError<RandR::BadModeError>(RandR::BadModeError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string RandR::BadProviderError::ToString() const {
   std::stringstream ss_;
   ss_ << "RandR::BadProviderError{";
@@ -208,6 +212,7 @@ void ReadError<RandR::BadProviderError>(RandR::BadProviderError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 template <>
 COMPONENT_EXPORT(X11)
 void ReadEvent<RandR::ScreenChangeNotifyEvent>(

@@ -42,13 +42,10 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
 public class BookmarkUiPrefsTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private BookmarkUiPrefs.Observer mObserver;
+    @Mock private BookmarkUiPrefs.Observer mObserver;
 
     private SharedPreferencesManager mSharedPreferencesManager;
     private BookmarkUiPrefs mBookmarkUiPrefs;

@@ -238,8 +238,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   void CloseWindowNow() override;
   void SetInitialBounds(const gfx::Rect& new_bounds,
                         const gfx::Size& minimum_content_size) override;
-  void SetBounds(const gfx::Rect& new_bounds,
-                 const gfx::Size& minimum_content_size) override;
+  void SetBounds(
+      const gfx::Rect& new_bounds,
+      const gfx::Size& minimum_content_size,
+      const absl::optional<gfx::Size>& maximum_content_size) override;
   void SetSize(const gfx::Size& new_size,
                const gfx::Size& minimum_content_size) override;
   void SetSizeAndCenter(const gfx::Size& content_size,
@@ -309,6 +311,10 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // changes. `reveal_amount` ranges in [0, 1]. This is the opacity of the
   // menubar and the browser window traffic lights.
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount);
+
+  // Called by the ImmersiveModeController at the end of fullscreen transition
+  // with the height of the menu bar if it autohides, or 0 if it doesn't.
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height);
 
  private:
   friend class views::test::BridgedNativeWidgetTestApi;

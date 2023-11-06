@@ -14,6 +14,7 @@
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
+class ExceptionState;
 class EXTBlendFuncExtended;
 class EXTClipControl;
 class EXTColorBufferFloat;
@@ -76,7 +77,7 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
       const Platform::GraphicsInfo&,
       const CanvasContextCreationAttributesCore& requested_attributes);
 
-  ImageBitmap* TransferToImageBitmap(ScriptState*) final;
+  ImageBitmap* TransferToImageBitmap(ScriptState*, ExceptionState&) final;
   String ContextName() const override { return "WebGL2RenderingContext"; }
   void RegisterContextExtensions() override;
   V8RenderingContext* AsV8RenderingContext() final;

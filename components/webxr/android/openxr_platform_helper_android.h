@@ -23,8 +23,10 @@ class OpenXrPlatformHelperAndroid : public device::OpenXrPlatformHelper {
 
   // OpenXrPlatformHelper
   std::unique_ptr<device::OpenXrGraphicsBinding> GetGraphicsBinding() override;
-  void GetPlatformCreateInfo(const device::OpenXrCreateInfo& create_info,
-                             PlatformCreateInfoReadyCallback) override;
+  void GetPlatformCreateInfo(
+      const device::OpenXrCreateInfo& create_info,
+      PlatformCreateInfoReadyCallback result_callback,
+      PlatormInitiatedShutdownCallback shutdown_callback) override;
   device::mojom::XRDeviceData GetXRDeviceData() override;
   bool Initialize() override;
 

@@ -18,6 +18,9 @@
 #include "services/accessibility/public/mojom/automation.mojom.h"
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+#include "services/accessibility/public/mojom/autoclick.mojom.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
@@ -31,6 +34,9 @@ namespace ax {
 // TODO(b/262637071): This should be split for OS vs Browser ATP.
 class FakeServiceClient : public mojom::AccessibilityServiceClient,
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+                          public mojom::AccessibilityFileLoader,
+                          public mojom::AutoclickClient,
+                          public mojom::SpeechRecognition,
                           public mojom::Tts,
                           public mojom::UserInterface,
 #endif
@@ -48,9 +54,28 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void BindAccessibilityFileLoader(
+      mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+          file_loader_receiver) override;
+  void BindAutoclickClient(mojo::PendingReceiver<ax::mojom::AutoclickClient>
+                               autoclick_client_reciever) override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ux_receiver) override;
+
+  // ax::mojom::AutoclickClient:
+  void HandleScrollableBoundsForPointFound(const gfx::Rect& bounds) override;
+  void BindAutoclick(BindAutoclickCallback callback) override;
+
+  // ax::mojom::SpeechRecognition:
+  void Start(ax::mojom::StartOptionsPtr options,
+             StartCallback callback) override;
+  void Stop(ax::mojom::StopOptionsPtr options, StopCallback callback) override;
+
+  // ax::mojom::AccessibilityFileLoader:
+  void Load(const base::FilePath& path, LoadCallback callback) override;
 
   // ax::mojom::Tts:
   void Speak(const std::string& utterance,
@@ -65,10 +90,15 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   // ax::mojom::UserInterface:
   void DarkenScreen(bool darken) override;
   void OpenSettingsSubpage(const std::string& subpage) override;
+  void ShowConfirmationDialog(const std::string& title,
+                              const std::string& description,
+                              const absl::optional<std::string>& cancel_name,
+                              ShowConfirmationDialogCallback callback) override;
   void SetFocusRings(std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
                      ax::mojom::AssistiveTechnologyType at_type) override;
   void SetHighlights(const std::vector<gfx::Rect>& rects,
                      SkColor color) override;
+  void SetVirtualKeyboardVisible(bool is_visible) override;
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 
   // Methods for testing.
@@ -78,6 +108,16 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   bool AutomationIsBound() const;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  void RequestScrollableBoundsForPoint(const gfx::Point& point);
+  void SetScrollableBoundsForPointFoundCallback(
+      base::RepeatingCallback<void(const gfx::Rect&)> callback);
+
+  void SetSpeechRecognitionStartCallback(
+      base::RepeatingCallback<void()> callback);
+  void SendSpeechRecognitionStopEvent();
+  void SendSpeechRecognitionResultEvent();
+  void SendSpeechRecognitionErrorEvent();
+
   void SetTtsSpeakCallback(
       base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
           callback);
@@ -94,6 +134,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetHighlightsCallback(
       base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                    SkColor color)> callback);
+  void SetVirtualKeyboardVisibleCallback(
+      base::RepeatingCallback<void(bool is_visible)> callback);
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   base::WeakPtr<FakeServiceClient> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -106,6 +148,15 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+  mojo::ReceiverSet<ax::mojom::AutoclickClient> autoclick_client_recievers_;
+  mojo::Remote<ax::mojom::Autoclick> autoclick_remote_;
+  base::RepeatingCallback<void(const gfx::Rect&)>
+      scrollable_bounds_for_point_callback_;
+
+  mojo::ReceiverSet<mojom::SpeechRecognition> sr_receivers_;
+  mojo::Remote<ax::mojom::SpeechRecognitionEventObserver> sr_event_observer_;
+  base::RepeatingCallback<void()> speech_recognition_start_callback_;
+
   base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
       tts_speak_callback_;
   mojo::ReceiverSet<mojom::Tts> tts_receivers_;
@@ -123,6 +174,10 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                SkColor color)>
       highlights_callback_;
+  base::RepeatingCallback<void(bool is_visible)>
+      virtual_keyboard_visible_callback_;
+
+  mojo::Receiver<ax::mojom::AccessibilityFileLoader> file_loader_{this};
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   mojo::Receiver<mojom::AccessibilityServiceClient> a11y_client_receiver_{this};
 

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TEXT_FRAGMENT_PAINTER_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -15,8 +15,8 @@ namespace blink {
 
 class ComputedStyle;
 class DisplayItemClient;
+class InlineCursor;
 class LayoutObject;
-class NGInlineCursor;
 class NGInlinePaintContext;
 struct NGTextFragmentPaintInfo;
 struct PaintInfo;
@@ -24,16 +24,16 @@ struct PhysicalOffset;
 struct PhysicalRect;
 struct PhysicalSize;
 
-// Text fragment painter for LayoutNG. Operates on NGFragmentItem that IsText()
+// Text fragment painter for LayoutNG. Operates on FragmentItem that IsText()
 // and handles clipping, selection, etc. Delegates to NGTextPainter to paint the
 // text itself.
 class NGTextFragmentPainter {
   STACK_ALLOCATED();
 
  public:
-  explicit NGTextFragmentPainter(const NGInlineCursor& cursor)
+  explicit NGTextFragmentPainter(const InlineCursor& cursor)
       : cursor_(cursor) {}
-  NGTextFragmentPainter(const NGInlineCursor& cursor,
+  NGTextFragmentPainter(const InlineCursor& cursor,
                         const PhysicalOffset& parent_offset,
                         NGInlinePaintContext* inline_context)
       : cursor_(cursor),
@@ -60,9 +60,9 @@ class NGTextFragmentPainter {
                           const PaintInfo& paint_info,
                           const PhysicalOffset& paint_offset);
 
-  const NGInlineCursor& cursor_;
+  const InlineCursor& cursor_;
   PhysicalOffset parent_offset_;
-  absl::optional<NGInlineCursor> inline_cursor_for_block_flow_;
+  absl::optional<InlineCursor> inline_cursor_for_block_flow_;
   NGInlinePaintContext* inline_context_ = nullptr;
 };
 

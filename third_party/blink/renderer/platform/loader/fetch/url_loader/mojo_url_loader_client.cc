@@ -53,18 +53,25 @@ class MojoURLLoaderClient::DeferredOnReceiveResponse final
  public:
   explicit DeferredOnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata,
       base::TimeTicks response_arrival)
       : response_head_(std::move(response_head)),
+        body_(std::move(body)),
+        cached_metadata_(std::move(cached_metadata)),
         response_arrival_(response_arrival) {}
 
   void HandleMessage(ResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnReceivedResponse(std::move(response_head_),
-                                                response_arrival_);
+    resource_request_sender->OnReceivedResponse(
+        std::move(response_head_), std::move(body_),
+        std::move(cached_metadata_), response_arrival_);
   }
   bool IsCompletionMessage() const override { return false; }
 
  private:
   network::mojom::URLResponseHeadPtr response_head_;
+  mojo::ScopedDataPipeConsumerHandle body_;
+  absl::optional<mojo_base::BigBuffer> cached_metadata_;
   const base::TimeTicks response_arrival_;
 };
 
@@ -107,36 +114,6 @@ class MojoURLLoaderClient::DeferredOnUploadProgress final
   const int64_t total_;
 };
 
-class MojoURLLoaderClient::DeferredOnReceiveCachedMetadata final
-    : public DeferredMessage {
- public:
-  explicit DeferredOnReceiveCachedMetadata(mojo_base::BigBuffer data)
-      : data_(std::move(data)) {}
-
-  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnReceivedCachedMetadata(std::move(data_));
-  }
-  bool IsCompletionMessage() const override { return false; }
-
- private:
-  mojo_base::BigBuffer data_;
-};
-
-class MojoURLLoaderClient::DeferredOnStartLoadingResponseBody final
-    : public DeferredMessage {
- public:
-  explicit DeferredOnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body)
-      : body_(std::move(body)) {}
-
-  void HandleMessage(ResourceRequestSender* resource_request_sender) override {
-    resource_request_sender->OnStartLoadingResponseBody(std::move(body_));
-  }
-  bool IsCompletionMessage() const override { return false; }
-
- private:
-  mojo::ScopedDataPipeConsumerHandle body_;
-};
 
 class MojoURLLoaderClient::DeferredOnComplete final : public DeferredMessage {
  public:
@@ -330,74 +307,39 @@ void MojoURLLoaderClient::OnReceiveResponse(
                last_loaded_url_.GetString().Utf8());
 
   has_received_response_head_ = true;
+  has_received_response_body_ = !!body;
   base::TimeTicks response_arrival_timing = base::TimeTicks::Now();
 
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();
-  if (NeedsStoringMessage()) {
-    StoreAndDispatch(std::make_unique<DeferredOnReceiveResponse>(
-        std::move(response_head), response_arrival_timing));
-  } else {
-    resource_request_sender_->OnReceivedResponse(std::move(response_head),
-                                                 response_arrival_timing);
-  }
-
-  if (!weak_this)
-    return;
-
-  // Send the cached metadata, if any, before starting to load the body, so that
-  // resources using the cached data (e.g. script resources deserialising the
-  // code cache) immediately know whether the cache is available before starting
-  // to process the response body.
-  if (cached_metadata) {
-    if (NeedsStoringMessage()) {
-      StoreAndDispatch(std::make_unique<DeferredOnReceiveCachedMetadata>(
-          std::move(*cached_metadata)));
-    } else {
-      resource_request_sender_->OnReceivedCachedMetadata(
-          std::move(*cached_metadata));
-    }
-
-    if (!weak_this)
-      return;
-  }
-
-  if (!body)
-    return;
-
-  has_received_response_body_ = true;
-
   if (!NeedsStoringMessage()) {
-    // Send the message immediately.
-    resource_request_sender_->OnStartLoadingResponseBody(std::move(body));
+    resource_request_sender_->OnReceivedResponse(
+        std::move(response_head), std::move(body), std::move(cached_metadata),
+        response_arrival_timing);
     return;
   }
 
-  if (freeze_mode_ != LoaderFreezeMode::kBufferIncoming) {
-    // Defer the message, storing the original body pipe.
-    StoreAndDispatch(
-        std::make_unique<DeferredOnStartLoadingResponseBody>(std::move(body)));
-    return;
+  if (body && (freeze_mode_ == LoaderFreezeMode::kBufferIncoming)) {
+    DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
+    // We want to run loading tasks while deferred (but without dispatching the
+    // messages). Drain the original pipe containing the response body into a
+    // new pipe so that we won't block the network service if we're deferred for
+    // a long time.
+    mojo::ScopedDataPipeProducerHandle new_body_producer;
+    mojo::ScopedDataPipeConsumerHandle new_body_consumer;
+    MojoResult result =
+        mojo::CreateDataPipe(nullptr, new_body_producer, new_body_consumer);
+    if (result != MOJO_RESULT_OK) {
+      OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      return;
+    }
+    body_buffer_ = std::make_unique<BodyBuffer>(
+        this, std::move(body), std::move(new_body_producer), task_runner_);
+    body = std::move(new_body_consumer);
   }
-
-  DCHECK(IsInflightNetworkRequestBackForwardCacheSupportEnabled());
-  // We want to run loading tasks while deferred (but without dispatching the
-  // messages). Drain the original pipe containing the response body into a
-  // new pipe so that we won't block the network service if we're deferred for
-  // a long time.
-  mojo::ScopedDataPipeProducerHandle new_body_producer;
-  mojo::ScopedDataPipeConsumerHandle new_body_consumer;
-  MojoResult result =
-      mojo::CreateDataPipe(nullptr, new_body_producer, new_body_consumer);
-  if (result != MOJO_RESULT_OK) {
-    OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
-    return;
-  }
-  body_buffer_ = std::make_unique<BodyBuffer>(
-      this, std::move(body), std::move(new_body_producer), task_runner_);
-
-  StoreAndDispatch(std::make_unique<DeferredOnStartLoadingResponseBody>(
-      std::move(new_body_consumer)));
+  StoreAndDispatch(std::make_unique<DeferredOnReceiveResponse>(
+      std::move(response_head), std::move(body), std::move(cached_metadata),
+      response_arrival_timing));
 }
 
 void MojoURLLoaderClient::EvictFromBackForwardCache(

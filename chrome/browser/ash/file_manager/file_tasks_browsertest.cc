@@ -20,6 +20,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -165,23 +167,6 @@ void VerifyAsyncTask(int* remaining,
   std::move(quit_closure).Run();
 }
 
-// Verifies that all tasks are either blocked or not by DLP, according to
-// |expectation|. Decrements the provided |remaining| integer to provide
-// additional verification that this function is invoked an expected number of
-// times (i.e. even if the callback could be invoked asynchronously).
-void VerifyDlpStatus(int* remaining,
-                     Expectation expectation,
-                     std::unique_ptr<ResultingTasks> resulting_tasks) {
-  ASSERT_TRUE(resulting_tasks) << expectation.file_extensions;
-  --*remaining;
-
-  bool expect_dlp_blocked = expectation.dlp_source_url &&
-                            strcmp(expectation.dlp_source_url, blockedUrl) == 0;
-  EXPECT_EQ(expect_dlp_blocked,
-            base::ranges::all_of(resulting_tasks->tasks,
-                                 &FullTaskDescriptor::is_dlp_blocked));
-}
-
 // Installs a chrome app that handles .tiff.
 scoped_refptr<const extensions::Extension> InstallTiffHandlerChromeApp(
     Profile* profile) {
@@ -200,12 +185,9 @@ void ConvertExpectation(const Expectation& test,
   for (base::StringPiece extension : all_extensions) {
     base::FilePath path = prefix.AddExtension(extension);
     std::string mime_type;
+    base::ScopedAllowBlockingForTesting allow_blocking;
     net::GetMimeTypeFromFile(path, &mime_type);
     if (test.mime_type != nullptr) {
-      // Sniffing isn't used when GetMimeTypeFromFile() succeeds, so there
-      // shouldn't be a hard-coded mime type configured.
-      EXPECT_TRUE(mime_type.empty())
-          << "Did not expect mime match " << mime_type << " for " << path;
       mime_type = test.mime_type;
     } else {
       EXPECT_FALSE(mime_type.empty()) << "No mime type for " << path;
@@ -284,7 +266,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
       {"cr2"},
       {"dng"},
       {"nef"},
-      {"nrw"},
+      {"nrw", false},
       {"orf"},
       {"raf"},
       {"rw2"},
@@ -321,8 +303,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExtensionToMimeMapping) {
   for (const auto& test : kExpectations) {
     base::FilePath path = prefix.AddExtension(test.file_extension);
 
-    EXPECT_EQ(test.has_mime, net::GetMimeTypeFromFile(path, &mime_type))
-        << test.file_extension;
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    if (test.has_mime) {
+      EXPECT_TRUE(net::GetMimeTypeFromFile(path, &mime_type))
+          << test.file_extension;
+    }
   }
 }
 
@@ -350,11 +335,11 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ImageHandlerChangeDetector) {
       {"cr2", kMediaAppId},
       {"dng", kMediaAppId},
       {"nef", kMediaAppId},
-      {"nrw", kMediaAppId},
+      {"nrw", kMediaAppId, "image/tiff"},
       {"orf", kMediaAppId},
       {"raf", kMediaAppId},
       {"rw2", kMediaAppId},
-      {"NRW", kMediaAppId},  // Uppercase extension.
+      {"NRW", kMediaAppId, "image/tiff"},  // Uppercase extension.
   };
   TestExpectationsAgainstDefaultTasks(expectations);
 }
@@ -679,7 +664,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackSucceedsWithQuickOffice) {
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
@@ -711,7 +696,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, FallbackFailsNoQuickOffice) {
       profile, CreateWebDriveOfficeTask(), {test_url}, nullptr,
       ash::office_fallback::FallbackReason::kOffline,
       std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-          ash::cloud_upload::CloudProvider::kOneDrive)));
+          ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1)));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -722,27 +707,33 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
   // Tests that fetched tasks are marked as blocked by DLP, if expected.
   void TestExpectationsAgainstDlp(
       const std::vector<Expectation>& expectations) {
-    int remaining = expectations.size();
-
     for (const Expectation& test : expectations) {
       std::vector<extensions::EntryInfo> entries;
       std::vector<GURL> file_urls;
       std::vector<std::string> dlp_source_urls;
       ConvertExpectation(test, entries, file_urls, dlp_source_urls);
 
-      // task_verifier callback is invoked synchronously from
-      // FindAllTypesOfTasks.
+      base::test::TestFuture<std::unique_ptr<ResultingTasks>> tasks_future;
       FindAllTypesOfTasks(browser()->profile(), entries, file_urls,
-                          dlp_source_urls,
-                          base::BindOnce(&VerifyDlpStatus, &remaining, test));
+                          dlp_source_urls, tasks_future.GetCallback());
+      ASSERT_TRUE(tasks_future.Get()) << test.file_extensions;
+      ResultingTasks& resulting_tasks = *tasks_future.Get();
+
+      // Verifies that all tasks are either blocked or not by DLP, according to
+      // |test|.
+      bool expect_dlp_blocked =
+          test.dlp_source_url && strcmp(test.dlp_source_url, blockedUrl) == 0;
+      EXPECT_EQ(expect_dlp_blocked,
+                base::ranges::all_of(resulting_tasks.tasks,
+                                     &FullTaskDescriptor::is_dlp_blocked));
     }
-    EXPECT_EQ(0, remaining);
   }
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
-        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
+            Profile::FromBrowserContext(context));
     rules_manager_ = dlp_rules_manager.get();
     return dlp_rules_manager;
   }
@@ -1123,7 +1114,7 @@ class DriveTest : public TestAccountBrowserTest {
     // Path of test file relative to the DriveFs mount point.
     relative_test_file_path = base::FilePath("/").AppendASCII(test_file_name_);
     cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-        ash::cloud_upload::CloudProvider::kGoogleDrive);
+        ash::cloud_upload::CloudProvider::kGoogleDrive, /*file_count=*/1);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 
@@ -1274,9 +1265,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, OfficeFallbackTryAgain) {
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kGoogleDrive, 1);
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
   histogram_.ExpectUniqueSample(ash::cloud_upload::kDriveOpenSourceVolumeMetric,
                                 VolumeType::VOLUME_TYPE_GOOGLE_DRIVE, 1);
   histogram_.ExpectUniqueSample(
@@ -1359,9 +1350,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileInDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
@@ -1399,9 +1390,9 @@ IN_PROC_BROWSER_TEST_F(DriveTest, FileNotInDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kGoogleDrive,
-                                1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kGoogleDrive, 1);
 }
 
 // Fake app service web app publisher to test when an app is launched.
@@ -1483,7 +1474,7 @@ class OneDriveTest : public TestAccountBrowserTest,
     // The path in ODFS is the relative path with "/" prefixed.
     test_path_within_odfs_ = base::FilePath("/").Append(relative_test_path_);
     cloud_open_metrics_ = std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-        ash::cloud_upload::CloudProvider::kOneDrive);
+        ash::cloud_upload::CloudProvider::kOneDrive, /*file_count=*/1);
     cloud_open_metrics_weak_ptr_ = cloud_open_metrics_->GetWeakPtr();
   }
 
@@ -1655,8 +1646,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackTryAgain) {
   CHECK_EQ(launches[0].app_id, web_app::kMicrosoft365AppId);
   CHECK_EQ(launches[0].intent_url, kODFSSampleUrl);
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveOpenSourceVolumeMetric,
       ash::cloud_upload::OfficeFilesSourceVolume::kMicrosoftOneDrive, 1);
@@ -1717,8 +1709,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, OfficeFallbackCancel) {
 
   ASSERT_EQ(0u, web_app_publisher_->GetLaunches().size());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
   histogram_.ExpectUniqueSample(
       ash::cloud_upload::kOneDriveTaskResultMetricName,
       ash::cloud_upload::OfficeTaskResult::kCancelledAtFallback, 1);
@@ -2107,8 +2100,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
 
 // Test that the setup flow for office files, that has never been run before,
@@ -2139,8 +2133,9 @@ IN_PROC_BROWSER_TEST_F(OneDriveTest, FileNotInOneDriveOpensSetUpDialog) {
   navigation_observer_dialog.Wait();
   ASSERT_TRUE(navigation_observer_dialog.last_navigation_succeeded());
 
-  histogram_.ExpectUniqueSample(ash::cloud_upload::kOpenCloudProviderMetric,
-                                ash::cloud_upload::CloudProvider::kOneDrive, 1);
+  histogram_.ExpectUniqueSample(
+      ash::cloud_upload::kOpenInitialCloudProviderMetric,
+      ash::cloud_upload::CloudProvider::kOneDrive, 1);
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(

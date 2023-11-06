@@ -48,21 +48,27 @@ class ChromePrivateNetworkDeviceDelegate
           OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
 
   bool HasDevicePermission(content::RenderFrameHost& frame,
-                           const blink::mojom::PrivateNetworkDevice& device);
+                           const blink::mojom::PrivateNetworkDevice& device,
+                           bool is_device_valid);
 
   std::unique_ptr<ChromePrivateNetworkDeviceChooser> RunChooser(
       content::RenderFrameHost& frame,
       blink::mojom::PrivateNetworkDevicePtr device,
       network::mojom::URLLoaderNetworkServiceObserver::
-          OnPrivateNetworkAccessPermissionRequiredCallback callback);
+          OnPrivateNetworkAccessPermissionRequiredCallback callback,
+      bool is_device_valid);
 
   void HandlePrivateNetworkDeviceChooserResult(
+      bool is_device_valid,
       network::mojom::URLLoaderNetworkServiceObserver::
           OnPrivateNetworkAccessPermissionRequiredCallback callback,
       PrivateNetworkDevicePermissionContext* permission_context,
       const url::Origin& origin,
       const blink::mojom::PrivateNetworkDevice& device,
       bool permission_granted);
+
+  static bool CheckDevice(const blink::mojom::PrivateNetworkDevice& device,
+                          content::RenderFrameHost& frame);
 
  private:
   PrivateNetworkDevicePermissionContext* GetPermissionContext(

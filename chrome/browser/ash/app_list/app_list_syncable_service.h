@@ -61,7 +61,8 @@ class AppListSyncableService : public syncer::SyncableService,
  public:
   struct SyncItem {
     SyncItem(const std::string& id,
-             sync_pb::AppListSpecifics::AppListItemType type);
+             sync_pb::AppListSpecifics::AppListItemType type,
+             bool is_new);
     SyncItem(const SyncItem&) = delete;
     SyncItem& operator=(const SyncItem&) = delete;
     ~SyncItem();
@@ -116,6 +117,11 @@ class AppListSyncableService : public syncer::SyncableService,
     //    user and then additionally specified in PinnedLauncherApps, this value
     //    will be set to true.
     absl::optional<bool> is_user_pinned;
+
+    // Whether the item is considered new - i.e. first added during the current
+    // user session. This will be false if the sync item was created when
+    // loading items from local storage, or in response to sync changes.
+    const bool is_new;
 
     std::string ToString() const;
   };
@@ -180,11 +186,30 @@ class AppListSyncableService : public syncer::SyncableService,
   // provided `id`.
   syncer::StringOrdinal GetPositionAfterApp(const std::string& id) const;
 
-  // Find an app in the synced data that has the specified `promise_package_id`.
-  // If a match exists, retrieve the ordinal position of the synced app item.
-  // Otherwise, return an empty ordinal.
-  const syncer::StringOrdinal GetSyncPositionForPromiseAppItem(
-      const std::string& promise_package_id) const;
+  // Describes linkage between a promise app item, and an existing app sync
+  // item. Promise app will be linked with an existing app when the existing app
+  // package ID matches the promise app ID (i.e. when the promise app is
+  // installing an app previously installed by the user).
+  struct LinkedPromiseAppSyncItem {
+    // The ID of the existing sync item linked with the promise app.
+    const std::string linked_item_id;
+    // The promise app sync item created from the linked sync item attributes.
+    const raw_ptr<const SyncItem> promise_item;
+  };
+
+  // If an sync item with the provided package ID exists, it creates a sync item
+  // for the promise app, and "links" it with the existing sync item.
+  // When a promise app item is linked to another sync item, changes to the sync
+  // item (e.g. from app list sync) will be applied to the promise app item, and
+  // change to promise app item (e.g. from user actions in app list UI) will be
+  // applied to the linked sync item.
+  // Linkage will be removed when the promise app item gets removed.
+  // This can be called multiple times per promise app, and it will return
+  // consistent result as long as the linkage is active.
+  // If no items that can be linked to the promise app are found, the promise
+  // app sync item will not be created, and this will return nullopt.
+  absl::optional<LinkedPromiseAppSyncItem>
+  CreateLinkedPromiseSyncItemIfAvailable(const std::string& promise_package_id);
 
   // Called when properties of an item may have changed, e.g. default/oem state.
   void UpdateItem(const ChromeAppListItem* app_item);
@@ -224,6 +249,14 @@ class AppListSyncableService : public syncer::SyncableService,
   virtual void SetPinPosition(const std::string& app_id,
                               const syncer::StringOrdinal& item_pin_ordinal,
                               bool pinned_by_policy);
+
+  // Copies a promise app sync item attributes from a sync item  with
+  // `promise_app_id` to a sync item with `target_id`. No-op if the source sync
+  // item does not exist. If the target sync item does not exist, it will be
+  // created. At the time of writing, used to move a promise app sync item
+  // attributes the the sync item associated with the installed app.
+  void CopyPromiseItemAttributesToItem(const std::string& promise_app_id,
+                                       const std::string& target_id);
 
   // Sets |is_user_pinned| to false for the given item specified by |item_id|.
   // Item must exist, |item_pin_ordinal| must be valid, and |is_user_pinned|
@@ -358,9 +391,9 @@ class AppListSyncableService : public syncer::SyncableService,
   SyncItem* FindSyncItem(const std::string& item_id);
 
   // Creates a new sync item for |item_id|.
-  SyncItem* CreateSyncItem(
-      const std::string& item_id,
-      sync_pb::AppListSpecifics::AppListItemType item_type);
+  SyncItem* CreateSyncItem(const std::string& item_id,
+                           sync_pb::AppListSpecifics::AppListItemType item_type,
+                           bool is_new);
 
   // Deletes a SyncItem matching |specifics|.
   void DeleteSyncItemSpecifics(const sync_pb::AppListSpecifics& specifics);
@@ -457,6 +490,10 @@ class AppListSyncableService : public syncer::SyncableService,
   // across all ChromeOS devices and sessions for the associated user. Note that
   // this value is absent until completion of the first sync in the session.
   absl::optional<bool> first_sync_was_first_sync_ever_;
+
+  // Map from a promise app item to an app sync item linked with the promise app
+  // - created by `CreateLinkedPromiseSyncItemIfAvailable()`.
+  std::map<std::string, std::string> items_linked_to_promise_item_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

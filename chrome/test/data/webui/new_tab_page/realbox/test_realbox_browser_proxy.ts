@@ -5,6 +5,7 @@
 import {NavigationPredictor, PageCallbackRouter, PageHandlerInterface, PageRemote} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -26,6 +27,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'stopAutocomplete',
       'toggleSuggestionGroupIdVisibility',
       'onFocusChanged',
+      'popupElementSizeChanged',
     ]);
   }
 
@@ -35,6 +37,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   onFocusChanged(focused: boolean) {
     this.methodCalled('onFocusChanged', {focused});
+  }
+
+  popupElementSizeChanged(size: Size) {
+    this.methodCalled('popupElementSizeChanged', {size});
   }
 
   deleteAutocompleteMatch(line: number, url: Url) {

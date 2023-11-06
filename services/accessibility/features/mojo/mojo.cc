@@ -98,7 +98,7 @@ void Mojo::BindInterface(gin::Arguments* arguments) {
   // static void bindInterface(DOMString interfaceName, MojoHandle
   // request_handle, optional MojoScope scope = "context"); In this
   // implementation, the MojoScope is unused.
-  std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
+  v8::LocalVector<v8::Value> args = arguments->GetAll();
   v8::Local<v8::String> v8_interface_name = args[0].As<v8::String>();
   std::string interface_name;
   gin::ConvertFromV8(isolate, v8_interface_name, &interface_name);

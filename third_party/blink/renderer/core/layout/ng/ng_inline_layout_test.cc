@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -53,7 +53,7 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
   EXPECT_TRUE(result);
 
   String expected_text("Hello World!");
-  auto first_child = To<NGInlineNode>(node.FirstChild());
+  auto first_child = To<InlineNode>(node.FirstChild());
   EXPECT_EQ(expected_text,
             StringView(first_child.ItemsData(false).text_content, 0, 12));
 }
@@ -83,7 +83,7 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   expected_text.Append("Hello ");
   expected_text.Append(kObjectReplacementCharacter);
   expected_text.Append('.');
-  auto first_child = To<NGInlineNode>(node.FirstChild());
+  auto first_child = To<InlineNode>(node.FirstChild());
   EXPECT_EQ(expected_text.ToString(),
             StringView(first_child.ItemsData(false).text_content, 0, 8));
 }

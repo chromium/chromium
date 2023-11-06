@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_test.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/ax_event_counter.h"
 
@@ -77,11 +78,6 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
-                       InvokeUi_AutomaticPasswordBubble) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
                        InvokeUi_ManagePasswordBubble) {
   ShowAndVerifyUi();
 }
@@ -118,4 +114,39 @@ IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PasswordBubbleBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+// TODO(crbug.com/1493957): Remove this class once
+// kNewConfirmationBubbleForGeneratedPasswords is fully propagated and add test
+// back to PasswordBubbleBrowserTest.
+// First test parameter is responsible for toggling RTL.
+// Second test parameter is responsible for toggling
+// kNewConfirmationBubbleForGeneratedPasswords feature.
+class PasswordAutomaticSaveBubbleBrowserTest
+    : public SupportsTestDialog<ManagePasswordsTest>,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  PasswordAutomaticSaveBubbleBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        password_manager::features::kNewConfirmationBubbleForGeneratedPasswords,
+        std::get<1>(GetParam()));
+  }
+  ~PasswordAutomaticSaveBubbleBrowserTest() override = default;
+
+  void ShowUi(const std::string& name) override {
+    base::i18n::SetRTLForTesting(std::get<0>(GetParam()));
+    SetupAutomaticPassword();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(PasswordAutomaticSaveBubbleBrowserTest,
+                       InvokeUi_AutomaticPasswordBubble) {
+  ShowAndVerifyUi();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PasswordAutomaticSaveBubbleBrowserTest,
                          testing::Combine(testing::Bool(), testing::Bool()));

@@ -15,17 +15,17 @@ class ChromeActionsTest : public testing::Test {
   ChromeActionsTest(const ChromeActionsTest&) = delete;
   ChromeActionsTest& operator=(const ChromeActionsTest&) = delete;
   ~ChromeActionsTest() override = default;
+
+  void TearDown() override { actions::ActionIdMap::ResetMapsForTesting(); }
 };
 
 // TODO(crbug.com/1491976): Adding temporarily to unblock the side panel team.
 // Should be removed/replaced when general solution to add action id mappings is
 // implemented.
-// TODO(josephjoopark): Rewrite such that static maps are reset to their
-// original state.
 TEST_F(ChromeActionsTest, InitializeActionIdStringMappingTest) {
   InitializeActionIdStringMapping();
 
   auto actual_action_id =
-      actions::ActionManager::StringToActionId("kActionSidePanelShowFeed");
+      actions::ActionIdMap::StringToActionId("kActionSidePanelShowFeed");
   EXPECT_THAT(actual_action_id, testing::Optional(kActionSidePanelShowFeed));
 }

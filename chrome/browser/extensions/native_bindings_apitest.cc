@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/file_system/file_system_api.h"
+#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -25,8 +27,8 @@
 #include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/script_result_queue.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -35,6 +37,59 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace extensions {
+
+namespace {
+
+// A script that can verify whether a developer-mode-restricted API is
+// available. Note that we use separate verify methods here (as opposed to
+// a boolean "is API available") so we can better verify expected errors and
+// give more meaningful messages in the case of failure.
+constexpr char kCheckApiAvailability[] =
+    R"(const script =
+           {
+             id: 'script',
+             matches: ['*://*/*'],
+             js: [{file: 'script.js'}]
+           };
+       async function verifyApiIsAvailable() {
+         let message;
+         try {
+           await chrome.userScripts.register([script]);
+           const registered = await chrome.userScripts.getScripts();
+           message =
+               (registered.length == 1 &&
+                registered[0].id == 'script')
+                   ? 'success'
+                   : 'Unexpected registration result: ' +
+                         JSON.stringify(registered);
+           await chrome.userScripts.unregister();
+         } catch (e) {
+           message = 'Unexpected error: ' + e.toString();
+         }
+         chrome.test.sendScriptResult(message);
+       }
+
+       async function verifyApiIsNotAvailable() {
+         let message;
+         try {
+           // Note: we try to call a method on the API (and not just test
+           // accessing it) since, if it was previously instantiated when the
+           // API was available, it would still be present.
+           await chrome.userScripts.register([script]);
+           message = 'API unexpectedly available.';
+           await chrome.userScripts.unregister();
+         } catch(e) {
+           const expectedError =
+               `Error: The 'userScripts' API is only available for users ` +
+               'in developer mode.';
+           message = e.toString() == expectedError
+               ? 'success'
+               : 'Unexpected error: ' + e.toString();
+         }
+         chrome.test.sendScriptResult(message);
+       })";
+
+}  // namespace
 
 // And end-to-end test for extension APIs using native bindings.
 class NativeBindingsApiTest : public ExtensionApiTest {
@@ -66,8 +121,10 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
     : public NativeBindingsApiTest {
  public:
   NativeBindingsRestrictedToDeveloperModeApiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kRestrictDeveloperModeAPIs);
+    scoped_feature_list_.InitWithFeatures(
+        {extensions_features::kRestrictDeveloperModeAPIs,
+         extensions_features::kApiUserScripts},
+        /*disabled_features=*/{});
   }
 
   NativeBindingsRestrictedToDeveloperModeApiTest(
@@ -78,6 +135,8 @@ class NativeBindingsRestrictedToDeveloperModeApiTest
   ~NativeBindingsRestrictedToDeveloperModeApiTest() override = default;
 
  private:
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -591,7 +650,7 @@ IN_PROC_BROWSER_TEST_F(
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should not be available if the user is not in developer mode.
   SetCustomArg("not_in_developer_mode");
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), false);
+  util::SetDeveloperModeForProfile(profile(), false);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_with_api_permission"))
       << message_;
@@ -603,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(
   // With kDeveloperModeRestriction enabled, developer mode-only APIs
   // should be available if the user is in developer mode.
   SetCustomArg("in_developer_mode");
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), true);
+  util::SetDeveloperModeForProfile(profile(), true);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_with_api_permission"))
       << message_;
@@ -612,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DeveloperModeOnlyWithoutAPIPermissionUserIsNotInDeveloperMode) {
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), false);
+  util::SetDeveloperModeForProfile(profile(), false);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_without_api_permission"))
       << message_;
@@ -621,10 +680,167 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     NativeBindingsRestrictedToDeveloperModeApiTest,
     DeveloperModeOnlyWithoutAPIPermissionUserIsInDeveloperMode) {
-  SetCurrentDeveloperMode(util::GetBrowserContextId(profile()), true);
+  util::SetDeveloperModeForProfile(profile(), true);
   ASSERT_TRUE(RunExtensionTest(
       "native_bindings/developer_mode_only_without_api_permission"))
       << message_;
+}
+
+// Tests that changing the developer mode setting affects existing renderers
+// for page-based contexts (i.e., the main renderer thread).
+IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
+                       SwitchingDeveloperModeAffectsExistingRenderers_Pages) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["userScripts"]
+         })";
+  static constexpr char kPageHtml[] =
+      R"(<!doctype html>
+         <html>
+           <script src="page.js"></script>
+         </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kCheckApiAvailability);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// blank");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  const GURL extension_url = extension->GetResourceURL("page.html");
+
+  // Navigate to the extension page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), extension_url));
+  content::WebContents* existing_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(extension_url, existing_tab->GetLastCommittedURL());
+
+  ScriptResultQueue result_queue;
+
+  // By default, the API is unavailable.
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Next, set the user in developer mode. Now the API should be available.
+  util::SetDeveloperModeForProfile(profile(), true);
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Toggle back to not in developer mode. The API should be unavailable again.
+  util::SetDeveloperModeForProfile(profile(), false);
+  ASSERT_TRUE(content::ExecJs(existing_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+}
+
+// Tests that incognito windows use the developer mode setting from the
+// original, on-the-record profile (since incognito windows can't separately
+// set developer mode).
+IN_PROC_BROWSER_TEST_F(NativeBindingsRestrictedToDeveloperModeApiTest,
+                       IncognitoRenderersUseOriginalProfilesDevModeSetting) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "incognito": "split",
+           "permissions": ["userScripts"]
+         })";
+  static constexpr char kPageHtml[] =
+      R"(<!doctype html>
+         <html>
+           <script src="page.js"></script>
+         </html>)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), kPageHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), kCheckApiAvailability);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// blank");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+
+  const GURL extension_url = extension->GetResourceURL("page.html");
+
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), extension_url);
+  content::WebContents* incognito_tab =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(incognito_tab);
+
+  ScriptResultQueue result_queue;
+
+  // By default, the API is unavailable.
+  ASSERT_TRUE(content::ExecJs(incognito_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Next, set the user in developer mode. Now the API should be available.
+  util::SetDeveloperModeForProfile(profile(), true);
+  ASSERT_TRUE(content::ExecJs(incognito_tab, "verifyApiIsAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+
+  // Toggle back to not in developer mode. The API should be unavailable again.
+  util::SetDeveloperModeForProfile(profile(), false);
+  ASSERT_TRUE(content::ExecJs(incognito_tab, "verifyApiIsNotAvailable();"));
+  EXPECT_EQ("success", result_queue.GetNextResult());
+}
+
+// Tests that changing the developer mode setting affects existing renderers
+// for service worker contexts (which run off the main thread in the renderer).
+IN_PROC_BROWSER_TEST_F(
+    NativeBindingsRestrictedToDeveloperModeApiTest,
+    SwitchingDeveloperModeAffectsExistingRenderers_ServiceWorkers) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "permissions": ["userScripts"],
+           "background": {"service_worker": "background.js"}
+         })";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kCheckApiAvailability);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script.js"), "// blank");
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto call_in_service_worker = [this, extension](const std::string& script) {
+    return BackgroundScriptExecutor::ExecuteScript(
+        profile(), extension->id(), script,
+        BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  };
+
+  auto renderer_round_trip = [this, extension]() {
+    EXPECT_EQ("success",
+              BackgroundScriptExecutor::ExecuteScript(
+                  profile(), extension->id(),
+                  "chrome.test.sendScriptResult('success');",
+                  BackgroundScriptExecutor::ResultCapture::kSendScriptResult));
+  };
+
+  // By default, the API is unavailable.
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsNotAvailable();"));
+
+  // Next, set the user in developer mode. Now the API should be available.
+  util::SetDeveloperModeForProfile(profile(), true);
+  // We need to give the renderer time to do a few thread hops since there are
+  // multiple IPC channels at play (unlike the test above). Do a round-trip to
+  // the renderer to allow it to process.
+  renderer_round_trip();
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsAvailable();"));
+
+  // Toggle back to not in developer mode. The API should be unavailable again.
+  util::SetDeveloperModeForProfile(profile(), false);
+  renderer_round_trip();
+  EXPECT_EQ("success", call_in_service_worker("verifyApiIsNotAvailable();"));
 }
 
 }  // namespace extensions

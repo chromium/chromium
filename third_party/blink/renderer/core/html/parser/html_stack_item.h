@@ -303,11 +303,11 @@ class HTMLStackItem final : public GarbageCollected<HTMLStackItem> {
     return false;
   }
 
-  HTMLStackItem* NextItemInStack() { return next_item_in_stack_; }
+  HTMLStackItem* NextItemInStack() { return next_item_in_stack_.Get(); }
 
   bool IsAboveItemInStack(const HTMLStackItem* item) const {
     DCHECK(item);
-    HTMLStackItem* below = next_item_in_stack_;
+    HTMLStackItem* below = next_item_in_stack_.Get();
     while (below) {
       if (below == item) {
         return true;

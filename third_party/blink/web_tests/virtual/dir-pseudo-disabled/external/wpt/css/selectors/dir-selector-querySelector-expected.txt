@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+[FAIL] :dir() allows any ident value but strings other than ltr/rtl don't match
+  Failed to execute 'querySelector' on 'Document': ':dir(lol)' is not a valid selector.
+[PASS] :dir() requires exactly an ident argument
+[FAIL] :dir() works in compound selectors
+  Failed to execute 'querySelector' on 'Document': ':dir(rtl)' is not a valid selector.
+[FAIL] :dir() works in complex selectors
+  Failed to execute 'querySelector' on 'Document': '#div2 :dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+

@@ -7,7 +7,7 @@
  * SWA.
  */
 
-import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
+import {emptyState, PersonalizationState, setAmbientProviderForTesting, setKeyboardBacklightProviderForTesting, setSeaPenProviderForTesting, setThemeProviderForTesting, setUserProviderForTesting, setWallpaperProviderForTesting} from 'chrome://personalization/js/personalization_app.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,6 +15,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestAmbientProvider} from './test_ambient_interface_provider.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestUserProvider} from './test_user_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
@@ -60,12 +61,15 @@ export function baseSetup(initialState: PersonalizationState = emptyState()) {
   setThemeProviderForTesting(themeProvider);
   const userProvider = new TestUserProvider();
   setUserProviderForTesting(userProvider);
+  const seaPenProvider = new TestSeaPenProvider();
+  setSeaPenProviderForTesting(seaPenProvider);
   const personalizationStore = new TestPersonalizationStore(initialState);
   personalizationStore.replaceSingleton();
   document.body.innerHTML = window.trustedTypes!.emptyHTML;
   return {
     ambientProvider,
     keyboardBacklightProvider,
+    seaPenProvider,
     themeProvider,
     userProvider,
     wallpaperProvider,

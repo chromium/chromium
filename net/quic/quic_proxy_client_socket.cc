@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/values.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_log_util.h"
@@ -25,7 +26,8 @@ namespace net {
 QuicProxyClientSocket::QuicProxyClientSocket(
     std::unique_ptr<QuicChromiumClientStream::Handle> stream,
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t proxy_chain_index,
     const std::string& user_agent,
     const HostPortPair& endpoint,
     const NetLogWithSource& net_log,
@@ -35,7 +37,8 @@ QuicProxyClientSocket::QuicProxyClientSocket(
       session_(std::move(session)),
       endpoint_(endpoint),
       auth_(std::move(auth_controller)),
-      proxy_server_(proxy_server),
+      proxy_chain_(proxy_chain),
+      proxy_chain_index_(proxy_chain_index),
       proxy_delegate_(proxy_delegate),
       user_agent_(user_agent),
       net_log_(net_log) {
@@ -344,8 +347,8 @@ int QuicProxyClientSocket::DoSendRequest() {
 
   if (proxy_delegate_) {
     HttpRequestHeaders proxy_delegate_headers;
-    proxy_delegate_->OnBeforeTunnelRequest(proxy_server_,
-                                           &proxy_delegate_headers);
+    proxy_delegate_->OnBeforeTunnelRequestServerOnly(
+        proxy_chain_, proxy_chain_index_, &proxy_delegate_headers);
     request_.extra_headers.MergeFrom(proxy_delegate_headers);
   }
 
@@ -407,8 +410,8 @@ int QuicProxyClientSocket::DoReadReplyComplete(int result) {
       response_.headers.get());
 
   if (proxy_delegate_) {
-    int rv = proxy_delegate_->OnTunnelHeadersReceived(proxy_server_,
-                                                      *response_.headers);
+    int rv = proxy_delegate_->OnTunnelHeadersReceivedServerOnly(
+        proxy_chain_, proxy_chain_index_, *response_.headers);
     if (rv != OK) {
       DCHECK_NE(ERR_IO_PENDING, rv);
       return rv;

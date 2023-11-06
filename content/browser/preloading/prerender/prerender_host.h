@@ -38,6 +38,7 @@ class PrerenderCancellationReason;
 class PrerenderHostRegistry;
 class RenderFrameHostImpl;
 class WebContentsImpl;
+struct PrerenderMismatchedHeaders;
 
 // Prerender2:
 // PrerenderHost creates a new FrameTree in WebContents associated with the page
@@ -181,12 +182,13 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // This must be called after this host gets ready for activation.
   std::unique_ptr<StoredPage> Activate(NavigationRequest& navigation_request);
 
-  // Returns true if the navigation params that were used in the initial
-  // prerender navigation (i.e., in StartPrerendering()) match the navigation
-  // params in `navigation_request`. This function can be used to determine
-  // whether `navigation_request` may be eligible to activate this
-  // PrerenderHost.
-  bool AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+  // Returns PrerenderMismatchedHeaders if the navigation
+  // params that were used in the initial prerender navigation (i.e., in
+  // StartPrerendering()) do not match the navigation params in
+  // `navigation_request`. This function can be used to determine whether
+  // `navigation_request` may be eligible to activate this PrerenderHost.
+  std::unique_ptr<PrerenderMismatchedHeaders>
+  CheckInitialPrerenderNavigationParamsCompatibleWithNavigation(
       NavigationRequest& navigation_request);
 
   bool IsFramePolicyCompatibleWithPrimaryFrameTree();

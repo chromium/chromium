@@ -49,22 +49,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Unit tests for the {@link ChromeActionModeHandler}.
- */
+/** Unit tests for the {@link ChromeActionModeHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeActionModeHandlerUnitTest {
-    @Mock
-    private Tab mTab;
-    @Mock
-    private ActionModeCallbackHelper mActionModeCallbackHelper;
-    @Mock
-    private ActionMode mActionMode;
-    @Mock
-    private Menu mMenu;
-    @Mock
-    private ShareDelegate mShareDelegate;
+    @Mock private Tab mTab;
+    @Mock private ActionModeCallbackHelper mActionModeCallbackHelper;
+    @Mock private ActionMode mActionMode;
+    @Mock private Menu mMenu;
+    @Mock private ShareDelegate mShareDelegate;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
@@ -100,8 +93,9 @@ public class ChromeActionModeHandlerUnitTest {
         mActionModeCallback.onCreateActionMode(mActionMode, mMenu);
 
         Mockito.verify(mActionModeCallbackHelper)
-                .setAllowedMenuItems(ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
-                        | ActionModeCallbackHelper.MENU_ITEM_SHARE);
+                .setAllowedMenuItems(
+                        ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
+                                | ActionModeCallbackHelper.MENU_ITEM_SHARE);
     }
 
     @Test
@@ -111,9 +105,10 @@ public class ChromeActionModeHandlerUnitTest {
         mActionModeCallback.onCreateActionMode(mActionMode, mMenu);
 
         Mockito.verify(mActionModeCallbackHelper)
-                .setAllowedMenuItems(ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
-                        | ActionModeCallbackHelper.MENU_ITEM_SHARE
-                        | ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
+                .setAllowedMenuItems(
+                        ActionModeCallbackHelper.MENU_ITEM_PROCESS_TEXT
+                                | ActionModeCallbackHelper.MENU_ITEM_SHARE
+                                | ActionModeCallbackHelper.MENU_ITEM_WEB_SEARCH);
     }
 
     @Test
@@ -123,13 +118,15 @@ public class ChromeActionModeHandlerUnitTest {
         Mockito.when(mActionModeCallbackHelper.isActionModeValid()).thenReturn(true);
         Mockito.when(mActionModeCallbackHelper.getSelectedText()).thenReturn("OhHai");
 
-        LocaleManagerDelegate delegate = Mockito.spy(new LocaleManagerDelegate() {
-            @Override
-            public void showSearchEnginePromoIfNeeded(
-                    Activity activity, Callback<Boolean> onSearchEngineFinalized) {
-                onSearchEngineFinalized.onResult(true);
-            }
-        });
+        LocaleManagerDelegate delegate =
+                Mockito.spy(
+                        new LocaleManagerDelegate() {
+                            @Override
+                            public void showSearchEnginePromoIfNeeded(
+                                    Activity activity, Callback<Boolean> onSearchEngineFinalized) {
+                                onSearchEngineFinalized.onResult(true);
+                            }
+                        });
 
         LocaleManager.getInstance().setDelegateForTest(delegate);
 
@@ -185,7 +182,8 @@ public class ChromeActionModeHandlerUnitTest {
             String packageName = item.getIntent().getComponent().getPackageName();
             if (browserPackageNames.contains(packageName)
                     || launcherPackageNames.contains(packageName)) {
-                Assert.assertFalse("Browser or home launcher application should be filtered out",
+                Assert.assertFalse(
+                        "Browser or home launcher application should be filtered out",
                         item.isVisible());
             } else {
                 Assert.assertTrue(
@@ -228,10 +226,11 @@ public class ChromeActionModeHandlerUnitTest {
 
     private void addMenuItem(Menu menu, int order, String packageName) {
         menu.add(R.id.select_action_menu_text_processing_items, Menu.NONE, order, "title")
-                .setIntent(new Intent()
-                                   .setAction(Intent.ACTION_PROCESS_TEXT)
-                                   .setType("text/plain")
-                                   .putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true)
-                                   .setClassName(packageName, "foo"));
+                .setIntent(
+                        new Intent()
+                                .setAction(Intent.ACTION_PROCESS_TEXT)
+                                .setType("text/plain")
+                                .putExtra(Intent.EXTRA_PROCESS_TEXT_READONLY, true)
+                                .setClassName(packageName, "foo"));
     }
 }

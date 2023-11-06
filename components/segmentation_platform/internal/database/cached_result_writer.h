@@ -25,8 +25,7 @@ class ClientResultPrefs;
 // results for the  client after model execution inorder to update it in prefs.
 class CachedResultWriter {
  public:
-  CachedResultWriter(std::unique_ptr<ClientResultPrefs> prefs,
-                     base::Clock* clock);
+  CachedResultWriter(ClientResultPrefs* prefs, base::Clock* clock);
 
   ~CachedResultWriter();
 
@@ -35,8 +34,9 @@ class CachedResultWriter {
   CachedResultWriter& operator=(CachedResultWriter&) = delete;
 
   // Updates the prefs only if the previous result in the pref is expired or
-  // unavailable or `force_refresh_results` is set as true.
-  void UpdatePrefsIfExpired(const Config* config,
+  // unavailable or `force_refresh_results` is set as true. Returns true if
+  // prefs was updated.
+  bool UpdatePrefsIfExpired(const Config* config,
                             const proto::ClientResult& client_result,
                             const PlatformOptions& platform_options);
 
@@ -66,7 +66,7 @@ class CachedResultWriter {
                                     const proto::ClientResult& client_result);
 
   // Helper class to read/write results to the prefs.
-  std::unique_ptr<ClientResultPrefs> result_prefs_;
+  const raw_ptr<ClientResultPrefs> result_prefs_;
 
   // The time provider.
   const raw_ptr<base::Clock> clock_;

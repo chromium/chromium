@@ -28,7 +28,6 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -38,7 +37,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -50,7 +48,6 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/security_state/core/security_state.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/user_prefs/user_prefs.h"
@@ -78,6 +75,7 @@
 #include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/webauthn/chrome_authenticator_request_delegate_mac.h"
 #include "device/fido/mac/authenticator.h"
 #include "device/fido/mac/credential_metadata.h"
 #endif
@@ -223,8 +221,6 @@ class CableLinkingEventHandler : public ProfileObserver {
 
 ChromeWebAuthenticationDelegate::~ChromeWebAuthenticationDelegate() = default;
 
-#if !BUILDFLAG(IS_ANDROID)
-
 bool ChromeWebAuthenticationDelegate::
     OverrideCallerOriginAndRelyingPartyIdValidation(
         content::BrowserContext* browser_context,
@@ -283,34 +279,6 @@ bool ChromeWebAuthenticationDelegate::OriginMayUseRemoteDesktopClientOverride(
       GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           webauthn::switches::kRemoteProxiedRequestsAllowedAdditionalOrigin)));
   return caller_origin == cmdline_allowed_origin;
-}
-
-bool ChromeWebAuthenticationDelegate::IsSecurityLevelAcceptableForWebAuthn(
-    content::RenderFrameHost* rfh,
-    const url::Origin& caller_origin) {
-  const Profile* profile =
-      Profile::FromBrowserContext(rfh->GetBrowserContext());
-  if (profile->GetPrefs()->GetBoolean(
-          webauthn::pref_names::kAllowWithBrokenCerts)) {
-    return true;
-  }
-  if (caller_origin.scheme() == extensions::kExtensionScheme) {
-    return true;
-  }
-  if (net::IsLocalhost(caller_origin.GetURL())) {
-    return true;
-  }
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  SecurityStateTabHelper::CreateForWebContents(web_contents);
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  security_state::SecurityLevel security_level = helper->GetSecurityLevel();
-  return security_level == security_state::SecurityLevel::SECURE ||
-         security_level ==
-             security_state::SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kIgnoreCertificateErrors);
 }
 
 absl::optional<std::string>
@@ -385,8 +353,6 @@ ChromeWebAuthenticationDelegate::MaybeGetRequestProxy(
       Profile::FromBrowserContext(browser_context));
   return service && service->IsActive(caller_origin) ? service : nullptr;
 }
-
-#endif  // !IS_ANDROID
 
 #if BUILDFLAG(IS_MAC)
 // static
@@ -773,6 +739,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     discovery_factory->set_cable_event_callback(
         base::BindRepeating(&ChromeAuthenticatorRequestDelegate::OnCableEvent,
                             weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  if (non_extension_cablev2_enabled || cablev2_extension_provided ||
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
     if (SystemNetworkContextManager::GetInstance()) {
       discovery_factory->set_network_context(
           SystemNetworkContextManager::GetInstance()->GetContext());
@@ -811,12 +781,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator) &&
+  if (EnclaveAuthenticatorAvailable() &&
       request_type == device::FidoRequestType::kGetAssertion) {
     ConfigureEnclaveDiscovery(rp_id, discovery_factory);
   }
-#endif
 
   dialog_model_->set_is_non_webauthn_request(request_source !=
                                              RequestSource::kWebAuthentication);
@@ -903,7 +871,8 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
       base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      !IsVirtualEnvironmentEnabled() && can_use_synced_phone_passkeys_) {
+      (can_use_synced_phone_passkeys_ || EnclaveAuthenticatorAvailable()) &&
+      !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);
   }
   if (!credential_filter_.empty()) {
@@ -1120,17 +1089,18 @@ void ChromeAuthenticatorRequestDelegate::OnCableEvent(
 
 void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
     std::vector<device::DiscoverableCredentialMetadata>* passkeys) {
-  // TODO(crbug.com/1456847): Introduce
-  // PasskeyModel::GetPasskeysForRelyingPartyId() and move this logic there.
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(GetBrowserContext()));
   CHECK(passkey_model);
+  device::AuthenticatorType type = EnclaveAuthenticatorAvailable()
+                                       ? device::AuthenticatorType::kEnclave
+                                       : device::AuthenticatorType::kPhone;
   for (const sync_pb::WebauthnCredentialSpecifics& passkey :
        passkey_model->GetPasskeysForRelyingPartyId(
            dialog_model_->relying_party_id())) {
     passkeys->emplace_back(
-        device::AuthenticatorType::kPhone, passkey.rp_id(),
+        type, passkey.rp_id(),
         std::vector<uint8_t>(passkey.credential_id().begin(),
                              passkey.credential_id().end()),
         device::PublicKeyCredentialUserEntity(
@@ -1140,7 +1110,6 @@ void ChromeAuthenticatorRequestDelegate::GetPhoneContactableGpmPasskeysForRpId(
   }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
     const std::string& rp_id,
     device::FidoDiscoveryFactory* discovery_factory) {
@@ -1153,7 +1122,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureEnclaveDiscovery(
       passkey_model->GetPasskeysForRelyingPartyId(rp_id);
   discovery_factory->SetEnclavePasskeys(std::move(passkeys));
 }
+
+bool ChromeAuthenticatorRequestDelegate::EnclaveAuthenticatorAvailable() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // Enclave service authenticators are not needed for Chrome OS.
+  return false;
+#else
+  // TODO(https://crbug.com/1459620): This also has to be conditional on device
+  // registration with the enclave, when implemented.
+  return base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
 #endif
+}
 
 #if BUILDFLAG(IS_MAC)
 // static

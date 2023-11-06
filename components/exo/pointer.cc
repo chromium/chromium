@@ -457,11 +457,9 @@ void Pointer::OnSurfaceDestroying(Surface* surface) {
 void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   if (seat_->was_shutdown() || event->handled())
     return;
-
-  WMHelper* helper = WMHelper::GetInstance();
-  auto* drag_drop_client = helper->GetDragDropClient();
-  if (!static_cast<ash::DragDropController*>(drag_drop_client)
-           ->IsDragDropCompleted()) {
+  // Ask seat instead of ash's DragDropController because it ends
+  // asynchronously.
+  if (seat_->IsDragDropOperationInProgress()) {
     return;
   }
 
@@ -644,13 +642,13 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
                             kForceGranularity)) {
       last_force_ = details.force;
       stylus_delegate_->OnPointerForce(event->time_stamp(), details.force);
-      needs_frame = true;
+      needs_frame |= true;
     }
     if (abs(last_tilt_.x() - details.tilt_x) >= kTiltGranularity ||
         abs(last_tilt_.y() - details.tilt_y) >= kTiltGranularity) {
       last_tilt_ = gfx::Vector2dF(details.tilt_x, details.tilt_y);
       stylus_delegate_->OnPointerTilt(event->time_stamp(), last_tilt_);
-      needs_frame = true;
+      needs_frame |= true;
     }
   }
 

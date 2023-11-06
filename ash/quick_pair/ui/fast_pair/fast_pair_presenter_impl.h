@@ -14,6 +14,7 @@
 #include "ash/quick_pair/ui/fast_pair/fast_pair_presenter.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace message_center {
@@ -132,6 +133,23 @@ class FastPairPresenterImpl : public FastPairPresenter {
                                              CompanionAppCallback callback,
                                              DeviceMetadata* device_metadata,
                                              bool has_retryable_error);
+
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast A timer used to delay displaying the Fast Pair companion app
+  // notification until the Bluetooth device-connected toast is almost or
+  // already auto-dismissed. Only one Fast Pair companion notification is
+  // supported at a time. If a new device with companion app is paired before
+  // the previous notification shows, only the new device's companion
+  // notification will be shown.
+  base::OneShotTimer toast_collision_avoidance_timer_;
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast
+  void ShowInstallCompanionAppDelayed(scoped_refptr<Device> device,
+                                      CompanionAppCallback callback);
+  // TODO(b/274973687): remove once notification replaces Bluetooth connect
+  // toast
+  void ShowLaunchCompanionAppDelayed(scoped_refptr<Device> device,
+                                     CompanionAppCallback callback);
 
   std::unique_ptr<FastPairNotificationController> notification_controller_;
   base::WeakPtrFactory<FastPairPresenterImpl> weak_pointer_factory_{this};

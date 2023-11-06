@@ -188,7 +188,9 @@ int GetFieldTypeGroupPredictionQualityMetric(
         case ADDRESS_HOME_LINE3:
           group = GROUP_ADDRESS_LINE_3;
           break;
+        case ADDRESS_HOME_APT:
         case ADDRESS_HOME_APT_NUM:
+        case ADDRESS_HOME_APT_TYPE:
           group = GROUP_ADDRESS_HOME_APT_NUM;
           break;
         case ADDRESS_HOME_STREET_ADDRESS:
@@ -494,7 +496,7 @@ ServerFieldType GetActualFieldType(const ServerFieldTypeSet& possible_types,
   if (collapsed_field_types.size() == 1)
     actual_type = *collapsed_field_types.begin();
 
-  DVLOG(2) << "Inferred Type: " << FieldTypeToStringPiece(actual_type);
+  DVLOG(2) << "Inferred Type: " << FieldTypeToStringView(actual_type);
   return actual_type;
 }
 
@@ -700,8 +702,8 @@ void LogPredictionQualityMetrics(
   ServerFieldType actual_type =
       GetActualFieldType(possible_types, predicted_type);
 
-  DVLOG(2) << "Predicted: " << FieldTypeToStringPiece(predicted_type) << "; "
-           << "Actual: " << FieldTypeToStringPiece(actual_type);
+  DVLOG(2) << "Predicted: " << FieldTypeToStringView(predicted_type) << "; "
+           << "Actual: " << FieldTypeToStringView(actual_type);
 
   DCHECK_LE(predicted_type, UINT16_MAX);
   DCHECK_LE(actual_type, UINT16_MAX);
@@ -2052,14 +2054,6 @@ void AutofillMetrics::LogIsQueriedCreditCardFormSecure(bool is_secure) {
 }
 
 // static
-void AutofillMetrics::LogWalletAddressConversionType(
-    WalletAddressConversionType type) {
-  DCHECK_LT(type, NUM_CONVERTED_ADDRESS_CONVERSION_TYPES);
-  UMA_HISTOGRAM_ENUMERATION("Autofill.WalletAddressConversionType", type,
-                            NUM_CONVERTED_ADDRESS_CONVERSION_TYPES);
-}
-
-// static
 void AutofillMetrics::LogShowedHttpNotSecureExplanation() {
   base::RecordAction(
       base::UserMetricsAction("Autofill_ShowedHttpNotSecureExplanation"));
@@ -2538,6 +2532,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
           AutofillMetrics::FieldGlobalIdToHash64Bit(field.global_id()))
       .SetFieldSignature(HashFieldSignature(field.GetFieldSignature()))
       .SetFormControlType(base::to_underlying(field.FormControlType()))
+      .SetFormControlType2(base::to_underlying(field.form_control_type))
       .SetAutocompleteState(base::to_underlying(autocomplete_state));
 
   SetStatusVector(AutofillStatus::kIsFocusable, field.IsFocusable());

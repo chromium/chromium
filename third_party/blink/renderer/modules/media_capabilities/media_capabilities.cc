@@ -699,10 +699,37 @@ bool IsVideoConfigurationSupported(const String& mime_type,
   bool is_video_codec_ambiguous = true;
 
   // Must succeed as IsVideoCodecValid() should have been called before.
+  media::VideoColorSpace color_space_from_codec_string;
   bool parsed = media::ParseVideoCodecString(
       mime_type.Ascii(), codec.Ascii(), &is_video_codec_ambiguous, &video_codec,
-      &video_profile, &video_level, &video_color_space);
+      &video_profile, &video_level, &color_space_from_codec_string);
   DCHECK(parsed && !is_video_codec_ambiguous);
+
+  // ParseVideoCodecString will fill in a default of REC709 for every codec, but
+  // only some codecs actually have color space information that we can use
+  // to validate against provided colorGamut and transferFunction fields.
+  const bool codec_string_has_non_default_color_space =
+      color_space_from_codec_string.IsSpecified() &&
+      (video_codec == media::VideoCodec::kVP9 ||
+       video_codec == media::VideoCodec::kAV1);
+
+  if (video_color_space.IsSpecified() &&
+      codec_string_has_non_default_color_space) {
+    // Per spec, report unsupported if color space information is mismatched.
+    if (video_color_space.transfer != color_space_from_codec_string.transfer ||
+        video_color_space.primaries !=
+            color_space_from_codec_string.primaries) {
+      DLOG(ERROR) << "Mismatched color spaces between config and codec string.";
+      return false;
+    }
+    // Prefer color space from codec string since it'll be more specified.
+    video_color_space = color_space_from_codec_string;
+  } else if (video_color_space.IsSpecified()) {
+    // Prefer color space from the config.
+  } else {
+    // There's no color space in the config and only a default one from codec.
+    video_color_space = color_space_from_codec_string;
+  }
 
   return media::IsSupportedVideoType({video_codec, video_profile, video_level,
                                       video_color_space, hdr_metadata_type});
@@ -952,7 +979,13 @@ ScriptPromise MediaCapabilities::decodingInfo(
   // Validation errors should return above.
   DCHECK(message.empty());
 
+  // Fill in values for range, matrix since `VideoConfiguration` doesn't have
+  // such concepts; these aren't used, but ensure VideoColorSpace.IsSpecified()
+  // works as expected downstream.
   media::VideoColorSpace video_color_space;
+  video_color_space.range = gfx::ColorSpace::RangeID::DERIVED;
+  video_color_space.matrix = media::VideoColorSpace::MatrixID::BT709;
+
   gfx::HdrMetadataType hdr_metadata_type = gfx::HdrMetadataType::kNone;
   if (config->hasVideo()) {
     ParseDynamicRangeConfigurations(config->video(), &video_color_space,

@@ -96,6 +96,10 @@ class VideoConferenceAshFeatureClient;
 class WebKioskAppManager;
 class KioskAppManager;
 
+namespace carrier_lock {
+class CarrierLockManager;
+}
+
 namespace cros_healthd::internal {
 class DataCollector;
 }
@@ -106,10 +110,6 @@ class ReportController;
 
 namespace internal {
 class DBusServices;
-}
-
-namespace input_method {
-class EditorMediator;
 }
 
 namespace mojo_service_manager {
@@ -201,6 +201,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<ShutdownPolicyForwarder> shutdown_policy_forwarder_;
 
   std::unique_ptr<EventRewriterDelegateImpl> event_rewriter_delegate_;
+
+  std::unique_ptr<carrier_lock::CarrierLockManager> carrier_lock_manager_;
 
   // Handles event dispatch to the accessibility component extensions.
   std::unique_ptr<AccessibilityEventRewriterDelegateImpl>
@@ -315,8 +317,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
-
-  std::unique_ptr<input_method::EditorMediator> editor_mediator_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };

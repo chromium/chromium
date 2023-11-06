@@ -23,6 +23,9 @@ from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session_manager as sgsm
 from skia_gold_common.skia_gold_session import SkiaGoldSession
 
+from chrome.test.variations.fixtures.result_sink import AddTag
+from chrome.test.variations.fixtures.test_options import TestOptions
+
 _CORPUS ='finch-smoke-tests'
 
 @functools.lru_cache
@@ -53,6 +56,7 @@ class VariationsSkiaGoldUtil:
   test_name: str = attr.attrib()
   use_luci: bool = attr.attrib()
   request: pytest.FixtureRequest = attr.attrib()
+  add_tag: AddTag = attr.attrib()
 
   def _png_file_for_name(self, name: str) -> str:
     """Returns a file name that should be used for diff comparison."""
@@ -114,15 +118,16 @@ class VariationsSkiaGoldUtil:
     # Screenshots for variations are in chrome-gold.skia.org
     triage_link = self.skia_gold_session.GetTriageLinks(image_name)[1]
     if triage_link:
-      self.request.node.user_properties.append(
-        ('tag', (f'skiagold_link/{name}', triage_link)))
+      self.add_tag(f'skiagold_link/{name}', triage_link)
 
     return status, f'{error_msg} \n{triage_link}'
 
 @pytest.fixture
 def skia_gold_util(
   request: pytest.FixtureRequest,
-  tmp_path_factory: pytest.TempPathFactory
+  tmp_path_factory: pytest.TempPathFactory,
+  test_options: TestOptions,
+  add_tag: AddTag
   ) -> VariationsSkiaGoldUtil:
   """Returns VariationsSkiaGoldUtil to help compare gold images."""
 
@@ -141,8 +146,8 @@ def skia_gold_util(
 
   config = request.config
   session = skia_gold_session_manager.GetSkiaGoldSession({
-    'platform': config.getoption('target_platform'),
-    'channel': config.getoption('channel'),
+    'platform': test_options.platform,
+    'channel': test_options.channel,
   }, _CORPUS)
 
   test_file = os.path.relpath(request.module.__file__, SRC_DIR)
@@ -152,6 +157,7 @@ def skia_gold_util(
       request=request,
       img_dir=skia_img_dir,
       skia_gold_session=session,
+      add_tag=add_tag,
       test_name=f'{test_file}:{request.node.name}',
       use_luci=(not skia_gold_properties.local_pixel_tests))
     yield util

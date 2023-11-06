@@ -14,6 +14,7 @@ namespace blink {
 class QualifiedName;
 
 namespace style_change_reason {
+extern const char kAccessibility[];
 extern const char kActiveStylesheetsUpdate[];
 extern const char kAnimation[];
 extern const char kAttribute[];
@@ -59,6 +60,7 @@ typedef const char StyleChangeReasonString[];
 
 namespace style_change_extra_data {
 extern const AtomicString& g_active;
+extern const AtomicString& g_active_view_transition;
 extern const AtomicString& g_disabled;
 extern const AtomicString& g_drag;
 extern const AtomicString& g_focus;
@@ -66,7 +68,6 @@ extern const AtomicString& g_focus_visible;
 extern const AtomicString& g_focus_within;
 extern const AtomicString& g_hover;
 extern const AtomicString& g_past;
-extern const AtomicString& g_toggle;
 extern const AtomicString& g_unresolved;
 
 void Init();

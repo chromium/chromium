@@ -60,11 +60,11 @@ XRViewport* XRView::Viewport(double framebuffer_scale) {
         viewport.height() * scale);
   }
 
-  return viewport_;
+  return viewport_.Get();
 }
 
 XRFrame* XRView::frame() const {
-  return frame_;
+  return frame_.Get();
 }
 
 XRSession* XRView::session() const {
@@ -79,7 +79,7 @@ DOMFloat32Array* XRView::projectionMatrix() const {
     return nullptr;
   }
 
-  return projection_matrix_;
+  return projection_matrix_.Get();
 }
 
 XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
@@ -191,7 +191,7 @@ void XRViewData::SetMojoFromView(const gfx::Transform& mojo_from_view) {
 }
 
 XRRigidTransform* XRView::refSpaceFromView() const {
-  return ref_space_from_view_;
+  return ref_space_from_view_.Get();
 }
 
 absl::optional<double> XRView::recommendedViewportScale() const {

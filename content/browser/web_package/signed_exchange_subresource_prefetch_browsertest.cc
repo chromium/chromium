@@ -1103,8 +1103,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       1 /* expected_script_fetch_count */);
 }
 
-// Flaky. See https://crbug.com/1415204.
-#if BUILDFLAG(IS_MAC)
+// Flaky. See https://crbug.com/1415204 and https://crbug.com/1494880.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument \
   DISABLED_MainResourceSXGAndScriptSXG_CrossOrigin_AsDocument
 #else

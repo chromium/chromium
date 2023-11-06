@@ -892,6 +892,8 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest, PreconnectNonCors) {
   EXPECT_EQ(0u, connection_tracker()->GetReadSocketCount());
 }
 
+// TODO(crbug.com/1419756): isolate test per feature.  Currently, it has
+// test for script observer and fonts.
 class LCPCriticalPathPredictorBrowserTest : public LoadingPredictorBrowserTest {
  public:
   LCPCriticalPathPredictorBrowserTest() {

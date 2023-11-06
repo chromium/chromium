@@ -252,7 +252,7 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 
   base::Value::Dict log_entry;
 
-  double epoch_time = base::Time::Now().ToJsTime();
+  double epoch_time = base::Time::Now().InMillisecondsFSinceUnixEpoch();
   string time = base::NumberToString(epoch_time);
   log_entry.Set("time", time);
   log_entry.Set("type", type);
@@ -329,7 +329,7 @@ void WebRTCInternals::OnGetMedia(const std::string& request_type,
   dict.Set("request_id", request_id);
   dict.Set("request_type", request_type);
   dict.Set("origin", origin);
-  dict.Set("timestamp", base::Time::Now().ToJsTime());
+  dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   if (audio)
     dict.Set("audio", audio_constraints);
   if (video)
@@ -367,7 +367,7 @@ void WebRTCInternals::OnGetMediaSuccess(const std::string& request_type,
   dict.Set("pid", static_cast<int>(pid));
   dict.Set("request_id", request_id);
   dict.Set("request_type", request_type);
-  dict.Set("timestamp", base::Time::Now().ToJsTime());
+  dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   dict.Set("stream_id", stream_id);
   if (!audio_track_info.empty())
     dict.Set("audio_track_info", audio_track_info);
@@ -405,7 +405,7 @@ void WebRTCInternals::OnGetMediaFailure(const std::string& request_type,
   dict.Set("pid", static_cast<int>(pid));
   dict.Set("request_id", request_id);
   dict.Set("request_type", request_type);
-  dict.Set("timestamp", base::Time::Now().ToJsTime());
+  dict.Set("timestamp", base::Time::Now().InMillisecondsFSinceUnixEpoch());
   dict.Set("error", error);
   dict.Set("error_message", error_message);
 

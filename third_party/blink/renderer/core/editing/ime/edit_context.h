@@ -20,7 +20,7 @@ namespace blink {
 class DOMRect;
 class EditContext;
 class EditContextInit;
-class Element;
+class HTMLElement;
 class ExceptionState;
 class InputMethodController;
 
@@ -94,7 +94,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
                   ExceptionState& exception_state);
 
   // Get elements that are associated with this EditContext.
-  const HeapVector<Member<Element>>& attachedElements();
+  const HeapVector<Member<HTMLElement>>& attachedElements();
 
   // Returns the text of the EditContext.
   String text() const;
@@ -185,6 +185,9 @@ class CORE_EXPORT EditContext final : public EventTarget,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+  // Delete `before` characters preceding the current `selection_start_` and
+  // `after` characters following the current `selection_end_`.
+  void DeleteSurroundingText(int before, int after);
 
   // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
   // for the character range specified by `location` and `length`.
@@ -194,8 +197,8 @@ class CORE_EXPORT EditContext final : public EventTarget,
                                   uint32_t length,
                                   gfx::Rect& rect_in_viewport);
 
-  void AttachElement(Element* element_to_attach);
-  void DetachElement(Element* element_to_detach);
+  void AttachElement(HTMLElement* element_to_attach);
+  void DetachElement(HTMLElement* element_to_detach);
 
  private:
   InputMethodController& GetInputMethodController() const;
@@ -274,7 +277,7 @@ class CORE_EXPORT EditContext final : public EventTarget,
   uint32_t composition_range_start_ = 0;
   uint32_t composition_range_end_ = 0;
   // Elements that are associated with this EditContext.
-  HeapVector<Member<Element>> attached_elements_;
+  HeapVector<Member<HTMLElement>> attached_elements_;
 };
 
 }  // namespace blink

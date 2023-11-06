@@ -2055,9 +2055,6 @@ void WebTestControlHost::BlockThirdPartyCookies(bool block) {
       browser_context->GetDefaultStoragePartition();
   storage_partition->GetCookieManagerForBrowserProcess()
       ->BlockThirdPartyCookies(block);
-  ShellFederatedPermissionContext* federated_context =
-      browser_context->GetShellFederatedPermissionContext();
-  federated_context->SetThirdPartyCookiesBlocked(block);
 }
 
 void WebTestControlHost::BindWebTestControlHostForRenderer(

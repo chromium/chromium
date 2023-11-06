@@ -332,7 +332,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     void set_bubble_view(views::View* view) { bubble_view_ = view; }
 
     void set_allowed_class_names_for_testing(
-        const std::unordered_set<std::string>& value) {
+        const base::span<const char*>& value) {
       allowed_class_names_for_testing_ = value;
     }
 
@@ -352,8 +352,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
    private:
     absl::optional<raw_ptr<views::View>> bubble_view_;
     absl::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
-    absl::optional<std::unordered_set<std::string>>
-        allowed_class_names_for_testing_;
+    absl::optional<base::span<const char*>> allowed_class_names_for_testing_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 

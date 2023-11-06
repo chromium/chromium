@@ -24,6 +24,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/device_event_log/device_event_log.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"
 #include "extensions/browser/api/printer_provider/printer_provider_internal_api_observer.h"
 #include "extensions/browser/api/printer_provider/printer_provider_print_job.h"
@@ -31,6 +32,7 @@
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/api/printer_provider.h"
 #include "extensions/common/api/printer_provider_internal.h"
 #include "extensions/common/api/usb.h"
@@ -697,6 +699,10 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
     printer_list.Append(std::move(printer));
   }
 
+  PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
+                     << " of OnGetPrinters request=" << request_id
+                     << " completed with printers=" << printer_list;
+
   pending_get_printers_requests_.CompleteForExtension(
       extension->id(), request_id, std::move(printer_list));
 }
@@ -704,6 +710,9 @@ void PrinterProviderAPIImpl::OnGetPrintersResult(
 void PrinterProviderAPIImpl::OnGetCapabilityResult(const Extension* extension,
                                                    int request_id,
                                                    base::Value::Dict result) {
+  PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
+                     << " that OnGetCapabilility request id=" << request_id
+                     << " completed with capabilities=" << result;
   pending_capability_requests_[extension->id()].Complete(request_id,
                                                          std::move(result));
 }
@@ -712,6 +721,10 @@ void PrinterProviderAPIImpl::OnPrintResult(
     const Extension* extension,
     int request_id,
     api::printer_provider_internal::PrintError error) {
+  PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
+                     << " that OnPrint request id=" << request_id
+                     << " has completed with status="
+                     << api::printer_provider_internal::ToString(error);
   pending_print_requests_[extension->id()].Complete(request_id, error);
 }
 
@@ -722,9 +735,15 @@ void PrinterProviderAPIImpl::OnGetUsbPrinterInfoResult(
   if (result) {
     base::Value::Dict printer(result->ToValue());
     UpdatePrinterWithExtensionInfo(&printer, extension);
+    PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
+                       << " from request=" << request_id << " that "
+                       << result->name << " is a USB connected printer";
     pending_usb_printer_info_requests_[extension->id()].Complete(
         request_id, std::move(printer));
   } else {
+    PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
+                       << " from request=" << request_id
+                       << " that there are no USB connected printers";
     pending_usb_printer_info_requests_[extension->id()].Complete(
         request_id, base::Value::Dict());
   }
@@ -734,6 +753,10 @@ void PrinterProviderAPIImpl::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
+  PRINTER_LOG(DEBUG) << "Unloading Extension: Name=" << extension->name()
+                     << " Version=" << extension->VersionString()
+                     << " extensionID=" << extension->id()
+                     << " for reason=" << base::ToString(reason);
   pending_get_printers_requests_.FailAllForExtension(extension->id());
 
   auto print_it = pending_print_requests_.find(extension->id());

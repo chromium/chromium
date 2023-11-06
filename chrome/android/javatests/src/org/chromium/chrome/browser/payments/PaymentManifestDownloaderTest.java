@@ -38,29 +38,29 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private static final String EXPECTED_PAYMENT_METHOD_MANIFEST = "{\n"
-            + "  \"default_applications\": [\"https://bobpay.test/app.json\"]\n"
-            + "}\n";
+    private static final String EXPECTED_PAYMENT_METHOD_MANIFEST =
+            "{\n" + "  \"default_applications\": [\"https://bobpay.test/app.json\"]\n" + "}\n";
 
-    private static final String EXPECTED_WEB_APP_MANIFEST = "{\n"
-            + "  \"name\": \"BobPay\",\n"
-            + "  \"icons\": [{\n"
-            + "    \"src\": \"icon.png\",\n"
-            + "    \"sizes\": \"48x48\",\n"
-            + "    \"type\": \"image/png\"\n"
-            + "  }],\n"
-            + "  \"related_applications\": [{\n"
-            + "    \"platform\": \"play\",\n"
-            + "    \"id\": \"com.bobpay\",\n"
-            + "    \"min_version\": \"1\",\n"
-            + "    \"fingerprints\": [{\n"
-            + "      \"type\": \"sha256_cert\",\n"
-            + "      \"value\": \"9A:89:C6:8C:4C:5E:28:B8:C4:A5:56:76:73:D4:62:"
-            + "FF:F5:15:DB:46:11:6F:99:00:62:4D:09:C4:74:F5:93:FB\",\n"
-            + "      \"comment\": \"This fingperint is SHA256 of '01020304050607080900'\"\n"
-            + "    }]\n"
-            + "  }]\n"
-            + "}\n";
+    private static final String EXPECTED_WEB_APP_MANIFEST =
+            "{\n"
+                    + "  \"name\": \"BobPay\",\n"
+                    + "  \"icons\": [{\n"
+                    + "    \"src\": \"icon.png\",\n"
+                    + "    \"sizes\": \"48x48\",\n"
+                    + "    \"type\": \"image/png\"\n"
+                    + "  }],\n"
+                    + "  \"related_applications\": [{\n"
+                    + "    \"platform\": \"play\",\n"
+                    + "    \"id\": \"com.bobpay\",\n"
+                    + "    \"min_version\": \"1\",\n"
+                    + "    \"fingerprints\": [{\n"
+                    + "      \"type\": \"sha256_cert\",\n"
+                    + "      \"value\": \"9A:89:C6:8C:4C:5E:28:B8:C4:A5:56:76:73:D4:62:"
+                    + "FF:F5:15:DB:46:11:6F:99:00:62:4D:09:C4:74:F5:93:FB\",\n"
+                    + "      \"comment\": \"This fingperint is SHA256 of '01020304050607080900'\"\n"
+                    + "    }]\n"
+                    + "  }]\n"
+                    + "}\n";
 
     private final PaymentManifestDownloader mDownloader = new PaymentManifestDownloader();
     private Origin mTestOrigin;
@@ -98,19 +98,26 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Before
     public void setUp() throws Throwable {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
-        mActivityTestRule.runOnUiThread((Runnable) () -> {
-            mDownloader.initialize(
-                    mActivityTestRule.getActivity().getCurrentWebContents(), new CSPChecker() {
-                        @Override
-                        public void allowConnectToSource(GURL url, GURL urlBeforeRedirects,
-                                boolean didFollowRedirect, Callback<Boolean> resultCallback) {
-                            resultCallback.onResult(/*allow=*/true);
-                        }
-                    });
-            mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();
-        });
+        mServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
+        mActivityTestRule.runOnUiThread(
+                (Runnable)
+                        () -> {
+                            mDownloader.initialize(
+                                    mActivityTestRule.getActivity().getCurrentWebContents(),
+                                    new CSPChecker() {
+                                        @Override
+                                        public void allowConnectToSource(
+                                                GURL url,
+                                                GURL urlBeforeRedirects,
+                                                boolean didFollowRedirect,
+                                                Callback<Boolean> resultCallback) {
+                                            resultCallback.onResult(/* allow= */ true);
+                                        }
+                                    });
+                            mTestOrigin = PaymentManifestDownloader.createOpaqueOriginForTest();
+                        });
         mDownloadComplete = false;
         mDownloadPaymentMethodManifestSuccess = false;
         mDownloadWebAppManifestSuccess = false;
@@ -130,9 +137,11 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     public void testDownloadWebAppManifest() throws Throwable {
         final GURL url =
                 new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/app.json"));
-        mActivityTestRule.runOnUiThread((Runnable) ()
-                                                -> mDownloader.downloadWebAppManifest(mTestOrigin,
-                                                        url, PaymentManifestDownloaderTest.this));
+        mActivityTestRule.runOnUiThread(
+                (Runnable)
+                        () ->
+                                mDownloader.downloadWebAppManifest(
+                                        mTestOrigin, url, PaymentManifestDownloaderTest.this));
         CriteriaHelper.pollInstrumentationThread(() -> mDownloadComplete);
 
         Assert.assertTrue(
@@ -144,13 +153,17 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     @Feature({"Payments"})
     public void testUnableToDownloadWebAppManifest() throws Throwable {
         final GURL url = new GURL(mServer.getURL("/no-such-app.json"));
-        mActivityTestRule.runOnUiThread((Runnable) ()
-                                                -> mDownloader.downloadWebAppManifest(mTestOrigin,
-                                                        url, PaymentManifestDownloaderTest.this));
+        mActivityTestRule.runOnUiThread(
+                (Runnable)
+                        () ->
+                                mDownloader.downloadWebAppManifest(
+                                        mTestOrigin, url, PaymentManifestDownloaderTest.this));
         CriteriaHelper.pollInstrumentationThread(() -> mDownloadComplete);
 
         Assert.assertTrue("Web app manifest should not have been downloaded.", mDownloadFailure);
-        Assert.assertEquals("Unable to download payment manifest \"" + url.getSpec()
+        Assert.assertEquals(
+                "Unable to download payment manifest \""
+                        + url.getSpec()
                         + "\". HTTP 404 Not Found.",
                 mErrorMessage);
     }
@@ -161,12 +174,14 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
         final GURL url =
                 new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/webpay"));
         mActivityTestRule.runOnUiThread(
-                (Runnable) ()
-                        -> mDownloader.downloadPaymentMethodManifest(
-                                mTestOrigin, url, PaymentManifestDownloaderTest.this));
+                (Runnable)
+                        () ->
+                                mDownloader.downloadPaymentMethodManifest(
+                                        mTestOrigin, url, PaymentManifestDownloaderTest.this));
         CriteriaHelper.pollInstrumentationThread(() -> mDownloadComplete);
 
-        Assert.assertTrue("Payment method manifest should have been downloaded.",
+        Assert.assertTrue(
+                "Payment method manifest should have been downloaded.",
                 mDownloadPaymentMethodManifestSuccess);
         Assert.assertEquals(EXPECTED_PAYMENT_METHOD_MANIFEST, mPaymentMethodManifest);
     }
@@ -176,14 +191,17 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
     public void testUnableToDownloadPaymentMethodManifest() throws Throwable {
         final GURL url = new GURL(mServer.getURL("/no-such-payment-method-name"));
         mActivityTestRule.runOnUiThread(
-                (Runnable) ()
-                        -> mDownloader.downloadPaymentMethodManifest(
-                                mTestOrigin, url, PaymentManifestDownloaderTest.this));
+                (Runnable)
+                        () ->
+                                mDownloader.downloadPaymentMethodManifest(
+                                        mTestOrigin, url, PaymentManifestDownloaderTest.this));
         CriteriaHelper.pollInstrumentationThread(() -> mDownloadComplete);
 
         Assert.assertTrue(
                 "Payment method manifest should have not have been downloaded.", mDownloadFailure);
-        Assert.assertEquals("Unable to download payment manifest \"" + url.getSpec()
+        Assert.assertEquals(
+                "Unable to download payment manifest \""
+                        + url.getSpec()
                         + "\". HTTP 404 Not Found.",
                 mErrorMessage);
     }
@@ -197,21 +215,28 @@ public class PaymentManifestDownloaderTest implements ManifestDownloadCallback {
         final GURL webAppUri1 = new GURL(mServer.getURL("/no-such-app.json"));
         final GURL webAppUri2 =
                 new GURL(mServer.getURL("/components/test/data/payments/bobpay.test/app.json"));
-        mActivityTestRule.runOnUiThread((Runnable) () -> {
-            mDownloader.downloadPaymentMethodManifest(
-                    mTestOrigin, paymentMethodUri1, PaymentManifestDownloaderTest.this);
-            mDownloader.downloadPaymentMethodManifest(
-                    mTestOrigin, paymentMethodUri2, PaymentManifestDownloaderTest.this);
-            mDownloader.downloadWebAppManifest(
-                    mTestOrigin, webAppUri1, PaymentManifestDownloaderTest.this);
-            mDownloader.downloadWebAppManifest(
-                    mTestOrigin, webAppUri2, PaymentManifestDownloaderTest.this);
-        });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(mDownloadWebAppManifestSuccess, Matchers.is(true));
-            Criteria.checkThat(mDownloadPaymentMethodManifestSuccess, Matchers.is(true));
-            Criteria.checkThat(mDownloadFailure, Matchers.is(true));
-        });
+        mActivityTestRule.runOnUiThread(
+                (Runnable)
+                        () -> {
+                            mDownloader.downloadPaymentMethodManifest(
+                                    mTestOrigin,
+                                    paymentMethodUri1,
+                                    PaymentManifestDownloaderTest.this);
+                            mDownloader.downloadPaymentMethodManifest(
+                                    mTestOrigin,
+                                    paymentMethodUri2,
+                                    PaymentManifestDownloaderTest.this);
+                            mDownloader.downloadWebAppManifest(
+                                    mTestOrigin, webAppUri1, PaymentManifestDownloaderTest.this);
+                            mDownloader.downloadWebAppManifest(
+                                    mTestOrigin, webAppUri2, PaymentManifestDownloaderTest.this);
+                        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(mDownloadWebAppManifestSuccess, Matchers.is(true));
+                    Criteria.checkThat(mDownloadPaymentMethodManifestSuccess, Matchers.is(true));
+                    Criteria.checkThat(mDownloadFailure, Matchers.is(true));
+                });
 
         Assert.assertEquals(EXPECTED_PAYMENT_METHOD_MANIFEST, mPaymentMethodManifest);
         Assert.assertEquals(EXPECTED_WEB_APP_MANIFEST, mWebAppManifest);

@@ -605,4 +605,20 @@ TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest, NetworkDelayedActiveNetworkTest) {
   EXPECT_EQ(1u, test_observer_->messages(kTestGuid2).size());
 }
 
+TEST_P(NetworkSmsHandlerSmsSuppressOnlyTest,
+       MessageReceivedNeverConnectedNetwork) {
+  UpdateNetworkState(kTestCellularServicePath1, shill::kStateDisconnect);
+  SetupCellularModem(kCellularDeviceObjectPath2, kTestCellularServicePath2,
+                     kTestGuid2, kTestIccid2, shill::kStateDisconnect);
+
+  base::RunLoop().RunUntilIdle();
+  network_sms_handler_->RequestUpdate();
+  EXPECT_EQ(0u, test_observer_->messages().size());
+  ReceiveSms(dbus::ObjectPath(kCellularDeviceObjectPath2),
+             dbus::ObjectPath(kSmsPath));
+  CompleteReceiveSms();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1u, test_observer_->messages(kTestGuid2).size());
+}
+
 }  // namespace ash

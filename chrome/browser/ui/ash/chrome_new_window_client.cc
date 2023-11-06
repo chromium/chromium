@@ -234,8 +234,15 @@ void ChromeNewWindowClient::NewTab() {
 
   // Display a browser, setting the focus to the location bar after it is shown.
   {
-    chrome::ScopedTabbedBrowserDisplayer displayer(
-        ProfileManager::GetActiveUserProfile());
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    bool is_otr_forced =
+        IncognitoModePrefs::ShouldOpenSubsequentBrowsersInIncognito(
+            *base::CommandLine::ForCurrentProcess(), profile->GetPrefs());
+
+    if (is_otr_forced) {
+      profile = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    }
+    chrome::ScopedTabbedBrowserDisplayer displayer(profile);
     browser = displayer.browser();
     chrome::NewTab(browser);
   }

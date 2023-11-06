@@ -44,7 +44,7 @@ std::string SerializeTimeRoundedDownToWholeDayInSeconds(base::Time time) {
   // TODO(csharrison, linnan): Validate that `time` is valid (e.g. not null /
   // inf).
   base::Time rounded = RoundDownToWholeDaySinceUnixEpoch(time);
-  return base::NumberToString(rounded.ToJavaTime() /
+  return base::NumberToString(rounded.InMillisecondsSinceUnixEpoch() /
                               base::Time::kMillisecondsPerSecond);
 }
 

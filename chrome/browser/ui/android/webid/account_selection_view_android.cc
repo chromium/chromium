@@ -52,7 +52,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaIdentityProviderMetadata(
       env, ui::OptionalSkColorToJavaColor(metadata.brand_text_color),
       ui::OptionalSkColorToJavaColor(metadata.brand_background_color),
       java_brand_icon_url,
-      url::GURLAndroid::FromNativeGURL(env, metadata.config_url));
+      url::GURLAndroid::FromNativeGURL(env, metadata.config_url),
+      url::GURLAndroid::FromNativeGURL(env, metadata.idp_login_url));
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaIdentityCredentialTokenError(
@@ -106,12 +107,11 @@ Account ConvertFieldsToAccount(
 
   GURL picture_url = *url::GURLAndroid::ToNativeGURL(env, picture_url_obj);
 
-  // The login hints and hosted domains are only used before account selection.
+  // The login hints and domain hints are only used before account selection.
   std::vector<std::string> login_hints;
-  std::vector<std::string> hosted_domains;
+  std::vector<std::string> domain_hints;
   return Account(account_id, email, name, given_name, picture_url,
-                 std::move(login_hints), std::move(hosted_domains),
-                 login_state);
+                 std::move(login_hints), std::move(domain_hints), login_state);
 }
 
 ScopedJavaLocalRef<jstring> ConvertRpContextToJavaString(
@@ -293,8 +293,11 @@ void AccountSelectionViewAndroid::OnDismiss(JNIEnv* env, jint dismiss_reason) {
   delegate_->OnDismiss(static_cast<DismissReason>(dismiss_reason));
 }
 
-void AccountSelectionViewAndroid::OnSignInToIdp(JNIEnv* env) {
-  delegate_->OnSigninToIdP();
+void AccountSelectionViewAndroid::OnSignInToIdp(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& idp_login_url) {
+  GURL login_url = *url::GURLAndroid::ToNativeGURL(env, idp_login_url);
+  delegate_->OnSigninToIdP(login_url);
 }
 
 void AccountSelectionViewAndroid::OnMoreDetails(JNIEnv* env) {

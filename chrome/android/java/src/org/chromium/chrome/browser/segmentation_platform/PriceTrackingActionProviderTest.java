@@ -40,29 +40,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Unit tests for {@link PriceTrackingActionProvider}
- */
+/** Unit tests for {@link PriceTrackingActionProvider} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PriceTrackingActionProviderTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
+    @Mock PriceTrackingUtils.Natives mMockPriceTrackingUtilsJni;
 
-    @Mock
-    private Tab mMockTab;
+    @Mock private Tab mMockTab;
 
-    @Mock
-    private ShoppingService mShoppingService;
+    @Mock private ShoppingService mShoppingService;
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkModel mBookmarkModel;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     @Before
     public void setUp() {
@@ -74,34 +66,47 @@ public class PriceTrackingActionProviderTest {
         mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
 
         // Setup bookmark model expectations.
-        Mockito.doAnswer(invocation -> {
-                   Runnable runnable = invocation.getArgument(0);
-                   runnable.run();
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mBookmarkModel)
                 .finishLoadingBookmarkModel(any());
     }
 
     private void setIsUrlPriceTrackableResult(boolean hasProductInfo) {
-        ProductInfo testProductInfo = new ProductInfo(
-                null, null, Optional.of(12345L), Optional.empty(), null, 0, null, Optional.empty());
+        ProductInfo testProductInfo =
+                new ProductInfo(
+                        null,
+                        null,
+                        Optional.of(12345L),
+                        Optional.empty(),
+                        null,
+                        0,
+                        null,
+                        Optional.empty());
         Mockito.doReturn(true).when(mShoppingService).isShoppingListEligible();
-        Mockito.doAnswer(invocation -> {
-                   ProductInfoCallback callback = invocation.getArgument(1);
-                   callback.onResult(
-                           invocation.getArgument(0), hasProductInfo ? testProductInfo : null);
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            ProductInfoCallback callback = invocation.getArgument(1);
+                            callback.onResult(
+                                    invocation.getArgument(0),
+                                    hasProductInfo ? testProductInfo : null);
+                            return null;
+                        })
                 .when(mShoppingService)
                 .getProductInfoForUrl(any(), any());
     }
 
     private void setIsBookmarkPriceTrackedResult(boolean isBookmarkPriceTracked) {
-        doAnswer((InvocationOnMock invocation) -> {
-            ((Callback<Boolean>) invocation.getArgument(2)).onResult(isBookmarkPriceTracked);
-            return null;
-        })
+        doAnswer(
+                        (InvocationOnMock invocation) -> {
+                            ((Callback<Boolean>) invocation.getArgument(2))
+                                    .onResult(isBookmarkPriceTracked);
+                            return null;
+                        })
                 .when(mMockPriceTrackingUtilsJni)
                 .isBookmarkPriceTracked(any(Profile.class), anyLong(), any());
     }
@@ -109,8 +114,9 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingActionShownSuccessfully() {
         List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider = new PriceTrackingActionProvider(
-                () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+        PriceTrackingActionProvider provider =
+                new PriceTrackingActionProvider(
+                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setIsUrlPriceTrackableResult(true);
@@ -121,8 +127,9 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingNotShownForAlreadyPriceTrackedPages() {
         List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider = new PriceTrackingActionProvider(
-                () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+        PriceTrackingActionProvider provider =
+                new PriceTrackingActionProvider(
+                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         // URL supports price tracking.
@@ -139,8 +146,9 @@ public class PriceTrackingActionProviderTest {
     @Test
     public void priceTrackingNotShownForNonTrackablePages() {
         List<ActionProvider> providers = new ArrayList<>();
-        PriceTrackingActionProvider provider = new PriceTrackingActionProvider(
-                () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+        PriceTrackingActionProvider provider =
+                new PriceTrackingActionProvider(
+                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         // URL does not support price tracking.

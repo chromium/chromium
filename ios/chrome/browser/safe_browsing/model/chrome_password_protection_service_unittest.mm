@@ -822,7 +822,8 @@ TEST_F(ChromePasswordProtectionServiceTest, TestGetCachedVerdicts) {
       LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
       reused_password_account_type, LoginReputationClientResponse::PHISHING,
       10 * kMinute, "test.com/def/",
-      base::Time::FromDoubleT(now.ToDoubleT() - kDay));  // Yesterday, expired.
+      base::Time::FromSecondsSinceUnixEpoch(now.InSecondsFSinceUnixEpoch() -
+                                            kDay));  // Yesterday, expired.
   reused_password_account_type.set_account_type(
       ReusedPasswordAccountType::UNKNOWN);
   CacheVerdict(GURL("http://test.com/bar/login.html"),

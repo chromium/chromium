@@ -24,8 +24,6 @@
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
-#include "content/browser/attribution_reporting/attribution_storage_delegate.h"
-#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -37,6 +35,7 @@
 namespace attribution_reporting {
 class AggregationKeys;
 class EventReportWindows;
+class TriggerConfig;
 }  // namespace attribution_reporting
 
 namespace net {
@@ -49,8 +48,9 @@ class TriggerVerification;
 
 namespace content {
 
-class AttributionManager;
 class AttributionTrigger;
+class CommonSourceInfo;
+struct FakeEventLevelReport;
 
 enum class RateLimitResult : int;
 
@@ -119,11 +119,13 @@ class SourceBuilder {
 
   SourceBuilder& SetMaxEventLevelReports(int max_event_level_reports);
 
+  SourceBuilder& SetTriggerConfig(attribution_reporting::TriggerConfig);
+
+  SourceBuilder& SetDebugCookieSet(bool debug_cookie_set);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;
-
-  CommonSourceInfo BuildCommonInfo() const;
 
  private:
   base::Time source_time_;
@@ -143,6 +145,7 @@ class SourceBuilder {
   double randomized_response_rate_ = 0;
   std::vector<uint64_t> aggregatable_dedup_keys_;
   bool is_within_fenced_frame_ = false;
+  bool debug_cookie_set_ = false;
 };
 
 // Returns a AttributionTrigger with default data which matches the default
@@ -308,11 +311,9 @@ bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b);
 
 bool operator==(const AttributionInfo& a, const AttributionInfo& b);
 
-bool operator==(const AttributionStorageDelegate::FakeReport& a,
-                const AttributionStorageDelegate::FakeReport& b);
+bool operator==(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
 
-bool operator<(const AttributionStorageDelegate::FakeReport& a,
-               const AttributionStorageDelegate::FakeReport& b);
+bool operator<(const FakeEventLevelReport& a, const FakeEventLevelReport& b);
 
 bool operator==(const StorableSource& a, const StorableSource& b);
 
@@ -347,8 +348,7 @@ std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source);
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInfo& attribution_info);
 
-std::ostream& operator<<(std::ostream& out,
-                         const AttributionStorageDelegate::FakeReport&);
+std::ostream& operator<<(std::ostream& out, const FakeEventLevelReport&);
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& source);
 
@@ -387,17 +387,10 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out,
                          const AttributionDataModel::DataKey& key);
 
-std::vector<AttributionReport> GetAttributionReportsForTesting(
-    AttributionManager* manager);
-
 // Source matchers
 
 MATCHER_P(SourceRegistrationIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.registration(), result_listener);
-}
-
-MATCHER_P(CommonSourceInfoIs, matcher, "") {
-  return ExplainMatchResult(matcher, arg.common_info(), result_listener);
 }
 
 MATCHER_P(SourceEventIdIs, matcher, "") {
@@ -421,6 +414,10 @@ MATCHER_P(SourceTypeIs, matcher, "") {
 
 MATCHER_P(SourceDebugKeyIs, matcher, "") {
   return ExplainMatchResult(matcher, arg.debug_key(), result_listener);
+}
+
+MATCHER_P(SourceDebugCookieSetIs, matcher, "") {
+  return ExplainMatchResult(matcher, arg.debug_cookie_set(), result_listener);
 }
 
 MATCHER_P(SourceFilterDataIs, matcher, "") {

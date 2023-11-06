@@ -188,6 +188,10 @@ BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
 // -OnVisibilityChanged method is called.
 BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);
 
+// If enabled, the payment methods sync setting toggle is decoupled from
+// autofill. See crbug.com/1435431 for details.
+BASE_DECLARE_FEATURE(kSyncDecoupleAddressPaymentSettings);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

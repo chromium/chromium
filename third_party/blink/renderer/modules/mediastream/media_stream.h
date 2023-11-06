@@ -147,7 +147,7 @@ class MODULES_EXPORT MediaStream final
   void AddRemoteTrack(MediaStreamTrack*);
   void RemoveRemoteTrack(MediaStreamTrack*);
 
-  MediaStreamDescriptor* Descriptor() const { return descriptor_; }
+  MediaStreamDescriptor* Descriptor() const { return descriptor_.Get(); }
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/command_line.h"
 #include "chrome/updater/app/server/win/updater_legacy_idl.h"
@@ -27,11 +28,18 @@ TEST(SetupUtilTest, DeleteLegacyEntriesPerUser) {
   ASSERT_TRUE(DeleteLegacyEntriesPerUser());
 
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
-  for (const auto& iid :
-       {__uuidof(IProcessLauncher), __uuidof(IProcessLauncher2)}) {
-    AddInstallComInterfaceWorkItems(
-        HKEY_CURRENT_USER, base::FilePath(L"C:\\foo.exe"), iid, list.get());
+
+#define INTERFACE_PAIR(interface) \
+  std::make_pair(__uuidof(interface), L#interface)
+
+  for (const auto& [iid, interface_name] :
+       {INTERFACE_PAIR(IProcessLauncher), INTERFACE_PAIR(IProcessLauncher2)}) {
+    AddInstallComInterfaceWorkItems(HKEY_CURRENT_USER,
+                                    base::FilePath(L"C:\\foo.exe"), iid,
+                                    interface_name, list.get());
   }
+#undef INTERFACE_PAIR
+
   ASSERT_TRUE(list->Do());
 
   ASSERT_TRUE(DeleteLegacyEntriesPerUser());

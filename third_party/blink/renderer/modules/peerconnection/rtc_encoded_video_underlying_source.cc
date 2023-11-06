@@ -36,7 +36,8 @@ RTCEncodedVideoUnderlyingSource::RTCEncodedVideoUnderlyingSource(
   task_runner_ = context->GetTaskRunner(TaskType::kInternalMediaRealTime);
 }
 
-ScriptPromise RTCEncodedVideoUnderlyingSource::pull(ScriptState* script_state) {
+ScriptPromise RTCEncodedVideoUnderlyingSource::Pull(ScriptState* script_state,
+                                                    ExceptionState&) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   // WebRTC is a push source without backpressure support, so nothing to do
   // here.

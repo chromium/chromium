@@ -17,9 +17,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.components.metrics.LowEntropySource;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Unit tests for {@link NormalizedMurmurHashEntropyProvider}.
- */
+/** Unit tests for {@link NormalizedMurmurHashEntropyProvider}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class NormalizedMurmurHashEntropyProviderTest {
@@ -32,17 +30,30 @@ public class NormalizedMurmurHashEntropyProviderTest {
     @MediumTest
     public void testMurmurHashHelper() {
         // Pick some likely edge case values.
-        int[] seeds = {-2, -1, 0, 1, 2, Integer.MAX_VALUE - 2, Integer.MAX_VALUE - 1,
-                Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 2};
+        int[] seeds = {
+            -2,
+            -1,
+            0,
+            1,
+            2,
+            Integer.MAX_VALUE - 2,
+            Integer.MAX_VALUE - 1,
+            Integer.MAX_VALUE,
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE + 1,
+            Integer.MIN_VALUE + 2
+        };
 
         final int max16 = 65535;
         int[] data = {
-                0, max16 / 2 - 1, max16 - 2, 1, max16 / 2, max16 - 1, 2, max16 / 2 + 1, max16};
+            0, max16 / 2 - 1, max16 - 2, 1, max16 / 2, max16 - 1, 2, max16 / 2 + 1, max16
+        };
 
         for (int seed : seeds) {
             for (int datum : data) {
-                int expected = NormalizedMurmurHashEntropyProviderTestUtilsBridge.murmurHash16(
-                        seed, datum);
+                int expected =
+                        NormalizedMurmurHashEntropyProviderTestUtilsBridge.murmurHash16(
+                                seed, datum);
                 assertEquals(expected, NormalizedMurmurHashEntropyProvider.hash16(seed, datum));
             }
         }

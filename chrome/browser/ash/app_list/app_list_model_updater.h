@@ -73,7 +73,8 @@ class AppListModelUpdater {
   virtual void SetItemIconVersion(const std::string& id, int icon_version) {}
   virtual void SetItemIconAndColor(const std::string& id,
                                    const gfx::ImageSkia& icon,
-                                   const ash::IconColor& icon_color) {}
+                                   const ash::IconColor& icon_color,
+                                   bool is_placeholder_icon) {}
   virtual void SetItemBadgeIcon(const std::string& id,
                                 const gfx::ImageSkia& badge_icon) {}
   virtual void SetItemName(const std::string& id, const std::string& name) {}
@@ -87,6 +88,8 @@ class AppListModelUpdater {
                                const std::string& folder_id) = 0;
   virtual void SetNotificationBadgeColor(const std::string& id,
                                          const SkColor color) {}
+  virtual void SetAccessibleName(const std::string& id,
+                                 const std::string& name) {}
 
   virtual void SetSearchResultMetadata(
       const std::string& id,

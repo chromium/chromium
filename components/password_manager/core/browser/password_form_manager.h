@@ -332,6 +332,14 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   bool IsPossibleSingleUsernameAvailable(
       const PossibleUsernameData& possible_username) const;
 
+  // Finds best username candidate that is outside of the form. This is done
+  // according to priorities listed in `UsernameFoundOutsideOfFormType`.
+  // If there are more than one field in the same category, pick the one that is
+  // more recently modified by the user.
+  std::optional<UsernameFoundOutsideOfForm> FindBestPossibleUsernameCandidate(
+      const base::LRUCache<PossibleUsernameFieldIdentifier,
+                           PossibleUsernameData>& possible_usernames);
+
   // Updates the predictions stored in `parser_` with predictions relevant for
   // `observed_form_or_digest_`.
   void UpdatePredictionsForObservedForm(
@@ -349,15 +357,28 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // credentials available to use.
   bool WebAuthnCredentialsAvailable() const;
 
-  // Sets voting data and update |parsed_submitted_form_| with the correct
+  // Checks if `best_candidate` has better signal than the username
+  // found inside the password form.
+  bool ShouldPreferUsernameFoundOutsideOfForm(
+      const std::optional<UsernameFoundOutsideOfForm>& best_candidate,
+      FormDataParser::UsernameDetectionMethod
+          in_form_username_detection_method);
+
+  // Sets voting data and update `parsed_submitted_form_` with the correct
   // username value for a password form without a username field.
   void HandleUsernameFirstFlow(
-      const UsernameFoundOutsideOfForm& possible_username);
+      const base::LRUCache<PossibleUsernameFieldIdentifier,
+                           PossibleUsernameData>& possible_usernames,
+      FormDataParser::UsernameDetectionMethod
+          in_form_username_detection_method);
 
   // Sets voting data for a password form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the
   // password recovery process).
   void HandleForgotPasswordFormData();
+
+  // Returns non-empty, lower case stored usernames based on `GetBestMatches()`.
+  base::flat_set<std::u16string> GetStoredUsernames() const;
 
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;

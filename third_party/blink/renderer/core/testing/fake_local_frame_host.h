@@ -33,11 +33,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void FullscreenStateChanged(
       bool is_fullscreen,
       mojom::blink::FullscreenOptionsPtr options) override;
-#if defined(USE_AURA)
   void Maximize() override;
   void Minimize() override;
   void Restore() override;
-#endif
   void RegisterProtocolHandler(const WTF::String& scheme,
                                const ::blink::KURL& url,
                                bool user_gesture) override;
@@ -188,6 +186,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
   void SetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type,
       const WTF::String& event_data,
       const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures

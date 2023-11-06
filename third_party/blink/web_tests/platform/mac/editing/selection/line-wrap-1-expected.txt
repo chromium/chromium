@@ -7,7 +7,7 @@ layer at (0,0)
       LayoutNGBlockFlow {P} at (0,0) size 784x18
         LayoutText {#text} at (0,0) size 188x18
           text run at (0,0) width 188: "Only 'bar' should be selected."
-      LayoutNGBlockFlow {DIV} at (0,34) size 52x38 [border: (1px solid #000000)]
+      LayoutNGBlockFlow {DIV} at (0,34) size 52x38 [border: (1px solid #000000) (1px solid #000000) (1px solid #000000) (1px solid #000000)]
         LayoutText {#text} at (1,1) size 48x36
           text run at (1,1) width 46: "foo bar"
           text run at (1,19) width 48: "baz foo"

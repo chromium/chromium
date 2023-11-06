@@ -152,22 +152,22 @@ enum ClipComponentIndex : unsigned {
   kClipComponentIndexCount,
 };
 
-static std::unique_ptr<InterpolableValue> ConvertClipComponent(
-    const Length& length,
-    double zoom) {
-  if (length.IsAuto())
-    return std::make_unique<InterpolableList>(0);
+static InterpolableValue* ConvertClipComponent(const Length& length,
+                                               double zoom) {
+  if (length.IsAuto()) {
+    return MakeGarbageCollected<InterpolableList>(0);
+  }
   return InterpolableLength::MaybeConvertLength(length, zoom);
 }
 
 static InterpolationValue CreateClipValue(const LengthBox& clip, double zoom) {
-  auto list = std::make_unique<InterpolableList>(kClipComponentIndexCount);
+  auto* list = MakeGarbageCollected<InterpolableList>(kClipComponentIndexCount);
   list->Set(kClipTop, ConvertClipComponent(clip.Top(), zoom));
   list->Set(kClipRight, ConvertClipComponent(clip.Right(), zoom));
   list->Set(kClipBottom, ConvertClipComponent(clip.Bottom(), zoom));
   list->Set(kClipLeft, ConvertClipComponent(clip.Left(), zoom));
   return InterpolationValue(
-      std::move(list), CSSClipNonInterpolableValue::Create(ClipAutos(clip)));
+      list, CSSClipNonInterpolableValue::Create(ClipAutos(clip)));
 }
 
 InterpolationValue CSSClipInterpolationType::MaybeConvertNeutral(
@@ -210,10 +210,9 @@ static bool IsCSSAuto(const CSSValue& value) {
          identifier_value->GetValueID() == CSSValueID::kAuto;
 }
 
-static std::unique_ptr<InterpolableValue> ConvertClipComponent(
-    const CSSValue& length) {
+static InterpolableValue* ConvertClipComponent(const CSSValue& length) {
   if (IsCSSAuto(length))
-    return std::make_unique<InterpolableList>(0);
+    return MakeGarbageCollected<InterpolableList>(0);
   return InterpolableLength::MaybeConvertCSSValue(length);
 }
 
@@ -224,15 +223,14 @@ InterpolationValue CSSClipInterpolationType::MaybeConvertValue(
   const auto* quad = DynamicTo<CSSQuadValue>(value);
   if (!quad)
     return nullptr;
-  auto list = std::make_unique<InterpolableList>(kClipComponentIndexCount);
+  auto* list = MakeGarbageCollected<InterpolableList>(kClipComponentIndexCount);
   list->Set(kClipTop, ConvertClipComponent(*quad->Top()));
   list->Set(kClipRight, ConvertClipComponent(*quad->Right()));
   list->Set(kClipBottom, ConvertClipComponent(*quad->Bottom()));
   list->Set(kClipLeft, ConvertClipComponent(*quad->Left()));
   ClipAutos autos(IsCSSAuto(*quad->Top()), IsCSSAuto(*quad->Right()),
                   IsCSSAuto(*quad->Bottom()), IsCSSAuto(*quad->Left()));
-  return InterpolationValue(std::move(list),
-                            CSSClipNonInterpolableValue::Create(autos));
+  return InterpolationValue(list, CSSClipNonInterpolableValue::Create(autos));
 }
 
 InterpolationValue

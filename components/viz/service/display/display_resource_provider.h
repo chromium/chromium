@@ -93,12 +93,9 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // Return the SharedImageFormat of the underlying buffer that can be used for
   // scanout.
   SharedImageFormat GetSharedImageFormat(ResourceId id);
-  // Returns the color space that the resource needs to be interpreted in by the
-  // operating system.
-  const gfx::ColorSpace& GetOverlayColorSpace(ResourceId id);
-  // Returns the color space that samples of this resource in a shader will be
-  // in.
-  gfx::ColorSpace GetSamplerColorSpace(ResourceId id);
+  // Returns the color space of the resource.
+  const gfx::ColorSpace& GetColorSpace(ResourceId id);
+
   const gfx::HDRMetadata& GetHDRMetadata(ResourceId id);
 
   // Indicates if this resource may be used for a hardware overlay plane.

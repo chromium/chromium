@@ -7,12 +7,14 @@
  */
 
 GEN_INCLUDE([
-  '//chrome/test/data/webui/polymer_browser_test_base.js',
+  '//chrome/test/data/webui/chromeos/polymer_browser_test_base.js',
 ]);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
+// TODO(https://crbug.com/1033337): js2gtest fixtures require var here.
+// eslint-disable-next-line no-var
 var PolymerSecurityTokenPinTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {

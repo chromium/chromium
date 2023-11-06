@@ -210,8 +210,8 @@ TEST_F(FormAutofillUtilsTest, WebFormElementToFormDataIdAndNames) {
   FormData form_data;
   ASSERT_TRUE(WebFormElementToFormData(
       GetFormElementById(GetMainFrame()->GetDocument(), "form-id"),
-      WebFormControlElement(), /*field_data_manager=*/nullptr, EXTRACT_OPTIONS,
-      &form_data, /*field=*/nullptr));
+      WebFormControlElement(), /*field_data_manager=*/nullptr,
+      {ExtractOption::kOptions}, &form_data, /*field=*/nullptr));
   EXPECT_EQ(form_data.name, u"form-name");
   EXPECT_EQ(form_data.id_attribute, u"form-id");
   EXPECT_EQ(form_data.name_attribute, u"form-name");
@@ -243,7 +243,7 @@ TEST_F(FormAutofillUtilsTest, TruncateLargeOptionValuesAndContents) {
   FormData form_data;
   ASSERT_TRUE(WebFormElementToFormData(
       web_form, WebFormControlElement(), /*field_data_manager=*/nullptr,
-      EXTRACT_OPTIONS, &form_data, /*field=*/nullptr));
+      {ExtractOption::kOptions}, &form_data, /*field=*/nullptr));
 
   ASSERT_EQ(form_data.fields.size(), 1u);
   ASSERT_EQ(form_data.fields[0].options.size(), 1u);
@@ -571,7 +571,7 @@ TEST_F(FormAutofillUtilsTest, IsEnabled) {
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsToFormData(
       control_elements, iframe_elements, /*element=*/nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target,
+      web_frame->GetDocument(), nullptr, /*extract_options=*/{}, &target,
       /*field=*/nullptr));
   const struct {
     const char16_t* const name;
@@ -612,7 +612,7 @@ TEST_F(FormAutofillUtilsTest, IsReadonly) {
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsToFormData(
       control_elements, iframe_elements, /*element=*/nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target,
+      web_frame->GetDocument(), nullptr, /*extract_options=*/{}, &target,
       /*field=*/nullptr));
   const struct {
     const char16_t* const name;
@@ -655,7 +655,7 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   autofill::FormData target;
   EXPECT_TRUE(UnownedFormElementsToFormData(
       control_elements, iframe_elements, /*element=*/nullptr,
-      web_frame->GetDocument(), nullptr, EXTRACT_NONE, &target,
+      web_frame->GetDocument(), nullptr, /*extract_options=*/{}, &target,
       /*field=*/nullptr));
   ASSERT_EQ(2u, target.fields.size());
   EXPECT_EQ(u"name1", target.fields[0].name);
@@ -910,10 +910,10 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyFalse) {
   auto web_form = GetFormElementById(doc, "form1");
 
   FormData form_data;
-  ASSERT_TRUE(WebFormElementToFormData(
-      web_form, WebFormControlElement(),
-      /*field_data_manager=*/nullptr /*field_data_manager=*/, EXTRACT_VALUE,
-      &form_data, /*field=*/nullptr));
+  ASSERT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
+                                       /*field_data_manager=*/nullptr,
+                                       {ExtractOption::kValue}, &form_data,
+                                       /*field=*/nullptr));
 
   EXPECT_FALSE(form_data.is_action_empty);
 }
@@ -924,10 +924,10 @@ TEST_F(FormAutofillUtilsTest, IsActionEmptyTrue) {
   auto web_form = GetFormElementById(doc, "form1");
 
   FormData form_data;
-  ASSERT_TRUE(WebFormElementToFormData(
-      web_form, WebFormControlElement(),
-      /*field_data_manager=*/nullptr /*field_data_manager=*/, EXTRACT_VALUE,
-      &form_data, /*field=*/nullptr));
+  ASSERT_TRUE(WebFormElementToFormData(web_form, WebFormControlElement(),
+                                       /*field_data_manager=*/nullptr,
+                                       {ExtractOption::kValue}, &form_data,
+                                       /*field=*/nullptr));
 
   EXPECT_TRUE(form_data.is_action_empty);
 }
@@ -939,8 +939,8 @@ TEST_F(FormAutofillUtilsTest, ExtractBounds) {
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, /*field_data_manager=*/nullptr /*field_data_manager=*/,
-      EXTRACT_BOUNDS, &form_data,
+      web_control, /*field_data_manager=*/nullptr, {ExtractOption::kBounds},
+      &form_data,
       /*field=*/nullptr));
 
   EXPECT_FALSE(form_data.fields.back().bounds.IsEmpty());
@@ -953,7 +953,7 @@ TEST_F(FormAutofillUtilsTest, NotExtractBounds) {
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, /*field_data_manager=*/nullptr /*field_data_manager=*/,
+      web_control, /*field_data_manager=*/nullptr, /*extract_options=*/{},
       &form_data,
       /*field=*/nullptr));
 
@@ -967,8 +967,8 @@ TEST_F(FormAutofillUtilsTest, ExtractUnownedBounds) {
 
   FormData form_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, /*field_data_manager=*/nullptr /*field_data_manager=*/,
-      EXTRACT_BOUNDS, &form_data,
+      web_control, /*field_data_manager=*/nullptr, {ExtractOption::kBounds},
+      &form_data,
       /*field=*/nullptr));
 
   EXPECT_FALSE(form_data.fields.back().bounds.IsEmpty());
@@ -981,15 +981,13 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestions) {
       "value='2'></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<std::u16string> values;
-  std::vector<std::u16string> labels;
-  GetDataListSuggestions(web_control, &values, &labels);
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"");
-  EXPECT_EQ(labels[1], u"");
+  std::vector<SelectOption> options;
+  GetDataListSuggestions(web_control, &options);
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"");
+  EXPECT_EQ(options[1].content, u"");
 }
 
 TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
@@ -999,15 +997,13 @@ TEST_F(FormAutofillUtilsTest, GetDataListSuggestionsWithLabels) {
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetMainFrame()->GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<std::u16string> values;
-  std::vector<std::u16string> labels;
-  GetDataListSuggestions(web_control, &values, &labels);
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"one");
-  EXPECT_EQ(labels[1], u"two");
+  std::vector<SelectOption> options;
+  GetDataListSuggestions(web_control, &options);
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"one");
+  EXPECT_EQ(options[1].content, u"two");
 }
 
 TEST_F(FormAutofillUtilsTest, ExtractDataList) {
@@ -1020,19 +1016,16 @@ TEST_F(FormAutofillUtilsTest, ExtractDataList) {
   FormData form_data;
   FormFieldData form_field_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, /*field_data_manager=*/nullptr /*field_data_manager=*/,
-      EXTRACT_DATALIST, &form_data, &form_field_data));
+      web_control, /*field_data_manager=*/nullptr, {ExtractOption::kDatalist},
+      &form_data, &form_field_data));
 
-  auto& values = form_data.fields.back().datalist_values;
-  auto& labels = form_data.fields.back().datalist_labels;
-  ASSERT_EQ(values.size(), 2u);
-  ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(values[0], u"1");
-  EXPECT_EQ(values[1], u"2");
-  EXPECT_EQ(labels[0], u"one");
-  EXPECT_EQ(labels[1], u"two");
-  EXPECT_EQ(form_field_data.datalist_values, values);
-  EXPECT_EQ(form_field_data.datalist_labels, labels);
+  auto& options = form_data.fields.back().datalist_options;
+  ASSERT_EQ(options.size(), 2u);
+  EXPECT_EQ(options[0].value, u"1");
+  EXPECT_EQ(options[1].value, u"2");
+  EXPECT_EQ(options[0].content, u"one");
+  EXPECT_EQ(options[1].content, u"two");
+  EXPECT_EQ(form_field_data.datalist_options.size(), options.size());
 }
 
 TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
@@ -1045,11 +1038,9 @@ TEST_F(FormAutofillUtilsTest, NotExtractDataList) {
   FormData form_data;
   FormFieldData form_field_data;
   ASSERT_TRUE(FindFormAndFieldForFormControlElement(
-      web_control, /*field_data_manager=*/nullptr /*field_data_manager=*/,
+      web_control, /*field_data_manager=*/nullptr, /*extract_options=*/{},
       &form_data, &form_field_data));
-
-  EXPECT_TRUE(form_data.fields.back().datalist_values.empty());
-  EXPECT_TRUE(form_data.fields.back().datalist_labels.empty());
+  EXPECT_TRUE(form_data.fields.back().datalist_options.empty());
 }
 
 // Tests the visibility detection of iframes.
@@ -1484,7 +1475,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
         form_util::GetUnownedIframeElements(doc);
     ASSERT_TRUE(UnownedFormElementsToFormData(
         control_elements, iframe_elements, /*element=*/nullptr, doc,
-        /*field_data_manager=*/nullptr, EXTRACT_NONE, &form_data,
+        /*field_data_manager=*/nullptr, /*extract_options=*/{}, &form_data,
         /*field=*/nullptr));
     host_form = FormRendererId();
   } else {  // Real <form>.
@@ -1492,7 +1483,7 @@ TEST_P(FieldFramesTest, ExtractFieldsAndFrames) {
     auto form_element = GetFormElementById(doc, test_case.form_id);
     ASSERT_TRUE(WebFormElementToFormData(form_element, WebFormControlElement(),
                                          /*field_data_manager=*/nullptr,
-                                         EXTRACT_NONE, &form_data,
+                                         /*extract_options=*/{}, &form_data,
                                          /*field=*/nullptr));
     host_form = GetFormRendererId(form_element);
   }
@@ -1591,10 +1582,11 @@ INSTANTIATE_TEST_SUITE_P(
         // do not belong to the form of interest.
         std::string html;
         for (const FieldOrFrame& field_or_frame : fields_and_frames) {
-          html += base::StringPrintf(field_or_frame.is_frame
-                                         ? "<iframe id='%s'></iframe>"
-                                         : "<input id='%s'>",
-                                     field_or_frame.id);
+          html +=
+              field_or_frame.is_frame
+                  ? base::StringPrintf("<iframe id='%s'></iframe>",
+                                       field_or_frame.id)
+                  : base::StringPrintf("<input id='%s'>", field_or_frame.id);
         }
         if (!is_synthetic_form) {
           html = base::StringPrintf("<form id='%s'>%s</form>", form_id,
@@ -1667,7 +1659,7 @@ TEST_P(SelectListAutofillParamTest, WebFormElementToFormData) {
   FormData form_data;
   ASSERT_TRUE(WebFormElementToFormData(form_element, WebFormControlElement(),
                                        /*field_data_manager=*/nullptr,
-                                       EXTRACT_NONE, &form_data,
+                                       /*extract_options=*/{}, &form_data,
                                        /*field=*/nullptr));
   EXPECT_EQ(form_data.fields.size(),
             IsAutofillingSelectListEnabled() ? 2u : 1u);
@@ -1713,9 +1705,10 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   WebFormElement form = GetFormElementById(doc, "f");
   {
     FormData form_data;
-    ASSERT_TRUE(WebFormElementToFormData(
-        form, WebFormControlElement(), /*field_data_manager_=*/nullptr,
-        EXTRACT_NONE, &form_data, /*field=*/nullptr));
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(),
+                                         /*field_data_manager_=*/nullptr,
+                                         /*extract_options=*/{}, &form_data,
+                                         /*field=*/nullptr));
     EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
     EXPECT_EQ(form_data.child_frames.size(), kMaxExtractableChildFrames);
   }
@@ -1726,9 +1719,10 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFramesIfTooManyIframes) {
   for (int i = 0; i < 3; ++i) {
     CreateFormElement("iframe");
     FormData form_data;
-    ASSERT_TRUE(WebFormElementToFormData(
-        form, WebFormControlElement(), /*field_data_manager=*/nullptr,
-        EXTRACT_NONE, &form_data, /*field=*/nullptr));
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(),
+                                         /*field_data_manager=*/nullptr,
+                                         /*extract_options=*/{}, &form_data,
+                                         /*field=*/nullptr));
     EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
     EXPECT_TRUE(form_data.child_frames.empty());
   }
@@ -1758,9 +1752,10 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
   WebFormElement form = GetFormElementById(doc, "f");
   {
     FormData form_data;
-    ASSERT_TRUE(WebFormElementToFormData(
-        form, WebFormControlElement(), /*field_data_manager=*/nullptr,
-        EXTRACT_NONE, &form_data, /*field=*/nullptr));
+    ASSERT_TRUE(WebFormElementToFormData(form, WebFormControlElement(),
+                                         /*field_data_manager=*/nullptr,
+                                         /*extract_options=*/{}, &form_data,
+                                         /*field=*/nullptr));
     EXPECT_EQ(form_data.fields.size(), kMaxExtractableFields - 1);
     EXPECT_EQ(form_data.child_frames.size(), kMaxExtractableChildFrames);
   }
@@ -1773,7 +1768,8 @@ TEST_F(FormAutofillUtilsTest, ExtractNoFieldsOrFramesIfTooManyFields) {
     CreateFormElement("input");
     FormData form_data;
     ASSERT_FALSE(WebFormElementToFormData(form, WebFormControlElement(),
-                                          nullptr, EXTRACT_NONE, &form_data,
+                                          nullptr, /*extract_options=*/{},
+                                          &form_data,
                                           /*field=*/nullptr));
     EXPECT_TRUE(form_data.fields.empty());
     EXPECT_TRUE(form_data.child_frames.empty());

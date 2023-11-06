@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
@@ -31,9 +32,6 @@
 namespace vr {
 
 namespace {
-constexpr float kZNear = 0.1f;
-constexpr float kZFar = 10000.0f;
-
 // GVR buffer indices for use with viewport->SetSourceBufferIndex
 // or frame.BindBuffer. We use one for multisampled contents (Browser UI), and
 // one for non-multisampled content (webVR or quad layer).
@@ -127,7 +125,11 @@ GvrGraphicsDelegate::GvrGraphicsDelegate(
       webvr_acquire_time_(sliding_time_size),
       webvr_submit_time_(sliding_time_size) {}
 
-GvrGraphicsDelegate::~GvrGraphicsDelegate() = default;
+GvrGraphicsDelegate::~GvrGraphicsDelegate() {
+  if (curr_context_id_ != kNone) {
+    contexts_[curr_context_id_]->ReleaseCurrent(surface_.get());
+  }
+}
 
 void GvrGraphicsDelegate::Init(
     base::WaitableEvent* gl_surface_created_event,
@@ -173,7 +175,19 @@ void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window) {
     return;
   }
 
-  if (!BaseGraphicsDelegate::Initialize(surface)) {
+  surface_ = surface;
+  share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
+  for (auto& context : contexts_) {
+    context = gl::init::CreateGLContext(share_group_.get(), surface_.get(),
+                                        gl::GLContextAttribs());
+    if (!context.get()) {
+      LOG(ERROR) << "gl::init::CreateGLContext failed";
+      browser_->ForceExitVr();
+      return;
+    }
+  }
+
+  if (!MakeContextCurrent(kMainContext)) {
     browser_->ForceExitVr();
     return;
   }
@@ -373,7 +387,7 @@ void GvrGraphicsDelegate::UpdateEyeInfos(const gfx::Transform& head_pose,
     eye_info.viewport = vr::CalculatePixelSpaceRect(render_size, rect);
 
     eye_info.view_proj_matrix =
-        PerspectiveMatrixFromView(vp.GetSourceFov(), kZNear, kZFar) *
+        PerspectiveMatrixFromView(vp.GetSourceFov(), GetZNear(), GetZFar()) *
         eye_info.view_matrix;
   }
 }
@@ -449,10 +463,6 @@ void GvrGraphicsDelegate::PrepareBufferForBrowserUi() {
 FovRectangles GvrGraphicsDelegate::GetRecommendedFovs() {
   return {ToUiFovRect(webvr_overlay_viewport_.left.GetSourceFov()),
           ToUiFovRect(webvr_overlay_viewport_.right.GetSourceFov())};
-}
-
-float GvrGraphicsDelegate::GetZNear() {
-  return kZNear;
 }
 
 RenderInfo GvrGraphicsDelegate::GetOptimizedRenderInfoForFovs(
@@ -536,4 +546,67 @@ void GvrGraphicsDelegate::RecordFrameTimeTraces() const {
                  webvr_submit_time_.GetAverage().InMilliseconds());
 }
 
+bool GvrGraphicsDelegate::RunInSkiaContext(base::OnceClosure callback) {
+  DCHECK_EQ(curr_context_id_, kMainContext);
+  if (!MakeContextCurrent(kSkiaContext)) {
+    return false;
+  }
+  std::move(callback).Run();
+  return MakeContextCurrent(kMainContext);
+}
+
+void GvrGraphicsDelegate::SwapSurfaceBuffers() {
+  TRACE_EVENT0("gpu", __func__);
+  DCHECK(surface_);
+  surface_->SwapBuffers(base::DoNothing(), gfx::FrameData());
+}
+
+bool GvrGraphicsDelegate::MakeContextCurrent(ContextId context_id) {
+  DCHECK(context_id > kNone && context_id < kNumContexts);
+  if (curr_context_id_ == context_id) {
+    return true;
+  }
+  auto& context = contexts_[context_id];
+  if (!context->MakeCurrent(surface_.get())) {
+    LOG(ERROR) << "gl::GLContext::MakeCurrent() failed";
+    return false;
+  }
+  curr_context_id_ = context_id;
+  return true;
+}
+
+bool GvrGraphicsDelegate::PreRender() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+void GvrGraphicsDelegate::PostRender() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+mojo::PlatformHandle GvrGraphicsDelegate::GetTexture() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+const gpu::SyncToken& GvrGraphicsDelegate::GetSyncToken() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+void GvrGraphicsDelegate::ResetMemoryBuffer() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+bool GvrGraphicsDelegate::BindContext() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
+
+void GvrGraphicsDelegate::ClearContext() {
+  // Only called by VrBrowserRendererThreadWin which never creates this class.
+  NOTREACHED_NORETURN();
+}
 }  // namespace vr

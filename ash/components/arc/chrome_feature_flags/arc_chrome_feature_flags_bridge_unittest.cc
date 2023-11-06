@@ -71,12 +71,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Enabled) {
   EXPECT_TRUE(instance()->flags_called_value()->qs_revamp);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyQsRevamp_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(ash::features::kQsRevamp);
-  Connect();
-  EXPECT_FALSE(instance()->flags_called_value()->qs_revamp);
-}
-
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly_Enabled) {
   scoped_feature_list()->InitAndEnableFeature(chromeos::features::kJelly);
   Connect();
@@ -99,24 +93,6 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyTouchscreenEmulation_Disabled) {
   scoped_feature_list()->InitAndDisableFeature(kTouchscreenEmulation);
   Connect();
   EXPECT_FALSE(instance()->flags_called_value()->touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyTrackpadScrollTouchscreenEmulation_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(
-      kTrackpadScrollTouchscreenEmulation);
-  Connect();
-  EXPECT_TRUE(
-      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyTrackpadScrollTouchscreenEmulation_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(
-      kTrackpadScrollTouchscreenEmulation);
-  Connect();
-  EXPECT_FALSE(
-      instance()->flags_called_value()->trackpad_scroll_touchscreen_emulation);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {

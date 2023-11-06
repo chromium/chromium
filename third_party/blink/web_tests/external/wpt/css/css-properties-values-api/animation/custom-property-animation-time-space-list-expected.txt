@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS Animating a custom property of type <time>+
-PASS Animating a custom property of type <time>+ with a single keyframe
-PASS Animating a custom property of type <time>+ with additivity
-PASS Animating a custom property of type <time>+ with a single keyframe and additivity
-FAIL Animating a custom property of type <time>+ with iterationComposite assert_equals: expected "250s 275s" but got "50s 75s"
-PASS Animating a custom property of type <time>+ with different lengths is discrete
+[PASS] Animating a custom property of type <time>+
+[PASS] Animating a custom property of type <time>+ with a single keyframe
+[PASS] Animating a custom property of type <time>+ with additivity
+[PASS] Animating a custom property of type <time>+ with a single keyframe and additivity
+[FAIL] Animating a custom property of type <time>+ with iterationComposite
+  assert_equals: expected "250s 275s" but got "50s 75s"
+[PASS] Animating a custom property of type <time>+ with different lengths is discrete
 Harness: the test ran to completion.
 

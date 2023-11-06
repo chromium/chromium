@@ -1,0 +1,34 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!DOCTYPE html>
+<html dir="ltr" lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  <link rel="stylesheet" href="private_aggregation_internals.css">
+  <script type="module" src="private_aggregation_internals.js"></script>
+  <title>Private Aggregation API Internals</title>
+</head>
+<body>
+<header>
+  <h1>Private Aggregation API Internals</h1>
+  <button id="refresh">Refresh all page data</button>
+  <button id="clear-data">Clear all private aggregation data</button>
+</header>
+<main>
+<section>
+  <h2>Aggregatable reports</h2>
+  <div class="content">
+    <button class = "button sendbutton" id="send-reports" disabled>
+      Send Selected Reports
+    </button>
+    <aggregation-service-internals-table id="reportTable">
+    </aggregation-service-internals-table>
+  </div>
+</section>
+</main>
+</body>
+</html>

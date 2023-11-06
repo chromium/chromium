@@ -48,14 +48,17 @@ class [[nodiscard]] Status {
   // Creates a "successful" status.
   Status();
 
+  Status(const Status&);
+  Status& operator=(const Status&);
+  Status(Status&&);
+  Status& operator=(Status&&);
+  virtual ~Status();
+
   // Create a status in the canonical error space with the specified
   // code, and error message.  If "code == 0", error_message is
   // ignored and a Status object identical to Status::OK is
   // constructed.
   Status(error::Code error_code, std::string_view error_message);
-  Status(const Status&);
-  Status& operator=(const Status& x);
-  ~Status() = default;
 
   // Pre-defined Status object
   static const Status& StatusOK();

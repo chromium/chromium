@@ -113,8 +113,9 @@ TEST_F(PostSaveCompromisedHelperTest, DefaultState) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, EmptyStore) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, 0));
@@ -127,8 +128,9 @@ TEST_F(PostSaveCompromisedHelperTest, EmptyStore) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, RandomSite_FullStore) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PostSaveCompromisedHelper helper({}, kUsername);
   base::MockCallback<PostSaveCompromisedHelper::BubbleCallback> callback;
   EXPECT_CALL(callback, Run(BubbleType::kNoBubble, _));
@@ -142,8 +144,9 @@ TEST_F(PostSaveCompromisedHelperTest, RandomSite_FullStore) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername, kPassword);
   form1.password_issues.insert({InsecureType::kLeaked, InsecurityMetadata()});
   PasswordForm form2 = CreateForm(kSignonRealm, kUsername2, kPassword2);
@@ -162,8 +165,9 @@ TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemStayed) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, CompromisedSite_ItemGone) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm form1 = CreateForm(kSignonRealm, kUsername, kPassword);
   PasswordForm form2 = CreateInsecureCredential(kUsername2, kPassword2);
   PasswordForm form3 = CreateInsecureCredential(kUsername, kPassword);
@@ -194,8 +198,9 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckNeverDone) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Days(5)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Days(5)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
   PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
@@ -210,8 +215,9 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneLongAgo) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
   PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
@@ -226,8 +232,9 @@ TEST_F(PostSaveCompromisedHelperTest, FixedLast_BulkCheckDoneRecently) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential = CreateInsecureCredential(
       kUsername, kPassword, PasswordForm::Store::kProfileStore, IsMuted(true));
   PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
@@ -242,8 +249,9 @@ TEST_F(PostSaveCompromisedHelperTest, BubbleShownEvenIfIssueIsMuted) {
 }
 
 TEST_F(PostSaveCompromisedHelperTest, MutedIssuesNotIncludedToCount) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm insecure_credential =
       CreateInsecureCredential(kUsername, kPassword);
   PostSaveCompromisedHelper helper({&insecure_credential}, kUsername);
@@ -288,8 +296,9 @@ class PostSaveCompromisedHelperWithTwoStoreTest
 
 TEST_F(PostSaveCompromisedHelperWithTwoStoreTest,
        CompromisedSiteInAccountStore_ItemStayed) {
-  prefs()->SetDouble(kLastTimePasswordCheckCompleted,
-                     (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+  prefs()->SetDouble(
+      kLastTimePasswordCheckCompleted,
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   PasswordForm compromised_profile_credential = CreateInsecureCredential(
       kUsername, kPassword, PasswordForm::Store::kProfileStore);
   PasswordForm compromised_account_credential = CreateInsecureCredential(

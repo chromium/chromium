@@ -57,32 +57,22 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ScrollCaptureCallbackDelegateTest {
-    @Mock
-    private Tab mTab;
-    @Mock
-    private WebContentsImpl mWebContents;
-    @Mock
-    private RenderCoordinatesImpl mRenderCoordinates;
-    @Mock
-    private EntryManagerWrapper mEntryManagerWrapper;
-    @Mock
-    private EntryManager mEntryManager;
-    @Mock
-    private LongScreenshotsEntry mEntry;
-    @Mock
-    private Callback<Rect> mRectConsumer;
-    @Mock
-    private PaintPreviewCompositorUtils.Natives mCompositorUtils;
+    @Mock private Tab mTab;
+    @Mock private WebContentsImpl mWebContents;
+    @Mock private RenderCoordinatesImpl mRenderCoordinates;
+    @Mock private EntryManagerWrapper mEntryManagerWrapper;
+    @Mock private EntryManager mEntryManager;
+    @Mock private LongScreenshotsEntry mEntry;
+    @Mock private Callback<Rect> mRectConsumer;
+    @Mock private PaintPreviewCompositorUtils.Natives mCompositorUtils;
 
     // We should use the Object type here to avoid RuntimeError in classloader on the bots running
     // API versions before S.
     private Object mScrollCaptureCallbackObj;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Before
     public void setUp() {
@@ -113,7 +103,8 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
         when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
-        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+        Assert.assertEquals(
+                new Rect(0, 0, viewportWidth, viewportHeight),
                 scrollCaptureCallback.onScrollCaptureSearch(signal));
     }
 
@@ -137,7 +128,8 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mRenderCoordinates.getLastFrameViewportWidthPixInt()).thenReturn(viewportWidth);
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
         when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
-        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+        Assert.assertEquals(
+                new Rect(0, 0, viewportWidth, viewportHeight),
                 scrollCaptureCallback.onScrollCaptureSearch(signal));
 
         // Test EntryManager initialization
@@ -164,7 +156,8 @@ public class ScrollCaptureCallbackDelegateTest {
         int contentWidth = 200;
         int contentHeight = 2000;
         observer.onCompositorReady(new Size(contentWidth, contentHeight), new Point(0, 0));
-        Assert.assertEquals(new Rect(0, 0, contentWidth, contentHeight),
+        Assert.assertEquals(
+                new Rect(0, 0, contentWidth, contentHeight),
                 scrollCaptureCallback.getContentAreaForTesting());
         Assert.assertEquals(0, scrollCaptureCallback.getInitialYOffsetForTesting());
 
@@ -204,7 +197,8 @@ public class ScrollCaptureCallbackDelegateTest {
         when(mRenderCoordinates.getLastFrameViewportHeightPixInt()).thenReturn(viewportHeight);
         when(mRenderCoordinates.getMinPageScaleFactor()).thenReturn(1f);
         // Set up viewportRect
-        Assert.assertEquals(new Rect(0, 0, viewportWidth, viewportHeight),
+        Assert.assertEquals(
+                new Rect(0, 0, viewportWidth, viewportHeight),
                 scrollCaptureCallback.onScrollCaptureSearch(signal));
         scrollCaptureCallback.onScrollCaptureStart(signal, () -> {});
         // Set up contentArea and initialRect
@@ -226,11 +220,12 @@ public class ScrollCaptureCallbackDelegateTest {
                 surface, signal, captureArea, mRectConsumer);
         inOrder.verify(mRectConsumer).onResult(eq(new Rect()));
 
-        doAnswer(invocation -> {
-            EntryListener listener = invocation.getArgument(0);
-            listener.onResult(EntryStatus.BITMAP_GENERATED);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            EntryListener listener = invocation.getArgument(0);
+                            listener.onResult(EntryStatus.BITMAP_GENERATED);
+                            return null;
+                        })
                 .when(mEntry)
                 .setListener(any(EntryListener.class));
         when(mEntryManager.generateEntry(any())).thenReturn(mEntry);

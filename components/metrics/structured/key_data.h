@@ -92,6 +92,10 @@ class KeyData {
   // since epoch. Returns nullopt if the key doesn't exist.
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash);
 
+  // Return the age of the key for |project_name_hash| since the last rotation,
+  // in weeks.
+  absl::optional<int> GetKeyAgeInWeeks(uint64_t project_name_hash);
+
   // Clears all key data from memory and from disk. If this is called before the
   // underlying proto has been read from disk, the purge will be performed once
   // the read is complete.

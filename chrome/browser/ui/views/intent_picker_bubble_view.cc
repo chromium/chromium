@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -624,7 +623,7 @@ IntentPickerBubbleView::IntentPickerBubbleView(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       intent_picker_cb_(std::move(intent_picker_cb)),
       app_info_(std::move(app_info)),
-      use_grid_view_(apps::features::LinkCapturingUiUpdateEnabled() &&
+      use_grid_view_(apps::features::ShouldShowLinkCapturingUX() &&
                      bubble_type == BubbleType::kLinkCapturing),
       show_stay_in_chrome_(show_stay_in_chrome && !use_grid_view_),
       show_remember_selection_(show_remember_selection),
@@ -789,13 +788,7 @@ void IntentPickerBubbleView::UpdateCheckboxState(size_t index) {
   if (!remember_selection_checkbox_)
     return;
   auto selected_app_type = app_info_[index].type;
-  bool should_enable = true;
-  if (selected_app_type == apps::PickerEntryType::kDevice) {
-    // TODO(crbug.com/1000037): Allow persisting remote devices.
-    should_enable = false;
-  } else if (selected_app_type == apps::PickerEntryType::kWeb) {
-    should_enable = apps::IntentPickerPwaPersistenceEnabled();
-  }
+  bool should_enable = selected_app_type != apps::PickerEntryType::kDevice;
 
   // Reset the checkbox state to the default unchecked if becomes disabled.
   if (!should_enable)

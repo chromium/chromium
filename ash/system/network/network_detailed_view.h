@@ -53,6 +53,8 @@ class ASH_EXPORT NetworkDetailedView : public TrayDetailedView,
   NetworkDetailedView& operator=(const NetworkDetailedView&) = delete;
   ~NetworkDetailedView() override;
 
+  views::Button* info_button_for_testing() { return info_button_; }
+
  protected:
   NetworkDetailedView(DetailedViewDelegate* detailed_view_delegate,
                       Delegate* delegate,

@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 
-void ShowReadAnythingSidePanel(Browser* browser) {
+void ShowReadAnythingSidePanel(Browser* browser,
+                               SidePanelOpenTrigger open_trigger) {
   SidePanelUI* side_panel_ui = SidePanelUI::GetSidePanelUIForBrowser(browser);
   if (!side_panel_ui) {
     return;
   }
-  side_panel_ui->Show(SidePanelEntryId::kReadAnything,
-                      SidePanelOpenTrigger::kReadAnythingContextMenu);
+  side_panel_ui->Show(SidePanelEntryId::kReadAnything, open_trigger);
 }
 
 bool IsReadAnythingEntryShowing(Browser* browser) {
@@ -23,4 +24,10 @@ bool IsReadAnythingEntryShowing(Browser* browser) {
   return side_panel_ui->IsSidePanelShowing() &&
          (side_panel_ui->GetCurrentEntryId() ==
           SidePanelEntryId::kReadAnything);
+}
+
+std::unique_ptr<ReadAnythingTabHelper::Delegate> CreateDelegate(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  return std::make_unique<ReadAnythingSidePanelController>(web_contents);
 }

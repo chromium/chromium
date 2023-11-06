@@ -251,7 +251,7 @@ void FormField::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
 
       LogBuffer description;
       LOG_AF(description) << "BestHeuristicType: "
-                          << FieldTypeToStringPiece(f.best_heuristic_type)
+                          << FieldTypeToStringView(f.best_heuristic_type)
                           << ", is fillable: "
                           << IsFillableFieldType(f.best_heuristic_type);
 
@@ -305,6 +305,19 @@ void FormField::ParseStandaloneCVCFields(
   ParseFormFieldsPass(StandaloneCvcField::Parse, processed_fields,
                       field_candidates, client_country, page_language,
                       pattern_source, log_manager);
+}
+
+void FormField::ParseStandaloneEmailFields(
+    const std::vector<std::unique_ptr<AutofillField>>& fields,
+    const GeoIpCountryCode& client_country,
+    const LanguageCode& page_language,
+    PatternSource pattern_source,
+    FieldCandidatesMap& field_candidates,
+    LogManager* log_manager) {
+  std::vector<AutofillField*> processed_fields = RemoveCheckableFields(fields);
+  ParseFormFieldsPass(EmailField::Parse, processed_fields, field_candidates,
+                      client_country, page_language, pattern_source,
+                      log_manager);
 }
 
 // static

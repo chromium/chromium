@@ -187,7 +187,7 @@ TEST(WebPParserTest, WebPImageFileValidator) {
 
 TEST(WebPParserTest, ParseLossyWebP) {
   base::FilePath data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
 
   base::FilePath file_path = data_dir.AppendASCII("media")
                                  .AppendASCII("test")
@@ -212,7 +212,7 @@ TEST(WebPParserTest, ParseLossyWebP) {
 
 TEST(WebPParserTest, ParseLosslessWebP) {
   base::FilePath data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
 
   base::FilePath file_path =
       data_dir.AppendASCII("media")
@@ -232,7 +232,7 @@ TEST(WebPParserTest, ParseLosslessWebP) {
 
 TEST(WebPParserTest, ParseExtendedWebP) {
   base::FilePath data_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
 
   base::FilePath file_path = data_dir.AppendASCII("media")
                                  .AppendASCII("test")

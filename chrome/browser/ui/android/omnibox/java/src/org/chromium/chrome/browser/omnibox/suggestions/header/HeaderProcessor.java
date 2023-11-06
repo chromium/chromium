@@ -23,8 +23,9 @@ public class HeaderProcessor implements DropdownItemProcessor {
      */
     public HeaderProcessor(Context context) {
         mContext = context;
-        mMinimumHeight = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_header_height);
+        mMinimumHeight =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
     }
 
     @Override
@@ -44,18 +45,20 @@ public class HeaderProcessor implements DropdownItemProcessor {
 
     /**
      * Populate a model for the group header.
+     *
      * @param model The model to populate.
      * @param headerText Text to be displayed for this group header.
      */
     public void populateModel(final PropertyModel model, final String headerText) {
         model.set(HeaderViewProperties.TITLE, headerText);
-        model.set(HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING,
+        model.set(
+                HeaderViewProperties.USE_MODERNIZED_HEADER_PADDING,
                 mShouldUseModernizedHeaderPadding);
     }
 
     /**
-     * Signals that native initialization has completed.
-     * And cache the feature flag value from the flag.
+     * Signals that native initialization has completed. And cache the feature flag value from the
+     * flag.
      */
     @Override
     public void onNativeInitialized() {

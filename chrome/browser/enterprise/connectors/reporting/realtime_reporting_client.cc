@@ -24,7 +24,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
@@ -39,6 +38,10 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -143,6 +146,14 @@ void PopulateSignals(base::Value::Dict event,
 }
 #endif
 
+bool IsManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
+#endif
+}
+
 }  // namespace
 
 const char RealtimeReportingClient::kKeyProfileIdentifier[] =
@@ -176,7 +187,7 @@ std::string RealtimeReportingClient::GetBaseName(const std::string& filename) {
 
 // static
 bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (profiles::IsManagedGuestSession() &&
+  if (IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
                 "Guest Sessions.";
@@ -288,7 +299,7 @@ RealtimeReportingClient::InitBrowserReportingClient(
   }
   DCHECK(profile);
 
-  if (profiles::IsManagedGuestSession()) {
+  if (IsManagedGuestSession()) {
     client_id = reporting::GetMGSUserClientId().value_or("");
   } else {
     client_id = reporting::GetUserClientId(profile).value_or("");

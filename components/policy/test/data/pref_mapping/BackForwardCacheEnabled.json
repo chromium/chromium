@@ -1,0 +1,23 @@
+[
+  {
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BackForwardCacheEnabled": true
+        },
+        "prefs": {
+          "policy.back_forward_cache_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

@@ -181,6 +181,17 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
   return *this;
 }
 
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
+    bool enable_diffs) {
+  overrides_.Set(kDevOverrideKeyEnableDiffUpdates, enable_diffs);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
+  overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
+  return *this;
+}
+
 bool ExternalConstantsBuilder::Overwrite() {
   const absl::optional<base::FilePath> override_path =
       GetOverrideFilePath(GetUpdaterScope());
@@ -231,6 +242,9 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
     SetMachineManaged(verifier->IsMachineManaged());
+  }
+  if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
+    SetEnableDiffUpdates(verifier->EnableDiffUpdates());
   }
 
   return Overwrite();

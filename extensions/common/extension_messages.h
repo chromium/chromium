@@ -20,13 +20,13 @@
 #include "base/values.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/socket_permission_request.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/api/messaging/port_context.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/common_param_traits.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_guid.h"
 #include "extensions/common/extension_param_traits.h"
@@ -52,6 +52,7 @@
 
 #define IPC_MESSAGE_START ExtensionMsgStart
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 IPC_ENUM_TRAITS_MAX_VALUE(extensions::mojom::CSSOrigin,
                           extensions::mojom::CSSOrigin::kMaxValue)
 
@@ -128,11 +129,6 @@ IPC_STRUCT_BEGIN(ExtensionMsg_ExternalConnectionInfo)
   IPC_STRUCT_MEMBER(int, guest_render_frame_routing_id)
 IPC_STRUCT_END()
 
-IPC_STRUCT_TRAITS_BEGIN(extensions::DraggableRegion)
-  IPC_STRUCT_TRAITS_MEMBER(draggable)
-  IPC_STRUCT_TRAITS_MEMBER(bounds)
-IPC_STRUCT_TRAITS_END()
-
 IPC_STRUCT_TRAITS_BEGIN(content::SocketPermissionRequest)
   IPC_STRUCT_TRAITS_MEMBER(type)
   IPC_STRUCT_TRAITS_MEMBER(host)
@@ -181,15 +177,6 @@ IPC_STRUCT_TRAITS_BEGIN(extensions::PortId)
   IPC_STRUCT_TRAITS_MEMBER(is_opener)
   IPC_STRUCT_TRAITS_MEMBER(serialization_format)
 IPC_STRUCT_TRAITS_END()
-
-// Struct to work around the maximum number of parameters in the
-// ExtensionMsg_ResponseWorker message.
-IPC_STRUCT_BEGIN(ExtensionMsg_ResponseWorkerData)
-  // Response wrapper, the response data (if any) is the first element in this
-  // list.
-  IPC_STRUCT_MEMBER(base::Value::List, results)
-  IPC_STRUCT_MEMBER(extensions::mojom::ExtraResponseDataPtr, extra_data)
-IPC_STRUCT_END()
 
 IPC_STRUCT_BEGIN(ExtensionMsg_OnConnectData)
   IPC_STRUCT_MEMBER(extensions::PortId, target_port_id)
@@ -297,22 +284,6 @@ IPC_SYNC_MESSAGE_CONTROL1_1(
     std::string /* extension id */,
     extensions::MessageBundle::SubstitutionMap /* message bundle */)
 
-// Informs the browser to increment the keepalive count for the lazy background
-// page, keeping it alive.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_IncrementLazyKeepaliveCount)
-
-// Informs the browser there is one less thing keeping the lazy background page
-// alive.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_DecrementLazyKeepaliveCount)
-
-// Notify the browser that an app window is ready and can resume resource
-// requests.
-IPC_MESSAGE_ROUTED0(ExtensionHostMsg_AppWindowReady)
-
-// Sent by the renderer when the draggable regions are updated.
-IPC_MESSAGE_ROUTED1(ExtensionHostMsg_UpdateDraggableRegions,
-                    std::vector<extensions::DraggableRegion> /* regions */)
-
 // Asks the browser to wake the event page of an extension.
 // The browser will reply with ExtensionHostMsg_WakeEventPageResponse.
 IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
@@ -323,15 +294,6 @@ IPC_MESSAGE_CONTROL2(ExtensionHostMsg_WakeEventPage,
 #undef IPC_MESSAGE_START
 #define IPC_MESSAGE_START ExtensionWorkerMsgStart
 
-// The browser sends this message in response to all service worker extension
-// api calls.
-IPC_MESSAGE_CONTROL5(ExtensionMsg_ResponseWorker,
-                     int /* thread_id */,
-                     int /* request_id */,
-                     bool /* success */,
-                     ExtensionMsg_ResponseWorkerData /* response */,
-                     std::string /* error */)
-
 // Tells the browser that an event with |event_id| was successfully dispatched
 // to the worker with version |service_worker_version_id|.
 IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
@@ -339,5 +301,6 @@ IPC_MESSAGE_CONTROL4(ExtensionHostMsg_EventAckWorker,
                      int64_t /* service_worker_version_id */,
                      int /* worker_thread_id */,
                      int /* event_id */)
+#endif
 
 #endif  // EXTENSIONS_COMMON_EXTENSION_MESSAGES_H_

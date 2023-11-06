@@ -56,12 +56,14 @@ class HiddenInputType final : public InputType, private InputTypeView {
   ValueMode GetValueMode() const override;
   bool IsInteractiveContent() const override { return false; }
   bool ShouldRespectHeightAndWidthAttributes() override;
+  bool IsAutoDirectionalityFormAssociated() const override;
   void SetValue(const String&,
                 bool,
                 TextFieldEventBehavior,
                 TextControlSetValueSelection) override;
   void AppendToFormData(FormData&) const override;
   bool NeedsShadowSubtree() const override { return false; }
+  void ValueAttributeChanged() override;
 };
 
 template <>

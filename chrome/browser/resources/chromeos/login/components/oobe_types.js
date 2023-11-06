@@ -205,7 +205,7 @@ OobeTypes.GaiaDialogButtonsType = {
  * @enum {number}
  */
 OobeTypes.LicenseType = {
-  /* NONE: 0, not used in js */
+  NONE: 0,
   ENTERPRISE: 1,
   EDUCATION: 2,
   KIOSK: 3,

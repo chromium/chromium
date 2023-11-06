@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safe_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_coordinator.h"
@@ -23,6 +25,36 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #endif
+
+class ReadAnythingUntrustedPageHandler;
+
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingWebContentsObserver
+//
+//  This class allows the ReadAnythingUntrustedPageHandler to observe multiple
+//  web contents at once.
+//
+class ReadAnythingWebContentsObserver : public content::WebContentsObserver {
+ public:
+  ReadAnythingWebContentsObserver(
+      base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler,
+      content::WebContents* web_contents);
+  ReadAnythingWebContentsObserver(const ReadAnythingWebContentsObserver&) =
+      delete;
+  ReadAnythingWebContentsObserver& operator=(
+      const ReadAnythingWebContentsObserver&) = delete;
+  ~ReadAnythingWebContentsObserver() override;
+
+  // content::WebContentsObserver:
+  void AccessibilityEventReceived(
+      const content::AXEventNotificationDetails& details) override;
+  void PrimaryPageChanged(content::Page& page) override;
+
+  // base::SafeRef used since the lifetime of ReadAnythingWebContentsObserver is
+  // completely contained by page_handler_. See
+  // ReadAnythingUntrustedPageHandler's destructor.
+  base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler_;
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingUntrustedPageHandler
@@ -40,8 +72,7 @@ class ReadAnythingUntrustedPageHandler
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       public screen_ai::ScreenAIInstallState::Observer,
 #endif
-      public TabStripModelObserver,
-      public content::WebContentsObserver {
+      public TabStripModelObserver {
  public:
   ReadAnythingUntrustedPageHandler(
       mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
@@ -53,6 +84,10 @@ class ReadAnythingUntrustedPageHandler
   ReadAnythingUntrustedPageHandler& operator=(
       const ReadAnythingUntrustedPageHandler&) = delete;
   ~ReadAnythingUntrustedPageHandler() override;
+
+  void AccessibilityEventReceived(
+      const content::AXEventNotificationDetails& details);
+  void PrimaryPageChanged();
 
  private:
   // ui::AXActionHandlerObserver:
@@ -68,6 +103,8 @@ class ReadAnythingUntrustedPageHandler
   void OnFontSizeChange(double font_size) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnSpeechRateChange(double rate) override;
+  void OnVoiceChange(const std::string& voice,
+                     const std::string& lang) override;
   void OnHighlightGranularityChanged(
       read_anything::mojom::HighlightGranularity granularity) override;
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
@@ -78,6 +115,7 @@ class ReadAnythingUntrustedPageHandler
                          ui::AXNodeID focus_node_id,
                          int focus_offset) override;
   void OnCollapseSelection() override;
+  void EnablePDFContentAccessibility(const ui::AXTreeID& ax_tree_id) override;
 
   // ReadAnythingModel::Observer:
   void OnReadAnythingThemeChanged(
@@ -104,11 +142,6 @@ class ReadAnythingUntrustedPageHandler
       const TabStripSelectionChange& selection) override;
   void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
 
-  // content::WebContentsObserver:
-  void AccessibilityEventReceived(
-      const content::AXEventNotificationDetails& details) override;
-  void PrimaryPageChanged(content::Page& page) override;
-
   // When the active web contents changes (or the UI becomes active):
   // 1. Begins observing the web contents of the active tab and enables web
   //    contents-only accessibility on that web contents. This causes
@@ -118,14 +151,15 @@ class ReadAnythingUntrustedPageHandler
   // 2. Notifies the model that the AXTreeID has changed.
   void OnActiveWebContentsChanged();
 
-  // Notifies the model that the AXTreeID has changed.
-  void OnActiveAXTreeIDChanged();
+  // force_update_state will tell the UI to update the state even if the active
+  // tree id does not change.
+  void OnActiveAXTreeIDChanged(bool force_update_state = false);
 
   // Logs the current visual settings values.
   void LogTextStyle();
 
   raw_ptr<ReadAnythingCoordinator> coordinator_;
-  const raw_ptr<Browser> browser_;
+  const base::WeakPtr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
   const std::map<std::string, ReadAnythingFont> font_map_ = {
       {"Poppins", ReadAnythingFont::kPoppins},
@@ -136,6 +170,13 @@ class ReadAnythingUntrustedPageHandler
       {"EB Garamond", ReadAnythingFont::kEbGaramond},
       {"STIX Two Text", ReadAnythingFont::kStixTwoText},
   };
+
+  std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
+
+  // This observer is used when the current page is a pdf. It observes a child
+  // (iframe) of the main web contents since that is where the pdf contents is
+  // contained.
+  std::unique_ptr<ReadAnythingWebContentsObserver> pdf_observer_;
 
   const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
@@ -159,6 +200,8 @@ class ReadAnythingUntrustedPageHandler
                           screen_ai::ScreenAIInstallState::Observer>
       component_ready_observer_{this};
 #endif
+
+  base::WeakPtrFactory<ReadAnythingUntrustedPageHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_UNTRUSTED_PAGE_HANDLER_H_

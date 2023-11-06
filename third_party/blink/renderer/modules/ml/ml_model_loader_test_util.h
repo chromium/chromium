@@ -29,8 +29,8 @@ class FakeMLService : public MLService {
   ~FakeMLService() override;
 
   using CreateModelLoaderFn =
-      base::OnceCallback<void(CreateModelLoaderOptionsPtr,
-                              MLService::CreateModelLoaderCallback)>;
+      base::RepeatingCallback<void(CreateModelLoaderOptionsPtr,
+                                   MLService::CreateModelLoaderCallback)>;
 
   void SetCreateModelLoader(CreateModelLoaderFn fn);
 
@@ -66,8 +66,8 @@ class FakeMLModelLoader : public ModelLoader {
   FakeMLModelLoader(FakeMLModelLoader&&) = delete;
   ~FakeMLModelLoader() override;
 
-  using LoadFn =
-      base::OnceCallback<void(mojo_base::BigBuffer, ModelLoader::LoadCallback)>;
+  using LoadFn = base::RepeatingCallback<void(mojo_base::BigBuffer,
+                                              ModelLoader::LoadCallback)>;
   void SetLoad(LoadFn fn);
 
   FakeMLService::CreateModelLoaderFn CreateFromThis();

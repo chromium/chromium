@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,6 +14,13 @@
 #include "ui/base/class_property.h"
 
 namespace actions {
+
+enum class ContextValues {
+  kContextNone,
+  kContextKeyboard,
+  kContextMouse,
+  kContextTouch,
+};
 
 namespace {
 
@@ -30,15 +38,21 @@ const std::u16string kActionTooltipText = u"Tooltip text";
 
 #include "ui/actions/action_id_macros.inc"
 
+// clang-format off
 enum TestActionIds : ActionId {
   kActionTestStart = kActionsEnd,
 
   TEST_ACTION_IDS
 
-      kActionTestEnd,
+  kActionTestEnd,
 };
+// clang-format on
 
 #include "ui/actions/action_id_macros.inc"
+
+DEFINE_UI_CLASS_PROPERTY_KEY(ContextValues,
+                             kContextValueKey,
+                             ContextValues::kContextNone)
 
 class ActionManagerTest : public testing::Test {
  public:
@@ -71,13 +85,23 @@ class ActionManagerTest : public testing::Test {
             &ActionManagerTest::InitializeActions, base::Unretained(this)));
   }
 
+  void TearDown() override { ActionIdMap::ResetMapsForTesting(); }
+
  private:
   base::CallbackListSubscription initialization_subscription_;
 };
 
 using ActionItemTest = ActionManagerTest;
+using ActionIdMapTest = ActionManagerTest;
 
 }  // namespace
+}  // namespace actions
+
+DECLARE_EXPORTED_UI_CLASS_PROPERTY_TYPE(, actions::ContextValues)
+
+DEFINE_UI_CLASS_PROPERTY_TYPE(actions::ContextValues)
+
+namespace actions {
 
 // Verifies that the test harness functions correctly.
 TEST_F(ActionManagerTest, Harness) {
@@ -107,7 +131,8 @@ TEST_F(ActionManagerTest, ActionRegisterAndInvoke) {
       [](int* invoked_count, const std::u16string& text,
          ActionManager* manager) {
         auto action = std::make_unique<ActionItem>(base::BindRepeating(
-            [](int* invoked_count, actions::ActionItem* action) {
+            [](int* invoked_count, actions::ActionItem* action,
+               ActionInvocationContext context) {
               ++*invoked_count;
               EXPECT_EQ(*invoked_count, action->GetInvokeCount());
               EXPECT_GE(base::TimeTicks::Now(), *action->GetLastInvokeTime());
@@ -167,45 +192,48 @@ TEST_F(ActionItemTest, ScopedFindActionTest) {
   EXPECT_FALSE(action_test3);
 }
 
-TEST_F(ActionManagerTest, TestCreateActionId) {
+TEST_F(ActionIdMapTest, TestCreateActionId) {
   const std::string new_action_id_1 = "kNewActionId1";
   const std::string new_action_id_2 = "kNewActionId2";
   const std::string existing_action_id = "kActionPaste";
 
-  auto result_1 = ActionManager::CreateActionId(new_action_id_1);
+  auto result_1 = ActionIdMap::CreateActionId(new_action_id_1);
   EXPECT_TRUE(result_1.second);
 
-  auto result_2 = ActionManager::CreateActionId(new_action_id_2);
+  auto result_2 = ActionIdMap::CreateActionId(new_action_id_2);
   EXPECT_TRUE(result_2.second);
   EXPECT_NE(result_1.first, result_2.first);
 
-  auto result_2_dupe = ActionManager::CreateActionId(new_action_id_2);
+  auto result_2_dupe = ActionIdMap::CreateActionId(new_action_id_2);
   EXPECT_FALSE(result_2_dupe.second);
   EXPECT_EQ(result_2.first, result_2_dupe.first);
 
-  auto result_existing = ActionManager::CreateActionId(existing_action_id);
+  auto result_existing = ActionIdMap::CreateActionId(existing_action_id);
   EXPECT_FALSE(result_existing.second);
 }
 
-TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
+TEST_F(ActionIdMapTest, MapBetweenEnumAndString) {
+  auto result_1 = ActionIdMap::CreateActionId("kNewActionId1");
+  EXPECT_TRUE(result_1.second);
+
   const std::string expected_action_string = "kActionPaste";
-  auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
+  auto actual_action_string = ActionIdMap::ActionIdToString(kActionPaste);
   ASSERT_THAT(actual_action_string, testing::Optional(expected_action_string));
 
   // Map back from enum to string
   auto actual_action_id =
-      ActionManager::StringToActionId(actual_action_string.value());
+      ActionIdMap::StringToActionId(actual_action_string.value());
   EXPECT_THAT(actual_action_id, testing::Optional(kActionPaste));
 
   const std::vector<std::string> strings{"kActionPaste", "kActionCut"};
   const std::vector<ActionId> action_ids{kActionPaste, kActionCut};
 
-  auto actual_strings = ActionManager::ActionIdsToStrings(action_ids);
+  auto actual_strings = ActionIdMap::ActionIdsToStrings(action_ids);
   ASSERT_EQ(strings.size(), actual_strings.size());
   EXPECT_THAT(actual_strings[0], testing::Optional(strings[0]));
   EXPECT_THAT(actual_strings[1], testing::Optional(strings[1]));
 
-  auto actual_action_ids = ActionManager::StringsToActionIds(strings);
+  auto actual_action_ids = ActionIdMap::StringsToActionIds(strings);
   ASSERT_EQ(action_ids.size(), actual_action_ids.size());
   EXPECT_THAT(actual_action_ids[0], testing::Optional(action_ids[0]));
   EXPECT_THAT(actual_action_ids[1], testing::Optional(action_ids[1]));
@@ -214,30 +242,30 @@ TEST_F(ActionManagerTest, MapBetweenEnumAndString) {
 #define MAP_ACTION_IDS_TO_STRINGS
 #include "ui/actions/action_id_macros.inc"
 
-TEST_F(ActionManagerTest, MergeMaps) {
+TEST_F(ActionIdMapTest, MergeMaps) {
   auto test_action_map = base::MakeFlatMap<ActionId, std::string>(
       std::vector<std::pair<ActionId, std::string>>{TEST_ACTION_IDS});
-  ActionManager::AddActionIdToStringMappings(test_action_map);
+  ActionIdMap::AddActionIdToStringMappings(test_action_map);
 
   const std::string expected_action_string = "kActionPaste";
-  auto actual_action_string = ActionManager::ActionIdToString(kActionPaste);
+  auto actual_action_string = ActionIdMap::ActionIdToString(kActionPaste);
   EXPECT_THAT(actual_action_string, testing::Optional(expected_action_string));
 
   const std::string expected_string = "kActionTest2";
-  auto actual_string = ActionManager::ActionIdToString(kActionTest2);
+  auto actual_string = ActionIdMap::ActionIdToString(kActionTest2);
   EXPECT_THAT(actual_string, testing::Optional(expected_string));
 }
 
 #include "ui/actions/action_id_macros.inc"
 #undef MAP_ACTION_IDS_TO_STRINGS
 
-TEST_F(ActionManagerTest, TestEnumNotFound) {
+TEST_F(ActionIdMapTest, TestEnumNotFound) {
   const std::string unknown_action = "kActionUnknown";
-  auto unknown_id = ActionManager::StringToActionId(unknown_action);
+  auto unknown_id = ActionIdMap::StringToActionId(unknown_action);
   EXPECT_FALSE(unknown_id.has_value());
 
   const ActionId invalid_action_id = static_cast<ActionId>(-1);
-  auto unknown_id_string = ActionManager::ActionIdToString(invalid_action_id);
+  auto unknown_id_string = ActionIdMap::ActionIdToString(invalid_action_id);
   EXPECT_FALSE(unknown_id_string.has_value());
 }
 
@@ -272,7 +300,8 @@ TEST_F(ActionItemTest, ActionBuilderChildrenTest) {
   int action_invoked_count = 0;
   // clang-format off
   auto builder = ActionItem::Builder(
-      base::BindRepeating([](int* invoked_count, actions::ActionItem* action){
+      base::BindRepeating([](int* invoked_count, actions::ActionItem* action,
+          ActionInvocationContext context){
         ++*invoked_count;
       }, &action_invoked_count))
       .CopyAddressTo(&root_action)
@@ -452,6 +481,64 @@ TEST_F(ActionItemTest, TestActionProperties) {
   EXPECT_EQ(action_item->GetAccessibleName(), kActionAccessibleText);
   EXPECT_EQ(action_item->GetTooltipText(), kActionTooltipText);
   EXPECT_EQ(action_item->GetGroupId(), kGroupId);
+}
+
+TEST_F(ActionItemTest, TestActionWeakPtr) {
+  base::WeakPtr<ActionItem> action_test2;
+  base::WeakPtr<ActionItem> action_test3;
+  // clang-format off
+  auto builder = ActionItem::Builder()
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(false)
+      .AddChildren(
+          ActionItem::Builder()
+              .CopyWeakPtrTo(&action_test2)
+              .SetActionId(kActionTest2)
+              .SetGroupId(10)
+              .SetText(kChild1Text),
+          ActionItem::Builder()
+              .CopyWeakPtrTo(&action_test3)
+              .SetActionId(kActionTest3)
+              .SetGroupId(10)
+              .SetChecked(true)
+              .SetText(kChild2Text));
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  ASSERT_NE(action_test2.get(), nullptr);
+  ASSERT_NE(action_test3.get(), nullptr);
+  manager.ResetActions();
+  EXPECT_EQ(action_test2.get(), nullptr);
+  EXPECT_EQ(action_test3.get(), nullptr);
+}
+
+TEST_F(ActionItemTest, TextActionInvocationContext) {
+  int action_invoked_count = 0;
+  base::WeakPtr<ActionItem> action_test1;
+  // clang-format off
+  auto builder = ActionItem::Builder(
+      base::BindRepeating([](int* invoked_count, actions::ActionItem* action,
+          ActionInvocationContext context){
+        ++*invoked_count;
+        ContextValues context_value = context.GetProperty(kContextValueKey);
+        EXPECT_EQ(context_value, ContextValues::kContextKeyboard);
+      },  &action_invoked_count))
+      .CopyWeakPtrTo(&action_test1)
+      .SetText(kActionText)
+      .SetActionId(kActionTest1)
+      .SetVisible(true)
+      .SetEnabled(true);
+  // clang-format on
+  auto& manager = ActionManager::GetForTesting();
+  manager.AddAction(std::move(builder).Build());
+  ASSERT_TRUE(action_test1);
+  action_test1->InvokeAction(
+      ActionInvocationContext::Builder()
+          .SetProperty(kContextValueKey, ContextValues::kContextKeyboard)
+          .Build());
+  EXPECT_EQ(action_invoked_count, 1);
 }
 
 }  // namespace actions

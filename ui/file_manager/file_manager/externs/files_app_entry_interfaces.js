@@ -59,11 +59,11 @@ export class FilesAppEntry {
      */
     this.type_name = 'FilesAppEntry';
 
-    /** @public @type {VolumeManagerCommon.RootType|null} */
+    /** @type {VolumeManagerCommon.RootType|null} */
     this.rootType = null;
 
     /**
-     * @public @type {?FileSystem}
+     * @type {?FileSystem}
      */
     this.filesystem = null;
   }
@@ -74,6 +74,7 @@ export class FilesAppEntry {
    * @param {function(Error)=} error callback.
    * This method is defined on Entry.
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getParent(success, error) {}
 
   /**
@@ -82,7 +83,9 @@ export class FilesAppEntry {
    * "fake-entry://unique/path/to/entry".
    * This method is defined on Entry.
    */
-  toURL() {}
+  toURL() {
+    return '';
+  }
 
   /**
    * Return metadata via |success| callback. Relevant metadata are
@@ -99,7 +102,10 @@ export class FilesAppEntry {
    * or DirectoryEntry, this means it can interact with VolumeManager.
    * @return {boolean}
    */
-  get isNativeType() {}
+  // @ts-ignore: error TS2378: A 'get' accessor must return a value.
+  get isNativeType() {
+    return false;
+  }
 
   /**
    * Returns a FileSystemEntry if this instance has one, returns null if it
@@ -107,7 +113,9 @@ export class FilesAppEntry {
    * FilesAppEntry to be able to send to FileSystem API or fileManagerPrivate.
    * @return {?Entry}
    */
-  getNativeEntry() {}
+  getNativeEntry() {
+    return null;
+  }
 
   /**
    * @param {!DirectoryEntry|!FilesAppDirEntry} newParent
@@ -115,6 +123,7 @@ export class FilesAppEntry {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   copyTo(newParent, newName, success, error) {}
 
   /**
@@ -123,12 +132,14 @@ export class FilesAppEntry {
    * @param {(function(Entry)|function(FilesAppEntry))=} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   moveTo(newParent, newName, success, error) {}
 
   /**
-   * @param {function(Entry)|function(FilesAppEntry)} success
+   * @param {function(Entry):void|function(FilesAppEntry):void} success
    * @param {function(FileError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   remove(success, error) {}
 }
 
@@ -164,28 +175,34 @@ export class FilesAppDirEntry extends FilesAppEntry {
    * this instance.
    * This method is defined on DirectoryEntry.
    */
-  createReader() {}
+  createReader() {
+    return /** @type {DirectoryReader} */ ({});
+  }
 
   /**
    * @param {string} path
    * @param {!FileSystemFlags=} options
    * @param {(function(!FileEntry)|function(!FilesAppEntry))=} success
-   * @param {function(!FileError)=} error
+   * @param {function(!DOMError):void=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getFile(path, options, success, error) {}
 
   /**
    * @param {string} path
    * @param {!FileSystemFlags=} options
-   * @param {(function(!DirectoryEntry)|function(!FilesAppDirEntry))=} success
-   * @param {function(!FileError)=} error
+   * @param {(function(!DirectoryEntry):void|function(!FilesAppDirEntry):void)=}
+   *     success
+   * @param {function(!DOMError)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   getDirectory(path, options, success, error) {}
 
   /**
-   * @param {function()} success
+   * @param {function():void} success
    * @param {function(!Error)=} error
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   removeRecursively(success, error) {}
 }
 
@@ -204,50 +221,52 @@ export class FakeEntry extends FilesAppDirEntry {
    * @param {chrome.fileManagerPrivate.FileCategory=} opt_fileCategory
    *    used on Recents to filter recent files by their file types.
    */
+  // @ts-ignore: error TS6133: 'opt_fileCategory' is declared but its value is
+  // never read.
   constructor(label, rootType, opt_sourceRestriction, opt_fileCategory) {
     super();
     /**
-     * @public @type {string} label: Label to be used when displaying to user,
-     * it should be already translated.
+     * @type {string} label: Label to be used when displaying to user, it
+     *      should be already translated.
      */
     this.label;
 
-    /** @public @type {string} Name for this volume. */
+    /** @type {string} Name for this volume. */
     this.name;
 
-    /** @public @type {!VolumeManagerCommon.RootType} */
+    /** @type {!VolumeManagerCommon.RootType} */
     this.rootType;
 
-    /** @public @type {boolean} true FakeEntry are always directory-like. */
+    /** @type {boolean} true FakeEntry are always directory-like. */
     this.isDirectory = true;
 
-    /** @public @type {boolean} false FakeEntry are always directory-like. */
+    /** @type {boolean} false FakeEntry are always directory-like. */
     this.isFile = false;
 
     /**
-     * @public @type {boolean} false FakeEntry can be disabled if it represents
-     * the placeholder of the real volume.
+     * @type {boolean} false FakeEntry can be disabled if it represents the
+     * placeholder of the real volume.
      */
     this.disabled = false;
 
     /**
-     * @public @type {chrome.fileManagerPrivate.SourceRestriction|undefined}
-     * It's used to communicate restrictions about sources to
+     * @type {chrome.fileManagerPrivate.SourceRestriction|undefined} It's used
+     * to communicate restrictions about sources to
      * chrome.fileManagerPrivate.getRecentFiles API.
      */
     this.sourceRestriction;
 
     /**
-     * @public @type {chrome.fileManagerPrivate.FileCategory|undefined} It's
-     * used to communicate category filter to
-     * chrome.fileManagerPrivate.getRecentFiles API.
+     * @type {chrome.fileManagerPrivate.FileCategory|undefined} It's used to
+     * communicate category filter to chrome.fileManagerPrivate.getRecentFiles
+     * API.
      */
     this.fileCategory;
 
     /**
-     * @public @type {string} the class name for this class. It's workaround for
-     * the fact that an instance created on foreground page and sent to
-     * background page can't be checked with "instanceof".
+     * @type {string} the class name for this class. It's workaround for the
+     * fact that an instance created on foreground page and sent to background
+     * page can't be checked with "instanceof".
      */
     this.type_name = 'FakeEntry';
   }
@@ -256,12 +275,18 @@ export class FakeEntry extends FilesAppDirEntry {
    * String used to determine the icon.
    * @return {string}
    */
-  get iconName() {}
+  // @ts-ignore: error TS2378: A 'get' accessor must return a value.
+  get iconName() {
+    return '';
+  }
 
   /**
    * FakeEntry can be a placeholder for the real volume, if so this field will
    * be the volume type of the volume it represents.
    * @return {VolumeManagerCommon.VolumeType|null}
    */
-  get volumeType() {}
+  // @ts-ignore: error TS2378: A 'get' accessor must return a value.
+  get volumeType() {
+    return null;
+  }
 }

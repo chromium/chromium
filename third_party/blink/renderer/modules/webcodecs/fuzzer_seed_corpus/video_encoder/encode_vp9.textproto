@@ -21,7 +21,8 @@ invocations: [
       bitrate_mode: VARIABLE,
       scalability_mode: L1T1,
       alpha: KEEP,
-      latency_mode: QUALITY
+      latency_mode: QUALITY,
+      content_hint: TEXT
     }
   },
   {

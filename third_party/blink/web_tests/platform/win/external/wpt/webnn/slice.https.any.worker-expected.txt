@@ -1,13 +1,18 @@
 This is a testharness.js-based test.
-PASS slice float32 1D tensor / sync
-PASS slice float32 2D tensor / sync
-PASS slice float32 3D tensor / sync
-PASS slice float32 4D tensor / sync
-PASS slice float32 5D tensor / sync
-FAIL slice float32 1D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL slice float32 2D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL slice float32 3D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL slice float32 4D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL slice float32 5D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[PASS] slice float32 1D tensor / sync
+[PASS] slice float32 2D tensor / sync
+[PASS] slice float32 3D tensor / sync
+[PASS] slice float32 4D tensor / sync
+[PASS] slice float32 5D tensor / sync
+[FAIL] slice float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] slice float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] slice float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] slice float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] slice float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

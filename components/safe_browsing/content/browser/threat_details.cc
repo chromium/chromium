@@ -151,6 +151,8 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
       return CSBRR::PVER5_NATIVE_REAL_TIME;
     case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
       return CSBRR::ANDROID_SAFEBROWSING_REAL_TIME;
+    case safe_browsing::ThreatSource::ANDROID_SAFEBROWSING:
+      return CSBRR::ANDROID_SAFEBROWSING;
     case safe_browsing::ThreatSource::UNKNOWN:
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
@@ -698,7 +700,8 @@ void ThreatDetails::FinishCollection(
     bool did_proceed,
     int num_visit,
     std::unique_ptr<security_interstitials::InterstitialInteractionMap>
-        interstitial_interactions) {
+        interstitial_interactions,
+    absl::optional<int64_t> warning_shown_ts) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   all_done_expected_ = true;
@@ -723,6 +726,7 @@ void ThreatDetails::FinishCollection(
   did_proceed_ = did_proceed;
   num_visits_ = num_visit;
   interstitial_interactions_ = std::move(interstitial_interactions);
+  warning_shown_ts_ = warning_shown_ts;
   std::vector<GURL> urls;
   for (ResourceMap::const_iterator it = resources_.begin();
        it != resources_.end(); ++it) {
@@ -807,6 +811,13 @@ void ThreatDetails::OnCacheCollectionReady() {
         report_.get(), interstitial_interactions_.get());
   }
 
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport) &&
+      warning_shown_ts_.has_value()) {
+    // Set the warning shown timestamp.
+    report_->set_warning_shown_timestamp_msec(warning_shown_ts_.value());
+  }
+
   // Add report to HaTS survey response if applicable.
   MaybeAttachThreatDetailsAndLaunchSurvey();
 
@@ -862,6 +873,10 @@ void ThreatDetails::MaybeAttachThreatDetailsAndLaunchSurvey() {
   report->set_url(report_->url());
   report->set_page_url(report_->page_url());
   report->set_referrer_url(report_->referrer_url());
+  if (report_->has_warning_shown_timestamp_msec()) {
+    report->set_warning_shown_timestamp_msec(
+        report_->warning_shown_timestamp_msec());
+  }
   client_report_utils::FillInterstitialInteractionsHelper(
       report.get(), interstitial_interactions_.get());
   ui_manager_->AttachThreatDetailsAndLaunchSurvey(browser_context_,

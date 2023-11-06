@@ -213,6 +213,17 @@ class ASH_PUBLIC_EXPORT AppListConfig {
   int item_icon_in_folder_icon_margin() const {
     return item_icon_in_folder_icon_margin_;
   }
+  int shortcut_host_badge_icon_dimension() const {
+    return shortcut_host_badge_icon_dimension_;
+  }
+  int shortcut_host_badge_icon_border_dimension() const {
+    return shortcut_host_badge_icon_border_dimension_;
+  }
+  int shortcut_background_border_dimension() const {
+    return shortcut_background_border_dimension_;
+  }
+  int GetShortcutHostBadgeIconContainerDimension() const;
+  int GetShortcutBackgroundContainerDimension() const;
 
   gfx::Size grid_icon_size() const {
     return gfx::Size(grid_icon_dimension_, grid_icon_dimension_);
@@ -300,6 +311,15 @@ class ASH_PUBLIC_EXPORT AppListConfig {
 
   // The margin between item icons inside a folder icon.
   const int item_icon_in_folder_icon_margin_;
+
+  // The dimension of a host badge icon of a shortcut.
+  const int shortcut_host_badge_icon_dimension_;
+
+  // The dimension of a host badge icon container border of a shortcut.
+  const int shortcut_host_badge_icon_border_dimension_;
+
+  // The dimension of a background container border of a shortcut.
+  const int shortcut_background_border_dimension_;
 };
 
 }  // namespace ash

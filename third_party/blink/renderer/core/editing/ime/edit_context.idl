@@ -20,7 +20,7 @@
     void updateSelectionBounds(DOMRect selectionBounds);
     void updateCharacterBounds(unsigned long rangeStart, sequence<DOMRect> characterBounds);
     [RaisesException] void updateText(unsigned long start, unsigned long end, DOMString newText);
-    sequence<Element> attachedElements();
+    sequence<HTMLElement> attachedElements();
 
     readonly attribute DOMString text;
     readonly attribute unsigned long selectionStart;

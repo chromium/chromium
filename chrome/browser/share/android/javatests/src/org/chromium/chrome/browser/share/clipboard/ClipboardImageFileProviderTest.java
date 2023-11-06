@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests of {@link ClipboardImageFileProvider}.
- */
+/** Tests of {@link ClipboardImageFileProvider}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ClipboardImageFileProviderTest {
@@ -75,7 +73,7 @@ public class ClipboardImageFileProviderTest {
         Clipboard.getInstance().setText("");
 
         Bitmap bitmap =
-                Bitmap.createBitmap(/* width = */ 10, /* height = */ 10, Bitmap.Config.ARGB_8888);
+                Bitmap.createBitmap(/* width= */ 10, /* height= */ 10, Bitmap.Config.ARGB_8888);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, /*quality = (0-100) */ 100, baos);
         mTestImageData = baos.toByteArray();
@@ -96,16 +94,20 @@ public class ClipboardImageFileProviderTest {
         Clipboard.getInstance().setImageFileProvider(new ClipboardImageFileProvider());
         Clipboard.getInstance().setImage(mTestImageData, TEST_PNG_IMAGE_FILE_EXTENSION);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
-            Criteria.checkThat(Clipboard.getInstance().getImageUriIfSharedByThisApp(),
-                    Matchers.is(Clipboard.getInstance().getImageUri()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            Clipboard.getInstance().getImageUriIfSharedByThisApp(),
+                            Matchers.is(Clipboard.getInstance().getImageUri()));
+                });
 
         Uri uri = Clipboard.getInstance().getImageUri();
         Assert.assertNotNull(uri);
-        Bitmap bitmap = ApiCompatibilityUtils.getBitmapByUri(
-                ContextUtils.getApplicationContext().getContentResolver(), uri);
+        Bitmap bitmap =
+                ApiCompatibilityUtils.getBitmapByUri(
+                        ContextUtils.getApplicationContext().getContentResolver(), uri);
         Assert.assertNotNull(bitmap);
 
         // Wait for the above check to complete.

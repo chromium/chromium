@@ -1243,8 +1243,9 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   SetCookieControlsMode(content_settings::CookieControlsMode::kIncognitoOnly);
   OpenPageInfoAndGoToCookiesSubpage(/*fps_owner =*/{});
 
-  // FPS blocked and 3pc allowed -> only button for opening cookie dialog.
-  size_t kExpectedChildren = 1;
+  // FPS blocked and 3pc allowed -> button for opening cookie dialog +
+  // separator.
+  size_t kExpectedChildren = IsParamFeatureEnabled() ? 2 : 1;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1272,7 +1273,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
   if (IsParamFeatureEnabled()) {
-    size_t kExpectedChildren = 2;
+    size_t kExpectedChildren = 3;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());
@@ -1324,7 +1325,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
   // FPS blocked and 3pc blocked -> buttons for cookie dialog and third party
   // cookies.
   if (IsParamFeatureEnabled()) {
-    size_t kExpectedChildren = 1;
+    size_t kExpectedChildren = 2;
     auto* cookies_buttons_container = GetView(
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
     EXPECT_THAT(cookies_buttons_container->children().size(),
@@ -1387,8 +1388,9 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestCookiesSubpage,
 
   OpenPageInfoAndGoToCookiesSubpage({fps_owner});
 
-  // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button.
-  size_t kExpectedChildren = 2;
+  // FPS allowed and 3pc allowed -> buttons for cookie dialog and fps button and
+  // separator.
+  size_t kExpectedChildren = IsParamFeatureEnabled() ? 3 : 2;
   auto* cookies_buttons_container =
       GetView(PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_BUTTONS_CONTAINER);
   EXPECT_EQ(kExpectedChildren, cookies_buttons_container->children().size());

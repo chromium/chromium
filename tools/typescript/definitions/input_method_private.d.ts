@@ -19,6 +19,11 @@ declare global {
         ERROR_NEEDS_REBOOT = 'errorNeedsReboot',
       }
 
+      export interface LanguagePackStatusChange {
+        engineIds: string[];
+        status: LanguagePackStatus;
+      }
+
       export function getCurrentInputMethod(): Promise<string>;
       export function setCurrentInputMethod(inputMethodId: string):
           Promise<void>;
@@ -29,6 +34,8 @@ declare global {
           Promise<LanguagePackStatus>;
 
       export const onChanged: ChromeEvent<(newInputMethodId: string) => void>;
+      export const onLanguagePackStatusChanged:
+          ChromeEvent<(change: LanguagePackStatusChange) => void>;
     }
   }
 }

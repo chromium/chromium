@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Kërko me zë në Chromium.</translation>
 <translation id="1047130070405668746">Zgjidh Chromium</translation>
 <translation id="1091252999271033193">Kjo do të thotë që Chromium do kërkojë sajtin në celular çdo herë.</translation>
+<translation id="1115463765356382667">Përfundo këto veprime të sugjeruara më poshtë për të përfituar sa më shumë nga Chromium.</translation>
 <translation id="1171824629317156389">Hap "Cilësimet" e Chromium në iOS dhe më pas trokit te "Default Browser App" dhe zgjidh Chromium.</translation>
 <translation id="1185134272377778587">Rreth Chromium</translation>
 <translation id="1257458525759135959">Për të ruajtur imazhet, trokit te "Cilësimet" për të lejuar që Chromium të shtojë te fotografitë e tua</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">Chromium nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
 <translation id="2784449251446768092">Menaxho cilësimet e Chromium</translation>
 <translation id="2798503587425057129">Hap "Listën e leximit" të Chromium.</translation>
+<translation id="2843571538056574338">Përdor Chromium për "Plotësimin automatik"</translation>
 <translation id="2915596697727466327">Chromium përdor Face ID për të siguruar qasjen e autorizuar te fjalëkalimet e tua.</translation>
 <translation id="2918709798697875261">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="2942241131342758843">Përdor Chromium si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
@@ -94,6 +96,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />pastro të dhënat e 
 <translation id="4654936625574199632">Për të ndihmuar në përmirësimin e aplikacionit, Chromium dërgon të dhëna të përdorimit dhe të ndërprerjeve aksidentale te Google. <ph name="BEGIN_LINK" />Menaxho<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
 <translation id="4736424910885271643">Llogaria jote menaxhohet nga <ph name="HOSTED_DOMAIN" />, prandaj të dhënat e tua të Chromium do të pastrohen nga kjo pajisje</translation>
+<translation id="4773487571745795781">Ke çaktivizuar identifikimin në Chromium.</translation>
 <translation id="4790638144988730920">Vazhdo të përdorësh të dhënat e Chromium në "Llogarinë tënde të Google".</translation>
 <translation id="4828317641996116749">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
 <translation id="4985291216379576555">Offline. Chromium nuk mund të kontrollojë për përditësime</translation>
@@ -139,10 +142,12 @@ Gjëra për të pasur parasysh:
 1. Hap "Cilësimet"
 2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"
 3. Zgjidh Chromium.</translation>
+<translation id="6154098560469640583">Përdor Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera</translation>
 <translation id="6197255575340902638">Nëse e fsheh "<ph name="MODULE_NAME" />", Chromium nuk do të gjurmojë më automatikisht pakot e tua në të ardhmen dhe do t'i fshijë të gjitha të dhënat e mëparshme të gjurmimit të pakove.</translation>
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
 <translation id="6324041800010509197">Vizito rrjetën e skedave në Chromium</translation>
+<translation id="6325378625795868881">Përdor Chromium sa herë që troket te lidhjet në mesazhe dhe aplikacione të tjera.</translation>
 <translation id="632825460376924298">Lejo identifikimin në Chromium</translation>
 <translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6407399265324739055">Mënyrat e pagesës dhe adresat nuk do të enkriptohen. Historiku i shfletimit nga Chromium nuk do të sinkronizohet.
@@ -155,9 +160,11 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="6752854822223394465">Organizata jote po konfiguron Chromium...</translation>
 <translation id="6794054469102824109">Hap lojën Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
+<translation id="6852799557929001644">Qasu te fjalëkalimet e tua të Chromium etj. nëpër aplikacione të tjera në këtë pajisje.</translation>
 <translation id="6911341667534646387">Vazhdo të përdorësh të dhënat e Chromium në "Llogarinë tënde të Google"</translation>
 <translation id="7006920032187763988">Fjalëkalimet që ke ruajtur në "Menaxherin e fjalëkalimeve" mund t'i përdorësh në aplikacione të tjera në iPad.</translation>
 <translation id="7018284295775193585">Chromium nuk mund të përditësohet</translation>
+<translation id="7025471822960602362">Gjurmo paketat e zbuluara në Chromium</translation>
 <translation id="7045244423563602563">Bëje Chromium tëndin</translation>
 <translation id="7055269218854630176">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si mund të përdoret Chromium. Administratori yt mund të konfigurojë ose të kufizojë veçori të caktuara.</translation>
 <translation id="7099326575020694068">Chromium nuk mund ta përdorë kamerën tënde në modalitetin e "Pamjes së ndarë"</translation>
@@ -168,6 +175,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="7208566199746267865">Chromium të kursen kohë duke i sjellë llogaritë e tua në ueb. Mund të shtosh ose heqësh llogari te "Cilësimet".</translation>
 <translation id="725427773388857052">Chromium mund të të ndihmojë të qëndrosh i sigurt nga nxjerrjet e paautorizuara të të dhënave, faqet e pasigurta të internetit etj.</translation>
 <translation id="7269362888766543920">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Provo t'i çinstalosh ata.</translation>
+<translation id="7285031092584344905">Qasu te fjalëkalimet e tua të Chromium etj. nëpër aplikacione të tjera.</translation>
 <translation id="7313655110045230863">Për ta bërë Chromium shfletuesin tënd të parazgjedhur, hap Settings. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit" dhe zgjidh "Chromium".</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Të dhënat e zgjedhura janë hequr nga Chromium dhe nga pajisjet e sinkronizuara. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit, si kërkimet dhe aktivitetet nga shërbimet e tjera të Google në history.google.com.</translation>
@@ -182,14 +190,18 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="786327964234957808">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chromium po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Fillo të përdorësh skanerin e Chromium</translation>
 <translation id="7905064834449738336">Kur përdor një fjalëkalim, Chromium të paralajmëron nëse ai është publikuar online. Kur vepron kështu, fjalëkalimet dhe emrat e tu të përdoruesit enkriptohen, në mënyrë që të mos lexohen nga askush, duke përfshirë Google.</translation>
+<translation id="7917424453593305610">Përdor Chromium në aplikacione të tjera.</translation>
 <translation id="7928628054454574139">Hap gjithmonë Chromium kur troket te lidhjet në aplikacionet e tjera</translation>
 <translation id="7931842119211730154">Kyçi skedat "e fshehta" kur të mbyllësh Chromium</translation>
 <translation id="7934404985878918282">Shiko "Listën e leximit" të Chromium</translation>
 <translation id="7980860476903281594">Chromium e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
+<translation id="7995166854192397899">Sugjerimet bazohen në aktivitetin tënd të shfletimit në pajisjet e tua të tjera. Për të marrë sugjerime, identifikohu në Chromium në të gjitha pajisjet e tua.</translation>
+<translation id="800195749539500647">Përfito sa më shumë nga Chromium</translation>
 <translation id="8013573822802650211">Për të parë skedat e tua nga çdo vend ku përdor Chromium, identifikohu në të gjitha pajisjet e tua</translation>
 <translation id="8071041515667087705">Shko te "Cilësimet" e Chromium.</translation>
 <translation id="8073677936375100957">Të pastrohen të dhënat e tua të Chromium nga kjo pajisje?</translation>
 <translation id="8115308261377517697">Caktoje Chromium si shfletuesin tënd të parazgjedhur</translation>
+<translation id="8197822717502700527">Tani do të përfitosh më shumë nga Chromium në pajisjen tënde.</translation>
 <translation id="8235427517854598594">Të bëhet Chromium shfletuesi yt i parazgjedhur?</translation>
 <translation id="8240981428553046115">Chromium nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="8303579360494576778">Menaxho mënyrat e pagesës në Chromium</translation>
@@ -215,6 +227,7 @@ Gjëra për të pasur parasysh:
 <translation id="894437814105052438">Kur të dalësh, Chromium nuk do të sinkronizojë asnjë nga të dhënat e tua të reja me "Llogarinë tënde të Google". Të dhënat e sinkronizuara më herët qëndrojnë në llogari.</translation>
 <translation id="8963279154877372067">Lejo që njoftimet e Chromium të shfaqin sinjalizime për uljen e çmimeve</translation>
 <translation id="9022552996538154597">Identifikohu në Chromium</translation>
+<translation id="9050790730841755540">Përdor Chromium sa herë që troket te lidhjet në aplikacione të tjera.</translation>
 <translation id="9059693977935746710">Nuk është nevoja ta kujtosh këtë fjalëkalim. Ai do të ruhet në "Menaxherin e fjalëkalimeve" për <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium nuk është i përditësuar</translation>
 <translation id="9110075932708282655">Përdor Chromium me parazgjedhje</translation>

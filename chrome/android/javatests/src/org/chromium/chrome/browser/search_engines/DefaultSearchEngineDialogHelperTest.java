@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Tests for the class that backs the "Choose your search engine" dialogs.
  *
- * TODO(dfalcantara): Add the MultiActivityTestRule() as a @Rule when it lands.
+ * <p>TODO(dfalcantara): Add the MultiActivityTestRule() as a @Rule when it lands.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class DefaultSearchEngineDialogHelperTest {
@@ -50,6 +50,7 @@ public class DefaultSearchEngineDialogHelperTest {
     private class TestTemplateUrl extends TemplateUrl {
         private String mShortName;
         private String mKeyword;
+
         public TestTemplateUrl(String shortName, String keyword) {
             super(0);
             mShortName = shortName;
@@ -78,8 +79,12 @@ public class DefaultSearchEngineDialogHelperTest {
     private class TestDialogHelper extends DefaultSearchEngineDialogHelper {
         public final TestDelegate delegate;
 
-        public TestDialogHelper(@SearchEnginePromoType int dialogType, TestDelegate delegate,
-                RadioButtonLayout controls, Button confirmButton, Runnable finishRunnable) {
+        public TestDialogHelper(
+                @SearchEnginePromoType int dialogType,
+                TestDelegate delegate,
+                RadioButtonLayout controls,
+                Button confirmButton,
+                Runnable finishRunnable) {
             super(dialogType, delegate, controls, confirmButton, finishRunnable);
             this.delegate = delegate;
         }
@@ -92,7 +97,8 @@ public class DefaultSearchEngineDialogHelperTest {
         public void run() {
             runCount++;
         }
-    };
+    }
+    ;
 
     private final DismissRunnable mDismissRunnable = new DismissRunnable();
     private final List<TemplateUrl> mTemplateUrls = new ArrayList<>();
@@ -120,8 +126,9 @@ public class DefaultSearchEngineDialogHelperTest {
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper = new TestDialogHelper(
-                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper =
+                new TestDialogHelper(
+                        mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         // Confirm that no radio buttons are marked as selected.
         for (int i = 0; i < radioLayout.getChildCount(); i++) {
@@ -166,7 +173,7 @@ public class DefaultSearchEngineDialogHelperTest {
 
     /**
      * This test is testing the randomness of the search engine listing (which absolutely must be
-     * shuffled).  Although it is inherently flaky, reduce the chance of it failing randomly by
+     * shuffled). Although it is inherently flaky, reduce the chance of it failing randomly by
      * running the test a few times internally before declaring failure to the testing framework.
      */
     @Test
@@ -218,8 +225,9 @@ public class DefaultSearchEngineDialogHelperTest {
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper = new TestDialogHelper(
-                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper =
+                new TestDialogHelper(
+                        mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         Assert.assertNull(
                 "Engine selected after construction", helper.getCurrentlySelectedKeyword());
@@ -245,8 +253,9 @@ public class DefaultSearchEngineDialogHelperTest {
 
         RadioButtonLayout radioLayout = new RadioButtonLayout(mContext);
         Button okButton = new Button(mContext);
-        TestDialogHelper helper = new TestDialogHelper(
-                mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
+        TestDialogHelper helper =
+                new TestDialogHelper(
+                        mDialogType, mTestDelegate, radioLayout, okButton, mDismissRunnable);
 
         Assert.assertNull(
                 "Engine selected after construction", helper.getCurrentlySelectedKeyword());
@@ -271,7 +280,8 @@ public class DefaultSearchEngineDialogHelperTest {
 
         radioLayout.getChildAt(index).performClick();
         Assert.assertNotNull("Didn't update after selecting", helper.getCurrentlySelectedKeyword());
-        Assert.assertTrue("Engine keywords didn't match",
+        Assert.assertTrue(
+                "Engine keywords didn't match",
                 TextUtils.equals(keyword, helper.getCurrentlySelectedKeyword()));
         Assert.assertNull("Engine set before explicitly hitting OK", helper.delegate.chosenKeyword);
         Assert.assertTrue("User can't proceed because button disabled", okButton.isEnabled());
@@ -284,7 +294,8 @@ public class DefaultSearchEngineDialogHelperTest {
         String keyword = (String) radioButton.getTag();
 
         Assert.assertNotNull("Engine wasn't set after hitting OK", helper.delegate.chosenKeyword);
-        Assert.assertTrue("Engine keywords didn't match",
+        Assert.assertTrue(
+                "Engine keywords didn't match",
                 TextUtils.equals(keyword, helper.delegate.chosenKeyword));
         Assert.assertEquals("Runnable failed to after hitting OK", 1, mDismissRunnable.runCount);
     }

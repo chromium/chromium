@@ -36,30 +36,29 @@ import java.util.function.Consumer;
 public final class AutofillSaveCardBottomSheetMediatorTest {
     private static final String HTTPS_EXAMPLE_TEST = "https://example.test";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private AutofillSaveCardBottomSheetMediator mMediator;
 
-    @Mock
-    private AutofillSaveCardBottomSheetContent mBottomSheetContent;
+    @Mock private AutofillSaveCardBottomSheetContent mBottomSheetContent;
     private AutofillSaveCardUiInfo mUiInfo;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private TabModel mTabModel;
-    @Mock
-    private Consumer<String> mOnUiLegalMessageUrlClicked;
-    @Mock
-    private AutofillSaveCardBottomSheetBridge mBridge;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private TabModel mTabModel;
+    @Mock private Consumer<String> mOnUiLegalMessageUrlClicked;
+    @Mock private AutofillSaveCardBottomSheetBridge mBridge;
 
     @Before
     public void setUp() {
-        mMediator = new AutofillSaveCardBottomSheetMediator(mBottomSheetContent, mUiInfo,
-                mBottomSheetController, mLayoutStateProvider, mTabModel,
-                mOnUiLegalMessageUrlClicked, mBridge);
+        mMediator =
+                new AutofillSaveCardBottomSheetMediator(
+                        mBottomSheetContent,
+                        mUiInfo,
+                        mBottomSheetController,
+                        mLayoutStateProvider,
+                        mTabModel,
+                        mOnUiLegalMessageUrlClicked,
+                        mBridge);
     }
 
     @Test
@@ -132,8 +131,10 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
         mMediator.didClickConfirm();
 
         verify(mBottomSheetController)
-                .hideContent(mBottomSheetContent,
-                        /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+                .hideContent(
+                        mBottomSheetContent,
+                        /* animate= */ true,
+                        StateChangeReason.INTERACTION_COMPLETE);
         verify(mBridge).onUiAccepted();
     }
 
@@ -142,8 +143,10 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
         mMediator.didClickCancel();
 
         verify(mBottomSheetController)
-                .hideContent(mBottomSheetContent,
-                        /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
+                .hideContent(
+                        mBottomSheetContent,
+                        /* animate= */ true,
+                        StateChangeReason.INTERACTION_COMPLETE);
         verify(mBridge).onUiCanceled();
     }
 
@@ -196,7 +199,8 @@ public final class AutofillSaveCardBottomSheetMediatorTest {
         verify(mBottomSheetController, never())
                 .hideContent(eq(mBottomSheetContent), /* animate= */ anyBoolean());
         verify(mBottomSheetController, never())
-                .hideContent(eq(mBottomSheetContent),
+                .hideContent(
+                        eq(mBottomSheetContent),
                         /* animate= */ anyBoolean(),
                         /* reason= */ anyInt());
     }

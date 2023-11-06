@@ -38,9 +38,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
-/**
- * Verifies the main user journeys for supervised users.
- */
+/** Verifies the main user journeys for supervised users. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SupervisedUserCriticalJourneysIntegrationTest {
@@ -49,6 +47,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
     private WebContents mWebContents;
 
@@ -66,10 +65,11 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     public void sitesThatAreOnBlocklistAreBlockedByInterstitialPage() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SupervisedUserSettingsTestUtils.addUrlToBlocklist(
-                    Profile.getLastUsedRegularProfile(), BLOCKED_SITE_URL);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestUtils.addUrlToBlocklist(
+                            Profile.getLastUsedRegularProfile(), BLOCKED_SITE_URL);
+                });
 
         EmbeddedTestServer testServer = mActivityTestRule.getEmbeddedTestServerRule().getServer();
         String blockedHost = testServer.getURLWithHostName(BLOCKED_SITE_URL, "/");
@@ -86,9 +86,11 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     public void incognitoModeIsUnavailableFromAppMenu() throws InterruptedException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isEnabled())));
         onView(withText(R.string.menu_new_incognito_tab)).check(matches(not(isClickable())));
     }
@@ -106,10 +108,13 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Features.EnableFeatures({ChromeFeatureList.ENABLE_PROTO_API_FOR_CLASSIFY_URL})
     public void matureSitesAreBlockedBySafeSites() throws Exception {
         SupervisedUserSettingsTestUtils.setUpTestUrlLoaderFactoryHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
-                    Profile.getLastUsedRegularProfile(), /*isAllowed=*/false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SupervisedUserSettingsTestUtils.setKidsManagementResponseForTesting(
+                            Profile.getLastUsedRegularProfile(), /* isAllowed= */ false);
+                    SupervisedUserSettingsTestUtils.setSafeSearchResponseForTesting(
+                            Profile.getLastUsedRegularProfile(), /* isAllowed= */ false);
+                });
 
         EmbeddedTestServer testServer = mActivityTestRule.getEmbeddedTestServerRule().getServer();
         String blockedHost = testServer.getURLWithHostName(MATURE_SITE_URL, "/");

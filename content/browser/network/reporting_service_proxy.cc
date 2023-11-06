@@ -74,8 +74,9 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
     base::Value::Dict body;
     body.Set("id", id);
     if (anticipated_removal) {
-      body.Set("anticipatedRemoval",
-               anticipated_removal->ToJsTimeIgnoringNull());
+      body.Set(
+          "anticipatedRemoval",
+          anticipated_removal->InMillisecondsFSinceUnixEpochIgnoringNull());
     }
     body.Set("message", message);
     if (source_file)

@@ -6,19 +6,19 @@
 
 namespace global_media_controls::test {
 
+MockDeviceListHost::MockDeviceListHost() = default;
+MockDeviceListHost::~MockDeviceListHost() = default;
+
+MockDeviceListClient::MockDeviceListClient() = default;
+MockDeviceListClient::~MockDeviceListClient() = default;
+
 MockDeviceService::MockDeviceService() = default;
 MockDeviceService::~MockDeviceService() = default;
 
-mojo::PendingRemote<mojom::DeviceService> MockDeviceService::PassRemote() {
-  return receiver_.BindNewPipeAndPassRemote();
-}
+MockDevicePickerProvider::MockDevicePickerProvider() = default;
+MockDevicePickerProvider::~MockDevicePickerProvider() = default;
 
-void MockDeviceService::ResetReceiver() {
-  receiver_.reset();
-}
-
-void MockDeviceService::FlushForTesting() {
-  receiver_.FlushForTesting();
-}
+MockDevicePickerObserver::MockDevicePickerObserver() = default;
+MockDevicePickerObserver::~MockDevicePickerObserver() = default;
 
 }  // namespace global_media_controls::test

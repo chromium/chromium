@@ -57,7 +57,6 @@ import './os_apps_page/app_management_page/app_management_cros_shared_style.css.
 import './os_apps_page/app_management_page/app_management_cros_shared_vars.css.js';
 import './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 import './os_apps_page/os_apps_page.js';
-import './os_bluetooth_page/os_bluetooth_device_detail_subpage.js';
 import './os_bluetooth_page/os_bluetooth_saved_devices_subpage.js';
 import './os_bluetooth_page/os_remove_saved_device_dialog.js';
 import './os_bluetooth_page/os_bluetooth_forget_device_dialog.js';
@@ -70,7 +69,6 @@ import './os_bluetooth_page/os_saved_devices_list_item.js';
 import './os_bluetooth_page/settings_fast_pair_constants.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 /**
  * With the optimize_webui() build step, the generated JS files are bundled
@@ -110,6 +108,7 @@ export {CrCardRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_
 export {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 export {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 export {CrSearchableDropDownElement} from 'chrome://resources/cr_elements/cr_searchable_drop_down/cr_searchable_drop_down.js';
+export {CrSliderElement} from 'chrome://resources/cr_elements/cr_slider/cr_slider.js';
 export {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
@@ -123,6 +122,11 @@ export {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-ic
 export {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 export {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 export {PaperTooltipElement} from 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './common/app_management/actions.js';
+export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './common/app_management/browser_proxy.js';
+export {reduceAction, updateApps} from './common/app_management/reducers.js';
+export {AppManagementPageState, AppManagementStore} from './common/app_management/store.js';
+export {AppManagementStoreMixin} from './common/app_management/store_mixin.js';
 export {resetGlobalScrollTargetForTesting, setGlobalScrollTarget as setGlobalScrollTargetForTesting} from './common/global_scroll_target_mixin.js';
 export {LacrosExtensionControlBrowserProxy, LacrosExtensionControlBrowserProxyImpl} from './common/lacros_extension_control_browser_proxy.js';
 export {LacrosExtensionControlledIndicatorElement} from './common/lacros_extension_controlled_indicator.js';
@@ -139,7 +143,7 @@ export {FakeInputDeviceSettingsProvider} from './device_page/fake_input_device_s
 export {FkeyRowElement} from './device_page/fkey_row.js';
 export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_tablet_subpage.js';
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
-export {Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
+export {Fkey, GraphicsTablet, InputDeviceSettingsPolicy, Keyboard, KeyEvent, MetaKey, ModifierKey, Mouse, PolicyStatus, ShortcutInputProviderInterface, SimulateRightClickModifier, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier, TopRowActionKey, Vkey} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
 export {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from './device_page/keyboard_six_pack_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
@@ -151,6 +155,7 @@ export {SettingsPerDevicePointingStickElement} from './device_page/per_device_po
 export {SettingsPerDevicePointingStickSubsectionElement} from './device_page/per_device_pointing_stick_subsection.js';
 export {SettingsPerDeviceTouchpadElement} from './device_page/per_device_touchpad.js';
 export {SettingsPerDeviceTouchpadSubsectionElement} from './device_page/per_device_touchpad_subsection.js';
+export {getShortcutInputProvider} from './device_page/shortcut_input_mojo_interface_provider.js';
 export {ensureLazyLoaded} from './ensure_lazy_loaded.js';
 export {OsSettingsCellularSetupDialogElement} from './internet_page/cellular_setup_dialog.js';
 export {EsimRenameDialogElement} from './internet_page/esim_rename_dialog.js';
@@ -166,6 +171,7 @@ export {MainPageContainerElement} from './main_page_container/main_page_containe
 export {PageDisplayerElement} from './main_page_container/page_displayer.js';
 export {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from './metrics_recorder.js';
 export * as appNotificationHandlerMojom from './mojom-webui/app_notification_handler.mojom-webui.js';
+export * as appPermissionHandlerMojom from './mojom-webui/app_permission_handler.mojom-webui.js';
 export * as crosAudioConfigMojom from './mojom-webui/cros_audio_config.mojom-webui.js';
 export * as displaySettingsProviderMojom from './mojom-webui/display_settings_provider.mojom-webui.js';
 export * as personalizationSearchMojom from './mojom-webui/personalization_search.mojom-webui.js';
@@ -195,12 +201,7 @@ export {AboutPageBrowserProxyImpl, BrowserChannel, UpdateStatus} from './os_abou
 export {DeviceNameBrowserProxyImpl} from './os_about_page/device_name_browser_proxy.js';
 export {DeviceNameState, SetDeviceNameResult} from './os_about_page/device_name_util.js';
 export {AndroidAppsBrowserProxy, AndroidAppsBrowserProxyImpl} from './os_apps_page/android_apps_browser_proxy.js';
-export {addApp, AppManagementActions, changeApp, removeApp, updateSelectedAppId, updateSubAppToParentAppId} from './os_apps_page/app_management_page/actions.js';
-export {AppManagementBrowserProxy, AppManagementComponentBrowserProxy} from './os_apps_page/app_management_page/browser_proxy.js';
 export {PluginVmBrowserProxy, PluginVmBrowserProxyImpl} from './os_apps_page/app_management_page/plugin_vm_page/plugin_vm_browser_proxy.js';
-export {reduceAction, updateApps} from './os_apps_page/app_management_page/reducers.js';
-export {AppManagementPageState, AppManagementStore} from './os_apps_page/app_management_page/store.js';
-export {AppManagementStoreMixin} from './os_apps_page/app_management_page/store_mixin.js';
 export {setAppNotificationProviderForTesting} from './os_apps_page/app_notifications_page/mojo_interface_provider.js';
 export {OsSettingsAppsPageElement} from './os_apps_page/os_apps_page.js';
 export {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_page/os_bluetooth_devices_subpage_browser_proxy.js';
@@ -216,8 +217,10 @@ export {AccountManagerSettingsCardElement} from './os_people_page/account_manage
 export {AdditionalAccountsSettingsCardElement} from './os_people_page/additional_accounts_settings_card.js';
 export {OsSettingsPeoplePageElement} from './os_people_page/os_people_page.js';
 export {MetricsConsentBrowserProxy, MetricsConsentBrowserProxyImpl, MetricsConsentState} from './os_privacy_page/metrics_consent_browser_proxy.js';
+export {setAppPermissionProviderForTesting} from './os_privacy_page/mojo_interface_provider.js';
 export {OsSettingsPrivacyPageElement} from './os_privacy_page/os_privacy_page.js';
 export {DataAccessPolicyState, PeripheralDataAccessBrowserProxy, PeripheralDataAccessBrowserProxyImpl} from './os_privacy_page/peripheral_data_access_browser_proxy.js';
+export {SettingsPrivacyHubAppPermissionRow} from './os_privacy_page/privacy_hub_app_permission_row.js';
 export {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js';
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchAndAssistantSettingsCardElement} from './os_search_page/search_and_assistant_settings_card.js';
@@ -247,24 +250,7 @@ export {StartupSettingsCardElement} from './system_preferences_page/startup_sett
 export {StorageAndPowerSettingsCardElement} from './system_preferences_page/storage_and_power_settings_card.js';
 export {SettingsSystemPreferencesPageElement} from './system_preferences_page/system_preferences_page.js';
 
-// TODO(b/257329722) After the Jelly experiment is launched, add the CSS link
-// element directly to the HTML.
-const jellyEnabled = loadTimeData.getBoolean('isJellyEnabled');
-if (jellyEnabled) {
-  const link = document.createElement('link');
-  link.rel = 'stylesheet';
-  link.href = 'chrome://theme/colors.css?sets=legacy,sys';
-  document.head.appendChild(link);
-  document.body.classList.add('jelly-enabled');
-
-  const fontLink = document.createElement('link');
-  fontLink.rel = 'stylesheet';
-  fontLink.href = 'chrome://theme/typography.css';
-  document.head.appendChild(fontLink);
-}
-
 window.addEventListener('load', () => {
-  if (jellyEnabled) {
-    ColorChangeUpdater.forDocument().start();
-  }
+  // Listen for changes to Jelly dynamic colors.
+  ColorChangeUpdater.forDocument().start();
 });

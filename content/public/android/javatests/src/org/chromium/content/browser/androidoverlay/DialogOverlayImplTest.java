@@ -24,17 +24,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Tests for DialogOverlayImpl.
- */
+/** Tests for DialogOverlayImpl. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DisabledTest(message = "https://crbug.com/1462304")
 public class DialogOverlayImplTest {
     private static final String BLANK_URL = "about:blank";
 
     @Rule
-    public DialogOverlayImplTestRule mActivityTestRule =
-            new DialogOverlayImplTestRule(BLANK_URL);
+    public DialogOverlayImplTestRule mActivityTestRule = new DialogOverlayImplTestRule(BLANK_URL);
 
     @Test
     @SmallTest
@@ -55,7 +52,10 @@ public class DialogOverlayImplTest {
 
         // Close the overlay, and make sure that the provider is notified.
         // Note that we should not get a 'destroyed' message when we close it.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { overlay.close(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    overlay.close();
+                });
         Assert.assertEquals(Client.RELEASED, mActivityTestRule.getClient().nextEvent().which);
         Assert.assertFalse(mActivityTestRule.getClient().isUsingOverlayMode());
     }
@@ -79,7 +79,9 @@ public class DialogOverlayImplTest {
     @Feature({"AndroidOverlay"})
     public void testCreateOverlayFailsIfWebContentsHidden() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getWebContents().onHide(); });
+                () -> {
+                    mActivityTestRule.getWebContents().onHide();
+                });
 
         DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
         Assert.assertNotNull(overlay);
@@ -97,7 +99,9 @@ public class DialogOverlayImplTest {
         Assert.assertNotNull(overlay);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivityTestRule.getWebContents().onHide(); });
+                () -> {
+                    mActivityTestRule.getWebContents().onHide();
+                });
 
         // We should be notified that the overlay is destroyed.
         Client.Event event = mActivityTestRule.getClient().nextEvent();
@@ -118,7 +122,10 @@ public class DialogOverlayImplTest {
         rect.y = 200;
         rect.width = 100;
         rect.height = 100;
-        TestThreadUtils.runOnUiThreadBlocking(() -> { overlay.scheduleLayout(rect); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    overlay.scheduleLayout(rect);
+                });
 
         // No additional messages should have arrived.
         Assert.assertTrue(mActivityTestRule.getClient().isEmpty());
@@ -147,13 +154,17 @@ public class DialogOverlayImplTest {
         // Test that trying to close an overlay more than once doesn't actually do anything.
         final DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
         // The first should generate RELEASED
-        TestThreadUtils.runOnUiThreadBlocking(() -> { overlay.close(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    overlay.close();
+                });
         Assert.assertEquals(Client.RELEASED, mActivityTestRule.getClient().nextEvent().which);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            overlay.close();
-            mActivityTestRule.getClient().injectMarkerEvent();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    overlay.close();
+                    mActivityTestRule.getClient().injectMarkerEvent();
+                });
         Assert.assertEquals(Client.TEST_MARKER, mActivityTestRule.getClient().nextEvent().which);
     }
 
@@ -168,6 +179,8 @@ public class DialogOverlayImplTest {
         final DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { overlay.onWindowAndroid(mockWindowAndroid); });
+                () -> {
+                    overlay.onWindowAndroid(mockWindowAndroid);
+                });
     }
 }

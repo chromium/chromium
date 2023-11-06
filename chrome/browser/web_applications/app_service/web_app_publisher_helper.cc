@@ -43,7 +43,6 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -80,6 +79,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -135,8 +135,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/lacros/lacros_service.h"
 #endif
 
@@ -703,8 +701,7 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   // Web App's publisher_id the start url.
   app->publisher_id = web_app->start_url().spec();
 
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
   app->last_launch_time = web_app->last_launch_time();
   app->install_time = web_app->first_install_time();
@@ -863,8 +860,7 @@ void WebAppPublisherHelper::SetIconEffect(const std::string& app_id) {
   }
 
   auto app = std::make_unique<apps::App>(app_type(), app_id);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
   delegate_->PublishWebApp(std::move(app));
 }
 
@@ -1116,51 +1112,12 @@ void WebAppPublisherHelper::LaunchAppWithParams(
   full_restore::FullRestoreSaveHandler::GetInstance();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto launch_web_app_callback = base::BindOnce(
-      &WebAppPublisherHelper::OnLaunchCompleted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(params_for_restore), is_system_web_app, override_url,
-      std::move(on_complete));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (ResolveExperimentalWebAppIsolationFeature() ==
-      ExperimentalWebAppIsolationMode::kProfile) {
-    WebAppRegistrar& registrar = provider_->registrar_unsafe();
-    const WebApp* web_app = registrar.GetAppById(params.app_id);
-    const auto& chromeos_data = web_app->chromeos_data();
-    if (chromeos_data.has_value() &&
-        chromeos_data->app_profile_path.has_value()) {
-      // Redirect the launch to the app profile.
-      g_browser_process->profile_manager()->LoadProfileByPath(
-          chromeos_data->app_profile_path.value(),
-          /*incognito=*/false,
-          base::BindOnce(
-              [](Profile* origin_profile, apps::AppLaunchParams params,
-                 LaunchWebAppCallback on_complete, Profile* app_profile) {
-                Profile* profile = app_profile;
-                if (profile == nullptr) {
-                  // We can reach here if the user has cleared all the app
-                  // profiles from chrome://web-app-internals. In this case, we
-                  // just act as if this app is not in isolation mode.
-                  LOG(WARNING)
-                      << "unable to load app profile. Fallback to "
-                         "non-isolation mode (i.e. using default profile)";
-                  profile = origin_profile;
-                }
-                WebAppProvider::GetForWebApps(profile)
-                    ->scheduler()
-                    .LaunchAppWithCustomParams(std::move(params),
-                                               std::move(on_complete));
-              },
-              /*origin_profile=*/profile_, std::move(params),
-              std::move(launch_web_app_callback)));
-
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   provider_->scheduler().LaunchAppWithCustomParams(
-      std::move(params), std::move(launch_web_app_callback));
+      std::move(params),
+      base::BindOnce(&WebAppPublisherHelper::OnLaunchCompleted,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(params_for_restore), is_system_web_app,
+                     override_url, std::move(on_complete)));
 }
 
 void WebAppPublisherHelper::SetPermission(const std::string& app_id,
@@ -1231,6 +1188,17 @@ apps::WindowMode WebAppPublisherHelper::GetWindowMode(
 
   auto display_mode = registrar().GetAppEffectiveDisplayMode(web_app->app_id());
   return ConvertDisplayModeToWindowMode(display_mode);
+}
+
+void WebAppPublisherHelper::UpdateAppSize(const std::string& app_id) {
+  const auto* web_app = GetWebApp(app_id);
+  if (!web_app) {
+    return;
+  }
+
+  provider_->scheduler().ComputeAppSize(
+      app_id, base::BindOnce(&WebAppPublisherHelper::OnGetWebAppSize,
+                             weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
 void WebAppPublisherHelper::SetWindowMode(const std::string& app_id,
@@ -1412,7 +1380,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
     // a new `raw_icon_data_version`, to remove the icon files saved in the
     // AppService icon directory, to get the new raw icon files of the web app
     // for AppService.
-    app->icon_key->raw_icon_updated = true;
+    app->icon_key->update_version = true;
     delegate_->PublishWebApp(std::move(app));
   }
 }
@@ -1420,7 +1388,7 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
 void WebAppPublisherHelper::OnWebAppUninstalled(
     const webapps::AppId& app_id,
     webapps::WebappUninstallSource uninstall_source) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If a web app has been uninstalled, we do not know if it is a shortcut from
   // web app registrar. Here we check if we have got an app registered in
   // AppRegistryCache to be uninstalled. If not, we do not publish the update.
@@ -1430,8 +1398,7 @@ void WebAppPublisherHelper::OnWebAppUninstalled(
   if (!found) {
     return;
   }
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
+
   paused_apps_.MaybeRemoveApp(app_id);
 
   app_notifications_.RemoveNotificationsForApp(app_id);
@@ -1501,9 +1468,7 @@ void WebAppPublisherHelper::OnWebAppDisabledStateChanged(
 
   DCHECK_EQ(is_disabled, web_app->chromeos_data()->is_disabled);
   apps::AppPtr app = CreateWebApp(web_app);
-  app->icon_key =
-      std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
-  ;
+  app->icon_key = apps::IconKey(GetIconEffects(web_app));
 
   // If the disable mode is hidden, update the visibility of the new disabled
   // app.
@@ -2034,6 +1999,18 @@ void WebAppPublisherHelper::OnLaunchCompleted(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::move(on_complete).Run(web_contents.get());
+}
+
+void WebAppPublisherHelper::OnGetWebAppSize(
+    webapps::AppId app_id,
+    absl::optional<ComputeAppSizeCommand::Size> size) {
+  auto app = std::make_unique<apps::App>(app_type(), app_id);
+  if (!size.has_value()) {
+    return;
+  }
+  app->app_size_in_bytes = size->app_size_in_bytes;
+  app->data_size_in_bytes = size->data_size_in_bytes;
+  delegate_->PublishWebApp(std::move(app));
 }
 
 }  // namespace web_app

@@ -347,7 +347,8 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     /**
      * @see GestureListenerManager#updateMultiTouchZoomSupport(boolean).
      */
-    private void updateMultiTouchZoomSupport(boolean enable) {
+    @VisibleForTesting
+    protected void updateMultiTouchZoomSupport(boolean enable) {
         if (mTab == null || mTab.isHidden()) return;
         WebContents webContents = mTab.getWebContents();
         if (webContents != null) {

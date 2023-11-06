@@ -47,7 +47,7 @@ from urllib.parse import urlparse
 from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
 from blinkpy.common.path_finder import PathFinder
-from blinkpy.web_tests.models.testharness_results import is_all_pass_testharness_result
+from blinkpy.web_tests.models.testharness_results import is_all_pass_test_result
 from blinkpy.web_tests.models.test_expectations import TestExpectationsCache
 from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port.base import Port
@@ -222,8 +222,9 @@ class BaselineOptimizer:
                 self.location(path) for path in search_path
             ]
             if not self._skips_test(port, nonvirtual_test):
-                skipped_ports_by_test[nonvirtual_test].append(port)
                 yield nonvirtual_locations
+            else:
+                skipped_ports_by_test[nonvirtual_test].append(port)
             for virtual_test in virtual_tests:
                 if self._skips_test(port, virtual_test):
                     skipped_ports_by_test[virtual_test].append(port)
@@ -471,7 +472,7 @@ class ResultDigest:
         if path.endswith('.txt'):
             try:
                 content = fs.read_text_file(path)
-                is_extra_result = not content or is_all_pass_testharness_result(
+                is_extra_result = not content or is_all_pass_test_result(
                     content)
             except UnicodeDecodeError as e:
                 is_extra_result = False

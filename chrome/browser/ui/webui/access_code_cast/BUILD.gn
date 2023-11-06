@@ -12,7 +12,6 @@ mojom("mojo_bindings") {
   public_deps =
       [ "//components/media_router/common/mojom:route_request_result_code" ]
   webui_module_path = "/"
-  use_typescript_sources = true
 
   disable_variants = true
 }

@@ -8,12 +8,17 @@
 #include "ash/ash_export.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_metrics.h"
-#include "base/time/time.h"
 #include "chromeos/ui/frame/caption_buttons/snap_controller.h"
 #include "chromeos/ui/frame/multitask_menu/float_controller_base.h"
-#include "ui/display/display.h"
 #include "ui/display/display_observer.h"
-#include "ui/gfx/geometry/rect.h"
+
+namespace base {
+class TimeDelta;
+}  // namespace base
+
+namespace gfx {
+class Rect;
+}  // namespace gfx
 
 namespace ash {
 
@@ -164,7 +169,7 @@ class ASH_EXPORT WMEvent {
 // An WMEvent to request new bounds for the window.
 class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
  public:
-  SetBoundsWMEvent(
+  explicit SetBoundsWMEvent(
       const gfx::Rect& requested_bounds,
       bool animate = false,
       base::TimeDelta duration = WindowState::kBoundsChangeSlideDuration);
@@ -175,9 +180,6 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
 
   ~SetBoundsWMEvent() override;
 
-  // WMevent:
-  const SetBoundsWMEvent* AsSetBoundsWMEvent() const override;
-
   const gfx::Rect& requested_bounds() const { return requested_bounds_; }
 
   bool animate() const { return animate_; }
@@ -185,6 +187,9 @@ class ASH_EXPORT SetBoundsWMEvent : public WMEvent {
   base::TimeDelta duration() const { return duration_; }
 
   int64_t display_id() const { return display_id_; }
+
+  // WMevent:
+  const SetBoundsWMEvent* AsSetBoundsWMEvent() const override;
 
  private:
   const gfx::Rect requested_bounds_;
@@ -230,12 +235,12 @@ class ASH_EXPORT WindowFloatWMEvent : public WMEvent {
   WindowFloatWMEvent& operator=(const WindowFloatWMEvent&) = delete;
   ~WindowFloatWMEvent() override;
 
-  // WMEvent:
-  const WindowFloatWMEvent* AsFloatEvent() const override;
-
   chromeos::FloatStartLocation float_start_location() const {
     return float_start_location_;
   }
+
+  // WMEvent:
+  const WindowFloatWMEvent* AsFloatEvent() const override;
 
  private:
   const chromeos::FloatStartLocation float_start_location_;
@@ -257,13 +262,13 @@ class ASH_EXPORT WindowSnapWMEvent : public WMEvent {
 
   ~WindowSnapWMEvent() override;
 
-  // WMEvent:
-  const WindowSnapWMEvent* AsSnapEvent() const override;
-
   float snap_ratio() const { return snap_ratio_; }
   WindowSnapActionSource snap_action_source() const {
     return snap_action_source_;
   }
+
+  // WMEvent:
+  const WindowSnapWMEvent* AsSnapEvent() const override;
 
  private:
   float snap_ratio_ = chromeos::kDefaultSnapRatio;

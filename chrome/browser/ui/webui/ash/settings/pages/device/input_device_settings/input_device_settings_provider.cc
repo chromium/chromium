@@ -11,9 +11,11 @@
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash::settings {
@@ -25,42 +27,55 @@ using ActionTypeVariant =
 
 // Used to represent a constant version of the mojom::ActionChoice struct.
 struct ActionChoice {
-  const char* name;
+  int id;
   ActionTypeVariant action_variant;
 };
 
-// TODO(dpad): Update list to official list of actions.
-// TODO(b/286930911): Translate action string names.
 constexpr ActionChoice kMouseButtonOptions[] = {
-    {"Disable", ::ash::mojom::StaticShortcutAction::kDisable},
-    {"Volume mute", AcceleratorAction::kVolumeMuteToggle},
-    {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
-    {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
-    {"Overview", AcceleratorAction::kToggleOverview},
-    {"Screenshot", AcceleratorAction::kTakeScreenshot},
-    {"Emoji Picker", AcceleratorAction::kShowEmojiPicker},
-    {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
-    {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
-    {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
-    {"Copy", ::ash::mojom::StaticShortcutAction::kCopy},
-    {"Paste", ::ash::mojom::StaticShortcutAction::kPaste},
+    {IDS_SETTINGS_VOLUME_ON_OFF_OPTION_LABEL,
+     AcceleratorAction::kVolumeMuteToggle},
+    {IDS_SETTINGS_MICROPHONE_ON_OFF_OPTION_LABEL,
+     AcceleratorAction::kMicrophoneMuteToggle},
+    {IDS_SETTINGS_MEDIA_PLAY_PAUSE_OPTION_LABEL,
+     AcceleratorAction::kMediaPlayPause},
+    {IDS_SETTINGS_OVERVIEW_OPTION_LABEL, AcceleratorAction::kToggleOverview},
+    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL,
+     AcceleratorAction::kTakePartialScreenshot},
+    {IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kPreviousPage},
+    {IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kNextPage},
+    {IDS_SETTINGS_EMOJI_PICKER_OPTION_LABEL,
+     AcceleratorAction::kShowEmojiPicker},
+    {IDS_SETTINGS_HIGH_CONTRAST_ON_OFF_OPTION_LABEL,
+     AcceleratorAction::kToggleHighContrast},
+    {IDS_SETTINGS_MAGNIFIER_ON_OFF_OPTION_LABEL,
+     AcceleratorAction::kToggleFullscreenMagnifier},
+    {IDS_SETTINGS_DICTATION_ON_OFF_OPTION_LABEL,
+     AcceleratorAction::kEnableOrToggleDictation},
+    {IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kMiddleClick},
 };
 
-// TODO(dpad): Update list to official list of actions.
-// TODO(b/286930911): Translate action string names.
 constexpr ActionChoice kGraphicsTabletOptions[] = {
-    {"Disable", ::ash::mojom::StaticShortcutAction::kDisable},
-    {"Volume mute", AcceleratorAction::kVolumeMuteToggle},
-    {"Microphone mute", AcceleratorAction::kMicrophoneMuteToggle},
-    {"Play/Pause media", AcceleratorAction::kMediaPlayPause},
-    {"Overview", AcceleratorAction::kToggleOverview},
-    {"Screenshot", AcceleratorAction::kTakeScreenshot},
-    {"Emoji Picker", AcceleratorAction::kShowEmojiPicker},
-    {"Turn on high contrast", AcceleratorAction::kToggleHighContrast},
-    {"Turn on magnifier", AcceleratorAction::kToggleFullscreenMagnifier},
-    {"Turn on dictation", AcceleratorAction::kEnableOrToggleDictation},
-    {"Copy", ::ash::mojom::StaticShortcutAction::kCopy},
-    {"Paste", ::ash::mojom::StaticShortcutAction::kPaste},
+    {IDS_SETTINGS_RIGHT_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kRightClick},
+    {IDS_SETTINGS_MIDDLE_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kMiddleClick},
+    {IDS_SETTINGS_LEFT_CLICK_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kLeftClick},
+    {IDS_SETTINGS_UNDO_OPTION_LABEL, ::ash::mojom::StaticShortcutAction::kUndo},
+    {IDS_SETTINGS_REDO_OPTION_LABEL, ::ash::mojom::StaticShortcutAction::kRedo},
+    {IDS_SETTINGS_PREVIOUS_PAGE_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kPreviousPage},
+    {IDS_SETTINGS_NEXT_PAGE_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kNextPage},
+    {IDS_SETTINGS_ZOOM_IN_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kZoomIn},
+    {IDS_SETTINGS_ZOOM_OUT_OPTION_LABEL,
+     ::ash::mojom::StaticShortcutAction::kZoomOut},
+    {IDS_SETTINGS_SCREENSHOT_OPTION_LABEL,
+     AcceleratorAction::kTakePartialScreenshot},
 };
 
 mojom::ActionTypePtr GetActionType(AcceleratorAction accelerator_action) {
@@ -239,8 +254,10 @@ void InputDeviceSettingsProvider::SetKeyboardSettings(
     ::ash::mojom::KeyboardSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetKeyboardSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetKeyboardSettings(
+          device_id, std::move(settings))) {
+    NotifyKeyboardsUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetPointingStickSettings(
@@ -248,8 +265,10 @@ void InputDeviceSettingsProvider::SetPointingStickSettings(
     ::ash::mojom::PointingStickSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetPointingStickSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetPointingStickSettings(
+          device_id, std::move(settings))) {
+    NotifyPointingSticksUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetMouseSettings(
@@ -257,8 +276,10 @@ void InputDeviceSettingsProvider::SetMouseSettings(
     ::ash::mojom::MouseSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetMouseSettings(device_id,
-                                                         std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetMouseSettings(
+          device_id, std::move(settings))) {
+    NotifyMiceUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetTouchpadSettings(
@@ -266,8 +287,10 @@ void InputDeviceSettingsProvider::SetTouchpadSettings(
     ::ash::mojom::TouchpadSettingsPtr settings) {
   DCHECK(features::IsInputDeviceSettingsSplitEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetTouchpadSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetTouchpadSettings(
+          device_id, std::move(settings))) {
+    NotifyTouchpadsUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
@@ -275,8 +298,10 @@ void InputDeviceSettingsProvider::SetGraphicsTabletSettings(
     ::ash::mojom::GraphicsTabletSettingsPtr settings) {
   DCHECK(features::IsPeripheralCustomizationEnabled());
   DCHECK(InputDeviceSettingsController::Get());
-  InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
-      device_id, std::move(settings));
+  if (!InputDeviceSettingsController::Get()->SetGraphicsTabletSettings(
+          device_id, std::move(settings))) {
+    NotifyGraphicsTabletUpdated();
+  }
 }
 
 void InputDeviceSettingsProvider::ObserveKeyboardSettings(
@@ -525,7 +550,8 @@ void InputDeviceSettingsProvider::
   std::vector<mojom::ActionChoicePtr> choices;
   for (const auto& choice : kGraphicsTabletOptions) {
     choices.push_back(mojom::ActionChoice::New(
-        GetActionTypeFromVariant(choice.action_variant), choice.name));
+        GetActionTypeFromVariant(choice.action_variant),
+        l10n_util::GetStringUTF8(choice.id)));
   }
   std::move(callback).Run(std::move(choices));
 }
@@ -535,7 +561,8 @@ void InputDeviceSettingsProvider::GetActionsForMouseButtonCustomization(
   std::vector<mojom::ActionChoicePtr> choices;
   for (const auto& choice : kMouseButtonOptions) {
     choices.push_back(mojom::ActionChoice::New(
-        GetActionTypeFromVariant(choice.action_variant), choice.name));
+        GetActionTypeFromVariant(choice.action_variant),
+        l10n_util::GetStringUTF8(choice.id)));
   }
   std::move(callback).Run(std::move(choices));
 }

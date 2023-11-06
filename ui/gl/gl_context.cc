@@ -73,6 +73,8 @@ GLContext::GLContext(GLShareGroup* share_group) : share_group_(share_group) {
 }
 
 GLContext::~GLContext() {
+  DCHECK(has_called_on_destory_);
+
 #if BUILDFLAG(IS_APPLE)
   DCHECK(!HasBackpressureFences());
 #endif
@@ -103,12 +105,38 @@ void GLContext::SetSwitchableGPUsSupported() {
   switchable_gpus_supported_ = true;
 }
 
+bool GLContext::Initialize(GLSurface* compatible_surface,
+                           const GLContextAttribs& attribs) {
+  DCHECK(compatible_surface && !default_surface_);
+  if (compatible_surface->IsOffscreen()) {
+    default_surface_ = compatible_surface;
+  }
+  return InitializeImpl(compatible_surface, attribs);
+}
+
 bool GLContext::MakeCurrent(GLSurface* surface) {
   if (context_lost_) {
     LOG(ERROR) << "Failed to make current since context is marked as lost";
     return false;
   }
   return MakeCurrentImpl(surface);
+}
+
+bool GLContext::MakeCurrentDefault() {
+  if (!default_surface()) {
+    LOG(ERROR) << "Failed to make current offscreen since the context was not "
+                  "initialized with an offscreen surface.";
+    return false;
+  }
+  return MakeCurrent(default_surface());
+}
+
+void GLContext::AddObserver(GLContextObserver* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void GLContext::RemoveObserver(GLContextObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 GLApi* GLContext::CreateGLApi(DriverGL* driver) {
@@ -346,9 +374,26 @@ GLContext* GLContext::GetRealCurrent() {
   return current_real_context;
 }
 
+void GLContext::OnContextWillDestroy() {
+  DCHECK(!has_called_on_destory_);
+  has_called_on_destory_ = true;
+
+  for (auto& obs : observer_list_) {
+    obs.OnGLContextWillDestroy(this);
+  }
+}
+
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
   return std::make_unique<GLVersionInfo>(
       GetGLVersion().c_str(), GetGLRenderer().c_str(), GetExtensions());
+}
+
+void GLContext::MarkContextLost() {
+  context_lost_ = true;
+
+  for (auto& obs : observer_list_) {
+    obs.OnGLContextLost(this);
+  }
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {
@@ -384,8 +429,9 @@ void GLContext::SetGLStateRestorer(GLStateRestorer* state_restorer) {
 
 GLenum GLContext::CheckStickyGraphicsResetStatus() {
   GLenum status = CheckStickyGraphicsResetStatusImpl();
-  if (status != GL_NO_ERROR)
-    context_lost_ = true;
+  if (status != GL_NO_ERROR) {
+    MarkContextLost();
+  }
   return status;
 }
 
@@ -429,7 +475,7 @@ bool GLContext::MakeVirtuallyCurrent(
     if (switched_real_contexts || !current_surface ||
         !virtual_context->IsCurrent(surface)) {
       if (!MakeCurrent(surface)) {
-        context_lost_ = true;
+        MarkContextLost();
         return false;
       }
     }
@@ -470,7 +516,7 @@ bool GLContext::MakeVirtuallyCurrent(
   virtual_context->SetCurrent(surface);
   if (!surface->OnMakeCurrent(virtual_context)) {
     LOG(ERROR) << "Could not make GLSurface current.";
-    context_lost_ = true;
+    MarkContextLost();
     return false;
   }
   return true;

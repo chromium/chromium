@@ -364,7 +364,7 @@ Document* XMLHttpRequest::responseXML(ExceptionState& exception_state) {
     parsed_response_ = true;
   }
 
-  return response_document_;
+  return response_document_.Get();
 }
 
 v8::Local<v8::Value> XMLHttpRequest::ResponseJSON(
@@ -405,7 +405,7 @@ Blob* XMLHttpRequest::ResponseBlob() {
         BlobDataHandle::Create(std::move(blob_data), size));
   }
 
-  return response_blob_;
+  return response_blob_.Get();
 }
 
 DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
@@ -437,7 +437,7 @@ DOMArrayBuffer* XMLHttpRequest::ResponseArrayBuffer() {
     }
   }
 
-  return response_array_buffer_;
+  return response_array_buffer_.Get();
 }
 
 // https://xhr.spec.whatwg.org/#dom-xmlhttprequest-response
@@ -575,7 +575,7 @@ String XMLHttpRequest::responseURL() {
 XMLHttpRequestUpload* XMLHttpRequest::upload() {
   if (!upload_)
     upload_ = MakeGarbageCollected<XMLHttpRequestUpload>(this);
-  return upload_;
+  return upload_.Get();
 }
 
 void XMLHttpRequest::TrackProgress(uint64_t length) {

@@ -162,3 +162,19 @@ class MonorailAPI(object):
         body = self._fix_cc_in_body(issue.body)
         return self.api.issues().insert(
             projectId=issue.project_id, body=body).execute()
+
+    def get_issue(self, project_id, issue_id):
+        return self.api.issues().get(projectId=project_id,
+                                     issueId=issue_id).execute()
+
+    def get_comment_list(self, project_id, issue_id):
+        return self.api.issues().comments().list(projectId=project_id,
+                                                 issueId=issue_id).execute()
+
+    def insert_comment(self, project_id, issue_id, content):
+        return self.api.issues().comments().insert(projectId=project_id,
+                                                   issueId=issue_id,
+                                                   sendEmail=False,
+                                                   body={
+                                                       'content': content
+                                                   }).execute()

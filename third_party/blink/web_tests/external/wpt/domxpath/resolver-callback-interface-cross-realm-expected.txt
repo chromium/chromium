@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL XPathNSResolver is cross-realm plain object without 'lookupNamespaceURI' property assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL XPathNSResolver is cross-realm plain object with non-callable 'lookupNamespaceURI' property assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL XPathNSResolver is cross-realm plain object with revoked Proxy as 'lookupNamespaceURI' property assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL XPathNSResolver is cross-realm non-callable revoked Proxy assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL XPathNSResolver is cross-realm callable revoked Proxy assert_unreached: Should have rejected: undefined Reached unreachable code
-Harness: the test ran to completion.
-

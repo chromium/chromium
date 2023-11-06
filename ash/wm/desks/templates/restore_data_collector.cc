@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/templates/restore_data_collector.h"
 
+#include "ash/multi_user/multi_user_window_manager_impl.h"
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -18,7 +20,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-
 RestoreDataCollector::Call::Call()
     : data(std::make_unique<app_restore::RestoreData>()) {}
 RestoreDataCollector::Call::Call(RestoreDataCollector::Call&&) = default;
@@ -33,7 +34,8 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     GetDeskTemplateCallback callback,
     DeskTemplateType template_type,
     const std::string& template_name,
-    aura::Window* root_window_to_show) {
+    aura::Window* root_window_to_show,
+    AccountId current_account_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const auto current_serial = serial_++;
@@ -44,7 +46,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   call.root_window_to_show = root_window_to_show;
   call.template_type = template_type;
   call.template_name = template_name;
-
+  auto* window_manager = MultiUserWindowManagerImpl::Get();
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
@@ -52,8 +54,19 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
   bool has_supported_apps = false;
   for (auto* window : mru_windows) {
     // Skip transient windows without reporting.
-    if (wm::GetTransientParent(window))
+    if (wm::GetTransientParent(window)) {
       continue;
+    }
+    // If `window_manager` is not nullptr, then we have a multi profile session.
+    // We need to make sure that the windows we are capturing belongs to the
+    // owner of the current active session.
+    if (window_manager) {
+      // Skip windows that belong to another profile user.
+      const AccountId& window_owner = window_manager->GetWindowOwner(window);
+      if (window_owner.is_valid() && current_account_id != window_owner) {
+        continue;
+      }
+    }
 
     if (!delegate->IsWindowSupportedForSavedDesk(window)) {
       call.unsupported_apps.push_back(window);
@@ -78,8 +91,9 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
         BuildWindowInfo(window, /*activation_index=*/absl::nullopt,
                         /*for_saved_desks=*/true, mru_windows);
 
-    // Clear the desk ID and uuid in the WindowInfo that is to be stored in the
-    // template. They will be set to the newly created desk when launching.
+    // Clear the desk ID and uuid in the WindowInfo that is to be stored in
+    // the template. They will be set to the newly created desk when
+    // launching.
     window_info->desk_id.reset();
     window_info->desk_guid = base::Uuid();
 
@@ -98,15 +112,17 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     return;
   }
 
-  if (root_window_to_show)
+  if (root_window_to_show) {
     window_tracker_.Add(root_window_to_show);
+  }
   call.callback = std::move(callback);
 
-  // If all requests in the loop above returned data synchronously, then we have
-  // no pending requests and send the data right away.  Otherwise it will be
-  // sent after the last pending request is handled.
-  if (call.pending_request_count == 0)
+  // If all requests in the loop above returned data synchronously, then we
+  // have no pending requests and send the data right away.  Otherwise it will
+  // be sent after the last pending request is handled.
+  if (call.pending_request_count == 0) {
     SendDeskTemplate(current_serial);
+  }
 }
 
 void RestoreDataCollector::OnAppLaunchDataReceived(
@@ -132,11 +148,13 @@ void RestoreDataCollector::OnAppLaunchDataReceived(
     call.data->ModifyWindowInfo(app_id, window_id, *window_info);
   }
 
-  // Null callback here means that the loop in `CaptureActiveDeskAsSavedDesk()`
-  // has not yet finished polling the windows.  Non-zero pending request count
-  // means that some of preceding requests were asynchronous.
-  if (call.pending_request_count == 0 && !call.callback.is_null())
+  // Null callback here means that the loop in
+  // `CaptureActiveDeskAsSavedDesk()` has not yet finished polling the
+  // windows.  Non-zero pending request count means that some of preceding
+  // requests were asynchronous.
+  if (call.pending_request_count == 0 && !call.callback.is_null()) {
     SendDeskTemplate(serial);
+  }
 }
 
 void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
@@ -156,10 +174,11 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
     // The ideal root window may have gone by now.  In that case fall back to
     // the primary root one.
     auto* root_window_to_show = call.root_window_to_show.get();
-    if (root_window_to_show && window_tracker_.Contains(root_window_to_show))
+    if (root_window_to_show && window_tracker_.Contains(root_window_to_show)) {
       window_tracker_.Remove(root_window_to_show);
-    else
+    } else {
       root_window_to_show = Shell::Get()->GetPrimaryRootWindow();
+    }
 
     // There were some unsupported apps in the active desk so open up a dialog
     // to let the user know. The dialog controller should always be available

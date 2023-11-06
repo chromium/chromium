@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <iterator>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
@@ -20,6 +21,7 @@
 #include "content/public/common/content_client.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -141,7 +143,18 @@ ui::AXPlatformNode* BrowserAccessibility::GetAXPlatformNode() const {
 size_t BrowserAccessibility::PlatformChildCount() const {
   // We need to explicitly check for leafiness here instead of relying on
   // `AXNode::IsLeaf()` because Android has a different notion of this concept.
-  return IsLeaf() ? 0 : node()->GetUnignoredChildCountCrossingTreeBoundary();
+  if (IsLeaf()) {
+    return 0u;
+  }
+  if (ui::AXTreeManager::ForChildTree(*node())) {
+    // A child tree might not be connected yet, or might not be hosting platform
+    // objects.
+    return manager()->GetFromAXNode(
+               node()->GetFirstUnignoredChildCrossingTreeBoundary())
+               ? 1u
+               : 0u;
+  }
+  return node()->GetUnignoredChildCountCrossingTreeBoundary();
 }
 
 BrowserAccessibility* BrowserAccessibility::PlatformGetParent() const {
@@ -256,8 +269,8 @@ BrowserAccessibility* BrowserAccessibility::PlatformDeepestLastChild() const {
 BrowserAccessibility* BrowserAccessibility::InternalDeepestFirstChild() const {
   // By design, this method should be able to traverse platform leaves, hence we
   // don't check for leafiness.
-  ui::AXNode* deepest_child = node()->GetDeepestFirstUnignoredChild();
-  return manager()->GetFromAXNode(deepest_child);
+  ui::AXNode* deepest_descendant = node()->GetDeepestFirstUnignoredDescendant();
+  return manager()->GetFromAXNode(deepest_descendant);
 }
 
 BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
@@ -265,8 +278,8 @@ BrowserAccessibility* BrowserAccessibility::InternalDeepestLastChild() const {
   // don't check for leafiness. We need to explicitly check for leafiness here
   // instead of relying on `AXNode::IsLeaf()` because Android has a different
   // notion of this concept.
-  ui::AXNode* deepest_child = node()->GetDeepestLastUnignoredChild();
-  return manager()->GetFromAXNode(deepest_child);
+  ui::AXNode* deepest_descendant = node()->GetDeepestLastUnignoredDescendant();
+  return manager()->GetFromAXNode(deepest_descendant);
 }
 
 size_t BrowserAccessibility::InternalChildCount() const {
@@ -1248,6 +1261,17 @@ bool BrowserAccessibility::AccessibilityPerformAction(
     case ax::mojom::Action::kShowContextMenu:
       manager_->ShowContextMenu(*this);
       return true;
+    case ax::mojom::Action::kStitchChildTree:
+      CHECK_NE(data.target_tree_id, ui::AXTreeIDUnknown());
+      CHECK_EQ(data.target_tree_id, manager()->GetTreeID());
+      CHECK_NE(data.target_node_id, ui::kInvalidAXNodeID);
+      CHECK_EQ(data.target_node_id, node()->id());
+      CHECK_NE(data.child_tree_id, ui::AXTreeIDUnknown());
+      CHECK_NE(data.child_tree_id, manager()->GetTreeID())
+          << "Circular tree stitching at node:\n"
+          << *this;
+      manager()->StitchChildTree(*this, data.child_tree_id);
+      return true;
     case ax::mojom::Action::kIncrement:
       manager_->Increment(*this);
       return true;
@@ -1816,7 +1840,8 @@ BrowserAccessibility* BrowserAccessibility::PlatformGetRootOfChildTree() const {
     return nullptr;
   }
   DCHECK_EQ(node()->children().size(), 0u)
-      << "A node should not have both children and a child tree.";
+      << "A node should not have both children and a child tree.\n"
+      << *node();
 
   BrowserAccessibilityManager* child_manager =
       BrowserAccessibilityManager::FromID(

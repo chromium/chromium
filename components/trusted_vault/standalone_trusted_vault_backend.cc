@@ -123,7 +123,7 @@ void WriteMD5HashedFileToDisk(const trusted_vault_pb::LocalTrustedVault& data,
 
 void MaybeMigrateDataFile(const base::FilePath& old_file_path,
                           const base::FilePath& new_file_path) {
-  if (!base::PathExists(old_file_path)) {
+  if (old_file_path.empty() || !base::PathExists(old_file_path)) {
     return;
   }
   if (!base::PathExists(new_file_path)) {

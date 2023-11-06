@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import androidx.annotation.ColorInt;
@@ -38,12 +39,10 @@ import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
-import org.chromium.chrome.browser.toolbar.HomeButton;
 import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
@@ -84,7 +83,7 @@ public class ToolbarTablet
 
     private static final int HOME_BUTTON_POSITION_FOR_TAB_STRIP_REDESIGN = 3;
 
-    private HomeButton mHomeButton;
+    private ImageButton mHomeButton;
     private ImageButton mBackButton;
     private ImageButton mForwardButton;
     private ImageButton mReloadButton;
@@ -365,10 +364,16 @@ public class ToolbarTablet
     private void displayNavigationPopup(boolean isForward, View anchorView) {
         Tab tab = getToolbarDataProvider().getTab();
         if (tab == null || tab.getWebContents() == null) return;
-        mNavigationPopup = new NavigationPopup(Profile.fromWebContents(tab.getWebContents()),
-                getContext(), tab.getWebContents().getNavigationController(),
-                isForward ? NavigationPopup.Type.TABLET_FORWARD : NavigationPopup.Type.TABLET_BACK,
-                getToolbarDataProvider()::getTab, mHistoryDelegate);
+        mNavigationPopup =
+                new NavigationPopup(
+                        tab.getProfile(),
+                        getContext(),
+                        tab.getWebContents().getNavigationController(),
+                        isForward
+                                ? NavigationPopup.Type.TABLET_FORWARD
+                                : NavigationPopup.Type.TABLET_BACK,
+                        getToolbarDataProvider()::getTab,
+                        mHistoryDelegate);
         mNavigationPopup.show(anchorView);
     }
 
@@ -732,7 +737,7 @@ public class ToolbarTablet
     }
 
     @Override
-    public HomeButton getHomeButton() {
+    public ImageView getHomeButton() {
         return mHomeButton;
     }
 

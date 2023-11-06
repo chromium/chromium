@@ -12,7 +12,7 @@ ProtocolEvent::~ProtocolEvent() = default;
 
 base::Value::Dict ProtocolEvent::ToValue(bool include_specifics) const {
   return base::Value::Dict()
-      .Set("time", GetTimestamp().ToJsTime())
+      .Set("time", GetTimestamp().InMillisecondsFSinceUnixEpoch())
       .Set("type", GetType())
       .Set("details", GetDetails())
       .Set("proto", GetProtoMessage(include_specifics));

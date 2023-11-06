@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/customize_chrome/customize_chrome_feature_promo_helper.h"
+#include "chrome/browser/new_tab_page/feature_promo_helper/new_tab_page_feature_promo_helper.h"
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 #include "chrome/browser/new_tab_page/promos/promo_service_observer.h"
 #include "chrome/browser/search/background/ntp_background_service_observer.h"
@@ -41,7 +41,7 @@ class GURL;
 class NtpBackgroundService;
 class Profile;
 class NTPUserDataLogger;
-class CustomizeChromeFeaturePromoHelper;
+class NewTabPageFeaturePromoHelper;
 
 namespace content {
 class WebContents;
@@ -72,7 +72,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       ThemeService* theme_service,
       search_provider_logos::LogoService* logo_service,
       content::WebContents* web_contents,
-      std::unique_ptr<CustomizeChromeFeaturePromoHelper>
+      std::unique_ptr<NewTabPageFeaturePromoHelper>
           customize_chrome_feature_promo_helper,
       const base::Time& ntp_navigation_start_time,
       const std::vector<std::pair<const std::string, int>> module_id_names);
@@ -130,7 +130,8 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;
   void IncrementCustomizeChromeButtonOpenCount() override;
-  void MaybeShowCustomizeChromeFeaturePromo() override;
+  void MaybeShowFeaturePromo(
+      new_tab_page::mojom::IphFeature iph_feature) override;
   void OnAppRendered(double time) override;
   void OnOneGoogleBarRendered(double time) override;
   void OnPromoRendered(double time,
@@ -147,6 +148,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
                       const std::string& doodle_id,
                       const absl::optional<std::string>& share_id) override;
   void OnPromoLinkClicked() override;
+  void OnModulesUsed() override;
 
  private:
   // ui::NativeThemeObserver:
@@ -214,8 +216,7 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
   raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<CustomizeChromeFeaturePromoHelper>
-      customize_chrome_feature_promo_helper_;
+  std::unique_ptr<NewTabPageFeaturePromoHelper> feature_promo_helper_;
   base::Time ntp_navigation_start_time_;
   const std::vector<std::pair<const std::string, int>> module_id_names_;
   NTPUserDataLogger logger_;

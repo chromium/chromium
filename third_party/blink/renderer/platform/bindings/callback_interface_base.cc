@@ -54,7 +54,7 @@ ScriptState* CallbackInterfaceBase::CallbackRelevantScriptStateOrReportError(
     const char* interface_name,
     const char* operation_name) {
   if (callback_relevant_script_state_)
-    return callback_relevant_script_state_;
+    return callback_relevant_script_state_.Get();
 
   // Report a SecurityError due to a cross origin callback object.
   ScriptState::Scope incumbent_scope(incumbent_script_state_);
@@ -73,7 +73,7 @@ ScriptState* CallbackInterfaceBase::CallbackRelevantScriptStateOrThrowException(
     const char* interface_name,
     const char* operation_name) {
   if (callback_relevant_script_state_)
-    return callback_relevant_script_state_;
+    return callback_relevant_script_state_.Get();
 
   // Throw a SecurityError due to a cross origin callback object.
   ScriptState::Scope incumbent_scope(incumbent_script_state_);

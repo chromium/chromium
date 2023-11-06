@@ -65,7 +65,7 @@ dependencies = [
  "skrifa",
  "small_ctor",
  "static_assertions",
- "syn 1.0.99",
+ "syn 2.0.29",
  "unicode-linebreak",
  "wycheproof",
 ]
@@ -341,7 +341,7 @@ dependencies = [
 
 [[package]]
 name = "serde_json_lenient"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "itoa",
  "ryu",

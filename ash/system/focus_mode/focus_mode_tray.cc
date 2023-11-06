@@ -53,7 +53,8 @@ void FocusModeTray::ClickedOutsideBubble() {
 
 std::u16string FocusModeTray::GetAccessibleNameForTray() {
   // TODO(b/288975135): Update once we get UX writing.
-  return l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_ACCESSIBILITY);
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL);
 }
 
 void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
@@ -78,6 +79,7 @@ void FocusModeTray::CloseBubble() {
   }
 
   bubble_.reset();
+  countdown_view_ = nullptr;
   SetIsActive(false);
 }
 
@@ -90,10 +92,11 @@ void FocusModeTray::ShowBubble() {
       std::make_unique<TrayBubbleView>(CreateInitParamsForTrayBubble(
           /*tray=*/this, /*anchor_to_shelf_corner=*/false));
 
-  countdown_view_ =
-      bubble_view->AddChildView(std::make_unique<FocusModeCountdownView>());
+  countdown_view_ = bubble_view->AddChildView(
+      std::make_unique<FocusModeCountdownView>(/*include_end_button=*/true));
   countdown_view_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(kBubbleInset)));
+  countdown_view_->UpdateUI();
 
   bubble_ = std::make_unique<TrayBubbleWrapper>(this);
   bubble_->ShowBubble(std::move(bubble_view));
@@ -114,6 +117,12 @@ void FocusModeTray::OnThemeChanged() {
 void FocusModeTray::OnFocusModeChanged(bool in_focus_session) {
   if (!in_focus_session) {
     CloseBubble();
+  }
+}
+
+void FocusModeTray::OnTimerTick() {
+  if (countdown_view_) {
+    countdown_view_->UpdateUI();
   }
 }
 

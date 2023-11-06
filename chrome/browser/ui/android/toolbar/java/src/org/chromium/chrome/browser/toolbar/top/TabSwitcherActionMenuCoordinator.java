@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuDivider;
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
 
 import android.content.Context;
 import android.view.View;
@@ -21,11 +21,12 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.RectProvider;
@@ -96,9 +97,13 @@ public class TabSwitcherActionMenuCoordinator {
     void displayMenu(final Context context, ListMenuButton anchorView, ModelList listItems,
             Callback<Integer> onItemClicked) {
         RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
-        BasicListMenu listMenu = new BasicListMenu(context, listItems, (model) -> {
-            onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        });
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        context,
+                        listItems,
+                        (model) -> {
+                            onItemClicked.onResult(model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                        });
 
         mContentView = listMenu.getContentView();
         int verticalPadding = context.getResources().getDimensionPixelOffset(

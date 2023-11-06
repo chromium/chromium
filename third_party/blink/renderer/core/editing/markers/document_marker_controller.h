@@ -179,11 +179,11 @@ class CORE_EXPORT DocumentMarkerController final
   // function receives the text node and marker, for every <node,marker>
   // pair in the marker set.
   void ApplyToMarkersOfType(
-      base::FunctionRef<void(WeakMember<Text>, DocumentMarker*)>,
+      base::FunctionRef<void(const Text&, DocumentMarker*)>,
       DocumentMarker::MarkerType);
 
   DocumentMarkerVector ComputeMarkersToPaint(const Text&) const;
-  DocumentMarkerVector CustomHighlightMarkersNotOverlapping(const Text&) const;
+  void ProcessCustomHighlightMarkersForOverlap();
 
   bool PossiblyHasTextMatchMarkers() const;
   Vector<gfx::Rect> LayoutRectsForTextMatchMarkers();

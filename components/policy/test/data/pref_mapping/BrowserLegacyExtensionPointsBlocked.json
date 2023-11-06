@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserLegacyExtensionPointsBlocked": true
+        },
+        "prefs": {
+          "block_browser_legacy_extension_points": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

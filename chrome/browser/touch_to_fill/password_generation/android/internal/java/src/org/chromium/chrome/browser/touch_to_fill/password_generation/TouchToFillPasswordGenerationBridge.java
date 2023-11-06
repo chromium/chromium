@@ -21,6 +21,7 @@ import org.chromium.ui.base.WindowAndroid;
  */
 class TouchToFillPasswordGenerationBridge
         implements TouchToFillPasswordGenerationCoordinator.Delegate {
+    private WindowAndroid mWindowAndroid;
     private TouchToFillPasswordGenerationCoordinator mCoordinator;
     private long mNativeTouchToFillPasswordGenerationBridge;
 
@@ -32,11 +33,10 @@ class TouchToFillPasswordGenerationBridge
             long nativeTouchToFillPasswordGenerationBridge) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        Context context = windowAndroid.getContext().get();
         return new TouchToFillPasswordGenerationBridge(
                 nativeTouchToFillPasswordGenerationBridge,
                 bottomSheetController,
-                context,
+                windowAndroid,
                 webContents,
                 prefService);
     }
@@ -44,36 +44,41 @@ class TouchToFillPasswordGenerationBridge
     public TouchToFillPasswordGenerationBridge(
             long nativeTouchToFillPasswordGenerationBridge,
             BottomSheetController bottomSheetController,
-            Context context,
+            WindowAndroid windowAndroid,
             WebContents webContents,
             PrefService prefService) {
         mNativeTouchToFillPasswordGenerationBridge = nativeTouchToFillPasswordGenerationBridge;
+        mWindowAndroid = windowAndroid;
         mCoordinator =
                 new TouchToFillPasswordGenerationCoordinator(
-                        bottomSheetController,
-                        context,
                         webContents,
                         prefService,
+                        bottomSheetController,
                         KeyboardVisibilityDelegate.getInstance(),
                         this);
     }
 
     @CalledByNative
     public boolean show(String generatedPassword, String account) {
-        return mCoordinator.show(generatedPassword, account);
+        Context context = mWindowAndroid.getContext().get();
+        if (context == null) return false;
+
+        return mCoordinator.show(generatedPassword, account, context);
     }
 
     @CalledByNative
     public void hideFromNative() {
         mCoordinator.hideFromNative();
+        mNativeTouchToFillPasswordGenerationBridge = 0;
     }
 
     @Override
-    public void onDismissed() {
+    public void onDismissed(boolean passwordAccepted) {
         if (mNativeTouchToFillPasswordGenerationBridge == 0) return;
 
-        TouchToFillPasswordGenerationBridgeJni.get().onDismissed(
-                mNativeTouchToFillPasswordGenerationBridge);
+        TouchToFillPasswordGenerationBridgeJni.get()
+                .onDismissed(mNativeTouchToFillPasswordGenerationBridge, passwordAccepted);
+        mNativeTouchToFillPasswordGenerationBridge = 0;
     }
 
     @Override
@@ -82,6 +87,8 @@ class TouchToFillPasswordGenerationBridge
 
         TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordAccepted(
                 mNativeTouchToFillPasswordGenerationBridge, password);
+        // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
+        // afterwards.
     }
 
     @Override
@@ -90,11 +97,14 @@ class TouchToFillPasswordGenerationBridge
 
         TouchToFillPasswordGenerationBridgeJni.get().onGeneratedPasswordRejected(
                 mNativeTouchToFillPasswordGenerationBridge);
+        // No need to reset mNativeTouchToFillPasswordGenerationBridge, onDismissed will do it
+        // afterwards.
     }
 
     @NativeMethods
     interface Natives {
-        void onDismissed(long nativeTouchToFillPasswordGenerationBridge);
+        void onDismissed(long nativeTouchToFillPasswordGenerationBridge, boolean passwordAccepted);
+
         void onGeneratedPasswordAccepted(
                 long nativeTouchToFillPasswordGenerationBridge, String password);
         void onGeneratedPasswordRejected(long nativeTouchToFillPasswordGenerationBridge);

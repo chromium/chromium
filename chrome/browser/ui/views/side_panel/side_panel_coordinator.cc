@@ -21,21 +21,25 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
+#include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/frame/browser_actions.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_combobox_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_content_proxy.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_header.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_toolbar_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -54,6 +58,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -77,10 +82,19 @@ void ConfigureControlButton(views::ImageButton* button) {
   button->SetMinimumImageSize(
       gfx::Size(minimum_button_size, minimum_button_size));
 
-  button->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL)));
+
+  } else {
+    button->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
+            views::DistanceMetric::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+  }
   button->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
@@ -114,6 +128,8 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
       unpin_icon, kColorSidePanelHeaderButtonIconDisabled, dip_size);
   button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
   button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
+  button->SetProperty(views::kElementIdentifierKey,
+                      kSidePanelPinButtonElementId);
   return button;
 }
 
@@ -136,11 +152,18 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
 
 std::unique_ptr<views::ImageView> CreateIcon() {
   std::unique_ptr<views::ImageView> icon = std::make_unique<views::ImageView>();
+  int horizontal_margin = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    horizontal_margin =
+        ChromeLayoutProvider::Get()->GetDistanceMetric(
+            ChromeDistanceMetric::
+                DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL) *
+        2;
+  }
   icon->SetProperty(
       views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0, 0,
-                        ChromeLayoutProvider::Get()->GetDistanceMetric(
-                            views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
+      gfx::Insets::TLBR(0, horizontal_margin, 0, horizontal_margin));
   return icon;
 }
 
@@ -278,6 +301,28 @@ SidePanelRegistry* SidePanelCoordinator::GetGlobalSidePanelRegistry(
       browser->GetUserData(kGlobalSidePanelRegistryKey));
 }
 
+actions::ActionItem* SidePanelCoordinator::GetActionItem(
+    SidePanelEntry::Key entry_key) {
+  BrowserActions* const browser_actions =
+      BrowserActions::FromBrowser(browser_view_->browser());
+  if (entry_key.id() == SidePanelEntryId::kExtension) {
+    absl::optional<actions::ActionId> extension_action_id =
+        actions::ActionIdMap::StringToActionId(entry_key.ToString());
+    CHECK(extension_action_id.has_value());
+    actions::ActionItem* const action_item =
+        actions::ActionManager::Get().FindAction(
+            extension_action_id.value(), browser_actions->root_action_item());
+    CHECK(action_item);
+    return action_item;
+  }
+
+  absl::optional<actions::ActionId> action_id =
+      SidePanelEntryIdToActionId(entry_key.id());
+  CHECK(action_id.has_value());
+  return actions::ActionManager::Get().FindAction(
+      action_id.value(), browser_actions->root_action_item());
+}
+
 void SidePanelCoordinator::Show(
     absl::optional<SidePanelEntry::Id> entry_id,
     absl::optional<SidePanelUtil::SidePanelOpenTrigger> open_trigger) {
@@ -334,6 +379,10 @@ void SidePanelCoordinator::Close() {
     }
     current_entry_.reset();
     current_entry->OnEntryHidden();
+
+    if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+      NotifyPinnedContainerOfActiveStateChange(current_entry->key(), false);
+    }
   }
 
   // Reset active entry values for all observed registries and clear cache for
@@ -404,17 +453,29 @@ void SidePanelCoordinator::OpenInNewTab() {
 }
 
 void SidePanelCoordinator::UpdatePinState() {
-  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
-  if (pref_service) {
-    bool current_state = pref_service->GetBoolean(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar);
-    pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
-                             !current_state);
-    SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
-        browser_view_, /*is_open=*/true);
-    base::RecordComputedAction(base::StrCat(
-        {"SidePanel.Companion.", !current_state ? "Pinned" : "Unpinned",
-         ".BySidePanelHeaderButton"}));
+  Profile* const profile = browser_view_->GetProfile();
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(profile);
+    absl::optional<actions::ActionId> action_id =
+        GetActionItem(current_entry_->key())->GetActionId();
+    CHECK(action_id.has_value());
+    actions_model->UpdatePinnedState(
+        action_id.value(), !actions_model->Contains(action_id.value()));
+    // TODO(b:299464014): Add metrics for pinned panels
+  } else {
+    PrefService* const pref_service = profile->GetPrefs();
+    if (pref_service) {
+      bool current_state = pref_service->GetBoolean(
+          prefs::kSidePanelCompanionEntryPinnedToToolbar);
+      pref_service->SetBoolean(prefs::kSidePanelCompanionEntryPinnedToToolbar,
+                               !current_state);
+      SearchCompanionSidePanelCoordinator::SetAccessibleNameForToolbarButton(
+          browser_view_, /*is_open=*/true);
+      base::RecordComputedAction(base::StrCat(
+          {"SidePanel.Companion.", !current_state ? "Pinned" : "Unpinned",
+           ".BySidePanelHeaderButton"}));
+    }
   }
 }
 
@@ -462,19 +523,6 @@ void SidePanelCoordinator::Show(
 
   if (!entry) {
     return;
-  }
-
-  // TODO(b/301638334): Remove this if no longer needed after CSC launch.
-  if (entry->key().id() == SidePanelEntry::Id::kSearchCompanion ||
-      entry->key().id() == SidePanelEntry::Id::kLens) {
-    if (!combobox_model_->HasKey(entry->key())) {
-      combobox_model_->AddItem(entry);
-    }
-    auto remove_key =
-        entry->key().id() == SidePanelEntry::Id::kSearchCompanion
-            ? SidePanelEntry::Key(SidePanelEntry::Id::kLens)
-            : SidePanelEntry::Key(SidePanelEntry::Id::kSearchCompanion);
-    combobox_model_->RemoveItem(remove_key);
   }
 
   if (GetContentContainerView() == nullptr) {
@@ -609,8 +657,8 @@ void SidePanelCoordinator::PopulateSidePanel(
     SidePanelEntry* entry,
     absl::optional<std::unique_ptr<views::View>> content_view) {
   if (!header_combobox_) {
-    UpdatePanelIconView(entry->icon());
-    panel_title_->SetText(entry->name());
+    actions::ActionItem* const action_item = GetActionItem(entry->key());
+    UpdatePanelIconAndTitle(action_item->GetImage(), action_item->GetText());
   } else {
     // Ensure that the correct combobox entry is selected. This may not be the
     // case if `Show()` was called after registering a contextual entry.
@@ -653,9 +701,14 @@ void SidePanelCoordinator::PopulateSidePanel(
     content->RequestFocus();
   }
   UpdateNewTabButtonState();
-  if (auto* side_panel_container =
-          browser_view_->toolbar()->side_panel_container()) {
-    UpdateHeaderPinButtonState();
+  UpdateHeaderPinButtonState();
+  if (browser_view_->toolbar()->pinned_toolbar_actions_container()) {
+    NotifyPinnedContainerOfActiveStateChange(entry->key(), true);
+    if (previous_entry) {
+      NotifyPinnedContainerOfActiveStateChange(previous_entry->key(), false);
+    }
+  } else if (auto* side_panel_container =
+                 browser_view_->toolbar()->side_panel_container()) {
     side_panel_container->UpdateSidePanelContainerButtonsState();
   }
 
@@ -928,16 +981,27 @@ SidePanelEntry* SidePanelCoordinator::GetNewActiveEntryOnTabChanged() {
              : nullptr;
 }
 
+void SidePanelCoordinator::NotifyPinnedContainerOfActiveStateChange(
+    SidePanelEntryKey key,
+    bool is_active) {
+  auto* toolbar_container =
+      browser_view_->toolbar()->pinned_toolbar_actions_container();
+  CHECK(toolbar_container);
+
+  if (key.id() == SidePanelEntryId::kExtension) {
+    // TODO(b/303064829): Handle extensions pop out and highlighting.
+  } else {
+    absl::optional<actions::ActionId> action_id =
+        SidePanelEntryIdToActionId(key.id());
+    CHECK(action_id.has_value());
+    toolbar_container->UpdateActionState(*action_id, is_active);
+  }
+}
+
 void SidePanelCoordinator::OnEntryRegistered(SidePanelRegistry* registry,
                                              SidePanelEntry* entry) {
   if (combobox_model_) {
-    // TODO(b/301638334): Remove this if no longer needed after CSC launch.
-    // Only add companion entries if Lens is not in the combobox model.
-    if (!(entry->key().id() == SidePanelEntry::Id::kSearchCompanion &&
-          combobox_model_->HasKey(
-              SidePanelEntry::Key(SidePanelEntry::Id::kLens)))) {
-      combobox_model_->AddItem(entry);
-    }
+    combobox_model_->AddItem(entry);
     if (GetContentContainerView()) {
       SetSelectedEntryInCombobox(GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())));
@@ -1012,8 +1076,6 @@ void SidePanelCoordinator::OnEntryWillDeregister(SidePanelRegistry* registry,
 void SidePanelCoordinator::OnEntryIconUpdated(SidePanelEntry* entry) {
   if (combobox_model_) {
     combobox_model_->UpdateIconForEntry(entry);
-  } else if (current_entry_ && (current_entry_->key() == entry->key())) {
-    UpdatePanelIconView(entry->icon());
   }
 }
 
@@ -1105,14 +1167,27 @@ void SidePanelCoordinator::UpdateHeaderPinButtonState() {
     return;
   }
 
-  PrefService* pref_service = browser_view_->GetProfile()->GetPrefs();
-  if (pref_service) {
-    bool pinned = pref_service->GetBoolean(
-        prefs::kSidePanelCompanionEntryPinnedToToolbar);
-    header_pin_button_->SetToggled(pinned);
+  Profile* const profile = browser_view_->GetProfile();
+  if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
+    PinnedToolbarActionsModel* const actions_model =
+        PinnedToolbarActionsModel::Get(profile);
+    actions::ActionItem* const action_item =
+        GetActionItem(current_entry_->key());
+    absl::optional<actions::ActionId> action_id = action_item->GetActionId();
+    CHECK(action_id.has_value());
+    header_pin_button_->SetToggled(actions_model->Contains(action_id.value()));
+    header_pin_button_->SetVisible(
+        action_item->GetProperty(actions::kActionItemPinnableKey));
+  } else {
+    PrefService* pref_service = profile->GetPrefs();
+    if (pref_service && companion::IsCompanionFeatureEnabled()) {
+      bool pinned = pref_service->GetBoolean(
+          prefs::kSidePanelCompanionEntryPinnedToToolbar);
+      header_pin_button_->SetToggled(pinned);
+    }
+    header_pin_button_->SetVisible(current_entry_->key().id() ==
+                                   SidePanelEntry::Id::kSearchCompanion);
   }
-  header_pin_button_->SetVisible(current_entry_->key().id() ==
-                                 SidePanelEntry::Id::kSearchCompanion);
 }
 
 void SidePanelCoordinator::UpdateToolbarButtonHighlight(
@@ -1124,7 +1199,8 @@ void SidePanelCoordinator::UpdateToolbarButtonHighlight(
                          : IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
-void SidePanelCoordinator::UpdatePanelIconView(const ui::ImageModel& icon) {
+void SidePanelCoordinator::UpdatePanelIconAndTitle(const ui::ImageModel& icon,
+                                                   const std::u16string& text) {
   ui::ImageModel updated_icon = icon;
   if (icon.IsVectorIcon()) {
     updated_icon = ui::ImageModel::FromVectorIcon(
@@ -1132,6 +1208,7 @@ void SidePanelCoordinator::UpdatePanelIconView(const ui::ImageModel& icon) {
         icon.GetVectorIcon().icon_size());
   }
   panel_icon_->SetImage(updated_icon);
+  panel_title_->SetText(text);
 }
 
 void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,

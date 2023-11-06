@@ -8,6 +8,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/profile_token_quality_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -22,13 +23,14 @@ using sync_pb::ContactInfoSpecifics;
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
 constexpr char kInvalidGuid[] = "1234";
 constexpr int kNonChromeModifier = 1234;
-const auto kUseDate = base::Time::FromDoubleT(123);
-const auto kModificationDate = base::Time::FromDoubleT(456);
+const auto kUseDate = base::Time::FromSecondsSinceUnixEpoch(123);
+const auto kModificationDate = base::Time::FromSecondsSinceUnixEpoch(456);
 
 // Returns a profile with all fields set. Contains identical data to the data
 // returned from `ConstructCompleteSpecifics()`.
 AutofillProfile ConstructCompleteProfile() {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount,
+                          AddressCountryCode("ES"));
 
   profile.set_use_count(123);
   profile.set_use_date(kUseDate);
@@ -66,8 +68,6 @@ AutofillProfile ConstructCompleteProfile() {
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"California",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
-                                           VerificationStatus::kObserved);
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"US",
                                            VerificationStatus::kObserved);
   profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_STREET_ADDRESS,
@@ -179,7 +179,7 @@ ContactInfoSpecifics ConstructCompleteSpecifics() {
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_zip(), "94043",
            ContactInfoSpecifics::OBSERVED);
-  SetToken(specifics.mutable_address_country(), "US",
+  SetToken(specifics.mutable_address_country(), "ES",
            ContactInfoSpecifics::OBSERVED);
   SetToken(specifics.mutable_address_street_address(),
            "123 Fake St. Premise Marcos y Oliva\n"
@@ -246,9 +246,11 @@ class ContactInfoSyncUtilTest : public testing::Test {
  public:
   ContactInfoSyncUtilTest() {
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
+        {features::kAutofillUseI18nAddressModel,
+         features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
          features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers,
          features::kAutofillTrackProfileTokenQuality},
         {});
   }

@@ -29,7 +29,7 @@ class DisplayOverlayController;
 //
 // View looks like this:
 // +----------------------------------+
-// ||icon|  |"Button options"|  |icon||
+// ||"Button options"|          |icon||
 // |----------------------------------|
 // ||"Key assignment"|                |
 // |----------------------------------|
@@ -39,8 +39,8 @@ class DisplayOverlayController;
 // ||"Selected key"       |key labels||
 // ||"key"                            |
 // |----------------------------------|
-// ||"Button label"                 > |
-// ||"Unassigned"                     |
+// -----------------------------------|
+// ||         Delete button          ||
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
@@ -57,8 +57,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   friend class EditLabelTest;
   friend class EditingListTest;
 
-  class ActionLabelButton;
-
   void Init();
 
   // Add UI components.
@@ -66,9 +64,10 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void AddEditTitle();
   void AddActionEdit();
   void AddActionSelection();
+  void AddDeleteButton();
 
   // Functions related to buttons.
-  void OnTrashButtonPressed();
+  void OnDeleteButtonPressed();
   void OnDoneButtonPressed();
   void OnButtonLabelAssignmentPressed();
 
@@ -86,7 +85,6 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   raw_ptr<ash::IconButton> done_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
   raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
-  raw_ptr<ActionLabelButton> action_label_button_ = nullptr;
 };
 
 }  // namespace arc::input_overlay

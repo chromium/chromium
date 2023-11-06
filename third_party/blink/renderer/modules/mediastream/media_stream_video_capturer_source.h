@@ -84,7 +84,7 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   void StartSourceImpl(
       VideoCaptureDeliverFrameCB frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureCropVersionCB crop_version_callback,
+      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
       VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
   media::VideoCaptureFeedbackCB GetFeedbackCallback() const override;
   void StopSourceImpl() override;
@@ -93,13 +93,15 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<media::VideoCaptureFormat> GetCurrentFormat() const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
 #if !BUILDFLAG(IS_ANDROID)
-  void Crop(const base::Token& crop_id,
-            uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
-      override;
-  absl::optional<uint32_t> GetNextCropVersion() override;
+  void ApplySubCaptureTarget(
+      media::mojom::blink::SubCaptureTargetType type,
+      const base::Token& sub_capture_target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback) override;
+  absl::optional<uint32_t> GetNextSubCaptureTargetVersion() override;
 #endif
-  uint32_t GetCropVersion() const override;
+  uint32_t GetSubCaptureTargetVersion() const override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
@@ -128,20 +130,21 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
 
   media::VideoCaptureParams capture_params_;
   VideoCaptureDeliverFrameCB frame_callback_;
-  VideoCaptureCropVersionCB crop_version_callback_;
+  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback_;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_callback_;
   DeviceCapturerFactoryCallback device_capturer_factory_callback_;
 
-  // Each time Crop() is called, the source crop version increments.
-  // Associate each Promise with its crop version, so that Viz can easily stamp
-  // each frame. When we see the first such frame, or an equivalent message,
-  // we can resolve the Promise. (An "equivalent message" can be a notification
-  // of a dropped frame, or a notification that a frame was not produced due
-  // to consisting of 0 pixels after the crop was applied, or anything similar.)
+  // Each time Crop() is called, the source sub-capture-target version
+  // increments. Associate each Promise with its sub-capture-target version, so
+  // that Viz can easily stamp each frame. When we see the first such frame, or
+  // an equivalent message, we can resolve the Promise. (An "equivalent message"
+  // can be a notification of a dropped frame, or a notification that a frame
+  // was not produced due to consisting of 0 pixels after the crop was applied,
+  // or anything similar.)
   //
   // Note that frames before the first call to cropTo() will be associated
   // with a version of 0, both here and in Viz.
-  uint32_t current_crop_version_ = 0;
+  uint32_t current_sub_capture_target_version_ = 0;
 
   base::WeakPtrFactory<MediaStreamVideoCapturerSource> weak_factory_{this};
 };

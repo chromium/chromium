@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policy set)",
+        "policies": {},
+        "prefs": {
+          "webrtc.text_log_collection_allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebRtcTextLogCollectionAllowed": true
+        },
+        "prefs": {
+          "webrtc.text_log_collection_allowed": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "WebRtcTextLogCollectionAllowed": false
+        },
+        "prefs": {
+          "webrtc.text_log_collection_allowed": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

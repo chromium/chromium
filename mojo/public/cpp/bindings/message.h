@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   static const uint32_t kFlagIsResponse = 1 << 1;
   static const uint32_t kFlagIsSync = 1 << 2;
   static const uint32_t kFlagNoInterrupt = 1 << 3;
+  static const uint32_t kFlagIsUrgent = 1 << 4;
 
   // Constructs an uninitialized Message object.
   Message();

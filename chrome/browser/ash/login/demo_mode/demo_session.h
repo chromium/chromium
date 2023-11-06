@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_extensions_external_loader.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
@@ -246,6 +247,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // The fallback timer that ensures the splash screen is removed in case the
   // screensaver app takes an extra long time to be shown.
   std::unique_ptr<base::OneShotTimer> remove_splash_screen_fallback_timer_;
+
+  // Constructed when the demo mode user session starts.
+  std::unique_ptr<DemoModeWindowCloser> window_closer_;
 
   bool splash_screen_removed_ = false;
   bool screensaver_activated_ = false;

@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <strstream>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -82,7 +83,11 @@ constexpr char kDefaultZip[] = "94102";
 constexpr char kDefaultCity[] = "Los Angeles";
 constexpr char kDefaultState[] = "California";
 constexpr char kDefaultCountry[] = "US";
-constexpr char kDefaultPhone[] = "+1 650-555-0000";
+// Unlike phone numbers from other countries, US phone numbers are stored
+// without a leading "+". Formatting a US or CA phone number drops the leading
+// "+". As these tests check equality, we drop the "+" in the input as it would
+// be gone in the output.
+constexpr char kDefaultPhone[] = "1 650-555-0000";
 constexpr char kDefaultPhoneDomesticFormatting[] = "(650) 555-0000";
 constexpr char kDefaultPhoneAreaCode[] = "650";
 constexpr char kDefaultPhonePrefix[] = "555";
@@ -96,7 +101,7 @@ constexpr char kSecondAddressLine1[] = "23 Main St";
 constexpr char kSecondZip[] = "94106";
 constexpr char kSecondCity[] = "Los Angeles";
 constexpr char kSecondState[] = "California";
-constexpr char kSecondPhone[] = "+1 651-666-1111";
+constexpr char kSecondPhone[] = "1 651-666-1111";
 constexpr char kSecondPhoneAreaCode[] = "651";
 constexpr char kSecondPhonePrefix[] = "666";
 constexpr char kSecondPhoneSuffix[] = "1111";
@@ -109,12 +114,16 @@ constexpr char kThirdAddressLine1[] = "742 Evergreen Terrace";
 constexpr char kThirdZip[] = "65619";
 constexpr char kThirdCity[] = "Springfield";
 constexpr char kThirdState[] = "Oregon";
-constexpr char kThirdPhone[] = "+1 851-777-2222";
+constexpr char kThirdPhone[] = "1 850-777-2222";
 
 constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
+
+constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
+constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
+constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
 
 // For a given ServerFieldType |type| returns a pair of field name and label
 // that should be parsed into this type by our field type parsers.
@@ -243,6 +252,13 @@ TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country) {
   auto pairs = GetDefaultProfileTypeValuePairs();
   SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
+  if (country == "DE" || country == "Germany") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneGermany);
+  } else if (country == "MX" || country == "Mexico") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
+  } else if (country == "AM" || country == "Armenien") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneArmenia);
+  }
   return pairs;
 }
 
@@ -485,15 +501,16 @@ class MockCreditCardSaveManager : public TestCreditCardSaveManager {
               AttemptToOfferCvcLocalSave,
               (const CreditCard& card),
               (override));
-  MOCK_METHOD(bool,
-              ShouldOfferCvcSave,
-              (const CreditCard& card,
-               FormDataImporter::CreditCardImportType credit_card_import_type,
-               bool is_credit_card_upstream_enabled),
-              (override));
   MOCK_METHOD(void,
               AttemptToOfferCvcUploadSave,
               (const CreditCard& card),
+              (override));
+  MOCK_METHOD(bool,
+              ProceedWithSavingIfApplicable,
+              (const FormStructure& submitted_form,
+               const CreditCard& card,
+               FormDataImporter::CreditCardImportType credit_card_import_type,
+               bool is_credit_card_upstream_enabled),
               (override));
 };
 
@@ -622,8 +639,21 @@ class FormDataImporterTestBase {
   // Note, that order is taken into account.
   void VerifyExpectationForExtractedAddressProfiles(
       const std::vector<AutofillProfile>& expected_profiles) {
+    auto print_profiles = [&] {
+      std::ostringstream output;
+      output << "Expected:" << std::endl;
+      for (const AutofillProfile& p : expected_profiles) {
+        output << p << std::endl;
+      }
+      output << "Observed:" << std::endl;
+      for (const AutofillProfile* p : personal_data_manager_->GetProfiles()) {
+        output << *p << std::endl;
+      }
+      return output.str();
+    };
     EXPECT_THAT(personal_data_manager_->GetProfiles(),
-                UnorderedElementsCompareEqualArray(expected_profiles));
+                UnorderedElementsCompareEqualArray(expected_profiles))
+        << print_profiles();
   }
 
   // Convenience wrapper that calls
@@ -778,10 +808,19 @@ TEST_P(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
   AutofillProfile kDefaultGermanProfile =
       ConstructDefaultProfileWithOverriddenCountry("DE");
   kDefaultGermanProfile.ClearFields({ADDRESS_HOME_STATE});
+
   autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+
+  // Retrieve a default profile with overridden country and overridden phone
+  // number to match kDefaultGermanProfile.
+  TypeValuePairs form_structure_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
+  // Clear the country to verify that it gets complemented from the variation
+  // config.
+  SetValueForType(form_structure_pairs, ADDRESS_HOME_COUNTRY, "");
   std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
+      ConstructFormStructureFromTypeValuePairs(form_structure_pairs);
+
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {kDefaultGermanProfile});
 }
@@ -1611,14 +1650,24 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_LocalizedCountryName) {
   // Verify that the country code is not determined from the country value if
   // the page language is not set. This results in an import of the default
   // profile.
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  // The country is US here, but we override the phone number that is expected
+  // later in an Armenian profile.
+  expected_profile.SetRawInfoWithVerificationStatus(
+      PHONE_HOME_WHOLE_NUMBER,
+      base::UTF8ToUTF16(std::string(kDefaultPhoneArmenia)),
+      VerificationStatus::kObserved);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
 
   // Set the page language to match the localized country value and try again.
   autofill_client_->GetLanguageState()->SetSourceLanguage("de");
-  // Note that the default profile is still available in the PDM.
+
+  // Note that the previously extracted profile is still available in the PDM
+  // after extracting the profile a second time with a page language configured.
   ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructDefaultProfile(),
-                        ConstructDefaultProfileWithOverriddenCountry("AM")});
+      *form_structure,
+      {expected_profile, ConstructDefaultProfileWithOverriddenCountry("AM")});
 }
 
 // Tests that a profile is created for countries with composed names.
@@ -1896,7 +1945,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Type the same data as the masked card into a form.
@@ -1924,7 +1973,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");  // Imported cards have no billing info.
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Type the same data as the unmasked card into a form.
@@ -2404,7 +2453,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Biggie Smalls", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same masked server card.
@@ -2433,7 +2482,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "Biggie Smalls",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same full server card.
@@ -2572,7 +2621,7 @@ TEST_P(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "a123");
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same card number but different
@@ -2597,9 +2646,10 @@ TEST_P(FormDataImporterTest,
        ExtractFormData_ExtractCreditCardRecordType_ServerCardWithCvc) {
   // Add a valid server card.
   CreditCard server_card(CreditCard::RecordType::kMaskedServerCard, "a123");
+  server_card.SetNetworkForMaskedCard(kVisaCard);
   test::SetCreditCardInfo(&server_card, "John Dillinger",
                           "4111 1111 1111 1111" /* Visa */, "01", "2999", "");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the same card number but different
@@ -2627,7 +2677,7 @@ TEST_P(
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2999", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   ASSERT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // Simulate a form submission with the card with same last four but different
@@ -2666,12 +2716,12 @@ TEST_P(
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card1);
+  personal_data_manager_->AddServerCreditCard(server_card1);
   CreditCard server_card2(CreditCard::RecordType::kMaskedServerCard, "a124");
   test::SetCreditCardInfo(&server_card2, "John Dillinger", "1111" /* Visa */,
                           "02", "2112", "");
   server_card2.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card2);
+  personal_data_manager_->AddServerCreditCard(server_card2);
   EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
 
   {
@@ -2985,12 +3035,12 @@ TEST_P(FormDataImporterTest, DuplicateMaskedServerCard) {
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
                           "01", "2999", "");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card1);
+  personal_data_manager_->AddServerCreditCard(server_card1);
   CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "");
-  personal_data_manager_->AddFullServerCreditCard(server_card2);
+  personal_data_manager_->AddServerCreditCard(server_card2);
   EXPECT_EQ(2U, personal_data_manager_->GetCreditCards().size());
 
   // A valid credit card form. A user re-enters one of their masked cards.
@@ -3062,12 +3112,12 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card1, "John Dillinger", "1881" /* Visa */,
                           "01", "2999", "1");
   server_card1.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card1);
+  personal_data_manager_->AddServerCreditCard(server_card1);
   CreditCard server_card2(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card2, "Clyde Barrow",
                           "378282246310005" /* American Express */, "04",
                           "2999", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card2);
+  personal_data_manager_->AddServerCreditCard(server_card2);
 
   // Add two local cards to the credit cards to ensure that in the case where we
   // have separate copies of a server card and a local card, we still only set
@@ -3128,7 +3178,7 @@ TEST_P(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
@@ -3165,7 +3215,7 @@ TEST_P(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3198,7 +3248,7 @@ TEST_P(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3232,7 +3282,7 @@ TEST_P(
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4111111111111111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form with an empty
@@ -3263,7 +3313,7 @@ TEST_P(FormDataImporterTest,
   CreditCard server_card(CreditCard::RecordType::kFullServerCard, "c789");
   test::SetCreditCardInfo(&server_card, "Clyde Barrow",
                           "4444333322221111" /* Visa */, "04", "2111", "1");
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
@@ -3300,7 +3350,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form.  Ensure that
@@ -3336,7 +3386,7 @@ TEST_P(FormDataImporterTest,
   test::SetCreditCardInfo(&server_card, "John Dillinger", "1111" /* Visa */,
                           "01", "2111", "");
   server_card.SetNetworkForMaskedCard(kVisaCard);
-  personal_data_manager_->AddFullServerCreditCard(server_card);
+  personal_data_manager_->AddServerCreditCard(server_card);
   EXPECT_EQ(1U, personal_data_manager_->GetCreditCards().size());
 
   // A user fills/enters the card's information on a checkout form but changes
@@ -3558,17 +3608,32 @@ TEST_P(FormDataImporterTest, MultiStepImport_ComplementCountryEarly) {
       std::pair<ServerFieldType, std::string>(ADDRESS_HOME_COUNTRY, "US")));
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
 
-  // Now import a profile without a country. The country is thus be complemented
-  // to the variation country "DE".
+  // Now import the second profile form fragment without a country field. The
+  // country is thus be complemented to the variation country "DE".
   autofill_client_->SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
   type_value_pairs = GetSplitDefaultProfileTypeValuePairs(/*part=*/2);
   EXPECT_FALSE(base::Contains(type_value_pairs, ADDRESS_HOME_COUNTRY,
                               [](auto& pair) { return pair.first; }));
   form_structure = ConstructFormStructureFromTypeValuePairs(type_value_pairs);
 
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDefaultToCityAndNumber)) {
+    ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+  } else {
+    // The behavior of FormDataImporter is a bit broken:
+    // The first split of the form contains the country (US) and some other
+    // fields. The second split contains no country but a phone number.
+    // Therefore, the country is inferred from the geo IP and the US phone
+    // number is parsed with the assumption to read a DE number. The resulting
+    // phone number is not a valid US phone number even though the address
+    // profile is a US profile.
+    AutofillProfile expected_profile = ConstructDefaultProfile();
+    expected_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"0165 05550000");
+    ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                               {expected_profile});
+  }
 }
 
 // Tests that when multi-step complements are enabled, complete profiles those
@@ -3743,7 +3808,7 @@ TEST_P(FormDataImporterTest, SkipAutocompleteUnrecognizedFields) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(FormDataImporterTest,
        ProcessIbanImportCandidate_ShouldOfferLocalSave_NewIban) {
-  Iban iban_import_candidate = test::GetIban();
+  Iban iban_import_candidate = test::GetLocalIban();
 
   EXPECT_TRUE(
       form_data_importer().ProcessIbanImportCandidate(iban_import_candidate));
@@ -3977,139 +4042,37 @@ TEST_F(FormDataImporterNonParameterizedTest,
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
-// Test that in the case where the CreditCardSaveManager denotes we should
-// offer CVC local save, we attempt to offer it.
+// Test that ProceedWithSavingIfApplicable gets called for server cards with the
+// correct pre-requisites set.
 TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_LocalCvcSaveOffered) {
+       ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Server) {
+  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultCreditCardFormStructure();
+  form_data_importer().set_credit_card_import_type_for_testing(
+      FormDataImporter::CreditCardImportType::kServerCard);
+
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
+  form_data_importer().ProcessExtractedCreditCardForTesting(
+      *form_structure, card,
+      /*payment_methods_autofill_enabled=*/true,
+      /*is_credit_card_upstream_enabled=*/false);
+}
+
+// Test that ProceedWithSavingIfApplicable gets called for local cards with the
+// correct pre-requisites set.
+TEST_F(FormDataImporterNonParameterizedTest,
+       ProcessExtractedCreditCard_ProceedWithSavingIfApplicable_Local) {
   CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
   std::unique_ptr<FormStructure> form_structure =
       ConstructDefaultCreditCardFormStructure();
   form_data_importer().set_credit_card_import_type_for_testing(
       FormDataImporter::CreditCardImportType::kLocalCard);
 
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcLocalSave);
+  EXPECT_CALL(credit_card_save_manager(), ProceedWithSavingIfApplicable);
   form_data_importer().ProcessExtractedCreditCardForTesting(
       *form_structure, card,
       /*payment_methods_autofill_enabled=*/true,
       /*is_credit_card_upstream_enabled=*/false);
 }
-
-// Test that in the case where the CreditCardSaveManager denotes we should
-// not offer CVC local save, we will not offer it.
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_LocalCvcSaveNotOffered) {
-  CreditCard card = test::WithCvc(test::GetCreditCard(), u"123");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kLocalCard);
-
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
-      .WillByDefault(testing::Return(false));
-  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcLocalSave).Times(0);
-  form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, card,
-      /*payment_methods_autofill_enabled=*/true,
-      /*is_credit_card_upstream_enabled=*/false);
-}
-
-// Test that in the case where the CreditCardSaveManager denotes we should
-// offer CVC upload save, we attempt to offer it once the form is submitted.
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_UploadCvcSaveOffered) {
-  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kServerCard);
-
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
-      .WillByDefault(testing::Return(true));
-  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave);
-  form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, card,
-      /*payment_methods_autofill_enabled=*/true,
-      /*is_credit_card_upstream_enabled=*/true);
-}
-
-// Test that in the case where upstream is not enabled, we will not offer CVC
-// upload save.
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_UploadCvcSaveNotOfferedWithUpstreamDisabled) {
-  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kServerCard);
-
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
-      .WillByDefault(testing::Return(false));
-  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave).Times(0);
-  form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, card,
-      /*payment_methods_autofill_enabled=*/true,
-      /*is_credit_card_upstream_enabled=*/false);
-}
-
-// Test that in the case where the CreditCardSaveManager denotes we should
-// not offer CVC upload save, we will not offer it.
-TEST_F(FormDataImporterNonParameterizedTest,
-       ProcessExtractedCreditCard_UploadCvcSaveNotOffered) {
-  CreditCard card = test::WithCvc(test::GetMaskedServerCard(), u"123");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultCreditCardFormStructure();
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kServerCard);
-
-  ON_CALL(credit_card_save_manager(), ShouldOfferCvcSave)
-      .WillByDefault(testing::Return(false));
-  EXPECT_CALL(credit_card_save_manager(), AttemptToOfferCvcUploadSave).Times(0);
-  form_data_importer().ProcessExtractedCreditCardForTesting(
-      *form_structure, card,
-      /*payment_methods_autofill_enabled=*/true,
-      /*is_credit_card_upstream_enabled=*/true);
-}
-
-TEST_F(FormDataImporterNonParameterizedTest, ShouldOfferCreditCardSave) {
-  // Should not offer save for null cards.
-  absl::optional<CreditCard> extracted_credit_card;
-  EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/false));
-
-  extracted_credit_card = test::GetCreditCard();
-
-  // Should not offer save for local cards if upstream is not enabled.
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kLocalCard);
-  EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/false));
-
-  // Should offer save for local cards if upstream is enabled.
-  EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/true));
-
-  // Should not offer save for server cards.
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kServerCard);
-  EXPECT_FALSE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/true));
-
-  // Should always offer save for new cards; upload save if it is enabled, local
-  // save otherwise.
-  form_data_importer().set_credit_card_import_type_for_testing(
-      FormDataImporter::CreditCardImportType::kNewCard);
-  EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/true));
-  EXPECT_TRUE(form_data_importer().ShouldOfferCreditCardSave(
-      extracted_credit_card,
-      /*is_credit_card_upstream_enabled=*/false));
-}
-
 }  // namespace autofill

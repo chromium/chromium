@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -136,6 +137,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveStringIds) {
     EXPECT_NE("", GetColumnIdAsString(kColumns[i].id));
 }
 
+// Test that all defined columns can be sorted
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, AllColumnsHaveSortable) {
+  for (size_t i = 0; i < kColumnsSize; ++i) {
+    EXPECT_TRUE(kColumns[i].sortable);
+  }
+}
+
 // In the case of no settings stored in the user preferences local store, test
 // that the task manager table starts with the default columns visibility as
 // stored in |kColumns|.
@@ -213,6 +221,52 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
     EXPECT_EQ(!kColumns[i].default_visibility,
               table->IsColumnVisible(kColumns[i].id));
   }
+}
+
+// Test hiding all visible columns and keeping them normal when reopened
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, HideAllColumnsAndRestored) {
+  ASSERT_NO_FATAL_FAILURE(ClearStoredColumnSettings());
+
+  chrome::ShowTaskManager(browser());
+  TaskManagerView* view = GetView();
+  ASSERT_TRUE(view);
+  views::TableView* table = GetTable();
+  ASSERT_TRUE(table);
+
+  EXPECT_FALSE(table->GetIsSorted());
+
+  // hide all visible columns except IDS_TASK_MANAGER_TASK_COLUMN
+  int task_column_index = -1;
+  for (size_t i = 0; i < kColumnsSize; ++i) {
+    EXPECT_EQ(kColumns[i].default_visibility,
+              table->IsColumnVisible(kColumns[i].id));
+    if (kColumns[i].id == IDS_TASK_MANAGER_TASK_COLUMN) {
+      task_column_index = i;
+      ASSERT_EQ(kColumns[i].default_visibility,
+                table->IsColumnVisible(kColumns[i].id));
+      continue;
+    }
+    if (kColumns[i].default_visibility) {
+      ToggleColumnVisibility(view, kColumns[i].id);
+    }
+  }
+  EXPECT_EQ(table->visible_columns().size(), 1u);
+  // hide IDS_TASK_MANAGER_TASK_COLUMN
+  ASSERT_EQ(task_column_index, 0);
+  ToggleColumnVisibility(view, kColumns[task_column_index].id);
+  EXPECT_EQ(table->visible_columns().size(), 1u);
+  EXPECT_TRUE(table->IsColumnVisible(kColumns[task_column_index].id));
+
+  // Close the task manager view and re-open. Expect
+  // IDS_TASK_MANAGER_TASK_COLUMN visibility
+  HideTaskManagerSync();
+  ASSERT_FALSE(GetView());
+  chrome::ShowTaskManager(browser());
+  table = GetTable();
+  ASSERT_TRUE(table);
+
+  EXPECT_EQ(table->visible_columns().size(), 1u);
+  EXPECT_TRUE(table->IsColumnVisible(kColumns[task_column_index].id));
 }
 
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {

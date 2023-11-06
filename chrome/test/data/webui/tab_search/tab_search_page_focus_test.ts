@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {InfiniteList, ProfileData, TabSearchApiProxyImpl, TabSearchItem, TabSearchPageElement} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';

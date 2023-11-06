@@ -47,6 +47,7 @@
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/download/public/common/download_stats.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -867,6 +868,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
   if (!base::android::BuildInfo::GetInstance()->is_automotive()) {
     GTEST_SKIP() << "This test should only run on automotive.";
   }
+  base::HistogramTester histograms;
 
   TestDownloadMessageBridge* message_bridge = new TestDownloadMessageBridge();
   delegate()->SetDownloadMessageBridgeForTesting(
@@ -882,6 +884,8 @@ TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadForAutomotive) {
   should_intercept = delegate()->InterceptDownloadIfApplicable(
       kUrl, "", "", mime_type, "", 10, false /*is_transient*/, nullptr);
   EXPECT_TRUE(should_intercept);
+  histograms.ExpectUniqueSample("Download.Blocked.ContentType.Automotive",
+                                download::DownloadContent::PDF, 1);
 
   EXPECT_EQ(1, message_bridge->GetMessageShownCount());
 }
@@ -1907,7 +1911,8 @@ class TestDownloadProtectionService
 
   void CheckClientDownload(
       DownloadItem* download_item,
-      safe_browsing::CheckDownloadRepeatingCallback callback) override {
+      safe_browsing::CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password) override {
     std::move(callback).Run(MockCheckClientDownload());
   }
   MOCK_METHOD0(MockCheckClientDownload, safe_browsing::DownloadCheckResult());

@@ -29,7 +29,7 @@ class TouchToFillPasswordGenerationBridgeImpl
 
   void Hide() override;
 
-  void OnDismissed(JNIEnv* env) override;
+  void OnDismissed(JNIEnv* env, bool generated_password_accepted) override;
 
   void OnGeneratedPasswordAccepted(
       JNIEnv* env,

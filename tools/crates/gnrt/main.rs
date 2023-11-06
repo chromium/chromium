@@ -9,7 +9,7 @@ mod download;
 mod gen;
 mod util;
 
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
 use clap::{arg, Arg};
 use gnrt_lib::*;
 
@@ -106,7 +106,7 @@ fn main() -> Result<()> {
             let version = args.get_one::<semver::Version>("version").unwrap().clone();
             download::download(name, version, security, shipped, &paths)
         }
-        _ => unreachable!("Invalid subcommand"),
+        _ => Err(anyhow!("Invalid or missing subcommand: must be 'gen' or 'download'")),
     }
 }
 

@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerFa
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -289,20 +290,25 @@ public class TabSwitcherCoordinator
             RecordHistogram.recordTimesHistogram("Android.TabSwitcher.SetupRecyclerView.Time",
                     SystemClock.uptimeMillis() - startTimeMs);
 
-            mMessageCardProviderCoordinator = new MessageCardProviderCoordinator(
-                    activity, tabModelSelector::isIncognitoSelected, (identifier) -> {
-                        if (identifier == MessageService.MessageType.PRICE_MESSAGE
-                                || identifier
-                                        == MessageService.MessageType
-                                                   .INCOGNITO_REAUTH_PROMO_MESSAGE) {
-                            mTabListCoordinator.removeSpecialListItem(
-                                    TabProperties.UiType.LARGE_MESSAGE, identifier);
-                        } else {
-                            mTabListCoordinator.removeSpecialListItem(
-                                    TabProperties.UiType.MESSAGE, identifier);
-                            appendNextMessage(identifier);
-                        }
-                    });
+            mMessageCardProviderCoordinator =
+                    new MessageCardProviderCoordinator(
+                            activity,
+                            tabModelSelector::isIncognitoSelected,
+                            (identifier) -> {
+                                if (identifier == MessageService.MessageType.PRICE_MESSAGE
+                                        || identifier
+                                                == MessageService.MessageType
+                                                        .INCOGNITO_REAUTH_PROMO_MESSAGE
+                                        || identifier
+                                                == MessageService.MessageType.TAB_SUGGESTION) {
+                                    mTabListCoordinator.removeSpecialListItem(
+                                            TabProperties.UiType.LARGE_MESSAGE, identifier);
+                                } else {
+                                    mTabListCoordinator.removeSpecialListItem(
+                                            TabProperties.UiType.MESSAGE, identifier);
+                                    appendNextMessage(identifier);
+                                }
+                            });
 
             mMenuOrKeyboardActionController = menuOrKeyboardActionController;
 
@@ -319,7 +325,9 @@ public class TabSwitcherCoordinator
                             LargeMessageCardViewBinder::bind);
                 }
 
-                if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
+                if (ProfileManager.isInitialized()
+                        && PriceTrackingFeatures.isPriceTrackingEnabled(
+                                Profile.getLastUsedRegularProfile())) {
                     mPriceAnnotationsPrefListener = (sharedPrefs, key) -> {
                         if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
                                 && !mTabModelSelector.isIncognitoSelected()
@@ -416,13 +424,17 @@ public class TabSwitcherCoordinator
 
             if (mMode == TabListCoordinator.TabListMode.GRID) {
                 if (ChromeFeatureList.sCloseTabSuggestions.isEnabled()) {
-                    mTabSuggestionsOrchestrator = new TabSuggestionsOrchestrator(
-                            mActivity, mTabModelSelector, mLifecycleDispatcher);
+                    mTabSuggestionsOrchestrator =
+                            new TabSuggestionsOrchestrator(
+                                    mActivity, mTabModelSelector, mLifecycleDispatcher);
                     TabSuggestionMessageService tabSuggestionMessageService =
-                            new TabSuggestionMessageService(mActivity, mTabModelSelector, () -> {
-                                initTabSelectionEditor();
-                                return mTabSelectionEditorCoordinator.getController();
-                            });
+                            new TabSuggestionMessageService(
+                                    mActivity,
+                                    mTabModelSelector,
+                                    () -> {
+                                        initTabSelectionEditor();
+                                        return mTabSelectionEditorCoordinator.getController();
+                                    });
                     mTabSuggestionsOrchestrator.addObserver(tabSuggestionMessageService);
                     mMessageCardProviderCoordinator.subscribeMessageService(
                             tabSuggestionMessageService);
@@ -511,7 +523,7 @@ public class TabSwitcherCoordinator
     }
 
     private void setUpPriceTracking(Context context, ModalDialogManager modalDialogManager) {
-        if (PriceTrackingFeatures.isPriceTrackingEnabled()) {
+        if (PriceTrackingFeatures.isPriceTrackingEnabled(Profile.getLastUsedRegularProfile())) {
             PriceDropNotificationManager notificationManager =
                     PriceDropNotificationManagerFactory.create();
             if (mMode == TabListCoordinator.TabListMode.GRID) {
@@ -689,7 +701,8 @@ public class TabSwitcherCoordinator
         }
         if (tabs != null && tabs.size() > 0) {
             if (mPriceMessageService != null
-                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
+                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(
+                            Profile.getLastUsedRegularProfile())) {
                 mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
             }
             appendMessagesTo(tabs.size());
@@ -705,6 +718,8 @@ public class TabSwitcherCoordinator
                 TabProperties.UiType.MESSAGE, MessageService.MessageType.ALL);
         mTabListCoordinator.removeSpecialListItem(TabProperties.UiType.LARGE_MESSAGE,
                 MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE);
+        mTabListCoordinator.removeSpecialListItem(
+                TabProperties.UiType.LARGE_MESSAGE, MessageService.MessageType.TAB_SUGGESTION);
         sAppendedMessagesForTesting = false;
     }
 
@@ -720,6 +735,9 @@ public class TabSwitcherCoordinator
                 continue;
             } else if (messages.get(i).type
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
+                mTabListCoordinator.addSpecialListItemToEnd(
+                        TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
+            } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
                 mTabListCoordinator.addSpecialListItemToEnd(
                         TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
             } else {
@@ -745,7 +763,8 @@ public class TabSwitcherCoordinator
     @Override
     public void showPriceWelcomeMessage(PriceMessageService.PriceTabData priceTabData) {
         if (mPriceMessageService == null
-                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled()
+                || !PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(
+                        Profile.getLastUsedRegularProfile())
                 || mMessageCardProviderCoordinator.isMessageShown(
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME)) {
             return;
@@ -782,6 +801,16 @@ public class TabSwitcherCoordinator
             } else if (messages.get(i).type
                     == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
                 mayAddIncognitoReauthPromoCard(messages.get(i).model);
+            } else if (messages.get(i).type == MessageService.MessageType.TAB_SUGGESTION) {
+                // TODO(crbug.com/1487664): Update to a mayAdd call checking show criteria
+                mTabListCoordinator.addSpecialListItem(
+                        mTabModelSelector
+                                        .getTabModelFilterProvider()
+                                        .getCurrentTabModelFilter()
+                                        .index()
+                                + 1,
+                        TabProperties.UiType.LARGE_MESSAGE,
+                        messages.get(i).model);
             } else {
                 mTabListCoordinator.addSpecialListItem(
                         index, TabProperties.UiType.MESSAGE, messages.get(i).model);
@@ -849,8 +878,12 @@ public class TabSwitcherCoordinator
     }
 
     private boolean shouldRegisterLargeMessageItemType() {
-        return PriceTrackingFeatures.isPriceTrackingEnabled()
-                || IncognitoReauthManager.isIncognitoReauthFeatureAvailable();
+        if (ProfileManager.isInitialized()
+                && PriceTrackingFeatures.isPriceTrackingEnabled(
+                        Profile.getLastUsedRegularProfile())) {
+            return true;
+        }
+        return IncognitoReauthManager.isIncognitoReauthFeatureAvailable();
     }
 
     @Override

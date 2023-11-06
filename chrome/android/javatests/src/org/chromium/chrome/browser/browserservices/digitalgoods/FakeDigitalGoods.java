@@ -14,14 +14,12 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * A fake implementation of the {@link DigitalGoods} mojo interface for testing.
- */
+/** A fake implementation of the {@link DigitalGoods} mojo interface for testing. */
 class FakeDigitalGoods implements DigitalGoods {
     private final Map<String, ItemDetails> mItems = new HashMap<>();
 
-    public void addItem(String id, String title, String description, String priceCurrency,
-            String priceAmount) {
+    public void addItem(
+            String id, String title, String description, String priceCurrency, String priceAmount) {
         PaymentCurrencyAmount amount = new PaymentCurrencyAmount();
         amount.currency = priceCurrency;
         amount.value = priceAmount;
@@ -39,13 +37,13 @@ class FakeDigitalGoods implements DigitalGoods {
     public void getDetails(String[] itemIds, GetDetails_Response callback) {
         // Figure out the size of the results array.
         int size = 0;
-        for (String id: itemIds) {
+        for (String id : itemIds) {
             if (mItems.containsKey(id)) size++;
         }
 
         ItemDetails[] result = new ItemDetails[size];
         int current = 0;
-        for (String id: itemIds) {
+        for (String id : itemIds) {
             if (mItems.containsKey(id)) result[current++] = mItems.get(id);
         }
 

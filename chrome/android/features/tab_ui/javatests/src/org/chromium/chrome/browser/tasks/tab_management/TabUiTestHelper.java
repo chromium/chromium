@@ -569,22 +569,18 @@ public class TabUiTestHelper {
             // When there are pending readbacks due to detached Tabs, try to fix it by switching
             // back to that tab.
             if (fixPendingReadbacks && previousTabIndex != TabModel.INVALID_TAB_INDEX) {
-                // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
                         previousTabModel.setIndex(
                             previousTabIndex, TabSelectionType.FROM_USER, false)
                 );
-                // clang-format on
             }
 
             checkThumbnailsExist(previousTab);
 
             if (fixPendingReadbacks) {
-                // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() -> currentTabModel.setIndex(
                         currentTabIndex, TabSelectionType.FROM_USER, false)
                 );
-                // clang-format on
             }
         }
 

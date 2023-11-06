@@ -27,6 +27,7 @@
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/theme_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -85,7 +86,7 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   // A method asking if the platform is able to show a calendar picker for a
   // given input type.
-  virtual bool SupportsCalendarPicker(const AtomicString&) const;
+  virtual bool SupportsCalendarPicker(InputType::Type) const;
 
   // Text selection colors.
   Color ActiveSelectionBackgroundColor(

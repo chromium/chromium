@@ -11,6 +11,7 @@
 class FakeWebStateListDelegate : public WebStateListDelegate {
  public:
   FakeWebStateListDelegate();
+  explicit FakeWebStateListDelegate(bool force_realization_on_activation);
 
   FakeWebStateListDelegate(const FakeWebStateListDelegate&) = delete;
   FakeWebStateListDelegate& operator=(const FakeWebStateListDelegate&) = delete;
@@ -19,6 +20,12 @@ class FakeWebStateListDelegate : public WebStateListDelegate {
 
   // WebStateListDelegate implementation.
   void WillAddWebState(web::WebState* web_state) override;
+  void WillActivateWebState(web::WebState* web_state) override;
+
+ private:
+  // Controls whether WebState are forced to the realized state when
+  // activated.
+  const bool force_realization_on_activation_ = false;
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_TEST_FAKE_WEB_STATE_LIST_DELEGATE_H_

@@ -339,49 +339,16 @@ export class Panel extends PanelInterface {
       const sortedBindings = await this.menuManager_.getSortedKeyBindings();
 
       // Insert items from the bindings into the menus.
-      const sawBindingSet = {};
-      const bindingMap = new Map();
-      sortedBindings.forEach(binding => {
-        const command = binding.command;
-        bindingMap.set(binding.command, binding);
-        if (sawBindingSet[command]) {
-          return;
-        }
-        sawBindingSet[command] = true;
+      const bindingMap = this.menuManager_.makeBindingMap(sortedBindings);
+      for (const binding of bindingMap.values()) {
         const category = CommandStore.categoryForCommand(binding.command);
         const menu = category ? categoryToMenu[category] : null;
         this.menuManager_.addMenuItemFromKeyBinding(binding, menu, touchScreen);
-      });
+      }
 
       // Add Touch Gestures menu items.
-      if (touchScreen) {
-        const touchGestureItems = [];
-        for (const key in GestureCommandData.GESTURE_COMMAND_MAP) {
-          const command =
-              GestureCommandData.GESTURE_COMMAND_MAP[key]['command'];
-          if (!command) {
-            continue;
-          }
-
-          const gestureText =
-              Msgs.getMsg(GestureCommandData.GESTURE_COMMAND_MAP[key]['msgId']);
-          const msgForCmd =
-              GestureCommandData
-                  .GESTURE_COMMAND_MAP[key]['commandDescriptionMsgId'] ||
-              CommandStore.messageForCommand(command);
-          const titleText = Msgs.getMsg(msgForCmd);
-          touchGestureItems.push({titleText, gestureText, command});
-        }
-
-        touchGestureItems.sort(
-            (item1, item2) => item1.titleText.localeCompare(item2.titleText));
-
-        for (const item of touchGestureItems) {
-          touchMenu.addMenuItem(
-              item.titleText, '', '', item.gestureText,
-              () => BackgroundBridge.CommandHandler.onCommand(item.command),
-              item.command);
-        }
+      if (touchMenu) {
+        this.menuManager_.addTouchGestureMenuItems(touchMenu);
       }
 
       if (this.sessionState_ !== 'IN_SESSION') {
@@ -399,31 +366,7 @@ export class Panel extends PanelInterface {
       await BackgroundBridge.PanelBackground.createAllNodeMenuBackgrounds(
           opt_activateMenuTitle);
 
-      const actions =
-          await BackgroundBridge.PanelBackground.getActionsForCurrentNode();
-      for (const standardAction of actions.standardActions) {
-        const actionMsg = Panel.ACTION_TO_MSG_ID[standardAction];
-        if (!actionMsg) {
-          continue;
-        }
-        const commandName = CommandStore.commandForMessage(actionMsg);
-        const command = bindingMap.get(commandName);
-        const shortcutName = command ? command.keySeq : '';
-        const actionDesc = Msgs.getMsg(actionMsg);
-        actionsMenu.addMenuItem(
-            actionDesc, shortcutName, '' /* menuItemBraille */,
-            '' /* gesture */,
-            () => BackgroundBridge.PanelBackground
-                      .performStandardActionOnCurrentNode(standardAction));
-      }
-
-      for (const customAction of actions.customActions) {
-        actionsMenu.addMenuItem(
-            customAction.description, '' /* menuItemShortcut */,
-            '' /* menuItemBraille */, '' /* gesture */,
-            () => BackgroundBridge.PanelBackground
-                      .performCustomActionOnCurrentNode(customAction.id));
-      }
+      await this.menuManager_.addActionsMenuItems(actionsMenu, bindingMap);
 
       // Activate either the specified menu or the search menu.
       const selectedMenu =
@@ -858,22 +801,22 @@ export class Panel extends PanelInterface {
     const backgroundPage = chrome.extension.getBackgroundPage();
 
     $('chromevox-tutorial').addEventListener('closetutorial', async evt => {
-      // Ensure UserActionMonitor is destroyed before closing tutorial.
-      await BackgroundBridge.UserActionMonitor.destroy();
+      // Ensure ForcedActionPath is destroyed before closing tutorial.
+      await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
     });
     $('chromevox-tutorial')
         .addEventListener('startinteractivemode', async evt => {
           const actions = evt.detail.actions;
-          await BackgroundBridge.UserActionMonitor.create(actions);
-          await BackgroundBridge.UserActionMonitor.destroy();
+          await BackgroundBridge.ForcedActionPath.create(actions);
+          await BackgroundBridge.ForcedActionPath.destroy();
           if (this.tutorial_ && this.tutorial_.showNextLesson) {
             this.tutorial_.showNextLesson();
           }
         });
     $('chromevox-tutorial')
         .addEventListener('stopinteractivemode', async evt => {
-          await BackgroundBridge.UserActionMonitor.destroy();
+          await BackgroundBridge.ForcedActionPath.destroy();
         });
     $('chromevox-tutorial').addEventListener('requestfullydescribe', evt => {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
@@ -893,8 +836,8 @@ export class Panel extends PanelInterface {
     });
     $('chromevox-tutorial').addEventListener('openUrl', async evt => {
       const url = evt.detail.url;
-      // Ensure UserActionMonitor is destroyed before closing tutorial.
-      await BackgroundBridge.UserActionMonitor.destroy();
+      // Ensure ForcedActionPath is destroyed before closing tutorial.
+      await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
       BrowserUtil.openBrowserUrl(url);
     });
@@ -971,16 +914,6 @@ export class Panel extends PanelInterface {
     $('options').disabled = sessionState !== 'IN_SESSION';
   }
 }
-
-Panel.ACTION_TO_MSG_ID = {
-  decrement: 'action_decrement_description',
-  doDefault: 'perform_default_action',
-  increment: 'action_increment_description',
-  scrollBackward: 'action_scroll_backward_description',
-  scrollForward: 'action_scroll_forward_description',
-  showContextMenu: 'show_context_menu',
-  longClick: 'force_long_click_on_current_item',
-};
 
 window.addEventListener('load', async () => await Panel.init(), false);
 

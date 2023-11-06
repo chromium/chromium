@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/tab_strip_swift.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -38,7 +39,9 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 
 }  // namespace
 
-@interface TabStripMediator () <CRWWebStateObserver, WebStateListObserving> {
+@interface TabStripMediator () <CRWWebStateObserver,
+                                WebStateFaviconDriverObserver,
+                                WebStateListObserving> {
   // Bridge C++ WebStateListObserver methods to this TabStripController.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
   // Bridge C++ WebStateObserver methods to this TabStripController.
@@ -47,6 +50,10 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   // by the TabStripMediator.
   std::unique_ptr<AllWebStateObservationForwarder>
       _allWebStateObservationForwarder;
+  // Bridges FaviconDriverObservers methods to this mediator, and maintains a
+  // FaviconObserver for each all webstates.
+  std::unique_ptr<WebStateListFaviconDriverObserver>
+      _webStateListFaviconObserver;
 }
 
 // The consumer for this object.
@@ -66,6 +73,7 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 - (void)disconnect {
   if (_webStateList) {
     [self removeWebStateObservations];
+    _webStateListFaviconObserver.reset();
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateListObserver = nullptr;
     _webStateList = nullptr;
@@ -77,6 +85,7 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 - (void)setWebStateList:(WebStateList*)webStateList {
   if (_webStateList) {
     [self removeWebStateObservations];
+    _webStateListFaviconObserver.reset();
     _webStateList->RemoveObserver(_webStateListObserver.get());
   }
 
@@ -86,6 +95,10 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
     DCHECK_GE(_webStateList->count(), 0);
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+
+    _webStateListFaviconObserver =
+        std::make_unique<WebStateListFaviconDriverObserver>(_webStateList,
+                                                            self);
 
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
     [self addWebStateObservations];
@@ -273,6 +286,15 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
 }
 
 - (void)webStateDidChangeTitle:(web::WebState*)webState {
+  TabSwitcherItem* item =
+      [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
+  [self.consumer reloadItem:item];
+}
+
+#pragma mark - WebStateFaviconDriverObserver
+
+- (void)faviconDriver:(favicon::FaviconDriver*)driver
+    didUpdateFaviconForWebState:(web::WebState*)webState {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
   [self.consumer reloadItem:item];

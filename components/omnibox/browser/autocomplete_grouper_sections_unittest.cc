@@ -1164,3 +1164,58 @@ TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection_mostVisitedTiles) {
          105, 104, 103, 102, 101, 10, 9, 8, 7, 6, 5, 4, 3});
   }
 }
+
+TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    size_t max_trending_queries = 3;
+    size_t max_psuggest_queries = 3;
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(std::make_unique<IOSNTPZpsSection>(
+        max_trending_queries, max_psuggest_queries, group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  {
+    SCOPED_TRACE("Given no matches, should return no matches.");
+    test({}, {});
+  }
+
+  {
+    SCOPED_TRACE(
+        "Given no trend matches and only psuggest, should only display "
+        "psuggest following the psuggest count limit");
+    test({CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST)},
+         {100, 99, 98});
+  }
+
+  {
+    SCOPED_TRACE(
+        "Given no psuggest matches and only trends, should only display trends "
+        "following the trends count limit");
+    test({CreateMatch(100, omnibox::GROUP_TRENDS),
+          CreateMatch(99, omnibox::GROUP_TRENDS),
+          CreateMatch(98, omnibox::GROUP_TRENDS),
+          CreateMatch(97, omnibox::GROUP_TRENDS)},
+         {100, 99, 98});
+  }
+
+  {
+    SCOPED_TRACE(
+        "Given both psuggest and trends matches, should display both groups "
+        "following their count limit");
+    test({CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(96, omnibox::GROUP_TRENDS),
+          CreateMatch(95, omnibox::GROUP_TRENDS),
+          CreateMatch(94, omnibox::GROUP_TRENDS),
+          CreateMatch(93, omnibox::GROUP_TRENDS)},
+         {100, 99, 98, 96, 95, 94});
+  }
+}

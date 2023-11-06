@@ -7,14 +7,16 @@ import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import './app_management_cros_shared_style.css.js';
 
 import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction, AppType, InstallReason, InstallSource} from 'chrome://resources/cr_components/app_management/constants.js';
+import {recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {AppManagementBrowserProxy} from '../../common/app_management/browser_proxy.js';
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+
 import {getTemplate} from './app_details_item.html.js';
-import {AppManagementBrowserProxy} from './browser_proxy.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementAppDetailsItemBase =
     AppManagementStoreMixin(I18nMixin(PolymerElement));
@@ -96,11 +98,11 @@ export class AppManagementAppDetailsItem extends
   private shouldShowDataSize_(app: App): boolean {
     return Boolean(app.dataSize);
   }
-  /**
-   * The info icon is only shown for apps installed from the Chrome browser.
-   */
+
   private shouldShowInfoIcon_(app: App): boolean {
-    return app.installSource === InstallSource.kBrowser;
+    return app.type === AppType.kWeb &&
+        (app.installSource === InstallSource.kBrowser ||
+         app.installSource === InstallSource.kSync);
   }
 
   /**
@@ -148,34 +150,33 @@ export class AppManagementAppDetailsItem extends
   }
 
   private getTypeAndSourceString_(app: App): string {
-    switch (app.installSource) {
-      case InstallSource.kPlayStore:
-      case InstallSource.kChromeWebStore:
-        return this
-            .i18nAdvanced('appManagementAppDetailsTypeAndSourceCombined', {
-              substitutions: [
-                this.getTypeString_(app),
-                this.getInstallSourceString_(app),
-              ],
-            })
-            .toString();
-      case InstallSource.kBrowser:
-        return this.i18n('appManagementAppDetailsInstallSourceBrowser');
-      case InstallSource.kSystem:
-        return this
-            .i18nAdvanced(
-                'appManagementAppDetailsTypeAndSourcePreinstalledApp', {
-                  substitutions: [
-                    this.getTypeString_(app),
-                    loadTimeData.getString('appManagementDeviceName'),
-                  ],
-                })
-            .toString();
-      case InstallSource.kUnknown:
-        return this.getTypeString_(app);
-      default:
-        return this.getTypeString_(app);
+    if (app.type === AppType.kWeb &&
+        (app.installSource === InstallSource.kBrowser ||
+         app.installSource === InstallSource.kSync)) {
+      return this.i18n('appManagementAppDetailsInstallSourceBrowser');
     }
+    if (app.installSource === InstallSource.kPlayStore ||
+        app.installSource === InstallSource.kChromeWebStore) {
+      return this
+          .i18nAdvanced('appManagementAppDetailsTypeAndSourceCombined', {
+            substitutions: [
+              this.getTypeString_(app),
+              this.getInstallSourceString_(app),
+            ],
+          })
+          .toString();
+    }
+    if (app.installSource === InstallSource.kSystem) {
+      return this
+          .i18nAdvanced('appManagementAppDetailsTypeAndSourcePreinstalledApp', {
+            substitutions: [
+              this.getTypeString_(app),
+              loadTimeData.getString('appManagementDeviceName'),
+            ],
+          })
+          .toString();
+    }
+    return this.getTypeString_(app);
   }
 
   private onStoreLinkClicked_(e: CustomEvent<{event: Event}>): void {
@@ -187,6 +188,8 @@ export class AppManagementAppDetailsItem extends
     }
 
     if (this.app !== null) {
+      recordAppManagementUserAction(
+          this.app.type, AppManagementUserAction.APP_STORE_LINK_CLICKED);
       AppManagementBrowserProxy.getInstance().handler.openStorePage(
           this.app.id);
     }
@@ -199,6 +202,7 @@ export class AppManagementAppDetailsItem extends
   private getTooltipText_(app: App): string {
     switch (app.installSource) {
       case InstallSource.kBrowser:
+      case InstallSource.kSync:
         return app.publisherId.replace(/\?.*$/g, '');
       default:
         return '';

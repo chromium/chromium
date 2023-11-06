@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -107,18 +108,24 @@ gfx::Vector2dF FrameView::UpdateViewportIntersection(
     if (should_compute_occlusion)
       geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
 
+    absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
     IntersectionGeometry geometry(
         /* root */ nullptr,
         /* target */ *owner_element,
         /* root_margin */ {},
         /* thresholds */ {IntersectionObserver::kMinimumThreshold},
         /* target_margin */ {},
-        /* scroll_margin */ {},
-        /* flags */ geometry_flags);
+        /* scroll_margin */ {}, geometry_flags, root_geometry);
 
-    PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
     min_scroll_delta_to_update_viewport_intersection_ =
         geometry.MinScrollDeltaToUpdate();
+    PhysicalRect new_rect_in_parent = geometry.IntersectionRect();
+
+    // Convert to DIP
+    const auto& screen_info =
+        frame.GetChromeClient().GetScreenInfo(*owner_document.GetFrame());
+    new_rect_in_parent.Scale(1. / screen_info.device_scale_factor);
+
     if (new_rect_in_parent.size != rect_in_parent_.size ||
         ((new_rect_in_parent.X() - rect_in_parent_.X()).Abs() +
              (new_rect_in_parent.Y() - rect_in_parent_.Y()).Abs() >

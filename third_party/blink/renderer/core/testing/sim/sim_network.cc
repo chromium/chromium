@@ -50,7 +50,9 @@ void SimNetwork::DidReceiveResponse(URLLoaderClient* client,
                                     const WebURLResponse& response) {
   auto it = requests_.find(response.CurrentRequestUrl().GetString());
   if (it == requests_.end()) {
-    client->DidReceiveResponse(response);
+    client->DidReceiveResponse(response,
+                               /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                               /*cached_metadata=*/absl::nullopt);
     return;
   }
   DCHECK(it->value);

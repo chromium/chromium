@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_util.h"
@@ -112,7 +113,11 @@ class DefaultSearchManagerTest : public testing::Test {
 // Test that a TemplateURLData object is properly written and read from Prefs.
 TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   TemplateURLData data;
   data.SetShortName(u"name1");
   data.SetKeyword(u"key1");
@@ -137,7 +142,11 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   size_t default_search_index = 0;
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service(),
                                                          &default_search_index);
@@ -159,7 +168,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   std::unique_ptr<TemplateURLData> new_data =
       GenerateDummyTemplateURLData("user2");
   DefaultSearchManager other_manager(pref_service(),
-                                     DefaultSearchManager::ObserverCallback());
+                                     DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                                     , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   other_manager.SetUserSelectedDefaultSearchEngine(*new_data);
 
   ExpectSimilar(new_data.get(), manager.GetDefaultSearchEngine(&source));
@@ -178,7 +191,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
   SetOverrides(pref_service(), false);
   size_t default_search_index = 0;
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_urls =
       TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service(),
                                                          &default_search_index);
@@ -206,7 +223,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
 // Test DefaultSearchManager handles policy-enforced DSEs correctly.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByEnforcedPolicy) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
   manager.SetUserSelectedDefaultSearchEngine(*data);
 
@@ -235,7 +256,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByEnforcedPolicy) {
 // Policy-recommended DSE is handled correctly when no existing DSE is present.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByRecommendedPolicy) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
 
   // Set recommended policy DSE with valid data.
@@ -269,7 +294,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByRecommendedPolicy) {
 // Policy-recommended DSE does not override existing DSE set by user.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   // Set user-configured DSE.
   std::unique_ptr<TemplateURLData> user_data =
       GenerateDummyTemplateURLData("user");
@@ -296,7 +325,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
 // Test DefaultSearchManager handles extension-controlled DSEs correctly.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
   manager.SetUserSelectedDefaultSearchEngine(*data);
 
@@ -343,7 +376,11 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
 // search engine created from Play API data.
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPlayAPI) {
   DefaultSearchManager manager(pref_service(),
-                               DefaultSearchManager::ObserverCallback());
+                               DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                               , /*for_lacros_main_proifle=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   const TemplateURLData* prepopulated_data =
       manager.GetDefaultSearchEngine(nullptr);
 

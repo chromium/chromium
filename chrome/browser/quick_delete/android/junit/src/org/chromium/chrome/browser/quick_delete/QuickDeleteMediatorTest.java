@@ -34,28 +34,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
-/**
- * Robolectric tests for {@link QuickDeleteMediator}.
- */
-
+/** Robolectric tests for {@link QuickDeleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
 @Batch(Batch.UNIT_TESTS)
 public class QuickDeleteMediatorTest {
-    @Mock
-    private IdentityManager mIdentityManagerMock;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
-    @Mock
-    private Profile mProfileMock;
-    @Mock
-    private QuickDeleteBridge mQuickDeleteBridgeMock;
-    @Mock
-    private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
-    @Mock
-    private List<Tab> mTabsListMock;
+    @Mock private Profile mProfileMock;
+    @Mock private QuickDeleteBridge mQuickDeleteBridgeMock;
+    @Mock private QuickDeleteTabsFilter mQuickDeleteTabsFilterMock;
+    @Mock private List<Tab> mTabsListMock;
 
     private PropertyModel mPropertyModel;
     private QuickDeleteMediator mQuickDeleteMediator;
@@ -83,8 +74,12 @@ public class QuickDeleteMediatorTest {
         when(mQuickDeleteTabsFilterMock.getListOfTabsToBeClosed(eq(TimePeriod.LAST_15_MINUTES)))
                 .thenReturn(mTabsListMock);
 
-        mQuickDeleteMediator = new QuickDeleteMediator(
-                mPropertyModel, mProfileMock, mQuickDeleteBridgeMock, mQuickDeleteTabsFilterMock);
+        mQuickDeleteMediator =
+                new QuickDeleteMediator(
+                        mPropertyModel,
+                        mProfileMock,
+                        mQuickDeleteBridgeMock,
+                        mQuickDeleteTabsFilterMock);
         mQuickDeleteMediator.onTimePeriodChanged(TimePeriod.LAST_15_MINUTES);
 
         assertTrue(mPropertyModel.get(QuickDeleteProperties.IS_SIGNED_IN));

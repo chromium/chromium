@@ -58,7 +58,7 @@ class XSLStyleSheet final : public StyleSheet {
 
   Document* OwnerDocument();
   XSLStyleSheet* parentStyleSheet() const override {
-    return parent_style_sheet_;
+    return parent_style_sheet_.Get();
   }
 
   xmlDocPtr GetDocument();
@@ -74,7 +74,7 @@ class XSLStyleSheet final : public StyleSheet {
   String type() const override { return "text/xml"; }
   bool disabled() const override { return is_disabled_; }
   void setDisabled(bool b) override { is_disabled_ = b; }
-  Node* ownerNode() const override { return owner_node_; }
+  Node* ownerNode() const override { return owner_node_.Get(); }
   String href() const override { return original_url_; }
   String title() const override { return g_empty_string; }
 

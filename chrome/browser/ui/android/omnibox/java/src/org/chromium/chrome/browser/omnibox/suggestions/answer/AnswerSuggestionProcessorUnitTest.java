@@ -62,15 +62,21 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.Arrays;
 import java.util.Locale;
 
-/**
- * Tests for {@link AnswerSuggestionProcessor}.
- */
+/** Tests for {@link AnswerSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SUGGESTION_ANSWERS_COLOR_REVERSE)
 public class AnswerSuggestionProcessorUnitTest {
-    private static final @AnswerType int[] ANSWER_TYPES = {AnswerType.DICTIONARY,
-            AnswerType.FINANCE, AnswerType.KNOWLEDGE_GRAPH, AnswerType.SPORTS, AnswerType.SUNRISE,
-            AnswerType.TRANSLATION, AnswerType.WEATHER, AnswerType.WHEN_IS, AnswerType.CURRENCY};
+    private static final @AnswerType int[] ANSWER_TYPES = {
+        AnswerType.DICTIONARY,
+        AnswerType.FINANCE,
+        AnswerType.KNOWLEDGE_GRAPH,
+        AnswerType.SPORTS,
+        AnswerType.SUNRISE,
+        AnswerType.TRANSLATION,
+        AnswerType.WEATHER,
+        AnswerType.WHEN_IS,
+        AnswerType.CURRENCY
+    };
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mFeatureProcessor = new Features.JUnitProcessor();
@@ -84,8 +90,8 @@ public class AnswerSuggestionProcessorUnitTest {
     private Locale mDefaultLocale;
 
     /**
-     * Base Suggestion class that can be used for testing.
-     * Holds all mechanisms that are required to processSuggestion and validate suggestions.
+     * Base Suggestion class that can be used for testing. Holds all mechanisms that are required to
+     * processSuggestion and validate suggestions.
      */
     class SuggestionTestHelper {
         // Stores created AutocompleteMatch
@@ -95,8 +101,11 @@ public class AnswerSuggestionProcessorUnitTest {
         // Stores Answer object associated with AutocompleteMatch (if any).
         private final SuggestionAnswer mAnswer;
 
-        private SuggestionTestHelper(AutocompleteMatch suggestion, SuggestionAnswer answer,
-                PropertyModel model, String userQuery) {
+        private SuggestionTestHelper(
+                AutocompleteMatch suggestion,
+                SuggestionAnswer answer,
+                PropertyModel model,
+                String userQuery) {
             mSuggestion = suggestion;
             mAnswer = answer;
             mModel = model;
@@ -105,8 +114,11 @@ public class AnswerSuggestionProcessorUnitTest {
         }
 
         /** Check the content of first suggestion line. */
-        private void verifyLine(String expectedTitle, int expectedMaxLineCount,
-                String expectedDescription, WritableObjectPropertyKey<Spannable> titleKey,
+        private void verifyLine(
+                String expectedTitle,
+                int expectedMaxLineCount,
+                String expectedDescription,
+                WritableObjectPropertyKey<Spannable> titleKey,
                 WritableIntPropertyKey maxLineCountKey,
                 WritableObjectPropertyKey<String> descriptionKey) {
             final Spannable actualTitleSpan = mModel.get(titleKey);
@@ -122,7 +134,10 @@ public class AnswerSuggestionProcessorUnitTest {
 
         void verifyLine1(
                 String expectedTitle, int expectedMaxLineCount, String expectedDescription) {
-            verifyLine(expectedTitle, expectedMaxLineCount, expectedDescription,
+            verifyLine(
+                    expectedTitle,
+                    expectedMaxLineCount,
+                    expectedDescription,
                     AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT,
                     AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES,
                     AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION);
@@ -131,7 +146,10 @@ public class AnswerSuggestionProcessorUnitTest {
         /** Check the content of second suggestion line. */
         void verifyLine2(
                 String expectedTitle, int expectedMaxLineCount, String expectedDescription) {
-            verifyLine(expectedTitle, expectedMaxLineCount, expectedDescription,
+            verifyLine(
+                    expectedTitle,
+                    expectedMaxLineCount,
+                    expectedDescription,
                     AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT,
                     AnswerSuggestionViewProperties.TEXT_LINE_2_MAX_LINES,
                     AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION);
@@ -162,10 +180,17 @@ public class AnswerSuggestionProcessorUnitTest {
     }
 
     /** Create Answer Suggestion. */
-    SuggestionTestHelper createAnswerSuggestion(@AnswerType int type, String line1Text,
-            int line1Size, String line2Text, int line2Size, String url) {
+    SuggestionTestHelper createAnswerSuggestion(
+            @AnswerType int type,
+            String line1Text,
+            int line1Size,
+            String line2Text,
+            int line2Size,
+            String url) {
         SuggestionAnswer answer =
-                new SuggestionAnswer(type, createAnswerImageLine(line1Text, line1Size, null),
+                new SuggestionAnswer(
+                        type,
+                        createAnswerImageLine(line1Text, line1Size, null),
                         createAnswerImageLine(line2Text, line2Size, url));
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
@@ -177,15 +202,23 @@ public class AnswerSuggestionProcessorUnitTest {
 
     /** Create a (possibly) multi-line ImageLine object with default formatting. */
     private ImageLine createAnswerImageLine(String text, int lines, String url) {
-        return new ImageLine(Arrays.asList(new TextField(AnswerTextType.SUGGESTION, text,
-                                     AnswerTextStyle.NORMAL, lines)),
-                /* additionalText */ null, /* statusText */ null, url);
+        return new ImageLine(
+                Arrays.asList(
+                        new TextField(
+                                AnswerTextType.SUGGESTION, text, AnswerTextStyle.NORMAL, lines)),
+                /* additionalText= */ null,
+                /* statusText= */ null,
+                url);
     }
 
     @Before
     public void setUp() {
-        mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlStateProvider, mImageSupplier);
+        mProcessor =
+                new AnswerSuggestionProcessor(
+                        ContextUtils.getApplicationContext(),
+                        mSuggestionHost,
+                        mUrlStateProvider,
+                        mImageSupplier);
         mDefaultLocale = Locale.getDefault();
         OmniboxResourceProvider.disableCachesForTesting();
     }
@@ -321,8 +354,12 @@ public class AnswerSuggestionProcessorUnitTest {
     @Test
     public void answerImage_noImageFetchWhenFetcherIsUnavailable() {
         final String url = "http://site.com";
-        mProcessor = new AnswerSuggestionProcessor(
-                ContextUtils.getApplicationContext(), mSuggestionHost, mUrlStateProvider, null);
+        mProcessor =
+                new AnswerSuggestionProcessor(
+                        ContextUtils.getApplicationContext(),
+                        mSuggestionHost,
+                        mUrlStateProvider,
+                        null);
         final SuggestionTestHelper suggHelper =
                 createAnswerSuggestion(AnswerType.WEATHER, "", 1, "", 1, url);
         Assert.assertNotNull(suggHelper.getIcon());
@@ -339,7 +376,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void
-    checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalEnabledAndIncludedInCountryList() {
+            checkColorReversalRequired_ReturnsTrueIfOmniBoxAnswerColorReversalEnabledAndIncludedInCountryList() {
         mProcessor.onNativeInitialized();
         Locale.setDefault(new Locale("ja", "JP"));
         for (@AnswerType int type : ANSWER_TYPES) {
@@ -353,7 +390,7 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void
-    checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalEnabledAndNotIncludedInCountryList() {
+            checkColorReversalRequired_ReturnsFalseIfOmniBoxAnswerColorReversalEnabledAndNotIncludedInCountryList() {
         mProcessor.onNativeInitialized();
         Locale.setDefault(new Locale("en", "US"));
         for (@AnswerType int type : ANSWER_TYPES) {
@@ -384,8 +421,9 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void fetchAnswerImage_withSupplier() {
-        var suggHelper = createAnswerSuggestion(
-                AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
+        var suggHelper =
+                createAnswerSuggestion(
+                        AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
 
         ArgumentCaptor<Callback<Bitmap>> cb = ArgumentCaptor.forClass(Callback.class);
         verify(mImageSupplier, times(1)).fetchImage(eq(JUnitTestGURLs.BLUE_1), cb.capture());
@@ -404,11 +442,16 @@ public class AnswerSuggestionProcessorUnitTest {
 
     @Test
     public void fetchAnswerImage_withoutSupplier() {
-        mProcessor = new AnswerSuggestionProcessor(ContextUtils.getApplicationContext(),
-                mSuggestionHost, mUrlStateProvider, /* imageSupplier=*/null);
+        mProcessor =
+                new AnswerSuggestionProcessor(
+                        ContextUtils.getApplicationContext(),
+                        mSuggestionHost,
+                        mUrlStateProvider,
+                        /* imageSupplier= */ null);
 
-        var suggHelper = createAnswerSuggestion(
-                AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
+        var suggHelper =
+                createAnswerSuggestion(
+                        AnswerType.TOTAL_COUNT, "", 1, "", 1, JUnitTestGURLs.BLUE_1.getSpec());
 
         var sds1 = suggHelper.mModel.get(BaseSuggestionViewProperties.ICON);
         Assert.assertNotNull(sds1);

@@ -78,7 +78,8 @@ bool WebInputMethodControllerImpl::SetComposition(
   if (!replacement_range.IsNull()) {
     web_frame_->SelectRange(replacement_range,
                             WebLocalFrame::kHideSelectionHandle,
-                            blink::mojom::SelectionMenuBehavior::kHide);
+                            blink::mojom::SelectionMenuBehavior::kHide,
+                            WebLocalFrame::kSelectionSetFocus);
   }
 
   // We should verify the parent node of this IME composition node are

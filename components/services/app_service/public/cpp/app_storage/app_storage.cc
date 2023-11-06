@@ -5,6 +5,8 @@
 #include "components/services/app_service/public/cpp/app_storage/app_storage.h"
 
 #include <map>
+#include <memory>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -12,12 +14,24 @@
 #include "base/task/task_runner.h"
 #include "components/services/app_service/public/cpp/app_storage/app_storage_file_handler.h"
 #include "components/services/app_service/public/cpp/app_update.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
 namespace apps {
 
+#define IS_APP_VALUE_CHANGED(FIELD)                                \
+  if (app->FIELD.has_value() && app->FIELD != it->second->FIELD) { \
+    return true;                                                   \
+  }
+
+#define IS_APP_VALUE_CHANGED_FOR_ENUM(FIELD, DEFAULT_VALUE)             \
+  if (app->FIELD != DEFAULT_VALUE && app->FIELD != it->second->FIELD) { \
+    return true;                                                        \
+  }
+
 AppStorage::AppStorage(const base::FilePath& base_path,
-                       apps::AppRegistryCache& app_registry_cache)
+                       apps::AppRegistryCache& app_registry_cache,
+                       base::OnceCallback<void()> on_get_app_info_callback)
     : app_registry_cache_(app_registry_cache) {
   file_handler_ = base::MakeRefCounted<AppStorageFileHandler>(base_path);
   app_registry_cache_observer_.Observe(&app_registry_cache);
@@ -32,8 +46,8 @@ AppStorage::AppStorage(const base::FilePath& base_path,
   file_handler_->owning_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&AppStorageFileHandler::ReadFromFile, file_handler_.get()),
-      base::BindOnce(&AppStorage::OnGetAppInfoData,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&AppStorage::OnGetAppInfoData, weak_factory_.GetWeakPtr(),
+                     std::move(on_get_app_info_callback)));
 }
 
 AppStorage::~AppStorage() = default;
@@ -58,22 +72,30 @@ void AppStorage::OnAppRegistryCacheWillBeDestroyed(
   app_registry_cache_observer_.Reset();
 }
 
-void AppStorage::OnGetAppInfoData(std::vector<AppPtr> apps) {
-  onapps_in_progress_ = true;
-
-  app_registry_cache_->OnApps(std::move(apps), AppType::kUnknown,
-                              /*should_notify_initialized=*/false);
-
-  onapps_in_progress_ = false;
-
-  // As the reading process is done, set io_in_progress_` as false, and call
-  // MaybeSaveAppInfo to write the pending app info to the AppStorage file if
-  // there are some app info changes.
+void AppStorage::OnGetAppInfoData(base::OnceCallback<void()> callback,
+                                  std::unique_ptr<AppInfo> app_info) {
+  // As the reading process is done, set io_in_progress_` as false to unblock
+  // the writing process.
   io_in_progress_ = false;
-  MaybeSaveAppInfo();
 
-  // TODO(crbug.com/1385932): Get the app types to set initialized for app
-  // types.
+  if (app_info) {
+    onapps_in_progress_ = true;
+
+    app_registry_cache_->OnApps(std::move(app_info->apps), AppType::kUnknown,
+                                /*should_notify_initialized=*/false);
+
+    // Init app types.
+    for (auto app_type : app_info->app_types) {
+      app_registry_cache_->OnApps(std::vector<AppPtr>(), app_type,
+                                  /*should_notify_initialized=*/true);
+    }
+
+    onapps_in_progress_ = false;
+  }
+
+  if (!callback.is_null()) {
+    std::move(callback).Run();
+  }
 }
 
 bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
@@ -108,16 +130,66 @@ bool AppStorage::IsAppChanged(const apps::AppUpdate& update) {
     return true;
   }
 
-  if (app->readiness != Readiness::kUnknown &&
-      app->readiness != it->second->readiness) {
+  IS_APP_VALUE_CHANGED_FOR_ENUM(readiness, Readiness::kUnknown)
+
+  IS_APP_VALUE_CHANGED(name);
+  IS_APP_VALUE_CHANGED(short_name);
+  IS_APP_VALUE_CHANGED(description);
+  IS_APP_VALUE_CHANGED(version);
+
+  if (!app->additional_search_terms.empty() &&
+      app->additional_search_terms != it->second->additional_search_terms) {
     return true;
   }
 
-  if (app->name.has_value() &&
-      (!it->second->name.has_value() ||
-       app->name.value() != it->second->name.value())) {
+  if (app->icon_key.has_value()) {
+    if (!it->second->icon_key.has_value()) {
+      return true;
+    }
+    if (app->icon_key.value().resource_id !=
+        it->second->icon_key.value().resource_id) {
+      return true;
+    }
+    // Skip the kPaused icon effect, because we don't save the paused status,
+    // and we wait for the family link to set the paused status and apply the
+    // kPaused icon effect.
+    if ((app->icon_key.value().icon_effects & (~IconEffects::kPaused)) !=
+        (it->second->icon_key.value().icon_effects & (~IconEffects::kPaused))) {
+      return true;
+    }
+  }
+
+  IS_APP_VALUE_CHANGED(last_launch_time);
+  IS_APP_VALUE_CHANGED(install_time);
+
+  if (!app->permissions.empty() &&
+      !IsEqual(app->permissions, it->second->permissions)) {
     return true;
   }
+
+  IS_APP_VALUE_CHANGED_FOR_ENUM(install_reason, InstallReason::kUnknown)
+  IS_APP_VALUE_CHANGED_FOR_ENUM(install_source, InstallSource::kUnknown)
+
+  if (!app->policy_ids.empty() && app->policy_ids != it->second->policy_ids) {
+    return true;
+  }
+
+  IS_APP_VALUE_CHANGED(is_platform_app);
+  IS_APP_VALUE_CHANGED(recommendable);
+  IS_APP_VALUE_CHANGED(searchable);
+  IS_APP_VALUE_CHANGED(show_in_launcher);
+  IS_APP_VALUE_CHANGED(show_in_shelf);
+  IS_APP_VALUE_CHANGED(show_in_search);
+  IS_APP_VALUE_CHANGED(show_in_management);
+  IS_APP_VALUE_CHANGED(handles_intents);
+  IS_APP_VALUE_CHANGED(allow_uninstall);
+
+  if (!app->intent_filters.empty() &&
+      !IsEqual(app->intent_filters, it->second->intent_filters)) {
+    return true;
+  }
+
+  IS_APP_VALUE_CHANGED_FOR_ENUM(window_mode, WindowMode::kUnknown)
 
   // TODO(crbug.com/1385932): Add other files in the App structure.
   return false;

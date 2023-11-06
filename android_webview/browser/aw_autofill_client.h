@@ -26,7 +26,6 @@ class AutofillPopupDelegate;
 class CreditCard;
 class PersonalDataManager;
 class StrikeDatabase;
-struct CardUnmaskPromptOptions;
 }  // namespace autofill
 
 namespace content {
@@ -103,27 +102,6 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   const translate::LanguageState* GetLanguageState() override;
   translate::TranslateDriver* GetTranslateDriver() override;
   void ShowAutofillSettings(autofill::PopupType popup_type) override;
-  void ShowUnmaskPrompt(
-      const autofill::CreditCard& card,
-      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override;
-  void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
-  void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) override;
-  void ConfirmExpirationDateFixFlow(
-      const autofill::CreditCard& card,
-      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) override;
-  void ConfirmSaveCreditCardLocally(
-      const autofill::CreditCard& card,
-      SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback) override;
-  void ConfirmSaveCreditCardToCloud(
-      const autofill::CreditCard& card,
-      const autofill::LegalMessageLines& legal_message_lines,
-      SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) override;
-  void CreditCardUploadCompleted(bool card_saved) override;
   void ConfirmCreditCardFillAssist(const autofill::CreditCard& card,
                                    base::OnceClosure callback) override;
   void ConfirmSaveAddressProfile(
@@ -148,8 +126,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
       const autofill::AutofillClient::PopupOpenArgs& open_args,
       base::WeakPtr<autofill::AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override;
+      base::span<const autofill::SelectOption> datalist) override;
   std::vector<autofill::Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   autofill::AutofillClient::PopupOpenArgs GetReopenPopupArgs(
@@ -162,7 +139,7 @@ class AwAutofillClient : public autofill::ContentAutofillClient {
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
   void DidFillOrPreviewForm(
-      autofill::mojom::AutofillActionPersistence action_persistence,
+      autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
       bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,

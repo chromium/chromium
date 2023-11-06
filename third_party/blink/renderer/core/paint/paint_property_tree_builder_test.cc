@@ -381,11 +381,7 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollExcludeCssOverlayScrollbar) {
   )HTML");
   // The document content should not be clipped by the overlay scrollbar because
   // the scrollbar can be transparent and the content needs to paint below.
-  if (RuntimeEnabledFeatures::OverflowOverlayAliasesAutoEnabled()) {
-    EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 600, 600), DocContentClip());
-  } else {
-    EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 800, 600), DocContentClip());
-  }
+  EXPECT_CLIP_RECT(FloatRoundedRect(0, 0, 600, 600), DocContentClip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollVerticalRL) {
@@ -5575,7 +5571,12 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootWithCSSMask) {
   EXPECT_TRUE(root.FirstFragment().PaintProperties()->Mask());
 }
 
-TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
+// This test has been disabled because the Element Capture pipeline is in the
+// process of being converted from using a CropTarget to a RestrictionTarget.
+// This is done over a chain of CLs. A later CL in the chain will re-enable
+// this test and removes this comment. All of these CLs will be landed together.
+// TODO(crbug.com/1418194): Re-enable this test.
+TEST_P(PaintPropertyTreeBuilderTest, DISABLED_ElementCaptureEffectNode) {
   // This test makes sure that an ElementCaptureEffect node is properly added
   // when an element has a crop ID.
   SetBodyInnerHTML(R"HTML(
@@ -5590,8 +5591,8 @@ TEST_P(PaintPropertyTreeBuilderTest, ElementCaptureEffectNode) {
   // As a plain div, the element shouldn't have a separate stacking context.
   EXPECT_FALSE(element->GetLayoutObject()->HasLayer());
   EXPECT_FALSE(element->GetLayoutObject()->IsStackingContext());
-  element->SetRegionCaptureCropId(
-      std::make_unique<RegionCaptureCropId>(base::Token::CreateRandom()));
+  element->SetRestrictionTargetId(
+      std::make_unique<RestrictionTargetId>(base::Token::CreateRandom()));
   UpdateAllLifecyclePhasesForTest();
 
   // The element should now have a proper stacking context, assuming element
@@ -7284,6 +7285,23 @@ TEST_P(PaintPropertyTreeBuilderTest, BackgroundClipFragmented) {
                          gfx::RectF(100, 0, 100, 200));
   EXPECT_BACKGROUND_CLIP(FragmentAt(target, 2).PaintProperties(),
                          gfx::RectF(200, 0, 100, 200));
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, OverlayScrollbarEffects) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px; overflow: scroll">
+      <div style="height: 300px"></div>
+    </div>
+  )HTML");
+  CHECK(GetDocument().GetPage()->GetScrollbarTheme().UsesOverlayScrollbars());
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->OverflowClip());
+  EXPECT_FALSE(properties->HorizontalScrollbarEffect());
+  ASSERT_TRUE(properties->VerticalScrollbarEffect());
+  EXPECT_EQ(properties->OverflowClip()->Parent(),
+            properties->VerticalScrollbarEffect()->OutputClip());
 }
 
 }  // namespace blink

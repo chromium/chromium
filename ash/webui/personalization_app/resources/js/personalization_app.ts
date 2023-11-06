@@ -79,8 +79,9 @@ export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight
 export {ZoneCustomizationElement} from './keyboard_backlight/zone_customization_element.js';
 export {Actions, DismissErrorAction, dismissErrorAction, PersonalizationActionName, SetErrorAction} from './personalization_actions.js';
 
-export * from './../personalization_app.mojom-webui.js';
-export {ColorScheme} from './../color_scheme.mojom-webui.js';
+export * from '../personalization_app.mojom-webui.js';
+export * from '../sea_pen.mojom-webui.js';
+export {ColorScheme} from '../color_scheme.mojom-webui.js';
 export {PersonalizationBreadcrumbElement} from './personalization_breadcrumb_element.js';
 export {PersonalizationMainElement} from './personalization_main_element.js';
 export {reduce} from './personalization_reducers.js';
@@ -105,7 +106,7 @@ export {UserPreviewElement} from './user/user_preview_element.js';
 export {UserSubpageElement} from './user/user_subpage_element.js';
 export {GetUserMediaProxy, getWebcamUtils, setWebcamUtilsForTesting} from './user/webcam_utils_proxy.js';
 export {getCountText, getNumberOfGridItemsPerRow, staticColorIds} from './utils.js';
-export {DefaultImageSymbol, DisplayableImage, WallpaperSearchThumbnail, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
+export {DefaultImageSymbol, DisplayableImage, SeaPenWallpaper, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './wallpaper/constants.js';
 export {GooglePhotosAlbumsElement} from './wallpaper/google_photos_albums_element.js';
 export {GooglePhotosCollectionElement, GooglePhotosTab} from './wallpaper/google_photos_collection_element.js';
 export {GooglePhotosPhotosByAlbumIdElement} from './wallpaper/google_photos_photos_by_album_id_element.js';
@@ -116,6 +117,8 @@ export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImagesElement} from './wallpaper/local_images_element.js';
 export {SeaPenCollectionElement} from './wallpaper/sea_pen/sea_pen_collection_element.js';
 export {SeaPenImagesElement} from './wallpaper/sea_pen/sea_pen_images_element.js';
+export {SeaPenRecentWallpapersElement} from './wallpaper/sea_pen/sea_pen_recent_wallpapers_element.js';
+export {setSeaPenProviderForTesting} from './wallpaper/sea_pen/sea_pen_interface_provider.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';
@@ -128,6 +131,7 @@ export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_pr
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';
 export {WallpaperPreviewElement} from './wallpaper/wallpaper_preview_element.js';
 export {WallpaperSelectedElement} from './wallpaper/wallpaper_selected_element.js';
+export {SeaPenState} from './wallpaper/wallpaper_state.js';
 export {WallpaperSubpageElement} from './wallpaper/wallpaper_subpage_element.js';
 export {WallpaperSubpageTopElement} from './wallpaper/wallpaper_subpage_top_element.js';
 export {DailyRefreshType} from './wallpaper/wallpaper_state.js';

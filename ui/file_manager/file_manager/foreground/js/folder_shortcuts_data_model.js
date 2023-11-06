@@ -6,9 +6,9 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {getPreferences} from '../../common/js/api.js';
 import {AsyncQueue, Group} from '../../common/js/async_util.js';
+import {comparePath, isSameEntry} from '../../common/js/entry_utils.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {recordSmallCount, recordUserAction} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {addFolderShortcut, refreshFolderShortcut, removeFolderShortcut} from '../../state/ducks/folder_shortcuts.js';
 import {getStore} from '../../state/store.js';
@@ -33,6 +33,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     super();
 
     this.volumeManager_ = volumeManager;
+    // @ts-ignore: error TS7008: Member 'array_' implicitly has an 'any[]' type.
     this.array_ = [];
     this.pendingPaths_ = {};  // Hash map for easier deleting.
     this.unresolvablePaths_ = {};
@@ -93,6 +94,8 @@ export class FolderShortcutsDataModel extends EventTarget {
       this.pendingPaths_ = {};
       this.unresolvablePaths_ = {};
       list.forEach(function(path) {
+        // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+        // does not have a type annotation.
         this.pendingPaths_[path] = true;
       }, this);
       callback();
@@ -105,23 +108,34 @@ export class FolderShortcutsDataModel extends EventTarget {
       const resolvedURLs = {};
       this.rememberLastDriveURL_();  // Required for conversions.
 
+      // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any'
+      // type.
       const onResolveSuccess = (path, entry) => {
         if (path in this.pendingPaths_) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
           delete this.pendingPaths_[path];
         }
         if (path in this.unresolvablePaths_) {
           changed = true;
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
           delete this.unresolvablePaths_[path];
         }
         if (!this.exists(entry)) {
           changed = true;
           this.addInternal_(entry);
         }
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'any' can't be used to index type '{}'.
         resolvedURLs[entry.toURL()] = true;
       };
 
+      // @ts-ignore: error TS7006: Parameter 'url' implicitly has an 'any' type.
       const onResolveFailure = (path, url) => {
         if (path in this.pendingPaths_) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
           delete this.pendingPaths_[path];
         }
         const existingIndex = this.getIndexByURL_(url);
@@ -135,8 +149,13 @@ export class FolderShortcutsDataModel extends EventTarget {
         if (!volumeInfo ||
             this.volumeManager_.getDriveConnectionState().type !==
                 chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE) {
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'any' can't be used to index type '{}'.
           if (!this.unresolvablePaths_[path]) {
             changed = true;
+            // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+            // because expression of type 'any' can't be used to index type
+            // '{}'.
             this.unresolvablePaths_[path] = true;
           }
         }
@@ -148,8 +167,14 @@ export class FolderShortcutsDataModel extends EventTarget {
       // Resolve the items all at once, in parallel.
       const group = new Group();
       list.forEach(function(path) {
+        // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an
+        // 'any' type.
         group.add(((path, callback) => {
+                    // @ts-ignore: error TS2683: 'this' implicitly has type
+                    // 'any' because it does not have a type annotation.
                     const url = this.lastDriveRootURL_ &&
+                        // @ts-ignore: error TS2683: 'this' implicitly has type
+                        // 'any' because it does not have a type annotation.
                         this.convertStoredPathToUrl_(path);
                     if (url && volumeInfo) {
                       window.webkitResolveLocalFileSystemURL(
@@ -175,6 +200,9 @@ export class FolderShortcutsDataModel extends EventTarget {
         let index = 0;
         while (index < this.length) {
           const entry = this.item(index);
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'string' can't be used to index type
+          // '{}'.
           if (!resolvedURLs[entry.toURL()]) {
             this.removeInternal_(entry);
             changed = true;
@@ -284,7 +312,7 @@ export class FolderShortcutsDataModel extends EventTarget {
   getIndex(value) {
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         return i;
       }
     }
@@ -301,7 +329,7 @@ export class FolderShortcutsDataModel extends EventTarget {
    *     Otherwise, returns 1.
    */
   compare(a, b) {
-    return util.comparePath(a, b);
+    return comparePath(a, b);
   }
 
   /**
@@ -314,6 +342,9 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   add(value) {
     const result = this.addInternal_(value);
+    // @ts-ignore: error TS2739: Type 'FileSystemEntry' is missing the following
+    // properties from type 'FileSystemDirectoryEntry': createReader,
+    // getDirectory, getFile, removeRecursively
     this.store_.dispatch(addFolderShortcut({entry: value}));
     recordUserAction('FolderShortcut.Add');
     this.save_();
@@ -336,7 +367,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     let addedIndex = -1;
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         return i;
       }
 
@@ -385,7 +416,7 @@ export class FolderShortcutsDataModel extends EventTarget {
     const oldArray = this.array_.slice(0);  // Shallow copy.
     for (let i = 0; i < this.length; i++) {
       // Same item check: must be exact match.
-      if (util.isSameEntry(this.array_[i], value)) {
+      if (isSameEntry(this.array_[i], value)) {
         this.array_.splice(i, 1);
         removedIndex = i;
         break;
@@ -432,6 +463,9 @@ export class FolderShortcutsDataModel extends EventTarget {
                       .concat(Object.keys(this.unresolvablePaths_));
 
     const prefs = {folderShortcuts: paths};
+    // @ts-ignore: error TS2345: Argument of type '{ folderShortcuts: (string |
+    // null)[]; }' is not assignable to parameter of type
+    // 'Partial<PreferencesChange>'.
     chrome.fileManagerPrivate.setPreferences(prefs);
   }
 
@@ -460,13 +494,18 @@ export class FolderShortcutsDataModel extends EventTarget {
       while (newIndex < newArray.length) {
         // Unchanged item, which exists in both new and old array. But the
         // index may be changed.
-        if (util.isSameEntry(oldArray[oldIndex], newArray[newIndex])) {
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry |
+        // FilesAppEntry'.
+        if (isSameEntry(oldArray[oldIndex], newArray[newIndex])) {
           permutation[oldIndex] = newIndex;
           newIndex++;
           break;
         }
 
         // oldArray[oldIndex] is deleted, which is not in the new array.
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry'.
         if (this.compare(oldArray[oldIndex], newArray[newIndex]) < 0) {
           permutation[oldIndex] = -1;
           break;
@@ -486,7 +525,11 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   firePermutedEvent_(permutation) {
     const permutedEvent = new Event('permuted');
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     permutedEvent.newLength = this.length;
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     permutedEvent.permutation = permutation;
     this.dispatchEvent(permutedEvent);
 
@@ -509,6 +552,7 @@ export class FolderShortcutsDataModel extends EventTarget {
         chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE) {
       const path = this.convertUrlToStoredPath_(entry.toURL());
       // TODO(mtomasz): Add support for multi-profile.
+      // @ts-ignore: error TS2538: Type 'null' cannot be used as an index type.
       this.unresolvablePaths_[path] = true;
     }
     this.removeInternal_(entry);
@@ -526,6 +570,8 @@ export class FolderShortcutsDataModel extends EventTarget {
    * @return {?string} URL of the given path.
    * @private
    */
+  // @ts-ignore: error TS6133: 'convertStoredPathToUrl_' is declared but its
+  // value is never read.
   convertStoredPathToUrl_(path) {
     if (path.indexOf(STORED_DRIVE_MOUNT_PATH + '/') !== 0) {
       console.warn(path + ' is neither a drive mount path nor a stored path.');
@@ -546,12 +592,15 @@ export class FolderShortcutsDataModel extends EventTarget {
    */
   convertUrlToStoredPath_(url) {
     // Root URLs contain a trailing slash.
+    // @ts-ignore: error TS2345: Argument of type 'string | null' is not
+    // assignable to parameter of type 'string'.
     if (url.indexOf(this.lastDriveRootURL_) !== 0) {
       console.warn(url + ' is not a drive URL.');
       return null;
     }
 
     return STORED_DRIVE_MOUNT_PATH + '/' +
+        // @ts-ignore: error TS2531: Object is possibly 'null'.
         decodeURIComponent(url.substr(this.lastDriveRootURL_.length));
   }
 }

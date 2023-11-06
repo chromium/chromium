@@ -55,8 +55,8 @@ import java.util.List;
 /**
  * Tests of the Omnibox.
  *
- * TODO(yolandyan): Replace the ParameterizedCommandLineFlags with new JUnit4
- * parameterized framework once it supports Test Rule Parameterization.
+ * <p>TODO(yolandyan): Replace the ParameterizedCommandLineFlags with new JUnit4 parameterized
+ * framework once it supports Test Rule Parameterization.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -70,15 +70,18 @@ public class OmniboxTest {
         final UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
         Assert.assertNotNull(urlBar);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { urlBar.setText(""); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    urlBar.setText("");
+                });
     }
 
     private static final OnSuggestionsReceivedListener sEmptySuggestionListener =
             (result, autocompleteText, isFinal) -> {};
 
     /**
-     * Sanity check of Omnibox.  The problem in http://b/5021723 would
-     * cause this to fail (hang or crash).
+     * Sanity check of Omnibox. The problem in http://b/5021723 would cause this to fail (hang or
+     * crash).
      */
     @Test
     @EnormousTest
@@ -89,8 +92,11 @@ public class OmniboxTest {
         omnibox.typeText("aaaaaaa", false);
         omnibox.checkSuggestionsShown();
 
-        ChromeTabUtils.waitForTabPageLoadStart(mActivityTestRule.getActivity().getActivityTab(),
-                null, () -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER), 20L);
+        ChromeTabUtils.waitForTabPageLoadStart(
+                mActivityTestRule.getActivity().getActivityTab(),
+                null,
+                () -> omnibox.sendKey(KeyEvent.KEYCODE_ENTER),
+                20L);
     }
 
     // Sanity check that no text is displayed in the omnibox when on the NTP page and that the hint
@@ -106,18 +112,22 @@ public class OmniboxTest {
         // Omnibox on NTP shows the hint text.
         Assert.assertNotNull(urlBar);
         Assert.assertEquals("Location bar has text.", "", urlBar.getText().toString());
-        Assert.assertEquals("Location bar has incorrect hint.",
-                mActivityTestRule.getActivity().getResources().getString(
-                        R.string.omnibox_empty_hint),
+        Assert.assertEquals(
+                "Location bar has incorrect hint.",
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.omnibox_empty_hint),
                 urlBar.getHint().toString());
 
         // Type something in the omnibox.
         // Note that the TextView does not provide a way to test if the hint is showing, the API
         // documentation simply says it shows when the text is empty.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            urlBar.requestFocus();
-            urlBar.setText("G");
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    urlBar.requestFocus();
+                    urlBar.setText("G");
+                });
         Assert.assertEquals("Location bar should have text.", "G", urlBar.getText().toString());
     }
 
@@ -135,30 +145,40 @@ public class OmniboxTest {
 
         // Dispatch ALT + ENTER key event.
         final UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        KeyEvent keyDownEvent = new KeyEvent(
-                0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
-        KeyEvent keyUpEvent = new KeyEvent(
-                0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            urlBar.dispatchKeyEvent(keyDownEvent);
-            urlBar.dispatchKeyEvent(keyUpEvent);
-        });
+        KeyEvent keyDownEvent =
+                new KeyEvent(
+                        0,
+                        0,
+                        KeyEvent.ACTION_DOWN,
+                        KeyEvent.KEYCODE_ENTER,
+                        0,
+                        KeyEvent.META_ALT_ON);
+        KeyEvent keyUpEvent =
+                new KeyEvent(
+                        0, 0, KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER, 0, KeyEvent.META_ALT_ON);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    urlBar.dispatchKeyEvent(keyDownEvent);
+                    urlBar.dispatchKeyEvent(keyUpEvent);
+                });
 
         Tab resultTab = mActivityTestRule.getActivity().getActivityTab();
         Assert.assertNotEquals(
                 "The result should be loaded in a new tab that is brought to the foreground.",
-                currentTab, resultTab);
-        Assert.assertEquals("Tab count should reflect new tab.", tabCount + 1,
+                currentTab,
+                resultTab);
+        Assert.assertEquals(
+                "Tab count should reflect new tab.",
+                tabCount + 1,
                 ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
     }
 
     /**
      * The following test is a basic way to assess how much instant slows down typing in the
-     * omnibox. It is meant to be run manually for investigation purposes.
-     * When instant was enabled for all suggestions (including searched), I would get a 40% increase
-     * in the average time on this test. With instant off, it was almost identical.
-     * Marking the test disabled so it is not picked up by our test runner, as it is supposed to be
-     * run manually.
+     * omnibox. It is meant to be run manually for investigation purposes. When instant was enabled
+     * for all suggestions (including searched), I would get a 40% increase in the average time on
+     * this test. With instant off, it was almost identical. Marking the test disabled so it is not
+     * picked up by our test runner, as it is supposed to be run manually.
      */
     public void manualTestTypingPerformance() throws InterruptedException {
         final String text = "searching for pizza";
@@ -190,15 +210,14 @@ public class OmniboxTest {
         System.err.println("******************************************************************");
     }
 
-    /**
-     * Test to verify that the security icon is present when visiting http:// URLs.
-     */
+    /** Test to verify that the security icon is present when visiting http:// URLs. */
     @Test
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTP() {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         final String testUrl = testServer.getURL("/chrome/test/data/android/omnibox/one.html");
         mActivityTestRule.loadUrl(testUrl);
         final LocationBarLayout locationBar =
@@ -210,29 +229,30 @@ public class OmniboxTest {
                 R.drawable.omnibox_info, statusCoordinator.getSecurityIconResourceIdForTesting());
     }
 
-    /**
-     * Test to verify that the security icon is present when visiting https:// URLs.
-     */
+    /** Test to verify that the security icon is present when visiting https:// URLs. */
     @Test
     @MediumTest
     @SkipCommandLineParameterization
     public void testSecurityIconOnHTTPS() throws Exception {
-        EmbeddedTestServer httpsTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
+        EmbeddedTestServer httpsTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
-        TabObserver observer = new EmptyTabObserver() {
-            @Override
-            public void onSSLStateUpdated(Tab tab) {
-                onSSLStateUpdatedCallbackHelper.notifyCalled();
-            }
-        };
+        TabObserver observer =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onSSLStateUpdated(Tab tab) {
+                        onSSLStateUpdatedCallbackHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
         final String testHttpsUrl =
                 httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
-        ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
-                R.id.location_bar_status_icon);
+        ImageView securityView =
+                (ImageView)
+                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         mActivityTestRule.loadUrl(testHttpsUrl);
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         final LocationBarLayout locationBar =
@@ -240,12 +260,14 @@ public class OmniboxTest {
         StatusCoordinator statusCoordinator = locationBar.getStatusCoordinatorForTesting();
         boolean securityIcon = statusCoordinator.isSecurityViewShown();
         Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-        Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                R.id.location_bar_status_icon, securityView.getId());
+        Assert.assertEquals(
+                "location_bar_status_icon with wrong resource-id",
+                R.id.location_bar_status_icon,
+                securityView.getId());
         Assert.assertTrue(securityView.isShown());
         Assert.assertEquals(
                 ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                                ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
                         ? R.drawable.omnibox_https_valid_refresh
                         : R.drawable.omnibox_https_valid,
                 statusCoordinator.getSecurityIconResourceIdForTesting());
@@ -253,11 +275,13 @@ public class OmniboxTest {
 
     /**
      * Test to verify that the security icon is present after
+     *
      * <ol>
      *   <li>visiting a https:// URL
      *   <li>focusing the url bar
      *   <li>pressing back
      * </ol>
+     *
      * All while the search engine is not the default one. See https://crbug.com/1173447
      */
     @Test
@@ -266,15 +290,17 @@ public class OmniboxTest {
     public void testSecurityIconOnHTTPSFocusAndBack() throws Exception {
         setNonDefaultSearchEngine();
 
-        EmbeddedTestServer httpsTestServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
+        EmbeddedTestServer httpsTestServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        ApplicationProvider.getApplicationContext(), ServerCertificate.CERT_OK);
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
-        TabObserver observer = new EmptyTabObserver() {
-            @Override
-            public void onSSLStateUpdated(Tab tab) {
-                onSSLStateUpdatedCallbackHelper.notifyCalled();
-            }
-        };
+        TabObserver observer =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onSSLStateUpdated(Tab tab) {
+                        onSSLStateUpdatedCallbackHelper.notifyCalled();
+                    }
+                };
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getActivityTab().addObserver(observer));
 
@@ -282,14 +308,17 @@ public class OmniboxTest {
             final String testHttpsUrl =
                     httpsTestServer.getURL("/chrome/test/data/android/omnibox/one.html");
 
-            ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
-                    R.id.location_bar_status_icon);
+            ImageView securityView =
+                    (ImageView)
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.location_bar_status_icon);
 
             mActivityTestRule.loadUrl(testHttpsUrl);
             onSSLStateUpdatedCallbackHelper.waitForCallback(0);
             final LocationBarLayout locationBar =
-                    (LocationBarLayout) mActivityTestRule.getActivity().findViewById(
-                            R.id.location_bar);
+                    (LocationBarLayout)
+                            mActivityTestRule.getActivity().findViewById(R.id.location_bar);
             final StatusCoordinator statusCoordinator =
                     locationBar.getStatusCoordinatorForTesting();
             final int firstIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
@@ -305,12 +334,15 @@ public class OmniboxTest {
 
             boolean securityIcon = statusCoordinator.isSecurityViewShown();
             Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-            Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                    R.id.location_bar_status_icon, securityView.getId());
+            Assert.assertEquals(
+                    "location_bar_status_icon with wrong resource-id",
+                    R.id.location_bar_status_icon,
+                    securityView.getId());
             Assert.assertTrue(securityView.isShown());
             Assert.assertEquals(
                     ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
+                                    ChromeFeatureList
+                                            .OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
                             ? R.drawable.omnibox_https_valid_refresh
                             : R.drawable.omnibox_https_valid,
                     statusCoordinator.getSecurityIconResourceIdForTesting());
@@ -320,68 +352,79 @@ public class OmniboxTest {
     }
 
     private void setNonDefaultSearchEngine() {
-        TemplateUrlService templateUrlService = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile()));
+        TemplateUrlService templateUrlService =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                TemplateUrlServiceFactory.getForProfile(
+                                        Profile.getLastUsedRegularProfile()));
         TestThreadUtils.runOnUiThreadBlocking(() -> templateUrlService.load());
         CriteriaHelper.pollUiThread(() -> templateUrlService.isLoaded());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
-            TemplateUrl defaultEngine = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<TemplateUrl> searchEngines = templateUrlService.getTemplateUrls();
+                    TemplateUrl defaultEngine =
+                            templateUrlService.getDefaultSearchEngineTemplateUrl();
 
-            TemplateUrl notDefault = null;
-            for (TemplateUrl searchEngine : searchEngines) {
-                if (!searchEngine.equals(defaultEngine)) {
-                    notDefault = searchEngine;
-                    break;
-                }
-            }
+                    TemplateUrl notDefault = null;
+                    for (TemplateUrl searchEngine : searchEngines) {
+                        if (!searchEngine.equals(defaultEngine)) {
+                            notDefault = searchEngine;
+                            break;
+                        }
+                    }
 
-            Assert.assertNotNull(notDefault);
+                    Assert.assertNotNull(notDefault);
 
-            templateUrlService.setSearchEngine(notDefault.getKeyword());
-        });
+                    templateUrlService.setSearchEngine(notDefault.getKeyword());
+                });
     }
 
     private void restoreDefaultSearchEngine() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TemplateUrlService service =
-                    TemplateUrlServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
-            TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
-            service.setSearchEngine(defaultEngine.getKeyword());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TemplateUrlService service =
+                            TemplateUrlServiceFactory.getForProfile(
+                                    Profile.getLastUsedRegularProfile());
+                    TemplateUrl defaultEngine = service.getDefaultSearchEngineTemplateUrl();
+                    service.setSearchEngine(defaultEngine.getKeyword());
+                });
     }
 
-    /**
-     * Test whether the color of the Location bar is correct for HTTPS scheme.
-     */
+    /** Test whether the color of the Location bar is correct for HTTPS scheme. */
     @Test
     @SmallTest
     @SkipCommandLineParameterization
     public void testHttpsLocationBarColor() throws Exception {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartHTTPSServer(
-                InstrumentationRegistry.getInstrumentation().getContext(),
-                ServerCertificate.CERT_OK);
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartHTTPSServer(
+                        InstrumentationRegistry.getInstrumentation().getContext(),
+                        ServerCertificate.CERT_OK);
         CallbackHelper didThemeColorChangedCallbackHelper = new CallbackHelper();
         CallbackHelper onSSLStateUpdatedCallbackHelper = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            new TabModelSelectorTabObserver(mActivityTestRule.getActivity().getTabModelSelector()) {
-                @Override
-                public void onSSLStateUpdated(Tab tab) {
-                    onSSLStateUpdatedCallbackHelper.notifyCalled();
-                }
-            };
-
-            mActivityTestRule.getActivity()
-                    .getRootUiCoordinatorForTesting()
-                    .getTopUiThemeColorProvider()
-                    .addThemeColorObserver(new ThemeColorObserver() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new TabModelSelectorTabObserver(
+                            mActivityTestRule.getActivity().getTabModelSelector()) {
                         @Override
-                        public void onThemeColorChanged(int color, boolean shouldAnimate) {
-                            didThemeColorChangedCallbackHelper.notifyCalled();
+                        public void onSSLStateUpdated(Tab tab) {
+                            onSSLStateUpdatedCallbackHelper.notifyCalled();
                         }
-                    });
-        });
+                    };
+
+                    mActivityTestRule
+                            .getActivity()
+                            .getRootUiCoordinatorForTesting()
+                            .getTopUiThemeColorProvider()
+                            .addThemeColorObserver(
+                                    new ThemeColorObserver() {
+                                        @Override
+                                        public void onThemeColorChanged(
+                                                int color, boolean shouldAnimate) {
+                                            didThemeColorChangedCallbackHelper.notifyCalled();
+                                        }
+                                    });
+                });
 
         final String testHttpsUrl =
                 testServer.getURL("/chrome/test/data/android/theme_color_test.html");
@@ -393,23 +436,30 @@ public class OmniboxTest {
         onSSLStateUpdatedCallbackHelper.waitForCallback(0);
         LocationBarLayout locationBarLayout =
                 (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
-        ImageView securityView = (ImageView) mActivityTestRule.getActivity().findViewById(
-                R.id.location_bar_status_icon);
+        ImageView securityView =
+                (ImageView)
+                        mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon);
         boolean securityIcon =
                 locationBarLayout.getStatusCoordinatorForTesting().isSecurityViewShown();
         Assert.assertTrue("Omnibox should have a Security icon", securityIcon);
-        Assert.assertEquals("location_bar_status_icon with wrong resource-id",
-                R.id.location_bar_status_icon, securityView.getId());
+        Assert.assertEquals(
+                "location_bar_status_icon with wrong resource-id",
+                R.id.location_bar_status_icon,
+                securityView.getId());
         if (mActivityTestRule.getActivity().isTablet()) {
-            Assert.assertTrue(mActivityTestRule.getActivity()
-                                      .getToolbarManager()
-                                      .getLocationBarModelForTesting()
-                                      .shouldEmphasizeHttpsScheme());
+            Assert.assertTrue(
+                    mActivityTestRule
+                            .getActivity()
+                            .getToolbarManager()
+                            .getLocationBarModelForTesting()
+                            .shouldEmphasizeHttpsScheme());
         } else {
-            Assert.assertFalse(mActivityTestRule.getActivity()
-                                       .getToolbarManager()
-                                       .getLocationBarModelForTesting()
-                                       .shouldEmphasizeHttpsScheme());
+            Assert.assertFalse(
+                    mActivityTestRule
+                            .getActivity()
+                            .getToolbarManager()
+                            .getLocationBarModelForTesting()
+                            .shouldEmphasizeHttpsScheme());
         }
     }
 

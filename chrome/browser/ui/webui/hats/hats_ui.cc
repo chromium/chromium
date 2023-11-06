@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "google_apis/google_api_keys.h"
 
 HatsUIConfig::HatsUIConfig()
     : WebUIConfig(content::kChromeUIUntrustedScheme,
@@ -38,14 +37,14 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
       source, base::make_span(kHatsResources, kHatsResourcesSize),
       IDR_HATS_HATS_HTML);
 
-  source->AddString("hatsApiKey", google_apis::GetHatsAPIKey());
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src "
-      // The SHA256 hash of the initial inline JS. Must be replaced when the js
-      // source code changes. Can be viewed via developer tools if the page
-      // throws an error.
-      "'sha256-Jn+1+gFu9qNjYPcvPY3ntC5j2dR0JZr/CCfXHm4nxVw=' "
+      // The SHA256 hash of the initial inline JS.
+      // Must be replaced when the inline js of hats.html changes.
+      // The new hash can be viewed via terminal or via developer tools on
+      // chrome-untrusted://hats if the page throws an error.
+      "'sha256-gE2l7O/qvxOSNGhz8GPZzb9y0Ca6tLZWE1M0p/uvGt8=' "
       // Scripts loaded transitively from the initial one are allowed:
       "'strict-dynamic' "
       ";");
@@ -78,6 +77,25 @@ HatsUI::HatsUI(content::WebUI* web_ui) : ui::UntrustedWebUIController(web_ui) {
 
   // TODO(crbug.com/1481674): Enable TrustedType.
   source->DisableTrustedTypesCSP();
+}
+
+HatsUI::~HatsUI() = default;
+
+void HatsUI::SetHatsPageHandlerDelegate(HatsPageHandlerDelegate* delegate) {
+  page_handler_delegate_ = delegate;
+}
+
+void HatsUI::BindInterface(
+    mojo::PendingReceiver<hats::mojom::PageHandlerFactory> receiver) {
+  page_factory_receiver_.reset();
+  page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void HatsUI::CreatePageHandler(
+    mojo::PendingRemote<hats::mojom::Page> page,
+    mojo::PendingReceiver<hats::mojom::PageHandler> receiver) {
+  page_handler_ = std::make_unique<HatsPageHandler>(
+      std::move(receiver), std::move(page), page_handler_delegate_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(HatsUI)

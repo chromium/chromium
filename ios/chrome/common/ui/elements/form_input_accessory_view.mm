@@ -42,6 +42,9 @@ constexpr CGFloat ManualFillSeparatorHeight = 0.5;
 NSString* const kFormInputAccessoryViewAccessibilityID =
     @"kFormInputAccessoryViewAccessibilityID";
 
+NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
+    @"kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID";
+
 @interface FormInputAccessoryView ()
 
 // The navigation delegate if any.
@@ -301,6 +304,8 @@ NSString* const kFormInputAccessoryViewAccessibilityID =
     _omniboxTypingShield.backgroundColor = UIColor.clearColor;
     _omniboxTypingShield.isAccessibilityElement = NO;
     _omniboxTypingShield.opaque = NO;
+    _omniboxTypingShield.accessibilityIdentifier =
+        kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID;
     [self addSubview:_omniboxTypingShield];
 
     AddSameConstraintsToSides(

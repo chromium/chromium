@@ -56,7 +56,7 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   // Document's scrollingElement, and it may be null if the document was
   // removed before the ScrollTimeline was created.
   Node* ResolvedSource() const {
-    return timeline_state_snapshotted_.resolved_source;
+    return timeline_state_snapshotted_.resolved_source.Get();
   }
 
   // Return the latest resolved scroll/view offsets. This will be empty when

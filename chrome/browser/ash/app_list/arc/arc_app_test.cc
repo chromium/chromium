@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
@@ -45,11 +44,15 @@ constexpr char kPackageName1[] = "fake.package.name1";
 constexpr char kPackageName2[] = "fake.package.name2";
 constexpr char kPackageName3[] = "fake.package.name3";
 constexpr char kPackageName4[] = "fake.package.name4";
+constexpr char kPackageName5[] = "fake.package.name5";
 
 constexpr char kWebAppInfoTitle4[] = "package4";
 constexpr char kWebAppInfoStartURL4[] = "https://example.com/app?start";
 constexpr char kWebAppInfoScope4[] = "https://example.com/app";
 constexpr char kWebAppInfoCertificateFingerprint4[] = "abc";
+
+const std::vector<std::string> kSupportedLocales5 = {"en-US", "ja"};
+constexpr char kSelectedLocale5[] = "en-US";
 
 }  // namespace
 
@@ -82,17 +85,10 @@ std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
 }
 
 ArcAppTest::ArcAppTest() {
-  user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<ash::FakeChromeUserManager>());
   CreateFakeAppsAndPackages();
 }
 
 ArcAppTest::~ArcAppTest() = default;
-
-ash::FakeChromeUserManager* ArcAppTest::GetUserManager() {
-  return static_cast<ash::FakeChromeUserManager*>(
-      user_manager::UserManager::Get());
-}
 
 void ArcAppTest::SetUp(Profile* profile) {
   if (!ash::ConciergeClient::Get()) {
@@ -284,6 +280,18 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
       /*version_name=*/absl::nullopt,
       /*preinstalled=*/false));
 
+  base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
+      permissions5;
+  fake_packages_.emplace_back(arc::mojom::ArcPackageInfo::New(
+      kPackageName5 /* package_name */, 5 /* package_version */,
+      5 /* last_backup_android_id */, 5 /* last_backup_time */,
+      false /* sync */, false /* system */, false /* vpn_provider */,
+      nullptr /* web_app_info */, absl::nullopt, std::move(permissions5),
+      absl::nullopt /* version_name */, false /* preinstalled */,
+      arc::mojom::InstallPriority::kUndefined /* priority */,
+      arc::mojom::PackageLocaleInfo::New(kSupportedLocales5,
+                                         kSelectedLocale5)));
+
   for (int i = 0; i < 3; ++i) {
     arc::mojom::ShortcutInfo shortcut_info;
     shortcut_info.name = base::StringPrintf("Fake Shortcut %d", i);
@@ -353,8 +361,8 @@ void ArcAppTest::SetUpIntentHelper() {
 const user_manager::User* ArcAppTest::CreateUserAndLogin() {
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
       profile_->GetProfileUserName(), "1234567890"));
-  const user_manager::User* user = GetUserManager()->AddUser(account_id);
-  GetUserManager()->LoginUser(account_id);
+  const user_manager::User* user = fake_user_manager_->AddUser(account_id);
+  fake_user_manager_->LoginUser(account_id);
   return user;
 }
 

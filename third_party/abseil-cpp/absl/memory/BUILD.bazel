@@ -24,6 +24,7 @@ load(
 package(
     default_visibility = ["//visibility:public"],
     features = [
+        "header_modules",
         "layering_check",
         "parse_headers",
     ],

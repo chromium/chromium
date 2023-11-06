@@ -49,13 +49,10 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BookmarkUtilsTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkModel mBookmarkModel;
 
     @Before
     public void setup() {
@@ -71,8 +68,18 @@ public class BookmarkUtilsTest {
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, PARTNER_BOOKMARK_ID));
 
         BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
-        BookmarkItem managedBookmarkItem = new BookmarkItem(managedBookmarkId, "managed", null,
-                true, ROOT_BOOKMARK_ID, false, true, 0, false, 0);
+        BookmarkItem managedBookmarkItem =
+                new BookmarkItem(
+                        managedBookmarkId,
+                        "managed",
+                        null,
+                        true,
+                        ROOT_BOOKMARK_ID,
+                        false,
+                        true,
+                        0,
+                        false,
+                        0);
         doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedBookmarkId));
     }
@@ -91,17 +98,29 @@ public class BookmarkUtilsTest {
         assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, nullBookmarkItemId));
 
         BookmarkId managedBookmarkId = new BookmarkId(123, BookmarkType.NORMAL);
-        BookmarkItem managedBookmarkItem = new BookmarkItem(managedBookmarkId, "managed", null,
-                true, ROOT_BOOKMARK_ID, false, true, 0, false, 0);
+        BookmarkItem managedBookmarkItem =
+                new BookmarkItem(
+                        managedBookmarkId,
+                        "managed",
+                        null,
+                        true,
+                        ROOT_BOOKMARK_ID,
+                        false,
+                        true,
+                        0,
+                        false,
+                        0);
         doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
         assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, managedBookmarkId));
     }
 
     @Test
     public void testGetParentFolderForViewing() {
-        assertEquals(MOBILE_BOOKMARK_ID,
+        assertEquals(
+                MOBILE_BOOKMARK_ID,
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, FOLDER_BOOKMARK_ID_A));
-        assertEquals(ROOT_BOOKMARK_ID,
+        assertEquals(
+                ROOT_BOOKMARK_ID,
                 BookmarkUtils.getParentFolderForViewing(mBookmarkModel, OTHER_BOOKMARK_ID));
     }
 
@@ -144,8 +163,10 @@ public class BookmarkUtilsTest {
                 .when(mBookmarkModel)
                 .addBookmark(FOLDER_BOOKMARK_ID_A, 0, URL_ITEM_D.getTitle(), URL_ITEM_D.getUrl());
 
-        BookmarkUtils.moveBookmarksToParent(mBookmarkModel,
-                Arrays.asList(URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_A), FOLDER_BOOKMARK_ID_A);
+        BookmarkUtils.moveBookmarksToParent(
+                mBookmarkModel,
+                Arrays.asList(URL_BOOKMARK_ID_D, URL_BOOKMARK_ID_A),
+                FOLDER_BOOKMARK_ID_A);
 
         List<BookmarkId> expected = Arrays.asList(URL_BOOKMARK_ID_A);
         verify(mBookmarkModel)

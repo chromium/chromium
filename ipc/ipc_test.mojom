@@ -53,3 +53,9 @@ interface InterfacePassingTestDriver {
       array<pending_associated_receiver<PingReceiver>> receiver) => ();
   Quit();
 };
+
+interface InterfaceWithUrgentMethod {
+  [SupportsUrgent] MaybeUrgentMessage(bool is_urgent);
+  NonUrgentMessage();
+  RequestQuit() => ();
+};

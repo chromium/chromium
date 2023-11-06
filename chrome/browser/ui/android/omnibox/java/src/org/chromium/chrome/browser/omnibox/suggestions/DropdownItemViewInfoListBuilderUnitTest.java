@@ -54,9 +54,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link DropdownItemViewInfoListBuilder}.
- */
+/** Tests for {@link DropdownItemViewInfoListBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DropdownItemViewInfoListBuilderUnitTest {
     public @Rule TestRule mProcessor = new Features.JUnitProcessor();
@@ -79,34 +77,37 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenAnswer((mock) -> new PropertyModel(SuggestionCommonProperties.ALL_KEYS));
         when(mMockHeaderProcessor.getViewTypeId()).thenReturn(OmniboxSuggestionUiType.HEADER);
 
-        mBuilder = new DropdownItemViewInfoListBuilder(
-                () -> null, (url) -> false, mOpenHistoryClustersDelegate);
+        mBuilder =
+                new DropdownItemViewInfoListBuilder(
+                        () -> null, (url) -> false, mOpenHistoryClustersDelegate);
         mBuilder.registerSuggestionProcessor(mMockSuggestionProcessor);
         mBuilder.setHeaderProcessorForTest(mMockHeaderProcessor);
     }
 
     /**
-     * Verify that two lists have exactly same content.
-     * Note: this works similarly to Assert.assertEquals(list1, list2), but instead of printing out
-     * the content of both lists, simply reports elements that differ.
-     * AutocompleteMatch.toString() is verbose enough that the result analysis may be difficult or
-     * even impossible for a small list if the output exceeds the Android's logcat entry length
-     * limit.
+     * Verify that two lists have exactly same content. Note: this works similarly to
+     * Assert.assertEquals(list1, list2), but instead of printing out the content of both lists,
+     * simply reports elements that differ. AutocompleteMatch.toString() is verbose enough that the
+     * result analysis may be difficult or even impossible for a small list if the output exceeds
+     * the Android's logcat entry length limit.
      */
     private <T> void verifyListsMatch(List<T> expected, List<T> actual) {
         Assert.assertEquals(expected.size(), actual.size());
         for (int index = 0; index < expected.size(); index++) {
-            Assert.assertEquals("Item at position " + index + " does not match",
-                    expected.get(index), actual.get(index));
+            Assert.assertEquals(
+                    "Item at position " + index + " does not match",
+                    expected.get(index),
+                    actual.get(index));
         }
     }
 
     @Test
     public void buildDropdownViewInfoList_mixedGroups() {
-        final var groupsDetails = GroupsInfo.newBuilder()
-                                          .putGroupConfigs(1, SECTION_MOST_VISITED)
-                                          .putGroupConfigs(2, SECTION_2_WITH_HEADER)
-                                          .build();
+        final var groupsDetails =
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_MOST_VISITED)
+                        .putGroupConfigs(2, SECTION_2_WITH_HEADER)
+                        .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
 
@@ -121,8 +122,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
         var actualList =
                 List.of(horizontal, horizontal, vertical, vertical, horizontal, horizontal);
-        var model = mBuilder.buildDropdownViewInfoList(
-                AutocompleteResult.fromCache(actualList, groupsDetails));
+        var model =
+                mBuilder.buildDropdownViewInfoList(
+                        AutocompleteResult.fromCache(actualList, groupsDetails));
 
         // 1 horizontal + 1 header + 2 vertical + 1 horizontal.
         Assert.assertEquals(5, model.size());
@@ -148,10 +150,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @Test
     public void headers_buildsHeadersOnlyWhenGroupChanges() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final var groupsDetails = GroupsInfo.newBuilder()
-                                          .putGroupConfigs(1, SECTION_2_WITH_HEADER)
-                                          .putGroupConfigs(2, SECTION_3_WITH_HEADER)
-                                          .build();
+        final var groupsDetails =
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_2_WITH_HEADER)
+                        .putGroupConfigs(2, SECTION_3_WITH_HEADER)
+                        .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
@@ -173,8 +176,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         actualList.add(suggestionForGroup2);
 
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
-        final List<DropdownItemViewInfo> model = mBuilder.buildDropdownViewInfoList(
-                AutocompleteResult.fromCache(actualList, groupsDetails));
+        final List<DropdownItemViewInfo> model =
+                mBuilder.buildDropdownViewInfoList(
+                        AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
@@ -215,10 +219,11 @@ public class DropdownItemViewInfoListBuilderUnitTest {
     @Test
     public void headers_respectGroupHeadersWithNoTitle() {
         final List<AutocompleteMatch> actualList = new ArrayList<>();
-        final var groupsDetails = GroupsInfo.newBuilder()
-                                          .putGroupConfigs(1, SECTION_1_NO_HEADER)
-                                          .putGroupConfigs(2, SECTION_2_WITH_HEADER)
-                                          .build();
+        final var groupsDetails =
+                GroupsInfo.newBuilder()
+                        .putGroupConfigs(1, SECTION_1_NO_HEADER)
+                        .putGroupConfigs(2, SECTION_2_WITH_HEADER)
+                        .build();
 
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         AutocompleteMatch suggestionWithNoGroup =
@@ -240,8 +245,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         actualList.add(suggestionForGroup2);
 
         final InOrder verifier = inOrder(mMockSuggestionProcessor, mMockHeaderProcessor);
-        final List<DropdownItemViewInfo> model = mBuilder.buildDropdownViewInfoList(
-                AutocompleteResult.fromCache(actualList, groupsDetails));
+        final List<DropdownItemViewInfo> model =
+                mBuilder.buildDropdownViewInfoList(
+                        AutocompleteResult.fromCache(actualList, groupsDetails));
 
         verifier.verify(mMockSuggestionProcessor, times(1))
                 .populateModel(eq(suggestionWithNoGroup), any(), eq(0));
@@ -311,15 +317,19 @@ public class DropdownItemViewInfoListBuilderUnitTest {
                 .thenReturn(true);
         // Create AutocompleteResult with a lot of suggestions.
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = AutocompleteResult.fromCache(
-                Arrays.asList(match, match, match, match, match, match, match, match, match, match),
-                null);
+        final AutocompleteResult result =
+                AutocompleteResult.fromCache(
+                        Arrays.asList(
+                                match, match, match, match, match, match, match, match, match,
+                                match),
+                        null);
         Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(result));
 
         // Same, with a shorter list of suggestions; in this case we don't know the height of the
         // dropdown view, so we assume we can comfortably fit 5 suggestions.
-        final AutocompleteResult shortResult = AutocompleteResult.fromCache(
-                Arrays.asList(match, match, match, match, match), null);
+        final AutocompleteResult shortResult =
+                AutocompleteResult.fromCache(
+                        Arrays.asList(match, match, match, match, match), null);
         Assert.assertEquals(5, mBuilder.getVisibleSuggestionsCount(shortResult));
     }
 
@@ -332,9 +342,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         final AutocompleteMatchBuilder builder =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST);
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = AutocompleteResult.fromCache(
-                Arrays.asList(match, match, match, match, match, match, match, match, match, match),
-                null);
+        final AutocompleteResult result =
+                AutocompleteResult.fromCache(
+                        Arrays.asList(
+                                match, match, match, match, match, match, match, match, match,
+                                match),
+                        null);
 
         mBuilder.setDropdownHeightWithKeyboardActive(60);
         Assert.assertEquals(6, mBuilder.getVisibleSuggestionsCount(result));
@@ -353,9 +366,12 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(AutocompleteMatch.class), anyInt()))
                 .thenReturn(true);
         final AutocompleteMatch match = builder.build();
-        final AutocompleteResult result = AutocompleteResult.fromCache(
-                Arrays.asList(match, match, match, match, match, match, match, match, match, match),
-                null);
+        final AutocompleteResult result =
+                AutocompleteResult.fromCache(
+                        Arrays.asList(
+                                match, match, match, match, match, match, match, match, match,
+                                match),
+                        null);
 
         when(mMockSuggestionProcessor.getMinimumViewHeight()).thenReturn(10);
         mBuilder.setDropdownHeightWithKeyboardActive(45);
@@ -539,15 +555,17 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     public void buildVerticalSuggestionsGroup_withoutGroupHeader() {
-        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                            .setGroupId(1)
-                            .build();
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
         var matches = List.of(match, match);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
 
-        var result = mBuilder.buildVerticalSuggestionsGroup(
-                SECTION_1_NO_HEADER, matches, /* firstVerticalPosition=*/5);
+        var result =
+                mBuilder.buildVerticalSuggestionsGroup(
+                        SECTION_1_NO_HEADER, matches, /* firstVerticalPosition= */ 5);
 
         verify(mMockSuggestionProcessor, times(2)).createModel();
         verify(mMockSuggestionProcessor, atLeastOnce()).getViewTypeId();
@@ -563,15 +581,17 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     public void buildVerticalSuggestionsGroup_withGroupHeader() {
-        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                            .setGroupId(1)
-                            .build();
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
         var matches = List.of(match, match);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
 
-        var result = mBuilder.buildVerticalSuggestionsGroup(
-                SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition=*/7);
+        var result =
+                mBuilder.buildVerticalSuggestionsGroup(
+                        SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();
@@ -592,15 +612,17 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     public void buildHorizontalSuggestionsGroup_withoutGroupHeader() {
-        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                            .setGroupId(1)
-                            .build();
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
         var matches = List.of(match, match);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
 
-        var result = mBuilder.buildHorizontalSuggestionsGroup(
-                SECTION_1_NO_HEADER, matches, /* firstVerticalPosition=*/5);
+        var result =
+                mBuilder.buildHorizontalSuggestionsGroup(
+                        SECTION_1_NO_HEADER, matches, /* firstVerticalPosition= */ 5);
 
         var captor = ArgumentCaptor.forClass(PropertyModel.class);
         verify(mMockSuggestionProcessor).getViewTypeId();
@@ -620,15 +642,17 @@ public class DropdownItemViewInfoListBuilderUnitTest {
 
     @Test
     public void buildHorizontalSuggestionsGroup_withGroupHeader() {
-        var match = AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                            .setGroupId(1)
-                            .build();
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .setGroupId(1)
+                        .build();
         var matches = List.of(match, match);
         when(mMockSuggestionProcessor.doesProcessSuggestion(any(), anyInt())).thenReturn(true);
         clearInvocations(mMockHeaderProcessor, mMockSuggestionProcessor);
 
-        var result = mBuilder.buildHorizontalSuggestionsGroup(
-                SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition=*/7);
+        var result =
+                mBuilder.buildHorizontalSuggestionsGroup(
+                        SECTION_2_WITH_HEADER, matches, /* firstVerticalPosition= */ 7);
 
         verify(mMockHeaderProcessor).createModel();
         verify(mMockHeaderProcessor, atLeastOnce()).getViewTypeId();
@@ -673,8 +697,9 @@ public class DropdownItemViewInfoListBuilderUnitTest {
         actualList.add(suggestion);
         actualList.add(suggestion);
 
-        final List<DropdownItemViewInfo> infoList = mBuilder.buildDropdownViewInfoList(
-                AutocompleteResult.fromCache(actualList, groupsDetails));
+        final List<DropdownItemViewInfo> infoList =
+                mBuilder.buildDropdownViewInfoList(
+                        AutocompleteResult.fromCache(actualList, groupsDetails));
         Assert.assertEquals(4, infoList.size()); // 1 divider line + 1 header + 2 suggestions.
 
         Assert.assertEquals(infoList.get(0).type, OmniboxSuggestionUiType.DIVIDER_LINE);

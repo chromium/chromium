@@ -1,19 +1,24 @@
 This is a testharness.js-based test.
-PASS Loading JSON…
-PASS X-Content-Type-Options%3A%20NOSNIFF
-PASS x-content-type-OPTIONS%3A%20nosniff
-PASS X-Content-Type-Options%3A%20nosniff%2C%2C%40%23%24%23%25%25%26%5E%26%5E*()()11!
-PASS X-Content-Type-Options%3A%20%40%23%24%23%25%25%26%5E%26%5E*()()11!%2Cnosniff
-PASS X-Content-Type-Options%3A%20nosniff%0D%0AX-Content-Type-Options%3A%20no
-PASS X-Content-Type-Options%3A%20no%0D%0AX-Content-Type-Options%3A%20nosniff
-FAIL X-Content-Type-Options%3A%0D%0AX-Content-Type-Options%3A%20nosniff assert_unreached: Script should have loaded Reached unreachable code
-PASS X-Content-Type-Options%3A%20nosniff%0D%0AX-Content-Type-Options%3A%20nosniff
-FAIL X-Content-Type-Options%3A%20%2Cnosniff assert_unreached: Script should have loaded Reached unreachable code
-FAIL X-Content-Type-Options%3A%20nosniff%0C assert_unreached: Script should have loaded Reached unreachable code
-FAIL X-Content-Type-Options%3A%20nosniff%0B assert_unreached: Script should have loaded Reached unreachable code
-FAIL X-Content-Type-Options%3A%20nosniff%0B%2Cnosniff assert_unreached: Script should have loaded Reached unreachable code
-PASS X-Content-Type-Options%3A%20'NosniFF'
-PASS X-Content-Type-Options%3A%20%22nosniFF%22
-PASS Content-Type-Options%3A%20nosniff
+[PASS] Loading JSON…
+[PASS] X-Content-Type-Options%3A%20NOSNIFF
+[PASS] x-content-type-OPTIONS%3A%20nosniff
+[PASS] X-Content-Type-Options%3A%20nosniff%2C%2C%40%23%24%23%25%25%26%5E%26%5E*()()11!
+[PASS] X-Content-Type-Options%3A%20%40%23%24%23%25%25%26%5E%26%5E*()()11!%2Cnosniff
+[PASS] X-Content-Type-Options%3A%20nosniff%0D%0AX-Content-Type-Options%3A%20no
+[PASS] X-Content-Type-Options%3A%20no%0D%0AX-Content-Type-Options%3A%20nosniff
+[FAIL] X-Content-Type-Options%3A%0D%0AX-Content-Type-Options%3A%20nosniff
+  assert_unreached: Script should have loaded Reached unreachable code
+[PASS] X-Content-Type-Options%3A%20nosniff%0D%0AX-Content-Type-Options%3A%20nosniff
+[FAIL] X-Content-Type-Options%3A%20%2Cnosniff
+  assert_unreached: Script should have loaded Reached unreachable code
+[FAIL] X-Content-Type-Options%3A%20nosniff%0C
+  assert_unreached: Script should have loaded Reached unreachable code
+[FAIL] X-Content-Type-Options%3A%20nosniff%0B
+  assert_unreached: Script should have loaded Reached unreachable code
+[FAIL] X-Content-Type-Options%3A%20nosniff%0B%2Cnosniff
+  assert_unreached: Script should have loaded Reached unreachable code
+[PASS] X-Content-Type-Options%3A%20'NosniFF'
+[PASS] X-Content-Type-Options%3A%20%22nosniFF%22
+[PASS] Content-Type-Options%3A%20nosniff
 Harness: the test ran to completion.
 

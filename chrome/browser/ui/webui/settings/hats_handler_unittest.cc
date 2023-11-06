@@ -135,6 +135,34 @@ TEST_F(HatsHandlerTest, PrivacyGuideHats) {
   task_environment()->RunUntilIdle();
 }
 
+TEST_F(HatsHandlerTest, SecurityPageInteractions) {
+  SurveyStringData expected_product_specific_data = {
+      {"Security Page User Action", "enhanced_protection_radio_button_clicked"},
+      {"Safe Browsing Setting Before Trigger", "standard_protection"},
+      {"Safe Browsing Setting After Trigger", "standard_protection"},
+      {"Client Channel", "unknown"},
+  };
+
+  // Check that triggering the security page handler function will trigger HaTS
+  // correctly.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurveyForWebContents(
+                  kHatsSurveyTriggerSettingsSecurity, web_contents(), 15000, _,
+                  expected_product_specific_data, true))
+      .Times(1);
+
+  base::Value::List args;
+  args.Append(static_cast<int>(
+      HatsHandler::SecurityPageInteraction::RADIO_BUTTON_ENHANCED_CLICK));
+  args.Append(static_cast<int>(HatsHandler::SafeBrowsingSetting::STANDARD));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingSurveysEnabled, true);
+
+  handler()->HandleSecurityPageInteractionOccurred(args);
+  task_environment()->RunUntilIdle();
+}
+
 class HatsHandlerNoSandboxTest : public HatsHandlerTest {
  public:
   HatsHandlerNoSandboxTest() {

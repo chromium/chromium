@@ -29,13 +29,12 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Tests for {@link FontSizePrefs}.
  *
- * TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * <p>TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
  * good way of testing with native code there.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class FontSizePrefsTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final float EPSILON = 0.001f;
     private FontSizePrefs mFontSizePrefs;
@@ -179,11 +178,13 @@ public class FontSizePrefsTest {
         }
 
         private void assertConsistent() {
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                Assert.assertEquals(getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
-                Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
-                Assert.assertEquals(getForceEnableZoom(), mForceEnableZoom);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Assert.assertEquals(
+                                getUserFontScaleFactor(), mUserFontScaleFactor, EPSILON);
+                        Assert.assertEquals(getFontScaleFactor(), mFontScaleFactor, EPSILON);
+                        Assert.assertEquals(getForceEnableZoom(), mForceEnableZoom);
+                    });
         }
     }
 
@@ -193,11 +194,12 @@ public class FontSizePrefsTest {
     }
 
     private TestingObserver createAndAddFontSizePrefsObserver() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            TestingObserver observer = new TestingObserver();
-            mFontSizePrefs.addObserver(observer);
-            return observer;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    TestingObserver observer = new TestingObserver();
+                    mFontSizePrefs.addObserver(observer);
+                    return observer;
+                });
     }
 
     private void setUserFontScaleFactor(final float fontsize) {
@@ -226,9 +228,10 @@ public class FontSizePrefsTest {
     }
 
     private void setSystemFontScaleForTest(final float systemFontScale) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mFontSizePrefs.setSystemFontScaleForTest(systemFontScale);
-            mFontSizePrefs.onSystemFontScaleChanged();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFontSizePrefs.setSystemFontScaleForTest(systemFontScale);
+                    mFontSizePrefs.onSystemFontScaleChanged();
+                });
     }
 }

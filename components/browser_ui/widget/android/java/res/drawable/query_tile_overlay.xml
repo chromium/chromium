@@ -4,15 +4,30 @@ Copyright 2020 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<shape
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle" >
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+  <item android:state_selected="false">
+    <shape android:shape="rectangle" >
+      <gradient
+          android:angle="270"
+          android:endColor="@color/black_alpha_65"
+          android:startColor="@android:color/transparent"
+          android:type="linear" />
+      <corners
+          android:radius="@dimen/default_rounded_corner_radius"/>
+    </shape>
+  </item>
 
-    <gradient
-        android:angle="270"
-        android:endColor="#99000000"
-        android:startColor="#00000000"
-        android:type="linear" />
-    <corners
-        android:radius="@dimen/default_rounded_corner_radius"/>
-</shape>
+  <!-- Selected state. Same as default + hairline stroke. -->
+  <item android:state_selected="true">
+    <shape android:shape="rectangle">
+      <stroke android:width="2dp" android:color="@macro/hairline_stroke_color"/>
+      <gradient
+          android:angle="270"
+          android:endColor="@color/black_alpha_65"
+          android:startColor="@android:color/transparent"
+          android:type="linear" />
+      <corners
+          android:radius="@dimen/default_rounded_corner_radius"/>
+    </shape>
+  </item>
+</selector>

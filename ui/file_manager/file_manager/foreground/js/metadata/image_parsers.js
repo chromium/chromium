@@ -4,7 +4,7 @@
 
 import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
 
-import {ByteReader} from './byte_reader.js';
+import {ByteOrder, ByteReader} from './byte_reader.js';
 import {ImageParser, MetadataParser} from './metadata_parser.js';
 
 /**
@@ -28,16 +28,18 @@ export class SimpleImageParser extends ImageParser {
   /**
    * @param {File} file File to be parses.
    * @param {Object} metadata Metadata object of the file.
-   * @param {function(Object)} callback Success callback.
-   * @param {function(string)} errorCallback Error callback.
+   * @param {function(Object):void} callback Success callback.
+   * @param {function(string):void} errorCallback Error callback.
    */
   parse(file, metadata, callback, errorCallback) {
     const self = this;
+    // @ts-ignore: error TS6133: 'file' is declared but its value is never read.
     MetadataParser.readFileBytes(file, 0, this.headerSize, (file, br) => {
       try {
         self.parseHeader(metadata, br);
         callback(metadata);
       } catch (e) {
+        // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
         errorCallback(e.toString());
       }
     }, errorCallback);
@@ -49,6 +51,8 @@ export class SimpleImageParser extends ImageParser {
    * @param {Object} metadata Dictionary to store the parsed metadata.
    * @param {ByteReader} byteReader Reader for header binary data.
    */
+  // @ts-ignore: error TS6133: 'byteReader' is declared but its value is never
+  // read.
   parseHeader(metadata, byteReader) {}
 }
 
@@ -67,8 +71,9 @@ export class PngParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
-    br.setByteOrder(ByteReader.BIG_ENDIAN);
+    br.setByteOrder(ByteOrder.BIG_ENDIAN);
 
     const signature = br.readString(8);
     if (signature != '\x89PNG\x0D\x0A\x1A\x0A') {
@@ -101,8 +106,9 @@ export class BmpParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
-    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
+    br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = br.readString(2);
     if (signature != 'BM') {
@@ -130,8 +136,9 @@ export class GifParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
-    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
+    br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = br.readString(6);
     if (!signature.match(/GIF8(7|9)a/)) {
@@ -158,8 +165,9 @@ export class WebpParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'br' implicitly has an 'any' type.
   parseHeader(metadata, br) {
-    br.setByteOrder(ByteReader.LITTLE_ENDIAN);
+    br.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const riffSignature = br.readString(4);
     if (riffSignature != 'RIFF') {
@@ -233,8 +241,10 @@ export class IcoParser extends SimpleImageParser {
   /**
    * @override
    */
+  // @ts-ignore: error TS7006: Parameter 'byteReader' implicitly has an 'any'
+  // type.
   parseHeader(metadata, byteReader) {
-    byteReader.setByteOrder(ByteReader.LITTLE_ENDIAN);
+    byteReader.setByteOrder(ByteOrder.LITTLE_ENDIAN);
 
     const signature = byteReader.readString(4);
     if (signature !== '\x00\x00\x00\x01') {

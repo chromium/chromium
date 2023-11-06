@@ -47,6 +47,7 @@
 #include <algorithm>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -198,8 +199,7 @@ bool HttpChunkedDecoder::ParseChunkSize(const char* start,
   // Be more restrictive than HexStringToInt64;
   // don't allow inputs with leading "-", "+", "0x", "0X"
   base::StringPiece chunk_size(start, len);
-  if (chunk_size.find_first_not_of("0123456789abcdefABCDEF")
-      != base::StringPiece::npos) {
+  if (!base::ranges::all_of(chunk_size, base::IsHexDigit<char>)) {
     return false;
   }
 

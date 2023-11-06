@@ -88,7 +88,8 @@ void RealTimeUrlLookupService::GetAccessToken(
 
 void RealTimeUrlLookupService::OnPrefChanged() {
   if (CanPerformFullURLLookup()) {
-    url_lookup_enabled_timestamp_ = base::Time::Now().ToDoubleT();
+    url_lookup_enabled_timestamp_ =
+        base::Time::Now().InSecondsFSinceUnixEpoch();
   }
 }
 

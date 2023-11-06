@@ -115,11 +115,6 @@ inline constexpr char kAudioMute[] = "settings.audio.mute";
 // it, therefore when the policy is lifted the original mute state is restored.
 inline constexpr char kAudioOutputAllowed[] = "hardware.audio_output_enabled";
 
-// A double pref storing the user-requested volume. This setting is here only
-// for migration purposes now. It is being replaced by the
-// |kAudioDevicesVolumePercent| setting.
-inline constexpr char kAudioVolumePercent[] = "settings.audio.volume_percent";
-
 // A dictionary pref that maps stable device id string to |AudioDeviceState|.
 // Different state values indicate whether or not a device has been selected
 // as the active one for audio I/O, or it's a new plugged device.
@@ -138,7 +133,8 @@ inline constexpr char kAudioOutputDevicesUserPriority[] =
     "settings.audio.output_user_priority";
 
 // A dictionary pref that maps device id string to the timestamp of the last
-// time the audio device was connected, in `base::Time::ToDoubleT()`'s format.
+// time the audio device was connected, in
+// `base::Time::InSecondsFSinceUnixEpoch()`'s format.
 inline constexpr char kAudioDevicesLastSeen[] = "settings.audio.last_seen";
 
 // A string pref storing an identifier that is getting sent with parental
@@ -878,14 +874,6 @@ inline constexpr char kNightLightCustomStartTime[] =
 inline constexpr char kNightLightCustomEndTime[] =
     "ash.night_light.custom_end_time";
 
-// Double prefs storing the most recent valid geoposition, which is only used
-// when the device lacks connectivity and we're unable to retrieve a valid
-// geoposition to calculate the sunset / sunrise times.
-inline constexpr char kNightLightCachedLatitude[] =
-    "ash.night_light.cached_latitude";
-inline constexpr char kNightLightCachedLongitude[] =
-    "ash.night_light.cached_longitude";
-
 // A boolean pref storing whether the AutoNightLight notification has ever been
 // dismissed by the user, which we use to stop showing it again.
 inline constexpr char kAutoNightLightNotificationDismissed[] =
@@ -1376,6 +1364,11 @@ inline constexpr char kSendFunctionKeys[] =
 inline constexpr char kDeviceSwitchFunctionKeysBehaviorEnabled[] =
     "ash.settings.switch_function_keys_behavior_enabled";
 
+// A string-enum-list pref that controls if the WiFi firmware dump is allowed to
+// be included in user feedback report.
+inline constexpr char kUserFeedbackWithLowLevelDebugDataAllowed[] =
+    "ash.user_feedback_with_low_level_debug_data_allowed";
+
 // A boolean pref which is true if touchpad reverse scroll is enabled.
 inline constexpr char kNaturalScroll[] = "settings.touchpad.natural_scroll";
 // A boolean pref which is true if mouse reverse scroll is enabled.
@@ -1855,6 +1848,13 @@ inline constexpr char kDemoModeStoreId[] = "demo_mode.store_id";
 // A string pref holding the value of the default locale for demo sessions.
 inline constexpr char kDemoModeDefaultLocale[] = "demo_mode.default_locale";
 
+// A string pref holding the version of the installed demo mode app.
+inline constexpr char kDemoModeAppVersion[] = "demo_mode.app_version";
+
+// A string pref holding the version of the installed demo mode resources.
+inline constexpr char kDemoModeResourcesVersion[] =
+    "demo_mode.resources_version";
+
 // A dictionary pref containing the set of touchpad settings for the user. This
 // is synced for all user devices.
 inline constexpr char kTouchpadInternalSettings[] =
@@ -1898,6 +1898,15 @@ inline constexpr char kTouchpadDefaultSettings[] =
 // DeviceExtendedFkeysMofidier.
 inline constexpr char kExtendedFkeysModifier[] =
     "ash.settings.extended_fkeys_modifier";
+
+//-----------------------------------------------------------------------------
+// Language related Prefs
+//-----------------------------------------------------------------------------
+
+// A string pref (comma-separated list) that corresponds to the set of enabled
+// 1P input method engine IDs.
+inline constexpr char kLanguagePreloadEngines[] =
+    "settings.language.preload_engines";
 
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.

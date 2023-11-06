@@ -5,15 +5,15 @@
 #import "ios/chrome/browser/ui/settings/content_settings/web_inspector_state_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util.h"
 
 class WebInspectorStateTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[WebInspectorStateTableViewController alloc]
         initWithStyle:UITableViewStyleGrouped];
   }
@@ -54,7 +54,7 @@ TEST_F(WebInspectorStateTableViewControllerTest, TestSwitchItemAtLoad) {
 
 // Tests that the switch item gets correctly updated.
 TEST_F(WebInspectorStateTableViewControllerTest, TestCheckmark) {
-  ChromeTableViewController* chrome_controller = controller();
+  LegacyChromeTableViewController* chrome_controller = controller();
   WebInspectorStateTableViewController* controller =
       base::apple::ObjCCastStrict<WebInspectorStateTableViewController>(
           chrome_controller);

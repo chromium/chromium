@@ -489,10 +489,14 @@ component("color_space") {
     sources += [
       "hdr_metadata_mac.h",
       "hdr_metadata_mac.mm",
+      "mac/color_space_util.h",
+      "mac/color_space_util.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
+      "CoreMedia.framework",
+      "CoreVideo.framework",
     ]
     if (is_mac) {
       sources += [
@@ -758,7 +762,6 @@ test("gfx_unittests") {
   sources = [
     "animation/keyframe/keyframe_animation_unittest.cc",
     "animation/keyframe/keyframed_animation_curve_unittest.cc",
-    "font_names_testing.cc",
     "font_names_testing.h",
     "font_unittest.cc",
     "geometry/linear_gradient_unittest.cc",
@@ -920,6 +923,10 @@ test("gfx_unittests") {
     deps += [ "//ui/android:ui_java" ]
   }
 
+  if (is_ios) {
+    deps += [ "//ui/gfx:codec_tests_bundle_data" ]
+  }
+
   if (is_android || is_fuchsia) {
     sources += [ "font_fallback_skia_unittest.cc" ]
   }
@@ -1037,8 +1044,12 @@ fuzzer_test("render_text_api_fuzzer") {
 }
 
 if (is_ios) {
-  bundle_data_from_filelist("unit_tests_bundle_data") {
+  bundle_data_from_filelist("codec_tests_bundle_data") {
     testonly = true
-    filelist_name = "test/data/unit_tests_bundle_data.filelist"
+    filelist_name = "test/data/codec/unit_tests_bundle_data.filelist"
+  }
+  bundle_data_from_filelist("compositor_tests_bundle_data") {
+    testonly = true
+    filelist_name = "test/data/compositor/unit_tests_bundle_data.filelist"
   }
 }

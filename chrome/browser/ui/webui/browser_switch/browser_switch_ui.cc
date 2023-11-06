@@ -500,8 +500,10 @@ void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
 
   auto retval =
       base::Value::Dict()
-          .Set("last_fetch", downloader->last_refresh_time().ToJsTime())
-          .Set("next_fetch", downloader->next_refresh_time().ToJsTime());
+          .Set("last_fetch",
+               downloader->last_refresh_time().InMillisecondsFSinceUnixEpoch())
+          .Set("next_fetch",
+               downloader->next_refresh_time().InMillisecondsFSinceUnixEpoch());
 
   ResolveJavascriptCallback(args[0], retval);
 }

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -13,7 +13,7 @@ namespace blink {
 
 namespace {
 
-String StringFromTextItem(const NGInlineCursor& cursor) {
+String StringFromTextItem(const InlineCursor& cursor) {
   return cursor.Current().Text(cursor).ToString().StripWhiteSpace();
 }
 
@@ -60,36 +60,36 @@ TEST_F(NGInlinePaintContextTest, MultiLine) {
   )HTML");
   // Test the `#span` fragment in the first line.
   const LayoutObject* span = GetLayoutObjectByElementId("span");
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*span);
   ASSERT_TRUE(cursor.Current());
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
-  const NGFragmentItem& span0_item = *cursor.Current();
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kBox);
+  const FragmentItem& span0_item = *cursor.Current();
   EXPECT_EQ(span0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
 
   // Test the text "0".
   cursor.MoveToNext();
   EXPECT_EQ(StringFromTextItem(cursor), "0");
-  const NGFragmentItem& text0_item = *cursor.Current();
+  const FragmentItem& text0_item = *cursor.Current();
   EXPECT_EQ(text0_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
 
   cursor.MoveToNext();
   EXPECT_TRUE(cursor.Current().IsLineBreak());
-  const NGFragmentItem& br_item = *cursor.Current();
+  const FragmentItem& br_item = *cursor.Current();
   EXPECT_EQ(br_item.InkOverflow(), PhysicalRect(0, 0, 0, 10));
 
   // Test the `#span` fragment in the second line.
   cursor.MoveToNext();
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kLine);
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kLine);
   cursor.MoveToNext();
-  EXPECT_EQ(cursor.Current()->Type(), NGFragmentItem::kBox);
-  const NGFragmentItem& span1_item = *cursor.Current();
+  EXPECT_EQ(cursor.Current()->Type(), FragmentItem::kBox);
+  const FragmentItem& span1_item = *cursor.Current();
   EXPECT_EQ(span1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
 
   // Test the text "1".
   cursor.MoveToNext();
   EXPECT_EQ(StringFromTextItem(cursor), "1");
-  const NGFragmentItem& text1_item = *cursor.Current();
+  const FragmentItem& text1_item = *cursor.Current();
   EXPECT_EQ(text1_item.InkOverflow(), PhysicalRect(0, 0, 10, 10));
 
   // Test the containing block.
@@ -125,21 +125,21 @@ TEST_F(NGInlinePaintContextTest, VerticalAlign) {
     </div>
   )HTML");
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   const LayoutObject* span1 = GetLayoutObjectByElementId("span1");
   cursor.MoveToIncludingCulledInline(*span1);
   EXPECT_EQ(cursor.Current().GetLayoutObject(), span1);
-  const NGFragmentItem& span1_item = *cursor.Current();
+  const FragmentItem& span1_item = *cursor.Current();
 
   const LayoutObject* span2 = GetLayoutObjectByElementId("span2");
   cursor.MoveToIncludingCulledInline(*span2);
   EXPECT_EQ(cursor.Current().GetLayoutObject(), span2);
-  const NGFragmentItem& span2_item = *cursor.Current();
+  const FragmentItem& span2_item = *cursor.Current();
 
   const LayoutObject* span3 = GetLayoutObjectByElementId("span3");
   cursor.MoveToIncludingCulledInline(*span3);
   EXPECT_EQ(StringFromTextItem(cursor), "span3");
-  const NGFragmentItem& span3_item = *cursor.Current();
+  const FragmentItem& span3_item = *cursor.Current();
 
   // The bottom of ink overflows of `span1`, `span2`, and `span3` should match,
   // because underlines are drawn at the decorating box; i.e., `span1`.
@@ -172,7 +172,7 @@ TEST_F(NGInlinePaintContextTest, NestedBlocks) {
 
   NGInlinePaintContext context;
   const auto* ifc = To<LayoutBlockFlow>(GetLayoutObjectByElementId("ifc"));
-  NGInlineCursor cursor(*ifc);
+  InlineCursor cursor(*ifc);
   cursor.MoveToFirstLine();
   context.SetLineBox(cursor);
   // Two text decorations are propagated to the `ifc`. The outer one does not

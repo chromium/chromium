@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // Struct containing the information required to register an application with
 // the updater. Passed from client to server during RegisterApp and Install.
+// Next version: 2
 [Stable] struct RegistrationRequest {
   // Application ID of the app.
   string app_id;
@@ -36,6 +37,20 @@ import "mojo/public/mojom/base/file_path.mojom";
   // whether an app has been uninstalled via deletion. May be the empty
   // string; if so, the app is assumed to be installed unconditionally.
   mojo_base.mojom.FilePath existence_checker_path;
+
+  // The path to a file containing the ap key/value pair. On macOS, a plist
+  // should be used.
+  [MinVersion=1] mojo_base.mojom.FilePath? ap_path;
+
+  // The name of the key in the file for the ap value.
+  [MinVersion=1] string? ap_key;
+
+  // The path to a file containing the product version key/value. On macOS, a
+  // plist should be used.
+  [MinVersion=1] mojo_base.mojom.FilePath? version_path;
+
+  // The name of they key in the file for the product version value.
+  [MinVersion=1] string? version_key;
 };
 
 // Struct containing details on the state of an update. It is passed
@@ -104,6 +119,7 @@ import "mojo/public/mojom/base/file_path.mojom";
   string installer_cmd_line;
 };
 
+// Next version: 2
 [Stable] struct AppState {
   string app_id;
   string version;
@@ -111,6 +127,10 @@ import "mojo/public/mojom/base/file_path.mojom";
   string brand_code;
   mojo_base.mojom.FilePath brand_path;
   mojo_base.mojom.FilePath ecp;
+  [MinVersion=1] mojo_base.mojom.FilePath? ap_path;
+  [MinVersion=1] string? ap_key;
+  [MinVersion=1] mojo_base.mojom.FilePath? version_path;
+  [MinVersion=1] string? version_key;
 };
 
 // The UpdateService is the cross-platform core of the updater.

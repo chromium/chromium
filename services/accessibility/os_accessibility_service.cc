@@ -37,9 +37,8 @@ void OSAccessibilityService::BindAssistiveTechnologyController(
 void OSAccessibilityService::ConnectDevToolsAgent(
     mojo::PendingAssociatedReceiver<::blink::mojom::DevToolsAgent> agent,
     mojom::AssistiveTechnologyType type) {
-  auto* manager = at_controller_->GetV8Manager(type);
-  CHECK(manager);
-  manager->ConnectDevToolsAgent(std::move(agent));
+  auto& manager = at_controller_->GetOrCreateV8Manager(type);
+  manager.ConnectDevToolsAgent(std::move(agent));
 }
 
 }  // namespace ax

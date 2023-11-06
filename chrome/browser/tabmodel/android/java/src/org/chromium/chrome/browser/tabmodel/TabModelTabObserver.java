@@ -28,22 +28,28 @@ public class TabModelTabObserver extends EmptyTabObserver {
      */
     public TabModelTabObserver(TabModel model) {
         mTabModel = model;
-        mTabModelObserver = new TabModelObserver() {
-            @Override
-            public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
-                onTabSelected(tab);
-            }
+        mTabModelObserver =
+                new TabModelObserver() {
+                    @Override
+                    public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
+                        onTabSelected(tab);
+                    }
 
-            @Override
-            public void tabClosureCommitted(Tab tab) {
-                tab.removeObserver(TabModelTabObserver.this);
-            }
+                    @Override
+                    public void tabClosureCommitted(Tab tab) {
+                        tab.removeObserver(TabModelTabObserver.this);
+                    }
 
-            @Override
-            public void restoreCompleted() {
-                maybeCallOnTabSelected();
-            }
-        };
+                    @Override
+                    public void restoreCompleted() {
+                        maybeCallOnTabSelected();
+                    }
+
+                    @Override
+                    public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
+                        TabModelTabObserver.this.willCloseTab(tab);
+                    }
+                };
 
         mTabModel.addObserver(mTabModelObserver);
         maybeCallOnTabSelected();
@@ -60,10 +66,13 @@ public class TabModelTabObserver extends EmptyTabObserver {
         }
     }
 
+    /* Called when a tab starts closing. */
+    public void willCloseTab(Tab tab) {}
+
     /* Called when a tab in a model is selected or restored. */
     protected void onTabSelected(Tab tab) {
         tab.addObserver(TabModelTabObserver.this);
-    };
+    }
 
     private void maybeCallOnTabSelected() {
         if (mTabModel.index() != TabList.INVALID_TAB_INDEX) {

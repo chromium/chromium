@@ -45,6 +45,9 @@ export class AutoScrollHandler {
 
     /** @private {boolean} */
     this.relatedFocusEventHappened_ = false;
+
+    /** @private {boolean} */
+    this.allowWebContentsForTesting_ = false;
   }
 
   static init() {
@@ -175,6 +178,13 @@ export class AutoScrollHandler {
     } else {
       ancestors = AutomationUtil.getUniqueAncestors(
           target.start.node, ChromeVoxRange.current.start.node);
+    }
+    // Check if we are in ARC++. Scrolling behavior should only happen there,
+    // where additional nodes are not loaded until the user scrolls.
+    if (!this.allowWebContentsForTesting_ &&
+        !ancestors.find(
+            node => node.role === chrome.automation.RoleType.APPLICATION)) {
+      return null;
     }
     const scrollable =
         ancestors.find(node => AutomationPredicate.autoScrollable(node));

@@ -757,13 +757,13 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 #pragma mark - Default Utilities (EG2)
 
 // Stores a value for the provided key in NSUserDefaults.
-- (void)setUserDefaultObject:(id)value forKey:(NSString*)defaultName;
+- (void)setUserDefaultsObject:(id)value forKey:(NSString*)defaultName;
 
 // Removes the object for `key` in NSUserDefault.
-- (void)removeUserDefaultObjectForKey:(NSString*)key;
+- (void)removeUserDefaultsObjectForKey:(NSString*)key;
 
 // Returns the object for `key` in NSUserDefault.
-- (id)userDefaultObjectForKey:(NSString*)key;
+- (id)userDefaultsObjectForKey:(NSString*)key;
 
 #pragma mark - Pref Utilities (EG2)
 
@@ -787,6 +787,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // State contains the preferences that are shared between all browser states.
 - (void)setStringValue:(const std::string&)value
      forLocalStatePref:(const std::string&)prefName;
+
+// Sets the bool value for the local state pref with `prefName`. Local
+// State contains the preferences that are shared between all browser states.
+- (void)setBoolValue:(BOOL)value forLocalStatePref:(const std::string&)prefName;
 
 // Gets the value of a user pref in the original browser state.
 - (bool)userBooleanPref:(const std::string&)prefName;

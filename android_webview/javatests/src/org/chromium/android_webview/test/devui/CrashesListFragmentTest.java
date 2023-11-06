@@ -94,9 +94,7 @@ import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-/**
- * UI tests for {@link CrashesListFragment}.
- */
+/** UI tests for {@link CrashesListFragment}. */
 @LargeTest
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Batching causes test failures.")
@@ -201,16 +199,15 @@ public class CrashesListFragmentTest {
     }
 
     private CallbackHelper getCrashListLoadedListener() throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final CallbackHelper helper = new CallbackHelper();
-            CrashesListFragment.setCrashInfoLoadedListenerForTesting(helper::notifyCalled);
-            return helper;
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    final CallbackHelper helper = new CallbackHelper();
+                    CrashesListFragment.setCrashInfoLoadedListenerForTesting(helper::notifyCalled);
+                    return helper;
+                });
     }
 
-    /**
-     * Matches that a {@link ImageView} has the given {@link Drawable}.
-     */
+    /** Matches that a {@link ImageView} has the given {@link Drawable}. */
     private static Matcher<View> withDrawable(Drawable expectedDrawable) {
         return new TypeSafeMatcher<>() {
             @Override
@@ -247,10 +244,12 @@ public class CrashesListFragmentTest {
             @Override
             public void describeTo(Description description) {
                 try {
-                    description.appendText("with Drawable Id: ")
+                    description
+                            .appendText("with Drawable Id: ")
                             .appendText(mResources.getResourceName(expectedId));
                 } catch (Resources.NotFoundException e) {
-                    description.appendText("with Drawable Id (resource name not found): ")
+                    description
+                            .appendText("with Drawable Id (resource name not found): ")
                             .appendText(Integer.toString(expectedId));
                 }
             }
@@ -268,8 +267,11 @@ public class CrashesListFragmentTest {
 
     // Convert a drawable to a Bitmap for comparison.
     private static Bitmap getBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
@@ -314,13 +316,16 @@ public class CrashesListFragmentTest {
     private static DataInteraction checkPackageCrashItemHeader(
             DataInteraction headerDataInteraction, CrashInfo crashInfo, String packageName) {
         String captureDate = new Date(crashInfo.captureTime).toString();
-        headerDataInteraction.onChildView(withId(android.R.id.text1))
+        headerDataInteraction
+                .onChildView(withId(android.R.id.text1))
                 .check(matches(withText(packageName)));
-        headerDataInteraction.onChildView(withId(android.R.id.text2))
+        headerDataInteraction
+                .onChildView(withId(android.R.id.text2))
                 .check(matches(withText(captureDate)));
         // There should not be an app with FAKE_APP_PACKAGE_NAME so system default icon should be
         // shown.
-        headerDataInteraction.onChildView(withId(R.id.crash_package_icon))
+        headerDataInteraction
+                .onChildView(withId(R.id.crash_package_icon))
                 .check(matches(withDrawable(android.R.drawable.sym_def_app_icon)));
 
         return headerDataInteraction;
@@ -332,7 +337,8 @@ public class CrashesListFragmentTest {
      * @param {@link DataInteraction} represents the crash item body.
      */
     private static void clickHideCrashButton(DataInteraction bodyDataInteraction) {
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_hide_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)))
@@ -351,12 +357,15 @@ public class CrashesListFragmentTest {
         DataInteraction uploadStatusDataInteraction =
                 bodyDataInteraction.onChildView(withId(R.id.upload_status));
         String uploadState = CrashesListFragment.uploadStateString(crashInfo.uploadState);
-        uploadStatusDataInteraction.onChildView(withId(android.R.id.text1))
+        uploadStatusDataInteraction
+                .onChildView(withId(android.R.id.text1))
                 .check(matches(withText(uploadState)));
-        String uploadInfo = crashInfo.uploadState == UploadState.UPLOADED
-                ? new Date(crashInfo.uploadTime).toString() + "\nID: " + crashInfo.uploadId
-                : "";
-        uploadStatusDataInteraction.onChildView(withId(android.R.id.text2))
+        String uploadInfo =
+                crashInfo.uploadState == UploadState.UPLOADED
+                        ? new Date(crashInfo.uploadTime).toString() + "\nID: " + crashInfo.uploadId
+                        : "";
+        uploadStatusDataInteraction
+                .onChildView(withId(android.R.id.text2))
                 .check(matches(withText(uploadInfo)));
 
         return bodyDataInteraction;
@@ -386,8 +395,14 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_uploaded() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
-                systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456",
+                        systemTime,
+                        "0abcde123456",
+                        systemTime + 1000,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
         assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
@@ -407,13 +422,16 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
 
-        bodyDataInteraction.onChildView(withId(R.id.crash_report_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_report_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withText(CRASH_REPORT_BUTTON_TEXT)));
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_hide_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
@@ -423,8 +441,14 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testOpenBugReportCrash() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
-                systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456",
+                        systemTime,
+                        "0abcde123456",
+                        systemTime + 1000,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
         assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
@@ -463,8 +487,10 @@ public class CrashesListFragmentTest {
         Intent expectedIntent = new CrashBugUrlFactory(crashInfo).getReportIntent();
         // TODO(hazems): use IntentMatchers.filterEquals() after pulling the new version of
         // espresso-intents
-        intended(allOf(IntentMatchers.hasAction(expectedIntent.getAction()),
-                IntentMatchers.hasData(expectedIntent.getData())));
+        intended(
+                allOf(
+                        IntentMatchers.hasAction(expectedIntent.getAction()),
+                        IntentMatchers.hasData(expectedIntent.getData())));
     }
 
     @Test
@@ -472,8 +498,9 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -493,15 +520,18 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
 
-        bodyDataInteraction.onChildView(withId(R.id.crash_report_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_report_button))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_REPORT_BUTTON_TEXT)))
                 .check(matches(not(isEnabled())));
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_UPLOAD_BUTTON_TEXT)))
                 .check(matches(isEnabled()));
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_hide_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
@@ -511,8 +541,14 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_pendingUserRequest() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, null, -1,
-                FAKE_APP_PACKAGE_NAME, UploadState.PENDING_USER_REQUESTED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456",
+                        systemTime,
+                        null,
+                        -1,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.PENDING_USER_REQUESTED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -532,14 +568,17 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
 
-        bodyDataInteraction.onChildView(withId(R.id.crash_report_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_report_button))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_REPORT_BUTTON_TEXT)))
                 .check(matches(not(isEnabled())))
                 .perform(click());
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_hide_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
@@ -549,8 +588,9 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testShowingSingleCrashReport_skipped() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -570,15 +610,18 @@ public class CrashesListFragmentTest {
         DataInteraction bodyDataInteraction = onData(anything()).atPosition(1);
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
 
-        bodyDataInteraction.onChildView(withId(R.id.crash_report_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_report_button))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_REPORT_BUTTON_TEXT)))
                 .check(matches(not(isEnabled())));
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(isDisplayed()))
                 .check(matches(withText(CRASH_UPLOAD_BUTTON_TEXT)))
                 .check(matches(isEnabled()));
-        bodyDataInteraction.onChildView(withId(R.id.crash_hide_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_hide_button))
                 .check(matches(isDisplayed()))
                 .check(matches(isEnabled()))
                 .check(matches(withDrawable(R.drawable.ic_delete)));
@@ -588,22 +631,24 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testForceUploadSkippedCrashReport_noWifi() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         File minidumpFile = createMinidumpFile(crashInfo);
         assertThat("temp minidump file should exist", minidumpFile.exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
 
-        CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
-            @Override
-            public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
+        CrashUploadUtil.setCrashUploadDelegateForTesting(
+                new CrashUploadDelegate() {
+                    @Override
+                    public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
 
-            @Override
-            public boolean isNetworkUnmetered(Context context) {
-                return false;
-            }
-        });
+                    @Override
+                    public boolean isNetworkUnmetered(Context context) {
+                        return false;
+                    }
+                });
 
         CallbackHelper helper = getCrashListLoadedListener();
         int crashListLoadInitCount = helper.getCallCount();
@@ -626,7 +671,8 @@ public class CrashesListFragmentTest {
         onView(withId(android.R.id.button2)).check(matches(withText("Cancel"))).perform(click());
         // Check no changes in the view after dismissing the dialog
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(isDisplayed()));
 
         // Secondly test clicking the upload button, and proceeding with upload.
@@ -637,7 +683,8 @@ public class CrashesListFragmentTest {
         onView(withId(android.R.id.button1)).check(matches(withText("Upload"))).perform(click());
         helper.waitForCallback(crashListLoadInitCount, 1);
         // upload button is now hidden
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
         crashInfo.uploadState = UploadState.PENDING_USER_REQUESTED;
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
@@ -654,22 +701,24 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testForceUploadSkippedCrashReport_withWifi() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.SKIPPED);
 
         File minidumpFile = createMinidumpFile(crashInfo);
         assertThat("temp minidump file should exist", minidumpFile.exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
 
-        CrashUploadUtil.setCrashUploadDelegateForTesting(new CrashUploadDelegate() {
-            @Override
-            public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
+        CrashUploadUtil.setCrashUploadDelegateForTesting(
+                new CrashUploadDelegate() {
+                    @Override
+                    public void scheduleNewJob(Context context, boolean requiresUnmeteredNetwork) {}
 
-            @Override
-            public boolean isNetworkUnmetered(Context context) {
-                return true;
-            }
-        });
+                    @Override
+                    public boolean isNetworkUnmetered(Context context) {
+                        return true;
+                    }
+                });
 
         CallbackHelper helper = getCrashListLoadedListener();
         int crashListLoadInitCount = helper.getCallCount();
@@ -689,7 +738,8 @@ public class CrashesListFragmentTest {
         bodyDataInteraction.onChildView(withId(R.id.crash_upload_button)).perform(click());
         helper.waitForCallback(crashListLoadInitCount, 1);
         // upload button is now hidden
-        bodyDataInteraction.onChildView(withId(R.id.crash_upload_button))
+        bodyDataInteraction
+                .onChildView(withId(R.id.crash_upload_button))
                 .check(matches(not(isDisplayed())));
         crashInfo.uploadState = UploadState.PENDING_USER_REQUESTED;
         checkCrashItemUploadStatus(bodyDataInteraction, crashInfo);
@@ -721,8 +771,9 @@ public class CrashesListFragmentTest {
                 "This test assumes \"com.android.settings\" package is available", appInfo);
 
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, appPackageName, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, appPackageName, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -735,9 +786,11 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(1)));
 
         DataInteraction headerDataInteraction = onData(anything()).atPosition(0);
-        headerDataInteraction.onChildView(withId(android.R.id.text1))
+        headerDataInteraction
+                .onChildView(withId(android.R.id.text1))
                 .check(matches(withText(appPackageName)));
-        headerDataInteraction.onChildView(withId(R.id.crash_package_icon))
+        headerDataInteraction
+                .onChildView(withId(R.id.crash_package_icon))
                 .check(matches(withDrawable(packageManager.getApplicationIcon(appInfo))));
     }
 
@@ -746,8 +799,9 @@ public class CrashesListFragmentTest {
     // Test when app package name field is missing in the crash info.
     public void testMissingPackageInfo() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, null, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, null, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -810,8 +864,14 @@ public class CrashesListFragmentTest {
         for (int i = 0; i < crashReportsNum; ++i) {
             // Set capture time with an arbitrary chosen 2 second difference to make sure crashes
             // are shown in descending order with most recent crash first.
-            crashInfo[i] = createCrashInfoForTesting("abcd" + Integer.toString(i),
-                    systemTime + i * 2000, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+            crashInfo[i] =
+                    createCrashInfoForTesting(
+                            "abcd" + Integer.toString(i),
+                            systemTime + i * 2000,
+                            null,
+                            -1,
+                            FAKE_APP_PACKAGE_NAME,
+                            UploadState.PENDING);
 
             assertThat(
                     "temp minidump file should exist", createMinidumpFile(crashInfo[i]).exists());
@@ -838,8 +898,14 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_uploaded() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting("123456", systemTime, "0abcde123456",
-                systemTime + 1000, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456",
+                        systemTime,
+                        "0abcde123456",
+                        systemTime + 1000,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.UPLOADED);
 
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
         assertThat("upload log file should exist", appendUploadedEntryToLog(crashInfo).exists());
@@ -869,8 +935,9 @@ public class CrashesListFragmentTest {
     @Feature({"AndroidWebView"})
     public void testHideCrashButton_pending() throws Throwable {
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -967,8 +1034,9 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.crashes_list)).check(matches(withCount(0)));
 
         final long systemTime = System.currentTimeMillis();
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        "123456", systemTime, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
 
         assertThat("temp minidump file should exist", createMinidumpFile(crashInfo).exists());
         assertThat("temp json log file should exist", writeJsonLogFile(crashInfo).exists());
@@ -985,26 +1053,41 @@ public class CrashesListFragmentTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
-    // clang-format off
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.R,
-        message = "https://crbug.com/1292197")
-    // clang-format on
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.R,
+            message = "https://crbug.com/1292197")
     public void testLongPressCopy() throws Throwable {
         Context context = ContextUtils.getApplicationContext();
         final long systemTime = System.currentTimeMillis();
-        CrashInfo uploadedCrashInfo = createCrashInfoForTesting("123456", systemTime - 1000,
-                "0abcde123456", systemTime, FAKE_APP_PACKAGE_NAME, UploadState.UPLOADED);
-        CrashInfo pendingCrashInfo = createCrashInfoForTesting(
-                "78910", systemTime - 2000, null, -1, FAKE_APP_PACKAGE_NAME, UploadState.PENDING);
+        CrashInfo uploadedCrashInfo =
+                createCrashInfoForTesting(
+                        "123456",
+                        systemTime - 1000,
+                        "0abcde123456",
+                        systemTime,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.UPLOADED);
+        CrashInfo pendingCrashInfo =
+                createCrashInfoForTesting(
+                        "78910",
+                        systemTime - 2000,
+                        null,
+                        -1,
+                        FAKE_APP_PACKAGE_NAME,
+                        UploadState.PENDING);
 
-        assertThat("temp json log file for uploaded crash should exist",
+        assertThat(
+                "temp json log file for uploaded crash should exist",
                 writeJsonLogFile(uploadedCrashInfo).exists());
-        assertThat("upload log file should exist",
+        assertThat(
+                "upload log file should exist",
                 appendUploadedEntryToLog(uploadedCrashInfo).exists());
 
-        assertThat("temp minidump file for pending crash should exist",
+        assertThat(
+                "temp minidump file for pending crash should exist",
                 createMinidumpFile(pendingCrashInfo).exists());
-        assertThat("temp json log file for pending crash should exist",
+        assertThat(
+                "temp json log file for pending crash should exist",
                 writeJsonLogFile(pendingCrashInfo).exists());
 
         CallbackHelper helper = getCrashListLoadedListener();
@@ -1018,8 +1101,10 @@ public class CrashesListFragmentTest {
         onData(anything()).atPosition(0).perform(click());
         // long click on the crash item body to copy
         onData(anything()).atPosition(1).perform(longClick());
-        String expectedUploadInfo = new Date(uploadedCrashInfo.uploadTime).toString()
-                + "\nID: " + uploadedCrashInfo.uploadId;
+        String expectedUploadInfo =
+                new Date(uploadedCrashInfo.uploadTime).toString()
+                        + "\nID: "
+                        + uploadedCrashInfo.uploadId;
         assertThat(getClipBoardTextOnUiThread(context), is(expectedUploadInfo));
 
         // click on the first crash item header to collapse
@@ -1045,12 +1130,14 @@ public class CrashesListFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(
                 HomeFragmentTest.FAKE_WEBVIEW_PACKAGE);
         PlatformServiceBridge.injectInstance(
-                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+                new TestPlatformServiceBridge(/* canUseGms= */ true, /* userConsent= */ false));
         launchCrashesFragment();
 
-        String expectedErrorMessage = String.format(Locale.US,
-                WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
-                WebViewPackageHelper.loadLabel(context));
+        String expectedErrorMessage =
+                String.format(
+                        Locale.US,
+                        WebViewPackageError.DIFFERENT_WEBVIEW_PROVIDER_ERROR_MESSAGE,
+                        WebViewPackageHelper.loadLabel(context));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text)).check(matches(withText(expectedErrorMessage)));
     }
@@ -1064,7 +1151,7 @@ public class CrashesListFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(
                 WebViewPackageHelper.getContextPackageInfo(context));
         PlatformServiceBridge.injectInstance(
-                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/true));
+                new TestPlatformServiceBridge(/* canUseGms= */ true, /* userConsent= */ true));
         launchCrashesFragment();
 
         onView(withId(R.id.main_error_view)).check(matches(not(isDisplayed())));
@@ -1088,18 +1175,22 @@ public class CrashesListFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(
                 WebViewPackageHelper.getContextPackageInfo(context));
         PlatformServiceBridge.injectInstance(
-                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+                new TestPlatformServiceBridge(/* canUseGms= */ true, /* userConsent= */ false));
         launchCrashesFragment();
 
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text))
-                .check(matches(
-                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+                .check(
+                        matches(
+                                withText(
+                                        CrashesListFragment
+                                                .CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
         onView(withId(R.id.action_button))
                 .check(matches(withText("Open Settings")))
                 .perform(click());
-        intended(IntentMatchers.hasAction(
-                CrashesListFragment.USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION));
+        intended(
+                IntentMatchers.hasAction(
+                        CrashesListFragment.USAGE_AND_DIAGONSTICS_ACTIVITY_INTENT_ACTION));
     }
 
     @Test
@@ -1111,13 +1202,16 @@ public class CrashesListFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(
                 WebViewPackageHelper.getContextPackageInfo(context));
         PlatformServiceBridge.injectInstance(
-                new TestPlatformServiceBridge(/*canUseGms=*/true, /*userConsent=*/false));
+                new TestPlatformServiceBridge(/* canUseGms= */ true, /* userConsent= */ false));
         launchCrashesFragment();
 
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text))
-                .check(matches(
-                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+                .check(
+                        matches(
+                                withText(
+                                        CrashesListFragment
+                                                .CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
 
         // CrashesListFragment -> FlagsFragment (Not shown)
         onView(withId(R.id.navigation_flags_ui)).perform(click());
@@ -1132,8 +1226,11 @@ public class CrashesListFragmentTest {
         onView(withId(R.id.fragment_crashes_list)).check(matches(isDisplayed()));
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));
         onView(withId(R.id.error_text))
-                .check(matches(
-                        withText(CrashesListFragment.CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
+                .check(
+                        matches(
+                                withText(
+                                        CrashesListFragment
+                                                .CRASH_COLLECTION_DISABLED_ERROR_MESSAGE)));
     }
 
     @Test
@@ -1145,7 +1242,7 @@ public class CrashesListFragmentTest {
         WebViewPackageHelper.setCurrentWebViewPackageForTesting(
                 WebViewPackageHelper.getContextPackageInfo(context));
         PlatformServiceBridge.injectInstance(
-                new TestPlatformServiceBridge(/*canUseGms=*/false, /*userConsent=*/false));
+                new TestPlatformServiceBridge(/* canUseGms= */ false, /* userConsent= */ false));
         launchCrashesFragment();
 
         onView(withId(R.id.main_error_view)).check(matches(isDisplayed()));

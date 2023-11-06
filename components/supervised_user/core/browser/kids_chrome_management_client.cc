@@ -183,7 +183,7 @@ struct KidsChromeManagementClient::KidsChromeManagementRequest {
 
   KidsChromeManagementRequest(KidsChromeManagementRequest&&) = default;
 
-  ~KidsChromeManagementRequest() { DCHECK(!callback); }
+  ~KidsChromeManagementRequest() = default;
 
   std::unique_ptr<google::protobuf::MessageLite> request_proto;
   KidsChromeManagementCallback callback;
@@ -338,13 +338,6 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   // KidsChromeManagementClient class owns `simple_url_loader`, and deleting the
   // the simple_url_loader during the request will cause the callback not to be
   // called.
-  // TODO(https://crbug.com/1444748): Write a test making sure that this cannot
-  // cause a UAF. The test needs to:
-  // - Start a ClassifyURL request.
-  // - Start a loader and pause it before completion.
-  // - Kill the KidsChromeManagementClient. Note that this will not work unless
-  //   DCHECKs are turned off, because we otherwise check that callback_ has
-  //   been run.
   simple_url_loader->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&KidsChromeManagementClient::OnSimpleLoaderComplete,

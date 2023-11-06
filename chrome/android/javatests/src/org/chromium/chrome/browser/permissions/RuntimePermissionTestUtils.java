@@ -36,9 +36,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
-/**
- * Utility class to help test the runtime permission prompt (Android level prompt).
- */
+/** Utility class to help test the runtime permission prompt (Android level prompt). */
 public class RuntimePermissionTestUtils {
     public enum RuntimePromptResponse {
         GRANT,
@@ -47,9 +45,8 @@ public class RuntimePermissionTestUtils {
         ASSERT_NEVER_ASKED,
         ALREADY_GRANTED, // Also implies "ASSERT_NEVER_ASKED"
     }
-    /**
-     * Utility delegate for to provide the permissions to be requested and the runtime response.
-     */
+
+    /** Utility delegate for to provide the permissions to be requested and the runtime response. */
     public static class TestAndroidPermissionDelegate implements AndroidPermissionDelegate {
         private RuntimePromptResponse mResponse;
         private final Set<String> mRequestablePermissions;
@@ -84,25 +81,29 @@ public class RuntimePermissionTestUtils {
         @Override
         public void requestPermissions(
                 final String[] permissions, final PermissionCallback callback) {
-            Assert.assertNotSame("Runtime permission requested.", mResponse,
+            Assert.assertNotSame(
+                    "Runtime permission requested.",
+                    mResponse,
                     RuntimePromptResponse.ASSERT_NEVER_ASKED);
             // Call back needs to be made async.
-            new Handler().post(() -> {
-                int[] grantResults = new int[permissions.length];
-                for (int i = 0; i < permissions.length; ++i) {
-                    if (mRequestablePermissions.contains(permissions[i])
-                            && mResponse == RuntimePromptResponse.GRANT) {
-                        mGrantedPermissions.add(permissions[i]);
-                        grantResults[i] = PackageManager.PERMISSION_GRANTED;
-                    } else {
-                        grantResults[i] = PackageManager.PERMISSION_DENIED;
-                        if (mResponse == RuntimePromptResponse.NEVER_ASK_AGAIN) {
-                            mRequestablePermissions.remove(permissions[i]);
-                        }
-                    }
-                }
-                callback.onRequestPermissionsResult(permissions, grantResults);
-            });
+            new Handler()
+                    .post(
+                            () -> {
+                                int[] grantResults = new int[permissions.length];
+                                for (int i = 0; i < permissions.length; ++i) {
+                                    if (mRequestablePermissions.contains(permissions[i])
+                                            && mResponse == RuntimePromptResponse.GRANT) {
+                                        mGrantedPermissions.add(permissions[i]);
+                                        grantResults[i] = PackageManager.PERMISSION_GRANTED;
+                                    } else {
+                                        grantResults[i] = PackageManager.PERMISSION_DENIED;
+                                        if (mResponse == RuntimePromptResponse.NEVER_ASK_AGAIN) {
+                                            mRequestablePermissions.remove(permissions[i]);
+                                        }
+                                    }
+                                }
+                                callback.onRequestPermissionsResult(permissions, grantResults);
+                            });
         }
 
         @Override
@@ -123,46 +124,55 @@ public class RuntimePermissionTestUtils {
 
     private static void waitUntilDifferentDialogIsShowing(
             final PermissionTestRule permissionTestRule, final PropertyModel previousDialog) {
-        CriteriaHelper.pollUiThread(() -> {
-            final ModalDialogManager manager =
-                    permissionTestRule.getActivity().getModalDialogManager();
-            Criteria.checkThat(manager.isShowing(), Matchers.is(true));
-            Criteria.checkThat(manager.getCurrentDialogForTest(), Matchers.not(previousDialog));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final ModalDialogManager manager =
+                            permissionTestRule.getActivity().getModalDialogManager();
+                    Criteria.checkThat(manager.isShowing(), Matchers.is(true));
+                    Criteria.checkThat(
+                            manager.getCurrentDialogForTest(), Matchers.not(previousDialog));
+                });
     }
 
     /**
      * Run a test related to the runtime permission prompt, based on the specified parameters.
+     *
      * @param permissionTestRule The PermissionTestRule of the calling test.
      * @param testAndroidPermissionDelegate The TestAndroidPermissionDelegate to be used for this
-     *         test.
+     *     test.
      * @param testUrl The URL of the test page to load in order to run the text.
      * @param expectPermissionAllowed Whether to expect that the permissions is granted by the end
-     *         of the test.
+     *     of the test.
      * @param permissionPromptAllow Whether to "allow" or "reject" on the Chrome permission prompt
-     *         (`null` means skip waiting for a permission prompt at all).
+     *     (`null` means skip waiting for a permission prompt at all).
      * @param waitForMissingPermissionPrompt Whether to wait for a Chrome dialog informing the user
-     *         that the Android permission is missing.
+     *     that the Android permission is missing.
      * @param waitForUpdater Whether to wait for the test page to update the window title to confirm
-     *         the test's success.
+     *     the test's success.
      * @param javascriptToExecute Some javascript to execute after the page loads (empty or null to
-     *         skip).
+     *     skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
-     *         missing permission prompt dialog (0 if not applicable).
+     *     missing permission prompt dialog (0 if not applicable).
      * @throws Exception
      */
-    public static void runTest(final PermissionTestRule permissionTestRule,
-            final TestAndroidPermissionDelegate testAndroidPermissionDelegate, final String testUrl,
-            final boolean expectPermissionAllowed, final Boolean permissionPromptAllow,
-            final boolean waitForMissingPermissionPrompt, final boolean waitForUpdater,
-            final String javascriptToExecute, final @StringRes int missingPermissionPromptTextId)
+    public static void runTest(
+            final PermissionTestRule permissionTestRule,
+            final TestAndroidPermissionDelegate testAndroidPermissionDelegate,
+            final String testUrl,
+            final boolean expectPermissionAllowed,
+            final Boolean permissionPromptAllow,
+            final boolean waitForMissingPermissionPrompt,
+            final boolean waitForUpdater,
+            final String javascriptToExecute,
+            final @StringRes int missingPermissionPromptTextId)
             throws Exception {
         final ChromeActivity activity = permissionTestRule.getActivity();
         activity.getWindowAndroid().setAndroidPermissionDelegate(testAndroidPermissionDelegate);
 
         final Tab tab = activity.getActivityTab();
-        final PermissionUpdateWaiter permissionUpdateWaiter = new PermissionUpdateWaiter(
-                expectPermissionAllowed ? "Granted" : "Denied", activity);
+        final PermissionUpdateWaiter permissionUpdateWaiter =
+                new PermissionUpdateWaiter(
+                        expectPermissionAllowed ? "Granted" : "Denied", activity);
         TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(permissionUpdateWaiter));
 
         permissionTestRule.setUpUrl(testUrl);
@@ -176,8 +186,9 @@ public class RuntimePermissionTestUtils {
             // A permission prompt dialog is expected. Wait for chrome to display and accept or
             // deny.
             PermissionTestRule.waitForDialog(activity);
-            final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
-                    activity::getModalDialogManager);
+            final ModalDialogManager manager =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            activity::getModalDialogManager);
             askPermissionDialogModel = manager.getCurrentDialogForTest();
 
             PermissionTestRule.replyToDialog(permissionPromptAllow, activity);
@@ -189,27 +200,32 @@ public class RuntimePermissionTestUtils {
         }
 
         if (waitForMissingPermissionPrompt) {
-            final ModalDialogManager manager = TestThreadUtils.runOnUiThreadBlockingNoException(
-                    activity::getModalDialogManager);
+            final ModalDialogManager manager =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(
+                            activity::getModalDialogManager);
 
-            // Wait for the dialog that informs the user permissions are missing, when the initial 
+            // Wait for the dialog that informs the user permissions are missing, when the initial
             // prompt is rejected or expected to not be shown.
             if (!Boolean.TRUE.equals(permissionPromptAllow)) {
                 waitUntilDifferentDialogIsShowing(permissionTestRule, askPermissionDialogModel);
             }
 
             // Verify the correct missing permission string resource is displayed.
-            final View dialogText = manager.getCurrentDialogForTest()
-                                            .get(ModalDialogProperties.CUSTOM_VIEW)
-                                            .findViewById(R.id.text);
+            final View dialogText =
+                    manager.getCurrentDialogForTest()
+                            .get(ModalDialogProperties.CUSTOM_VIEW)
+                            .findViewById(R.id.text);
             String appName = BuildInfo.getInstance().hostPackageLabel;
-            Assert.assertEquals(((TextView) dialogText).getText(),
+            Assert.assertEquals(
+                    ((TextView) dialogText).getText(),
                     activity.getResources().getString(missingPermissionPromptTextId, appName));
 
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                manager.getCurrentPresenterForTest().dismissCurrentDialog(
-                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        manager.getCurrentPresenterForTest()
+                                .dismissCurrentDialog(
+                                        DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
+                    });
         }
 
         if (waitForUpdater) {

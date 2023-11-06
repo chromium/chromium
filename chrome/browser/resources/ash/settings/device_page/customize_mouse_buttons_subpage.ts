@@ -17,7 +17,7 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
@@ -110,9 +110,13 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
     this.previousRoute_ = route;
-    if (this.hasMice() &&
-        (!this.selectedMouse ||
-         this.selectedMouse.id !== this.getMouseIdFromUrl())) {
+
+    if (!this.hasMice()) {
+      return;
+    }
+
+    if (!this.selectedMouse ||
+        this.selectedMouse.id !== this.getMouseIdFromUrl()) {
       await this.initializeMouse();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedMouse.id);
@@ -124,14 +128,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
    */
   private async initializeMouse(): Promise<void> {
     this.isInitialized_ = false;
-    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
-                                  .getActionsForMouseButtonCustomization())
-                                 ?.options;
+
     const mouseId = this.getMouseIdFromUrl();
     const searchedMouse =
         this.mouseList.find((mouse: Mouse) => mouse.id === mouseId);
     this.selectedMouse = castExists(searchedMouse);
     this.set('primaryRightPref_.value', this.selectedMouse.settings.swapRight);
+    this.buttonActionList_ = (await this.inputDeviceSettingsProvider_
+                                  .getActionsForMouseButtonCustomization())
+                                 ?.options;
     this.isInitialized_ = true;
   }
 
@@ -159,8 +164,13 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       return;
     }
 
-    if (!this.hasMice() || !this.isMouseConnected(this.getMouseIdFromUrl())) {
+    if (!this.hasMice()) {
       Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+
+    if (!this.isMouseConnected(this.getMouseIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.PER_DEVICE_MOUSE);
       return;
     }
     await this.initializeMouse();

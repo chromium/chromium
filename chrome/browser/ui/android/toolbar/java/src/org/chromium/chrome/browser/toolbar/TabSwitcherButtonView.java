@@ -9,7 +9,7 @@ import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButton;
 
 /**
  * The Button used for switching tabs. Currently this class is only being used for the bottom

@@ -43,8 +43,7 @@ class ProfileAttributesEntry;
 class ProfileAvatarDownloader;
 class PrefRegistrySimple;
 
-class ProfileAttributesStorage
-    : public base::SupportsWeakPtr<ProfileAttributesStorage> {
+class ProfileAttributesStorage {
  public:
   using Observer = ProfileAttributesStorageObserver;
 
@@ -211,6 +210,10 @@ class ProfileAttributesStorage
 
   void EnsureProfilesOrderPrefIsInitializedForTesting();
 
+  base::WeakPtr<ProfileAttributesStorage> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ProfileAttributesStorageTest,
                            DownloadHighResAvatarTest);
@@ -342,6 +345,8 @@ class ProfileAttributesStorage
   // PersistentRepeatingTimer for periodically logging profile metrics.
   std::unique_ptr<signin::PersistentRepeatingTimer> repeating_timer_;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+  base::WeakPtrFactory<ProfileAttributesStorage> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_ATTRIBUTES_STORAGE_H_

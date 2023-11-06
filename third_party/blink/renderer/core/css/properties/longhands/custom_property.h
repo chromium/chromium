@@ -58,7 +58,7 @@ class CORE_EXPORT CustomProperty : public Variable {
       const LayoutObject*,
       bool allow_visited_style) const override;
 
-  bool IsRegistered() const { return registration_; }
+  bool IsRegistered() const { return registration_ != nullptr; }
 
   bool HasInitialValue() const;
 

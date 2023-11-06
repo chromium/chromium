@@ -17,7 +17,6 @@ android_library("glue_java") {
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/content_capture/android:java",
     "//components/embedder_support/android:application_java",
@@ -26,6 +25,7 @@ android_library("glue_java") {
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

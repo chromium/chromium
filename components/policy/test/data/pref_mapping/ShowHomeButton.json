@@ -1,0 +1,43 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "browser.show_home_button": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowHomeButton": false
+        },
+        "prefs": {
+          "browser.show_home_button": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowHomeButton": true
+        },
+        "prefs": {
+          "browser.show_home_button": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

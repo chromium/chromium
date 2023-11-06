@@ -45,29 +45,10 @@ group("closure_compile") {
   testonly = true
 
   deps = [
-    "file_manager/background/js:closure_compile",
-    "file_manager/common/js:closure_compile",
-    "file_manager/foreground/elements:closure_compile",
-    "file_manager/foreground/js:closure_compile",
-    "file_manager/foreground/js/metadata:closure_compile",
-    "file_manager/foreground/js/ui:closure_compile",
     "image_loader:closure_compile",
     "integration_tests:closure_compile",
     "integration_tests/file_manager:closure_compile",
     "integration_tests/file_manager/page_objects:closure_compile",
-  ]
-}
-
-group("unit_test_data") {
-  testonly = true
-  deps = [
-    "file_manager/background/js:js_test_type_check",
-    "file_manager/common/js:js_test_type_check",
-    "file_manager/foreground/elements:js_test_type_check",
-    "file_manager/foreground/js:js_test_type_check",
-    "file_manager/foreground/js/metadata:js_test_type_check",
-    "file_manager/foreground/js/ui:js_test_type_check",
-    "image_loader:js_test_type_check",
   ]
 }
 
@@ -86,15 +67,7 @@ preprocess_if_expr("preprocess_static") {
     out_folder = preprocess_folder
   }
 
-  in_files = static_js_files
-
-  deps = [
-    "//ui/file_manager/file_manager/background/js:js_modules",
-    "//ui/file_manager/file_manager/common/js:js_modules",
-    "//ui/file_manager/file_manager/foreground/elements:web_components",
-    "//ui/file_manager/file_manager/foreground/js:deferred_elements",
-    "//ui/file_manager/file_manager/foreground/js:main",
-  ]
+  in_files = static_js_files + unittest_files
 }
 
 if (enable_webui_inline_sourcemaps) {
@@ -126,8 +99,6 @@ preprocess_if_expr("preprocess_static_image_loader") {
   }
 
   in_files = image_loader_static_js_files
-
-  deps = [ "//ui/file_manager/image_loader:js_modules" ]
 }
 
 if (enable_webui_inline_sourcemaps) {
@@ -160,7 +131,6 @@ preprocess_if_expr("preprocess_generated") {
   deps = [
     ":html_wrapper_files",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
-    "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:polymer_elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
   ]
@@ -228,6 +198,7 @@ ts_library("build_ts") {
 
   definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/chrome_test.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
@@ -267,12 +238,14 @@ ts_library("test_build_ts") {
   tsconfig_base = "tsconfig_base.json"
   enable_source_maps = false
 
-  in_files =
-      ts_test_files + [ "file_manager/externs/test/file_manager_private.js" ]
+  in_files = unittest_files + ts_test_files +
+             [ "file_manager/externs/test/file_manager_private.js" ]
 
   manifest_excludes = [ "file_manager/externs/test/file_manager_private.js" ]
 
   path_mappings = [
+    "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/*|preprocessed/image_loader/*",
+
     # for chai_assert.js.
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
@@ -306,9 +279,15 @@ ts_library("test_build_ts") {
     ":generate_definitions",
   ]
   if (enable_webui_inline_sourcemaps) {
-    extra_deps += [ ":create_source_maps_copy_ts" ]
+    extra_deps += [
+      ":create_source_maps_copy_ts",
+      ":create_source_maps_static",
+    ]
   } else {
-    extra_deps += [ ":copy_ts" ]
+    extra_deps += [
+      ":copy_ts",
+      ":preprocess_static",
+    ]
   }
 }
 
@@ -449,7 +428,6 @@ generate_grd("build_grd") {
     deps += [
       ":for_image_loader",
       "//ui/file_manager/file_manager/background/js:build",
-      "//ui/file_manager/file_manager/foreground/elements:elements",
       "//ui/file_manager/file_manager/foreground/js:build",
       "//ui/file_manager/file_manager/foreground/js:build_worker",
     ]
@@ -497,7 +475,7 @@ generate_grd("build_tests_grdp") {
   out_grd = "$target_gen_dir/tests_resources.grdp"
 
   input_files_base_dir = rebase_path(".", "//")
-  input_files = unittest_files
+  input_files = unittest_harness
 }
 
 # GRD for the actual application files that are processed by TS compiler.

@@ -25,6 +25,8 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/private_aggregation/private_aggregation_budget_key.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
@@ -73,6 +75,7 @@ struct PrivateAggregationHost::ReceiverContext {
   url::Origin top_frame_origin;
   PrivateAggregationBudgetKey::Api api_for_budgeting;
   absl::optional<std::string> context_id;
+  absl::optional<url::Origin> aggregation_coordinator_origin;
 
   // If contributions have been truncated, tracks this for triggering the right
   // histogram value.
@@ -137,6 +140,7 @@ bool PrivateAggregationHost::BindNewReceiver(
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     absl::optional<std::string> context_id,
     absl::optional<base::TimeDelta> timeout,
+    absl::optional<url::Origin> aggregation_coordinator_origin,
     mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
         pending_receiver) {
   // If rejected, let the pending receiver be destroyed as it goes out of scope
@@ -149,6 +153,21 @@ bool PrivateAggregationHost::BindNewReceiver(
     return false;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Override with the default if a non-default coordinator is specified when
+    // the feature is disabled.
+    aggregation_coordinator_origin = absl::nullopt;
+  }
+
+  if (aggregation_coordinator_origin.has_value() &&
+      !aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          aggregation_coordinator_origin.value())) {
+    return false;
+  }
+
   if (timeout.has_value() && !context_id.has_value()) {
     return false;
   }
@@ -157,7 +176,9 @@ bool PrivateAggregationHost::BindNewReceiver(
       new ReceiverContext{.worklet_origin = std::move(worklet_origin),
                           .top_frame_origin = std::move(top_frame_origin),
                           .api_for_budgeting = api_for_budgeting,
-                          .context_id = std::move(context_id)});
+                          .context_id = std::move(context_id),
+                          .aggregation_coordinator_origin =
+                              std::move(aggregation_coordinator_origin)});
 
   ReceiverContext* receiver_context_raw_ptr = receiver_context.get();
 
@@ -260,6 +281,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
     const url::Origin& reporting_origin,
     PrivateAggregationBudgetKey::Api api_for_budgeting,
     absl::optional<std::string> context_id,
+    absl::optional<url::Origin> aggregation_coordinator_origin,
     std::vector<blink::mojom::AggregatableReportHistogramContribution>
         contributions) {
   CHECK(context_id.has_value() || !contributions.empty());
@@ -269,8 +291,7 @@ AggregatableReportRequest PrivateAggregationHost::GenerateReportRequest(
       std::move(contributions),
       // TODO(alexmt): Consider allowing this to be set.
       blink::mojom::AggregationServiceMode::kDefault,
-      /*aggregation_coordinator_origin=*/absl::nullopt,
-      kMaxNumberOfContributions);
+      std::move(aggregation_coordinator_origin), kMaxNumberOfContributions);
 
   CHECK(debug_mode_details);
   AggregatableReportSharedInfo shared_info(
@@ -436,7 +457,8 @@ void PrivateAggregationHost::SendReportOnTimeoutOrDisconnect(
                                    : GetScheduledReportTime(report_issued_time),
       /*report_id=*/base::Uuid::GenerateRandomV4(), reporting_origin,
       receiver_context.api_for_budgeting,
-      std::move(receiver_context.context_id));
+      std::move(receiver_context.context_id),
+      std::move(receiver_context.aggregation_coordinator_origin));
 
   RecordPipeResultHistogram(
       receiver_context.too_many_contributions

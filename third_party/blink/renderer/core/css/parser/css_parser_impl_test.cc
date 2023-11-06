@@ -155,7 +155,7 @@ TEST(CSSParserImplTest, AtPageOffsets) {
 }
 
 TEST(CSSParserImplTest, AtPropertyOffsets) {
-  String sheet_text = "@property --test { }";
+  String sheet_text = "@property --test { syntax: '*'; inherits: false }";
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
@@ -168,7 +168,7 @@ TEST(CSSParserImplTest, AtPropertyOffsets) {
   EXPECT_EQ(test_css_parser_observer.rule_header_start_, 10u);
   EXPECT_EQ(test_css_parser_observer.rule_header_end_, 17u);
   EXPECT_EQ(test_css_parser_observer.rule_body_start_, 18u);
-  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 19u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 48u);
 }
 
 TEST(CSSParserImplTest, AtCounterStyleOffsets) {

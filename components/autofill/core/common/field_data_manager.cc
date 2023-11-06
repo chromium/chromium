@@ -32,7 +32,7 @@ FieldPropertiesMask FieldDataManager::GetFieldPropertiesMask(
   return field_value_and_properties_map_.at(id).second;
 }
 
-bool FieldDataManager::FindMachedValue(const std::u16string& value) const {
+bool FieldDataManager::FindMatchedValue(const std::u16string& value) const {
   constexpr size_t kMinMatchSize = 3u;
   const auto lowercase = base::i18n::ToLower(value);
   for (const auto& map_key : field_value_and_properties_map_) {

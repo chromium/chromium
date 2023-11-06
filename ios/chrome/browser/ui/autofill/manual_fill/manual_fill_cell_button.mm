@@ -56,24 +56,13 @@ static const CGFloat kButtonVerticalMargin = 12;
   self.translatesAutoresizingMaskIntoConstraints = NO;
   self.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeading;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
-        kButtonHorizontalMargin);
-    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-    self.configuration = buttonConfiguration;
-  } else {
-    self.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    self.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    self.titleLabel.adjustsFontForContentSizeCategory = YES;
-    UIEdgeInsets contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonVerticalMargin, kButtonHorizontalMargin,
-                         kButtonVerticalMargin, kButtonHorizontalMargin);
-    SetContentEdgeInsets(self, contentEdgeInsets);
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+      kButtonVerticalMargin, kButtonHorizontalMargin, kButtonVerticalMargin,
+      kButtonHorizontalMargin);
+  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+  self.configuration = buttonConfiguration;
 }
 
 @end

@@ -27,8 +27,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/strings/string_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/media_message_center/notification_theme.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -46,13 +44,13 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 
 namespace ash {
 
 namespace {
 
 constexpr int kNoMediaTextFontSizeIncrease = 2;
+constexpr int kNoMediaTextFontSize = 14;
 constexpr int kTitleFontSizeIncrease = 4;
 constexpr int kTitleViewHeight = 56;
 
@@ -66,8 +64,9 @@ constexpr float kMinimumScreenSizeDiagonal = 10.0f;
 // kMinimumScreenSizeDiagonal.
 bool GetIsPinnedToShelfByDefault() {
   // Happens in test.
-  if (!Shell::HasInstance())
+  if (!Shell::HasInstance()) {
     return false;
+  }
 
   display::ManagedDisplayInfo info =
       Shell::Get()->display_manager()->GetDisplayInfo(
@@ -105,13 +104,9 @@ class GlobalMediaControlsTitleView : public views::View {
     if (base::FeatureList::IsEnabled(
             media::kGlobalMediaControlsCrOSUpdatedUI)) {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-      if (chromeos::features::IsJellyEnabled()) {
-        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
-                                              *title_label_);
-      } else {
-        TrayPopupUtils::SetLabelFontList(title_label_,
-                                         TrayPopupUtils::FontStyle::kTitle);
-      }
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosTitle1,
+                                            *title_label_);
+
     } else {
       title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
       title_label_->SetFontList(views::Label::GetDefaultFontList().Derive(
@@ -199,13 +194,8 @@ MediaTray::PinButton::PinButton()
           /*has_border=*/false) {
   SetIconSize(kTrayTopShortcutButtonIconSize);
   SetToggledVectorIcon(kPinnedIcon);
-  if (chromeos::features::IsJellyEnabled()) {
-    SetIconColorId(cros_tokens::kCrosSysOnSurface);
-    SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
-  } else {
-    SetIconColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary));
-  }
+  SetIconColor(cros_tokens::kCrosSysOnSurface);
+  SetBackgroundToggledColor(cros_tokens::kCrosSysSystemPrimaryContainer);
   SetToggled(MediaTray::IsPinnedToShelf());
 }
 
@@ -236,20 +226,17 @@ MediaTray::MediaTray(Shelf* shelf)
   icon->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
   icon_ = tray_container()->AddChildView(std::move(icon));
-  if (chromeos::features::IsJellyEnabled()) {
-    UpdateTrayItemColor(is_active());
-  } else {
-    icon_->SetImage(ui::ImageModel::FromVectorIcon(kGlobalMediaControlsIcon,
-                                                   kColorAshIconColorPrimary));
-  }
+  UpdateTrayItemColor(is_active());
 }
 
 MediaTray::~MediaTray() {
-  if (bubble_)
-    bubble_->GetBubbleView()->ResetDelegate();
+  if (GetBubbleView()) {
+    GetBubbleView()->ResetDelegate();
+  }
 
-  if (MediaNotificationProvider::Get())
+  if (MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Get()->RemoveObserver(this);
+  }
 
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
@@ -259,10 +246,11 @@ void MediaTray::OnNotificationListChanged() {
 }
 
 void MediaTray::OnNotificationListViewSizeChanged() {
-  if (!bubble_)
+  if (!GetBubbleView()) {
     return;
+  }
 
-  bubble_->GetBubbleView()->UpdateBubble();
+  GetBubbleView()->UpdateBubble();
 }
 
 std::u16string MediaTray::GetAccessibleNameForTray() {
@@ -297,17 +285,28 @@ void MediaTray::ShowBubble() {
 }
 
 void MediaTray::CloseBubble() {
-  if (MediaNotificationProvider::Get())
+  if (!bubble_) {
+    CHECK(!is_active());
+    CHECK(!pin_button_);
+    CHECK(!content_view_);
+    CHECK(!empty_state_view_);
+    return;
+  }
+  if (MediaNotificationProvider::Get()) {
     MediaNotificationProvider::Get()->OnBubbleClosing();
+  }
   SetIsActive(false);
+  pin_button_ = nullptr;
+  content_view_ = nullptr;
   empty_state_view_ = nullptr;
   bubble_.reset();
   shelf()->UpdateAutoHideState();
 }
 
 void MediaTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {
-  if (bubble_ && bubble_->bubble_view() == bubble_view)
+  if (GetBubbleView() && GetBubbleView() == bubble_view) {
     CloseBubble();
+  }
 }
 
 void MediaTray::ClickedOutsideBubble() {
@@ -315,7 +314,6 @@ void MediaTray::ClickedOutsideBubble() {
 }
 
 void MediaTray::UpdateTrayItemColor(bool is_active) {
-  DCHECK(chromeos::features::IsJellyEnabled());
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       kGlobalMediaControlsIcon,
       is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
@@ -346,21 +344,27 @@ void MediaTray::OnTrayButtonPressed() {
 }
 
 void MediaTray::UpdateDisplayState() {
-  if (!MediaNotificationProvider::Get())
+  if (!MediaNotificationProvider::Get()) {
     return;
+  }
 
-  if (bubble_ && Shell::Get()->session_controller()->IsScreenLocked())
+  if (bubble_ && Shell::Get()->session_controller()->IsScreenLocked()) {
     CloseBubble();
+  }
 
   bool has_session =
       MediaNotificationProvider::Get()->HasActiveNotifications() ||
       MediaNotificationProvider::Get()->HasFrozenNotifications();
 
-  if (bubble_ && !has_session)
-    ShowEmptyState();
-
-  if (bubble_ && has_session && empty_state_view_)
-    empty_state_view_->SetVisible(false);
+  // Verify the bubble view still exists before referencing `empty_state_view_`.
+  if (GetBubbleView()) {
+    if (has_session && empty_state_view_) {
+      empty_state_view_->SetVisible(false);
+    }
+    if (!has_session) {
+      ShowEmptyState();
+    }
+  }
 
   bool should_show = has_session &&
                      !Shell::Get()->session_controller()->IsScreenLocked() &&
@@ -404,8 +408,9 @@ std::u16string MediaTray::GetAccessibleNameForBubble() {
 }
 
 void MediaTray::SetNotificationColorTheme() {
-  if (!MediaNotificationProvider::Get())
+  if (!MediaNotificationProvider::Get()) {
     return;
+  }
 
   media_message_center::NotificationTheme theme;
   theme.primary_text_color = AshColorProvider::Get()->GetContentLayerColor(
@@ -428,7 +433,9 @@ void MediaTray::OnGlobalMediaControlsPinPrefChanged() {
 }
 
 void MediaTray::ShowEmptyState() {
-  DCHECK(content_view_);
+  CHECK(content_view_);
+  CHECK(GetBubbleView());
+
   if (empty_state_view_) {
     empty_state_view_->SetVisible(true);
     return;
@@ -450,22 +457,29 @@ void MediaTray::ShowEmptyState() {
       AshColorProvider::ContentLayerType::kTextColorSecondary));
   no_media_label->SetText(
       l10n_util::GetStringUTF16(IDS_ASH_GLOBAL_MEDIA_CONTROLS_NO_MEDIA_TEXT));
-  no_media_label->SetFontList(
-      views::Label::GetDefaultFontList().DeriveWithSizeDelta(
-          kNoMediaTextFontSizeIncrease));
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    no_media_label->SetFontList(
+        gfx::FontList({"Google Sans", "Roboto"}, gfx::Font::NORMAL,
+                      kNoMediaTextFontSize, gfx::Font::Weight::NORMAL));
+  } else {
+    no_media_label->SetFontList(
+        views::Label::GetDefaultFontList().DeriveWithSizeDelta(
+            kNoMediaTextFontSizeIncrease));
+  }
   empty_state_view->AddChildView(std::move(no_media_label));
 
   empty_state_view->SetPaintToLayer();
   empty_state_view->layer()->SetFillsBoundsOpaquely(false);
   empty_state_view_ =
-      bubble_->GetBubbleView()->AddChildView(std::move(empty_state_view));
+      GetBubbleView()->AddChildView(std::move(empty_state_view));
 }
 
 void MediaTray::AnchorUpdated() {
-  if (!bubble_)
+  if (!GetBubbleView()) {
     return;
+  }
 
-  bubble_->GetBubbleView()->SetAnchorRect(
+  GetBubbleView()->SetAnchorRect(
       shelf()->GetStatusAreaWidget()->GetMediaTrayAnchorRect());
 }
 

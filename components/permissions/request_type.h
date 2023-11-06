@@ -30,10 +30,13 @@ enum class RequestType {
   kTopLevelStorageAccess,
   kDiskQuota,
 #if !BUILDFLAG(IS_ANDROID)
-  kLocalFonts,
+  kFileSystemAccess,
 #endif
   kGeolocation,
   kIdleDetection,
+#if !BUILDFLAG(IS_ANDROID)
+  kLocalFonts,
+#endif
   kMicStream,
   kMidi,
   kMidiSysex,

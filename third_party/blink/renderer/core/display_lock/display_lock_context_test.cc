@@ -157,7 +157,7 @@ class DisplayLockContextTest : public testing::Test,
   }
 
   void UnlockImmediate(DisplayLockContext* context) {
-    context->SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+    context->SetRequestedState(EContentVisibility::kVisible);
   }
 
   mojom::blink::FindOptionsPtr FindOptions(bool new_session = true) {
@@ -2042,7 +2042,7 @@ class DisplayLockContextRenderingTest
     return context->needs_compositing_dependent_flag_update_;
   }
   void LockImmediate(DisplayLockContext* context) {
-    context->SetRequestedState(EContentVisibility::kHidden, g_null_atom);
+    context->SetRequestedState(EContentVisibility::kHidden);
   }
   void RunStartOfLifecycleTasks() {
     auto start_of_lifecycle_tasks =

@@ -44,9 +44,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for startup timing histograms.
- */
+/** Tests for startup timing histograms. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "These startup tests rely on having exactly one process start per test.")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -82,14 +80,12 @@ public class StartupLoadingMetricsTest {
     @Rule
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    @Rule
-    public WebApkActivityTestRule mWebApkActivityTestRule = new WebApkActivityTestRule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public WebApkActivityTestRule mWebApkActivityTestRule = new WebApkActivityTestRule();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
@@ -138,10 +134,12 @@ public class StartupLoadingMetricsTest {
     }
 
     private void assertOnePreForegroundSample(int sample) {
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, sample == 1 ? 0 : 1));
     }
@@ -171,12 +169,14 @@ public class StartupLoadingMetricsTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_ACTIVITY_CREATED_WHILE_INIT_HISTOGRAM));
 
-        int firstCommitSamples = RecordHistogram.getHistogramTotalCountForTesting(
-                FIRST_COMMIT_HISTOGRAM + histogramSuffix);
+        int firstCommitSamples =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FIRST_COMMIT_HISTOGRAM + histogramSuffix);
         Assert.assertTrue(firstCommitSamples < 2);
 
-        int firstContentfulPaintSamples = RecordHistogram.getHistogramTotalCountForTesting(
-                FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix);
+        int firstContentfulPaintSamples =
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        FIRST_CONTENTFUL_PAINT_HISTOGRAM + histogramSuffix);
         Assert.assertTrue(firstContentfulPaintSamples < 2);
 
         int visibleContentSamples =
@@ -205,10 +205,12 @@ public class StartupLoadingMetricsTest {
         if (isTabbedSuffix) {
             // These tests only exercise the cases when the first visible content is calculated as
             // the first navigation commit.
-            Assert.assertEquals(firstCommitSamples,
+            Assert.assertEquals(
+                    firstCommitSamples,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM));
-            Assert.assertEquals(expectedCount,
+            Assert.assertEquals(
+                    expectedCount,
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM2));
         }
@@ -249,8 +251,8 @@ public class StartupLoadingMetricsTest {
     @LargeTest
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
-                ()
-                        -> mTabbedActivityTestRule.startMainActivityFromExternalApp(
+                () ->
+                        mTabbedActivityTestRule.startMainActivityFromExternalApp(
                                 getTestPage(), null));
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
 
@@ -321,35 +323,37 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     public void testBackgroundedPageNotRecorded() throws Exception {
-        runAndWaitForPageLoadMetricsRecorded(() -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-            // The SLOW_PAGE will hang for 2 seconds before sending a response. It should be enough
-            // to put Chrome in background before the page is committed.
-            mTabbedActivityTestRule.prepareUrlIntent(intent, getServerURL(SLOW_PAGE));
-            mTabbedActivityTestRule.launchActivity(intent);
+                    // The SLOW_PAGE will hang for 2 seconds before sending a response. It should be
+                    // enough to put Chrome in background before the page is committed.
+                    mTabbedActivityTestRule.prepareUrlIntent(intent, getServerURL(SLOW_PAGE));
+                    mTabbedActivityTestRule.launchActivity(intent);
 
-            // Put Chrome in background before the page is committed.
-            ChromeApplicationTestUtils.fireHomeScreenIntent(
-                    ApplicationProvider.getApplicationContext());
+                    // Put Chrome in background before the page is committed.
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            ApplicationProvider.getApplicationContext());
 
-            // Wait for a tab to be loaded.
-            mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
-            CriteriaHelper.pollUiThread(
-                    ()
-                            -> mTabbedActivityTestRule.getActivity().getActivityTab() != null,
-                    "Tab never selected/initialized.");
-            Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
-            ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
-        });
+                    // Wait for a tab to be loaded.
+                    mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
+                    CriteriaHelper.pollUiThread(
+                            () -> mTabbedActivityTestRule.getActivity().getActivityTab() != null,
+                            "Tab never selected/initialized.");
+                    Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+                    ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
+                });
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);
 
-        runAndWaitForPageLoadMetricsRecorded(() -> {
-            // Put Chrome in foreground before loading a new page.
-            ChromeApplicationTestUtils.launchChrome(ApplicationProvider.getApplicationContext());
-            mTabbedActivityTestRule.loadUrl(getTestPage());
-        });
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    // Put Chrome in foreground before loading a new page.
+                    ChromeApplicationTestUtils.launchChrome(
+                            ApplicationProvider.getApplicationContext());
+                    mTabbedActivityTestRule.loadUrl(getTestPage());
+                });
         assertHistogramsRecordedWithForegroundStart(0, TABBED_SUFFIX);
     }
 
@@ -358,20 +362,23 @@ public class StartupLoadingMetricsTest {
     public void testRecordingOfFirstNavigationCommitPreForeground() throws Exception {
         UmaUtils.skipRecordingNextForegroundStartTimeForTesting();
 
-        runAndWaitForPageLoadMetricsRecorded(() -> {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.addCategory(Intent.CATEGORY_LAUNCHER);
-            // Waits for the native initialization to finish. As part of it skips the foreground
-            // start as requested above.
-            mTabbedActivityTestRule.startMainActivityFromIntent(intent, getTestPage());
-        });
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                    // Waits for the native initialization to finish. As part of it skips the
+                    // foreground start as requested above.
+                    mTabbedActivityTestRule.startMainActivityFromIntent(intent, getTestPage());
+                });
 
         // Startup metrics should not have been recorded since the browser does not know it is in
         // the foreground.
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
 
         // The metric based on early foreground notification should be recorded.
@@ -384,7 +391,8 @@ public class StartupLoadingMetricsTest {
         // The metric for the first navigation commit having occurred pre-foregrounding should also
         // not have been recorded at this point, as there hasn't yet been a notification that the
         // browser has come to the foreground.
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
 
@@ -392,15 +400,18 @@ public class StartupLoadingMetricsTest {
         TestThreadUtils.runOnUiThreadBlocking(UmaUtils::recordForegroundStartTimeWithNative);
 
         // Startup metrics should still not have been recorded...
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_HISTOGRAM + TABBED_SUFFIX));
-        Assert.assertEquals(0,
+        Assert.assertEquals(
+                0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_VISIBLE_CONTENT_HISTOGRAM));
 
         // ...but the metric for the first navigation commit having occurred pre-foregrounding
         // *should* now have been recorded.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         FIRST_COMMIT_OCCURRED_PRE_FOREGROUND_HISTOGRAM, 1));
     }

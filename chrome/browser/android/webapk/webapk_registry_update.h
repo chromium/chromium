@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/android/webapk/proto/webapk_database.pb.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace webapk {
 
@@ -20,9 +21,8 @@ struct RegistryUpdateData {
 
   using Apps = std::vector<std::unique_ptr<WebApkProto>>;
   Apps apps_to_create;
-  Apps apps_to_update;
 
-  std::vector<std::string> apps_to_delete;
+  std::vector<webapps::AppId> apps_to_delete;
 
   bool isEmpty() const;
 };

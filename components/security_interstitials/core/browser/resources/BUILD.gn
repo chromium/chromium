@@ -1,0 +1,49 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/bundle_js.gni")
+
+# Generate JS bundles for interstitials UIs, regradless of the `optimize_webui`
+# GN arg, as these UIs can't load any JS modules at runtime, since they are not
+# proper WebUI pages and therefore are not backed up by any WebUIDataSource.
+group("bundle_js") {
+  public_deps = [
+    ":bundle_js_interstitial_large",
+    ":bundle_js_interstitial_webview_quiet",
+  ]
+}
+
+shared_interstitials_path =
+    rebase_path("${root_gen_dir}/components/security_interstitials/core/",
+                root_build_dir)
+
+bundle_js("bundle_js_interstitial_large") {
+  # Using a dummy value for`host` which is ignored anyway since the code being
+  # bundled below is not served from any host.
+  host = "_ignored_"
+  input = rebase_path(".", root_build_dir)
+  out_folder = "${target_gen_dir}/interstitial_large"
+  js_module_in_files = [ "interstitial_large.js" ]
+
+  external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}
+
+bundle_js("bundle_js_interstitial_webview_quiet") {
+  # Using a dummy value for`host` which is ignored anyway since the code being
+  # bundled below is not served from any host.
+  host = "_ignored_"
+  input = rebase_path(".", root_build_dir)
+  out_folder = "${target_gen_dir}/interstitial_webview_quiet"
+  js_module_in_files = [ "interstitial_webview_quiet.js" ]
+
+  external_paths = [ "chrome://interstitials/|$shared_interstitials_path" ]
+  deps = [
+    "../../common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

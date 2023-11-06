@@ -37,9 +37,7 @@ import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateControllerTest.ShadowAppCompatDelegate;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Unit tests for {@link GlobalNightModeStateController}.
- */
+/** Unit tests for {@link GlobalNightModeStateController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = ShadowAppCompatDelegate.class)
 public class GlobalNightModeStateControllerTest {
@@ -54,21 +52,17 @@ public class GlobalNightModeStateControllerTest {
         public static void setDefaultNightMode(int mode) {}
     }
 
-    @Mock
-    private NightModeStateProvider.Observer mObserver;
+    @Mock private NightModeStateProvider.Observer mObserver;
 
     private GlobalNightModeStateController mGlobalNightModeStateController;
 
-    @Mock
-    private SystemNightModeMonitor mSystemNightModeMonitor;
+    @Mock private SystemNightModeMonitor mSystemNightModeMonitor;
 
     private SystemNightModeMonitor.Observer mSystemNightModeObserver;
 
-    @Mock
-    private PowerSavingModeMonitor mPowerSavingMonitor;
+    @Mock private PowerSavingModeMonitor mPowerSavingMonitor;
 
     private Runnable mPowerModeObserver;
-
 
     @Before
     public void setUp() {
@@ -76,7 +70,9 @@ public class GlobalNightModeStateControllerTest {
         captureObservers();
 
         mGlobalNightModeStateController =
-                new GlobalNightModeStateController(mSystemNightModeMonitor, mPowerSavingMonitor,
+                new GlobalNightModeStateController(
+                        mSystemNightModeMonitor,
+                        mPowerSavingMonitor,
                         ChromeSharedPreferences.getInstance());
 
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
@@ -87,19 +83,25 @@ public class GlobalNightModeStateControllerTest {
 
     private void captureObservers() {
         // We need to mock removeObserver as well as addObserver, so can't use ArgumentCaptor.
-        doAnswer(answerVoid((VoidAnswer1<SystemNightModeMonitor.Observer>)
-                observer -> mSystemNightModeObserver = observer))
-                .when(mSystemNightModeMonitor).addObserver(any());
-        doAnswer(answerVoid((VoidAnswer1<SystemNightModeMonitor.Observer>)
-                observer -> mSystemNightModeObserver = null))
-                .when(mSystemNightModeMonitor).removeObserver(any());
+        doAnswer(
+                        answerVoid(
+                                (VoidAnswer1<SystemNightModeMonitor.Observer>)
+                                        observer -> mSystemNightModeObserver = observer))
+                .when(mSystemNightModeMonitor)
+                .addObserver(any());
+        doAnswer(
+                        answerVoid(
+                                (VoidAnswer1<SystemNightModeMonitor.Observer>)
+                                        observer -> mSystemNightModeObserver = null))
+                .when(mSystemNightModeMonitor)
+                .removeObserver(any());
 
-        doAnswer(answerVoid((VoidAnswer1<Runnable>)
-                observer -> mPowerModeObserver = observer))
-                .when(mPowerSavingMonitor).addObserver(any());
-        doAnswer(answerVoid((VoidAnswer1<Runnable>)
-                observer -> mPowerModeObserver = null))
-                .when(mPowerSavingMonitor).removeObserver(any());
+        doAnswer(answerVoid((VoidAnswer1<Runnable>) observer -> mPowerModeObserver = observer))
+                .when(mPowerSavingMonitor)
+                .addObserver(any());
+        doAnswer(answerVoid((VoidAnswer1<Runnable>) observer -> mPowerModeObserver = null))
+                .when(mPowerSavingMonitor)
+                .removeObserver(any());
     }
 
     @After
@@ -123,10 +125,10 @@ public class GlobalNightModeStateControllerTest {
     }
 
     @Test
-    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.P,
             reason = "Default to light parameter is only applicable pre-Q.")
-    public void
-    testUpdateNightMode_PowerSaveMode_DefaultsToLight() {
+    public void testUpdateNightMode_PowerSaveMode_DefaultsToLight() {
         // Enable power save mode and verify night mode is not enabled.
         setIsPowerSaveMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());
@@ -148,10 +150,10 @@ public class GlobalNightModeStateControllerTest {
     }
 
     @Test
-    @MaxAndroidSdkLevel(value = Build.VERSION_CODES.P,
+    @MaxAndroidSdkLevel(
+            value = Build.VERSION_CODES.P,
             reason = "Default to light parameter is only applicable pre-Q.")
-    public void
-    testUpdateNightMode_SystemNightMode_DefaultsToLight() {
+    public void testUpdateNightMode_SystemNightMode_DefaultsToLight() {
         // Enable system night mode and verify night mode is not enabled.
         setSystemNightMode(true);
         assertFalse(mGlobalNightModeStateController.isInNightMode());

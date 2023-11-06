@@ -7,9 +7,10 @@ package org.chromium.ui.base;
 import android.content.pm.PackageManager;
 import android.view.InputDevice;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 /**
  * Simple proxy for querying input device properties from C++.

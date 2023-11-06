@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ref_counted_memory.h"
@@ -50,10 +51,9 @@ std::string FormatTemplate(int resource_id,
       /* skip_unexpected_placeholder_check= */ true);
 }
 
-std::string ReadBackgroundImageData(const base::FilePath& profile_path) {
+std::string ReadBackgroundImageData(const base::FilePath& path) {
   std::string data_string;
-  base::ReadFileToString(profile_path.AppendASCII("background.jpg"),
-                         &data_string);
+  base::ReadFileToString(path, &data_string);
   return data_string;
 }
 
@@ -182,10 +182,11 @@ void UntrustedSource::StartDataRequest(
         IDR_NEW_TAB_PAGE_UNTRUSTED_BACKGROUND_IMAGE_JS));
     return;
   }
-  if (path == "background.jpg") {
+  if (base::Contains(path, "background.jpg")) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-        base::BindOnce(&ReadBackgroundImageData, profile_->GetPath()),
+        base::BindOnce(&ReadBackgroundImageData,
+                       profile_->GetPath().AppendASCII(path)),
         base::BindOnce(&ServeBackgroundImageData, std::move(callback)));
     return;
   }
@@ -229,7 +230,7 @@ bool UntrustedSource::ShouldServiceRequest(
   return path == "one-google-bar" || path == "one_google_bar.js" ||
          path == "image" || path == "background_image" ||
          path == "custom_background_image" || path == "background_image.js" ||
-         path == "background.jpg";
+         base::Contains(path, "background.jpg");
 }
 
 void UntrustedSource::OnOneGoogleBarDataUpdated() {

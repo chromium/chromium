@@ -77,7 +77,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 @property(nonatomic, assign) BOOL accountProfile;
 
 // The shown view controller.
-@property(nonatomic, weak) ChromeTableViewController* controller;
+@property(nonatomic, weak) LegacyChromeTableViewController* controller;
 
 // If YES, denotes that the view is shown in the settings.
 @property(nonatomic, assign) BOOL settingsView;
@@ -111,7 +111,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 - (instancetype)initWithDelegate:
                     (id<AutofillProfileEditTableViewControllerDelegate>)delegate
                        userEmail:(NSString*)userEmail
-                      controller:(ChromeTableViewController*)controller
+                      controller:(LegacyChromeTableViewController*)controller
                     settingsView:(BOOL)settingsView {
   self = [super init];
   if (self) {

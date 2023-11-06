@@ -65,6 +65,24 @@ var availableTests = [
         });
   },
 
+  function addPasswordOperationDisabledByPolicy() {
+    chrome.passwordsPrivate.addPassword(
+        /* @type {chrome.passwordsPrivate.AddPasswordOptions} */
+        {
+          url: 'https://example.com',
+          username: 'username',
+          password: 'password',
+          note: '',
+          useAccountStore: false
+        },
+        () => {
+          chrome.test.assertLastError(
+              'Operation failed because CredentialsEnableService policy is ' +
+              'set to false by admin.');
+          chrome.test.succeed();
+        });
+  },
+
   function addPasswordWhenOperationFails() {
     chrome.passwordsPrivate.addPassword(
         /* @type {chrome.passwordsPrivate.AddPasswordOptions} */
@@ -349,6 +367,16 @@ var availableTests = [
     chrome.passwordsPrivate.importPasswords(
       chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
       callback);
+  },
+
+  function importPasswordsOperationDisabledByPolicy() {
+    chrome.passwordsPrivate.importPasswords(
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE, () => {
+          chrome.test.assertLastError(
+              'Operation failed because CredentialsEnableService policy is ' +
+              'set to false by admin.');
+          chrome.test.succeed();
+        });
   },
 
   function continueImport() {

@@ -1,94 +1,98 @@
 This is a testharness.js-based test.
 Found 90 tests; 86 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial dictionary CredentialCreationOptions: original dictionary defined
-PASS Partial dictionary CredentialCreationOptions: member names are unique
-PASS Partial dictionary CredentialRequestOptions: original dictionary defined
-PASS Partial dictionary CredentialRequestOptions: member names are unique
-PASS Partial interface PublicKeyCredential: original interface defined
-PASS Partial interface PublicKeyCredential: member names are unique
-PASS Partial interface PublicKeyCredential[2]: original interface defined
-PASS Partial interface PublicKeyCredential[2]: member names are unique
-PASS Partial interface PublicKeyCredential[3]: original interface defined
-PASS Partial interface PublicKeyCredential[3]: member names are unique
-PASS Partial interface PublicKeyCredential[4]: original interface defined
-PASS Partial interface PublicKeyCredential[4]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[2]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[2]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[2]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[2]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[3]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[3]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[3]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[3]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[4]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[4]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[4]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[4]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[5]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[5]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[5]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[5]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[6]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[6]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientInputs[7]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientInputs[7]: member names are unique
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[7]: original dictionary defined
-PASS Partial dictionary AuthenticationExtensionsClientOutputs[7]: member names are unique
-PASS Partial dictionary CredentialRequestOptions[2]: member names are unique
-PASS Partial dictionary CredentialCreationOptions[2]: member names are unique
-PASS Partial dictionary CredentialRequestOptions[3]: member names are unique
-PASS Partial dictionary CredentialCreationOptions[3]: member names are unique
-PASS PublicKeyCredential interface: existence and properties of interface object
-PASS PublicKeyCredential interface object length
-PASS PublicKeyCredential interface object name
-PASS PublicKeyCredential interface: existence and properties of interface prototype object
-PASS PublicKeyCredential interface: existence and properties of interface prototype object's "constructor" property
-PASS PublicKeyCredential interface: existence and properties of interface prototype object's @@unscopables property
-PASS PublicKeyCredential interface: attribute rawId
-PASS PublicKeyCredential interface: attribute response
-PASS PublicKeyCredential interface: attribute authenticatorAttachment
-PASS PublicKeyCredential interface: operation getClientExtensionResults()
-PASS PublicKeyCredential interface: operation isConditionalMediationAvailable()
-PASS PublicKeyCredential interface: operation toJSON()
-PASS PublicKeyCredential interface: operation isUserVerifyingPlatformAuthenticatorAvailable()
-FAIL PublicKeyCredential interface: operation isPasskeyPlatformAuthenticatorAvailable() assert_own_property: interface object missing static operation expected property "isPasskeyPlatformAuthenticatorAvailable" missing
-FAIL PublicKeyCredential interface: operation parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON) assert_own_property: interface object missing static operation expected property "parseCreationOptionsFromJSON" missing
-FAIL PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON) assert_own_property: interface object missing static operation expected property "parseRequestOptionsFromJSON" missing
-PASS AuthenticatorResponse interface: existence and properties of interface object
-PASS AuthenticatorResponse interface object length
-PASS AuthenticatorResponse interface object name
-PASS AuthenticatorResponse interface: existence and properties of interface prototype object
-PASS AuthenticatorResponse interface: existence and properties of interface prototype object's "constructor" property
-PASS AuthenticatorResponse interface: existence and properties of interface prototype object's @@unscopables property
-PASS AuthenticatorResponse interface: attribute clientDataJSON
-PASS AuthenticatorAttestationResponse interface: existence and properties of interface object
-PASS AuthenticatorAttestationResponse interface object length
-PASS AuthenticatorAttestationResponse interface object name
-PASS AuthenticatorAttestationResponse interface: existence and properties of interface prototype object
-PASS AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's "constructor" property
-PASS AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's @@unscopables property
-PASS AuthenticatorAttestationResponse interface: attribute attestationObject
-PASS AuthenticatorAttestationResponse interface: operation getTransports()
-PASS AuthenticatorAttestationResponse interface: operation getAuthenticatorData()
-PASS AuthenticatorAttestationResponse interface: operation getPublicKey()
-PASS AuthenticatorAttestationResponse interface: operation getPublicKeyAlgorithm()
-PASS AuthenticatorAssertionResponse interface: existence and properties of interface object
-PASS AuthenticatorAssertionResponse interface object length
-PASS AuthenticatorAssertionResponse interface object name
-PASS AuthenticatorAssertionResponse interface: existence and properties of interface prototype object
-PASS AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's "constructor" property
-PASS AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's @@unscopables property
-PASS AuthenticatorAssertionResponse interface: attribute authenticatorData
-PASS AuthenticatorAssertionResponse interface: attribute signature
-PASS AuthenticatorAssertionResponse interface: attribute userHandle
-FAIL AuthenticatorAssertionResponse interface: attribute attestationObject assert_true: The prototype object must have a property "attestationObject" expected true got false
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial dictionary CredentialCreationOptions: original dictionary defined
+[PASS] Partial dictionary CredentialCreationOptions: member names are unique
+[PASS] Partial dictionary CredentialRequestOptions: original dictionary defined
+[PASS] Partial dictionary CredentialRequestOptions: member names are unique
+[PASS] Partial interface PublicKeyCredential: original interface defined
+[PASS] Partial interface PublicKeyCredential: member names are unique
+[PASS] Partial interface PublicKeyCredential[2]: original interface defined
+[PASS] Partial interface PublicKeyCredential[2]: member names are unique
+[PASS] Partial interface PublicKeyCredential[3]: original interface defined
+[PASS] Partial interface PublicKeyCredential[3]: member names are unique
+[PASS] Partial interface PublicKeyCredential[4]: original interface defined
+[PASS] Partial interface PublicKeyCredential[4]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[2]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[2]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[2]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[2]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[3]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[3]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[3]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[3]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[4]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[4]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[4]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[4]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[5]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[5]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[5]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[5]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[6]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[6]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[6]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[6]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[7]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientInputs[7]: member names are unique
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[7]: original dictionary defined
+[PASS] Partial dictionary AuthenticationExtensionsClientOutputs[7]: member names are unique
+[PASS] Partial dictionary CredentialRequestOptions[2]: member names are unique
+[PASS] Partial dictionary CredentialCreationOptions[2]: member names are unique
+[PASS] Partial dictionary CredentialRequestOptions[3]: member names are unique
+[PASS] Partial dictionary CredentialCreationOptions[3]: member names are unique
+[PASS] PublicKeyCredential interface: existence and properties of interface object
+[PASS] PublicKeyCredential interface object length
+[PASS] PublicKeyCredential interface object name
+[PASS] PublicKeyCredential interface: existence and properties of interface prototype object
+[PASS] PublicKeyCredential interface: existence and properties of interface prototype object's "constructor" property
+[PASS] PublicKeyCredential interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] PublicKeyCredential interface: attribute rawId
+[PASS] PublicKeyCredential interface: attribute response
+[PASS] PublicKeyCredential interface: attribute authenticatorAttachment
+[PASS] PublicKeyCredential interface: operation getClientExtensionResults()
+[PASS] PublicKeyCredential interface: operation isConditionalMediationAvailable()
+[PASS] PublicKeyCredential interface: operation toJSON()
+[PASS] PublicKeyCredential interface: operation isUserVerifyingPlatformAuthenticatorAvailable()
+[FAIL] PublicKeyCredential interface: operation isPasskeyPlatformAuthenticatorAvailable()
+  assert_own_property: interface object missing static operation expected property "isPasskeyPlatformAuthenticatorAvailable" missing
+[FAIL] PublicKeyCredential interface: operation parseCreationOptionsFromJSON(PublicKeyCredentialCreationOptionsJSON)
+  assert_own_property: interface object missing static operation expected property "parseCreationOptionsFromJSON" missing
+[FAIL] PublicKeyCredential interface: operation parseRequestOptionsFromJSON(PublicKeyCredentialRequestOptionsJSON)
+  assert_own_property: interface object missing static operation expected property "parseRequestOptionsFromJSON" missing
+[PASS] AuthenticatorResponse interface: existence and properties of interface object
+[PASS] AuthenticatorResponse interface object length
+[PASS] AuthenticatorResponse interface object name
+[PASS] AuthenticatorResponse interface: existence and properties of interface prototype object
+[PASS] AuthenticatorResponse interface: existence and properties of interface prototype object's "constructor" property
+[PASS] AuthenticatorResponse interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] AuthenticatorResponse interface: attribute clientDataJSON
+[PASS] AuthenticatorAttestationResponse interface: existence and properties of interface object
+[PASS] AuthenticatorAttestationResponse interface object length
+[PASS] AuthenticatorAttestationResponse interface object name
+[PASS] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object
+[PASS] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's "constructor" property
+[PASS] AuthenticatorAttestationResponse interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] AuthenticatorAttestationResponse interface: attribute attestationObject
+[PASS] AuthenticatorAttestationResponse interface: operation getTransports()
+[PASS] AuthenticatorAttestationResponse interface: operation getAuthenticatorData()
+[PASS] AuthenticatorAttestationResponse interface: operation getPublicKey()
+[PASS] AuthenticatorAttestationResponse interface: operation getPublicKeyAlgorithm()
+[PASS] AuthenticatorAssertionResponse interface: existence and properties of interface object
+[PASS] AuthenticatorAssertionResponse interface object length
+[PASS] AuthenticatorAssertionResponse interface object name
+[PASS] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object
+[PASS] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's "constructor" property
+[PASS] AuthenticatorAssertionResponse interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] AuthenticatorAssertionResponse interface: attribute authenticatorData
+[PASS] AuthenticatorAssertionResponse interface: attribute signature
+[PASS] AuthenticatorAssertionResponse interface: attribute userHandle
+[FAIL] AuthenticatorAssertionResponse interface: attribute attestationObject
+  assert_true: The prototype object must have a property "attestationObject" expected true got false
 Harness: the test ran to completion.
 

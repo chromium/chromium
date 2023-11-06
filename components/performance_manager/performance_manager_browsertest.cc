@@ -15,6 +15,7 @@
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "components/performance_manager/test_support/performance_manager_browsertest_harness.h"
+#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,6 +25,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace performance_manager {
 
@@ -103,17 +105,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest, OpenerTrackingWorks) {
   auto page = PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
 
   // Jump into the graph and make sure everything is connected as expected.
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&page, &run_loop]() {
-        EXPECT_TRUE(page);
-        auto* frame = page->GetMainFrameNode();
-        EXPECT_EQ(1u, frame->GetOpenedPageNodes().size());
-        auto* embedded_page = *(frame->GetOpenedPageNodes().begin());
-        EXPECT_EQ(frame, embedded_page->GetOpenerFrameNode());
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  RunInGraph([page]() {
+    EXPECT_TRUE(page);
+    auto* frame = page->GetMainFrameNode();
+    EXPECT_EQ(1u, frame->GetOpenedPageNodes().size());
+    auto* embedded_page = *(frame->GetOpenedPageNodes().begin());
+    EXPECT_EQ(frame, embedded_page->GetOpenerFrameNode());
+  });
 }
 
 class PerformanceManagerFencedFrameBrowserTest
@@ -121,11 +119,6 @@ class PerformanceManagerFencedFrameBrowserTest
  public:
   PerformanceManagerFencedFrameBrowserTest() = default;
   ~PerformanceManagerFencedFrameBrowserTest() override = default;
-  PerformanceManagerFencedFrameBrowserTest(
-      const PerformanceManagerFencedFrameBrowserTest&) = delete;
-
-  PerformanceManagerFencedFrameBrowserTest& operator=(
-      const PerformanceManagerFencedFrameBrowserTest&) = delete;
 
   content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
     return fenced_frame_helper_;
@@ -138,39 +131,93 @@ class PerformanceManagerFencedFrameBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
-                       FencedFrameDoesNotHaveParentFrameNode) {
+                       NoParentFrameNode) {
   auto initial_url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
   PerformanceManagerTabHelper* tab_helper =
       PerformanceManagerTabHelper::FromWebContents(GetWebContents());
-  DCHECK(tab_helper);
-  EXPECT_EQ(tab_helper->frames_.size(), 1U);
+  ASSERT_TRUE(tab_helper);
+
+  // Main frame, which is going to be the fenced frame's outer document.
+  content::RenderFrameHost* main_frame_host =
+      GetWebContents()->GetPrimaryMainFrame();
+  FrameNodeImpl* main_frame_node = tab_helper->GetFrameNode(main_frame_host);
 
   // Load a fenced frame.
   GURL fenced_frame_url =
       embedded_test_server()->GetURL("/fenced_frames/title1.html");
   content::RenderFrameHost* fenced_frame_host =
-      fenced_frame_test_helper().CreateFencedFrame(
-          GetWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
+      fenced_frame_test_helper().CreateFencedFrame(main_frame_host,
+                                                   fenced_frame_url);
+  FrameNodeImpl* fenced_frame_node =
+      tab_helper->GetFrameNode(fenced_frame_host);
 
-  // Jump into the graph and make sure |fenced_frame_host| does not have a
+  // Jump into the graph and make sure |fenced_frame_node| does not have a
   // parent frame node.
-  base::RunLoop run_loop;
-  PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindLambdaForTesting([tab_helper, fenced_frame_host, &run_loop]() {
-        // Fenced frame and Portals have an embedder frame node instead of a
-        // parent frame node. So, the fenced frame should not have a parent
-        // frame node.
-        ASSERT_EQ(tab_helper->frames_[fenced_frame_host]->parent_frame_node(),
-                  nullptr);
-        // TODO(crbug.com/1260363): Check that the embedder relationship exists.
-        // See also crbug.com/1261454 because the check of
-        // tab_helper->frames_.size() caused a flaky test failure.
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  RunInGraph([main_frame_node, fenced_frame_node]() {
+    // Fenced frames have an outer document instead of a parent frame node.
+    EXPECT_EQ(fenced_frame_node->parent_frame_node(), nullptr);
+
+    // The outer document of the fenced frame is available.
+    EXPECT_EQ(fenced_frame_node->parent_or_outer_document_or_embedder(),
+              main_frame_node);
+  });
+}
+
+class PerformanceManagerPortalBrowserTest
+    : public PerformanceManagerBrowserTest {
+ public:
+  PerformanceManagerPortalBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPortals,
+                              blink::features::kPortalsCrossOrigin},
+        /*disabled_features=*/{});
+  }
+  ~PerformanceManagerPortalBrowserTest() override = default;
+
+  content::WebContents* GetWebContents() { return shell()->web_contents(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerPortalBrowserTest, NoParentFrameNode) {
+  auto initial_url = embedded_test_server()->GetURL("/portal.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+
+  PerformanceManagerTabHelper* tab_helper =
+      PerformanceManagerTabHelper::FromWebContents(GetWebContents());
+  ASSERT_TRUE(tab_helper);
+
+  // Main frame, which is the portal's outer document.
+  content::RenderFrameHost* main_frame_host =
+      GetWebContents()->GetPrimaryMainFrame();
+  FrameNodeImpl* main_frame_node = tab_helper->GetFrameNode(main_frame_host);
+
+  // Get the portal frame. Portals are embedded into pages as inner WebContents.
+  std::vector<content::WebContents*> inner_web_contents =
+      GetWebContents()->GetInnerWebContents();
+  ASSERT_EQ(inner_web_contents.size(), 1u);
+  content::WebContents* portal_contents = inner_web_contents[0];
+
+  PerformanceManagerTabHelper* portal_tab_helper =
+      PerformanceManagerTabHelper::FromWebContents(portal_contents);
+  ASSERT_TRUE(portal_tab_helper);
+
+  content::RenderFrameHost* portal_main_frame =
+      portal_contents->GetPrimaryMainFrame();
+  FrameNodeImpl* portal_frame_node =
+      portal_tab_helper->GetFrameNode(portal_main_frame);
+
+  RunInGraph([main_frame_node, portal_frame_node](Graph* graph) {
+    // Portals have an outer document instead of a parent frame node.
+    EXPECT_EQ(portal_frame_node->parent_frame_node(), nullptr);
+
+    // The outer document of the portal frame is available.
+    EXPECT_EQ(portal_frame_node->parent_or_outer_document_or_embedder(),
+              main_frame_node);
+  });
 }
 
 }  // namespace performance_manager

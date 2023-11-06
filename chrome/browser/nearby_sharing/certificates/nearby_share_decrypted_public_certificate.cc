@@ -102,10 +102,10 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   // Note: The PublicCertificate.metadata_encryption_key and
   // PublicCertificate.for_selected_contacts are not returned from the server
   // for remote devices.
-  base::Time not_before = base::Time::FromJavaTime(
-      public_certificate.start_time().seconds() * 1000);
-  base::Time not_after =
-      base::Time::FromJavaTime(public_certificate.end_time().seconds() * 1000);
+  base::Time not_before = base::Time::FromSecondsSinceUnixEpoch(
+      public_certificate.start_time().seconds());
+  base::Time not_after = base::Time::FromSecondsSinceUnixEpoch(
+      public_certificate.end_time().seconds());
   std::vector<uint8_t> public_key(public_certificate.public_key().begin(),
                                   public_certificate.public_key().end());
   std::unique_ptr<crypto::SymmetricKey> secret_key =

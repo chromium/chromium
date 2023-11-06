@@ -4,10 +4,10 @@
 
 #include <string>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/unified/date_tray.h"
@@ -52,7 +52,7 @@ class GlanceablesPixelTest : public AshTestBase {
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(due_date, &date));
     fake_glanceables_tasks_client_ =
-        std::make_unique<FakeGlanceablesTasksClient>(date);
+        std::make_unique<api::FakeTasksClient>(date);
     Shell::Get()->glanceables_controller()->UpdateClientsRegistration(
         account_id_, GlanceablesController::ClientsRegistration{
                          .tasks_client = fake_glanceables_tasks_client_.get()});
@@ -82,7 +82,7 @@ class GlanceablesPixelTest : public AshTestBase {
 
   void OpenGlanceables() { LeftClickOn(GetDateTray()); }
 
-  FakeGlanceablesTasksClient* fake_glanceables_tasks_client() {
+  api::FakeTasksClient* fake_glanceables_tasks_client() {
     return fake_glanceables_tasks_client_.get();
   }
 
@@ -91,7 +91,7 @@ class GlanceablesPixelTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
-  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
 };
 
 // Pixel test for glanceables when no data is available.

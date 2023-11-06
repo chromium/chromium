@@ -115,7 +115,8 @@ class ExtensionRequestReportGeneratorTest : public ::testing::Test {
           id,
           base::Value::Dict()
               .Set(timestamp_name,
-                   ::base::TimeToValue(base::Time::FromJavaTime(kTimeStamp)))
+                   ::base::TimeToValue(
+                       base::Time::FromMillisecondsSinceUnixEpoch(kTimeStamp)))
               .Set(extension_misc::kExtensionWorkflowJustification,
                    base::Value(kJustification)));
     }

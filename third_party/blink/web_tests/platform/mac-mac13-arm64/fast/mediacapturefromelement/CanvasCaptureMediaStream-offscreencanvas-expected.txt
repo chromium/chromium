@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS CanvasCaptureMediaStream-offscreencanvas
-FAIL CanvasCaptureMediaStream-offscreencanvas 1 Cannot read properties of null (reading 'clearColor')
-Harness: the test ran to completion.
-

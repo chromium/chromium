@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice.mojom.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -31,10 +32,17 @@ class SearchEngineChoiceUI
       mojo::PendingReceiver<search_engine_choice::mojom::PageHandlerFactory>
           receiver);
 
-  // Initializes the callbacks that need to be passed to the handler.
-  // `display_dialog_callback` is how we display the search engine choice
-  // dialog. It will be called when the page's static content is rendered.
-  void Initialize(base::OnceCallback<void()> display_dialog_callback);
+  // Initializes the callbacks that may be passed to the handler.
+  // `display_dialog_callback` is called when the page's static content is
+  // rendered and can be used to trigger the display of the page in a
+  // dialog.
+  // `on_choice_made_callback` is called once the user made a choice in
+  // the UI.
+  // `entry_point` is the view in which the UI is rendered.
+  // The callbacks may be empty.
+  void Initialize(base::OnceClosure display_dialog_callback,
+                  base::OnceClosure on_choice_made_callback,
+                  SearchEngineChoiceService::EntryPoint entry_point);
 
  private:
   // search_engine_choice::mojom::PageHandlerFactory:
@@ -45,12 +53,24 @@ class SearchEngineChoiceUI
   // Notifies the search engine choice service that a choice has been made.
   void HandleSearchEngineChoiceMade(int prepopulate_id);
 
+  // Notifies the search engine choice service that the learn more link was
+  // clicked.
+  void HandleLearnMoreLinkClicked();
+
   std::unique_ptr<SearchEngineChoiceHandler> page_handler_;
 
   mojo::Receiver<search_engine_choice::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
-  base::OnceCallback<void()> display_dialog_callback_;
+  // Displays the native dialog. May be null if the dialog is not triggered by
+  // this UI.
+  base::OnceClosure display_dialog_callback_;
+
+  // Called when the choice is complete.
+  base::OnceClosure on_choice_made_callback_;
+
+  // The view in which the UI is rendered.
+  SearchEngineChoiceService::EntryPoint entry_point_;
   const raw_ref<Profile> profile_;
   base::WeakPtrFactory<SearchEngineChoiceUI> weak_ptr_factory_{this};
 

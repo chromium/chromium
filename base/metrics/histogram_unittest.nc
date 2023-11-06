@@ -67,7 +67,7 @@ void WontCompile() {
   UmaHistogramEnumeration("", NoMaxValue::kMoo);
 }
 
-#elif defined(NCTEST_FUNCTION_INT_AS_ENUM)  // [r"static assertion failed due to requirement 'std::is_enum<int>::value'"]
+#elif defined(NCTEST_FUNCTION_INT_AS_ENUM)  // [r"static assertion failed due to requirement 'std::is_enum_v<int>'"]
 
 void WontCompile() {
   UmaHistogramEnumeration("", 1, 2);

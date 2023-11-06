@@ -73,7 +73,7 @@ interface CrosHealthdRoutinesService {
 
 // Argument types for the possible routines the routine control API can create.
 //
-// NextMinVersion: 2, NextIndex: 2
+// NextMinVersion: 3, NextIndex: 3
 [Stable, Extensible]
 union RoutineArgument {
   // Default field is required by extensible unions for backward compatibility.
@@ -81,6 +81,8 @@ union RoutineArgument {
   [Default] bool unrecognizedArgument @0;
   // Arguments to create a memory routine.
   [MinVersion=1] MemoryRoutineArgument memory@1;
+  // Arguments to create a volume button routine.
+  [MinVersion=2] VolumeButtonRoutineArgument volume_button@2;
 };
 
 // This routine checks whether there is any memory problem by
@@ -92,6 +94,27 @@ struct MemoryRoutineArgument {
   // An optional field to indicate how much memory should be tested. If the
   // value is null, memory test will run with as much memory as possible.
   uint32? max_testing_mem_kib@0;
+};
+
+// This routine checks the functionality of the volume button. The routine
+// passes if the specified volume button event is received before the timeout.
+// Otherwise, the routine fails.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct VolumeButtonRoutineArgument {
+  [Stable, Extensible]
+  enum ButtonType {
+    // The default value is for backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    kVolumeUp = 1,    // Test for the volume up button.
+    kVolumeDown = 2,  // Test for the volume down button.
+  };
+  // The type of volume button to test.
+  ButtonType type@0;
+  // Length of time to listen to the volume button events. The timeout should be
+  // positive and less or equal to 600 seconds.
+  mojo_base.mojom.TimeDelta timeout@1;
 };
 
 // Interface exposed to clients for controlling a routine.
@@ -203,14 +226,16 @@ struct RoutineStateFinished {
 
 // Details about a finished routine.
 //
-// NextMinVersion: 2, NextIndex: 2
-[Stable]
+// NextMinVersion: 3, NextIndex: 3
+[Stable, Extensible]
 union RoutineDetail {
   // Default field is required by extensible unions for backward compatibility.
   // Any unrecognized Mojo field will deserialize to this field. Don't use this.
   [Default] bool unrecognizedArgument@0;
   // Details of a completed memory routine.
   [MinVersion=1] MemoryRoutineDetail memory@1;
+  // Details of a completed volume button routine.
+  [MinVersion=2] VolumeButtonRoutineDetail volume_button@2;
 };
 
 // Details regarding memory routine.
@@ -291,3 +316,9 @@ enum MemtesterTestItemEnum {
   // Test Pattern: 16 bit random words.
   k16BitWrites = 19,
 };
+
+// Details regarding volume button routine.
+//
+// NextMinVersion: 1, NextIndex: 0
+[Stable]
+struct VolumeButtonRoutineDetail {};

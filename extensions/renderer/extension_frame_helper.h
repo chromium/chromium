@@ -14,7 +14,9 @@
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/mojom/renderer_host.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -22,7 +24,9 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "v8/include/v8-forward.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 struct ExtensionMsg_OnConnectData;
+#endif
 
 namespace extensions {
 
@@ -110,16 +114,23 @@ class ExtensionFrameHelper
                      const std::string& module_name,
                      const std::string& function_name,
                      base::Value::List args) override;
-
   void ExecuteCode(mojom::ExecuteCodeParamsPtr param,
                    ExecuteCodeCallback callback) override;
-
   void ExecuteDeclarativeScript(int32_t tab_id,
                                 const std::string& extension_id,
                                 const std::string& script_id,
                                 const GURL& url) override;
-
   void UpdateBrowserWindowId(int32_t window_id) override;
+  void DispatchOnConnect(
+      const PortId& port_id,
+      extensions::mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      extensions::mojom::TabConnectionInfoPtr tab_info,
+      extensions::mojom::ExternalConnectionInfoPtr external_connection_info,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost>
+          port_host,
+      DispatchOnConnectCallback callback) override;
 
   void NotifyDidCreateScriptContext(int32_t world_id);
   bool did_create_script_context() const { return did_create_script_context_; }
@@ -149,6 +160,7 @@ class ExtensionFrameHelper
   void ScheduleAtDocumentIdle(base::OnceClosure callback);
 
   mojom::LocalFrameHost* GetLocalFrameHost();
+  mojom::RendererHost* GetRendererHost();
 
  private:
   void BindLocalFrame(
@@ -164,11 +176,14 @@ class ExtensionFrameHelper
                               int32_t world_id) override;
   void WillReleaseScriptContext(v8::Local<v8::Context>,
                                 int32_t world_id) override;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool OnMessageReceived(const IPC::Message& message) override;
+#endif
   void OnDestruct() override;
   void DraggableRegionsChanged() override;
   void DidClearWindowObject() override;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // IPC handlers.
   void OnExtensionValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnExtensionDispatchOnConnect(
@@ -180,6 +195,7 @@ class ExtensionFrameHelper
   void OnExtensionDispatchOnDisconnect(int worker_thread_id,
                                        const PortId& id,
                                        const std::string& error_message);
+#endif
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;
@@ -221,6 +237,7 @@ class ExtensionFrameHelper
   bool is_initializing_main_world_script_context_ = false;
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
+  mojo::AssociatedRemote<mojom::RendererHost> renderer_host_remote_;
 
   mojo::AssociatedReceiver<mojom::LocalFrame> local_frame_receiver_{this};
 

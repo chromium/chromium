@@ -109,7 +109,7 @@ class NoVarySearchHelperTester final {
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");
     auto weak_prefetch_container = prefetch_container->GetWeakPtr();
-    no_vary_search::SetNoVarySearchData(prefetch_container->GetWeakPtr());
+    prefetch_container->SetNoVarySearchData(nullptr);
     owned_prefetches_.push_back(std::move(prefetch_container));
 
     return weak_prefetch_container;
@@ -339,11 +339,12 @@ TEST_P(NoVarySearchHelperTest, DoNotPrefixMatch) {
   // and can be matched.
   const auto urls_with_no_vary_search =
       helper->GetAllForUrlWithoutRefAndQueryForTesting(matching_url_raw);
-  ASSERT_EQ(urls_with_no_vary_search.size(), 4u);
+  ASSERT_EQ(urls_with_no_vary_search.size(), 5u);
   EXPECT_EQ(urls_with_no_vary_search.at(0).first, matching_url_raw);
   EXPECT_EQ(urls_with_no_vary_search.at(1).first, matching_url_ref);
-  EXPECT_EQ(urls_with_no_vary_search.at(2).first, matching_url_a_1);
-  EXPECT_EQ(urls_with_no_vary_search.at(3).first, matching_url_a_2);
+  EXPECT_EQ(urls_with_no_vary_search.at(2).first, matching_url_a_0);
+  EXPECT_EQ(urls_with_no_vary_search.at(3).first, matching_url_a_1);
+  EXPECT_EQ(urls_with_no_vary_search.at(4).first, matching_url_a_2);
 
   EXPECT_EQ(
       helper->MatchUrl(GURL("https://example.com/index.html?b=4&a=2&c=5")),

@@ -31,12 +31,10 @@ import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplaySty
 /** Unit tests for {@link FeedStreamViewResizer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedStreamViewResizerTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private Activity mActivity;
-    @Mock
-    private RecyclerView mRecyclerView;
+    @Mock private RecyclerView mRecyclerView;
     private UiConfig mUiConfig;
 
     private FeedStreamViewResizer mResizer;

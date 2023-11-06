@@ -15,6 +15,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
@@ -63,6 +64,14 @@ WebUIUserScriptLoader* UserScriptManager::GetUserScriptLoaderForWebUI(
   auto it = webui_script_loaders_.find(url);
   return (it == webui_script_loaders_.end()) ? CreateWebUIUserScriptLoader(url)
                                              : it->second.get();
+}
+
+void UserScriptManager::SetUserScriptSourceEnabledForExtensions(
+    UserScript::Source source,
+    bool enabled) {
+  for (auto& map_entry : extension_script_loaders_) {
+    map_entry.second->SetSourceEnabled(source, enabled);
+  }
 }
 
 void UserScriptManager::OnExtensionWillBeInstalled(
@@ -127,6 +136,9 @@ ExtensionUserScriptLoader* UserScriptManager::CreateExtensionUserScriptLoader(
                            ->dynamic_user_scripts_store(),
                        /*listen_for_extension_system_loaded=*/true))
           .first->second.get();
+  loader->SetSourceEnabled(
+      UserScript::Source::kDynamicUserScript,
+      GetCurrentDeveloperMode(util::GetBrowserContextId(browser_context_)));
 
   return loader;
 }

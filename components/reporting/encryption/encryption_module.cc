@@ -12,6 +12,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/status.h"
@@ -32,7 +33,7 @@ void AddToRecord(std::string_view record,
              base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
              Status status) {
             if (!status.ok()) {
-              std::move(cb).Run(status);
+              std::move(cb).Run(base::unexpected(status));
               return;
             }
             base::ThreadPool::PostTask(
@@ -50,8 +51,8 @@ EncryptionModule::EncryptionModule(base::TimeDelta renew_encryption_key_period)
   static_assert(std::is_same<PublicKeyId, Encryptor::PublicKeyId>::value,
                 "Public key id types must match");
   auto encryptor_result = Encryptor::Create();
-  CHECK_OK(encryptor_result) << encryptor_result.status();
-  encryptor_ = std::move(encryptor_result.ValueOrDie());
+  CHECK(encryptor_result.has_value()) << encryptor_result.error();
+  encryptor_ = std::move(encryptor_result.value());
 }
 
 EncryptionModule::~EncryptionModule() = default;
@@ -64,15 +65,14 @@ void EncryptionModule::EncryptRecordImpl(
       [](std::string record,
          base::OnceCallback<void(StatusOr<EncryptedRecord>)> cb,
          StatusOr<Encryptor::Handle*> handle_result) {
-        if (!handle_result.ok()) {
-          std::move(cb).Run(handle_result.status());
+        if (!handle_result.has_value()) {
+          std::move(cb).Run(base::unexpected(handle_result.error()));
           return;
         }
         base::ThreadPool::PostTask(
-            FROM_HERE,
-            base::BindOnce(&AddToRecord, record,
-                           base::Unretained(handle_result.ValueOrDie()),
-                           std::move(cb)));
+            FROM_HERE, base::BindOnce(&AddToRecord, record,
+                                      base::Unretained(handle_result.value()),
+                                      std::move(cb)));
       },
       std::string(record), std::move(cb)));
 }

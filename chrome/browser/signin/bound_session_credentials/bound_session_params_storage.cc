@@ -4,11 +4,16 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params_storage.h"
 
+#include <string_view>
+
 #include "base/base64.h"
+#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_params_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
@@ -24,10 +29,12 @@ class BoundSessionParamsPrefsStorage : public BoundSessionParamsStorage {
   [[nodiscard]] bool SaveParams(
       const bound_session_credentials::BoundSessionParams& params) override;
 
-  absl::optional<bound_session_credentials::BoundSessionParams> ReadParams()
+  std::vector<bound_session_credentials::BoundSessionParams> ReadAllParams()
       const override;
 
-  void ClearParams() override;
+  bool ClearParams(std::string_view site, std::string_view session_id) override;
+
+  void ClearAllParams() override;
 
  private:
   const raw_ref<PrefService> pref_service_;
@@ -41,7 +48,8 @@ BoundSessionParamsPrefsStorage::~BoundSessionParamsPrefsStorage() = default;
 
 bool BoundSessionParamsPrefsStorage::SaveParams(
     const bound_session_credentials::BoundSessionParams& params) {
-  if (!AreParamsValid(params)) {
+  // TODO(b/300627729): limit the maximum number of saved sessions.
+  if (!bound_session_credentials::AreParamsValid(params)) {
     return false;
   }
 
@@ -50,33 +58,56 @@ bool BoundSessionParamsPrefsStorage::SaveParams(
     return false;
   }
 
-  std::string encoded_serialized_params;
-  base::Base64Encode(serialized_params, &encoded_serialized_params);
-  pref_service_->SetString(kBoundSessionParamsPref, encoded_serialized_params);
+  ScopedDictPrefUpdate update(&pref_service_.get(), kBoundSessionParamsPref);
+  base::Value::Dict* site_dict = update->EnsureDict(params.site());
+  CHECK(site_dict);
+  site_dict->Set(params.session_id(), base::Base64Encode(serialized_params));
   return true;
 }
 
-absl::optional<bound_session_credentials::BoundSessionParams>
-BoundSessionParamsPrefsStorage::ReadParams() const {
-  std::string encoded_params_str =
-      pref_service_->GetString(kBoundSessionParamsPref);
-  if (encoded_params_str.empty()) {
-    return absl::nullopt;
+std::vector<bound_session_credentials::BoundSessionParams>
+BoundSessionParamsPrefsStorage::ReadAllParams() const {
+  const base::Value::Dict& root =
+      pref_service_->GetDict(kBoundSessionParamsPref);
+
+  std::vector<bound_session_credentials::BoundSessionParams> result;
+  for (const auto [site, sessions] : root) {
+    const base::Value::Dict* sessions_dict = sessions.GetIfDict();
+    if (!sessions_dict) {
+      continue;
+    }
+
+    for (const auto [session_id, encoded_params] : *sessions_dict) {
+      const std::string* encoded_params_str = encoded_params.GetIfString();
+      if (!encoded_params_str) {
+        continue;
+      }
+      std::string params_str;
+      if (!base::Base64Decode(*encoded_params_str, &params_str)) {
+        continue;
+      }
+      bound_session_credentials::BoundSessionParams params;
+      if (params.ParseFromString(params_str) &&
+          bound_session_credentials::AreParamsValid(params)) {
+        result.push_back(params);
+      }
+    }
   }
 
-  std::string params_str;
-  if (!base::Base64Decode(encoded_params_str, &params_str)) {
-    return absl::nullopt;
-  }
-
-  bound_session_credentials::BoundSessionParams params;
-  if (params.ParseFromString(params_str) && AreParamsValid(params)) {
-    return params;
-  }
-  return absl::nullopt;
+  return result;
 }
 
-void BoundSessionParamsPrefsStorage::ClearParams() {
+bool BoundSessionParamsPrefsStorage::ClearParams(std::string_view site,
+                                                 std::string_view session_id) {
+  ScopedDictPrefUpdate update(&pref_service_.get(), kBoundSessionParamsPref);
+  base::Value::Dict* site_dict = update->FindDict(site);
+  if (!site_dict) {
+    return false;
+  }
+  return site_dict->Remove(session_id);
+}
+
+void BoundSessionParamsPrefsStorage::ClearAllParams() {
   pref_service_->ClearPref(kBoundSessionParamsPref);
 }
 
@@ -88,14 +119,15 @@ class BoundSessionParamsInMemoryStorage : public BoundSessionParamsStorage {
   [[nodiscard]] bool SaveParams(
       const bound_session_credentials::BoundSessionParams& params) override;
 
-  absl::optional<bound_session_credentials::BoundSessionParams> ReadParams()
+  std::vector<bound_session_credentials::BoundSessionParams> ReadAllParams()
       const override;
 
-  void ClearParams() override;
+  bool ClearParams(std::string_view site, std::string_view session_id) override;
+
+  void ClearAllParams() override;
 
  private:
-  absl::optional<bound_session_credentials::BoundSessionParams>
-      in_memory_params_;
+  std::vector<bound_session_credentials::BoundSessionParams> in_memory_params_;
 };
 
 BoundSessionParamsInMemoryStorage::BoundSessionParamsInMemoryStorage() =
@@ -105,21 +137,37 @@ BoundSessionParamsInMemoryStorage::~BoundSessionParamsInMemoryStorage() =
 
 bool BoundSessionParamsInMemoryStorage::SaveParams(
     const bound_session_credentials::BoundSessionParams& params) {
-  if (!AreParamsValid(params)) {
+  // TODO(b/300627729): limit the maximum number of saved sessions.
+  if (!bound_session_credentials::AreParamsValid(params)) {
     return false;
   }
 
-  in_memory_params_ = params;
+  // Erase existing params for this session, if any.
+  base::EraseIf(in_memory_params_, [&params](const auto& saved_params) {
+    return bound_session_credentials::AreSameSessionParams(params,
+                                                           saved_params);
+  });
+
+  in_memory_params_.push_back(params);
   return true;
 }
 
-absl::optional<bound_session_credentials::BoundSessionParams>
-BoundSessionParamsInMemoryStorage::ReadParams() const {
+std::vector<bound_session_credentials::BoundSessionParams>
+BoundSessionParamsInMemoryStorage::ReadAllParams() const {
   return in_memory_params_;
 }
 
-void BoundSessionParamsInMemoryStorage::ClearParams() {
-  in_memory_params_ = absl::nullopt;
+bool BoundSessionParamsInMemoryStorage::ClearParams(
+    std::string_view site,
+    std::string_view session_id) {
+  return base::EraseIf(in_memory_params_, [&site,
+                                           session_id](const auto& params) {
+           return params.site() == site && params.session_id() == session_id;
+         }) > 0;
+}
+
+void BoundSessionParamsInMemoryStorage::ClearAllParams() {
+  in_memory_params_.clear();
 }
 
 }  // namespace
@@ -143,14 +191,5 @@ BoundSessionParamsStorage::CreatePrefsStorageForTesting(
 // static
 void BoundSessionParamsStorage::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(kBoundSessionParamsPref, std::string());
-}
-
-// static
-bool BoundSessionParamsStorage::AreParamsValid(
-    const bound_session_credentials::BoundSessionParams& bound_session_params) {
-  // TODO(crbug.com/1441168): Check for validity of other fields once they are
-  // available.
-  return bound_session_params.has_session_id() &&
-         bound_session_params.has_wrapped_key();
+  registry->RegisterDictionaryPref(kBoundSessionParamsPref);
 }

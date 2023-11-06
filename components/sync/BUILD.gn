@@ -254,6 +254,7 @@ source_set("unit_tests") {
     "service/model_type_controller_unittest.cc",
     "service/passphrase_type_metrics_provider_unittest.cc",
     "service/sync_auth_manager_unittest.cc",
+    "service/sync_feature_status_for_migrations_recorder_unittest.cc",
     "service/sync_internals_util_unittest.cc",
     "service/sync_prefs_unittest.cc",
     "service/sync_service_crypto_unittest.cc",

@@ -60,11 +60,13 @@ function createFakeFolderShortcutsDataModel() {
       return this.has;
     }
 
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     add(entry) {
       this.has = true;
       return 0;
     }
 
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     remove(entry) {
       this.has = false;
       return 0;
@@ -83,12 +85,20 @@ let shortcutsModel;
 /** @implements ActionModelUI */
 class MockUI {
   constructor() {
+    // @ts-ignore: error TS2352: Conversion of type '{ currentView: {
+    // updateListItemsMetadata: () => void; }; }' to type 'ListContainer' may be
+    // a mistake because neither type sufficiently overlaps with the other. If
+    // this was intentional, convert the expression to 'unknown' first.
     this.listContainer = /** @type {!ListContainer} */ ({
       currentView: {
         updateListItemsMetadata: function() {},
       },
     });
 
+    // @ts-ignore: error TS2352: Conversion of type '{ showHtml: () => void; }'
+    // to type 'FilesAlertDialog' may be a mistake because neither type
+    // sufficiently overlaps with the other. If this was intentional, convert
+    // the expression to 'unknown' first.
     this.alertDialog = /** @type {!FilesAlertDialog} */ ({
       showHtml: function() {},
     });
@@ -116,12 +126,14 @@ export function setUp() {
   volumeManager = new MockVolumeManager();
   let type = VolumeManagerCommon.VolumeType.DRIVE;
   driveFileSystem =
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       assert(volumeManager.getCurrentProfileVolumeInfo(type).fileSystem);
 
   // Setup Provided file system.
   type = VolumeManagerCommon.VolumeType.PROVIDED;
   volumeManager.createVolumeInfo(type, 'provided', 'Provided');
   providedFileSystem =
+      // @ts-ignore: error TS2531: Object is possibly 'null'.
       assert(volumeManager.getCurrentProfileVolumeInfo(type).fileSystem);
 
   // Create mock action model components.
@@ -131,8 +143,11 @@ export function setUp() {
 
 /**
  * Tests that the correct actions are available for a Google Drive directory.
+ * @param {()=>void} callback
  */
 export function testDriveDirectoryEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test'] =
       MockDirectoryEntry.create(driveFileSystem, '/test');
 
@@ -141,7 +156,11 @@ export function testDriveDirectoryEntry(callback) {
   });
 
   let model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [driveFileSystem.entries['/test']]);
 
   let invalidated = 0;
@@ -161,12 +180,15 @@ export function testDriveDirectoryEntry(callback) {
             volumeManager.driveConnectionState = {
               type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
             };
+            // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
             assertFalse(shareAction.canExecute());
 
             // 'Manage in Drive' should be disabled in offline mode.
             const manageInDriveAction =
                 actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
             assertTrue(!!manageInDriveAction);
+            // @ts-ignore: error TS18048: 'manageInDriveAction' is possibly
+            // 'undefined'.
             assertFalse(manageInDriveAction.canExecute());
 
             // 'Create Shortcut' should be enabled, until it's executed, then
@@ -174,15 +196,26 @@ export function testDriveDirectoryEntry(callback) {
             const createFolderShortcutAction =
                 actions[ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT];
             assertTrue(!!createFolderShortcutAction);
+            // @ts-ignore: error TS18048: 'createFolderShortcutAction' is
+            // possibly 'undefined'.
             assertTrue(createFolderShortcutAction.canExecute());
+            // @ts-ignore: error TS18048: 'createFolderShortcutAction' is
+            // possibly 'undefined'.
             createFolderShortcutAction.execute();
+            // @ts-ignore: error TS18048: 'createFolderShortcutAction' is
+            // possibly 'undefined'.
             assertFalse(createFolderShortcutAction.canExecute());
             assertEquals(1, invalidated);
 
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
+                // @ts-ignore: error TS2339: Property 'entries' does not exist
+                // on type 'FileSystem'.
                 [driveFileSystem.entries['/test']]);
             model.addEventListener('invalidated', () => {
               invalidated++;
@@ -202,6 +235,8 @@ export function testDriveDirectoryEntry(callback) {
             const createFolderShortcutAction =
                 actions[ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT];
             assertTrue(!!createFolderShortcutAction);
+            // @ts-ignore: error TS18048: 'createFolderShortcutAction' is
+            // possibly 'undefined'.
             assertFalse(createFolderShortcutAction.canExecute());
             assertEquals(1, invalidated);
           }),
@@ -210,8 +245,11 @@ export function testDriveDirectoryEntry(callback) {
 
 /**
  * Tests that the correct actions are available for a Google Drive file.
+ * @param {()=>void} callback
  */
 export function testDriveFileEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test.txt'] =
       MockFileEntry.create(driveFileSystem, '/test.txt');
 
@@ -222,7 +260,11 @@ export function testDriveFileEntry(callback) {
   });
 
   let model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [driveFileSystem.entries['/test.txt']]);
   let invalidated = 0;
 
@@ -237,16 +279,24 @@ export function testDriveFileEntry(callback) {
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertTrue(saveForOfflineAction.canExecute());
 
             // 'Manage in Drive' should be enabled.
             const manageInDriveAction =
                 actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
             assertTrue(!!manageInDriveAction);
+            // @ts-ignore: error TS18048: 'manageInDriveAction' is possibly
+            // 'undefined'.
             assertTrue(manageInDriveAction.canExecute());
 
             chrome.fileManagerPrivate.pinDriveFile = (entry, pin, callback) => {
+              // @ts-ignore: error TS2339: Property 'pinned' does not exist on
+              // type 'Object'.
               metadataModel.properties.pinned = true;
+              // @ts-ignore: error TS2339: Property 'entries' does not exist on
+              // type 'FileSystem'.
               assertEquals(driveFileSystem.entries['/test.txt'], entry);
               assertTrue(pin);
               callback();
@@ -254,15 +304,24 @@ export function testDriveFileEntry(callback) {
 
             // For pinning, invalidating is done asynchronously, so we need to
             // wait for it with a promise.
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
                 invalidated++;
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+              // 'undefined'.
               saveForOfflineAction.execute();
             });
           })
           .then(() => {
+            // @ts-ignore: error TS2339: Property 'pinned' does not exist on
+            // type 'Object'.
             assertTrue(metadataModel.properties.pinned);
             assertEquals(1, invalidated);
 
@@ -273,7 +332,12 @@ export function testDriveFileEntry(callback) {
             // The model is invalidated, as list of actions have changed.
             // Recreated the model and check that the actions are updated.
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
+                // @ts-ignore: error TS2339: Property 'entries' does not exist
+                // on type 'FileSystem'.
                 [driveFileSystem.entries['/test.txt']]);
             return model.initialize();
           })
@@ -286,30 +350,47 @@ export function testDriveFileEntry(callback) {
             const offlineNotNecessaryAction =
                 actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
             assertTrue(!!offlineNotNecessaryAction);
+            // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+            // possibly 'undefined'.
             assertTrue(offlineNotNecessaryAction.canExecute());
 
             // 'Manage in Drive' should be enabled.
             const manageInDriveAction =
                 actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
             assertTrue(!!manageInDriveAction);
+            // @ts-ignore: error TS18048: 'manageInDriveAction' is possibly
+            // 'undefined'.
             assertTrue(manageInDriveAction.canExecute());
 
             chrome.fileManagerPrivate.pinDriveFile = (entry, pin, callback) => {
+              // @ts-ignore: error TS2339: Property 'pinned' does not exist on
+              // type 'Object'.
               metadataModel.properties.pinned = false;
+              // @ts-ignore: error TS2339: Property 'entries' does not exist on
+              // type 'FileSystem'.
               assertEquals(driveFileSystem.entries['/test.txt'], entry);
               assertFalse(pin);
               callback();
             };
 
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
                 invalidated++;
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+              // possibly 'undefined'.
               offlineNotNecessaryAction.execute();
             });
           })
           .then(() => {
+            // @ts-ignore: error TS2339: Property 'pinned' does not exist on
+            // type 'Object'.
             assertFalse(metadataModel.properties.pinned);
             assertEquals(2, invalidated);
           }),
@@ -318,11 +399,16 @@ export function testDriveFileEntry(callback) {
 
 /**
  * Tests that the correct actions are available for a Google Drive hosted file.
+ * @param {()=>void} callback
  */
 export function testDriveHostedFileEntry(callback) {
   const testDocument = MockFileEntry.create(driveFileSystem, '/test.gdoc');
   const testFile = MockFileEntry.create(driveFileSystem, '/test.txt');
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test.gdoc'] = testDocument;
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test.txt'] = testFile;
 
   const metadataModel = new MockMetadataModel({});
@@ -330,6 +416,9 @@ export function testDriveHostedFileEntry(callback) {
   metadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   volumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    // @ts-ignore: error TS2322: Type '{ type: string; hasCellularNetworkAccess:
+    // boolean; canPinHostedFiles: boolean; }' is not assignable to type
+    // 'DriveConnectionState'.
     hasCellularNetworkAccess: false,
     canPinHostedFiles: true,
   };
@@ -341,6 +430,8 @@ export function testDriveHostedFileEntry(callback) {
   };
 
   let model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui, [testDocument]);
 
   return reportPromise(
@@ -352,10 +443,15 @@ export function testDriveHostedFileEntry(callback) {
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertTrue(saveForOfflineAction.canExecute());
 
             // Check the actions for multiple selection.
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
                 [testDocument, testFile]);
             return model.initialize();
@@ -371,14 +467,23 @@ export function testDriveHostedFileEntry(callback) {
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertTrue(saveForOfflineAction.canExecute());
 
             // For pinning, invalidating is done asynchronously, so we need to
             // wait for it with a promise.
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+              // 'undefined'.
               saveForOfflineAction.execute();
             });
           })
@@ -391,6 +496,9 @@ export function testDriveHostedFileEntry(callback) {
                 1, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
 
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
                 [testDocument, testFile]);
             return model.initialize();
@@ -402,6 +510,8 @@ export function testDriveHostedFileEntry(callback) {
             const offlineNotNecessaryAction =
                 actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
             assertTrue(!!offlineNotNecessaryAction);
+            // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+            // possibly 'undefined'.
             assertTrue(offlineNotNecessaryAction.canExecute());
 
             // 'Save for Offline' should not be enabled.
@@ -410,10 +520,17 @@ export function testDriveHostedFileEntry(callback) {
 
             // For pinning, invalidating is done asynchronously, so we need to
             // wait for it with a promise.
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+              // possibly 'undefined'.
               offlineNotNecessaryAction.execute();
             });
           })
@@ -427,11 +544,16 @@ export function testDriveHostedFileEntry(callback) {
 /**
  * Tests that the correct actions are available for a Drive file that cannot be
  * pinned.
+ * @param {()=>void} callback
  */
 export function testUnpinnableDriveHostedFileEntry(callback) {
   const testDocument = MockFileEntry.create(driveFileSystem, '/test.gdoc');
   const testFile = MockFileEntry.create(driveFileSystem, '/test.txt');
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test.gdoc'] = testDocument;
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/test.txt'] = testFile;
 
   const metadataModel = new MockMetadataModel({});
@@ -439,6 +561,9 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
   metadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   volumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
+    // @ts-ignore: error TS2322: Type '{ type: string; hasCellularNetworkAccess:
+    // boolean; canPinHostedFiles: boolean; }' is not assignable to type
+    // 'DriveConnectionState'.
     hasCellularNetworkAccess: false,
     canPinHostedFiles: false,
   };
@@ -450,6 +575,8 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
   };
 
   let model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui, [testDocument]);
 
   return reportPromise(
@@ -461,10 +588,15 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertFalse(saveForOfflineAction.canExecute());
 
             // Check the actions for multiple selection.
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
                 [testDocument, testFile]);
             return model.initialize();
@@ -481,14 +613,23 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertTrue(saveForOfflineAction.canExecute());
 
             // For pinning, invalidating is done asynchronously, so we need to
             // wait for it with a promise.
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+              // 'undefined'.
               saveForOfflineAction.execute();
             });
           })
@@ -501,6 +642,9 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
                 0, countMetricCalls('FileBrowser.DriveHostedFilePinSuccess'));
 
             model = new ActionsModel(
+                // @ts-ignore: error TS2345: Argument of type
+                // 'MockMetadataModel' is not assignable to parameter of type
+                // 'MetadataModel'.
                 volumeManager, metadataModel, shortcutsModel, ui,
                 [testDocument, testFile]);
             return model.initialize();
@@ -512,20 +656,31 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
             const offlineNotNecessaryAction =
                 actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
             assertTrue(!!offlineNotNecessaryAction);
+            // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+            // possibly 'undefined'.
             assertTrue(offlineNotNecessaryAction.canExecute());
 
             // 'Save for Offline' should be enabled, but not executable.
             const saveForOfflineAction =
                 actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
             assertTrue(!!saveForOfflineAction);
+            // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+            // 'undefined'.
             assertFalse(saveForOfflineAction.canExecute());
 
             // For pinning, invalidating is done asynchronously, so we need to
             // wait for it with a promise.
+            // @ts-ignore: error TS6133: 'reject' is declared but its value is
+            // never read.
             return new Promise((fulfill, reject) => {
               model.addEventListener('invalidated', () => {
+                // @ts-ignore: error TS2810: Expected 1 argument, but got 0.
+                // 'new Promise()' needs a JSDoc hint to produce a 'resolve'
+                // that can be called without arguments.
                 fulfill();
               });
+              // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is
+              // possibly 'undefined'.
               offlineNotNecessaryAction.execute();
             });
           })
@@ -538,8 +693,11 @@ export function testUnpinnableDriveHostedFileEntry(callback) {
 
 /**
  * Tests that a Team Drive Root entry has the correct actions available.
+ * @param {()=>void} callback
  */
 export function testTeamDriveRootEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/team_drives/ABC Team'] =
       MockDirectoryEntry.create(driveFileSystem, '/team_drives/ABC Team');
 
@@ -548,7 +706,11 @@ export function testTeamDriveRootEntry(callback) {
   });
 
   const model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [driveFileSystem.entries['/team_drives/ABC Team']]);
 
   return reportPromise(
@@ -560,12 +722,14 @@ export function testTeamDriveRootEntry(callback) {
         // "share" action is enabled for Team Drive Root entries.
         const shareAction = actions[ActionsModel.CommonActionId.SHARE];
         assertTrue(!!shareAction);
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         assertTrue(shareAction.canExecute());
 
         // "manage in drive" action is disabled for Team Drive Root entries.
         const manageAction =
             actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
         assertTrue(!!manageAction);
+        // @ts-ignore: error TS18048: 'manageAction' is possibly 'undefined'.
         assertTrue(manageAction.canExecute());
       }),
       callback);
@@ -573,8 +737,11 @@ export function testTeamDriveRootEntry(callback) {
 
 /**
  * Tests that a Team Drive directory entry has the correct actions available.
+ * @param {()=>void} callback
  */
 export function testTeamDriveDirectoryEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/team_drives/ABC Team/Folder 1'] =
       MockDirectoryEntry.create(
           driveFileSystem, '/team_drives/ABC Team/Folder 1');
@@ -585,7 +752,11 @@ export function testTeamDriveDirectoryEntry(callback) {
   });
 
   const model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [driveFileSystem.entries['/team_drives/ABC Team/Folder 1']]);
 
   return reportPromise(
@@ -596,30 +767,38 @@ export function testTeamDriveDirectoryEntry(callback) {
         // "Share" is enabled for Team Drive directories.
         const shareAction = actions[ActionsModel.CommonActionId.SHARE];
         assertTrue(!!shareAction);
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         assertTrue(shareAction.canExecute());
 
         // "Available Offline" toggle is enabled for Team Drive directories.
         const saveForOfflineAction =
             actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
         assertTrue(!!saveForOfflineAction);
+        // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+        // 'undefined'.
         assertTrue(saveForOfflineAction.canExecute());
 
         // "Available Offline" toggle is enabled for Team Drive directories.
         const offlineNotNecessaryAction =
             actions[ActionsModel.CommonActionId.OFFLINE_NOT_NECESSARY];
         assertTrue(!!offlineNotNecessaryAction);
+        // @ts-ignore: error TS18048: 'offlineNotNecessaryAction' is possibly
+        // 'undefined'.
         assertTrue(offlineNotNecessaryAction.canExecute());
 
         // "Manage in drive" is enabled for Team Drive directories.
         const manageAction =
             actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
         assertTrue(!!manageAction);
+        // @ts-ignore: error TS18048: 'manageAction' is possibly 'undefined'.
         assertTrue(manageAction.canExecute());
 
         // 'Create shortcut' should be enabled.
         const createFolderShortcutAction =
             actions[ActionsModel.InternalActionId.CREATE_FOLDER_SHORTCUT];
         assertTrue(!!createFolderShortcutAction);
+        // @ts-ignore: error TS18048: 'createFolderShortcutAction' is possibly
+        // 'undefined'.
         assertTrue(createFolderShortcutAction.canExecute());
       }),
       callback);
@@ -627,8 +806,11 @@ export function testTeamDriveDirectoryEntry(callback) {
 
 /**
  * Tests that a Team Drive file entry has the correct actions available.
+ * @param {()=>void} callback
  */
 export function testTeamDriveFileEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   driveFileSystem.entries['/team_drives/ABC Team/Folder 1/test.txt'] =
       MockFileEntry.create(
           driveFileSystem, '/team_drives/ABC Team/Folder 1/test.txt');
@@ -640,7 +822,11 @@ export function testTeamDriveFileEntry(callback) {
   });
 
   const model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [driveFileSystem.entries['/team_drives/ABC Team/Folder 1/test.txt']]);
 
   return reportPromise(
@@ -652,17 +838,21 @@ export function testTeamDriveFileEntry(callback) {
         const saveForOfflineAction =
             actions[ActionsModel.CommonActionId.SAVE_FOR_OFFLINE];
         assertTrue(!!saveForOfflineAction);
+        // @ts-ignore: error TS18048: 'saveForOfflineAction' is possibly
+        // 'undefined'.
         assertTrue(saveForOfflineAction.canExecute());
 
         // "share" action is enabled for Team Drive file entries.
         const shareAction = actions[ActionsModel.CommonActionId.SHARE];
         assertTrue(!!shareAction);
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         assertTrue(shareAction.canExecute());
 
         // "manage in drive" action is enabled for Team Drive file entries.
         const manageAction =
             actions[ActionsModel.InternalActionId.MANAGE_IN_DRIVE];
         assertTrue(!!manageAction);
+        // @ts-ignore: error TS18048: 'manageAction' is possibly 'undefined'.
         assertTrue(manageAction.canExecute());
       }),
       callback);
@@ -671,13 +861,18 @@ export function testTeamDriveFileEntry(callback) {
 /**
  * Tests that if actions are provided with getCustomActions(), they appear
  * correctly for the file.
+ * @param {()=>void} callback
  */
 export function testProvidedEntry(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   providedFileSystem.entries['/test'] =
       MockDirectoryEntry.create(providedFileSystem, '/test');
 
   chrome.fileManagerPrivate.getCustomActions = (entries, callback) => {
     assertEquals(1, entries.length);
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'FileSystem'.
     assertEquals(providedFileSystem.entries['/test'], entries[0]);
     callback([
       {
@@ -691,10 +886,16 @@ export function testProvidedEntry(callback) {
     ]);
   };
 
+  // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
+  // parameter of type 'Object'.
   const metadataModel = new MockMetadataModel(null);
 
   const model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [providedFileSystem.entries['/test']]);
 
   let invalidated = 0;
@@ -713,35 +914,48 @@ export function testProvidedEntry(callback) {
         // are always executable, as we don't know the actions implementation.
         volumeManager.driveConnectionState = {
           type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
+          // @ts-ignore: error TS2322: Type '{ type: string;
+          // hasCellularNetworkAccess: boolean; canPinHostedFiles: boolean; }'
+          // is not assignable to type 'DriveConnectionState'.
           hasCellularNetworkAccess: false,
           canPinHostedFiles: false,
         };
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         assertTrue(shareAction.canExecute());
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         assertEquals('Share it!', shareAction.getTitle());
 
         chrome.fileManagerPrivate.executeCustomAction =
             (entries, actionId, callback) => {
               assertEquals(1, entries.length);
+              // @ts-ignore: error TS2339: Property 'entries' does not exist on
+              // type 'FileSystem'.
               assertEquals(providedFileSystem.entries['/test'], entries[0]);
               assertEquals(ActionsModel.CommonActionId.SHARE, actionId);
               callback();
             };
+        // @ts-ignore: error TS18048: 'shareAction' is possibly 'undefined'.
         shareAction.execute();
         assertEquals(1, invalidated);
 
         assertTrue(!!actions['some-custom-id']);
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         assertTrue(actions['some-custom-id'].canExecute());
         assertEquals(
+            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             'Turn into chocolate!', actions['some-custom-id'].getTitle());
 
         chrome.fileManagerPrivate.executeCustomAction =
             (entries, actionId, callback) => {
               assertEquals(1, entries.length);
+              // @ts-ignore: error TS2339: Property 'entries' does not exist on
+              // type 'FileSystem'.
               assertEquals(providedFileSystem.entries['/test'], entries[0]);
               assertEquals('some-custom-id', actionId);
               callback();
             };
 
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         actions['some-custom-id'].execute();
         assertEquals(2, invalidated);
       }),
@@ -750,22 +964,37 @@ export function testProvidedEntry(callback) {
 
 /**
  * Tests that no actions are available when getCustomActions() throws an error.
+ * @param {()=>void} callback
  */
 export function testProvidedEntryWithError(callback) {
+  // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+  // 'FileSystem'.
   providedFileSystem.entries['/test'] =
       MockDirectoryEntry.create(providedFileSystem, '/test');
 
+  // @ts-ignore: error TS6133: 'entries' is declared but its value is never
+  // read.
   chrome.fileManagerPrivate.getCustomActions = (entries, callback) => {
+    // @ts-ignore: error TS2339: Property 'runtime' does not exist on type
+    // 'typeof chrome'.
     chrome.runtime.lastError = {
       message: 'Failed to fetch custom actions.',
     };
+    // @ts-ignore: error TS2322: Type 'string' is not assignable to type
+    // 'FileSystemProviderAction'.
     callback(['error']);
   };
 
+  // @ts-ignore: error TS2345: Argument of type 'null' is not assignable to
+  // parameter of type 'Object'.
   const metadataModel = new MockMetadataModel(null);
 
   const model = new ActionsModel(
+      // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+      // assignable to parameter of type 'MetadataModel'.
       volumeManager, metadataModel, shortcutsModel, ui,
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       [providedFileSystem.entries['/test']]);
 
   return reportPromise(

@@ -14,11 +14,11 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "context_lost_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -28,6 +28,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -38,6 +39,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -46,7 +48,6 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "expected_color_pixel_passthrough_test JACUZZI_RELEASE_LKGM",
         "precommit_args": [
@@ -61,6 +62,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -70,11 +72,11 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs"
+          "--stable-jobs",
+          "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "gpu_process_launch_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -84,6 +86,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -93,11 +96,11 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs"
+          "--stable-jobs",
+          "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "hardware_accelerated_feature_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -107,6 +110,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -117,6 +121,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--expected-vendor-id",
           "0",
           "--expected-device-id",
@@ -124,7 +129,6 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
         "name": "info_collection_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -134,6 +138,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -143,11 +148,11 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--stable-jobs"
+          "--stable-jobs",
+          "--enforce-browser-version"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "mediapipe_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -157,6 +162,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -167,6 +173,7 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -176,7 +183,6 @@
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "pixel_skia_gold_passthrough_test JACUZZI_RELEASE_LKGM",
         "precommit_args": [
@@ -191,6 +197,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -201,11 +208,11 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
         "name": "screenshot_sync_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -215,6 +222,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -225,11 +233,11 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "trace_test JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -239,6 +247,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -249,11 +258,11 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
         "name": "webcodecs_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
@@ -263,6 +272,7 @@
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -273,22 +283,24 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
         "name": "webgl2_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "shards": 20,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       },
       {
@@ -299,21 +311,23 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
+          "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
           "--jobs=1"
         ],
         "autotest_name": "chromium_Graphics",
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R120-15642.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
         "name": "webgl_conformance_gles_passthrough_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "shards": 6,
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
+        "use_lkgm": true,
         "variant_id": "JACUZZI_RELEASE_LKGM"
       }
     ]
@@ -332,6 +346,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -379,6 +394,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -427,6 +443,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
           "--jobs=1",
@@ -468,6 +485,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
           "--jobs=1",
           "--deploy-lacros",
@@ -515,6 +533,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -562,6 +581,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
           "--dont-restore-color-profile-after-test",
           "--test-machine-name",
           "${buildername}",
@@ -610,6 +630,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--webgl-conformance-version=2.0.1",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl2_conformance_linux_runtimes.json",
           "--jobs=1",
@@ -651,6 +672,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--enforce-browser-version",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_linux_runtimes.json",
           "--jobs=1",
           "--deploy-lacros",

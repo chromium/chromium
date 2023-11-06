@@ -11,6 +11,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/base64.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/logging.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -855,13 +856,8 @@ TEST_F(WebStateImplTest, UncommittedRestoreSessionOptimisedStorage) {
 
   WebStateImpl web_state =
       WebStateImpl(GetBrowserState(), web::WebStateID::NewUnique(), metadata,
-                   base::BindOnce(
-                       [](proto::WebStateStorage storage,
-                          proto::WebStateStorage& inner_storage) {
-                         inner_storage = storage;
-                       },
-                       std::move(storage)),
-                   base::BindOnce([]() -> NSData* { return nil; }));
+                   base::ReturnValueOnce(std::move(storage)),
+                   base::ReturnValueOnce<NSData*>(nil));
 
   // Check that the title and url are correct.
   ASSERT_FALSE(web_state.IsRealized());

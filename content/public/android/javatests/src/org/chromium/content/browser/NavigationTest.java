@@ -24,9 +24,7 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 
-/**
- * Tests for various aspects of navigation.
- */
+/** Tests for various aspects of navigation. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class NavigationTest {
     @Rule
@@ -40,10 +38,13 @@ public class NavigationTest {
     private static final String URL_6 = UrlUtils.encodeHtmlDataUri("<html>6</html>");
     private static final String URL_7 = UrlUtils.encodeHtmlDataUri("<html>7</html>");
 
-    private void goBack(final NavigationController navigationController,
-            TestCallbackHelperContainer testCallbackHelperContainer) throws Throwable {
+    private void goBack(
+            final NavigationController navigationController,
+            TestCallbackHelperContainer testCallbackHelperContainer)
+            throws Throwable {
         mActivityTestRule.handleBlockingCallbackAction(
-                testCallbackHelperContainer.getOnPageFinishedHelper(), new Runnable() {
+                testCallbackHelperContainer.getOnPageFinishedHelper(),
+                new Runnable() {
                     @Override
                     public void run() {
                         navigationController.goBack();
@@ -51,10 +52,13 @@ public class NavigationTest {
                 });
     }
 
-    private void reload(final NavigationController navigationController,
-            TestCallbackHelperContainer testCallbackHelperContainer) throws Throwable {
+    private void reload(
+            final NavigationController navigationController,
+            TestCallbackHelperContainer testCallbackHelperContainer)
+            throws Throwable {
         mActivityTestRule.handleBlockingCallbackAction(
-                testCallbackHelperContainer.getOnPageFinishedHelper(), new Runnable() {
+                testCallbackHelperContainer.getOnPageFinishedHelper(),
+                new Runnable() {
                     @Override
                     public void run() {
                         navigationController.reload(true);
@@ -122,9 +126,10 @@ public class NavigationTest {
     @MediumTest
     @Feature({"Navigation"})
     public void testPageReload() throws Throwable {
-        final String htmlLoadTime = "<html><head>"
-                + "<script type=\"text/javascript\">var loadTimestamp = new Date().getTime();"
-                + "function getLoadtime() { return loadTimestamp; }</script></head></html>";
+        final String htmlLoadTime =
+                "<html><head><script type=\"text/javascript\">var loadTimestamp = new"
+                        + " Date().getTime();function getLoadtime() { return loadTimestamp;"
+                        + " }</script></head></html>";
         final String urlLoadTime = UrlUtils.encodeHtmlDataUri(htmlLoadTime);
 
         ContentShellActivity activity = mActivityTestRule.launchContentShellWithUrl(urlLoadTime);

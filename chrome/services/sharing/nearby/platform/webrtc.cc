@@ -20,6 +20,7 @@
 #include "third_party/nearby/src/internal/platform/count_down_latch.h"
 #include "third_party/nearby/src/internal/platform/future.h"
 #include "third_party/nearby/src/internal/platform/logging.h"
+#include "third_party/webrtc/api/async_dns_resolver.h"
 #include "third_party/webrtc/api/jsep.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
@@ -95,16 +96,32 @@ const std::string GetCurrentCountryCode() {
   return std::string(icu::Locale::getDefault().getCountry());
 }
 
-class ProxyAsyncResolverFactory final : public webrtc::AsyncResolverFactory {
+class ProxyAsyncDnsResolverFactory final
+    : public webrtc::AsyncDnsResolverFactoryInterface {
  public:
-  explicit ProxyAsyncResolverFactory(
+  explicit ProxyAsyncDnsResolverFactory(
       sharing::IpcPacketSocketFactory* socket_factory)
       : socket_factory_(socket_factory) {
     DCHECK(socket_factory_);
   }
 
-  rtc::AsyncResolverInterface* Create() override {
-    return socket_factory_->CreateAsyncResolver();
+  std::unique_ptr<webrtc::AsyncDnsResolverInterface> Create() override {
+    return socket_factory_->CreateAsyncDnsResolver();
+  }
+  std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
+      const rtc::SocketAddress& addr,
+      absl::AnyInvocable<void()> callback) override {
+    auto temp = Create();
+    temp->Start(addr, std::move(callback));
+    return temp;
+  }
+  std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
+      const rtc::SocketAddress& addr,
+      int family,
+      absl::AnyInvocable<void()> callback) override {
+    auto temp = Create();
+    temp->Start(addr, family, std::move(callback));
+    return temp;
   }
 
  private:
@@ -530,8 +547,8 @@ void WebRtcMedium::OnIceServersFetched(
   port_config.enable_nonproxied_udp = true;
   dependencies.allocator = std::make_unique<sharing::P2PPortAllocator>(
       network_manager_.get(), socket_factory_.get(), port_config);
-  dependencies.async_resolver_factory =
-      std::make_unique<ProxyAsyncResolverFactory>(socket_factory_.get());
+  dependencies.async_dns_resolver_factory =
+      std::make_unique<ProxyAsyncDnsResolverFactory>(socket_factory_.get());
 
   webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::PeerConnectionInterface>>
       peer_connection = peer_connection_factory_->CreatePeerConnectionOrError(

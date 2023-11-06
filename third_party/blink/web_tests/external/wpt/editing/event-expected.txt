@@ -1,184 +1,191 @@
 This is a testharness.js-based test.
 Found 180 tests; 173 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Simple editable div: execCommand() must not throw
-PASS Simple editable div: input event
-PASS Editable b: execCommand() must not throw
-PASS Editable b: input event
-PASS No editable content: execCommand() must not throw
-PASS No editable content: input event
-PASS Partially-selected editable content: execCommand() must not throw
-FAIL Partially-selected editable content: input event assert_equals: number of input events fired expected 0 but got 1
-PASS Selection spans two editing hosts: execCommand() must not throw
-FAIL Selection spans two editing hosts: input event assert_equals: number of input events fired expected 0 but got 1
-PASS Selection includes two editing hosts: execCommand() must not throw
-PASS Selection includes two editing hosts: input event
-PASS Changing selection from handler: execCommand() must not throw
-FAIL Changing selection from handler: input event assert_equals: event.target expected Element node <div contenteditable="">bar</div> but got Element node <div contenteditable=""><b>foo</b></div>
-PASS Command backColor, value "": execCommand() must not throw
-PASS Command backColor, value "": input event
-PASS Command backColor, value "quasit": execCommand() must not throw
-PASS Command backColor, value "quasit": input event
-PASS Command backColor, value "green": execCommand() must not throw
-PASS Command backColor, value "green": input event
-PASS Command createLink, value "": execCommand() must not throw
-FAIL Command createLink, value "": input event assert_equals: number of input events fired expected 1 but got 0
-PASS Command createLink, value "quasit": execCommand() must not throw
-PASS Command createLink, value "quasit": input event
-PASS Command createLink, value "http://www.w3.org/community/editing/": execCommand() must not throw
-PASS Command createLink, value "http://www.w3.org/community/editing/": input event
-PASS Command fontName, value "": execCommand() must not throw
-PASS Command fontName, value "": input event
-PASS Command fontName, value "quasit": execCommand() must not throw
-PASS Command fontName, value "quasit": input event
-PASS Command fontName, value "serif": execCommand() must not throw
-PASS Command fontName, value "serif": input event
-PASS Command fontName, value "Helvetica": execCommand() must not throw
-PASS Command fontName, value "Helvetica": input event
-PASS Command fontSize, value "": execCommand() must not throw
-FAIL Command fontSize, value "": input event assert_equals: number of input events fired expected 1 but got 0
-PASS Command fontSize, value "quasit": execCommand() must not throw
-FAIL Command fontSize, value "quasit": input event assert_equals: number of input events fired expected 1 but got 0
-PASS Command fontSize, value "6": execCommand() must not throw
-PASS Command fontSize, value "6": input event
-PASS Command fontSize, value "15px": execCommand() must not throw
-PASS Command fontSize, value "15px": input event
-PASS Command foreColor, value "": execCommand() must not throw
-PASS Command foreColor, value "": input event
-PASS Command foreColor, value "quasit": execCommand() must not throw
-PASS Command foreColor, value "quasit": input event
-PASS Command foreColor, value "green": execCommand() must not throw
-PASS Command foreColor, value "green": input event
-PASS Command hiliteColor, value "": execCommand() must not throw
-PASS Command hiliteColor, value "": input event
-PASS Command hiliteColor, value "quasit": execCommand() must not throw
-PASS Command hiliteColor, value "quasit": input event
-PASS Command hiliteColor, value "green": execCommand() must not throw
-PASS Command hiliteColor, value "green": input event
-PASS Command italic, value "": execCommand() must not throw
-PASS Command italic, value "": input event
-PASS Command italic, value "quasit": execCommand() must not throw
-PASS Command italic, value "quasit": input event
-PASS Command removeFormat, value "": execCommand() must not throw
-PASS Command removeFormat, value "": input event
-PASS Command removeFormat, value "quasit": execCommand() must not throw
-PASS Command removeFormat, value "quasit": input event
-PASS Command strikeThrough, value "": execCommand() must not throw
-PASS Command strikeThrough, value "": input event
-PASS Command strikeThrough, value "quasit": execCommand() must not throw
-PASS Command strikeThrough, value "quasit": input event
-PASS Command subscript, value "": execCommand() must not throw
-PASS Command subscript, value "": input event
-PASS Command subscript, value "quasit": execCommand() must not throw
-PASS Command subscript, value "quasit": input event
-PASS Command superscript, value "": execCommand() must not throw
-PASS Command superscript, value "": input event
-PASS Command superscript, value "quasit": execCommand() must not throw
-PASS Command superscript, value "quasit": input event
-PASS Command underline, value "": execCommand() must not throw
-PASS Command underline, value "": input event
-PASS Command underline, value "quasit": execCommand() must not throw
-PASS Command underline, value "quasit": input event
-PASS Command unlink, value "": execCommand() must not throw
-PASS Command unlink, value "": input event
-PASS Command unlink, value "quasit": execCommand() must not throw
-PASS Command unlink, value "quasit": input event
-PASS Command delete, value "": execCommand() must not throw
-PASS Command delete, value "": input event
-PASS Command delete, value "quasit": execCommand() must not throw
-PASS Command delete, value "quasit": input event
-PASS Command formatBlock, value "": execCommand() must not throw
-FAIL Command formatBlock, value "": input event assert_equals: number of input events fired expected 1 but got 0
-PASS Command formatBlock, value "quasit": execCommand() must not throw
-PASS Command formatBlock, value "quasit": input event
-PASS Command formatBlock, value "p": execCommand() must not throw
-PASS Command formatBlock, value "p": input event
-PASS Command forwardDelete, value "": execCommand() must not throw
-PASS Command forwardDelete, value "": input event
-PASS Command forwardDelete, value "quasit": execCommand() must not throw
-PASS Command forwardDelete, value "quasit": input event
-PASS Command indent, value "": execCommand() must not throw
-PASS Command indent, value "": input event
-PASS Command indent, value "quasit": execCommand() must not throw
-PASS Command indent, value "quasit": input event
-PASS Command insertHorizontalRule, value "": execCommand() must not throw
-PASS Command insertHorizontalRule, value "": input event
-PASS Command insertHorizontalRule, value "quasit": execCommand() must not throw
-PASS Command insertHorizontalRule, value "quasit": input event
-PASS Command insertHorizontalRule, value "id": execCommand() must not throw
-PASS Command insertHorizontalRule, value "id": input event
-PASS Command insertHTML, value "": execCommand() must not throw
-PASS Command insertHTML, value "": input event
-PASS Command insertHTML, value "quasit": execCommand() must not throw
-PASS Command insertHTML, value "quasit": input event
-PASS Command insertHTML, value "<b>hi</b>": execCommand() must not throw
-PASS Command insertHTML, value "<b>hi</b>": input event
-PASS Command insertImage, value "": execCommand() must not throw
-PASS Command insertImage, value "": input event
-PASS Command insertImage, value "quasit": execCommand() must not throw
-PASS Command insertImage, value "quasit": input event
-PASS Command insertImage, value "../images/green.png": execCommand() must not throw
-PASS Command insertImage, value "../images/green.png": input event
-PASS Command insertLineBreak, value "": execCommand() must not throw
-PASS Command insertLineBreak, value "": input event
-PASS Command insertLineBreak, value "quasit": execCommand() must not throw
-PASS Command insertLineBreak, value "quasit": input event
-PASS Command insertOrderedList, value "": execCommand() must not throw
-PASS Command insertOrderedList, value "": input event
-PASS Command insertOrderedList, value "quasit": execCommand() must not throw
-PASS Command insertOrderedList, value "quasit": input event
-PASS Command insertParagraph, value "": execCommand() must not throw
-PASS Command insertParagraph, value "": input event
-PASS Command insertParagraph, value "quasit": execCommand() must not throw
-PASS Command insertParagraph, value "quasit": input event
-PASS Command insertText, value "": execCommand() must not throw
-PASS Command insertText, value "": input event
-PASS Command insertText, value "quasit": execCommand() must not throw
-PASS Command insertText, value "quasit": input event
-PASS Command insertText, value "abc": execCommand() must not throw
-PASS Command insertText, value "abc": input event
-PASS Command insertUnorderedList, value "": execCommand() must not throw
-PASS Command insertUnorderedList, value "": input event
-PASS Command insertUnorderedList, value "quasit": execCommand() must not throw
-PASS Command insertUnorderedList, value "quasit": input event
-PASS Command justifyCenter, value "": execCommand() must not throw
-PASS Command justifyCenter, value "": input event
-PASS Command justifyCenter, value "quasit": execCommand() must not throw
-PASS Command justifyCenter, value "quasit": input event
-PASS Command justifyFull, value "": execCommand() must not throw
-PASS Command justifyFull, value "": input event
-PASS Command justifyFull, value "quasit": execCommand() must not throw
-PASS Command justifyFull, value "quasit": input event
-PASS Command justifyLeft, value "": execCommand() must not throw
-PASS Command justifyLeft, value "": input event
-PASS Command justifyLeft, value "quasit": execCommand() must not throw
-PASS Command justifyLeft, value "quasit": input event
-PASS Command justifyRight, value "": execCommand() must not throw
-PASS Command justifyRight, value "": input event
-PASS Command justifyRight, value "quasit": execCommand() must not throw
-PASS Command justifyRight, value "quasit": input event
-PASS Command outdent, value "": execCommand() must not throw
-PASS Command outdent, value "": input event
-PASS Command outdent, value "quasit": execCommand() must not throw
-PASS Command outdent, value "quasit": input event
-PASS Command redo, value "": execCommand() must not throw
-PASS Command redo, value "": input event
-PASS Command redo, value "quasit": execCommand() must not throw
-PASS Command redo, value "quasit": input event
-PASS Command selectAll, value "": execCommand() must not throw
-PASS Command selectAll, value "": input event
-PASS Command selectAll, value "quasit": execCommand() must not throw
-PASS Command selectAll, value "quasit": input event
-PASS Command styleWithCSS, value "": execCommand() must not throw
-PASS Command styleWithCSS, value "": input event
-PASS Command styleWithCSS, value "quasit": execCommand() must not throw
-PASS Command styleWithCSS, value "quasit": input event
-PASS Command undo, value "": execCommand() must not throw
-PASS Command undo, value "": input event
-PASS Command undo, value "quasit": execCommand() must not throw
-PASS Command undo, value "quasit": input event
-PASS Command useCSS, value "": execCommand() must not throw
-PASS Command useCSS, value "": input event
-PASS Command useCSS, value "quasit": execCommand() must not throw
-PASS Command useCSS, value "quasit": input event
+[PASS] Simple editable div: execCommand() must not throw
+[PASS] Simple editable div: input event
+[PASS] Editable b: execCommand() must not throw
+[PASS] Editable b: input event
+[PASS] No editable content: execCommand() must not throw
+[PASS] No editable content: input event
+[PASS] Partially-selected editable content: execCommand() must not throw
+[FAIL] Partially-selected editable content: input event
+  assert_equals: number of input events fired expected 0 but got 1
+[PASS] Selection spans two editing hosts: execCommand() must not throw
+[FAIL] Selection spans two editing hosts: input event
+  assert_equals: number of input events fired expected 0 but got 1
+[PASS] Selection includes two editing hosts: execCommand() must not throw
+[PASS] Selection includes two editing hosts: input event
+[PASS] Changing selection from handler: execCommand() must not throw
+[FAIL] Changing selection from handler: input event
+  assert_equals: event.target expected Element node <div contenteditable="">bar</div> but got Element node <div contenteditable=""><b>foo</b></div>
+[PASS] Command backColor, value "": execCommand() must not throw
+[PASS] Command backColor, value "": input event
+[PASS] Command backColor, value "quasit": execCommand() must not throw
+[PASS] Command backColor, value "quasit": input event
+[PASS] Command backColor, value "green": execCommand() must not throw
+[PASS] Command backColor, value "green": input event
+[PASS] Command createLink, value "": execCommand() must not throw
+[FAIL] Command createLink, value "": input event
+  assert_equals: number of input events fired expected 1 but got 0
+[PASS] Command createLink, value "quasit": execCommand() must not throw
+[PASS] Command createLink, value "quasit": input event
+[PASS] Command createLink, value "http://www.w3.org/community/editing/": execCommand() must not throw
+[PASS] Command createLink, value "http://www.w3.org/community/editing/": input event
+[PASS] Command fontName, value "": execCommand() must not throw
+[PASS] Command fontName, value "": input event
+[PASS] Command fontName, value "quasit": execCommand() must not throw
+[PASS] Command fontName, value "quasit": input event
+[PASS] Command fontName, value "serif": execCommand() must not throw
+[PASS] Command fontName, value "serif": input event
+[PASS] Command fontName, value "Helvetica": execCommand() must not throw
+[PASS] Command fontName, value "Helvetica": input event
+[PASS] Command fontSize, value "": execCommand() must not throw
+[FAIL] Command fontSize, value "": input event
+  assert_equals: number of input events fired expected 1 but got 0
+[PASS] Command fontSize, value "quasit": execCommand() must not throw
+[FAIL] Command fontSize, value "quasit": input event
+  assert_equals: number of input events fired expected 1 but got 0
+[PASS] Command fontSize, value "6": execCommand() must not throw
+[PASS] Command fontSize, value "6": input event
+[PASS] Command fontSize, value "15px": execCommand() must not throw
+[PASS] Command fontSize, value "15px": input event
+[PASS] Command foreColor, value "": execCommand() must not throw
+[PASS] Command foreColor, value "": input event
+[PASS] Command foreColor, value "quasit": execCommand() must not throw
+[PASS] Command foreColor, value "quasit": input event
+[PASS] Command foreColor, value "green": execCommand() must not throw
+[PASS] Command foreColor, value "green": input event
+[PASS] Command hiliteColor, value "": execCommand() must not throw
+[PASS] Command hiliteColor, value "": input event
+[PASS] Command hiliteColor, value "quasit": execCommand() must not throw
+[PASS] Command hiliteColor, value "quasit": input event
+[PASS] Command hiliteColor, value "green": execCommand() must not throw
+[PASS] Command hiliteColor, value "green": input event
+[PASS] Command italic, value "": execCommand() must not throw
+[PASS] Command italic, value "": input event
+[PASS] Command italic, value "quasit": execCommand() must not throw
+[PASS] Command italic, value "quasit": input event
+[PASS] Command removeFormat, value "": execCommand() must not throw
+[PASS] Command removeFormat, value "": input event
+[PASS] Command removeFormat, value "quasit": execCommand() must not throw
+[PASS] Command removeFormat, value "quasit": input event
+[PASS] Command strikeThrough, value "": execCommand() must not throw
+[PASS] Command strikeThrough, value "": input event
+[PASS] Command strikeThrough, value "quasit": execCommand() must not throw
+[PASS] Command strikeThrough, value "quasit": input event
+[PASS] Command subscript, value "": execCommand() must not throw
+[PASS] Command subscript, value "": input event
+[PASS] Command subscript, value "quasit": execCommand() must not throw
+[PASS] Command subscript, value "quasit": input event
+[PASS] Command superscript, value "": execCommand() must not throw
+[PASS] Command superscript, value "": input event
+[PASS] Command superscript, value "quasit": execCommand() must not throw
+[PASS] Command superscript, value "quasit": input event
+[PASS] Command underline, value "": execCommand() must not throw
+[PASS] Command underline, value "": input event
+[PASS] Command underline, value "quasit": execCommand() must not throw
+[PASS] Command underline, value "quasit": input event
+[PASS] Command unlink, value "": execCommand() must not throw
+[PASS] Command unlink, value "": input event
+[PASS] Command unlink, value "quasit": execCommand() must not throw
+[PASS] Command unlink, value "quasit": input event
+[PASS] Command delete, value "": execCommand() must not throw
+[PASS] Command delete, value "": input event
+[PASS] Command delete, value "quasit": execCommand() must not throw
+[PASS] Command delete, value "quasit": input event
+[PASS] Command formatBlock, value "": execCommand() must not throw
+[FAIL] Command formatBlock, value "": input event
+  assert_equals: number of input events fired expected 1 but got 0
+[PASS] Command formatBlock, value "quasit": execCommand() must not throw
+[PASS] Command formatBlock, value "quasit": input event
+[PASS] Command formatBlock, value "p": execCommand() must not throw
+[PASS] Command formatBlock, value "p": input event
+[PASS] Command forwardDelete, value "": execCommand() must not throw
+[PASS] Command forwardDelete, value "": input event
+[PASS] Command forwardDelete, value "quasit": execCommand() must not throw
+[PASS] Command forwardDelete, value "quasit": input event
+[PASS] Command indent, value "": execCommand() must not throw
+[PASS] Command indent, value "": input event
+[PASS] Command indent, value "quasit": execCommand() must not throw
+[PASS] Command indent, value "quasit": input event
+[PASS] Command insertHorizontalRule, value "": execCommand() must not throw
+[PASS] Command insertHorizontalRule, value "": input event
+[PASS] Command insertHorizontalRule, value "quasit": execCommand() must not throw
+[PASS] Command insertHorizontalRule, value "quasit": input event
+[PASS] Command insertHorizontalRule, value "id": execCommand() must not throw
+[PASS] Command insertHorizontalRule, value "id": input event
+[PASS] Command insertHTML, value "": execCommand() must not throw
+[PASS] Command insertHTML, value "": input event
+[PASS] Command insertHTML, value "quasit": execCommand() must not throw
+[PASS] Command insertHTML, value "quasit": input event
+[PASS] Command insertHTML, value "<b>hi</b>": execCommand() must not throw
+[PASS] Command insertHTML, value "<b>hi</b>": input event
+[PASS] Command insertImage, value "": execCommand() must not throw
+[PASS] Command insertImage, value "": input event
+[PASS] Command insertImage, value "quasit": execCommand() must not throw
+[PASS] Command insertImage, value "quasit": input event
+[PASS] Command insertImage, value "../images/green.png": execCommand() must not throw
+[PASS] Command insertImage, value "../images/green.png": input event
+[PASS] Command insertLineBreak, value "": execCommand() must not throw
+[PASS] Command insertLineBreak, value "": input event
+[PASS] Command insertLineBreak, value "quasit": execCommand() must not throw
+[PASS] Command insertLineBreak, value "quasit": input event
+[PASS] Command insertOrderedList, value "": execCommand() must not throw
+[PASS] Command insertOrderedList, value "": input event
+[PASS] Command insertOrderedList, value "quasit": execCommand() must not throw
+[PASS] Command insertOrderedList, value "quasit": input event
+[PASS] Command insertParagraph, value "": execCommand() must not throw
+[PASS] Command insertParagraph, value "": input event
+[PASS] Command insertParagraph, value "quasit": execCommand() must not throw
+[PASS] Command insertParagraph, value "quasit": input event
+[PASS] Command insertText, value "": execCommand() must not throw
+[PASS] Command insertText, value "": input event
+[PASS] Command insertText, value "quasit": execCommand() must not throw
+[PASS] Command insertText, value "quasit": input event
+[PASS] Command insertText, value "abc": execCommand() must not throw
+[PASS] Command insertText, value "abc": input event
+[PASS] Command insertUnorderedList, value "": execCommand() must not throw
+[PASS] Command insertUnorderedList, value "": input event
+[PASS] Command insertUnorderedList, value "quasit": execCommand() must not throw
+[PASS] Command insertUnorderedList, value "quasit": input event
+[PASS] Command justifyCenter, value "": execCommand() must not throw
+[PASS] Command justifyCenter, value "": input event
+[PASS] Command justifyCenter, value "quasit": execCommand() must not throw
+[PASS] Command justifyCenter, value "quasit": input event
+[PASS] Command justifyFull, value "": execCommand() must not throw
+[PASS] Command justifyFull, value "": input event
+[PASS] Command justifyFull, value "quasit": execCommand() must not throw
+[PASS] Command justifyFull, value "quasit": input event
+[PASS] Command justifyLeft, value "": execCommand() must not throw
+[PASS] Command justifyLeft, value "": input event
+[PASS] Command justifyLeft, value "quasit": execCommand() must not throw
+[PASS] Command justifyLeft, value "quasit": input event
+[PASS] Command justifyRight, value "": execCommand() must not throw
+[PASS] Command justifyRight, value "": input event
+[PASS] Command justifyRight, value "quasit": execCommand() must not throw
+[PASS] Command justifyRight, value "quasit": input event
+[PASS] Command outdent, value "": execCommand() must not throw
+[PASS] Command outdent, value "": input event
+[PASS] Command outdent, value "quasit": execCommand() must not throw
+[PASS] Command outdent, value "quasit": input event
+[PASS] Command redo, value "": execCommand() must not throw
+[PASS] Command redo, value "": input event
+[PASS] Command redo, value "quasit": execCommand() must not throw
+[PASS] Command redo, value "quasit": input event
+[PASS] Command selectAll, value "": execCommand() must not throw
+[PASS] Command selectAll, value "": input event
+[PASS] Command selectAll, value "quasit": execCommand() must not throw
+[PASS] Command selectAll, value "quasit": input event
+[PASS] Command styleWithCSS, value "": execCommand() must not throw
+[PASS] Command styleWithCSS, value "": input event
+[PASS] Command styleWithCSS, value "quasit": execCommand() must not throw
+[PASS] Command styleWithCSS, value "quasit": input event
+[PASS] Command undo, value "": execCommand() must not throw
+[PASS] Command undo, value "": input event
+[PASS] Command undo, value "quasit": execCommand() must not throw
+[PASS] Command undo, value "quasit": input event
+[PASS] Command useCSS, value "": execCommand() must not throw
+[PASS] Command useCSS, value "": input event
+[PASS] Command useCSS, value "quasit": execCommand() must not throw
+[PASS] Command useCSS, value "quasit": input event
 Harness: the test ran to completion.
 

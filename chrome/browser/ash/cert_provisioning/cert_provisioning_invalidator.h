@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -67,11 +67,17 @@ class CertProvisioningInvalidationHandler
   // invalidation::InvalidationHandler:
   void OnInvalidatorStateChange(invalidation::InvalidatorState state) override;
   void OnIncomingInvalidation(
-      const invalidation::TopicInvalidationMap& invalidation_map) override;
+      const invalidation::Invalidation& invalidation) override;
   std::string GetOwnerName() const override;
   bool IsPublicTopic(const invalidation::Topic& topic) const override;
 
  private:
+  // Returns true if `this` is observing `invalidation_service_`.
+  bool IsRegistered() const;
+
+  // Returns true if `IsRegistered()` and `invalidation_service_` is enabled.
+  bool AreInvalidationsEnabled() const;
+
   // Registers the handler to |invalidation_service_| and subscribes with
   // |topic_|.
   // Returns true if registered successfully or if already registered,
@@ -81,15 +87,6 @@ class CertProvisioningInvalidationHandler
   // Sequence checker to ensure that calls from invalidation service are
   // consecutive.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  struct State {
-    bool is_registered;
-    bool is_invalidation_service_enabled;
-  };
-
-  // Represents state of current handler: whether invalidation service is
-  // enabled and whether handler is registered.
-  State state_{false, false};
 
   // Represents a handler's scope: user or device.
   const CertScope scope_;

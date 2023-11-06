@@ -1525,11 +1525,16 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // LocalStorage are counted. TODO(crbug.com/1307796): Use a different approach
   // to determine presence of data that does not depend on UI code and has a
   // better resolution when 3PSP is fully enabled.
-  ExpectTotalModelCount(kStorageTypes.size() - 2,
-                        base::FeatureList::IsEnabled(
-                            browsing_data::features::kMigrateStorageToBDM)
-                            ? 2
-                            : 3);
+  auto expected_model_size = 3;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kMigrateStorageToBDM)) {
+    expected_model_size--;
+  }
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    expected_model_size--;
+  }
+  ExpectTotalModelCount(kStorageTypes.size() - 2, expected_model_size);
   RemoveAndWait(chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                 content::BrowsingDataRemover::DATA_TYPE_CACHE |
                 chrome_browsing_data_remover::DATA_TYPE_HISTORY |
@@ -1585,11 +1590,17 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   // Cookies and LocalStorage are counted. TODO(crbug.com/1307796): Use a
   // different approach to determine presence of data that does not depend on UI
   // code and has a better resolution when 3PSP is fully enabled.
+  auto expected_model_size = 3;
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kMigrateStorageToBDM)) {
+    expected_model_size--;
+  }
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel)) {
+    expected_model_size--;
+  }
   ExpectTotalModelCount(kSessionOnlyStorageTestTypes.size() - 1,
-                        base::FeatureList::IsEnabled(
-                            browsing_data::features::kMigrateStorageToBDM)
-                            ? 2
-                            : 3);
+                        expected_model_size);
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::COOKIES,
                                  CONTENT_SETTING_SESSION_ONLY);

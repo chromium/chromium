@@ -49,7 +49,7 @@ class PortalContents : public GarbageCollected<PortalContents>,
   bool IsValid() const { return remote_portal_.is_bound(); }
 
   // Returns true if this contents is currently being activated.
-  bool IsActivating() const { return activation_delegate_; }
+  bool IsActivating() const { return activation_delegate_ != nullptr; }
 
   // Returns an unguessable token which uniquely identifies the contents, if
   // valid.

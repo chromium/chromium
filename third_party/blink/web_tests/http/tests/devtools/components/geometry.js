@@ -4,6 +4,7 @@
 
 import {TestRunner} from 'test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
 (async function() {
@@ -17,7 +18,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
           [new UIModule.Geometry.Vector(3, 4, 5), new UIModule.Geometry.Vector(-1, 0, -1), new UIModule.Geometry.Vector(6, -2, 3)];
       TestRunner.addResult('Testing vector length');
       for (var i = 0; i < testVectors.length; ++i)
-        TestRunner.addResult(String.sprintf('Vector length: %.4f', testVectors[i].length()));
+        TestRunner.addResult(Platform.StringUtilities.sprintf('Vector length: %.4f', testVectors[i].length()));
 
       next();
     },
@@ -60,7 +61,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
       for (var i = 0; i < vectorsU.length; ++i) {
         var result = UIModule.Geometry.crossProduct(vectorsU[i], vectorsV[i]);
-        TestRunner.addResult(String.sprintf('Cross Product: [%.4f, %.4f, %.4f]', result.x, result.y, result.z));
+        TestRunner.addResult(Platform.StringUtilities.sprintf('Cross Product: [%.4f, %.4f, %.4f]', result.x, result.y, result.z));
       }
 
       next();
@@ -83,7 +84,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
 
       for (var i = 0; i < vectorsU.length; ++i)
         TestRunner.addResult(
-            String.sprintf('Calculate angle: %.4f', UIModule.Geometry.calculateAngle(vectorsU[i], vectorsV[i])));
+            Platform.StringUtilities.sprintf('Calculate angle: %.4f', UIModule.Geometry.calculateAngle(vectorsU[i], vectorsV[i])));
 
       next();
     },
@@ -91,7 +92,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     function testRadiansToDegrees(next) {
       var angles = [Math.PI, Math.PI / 4, Math.PI / 6];
       for (var i = 0; i < angles.length; ++i)
-        TestRunner.addResult(String.sprintf('deg: %.4f', UIModule.Geometry.radiansToDegrees(angles[i])));
+        TestRunner.addResult(Platform.StringUtilities.sprintf('deg: %.4f', UIModule.Geometry.radiansToDegrees(angles[i])));
 
       next();
     },
@@ -99,7 +100,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     function testDegreesToRadians(next) {
       var angles = [-30, 0, 30, 90, 180];
       for (var i = 0; i < angles.length; ++i)
-        TestRunner.addResult(String.sprintf('rad: %.4f', UIModule.Geometry.degreesToRadians(angles[i])));
+        TestRunner.addResult(Platform.StringUtilities.sprintf('rad: %.4f', UIModule.Geometry.degreesToRadians(angles[i])));
 
       next();
     }

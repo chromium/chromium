@@ -13,7 +13,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
-import {fakeAuthExtensionData, getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
+import {fakeAuthenticationData, getFakeAccountsList, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
 suite('InlineLoginTest', () => {
   let inlineLoginComponent: InlineLoginAppElement;
@@ -44,12 +44,12 @@ suite('InlineLoginTest', () => {
     inlineLoginComponent = document.createElement('inline-login-app');
     document.body.appendChild(inlineLoginComponent);
     testAuthenticator = new TestAuthenticator();
-    inlineLoginComponent.setAuthExtHostForTest(testAuthenticator);
+    inlineLoginComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
   });
 
   test('Initialize', () => {
-    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+    webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     // 'Add account' screen should be shown.
     assertTrue(isVisible(`#${View.ADD_ACCOUNT}`));
 
@@ -66,10 +66,10 @@ suite('InlineLoginTest', () => {
   });
 
   test('WebUICallbacks', () => {
-    webUIListenerCallback('load-auth-extension', fakeAuthExtensionData);
+    webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     assertEquals(1, testAuthenticator.loadCalls);
-    assertEquals(fakeAuthExtensionData, testAuthenticator.data);
-    assertEquals(fakeAuthExtensionData.authMode, testAuthenticator.authMode);
+    assertEquals(fakeAuthenticationData, testAuthenticator.data);
+    assertEquals(fakeAuthenticationData.authMode, testAuthenticator.authMode);
 
     webUIListenerCallback('close-dialog');
     assertEquals(1, testBrowserProxy.getCallCount('dialogClose'));
@@ -82,12 +82,12 @@ suite('InlineLoginTest', () => {
     });
   });
 
-  test('AuthExtHostCallbacks', async () => {
+  test('AuthenticatorCallbacks', async () => {
     const fakeUrl = 'www.google.com/fake';
 
     assertTrue(inlineLoginComponent.$.spinner.active);
     testAuthenticator.dispatchEvent(new Event('ready'));
-    assertEquals(1, testBrowserProxy.getCallCount('authExtensionReady'));
+    assertEquals(1, testBrowserProxy.getCallCount('authenticatorReady'));
     assertFalse(inlineLoginComponent.$.spinner.active);
 
     testAuthenticator.dispatchEvent(

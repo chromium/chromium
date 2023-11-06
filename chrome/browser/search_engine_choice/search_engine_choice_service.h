@@ -19,9 +19,19 @@
 class Browser;
 class BrowserListObserver;
 
+namespace search_engines {
+enum class SearchEngineChoiceScreenConditions;
+}
+
 // Service handling the Search Engine Choice dialog.
 class SearchEngineChoiceService : public KeyedService {
  public:
+  // Specifies the view in which the choice screen UI is rendered.
+  enum class EntryPoint {
+    kProfilePicker = 0,
+    kDialog,
+  };
+
   SearchEngineChoiceService(Profile& profile,
                             TemplateURLService& template_url_service);
   ~SearchEngineChoiceService() override;
@@ -38,12 +48,17 @@ class SearchEngineChoiceService : public KeyedService {
   // corresponding preferences.
   // `prepopulate_id` is the `prepopulate_id` of the search engine found in
   // `components/search_engines/template_url_data.h`. It will always be > 0.
+  // `entry_point` is the view in which the UI is rendered.
   // Virtual to be able to mock in tests.
-  virtual void NotifyChoiceMade(int prepopulate_id);
+  virtual void NotifyChoiceMade(int prepopulate_id, EntryPoint entry_point);
 
   // Informs the service that a Search Engine Choice dialog has been closed for
   // `browser`.
   void NotifyDialogClosed(Browser* browser);
+
+  // Informs the service that the learn more link was clicked. This is used to
+  // record histograms. `entry_point` is the view in which the UI is rendered.
+  void NotifyLearnMoreLinkClicked(EntryPoint entry_point);
 
   // Returns whether a Search Engine Choice dialog is currently open or not for
   // `browser`.
@@ -63,9 +78,15 @@ class SearchEngineChoiceService : public KeyedService {
   // Returns whether the user has already made a choice or not.
   bool HasUserMadeChoice() const;
 
-  // Returns whether the user made the search engine choice during the first run
-  // experience.
-  bool WasChoiceMadeInFRE() const;
+  // Checks whether we need to display the Privacy Sandbox dialog
+  // in context of the Search Engine Choice.
+  // The Privacy Sandbox dialog should be delayed to the next Chrome run if the
+  // Search Engine Choice dialog will be or has been displayed in the current
+  // run.
+  // The Privacy Sandbox dialog should be displayed directly when the
+  // browser gets launched in the case where the search engine choice was made
+  // in the FRE.
+  bool CanSuppressPrivacySandboxPromo() const;
 
   // Returns the list of search engines.
   // The search engine details returned by this function will be the canonical
@@ -103,6 +124,9 @@ class SearchEngineChoiceService : public KeyedService {
   };
   friend class SearchEngineChoiceServiceFactory;
 
+  search_engines::SearchEngineChoiceScreenConditions ComputeDialogConditions(
+      Browser& browser);
+
   // A map of Browser windows which have an open Search Engine Choice dialog to
   // the callback that will close the browser's dialog.
   base::flat_map<Browser*, base::OnceClosure> browsers_with_open_dialogs_;
@@ -110,8 +134,8 @@ class SearchEngineChoiceService : public KeyedService {
   // Observes the browser list for closed browsers.
   BrowserObserver browser_observer_{*this};
 
-  // To know whether the choice was made during the FRE or not.
-  bool choice_made_in_fre_ = false;
+  // To know whether the choice was made during the Profile Picker or not.
+  bool choice_made_in_profile_picker_ = false;
 
   // The `KeyedService` lifetime is expected to exceed the profile's.
   const raw_ref<Profile> profile_;

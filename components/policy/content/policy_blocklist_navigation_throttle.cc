@@ -10,7 +10,6 @@
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
@@ -88,13 +87,6 @@ PolicyBlocklistNavigationThrottle::WillStartRequest() {
 // here to determine whether to use SafeSitesNavigationThrottle.
 content::NavigationThrottle::ThrottleCheckResult
 PolicyBlocklistNavigationThrottle::CheckSafeSitesFilter(const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kSafeSitesFilterBehaviorPolicyAndroid)) {
-    return PROCEED;
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-
   SafeSitesFilterBehavior filter_behavior =
       static_cast<SafeSitesFilterBehavior>(
           prefs_->GetInteger(policy::policy_prefs::kSafeSitesFilterBehavior));

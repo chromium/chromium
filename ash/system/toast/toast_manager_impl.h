@@ -49,23 +49,21 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
 
   // ToastManager overrides:
   void Show(ToastData data) override;
-  void Cancel(const std::string& id) override;
+  void Cancel(std::string_view id) override;
   bool MaybeToggleA11yHighlightOnActiveToastDismissButton(
-      const std::string& id) override;
+      std::string_view id) override;
   bool MaybeActivateHighlightedDismissButtonOnActiveToast(
-      const std::string& id) override;
-  bool IsRunning(std::string_view id) const override;
+      std::string_view id) override;
+  bool IsToastShown(std::string_view id) const override;
+  bool IsToastDismissButtonHighlighted(std::string_view id) const override;
   std::unique_ptr<ScopedToastPause> CreateScopedPause() override;
-  bool IsHighlighted(std::string_view id) const override;
 
   // ToastOverlay::Delegate overrides:
-  void OnClosed() override;
+  void CloseToast() override;
   void OnToastHoverStateChanged(bool is_hovering) override;
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
-
-  const ToastData& GetCurrentToastDataForTesting() const;
 
  private:
   class PausableTimer;

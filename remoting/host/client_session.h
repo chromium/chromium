@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "remoting/base/constants.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/client_session_details.h"
@@ -40,6 +41,7 @@
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/data_channel_manager.h"
 #include "remoting/protocol/display_size.h"
+#include "remoting/protocol/fractional_input_filter.h"
 #include "remoting/protocol/host_stub.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "remoting/protocol/input_filter.h"
@@ -285,14 +287,15 @@ class ClientSession : public protocol::HostStub,
   // The DesktopEnvironment instance for this session.
   std::unique_ptr<DesktopEnvironment> desktop_environment_;
 
-  // Filter used as the final element in the input pipeline.
-  protocol::InputFilter host_input_filter_;
-
   // Tracker used to release pressed keys and buttons when disconnecting.
   protocol::InputEventTracker input_tracker_;
 
   // Filter used to disable remote inputs during local input activity.
   RemoteInputFilter remote_input_filter_;
+
+  // Filter used to convert any fractional coordinates to input-injection
+  // coordinates.
+  protocol::FractionalInputFilter fractional_input_filter_;
 
   // Filter used to clamp mouse events to the current display dimensions.
   protocol::MouseInputFilter mouse_clamping_filter_;
@@ -354,8 +357,8 @@ class ClientSession : public protocol::HostStub,
   DesktopDisplayInfo desktop_display_info_;
 
   // Default DPI values to use if a display reports 0 for DPI.
-  int default_x_dpi_;
-  int default_y_dpi_;
+  int default_x_dpi_ = kDefaultDpi;
+  int default_y_dpi_ = kDefaultDpi;
 
   // The index of the desktop display to show to the user.
   // Default is webrtc::kInvalidScreenScreenId because we need to perform

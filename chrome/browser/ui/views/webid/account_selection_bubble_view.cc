@@ -690,8 +690,8 @@ void AccountSelectionBubbleView::ShowFailureDialog(
 
   // Add continue button.
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::OnSigninToIdP,
-                          base::Unretained(observer_)),
+      base::BindRepeating(&Observer::OnSigninToIdP, base::Unretained(observer_),
+                          idp_metadata.idp_login_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_MISMATCH_DIALOG_CONTINUE),
       this, idp_metadata);
   row->AddChildView(std::move(button));

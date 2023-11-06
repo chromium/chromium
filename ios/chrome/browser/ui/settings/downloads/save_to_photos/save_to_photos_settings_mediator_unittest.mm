@@ -135,21 +135,16 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
   // `askEveryTimeSwitchOn` or `identityEnabled` in `fake_consumer`.
   void CheckFakeConsumerIdentities(
       FakeSaveToPhotosSettingsConsumer* fake_consumer,
-      id<SystemIdentity> expected_presented_identity,
-      bool presented_identity_is_selected) {
-    UIImage* expected_presented_identity_avatar =
+      id<SystemIdentity> saved_identity) {
+    UIImage* saved_identity_avatar =
         GetAccountManagerService()->GetIdentityAvatarWithIdentity(
-            expected_presented_identity, IdentityAvatarSize::TableViewIcon);
+            saved_identity, IdentityAvatarSize::TableViewIcon);
 
     // Test that the presented identity is the expected one.
-    EXPECT_NSEQ(expected_presented_identity_avatar,
-                fake_consumer.identityAvatar);
-    EXPECT_NSEQ(expected_presented_identity.userFullName,
-                fake_consumer.identityName);
-    EXPECT_NSEQ(expected_presented_identity.userEmail,
-                fake_consumer.identityEmail);
-    EXPECT_NSEQ(expected_presented_identity.gaiaID,
-                fake_consumer.identityGaiaID);
+    EXPECT_NSEQ(saved_identity_avatar, fake_consumer.identityAvatar);
+    EXPECT_NSEQ(saved_identity.userFullName, fake_consumer.identityName);
+    EXPECT_NSEQ(saved_identity.userEmail, fake_consumer.identityEmail);
+    EXPECT_NSEQ(saved_identity.gaiaID, fake_consumer.identityGaiaID);
 
     // Tests that if there is at least an element, it matches `fake_identity_a_`
     // and is selected if its GAIA ID matches that of the expected selected
@@ -167,8 +162,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
       EXPECT_NSEQ(fake_identity_a_avatar,
                   fake_consumer.identityConfigurators[0].avatar);
       EXPECT_EQ([fake_consumer.identityConfigurators[0].gaiaID
-                    isEqual:expected_presented_identity.gaiaID] &&
-                    presented_identity_is_selected,
+                    isEqual:saved_identity.gaiaID],
                 fake_consumer.identityConfigurators[0].selected);
     }
 
@@ -187,9 +181,8 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
                   fake_consumer.identityConfigurators[1].email);
       EXPECT_NSEQ(fake_identity_b_avatar,
                   fake_consumer.identityConfigurators[1].avatar);
-      EXPECT_EQ([fake_identity_b_.gaiaID
-                    isEqual:expected_presented_identity.gaiaID] &&
-                    presented_identity_is_selected,
+      EXPECT_EQ([fake_consumer.identityConfigurators[1].gaiaID
+                    isEqual:saved_identity.gaiaID],
                 fake_consumer.identityConfigurators[1].selected);
     }
   }
@@ -208,7 +201,9 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
 
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID).c_str());
+      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  browser_state_->GetPrefs()->SetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker, true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
@@ -219,10 +214,15 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
   EXPECT_EQ(base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
             browser_state_->GetPrefs()->GetString(
                 prefs::kIosSaveToPhotosDefaultGaiaId));
+  EXPECT_TRUE(browser_state_->GetPrefs()->GetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker));
 
-  [mediator setSelectedIdentityGaiaID:nil];
-  EXPECT_EQ("", browser_state_->GetPrefs()->GetString(
-                    prefs::kIosSaveToPhotosDefaultGaiaId));
+  [mediator setAskWhichAccountToUseEveryTime:YES];
+  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
+            browser_state_->GetPrefs()->GetString(
+                prefs::kIosSaveToPhotosDefaultGaiaId));
+  EXPECT_FALSE(browser_state_->GetPrefs()->GetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker));
 
   [mediator disconnect];
 }
@@ -234,26 +234,27 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
 
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID).c_str());
+      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  browser_state_->GetPrefs()->SetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker, true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
   mediator.accountConfirmationConsumer = fake_consumer;
   mediator.accountSelectionConsumer = fake_consumer;
 
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_, true);
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_b_.gaiaID).c_str());
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_, true);
+      base::SysNSStringToUTF8(fake_identity_b_.gaiaID));
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
-  // The mediator should only push different identity data if the preference is
-  // not cleared.
-  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_, false);
+  browser_state_->GetPrefs()->ClearPref(
+      prefs::kIosSaveToPhotosSkipAccountPicker);
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
   [mediator disconnect];
@@ -267,27 +268,29 @@ TEST_F(SaveToPhotosSettingsMediatorTest,
 
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
-      base::SysNSStringToUTF8(fake_identity_a_.gaiaID).c_str());
+      base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
+  browser_state_->GetPrefs()->SetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker, true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
   mediator.accountConfirmationConsumer = fake_consumer;
   mediator.accountSelectionConsumer = fake_consumer;
 
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_, true);
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
   FakeSystemIdentityManager* system_identity_manager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
   system_identity_manager->ForgetIdentityFromOtherApplication(fake_identity_b_);
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_, true);
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(1U, fake_consumer.identityConfigurators.count);
 
   fake_identity_b_ = [FakeSystemIdentity fakeIdentity3];
   system_identity_manager->AddIdentity(fake_identity_b_);
-  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_, true);
+  CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
   EXPECT_EQ(2U, fake_consumer.identityConfigurators.count);
 

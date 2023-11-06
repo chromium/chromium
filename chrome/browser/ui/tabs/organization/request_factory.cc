@@ -21,7 +21,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/tab_organization_metadata.pb.h"
+#include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -29,7 +29,8 @@ namespace {
 void OnTabOrganizationModelExecutionResult(
     TabOrganizationRequest::BackendCompletionCallback on_completion,
     TabOrganizationRequest::BackendFailureCallback on_failure,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
+    optimization_guide::OptimizationGuideModelExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!result.has_value()) {
     LOG(ERROR) << "TabOrganizationResponse model execution failed ";
     std::move(on_failure).Run();
@@ -37,8 +38,7 @@ void OnTabOrganizationModelExecutionResult(
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
-      chrome_intelligence_modelexecution_proto::TabOrganizationResponse>(
-      result.value());
+      optimization_guide::proto::TabOrganizationResponse>(result.value());
   if (!response) {
     std::move(on_failure).Run();
     return;
@@ -77,8 +77,7 @@ void PerformTabOrganizationExecution(
     return;
   }
 
-  chrome_intelligence_modelexecution_proto::TabOrganizationRequest
-      tab_organization_request;
+  optimization_guide::proto::TabOrganizationRequest tab_organization_request;
   for (const std::unique_ptr<TabData>& tab_data : request->tab_datas()) {
     if (!tab_data->IsValidForOrganizing()) {
       continue;

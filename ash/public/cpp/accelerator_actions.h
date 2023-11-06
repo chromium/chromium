@@ -18,6 +18,9 @@ namespace ash {
 // <histogram name="Ash.Accelerators.Actions.{ActionName}" in this file
 // tools/metrics/histograms/metadata/ash/histograms.xml.
 //
+// Please keep the ActionName in sync with the AcceleratorAction enum
+// in this file tools/metrics/histograms/enums.xml.
+//
 // Example:
 //
 // If you add a new Action here,
@@ -25,6 +28,7 @@ namespace ash {
 // then, add an new entry inside <token key="ActionName">:
 //  <variant name="NewAction" />
 // in the histograms.xml file.
+// Please also add a new AcceleratorAction enum in the enums.xml file.
 //
 // The added enum member is kNewAction. Its string name is NewAction.
 //

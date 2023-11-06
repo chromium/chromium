@@ -13,9 +13,9 @@
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
 #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
+#include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,14 +80,8 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   InvalidatorState GetInvalidatorState() const { return state_; }
 
   // FCMInvalidationListener::Delegate implementation.
-  void OnInvalidate(const TopicInvalidationMap& invalidation_map) override {
-    TopicSet topics = invalidation_map.GetTopics();
-    for (const auto& topic : topics) {
-      const SingleTopicInvalidationSet& incoming =
-          invalidation_map.ForTopic(topic);
-      List& list = invalidations_[topic];
-      list.insert(list.end(), incoming.begin(), incoming.end());
-    }
+  void OnInvalidate(const Invalidation& invalidation) override {
+    invalidations_[invalidation.topic()].push_back(invalidation);
   }
 
   void OnInvalidatorStateChange(InvalidatorState state) override {
@@ -116,7 +110,7 @@ class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
   }
   ~MockSubscriptionManager() override = default;
   MOCK_METHOD2(UpdateSubscribedTopics,
-               void(const Topics& topics, const std::string& token));
+               void(const TopicMap& topics, const std::string& token));
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
                      absl::optional<Topic>(const std::string& private_topic));
@@ -136,7 +130,7 @@ class FCMInvalidationListenerTest : public testing::Test {
   void SetUp() override {
     StartListener();
 
-    Topics initial_topics;
+    TopicMap initial_topics;
     initial_topics.emplace(kBookmarksTopic_, TopicMetadata{false});
     initial_topics.emplace(kPreferencesTopic_, TopicMetadata{true});
     listener_.UpdateInterestedTopics(initial_topics);
@@ -261,7 +255,7 @@ TEST_F(FCMInvalidationListenerTest, ManyInvalidations_NoDrop) {
 TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   const Topic kUnregisteredId = "unregistered";
   const Topic& topic = kUnregisteredId;
-  Topics topics;
+  TopicMap topics;
   topics.emplace(topic, TopicMetadata{false});
 
   EXPECT_EQ(0U, GetInvalidationCount(topic));
@@ -284,7 +278,7 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Drop) {
   const int kRepeatCount = 10;
   const Topic kTopicA = "unregistered topic a";
   const Topic kTopicB = "unregistered topic b";
-  Topics topics;
+  TopicMap topics;
   topics.emplace(kTopicA, TopicMetadata{false});
   topics.emplace(kTopicB, TopicMetadata{false});
 

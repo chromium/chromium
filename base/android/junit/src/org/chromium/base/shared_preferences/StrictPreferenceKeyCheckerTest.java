@@ -15,9 +15,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Unit tests for {@link StrictPreferenceKeyChecker}.
- */
+/** Unit tests for {@link StrictPreferenceKeyChecker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class StrictPreferenceKeyCheckerTest {
     private static final String KEY1_IN_USE = "Chrome.Feature.Key1";
@@ -36,8 +34,12 @@ public class StrictPreferenceKeyCheckerTest {
 
     @Before
     public void setUp() {
-        List<String> keysInUse = Arrays.asList(KEY1_IN_USE, KEY2_IN_USE,
-                KEY_PREFIX1_IN_USE.pattern(), KEY_PREFIX2_IN_USE.pattern());
+        List<String> keysInUse =
+                Arrays.asList(
+                        KEY1_IN_USE,
+                        KEY2_IN_USE,
+                        KEY_PREFIX1_IN_USE.pattern(),
+                        KEY_PREFIX2_IN_USE.pattern());
         List<String> legacyKeys = Arrays.asList(LEGACY_KEY_IN_USE);
         List<KeyPrefix> legacyPrefixes = Arrays.asList(new KeyPrefix(LEGACY_PREFIX_IN_USE + "*"));
         PreferenceKeyRegistry registry =

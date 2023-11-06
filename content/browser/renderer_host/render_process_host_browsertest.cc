@@ -1147,8 +1147,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, KeepAliveRendererProcess) {
   EXPECT_LT(base::TimeTicks::Now() - start, base::Seconds(30));
 }
 
+// TODO(crbug.com/1462719): Fix and re-enable.
 IN_PROC_BROWSER_TEST_P(RenderProcessHostTest,
-                       KeepAliveRendererProcessWithServiceWorker) {
+                       DISABLED_KeepAliveRendererProcessWithServiceWorker) {
   if (IsKeepAliveInBrowserMigrationEnabled()) {
     // TODO(crbug.com/1356128): Add keepalive in-browser support for workers.
     return;

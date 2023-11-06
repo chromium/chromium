@@ -32,11 +32,9 @@ bool FakeStartCrdSessionJobDelegate::HasActiveSession() const {
   return has_active_session_;
 }
 
-void FakeStartCrdSessionJobDelegate::TerminateSession(
-    base::OnceClosure callback) {
+void FakeStartCrdSessionJobDelegate::TerminateSession() {
   has_active_session_ = false;
   terminate_session_called_ = true;
-  std::move(callback).Run();
 }
 
 void FakeStartCrdSessionJobDelegate::StartCrdHostAndGetCode(

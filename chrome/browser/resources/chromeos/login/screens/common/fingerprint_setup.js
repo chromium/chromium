@@ -31,7 +31,7 @@ import {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
  * third_party/cros_system_api/dbus/service_constants.h.
  * @enum {number}
  */
-var FingerprintResultType = {
+const FingerprintResultType = {
   SUCCESS: 0,
   PARTIAL: 1,
   INSUFFICIENT: 2,
@@ -67,6 +67,14 @@ const FingerprintSetupBase = mixinBehaviors(
  * }}
  */
 FingerprintSetupBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isChildAccount: boolean,
+ * }}
+ */
+let FingerprintSetupScreenData;
 
 /**
  * @polymer
@@ -166,6 +174,9 @@ class FingerprintSetup extends FingerprintSetupBase {
     return FingerprintUIState.START;
   }
 
+  /**
+   * @param {FingerprintSetupScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     this.isChildAccount_ = data['isChildAccount'];
     this.setAnimationState_(true);

@@ -89,7 +89,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
     }
     ~EventData() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEventTiming() const { return event_timing_; }
+    PerformanceEventTiming* GetEventTiming() const {
+      return event_timing_.Get();
+    }
     uint64_t GetFrameIndex() const { return frame_; }
     uint64_t GetPresentationIndex() const { return presentation_index_; }
     base::TimeTicks GetEventTimestamp() const { return event_timestamp_; }
@@ -191,7 +193,7 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void SetCurrentEventTimingEvent(const Event* event) {
     current_event_ = event;
   }
-  const Event* GetCurrentEventTimingEvent() { return current_event_; }
+  const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
   void CreateNavigationTimingInstance(
       mojom::blink::ResourceTimingInfoPtr navigation_resource_timing);
@@ -268,7 +270,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   mutable Member<PerformanceTiming> timing_;
   mutable Member<PerformanceTimingForReporting> timing_for_reporting_;
   DOMHighResTimeStamp pending_pointer_down_start_time_;
-  absl::optional<base::TimeDelta> pending_pointer_down_input_delay_;
   absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
 

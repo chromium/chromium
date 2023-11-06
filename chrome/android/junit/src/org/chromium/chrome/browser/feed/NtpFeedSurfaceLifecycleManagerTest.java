@@ -39,24 +39,16 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.components.prefs.PrefService;
 
-/**
- * Unit tests for {@link FeedSurfaceLifecycleManager}.
- */
+/** Unit tests for {@link FeedSurfaceLifecycleManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NtpFeedSurfaceLifecycleManagerTest {
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private TabImpl mTab;
-    @Mock
-    private Stream mStream;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private FeedSurfaceCoordinator mCoordinator;
-    @Mock
-    private FeedReliabilityLogger mFeedReliabilityLogger;
+    @Mock private Activity mActivity;
+    @Mock private TabImpl mTab;
+    @Mock private Stream mStream;
+    @Mock private PrefService mPrefService;
+    @Mock private FeedSurfaceCoordinator mCoordinator;
+    @Mock private FeedReliabilityLogger mFeedReliabilityLogger;
 
     private NtpFeedSurfaceLifecycleManager mNtpStreamLifecycleManager;
 
@@ -147,8 +139,9 @@ public class NtpFeedSurfaceLifecycleManagerTest {
         verify(mStream, times(1)).onShow();
 
         // Hide the stream.
-        mNtpStreamLifecycleManager.getTabObserverForTesting().onHidden(
-                mTab, TabHidingType.CHANGED_TABS);
+        mNtpStreamLifecycleManager
+                .getTabObserverForTesting()
+                .onHidden(mTab, TabHidingType.CHANGED_TABS);
         verify(mStream, times(1)).onShow();
         verify(mStream, times(1)).onHide();
     }

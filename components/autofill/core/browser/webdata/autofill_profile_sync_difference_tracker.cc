@@ -50,13 +50,13 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // the local entry with remote data.
     std::unique_ptr<AutofillProfile> updated =
         std::make_unique<AutofillProfile>(local_with_same_storage_key.value());
-    updated->OverwriteDataFrom(*remote);
+    updated->OverwriteDataFromForLegacySync(*remote);
     // TODO(crbug.com/1117022l): if |updated| deviates from |remote|, we should
     // sync it back up. The only way |updated| can differ is having some extra
     // fields compared to |remote|. Thus, this cannot lead to an infinite loop
     // of commits from two clients as each commit decreases the set of empty
     // fields. This invariant depends on the implementation of
-    // OverwriteDataFrom() and thus should be enforced by a DCHECK.
+    // OverwriteDataFromForLegacySync() and thus should be enforced by a DCHECK.
     //
     // With structured names the situation changes a bit,
     // but maintains its character.
@@ -66,11 +66,11 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // A merge operations manipulates the name towards a better total
     // verification status of the stored tokens. Consequently, it is not
     // possible to get into a merging loop of two competing clients.
-    // As in the legacy implementation, |OverwriteDataForm()| can change the
-    // profile in a deterministic way and a direct sync-back would be
+    // As in the legacy implementation, |OverwriteDataFromForLegacySync()| can
+    // change the profile in a deterministic way and a direct sync-back would be
     // reasonable.
 
-    if (!updated->EqualsForSyncPurposes(*local_with_same_storage_key)) {
+    if (!updated->EqualsForLegacySyncPurposes(*local_with_same_storage_key)) {
       // We need to write back locally new changes in this entry.
       update_to_local_.push_back(std::move(updated));
     }
@@ -306,7 +306,7 @@ AutofillProfileInitialSyncDifferenceTracker::MergeSimilarEntriesForInitialSync(
     // content merged (if applicable) in the profile that came from sync.
     AutofillProfile remote_before_merge = *remote;
     remote->MergeDataFrom(*local, app_locale);
-    if (!remote->EqualsForSyncPurposes(remote_before_merge)) {
+    if (!remote->EqualsForLegacySyncPurposes(remote_before_merge)) {
       // We need to sync new changes in the entry back to the server.
       save_to_sync_.push_back(std::make_unique<AutofillProfile>(*remote));
       // |remote| is updated in place within |add_to_local_| so the newest

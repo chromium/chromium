@@ -33,6 +33,8 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int ThumbThickness() const override;
 
+  void set_color(SkColor4f color) { color_ = color; }
+
  protected:
   SolidColorScrollbarLayerImpl(LayerTreeImpl* tree_impl,
                                int id,
@@ -52,7 +54,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
 
   int thumb_thickness_;
   int track_start_;
-  SkColor4f color_;
+  SkColor4f color_ = SkColors::kTransparent;
 };
 
 }  // namespace cc

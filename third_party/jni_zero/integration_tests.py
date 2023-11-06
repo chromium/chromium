@@ -26,7 +26,7 @@ import zipfile
 
 _SCRIPT_DIR = os.path.normpath(os.path.dirname(__file__))
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
-_EXTRA_INCLUDES = 'base/android/jni_generator/jni_generator_helper.h'
+_EXTRA_INCLUDES = 'third_party/jni_zero/jni_zero_helper.h'
 _JAVA_SRC_DIR = os.path.join(_SCRIPT_DIR, 'samples', 'java', 'src', 'org',
                              'jni_zero', 'samples')
 

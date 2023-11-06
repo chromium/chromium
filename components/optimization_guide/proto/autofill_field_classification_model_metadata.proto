@@ -1,0 +1,31 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "AutofillFieldClassificationModelMetadata";
+
+package optimization_guide.proto;
+
+// Metadata for OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION.
+message AutofillFieldClassificationModelMetadata {
+  // The dictionary used for vectorization of the input labels. The strings
+  // are mapped to integers in the order that they are present in the repeated
+  // field. Index 0 of `input_token` maps to integer 2, since 0 is reserved for
+  // padding and 1 is reserved for unknown tokens.
+  repeated string input_token = 1;
+
+  // The mapping from the model's outputs to the (integer representation of) the
+  // corresponding `autofill::ServerFieldType`.
+  repeated fixed32 output_type = 2;
+
+  // For every field, the model outputs a list of confidences for every
+  // `output_type`. If no `confidence_threshold` is specified, the final type
+  // prediction is simply the one with the highest confidence. If a threshold
+  // is specified and the highest confidence is below it, the prediction becomes
+  // UNKNOWN_TYPE instead.
+  optional float confidence_threshold = 3;
+}

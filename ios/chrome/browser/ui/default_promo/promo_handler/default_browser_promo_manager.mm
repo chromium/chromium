@@ -77,14 +77,6 @@ enum class DisplayedVideoPromo {
     return;
   }
 
-  // Don't show the default browser promo if the user is in the default browser
-  // blue dot experiment.
-  // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!AreDefaultBrowserPromosEnabled()) {
-    [self hidePromo];
-    return;
-  }
-
   // Bypass the all of the triggering criteria if enabled.
   if (ShouldForceDefaultPromoType()) {
     [self showPromo:ForceDefaultPromoType()];

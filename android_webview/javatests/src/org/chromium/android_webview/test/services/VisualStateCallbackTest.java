@@ -16,6 +16,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -26,7 +28,9 @@ import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.AwActivityTestRule;
-import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.AwJUnit4ClassRunnerWithParameters;
+import org.chromium.android_webview.test.AwParameterizedTest;
+import org.chromium.android_webview.test.AwSettingsMutation;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.android_webview.test.RenderProcessGoneHelper;
@@ -41,10 +45,11 @@ import org.chromium.base.test.util.Feature;
  * Test VisualStateCallback when render process is gone. Test is not batched because it tests
  * behaviour in multiprocesses.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class VisualStateCallbackTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class VisualStateCallbackTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
 
     private static class VisualStateCallbackHelper extends CallbackHelper {
         // Indicates VisualStateCallback has been received by AwContents, but
@@ -74,13 +79,24 @@ public class VisualStateCallbackTest {
         private VisualStateCallback mCallback;
         private long mRequestId;
 
-        public VisualStateCallbackTestAwContents(AwBrowserContext browserContext,
-                ViewGroup containerView, Context context,
+        public VisualStateCallbackTestAwContents(
+                AwBrowserContext browserContext,
+                ViewGroup containerView,
+                Context context,
                 InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-                AwSettings settings, DependencyFactory dependencyFactory) {
-            super(browserContext, containerView, context, internalAccessAdapter,
-                    nativeDrawFunctorFactory, contentsClient, settings, dependencyFactory);
+                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwContentsClient contentsClient,
+                AwSettings settings,
+                DependencyFactory dependencyFactory) {
+            super(
+                    browserContext,
+                    containerView,
+                    context,
+                    internalAccessAdapter,
+                    nativeDrawFunctorFactory,
+                    contentsClient,
+                    settings,
+                    dependencyFactory);
             mVisualStateCallbackHelper = new VisualStateCallbackHelper();
         }
 
@@ -110,12 +126,23 @@ public class VisualStateCallbackTest {
     private static class CrashTestDependencyFactory
             extends AwActivityTestRule.TestDependencyFactory {
         @Override
-        public AwContents createAwContents(AwBrowserContext browserContext, ViewGroup containerView,
-                Context context, InternalAccessDelegate internalAccessAdapter,
-                NativeDrawFunctorFactory nativeDrawFunctorFactory, AwContentsClient contentsClient,
-                AwSettings settings, DependencyFactory dependencyFactory) {
-            return new VisualStateCallbackTestAwContents(browserContext, containerView, context,
-                    internalAccessAdapter, nativeDrawFunctorFactory, contentsClient, settings,
+        public AwContents createAwContents(
+                AwBrowserContext browserContext,
+                ViewGroup containerView,
+                Context context,
+                InternalAccessDelegate internalAccessAdapter,
+                NativeDrawFunctorFactory nativeDrawFunctorFactory,
+                AwContentsClient contentsClient,
+                AwSettings settings,
+                DependencyFactory dependencyFactory) {
+            return new VisualStateCallbackTestAwContents(
+                    browserContext,
+                    containerView,
+                    context,
+                    internalAccessAdapter,
+                    nativeDrawFunctorFactory,
+                    contentsClient,
+                    settings,
                     dependencyFactory);
         }
     }
@@ -141,12 +168,17 @@ public class VisualStateCallbackTest {
     private VisualStateCallbackTestAwContents mAwContents;
     private RenderProcessGoneHelper mHelper;
 
+    public VisualStateCallbackTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Before
     public void setUp() {
         RenderProcessGoneTestAwContentsClient contentsClient =
                 new RenderProcessGoneTestAwContentsClient();
-        AwTestContainerView testView = mActivityTestRule.createAwTestContainerViewOnMainSync(
-                contentsClient, false, new CrashTestDependencyFactory());
+        AwTestContainerView testView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        contentsClient, false, new CrashTestDependencyFactory());
         mAwContents = (VisualStateCallbackTestAwContents) testView.getAwContents();
         mHelper = mAwContents.getRenderProcessGoneHelper();
     }

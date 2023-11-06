@@ -72,7 +72,8 @@ void StorageNamespace::ProvideSessionStorageNamespaceTo(
 
 scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
     LocalDOMWindow* local_dom_window,
-    mojo::PendingRemote<mojom::blink::StorageArea> storage_area) {
+    mojo::PendingRemote<mojom::blink::StorageArea> storage_area,
+    StorageContext context) {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class CacheMetrics {
@@ -84,9 +85,16 @@ scoped_refptr<CachedStorageArea> StorageNamespace::GetCachedArea(
 
   CacheMetrics metric = CacheMetrics::kMiss;
   scoped_refptr<CachedStorageArea> result;
-  const BlinkStorageKey& storage_key =
-      IsSessionStorage() ? local_dom_window->GetSessionStorageKey()
-                         : local_dom_window->GetStorageKey();
+  BlinkStorageKey storage_key = IsSessionStorage()
+                                    ? local_dom_window->GetSessionStorageKey()
+                                    : local_dom_window->GetStorageKey();
+  // The Storage Access API needs to use the first-party version of the storage
+  // key. For more see:
+  // third_party/blink/renderer/modules/storage_access/README.md
+  if (context == StorageContext::kStorageAccessAPI) {
+    storage_key =
+        BlinkStorageKey::CreateFirstParty(storage_key.GetSecurityOrigin());
+  }
   auto cache_it = cached_areas_.find(&storage_key);
   if (cache_it != cached_areas_.end()) {
     metric = cache_it->value->HasOneRef() ? CacheMetrics::kHit

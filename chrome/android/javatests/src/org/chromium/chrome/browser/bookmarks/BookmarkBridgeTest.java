@@ -32,14 +32,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Tests for bookmark bridge
- */
+/** Tests for bookmark bridge */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BookmarkBridgeTest {
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private BookmarkBridge mBookmarkBridge;
     private BookmarkId mMobileNode;
@@ -48,18 +45,20 @@ public class BookmarkBridgeTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            mBookmarkBridge = BookmarkBridge.getForProfile(profile);
-            mBookmarkBridge.loadFakePartnerBookmarkShimForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = Profile.getLastUsedRegularProfile();
+                    mBookmarkBridge = BookmarkBridge.getForProfile(profile);
+                    mBookmarkBridge.loadFakePartnerBookmarkShimForTesting();
+                });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMobileNode = mBookmarkBridge.getMobileFolderId();
-            mDesktopNode = mBookmarkBridge.getDesktopFolderId();
-            mOtherNode = mBookmarkBridge.getOtherFolderId();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMobileNode = mBookmarkBridge.getMobileFolderId();
+                    mDesktopNode = mBookmarkBridge.getDesktopFolderId();
+                    mOtherNode = mBookmarkBridge.getOtherFolderId();
+                });
     }
 
     @After
@@ -94,8 +93,12 @@ public class BookmarkBridgeTest {
         verifyBookmark(folderAA, "faa", null, true, folderA);
     }
 
-    private void verifyBookmark(BookmarkId idToVerify, String expectedTitle,
-            String expectedUrl, boolean isFolder, BookmarkId expectedParent) {
+    private void verifyBookmark(
+            BookmarkId idToVerify,
+            String expectedTitle,
+            String expectedUrl,
+            boolean isFolder,
+            BookmarkId expectedParent) {
         Assert.assertNotNull(idToVerify);
         BookmarkItem item = mBookmarkBridge.getBookmarkById(idToVerify);
         Assert.assertEquals(expectedTitle, item.getTitle());
@@ -216,7 +219,9 @@ public class BookmarkBridgeTest {
         verifyFolderDepths(folderList, depthList, idToDepth);
     }
 
-    private void verifyFolderDepths(List<BookmarkId> folderList, List<Integer> depthList,
+    private void verifyFolderDepths(
+            List<BookmarkId> folderList,
+            List<Integer> depthList,
             HashMap<BookmarkId, Integer> idToDepth) {
         Assert.assertEquals(folderList.size(), depthList.size());
         Assert.assertEquals(folderList.size(), idToDepth.size());
@@ -225,7 +230,8 @@ public class BookmarkBridgeTest {
             Integer depth = depthList.get(i);
             Assert.assertNotNull(folder);
             Assert.assertNotNull(depthList.get(i));
-            Assert.assertTrue("Folder list contains non-folder elements: ",
+            Assert.assertTrue(
+                    "Folder list contains non-folder elements: ",
                     mBookmarkBridge.getBookmarkById(folder).isFolder());
             Assert.assertTrue(
                     "Returned list contained unexpected key: ", idToDepth.containsKey(folder));
@@ -284,14 +290,18 @@ public class BookmarkBridgeTest {
     @Feature({"Bookmark"})
     public void testSearchPartner() {
         List<BookmarkId> expectedSearchResults = new ArrayList<>();
-        expectedSearchResults.add(new BookmarkId(
-                1, 1)); // Partner bookmark with ID 1: "Partner Bookmark A", http://a.com
-        expectedSearchResults.add(new BookmarkId(
-                2, 1)); // Partner bookmark with ID 2: "Partner Bookmark B", http://b.com
+        expectedSearchResults.add(
+                new BookmarkId(
+                        1, 1)); // Partner bookmark with ID 1: "Partner Bookmark A", http://a.com
+        expectedSearchResults.add(
+                new BookmarkId(
+                        2, 1)); // Partner bookmark with ID 2: "Partner Bookmark B", http://b.com
         List<BookmarkId> searchResults = mBookmarkBridge.searchBookmarks("pArTnER BookMARK", 100);
-        Assert.assertEquals("Expected search results would yield partner bookmark with "
+        Assert.assertEquals(
+                "Expected search results would yield partner bookmark with "
                         + "case-insensitive title match",
-                expectedSearchResults, searchResults);
+                expectedSearchResults,
+                searchResults);
     }
 
     @Test
@@ -302,9 +312,10 @@ public class BookmarkBridgeTest {
         List<BookmarkId> expectedSearchResults = new ArrayList<>();
         expectedSearchResults.add(mBookmarkBridge.addFolder(mMobileNode, 0, "FooBar"));
         List<BookmarkId> searchResults = mBookmarkBridge.searchBookmarks("oba", 100);
-        Assert.assertEquals("Expected search results would yield case-insensitive match of "
-                        + "part of title",
-                expectedSearchResults, searchResults);
+        Assert.assertEquals(
+                "Expected search results would yield case-insensitive match of " + "part of title",
+                expectedSearchResults,
+                searchResults);
     }
 
     @Test
@@ -315,15 +326,18 @@ public class BookmarkBridgeTest {
         List<BookmarkId> expectedSearchResults = new ArrayList<>();
         expectedSearchResults.add(mBookmarkBridge.addFolder(mMobileNode, 0, "FooBar"));
         expectedSearchResults.add(mBookmarkBridge.addFolder(mMobileNode, 1, "BazQuux"));
-        expectedSearchResults.add(new BookmarkId(
-                1, 1)); // Partner bookmark with ID 1: "Partner Bookmark A", http://a.com
+        expectedSearchResults.add(
+                new BookmarkId(
+                        1, 1)); // Partner bookmark with ID 1: "Partner Bookmark A", http://a.com
 
         List<BookmarkId> searchResults = mBookmarkBridge.searchBookmarks("a", 3);
         Assert.assertEquals(
                 "Expected search results size to be 3 (maximum size)", 3, searchResults.size());
-        Assert.assertEquals("Expected that user (non-partner) bookmarks would get priority "
+        Assert.assertEquals(
+                "Expected that user (non-partner) bookmarks would get priority "
                         + "over partner bookmarks",
-                expectedSearchResults, searchResults);
+                expectedSearchResults,
+                searchResults);
     }
 
     @Test
@@ -339,7 +353,8 @@ public class BookmarkBridgeTest {
     @UiThreadTest
     @RequiresRestart
     public void testAddToReadingList() {
-        Assert.assertNull("Should return null for non http/https URLs.",
+        Assert.assertNull(
+                "Should return null for non http/https URLs.",
                 mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
         BookmarkId readingListId =
                 mBookmarkBridge.addToReadingList("a", new GURL("https://www.google.com/"));

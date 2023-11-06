@@ -56,27 +56,36 @@ bool ValidateAlarmCreateInfo(const std::string& alarm_name,
   // compute a long-enough timeout, but then the call into the alarms interface
   // gets delayed past the boundary).  However, it's still worth warning about
   // relative delays that are shorter than we'll honor.
+  // For this minimum delay, we compare to the minimum of a packed extension,
+  // since we want to appropriately warn developers (we take into account the
+  // "real" unpacked state in the phrasing of the warning).
+  const base::TimeDelta min_packed_delay =
+      alarms_api_constants::GetMinimumDelay(/*is_unpacked=*/false,
+                                            extension->manifest_version());
+  const bool is_unpacked = Manifest::IsUnpackedLocation(extension->location());
   if (create_info.delay_in_minutes) {
-    if (*create_info.delay_in_minutes <
-        alarms_api_constants::kReleaseDelayMinimum) {
-      if (Manifest::IsUnpackedLocation(extension->location())) {
-        warnings->push_back(ErrorUtils::FormatErrorMessage(
-            alarms_api_constants::kWarningMinimumDevDelay, alarm_name));
+    if (base::Minutes(*create_info.delay_in_minutes) < min_packed_delay) {
+      if (is_unpacked) {
+        warnings->push_back(base::StringPrintf(
+            alarms_api_constants::kWarningMinimumDevDelay, "delay",
+            min_packed_delay.InSeconds(), alarm_name.c_str()));
       } else {
-        warnings->push_back(ErrorUtils::FormatErrorMessage(
-            alarms_api_constants::kWarningMinimumReleaseDelay, alarm_name));
+        warnings->push_back(base::StringPrintf(
+            alarms_api_constants::kWarningMinimumReleaseDelay, "delay",
+            min_packed_delay.InSeconds(), alarm_name.c_str()));
       }
     }
   }
   if (create_info.period_in_minutes) {
-    if (*create_info.period_in_minutes <
-        alarms_api_constants::kReleaseDelayMinimum) {
-      if (Manifest::IsUnpackedLocation(extension->location())) {
-        warnings->push_back(ErrorUtils::FormatErrorMessage(
-            alarms_api_constants::kWarningMinimumDevPeriod, alarm_name));
+    if (base::Minutes(*create_info.period_in_minutes) < min_packed_delay) {
+      if (is_unpacked) {
+        warnings->push_back(base::StringPrintf(
+            alarms_api_constants::kWarningMinimumDevDelay, "period",
+            min_packed_delay.InSeconds(), alarm_name.c_str()));
       } else {
-        warnings->push_back(ErrorUtils::FormatErrorMessage(
-            alarms_api_constants::kWarningMinimumReleasePeriod, alarm_name));
+        warnings->push_back(base::StringPrintf(
+            alarms_api_constants::kWarningMinimumReleaseDelay, "period",
+            min_packed_delay.InSeconds(), alarm_name.c_str()));
       }
     }
   }
@@ -119,13 +128,9 @@ ExtensionFunction::ResponseAction AlarmsCreateFunction::Run() {
     WriteToConsole(blink::mojom::ConsoleMessageLevel::kWarning, warning);
   }
 
-  const int kSecondsPerMinute = 60;
-  base::TimeDelta granularity =
-      base::Seconds((Manifest::IsUnpackedLocation(extension()->location())
-                         ? alarms_api_constants::kDevDelayMinimum
-                         : alarms_api_constants::kReleaseDelayMinimum)) *
-      kSecondsPerMinute;
-
+  base::TimeDelta granularity = alarms_api_constants::GetMinimumDelay(
+      Manifest::IsUnpackedLocation(extension()->location()),
+      extension()->manifest_version());
   Alarm alarm(alarm_name, params->alarm_info, granularity, clock_->Now());
   alarm_manager->AddAlarm(
       extension_id(), std::move(alarm),

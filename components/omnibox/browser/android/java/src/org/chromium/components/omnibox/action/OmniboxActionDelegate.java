@@ -10,13 +10,9 @@ import androidx.annotation.NonNull;
 
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
 
-/**
- * An interface for handling interactions for Omnibox Action Chips.
- */
+/** An interface for handling interactions for Omnibox Action Chips. */
 public interface OmniboxActionDelegate {
-    /**
-     * Returns whether the user is currently browsing incognito.
-     */
+    /** Returns whether the user is currently browsing incognito. */
     boolean isIncognito();
 
     /**
@@ -27,27 +23,21 @@ public interface OmniboxActionDelegate {
     void loadPageInCurrentTab(String url);
 
     /**
-     * Start the activity referenced by the supplied {@link android.content.Intent}.
-     * Decorates the intent with trusted intent extras when the intent references the browser.
+     * Start the activity referenced by the supplied {@link android.content.Intent}. Decorates the
+     * intent with trusted intent extras when the intent references the browser.
      *
      * @param intent the intent describing the activity to be started
      * @return whether operation was successful
      */
     boolean startActivity(@NonNull Intent intent);
 
-    /**
-     * Create a new incognito tab.
-     */
+    /** Create a new incognito tab. */
     void openIncognitoTab();
 
-    /**
-     * Open Password Manager.
-     */
+    /** Open Password Manager. */
     void openPasswordManager();
 
-    /**
-     * Open specific settings page.
-     */
+    /** Open specific settings page. */
     void openSettingsPage(@SettingsFragment int fragment);
 
     /**
@@ -57,8 +47,6 @@ public interface OmniboxActionDelegate {
      */
     void openHistoryClustersPage(String query);
 
-    /**
-     * Handles opening the CBD or the quick deleted dialog.
-     */
+    /** Handles opening the CBD or the quick deleted dialog. */
     void handleClearBrowsingData();
 }

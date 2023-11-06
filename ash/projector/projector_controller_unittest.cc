@@ -16,7 +16,6 @@
 #include "ash/projector/test/mock_projector_metadata_controller.h"
 #include "ash/projector/test/mock_projector_ui_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
-#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/shell.h"
@@ -29,24 +28,17 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/values.h"
-#include "build/branding_buildflags.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
 #include "chromeos/ash/components/dbus/audio/fake_cras_audio_client.h"
 #include "media/mojo/mojom/speech_recognition_result.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -76,6 +68,7 @@ constexpr char kSpeechRecognitionEndStateServerBased[] =
 
 constexpr char kMetadataFileName[] = "MyScreencast";
 constexpr char kProjectorExtension[] = "projector";
+constexpr char kProjectorV2Extension[] = "screencast";
 
 void NotifyControllerForFinalSpeechResult(ProjectorControllerImpl* controller) {
   media::SpeechRecognitionResult result;
@@ -144,7 +137,6 @@ class ProjectorControllerTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-
     controller_ =
         static_cast<ProjectorControllerImpl*>(ProjectorController::Get());
 
@@ -209,6 +201,7 @@ class ProjectorControllerTest : public AshTestBase {
   MockProjectorClient mock_client_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ProjectorControllerTest, OnTranscription) {
@@ -597,6 +590,36 @@ TEST_F(ProjectorControllerTest, TranscriptsTest) {
   // should be larger than the one in the NoTranscriptsTest above. Change this
   // limit as needed if you make significant changes to the metadata file.
   base::File file(metadata_file.AddExtension(kProjectorExtension),
+                  base::File::FLAG_OPEN | base::File::FLAG_READ);
+  EXPECT_GT(file.GetLength(), 400);
+  EXPECT_LT(file.GetLength(), 500);
+}
+
+TEST_F(ProjectorControllerTest, V2TranscriptsTest) {
+  scoped_feature_list_.InitAndEnableFeature(ash::features::kProjectorV2);
+  InitializeRealMetadataController();
+  metadata_controller_->OnRecordingStarted();
+
+  base::RunLoop run_loop;
+  metadata_controller_->SetRunLoopQuitClosure(run_loop.QuitClosure());
+
+  // Simulate adding some transcripts.
+  NotifyControllerForFinalSpeechResult(controller_);
+  NotifyControllerForFinalSpeechResult(controller_);
+
+  // Simulate ending the recording and saving the metadata file.
+  ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+  base::FilePath metadata_file(temp_dir_.GetPath().Append(kMetadataFileName));
+  metadata_controller_->SaveMetadata(metadata_file);
+  run_loop.Run();
+
+  histogram_tester_.ExpectUniqueSample(kProjectorTranscriptsCountHistogramName,
+                                       /*sample=*/2, /*count=*/1);
+
+  // Verify the written metadata file size is between 400-500 bytes. This file
+  // should be larger than the one in the NoTranscriptsTest above. Change this
+  // limit as needed if you make significant changes to the metadata file.
+  base::File file(metadata_file.AddExtension(kProjectorV2Extension),
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_GT(file.GetLength(), 400);
   EXPECT_LT(file.GetLength(), 500);

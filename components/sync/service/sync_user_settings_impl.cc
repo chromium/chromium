@@ -386,6 +386,9 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypeEnabled() const {
 }
 
 bool SyncUserSettingsImpl::ShouldUsePerAccountPrefs() const {
+  // Note: If Sync-the-feature users are ever migrated to use the account-scoped
+  // prefs, also update the migration code in sync_to_signin_migration.cc
+  // accordingly!
   return base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos) &&
          sync_account_state_for_prefs_callback_.Run() ==
              SyncPrefs::SyncAccountState::kSignedInNotSyncing;

@@ -101,8 +101,7 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
     ::sharesheet::SharesheetService* const sharesheet_service =
         ::sharesheet::SharesheetServiceFactory::GetForProfile(profile_.get());
     sharesheet_service->ShowBubbleForTesting(
-        parent_window_, std::move(intent),
-        /*contains_hosted_document=*/false, source,
+        parent_window_, std::move(intent), source,
         /*delivered_callback=*/base::DoNothing(),
         /*close_callback=*/base::DoNothing(), num_actions_to_add);
     bubble_delegate_ = static_cast<SharesheetBubbleViewDelegate*>(

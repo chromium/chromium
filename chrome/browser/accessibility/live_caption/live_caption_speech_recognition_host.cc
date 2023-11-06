@@ -273,8 +273,11 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
               result.is_final)));
     }
   } else {
-    std::move(reply).Run(
-        live_caption_controller->DispatchTranscription(context_.get(), result));
+    std::move(reply).Run(live_caption_controller->DispatchTranscription(
+        context_.get(),
+        media::SpeechRecognitionResult(
+            GetTextForDispatch(result.transcription, result.is_final),
+            result.is_final)));
   }
 }
 
@@ -412,8 +415,10 @@ std::string LiveCaptionSpeechRecognitionHost::GetTextForDispatch(
     text = greedy_text_stabilizer_->UpdateText(text, is_final);
   }
 
-  translation_characters_erased_ += input_text.length() - text.length();
-  partial_result_count_++;
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    translation_characters_erased_ += input_text.length() - text.length();
+    partial_result_count_++;
+  }
 
   return text;
 }

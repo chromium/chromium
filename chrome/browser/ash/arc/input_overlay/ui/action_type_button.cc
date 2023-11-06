@@ -22,6 +22,8 @@ constexpr int kButtonWidth = 110;
 constexpr int kActionTypeButtonHeight = 94;
 constexpr int kActionTypeIconSize = 48;
 constexpr int kLabelIconSpacing = 8;
+constexpr int kTopSpacing = 10;
+constexpr int kBorderThickness = 1;
 
 // Gap between focus ring outer edge to label.
 constexpr float kHaloInset = -5;
@@ -42,6 +44,10 @@ ActionTypeButton::ActionTypeButton(PressedCallback callback,
   SetVisible(true);
   SetBackground(views::CreateRoundedRectBackground(SK_ColorTRANSPARENT,
                                                    /*radius=*/kCornerRadius));
+  SetBorder(views::CreateThemedRoundedRectBorder(
+      /*thickness=*/kBorderThickness,
+      /*radius=*/kCornerRadius, cros_tokens::kCrosSysHoverOnSubtle));
+
   // Set highlight path.
   views::HighlightPathGenerator::Install(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
@@ -72,10 +78,10 @@ void ActionTypeButton::Layout() {
 
   gfx::Point image_origin = local_content_bounds.origin();
   image_origin.Offset((local_content_bounds.width() - kActionTypeIconSize) / 2,
-                      0);
+                      kTopSpacing);
   gfx::Point label_origin = local_content_bounds.origin();
   label_origin.Offset((local_content_bounds.width() - label_size.width()) / 2,
-                      kActionTypeIconSize + kLabelIconSpacing);
+                      kTopSpacing + kActionTypeIconSize + kLabelIconSpacing);
 
   image()->SetBoundsRect(gfx::Rect(
       image_origin, gfx::Size(kActionTypeIconSize, kActionTypeIconSize)));
@@ -103,17 +109,30 @@ gfx::Size ActionTypeButton::CalculatePreferredSize() const {
 void ActionTypeButton::OnThemeChanged() {
   views::Button::OnThemeChanged();
   UpdateImage();
-  RefreshTextColor();
+  RefreshColors();
 }
 
-void ActionTypeButton::RefreshTextColor() {
-  auto active_color_id = selected() ? cros_tokens::kCrosSysPrimary
-                                    : cros_tokens::kCrosSysOnSurface;
-  auto disabled_color_id = selected()
+void ActionTypeButton::RefreshColors() {
+  const bool is_selected = selected();
+  auto active_color_id = is_selected ? cros_tokens::kCrosSysPrimary
+                                     : cros_tokens::kCrosSysOnSurface;
+  auto disabled_color_id = is_selected
                                ? ash::kColorAshIconPrimaryDisabledColor
                                : ash::kColorAshIconSecondaryDisabledColor;
   SetEnabledTextColorIds(active_color_id);
   SetTextColorId(ButtonState::STATE_DISABLED, disabled_color_id);
+  SetBackground(is_selected ? views::CreateThemedRoundedRectBackground(
+                                  cros_tokens::kCrosSysHighlightShape,
+                                  /*radius=*/kCornerRadius)
+                            : views::CreateRoundedRectBackground(
+                                  SK_ColorTRANSPARENT,
+                                  /*radius=*/kCornerRadius));
+  SetBorder(is_selected
+                ? views::CreateEmptyBorder(/*thickness=*/kBorderThickness)
+                : views::CreateThemedRoundedRectBorder(
+                      /*thickness=*/kBorderThickness,
+                      /*radius=*/kCornerRadius,
+                      cros_tokens::kCrosSysHoverOnSubtle));
 }
 
 }  // namespace arc::input_overlay

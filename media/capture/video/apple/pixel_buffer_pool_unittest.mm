@@ -30,16 +30,19 @@ TEST(PixelBufferPoolTest, CreatedBufferHasSpecifiedAttributes) {
   std::unique_ptr<PixelBufferPool> pool =
       PixelBufferPool::Create(kPixelFormatNv12, kVgaWidth, kVgaHeight, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer = pool->CreateBuffer();
-  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(buffer) == kPixelFormatNv12);
-  EXPECT_EQ(CVPixelBufferGetWidth(buffer), static_cast<size_t>(kVgaWidth));
-  EXPECT_EQ(CVPixelBufferGetHeight(buffer), static_cast<size_t>(kVgaHeight));
+  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(buffer.get()) ==
+              kPixelFormatNv12);
+  EXPECT_EQ(CVPixelBufferGetWidth(buffer.get()),
+            static_cast<size_t>(kVgaWidth));
+  EXPECT_EQ(CVPixelBufferGetHeight(buffer.get()),
+            static_cast<size_t>(kVgaHeight));
 }
 
 TEST(PixelBufferPoolTest, CreatedBufferHasIOSurface) {
   std::unique_ptr<PixelBufferPool> pool =
       PixelBufferPool::Create(kPixelFormatNv12, kVgaWidth, kVgaHeight, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer = pool->CreateBuffer();
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(buffer.get()));
 }
 
 TEST(PixelBufferPoolTest, CannotExceedMaxBuffersWhenHoldingOnToPixelBuffer) {
@@ -64,7 +67,7 @@ TEST(PixelBufferPoolTest, CannotExceedMaxBuffersWhenIOSurfaceIsInUse) {
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> first_buffer =
       pool->CreateBuffer();
   EXPECT_TRUE(first_buffer);
-  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(first_buffer);
+  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(first_buffer.get());
   EXPECT_TRUE(io_surface);
   // Increment use count of raw ptr IOSurface reference while releasing the
   // pixel buffer's only reference.
@@ -99,7 +102,7 @@ TEST(PixelBufferPoolTest, CanCreateBufferAfterPreviousBufferIsReleased) {
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer = pool->CreateBuffer();
   buffer.reset();
   buffer = pool->CreateBuffer();
-  EXPECT_TRUE(buffer);
+  EXPECT_TRUE(buffer.get());
 }
 
 TEST(PixelBufferPoolTest, CanCreateBufferAfterPreviousIOSurfaceIsNoLongerUsed) {
@@ -109,7 +112,7 @@ TEST(PixelBufferPoolTest, CanCreateBufferAfterPreviousIOSurfaceIsNoLongerUsed) {
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> first_buffer =
       pool->CreateBuffer();
   EXPECT_TRUE(first_buffer);
-  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(first_buffer);
+  IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(first_buffer.get());
   EXPECT_TRUE(io_surface);
   IOSurfaceIncrementUseCount(io_surface);
   first_buffer.reset();
@@ -130,7 +133,8 @@ TEST(PixelBufferPoolTest,
       pool->CreateBuffer();
   EXPECT_TRUE(first_buffer);
   base::apple::ScopedCFTypeRef<IOSurfaceRef> first_buffer_io_surface(
-      CVPixelBufferGetIOSurface(first_buffer), base::scoped_policy::RETAIN);
+      CVPixelBufferGetIOSurface(first_buffer.get()),
+      base::scoped_policy::RETAIN);
   EXPECT_TRUE(first_buffer_io_surface);
   // Releasing the first buffer returns it to the pool, despite the IOSurface
   // still being referenced by |first_buffer_io_surface|.
@@ -140,12 +144,13 @@ TEST(PixelBufferPoolTest,
       pool->CreateBuffer();
   EXPECT_TRUE(second_buffer);
   base::apple::ScopedCFTypeRef<IOSurfaceRef> second_buffer_io_surface(
-      CVPixelBufferGetIOSurface(second_buffer), base::scoped_policy::RETAIN);
+      CVPixelBufferGetIOSurface(second_buffer.get()),
+      base::scoped_policy::RETAIN);
   EXPECT_TRUE(second_buffer_io_surface);
 
   // Because this is a recycled pixel buffer, the IOSurface is also recycled.
-  EXPECT_EQ(IOSurfaceGetID(first_buffer_io_surface),
-            IOSurfaceGetID(second_buffer_io_surface));
+  EXPECT_EQ(IOSurfaceGetID(first_buffer_io_surface.get()),
+            IOSurfaceGetID(second_buffer_io_surface.get()));
 }
 
 TEST(PixelBufferPoolTest, RecreatePoolAndObserveRecycledIOSurfaceID) {
@@ -156,7 +161,7 @@ TEST(PixelBufferPoolTest, RecreatePoolAndObserveRecycledIOSurfaceID) {
       pool->CreateBuffer();
   EXPECT_TRUE(first_buffer);
   IOSurfaceID first_buffer_id =
-      IOSurfaceGetID(CVPixelBufferGetIOSurface(first_buffer));
+      IOSurfaceGetID(CVPixelBufferGetIOSurface(first_buffer.get()));
 
   // Free references and recreate the pool. There is nothing preventing the
   // IOSurfaceID from being recycled, even by a different CVPixelBufferPool with
@@ -169,7 +174,7 @@ TEST(PixelBufferPoolTest, RecreatePoolAndObserveRecycledIOSurfaceID) {
       pool->CreateBuffer();
   EXPECT_TRUE(second_buffer);
   IOSurfaceID second_buffer_id =
-      IOSurfaceGetID(CVPixelBufferGetIOSurface(second_buffer));
+      IOSurfaceGetID(CVPixelBufferGetIOSurface(second_buffer.get()));
 
   // The new pool is allowed to recycle the old IOSurface ID.
   //
@@ -185,10 +190,13 @@ TEST(PixelBufferPoolTest, BuffersCanOutliveThePool) {
       PixelBufferPool::Create(kPixelFormatNv12, kVgaWidth, kVgaHeight, 1);
   base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer = pool->CreateBuffer();
   pool.reset();
-  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(buffer) == kPixelFormatNv12);
-  EXPECT_EQ(CVPixelBufferGetWidth(buffer), static_cast<size_t>(kVgaWidth));
-  EXPECT_EQ(CVPixelBufferGetHeight(buffer), static_cast<size_t>(kVgaHeight));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(buffer));
+  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(buffer.get()) ==
+              kPixelFormatNv12);
+  EXPECT_EQ(CVPixelBufferGetWidth(buffer.get()),
+            static_cast<size_t>(kVgaWidth));
+  EXPECT_EQ(CVPixelBufferGetHeight(buffer.get()),
+            static_cast<size_t>(kVgaHeight));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(buffer.get()));
 }
 
 TEST(PixelBufferPoolTest, CanFlushWhileBufferIsInUse) {
@@ -203,13 +211,13 @@ TEST(PixelBufferPoolTest, CanFlushWhileBufferIsInUse) {
   // way to assert this in a unittest.
   pool->Flush();
   // We expect |retained_buffer| is still usable. Inspecting its properties.
-  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(retained_buffer) ==
+  EXPECT_TRUE(CVPixelBufferGetPixelFormatType(retained_buffer.get()) ==
               kPixelFormatNv12);
-  EXPECT_EQ(CVPixelBufferGetWidth(retained_buffer),
+  EXPECT_EQ(CVPixelBufferGetWidth(retained_buffer.get()),
             static_cast<size_t>(kVgaWidth));
-  EXPECT_EQ(CVPixelBufferGetHeight(retained_buffer),
+  EXPECT_EQ(CVPixelBufferGetHeight(retained_buffer.get()),
             static_cast<size_t>(kVgaHeight));
-  EXPECT_TRUE(CVPixelBufferGetIOSurface(retained_buffer));
+  EXPECT_TRUE(CVPixelBufferGetIOSurface(retained_buffer.get()));
 }
 
 }  // namespace media

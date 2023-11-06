@@ -375,6 +375,12 @@ class PrerenderOmniboxSearchSuggestionReloadBrowserTest
         {features::kBackForwardCache});
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -431,6 +437,12 @@ class PrerenderOmniboxSearchSuggestionExpiryBrowserTest
          {kSearchPrefetchServicePrefetching,
           {{"device_memory_threshold_MB", "0"}}}},
         {});
+  }
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderOmniboxSearchSuggestionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 
  protected:

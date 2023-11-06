@@ -33,6 +33,7 @@ source_set("open") {
   deps = [
     ":system_strings",
     "//base",
+    "//ios/chrome/common:extension_open_url",
     "//ios/chrome/common/app_group:app_group",
     "//ios/chrome/common/app_group:command",
     "//ios/chrome/common/crash_report",

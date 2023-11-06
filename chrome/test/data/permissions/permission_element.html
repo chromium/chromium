@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <script>
-  function waitForDismissedEvent(id) {
+  function waitForDismissEvent(id) {
     (async () => {
       await new Promise(resolve => {
-        document.getElementById(id).ondismissed = function (event) {
+        document.getElementById(id).ondismiss = function (event) {
           resolve();
         };
       });
@@ -12,10 +12,10 @@
     return true;
   }
 
-  function waitForResolvedEvent(id) {
+  function waitForResolveEvent(id) {
     (async () => {
       await new Promise(resolve => {
-        document.getElementById(id).onresolved = function (event) {
+        document.getElementById(id).onresolve = function (event) {
           resolve();
         };
       });

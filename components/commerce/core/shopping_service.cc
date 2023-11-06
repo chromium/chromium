@@ -17,11 +17,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/bookmark_update_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/discounts_storage.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/metrics/scheduled_metrics_manager.h"
@@ -71,60 +71,23 @@ const char kOgTitle[] = "title";
 const char kOgType[] = "type";
 
 // Specific open graph values we're interested in.
-const char kOgTypeOgProduct[] = "og:product";
+const char kOgTypeOgProduct[] = "product";
 const char kOgTypeProductItem[] = "product.item";
 
 const long kToMicroCurrency = 1e6;
 
 const char kImageAvailabilityHistogramName[] =
     "Commerce.ShoppingService.ProductInfo.ImageAvailability";
-const char kProductInfoJavascriptTime[] =
-    "Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime";
+const char kProductInfoLocalExtractionTime[] =
+    "Commerce.ShoppingService.ProductInfo.LocalExtractionExecutionTime";
 
-const uint64_t kProductInfoJavascriptDelayMs = 2000;
-
-ProductInfo::ProductInfo() = default;
-ProductInfo::ProductInfo(const ProductInfo&) = default;
-ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
-ProductInfo::~ProductInfo() = default;
+const uint64_t kProductInfoLocalExtractionDelayMs = 2000;
 
 ProductInfoCacheEntry::ProductInfoCacheEntry() = default;
 ProductInfoCacheEntry::~ProductInfoCacheEntry() = default;
 
 PriceInsightsInfoCacheEntry::PriceInsightsInfoCacheEntry() = default;
 PriceInsightsInfoCacheEntry::~PriceInsightsInfoCacheEntry() = default;
-
-MerchantInfo::MerchantInfo() = default;
-MerchantInfo::MerchantInfo(const MerchantInfo&) = default;
-MerchantInfo& MerchantInfo::operator=(const MerchantInfo&) = default;
-MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
-MerchantInfo::~MerchantInfo() = default;
-
-PriceInsightsInfo::PriceInsightsInfo() = default;
-PriceInsightsInfo::PriceInsightsInfo(const PriceInsightsInfo&) = default;
-PriceInsightsInfo& PriceInsightsInfo::operator=(const PriceInsightsInfo&) =
-    default;
-PriceInsightsInfo::~PriceInsightsInfo() = default;
-
-DiscountInfo::DiscountInfo() = default;
-DiscountInfo::DiscountInfo(const DiscountInfo&) = default;
-DiscountInfo& DiscountInfo::operator=(const DiscountInfo&) = default;
-DiscountInfo::~DiscountInfo() = default;
-
-ParcelTrackingStatus::ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
-    default;
-ParcelTrackingStatus& ParcelTrackingStatus::operator=(
-    const ParcelTrackingStatus&) = default;
-ParcelTrackingStatus::~ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelStatus& parcel_status) {
-  carrier = parcel_status.parcel_identifier().carrier();
-  tracking_id = parcel_status.parcel_identifier().tracking_id();
-  state = parcel_status.parcel_state();
-  tracking_url = GURL(parcel_status.tracking_url());
-  estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
-      base::Microseconds(parcel_status.estimated_delivery_time_usec()));
-}
 
 ShoppingService::ShoppingService(
     const std::string& country_on_startup,
@@ -144,7 +107,8 @@ ShoppingService::ShoppingService(
         discounts_proto_db,
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
-    history::HistoryService* history_service)
+    history::HistoryService* history_service,
+    std::unique_ptr<commerce::WebExtractor> web_extractor)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -160,6 +124,7 @@ ShoppingService::ShoppingService(
                   sync_service,
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
+      web_extractor_(std::move(web_extractor)),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -296,10 +261,10 @@ void ShoppingService::DidNavigateAway(WebWrapper* web, const GURL& from_url) {
 }
 
 void ShoppingService::DidStopLoading(WebWrapper* web) {
-  ScheduleProductInfoJavascript(web);
+  ScheduleProductInfoLocalExtraction(web);
 }
 
-void ShoppingService::ScheduleProductInfoJavascript(WebWrapper* web) {
+void ShoppingService::ScheduleProductInfoLocalExtraction(WebWrapper* web) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsProductInfoApiEnabled()) {
@@ -322,40 +287,43 @@ void ShoppingService::ScheduleProductInfoJavascript(WebWrapper* web) {
 
   auto it = product_info_cache_.find(url.spec());
 
-  if (it == product_info_cache_.end() || !it->second->needs_javascript_run) {
+  if (it == product_info_cache_.end() ||
+      !it->second->needs_local_extraction_run) {
     return;
   }
 
   ProductInfoCacheEntry* entry = it->second.get();
 
   // If there's already a task scheduled, cancel it.
-  if (entry->run_javascript_task.get()) {
-    entry->run_javascript_task->Cancel();
-    entry->run_javascript_task.reset();
+  if (entry->run_local_extraction_task.get()) {
+    entry->run_local_extraction_task->Cancel();
+    entry->run_local_extraction_task.reset();
   }
 
-  entry->run_javascript_task = std::make_unique<base::CancelableOnceClosure>(
-      base::BindOnce(&ShoppingService::TryRunningJavascriptForProductInfo,
-                     weak_ptr_factory_.GetWeakPtr(), web->GetWeakPtr()));
+  entry->run_local_extraction_task =
+      std::make_unique<base::CancelableOnceClosure>(base::BindOnce(
+          &ShoppingService::TryRunningLocalExtractionForProductInfo,
+          weak_ptr_factory_.GetWeakPtr(), web->GetWeakPtr()));
 
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE, entry->run_javascript_task->callback(),
-      base::Milliseconds(kProductInfoJavascriptDelayMs));
+      FROM_HERE, entry->run_local_extraction_task->callback(),
+      base::Milliseconds(kProductInfoLocalExtractionDelayMs));
 }
 
 void ShoppingService::DidFinishLoad(WebWrapper* web) {
-  ScheduleProductInfoJavascript(web);
+  ScheduleProductInfoLocalExtraction(web);
 }
 
-void ShoppingService::TryRunningJavascriptForProductInfo(
+void ShoppingService::TryRunningLocalExtractionForProductInfo(
     base::WeakPtr<WebWrapper> web) {
   if (web.WasInvalidated()) {
     return;
   }
 
-  // Make sure we actually need the javascript to run based on the cache.
+  // Make sure we actually need the local extraction to run based on the cache.
   auto it = product_info_cache_.find(web->GetLastCommittedURL().spec());
-  if (it == product_info_cache_.end() || !it->second->needs_javascript_run) {
+  if (it == product_info_cache_.end() ||
+      !it->second->needs_local_extraction_run) {
     return;
   }
 
@@ -365,27 +333,25 @@ void ShoppingService::TryRunningJavascriptForProductInfo(
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // If there is both an entry in the cache and the javascript fallback needs
-  // to run, run it.
-  if (it != product_info_cache_.end() && it->second->needs_javascript_run) {
+  // If there is both an entry in the cache and the local extraction fallback
+  // needs to run, run it.
+  if (it != product_info_cache_.end() &&
+      it->second->needs_local_extraction_run && web_extractor_) {
     // Since we're about to run the JS, flip the flag in the cache.
-    it->second->needs_javascript_run = false;
+    it->second->needs_local_extraction_run = false;
 
-    std::string script =
-        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-            IDR_QUERY_SHOPPING_META_JS);
+    it->second->local_extraction_execution_start_time = base::Time::Now();
 
-    it->second->javascript_execution_start_time = base::Time::Now();
-    web->RunJavascript(
-        base::UTF8ToUTF16(script),
-        base::BindOnce(&ShoppingService::OnProductInfoJavascriptResult,
+    web_extractor_->ExtractMetaInfo(
+        web.get(),
+        base::BindOnce(&ShoppingService::OnProductInfoLocalExtractionResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        GURL(web->GetLastCommittedURL())));
   }
 }
 
-void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
-                                                    base::Value result) {
+void ShoppingService::OnProductInfoLocalExtractionResult(const GURL url,
+                                                         base::Value result) {
   // We should only ever get a string result from the script execution.
   if (!result.is_string()) {
     return;
@@ -398,8 +364,8 @@ void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
   }
 
   base::UmaHistogramTimes(
-      kProductInfoJavascriptTime,
-      base::Time::Now() - it->second->javascript_execution_start_time);
+      kProductInfoLocalExtractionTime,
+      base::Time::Now() - it->second->local_extraction_execution_start_time);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       result.GetString(),
@@ -428,10 +394,10 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
   bool pdp_detected_by_client = false;
   bool pdp_detected_by_server = false;
 
-  // If there wasn't cached info but the javascript still ran, it means that
-  // the server didn't detect the page as a PDP, so we should try to determine
-  // whether it is using the meta extracted from the page. This will only
-  // happen if the |kCommerceLocalPDPDetection| flag is enabled.
+  // If there wasn't cached info but the local extraction still ran, it means
+  // that the server didn't detect the page as a PDP, so we should try to
+  // determine whether it is using the meta extracted from the page. This will
+  // only happen if the |kCommerceLocalPDPDetection| flag is enabled.
   pdp_detected_by_client = CheckIsPDPFromMetaOnly(result.value().GetDict());
   if (cached_info) {
     pdp_detected_by_server = true;
@@ -502,7 +468,7 @@ void ShoppingService::UpdateProductInfoCache(
   if (it == product_info_cache_.end())
     return;
 
-  it->second->needs_javascript_run = needs_js;
+  it->second->needs_local_extraction_run = needs_js;
   it->second->product_info = std::move(info);
 }
 
@@ -524,9 +490,9 @@ void ShoppingService::UpdateProductInfoCacheForRemoval(const GURL& url) {
   if (it != product_info_cache_.end()) {
     ProductInfoCacheEntry* entry = it->second.get();
     if (entry->pages_with_url_open <= 1) {
-      if (entry->run_javascript_task.get()) {
-        entry->run_javascript_task->Cancel();
-        entry->run_javascript_task.reset();
+      if (entry->run_local_extraction_task.get()) {
+        entry->run_local_extraction_task->Cancel();
+        entry->run_local_extraction_task.reset();
       }
       product_info_cache_.erase(it);
     } else {
@@ -590,13 +556,13 @@ absl::optional<ProductInfo> ShoppingService::GetAvailableProductInfoForUrl(
 }
 
 void ShoppingService::GetUpdatedProductInfoForBookmarks(
-    const std::vector<base::Uuid>& bookmark_uuids,
+    const std::vector<int64_t>& bookmark_ids,
     BookmarkProductInfoUpdatedCallback info_updated_callback) {
   std::vector<GURL> urls;
-  std::unordered_map<std::string, base::Uuid> url_to_uuid_map;
-  for (const base::Uuid& uuid : bookmark_uuids) {
+  std::unordered_map<std::string, int64_t> url_to_id_map;
+  for (uint64_t id : bookmark_ids) {
     const bookmarks::BookmarkNode* bookmark =
-        GetBookmarkModelUsedForSync()->GetNodeByUuid(uuid);
+        bookmarks::GetBookmarkNodeByID(GetBookmarkModelUsedForSync(), id);
 
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
         power_bookmarks::GetNodePowerBookmarkMeta(GetBookmarkModelUsedForSync(),
@@ -609,7 +575,7 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
       continue;
 
     urls.push_back(bookmark->url());
-    url_to_uuid_map[bookmark->url().spec()] = uuid;
+    url_to_id_map[bookmark->url().spec()] = id;
   }
 
   opt_guide_->CanApplyOptimizationOnDemand(
@@ -618,7 +584,7 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
       base::BindRepeating(&ShoppingService::OnProductInfoUpdatedOnDemand,
                           weak_ptr_factory_.GetWeakPtr(),
                           std::move(info_updated_callback),
-                          std::move(url_to_uuid_map)));
+                          std::move(url_to_id_map)));
 }
 
 size_t ShoppingService::GetMaxProductBookmarkUpdatesPerBatch() {
@@ -836,7 +802,7 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
     if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
       UpdateProductInfoCache(url, true, nullptr);
       if (web) {
-        ScheduleProductInfoJavascript(web);
+        ScheduleProductInfoLocalExtraction(web);
       }
     }
 
@@ -853,14 +819,14 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   }
 
   // TODO(mdjones): Longer-term it might make sense to wait until the
-  // javascript has run to execute this. The problem is that optimization guide
-  // is fast and the javascript is slow.
+  // local extraction has run to execute this. The problem is that optimization
+  // guide is fast and the local extraction is slow.
   std::move(callback).Run(url, optional_info);
 
-  // Check if we still need to run the javascript. This could happen if page
-  // load happened prior to optimization guide responding.
+  // Check if we still need to run the local extraction. This could happen if
+  // page load happened prior to optimization guide responding.
   if (web) {
-    ScheduleProductInfoJavascript(web);
+    ScheduleProductInfoLocalExtraction(web);
   }
 }
 
@@ -941,7 +907,7 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
 void ShoppingService::OnProductInfoUpdatedOnDemand(
     BookmarkProductInfoUpdatedCallback callback,
-    std::unordered_map<std::string, base::Uuid> url_to_uuid_map,
+    std::unordered_map<std::string, int64_t> url_to_id_map,
     const GURL& url,
     const base::flat_map<
         optimization_guide::proto::OptimizationType,
@@ -969,7 +935,7 @@ void ShoppingService::OnProductInfoUpdatedOnDemand(
     optional_info.emplace(*info);
     UpdateProductInfoCache(url, false, std::move(info));
 
-    std::move(callback).Run(url_to_uuid_map[url.spec()], url, optional_info);
+    std::move(callback).Run(url_to_id_map[url.spec()], url, optional_info);
   }
 }
 
@@ -1608,6 +1574,14 @@ void ShoppingService::StartTrackingParcels(
 }
 
 void ShoppingService::GetAllParcelStatuses(GetParcelStatusCallback callback) {
+  if (base::FeatureList::IsEnabled(kParcelTrackingTestData)) {
+    auto statuses = std::make_unique<std::vector<ParcelTrackingStatus>>();
+    statuses->push_back(GetParcelTrackingStatusTestData());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), true, std::move(statuses)));
+    return;
+  }
   if (parcels_manager_) {
     parcels_manager_->GetAllParcelStatuses(std::move(callback));
   } else {

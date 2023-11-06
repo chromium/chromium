@@ -82,6 +82,9 @@ class FormFieldTestBase {
   void ClassifyAndVerify(ParseResult parse_result = ParseResult::PARSED,
                          const LanguageCode& page_language = LanguageCode(""));
 
+  // Removes all the fields and resets the expectations.
+  void ClearFieldsAndExpectations();
+
   // Test the parsed verifications against the expectations.
   void TestClassificationExpectations();
 

@@ -29,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {
@@ -82,6 +83,7 @@ void ReadError<Glx::GenericError>(Glx::GenericError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadContextError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadContextError{";
@@ -128,6 +130,7 @@ void ReadError<Glx::BadContextError>(Glx::BadContextError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadContextStateError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadContextStateError{";
@@ -174,6 +177,7 @@ void ReadError<Glx::BadContextStateError>(Glx::BadContextStateError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadDrawableError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadDrawableError{";
@@ -220,6 +224,7 @@ void ReadError<Glx::BadDrawableError>(Glx::BadDrawableError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadPixmapError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadPixmapError{";
@@ -266,6 +271,7 @@ void ReadError<Glx::BadPixmapError>(Glx::BadPixmapError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadContextTagError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadContextTagError{";
@@ -312,6 +318,7 @@ void ReadError<Glx::BadContextTagError>(Glx::BadContextTagError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadCurrentWindowError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadCurrentWindowError{";
@@ -358,6 +365,7 @@ void ReadError<Glx::BadCurrentWindowError>(Glx::BadCurrentWindowError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadRenderRequestError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadRenderRequestError{";
@@ -404,6 +412,7 @@ void ReadError<Glx::BadRenderRequestError>(Glx::BadRenderRequestError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadLargeRequestError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadLargeRequestError{";
@@ -450,6 +459,7 @@ void ReadError<Glx::BadLargeRequestError>(Glx::BadLargeRequestError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::UnsupportedPrivateRequestError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::UnsupportedPrivateRequestError{";
@@ -497,6 +507,7 @@ void ReadError<Glx::UnsupportedPrivateRequestError>(
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadFBConfigError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadFBConfigError{";
@@ -543,6 +554,7 @@ void ReadError<Glx::BadFBConfigError>(Glx::BadFBConfigError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadPbufferError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadPbufferError{";
@@ -589,6 +601,7 @@ void ReadError<Glx::BadPbufferError>(Glx::BadPbufferError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadCurrentDrawableError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadCurrentDrawableError{";
@@ -636,6 +649,7 @@ void ReadError<Glx::BadCurrentDrawableError>(
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::BadWindowError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::BadWindowError{";
@@ -682,6 +696,7 @@ void ReadError<Glx::BadWindowError>(Glx::BadWindowError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 std::string Glx::GLXBadProfileARBError::ToString() const {
   std::stringstream ss_;
   ss_ << "Glx::GLXBadProfileARBError{";
@@ -728,6 +743,7 @@ void ReadError<Glx::GLXBadProfileARBError>(Glx::GLXBadProfileARBError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 template <>
 COMPONENT_EXPORT(X11)
 void ReadEvent<Glx::PbufferClobberEvent>(Glx::PbufferClobberEvent* event_,

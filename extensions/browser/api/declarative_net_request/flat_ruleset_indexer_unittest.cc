@@ -204,8 +204,8 @@ IndexedRule CreateIndexedRule(
   rule.action_type = action_type;
   rule.url_transform = std::move(url_transform);
   rule.regex_substitution = std::move(regex_substitution);
-  rule.request_headers = std::move(request_headers);
-  rule.response_headers = std::move(response_headers);
+  rule.request_headers_to_modify = std::move(request_headers);
+  rule.response_headers_to_modify = std::move(response_headers);
   return rule;
 }
 
@@ -356,10 +356,11 @@ void VerifyExtensionMetadata(
         };
 
     EXPECT_TRUE(are_header_modifications_equal(
-        pair.metadata->request_headers(), pair.indexed_rule->request_headers));
-    EXPECT_TRUE(
-        are_header_modifications_equal(pair.metadata->response_headers(),
-                                       pair.indexed_rule->response_headers));
+        pair.metadata->request_headers(),
+        pair.indexed_rule->request_headers_to_modify));
+    EXPECT_TRUE(are_header_modifications_equal(
+        pair.metadata->response_headers(),
+        pair.indexed_rule->response_headers_to_modify));
 
     return true;
   };

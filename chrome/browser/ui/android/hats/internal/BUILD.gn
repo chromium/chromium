@@ -28,10 +28,15 @@ android_library("java") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
+    "//components/browser_ui/util/android:java",
     "//components/messages/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -56,6 +61,7 @@ robolectric_library("junit") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/hats:java",
     "//chrome/browser/ui/android/hats:message_ui_delegate_java",
@@ -63,6 +69,9 @@ robolectric_library("junit") {
     "//components/messages/android:factory_java",
     "//components/messages/android:java",
     "//components/messages/android:manager_java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -81,6 +90,11 @@ android_library("controller_java") {
   deps = [
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
   ]
@@ -93,7 +107,10 @@ android_library("controller_java") {
 android_library("provider_public_impl_java") {
   sources = [ "java/src/org/chromium/chrome/browser/ui/hats/SurveyControllerProvider.java" ]
 
-  deps = [ ":controller_java" ]
+  deps = [
+    ":controller_java",
+    "//chrome/browser/profiles/android:java",
+  ]
 }
 
 generate_jni("jni_headers") {

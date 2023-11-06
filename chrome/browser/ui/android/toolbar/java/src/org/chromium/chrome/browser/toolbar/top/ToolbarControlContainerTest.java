@@ -59,25 +59,16 @@ public class ToolbarControlContainerTest {
     private static final String DIFFERENCE_NAME = "Android.TopToolbar.SnapshotDifference";
     private static final String MOTION_STAGE_NAME = "Android.TopToolbar.InMotionStage";
 
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mFeaturesProcessor = new JUnitProcessor();
+    @Rule public MockitoRule rule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
 
-    @Mock
-    private ResourceFactory.Natives mResourceFactoryJni;
-    @Mock
-    private View mToolbarContainer;
-    @Mock
-    private Toolbar mToolbar;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private FullscreenManager mFullscreenManager;
+    @Mock private ResourceFactory.Natives mResourceFactoryJni;
+    @Mock private View mToolbarContainer;
+    @Mock private Toolbar mToolbar;
+    @Mock private Tab mTab;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private FullscreenManager mFullscreenManager;
 
     private final Supplier<Tab> mTabSupplier = () -> mTab;
     private final ObservableSupplierImpl<Boolean> mCompositorInMotionSupplier =
@@ -100,19 +91,26 @@ public class ToolbarControlContainerTest {
     private ToolbarViewResourceAdapter mAdapter;
 
     private void makeAdapter() {
-        mAdapter = new ToolbarViewResourceAdapter(mToolbarContainer, false) {
-            @Override
-            public void onResourceRequested() {
-                // No-op normal functionality and just count calls instead.
-                mOnResourceRequestedCount.getAndIncrement();
-            }
-        };
+        mAdapter =
+                new ToolbarViewResourceAdapter(mToolbarContainer, false) {
+                    @Override
+                    public void onResourceRequested() {
+                        // No-op normal functionality and just count calls instead.
+                        mOnResourceRequestedCount.getAndIncrement();
+                    }
+                };
     }
 
     private void initAdapter() {
-        mAdapter.setPostInitializationDependencies(mToolbar, mConstraintsSupplier, mTabSupplier,
-                mCompositorInMotionSupplier, mBrowserStateBrowserControlsVisibilityDelegate,
-                mIsVisibleSupplier, mLayoutStateProviderSupplier, mFullscreenManager);
+        mAdapter.setPostInitializationDependencies(
+                mToolbar,
+                mConstraintsSupplier,
+                mTabSupplier,
+                mCompositorInMotionSupplier,
+                mBrowserStateBrowserControlsVisibilityDelegate,
+                mIsVisibleSupplier,
+                mLayoutStateProviderSupplier,
+                mFullscreenManager);
         // The adapter may observe some of these already, which will post events.
         ShadowLooper.idleMainLooper();
         // The initial addObserver triggers an event that we don't care about. Reset count.
@@ -187,11 +185,12 @@ public class ToolbarControlContainerTest {
         when(mToolbarContainer.getHeight()).thenReturn(1);
         mBrowserStateBrowserControlsVisibilityDelegate.set(BrowserControlsState.BOTH);
         mCompositorInMotionSupplier.set(false);
-        mBrowserStateBrowserControlsVisibilityDelegate.addObserver(result -> {
-            if (!mHasTestConstraintsOverride) {
-                mConstraintsSupplier.set(result);
-            }
-        });
+        mBrowserStateBrowserControlsVisibilityDelegate.addObserver(
+                result -> {
+                    if (!mHasTestConstraintsOverride) {
+                        mConstraintsSupplier.set(result);
+                    }
+                });
     }
 
     @Test
@@ -279,13 +278,13 @@ public class ToolbarControlContainerTest {
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder().expectNoRecords(BLOCK_NAME).build();
-        verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        verifyRequestsOnInMotionChange(/* inMotion= */ true, /* expectResourceRequested= */ false);
         histogramWatcher.assertExpected();
 
         verifyIsDirtyWasBlocked(TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION);
         assertFalse(didAdapterLockControls());
 
-        verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        verifyRequestsOnInMotionChange(/* inMotion= */ false, /* expectResourceRequested= */ true);
     }
 
     @Test
@@ -296,25 +295,27 @@ public class ToolbarControlContainerTest {
         mIsVisible = true;
 
         try (HistogramWatcher ignored =
-                        HistogramWatcher.newBuilder()
-                                .expectIntRecord(
-                                        MOTION_STAGE_NAME, ToolbarInMotionStage.SUPPRESSION_ENABLED)
-                                .expectIntRecord(
-                                        MOTION_STAGE_NAME, ToolbarInMotionStage.READINESS_CHECKED)
-                                .expectIntRecord(BLOCK_NAME,
-                                        TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION)
-                                .build()) {
-            verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MOTION_STAGE_NAME, ToolbarInMotionStage.SUPPRESSION_ENABLED)
+                        .expectIntRecord(MOTION_STAGE_NAME, ToolbarInMotionStage.READINESS_CHECKED)
+                        .expectIntRecord(
+                                BLOCK_NAME, TopToolbarBlockCaptureReason.COMPOSITOR_IN_MOTION)
+                        .build()) {
+            verifyRequestsOnInMotionChange(
+                    /* inMotion= */ true, /* expectResourceRequested= */ false);
         }
         assertTrue(didAdapterLockControls());
 
-        try (HistogramWatcher ignored = HistogramWatcher.newBuilder()
-                                                .expectIntRecord(MOTION_STAGE_NAME,
-                                                        ToolbarInMotionStage.SUPPRESSION_ENABLED)
-                                                .expectNoRecords(BLOCK_NAME)
-                                                .expectNoRecords(ALLOW_NAME)
-                                                .build()) {
-            verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        try (HistogramWatcher ignored =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                MOTION_STAGE_NAME, ToolbarInMotionStage.SUPPRESSION_ENABLED)
+                        .expectNoRecords(BLOCK_NAME)
+                        .expectNoRecords(ALLOW_NAME)
+                        .build()) {
+            verifyRequestsOnInMotionChange(
+                    /* inMotion= */ false, /* expectResourceRequested= */ true);
         }
         assertFalse(didAdapterLockControls());
     }
@@ -334,9 +335,9 @@ public class ToolbarControlContainerTest {
         when(mTab.isNativePage()).thenReturn(false);
         mIsVisible = true;
 
-        verifyRequestsOnInMotionChange(/*inMotion*/ true, /*expectResourceRequested*/ false);
+        verifyRequestsOnInMotionChange(/* inMotion= */ true, /* expectResourceRequested= */ false);
         assertTrue(didAdapterLockControls());
-        verifyRequestsOnInMotionChange(/*inMotion*/ false, /*expectResourceRequested*/ true);
+        verifyRequestsOnInMotionChange(/* inMotion= */ false, /* expectResourceRequested= */ true);
         assertFalse(didAdapterLockControls());
         histogramWatcher.assertExpected();
     }
@@ -383,8 +384,10 @@ public class ToolbarControlContainerTest {
     public void testIsDirty_Fullscreen() {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, true);
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
-                ToolbarFeatures.BLOCK_FOR_FULLSCREEN, "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
+                ToolbarFeatures.BLOCK_FOR_FULLSCREEN,
+                "true");
         FeatureList.setTestValues(testValues);
 
         final @ToolbarSnapshotDifference int difference = ToolbarSnapshotDifference.URL_TEXT;

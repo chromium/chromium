@@ -25,7 +25,8 @@ std::string FormatListAsJSON(const base::Value::List& list) {
 }
 
 base::Value GetJavascriptTimestamp() {
-  return base::Value(base::Time::Now().ToJsTimeIgnoringNull());
+  return base::Value(
+      base::Time::Now().InMillisecondsFSinceUnixEpochIgnoringNull());
 }
 
 // Keys in the JSON representation of a contact message

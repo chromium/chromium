@@ -32,6 +32,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -56,67 +57,6 @@ std::string GetManagedAccountTitle(ProfileAttributesEntry* entry,
   return l10n_util::GetStringFUTF8(
       IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_MANAGED_BY,
       base::UTF8ToUTF16(domain_name));
-}
-
-std::string GetManagedAccountTitleWithEmail(
-    Profile* profile,
-    ProfileAttributesEntry* entry,
-    const std::string& account_domain_name,
-    const std::u16string& email) {
-  DCHECK(profile);
-  DCHECK(entry);
-  DCHECK(!email.empty());
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  absl::optional<std::string> account_manager =
-      chrome::GetAccountManagerIdentity(profile);
-
-  if (!signin_util::IsProfileSeparationEnforcedByProfile(
-          profile, base::UTF16ToUTF8(email))) {
-    // The profile is managed but does not enforce profile separation. The
-    // intercepted account requires it.
-    if (account_manager && !account_manager->empty()) {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
-          base::UTF8ToUTF16(*account_manager), email,
-          base::UTF8ToUTF16(account_domain_name));
-    }
-    // The profile is not managed. The intercepted account requires profile
-    // separation.
-    return l10n_util::GetStringFUTF8(
-        IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
-        base::UTF8ToUTF16(account_domain_name));
-  } else if (profile->GetPrefs()->GetBoolean(
-                 prefs::kManagedAccountsSigninRestrictionScopeMachine)) {
-    // The device is managed and requires profile separation.
-    absl::optional<std::string> device_manager =
-        chrome::GetDeviceManagerIdentity();
-    if (device_manager && !device_manager->empty()) {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
-          base::UTF8ToUTF16(*device_manager), email);
-    } else {
-      return l10n_util::GetStringFUTF8(
-          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
-          email);
-    }
-  } else {
-    DCHECK(account_manager);
-    DCHECK(!account_manager->empty());
-    return l10n_util::GetStringFUTF8(
-        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
-        base::UTF8ToUTF16(*account_manager), email);
-  }
-#else
-  if (entry->GetHostedDomain() == kNoHostedDomainFound)
-    return std::string();
-  const std::string domain_name = entry->GetHostedDomain().empty()
-                                      ? account_domain_name
-                                      : entry->GetHostedDomain();
-  return l10n_util::GetStringFUTF8(
-      IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
-      base::UTF8ToUTF16(domain_name));
-#endif  //  !BUILDFLAG(IS_CHROMEOS)
 }
 
 std::string GetManagedDeviceTitle() {
@@ -271,6 +211,66 @@ void EnterpriseProfileWelcomeHandler::UpdateProfileInfo(
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 
+// static
+std::string EnterpriseProfileWelcomeHandler::GetManagedAccountTitleWithEmail(
+    Profile* profile,
+    ProfileAttributesEntry* entry,
+    const std::string& account_domain_name,
+    const std::u16string& email) {
+  DCHECK(profile);
+  DCHECK(entry);
+  DCHECK(!email.empty());
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  absl::optional<std::string> account_manager =
+      chrome::GetAccountManagerIdentity(profile);
+  absl::optional<std::string> device_manager =
+      chrome::GetDeviceManagerIdentity();
+
+  if (!signin_util::IsProfileSeparationEnforcedByProfile(
+          profile, base::UTF16ToUTF8(email))) {
+    // The profile is managed but does not enforce profile separation. The
+    // intercepted account requires it.
+    if (account_manager && !account_manager->empty()) {
+      return l10n_util::GetStringFUTF8(
+          IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_SEPARATION,
+          base::UTF8ToUTF16(*account_manager), email,
+          base::UTF8ToUTF16(account_domain_name));
+    }
+    // The profile is not managed. The intercepted account requires profile
+    // separation.
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+        base::UTF8ToUTF16(account_domain_name));
+  }
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kManagedAccountsSigninRestrictionScopeMachine) &&
+      account_manager && !account_manager->empty()) {
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_MANAGED_STRICT_SEPARATION,
+        base::UTF8ToUTF16(*account_manager), email);
+  }
+  if (device_manager && !device_manager->empty()) {
+    // The device is managed and requires profile separation.
+    return l10n_util::GetStringFUTF8(
+        IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED_BY,
+        base::UTF8ToUTF16(*device_manager), email);
+  }
+  return l10n_util::GetStringFUTF8(
+      IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED, email);
+#else
+  if (entry->GetHostedDomain() == kNoHostedDomainFound) {
+    return std::string();
+  }
+  const std::string domain_name = entry->GetHostedDomain().empty()
+                                      ? account_domain_name
+                                      : entry->GetHostedDomain();
+  return l10n_util::GetStringFUTF8(
+      IDS_ENTERPRISE_PROFILE_WELCOME_ACCOUNT_EMAIL_MANAGED_BY, email,
+      base::UTF8ToUTF16(domain_name));
+#endif  //  !BUILDFLAG(IS_CHROMEOS)
+}
+
 base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
   base::Value::Dict dict;
   dict.Set("pictureUrl", GetPictureUrl());
@@ -321,10 +321,21 @@ base::Value::Dict EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
 #if !BUILDFLAG(IS_CHROMEOS)
+      // We apply the checkLinkDataCheckboxByDefault to true value only if the
+      // link data checkbox is visible and the policy
+      // ProfileSeparationDataMigrationSettings is set to its OPTOUT value (2)
+      // or the legacy policy EnterpriseProfileCreationKeepBrowsingData is set
+      // to True.
+      bool profile_separation_data_migration_settings_optout =
+          Profile::FromWebUI(web_ui())->GetPrefs()->GetInteger(
+              prefs::kProfileSeparationDataMigrationSettings) == 2;
+      bool check_link_Data_checkbox_by_default_from_legacy_policy =
+          g_browser_process->local_state()->GetBoolean(
+              prefs::kEnterpriseProfileCreationKeepBrowsingData);
       dict.Set("checkLinkDataCheckboxByDefault",
                show_link_data_option_ &&
-                   g_browser_process->local_state()->GetBoolean(
-                       prefs::kEnterpriseProfileCreationKeepBrowsingData));
+                   (profile_separation_data_migration_settings_optout ||
+                    check_link_Data_checkbox_by_default_from_legacy_policy));
 #endif
       break;
   }

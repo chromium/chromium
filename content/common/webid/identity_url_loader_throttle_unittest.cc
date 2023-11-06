@@ -42,12 +42,12 @@ class IdentityUrlLoaderThrottleTest : public testing::Test {
 
 class IdentityUrlLoaderThrottleTestParameterized
     : public IdentityUrlLoaderThrottleTest,
-      public testing::WithParamInterface<
-          std::tuple<IdpSigninStatus, bool, bool>> {};
+      public testing::WithParamInterface<std::tuple<IdpSigninStatus, bool>> {};
 
 TEST_F(IdentityUrlLoaderThrottleTest, DisabledByKillSwitch) {
   base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmIdpSigninStatusMetrics);
+  list.InitWithFeatures({}, {features::kFedCmIdpSigninStatusMetrics,
+                             features::kFedCmIdpSigninStatusEnabled});
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
@@ -57,30 +57,22 @@ TEST_F(IdentityUrlLoaderThrottleTest, DisabledByKillSwitch) {
 TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
   IdpSigninStatus signin_status = std::get<0>(GetParam());
   bool has_user_gesture = std::get<1>(GetParam());
-  bool is_google_header = std::get<2>(GetParam());
 
   std::unique_ptr<blink::URLLoaderThrottle> throttle =
       MaybeCreateIdentityUrlLoaderThrottle(CreateCallback());
   ASSERT_NE(nullptr, throttle);
 
   network::ResourceRequest request;
-  request.url = GURL("https://accounts.google.com/");
+  request.url = GURL("https://accounts.idp.example/");
   request.has_user_gesture = has_user_gesture;
   bool defer = false;
 
   throttle->WillStartRequest(&request, &defer);
   EXPECT_FALSE(defer);
 
-  std::string header =
-      is_google_header
-          ? base::StringPrintf(
-                "Google-Accounts-Sign%s: email=\"foo@example.com\", "
-                "sessionindex=0, "
-                "obfuscatedid=123\n",
-                signin_status == IdpSigninStatus::kSignedIn ? "In" : "Out")
-          : base::StringPrintf(
-                "set-login: logged-%s; type=idp; foo=bar",
-                signin_status == IdpSigninStatus::kSignedIn ? "in" : "out");
+  std::string header = base::StringPrintf(
+      "set-login: logged-%s; foo=bar",
+      signin_status == IdpSigninStatus::kSignedIn ? "in" : "out");
 
   network::mojom::URLResponseHead response_head;
   response_head.headers = net::HttpResponseHeaders::TryToCreate(
@@ -90,7 +82,7 @@ TEST_P(IdentityUrlLoaderThrottleTestParameterized, Headers) {
 
   EXPECT_EQ(1, cb_num_calls_);
   EXPECT_EQ(signin_status, cb_signin_status_);
-  EXPECT_EQ(url::Origin::Create(GURL("https://accounts.google.com/")),
+  EXPECT_EQ(url::Origin::Create(GURL("https://accounts.idp.example/")),
             cb_origin_);
   if (signin_status == IdpSigninStatus::kSignedIn) {
     histogram_tester_.ExpectUniqueSample(
@@ -106,7 +98,6 @@ INSTANTIATE_TEST_SUITE_P(
     IdentityUrlLoaderThrottleTestParameterized,
     testing::Combine(testing::Values(IdpSigninStatus::kSignedIn,
                                      IdpSigninStatus::kSignedOut),
-                     testing::Values(false, true),
                      testing::Values(false, true)));
 
 TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
@@ -115,7 +106,7 @@ TEST_F(IdentityUrlLoaderThrottleTest, NoRelevantHeader) {
   ASSERT_NE(nullptr, throttle);
 
   network::ResourceRequest request;
-  request.url = GURL("https://accounts.google.com/");
+  request.url = GURL("https://accounts.idp.example/");
   request.has_user_gesture = true;
   bool defer = false;
 
@@ -143,12 +134,12 @@ TEST_F(IdentityUrlLoaderThrottleTest, HeaderHasToken) {
       IdentityUrlLoaderThrottle::HeaderHasToken(*headers, "Signin", "val"));
 
   headers = net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\nSignIn: val; type=idp");
+      "HTTP/1.1 200 OK\nSignIn: val; foo=bar");
   EXPECT_TRUE(
       IdentityUrlLoaderThrottle::HeaderHasToken(*headers, "Signin", "val"));
 
   headers = net::HttpResponseHeaders::TryToCreate(
-      "HTTP/1.1 200 OK\nSignin:  val ; type=idp");
+      "HTTP/1.1 200 OK\nSignin:  val ; foo=bar");
   EXPECT_TRUE(
       IdentityUrlLoaderThrottle::HeaderHasToken(*headers, "Signin", "val"));
 

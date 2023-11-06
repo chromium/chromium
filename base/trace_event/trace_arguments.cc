@@ -16,6 +16,7 @@
 #include "base/json/string_escape.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -164,7 +165,7 @@ bool StringStorage::Contains(const TraceArguments& args) const {
 }
 
 static_assert(
-    std::is_pod<TraceValue>::value,
+    std::is_pod_v<TraceValue>,
     "TraceValue must be plain-old-data type for performance reasons!");
 
 void TraceValue::AppendAsJSON(unsigned char type, std::string* out) const {
@@ -196,10 +197,10 @@ void TraceValue::Append(unsigned char type,
       // So as not to lose bits from a 64-bit pointer, output as a hex string.
       // For consistency, do the same for non-JSON strings, but without the
       // surrounding quotes.
-      const char* format_string = as_json ? "\"0x%" PRIx64 "\"" : "0x%" PRIx64;
-      StringAppendF(
-          out, format_string,
+      const std::string value = StringPrintf(
+          "0x%" PRIx64,
           static_cast<uint64_t>(reinterpret_cast<uintptr_t>(this->as_pointer)));
+      *out += as_json ? StrCat({"\"", value, "\""}) : value;
     } break;
     case TRACE_VALUE_TYPE_STRING:
     case TRACE_VALUE_TYPE_COPY_STRING:

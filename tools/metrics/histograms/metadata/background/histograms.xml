@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.OneShotResultPattern"
-    enum="BackgroundSyncResultPattern" expires_after="2024-02-06">
+    enum="BackgroundSyncResultPattern" expires_after="2024-04-28">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -138,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Event.Time" units="ms"
-    expires_after="2024-02-06">
+    expires_after="2024-04-28">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.LaunchTask.PlayServicesAvailable"
-    enum="Boolean" expires_after="2024-02-06">
+    enum="Boolean" expires_after="2024-04-28">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -186,7 +186,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.OneShot"
-    enum="BackgroundSyncStatus" expires_after="2024-02-06">
+    enum="BackgroundSyncStatus" expires_after="2024-04-28">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BackgroundSync.Registration.Periodic"
-    enum="BackgroundSyncStatus" expires_after="2024-02-06">
+    enum="BackgroundSyncStatus" expires_after="2024-04-28">
   <owner>nator@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>

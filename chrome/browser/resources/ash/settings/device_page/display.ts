@@ -35,11 +35,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
-import {DisplaySettingsProviderInterface, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {DisplayConfigurationObserverReceiver, DisplaySettingsProviderInterface, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
@@ -337,6 +337,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const {isTabletMode} = await this.displaySettingsProvider.observeTabletMode(
         new TabletModeObserverReceiver(this).$.bindNewPipeAndPassRemote());
     this.isTabletMode_ = isTabletMode;
+
+    this.displaySettingsProvider.observeDisplayConfiguration(
+        new DisplayConfigurationObserverReceiver(this)
+            .$.bindNewPipeAndPassRemote());
   }
 
   override disconnectedCallback(): void {
@@ -354,6 +358,14 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
    */
   onTabletModeChanged(isTabletMode: boolean): void {
     this.isTabletMode_ = isTabletMode;
+  }
+
+  /**
+   * Implements DisplayConfigurationObserver.OnDisplayConfigurationChanged.
+   */
+  onDisplayConfigurationChanged(): void {
+    // Sync active display settings to avoid UI inconsistency.
+    this.getDisplayInfo_();
   }
 
   override beforeDeepLinkAttempt(_settingId: Setting): boolean {

@@ -34,7 +34,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
   const String& eye() const { return eye_string_; }
   device::mojom::blink::XREye EyeValue() const { return eye_; }
-  XRViewData* ViewData() const { return view_data_; }
+  XRViewData* ViewData() const { return view_data_.Get(); }
   XRViewport* Viewport(double scale);
 
   XRFrame* frame() const;

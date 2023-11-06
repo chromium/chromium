@@ -55,11 +55,6 @@ template("_invoke_jni_zero") {
       inputs = []
     }
     inputs += rebase_path([
-                            "../../build/action_helpers.py",
-                            "../../build/android/gyp/util/__init__.py",
-                            "../../build/android/gyp/util/build_utils.py",
-                            "../../build/gn_helpers.py",
-                            "../../build/zip_helpers.py",
                             "codegen/placeholder_gen_jni_java.py",
                             "codegen/proxy_impl_java.py",
                             "common.py",
@@ -135,6 +130,16 @@ template("generate_jni_registration") {
     outputs = [ _srcjar_output ]
     depfile = "$target_gen_dir/$target_name.d"
 
+    java_target_deps = []
+    if (defined(invoker.java_targets)) {
+      foreach(java_targets_dep, invoker.java_targets) {
+        java_target_deps +=
+            [ get_label_info(java_targets_dep, "label_no_toolchain") ]
+      }
+    }
+    metadata = {
+      java_deps = java_target_deps
+    }
     args = [
       "generate-final",
       "--srcjar-path",
@@ -239,8 +244,7 @@ template("generate_jni_impl") {
         _jni_generator_include = invoker.jni_generator_include
         _jni_generator_include_deps = []
       } else {
-        _jni_generator_include =
-            "//base/android/jni_generator/jni_generator_helper.h"
+        _jni_generator_include = "//third_party/jni_zero/jni_zero_helper.h"
         _jni_generator_include_deps = [
           # Using //base/android/jni_generator/jni_generator_helper.h introduces
           # a dependency on buildflags targets indirectly through

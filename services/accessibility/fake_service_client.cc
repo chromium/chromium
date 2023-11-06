@@ -5,6 +5,7 @@
 #include "services/accessibility/fake_service_client.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/notreached.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace ax {
@@ -24,6 +25,16 @@ void FakeServiceClient::BindAutomation(
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::BindAutoclickClient(
+    mojo::PendingReceiver<ax::mojom::AutoclickClient>
+        autoclick_client_reciever) {
+  autoclick_client_recievers_.Add(this, std::move(autoclick_client_reciever));
+}
+void FakeServiceClient::BindSpeechRecognition(
+    mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) {
+  sr_receivers_.Add(this, std::move(sr_receiver));
+}
+
 void FakeServiceClient::BindTts(
     mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) {
   tts_receivers_.Add(this, std::move(tts_receiver));
@@ -32,6 +43,46 @@ void FakeServiceClient::BindTts(
 void FakeServiceClient::BindUserInterface(
     mojo::PendingReceiver<mojom::UserInterface> ux_receiver) {
   ux_receivers_.Add(this, std::move(ux_receiver));
+}
+
+void FakeServiceClient::HandleScrollableBoundsForPointFound(
+    const gfx::Rect& bounds) {
+  if (scrollable_bounds_for_point_callback_) {
+    scrollable_bounds_for_point_callback_.Run(bounds);
+  }
+}
+
+void FakeServiceClient::BindAutoclick(BindAutoclickCallback callback) {
+  std::move(callback).Run(autoclick_remote_.BindNewPipeAndPassReceiver());
+}
+
+void FakeServiceClient::Start(ax::mojom::StartOptionsPtr options,
+                              StartCallback callback) {
+  auto info = mojom::SpeechRecognitionStartInfo::New();
+  info->type = mojom::SpeechRecognitionType::kNetwork;
+  info->observer = sr_event_observer_.BindNewPipeAndPassReceiver();
+  std::move(callback).Run(std::move(info));
+  if (speech_recognition_start_callback_) {
+    speech_recognition_start_callback_.Run();
+  }
+}
+
+void FakeServiceClient::Stop(ax::mojom::StopOptionsPtr options,
+                             StopCallback callback) {
+  std::move(callback).Run();
+}
+
+void FakeServiceClient::BindAccessibilityFileLoader(
+    mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+        file_loader_receiver) {
+  DCHECK(!file_loader_.is_bound());
+  file_loader_.Bind(std::move(file_loader_receiver));
+}
+
+void FakeServiceClient::Load(const base::FilePath& path,
+                             LoadCallback callback) {
+  // TODO(crbug.com/1493546): Implement file loading for
+  // FakeAccessibilityServiceClient.
 }
 
 void FakeServiceClient::Speak(const std::string& utterance,
@@ -118,6 +169,14 @@ void FakeServiceClient::OpenSettingsSubpage(const std::string& subpage) {
   }
 }
 
+void FakeServiceClient::ShowConfirmationDialog(
+    const std::string& title,
+    const std::string& description,
+    const absl::optional<std::string>& cancel_name,
+    ShowConfirmationDialogCallback callback) {
+  std::move(callback).Run(true);
+}
+
 void FakeServiceClient::SetFocusRings(
     std::vector<mojom::FocusRingInfoPtr> focus_rings,
     mojom::AssistiveTechnologyType at_type) {
@@ -131,6 +190,12 @@ void FakeServiceClient::SetHighlights(const std::vector<gfx::Rect>& rects,
                                       SkColor color) {
   if (highlights_callback_) {
     highlights_callback_.Run(rects, color);
+  }
+}
+
+void FakeServiceClient::SetVirtualKeyboardVisible(bool is_visible) {
+  if (virtual_keyboard_visible_callback_) {
+    virtual_keyboard_visible_callback_.Run(is_visible);
   }
 }
 #endif  // BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
@@ -151,6 +216,38 @@ bool FakeServiceClient::AutomationIsBound() const {
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
+void FakeServiceClient::RequestScrollableBoundsForPoint(
+    const gfx::Point& point) {
+  autoclick_remote_->RequestScrollableBoundsForPoint(point);
+}
+
+void FakeServiceClient::SetScrollableBoundsForPointFoundCallback(
+    base::RepeatingCallback<void(const gfx::Rect&)> callback) {
+  scrollable_bounds_for_point_callback_ = std::move(callback);
+}
+
+void FakeServiceClient::SetSpeechRecognitionStartCallback(
+    base::RepeatingCallback<void()> callback) {
+  speech_recognition_start_callback_ = std::move(callback);
+}
+
+void FakeServiceClient::SendSpeechRecognitionStopEvent() {
+  sr_event_observer_->OnStop();
+}
+
+void FakeServiceClient::SendSpeechRecognitionResultEvent() {
+  auto result = ax::mojom::SpeechRecognitionResultEvent::New();
+  result->transcript = "Hello world";
+  result->is_final = true;
+  sr_event_observer_->OnResult(std::move(result));
+}
+
+void FakeServiceClient::SendSpeechRecognitionErrorEvent() {
+  auto event = ax::mojom::SpeechRecognitionErrorEvent::New();
+  event->message = "Goodnight world";
+  sr_event_observer_->OnError(std::move(event));
+}
+
 void FakeServiceClient::SetTtsSpeakCallback(
     base::RepeatingCallback<void(const std::string&, mojom::TtsOptionsPtr)>
         callback) {
@@ -181,6 +278,11 @@ void FakeServiceClient::SetHighlightsCallback(
     base::RepeatingCallback<void(const std::vector<gfx::Rect>& rects,
                                  SkColor color)> callback) {
   highlights_callback_ = callback;
+}
+
+void FakeServiceClient::SetVirtualKeyboardVisibleCallback(
+    base::RepeatingCallback<void(bool is_visible)> callback) {
+  virtual_keyboard_visible_callback_ = std::move(callback);
 }
 
 bool FakeServiceClient::UserInterfaceIsBound() const {

@@ -38,6 +38,8 @@ declare global {
   }
 }
 
+const MAX_BUTTON_NAME_INPUT_LENGTH = 32;
+
 const CustomizeButtonsSubsectionElementBase = I18nMixin(PolymerElement);
 
 export class CustomizeButtonsSubsectionElement extends
@@ -72,10 +74,27 @@ export class CustomizeButtonsSubsectionElement extends
       selectedButtonName_: {
         type: String,
         value: '',
+        observer: 'onNameInputChanged_',
       },
 
       selectedButtonIndex_: {
         type: Number,
+      },
+
+      buttonNameInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
+
+      isSaveButtonDisabled_: {
+        type: Boolean,
+        value: false,
+      },
+
+      duplicateButtonName_: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -87,6 +106,9 @@ export class CustomizeButtonsSubsectionElement extends
   private shouldShowRenamingDialog_: boolean;
   private selectedButtonName_: string;
   private dragAndDropManager: DragAndDropManager = new DragAndDropManager();
+  private buttonNameInvalid_: boolean;
+  private isSaveButtonDisabled_: boolean;
+  private duplicateButtonName_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -104,7 +126,24 @@ export class CustomizeButtonsSubsectionElement extends
     this.selectedButtonIndex_ = e.detail.buttonIndex;
     this.selectedButton_ = this.buttonRemappingList[this.selectedButtonIndex_];
     this.selectedButtonName_ = this.selectedButton_.name;
+    this.buttonNameInvalid_ = false;
+    this.isSaveButtonDisabled_ = false;
+    this.duplicateButtonName_ = false;
     this.shouldShowRenamingDialog_ = true;
+  }
+
+  /**
+   * Returns a formatted string containing the current number of characters
+   * entered in the input compared to the maximum number of characters allowed.
+   */
+  private getInputCountString_(buttonName: string): string {
+    // minimumIntegerDigits is 2 because we want to show a leading zero if
+    // length is less than 10.
+    return this.i18n(
+        'buttonRenamingDialogInputCharCount',
+        buttonName.length.toLocaleString(
+            /*locales=*/ undefined, {minimumIntegerDigits: 2}),
+        MAX_BUTTON_NAME_INPUT_LENGTH.toLocaleString());
   }
 
   private showKeyCombinationDialog_(e: ShowKeyCustomizationDialogEvent): void {
@@ -117,8 +156,51 @@ export class CustomizeButtonsSubsectionElement extends
   }
 
   private saveRenamingDialogClicked_(): void {
+    if (this.isSaveButtonDisabled_) {
+      return;
+    }
+
+    if (this.sameButtonNameExists_()) {
+      this.buttonNameInvalid_ = true;
+      this.duplicateButtonName_ = true;
+      return;
+    }
+
     this.updateButtonName_();
     this.shouldShowRenamingDialog_ = false;
+  }
+
+  private onKeyDownInRenamingDialog_(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.saveRenamingDialogClicked_();
+    }
+  }
+
+  private onNameInputChanged_(_newValue: string, oldValue: string): void {
+    // If oldValue.length > MAX_BUTTON_NAME_INPUT_LENGTH, the user attempted
+    // to enter more than the max limit, this method was called and it was
+    // truncated, and then this method was called one more time.
+    this.buttonNameInvalid_ =
+        !!oldValue && oldValue.length > MAX_BUTTON_NAME_INPUT_LENGTH;
+    this.duplicateButtonName_ = false;
+    // Truncate the name to maxInputLength.
+    this.selectedButtonName_ =
+        this.selectedButtonName_.substring(0, MAX_BUTTON_NAME_INPUT_LENGTH);
+    this.isSaveButtonDisabled_ = this.selectedButtonName_ === '';
+  }
+
+  /**
+   * Button names within one device should be unique.
+   */
+  private sameButtonNameExists_(): boolean {
+    for (const button of this.buttonRemappingList) {
+      if (button.name !== this.selectedButton_.name &&
+          button.name === this.selectedButtonName_) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private updateButtonName_(): void {

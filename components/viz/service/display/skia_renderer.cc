@@ -557,12 +557,12 @@ class SkiaRenderer::ScopedSkImageBuilder {
 
   ~ScopedSkImageBuilder() = default;
 
-  const SkImage* sk_image() const { return sk_image_; }
+  const SkImage* sk_image() const { return sk_image_.get(); }
   const cc::PaintOpBuffer* paint_op_buffer() const { return paint_op_buffer_; }
   const absl::optional<SkColor4f>& clear_color() const { return clear_color_; }
 
  private:
-  raw_ptr<const SkImage, DanglingUntriaged> sk_image_ = nullptr;
+  sk_sp<SkImage> sk_image_;
   raw_ptr<const cc::PaintOpBuffer> paint_op_buffer_ = nullptr;
   absl::optional<SkColor4f> clear_color_;
 };
@@ -581,8 +581,7 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   DCHECK(IsTextureResource(resource_provider, resource_id));
 
   auto* image_context = skia_renderer->lock_set_for_external_use_->LockResource(
-      resource_id, maybe_concurrent_reads, /*is_video_plane=*/false,
-      override_color_space, raw_draw_if_possible);
+      resource_id, maybe_concurrent_reads, raw_draw_if_possible);
 
   // |ImageContext::image| provides thread safety: (a) this ImageContext is
   // only accessed by GPU thread after |image| is set and (b) the fields of
@@ -596,12 +595,16 @@ SkiaRenderer::ScopedSkImageBuilder::ScopedSkImageBuilder(
   // We need the original TransferableResource.color_space for YUV => RGB
   // conversion.
   skia_renderer->skia_output_surface_->MakePromiseSkImage(
-      image_context, resource_provider->GetOverlayColorSpace(resource_id));
+      image_context, resource_provider->GetColorSpace(resource_id));
   paint_op_buffer_ = image_context->paint_op_buffer();
   clear_color_ = image_context->clear_color();
-  sk_image_ = image_context->image().get();
+  sk_image_ = image_context->image();
   LOG_IF(ERROR, !image_context->has_image() && !paint_op_buffer_)
       << "Failed to create the promise sk image or get paint ops.";
+
+  if (sk_image_ && override_color_space) {
+    sk_image_ = sk_image_->reinterpretColorSpace(override_color_space);
+  }
 }
 
 class SkiaRenderer::ScopedYUVSkImageBuilder {
@@ -639,25 +642,21 @@ class SkiaRenderer::ScopedYUVSkImageBuilder {
     // Skia API ignores the color space information on the individual planes.
     // Dropping them here avoids some LOG spam.
     auto* y_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->y_plane_resource_id(), /*maybe_concurrent_reads=*/true,
-        /*is_video_plane=*/true);
+        quad->y_plane_resource_id(), /*maybe_concurrent_reads=*/true);
     contexts.push_back(std::move(y_context));
     auto* u_context = skia_renderer->lock_set_for_external_use_->LockResource(
-        quad->u_plane_resource_id(), /*maybe_concurrent_reads=*/true,
-        /*is_video_plane=*/true);
+        quad->u_plane_resource_id(), /*maybe_concurrent_reads=*/true);
     contexts.push_back(std::move(u_context));
     if (plane_config == SkYUVAInfo::PlaneConfig::kY_U_V ||
         plane_config == SkYUVAInfo::PlaneConfig::kY_U_V_A) {
       auto* v_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->v_plane_resource_id(), /*maybe_concurrent_reads=*/true,
-          /*is_video_plane=*/true);
+          quad->v_plane_resource_id(), /*maybe_concurrent_reads=*/true);
       contexts.push_back(std::move(v_context));
     }
 
     if (SkYUVAInfo::HasAlpha(plane_config)) {
       auto* a_context = skia_renderer->lock_set_for_external_use_->LockResource(
-          quad->a_plane_resource_id(), /*maybe_concurrent_reads=*/true,
-          /*is_video_plane=*/true);
+          quad->a_plane_resource_id(), /*maybe_concurrent_reads=*/true);
       contexts.push_back(std::move(a_context));
     }
 
@@ -2467,8 +2466,13 @@ void SkiaRenderer::DrawTextureQuad(const TextureDrawQuad* quad,
                                    const DrawRPDQParams* rpdq_params,
                                    DrawQuadParams* params) {
   TRACE_EVENT0("viz", "SkiaRenderer::DrawTextureQuad");
+
+  // We need only RGB portion of the color space, YUV conversion handled in
+  // skia.
   const gfx::ColorSpace& src_color_space =
-      resource_provider()->GetSamplerColorSpace(quad->resource_id());
+      resource_provider()
+          ->GetColorSpace(quad->resource_id())
+          .GetAsFullRangeRGB();
   const bool needs_color_conversion_filter =
       ((quad->is_video_frame && src_color_space.IsHDR()) ||
        src_color_space.IsToneMappedByDefault()) &&

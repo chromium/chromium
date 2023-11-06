@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -58,16 +58,16 @@ void SetOrthogonalFallbackInlineSize(const ComputedStyle& parent_style,
   if (parent_style.BoxSizing() == EBoxSizing::kBorderBox) {
     // We're unable to resolve percentages at this point, so make sure we're
     // only dealing with fixed-size values.
-    if (!parent_style.PaddingBefore().IsFixed() ||
-        !parent_style.PaddingAfter().IsFixed()) {
+    if (!parent_style.PaddingBlockStart().IsFixed() ||
+        !parent_style.PaddingBlockEnd().IsFixed()) {
       builder->SetOrthogonalFallbackInlineSize(fallback_size);
       return;
     }
 
-    LayoutUnit border_padding(parent_style.BorderBefore().Width() +
-                              parent_style.BorderAfter().Width() +
-                              parent_style.PaddingBefore().GetFloatValue() +
-                              parent_style.PaddingAfter().GetFloatValue());
+    LayoutUnit border_padding(parent_style.BorderBlockStartWidth() +
+                              parent_style.BorderBlockEndWidth() +
+                              parent_style.PaddingBlockStart().GetFloatValue() +
+                              parent_style.PaddingBlockEnd().GetFloatValue());
 
     size -= border_padding;
     size = size.ClampNegativeToZero();

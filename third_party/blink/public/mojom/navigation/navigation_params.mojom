@@ -35,7 +35,7 @@ import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/browsing_context_group_info.mojom";
 import "third_party/blink/public/mojom/page/page.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
-import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
+import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
 import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/origin.mojom";
@@ -582,7 +582,7 @@ struct CommitNavigationParams {
   // Maps the blink runtime-enabled features modified in the browser process to
   // their new enabled/disabled status:
   // <enum_representing_runtime_enabled_feature, enabled/disabled>
-  map<blink.mojom.RuntimeFeatureState, bool> modified_runtime_features;
+  map<blink.mojom.RuntimeFeature, bool> modified_runtime_features;
 
   // A collection of properties that determines the behavior of a fenced frame.
   // Only non-null for embedder-initiated navigations of a fenced frame root,
@@ -611,4 +611,7 @@ struct CommitNavigationParams {
   // Some content settings must be enforced by the renderer. See
   // ContentSettingsType for more details.
   RendererContentSettings content_settings;
+
+  // The cookie deprecation label for cookie deprecation facilitated testing.
+  string? cookie_deprecation_label;
 };

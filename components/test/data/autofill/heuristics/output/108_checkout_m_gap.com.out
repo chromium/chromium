@@ -34,7 +34,7 @@ ADDRESS_HOME_STATE | shippingAddressFieldGroup5-shippingState | *State |  | ship
 ADDRESS_HOME_CITY | shippingAddressFieldGroup5-shippingCity | *Town/City |  | shippingAddressFieldGroup5-shippingLastName_5
 ADDRESS_HOME_LINE1 | shippingAddressFieldGroup5-shippingAddressLine1 | *House Number and Street |  | shippingAddressFieldGroup5-shippingLastName_5
 ADDRESS_HOME_LINE2 | shippingAddressFieldGroup5-shippingAddressLine2 | Address line 2 |  | shippingAddressFieldGroup5-shippingLastName_5
-PHONE_HOME_WHOLE_NUMBER | shippingDayPhone | * Day phone (incl. area code) |  | shippingAddressFieldGroup5-shippingLastName_5
+PHONE_HOME_CITY_AND_NUMBER | shippingDayPhone | * Day phone (incl. area code) |  | shippingAddressFieldGroup5-shippingLastName_5
 UNKNOWN_TYPE | shippingBillingSameAsShipping | Use this address for my Billing information. | on | shippingAddressFieldGroup5-shippingLastName_5
 UNKNOWN_TYPE | shippingOptions | 7-9 business days  - $0.00 | 7 | shippingAddressFieldGroup5-shippingLastName_5
 UNKNOWN_TYPE | shippingOptions | 3-5 business days  - $7.00 | 1 | shippingAddressFieldGroup5-shippingLastName_5

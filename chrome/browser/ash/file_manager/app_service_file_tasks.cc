@@ -65,15 +65,15 @@ ConvertLaunchResultToTaskResult(const apps::LaunchResult& result,
   switch (result.state) {
     case apps::State::SUCCESS:
       if (task_type == TASK_TYPE_WEB_APP) {
-        return fmp::TASK_RESULT_OPENED;
+        return fmp::TaskResult::kOpened;
       } else {
-        return fmp::TASK_RESULT_MESSAGE_SENT;
+        return fmp::TaskResult::kMessageSent;
       }
     case apps::State::FAILED_DIRECTORY_NOT_SHARED:
       DCHECK(task_type == TASK_TYPE_PLUGIN_VM_APP);
-      return fmp::TASK_RESULT_FAILED_PLUGIN_VM_DIRECTORY_NOT_SHARED;
+      return fmp::TaskResult::kFailedPluginVmDirectoryNotShared;
     case apps::State::FAILED:
-      return fmp::TASK_RESULT_FAILED;
+      return fmp::TaskResult::kFailed;
   }
 }
 
@@ -348,7 +348,7 @@ void ExecuteAppServiceTask(
   Profile* profile_with_app_service = GetProfileWithAppService(profile);
   if (!profile_with_app_service) {
     std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        extensions::api::file_manager_private::TaskResult::kFailed,
         "Unexpected profile type");
     return;
   }

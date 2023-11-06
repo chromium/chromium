@@ -5,6 +5,9 @@
 #include "chrome/browser/ash/input_method/editor_text_actuator.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
+#include "chrome/browser/ash/input_method/editor_feedback.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "url/url_constants.h"
 
 namespace ash::input_method {
@@ -18,13 +21,21 @@ bool IsUrlAllowed(const GURL& url) {
 }  // namespace
 
 EditorTextActuator::EditorTextActuator(
+    Profile* profile,
     mojo::PendingAssociatedReceiver<orca::mojom::TextActuator> receiver,
     Delegate* delegate)
-    : text_actuator_receiver_(this, std::move(receiver)), delegate_(delegate) {}
+    : profile_(profile),
+      text_actuator_receiver_(this, std::move(receiver)),
+      delegate_(delegate) {}
 
 EditorTextActuator::~EditorTextActuator() = default;
 
 void EditorTextActuator::InsertText(const std::string& text) {
+  EditorMode editor_mode = delegate_->GetEditorMode();
+  LogEditorState(EditorStates::kInsert, editor_mode);
+  LogNumberOfCharactersInserted(editor_mode, text.length());
+  LogNumberOfCharactersSelectedForInsert(editor_mode,
+                                         delegate_->GetSelectedTextLength());
   // We queue the text to be inserted here rather then insert it directly into
   // the input.
   inserter_.InsertTextOnNextFocus(text);
@@ -54,7 +65,12 @@ void EditorTextActuator::ShowUI() {
 }
 
 void EditorTextActuator::CloseUI() {
+  LogEditorState(EditorStates::kClickCloseButton, delegate_->GetEditorMode());
   delegate_->CloseUI();
+}
+
+void EditorTextActuator::SubmitFeedback(const std::string& description) {
+  SendEditorFeedback(profile_, description);
 }
 
 void EditorTextActuator::OnFocus(int context_id) {

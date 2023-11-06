@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -26,7 +27,17 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 @interface PasswordCheckupCoordinator () <PasswordCheckupCommands,
                                           PasswordIssuesCoordinatorDelegate,
-                                          ReauthenticationCoordinatorDelegate> {
+                                          ReauthenticationCoordinatorDelegate>
+
+@end
+
+@implementation PasswordCheckupCoordinator {
+  // Main view controller for this coordinator.
+  PasswordCheckupViewController* _viewController;
+
+  // Main mediator for this coordinator.
+  PasswordCheckupMediator* _mediator;
+
   // Coordinator for password issues.
   PasswordIssuesCoordinator* _passwordIssuesCoordinator;
 
@@ -41,17 +52,12 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
   // Location in the app from which Password Checkup was opened.
   PasswordCheckReferrer _referrer;
+
+  // Whether the metric counting visits to the page was already recorded.
+  // Used to avoid over-recording the metric after each successful
+  // authentication.
+  BOOL _visitRecorded;
 }
-
-// Main view controller for this coordinator.
-@property(nonatomic, strong) PasswordCheckupViewController* viewController;
-
-// Main mediator for this coordinator.
-@property(nonatomic, strong) PasswordCheckupMediator* mediator;
-
-@end
-
-@implementation PasswordCheckupCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -78,33 +84,39 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   [super start];
 
   password_manager::LogOpenPasswordCheckupHomePage();
-  self.viewController = [[PasswordCheckupViewController alloc]
+  _viewController = [[PasswordCheckupViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
-  self.viewController.handler = self;
-  self.mediator = [[PasswordCheckupMediator alloc]
+  _viewController.handler = self;
+  _mediator = [[PasswordCheckupMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
                                        GetForBrowserState(
                                            self.browser->GetBrowserState())];
-  self.viewController.delegate = self.mediator;
-  self.mediator.consumer = self.viewController;
+  _viewController.delegate = _mediator;
+  _mediator.consumer = _viewController;
+
+  BOOL requireAuthOnStart = [self shouldRequireAuthOnStart];
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
-  [self.baseNavigationController
-      pushViewController:self.viewController
-                animated:![self shouldRequireAuthOnStart]];
+  [self.baseNavigationController pushViewController:_viewController
+                                           animated:!requireAuthOnStart];
+
+  // Only record visit if no auth is required, otherwise wait for successful
+  // auth.
+  if (!requireAuthOnStart) {
+    [self maybeRecordPasswordCheckupVisit];
+  }
 
   if (IsAuthOnEntryV2Enabled()) {
-    [self
-        startReauthCoordinatorWithAuthOnStart:[self shouldRequireAuthOnStart]];
+    [self startReauthCoordinatorWithAuthOnStart:requireAuthOnStart];
   }
 }
 
 - (void)stop {
-  [self.mediator disconnect];
-  self.mediator = nil;
-  self.viewController.handler = nil;
-  self.viewController = nil;
+  [_mediator disconnect];
+  _mediator = nil;
+  _viewController.handler = nil;
+  _viewController = nil;
 
   [self stopPasswordIssuesCoordinator];
   [self stopReauthenticationCoordinator];
@@ -148,7 +160,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   NSArray<UIViewController*>* viewControllers =
       self.baseNavigationController.viewControllers;
   NSInteger viewControllerIndex =
-      [viewControllers indexOfObject:self.viewController];
+      [viewControllers indexOfObject:_viewController];
 
   // Nothing to do if the view controller was already removed from the
   // navigation stack.
@@ -156,11 +168,11 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     return;
   }
 
-  // If the view controller is at the top of the navigation stack, go to the
-  // previous view controller.
+  // Dismiss the whole navigation stack if checkup is the root view controller.
   if (viewControllerIndex == 0) {
-    [self.baseNavigationController popViewControllerAnimated:YES];
-
+    UIViewController* presentingViewController =
+        _baseNavigationController.presentingViewController;
+    [presentingViewController dismissViewControllerAnimated:YES completion:nil];
     return;
   }
 
@@ -183,7 +195,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [self maybeRecordPasswordCheckupVisit];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -271,6 +283,18 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     case PasswordCheckReferrer::kPasswordSettings:
       return NO;
   }
+}
+
+// Logs a Password Checkup visit. Only logs the first time it is invoked, no-op
+// after that.
+- (void)maybeRecordPasswordCheckupVisit {
+  if (_visitRecorded) {
+    return;
+  }
+
+  _visitRecorded = YES;
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordCheckup);
 }
 
 @end

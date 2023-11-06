@@ -11,21 +11,24 @@ import './test_util.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import {entriesToURLs} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileManagerBaseInterface} from '../../externs/background/file_manager_base.js';
 
 import {test} from './test_util_base.js';
 
+
 /** @type {!FileManagerBaseInterface} */
+// @ts-ignore: error TS2339: Property 'background' does not exist on type
+// 'Window & typeof globalThis'.
 window.background;
 
 /**
  * @typedef {{
- *   attributes:Object<string>,
+ *   attributes:Record<string, string>,
  *   text:string,
- *   styles:(Object<string>|undefined),
+ *   styles:(Record<string, string>|undefined),
  *   hidden:boolean,
  *   hasShadowRoot: boolean,
  *   imageWidth: (number|undefined),
@@ -40,6 +43,8 @@ window.background;
  *   scrollHeight: (number|undefined),
  *  }}
  */
+// @ts-ignore: error TS7005: Variable 'ElementObject' implicitly has an 'any'
+// type.
 export let ElementObject;
 
 /**
@@ -51,6 +56,8 @@ export let ElementObject;
  *   ctrl: (boolean|undefined),
  * }}
  */
+// @ts-ignore: error TS7005: Variable 'KeyModifiers' implicitly has an 'any'
+// type.
 export let KeyModifiers;
 
 /**
@@ -62,6 +69,7 @@ export let KeyModifiers;
  *   clearAllCount: number,
  * }}
  */
+// @ts-ignore: error TS6196: 'MetadataStatsType' is declared but never used.
 let MetadataStatsType;
 
 /**
@@ -76,17 +84,25 @@ let MetadataStatsType;
 function extractElementInfo(element, contentWindow, opt_styleNames) {
   const attributes = {};
   for (let i = 0; i < element.attributes.length; i++) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     attributes[element.attributes[i].nodeName] =
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         element.attributes[i].nodeValue;
   }
 
   const result = {
     attributes: attributes,
     text: element.textContent,
+    // @ts-ignore: error TS2339: Property 'innerText' does not exist on type
+    // 'Element'.
     innerText: element.innerText,
+    // @ts-ignore: error TS2339: Property 'value' does not exist on type
+    // 'Element'.
     value: element.value,
     // The hidden attribute is not in the element.attributes even if
     // element.hasAttribute('hidden') is true.
+    // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
+    // 'Element'.
     hidden: !!element.hidden,
     hasShadowRoot: !!element.shadowRoot,
   };
@@ -94,33 +110,73 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
   const styleNames = opt_styleNames || [];
   assert(Array.isArray(styleNames));
   if (!styleNames.length) {
+    // @ts-ignore: error TS2740: Type '{ attributes: {}; text: string | null;
+    // innerText: any; value: any; hidden: boolean; hasShadowRoot: boolean; }'
+    // is missing the following properties from type 'ElementObject': styles,
+    // imageWidth, imageHeight, renderedWidth, and 7 more.
     return result;
   }
 
   // Force a style resolve and record the requested style values.
+  // @ts-ignore: error TS2339: Property 'styles' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.styles = {};
   const size = element.getBoundingClientRect();
   const computedStyle = contentWindow.getComputedStyle(element);
   for (let i = 0; i < styleNames.length; i++) {
+    // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+    // type.
     result.styles[styleNames[i]] = computedStyle[styleNames[i]];
   }
 
   // These attributes are set when element is <img> or <canvas>.
+  // @ts-ignore: error TS2339: Property 'width' does not exist on type
+  // 'Element'.
   result.imageWidth = Number(element.width);
+  // @ts-ignore: error TS2339: Property 'height' does not exist on type
+  // 'Element'.
   result.imageHeight = Number(element.height);
 
   // Get the element client rectangle properties.
+  // @ts-ignore: error TS2339: Property 'renderedWidth' does not exist on type
+  // '{ attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.renderedWidth = size.width;
+  // @ts-ignore: error TS2339: Property 'renderedHeight' does not exist on type
+  // '{ attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.renderedHeight = size.height;
+  // @ts-ignore: error TS2339: Property 'renderedTop' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.renderedTop = size.top;
+  // @ts-ignore: error TS2339: Property 'renderedLeft' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.renderedLeft = size.left;
 
   // Get the element scroll properties.
+  // @ts-ignore: error TS2339: Property 'scrollLeft' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.scrollLeft = element.scrollLeft;
+  // @ts-ignore: error TS2339: Property 'scrollTop' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.scrollTop = element.scrollTop;
+  // @ts-ignore: error TS2339: Property 'scrollWidth' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.scrollWidth = element.scrollWidth;
+  // @ts-ignore: error TS2339: Property 'scrollHeight' does not exist on type '{
+  // attributes: {}; text: string | null; innerText: any; value: any; hidden:
+  // boolean; hasShadowRoot: boolean; }'.
   result.scrollHeight = element.scrollHeight;
 
+  // @ts-ignore: error TS2322: Type '{ attributes: {}; text: string | null;
+  // innerText: any; value: any; hidden: boolean; hasShadowRoot: boolean; }' is
+  // not assignable to type 'ElementObject'.
   return result;
 }
 
@@ -129,6 +185,8 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
  * @return {number} Error count.
  */
 test.util.sync.getErrorCount = () => {
+  // @ts-ignore: error TS2339: Property 'JSErrorCount' does not exist on type
+  // 'Window & typeof globalThis'.
   return window.JSErrorCount;
 };
 
@@ -185,6 +243,8 @@ test.util.sync.deepQueryAllElements =
 
       const elems = test.util.sync.deepQuerySelectorAll_(
           contentWindow.document, targetQuery);
+      // @ts-ignore: error TS7006: Parameter 'element' implicitly has an 'any'
+      // type.
       return elems.map(element => {
         return extractElementInfo(element, contentWindow, opt_styleNames);
       });
@@ -200,9 +260,11 @@ test.util.sync.deepQueryAllElements =
  * @param {!Array<string>} query Query to specify the element.
  *   |query[0]| specifies the first element(s). |query[1]| specifies elements
  *   inside the shadow DOM of the first element, and so on.
- * @param {function(boolean)} callback Callback function with results if the
+ * @param {function(boolean):void} callback Callback function with results if
+ *     the
  *    number of elements match |count|.
  */
+// @ts-ignore: error TS7006: Parameter 'count' implicitly has an 'any' type.
 test.util.async.countElements = (contentWindow, query, count, callback) => {
   // Uses requestIdleCallback so it doesn't interfere with normal operation of
   // Files app UI.
@@ -226,15 +288,20 @@ test.util.async.countElements = (contentWindow, query, count, callback) => {
  */
 test.util.sync.deepQuerySelectorAll_ = (root, targetQuery) => {
   const elems =
+      // @ts-ignore: error TS2769: No overload matches this call.
       Array.prototype.slice.call(root.querySelectorAll(targetQuery[0]));
   const remaining = targetQuery.slice(1);
   if (remaining.length === 0) {
     return elems;
   }
 
+  // @ts-ignore: error TS7034: Variable 'res' implicitly has type 'any[]' in
+  // some locations where its type cannot be determined.
   let res = [];
   for (let i = 0; i < elems.length; i++) {
     if (elems[i].shadowRoot) {
+      // @ts-ignore: error TS7005: Variable 'res' implicitly has an 'any[]'
+      // type.
       res = res.concat(
           test.util.sync.deepQuerySelectorAll_(elems[i].shadowRoot, remaining));
     }
@@ -308,6 +375,7 @@ test.util.sync.deepGetActivePath = (contentWindow, opt_styleNames) => {
 
   const path = [contentWindow.document.activeElement];
   while (true) {
+    // @ts-ignore: error TS2532: Object is possibly 'undefined'.
     const shadow = path[path.length - 1].shadowRoot;
     if (shadow && shadow.activeElement) {
       path.push(shadow.activeElement);
@@ -355,6 +423,7 @@ test.util.sync.inputText = (contentWindow, query, text) => {
  * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollLeft = (contentWindow, query, position) => {
+  // @ts-ignore: error TS2531: Object is possibly 'null'.
   contentWindow.document.querySelector(query).scrollLeft = position;
   return true;
 };
@@ -367,6 +436,7 @@ test.util.sync.setScrollLeft = (contentWindow, query, position) => {
  * @return {boolean} True if operation was successful.
  */
 test.util.sync.setScrollTop = (contentWindow, query, position) => {
+  // @ts-ignore: error TS2531: Object is possibly 'null'.
   contentWindow.document.querySelector(query).scrollTop = position;
   return true;
 };
@@ -385,6 +455,8 @@ test.util.sync.setElementStyles = (contentWindow, query, properties) => {
     return false;
   }
   for (const [key, value] of Object.entries(properties)) {
+    // @ts-ignore: error TS2339: Property 'style' does not exist on type
+    // 'Element'.
     element.style[key] = value;
   }
   return true;
@@ -450,6 +522,9 @@ test.util.sync.fakeEvent =
             // bubbles is a read-only which, causes an error when assigning.
             continue;
           }
+          // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+          // because expression of type 'string' can't be used to index type
+          // 'Object'.
           event[name] = opt_additionalProperties[name];
         }
       }
@@ -513,12 +588,21 @@ test.util.sync.fakeMouseClick =
             bubbles: true,
             detail: 1,
             composed: true,  // Allow the event to bubble past shadow DOM root.
+            // @ts-ignore: error TS2339: Property 'ctrl' does not exist on type
+            // '{}'.
             ctrlKey: modifiers.ctrl,
+            // @ts-ignore: error TS2339: Property 'shift' does not exist on type
+            // '{}'.
             shiftKey: modifiers.shift,
+            // @ts-ignore: error TS2339: Property 'alt' does not exist on type
+            // '{}'.
             altKey: modifiers.alt,
           },
           eventProperties);
       if (opt_button !== undefined) {
+        // @ts-ignore: error TS2339: Property 'button' does not exist on type '{
+        // bubbles: boolean; detail: number; composed: boolean; ctrlKey: any;
+        // shiftKey: any; altKey: any; } & Object'.
         props.button = opt_button;
       }
 
@@ -529,6 +613,7 @@ test.util.sync.fakeMouseClick =
         targetQuery = [targetQuery];
       }
       const elems = test.util.sync.deepQuerySelectorAll_(
+          // @ts-ignore: error TS1110: Type expected.
           contentWindow.document, /** @type !Array<string> */ (targetQuery));
       if (elems.length === 0) {
         return false;
@@ -566,8 +651,13 @@ test.util.sync.fakeMouseOver =
         bubbles: true,
         detail: 1,
         composed: true,  // Allow the event to bubble past shadow DOM root.
+        // @ts-ignore: error TS2339: Property 'ctrl' does not exist on type
+        // '{}'.
         ctrlKey: modifiers.ctrl,
+        // @ts-ignore: error TS2339: Property 'shift' does not exist on type
+        // '{}'.
         shiftKey: modifiers.shift,
+        // @ts-ignore: error TS2339: Property 'alt' does not exist on type '{}'.
         altKey: modifiers.alt,
       };
       const mouseOverEvent = new MouseEvent('mouseover', props);
@@ -594,8 +684,13 @@ test.util.sync.fakeMouseOut =
         bubbles: true,
         detail: 1,
         composed: true,  // Allow the event to bubble past shadow DOM root.
+        // @ts-ignore: error TS2339: Property 'ctrl' does not exist on type
+        // '{}'.
         ctrlKey: modifiers.ctrl,
+        // @ts-ignore: error TS2339: Property 'shift' does not exist on type
+        // '{}'.
         shiftKey: modifiers.shift,
+        // @ts-ignore: error TS2339: Property 'alt' does not exist on type '{}'.
         altKey: modifiers.alt,
       };
       const mouseOutEvent = new MouseEvent('mouseout', props);
@@ -760,7 +855,7 @@ test.util.sync.rightClickOffset =
  * @param {string} targetQuery Query to specify the target element.
  * @param {boolean} skipDrop Set true to drag over (hover) the target
  *    only, and not send target drop or source dragend events.
- * @param {function(boolean)} callback Function called with result
+ * @param {function(boolean):void} callback Function called with result
  *    true on success, or false on failure.
  */
 test.util.async.fakeDragAndDrop =
@@ -785,7 +880,11 @@ test.util.async.fakeDragAndDrop =
       // logic requires clientX and clientY.
       const sourceRect = source.getBoundingClientRect();
       const sourceOptions = Object.assign({}, targetOptions);
+      // @ts-ignore: error TS2339: Property 'clientX' does not exist on type '{
+      // bubbles: boolean; composed: boolean; dataTransfer: DataTransfer; }'.
       sourceOptions.clientX = sourceRect.left + (sourceRect.width / 2);
+      // @ts-ignore: error TS2339: Property 'clientY' does not exist on type '{
+      // bubbles: boolean; composed: boolean; dataTransfer: DataTransfer; }'.
       sourceOptions.clientY = sourceRect.top + (sourceRect.height / 2);
 
       let dragEventPhase = 0;
@@ -796,28 +895,42 @@ test.util.async.fakeDragAndDrop =
         switch (dragEventPhase) {
           case 0:
             event = new DragEvent('dragstart', sourceOptions);
+            // @ts-ignore: error TS18047: 'source' is possibly 'null'.
             result = source.dispatchEvent(event);
             break;
           case 1:
+            // @ts-ignore: error TS2339: Property 'relatedTarget' does not exist
+            // on type '{ bubbles: boolean; composed: boolean; dataTransfer:
+            // DataTransfer; }'.
             targetOptions.relatedTarget = source;
             event = new DragEvent('dragenter', targetOptions);
+            // @ts-ignore: error TS18047: 'target' is possibly 'null'.
             result = target.dispatchEvent(event);
             break;
           case 2:
+            // @ts-ignore: error TS2339: Property 'relatedTarget' does not exist
+            // on type '{ bubbles: boolean; composed: boolean; dataTransfer:
+            // DataTransfer; }'.
             targetOptions.relatedTarget = null;
             event = new DragEvent('dragover', targetOptions);
+            // @ts-ignore: error TS18047: 'target' is possibly 'null'.
             result = target.dispatchEvent(event);
             break;
           case 3:
             if (!skipDrop) {
+              // @ts-ignore: error TS2339: Property 'relatedTarget' does not
+              // exist on type '{ bubbles: boolean; composed: boolean;
+              // dataTransfer: DataTransfer; }'.
               targetOptions.relatedTarget = null;
               event = new DragEvent('drop', targetOptions);
+              // @ts-ignore: error TS18047: 'target' is possibly 'null'.
               result = target.dispatchEvent(event);
             }
             break;
           case 4:
             if (!skipDrop) {
               event = new DragEvent('dragend', sourceOptions);
+              // @ts-ignore: error TS18047: 'source' is possibly 'null'.
               result = source.dispatchEvent(event);
             }
             break;
@@ -848,7 +961,7 @@ test.util.async.fakeDragAndDrop =
  * @param {string} targetQuery Query to specify the target element.
  * @param {boolean} dragLeave Set true to send a dragleave event to
  *    the target instead of a drop event.
- * @param {function(boolean)} callback Function called with result
+ * @param {function(boolean):void} callback Function called with result
  *    true on success, or false on failure.
  */
 test.util.async.fakeDragLeaveOrDrop =
@@ -873,7 +986,11 @@ test.util.async.fakeDragLeaveOrDrop =
       // logic requires clientX and clientY.
       const sourceRect = source.getBoundingClientRect();
       const sourceOptions = Object.assign({}, targetOptions);
+      // @ts-ignore: error TS2339: Property 'clientX' does not exist on type '{
+      // bubbles: boolean; composed: boolean; dataTransfer: DataTransfer; }'.
       sourceOptions.clientX = sourceRect.left + (sourceRect.width / 2);
+      // @ts-ignore: error TS2339: Property 'clientY' does not exist on type '{
+      // bubbles: boolean; composed: boolean; dataTransfer: DataTransfer; }'.
       sourceOptions.clientY = sourceRect.top + (sourceRect.height / 2);
 
       // Define the target event type.
@@ -887,10 +1004,12 @@ test.util.async.fakeDragLeaveOrDrop =
         switch (dragEventPhase) {
           case 0:
             event = new DragEvent(targetType, targetOptions);
+            // @ts-ignore: error TS18047: 'target' is possibly 'null'.
             result = target.dispatchEvent(event);
             break;
           case 1:
             event = new DragEvent('dragend', sourceOptions);
+            // @ts-ignore: error TS18047: 'source' is possibly 'null'.
             result = source.dispatchEvent(event);
             break;
         }
@@ -916,7 +1035,7 @@ test.util.async.fakeDragLeaveOrDrop =
  * @param {string} fileContent File content.
  * @param {string} fileMimeType File mime type.
  * @param {string} targetQuery Query to specify the target element.
- * @param {function(boolean)} callback Function called with result
+ * @param {function(boolean):void} callback Function called with result
  *    true on success, or false on failure.
  */
 test.util.async.fakeDropBrowserFile =
@@ -970,16 +1089,20 @@ test.util.sync.focus = (contentWindow, targetQuery) => {
     return false;
   }
 
+  // @ts-ignore: error TS2339: Property 'focus' does not exist on type
+  // 'Element'.
   target.focus();
   return true;
 };
 
 /**
  * Obtains the list of notification ID.
- * @param {function(Object<boolean>)} callback Callback function with
- *     results returned by the script.
+ * @param {function(Record<string, boolean>):void} callback Callback function
+ *     with results returned by the script.
  */
 test.util.async.getNotificationIDs = callback => {
+  // @ts-ignore: error TS2339: Property 'notifications' does not exist on type
+  // 'typeof chrome'.
   chrome.notifications.getAll(callback);
 };
 
@@ -988,12 +1111,16 @@ test.util.async.getNotificationIDs = callback => {
  *
  * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
  * @param {Array<string>} names File name list.
- * @param {function(*)} callback Callback function with results returned by the
- *     script.
+ * @param {function(*):void} callback Callback function with results returned by
+ *     the script.
  */
 test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
+  // @ts-ignore: error TS2339: Property 'background' does not exist on type
+  // 'Window & typeof globalThis'.
   const volumeManager = await window.background.getVolumeManager();
   let volumeInfo = null;
+  // @ts-ignore: error TS7034: Variable 'displayRoot' implicitly has type 'any'
+  // in some locations where its type cannot be determined.
   let displayRoot = null;
 
   // Wait for the volume to initialize.
@@ -1012,12 +1139,14 @@ test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
     if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
       name = 'Downloads/' + name;
     }
+    // @ts-ignore: error TS7005: Variable 'displayRoot' implicitly has an 'any'
+    // type.
     return new Promise(displayRoot.getFile.bind(displayRoot, name, {}));
   });
 
   try {
     const urls = await Promise.all(filesPromise);
-    const result = util.entriesToURLs(urls);
+    const result = entriesToURLs(urls);
     callback(result);
   } catch (error) {
     console.error(error);
@@ -1029,9 +1158,11 @@ test.util.async.getFilesUnderVolume = async (volumeType, names, callback) => {
  * Unmounts the specified volume.
  *
  * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
- * @param {function(boolean)} callback Function receives true on success.
+ * @param {function(boolean):void} callback Function receives true on success.
  */
 test.util.async.unmount = async (volumeType, callback) => {
+  // @ts-ignore: error TS2339: Property 'background' does not exist on type
+  // 'Window & typeof globalThis'.
   const volumeManager = await window.background.getVolumeManager();
   const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
   try {
@@ -1077,8 +1208,12 @@ test.util.executeTestMessage = (request, sendResponse) => {
   }
   // Call the test utility function and respond the result.
   if (test.util.async[request.func]) {
+    // @ts-ignore: error TS7019: Rest parameter 'innerArgs' implicitly has an
+    // 'any[]' type.
     args[test.util.async[request.func].length - 1] = function(...innerArgs) {
       console.debug('Received the result of ' + request.func);
+      // @ts-ignore: error TS2345: Argument of type 'any[]' is not assignable to
+      // parameter of type '[any]'.
       sendResponse.apply(null, innerArgs);
     };
     console.debug('Waiting for the result of ' + request.func);
@@ -1106,6 +1241,8 @@ test.util.executeTestMessage = (request, sendResponse) => {
  *   Window so it isn't visible in the background. Here it will return as JSON
  *   object to test extension.
  */
+// @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
+// type.
 test.util.sync.getMetadataStats = contentWindow => {
   return contentWindow.fileManager.metadataModel.getStats();
 };
@@ -1115,10 +1252,12 @@ test.util.sync.getMetadataStats = contentWindow => {
  * list and try to get their metadata properties.
  *
  * @param {Array<String>} properties Content metadata properties to get.
- * @param {function(*)} callback Callback with metadata results returned.
+ * @param {function(*):void} callback Callback with metadata results returned.
  * @suppress {missingProperties} getContentMetadata isn't visible in the
  * background window.
  */
+// @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
+// type.
 test.util.async.getContentMetadata = (contentWindow, properties, callback) => {
   const entries =
       contentWindow.fileManager.directoryModel.getSelectedEntries_();
@@ -1127,6 +1266,8 @@ test.util.async.getContentMetadata = (contentWindow, properties, callback) => {
   const metaPromise =
       contentWindow.fileManager.metadataModel.get(entries, properties);
   // Wait for the promise to resolve
+  // @ts-ignore: error TS7006: Parameter 'resultsList' implicitly has an 'any'
+  // type.
   metaPromise.then(resultsList => {
     callback(resultsList);
   });
@@ -1136,6 +1277,8 @@ test.util.async.getContentMetadata = (contentWindow, properties, callback) => {
  * Returns true when FileManager has finished loading, by checking the attribute
  * "loaded" on its root element.
  */
+// @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
+// type.
 test.util.sync.isFileManagerLoaded = contentWindow => {
   if (contentWindow && contentWindow.fileManager &&
       contentWindow.fileManager.ui) {
@@ -1150,12 +1293,15 @@ test.util.sync.isFileManagerLoaded = contentWindow => {
  *
  * @return {Array<string>}
  */
+// @ts-ignore: error TS7006: Parameter 'contentWindow' implicitly has an 'any'
+// type.
 test.util.sync.getA11yAnnounces = contentWindow => {
   if (contentWindow && contentWindow.fileManager &&
       contentWindow.fileManager.ui) {
     return contentWindow.fileManager.ui.a11yAnnounces;
   }
 
+  // @ts-ignore: error TS2322: Type 'null' is not assignable to type 'string[]'.
   return null;
 };
 
@@ -1163,10 +1309,13 @@ test.util.sync.getA11yAnnounces = contentWindow => {
  * Reports to the given |callback| the number of volumes available in
  * VolumeManager in the background page.
  *
- * @param {function(number)} callback Callback function to be called with the
+ * @param {function(number):void} callback Callback function to be called with
+ *     the
  *   number of volumes.
  */
 test.util.async.getVolumesCount = callback => {
+  // @ts-ignore: error TS7006: Parameter 'volumeManager' implicitly has an 'any'
+  // type.
   return window.background.getVolumeManager().then((volumeManager) => {
     callback(volumeManager.volumeInfoList.length);
   });
@@ -1202,18 +1351,23 @@ test.util.sync.recordEnumMetric = (name, value, validValues) => {
  *     used for Files app.
  */
 test.util.sync.progressCenterNeverNotifyCompleted = () => {
+  // @ts-ignore: error TS2339: Property 'background' does not exist on type
+  // 'Window & typeof globalThis'.
   window.background.progressCenter.neverNotifyCompleted();
   return true;
 };
 
 /**
  * Waits for the background page to initialize.
- * @param {function()} callback Callback function called when background page
+ * @param {function():void} callback Callback function called when background
+ *     page
  *      has finished initializing.
  * @suppress {missingProperties}: ready() isn't available for Audio and Video
  * Player.
  */
 test.util.async.waitForBackgroundReady = callback => {
+  // @ts-ignore: error TS2339: Property 'background' does not exist on type
+  // 'Window & typeof globalThis'.
   window.background.ready(callback);
 };
 
@@ -1223,7 +1377,8 @@ test.util.async.waitForBackgroundReady = callback => {
  *
  * @param {Window} contentWindow Window to be tested.
  * @param {string} bannerTagName Tag name of the banner to isolate.
- * @param {function(boolean)} callback Callback function to be called with a
+ * @param {function(boolean):void} callback Callback function to be called with
+ *     a
  *    boolean indicating success or failure.
  * @suppress {missingProperties} banners is only defined for foreground
  *    Window so it isn't visible in the background.
@@ -1231,6 +1386,8 @@ test.util.async.waitForBackgroundReady = callback => {
 test.util.async.isolateBannerForTesting =
     async (contentWindow, bannerTagName, callback) => {
   try {
+    // @ts-ignore: error TS2339: Property 'ui_' does not exist on type
+    // 'FileManager'.
     await contentWindow.fileManager.ui_.banners.isolateBannerForTesting(
         bannerTagName);
     callback(true);
@@ -1246,13 +1403,16 @@ test.util.async.isolateBannerForTesting =
  * Disable banners from attaching themselves to the DOM.
  *
  * @param {Window} contentWindow Window the banner controller exists.
- * @param {function(boolean)} callback Callback function to be called with a
+ * @param {function(boolean):void} callback Callback function to be called with
+ *     a
  *    boolean indicating success or failure.
  * @suppress {missingProperties} banners is only defined for foreground
  *    Window so it isn't visible in the background.
  */
 test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
   try {
+    // @ts-ignore: error TS2339: Property 'ui_' does not exist on type
+    // 'FileManager'.
     await contentWindow.fileManager.ui_.banners.disableBannersForTesting();
     callback(true);
     return;
@@ -1266,12 +1426,15 @@ test.util.async.disableBannersForTesting = async (contentWindow, callback) => {
  * Disables the nudge expiry period for testing.
  *
  * @param {Window} contentWindow Window the banner controller exists.
- * @param {function(boolean)} callback Callback function to be called with a
+ * @param {function(boolean):void} callback Callback function to be called with
+ *     a
  *    boolean indicating success or failure.
  * @suppress {missingProperties} nudgeContainer is only defined for foreground
  *    Window so it isn't visible in the background.
  */
 test.util.async.disableNudgeExpiry = async (contentWindow, callback) => {
+  // @ts-ignore: error TS2339: Property 'ui_' does not exist on type
+  // 'FileManager'.
   contentWindow.fileManager.ui_.nudgeContainer
       .setExpiryPeriodEnabledForTesting = false;
   callback(true);

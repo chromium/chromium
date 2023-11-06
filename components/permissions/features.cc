@@ -40,14 +40,6 @@ BASE_FEATURE(kBlockRepeatedNotificationPermissionPrompts,
              "BlockRepeatedNotificationPermissionPrompts",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConfirmationChip,
-             "ConfirmationChip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChipLocationBarIconOverride,
-             "ChipLocationIconOverride",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPermissionElement,
              "PermissionElement",
              base::FEATURE_DISABLED_BY_DEFAULT);

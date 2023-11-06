@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL cross-origin image/canvas passed to Offscreen webgl texImage2D should be thrown Cannot read properties of null (reading 'createTexture')
-FAIL cross-origin video passed to Offscreen webgl texImage2D should be thrown Cannot read properties of null (reading 'createTexture')
-Harness: the test ran to completion.
-

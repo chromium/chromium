@@ -60,8 +60,10 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
           "device_better_together_public_key_0";
       const char kDeviceBetterTogetherPublicKey1[] =
           "device_better_together_public_key_1";
-      const base::Time kLastUpdateTime0 = base::Time::FromDoubleT(100);
-      const base::Time kLastUpdateTime1 = base::Time::FromDoubleT(200);
+      const base::Time kLastUpdateTime0 =
+          base::Time::FromSecondsSinceUnixEpoch(100);
+      const base::Time kLastUpdateTime1 =
+          base::Time::FromSecondsSinceUnixEpoch(200);
       const std::map<multidevice::SoftwareFeature,
                      multidevice::SoftwareFeatureState>
           kFakeFeatureStates0 = {
@@ -140,7 +142,7 @@ TEST_F(DeviceSyncCryptAuthDeviceRegistryImplTest, OverwriteDevice) {
   EXPECT_EQ(GetDeviceForTest(0), *device_registry()->GetDevice(kInstanceId0));
 
   CryptAuthDevice device_with_same_instance_id(
-      kInstanceId0, "name", "key", base::Time::FromDoubleT(5000),
+      kInstanceId0, "name", "key", base::Time::FromSecondsSinceUnixEpoch(5000),
       cryptauthv2::BetterTogetherDeviceMetadata(), {});
   EXPECT_TRUE(device_registry()->AddDevice(device_with_same_instance_id));
   EXPECT_EQ(device_with_same_instance_id,

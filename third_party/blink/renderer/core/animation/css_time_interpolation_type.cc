@@ -39,7 +39,7 @@ const CSSValue* CSSTimeInterpolationType::CreateCSSValue(
 
 InterpolationValue CSSTimeInterpolationType::CreateTimeValue(
     double seconds) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(seconds));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(seconds));
 }
 
 // static

@@ -354,8 +354,8 @@ static jlong JNI_FeedSurfaceRendererBridge_GetLastFetchTimeMs(JNIEnv* env,
   if (!feed_api) {
     return 0;
   }
-  return feed_api->GetLastFetchTime(FromJavaSurfaceId(surface_id)).ToDoubleT() *
-         1000;
+  return feed_api->GetLastFetchTime(FromJavaSurfaceId(surface_id))
+      .InMillisecondsFSinceUnixEpoch();
 }
 
 static void JNI_FeedSurfaceRendererBridge_ReportInfoCardTrackViewStarted(

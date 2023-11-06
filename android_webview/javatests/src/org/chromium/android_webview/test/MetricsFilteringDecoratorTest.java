@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
@@ -32,25 +34,31 @@ import java.util.Arrays;
 /**
  * Instrumentation tests for {@link MetricsFilteringDecorator}.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MediumTest
 @Batch(Batch.PER_CLASS)
-public class MetricsFilteringDecoratorTest {
+public class MetricsFilteringDecoratorTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    public AwActivityTestRule mRule;
 
     private MetricsTestPlatformServiceBridge mPlatformServiceBridge;
     private AndroidMetricsLogConsumer mUploader;
+
+    public MetricsFilteringDecoratorTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
         mPlatformServiceBridge = new MetricsTestPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mPlatformServiceBridge);
 
-        AndroidMetricsLogConsumer directUploader = data -> {
-            PlatformServiceBridge.getInstance().logMetrics(data, true);
-            return HttpURLConnection.HTTP_OK;
-        };
+        AndroidMetricsLogConsumer directUploader =
+                data -> {
+                    PlatformServiceBridge.getInstance().logMetrics(data, true);
+                    return HttpURLConnection.HTTP_OK;
+                };
         mUploader = new MetricsFilteringDecorator(directUploader);
     }
 
@@ -73,24 +81,32 @@ public class MetricsFilteringDecoratorTest {
     public void testMetricsFiltering_applied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
-                        .setSystemProfile(SystemProfileProto.newBuilder().setMetricsFilteringStatus(
-                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
-                        .addAllHistogramEvent(Arrays.asList(
-                                createHistogramWithName("Android.WebView.Visibility.Global"),
-                                createHistogramWithName("Histogram.Not.In.Allowlist"),
-                                createHistogramWithName(
-                                        "Android.WebView.SafeMode.SafeModeEnabled")))
+                        .setSystemProfile(
+                                SystemProfileProto.newBuilder()
+                                        .setMetricsFilteringStatus(
+                                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
+                        .addAllHistogramEvent(
+                                Arrays.asList(
+                                        createHistogramWithName(
+                                                "Android.WebView.Visibility.Global"),
+                                        createHistogramWithName("Histogram.Not.In.Allowlist"),
+                                        createHistogramWithName(
+                                                "Android.WebView.SafeMode.SafeModeEnabled")))
                         .addUserActionEvent(getUserAction())
                         .build();
 
         ChromeUserMetricsExtension expectedReceivedLog =
                 ChromeUserMetricsExtension.newBuilder()
-                        .setSystemProfile(SystemProfileProto.newBuilder().setMetricsFilteringStatus(
-                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
-                        .addAllHistogramEvent(Arrays.asList(
-                                createHistogramWithName("Android.WebView.Visibility.Global"),
-                                createHistogramWithName(
-                                        "Android.WebView.SafeMode.SafeModeEnabled")))
+                        .setSystemProfile(
+                                SystemProfileProto.newBuilder()
+                                        .setMetricsFilteringStatus(
+                                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
+                        .addAllHistogramEvent(
+                                Arrays.asList(
+                                        createHistogramWithName(
+                                                "Android.WebView.Visibility.Global"),
+                                        createHistogramWithName(
+                                                "Android.WebView.SafeMode.SafeModeEnabled")))
                         .build();
 
         int status = mUploader.log(log.toByteArray());
@@ -105,8 +121,10 @@ public class MetricsFilteringDecoratorTest {
     public void testMetricsFiltering_notApplied() throws Throwable {
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
-                        .setSystemProfile(SystemProfileProto.newBuilder().setMetricsFilteringStatus(
-                                MetricsFilteringStatus.METRICS_ALL))
+                        .setSystemProfile(
+                                SystemProfileProto.newBuilder()
+                                        .setMetricsFilteringStatus(
+                                                MetricsFilteringStatus.METRICS_ALL))
                         .addHistogramEvent(createHistogramWithName("Histogram.Not.In.Allowlist"))
                         .addUserActionEvent(getUserAction())
                         .build();
@@ -155,8 +173,10 @@ public class MetricsFilteringDecoratorTest {
         // the proto parsing code.
         ChromeUserMetricsExtension log =
                 ChromeUserMetricsExtension.newBuilder()
-                        .setSystemProfile(SystemProfileProto.newBuilder().setMetricsFilteringStatus(
-                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
+                        .setSystemProfile(
+                                SystemProfileProto.newBuilder()
+                                        .setMetricsFilteringStatus(
+                                                MetricsFilteringStatus.METRICS_ONLY_CRITICAL))
                         .addHistogramEvent(createHistogramWithName("Histogram.Not.In.Allowlist"))
                         .addUserActionEvent(getUserAction())
                         .build();

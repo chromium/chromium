@@ -47,7 +47,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kArcHostUreadaheadGeneration[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcUseDevCaches[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcErofs[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceEnableApkCache[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForcePostBootDexOpt[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcForceShowOptInUi[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kArcGeneratePlayAutoInstall[];
@@ -73,7 +72,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDebugShortcuts[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshDeveloperShortcuts[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshDisableTouchExplorationMode[];
-COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAshEnableCursorMotionBlur[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAshEnableMagnifierKeyScroller[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -269,6 +267,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataBackwardMigrationForUser[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kBrowserDataBackwardMigrationMode[];
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kCoralFeatureKey[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kForceBrowserDataBackwardMigration[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -363,6 +362,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kPreventKioskAutolaunchForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kAllowDefaultShelfPinLayoutIgnoringSync[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kForceRefreshRateThrottle[];
 
 ////////////////////////////////////////////////////////////////////////////////
 

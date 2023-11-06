@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
 
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -46,11 +47,13 @@ bool GpuMemoryBufferImageCopy::EnsureDestImage(const gfx::Size& size) {
 
     dest_image_size_ = size;
 
-    dest_mailbox_ = sii_->CreateSharedImage(
+    auto client_shared_image = sii_->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, "GpuMemoryBufferImageCopy",
         gpu_memory_buffer_->CloneHandle());
+    CHECK(client_shared_image);
+    dest_mailbox_ = client_shared_image->mailbox();
     gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;

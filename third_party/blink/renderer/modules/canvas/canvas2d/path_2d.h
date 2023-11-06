@@ -86,23 +86,25 @@ class MODULES_EXPORT Path2D final : public ScriptWrappable, public CanvasPath {
 
   void Trace(Visitor*) const override;
 
-  ExecutionContext* GetTopExecutionContext() const override { return context_; }
+  ExecutionContext* GetTopExecutionContext() const override {
+    return context_.Get();
+  }
 
   explicit Path2D(ScriptState* script_state)
       : context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_);
+    identifiability_study_helper_.SetExecutionContext(context_.Get());
     GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ScriptState* script_state, const Path& path)
       : CanvasPath(path), context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_);
+    identifiability_study_helper_.SetExecutionContext(context_.Get());
     GetModifiablePath().SetIsVolatile(false);
   }
   Path2D(ScriptState* script_state, Path2D* path)
       : Path2D(script_state, path->GetPath()) {}
   Path2D(ScriptState* script_state, const String& path_data)
       : context_(ExecutionContext::From(script_state)) {
-    identifiability_study_helper_.SetExecutionContext(context_);
+    identifiability_study_helper_.SetExecutionContext(context_.Get());
     BuildPathFromString(path_data, GetModifiablePath());
     GetModifiablePath().SetIsVolatile(false);
   }

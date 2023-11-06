@@ -62,8 +62,8 @@ TEST_F(QuerySyncManagerTest, Basic) {
   for (size_t ii = 0; ii < std::size(infos); ++ii) {
     EXPECT_TRUE(sync_manager_->Alloc(&infos[ii]));
     ASSERT_TRUE(infos[ii].sync != nullptr);
-    EXPECT_EQ(0, infos[ii].sync->process_count);
-    EXPECT_EQ(0u, infos[ii].sync->result);
+    EXPECT_EQ(0, base::subtle::Atomic32{infos[ii].sync->process_count});
+    EXPECT_EQ(0u, uint64_t{infos[ii].sync->result});
     EXPECT_EQ(0, infos[ii].submit_count);
   }
 
@@ -453,5 +453,3 @@ TEST_F(QueryTrackerTest, ManyQueries) {
 
 }  // namespace gles2
 }  // namespace gpu
-
-

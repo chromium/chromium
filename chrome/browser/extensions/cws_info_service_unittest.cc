@@ -149,7 +149,8 @@ StoreMetadata CWSInfoServiceTest::BuildStoreMetadata(
   StoreMetadata metadata;
   metadata.set_name(GetNameFromId(extension_id));
   metadata.set_is_live(true);
-  metadata.set_last_update_time_millis(last_update_time.ToJavaTime());
+  metadata.set_last_update_time_millis(
+      last_update_time.InMillisecondsSinceUnixEpoch());
   metadata.set_violation_type("none");
   return metadata;
 }
@@ -163,7 +164,8 @@ void CWSInfoServiceTest::VerifyCWSInfoRetrieved(
   } else {
     EXPECT_TRUE(cws_info->is_present);
     EXPECT_EQ(metadata->is_live(), cws_info->is_live);
-    EXPECT_EQ(base::Time::FromJavaTime(metadata->last_update_time_millis()),
+    EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                  metadata->last_update_time_millis()),
               cws_info->last_update_time);
     EXPECT_EQ(
         CWSInfoService::GetViolationTypeFromString(metadata->violation_type()),

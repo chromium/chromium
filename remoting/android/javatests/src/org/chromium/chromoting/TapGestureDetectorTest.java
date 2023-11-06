@@ -100,13 +100,15 @@ public class TapGestureDetectorTest {
     @Before
     public void setUp() {
         mListener = new MockListener();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mDetector = new TapGestureDetector(
-                        InstrumentationRegistry.getTargetContext(), mListener);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mDetector =
+                                new TapGestureDetector(
+                                        InstrumentationRegistry.getTargetContext(), mListener);
+                    }
+                });
         mEventGenerator = new TouchEventGenerator();
     }
 
@@ -185,26 +187,29 @@ public class TapGestureDetectorTest {
     @SmallTest
     @Feature({"Chromoting"})
     public void testLongPress() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Ensure the gesture-detector is created on the UI thread, so that it uses the
-                // Handler for the UI thread for LongPress notifications.
-                mDetector = new TapGestureDetector(
-                        InstrumentationRegistry.getTargetContext(), mListener);
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        // Ensure the gesture-detector is created on the UI thread, so that it uses
+                        // the Handler for the UI thread for LongPress notifications.
+                        mDetector =
+                                new TapGestureDetector(
+                                        InstrumentationRegistry.getTargetContext(), mListener);
 
-                injectDownEvent(0, 0, 0);
-            }
-        });
+                        injectDownEvent(0, 0, 0);
+                    }
+                });
 
         Thread.sleep(2 * ViewConfiguration.getLongPressTimeout());
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                injectUpEvent(0);
-            }
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        injectUpEvent(0);
+                    }
+                });
 
         mListener.assertLongPressDetected(1, 0, 0);
     }

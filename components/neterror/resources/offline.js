@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {HIDDEN_CLASS} from './constants.js';
+import {CollisionBox, spriteDefinitionByType} from './offline-sprite-definitions.js';
+
 /**
  * T-Rex runner.
  * @param {string} outerContainerId Outer containing element id.
@@ -10,7 +15,7 @@
  * @implements {EventListener}
  * @export
  */
-function Runner(outerContainerId, opt_config) {
+export function Runner(outerContainerId, opt_config) {
   // Singleton
   if (Runner.instance_) {
     return Runner.instance_;
@@ -28,7 +33,7 @@ function Runner(outerContainerId, opt_config) {
   this.dimensions = Runner.defaultDimensions;
 
   this.gameType = null;
-  Runner.spriteDefinition = Runner.spriteDefinitionByType['original'];
+  Runner.spriteDefinition = spriteDefinitionByType['original'];
 
   this.altGameImageSprite = null;
   this.altGameModeActive = false;
@@ -670,7 +675,7 @@ Runner.prototype = {
    */
   enableAltGameMode() {
     Runner.imageSprite = Runner.altGameImageSprite;
-    Runner.spriteDefinition = Runner.spriteDefinitionByType[Runner.gameType];
+    Runner.spriteDefinition = spriteDefinitionByType[Runner.gameType];
 
     if (IS_HIDPI) {
       this.spriteDef = Runner.spriteDefinition.HDPI;
@@ -1273,9 +1278,8 @@ Runner.prototype = {
 
     // Game over panel.
     if (!this.gameOverPanel) {
-      const origSpriteDef = IS_HIDPI ?
-          Runner.spriteDefinitionByType.original.HDPI :
-          Runner.spriteDefinitionByType.original.LDPI;
+      const origSpriteDef = IS_HIDPI ? spriteDefinitionByType.original.HDPI :
+                                       spriteDefinitionByType.original.LDPI;
 
       if (this.canvas) {
         if (Runner.isAltGameModeEnabled) {
@@ -1982,9 +1986,9 @@ GameOverPanel.prototype = {
 
     // Game over text
     if (this.altGameModeActive &&
-        Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG) {
+        spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG) {
       const altTextConfig =
-          Runner.spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
+          spriteDefinitionByType.original.ALT_GAME_OVER_TEXT_CONFIG;
 
       if (this.flashCounter < GameOverPanel.FLASH_ITERATIONS &&
           this.flashTimer > altTextConfig.FLASH_DURATION) {
@@ -2159,24 +2163,6 @@ function boxCompare(tRexBox, obstacleBox) {
   }
 
   return crashed;
-}
-
-
-//******************************************************************************
-
-/**
- * Collision box object.
- * @param {number} x X position.
- * @param {number} y Y Position.
- * @param {number} w Width.
- * @param {number} h Height.
- * @constructor
- */
-function CollisionBox(x, y, w, h) {
-  this.x = x;
-  this.y = y;
-  this.width = w;
-  this.height = h;
 }
 
 
@@ -3618,7 +3604,7 @@ NightMode.prototype = {
     let moonSourceX = this.spritePos.x + NightMode.phases[this.currentPhase];
     const moonOutputWidth = moonSourceWidth;
     let starSize = NightMode.config.STAR_SIZE;
-    let starSourceX = Runner.spriteDefinitionByType.original.LDPI.STAR.x;
+    let starSourceX = spriteDefinitionByType.original.LDPI.STAR.x;
 
     if (IS_HIDPI) {
       moonSourceWidth *= 2;
@@ -3626,7 +3612,7 @@ NightMode.prototype = {
       moonSourceX = this.spritePos.x +
           (NightMode.phases[this.currentPhase] * 2);
       starSize *= 2;
-      starSourceX = Runner.spriteDefinitionByType.original.HDPI.STAR.x;
+      starSourceX = spriteDefinitionByType.original.HDPI.STAR.x;
     }
 
     this.canvasCtx.save();
@@ -3663,12 +3649,10 @@ NightMode.prototype = {
       this.stars[i].y = getRandomNum(0, NightMode.config.STAR_MAX_Y);
 
       if (IS_HIDPI) {
-        this.stars[i].sourceY =
-            Runner.spriteDefinitionByType.original.HDPI.STAR.y +
+        this.stars[i].sourceY = spriteDefinitionByType.original.HDPI.STAR.y +
             NightMode.config.STAR_SIZE * 2 * i;
       } else {
-        this.stars[i].sourceY =
-            Runner.spriteDefinitionByType.original.LDPI.STAR.y +
+        this.stars[i].sourceY = spriteDefinitionByType.original.LDPI.STAR.y +
             NightMode.config.STAR_SIZE * i;
       }
     }
@@ -3880,7 +3864,7 @@ Horizon.prototype = {
    * Initialise the horizon. Just add the line and a cloud. No obstacles.
    */
   init() {
-    Obstacle.types = Runner.spriteDefinitionByType.original.OBSTACLES;
+    Obstacle.types = spriteDefinitionByType.original.OBSTACLES;
     this.addCloud();
     // Multiple Horizon lines
     for (let i = 0; i < Runner.spriteDefinition.LINES.length; i++) {

@@ -107,7 +107,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
         script_state, base::DoNothing(), udp_socket, std::move(receiver));
-    return stream_wrapper_;
+    return stream_wrapper_.Get();
   }
 
   void Trace(Visitor* visitor) const {

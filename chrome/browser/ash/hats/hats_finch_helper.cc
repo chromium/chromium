@@ -129,10 +129,11 @@ void HatsFinchHelper::LoadFinchParamValues(const HatsConfig& hats_config) {
                << first_survey_start_date_ms;
     // Set a random date in the distant future so that the survey never starts
     // until a new finch seed is received with the correct start date.
-    first_survey_start_date_ms = 2 * base::Time::Now().ToJsTime();
+    first_survey_start_date_ms =
+        2 * base::Time::Now().InMillisecondsFSinceUnixEpoch();
   }
   first_survey_start_date_ =
-      base::Time().FromJsTime(first_survey_start_date_ms);
+      base::Time().FromMillisecondsSinceUnixEpoch(first_survey_start_date_ms);
 
   trigger_id_ = GetTriggerID(hats_config);
 
@@ -146,8 +147,8 @@ void HatsFinchHelper::LoadFinchParamValues(const HatsConfig& hats_config) {
   if (reset_survey_cycle_ || reset_hats_) {
     probability_of_pick_ = 0;
     survey_cycle_length_ = INT_MAX;
-    first_survey_start_date_ =
-        base::Time().FromJsTime(2 * base::Time::Now().ToJsTime());
+    first_survey_start_date_ = base::Time().FromMillisecondsSinceUnixEpoch(
+        2 * base::Time::Now().InMillisecondsFSinceUnixEpoch());
   }
 }
 

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views_utils.h"
 
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -24,8 +25,8 @@ NSString* const kPasteSearchInputAccessoryViewID =
     @"kPasteSearchInputAccessoryViewID";
 
 // Parameters for the appearance of the buttons.
+const CGFloat kOmniboxAssistiveKeyboardSymbolPointSize = 23.0;
 const CGFloat kSymbolButtonSize = 36.0;
-const CGFloat kSymbolPointSize = 23.0;
 const CGFloat kPasteButtonSize = 36.0;
 const CGFloat kButtonShadowOpacity = 0.35;
 const CGFloat kButtonShadowRadius = 1.0;
@@ -43,17 +44,19 @@ void SetUpButtonWithIcon(UIButton* button, NSString* iconName) {
   button.layer.shadowRadius = kButtonShadowRadius;
 }
 
-}  // namespace
-
-void UpdateLensButtonAppearance(UIButton* button) {
+void SetUpButtonWithSymbol(UIButton* button,
+                           NSString* symbolName,
+                           BOOL isCustomSymbol) {
   [button setTranslatesAutoresizingMaskIntoConstraints:NO];
   UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
-      configurationWithPointSize:kSymbolPointSize
+      configurationWithPointSize:kOmniboxAssistiveKeyboardSymbolPointSize
                           weight:UIImageSymbolWeightSemibold
                            scale:UIImageSymbolScaleMedium];
 
   UIImage* icon =
-      CustomSymbolWithConfiguration(kCameraLensSymbol, configuration);
+      isCustomSymbol
+          ? CustomSymbolWithConfiguration(symbolName, configuration)
+          : DefaultSymbolWithConfiguration(symbolName, configuration);
   if (UITraitCollection.currentTraitCollection.userInterfaceStyle ==
       UIUserInterfaceStyleDark) {
     icon = MakeSymbolMonochrome(icon);
@@ -75,6 +78,12 @@ void UpdateLensButtonAppearance(UIButton* button) {
     [button.widthAnchor constraintEqualToConstant:kSymbolButtonSize],
     [button.heightAnchor constraintEqualToConstant:kSymbolButtonSize]
   ]];
+}
+
+}  // namespace
+
+void UpdateLensButtonAppearance(UIButton* button) {
+  SetUpButtonWithSymbol(button, kCameraLensSymbol, YES);
 }
 
 NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
@@ -128,6 +137,15 @@ NSArray<UIControl*>* OmniboxAssistiveKeyboardLeadingControls(
       [controls addObject:OmniboxAssistiveKeyboardPasteControl(pasteTarget)];
     }
 #endif  // defined(__IPHONE_16_0)
+  }
+  if (experimental_flags::IsOmniboxDebuggingEnabled()) {
+    UIButton* debuggerButton =
+        [[ExtendedTouchTargetButton alloc] initWithFrame:CGRectZero];
+    SetUpButtonWithSymbol(debuggerButton, kSettingsSymbol, NO);
+    [debuggerButton addTarget:delegate
+                       action:@selector(keyboardAccessoryDebuggerTapped)
+             forControlEvents:UIControlEventTouchUpInside];
+    [controls addObject:debuggerButton];
   }
 
   return controls;

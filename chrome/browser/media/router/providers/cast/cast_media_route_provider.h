@@ -92,6 +92,7 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   }
 
  private:
+  friend class CastMediaRouteProviderTest;
   FRIEND_TEST_ALL_PREFIXES(CastMediaRouteProviderTest,
                            GetRemotePlaybackCompatibleSinks);
 

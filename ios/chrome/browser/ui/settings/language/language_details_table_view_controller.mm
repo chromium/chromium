@@ -81,7 +81,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [self loadModel];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

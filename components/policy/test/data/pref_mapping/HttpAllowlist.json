@@ -1,0 +1,33 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "HttpAllowlist": [
+            "example.org",
+            "[*.]example.com",
+            "10.0.22.1"
+          ]
+        },
+        "prefs": {
+          "https_upgrades.policy.http_allowlist": {
+            "value": [
+              "example.org",
+              "[*.]example.com",
+              "10.0.22.1"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

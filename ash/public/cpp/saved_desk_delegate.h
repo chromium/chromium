@@ -88,6 +88,8 @@ class ASH_PUBLIC_EXPORT SavedDeskDelegate {
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
+  // TODO(sammiequon): This is used for other features, migrate to shell
+  // delegate.
   virtual void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,

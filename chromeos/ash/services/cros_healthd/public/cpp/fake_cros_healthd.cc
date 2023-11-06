@@ -681,32 +681,20 @@ void FakeCrosHealthd::RunEmmcLifetimeRoutine(
   std::move(callback).Run(run_routine_response_.Clone());
 }
 
-void FakeCrosHealthd::RunAudioSetVolumeRoutine(
+void FakeCrosHealthd::DEPRECATED_RunAudioSetVolumeRoutine(
     uint64_t node_id,
     uint8_t volume,
     bool mute_on,
-    RunAudioSetVolumeRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("node_id", static_cast<int>(node_id));
-  actual_passed_parameters_.Set("volume", static_cast<int>(volume));
-  actual_passed_parameters_.Set("mute_on", mute_on);
-
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetVolume;
-  std::move(callback).Run(run_routine_response_.Clone());
+    DEPRECATED_RunAudioSetVolumeRoutineCallback callback) {
+  NOTREACHED();
 }
 
-void FakeCrosHealthd::RunAudioSetGainRoutine(
+void FakeCrosHealthd::DEPRECATED_RunAudioSetGainRoutine(
     uint64_t node_id,
     uint8_t gain,
     bool mute_on,
-    RunAudioSetGainRoutineCallback callback) {
-  actual_passed_parameters_.clear();
-  actual_passed_parameters_.Set("node_id", static_cast<int>(node_id));
-  actual_passed_parameters_.Set("gain", static_cast<int>(gain));
-  actual_passed_parameters_.Set("mute_on", mute_on);
-
-  last_run_routine_ = mojom::DiagnosticRoutineEnum::kAudioSetGain;
-  std::move(callback).Run(run_routine_response_.Clone());
+    DEPRECATED_RunAudioSetGainRoutineCallback callback) {
+  NOTREACHED();
 }
 
 void FakeCrosHealthd::RunBluetoothPowerRoutine(
@@ -752,6 +740,11 @@ void FakeCrosHealthd::RunAudioDriverRoutine(
 void FakeCrosHealthd::RunUfsLifetimeRoutine(
     RunUfsLifetimeRoutineCallback callback) {
   last_run_routine_ = mojom::DiagnosticRoutineEnum::kUfsLifetime;
+  std::move(callback).Run(run_routine_response_.Clone());
+}
+
+void FakeCrosHealthd::RunFanRoutine(RunFanRoutineCallback callback) {
+  last_run_routine_ = mojom::DiagnosticRoutineEnum::kFan;
   std::move(callback).Run(run_routine_response_.Clone());
 }
 

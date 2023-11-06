@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS Animating a custom property of type <percentage>#
-PASS Animating a custom property of type <percentage># with a single keyframe
-PASS Animating a custom property of type <percentage># with additivity
-PASS Animating a custom property of type <percentage># with a single keyframe and additivity
-FAIL Animating a custom property of type <percentage># with iterationComposite assert_equals: expected "250%, 275%" but got "50%, 75%"
-PASS Animating a custom property of type <percentage># with different lengths is discrete
+[PASS] Animating a custom property of type <percentage>#
+[PASS] Animating a custom property of type <percentage># with a single keyframe
+[PASS] Animating a custom property of type <percentage># with additivity
+[PASS] Animating a custom property of type <percentage># with a single keyframe and additivity
+[FAIL] Animating a custom property of type <percentage># with iterationComposite
+  assert_equals: expected "250%, 275%" but got "50%, 75%"
+[PASS] Animating a custom property of type <percentage># with different lengths is discrete
 Harness: the test ran to completion.
 

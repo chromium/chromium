@@ -18,7 +18,6 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/views/new_badge_label.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -53,9 +52,6 @@ constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
     PopupItemId::kPasswordAccountStorageReSignin,
     PopupItemId::kPasswordAccountStorageOptInAndGenerate};
 
-constexpr int kExpandableControlCellInsetPadding = 16;
-constexpr int kExpandableControlCellIconSize = 6;
-
 // The size of a close or delete icon.
 constexpr int kCloseIconSize = 16;
 
@@ -69,95 +65,6 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
             FROM_HERE, std::move(delayed_task));
       },
       std::move(task));
-}
-
-// ********************* AccessibilityDelegate implementations *****************
-
-// ********************* ContentItemAccessibilityDelegate  *********************
-class ContentItemAccessibilityDelegate
-    : public PopupCellView::AccessibilityDelegate {
- public:
-  // Creates an a11y delegate for the `line_number`. `controller` must not be
-  // null.
-  ContentItemAccessibilityDelegate(
-      base::WeakPtr<AutofillPopupController> controller,
-      int line_number);
-  ~ContentItemAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             bool is_permanently_highlighted,
-                             ui::AXNodeData* node_data) const override;
-
- private:
-  // The string announced via VoiceOver.
-  std::u16string voice_over_string_;
-  // The number of suggestions in the popup and the (1-based) index of the
-  // suggestion this delegate belongs to.
-  int set_index_ = 0;
-  int set_size_ = 0;
-};
-
-ContentItemAccessibilityDelegate::ContentItemAccessibilityDelegate(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number) {
-  DCHECK(controller);
-
-  voice_over_string_ = popup_cell_utils::GetVoiceOverStringFromSuggestion(
-      controller->GetSuggestionAt(line_number));
-
-  set_size_ = 0;
-  set_index_ = line_number + 1;
-  for (int i = 0; i < controller->GetLineCount(); ++i) {
-    if (controller->GetSuggestionAt(i).popup_item_id ==
-        PopupItemId::kSeparator) {
-      if (i < line_number) {
-        --set_index_;
-      }
-    } else {
-      ++set_size_;
-    }
-  }
-}
-
-void ContentItemAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    bool is_permanently_highlighted,
-    ui::AXNodeData* node_data) const {
-  DCHECK(node_data);
-  // Options are selectable.
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, is_selected);
-  node_data->SetNameChecked(voice_over_string_);
-
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet, set_index_);
-  node_data->AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size_);
-}
-
-// ************** ExpandableControlCellAccessibilityDelegate  ******************
-class ExpandableControlCellAccessibilityDelegate
-    : public PopupCellView::AccessibilityDelegate {
- public:
-  ExpandableControlCellAccessibilityDelegate() = default;
-  ~ExpandableControlCellAccessibilityDelegate() override = default;
-
-  void GetAccessibleNodeData(bool is_selected,
-                             bool is_permanently_highlighted,
-                             ui::AXNodeData* node_data) const override;
-};
-
-// Sets the checked state according to `is_permanently_highlighted`,
-// `is_selected` is ignored as the first one is more important and updating
-// two states within hundreds of milliseconds can be confusing.
-void ExpandableControlCellAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    bool is_permanently_highlighted,
-    ui::AXNodeData* node_data) const {
-  node_data->role = ax::mojom::Role::kToggleButton;
-  node_data->SetNameChecked(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_EXPANDABLE_SUGGESTION_CONTROLL_A11Y_NAME));
-  node_data->SetCheckedState(is_permanently_highlighted
-                                 ? ax::mojom::CheckedState::kTrue
-                                 : ax::mojom::CheckedState::kFalse);
 }
 
 }  // namespace
@@ -203,29 +110,10 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   return view;
 }
 
-std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
-  const Suggestion& kSuggestion =
-      GetController()->GetSuggestionAt(GetLineNumber());
-  if (kSuggestion.children.empty()) {
-    return nullptr;
-  }
-
-  std::unique_ptr<PopupCellView> view =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ExpandableControlCellAccessibilityDelegate>())
-          .Build();
-  view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kExpandableControlCellInsetPadding)));
-  view->AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
-      vector_icons::kSubmenuArrowIcon, kExpandableControlCellIconSize));
-  return view;
-}
-
 std::unique_ptr<PopupCellView>
 PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
-  auto view = std::make_unique<PopupCellWithButtonView>();
+  auto view = std::make_unique<PopupCellWithButtonView>(GetController(),
+                                                        GetLineNumber());
   AddContentLabelsAndCallbacks(*view);
 
   // Add a delete button for Autocomplete entries.
@@ -277,18 +165,13 @@ PopupSuggestionStrategy::CreateAutocompleteWithDeleteButtonCell() {
 
 void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
     PopupCellView& view) {
-  view.SetAccessibilityDelegate(
-      std::make_unique<ContentItemAccessibilityDelegate>(GetController(),
-                                                         GetLineNumber()));
-
   // Add the actual views.
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
-  const int kTextStyle = IsGroupFillingPopupItemId(kSuggestion.popup_item_id)
-                             ? views::style::TextStyle::STYLE_SECONDARY
-                             : views::style::TextStyle::STYLE_PRIMARY;
   std::unique_ptr<views::Label> main_text_label =
-      popup_cell_utils::CreateMainTextLabel(kSuggestion.main_text, kTextStyle);
+      popup_cell_utils::CreateMainTextLabel(
+          kSuggestion.main_text,
+          GetMainTextStyleForPopupItemId(kSuggestion.popup_item_id));
   popup_cell_utils::FormatLabel(*main_text_label, kSuggestion.main_text,
                                 GetController());
   popup_cell_utils::AddSuggestionContentToView(
@@ -298,10 +181,6 @@ void PopupSuggestionStrategy::AddContentLabelsAndCallbacks(
       popup_cell_utils::CreateAndTrackSubtextViews(view, GetController(),
                                                    GetLineNumber()),
       view);
-
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              view);
 }
 
 /************************ PopupComposeSuggestionStrategy ********************/
@@ -324,9 +203,6 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   auto main_text_label = std::make_unique<user_education::NewBadgeLabel>(
@@ -341,15 +217,7 @@ std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateContent() {
           *view, GetController(), GetLineNumber(), views::style::STYLE_BODY_4),
       *view);
 
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
-
   return view;
-}
-
-std::unique_ptr<PopupCellView> PopupComposeSuggestionStrategy::CreateControl() {
-  return nullptr;
 }
 
 /************************ PopupPasswordSuggestionStrategy *******************/
@@ -371,9 +239,6 @@ PopupPasswordSuggestionStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   // Add the actual views.
@@ -386,10 +251,6 @@ PopupPasswordSuggestionStrategy::CreateContent() {
       kSuggestion, std::move(main_text_label),
       popup_cell_utils::CreateMinorTextLabel(kSuggestion.minor_text),
       CreateDescriptionLabel(), CreateAndTrackSubtextViews(*view), *view);
-
-  // Prepare the callbacks to the controller.
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
 
   return view;
 }
@@ -427,11 +288,6 @@ PopupPasswordSuggestionStrategy::CreateAndTrackSubtextViews(
   return result;
 }
 
-std::unique_ptr<PopupCellView>
-PopupPasswordSuggestionStrategy::CreateControl() {
-  return nullptr;
-}
-
 /************************** PopupFooterStrategy ******************************/
 
 PopupFooterStrategy::PopupFooterStrategy(
@@ -450,9 +306,6 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<ContentItemAccessibilityDelegate>(
-                  GetController(), GetLineNumber()))
           .Build();
 
   views::BoxLayout* layout_manager =
@@ -513,14 +366,7 @@ std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateContent() {
   // Force a refresh to ensure all the labels'styles are correct.
   view->RefreshStyle();
 
-  popup_cell_utils::AddCallbacksToContentView(GetController(), GetLineNumber(),
-                                              *view);
-
   return view;
-}
-
-std::unique_ptr<PopupCellView> PopupFooterStrategy::CreateControl() {
-  return nullptr;
 }
 
 }  // namespace autofill

@@ -83,6 +83,7 @@ class FakePageLoadMetricsObserverDelegate
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
+  int64_t GetNavigationId() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.
   void AddBackForwardCacheRestore(BackForwardCacheRestore bfcache_restore);
@@ -110,6 +111,7 @@ class FakePageLoadMetricsObserverDelegate
   ResourceTracker resource_tracker_;
   LargestContentfulPaintHandler largest_contentful_paint_handler_;
   LargestContentfulPaintHandler experimental_largest_contentful_paint_handler_;
+  int64_t navigation_id_;
   base::TimeTicks navigation_start_;
   absl::optional<base::TimeTicks> first_background_time_ = absl::nullopt;
   bool started_in_foreground_ = true;

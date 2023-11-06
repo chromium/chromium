@@ -61,9 +61,7 @@ class ASH_EXPORT AudioDetailedView
     // Starts at 1000 to prevent potential overlapping.
     kAudioDetailedView = 1000,
     // Agc information row and corresponding text label.
-    kAgcInfoRow,
     kAgcInfoLabel,
-    // For QsRevamp: AGC information row.
     kAgcInfoView,
     // Warning message view when an NBS device is selected.
     kNbsWarningView,
@@ -106,7 +104,7 @@ class ASH_EXPORT AudioDetailedView
                          const gfx::VectorIcon& icon,
                          const int text_id);
 
-  // For QsRevamp: Adds the sliders for output/input devices.
+  // Adds the sliders for output/input devices.
   views::View* AddDeviceSlider(views::View* container,
                                const AudioDevice& device,
                                HoverHighlightView* device_name_container,
@@ -118,24 +116,15 @@ class ASH_EXPORT AudioDetailedView
   // Creates the NBS warning view.
   std::unique_ptr<TriView> CreateNbsWarningView();
 
-  // For QsRevamp: Creates the `live_caption_view_`.
+  // Creates the `live_caption_view_`.
   void CreateLiveCaptionView();
 
   // Creates the noise cancellation toggle row in the input subsection.
-  std::unique_ptr<views::View> CreateNoiseCancellationToggleRow(
-      const AudioDevice& device);
-
-  // For QsRevamp: Creates the noise cancellation toggle row in the input
-  // subsection.
-  std::unique_ptr<HoverHighlightView> CreateQsNoiseCancellationToggleRow(
+  std::unique_ptr<HoverHighlightView> CreateNoiseCancellationToggleRow(
       const AudioDevice& device);
 
   // Creates the agc info row in the input subsection.
-  views::Builder<views::BoxLayoutView> CreateAgcInfoRow(
-      const AudioDevice& device);
-
-  // For QsRevamp: Creates the agc info row in the input subsection.
-  std::unique_ptr<HoverHighlightView> CreateQsAgcInfoRow(
+  std::unique_ptr<HoverHighlightView> CreateAgcInfoRow(
       const AudioDevice& device);
 
   // Sets the subtext for `live_caption_view_` based on whether live caption has
@@ -174,7 +163,6 @@ class ASH_EXPORT AudioDetailedView
   // Updates the label of AGC info when accessibility to microphone changed.
   // Hide AGC info row if no apps is requesting AGC stream.
   void UpdateAgcInfoRow();
-  void UpdateQsAgcInfoRow();
   bool ShowAgcInfoRow();
 
   // TrayDetailedView:

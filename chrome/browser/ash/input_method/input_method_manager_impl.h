@@ -226,6 +226,8 @@ class InputMethodManagerImpl : public InputMethodManager,
   InputMethodUtil* GetInputMethodUtil() override;
   ComponentExtensionIMEManager* GetComponentExtensionIMEManager() override;
   bool IsLoginKeyboard(const std::string& layout) const override;
+  std::string GetMigratedInputMethodID(
+      const std::string& input_method_id) override;
   bool MigrateInputMethods(std::vector<std::string>* input_method_ids) override;
   scoped_refptr<InputMethodManager::State> CreateNewState(
       Profile* profile) override;

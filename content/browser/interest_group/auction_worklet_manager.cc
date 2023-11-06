@@ -82,6 +82,10 @@ GetAuctionWorkletPermissionsPolicyState(RenderFrameHostImpl* auction_runner_rfh,
 
 const size_t AuctionWorkletManager::kBatchSize;
 
+int AuctionWorkletManager::GetFrameTreeNodeID() {
+  return delegate_->GetFrame()->frame_tree_node()->frame_tree_node_id();
+}
+
 class AuctionWorkletManager::WorkletOwner
     : public base::RefCounted<AuctionWorkletManager::WorkletOwner> {
  public:
@@ -115,8 +119,9 @@ class AuctionWorkletManager::WorkletOwner
   }
 
   SubresourceUrlAuthorizations* subresource_url_authorizations() {
-    if (!url_loader_factory_proxy_)
+    if (!url_loader_factory_proxy_) {
       return nullptr;
+    }
     return &url_loader_factory_proxy_->subresource_url_authorizations();
   }
 

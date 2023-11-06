@@ -157,7 +157,6 @@ std::string DeviceTrustBrowserTestBase::GetChallengeResponseHeader() {
     return std::string();
   }
 
-  ExpectFunnelStep(DTAttestationFunnelStep::kAttestationFlowStarted);
   ExpectFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
 
   EXPECT_EQ(challenge_response_request_->GetURL().path(),

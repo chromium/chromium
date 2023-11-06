@@ -77,4 +77,5 @@ union QuickStartMessage {
   FidoAssertionResponse fido_assertion_response;
   UserVerificationRequested user_verification_requested;
   UserVerificationResponse user_verification_response;
+  UserVerificationMethod user_verification_method;
 };

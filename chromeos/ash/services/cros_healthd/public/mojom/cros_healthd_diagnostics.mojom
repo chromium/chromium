@@ -15,7 +15,7 @@ const int32 kFailedToStartId = 0;
 
 // Enumeration of each of the diagnostics routines the platform may support.
 //
-// NextMinVersion: 12, NextIndex: 47
+// NextMinVersion: 13, NextIndex: 48
 [Stable, Extensible]
 enum DiagnosticRoutineEnum {
   [Default] kUnknown = 30,
@@ -56,8 +56,8 @@ enum DiagnosticRoutineEnum {
   [MinVersion=4] kLedLitUp = 35,
   [MinVersion=5] kSmartctlCheckWithPercentageUsed = 36,
   [MinVersion=6] kEmmcLifetime = 37,
-  [MinVersion=7] kAudioSetVolume = 38,
-  [MinVersion=7] kAudioSetGain = 39,
+  [MinVersion=7] DEPRECATED_kAudioSetVolume = 38,
+  [MinVersion=7] DEPRECATED_kAudioSetGain = 39,
   [MinVersion=8] kBluetoothPower = 40,
   [MinVersion=8] kBluetoothDiscovery = 41,
   [MinVersion=8] kBluetoothScanning = 42,
@@ -65,6 +65,7 @@ enum DiagnosticRoutineEnum {
   [MinVersion=9] kPowerButton = 44,
   [MinVersion=10] kAudioDriver = 45,
   [MinVersion=11] kUfsLifetime = 46,
+  [MinVersion=12] kFan = 47,
 };
 
 // Enumeration of the possible DiskRead routine's command type
@@ -216,7 +217,7 @@ enum NvmeSelfTestTypeEnum {
 // please refer to the EC firmware.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedName"]
+[Stable, Extensible]
 enum DEPRECATED_LedName {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -230,7 +231,7 @@ enum DEPRECATED_LedName {
 // Enumeration of each possible supported LED colors.
 //
 // NextMinVersion: 1, NextIndex: 7
-[Stable, Extensible, RenamedFrom="ash.cros_healthd.mojom.LedColor"]
+[Stable, Extensible]
 enum DEPRECATED_LedColor {
   // The default value is for backward compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -245,7 +246,7 @@ enum DEPRECATED_LedColor {
 // Replier interface for LED lit up routine.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="ash.cros_healthd.mojom.LedLitUpRoutineReplier"]
+[Stable]
 interface DEPRECATED_LedLitUpRoutineReplier {
   // Returns whether the actual LED color matches the expected color.
   //

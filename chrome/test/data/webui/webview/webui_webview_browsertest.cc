@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -206,7 +207,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/662673) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1494671): Fails due to reattaching webview, need to fix on JS
+// coverage builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 #define MAYBE_ContentScriptExistsAsLongAsWebViewTagExists \
   DISABLED_ContentScriptExistsAsLongAsWebViewTagExists
 #else

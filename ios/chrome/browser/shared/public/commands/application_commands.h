@@ -111,9 +111,6 @@ enum class WarningType;
 // Shows the Password Manager's search page.
 - (void)showPasswordSearchPage;
 
-// Shows the Tab Pickup Settings screen.
-- (void)showTabPickupSettings;
-
 // Shows the Content Settings page in the settings on top of baseViewController.
 - (void)showContentsSettingsFromViewController:
     (UIViewController*)baseViewController;
@@ -194,10 +191,6 @@ enum class WarningType;
 - (void)displayRegularTabSwitcherInGridLayout;
 
 // TODO(crbug.com/779791) : Do not pass baseViewController through dispatcher.
-// Shows the Autofill Settings UI, presenting from `baseViewController`.
-- (void)showAutofillSettingsFromViewController:
-    (UIViewController*)baseViewController;
-
 // Shows the settings Privacy UI.
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController;

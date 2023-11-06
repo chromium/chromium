@@ -11,6 +11,7 @@
 #include "ui/base/models/combobox_model.h"
 
 class PrefRegistrySimple;
+class PrefService;
 
 namespace ui {
 template <class ItemType>
@@ -19,13 +20,15 @@ class ListModel;
 
 namespace ash {
 
-struct GlanceablesTaskList;
+namespace api {
+struct TaskList;
+}  // namespace api
 
 // A simple data model for the glanceables tasks combobox. This is used to
 // switch between different available tasks lists in the glanceable.
 class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
  public:
-  explicit TasksComboboxModel(ui::ListModel<GlanceablesTaskList>* tasks_lists);
+  explicit TasksComboboxModel(const ui::ListModel<api::TaskList>* tasks_lists);
   TasksComboboxModel(const TasksComboboxModel&) = delete;
   TasksComboboxModel& operator=(const TasksComboboxModel&) = delete;
   ~TasksComboboxModel() override;
@@ -41,14 +44,14 @@ class ASH_EXPORT TasksComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(size_t index) const override;
   absl::optional<size_t> GetDefaultIndex() const override;
 
-  GlanceablesTaskList* GetTaskListAt(size_t index) const;
+  const api::TaskList* GetTaskListAt(size_t index) const;
 
   // Saves the last selected `task_list_id` in user profile prefs.
   void SaveLastSelectedTaskList(const std::string& task_list_id);
 
  private:
   // Owned by `GlanceableTasksClientImpl`.
-  const raw_ptr<ui::ListModel<GlanceablesTaskList>, ExperimentalAsh>
+  const raw_ptr<const ui::ListModel<api::TaskList>, ExperimentalAsh>
       task_lists_;
 };
 

@@ -31,17 +31,18 @@ class ReadableStreamBytesConsumer::BytesConsumerReadRequest final
       : consumer_(consumer) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  v8::Local<v8::Value> chunk) const override {
+                  v8::Local<v8::Value> chunk,
+                  ExceptionState& exception_state) const override {
     if (!chunk->IsUint8Array()) {
       consumer_->OnRejected();
       return;
     }
     ScriptState::Scope scope(script_state);
-    NonThrowableExceptionState exception_state;
     consumer_->OnRead(
         NativeValueTraits<MaybeShared<DOMUint8Array>>::NativeValue(
             script_state->GetIsolate(), chunk, exception_state)
             .Get());
+    DCHECK(!exception_state.HadException());
   }
 
   void CloseSteps(ScriptState* script_state) const override {
@@ -107,8 +108,11 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     ScriptState::Scope scope(script_state_);
     DCHECK(reader_);
 
+    ExceptionState exception_state(script_state_->GetIsolate(),
+                                   ExceptionContextType::kUnknown, "", "");
     auto* read_request = MakeGarbageCollected<BytesConsumerReadRequest>(this);
-    ReadableStreamDefaultReader::Read(script_state_, reader_, read_request);
+    ReadableStreamDefaultReader::Read(script_state_, reader_, read_request,
+                                      exception_state);
     is_inside_read_ = false;
   }
   return Result::kShouldWait;

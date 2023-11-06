@@ -43,9 +43,9 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/enterprise/data_controls/dlp_reporting_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -80,7 +80,8 @@ constexpr base::TimeDelta kCooldownTimeout = base::Seconds(5);
 constexpr size_t kEntriesLimit = 100;
 
 // FileSystemContext instance set for testing.
-storage::FileSystemContext* g_file_system_context_for_testing = nullptr;
+absl::optional<storage::FileSystemContext*> g_file_system_context_for_testing =
+    absl::nullopt;
 
 // Returns true if `file_path` is in My Files directory.
 bool IsInLocalFileSystem(Profile* profile, const base::FilePath& file_path) {
@@ -129,11 +130,8 @@ absl::optional<DlpFileDestination> GetFileDestinationForApp(
 // Returns |g_file_system_context_for_testing| if set, otherwise
 // it returns FileSystemContext* for the primary profile.
 storage::FileSystemContext* GetFileSystemContext(Profile* profile) {
-  if (g_file_system_context_for_testing) {
-    return g_file_system_context_for_testing;
-  }
-
-  return file_manager::util::GetFileManagerFileSystemContext(profile);
+  return g_file_system_context_for_testing.value_or(
+      file_manager::util::GetFileManagerFileSystemContext(profile));
 }
 
 // Gets all files inside |root| recursively and runs |callback_| with the
@@ -533,6 +531,12 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     const DlpFileDestination& download_src,
     const base::FilePath& file_path,
     CheckIfDlpAllowedCallback result_callback) {
+  if (!download_src.url().has_value()) {
+    // Currently we only support urls as sources.
+    std::move(result_callback).Run(true);
+    return;
+  }
+
   auto dst_component =
       MapFilePathToPolicyComponent(profile_, base::FilePath(file_path));
   if (!dst_component.has_value()) {
@@ -542,20 +546,11 @@ void DlpFilesControllerAsh::CheckIfDownloadAllowed(
     return;
   }
 
-  if (!download_src.url().has_value()) {
-    // Currently we only support urls as sources.
-    std::move(result_callback).Run(true);
-    return;
-  }
-
+  DlpFileDestination dlp_destination = DlpFileDestination(*dst_component);
   // TODO(b/290200170): Check whether referrer_url could be set too.
-  FileDaemonInfo file_info({}, {}, file_path, download_src.url()->spec(),
+  FileDaemonInfo file_info(/*inode=*/{}, /*crtime=*/{}, file_path,
+                           download_src.url()->spec(),
                            /*referrer_url=*/"");
-
-  absl::optional<data_controls::Component> component =
-      MapFilePathToPolicyComponent(profile_, file_path);
-  DlpFileDestination dlp_destination =
-      component ? DlpFileDestination(*component) : DlpFileDestination();
   IsFilesTransferRestricted(
       absl::nullopt, {std::move(file_info)}, dlp_destination,
       dlp::FileAction::kDownload,
@@ -845,11 +840,17 @@ bool DlpFilesControllerAsh::IsDlpPolicyMatched(const FileDaemonInfo& file) {
       restricted = true;
       break;
     case policy::DlpRulesManager::Level::kWarn:
-      // TODO(b/298950702): Show warning if applicable.
+      // Normally this case should not be hit as it means that a restricted file
+      // was accessed by a flow without requesting access before. We protect
+      // warned files the same way as blocked to not allow unauthorized access.
+      restricted = true;
       break;
     default:
       break;
   }
+
+  data_controls::DlpHistogramEnumeration(
+      data_controls::dlp::kFilesUnknownAccessLevel, level);
 
   MaybeReportEvent(
       file.inode, file.crtime, file.path, src_pattern,
@@ -944,7 +945,7 @@ DlpFilesControllerAsh::MapFilePathToPolicyComponent(
             extension_misc::kODFSExtensionId);
     auto one_drive_file_systems =
         service->GetProvidedFileSystemInfoList(provider_id);
-    CHECK(one_drive_file_systems.size() == 1);
+    CHECK_EQ(one_drive_file_systems.size(), 1u);
 
     if (one_drive_file_systems[0].mount_path().IsParent(file_path)) {
       return data_controls::Component::kOneDrive;
@@ -1156,7 +1157,7 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     return;
   }
 
-  DlpReportingManager* reporting_manager =
+  data_controls::DlpReportingManager* reporting_manager =
       rules_manager_->GetReportingManager();
   if (!reporting_manager) {
     return;
@@ -1170,12 +1171,12 @@ void DlpFilesControllerAsh::MaybeReportEvent(
     return;
   }
 
-  std::unique_ptr<DlpPolicyEventBuilder> event_builder =
+  std::unique_ptr<data_controls::DlpPolicyEventBuilder> event_builder =
       is_warning_proceeded_event
-          ? DlpPolicyEventBuilder::WarningProceededEvent(
+          ? data_controls::DlpPolicyEventBuilder::WarningProceededEvent(
                 source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles)
-          : DlpPolicyEventBuilder::Event(
+          : data_controls::DlpPolicyEventBuilder::Event(
                 source_pattern, rule_metadata.name, rule_metadata.obfuscated_id,
                 DlpRulesManager::Restriction::kFiles, level.value());
 

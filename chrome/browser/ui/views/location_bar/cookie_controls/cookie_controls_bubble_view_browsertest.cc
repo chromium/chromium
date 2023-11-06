@@ -15,6 +15,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -61,7 +62,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 
     controller_ = std::make_unique<content_settings::CookieControlsController>(
         CookieSettingsFactory::GetForProfile(browser()->profile()), nullptr,
-        HostContentSettingsMapFactory::GetForProfile(browser()->profile()));
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
+        /*tracking_protection_settings=*/nullptr);
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
   }
@@ -104,7 +106,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
     // If it does not exist, it will fall through the default wildcard.
     if (should_exist) {
       EXPECT_EQ(info.secondary_pattern,
-                content_settings::URLToSchemefulSitePattern(first_party_url));
+                ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                    first_party_url));
     } else {
       EXPECT_TRUE(info.secondary_pattern.MatchesAllHosts());
     }
@@ -152,12 +155,14 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewBrowserTest,
   ShowBubble();
   view_controller()->OnStatusChanged(CookieControlsStatus::kDisabled,
                                      CookieControlsEnforcement::kNoEnforcement,
+                                     CookieBlocking3pcdStatus::kNotIn3pcd,
                                      base::Time());
   WaitForBubbleClose();
 
   ShowBubble();
   view_controller()->OnStatusChanged(CookieControlsStatus::kUninitialized,
                                      CookieControlsEnforcement::kNoEnforcement,
+                                     CookieBlocking3pcdStatus::kNotIn3pcd,
                                      base::Time());
   WaitForBubbleClose();
 }

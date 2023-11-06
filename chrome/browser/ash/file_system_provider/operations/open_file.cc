@@ -38,11 +38,11 @@ bool OpenFile::Execute(int request_id) {
 
   switch (mode_) {
     case OPEN_FILE_MODE_READ:
-      options.mode = extensions::api::file_system_provider::OPEN_FILE_MODE_READ;
+      options.mode = extensions::api::file_system_provider::OpenFileMode::kRead;
       break;
     case OPEN_FILE_MODE_WRITE:
       options.mode =
-          extensions::api::file_system_provider::OPEN_FILE_MODE_WRITE;
+          extensions::api::file_system_provider::OpenFileMode::kWrite;
       break;
   }
 

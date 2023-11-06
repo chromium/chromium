@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {util} from '../../../../common/js/util.js';
+import {visitURL} from '../../../../common/js/util.js';
 
 import {type AllowedVolumeOrType, Banner, BannerEvent} from './types.js';
 import {getTemplate} from './warning_banner.html.js';
@@ -91,7 +91,7 @@ export class WarningBanner extends Banner {
     if (extraButton) {
       extraButton.addEventListener('click', (e) => {
         if (extraButton.getAttribute('href')) {
-          util.visitURL(extraButton.getAttribute('href')!);
+          visitURL(extraButton.getAttribute('href')!);
         }
         e.preventDefault();
       });

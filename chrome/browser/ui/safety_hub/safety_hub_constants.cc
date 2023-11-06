@@ -10,6 +10,18 @@ namespace safety_hub {
 const char kCardHeaderKey[] = "header";
 const char kCardSubheaderKey[] = "subheader";
 const char kCardStateKey[] = "state";
+const char kSafetyHubSafeBrowsingStatusKey[] = "safeBrowsingStatus";
+
+const char kSafetyHubMenuNotificationActiveKey[] = "isCurrentlyActive";
+const char kSafetyHubMenuNotificationAllTimeCountKey[] = "allTimeCount";
+const char kSafetyHubMenuNotificationImpressionCountKey[] = "impressionCount";
+const char kSafetyHubMenuNotificationFirstImpressionKey[] =
+    "firstImpressionTime";
+const char kSafetyHubMenuNotificationLastImpressionKey[] = "lastImpressionTime";
+const char kSafetyHubMenuNotificationShowAfterTimeKey[] = "onlyShowAfterTime";
+const char kSafetyHubMenuNotificationResultKey[] = "result";
+
+const char kSafetyHubTriggeringExtensionIdsKey[] = "triggeringExtensions";
 
 const base::TimeDelta kMinTimeBetweenPasswordChecks = base::Hours(1);
 const base::TimeDelta kPasswordCheckOverdueTimeWindow = base::Hours(1);

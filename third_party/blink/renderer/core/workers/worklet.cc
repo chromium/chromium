@@ -115,7 +115,7 @@ void Worklet::FinishPendingTasks(WorkletPendingTasks* pending_tasks) {
 
 WorkletGlobalScopeProxy* Worklet::FindAvailableGlobalScope() {
   DCHECK(IsMainThread());
-  return proxies_.at(SelectGlobalScope());
+  return proxies_.at(SelectGlobalScope()).Get();
 }
 
 // Implementation of the second half of the "addModule(moduleURL, options)"

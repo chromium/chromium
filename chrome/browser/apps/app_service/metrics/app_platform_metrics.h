@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/protos/app_types.pb.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 class Profile;
@@ -83,7 +84,8 @@ void RecordAppLaunchMetrics(Profile* profile,
                             apps::LaunchContainer container);
 
 class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
-                           public apps::InstanceRegistry::Observer {
+                           public apps::InstanceRegistry::Observer,
+                           public ukm::UkmRecorder::Observer {
  public:
   // Observer that is notified on certain app related events like install,
   // launch, uninstall, etc.
@@ -263,6 +265,11 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
 
+  // ukm::UkmRecorder::Observer:
+  // Called only in Managed Guest Session since the observation is started only
+  // in Managed Guest Session.
+  void OnStartingShutdown() override;
+
   // Returns the browser instance app id, instance id and state for
   // `browser_window`. If there is no browser instance, the returned token of
   // the browser id and app id will be empty, and the state will be unknown.
@@ -298,11 +305,11 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Records the app running duration.
   void RecordAppsRunningDuration();
 
-  // Records the app usage time metrics (both UMA and UKM) in five minutes
-  // intervals.
+  // Saves the app usage time metrics UKM to the user preferences and records
+  // UMA.
   void RecordAppsUsageTime();
 
-  // Records the app usage time UKM in five minutes intervals.
+  // Sends the app usage time UKM to `ukm::UkmRecorder`.
   void RecordAppsUsageTimeUkm();
 
   // Records the installed app in Chrome OS.
@@ -324,8 +331,8 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // `usage_times_from_pref_`.
   void LoadAppsUsageTimeUkmFromPref();
 
-  // Records the app usage time UKM based on the usage time saved in
-  // `usage_times_from_pref_`.
+  // Sends the app usage time UKM to `ukm::UkmRecorder` based on the usage time
+  // saved in `usage_times_from_pref_`.
   void RecordAppsUsageTimeUkmFromPref();
 
   // Attempts to clear app usage info entries in the pref store for instances if
@@ -337,6 +344,8 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // Normally triggered after corresponding usage snapshot has been reported to
   // UKM for the app instance.
   void ClearAppsUsageTimeForInstance(const base::StringPiece& instance_id);
+
+  void UpdateMetricsBeforeShutdown();
 
   const raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
 
@@ -381,6 +390,10 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
 
   base::ScopedObservation<InstanceRegistry, InstanceRegistry::Observer>
       instance_registry_observation_{this};
+
+  // Observes `UkmRecorder` only in Managed Guest Session.
+  base::ScopedObservation<ukm::UkmRecorder, ukm::UkmRecorder::Observer>
+      ukm_recorder_observer_{this};
 };
 
 }  // namespace apps

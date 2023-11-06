@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_absolute_utils.h"
 
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_static_position.h"
+#include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
@@ -117,12 +117,13 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         PhysicalOffset());
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
-    LogicalSize computed_available_size =
-        ComputeOutOfFlowAvailableRect(node, space, insets, static_position)
-            .size;
+    const InsetModifiedContainingBlock imcb =
+        ComputeInsetModifiedContainingBlock(
+            node, space.AvailableSize(), insets, static_position,
+            container_writing_direction, node.Style().GetWritingDirection());
     blink::ComputeOutOfFlowInlineDimensions(
-        node, node.Style(), space, insets, border_padding, static_position,
-        computed_available_size, absl::nullopt, container_writing_direction,
+        node, node.Style(), space, imcb, border_padding, absl::nullopt,
+        container_writing_direction,
         /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
@@ -153,12 +154,13 @@ class NGAbsoluteUtilsTest : public RenderingTest {
         PhysicalOffset());
     const NGLogicalOutOfFlowInsets insets = ComputeOutOfFlowInsets(
         node.Style(), space.AvailableSize(), &anchor_evaluator);
-    LogicalSize computed_available_size =
-        ComputeOutOfFlowAvailableRect(node, space, insets, static_position)
-            .size;
+    const InsetModifiedContainingBlock imcb =
+        ComputeInsetModifiedContainingBlock(
+            node, space.AvailableSize(), insets, static_position,
+            container_writing_direction, node.Style().GetWritingDirection());
     blink::ComputeOutOfFlowBlockDimensions(
-        node, node.Style(), space, insets, border_padding, static_position,
-        computed_available_size, absl::nullopt, container_writing_direction,
+        node, node.Style(), space, imcb, border_padding, absl::nullopt,
+        container_writing_direction,
         /* anchor_evaluator */ nullptr, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);

@@ -118,7 +118,7 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   void UpdateSpecifiedTiming(const Timing&);
   void SetIgnoreCssTimingProperties();
 
-  EventDelegate* GetEventDelegate() { return event_delegate_; }
+  EventDelegate* GetEventDelegate() { return event_delegate_.Get(); }
   void SetEventDelegate(EventDelegate* delegate) { event_delegate_ = delegate; }
 
   EffectTiming* getTiming() const;

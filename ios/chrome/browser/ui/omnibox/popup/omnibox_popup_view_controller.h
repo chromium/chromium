@@ -66,6 +66,9 @@ class LargeIconService;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
+/// Toggle visibility of the omnibox debugger view.
+- (void)toggleOmniboxDebuggerView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_VIEW_CONTROLLER_H_

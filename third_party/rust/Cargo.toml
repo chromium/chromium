@@ -51,7 +51,7 @@ version = "0.1"
 features = ["unbounded_depth", "float_roundtrip"]
 
 [dependencies.syn]
-version = "1"
+version = "2"
 features = ["full"]
 
 [dependencies.unicode-linebreak]

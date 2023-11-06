@@ -208,7 +208,10 @@ AppListConfig::AppListConfig(AppListConfigType type)
       icon_extended_background_radius_(IconExtendedBackgroundRadius(type)),
       item_icon_in_folder_icon_dimension_(
           ItemIconInFolderIconDimensionForType(type)),
-      item_icon_in_folder_icon_margin_(ItemIconInFolderIconMargin()) {}
+      item_icon_in_folder_icon_margin_(ItemIconInFolderIconMargin()),
+      shortcut_host_badge_icon_dimension_(24),
+      shortcut_host_badge_icon_border_dimension_(4),
+      shortcut_background_border_dimension_(6) {}
 
 AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
     : type_(base_config.type_),
@@ -240,8 +243,24 @@ AppListConfig::AppListConfig(const AppListConfig& base_config, float scale_x)
       item_icon_in_folder_icon_dimension_(
           Scale(base_config.item_icon_in_folder_icon_dimension_, scale_x)),
       item_icon_in_folder_icon_margin_(
-          Scale(base_config.item_icon_in_folder_icon_margin_, scale_x)) {}
+          Scale(base_config.item_icon_in_folder_icon_margin_, scale_x)),
+      shortcut_host_badge_icon_dimension_(
+          Scale(base_config.shortcut_host_badge_icon_dimension_, scale_x)),
+      shortcut_host_badge_icon_border_dimension_(
+          Scale(base_config.shortcut_host_badge_icon_border_dimension_,
+                scale_x)),
+      shortcut_background_border_dimension_(
+          Scale(base_config.shortcut_background_border_dimension_, scale_x)) {}
 
 AppListConfig::~AppListConfig() = default;
+
+int AppListConfig::GetShortcutHostBadgeIconContainerDimension() const {
+  return shortcut_host_badge_icon_dimension_ +
+         shortcut_host_badge_icon_border_dimension_;
+}
+
+int AppListConfig::GetShortcutBackgroundContainerDimension() const {
+  return grid_icon_dimension_ + shortcut_host_badge_icon_border_dimension_;
+}
 
 }  // namespace ash

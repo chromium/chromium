@@ -101,7 +101,6 @@
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
 #include "chrome/browser/ash/external_metrics.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -200,6 +199,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_flusher.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/carrier_lock/carrier_lock_manager.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
@@ -228,6 +228,7 @@
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/power/dark_resume_controller.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/real_psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 #include "chromeos/ash/components/report/report_controller.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -1043,6 +1044,13 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
 
   multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
 
+  // Initialize Cellular Carrier Lock provisioning manager before login
+  if (base::FeatureList::IsEnabled(features::kCellularCarrierLock)) {
+    carrier_lock_manager_ = carrier_lock::CarrierLockManager::Create(
+        g_browser_process->local_state(), g_browser_process->gcm_driver(),
+        g_browser_process->shared_url_loader_factory());
+  }
+
   if (immediate_login) {
     const user_manager::CryptohomeId cryptohome_id(
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -1248,13 +1256,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
         g_browser_process->local_state(), ash::SessionController::Get());
 
     misconfigured_user_cleaner_->ScheduleCleanup();
-
-    if (chromeos::features::IsOrcaEnabled()) {
-      editor_mediator_ = std::make_unique<input_method::EditorMediator>(
-          /*profile=*/profile,
-          /*country_code=*/g_browser_process->variations_service()
-              ->GetLatestCountry());
-    }
 
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
@@ -1715,6 +1716,8 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   content::MediaCaptureDevices::GetInstance()->RemoveAllVideoCaptureObservers();
 
+  audio_survey_handler_.reset();
+  // The `CrasAudioHandler` needs to outlive the `audio_survey_handler_.`
   // Shutdown after PostMainMessageLoopRun() which should destroy all observers.
   CrasAudioHandler::Shutdown();
 
@@ -1815,7 +1818,9 @@ void ChromeBrowserMainPartsAsh::StartReportController() {
           ->GetSharedURLLoaderFactory(),
       first_run::GetFirstRunSentinelCreationTime(),
       std::move(check_oobe_completed_callback),
-      std::make_unique<report::PsmDelegateImpl>());
+      std::make_unique<ash::report::device_metrics::PsmClientManager>(
+          std::make_unique<
+              report::device_metrics::RealPsmClientManagerDelegate>()));
 
 #endif
 }

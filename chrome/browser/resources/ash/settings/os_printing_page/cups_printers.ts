@@ -43,11 +43,11 @@ import {CrosNetworkConfigInterface, FilterType, NetworkStateProperties, NO_LIMIT
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../deep_linking_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {PrinterListEntry, PrinterType} from './cups_printer_types.js';

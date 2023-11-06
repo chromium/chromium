@@ -691,6 +691,13 @@ void FakeServer::LogForTestFailure(const base::Location& location,
           switches::kDisableFakeServerFailureOutput)) {
     return;
   }
+  if (gtest_scoped_traces_.empty()) {
+    gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(
+        location.file_name(), location.line_number(),
+        base::StringPrintf(
+            "Add --%s to hide verbose logs from the fake server.",
+            switches::kDisableFakeServerFailureOutput)));
+  }
   gtest_scoped_traces_.push_back(std::make_unique<testing::ScopedTrace>(
       location.file_name(), location.line_number(),
       base::StringPrintf("--- %s %d (reverse chronological order) ---\n%s",

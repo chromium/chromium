@@ -6,6 +6,7 @@ include_rules = [
   "+components/exo",
   "+components/guest_os",
   "+components/keyed_service",
+  "+components/metrics",
   "+components/session_manager/core",
   "+components/user_manager",
   "+components/user_prefs",

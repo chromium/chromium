@@ -144,6 +144,12 @@ void DecoderTemplate<Traits>::configure(const ConfigType* config,
   absl::optional<MediaConfigType> media_config =
       MakeMediaConfig(*config, &js_error_message);
 
+  // Audio/VideoDecoder don't yet support encryption.
+  if (media_config && media_config->is_encrypted()) {
+    js_error_message = "Encrypted content is not supported";
+    media_config = absl::nullopt;
+  }
+
   MarkCodecActive();
 
   state_ = V8CodecState(V8CodecState::Enum::kConfigured);
@@ -785,10 +791,6 @@ void DecoderTemplate<Traits>::DispatchDequeueEvent(Event* event) {
 template <typename Traits>
 void DecoderTemplate<Traits>::ScheduleDequeueEvent() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!RuntimeEnabledFeatures::WebCodecsDequeueEventEnabled())
-    return;
-
   if (dequeue_event_pending_)
     return;
   dequeue_event_pending_ = true;

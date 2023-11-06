@@ -81,7 +81,7 @@ bool AXVirtualObject::HasAOMPropertyOrARIAAttribute(AOMBooleanProperty property,
 }
 
 AccessibleNode* AXVirtualObject::GetAccessibleNode() const {
-  return accessible_node_;
+  return accessible_node_.Get();
 }
 
 String AXVirtualObject::TextAlternative(

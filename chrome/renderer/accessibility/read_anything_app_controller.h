@@ -89,7 +89,8 @@ class ReadAnythingAppController
       const std::vector<ui::AXEvent>& events) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
                                ukm::SourceId ukm_source_id,
-                               const GURL& hostname) override;
+                               const GURL& hostname,
+                               bool force_update_state) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
@@ -100,6 +101,7 @@ class ReadAnythingAppController
       double font_size,
       read_anything::mojom::Colors color,
       double speech_rate,
+      base::Value::Dict voices,
       read_anything::mojom::HighlightGranularity granularity) override;
   void SetDefaultLanguageCode(const std::string& code) override;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -135,6 +137,7 @@ class ReadAnythingAppController
   int DarkTheme() const;
   int YellowTheme() const;
   int BlueTheme() const;
+  std::string GetStoredVoice(const std::string& lang) const;
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) const;
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) const;
   std::string GetLanguage(ui::AXNodeID ax_node_id) const;
@@ -168,6 +171,7 @@ class ReadAnythingAppController
   void OnBlueTheme();
   void OnFontChange(const std::string& font);
   void OnSpeechRateChange(double rate);
+  void OnVoiceChange(const std::string& voice, const std::string& lang);
   void TurnedHighlightOn();
   void TurnedHighlightOff();
   double GetLineSpacingValue(int line_spacing) const;
@@ -231,7 +235,7 @@ class ReadAnythingAppController
                           int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
-  raw_ptr<content::RenderFrame, DanglingUntriaged> render_frame_;
+  const int render_frame_id_;
   std::unique_ptr<AXTreeDistiller> distiller_;
   mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_;

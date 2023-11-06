@@ -22,7 +22,10 @@
 class PlusAddressServiceBrowserTest : public PlatformBrowserTest {
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(plus_addresses::kFeature);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        plus_addresses::kFeature,
+        {{plus_addresses::kEnterprisePlusAddressServerUrl.name,
+          "mattwashere"}});
     PlatformBrowserTest::SetUp();
   }
 
@@ -58,5 +61,6 @@ IN_PROC_BROWSER_TEST_F(PlusAddressServiceBrowserTest,
           GetActiveWebContents()->GetBrowserContext());
   EXPECT_NE(plus_address_service, nullptr);
   EXPECT_TRUE(plus_address_service->SupportsPlusAddresses(
-      url::Origin::Create(GURL("https://test.example"))));
+      url::Origin::Create(GURL("https://test.example")),
+      /*is_off_the_record=*/false));
 }

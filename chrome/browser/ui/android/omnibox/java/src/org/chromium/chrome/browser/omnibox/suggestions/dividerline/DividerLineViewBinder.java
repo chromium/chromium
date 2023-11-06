@@ -19,8 +19,9 @@ public class DividerLineViewBinder {
                     == BrandedColorScheme.INCOGNITO) {
                 view.getDivider().setBackgroundResource(R.color.divider_line_bg_color_light);
             } else {
-                view.getDivider().setBackgroundColor(
-                        SemanticColorUtils.getDividerLineBgColor(view.getContext()));
+                view.getDivider()
+                        .setBackgroundColor(
+                                SemanticColorUtils.getDividerLineBgColor(view.getContext()));
             }
         }
     }

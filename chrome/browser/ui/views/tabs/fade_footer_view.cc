@@ -114,6 +114,14 @@ void FooterRow<T>::SetFade(double percent) {
       SkColorSetA(footer_label_->GetEnabledColor(), alpha));
 }
 
+using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
+BEGIN_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow)
+END_METADATA
+
+using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
+BEGIN_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow)
+END_METADATA
+
 template class FooterRow<AlertFooterRowData>;
 template class FooterRow<PerformanceRowData>;
 
@@ -132,6 +140,9 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
   }
   data_ = data;
 }
+
+BEGIN_METADATA(FadeAlertFooterRow)
+END_METADATA
 
 // FadePerformanceFooterRow
 // -----------------------------------------------------------------------
@@ -170,6 +181,9 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
   SetContent(icon_image_model, row_text, data.footer_row_width);
   data_ = data;
 }
+
+BEGIN_METADATA(FadePerformanceFooterRow)
+END_METADATA
 
 // FooterView
 // -----------------------------------------------------------------------
@@ -227,6 +241,36 @@ void FooterView::UpdateVisibility() {
 gfx::Size FooterView::GetMinimumSize() const {
   return gfx::Size();
 }
+
+using FadeWrapper_View_PerformanceRowData =
+    FadeWrapper<views::View, PerformanceRowData>;
+
+BEGIN_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper)
+END_METADATA
+
+using FadeWrapper_View_AlertFooterRowData =
+    FadeWrapper<views::View, AlertFooterRowData>;
+
+BEGIN_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper)
+END_METADATA
+
+using FadeView_FadeAlertFooterRow_FadeAlertFooterRow_AlertFooterRowData =
+    FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>;
+
+BEGIN_TEMPLATE_METADATA(
+    FadeView_FadeAlertFooterRow_FadeAlertFooterRow_AlertFooterRowData,
+    FadeView)
+END_METADATA
+
+using FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowData =
+    FadeView<FadePerformanceFooterRow,
+             FadePerformanceFooterRow,
+             PerformanceRowData>;
+
+BEGIN_TEMPLATE_METADATA(
+    FadeView_FadePerformanceFooterRow_FadePerformanceFooterRow_PerformanceRowData,
+    FadeView)
+END_METADATA
 
 BEGIN_METADATA(FooterView, views::View)
 END_METADATA

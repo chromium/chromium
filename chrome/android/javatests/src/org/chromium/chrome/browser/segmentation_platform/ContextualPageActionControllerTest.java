@@ -15,6 +15,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -30,13 +31,12 @@ import org.chromium.net.test.EmbeddedTestServer;
 public class ContextualPageActionControllerTest {
     private static final String CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM =
             "SegmentationPlatform.ModelExecution.DefaultProvider.Status."
-            + "ContextualPageActionPriceTracking";
+                    + "ContextualPageActionPriceTracking";
     private static final String CONTEXTUAL_PAGE_ACTION_SHOWN_BUTTON_HISTOGRAM =
             "Android.AdaptiveToolbarButton.Variant.OnPageLoad";
     private static final String TEST_PAGE = "/chrome/test/data/dom_distiller/simple_article.html";
 
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -52,16 +52,17 @@ public class ContextualPageActionControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
-    public void
-    testContextualPageModelExecution() {
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
+    })
+    public void testContextualPageModelExecution() {
         LibraryLoader.getInstance().ensureInitialized();
 
         // Expect the default model to be executed successfully.
-        var histogram = HistogramWatcher.newSingleRecordWatcher(
-                CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM,
-                /* value= kSuccess*/ 0);
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM, /* value= kSuccess*/ 0);
 
         // Load a blank page, model should execute for every page load.
         mActivityTestRule.startMainActivityOnBlankPage();
@@ -71,18 +72,22 @@ public class ContextualPageActionControllerTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-            ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE})
-    public void
-    testContextualPageModelExecution_OnReaderModePage() {
+    @EnableFeatures({
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+        ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE
+    })
+    @DisabledTest(message = "https://crbug.com/1495178")
+    public void testContextualPageModelExecution_OnReaderModePage() {
         LibraryLoader.getInstance().ensureInitialized();
 
         var histograms =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM,
+                        .expectIntRecord(
+                                CONTEXTUAL_PAGE_ACTION_DEFAULT_MODEL_HISTOGRAM,
                                 /* value= kSuccess*/ 0)
-                        .expectIntRecord(CONTEXTUAL_PAGE_ACTION_SHOWN_BUTTON_HISTOGRAM, /* value= */
-                                AdaptiveToolbarButtonVariant.READER_MODE)
+                        .expectIntRecord(
+                                CONTEXTUAL_PAGE_ACTION_SHOWN_BUTTON_HISTOGRAM,
+                                /* value= */ AdaptiveToolbarButtonVariant.READER_MODE)
                         .build();
 
         mActivityTestRule.startMainActivityWithURL(mReaderModePageUrl);

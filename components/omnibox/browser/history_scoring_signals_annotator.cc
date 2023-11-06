@@ -70,9 +70,9 @@ void HistoryScoringSignalsAnnotator::AnnotateResult(
     }
 
     history::URLRow row;
-    // Return if no URL row found.
+    // Skip this match if no URL row found.
     if (url_db->GetRowForURL(match.destination_url, &row) == 0) {
-      return;
+      continue;
     }
 
     // Populate scoring signals.

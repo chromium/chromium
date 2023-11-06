@@ -27,10 +27,10 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_spanner_placeholder.h"
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -278,7 +278,7 @@ LayoutUnit LayoutMultiColumnSet::LogicalTopFromMulticolContentEdge() const {
   // have margins, but spanner placeholders may.
   LayoutUnit first_column_box_margin_edge =
       first_column_box.LogicalTop() -
-      first_column_box.MarginBefore(MultiColumnBlockFlow()->Style());
+      first_column_box.MarginBlockStart(MultiColumnBlockFlow()->Style());
   return LogicalTop() - first_column_box_margin_edge;
 }
 
@@ -316,27 +316,6 @@ void LayoutMultiColumnSet::ResetColumnHeight() {
   NOT_DESTROYED();
   fragmentainer_groups_.DeleteExtraGroups();
   fragmentainer_groups_.First().ResetColumnHeight();
-}
-
-void LayoutMultiColumnSet::BeginFlow(LayoutUnit offset_in_flow_thread) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // At this point layout is exactly at the beginning of this set. Store block
-  // offset from flow thread start.
-  fragmentainer_groups_.First().SetLogicalTopInFlowThread(
-      offset_in_flow_thread);
-}
-
-void LayoutMultiColumnSet::EndFlow(LayoutUnit offset_in_flow_thread) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // At this point layout is exactly at the end of this set. Store block offset
-  // from flow thread start. This set is now considered "flowed", although we
-  // may have to revisit it later (with beginFlow()), e.g. if a subtree in the
-  // flow thread has to be laid out over again because the initial margin
-  // collapsing estimates were wrong.
-  fragmentainer_groups_.Last().SetLogicalBottomInFlowThread(
-      offset_in_flow_thread);
 }
 
 void LayoutMultiColumnSet::StyleDidChange(StyleDifference diff,
@@ -411,8 +390,7 @@ PhysicalSize LayoutMultiColumnSet::Size() const {
 }
 
 void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
-  if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled() &&
-      !HasValidCachedGeometry() && EverHadLayout()) {
+  if (!HasValidCachedGeometry() && EverHadLayout()) {
     // const_cast in order to update the cached value.
     const_cast<LayoutMultiColumnSet*>(this)->UpdateGeometry();
   }
@@ -420,7 +398,6 @@ void LayoutMultiColumnSet::UpdateGeometryIfNeeded() const {
 
 void LayoutMultiColumnSet::UpdateGeometry() {
   NOT_DESTROYED();
-  DCHECK(RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
   DCHECK(!HasValidCachedGeometry());
   SetHasValidCachedGeometry(true);
   frame_location_ = LayoutPoint();
@@ -642,17 +619,6 @@ PhysicalRect LayoutMultiColumnSet::LocalVisualRectIgnoringVisibility() const {
   }
 
   return block_flow_bounds;
-}
-
-void LayoutMultiColumnSet::FinishLayoutFromNG() {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-  // Calculate the block-size of all the fragmentainer groups combined.
-  LayoutUnit logical_height;
-  for (const auto& group : fragmentainer_groups_) {
-    logical_height += group.GroupLogicalHeight();
-  }
-  SetLogicalHeight(logical_height);
 }
 
 void LayoutMultiColumnSet::SetIsIgnoredByNG() {

@@ -54,17 +54,6 @@ public final class TabContentManagerHandler extends TabModelSelectorTabObserver 
     }
 
     @Override
-    public void onTabRegistered(Tab tab) {
-        // TODO(dtrainor): Remove this and move to a pull model instead of pushing the layer
-        mTabContentManager.attachTab(tab);
-    }
-
-    @Override
-    public void onTabUnregistered(Tab tab) {
-        mTabContentManager.detachTab(tab);
-    }
-
-    @Override
     public void onInteractabilityChanged(Tab tab, boolean interactable) {
         if (interactable && mShouldRemoveThumbnail && mThumbnailTab != null) {
             mTabContentManager.removeTabThumbnail(mThumbnailTab.getId());

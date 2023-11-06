@@ -5,7 +5,7 @@
 // Preferences API test for extension controlled prefs where the main profile
 // controls the underlying feature in ash, but secondary profile can still set
 // the preference in the browser instance.
-// Run with lacros_chrome_browsertests_run_in_series \
+// Run with lacros_chrome_browsertests \
 //     --gtest_filter=ExtensionPreferenceLacrosBrowserTest.SecondaryProfilePrefs
 // Based on the "standard" extension test.
 

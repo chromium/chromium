@@ -51,29 +51,24 @@ class PlusAddressClient {
   PlusAddressClient(PlusAddressClient&&);
   PlusAddressClient& operator=(PlusAddressClient&&);
 
-  // Initiates a request to get a plus address for use on `site` and only
+  // Initiates a request to get a plus address for use on `origin` and only
   // runs `callback` with a plus address if the request to the server
   // completes successfully and returns the expected response.
   //
   // TODO (crbug.com/1467623): Should callback be run if the request fails?
-  void CreatePlusAddress(const std::string& site, PlusAddressCallback callback);
+  void CreatePlusAddress(const url::Origin& origin,
+                         PlusAddressCallback callback);
 
-  // Initiates a request to get a plus address for use on `site` and only
-  // runs `callback` with a plus address if the request to the server
-  // completes successfully and returns the expected response.
-  //
-  // TODO (crbug.com/1467623): Should callback be run if the request fails?
-  void ReservePlusAddress(const std::string& site,
-                          PlusAddressCallback callback);
+  // Initiates a request to get a plus address for use on `origin` and runs
+  // `on_completed` when the request is completed.
+  void ReservePlusAddress(const url::Origin& origin,
+                          PlusAddressRequestCallback on_completed);
 
-  // Initiates a request to confirm `plus_address` for use on `site` and only
-  // runs `callback` with the plus address if the request to the server
-  // completes successfully and returns the expected response.
-  //
-  // TODO (crbug.com/1467623): Should callback be run if the request fails?
-  void ConfirmPlusAddress(const std::string& site,
+  // Initiates a request to confirm `plus_address` for use on `origin` and runs
+  // `on_completed` when the request is completed.
+  void ConfirmPlusAddress(const url::Origin& origin,
                           const std::string& plus_address,
-                          PlusAddressCallback callback);
+                          PlusAddressRequestCallback on_completed);
 
   // Initiates a request to get all plus addresses from the remote enterprise-
   // specified server and only runs callback with them if the request to
@@ -93,13 +88,19 @@ class PlusAddressClient {
  private:
   using UrlLoaderList = std::list<std::unique_ptr<network::SimpleURLLoader>>;
 
-  // This is shared by the Create, Reserve, and ConfirmPlusAddress methods since
-  // they all use `loaders_for_creation_` and have the same return type.
-  void OnCreateOrReservePlusAddressComplete(
+  // Only used by CreatePlusAddress.
+  void OnCreatePlusAddressComplete(UrlLoaderList::iterator it,
+                                   base::Time request_start,
+                                   PlusAddressCallback on_completed,
+                                   std::unique_ptr<std::string> response);
+
+  // This is shared by the Reserve and Confirm PlusAddress methods since
+  // they both use `loaders_for_creation_` and have the same return type.
+  void OnReserveOrConfirmPlusAddressComplete(
       UrlLoaderList::iterator it,
       PlusAddressNetworkRequestType type,
       base::Time request_start,
-      PlusAddressCallback callback,
+      PlusAddressRequestCallback on_completed,
       std::unique_ptr<std::string> response);
   void OnGetAllPlusAddressesComplete(base::Time request_start,
                                      PlusAddressMapCallback callback,

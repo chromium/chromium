@@ -105,7 +105,7 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   }
   FirstLetterPseudoElement* GetFirstLetterPseudoElement() const {
     NOT_DESTROYED();
-    return first_letter_pseudo_element_;
+    return first_letter_pseudo_element_.Get();
   }
 
   void SetIsRemainingTextLayoutObject(bool is_remaining_text) {

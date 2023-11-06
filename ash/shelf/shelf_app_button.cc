@@ -21,6 +21,8 @@
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_util.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
@@ -48,6 +50,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/square_ink_drop_ripple.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
@@ -84,6 +87,9 @@ constexpr float kAppIconScale = 1.2f;
 
 // The icon for promise apps should be scaled down by this factor.
 constexpr float kPromiseIconScale = 0.77f;
+
+// The amount of space between the progress ring and the promise app background.
+constexpr gfx::Insets kProgressRingMargin = gfx::Insets(-2);
 
 // The drag and drop app icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionMs = 200;
@@ -155,6 +161,44 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
 
   gfx::ThrobAnimation animation_;
   base::ObserverList<Observer>::Unchecked observers_;
+};
+
+// Draws a circular background for a promise icon view.
+class PromiseIconBackground : public views::Background {
+ public:
+  PromiseIconBackground(ui::ColorId color_id,
+                        const gfx::Rect& icon_bounds,
+                        const gfx::Insets& insets)
+      : color_id_(color_id), icon_bounds_(icon_bounds), insets_(insets) {}
+
+  PromiseIconBackground(const PromiseIconBackground&) = delete;
+  PromiseIconBackground& operator=(const PromiseIconBackground&) = delete;
+  ~PromiseIconBackground() override = default;
+
+  // views::Background:
+  void Paint(gfx::Canvas* canvas, views::View* view) const override {
+    gfx::Rect bounds = icon_bounds_;
+    bounds.Inset(insets_);
+
+    const float radius =
+        std::min(bounds.size().width(), bounds.size().height()) / 2.f;
+
+    cc::PaintFlags flags;
+    flags.setAntiAlias(true);
+    flags.setColor(get_color());
+
+    canvas->DrawCircle(bounds.CenterPoint(), radius, flags);
+  }
+
+  void OnViewThemeChanged(views::View* view) override {
+    SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
+    view->SchedulePaint();
+  }
+
+ private:
+  const ui::ColorId color_id_;
+  const gfx::Rect icon_bounds_;
+  const gfx::Insets insets_;
 };
 
 }  // namespace
@@ -583,8 +627,10 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
 void ShelfAppButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   ShelfButton::GetAccessibleNodeData(node_data);
-  const std::u16string title = shelf_view_->GetTitleForView(this);
-  node_data->SetName(title.empty() ? GetAccessibleName() : title);
+  const std::u16string accessible_name = GetAccessibleName();
+  node_data->SetName(!accessible_name.empty()
+                         ? accessible_name
+                         : shelf_view_->GetTitleForView(this));
 
   switch (app_status_) {
     case AppStatus::kBlocked:
@@ -617,8 +663,9 @@ void ShelfAppButton::ReflectItemStatus(const ShelfItem& item) {
 
   app_status_ = item.app_status;
 
-  is_promise_app_ = app_status_ == AppStatus::kPending ||
-                    app_status_ == AppStatus::kInstalling;
+  is_promise_app_ = item.is_promise_app;
+
+  package_id_ = item.package_id;
 
   // Progress is incremental always by server side implementation. Do not use
   // equal for comparing progress as float point errors may surface.
@@ -1145,19 +1192,33 @@ void ShelfAppButton::UpdateProgressRingBounds() {
             },
             base::Unretained(this)));
     progress_indicator_->SetInnerIconVisible(false);
+    progress_indicator_->SetInnerRingVisible(false);
+    progress_indicator_->SetOuterRingStrokeWidth(2.0);
     SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->Add(progress_indicator_->CreateLayer(base::BindRepeating(
         [](ShelfAppButton* view, ui::ColorId color_id) {
           return view->GetColorProvider()->GetColor(color_id);
         },
         base::Unretained(this))));
-    progress_indicator_->SetColorId(cros_tokens::kCrosRefPrimary70);
+  }
+
+  if (app_status() == AppStatus::kPending) {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysHighlightShape);
+    progress_indicator_->SetOuterRingTrackVisible(true);
+  } else {
+    progress_indicator_->SetColorId(cros_tokens::kCrosSysPrimary);
+    progress_indicator_->SetOuterRingTrackVisible(false);
   }
 
   const gfx::Rect button_bounds(GetContentsBounds());
 
   gfx::Rect progress_indicator_bounds =
       GetIconViewBounds(button_bounds, icon_scale_);
+
+  SetBackground(std::make_unique<PromiseIconBackground>(
+      cros_tokens::kCrosSysSystemOnBase, progress_indicator_bounds,
+      kProgressRingMargin));
 
   progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
   layer()->StackAtBottom(progress_indicator_->layer());
@@ -1176,6 +1237,11 @@ float ShelfAppButton::GetAdjustedIconScaleForProgressRing() const {
 ProgressIndicator* ShelfAppButton::GetProgressIndicatorForTest() const {
   DCHECK(is_promise_app_);
   return progress_indicator_.get();
+}
+
+std::unique_ptr<ui::LayerTreeOwner> ShelfAppButton::RequestDuplicateLayer() {
+  CHECK(layer());
+  return ::wm::RecreateLayers(this);
 }
 
 }  // namespace ash

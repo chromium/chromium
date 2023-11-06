@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_tri_state.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -92,6 +93,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 constexpr char kPasswordRe[] =
@@ -104,31 +107,7 @@ constexpr char kPasswordRe[] =
     "sandi|signum|slaptazodis|kata|passord|haslo|senha|geslo|contrasena|"
     "khau";
 
-static mojom::blink::ContextMenuDataInputFieldType ComputeInputFieldType(
-    Element* element) {
-  if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    if (input->type() == input_type_names::kPassword) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPassword;
-    }
-    if (input->type() == input_type_names::kNumber) {
-      return mojom::blink::ContextMenuDataInputFieldType::kNumber;
-    }
-    if (input->type() == input_type_names::kTel) {
-      return mojom::blink::ContextMenuDataInputFieldType::kTelephone;
-    }
-    if (input->IsTextField()) {
-      return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-    }
-    return mojom::blink::ContextMenuDataInputFieldType::kOther;
-  } else if (IsA<HTMLTextAreaElement>(element)) {
-    return mojom::blink::ContextMenuDataInputFieldType::kPlainText;
-  }
-  return mojom::blink::ContextMenuDataInputFieldType::kNone;
-}
-
-void SetInputFieldsData(Element* element, ContextMenuData& data) {
-  data.input_field_type = ComputeInputFieldType(element);
-
+void SetPasswordManagerData(Element* element, ContextMenuData& data) {
   // Uses heuristics (finding 'password' and its short versions and translations
   // in field name and id etc.) to recognize a field intended for password input
   // of plain text HTML field type or `HasBeenPasswordField` which returns true
@@ -143,11 +122,50 @@ void SetInputFieldsData(Element* element, ContextMenuData& data) {
                             kPasswordRe, kTextCaseUnicodeInsensitive)));
 
     data.is_password_type_by_heuristics =
-        (data.input_field_type ==
-         mojom::blink::ContextMenuDataInputFieldType::kPlainText) &&
+        (data.form_control_type == mojom::blink::FormControlType::kInputText ||
+         data.form_control_type == mojom::blink::FormControlType::kInputEmail ||
+         data.form_control_type ==
+             mojom::blink::FormControlType::kInputSearch ||
+         data.form_control_type == mojom::blink::FormControlType::kInputUrl ||
+         data.form_control_type == mojom::blink::FormControlType::kTextArea) &&
         (passwordRegexp->Match(id.GetString()) >= 0 ||
          passwordRegexp->Match(name.GetString()) >= 0 ||
          input->HasBeenPasswordField());
+  }
+}
+
+void SetAutofillData(Node* node, ContextMenuData& data) {
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(node)) {
+    data.form_control_type = form_control->FormControlType();
+    data.field_renderer_id = base::FeatureList::IsEnabled(
+                                 features::kAutofillUseDomNodeIdForRendererId)
+                                 ? form_control->GetDomNodeId()
+                                 : form_control->UniqueRendererFormControlId();
+    if (auto* form = form_control->Form()) {
+      data.form_renderer_id = base::FeatureList::IsEnabled(
+                                  features::kAutofillUseDomNodeIdForRendererId)
+                                  ? form->GetDomNodeId()
+                                  : form->UniqueRendererFormId();
+    } else {
+      data.form_renderer_id = 0;
+    }
+  }
+  if (auto* html_element =
+          node ? DynamicTo<HTMLElement>(RootEditableElement(*node)) : nullptr) {
+    ContentEditableType content_editable =
+        html_element->contentEditableNormalized();
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillUseDomNodeIdForRendererId)) {
+      data.is_content_editable_for_autofill =
+          (content_editable == ContentEditableType::kPlaintextOnly ||
+           content_editable == ContentEditableType::kContentEditable) &&
+          !DynamicTo<HTMLFormElement>(node) &&
+          !DynamicTo<HTMLFormControlElement>(node);
+      if (data.is_content_editable_for_autofill) {
+        data.field_renderer_id = html_element->GetDomNodeId();
+        data.form_renderer_id = html_element->GetDomNodeId();
+      }
+    }
   }
 }
 
@@ -182,29 +200,6 @@ uint32_t EnumToBitmask(enumType outcome) {
   return 1 << static_cast<uint8_t>(outcome);
 }
 
-absl::optional<uint64_t> GetFormRendererId(HitTestResult& result) {
-  if (auto* text_control_element =
-          DynamicTo<TextControlElement>(result.InnerNode())) {
-    if (text_control_element->Form() != nullptr) {
-      return (base::FeatureList::IsEnabled(
-                 features::kAutofillUseDomNodeIdForRendererId))
-                 ? text_control_element->Form()->GetDomNodeId()
-                 : text_control_element->Form()->UniqueRendererFormId();
-    }
-  }
-  return absl::nullopt;
-}
-
-absl::optional<uint64_t> GetFieldRendererId(HitTestResult& result) {
-  if (auto* text_control_element =
-          DynamicTo<TextControlElement>(result.InnerNode())) {
-    return (base::FeatureList::IsEnabled(
-               features::kAutofillUseDomNodeIdForRendererId))
-               ? text_control_element->GetDomNodeId()
-               : text_control_element->UniqueRendererFormControlId();
-  }
-  return absl::nullopt;
-}
 }  // namespace
 
 ContextMenuController::ContextMenuController(Page* page) : page_(page) {}
@@ -831,11 +826,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     }
   }
 
-  SetInputFieldsData(result.InnerElement(), data);
   data.selection_rect = ComputeSelectionRect(selected_frame);
   data.source_type = source_type;
-  data.form_renderer_id = GetFormRendererId(result);
-  data.field_renderer_id = GetFieldRendererId(result);
+
+  SetAutofillData(result.InnerNode(), data);
+  SetPasswordManagerData(result.InnerElement(), data);
 
   const bool from_touch = source_type == kMenuSourceTouch ||
                           source_type == kMenuSourceLongPress ||

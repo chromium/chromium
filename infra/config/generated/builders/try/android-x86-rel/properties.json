@@ -51,6 +51,7 @@
       "unit",
       "overall"
     ],
+    "use_clang_coverage": true,
     "use_java_coverage": true
   },
   "$build/flakiness": {

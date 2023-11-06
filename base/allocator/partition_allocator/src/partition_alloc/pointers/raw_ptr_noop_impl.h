@@ -55,7 +55,7 @@ struct RawPtrNoOpImpl {
   // Upcasts the wrapped pointer.
   template <typename To, typename From>
   PA_ALWAYS_INLINE static constexpr To* Upcast(From* wrapped_ptr) {
-    static_assert(std::is_convertible<From*, To*>::value,
+    static_assert(std::is_convertible_v<From*, To*>,
                   "From must be convertible to To.");
     // Note, this cast may change the address if upcasting to base that lies
     // in the middle of the derived object.

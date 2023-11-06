@@ -8,9 +8,9 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/device_reauth/android/device_authenticator_bridge.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/device_authenticator_common.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,7 +46,7 @@ enum class DeviceAuthFinalResult {
 };
 
 // Android implementation of the DeviceAuthenticator interface.
-class DeviceAuthenticatorAndroid : public ChromeDeviceAuthenticatorCommon {
+class DeviceAuthenticatorAndroid : public DeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorAndroid(std::unique_ptr<DeviceAuthenticatorBridge> bridge,
                              DeviceAuthenticatorProxy* proxy,

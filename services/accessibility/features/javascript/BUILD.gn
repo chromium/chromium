@@ -5,6 +5,8 @@
 copy("js_api_copied_files") {
   sources = [
     "accessibility_private.js",
+    "chrome_event.js",
+    "speech_recognition.js",
     "tts.js",
   ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
@@ -12,8 +14,10 @@ copy("js_api_copied_files") {
 
 group("js_api_files") {
   data = [
-    "$target_gen_dir/tts.js",
     "$target_gen_dir/accessibility_private.js",
+    "$target_gen_dir/chrome_event.js",
+    "$target_gen_dir/speech_recognition.js",
+    "$target_gen_dir/tts.js",
   ]
   deps = [ ":js_api_copied_files" ]
 }

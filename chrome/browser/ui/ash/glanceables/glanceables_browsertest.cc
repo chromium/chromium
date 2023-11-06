@@ -5,12 +5,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/api/tasks/fake_tasks_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/fake_glanceables_tasks_client.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -104,7 +104,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     base::Time date;
     ASSERT_TRUE(base::Time::FromString(kDueDate, &date));
     fake_glanceables_tasks_client_ =
-        std::make_unique<FakeGlanceablesTasksClient>(date);
+        std::make_unique<api::FakeTasksClient>(date);
     fake_glanceables_classroom_client_ =
         std::make_unique<FakeGlanceablesClassroomClient>();
 
@@ -131,11 +131,11 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
     return date_tray_->bubble_.get();
   }
 
-  FakeGlanceablesTasksClient* fake_glanceables_tasks_client() const {
+  api::FakeTasksClient* fake_glanceables_tasks_client() const {
     return fake_glanceables_tasks_client_.get();
   }
 
-  TasksBubbleView* GetTasksView() const {
+  views::View* GetTasksView() const {
     return GetGlanceableTrayBubble()->GetTasksView();
   }
 
@@ -216,7 +216,7 @@ class GlanceablesBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   AccountId account_id_ =
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId);
-  std::unique_ptr<FakeGlanceablesTasksClient> fake_glanceables_tasks_client_;
+  std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   std::unique_ptr<FakeGlanceablesClassroomClient>
       fake_glanceables_classroom_client_;
 
@@ -473,7 +473,8 @@ IN_PROC_BROWSER_TEST_F(GlanceablesMvpBrowserTest, CheckOffTaskItems) {
 
 class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
  private:
-  base::test::ScopedFeatureList features_{features::kGlanceablesV2TasksAddEdit};
+  base::test::ScopedFeatureList features_{
+      features::kGlanceablesTimeManagementStableLaunch};
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, EditTaskItem) {

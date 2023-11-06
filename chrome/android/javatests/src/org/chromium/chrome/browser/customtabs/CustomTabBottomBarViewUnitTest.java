@@ -43,10 +43,8 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase {
-    @Mock
-    private SwipeHandler mSwipeHandler;
-    @Mock
-    private OnClickListener mOnClickListener;
+    @Mock private SwipeHandler mSwipeHandler;
+    @Mock private OnClickListener mOnClickListener;
 
     private CustomTabBottomBarView mView;
     private View mStub;
@@ -55,15 +53,22 @@ public class CustomTabBottomBarViewUnitTest extends BlankUiTestActivityTestCase 
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         when(mSwipeHandler.isSwipeEnabled(eq(ScrollDirection.UP))).thenReturn(true);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mView = (CustomTabBottomBarView) getActivity().getLayoutInflater().inflate(
-                    R.layout.custom_tabs_bottombar, null);
-            mStub = getActivity().getLayoutInflater().inflate(R.layout.bottombar_stub, null);
-            mStub.setOnClickListener(mOnClickListener);
-            mView.addView(mStub);
-            mView.setSwipeHandler(mSwipeHandler);
-            getActivity().setContentView(mView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mView =
+                            (CustomTabBottomBarView)
+                                    getActivity()
+                                            .getLayoutInflater()
+                                            .inflate(R.layout.custom_tabs_bottombar, null);
+                    mStub =
+                            getActivity()
+                                    .getLayoutInflater()
+                                    .inflate(R.layout.bottombar_stub, null);
+                    mStub.setOnClickListener(mOnClickListener);
+                    mView.addView(mStub);
+                    mView.setSwipeHandler(mSwipeHandler);
+                    getActivity().setContentView(mView);
+                });
     }
 
     @Test

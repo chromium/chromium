@@ -462,7 +462,7 @@ void MouseEventManager::NodeWillBeRemoved(Node& node_to_be_removed) {
 }
 
 Element* MouseEventManager::GetElementUnderMouse() {
-  return element_under_mouse_;
+  return element_under_mouse_.Get();
 }
 
 WebInputEventResult MouseEventManager::HandleMouseFocus(
@@ -1138,7 +1138,7 @@ void MouseEventManager::SetCapturesDragging(bool captures_dragging) {
 }
 
 Node* MouseEventManager::MousePressNode() {
-  return mouse_press_node_;
+  return mouse_press_node_.Get();
 }
 
 void MouseEventManager::SetMousePressNode(Node* node) {
@@ -1146,7 +1146,7 @@ void MouseEventManager::SetMousePressNode(Node* node) {
 }
 
 Element* MouseEventManager::ClickElement() {
-  return click_element_;
+  return click_element_.Get();
 }
 
 void MouseEventManager::SetClickElement(Element* element) {

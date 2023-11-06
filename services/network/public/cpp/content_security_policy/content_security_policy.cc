@@ -1109,6 +1109,67 @@ std::pair<CSPDirectiveName, const mojom::CSPSourceList*> GetSourceList(
 
 }  // namespace
 
+CSPCheckResult::CSPCheckResult(bool allowed)
+    : CSPCheckResult(allowed, allowed, allowed) {}
+
+CSPCheckResult& CSPCheckResult::operator&=(const CSPCheckResult& other) {
+  allowed_ &= other.allowed_;
+  allowed_if_wildcard_does_not_match_ws_ &=
+      other.allowed_if_wildcard_does_not_match_ws_;
+  allowed_if_wildcard_does_not_match_ftp_ &=
+      other.allowed_if_wildcard_does_not_match_ftp_;
+  return *this;
+}
+
+bool CSPCheckResult::operator==(const CSPCheckResult& other) const {
+  return allowed_ == other.allowed_ &&
+         allowed_if_wildcard_does_not_match_ws_ ==
+             other.allowed_if_wildcard_does_not_match_ws_ &&
+         allowed_if_wildcard_does_not_match_ftp_ ==
+             other.allowed_if_wildcard_does_not_match_ftp_;
+}
+
+CSPCheckResult::operator bool() const {
+  return IsAllowed();
+}
+
+CSPCheckResult CSPCheckResult::Allowed() {
+  return CSPCheckResult(true);
+}
+
+CSPCheckResult CSPCheckResult::Blocked() {
+  return CSPCheckResult(false);
+}
+
+CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesWs() {
+  return CSPCheckResult(true, false, true);
+}
+
+CSPCheckResult CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp() {
+  return CSPCheckResult(true, true, false);
+}
+
+bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchWs() const {
+  return allowed_ != allowed_if_wildcard_does_not_match_ws_;
+}
+
+bool CSPCheckResult::WouldBlockIfWildcardDoesNotMatchFtp() const {
+  return allowed_ != allowed_if_wildcard_does_not_match_ftp_;
+}
+
+bool CSPCheckResult::IsAllowed() const {
+  return allowed_;
+}
+
+CSPCheckResult::CSPCheckResult(bool allowed,
+                               bool allowed_if_wildcard_does_not_match_ws,
+                               bool allowed_if_wildcard_does_not_match_ftp)
+    : allowed_(allowed),
+      allowed_if_wildcard_does_not_match_ws_(
+          allowed_if_wildcard_does_not_match_ws),
+      allowed_if_wildcard_does_not_match_ftp_(
+          allowed_if_wildcard_does_not_match_ftp) {}
+
 CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
                                       CSPDirectiveName original_directive) {
   switch (directive) {
@@ -1325,32 +1386,33 @@ bool ParseSource(CSPDirectiveName directive_name,
   return path_parsed;
 }
 
-bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
-                                CSPDirectiveName directive_name,
-                                const GURL& url,
-                                const GURL& url_before_redirects,
-                                bool has_followed_redirect,
-                                bool is_response_check,
-                                CSPContext* context,
-                                const mojom::SourceLocationPtr& source_location,
-                                bool is_form_submission,
-                                bool is_opaque_fenced_frame) {
+CSPCheckResult CheckContentSecurityPolicy(
+    const mojom::ContentSecurityPolicyPtr& policy,
+    CSPDirectiveName directive_name,
+    const GURL& url,
+    const GURL& url_before_redirects,
+    bool has_followed_redirect,
+    bool is_response_check,
+    CSPContext* context,
+    const mojom::SourceLocationPtr& source_location,
+    bool is_form_submission,
+    bool is_opaque_fenced_frame) {
   DCHECK(policy->self_origin);
 
   if (is_opaque_fenced_frame &&
       directive_name != CSPDirectiveName::FencedFrameSrc)
-    return false;
+    return CSPCheckResult::Blocked();
 
   if (!is_opaque_fenced_frame &&
       ShouldBypassContentSecurityPolicy(context, directive_name, url)) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
   // 'navigate-to' has no effect when doing a form submission and a
   // 'form-action' directive is present.
   if (is_form_submission && directive_name == CSPDirectiveName::NavigateTo &&
       policy->directives.count(CSPDirectiveName::FormAction)) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
   for (CSPDirectiveName effective_directive_name = directive_name;
@@ -1362,11 +1424,11 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
       continue;
 
     const auto& source_list = directive->second;
-    bool allowed = CheckCSPSourceList(
+    CSPCheckResult result = CheckCSPSourceList(
         directive_name, *source_list, url, *(policy->self_origin),
         has_followed_redirect, is_response_check, is_opaque_fenced_frame);
 
-    if (!allowed) {
+    if (!result) {
       ReportViolation(
           context, policy, effective_directive_name, directive_name,
           is_opaque_fenced_frame
@@ -1378,10 +1440,11 @@ bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
           source_location);
     }
 
-    return allowed ||
-           policy->header->type == mojom::ContentSecurityPolicyType::kReport;
+    return policy->header->type == mojom::ContentSecurityPolicyType::kReport
+               ? CSPCheckResult::Allowed()
+               : result;
   }
-  return true;
+  return CSPCheckResult::Allowed();
 }
 
 bool ShouldUpgradeInsecureRequest(

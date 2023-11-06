@@ -43,8 +43,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "ui/base/ui_base_features.h"
 
@@ -335,7 +335,7 @@ HTMLInputElement* SliderContainerElement::HostInput() const {
 }
 
 LayoutObject* SliderContainerElement::CreateLayoutObject(const ComputedStyle&) {
-  return MakeGarbageCollected<LayoutNGFlexibleBox>(this);
+  return MakeGarbageCollected<LayoutFlexibleBox>(this);
 }
 
 void SliderContainerElement::DefaultEventHandler(Event& event) {

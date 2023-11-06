@@ -1,0 +1,53 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AutoLaunchProtocolsFromOrigins": [
+            {
+              "allowed_origins": [
+                "*"
+              ],
+              "protocol": "calc"
+            },
+            {
+              "allowed_origins": [
+                "*"
+              ],
+              "protocol": "invalid://"
+            },
+            {
+              "allowed_origins": [],
+              "protocol": "notes"
+            },
+            {
+              "allowed_origins": [
+                "http://a.com/path",
+                "http://a.com/?b=1"
+              ],
+              "protocol": "no.valid.origins"
+            }
+          ]
+        },
+        "prefs": {
+          "protocol_handler.policy.auto_launch_protocols_from_origins": {
+            "value": [
+              {
+                "allowed_origins": [
+                  "*"
+                ],
+                "protocol": "calc"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

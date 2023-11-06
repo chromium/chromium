@@ -10,6 +10,15 @@
 
 namespace app_launcher_overlays {
 
+// The reason why the confirmation request was created.
+enum class AppLaunchConfirmationRequestCause {
+  kOther,
+  kRepeatedRequest,
+  kOpenFromIncognito,
+  kNoUserInteraction,
+  kAppLaunchFailed,
+};
+
 // Configuration object for OverlayRequests for alerts notifying the user that
 // a navigation will open another app.
 class AppLaunchConfirmationRequest
@@ -17,17 +26,17 @@ class AppLaunchConfirmationRequest
  public:
   ~AppLaunchConfirmationRequest() override;
 
-  // Whether the current page has previously attempted to open another app.
-  bool is_repeated_request() const { return is_repeated_request_; }
+  // The reason why a confirmation dialog was displayed.
+  AppLaunchConfirmationRequestCause cause() const { return cause_; }
 
  private:
   OVERLAY_USER_DATA_SETUP(AppLaunchConfirmationRequest);
-  AppLaunchConfirmationRequest(bool is_repeated_request);
+  AppLaunchConfirmationRequest(AppLaunchConfirmationRequestCause cause);
 
   // OverlayUserData:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
 
-  const bool is_repeated_request_;
+  const AppLaunchConfirmationRequestCause cause_;
 };
 
 // Completion response used when the user allows the app launcher navigation.

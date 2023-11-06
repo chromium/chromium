@@ -120,7 +120,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   }
   const String& UnparsedCSSFilter() const { return unparsed_css_filter_; }
   void SetCanvasFilter(CanvasFilter* filter_value);
-  CanvasFilter* GetCanvasFilter() const { return canvas_filter_; }
+  CanvasFilter* GetCanvasFilter() const { return canvas_filter_.Get(); }
   sk_sp<PaintFilter> GetFilter(Element*,
                                gfx::Size canvas_size,
                                CanvasRenderingContext2D*);

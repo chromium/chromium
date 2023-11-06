@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -761,8 +763,9 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   }
   bool first_answer_is_single_label =
       first_answer_view->children().size() == 1 &&
-      first_answer_view->children().front()->GetClassName() ==
-          quick_answers::QuickAnswersTextLabel::kViewClassName;
+      std::string_view(first_answer_view->children().front()->GetClassName()) ==
+          std::string_view(
+              quick_answers::QuickAnswersTextLabel::kViewClassName);
   if (first_answer_is_single_label) {
     // Update announcement.
     auto* answer_label =

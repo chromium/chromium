@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -57,7 +58,20 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 @interface PasswordIssuesCoordinator () <PasswordDetailsCoordinatorDelegate,
                                          PasswordIssuesCoordinatorDelegate,
                                          PasswordIssuesPresenter,
-                                         ReauthenticationCoordinatorDelegate> {
+                                         ReauthenticationCoordinatorDelegate>
+
+@end
+
+@implementation PasswordIssuesCoordinator {
+  // Main view controller for this coordinator.
+  PasswordIssuesTableViewController* _viewController;
+
+  // Main mediator for this coordinator.
+  PasswordIssuesMediator* _mediator;
+
+  // Coordinator for password details.
+  PasswordDetailsCoordinator* _passwordDetails;
+
   // Password check manager to power mediator.
   IOSChromePasswordCheckManager* _manager;
 
@@ -81,20 +95,12 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // from outside the Password Manager and when the app is
   // backgrounded/foregrounded with Password Issues opened.
   ReauthenticationCoordinator* _reauthCoordinator;
+
+  // Whether the metric counting visits to the page was already recorded.
+  // Used to avoid over-recording the metric after each successful
+  // authentication.
+  BOOL _visitRecorded;
 }
-
-// Main view controller for this coordinator.
-@property(nonatomic, strong) PasswordIssuesTableViewController* viewController;
-
-// Main mediator for this coordinator.
-@property(nonatomic, strong) PasswordIssuesMediator* mediator;
-
-// Coordinator for password details.
-@property(nonatomic, strong) PasswordDetailsCoordinator* passwordDetails;
-
-@end
-
-@implementation PasswordIssuesCoordinator
 
 @synthesize baseNavigationController = _baseNavigationController;
 
@@ -117,7 +123,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   [super start];
 
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  self.mediator = [[PasswordIssuesMediator alloc]
+  _mediator = [[PasswordIssuesMediator alloc]
         initForWarningType:_warningType
       passwordCheckManager:IOSChromePasswordCheckManagerFactory::
                                GetForBrowserState(browserState)
@@ -130,23 +136,29 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
           initWithWarningType:_warningType];
-  passwordIssuesTableViewController.imageDataSource = self.mediator;
-  self.viewController = passwordIssuesTableViewController;
+  passwordIssuesTableViewController.imageDataSource = _mediator;
+  _viewController = passwordIssuesTableViewController;
 
   // If reauthentication module was not provided, coordinator will create its
   // own.
   if (!self.reauthModule) {
     self.reauthModule = password_manager::BuildReauthenticationModule(
-        /*successfulReauthTimeAccessor=*/self.mediator);
+        /*successfulReauthTimeAccessor=*/_mediator);
   }
 
-  self.mediator.consumer = self.viewController;
-  self.viewController.presenter = self;
+  _mediator.consumer = _viewController;
+  _viewController.presenter = self;
+
+  // Only record visit if no auth is required, otherwise wait for successful
+  // auth.
+  if (_skipAuthenticationOnStart) {
+    [self maybeRecordVisitMetric];
+  }
 
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
   [self.baseNavigationController
-      pushViewController:self.viewController
+      pushViewController:_viewController
                 animated:_skipAuthenticationOnStart ||
                          !IsAuthOnEntryV2Enabled()];
 
@@ -154,13 +166,13 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)stop {
-  [self.mediator disconnect];
-  self.mediator = nil;
-  self.viewController = nil;
+  [_mediator disconnect];
+  _mediator = nil;
+  _viewController = nil;
 
-  [self.passwordDetails stop];
-  self.passwordDetails.delegate = nil;
-  self.passwordDetails = nil;
+  [_passwordDetails stop];
+  _passwordDetails.delegate = nil;
+  _passwordDetails = nil;
 
   [self stopDismissedPasswordIssuesCoordinator];
   [self stopReauthenticationCoordinator];
@@ -179,19 +191,19 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)presentPasswordIssueDetails:(PasswordIssue*)password {
-  DCHECK(!self.passwordDetails);
+  DCHECK(!_passwordDetails);
 
   [self stopReauthCoordinatorBeforeStartingChildCoordinator];
 
-  self.passwordDetails = [[PasswordDetailsCoordinator alloc]
+  _passwordDetails = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                             credential:password.credential
                           reauthModule:self.reauthModule
                                context:ComputeDetailsContextFromWarningType(
                                            _warningType)];
-  self.passwordDetails.delegate = self;
-  [self.passwordDetails start];
+  _passwordDetails.delegate = self;
+  [_passwordDetails start];
 }
 
 - (void)presentDismissedCompromisedCredentials {
@@ -213,7 +225,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 }
 
 - (void)dismissAfterAllIssuesGone {
-  if (self.baseNavigationController.topViewController == self.viewController) {
+  if (self.baseNavigationController.topViewController == _viewController) {
     [self.baseNavigationController popViewControllerAnimated:NO];
   } else {
     _shouldDismissAfterChildCoordinatorRemoved = YES;
@@ -224,10 +236,10 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)passwordDetailsCoordinatorDidRemove:
     (PasswordDetailsCoordinator*)coordinator {
-  DCHECK_EQ(self.passwordDetails, coordinator);
-  [self.passwordDetails stop];
-  self.passwordDetails.delegate = nil;
-  self.passwordDetails = nil;
+  DCHECK_EQ(_passwordDetails, coordinator);
+  [_passwordDetails stop];
+  _passwordDetails.delegate = nil;
+  _passwordDetails = nil;
 
   [self onChildCoordinatorDidRemove];
 }
@@ -246,7 +258,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)successfulReauthenticationWithCoordinator:
     (ReauthenticationCoordinator*)coordinator {
-  // No-op.
+  [self maybeRecordVisitMetric];
 }
 
 - (void)willPushReauthenticationViewController {
@@ -275,8 +287,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   // was presenting content, dismiss the view controller now that the child
   // coordinator's vc was removed.
   if (_shouldDismissAfterChildCoordinatorRemoved) {
-    CHECK_EQ(self.baseNavigationController.topViewController,
-             self.viewController);
+    CHECK_EQ(self.baseNavigationController.topViewController, _viewController);
     _shouldDismissAfterChildCoordinatorRemoved = NO;
     dispatch_async(dispatch_get_main_queue(), ^{
       [self.baseNavigationController popViewControllerAnimated:NO];
@@ -335,6 +346,18 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
   if (IsAuthOnEntryV2Enabled()) {
     [self startReauthCoordinatorWithAuthOnStart:NO];
   }
+}
+
+// Logs a Password Issues visit. Only logs the first time it is invoked, no-op
+// after that.
+- (void)maybeRecordVisitMetric {
+  if (_visitRecorded) {
+    return;
+  }
+
+  _visitRecorded = YES;
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordIssues);
 }
 
 @end

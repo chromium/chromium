@@ -14,8 +14,8 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -37,6 +37,7 @@ const std::u16string kUsername = u"username";
 const std::u16string kPassword = u"password";
 const std::u16string kSenderEmail = u"sender@example.com";
 const std::u16string kSenderName = u"Sender Name";
+const std::string kSenderProfileImagerUrl = "https://sender.com/avatar";
 
 IncomingSharingInvitation CreateIncomingSharingInvitation() {
   IncomingSharingInvitation invitation;
@@ -45,6 +46,7 @@ IncomingSharingInvitation CreateIncomingSharingInvitation() {
   invitation.username_value = kUsername;
   invitation.password_value = kPassword;
   invitation.sender_email = kSenderEmail;
+  invitation.sender_profile_image_url = GURL(kSenderProfileImagerUrl);
   invitation.sender_display_name = kSenderName;
   return invitation;
 }
@@ -164,6 +166,8 @@ TEST_F(PasswordReceiverServiceImplTest,
           Field(&PasswordForm::type, PasswordForm::Type::kReceivedViaSharing),
           Field(&PasswordForm::sender_email, kSenderEmail),
           Field(&PasswordForm::sender_name, kSenderName),
+          Field(&PasswordForm::sender_profile_image_url,
+                GURL(kSenderProfileImagerUrl)),
           Field(&PasswordForm::sharing_notification_displayed, false))));
 
   EXPECT_TRUE(account_password_store().stored_passwords().empty());

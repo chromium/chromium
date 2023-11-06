@@ -48,6 +48,7 @@ static_library("gcm_driver") {
     "//components/gcm_driver/common",
     "//components/gcm_driver/crypto",
     "//components/gcm_driver/instance_id",
+    "//components/version_info:channel",
     "//crypto",
   ]
 
@@ -106,6 +107,7 @@ static_library("gcm_driver") {
     deps += [
       "//build:chromeos_buildflags",
       "//components/crx_file",
+      "//components/version_info:version_info",
       "//google_apis/gcm",
     ]
   }

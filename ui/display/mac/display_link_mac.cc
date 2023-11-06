@@ -241,13 +241,13 @@ std::unique_ptr<DisplayLinkMacSharedState> DisplayLinkMacSharedState::Create(
   // which is accessible via CVDisplayLinkGetCurrentCGDisplay(). In
   // normal conditions the current display is never zero.
   if ((ret == kCVReturnSuccess) &&
-      (CVDisplayLinkGetCurrentCGDisplay(display_link) == 0)) {
+      (CVDisplayLinkGetCurrentCGDisplay(display_link.get()) == 0)) {
     LOG(ERROR)
         << "CVDisplayLinkCreateWithCGDisplay failed (no current display)";
     return nullptr;
   }
 
-  ret = CVDisplayLinkSetOutputCallback(display_link, &DisplayLinkCallback,
+  ret = CVDisplayLinkSetOutputCallback(display_link.get(), &DisplayLinkCallback,
                                        reinterpret_cast<void*>(display_id));
   if (ret != kCVReturnSuccess) {
     LOG(ERROR) << "CVDisplayLinkSetOutputCallback failed. CVReturn: " << ret;
@@ -264,8 +264,8 @@ bool DisplayLinkMacSharedState::EnsureDisplayLinkRunning() {
   base::AutoLock lock(display_link_running_lock_);
 
   if (!display_link_is_running_) {
-    DCHECK(!CVDisplayLinkIsRunning(display_link_));
-    CVReturn ret = CVDisplayLinkStart(display_link_);
+    DCHECK(!CVDisplayLinkIsRunning(display_link_.get()));
+    CVReturn ret = CVDisplayLinkStart(display_link_.get());
     if (ret != kCVReturnSuccess) {
       LOG(ERROR) << "CVDisplayLinkStart failed. CVReturn: " << ret;
       return false;
@@ -293,7 +293,7 @@ void DisplayLinkMacSharedState::StopDisplayLinkIfNeeded() {
   if (!display_link_is_running_) {
     return;
   }
-  CVReturn ret = CVDisplayLinkStop(display_link_);
+  CVReturn ret = CVDisplayLinkStop(display_link_.get());
   if (ret == kCVReturnSuccess) {
     display_link_is_running_ = false;
     consecutive_vsyncs_with_no_callbacks_ = 0;
@@ -305,7 +305,7 @@ void DisplayLinkMacSharedState::StopDisplayLinkIfNeeded() {
 double DisplayLinkMacSharedState::GetRefreshRate() const {
   double refresh_rate = 0;
   CVTime cv_time =
-      CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link_);
+      CVDisplayLinkGetNominalOutputVideoRefreshPeriod(display_link_.get());
   if (!(cv_time.flags & kCVTimeIsIndefinite)) {
     refresh_rate = (static_cast<double>(cv_time.timeScale) /
                     static_cast<double>(cv_time.timeValue));
@@ -316,7 +316,7 @@ double DisplayLinkMacSharedState::GetRefreshRate() const {
 
 base::TimeTicks DisplayLinkMacSharedState::GetCurrentTime() const {
   CVTimeStamp out_time;
-  CVReturn ret = CVDisplayLinkGetCurrentTime(display_link_, &out_time);
+  CVReturn ret = CVDisplayLinkGetCurrentTime(display_link_.get(), &out_time);
   if (ret == kCVReturnSuccess) {
     return base::TimeTicks::FromMachAbsoluteTime(out_time.hostTime);
   } else {

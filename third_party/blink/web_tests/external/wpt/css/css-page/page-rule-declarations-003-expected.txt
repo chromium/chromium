@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS contents for selector ['auto']
-PASS contents for selector ['_abcd']
-PASS expected empty selector when assigning blank string
-FAIL CSS Paged Media: parsing @page selectors assert_equals: missing @page selectors expected 0 but got 7
+[PASS] contents for selector ['auto']
+[PASS] contents for selector ['_abcd']
+[PASS] expected empty selector when assigning blank string
+[FAIL] CSS Paged Media: parsing @page selectors
+  assert_equals: missing @page selectors expected 0 but got 7
 Harness: the test ran to completion.
 

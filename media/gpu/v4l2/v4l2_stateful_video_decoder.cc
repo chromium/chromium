@@ -44,34 +44,23 @@ void* Mmap(int fd,
 }
 
 // This method blocks waiting for an event from either |device_fd| or
-// |wake_event|; then if it's from |device_fd| and of the type POLLIN
-// (meaning there's data) or POLLPRI (meaning a resolution change event), this
-// function calls |dequeue_callback| or |resolution_change_callback|.
-
-// If |enqueue_callback| is not null, this function also listens to POLLOUT
-// events (meaning the OUTPUT queue can accept encoded chunks); this event
-// could technically be ignored -- except for Hana MTK8173, where for some
-// reason it must be listened to and acted upon it to avoid events from
-// stopping being produced altogether.
-//
-// Since this function blocks, it needs to work on its own SequencedTaskRunner,
-// in this case |event_task_runner_|.
+// |wake_event|; then if it's of the type POLLIN (meaning there's data) or
+// POLLPRI (meaning a resolution change event) and from |device_fd|, this
+// function calls |dequeue_callback| or |resolution_change_callback|,
+// respectively. Since it blocks, it needs to work on its own
+// SequencedTaskRunner, in this case |event_task_runner_|.
 // TODO(mcasas): Add an error callback too.
 void WaitOnceForEvents(int device_fd,
                        int wake_event,
                        base::OnceClosure dequeue_callback,
-                       base::OnceClosure enqueue_callback,
                        base::OnceClosure resolution_change_callback) {
   VLOGF(5) << "Going to poll()";
 
   // POLLERR, POLLHUP, or POLLNVAL are always return-able and anyway ignored
   // when set in pollfd.events.
   // https://www.kernel.org/doc/html/v5.15/userspace-api/media/v4l/func-poll.html
-  const short poll_events_to_listen_for =
-      POLLIN | POLLPRI | (enqueue_callback.is_null() ? 0x0 : POLLOUT);
-  struct pollfd pollfds[] = {
-      {.fd = device_fd, .events = poll_events_to_listen_for},
-      {.fd = wake_event, .events = POLLIN}};
+  struct pollfd pollfds[] = {{.fd = device_fd, .events = POLLIN | POLLPRI},
+                             {.fd = wake_event, .events = POLLIN}};
   constexpr int kInfiniteTimeout = -1;
   if (HANDLE_EINTR(poll(pollfds, std::size(pollfds), kInfiniteTimeout)) <
       kIoctlOk) {
@@ -82,15 +71,12 @@ void WaitOnceForEvents(int device_fd,
   const auto events_from_device = pollfds[0].revents;
   const auto other_events = pollfds[1].revents;
   // At least Qualcomm Venus likes to bundle events.
-  if (events_from_device & poll_events_to_listen_for) {
+  const auto pollin_or_pollpri_event = events_from_device & (POLLIN | POLLPRI);
+  if (pollin_or_pollpri_event) {
     // "POLLIN There is data to read."
-    // "POLLOUT Normal data may be written without blocking."
     //  https://man7.org/linux/man-pages/man2/poll.2.html
     if (events_from_device & POLLIN) {
       std::move(dequeue_callback).Run();
-    }
-    if (events_from_device & POLLOUT) {
-      std::move(enqueue_callback).Run();
     }
     // "If an event occurred (see ioctl VIDIOC_DQEVENT) then POLLPRI will be set
     //  in the revents field and poll() will return."
@@ -193,8 +179,10 @@ scoped_refptr<media::DecoderBuffer> ReassembleFragments(
 
 namespace media {
 
-// Stateful drivers need to be passed full frames (see IsNewH264Frame() above).
-// This class helps processing and gathering DecoderBuffers into full frames.
+// Stateful drivers need to be passed whole frames (see IsNewH264Frame() above).
+// Some implementations(Hana MTK8173, but not Trogdor SC7180), don't support
+// multiple whole frames enqueued in a single OUTPUT queue buffer. This class
+// helps processing and gathering DecoderBuffers into full frames.
 class H264FrameReassembler {
  public:
   H264FrameReassembler() = default;
@@ -203,14 +191,14 @@ class H264FrameReassembler {
   H264FrameReassembler(const H264FrameReassembler&) = delete;
   H264FrameReassembler& operator=(const H264FrameReassembler&) = delete;
 
-  // This method parses |buffer| and decides whether it's part of a frame, if it
-  // marks the beginning of a new frame, or if it's a full frame itself. In any
-  // case, it might return a pair DecoderBuffer + DecodeCB; if so, the caller
-  // can treat it as ready to be enqueued in the driver: this method will hold
-  // onto and reassemble fragments as needed. |decode_cb| will be called
-  // internally to signal errors or correctly received |buffer|s.
-  absl::optional<
-      std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
+  // This method parses |buffer| and decides whether it's part of a frame, it
+  // marks the beginning of a new frame, it's a full frame itself, or if it
+  // contains multiple frames. In any case, it might return a vector of
+  // DecoderBuffer + DecodeCB; if so, the caller can treat those as ready to be
+  // enqueued in the driver: this method will hold onto and reassemble
+  // fragments as needed. |decode_cb| will be called internally to signal
+  // errors or correctly received |buffer|s.
+  std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
   Process(scoped_refptr<DecoderBuffer> buffer,
           VideoDecoder::DecodeCB decode_cb);
 
@@ -222,8 +210,23 @@ class H264FrameReassembler {
   bool HasFragments() const { return !frame_fragments_.empty(); }
 
  private:
-  absl::optional<bool> DoesBufferMarkANewH264Frame(
-      const DecoderBuffer* const buffer);
+  // Parses |data| and returns either absl::nullopt, if parsing |data| fails, or
+  // a pair of a boolean flag and a size_t, where:
+  // - The boolean flag tells whether |data| contains the beginning of a new
+  //   frame (and necessarily the end of a previous one, if any).
+  // - If said flag is true, then the returned size_t is the length of the first
+  //   found whole frame.
+  // - If said flag is false, then the returned size_t is the size of the first
+  //   fragment (a.k.a. "slice"), which might be smaller than |size|.
+  //
+  // It is assumed that:
+  // - |data| contains an integer number of NALUs.
+  // - |data| contains at most 2 whole frames.
+  //   TODO(mcasas): Support more frames, as seen in e.g. CAPCM*1_Sand_E.h264,
+  //   switch_1080p_720p_240frames.h264.
+  absl::optional<std::pair<bool, size_t>> FindH264FrameBoundary(
+      const uint8_t* const data,
+      size_t size);
 
   H264Parser h264_parser_;
   static constexpr int kInvalidSPS = -1;
@@ -486,16 +489,18 @@ void V4L2StatefulVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   PrintOutQueueStatesForVLOG(FROM_HERE);
 
   if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kH264) {
-    auto processed_buffer_and_decode_cb = h264_frame_reassembler_->Process(
+    auto processed_buffer_and_decode_cbs = h264_frame_reassembler_->Process(
         std::move(buffer), std::move(decode_cb));
     // If Process() returns nothing, then it swallowed its arguments and
     // there's nothing further to do. Otherwise, just treat whatever it
-    // returned as a normal DecoderBuffer + DecodeCB pair.
-    if (!processed_buffer_and_decode_cb.has_value()) {
+    // returned as a normal sequence of DecoderBuffer + DecodeCB.
+    if (processed_buffer_and_decode_cbs.empty()) {
       return;
     }
-    decoder_buffer_and_callbacks_.emplace(
-        std::move(*processed_buffer_and_decode_cb));
+    for (auto& a : processed_buffer_and_decode_cbs) {
+      decoder_buffer_and_callbacks_.push(std::move(a));
+    }
+
   } else if (VideoCodecProfileToVideoCodec(profile_) == VideoCodec::kHEVC) {
     NOTIMPLEMENTED();
     std::move(decode_cb).Run(DecoderStatus::Codes::kUnsupportedCodec);
@@ -800,7 +805,10 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
   // ITU-T codecs, it depends on the bitstream. Here we query it from the
   // driver anyway.
   constexpr size_t kDefaultNumReferenceFrames = 8;
-  size_t num_codec_reference_frames = kDefaultNumReferenceFrames;
+  constexpr size_t kDefaultNumReferenceFramesMTK8173 = 16;
+  size_t num_codec_reference_frames = is_mtk8173_
+                                          ? kDefaultNumReferenceFramesMTK8173
+                                          : kDefaultNumReferenceFrames;
 
   struct v4l2_ext_control ctrl = {.id = V4L2_CID_MIN_BUFFERS_FOR_CAPTURE};
   struct v4l2_ext_controls ext_ctrls = {.count = 1, .controls = &ctrl};
@@ -826,13 +834,6 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   auto dequeue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
       weak_ptr_factory_for_events_.GetWeakPtr()));
-  base::OnceClosure enqueue_callback = base::NullCallback();
-  if (is_mtk8173_) {
-    enqueue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
-        base::IgnoreResult(
-            &V4L2StatefulVideoDecoder::TryAndEnqueueOUTPUTQueueBuffers),
-        weak_ptr_factory_for_events_.GetWeakPtr()));
-  }
   // |client_| needs to be told of a hypothetical resolution change (to wait for
   // frames in flight etc). Once that's done they will ping us via
   // ApplyResolutionChange().
@@ -860,7 +861,7 @@ void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   cancelable_task_tracker_.PostTask(
       event_task_runner_.get(), FROM_HERE,
       base::BindOnce(&WaitOnceForEvents, device_fd_.get(), wake_event_.get(),
-                     std::move(dequeue_callback), std::move(enqueue_callback),
+                     std::move(dequeue_callback),
                      std::move(resolution_change_callback)));
 }
 
@@ -1112,48 +1113,75 @@ bool V4L2StatefulVideoDecoder::IsInitialized() const {
   return !!OUTPUT_queue_;
 }
 
-absl::optional<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
+std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
 H264FrameReassembler::Process(scoped_refptr<DecoderBuffer> buffer,
                               VideoDecoder::DecodeCB decode_cb) {
-  const auto result = DoesBufferMarkANewH264Frame(buffer.get());
+  const auto result =
+      FindH264FrameBoundary(buffer->data(), buffer->data_size());
   if (!result.has_value()) {
     LOG(ERROR) << "Failed parsing H.264 DecoderBuffer";
     std::move(decode_cb).Run(DecoderStatus::Codes::kFailed);
-    return absl::nullopt;
+    return {};
   }
 
-  // It's possible that |buffer| contains more than one full frame
-  // (e.g. main/CAPCM1_Sand_E.h264, main/CAPCMNL1_Sand_E.h264 and a few
-  // others). This code now doesn't support it (|buffer| is either a full frame
-  // or is a fragment of a full frame). TODO(mcasas): support this case.
-
-  const auto is_new_frame = *result;
-  if (!is_new_frame) {
+  // If |buffer| has part of a frame (i.e. FindH264FrameBoundary() didn't find a
+  // frame boundary / the beginning of a new frame), we can't do much: store it
+  // for later reassembly. Otherwise, |buffer| marks the beginning of a new
+  // frame and needs further processing.
+  const bool is_new_frame_found = result->first;
+  if (!is_new_frame_found) {
     VLOGF(3) << "|buffer| is a frame fragment, storing it for reassembly.";
     frame_fragments_.emplace_back(std::move(buffer));
     std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
-    return absl::nullopt;
+    return {};
   }
 
-  const bool needs_reassembly = HasFragments();
-  if (!needs_reassembly) {
-    // Easy case: |buffer| is a full frame and doesn't need reassembly.
-    return std::make_pair(std::move(buffer), std::move(decode_cb));
+  std::vector<std::pair<scoped_refptr<DecoderBuffer>, VideoDecoder::DecodeCB>>
+      whole_frames;
+
+  // If we reach here, |buffer| marks a new frame; reassemble any previously
+  // stored |frame_fragments_| (a.k.a. "slices") into a new DecoderBuffer.
+  if (HasFragments()) {
+    VLOGF(3) << "|buffer| is a new frame fragment; " << frame_fragments_.size()
+             << " currently stored frame fragment(s) can be reassembled.";
+    whole_frames.emplace_back(std::make_pair(
+        ReassembleFragments(frame_fragments_), base::DoNothing()));
   }
 
-  VLOGF(3) << "|buffer| is a new frame fragment; " << frame_fragments_.size()
-           << " currently stored frame fragment(s) can be reassembled.";
-  auto reassembled_frame = ReassembleFragments(frame_fragments_);
+  const size_t found_frame_size = result->second;
+  const bool contains_multiple_frames = found_frame_size < buffer->data_size();
+  if (!contains_multiple_frames) {
+    // We cannot know if |buffer| is a full frame or a fragment (we'll only know
+    // when we find the beginning of the next frame). Save the current |buffer|
+    // as the first fragment for the next time we call this method.
+    frame_fragments_.emplace_back(std::move(buffer));
+    std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+    return whole_frames;
+  }
 
-  // Save the current |buffer|, which would be lost otherwise.
-  frame_fragments_.emplace_back(std::move(buffer));
-  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
-  return std::make_pair(std::move(reassembled_frame), base::DoNothing());
+  // The code here assumes there's just two whole frames in |buffer|.
+  // TODO(mcasas): Support more, as seen in e.g. CAPCM*1_Sand_E.h264.
+  VLOGF(3) << "|buffer| contains several frames, need to split them.";
+  auto first_frame = DecoderBuffer::CopyFrom(buffer->data(), found_frame_size);
+
+  const auto h264_second_frame_size = buffer->data_size() - found_frame_size;
+  auto second_frame = DecoderBuffer::CopyFrom(buffer->data() + found_frame_size,
+                                              h264_second_frame_size);
+
+  // Note that |decode_cb| is a OnceCallback, so should be called only once,
+  // when the |second_frame| is enqueued.
+  whole_frames.emplace_back(
+      std::make_pair(std::move(first_frame), base::DoNothing()));
+  whole_frames.emplace_back(
+      std::make_pair(std::move(second_frame), std::move(decode_cb)));
+
+  return whole_frames;
 }
 
-absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
-    const DecoderBuffer* const buffer) {
-  h264_parser_.SetStream(buffer->data(), buffer->data_size());
+absl::optional<std::pair<bool, size_t>>
+H264FrameReassembler::FindH264FrameBoundary(const uint8_t* const data,
+                                            size_t data_size) {
+  h264_parser_.SetStream(data, data_size);
   while (true) {
     H264NALU nalu;
     H264Parser::Result result = h264_parser_.AdvanceToNextNALU(&nalu);
@@ -1163,7 +1191,8 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
       return absl::nullopt;
     }
     if (result == H264Parser::kEOStream) {
-      return false;
+      NOTREACHED_NORETURN()
+          << "|data| did not contain a whole NALU while parsing";
     }
     DCHECK_EQ(result, H264Parser::kOk);
 
@@ -1178,8 +1207,13 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
     };
     CHECK_LT(base::checked_cast<size_t>(nalu.nal_unit_type),
              std::size(kKnownNALUNames));
-    VLOGF(4) << "H264NALU type " << kKnownNALUNames[nalu.nal_unit_type] << ", "
-             << nalu.size << " bytes payload";
+
+    CHECK_GE(nalu.data, data);
+    CHECK_LE(nalu.data, data + data_size);
+    const auto nalu_size = nalu.data - data + nalu.size;
+    VLOGF(4) << "H264NALU type " << kKnownNALUNames[nalu.nal_unit_type]
+             << ", NALU size=" << nalu_size
+             << "bytes, payload size=" << nalu.size << " bytes";
 
     switch (nalu.nal_unit_type) {
       case H264NALU::kSPS:
@@ -1188,14 +1222,14 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
           LOG(ERROR) << "Could not parse SPS header.";
           return absl::nullopt;
         }
-        return true;
+        return std::make_pair(true, nalu_size);
       case H264NALU::kPPS:
         result = h264_parser_.ParsePPS(&pps_id_);
         if (result != H264Parser::kOk) {
           LOG(ERROR) << "Could not parse PPS header.";
           return absl::nullopt;
         }
-        return true;
+        return std::make_pair(true, nalu_size);
       case H264NALU::kNonIDRSlice:
       case H264NALU::kIDRSlice: {
         H264SliceHeader curr_slice_header;
@@ -1204,16 +1238,17 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
           // In this function we just want to find frame boundaries, so return
           // but don't mark an error.
           LOG(WARNING) << "Could not parse NALU header.";
-          return true;
+          return std::make_pair(true, nalu_size);
         }
         const bool is_new_frame =
-            previous_slice_header_ &&
-            IsNewH264Frame(h264_parser_.GetSPS(sps_id_),
-                           h264_parser_.GetPPS(pps_id_),
-                           previous_slice_header_.get(), &curr_slice_header);
+            !previous_slice_header_ ||
+            (previous_slice_header_ &&
+             IsNewH264Frame(h264_parser_.GetSPS(sps_id_),
+                            h264_parser_.GetPPS(pps_id_),
+                            previous_slice_header_.get(), &curr_slice_header));
         previous_slice_header_ =
             std::make_unique<H264SliceHeader>(curr_slice_header);
-        return is_new_frame;
+        return std::make_pair(is_new_frame, nalu_size);
       }
       case H264NALU::kSEIMessage:
       case H264NALU::kAUD:
@@ -1227,7 +1262,7 @@ absl::optional<bool> H264FrameReassembler::DoesBufferMarkANewH264Frame(
       case H264NALU::kReserved17:
       case H264NALU::kReserved18:
         // Anything else than SPS, PPS and Non/IDRs marks a new frame boundary.
-        return true;
+        return std::make_pair(true, nalu_size);
       default:
         NOTREACHED_NORETURN() << "Unknown NALU, id: " << nalu.nal_unit_type;
     }

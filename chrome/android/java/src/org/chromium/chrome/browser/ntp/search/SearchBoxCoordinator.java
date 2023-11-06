@@ -141,6 +141,11 @@ public class SearchBoxCoordinator {
         mMediator.setLensButtonLeftMargin(leftMargin);
     }
 
+    public void setSearchTextSize(float textSize) {
+        mModel.set(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE, textSize);
+    }
+
+
     public boolean getIncognitoModeForTesting() {
         return mIsIncognito;
     }

@@ -26,11 +26,11 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Coordinates the interactions with the UrlBar text component.
- */
-public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFocusChangeListener,
-                                          KeyboardVisibilityDelegate.KeyboardVisibilityListener {
+/** Coordinates the interactions with the UrlBar text component. */
+public class UrlBarCoordinator
+        implements UrlBarEditingTextStateProvider,
+                UrlFocusChangeListener,
+                KeyboardVisibilityDelegate.KeyboardVisibilityListener {
     private static final int KEYBOARD_HIDE_DELAY_MS = 150;
     private static final int KEYBOARD_MODE_CHANGE_DELAY_MS = 300;
 
@@ -63,22 +63,26 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      * @param context The current Android's context.
      * @param urlBar The {@link UrlBar} view this coordinator encapsulates.
      * @param windowDelegate Delegate for accessing and mutating window properties, e.g. soft input
-     *         mode.
+     *     mode.
      * @param actionModeCallback Callback to handle changes in contextual action Modes.
      * @param focusChangeCallback The callback that will be notified when focus changes on the
-     *         UrlBar.
+     *     UrlBar.
      * @param delegate The primary delegate for the UrlBar view.
      * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
-     *         visibility.
+     *     visibility.
      * @param isIncognito Whether incognito mode is initially enabled. This can later be changed
-     *         using {@link #setIncognitoColorsEnabled(boolean)}.
+     *     using {@link #setIncognitoColorsEnabled(boolean)}.
      * @param reportExceptionCallback A {@link Callback} to report exceptions.
      */
-    public UrlBarCoordinator(Context context, @NonNull UrlBar urlBar,
+    public UrlBarCoordinator(
+            Context context,
+            @NonNull UrlBar urlBar,
             @Nullable WindowDelegate windowDelegate,
             @NonNull ActionMode.Callback actionModeCallback,
-            @NonNull Callback<Boolean> focusChangeCallback, @NonNull UrlBarDelegate delegate,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate, boolean isIncognito,
+            @NonNull Callback<Boolean> focusChangeCallback,
+            @NonNull UrlBarDelegate delegate,
+            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            boolean isIncognito,
             Callback<Throwable> reportExceptionCallback) {
         mContext = context;
         mUrlBar = urlBar;
@@ -111,12 +115,16 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         mFocusChangeCallback = null;
     }
 
-    /** @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener) */
+    /**
+     * @see UrlBarMediator#addUrlTextChangeListener(UrlTextChangeListener)
+     */
     public void addUrlTextChangeListener(UrlTextChangeListener listener) {
         mMediator.addUrlTextChangeListener(listener);
     }
 
-    /** @see UrlBarMediator#setUrlBarData(UrlBarData, int, int) */
+    /**
+     * @see UrlBarMediator#setUrlBarData(UrlBarData, int, int)
+     */
     public boolean setUrlBarData(
             UrlBarData data, @ScrollType int scrollType, @SelectionState int state) {
         return mMediator.setUrlBarData(data, scrollType, state);
@@ -127,27 +135,37 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mMediator.getUrlBarData();
     }
 
-    /** @see UrlBarMediator#setAutocompleteText(String, String) */
+    /**
+     * @see UrlBarMediator#setAutocompleteText(String, String)
+     */
     public void setAutocompleteText(String userText, String autocompleteText) {
         mMediator.setAutocompleteText(userText, autocompleteText);
     }
 
-    /** @see UrlBarMediator#setBrandedColorScheme(int) */
+    /**
+     * @see UrlBarMediator#setBrandedColorScheme(int)
+     */
     public boolean setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
         return mMediator.setBrandedColorScheme(brandedColorScheme);
     }
 
-    /** @see UrlBarMediator#setIncognitoColorsEnabled(boolean) */
+    /**
+     * @see UrlBarMediator#setIncognitoColorsEnabled(boolean)
+     */
     public void setIncognitoColorsEnabled(boolean incognitoColorsEnabled) {
         mMediator.setIncognitoColorsEnabled(incognitoColorsEnabled);
     }
 
-    /** @see UrlBarMediator#setAllowFocus(boolean) */
+    /**
+     * @see UrlBarMediator#setAllowFocus(boolean)
+     */
     public void setAllowFocus(boolean allowFocus) {
         mMediator.setAllowFocus(allowFocus);
     }
 
-    /** @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>) */
+    /**
+     * @see UrlBarMediator#setUrlDirectionListener(Callback<Integer>)
+     */
     public void setUrlDirectionListener(Callback<Integer> listener) {
         mMediator.setUrlDirectionListener(listener);
     }
@@ -187,7 +205,9 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         return mUrlBar.getTextWithoutAutocomplete();
     }
 
-    /** @see UrlBar#getVisibleTextPrefixHint() */
+    /**
+     * @see UrlBar#getVisibleTextPrefixHint()
+     */
     public CharSequence getVisibleTextPrefixHint() {
         return mUrlBar.getVisibleTextPrefixHint();
     }
@@ -229,7 +249,7 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
      *
      * @param showKeyboard Whether the soft keyboard should be shown.
      * @param shouldDelayHiding When true, keyboard hide operation will be delayed slightly to
-     *         improve the animation smoothness.
+     *     improve the animation smoothness.
      */
     public void setKeyboardVisibility(boolean showKeyboard, boolean shouldDelayHiding) {
         // Cancel pending jobs to prevent any possibility of keyboard flicker.
@@ -243,26 +263,28 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
         } else {
             // The animation rendering may not yet be 100% complete and hiding the keyboard makes
             // the animation quite choppy.
-            // clang-format off
-            mKeyboardHideTask = () -> {
-                mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
-                mKeyboardHideTask = NO_OP_RUNNABLE;
-            };
-            // clang-format on
+            mKeyboardHideTask =
+                    () -> {
+                        mKeyboardVisibilityDelegate.hideKeyboard(mUrlBar);
+                        mKeyboardHideTask = NO_OP_RUNNABLE;
+                    };
             mUrlBar.postDelayed(mKeyboardHideTask, shouldDelayHiding ? KEYBOARD_HIDE_DELAY_MS : 0);
             // Convert the keyboard back to resize mode (delay the change for an arbitrary amount
             // of time in hopes the keyboard will be completely hidden before making this change).
         }
     }
 
-    /** @param hasSuggestions Whether suggestions are showing in the URL bar. */
+    /**
+     * @param hasSuggestions Whether suggestions are showing in the URL bar.
+     */
     public void onUrlBarSuggestionsChanged(boolean hasSuggestions) {
         mMediator.onUrlBarSuggestionsChanged(hasSuggestions);
     }
 
     private void onUrlFocusChangeInternal(boolean hasFocus) {
-        InputMethodManager imm = (InputMethodManager) mUrlBar.getContext().getSystemService(
-                Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm =
+                (InputMethodManager)
+                        mUrlBar.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (hasFocus) {
             // Explicitly tell InputMethodManager that the url bar is focused before any callbacks
             // so that it updates the active view accordingly. Otherwise, it may fail to update
@@ -292,14 +314,23 @@ public class UrlBarCoordinator implements UrlBarEditingTextStateProvider, UrlFoc
                 OmniboxFeatures.shouldShowModernizeVisualUpdate(mUrlBar.getContext());
     }
 
-    /** @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean, boolean, int) */
-    public void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType,
-            boolean usePreviousHintTextColor, @BrandedColorScheme int brandedColorScheme) {
-        mMediator.setUrlBarHintTextColorForSurfacePolish(
-                useColorfulOmniboxType, usePreviousHintTextColor, brandedColorScheme);
+    /**
+     * @see UrlBarMediator#setUrlBarHintTextColorForDefault(int)
+     */
+    public void setUrlBarHintTextColorForDefault(@BrandedColorScheme int brandedColorScheme) {
+        mMediator.setUrlBarHintTextColorForDefault(brandedColorScheme);
     }
 
-    /** @see UrlBarMediator#setUrlBarTypeface(Typeface) */
+    /**
+     * @see UrlBarMediator#setUrlBarHintTextColorForSurfacePolish(boolean)
+     */
+    public void setUrlBarHintTextColorForSurfacePolish(boolean useColorfulOmniboxType) {
+        mMediator.setUrlBarHintTextColorForSurfacePolish(useColorfulOmniboxType);
+    }
+
+    /**
+     * @see UrlBarMediator#setUrlBarTypeface(Typeface)
+     */
     public void setUrlBarTypeface(Typeface typeface) {
         mMediator.setUrlBarTypeface(typeface);
     }

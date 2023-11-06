@@ -298,7 +298,7 @@ AX_TEST_F(
       // Case: no selection start.
       // Because automation.setDocumentSelection enforces that there is a
       // selectionStart object, we will call the method directly.
-      instance.onDocumentSelectionChanged({
+      instance.onDocumentSelectionChanged_({
         target: {
           selectionStartObject: null,
           selectionStartOffset: 0,
@@ -325,7 +325,7 @@ AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
   const assertGetFocusCalled = this.prepareToExpectMethodCall(
       DesktopAutomationInterface.instance, 'maybeRecoverFocusAndOutput_');
 
-  DesktopAutomationInterface.instance.onFocus({target: root});
+  DesktopAutomationInterface.instance.onFocus_({target: root});
   await this.waitForPendingMethods();
   assertGetFocusCalled();
   assertEquals(
@@ -339,7 +339,7 @@ AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
     const assertExitEarly = this.prepareToExpectMethodNotCalled(
         Output, 'forceModeForNextSpeechUtterance');
 
-    DesktopAutomationInterface.instance.onFocus({target: button});
+    DesktopAutomationInterface.instance.onFocus_({target: button});
     await this.waitForPendingMethods();
     assertCreateTextHandlerCalled();
     assertExitEarly();
@@ -388,7 +388,7 @@ AX_TEST_F('ChromeVoxDesktopAutomationHandlerTest', 'OnFocus', async function() {
   const assertEventDefault = this.prepareToExpectMethodCall(
       DesktopAutomationInterface.instance, 'onEventDefault');
 
-  DesktopAutomationInterface.instance.onFocus({target: button});
+  DesktopAutomationInterface.instance.onFocus_({target: button});
   await this.waitForPendingMethods();
   assertNotEquals('fake url', DesktopAutomationInterface.instance.lastRootUrl_);
   assertOutputFlush();

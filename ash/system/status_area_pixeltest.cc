@@ -63,9 +63,7 @@ class StatusAreaPixelTest : public AshTestBase {
 
     // The `NotificationCenterTray` does not exist until the `QsRevamp` feature
     // is enabled.
-    notification_test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    notification_test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   TrayBackgroundView* GetSystemTray() {

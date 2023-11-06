@@ -254,10 +254,6 @@ const char kEnableDomainReliability[] = "enable-domain-reliability";
 const char kEnableDownloadWarningImprovements[] =
     "enable-download-warning-improvements";
 
-// Enables the early process singleton feature. The process singleton will be
-// held for the whole lifetime of BrowserImpl (see https://crbug.com/1340599).
-const char kEnableEarlyProcessSingleton[] = "enable-early-process-singleton";
-
 // Enables logging for extension activity.
 const char kEnableExtensionActivityLogging[] =
     "enable-extension-activity-logging";
@@ -788,6 +784,11 @@ extern const char kFromInstaller[] = "from-installer";
 // shows an error box because the only way to hide Chrome is by uninstalling
 // it.
 const char kHideIcons[] = "hide-icons";
+
+// Don't try to clear downlevel OS appcompat layers out of Chrome's
+// AppCompatFlags\Layers value in the Windows registry on process startup; see
+// https://crbug.com/1482568.
+const char kNoAppCompatClear[] = "no-appcompat-clear";
 
 // Whether or not the browser should warn if the profile is on a network share.
 // This flag is only relevant for Windows currently.

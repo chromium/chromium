@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="1178581264944972037">一時停止</translation>
+<translation id="2558806128245168542">戻る</translation>
 <translation id="3523426587027570423">タップすると「このページを読み上げ」を閉じます。</translation>
+<translation id="4431240646217225907">テキストのハイライト表示と自動スクロール</translation>
 <translation id="4654641641922242357">「このページを読み上げ」プレーヤー。</translation>
 <translation id="4731877163452936634">再生速度: <ph name="PLAYBACK_SPEED" />。クリックすると変更できます。</translation>
 <translation id="5234971936051226002">「このページを読み上げ」プレーヤーが最小化されました。</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
+<translation id="6315170314923504164">音声</translation>
+<translation id="6550675742724504774">オプション</translation>
 <translation id="6790428901817661496">再生</translation>
+<translation id="6831043979455480757">翻訳</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="7587250070160020374">Chrome で再生中</translation>
 <translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> 秒早送り</translation>

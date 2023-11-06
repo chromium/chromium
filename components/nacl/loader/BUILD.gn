@@ -46,14 +46,6 @@ if (current_cpu != "arm64") {
       "//services/service_manager/public/cpp",
     ]
 
-    if (is_win) {
-      sources += [ "nacl_main_platform_delegate_win.cc" ]
-    }
-
-    if (is_mac) {
-      sources += [ "nacl_main_platform_delegate_mac.mm" ]
-    }
-
     if (is_linux || is_chromeos) {
       sources += [ "nacl_main_platform_delegate_linux.cc" ]
     }
@@ -68,9 +60,6 @@ if (current_cpu != "arm64") {
 
     sources = []
 
-    if (is_win) {
-      sources += [ "//content/public/common/sandbox_init_win.h" ]
-    }
     if (is_linux || is_chromeos) {
       sources += [ "//content/public/common/zygote/sandbox_support_linux.h" ]
     }
@@ -209,27 +198,5 @@ if ((is_linux || is_chromeos) && current_cpu == "arm64") {
     sources = [ "${out_dir}/nacl_helper_bootstrap" ]
     outputs = [ "${root_out_dir}/nacl_helper_bootstrap" ]
     deps = [ label ]
-  }
-}
-
-if (is_win && target_cpu == "x86" && current_cpu == "x64") {
-  source_set("nacl_helper_win_64") {
-    sources = [
-      "nacl_helper_win_64.cc",
-      "nacl_helper_win_64.h",
-    ]
-
-    deps = [
-      ":minimal",
-      ":minimal_content_dummy",
-      "//base",
-      "//components/nacl/broker",
-      "//components/nacl/common:switches",
-      "//content/public/common:main_function_params",
-      "//content/public/common:static_switches",
-      "//mojo/core/embedder",
-      "//sandbox",
-      "//sandbox/policy",
-    ]
   }
 }

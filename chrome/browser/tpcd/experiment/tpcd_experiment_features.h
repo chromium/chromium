@@ -7,6 +7,8 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
 
 namespace tpcd::experiment {
 
@@ -14,11 +16,73 @@ extern const char kVersionName[];
 extern const char kDisable3PCookiesName[];
 extern const char kDecisionDelayTimeName[];
 extern const char kForceEligibleForTestingName[];
+extern const char kExclude3PCBlockedName[];
+extern const char kExcludeNotSeenAdsAPIsNoticeName[];
+extern const char kExcludeDasherAccountName[];
+extern const char kExcludeNewUserName[];
+extern const char kInstallTimeForNewUserName[];
+#if BUILDFLAG(IS_ANDROID)
+extern const char kExcludePwaOrTwaInstalledName[];
+#endif
 
 extern const base::FeatureParam<int> kVersion;
 extern const base::FeatureParam<bool> kDisable3PCookies;
 extern const base::FeatureParam<base::TimeDelta> kDecisionDelayTime;
 extern const base::FeatureParam<bool> kForceEligibleForTesting;
+
+// Whether to exclude users who have 3P cookies blocked.
+extern const base::FeatureParam<bool> kExclude3PCBlocked;
+
+// Whether to exclude users who have not seen the Ads APIs notice.
+extern const base::FeatureParam<bool> kExcludeNotSeenAdsAPIsNotice;
+
+// Whether to exclude Dasher accounts.
+extern const base::FeatureParam<bool> kExcludeDasherAccount;
+
+// Whether to exclude new users, i.e. their client was installed more than
+// kInstallTimeForNewUser days ago.
+extern const base::FeatureParam<bool> kExcludeNewUser;
+// How long (number of days) a user's client needs to be installed to be
+// considered a new user for exclusion.
+extern const base::FeatureParam<base::TimeDelta> kInstallTimeForNewUser;
+
+#if BUILDFLAG(IS_ANDROID)
+// Whether to exclude Android users who have a PWA or TWA installed.
+extern const base::FeatureParam<bool> kExcludePwaOrTwaInstalled;
+#endif
+
+extern const char kTpcdWritePopupCurrentInteractionHeuristicsGrantsName[];
+extern const char kTpcdWritePopupPastInteractionHeuristicsGrantsName[];
+extern const char kTpcdBackfillPopupHeuristicsGrantsName[];
+
+// Whether to create a short-term grant when observing the Popup With Current
+// Interaction scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupCurrentInteractionHeuristicsGrants;
+
+// Whether to create a short-term grant when observing the Popup With Past
+// Interaction scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWritePopupPastInteractionHeuristicsGrants;
+
+// Whether to backfill popup heuristics grants for recent popups with a current
+// interaction, when a user is onboarded to 3PCD.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdBackfillPopupHeuristicsGrants;
+
+// Whether to create a short-term grant when observing the Redirect scenario.
+extern const base::FeatureParam<base::TimeDelta>
+    kTpcdWriteRedirectHeuristicGrants;
+
+// Whether to require an A-B-A flow (where the first party preceded the
+// third-party redirect in the tab history) when applying the Redirect
+// heuristic.
+extern const base::FeatureParam<bool> kTpcdRedirectHeuristicRequireABAFlow;
+
+// Whether to require the third-party interaction to be in the current
+// navigation when applying the Redirect heuristic.
+extern const base::FeatureParam<bool>
+    kTpcdRedirectHeuristicRequireCurrentInteraction;
 
 }  // namespace tpcd::experiment
 

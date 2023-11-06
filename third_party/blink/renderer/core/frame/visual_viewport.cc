@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -676,6 +677,17 @@ EScrollbarWidth VisualViewport::CSSScrollbarWidth() const {
   return EScrollbarWidth::kAuto;
 }
 
+absl::optional<blink::Color> VisualViewport::CSSScrollbarThumbColor() const {
+  DCHECK(IsActiveViewport());
+  if (Document* main_document = LocalMainFrame().GetDocument()) {
+    return main_document->GetLayoutView()
+        ->StyleRef()
+        .ScrollbarThumbColorResolved();
+  }
+
+  return absl::nullopt;
+}
+
 int VisualViewport::ScrollbarThickness() const {
   DCHECK(IsActiveViewport());
   return ScrollbarThemeOverlayMobile::GetInstance().ScrollbarThickness(
@@ -685,7 +697,7 @@ int VisualViewport::ScrollbarThickness() const {
 void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
   DCHECK(IsActiveViewport());
   bool is_horizontal = orientation == kHorizontalScrollbar;
-  scoped_refptr<cc::ScrollbarLayerBase>& scrollbar_layer =
+  scoped_refptr<cc::SolidColorScrollbarLayer>& scrollbar_layer =
       is_horizontal ? scrollbar_layer_horizontal_ : scrollbar_layer_vertical_;
   if (!scrollbar_layer) {
     auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
@@ -710,6 +722,8 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
                       ScrollbarThickness())
           : gfx::Size(ScrollbarThickness(),
                       size_.height() - ScrollbarThickness()));
+
+  UpdateScrollbarColor(*scrollbar_layer);
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {
@@ -738,7 +752,7 @@ SmoothScrollSequencer* VisualViewport::GetSmoothScrollSequencer() const {
   return LocalMainFrame().GetSmoothScrollSequencer();
 }
 
-void VisualViewport::SetScrollOffset(
+bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
@@ -752,15 +766,16 @@ void VisualViewport::SetScrollOffset(
   // stores fractional offsets and that truncation happens elsewhere, see
   // crbug.com/626315.
   ScrollOffset new_scroll_offset = ClampScrollOffset(offset);
-  ScrollableArea::SetScrollOffset(new_scroll_offset, scroll_type,
-                                  scroll_behavior, std::move(on_finish));
+  return ScrollableArea::SetScrollOffset(new_scroll_offset, scroll_type,
+                                         scroll_behavior, std::move(on_finish));
 }
 
-void VisualViewport::SetScrollOffset(
+bool VisualViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior) {
-  SetScrollOffset(offset, scroll_type, scroll_behavior, ScrollCallback());
+  return SetScrollOffset(offset, scroll_type, scroll_behavior,
+                         ScrollCallback());
 }
 
 PhysicalRect VisualViewport::ScrollIntoView(
@@ -1195,6 +1210,20 @@ void VisualViewport::UsedColorSchemeChanged() {
   DCHECK(IsActiveViewport());
   // The scrollbar overlay color theme depends on the used color scheme.
   RecalculateScrollbarOverlayColorTheme();
+}
+
+void VisualViewport::ScrollbarColorChanged() {
+  DCHECK(IsActiveViewport());
+  if (scrollbar_layer_horizontal_) {
+    DCHECK(scrollbar_layer_vertical_);
+    UpdateScrollbarColor(*scrollbar_layer_horizontal_);
+    UpdateScrollbarColor(*scrollbar_layer_vertical_);
+  }
+}
+
+void VisualViewport::UpdateScrollbarColor(cc::SolidColorScrollbarLayer& layer) {
+  auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
+  layer.SetColor(theme.GetSolidColor(CSSScrollbarThumbColor()));
 }
 
 }  // namespace blink

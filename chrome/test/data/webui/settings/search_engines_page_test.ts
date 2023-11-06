@@ -8,7 +8,7 @@ import 'chrome://settings/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEditDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
-import {ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
+import {ExtensionControlBrowserProxyImpl, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -26,6 +26,7 @@ function createSampleOmniboxExtension(): SearchEngine {
     canBeDeactivated: false,
     default: false,
     displayName: 'Omnibox extension displayName',
+    iconPath: 'images/foo.png',
     extension: {
       icon: 'chrome://extension-icon/some-extension-icon',
       id: 'dummyextensionid',
@@ -226,7 +227,9 @@ suite('SearchEngineEntryTests', function() {
     const makeDefaultButton = entry.$.makeDefault;
     assertTrue(!!makeDefaultButton);
     makeDefaultButton.click();
-    const modelIndex = await browserProxy.whenCalled('setDefaultSearchEngine');
+    const [modelIndex, choiceMadeLocation] =
+        await browserProxy.whenCalled('setDefaultSearchEngine');
+    assertEquals(choiceMadeLocation, ChoiceMadeLocation.SEARCH_ENGINE_SETTINGS);
     assertFalse(menu.open);
     assertEquals(entry.engine.modelIndex, modelIndex);
   });

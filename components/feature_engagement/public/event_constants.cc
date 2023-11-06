@@ -37,6 +37,8 @@ const char kTabSearchOpened[] = "tab_search_opened";
 const char kWebUITabStripClosed[] = "webui_tab_strip_closed";
 const char kWebUITabStripOpened[] = "webui_tab_strip_opened";
 
+const char kDesktopNTPModuleUsed[] = "desktop_new_tab_page_modules_used";
+
 const char kDesktopPwaInstalled[] = "desktop_pwa_installed";
 
 const char kFocusHelpBubbleAcceleratorPressed[] =
@@ -108,6 +110,8 @@ const char kShareToolbarItemUsed[] = "share_toolbar_item_used";
 const char kDefaultBrowserVideoPromoConditionsMet[] =
     "default_browser_video_promo_conditions_met";
 const char kLensButtonKeyboardUsed[] = "lens_keyboard_used";
+const char kParcelTrackingTriggered[] = "parcel_tracking_triggered";
+const char kParcelTracked[] = "parcel_tracked";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

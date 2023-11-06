@@ -43,13 +43,13 @@ arc::FakeFileSystemInstance::Document MakeDocument(
     const std::string& mime_type,
     const base::Time& last_modified) {
   return arc::FakeFileSystemInstance::Document(
-      arc::kMediaDocumentsProviderAuthority,  // authority
-      document_id,                            // document_id
-      parent_document_id,                     // parent_document_id
-      display_name,                           // display_name
-      mime_type,                              // mime_type
-      0,                                      // size
-      last_modified.ToJavaTime());            // last_modified
+      arc::kMediaDocumentsProviderAuthority,          // authority
+      document_id,                                    // document_id
+      parent_document_id,                             // parent_document_id
+      display_name,                                   // display_name
+      mime_type,                                      // mime_type
+      0,                                              // size
+      last_modified.InMillisecondsSinceUnixEpoch());  // last_modified
 }
 
 }  // namespace
@@ -82,42 +82,50 @@ class RecentArcMediaSourceTest : public testing::Test {
   void TearDown() override {
     arc_service_manager_->arc_bridge_service()->file_system()->CloseInstance(
         &fake_file_system_);
+    arc_service_manager_->set_browser_context(nullptr);
   }
 
  protected:
   void AddDocumentsToFakeFileSystemInstance() {
-    auto images_root_doc = MakeDocument(arc::kImagesRootDocumentId, "", "",
-                                        arc::kAndroidDirectoryMimeType,
-                                        base::Time::FromJavaTime(1));
-    auto cat_doc = MakeDocument("cat", arc::kImagesRootDocumentId, "cat.png",
-                                "image/png", base::Time::FromJavaTime(2));
-    auto dog_doc = MakeDocument("dog", arc::kImagesRootDocumentId, "dog.jpg",
-                                "image/jpeg", base::Time::FromJavaTime(3));
-    auto fox_doc = MakeDocument("fox", arc::kImagesRootDocumentId, "fox.gif",
-                                "image/gif", base::Time::FromJavaTime(4));
+    auto images_root_doc = MakeDocument(
+        arc::kImagesRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
+        base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto cat_doc =
+        MakeDocument("cat", arc::kImagesRootDocumentId, "cat.png", "image/png",
+                     base::Time::FromMillisecondsSinceUnixEpoch(2));
+    auto dog_doc =
+        MakeDocument("dog", arc::kImagesRootDocumentId, "dog.jpg", "image/jpeg",
+                     base::Time::FromMillisecondsSinceUnixEpoch(3));
+    auto fox_doc =
+        MakeDocument("fox", arc::kImagesRootDocumentId, "fox.gif", "image/gif",
+                     base::Time::FromMillisecondsSinceUnixEpoch(4));
     auto elk_doc = MakeDocument("elk", arc::kImagesRootDocumentId, "elk.tiff",
-                                "image/tiff", base::Time::FromJavaTime(5));
-    auto audio_root_doc = MakeDocument(arc::kAudioRootDocumentId, "", "",
-                                       arc::kAndroidDirectoryMimeType,
-                                       base::Time::FromJavaTime(1));
-    auto god_doc = MakeDocument("god", arc::kAudioRootDocumentId, "god.mp3",
-                                "audio/mp3", base::Time::FromJavaTime(6));
-    auto videos_root_doc = MakeDocument(arc::kVideosRootDocumentId, "", "",
-                                        arc::kAndroidDirectoryMimeType,
-                                        base::Time::FromJavaTime(1));
-    auto hot_doc = MakeDocument("hot", arc::kVideosRootDocumentId, "hot.mp4",
-                                "video/mp4", base::Time::FromJavaTime(7));
+                                "image/tiff",
+                                base::Time::FromMillisecondsSinceUnixEpoch(5));
+    auto audio_root_doc = MakeDocument(
+        arc::kAudioRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
+        base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto god_doc =
+        MakeDocument("god", arc::kAudioRootDocumentId, "god.mp3", "audio/mp3",
+                     base::Time::FromMillisecondsSinceUnixEpoch(6));
+    auto videos_root_doc = MakeDocument(
+        arc::kVideosRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
+        base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto hot_doc =
+        MakeDocument("hot", arc::kVideosRootDocumentId, "hot.mp4", "video/mp4",
+                     base::Time::FromMillisecondsSinceUnixEpoch(7));
     auto ink_doc = MakeDocument("ink", arc::kVideosRootDocumentId, "ink.webm",
-                                "video/webm", base::Time::FromJavaTime(8));
-    auto documents_root_doc = MakeDocument(arc::kDocumentsRootDocumentId, "",
-                                           "", arc::kAndroidDirectoryMimeType,
-                                           base::Time::FromJavaTime(1));
-    auto word_doc =
-        MakeDocument("word", arc::kDocumentsRootDocumentId, "word.doc",
-                     "application/msword", base::Time::FromJavaTime(9));
-    auto text_doc =
-        MakeDocument("text", arc::kDocumentsRootDocumentId, "text.txt",
-                     "text/plain", base::Time::FromJavaTime(10));
+                                "video/webm",
+                                base::Time::FromMillisecondsSinceUnixEpoch(8));
+    auto documents_root_doc = MakeDocument(
+        arc::kDocumentsRootDocumentId, "", "", arc::kAndroidDirectoryMimeType,
+        base::Time::FromMillisecondsSinceUnixEpoch(1));
+    auto word_doc = MakeDocument("word", arc::kDocumentsRootDocumentId,
+                                 "word.doc", "application/msword",
+                                 base::Time::FromMillisecondsSinceUnixEpoch(9));
+    auto text_doc = MakeDocument(
+        "text", arc::kDocumentsRootDocumentId, "text.txt", "text/plain",
+        base::Time::FromMillisecondsSinceUnixEpoch(10));
 
     fake_file_system_.AddDocument(images_root_doc);
     fake_file_system_.AddDocument(cat_doc);
@@ -160,6 +168,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   }
 
   std::vector<RecentFile> GetRecentFiles(
+      const std::string query,
       RecentSource::FileType file_type = RecentSource::FileType::kAll) {
     std::vector<RecentFile> files;
 
@@ -167,7 +176,8 @@ class RecentArcMediaSourceTest : public testing::Test {
 
     source_->GetRecentFiles(RecentSource::Params(
         nullptr /* file_system_context */, GURL() /* origin */,
-        1 /* max_files: ignored */, base::Time() /* cutoff_time: ignored */,
+        1 /* max_files: ignored */, query,
+        base::Time() /* cutoff_time: ignored */,
         base::TimeTicks::Max() /* end_time: ignored */,
         file_type /* file_type */,
         base::BindOnce(
@@ -201,7 +211,7 @@ class RecentArcMediaSourceTest : public testing::Test {
 TEST_F(RecentArcMediaSourceTest, Normal) {
   EnableFakeFileSystemInstance();
 
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
 
   ASSERT_EQ(6u, files.size());
   EXPECT_EQ(
@@ -209,42 +219,58 @@ TEST_F(RecentArcMediaSourceTest, Normal) {
                                          arc::kImagesRootDocumentId)
           .Append("cat.png"),
       files[0].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(2), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
+            files[0].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kImagesRootDocumentId)
           .Append("dog.jpg"),
       files[1].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(3), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
+            files[1].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kVideosRootDocumentId)
           .Append("hot.mp4"),
       files[2].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(7), files[2].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
+            files[2].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kVideosRootDocumentId)
           .Append("ink.webm"),
       files[3].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(8), files[3].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
+            files[3].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kDocumentsRootDocumentId)
           .Append("text.txt"),
       files[4].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(10), files[4].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
+            files[4].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kDocumentsRootDocumentId)
           .Append("word.doc"),
       files[5].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(9), files[5].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
+            files[5].last_modified());
+
+  files = GetRecentFiles("text");
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ(
+      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                         arc::kDocumentsRootDocumentId)
+          .Append("text.txt"),
+      files[0].url().path());
 }
 
 TEST_F(RecentArcMediaSourceTest, ArcNotAvailable) {
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
+  EXPECT_EQ(0u, files.size());
 
+  files = GetRecentFiles("hot");
   EXPECT_EQ(0u, files.size());
 }
 
@@ -252,8 +278,10 @@ TEST_F(RecentArcMediaSourceTest, Deferred) {
   EnableFakeFileSystemInstance();
   EnableDefer();
 
-  std::vector<RecentFile> files = GetRecentFiles();
+  std::vector<RecentFile> files = GetRecentFiles("");
+  EXPECT_EQ(0u, files.size());
 
+  files = GetRecentFiles("word");
   EXPECT_EQ(0u, files.size());
 }
 
@@ -261,7 +289,7 @@ TEST_F(RecentArcMediaSourceTest, GetAudioFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kAudio);
+      GetRecentFiles("", RecentSource::FileType::kAudio);
   // Query for recently-modified audio files should be ignored, since
   // MediaDocumentsProvider doesn't support queryRecentDocuments for audio.
   ASSERT_EQ(0u, files.size());
@@ -271,7 +299,7 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kImage);
+      GetRecentFiles("", RecentSource::FileType::kImage);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -279,20 +307,22 @@ TEST_F(RecentArcMediaSourceTest, GetImageFiles) {
                                          arc::kImagesRootDocumentId)
           .Append("cat.png"),
       files[0].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(2), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(2),
+            files[0].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kImagesRootDocumentId)
           .Append("dog.jpg"),
       files[1].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(3), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(3),
+            files[1].last_modified());
 }
 
 TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kVideo);
+      GetRecentFiles("", RecentSource::FileType::kVideo);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -300,20 +330,22 @@ TEST_F(RecentArcMediaSourceTest, GetVideoFiles) {
                                          arc::kVideosRootDocumentId)
           .Append("hot.mp4"),
       files[0].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(7), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(7),
+            files[0].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kVideosRootDocumentId)
           .Append("ink.webm"),
       files[1].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(8), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(8),
+            files[1].last_modified());
 }
 
 TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
   EnableFakeFileSystemInstance();
 
   std::vector<RecentFile> files =
-      GetRecentFiles(RecentSource::FileType::kDocument);
+      GetRecentFiles("", RecentSource::FileType::kDocument);
 
   ASSERT_EQ(2u, files.size());
   EXPECT_EQ(
@@ -321,13 +353,28 @@ TEST_F(RecentArcMediaSourceTest, GetDocumentFiles) {
                                          arc::kDocumentsRootDocumentId)
           .Append("text.txt"),
       files[0].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(10), files[0].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(10),
+            files[0].last_modified());
   EXPECT_EQ(
       arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
                                          arc::kDocumentsRootDocumentId)
           .Append("word.doc"),
       files[1].url().path());
-  EXPECT_EQ(base::Time::FromJavaTime(9), files[1].last_modified());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
+            files[1].last_modified());
+
+  files = GetRecentFiles("word", RecentSource::FileType::kDocument);
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ(
+      arc::GetDocumentsProviderMountPath(arc::kMediaDocumentsProviderAuthority,
+                                         arc::kDocumentsRootDocumentId)
+          .Append("word.doc"),
+      files[0].url().path());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(9),
+            files[0].last_modified());
+
+  files = GetRecentFiles("no-match", RecentSource::FileType::kDocument);
+  ASSERT_EQ(0u, files.size());
 }
 
 TEST_F(RecentArcMediaSourceTest, UmaStats) {
@@ -335,7 +382,7 @@ TEST_F(RecentArcMediaSourceTest, UmaStats) {
 
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles();
+  GetRecentFiles("");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     1);
@@ -347,7 +394,7 @@ TEST_F(RecentArcMediaSourceTest, UmaStats_Deferred) {
 
   base::HistogramTester histogram_tester;
 
-  GetRecentFiles();
+  GetRecentFiles("");
 
   histogram_tester.ExpectTotalCount(RecentArcMediaSource::kLoadHistogramName,
                                     0);

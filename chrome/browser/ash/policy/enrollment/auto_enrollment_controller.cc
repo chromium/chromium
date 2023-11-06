@@ -393,6 +393,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
     // system clock sync status is already known.
     UpdateState(AutoEnrollmentState::kPending);
 
+    LOG(WARNING) << "Waiting for clock sync";
     // Use `client_start_weak_factory_` so the callback is not invoked if
     // `Timeout` has been called in the meantime (after `kSafeguardTimeout`).
     system_clock_sync_observation_ =
@@ -405,6 +406,7 @@ void AutoEnrollmentController::StartWithSystemClockSyncState() {
 
   // Start by checking if the device has already been owned.
   UpdateState(AutoEnrollmentState::kPending);
+  LOG(WARNING) << "Get ownership status to check if it's enrollment recovery";
   device_settings_service_->GetOwnershipStatusAsync(
       base::BindOnce(&AutoEnrollmentController::OnOwnershipStatusCheckDone,
                      client_start_weak_factory_.GetWeakPtr()));
@@ -463,11 +465,13 @@ void AutoEnrollmentController::OnOwnershipStatusCheckDone(
             kForcedReEnrollmentImplicitlyRequired:
           ++request_state_keys_tries_;
           // For FRE, request state keys first.
+          LOG(WARNING) << "Requesting state keys";
           state_keys_broker_->RequestStateKeys(
               base::BindOnce(&AutoEnrollmentController::StartClientForFRE,
                              client_start_weak_factory_.GetWeakPtr()));
           break;
         case AutoEnrollmentTypeChecker::CheckType::kInitialStateDetermination:
+          LOG(WARNING) << "Start client for initial state determination";
           StartClientForInitialEnrollment();
           break;
         case AutoEnrollmentTypeChecker::CheckType::

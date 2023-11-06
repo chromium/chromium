@@ -22,14 +22,6 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
   dawn_desc.type = AsDawnEnum(webgpu_desc->type());
   dawn_desc.count = webgpu_desc->count();
 
-  std::unique_ptr<WGPUPipelineStatisticName[]> pipeline_statistics;
-  if (webgpu_desc->hasPipelineStatistics()) {
-    pipeline_statistics = AsDawnEnum<WGPUPipelineStatisticName>(
-        webgpu_desc->pipelineStatistics());
-    dawn_desc.pipelineStatistics = pipeline_statistics.get();
-    dawn_desc.pipelineStatisticCount = webgpu_desc->pipelineStatistics().size();
-  }
-
   std::string label;
   if (webgpu_desc->hasLabel()) {
     label = webgpu_desc->label().Utf8();

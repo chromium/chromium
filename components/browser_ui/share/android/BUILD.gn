@@ -41,7 +41,6 @@ android_library("java") {
     ":constants_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java_resources",
     "//components/dom_distiller/core/android:dom_distiller_core_java",
@@ -49,6 +48,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",
   ]

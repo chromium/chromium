@@ -26,8 +26,8 @@ import org.chromium.components.payments.Event;
 import java.util.concurrent.TimeoutException;
 
 /**
- * A payment integration test for a merchant that requests a payer name, an email address and
- * a phone number and provides free shipping regardless of address.
+ * A payment integration test for a merchant that requests a payer name, an email address and a
+ * phone number and provides free shipping regardless of address.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -36,26 +36,28 @@ public class PaymentRequestContactDetailsAndFreeShippingTest {
     private static final String BOBPAY_TEST = "https://bobpay.test";
 
     @Rule
-    public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
-            "payment_request_contact_details_and_free_shipping_test.html");
+    public PaymentRequestTestRule mPaymentRequestTestRule =
+            new PaymentRequestTestRule(
+                    "payment_request_contact_details_and_free_shipping_test.html");
 
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address with a valid email address and a valid phone number on
         // disk.
-        helper.setProfile(AutofillProfile.builder()
-                                  .setFullName("Jon Doe")
-                                  .setCompanyName("Google")
-                                  .setStreetAddress("340 Main St")
-                                  .setRegion("CA")
-                                  .setLocality("Los Angeles")
-                                  .setPostalCode("90291")
-                                  .setCountryCode("US")
-                                  .setPhoneNumber("555-555-5555")
-                                  .setEmailAddress("jon.doe@google.com")
-                                  .setLanguageCode("en-US")
-                                  .build());
+        helper.setProfile(
+                AutofillProfile.builder()
+                        .setFullName("Jon Doe")
+                        .setCompanyName("Google")
+                        .setStreetAddress("340 Main St")
+                        .setRegion("CA")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90291")
+                        .setCountryCode("US")
+                        .setPhoneNumber("555-555-5555")
+                        .setEmailAddress("jon.doe@google.com")
+                        .setLanguageCode("en-US")
+                        .build());
 
         mPaymentRequestTestRule.addPaymentAppFactory(
                 BOBPAY_TEST, AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
@@ -76,28 +78,48 @@ public class PaymentRequestContactDetailsAndFreeShippingTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Jon Doe", "jon.doe@google.com",
-                "+15555555555", "Google", "340 Main St", "CA", "Los Angeles", "90291", "US", "en",
-                "freeShippingOption"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "Jon Doe",
+                    "jon.doe@google.com",
+                    "+15555555555",
+                    "Google",
+                    "340 Main St",
+                    "CA",
+                    "Los Angeles",
+                    "90291",
+                    "US",
+                    "en",
+                    "freeShippingOption"
+                });
     }
 
     /**
-     * Test that ending a payment request that requires an email address, a phone number, a name
-     * and a shipping address results in the appropriate metric being logged in
-     * PaymentRequest.Events.
+     * Test that ending a payment request that requires an email address, a phone number, a name and
+     * a shipping address results in the appropriate metric being logged in PaymentRequest.Events.
      */
     @Test
     @MediumTest
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
-        int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
-                | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_PAYER_PHONE
-                | Event.REQUEST_PAYER_EMAIL | Event.REQUEST_PAYER_NAME | Event.REQUEST_SHIPPING
-                | Event.REQUEST_METHOD_OTHER | Event.AVAILABLE_METHOD_OTHER | Event.SELECTED_OTHER;
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectIntRecord("PaymentRequest.Events", expectedSample)
-                                       .build();
+        int expectedSample =
+                Event.SHOWN
+                        | Event.PAY_CLICKED
+                        | Event.RECEIVED_INSTRUMENT_DETAILS
+                        | Event.COMPLETED
+                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
+                        | Event.REQUEST_PAYER_PHONE
+                        | Event.REQUEST_PAYER_EMAIL
+                        | Event.REQUEST_PAYER_NAME
+                        | Event.REQUEST_SHIPPING
+                        | Event.REQUEST_METHOD_OTHER
+                        | Event.AVAILABLE_METHOD_OTHER
+                        | Event.SELECTED_OTHER;
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("PaymentRequest.Events", expectedSample)
+                        .build();
 
         // Start and complete the Payment Request.
         mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
@@ -106,9 +128,20 @@ public class PaymentRequestContactDetailsAndFreeShippingTest {
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Jon Doe", "jon.doe@google.com",
-                "+15555555555", "Google", "340 Main St", "CA", "Los Angeles", "90291", "US", "en",
-                "freeShippingOption"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {
+                    "Jon Doe",
+                    "jon.doe@google.com",
+                    "+15555555555",
+                    "Google",
+                    "340 Main St",
+                    "CA",
+                    "Los Angeles",
+                    "90291",
+                    "US",
+                    "en",
+                    "freeShippingOption"
+                });
         histogramWatcher.pollInstrumentationThreadUntilSatisfied();
     }
 }

@@ -1680,7 +1680,8 @@ TEST_P(AppListBubbleAndTabletTest, ClearSearchButtonClearsSearch) {
 
   SearchBoxView* search_box_view = GetSearchBoxView();
   search_box_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   LeftClickOn(search_box_view->close_button());
 
   EXPECT_EQ(std::vector<std::u16string>({u""}),
@@ -4158,7 +4159,7 @@ TEST_F(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
   GetAppListTestHelper()->CheckVisibility(true);
 
   // Enable overview mode.
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   ui::Layer* layer = GetAppListView()->GetWidget()->GetNativeWindow()->layer();
@@ -4262,7 +4263,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -4282,7 +4283,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> dummy_window(CreateTestWindowInShellWithId(1));
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
 
@@ -4650,7 +4651,7 @@ TEST_F(AppListPresenterWithScaleAnimationOnTabletModeTransitionTest,
   const auto expected_opacity = layer->opacity();
   const auto expected_transform = layer->transform();
 
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  OverviewController* overview_controller = OverviewController::Get();
 
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());

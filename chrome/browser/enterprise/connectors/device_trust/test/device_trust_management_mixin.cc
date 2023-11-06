@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_signals/core/browser/pref_names.h"
@@ -150,8 +149,6 @@ void DeviceTrustManagementMixin::SetMachineInlinePolicy(
 #else
   base::flat_map<std::string, absl::optional<base::Value>> policy_values;
   policy_values.insert({policy::key::kBrowserContextAwareAccessSignalsAllowlist,
-                        policy_value.Clone()});
-  policy_values.insert({policy::key::kContextAwareAccessSignalsAllowlist,
                         std::move(policy_value)});
   management_context_mixin_->SetCloudMachinePolicies(std::move(policy_values));
 #endif
@@ -162,8 +159,6 @@ void DeviceTrustManagementMixin::SetUserInlinePolicy(base::Value policy_value) {
 
   base::flat_map<std::string, absl::optional<base::Value>> policy_values;
   policy_values.insert({policy::key::kUserContextAwareAccessSignalsAllowlist,
-                        policy_value.Clone()});
-  policy_values.insert({policy::key::kContextAwareAccessSignalsAllowlist,
                         std::move(policy_value)});
   management_context_mixin_->SetCloudUserPolicies(std::move(policy_values));
 }

@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -413,6 +414,35 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   display::ManagedDisplayInfo first_display_info_;
 };
 
+class WindowTreeHostManagerHistogramTest : public AshTestBase,
+                                           public TestHelper {
+ public:
+  WindowTreeHostManagerHistogramTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        TestHelper(this) {}
+
+  WindowTreeHostManagerHistogramTest(
+      const WindowTreeHostManagerHistogramTest&) = delete;
+  WindowTreeHostManagerHistogramTest& operator=(
+      const WindowTreeHostManagerHistogramTest&) = delete;
+
+  ~WindowTreeHostManagerHistogramTest() override = default;
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment()->FastForwardBy(delta);
+  }
+
+  void VerifyActiveEffectiveDPIEmitted(const base::HistogramTester& tester,
+                                       bool is_internal_display,
+                                       int bucket,
+                                       int count) {
+    const std::string umaName =
+        is_internal_display ? "Ash.Display.InternalDisplay.ActiveEffectiveDPI"
+                            : "Ash.Display.ExternalDisplay.ActiveEffectiveDPI";
+    tester.ExpectBucketCount(umaName, bucket, count);
+  }
+};
+
 }  // namespace
 
 class WindowTreeHostManagerTest : public AshTestBase, public TestHelper {
@@ -435,6 +465,69 @@ TEST_F(WindowTreeHostManagerStartupTest, Startup) {
   // root window.
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_FALSE(root_windows.empty());
+}
+
+TEST_F(WindowTreeHostManagerHistogramTest,
+       EmitInternalDisplayEffectiveDPIHistogram) {
+  const float kDefaultDeviceDPI = 100.f;
+  const float kZoomFactor1 = 1.2f;
+  const float kZoomFactor2 = 1.5f;
+  const int kRepeatingDelay = 30;
+  base::HistogramTester tester;
+
+  display::ManagedDisplayInfo internal_display_info =
+      display::CreateDisplayInfo(123, gfx::Rect(0, 0, 800, 600));
+  display::ManagedDisplayInfo external_display_info =
+      display::CreateDisplayInfo(456, gfx::Rect(100, 200, 1024, 768));
+  internal_display_info.set_device_dpi(kDefaultDeviceDPI);
+  external_display_info.set_device_dpi(kDefaultDeviceDPI);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  // Do not emit right after initialization.
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/0);
+
+  // Firstly emitted after half of delayed time.
+  FastForwardBy(base::Minutes(kRepeatingDelay / 2 + 1));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+
+  // Emitted repeatedly after delayed time.
+  FastForwardBy(base::Minutes(kRepeatingDelay - 2));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/1);
+  FastForwardBy(base::Minutes(2));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI, /*count=*/2);
+
+  // Changing zoom factor will emit to a different bucket.
+  internal_display_info.set_zoom_factor(kZoomFactor1);
+  external_display_info.set_zoom_factor(kZoomFactor2);
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  FastForwardBy(base::Minutes(kRepeatingDelay));
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/true,
+                                  /*bucket=*/kDefaultDeviceDPI / kZoomFactor1,
+                                  /*count=*/1);
+  VerifyActiveEffectiveDPIEmitted(tester, /*is_internal_display=*/false,
+                                  /*bucket=*/kDefaultDeviceDPI / kZoomFactor2,
+                                  /*count=*/1);
 }
 
 TEST_F(WindowTreeHostManagerTest, SecondaryDisplayLayout) {

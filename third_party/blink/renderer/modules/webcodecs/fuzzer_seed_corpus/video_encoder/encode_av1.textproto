@@ -21,7 +21,8 @@ invocations: [
       bitrate_mode: CONSTANT,
       scalability_mode: L1T2,
       alpha: DISCARD,
-      latency_mode: REALTIME
+      latency_mode: REALTIME,
+      content_hint: TEXT
     }
   },
   {

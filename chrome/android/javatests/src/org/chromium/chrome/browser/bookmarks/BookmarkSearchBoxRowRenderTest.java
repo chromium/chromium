@@ -50,16 +50,18 @@ public class BookmarkSearchBoxRowRenderTest {
 
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_BOOKMARKS)
                     .build();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private LinearLayout mContentView;
     private PropertyModel mPropertyModel;
@@ -123,8 +125,8 @@ public class BookmarkSearchBoxRowRenderTest {
     @Feature({"RenderTest"})
     public void testWithChip() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPropertyModel.set(
+                () ->
+                        mPropertyModel.set(
                                 BookmarkSearchBoxRowProperties.SHOPPING_CHIP_VISIBILITY, true));
         mRenderTestRule.render(mContentView, "withShoppingChip");
     }
@@ -133,11 +135,13 @@ public class BookmarkSearchBoxRowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testWithSearchText() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPropertyModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "foo");
-            mPropertyModel.set(
-                    BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPropertyModel.set(BookmarkSearchBoxRowProperties.SEARCH_TEXT, "foo");
+                    mPropertyModel.set(
+                            BookmarkSearchBoxRowProperties.CLEAR_SEARCH_TEXT_BUTTON_VISIBILITY,
+                            true);
+                });
         mRenderTestRule.render(mContentView, "searchText");
     }
 }

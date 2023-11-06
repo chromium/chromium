@@ -153,7 +153,7 @@ TEST_F(TabOrganizationServiceTest, SessionFromBrowserPopulatesRequest) {
     AddTabToBrowser(browser1, 0);
   }
   std::unique_ptr<TabOrganizationSession> session =
-      TabOrganizationSession::CreateSessionForBrowser(browser1);
+      TabOrganizationSession::CreateSessionForBrowser(browser1, service());
   EXPECT_EQ(session->request()->tab_datas().size(), 4u);
 
   session->StartRequest();

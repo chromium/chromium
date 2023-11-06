@@ -1,0 +1,9 @@
+Test that font-palette-values rules are reported
+Sheet: "sheet('/*# sourceURL=constructed.css */')": sourceMapURL='undefined' sourceURL='constructed.css'
+Sheet: "sheet('/*# sourceMappingURL=foobar1 */')": sourceMapURL='foobar1' sourceURL=''
+Sheet: "sheet('/*# sourceMappingURL=foobar2 */')": sourceMapURL='foobar2' sourceURL=''
+Sheet: "sheet('')": sourceMapURL='undefined' sourceURL=''
+Sheet: "sheet('/*# sourceMappingURL=foobar3 */')": sourceMapURL='foobar3' sourceURL=''
+Sheet: "sheet('/*# sourceMappingURL=foobar3 */').insertRule('* {color: green;}')": sourceMapURL='undefined' sourceURL=''
+Sheet: "sheet('* {color: green;}/*# sourceMappingURL=foobar3 */').removeRule(0)": sourceMapURL='undefined' sourceURL=''
+

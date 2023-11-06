@@ -1,0 +1,36 @@
+caption: Enable <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding support
+desc: |-
+  This feature enables the use of "zstd" in the Accept-Encoding request header,
+  and support for decompressing
+  <ph name="ZSTANDARD_SHORTNAME">zstd</ph>-compressed web content.
+
+  Setting the policy to Enabled or leaving it unset means
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will accept web contents
+  compressed with <ph name="ZSTANDARD_SHORTNAME">zstd</ph>.
+  Setting the policy to Disabled turns off the
+  <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding feature.
+
+  This policy is intended to be temporary and will be removed in the future.
+default: true
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Enable advertising <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding in the Accept-Encoding header
+  value: true
+- caption: Do not allow using the <ph name="ZSTANDARD_SHORTNAME">zstd</ph> content-encoding feature
+  value: false
+owners:
+- nidhijaju@chromium.org
+- file://net/OWNERS
+future_on:
+- fuchsia
+schema:
+  type: boolean
+supported_on:
+- android:119-
+- chrome.*:119-
+- chrome_os:119-
+tags: []
+type: main

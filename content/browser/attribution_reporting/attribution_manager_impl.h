@@ -20,6 +20,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
+#include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
@@ -27,6 +29,7 @@
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -62,7 +65,9 @@ struct StoreSourceResult;
 // UI thread class that manages the lifetime of the underlying attribution
 // storage and coordinates sending attribution reports. Owned by the storage
 // partition.
-class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
+class CONTENT_EXPORT AttributionManagerImpl
+    : public AttributionManager,
+      public PrivacySandboxAttestationsObserver {
  public:
   // Configures underlying storage to be setup in memory, rather than on
   // disk. This speeds up initialization to avoid timeouts in test environments.
@@ -150,6 +155,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   using ReportSentCallback = AttributionReportSender::ReportSentCallback;
   using SourceOrTrigger = absl::variant<StorableSource, AttributionTrigger>;
 
+  struct SourceOrTriggerRFH;
+
   struct PendingReportTimings;
 
   AttributionManagerImpl(
@@ -163,9 +170,9 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
       std::unique_ptr<AttributionOsLevelManager> os_level_manager,
       scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner);
 
-  void MaybeEnqueueEvent(SourceOrTrigger);
+  void MaybeEnqueueEvent(SourceOrTriggerRFH);
   void ProcessEvents();
-  void ProcessNextEvent(bool is_debug_cookie_set);
+  void ProcessNextEvent(bool registration_allowed, bool is_debug_cookie_set);
   void StoreSource(StorableSource source, bool is_debug_cookie_set);
   void StoreTrigger(AttributionTrigger trigger, bool is_debug_cookie_set);
 
@@ -232,7 +239,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   void OnClearDataComplete();
 
-  void ProcessNextOsEvent();
+  void ProcessOsEvents();
+  void ProcessNextOsEvent(bool registration_allowed, bool is_debug_key_allowed);
   void OnOsRegistration(bool is_debug_key_allowed,
                         const OsRegistration&,
                         bool success);
@@ -244,6 +252,14 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   void RecordReservedKeysUsage(const SourceOrTrigger& event,
                                GlobalRenderFrameHostId) const;
 
+  // PrivacySandboxAttestationsObserver:
+  void OnAttestationsLoaded() override;
+
+  // The manager may not be ready to process attribution events when
+  // attestations are not loaded yet. Returns whether the manager is ready upon
+  // `OnAttestationsLoaded()`.
+  bool IsReady() const;
+
   const raw_ref<StoragePartitionImpl> storage_partition_;
 
   // Holds pending sources and triggers in the order they were received by the
@@ -251,7 +267,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   // to ensure that behavioral requirements are met. We may be able to loosen
   // this requirement in the future so that there are conceptually separate
   // queues per <source origin, destination origin, reporting origin>.
-  base::circular_deque<SourceOrTrigger> pending_events_;
+  base::circular_deque<SourceOrTriggerRFH> pending_events_;
 
   // Controls the maximum size of `pending_events_` to avoid unbounded memory
   // growth with adversarial input.
@@ -269,7 +285,7 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 
-  ReportSchedulerTimer scheduler_timer_;
+  std::unique_ptr<ReportSchedulerTimer> scheduler_timer_;
 
   std::unique_ptr<AttributionDataHostManager> data_host_manager_;
 
@@ -296,6 +312,14 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
   const std::unique_ptr<AttributionOsLevelManager> os_level_manager_;
 
   base::circular_deque<OsRegistration> pending_os_events_;
+
+  // Guardrail to ensure `OnAttestationsLoaded()` is always called to avoid
+  // waiting indefinitely.
+  base::OneShotTimer privacy_sandbox_attestations_timer_;
+
+  // Timer to record the time elapsed since the construction. Used to measure
+  // the delay due to privacy sandbox attestations loading.
+  base::ElapsedTimer time_since_construction_;
 
   base::WeakPtrFactory<AttributionManagerImpl> weak_factory_{this};
 };

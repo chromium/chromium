@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
@@ -73,9 +74,9 @@ import * as Console from 'devtools/panels/console/console.js';
       }
       ConsoleTestRunner.addConsoleSniffer(messageAdded, false);
       if (!repeating)
-        TestRunner.evaluateInPage(String.sprintf('addMessages(%d)', count));
+        TestRunner.evaluateInPage(Platform.StringUtilities.sprintf('addMessages(%d)', count));
       else
-        TestRunner.evaluateInPage(String.sprintf('addRepeatingMessages(%d)', count));
+        TestRunner.evaluateInPage(Platform.StringUtilities.sprintf('addRepeatingMessages(%d)', count));
     });
   }
 

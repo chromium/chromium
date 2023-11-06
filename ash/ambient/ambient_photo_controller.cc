@@ -241,8 +241,8 @@ void AmbientPhotoController::ReadPhotoFromTopicQueue() {
       base::BindOnce(&AmbientPhotoController::OnAllPhotoRawDataDownloaded,
                      weak_factory_.GetWeakPtr()));
 
-  photo_cache_->DownloadPhoto(
-      topic.url,
+  AmbientPhotoCache::DownloadPhoto(
+      topic.url, *Shell::Get()->ambient_controller()->access_token_controller(),
       base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                      weak_factory_.GetWeakPtr(),
                      /*is_related_image=*/false, on_done));
@@ -253,8 +253,9 @@ void AmbientPhotoController::ReadPhotoFromTopicQueue() {
     related_photo->set_is_portrait(topic.is_portrait);
     related_photo->set_type(topic.topic_type);
 
-    photo_cache_->DownloadPhoto(
+    AmbientPhotoCache::DownloadPhoto(
         topic.related_image_url,
+        *Shell::Get()->ambient_controller()->access_token_controller(),
         base::BindOnce(&AmbientPhotoController::OnPhotoRawDataDownloaded,
                        weak_factory_.GetWeakPtr(),
                        /*is_related_image=*/true, on_done));

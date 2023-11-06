@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">Sprachsuche in Chromium.</translation>
 <translation id="1047130070405668746">Wähle Chromium aus</translation>
 <translation id="1091252999271033193">Das bedeutet, dass Chromium immer die mobile Website anfordert.</translation>
+<translation id="1115463765356382667">Mit den unten vorgeschlagenen Aktionen lässt sich Chromium optimal nutzen.</translation>
 <translation id="1171824629317156389">Öffne unter iOS die Chromium-Einstellungen, tippe auf „Standard-Browser-App“ und wähle „Chromium“ aus.</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, gib Chromium unter „Einstellungen“ die Berechtigung zum Hinzufügen von Fotos</translation>
@@ -50,6 +51,7 @@
 <translation id="2730884209570016437">Chromium kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="2784449251446768092">Chromium-Einstellungen verwalten</translation>
 <translation id="2798503587425057129">Öffnet die Chromium-Leseliste.</translation>
+<translation id="2843571538056574338">Chromium für die Funktion „Autofill“ verwenden</translation>
 <translation id="2915596697727466327">Chromium verwendet Face ID, um den autorisierten Zugriff auf deine Passwörter zu gewährleisten.</translation>
 <translation id="2918709798697875261">Deine Organisation verlangt, dass du aus Chromium abgemeldet bleibst.</translation>
 <translation id="2942241131342758843">Standardmäßig Chromium verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch ausfüllen zu lassen</translation>
@@ -93,6 +95,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="4654936625574199632">Chromium sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
 <translation id="4736424910885271643">Dein Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, deine Chromium-Daten werden von diesem Gerät gelöscht</translation>
+<translation id="4773487571745795781">Du hast die Anmeldung in Chromium deaktiviert.</translation>
 <translation id="4790638144988730920">Chromium-Daten in deinem Google-Konto weiterhin verwenden.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
@@ -139,10 +142,12 @@ Wichtige Hinweise:
 1. Öffne die Einstellungen
 2. Tippe auf „Standard-Browser-App“
 3. Wähle Chromium aus.</translation>
+<translation id="6154098560469640583">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6197255575340902638">Wenn du „<ph name="MODULE_NAME" />“ ausblendest, verfolgt Chromium zukünftige Pakete nicht mehr automatisch und löscht alle früheren Paketverfolgungsdaten.</translation>
 <translation id="6247557882553405851">Google Passwortmanager</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
 <translation id="6324041800010509197">Tab-Raster in Chromium aufrufen</translation>
+<translation id="6325378625795868881">Du kannst Chromium jederzeit nutzen, wenn du in Nachrichten und anderen Apps auf Links tippst.</translation>
 <translation id="632825460376924298">Anmeldung in Chromium zulassen</translation>
 <translation id="6337530241089703714">Möchtest du deine Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="6407399265324739055">Zahlungsmethoden und Adressen werden nicht verschlüsselt. Der Chromium-Browserverlauf wird nicht synchronisiert.
@@ -155,9 +160,11 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="6752854822223394465">Deine Organisation richtet Chromium ein…</translation>
 <translation id="6794054469102824109">Öffnet Chromium Dino.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
+<translation id="6852799557929001644">Du kannst in anderen Apps auf diesem Gerät auf deine Chromium-Passwörter und mehr zugreifen.</translation>
 <translation id="6911341667534646387">Chromium-Daten in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="7006920032187763988">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPad verwenden.</translation>
 <translation id="7018284295775193585">Chromium kann nicht aktualisiert werden</translation>
+<translation id="7025471822960602362">Erkannte Pakete in Chromium verfolgen</translation>
 <translation id="7045244423563602563">Chromium personalisieren</translation>
 <translation id="7055269218854630176">Deine Organisation, <ph name="DOMAIN" />, verwaltet dieses Konto und die Nutzung von Chromium. Dein Administrator kann einzelne Funktionen einrichten oder einschränken.</translation>
 <translation id="7099326575020694068">Chromium kann die Kamera nicht im Modus "Geteilte Ansicht" nutzen</translation>
@@ -168,6 +175,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="7208566199746267865">Mit Chromium sparst du Zeit, da du deine Konten im Web verwenden kannst. In den Einstellungen hast du die Möglichkeit, Konten hinzuzufügen oder zu entfernen.</translation>
 <translation id="725427773388857052">Chromium kann helfen, dich vor Bedrohungen wie Datenpannen und schädlichen Erweiterungen zu schützen</translation>
 <translation id="7269362888766543920">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstalliere diese Add-ons.</translation>
+<translation id="7285031092584344905">Du kannst in anderen Apps auf Chromium-Passwörter und mehr zugreifen.</translation>
 <translation id="7313655110045230863">Wenn du Chromium als deinen Standardbrowser festlegen möchtest, öffne die Einstellungen. Tippe dort auf „Standard-Browser-App“ und wähle Chromium aus.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die ausgewählten Daten wurden aus Chromium und von allen synchronisierten Geräten entfernt. Eventuell findest du unter history.google.com weitere Arten von Browserverlaufsdaten wie Suchanfragen oder Aktivitäten anderer Google-Dienste für dein Google-Konto.</translation>
@@ -182,14 +190,18 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="786327964234957808">Du stellst die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Deine bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden deine Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
 <translation id="7905064834449738336">Wenn du ein Passwort verwendest, wirst du von Chromium gewarnt, falls es online veröffentlicht wurde. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
+<translation id="7917424453593305610">Du kannst Chromium in anderen Apps verwenden.</translation>
 <translation id="7928628054454574139">Chromium immer öffnen, wenn du auf Links in anderen Apps tippst</translation>
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>
 <translation id="7934404985878918282">Chromium-Leseliste ansehen</translation>
 <translation id="7980860476903281594">Chromium teilt deinen Standort mit Websites, für die du das zulässt.</translation>
+<translation id="7995166854192397899">Die Vorschläge basieren auf deinen Browseraktivitäten auf deinen anderen Geräten. Melde dich auf allen deinen Geräten in Chromium an, um Vorschläge zu erhalten.</translation>
+<translation id="800195749539500647">Chromium optimal nutzen</translation>
 <translation id="8013573822802650211">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="8071041515667087705">Gehe zu den Chromium-Einstellungen.</translation>
 <translation id="8073677936375100957">Deine Chromium-Daten von diesem Gerät löschen?</translation>
 <translation id="8115308261377517697">Chromium als Standardbrowser festlegen</translation>
+<translation id="8197822717502700527">Jetzt kannst du Chromium auf deinem Gerät optimal nutzen.</translation>
 <translation id="8235427517854598594">Chromium als Standardbrowser festlegen?</translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="8303579360494576778">Zahlungsmethoden in Chromium verwalten</translation>
@@ -214,6 +226,7 @@ Wichtige Hinweise:
 <translation id="894437814105052438">Wenn du dich abmeldest, synchronisiert Chromium keine neuen Daten mehr mit deinem Google-Konto. Daten, die bereits synchronisiert wurden, bleiben im Konto gespeichert.</translation>
 <translation id="8963279154877372067">Chromium-Benachrichtigungen erlauben, Benachrichtigungen zu Preisnachlässen abzurufen</translation>
 <translation id="9022552996538154597">In Chromium anmelden</translation>
+<translation id="9050790730841755540">Du kannst Chromium jederzeit nutzen, wenn du in anderen Apps auf Links tippst.</translation>
 <translation id="9059693977935746710">Du musst dir dieses Passwort nicht merken. Es wird im Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="9110075932708282655">Standardmäßig Chromium verwenden</translation>

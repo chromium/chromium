@@ -13,8 +13,14 @@ package org.chromium.components.messages;
 public abstract class MessageFeatureList {
     public static final String MESSAGES_FOR_ANDROID_STACKING_ANIMATION =
             "MessagesForAndroidStackingAnimation";
+    public static final String MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK =
+            "MessagesForAndroidFullyVisibleCallback";
 
     public static boolean isStackAnimationEnabled() {
         return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_STACKING_ANIMATION);
+    }
+
+    public static boolean isFullyVisibleCallbackEnabled() {
+        return MessageFeatureMap.isEnabled(MESSAGES_FOR_ANDROID_FULLY_VISIBLE_CALLBACK);
     }
 }

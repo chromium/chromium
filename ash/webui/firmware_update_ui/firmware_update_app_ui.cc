@@ -40,6 +40,8 @@ void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
   source->AddBoolean("isJellyEnabledForFirmwareUpdate",
                      ash::features::IsJellyEnabledForFirmwareUpdate());
+  source->AddBoolean("isFirmwareUpdateUIV2Enabled",
+                     ash::features::IsFirmwareUpdateUIV2Enabled());
 }
 
 void AddFirmwareUpdateAppStrings(content::WebUIDataSource* source) {

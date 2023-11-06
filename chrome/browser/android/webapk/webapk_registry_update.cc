@@ -9,8 +9,7 @@ RegistryUpdateData::RegistryUpdateData() = default;
 RegistryUpdateData::~RegistryUpdateData() = default;
 
 bool RegistryUpdateData::isEmpty() const {
-  return apps_to_create.empty() && apps_to_update.empty() &&
-         apps_to_delete.empty();
+  return apps_to_create.empty() && apps_to_delete.empty();
 }
 
 }  // namespace webapk

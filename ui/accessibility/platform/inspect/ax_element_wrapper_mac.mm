@@ -224,7 +224,7 @@ AXOptionalNSObject AXElementWrapper::GetParameterizedAttributeValue(
     base::apple::ScopedCFTypeRef<CFTypeRef> value_ref;
     AXError result = AXUIElementCopyParameterizedAttributeValue(
         (__bridge AXUIElementRef)node_, (__bridge CFStringRef)attribute,
-        parameter_ref, value_ref.InitializeInto());
+        parameter_ref.get(), value_ref.InitializeInto());
 
     return ToOptional((__bridge id)value_ref.get(), result,
                       "GetParameterizedAttributeValue(" +

@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS <a> that is not connected should be followed
-PASS <a> that is from an inactive document should not be followed
-FAIL <area> that is not connected should not be followed assert_unreached: Reached unreachable code
-PASS <area> that is from an inactive document should not be followed
-Harness: the test ran to completion.
-

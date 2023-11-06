@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL GeolocationSensor: Feature-Policy allow='geolocation' attribute allows same-origin relocation assert_implements: GeolocationSensor is not supported. undefined
-FAIL GeolocationSensor: Feature-Policy allow='geolocation' attribute disallows cross-origin relocation assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy allow='geolocation' attribute allows same-origin relocation
+  assert_implements: GeolocationSensor is not supported. undefined
+[FAIL] GeolocationSensor: Feature-Policy allow='geolocation' attribute disallows cross-origin relocation
+  assert_implements: GeolocationSensor is not supported. undefined
 Harness: the test ran to completion.
 

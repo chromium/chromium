@@ -17,6 +17,8 @@ namespace blink {
 
 MLGraphBuilder* CreateMLGraphBuilder(
     ExecutionContext* execution_context,
+    ScriptState* script_state,
+    ExceptionState& exception_state,
     MLContextOptions* options = MLContextOptions::Create());
 
 MLOperand* BuildInput(MLGraphBuilder* builder,

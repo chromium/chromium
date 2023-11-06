@@ -28,11 +28,12 @@ import java.util.concurrent.TimeoutException;
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class DigitalGoodsUnitTest {
-    private final DigitalGoodsImpl.Delegate mDelegate = () -> {
-        GURL url = Mockito.mock(GURL.class);
-        when(url.getSpec()).thenReturn("http://www.example.com/");
-        return url;
-    };
+    private final DigitalGoodsImpl.Delegate mDelegate =
+            () -> {
+                GURL url = Mockito.mock(GURL.class);
+                when(url.getSpec()).thenReturn("http://www.example.com/");
+                return url;
+            };
     private final MockTrustedWebActivityClient mClient = new MockTrustedWebActivityClient();
 
     private DigitalGoodsImpl mDigitalGoods;
@@ -46,14 +47,16 @@ public class DigitalGoodsUnitTest {
     @Test
     public void getDetails() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        mDigitalGoods.getDetails(new String[] {"token 1", "token 2"}, (code, details) -> {
-            assertEquals(2, details.length);
+        mDigitalGoods.getDetails(
+                new String[] {"token 1", "token 2"},
+                (code, details) -> {
+                    assertEquals(2, details.length);
 
-            assertEquals("id1", details[0].itemId);
-            assertEquals("id2", details[1].itemId);
+                    assertEquals("id1", details[0].itemId);
+                    assertEquals("id2", details[1].itemId);
 
-            callbackHelper.notifyCalled();
-        });
+                    callbackHelper.notifyCalled();
+                });
         mClient.runCallback();
 
         callbackHelper.waitForCallback(0);
@@ -62,12 +65,13 @@ public class DigitalGoodsUnitTest {
     @Test
     public void listPurchases() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        mDigitalGoods.listPurchases((code, purchases) -> {
-            callbackHelper.notifyCalled();
+        mDigitalGoods.listPurchases(
+                (code, purchases) -> {
+                    callbackHelper.notifyCalled();
 
-            assertEquals("id3", purchases[0].itemId);
-            assertEquals("id4", purchases[1].itemId);
-        });
+                    assertEquals("id3", purchases[0].itemId);
+                    assertEquals("id4", purchases[1].itemId);
+                });
         mClient.runCallback();
 
         callbackHelper.waitForCallback(0);
@@ -76,12 +80,13 @@ public class DigitalGoodsUnitTest {
     @Test
     public void listPurchaseHistory() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        mDigitalGoods.listPurchaseHistory((code, purchases) -> {
-            assertEquals("id4", purchases[0].itemId);
-            assertEquals("id3", purchases[1].itemId);
+        mDigitalGoods.listPurchaseHistory(
+                (code, purchases) -> {
+                    assertEquals("id4", purchases[0].itemId);
+                    assertEquals("id3", purchases[1].itemId);
 
-            callbackHelper.notifyCalled();
-        });
+                    callbackHelper.notifyCalled();
+                });
         mClient.runCallback();
 
         callbackHelper.waitForCallback(0);
@@ -90,11 +95,13 @@ public class DigitalGoodsUnitTest {
     @Test
     public void consume() throws TimeoutException {
         CallbackHelper callbackHelper = new CallbackHelper();
-        mDigitalGoods.consume("token", (code) -> {
-            assertEquals(BillingResponseCode.OK, (int) code);
+        mDigitalGoods.consume(
+                "token",
+                (code) -> {
+                    assertEquals(BillingResponseCode.OK, (int) code);
 
-            callbackHelper.notifyCalled();
-        });
+                    callbackHelper.notifyCalled();
+                });
 
         mClient.runCallback();
 
@@ -106,11 +113,13 @@ public class DigitalGoodsUnitTest {
         mClient.setVersion(1);
 
         CallbackHelper callbackHelper = new CallbackHelper();
-        mDigitalGoods.consume("token", (code) -> {
-            assertEquals(BillingResponseCode.OK, (int) code);
+        mDigitalGoods.consume(
+                "token",
+                (code) -> {
+                    assertEquals(BillingResponseCode.OK, (int) code);
 
-            callbackHelper.notifyCalled();
-        });
+                    callbackHelper.notifyCalled();
+                });
 
         mClient.runCallback();
 

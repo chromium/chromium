@@ -25,7 +25,6 @@
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/files/file_path.h"
 #include "chromeos/crosapi/mojom/arc.mojom.h"
 #endif
 
@@ -52,7 +51,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   FetchManifestAndInstallCommand(
       webapps::WebappInstallSource install_surface,
       base::WeakPtr<content::WebContents> contents,
-      bool bypass_service_worker_check,
       WebAppInstallDialogCallback dialog_callback,
       OnceInstallCallback callback,
       bool use_fallback,
@@ -136,7 +134,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
 
   webapps::WebappInstallSource install_surface_;
   base::WeakPtr<content::WebContents> web_contents_;
-  bool bypass_service_worker_check_;
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
   // Whether using fallback installation data from the document.
@@ -153,10 +150,6 @@ class FetchManifestAndInstallCommand : public WebAppCommandTemplate<NoopLock>,
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
   blink::mojom::ManifestPtr opt_manifest_;
   base::Value::Dict debug_log_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  absl::optional<base::FilePath> app_profile_path_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   base::WeakPtrFactory<FetchManifestAndInstallCommand> weak_ptr_factory_{this};
 };

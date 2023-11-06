@@ -168,48 +168,6 @@ void OnInterMediateUriCreated(LocalPathCallback callback,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// This is a UserData::Data wrapping a notification ID that will be attached to
-// a DownloadItem as a side-channel for passing the notification ID to
-// persistence layer.
-class DownloadNotificationData : public base::SupportsUserData::Data {
- public:
-  explicit DownloadNotificationData(int notification_id);
-  ~DownloadNotificationData() override = default;
-
-  static void Attach(download::DownloadItem* download_item,
-                     int notification_id);
-
-  static DownloadNotificationData* Get(
-      const download::DownloadItem* download_item);
-
-  int notification_id() const { return notification_id_; }
-
- private:
-  static const char kKey[];
-  int notification_id_;
-};
-
-// static
-const char DownloadNotificationData::kKey[] =
-    "DownloadItemUtils DownloadNotificationData";
-
-DownloadNotificationData::DownloadNotificationData(int notification_id)
-    : notification_id_(notification_id) {}
-
-// static
-void DownloadNotificationData::Attach(download::DownloadItem* download_item,
-                                      int notification_id) {
-  auto data = std::make_unique<DownloadNotificationData>(notification_id);
-  download_item->SetUserData(&kKey, std::move(data));
-}
-
-// static
-DownloadNotificationData* DownloadNotificationData::Get(
-    const download::DownloadItem* download_item) {
-  return static_cast<DownloadNotificationData*>(
-      download_item->GetUserData(&kKey));
-}
-
 }  // namespace
 
 const uint32_t DownloadItem::kInvalidId = 0;
@@ -587,7 +545,6 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.interrupt_reason = item.GetLastReason();
   in_progress_info.paused = item.IsPaused();
   in_progress_info.metered = item.AllowMetered();
-  in_progress_info.notification_id = GetNotificationIdForDownload(&item);
   in_progress_info.bytes_wasted = item.GetBytesWasted();
   in_progress_info.auto_resume_count = item.GetAutoResumeCount();
   in_progress_info.credentials_mode = item.GetCredentialsMode();
@@ -595,11 +552,11 @@ DownloadDBEntry CreateDownloadDBEntryFromItem(const DownloadItemImpl& item) {
   in_progress_info.range_request_from = range_request_offset.first;
   in_progress_info.range_request_to = range_request_offset.second;
 
-  download_info.in_progress_info = in_progress_info;
+  download_info.in_progress_info = std::move(in_progress_info);
 
   download_info.ukm_info =
       UkmInfo(item.GetDownloadSource(), item.ukm_download_id());
-  entry.download_info = download_info;
+  entry.download_info = std::move(download_info);
   return entry;
 }
 
@@ -815,15 +772,6 @@ int GetDownloadFileBufferSize() {
   return base::GetFieldTrialParamByFeatureAsInt(
       features::kAllowFileBufferSizeControl, kDownloadFileBufferSizeFinchKey,
       kDefaultDownloadFileBufferSize);
-}
-
-int GetNotificationIdForDownload(const DownloadItem* download) {
-  DownloadNotificationData* data = DownloadNotificationData::Get(download);
-  return data ? data->notification_id() : 0;
-}
-
-void SetNotificationIdForDownload(DownloadItem* download, int notification_id) {
-  DownloadNotificationData::Attach(download, notification_id);
 }
 
 void DetermineLocalPath(DownloadItem* download,

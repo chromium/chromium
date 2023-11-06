@@ -862,10 +862,10 @@ std::string HtmlToCFHtml(base::StringPiece html,
 
 #define MAX_DIGITS 10
 #define MAKE_NUMBER_FORMAT_1(digits) MAKE_NUMBER_FORMAT_2(digits)
-#define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "u"
+#define MAKE_NUMBER_FORMAT_2(digits) "%0" #digits "zu"
 #define NUMBER_FORMAT MAKE_NUMBER_FORMAT_1(MAX_DIGITS)
 
-  static const char* kHeader =
+  static constexpr char kHeader[] =
       "Version:0.9\r\n"
       "StartHTML:" NUMBER_FORMAT
       "\r\n"

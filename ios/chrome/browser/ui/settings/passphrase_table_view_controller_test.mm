@@ -62,14 +62,14 @@ std::unique_ptr<KeyedService> CreateNiceMockSyncService(
 }  // anonymous namespace
 
 PassphraseTableViewControllerTest::PassphraseTableViewControllerTest()
-    : ChromeTableViewControllerTest(),
+    : LegacyChromeTableViewControllerTest(),
       fake_sync_service_(NULL),
       default_auth_error_(GoogleServiceAuthError::NONE) {}
 
 PassphraseTableViewControllerTest::~PassphraseTableViewControllerTest() {}
 
 void PassphraseTableViewControllerTest::SetUp() {
-  ChromeTableViewControllerTest::SetUp();
+  LegacyChromeTableViewControllerTest::SetUp();
 
   // Set up the default return values for non-trivial return types.
   DefaultValue<const GoogleServiceAuthError&>::Set(default_auth_error_);
@@ -125,7 +125,7 @@ void PassphraseTableViewControllerTest::TearDown() {
   // controllers.
   [nav_controller_ cleanUpSettings];
   nav_controller_ = nil;
-  ChromeTableViewControllerTest::TearDown();
+  LegacyChromeTableViewControllerTest::TearDown();
 }
 
 void PassphraseTableViewControllerTest::RegisterTestingFactories(

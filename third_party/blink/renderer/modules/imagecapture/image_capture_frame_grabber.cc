@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -66,8 +67,11 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
  public:
   using SkImageDeliverCB = WTF::CrossThreadOnceFunction<void(sk_sp<SkImage>)>;
 
-  explicit SingleShotFrameHandler(SkImageDeliverCB deliver_cb)
-      : deliver_cb_(std::move(deliver_cb)) {
+  explicit SingleShotFrameHandler(
+      SkImageDeliverCB deliver_cb,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      : deliver_cb_(std::move(deliver_cb)),
+        task_runner_(std::move(task_runner)) {
     DCHECK(deliver_cb_);
   }
 
@@ -79,7 +83,6 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
   // Receives a |frame| and converts its pixels into a SkImage via an internal
   // PaintSurface and SkPixmap. Alpha channel, if any, is copied.
   void OnVideoFrameOnIOThread(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<media::VideoFrame> frame,
       base::TimeTicks current_time);
 
@@ -93,18 +96,21 @@ class ImageCaptureFrameGrabber::SingleShotFrameHandler
   base::Lock lock_;
   // Null once the initial frame has been queued for delivery.
   SkImageDeliverCB deliver_cb_ GUARDED_BY(lock_);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 ImageCaptureFrameGrabber::SingleShotFrameHandler::~SingleShotFrameHandler() {
   base::AutoLock locker(lock_);
   if (deliver_cb_) {
     // Reject the promise if no frame was received.
-    std::move(deliver_cb_).Run(nullptr);
+    // Post to `task_runner_` to ensure the promise is always rejected on the
+    // main thread.
+    PostCrossThreadTask(*task_runner_, FROM_HERE,
+                        CrossThreadBindOnce(std::move(deliver_cb_), nullptr));
   }
 }
 
 void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     scoped_refptr<media::VideoFrame> frame,
     base::TimeTicks /*current_time*/) {
   base::AutoLock locker(lock_);
@@ -112,7 +118,7 @@ void ImageCaptureFrameGrabber::SingleShotFrameHandler::OnVideoFrameOnIOThread(
     return;
 
   PostCrossThreadTask(
-      *task_runner, FROM_HERE,
+      *task_runner_, FROM_HERE,
       CrossThreadBindOnce(&SingleShotFrameHandler::ConvertAndDeliverFrame,
                           base::WrapRefCounted(this), std::move(deliver_cb_),
                           std::move(frame)));
@@ -344,10 +350,11 @@ void ImageCaptureFrameGrabber::GrabFrame(
       WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &SingleShotFrameHandler::OnVideoFrameOnIOThread,
-          base::MakeRefCounted<SingleShotFrameHandler>(CrossThreadBindOnce(
-              &ImageCaptureFrameGrabber::OnSkImage, weak_factory_.GetWeakPtr(),
-              std::move(scoped_callbacks))),
-          std::move(task_runner))),
+          base::MakeRefCounted<SingleShotFrameHandler>(
+              CrossThreadBindOnce(&ImageCaptureFrameGrabber::OnSkImage,
+                                  weak_factory_.GetWeakPtr(),
+                                  std::move(scoped_callbacks)),
+              std::move(task_runner)))),
       MediaStreamVideoSink::IsSecure::kNo,
       MediaStreamVideoSink::UsesAlpha::kDefault);
 }

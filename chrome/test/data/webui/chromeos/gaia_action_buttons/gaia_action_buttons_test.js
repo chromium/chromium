@@ -8,7 +8,7 @@ import {GaiaActionButtonsElement} from 'chrome://chrome-signin/gaia_action_butto
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 window.gaia_action_buttons_test = {};
 const gaia_action_buttons_test = window.gaia_action_buttons_test;
@@ -61,7 +61,7 @@ suite(gaia_action_buttons_test.suiteName, () => {
         document.createElement('gaia-action-buttons'));
     document.body.appendChild(actionButtonsComponent);
     testAuthenticator = new TestAuthenticator();
-    actionButtonsComponent.setAuthExtHostForTest(testAuthenticator);
+    actionButtonsComponent.setAuthenticatorForTest(testAuthenticator);
     flush();
     primaryButton = /** @type {!CrButtonElement} */ (
         actionButtonsComponent.shadowRoot.querySelector('.action-button'));

@@ -199,7 +199,7 @@ CounterNode* CountersScope::FindPreviousCounterWithinStyleScope(
     wtf_size_t pos =
         FindCounterIndexPrecedingCounter(counter, scope->Counters());
     if (pos != kNotFound) {
-      return scope->Counters().at(pos);
+      return scope->Counters().at(pos).Get();
     }
     if (search_scope == SearchScope::SelfSearch) {
       return nullptr;
@@ -272,9 +272,6 @@ bool CountersScope::UpdateOwnCounters(bool force_update,
     }
     counter->SetValueBefore(value);
     counter->CalculateValueAfter(should_reset_increment, num_counters_in_scope);
-    if (auto* layout_counter = DynamicTo<LayoutCounter>(counter->Owner())) {
-      layout_counter->UpdateCounter();
-    }
     if (!counter->HasUseType()) {
       should_reset_increment = false;
     }

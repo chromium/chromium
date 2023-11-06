@@ -165,6 +165,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
     web_contents()->GetWebUI()->AddMessageHandler(
         base::WrapUnique(test_handler_.get()));
   }
+  void TearDownOnMainThread() override { test_handler_ = nullptr; }
 
  protected:
   void SendMessageAndWaitForFinish() {
@@ -188,7 +189,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  raw_ptr<TestWebUIMessageHandler, DanglingUntriaged> test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
 };
 
 }  // namespace
@@ -260,6 +261,47 @@ IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
   EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
   ASSERT_TRUE(initial_rfh);
   EXPECT_FALSE(initial_rfh->GetProcess()->IsUnused());
+}
+
+// Check that starting a WebUI navigation while an about:blank navigation in an
+// initial RenderFrameHost is pending commit does not crash.  See
+// https://crbug.com/1492076.
+IN_PROC_BROWSER_TEST_F(WebUIImplBrowserTest,
+                       StartWebUINavigationWhileAboutBlankIsPendingCommit) {
+  WebContents* web_contents = shell()->web_contents();
+  RenderFrameHostImplWrapper initial_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(initial_rfh->GetProcess()->IsUnused());
+  EXPECT_FALSE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+
+  // Start an about:blank navigation, but don't wait for commit.  Since
+  // about:blank doesn't run through the typical navigation throttles, it
+  // proceeds straight to CommitNavigation, so when LoadURL() returns,
+  // about:blank is pending commit and waiting for DidCommitNavigation.
+  shell()->LoadURL(GURL(url::kAboutBlankURL));
+
+  // Because has_committed_any_navigation() is modified in CommitNavigation(),
+  // it should have become true now. is_initial_empty_document() is modified in
+  // DidCommitNavigation, so it hasn't been updated yet.
+  EXPECT_TRUE(initial_rfh->has_committed_any_navigation());
+  EXPECT_TRUE(initial_rfh->is_initial_empty_document());
+
+  // Now, start a navigation to a WebUI URL.  This used to crash in
+  // https://crbug.com/1492076.
+  const GURL web_ui_url(GetWebUIURL(kChromeUIHistogramHost));
+  // Note: NavigateToURL() does a WaitForLoadStop() before starting a
+  // navigation, so start the navigation via LoadURL instead.
+  TestNavigationManager manager(web_contents, web_ui_url);
+  shell()->LoadURL(web_ui_url);
+
+  // After the WebUI navigation finishes, check that it didn't reuse the initial
+  // RFH, since it was already considered to have a committed/committing
+  // navigation (to about:blank) when the WebUI navigation started.
+  EXPECT_TRUE(manager.WaitForNavigationFinished());
+  RenderFrameHostImplWrapper final_rfh(web_contents->GetPrimaryMainFrame());
+  EXPECT_NE(initial_rfh.get(), final_rfh.get());
+  EXPECT_TRUE(final_rfh->has_committed_any_navigation());
+  EXPECT_FALSE(final_rfh->is_initial_empty_document());
 }
 
 // Check that navigating to a WebUI page from a crashed about:blank page will

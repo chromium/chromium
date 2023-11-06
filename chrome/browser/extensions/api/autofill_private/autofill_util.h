@@ -46,6 +46,12 @@ IbanEntryList GenerateIbanList(
 absl::optional<api::autofill_private::AccountInfo> GetAccountInfo(
     const autofill::PersonalDataManager& personal_data);
 
+// Returns a `CreditCardEntry` object which is UI compatible.
+api::autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
+    const autofill::CreditCard& credit_card,
+    const autofill::PersonalDataManager& personal_data,
+    bool mask_local_cards);
+
 }  // namespace autofill_util
 
 }  // namespace extensions

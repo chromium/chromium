@@ -204,6 +204,7 @@ void WebAXObject::Serialize(ui::AXNodeData* node_data,
   }
 #endif
 
+  ScopedFreezeAXCache freeze(private_->AXObjectCache());
   private_->Serialize(node_data, accessibility_mode);
 }
 
@@ -966,12 +967,13 @@ bool WebAXObject::ScrollToMakeVisibleWithSubFocus(
       blink_vertical_scroll_alignment);
 }
 
-void WebAXObject::HandleAutofillStateChanged(
-    const blink::WebAXAutofillState state) const {
+void WebAXObject::HandleAutofillSuggestionAvailabilityChanged(
+    blink::WebAXAutofillSuggestionAvailability suggestion_availability) const {
   if (IsDetached() || !private_->IsAXLayoutObject())
     return;
 
-  private_->HandleAutofillStateChanged(state);
+  private_->HandleAutofillSuggestionAvailabilityChanged(
+      suggestion_availability);
 }
 
 bool WebAXObject::CanCallAOMEventListenersForTesting() const {

@@ -297,7 +297,8 @@ using IsViaIPC = base::StrongAlias<class IsViaIPCTag, bool>;
 
 class BASE_EXPORT PlatformThreadLinux : public PlatformThreadBase {
  public:
-  static constexpr struct sched_param kRealTimePrio = {8};
+  static constexpr struct sched_param kRealTimeAudioPrio = {8};
+  static constexpr struct sched_param kRealTimeDisplayPrio = {6};
 
   // Sets a delegate which handles thread type changes for this process. This
   // must be externally synchronized with any call to SetCurrentThreadType.
@@ -346,6 +347,9 @@ class BASE_EXPORT PlatformThreadChromeOS : public PlatformThreadLinux {
 
   // Returns true if the feature for backgrounding of threads is enabled.
   static bool IsThreadsBgFeatureEnabled();
+
+  // Returns true if the feature for setting display threads to RT is enabled.
+  static bool IsDisplayThreadsRtFeatureEnabled();
 
   // Set a specific thread as backgrounded. This is called when the process
   // moves to and from the background and changes have to be made to each of its

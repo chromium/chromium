@@ -29,9 +29,8 @@ static inline bool IsOutOfSync(const base::TimeDelta& timestamp_1,
                                const base::TimeDelta& timestamp_2) {
   // Out of sync of 100ms would be pretty noticeable and we should keep any
   // drift below that.
-  const int64_t kOutOfSyncThresholdInMilliseconds = 100;
-  return std::abs(timestamp_1.InMilliseconds() - timestamp_2.InMilliseconds()) >
-         kOutOfSyncThresholdInMilliseconds;
+  const base::TimeDelta kOutOfSyncThreshold = base::Milliseconds(100);
+  return (timestamp_1 - timestamp_2).magnitude() > kOutOfSyncThreshold;
 }
 
 DecryptingAudioDecoder::DecryptingAudioDecoder(

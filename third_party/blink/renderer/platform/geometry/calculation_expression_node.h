@@ -124,6 +124,8 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
   float Pixels() const { return value_.pixels; }
   float Percent() const { return value_.percent; }
   PixelsAndPercent GetPixelsAndPercent() const { return value_; }
+  bool HasExplicitPixels() const { return value_.has_explicit_pixels; }
+  bool HasExplicitPercent() const { return value_.has_explicit_percent; }
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const Length::AnchorEvaluator*) const final;

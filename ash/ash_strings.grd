@@ -310,10 +310,6 @@ Style notes:
         <ph name="hotspot">$1<ex>Hotspot on, no devices connected</ex></ph>,
         <ph name="network">$2<ex>Connected to Google-A, Median signal</ex></ph>
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_PRIVACY_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description of privacy in the status tray and the information on it.">
-        <ph name="mic">$1<ex>A virtual machine is using your microphone</ex></ph>,
-        <ph name="camera">$2<ex>A virtual machine is using your camera</ex></ph>
-      </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_ACCESSIBLE_DESCRIPTION" desc="The accessible description of the quick settings bubble and the information in it.">
         Quick Settings, Press search + left to access the notification center.
       </message>
@@ -804,13 +800,13 @@ Style notes:
         Focusing
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL" translateable="false" desc="The text used for the sublabel of the toggle row in the focus mode detailed view.">
-        <ph name="TIME_REMAINING_EXPRESSION">$1<ex>30 min</ex></ph> ⋅ Until <ph name="END_TIME_EXPRESSION">$2<ex>1:00 PM</ex></ph>
+        Until <ph name="END_TIME_EXPRESSION">$1<ex>1:00 PM</ex></ph>
       </message>
       <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_START_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is not active.">
         Start
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode toggle row in the focus mode detailed view when focus mode is active.">
-        End
+      <message name="IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON" translateable="false" desc="The text used for the label of the toggle button in the focus mode detailed view and countdown view for when focus mode is active.">
+        End Focus
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_UPDATE" desc="The label used in the tray popup to notify that the user should restart to get system updates.">
@@ -1000,12 +996,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_AREA_TOAST_KBL_ON" desc="The text in the toast that shows up when the keyboard backlight is toggled on using a physical key or shortcut.">
         Keyboard backlight is on
-      </message>
-      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_OFF" desc="The text in the toast that shows up when the mic is muted using a physical key or shortcut.">
-        Device microphone access is off
-      </message>
-      <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_ON" desc="The text in the toast that shows up when the mic is unmuted using a physical key or shortcut.">
-        Device microphone access is on
       </message>
       <message name="IDS_ASH_STATUS_TRAY_VOLUME" desc="The accessible text for the toggle volume muted button in the tray.">
         Toggle Volume. <ph name="STATE_TEXT">$1<ex>Volume is muted</ex></ph>
@@ -1368,7 +1358,7 @@ Style notes:
         Go to a text field to use Dictation
       </message>
       <message name="IDS_ASH_ACCESSIBILITY_NUDGE_DICTATION_MIC_MUTED" desc="Displayed in a nudge when Dictation cannot start because the active microphone is muted.">
-        Can't start dictation because the microphone is muted
+        Can't start dictation. Your mic is off.
       </message>
 
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_VIRTUAL_KEYBOARD" desc="The label used in the accessibility menu of the system tray to toggle on/off the onscreen keyboard.">
@@ -1376,9 +1366,6 @@ Style notes:
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SWITCH_ACCESS" desc="The label used in the accessibility menu of the system tray to toggle Switch Access, a feature that allows the entire device to be controlled with as few as 1 switch or button.">
         Switch Access
-      </message>
-      <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_ADDITIONAL_SETTINGS" desc="The sub-header label for additional setting in accessibility menu of system tray.">
-        Additional settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MONO_AUDIO" desc="The label used in the additional settings of accessibility menu of the system tray to toggle on/off mono audio.">
         Mono audio
@@ -1697,11 +1684,11 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_CONFIRMATION_BUTTON" desc="The button text for the nudge that is shown after a user has opted in or out of the speak-on-mute detection feature.">
         Settings
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_FIRST_BUTTON" desc="The cancel button text for the nudge shown so users can opt-in or out of the speak-on-mute detection feature.">
-        No thanks
-      </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_SECOND_BUTTON" desc="The confirmation button text for the nudge shown so users can opt-in or out of the speak-on-mute detection feature.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_PRIMARY_BUTTON" desc="The confirmation button text for the nudge shown so users can opt-in or out of the speak-on-mute detection feature.">
         Turn on
+      </message>
+      <message name="IDS_ASH_VIDEO_CONFERENCE_NUDGE_SPEAK_ON_MUTE_OPT_IN_SECONDARY_BUTTON" desc="The cancel button text for the nudge shown so users can opt-in or out of the speak-on-mute detection feature.">
+        No thanks
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME" desc="Text display for the camera.">
         camera
@@ -2816,9 +2803,6 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_QUICK_SETTINGS_ADD_ESIM" desc="The label used in the network detailed page for the Add eSIM network entry">
         Add eSIM
       </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_NETWORK_DISABLED" desc="Network disabled label in the quick settings bubble network subpage." meaning="Network is disabled.">
-        Off
-      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN" desc="Accessibility label used for a network in quick settings network list that opens network settings page.">
         Open settings for <ph name="NETWORK_NAME">$1<ex>Ethernet</ex></ph>
       </message>
@@ -2973,16 +2957,16 @@ Some features are limited to increase battery life.
         Show hotspot details. Hotspot is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_OFF" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and is allowed to turn on.">
-        Toggle Hotspot. Hotspot is off.
+        Toggle hotspot. Hotspot is off.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_NO_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and no device connected.">
-        Toggle Hotspot. Hotspot is on, no device connected.
+        Toggle hotspot. Hotspot is on, no device connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_ONE_DEVICE_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and one device connected.">
-        Toggle Hotspot. Hotspot is on, 1 device connected.
+        Toggle hotspot. Hotspot is on, 1 device connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_STATUS_ON_MULTIPLE_DEVICES_CONNECTED" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is on and multiple devices connected.">
-        Toggle Hotspot. Hotspot is on, <ph name="DEVICECOUNT">$1</ph> devices connected.
+        Toggle hotspot. Hotspot is on, <ph name="DEVICECOUNT">$1</ph> devices connected.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_HOTSPOT_FEATURE_TILE_TOOLTIP_NO_MOBILE_DATA" desc="The tooltip for the hotspot feature tile of quick settings when hotspot is off and not allowed to turn on due to no mobile data connection.">
         Show hotspot details. Connect to mobile network to use hotspot.
@@ -3003,7 +2987,7 @@ Some features are limited to increase battery life.
         This setting is managed by your administrator
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_ON_NO_CONNECTED_DEVICES" desc="The subtext in the hotspot detailed view when hotspot is on and no devices connected to it.">
-        On, no devices connected
+        No devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_DETAILED_VIEW_TITLE" desc="The label in the hotspot detailed view for the Chromebook Hotspot.">
         <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot
@@ -3027,7 +3011,7 @@ Some features are limited to increase battery life.
         <ph name="DEVICE_NAME">$1<ex>Chromebook</ex></ph> hotspot is on, no devices connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_TITLE" desc="Title used for the system notification shown when the hotspot is turned on.">
-        Hotspot is on
+        With hotspot on, Wi-Fi is off
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
         <ph name="DEVICECOUNT">$1</ph> devices connected
@@ -3036,16 +3020,16 @@ Some features are limited to increase battery life.
         1 device connected
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_NO_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and no devices are connected.">
-        No devices connected. WiFi will be turned off to start using Hotspot.
+        No devices connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_MULTIPLE_CONNECTED_DEVICES_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and multiple devices are connected.">
-        <ph name="DEVICECOUNT">$1</ph> devices connected. WiFi will be turned off to start using Hotspot.
+        <ph name="DEVICECOUNT">$1</ph> devices connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ON_MESSAGE_ONE_CONNECTED_DEVICE_NOTIFICATION" desc="Message displayed in the notification when hotspot is turned on and one device is connected.">
-        1 device connected. WiFi will be turned off to start using Hotspot.
+        1 device connected. While using hotspot, Wi-Fi will stay off.
       </message>
       <message name="IDS_ASH_TURN_OFF_HOTSPOT_LABEL" desc="The label for button used to turn off hotspot.">
-        Turn off
+        Turn off hotspot
       </message>
       <message name="IDS_ASH_HOTSPOT_OFF_TITLE" desc="Title used for the system notification shown when the hotspot is turned off.">
         Hotspot is off
@@ -3057,10 +3041,10 @@ Some features are limited to increase battery life.
         Turn on WiFi instead
       </message>
       <message name="IDS_ASH_HOTSPOT_WIFI_TURNED_ON_MESSAGE" desc="Message displayed in the system notification shown when hotspot is disabled due to WiFi being turned on.">
-        Hotspot has been turned off to use WiFi. To use Hotspot, turn WiFi off.
+        Hotspot has been turned off to use WiFi. To use hotspot, turn WiFi off.
       </message>
       <message name="IDS_ASH_HOTSPOT_ADMIN_RESTRICTED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off by the administrator.">
-        Your administrator has turned Hotspot off.
+        Your administrator has turned hotspot off.
       </message>
       <message name="IDS_ASH_HOTSPOT_AUTO_DISABLED_MESSAGE" desc="Message displayed in the system notification shown when the hotspot is turned off due to inactivity.">
         Due to inactivity, hotspot has been turned off.
@@ -3326,7 +3310,7 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_AUDIO" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio settings
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_AUDIO_QS_REVAMP" desc="The label used in audio detailed page bottom header of ash tray pop up.">
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_TITLE" desc="The label used in audio detailed page bottom header of ash tray pop up.">
         Audio
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_OUTPUT" desc="The label used in audio detailed page for audio output section of ash tray pop up.">
@@ -3622,8 +3606,8 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_WIFI" desc="The label used in the tray popup to separate Wi-Fi networks.">
         Wi-Fi
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER" desc="The label used in the tray popup to separate Instant Tethering networks.">
-        Instant Tethering
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_TETHER_HOSTS" desc="The label used in the tray popup to separate your tether devices.">
+        Your devices
       </message>
       <message name="IDS_ASH_STATUS_TRAY_ADD_CONNECTION" desc="Title for control to add a new network connection." >
         Add connection
@@ -4187,8 +4171,8 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FAST_FORWARD_MEDIA" desc="Label for accelerator action - Fast forward media.">
         Fast forward media
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Label for accelerator action - Open Quick Settings by selecting the time.">
-        Open Quick Settings by selecting the time
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Label for accelerator action - Open Quick Settings.">
+        Open Quick Settings
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Label for accelerator action - Open notifications.">
         Open notifications
@@ -4807,6 +4791,12 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_LOGIN_PIN_REQUEST_NEXT_NUMBER_PROMPT" desc="Accessible prompt read when next access code input field has been focused. Asks user to enter next piece of the access code.">
         Next number
       </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_TITLE" desc="Title of the local authentication input dialog that allows the user to login during the reauthenticate session.">
+        Finish verifying your identity
+      </message>
+      <message name="IDS_ASH_LOGIN_LOCAL_AUTHENTICATION_REQUEST_DESCRIPTION" desc="Description shown on the local authentication input dialog. Explains local authentication credentials should be used to unlock the device.">
+        Enter device password for <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph>
+      </message>
       <message name="IDS_ASH_LOGIN_SECURITY_TOKEN_REQUEST_DIALOG_TITLE" desc="Title of the PIN dialog to unlock the device with a smart card.">
         Smart card PIN
       </message>
@@ -4855,16 +4845,22 @@ Some features are limited to increase battery life.
         Settings
       </message>
       <message name="IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_TITLE" desc="Notification title shown to direct users to download companion app on Fast Pair device">
-        Install the app for <ph name="NAME">$1<ex>JBLTools</ex></ph> from Google Play to see all available features
+        <ph name="NAME">$1<ex>Pixel Buds</ex></ph> connected
+      </message>
+      <message name="IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_MESSAGE" desc="Notification message shown to direct users to download companion app on Fast Pair device">
+        Customize this device in app
       </message>
       <message name="IDS_FAST_PAIR_DOWNLOAD_APP_BUTTON" desc="Button title shown to direct users to app store to download companion app on Fast Pair device">
-        Install
+        Install app
       </message>
       <message name="IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_TITLE" desc="Notification title shown to direct users to setup their Fast Pair device with the companion app">
-        Open <ph name="NAME">$1<ex>JBLTools</ex></ph> to set up and customize your device
+        <ph name="NAME">$1<ex>Pixel Buds</ex></ph> connected
+      </message>
+      <message name="IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_MESSAGE" desc="Notification message shown to direct users to setup their Fast Pair device with the companion app">
+        Customize this device in app
       </message>
       <message name="IDS_FAST_PAIR_SETUP_APP_BUTTON" desc="Button title shown to direct users to setup their Fast Pair device with the companion app">
-        Open
+        Open app
       </message>
       <message name="IDS_FAST_PAIR_CONNECT_BUTTON" desc="Message on button to tell users to connect bluetooth device with Fast Pair.">
         Connect
@@ -5107,6 +5103,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_MESSAGE_CENTER_ACCELERATOR_NO_NOTIFICATIONS" desc="The toast message displayed when Alt+Shift+N is pressed but there are no notifications.">
         No notifications
       </message>
+      <message name="IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT" desc="Accessibility announcement informing the user of an incoming silent notification.">
+        New notification, <ph name="NOTIFICATION_COUNT">$1<ex>7</ex></ph> total
+      </message>
 
       <!-- Notification -->
       <message name="IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP" desc="The tooltip for the expand button, indicating action to expand the notification.">
@@ -5114,9 +5113,6 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP" desc="The tooltip for the expand button, indicating action to collapse the notification.">
         Collapse <ph name="NOTIFICATION_TITLE">$1<ex>Restore</ex></ph> notification
-      </message>
-      <message name="IDS_ASH_NOTIFICATION_EXPAND_DISABLED_TOOLTIP" desc="The tooltip for the expand button when it is disabled, indicating that user cannot expand the notification in this situation.">
-        You can't expand the notification while a panel is open. Close the panel below first.
       </message>
       <message name="IDS_ASH_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The placeholder string for the textfield of an in-line reply notification.">
         Reply
@@ -5147,6 +5143,11 @@ Some features are limited to increase battery life.
       </message>
       <message name="IDS_ASH_NOTIFICATION_SNOOZE_SETTINGS_UNDO_SNOOZE_TEXT" desc="The text for undo snooze notification in snooze settings.">
         Undo
+      </message>
+
+      <!-- Nudges -->
+      <message name="IDS_ASH_SYSTEM_NUDGE_CLOSE_BUTTON_TOOLTIP" desc="The close button tooltip for system nudges.">
+        Close nudge
       </message>
 
       <message name="IDS_ASH_DIALOG_DONT_SHOW_AGAIN" desc="Label for checkbox dismissing show of a dialog.">
@@ -5263,19 +5264,12 @@ Some features are limited to increase battery life.
         Event <ph name="event_position">$1<ex>1</ex></ph> of <ph name="event_total_count">$2<ex>2</ex></ph>
       </message>
 
-      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION_JELLY" desc="The accessible label of a calendar event list item jelly entry.">
+      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event list item entry.">
         <ph name="event_position">$1<ex>Event 1 of 2</ex></ph>
         <ph name="event_summary">$2<ex>Lunch break</ex></ph>,
         <ph name="start_time">$3<ex>12 PM</ex></ph> to
         <ph name="end_time">$4<ex>1 PM</ex></ph>,
         <ph name="time_zone">$5<ex>Pacific time</ex></ph>. Select for more details in Google Calendar.
-      </message>
-
-      <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
-        <ph name="start_time">$1<ex>12 PM</ex></ph> to
-        <ph name="end_time">$2<ex>1 PM</ex></ph>,
-        <ph name="time_zone">$3<ex>Pacific time</ex></ph>,
-        <ph name="event_summary">$4<ex>Lunch break</ex></ph>. Select for more details in Google Calendar.
       </message>
 
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP" desc="The tool tip label of a calendar event entry.">
@@ -5557,17 +5551,6 @@ Here are some things you can try to get started.
       <!-- For ScreenCaptureTrayItemView -->
       <message name="IDS_ASH_ADMIN_SCREEN_CAPTURE" desc="Tooltip message shown at the systray screen capture indicator when an administrator is capturing the screens.">
         Your system administrator is monitoring your screens
-      </message>
-
-      <!-- For CameraMicTrayItemView -->
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA" desc="Tooltip message shown at the systray camera indicator when a VM is using the camera">
-        An application is using your camera
-      </message>
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_CAMERA_AND_MIC" desc="Tooltip message shown at the systray camera indicator when a VM is using both the camera and mic">
-        An application is using your camera and microphone
-      </message>
-      <message name="IDS_ASH_CAMERA_MIC_VM_USING_MIC" desc="Tooltip message shown at the systray microphone indicator when a VM is using the microphone">
-        An application is using your microphone
       </message>
 
       <!-- For privacy indicators notification -->
@@ -7073,6 +7056,9 @@ New install
       <message name="IDS_GLANCEABLES_CLASSROOM_FETCH_ERROR" desc="A glanceables classroom bubble displays a notification with an error message when an error occurs while fetching data. This is the text that describes the error to the user and appears on the notification.">
         Can't show items. Try reopening this panel.
       </message>
+      <message name="IDS_GLANCEABLES_OVERVIEW_REMOVE_CHIP" desc="The text shown on the removing glanceable chip panel in Overview">
+        Remove this suggestion
+      </message>
 
       <!-- Do Not Disturb notification -->
       <message name="IDS_ASH_DO_NOT_DISTURB_NOTIFICATION_TITLE" desc="Label used for the notification that shows up when the 'Do Not Disturb' feature is enabled.">
@@ -7225,9 +7211,19 @@ To shut down the device, press and hold the power button on the device again.
         Keys, buttons, and more
       </message>
 
+      <!-- TODO(b/286930911): Translate strings for input device settings notifications. -->
       <!-- Input device settings notifications -->
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_ALT_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click from alt + click
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_PERIPHERAL_CUSTOMIZATION_TITLE" translateable="false" desc="Notification title to tell users that the peripheral is customizable.">
+        Customize your <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph>
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_MOUSE_CUSTOMIZATION" translateable="false" desc="The message shown to notify a user that the mouse is customizable in settings.">
+        <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your mouse in Settings.
+      </message>
+      <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_GRAPHICS_TABLET_CUSTOMIZATION" translateable="false" desc="The message shown to notify a user that the graphics tablet is customizable in settings.">
+        <ph name="PERIPHERAL_NAME">$1<ex>MX Anywhere</ex></ph> is connected and ready to use. You can customize your graphics tablet in Settings.
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_NOTIFICATIONS_LAUNCHER_RIGHT_CLICK" desc="The message shown to notify a user that the shortcut used to simulate a right-click using touchpad and keyboard has changed.">
         The right-click shortcut is updated to alt + click from <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> key + click
@@ -7310,6 +7306,24 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_DEVICE_SETTINGS_LEARN_MORE_BUTTON" desc="Button shown for device settings notifications which opens an article with helpful information related to the notification.">
         Learn more
+      </message>
+        <message name="IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME" desc="The name of the middle mouse button on a mouse">
+    Middle Button
+  </message>
+  <message name="IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME" desc="The default name to give additional buttons on a mouse or graphics tablet">
+    Other Button <ph name="BUTTON_NUMBER">$1<ex>1</ex></ph>
+  </message>
+
+
+      <!-- Compat Mode Resize States-->
+      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
+        Phone
+      </message>
+      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size.">
+        Tablet
+      </message>
+      <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
+        Resizable
       </message>
      </messages>
     </release>

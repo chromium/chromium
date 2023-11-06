@@ -55,6 +55,6 @@ source_set("unit_tests") {
   data = [
     # enums.xml is analyzed by LanguagePackMetricsTest, so this dependency
     # is needed to make commit bots run unit_tests on enums.xml changes.
-    "//tools/metrics/histograms/enums.xml",
+    "//tools/metrics/histograms/metadata/chromeos/enums.xml",
   ]
 }

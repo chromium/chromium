@@ -6,9 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_SHARING_SHARING_STATUS_COORDINATOR_H_
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
 
 @class RecipientInfoForIOSDisplay;
 @protocol SharingStatusCoordinatorDelegate;
+
+class GURL;
 
 // This coordinator presents a view with a sharing status animation. Main part
 // of the animation is a progress bar loading between images of the sender and
@@ -18,10 +21,18 @@
 // success status is displayed. Otherwise, cancelled status is displayed.
 @interface SharingStatusCoordinator : ChromeCoordinator
 
+// `recipients` contains information about users selected to receive passwords.
+// `website` is a display origin of the site for which the password is shared.
+// `URL` is a url of the website for which the password is being shared.
+// `changePasswordURL` is a url which allows to change the password that is
+// being shared (might be null for Android app passwords).
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
                     recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
+                       website:(NSString*)website
+                           URL:(const GURL&)URL
+             changePasswordURL:(const absl::optional<GURL>&)changePasswordURL
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

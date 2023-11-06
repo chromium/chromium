@@ -69,7 +69,8 @@ enum class DebugDataType {
   kOsSourceDelegated = 24,
   kOsTriggerDelegated = 25,
   kTriggerEventReportWindowNotStarted = 26,
-  kMaxValue = kTriggerEventReportWindowNotStarted,
+  kTriggerEventNoMatchingTriggerData = 27,
+  kMaxValue = kTriggerEventNoMatchingTriggerData,
 };
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
@@ -161,6 +162,10 @@ absl::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kReportWindowPassed:
       return DataTypeIfCookieSet(DebugDataType::kTriggerEventReportWindowPassed,
                                  is_debug_cookie_set);
+    case EventLevelResult::kNoMatchingTriggerData:
+      return DataTypeIfCookieSet(
+          DebugDataType::kTriggerEventNoMatchingTriggerData,
+          is_debug_cookie_set);
   }
 }
 
@@ -249,6 +254,8 @@ std::string SerializeReportDataType(DebugDataType data_type) {
       return "trigger-event-report-window-not-started";
     case DebugDataType::kTriggerEventReportWindowPassed:
       return "trigger-event-report-window-passed";
+    case DebugDataType::kTriggerEventNoMatchingTriggerData:
+      return "trigger-event-no-matching-trigger-data";
     case DebugDataType::kTriggerAggregateDeduplicated:
       return "trigger-aggregate-deduplicated";
     case DebugDataType::kTriggerAggregateNoContributions:
@@ -328,6 +335,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventStorageLimit:
     case DebugDataType::kTriggerEventReportWindowNotStarted:
     case DebugDataType::kTriggerEventReportWindowPassed:
+    case DebugDataType::kTriggerEventNoMatchingTriggerData:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
     case DebugDataType::kTriggerAggregateInsufficientBudget:
@@ -371,6 +379,7 @@ base::Value::Dict GetReportDataBody(DebugDataType data_type,
     case DebugDataType::kTriggerEventNoise:
     case DebugDataType::kTriggerEventReportWindowNotStarted:
     case DebugDataType::kTriggerEventReportWindowPassed:
+    case DebugDataType::kTriggerEventNoMatchingTriggerData:
     case DebugDataType::kTriggerAggregateDeduplicated:
     case DebugDataType::kTriggerAggregateNoContributions:
     case DebugDataType::kTriggerAggregateReportWindowPassed:
@@ -428,9 +437,9 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 void RecordVerboseDebugReportType(DebugDataType type) {
   static_assert(
       DebugDataType::kMaxValue ==
-          DebugDataType::kTriggerEventReportWindowNotStarted,
-      "Bump version of Conversions.SentVerboseDebugReportType3 histogram.");
-  base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType3",
+          DebugDataType::kTriggerEventNoMatchingTriggerData,
+      "Bump version of Conversions.SentVerboseDebugReportType4 histogram.");
+  base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
                                 type);
 }
 
@@ -479,6 +488,10 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   if (!trigger.registration().debug_reporting ||
       trigger.is_within_fenced_frame()) {
     return absl::nullopt;
+  }
+
+  if (is_debug_cookie_set && result.source()) {
+    is_debug_cookie_set = result.source()->debug_cookie_set();
   }
 
   base::Value::List report_body;

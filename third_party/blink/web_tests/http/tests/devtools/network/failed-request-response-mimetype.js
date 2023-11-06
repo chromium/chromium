@@ -7,12 +7,13 @@ import {ApplicationTestRunner} from 'application_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Network from 'devtools/panels/network/network.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
   await TestRunner.showPanel('network');
 
-  SDK.multitargetNetworkManager.setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
   TestRunner.networkManager.addEventListener(
     SDK.NetworkManager.Events.RequestFinished, (event) => {
       const request = event.data;
@@ -34,7 +35,7 @@ import * as Network from 'devtools/panels/network/network.js';
     }
   );
 
-  SDK.multitargetNetworkManager.setBlockedPatterns([
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([
     {url: '*', enabled: true}
   ]);
 

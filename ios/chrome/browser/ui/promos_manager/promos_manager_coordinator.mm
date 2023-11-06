@@ -573,12 +573,10 @@
   }
 
   // DefaultBrowser Promo handler
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =
-        [[DefaultBrowserPromoDisplayHandler alloc] init];
-    _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
-        [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
-  }
+  _displayHandlerPromos[promos_manager::Promo::DefaultBrowser] =
+      [[DefaultBrowserPromoDisplayHandler alloc] init];
+  _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
+      [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
 
   // Choice Promo handler
   if (ios::provider::IsChoiceEnabled()) {

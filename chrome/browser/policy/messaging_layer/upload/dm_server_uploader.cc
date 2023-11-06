@@ -13,6 +13,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -54,20 +55,21 @@ DmServerUploader::~DmServerUploader() = default;
 void DmServerUploader::OnStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (handler_ == nullptr) {
-    Finalize(Status(error::INVALID_ARGUMENT, "handler was null"));
+    Finalize(
+        base::unexpected(Status(error::INVALID_ARGUMENT, "handler was null")));
     return;
   }
   // Early exit if we don't have any records and do not need encryption key.
   if (encrypted_records_.empty() && !need_encryption_key_) {
-    Finalize(
-        Status(error::INVALID_ARGUMENT, "No records received for upload."));
+    Finalize(base::unexpected(
+        Status(error::INVALID_ARGUMENT, "No records received for upload.")));
     return;
   }
 
   if (!encrypted_records_.empty()) {
     const auto process_status = ProcessRecords();
     if (!process_status.ok()) {
-      Finalize(process_status);
+      Finalize(base::unexpected(process_status));
       return;
     }
   }
@@ -119,10 +121,10 @@ void DmServerUploader::HandleRecords() {
 
 void DmServerUploader::Finalize(CompletionResponse upload_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (upload_result.ok()) {
+  if (upload_result.has_value()) {
     std::move(report_success_upload_cb_)
-        .Run(upload_result.ValueOrDie().sequence_information,
-             upload_result.ValueOrDie().force_confirm);
+        .Run(upload_result.value().sequence_information,
+             upload_result.value().force_confirm);
   } else {
     // Log any error except those listed below:
     static constexpr std::array<error::Code, 2> kIgnoredCodes = {
@@ -135,8 +137,8 @@ void DmServerUploader::Finalize(CompletionResponse upload_result) {
         error::OUT_OF_RANGE,
     };
     LOG_IF(WARNING,
-           !base::Contains(kIgnoredCodes, upload_result.status().code()))
-        << upload_result.status();
+           !base::Contains(kIgnoredCodes, upload_result.error().code()))
+        << upload_result.error();
   }
   Response(upload_result);
 }

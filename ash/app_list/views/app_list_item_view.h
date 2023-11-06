@@ -13,12 +13,15 @@
 #include "ash/app_list/model/app_icon_load_helper.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -169,8 +172,16 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Sets the icon of this image.
   void SetIcon(const gfx::ImageSkia& icon);
 
+  // Whether the icon use on this item is a placeholder icon for a promise app.
+  bool HasPromiseIconPlaceholder();
+
   void SetItemName(const std::u16string& display_name,
                    const std::u16string& full_name);
+
+  void SetItemAccessibleName(const std::u16string& name);
+
+  void SetHostBadgeIcon(const gfx::ImageSkia& host_badge_icon,
+                        bool update_host_badge_icon);
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
@@ -218,6 +229,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
       const AppListConfig* config,
       const gfx::Rect& target_bounds,
       const gfx::Size& icon_size,
+      float icon_scale);
+
+  // Returns the host badge icon bounds using the centerpoint of
+  // `main_icon_bounds` and given `host_badge_icon_container_size and the
+  // `icon_scale` if the icon was scaled from the original display size.
+  static gfx::Rect GetHostBadgeIconContainerBoundsForTargetViewBounds(
+      const gfx::Rect& main_icon_bounds,
+      const gfx::Size& host_badge_icon_container_size,
       float icon_scale);
 
   // Returns the title bounds for with |target_bounds| as the bounds of this
@@ -268,7 +287,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   bool IsNotificationIndicatorShownForTest() const;
   GridDelegate* grid_delegate_for_test() { return grid_delegate_; }
-  const gfx::ImageSkia& icon_image_for_test() const { return icon_image_; }
+  const gfx::ImageSkia icon_image_for_test() const {
+    return icon_image_model_.GetImage().AsImageSkia();
+  }
 
   AppListMenuModelAdapter* item_menu_model_adapter() const {
     return item_menu_model_adapter_.get();
@@ -398,6 +419,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // AppListItemObserver overrides:
   void ItemIconChanged(AppListConfigType config_type) override;
   void ItemNameChanged() override;
+  void ItemHostBadgeIconChanged() override;
   void ItemBadgeVisibilityChanged() override;
   void ItemBadgeColorChanged() override;
   void ItemIsNewInstallChanged() override;
@@ -474,6 +496,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // The folder icon view used for refreshed folders.
   raw_ptr<FolderIconView, ExperimentalAsh> folder_icon_ = nullptr;
 
+  // The main icon container view used for app shortcuts.
+  raw_ptr<views::View, ExperimentalAsh> shortcut_background_container_ =
+      nullptr;
+  // The host badge icon container view used for app shortcuts.
+  raw_ptr<views::View, ExperimentalAsh> host_badge_icon_container_ = nullptr;
+  // The host badge icon view used for app shortcuts.
+  raw_ptr<views::ImageView, ExperimentalAsh> host_badge_icon_view_ = nullptr;
+
   raw_ptr<views::Label, ExperimentalAsh> title_ = nullptr;
 
   // The background layer added under the `icon_` layer to paint the background
@@ -514,15 +544,16 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether `item_menu_model_adapter_` was shown via key event.
   bool menu_show_initiated_from_key_ = false;
 
-  std::u16string tooltip_text_;
-
   // A timer to defer showing drag UI when mouse is pressed.
   base::OneShotTimer mouse_drag_timer_;
   // A timer to defer showing drag UI when the app item is touch pressed.
   base::OneShotTimer touch_drag_timer_;
 
   // The bitmap image for this app list item.
-  gfx::ImageSkia icon_image_;
+  ui::ImageModel icon_image_model_;
+
+  // The bitmap image for this app list item's host badge icon.
+  gfx::ImageSkia host_badge_icon_image_;
 
   // The current item's drag state.
   DragState drag_state_ = DragState::kNone;
@@ -565,6 +596,11 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // Whether the app is a promise app  (i.e. an app with pending or installing
   // app status).
   bool is_promise_app_ = false;
+
+  // Whether the app is a shortcut (i.e. a deeplink created with shortcut via
+  // Chrome or other third party installed apps) and should render the host
+  // badge icon.
+  bool has_host_badge_ = false;
 
   // An object that draws and updates the progress ring around promise app
   // icons.

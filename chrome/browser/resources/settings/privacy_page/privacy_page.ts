@@ -8,6 +8,7 @@
  * security settings.
  */
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -15,7 +16,6 @@ import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../icons.html.js';
 import '../safety_hub/safety_hub_module.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -557,11 +557,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
     this.notificationPermissionsReviewHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewPrimaryLabel',
-            permissions.length);
+            'safetyHubNotificationPermissionsPrimaryLabel', permissions.length);
     this.notificationPermissionsReviewSubheader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
-            'safetyCheckNotificationPermissionReviewSecondaryLabel',
+            'safetyHubNotificationPermissionsSecondaryLabel',
             permissions.length);
   }
 

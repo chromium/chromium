@@ -72,6 +72,12 @@ found in the LICENSE file.
                 app:iconImage="@drawable/ic_link_24dp"
                 app:summaryText="@string/privacy_guide_search_suggestions_item_three" />
 
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:iconImage="@drawable/ic_lightbulb_24dp"
+                app:summaryText="@string/privacy_guide_search_suggestions_item_four" />
+
         </LinearLayout>
 
     </LinearLayout>

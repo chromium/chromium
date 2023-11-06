@@ -51,18 +51,19 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            NetworkChangeNotifier.forceConnectivityState(true);
-            FirstRunUtils.setEulaAccepted();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    NetworkChangeNotifier.forceConnectivityState(true);
+                    FirstRunUtils.setEulaAccepted();
+                });
     }
 
     /** Test for turning the feed on and off via the gear menu. */
@@ -77,8 +78,11 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         // Make sure the eye icon starts off invisible, tab views enabled.
         onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
         // We need to select the TabView which is a parent of the text view with "Following".
-        onView(allOf(isFocusable(), withContentDescription("Following"),
-                       hasDescendant(withText("Following"))))
+        onView(
+                        allOf(
+                                isFocusable(),
+                                withContentDescription("Following"),
+                                hasDescendant(withText("Following"))))
                 .check(matches(isEnabled()));
 
         // Bring up the gear icon menu, and turn off the feed.
@@ -88,8 +92,11 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
         // Verify that the eye icon appears, and the tab view disables.
         onView(withId(R.id.section_status_indicator)).check(matches(isDisplayed()));
         // Make sure the tab gets disabled.
-        onView(allOf(isFocusable(), withContentDescription("Following"),
-                       hasDescendant(withText("Following"))))
+        onView(
+                        allOf(
+                                isFocusable(),
+                                withContentDescription("Following"),
+                                hasDescendant(withText("Following"))))
                 .check(matches(not(isEnabled())));
 
         // Turn the feed back on.
@@ -98,8 +105,11 @@ public final class FeedSurfaceCoordinatorIntegrationTest {
 
         // Verify that the eye icon is gone, and the text is enabled.
         onView(withId(R.id.section_status_indicator)).check(matches(not(isDisplayed())));
-        onView(allOf(isFocusable(), withContentDescription("Following"),
-                       hasDescendant(withText("Following"))))
+        onView(
+                        allOf(
+                                isFocusable(),
+                                withContentDescription("Following"),
+                                hasDescendant(withText("Following"))))
                 .check(matches(isEnabled()));
     }
 }

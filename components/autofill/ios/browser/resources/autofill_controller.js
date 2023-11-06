@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {isTextAreaElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -60,15 +61,6 @@ __gCrWeb.autofill.lastAutoFilledElement = null;
  * @type {boolean}
  */
 __gCrWeb.autofill.styleInjected = false;
-
-/**
- * Sets the delay between fields when autofilling forms.
- *
- * @param {number} delay The new delay in milliseconds.
- */
-__gCrWeb.autofill.setDelay = function(delay) {
-  __gCrWeb.autofill.delayBetweenFieldFillingMs = delay;
-};
 
 /**
  * Determines whether the form is interesting enough to send to the browser for
@@ -169,6 +161,27 @@ __gCrWeb.autofill['fillActiveFormField'] = function(data) {
   }
   __gCrWeb.autofill.lastAutoFilledElement = activeElement;
   return __gCrWeb.autofill.fillFormField(data, activeElement);
+};
+
+/**
+ * Fills data into the form field identified by `data['unique_renderer_id']`.
+ * This is similar to `fillActiveFormField`, but does not require that the
+ * target field be `document.activeElement`.
+ *
+ * @param {AutofillFormFieldData} data The data to fill in.
+ * @return {boolean} Whether the field was filled successfully.
+ */
+__gCrWeb.autofill['fillSpecificFormField'] = function(data) {
+  const fieldID = data['unique_renderer_id'];
+  if (typeof fieldID === 'undefined') {
+    return false;
+  }
+  const field = __gCrWeb.fill.getElementByUniqueID(fieldID);
+  if (!field) {
+    return false;
+  }
+  __gCrWeb.autofill.lastAutoFilledElement = field;
+  return __gCrWeb.autofill.fillFormField(data, field);
 };
 
 // Remove Autofill styling when control element is edited by the user.
@@ -328,8 +341,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
     }
 
     let value = null;
-    if (__gCrWeb.fill.isTextInput(element) ||
-        __gCrWeb.fill.isTextAreaElement(element)) {
+    if (__gCrWeb.fill.isTextInput(element) || isTextAreaElement(element)) {
       value = '';
     } else if (__gCrWeb.fill.isSelectElement(element)) {
       // Reset to the first index.
@@ -473,8 +485,7 @@ __gCrWeb.autofill.fillFormField = function(data, field) {
   }
 
   let filled = false;
-  if (__gCrWeb.fill.isTextInput(field) ||
-      __gCrWeb.fill.isTextAreaElement(field)) {
+  if (__gCrWeb.fill.isTextInput(field) || isTextAreaElement(field)) {
     let sanitizedValue = data['value'];
 
     if (__gCrWeb.fill.isTextInput(field)) {

@@ -20,16 +20,6 @@
 
 namespace webapps {
 
-const base::FeatureParam<double> kGuardrailResultReportProb(
-    &webapps::features::kWebAppsEnableMLModelForPromotion,
-    "guardrail_report_prob",
-    0);
-
-const base::FeatureParam<double> kModelDeclineUserDeclineReportProb(
-    &webapps::features::kWebAppsEnableMLModelForPromotion,
-    "model_and_user_decline_report_prob",
-    0);
-
 MlInstallResultReporter::MlInstallResultReporter(
     base::WeakPtr<AppBannerManager> app_banner_manager,
     segmentation_platform::TrainingRequestId training_request,
@@ -131,13 +121,15 @@ void MlInstallResultReporter::ReportResultInternal(
 
   // Exit early to avoid over-sampling in a few cases.
   if (!ml_promoted && response == MlInstallResponse::kReporterDestroyed &&
-      base::RandDouble() > kModelDeclineUserDeclineReportProb.Get()) {
+      base::RandDouble() >
+          features::kWebAppsMLModelUserDeclineReportProb.Get()) {
     // If the UX is never shown, then this reporter will simply be destroyed. Do
     // not bother reporting this result.
     return;
   }
   if (response == MlInstallResponse::kBlockedGuardrails &&
-      base::RandDouble() > kGuardrailResultReportProb.Get()) {
+      base::RandDouble() >
+          features::kWebAppsMLGuardrailResultReportProb.Get()) {
     return;
   }
 

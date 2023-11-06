@@ -94,7 +94,7 @@ class FetchDataLoaderTest : public testing::Test {
       completion_notifier_->SignalError(BytesConsumer::Error());
     }
 
-    BytesConsumer* GetDestination() { return destination_; }
+    BytesConsumer* GetDestination() { return destination_.Get(); }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(destination_);

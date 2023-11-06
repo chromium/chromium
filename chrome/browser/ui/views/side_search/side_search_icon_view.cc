@@ -120,7 +120,7 @@ void SideSearchIconView::UpdateImpl() {
     HidePageActionLabel();
     browser_view->CloseFeaturePromo(
         feature_engagement::kIPHSideSearchFeature,
-        user_education::FeaturePromoCloseReason::kAbortPromo);
+        user_education::EndFeaturePromoReason::kAbortPromo);
   }
 }
 

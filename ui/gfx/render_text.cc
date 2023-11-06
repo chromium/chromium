@@ -309,6 +309,20 @@ int GetLineSegmentContainingXCoord(const internal::Line& line,
   return line.segments.size();
 }
 
+bool DoesElidingBehaviorRequireEllipsis(ElideBehavior behavior) {
+  switch (behavior) {
+    case TRUNCATE:
+    case FADE_TAIL:
+      return false;
+    case NO_ELIDE:
+    case ELIDE_HEAD:
+    case ELIDE_MIDDLE:
+    case ELIDE_TAIL:
+    case ELIDE_EMAIL:
+      return true;
+  }
+}
+
 }  // namespace
 
 namespace internal {
@@ -659,14 +673,22 @@ void RenderText::SetMinLineHeight(int line_height) {
 void RenderText::SetElideBehavior(ElideBehavior elide_behavior) {
   if (elide_behavior_ != elide_behavior) {
     elide_behavior_ = elide_behavior;
-    OnDisplayTextAttributeChanged();
+    if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding)) {
+      OnLayoutTextAttributeChanged(false);
+    } else {
+      OnDisplayTextAttributeChanged();
+    }
   }
 }
 
 void RenderText::SetWhitespaceElision(absl::optional<bool> whitespace_elision) {
   if (whitespace_elision_ != whitespace_elision) {
     whitespace_elision_ = whitespace_elision;
-    OnDisplayTextAttributeChanged();
+    if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding)) {
+      OnLayoutTextAttributeChanged(false);
+    } else {
+      OnDisplayTextAttributeChanged();
+    }
   }
 }
 
@@ -675,7 +697,11 @@ void RenderText::SetDisplayRect(const Rect& r) {
     display_rect_ = r;
     baseline_ = kInvalidBaseline;
     cached_bounds_and_offset_valid_ = false;
-    OnDisplayTextAttributeChanged();
+    if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding)) {
+      OnLayoutTextAttributeChanged(false);
+    } else {
+      OnDisplayTextAttributeChanged();
+    }
   }
 }
 
@@ -930,6 +956,12 @@ void RenderText::SetEliding(bool value) {
 void RenderText::ApplyEliding(bool value, const Range& range) {
   elidings_.ApplyValue(value, range);
   OnLayoutTextAttributeChanged(false);
+}
+
+void RenderText::SetTextFullyElided() {
+  DCHECK(!text_fully_elided_);
+  text_fully_elided_ = true;
+  SetEliding(true);
 }
 
 bool RenderText::GetStyle(TextStyle style) const {
@@ -1349,9 +1381,10 @@ bool RenderText::GetLookupDataForRange(const Range& range,
   const internal::ShapedText* shaped_text = GetShapedText();
 
   const std::vector<Rect> word_bounds = GetSubstringBounds(range);
-  if (word_bounds.empty() || !GetDecoratedTextForRange(range, decorated_text)) {
+  if (word_bounds.empty()) {
     return false;
   }
+  GetDecoratedTextForRange(range, decorated_text);
 
   // Retrieve the baseline origin of the left-most glyph.
   const auto left_rect = std::min_element(
@@ -1612,7 +1645,7 @@ void RenderText::EnsureLayoutTextUpdated() const {
   // |layout_text_|.
   base::i18n::UTF16CharIterator text_iter(text_);
   internal::StyleIterator styles = GetTextStyleIterator();
-  bool text_truncated = false;
+  bool text_truncated = text_fully_elided_;
   while (!text_iter.end() && !text_truncated) {
     std::vector<uint32_t> grapheme_codepoints;
     const size_t text_grapheme_start_position = text_iter.array_pos();
@@ -1669,8 +1702,30 @@ void RenderText::EnsureLayoutTextUpdated() const {
     if (elided_grapheme || text_truncated) {
       grapheme_codepoints.clear();
       // Append an ellipsis if not already done.
-      if (!previous_grapheme_elided)
+      const bool need_ellipsis =
+          DoesElidingBehaviorRequireEllipsis(elide_behavior_);
+      if (need_ellipsis && !previous_grapheme_elided) {
         grapheme_codepoints.push_back(kEllipsisCodepoint);
+        // When ellipsis follows text whose directionality is not the same as
+        // that of the whole text, it will be rendered with the directionality
+        // of the whole text. However we actually want ellipsis to indicate
+        // continuation of the preceding text. To do so, we force the
+        // directionality of ellipsis to be same as the preceding text using LTR
+        // or RTL markers.
+        if (base::FeatureList::IsEnabled(kRenderTextEarlyEliding) &&
+            elide_behavior_ == ELIDE_TAIL && layout_text_.size() != 0) {
+          const base::i18n::TextDirection text_direction = GetTextDirection();
+          const base::i18n::TextDirection last_text_direction =
+              base::i18n::GetLastStrongCharacterDirection(layout_text_);
+          if (last_text_direction != text_direction &&
+              text_grapheme_end_position + 1 <= truncate_length_) {
+            grapheme_codepoints.push_back(last_text_direction ==
+                                                  base::i18n::LEFT_TO_RIGHT
+                                              ? base::i18n::kLeftToRightMark
+                                              : base::i18n::kRightToLeftMark);
+          }
+        }
+      }
     }
     previous_grapheme_elided = elided_grapheme;
 
@@ -2058,6 +2113,10 @@ void RenderText::OnTextAttributeChanged() {
   layout_text_.clear();
   display_text_.clear();
   text_elided_ = false;
+
+  // Reset any previous eliding state.
+  SetEliding(false);
+  text_fully_elided_ = false;
 
   layout_text_up_to_date_ = false;
 

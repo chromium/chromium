@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -23,7 +24,6 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
@@ -40,7 +40,6 @@
 class PrefService;
 
 namespace base {
-class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -180,7 +179,7 @@ class DriveIntegrationService : public KeyedService,
     virtual void OnBulkPinProgress(const drivefs::pinning::Progress& progress) {
     }
 
-    // Triggered when the bulk pinning manger is fully initialized.
+    // Triggered when the bulk-pinning manager is fully initialized.
     virtual void OnBulkPinInitialized() {}
 
     // Triggered when the network connection to Drive could have changed.
@@ -316,8 +315,6 @@ class DriveIntegrationService : public KeyedService,
   void GetSyncingPaths(
       drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
 
-  drivefs::SyncState GetSyncStateForPath(const base::FilePath& drive_path);
-
   // Tells DriveFS to update its cached pin states of hosted files (once).
   void PollHostedFilePinStates();
 
@@ -440,8 +437,14 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // Enables or disables DriveFS bulk pinning.
-  void ToggleBulkPinning();
+  // Called when the "drivefs.bulk_pinning_enabled" pref changes value.
+  // Starts or stops DriveFS bulk pinning accordingly.
+  // Does nothing if there is no bulk-pinning manager.
+  void StartOrStopBulkPinning();
+
+  // Called when the "drivefs.bulk_pinning.visible" pref changes value.
+  // Creates or deletes the DriveFS bulk-pinning manager accordingly.
+  void CreateOrDeleteBulkPinningManager();
 
   // Regularly samples the bulk-pinning preference and stores the result in a
   // UMA histogram.

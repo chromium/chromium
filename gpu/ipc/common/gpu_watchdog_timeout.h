@@ -33,18 +33,10 @@ constexpr base::TimeDelta kGpuWatchdogTimeout = base::Seconds(15);
 // It usually takes longer to finish a GPU task when the system just resumes
 // from power suspension or when the Android app switches from the background to
 // the foreground. This is the factor the original timeout will be multiplied.
-constexpr int kRestartFactor = 2;
-
-// It takes longer to initialize GPU process in Windows. See
-// https://crbug.com/949839 for details.
-#if BUILDFLAG(IS_WIN)
-constexpr int kInitFactor = 2;
-#else
-constexpr int kInitFactor = 1;
-#endif
+inline constexpr int kRestartFactor = 2;
 
 // Software rasterizer runs slower than hardware accelerated.
-constexpr int kSoftwareRenderingFactor = 2;
+inline constexpr int kSoftwareRenderingFactor = 2;
 
 }  // namespace gpu
 

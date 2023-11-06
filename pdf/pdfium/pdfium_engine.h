@@ -15,7 +15,9 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -256,6 +258,16 @@ class PDFiumEngine : public PDFEngine,
    private:
     PDFiumPage::Area area_;
     PDFiumPage::LinkTarget target_;
+  };
+
+  struct RegionData {
+    RegionData(base::span<uint8_t> buffer, size_t stride);
+    RegionData(RegionData&&);
+    RegionData& operator=(RegionData&&);
+    ~RegionData();
+
+    base::raw_span<uint8_t> buffer;  // Never empty.
+    size_t stride;
   };
 
   friend class FormFillerTest;
@@ -516,11 +528,10 @@ class PDFiumEngine : public PDFEngine,
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
   gfx::Rect GetScreenRect(const gfx::Rect& rect) const;
 
-  // Given an image `buffer` with `stride`, highlights `rect`.
+  // Given an image `region`, highlights `rect`.
   // `highlighted_rects` contains the already highlighted rectangles and will be
   // updated to include `rect` if `rect` has not already been highlighted.
-  void Highlight(void* buffer,
-                 int stride,
+  void Highlight(const RegionData& region,
                  const gfx::Rect& rect,
                  int color_red,
                  int color_green,
@@ -547,10 +558,8 @@ class PDFiumEngine : public PDFEngine,
                       const gfx::Rect& clip_rect,
                       SkBitmap& image_data);
 
-  void GetRegion(const gfx::Point& location,
-                 SkBitmap& image_data,
-                 void*& region,
-                 int& stride) const;
+  absl::optional<RegionData> GetRegion(const gfx::Point& location,
+                                       SkBitmap& image_data) const;
 
   // Called when the selection changes.
   void OnSelectionTextChanged();
@@ -611,6 +620,9 @@ class PDFiumEngine : public PDFEngine,
   // text range in `selection_`.
   void SetSelection(const PageCharacterIndex& selection_start_index,
                     const PageCharacterIndex& selection_end_index);
+
+  void SaveSelection();
+  void RestoreSelection();
 
   // Scroll the current focused annotation into view if not already in view.
   void ScrollFocusedAnnotationIntoView();
@@ -707,6 +719,11 @@ class PDFiumEngine : public PDFEngine,
   // Used for text selection, but does not include text within form text areas.
   // There could be more than one range if selection spans more than one page.
   std::vector<PDFiumRange> selection_;
+
+  // When rotating the page or updating the PageSpread mode, used to store the
+  // contents of `selection_`. After the page change is completed, the contents
+  // of `selection_` are restored.
+  std::vector<PDFiumRange> saved_selection_;
 
   // True if we're in the middle of text selection.
   bool selecting_ = false;

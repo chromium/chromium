@@ -82,11 +82,7 @@ def main(argv):
   cmd = build_utils.JavaCmd() + [
       '-classpath', options.turbine_jar_path, 'com.google.turbine.main.Main'
   ]
-  javac_cmd = [
-      # We currently target JDK 11 everywhere.
-      '--release',
-      '11',
-  ]
+  javac_cmd = ['--release', '17']
 
   # Turbine reads lists from command line args by consuming args until one
   # starts with double dash (--). Thus command line args should be grouped

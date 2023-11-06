@@ -79,33 +79,30 @@ public final class DeveloperUiService extends Service {
     @GuardedBy("sLock")
     private static @NonNull Flag[] sFlagList = ProductionSupportedFlagList.sFlagList;
 
-    private final IDeveloperUiService.Stub mBinder = new IDeveloperUiService.Stub() {
-        @Override
-        public void setFlagOverrides(Map overriddenFlags) {
-            if (Binder.getCallingUid() != Process.myUid()) {
-                throw new SecurityException(
-                        "setFlagOverrides() may only be called by the Developer UI app");
-            }
-            synchronized (sLock) {
-                applyFlagsToCommandLine(sOverriddenFlags, overriddenFlags);
-                sOverriddenFlags = overriddenFlags;
-                writeFlagsToStorageAsync(sOverriddenFlags);
-                if (sOverriddenFlags.isEmpty()) {
-                    disableDeveloperMode();
-                } else {
-                    try {
-                        enableDeveloperMode();
-                    } catch (IllegalStateException e) {
-                        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                            : "Unable enable developer mode, this is only expected on Android S";
-                        String msg = "Unable to create foreground service (client is likely in "
-                                + "background). Continuing as a background service.";
-                        Log.w(TAG, msg);
+    private final IDeveloperUiService.Stub mBinder =
+            new IDeveloperUiService.Stub() {
+                @Override
+                public void setFlagOverrides(Map overriddenFlags) {
+                    if (Binder.getCallingUid() != Process.myUid()) {
+                        throw new SecurityException(
+                                "setFlagOverrides() may only be called by the Developer UI app");
+                    }
+                    synchronized (sLock) {
+                        applyFlagsToCommandLine(sOverriddenFlags, overriddenFlags);
+                        sOverriddenFlags = overriddenFlags;
+                        writeFlagsToStorageAsync(sOverriddenFlags);
+                        if (sOverriddenFlags.isEmpty()) {
+                            disableDeveloperMode();
+                        } else {
+                            try {
+                                enableDeveloperMode();
+                            } catch (IllegalStateException e) {
+                                logSuspectedForegroundServiceStartNotAllowedException();
+                            }
+                        }
                     }
                 }
-            }
-        }
-    };
+            };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -293,8 +290,29 @@ public final class DeveloperUiService extends Service {
                               .setPriority(Notification.PRIORITY_LOW);
         }
         Notification notification = builder.build();
+        try {
+            startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
+        } catch (IllegalStateException e) {
+            logSuspectedForegroundServiceStartNotAllowedException();
 
-        startForeground(FLAG_OVERRIDE_NOTIFICATION_ID, notification);
+            // Mark that we failed to start developer mode fully.
+            // Mark as not enabled to let enableDeveloperMode run again, which will call
+            // onStartCommand.
+            // https://developer.android.com/guide/components/services#StartingAService
+            synchronized (sLock) {
+                mDeveloperModeEnabled = false;
+            }
+        }
+    }
+
+    private void logSuspectedForegroundServiceStartNotAllowedException() {
+        // Expecting a ForegroundServiceStartNotAllowedException, but that's an S API.
+        assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                : "Unable enable developer mode, this is only expected on Android S";
+        String msg =
+                "Unable to create foreground service (client is likely in "
+                        + "background). Continuing as a background service.";
+        Log.w(TAG, msg);
     }
 
     /**
@@ -336,12 +354,15 @@ public final class DeveloperUiService extends Service {
 
             ComponentName developerModeState =
                     new ComponentName(this, DeveloperModeUtils.DEVELOPER_MODE_STATE_COMPONENT);
-            getPackageManager().setComponentEnabledSetting(developerModeState,
-                    PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+            getPackageManager()
+                    .setComponentEnabledSetting(
+                            developerModeState,
+                            PackageManager.COMPONENT_ENABLED_STATE_DEFAULT,
+                            PackageManager.DONT_KILL_APP);
 
             // Finally, stop the service explicitly. Do this last to make sure we do the other
             // necessary cleanup.
-            stopForeground(/* removeNotification */ true);
+            stopForeground(STOP_FOREGROUND_REMOVE);
             stopSelf();
         }
     }

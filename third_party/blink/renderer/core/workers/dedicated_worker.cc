@@ -516,7 +516,7 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->IsIsolatedContext(),
       /*interface_registry=*/nullptr,
       std::move(agent_group_scheduler_compositor_task_runner),
-      top_level_frame_security_origin);
+      top_level_frame_security_origin, execution_context->HasStorageAccess());
 }
 
 scoped_refptr<WebWorkerFetchContext>

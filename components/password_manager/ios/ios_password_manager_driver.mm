@@ -92,7 +92,7 @@ void IOSPasswordManagerDriver::ClearPreviewedForm() {
 
 void IOSPasswordManagerDriver::SetSuggestionAvailability(
     autofill::FieldRendererId generation_element_id,
-    const autofill::mojom::AutofillState state) {
+    autofill::mojom::AutofillSuggestionAvailability suggestion_availability) {
   NOTIMPLEMENTED();
 }
 

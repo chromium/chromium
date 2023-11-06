@@ -520,6 +520,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
     base::File video_file(downloads_dir.Append("all-justice.mp4"),
                           base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(video_file.IsValid());
+    base::File text_file(downloads_dir.Append("all-justice.txt"),
+                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(text_file.IsValid());
+    ASSERT_TRUE(text_file.SetTimes(base::Time::Now(),
+                                   base::Time::Now() - base::Days(60)));
   }
 
   ASSERT_TRUE(RunExtensionTest("file_browser/recent_test", {},
@@ -781,7 +786,8 @@ class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
-    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();
+    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>(
+        Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));

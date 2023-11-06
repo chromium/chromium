@@ -8,6 +8,8 @@ static_library("browser") {
     "commerce_internals_ui.mm",
     "commerce_tab_helper.h",
     "commerce_tab_helper.mm",
+    "web_extractor_impl.h",
+    "web_extractor_impl.mm",
     "web_state_wrapper.h",
     "web_state_wrapper.mm",
   ]
@@ -15,6 +17,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/commerce/core:shopping_service",
+    "//components/resources:components_resources_grit",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

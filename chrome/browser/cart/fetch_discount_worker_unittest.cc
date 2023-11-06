@@ -73,7 +73,8 @@ std::unique_ptr<autofill::AutofillOfferData> BuildCouponsMapValueEntry(
   ds.value_prop_text = coupon_info.coupon_description();
   auto promo_code = coupon_info.coupon_code();
   auto offer_id = coupon_info.coupon_id();
-  auto expiry = base::Time::FromDoubleT(coupon_info.expiry_time());
+  auto expiry =
+      base::Time::FromSecondsSinceUnixEpoch(coupon_info.expiry_time());
   std::vector<GURL> origins;
   origins.emplace_back(cart_url);
   return std::make_unique<autofill::AutofillOfferData>(
@@ -136,7 +137,8 @@ const char kMockMerchantARuleId[] = "456";
 const char kMockMerchantARawMerchantOfferId[] = "789";
 const char kMockMerchantAHighestPercentOff[] = "10\% off";
 const int kMockMerchantAPercentOff = 10;
-const double kMockMerchantATimestamp = base::Time::Now().ToDoubleT();
+const double kMockMerchantATimestamp =
+    base::Time::Now().InSecondsFSinceUnixEpoch();
 const cart_db::ChromeCartContentProto kMockMerchantACartContentProto =
     BuildCartContentProto(kMockMerchantA,
                           kMockMerchantACartUrl,

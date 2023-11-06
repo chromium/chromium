@@ -50,3 +50,7 @@ void ImmersiveModeControllerStub::OnWidgetActivationChanged(
 int ImmersiveModeControllerStub::GetMinimumContentOffset() const {
   return 0;
 }
+
+int ImmersiveModeControllerStub::GetExtraInfobarOffset() const {
+  return 0;
+}

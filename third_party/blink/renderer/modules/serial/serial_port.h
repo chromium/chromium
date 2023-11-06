@@ -67,7 +67,7 @@ class SerialPort final : public EventTarget,
   ScriptPromise ContinueClose(ScriptState*);
   void AbortClose();
   void StreamsClosed();
-  bool IsClosing() const { return close_resolver_; }
+  bool IsClosing() const { return close_resolver_ != nullptr; }
 
   void Flush(device::mojom::blink::SerialPortFlushMode mode,
              device::mojom::blink::SerialPort::FlushCallback callback);

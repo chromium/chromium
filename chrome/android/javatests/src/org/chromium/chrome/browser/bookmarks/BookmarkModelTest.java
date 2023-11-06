@@ -34,9 +34,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Tests for {@link BookmarkModel}, the data layer of bookmarks.
- */
+/** Tests for {@link BookmarkModel}, the data layer of bookmarks. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class BookmarkModelTest {
@@ -45,8 +43,7 @@ public class BookmarkModelTest {
     public static final GURL C_COM = new GURL("http://c.com");
     public static final GURL AA_COM = new GURL("http://aa.com");
 
-    @Rule
-    public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private static final int TIMEOUT_MS = 5000;
     private BookmarkModel mBookmarkModel;
@@ -56,18 +53,20 @@ public class BookmarkModelTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            mBookmarkModel = BookmarkModel.getForProfile(profile);
-            mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = Profile.getLastUsedRegularProfile();
+                    mBookmarkModel = BookmarkModel.getForProfile(profile);
+                    mBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mMobileNode = mBookmarkModel.getMobileFolderId();
-            mDesktopNode = mBookmarkModel.getDesktopFolderId();
-            mOtherNode = mBookmarkModel.getOtherFolderId();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMobileNode = mBookmarkModel.getMobileFolderId();
+                    mDesktopNode = mBookmarkModel.getDesktopFolderId();
+                    mOtherNode = mBookmarkModel.getOtherFolderId();
+                });
     }
 
     @After
@@ -287,14 +286,19 @@ public class BookmarkModelTest {
         return addBookmark(mBookmarkModel, parent, index, title, url);
     }
 
-    public static BookmarkId addBookmark(BookmarkModel model, final BookmarkId parent,
-            final int index, final String title, final GURL url) {
+    public static BookmarkId addBookmark(
+            BookmarkModel model,
+            final BookmarkId parent,
+            final int index,
+            final String title,
+            final GURL url) {
         final AtomicReference<BookmarkId> result = new AtomicReference<>();
         final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            result.set(model.addBookmark(parent, index, title, url));
-            semaphore.release();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    result.set(model.addBookmark(parent, index, title, url));
+                    semaphore.release();
+                });
         try {
             if (semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS)) {
                 return result.get();
@@ -306,8 +310,12 @@ public class BookmarkModelTest {
         }
     }
 
-    private void verifyBookmark(BookmarkId idToVerify, String expectedTitle,
-            String expectedUrl, boolean isFolder, BookmarkId expectedParent) {
+    private void verifyBookmark(
+            BookmarkId idToVerify,
+            String expectedTitle,
+            String expectedUrl,
+            boolean isFolder,
+            BookmarkId expectedParent) {
         Assert.assertNotNull(idToVerify);
         BookmarkItem item = mBookmarkModel.getBookmarkById(idToVerify);
         Assert.assertEquals(expectedTitle, item.getTitle());

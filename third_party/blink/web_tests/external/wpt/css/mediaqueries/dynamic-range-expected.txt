@@ -1,26 +1,28 @@
 This is a testharness.js-based test.
-PASS Should be known: '(dynamic-range: standard)'
-PASS Should be known: '(dynamic-range: high)'
-PASS Should be known: '(video-dynamic-range: standard)'
-PASS Should be known: '(video-dynamic-range: high)'
-FAIL Should be known: '(dynamic-range)' assert_true: expected true got false
-FAIL Should be known: '(video-dynamic-range)' assert_true: expected true got false
-PASS Should be parseable: '(dynamic-range: 0)'
-PASS Should be unknown: '(dynamic-range: 0)'
-PASS Should be parseable: '(dynamic-range: 10px)'
-PASS Should be unknown: '(dynamic-range: 10px)'
-PASS Should be parseable: '(dynamic-range: invalid)'
-PASS Should be unknown: '(dynamic-range: invalid)'
-PASS Should be parseable: '(video-dynamic-range: 0)'
-PASS Should be unknown: '(video-dynamic-range: 0)'
-PASS Should be parseable: '(video-dynamic-range: 10px)'
-PASS Should be unknown: '(video-dynamic-range: 10px)'
-PASS Should be parseable: '(video-dynamic-range: invalid)'
-PASS Should be unknown: '(video-dynamic-range: invalid)'
-PASS Check that dynamic-range evaluates to false in the boolean context
-PASS Check that video-dynamic-range evaluates to false in the boolean context
-PASS Check that dynamic-range always matches 'standard'
-PASS Check that video-dynamic-range always matches 'standard'
-PASS Check that video-dynamic-range is not 'invalid'
+[PASS] Should be known: '(dynamic-range: standard)'
+[PASS] Should be known: '(dynamic-range: high)'
+[PASS] Should be known: '(video-dynamic-range: standard)'
+[PASS] Should be known: '(video-dynamic-range: high)'
+[FAIL] Should be known: '(dynamic-range)'
+  assert_true: expected true got false
+[FAIL] Should be known: '(video-dynamic-range)'
+  assert_true: expected true got false
+[PASS] Should be parseable: '(dynamic-range: 0)'
+[PASS] Should be unknown: '(dynamic-range: 0)'
+[PASS] Should be parseable: '(dynamic-range: 10px)'
+[PASS] Should be unknown: '(dynamic-range: 10px)'
+[PASS] Should be parseable: '(dynamic-range: invalid)'
+[PASS] Should be unknown: '(dynamic-range: invalid)'
+[PASS] Should be parseable: '(video-dynamic-range: 0)'
+[PASS] Should be unknown: '(video-dynamic-range: 0)'
+[PASS] Should be parseable: '(video-dynamic-range: 10px)'
+[PASS] Should be unknown: '(video-dynamic-range: 10px)'
+[PASS] Should be parseable: '(video-dynamic-range: invalid)'
+[PASS] Should be unknown: '(video-dynamic-range: invalid)'
+[PASS] Check that dynamic-range evaluates to false in the boolean context
+[PASS] Check that video-dynamic-range evaluates to false in the boolean context
+[PASS] Check that dynamic-range always matches 'standard'
+[PASS] Check that video-dynamic-range always matches 'standard'
+[PASS] Check that video-dynamic-range is not 'invalid'
 Harness: the test ran to completion.
 

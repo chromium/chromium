@@ -54,7 +54,6 @@ static bool check_msgtable() {
 #endif  // !BUILDFLAG(ENABLE_NACL)
 
 #if !BUILDFLAG(IS_ANDROID)
-  exemptions.push_back(EncryptedMediaMsgStart);
   exemptions.push_back(GinJavaBridgeMsgStart);
   exemptions.push_back(ExtensionWorkerMsgStart);
 #endif  // !BUILDFLAG(IS_ANDROID)

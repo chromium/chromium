@@ -158,38 +158,43 @@ void GeolocationController::OnSystemGeolocationPermissionChanged(bool enabled) {
 // static
 base::TimeDelta
 GeolocationController::GetNextRequestDelayAfterSuccessForTesting() {
-  return kNextRequestDelayAfterSuccess;
+  return kNextRequestDelayAfterSuccess;  // IN-TEST
 }
 
 network::SharedURLLoaderFactory*
 GeolocationController::GetSharedURLLoaderFactoryForTesting() {
-  return simple_geolocation_provider_->GetSharedURLLoaderFactoryForTesting();
+  return simple_geolocation_provider_
+      ->GetSharedURLLoaderFactoryForTesting();  // IN-TEST
 }
 
 void GeolocationController::SetTimerForTesting(
     std::unique_ptr<base::OneShotTimer> timer) {
-  timer_ = std::move(timer);
+  timer_ = std::move(timer);  // IN-TEST
 }
 
 void GeolocationController::SetClockForTesting(base::Clock* clock) {
-  clock_ = clock;
+  clock_ = clock;  // IN-TEST
 }
 
 void GeolocationController::SetLocalTimeConverterForTesting(
     const LocalTimeConverter* local_time_converter) {
-  local_time_converter_ = local_time_converter;
+  local_time_converter_ = local_time_converter;  // IN-TEST
 }
 
 void GeolocationController::SetGeolocationProviderForTesting(
     std::unique_ptr<SimpleGeolocationProvider> simple_geolocation_provider) {
   simple_geolocation_provider_ = std::move(simple_geolocation_provider);
   // Immediately schedule a new request to receive a geoposition event.
-  ScheduleNextRequest(base::Seconds(0));
+  RequestImmediateGeopositionForTesting();  // IN-TEST
 }
 
 void GeolocationController::SetCurrentTimezoneIdForTesting(
     const std::u16string& timezone_id) {
-  current_timezone_id_ = timezone_id;
+  current_timezone_id_ = timezone_id;  // IN-TEST
+}
+
+void GeolocationController::RequestImmediateGeopositionForTesting() {
+  ScheduleNextRequest(base::Seconds(0));  // IN-TEST
 }
 
 void GeolocationController::OnGeoposition(const Geoposition& position,
@@ -313,8 +318,6 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
   // icu::CalendarAstronomer object should be set to a time near local noon.
   // This avoids having the computation flopping over into an adjacent day.
   // See the documentation of icu::CalendarAstronomer::getSunRiseSet().
-  // Note that the icu calendar works with milliseconds since epoch, and
-  // base::Time::FromDoubleT() / ToDoubleT() work with seconds since epoch.
   const absl::optional<base::Time> midday_today =
       TimeOfDay(12 * 60)
           .SetClock(clock_)
@@ -324,13 +327,14 @@ GeolocationController::GetSunRiseSet(bool sunrise) const {
     return kSunRiseSetUnavailable;
   }
 
-  astro.setTime(midday_today->ToDoubleT() * 1000.0);
+  astro.setTime(midday_today->InMillisecondsFSinceUnixEpoch());
   const double sun_rise_set_ms = astro.getSunRiseSet(sunrise);
   // If there is 24 hours of daylight or darkness, `CalendarAstronomer` returns
   // a very large negative value. Any timestamp before or at the epoch
   // definitely does not make sense, so assume `kNoSunRiseSet`.
   if (sun_rise_set_ms > 0) {
-    return base::ok(base::Time::FromDoubleT(sun_rise_set_ms / 1000.0));
+    return base::ok(
+        base::Time::FromMillisecondsSinceUnixEpoch(sun_rise_set_ms));
   }
   return kNoSunRiseSet;
 }

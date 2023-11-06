@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Check detection result assert_equals: Expected windows-1258 expected "windows-1258" but got "windows-1252"
+[FAIL] Check detection result
+  assert_equals: Expected windows-1258 expected "windows-1258" but got "windows-1252"
 Harness: the test ran to completion.
 

@@ -20,11 +20,9 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Custom ChromeBrowserTestRule to test Autofill.
- */
-class AutofillTestRule
-        extends ChromeBrowserTestRule implements EditorObserverForTest, Callback<Fragment> {
+/** Custom ChromeBrowserTestRule to test Autofill. */
+class AutofillTestRule extends ChromeBrowserTestRule
+        implements EditorObserverForTest, Callback<Fragment> {
     final CallbackHelper mClickUpdate;
     final CallbackHelper mEditorTextUpdate;
     final CallbackHelper mPreferenceUpdate;
@@ -48,12 +46,13 @@ class AutofillTestRule
 
     protected void setTextInEditorAndWait(final String[] values) throws TimeoutException {
         int callCount = mEditorTextUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
-            for (int i = 0; i < values.length; i++) {
-                fields.get(i).setText(values[i]);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
+                    for (int i = 0; i < values.length; i++) {
+                        fields.get(i).setText(values[i]);
+                    }
+                });
         mEditorTextUpdate.waitForCallback(callCount);
     }
 
@@ -76,10 +75,11 @@ class AutofillTestRule
         if (mEditorDialog.getConfirmationDialogForTest() != null) {
             int callCount = mClickUpdate.getCallCount();
             TestThreadUtils.runOnUiThreadBlockingNoException(
-                    ()
-                            -> mEditorDialog.getConfirmationDialogForTest()
-                                       .getButton(button)
-                                       .performClick());
+                    () ->
+                            mEditorDialog
+                                    .getConfirmationDialogForTest()
+                                    .getButton(button)
+                                    .performClick());
             mClickUpdate.waitForCallback(callCount);
         }
     }
@@ -103,12 +103,14 @@ class AutofillTestRule
     protected void sendKeycodeToTextFieldInEditorAndWait(
             final int keycode, final int textFieldIndex) throws TimeoutException {
         int callCount = mClickUpdate.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
-            fields.get(textFieldIndex)
-                    .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode));
-            fields.get(textFieldIndex).dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<EditText> fields = mEditorDialog.getEditableTextFieldsForTest();
+                    fields.get(textFieldIndex)
+                            .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, keycode));
+                    fields.get(textFieldIndex)
+                            .dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, keycode));
+                });
         mClickUpdate.waitForCallback(callCount);
     }
 
@@ -138,6 +140,7 @@ class AutofillTestRule
         ThreadUtils.assertOnUiThread();
         mEditorTextUpdate.notifyCalled();
     }
+
     @Override
     public void onEditorReadyToEdit() {
         ThreadUtils.assertOnUiThread();

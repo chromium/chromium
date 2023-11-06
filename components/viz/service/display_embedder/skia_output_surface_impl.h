@@ -140,7 +140,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::Rect& update_rect,
       bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context,
-                          const gfx::ColorSpace& yuv_color_space) override;
+                          const gfx::ColorSpace& color_space) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
       const gfx::Size& size,
@@ -256,9 +256,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
       const gfx::ColorSpace& yuv_color_space);
   void MakePromiseSkImageSinglePlane(ImageContextImpl* image_context,
                                      bool mipmapped,
-                                     const gfx::ColorSpace& yuv_color_space);
+                                     const gfx::ColorSpace& color_space);
   void MakePromiseSkImageMultiPlane(ImageContextImpl* image_context,
-                                    const gfx::ColorSpace& yuv_color_space);
+                                    const gfx::ColorSpace& color_space);
   void ContextLost();
   void RecreateRootDDLRecorder();
 

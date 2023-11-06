@@ -32,7 +32,7 @@ class PasswordManagerSettingsServiceAndroidImpl
   PasswordManagerSettingsServiceAndroidImpl(PrefService* pref_service,
                                             syncer::SyncService* sync_service);
   PasswordManagerSettingsServiceAndroidImpl(
-      base::PassKey<class PasswordManagerSettingsServiceAndroidImplTest>,
+      base::PassKey<class PasswordManagerSettingsServiceAndroidImplBaseTest>,
       PrefService* pref_service,
       syncer::SyncService* sync_service,
       std::unique_ptr<
@@ -92,6 +92,10 @@ class PasswordManagerSettingsServiceAndroidImpl
   // in the middle of the browser session.
   void OnUnenrollmentPreferenceChanged();
 
+  // Checks that the user is either syncing and enrolled in UPM or not syncing
+  // and ready to use local UPM.
+  bool UsesUPMBackend() const;
+
   // Pref service used to read and write password manager user prefs.
   raw_ptr<PrefService> pref_service_ = nullptr;
 
@@ -117,7 +121,7 @@ class PasswordManagerSettingsServiceAndroidImpl
   // setting was changed, and the fetch is still in progress.
   bool fetch_after_sync_status_change_in_progress_ = false;
 
-  // Settings requested from the backend after a sunc status change, but not
+  // Settings requested from the backend after a sync status change, but not
   // fetched yet.
   base::flat_set<password_manager::PasswordManagerSetting> awaited_settings_;
 

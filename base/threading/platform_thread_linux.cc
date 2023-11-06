@@ -172,7 +172,7 @@ GetCurrentThreadPriorityForPlatformForTest() {
                             &maybe_realtime_prio) == 0 &&
       maybe_sched_rr == SCHED_RR &&
       maybe_realtime_prio.sched_priority ==
-          PlatformThreadLinux::kRealTimePrio.sched_priority) {
+          PlatformThreadLinux::kRealTimeAudioPrio.sched_priority) {
     return absl::make_optional(ThreadPriorityForTest::kRealtimeAudio);
   }
   return absl::nullopt;
@@ -288,7 +288,7 @@ void PlatformThreadLinux::SetThreadType(ProcessId process_id,
 
   if (thread_type == ThreadType::kRealtimeAudio) {
     if (sched_setscheduler(syscall_tid, SCHED_RR,
-                           &PlatformThreadLinux::kRealTimePrio) == 0) {
+                           &PlatformThreadLinux::kRealTimeAudioPrio) == 0) {
       return;
     }
     // If failed to set to RT, fallback to setpriority to set nice value.

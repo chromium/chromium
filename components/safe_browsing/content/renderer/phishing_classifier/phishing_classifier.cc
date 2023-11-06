@@ -160,17 +160,10 @@ void PhishingClassifier::DOMExtractionFinished(bool success) {
 
 void PhishingClassifier::TermExtractionFinished(bool success) {
   if (success) {
-#if BUILDFLAG(FULL_SAFE_BROWSING)
     visual_extractor_->ExtractFeatures(
         render_frame_->GetWebFrame(),
         base::BindOnce(&PhishingClassifier::OnPlaybackDone,
                        base::Unretained(this)));
-#else
-    visual_extractor_->ExtractFeatures(
-        render_frame_->GetWebFrame(),
-        base::BindOnce(&PhishingClassifier::OnPlaybackDone,
-                       base::Unretained(this)));
-#endif
   } else {
     RunFailureCallback();
   }

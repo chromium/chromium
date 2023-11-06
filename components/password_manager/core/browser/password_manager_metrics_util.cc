@@ -261,7 +261,7 @@ void LogDownloadedBlocklistedEntriesCountFromAccountStoreAfterUnlock(
       blocklist_entries_count);
 }
 
-void LogPasswordSettingsReauthResult(ReauthResult result) {
+void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.ReauthToAccessPasswordInSettings", result);
 }
@@ -304,6 +304,10 @@ void LogGenerationDialogChoice(GenerationDialogChoice choice,
     case PasswordGenerationType::kManual:
       base::UmaHistogramEnumeration(
           "KeyboardAccessory.GenerationDialogChoice.Manual", choice);
+      break;
+    case PasswordGenerationType::kTouchToFill:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.TouchToFill.PasswordGeneration.UserChoice", choice);
       break;
   };
 }  // namespace metrics_util
@@ -416,6 +420,14 @@ void LogGroupedPasswordsResults(
   base::UmaHistogramEnumeration(
       "PasswordManager.GetLogins.GroupedMatchesStatus", result);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void LogTouchToFillPasswordGenerationTriggerOutcome(
+    TouchToFillPasswordGenerationTriggerOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.TouchToFill.PasswordGeneration.TriggerOutcome", outcome);
+}
+#endif
 
 #if BUILDFLAG(IS_IOS)
 void RecordMigrationToOSCryptLatency(bool success,

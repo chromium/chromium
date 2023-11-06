@@ -26,11 +26,12 @@
 #include "ash/constants/ash_features.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chromeos/ash/components/standalone_browser/migrator_util.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
-
 #endif
 
 namespace {
@@ -109,6 +110,8 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
                                /*browser_restart=*/false,
                                /*is_child=*/false);
     crosapi::browser_util::RegisterLocalStatePrefs(local_state_.registry());
+    ash::standalone_browser::migrator_util::RegisterLocalStatePrefs(
+        local_state_.registry());
 #endif
   }
 
@@ -162,7 +165,8 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+  feature_list.InitWithFeatures(
+      {ash::standalone_browser::features::kLacrosOnly}, {});
 #endif
 
   ::testing::StrictMock<MockAppMenuIconControllerDelegate> mock_delegate;

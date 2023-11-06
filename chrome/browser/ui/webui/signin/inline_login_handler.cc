@@ -61,8 +61,8 @@ void InlineLoginHandler::RegisterMessages() {
       base::BindRepeating(&InlineLoginHandler::HandleInitializeMessage,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "authExtensionReady",
-      base::BindRepeating(&InlineLoginHandler::HandleAuthExtensionReadyMessage,
+      "authenticatorReady",
+      base::BindRepeating(&InlineLoginHandler::HandleAuthenticatorReadyMessage,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "completeLogin",
@@ -159,7 +159,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   params.Set("readOnlyEmail", !read_only_email.empty());
 
   SetExtraInitParams(params);
-  FireWebUIListener("load-auth-extension", params);
+  FireWebUIListener("load-authenticator", params);
 }
 
 void InlineLoginHandler::HandleCompleteLoginMessage(

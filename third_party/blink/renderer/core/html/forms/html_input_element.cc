@@ -78,6 +78,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
@@ -98,6 +100,8 @@
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 namespace {
 
@@ -473,7 +477,8 @@ void HTMLInputElement::UpdateType() {
   const AtomicString& dir = FastGetAttribute(html_names::kDirAttr);
   if ((!dir && (old_type->IsTelephoneInputType() || IsTelephone())) ||
       (EqualIgnoringASCIICase(dir, "auto") &&
-       (old_type->ShouldAutoDirUseValue() || ShouldAutoDirUseValue()))) {
+       (old_type->IsAutoDirectionalityFormAssociated() ||
+        IsAutoDirectionalityFormAssociated()))) {
     const AtomicString& value_dir = AtomicString(DirectionForFormData());
     UpdateDirectionalityAfterInputTypeChange(dir, value_dir);
   }
@@ -756,8 +761,10 @@ bool HTMLInputElement::IsPresentationAttribute(
   if (name == html_names::kVspaceAttr || name == html_names::kHspaceAttr ||
       name == html_names::kAlignAttr || name == html_names::kWidthAttr ||
       name == html_names::kHeightAttr ||
-      (name == html_names::kBorderAttr && type() == input_type_names::kImage))
+      (name == html_names::kBorderAttr &&
+       FormControlType() == FormControlType::kInputImage)) {
     return true;
+  }
   return TextControlElement::IsPresentationAttribute(name);
 }
 
@@ -789,7 +796,8 @@ void HTMLInputElement::CollectStyleForPresentationAttribute(
         ApplyAspectRatioToStyle(width, value, style);
     }
   } else if (name == html_names::kBorderAttr &&
-             type() == input_type_names::kImage) {  // FIXME: Remove type check.
+             FormControlType() ==
+                 FormControlType::kInputImage) {  // FIXME: Remove type check.
     ApplyBorderAttributeToStyle(value, style);
   } else {
     TextControlElement::CollectStyleForPresentationAttribute(name, value,
@@ -1021,8 +1029,8 @@ bool HTMLInputElement::IsTelephone() const {
   return input_type_->IsTelephoneInputType();
 }
 
-bool HTMLInputElement::ShouldAutoDirUseValue() const {
-  return input_type_->ShouldAutoDirUseValue();
+bool HTMLInputElement::IsAutoDirectionalityFormAssociated() const {
+  return input_type_->IsAutoDirectionalityFormAssociated();
 }
 
 bool HTMLInputElement::HasBeenPasswordField() const {
@@ -1204,6 +1212,13 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
     } else {
       placeholder->classList().Remove(reveal);
     }
+
+    const AtomicString fade_out("fade-out-password");
+    if (should_show_strong_password_label_) {
+      placeholder->classList().Add(fade_out);
+    } else {
+      placeholder->classList().Remove(fade_out);
+    }
   }
 
   SetNeedsStyleRecalc(
@@ -1220,7 +1235,7 @@ void HTMLInputElement::SetInnerEditorValue(const String& value) {
 void HTMLInputElement::setValueForBinding(const String& value,
                                           ExceptionState& exception_state) {
   // FIXME: Remove type check.
-  if (type() == input_type_names::kFile && !value.empty()) {
+  if (FormControlType() == FormControlType::kInputFile && !value.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "This input element accepts a filename, "
                                       "which may only be programmatically set "
@@ -1325,7 +1340,9 @@ ScriptValue HTMLInputElement::valueAsDate(ScriptState* script_state) const {
   v8::Isolate* isolate = script_state->GetIsolate();
   if (!std::isfinite(date))
     return ScriptValue::CreateNull(isolate);
-  return ScriptValue(isolate, ToV8(base::Time::FromJsTime(date), script_state));
+  return ScriptValue(
+      isolate,
+      ToV8(base::Time::FromMillisecondsSinceUnixEpoch(date), script_state));
 }
 
 void HTMLInputElement::setValueAsDate(ScriptState* script_state,
@@ -1358,7 +1375,7 @@ void HTMLInputElement::setValueAsNumber(double new_value,
 }
 
 Decimal HTMLInputElement::RatioValue() const {
-  DCHECK_EQ(type(), input_type_names::kRange);
+  DCHECK_EQ(FormControlType(), FormControlType::kInputRange);
   const StepRange step_range(CreateStepRange(kRejectAny));
   const Decimal old_value =
       ParseToDecimalForNumberType(Value(), step_range.DefaultValue());
@@ -1367,7 +1384,7 @@ Decimal HTMLInputElement::RatioValue() const {
 
 void HTMLInputElement::SetValueFromRenderer(const String& value) {
   // File upload controls will never use this.
-  DCHECK_NE(type(), input_type_names::kFile);
+  DCHECK_NE(FormControlType(), FormControlType::kInputFile);
 
   // Clear the suggested value. Use the base class version to not trigger a view
   // update.
@@ -1480,7 +1497,7 @@ void HTMLInputElement::DefaultEventHandler(Event& evt) {
 
   if (input_type_view_->ShouldSubmitImplicitly(evt)) {
     // FIXME: Remove type check.
-    if (type() == input_type_names::kSearch) {
+    if (FormControlType() == FormControlType::kInputSearch) {
       GetDocument()
           .GetTaskRunner(TaskType::kUserInteraction)
           ->PostTask(FROM_HERE, WTF::BindOnce(&HTMLInputElement::OnSearch,
@@ -1745,8 +1762,9 @@ void HTMLInputElement::DidMoveToNewDocument(Document& old_document) {
     ImageLoader()->ElementDidMoveToNewDocument();
 
   // FIXME: Remove type check.
-  if (type() == input_type_names::kRadio)
+  if (FormControlType() == FormControlType::kInputRadio) {
     GetTreeScope().GetRadioButtonGroupScope().RemoveButton(this);
+  }
 
   TextControlElement::DidMoveToNewDocument(old_document);
 }
@@ -1812,7 +1830,7 @@ HTMLInputElement::FilteredDataListOptions() const {
     return filtered;
 
   String editor_value = InnerEditorValue();
-  if (Multiple() && type() == input_type_names::kEmail) {
+  if (Multiple() && FormControlType() == FormControlType::kInputEmail) {
     Vector<String> emails;
     editor_value.Split(',', true, emails);
     if (!emails.empty())
@@ -2010,8 +2028,9 @@ HTMLInputElement::SupportsPopoverTriggering() const {
 
 RadioButtonGroupScope* HTMLInputElement::GetRadioButtonGroupScope() const {
   // FIXME: Remove type check.
-  if (type() != input_type_names::kRadio)
+  if (FormControlType() != FormControlType::kInputRadio) {
     return nullptr;
+  }
   if (HTMLFormElement* form_element = Form())
     return &form_element->GetRadioButtonGroupScope();
   if (isConnected())
@@ -2103,7 +2122,7 @@ bool HTMLInputElement::SetupDateTimeChooserParameters(
   if (!GetDocument().View())
     return false;
 
-  parameters.type = type();
+  parameters.type = input_type_->type();
   parameters.minimum = Minimum();
   parameters.maximum = Maximum();
   parameters.required = IsRequired();
@@ -2301,8 +2320,8 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   // In cross-origin iframes it should throw a "SecurityError" DOMException
   // except on file and color. In same-origin iframes it should work fine.
   // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
-  if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
-      frame) {
+  if (FormControlType() != FormControlType::kInputFile &&
+      FormControlType() != FormControlType::kInputColor && frame) {
     if (!frame->IsSameOrigin()) {
       exception_state.ThrowSecurityError(
           "showPicker() called from cross-origin iframe.");
@@ -2325,6 +2344,35 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   }
 
   input_type_view_->OpenPopupView();
+}
+
+bool HTMLInputElement::HandleInvokeInternal(HTMLElement& invoker,
+                                            AtomicString& action) {
+  if (HTMLElement::HandleInvokeInternal(invoker, action)) {
+    return true;
+  }
+
+  if (!EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
+    return false;
+  }
+
+  Document& document = GetDocument();
+  LocalFrame* frame = document.GetFrame();
+  if (frame && !frame->IsSameOrigin()) {
+    String message = "Input cannot be invoked from cross-origin iframe.";
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kJavaScript,
+        mojom::ConsoleMessageLevel::kWarning, message));
+    return false;
+  }
+
+  if (!isMutable()) {
+    return false;
+  }
+
+  input_type_view_->OpenPopupView();
+
+  return true;
 }
 
 }  // namespace blink

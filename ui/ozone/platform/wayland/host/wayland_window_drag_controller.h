@@ -138,8 +138,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
-  void OnDataSourceFinish(bool completed) override;
-  void OnDataSourceSend(const std::string& mime_type,
+  void OnDataSourceFinish(WaylandDataSource* source, bool completed) override;
+  void OnDataSourceSend(WaylandDataSource* source,
+                        const std::string& mime_type,
                         std::string* contents) override;
 
   // PlatformEventDispatcher

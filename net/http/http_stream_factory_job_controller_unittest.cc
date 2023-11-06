@@ -27,6 +27,7 @@
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_server.h"
+#include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_proxy_delegate.h"
 #include "net/dns/mock_host_resolver.h"
@@ -127,7 +128,7 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 class TestProxyDelegateForIpProtection : public TestProxyDelegate {
  public:
   void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
+                      const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
@@ -769,14 +770,17 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
         const ProxyRetryInfoMap& retry_info =
             session_->proxy_resolution_service()->proxy_retry_info();
         ASSERT_THAT(retry_info, SizeIs(2));
-        EXPECT_THAT(retry_info, Contains(Key("badproxy:99")));
-        EXPECT_THAT(retry_info, Contains(Key("badfallbackproxy:98")));
+        EXPECT_THAT(retry_info, Contains(Key(ProxyUriToProxyChain(
+                                    "badproxy:99", ProxyServer::SCHEME_HTTP))));
+        EXPECT_THAT(retry_info,
+                    Contains(Key(ProxyUriToProxyChain(
+                        "badfallbackproxy:98", ProxyServer::SCHEME_HTTP))));
 
         // The idle socket should have been added back to the socket pool. Close
         // it, so the next loop iteration creates a new socket instead of
         // reusing the idle one.
         auto* socket_pool = session_->GetSocketPool(
-            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
         EXPECT_EQ(1, socket_pool->IdleSocketCount());
         socket_pool->CloseIdleSockets("Close socket reason");
       }
@@ -983,18 +987,25 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
             session_->proxy_resolution_service()->proxy_retry_info();
         if (!mock_error.triggers_ssl_connect_job_retry_logic) {
           ASSERT_THAT(retry_info, SizeIs(2));
-          EXPECT_THAT(retry_info, Contains(Key("https://badproxy:99")));
-          EXPECT_THAT(retry_info, Contains(Key("https://badfallbackproxy:98")));
+          EXPECT_THAT(retry_info,
+                      Contains(Key(ProxyUriToProxyChain(
+                          "https://badproxy:99", ProxyServer::SCHEME_HTTP))));
+          EXPECT_THAT(
+              retry_info,
+              Contains(Key(ProxyUriToProxyChain("https://badfallbackproxy:98",
+                                                ProxyServer::SCHEME_HTTP))));
         } else {
           ASSERT_THAT(retry_info, SizeIs(1));
-          EXPECT_THAT(retry_info, Contains(Key("https://badproxy:99")));
+          EXPECT_THAT(retry_info,
+                      Contains(Key(ProxyUriToProxyChain(
+                          "https://badproxy:99", ProxyServer::SCHEME_HTTP))));
         }
 
         // The idle socket should have been added back to the socket pool. Close
         // it, so the next loop iteration creates a new socket instead of
         // reusing the idle one.
         auto* socket_pool = session_->GetSocketPool(
-            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+            HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
         EXPECT_EQ(1, socket_pool->IdleSocketCount());
         socket_pool->CloseIdleSockets("Close socket reason");
       }
@@ -1202,14 +1213,19 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       const ProxyRetryInfoMap& retry_info =
           session_->proxy_resolution_service()->proxy_retry_info();
       ASSERT_THAT(retry_info, SizeIs(2));
-      EXPECT_THAT(retry_info, Contains(Key("socks5://badproxy:99")));
-      EXPECT_THAT(retry_info, Contains(Key("socks5://badfallbackproxy:98")));
+      EXPECT_THAT(retry_info,
+                  Contains(Key(ProxyUriToProxyChain(
+                      "socks5://badproxy:99", ProxyServer::SCHEME_SOCKS5))));
+      EXPECT_THAT(
+          retry_info,
+          Contains(Key(ProxyUriToProxyChain("socks5://badfallbackproxy:98",
+                                            ProxyServer::SCHEME_SOCKS5))));
 
       // The idle socket should have been added back to the socket pool. Close
       // it, so the next loop iteration creates a new socket instead of reusing
       // the idle one.
       auto* socket_pool = session_->GetSocketPool(
-          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
       EXPECT_EQ(1, socket_pool->IdleSocketCount());
       socket_pool->CloseIdleSockets("Close socket reason");
     }
@@ -1256,7 +1272,9 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest, ReconsiderErrMsgTooBig) {
   const ProxyRetryInfoMap& retry_info =
       session_->proxy_resolution_service()->proxy_retry_info();
   EXPECT_THAT(retry_info, SizeIs(1));
-  EXPECT_THAT(retry_info, Contains(Key("quic://badproxy:99")));
+  EXPECT_THAT(retry_info,
+              Contains(Key(ProxyUriToProxyChain("quic://badproxy:99",
+                                                ProxyServer::SCHEME_QUIC))));
 
   request.reset();
   EXPECT_TRUE(HttpStreamFactoryPeer::IsJobControllerDeleted(factory_));
@@ -3151,7 +3169,7 @@ void HttpStreamFactoryJobControllerTestBase::
   Initialize(request_info);
   // Put a SpdySession in the pool.
   HostPortPair host_port_pair("www.google.com", 443);
-  SpdySessionKey key(host_port_pair, ProxyServer::Direct(),
+  SpdySessionKey key(host_port_pair, ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -3277,7 +3295,7 @@ TEST_P(HttpStreamFactoryJobControllerTest, SpdySessionInterruptsPreconnect) {
   base::WeakPtr<SpdySession> spdy_session =
       session_->spdy_session_pool()->FindAvailableSession(
           SpdySessionKey(
-              HostPortPair::FromURL(request_info.url), ProxyServer::Direct(),
+              HostPortPair::FromURL(request_info.url), ProxyChain::Direct(),
               request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
               request_info.socket_tag, request_info.network_anonymization_key,
               request_info.secure_dns_policy),
@@ -3356,7 +3374,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
     base::WeakPtr<SpdySession> spdy_session =
         session_->spdy_session_pool()->FindAvailableSession(
             SpdySessionKey(HostPortPair::FromURL(request_info.url),
-                           ProxyServer::Direct(), request_info.privacy_mode,
+                           ProxyChain::Direct(), request_info.privacy_mode,
                            SpdySessionKey::IsProxySession::kFalse,
                            request_info.socket_tag,
                            request_info.network_anonymization_key,
@@ -3390,7 +3408,7 @@ TEST_P(HttpStreamFactoryJobControllerTest,
   // has finished.
   {
     const SpdySessionKey spdy_session_key = SpdySessionKey(
-        HostPortPair::FromURL(other_request_info.url), ProxyServer::Direct(),
+        HostPortPair::FromURL(other_request_info.url), ProxyChain::Direct(),
         other_request_info.privacy_mode, SpdySessionKey::IsProxySession::kFalse,
         other_request_info.socket_tag,
         other_request_info.network_anonymization_key,
@@ -3586,7 +3604,7 @@ TEST_F(JobControllerLimitMultipleH2Requests,
   }
   TransportClientSocketPool* socket_pool =
       reinterpret_cast<TransportClientSocketPool*>(session_->GetSocketPool(
-          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct()));
+          HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct()));
   ClientSocketPool::GroupId group_id0(
       url::SchemeHostPort(request_info.url), request_info.privacy_mode,
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -4836,7 +4854,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Put a SpdySession in the pool.
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
-                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);
@@ -5081,7 +5099,7 @@ TEST_F(HttpStreamFactoryJobControllerDnsHttpsAlpnTest,
 
   // Put a SpdySession in the pool.
   SpdySessionKey key(HostPortPair::FromURL(request_info.url),
-                     ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                     ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::ignore = CreateFakeSpdySession(session_->spdy_session_pool(), key);

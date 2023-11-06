@@ -113,7 +113,6 @@ class CORE_EXPORT HTMLElement : public Element {
 
   String title() const final;
 
-  String innerText();
   void setInnerText(const String&);
   V8UnionStringLegacyNullToEmptyStringOrTrustedScript* innerTextForBinding();
   virtual void setInnerTextForBinding(
@@ -162,12 +161,13 @@ class CORE_EXPORT HTMLElement : public Element {
   static bool IsValidDirAttribute(const AtomicString& value);
   static bool ElementAffectsDirectionality(const Node* node);
   static bool ElementInheritsDirectionality(const Node* node);
-  static const TextControlElement* ElementIfAutoDirShouldUseValueOrNull(
-      const Element* element);
-  static TextControlElement* ElementIfAutoDirShouldUseValueOrNull(
+  static const TextControlElement*
+  ElementIfAutoDirectionalityFormAssociatedOrNull(const Element* element);
+  static TextControlElement* ElementIfAutoDirectionalityFormAssociatedOrNull(
       Element* element) {
-    return const_cast<TextControlElement*>(ElementIfAutoDirShouldUseValueOrNull(
-        const_cast<const Element*>(element)));
+    return const_cast<TextControlElement*>(
+        ElementIfAutoDirectionalityFormAssociatedOrNull(
+            const_cast<const Element*>(element)));
   }
 
   virtual bool IsHTMLBodyElement() const { return false; }
@@ -275,7 +275,7 @@ class CORE_EXPORT HTMLElement : public Element {
   Element* anchorElement();
   void setAnchorElement(Element*);
   static void HandlePopoverLightDismiss(const Event& event, const Node& node);
-  void InvokePopover(Element* invoker);
+  void InvokePopover(Element& invoker);
   void SetPopoverFocusOnShow();
   // This hides all visible popovers up to, but not including,
   // |endpoint|. If |endpoint| is nullptr, all popovers are hidden.
@@ -297,6 +297,19 @@ class CORE_EXPORT HTMLElement : public Element {
       mojom::blink::FocusType,
       InputDeviceCapabilities* source_capabilities) override;
 
+  // This allows customization of how Invokes are handled, per element.
+  // The default HTMLElement behavior handles popovers, and specific
+  // element subclasses - such as HTMLDialogElement - can handle
+  // other invocation actions such as showModal. Implementations should return
+  // `true` if they have handled, so that overrides can exit early.
+  // Additionally, override implementations should not execute their own
+  // behavior before calling `HTMLElement::HandleInvokeInternal` as that
+  // override governs the logic for global attributes such as `popover`;
+  // for example a `<dialog popover>` should run `popover` invocation steps
+  // before `<dialog>` invocation steps.
+  // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
+  virtual bool HandleInvokeInternal(HTMLElement& invoker, AtomicString& action);
+
  protected:
   bool SupportsFocus() const override;
 
@@ -310,6 +323,10 @@ class CORE_EXPORT HTMLElement : public Element {
   void AddHTMLColorToStyle(MutableCSSPropertyValueSet*,
                            CSSPropertyID,
                            const String& color);
+  void AddHTMLBackgroundImageToStyle(
+      MutableCSSPropertyValueSet*,
+      const String& url_value,
+      const AtomicString& initiator_name = g_null_atom);
 
   // This corresponds to:
   //  'map to the aspect-ratio property (using dimension rules)'
@@ -363,6 +380,8 @@ class CORE_EXPORT HTMLElement : public Element {
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
+
+  void AdjustDirectionalityIfNeededAfterInsert(Node& node);
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 

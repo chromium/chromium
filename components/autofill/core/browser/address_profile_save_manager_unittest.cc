@@ -136,7 +136,7 @@ struct ImportScenarioTestCase {
   AutofillProfile observed_profile;
   bool is_prompt_expected;
   UserDecision user_decision;
-  AutofillProfile edited_profile;
+  AutofillProfile edited_profile{};
   AutofillProfileImportType expected_import_type;
   bool is_profile_change_expected;
   absl::optional<AutofillProfile> merge_candidate;

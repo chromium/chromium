@@ -148,7 +148,6 @@ profile_metrics::BrowserProfileType ComputeOffTheRecordProfileType(
 
     case profile_metrics::BrowserProfileType::kIncognito:
     case profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile:
-    case profile_metrics::BrowserProfileType::kDeprecatedEphemeralGuest:
       NOTREACHED();
   }
   return profile_metrics::BrowserProfileType::kOtherOffTheRecordProfile;
@@ -206,8 +205,7 @@ void OffTheRecordProfileImpl::Init() {
   content::URLDataSource::Add(
       this, std::make_unique<extensions::ExtensionIconSource>(profile_));
 
-  extensions::ExtensionWebRequestEventRouter::GetInstance()
-      ->OnOTRBrowserContextCreated(profile_, this);
+  extensions::WebRequestEventRouter::OnOTRBrowserContextCreated(profile_, this);
 #endif
 
   // The DomDistillerViewerSource is not a normal WebUI so it must be registered
@@ -262,8 +260,8 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::ExtensionWebRequestEventRouter::GetInstance()
-      ->OnOTRBrowserContextDestroyed(profile_, this);
+  extensions::WebRequestEventRouter::OnOTRBrowserContextDestroyed(profile_,
+                                                                  this);
 #endif
 
   // This must be called before ProfileIOData::ShutdownOnUIThread but after

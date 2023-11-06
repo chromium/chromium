@@ -226,18 +226,8 @@ NSComparisonResult SubviewSorter(__kindof NSView* lhs,
 // |child_windows| array ignoring the windows added by AppKit.
 NSUInteger CountBridgedWindows(NSArray* child_windows) {
   NSUInteger count = 0;
-
   for (NSWindow* child in child_windows) {
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([child parentWindow]);
-
-    // The child may be in an intermediary state where it's been removed from
-    // Views but not from the childWindow list (see the description of
-    // -willCloseLater in ViewsNSWindowDelegate). Child windows in this state
-    // essentially do not exist, so we should not count them.
-    if ([parentWindow willRemoveChildWindowOnActivation:child]) {
-      continue;
-    } else if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
+    if ([[child delegate] isKindOfClass:[ViewsNSWindowDelegate class]]) {
       ++count;
     }
   }
@@ -516,18 +506,23 @@ void NativeWidgetNSWindowBridge::SetInitialBounds(
     adjusted_bounds = gfx::Rect(
         gfx::Point(), gfx::Size(NSWidth(frame_rect), NSHeight(frame_rect)));
   }
-  SetBounds(adjusted_bounds, minimum_content_size);
+  SetBounds(adjusted_bounds, minimum_content_size, absl::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetBounds(
     const gfx::Rect& new_bounds,
-    const gfx::Size& minimum_content_size) {
-  // -[NSWindow contentMinSize] is only checked by Cocoa for user-initiated
-  // resizes. This is not what toolkit-views expects, so clamp. Note there is
-  // no check for maximum size (consistent with aura::Window::SetBounds()).
+    const gfx::Size& minimum_content_size,
+    const absl::optional<gfx::Size>& maximum_content_size) {
+  // -[NSWindow contentMinSize] and [NSWindow contentMaxSize] are only checked
+  // by Cocoa for user-initiated resizes. This is not what toolkit-views
+  // expects, so clamp.
   gfx::Size clamped_content_size =
       GetClientSizeForWindowSize(window_, new_bounds.size());
   clamped_content_size.SetToMax(minimum_content_size);
+
+  if (maximum_content_size.has_value()) {
+    clamped_content_size.SetToMin(*maximum_content_size);
+  }
 
   // A contentRect with zero width or height is a banned practice in ChromeMac,
   // due to unpredictable macOS treatment.
@@ -567,7 +562,7 @@ void NativeWidgetNSWindowBridge::SetSize(
   // which -[NSWindow setContentSize:] would do).
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(new_size);
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, absl::nullopt);
 }
 
 void NativeWidgetNSWindowBridge::SetSizeAndCenter(
@@ -575,7 +570,7 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
     const gfx::Size& minimum_content_size) {
   gfx::Rect new_window_bounds = gfx::ScreenRectFromNSRect([window_ frame]);
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
-  SetBounds(new_window_bounds, minimum_content_size);
+  SetBounds(new_window_bounds, minimum_content_size, absl::nullopt);
 
   // Note that this is not the precise center of screen, but it is the standard
   // location for windows like dialogs to appear on screen for Mac.
@@ -775,11 +770,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // DCHECK(![window_ attachedSheet]);
 
     [window_ orderOut:nil];
-
-    NativeWidgetMacNSWindow* parentWindow =
-        base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-    DCHECK(!window_visible_ ||
-           [parentWindow willRemoveChildWindowOnActivation:window_]);
+    DCHECK(!window_visible_);
     return;
   } else if (new_state == WindowVisibilityState::kMiniaturizeWindow) {
     [window_ miniaturize:nil];
@@ -1047,6 +1038,11 @@ void NativeWidgetNSWindowBridge::OnImmersiveFullscreenMenuBarRevealChanged(
   host_->OnImmersiveFullscreenMenuBarRevealChanged(reveal_amount);
 }
 
+void NativeWidgetNSWindowBridge::OnAutohidingMenuBarHeightChanged(
+    int menu_bar_height) {
+  host_->OnAutohidingMenuBarHeightChanged(menu_bar_height);
+}
+
 void NativeWidgetNSWindowBridge::SetCanGoBack(bool can_go_back) {
   can_go_back_ = can_go_back;
 }
@@ -1109,12 +1105,7 @@ void NativeWidgetNSWindowBridge::OnPositionChanged() {
 }
 
 void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
-  NativeWidgetMacNSWindow* parentWindow =
-      base::apple::ObjCCast<NativeWidgetMacNSWindow>([window_ parentWindow]);
-  const bool window_visible =
-      [window_ isVisible] &&
-      ![parentWindow willRemoveChildWindowOnActivation:window_];
-
+  const bool window_visible = [window_ isVisible];
   if (window_visible_ == window_visible)
     return;
 
@@ -1709,17 +1700,10 @@ void NativeWidgetNSWindowBridge::NotifyVisibilityChangeDown() {
   const size_t child_count = child_windows_.size();
   if (!window_visible_) {
     for (NativeWidgetNSWindowBridge* child : child_windows_) {
-      NSWindow* childWindow = child->ns_window();
-
       if (child->window_visible_) {
-        [childWindow orderOut:nil];
+        [child->ns_window() orderOut:nil];
       }
-      NativeWidgetMacNSWindow* parentWindow =
-          base::apple::ObjCCast<NativeWidgetMacNSWindow>(
-              [childWindow parentWindow]);
-
-      DCHECK(!child->window_visible_ ||
-             [parentWindow willRemoveChildWindowOnActivation:childWindow]);
+      DCHECK(!child->window_visible_);
       CHECK_EQ(child_count, child_windows_.size());
     }
     // The orderOut calls above should result in a call to OnVisibilityChanged()

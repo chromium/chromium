@@ -25,15 +25,17 @@ namespace {
 
 base::FilePath GetPdfTestData(const base::FilePath::StringType& filename) {
   base::FilePath root_path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path)) {
     return base::FilePath();
+  }
   return root_path.Append("pdf").Append("test").Append("data").Append(filename);
 }
 
 base::FilePath GetPrintingTestData(const base::FilePath::StringType& filename) {
   base::FilePath root_path;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path)) {
     return base::FilePath();
+  }
   return root_path.Append("printing")
       .Append("test")
       .Append("data")
@@ -82,11 +84,11 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
       CGColorSpaceCreateDeviceRGB());
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       rendered_bitmap.data(), dest_size.width(), dest_size.height(),
-      kBitsPerComponent, kStride, color_space,
+      kBitsPerComponent, kStride, color_space.get(),
       uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Little));
 
   // Render using metafile and calculate the output hash.
-  ASSERT_TRUE(pdf_cg->RenderPage(page_number, context,
+  ASSERT_TRUE(pdf_cg->RenderPage(page_number, context.get(),
                                  gfx::Rect(dest_size).ToCGRect(), autorotate,
                                  fit_to_page));
   *rendered_hash = base::SHA1HashSpan(rendered_bitmap);

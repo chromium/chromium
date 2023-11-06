@@ -23,5 +23,11 @@ extern const char kOpenMostRecentTabAction[];
 extern const char kTrendingQueriesHistogram[];
 extern const char kMagicStackTopModuleImpressionHistogram[];
 extern const char kMagicStackModuleEngagementHistogram[];
+extern const char kMagicStackModuleEngagementMostVisitedIndexHistogram[];
+extern const char kMagicStackModuleEngagementShortcutsIndexHistogram[];
+extern const char kMagicStackModuleEngagementSetUpListIndexHistogram[];
+extern const char kMagicStackModuleEngagementTabResumptionIndexHistogram[];
+extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
+extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_METRICS_CONSTANTS_H_

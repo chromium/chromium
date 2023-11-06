@@ -24,59 +24,6 @@ bool HasOneDecimalDigit(absl::optional<double> rate) {
 
 }  // namespace
 
-const char kFullRequestTemplate[] =
-    R"({
-        "advanced_options": {
-          "audio_generation_options": {"speed_factor": %.1f},
-          "force_language": "%s"
-        },
-        "text": {
-          "text_parts": ["%s"]
-        },
-        "voice_settings": {
-          "voice_criteria_and_selections": [{
-            "criteria": {"language": "%s"},
-            "selection": {"default_voice": "%s"}
-          }]
-        }
-      })";
-
-extern const char kSimpleRequestTemplate[] =
-    R"({"advanced_options": {
-          "audio_generation_options": {"speed_factor": %.1f}
-        },
-        "text": {"text_parts": ["%s"]}})";
-
-extern const char kTemplateResponse[] =
-    R"([
-        {"metadata": {}},
-        {"text": {
-          "timingInfo": [
-            {
-              "text": "test1",
-              "location": {
-                "textLocation": {"length": 5},
-                "timeLocation": {
-                  "timeOffset": "0.01s",
-                  "duration": "0.14s"
-                }
-              }
-            },
-            {
-              "text": "test2",
-              "location": {
-                "textLocation": {"length": 5, "offset": 6},
-                "timeLocation": {
-                  "timeOffset": "0.16s",
-                  "duration": "0.17s"
-                }
-              }
-            }
-          ]}
-        },
-        {"audio": {"bytes": "%s"}}
-      ])";
-
 std::string CreateCorrectRequest(const std::string& input_text,
                                  float rate,
                                  const std::string& voice_name,

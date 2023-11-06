@@ -8,9 +8,9 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -116,23 +116,10 @@ base::expected<blink_mojom::GraphInfoPtr, String> BuildWebNNGraphInfo(
   return graph_info;
 }
 
-#define DEFINE_WEBNN_ERROR_CODE_MAPPING(error_code) \
-  case blink_mojom::Error::Code::error_code: {      \
-    return DOMExceptionCode::error_code;            \
-  }
-
-DOMExceptionCode ConvertWebNNErrorCodeToDOMExceptionCode(
-    blink_mojom::Error::Code error_code) {
-  switch (error_code) {
-    DEFINE_WEBNN_ERROR_CODE_MAPPING(kUnknownError)
-    DEFINE_WEBNN_ERROR_CODE_MAPPING(kNotSupportedError)
-  }
-}
-
 }  // namespace
 
 // static
-void MLGraphMojo::ValidateAndBuildAsync(MLContext* context,
+void MLGraphMojo::ValidateAndBuildAsync(MLContextMojo* context,
                                         const MLNamedOperands& named_outputs,
                                         ScriptPromiseResolver* resolver) {
   auto* graph =
@@ -140,13 +127,16 @@ void MLGraphMojo::ValidateAndBuildAsync(MLContext* context,
   graph->BuildAsync(named_outputs, resolver);
 }
 
-MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContext* context)
-    : MLGraph(context), remote_graph_(ExecutionContext::From(script_state)) {}
+MLGraphMojo::MLGraphMojo(ScriptState* script_state, MLContextMojo* context)
+    : MLGraph(context),
+      ml_context_mojo_(context),
+      remote_graph_(ExecutionContext::From(script_state)) {}
 
 MLGraphMojo::~MLGraphMojo() = default;
 
 void MLGraphMojo::Trace(Visitor* visitor) const {
   visitor->Trace(remote_graph_);
+  visitor->Trace(ml_context_mojo_);
   MLGraph::Trace(visitor);
 }
 
@@ -160,9 +150,8 @@ void MLGraphMojo::BuildAsyncImpl(const MLNamedOperands& outputs,
     return;
   }
   // Create `WebNNGraph` message pipe with `WebNNContext` mojo interface.
-  auto* script_state = resolver->GetScriptState();
-  ml_context_->CreateWebNNGraph(
-      script_state, std::move(graph_info.value()),
+  ml_context_mojo_->CreateWebNNGraph(
+      std::move(graph_info.value()),
       WTF::BindOnce(&MLGraphMojo::OnCreateWebNNGraph, WrapPersistent(this),
                     WrapPersistent(resolver)));
 }

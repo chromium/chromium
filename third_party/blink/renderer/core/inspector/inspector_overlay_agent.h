@@ -268,6 +268,7 @@ class CORE_EXPORT InspectorOverlayAgent final
 
   void Inspect(Node*);
   void EnsureAXContext(Node*);
+  void EnsureAXContext(Document&);
   void DispatchBufferedTouchEvents();
   void SetPageIsScrolling(bool is_scrolling);
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
@@ -289,6 +290,8 @@ class CORE_EXPORT InspectorOverlayAgent final
 
   float EmulationScaleFactor() const;
 
+  void DidInitializeFrameWidget();
+
  private:
   class InspectorOverlayChromeClient;
   class InspectorPageOverlayDelegate;
@@ -298,6 +301,7 @@ class CORE_EXPORT InspectorOverlayAgent final
                 ExceptionState& exception_state) override;
 
   bool IsEmpty();
+  bool FrameWidgetInitialized() const;
 
   LocalFrame* OverlayMainFrame();
   void Reset(const gfx::Size& viewport_size,

@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "chrome/browser/autofill/autofill_uitest_util.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router.h"
+#include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
@@ -43,6 +45,19 @@ class MandatoryReauthSettingsPageMetricsTest
     autofill_client()
         ->GetPersonalDataManager()
         ->SetPaymentMethodsMandatoryReauthEnabled(IsFeatureTurnedOn());
+    extensions::AutofillPrivateEventRouterFactory::GetForProfile(
+        browser_context())
+        ->RebindPersonalDataManagerForTesting(
+            autofill_client()->GetPersonalDataManager());
+  }
+
+  void TearDownOnMainThread() override {
+    // Unbinding the `autofill_client()` test PDM on the
+    // `AutofillPrivateEventRouter`. This removes the test PDM instance added to
+    // the observers in `SetUpOnMainThread()` for `AutofillPrivateEventRouter`.
+    extensions::AutofillPrivateEventRouterFactory::GetForProfile(
+        browser_context())
+        ->UnbindPersonalDataManagerForTesting();
   }
 
   bool IsFeatureTurnedOn() const { return std::get<0>(GetParam()); }
@@ -65,6 +80,13 @@ class MandatoryReauthSettingsPageMetricsTest
   }
 
  private:
+  content::BrowserContext* browser_context() {
+    return browser()
+        ->tab_strip_model()
+        ->GetActiveWebContents()
+        ->GetBrowserContext();
+  }
+
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       test_autofill_client_injector_;
 };
@@ -102,7 +124,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
-                       SettingsPageMandatoryReauthEditLocalCard) {
+                       SettingsPageMandatoryReauthReturnLocalCard) {
   base::HistogramTester histogram_tester;
 
   ON_CALL(*static_cast<autofill::payments::MockMandatoryReauthManager*>(
@@ -114,7 +136,7 @@ IN_PROC_BROWSER_TEST_P(MandatoryReauthSettingsPageMetricsTest,
             std::move(callback).Run(auth_success);
           }));
 
-  RunAutofillSubtest("authenticateUserToEditLocalCard");
+  RunAutofillSubtest("getLocalCard");
 
   std::string histogram_name =
       "Autofill.PaymentMethods.MandatoryReauth.AuthEvent.SettingsPage.EditCard";

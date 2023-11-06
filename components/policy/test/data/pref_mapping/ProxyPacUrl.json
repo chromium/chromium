@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ProxyMode": "pac_script",
+          "ProxyPacUrl": "http://localhost:8080/proxy.pac"
+        },
+        "prefs": {
+          "proxy": {
+            "value": {
+              "mode": "pac_script",
+              "pac_mandatory": false,
+              "pac_url": "http://localhost:8080/proxy.pac"
+            }
+          }
+        }
+      }
+    ]
+  }
+]

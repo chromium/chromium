@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/actions/action_id.h"
@@ -95,10 +96,50 @@ class COMPONENT_EXPORT(ACTIONS) ScopedActionUpdate {
   raw_ptr<ActionItem> action_item_;
 };
 
+// Context object designed to allow any class property to be attached to it.
+// This allows invoking the action with any additional contextual information
+// without requiring the action item itself have any knowledge of that
+// information.
+class COMPONENT_EXPORT(ACTIONS) ActionInvocationContext
+    : public ui::PropertyHandler {
+ public:
+  ActionInvocationContext();
+  ActionInvocationContext(ActionInvocationContext&&);
+  ActionInvocationContext& operator=(ActionInvocationContext&&);
+  ~ActionInvocationContext() override;
+
+  class COMPONENT_EXPORT(ACTIONS) ContextBuilder {
+   public:
+    ContextBuilder(ContextBuilder&&);
+    ContextBuilder& operator=(ContextBuilder&&);
+    ~ContextBuilder();
+
+    template <typename T>
+    ContextBuilder&& SetProperty(const ui::ClassProperty<T>* property,
+                                 ui::metadata::ArgType<T> value) && {
+      context_->SetProperty(property, value);
+      return std::move(*this);
+    }
+
+    [[nodiscard]] ActionInvocationContext Build() &&;
+
+   private:
+    friend class ActionInvocationContext;
+    ContextBuilder();
+    std::unique_ptr<ActionInvocationContext> context_ =
+        std::make_unique<ActionInvocationContext>();
+  };
+
+  static ContextBuilder Builder();
+};
+
 class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
+  METADATA_HEADER(ActionItem, BaseAction)
+
  public:
   using ActionChangedCallback = ui::metadata::PropertyChangedCallback;
-  using InvokeActionCallback = base::RepeatingCallback<void(ActionItem*)>;
+  using InvokeActionCallback =
+      base::RepeatingCallback<void(ActionItem*, ActionInvocationContext)>;
 
   class COMPONENT_EXPORT(ACTIONS) ActionItemBuilder {
    public:
@@ -127,6 +168,15 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     template <typename ActionPtr>
     ActionItemBuilder&& CopyAddressTo(ActionPtr* action_address) && {
       return std::move(this->CopyAddressTo(action_address));
+    }
+    template <typename Action>
+    ActionItemBuilder& CopyWeakPtrTo(base::WeakPtr<Action>* weak_ptr) & {
+      *weak_ptr = action_item_->GetAsWeakPtr();
+      return *this;
+    }
+    template <typename Action>
+    ActionItemBuilder&& CopyWeakPtrTo(base::WeakPtr<Action>* weak_ptr) && {
+      return std::move(this->CopyWeakPtrTo(weak_ptr));
     }
 
     template <typename T>
@@ -183,8 +233,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
     ChildList children_;
   };
 
-  METADATA_HEADER(ActionItem);
-
   ActionItem();
   explicit ActionItem(InvokeActionCallback callback);
   ActionItem(const ActionItem&) = delete;
@@ -229,11 +277,14 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   [[nodiscard]] ScopedActionUpdate BeginUpdate();
 
   // Invoke an action.
-  void InvokeAction();
+  void InvokeAction(
+      ActionInvocationContext context = ActionInvocationContext());
 
   // Get action metrics.
   int GetInvokeCount() const;
   absl::optional<base::TimeTicks> GetLastInvokeTime() const;
+
+  base::WeakPtr<ActionItem> GetAsWeakPtr();
 
  protected:
   // ActionList::Delegate override.
@@ -264,6 +315,7 @@ class COMPONENT_EXPORT(ACTIONS) ActionItem : public BaseAction {
   InvokeActionCallback callback_;
   int invoke_count_ = 0;
   absl::optional<base::TimeTicks> last_invoke_time_;
+  base::WeakPtrFactory<ActionItem> weak_ptr_factory_{this};
 };
 
 class COMPONENT_EXPORT(ACTIONS) ActionManager
@@ -273,8 +325,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
 
   using ActionItemInitializerList =
       base::RepeatingCallbackList<void(ActionManager*)>;
-  using ActionIdToStringMap = base::flat_map<ActionId, std::string>;
-  using StringToActionIdMap = base::flat_map<std::string, ActionId>;
 
   ActionManager(const ActionManager&) = delete;
   ActionManager& operator=(const ActionManager&) = delete;
@@ -282,26 +332,6 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   static ActionManager& Get();
   static ActionManager& GetForTesting();
   static void ResetForTesting();
-
-  // Searches existing maps for the given ActionId and returns the corresponding
-  // string if found, otherwise returns an empty string.
-  static absl::optional<std::string> ActionIdToString(const ActionId action_id);
-  // Searches existing maps for the given string and returns the corresponding
-  // ActionId if found, otherwise returns kActionsEnd.
-  static absl::optional<ActionId> StringToActionId(
-      const std::string action_id_string);
-  static std::vector<absl::optional<std::string>> ActionIdsToStrings(
-      std::vector<ActionId> action_ids);
-  static std::vector<absl::optional<ActionId>> StringsToActionIds(
-      std::vector<std::string> action_id_strings);
-
-  static void AddActionIdToStringMappings(ActionIdToStringMap map);
-  static void AddStringToActionIdMappings(StringToActionIdMap map);
-
-  // The second element in the pair is set to true if a new ActionId is
-  // created, or false if an ActionId with the given name already exists.
-  static std::pair<ActionId, bool> CreateActionId(
-      const std::string& action_name);
 
   void IndexActions();
   ActionItem* FindAction(std::u16string term, ActionItem* scope = nullptr);
@@ -323,7 +353,9 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   // Resets the current `initializer_list_`.
   void ResetActionItemInitializerList();
 
-  // Appends `initializer` to the end of the current `initializer_list_`.
+  // Appends `initializer` to the end of the current `initializer_list_`. If the
+  // initializers have already been run or actions have already been added to
+  // the manager, the initializer will be run immediately.
   [[nodiscard]] base::CallbackListSubscription AppendActionItemInitializer(
       ActionItemInitializerList::CallbackType initializer);
 
@@ -342,18 +374,52 @@ class COMPONENT_EXPORT(ACTIONS) ActionManager
   ActionItem* FindActionImpl(ActionId action_id, const ActionList& list);
   void GetActionsImpl(ActionItem* item, ActionItemVector& items);
 
-  // Merges the `map2` into `map1`.
-  template <typename T, typename U>
-  static void MergeMaps(base::flat_map<T, U>& map1, base::flat_map<T, U>& map2);
-
-  static ActionIdToStringMap& GetActionIdToStringMap();
-  static StringToActionIdMap& GetStringToActionIdMap();
-
   // Holds the chain of ActionManager initializer callbacks.
   std::unique_ptr<ActionItemInitializerList> initializer_list_;
 
   // All "root" actions are parented to this action.
   BaseAction root_action_parent_;
+};
+
+class COMPONENT_EXPORT(ACTIONS) ActionIdMap {
+ public:
+  using ActionIdToStringMap = base::flat_map<ActionId, std::string>;
+  using StringToActionIdMap = base::flat_map<std::string, ActionId>;
+
+  ActionIdMap(const ActionIdMap&) = delete;
+  ActionIdMap& operator=(const ActionIdMap&) = delete;
+
+  // Searches existing maps for the given ActionId and returns the corresponding
+  // string if found, otherwise returns an empty string.
+  static absl::optional<std::string> ActionIdToString(const ActionId action_id);
+  // Searches existing maps for the given string and returns the corresponding
+  // ActionId if found, otherwise returns kActionsEnd.
+  static absl::optional<ActionId> StringToActionId(
+      const std::string action_id_string);
+  static std::vector<absl::optional<std::string>> ActionIdsToStrings(
+      std::vector<ActionId> action_ids);
+  static std::vector<absl::optional<ActionId>> StringsToActionIds(
+      std::vector<std::string> action_id_strings);
+
+  static void AddActionIdToStringMappings(ActionIdToStringMap map);
+  static void AddStringToActionIdMappings(StringToActionIdMap map);
+
+  // The second element in the pair is set to true if a new ActionId is
+  // created, or false if an ActionId with the given name already exists.
+  static std::pair<ActionId, bool> CreateActionId(
+      const std::string& action_name);
+
+  static void ResetMapsForTesting();
+
+ private:
+  // Merges `map2` into `map1`.
+  template <typename T, typename U>
+  static void MergeMaps(base::flat_map<T, U>& map1, base::flat_map<T, U>& map2);
+
+  static absl::optional<ActionIdToStringMap>& GetGlobalActionIdToStringMap();
+  static absl::optional<StringToActionIdMap>& GetGlobalStringToActionIdMap();
+  static ActionIdToStringMap& GetActionIdToStringMap();
+  static StringToActionIdMap& GetStringToActionIdMap();
 };
 
 COMPONENT_EXPORT(ACTIONS)

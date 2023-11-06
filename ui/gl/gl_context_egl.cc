@@ -139,8 +139,8 @@ bool IsARMSwiftShaderPlatform() {
 GLContextEGL::GLContextEGL(GLShareGroup* share_group)
     : GLContextReal(share_group) {}
 
-bool GLContextEGL::Initialize(GLSurface* compatible_surface,
-                              const GLContextAttribs& attribs) {
+bool GLContextEGL::InitializeImpl(GLSurface* compatible_surface,
+                                  const GLContextAttribs& attribs) {
   DCHECK(compatible_surface);
   DCHECK(!context_);
 
@@ -397,6 +397,7 @@ bool GLContextEGL::Initialize(GLSurface* compatible_surface,
 
 void GLContextEGL::Destroy() {
   ReleaseBackpressureFences();
+  OnContextWillDestroy();
   if (context_) {
     if (!eglDestroyContext(gl_display_->GetDisplay(), context_)) {
       LOG(ERROR) << "eglDestroyContext failed with error "

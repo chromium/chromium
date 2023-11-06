@@ -17,6 +17,7 @@ source_set("messaging") {
     "message_port.h",
     "message_service.cc",
     "message_service.h",
+    "message_service_bindings.cc",
     "messaging_api_message_filter.cc",
     "messaging_api_message_filter.h",
     "messaging_delegate.cc",
@@ -33,6 +34,7 @@ source_set("messaging") {
     "//components/keyed_service/content:content",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common/api",
   ]

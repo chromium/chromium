@@ -133,9 +133,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     return no_state_prefetch_manager_;
   }
 
-  const GURL& prerender_url() const { return prerender_url_; }
+  const GURL& prefetch_url() const { return prefetch_url_; }
   bool has_finished_loading() const { return has_finished_loading_; }
-  bool prerendering_has_started() const { return prerendering_has_started_; }
+  bool prefetching_has_started() const { return prefetching_has_started_; }
 
   FinalStatus final_status() const { return final_status_; }
 
@@ -192,8 +192,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // Increments the number of bytes fetched over the network for this prerender.
   void AddNetworkBytes(int64_t bytes);
 
-  bool prerendering_has_been_cancelled() const {
-    return prerendering_has_been_cancelled_;
+  bool prefetching_has_been_cancelled() const {
+    return prefetching_has_been_cancelled_;
   }
 
   // Running byte count. Increased when each resource completes loading.
@@ -226,7 +226,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   std::unique_ptr<content::WebContents> CreateWebContents(
       content::SessionStorageNamespace* session_storage_namespace);
 
-  bool prerendering_has_started_;
+  bool prefetching_has_started_ = false;
 
   // Time at which we started to load the URL.  This is used to compute
   // the time elapsed from initiating a prerender until the time the
@@ -271,8 +271,8 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // The delegate that content embedders use to override this class's logic.
   std::unique_ptr<NoStatePrefetchContentsDelegate> delegate_;
 
-  // The URL being prerendered.
-  const GURL prerender_url_;
+  // The URL being prefetched.
+  const GURL prefetch_url_;
 
   // Store the PreloadingAttempt for this NoStatePrefetch attempt. We store
   // WeakPtr as it is possible that the PreloadingAttempt is deleted before the
@@ -295,13 +295,13 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   std::vector<GURL> alias_urls_;
 
   // True when the main frame has finished loading.
-  bool has_finished_loading_;
+  bool has_finished_loading_ = false;
 
   FinalStatus final_status_;
 
-  // Tracks whether or not prerendering has been cancelled by calling Destroy.
+  // Tracks whether or not prefetching has been cancelled by calling Destroy.
   // Used solely to prevent double deletion.
-  bool prerendering_has_been_cancelled_;
+  bool prefetching_has_been_cancelled_ = false;
 
   // Pid of the render process associated with the RenderViewHost for this
   // object.

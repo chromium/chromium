@@ -74,9 +74,9 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     }
   }
 
-  GinJavaBridgeError error;
+  mojom::GinJavaBridgeError error;
   std::unique_ptr<base::Value> result = dispatcher_->InvokeJavaMethod(
-      object->object_id(), method_name_, arguments, &error);
+      object->object_id(), method_name_, std::move(arguments), &error);
   if (!result.get()) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
         args->isolate(), GinJavaBridgeErrorToString(error))));

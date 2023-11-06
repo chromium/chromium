@@ -33,6 +33,8 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/sync/base/features.h"
+#include "components/sync/service/sync_service_impl.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -74,6 +76,17 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     if (!result) {
       return result;
     }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    // Enable the Apps toggle for both clients.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
+    }
+#endif
+
     for (Profile* profile : GetAllProfiles()) {
       auto* web_app_provider = WebAppProvider::GetForTest(profile);
       base::RunLoop loop;
@@ -112,7 +125,6 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     provider->scheduler().FetchManifestAndInstall(
         source,
         browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
         base::BindOnce(test::TestAcceptDialogCallback),
         base::BindLambdaForTesting([&](const webapps::AppId& new_app_id,
                                        webapps::InstallResultCode code) {

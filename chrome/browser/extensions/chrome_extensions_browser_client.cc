@@ -51,7 +51,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_signal.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
@@ -109,6 +108,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -453,7 +453,11 @@ bool ChromeExtensionsBrowserClient::IsAppModeForcedForApp(
 }
 
 bool ChromeExtensionsBrowserClient::IsLoggedInAsPublicAccount() {
-  return profiles::IsManagedGuestSession();
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
+#endif
 }
 
 ExtensionSystemProvider*

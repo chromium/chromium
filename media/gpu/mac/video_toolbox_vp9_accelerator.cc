@@ -41,12 +41,9 @@ VideoToolboxVP9Accelerator::Status VideoToolboxVP9Accelerator::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
-    const Vp9ReferenceFrameVector& reference_frames,
-    const base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& reference_frames) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // No callback because SupportsContextProbabilityReadback() returns false.
-  DCHECK(!done_cb);
   // `show_existing_frame` pictures go directly to OutputPicture().
   DCHECK(!pic->frame_hdr->show_existing_frame);
 
@@ -123,7 +120,8 @@ bool VideoToolboxVP9Accelerator::ProcessFrame(scoped_refptr<VP9Picture> pic) {
   }
 
   // Append this picture to the current superframe.
-  AppendData(frame_data_, pic->frame_hdr->data, pic->frame_hdr->frame_size);
+  AppendData(frame_data_.get(), pic->frame_hdr->data,
+             pic->frame_hdr->frame_size);
   frame_sizes_.push_back(pic->frame_hdr->frame_size);
 
   // If this is an output picture, submit the current superframe for decoding.
@@ -179,8 +177,9 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     active_format_.reset();
 
     base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
-        CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
-                               hdr_metadata);
+        CreateFormatExtensions(kCMVideoCodecType_VP9, profile,
+                               pic->frame_hdr->bit_depth, color_space,
+                               hdr_metadata, absl::nullopt);
     if (!format_config) {
       MEDIA_LOG(ERROR, media_log_.get())
           << "Failed to create format extensions";
@@ -190,7 +189,8 @@ bool VideoToolboxVP9Accelerator::ProcessFormat(scoped_refptr<VP9Picture> pic,
     base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
     OSStatus status = CMVideoFormatDescriptionCreate(
         kCFAllocatorDefault, kCMVideoCodecType_VP9, coded_size.width(),
-        coded_size.height(), format_config, active_format_.InitializeInto());
+        coded_size.height(), format_config.get(),
+        active_format_.InitializeInto());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMVideoFormatDescriptionCreate()";
@@ -263,24 +263,25 @@ bool VideoToolboxVP9Accelerator::SubmitFrames(
     trailer.push_back(header);
     DCHECK_EQ(trailer.size(), trailer_size);
 
-    AppendData(frame_data, trailer.data(), trailer.size());
+    AppendData(frame_data.get(), trailer.data(), trailer.size());
   }
 
   // Wrap the frame data in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  size_t size = CMBlockBufferGetDataLength(frame_data);
-  OSStatus status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                         frame_data,  // data_buffer
-                                         true,        // data_ready
-                                         nullptr,  // make_data_ready_callback
-                                         nullptr,  // make_data_ready_refcon
-                                         active_format_,  // format_description
-                                         1,               // num_samples
-                                         0,        // num_sample_timing_entries
-                                         nullptr,  // sample_timing_array
-                                         1,        // num_sample_size_entries
-                                         &size,    // sample_size_array
-                                         sample.InitializeInto());
+  size_t size = CMBlockBufferGetDataLength(frame_data.get());
+  OSStatus status =
+      CMSampleBufferCreate(kCFAllocatorDefault,
+                           frame_data.get(),      // data_buffer
+                           true,                  // data_ready
+                           nullptr,               // make_data_ready_callback
+                           nullptr,               // make_data_ready_refcon
+                           active_format_.get(),  // format_description
+                           1,                     // num_samples
+                           0,                     // num_sample_timing_entries
+                           nullptr,               // sample_timing_array
+                           1,                     // num_sample_size_entries
+                           &size,                 // sample_size_array
+                           sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMSampleBufferCreate()";

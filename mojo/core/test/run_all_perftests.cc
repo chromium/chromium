@@ -8,7 +8,6 @@
 #include "base/feature_list.h"
 #include "base/test/perf_test_suite.h"
 #include "mojo/core/test/scoped_mojo_support.h"
-#include "mojo/core/test/test_support_impl.h"
 #include "mojo/public/tests/test_support_private.h"
 
 int main(int argc, char** argv) {
@@ -22,6 +21,5 @@ int main(int argc, char** argv) {
 
   base::PerfTestSuite test(argc, argv);
   mojo::core::test::ScopedMojoSupport mojo_support;
-  mojo::test::TestSupport::Init(new mojo::core::test::TestSupportImpl());
   return test.Run();
 }

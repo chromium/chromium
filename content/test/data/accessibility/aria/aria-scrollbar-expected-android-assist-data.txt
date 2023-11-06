@@ -1,0 +1,5 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View text:"ScrollBar1" textSize:16.00 style:0 bundle:[aria-valuenow="55", display="block", htmlTag="div", role="scrollbar", tabindex="0"]
+++++TextView text:"ScrollBar1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++View text:"ScrollBar2" textSize:16.00 style:0 bundle:[aria-orientation="horizontal", aria-valuenow="55", class="test", display="block", htmlTag="div", role="scrollbar", tabindex="0"]
+++++TextView text:"ScrollBar2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

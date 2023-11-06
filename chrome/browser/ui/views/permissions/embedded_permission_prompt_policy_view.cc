@@ -11,7 +11,7 @@
 
 EmbeddedPermissionPromptPolicyView::EmbeddedPermissionPromptPolicyView(
     Browser* browser,
-    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
+    base::WeakPtr<Delegate> delegate,
     bool is_permission_allowed)
     : EmbeddedPermissionPromptBaseView(browser, delegate),
       is_permission_allowed_(is_permission_allowed) {}
@@ -33,12 +33,12 @@ void EmbeddedPermissionPromptPolicyView::RunButtonCallback(int button_id) {
   DCHECK_EQ(button, ButtonType::kPolicyOK);
 
   if (delegate()) {
-    delegate()->Dismiss();
+    delegate()->Acknowledge();
   }
 }
 
 std::vector<EmbeddedPermissionPromptPolicyView::RequestLineConfiguration>
-EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() {
+EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() const {
   std::vector<RequestLineConfiguration> lines;
   lines.emplace_back(&vector_icons::kBusinessIcon, GetMessageText());
 
@@ -46,7 +46,7 @@ EmbeddedPermissionPromptPolicyView::GetRequestLinesConfiguration() {
 }
 
 std::vector<EmbeddedPermissionPromptPolicyView::ButtonConfiguration>
-EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() {
+EmbeddedPermissionPromptPolicyView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   buttons.emplace_back(l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_OK_LABEL),
                        ButtonType::kPolicyOK, ui::ButtonStyle::kTonal);

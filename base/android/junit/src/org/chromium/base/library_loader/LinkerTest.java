@@ -27,18 +27,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- *  Tests for {@link Linker}.
- */
+/** Tests for {@link Linker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("GuardedBy") // doNothing().when(...).methodLocked() cannot resolve |mLock|.
 public class LinkerTest {
-    @Mock
-    Linker.Natives mNativeMock;
+    @Mock Linker.Natives mNativeMock;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
@@ -180,7 +176,8 @@ public class LinkerTest {
         linker.takeSharedRelrosFromBundle(b);
 
         // Verify.
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "ChromiumAndroidLinker.RelroSharingStatus2"));
     }

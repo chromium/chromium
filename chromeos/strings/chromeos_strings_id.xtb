@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Sinyal lemah</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mengupdate (<ph name="PERCENTAGE_VALUE" />% selesai)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> menit</translation>
 <translation id="1310380015393971138">Jaringan <ph name="NETWORK_NAME" /> tidak tersedia</translation>
 <translation id="131421566576084655">Tanggal reset data terakhir tidak tersedia</translation>
 <translation id="1314565355471455267">VPN Android</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> akan mengelola pengguna ini serta mungkin dapat mengelola setelan dan memantau aktivitas pengguna dari jarak jauh.</translation>
 <translation id="150962533380566081">PUK tidak valid.</translation>
 <translation id="1510238584712386396">Peluncur</translation>
+<translation id="1515129336378114413">beranda browser</translation>
 <translation id="1526389707933164996">Animasi screensaver</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
 <translation id="1555130319947370107">Biru</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Setel sebagai wallpaper</translation>
 <translation id="1578784163189013834">Pilih latar belakang screen saver</translation>
 <translation id="160633243685262989">Pratinjau Gambar</translation>
+<translation id="1611649489706141841">maju</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
 <translation id="1639239467298939599">Memuat</translation>
@@ -168,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2157660087437850958">alat pemilih emoji</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator telah menyetel <ph name="APP_NAME_1" /> agar dimulai secara otomatis setiap kali Anda login.}=2{Administrator telah menyetel <ph name="APP_NAME_1" /> dan <ph name="APP_NAME_2" /> agar dimulai secara otomatis setiap kali Anda login.}=3{Administrator telah menyetel <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, dan <ph name="APP_NAME_3" /> agar dimulai secara otomatis setiap kali Anda login.}other{Administrator telah menyetel <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, dan # aplikasi lainnya agar dimulai secara otomatis setiap kali Anda login.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
+<translation id="215916044711630446">Tombol Tambahkan APN kini dinonaktifkan</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
 <translation id="2161656808144014275">Teks</translation>
 <translation id="2163937499206714165">Aktifkan mode gelap</translation>
@@ -184,6 +189,7 @@
 <translation id="2236746079896696523">Tombol lampu latar keyboard</translation>
 <translation id="2240366984605217732">Beralih tata letak</translation>
 <translation id="225692081236532131">Status aktivasi</translation>
+<translation id="2267285889943769271">Tambahkan screenshot</translation>
 <translation id="2271469253353559191">Jadwal mode gelap</translation>
 <translation id="2276999893457278469">Konten bantuan teratas</translation>
 <translation id="2279051792571591988">Pulihkan default</translation>
@@ -285,6 +291,7 @@
 <translation id="3226405216343213872">Mencari pemindai</translation>
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
+<translation id="324961752321393509">Administrator tidak mengizinkan penutupan aplikasi ini</translation>
 <translation id="3268178239013324452">Gagal - Tutup terbuka</translation>
 <translation id="3275729367986477355">Gambar avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit file}}</translation>
@@ -336,7 +343,6 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
-<translation id="3607216139080387279">Tampilkan screensaver</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3632579075709132555">Beralih layar privasi</translation>
 <translation id="3651050199673793219">Pilih satuan suhu</translation>
@@ -348,7 +354,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Terhubung</translation>
 <translation id="3749289110408117711">Nama file</translation>
-<translation id="3766934827878963937">selama 1 jam</translation>
 <translation id="3771294271822695279">File Video</translation>
 <translation id="3784455785234192852">Kunci</translation>
 <translation id="380097101658023925">kontrol RGB</translation>
@@ -399,6 +404,7 @@
 <translation id="4117637339509843559">Mode gelap</translation>
 <translation id="4130035430755296270">Terus gerakkan kursor untuk melihat opsi tata letak lainnya</translation>
 <translation id="4131410914670010031">Hitam dan putih</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> dimulai secara otomatis}other{# aplikasi dimulai secara otomatis}}</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4150201353443180367">Tampilan</translation>
@@ -427,6 +433,7 @@
 <translation id="4297501883039923494">Dihentikan - Error tidak diketahui</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Gambar</translation>
 <translation id="4333390807948134856">Tombol <ph name="KEY_NAME" /> ditekan</translation>
+<translation id="4354430579665871434">tombol</translation>
 <translation id="435692326371619097">Kelola setelan APN jaringan. APN membuat koneksi antara jaringan seluler dan internet. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Reset semua pintasan</translation>
 <translation id="4378373042927530923">Tidak Berjalan</translation>
@@ -444,6 +451,7 @@
 <translation id="445059817448385655">Sandi lama</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pindai ke</translation>
+<translation id="4456812688969919973">Tombol Simpan APN kini dinonaktifkan</translation>
 <translation id="4469288414739283461">Screensaver Aliran bumi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Gagal melakukan ping ke gateway jaringan non-default</translation>
@@ -688,6 +696,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktifkan tema gelap</translation>
 <translation id="628726841779494414">Kelola printer Anda di setelan printer</translation>
+<translation id="6292095526077353682">Saat mengisi daya, tampilkan screensaver selama</translation>
 <translation id="629550705077076970">peredupan keyboard</translation>
 <translation id="6302401976930124515">Pengujian <ph name="TEST_NAME" /> telah dibatalkan</translation>
 <translation id="631063167932043783">Aplikasi Jelajahi</translation>
@@ -715,6 +724,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Buka setelan akun</translation>
+<translation id="6462978824459367242">Tombol Tambahkan APN kini diaktifkan</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Pindai ulang halaman?}=1{Pindai ulang halaman {PAGE_NUMBER}?}other{Pindai ulang halaman {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Dikelola oleh <ph name="MANAGER" /></translation>
@@ -749,6 +759,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">tingkatkan kecerahan keyboard</translation>
 <translation id="6692996468359469499">Dapatkan info terkait pilihan Anda</translation>
+<translation id="6694534975463174713">kunci</translation>
 <translation id="6704062477274546131">Resolusi DNS</translation>
 <translation id="6723839937902243910">Daya</translation>
 <translation id="6723847290197874913">Lampu latar keyboard</translation>
@@ -939,6 +950,7 @@
 <translation id="8227119283605456246">Lampirkan file</translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8246209727385807362">Operator tidak diketahui</translation>
+<translation id="8262870577632766028">1 jam</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Hubungkan ke jaringan dan muat ulang halaman untuk melihat wallpaper.</translation>
 <translation id="8291967909914612644">Negara penyedia rumah</translation>
@@ -1003,6 +1015,7 @@
 <translation id="8747900814994928677">Konfirmasi perubahan</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Foto</translation>
+<translation id="8775713578693478175">APN Modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Pintasan digunakan untuk "<ph name="CONFLICT_ACCEL_NAME" />". Tekan pintasan baru. Untuk mengganti pintasan awal, tekan lagi pintasan ini.</translation>
 <translation id="879568662008399081">Jaringan ini mungkin memiliki captive portal</translation>
@@ -1052,6 +1065,7 @@
 <translation id="902638246363752736">Setelan keyboard</translation>
 <translation id="9028832514430399253">Aktifkan tombol untuk memilih opsi screensaver</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Tombol Simpan APN kini diaktifkan</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Resolusi DNS memiliki latensi tinggi</translation>
 <translation id="9065203028668620118">Edit</translation>
@@ -1067,11 +1081,9 @@
 <translation id="9111102763498581341">Buka kunci</translation>
 <translation id="9122602430962285795">Untuk menghubungkan kembali, buka Setelan</translation>
 <translation id="9126720536733509015">Simpan beberapa halaman ke satu PDF</translation>
-<translation id="9133104754938025929">Untuk menghemat baterai, screensaver hanya ditampilkan saat mengisi daya.</translation>
 <translation id="9133772297793293778">Tekan tombol pengubah 1-4 dan 1 tombol lainnya di keyboard. Untuk keluar dari mode edit, tekan alt + esc.</translation>
 <translation id="9137526406337347448">Layanan Google</translation>
 <translation id="9138630967333032450">Shift kiri</translation>
-<translation id="9143347780818904997">selama <ph name="MINUTES" /> menit</translation>
 <translation id="9149391708638971077">Jalankan pengujian Memori</translation>
 <translation id="9161276708550942948">spasi</translation>
 <translation id="9173638680043580060">Kurang dari satu menit lagi</translation>

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_FAKE_CROS_NETWORK_CONFIG_H_
 #define CHROMEOS_SERVICES_NETWORK_CONFIG_PUBLIC_CPP_FAKE_CROS_NETWORK_CONFIG_H_
 
+#include <queue>
 #include <string>
 #include <vector>
 
@@ -85,7 +86,8 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
       mojom::UInt32ValuePtr day,
       SetTrafficCountersAutoResetCallback callback) override {}
   void CreateCustomApn(const std::string& network_guid,
-                       mojom::ApnPropertiesPtr apn) override;
+                       chromeos::network_config::mojom::ApnPropertiesPtr apn,
+                       CreateCustomApnCallback callback) override;
   void RemoveCustomApn(const std::string& network_guid,
                        const std::string& apn_id) override {}
   void ModifyCustomApn(const std::string& network_guid,
@@ -142,6 +144,8 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
     return custom_apns_;
   }
 
+  void InvokePendingCreateCustomApnCallback(bool success);
+
  private:
   // Adds `device_properties` to `device_properties_` if there are no device
   // properties for the network type `device_properties->type`, otherwise it
@@ -163,6 +167,8 @@ class FakeCrosNetworkConfig : public mojom::CrosNetworkConfig {
   mojom::GlobalPolicyPtr global_policy_;
   std::map<mojom::NetworkType, int> scan_count_;
   std::vector<mojom::ApnPropertiesPtr> custom_apns_;
+  std::queue<std::pair<CreateCustomApnCallback, mojom::ApnPropertiesPtr>>
+      pending_create_custom_apn_callbacks_;
   mojo::RemoteSet<mojom::CrosNetworkConfigObserver> observers_;
   mojo::Receiver<mojom::CrosNetworkConfig> receiver_{this};
 };

@@ -244,8 +244,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/encryptedmedia/media_keys_get_status_for_policy.idl",
   "//third_party/blink/renderer/modules/encryptedmedia/media_keys_policy.idl",
   "//third_party/blink/renderer/modules/encryptedmedia/navigator_request_media_key_system_access.idl",
-  "//third_party/blink/renderer/modules/environment_integrity/environment_integrity.idl",
-  "//third_party/blink/renderer/modules/environment_integrity/navigator_environment_integrity.idl",
   "//third_party/blink/renderer/modules/eventsource/event_source.idl",
   "//third_party/blink/renderer/modules/eventsource/event_source_init.idl",
   "//third_party/blink/renderer/modules/eyedropper/color_selection_options.idl",
@@ -467,6 +465,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/mediastream/navigator_media_stream.idl",
   "//third_party/blink/renderer/modules/mediastream/navigator_user_media.idl",
   "//third_party/blink/renderer/modules/mediastream/overconstrained_error.idl",
+  "//third_party/blink/renderer/modules/mediastream/restriction_target.idl",
   "//third_party/blink/renderer/modules/mediastream/screen_capture_media_stream_track.idl",
   "//third_party/blink/renderer/modules/ml/ml.idl",
   "//third_party/blink/renderer/modules/ml/ml_context.idl",
@@ -738,7 +737,6 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/shared_storage/private_aggregation_debug_mode_options.idl",
   "//third_party/blink/renderer/modules/shared_storage/private_aggregation_histogram_contribution.idl",
   "//third_party/blink/renderer/modules/shared_storage/shared_storage.idl",
-  "//third_party/blink/renderer/modules/shared_storage/shared_storage_iterator.idl",
   "//third_party/blink/renderer/modules/shared_storage/shared_storage_private_aggregation_config.idl",
   "//third_party/blink/renderer/modules/shared_storage/shared_storage_run_operation_method_options.idl",
   "//third_party/blink/renderer/modules/shared_storage/shared_storage_set_method_options.idl",
@@ -769,6 +767,9 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/storage/storage_event.idl",
   "//third_party/blink/renderer/modules/storage/storage_event_init.idl",
   "//third_party/blink/renderer/modules/storage/window_storage.idl",
+  "//third_party/blink/renderer/modules/storage_access/document_storage_access.idl",
+  "//third_party/blink/renderer/modules/storage_access/storage_access_handle.idl",
+  "//third_party/blink/renderer/modules/storage_access/storage_access_types.idl",
   "//third_party/blink/renderer/modules/subapps/navigator_sub_apps.idl",
   "//third_party/blink/renderer/modules/subapps/sub_apps.idl",
   "//third_party/blink/renderer/modules/subapps/sub_apps_add_params.idl",
@@ -865,6 +866,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webcodecs/audio_sample_format.idl",
   "//third_party/blink/renderer/modules/webcodecs/avc_encoder_config.idl",
   "//third_party/blink/renderer/modules/webcodecs/codec_state.idl",
+  "//third_party/blink/renderer/modules/webcodecs/decrypt_config.idl",
   "//third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.idl",
   "//third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk_init.idl",
   "//third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk_metadata.idl",
@@ -873,6 +875,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_init.idl",
   "//third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_metadata.idl",
   "//third_party/blink/renderer/modules/webcodecs/encoded_video_chunk_output_callback.idl",
+  "//third_party/blink/renderer/modules/webcodecs/encryption_pattern.idl",
   "//third_party/blink/renderer/modules/webcodecs/hardware_preference.idl",
   "//third_party/blink/renderer/modules/webcodecs/hevc_encoder_config.idl",
   "//third_party/blink/renderer/modules/webcodecs/image_decode_options.idl",
@@ -884,6 +887,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webcodecs/latency_mode.idl",
   "//third_party/blink/renderer/modules/webcodecs/opus_encoder_config.idl",
   "//third_party/blink/renderer/modules/webcodecs/plane_layout.idl",
+  "//third_party/blink/renderer/modules/webcodecs/subsample_entry.idl",
   "//third_party/blink/renderer/modules/webcodecs/svc_output_metadata.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_color_primaries.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_color_space.idl",
@@ -1243,6 +1247,19 @@ if (target_os != "android") {
   ]
 }
 
+# Printing
+# This uses target_os rather than current_os (which is what is_android is set
+# from) for the case of generating the v8 context snapshot for Android. When
+# generating the snapshot for Android, Blink is compiled with
+# current_os = "linux" and target_os = "android". Using target_os is necessary as
+# we need to compile in the same way as would happen when current_os = "android".
+if (target_os != "android") {
+  static_idl_files_in_modules += [
+    "//third_party/blink/renderer/modules/printing/navigator_printing.idl",
+    "//third_party/blink/renderer/modules/printing/web_printing_manager.idl",
+  ]
+}
+
 # Serial
 # This uses target_os rather than current_os (which is what is_android is set
 # from) for the case of generating the v8 context snapshot for android. When
@@ -1322,6 +1339,10 @@ static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/peerconnection/testing/internals_rtc_certificate.idl",
   "//third_party/blink/renderer/modules/peerconnection/testing/internals_rtc_peer_connection.idl",
   "//third_party/blink/renderer/modules/permissions/testing/internals_permission.idl",
+  "//third_party/blink/renderer/modules/sensor/testing/internals_sensor.idl",
+  "//third_party/blink/renderer/modules/sensor/testing/create_virtual_sensor_options.idl",
+  "//third_party/blink/renderer/modules/sensor/testing/virtual_sensor_information.idl",
+  "//third_party/blink/renderer/modules/sensor/testing/virtual_sensor_reading.idl",
   "//third_party/blink/renderer/modules/service_worker/testing/internals_service_worker.idl",
   "//third_party/blink/renderer/modules/speech/testing/internals_speech_synthesis.idl",
   "//third_party/blink/renderer/modules/vibration/testing/internals_vibration.idl",

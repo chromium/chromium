@@ -19,21 +19,15 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests for the {@link TimedCallbackDelayer} class.
- */
+/** Tests for the {@link TimedCallbackDelayer} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TimedCallbackDelayerTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public final EnsureAsyncPostingRule mPostingRule = new EnsureAsyncPostingRule();
+    @Rule public final EnsureAsyncPostingRule mPostingRule = new EnsureAsyncPostingRule();
 
-    /**
-     * Check that the callback is eventually called.
-     */
+    /** Check that the callback is eventually called. */
     @Test
     public void testCallbackCalled() {
         // Arbitrary time delays in milliseconds.
@@ -49,9 +43,7 @@ public class TimedCallbackDelayerTest {
         }
     }
 
-    /**
-     * Check that the callback is not called synchronously, even if the time delay is 0.
-     */
+    /** Check that the callback is not called synchronously, even if the time delay is 0. */
     @Test
     public void testCallbackAsync() {
         Runnable callback = mock(Runnable.class);

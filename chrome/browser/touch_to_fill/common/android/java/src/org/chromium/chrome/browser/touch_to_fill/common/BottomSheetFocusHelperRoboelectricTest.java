@@ -32,20 +32,13 @@ import org.chromium.ui.base.WindowAndroid;
 public class BottomSheetFocusHelperRoboelectricTest {
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private WebContentsAccessibility mWebContentsAccessibility;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private UserData mUserData;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
+    @Mock private WebContentsAccessibility mWebContentsAccessibility;
+    @Mock private Tab mTab;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private UserData mUserData;
 
     @Before
     public void setUp() throws InterruptedException {

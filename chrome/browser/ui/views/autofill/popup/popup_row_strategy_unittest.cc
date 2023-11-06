@@ -53,10 +53,6 @@ struct RowStrategyTestdata {
   int line_number;
   // The type of strategy to be tested.
   StrategyType strategy_type;
-  // The number of (non-separator) entries and the 1-indexed position of the
-  // entry with `line_number` inside them.
-  int set_size;
-  int set_index;
 };
 
 const RowStrategyTestdata kTestcases[] = {
@@ -66,8 +62,6 @@ const RowStrategyTestdata kTestcases[] = {
                            PopupItemId::kAutofillOptions},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
-        .set_size = 3,
-        .set_index = 2,
     },
     RowStrategyTestdata{
         .popup_item_ids = {PopupItemId::kPasswordEntry,
@@ -76,8 +70,6 @@ const RowStrategyTestdata kTestcases[] = {
                            PopupItemId::kAllSavedPasswordsEntry},
         .line_number = 0,
         .strategy_type = StrategyType::kPasswordSuggestion,
-        .set_size = 3,
-        .set_index = 1,
     },
     RowStrategyTestdata{
         .popup_item_ids = {PopupItemId::kAddressEntry,
@@ -85,8 +77,6 @@ const RowStrategyTestdata kTestcases[] = {
                            PopupItemId::kAutofillOptions},
         .line_number = 3,
         .strategy_type = StrategyType::kFooter,
-        .set_size = 3,
-        .set_index = 3,
     },
     RowStrategyTestdata{
         .popup_item_ids = {PopupItemId::kAutocompleteEntry,
@@ -94,15 +84,11 @@ const RowStrategyTestdata kTestcases[] = {
                            PopupItemId::kAutocompleteEntry},
         .line_number = 1,
         .strategy_type = StrategyType::kSuggestion,
-        .set_size = 3,
-        .set_index = 2,
     },
     RowStrategyTestdata{
         .popup_item_ids = {PopupItemId::kCompose},
         .line_number = 0,
         .strategy_type = StrategyType::kComposeSuggestion,
-        .set_size = 1,
-        .set_index = 1,
     }};
 
 }  // namespace
@@ -120,21 +106,6 @@ class PopupRowStrategyTest : public ChromeViewsTestBase {
       suggestions.emplace_back("Main text", "", "", popup_item_id);
     }
     controller().set_suggestions(std::move(suggestions));
-  }
-
-  // Checks that the expected callbacks for content cells are set and call the
-  // controller.
-  void TestContentCallbacks(const PopupCellView& cell, int index) {
-    base::RepeatingClosure on_select_callback = cell.GetOnSelectedCallback();
-    ASSERT_TRUE(on_select_callback);
-    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(index)));
-    on_select_callback.Run();
-
-    base::RepeatingClosure on_unselect_callback =
-        cell.GetOnUnselectedCallback();
-    ASSERT_TRUE(on_unselect_callback);
-    EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
-    on_unselect_callback.Run();
   }
 
   std::unique_ptr<PopupRowStrategy> CreateStrategy(StrategyType type,
@@ -174,51 +145,6 @@ TEST_P(PopupRowStrategyParametrizedTest, HasContentArea) {
 
   // Every suggestion has a content area.
   EXPECT_THAT(strategy->CreateContent(), NotNull());
-}
-
-TEST_P(PopupRowStrategyParametrizedTest, ContentAreaCallbacksWork) {
-  const RowStrategyTestdata kTestdata = GetParam();
-
-  SetSuggestions(kTestdata.popup_item_ids);
-  std::unique_ptr<PopupRowStrategy> strategy =
-      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
-
-  std::unique_ptr<PopupCellView> content_cell = strategy->CreateContent();
-  ASSERT_THAT(content_cell, NotNull());
-  TestContentCallbacks(*content_cell, kTestdata.line_number);
-}
-
-TEST_P(PopupRowStrategyParametrizedTest,
-       SetsAccessibilityAttributesForContentArea) {
-  const RowStrategyTestdata kTestdata = GetParam();
-
-  SetSuggestions(kTestdata.popup_item_ids);
-  std::unique_ptr<PopupRowStrategy> strategy =
-      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
-
-  std::unique_ptr<PopupCellView> content_cell = strategy->CreateContent();
-  ASSERT_THAT(content_cell, NotNull());
-
-  ui::AXNodeData node_data;
-  content_cell->GetAccessibleNodeData(&node_data);
-
-  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
-  EXPECT_EQ(u"Main text",
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
-            kTestdata.set_size);
-  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
-            kTestdata.set_index);
-}
-
-TEST_P(PopupRowStrategyParametrizedTest, HasControlArea) {
-  const RowStrategyTestdata kTestdata = GetParam();
-
-  SetSuggestions(kTestdata.popup_item_ids);
-  std::unique_ptr<PopupRowStrategy> strategy =
-      CreateStrategy(kTestdata.strategy_type, kTestdata.line_number);
-
-  EXPECT_THAT(strategy->CreateControl(), IsNull());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

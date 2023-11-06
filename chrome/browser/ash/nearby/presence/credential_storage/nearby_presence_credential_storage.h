@@ -11,6 +11,8 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence_credential_storage.mojom.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/local_credential.pb.h"
 
@@ -20,13 +22,25 @@ class ProtoDatabaseProvider;
 
 namespace ash::nearby::presence {
 
+// This base class exists for test implementations of
+// NearbyPresenceCredentialStorage.
+class NearbyPresenceCredentialStorageBase
+    : public mojom::NearbyPresenceCredentialStorage {
+ public:
+  ~NearbyPresenceCredentialStorageBase() override = default;
+
+  virtual void Initialize(base::OnceCallback<void(bool)> on_initialized) = 0;
+};
+
 // Implementation of the Mojo NearbyPresenceCredentialStorage interface. It
 // handles requests to read/write to the credential storage database for Nearby
 // Presence.
 class NearbyPresenceCredentialStorage
-    : public mojom::NearbyPresenceCredentialStorage {
+    : public NearbyPresenceCredentialStorageBase {
  public:
   NearbyPresenceCredentialStorage(
+      mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+          pending_receiver,
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& profile_path);
   NearbyPresenceCredentialStorage(const NearbyPresenceCredentialStorage&) =
@@ -40,19 +54,25 @@ class NearbyPresenceCredentialStorage
   // public credential database. The callback is invoked with true iff both
   // initializations are successful. Must be called in order to store
   // credentials.
-  void Initialize(base::OnceCallback<void(bool)> on_initialized);
+  void Initialize(base::OnceCallback<void(bool)> on_initialized) override;
 
-  // NearbyPresenceCredentialStorage:
+  // mojom::NearbyPresenceCredentialStorage:
   void SaveCredentials(
       std::vector<mojom::LocalCredentialPtr> local_credentials,
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
       mojom::PublicCredentialType public_credential_type,
       SaveCredentialsCallback on_credentials_fully_saved_callback) override;
+  void GetPublicCredentials(mojom::PublicCredentialType public_credential_type,
+                            GetPublicCredentialsCallback callback) override;
+  void GetPrivateCredentials(GetPrivateCredentialsCallback callback) override;
 
  protected:
   NearbyPresenceCredentialStorage(
-      std::unique_ptr<leveldb_proto::ProtoDatabase<
-          ::nearby::internal::LocalCredential>> private_db,
+      mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+          pending_receiver,
+      std::unique_ptr<
+          leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
+          private_db,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
           local_public_db,
@@ -61,6 +81,17 @@ class NearbyPresenceCredentialStorage
           remote_public_db);
 
  private:
+  void OnPrivateCredentialsRetrieved(
+      GetPrivateCredentialsCallback callback,
+      bool success,
+      std::unique_ptr<std::vector<::nearby::internal::LocalCredential>>
+          entries);
+  void OnPublicCredentialsRetrieved(
+      GetPublicCredentialsCallback callback,
+      bool success,
+      std::unique_ptr<std::vector<::nearby::internal::SharedCredential>>
+          entries);
+
   void OnLocalPublicCredentialsSaved(
       std::vector<mojom::LocalCredentialPtr> local_credentials,
       SaveCredentialsCallback on_credentials_fully_saved_callback,
@@ -91,6 +122,15 @@ class NearbyPresenceCredentialStorage
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
       remote_public_db_;
+
+  // `reciever_` is only bound after successful initialization.
+  mojo::Receiver<mojom::NearbyPresenceCredentialStorage> receiver_{this};
+
+  // `pending_receiver_` will only be valid prior to initialization, and is
+  // bound to `receiver_` upon a successful call to `Initialize()`.
+  mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+      pending_receiver_;
+
   base::WeakPtrFactory<NearbyPresenceCredentialStorage> weak_ptr_factory_{this};
 };
 

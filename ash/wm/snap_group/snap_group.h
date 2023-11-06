@@ -33,6 +33,9 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // Minimizes the windows in the snap group.
   void MinimizeWindows();
 
+  // Swaps the windows in the snap group.
+  void SwapWindows();
+
   // aura::WindowObserver:
   // TODO: Implement `OnWindowParentChanged`.
   void OnWindowDestroying(aura::Window* window) override;
@@ -55,6 +58,9 @@ class SnapGroup : public aura::WindowObserver, public WindowStateObserver {
   // divider during `UpdateSnappedWindowsAndDividerBounds()` in
   // `SplitViewController`.
   void RestoreWindowsBoundsOnSnapGroupRemoved();
+
+  // True while we are updating the windows during a swap.
+  bool is_swapping_ = false;
 
   raw_ptr<aura::Window, ExperimentalAsh> window1_;
   raw_ptr<aura::Window, ExperimentalAsh> window2_;

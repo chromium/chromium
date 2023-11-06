@@ -65,8 +65,8 @@ TEST_F(DMTokenRetrieverProviderTest,
   test::TestEvent<StatusOr<std::string>> dm_token_retrieved_event;
   dm_token_retriever->RetrieveDMToken(dm_token_retrieved_event.cb());
   auto dm_token_result = dm_token_retrieved_event.result();
-  ASSERT_OK(dm_token_result);
-  EXPECT_THAT(dm_token_result.ValueOrDie(), IsEmpty());
+  ASSERT_TRUE(dm_token_result.has_value());
+  EXPECT_THAT(dm_token_result.value(), IsEmpty());
 }
 
 TEST_F(DMTokenRetrieverProviderTest, ReturnsUserDMTokenRetrieverForUserEvents) {
@@ -82,8 +82,8 @@ TEST_F(DMTokenRetrieverProviderTest, ReturnsUserDMTokenRetrieverForUserEvents) {
   test::TestEvent<StatusOr<std::string>> dm_token_retrieved_event;
   dm_token_retriever->RetrieveDMToken(dm_token_retrieved_event.cb());
   auto dm_token_result = dm_token_retrieved_event.result();
-  ASSERT_OK(dm_token_result);
-  EXPECT_THAT(dm_token_result.ValueOrDie(), StrEq(kDMToken));
+  ASSERT_TRUE(dm_token_result.has_value());
+  EXPECT_THAT(dm_token_result.value(), StrEq(kDMToken));
 }
 
 TEST_F(DMTokenRetrieverProviderTest,

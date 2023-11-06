@@ -278,14 +278,18 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return origins;
   }
 
-  void ClearAllDictionaries() {
+  std::set<base::UnguessableToken> ClearAllDictionaries() {
     base::RunLoop run_loop;
+    std::set<base::UnguessableToken> tokens;
     store_->ClearAllDictionaries(base::BindLambdaForTesting(
-        [&](SQLitePersistentSharedDictionaryStore::Error error) {
-          EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk, error);
+        [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+                result) {
+          ASSERT_TRUE(result.has_value());
+          tokens = std::move(result.value());
           run_loop.Quit();
         }));
     run_loop.Run();
+    return tokens;
   }
 
   std::set<base::UnguessableToken> ClearDictionaries(
@@ -399,8 +403,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     CHECK(sql::test::CorruptSizeInHeader(GetStroeFilePath()));
   }
 
-  void ManipulateDatabase(
-      const std::vector<std::string>& create_table_queries) {
+  void ManipulateDatabase(const std::vector<std::string>& queries) {
     // We don't allow manipulating the database while `store_` exists.
     ASSERT_FALSE(store_);
 
@@ -411,7 +414,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(db.get(), kCurrentVersionNumber,
                                 kCurrentVersionNumber));
-    for (const std::string& query : create_table_queries) {
+    for (const std::string& query : queries) {
       ASSERT_TRUE(db->Execute(query.c_str()));
     }
     db->Close();
@@ -511,7 +514,9 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, SingleDictionary) {
                         dictionary_info_.response_time() + base::Seconds(1)),
       ElementsAreArray({isolation_key_.frame_origin()}));
 
-  ClearAllDictionaries();
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
 
   EXPECT_EQ(0u, GetTotalDictionarySize());
   EXPECT_TRUE(GetDictionaries(isolation_key_).empty());
@@ -551,8 +556,11 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
   base::Time latest_response_time = std::max(dictionary_info1.response_time(),
                                              dictionary_info2.response_time());
 
+  std::set<base::UnguessableToken> registered_tokens;
+
   if (isolation_key1 == isolation_key2) {
     if (expect_merged) {
+      registered_tokens.insert(expected_info2.disk_cache_key_token());
       EXPECT_EQ(dictionary_info2.size(),
                 register_dictionary_result2.total_dictionary_size());
       EXPECT_THAT(GetDictionaries(isolation_key1),
@@ -571,6 +579,9 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                                     latest_response_time + base::Seconds(1)),
                   ElementsAreArray({isolation_key2.frame_origin()}));
     } else {
+      registered_tokens.insert(expected_info1.disk_cache_key_token());
+      registered_tokens.insert(expected_info2.disk_cache_key_token());
+
       EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
                 register_dictionary_result2.total_dictionary_size());
       EXPECT_THAT(GetDictionaries(isolation_key1),
@@ -589,6 +600,8 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                   UnorderedElementsAreArray({isolation_key1.frame_origin()}));
     }
   } else {
+    registered_tokens.insert(expected_info1.disk_cache_key_token());
+    registered_tokens.insert(expected_info2.disk_cache_key_token());
     EXPECT_EQ(dictionary_info1.size() + dictionary_info2.size(),
               register_dictionary_result2.total_dictionary_size());
     EXPECT_THAT(GetDictionaries(isolation_key1),
@@ -613,7 +626,8 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
                                            isolation_key2.frame_origin()}));
   }
 
-  ClearAllDictionaries();
+  EXPECT_THAT(ClearAllDictionaries(),
+              UnorderedElementsAreArray(registered_tokens));
   EXPECT_TRUE(GetDictionaries(isolation_key_).empty());
   EXPECT_TRUE(GetAllDictionaries().empty());
   EXPECT_TRUE(GetUsageInfo().empty());
@@ -747,13 +761,18 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        GetTotalDictionarySizeErrorFailedToGetTotalDictSize) {
   CreateStore();
-  ClearAllDictionaries();
+  EXPECT_TRUE(ClearAllDictionaries().empty());
   DestroyStore();
   ManipulateDatabase({"DELETE FROM meta WHERE key='total_dict_size'"});
 
   RunGetTotalDictionarySizeFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
-  CheckStoreRecovered();
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_TRUE(ClearAllDictionaries().empty());
+  // So GetTotalDictionarySize() should succeed.
+  EXPECT_EQ(0u, GetTotalDictionarySize());
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::
@@ -813,7 +832,12 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   RunRegisterDictionaryFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
-  CheckStoreRecovered();
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_TRUE(ClearAllDictionaries().empty());
+  // So RegisterDictionary() should succeed.
+  RegisterDictionary(isolation_key_, dictionary_info_);
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
@@ -1382,8 +1406,10 @@ void SQLitePersistentSharedDictionaryStoreTest::
   CreateStore();
   base::RunLoop run_loop;
   store_->ClearAllDictionaries(base::BindLambdaForTesting(
-      [&](SQLitePersistentSharedDictionaryStore::Error error) {
-        EXPECT_EQ(expected_error, error);
+      [&](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+              result) {
+        ASSERT_FALSE(result.has_value());
+        EXPECT_EQ(expected_error, result.error());
         run_loop.Quit();
       }));
   run_loop.Run();
@@ -1408,7 +1434,7 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   DestroyStore();
   MakeFileUnwritable();
   RunClearAllDictionariesFailureTest(
-      SQLitePersistentSharedDictionaryStore::Error::kFailedToExecuteSql);
+      SQLitePersistentSharedDictionaryStore::Error::kFailedToSetTotalDictSize);
 }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -1492,6 +1518,17 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
   RunClearDictionariesFailureTest(
       base::RepeatingCallback<bool(const GURL&)>(),
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
+  // So ClearDictionaries() should succeed.
+  EXPECT_TRUE(ClearDictionaries(base::Time::Now() - base::Seconds(10),
+                                base::Time::Now(),
+                                base::RepeatingCallback<bool(const GURL&)>())
+                  .empty());
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::
@@ -1537,6 +1574,14 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   RunClearDictionariesForIsolationKeyFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
+  // So ClearDictionariesForIsolationKey() should succeed.
+  EXPECT_TRUE(ClearDictionariesForIsolationKey(isolation_key_).empty());
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::
@@ -1585,6 +1630,14 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   RunDeleteExpiredDictionariesFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
+  // So DeleteExpiredDictionaries() should succeed.
+  EXPECT_TRUE(DeleteExpiredDictionaries(base::Time::Now()).empty());
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::RunProcessEvictionFailureTest(
@@ -1650,6 +1703,17 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
   RunProcessEvictionFailureTest(
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize);
+
+  CreateStore();
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
+  // So ProcessEviction() should succeed.
+  EXPECT_TRUE(ProcessEviction(
+                  /*cache_max_size=*/1, /*size_low_watermark=*/1,
+                  /*cache_max_count=*/1, /*count_low_watermark=*/1)
+                  .empty());
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::
@@ -1717,6 +1781,15 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
       SQLitePersistentSharedDictionaryStore::Error::kFailedToGetTotalDictSize,
       DeleteDictionariesByDiskCacheKeyTokens(
           {dictionary_info_.disk_cache_key_token()}));
+
+  // ClearAllDictionaries() resets total_dict_size in metadata.
+  EXPECT_THAT(
+      ClearAllDictionaries(),
+      UnorderedElementsAreArray({dictionary_info_.disk_cache_key_token()}));
+  // So DeleteDictionariesByDiskCacheKeyTokens() should succeed.
+  EXPECT_EQ(SQLitePersistentSharedDictionaryStore::Error::kOk,
+            DeleteDictionariesByDiskCacheKeyTokens(
+                {base::UnguessableToken::Create()}));
 }
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest, InvalidHash) {
@@ -1812,9 +1885,8 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        ClearAllDictionariesCallbackNotCalledAfterStoreDeleted) {
   CreateStore();
   store_->ClearAllDictionaries(base::BindLambdaForTesting(
-      [](SQLitePersistentSharedDictionaryStore::Error error) {
-        EXPECT_TRUE(false) << "Should not be reached.";
-      }));
+      [](SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+             result) { EXPECT_TRUE(false) << "Should not be reached."; }));
   store_.reset();
   RunUntilIdle();
 }

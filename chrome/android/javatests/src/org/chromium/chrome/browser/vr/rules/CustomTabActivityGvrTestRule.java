@@ -17,27 +17,32 @@ import org.chromium.chrome.browser.vr.rules.XrActivityRestriction.SupportedActiv
 import org.chromium.chrome.browser.vr.util.GvrTestRuleUtils;
 
 /**
- * VR extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule then
- * opens up a CustomTabActivity to a blank page while performing some additional VR-only setup.
+ * VR extension of CustomTabActivityTestRule. Applies CustomTabActivityTestRule then opens up a
+ * CustomTabActivity to a blank page while performing some additional VR-only setup.
  */
 public class CustomTabActivityGvrTestRule extends CustomTabActivityTestRule implements VrTestRule {
     private boolean mDonEnabled;
 
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                GvrTestRuleUtils.evaluateVrTestRuleImpl(
-                        base, desc, CustomTabActivityGvrTestRule.this, () -> {
-                            startCustomTabActivityWithIntent(
-                                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                                            ApplicationProvider.getApplicationContext(),
-                                            "about:blank"));
-                            TestVrShellDelegate.createTestVrShellDelegate(getActivity());
-                        });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        GvrTestRuleUtils.evaluateVrTestRuleImpl(
+                                base,
+                                desc,
+                                CustomTabActivityGvrTestRule.this,
+                                () -> {
+                                    startCustomTabActivityWithIntent(
+                                            CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                                                    ApplicationProvider.getApplicationContext(),
+                                                    "about:blank"));
+                                    TestVrShellDelegate.createTestVrShellDelegate(getActivity());
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

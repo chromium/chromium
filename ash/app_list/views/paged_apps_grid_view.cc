@@ -552,20 +552,6 @@ PagedAppsGridView::GetVisibleItemIndexRange() const {
                                start_view_index + on_page_item_count - 1);
 }
 
-base::ScopedClosureRunner PagedAppsGridView::LockAppsGridOpacity() {
-  lock_opacity_ = true;
-
-  base::OnceClosure reset_closure = base::BindOnce(
-      [](base::WeakPtr<PagedAppsGridView> weak_ptr) {
-        if (!weak_ptr)
-          return;
-
-        weak_ptr->lock_opacity_ = false;
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  return base::ScopedClosureRunner(std::move(reset_closure));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // PaginationModelObserver:
 

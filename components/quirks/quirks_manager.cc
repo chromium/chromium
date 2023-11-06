@@ -171,7 +171,7 @@ void QuirksManager::OnIccFilePathRequestCompleted(
                           .value_or(0.0);
 
   const base::TimeDelta time_since =
-      base::Time::Now() - base::Time::FromDoubleT(last_check);
+      base::Time::Now() - base::Time::FromSecondsSinceUnixEpoch(last_check);
 
   // Don't need server check if we've checked within last 30 days.
   if (time_since < base::Days(kDaysBetweenServerChecks)) {
@@ -204,7 +204,7 @@ void QuirksManager::SetLastServerCheck(int64_t product_id,
                                        const base::Time& last_check) {
   DCHECK(thread_checker_.CalledOnValidThread());
   ScopedDictPrefUpdate dict(local_state_, prefs::kQuirksClientLastServerCheck);
-  dict->Set(IdToHexString(product_id), last_check.ToDoubleT());
+  dict->Set(IdToHexString(product_id), last_check.InSecondsFSinceUnixEpoch());
 }
 
 }  // namespace quirks

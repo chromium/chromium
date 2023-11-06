@@ -425,16 +425,16 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // based on knowledge of how the allocator is being used.
   template <typename T>
   T* GetAsObject(Reference ref) {
-    static_assert(std::is_standard_layout<T>::value, "only standard objects");
-    static_assert(!std::is_array<T>::value, "use GetAsArray<>()");
+    static_assert(std::is_standard_layout_v<T>, "only standard objects");
+    static_assert(!std::is_array_v<T>, "use GetAsArray<>()");
     static_assert(T::kExpectedInstanceSize == sizeof(T), "inconsistent size");
     return const_cast<T*>(reinterpret_cast<volatile T*>(
         GetBlockData(ref, T::kPersistentTypeId, sizeof(T))));
   }
   template <typename T>
   const T* GetAsObject(Reference ref) const {
-    static_assert(std::is_standard_layout<T>::value, "only standard objects");
-    static_assert(!std::is_array<T>::value, "use GetAsArray<>()");
+    static_assert(std::is_standard_layout_v<T>, "only standard objects");
+    static_assert(!std::is_array_v<T>, "use GetAsArray<>()");
     static_assert(T::kExpectedInstanceSize == sizeof(T), "inconsistent size");
     return const_cast<const T*>(reinterpret_cast<const volatile T*>(
         GetBlockData(ref, T::kPersistentTypeId, sizeof(T))));
@@ -453,13 +453,13 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // as char, float, double, or (u)intXX_t.
   template <typename T>
   T* GetAsArray(Reference ref, uint32_t type_id, size_t count) {
-    static_assert(std::is_fundamental<T>::value, "use GetAsObject<>()");
+    static_assert(std::is_fundamental_v<T>, "use GetAsObject<>()");
     return const_cast<T*>(reinterpret_cast<volatile T*>(
         GetBlockData(ref, type_id, count * sizeof(T))));
   }
   template <typename T>
   const T* GetAsArray(Reference ref, uint32_t type_id, size_t count) const {
-    static_assert(std::is_fundamental<T>::value, "use GetAsObject<>()");
+    static_assert(std::is_fundamental_v<T>, "use GetAsObject<>()");
     return const_cast<const char*>(reinterpret_cast<const volatile T*>(
         GetBlockData(ref, type_id, count * sizeof(T))));
   }
@@ -669,9 +669,9 @@ class BASE_EXPORT PersistentMemoryAllocator {
   // Implementation of Flush that accepts how much to flush.
   virtual void FlushPartial(size_t length, bool sync);
 
-  // This field is not a raw_ptr<> because a pointer to stale non-PA allocation
-  // could be confused as a pointer to PA memory when that address space is
-  // reused. crbug.com/1173851 crbug.com/1169582
+  // This field is not a raw_ptr<> because it always points to a mmap'd region
+  // of memory outside of the PA heap. Thus, there would be overhead involved
+  // with using a raw_ptr<> but no safety gains.
   RAW_PTR_EXCLUSION volatile char* const
       mem_base_;                   // Memory base. (char so sizeof guaranteed 1)
   const MemoryType mem_type_;      // Type of memory allocation.
@@ -946,7 +946,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // The underlying object that does the actual allocation of memory. Its
   // lifetime must exceed that of all DelayedPersistentAllocation objects
   // that use it.
-  const raw_ptr<PersistentMemoryAllocator, LeakedDanglingUntriaged> allocator_;
+  const raw_ptr<PersistentMemoryAllocator> allocator_;
 
   // The desired type and size of the allocated segment plus the offset
   // within it for the defined request.
@@ -958,9 +958,7 @@ class BASE_EXPORT DelayedPersistentAllocation {
   // stored once the allocation is complete. If multiple delayed allocations
   // share the same pointer then an allocation on one will amount to an
   // allocation for all.
-  const raw_ptr<volatile std::atomic<Reference>,
-                LeakedDanglingUntriaged | AllowPtrArithmetic>
-      reference_;
+  const raw_ptr<volatile std::atomic<Reference>, AllowPtrArithmetic> reference_;
 
   // No DISALLOW_COPY_AND_ASSIGN as it's okay to copy/move these objects.
 };

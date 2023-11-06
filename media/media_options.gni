@@ -71,6 +71,10 @@ declare_args() {
   # on-device decoding and bitstream passthrough as supported by device.
   enable_platform_ac3_eac3_audio = proprietary_codecs && is_cast_media_device
 
+  # Enables AC4 audio handling in chromium. This includes demuxing,
+  # on-device decoding and bitstream passthrough as supported by device.
+  enable_platform_ac4_audio = false
+
   enable_platform_mpeg_h_audio = proprietary_codecs && is_cast_media_device
 
   # Enables DTS/DTSX audio handling in chromium. This includes demuxing,
@@ -150,6 +154,8 @@ assert(!enable_hls_demuxer || proprietary_codecs,
        "proprietary_codecs required for enable_hls_demuxer")
 assert(!enable_platform_ac3_eac3_audio || proprietary_codecs,
        "proprietary_codecs required for enable_platform_ac3_eac3_audio")
+assert(!enable_platform_ac4_audio || proprietary_codecs,
+       "proprietary_codecs required for enable_platform_ac4_audio")
 assert(!enable_platform_mpeg_h_audio || proprietary_codecs,
        "proprietary_codecs required for enable_platform_mpeg_h_audio")
 assert(!enable_mse_mpeg2ts_stream_parser || proprietary_codecs,
@@ -263,6 +269,7 @@ if (is_cast_media_device) {
   _default_mojo_media_services = [
     "cdm",
     "audio_decoder",
+    "audio_encoder",
     "video_decoder",
   ]
   _default_mojo_media_host = "gpu"

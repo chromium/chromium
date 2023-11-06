@@ -114,7 +114,6 @@ source_set("internal") {
     "cloud/dmserver_job_configurations.h",
     "cloud/encrypted_reporting_job_configuration.cc",
     "cloud/encrypted_reporting_job_configuration.h",
-    "cloud/enterprise_metrics.cc",
     "cloud/enterprise_metrics.h",
     "cloud/external_policy_data_fetcher.cc",
     "cloud/external_policy_data_fetcher.h",

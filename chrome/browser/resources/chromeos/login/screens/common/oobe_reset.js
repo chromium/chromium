@@ -15,23 +15,37 @@ import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/buttons/oobe_text_button.js';
 
-import {announceAccessibleMessage} from '//resources/ash/common/util.js';
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
 
-
-/** @enum {number} */
-const RESET_SCREEN_STATE = {
-  'RESTART_REQUIRED': 0,
-  'REVERT_PROMISE': 1,
-  'POWERWASH_PROPOSAL': 2,  // supports 2 ui-states - With or without rollback
-  'ERROR': 3,
+/**
+ * UI state for the dialog.
+ * @enum {string}
+ */
+const ResetScreenUiState = {
+  RESTART_REQUIRED: 'restart-required',
+  REVERT_PROMISE: 'revert-promise',
+  // POWERWASH_PROPOSAL supports 2 ui-states: with or without rollback
+  POWERWASH_PROPOSAL: 'powerwash-proposal',
+  ERROR: 'error',
 };
+
+/**
+ * The order should be in sync with the ResetView::State enum.
+ */
+const ResetScreenUiStateMapping = [
+  ResetScreenUiState.RESTART_REQUIRED,
+  ResetScreenUiState.REVERT_PROMISE,
+  ResetScreenUiState.POWERWASH_PROPOSAL,
+  ResetScreenUiState.ERROR,
+];
 
 // When the screen is in the powerwash proposal state, it depends on the mode
 /** @enum {number} */
@@ -68,9 +82,15 @@ const POWERWASH_MODE_DETAILS = new Map([
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
  */
 const ResetScreenElementBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
     PolymerElement);
 
 /**
@@ -96,13 +116,6 @@ class OobeReset extends ResetScreenElementBase {
 
   static get properties() {
     return {
-      /* The current state of the screen as set from the C++ side. */
-      screenState_: {
-        type: Number,
-        value: RESET_SCREEN_STATE.RESTART_REQUIRED,
-        observer: 'onScreenStateChanged_',
-      },
-
       /** Whether rollback is available */
       isRollbackAvailable_: {
         type: Boolean,
@@ -183,24 +196,7 @@ class OobeReset extends ResetScreenElementBase {
         value: POWERWASH_MODE.POWERWASH_ONLY,
       },
 
-      // Simple variables that reflect the current screen state
-      // Only modified by the observer of 'screenState_'
-      inRestartRequiredState_: {
-        type: Boolean,
-        value: true,
-      },
-
       inRevertState_: {
-        type: Boolean,
-        value: false,
-      },
-
-      inPowerwashState_: {
-        type: Boolean,
-        value: false,
-      },
-
-      inErrorState_: {
         type: Boolean,
         value: false,
       },
@@ -223,25 +219,27 @@ class OobeReset extends ResetScreenElementBase {
 
   // clang-format on
 
+  /**
+   * @return {string}
+   */
+  defaultUIStep() {
+    return ResetScreenUiState.RESTART_REQUIRED;
+  }
+
+  get UI_STEPS() {
+    return ResetScreenUiState;
+  }
+
   /** @override */
   ready() {
     super.ready();
     this.initializeLoginScreen('ResetScreen');
   }
 
-  /**
-   * Returns the control which should receive initial focus.
-   */
-  get defaultControl() {
-    return this.$.resetDialog;
-  }
-
-  focus() {
-    this.$.resetDialog.focus();
-  }
-
   reset() {
-    this.screenState_ = RESET_SCREEN_STATE.RESTART_REQUIRED;
+    this.setUIStep(ResetScreenUiState.RESTART_REQUIRED);
+    this.onScreenStateChanged_();
+
     this.powerwashMode_ = POWERWASH_MODE.POWERWASH_ONLY;
     this.tpmUpdateAvailable_ = false;
     this.isRollbackAvailable_ = false;
@@ -292,9 +290,10 @@ class OobeReset extends ResetScreenElementBase {
     }
   }
 
-  /** @param {RESET_SCREEN_STATE} state  */
+  /** @param {number} state  */
   setScreenState(state) {
-    this.screenState_ = state;
+    this.setUIStep(ResetScreenUiStateMapping[state]);
+    this.onScreenStateChanged_();
   }
   /* ---------- EXTERNAL API END ---------- */
 
@@ -315,20 +314,13 @@ class OobeReset extends ResetScreenElementBase {
 
   /** @private */
   onScreenStateChanged_() {
-    if (this.screenState_ == RESET_SCREEN_STATE.REVERT_PROMISE) {
-      announceAccessibleMessage(this.i18n('resetRevertSpinnerMessage'));
+    if (this.uiStep == ResetScreenUiState.REVERT_PROMISE) {
+      getAnnouncerInstance().announce(this.i18n('resetRevertSpinnerMessage'));
       this.classList.add('revert-promise-view');
     } else {
       this.classList.remove('revert-promise-view');
     }
-
-    this.inRevertState_ =
-        (this.screenState_ == RESET_SCREEN_STATE.REVERT_PROMISE);
-    this.inRestartRequiredState_ =
-        (this.screenState_ == RESET_SCREEN_STATE.RESTART_REQUIRED);
-    this.inPowerwashState_ =
-        (this.screenState_ == RESET_SCREEN_STATE.POWERWASH_PROPOSAL);
-    this.inErrorState_ = (this.screenState_ == RESET_SCREEN_STATE.ERROR);
+    this.inRevertState_ = this.uiStep == ResetScreenUiState.REVERT_PROMISE;
   }
 
   /**

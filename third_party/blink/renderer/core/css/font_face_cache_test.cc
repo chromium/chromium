@@ -62,9 +62,7 @@ void FontFaceCacheTest::AppendTestFaceForCapabilities(const CSSValue& stretch,
                                                       const CSSValue& weight) {
   CSSFontFamilyValue* family_name =
       CSSFontFamilyValue::Create(kFontNameForTesting);
-  CSSFontFaceSrcValue* src = CSSFontFaceSrcValue::CreateLocal(
-      kFontNameForTesting, nullptr /* world */, OriginClean::kTrue,
-      false /* is_ad_related */);
+  auto* src = CSSFontFaceSrcValue::CreateLocal(kFontNameForTesting);
   CSSValueList* src_value_list = CSSValueList::CreateCommaSeparated();
   src_value_list->Append(*src);
   CSSPropertyValue properties[] = {

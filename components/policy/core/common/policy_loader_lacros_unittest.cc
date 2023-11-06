@@ -275,4 +275,23 @@ TEST_F(PolicyLoaderLacrosTest, DeviceLocalAccountUsers) {
       crosapi::mojom::SessionType::kAppKioskSession);
 }
 
+TEST_F(PolicyLoaderLacrosTest, DeviceAffiliatedId) {
+  const char kAffiliationId[] = "affiliation-id";
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->device_affiliation_ids = {kAffiliationId};
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+  EXPECT_EQ(1u, PolicyLoaderLacros::device_affiliation_ids().size());
+  EXPECT_EQ(kAffiliationId, PolicyLoaderLacros::device_affiliation_ids()[0]);
+}
+
+TEST_F(PolicyLoaderLacrosTest, DeviceDMToken) {
+  const char kDMToken[] = "dm-token";
+  auto init_params = crosapi::mojom::BrowserInitParams::New();
+  init_params->device_properties = crosapi::mojom::DeviceProperties::New();
+  init_params->device_properties->device_dm_token = kDMToken;
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+  EXPECT_EQ(kDMToken, PolicyLoaderLacros::device_dm_token());
+}
+
 }  // namespace policy

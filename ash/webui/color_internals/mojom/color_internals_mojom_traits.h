@@ -16,13 +16,14 @@ template <>
 struct StructTraits<
     ash::color_internals::mojom::WallpaperCalculatedColorsDataView,
     ash::WallpaperCalculatedColors> {
-  static const std::vector<SkColor>& prominent_colors(
-      const ash::WallpaperCalculatedColors& wallpaper_calculated_colors) {
-    return wallpaper_calculated_colors.prominent_colors;
-  }
   static SkColor k_mean_color(
       const ash::WallpaperCalculatedColors& wallpaper_calculated_colors) {
     return wallpaper_calculated_colors.k_mean_color;
+  }
+
+  static SkColor celebi_color(
+      const ash::WallpaperCalculatedColors& wallpaper_calculated_colors) {
+    return wallpaper_calculated_colors.celebi_color;
   }
 
   static bool Read(

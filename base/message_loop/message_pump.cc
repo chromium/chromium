@@ -97,7 +97,7 @@ void MessagePump::InitializeFeatures() {
 #endif
 }
 
-TimeTicks MessagePump::AjdustDelayedRunTime(TimeTicks earliest_time,
+TimeTicks MessagePump::AdjustDelayedRunTime(TimeTicks earliest_time,
                                             TimeTicks run_time,
                                             TimeTicks latest_time) {
   // Windows relies on the low resolution timer rather than manual wake up

@@ -75,6 +75,7 @@ preprocess_if_expr("preprocess") {
                "nearby_http_browser_proxy.js",
                "cross_device_logs_browser_proxy.js",
                "nearby_presence_browser_proxy.js",
+               "chime_browser_proxy.js",
                "nearby_prefs_browser_proxy.js",
                "nearby_ui_trigger_browser_proxy.js",
                "types.js",
@@ -112,6 +113,7 @@ grit("resources") {
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":chime_browser_proxy",
     ":contact_object",
     ":contact_tab",
     ":cross_device_internals",
@@ -136,6 +138,7 @@ js_type_check("closure_compile") {
 
 js_library("cross_device_internals") {
   deps = [
+    ":chime_browser_proxy",
     ":cross_device_logs_browser_proxy",
     ":log_object",
     ":log_types",
@@ -300,6 +303,13 @@ js_library("nearby_contact_browser_proxy") {
 }
 
 js_library("nearby_presence_browser_proxy") {
+  deps = [
+    ":types",
+    "//ash/webui/common/resources:cr_deprecated",
+  ]
+}
+
+js_library("chime_browser_proxy") {
   deps = [
     ":types",
     "//ash/webui/common/resources:cr_deprecated",

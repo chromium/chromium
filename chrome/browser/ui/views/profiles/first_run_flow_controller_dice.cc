@@ -12,6 +12,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
@@ -36,6 +37,10 @@
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#endif
 
 namespace {
 
@@ -407,6 +412,37 @@ void FirstRunFlowControllerDice::HandleIdentityStepsCompleted(
 
   post_host_cleared_callback_ = std::move(post_host_cleared_callback);
 
+  bool should_show_search_engine_choice_step =
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+      !is_continue_callback;
+#else
+      false;
+#endif
+
+  auto step_finished_callback = base::BindOnce(
+      &FirstRunFlowControllerDice::HandleSwitchToDefaultBrowserStep,
+      base::Unretained(this), is_continue_callback);
+
+  if (should_show_search_engine_choice_step) {
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+    RegisterStep(
+        Step::kSearchEngineChoice,
+        ProfileManagementStepController::CreateForSearchEngineChoice(
+            host(), SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+            std::move(step_finished_callback)));
+    SwitchToStep(Step::kSearchEngineChoice, /*reset_state=*/true);
+#else
+    NOTREACHED();
+#endif
+  } else {
+    // Directly advance past the step. The choice screen can still be displayed
+    // in the browser later.
+    std::move(step_finished_callback).Run();
+  }
+}
+
+void FirstRunFlowControllerDice::HandleSwitchToDefaultBrowserStep(
+    bool is_continue_callback) {
   bool should_show_default_browser_step =
       // Proceed with the callback  directly instead of showing the default
       // browser prompt.

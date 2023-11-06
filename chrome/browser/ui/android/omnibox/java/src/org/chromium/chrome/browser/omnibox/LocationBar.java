@@ -12,9 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 
-/**
- * Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}.
- */
+/** Container that holds the {@link UrlBar} and SSL state related with the current {@link Tab}. */
 public interface LocationBar {
     /** Handle all necessary tasks that can be delayed until initialization completes. */
     default void onDeferredStartup() {}
@@ -76,17 +74,18 @@ public interface LocationBar {
 
     /**
      * TODO(twellington): Try to remove this method. It's only used to return an in-product help
-     *                    bubble anchor view... which should be moved out of tab and perhaps into
-     *                    the status bar icon component.
+     * bubble anchor view... which should be moved out of tab and perhaps into the status bar icon
+     * component.
+     *
      * @return The view containing the security icon.
      */
     View getSecurityIconView();
-
 
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
     default @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
         return null;
     }
+
     /**
      * Returns a (@link OmniboxStub}.
      *

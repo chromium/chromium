@@ -269,8 +269,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, SetAddresses) {
 
   SendCommandSync("Autofill.setAddresses", std::move(params));
 
-  std::vector<autofill::AutofillProfile> res =
-      test_api(main_autofill_manager()).test_addresses();
+  std::vector<autofill::AutofillProfile> res = main_autofill_manager()
+                                                   .client()
+                                                   .GetPersonalDataManager()
+                                                   ->test_addresses();
   ASSERT_EQ(res.size(), 2u);
   ASSERT_EQ(res[0].GetAddress().GetRawInfo(
                 autofill::ServerFieldType::ADDRESS_HOME_LINE1),
@@ -467,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
   SendCommandSync("Autofill.enable");
   main_autofill_manager().NotifyObservers(
       &autofill::AutofillManager::Observer::OnFillOrPreviewDataModelForm,
-      form_id(), autofill::mojom::AutofillActionPersistence::kFill,
+      form_id(), autofill::mojom::ActionPersistence::kFill,
       filled_fields_by_autofill, &profile);
 
   base::Value::Dict notification = WaitForNotification(

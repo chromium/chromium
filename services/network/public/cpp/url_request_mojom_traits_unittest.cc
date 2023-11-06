@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
 #include "net/filter/source_stream.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
@@ -68,7 +69,8 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
       net::ReferrerPolicy::ORIGIN_ONLY_ON_TRANSITION_CROSS_ORIGIN;
   original.headers.SetHeader("Accept", "text/xml");
   original.cors_exempt_headers.SetHeader("X-Requested-With", "ForTesting");
-  original.load_flags = 3;
+  original.load_flags = net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
+                        net::LOAD_SHOULD_BYPASS_HSTS;
   original.resource_type = 2;
   original.priority = net::IDLE;
   original.priority_incremental = net::kDefaultPriorityIncremental;
@@ -83,7 +85,7 @@ TEST(URLRequestMojomTraitsTest, Roundtrips_ResourceRequest) {
   original.keepalive = true;
   original.browsing_topics = true;
   original.ad_auction_headers = true;
-  original.shared_storage_writable = true;
+  original.shared_storage_writable_eligible = true;
   original.has_user_gesture = false;
   original.enable_load_timing = true;
   original.enable_upload_progress = false;

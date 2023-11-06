@@ -39,16 +39,20 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
     /** Push all information about the texture to native at once. */
     private void pushProperties(PropertyModel model) {
         if (mResourceManagerSupplier.get() == null) return;
-        TopToolbarSceneLayerJni.get().updateToolbarLayer(mNativePtr, TopToolbarSceneLayer.this,
-                mResourceManagerSupplier.get(), model.get(TopToolbarOverlayProperties.RESOURCE_ID),
-                model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
-                model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
-                model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
-                model.get(TopToolbarOverlayProperties.X_OFFSET),
-                model.get(TopToolbarOverlayProperties.Y_OFFSET),
-                model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
-                model.get(TopToolbarOverlayProperties.VISIBLE),
-                model.get(TopToolbarOverlayProperties.ANONYMIZE));
+        TopToolbarSceneLayerJni.get()
+                .updateToolbarLayer(
+                        mNativePtr,
+                        TopToolbarSceneLayer.this,
+                        mResourceManagerSupplier.get(),
+                        model.get(TopToolbarOverlayProperties.RESOURCE_ID),
+                        model.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR),
+                        model.get(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID),
+                        model.get(TopToolbarOverlayProperties.URL_BAR_COLOR),
+                        model.get(TopToolbarOverlayProperties.X_OFFSET),
+                        model.get(TopToolbarOverlayProperties.CONTENT_OFFSET),
+                        model.get(TopToolbarOverlayProperties.SHOW_SHADOW),
+                        model.get(TopToolbarOverlayProperties.VISIBLE),
+                        model.get(TopToolbarOverlayProperties.ANONYMIZE));
 
         DrawingInfo progressInfo = model.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO);
         if (progressInfo == null) return;

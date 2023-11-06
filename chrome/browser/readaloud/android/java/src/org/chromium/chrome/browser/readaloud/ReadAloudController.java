@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.readaloud;
 
 import android.app.Activity;
-import android.content.Context;
-import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -15,8 +13,10 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.readaloud.player.PlayerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelTabObserver;
@@ -31,6 +31,8 @@ import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.url.GURL;
 
@@ -46,20 +48,22 @@ import java.util.Map;
 public class ReadAloudController implements Player.Observer, Player.Delegate, PlaybackListener {
     private static final String TAG = "ReadAloudController";
 
+    private final Activity mActivity;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Map<String, Boolean> mReadabilityMap = new HashMap<>();
     private final Map<String, Boolean> mTimepointsSupportedMap = new HashMap<>();
     private final HashSet<String> mPendingRequests = new HashSet<>();
     private final TabModel mTabModel;
-    private final PlayerCoordinator mPlayerCoordinator;
-    @Nullable
-    private static PlayerCoordinator sPlayerCoordinatorForTesting;
+    @Nullable private Player mPlayerCoordinator;
+    private final LayoutManager mLayoutManager;
 
     private TabModelTabObserver mTabObserver;
 
     private final BottomSheetController mBottomSheetController;
+    private final BrowserControlsSizer mBrowserControlsSizer;
 
-    private final ReadAloudReadabilityHooks mReadabilityHooks;
+    private ReadAloudReadabilityHooks mReadabilityHooks;
+
     @Nullable
     private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
     @Nullable
@@ -117,19 +121,28 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 }
             };
 
-    public ReadAloudController(Context context, ObservableSupplier<Profile> profileSupplier,
-            TabModel tabModel, ViewStub miniPlayerStub,
-            BottomSheetController bottomSheetController) {
+    public ReadAloudController(
+            Activity activity,
+            ObservableSupplier<Profile> profileSupplier,
+            TabModel tabModel,
+            BottomSheetController bottomSheetController,
+            BrowserControlsSizer browserControlsSizer,
+            LayoutManager layoutManager) {
+        mActivity = activity;
         mProfileSupplier = profileSupplier;
+        new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
         mTabModel = tabModel;
-        mReadabilityHooks = sReadabilityHooksForTesting != null
-                ? sReadabilityHooksForTesting
-                : new ReadAloudReadabilityHooksImpl(context, ReadAloudFeatures.getApiKeyOverride());
         mBottomSheetController = bottomSheetController;
-        mPlayerCoordinator =
-                sPlayerCoordinatorForTesting != null
-                        ? sPlayerCoordinatorForTesting
-                        : new PlayerCoordinator(context, miniPlayerStub, this);
+        mBrowserControlsSizer = browserControlsSizer;
+        mLayoutManager = layoutManager;
+    }
+
+    private void onProfileAvailable(Profile profile) {
+        mReadabilityHooks =
+                sReadabilityHooksForTesting != null
+                        ? sReadabilityHooksForTesting
+                        : new ReadAloudReadabilityHooksImpl(
+                                mActivity, profile, ReadAloudFeatures.getApiKeyOverride());
         if (mReadabilityHooks.isEnabled()) {
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
@@ -138,6 +151,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                             Log.d(TAG, "onPageLoad called for %s", url.getPossiblyInvalidSpec());
                             maybeCheckReadability(url);
                             maybeHandleTabReload(tab, url);
+                            maybeStopPlayback(tab);
                         }
 
                         @Override
@@ -149,6 +163,11 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                             super.onTabSelected(tab);
                             maybeCheckReadability(tab.getUrl());
                         }
+
+                        @Override
+                        public void willCloseTab(Tab tab) {
+                            maybeStopPlayback(tab);
+                        }
                     };
         }
     }
@@ -158,12 +177,17 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         if (!isURLReadAloudSupported(url)) {
             return;
         }
-        String urlSpec = url.getSpec();
+
+        String urlSpec = stripUserData(url).getSpec();
         if (mReadabilityMap.containsKey(urlSpec) || mPendingRequests.contains(urlSpec)) {
             return;
         }
 
         if (!isAvailable()) {
+            return;
+        }
+
+        if (mReadabilityHooks == null) {
             return;
         }
 
@@ -202,7 +226,7 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
      */
     public boolean isReadable(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
-            Boolean isReadable = mReadabilityMap.get(tab.getUrl().getSpec());
+            Boolean isReadable = mReadabilityMap.get(stripUserData(tab.getUrl()).getSpec());
             return isReadable == null ? false : isReadable;
         }
         return false;
@@ -211,9 +235,11 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public void playTab(Tab tab) {
         assert tab.getUrl().isValid();
         if (mPlaybackHooks == null) {
-            mPlaybackHooks = sPlaybackHooksForTesting != null
-                    ? sPlaybackHooksForTesting
-                    : ReadAloudPlaybackHooksProvider.getInstance();
+            mPlaybackHooks =
+                    sPlaybackHooksForTesting != null
+                            ? sPlaybackHooksForTesting
+                            : ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
+            mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
         }
         // only start a new playback if different URL or no active playback for that url
         if (mCurrentlyPlayingTab == null || !tab.getUrl().equals(mCurrentlyPlayingTab.getUrl())) {
@@ -224,9 +250,13 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 mPlayback = null;
             }
 
-            PlaybackArgs args = new PlaybackArgs(tab.getUrl().getSpec(),
-                    TranslateBridge.getCurrentLanguage(tab),
-                    /* voice=*/null, /* dateModifiedMsSinceEpock=*/0);
+            // TODO Create voice list from settings.
+            PlaybackArgs args =
+                    new PlaybackArgs(
+                            stripUserData(tab.getUrl()).getSpec(),
+                            TranslateBridge.getCurrentLanguage(tab),
+                            /* voice= */ null,
+                            /* dateModifiedMsSinceEpock= */ 0);
             mPlaybackHooks.createPlayback(args, mPlaybackCallback);
 
             // Notify player UI that playback is happening soon.
@@ -241,7 +271,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
      */
     public boolean timepointsSupported(Tab tab) {
         if (isAvailable() && tab.getUrl().isValid()) {
-            Boolean timepointsSuported = mTimepointsSupportedMap.get(tab.getUrl().getSpec());
+            Boolean timepointsSuported =
+                    mTimepointsSupportedMap.get(stripUserData(tab.getUrl()).getSpec());
             return timepointsSuported == null ? false : timepointsSuported;
         }
         return false;
@@ -275,7 +306,9 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     /** Cleanup: unregister listeners. */
     public void destroy() {
         // Stop playback and hide players.
-        mPlayerCoordinator.destroy();
+        if (mPlayerCoordinator != null) {
+            mPlayerCoordinator.destroy();
+        }
 
         if (mTabObserver != null) {
             mTabObserver.destroy();
@@ -290,7 +323,8 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
                 mHighligher = mPlaybackHooks.createHighlighter();
             }
 
-            mHighligher.initializeJs(mCurrentlyPlayingTab, metadata, new Highlighter.Config());
+            mHighligher.initializeJs(
+                    mCurrentlyPlayingTab, metadata, new Highlighter.Config(mActivity));
             assert (mCurrentlyPlayingTab.getWebContents() != null
                     && mCurrentlyPlayingTab.getWebContents().getMainFrame() != null);
             if (mCurrentlyPlayingTab.getWebContents() != null
@@ -316,12 +350,38 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
         }
     }
 
+    private void maybeStopPlayback(Tab tab) {
+        if (mCurrentlyPlayingTab == null && mPlayerCoordinator != null) {
+            // in case there's an error and UI is drawn
+            mPlayerCoordinator.removeObserver(this);
+            mPlayerCoordinator.dismissPlayers();
+            return;
+        }
+        if (mCurrentlyPlayingTab != null && mCurrentlyPlayingTab.getId() == tab.getId()) {
+            stopPlayback();
+            return;
+        }
+    }
+
     private void maybeHandleTabReload(Tab tab, GURL newUrl) {
         if (mHighligher != null
                 && tab.getUrl() != null
                 && tab.getUrl().getSpec().equals(newUrl.getSpec())) {
             mHighligher.handleTabReloaded(tab);
         }
+    }
+
+    private GURL stripUserData(GURL in) {
+        if (!in.isValid()
+                || in.isEmpty()
+                || (in.getUsername().isEmpty() && in.getPassword().isEmpty())) {
+            return in;
+        }
+        return in.replaceComponents(
+                /* username= */ null,
+                /* clearUsername= */ true,
+                /* password= */ null,
+                /* clearPassword= */ true);
     }
 
     // Player.Delegate
@@ -377,7 +437,22 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
 
     @Override
     public Activity getActivity() {
-        return null;
+        return mActivity;
+    }
+
+    @Override
+    public PrefService getPrefService() {
+        return UserPrefs.get(mProfileSupplier.get());
+    }
+
+    @Override
+    public BrowserControlsSizer getBrowserControlsSizer() {
+        return mBrowserControlsSizer;
+    }
+
+    @Override
+    public LayoutManager getLayoutManager() {
+        return mLayoutManager;
     }
 
     // Player.Observer
@@ -415,11 +490,5 @@ public class ReadAloudController implements Player.Observer, Player.Delegate, Pl
     public static void setPlaybackHooks(ReadAloudPlaybackHooks hooks) {
         sPlaybackHooksForTesting = hooks;
         ResettersForTesting.register(() -> sPlaybackHooksForTesting = null);
-    }
-
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void setPlayerCoordinator(PlayerCoordinator coordinator) {
-        sPlayerCoordinatorForTesting = coordinator;
-        ResettersForTesting.register(() -> sPlayerCoordinatorForTesting = null);
     }
 }

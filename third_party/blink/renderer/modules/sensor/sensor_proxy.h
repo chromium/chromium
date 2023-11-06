@@ -84,7 +84,7 @@ class SensorProxy : public GarbageCollected<SensorProxy>,
   virtual void Suspend() {}
   virtual void Resume() {}
 
-  SensorProviderProxy* sensor_provider_proxy() const { return provider_; }
+  SensorProviderProxy* sensor_provider_proxy() const { return provider_.Get(); }
 
   device::mojom::blink::SensorType type_;
   using ObserversSet = HeapHashSet<WeakMember<Observer>>;

@@ -17,6 +17,13 @@ class PrefService;
 
 namespace ash {
 
+struct VendorProductId {
+  uint16_t vendor_id;
+  uint16_t product_id;
+  constexpr bool operator<(const VendorProductId& other) const;
+  bool operator==(const VendorProductId& other) const;
+};
+
 // Checks if a given value is within the bounds set by `ui::mojom::ModifierKey`.
 bool IsValidModifier(int val);
 

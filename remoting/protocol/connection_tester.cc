@@ -57,7 +57,8 @@ void StreamConnectionTester::Done() {
 
 void StreamConnectionTester::InitBuffers() {
   output_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-      base::MakeRefCounted<net::IOBuffer>(test_data_size_), test_data_size_);
+      base::MakeRefCounted<net::IOBufferWithSize>(test_data_size_),
+      test_data_size_);
   for (int i = 0; i < test_data_size_; ++i) {
     output_buffer_->data()[i] = static_cast<char>(i);
   }

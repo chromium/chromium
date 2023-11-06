@@ -15,6 +15,7 @@
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
@@ -149,6 +150,31 @@ class AmbientUiVisibilityBarrier : public AmbientUiModelObserver {
   base::ScopedObservation<AmbientUiModel, AmbientUiModelObserver> observation_{
       this};
   base::RepeatingClosure run_loop_quit_closure_;
+};
+
+// UpdateDisplay triggers a rogue MouseEvent that cancels Ambient mode when
+// testing with Xvfb. A corresponding MouseEvent is not fired on a real device
+// when an external display is added. Ignore this MouseEvent for testing.
+// Store the old |ShouldIgnoreNativePlatformEvents| value and reset it at the
+// end of the test.
+class ScopedIgnoreNativePlatformEvents {
+ public:
+  ScopedIgnoreNativePlatformEvents()
+      : old_should_ignore_events_(
+            ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents()) {
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+  }
+  ScopedIgnoreNativePlatformEvents(const ScopedIgnoreNativePlatformEvents&) =
+      delete;
+  ScopedIgnoreNativePlatformEvents& operator=(
+      const ScopedIgnoreNativePlatformEvents&) = delete;
+  ~ScopedIgnoreNativePlatformEvents() {
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(
+        old_should_ignore_events_);
+  }
+
+ private:
+  const bool old_should_ignore_events_;
 };
 
 }  // namespace
@@ -449,6 +475,7 @@ TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
 
 TEST_P(AmbientControllerTestForAnyUiSettings,
        ShouldRequestAccessTokenWhenLockingScreen) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -475,6 +502,7 @@ TEST_F(AmbientControllerTest, ShouldNotRequestAccessTokenWhenPrefNotEnabled) {
 }
 
 TEST_P(AmbientControllerTestForAnyUiSettings, ShouldReturnCachedAccessToken) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -515,6 +543,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
 }
 
 TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -557,6 +586,7 @@ TEST_F(AmbientControllerTest, ShouldReturnEmptyAccessToken) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -574,6 +604,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenAfterFailure) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -599,6 +630,7 @@ TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenWithBackoffPolicy) {
 }
 
 TEST_F(AmbientControllerTest, ShouldRetryRefreshAccessTokenOnlyThreeTimes) {
+  GetAmbientAshTestHelper()->ambient_client().SetAutomaticalyIssueToken(false);
   EXPECT_FALSE(IsAccessTokenRequestPending());
 
   // Lock the screen will request a token.
@@ -1235,14 +1267,7 @@ TEST_P(AmbientControllerTestForAnyUiSettings, ShowsOnMultipleDisplays) {
 }
 
 TEST_P(AmbientControllerTestForAnyUiSettings, RespondsToDisplayAdded) {
-  // UpdateDisplay triggers a rogue MouseEvent that cancels Ambient mode when
-  // testing with Xvfb. A corresponding MouseEvent is not fired on a real device
-  // when an external display is added. Ignore this MouseEvent for testing.
-  // Store the old |ShouldIgnoreNativePlatformEvents| value and reset it at the
-  // end of the test.
-  bool old_should_ignore_events =
-      ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents();
-  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
+  ScopedIgnoreNativePlatformEvents ignore_native_platform_events;
 
   UpdateDisplay("800x600");
   SetAmbientShownAndWaitForWidgets();
@@ -1260,9 +1285,38 @@ TEST_P(AmbientControllerTestForAnyUiSettings, RespondsToDisplayAdded) {
   for (auto* ctrl : RootWindowController::root_window_controllers())
     EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
                 ctrl->ambient_widget_for_testing()->IsVisible());
+}
 
-  ui::PlatformEventSource::SetIgnoreNativePlatformEvents(
-      old_should_ignore_events);
+TEST_F(AmbientControllerTest, RespondsToDisplayAddedWhileInitializing) {
+  static constexpr base::TimeDelta kPhotoDownloadDelay = base::Seconds(2);
+
+  ScopedIgnoreNativePlatformEvents ignore_native_platform_events;
+
+  SetAmbientTheme(AmbientTheme::kSlideshow);
+  SetPhotoDownloadDelay(kPhotoDownloadDelay);
+
+  UpdateDisplay("800x600");
+  ambient_controller()->SetUiVisibilityShouldShow();
+
+  // First photo is downloaded, but the minimum required to start
+  // `kSlideshow` is two, so `AmbientPhotoController` should attempt to
+  // download another before starting the ui.
+  task_environment()->FastForwardBy(kPhotoDownloadDelay);
+  ASSERT_TRUE(GetContainerViews().empty());
+
+  // Now user plugs in second display.
+  UpdateDisplay("800x600,800x600");
+
+  task_environment()->FastForwardBy(kPhotoDownloadDelay);
+  FastForwardTiny();
+
+  EXPECT_TRUE(ambient_controller()->IsShowing());
+  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), 2);
+  EXPECT_EQ(GetContainerViews().size(), 2u);
+  for (auto* ctrl : RootWindowController::root_window_controllers()) {
+    EXPECT_TRUE(ctrl->ambient_widget_for_testing() &&
+                ctrl->ambient_widget_for_testing()->IsVisible());
+  }
 }
 
 TEST_P(AmbientControllerTestForAnyUiSettings, HandlesDisplayRemoved) {
@@ -2087,6 +2141,55 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
   EXPECT_EQ(AmbientUiModel::Get()->ui_visibility(),
             AmbientUiVisibility::kClosed);
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverDoesNotShowCursorWhenDisabledOrNotStarted) {
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  TriggerScreensaverOnLoginScreen();
+  ASSERT_FALSE(GetContainerView());
+
+  // Hide the cursor.
+  Shell::Get()->cursor_manager()->HideCursor();
+
+  // Disabling an already disabled screensaver shouldn't show the cursor.
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  // Just enabling the screensaver and updating the images one by one should not
+  // change the cursor visibility.
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  managed_policy_handler()->SetImagesForTesting({image_file_paths_[0]});
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+
+  // Waiting for some time without activity should not change the cursor
+  // visibility.
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/0.5f);
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(Shell::Get()->cursor_manager()->IsCursorVisible());
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       ManagedScreensaverInsufficientImagesErrorClearedOnGettingNewData) {
+  TriggerScreensaverOnLoginScreen();
+  // TODO(b/305199163) Remove after investigating the flakiness root cause and
+  // coming up with a general solution.
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/0.2f);
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(managed_photo_controller()->HasScreenUpdateErrors());
+
+  // Only set one image to trigger insufficient images error.
+  managed_policy_handler()->SetImagesForTesting({image_file_paths_[0]});
+  EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_TRUE(managed_photo_controller()->HasScreenUpdateErrors());
+
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
+  FastForwardByLockScreenInactivityTimeout(/*factor=*/1.2f);
+
+  // Confirm that the screensaver is shown and errors are cleared.
+  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
+  EXPECT_FALSE(managed_photo_controller()->HasScreenUpdateErrors());
 }
 
 TEST_F(AmbientControllerForManagedScreensaverTest,

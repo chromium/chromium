@@ -39,6 +39,15 @@ enum LogoutRpsStatus {
   kError,
 };
 
+// Represents the fetch result from a IdentityProvider.revoke() request.
+// It is used to determine whether a JavaScript exception should be
+// thrown, and what the error message of such exception should say.
+enum RevokeStatus {
+  kSuccess,
+  kErrorTooManyRequests,
+  kError
+};
+
 enum IdpSigninStatus {
   kSignedIn,
   kSignedOut
@@ -70,28 +79,28 @@ struct LogoutRpsRequest {
 
 // The details of different mechanisms that allows the browser
 // to intermediate the exchange of the user's entities.
-// Currently, federated identities are supported, and mobile driver's license
+// Currently, federated identities are supported, and digital credentials
 // are being prototyped.
 union IdentityProvider {
-  IdentityProviderConfig federated;
-  WalletProvider holder;
+  IdentityProviderRequestOptions federated;
+  DigitalCredentialProvider holder;
 };
 
-// The specification of the query to wallets.
-struct WalletProvider {
+// The specification of the query to digital credentials.
+struct DigitalCredentialProvider {
   map<string, string> params;
-  WalletSelector selector;
+  DigitalCredentialSelector selector;
 };
 
 // The requirements of the credentials that are being requested.
-struct WalletSelector {
+struct DigitalCredentialSelector {
   array<string> format;
   string? doctype;
-  array<WalletFieldRequirement> fields;
+  array<DigitalCredentialFieldRequirement> fields;
 };
 
 // The requirements that the verifier needs on specific fields.
-struct WalletFieldRequirement {
+struct DigitalCredentialFieldRequirement {
   // The name of the field (e.g. "org.iso.18013.5.1.family_name").
   string name;
 
@@ -105,6 +114,11 @@ struct IdentityProviderConfig {
 
   // Can be an empty string to be omitted in the request sent to the provider.
   string client_id;
+};
+
+// The request parameters for a navigator.credentials.get() FedCM call.
+struct IdentityProviderRequestOptions {
+  IdentityProviderConfig config;
 
   // Can be an empty string to be omitted in the request sent to the provider.
   string nonce;
@@ -114,10 +128,10 @@ struct IdentityProviderConfig {
   // This field is not sent to the provider, but rather used by the user agent.
   string login_hint;
 
-  // The hosted domain for this identity provider. Used by the relying party to
-  // specify the hosted domain they require an account to belong to. The field
+  // The domain hint for this identity provider. Used by the relying party to
+  // specify the domain hint they require an account to belong to. The field
   // is not sent to the provider, but rather used by the user agent.
-  string hosted_domain;
+  string domain_hint;
 
   // The scope of the federated identity request: name/email/photo or
   // custom ones (e.g. "access to calendar", "access to social graph", etc).
@@ -134,6 +148,14 @@ struct IdentityProviderConfig {
   map<string, string> params;
 };
 
+// The information passed in an IdentityProvider.revoke() call.
+struct IdentityCredentialRevokeOptions {
+  IdentityProviderConfig config;
+
+  // The account hint for which the revocation ought to happen.
+  string account_hint;
+};
+
 // The list of user information that can be returned to an identity provider during a UserInfo API call.
 struct IdentityUserInfo {
   string email;
@@ -148,8 +170,6 @@ struct IdentityProviderGetParameters {
   array<IdentityProvider> providers;
 
   // Controls the wording of the FedCM prompt.
-  // TODO(crbug.com/1335237): consider moving this up to IdentityProviderConfig
-  // when/if we support the Context API for Multiple IdPs at a time.
   RpContext context;
 
   // Controls the UX of the FedCM prompt: modality, behavior when the
@@ -186,7 +206,7 @@ interface FederatedAuthRequest {
       url.mojom.Url? selected_identity_provider_config_url,
       string? token,
       TokenError? error,
-      bool is_identity_credential_auto_selected);
+      bool is_auto_selected);
 
   // Requests user info to be generated, given an IDP config.
   // Returns an IdentityUserInfo for each of the user's accounts.
@@ -224,4 +244,8 @@ interface FederatedAuthRequest {
   // hard to reuse it as-is. We should unify the implementation for different
   // CredentialTypes and avoid the duplication eventually.
   PreventSilentAccess() => ();
+
+  // Revokes the sharing permission for the specified |account_id| from
+  // |provider| for the RP identified by |client_id|.
+  Revoke(IdentityCredentialRevokeOptions options) => (RevokeStatus status);
 };

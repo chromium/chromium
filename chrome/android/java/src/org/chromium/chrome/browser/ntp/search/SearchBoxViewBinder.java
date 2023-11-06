@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import android.os.Build;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -100,6 +101,9 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X == propertyKey) {
             searchBoxTextView.setTranslationX(
                     model.get(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X));
+        } else if (SearchBoxProperties.SEARCH_BOX_TEXT_SIZE == propertyKey) {
+            searchBoxTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP,
+                model.get(SearchBoxProperties.SEARCH_BOX_TEXT_SIZE));
         } else if (SearchBoxProperties.BUTTONS_HEIGHT == propertyKey) {
             int height = model.get(SearchBoxProperties.BUTTONS_HEIGHT);
             ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();

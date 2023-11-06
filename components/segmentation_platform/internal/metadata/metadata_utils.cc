@@ -226,14 +226,14 @@ ValidationResult ValidateMetadataAndFeatures(
   }
 
   for (int i = 0; i < model_metadata.features_size(); ++i) {
-    auto feature = model_metadata.features(i);
+    const auto& feature = model_metadata.features(i);
     auto feature_result = ValidateMetadataUmaFeature(feature);
     if (feature_result != ValidationResult::kValidationSuccess)
       return feature_result;
   }
 
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
-    auto feature = model_metadata.input_features(i);
+    const auto& feature = model_metadata.input_features(i);
     if (feature.has_uma_feature()) {
       auto feature_result = ValidateMetadataUmaFeature(feature.uma_feature());
       if (feature_result != ValidationResult::kValidationSuccess)
@@ -535,7 +535,7 @@ void VisitAllUmaFeatures(const proto::SegmentationModelMetadata& model_metadata,
 
   // Add training/inference inputs.
   for (int i = 0; i < model_metadata.input_features_size(); ++i) {
-    auto feature = model_metadata.input_features(i);
+    const auto& feature = model_metadata.input_features(i);
     if (feature.has_uma_feature())
       visit.Run(feature.uma_feature());
   }
@@ -604,7 +604,6 @@ bool SegmentUsesLegacyOutput(proto::SegmentId segment_id) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID_V2};
 
   return segment_ids_use_legacy.contains(segment_id);

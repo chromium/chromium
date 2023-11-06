@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Snippets from 'devtools/panels/snippets/snippets.js';
 import * as Sources from 'devtools/panels/sources/sources.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
@@ -19,8 +20,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
       enabled: false,
     },
   };
-
-  await TestRunner.loadLegacyModule('snippets');
 
   await UI.ViewManager.ViewManager.instance().showView('sources');
 

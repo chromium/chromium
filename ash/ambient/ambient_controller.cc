@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_animation_ui_launcher.h"
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_slideshow_ui_launcher.h"
+#include "ash/ambient/ambient_photo_cache_settings.h"
 #include "ash/ambient/ambient_slideshow_ui_launcher.h"
 #include "ash/ambient/ambient_ui_launcher.h"
 #include "ash/ambient/ambient_ui_settings.h"
@@ -175,13 +176,6 @@ bool IsAmbientModeManagedScreensaverEnabled() {
 
 bool IsAmbientModeEnabled() {
   return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
-}
-
-// Get the cache root path for ambient mode.
-base::FilePath GetCacheRootPath() {
-  base::FilePath home_dir;
-  CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
-  return home_dir.Append(FILE_PATH_LITERAL(kAmbientModeDirectoryName));
 }
 
 class AmbientWidgetDelegate : public views::WidgetDelegate {
@@ -1005,14 +999,12 @@ void AmbientController::OnEnabledPrefChanged() {
     AddConsumerPrefObservers();
   }
 
-  photo_cache_ = AmbientPhotoCache::Create(
-      GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeCacheDirectoryName)),
-      *AmbientClient::Get(), access_token_controller_);
+  photo_cache_ = AmbientPhotoCache::Create(GetAmbientPhotoCacheRootDir(),
+                                           *AmbientClient::Get(),
+                                           access_token_controller_);
   backup_photo_cache_ = AmbientPhotoCache::Create(
-      GetCacheRootPath().Append(
-          FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)),
-      *AmbientClient::Get(), access_token_controller_);
+      GetAmbientBackupPhotoCacheRootDir(), *AmbientClient::Get(),
+      access_token_controller_);
   CreateUiLauncher();
 
   ambient_ui_model_observer_.Observe(&ambient_ui_model_);
@@ -1168,7 +1160,7 @@ AmbientWeatherModel* AmbientController::GetAmbientWeatherModel() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
-  if (!ShouldShowAmbientUi()) {
+  if (ui_launcher_state_ != AmbientUiLauncherState::kRendering) {
     return nullptr;
   }
 
@@ -1225,6 +1217,7 @@ void AmbientController::OnUiLauncherInitialized(bool success) {
     SetUiVisibilityClosed();
     return;
   }
+  ui_launcher_state_ = AmbientUiLauncherState::kRendering;
   CreateAndShowWidgets();
 }
 
@@ -1244,6 +1237,7 @@ void AmbientController::StopScreensaver() {
   CloseAllWidgets(close_widgets_immediately_);
   session_metrics_recorder_.reset();
   ui_launcher_init_callback_.Cancel();
+  ui_launcher_state_ = AmbientUiLauncherState::kInactive;
   ambient_ui_launcher_->Finalize();
 }
 
@@ -1267,6 +1261,7 @@ void AmbientController::MaybeStartScreenSaver() {
   ui_launcher_init_callback_.Reset(
       base::BindOnce(&AmbientController::OnUiLauncherInitialized,
                      weak_ptr_factory_.GetWeakPtr()));
+  ui_launcher_state_ = AmbientUiLauncherState::kInitializing;
   ambient_ui_launcher_->Initialize(ui_launcher_init_callback_.callback());
 }
 
@@ -1334,11 +1329,12 @@ void AmbientController::CreateUiLauncher() {
 }
 
 void AmbientController::DestroyUiLauncher() {
+  ui_launcher_state_ = AmbientUiLauncherState::kInactive;
   ambient_ui_launcher_.reset();
 }
 
 bool AmbientController::IsUiLauncherActive() const {
-  return ambient_ui_launcher_ && ambient_ui_launcher_->IsActive();
+  return ui_launcher_state_ != AmbientUiLauncherState::kInactive;
 }
 
 void AmbientController::OnReadyStateChanged(bool is_ready) {

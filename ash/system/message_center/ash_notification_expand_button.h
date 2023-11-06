@@ -53,8 +53,6 @@ class AshNotificationExpandButton : public views::Button {
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
 
-  void SetExpandCollapseEnabled(bool enabled);
-
   void SetNotificationTitleForButtonTooltip(
       const std::u16string& notification_title);
 
@@ -98,8 +96,6 @@ class AshNotificationExpandButton : public views::Button {
 
   // True if `label_` is in its fade out animation.
   bool label_fading_out_ = false;
-
-  bool disable_expand_collapse_ = false;
 
   // Cache of the notification title. Used this to display in the button
   // tooltip.

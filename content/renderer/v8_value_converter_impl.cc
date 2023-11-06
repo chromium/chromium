@@ -14,10 +14,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-container.h"
@@ -346,7 +345,8 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
          isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value.size());
-  memcpy(buffer->GetBackingStore()->Data(), value.data(), value.size());
+  base::ranges::copy(value,
+                     static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
   return buffer;
 }
 

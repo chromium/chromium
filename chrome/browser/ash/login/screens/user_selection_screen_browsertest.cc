@@ -265,18 +265,14 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenBlockOfflineTest,
   test::OobeJS().ExpectVisiblePath(kErrorMessageOfflineSigninLink);
 }
 
-class DarkLightEnabledTest : public LoginManagerTest, public ColorModeObserver {
+class DarkLightEnabledTest : public LoginManagerTest {
  protected:
   void StartLogin(const AccountId& account_id) {
-    DarkLightModeControllerImpl::Get()->AddObserver(this);
-    wait_for_color_mode_change_ = true;
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->defer_oobe_flow_finished_for_tests = true;
     login_manager_mixin_.LoginWithDefaultContext(
         LoginManagerMixin::TestUserInfo(account_id));
-    WaitForColorModeChange();
-    DarkLightModeControllerImpl::Get()->RemoveObserver(this);
   }
   void FinishLogin() {
     LoginDisplayHost::default_host()
@@ -286,25 +282,9 @@ class DarkLightEnabledTest : public LoginManagerTest, public ColorModeObserver {
     login_manager_mixin_.WaitForActiveSession();
   }
 
-  void OnColorModeChanged(bool dark_mode_enabled) override {
-    wait_for_color_mode_change_ = false;
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  void WaitForColorModeChange() {
-    if (!wait_for_color_mode_change_)
-      return;
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_.reset();
-  }
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   const AccountId user1{AccountId::FromUserEmailGaiaId(kUser1Email, kGaia1ID)};
   const AccountId user2{AccountId::FromUserEmailGaiaId(kUser2Email, kGaia2ID)};
-  bool wait_for_color_mode_change_ = false;
-  std::unique_ptr<base::RunLoop> run_loop_;
 };
 
 // OOBE + login of the first user.
@@ -364,8 +344,7 @@ IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, PRE_OobeLogin) {
 }
 
 // Test focusing different pods.
-// Flaky test: crbug.com/1406789
-IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, DISABLED_OobeLogin) {
+IN_PROC_BROWSER_TEST_F(DarkLightEnabledTest, OobeLogin) {
   ASSERT_EQ(LoginScreenTestApi::GetFocusedUser(), user2);
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   EXPECT_FALSE(dark_light_mode_controller->IsDarkModeEnabled());

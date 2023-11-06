@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/bluetooth/bluetooth_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -19,8 +20,6 @@
 
 using ::content::BluetoothDelegate;
 
-namespace chrome {
-
 void ShowBluetoothDevicePairConfirmDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
@@ -31,8 +30,6 @@ void ShowBluetoothDevicePairConfirmDialog(
                                                     std::move(close_callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 }
-
-}  // namespace chrome
 
 BluetoothDevicePairConfirmView::BluetoothDevicePairConfirmView(
     const std::u16string& device_identifier,

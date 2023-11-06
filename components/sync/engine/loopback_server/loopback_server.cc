@@ -255,7 +255,7 @@ void LoopbackServer::Init() {
   if (LoadStateFromFile())
     return;
 
-  store_birthday_ = base::Time::Now().ToJavaTime();
+  store_birthday_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
   keystore_keys_.push_back(GenerateNewKeystoreKey());
 
   const bool create_result = CreateDefaultPermanentItems();
@@ -701,7 +701,7 @@ void LoopbackServer::ClearServerData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   entities_.clear();
   keystore_keys_.clear();
-  store_birthday_ = base::Time::Now().ToJavaTime();
+  store_birthday_ = base::Time::Now().InMillisecondsSinceUnixEpoch();
   base::DeleteFile(persistent_file_);
   Init();
 }

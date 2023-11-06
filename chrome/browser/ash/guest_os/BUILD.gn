@@ -12,4 +12,7 @@ mojom("guest_os_diagnostics_mojom") {
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
+
+  # For Closure Compiler targets in chrome/browser/resources/ash/vm
+  use_typescript_sources = false
 }

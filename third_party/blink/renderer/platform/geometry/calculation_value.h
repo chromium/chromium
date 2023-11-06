@@ -83,6 +83,14 @@ class PLATFORM_EXPORT CalculationValue : public RefCounted<CalculationValue> {
     DCHECK(!IsExpression());
     return data_.value;
   }
+  bool HasExplicitPixels() const {
+    DCHECK(!IsExpression());
+    return data_.value.has_explicit_pixels;
+  }
+  bool HasExplicitPercent() const {
+    DCHECK(!IsExpression());
+    return data_.value.has_explicit_percent;
+  }
 
   // If |this| is an expression, returns the underlying expression. Otherwise,
   // creates one from the underlying |PixelsAndPercent| value.

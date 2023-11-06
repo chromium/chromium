@@ -28,6 +28,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -58,13 +59,6 @@ namespace updater {
 namespace {
 
 constexpr int64_t kLogRotateAtSize = 1024 * 1024;  // 1 MiB.
-
-const char kHexString[] = "0123456789ABCDEF";
-inline char IntToHex(int i) {
-  CHECK_GE(i, 0) << i << " not a hex value";
-  CHECK_LE(i, 15) << i << " not a hex value";
-  return kHexString[i];
-}
 
 // A fast bit-vector map for ascii characters.
 //
@@ -104,8 +98,7 @@ std::string Escape(base::StringPiece text,
       escaped.push_back('%');
     } else if (charmap.Contains(c)) {
       escaped.push_back('%');
-      escaped.push_back(IntToHex(c >> 4));
-      escaped.push_back(IntToHex(c & 0xf));
+      base::AppendHexEncodedByte(c, escaped);
     } else {
       escaped.push_back(c);
     }
@@ -142,6 +135,20 @@ absl::optional<base::FilePath> GetUpdaterExecutablePath(
     return absl::nullopt;
   }
   return path->Append(GetExecutableRelativePath());
+}
+
+#if !BUILDFLAG(IS_MAC)
+absl::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
+  return GetInstallDirectory(scope);
+}
+#endif
+
+absl::optional<base::FilePath> GetCrxDiffCacheDirectory(UpdaterScope scope) {
+  const absl::optional<base::FilePath> cache_path(GetCacheBaseDirectory(scope));
+  if (!cache_path) {
+    return absl::nullopt;
+  }
+  return absl::optional<base::FilePath>(cache_path->AppendASCII("crx_cache"));
 }
 
 absl::optional<base::FilePath> GetUpdaterExecutablePath(UpdaterScope scope) {
@@ -270,15 +277,6 @@ void InitLogging(UpdaterScope updater_scope) {
       {0xa1, 0x88, 0x21, 0x36, 0xab, 0x85, 0xf5, 0xf1}};
   logging::LogEventProvider::Initialize(kUpdaterETWProviderName);
 #endif
-
-  VLOG(1) << "Log initialized for " <<
-      [] {
-        base::FilePath file_exe;
-        return base::PathService::Get(base::FILE_EXE, &file_exe)
-                   ? file_exe
-                   : base::FilePath();
-      }() << " -> "
-          << settings.log_file_path;
 }
 
 std::string GetUpdaterUserAgent() {

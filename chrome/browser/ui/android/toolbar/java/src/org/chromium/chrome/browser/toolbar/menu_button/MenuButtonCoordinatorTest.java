@@ -37,39 +37,24 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for ToolbarAppMenuManager.
- */
+/** Unit tests for ToolbarAppMenuManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class MenuButtonCoordinatorTest {
-    @Mock
-    private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
-    @Mock
-    private Activity mActivityMock;
-    @Mock
-    private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
-    @Mock
-    private AppMenuCoordinator mAppMenuCoordinator;
-    @Mock
-    private AppMenuHandler mAppMenuHandler;
-    @Mock
-    private AppMenuButtonHelper mAppMenuButtonHelper;
+    @Mock private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
+    @Mock private Activity mActivityMock;
+    @Mock private MenuButtonCoordinator.SetFocusFunction mFocusFunction;
+    @Mock private AppMenuCoordinator mAppMenuCoordinator;
+    @Mock private AppMenuHandler mAppMenuHandler;
+    @Mock private AppMenuButtonHelper mAppMenuButtonHelper;
     MenuButton mMenuButton;
-    @Mock
-    ImageButton mImageButton;
-    @Mock
-    private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    @Mock
-    private Runnable mRequestRenderRunnable;
-    @Mock
-    ThemeColorProvider mThemeColorProvider;
-    @Mock
-    Resources mResources;
-    @Mock
-    private WindowAndroid mWindowAndroid;
-    @Mock
-    private KeyboardVisibilityDelegate mKeyboardDelegate;
+    @Mock ImageButton mImageButton;
+    @Mock private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
+    @Mock private Runnable mRequestRenderRunnable;
+    @Mock ThemeColorProvider mThemeColorProvider;
+    @Mock Resources mResources;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
 
     private MenuUiState mMenuUiState;
     private OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
@@ -83,8 +68,9 @@ public class MenuButtonCoordinatorTest {
         // Get menu button.
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
-        ToolbarTablet toolbarTablet = (ToolbarTablet) mActivity.getLayoutInflater().inflate(
-                R.layout.toolbar_tablet, null);
+        ToolbarTablet toolbarTablet =
+                (ToolbarTablet)
+                        mActivity.getLayoutInflater().inflate(R.layout.toolbar_tablet, null);
         mMenuButton = spy(toolbarTablet.findViewById(R.id.menu_button_wrapper));
 
         doReturn(mAppMenuHandler).when(mAppMenuCoordinator).getAppMenuHandler();
@@ -106,12 +92,19 @@ public class MenuButtonCoordinatorTest {
         doReturn(new WeakReference<>(mActivityMock)).when(mWindowAndroid).getActivity();
         doReturn(mKeyboardDelegate).when(mWindowAndroid).getKeyboardDelegate();
 
-        // clang-format off
-        mMenuButtonCoordinator = new MenuButtonCoordinator(mAppMenuSupplier,
-                mControlsVisibilityDelegate, mWindowAndroid, mFocusFunction, mRequestRenderRunnable,
-                true, () -> false, mThemeColorProvider, () -> null, () -> {},
-                R.id.menu_button_wrapper);
-        // clang-format on
+        mMenuButtonCoordinator =
+                new MenuButtonCoordinator(
+                        mAppMenuSupplier,
+                        mControlsVisibilityDelegate,
+                        mWindowAndroid,
+                        mFocusFunction,
+                        mRequestRenderRunnable,
+                        true,
+                        () -> false,
+                        mThemeColorProvider,
+                        () -> null,
+                        () -> {},
+                        R.id.menu_button_wrapper);
     }
 
     @Test
@@ -128,7 +121,8 @@ public class MenuButtonCoordinatorTest {
 
     @Test
     public void testHoverTooltipText() {
-        Assert.assertEquals("Tooltip text for Menu button is not as expected",
+        Assert.assertEquals(
+                "Tooltip text for Menu button is not as expected",
                 mActivity.getResources().getString(R.string.accessibility_toolbar_btn_menu),
                 mMenuButton.getTooltipText());
     }

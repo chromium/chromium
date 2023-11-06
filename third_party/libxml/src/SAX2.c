@@ -1870,8 +1870,12 @@ xmlSAX2AttributeNs(xmlParserCtxtPtr ctxt,
     /*
      * Note: if prefix == NULL, the attribute is not in the default namespace
      */
-    if (prefix != NULL)
-	namespace = xmlSearchNs(ctxt->myDoc, ctxt->node, prefix);
+    if (prefix != NULL) {
+	namespace = xmlParserNsLookupSax(ctxt, prefix);
+	if ((namespace == NULL) && (xmlStrEqual(prefix, BAD_CAST "xml"))) {
+	    namespace = xmlSearchNs(ctxt->myDoc, ctxt->node, prefix);
+	}
+    }
 
     /*
      * allocate the node
@@ -2201,6 +2205,9 @@ xmlSAX2StartElementNs(void *ctx,
              */
 	    continue;
 	}
+
+        xmlParserNsUpdateSax(ctxt, pref, ns);
+
 #ifdef LIBXML_VALID_ENABLED
 	if ((!ctxt->html) && ctxt->validate && ctxt->wellFormed &&
 	    ctxt->myDoc && ctxt->myDoc->intSubset) {
@@ -2242,7 +2249,7 @@ xmlSAX2StartElementNs(void *ctx,
      * Note that, if prefix is NULL, this searches for the default Ns
      */
     if ((URI != NULL) && (ret->ns == NULL)) {
-        ret->ns = xmlSearchNs(ctxt->myDoc, parent, prefix);
+        ret->ns = xmlParserNsLookupSax(ctxt, prefix);
 	if ((ret->ns == NULL) && (xmlStrEqual(prefix, BAD_CAST "xml"))) {
 	    ret->ns = xmlSearchNs(ctxt->myDoc, ret, prefix);
 	}

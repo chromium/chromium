@@ -183,8 +183,6 @@ class HoldingSpaceModelAttachedWaiter : public HoldingSpaceControllerObserver {
     }
   }
 
-  void OnHoldingSpaceModelDetached(HoldingSpaceModel* model) override {}
-
   bool IsModelAttached() const {
     HoldingSpaceKeyedService* const holding_space_service =
         HoldingSpaceKeyedServiceFactory::GetInstance()->GetService(profile_);

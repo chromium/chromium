@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "nearby_sharing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "NearbyShareAllowed": false
+        },
+        "prefs": {
+          "nearby_sharing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "NearbyShareAllowed": true
+        },
+        "prefs": {
+          "nearby_sharing.enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

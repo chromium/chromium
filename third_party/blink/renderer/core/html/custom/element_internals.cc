@@ -274,7 +274,7 @@ LabelsNodeList* ElementInternals::labels(ExceptionState& exception_state) {
 CustomStateSet* ElementInternals::states() {
   if (!custom_states_)
     custom_states_ = MakeGarbageCollected<CustomStateSet>(Target());
-  return custom_states_;
+  return custom_states_.Get();
 }
 
 bool ElementInternals::HasState(const AtomicString& state) const {
@@ -350,7 +350,7 @@ Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
     return nullptr;
   HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
   DCHECK_EQ(stored_elements->size(), 1u);
-  return *(stored_elements->begin());
+  return stored_elements->begin()->Get();
 }
 
 HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(

@@ -346,6 +346,20 @@ struct AX_BASE_EXPORT AXNodeData {
   // Returns the approximate size in bytes.
   size_t ByteSize() const;
 
+  struct AX_BASE_EXPORT AXNodeDataSize {
+    size_t int_attribute_size = 0;
+    size_t float_attribute_size = 0;
+    size_t bool_attribute_size = 0;
+    size_t string_attribute_size = 0;
+    size_t int_list_attribhute_size = 0;
+    size_t string_list_attribute_size = 0;
+    size_t html_attribute_size = 0;
+    size_t child_ids_size = 0;
+
+    size_t ByteSize() const;
+  };
+  void AccumulateSize(AXNodeDataSize& node_data_size) const;
+
   // Return a string representation of |aria-dropeffect| values, for testing
   // and debugging.
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.

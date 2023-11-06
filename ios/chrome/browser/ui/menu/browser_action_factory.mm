@@ -9,7 +9,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -272,7 +272,8 @@
 
 - (UIAction*)actionToSaveToPhotosWithImageURL:(const GURL&)imageURL
                                      referrer:(const web::Referrer&)referrer
-                                     webState:(web::WebState*)webState {
+                                     webState:(web::WebState*)webState
+                                        block:(ProceduralBlock)block {
   __weak id<SaveToPhotosCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SaveToPhotosCommands);
   SaveImageToPhotosCommand* command =
@@ -293,6 +294,9 @@
                          image:image
                           type:MenuActionType::SaveImageToGooglePhotos
                          block:^{
+                           if (block) {
+                             block();
+                           }
                            [handler saveImageToPhotos:command];
                          }];
 }

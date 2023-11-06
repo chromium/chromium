@@ -120,19 +120,33 @@ enum PasswordComplexity {
 //
 // The chrome ash implementation calls into the cryptohomed system daemon via
 // the UserDataAuth.proto Dbus API to affect the desired changes to the user's
-// authentication factors.
+// authentication factors. Since the UserDataAuth API distinguishes between
+// adding a non existing auth factor and updating an existing auth factor, we
+// also make this distinction in this interface.
 interface PasswordFactorEditor {
-  // Sets the user's local password to the desired value. This will overwrite
-  // the user's current password, if any. Callers must provide a sufficiently
-  // complex password. A password is considered sufficiently complex if the
-  // `CheckLocalPasswordComplexity` call returns `kOk` for the password.
-  //
-  // TODO(b/290916811): For now, callers of this method must ensure that a local
-  // password is already configured for that user, i.e. `GetPasswordFactorType`
-  // must return `kLocal`. Eventually, calling this method should also be
-  // possible when the user has a Gaia password (which will then be removed and
-  // replaced by the provided local password) or no password at all.
+  // Updates the user's local password to the desired value. This assumes that
+  // the user has a local password factor set up. Callers must provide a
+  // sufficiently complex password. A password is considered sufficiently
+  // complex if the `CheckLocalPasswordComplexity` call returns `kOk` for
+  // the password.
+  UpdateLocalPassword(string auth_token, string new_password) =>
+      (ConfigureResult result);
+
+  // Updates the user's cryptohoome password to match their online password.
+  // This assumes that the user has an online password factor set up.
+  UpdateOnlinePassword(string auth_token, string new_password) =>
+      (ConfigureResult result);
+
+  // Sets the user's local password to the desired value. This assumes that the
+  // user has no password set up yet. Callers must provide a sufficiently
+  // complex password. A password is considered sufficiently complex if
+  // the `CheckLocalPasswordComplexity` call returns `kOk` for the password.
   SetLocalPassword(string auth_token, string new_password) =>
+      (ConfigureResult result);
+
+  // Sets the user's cryptohome password to match their online password.
+  // This assumes that the user has no online password set up yet.
+  SetOnlinePassword(string auth_token, string new_password) =>
       (ConfigureResult result);
 
   // Returns a value describing the complexity of the provided password value.

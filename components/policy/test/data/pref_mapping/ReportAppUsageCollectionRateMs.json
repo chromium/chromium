@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "default_value": 900000
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportAppUsageCollectionRateMs": 300000
+        },
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "value": 300000
+          }
+        }
+      }
+    ]
+  }
+]

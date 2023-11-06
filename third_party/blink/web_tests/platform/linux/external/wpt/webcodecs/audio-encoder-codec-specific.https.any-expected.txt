@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-PASS Test the Opus DTX flag works.
-PASS Test the Opus bitrateMode flag works.
-PRECONDITION_FAILED Test the AAC bitrateMode flag works. AAC CBR not supported
+[PASS] Test the Opus DTX flag works.
+[PASS] Test the Opus bitrateMode flag works.
+[PRECONDITION_FAILED] Test the AAC bitrateMode flag works.
+  AAC CBR not supported
 Harness: the test ran to completion.
 

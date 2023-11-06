@@ -66,7 +66,7 @@ class POLICY_EXPORT ConfigurationPolicyPrefStore
 
   // Returns a new PrefValueMap containing the preference values that correspond
   // to the policies currently provided by the policy service.
-  PrefValueMap* CreatePreferencesFromPolicies();
+  std::unique_ptr<PrefValueMap> CreatePreferencesFromPolicies();
 
   // May be null in tests.
   raw_ptr<BrowserPolicyConnectorBase> policy_connector_;

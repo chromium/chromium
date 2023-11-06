@@ -216,6 +216,7 @@
   E_CPONLY(kColorNewTabPageModuleControlBorder) \
   E_CPONLY(kColorNewTabPageModuleContextMenuDivider) \
   E_CPONLY(kColorNewTabPageModuleBackground) \
+  E_CPONLY(kColorNewTabPageModuleElementDivider) \
   E_CPONLY(kColorNewTabPageModuleIconContainerBackground) \
   E_CPONLY(kColorNewTabPageModuleItemBackground) \
   E_CPONLY(kColorNewTabPageModuleItemBackgroundHovered) \
@@ -265,7 +266,11 @@
   E_CPONLY(kColorOmniboxResultsButtonIcon) \
   E_CPONLY(kColorOmniboxResultsButtonIconSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDrop) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropRowHovered) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropRowSelected) \
   E_CPONLY(kColorOmniboxResultsButtonInkDropSelected) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowHovered) \
+  E_CPONLY(kColorOmniboxResultsButtonInkDropSelectedRowSelected) \
   E_CPONLY(kColorOmniboxResultsFocusIndicator) \
   E_CPONLY(kColorOmniboxResultsIcon) \
   E_CPONLY(kColorOmniboxResultsIconGM3Background) \
@@ -397,6 +402,9 @@
   E_CPONLY(kColorSidePanelCardBackground) \
   E_CPONLY(kColorSidePanelCardPrimaryForeground) \
   E_CPONLY(kColorSidePanelCardSecondaryForeground) \
+  E_CPONLY(kColorSidePanelCommerceGraphAxis) \
+  E_CPONLY(kColorSidePanelCommerceGraphBubbleBackground) \
+  E_CPONLY(kColorSidePanelCommerceGraphLine) \
   E_CPONLY(kColorSidePanelContentAreaSeparator) \
   E_CPONLY(kColorSidePanelContentBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeClassicChromeTileBorder) \
@@ -416,6 +424,7 @@
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeSnapshotBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeWallpaperSearchTileBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeWebStoreBorder) \
   E_CPONLY(kColorSidePanelDialogBackground) \
   E_CPONLY(kColorSidePanelDialogDivider) \
@@ -474,6 +483,8 @@
   E_CPONLY(kColorTabBackgroundSelectedHoverFrameInactive) \
   E_CPONLY(kColorTabCloseButtonFocusRingActive) \
   E_CPONLY(kColorTabCloseButtonFocusRingInactive) \
+  E_CPONLY(kColorTabDiscardRingFrameActive) \
+  E_CPONLY(kColorTabDiscardRingFrameInactive) \
   E_CPONLY(kColorTabFocusRingActive) \
   E_CPONLY(kColorTabFocusRingInactive) \
   E_CPONLY(kColorTabForegroundActiveFrameActive) \
@@ -706,12 +717,14 @@
   E_CPONLY(kColorPreviousReadAloudHighlightYellow) \
   /* Compose colors */ \
   E_CPONLY(kColorComposeDialogBackground) \
+  E_CPONLY(kColorComposeDialogDivider) \
   E_CPONLY(kColorComposeDialogError) \
   E_CPONLY(kColorComposeDialogForegroundSubtle) \
   E_CPONLY(kColorComposeDialogLink) \
   E_CPONLY(kColorComposeDialogResultBackground) \
   E_CPONLY(kColorComposeDialogResultForeground) \
   E_CPONLY(kColorComposeDialogResultIcon) \
+  E_CPONLY(kColorComposeDialogScrollbarThumb) \
   E_CPONLY(kColorComposeDialogTitle) \
   E_CPONLY(kColorComposeDialogTextarea) \
   E_CPONLY(kColorComposeDialogTextareaOutline) \

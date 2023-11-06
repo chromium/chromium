@@ -41,15 +41,12 @@ class NotificationCenterTrayTest : public AshTestBase {
   ~NotificationCenterTrayTest() override = default;
 
   void SetUp() override {
-    // Enable quick settings revamp feature.
     scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kCameraEffectsSupportedByHardware}, {});
+        {features::kCameraEffectsSupportedByHardware}, {});
 
     AshTestBase::SetUp();
 
-    test_api_ = std::make_unique<NotificationCenterTestApi>(
-        StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-            ->notification_center_tray());
+    test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
@@ -226,12 +223,12 @@ TEST_F(NotificationCenterTrayTest, AcceleratorTogglesBubble) {
 // Keyboard accelerator shows a toast when there are no notifications.
 TEST_F(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
   ASSERT_EQ(test_api()->GetNotificationCount(), 0u);
-  EXPECT_FALSE(ToastManager::Get()->IsRunning(
+  EXPECT_FALSE(ToastManager::Get()->IsToastShown(
       kNotificationCenterTrayNoNotificationsToastId));
   // Pressing the accelerator should show the toast and not the bubble.
   ShellTestApi().PressAccelerator(
       ui::Accelerator(ui::VKEY_N, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
-  EXPECT_TRUE(ToastManager::Get()->IsRunning(
+  EXPECT_TRUE(ToastManager::Get()->IsToastShown(
       kNotificationCenterTrayNoNotificationsToastId));
   EXPECT_FALSE(test_api()->IsBubbleShown());
 }
@@ -486,8 +483,7 @@ class NotificationCenterTrayPrivacyIndicatorsTest : public AshTestBase {
   ~NotificationCenterTrayPrivacyIndicatorsTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kQsRevamp, features::kPrivacyIndicators}, {});
+    scoped_feature_list_.InitWithFeatures({features::kPrivacyIndicators}, {});
 
     AshTestBase::SetUp();
   }

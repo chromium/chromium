@@ -8,9 +8,16 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentSender;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -108,6 +115,34 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
             Log.w(TAG, "Error sending trusted vault intent: ", exception);
         }
         onInitialLayoutInflationComplete();
+    }
+
+    @Override
+    protected OneshotSupplier<ProfileProvider> createProfileProvider() {
+        OneshotSupplierImpl<ProfileProvider> supplier = new OneshotSupplierImpl<>();
+        ProfileProvider profileProvider =
+                new ProfileProvider() {
+                    @NonNull
+                    @Override
+                    public Profile getOriginalProfile() {
+                        throw new IllegalStateException(
+                                "Unexpected access of the original profile.");
+                    }
+
+                    @Nullable
+                    @Override
+                    public Profile getOffTheRecordProfile(boolean createIfNeeded) {
+                        throw new IllegalStateException(
+                                "Unexpected access of the incognito profile.");
+                    }
+
+                    @Override
+                    public boolean hasOffTheRecordProfile() {
+                        return false;
+                    }
+                };
+        supplier.set(profileProvider);
+        return supplier;
     }
 
     @Override

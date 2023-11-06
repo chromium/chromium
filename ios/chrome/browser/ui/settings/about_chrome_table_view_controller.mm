@@ -20,7 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
@@ -168,14 +168,14 @@ const CGFloat kDefaultHeight = 70;
   MDCSnackbarMessage* message =
       [MDCSnackbarMessage messageWithText:messageText];
   message.category = @"version copied";
-  [self.snackbarCommandsHandler showSnackbarMessage:message bottomOffset:0];
+  [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }
 
 #pragma mark - Private methods
 
 - (void)openURL:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationCommandsHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closeSettingsUIAndOpenURL:command];
 }
 
 - (std::string)versionString {

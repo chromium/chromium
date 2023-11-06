@@ -26,10 +26,11 @@ TEST(LanguagePackMetricsTest, CheckLanguageCodes) {
       "ti", "tl",    "tr",    "uk",    "ur",    "vi",    "yue", "zh"};
 
   absl::optional<base::HistogramEnumEntryMap> language_codes_map =
-      base::ReadEnumFromEnumsXml("LanguagePackLanguageCodes");
+      base::ReadEnumFromEnumsXml("LanguagePackLanguageCodes",
+                                 /*subdirectory=*/"chromeos");
   ASSERT_TRUE(language_codes_map)
       << "Error reading enum 'LanguagePackLanguageCodes' from "
-         "tools/metrics/histograms/enums.xml.";
+         "tools/metrics/histograms/metadata/chromeos/enums.xml.";
 
   // We prepare the already formatted output in case any code is missing.
   std::string missing_codes;

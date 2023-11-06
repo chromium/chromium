@@ -65,8 +65,7 @@ public class DownloadInterstitialMediatorTest {
     private static final String OPEN_BUTTON_TEXT = "Open";
     private static final String DELETE_BUTTON_TEXT = "Delete";
 
-    @Mock
-    private SnackbarManager mSnackbarManager;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private final TestOfflineContentProvider mProvider = new TestOfflineContentProvider();
     private FakeModalDialogManager mModalDialogManager;
@@ -93,9 +92,14 @@ public class DownloadInterstitialMediatorTest {
         mModel.set(DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT, CANCEL_BUTTON_TEXT);
         mModel.set(DownloadInterstitialProperties.RELOAD_TAB, this::reloadTab);
         mProvider.addItem(mItem0);
-        mMediator = new DownloadInterstitialMediator(ApplicationProvider::getApplicationContext,
-                mModel, mItem0.originalUrl.getSpec(), mProvider, mSnackbarManager,
-                mModalDialogManager);
+        mMediator =
+                new DownloadInterstitialMediator(
+                        ApplicationProvider::getApplicationContext,
+                        mModel,
+                        mItem0.originalUrl.getSpec(),
+                        mProvider,
+                        mSnackbarManager,
+                        mModalDialogManager);
         // Increment progress to trigger onItemUpdated method for OfflineContentProvider observers.
         // This attaches the OfflineItem to the mediator.
         mProvider.incrementProgress(mItem0.id);
@@ -130,9 +134,14 @@ public class DownloadInterstitialMediatorTest {
         // Remove observer so that the mediator can attach its own observer.
         mProvider.setObserver(null);
         mModel.set(DOWNLOAD_ITEM, null);
-        mMediator = new DownloadInterstitialMediator(ApplicationProvider::getApplicationContext,
-                mModel, item1.originalUrl.getSpec(), mProvider, mSnackbarManager,
-                mModalDialogManager);
+        mMediator =
+                new DownloadInterstitialMediator(
+                        ApplicationProvider::getApplicationContext,
+                        mModel,
+                        item1.originalUrl.getSpec(),
+                        mProvider,
+                        mSnackbarManager,
+                        mModalDialogManager);
         mProvider.incrementProgress(mItem0.id);
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
@@ -332,8 +341,8 @@ public class DownloadInterstitialMediatorTest {
         }
 
         /**
-         * Captures the number of each metric logged at a given moment.
-         * Should be called during test setup.
+         * Captures the number of each metric logged at a given moment. Should be called during test
+         * setup.
          */
         void initialise() {
             mValues.put(INITIATED, getValueCount(INITIATED));
@@ -350,6 +359,7 @@ public class DownloadInterstitialMediatorTest {
 
         /**
          * Asserts that an action was logged a certain number of times.
+         *
          * @param action The action that is being queried.
          * @param numberOfTimes The expected number of times the action has been logged.
          */
@@ -384,8 +394,9 @@ public class DownloadInterstitialMediatorTest {
         /** Called to increment the progress of an offline item and notify observers. */
         public void incrementProgress(ContentId id) {
             OfflineItem item = findItem(id);
-            item.progress = new OfflineItem.Progress(
-                    item.progress.value + 1, item.progress.max, item.progress.unit);
+            item.progress =
+                    new OfflineItem.Progress(
+                            item.progress.value + 1, item.progress.max, item.progress.unit);
             if (item.progress.value == item.progress.max) {
                 item.state = OfflineItemState.COMPLETE;
             }
@@ -398,8 +409,9 @@ public class DownloadInterstitialMediatorTest {
          */
         public void completeDownload(ContentId id) {
             OfflineItem item = findItem(id);
-            item.progress = new OfflineItem.Progress(
-                    item.progress.max, item.progress.max, item.progress.unit);
+            item.progress =
+                    new OfflineItem.Progress(
+                            item.progress.max, item.progress.max, item.progress.unit);
             item.state = OfflineItemState.COMPLETE;
             notifyObservers(id);
         }

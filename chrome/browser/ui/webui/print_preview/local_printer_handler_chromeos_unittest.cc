@@ -40,6 +40,8 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::WithArg;
 
+constexpr auto kStatusTimestamp = base::Time::FromSecondsSinceUnixEpoch(1e9);
+
 // A `LocalPrinter` implementation where all functions run callbacks with
 // reasonable default values.
 class TestLocalPrinter : public FakeLocalPrinter {
@@ -362,13 +364,29 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
 }
 
 TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
+  crosapi::mojom::PrinterStatusPtr status =
+      crosapi::mojom::PrinterStatus::New();
+  status->printer_id = "printer_id";
+  status->timestamp = kStatusTimestamp;
+  status->status_reasons.push_back(crosapi::mojom::StatusReason::New(
+      crosapi::mojom::StatusReason::Reason::kOutOfInk,
+      crosapi::mojom::StatusReason::Severity::kWarning));
   crosapi::mojom::LocalDestinationInfo input("device_name", "printer_name",
-                                             "printer_description", false);
+                                             "printer_description", false, "",
+                                             std::move(status));
   const base::Value kExpectedValue = base::test::ParseJson(R"({
    "cupsEnterprisePrinter": false,
    "deviceName": "device_name",
    "printerDescription": "printer_description",
-   "printerName": "printer_name"
+   "printerName": "printer_name",
+   "printerStatus": {
+      "printerId": "printer_id",
+      "statusReasons": [ {
+        "reason": 6,
+        "severity": 2
+      } ],
+      "timestamp": 1e+12
+    }
 })");
   EXPECT_EQ(kExpectedValue, LocalPrinterHandlerChromeos::PrinterToValue(input));
 }
@@ -380,7 +398,8 @@ TEST(LocalPrinterHandlerChromeos, PrinterToValue_ConfiguredViaPolicy) {
    "cupsEnterprisePrinter": true,
    "deviceName": "device_name",
    "printerDescription": "printer_description",
-   "printerName": "printer_name"
+   "printerName": "printer_name",
+   "printerStatus": {}
 })");
   EXPECT_EQ(kExpectedValue,
             LocalPrinterHandlerChromeos::PrinterToValue(printer));
@@ -431,7 +450,7 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
 TEST(LocalPrinterHandlerChromeos, StatusToValue) {
   crosapi::mojom::PrinterStatus status;
   status.printer_id = "printer_id";
-  status.timestamp = base::Time::FromDoubleT(1e9);
+  status.timestamp = kStatusTimestamp;
   status.status_reasons.push_back(crosapi::mojom::StatusReason::New(
       crosapi::mojom::StatusReason::Reason::kOutOfInk,
       crosapi::mojom::StatusReason::Severity::kWarning));

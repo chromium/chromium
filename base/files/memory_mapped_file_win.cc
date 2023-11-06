@@ -62,17 +62,25 @@ bool MemoryMappedFile::MapFileRegionToMemory(
   if (!file_.IsValid())
     return false;
 
+  DWORD view_access;
   DWORD flags = 0;
   ULARGE_INTEGER size = {};
   switch (access) {
     case READ_ONLY:
       flags |= PAGE_READONLY;
+      view_access = FILE_MAP_READ;
       break;
     case READ_WRITE:
       flags |= PAGE_READWRITE;
+      view_access = FILE_MAP_WRITE;
+      break;
+    case READ_WRITE_COPY:
+      flags |= PAGE_WRITECOPY;
+      view_access = FILE_MAP_COPY;
       break;
     case READ_WRITE_EXTEND:
       flags |= PAGE_READWRITE;
+      view_access = FILE_MAP_WRITE;
       size.QuadPart = region.size;
       break;
     case READ_CODE_IMAGE:
@@ -119,10 +127,9 @@ bool MemoryMappedFile::MapFileRegionToMemory(
     length_ = region.size;
   }
 
-  data_ = static_cast<uint8_t*>(
-      ::MapViewOfFile(file_mapping_.get(),
-                      (flags & PAGE_READONLY) ? FILE_MAP_READ : FILE_MAP_WRITE,
-                      map_start.HighPart, map_start.LowPart, map_size));
+  data_ = static_cast<uint8_t*>(::MapViewOfFile(file_mapping_.get(),
+                                                view_access, map_start.HighPart,
+                                                map_start.LowPart, map_size));
   if (data_ == nullptr)
     return false;
   data_ += data_offset;

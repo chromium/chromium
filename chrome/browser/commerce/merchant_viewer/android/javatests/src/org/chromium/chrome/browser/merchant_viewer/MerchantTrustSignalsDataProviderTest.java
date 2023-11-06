@@ -31,26 +31,19 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link MerchantTrustSignalsDataProvider}.
- */
+/** Tests for {@link MerchantTrustSignalsDataProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustSignalsDataProviderTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private GURL mMockDestinationGurl;
+    @Mock private GURL mMockDestinationGurl;
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private Profile mMockProfile;
-    @Mock
-    private ShoppingService mMockShoppingService;
+    @Mock private Profile mMockProfile;
+    @Mock private ShoppingService mMockShoppingService;
 
     private final MerchantInfo mFakeMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, new GURL(""), true, 0.2f, false, false);
@@ -175,12 +168,15 @@ public class MerchantTrustSignalsDataProviderTest {
     }
 
     private void mockShoppingServiceResponse(MerchantInfo merchantInfo) {
-        doAnswer((Answer<Void>) invocation -> {
-            GURL url = (GURL) invocation.getArguments()[0];
-            MerchantInfoCallback callback = (MerchantInfoCallback) invocation.getArguments()[1];
-            callback.onResult(url, merchantInfo);
-            return null;
-        })
+        doAnswer(
+                        (Answer<Void>)
+                                invocation -> {
+                                    GURL url = (GURL) invocation.getArguments()[0];
+                                    MerchantInfoCallback callback =
+                                            (MerchantInfoCallback) invocation.getArguments()[1];
+                                    callback.onResult(url, merchantInfo);
+                                    return null;
+                                })
                 .when(mMockShoppingService)
                 .getMerchantInfoForUrl(any(GURL.class), any(MerchantInfoCallback.class));
     }

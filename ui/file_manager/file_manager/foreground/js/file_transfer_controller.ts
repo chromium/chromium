@@ -2,27 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * This file is checked via TS, so we suppress Closure checks.
- * @suppress {checkTypes}
- */
-
 import {assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import {getDisallowedTransfers, grantAccess, startIOTask} from '../../common/js/api.js';
-import {getFocusedTreeItem, htmlEscape, isDirectoryTree, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
+import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {FileType} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
+import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
+import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {visitURL} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {ProgressCenter} from '../../externs/background/progress_center.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileKey} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -30,6 +26,7 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 import {getFileData, getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import {XfTreeItem} from '../../widgets/xf_tree_item.js';
+import {isTreeItem} from '../../widgets/xf_tree_util.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -38,7 +35,10 @@ import {MetadataModel} from './metadata/metadata_model.js';
 import {Command} from './ui/command.js';
 import {DirectoryItem, DirectoryTree} from './ui/directory_tree.js';
 import {DragSelector} from './ui/drag_selector.js';
-import {List} from './ui/list.js';
+import type {FileGrid} from './ui/file_grid.js';
+import type {FileTableList} from './ui/file_table_list.js';
+import type {Grid} from './ui/grid.js';
+import type {List} from './ui/list.js';
 import {ListContainer} from './ui/list_container.js';
 import {ListItem} from './ui/list_item.js';
 import {TreeItem} from './ui/tree.js';
@@ -117,14 +117,6 @@ const getClipboardData = (event: Event): DataTransfer|null => {
   return isClipboardEvent(event) ? event.clipboardData : null;
 };
 
-/**
- * Take an entry and extract the rootType.
- */
-const getRootType = (entry: DirectoryEntry|FilesAppDirEntry|FakeEntry|
-                     EntryLocation): VolumeManagerCommon.RootType|null => {
-  return 'rootType' in entry ? entry.rootType : null;
-};
-
 export class FileTransferController {
   /**
    * The array of the pending task IDs.
@@ -154,7 +146,7 @@ export class FileTransferController {
 
   private destinationEntry_: DirectoryEntry|FilesAppDirEntry|null = null;
 
-  private lastEnteredTarget_: Element|null = null;
+  private lastEnteredTarget_: HTMLElement|null = null;
 
   private dropTarget_: Element|null = null;
 
@@ -186,7 +178,7 @@ export class FileTransferController {
     this.selectionHandler_.addEventListener(
         FileSelectionHandler.EventType.CHANGE_THROTTLED,
         this.onFileSelectionChangedThrottled_.bind(this));
-    this.attachDragSource_(this.listContainer_.table.list);
+    this.attachDragSource_(this.listContainer_.table.list as FileTableList);
     this.attachFileListDropTarget_(this.listContainer_.table.list);
     this.attachDragSource_(this.listContainer_.grid);
     this.attachFileListDropTarget_(this.listContainer_.grid);
@@ -200,7 +192,7 @@ export class FileTransferController {
   /**
    * Attaches items in the `list` that will be draggable.
    */
-  private attachDragSource_(list: List) {
+  private attachDragSource_(list: FileTableList|FileGrid) {
     if ('webkitUserDrag' in list.style) {
       list.style.webkitUserDrag = 'element';
     }
@@ -213,7 +205,7 @@ export class FileTransferController {
         'touchcancel', this.onTouchEnd_.bind(this), true);
   }
 
-  private attachFileListDropTarget_(list: List) {
+  private attachFileListDropTarget_(list: List|Grid) {
     list.addEventListener('dragover', this.onDragOver_.bind(this, false, list));
     list.addEventListener(
         'dragenter', this.onDragEnterFileList_.bind(this, list));
@@ -258,9 +250,9 @@ export class FileTransferController {
       return;
     }
     let entry: Entry|FakeEntry|FilesAppDirEntry = currentDirEntry;
-    if (util.isRecentRoot(currentDirEntry)) {
+    if (isRecentRoot(currentDirEntry)) {
       entry = this.selectionHandler_.selection.entries[0]!;
-    } else if (util.isTrashRoot(currentDirEntry)) {
+    } else if (isTrashRoot(currentDirEntry)) {
       // In the event the entry resides in the Trash root, delegate to the item
       // in .Trash/files to get the source filesystem.
       const trashEntry =
@@ -298,7 +290,7 @@ export class FileTransferController {
     // In the event a cut event has begun from the TrashRoot, the sources should
     // be delegated to the underlying files to ensure any validation done
     // onDrop_ (e.g. DLP scanning) is done on the actual file.
-    if (entries.every(util.isTrashEntry)) {
+    if (entries.every(isTrashEntry)) {
       entries = entries.map(e => (e as TrashEntry).filesEntry);
     }
 
@@ -309,7 +301,7 @@ export class FileTransferController {
                                       entries[i]!, metadata.contentMimeType) :
                                   false);
 
-    const sourceURLs = util.entriesToURLs(entries);
+    const sourceURLs = entriesToURLs(entries);
     clipboardData.setData('fs/sources', sourceURLs.join('\n'));
 
     clipboardData.effectAllowed = effectAllowed;
@@ -406,9 +398,8 @@ export class FileTransferController {
     const sourceEntries = await pastePlan.resolveEntries();
     let disallowedTransfers: Entry[] = [];
     try {
-      if (util.isDlpEnabled()) {
-        const destinationDir =
-            util.unwrapEntry(pastePlan.destinationEntry) as DirectoryEntry;
+      if (isDlpEnabled()) {
+        const destinationDir = unwrapEntry(pastePlan.destinationEntry);
         disallowedTransfers = await getDisallowedTransfers(
             sourceEntries, destinationDir, pastePlan.isMove);
       }
@@ -437,7 +428,7 @@ export class FileTransferController {
       this.filesToast_.show(toastText, {
         text: str('DLP_TOAST_BUTTON_LABEL'),
         callback: () => {
-          util.visitURL(
+          visitURL(
               'https://support.google.com/chrome/a/?p=chromeos_datacontrols');
         },
       });
@@ -624,7 +615,7 @@ export class FileTransferController {
     return container;
   }
 
-  private onDragStart_(list: List, event: MouseEvent) {
+  private onDragStart_(list: FileGrid|FileTableList, event: MouseEvent) {
     // If renaming is in progress, drag operation should be used for selecting
     // substring of the text. So we don't drag files here.
     if ('currentEntry' in this.listContainer_.renameInput &&
@@ -635,7 +626,8 @@ export class FileTransferController {
 
     // If this drag operation is initiated by mouse, check if we should start
     // selecting area.
-    if (!this.touching_ && list.shouldStartDragSelection(event)) {
+    // TODO: Remove `as FileGrid` once FileTableList is converted to TS.
+    if (!this.touching_ && (list as FileGrid).shouldStartDragSelection(event)) {
       event.preventDefault();
       this.dragSelector_.startDragSelection(list, event);
       return;
@@ -645,7 +637,7 @@ export class FileTransferController {
     // drag.
     if (this.touching_ && !list.hasDragHitElement(event)) {
       event.preventDefault();
-      list.selectionModel.unselectAll();
+      list.selectionModel!.unselectAll();
       return;
     }
 
@@ -723,7 +715,7 @@ export class FileTransferController {
   private onDragEnterFileList_(list: List, event: DragEvent) {
     event.preventDefault();  // Required to prevent the cursor flicker.
 
-    this.lastEnteredTarget_ = event.target as Element;
+    this.lastEnteredTarget_ = event.target as HTMLElement;
     let item: ListItem|null = list.getListItemAncestor(this.lastEnteredTarget_);
     item = item && list.isItem(item) ? item : null;
 
@@ -731,7 +723,7 @@ export class FileTransferController {
       return;
     }
 
-    const entry = item && list.dataModel.item(item.listIndex);
+    const entry = item && list.dataModel!.item(item.listIndex);
     if (entry && event.dataTransfer) {
       this.setDropTarget_(item, event.dataTransfer, entry);
     } else {
@@ -749,7 +741,7 @@ export class FileTransferController {
       return;
     }
 
-    this.lastEnteredTarget_ = event.target as Element;
+    this.lastEnteredTarget_ = event.target as HTMLElement;
     let item = event.target as Element;
     while (item && !(item instanceof TreeItem || item instanceof XfTreeItem)) {
       item = item.parentNode as Element;
@@ -797,14 +789,15 @@ export class FileTransferController {
       event.preventDefault();
       const sourceURLs =
           (event?.dataTransfer?.getData('fs/sources') || '').split('\n');
-      const {entries, failureUrls} = await URLsToEntriesWithAccess(sourceURLs);
+      const {entries, failureUrls} =
+          await convertURLsToEntriesWithAccess(sourceURLs);
 
       // The list of entries should not be special entries (e.g. Camera, Linux
       // files) and should not already exist in Trash (i.e. you can't trash
       // something that's already trashed).
       const isModifiableAndNotInTrashRoot = (entry: Entry) => {
-        return !util.isNonModifiable(this.volumeManager_, entry) &&
-            !util.isTrashEntry(entry);
+        return !isNonModifiable(this.volumeManager_, entry) &&
+            !isTrashEntry(entry);
       };
       const canTrashEntries = entries && entries.length > 0 &&
           entries.every(isModifiableAndNotInTrashRoot);
@@ -832,7 +825,7 @@ export class FileTransferController {
    */
   private changeToDropTargetDirectory_() {
     // Do custom action.
-    if (this.dropTarget_ instanceof DirectoryItem) {
+    if (isDirectoryTreeItem(this.dropTarget_)) {
       this.dropTarget_.doDropTargetAction();
     }
     if (!this.destinationEntry_) {
@@ -869,7 +862,7 @@ export class FileTransferController {
     // Disallow dropping a directory on itself.
     const entries = this.selectionHandler_.selection.entries;
     for (const entry of entries) {
-      if (util.isSameEntry(entry, destinationEntry)) {
+      if (isSameEntry(entry, destinationEntry)) {
         return;
       }
     }
@@ -965,9 +958,15 @@ export class FileTransferController {
 
     // If current focus is on DirectoryTree, write selected item of
     // DirectoryTree to system clipboard.
-    if (isDirectoryTree(document.activeElement)) {
-      const tree = document.activeElement as DirectoryTree | XfTree;
-      this.cutOrCopyFromDirectoryTree(tree, clipboardData, effectAllowed);
+    if (document.activeElement && isDirectoryTree(document.activeElement)) {
+      const focusedItem = getFocusedTreeItem(document.activeElement);
+      this.cutOrCopyFromDirectoryTree(
+          focusedItem, clipboardData, effectAllowed);
+      return;
+    }
+    if (document.activeElement && isTreeItem(document.activeElement)) {
+      this.cutOrCopyFromDirectoryTree(
+          document.activeElement, clipboardData, effectAllowed);
       return;
     }
 
@@ -981,9 +980,9 @@ export class FileTransferController {
    * Performs cut or copy operation dispatched from directory tree.
    */
   cutOrCopyFromDirectoryTree(
-      _: DirectoryTree|XfTree, clipboardData: DataTransfer|null,
+      focusedItem: DirectoryItem|XfTreeItem|null,
+      clipboardData: DataTransfer|null,
       effectAllowed: DataTransfer['effectAllowed']) {
-    const focusedItem = getFocusedTreeItem(document.activeElement);
     if (focusedItem === null) {
       return;
     }
@@ -1035,7 +1034,7 @@ export class FileTransferController {
     }
     // Trash entries are only allowed to be restored which is analogous to a
     // cut event, so disallow the copy.
-    if (this.selectionHandler_.selection.entries.every(util.isTrashEntry)) {
+    if (this.selectionHandler_.selection.entries.every(isTrashEntry)) {
       return false;
     }
     const entries = this.selectionHandler_.selection.entries;
@@ -1043,12 +1042,12 @@ export class FileTransferController {
       if (!entries[i]) {
         continue;
       }
-      if (util.isTeamDriveRoot(entries[i]!)) {
+      if (isTeamDriveRoot(entries[i]!)) {
         return false;
       }
       // If selected entries are not in the same directory, we can't copy them
       // by a single operation at this moment.
-      if (i > 0 && !util.isSiblingEntry(entries[0]!, entries[i]!)) {
+      if (i > 0 && !isSiblingEntry(entries[0]!, entries[i]!)) {
         return false;
       }
     }
@@ -1082,8 +1081,7 @@ export class FileTransferController {
     }
 
     for (let i = 0; i < entries.length; i++) {
-      if (entries[i] &&
-          util.isNonModifiable(this.volumeManager_, entries[i]!)) {
+      if (entries[i] && isNonModifiable(this.volumeManager_, entries[i]!)) {
         return false;
       }
     }
@@ -1175,6 +1173,7 @@ export class FileTransferController {
     }
 
     const sourceUrls = (clipboardData.getData('fs/sources') || '').split('\n');
+    assert(destinationLocationInfo.volumeInfo);
     if (this.getSourceRootUrl_(
             clipboardData, this.getDragAndDropGlobalData_()) !==
         destinationLocationInfo.volumeInfo.fileSystem.root.toURL()) {
@@ -1392,6 +1391,7 @@ export class FileTransferController {
       }
       // TODO(mtomasz): Use volumeId instead of comparing roots, as soon as
       // volumeId gets unique.
+      assert(destinationLocationInfo.volumeInfo);
       if (this.getSourceRootUrl_(event.dataTransfer!, dragAndDropData) ===
               destinationLocationInfo.volumeInfo.fileSystem.root.toURL() &&
           !event.ctrlKey) {
@@ -1433,7 +1433,7 @@ export class FileTransferController {
     const {entries} = this.selectionHandler_.selection;
     if (entries && entries.length > 0) {
       for (const entry of entries) {
-        if (util.isNonModifiable(this.volumeManager_, entry)) {
+        if (isNonModifiable(this.volumeManager_, entry)) {
           return false;
         }
         const entryURL = entry.toURL();
@@ -1505,7 +1505,7 @@ export class PastePlan {
    */
   async resolveEntries() {
     if (!this.sourceEntries.length) {
-      const result = await URLsToEntriesWithAccess(this.sourceURLs);
+      const result = await convertURLsToEntriesWithAccess(this.sourceURLs);
       this.sourceEntries = result.entries;
       this.failureUrls = result.failureUrls;
     }
@@ -1538,12 +1538,12 @@ export class PastePlan {
 
     // Confirmation type for team drives.
     const source = {
-      isTeamDrive: util.isSharedDriveEntry(this.sourceEntries[0]),
-      teamDriveName: util.getTeamDriveName(this.sourceEntries[0]),
+      isTeamDrive: isSharedDriveEntry(this.sourceEntries[0]),
+      teamDriveName: getTeamDriveName(this.sourceEntries[0]),
     };
     const destination = {
-      isTeamDrive: util.isSharedDriveEntry(this.destinationEntry),
-      teamDriveName: util.getTeamDriveName(this.destinationEntry),
+      isTeamDrive: isSharedDriveEntry(this.destinationEntry),
+      teamDriveName: getTeamDriveName(this.destinationEntry),
     };
     if (this.isMove) {
       if (source.isTeamDrive) {
@@ -1579,8 +1579,8 @@ export class PastePlan {
    */
   getConfirmationMessages(confirmationType: TransferConfirmationType) {
     assert(this.sourceEntries.length != 0);
-    const sourceName = util.getTeamDriveName(this.sourceEntries[0]!);
-    const destinationName = util.getTeamDriveName(this.destinationEntry);
+    const sourceName = getTeamDriveName(this.sourceEntries[0]!);
+    const destinationName = getTeamDriveName(this.destinationEntry);
     switch (confirmationType) {
       case TransferConfirmationType.COPY_TO_SHARED_DRIVE:
         return [strf(
@@ -1618,9 +1618,9 @@ export class PastePlan {
  * Converts list of urls to list of Entries with granting R/W permissions to
  * them, which is essential when pasting files from a different profile.
  */
-const URLsToEntriesWithAccess = async (urls: string[]) => {
+const convertURLsToEntriesWithAccess = async (urls: string[]) => {
   await grantAccess(urls);
-  return util.URLsToEntries(urls);
+  return convertURLsToEntries(urls);
 };
 
 

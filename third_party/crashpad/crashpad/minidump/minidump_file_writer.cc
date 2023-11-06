@@ -16,6 +16,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "minidump/minidump_crashpad_info_writer.h"
 #include "minidump/minidump_exception_writer.h"

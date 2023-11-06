@@ -150,6 +150,14 @@ component("fido") {
       "device_public_key_extension.h",
       "device_response_converter.cc",
       "device_response_converter.h",
+      "enclave/enclave_authenticator.cc",
+      "enclave/enclave_authenticator.h",
+      "enclave/enclave_discovery.cc",
+      "enclave/enclave_discovery.h",
+      "enclave/enclave_protocol_utils.cc",
+      "enclave/enclave_protocol_utils.h",
+      "enclave/enclave_websocket_client.cc",
+      "enclave/enclave_websocket_client.h",
       "fido_authenticator.cc",
       "fido_authenticator.h",
       "fido_device.cc",
@@ -295,19 +303,6 @@ component("fido") {
       "//chromeos/dbus/u2f",
       "//chromeos/dbus/u2f:u2f_proto",
       "//dbus",
-    ]
-  }
-
-  if (!is_chromeos && !is_android) {
-    sources += [
-      "enclave/enclave_authenticator.cc",
-      "enclave/enclave_authenticator.h",
-      "enclave/enclave_discovery.cc",
-      "enclave/enclave_discovery.h",
-      "enclave/enclave_http_client.cc",
-      "enclave/enclave_http_client.h",
-      "enclave/enclave_protocol_utils.cc",
-      "enclave/enclave_protocol_utils.h",
     ]
   }
 }

@@ -74,8 +74,9 @@ int GetDialogWidth(PrivacySandboxService::PromptType prompt_type) {
 class PrivacySandboxDialogDelegate : public views::DialogDelegate {
  public:
   explicit PrivacySandboxDialogDelegate(Browser* browser) : browser_(browser) {
-    SetCloseCallback(base::BindOnce(&PrivacySandboxDialogDelegate::OnClose,
-                                    base::Unretained(this)));
+    RegisterWindowClosingCallback(
+        base::BindOnce(&PrivacySandboxDialogDelegate::OnWindowClosing,
+                       base::Unretained(this)));
   }
 
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override {
@@ -86,7 +87,7 @@ class PrivacySandboxDialogDelegate : public views::DialogDelegate {
     return close_reason == views::Widget::ClosedReason::kUnspecified;
   }
 
-  void OnClose() {
+  void OnWindowClosing() {
     if (auto* privacy_sandbox_service =
             PrivacySandboxServiceFactory::GetForProfile(browser_->profile())) {
       privacy_sandbox_service->PromptClosedForBrowser(browser_);

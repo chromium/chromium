@@ -288,6 +288,16 @@ void StandaloneBrowserExtensionApps::StopApp(const std::string& app_id) {
   controller_->StopApp(app_id);
 }
 
+void StandaloneBrowserExtensionApps::UpdateAppSize(const std::string& app_id) {
+  // It is possible that Lacros is briefly unavailable, for example if it shuts
+  // down for an update.
+  if (!controller_.is_bound()) {
+    return;
+  }
+
+  controller_->UpdateAppSize(app_id);
+}
+
 void StandaloneBrowserExtensionApps::OpenNativeSettings(
     const std::string& app_id) {
   // It is possible that Lacros is briefly unavailable, for example if it shuts

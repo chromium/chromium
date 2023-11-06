@@ -32,10 +32,8 @@ class LoginPinInput;
 // When the length changes (e.g.: selecting a user with a different pin length)
 // the internal view `code_input_` is destroyed and a new one is inserted.
 //
-class ASH_EXPORT LoginPinInputView
-    : public views::View,
-      public ui::ImplicitAnimationObserver,
-      public base::SupportsWeakPtr<LoginPinInputView> {
+class ASH_EXPORT LoginPinInputView : public views::View,
+                                     public ui::ImplicitAnimationObserver {
  public:
   using OnPinSubmit = base::RepeatingCallback<void(const std::u16string& pin)>;
   using OnPinChanged = base::RepeatingCallback<void(bool is_empty)>;
@@ -92,6 +90,10 @@ class ASH_EXPORT LoginPinInputView
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   const char* GetClassName() const override;
 
+  base::WeakPtr<LoginPinInputView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   // The code input will call this when all digits are in.
   void SubmitPin(const std::u16string& pin);
@@ -114,6 +116,8 @@ class ASH_EXPORT LoginPinInputView
 
   OnPinSubmit on_submit_;
   OnPinChanged on_changed_;
+
+  base::WeakPtrFactory<LoginPinInputView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

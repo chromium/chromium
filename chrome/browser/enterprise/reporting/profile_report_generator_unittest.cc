@@ -140,11 +140,13 @@ class ProfileReportGeneratorTest : public ::testing::Test {
     base::Value::Dict id_values;
     for (const auto& id : ids) {
       id_values.Set(
-          id, base::Value::Dict()
-                  .Set(extension_misc::kExtensionRequestTimestamp,
-                       ::base::TimeToValue(base::Time::FromJavaTime(kFakeTime)))
-                  .Set(extension_misc::kExtensionWorkflowJustification,
-                       base::Value(kJustification)));
+          id,
+          base::Value::Dict()
+              .Set(extension_misc::kExtensionRequestTimestamp,
+                   ::base::TimeToValue(
+                       base::Time::FromMillisecondsSinceUnixEpoch(kFakeTime)))
+              .Set(extension_misc::kExtensionWorkflowJustification,
+                   base::Value(kJustification)));
     }
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));

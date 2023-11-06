@@ -634,7 +634,8 @@ void AppServiceAppWindowShelfController::AddAppWindowToShelf(
   app_window->SetController(item_controller);
 
   if (!owner()->GetItem(shelf_id)) {
-    owner()->CreateAppItem(std::move(controller), ash::STATUS_RUNNING);
+    owner()->CreateAppItem(std::move(controller), ash::STATUS_RUNNING,
+                           /*pinned=*/false);
   } else {
     owner()->shelf_model()->ReplaceShelfItemDelegate(shelf_id,
                                                      std::move(controller));

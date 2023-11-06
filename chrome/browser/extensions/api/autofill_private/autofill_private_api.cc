@@ -14,7 +14,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,6 +60,7 @@ using autofill::autofill_metrics::MandatoryReauthOptInOrOutSource;
 namespace {
 
 static const char kSettingsOrigin[] = "Chrome settings";
+static const char kErrorCardDataUnavailable[] = "Credit card data unavailable";
 static const char kErrorDataUnavailable[] = "Autofill data unavailable.";
 static const char kErrorDeviceAuthUnavailable[] = "Device auth is unvailable";
 
@@ -80,7 +80,7 @@ base::Value::Dict AddressUiComponentAsValueMap(
     const autofill::AutofillAddressUIComponent& address_ui_component) {
   base::Value::Dict info;
   info.Set(kFieldNameKey, address_ui_component.name);
-  info.Set(kFieldTypeKey, FieldTypeToStringPiece(address_ui_component.field));
+  info.Set(kFieldTypeKey, FieldTypeToStringView(address_ui_component.field));
   info.Set(kFieldLengthKey,
            address_ui_component.length_hint ==
                autofill::AutofillAddressUIComponent::HINT_LONG);
@@ -115,7 +115,12 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  return autofill::AutofillProfile(source);
+
+  AddressCountryCode address_country_code =
+      country_code.has_value()
+          ? AddressCountryCode(std::string(*country_code))
+          : autofill::i18n_model_definition::kLegacyHierarchyCountryCode;
+  return autofill::AutofillProfile(source, address_country_code);
 }
 
 }  // namespace
@@ -367,6 +372,10 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
 
   if (card->nickname) {
     credit_card.SetNickname(base::UTF8ToUTF16(*card->nickname));
+  }
+
+  if (card->cvc) {
+    credit_card.set_cvc(base::UTF8ToUTF16(*card->cvc));
   }
 
   if (use_existing_card) {
@@ -762,11 +771,8 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (!client) {
-    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+    return RespondNow(Error(kErrorDataUnavailable));
   }
-
-  const std::u16string message =
-      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT);
 
   // If `personal_data_manager` is not available or `IsDataLoaded` is false,
   // then don't do anything.
@@ -790,7 +796,7 @@ AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::Run() {
       !personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled(),
       MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
   client->GetOrCreatePaymentsMandatoryReauthManager()->AuthenticateWithMessage(
-      message,
+      l10n_util::GetStringUTF16(IDS_PAYMENTS_AUTOFILL_MANDATORY_REAUTH_PROMPT),
       base::BindOnce(
           &AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
               UpdateMandatoryAuthTogglePref,
@@ -816,8 +822,6 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
   CHECK(client);
   autofill::PersonalDataManager* personal_data_manager =
       client->GetPersonalDataManager();
-  // This function is not called in incognito mode and therefore a
-  // PersonalDataManager should always exist.
   CHECK(personal_data_manager);
 
   // `opt_in` bool denotes whether the user is trying to opt in or out of the
@@ -839,15 +843,13 @@ void AutofillPrivateAuthenticateUserAndFlipMandatoryAuthToggleFunction::
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// AutofillPrivateAuthenticateUserToEditLocalCardFunction
+// AutofillPrivateGetLocalCardFunction
 
-ExtensionFunction::ResponseAction
-AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+ExtensionFunction::ResponseAction AutofillPrivateGetLocalCardFunction::Run() {
   autofill::ContentAutofillClient* client =
       autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
   if (!client) {
-    return RespondNow(Error(kErrorDeviceAuthUnavailable));
+    return RespondNow(Error(kErrorDataUnavailable));
   }
 
   autofill::PersonalDataManager* personal_data_manager =
@@ -856,45 +858,72 @@ AutofillPrivateAuthenticateUserToEditLocalCardFunction::Run() {
     return RespondNow(Error(kErrorDataUnavailable));
   }
   if (personal_data_manager->IsPaymentMethodsMandatoryReauthEnabled()) {
-    const std::u16string message = l10n_util::GetStringUTF16(
-        IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT);
-
     base::RecordAction(base::UserMetricsAction(
         "PaymentsUserAuthTriggeredToShowEditLocalCardDialog"));
     LogMandatoryReauthSettingsPageEditCardEvent(
         MandatoryReauthAuthenticationFlowEvent::kFlowStarted);
-    // Based on the result of the auth, we will be asynchronously returning if
-    // the user can edit the local card.
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    // Based on the result of the auth, we will be asynchronously returning the
+    // card if the user can edit the local card.
     client->GetOrCreatePaymentsMandatoryReauthManager()
         ->AuthenticateWithMessage(
-            message,
+            l10n_util::GetStringUTF16(
+                IDS_PAYMENTS_AUTOFILL_EDIT_CARD_MANDATORY_REAUTH_PROMPT),
             base::BindOnce(
-                &AutofillPrivateAuthenticateUserToEditLocalCardFunction::
-                    CanShowEditDialogForLocalCard,
-                this));
-
-    // Due to async nature of AuthenticateWithMessage() on mandatory re-auth
-    // manager we use the below check to make sure we have a `Respond` captured.
-    // If we didn't have this check, then we would show the edit card dialog box
-    // even before the user successfully completes the auth.
-    return did_respond() ? AlreadyResponded() : RespondLater();
+                &AutofillPrivateGetLocalCardFunction::OnReauthFinished, this));
+#else
+    // This Autofill private API is only available on desktop systems and
+    // IsPaymentMethodsMandatoryReauthEnabled() ensures that it's only enabled
+    // for MacOS and Windows.
+    NOTREACHED_NORETURN();
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  } else {
+    ReturnCreditCard();
   }
-#endif
-  return RespondNow(WithArguments(true));
+  // Due to async nature of AuthenticateWithMessage() on mandatory re-auth
+  // manager and delayed return on ReturnCreditCard(), we use the below check to
+  // make sure we have a `Respond` captured. If we didn't have this check, then
+  // we would show the edit card dialog box even before the user successfully
+  // completes the auth.
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-// Return the auth result for showing the edit card dialog for local card. We
-// also log whether the auth was successful or not.
-void AutofillPrivateAuthenticateUserToEditLocalCardFunction::
-    CanShowEditDialogForLocalCard(bool can_show) {
-  LogMandatoryReauthSettingsPageEditCardEvent(
-      can_show ? MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded
-               : MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
-  if (can_show) {
-    base::RecordAction(base::UserMetricsAction(
-        "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
+// This is triggered after the reauth is completed and a local card may be
+// returned based on the auth result. We also log whether the auth was
+// successful or not.
+void AutofillPrivateGetLocalCardFunction::OnReauthFinished(bool can_retrieve) {
+  if (!can_retrieve) {
+    LogMandatoryReauthSettingsPageEditCardEvent(
+        MandatoryReauthAuthenticationFlowEvent::kFlowFailed);
+    Respond(NoArguments());
+    return;
   }
-  Respond(WithArguments(can_show));
+  base::RecordAction(base::UserMetricsAction(
+      "PaymentsUserAuthSuccessfulToShowEditLocalCardDialog"));
+  LogMandatoryReauthSettingsPageEditCardEvent(
+      MandatoryReauthAuthenticationFlowEvent::kFlowSucceeded);
+  ReturnCreditCard();
+}
+
+void AutofillPrivateGetLocalCardFunction::ReturnCreditCard() {
+  autofill::ContentAutofillClient* client =
+      autofill::ContentAutofillClient::FromWebContents(GetSenderWebContents());
+  CHECK(client);
+  autofill::PersonalDataManager* personal_data_manager =
+      client->GetPersonalDataManager();
+  CHECK(personal_data_manager);
+
+  absl::optional<autofill_private::GetLocalCard::Params> parameters =
+      autofill_private::GetLocalCard::Params::Create(args());
+  if (auto* card_from_guid =
+          personal_data_manager->GetCreditCardByGUID(parameters->guid)) {
+    return Respond(ArgumentList(autofill_private::GetLocalCard::Results::Create(
+        autofill_util::CreditCardToCreditCardEntry(
+            *card_from_guid, *personal_data_manager,
+            /*mask_local_cards=*/false))));
+  }
+  return Respond(Error(kErrorCardDataUnavailable));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

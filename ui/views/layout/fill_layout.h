@@ -38,6 +38,9 @@ class VIEWS_EXPORT FillLayout : public LayoutManagerBase {
   int GetPreferredHeightForWidth(const View* host, int width) const override;
 
  private:
+  // Returns the size bounds of the content area of the view.
+  SizeBounds GetContentsSizeBounds(const View* host) const;
+
   // Whether to compute minimum size separately, as the maximum of all of the
   // included child views' minimum size (true), or to simply return the
   // preferred size (false).

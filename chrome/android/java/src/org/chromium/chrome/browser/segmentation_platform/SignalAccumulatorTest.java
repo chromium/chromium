@@ -27,26 +27,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Unit tests for {@link SignalAccumulator}
- */
+/** Unit tests for {@link SignalAccumulator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SignalAccumulatorTest {
-    @Mock
-    private Tab mMockTab;
+    @Mock private Tab mMockTab;
 
-    @Mock
-    private Handler mHandler;
+    @Mock private Handler mHandler;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Mockito.doAnswer(invocation -> {
-                   Runnable runnable = invocation.getArgument(0);
-                   runnable.run();
-                   return null;
-               })
+        Mockito.doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(0);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mHandler)
                 .postDelayed(any(), anyLong());
     }
@@ -54,10 +51,11 @@ public class SignalAccumulatorTest {
     @Test
     public void testAllSignalsBeforeTimeout() throws TimeoutException {
         List<ActionProvider> actionProviders = new ArrayList<>();
-        ActionProvider dummyProvider = (tab, accumulator) -> {
-            accumulator.setHasPriceTracking(true);
-            accumulator.setHasReaderMode(false);
-        };
+        ActionProvider dummyProvider =
+                (tab, accumulator) -> {
+                    accumulator.setHasPriceTracking(true);
+                    accumulator.setHasReaderMode(false);
+                };
         actionProviders.add(dummyProvider);
         final CallbackHelper callbackHelper = new CallbackHelper();
         int callCount = callbackHelper.getCallCount();

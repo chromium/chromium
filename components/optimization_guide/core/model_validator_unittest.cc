@@ -109,7 +109,7 @@ class ModelValidatorExecutorTest : public testing::Test {
 
 TEST_F(ModelValidatorExecutorTest, ValidModel) {
   base::FilePath model_file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &model_file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &model_file_path);
   model_file_path = model_file_path.AppendASCII("components")
                         .AppendASCII("test")
                         .AppendASCII("data")

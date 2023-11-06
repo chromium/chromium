@@ -326,7 +326,7 @@ void ScopedOverviewTransformWindow::RestoreWindow(bool reset_transform,
       settings->AddObserver(exit_observer.get());
       if (window_->layer()->GetAnimator() == settings->GetAnimator())
         settings->AddObserver(new WindowTransformAnimationObserver(window_));
-      Shell::Get()->overview_controller()->AddExitAnimationObserver(
+      OverviewController::Get()->AddExitAnimationObserver(
           std::move(exit_observer));
     }
 
@@ -367,7 +367,7 @@ void ScopedOverviewTransformWindow::BeginScopedAnimation(
     if (animation_type == OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_ON_ENTER) {
       auto enter_observer = std::make_unique<EnterAnimationObserver>();
       settings->AddObserver(enter_observer.get());
-      Shell::Get()->overview_controller()->AddEnterAnimationObserver(
+      OverviewController::Get()->AddEnterAnimationObserver(
           std::move(enter_observer));
     }
 

@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/fullscreen_window_finder.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/window_properties.h"
@@ -573,7 +574,7 @@ void WorkspaceLayoutManager::MaybeUpdateA11yFloatingPanelOrPipBounds() const {
   for (auto* window : windows_) {
     WindowState* window_state = WindowState::Get(window);
     if (window_state->IsPip()) {
-      window_state->UpdatePipBounds();
+      Shell::Get()->pip_controller()->UpdatePipBounds();
     }
   }
 }

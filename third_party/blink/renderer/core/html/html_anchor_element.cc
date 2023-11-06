@@ -141,13 +141,22 @@ bool HTMLAnchorElement::ShouldHaveFocusAppearance() const {
          HTMLElement::SupportsFocus();
 }
 
-bool HTMLAnchorElement::IsFocusable() const {
-  if (!IsFocusableStyleAfterUpdate())
-    return false;
-  if (IsLink())
+bool HTMLAnchorElement::IsFocusable(
+    bool disallow_layout_updates_for_accessibility_only) const {
+  if (disallow_layout_updates_for_accessibility_only) {
+    if (!IsFocusableStyleNeverLayoutForAccessibilityOnly()) {
+      return false;
+    }
+  } else {
+    if (!IsFocusableStyleAfterUpdate()) {
+      return false;
+    }
+  }
+  if (IsLink()) {
     return SupportsFocus();
-
-  return HTMLElement::IsFocusable();
+  }
+  return HTMLElement::IsFocusable(
+      disallow_layout_updates_for_accessibility_only);
 }
 
 bool HTMLAnchorElement::IsKeyboardFocusable() const {
@@ -357,8 +366,7 @@ void HTMLAnchorElement::SetHref(const AtomicString& value) {
 
 KURL HTMLAnchorElement::Url() const {
   KURL href = Href();
-  if (RuntimeEnabledFeatures::AnchorHrefCheckInvalidURLEnabled() &&
-      !href.IsValid()) {
+  if (!href.IsValid()) {
     return KURL();
   }
   return href;
@@ -393,6 +401,22 @@ void HTMLAnchorElement::SetRel(const AtomicString& value) {
   if (new_link_relations.Contains(AtomicString("opener"))) {
     link_relations_ |= kRelationOpener;
   }
+
+  // These don't currently have web-facing behavior, but embedders may wish to
+  // expose their presence to users:
+  if (new_link_relations.Contains(AtomicString("privacy-policy"))) {
+    link_relations_ |= kRelationPrivacyPolicy;
+    UseCounter::Count(GetDocument(), WebFeature::kLinkRelPrivacyPolicy);
+  }
+  if (new_link_relations.Contains(AtomicString("terms-of-service"))) {
+    link_relations_ |= kRelationTermsOfService;
+    UseCounter::Count(GetDocument(), WebFeature::kLinkRelTermsOfService);
+  }
+
+  // Adding or removing a value here whose processing model is web-visible
+  // (e.g. if the value is listed as a "supported token" for `<a>`'s `rel`
+  // attribute in HTML) also requires you to update the list of tokens in
+  // RelList::SupportedTokensAnchorAndAreaAndForm().
 }
 
 const AtomicString& HTMLAnchorElement::GetName() const {
@@ -488,8 +512,6 @@ void HTMLAnchorElement::NavigateToHyperlink(ResourceRequest request,
       is_trusted ? mojom::blink::TriggeringEventInfo::kFromTrustedEvent
                  : mojom::blink::TriggeringEventInfo::kFromUntrustedEvent);
   frame_request.SetInputStartTime(platform_time_stamp);
-
-  frame->MaybeLogAdClickNavigation();
 
   if (const AtomicString& attribution_src =
           FastGetAttribute(html_names::kAttributionsrcAttr);

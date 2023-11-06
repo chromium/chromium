@@ -56,6 +56,7 @@ using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
 constexpr double kMinimumRelevance = 0.0;
 constexpr double kRelevanceThreshold = 0.79;
+constexpr double kMinimumQueryLength = 3;
 
 double ConvertKBtoBytes(uint32_t amount) {
   return static_cast<double>(amount) * 1024;
@@ -97,6 +98,10 @@ SystemInfoCardProvider::~SystemInfoCardProvider() {
 }
 
 void SystemInfoCardProvider::Start(const std::u16string& query) {
+  if (query.length() < kMinimumQueryLength) {
+    return;
+  }
+
   double max_relevance = 0;
   SystemInfoKeywordInput* most_relevant_keyword_input;
   for (SystemInfoKeywordInput& keyword_input : keywords_) {

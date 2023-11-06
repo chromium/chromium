@@ -20,8 +20,8 @@ NetworkScreenHandler::NetworkScreenHandler() : BaseScreenHandler(kScreenId) {}
 
 NetworkScreenHandler::~NetworkScreenHandler() = default;
 
-void NetworkScreenHandler::Show() {
-  ShowInWebUI();
+void NetworkScreenHandler::ShowScreenWithData(base::Value::Dict data) {
+  ShowInWebUI(std::move(data));
 }
 
 void NetworkScreenHandler::ShowError(const std::u16string& message) {
@@ -44,6 +44,14 @@ void NetworkScreenHandler::DeclareLocalizedValues(
 
   builder->Add("networkScreenQuickStart",
                IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
+
+  builder->Add("networkScreenConnectingToWifiTitle",
+               IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE);
+  builder->Add("networkScreenQuickStartTransferWifiSubtitle",
+               IDS_LOGIN_QUICK_START_WIFI_TRANSFER_SUBTITLE);
+  builder->AddF("quickStartNetworkNeededSubtitle",
+                IDS_LOGIN_QUICK_START_NETWORK_NEEDED_SUBTITLE,
+                ui::GetChromeOSDeviceName());
 
   ui::network_element::AddLocalizedValuesToBuilder(builder);
   cellular_setup::AddLocalizedValuesToBuilder(builder);

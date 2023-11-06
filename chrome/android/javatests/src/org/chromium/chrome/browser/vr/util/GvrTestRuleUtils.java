@@ -46,10 +46,14 @@ public class GvrTestRuleUtils extends XrTestRuleUtils {
      * @param desc The Description passed to the calling ChromeActivityTestRule's apply() method.
      * @param rule The calling VrTestRule.
      * @param launcher A ChromeLaunchMethod whose launch() contains the code snippet to start Chrome
-     *        in the calling ChromeActivityTestRule's activity type.
+     *     in the calling ChromeActivityTestRule's activity type.
      */
-    public static void evaluateVrTestRuleImpl(final Statement base, final Description desc,
-            final VrTestRule rule, final ChromeLaunchMethod launcher) throws Throwable {
+    public static void evaluateVrTestRuleImpl(
+            final Statement base,
+            final Description desc,
+            final VrTestRule rule,
+            final ChromeLaunchMethod launcher)
+            throws Throwable {
         TestVrShellDelegate.setDescription(desc);
 
         GvrTestRuleUtils.ensureNoVrActivitiesDisplayed();
@@ -63,18 +67,20 @@ public class GvrTestRuleUtils extends XrTestRuleUtils {
      * parameterization.
      *
      * @return An ArrayList of ParameterSets, with each ParameterSet containing a callable to create
-     *         a VrTestRule for a supported ChromeActivity.
+     *     a VrTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
         ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
-        parameters.add(new ParameterSet()
-                               .value(new Callable<ChromeTabbedActivityGvrTestRule>() {
-                                   @Override
-                                   public ChromeTabbedActivityGvrTestRule call() {
-                                       return new ChromeTabbedActivityGvrTestRule();
-                                   }
-                               })
-                               .name("ChromeTabbedActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<ChromeTabbedActivityGvrTestRule>() {
+                                    @Override
+                                    public ChromeTabbedActivityGvrTestRule call() {
+                                        return new ChromeTabbedActivityGvrTestRule();
+                                    }
+                                })
+                        .name("ChromeTabbedActivity"));
         // TODO(https://crbug.com/989117): Re-enable testing in CCT once we've migrated to using
         //    cardboard libraries instead of Daydream.
         // parameters.add(new ParameterSet()
@@ -86,14 +92,16 @@ public class GvrTestRuleUtils extends XrTestRuleUtils {
         //                        })
         //                        .name("CustomTabActivity"));
 
-        parameters.add(new ParameterSet()
-                               .value(new Callable<WebappActivityGvrTestRule>() {
-                                   @Override
-                                   public WebappActivityGvrTestRule call() {
-                                       return new WebappActivityGvrTestRule();
-                                   }
-                               })
-                               .name("WebappActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<WebappActivityGvrTestRule>() {
+                                    @Override
+                                    public WebappActivityGvrTestRule call() {
+                                        return new WebappActivityGvrTestRule();
+                                    }
+                                })
+                        .name("WebappActivity"));
 
         return parameters;
     }
@@ -101,11 +109,11 @@ public class GvrTestRuleUtils extends XrTestRuleUtils {
     /**
      * Creates a RuleChain that applies the XrActivityRestrictionRule before the given VrTestRule.
      *
-     * Also enforces that {@link BundleUtils#isBundle()} returns true for vr to be initialized.
+     * <p>Also enforces that {@link BundleUtils#isBundle()} returns true for vr to be initialized.
      *
      * @param rule The TestRule to wrap in an XrActivityRestrictionRule.
      * @return A RuleChain that ensures an XrActivityRestrictionRule is applied before the provided
-     *         TestRule.
+     *     TestRule.
      */
     public static RuleChain wrapRuleInActivityRestrictionRule(TestRule rule) {
         Assert.assertTrue("Given rule is not an VrTestRule", rule instanceof VrTestRule);
@@ -114,8 +122,8 @@ public class GvrTestRuleUtils extends XrTestRuleUtils {
     }
 
     /**
-     * Ensures that no VR-related activity is currently being displayed. This is meant to be used
-     * by TestRules before starting any activities. Having a VR activity in the foreground (e.g.
+     * Ensures that no VR-related activity is currently being displayed. This is meant to be used by
+     * TestRules before starting any activities. Having a VR activity in the foreground (e.g.
      * Daydream Home) has the potential to affect test results, as it often means that we are in VR
      * at the beginning of the test, which we don't want. This is most commonly caused by VrCore
      * automatically launching Daydream Home when Chrome gets closed after a test, but can happen

@@ -32,6 +32,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -142,11 +143,6 @@ void ReturnAllAddsAsFailed(
   std::move(result_callback).Run(std::move(result));
 }
 
-bool IsFrameIsolated(content::RenderFrameHost& render_frame_host) {
-  return render_frame_host.GetWebExposedIsolationLevel() >=
-         content::WebExposedIsolationLevel::kMaybeIsolatedApplication;
-}
-
 bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
   auto* app_id = GetAppId(render_frame_host);
   if (!app_id) {
@@ -163,7 +159,7 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
 // to avoid a potential race between the parent app calling an API while being
 // uninstalled.
 bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
-  return IsFrameIsolated(render_frame_host) &&
+  return content::HasIsolatedContextCapability(&render_frame_host) &&
          IsInstalledNonChildApp(render_frame_host);
 }
 
@@ -350,6 +346,7 @@ void SubAppsServiceImpl::FinishAddCallOrShowInstallDialog(int add_call_id) {
       add_call_info.install_infos,
       /*parent_app_name=*/registrar.GetAppShortName(*parent_app_id),
       /*parent_app_scope=*/registrar.GetAppScope(*parent_app_id).spec(),
+      *parent_app_id, GetProfile(render_frame_host()),
       /*window=*/
       content::WebContents::FromRenderFrameHost(&render_frame_host())
           ->GetTopLevelNativeWindow());
@@ -553,7 +550,7 @@ void SubAppsServiceImpl::NotifyUninstall(
         GetWebAppProvider(render_frame_host())->registrar_unsafe();
     const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
     const std::u16string parent_app_name =
-        base::ASCIIToUTF16(registrar.GetAppShortName(*parent_app_id));
+        base::UTF8ToUTF16(registrar.GetAppShortName(*parent_app_id));
     const GURL start_url = registrar.GetAppStartUrl(*parent_app_id);
     const std::u16string title =
         base::i18n::MessageFormatter::FormatWithNamedArgs(

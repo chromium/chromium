@@ -9,5 +9,8 @@ assert(is_chromeos_ash)
 
 mojom("crostini_installer_types_mojom") {
   webui_module_path = "/"
+
+  # For Closure Compiler targets in chrome/browser/resources/chromeos/crostini
+  use_typescript_sources = false
   sources = [ "crostini_types.mojom" ]
 }

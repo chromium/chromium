@@ -23,24 +23,16 @@ const char* CaptivePortalStartURL() {
   return captive_portal::CaptivePortalDetector::kDefaultURL;
 }
 
-std::u16string WindowTitleForNetwork(const NetworkState* network) {
-  if (network && !network->name().empty()) {
-    return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
-                                      base::ASCIIToUTF16(network->name()));
-  } else {
-    NOTREACHED() << "Captive portal with no active network?";
-    return l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
-                                      {});
-  }
-}
-
 }  // namespace
 
 CaptivePortalView::CaptivePortalView(Profile* profile,
-                                     CaptivePortalWindowProxy* proxy)
-    : SimpleWebViewDialog(profile), proxy_(proxy), redirected_(false) {}
+                                     CaptivePortalWindowProxy* proxy,
+                                     const std::string& network_name)
+    : SimpleWebViewDialog(profile),
+      proxy_(proxy),
+      network_name_(network_name) {}
 
-CaptivePortalView::~CaptivePortalView() {}
+CaptivePortalView::~CaptivePortalView() = default;
 
 void CaptivePortalView::StartLoad() {
   SimpleWebViewDialog::StartLoad(GURL(CaptivePortalStartURL()));
@@ -58,7 +50,7 @@ void CaptivePortalView::NavigationStateChanged(
   if (!redirected_ && url != GURL::EmptyGURL() &&
       url != GURL(CaptivePortalStartURL())) {
     redirected_ = true;
-    proxy_->OnRedirected();
+    proxy_->OnRedirected(network_name_);
   }
 }
 
@@ -77,8 +69,9 @@ std::unique_ptr<views::WidgetDelegate> CaptivePortalView::MakeWidgetDelegate() {
   delegate->SetCanResize(false);
   delegate->SetModalType(ui::MODAL_TYPE_SYSTEM);
   delegate->SetShowTitle(true);
-  delegate->SetTitle(WindowTitleForNetwork(
-      NetworkHandler::Get()->network_state_handler()->DefaultNetwork()));
+  delegate->SetTitle(
+      l10n_util::GetStringFUTF16(IDS_LOGIN_CAPTIVE_PORTAL_WINDOW_TITLE,
+                                 base::ASCIIToUTF16(network_name_)));
   return delegate;
 }
 

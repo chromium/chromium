@@ -7,7 +7,7 @@ import 'chrome://resources/js/action_link.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
 // Note: keep these values in sync with the values in
 // ui/accessibility/ax_mode.h

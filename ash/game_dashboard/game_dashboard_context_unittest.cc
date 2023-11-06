@@ -24,15 +24,12 @@
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/window_properties.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/mojom/color_scheme.mojom-shared.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/switch.h"
 #include "ash/system/unified/feature_tile.h"
-#include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "base/check.h"
@@ -41,7 +38,6 @@
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -86,7 +82,7 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
   // Starts the video recording from `CaptureModeBarView`.
   void ClickOnStartRecordingButtonInCaptureModeBarView() {
-    auto* start_recording_button = GetStartRecordingButton();
+    PillButton* start_recording_button = GetStartRecordingButton();
     ASSERT_TRUE(start_recording_button);
     LeftClickOn(start_recording_button);
     WaitForRecordingToStart();
@@ -120,6 +116,12 @@ class GameDashboardContextTest : public GameDashboardTestBase {
       game_window_->SetProperty(kArcGameControlsFlagsKey,
                                 ArcGameControlsFlag::kKnown);
     }
+
+    auto* game_dashboard_button_widget =
+        test_api_->GetGameDashboardButton()->GetWidget();
+    CHECK(game_dashboard_button_widget);
+    ASSERT_FALSE(game_dashboard_button_widget->CanActivate());
+    ASSERT_FALSE(game_dashboard_button_widget->IsActive());
   }
 
   // Opens the main menu and toolbar, and checks Game Controls UI states. At the
@@ -945,7 +947,7 @@ TEST_P(GameTypeGameDashboardContextTest,
 TEST_P(GameTypeGameDashboardContextTest, OpenAndCloseToolbarWidget) {
   if (IsArcGame()) {
     game_window_->SetProperty(
-        ash::kArcGameControlsFlagsKey,
+        kArcGameControlsFlagsKey,
         static_cast<ArcGameControlsFlag>(ArcGameControlsFlag::kKnown |
                                          ArcGameControlsFlag::kAvailable));
   }
@@ -1249,7 +1251,7 @@ TEST_P(GameTypeGameDashboardContextTest, MoveAndHideToolbarWidget) {
 class OnOverviewModeEndedWaiter : public OverviewObserver {
  public:
   OnOverviewModeEndedWaiter()
-      : overview_controller_(Shell::Get()->overview_controller()) {
+      : overview_controller_(OverviewController::Get()) {
     CHECK(overview_controller_);
     overview_controller_->AddObserver(this);
   }
@@ -1274,8 +1276,6 @@ class OnOverviewModeEndedWaiter : public OverviewObserver {
 // Verifies that in overview mode, the Game Dashboard button is not visible, the
 // main menu is closed, and the toolbar visibility is unchanged.
 TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
-  auto* overview_controller = Shell::Get()->overview_controller();
-  ASSERT_TRUE(overview_controller);
   auto* game_dashboard_button_widget =
       test_api_->GetGameDashboardButtonWidget();
   ASSERT_TRUE(game_dashboard_button_widget);
@@ -1297,6 +1297,7 @@ TEST_P(GameTypeGameDashboardContextTest, OverviewMode) {
   EXPECT_TRUE(main_menu_widget->IsVisible());
 
   EnterOverview();
+  auto* overview_controller = OverviewController::Get();
   ASSERT_TRUE(overview_controller->InOverviewSession());
 
   // Verify states in overview mode.

@@ -272,9 +272,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override;
-  void SetCanResizeFromWebAPI(content::Page* page,
-                              absl::optional<bool> can_resize) override;
-  bool GetCanResize(content::Page* page) override;
   bool MayDeleteServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context) override;
@@ -333,7 +330,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override;
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override;
   void OnAuctionComplete(content::RenderFrameHost* render_frame_host,
                          content::InterestGroupManager::InterestGroupDataKey
                              winner_data_key) override;
@@ -553,6 +551,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                content::WebContents* web_contents) override;
   void RemovePresentationObserver(content::PresentationObserver* observer,
                                   content::WebContents* web_contents) override;
+  bool AddPrivacySandboxAttestationsObserver(
+      content::PrivacySandboxAttestationsObserver* observer) override;
+  void RemovePrivacySandboxAttestationsObserver(
+      content::PrivacySandboxAttestationsObserver* observer) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
   std::vector<std::unique_ptr<content::CommitDeferringCondition>>
@@ -675,6 +677,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   content::UsbDelegate* GetUsbDelegate() override;
   content::PrivateNetworkDeviceDelegate* GetPrivateNetworkDeviceDelegate()
       override;
+  bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh,
+      const url::Origin& caller_origin) override;
 #if !BUILDFLAG(IS_ANDROID)
   void CreateDeviceInfoService(
       content::RenderFrameHost* render_frame_host,
@@ -921,6 +926,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsThirdPartyStoragePartitioningAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin) override;
+
+  bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url,
+      const url::Origin& top_frame_origin) override;
 
   bool IsTransientActivationRequiredForShowFileOrDirectoryPicker(
       content::WebContents* web_contents) override;

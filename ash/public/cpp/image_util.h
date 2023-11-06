@@ -9,12 +9,14 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
 class FilePath;
+class SequencedTaskRunner;
 }  // namespace base
 
 namespace gfx {
@@ -53,13 +55,19 @@ using DecodeAnimationCallback =
 // failure to read the file or decode the image.
 // If the image is too large, it will be repeatedly halved until it fits in
 // `IPC::Channel::kMaximumMessageSize` bytes.
+//
+// A custom `file_task_runner` may be specified if desired; if not, an arbitrary
+// task runner is used internally.
 ASH_PUBLIC_EXPORT void DecodeImageFile(
     DecodeImageCallback callback,
     const base::FilePath& file_path,
     data_decoder::mojom::ImageCodec codec =
-        data_decoder::mojom::ImageCodec::kDefault);
-ASH_PUBLIC_EXPORT void DecodeAnimationFile(DecodeAnimationCallback callback,
-                                           const base::FilePath& file_path);
+        data_decoder::mojom::ImageCodec::kDefault,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr);
+ASH_PUBLIC_EXPORT void DecodeAnimationFile(
+    DecodeAnimationCallback callback,
+    const base::FilePath& file_path,
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner = nullptr);
 
 // Reads contents of `data` and calls `callback` with a decoded image or
 // animation, respectively.

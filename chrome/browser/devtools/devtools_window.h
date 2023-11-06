@@ -13,7 +13,6 @@
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 #include "chrome/browser/devtools/devtools_ui_bindings.h"
-#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -145,6 +144,9 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   static void LogDevToolsOpenedByAction(DevToolsOpenedByAction opened_by);
 
+  // Logs UKM event when DevTools is opened.
+  static void LogDevToolsOpenedUKM(content::WebContents* web_contents);
+
   static std::unique_ptr<content::NavigationThrottle>
   MaybeCreateNavigationThrottle(content::NavigationHandle* handle);
 
@@ -251,7 +253,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
  private:
   friend class DevToolsWindowTesting;
-  friend class DevToolsWindowTest;
   friend class DevToolsWindowCreationObserver;
   friend class HatsNextWebDialogBrowserTest;
 
@@ -324,7 +325,6 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                                 bool browser_connection);
   static GURL GetDevToolsURL(Profile* profile,
                              FrontendType frontend_type,
-                             version_info::Channel channel,
                              const std::string& frontend_url,
                              bool can_dock,
                              const std::string& panel,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 61
+// Next MinVersion: 62
 
 module arc.mojom;
 
@@ -99,6 +99,22 @@ enum InstallPriority {
   kLow = 2,
 };
 
+// ARC package locale-related info.
+struct PackageLocaleInfo {
+  // These are the locales explicitly mentioned by the app to be supported.
+  // Should not be empty.
+  // Please see comment on `selected_locale` on possible differences between
+  // `supported_locales` and `selected_locale`.
+  array<string> supported_locales;
+
+  // Empty string denotes no language has been selected and will default to
+  // System Language. Due to Android-side implementation, this also doesn't
+  // necessarily comply with locales in `supported_locales`.
+  // For example, supported_locales = ["en-US", "ja"], selected_locale can be
+  // "en-SG" or even "fr".
+  string selected_locale;
+};
+
 // Describes ARC package.
 // The list of ArcPackageInfo sent by AppInstance contains all the installed
 // Android packages including ones other than launchable apps (e.g. Google Play
@@ -134,6 +150,12 @@ struct ArcPackageInfo {
   [MinVersion=55] bool preinstalled;
 
   [MinVersion=56] InstallPriority priority;
+
+  // If sent from ARC, null denotes that per-app language is not supported.
+  [MinVersion=60] PackageLocaleInfo? locale_info;
+
+  // True if the package has the Game Controls Opt Out metadata set to true.
+  [MinVersion=61] bool game_controls_opt_out;
 };
 
 // Describes ARC app shortcut.
@@ -520,6 +542,10 @@ interface AppInstance {
   // happens) is ignored, and uninstall option should appear in the UI.
   [MinVersion=2] UninstallPackage@5(string package_name);
 
+  // Sends a request to ARC to call AppHost::OnPackageAppListRefreshed and
+  // receive the latest data of a specified app.
+  [MinVersion=60] UpdateAppDetails@42(string package_name);
+
   // Returns Android instance id as it is registered on Google servers. 0 is
   // reserved for the case when Android instance id could not be determined,
   // however this should not normally happen once app instance is connected
@@ -560,9 +586,4 @@ interface AppInstance {
   // declare an app category.
   [MinVersion=53] GetAppCategory@41(string package_name) =>
       (AppCategory category);
-
-  // Returns true if `package_name` is for a game app and not Game Controls
-  // opt-out.
-  [MinVersion=60] IsGameControlsApplicable@42(string package_name) =>
-      (bool is_gc_applicable);
 };

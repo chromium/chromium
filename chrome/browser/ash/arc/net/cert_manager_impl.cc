@@ -20,10 +20,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "crypto/nss_key_util.h"
 #include "net/cert/nss_cert_database.h"
-#include "net/cert/pem.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 namespace {
 
@@ -43,7 +43,7 @@ void GetCertDBOnIOThread(
 }
 
 net::ScopedCERTCertificate TranslatePEMToCert(const std::string& cert_pem) {
-  net::PEMTokenizer tokenizer(cert_pem, {arc::kCertificatePEMHeader});
+  bssl::PEMTokenizer tokenizer(cert_pem, {arc::kCertificatePEMHeader});
   if (!tokenizer.GetNext()) {
     NET_LOG(ERROR) << "Failed to get certificate data";
     return nullptr;
@@ -69,7 +69,7 @@ std::string CertManagerImpl::ImportPrivateKey(const std::string& key_pem,
     return std::string();
   }
 
-  net::PEMTokenizer tokenizer(key_pem, {kPrivateKeyPEMHeader});
+  bssl::PEMTokenizer tokenizer(key_pem, {kPrivateKeyPEMHeader});
   if (!tokenizer.GetNext()) {
     NET_LOG(ERROR) << "Failed to get private key data";
     return std::string();

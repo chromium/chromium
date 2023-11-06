@@ -95,7 +95,7 @@ static bool CanLoadInProcess(NSFont* ns_font) {
   base::apple::ScopedCFTypeRef<CGFontRef> cg_font(CTFontCopyGraphicsFont(
       base::apple::NSToCFPtrCast(ns_font), /*attributes=*/nullptr));
   NSString* font_name =
-      base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font));
+      base::apple::CFToNSOwnershipCast(CGFontCopyPostScriptName(cg_font.get()));
   return ![font_name isEqualToString:@"LastResort"];
 }
 

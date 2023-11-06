@@ -15,17 +15,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Test class for {@link CallbackController}, which also describes typical usage.
- */
+/** Test class for {@link CallbackController}, which also describes typical usage. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CallbackControllerTest {
-    /**
-     * Callbacks in this test act on {@code CallbackTarget}.
-     */
+    /** Callbacks in this test act on {@code CallbackTarget}. */
     private static class CallbackTarget {
         public void runnableTarget() {}
+
         public void callbackTarget(boolean arg) {}
     }
 

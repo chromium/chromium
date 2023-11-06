@@ -14,7 +14,7 @@
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
+#include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -153,6 +153,10 @@ class PageNode : public Node {
   // to change from inaudible to audible at that point.
   virtual absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
       const = 0;
+
+  // Returns true if this page is displaying content in a picture-in-picture
+  // window, false otherwise.
+  virtual bool HasPictureInPicture() const = 0;
 
   // Returns the page's loading state.
   virtual LoadingState GetLoadingState() const = 0;
@@ -312,6 +316,9 @@ class PageNodeObserver {
   // this property change.
   virtual void OnIsAudibleChanged(const PageNode* page_node) = 0;
 
+  // Invoked when the HasPictureInPicture property changes.
+  virtual void OnHasPictureInPictureChanged(const PageNode* page_node) = 0;
+
   // Invoked when the GetLoadingState property changes.
   virtual void OnLoadingStateChanged(const PageNode* page_node,
                                      PageNode::LoadingState previous_state) = 0;
@@ -398,6 +405,7 @@ class PageNode::ObserverDefaultImpl : public PageNodeObserver {
   void OnIsFocusedChanged(const PageNode* page_node) override {}
   void OnIsVisibleChanged(const PageNode* page_node) override {}
   void OnIsAudibleChanged(const PageNode* page_node) override {}
+  void OnHasPictureInPictureChanged(const PageNode* page_node) override {}
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override {}
   void OnUkmSourceIdChanged(const PageNode* page_node) override {}

@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.content.ComponentName;
+import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -70,7 +70,7 @@ public class NotificationPermissionUpdater {
     }
 
     public void onWebApkLaunch(Origin origin, String packageName) {
-        if (!BuildInfo.isAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return;
         }
         WebApkServiceClient.getInstance().checkNotificationPermission(packageName,
@@ -109,7 +109,8 @@ public class NotificationPermissionUpdater {
      * from Android T, there is no permission dialog for showing notifications in earlier versions.
      */
     void requestPermission(Origin origin, String lastCommittedUrl, long callback) {
-        assert BuildInfo.isAtLeastT() : "Cannot request notification permission before Android T";
+        assert (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                : "Cannot request notification permission before Android T";
         mTrustedWebActivityClient.requestNotificationPermission(
                 lastCommittedUrl, new TrustedWebActivityClient.PermissionCallback() {
                     private boolean mCalled;

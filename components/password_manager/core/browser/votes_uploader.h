@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -77,6 +78,10 @@ struct SingleUsernameVoteData {
   // `VotesUploader` is used for UMA metrics. The variable can be removed once
   // the metrics are not needed anymore.
   PasswordFormHadMatchingUsername password_form_had_matching_username;
+
+  // If set to true, sends `SingleUsernameVoteType::IN_FORM_OVERRULE` vote. Read
+  // more about this vote type in proto file.
+  bool is_form_overrule;
 };
 
 // This class manages vote uploads for password forms.
@@ -187,7 +192,11 @@ class VotesUploader {
   // Calculate whether the username value was edited in a prompt based on
   // suggested and saved username values and whether it confirms or
   // contradicts the data about potential single username.
-  void CalculateUsernamePromptEditState(const std::u16string& saved_username);
+  // `all_alternative_usernames` stores text fields inside the password form
+  // that might be a username.
+  void CalculateUsernamePromptEditState(
+      const std::u16string& saved_username,
+      const AlternativeElementVector& all_alternative_usernames);
 
   // Cache the vote data for a form that is likely a forgot password form
   // (a form, into which the user inputs their username to start the
@@ -234,14 +243,20 @@ class VotesUploader {
     generated_password_changed_ = generated_password_changed;
   }
 
-  void clear_single_username_vote_data() { single_username_vote_data_.reset(); }
+  void clear_single_username_votes_data() {
+    single_username_votes_data_.clear();
+  }
 
-  void set_single_username_vote_data(const SingleUsernameVoteData& data) {
-    single_username_vote_data_ = data;
+  void add_single_username_vote_data(const SingleUsernameVoteData& data) {
+    single_username_votes_data_.push_back(data);
   }
 
   void set_suggested_username(const std::u16string& suggested_username) {
     suggested_username_ = suggested_username;
+  }
+
+  void set_should_send_username_first_flow_votes(bool value) {
+    should_send_username_first_flow_votes_ = value;
   }
 
 #if defined(UNIT_TEST)
@@ -287,6 +302,8 @@ class VotesUploader {
       const SingleUsernameVoteData& single_username,
       autofill::ServerFieldTypeSet* available_field_types,
       autofill::FormSignature form_signature,
+      autofill::IsMostRecentSingleUsernameCandidate
+          is_most_recent_single_username_candidate,
       bool is_forgot_password_vote);
 
   // On username first flow votes are uploaded both for the single username form
@@ -298,6 +315,19 @@ class VotesUploader {
       const SingleUsernameVoteData& vote_data,
       autofill::FormStructure& form_structure);
 
+  // Returns whether `IN_FORM_OVERRULE` vote should be sent. `IN_FORM_OVERRULE`
+  // signal can be either positive or negative. If positive (`autofill_type` is
+  // `SINGLE_USERNAME`), votes signal that user was prompted with a Save/Update
+  // bubble with a username value found inside the password form and edited it
+  // to one of the values that was found outside of the password form. If
+  // negative (`autofill_type` is `NOT_USERNAME`), user was prompted with a
+  // username value outside the password form and edited it to one of the values
+  // that is found inside the password form.
+  bool CalculateInFormOverrule(
+      const std::u16string& saved_username,
+      const std::u16string& potential_username,
+      const AlternativeElementVector& all_alternative_usernames);
+
   // Calculates whether the |saved_username| (the value actually saved in the
   // Password Manager) confirms or contradicts |potential_username| (Password
   // Manager's guess based on preceding text fields that the user has interacted
@@ -307,6 +337,10 @@ class VotesUploader {
                               const std::u16string& potential_username);
 
   // Attempts to send a vote for a single username form.
+  // `is_most_recent_single_username_candidate` specifies whether the single
+  // username is the most recent field outside of the password form that was
+  // modified by the user. Set to `std::nullopt` if vote is on a forgot
+  // password form.
   // `is_forgot_password_form` specifies whether the form is considered to be a
   // part of a username first or a forgot password flow:
   // 1) When it's true, SINGLE_USERNAME_FORGOT_PASSWORD & NOT_USERNAME can be
@@ -316,6 +350,8 @@ class VotesUploader {
   bool MaybeSendSingleUsernameVote(
       const SingleUsernameVoteData& single_username,
       const FormPredictions& predictions,
+      autofill::IsMostRecentSingleUsernameCandidate
+          is_most_recent_single_username_candidate,
       bool is_forgot_password_vote);
 
   // The client which implements embedder-specific PasswordManager operations.
@@ -365,7 +401,12 @@ class VotesUploader {
   // The data for voting on potential single username form for the username
   // first flow. Populated when the password form, that follows single username
   // form, is submitted.
-  absl::optional<SingleUsernameVoteData> single_username_vote_data_;
+  std::vector<SingleUsernameVoteData> single_username_votes_data_;
+
+  // If set to true, Username First Flow was detected and a vote on the
+  // candidate field(s) should be sent. Used only in Username First Flow, not
+  // used in Forgot Password Form.
+  bool should_send_username_first_flow_votes_ = false;
 
   // The username that is suggested in a save/update prompt. The user might
   // modify it in the prompt before saving.

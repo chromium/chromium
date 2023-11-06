@@ -85,10 +85,12 @@ class MockTrainingDataCollector : public TrainingDataCollector {
   MOCK_METHOD0(OnModelMetadataUpdated, void());
   MOCK_METHOD0(OnServiceInitialized, void());
   MOCK_METHOD0(ReportCollectedContinuousTrainingData, void());
-  MOCK_METHOD3(OnDecisionTime,
+  MOCK_METHOD5(OnDecisionTime,
                TrainingRequestId(proto::SegmentId id,
                                  scoped_refptr<InputContext> input_context,
-                                 DecisionType type));
+                                 DecisionType type,
+                                 absl::optional<ModelProvider::Request> inputs,
+                                 bool decision_result_update_trigger));
   MOCK_METHOD4(CollectTrainingData,
                void(SegmentId segment_id,
                     TrainingRequestId request_id,

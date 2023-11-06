@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "LensCameraAssistedSearchEnabled": true
+        },
+        "prefs": {
+          "ios.lens_camera_assited_search_policy.allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "LensCameraAssistedSearchEnabled": false
+        },
+        "prefs": {
+          "ios.lens_camera_assited_search_policy.allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -1060,6 +1060,12 @@ void MediaFoundationRenderer::RequestNextFrame() {
     return;
   }
 
+  if (native_video_size_.IsEmpty()) {
+    MEDIA_LOG(WARNING, media_log_)
+        << "RequestNextFrame ignores empty native_video_size_";
+    return;
+  }
+
   // TODO(crbug.com/1276067): Change the |native_video_size_| to get the correct
   // output video size as determined by the output texture requirements.
   gfx::Size video_size = native_video_size_;

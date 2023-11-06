@@ -46,6 +46,12 @@ struct CollectionImage {
   kUploadedImage,
 };
 
+// Enum representing the in product help promo to trigger.
+enum IphFeature {
+  kCustomizeChrome,
+  kCustomizeModules,
+};
+
 // The background image URL and styling.
 struct BackgroundImage {
   // URL to the background image. Can point to untrusted content.
@@ -316,8 +322,9 @@ interface PageHandler {
   // Increment the number of times the user has opened the side panel
   // with the customize chrome button.
   IncrementCustomizeChromeButtonOpenCount();
-  // Attempts to trigger in product help for customize chrome.
-  MaybeShowCustomizeChromeFeaturePromo();
+
+  // Attempts to trigger the specified in product help promo.
+  MaybeShowFeaturePromo(IphFeature iph_feature);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
@@ -350,6 +357,9 @@ interface PageHandler {
   OnPromoLinkClicked();
   // Logs that the <ntp-app> element's |ready| callback method was called.
   OnAppRendered(double time);
+  // Logs that a module's actionable element has been used, which is used to
+  // determine whether to trigger the in product help feature promo.
+  OnModulesUsed();
 };
 
 // WebUI-side handler for requests from the browser.

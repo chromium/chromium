@@ -1,0 +1,44 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check with GoogleSearchSidePanelEnabled default.",
+        "policies": {},
+        "prefs": {
+          "side_panel.google_search_side_panel_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Check with GoogleSearchSidePanelEnabled enabled.",
+        "policies": {
+          "GoogleSearchSidePanelEnabled": true
+        },
+        "prefs": {
+          "side_panel.google_search_side_panel_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check with GoogleSearchSidePanelEnabled disabled.",
+        "policies": {
+          "GoogleSearchSidePanelEnabled": false
+        },
+        "prefs": {
+          "side_panel.google_search_side_panel_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

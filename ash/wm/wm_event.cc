@@ -5,6 +5,7 @@
 #include "ash/wm/wm_event.h"
 
 #include "ash/wm/window_positioning_utils.h"
+#include "ash/wm/wm_metrics.h"
 
 namespace ash {
 
@@ -146,19 +147,19 @@ const WindowFloatWMEvent* WindowFloatWMEvent::AsFloatEvent() const {
   return this;
 }
 
-WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type) : WMEvent(type) {
-  CHECK(IsSnapEvent());
-}
+WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type)
+    : WindowSnapWMEvent(type,
+                        chromeos::kDefaultSnapRatio,
+                        WindowSnapActionSource::kNotSpecified) {}
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type, float snap_ratio)
-    : WMEvent(type), snap_ratio_(snap_ratio) {
-  CHECK(IsSnapEvent());
-}
+    : WindowSnapWMEvent(type,
+                        snap_ratio,
+                        WindowSnapActionSource::kNotSpecified) {}
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,
                                      WindowSnapActionSource snap_action_source)
-    : WMEvent(type), snap_action_source_(snap_action_source) {
-  CHECK(IsSnapEvent());
+    : WindowSnapWMEvent(type, chromeos::kDefaultSnapRatio, snap_action_source) {
 }
 
 WindowSnapWMEvent::WindowSnapWMEvent(WMEventType type,

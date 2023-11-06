@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-FAIL Worker exposure assert_not_equals: got disallowed value undefined
-PASS SharedWorker exposure
+[FAIL] Worker exposure
+  assert_not_equals: got disallowed value undefined
+[PASS] SharedWorker exposure
 Harness: the test ran to completion.
 

@@ -8,6 +8,7 @@
 #include "base/component_export.h"
 
 namespace content {
+class BrowserContext;
 struct ContextMenuParams;
 }  // namespace content
 
@@ -26,7 +27,8 @@ class COMPONENT_EXPORT(EDITOR_MENU_PUBLIC_CPP) ReadWriteCardsManager {
   // Returns the supported controller for the input params. Could be nullptr if
   // it is not supported.
   virtual ReadWriteCardController* GetController(
-      const content::ContextMenuParams& params) = 0;
+      const content::ContextMenuParams& params,
+      content::BrowserContext* context) = 0;
 };
 
 }  // namespace chromeos

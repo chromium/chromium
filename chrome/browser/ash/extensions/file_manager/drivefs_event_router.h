@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "url/gurl.h"
 
@@ -75,10 +74,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
 
   // DriveFsHost::Observer implementation.
   void OnUnmounted() override;
-  void OnSyncingStatusUpdate(
-      const drivefs::mojom::SyncingStatus& status) override;
-  void OnIndividualSyncingStatusesDelta(
-      const std::vector<const drivefs::SyncState>& sync_states) override;
   void OnFilesChanged(
       const std::vector<drivefs::mojom::FileChange>& changes) override;
   void OnError(const drivefs::mojom::DriveError& error) override;
@@ -90,21 +85,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
   }
 
  private:
-  struct SyncingStatusState {
-    SyncingStatusState();
-    SyncingStatusState(const SyncingStatusState& other);
-    ~SyncingStatusState();
-
-    std::unordered_map<int64_t, int64_t> group_id_to_bytes_to_transfer;
-    int64_t completed_bytes = 0;
-
-    // A given queued item that was received in one batch of events might not
-    // necessarily appear in the next batch. Because of that, we keep track of
-    // queued bytes and the total of queued items in the state.
-    std::unordered_map<int64_t, int64_t> group_id_to_queued_bytes;
-    int64_t queued_bytes = 0;
-  };
-
   // DriveIntegrationService::Observer implementation.
   void OnDriveIntegrationServiceDestroyed() override;
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
@@ -123,10 +103,6 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
 
   virtual bool IsPathWatched(const base::FilePath& path) = 0;
 
-  void BroadcastTransferEvent(
-      const extensions::events::HistogramValue event_type,
-      const FileTransferStatus& status);
-
   void BroadcastIndividualTransfersEvent(
       const extensions::events::HistogramValue event_type,
       const std::vector<IndividualFileTransferStatus>& status);
@@ -142,28 +118,11 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
       base::Value::List event_args,
       bool dispatch_to_system_notification = true) = 0;
 
-  // Send single event with aggregate sync information for all ItemEvents.
-  // Note: this assumes all ItemEvents have the same `reason`.
-  void BroadcastAggregateTransferEventForItems(
-      const std::vector<const drivefs::mojom::ItemEvent*>& items,
-      const extensions::events::HistogramValue& event_type,
-      const std::string& event_name,
-      SyncingStatusState& state);
-
-  // Send single event with array of per-file sync information for all
-  // ItemEvents. Note: this assumes all ItemEvents have the same `reason`.
-  void BroadcastIndividualTransferEventsForItems(
-      const std::vector<const drivefs::mojom::ItemEvent*>& items,
-      const extensions::events::HistogramValue& event_type,
-      const std::string& event_name);
-
   // This is owned by EventRouter and only shared with this class.
   const raw_ptr<Profile> profile_;
   const raw_ptr<SystemNotificationManager, ExperimentalAsh>
       notification_manager_;
 
-  SyncingStatusState sync_status_state_;
-  SyncingStatusState pin_status_state_;
   // Set of paths for which Drive transfer events are ignored.
   std::set<base::FilePath> ignored_file_paths_;
   base::OnceCallback<void(drivefs::mojom::DialogResult)> dialog_callback_;

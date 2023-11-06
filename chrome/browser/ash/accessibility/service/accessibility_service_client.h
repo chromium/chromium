@@ -7,13 +7,20 @@
 
 #include <vector>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
 #include "services/accessibility/public/mojom/tts.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace content {
 class BrowserContext;
@@ -21,7 +28,9 @@ class DevToolsAgentHost;
 }
 
 namespace ash {
+class AutoclickClientImpl;
 class AutomationClientImpl;
+class SpeechRecognitionImpl;
 class TtsClientImpl;
 class UserInterfaceImpl;
 
@@ -30,8 +39,8 @@ class UserInterfaceImpl;
 // to the service which features are running and binding helper classes for the
 // service.
 // TODO(crbug.com/1355633): Move to ash/accessibility/service.
-class AccessibilityServiceClient
-    : public ax::mojom::AccessibilityServiceClient {
+class AccessibilityServiceClient : public ax::mojom::AccessibilityServiceClient,
+                                   public ax::mojom::AccessibilityFileLoader {
  public:
   AccessibilityServiceClient();
   AccessibilityServiceClient(const AccessibilityServiceClient&) = delete;
@@ -44,9 +53,19 @@ class AccessibilityServiceClient
       mojo::PendingAssociatedRemote<ax::mojom::Automation> automation,
       mojo::PendingReceiver<ax::mojom::AutomationClient> automation_client)
       override;
+  void BindAutoclickClient(mojo::PendingReceiver<ax::mojom::AutoclickClient>
+                               autoclick_receiver) override;
+  void BindSpeechRecognition(
+      mojo::PendingReceiver<ax::mojom::SpeechRecognition> sr_receiver) override;
   void BindTts(mojo::PendingReceiver<ax::mojom::Tts> tts_receiver) override;
   void BindUserInterface(
       mojo::PendingReceiver<ax::mojom::UserInterface> ui_receiver) override;
+  void BindAccessibilityFileLoader(
+      mojo::PendingReceiver<ax::mojom::AccessibilityFileLoader>
+          file_loader_receiver) override;
+
+  // ax::mojom::AccessibilityFileLoader:
+  void Load(const base::FilePath& path, LoadCallback callback) override;
 
   void SetProfile(content::BrowserContext* profile);
 
@@ -58,8 +77,12 @@ class AccessibilityServiceClient
   void SetMagnifierEnabled(bool enabled);
   void SetDictationEnabled(bool enabled);
 
+  // Sends information into the accessibility service.
+  void RequestScrollableBoundsForPoint(const gfx::Point& point);
+
  private:
   friend class AccessibilityServiceClientTest;
+  friend class AccessibilityManagerWithAccessibilityServiceTest;
 
   // Called when the profile changes or on destruction. Disconnects all mojom
   // endpoints.
@@ -78,9 +101,15 @@ class AccessibilityServiceClient
       ::mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent,
       ax::mojom::AssistiveTechnologyType type);
 
+  // Helper method to return the opened file from the UI thread once it has been
+  // opened.
+  void OnFileLoaded(LoadCallback callback, base::File file);
+
   std::unique_ptr<AutomationClientImpl> automation_client_;
+  std::unique_ptr<SpeechRecognitionImpl> speech_recognition_impl_;
   std::unique_ptr<TtsClientImpl> tts_client_;
   std::unique_ptr<UserInterfaceImpl> user_interface_client_;
+  std::unique_ptr<AutoclickClientImpl> autoclick_client_;
 
   // Track the currently enabled features in case we disconnect from the service
   // and need to reconnect, for example when the profile changes.
@@ -95,10 +124,15 @@ class AccessibilityServiceClient
   // AccessibilityServiceClient.
   mojo::Receiver<ax::mojom::AccessibilityServiceClient> service_client_{this};
 
+  // Loads files on demand by the accessibility service.
+  mojo::Receiver<ax::mojom::AccessibilityFileLoader> file_loader_{this};
+
   // Container mapping AT type and devtools host.
   std::map<ax::mojom::AssistiveTechnologyType,
            scoped_refptr<content::DevToolsAgentHost>>
       devtools_agent_hosts_;
+
+  base::WeakPtrFactory<AccessibilityServiceClient> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

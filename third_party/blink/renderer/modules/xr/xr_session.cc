@@ -799,7 +799,7 @@ XRInputSourceArray* XRSession::inputSources(ScriptState* script_state) const {
     did_log_getInputSources_ = true;
   }
 
-  return input_sources_;
+  return input_sources_.Get();
 }
 
 ScriptPromise XRSession::requestHitTestSource(

@@ -325,7 +325,10 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
   new_request->has_storage_access =
       request_info.begin_params->has_storage_access;
 
-  new_request->attribution_reporting_support = AttributionManager::GetSupport();
+  new_request->attribution_reporting_support =
+      AttributionManager::GetAttributionSupport(
+          WebContents::FromFrameTreeNodeId(
+              frame_tree_node->frame_tree_node_id()));
 
   new_request->attribution_reporting_eligibility =
       request_info.begin_params->impression.has_value()
@@ -337,7 +340,8 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         request_info.begin_params->impression->runtime_features;
   }
 
-  new_request->shared_storage_writable = request_info.shared_storage_writable;
+  new_request->shared_storage_writable_eligible =
+      request_info.shared_storage_writable_eligible;
 
   return new_request;
 }
@@ -535,7 +539,8 @@ void NavigationURLLoaderImpl::CreateInterceptors(
   // Set up an interceptor for prefetch.
   std::unique_ptr<PrefetchURLLoaderInterceptor> prefetch_interceptor =
       content::PrefetchURLLoaderInterceptor::MaybeCreateInterceptor(
-          frame_tree_node_id_, request_info_->initiator_document_token);
+          frame_tree_node_id_, request_info_->initiator_document_token,
+          request_info_->prefetch_serving_page_metrics_container);
   if (prefetch_interceptor) {
     interceptors_.push_back(std::move(prefetch_interceptor));
   }

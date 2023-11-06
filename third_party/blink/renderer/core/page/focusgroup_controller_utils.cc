@@ -4,13 +4,12 @@
 
 #include "third_party/blink/renderer/core/page/focusgroup_controller_utils.h"
 
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
 #include "third_party/blink/renderer/core/page/grid_focusgroup_structure_info.h"
 
 namespace blink {
@@ -105,12 +104,11 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
           // TODO(bebeaudr): Support grid focusgroups that aren't based on the
           // table layout objects.
           if (ancestor_flags & FocusgroupFlags::kGrid &&
-              IsA<LayoutNGTable>(ancestor->GetLayoutObject())) {
+              IsA<LayoutTable>(ancestor->GetLayoutObject())) {
             return ancestor;
           }
           break;
         case FocusgroupType::kLinear:
-          // TODO(https://crbug.com/1250716): Check CSS toggle restrictions?
           if (!(ancestor_flags & FocusgroupFlags::kGrid))
             return ancestor;
           break;
@@ -180,48 +178,13 @@ bool FocusgroupControllerUtils::IsFocusgroupItem(const Element* element) {
     return false;
 
   // All children of a focusgroup are considered focusgroup items if they are
-  // focusable, except for some special cases for CSS toggles.
+  // focusable.
   Element* parent = FlatTreeTraversal::ParentElement(*element);
   if (!parent)
     return false;
 
   FocusgroupFlags parent_flags = parent->GetFocusgroupFlags();
-  if (parent_flags == FocusgroupFlags::kNone) {
-    return false;
-  }
-
-  FocusgroupFlags toggle_restrictions =
-      parent_flags & FocusgroupFlags::kCSSToggleRestrictions;
-  if (toggle_restrictions) {
-    CSSToggleInference* toggle_inference =
-        element->GetDocument().GetCSSToggleInference();
-    DCHECK(toggle_inference)
-        << "toggle restrictions should only exist because of toggle inference";
-    CSSToggleRole element_role = toggle_inference->RoleForElement(element);
-    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleCheckbox) {
-      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleCheckbox);
-      return element_role == CSSToggleRole::kCheckbox;
-    }
-    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleListboxItem) {
-      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleListboxItem);
-      return element_role == CSSToggleRole::kListboxItem;
-    }
-    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleRadioItem) {
-      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleRadioItem);
-      return element_role == CSSToggleRole::kRadioItem;
-    }
-    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleTab) {
-      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleTab);
-      return element_role == CSSToggleRole::kTab;
-    }
-    if (toggle_restrictions & FocusgroupFlags::kForCSSToggleTreeItem) {
-      DCHECK_EQ(toggle_restrictions, FocusgroupFlags::kForCSSToggleTreeItem);
-      return element_role == CSSToggleRole::kTreeItem;
-    }
-    NOTREACHED();
-  }
-
-  return true;
+  return parent_flags != FocusgroupFlags::kNone;
 }
 
 // This function is called whenever the |element| passed by parameter has fallen
@@ -307,13 +270,13 @@ bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
 
   // TODO(bebeaudr): Add support for manual grids, where the grid focusgroup
   // items aren't necessarily on an table cell layout object.
-  return IsA<LayoutNGTableCell>(element->GetLayoutObject());
+  return IsA<LayoutTableCell>(element->GetLayoutObject());
 }
 
 GridFocusgroupStructureInfo*
 FocusgroupControllerUtils::CreateGridFocusgroupStructureInfoForGridRoot(
     Element* root) {
-  if (IsA<LayoutNGTable>(root->GetLayoutObject()) &&
+  if (IsA<LayoutTable>(root->GetLayoutObject()) &&
       root->GetFocusgroupFlags() & FocusgroupFlags::kGrid) {
     return MakeGarbageCollected<AutomaticGridFocusgroupStructureInfo>(
         root->GetLayoutObject());

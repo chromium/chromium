@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_FADE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_FADE_VIEW_H_
 
+#include <type_traits>
+
+#include "ui/base/metadata/metadata_cache.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/background.h"
@@ -16,6 +20,10 @@
 // Adapts any view `T` so that the view can fade when used by a FadeView
 template <typename T, typename V>
 class FadeWrapper : public T {
+  static_assert(std::is_base_of<views::View, T>::value,
+                "Class T does not descend from views::View");
+  METADATA_TEMPLATE_HEADER(FadeWrapper, T)
+
  public:
   template <typename... Args>
   explicit FadeWrapper(Args&&... args) : T(std::forward<Args>(args)...) {}
@@ -35,9 +43,11 @@ class FadeWrapper : public T {
 // transition from the view with the old data `U` to the updated data in `T`
 template <typename T, typename U, typename V>
 class FadeView : public views::View {
+  METADATA_TEMPLATE_HEADER(FadeView, views::View)
+
  public:
   FadeView(std::unique_ptr<T> primary_view, std::unique_ptr<U> fade_out_view) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
+    SetUseDefaultFillLayout(true);
     primary_view_ = AddChildView(std::move(primary_view));
     fade_out_view_ = AddChildView(std::move(fade_out_view));
   }

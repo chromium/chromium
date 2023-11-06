@@ -31,19 +31,19 @@
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
+class AbstractInlineTextBox;
 class ContentCaptureManager;
-class NGAbstractInlineTextBox;
-struct NGInlineItemsData;
-struct NGInlineItemSpan;
-class NGOffsetMapping;
+class OffsetMapping;
+struct InlineItemsData;
+struct InlineItemSpan;
 
 enum class OnlyWhitespaceOrNbsp : unsigned { kUnknown = 0, kNo = 1, kYes = 2 };
 
@@ -252,7 +252,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void RemoveAndDestroyTextBoxes();
 
-  NGAbstractInlineTextBox* FirstAbstractInlineTextBox();
+  AbstractInlineTextBox* FirstAbstractInlineTextBox();
 
   bool HasAbstractInlineTextBox() const {
     NOT_DESTROYED();
@@ -279,15 +279,15 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   virtual UChar PreviousCharacter() const;
 
-  // Returns the NGOffsetMapping object when the current text is laid out with
+  // Returns the OffsetMapping object when the current text is laid out with
   // LayoutNG.
   // Note that the text can be in legacy layout even when LayoutNG is enabled,
   // so we can't simply check the RuntimeEnabledFeature.
-  const NGOffsetMapping* GetNGOffsetMapping() const;
+  const OffsetMapping* GetOffsetMapping() const;
 
   // Map DOM offset to LayoutNG text content offset.
   // Returns false if all characters in this LayoutText are collapsed.
-  bool MapDOMOffsetToTextContentOffset(const NGOffsetMapping&,
+  bool MapDOMOffsetToTextContentOffset(const OffsetMapping&,
                                        unsigned* start,
                                        unsigned* end) const;
   DOMNodeId EnsureNodeId();
@@ -296,15 +296,13 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     return node_id_ != kInvalidDOMNodeId;
   }
 
-  void SetInlineItems(NGInlineItemsData* data,
-                      wtf_size_t begin,
-                      wtf_size_t size);
+  void SetInlineItems(InlineItemsData* data, wtf_size_t begin, wtf_size_t size);
   void ClearInlineItems();
   bool HasValidInlineItems() const {
     NOT_DESTROYED();
     return valid_ng_items_;
   }
-  const NGInlineItemSpan& InlineItems() const;
+  const InlineItemSpan& InlineItems() const;
   // Inline items depends on context. It needs to be invalidated not only when
   // it was inserted/changed but also it was moved.
   void InvalidateInlineItems() {
@@ -325,11 +323,11 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     has_bidi_control_items_ = false;
   }
 
-  const NGInlineItemSpan* GetNGInlineItems() const {
+  const InlineItemSpan* GetInlineItems() const {
     NOT_DESTROYED();
     return &inline_items_;
   }
-  NGInlineItemSpan* GetNGInlineItems() {
+  InlineItemSpan* GetInlineItems() {
     NOT_DESTROYED();
     return &inline_items_;
   }
@@ -445,12 +443,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   // inserted or removed).
   unsigned lines_dirty_ : 1;
 
-  // Whether the NGInlineItems associated with this object are valid. Set after
+  // Whether the InlineItems associated with this object are valid. Set after
   // layout and cleared whenever the LayoutText is modified.
   // Functionally the inverse equivalent of lines_dirty_ for LayoutNG.
   unsigned valid_ng_items_ : 1;
 
-  // Whether there is any BidiControl type NGInlineItem associated with this
+  // Whether there is any BidiControl type InlineItem associated with this
   // object. Set after layout when associating items.
   unsigned has_bidi_control_items_ : 1;
 
@@ -465,7 +463,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void DetachAbstractInlineTextBoxes();
 
   // Used for LayoutNG with accessibility. True if inline fragments are
-  // associated to |NGAbstractInlineTextBox|.
+  // associated to |AbstractInlineTextBox|.
   unsigned has_abstract_inline_text_box_ : 1;
 
   DOMNodeId node_id_ = kInvalidDOMNodeId;
@@ -481,10 +479,10 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   mutable LogicalOffset previous_logical_starting_point_ =
       UninitializedLogicalStartingPoint();
 
-  NGInlineItemSpan inline_items_;
+  InlineItemSpan inline_items_;
 
   // The index of the first fragment item associated with this object in
-  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // |FragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
   wtf_size_t first_fragment_item_index_ = 0u;
 };

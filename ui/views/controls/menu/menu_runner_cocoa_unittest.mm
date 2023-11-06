@@ -131,15 +131,14 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
               [[parent_->GetNativeView().GetNativeNSView() subviews] count]);
 
     if (runner_) {
-      runner_->Release();
-      runner_ = nullptr;
+      runner_.ExtractAsDangling()->Release();
     }
 
     // Clean up for tests that set the notification filter.
     MenuCocoaWatcherMac::SetNotificationFilterForTesting(
         MacNotificationFilter::DontIgnoreNotifications);
 
-    parent_->CloseNow();
+    parent_.ExtractAsDangling()->CloseNow();
     ViewsTestBase::TearDown();
   }
 
@@ -221,8 +220,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   }
 
   void MenuDeleteCallback() {
-    runner_->Release();
-    runner_ = nullptr;
+    runner_.ExtractAsDangling()->Release();
     // Deleting an async menu intentionally does not invoke MenuCloseCallback().
     // (The callback is typically a method on something in the process of being
     // destroyed). So invoke QuitAsyncRunLoop() here as well.
@@ -244,8 +242,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     // A View showing a menu typically owns a MenuRunner unique_ptr, which will
     // will be destroyed (releasing the MenuRunnerImpl) alongside the MenuModel.
-    runner_->Release();
-    runner_ = nullptr;
+    runner_.ExtractAsDangling()->Release();
     menu_ = nullptr;
 
     // The menu is closing (yet "alive"), but the model is destroyed. The user
@@ -268,15 +265,14 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
   void MenuCancelAndDeleteCallback() {
     runner_->Cancel();
-    runner_->Release();
-    runner_ = nullptr;
+    // Release cause the runner to delete itself.
+    runner_.ExtractAsDangling()->Release();
   }
 
  protected:
   std::unique_ptr<TestModel> menu_;
-  raw_ptr<internal::MenuRunnerImplInterface, DanglingUntriaged> runner_ =
-      nullptr;
-  raw_ptr<views::Widget, DanglingUntriaged> parent_ = nullptr;
+  raw_ptr<internal::MenuRunnerImplInterface> runner_ = nullptr;
+  raw_ptr<views::Widget> parent_ = nullptr;
   NSRect last_anchor_frame_ = NSZeroRect;
   NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;
@@ -406,8 +402,7 @@ TEST_P(MenuRunnerCocoaTest, CancelWithoutRunning) {
 }
 
 TEST_P(MenuRunnerCocoaTest, DeleteWithoutRunning) {
-  runner_->Release();
-  runner_ = nullptr;
+  runner_.ExtractAsDangling()->Release();
   EXPECT_EQ(0, menu_close_count_);
 }
 

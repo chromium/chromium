@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DnsOverHttpsMode": "automatic",
+          "DnsOverHttpsSalt": "test-salt",
+          "DnsOverHttpsTemplatesWithIdentifiers": "https://cloudflare-dns.com/dns-query https://dns.quad9.net/dns-query{?dns}"
+        },
+        "prefs": {
+          "dns_over_https.templates_with_identifiers": {
+            "location": "local_state",
+            "value": "https://cloudflare-dns.com/dns-query https://dns.quad9.net/dns-query{?dns}"
+          }
+        }
+      }
+    ]
+  }
+]

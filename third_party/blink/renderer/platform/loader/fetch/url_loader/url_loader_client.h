@@ -36,6 +36,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -59,7 +60,8 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // information about the received redirect. When |report_raw_headers| is
   // updated it'll be used for filtering data of the next redirect or response.
   // |removed_headers| outputs headers that need to be removed from the
-  // redirect request.
+  // redirect request. `modified_headers` outputs headers that need to be added
+  // to or updated in the redirect request.
   //
   // Implementations should return true to instruct the loader to follow the
   // redirect, or false otherwise.
@@ -72,6 +74,7 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
       const WebURLResponse& passed_redirect_response,
       bool& report_raw_headers,
       std::vector<std::string>* removed_headers,
+      net::HttpRequestHeaders& modified_headers,
       bool insecure_scheme_was_upgraded) {
     return true;
   }
@@ -81,13 +84,11 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   virtual void DidSendData(uint64_t bytes_sent,
                            uint64_t total_bytes_to_be_sent) {}
 
-  // Called when response headers are received.
-  virtual void DidReceiveResponse(const WebURLResponse&) {}
-
-  // Called when the response body becomes available. This method is only called
-  // if the request's PassResponsePipeToClient flag was set to true.
-  virtual void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) {}
+  // Called when response are received.
+  virtual void DidReceiveResponse(
+      const WebURLResponse&,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) {}
 
   // Called when a chunk of response data is received. |data_length| is the
   // number of bytes pointed to by |data|.
@@ -96,10 +97,6 @@ class BLINK_PLATFORM_EXPORT URLLoaderClient {
   // Called when the number of bytes actually received from network including
   // HTTP headers is updated. |transfer_size_diff| is positive.
   virtual void DidReceiveTransferSizeUpdate(int transfer_size_diff) {}
-
-  // Called when a chunk of renderer-generated metadata is received from the
-  // cache.
-  virtual void DidReceiveCachedMetadata(mojo_base::BigBuffer data) {}
 
   // Called when the load completes successfully.
   // |total_encoded_data_length| may be equal to kUnknownEncodedDataLength.

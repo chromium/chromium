@@ -60,8 +60,6 @@ def validate_property(prop, props_by_name):
     assert not prop.is_internal or prop.computable is None, \
         'Internal properties are always non-computable [%s]' % name
     if prop.supports_incremental_style:
-        assert not prop.inherited, \
-            'We do not currently support incremental style on inherited properties [%s]' % name
         assert not prop.is_animation_property, \
             'Animation properties can not be applied incrementally [%s]' % name
         assert prop.idempotent, \
@@ -400,6 +398,7 @@ class CSSProperties(object):
             updated_alias.alternative = alias.alternative
             updated_alias.aliased_property = aliased_property.name.to_upper_camel_case(
             )
+            updated_alias.computable = alias.computable
             updated_alias.property_id = id_for_css_property_alias(alias.name)
             updated_alias.enum_key = enum_key_for_css_property_alias(
                 alias.name)

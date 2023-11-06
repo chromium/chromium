@@ -660,12 +660,28 @@ class FakeDownloadProtectionService
 
   void CheckClientDownload(
       DownloadItem* download_item,
-      safe_browsing::CheckDownloadRepeatingCallback callback) override {
+      safe_browsing::CheckDownloadRepeatingCallback callback,
+      base::optional_ref<const std::string> password) override {
+    safe_browsing::ClientDownloadResponse::Verdict verdict =
+        fake_verdict_.value_or(safe_browsing::ClientDownloadResponse::UNCOMMON);
     DownloadProtectionService::SetDownloadProtectionData(
-        download_item, "token", safe_browsing::ClientDownloadResponse::UNCOMMON,
+        download_item, "token", verdict,
         safe_browsing::ClientDownloadResponse::TailoredVerdict());
-    std::move(callback).Run(safe_browsing::DownloadCheckResult::UNCOMMON);
+
+    safe_browsing::DownloadCheckResult result =
+        fake_result_.value_or(safe_browsing::DownloadCheckResult::UNCOMMON);
+    std::move(callback).Run(result);
   }
+
+  void SetFakeResponse(safe_browsing::DownloadCheckResult result,
+                       safe_browsing::ClientDownloadResponse::Verdict verdict) {
+    fake_result_ = result;
+    fake_verdict_ = verdict;
+  }
+
+ private:
+  absl::optional<safe_browsing::DownloadCheckResult> fake_result_;
+  absl::optional<safe_browsing::ClientDownloadResponse::Verdict> fake_verdict_;
 };
 
 class FakeSafeBrowsingService : public safe_browsing::TestSafeBrowsingService {
@@ -4732,7 +4748,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   safe_browsing::ClientSafeBrowsingReportRequest actual_report;
   actual_report.ParseFromString(
       test_safe_browsing_factory_->fake_safe_browsing_service()
-          ->serilized_download_report());
+          ->serialized_download_report());
   EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_WARNING,
             actual_report.type());
@@ -4742,6 +4758,56 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   EXPECT_TRUE(actual_report.did_proceed());
 
   download->Cancel(true);
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
+                       SendDownloadReportIfUserProceedsDeepScanning) {
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled,
+                                               true);
+  // Make a dangerous file.
+  embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL download_url = embedded_test_server()->GetURL(kDangerousMockFilePath);
+  auto* download_protection_service =
+      static_cast<FakeDownloadProtectionService*>(
+          g_browser_process->safe_browsing_service()
+              ->download_protection_service());
+  download_protection_service->SetFakeResponse(
+      safe_browsing::DownloadCheckResult::PROMPT_FOR_SCANNING,
+      safe_browsing::ClientDownloadResponse::UNCOMMON);
+  std::unique_ptr<content::DownloadTestObserver> dangerous_observer(
+      DangerousDownloadWaiter(
+          browser(), 1,
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), download_url));
+  dangerous_observer->WaitForFinished();
+
+  std::vector<DownloadItem*> downloads;
+  DownloadManagerForBrowser(browser())->GetAllDownloads(&downloads);
+  ASSERT_EQ(1u, downloads.size());
+  DownloadItem* download = downloads[0];
+  DownloadItemModel model(download);
+  DownloadCommands(model.GetWeakPtr())
+      .ExecuteCommand(DownloadCommands::BYPASS_DEEP_SCANNING);
+
+  safe_browsing::ClientSafeBrowsingReportRequest actual_report;
+  actual_report.ParseFromString(
+      test_safe_browsing_factory_->fake_safe_browsing_service()
+          ->serialized_download_report());
+  EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
+                DANGEROUS_DOWNLOAD_WARNING,
+            actual_report.type());
+  EXPECT_EQ(safe_browsing::ClientDownloadResponse::UNCOMMON,
+            actual_report.download_verdict());
+  EXPECT_EQ(download_url.spec(), actual_report.url());
+  EXPECT_TRUE(actual_report.did_proceed());
+
+  // Trying to quit when the download hasn't completed will show a "Continue
+  // downloading?" prompt, and the test will timeout trying to quit. Instead
+  // wait for the download to complete before quitting.
+  std::unique_ptr<content::DownloadTestObserver> completed_observer(
+      CreateWaiter(browser(), 1));
+  completed_observer->WaitForFinished();
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -4769,7 +4835,7 @@ IN_PROC_BROWSER_TEST_F(
       .ExecuteCommand(DownloadCommands::DISCARD);
 
   EXPECT_TRUE(test_safe_browsing_factory_->fake_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 }
 
@@ -4799,7 +4865,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
   DownloadCommands(model.GetWeakPtr()).ExecuteCommand(DownloadCommands::KEEP);
 
   EXPECT_TRUE(test_safe_browsing_factory_->fake_safe_browsing_service()
-                  ->serilized_download_report()
+                  ->serialized_download_report()
                   .empty());
 
   download->Cancel(true);
@@ -4831,7 +4897,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsingNewCsbrrTrigger,
   safe_browsing::ClientSafeBrowsingReportRequest actual_report;
   actual_report.ParseFromString(
       test_safe_browsing_factory_->fake_safe_browsing_service()
-          ->serilized_download_report());
+          ->serialized_download_report());
   EXPECT_EQ(safe_browsing::ClientSafeBrowsingReportRequest::
                 DANGEROUS_DOWNLOAD_WARNING,
             actual_report.type());

@@ -12,8 +12,10 @@
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/chrome_config.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_config.h"
+#include "third_party/perfetto/protos/perfetto/config/interceptor_config.gen.h"
 
 namespace mojo {
 template <>
@@ -43,6 +45,13 @@ class StructTraits<tracing::mojom::DataSourceConfigDataView,
   static const std::string& track_event_config_raw(
       const perfetto::DataSourceConfig& src) {
     return src.track_event_config_raw();
+  }
+  static absl::optional<perfetto::protos::gen::InterceptorConfig>
+  interceptor_config(const perfetto::DataSourceConfig& src) {
+    if (src.has_interceptor_config()) {
+      return src.interceptor_config();
+    }
+    return absl::nullopt;
   }
 
   static bool Read(tracing::mojom::DataSourceConfigDataView data,

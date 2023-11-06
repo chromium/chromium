@@ -83,7 +83,7 @@ class ModuleRecordTestModulator final : public DummyModulator {
  private:
   // Implements Modulator:
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   ModuleRecordResolver* GetModuleRecordResolver() override {
     return resolver_.Get();

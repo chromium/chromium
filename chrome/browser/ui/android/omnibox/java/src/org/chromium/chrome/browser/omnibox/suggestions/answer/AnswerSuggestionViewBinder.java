@@ -13,7 +13,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** A mechanism binding AnswerSuggestion properties to its view. */
 public class AnswerSuggestionViewBinder {
-    /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
+    /**
+     * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
+     */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_1);
@@ -24,13 +26,15 @@ public class AnswerSuggestionViewBinder {
         } else if (AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION
                 == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_1);
-            tv.setContentDescription(model.get(
-                    AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION));
+            tv.setContentDescription(
+                    model.get(
+                            AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION));
         } else if (AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION
                 == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_2);
-            tv.setContentDescription(model.get(
-                    AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION));
+            tv.setContentDescription(
+                    model.get(
+                            AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION));
         } else if (AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES == propertyKey) {
             TextView tv = view.findViewById(R.id.omnibox_answer_line_1);
             tv.setMaxLines(model.get(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES));

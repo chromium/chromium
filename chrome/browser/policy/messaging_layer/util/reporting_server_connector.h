@@ -23,7 +23,6 @@ namespace reporting {
 
 class EncryptedReportingClient;
 
-BASE_DECLARE_FEATURE(kEnableEncryptedReportingClientForUpload);
 BASE_DECLARE_FEATURE(kEnableReportingFromUnmanagedDevices);
 
 // Singleton wrapper of a client used for uploading events to the reporting

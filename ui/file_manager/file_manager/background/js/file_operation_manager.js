@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
+import {isSameEntry} from '../../common/js/entry_utils.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -17,7 +17,7 @@ import {fileOperationUtil} from './file_operation_util.js';
 export class FileOperationManagerImpl {
   constructor() {
     /**
-     * @private @type {VolumeManager}
+     * @private @type {?VolumeManager}
      */
     this.volumeManager_ = null;
 
@@ -44,16 +44,21 @@ export class FileOperationManagerImpl {
     }
 
     // Check all file entries and keeps only those need sharing operation.
+    // @ts-ignore: error TS7006: Parameter 'entry' implicitly has an 'any' type.
     const processEntry = entry => {
       return new Promise(resolve => {
         entry.getParent(
+            // @ts-ignore: error TS7006: Parameter 'inParentEntry' implicitly
+            // has an 'any' type.
             inParentEntry => {
-              if (!util.isSameEntry(inParentEntry, targetEntry)) {
+              if (!isSameEntry(inParentEntry, targetEntry)) {
                 resolve(entry);
               } else {
                 resolve(null);
               }
             },
+            // @ts-ignore: error TS7006: Parameter 'error' implicitly has an
+            // 'any' type.
             error => {
               console.warn(error.stack || error);
               resolve(null);

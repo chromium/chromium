@@ -507,17 +507,17 @@ Element* HTMLElementStack::HtmlElement() const {
 
 Element* HTMLElementStack::HeadElement() const {
   DCHECK(head_element_);
-  return head_element_;
+  return head_element_.Get();
 }
 
 Element* HTMLElementStack::BodyElement() const {
   DCHECK(body_element_);
-  return body_element_;
+  return body_element_.Get();
 }
 
 ContainerNode* HTMLElementStack::RootNode() const {
   DCHECK(root_node_);
-  return root_node_;
+  return root_node_.Get();
 }
 
 void HTMLElementStack::PushCommon(HTMLStackItem* item) {

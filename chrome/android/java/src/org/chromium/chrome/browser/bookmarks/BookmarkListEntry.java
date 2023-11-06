@@ -18,19 +18,26 @@ import java.lang.annotation.RetentionPolicy;
 
 import javax.annotation.Nonnull;
 
-/**
- * Represents different type of views in the bookmark UI.
- */
+/** Represents different type of views in the bookmark UI. */
 public final class BookmarkListEntry {
-    /**
-     * Specifies the view types that the bookmark delegate screen can contain.
-     */
+    /** Specifies the view types that the bookmark delegate screen can contain. */
     @Retention(RetentionPolicy.SOURCE)
-    @IntDef({ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
-            ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER,
-            ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST,
-            ViewType.SHOPPING_FILTER, ViewType.IMPROVED_BOOKMARK_VISUAL,
-            ViewType.IMPROVED_BOOKMARK_COMPACT, ViewType.SEARCH_BOX})
+    @IntDef({
+        ViewType.INVALID,
+        ViewType.PERSONALIZED_SIGNIN_PROMO,
+        ViewType.PERSONALIZED_SYNC_PROMO,
+        ViewType.SYNC_PROMO,
+        ViewType.FOLDER,
+        ViewType.BOOKMARK,
+        ViewType.DIVIDER,
+        ViewType.SECTION_HEADER,
+        ViewType.SHOPPING_POWER_BOOKMARK,
+        ViewType.TAG_CHIP_LIST,
+        ViewType.SHOPPING_FILTER,
+        ViewType.IMPROVED_BOOKMARK_VISUAL,
+        ViewType.IMPROVED_BOOKMARK_COMPACT,
+        ViewType.SEARCH_BOX
+    })
     public @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -52,6 +59,7 @@ public final class BookmarkListEntry {
     static final class SectionHeaderData {
         public final @StringRes int titleRes;
         public final @DimenRes int topPaddingRes;
+
         SectionHeaderData(@StringRes int titleRes, @DimenRes int topPaddingRes) {
             this.titleRes = titleRes;
             this.topPaddingRes = topPaddingRes;
@@ -59,15 +67,15 @@ public final class BookmarkListEntry {
     }
 
     private final @ViewType int mViewType;
-    @Nullable
-    private final BookmarkItem mBookmarkItem;
-    @Nullable
-    private final SectionHeaderData mSectionHeaderData;
-    @Nullable
-    private final PowerBookmarkMeta mPowerBookmarkMeta;
+    @Nullable private final BookmarkItem mBookmarkItem;
+    @Nullable private final SectionHeaderData mSectionHeaderData;
+    @Nullable private final PowerBookmarkMeta mPowerBookmarkMeta;
 
-    private BookmarkListEntry(int viewType, @Nullable BookmarkItem bookmarkItem,
-            @Nullable SectionHeaderData sectionHeaderData, @Nullable PowerBookmarkMeta meta) {
+    private BookmarkListEntry(
+            int viewType,
+            @Nullable BookmarkItem bookmarkItem,
+            @Nullable SectionHeaderData sectionHeaderData,
+            @Nullable PowerBookmarkMeta meta) {
         mViewType = viewType;
         mBookmarkItem = bookmarkItem;
         mSectionHeaderData = sectionHeaderData;
@@ -76,54 +84,65 @@ public final class BookmarkListEntry {
 
     /**
      * Create an entry presenting a bookmark folder or bookmark.
+     *
      * @param bookmarkItem The data object created from the bookmark backend.
      * @param meta The PowerBookmarkMeta for the bookmark.
      * @param displayPref The display pref for the bookmark.
      */
-    static BookmarkListEntry createBookmarkEntry(@Nonnull BookmarkItem bookmarkItem,
-            @Nullable PowerBookmarkMeta meta, @BookmarkRowDisplayPref int displayPref) {
-        @ViewType
-        int viewType = bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK;
+    static BookmarkListEntry createBookmarkEntry(
+            @Nonnull BookmarkItem bookmarkItem,
+            @Nullable PowerBookmarkMeta meta,
+            @BookmarkRowDisplayPref int displayPref) {
+        @ViewType int viewType = bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            viewType = displayPref == BookmarkRowDisplayPref.VISUAL
-                    ? ViewType.IMPROVED_BOOKMARK_VISUAL
-                    : ViewType.IMPROVED_BOOKMARK_COMPACT;
+            viewType =
+                    displayPref == BookmarkRowDisplayPref.VISUAL
+                            ? ViewType.IMPROVED_BOOKMARK_VISUAL
+                            : ViewType.IMPROVED_BOOKMARK_COMPACT;
         } else if (meta != null && meta.hasShoppingSpecifics()) {
             viewType = ViewType.SHOPPING_POWER_BOOKMARK;
         }
 
-        return new BookmarkListEntry(viewType, bookmarkItem, /*sectionHeaderData=*/null, meta);
+        return new BookmarkListEntry(viewType, bookmarkItem, /* sectionHeaderData= */ null, meta);
     }
 
     /**
      * Create an entry presenting a sync promo header.
+     *
      * @param viewType The view type of the sync promo header.
      */
     static BookmarkListEntry createSyncPromoHeader(@ViewType int viewType) {
         assert viewType == ViewType.PERSONALIZED_SIGNIN_PROMO
-                || viewType == ViewType.PERSONALIZED_SYNC_PROMO || viewType == ViewType.SYNC_PROMO;
+                || viewType == ViewType.PERSONALIZED_SYNC_PROMO
+                || viewType == ViewType.SYNC_PROMO;
         return new BookmarkListEntry(
-                viewType, /*bookmarkItem=*/null, /*sectionHeaderData=*/null, /*meta=*/null);
+                viewType,
+                /* bookmarkItem= */ null,
+                /* sectionHeaderData= */ null,
+                /* meta= */ null);
     }
 
-    /**
-     * Creates a divider to separate sections in the bookmark list.
-     */
+    /** Creates a divider to separate sections in the bookmark list. */
     static BookmarkListEntry createDivider() {
         return new BookmarkListEntry(
-                ViewType.DIVIDER, /*bookmarkItem=*/null, /*sectionHeaderData=*/null, /*meta=*/null);
+                ViewType.DIVIDER,
+                /* bookmarkItem= */ null,
+                /* sectionHeaderData= */ null,
+                /* meta= */ null);
     }
 
-    /**
-     * Creates a price-tracking filter.
-     */
+    /** Creates a price-tracking filter. */
     static BookmarkListEntry createShoppingFilter() {
-        return new BookmarkListEntry(ViewType.SHOPPING_FILTER, /*bookmarkItem=*/null,
-                /*sectionHeaderData=*/null, /*meta=*/null);
+        return new BookmarkListEntry(
+                ViewType.SHOPPING_FILTER,
+                /* bookmarkItem= */ null,
+                /* sectionHeaderData= */ null,
+                /* meta= */ null);
     }
 
     /**
      * Create an entry representing the reading list read/unread section header.
+     *
      * @param titleRes The resource id for the title of the section header.
      * @param topPaddingRes The resource for the top padding of the section header. Ignored if 0.
      */
@@ -131,12 +150,10 @@ public final class BookmarkListEntry {
             @StringRes int titleRes, @DimenRes int topPaddingRes) {
         SectionHeaderData sectionHeaderData = new SectionHeaderData(titleRes, topPaddingRes);
         return new BookmarkListEntry(
-                ViewType.SECTION_HEADER, null, sectionHeaderData, /*meta=*/null);
+                ViewType.SECTION_HEADER, null, sectionHeaderData, /* meta= */ null);
     }
 
-    /**
-     * Returns the view type used in the bookmark list UI.
-     */
+    /** Returns the view type used in the bookmark list UI. */
     @ViewType
     int getViewType() {
         return mViewType;
@@ -158,9 +175,7 @@ public final class BookmarkListEntry {
         return mSectionHeaderData;
     }
 
-    /**
-     * Returns the PowerBookmarkMeta for this list entry.
-     */
+    /** Returns the PowerBookmarkMeta for this list entry. */
     @Nullable
     PowerBookmarkMeta getPowerBookmarkMeta() {
         return mPowerBookmarkMeta;

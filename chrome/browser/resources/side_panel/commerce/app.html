@@ -1,7 +1,11 @@
-<style include="cr-hidden-style cr-icons">
+<style include="cr-hidden-style cr-icons sp-shared-style">
   .section {
     flex-direction: column;
     display: flex;
+    padding: 16px;
+  }
+
+  :host-context([chrome-refresh-2023]) .sp-card {
     padding: 16px;
   }
 
@@ -41,8 +45,12 @@
     font-size: 12px;
   }
 
-  .section-details {
+  #titleSection > .section-details {
     margin-top: 8px;
+  }
+
+  #historySection > .section-details {
+    margin-top: 0px;
   }
 
   .panel-subtitle,
@@ -52,17 +60,27 @@
     max-width: 100%;
   }
 
-  #priceRange {
-    overflow: hidden;
+  :host-context([chrome-refresh-2023]) .panel-subtitle {
+    line-height: 16px;
   }
 
-  shopping-insights-history-graph {
+  :host-context([chrome-refresh-2023]) .section-title {
+    font-size: 14px;
+  }
+
+  :host-context([chrome-refresh-2023]) .history-subtitle {
+    line-height: 16px;
     margin-top: 8px;
+  }
+
+  #priceRange {
+    overflow: hidden;
   }
 </style>
 
 <div id="insightsContainer">
-  <div class="section" id="titleSection">
+  <div class="sp-cards-separator"></div>
+  <div class="section sp-card" id="titleSection">
     <h1 class="panel-title">[[productInfo.clusterTitle]]</h1>
     <div id="priceRange" class="panel-subtitle"
         hidden="[[!priceInsightsInfo.typicalLowPrice.length]]">
@@ -77,8 +95,8 @@
     </insights-comment-row>
   </div>
   <template is="dom-if" if="[[priceInsightsInfo.history.length]]" restamp>
-    <div class="divider"></div>
-    <div class="section" id="historySection">
+    <div class="divider sp-cards-separator"></div>
+    <div class="section sp-card" id="historySection">
       <div class="section-title" id="historyTitle">
         [[getHistoryTitle_(priceInsightsInfo)]]
       </div>
@@ -95,8 +113,9 @@
     </div>
   </template>
   <template is="dom-if" if="[[isProductTrackable_]]" restamp>
-    <div class="divider"></div>
-    <price-tracking-section id="priceTrackingSection"
+    <div class="divider sp-cards-separator"></div>
+    <price-tracking-section class="section sp-card"
+        id="priceTrackingSection"
         product-info="[[productInfo]]"
         price-insights-info="[[priceInsightsInfo]]">
     </price-tracking-section>

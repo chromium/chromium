@@ -128,8 +128,6 @@ class HintsFetcherTest : public testing::Test,
     for (const auto& pending_request :
          *test_url_loader_factory_.pending_requests()) {
       EXPECT_EQ(pending_request.request.method, "POST");
-      EXPECT_TRUE(net::GetValueForKeyInQuery(pending_request.request.url, "key",
-                                             &key_value));
       EXPECT_EQ(pending_request.request.request_body->elements()->size(), 1u);
       auto& element =
           pending_request.request.request_body->elements_mutable()->front();

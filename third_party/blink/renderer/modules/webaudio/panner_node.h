@@ -59,13 +59,13 @@ class PannerNode final : public AudioNode {
   void Trace(Visitor*) const override;
 
   // Uses a 3D cartesian coordinate system
-  AudioParam* positionX() const { return position_x_; }
-  AudioParam* positionY() const { return position_y_; }
-  AudioParam* positionZ() const { return position_z_; }
+  AudioParam* positionX() const { return position_x_.Get(); }
+  AudioParam* positionY() const { return position_y_.Get(); }
+  AudioParam* positionZ() const { return position_z_.Get(); }
 
-  AudioParam* orientationX() const { return orientation_x_; }
-  AudioParam* orientationY() const { return orientation_y_; }
-  AudioParam* orientationZ() const { return orientation_z_; }
+  AudioParam* orientationX() const { return orientation_x_.Get(); }
+  AudioParam* orientationY() const { return orientation_y_.Get(); }
+  AudioParam* orientationZ() const { return orientation_z_.Get(); }
 
   String panningModel() const;
   void setPanningModel(const String&);

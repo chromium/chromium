@@ -22,15 +22,16 @@
 #import "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
-#import "ios/chrome/browser/tabs/features.h"
-#import "ios/chrome/browser/tabs/synced_window_delegate_browser_agent.h"
-#import "ios/chrome/browser/tabs/tab_parenting_browser_agent.h"
-#import "ios/chrome/browser/tabs/tab_pickup/tab_pickup_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/features.h"
+#import "ios/chrome/browser/tabs/model/synced_window_delegate_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/tab_parenting_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/tab_pickup_browser_agent.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_center_browser_agent.h"
@@ -41,8 +42,8 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/session_metrics.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 
 // To get access to UseSessionSerializationOptimizations().
@@ -50,7 +51,7 @@
 #import "ios/web/common/features.h"
 
 void AttachBrowserAgents(Browser* browser) {
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
 

@@ -83,6 +83,11 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     /**
      * @type {boolean}
      */
+    this.shouldShowWifiDebugLogsCheckbox;
+
+    /**
+     * @type {boolean}
+     */
     this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox;
 
     /**
@@ -129,6 +134,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
      * @type {string}
      * @protected
      */
+    this.wifiDebugLogsCheckboxLabel_;
+
+    /**
+     * @type {string}
+     * @protected
+     */
     this.linkCrossDeviceDogfoodFeedbackCheckboxLabel_;
 
     /**
@@ -148,6 +159,7 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.setPerformanceTraceCheckboxLabel_();
     this.setAssistantLogsCheckboxLabelAndAttributes_();
     this.setBluetoothLogsCheckboxLabelAndAttributes_();
+    this.setWifiDebugLogsCheckboxLabelAndAttributes_();
     this.setLinkCrossDeviceDogfoodFeedbackCheckboxLabelAndAttributes_();
     this.setAutofillCheckboxLabelAndAttributes_();
     // Set the aria description works the best for screen reader.
@@ -298,6 +310,26 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   /** @protected */
   handleCloseBluetoothDialogClicked_() {
     this.getElement_('#bluetoothDialog').close();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenWifiDebugLogsInfoDialog_(e) {
+    // The default behavior of clicking on an anchor tag
+    // with href="#" is a scroll to the top of the page.
+    // This link opens a dialog, so we want to prevent
+    // this default behavior.
+    e.preventDefault();
+
+    this.getElement_('#wifiDebugLogsDialog').showModal();
+    this.getElement_('#wifiDebugLogsDialogDoneButton').focus();
+  }
+
+  /** @protected */
+  handleCloseWifiDebugLogsDialogClicked_() {
+    this.getElement_('#wifiDebugLogsDialog').close();
   }
 
   /**
@@ -457,6 +489,9 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.feedbackContext.autofillMetadata = '';
     }
 
+    report.sendWifiDebugLogs = this.shouldShowWifiDebugLogsCheckbox &&
+        this.getElement_('#wifiDebugLogsCheckbox').checked;
+
     if (this.getElement_('#performanceTraceCheckbox').checked) {
       report.feedbackContext.traceId = this.feedbackContext.traceId;
     } else {
@@ -503,6 +538,12 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
    */
   isUserLoggedIn_() {
     return this.feedbackContext?.categoryTag !== 'Login';
+  }
+
+  /** @protected */
+  getAttachFilesLabel_() {
+    return this.isUserLoggedIn_() ? this.i18n('attachFilesLabelLoggedIn') :
+                                    this.i18n('attachFilesLabelLoggedOut');
   }
 
   /** @private */
@@ -602,6 +643,19 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     bluetoothLogsLink.setAttribute('href', '#');
     bluetoothLogsLink.addEventListener(
         'click', (e) => void this.handleOpenBluetoothLogsInfoDialog_(e));
+  }
+
+  /** @private */
+  setWifiDebugLogsCheckboxLabelAndAttributes_() {
+    this.wifiDebugLogsCheckboxLabel_ =
+        this.i18nAdvanced('wifiDebugLogsInfo', {attrs: ['id']});
+
+    const wifiDebugLogsLink =
+        this.shadowRoot.querySelector('#wifiDebugLogsInfoLink');
+    // Setting href causes <a> tag to display as link.
+    wifiDebugLogsLink.setAttribute('href', '#');
+    wifiDebugLogsLink.addEventListener(
+        'click', (e) => void this.handleOpenWifiDebugLogsInfoDialog_(e));
   }
 
   /** @private */

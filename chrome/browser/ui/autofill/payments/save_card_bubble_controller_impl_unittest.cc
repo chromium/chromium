@@ -652,7 +652,7 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveWithCvcDialogContent) {
   scoped_feature_list_.InitAndEnableFeature(
       features::kAutofillEnableCvcStorageAndFilling);
 
-  // Show the local card save bubble.
+  // Show the local card save with CVC bubble.
   ShowLocalBubble(
       /*card=*/nullptr,
       /*options=*/AutofillClient::SaveCreditCardOptions()
@@ -665,6 +665,23 @@ TEST_F(SaveCardBubbleControllerImplTest, LocalCardSaveWithCvcDialogContent) {
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             u"To pay faster next time, save your card and encrypted security "
             u"code to your device");
+}
+
+TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveWithCvcDialogContent) {
+  scoped_feature_list_.InitAndEnableFeature(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  // Show the server card save with CVC bubble.
+  ShowUploadBubble(
+      /*options=*/AutofillClient::SaveCreditCardOptions()
+          .with_card_save_type(AutofillClient::CardSaveType::kCardSaveWithCvc)
+          .with_show_prompt(true));
+
+  ASSERT_EQ(BubbleType::UPLOAD_SAVE, controller()->GetBubbleType());
+  ASSERT_NE(nullptr, controller()->GetPaymentBubbleView());
+  EXPECT_EQ(controller()->GetExplanatoryMessage(),
+            u"To pay faster next time, save your card, encrypted security "
+            u"code, and billing address in your Google Account");
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, LocalCvcOnlySaveDialogContent) {
@@ -701,7 +718,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
 }
 
 TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
-  // Show the server card save bubble.
+  // Show the server CVC save bubble.
   ShowUploadBubble(
       /*options=*/AutofillClient::SaveCreditCardOptions()
           .with_card_save_type(AutofillClient::CardSaveType::kCvcSaveOnly)

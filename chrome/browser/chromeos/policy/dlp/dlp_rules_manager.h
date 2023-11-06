@@ -15,9 +15,14 @@
 #include "components/enterprise/data_controls/component.h"
 #include "url/gurl.h"
 
+class Profile;
+
+namespace data_controls {
+class DlpReportingManager;
+}  // namespace data_controls
+
 namespace policy {
 
-class DlpReportingManager;
 class DlpFilesController;
 
 // DlpRulesManager is the CrOS-specific parser for the rules set by the
@@ -51,6 +56,7 @@ class DlpRulesManager : public data_controls::ChromeDlpRulesManager {
   using AggregatedComponents =
       std::map<Level, std::set<data_controls::Component>>;
 
+  explicit DlpRulesManager(Profile* profile);
   ~DlpRulesManager() override = default;
 
   // Returns the enforcement level for `restriction` given that data comes
@@ -82,7 +88,7 @@ class DlpRulesManager : public data_controls::ChromeDlpRulesManager {
   // Returns the reporting manager that is used to report DLPPolicyEvents to the
   // serverside. Should always return a nullptr if reporting is disabled (see
   // IsReportingEnabled).
-  virtual DlpReportingManager* GetReportingManager() const = 0;
+  virtual data_controls::DlpReportingManager* GetReportingManager() const = 0;
 
   // Returns the files controller that is used to perform DLP checks on files.
   // Should always return a nullptr if there are no file restrictions (and thus

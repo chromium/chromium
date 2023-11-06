@@ -36,6 +36,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/controls/textarea/textarea.h"
 
 namespace file_manager {
 namespace {
@@ -81,7 +82,8 @@ class DlpFilesAppBrowserTestBase {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
-        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
+            Profile::FromBrowserContext(context));
     mock_rules_manager_ = dlp_rules_manager.get();
     ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
         .WillByDefault(testing::Return(true));
@@ -352,29 +354,42 @@ class DlpFilesAppBrowserTestBase {
       chromeos::DlpClient::GetFilesSourcesCallback callback) {
     std::move(callback).Run(response);
   }
-
 };
 
-constexpr char kFileTransferConnectorSettingsForDlp[] = R"(
-{
-  "service_provider": "google",
-  "enable": [
-    {
-      "source_destination_list": [
-        {
-          "sources": [{
-            "file_system_type": "%s"
-          }],
-          "destinations": [{
-            "file_system_type": "%s"
-          }]
-        }
-      ],
-      "tags": ["dlp"]
-    }
-  ],
-  "block_until_verdict": %s
-})";
+// Returns a file transfer connectors policy for DLP with the given settings.
+std::string GetFileTransferConnectorsPolicyForDlp(
+    const std::string& source,
+    const std::string& destination,
+    bool report_only,
+    bool require_user_justification) {
+  auto sources = base::Value::List().Append(
+      base::Value::Dict().Set("file_system_type", source));
+
+  auto destinations = base::Value::List().Append(
+      base::Value::Dict().Set("file_system_type", destination));
+
+  auto source_destination_list = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("sources", std::move(sources))
+          .Set("destinations", std::move(destinations)));
+
+  auto enable = base::Value::List().Append(
+      base::Value::Dict()
+          .Set("source_destination_list", std::move(source_destination_list))
+          .Set("tags", base::Value::List().Append("dlp")));
+
+  auto settings = base::Value::Dict();
+  settings.Set("service_provider", "google");
+  settings.Set("enable", std::move(enable));
+  settings.Set("block_until_verdict", report_only ? 0 : 1);
+
+  if (require_user_justification) {
+    settings.Set("require_justification_tags",
+                 base::Value::List().Append("dlp"));
+  }
+
+  return settings.DebugString();
+}
 
 base::TimeDelta kResponseDelay = base::Seconds(0);
 
@@ -501,10 +516,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
                 << " to " << *destination;
       enterprise_connectors::test::SetAnalysisConnector(
           profile->GetPrefs(), enterprise_connectors::FILE_TRANSFER,
-          base::StringPrintf(
-              kFileTransferConnectorSettingsForDlp, source->c_str(),
-              destination->c_str(),
-              options.file_transfer_connector_report_only ? "0" : "1"));
+          GetFileTransferConnectorsPolicyForDlp(
+              *source, *destination,
+              options.file_transfer_connector_report_only,
+              options.bypass_requires_justification));
 
       // Create a FakeFilesRequestHandler that intercepts uploads and fakes
       // responses.
@@ -564,6 +579,10 @@ class FileTransferConnectorFilesAppBrowserTestBase {
     }
     if (name == "getExpectedNumberOfWarnedFilesByConnectors") {
       *output = base::NumberToString(expected_warned_files_.size());
+      return true;
+    }
+    if (name == "doesBypassRequireJustification") {
+      *output = options.bypass_requires_justification ? "true" : "false";
       return true;
     }
     if (name == "setupScanningRunLoop") {
@@ -882,7 +901,8 @@ class FileTransferConnectorFilesAppBrowserTest
     if (name == "verifyFileTransferWarningDialogAndProceed") {
       const std::string* app_id = value.FindString("app_id");
       CHECK_NE(app_id, nullptr);
-      VerifyFileTransferWarningDialogAndProceed(*app_id);
+      VerifyFileTransferWarningDialogAndProceed(
+          *app_id, GetOptions().bypass_requires_justification);
       return true;
     } else {
       return FileTransferConnectorFilesAppBrowserTestBase::
@@ -945,7 +965,9 @@ class FileTransferConnectorFilesAppBrowserTest
     EXPECT_TRUE(widget->IsClosed());
   }
 
-  void VerifyFileTransferWarningDialogAndProceed(const std::string& app_id) {
+  void VerifyFileTransferWarningDialogAndProceed(
+      const std::string& app_id,
+      bool bypass_requires_justification) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     content::WebContents* web_contents = GetWebContentsForId(app_id);
     CHECK_NE(web_contents, nullptr);
@@ -976,9 +998,32 @@ class FileTransferConnectorFilesAppBrowserTest
     EXPECT_THAT(displayed_files,
                 ::testing::UnorderedElementsAreArray(expected_warned_files_));
 
+    policy::FilesPolicyWarnDialog* dialog =
+        static_cast<policy::FilesPolicyWarnDialog*>(
+            widget->widget_delegate()->AsDialogDelegate());
+    ASSERT_TRUE(dialog);
+
+    // Verify that the dialog has a text area where the user can enter a
+    // justification if required.
+    views::Textarea* justification_area =
+        static_cast<views::Textarea*>(widget->GetRootView()->GetViewByID(
+            policy::PolicyDialogBase::
+                kEnterpriseConnectorsJustificationTextareaId));
+    if (bypass_requires_justification) {
+      EXPECT_NE(justification_area, nullptr);
+      EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+      justification_area->InsertText(
+          u"User justification",
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+    } else {
+      EXPECT_EQ(justification_area, nullptr);
+      EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+    }
+
     // Close the dialog.
-    auto* dialog = static_cast<policy::FilesPolicyWarnDialog*>(
-        widget->widget_delegate()->AsDialogDelegate());
     dialog->AcceptDialog();
 
     // Verify that the dialog is closed.
@@ -1067,6 +1112,56 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DLP, /* dlp.js */
     DlpFilesAppBrowserTest,
     ::testing::Values(
+        file_manager::test::TestCase("transferShowDlpToast")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedAndroid")
+            .EnableArcVm()
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedCrostini")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedVm")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedUsb")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedDrive")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("blockShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("warnShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("warnTimeoutShowsPanelItem")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("mixedSummaryDisplayPanel")
+            .EnableDlp()
+            .EnableFilesPolicyNewUX()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsNonDlpRestricted")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("saveAsDlpRestrictedRedirectsToMyFiles")
+            .EnableDlp()
+            .NewDirectoryTree(),
+        file_manager::test::TestCase("openDlpRestrictedFile")
+            .EnableDlp()
+            .NewDirectoryTree(),
+#if !BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
+        file_manager::test::TestCase("openFolderDlpRestricted")
+            .EnableDlp()
+            .NewDirectoryTree(),
+#endif
+        // Section end - browser tests for new directory tree
         file_manager::test::TestCase("transferShowDlpToast").EnableDlp(),
         file_manager::test::TestCase("dlpShowManagedIcon").EnableDlp(),
         file_manager::test::TestCase("dlpContextMenuRestrictionDetails")
@@ -1119,6 +1214,73 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FileTransferConnectorFilesAppBrowserTest,
     ::testing::Values(
         FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromAndroidFilesToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE(
+            "transferConnectorFromAndroidFilesToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromCrostiniToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsDeep")
+            .FileTransferConnectorReportOnlyMode()
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsFlat")
+            .FileTransferConnectorReportOnlyMode()
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveDeep")
+            .FileTransferConnectorReportOnlyMode()
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromDriveToDownloadsMoveFlat")
+            .FileTransferConnectorReportOnlyMode()
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromMtpToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromSmbfsToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsDeep")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE("transferConnectorFromUsbToDownloadsFlat")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepMoveNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatMoveNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX(
+            "transferConnectorFromUsbToDownloadsDeepWarnCancelNewUX")
+            .NewDirectoryTree(),
+        // Section end - browser tests for new directory tree
+        FILE_TRANSFER_TEST_CASE(
             "transferConnectorFromAndroidFilesToDownloadsDeep"),
         FILE_TRANSFER_TEST_CASE(
             "transferConnectorFromAndroidFilesToDownloadsFlat"),
@@ -1154,8 +1316,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             "transferConnectorFromUsbToDownloadsFlatMoveNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsFlatWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("transferConnectorFromUsbToDownloadsFlat"
+                                       "WarnProceedWithJustificationNewUX")
+            .BypassRequiresJustification(),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsDeepWarnProceedNewUX"),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("transferConnectorFromUsbToDownloadsDeep"
+                                       "WarnProceedWithJustificationNewUX")
+            .BypassRequiresJustification(),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
             "transferConnectorFromUsbToDownloadsFlatWarnCancelNewUX"),
         FILE_TRANSFER_TEST_CASE_NEW_UX(
@@ -1165,6 +1333,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     DlpEntrepriseConnectors, /* dlp_enterprise_connectors.js */
     DlpAndEnterpriseConnectorsFilesAppBrowserTest,
     ::testing::Values(
+        FILE_TRANSFER_TEST_CASE_NEW_UX("twoWarningsProceeded")
+            .NewDirectoryTree(),
+        FILE_TRANSFER_TEST_CASE_NEW_UX("differentBlockPolicies")
+            .NewDirectoryTree(),
+        // Section end - browser tests for new directory tree
         FILE_TRANSFER_TEST_CASE_NEW_UX("twoWarningsProceeded"),
         FILE_TRANSFER_TEST_CASE_NEW_UX("differentBlockPolicies")));
 

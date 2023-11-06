@@ -1355,4 +1355,33 @@ TEST_P(VisualRectMappingTest, AnchorPositionScroll) {
                   PhysicalRect(100, 50, 50, 50));
 }
 
+TEST_P(VisualRectMappingTest, IgnoreFilters) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="parent">
+      <div id="filter" style="filter: blur(1px)">
+        <div id="child"></div>
+      </div>
+    </div>
+  )HTML");
+
+  auto* parent = GetLayoutBoxByElementId("parent");
+  auto* filter = GetLayoutBoxByElementId("filter");
+  auto* child = GetLayoutBoxByElementId("child");
+  PhysicalRect input(0, 0, 50, 50);
+  PhysicalRect expected_without_filter = input;
+  PhysicalRect expected_with_filter(-3, -3, 56, 56);
+  CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
+                                      filter, kDefaultVisualRectFlags, true);
+  CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
+                                      filter, kIgnoreFilters, true);
+  CheckMapToVisualRectInAncestorSpace(input, expected_with_filter, child,
+                                      parent, kDefaultVisualRectFlags, true);
+  CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, child,
+                                      parent, kIgnoreFilters, true);
+  CheckMapToVisualRectInAncestorSpace(input, expected_with_filter, filter,
+                                      parent, kDefaultVisualRectFlags, true);
+  CheckMapToVisualRectInAncestorSpace(input, expected_without_filter, filter,
+                                      parent, kIgnoreFilters, true);
+}
+
 }  // namespace blink

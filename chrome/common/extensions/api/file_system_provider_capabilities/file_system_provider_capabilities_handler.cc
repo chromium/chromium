@@ -85,16 +85,16 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
 
   FileSystemProviderSource source = SOURCE_FILE;
   switch (idl_capabilities.source) {
-    case api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_FILE:
+    case api::manifest_types::FileSystemProviderSource::kFile:
       source = SOURCE_FILE;
       break;
-    case api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_DEVICE:
+    case api::manifest_types::FileSystemProviderSource::kDevice:
       source = SOURCE_DEVICE;
       break;
-    case api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_NETWORK:
+    case api::manifest_types::FileSystemProviderSource::kNetwork:
       source = SOURCE_NETWORK;
       break;
-    case api::manifest_types::FILE_SYSTEM_PROVIDER_SOURCE_NONE:
+    case api::manifest_types::FileSystemProviderSource::kNone:
       NOTREACHED();
   }
 

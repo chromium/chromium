@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/features.h"
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "content/public/browser/web_contents.h"
@@ -28,8 +27,6 @@ class GURL;
 class PrefRegistrySimple;
 class Profile;
 
-BASE_DECLARE_FEATURE(kPromptForExternalNewsSchemes);
-
 class ExternalProtocolHandler {
  public:
   enum BlockState {
@@ -46,8 +43,8 @@ class ExternalProtocolHandler {
   enum class BlockStateMetric {
     kDeniedDefault,
     kAllowedDefaultMail,
-    kAllowedDefaultNews,
-    kNewsNotDefault,
+    kAllowedDefaultNews_Deprecated,  // No longer emitted.
+    kNewsNotDefault_Deprecated,      // No longer emitted.
     kAllowedByEnterprisePolicy,
     kAllowedByPreference,
     kPrompt,

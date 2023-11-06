@@ -57,21 +57,22 @@ void SearchResultInlineIconView::SetIcon(const gfx::VectorIcon& icon) {
 
   icon_ = &icon;
 
+  ui::ImageModel icon_model;
   if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
-    icon_image_->SetImage(gfx::CreateVectorIcon(
+    icon_model = ui::ImageModel::FromVectorIcon(
         *icon_, use_modified_styling_
                     ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                    : cros_tokens::kCrosSysOnSurface));
+                    : cros_tokens::kCrosSysOnSurface);
 
     icon_image_->SetBackground(views::CreateThemedRoundedRectBackground(
         use_modified_styling_ ? cros_tokens::kCrosSysSystemPrimaryContainer
                               : cros_tokens::kCrosSysSurface,
         kContentCornerRadius));
   } else {
-    icon_image_->SetImage(
-        gfx::CreateVectorIcon(*icon_, cros_tokens::kCrosSysPrimary));
+    icon_model =
+        ui::ImageModel::FromVectorIcon(*icon_, cros_tokens::kColorProminent);
   }
-
+  icon_image_->SetImage(icon_model);
   icon_image_->SetImageSize(gfx::Size(kIconSize, kIconSize));
   icon_image_->SetVisible(true);
 

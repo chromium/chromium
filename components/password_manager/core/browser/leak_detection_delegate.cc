@@ -28,11 +28,13 @@ namespace {
 
 using Logger = autofill::SavePasswordProgressLogger;
 
-void LogString(PasswordManagerClient* client, Logger::StringID string_id) {
+std::unique_ptr<autofill::SavePasswordProgressLogger> GetLogger(
+    PasswordManagerClient* client) {
   if (client && password_manager_util::IsLoggingActive(client)) {
-    BrowserSavePasswordProgressLogger logger(client->GetLogManager());
-    logger.LogMessage(string_id);
+    return std::make_unique<BrowserSavePasswordProgressLogger>(
+        client->GetLogManager());
   }
+  return nullptr;
 }
 
 }  // namespace
@@ -48,8 +50,10 @@ void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
   if (client_->IsOffTheRecord())
     return;
 
-  if (!CanStartLeakCheck(*client_->GetPrefs(), client_))
+  if (!LeakDetectionCheck::CanStartLeakCheck(*client_->GetPrefs(),
+                                             GetLogger(client_))) {
     return;
+  }
 
   if (credentials.username_value.empty())
     return;
@@ -157,32 +161,6 @@ void LeakDetectionDelegate::OnError(LeakDetectionError error) {
         break;
     }
   }
-}
-
-bool CanStartLeakCheck(const PrefService& prefs,
-                       PasswordManagerClient* client) {
-  const bool is_leak_protection_on =
-      prefs.GetBoolean(password_manager::prefs::kPasswordLeakDetectionEnabled);
-
-  // Leak detection can only start if:
-  // 1. The user has not opted out and Safe Browsing is turned on, or
-  // 2. The user is an enhanced protection user
-  safe_browsing::SafeBrowsingState sb_state =
-      safe_browsing::GetSafeBrowsingState(prefs);
-  switch (sb_state) {
-    case safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING:
-      LogString(client, Logger::STRING_LEAK_DETECTION_DISABLED_SAFE_BROWSING);
-      return false;
-    case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
-      if (!is_leak_protection_on)
-        LogString(client, Logger::STRING_LEAK_DETECTION_DISABLED_FEATURE);
-      return is_leak_protection_on;
-    case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
-      // feature is on.
-      break;
-  }
-
-  return true;
 }
 
 }  // namespace password_manager

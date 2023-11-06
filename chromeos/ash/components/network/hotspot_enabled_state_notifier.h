@@ -33,6 +33,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
       mojo::PendingRemote<hotspot_config::mojom::HotspotEnabledStateObserver>
           observer);
 
+  // HotspotController::Observer:
+  void OnHotspotTurnedOn() override;
+  void OnHotspotTurnedOff(
+      hotspot_config::mojom::DisableReason disable_reason) override;
+
  private:
   friend class HotspotNotifierTest;
   HotspotEnabledStateNotifier(HotspotStateHandler* hotspot_state_handler,
@@ -40,11 +45,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
 
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
-
-  // HotspotController::Observer:
-  void OnHotspotTurnedOn() override;
-  void OnHotspotTurnedOff(
-      hotspot_config::mojom::DisableReason disable_reason) override;
 
   raw_ptr<HotspotController, ExperimentalAsh> hotspot_controller_;
   raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;

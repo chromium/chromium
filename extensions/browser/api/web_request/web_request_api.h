@@ -282,7 +282,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // goes away or the WeakPtr instance bound in the callback is invalidated.
   void UpdateActiveListener(
       content::BrowserContext* browser_context,
-      ExtensionWebRequestEventRouter::ListenerUpdateType update_type,
+      WebRequestEventRouter::ListenerUpdateType update_type,
       const ExtensionId& extension_id,
       const std::string& sub_event_name,
       int worker_thread_id,
@@ -350,13 +350,12 @@ class WebRequestInternalEventHandledFunction
   // Unblocks the network request. Use this function when handling incorrect
   // requests from the extension that cannot be detected by the schema
   // validator.
-  void OnError(
-      const std::string& event_name,
-      const std::string& sub_event_name,
-      uint64_t request_id,
-      int render_process_id,
-      int web_view_instance_id,
-      std::unique_ptr<ExtensionWebRequestEventRouter::EventResponse> response);
+  void OnError(const std::string& event_name,
+               const std::string& sub_event_name,
+               uint64_t request_id,
+               int render_process_id,
+               int web_view_instance_id,
+               std::unique_ptr<WebRequestEventRouter::EventResponse> response);
 
   // ExtensionFunction:
   ResponseAction Run() override;

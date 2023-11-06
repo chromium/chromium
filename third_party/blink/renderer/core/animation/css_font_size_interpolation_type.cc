@@ -112,10 +112,9 @@ InterpolationValue CSSFontSizeInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   DCHECK(state);
 
-  std::unique_ptr<InterpolableValue> result =
-      InterpolableLength::MaybeConvertCSSValue(value);
+  InterpolableValue* result = InterpolableLength::MaybeConvertCSSValue(value);
   if (result)
-    return InterpolationValue(std::move(result));
+    return InterpolationValue(result);
 
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return MaybeConvertKeyword(identifier_value->GetValueID(), *state,

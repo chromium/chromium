@@ -104,7 +104,7 @@ class DomDistillerJsTest : public content::ContentBrowserTest {
 
   void SetUpTestServer() {
     base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
     path = path.AppendASCII(kExternalTestResourcesPath);
     embedded_test_server()->ServeFilesFromDirectory(path);
     ASSERT_TRUE(embedded_test_server()->Start());

@@ -14,6 +14,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -107,6 +108,12 @@ void SupportToolHandler::AddDataCollector(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(collector);
   data_collectors_.emplace_back(std::move(collector));
+}
+
+const std::vector<std::unique_ptr<DataCollector>>&
+SupportToolHandler::GetDataCollectorsForTesting() {
+  CHECK_IS_TEST();
+  return data_collectors_;
 }
 
 void SupportToolHandler::CollectSupportData(

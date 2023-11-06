@@ -5,6 +5,9 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Bindings from 'devtools/models/bindings/bindings.js';
+import * as Platform from 'devtools/core/platform/platform.js';
+
 (async function() {
   TestRunner.addResult(`Tests that styles sidebar pane does not leak any LiveLocations.\n`);
   await TestRunner.showPanel('elements');
@@ -57,7 +60,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
     function compareLiveLocationsCount(next) {
       var liveLocationsCount = countLiveLocations();
       if (liveLocationsCount !== initialLiveLocationsCount)
-        TestRunner.addResult(String.sprintf(
+        TestRunner.addResult(Platform.StringUtilities.sprintf(
             'ERROR: LiveLocations count is growing! Expected: %d found: %d', initialLiveLocationsCount,
             liveLocationsCount));
       else
@@ -68,7 +71,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
   function countLiveLocations() {
     var locationsCount = 0;
-    var modelInfos = Bindings.cssWorkspaceBinding.modelToInfo.values();
+    var modelInfos = Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().modelToInfo.values();
     for (var modelInfo of modelInfos)
       locationsCount += modelInfo.locations.valuesArray().length;
     return locationsCount;

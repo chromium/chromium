@@ -32,10 +32,11 @@ public class ModelListPropertyChangeFilterTest {
     public void testSetProperty() {
         ModelList modelList = new ModelList();
         PropertyModel propertyModel = new PropertyModel(PROPERTY_FOO, PROPERTY_BAR);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel));
 
-        ModelListPropertyChangeFilter propertyObserverFilter = new ModelListPropertyChangeFilter(
-                this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+        ModelListPropertyChangeFilter propertyObserverFilter =
+                new ModelListPropertyChangeFilter(
+                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         propertyModel.set(PROPERTY_BAR, true);
@@ -56,18 +57,19 @@ public class ModelListPropertyChangeFilterTest {
     @Test
     public void testAddRemoveTriggers() {
         ModelList modelList = new ModelList();
-        ModelListPropertyChangeFilter propertyObserverFilter = new ModelListPropertyChangeFilter(
-                this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+        ModelListPropertyChangeFilter propertyObserverFilter =
+                new ModelListPropertyChangeFilter(
+                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         PropertyModel propertyModel = new PropertyModel(PROPERTY_FOO, PROPERTY_BAR);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel));
         Assert.assertEquals(2, mCallbackCounter);
 
         modelList.removeAt(0);
         Assert.assertEquals(3, mCallbackCounter);
 
-        modelList.add(new ListItem(/*type*/ 0, propertyModel));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel));
         Assert.assertEquals(4, mCallbackCounter);
 
         propertyObserverFilter.destroy();
@@ -80,10 +82,11 @@ public class ModelListPropertyChangeFilterTest {
     public void testRemoveStopsObserving() {
         ModelList modelList = new ModelList();
         PropertyModel propertyModel = new PropertyModel(PROPERTY_FOO, PROPERTY_BAR);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel));
 
-        ModelListPropertyChangeFilter propertyObserverFilter = new ModelListPropertyChangeFilter(
-                this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
+        ModelListPropertyChangeFilter propertyObserverFilter =
+                new ModelListPropertyChangeFilter(
+                        this::onPropertyChange, modelList, CollectionUtil.newHashSet(PROPERTY_FOO));
         Assert.assertEquals(1, mCallbackCounter);
 
         modelList.removeAt(0);

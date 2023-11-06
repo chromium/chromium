@@ -4,10 +4,10 @@
 
 #include "ash/glanceables/glanceables_controller.h"
 
+#include "ash/api/tasks/tasks_client.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "ash/system/unified/classroom_bubble_student_view.h"
 #include "ash/system/unified/tasks_combobox_model.h"
@@ -65,7 +65,7 @@ GlanceablesClassroomClient* GlanceablesController::GetClassroomClient() const {
                                          : nullptr;
 }
 
-GlanceablesTasksClient* GlanceablesController::GetTasksClient() const {
+api::TasksClient* GlanceablesController::GetTasksClient() const {
   const auto iter = clients_registry_.find(active_account_id_);
   return iter != clients_registry_.end() ? iter->second.tasks_client.get()
                                          : nullptr;

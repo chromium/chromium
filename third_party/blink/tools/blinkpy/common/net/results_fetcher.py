@@ -52,7 +52,7 @@ class TestResultsFetcher:
     """
 
     _test_id_pattern = re.compile(
-        r'ninja://\S*blink_(web|wpt)_tests/(?P<name>\S+)')
+        r'ninja://\S*(blink|chrome)_(web|wpt)_tests/(?P<name>\S+)')
 
     def __init__(self, web, luci_auth):
         self.web = web
@@ -69,7 +69,7 @@ class TestResultsFetcher:
                        exclude_exonerated: bool = False,
                        only_unexpected: bool = True) -> WebTestResults:
         """Gather all web test results on a given build step from ResultDB."""
-        assert build.build_id, '%s must set a build ID' % build
+        assert build.build_id, f'{build} must set a build ID'
         suite = step_name
         if suite.endswith('(with patch)'):
             suite = suite[:-len('(with patch)')].strip()

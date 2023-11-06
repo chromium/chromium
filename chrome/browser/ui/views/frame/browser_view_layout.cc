@@ -652,12 +652,16 @@ int BrowserViewLayout::LayoutInfoBar(int top) {
     top = (browser_view_ ? browser_view_->y() : 0) +
           immersive_mode_controller_->GetMinimumContentOffset();
   }
-
+  // The content usually starts at the bottom of the infobar. When there is an
+  // extra infobar offset the infobar is shifted down while the content stays.
+  int infobar_top = top;
+  int content_top = infobar_top + infobar_container_->height();
+  infobar_top += delegate_->GetExtraInfobarOffset();
   SetViewVisibility(infobar_container_, IsInfobarVisible());
   infobar_container_->SetBounds(
-      vertical_layout_rect_.x(), top, vertical_layout_rect_.width(),
+      vertical_layout_rect_.x(), infobar_top, vertical_layout_rect_.width(),
       infobar_container_->GetPreferredSize().height());
-  return top + infobar_container_->height();
+  return content_top;
 }
 
 void BrowserViewLayout::LayoutContentsContainerView(int top, int bottom) {
@@ -902,6 +906,5 @@ int BrowserViewLayout::GetMinWebContentsWidth() const {
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {
-  // NOTE: Can't check if the size IsEmpty() since it's always 0-width.
-  return infobar_container_->GetPreferredSize().height() != 0;
+  return !infobar_container_->IsEmpty();
 }

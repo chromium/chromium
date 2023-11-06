@@ -67,7 +67,7 @@ void AudioGraphTracer::DidChangeBaseAudioContext(BaseAudioContext* context) {
 BaseAudioContext* AudioGraphTracer::GetContextById(String contextId) {
   for (const auto& context : contexts_) {
     if (context->Uuid() == contextId) {
-      return context;
+      return context.Get();
     }
   }
 

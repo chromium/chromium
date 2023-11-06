@@ -13,7 +13,7 @@
 #include "base/path_service.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_ui.h"
 #include "chrome/test/base/web_ui_test_data_source.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/settings/chromeos/test_api.test-mojom.h"

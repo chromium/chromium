@@ -23,20 +23,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Unit tests for {@link SiteDataCleaner}.
- */
+/** Unit tests for {@link SiteDataCleaner}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SiteDataCleanerUnitTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mBridgeMock;
+    @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
-    @Mock
-    private BrowserContextHandle mContextHandle;
+    @Mock private BrowserContextHandle mContextHandle;
 
     @Before
     public void setUp() {
@@ -49,12 +44,14 @@ public class SiteDataCleanerUnitTest {
         Website origin1 = new Website(WebsiteAddress.create("https://google.com"), null);
         Website origin2 = new Website(WebsiteAddress.create("mail.google.com"), null);
         Website origin3 = new Website(WebsiteAddress.create("https://docs.google.com"), null);
-        WebsiteGroup group = new WebsiteGroup(
-                "google.com", new ArrayList<>(Arrays.asList(origin1, origin2, origin3)));
+        WebsiteGroup group =
+                new WebsiteGroup(
+                        "google.com", new ArrayList<>(Arrays.asList(origin1, origin2, origin3)));
         final AtomicInteger callbacksReceived = new AtomicInteger(0);
-        final Runnable callback = () -> {
-            callbacksReceived.incrementAndGet();
-        };
+        final Runnable callback =
+                () -> {
+                    callbacksReceived.incrementAndGet();
+                };
         SiteDataCleaner.clearData(mContextHandle, group, callback);
         // Check that the callback was invoked only once.
         Assert.assertEquals(1, callbacksReceived.get());

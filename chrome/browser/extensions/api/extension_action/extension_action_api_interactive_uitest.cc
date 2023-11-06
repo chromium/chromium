@@ -13,6 +13,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
@@ -102,6 +103,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInActiveWindow) {
   EXPECT_TRUE(BrowserHasPopup(browser()));
   ExtensionHost* host = GetPopup(*extension);
   ASSERT_TRUE(host);
+  EXPECT_TRUE(content::WaitForLoadStop(host->host_contents()));
   EXPECT_TRUE(host->has_loaded_once());
   EXPECT_EQ(extension->GetResourceURL("popup.html"),
             host->main_frame_host()->GetLastCommittedURL());
@@ -134,6 +136,7 @@ IN_PROC_BROWSER_TEST_F(ActionAPIInteractiveUITest, OpenPopupInSpecifiedWindow) {
     EXPECT_TRUE(BrowserHasPopup(second_browser));
     ExtensionHost* host = GetPopup(*extension);
     ASSERT_TRUE(host);
+    EXPECT_TRUE(content::WaitForLoadStop(host->host_contents()));
     EXPECT_TRUE(host->has_loaded_once());
     EXPECT_EQ(extension->GetResourceURL("popup.html"),
               host->main_frame_host()->GetLastCommittedURL());

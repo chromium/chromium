@@ -173,8 +173,11 @@ void HTMLPlugInElement::SetFocused(bool focused,
 }
 
 bool HTMLPlugInElement::CanProcessDrag() const {
-  return PluginEmbeddedContentView() &&
-         PluginEmbeddedContentView()->CanProcessDrag();
+  // Be careful to call PluginEmbeddedContentView only once, because calling
+  // it can change things such that another call will return a different
+  // result.
+  WebPluginContainerImpl* plugin = PluginEmbeddedContentView();
+  return plugin && plugin->CanProcessDrag();
 }
 
 bool HTMLPlugInElement::CanStartSelection() const {
@@ -390,6 +393,9 @@ v8::Local<v8::Object> HTMLPlugInElement::PluginWrapper() {
   if (plugin_wrapper_.IsEmpty()) {
     WebPluginContainerImpl* plugin;
 
+    // Be careful to call PluginEmbeddedContentView only once, because calling
+    // it can change things such that another call will return a different
+    // result.
     if (persisted_plugin_)
       plugin = persisted_plugin_;
     else
@@ -615,10 +621,11 @@ bool HTMLPlugInElement::IsPluginElement() const {
 }
 
 bool HTMLPlugInElement::IsErrorplaceholder() {
-  if (PluginEmbeddedContentView() &&
-      PluginEmbeddedContentView()->IsErrorplaceholder())
-    return true;
-  return false;
+  // Be careful to call PluginEmbeddedContentView only once, because calling
+  // it can change things such that another call will return a different
+  // result.
+  WebPluginContainerImpl* plugin = PluginEmbeddedContentView();
+  return plugin && plugin->IsErrorplaceholder();
 }
 
 void HTMLPlugInElement::DisconnectContentFrame() {

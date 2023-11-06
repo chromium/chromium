@@ -40,9 +40,8 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
- * This test class checks cookie leakage between all different
- * pairs of Activity types with a constraint that one of the
- * interacting activity must be either Incognito Tab or Incognito CCT.
+ * This test class checks cookie leakage between all different pairs of Activity types with a
+ * constraint that one of the interacting activity must be either Incognito Tab or Incognito CCT.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
@@ -62,8 +61,9 @@ public class IncognitoCookieLeakageTest {
 
     @Before
     public void setUp() throws TimeoutException {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mCookiesTestPage = mTestServer.getURL(COOKIES_SETTING_PATH);
     }
 
@@ -83,8 +83,9 @@ public class IncognitoCookieLeakageTest {
     private void assertCookies(Tab tab, String expected) throws TimeoutException {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(tab.getWebContents(), Matchers.notNullValue()));
-        String actual = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab.getWebContents(), "getCookie()");
+        String actual =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), "getCookie()");
         if (actual.equalsIgnoreCase("null")) actual = "\"\"";
         assertEquals(expected, actual);
     }
@@ -109,18 +110,19 @@ public class IncognitoCookieLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(TestParams.IncognitoToIncognito.class)
-    public void
-    testCookiesDoNotLeakFromIncognitoToIncognito(
+    public void testCookiesDoNotLeakFromIncognitoToIncognito(
             String incognitoActivityType1, String incognitoActivityType2) throws TimeoutException {
         ActivityType incognitoActivity1 = ActivityType.valueOf(incognitoActivityType1);
         ActivityType incognitoActivity2 = ActivityType.valueOf(incognitoActivityType2);
 
-        Tab setter_tab = incognitoActivity1.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
+        Tab setter_tab =
+                incognitoActivity1.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
         setCookies(setter_tab);
 
-        Tab getter_tab = incognitoActivity2.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
+        Tab getter_tab =
+                incognitoActivity2.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
 
         String expected = "\"\"";
 
@@ -132,18 +134,19 @@ public class IncognitoCookieLeakageTest {
     @Test
     @LargeTest
     @UseMethodParameter(IsolatedFlowsParams.class)
-    public void
-    testCookiesDoNotLeakBetweenRegularAndIncognito(
+    public void testCookiesDoNotLeakBetweenRegularAndIncognito(
             String setterActivityType, String getterActivityType) throws TimeoutException {
         ActivityType setterActivity = ActivityType.valueOf(setterActivityType);
         ActivityType getterActivity = ActivityType.valueOf(getterActivityType);
 
-        Tab setter_tab = setterActivity.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
+        Tab setter_tab =
+                setterActivity.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
         setCookies(setter_tab);
 
-        Tab getter_tab = getterActivity.launchUrl(
-                mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
+        Tab getter_tab =
+                getterActivity.launchUrl(
+                        mChromeActivityTestRule, mCustomTabActivityTestRule, mCookiesTestPage);
 
         assertCookies(getter_tab, "\"\"");
     }

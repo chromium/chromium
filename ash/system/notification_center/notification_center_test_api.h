@@ -9,11 +9,9 @@
 #include <string>
 
 #include "ash/system/unified/notification_icons_controller.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/public/cpp/notification.h"
-#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
 class GURL;
@@ -46,15 +44,14 @@ class NotificationCounterView;
 // Utility class to facilitate easier testing of the notification center.
 class NotificationCenterTestApi {
  public:
-  explicit NotificationCenterTestApi(NotificationCenterTray* tray);
+  NotificationCenterTestApi();
   NotificationCenterTestApi(const NotificationCenterTestApi&) = delete;
   NotificationCenterTestApi& operator=(const NotificationCenterTestApi&) =
       delete;
   ~NotificationCenterTestApi() = default;
 
-  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
-  // (depending on whether QsRevamp is disabled or enabled, respectively) by
-  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // Toggles the `NotificationCenterBubble` by
+  // simulating a click on the `NotificationCenterTray`
   // on the primary display. Note: This API does not wait for any tray
   // animations to finish before clicking on the tray - that responsibility is
   // left to the caller (this becomes relevant, for instance, when the tray's
@@ -62,9 +59,8 @@ class NotificationCenterTestApi {
   // animation).
   void ToggleBubble();
 
-  // Toggles the `UnifiedMessageCenterBubble` or `NotificationCenterBubble`
-  // (depending on whether QsRevamp is disabled or enabled, respectively) by
-  // simulating a click on the `UnifiedSystemTray` or `NotificationCenterTray`
+  // Toggles the `NotificationCenterBubble` by
+  // simulating a click on the `NotificationCenterTray`
   // on the specified display. Note: This API does not wait for any tray
   // animations to finish before clicking on the tray - that responsibility is
   // left to the caller (this becomes relevant, for instance, when the tray's
@@ -104,6 +100,13 @@ class NotificationCenterTestApi {
 
   // Adds a progress notification and returns the associated id.
   std::string AddProgressNotification();
+
+  // Adds a notification that should have the settings control button visible
+  // and returns its id.
+  std::string AddNotificationWithSettingsButton();
+
+  // Adds a notification with priority `LOW_PRIORITY` and returns its id.
+  std::string AddLowPriorityNotification();
 
   // Removes the notification associated with the provided id.
   void RemoveNotification(const std::string& id);
@@ -196,13 +199,11 @@ class NotificationCenterTestApi {
   // nullptr otherwise.
   message_center::MessagePopupView* GetPopupViewForId(const std::string& id);
 
-  // Returns the `NotificationCenterTray` for the primary display, or nullptr if
-  // QS revamp is not enabled.
+  // Returns the `NotificationCenterTray` for the primary display.
   NotificationCenterTray* GetTray();
 
   // Returns the `NotificationCenterTray` associated with the display having an
-  // id of `display_id`, or nullptr if there is no display with that id. Also
-  // returns nullptr if QS revamp is not enabled.
+  // id of `display_id`, or nullptr if there is no display with that id.
   NotificationCenterTray* GetTrayOnDisplay(int64_t display_id);
 
   // Returns the widget that owns the `TrayBubbleView` for the notification
@@ -238,7 +239,7 @@ class NotificationCenterTestApi {
   std::string NotificationIdToParentNotificationId(const std::string& id);
 
   // Returns the notification center tray's focus ring.
-  views::FocusRing* GetFocusRing() const;
+  views::FocusRing* GetFocusRing();
 
   // Focuses the notification center tray.
   void FocusTray();
@@ -258,9 +259,13 @@ class NotificationCenterTestApi {
       const message_center::NotifierId& notifier_id,
       const message_center::RichNotificationData& optional_fields);
 
+  // Creates and returns a `NOTIFICATION_TYPE_SIMPLE` notification with mostly
+  // default parameters. The notification's id is obtained via
+  // `GenerateNotificationId()`, and the title and description are "test_title"
+  // and "test_message", respectively.
+  std::unique_ptr<message_center::Notification> CreateSimpleNotification();
+
   int notification_id_ = 0;
-  const raw_ptr<NotificationCenterTray, DanglingUntriaged | ExperimentalAsh>
-      notification_center_tray_;
 
   const int64_t primary_display_id_;
 };

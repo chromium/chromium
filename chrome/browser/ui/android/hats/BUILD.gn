@@ -25,6 +25,7 @@ android_library_factory("factory_java") {
   deps = [
     ":java",
     "//base:base_java",
+    "//chrome/browser/profiles/android:java",
   ]
 
   # This internal file will be replaced by a generated file so the resulting

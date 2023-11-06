@@ -7,6 +7,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
+import("//components/compose/features.gni")
 import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
@@ -92,6 +93,7 @@ chrome_grit_defines = [
   "enable_arcore=$enable_arcore",
   "enable_gvr_services=$enable_gvr_services",
   "enable_cardboard=$enable_cardboard",
+  "enable_compose=$enable_compose",
   "enable_openxr=$enable_openxr",
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",

@@ -23,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -5525,3 +5526,36 @@ TEST_F(DiskCacheBackendTest, BlockfileEmptyIndex) {
   ASSERT_TRUE(rv.backend);
 }
 #endif
+
+// See https://crbug.com/1486958
+TEST_F(DiskCacheBackendTest, SimpleDoomIter) {
+  const int kEntries = 1000;
+
+  SetSimpleCacheMode();
+  // Note: this test relies on InitCache() making sure the index is ready.
+  InitCache();
+
+  // We create a whole bunch of entries so that deleting them will hopefully
+  // finish after the iteration, in order to reproduce timing for the bug.
+  for (int i = 0; i < kEntries; ++i) {
+    disk_cache::Entry* entry = nullptr;
+    ASSERT_THAT(CreateEntry(base::NumberToString(i), &entry), IsOk());
+    entry->Close();
+  }
+  RunUntilIdle();  // Make sure close completes.
+
+  auto iterator = cache_->CreateIterator();
+  base::RunLoop run_loop;
+
+  disk_cache::EntryResult result = iterator->OpenNextEntry(
+      base::BindLambdaForTesting([&](disk_cache::EntryResult result) {
+        ASSERT_EQ(result.net_error(), net::OK);
+        disk_cache::Entry* entry = result.ReleaseEntry();
+        entry->Doom();
+        entry->Close();
+        run_loop.Quit();
+      }));
+  ASSERT_EQ(result.net_error(), net::ERR_IO_PENDING);
+  cache_->DoomAllEntries(base::DoNothing());
+  run_loop.Run();
+}

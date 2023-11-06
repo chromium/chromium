@@ -43,6 +43,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -1582,9 +1583,8 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
   // guarded by USE_VAAPI_X11. For example, if USE_VAAPI_X11 is true, but the
   // user chooses the Wayland backend for Ozone at runtime, then many things (if
   // not all) that we do for X11 won't apply.
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_vaapi) {
+  auto* ozone = ui::OzonePlatform::GetInstance();
+  if (!ozone || !ozone->GetPlatformProperties().supports_vaapi) {
     return {};
   }
 #endif
@@ -1768,12 +1768,10 @@ std::vector<SVCScalabilityMode> VaapiWrapper::GetSupportedScalabilityModes(
     if (GetDefaultVaEntryPoint(
             VaapiWrapper::kEncodeConstantQuantizationParameter, va_profile) ==
         VAEntrypointEncSliceLP) {
-      if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding)) {
-        scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
-        scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
-        scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);
-        scalability_modes.push_back(SVCScalabilityMode::kL3T3Key);
-      }
+      scalability_modes.push_back(SVCScalabilityMode::kL2T2Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL2T3Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL3T2Key);
+      scalability_modes.push_back(SVCScalabilityMode::kL3T3Key);
       if (base::FeatureList::IsEnabled(kVaapiVp9SModeHWEncoding)) {
         scalability_modes.push_back(SVCScalabilityMode::kS2T1);
         scalability_modes.push_back(SVCScalabilityMode::kS2T2);

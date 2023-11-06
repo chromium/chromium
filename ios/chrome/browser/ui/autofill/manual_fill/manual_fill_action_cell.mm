@@ -75,18 +75,14 @@
     [self createView];
   }
 
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration = self.titleButton.configuration;
-    DCHECK(buttonConfiguration);
-    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSAttributedString* attributedTitleString =
-        [[NSAttributedString alloc] initWithString:title attributes:attributes];
-    buttonConfiguration.attributedTitle = attributedTitleString;
-    self.titleButton.configuration = buttonConfiguration;
-  } else {
-    [self.titleButton setTitle:title forState:UIControlStateNormal];
-  }
+  UIButtonConfiguration* buttonConfiguration = self.titleButton.configuration;
+  DCHECK(buttonConfiguration);
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* attributedTitleString =
+      [[NSAttributedString alloc] initWithString:title attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedTitleString;
+  self.titleButton.configuration = buttonConfiguration;
   self.titleButton.accessibilityIdentifier = accessibilityID;
   self.action = action;
 }

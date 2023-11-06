@@ -32,6 +32,14 @@ class PageDelegate {
 
   // Called when `page` becomes primary in its FrameTree.
   virtual void NotifyPageBecamePrimary(PageImpl& page) = 0;
+
+  // Tells if `page` should be handled as in preview mode.
+  virtual bool IsInPreviewMode() const = 0;
+
+  // Notify the page uses a forbidden powerful API and cannot be shown in
+  // preview mode.
+  virtual void CancelPreviewByMojoBinderPolicy(
+      const std::string& interface_name) = 0;
 };
 
 }  // namespace content

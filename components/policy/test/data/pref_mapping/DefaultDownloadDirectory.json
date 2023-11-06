@@ -1,0 +1,50 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultDownloadDirectory": "${user_home}/test-downloads"
+        },
+        "prefs": {
+          "download.default_directory": {
+            "check_for_mandatory": false,
+            "check_for_recommended": true,
+            "value": "${user_home}/test-downloads"
+          },
+          "savefile.default_directory": {
+            "check_for_mandatory": false,
+            "check_for_recommended": true,
+            "value": "${user_home}/test-downloads"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultDownloadDirectory": "${user_home}/test-downloads",
+          "DownloadDirectory": "${user_home}/test-downloads-1"
+        },
+        "prefs": {
+          "download.default_directory": {
+            "check_for_mandatory": true,
+            "check_for_recommended": false,
+            "value": "${user_home}/test-downloads-1"
+          },
+          "savefile.default_directory": {
+            "check_for_mandatory": false,
+            "check_for_recommended": true,
+            "value": "${user_home}/test-downloads"
+          }
+        }
+      }
+    ]
+  }
+]

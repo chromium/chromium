@@ -18,7 +18,6 @@
 #include "chromeos/ash/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom-forward.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
-#include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -44,8 +43,6 @@ class LibassistantServiceTester {
 
   AssistantClient& assistant_client();
   chromeos::assistant::FakeAssistantManager& assistant_manager();
-  chromeos::assistant::FakeAssistantManagerInternal&
-  assistant_manager_internal();
 
   mojom::AudioInputController& audio_input_controller() {
     return *audio_input_controller_.get();

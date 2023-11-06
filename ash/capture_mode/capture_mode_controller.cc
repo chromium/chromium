@@ -11,6 +11,7 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_observer.h"
 #include "ash/capture_mode/capture_mode_session.h"
@@ -19,6 +20,7 @@
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/public/cpp/capture_mode/recording_overlay_view.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
@@ -472,6 +474,10 @@ CaptureModeController::CaptureModeController(
           &CaptureModeController::RecordAndResetConsecutiveScreenshots) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
+
+  if (features::IsCaptureModeEducationEnabled()) {
+    education_controller_ = std::make_unique<CaptureModeEducationController>();
+  }
 
   // Schedule recording of the number of screenshots taken per day.
   num_screenshots_taken_in_last_day_scheduler_.Start(
@@ -1722,12 +1728,14 @@ base::FilePath CaptureModeController::BuildImagePathForDisplay(
 base::FilePath CaptureModeController::BuildPathNoExtension(
     const char* const format_string,
     base::Time timestamp) const {
-  return GetCurrentCaptureFolder().path.AppendASCII(base::StringPrintf(
-      format_string,
-      base::UnlocalizedTimeFormatWithPattern(timestamp, "y-MM-dd").c_str(),
-      base::UnlocalizedTimeFormatWithPattern(
-          timestamp, delegate_->Uses24HourFormat() ? "HH.mm.ss" : "h.mm.ss a")
-          .c_str()));
+  return GetCurrentCaptureFolder().path.AppendASCII(
+      base::StringPrintfNonConstexpr(
+          format_string,
+          base::UnlocalizedTimeFormatWithPattern(timestamp, "y-MM-dd").c_str(),
+          base::UnlocalizedTimeFormatWithPattern(
+              timestamp,
+              delegate_->Uses24HourFormat() ? "HH.mm.ss" : "h.mm.ss a")
+              .c_str()));
 }
 
 base::FilePath CaptureModeController::GetFallbackFilePathFromFile(

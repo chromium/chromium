@@ -48,9 +48,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.io.IOException;
 
-/**
- * Render tests for {@link StatusView}.
- */
+/** Render tests for {@link StatusView}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
@@ -60,13 +58,10 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_OMNIBOX)
                     .build();
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    SearchEngineLogoUtils mSearchEngineLogoUtils;
+    @Mock SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
@@ -79,44 +74,54 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
 
         doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
 
-        runOnUiThreadBlocking(() -> {
-            ViewGroup view = new LinearLayout(getActivity());
+        runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup view = new LinearLayout(getActivity());
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
 
-            getActivity().setContentView(view, params);
+                    getActivity().setContentView(view, params);
 
-            mStatusView = getActivity()
-                                  .getLayoutInflater()
-                                  .inflate(R.layout.location_status, view, true)
-                                  .findViewById(R.id.location_bar_status);
-            mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            // clang-format off
-            mLocationBarModel = new LocationBarModel(mStatusView.getContext(),
-                    NewTabPageDelegate.EMPTY, url -> url.getSpec(), window -> null,
-                    ToolbarUnitTestUtils.OFFLINE_STATUS, mSearchEngineLogoUtils);
-            // clang-format on
-            mLocationBarModel.setTab(null, /*  incognito= */ false);
-            mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
-            PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
+                    mStatusView =
+                            getActivity()
+                                    .getLayoutInflater()
+                                    .inflate(R.layout.location_status, view, true)
+                                    .findViewById(R.id.location_bar_status);
+                    mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
+                    mLocationBarModel =
+                            new LocationBarModel(
+                                    mStatusView.getContext(),
+                                    NewTabPageDelegate.EMPTY,
+                                    url -> url.getSpec(),
+                                    window -> null,
+                                    ToolbarUnitTestUtils.OFFLINE_STATUS,
+                                    mSearchEngineLogoUtils);
+                    mLocationBarModel.setTab(null, /* incognito= */ false);
+                    mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
+                    PropertyModelChangeProcessor.create(
+                            mStatusModel, mStatusView, new StatusViewBinder());
 
-            // Increases visibility for manual parsing of diffs. Status view matches the parent
-            // height, so this white will stretch vertically.
-            mStatusView.setBackgroundColor(Color.WHITE);
-        });
+                    // Increases visibility for manual parsing of diffs. Status view matches the
+                    // parent height, so this white will stretch vertically.
+                    mStatusView.setBackgroundColor(Color.WHITE);
+                });
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoWithIcon() throws IOException {
-        runOnUiThreadBlocking(() -> {
-            mLocationBarModel.setTab(null, /*  incognito= */ true);
-            mStatusView.setIncognitoBadgeVisibility(true);
-            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
-                    new StatusIconResource(R.drawable.ic_search, 0));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mLocationBarModel.setTab(null, /* incognito= */ true);
+                    mStatusView.setIncognitoBadgeVisibility(true);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_ICON_RESOURCE,
+                            new StatusIconResource(R.drawable.ic_search, 0));
+                });
         mRenderTestRule.render(mStatusView, "status_view_incognito_with_icon");
     }
 
@@ -124,11 +129,12 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewIncognitoNoIcon() throws IOException {
-        runOnUiThreadBlocking(() -> {
-            mLocationBarModel.setTab(null, /*  incognito= */ true);
-            mStatusView.setIncognitoBadgeVisibility(true);
-            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mLocationBarModel.setTab(null, /* incognito= */ true);
+                    mStatusView.setIncognitoBadgeVisibility(true);
+                    mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
+                });
         mRenderTestRule.render(mStatusView, "status_view_incognito_no_icon");
     }
 
@@ -136,12 +142,14 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewWithIcon() throws IOException {
-        runOnUiThreadBlocking(() -> {
-            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
-                    new StatusIconResource(R.drawable.ic_search, 0));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+                    mStatusModel.set(
+                            StatusProperties.STATUS_ICON_RESOURCE,
+                            new StatusIconResource(R.drawable.ic_search, 0));
+                });
         mRenderTestRule.render(mStatusView, "status_view_with_icon");
     }
 
@@ -149,16 +157,21 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewWithLocationPermissionIcon() throws IOException {
-        runOnUiThreadBlocking(() -> {
-            Drawable locationIcon =
-                    ContentSettingsResources.getIconForOmnibox(mStatusView.getContext(),
-                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW, false);
-            PermissionIconResource statusIcon = new PermissionIconResource(locationIcon, false);
-            statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
-            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    Drawable locationIcon =
+                            ContentSettingsResources.getIconForOmnibox(
+                                    mStatusView.getContext(),
+                                    ContentSettingsType.GEOLOCATION,
+                                    ContentSettingValues.ALLOW,
+                                    false);
+                    PermissionIconResource statusIcon =
+                            new PermissionIconResource(locationIcon, false);
+                    statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
+                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+                    mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
+                });
         mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
     }
 
@@ -166,15 +179,20 @@ public class StatusViewRenderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testStatusViewWithStoreIcon() throws IOException {
-        runOnUiThreadBlocking(() -> {
-            Drawable storeIconDrawable = ResourcesCompat.getDrawable(getActivity().getResources(),
-                    R.drawable.ic_storefront_blue, getActivity().getTheme());
-            StatusIconResource statusIcon = new PermissionIconResource(storeIconDrawable, false);
-            statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
-            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
-            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    Drawable storeIconDrawable =
+                            ResourcesCompat.getDrawable(
+                                    getActivity().getResources(),
+                                    R.drawable.ic_storefront_blue,
+                                    getActivity().getTheme());
+                    StatusIconResource statusIcon =
+                            new PermissionIconResource(storeIconDrawable, false);
+                    statusIcon.setTransitionType(StatusView.IconTransitionType.ROTATE);
+                    mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+                    mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+                    mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
+                });
         mRenderTestRule.render(mStatusView, "status_view_with_store_icon");
     }
 }

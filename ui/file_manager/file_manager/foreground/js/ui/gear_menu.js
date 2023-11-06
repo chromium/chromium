@@ -6,7 +6,9 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {str, strf, util} from '../../../common/js/util.js';
+import {bytesToString, str, strf} from '../../../common/js/translations.js';
+
+import {MenuItem} from './menu_item.js';
 
 /**
  * Selector used by tast tests to identify when the storage meter is empty.
@@ -16,6 +18,7 @@ const tastEmptySpaceId = 'tast-storage-meter-empty';
 /**
  * @typedef {{totalSize: number, usedSize: number, warningMessage: string}}
  */
+// @ts-ignore: error TS7005: Variable 'SpaceInfo' implicitly has an 'any' type.
 export let SpaceInfo;
 
 export class GearMenu {
@@ -24,10 +27,10 @@ export class GearMenu {
    */
   constructor(element) {
     /**
-     * @type {!HTMLMenuItemElement}
+     * @type {!MenuItem}
      * @const
      */
-    this.syncButton = /** @type {!HTMLMenuItemElement} */
+    this.syncButton = /** @type {!MenuItem} */
         (queryRequiredElement('#gear-menu-drive-sync-settings', element));
 
     /**
@@ -89,6 +92,8 @@ export class GearMenu {
      * @type {Promise<SpaceInfo|undefined>}
      * @private
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'Promise<SpaceInfo | undefined>'.
     this.spaceInfoPromise_ = null;
 
     // Initialize attributes.
@@ -155,12 +160,11 @@ export class GearMenu {
             this.volumeSpaceOuterBar_.hidden = false;
 
             this.volumeSpaceInfoLabel_.textContent = strf(
-                'SPACE_AVAILABLE',
-                util.bytesToString(Math.max(0, remainingSize)));
+                'SPACE_AVAILABLE', bytesToString(Math.max(0, remainingSize)));
           } else {
             // User has unlimited individual storage.
             this.volumeSpaceInfoLabel_.textContent =
-                strf('SPACE_USED', util.bytesToString(spaceInfo.usedSize));
+                strf('SPACE_USED', bytesToString(spaceInfo.usedSize));
           }
 
           if (spaceInfo.warningMessage) {

@@ -37,6 +37,7 @@
         "responses": [
           {
             "url": "https://another-reporter.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",

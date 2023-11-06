@@ -153,9 +153,8 @@ try_.orchestrator_builder(
     compilator = "fuchsia-x64-cast-receiver-rel-compilator",
     coverage_test_types = ["unit", "overall"],
     experiments = {
-        "enable_weetbix_queries": 100,
-        "weetbix.retry_weak_exonerations": 100,
-        "weetbix.enable_weetbix_exonerations": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),

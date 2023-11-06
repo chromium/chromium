@@ -67,7 +67,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*socket_performance_watcher_factory=*/nullptr,
             /*network_quality_estimator=*/nullptr,
             NetLog::Get(),
-            /*websocket_endpoint_lock_manager=*/nullptr) {}
+            /*websocket_endpoint_lock_manager=*/nullptr,
+            /*http_server_properties=*/nullptr) {}
 
   ~TransportConnectJobTest() override = default;
 

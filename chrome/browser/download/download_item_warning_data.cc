@@ -127,10 +127,9 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
   }
   int64_t action_latency =
       (base::Time::Now() - data->warning_first_shown_time_).InMilliseconds();
-  bool is_terminal_action =
-      (action == WarningAction::PROCEED || action == WarningAction::DISCARD)
-          ? true
-          : false;
+  bool is_terminal_action = action == WarningAction::PROCEED ||
+                            action == WarningAction::DISCARD ||
+                            action == WarningAction::PROCEED_DEEP_SCAN;
   DCHECK_NE(WarningAction::SHOWN, action);
   data->action_events_.emplace_back(surface, action, action_latency,
                                     is_terminal_action);
@@ -141,7 +140,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
 
 // static
 bool DownloadItemWarningData::IsEncryptedArchive(
-    download::DownloadItem* download) {
+    const download::DownloadItem* download) {
   return GetWithDefault(download,
                         &DownloadItemWarningData::is_encrypted_archive_, false);
 }
@@ -159,7 +158,7 @@ void DownloadItemWarningData::SetIsEncryptedArchive(
 
 // static
 bool DownloadItemWarningData::HasIncorrectPassword(
-    download::DownloadItem* download) {
+    const download::DownloadItem* download) {
   return GetWithDefault(
       download, &DownloadItemWarningData::has_incorrect_password_, false);
 }
@@ -234,10 +233,51 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
     case DownloadItemWarningData::WarningAction::SHOWN:
       NOTREACHED();
       break;
+    case DownloadItemWarningData::WarningAction::PROCEED_DEEP_SCAN:
+      action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
+                            PROCEED_DEEP_SCAN);
+      break;
   }
   action.set_is_terminal_action(event.is_terminal_action);
   action.set_interval_msec(event.action_latency_msec);
   return action;
+}
+
+// static
+bool DownloadItemWarningData::HasShownLocalDecryptionPrompt(
+    const download::DownloadItem* download) {
+  return GetWithDefault(
+      download, &DownloadItemWarningData::has_shown_local_decryption_prompt_,
+      false);
+}
+
+// static
+void DownloadItemWarningData::SetHasShownLocalDecryptionPrompt(
+    download::DownloadItem* download,
+    bool has_shown) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->has_shown_local_decryption_prompt_ = has_shown;
+}
+
+// static
+bool DownloadItemWarningData::IsFullyExtractedArchive(
+    const download::DownloadItem* download) {
+  return GetWithDefault(
+      download, &DownloadItemWarningData::fully_extracted_archive_, false);
+}
+
+// static
+void DownloadItemWarningData::SetIsFullyExtractedArchive(
+    download::DownloadItem* download,
+    bool extracted) {
+  if (!download) {
+    return;
+  }
+
+  GetOrCreate(download)->fully_extracted_archive_ = extracted;
 }
 
 DownloadItemWarningData::DownloadItemWarningData() = default;

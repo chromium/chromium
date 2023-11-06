@@ -4,6 +4,8 @@
 
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "components/undo/bookmark_undo_service.h"
 
@@ -25,9 +27,10 @@ std::string BookmarkSyncService::EncodeBookmarkSyncMetadata() {
 void BookmarkSyncService::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure,
-    bookmarks::BookmarkModel* model) {
-  bookmark_model_type_processor_.ModelReadyToSync(metadata_str,
-                                                  schedule_save_closure, model);
+    std::unique_ptr<sync_bookmarks::BookmarkModelView> model) {
+  bookmark_model_view_ = std::move(model);
+  bookmark_model_type_processor_.ModelReadyToSync(
+      metadata_str, schedule_save_closure, bookmark_model_view_.get());
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
@@ -40,6 +43,10 @@ BookmarkSyncService::GetBookmarkSyncControllerDelegate(
 
 bool BookmarkSyncService::IsTrackingMetadata() const {
   return bookmark_model_type_processor_.IsTrackingMetadata();
+}
+
+sync_bookmarks::BookmarkModelView* BookmarkSyncService::bookmark_model_view() {
+  return bookmark_model_view_.get();
 }
 
 void BookmarkSyncService::SetBookmarksLimitForTesting(size_t limit) {

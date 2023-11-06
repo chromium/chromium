@@ -8,9 +8,10 @@ import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.MessagePayload;
 import org.chromium.content_public.browser.MessagePort;
 
@@ -28,12 +29,23 @@ public class WebMessageListenerHolder {
     }
 
     @CalledByNative
-    public void onPostMessage(MessagePayload payload, String sourceOrigin, boolean isMainFrame,
-            MessagePort[] ports, JsReplyProxy replyProxy) {
-        AwThreadUtils.postToCurrentLooper(() -> {
-            mListener.onPostMessage(
-                    payload, Uri.parse(sourceOrigin), isMainFrame, replyProxy, ports);
-        });
+    public void onPostMessage(
+            MessagePayload payload,
+            String topLevelOrigin,
+            String sourceOrigin,
+            boolean isMainFrame,
+            MessagePort[] ports,
+            JsReplyProxy replyProxy) {
+        AwThreadUtils.postToCurrentLooper(
+                () -> {
+                    mListener.onPostMessage(
+                            payload,
+                            Uri.parse(topLevelOrigin),
+                            Uri.parse(sourceOrigin),
+                            isMainFrame,
+                            replyProxy,
+                            ports);
+                });
     }
 
     public WebMessageListener getListener() {

@@ -146,14 +146,9 @@ class BrowsingDataRemover {
   // information.
   static constexpr DataType DATA_TYPE_INTEREST_GROUPS_INTERNAL = 1 << 23;
 
-  // Web Environment Integrity
-  // (https://github.com/RupertBenWiser/Web-Environment-Integrity/blob/main/explainer.md)
-  // persistent storage.
-  static constexpr DataType DATA_TYPE_ENVIRONMENT_INTEGRITY = 1 << 24;
-
   // Embedders can add more datatypes beyond this point.
   static constexpr DataType DATA_TYPE_CONTENT_END =
-      DATA_TYPE_ENVIRONMENT_INTEGRITY;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 
   // All data stored by the Attribution Reporting API.
   static constexpr DataType DATA_TYPE_ATTRIBUTION_REPORTING =
@@ -165,7 +160,7 @@ class BrowsingDataRemover {
       DATA_TYPE_TRUST_TOKENS | DATA_TYPE_ATTRIBUTION_REPORTING |
       DATA_TYPE_AGGREGATION_SERVICE | DATA_TYPE_INTEREST_GROUPS |
       DATA_TYPE_SHARED_STORAGE | DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL |
-      DATA_TYPE_INTEREST_GROUPS_INTERNAL | DATA_TYPE_ENVIRONMENT_INTEGRITY;
+      DATA_TYPE_INTEREST_GROUPS_INTERNAL;
 
   // Internal data stored by APIs in the Privacy Sandbox, e.g. privacy budgeting
   // information.

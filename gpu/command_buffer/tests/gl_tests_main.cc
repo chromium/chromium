@@ -19,11 +19,23 @@
 #include "base/apple/scoped_nsautorelease_pool.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/gfx/linux/gbm_util.h"  // nogncheck
+#endif
+
 namespace {
 
 class GlTestsSuite : public base::TestSuite {
  public:
-  GlTestsSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
+  GlTestsSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(b/271455200): the FeatureList has not been initialized by this
+    // point, so this call will always disable Intel media compression. We may
+    // want to move this to a later point to be able to run GL unit tests with
+    // Intel media compression enabled.
+    ui::EnsureIntelMediaCompressionEnvVarIsSet();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
  protected:
   void Initialize() override {

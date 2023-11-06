@@ -221,7 +221,7 @@ TEST_P(CopyOrMoveHookDelegateCompositeTest, OnErrorP) {
   TestSimpleMethod(
       base::BindLambdaForTesting([&](CopyOrMoveHookDelegate* delegate) {
         delegate->OnError(source_url_, destination_url_,
-                          base::File::FILE_ERROR_FAILED);
+                          base::File::FILE_ERROR_FAILED, base::DoNothing());
       }),
       base::BindRepeating([](MockCopyOrMoveHookDelegate* hook) {
         EXPECT_CALL(*hook, OnError).Times(1);

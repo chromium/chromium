@@ -27,9 +27,7 @@ import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
 import org.chromium.webapk.test.WebApkTestHelper;
 
-/**
- * Unit tests for {@link org.chromium.webapk.lib.client.WebApkIdentityServiceClient}.
- */
+/** Unit tests for {@link org.chromium.webapk.lib.client.WebApkIdentityServiceClient}. */
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
@@ -87,9 +85,10 @@ public class WebApkIdentityServiceClientTest {
      */
     @Test
     public void testReturnsFalseWhenNotMatchRuntimeHostBeforeIntroduceHostBrowserSwitchLogic() {
-        registerWebApk(ANOTHER_BROWSER_PACKAGE_NAME /*webApkRuntimeHost*/,
+        registerWebApk(
+                /* runtimeHost= */ ANOTHER_BROWSER_PACKAGE_NAME,
                 WebApkIdentityServiceClient.SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST - 1
-                /*shellApkVersion*/);
+                /* shellApkVersion= */ );
         mShadowApplication.declareActionUnbindable(
                 WebApkIdentityServiceClient.ACTION_WEBAPK_IDENTITY_SERVICE);
 
@@ -104,9 +103,10 @@ public class WebApkIdentityServiceClientTest {
      */
     @Test
     public void testReturnsTrueWhenMatchesRuntimeHostBeforeIntroduceHostBrowserSwitchLogic() {
-        registerWebApk(BROWSER_PACKAGE_NAME /*webApkRuntimeHost*/,
+        registerWebApk(
+                /* runtimeHost= */ BROWSER_PACKAGE_NAME,
                 WebApkIdentityServiceClient.SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST - 1
-                /*shellApkVersion*/);
+                /* shellApkVersion= */ );
         mShadowApplication.declareActionUnbindable(
                 WebApkIdentityServiceClient.ACTION_WEBAPK_IDENTITY_SERVICE);
 
@@ -120,9 +120,10 @@ public class WebApkIdentityServiceClientTest {
      */
     @Test
     public void testBacksWebApkCheckForWebApkWithHostBrowserSwitchLogicButWithoutIdentityService() {
-        registerWebApk(BROWSER_PACKAGE_NAME /*webApkRuntimeHost*/,
+        registerWebApk(
+                /* runtimeHost= */ BROWSER_PACKAGE_NAME,
                 WebApkIdentityServiceClient.SHELL_APK_VERSION_SUPPORTING_SWITCH_RUNTIME_HOST
-                /*shellApkVersion*/);
+                /* shellApkVersion= */ );
         mShadowApplication.declareActionUnbindable(
                 WebApkIdentityServiceClient.ACTION_WEBAPK_IDENTITY_SERVICE);
 
@@ -136,7 +137,7 @@ public class WebApkIdentityServiceClientTest {
     @Test
     public void testReturnsFalseWhenDoesNotMatchRuntimeHostProvidedByIdentityService() {
         // The shell APK version doesn't matter as long as the WebAPK has an Identity service.
-        registerWebApk(BROWSER_PACKAGE_NAME /*webApkSpecifiedRuntimeHost*/, 0 /*shellApkVersion*/);
+        registerWebApk(/* runtimeHost= */ BROWSER_PACKAGE_NAME, /* shellApkVersion= */ 0);
         mShadowApplication.setComponentNameAndServiceForBindService(
                 new ComponentName(WEBAPK_PACKAGE_NAME, ""),
                 new TestIdentityService(ANOTHER_BROWSER_PACKAGE_NAME));
@@ -151,11 +152,10 @@ public class WebApkIdentityServiceClientTest {
     @Test
     public void testReturnsTrueWhenMatchesRuntimeHostProvidedByIdentityService() {
         // The shell APK version doesn't matter as long as the WebAPK has an Identity service.
-        registerWebApk(
-                ANOTHER_BROWSER_PACKAGE_NAME /*webApkSpecifiedRuntimeHost*/, 0 /*shellApkVersion*/);
+        registerWebApk(/* runtimeHost= */ ANOTHER_BROWSER_PACKAGE_NAME, /* shellApkVersion= */ 0);
         mShadowApplication.setComponentNameAndServiceForBindService(
                 new ComponentName(WEBAPK_PACKAGE_NAME, ""),
-                new TestIdentityService(BROWSER_PACKAGE_NAME /*realRuntimeHost*/));
+                new TestIdentityService(/* runtimeHost= */ BROWSER_PACKAGE_NAME));
 
         Assert.assertTrue(doesBrowserBackWebApk());
     }
@@ -166,7 +166,7 @@ public class WebApkIdentityServiceClientTest {
         bundle.putString(WebApkMetaDataKeys.RUNTIME_HOST, runtimeHost);
         bundle.putInt(WebApkMetaDataKeys.SHELL_APK_VERSION, shellApkVersion);
         WebApkTestHelper.registerWebApkWithMetaData(
-                WEBAPK_PACKAGE_NAME, bundle, null /* shareTargetMetaData */);
+                WEBAPK_PACKAGE_NAME, bundle, /* shareTargetMetaData= */ null);
     }
 
     /** Checks whether the browser backs the WebAPK. */

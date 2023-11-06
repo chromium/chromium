@@ -114,7 +114,7 @@ float kTitleLabelMinimumScaleFactor = 0.7f;
   [self loadModel];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

@@ -44,7 +44,7 @@ template <typename Callback, typename Tuple>
 decltype(auto) RunImpl(Callback&& cb, Tuple&& tuple) {
   return RunImpl(std::forward<Callback>(cb), std::forward<Tuple>(tuple),
                  std::make_index_sequence<
-                     std::tuple_size<std::remove_reference_t<Tuple>>::value>());
+                     std::tuple_size_v<std::remove_reference_t<Tuple>>>());
 }
 
 // Invoked when the arguments to a OnceCallback are copy constructible. In this
@@ -52,7 +52,7 @@ decltype(auto) RunImpl(Callback&& cb, Tuple&& tuple) {
 // copy, allowing it to be used multiple times.
 template <size_t I,
           typename Tuple,
-          std::enable_if_t<std::is_copy_constructible<Tuple>::value, int> = 0>
+          std::enable_if_t<std::is_copy_constructible_v<Tuple>, int> = 0>
 auto RunOnceCallbackImpl(Tuple&& tuple) {
   return
       [tuple = std::forward<Tuple>(tuple)](auto&&... args) -> decltype(auto) {
@@ -67,7 +67,7 @@ auto RunOnceCallbackImpl(Tuple&& tuple) {
 // callback by move, allowing it to be only used once.
 template <size_t I,
           typename Tuple,
-          std::enable_if_t<!std::is_copy_constructible<Tuple>::value, int> = 0>
+          std::enable_if_t<!std::is_copy_constructible_v<Tuple>, int> = 0>
 auto RunOnceCallbackImpl(Tuple&& tuple) {
   // Mock actions need to be copyable, but `tuple` is not. Wrap it in in a
   // `scoped_refptr` to allow it to be copied.

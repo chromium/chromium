@@ -86,11 +86,12 @@ TEST_F(VP9SuperFrameBitstreamFilterTest, Passthrough) {
     auto cm_block = bsf.take_buffer();
     ASSERT_TRUE(cm_block);
 
-    ASSERT_EQ(buffer->data_size(), CMBlockBufferGetDataLength(cm_block));
+    ASSERT_EQ(buffer->data_size(), CMBlockBufferGetDataLength(cm_block.get()));
 
     std::unique_ptr<uint8_t> block_data(new uint8_t[buffer->data_size()]);
-    ASSERT_EQ(noErr, CMBlockBufferCopyDataBytes(
-                         cm_block, 0, buffer->data_size(), block_data.get()));
+    ASSERT_EQ(noErr,
+              CMBlockBufferCopyDataBytes(cm_block.get(), 0, buffer->data_size(),
+                                         block_data.get()));
 
     // Verify that the block is valid.
     parser_.SetStream(block_data.get(), buffer->data_size(), nullptr);
@@ -130,11 +131,12 @@ TEST_F(VP9SuperFrameBitstreamFilterTest, Superframe) {
 
   // Two marker bytes and 2x 16-bit sizes.
   const size_t kExpectedTotalSize = 1 + 2 + 2 + 1 + total_size;
-  EXPECT_EQ(kExpectedTotalSize, CMBlockBufferGetDataLength(cm_block));
+  EXPECT_EQ(kExpectedTotalSize, CMBlockBufferGetDataLength(cm_block.get()));
 
   std::unique_ptr<uint8_t> block_data(new uint8_t[kExpectedTotalSize]);
-  ASSERT_EQ(noErr, CMBlockBufferCopyDataBytes(cm_block, 0, kExpectedTotalSize,
-                                              block_data.get()));
+  ASSERT_EQ(noErr,
+            CMBlockBufferCopyDataBytes(cm_block.get(), 0, kExpectedTotalSize,
+                                       block_data.get()));
 
   parser_.SetStream(block_data.get(), kExpectedTotalSize, nullptr);
   EXPECT_EQ(Vp9Parser::kOk, ParseNextFrame());

@@ -25,8 +25,7 @@ using DeviceIdCallback = base::OnceCallback<void(const std::string&)>;
 // If no such device ID can be found, `callback` receives an empty string.
 CONTENT_EXPORT void GetDefaultMediaDeviceID(
     blink::mojom::MediaDeviceType device_type,
-    int render_process_id,
-    int render_frame_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     DeviceIdCallback callback);
 
 class CONTENT_EXPORT MediaDeviceSaltAndOrigin {

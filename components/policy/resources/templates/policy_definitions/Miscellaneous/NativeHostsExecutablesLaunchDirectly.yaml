@@ -1,0 +1,30 @@
+caption: Force Windows executable Native Messaging hosts to launch directly
+default: null
+desc: |-
+  This policy controls whether native host executables launch directly on Windows.
+
+        Setting the policy to Enabled forces <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to launch native messaging hosts implemented as executables directly.
+
+        Setting the policy to Disabled will result in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> launching hosts using cmd.exe as an intermediary process.
+
+        Leaving the policy unset allows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to decide which approach to use.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Directly launch executable Native Messaging Hosts on Windows
+  value: true
+- caption: Force Windows Native Messaging Hosts to launch via cmd.exe
+  value: false
+- caption: Allows <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to decide which approach to use
+  value: null
+owners:
+- file://components/policy/OWNERS
+- gesanc@microsoft.com
+schema:
+  type: boolean
+supported_on:
+- chrome.win:120-
+tags: []
+type: main

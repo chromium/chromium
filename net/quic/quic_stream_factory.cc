@@ -345,7 +345,6 @@ class QuicStreamFactory::Job {
   int DoCreateSession();
   int DoCreateSessionComplete(int rv);
   int DoConnect(int rv);
-  int DoConnectComplete(int rv);
   int DoConfirmConnection(int rv);
 
   void OnCreateSessionComplete(int rv);
@@ -2035,6 +2034,7 @@ bool QuicStreamFactory::CreateSessionHelper(
       params_.migrate_sessions_on_network_change_v2, default_network_,
       retransmittable_on_wire_timeout_, params_.migrate_idle_sessions,
       params_.allow_port_migration, params_.idle_session_migration_period,
+      params_.multi_port_probing_interval,
       params_.max_time_on_non_default_network,
       params_.max_migrations_to_non_default_network_on_write_error,
       params_.max_migrations_to_non_default_network_on_path_degrading,

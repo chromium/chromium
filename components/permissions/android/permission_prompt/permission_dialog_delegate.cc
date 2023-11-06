@@ -14,6 +14,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/gfx/android/java_bitmap.h"
 
 using base::android::ConvertUTF16ToJavaString;
 
@@ -50,17 +52,60 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
       PermissionsClient::Get()->MapToJavaDrawableId(
           permission_prompt_->GetIconId()),
       ConvertUTF16ToJavaString(env, permission_prompt_->GetMessageText()),
-      ConvertUTF16ToJavaString(env, permission_prompt_->GetSecondaryText()),
       primaryButtonText, secondaryButtonText));
 }
 
-void PermissionDialogJavaDelegate::CreateDialog() {
+void PermissionDialogJavaDelegate::CreateDialog(
+    content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Send the Java delegate to the Java PermissionDialogController for display.
   // The controller takes over lifetime management; when the Java delegate is no
   // longer needed it will in turn free the native delegate
   // (PermissionDialogDelegate).
   Java_PermissionDialogController_createDialog(env, j_delegate_);
+
+  if (permission_prompt_->ShouldUseRequestingOriginFavicon()) {
+    // In order to update the dialog, we need to make sure it has been created
+    // before.
+    GetAndUpdateRequestingOriginFavicon(web_contents);
+  }
+}
+
+void PermissionDialogJavaDelegate::GetAndUpdateRequestingOriginFavicon(
+    content::WebContents* web_contents) {
+  favicon::FaviconService* favicon_service =
+      PermissionsClient::Get()->GetFaviconService(
+          web_contents->GetBrowserContext());
+  CHECK(favicon_service);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  int iconSizeInPx =
+      Java_PermissionDialogDelegate_getIconSizeInPx(env, j_delegate_);
+
+  // Fetching requesting origin favicon.
+  // Fetch raw favicon to set |fallback_to_host|=true since we otherwise might
+  // not get a result if the user never visited the root URL of |site|.
+  favicon_service->GetRawFaviconForPageURL(
+      permission_prompt_->GetRequestingOrigin(),
+      {favicon_base::IconType::kFavicon}, iconSizeInPx,
+      /*fallback_to_host=*/true,
+      base::BindOnce(
+          &PermissionDialogJavaDelegate::OnRequestingOriginFaviconLoaded,
+          base::Unretained(this)),
+      &favicon_tracker_);
+}
+
+void PermissionDialogJavaDelegate::OnRequestingOriginFaviconLoaded(
+    const favicon_base::FaviconRawBitmapResult& favicon_result) {
+  if (favicon_result.is_valid()) {
+    gfx::Image image =
+        gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data->front(),
+                                         favicon_result.bitmap_data->size());
+    const SkBitmap* bitmap = image.ToSkBitmap();
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_PermissionDialogDelegate_updateIcon(env, j_delegate_,
+                                             gfx::ConvertToJavaBitmap(*bitmap));
+  }
 }
 
 void PermissionDialogJavaDelegate::DismissDialog() {
@@ -128,7 +173,7 @@ PermissionDialogDelegate::PermissionDialogDelegate(
   // Create our Java counterpart, which manages our lifetime.
   java_delegate_->CreateJavaDelegate(web_contents, this);
   // Open the Permission Dialog.
-  java_delegate_->CreateDialog();
+  java_delegate_->CreateDialog(web_contents);
 }
 
 PermissionDialogDelegate::~PermissionDialogDelegate() = default;

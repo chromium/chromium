@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.UserDataHost;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
 /**
  * Tab is a visual/functional unit that encapsulates the content (not just web site content
  * from network but also other types of content such as NTP, navigation history, etc) and
@@ -58,6 +60,10 @@ public interface Tab extends TabLifecycle {
      *         object having to know about them directly.
      */
     UserDataHost getUserDataHost();
+
+    /** Returns the Profile this tab is associated with. */
+    @NonNull
+    Profile getProfile();
 
     /**
      * @return The web contents associated with this tab.

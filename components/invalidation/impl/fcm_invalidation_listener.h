@@ -19,7 +19,7 @@
 
 namespace invalidation {
 
-class TopicInvalidationMap;
+class Invalidation;
 
 // Receives InstanceID tokens and actual invalidations from FCM via
 // FCMSyncNetworkChannel, and dispatches them to its delegate (in practice, the
@@ -38,7 +38,7 @@ class FCMInvalidationListener
    public:
     virtual ~Delegate() = default;
 
-    virtual void OnInvalidate(const TopicInvalidationMap& invalidations) = 0;
+    virtual void OnInvalidate(const Invalidation& invalidation) = 0;
 
     virtual void OnInvalidatorStateChange(InvalidatorState state) = 0;
   };
@@ -56,7 +56,7 @@ class FCMInvalidationListener
 
   // Update the set of topics for which we want to get invalidations. May be
   // called at any time.
-  void UpdateInterestedTopics(const Topics& topics);
+  void UpdateInterestedTopics(const TopicMap& topics);
 
   // Called when the InstanceID token is revoked (usually because the InstanceID
   // itself was deleted). Note that while this class receives new tokens
@@ -78,7 +78,7 @@ class FCMInvalidationListener
 
   void StartForTest(Delegate* delegate);
   void EmitStateChangeForTest(InvalidatorState state);
-  void EmitSavedInvalidationsForTest(const TopicInvalidationMap& to_emit);
+  void EmitSavedInvalidationForTest(const Invalidation& invalidation);
 
  private:
   // Callbacks for the |network_channel_|.
@@ -103,8 +103,8 @@ class FCMInvalidationListener
   // Cache `invalidation` and emit it to registered handlers (if any).
   void DispatchInvalidation(const Invalidation& invalidation);
 
-  // Emits previously saved invalidations to their registered observers.
-  void EmitSavedInvalidations(const TopicInvalidationMap& to_emit);
+  // Emits previously saved invalidation to their registered observers.
+  void EmitSavedInvalidation(const Invalidation& invalidation);
 
   std::unique_ptr<FCMSyncNetworkChannel> network_channel_;
   std::map<Topic, Invalidation> unacked_invalidations_map_;
@@ -112,7 +112,7 @@ class FCMInvalidationListener
 
   // The set of topics for which we want to receive invalidations. We'll pass
   // these to |per_user_topic_subscription_manager_| for (un)subscription.
-  Topics interested_topics_;
+  TopicMap interested_topics_;
 
   // The states of the HTTP and FCM channel.
   SubscriptionChannelState subscription_channel_state_ =

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str, strf} from '../common/js/util.js';
+import {str, strf} from '../common/js/translations.js';
 import {FilesTooltip} from '../foreground/elements/files_tooltip.js';
 
 import {css, customElement, html, property, XfBase} from './xf_base.js';

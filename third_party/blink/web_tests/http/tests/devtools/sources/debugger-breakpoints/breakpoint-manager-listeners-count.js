@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
+import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
 
 (async function() {
   TestRunner.addResult(
@@ -27,8 +28,8 @@ import * as SourcesModule from 'devtools/panels/sources/sources.js';
     }
 
     function didShowScriptSourceAgain() {
-      var listeners = Bindings.breakpointManager.listeners.get(
-          Bindings.BreakpointManager.Events.BreakpointAdded);
+      var listeners = Breakpoints.BreakpointManager.BreakpointManager.instance().listeners.get(
+          Breakpoints.BreakpointManager.Events.BreakpointAdded);
       // There should be 3 breakpoint-added event listeners:
       //  - BreakpointsSidebarPane
       //  - 2 shown tabs

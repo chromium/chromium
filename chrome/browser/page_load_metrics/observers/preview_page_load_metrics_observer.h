@@ -33,6 +33,17 @@ class PreviewPageLoadMetricsObserver
     kOriginUIVisit = 8,
     kMaxValue = kOriginUIVisit,
   };
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PreviewFinalStatus {
+    // Preview started, but the page wasn't promoted in any way
+    kPreviewed = 0,
+    // Preview started, and the page was promoted into a new tab
+    kPromoted = 1,
+    // TODO(b:292184832): Will define another entry for the promotion to the
+    // current tab
+    kMaxValue = kPromoted,
+  };
 
   PreviewPageLoadMetricsObserver() = default;
   PreviewPageLoadMetricsObserver(const PreviewPageLoadMetricsObserver&) =
@@ -50,6 +61,8 @@ class PreviewPageLoadMetricsObserver
       const GURL& currently_committed_url) override;
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override;
+  ObservePolicy OnPreviewStart(content::NavigationHandle* navigation_handle,
+                               const GURL& currently_committed_url) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
@@ -57,17 +70,25 @@ class PreviewPageLoadMetricsObserver
   ObservePolicy OnShown() override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void DidActivatePreviewedPage(base::TimeTicks activation_time) override;
 
  private:
+  enum class Status {
+    kNotPreviewed,
+    kPreviewed,
+    kPromoted,
+  };
   PageVisitType RecordPageVisitType();
   void RecordMetrics();
   void CheckPageTransitionType(content::NavigationHandle* navigation_handle);
+  PreviewFinalStatus ConvertStatusToPreviewFinalStatus(Status state);
 
   bool currently_in_foreground_ = false;
   bool is_history_navigation_ = false;
   bool is_first_navigation_ = false;
   base::TimeTicks last_time_shown_;
   base::TimeDelta total_foreground_duration_;
+  Status status_ = Status::kNotPreviewed;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_PREVIEW_PAGE_LOAD_METRICS_OBSERVER_H_

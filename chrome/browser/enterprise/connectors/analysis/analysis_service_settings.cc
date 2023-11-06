@@ -92,6 +92,14 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       settings_dict.FindInt(kKeyBlockUntilVerdict).value_or(0)
           ? BlockUntilVerdict::kBlock
           : BlockUntilVerdict::kNoBlock;
+  // If fail-closed settings can't be found, the browser defaults to fail open
+  // to handle backward compatibility.
+  const std::string* default_action_ptr =
+      settings_dict.FindString(kKeyDefaultAction);
+  default_action_ = default_action_ptr && *default_action_ptr == "block"
+                        ? DefaultAction::kBlock
+                        : DefaultAction::kAllow;
+
   block_password_protected_files_ =
       settings_dict.FindBool(kKeyBlockPasswordProtected).value_or(false);
   block_large_files_ =
@@ -188,6 +196,7 @@ AnalysisSettings AnalysisServiceSettings::GetAnalysisSettingsWithTags(
   AnalysisSettings settings;
 
   settings.block_until_verdict = block_until_verdict_;
+  settings.default_action = default_action_;
   settings.block_password_protected_files = block_password_protected_files_;
   settings.block_large_files = block_large_files_;
   settings.block_unsupported_file_types = block_unsupported_file_types_;
@@ -262,6 +271,13 @@ bool AnalysisServiceSettings::ShouldBlockUntilVerdict() const {
   if (!IsValid())
     return false;
   return block_until_verdict_ == BlockUntilVerdict::kBlock;
+}
+
+bool AnalysisServiceSettings::ShouldBlockByDefault() const {
+  if (!IsValid()) {
+    return false;
+  }
+  return default_action_ == DefaultAction::kBlock;
 }
 
 absl::optional<std::u16string> AnalysisServiceSettings::GetCustomMessage(

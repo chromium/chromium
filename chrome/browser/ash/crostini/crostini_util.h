@@ -32,18 +32,22 @@ class Profile;
 
 namespace crostini {
 
-extern const char kCrostiniImageAliasPattern[];
-extern const char kCrostiniContainerDefaultVersion[];
-extern const char kCrostiniContainerFlag[];
+inline constexpr char kCrostiniImageAliasPattern[] = "debian/%s";
+inline constexpr char kCrostiniContainerDefaultVersion[] = "bookworm";
+inline constexpr char kCrostiniContainerFlag[] =
+    "crostini-container-install-version";
 
-extern const guest_os::VmType kCrostiniDefaultVmType;
-extern const char kCrostiniDefaultVmName[];
-extern const char kCrostiniDefaultContainerName[];
-extern const char kCrostiniDefaultUsername[];
-extern const char kCrostiniDefaultImageServerUrl[];
-extern const char kCrostiniDlcName[];
+inline constexpr guest_os::VmType kCrostiniDefaultVmType =
+    guest_os::VmType::TERMINA;
+inline constexpr char kCrostiniDefaultVmName[] = "termina";
+inline constexpr char kCrostiniDefaultContainerName[] = "penguin";
+inline constexpr char kCrostiniDefaultUsername[] = "emperor";
+inline constexpr char kCrostiniDefaultImageServerUrl[] =
+    "https://storage.googleapis.com/cros-containers/%d";
+inline constexpr char kCrostiniDlcName[] = "termina-dlc";
 
-extern const base::FilePath::CharType kHomeDirectory[];
+inline constexpr base::FilePath::CharType kHomeDirectory[] =
+    FILE_PATH_LITERAL("/home/chronos/user");
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

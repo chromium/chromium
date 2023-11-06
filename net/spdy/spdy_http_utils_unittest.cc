@@ -136,7 +136,6 @@ constexpr auto ToSimpleString = test::HttpResponseHeadersToSimpleString;
 
 enum class SpdyHeadersToHttpResponseHeadersFeatureConfig {
   kUseRawString,
-  kVerify,
   kUseBuilder
 };
 
@@ -145,9 +144,6 @@ std::string PrintToString(
   switch (config) {
     case SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseRawString:
       return "RawString";
-
-    case SpdyHeadersToHttpResponseHeadersFeatureConfig::kVerify:
-      return "Verify";
 
     case SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseBuilder:
       return "UseBuilder";
@@ -162,20 +158,12 @@ class SpdyHeadersToHttpResponseTest
     switch (GetParam()) {
       case SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseRawString:
         feature_list_.InitWithFeatures(
-            {}, {features::kSpdyHeadersToHttpResponseUseBuilder,
-                 features::kSpdyHeadersToHttpResponseVerifyCorrectness});
-        break;
-
-      case SpdyHeadersToHttpResponseHeadersFeatureConfig::kVerify:
-        feature_list_.InitWithFeatures(
-            {features::kSpdyHeadersToHttpResponseVerifyCorrectness},
-            {features::kSpdyHeadersToHttpResponseUseBuilder});
+            {}, {features::kSpdyHeadersToHttpResponseUseBuilder});
         break;
 
       case SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseBuilder:
         feature_list_.InitWithFeatures(
-            {features::kSpdyHeadersToHttpResponseUseBuilder},
-            {features::kSpdyHeadersToHttpResponseVerifyCorrectness});
+            {features::kSpdyHeadersToHttpResponseUseBuilder}, {});
         break;
     }
   }
@@ -219,7 +207,6 @@ INSTANTIATE_TEST_SUITE_P(
     SpdyHttpUtils,
     SpdyHeadersToHttpResponseTest,
     Values(SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseRawString,
-           SpdyHeadersToHttpResponseHeadersFeatureConfig::kVerify,
            SpdyHeadersToHttpResponseHeadersFeatureConfig::kUseBuilder),
     ::testing::PrintToStringParamName());
 

@@ -3,11 +3,9 @@
 // found in the LICENSE file.
 
 #include "ash/root_window_controller.h"
-#include "base/memory/raw_ptr.h"
 
 #include <algorithm>
 #include <memory>
-#include <queue>
 #include <vector>
 
 #include "ash/accessibility/chromevox/touch_exploration_controller.h"
@@ -26,16 +24,15 @@
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_layout_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/virtual_keyboard_container_layout_manager.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/login_status.h"
 #include "ash/public/cpp/app_menu_constants.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_settings.h"
+#include "ash/rotator/screen_rotation_animator.h"
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
@@ -78,11 +75,13 @@
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_metrics.h"
 #include "ash/wm/work_area_insets.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
@@ -102,11 +101,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_utils.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/view_model.h"
-#include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/capture_controller.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -674,17 +669,36 @@ const aura::Window* RootWindowController::GetContainer(int container_id) const {
   return window_tree_host_->window()->GetChildById(container_id);
 }
 
+ScreenRotationAnimator* RootWindowController::GetScreenRotationAnimator() {
+  if (is_shutting_down_) {
+    return nullptr;
+  }
+
+  if (!screen_rotation_animator_) {
+    screen_rotation_animator_ =
+        std::make_unique<ScreenRotationAnimator>(GetRootWindow());
+  }
+
+  return screen_rotation_animator_.get();
+}
+
 void RootWindowController::Shutdown() {
-  auto targeter = GetRootWindow()->SetEventTargeter(
+  is_shutting_down_ = true;
+
+  // Destroy the `screen_rotation_animator_` now to avoid any potential crashes
+  // if there's any ongoing animation. See http://b/293667233.
+  screen_rotation_animator_.reset();
+
+  aura::Window* root_window = GetRootWindow();
+  auto targeter = root_window->SetEventTargeter(
       std::make_unique<aura::NullWindowTargeter>());
 
   touch_exploration_manager_.reset();
   wallpaper_widget_controller_.reset();
-  EndSplitViewOverviewSession();
+  EndSplitViewOverviewSession(SplitViewOverviewSessionExitPoint::kShutdown);
   CloseAmbientWidget(/*immediately=*/true);
 
   CloseChildWindows();
-  aura::Window* root_window = GetRootWindow();
   GetRootWindowSettings(root_window)->controller = nullptr;
   // Forget with the display ID so that display lookup
   // ends up with invalid display.
@@ -983,14 +997,25 @@ RootWindowController::security_curtain_widget_controller() {
 void RootWindowController::StartSplitViewOverviewSession(
     aura::Window* window,
     absl::optional<OverviewStartAction> action,
-    absl::optional<OverviewEnterExitType> type) {
+    absl::optional<OverviewEnterExitType> type,
+    WindowSnapActionSource snap_action_source) {
   split_view_overview_session_ =
-      std::make_unique<SplitViewOverviewSession>(window);
+      std::make_unique<SplitViewOverviewSession>(window, snap_action_source);
   split_view_overview_session_->Init(action, type);
 }
 
-void RootWindowController::EndSplitViewOverviewSession() {
+void RootWindowController::EndSplitViewOverviewSession(
+    SplitViewOverviewSessionExitPoint exit_point) {
+  if (!is_shutting_down_ && split_view_overview_session_) {
+    split_view_overview_session_
+        ->RecordSplitViewOverviewSessionExitPointMetrics(exit_point);
+  }
   split_view_overview_session_.reset();
+}
+
+void RootWindowController::SetScreenRotationAnimatorForTest(
+    std::unique_ptr<ScreenRotationAnimator> animator) {
+  screen_rotation_animator_ = std::move(animator);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1061,7 +1086,7 @@ void RootWindowController::Init(RootWindowType root_window_type) {
   // Explicitly update the desks controller before notifying the ShellObservers.
   // This is to make sure the desks' states are correct before clients are
   // updated.
-  Shell::Get()->desks_controller()->OnRootWindowAdded(root_window);
+  shell->desks_controller()->OnRootWindowAdded(root_window);
 
   if (root_window_type == RootWindowType::PRIMARY) {
     shell->keyboard_controller()->RebuildKeyboardIfEnabled();
@@ -1392,7 +1417,7 @@ void RootWindowController::CreateContainers() {
 
   // Make sure booting animation container is always on top of all other
   // siblings under the `magnified_container`.
-  if (ash::features::IsOobeSimonEnabled()) {
+  if (ash::features::IsBootAnimationEnabled()) {
     aura::Window* booting_animation_container =
         CreateContainer(kShellWindowId_BootingAnimationContainer,
                         "BootingAnimationContainer", magnified_container);

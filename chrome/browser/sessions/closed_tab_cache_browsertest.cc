@@ -227,8 +227,19 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, RestoreEntryWhenFound) {
               testing::ElementsAre(base::Bucket(1, 1)));
 }
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ClosedTabCacheBrowserTestNoTestingConfig
+    : public ClosedTabCacheBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ClosedTabCacheBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 // Evict an entry after timeout.
-IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest, EvictEntryOnTimeout) {
+IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTestNoTestingConfig,
+                       EvictEntryOnTimeout) {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   closed_tab_cache().SetTaskRunnerForTesting(task_runner);

@@ -31,13 +31,13 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -46,7 +46,7 @@ namespace blink {
 
 namespace {
 
-// TODO(yoichio): Share condition between NGOffsetMapping::AcceptsPosition.
+// TODO(yoichio): Share condition between OffsetMapping::AcceptsPosition.
 // TODO(1229581): Do we need this function anymore?
 bool ShouldUseLayoutNGTextContent(const Node& node) {
   LayoutObject* layout_object = node.GetLayoutObject();
@@ -474,8 +474,7 @@ static absl::optional<unsigned> GetTextContentOffset(const Position& position) {
   DCHECK(IsPositionValidText(position));
 #endif
   DCHECK(ShouldUseLayoutNGTextContent(*position.AnchorNode()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
+  const OffsetMapping* const offset_mapping = OffsetMapping::GetFor(position);
   DCHECK(offset_mapping);
   const absl::optional<unsigned>& ng_offset =
       offset_mapping->GetTextContentOffset(position);
@@ -563,7 +562,7 @@ static SelectionState GetSelectionStateFor(const LayoutText& layout_text) {
 }
 
 static SelectionState GetSelectionStateFor(
-    const NGInlineCursorPosition& position) {
+    const InlineCursorPosition& position) {
   DCHECK(position.GetLayoutObject());
   return GetSelectionStateFor(To<LayoutText>(*position.GetLayoutObject()));
 }
@@ -649,8 +648,8 @@ LayoutTextSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 // These offset can be out of fragment because SelectionState is of each
 // LayoutText and not of each fragment for it.
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
-    const NGInlineCursor& cursor) const {
-  const NGInlineCursorPosition& current = cursor.Current();
+    const InlineCursor& cursor) const {
+  const InlineCursorPosition& current = cursor.Current();
   if (!current.IsLayoutGeneratedText())
     return ComputeSelectionStatus(cursor, current.TextOffset());
 
@@ -675,8 +674,8 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
 }
 
 LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
-    const NGInlineCursor& cursor,
-    const NGTextOffsetRange& offset) const {
+    const InlineCursor& cursor,
+    const TextOffsetRange& offset) const {
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   switch (GetSelectionStateFor(cursor.Current())) {
@@ -773,7 +772,7 @@ SelectionState LayoutSelection::ComputeSelectionStateFromOffsets(
 }
 
 SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
-    const NGInlineCursorPosition& position) const {
+    const InlineCursorPosition& position) const {
   if (!position)
     return SelectionState::kNone;
 
@@ -783,7 +782,7 @@ SelectionState LayoutSelection::ComputePaintingSelectionStateForCursor(
   if (position.IsEllipsis())
     return SelectionState::kNone;
 
-  const NGTextOffsetRange offset = position.TextOffset();
+  const TextOffsetRange offset = position.TextOffset();
   const unsigned start_offset = offset.start;
   const unsigned end_offset = offset.end;
   // Determine the state of the overall selection, relative to the LayoutObject

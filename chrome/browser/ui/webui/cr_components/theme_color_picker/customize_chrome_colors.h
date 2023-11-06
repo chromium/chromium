@@ -49,4 +49,6 @@ struct DynamicColorInfo {
 
 extern const std::array<DynamicColorInfo, 13> kDynamicCustomizeChromeColors;
 
+SkColor HueToSkColor(float hue);
+
 #endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_THEME_COLOR_PICKER_CUSTOMIZE_CHROME_COLORS_H_

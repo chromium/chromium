@@ -26,7 +26,7 @@ namespace net {
 
 class NetworkAnonymizationKey;
 struct NetworkTrafficAnnotationTag;
-class ProxyServer;
+class ProxyChain;
 struct SSLConfig;
 
 // Common factory for all ConnectJob types. Determines and creates the correct
@@ -64,10 +64,10 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   // ConnectJob.
   std::unique_ptr<ConnectJob> CreateConnectJob(
       url::SchemeHostPort endpoint,
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const SSLConfig* base_ssl_config_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -83,10 +83,10 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
   std::unique_ptr<ConnectJob> CreateConnectJob(
       bool using_ssl,
       HostPortPair endpoint,
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const SSLConfig* base_ssl_config_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,
@@ -100,10 +100,10 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
  private:
   virtual std::unique_ptr<ConnectJob> CreateConnectJob(
       Endpoint endpoint,
-      const ProxyServer& proxy_server,
+      const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* ssl_config_for_proxy,
+      const SSLConfig* base_ssl_config_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,

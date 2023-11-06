@@ -17,7 +17,7 @@ TestAutofillExternalDelegate::TestAutofillExternalDelegate(
     : AutofillExternalDelegate(autofill_manager),
       call_parent_methods_(call_parent_methods) {}
 
-TestAutofillExternalDelegate::~TestAutofillExternalDelegate() {}
+TestAutofillExternalDelegate::~TestAutofillExternalDelegate() = default;
 
 void TestAutofillExternalDelegate::OnPopupShown() {
   popup_hidden_ = false;
@@ -66,11 +66,14 @@ bool TestAutofillExternalDelegate::HasActiveScreenReader() const {
 }
 
 void TestAutofillExternalDelegate::OnAutofillAvailabilityEvent(
-    const mojom::AutofillState state) {
-  if (state == mojom::AutofillState::kAutofillAvailable)
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
+  if (suggestion_availability ==
+      mojom::AutofillSuggestionAvailability::kAutofillAvailable) {
     has_suggestions_available_on_field_focus_ = true;
-  else if (state == mojom::AutofillState::kNoSuggestions)
+  } else if (suggestion_availability ==
+             mojom::AutofillSuggestionAvailability::kNoSuggestions) {
     has_suggestions_available_on_field_focus_ = false;
+  }
 }
 
 void TestAutofillExternalDelegate::WaitForPopupHidden() {

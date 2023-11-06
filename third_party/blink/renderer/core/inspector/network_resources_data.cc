@@ -439,7 +439,8 @@ NetworkResourcesData::ResourceDataForRequestId(const String& request_id) const {
   if (request_id.IsNull())
     return nullptr;
   auto it = request_id_to_resource_data_map_.find(request_id);
-  return it != request_id_to_resource_data_map_.end() ? it->value : nullptr;
+  return it != request_id_to_resource_data_map_.end() ? it->value.Get()
+                                                      : nullptr;
 }
 
 void NetworkResourcesData::EnsureNoDataForRequestId(const String& request_id) {

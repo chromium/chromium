@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/site_instance_process_assignment.h"
@@ -16,6 +17,7 @@
 #include "net/nqe/effective_connection_type.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 #include "ui/base/page_transition_types.h"
 
 namespace content {
@@ -173,7 +175,6 @@ class UkmPageLoadMetricsObserver
       ukm::builders::PageLoad& builder,
       const page_load_metrics::PageEndReason page_end_reason);
 
-  void RecordInputTimingMetrics();
   void RecordSmoothnessMetrics();
   void RecordResponsivenessMetrics();
 
@@ -236,6 +237,9 @@ class UkmPageLoadMetricsObserver
   // Record some Responsiveness metrics that have occurred on the page until
   // the first time the page moves from the foreground to the background.
   void ReportResponsivenessAfterFirstForeground();
+
+  // Tracing helper for key page load events.
+  void EmitUserTimingEvent(base::TimeDelta duration, const char event_name[]);
 
   // Guaranteed to be non-null during the lifetime of |this|.
   raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;

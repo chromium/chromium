@@ -141,9 +141,24 @@ void EventAckData::DecrementInflightEvent(
   if (worker_stopped || !start_ok)
     return;
 
-  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
-    LOG(ERROR) << "FinishExternalRequest failed: " << static_cast<int>(result);
-    std::move(failure_callback).Run();
+  base::UmaHistogramEnumeration(
+      "Extensions.ServiceWorkerBackground.FinishedExternalRequest_Result_"
+      "PostReturn",
+      result);
+
+  switch (result) {
+    case content::ServiceWorkerExternalRequestResult::kOk:
+    // Metrics have shown us that it is possible that a worker may not be found
+    // or not running at this point.
+    case content::ServiceWorkerExternalRequestResult::kWorkerNotFound:
+    case content::ServiceWorkerExternalRequestResult::kWorkerNotRunning:
+      break;
+    case content::ServiceWorkerExternalRequestResult::kBadRequestId:
+    case content::ServiceWorkerExternalRequestResult::kNullContext:
+      LOG(ERROR) << "FinishExternalRequest failed: "
+                 << static_cast<int>(result);
+      std::move(failure_callback).Run();
+      break;
   }
 }
 

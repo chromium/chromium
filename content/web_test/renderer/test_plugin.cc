@@ -22,6 +22,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -251,11 +252,13 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else if (gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
-    mailbox_ = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         "TestLabel", gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    mailbox_ = client_shared_image->mailbox();
     gl_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
     GLuint color_texture =

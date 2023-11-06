@@ -38,6 +38,17 @@ const ParentalHandoffElementBase = mixinBehaviors(
  */
 ParentalHandoffElementBase.$;
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   username: string,
+ * }}
+ */
+let ParentalHandoffScreenData;
+
+/**
+ * @polymer
+ */
 class ParentalHandoff extends ParentalHandoffElementBase {
   static get is() {
     return 'parental-handoff-element';
@@ -70,7 +81,7 @@ class ParentalHandoff extends ParentalHandoffElementBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload
+   * @param {ParentalHandoffScreenData} data Screen init payload
    */
   onBeforeShow(data) {
     if ('username' in data) {

@@ -17,7 +17,13 @@ namespace ash::input_method {
 // store.
 class EditorConsentStore {
  public:
-  explicit EditorConsentStore(PrefService* pref_service);
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
+
+    virtual EditorMode GetEditorMode() const = 0;
+  };
+  explicit EditorConsentStore(PrefService* pref_service, Delegate* delegate);
   EditorConsentStore(const EditorConsentStore&) = delete;
   EditorConsentStore& operator=(const EditorConsentStore&) = delete;
   ~EditorConsentStore();
@@ -43,6 +49,7 @@ class EditorConsentStore {
 
   // Not owned by this class.
   raw_ptr<PrefService> pref_service_;
+  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 

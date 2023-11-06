@@ -40,7 +40,7 @@ class PendingLinkPreload::FinishObserver final : public ResourceFinishObserver {
     return "PendingLinkPreload::FinishObserver";
   }
 
-  Resource* GetResource() { return resource_; }
+  Resource* GetResource() { return resource_.Get(); }
   void Dispose() {
     if (!resource_)
       return;

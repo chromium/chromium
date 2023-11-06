@@ -24,9 +24,7 @@ class RenderFrameHost;
 class RenderFrameHostImpl;
 class WebUIMainFrameObserver;
 
-class CONTENT_EXPORT WebUIImpl : public WebUI,
-                                 public mojom::WebUIHost,
-                                 public base::SupportsWeakPtr<WebUIImpl> {
+class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
  public:
   explicit WebUIImpl(WebContents* web_contents);
   explicit WebUIImpl(NavigationRequest* request);

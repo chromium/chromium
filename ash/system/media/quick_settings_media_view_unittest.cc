@@ -4,7 +4,6 @@
 
 #include "ash/system/media/quick_settings_media_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/media/quick_settings_media_view_controller.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -15,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/mock_media_notification_item.h"
-#include "media/base/media_switches.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
@@ -29,8 +27,8 @@ class QuickSettingsMediaViewTest : public NoSessionAshTestBase {
   ~QuickSettingsMediaViewTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, media::kGlobalMediaControlsCrOSUpdatedUI}, {});
+    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
+                                   {});
     NoSessionAshTestBase::SetUp();
 
     MediaTray::SetPinnedToShelf(false);

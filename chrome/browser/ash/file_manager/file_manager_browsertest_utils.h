@@ -80,15 +80,13 @@ struct TestCase {
 
   TestCase& EnableMirrorSync();
 
-  TestCase& EnableInlineSyncStatus();
-
-  TestCase& EnableInlineSyncStatusProgressEvents();
-
   TestCase& EnableFileTransferConnector();
 
   TestCase& EnableFileTransferConnectorNewUX();
 
   TestCase& FileTransferConnectorReportOnlyMode();
+
+  TestCase& BypassRequiresJustification();
 
   TestCase& EnableSearchV2();
 

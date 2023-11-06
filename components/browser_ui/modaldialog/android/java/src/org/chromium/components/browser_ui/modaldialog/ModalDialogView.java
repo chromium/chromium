@@ -16,41 +16,21 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * Generic dialog view for app modal or tab modal alert dialogs.
  */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
-    private static final String UMA_SECURITY_FILTERED_TOUCH_RESULT =
-            "Android.ModalDialog.SecurityFilteredTouchResult";
-
     private static boolean sEnableButtonTapProtection = true;
 
     private static long sCurrentTimeMsForTesting;
-
-    // Intdef with constants for recording the result of filtering touch events on security
-    // sensitive dialogs. Should stay in sync with the SecurityFilteredTouchResult enum defined in
-    // tools/metrics/histograms/enums.xml.
-    @IntDef({SecurityFilteredTouchResult.BLOCKED, SecurityFilteredTouchResult.HANDLED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SecurityFilteredTouchResult {
-        int HANDLED = 0;
-        int BLOCKED = 1;
-        int NUM_ENTRIES = 2;
-    }
 
     private FadingEdgeScrollView mScrollView;
     private ViewGroup mTitleContainer;
@@ -66,7 +46,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Callback<Integer> mOnButtonClickedCallback;
     private boolean mTitleScrollable;
     private boolean mFilterTouchForSecurity;
-    private boolean mFilteredTouchResultRecorded;
     private Runnable mOnTouchFilteredCallback;
     private ViewGroup mFooterContainer;
     private TextView mFooterMessageView;
@@ -260,13 +239,6 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             boolean shouldBlockTouchEvent = false;
             if ((ev.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0) {
                 shouldBlockTouchEvent = true;
-            }
-            if (ev.getAction() == MotionEvent.ACTION_DOWN && !mFilteredTouchResultRecorded) {
-                mFilteredTouchResultRecorded = true;
-                RecordHistogram.recordEnumeratedHistogram(UMA_SECURITY_FILTERED_TOUCH_RESULT,
-                        shouldBlockTouchEvent ? SecurityFilteredTouchResult.BLOCKED
-                                              : SecurityFilteredTouchResult.HANDLED,
-                        SecurityFilteredTouchResult.NUM_ENTRIES);
             }
             if (shouldBlockTouchEvent && mOnTouchFilteredCallback != null
                     && ev.getAction() == MotionEvent.ACTION_DOWN) {

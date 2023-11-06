@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-FAIL Test AvcConfig supports 'avc' and 'annexb' promise_test: Unhandled rejection with value: undefined
-PASS Test H.264 only supports even sizes
-PASS Resolutions exceeding H.264 level are rejected
+[FAIL] Test AvcConfig supports 'avc' and 'annexb'
+  promise_test: Unhandled rejection with value: undefined
+[PASS] Test H.264 only supports even sizes
+[PASS] Resolutions exceeding H.264 level are rejected
 Harness: the test ran to completion.
 

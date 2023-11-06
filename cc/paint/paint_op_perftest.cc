@@ -12,6 +12,7 @@
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_shader.h"
 #include "cc/test/test_options_provider.h"
+#include "skia/ext/font_utils.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
@@ -151,7 +152,7 @@ TEST_F(PaintOpPerfTest, ManyFlagsOps) {
 TEST_F(PaintOpPerfTest, TextOps) {
   PaintOpBuffer buffer;
 
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
 
   SkFont font;
   font.setTypeface(typeface);

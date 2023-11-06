@@ -47,9 +47,7 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class containing functionality related to voice search.
- */
+/** Class containing functionality related to voice search. */
 @MockedInTests
 public class VoiceRecognitionHandler {
     private static final String TAG = "VoiceRecognition";
@@ -58,25 +56,22 @@ public class VoiceRecognitionHandler {
      * The minimum confidence threshold that will result in navigating directly to a voice search
      * response (as opposed to treating it like a typed string in the Omnibox).
      */
-    @VisibleForTesting
-    public static final float VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD = 0.9f;
+    @VisibleForTesting public static final float VOICE_SEARCH_CONFIDENCE_NAVIGATE_THRESHOLD = 0.9f;
 
-    /**
-     * Extra containing the current timestamp (in epoch time) used for tracking intent latency.
-     */
+    /** Extra containing the current timestamp (in epoch time) used for tracking intent latency. */
     @VisibleForTesting
     static final String EXTRA_INTENT_SENT_TIMESTAMP =
             "com.android.chrome.voice.INTENT_SENT_TIMESTAMP";
 
     /**
-     * Extra containing an integer that indicates which voice entrypoint the intent
-     * was initiated
+     * Extra containing an integer that indicates which voice entrypoint the intent was initiated
      * from.
      *
-     * See VoiceInteractionEventSource for possible values.
+     * <p>See VoiceInteractionEventSource for possible values.
      */
     @VisibleForTesting
     static final String EXTRA_VOICE_ENTRYPOINT = "com.android.chrome.voice.VOICE_ENTRYPOINT";
+
     private static Boolean sIsRecognitionIntentPresentForTesting;
     private final Delegate mDelegate;
     private Long mQueryStartTimeMs;
@@ -90,10 +85,13 @@ public class VoiceRecognitionHandler {
     /**
      * AudioPermissionState defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
-    @IntDef({AudioPermissionState.GRANTED, AudioPermissionState.DENIED_CAN_ASK_AGAIN,
-            AudioPermissionState.DENIED_CANNOT_ASK_AGAIN})
+    @IntDef({
+        AudioPermissionState.GRANTED,
+        AudioPermissionState.DENIED_CAN_ASK_AGAIN,
+        AudioPermissionState.DENIED_CANNOT_ASK_AGAIN
+    })
     public @interface AudioPermissionState {
         // Permissions have been granted and won't be requested this time.
         int GRANTED = 0;
@@ -107,11 +105,15 @@ public class VoiceRecognitionHandler {
     /**
      * VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
-    @IntDef({VoiceInteractionSource.OMNIBOX, VoiceInteractionSource.NTP,
-            VoiceInteractionSource.SEARCH_WIDGET, VoiceInteractionSource.TASKS_SURFACE,
-            VoiceInteractionSource.TOOLBAR})
+    @IntDef({
+        VoiceInteractionSource.OMNIBOX,
+        VoiceInteractionSource.NTP,
+        VoiceInteractionSource.SEARCH_WIDGET,
+        VoiceInteractionSource.TASKS_SURFACE,
+        VoiceInteractionSource.TOOLBAR
+    })
     public @interface VoiceInteractionSource {
         int OMNIBOX = 0;
         int NTP = 1;
@@ -126,7 +128,7 @@ public class VoiceRecognitionHandler {
     /**
      * VoiceIntentTarget defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
     @IntDef({VoiceIntentTarget.SYSTEM, VoiceIntentTarget.ASSISTANT})
     public @interface VoiceIntentTarget {
@@ -140,10 +142,14 @@ public class VoiceRecognitionHandler {
     /**
      * AssistantActionPerformed defined in tools/metrics/histograms/enums.xml.
      *
-     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * <p>Do not reorder or remove items, only add new items before NUM_ENTRIES.
      */
-    @IntDef({AssistantActionPerformed.UNKNOWN, AssistantActionPerformed.TRANSCRIPTION,
-            AssistantActionPerformed.TRANSLATE, AssistantActionPerformed.READOUT})
+    @IntDef({
+        AssistantActionPerformed.UNKNOWN,
+        AssistantActionPerformed.TRANSCRIPTION,
+        AssistantActionPerformed.TRANSLATE,
+        AssistantActionPerformed.READOUT
+    })
     public @interface AssistantActionPerformed {
         int UNKNOWN = 0;
         int TRANSCRIPTION = 1;
@@ -154,12 +160,11 @@ public class VoiceRecognitionHandler {
         int NUM_ENTRIES = 4;
     }
 
-    /**
-     * Delegate interface to provide data to this class from the location bar implementation.
-     */
+    /** Delegate interface to provide data to this class from the location bar implementation. */
     public interface Delegate {
         /**
          * Loads the provided URL, assumes the PageTransition type is TYPED.
+         *
          * @param url The URL to load.
          */
         void loadUrlFromVoice(String url);
@@ -167,21 +172,24 @@ public class VoiceRecognitionHandler {
         /**
          * Sets the query string in the omnibox (ensuring the URL bar has focus and triggering
          * autocomplete for the specified query) as if the user typed it.
+         *
          * @param query The query to be set in the omnibox.
          */
         void setSearchQuery(final String query);
 
         /**
          * Grabs a reference to the location data provider from the location bar.
-         * @return The {@link LocationBarDataProvider} currently in use by the
-         *         {@link LocationBarLayout}.
+         *
+         * @return The {@link LocationBarDataProvider} currently in use by the {@link
+         *     LocationBarLayout}.
          */
         LocationBarDataProvider getLocationBarDataProvider();
 
         /**
          * Grabs a reference to the autocomplete coordinator from the location bar.
-         * @return The {@link AutocompleteCoordinator} currently in use by the
-         *         {@link LocationBarLayout}.
+         *
+         * @return The {@link AutocompleteCoordinator} currently in use by the {@link
+         *     LocationBarLayout}.
          */
         // TODO(tedchoc): Limit the visibility of what is passed in here.  This does not need the
         //                full coordinator.  It simply needs a way to pass voice suggestions to the
@@ -203,15 +211,13 @@ public class VoiceRecognitionHandler {
     /** Interface for observers interested in updates to the voice state. */
     public interface Observer {
         /**
-         * Triggers when an event occurs that impacts availability of the voice
-         * recognition, for example audio permissions or policy values change.
+         * Triggers when an event occurs that impacts availability of the voice recognition, for
+         * example audio permissions or policy values change.
          */
         void onVoiceAvailabilityImpacted();
     }
 
-    /**
-     * A storage class that holds voice recognition string matches and confidence scores.
-     */
+    /** A storage class that holds voice recognition string matches and confidence scores. */
     public static class VoiceResult {
         private final String mMatch;
         private final float mConfidence;
@@ -258,8 +264,8 @@ public class VoiceRecognitionHandler {
     }
 
     /**
-     * Instantiated when a voice search is performed to monitor the web contents for a navigation
-     * to be started so we can notify the render frame that a user gesture has been performed. This
+     * Instantiated when a voice search is performed to monitor the web contents for a navigation to
+     * be started so we can notify the render frame that a user gesture has been performed. This
      * allows autoplay of the voice response for search results.
      */
     private final class VoiceSearchWebContentsObserver extends WebContentsObserver {
@@ -268,11 +274,11 @@ public class VoiceRecognitionHandler {
         }
 
         /**
-         * Forces the user gesture flag to be set on a render frame if the URL being navigated to
-         * is a SRP.
+         * Forces the user gesture flag to be set on a render frame if the URL being navigated to is
+         * a SRP.
          *
          * @param url The URL for the navigation that started, so we can ensure that what we're
-         * navigating to is actually a SRP.
+         *     navigating to is actually a SRP.
          */
         private void setReceivedUserGesture(GURL url) {
             WebContents webContents = mWebContents.get();
@@ -283,7 +289,7 @@ public class VoiceRecognitionHandler {
 
             if (!mProfileSupplier.hasValue()) return;
             if (TemplateUrlServiceFactory.getForProfile(mProfileSupplier.get())
-                            .isSearchResultsPageFromDefaultSearchProvider(url)) {
+                    .isSearchResultsPageFromDefaultSearchProvider(url)) {
                 renderFrameHost.notifyUserActivation();
             }
         }
@@ -297,15 +303,11 @@ public class VoiceRecognitionHandler {
         }
     }
 
-    /**
-     * Callback for when we receive voice search results after initiating voice recognition.
-     */
+    /** Callback for when we receive voice search results after initiating voice recognition. */
     class VoiceRecognitionCompleteCallback implements WindowAndroid.IntentCallback {
-        @VoiceInteractionSource
-        private final int mSource;
+        @VoiceInteractionSource private final int mSource;
 
-        @VoiceIntentTarget
-        private final int mTarget;
+        @VoiceIntentTarget private final int mTarget;
 
         private boolean mCallbackComplete;
 
@@ -342,6 +344,7 @@ public class VoiceRecognitionHandler {
         /**
          * Processes the transcription results within the given Intent, potentially initiating a
          * search or navigation.
+         *
          * @param data The {@link Intent} with returned transcription data.
          */
         private void handleTranscriptionResult(Intent data) {
@@ -394,13 +397,14 @@ public class VoiceRecognitionHandler {
             AutocompleteMatch match =
                     AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
                             .get(profile)
-                            .classify(topResultQuery, false);
+                            .classify(topResultQuery);
 
             String url;
             if (match == null || match.isSearchSuggestion()) {
-                url = TemplateUrlServiceFactory.getForProfile(profile)
-                              .getUrlForVoiceSearchQuery(topResultQuery)
-                              .getSpec();
+                url =
+                        TemplateUrlServiceFactory.getForProfile(profile)
+                                .getUrlForVoiceSearchQuery(topResultQuery)
+                                .getSpec();
             } else {
                 url = match.getUrl().getSpec();
             }
@@ -411,6 +415,7 @@ public class VoiceRecognitionHandler {
 
     /**
      * Returns a String for use as a histogram suffix for histograms split by VoiceIntentTarget.
+     *
      * @param target The target of the voice search intent.
      * @return The histogram suffix for the given target. No '.' separator is included.
      */
@@ -449,9 +454,10 @@ public class VoiceRecognitionHandler {
 
             AutocompleteMatch match = null;
             if (mProfileSupplier.hasValue()) {
-                match = AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
+                match =
+                        AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
                                 .get(mProfileSupplier.get())
-                                .classify(culledString, false);
+                                .classify(culledString);
             }
 
             String urlOrSearchQuery;
@@ -484,7 +490,7 @@ public class VoiceRecognitionHandler {
             return;
         }
 
-        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck=*/true)) {
+        if (!VoiceRecognitionUtil.isVoiceSearchPermittedByPolicy(/* strictPolicyCheck= */ true)) {
             mDelegate.notifyVoiceRecognitionCanceled();
             return;
         }
@@ -499,9 +505,9 @@ public class VoiceRecognitionHandler {
     /**
      * Requests the audio permission and resolves the voice recognition request if necessary.
      *
-     * In a situation when permissions can't be requested anymore, or have been requested
-     * and the result was a denial without an option to request them again, voice
-     * functionality will become unavailable.
+     * <p>In a situation when permissions can't be requested anymore, or have been requested and the
+     * result was a denial without an option to request them again, voice functionality will become
+     * unavailable.
      *
      * @param activity The current {@link Activity} that we're requesting permission for.
      * @param windowAndroid Used to request audio permissions from the Android system.
@@ -522,26 +528,29 @@ public class VoiceRecognitionHandler {
             return false;
         }
 
-        PermissionCallback callback = (permissions, grantResults) -> {
-            if (grantResults.length != 1) {
-                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
-                mDelegate.notifyVoiceRecognitionCanceled();
-                return;
-            }
+        PermissionCallback callback =
+                (permissions, grantResults) -> {
+                    if (grantResults.length != 1) {
+                        recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                        mDelegate.notifyVoiceRecognitionCanceled();
+                        return;
+                    }
 
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Don't record granted permission here, it will get logged from
-                // within startSystemForVoiceSearch call.
-                startSystemForVoiceSearch(activity, windowAndroid, source);
-            } else if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
-                notifyVoiceAvailabilityImpacted();
-                mDelegate.notifyVoiceRecognitionCanceled();
-            } else {
-                recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
-                mDelegate.notifyVoiceRecognitionCanceled();
-            }
-        };
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        // Don't record granted permission here, it will get logged from
+                        // within startSystemForVoiceSearch call.
+                        startSystemForVoiceSearch(activity, windowAndroid, source);
+                    } else if (!windowAndroid.canRequestPermission(
+                            Manifest.permission.RECORD_AUDIO)) {
+                        recordAudioPermissionStateEvent(
+                                AudioPermissionState.DENIED_CANNOT_ASK_AGAIN);
+                        notifyVoiceAvailabilityImpacted();
+                        mDelegate.notifyVoiceRecognitionCanceled();
+                    } else {
+                        recordAudioPermissionStateEvent(AudioPermissionState.DENIED_CAN_ASK_AGAIN);
+                        mDelegate.notifyVoiceRecognitionCanceled();
+                    }
+                };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
 
         return false;
@@ -560,7 +569,8 @@ public class VoiceRecognitionHandler {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_WEB_SEARCH);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
+        intent.putExtra(
+                RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 activity.getComponentName().flattenToString());
         intent.putExtra(RecognizerIntent.EXTRA_WEB_SEARCH_ONLY, true);
 
@@ -600,17 +610,21 @@ public class VoiceRecognitionHandler {
      * @param windowAndroid The {@link WindowAndroid} associated with the current {@link Tab}.
      * @param intent The speech recognition {@link Intent}.
      * @param source Where the request to launch this {@link Intent} originated, such as NTP or
-     *        omnibox.
+     *     omnibox.
      * @param target The intended destination of this {@link Intent}, such as the system voice
-     *        transcription service or Assistant.
+     *     transcription service or Assistant.
      * @return True if showing the {@link Intent} was successful.
      */
-    private boolean showSpeechRecognitionIntent(WindowAndroid windowAndroid, Intent intent,
-            @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
+    private boolean showSpeechRecognitionIntent(
+            WindowAndroid windowAndroid,
+            Intent intent,
+            @VoiceInteractionSource int source,
+            @VoiceIntentTarget int target) {
         recordVoiceSearchStartEvent(source, target);
-        return windowAndroid.showCancelableIntent(intent,
-                       new VoiceRecognitionCompleteCallback(source, target),
-                       R.string.voice_search_error)
+        return windowAndroid.showCancelableIntent(
+                        intent,
+                        new VoiceRecognitionCompleteCallback(source, target),
+                        R.string.voice_search_error)
                 >= 0;
     }
 
@@ -633,11 +647,12 @@ public class VoiceRecognitionHandler {
             // In both scenarios, the state of the application will change to being paused before
             // the permission is changed, so we invalidate the cache here.
             if (!mRegisteredActivityStateListener) {
-                ApplicationStatus.registerApplicationStateListener(newState -> {
-                    if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
-                        mIsVoiceSearchEnabledCached = null;
-                    }
-                });
+                ApplicationStatus.registerApplicationStateListener(
+                        newState -> {
+                            if (newState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
+                                mIsVoiceSearchEnabledCached = null;
+                            }
+                        });
                 mRegisteredActivityStateListener = true;
             }
         }
@@ -652,8 +667,10 @@ public class VoiceRecognitionHandler {
 
     /** Record metrics that are only logged for successful intent responses. */
     @VisibleForTesting
-    protected void recordSuccessMetrics(@VoiceInteractionSource int source,
-            @VoiceIntentTarget int target, @AssistantActionPerformed int action) {
+    protected void recordSuccessMetrics(
+            @VoiceInteractionSource int source,
+            @VoiceIntentTarget int target,
+            @AssistantActionPerformed int action) {
         // Defensive check to guard against onIntentResult being called more than once. This only
         // happens with assistant experiments. See crbug.com/1116927 for details.
         if (mQueryStartTimeMs == null) return;
@@ -666,10 +683,11 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records the source of a voice search initiation.
+     *
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *        enum VoiceInteractionEventSource in enums.xml.
+     *     enum VoiceInteractionEventSource in enums.xml.
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      */
     @VisibleForTesting
     protected void recordVoiceSearchStartEvent(
@@ -682,10 +700,11 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records the source of a successful voice search completion.
+     *
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *        enum VoiceInteractionEventSource in enums.xml.
+     *     enum VoiceInteractionEventSource in enums.xml.
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      */
     @VisibleForTesting
     protected void recordVoiceSearchFinishEvent(
@@ -698,15 +717,18 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records the source of a dismissed voice search.
+     *
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *        enum VoiceInteractionEventSource in enums.xml.
+     *     enum VoiceInteractionEventSource in enums.xml.
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      */
     @VisibleForTesting
     protected void recordVoiceSearchDismissedEvent(
             @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.DismissedEventSource", source,
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.DismissedEventSource",
+                source,
                 VoiceInteractionSource.NUM_ENTRIES);
         RecordHistogram.recordEnumeratedHistogram(
                 "VoiceInteraction.DismissedEventTarget", target, VoiceIntentTarget.NUM_ENTRIES);
@@ -714,10 +736,11 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records the source of a failed voice search.
+     *
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *        enum VoiceInteractionEventSource in enums.xml.
+     *     enum VoiceInteractionEventSource in enums.xml.
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      */
     @VisibleForTesting
     protected void recordVoiceSearchFailureEvent(
@@ -730,15 +753,18 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records the source of an unexpected voice search result. Ideally this will always be 0.
+     *
      * @param source The source of the voice search, such as NTP or omnibox. Values taken from the
-     *        enum VoiceInteractionEventSource in enums.xml.
+     *     enum VoiceInteractionEventSource in enums.xml.
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      */
     @VisibleForTesting
     protected void recordVoiceSearchUnexpectedResult(
             @VoiceInteractionSource int source, @VoiceIntentTarget int target) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.UnexpectedResultSource", source,
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.UnexpectedResultSource",
+                source,
                 VoiceInteractionSource.NUM_ENTRIES);
         RecordHistogram.recordEnumeratedHistogram(
                 "VoiceInteraction.UnexpectedResultTarget", target, VoiceIntentTarget.NUM_ENTRIES);
@@ -747,10 +773,10 @@ public class VoiceRecognitionHandler {
     /**
      * Records the result of a voice search.
      *
-     * This also records submetrics split by the intent target.
+     * <p>This also records submetrics split by the intent target.
      *
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      * @param result The result of a voice search, true if results were successfully returned.
      */
     @VisibleForTesting
@@ -765,13 +791,13 @@ public class VoiceRecognitionHandler {
     }
 
     /**
-     * Records the voice search confidence value as a percentage, instead of the 0.0 to 1.0 range
-     * we receive.
+     * Records the voice search confidence value as a percentage, instead of the 0.0 to 1.0 range we
+     * receive.
      *
-     * This also records submetrics split by the intent target.
+     * <p>This also records submetrics split by the intent target.
      *
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      * @param value The voice search confidence value we received from 0.0 to 1.0.
      */
     @VisibleForTesting
@@ -790,12 +816,12 @@ public class VoiceRecognitionHandler {
     /**
      * Records the end-to-end voice search duration.
      *
-     * This also records submetrics split by the intent target.
+     * <p>This also records submetrics split by the intent target.
      *
      * @param target The intended recipient of the intent, such as the system voice transcription
-     *        service or Assistant.
+     *     service or Assistant.
      * @param openDurationMs The duration, in milliseconds, between when a voice intent was
-     *        initiated and when its result was returned.
+     *     initiated and when its result was returned.
      */
     private void recordVoiceSearchOpenDuration(@VoiceIntentTarget int target, long openDurationMs) {
         RecordHistogram.recordMediumTimesHistogram(
@@ -811,21 +837,24 @@ public class VoiceRecognitionHandler {
 
     /**
      * Records audio permissions state when a system voice recognition is requested.
+     *
      * @param permissionsState The current RECORD_AUDIO permission state.
      */
     @VisibleForTesting
     protected void recordAudioPermissionStateEvent(@AudioPermissionState int permissionsState) {
-        RecordHistogram.recordEnumeratedHistogram("VoiceInteraction.AudioPermissionEvent",
-                permissionsState, AudioPermissionState.NUM_ENTRIES);
+        RecordHistogram.recordEnumeratedHistogram(
+                "VoiceInteraction.AudioPermissionEvent",
+                permissionsState,
+                AudioPermissionState.NUM_ENTRIES);
     }
 
     /**
-     * Calls into {@link VoiceRecognitionUtil} to determine whether or not the
-     * {@link RecognizerIntent#ACTION_RECOGNIZE_SPEECH} {@link Intent} is handled by any
-     * {@link android.app.Activity}s in the system.
+     * Calls into {@link VoiceRecognitionUtil} to determine whether or not the {@link
+     * RecognizerIntent#ACTION_RECOGNIZE_SPEECH} {@link Intent} is handled by any {@link
+     * android.app.Activity}s in the system.
      *
      * @param useCachedValue Whether or not to use the cached value from a previous result.
-     * @return {@code true} if recognition is supported.  {@code false} otherwise.
+     * @return {@code true} if recognition is supported. {@code false} otherwise.
      */
     @VisibleForTesting
     protected static boolean isRecognitionIntentPresent(boolean useCachedValue) {

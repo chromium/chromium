@@ -15,9 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link ConditionalAnimationRunner}
- */
+/** Unit tests for {@link ConditionalAnimationRunner} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ConditionalAnimationRunnerUnitTest {
     private static class TestAnimationRunner implements ConditionalAnimationRunner.AnimationRunner {

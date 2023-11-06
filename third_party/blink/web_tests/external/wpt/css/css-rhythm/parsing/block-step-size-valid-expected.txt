@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-FAIL e.style['block-step-size'] = "1px" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['block-step-size'] = "2em" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['block-step-size'] = "0" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['block-step-size'] = "none" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['block-step-size'] = "calc(2em + 3ex)" should set the property value assert_not_equals: property should be set got disallowed value ""
-FAIL e.style['block-step-size'] = "1.2em" should set the property value assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "1px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "2em" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "0" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "none" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "calc(2em + 3ex)" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['block-step-size'] = "1.2em" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

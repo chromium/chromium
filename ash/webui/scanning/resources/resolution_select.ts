@@ -23,7 +23,7 @@ const ResolutionSelectElementBase = SelectMixin(I18nMixin(PolymerElement)) as
         AbstractConstructor<SelectMixinInterface<number>>&
     {new (): PolymerElement & I18nMixinInterface};
 
-class ResolutionSelectElement extends ResolutionSelectElementBase {
+export class ResolutionSelectElement extends ResolutionSelectElementBase {
   static get is() {
     return 'resolution-select' as const;
   }

@@ -807,16 +807,14 @@ void VideoDecoderShim::SendPictures() {
       // TODO(b/230007619): ideally, we shouldn't assume that these components
       // use the same stream. We should wire SyncTokens to make this more
       // general.
-      // NOTE: We cannot use SharedImage for the direct upload optimization here
-      // as that requires that the caller keep the destination texture alive,
-      // which this caller does not.
+      const auto& gl_capabilities =
+          pepper_video_decode_context_provider_->ContextCapabilities();
       if (!video_renderer_->CopyVideoFrameTexturesToGLTexture(
-              shared_main_thread_context_provider_.get(), gl,
+              shared_main_thread_context_provider_.get(), gl, gl_capabilities,
               frame->video_frame, destination_holder.texture_target,
               base::strict_cast<unsigned int>(destination_texture_id), GL_RGBA,
               GL_RGBA, GL_UNSIGNED_BYTE, 0,
-              /*premultiply_alpha=*/false, /*flip_y=*/false,
-              /*allow_shared_image_for_direct_upload=*/false)) {
+              /*premultiply_alpha=*/false, /*flip_y=*/false)) {
         gl->DeleteTextures(1, &destination_texture_id);
         gl->Flush();
         available_textures_.insert(texture_id);

@@ -5,8 +5,6 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "parent_access"
-
   files = [
     "extension_approvals_test.ts",
     "parent_access_after_test.ts",

@@ -137,8 +137,6 @@ class WebApps : public apps::AppPublisher,
 
   std::vector<apps::AppPtr> CreateWebApps();
   void InitWebApps();
-  void OnGetAppSize(webapps::AppId app_id,
-                    absl::optional<ComputeAppSizeCommand::Size> size);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // apps::AppPublisher overrides.

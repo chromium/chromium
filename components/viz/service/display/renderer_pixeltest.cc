@@ -49,6 +49,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "components/viz/test/test_shared_bitmap_manager.h"
 #include "components/viz/test/test_types.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_frame.h"
@@ -126,9 +127,12 @@ ResourceId CreateGpuResource(
   DCHECK(context_provider);
   gpu::SharedImageInterface* sii = context_provider->SharedImageInterface();
   DCHECK(sii);
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      format, size, color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", pixels);
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(format, size, color_space,
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+                             pixels)
+          ->mailbox();
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
 
   TransferableResource gl_resource =
@@ -2000,17 +2004,16 @@ class IntersectingVideoQuadPixelTest : public IntersectingQuadPixelTest {
     IntersectingQuadPixelTest::SetUp();
     constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
-    constexpr bool kUseR16Texture = false;
     constexpr int kMaxResourceSize = 10000;
 
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(), nullptr,
         this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
+        kUseGpuMemoryBufferResources, kMaxResourceSize);
     video_resource_updater2_ = std::make_unique<media::VideoResourceUpdater>(
         this->child_context_provider_.get(), nullptr,
         this->child_resource_provider_.get(), kUseStreamVideoDrawQuad,
-        kUseGpuMemoryBufferResources, kUseR16Texture, kMaxResourceSize);
+        kUseGpuMemoryBufferResources, kMaxResourceSize);
   }
 
   void TearDown() override {
@@ -2422,11 +2425,10 @@ class VideoRendererPixelTestBase : public VizPixelTest {
     VizPixelTest::SetUp();
     constexpr bool kUseStreamVideoDrawQuad = false;
     constexpr bool kUseGpuMemoryBufferResources = false;
-    constexpr bool kUseR16Texture = false;
     constexpr int kMaxResourceSize = 10000;
     video_resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
         child_context_provider_.get(), nullptr, child_resource_provider_.get(),
-        kUseStreamVideoDrawQuad, kUseGpuMemoryBufferResources, kUseR16Texture,
+        kUseStreamVideoDrawQuad, kUseGpuMemoryBufferResources,
         kMaxResourceSize);
   }
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
@@ -20,6 +21,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/os_feedback/os_feedback_screenshot_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -30,9 +32,11 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/feedback/child_web_dialog.h"
+#include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
+#include "chrome/browser/ui/webui/ash/os_feedback_dialog.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "components/feedback/content/content_tracing_manager.h"
@@ -50,6 +54,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -91,6 +96,18 @@ bool ShouldAddAttachment(const AttachedFilePtr& attached_file) {
     return false;
   }
   return true;
+}
+
+// Find the native window of feedback SWA or dialog.
+gfx::NativeWindow FindFeedbackWindow(Profile* profile) {
+  Browser* feedback_browser =
+      ash::FindSystemWebAppBrowser(profile, ash::SystemWebAppType::OS_FEEDBACK);
+
+  if (feedback_browser) {
+    return feedback_browser->window()->GetNativeWindow();
+  }
+
+  return OsFeedbackDialog::FindDialogWindow();
 }
 
 // Key-value pair to be added to FeedbackData when user grants consent to Google
@@ -187,6 +204,17 @@ ChromeOsFeedbackDelegate::GetLinkedPhoneMacAddress() {
   return remote_device_ref.value().bluetooth_public_address();
 }
 
+bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed() const {
+  const base::Value::List& allowed_list = profile_->GetPrefs()->GetList(
+      prefs::kUserFeedbackWithLowLevelDebugDataAllowed);
+  for (const auto& item : allowed_list) {
+    if (item == "all" || item == "wifi") {
+      return true;
+    }
+  }
+  return false;
+}
+
 int ChromeOsFeedbackDelegate::GetPerformanceTraceId() {
   if (ContentTracingManager* manager = ContentTracingManager::Get()) {
     return manager->RequestTrace();
@@ -217,6 +245,8 @@ void ChromeOsFeedbackDelegate::SendReport(
   feedback_params.load_system_info = report->include_system_logs_and_histograms;
   feedback_params.send_histograms = report->include_system_logs_and_histograms;
   feedback_params.send_bluetooth_logs = report->send_bluetooth_logs;
+  feedback_params.send_wifi_debug_logs =
+      report->send_wifi_debug_logs && IsWifiDebugLogsAllowed();
   feedback_params.send_tab_titles = report->include_screenshot;
   feedback_params.send_autofill_metadata = report->include_autofill_metadata;
   feedback_params.is_internal_email =
@@ -367,8 +397,21 @@ void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,
   std::move(callback).Run(send_status);
 }
 
+// An active feedback app can be either a SWA (for logged in users) or a dialog
+// (for users not logged in).
+// - Open the diagnostics app as SWA when feedback SWA exists.
+// - Otherwise, open it as a dialog.
 void ChromeOsFeedbackDelegate::OpenDiagnosticsApp() {
-  ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::DIAGNOSTICS);
+  if (ash::FindSystemWebAppBrowser(profile_,
+                                   ash::SystemWebAppType::OS_FEEDBACK)) {
+    ash::LaunchSystemWebAppAsync(profile_, ash::SystemWebAppType::DIAGNOSTICS);
+    return;
+  }
+
+  gfx::NativeWindow window = OsFeedbackDialog::FindDialogWindow();
+  CHECK(window);
+  ash::DiagnosticsDialog::ShowDialog(
+      ash::DiagnosticsDialog::DiagnosticsPage::kDefault, window);
 }
 
 void ChromeOsFeedbackDelegate::OpenExploreApp() {
@@ -400,21 +443,22 @@ bool ChromeOsFeedbackDelegate::IsChildAccount() {
 
 void ChromeOsFeedbackDelegate::OpenWebDialog(GURL url,
                                              const std::string& args) {
-  Browser* feedback_browser = ash::FindSystemWebAppBrowser(
-      profile_, ash::SystemWebAppType::OS_FEEDBACK);
-
-  gfx::NativeWindow window = feedback_browser->window()->GetNativeWindow();
-
+  gfx::NativeWindow window = FindFeedbackWindow(profile_);
+  CHECK(window);
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
 
-  ChildWebDialog* child_dialog = new ChildWebDialog(
-      profile_, widget, url,
-      /*title=*/std::u16string(),
-      /*modal_type=*/ui::MODAL_TYPE_NONE, /*args=*/args, /*dialog_width=*/640,
-      /*dialog_height=*/400, /*can_resize=*/true,
-      /*can_minimize=*/true);
+  auto delegate = std::make_unique<ui::WebDialogDelegate>();
+  delegate->set_can_close(true);
+  delegate->set_dialog_args(args);
+  delegate->set_dialog_content_url(url);
+  delegate->set_dialog_size(gfx::Size(640, 400));
+  delegate->set_can_maximize(true);
+  delegate->set_can_minimize(true);
+  delegate->set_can_resize(true);
+  delegate->set_show_dialog_title(true);
 
-  child_dialog->Show();
+  // The delegate is self-owning once the dialog is shown.
+  chrome::ShowWebDialog(widget->GetNativeView(), profile_, delegate.release());
 }
 
 void ChromeOsFeedbackDelegate::PreloadSystemLogs() {

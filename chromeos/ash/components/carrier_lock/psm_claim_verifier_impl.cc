@@ -17,7 +17,7 @@ namespace {
 
 // const values
 constexpr size_t kMaxOprfResponseSizeBytes = 1 << 20;   // 1MB;
-constexpr size_t kMaxQueryResponseSizeBytes = 1 << 26;  // 64MB;
+constexpr size_t kMaxQueryResponseSizeBytes = 5 << 20;  // 5MB;
 constexpr base::TimeDelta kRequestTimeoutSeconds = base::Seconds(60);
 
 // PSM server URL
@@ -33,16 +33,26 @@ const net::NetworkTrafficAnnotationTag traffic_annotation =
           sender: "Carrier Lock manager"
           description:
             "Check if the device is a member of Carrier Lock group on the "
-            "Private Set Membership service.
+            "Private Set Membership service."
           trigger: "Carrier Lock manager makes this network request at first "
                    "boot to check if the cellular modem should be locked."
           data: "Manufacturer, model, serial of the device and API key."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "cros-cellular-core@google.com"
+            }
+          }
+          user_data {
+            type: DEVICE_ID
+            type: HW_OS_INFO
+          }
+          last_reviewed: "2023-10-24"
         }
         policy {
           cookies_allowed: NO
           setting: "This feature cannot be disabled in settings."
-          policy_exception_justification: "Not implemented."
+          policy_exception_justification: "Carrier Lock is always enforced."
         })");
 
 std::vector<psm_rlwe::RlwePlaintextId> GetPsmDeviceId(std::string serial,

@@ -137,13 +137,11 @@ class LoadingPredictor : public KeyedService,
   void CleanupAbandonedHintsAndNavigations(NavigationId navigation_id);
 
   // May start preconnect and preresolve jobs according to |prediction| for
-  // |url| with a given hint |origin|.
+  // |url|.
   //
   // When LoadingPredictorPrefetch is enabled, starts prefetch
   // jobs if |prediction| has prefetch requests.
-  void MaybeAddPreconnect(const GURL& url,
-                          PreconnectPrediction prediction,
-                          HintOrigin origin);
+  void MaybeAddPreconnect(const GURL& url, PreconnectPrediction prediction);
   // If a preconnect or prefetch exists for |url|, stop it.
   void MaybeRemovePreconnect(const GURL& url);
 

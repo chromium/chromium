@@ -31,6 +31,7 @@ default_package_visibility = [
 package(
     default_visibility = default_package_visibility,
     features = [
+        "header_modules",
         "layering_check",
         "parse_headers",
     ],

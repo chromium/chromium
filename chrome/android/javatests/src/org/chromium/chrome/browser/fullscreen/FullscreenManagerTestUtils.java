@@ -25,12 +25,11 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Utility methods for testing the {@link BrowserControlsManager}.
- */
+/** Utility methods for testing the {@link BrowserControlsManager}. */
 public class FullscreenManagerTestUtils {
     /**
      * Scrolls the underlying web page to show or hide the browser controls.
+     *
      * @param testRule The test rule for the currently running test.
      * @param show Whether the browser controls should be shown.
      */
@@ -61,6 +60,7 @@ public class FullscreenManagerTestUtils {
 
     /**
      * Waits for the browser controls to reach the specified position.
+     *
      * @param testRule The test rule for the currently running test.
      * @param position The desired top controls offset.
      */
@@ -68,29 +68,34 @@ public class FullscreenManagerTestUtils {
             ChromeActivityTestRule testRule, int position) {
         final BrowserControlsStateProvider browserControlsStateProvider =
                 testRule.getActivity().getBrowserControlsManager();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    browserControlsStateProvider.getTopControlOffset(), Matchers.is(position));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            browserControlsStateProvider.getTopControlOffset(),
+                            Matchers.is(position));
+                });
     }
 
     /**
      * Waits for the base page to be scrollable.
+     *
      * @param tab The current activity tab.
      */
     public static void waitForPageToBeScrollable(final Tab tab) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(RenderCoordinates.fromWebContents(tab.getWebContents())
-                                       .getContentHeightPixInt(),
-                    Matchers.greaterThan(tab.getContentView().getHeight()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            RenderCoordinates.fromWebContents(tab.getWebContents())
+                                    .getContentHeightPixInt(),
+                            Matchers.greaterThan(tab.getContentView().getHeight()));
+                });
     }
 
     /**
      * Waits for the browser controls to be moveable by user gesture.
      *
-     * This function requires the browser controls to start fully visible. Then it ensures that
-     * at some point the controls can be moved by user gesture.  It will then fully cycle the top
+     * <p>This function requires the browser controls to start fully visible. Then it ensures that
+     * at some point the controls can be moved by user gesture. It will then fully cycle the top
      * controls to entirely hidden and back to fully shown.
      *
      * @param testRule The test rule for the currently running test.
@@ -106,19 +111,25 @@ public class FullscreenManagerTestUtils {
         final float initialVisibleContentOffset =
                 browserControlsStateProvider.getTopVisibleContentOffset();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            browserControlsStateProvider.addObserver(new BrowserControlsStateProvider.Observer() {
-                @Override
-                public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                        int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                    if (browserControlsStateProvider.getTopVisibleContentOffset()
-                            != initialVisibleContentOffset) {
-                        contentMovedCallback.notifyCalled();
-                        browserControlsStateProvider.removeObserver(this);
-                    }
-                }
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    browserControlsStateProvider.addObserver(
+                            new BrowserControlsStateProvider.Observer() {
+                                @Override
+                                public void onControlsOffsetChanged(
+                                        int topOffset,
+                                        int topControlsMinHeightOffset,
+                                        int bottomOffset,
+                                        int bottomControlsMinHeightOffset,
+                                        boolean needsAnimate) {
+                                    if (browserControlsStateProvider.getTopVisibleContentOffset()
+                                            != initialVisibleContentOffset) {
+                                        contentMovedCallback.notifyCalled();
+                                        browserControlsStateProvider.removeObserver(this);
+                                    }
+                                }
+                            });
+                });
 
         float dragX = 50f;
         float dragStartY = tab.getView().getHeight() - 50f;
@@ -143,9 +154,7 @@ public class FullscreenManagerTestUtils {
         Assert.fail("Visible content never moved as expected.");
     }
 
-    /**
-     * Disable any browser visibility overrides for testing.
-     */
+    /** Disable any browser visibility overrides for testing. */
     public static void disableBrowserOverrides() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> BrowserStateBrowserControlsVisibilityDelegate.disableForTesting());
@@ -153,10 +162,16 @@ public class FullscreenManagerTestUtils {
 
     public static void fling(ChromeActivityTestRule testRule, final int vx, final int vy) {
         PostTask.runOrPostTask(
-                TaskTraits.UI_DEFAULT, () -> {
-                    testRule.getWebContents().getEventForwarder().startFling(
-                            SystemClock.uptimeMillis(), vx, vy, /*synthetic_scroll*/ false,
-                            /*prevent_boosting*/ false);
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    testRule.getWebContents()
+                            .getEventForwarder()
+                            .startFling(
+                                    SystemClock.uptimeMillis(),
+                                    vx,
+                                    vy,
+                                    /* synthetic_scroll= */ false,
+                                    /* prevent_boosting= */ false);
                 });
     }
 }

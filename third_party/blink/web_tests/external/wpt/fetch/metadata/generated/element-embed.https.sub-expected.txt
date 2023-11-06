@@ -1,20 +1,21 @@
 This is a testharness.js-based test.
-PASS sec-fetch-site - Same origin
-PASS sec-fetch-site - Cross-site
-PASS sec-fetch-site - Same site
-PASS sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect
-PASS sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect
-PASS sec-fetch-site - Cross-Site -> Same Origin
-PASS sec-fetch-site - Cross-Site -> Same-Site
-PASS sec-fetch-site - Cross-Site -> Cross-Site
-PASS sec-fetch-site - Same-Origin -> Same Origin
-PASS sec-fetch-site - Same-Origin -> Same-Site
-PASS sec-fetch-site - Same-Origin -> Cross-Site
-PASS sec-fetch-site - Same-Site -> Same Origin
-PASS sec-fetch-site - Same-Site -> Same-Site
-PASS sec-fetch-site - Same-Site -> Cross-Site
-FAIL sec-fetch-mode assert_array_equals: expected property 0 to be "no-cors" but got "navigate" (expected array ["no-cors"] got ["navigate"])
-PASS sec-fetch-dest
-PASS sec-fetch-user
+[PASS] sec-fetch-site - Same origin
+[PASS] sec-fetch-site - Cross-site
+[PASS] sec-fetch-site - Same site
+[PASS] sec-fetch-site - Same-Origin -> Cross-Site -> Same-Origin redirect
+[PASS] sec-fetch-site - Same-Origin -> Same-Site -> Same-Origin redirect
+[PASS] sec-fetch-site - Cross-Site -> Same Origin
+[PASS] sec-fetch-site - Cross-Site -> Same-Site
+[PASS] sec-fetch-site - Cross-Site -> Cross-Site
+[PASS] sec-fetch-site - Same-Origin -> Same Origin
+[PASS] sec-fetch-site - Same-Origin -> Same-Site
+[PASS] sec-fetch-site - Same-Origin -> Cross-Site
+[PASS] sec-fetch-site - Same-Site -> Same Origin
+[PASS] sec-fetch-site - Same-Site -> Same-Site
+[PASS] sec-fetch-site - Same-Site -> Cross-Site
+[FAIL] sec-fetch-mode
+  assert_array_equals: expected property 0 to be "no-cors" but got "navigate" (expected array ["no-cors"] got ["navigate"])
+[PASS] sec-fetch-dest
+[PASS] sec-fetch-user
 Harness: the test ran to completion.
 

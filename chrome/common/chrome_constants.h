@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace chrome {
 
@@ -46,10 +45,6 @@ extern const char kInitialProfile[];
 extern const char kMultiProfileDirPrefix[];
 extern const base::FilePath::CharType kGuestProfileDir[];
 extern const base::FilePath::CharType kSystemProfileDir[];
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// The prefix for the name of a web app profile.
-extern const char kWebAppProfilePrefix[];
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // filenames
 extern const base::FilePath::CharType kAccountPreferencesFilename[];

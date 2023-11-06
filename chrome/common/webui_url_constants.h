@@ -77,6 +77,8 @@ extern const char kChromeUIDeviceLogUrl[];
 extern const char kChromeUIDevUiLoaderURL[];
 extern const char kChromeUIDiceWebSigninInterceptHost[];
 extern const char kChromeUIDiceWebSigninInterceptURL[];
+extern const char kChromeUIDiceWebSigninInterceptChromeSigninURL[];
+extern const char kChromeUIDiceWebSigninInterceptChromeSigninSubPage[];
 extern const char kChromeUIDownloadInternalsHost[];
 extern const char kChromeUIDownloadsHost[];
 extern const char kChromeUIDownloadsURL[];
@@ -411,7 +413,6 @@ extern const char kChromeUINotifGeneratorURL[];
 extern const char kChromeUIOSSettingsHost[];
 extern const char kChromeUIOSSettingsURL[];
 extern const char kChromeUISystemURL[];
-extern const char kOsUIAboutURL[];
 extern const char kOsUIComponentsURL[];
 extern const char kOsUIConnectivityDiagnosticsAppURL[];
 extern const char kOsUIDeviceLogURL[];
@@ -526,6 +527,7 @@ extern const char kAutofillSubPage[];
 extern const char kClearBrowserDataSubPage[];
 extern const char kContentSettingsSubPage[];
 extern const char kAllSitesSettingsSubpage[];
+extern const char kOnDeviceSiteDataSubpage[];
 extern const char kCookieSettingsSubPage[];
 extern const char kDownloadsSubPage[];
 extern const char kHandlerSettingsSubPage[];
@@ -574,12 +576,6 @@ extern const char kCleanupSubPage[];
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kChromeUICastFeedbackHost[];
-#endif
-
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const char kChromeUILensUntrustedURL[];
-extern const char kChromeUILensURL[];
-extern const char kChromeUILensHost[];
 #endif
 
 // Extensions sub pages.

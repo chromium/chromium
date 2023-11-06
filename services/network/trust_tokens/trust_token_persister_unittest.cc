@@ -27,7 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::IsNull;
 using ::testing::Pointee;
 

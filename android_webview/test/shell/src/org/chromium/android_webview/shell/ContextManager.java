@@ -6,8 +6,8 @@ package org.chromium.android_webview.shell;
 
 import android.view.Surface;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 /** draw_fn framework side implementation for tests. */
 @JNINamespace("draw_fn")

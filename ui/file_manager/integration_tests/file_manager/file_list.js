@@ -211,9 +211,11 @@ export async function countAndCheckLatestA11yMessage(
     return '';
   }
   const latestMessage = a11yMessages[a11yMessages.length - 1];
+
   chrome.test.assertEq(
       expectedCount, a11yMessages.length,
-      'Wrong number of a11y messages: latest message: ' + latestMessage);
+      `Wrong number of a11y messages: latest message: ${
+          latestMessage} \nAll messages:\n ${a11yMessages.join('\n-')}`);
   chrome.test.assertEq(expectedMessage, latestMessage);
   return latestMessage;
 }

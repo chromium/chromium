@@ -77,9 +77,15 @@ export class SettingsPerformancePageElement extends
         type: Object,
         value: HighEfficiencyModeState,
       },
+
+      numericUncheckedValues_: {
+        type: Array,
+        value: () => [HighEfficiencyModeState.DISABLED],
+      },
     };
   }
 
+  private numericUncheckedValues_: HighEfficiencyModeState[];
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 

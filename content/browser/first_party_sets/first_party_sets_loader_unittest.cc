@@ -162,4 +162,30 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
                   net::SiteType::kAssociated, 0)));
 }
 
+TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
+      R"({"primary": "https://bar.test",)"
+      R"("associatedSites": ["https://associatedsite1.test"]})"));
+
+  // All but the first SetManuallySpecifiedSet call should be ignored.
+  loader().SetManuallySpecifiedSet(LocalSetDeclaration(
+      R"({"primary": "https://bar.test",)"
+      R"("associatedSites": ["https://associatedsite2.test"]})"));
+
+  SetComponentSets(loader(), base::Version(), "");
+
+  const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
+
+  EXPECT_THAT(WaitAndGetResult().FindEntries(
+                  {
+                      associated1,
+                      net::SchemefulSite(GURL("https://associatedsite2.test")),
+                  },
+                  net::FirstPartySetsContextConfig()),
+              UnorderedElementsAre(Pair(
+                  associated1, net::FirstPartySetEntry(
+                                   net::SchemefulSite(GURL("https://bar.test")),
+                                   net::SiteType::kAssociated, 0))));
+}
+
 }  // namespace content

@@ -12,10 +12,10 @@
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash::language_packs {
 
@@ -226,13 +226,6 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   void UpdatePacksForOobe(const std::string& locale,
                           OnUpdatePacksForOobeCallback callback);
 
-  // Update all packs related to input methods to match current state.
-  // This method is called internally each time we detect a change to the list
-  // of input methods in the current session.
-  void UpdatePacksForInputMethods(
-      base::span<const std::string> current_hwr_locales,
-      input_method::InputMethodManager* input_method_manager);
-
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);
 
@@ -262,6 +255,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
                               const dlcservice::DlcState& dlc_state);
 
   base::ObserverList<Observer> observers_;
+  base::ScopedObservation<DlcserviceClient, DlcserviceClient::Observer> obs_{
+      this};
 };
 
 }  // namespace ash::language_packs

@@ -39,9 +39,7 @@ import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Controller tests for the all passwords bottom sheet.
- */
+/** Controller tests for the all passwords bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.FILLING_PASSWORDS_FROM_ANY_ORIGIN)
 public class AllPasswordsBottomSheetControllerTest {
@@ -55,14 +53,10 @@ public class AllPasswordsBottomSheetControllerTest {
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Mock
-    private UrlUtilities.Natives mUrlUtilitiesJniMock;
-    @Mock
-    private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Mock private UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock private AllPasswordsBottomSheetCoordinator.Delegate mMockDelegate;
 
     private AllPasswordsBottomSheetMediator mMediator;
     private PropertyModel mModel;
@@ -73,8 +67,9 @@ public class AllPasswordsBottomSheetControllerTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
         mMediator = new AllPasswordsBottomSheetMediator();
-        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
-                EXAMPLE_ORIGIN, mMediator::onDismissed, mMediator::onQueryTextChange);
+        mModel =
+                AllPasswordsBottomSheetProperties.createDefaultModel(
+                        EXAMPLE_ORIGIN, mMediator::onDismissed, mMediator::onQueryTextChange);
         mMediator.initialize(mMockDelegate, mModel);
 
         when(mUrlUtilitiesJniMock.getDomainAndRegistry(anyString(), anyBoolean()))
@@ -146,9 +141,10 @@ public class AllPasswordsBottomSheetControllerTest {
     }
 
     /**
-     * Helper to get organization-identifying host from URLs. The real implementation calls
-     * {@link UrlUtilities}. It's not useful to actually reimplement it, so just return a string in
-     * a trivial way.
+     * Helper to get organization-identifying host from URLs. The real implementation calls {@link
+     * UrlUtilities}. It's not useful to actually reimplement it, so just return a string in a
+     * trivial way.
+     *
      * @param origin A URL.
      * @return The organization-identifying host from the given URL.
      */

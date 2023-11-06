@@ -22,6 +22,7 @@
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
@@ -166,12 +167,14 @@ BitmapRasterBufferProvider::AcquireBufferForRaster(
           size.width(), gfx::BufferFormat::RGBA_8888, 0));
       handle.region = backing->unsafe_region.Duplicate();
 
-      backing->shared_bitmap_id =
+      auto client_shared_image =
           frame_sink_->shared_image_interface()->CreateSharedImage(
               viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
               gpu::SHARED_IMAGE_USAGE_CPU_WRITE, kDebugLabel,
               std::move(handle));
+      CHECK(client_shared_image);
+      backing->shared_bitmap_id = client_shared_image->mailbox();
 
     } else {
       backing->shared_bitmap_id = viz::SharedBitmap::GenerateId();

@@ -408,7 +408,9 @@ class NonIterableBitMask {
   uint32_t LeadingZeros() const {
     constexpr int total_significant_bits = SignificantBits << Shift;
     constexpr int extra_bits = sizeof(T) * 8 - total_significant_bits;
-    return static_cast<uint32_t>(countl_zero(mask_ << extra_bits)) >> Shift;
+    return static_cast<uint32_t>(
+               countl_zero(static_cast<T>(mask_ << extra_bits))) >>
+           Shift;
   }
 
   T mask_;
@@ -614,29 +616,31 @@ struct GroupSse2Impl {
   }
 
   // Returns a bitmask representing the positions of slots that match hash.
-  BitMask<uint32_t, kWidth> Match(h2_t hash) const {
+  BitMask<uint16_t, kWidth> Match(h2_t hash) const {
     auto match = _mm_set1_epi8(static_cast<char>(hash));
-    return BitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    BitMask<uint16_t, kWidth> result = BitMask<uint16_t, kWidth>(0);
+    result = BitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    return result;
   }
 
   // Returns a bitmask representing the positions of empty slots.
-  NonIterableBitMask<uint32_t, kWidth> MaskEmpty() const {
+  NonIterableBitMask<uint16_t, kWidth> MaskEmpty() const {
 #ifdef ABSL_INTERNAL_HAVE_SSSE3
     // This only works because ctrl_t::kEmpty is -128.
-    return NonIterableBitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
+    return NonIterableBitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_sign_epi8(ctrl, ctrl))));
 #else
     auto match = _mm_set1_epi8(static_cast<char>(ctrl_t::kEmpty));
-    return NonIterableBitMask<uint32_t, kWidth>(
-        static_cast<uint32_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
+    return NonIterableBitMask<uint16_t, kWidth>(
+        static_cast<uint16_t>(_mm_movemask_epi8(_mm_cmpeq_epi8(match, ctrl))));
 #endif
   }
 
   // Returns a bitmask representing the positions of empty or deleted slots.
-  NonIterableBitMask<uint32_t, kWidth> MaskEmptyOrDeleted() const {
+  NonIterableBitMask<uint16_t, kWidth> MaskEmptyOrDeleted() const {
     auto special = _mm_set1_epi8(static_cast<char>(ctrl_t::kSentinel));
-    return NonIterableBitMask<uint32_t, kWidth>(static_cast<uint32_t>(
+    return NonIterableBitMask<uint16_t, kWidth>(static_cast<uint16_t>(
         _mm_movemask_epi8(_mm_cmpgt_epi8_fixed(special, ctrl))));
   }
 
@@ -836,15 +840,19 @@ class CommonFieldsGenerationInfoEnabled {
   // whenever reserved_growth_ is zero.
   bool should_rehash_for_bug_detection_on_insert(const ctrl_t* ctrl,
                                                  size_t capacity) const;
+  // Similar to above, except that we don't depend on reserved_growth_.
+  bool should_rehash_for_bug_detection_on_move(const ctrl_t* ctrl,
+                                               size_t capacity) const;
   void maybe_increment_generation_on_insert() {
     if (reserved_growth_ == kReservedGrowthJustRanOut) reserved_growth_ = 0;
 
     if (reserved_growth_ > 0) {
       if (--reserved_growth_ == 0) reserved_growth_ = kReservedGrowthJustRanOut;
     } else {
-      *generation_ = NextGeneration(*generation_);
+      increment_generation();
     }
   }
+  void increment_generation() { *generation_ = NextGeneration(*generation_); }
   void reset_reserved_growth(size_t reservation, size_t size) {
     reserved_growth_ = reservation - size;
   }
@@ -890,7 +898,11 @@ class CommonFieldsGenerationInfoDisabled {
   bool should_rehash_for_bug_detection_on_insert(const ctrl_t*, size_t) const {
     return false;
   }
+  bool should_rehash_for_bug_detection_on_move(const ctrl_t*, size_t) const {
+    return false;
+  }
   void maybe_increment_generation_on_insert() {}
+  void increment_generation() {}
   void reset_reserved_growth(size_t, size_t) {}
   size_t reserved_growth() const { return 0; }
   void set_reserved_growth(size_t) {}
@@ -1062,6 +1074,14 @@ class CommonFields : public CommonFieldsGenerationInfo {
     return CommonFieldsGenerationInfo::
         should_rehash_for_bug_detection_on_insert(control(), capacity());
   }
+  bool should_rehash_for_bug_detection_on_move() const {
+    return CommonFieldsGenerationInfo::
+        should_rehash_for_bug_detection_on_move(control(), capacity());
+  }
+  void maybe_increment_generation_on_move() {
+    if (capacity() == 0) return;
+    increment_generation();
+  }
   void reset_reserved_growth(size_t reservation) {
     CommonFieldsGenerationInfo::reset_reserved_growth(reservation, size());
   }
@@ -1215,7 +1235,7 @@ inline void AssertIsFull(const ctrl_t* ctrl, GenerationType generation,
     if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
       ABSL_RAW_LOG(FATAL,
                    "%s called on invalid iterator. The table could have "
-                   "rehashed since this iterator was initialized.",
+                   "rehashed or moved since this iterator was initialized.",
                    operation);
     }
     if (ABSL_PREDICT_FALSE(!IsFull(*ctrl))) {
@@ -1246,8 +1266,8 @@ inline void AssertIsValidForComparison(const ctrl_t* ctrl,
   if (SwisstableGenerationsEnabled()) {
     if (ABSL_PREDICT_FALSE(generation != *generation_ptr)) {
       ABSL_RAW_LOG(FATAL,
-                        "Invalid iterator comparison. The table could have "
-                        "rehashed since this iterator was initialized.");
+                   "Invalid iterator comparison. The table could have rehashed "
+                   "or moved since this iterator was initialized.");
     }
     if (ABSL_PREDICT_FALSE(!ctrl_is_valid_for_comparison)) {
       ABSL_RAW_LOG(
@@ -1334,8 +1354,8 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
     ABSL_HARDENING_ASSERT(
         AreItersFromSameContainer(ctrl_a, ctrl_b, slot_a, slot_b) &&
         "Invalid iterator comparison. The iterators may be from different "
-        "containers or the container might have rehashed. Consider running "
-        "with --config=asan to diagnose rehashing issues.");
+        "containers or the container might have rehashed or moved. Consider "
+        "running with --config=asan to diagnose issues.");
   }
 }
 
@@ -1922,12 +1942,14 @@ class raw_hash_set {
         settings_(std::move(that.common()), that.hash_ref(), that.eq_ref(),
                   that.alloc_ref()) {
     that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
   }
 
   raw_hash_set(raw_hash_set&& that, const allocator_type& a)
       : settings_(CommonFields{}, that.hash_ref(), that.eq_ref(), a) {
     if (a == that.alloc_ref()) {
       std::swap(common(), that.common());
+      maybe_increment_generation_or_rehash_on_move();
     } else {
       move_elements_allocs_unequal(std::move(that));
     }
@@ -2131,7 +2153,7 @@ class raw_hash_set {
     alignas(slot_type) unsigned char raw[sizeof(slot_type)];
     slot_type* slot = reinterpret_cast<slot_type*>(&raw);
 
-    PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
+    construct(slot, std::forward<Args>(args)...);
     const auto& elem = PolicyTraits::element(slot);
     return PolicyTraits::apply(InsertSlot<true>{*this, std::move(*slot)}, elem);
   }
@@ -2236,7 +2258,7 @@ class raw_hash_set {
   // a better match if non-const iterator is passed as an argument.
   void erase(iterator it) {
     AssertIsFull(it.ctrl_, it.generation(), it.generation_ptr(), "erase()");
-    PolicyTraits::destroy(&alloc_ref(), it.slot_);
+    destroy(it.slot_);
     erase_meta_only(it);
   }
 
@@ -2529,10 +2551,9 @@ class raw_hash_set {
     std::pair<iterator, bool> operator()(const K& key, Args&&...) && {
       auto res = s.find_or_prepare_insert(key);
       if (res.second) {
-        PolicyTraits::transfer(&s.alloc_ref(), s.slot_array() + res.first,
-                               &slot);
+        s.transfer(s.slot_array() + res.first, &slot);
       } else if (do_destroy) {
-        PolicyTraits::destroy(&s.alloc_ref(), &slot);
+        s.destroy(&slot);
       }
       return {s.iterator_at(res.first), res.second};
     }
@@ -2541,13 +2562,31 @@ class raw_hash_set {
     slot_type&& slot;
   };
 
+  // Helpers to enable sanitizer mode validation to protect against reentrant
+  // calls during element constructor/destructor.
+  template <typename... Args>
+  inline void construct(slot_type* slot, Args&&... args) {
+    RunWithReentrancyGuard(*this, alloc_ref(), [&] {
+      PolicyTraits::construct(&alloc_ref(), slot, std::forward<Args>(args)...);
+    });
+  }
+  inline void destroy(slot_type* slot) {
+    RunWithReentrancyGuard(*this, alloc_ref(),
+                           [&] { PolicyTraits::destroy(&alloc_ref(), slot); });
+  }
+  inline void transfer(slot_type* to, slot_type* from) {
+    RunWithReentrancyGuard(*this, alloc_ref(), [&] {
+      PolicyTraits::transfer(&alloc_ref(), to, from);
+    });
+  }
+
   inline void destroy_slots() {
     const size_t cap = capacity();
     const ctrl_t* ctrl = control();
     slot_type* slot = slot_array();
     for (size_t i = 0; i != cap; ++i) {
       if (IsFull(ctrl[i])) {
-        PolicyTraits::destroy(&alloc_ref(), slot + i);
+        destroy(slot + i);
       }
     }
   }
@@ -2610,7 +2649,7 @@ class raw_hash_set {
         size_t new_i = target.offset;
         total_probe_length += target.probe_length;
         SetCtrl(common(), new_i, H2(hash), sizeof(slot_type));
-        PolicyTraits::transfer(&alloc_ref(), new_slots + new_i, old_slots + i);
+        transfer(new_slots + new_i, old_slots + i);
       }
     }
     if (old_capacity) {
@@ -2691,6 +2730,13 @@ class raw_hash_set {
     }
   }
 
+  void maybe_increment_generation_or_rehash_on_move() {
+    common().maybe_increment_generation_on_move();
+    if (!empty() && common().should_rehash_for_bug_detection_on_move()) {
+      resize(capacity());
+    }
+  }
+
   template<bool propagate_alloc>
   raw_hash_set& assign_impl(raw_hash_set&& that) {
     // We don't bother checking for this/that aliasing. We just need to avoid
@@ -2703,6 +2749,7 @@ class raw_hash_set {
     CopyAlloc(alloc_ref(), that.alloc_ref(),
               std::integral_constant<bool, propagate_alloc>());
     that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
     return *this;
   }
 
@@ -2712,10 +2759,11 @@ class raw_hash_set {
     reserve(size);
     for (iterator it = that.begin(); it != that.end(); ++it) {
       insert(std::move(PolicyTraits::element(it.slot_)));
-      PolicyTraits::destroy(&that.alloc_ref(), it.slot_);
+      that.destroy(it.slot_);
     }
     that.dealloc();
     that.common() = CommonFields{};
+    maybe_increment_generation_or_rehash_on_move();
     return *this;
   }
 
@@ -2802,8 +2850,7 @@ class raw_hash_set {
   // POSTCONDITION: *m.iterator_at(i) == value_type(forward<Args>(args)...).
   template <class... Args>
   void emplace_at(size_t i, Args&&... args) {
-    PolicyTraits::construct(&alloc_ref(), slot_array() + i,
-                            std::forward<Args>(args)...);
+    construct(slot_array() + i, std::forward<Args>(args)...);
 
     assert(PolicyTraits::apply(FindElement{*this}, *iterator_at(i)) ==
                iterator_at(i) &&
@@ -2869,8 +2916,7 @@ class raw_hash_set {
   }
   static void transfer_slot_fn(void* set, void* dst, void* src) {
     auto* h = static_cast<raw_hash_set*>(set);
-    PolicyTraits::transfer(&h->alloc_ref(), static_cast<slot_type*>(dst),
-                           static_cast<slot_type*>(src));
+    h->transfer(static_cast<slot_type*>(dst), static_cast<slot_type*>(src));
   }
   // Note: dealloc_fn will only be used if we have a non-standard allocator.
   static void dealloc_fn(CommonFields& common, const PolicyFunctions&) {

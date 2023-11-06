@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {strf, util} from '../../../../common/js/util.js';
+import {bytesToString, strf} from '../../../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './drive_low_individual_space_banner.html.js';
@@ -75,7 +75,7 @@ export class DriveLowIndividualSpaceBanner extends WarningBanner {
             Math.ceil(
                 (context.totalBytes - context.usedBytes) / context.totalBytes *
                 100),
-            util.bytesToString(context.totalBytes));
+            bytesToString(context.totalBytes));
   }
 }
 

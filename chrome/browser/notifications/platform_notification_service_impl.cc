@@ -360,7 +360,6 @@ void PlatformNotificationServiceImpl::ScheduleTrigger(base::Time timestamp) {
   if (current_trigger > timestamp)
     prefs->SetTime(prefs::kNotificationNextTriggerTime, timestamp);
 
-  trigger_scheduler_->ScheduleTrigger(timestamp);
 }
 
 base::Time PlatformNotificationServiceImpl::ReadNextTriggerTimestamp() {

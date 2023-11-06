@@ -50,7 +50,7 @@ struct HistogramSampleExpectation {
   std::string histogram_name_prefix;
   base::Histogram::Sample sample;
 };
-  
+
 #if !BUILDFLAG(IS_WIN) || !defined(ARCH_CPU_ARM64)
 // For each histogram named after the combination of prefixes from
 // `expectations` and suffixes from `suffixes`, verifies that there is a unique
@@ -327,7 +327,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = ++fake_value;
   fake_metrics.package_idle_wakeups = ++fake_value;
-  fake_metrics.energy_impact = ++fake_value;
 #endif
   process_monitor_.SetMetricsToReturn(fake_metrics);
 
@@ -387,8 +386,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
                                        fake_metrics.idle_wakeups);
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kPackageExitsName,
                                        fake_metrics.package_idle_wakeups);
-  test_ukm_recorder_.ExpectEntryMetric(
-      entries[0], UkmEntry::kEnergyImpactScoreName, fake_metrics.energy_impact);
 #endif
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kMaxTabCountName,
@@ -453,7 +450,6 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
 #if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = 42;
   fake_metrics.package_idle_wakeups = 43;
-  fake_metrics.energy_impact = 44;
 #endif
   process_monitor_.SetMetricsToReturn(fake_metrics);
   battery_states_.push(MakeBatteryDischargingState(50));

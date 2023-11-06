@@ -26,7 +26,11 @@ class PrerenderWebContentsDelegateImpl
                       bool user_gesture,
                       bool* was_blocked) override;
   void ActivateContents(content::WebContents* contents) override;
+  void LoadingStateChanged(content::WebContents* source,
+                           bool should_show_loading_ui) override;
   bool ShouldSuppressDialogs(content::WebContents* source) override;
+  bool ShouldFocusPageAfterCrash(content::WebContents* source) override;
+  bool TakeFocus(content::WebContents* source, bool reverse) override;
   void WebContentsCreated(content::WebContents* source_contents,
                           int opener_render_process_id,
                           int opener_render_frame_id,
@@ -39,6 +43,18 @@ class PrerenderWebContentsDelegateImpl
       content::WebContents* portal_web_contents) override;
   void WebContentsBecamePortal(
       content::WebContents* portal_web_contents) override;
+  bool CanEnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void EnterFullscreenModeForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void FullscreenStateChangedForTab(
+      content::RenderFrameHost* requesting_frame,
+      const blink::mojom::FullscreenOptions& options) override;
+  void ExitFullscreenModeForTab(content::WebContents*) override;
+  bool IsFullscreenForTabOrPending(
+      const content::WebContents* web_contents) override;
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,

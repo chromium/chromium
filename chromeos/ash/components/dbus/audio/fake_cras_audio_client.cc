@@ -449,6 +449,13 @@ void FakeCrasAudioClient::SetActiveInputStreamsWithPermission(
   }
 }
 
+void FakeCrasAudioClient::NotifySurveyTriggered(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {
+  for (auto& observer : observers_) {
+    observer.SurveyTriggered(survey_specific_data);
+  }
+}
+
 AudioNodeList::iterator FakeCrasAudioClient::FindNode(uint64_t node_id) {
   return base::ranges::find(node_list_, node_id, &AudioNode::id);
 }

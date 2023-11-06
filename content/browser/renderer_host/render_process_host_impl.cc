@@ -79,9 +79,9 @@
 #include "components/tracing/common/tracing_switches.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/gpu_client.h"
-#include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/blob_registry_wrapper.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/browser_main_loop.h"
@@ -143,6 +143,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -188,7 +189,6 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "services/metrics/ukm_recorder_factory_impl.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -199,6 +199,7 @@
 #include "third_party/blink/public/common/page/launching_process_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/disk_allocator.mojom.h"
 #include "third_party/blink/public/mojom/origin_trials/origin_trials_settings.mojom.h"
 #include "third_party/blink/public/mojom/plugins/plugin_registry.mojom.h"
@@ -1108,6 +1109,17 @@ bool IsUnusedAndTiedToBrowsingInstance(
   return stays_in_existing_browsing_instance;
 }
 
+// Returns true if `keep_alive_ref_count_` is allowed to be > 0.
+// When both of the features are enabled, fetch keepalive requests are expected
+// to be proxied via browser process, without increasing any
+// `keep_alive_ref_count_`.
+bool IsKeepAliveRefCountAllowed() {
+  return !base::FeatureList::IsEnabled(
+             blink::features::kKeepAliveInBrowserMigration) ||
+         !base::FeatureList::IsEnabled(
+             blink::features::kAttributionReportingInBrowserMigration);
+}
+
 }  // namespace
 
 // A RenderProcessHostImpl's IO thread implementation of the
@@ -1653,7 +1665,6 @@ bool RenderProcessHostImpl::Init() {
           browser_context_),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
-      AttributionManager::GetSupport(),
       GetContentClient()->browser()->GetOriginTrialsSettings());
 
   if (run_renderer_in_process()) {
@@ -1811,11 +1822,9 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  MediaInternals* media_internals = MediaInternals::GetInstance();
-
   scoped_refptr<RenderMessageFilter> render_message_filter =
-      base::MakeRefCounted<RenderMessageFilter>(
-          GetID(), GetBrowserContext(), widget_helper_.get(), media_internals);
+      base::MakeRefCounted<RenderMessageFilter>(GetID(), GetBrowserContext(),
+                                                widget_helper_.get());
   AddFilter(render_message_filter.get());
 
 #if BUILDFLAG(ENABLE_PPAPI)
@@ -1907,6 +1916,17 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
           // the Quarantine Service.
           storage_key.origin().GetURL(), GetID()),
       std::move(receiver));
+}
+
+void RenderProcessHostImpl::BindFileBackedBlobFactory(
+    const url::Origin& origin,
+    mojo::PendingReceiver<blink::mojom::FileBackedBlobFactory> receiver) {
+  if (!file_backed_blob_factory_) {
+    file_backed_blob_factory_ =
+        std::make_unique<FileBackedBlobFactoryWorkerImpl>(browser_context_,
+                                                          GetID());
+  }
+  file_backed_blob_factory_->BindReceiver(std::move(receiver), origin.GetURL());
 }
 
 void RenderProcessHostImpl::GetSandboxedFileSystemForBucket(
@@ -2212,8 +2232,7 @@ RenderProcessHostImpl::GetInfoForBrowserContextDestructionCrashReporting() {
     ret += " dcn";
 
   if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(IsKeepAliveRefCountAllowed());
     ret += " karc=" + base::NumberToString(keep_alive_ref_count_);
   }
 
@@ -2662,16 +2681,14 @@ void RenderProcessHostImpl::IncrementKeepAliveRefCount(uint64_t handle_id) {
   if (base::FeatureList::IsEnabled(kCheckNoNewRefCountsWhenRphDeletingSoon)) {
     CHECK(!deleting_soon_);
   }
-  CHECK(!base::FeatureList::IsEnabled(
-      blink::features::kKeepAliveInBrowserMigration));
+  CHECK(IsKeepAliveRefCountAllowed());
   ++keep_alive_ref_count_;
   DCHECK(!keep_alive_start_times_.contains(handle_id));
   keep_alive_start_times_[handle_id] = base::Time::Now();
 }
 
 bool RenderProcessHostImpl::AreAllRefCountsZero() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kKeepAliveInBrowserMigration)) {
+  if (!IsKeepAliveRefCountAllowed()) {
     CHECK_EQ(keep_alive_ref_count_, 0);
   }
   return keep_alive_ref_count_ == 0 && worker_ref_count_ == 0 &&
@@ -2681,8 +2698,7 @@ bool RenderProcessHostImpl::AreAllRefCountsZero() {
 void RenderProcessHostImpl::DecrementKeepAliveRefCount(uint64_t handle_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(!are_ref_counts_disabled_);
-  CHECK(!base::FeatureList::IsEnabled(
-      blink::features::kKeepAliveInBrowserMigration));
+  CHECK(IsKeepAliveRefCountAllowed());
   CHECK_GT(keep_alive_ref_count_, 0);
   --keep_alive_ref_count_;
   DCHECK(keep_alive_start_times_.contains(handle_id));
@@ -3185,18 +3201,11 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
       process_lock.GetWebExposedIsolationLevel() >=
       WebExposedIsolationLevel::kMaybeIsolated);
 
+  GetRendererInterface()->SetIsIsolatedContext(IsIsolatedContext(this));
+
   GetRendererInterface()->SetIsWebSecurityDisabled(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity));
-
-  bool is_isolated_context_allowed_by_embedder =
-      GetContentClient()->browser()->IsIsolatedContextAllowedForUrl(
-          GetBrowserContext(), process_lock.lock_url());
-
-  GetRendererInterface()->SetIsIsolatedContext(
-      process_lock.GetWebExposedIsolationLevel() >=
-          WebExposedIsolationLevel::kMaybeIsolatedApplication ||
-      is_isolated_context_allowed_by_embedder);
 
   if (!process_lock.IsASiteOrOrigin())
     return;
@@ -3682,8 +3691,7 @@ bool RenderProcessHostImpl::FastShutdownIfPossible(size_t page_count,
 
   // TODO(crbug.com/1356128): Remove this block once the migration is launched.
   if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(IsKeepAliveRefCountAllowed());
     LogDelayReasonForFastShutdown(DelayShutdownReason::kFetchKeepAlive);
     return false;
   }
@@ -3975,8 +3983,7 @@ void RenderProcessHostImpl::Cleanup() {
     LogDelayReasonForCleanup(DelayShutdownReason::kListener);
     return;
   } else if (keep_alive_ref_count_ != 0) {
-    CHECK(!base::FeatureList::IsEnabled(
-        blink::features::kKeepAliveInBrowserMigration));
+    CHECK(IsKeepAliveRefCountAllowed());
     TRACE_EVENT(
         "shutdown", "RenderProcessHostImpl::Cleanup : Have keep_alive_ref.",
         ChromeTrackEvent::kRenderProcessHost, *this,
@@ -4097,9 +4104,6 @@ void RenderProcessHostImpl::Cleanup() {
   }
   for (auto& observer : observers_)
     observer.RenderProcessHostDestroyed(this);
-  NotificationService::current()->Notify(
-      NOTIFICATION_RENDERER_PROCESS_TERMINATED, Source<RenderProcessHost>(this),
-      NotificationService::NoDetails());
 
   RecentlyDestroyedHosts::Add(this, time_spent_running_unload_handlers_,
                               browser_context_);
@@ -4285,7 +4289,9 @@ void RenderProcessHostImpl::RegisterCreationObserver(
 // static
 void RenderProcessHostImpl::UnregisterCreationObserver(
     RenderProcessHostCreationObserver* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
+         // Chrome OS unit tests trigger the thread uninitialized case.
+         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
   auto iter = base::ranges::find(GetAllCreationObservers(), observer);
   DCHECK(iter != GetAllCreationObservers().end());
   GetAllCreationObservers().erase(iter);
@@ -5206,8 +5212,8 @@ void RenderProcessHostImpl::SendProcessStateToRenderer() {
 
 void RenderProcessHostImpl::OnProcessLaunched() {
   // No point doing anything, since this object will be destructed soon.  We
-  // especially don't want to send the RENDERER_PROCESS_CREATED notification,
-  // since some clients might expect a RENDERER_PROCESS_TERMINATED afterwards
+  // especially don't want to send the OnRenderProcessHostCreated notification,
+  // since some clients might expect a RenderProcessHostDestroyed() afterwards
   // to properly cleanup.
   if (deleting_soon_)
     return;
@@ -5220,8 +5226,8 @@ void RenderProcessHostImpl::OnProcessLaunched() {
 
     // Unpause the channel now that the process is launched. We don't flush it
     // yet to ensure that any initialization messages sent here (e.g., things
-    // done in response to NOTIFICATION_RENDER_PROCESS_CREATED; see below)
-    // preempt already queued messages.
+    // done in response to OnRenderProcessHostCreated; see below) preempt
+    // already queued messages.
     channel_->Unpause(false /* flush */);
 
     gpu_client_->SetClientPid(GetProcess().Pid());
@@ -5273,9 +5279,6 @@ void RenderProcessHostImpl::OnProcessLaunched() {
   // The queued messages contain such things as "navigate". If this
   // notification was after, we can end up executing JavaScript before the
   // initialization happens.
-  NotificationService::current()->Notify(NOTIFICATION_RENDERER_PROCESS_CREATED,
-                                         Source<RenderProcessHost>(this),
-                                         NotificationService::NoDetails());
   for (auto* observer : GetAllCreationObservers())
     observer->OnRenderProcessHostCreated(this);
 
@@ -5556,11 +5559,6 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
               allocator->ProvideTemporaryFile(std::move(file));
           },
           std::move(allocator)));
-}
-
-void RenderProcessHostImpl::SetAttributionReportingSupport(
-    network::mojom::AttributionSupport attribution_support) {
-  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
 }
 
 #if BUILDFLAG(IS_ANDROID)

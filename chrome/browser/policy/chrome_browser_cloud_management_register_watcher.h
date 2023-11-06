@@ -110,7 +110,7 @@ class ChromeBrowserCloudManagementRegisterWatcher
 
   void DisplayErrorMessage();
 
-  raw_ptr<ChromeBrowserCloudManagementController> controller_;
+  const raw_ptr<ChromeBrowserCloudManagementController> controller_;
 
   base::RunLoop run_loop_;
   std::unique_ptr<EnterpriseStartupDialog> dialog_;
@@ -118,7 +118,7 @@ class ChromeBrowserCloudManagementRegisterWatcher
   bool is_restart_needed_ = false;
   absl::optional<bool> register_result_;
 
-  DialogCreationCallback dialog_creation_callback_;
+  DialogCreationCallback test_create_dialog_callback_;
 
   base::Time visible_start_time_;
 };

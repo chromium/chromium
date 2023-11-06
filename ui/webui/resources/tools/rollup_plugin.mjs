@@ -45,6 +45,12 @@ function combinePaths(origin, source) {
  *     corresponding to |source|. Otherwise, returns the full path for |source|.
  */
 function getPathForUrl(source, origin, urlPrefix, urlSrcPath, excludes) {
+  if (source === urlPrefix) {
+    // Handle case where 'urlPrefix` matches the entire `source` URL and
+    // therefore is not just a prefix, but a complete URL.
+    return urlSrcPath;
+  }
+
   let schemeRelativeUrl = urlPrefix;
   if (urlPrefix.includes('://')) {
     const url = new URL(urlPrefix);

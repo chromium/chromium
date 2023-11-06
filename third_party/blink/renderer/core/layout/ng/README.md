@@ -43,7 +43,7 @@ TODO(layout-dev): Document with lots of pretty pictures.
 
 ### Inline Layout ###
 
-Please refer to the [inline layout README](inline/README.md).
+Please refer to the [inline layout README](../inline/README.md).
 
 ### Fragment Tree ###
 

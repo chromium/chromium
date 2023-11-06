@@ -12,6 +12,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,13 +27,18 @@
 #include "content/public/test/browser_test.h"
 #include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/base/ui_base_features.h"
 
 namespace chrome {
 
 class BrowserCommandsTest : public InProcessBrowserTest {
  public:
-  BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  BrowserCommandsTest() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
+  }
 
+  base::test::ScopedFeatureList feature_list_;
   net::test_server::EmbeddedTestServer https_server_;
 
   void SetUpOnMainThread() override {
@@ -324,6 +332,18 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
             url1);
   EXPECT_EQ(active_browser->tab_strip_model()->GetWebContentsAt(1)->GetURL(),
             url3);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
+  chrome::ExecuteCommand(browser(), IDC_ORGANIZE_TABS);
+
+  TabOrganizationService* service =
+      TabOrganizationServiceFactory::GetForProfile(browser()->profile());
+  const TabOrganizationSession* session =
+      service->GetSessionForBrowser(browser());
+
+  EXPECT_NE(TabOrganizationRequest::State::NOT_STARTED,
+            session->request()->state());
 }
 
 }  // namespace chrome

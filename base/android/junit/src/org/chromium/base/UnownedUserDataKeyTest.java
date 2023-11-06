@@ -32,9 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 
-/**
- * Test class for {@link UnownedUserDataKey}, which also describes typical usage.
- */
+/** Test class for {@link UnownedUserDataKey}, which also describes typical usage. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UnownedUserDataKeyTest {
@@ -57,7 +55,8 @@ public class UnownedUserDataKeyTest {
 
         @Override
         public void onDetachedFromHost(UnownedUserDataHost host) {
-            assertTrue("Should not detach when informOnDetachmentFromHost() return false.",
+            assertTrue(
+                    "Should not detach when informOnDetachmentFromHost() return false.",
                     informOnDetachment);
             mDetachedHosts.add(host);
         }
@@ -93,6 +92,7 @@ public class UnownedUserDataKeyTest {
     private static class Foo extends TestUnownedUserData {
         public static final UnownedUserDataKey<Foo> KEY = new UnownedUserDataKey<>(Foo.class);
     }
+
     private static class Bar extends TestUnownedUserData {
         public static final UnownedUserDataKey<Bar> KEY = new UnownedUserDataKey<>(Bar.class);
     }
@@ -671,7 +671,7 @@ public class UnownedUserDataKeyTest {
 
     @Test
     public void
-    testTwoSimilarItemsMultipleHosts_destroyShouldOnlyRemoveFromCurrentHostWithMultipleKeys() {
+            testTwoSimilarItemsMultipleHosts_destroyShouldOnlyRemoveFromCurrentHostWithMultipleKeys() {
         Foo foo1 = new Foo();
         Foo foo2 = new Foo();
 
@@ -833,8 +833,9 @@ public class UnownedUserDataKeyTest {
     public void testSingleThreadPolicy() throws Exception {
         Foo.KEY.attachToHost(mHost1, mFoo);
 
-        FutureTask<Void> getTask = new FutureTask<>(
-                () -> assertAsserts(() -> Foo.KEY.retrieveDataFromHost(mHost1)), null);
+        FutureTask<Void> getTask =
+                new FutureTask<>(
+                        () -> assertAsserts(() -> Foo.KEY.retrieveDataFromHost(mHost1)), null);
         PostTask.postTask(TaskTraits.USER_VISIBLE, getTask);
         getTask.get();
 

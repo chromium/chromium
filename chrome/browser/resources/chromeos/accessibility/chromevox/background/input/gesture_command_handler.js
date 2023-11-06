@@ -16,8 +16,8 @@ import {ChromeVoxRange} from '../chromevox_range.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {PointerHandler} from '../event/pointer_handler.js';
 import {EventSource} from '../event_source.js';
+import {ForcedActionPath} from '../forced_action_path.js';
 import {Output} from '../output/output.js';
-import {UserActionMonitor} from '../user_action_monitor.js';
 
 import {CommandHandlerInterface} from './command_handler_interface.js';
 import {GestureInterface} from './gesture_interface.js';
@@ -28,7 +28,7 @@ export class GestureCommandHandler {
   /** @private */
   constructor() {
     /** @private {boolean} */
-    this.enabled_ = true;
+    this.bypassed_ = false;
     /** @private {GestureGranularity} */
     this.granularity_ = GestureGranularity.LINE;
     /** @private {!PointerHandler} */
@@ -51,18 +51,22 @@ export class GestureCommandHandler {
 
     BridgeHelper.registerHandler(
         BridgeConstants.GestureCommandHandler.TARGET,
-        BridgeConstants.GestureCommandHandler.Action.SET_ENABLED,
-        enabled => GestureCommandHandler.setEnabled(enabled));
+        BridgeConstants.GestureCommandHandler.Action.SET_BYPASS,
+        bypassed => GestureCommandHandler.setBypass(bypassed));
   }
 
   /** @return {boolean} */
   static getEnabled() {
-    return GestureCommandHandler.instance.enabled_;
+    return !GestureCommandHandler.instance.bypassed_;
   }
 
-  /** @param {boolean} state */
-  static setEnabled(state) {
-    GestureCommandHandler.instance.enabled_ = state;
+  /**
+   * Used by LearnMode to capture the events and prevent the standard behavior,
+   * in favor of reporting what that would behavior would be.
+   * @param {boolean} state
+   */
+  static setBypass(state) {
+    GestureCommandHandler.instance.bypassed_ = state;
   }
 
 
@@ -75,16 +79,16 @@ export class GestureCommandHandler {
    * @private
    */
   onAccessibilityGesture_(gesture, x, y) {
-    if (!this.enabled_) {
+    if (this.bypassed_) {
       return;
     }
 
     EventSource.set(EventSourceType.TOUCH_GESTURE);
 
-    const monitor = UserActionMonitor.instance;
-    if (gesture !== Gesture.SWIPE_LEFT2 && monitor &&
-        !monitor.onGesture(gesture)) {
-      // UserActionMonitor returns true if this gesture should propagate.
+    const actionPath = ForcedActionPath.instance;
+    if (gesture !== Gesture.SWIPE_LEFT2 && actionPath &&
+        !actionPath.onGesture(gesture)) {
+      // ForcedActionPath returns true if this gesture should propagate.
       // Prevent this gesture from propagating if it returns false.
       // Always allow SWIPE_LEFT2 to propagate, since it simulates the escape
       // key.
@@ -113,7 +117,7 @@ export class GestureCommandHandler {
     // Always try to recover the range to the previous valid target which may
     // have been invalidated by touch explore; this recovery omits touch explore
     // explicitly.
-    ChromeVoxState.instance.restoreLastValidRangeIfNeeded();
+    ChromeVoxRange.restoreLastValidRangeIfNeeded();
 
     // Handle gestures mapped to keys. Global keys are handled in place of
     // commands, and menu key overrides are handled only in menus.

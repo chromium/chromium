@@ -175,7 +175,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool keepalive = false;
   bool browsing_topics = false;
   bool ad_auction_headers = false;
-  bool shared_storage_writable = false;
+  bool shared_storage_writable_eligible = false;
   bool has_user_gesture = false;
   bool enable_load_timing = false;
   bool enable_upload_progress = false;
@@ -219,6 +219,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       attribution_reporting_runtime_features;
   bool shared_dictionary_writer_enabled = false;
   absl::optional<base::UnguessableToken> attribution_reporting_src_token;
+  bool is_ad_tagged = false;
 #if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1456586): Remove this once the issue is fixed.
   std::string created_location;

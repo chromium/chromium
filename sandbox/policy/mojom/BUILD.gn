@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -14,7 +15,14 @@ mojom("mojom") {
     "context.mojom",
     "sandbox.mojom",
   ]
-  webui_module_path = "/"
+
+  # WebUI bindings are only needed on ChromeOS Ash, and are used by
+  # ash/webui/help_app_ui which is still using Closure Compiler. Generate the
+  # bindings in JavaScript rather than TypeScript to support this legacy code.
+  if (is_chromeos_ash) {
+    webui_module_path = "/"
+    use_typescript_sources = false
+  }
 
   enabled_features = []
   if (enable_oop_printing) {

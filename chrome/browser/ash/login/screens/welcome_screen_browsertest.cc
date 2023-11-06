@@ -533,18 +533,17 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest,
 
 class WelcomeScreenInsetModeBrowserTest
     : public WelcomeScreenBrowserTest,
-      public testing::WithParamInterface<std::tuple</*OobeSimon*/ bool,
+      public testing::WithParamInterface<std::tuple</*BootAnimation*/ bool,
                                                     /*OobeJelly*/ bool,
                                                     /*OobeJellyModal*/ bool>> {
  public:
   WelcomeScreenInsetModeBrowserTest() {
-    const bool oobe_simon = std::get<0>(GetParam());
+    const bool boot_animation = std::get<0>(GetParam());
     const bool oobe_jelly = std::get<1>(GetParam());
     const bool oobe_jelly_modal = std::get<2>(GetParam());
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagementOobeSimon, oobe_simon},
-         {features::kOobeSimon, oobe_simon},
+        {{features::kFeatureManagementOobeSimon, boot_animation},
          {chromeos::features::kJelly, oobe_jelly},
          {features::kOobeJelly, oobe_jelly},
          {features::kOobeJellyModal, oobe_jelly_modal}});
@@ -591,7 +590,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
 
   // Use inset mode if one screen dimension is >=1040px (and tablet mode is off)
   display_manager.UpdateDisplay(std::string("600x1040"));
-  if (ash::features::IsOobeSimonEnabled() ||
+  if (ash::features::IsBootAnimationEnabled() ||
       ash::features::IsOobeJellyModalEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
@@ -599,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
   }
 
   display_manager.UpdateDisplay(std::string("1040x600"));
-  if (ash::features::IsOobeSimonEnabled() ||
+  if (ash::features::IsBootAnimationEnabled() ||
       ash::features::IsOobeJellyModalEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
@@ -620,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
   test::OobeJS().ExpectNE(kGetCalculatedBackgroundColor, kRgbaTransparent);
 
   ShellTestApi().SetTabletModeEnabledForTest(false);
-  if (ash::features::IsOobeSimonEnabled() ||
+  if (ash::features::IsBootAnimationEnabled() ||
       ash::features::IsOobeJellyModalEnabled()) {
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColor, kRgbaTransparent);
   } else {
@@ -628,18 +627,17 @@ IN_PROC_BROWSER_TEST_P(WelcomeScreenInsetModeBrowserTest,
   }
 }
 
-class WelcomeScreenSimonBrowserTest
+class WelcomeScreenBootAnimationBrowserTest
     : public WelcomeScreenBrowserTest,
-      public testing::WithParamInterface</*OobeSimon*/ bool> {
+      public testing::WithParamInterface</*BootAnimation*/ bool> {
  public:
-  WelcomeScreenSimonBrowserTest() {
-    const bool oobe_simon = GetParam();
+  WelcomeScreenBootAnimationBrowserTest() {
+    const bool boot_animation = GetParam();
 
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kFeatureManagementOobeSimon, oobe_simon},
-         {features::kOobeSimon, oobe_simon}});
+        {{features::kFeatureManagementOobeSimon, boot_animation}});
   }
-  ~WelcomeScreenSimonBrowserTest() override = default;
+  ~WelcomeScreenBootAnimationBrowserTest() override = default;
 
   const std::string kGetBackdropDisplayValue =
       "window.getComputedStyle(document.querySelector('#welcome-backdrop'))"
@@ -653,13 +651,16 @@ class WelcomeScreenSimonBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WelcomeScreenSimonBrowserTest, ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeScreenBootAnimationBrowserTest,
+                         ::testing::Bool());
 
-IN_PROC_BROWSER_TEST_P(WelcomeScreenSimonBrowserTest, CheckBackdropVisibility) {
+IN_PROC_BROWSER_TEST_P(WelcomeScreenBootAnimationBrowserTest,
+                       CheckBackdropVisibility) {
   test::WaitForWelcomeScreen();
   DisableCssTransitions();
 
-  if (ash::features::IsOobeSimonEnabled()) {
+  if (ash::features::IsBootAnimationEnabled()) {
     test::OobeJS().ExpectVisible("welcome-backdrop");
     test::OobeJS().ExpectEQ(kGetBackdropDisplayValue, std::string("block"));
     test::OobeJS().ExpectEQ(kGetCalculatedBackgroundColorInnerContainer,

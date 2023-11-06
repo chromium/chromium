@@ -40,29 +40,21 @@
 namespace payments {
 namespace {
 
-class ErrorLabelView : public views::Label {
- public:
-  METADATA_HEADER(ErrorLabelView);
+constexpr int kErrorLabelTopPadding = 6;
 
-  ErrorLabelView(const std::u16string& error, autofill::ServerFieldType type)
-      : views::Label(error, CONTEXT_DIALOG_BODY_TEXT_SMALL) {
-    SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type);
-    SetMultiLine(true);
-    SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    constexpr int kErrorLabelTopPadding = 6;
-    SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)));
-  }
-
-  // views::Label:
-  void OnThemeChanged() override {
-    views::Label::OnThemeChanged();
-    SetEnabledColor(GetColorProvider()->GetColor(ui::kColorAlertHighSeverity));
-  }
-};
-
-BEGIN_METADATA(ErrorLabelView, views::Label)
-END_METADATA
+std::unique_ptr<views::Label> CreateErrorLabel(const std::u16string& error,
+                                               autofill::ServerFieldType type) {
+  return views::Builder<views::Label>()
+      .SetText(error)
+      .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+      .SetID(static_cast<int>(DialogViewID::ERROR_LABEL_OFFSET) + type)
+      .SetMultiLine(true)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetBorder(views::CreateEmptyBorder(
+          gfx::Insets::TLBR(kErrorLabelTopPadding, 0, 0, 0)))
+      .SetEnabledColorId(ui::kColorAlertHighSeverity)
+      .Build();
+}
 
 }  // namespace
 
@@ -456,7 +448,7 @@ void EditorViewController::AddOrUpdateErrorMessageForField(
     if (label_view_it->second->children().empty()) {
       // If there was no error label view, add it.
       label_view_it->second->AddChildView(
-          std::make_unique<ErrorLabelView>(error_message, type));
+          CreateErrorLabel(error_message, type));
     } else {
       // The error view is the only child, and has a Label as only child itself.
       static_cast<views::Label*>(label_view_it->second->children().front())

@@ -41,7 +41,7 @@ StyleContainmentScopeTree::FindOrCreateEnclosingScopeForElement(
     return scope;
   }
   // Return root scope if nothing found.
-  return root_scope_;
+  return root_scope_.Get();
 }
 
 void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
@@ -61,7 +61,7 @@ StyleContainmentScope* StyleContainmentScopeTree::CreateScopeForElement(
     const Element& element) {
   auto entry = scopes_.find(&element);
   if (entry != scopes_.end()) {
-    return entry->value;
+    return entry->value.Get();
   }
   StyleContainmentScope* scope =
       MakeGarbageCollected<StyleContainmentScope>(&element, this);
@@ -121,7 +121,7 @@ StyleContainmentScope* FindCommonAncestor(StyleContainmentScope* scope1,
     --anc2;
   }
   int pos = anc1 == int(ancestors1.size()) - 1 ? anc1 : anc1 + 1;
-  return ancestors1[pos];
+  return ancestors1[pos].Get();
 }
 
 }  // namespace

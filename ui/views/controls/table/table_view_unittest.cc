@@ -10,12 +10,14 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/event_utils.h"
@@ -39,6 +41,8 @@
 // Put the tests in the views namespace to make it easier to declare them as
 // friend classes.
 namespace views {
+
+constexpr int kGroupingIndicatorSize = 6;
 
 class TableViewTestHelper {
  public:
@@ -139,8 +143,22 @@ class TableViewTestHelper {
     return expected_bounds;
   }
 
+  int GetCellMargin() const { return table_->GetCellMargin(); }
+
+  int GetCellElementSpacing() const { return table_->GetCellElementSpacing(); }
+
+  gfx::Rect GetPaintIconSrcBounds(const gfx::Size& image_size,
+                                  int image_dest_width) {
+    return table_->GetPaintIconSrcBounds(image_size, image_dest_width);
+  }
+
+  gfx::Rect GetPaintIconDestBounds(const gfx::Rect& cell_bounds,
+                                   int text_bounds_x) {
+    return table_->GetPaintIconDestBounds(cell_bounds, text_bounds_x);
+  }
+
  private:
-  raw_ptr<TableView, DanglingUntriaged> table_;
+  const raw_ptr<TableView> table_;
 };
 
 namespace {
@@ -467,6 +485,8 @@ class TableViewTest : public ViewsTestBase,
   }
 
   void TearDown() override {
+    table_ = nullptr;
+    helper_.reset();
     widget_.reset();
     ViewsTestBase::TearDown();
   }
@@ -588,8 +608,8 @@ class TableViewTest : public ViewsTestBase,
 
   std::unique_ptr<TestTableModel2> model_;
 
-  // Owned by |parent_|.
-  raw_ptr<TableView, DanglingUntriaged> table_ = nullptr;
+  // Owned by the scroll view owned by `widget_`.
+  raw_ptr<TableView> table_ = nullptr;
 
   std::unique_ptr<TableViewTestHelper> helper_;
 
@@ -867,7 +887,6 @@ TEST_P(TableViewTest, ResizeViaKeyboard) {
 // Verifies resizing a column won't reduce the column width below the width of
 // the column's title text.
 TEST_P(TableViewTest, ResizeHonorsMinimum) {
-  TableViewTestHelper helper(table_);
   const int x = table_->GetVisibleColumn(0).width;
   EXPECT_NE(0, x);
 
@@ -875,7 +894,7 @@ TEST_P(TableViewTest, ResizeHonorsMinimum) {
   DragLeftMouseTo(helper_->header(), gfx::Point(20, 0));
 
   int title_width = gfx::GetStringWidth(
-      table_->GetVisibleColumn(0).column.title, helper.font_list());
+      table_->GetVisibleColumn(0).column.title, helper_->font_list());
   EXPECT_LT(title_width, table_->GetVisibleColumn(0).width);
 
   int old_width = table_->GetVisibleColumn(0).width;
@@ -2180,5 +2199,258 @@ TEST_F(TableViewDefaultConstructabilityTest, TestFunctionalWithoutModel) {
       TableView::CreateScrollViewWithTable(std::make_unique<TableView>());
   scroll_view->SetBounds(0, 0, 10000, 10000);
   widget()->client_view()->AddChildView(std::move(scroll_view));
+}
+
+class TestTableModel3 : public TestTableModel2 {
+ public:
+  TestTableModel3() {
+    icon_.allocN32Pixels(48, 48);
+    SkCanvas canvas(icon_, SkSurfaceProps{});
+    canvas.drawColor(SK_ColorRED);
+  }
+
+  TestTableModel3(const TestTableModel3&) = delete;
+  TestTableModel3& operator=(const TestTableModel3&) = delete;
+  ui::ImageModel GetIcon(size_t row) override {
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(icon_));
+  }
+
+ private:
+  SkBitmap icon_;
+};
+
+// The test calculation paint icon bounds.
+class TableViewPaintIconBoundsTest : public ViewsTestBase {
+ public:
+  TableViewPaintIconBoundsTest() = default;
+  TableViewPaintIconBoundsTest(const TableViewPaintIconBoundsTest&) = delete;
+  TableViewPaintIconBoundsTest& operator=(const TableViewPaintIconBoundsTest&) =
+      delete;
+  ~TableViewPaintIconBoundsTest() override = default;
+
+  void SetUp() override {
+    ViewsTestBase::SetUp();
+
+    model_ = std::make_unique<TestTableModel3>();
+    std::vector<ui::TableColumn> columns(2);
+    columns[0].title = u"A";
+    columns[0].sortable = true;
+    columns[1].title = u"B";
+    columns[1].id = 1;
+    columns[1].sortable = true;
+
+    std::unique_ptr<TableView> table = std::make_unique<TableView>(
+        model_.get(), columns, ICON_AND_TEXT, false);
+    table_ = table.get();
+    auto scroll_view = TableView::CreateScrollViewWithTable(std::move(table));
+    scroll_view->SetBounds(0, 0, 1000, 1000);
+    helper_ = std::make_unique<TableViewTestHelper>(table_);
+
+    widget_ = std::make_unique<Widget>();
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+    params.bounds = gfx::Rect(0, 0, 650, 650);
+    widget_->Init(std::move(params));
+    test::RunScheduledLayout(
+        widget_->GetRootView()->AddChildView(std::move(scroll_view)));
+    widget_->Show();
+  }
+
+  void TearDown() override {
+    table_ = nullptr;
+    helper_.reset();
+    widget_.reset();
+    ViewsTestBase::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<TestTableModel2> model_;
+  raw_ptr<TableView> table_ = nullptr;
+  std::unique_ptr<TableViewTestHelper> helper_;
+  UniqueWidgetPtr widget_;
+};
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsForNormally) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  // icon can be paint within the cell bounds.
+  EXPECT_GT(cell_bounds.width(),
+            first_column_min_width + ui::TableModel::kIconSize);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  EXPECT_EQ(text_bounds.x(), first_column_min_width);
+
+  // If the cell size is sufficient to draw the icon, whether it is LTR or RTL,
+  // the `src_image_bounds` will be the size of the original image,
+  // which is (0, 0, image.width(), image.height()).
+  {
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // If it is an LTR layout, the `dest_image_bounds.x()` will be the minimum
+    // width of the first column, and the size of `dest_image_bounds` will be
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(first_column_min_width,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+
+    EXPECT_EQ(src_image_bounds, gfx::Rect(image.size()));
+  }
+  {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // If it is an RTL layout, the `dest_image_bounds.x()` will be the
+    // table_view's width minus the minimum width of the first column and
+    // ui::TableModel::kIconSize, and the size of `dest_image_bounds` will be
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(table_->width() - first_column_min_width -
+                      ui::TableModel::kIconSize,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  ui::TableModel::kIconSize, ui::TableModel::kIconSize));
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+    EXPECT_EQ(src_image_bounds, gfx::Rect(image.size()));
+    base::i18n::SetRTLForTesting(false);
+  }
+}
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsForClipped) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  // Adjust the width of the first column so that only half of the icon can be
+  // displayed
+  int dest_image_width = ui::TableModel::kIconSize / 2;
+  int x = table_->GetVisibleColumn(0).width;
+  int resize_pixels = x - (first_column_min_width + dest_image_width);
+  PressLeftMouseAt(helper_->header(), gfx::Point(x, 0));
+  DragLeftMouseTo(helper_->header(), gfx::Point(x - resize_pixels, 0));
+
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  // If the cell size is only sufficient to draw half of the icon
+  EXPECT_EQ(cell_bounds.width(), first_column_min_width + dest_image_width);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  {
+    // When the layout is LTR.
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // The `dest_image_bounds.x()` should be equal to the minimum width of the
+    // first column. The `dest_image_bounds.width()` should be equal to half of
+    // ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(first_column_min_width,
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  dest_image_width, ui::TableModel::kIconSize));
+    // The right boundary of `dest_image_bounds` should be equal to the right
+    // boundary of the cell when  clipped icon.
+    EXPECT_EQ(dest_image_bounds.right(), cell_bounds.right());
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+
+    // `src_image_bounds.x()` should be 0 (clipping starts from the left side of
+    // the original image). The `src_image_bounds.width()` should be equal
+    // to half of `image.width()`.
+    EXPECT_EQ(src_image_bounds,
+              gfx::Rect(0, 0, image.width() / 2, image.height()));
+  }
+  {
+    // When the layout is RTL.
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    // The `dest_image_bounds.x()` should be equal to the table_view's width
+    // minus the minimum width of the first column and half of
+    // ui::TableModel::kIconSize.The `dest_image_bounds.width()` should be equal
+    // to half of ui::TableModel::kIconSize.
+    EXPECT_EQ(
+        dest_image_bounds,
+        gfx::Rect(table_->width() - (first_column_min_width + dest_image_width),
+                  cell_bounds.y() +
+                      (cell_bounds.height() - ui::TableModel::kIconSize) / 2,
+                  dest_image_width, ui::TableModel::kIconSize));
+    // The left boundary of `dest_image_bounds` should be equal to the left
+    // boundary of the cell when  clipped icon.
+    EXPECT_EQ(dest_image_bounds.x(), table_->GetMirroredRect(cell_bounds).x());
+    gfx::Rect src_image_bounds =
+        helper_->GetPaintIconSrcBounds(image.size(), dest_image_bounds.width());
+    // `src_image_bounds.x()` should be equal to the width of the original image
+    // minus the width of the clipped icon. The `src_image_bounds.width()`
+    // should be equal to half of `image.width()`
+    EXPECT_EQ(src_image_bounds,
+              gfx::Rect(image.width() - src_image_bounds.width(), 0,
+                        image.width() / 2, image.height()));
+    base::i18n::SetRTLForTesting(false);
+  }
+}
+
+TEST_F(TableViewPaintIconBoundsTest, TestPaintIconBoundsNotNeedDisplay) {
+  EXPECT_EQ(2u, helper_->visible_col_count());
+  int cell_margin = helper_->GetCellMargin();
+  int cell_element_spacing = helper_->GetCellElementSpacing();
+  gfx::ImageSkia image =
+      model_->GetIcon(0).Rasterize(table_->GetColorProvider());
+  EXPECT_FALSE(image.isNull());
+  int first_column_min_width =
+      cell_margin + cell_element_spacing + kGroupingIndicatorSize;
+  // Adjust the width of the first column. icon not need display
+  int x = table_->GetVisibleColumn(0).width;
+  int resize_pixels = x - first_column_min_width;
+  PressLeftMouseAt(helper_->header(), gfx::Point(x, 0));
+  DragLeftMouseTo(helper_->header(), gfx::Point(x - resize_pixels, 0));
+
+  gfx::Rect cell_bounds = helper_->GetCellBounds(0, 0);
+  EXPECT_EQ(cell_bounds.width(), first_column_min_width);
+  gfx::Rect text_bounds = cell_bounds;
+  text_bounds.Inset(gfx::Insets::VH(0, cell_margin));
+  text_bounds.Inset(
+      gfx::Insets().set_left(kGroupingIndicatorSize + cell_element_spacing));
+  // If the bounds of the cell is not sufficient to draw the icon, whether it is
+  // LTR or RTL, the `dest_image_bounds` will be empty.
+  {
+    EXPECT_FALSE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    EXPECT_TRUE(dest_image_bounds.IsEmpty());
+  }
+  {
+    base::i18n::SetRTLForTesting(true);
+    EXPECT_TRUE(base::i18n::IsRTL());
+    gfx::Rect dest_image_bounds =
+        helper_->GetPaintIconDestBounds(cell_bounds, text_bounds.x());
+    EXPECT_TRUE(dest_image_bounds.IsEmpty());
+    base::i18n::SetRTLForTesting(false);
+  }
 }
 }  // namespace views

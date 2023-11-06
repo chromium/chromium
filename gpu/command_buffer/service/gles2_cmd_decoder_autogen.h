@@ -5243,30 +5243,6 @@ error::Error GLES2DecoderImpl::HandleMaxShaderCompilerThreadsKHR(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleTexImage2DSharedImageCHROMIUMImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::TexImage2DSharedImageCHROMIUMImmediate& c =
-      *static_cast<
-          const volatile gles2::cmds::TexImage2DSharedImageCHROMIUMImmediate*>(
-          cmd_data);
-  GLuint texture = static_cast<GLuint>(c.texture);
-  uint32_t mailbox_size;
-  if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &mailbox_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailbox_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailbox = GetImmediateDataAs<volatile const GLbyte*>(
-      c, mailbox_size, immediate_data_size);
-  if (mailbox == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoTexImage2DSharedImageCHROMIUM(texture, mailbox);
-  return error::kNoError;
-}
-
 error::Error
 GLES2DecoderImpl::HandleCreateAndTexStorage2DSharedImageINTERNALImmediate(
     uint32_t immediate_data_size,
@@ -5387,6 +5363,54 @@ error::Error GLES2DecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
   DoConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
                                       planes_yuv_color_space, plane_config,
                                       subsampling, mailboxes);
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderImpl::HandleConvertYUVAMailboxesToTextureINTERNALImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate&
+      c = *static_cast<const volatile gles2::cmds::
+                           ConvertYUVAMailboxesToTextureINTERNALImmediate*>(
+          cmd_data);
+  GLuint texture = static_cast<GLuint>(c.texture);
+  GLenum target = static_cast<GLenum>(c.target);
+  GLuint internal_format = static_cast<GLuint>(c.internal_format);
+  GLenum type = static_cast<GLenum>(c.type);
+  GLint src_x = static_cast<GLint>(c.src_x);
+  GLint src_y = static_cast<GLint>(c.src_y);
+  GLsizei width = static_cast<GLsizei>(c.width);
+  GLsizei height = static_cast<GLsizei>(c.height);
+  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
+  GLenum plane_config = static_cast<GLenum>(c.plane_config);
+  GLenum subsampling = static_cast<GLenum>(c.subsampling);
+  uint32_t mailboxes_size;
+  if (!GLES2Util::ComputeDataSize<GLbyte, 64>(1, &mailboxes_size)) {
+    return error::kOutOfBounds;
+  }
+  if (mailboxes_size > immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
+      c, mailboxes_size, immediate_data_size);
+  if (width < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
+                       "glConvertYUVAMailboxesToTextureINTERNAL", "width < 0");
+    return error::kNoError;
+  }
+  if (height < 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
+                       "glConvertYUVAMailboxesToTextureINTERNAL", "height < 0");
+    return error::kNoError;
+  }
+  if (mailboxes == nullptr) {
+    return error::kOutOfBounds;
+  }
+  DoConvertYUVAMailboxesToTextureINTERNAL(
+      texture, target, internal_format, type, src_x, src_y, width, height,
+      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
   return error::kNoError;
 }
 

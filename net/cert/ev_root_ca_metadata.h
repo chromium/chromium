@@ -44,12 +44,12 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
   EVRootCAMetadata& operator=(const EVRootCAMetadata&) = delete;
 
   // Returns true if policy_oid is an EV policy OID of some root CA.
-  bool IsEVPolicyOID(der::Input policy_oid) const;
+  bool IsEVPolicyOID(bssl::der::Input policy_oid) const;
 
   // Returns true if the root CA with the given certificate fingerprint has
   // the EV policy OID policy_oid.
   bool HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                      der::Input policy_oid) const;
+                      bssl::der::Input policy_oid) const;
 
   // AddEVCA adds an EV CA to the list of known EV CAs with the given policy.
   // |policy| is expressed as a string of dotted numbers. It returns true on

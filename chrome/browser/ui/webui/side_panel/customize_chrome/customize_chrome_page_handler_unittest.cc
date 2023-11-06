@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -20,12 +19,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
-#include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/search/background/ntp_background_data.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
@@ -42,15 +35,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/test_browser_window.h"
-#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/image_fetcher/core/mock_image_decoder.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
-#include "components/optimization_guide/proto/wallpaper_search.pb.h"
-#include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -58,19 +44,15 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension_builder.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "skia/ext/image_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 
@@ -195,8 +177,6 @@ class MockNtpCustomBackgroundService : public NtpCustomBackgroundService {
   MOCK_METHOD(absl::optional<CustomBackground>, GetCustomBackground, ());
   MOCK_METHOD(void, ResetCustomBackgroundInfo, ());
   MOCK_METHOD(void, SelectLocalBackgroundImage, (const base::FilePath&));
-  MOCK_METHOD(void, SelectLocalBackgroundImage, (const std::string&));
-  MOCK_METHOD(void, SelectLocalBackgroundImage, (const SkBitmap&));
   MOCK_METHOD(void, AddObserver, (NtpCustomBackgroundServiceObserver*));
   MOCK_METHOD(void,
               SetCustomBackgroundInfo,
@@ -258,13 +238,6 @@ std::unique_ptr<TestingProfile> MakeTestingProfile(
                               -> std::unique_ptr<KeyedService> {
         return std::make_unique<testing::NiceMock<MockThemeService>>();
       }));
-  profile_builder.AddTestingFactory(
-      OptimizationGuideKeyedServiceFactory::GetInstance(),
-      base::BindRepeating([](content::BrowserContext* context)
-                              -> std::unique_ptr<KeyedService> {
-        return std::make_unique<
-            testing::NiceMock<MockOptimizationGuideKeyedService>>(context);
-      }));
   profile_builder.SetSharedURLLoaderFactory(url_loader_factory);
   auto profile = profile_builder.Build();
   return profile;
@@ -283,17 +256,9 @@ class CustomizeChromePageHandlerTest : public testing::Test {
             NtpBackgroundServiceFactory::GetForProfile(profile_.get()))),
         web_contents_(web_contents_factory_.CreateWebContents(profile_.get())),
         mock_theme_service_(static_cast<MockThemeService*>(
-            ThemeServiceFactory::GetForProfile(profile_.get()))),
-        mock_optimization_guide_keyed_service_(
-            static_cast<MockOptimizationGuideKeyedService*>(
-                OptimizationGuideKeyedServiceFactory::GetForProfile(
-                    profile_.get()))),
-        mock_image_decoder_(
-            std::make_unique<image_fetcher::MockImageDecoder>()) {}
+            ThemeServiceFactory::GetForProfile(profile_.get()))) {}
 
   void SetUp() override {
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
-    RegisterLocalState(local_state_.registry());
     EXPECT_CALL(mock_ntp_background_service(), AddObserver)
         .Times(1)
         .WillOnce(SaveArg<0>(&ntp_background_service_observer_));
@@ -306,7 +271,7 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     handler_ = std::make_unique<CustomizeChromePageHandler>(
         mojo::PendingReceiver<side_panel::mojom::CustomizeChromePageHandler>(),
         mock_page_.BindAndGetRemote(), &mock_ntp_custom_background_service_,
-        web_contents_, module_id_names, mock_image_decoder_.get());
+        web_contents_, module_id_names);
     mock_page_.FlushForTesting();
     EXPECT_EQ(handler_.get(), ntp_background_service_observer_);
     EXPECT_EQ(handler_.get(), ntp_custom_background_service_observer_);
@@ -325,7 +290,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     browser_->tab_strip_model()->CloseAllTabs();
     browser_.reset();
     browser_window_.reset();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     test_url_loader_factory_.ClearResponses();
   }
 
@@ -342,12 +306,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
     return *ntp_background_service_observer_;
   }
   MockThemeService& mock_theme_service() { return *mock_theme_service_; }
-  MockOptimizationGuideKeyedService& mock_optimization_guide_keyed_service() {
-    return *mock_optimization_guide_keyed_service_;
-  }
-  image_fetcher::MockImageDecoder& mock_image_decoder() {
-    return *mock_image_decoder_;
-  }
   Browser& browser() { return *browser_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   base::UserActionTester& user_action_tester() { return user_action_tester_; }
@@ -356,7 +314,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   // NOTE: The initialization order of these members matters.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  TestingPrefServiceSimple local_state_;
   testing::NiceMock<MockNtpCustomBackgroundService>
       mock_ntp_custom_background_service_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
@@ -373,9 +330,6 @@ class CustomizeChromePageHandlerTest : public testing::Test {
   RAW_PTR_EXCLUSION NtpBackgroundServiceObserver*
       ntp_background_service_observer_;
   raw_ptr<MockThemeService> mock_theme_service_;
-  raw_ptr<MockOptimizationGuideKeyedService>
-      mock_optimization_guide_keyed_service_;
-  std::unique_ptr<image_fetcher::MockImageDecoder> mock_image_decoder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
@@ -524,6 +478,31 @@ TEST_P(CustomizeChromePageHandlerSetThemeTest, SetUploadedImage) {
   ASSERT_TRUE(theme->background_image);
   EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
   ASSERT_TRUE(theme->background_image->is_uploaded_image);
+}
+
+TEST_P(CustomizeChromePageHandlerSetThemeTest, SetWallpaperSearchImage) {
+  side_panel::mojom::ThemePtr theme;
+  EXPECT_CALL(mock_page_, SetTheme).Times(1).WillOnce(MoveArg<0>(&theme));
+  CustomBackground custom_background;
+  base::Token token = base::Token::CreateRandom();
+  custom_background.custom_background_url = GURL("https://foo.com/img.png");
+  custom_background.is_uploaded_image = true;
+  custom_background.local_background_id = token;
+  ON_CALL(mock_ntp_custom_background_service_, GetCustomBackground())
+      .WillByDefault(Return(absl::make_optional(custom_background)));
+  ON_CALL(mock_theme_service(), UsingDefaultTheme())
+      .WillByDefault(Return(false));
+  ON_CALL(mock_theme_service(), UsingSystemTheme())
+      .WillByDefault(Return(false));
+
+  UpdateTheme();
+  mock_page_.FlushForTesting();
+
+  ASSERT_TRUE(theme);
+  ASSERT_TRUE(theme->background_image);
+  EXPECT_TRUE(theme->background_image->is_uploaded_image);
+  EXPECT_EQ("https://foo.com/img.png", theme->background_image->url);
+  EXPECT_EQ(token, theme->background_image->local_background_id);
 }
 
 TEST_P(CustomizeChromePageHandlerSetThemeTest, SetThirdPartyTheme) {
@@ -830,544 +809,4 @@ TEST_F(CustomizeChromePageHandlerWithModulesTest, SetModuleDisabled) {
 
   EXPECT_EQ(1u, disabled_module_ids.size());
   EXPECT_EQ(kDriveModuleId, disabled_module_ids.front().GetString());
-}
-
-class CustomizeChromePageHandlerWithWallpaperSearchTest
-    : public CustomizeChromePageHandlerTest {
- public:
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kCustomizeChromeWallpaperSearch,
-                              optimization_guide::features::
-                                  kOptimizationGuideModelExecution},
-        /*disabled_features=*/{});
-    CustomizeChromePageHandlerTest::SetUp();
-  }
-
-  const std::string kDescriptorsLoadURL =
-      "https://static.corp.google.com/chrome-wallpaper-search/"
-      "descriptors_en-US.json";
-  void SetUpDescriptorsResponseWithData(const std::string& response) {
-    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
-        [&](const network::ResourceRequest& request) {}));
-    test_url_loader_factory_.AddResponse(kDescriptorsLoadURL, response);
-  }
-  void SetUpDescriptorsResponseWithNetworkError() {
-    test_url_loader_factory_.AddResponse(kDescriptorsLoadURL, std::string(),
-                                         net::HTTP_NOT_FOUND);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
-};
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Success_DescriptorsFormatCorrect) {
-  side_panel::mojom::DescriptorsPtr descriptors;
-  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&descriptors](
-              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
-            descriptors = std::move(descriptors_ptr_arg);
-          }));
-  SetUpDescriptorsResponseWithData(
-      R"()]}'
-        {
-          "descriptor_a":[
-            {"category":"foo","labels":["bar","baz"]},
-            {"category":"qux","labels":["foobar"]}
-          ],
-          "descriptor_b":[
-            {"label":"foo","image":"bar.png"}
-          ],
-          "descriptor_c":["foo","bar","baz"]
-        })");
-
-  ASSERT_FALSE(descriptors);
-  handler().GetDescriptors(callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_TRUE(descriptors);
-
-  const auto& descriptor_a = descriptors->descriptor_a;
-  EXPECT_EQ(2u, descriptor_a.size());
-  const auto& foo_descriptor = descriptor_a[0];
-  EXPECT_EQ(foo_descriptor->category, "foo");
-  EXPECT_EQ(2u, foo_descriptor->labels.size());
-  EXPECT_EQ("bar", foo_descriptor->labels[0]);
-  EXPECT_EQ("baz", foo_descriptor->labels[1]);
-  const auto& qux_descriptor = descriptor_a[1];
-  EXPECT_EQ(qux_descriptor->category, "qux");
-  EXPECT_EQ(1u, qux_descriptor->labels.size());
-  EXPECT_EQ("foobar", qux_descriptor->labels[0]);
-
-  const auto& descriptor_b = descriptors->descriptor_b;
-  EXPECT_EQ(1u, descriptor_b.size());
-  EXPECT_EQ("foo", descriptor_b[0]->label);
-  EXPECT_EQ("bar.png", descriptor_b[0]->image_path);
-
-  const auto& descriptor_c = descriptors->descriptor_c;
-  EXPECT_EQ(3u, descriptor_c.size());
-  EXPECT_EQ("foo", descriptor_c[0]);
-  EXPECT_EQ("bar", descriptor_c[1]);
-  EXPECT_EQ("baz", descriptor_c[2]);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Success_DescriptorsFormatIncorrect) {
-  side_panel::mojom::DescriptorsPtr descriptors;
-  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&descriptors](
-              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
-            descriptors = std::move(descriptors_ptr_arg);
-          }));
-  SetUpDescriptorsResponseWithData(
-      R"()]}'
-        {"descriptor_a":[
-          {"category":"foo"}
-      ]})");
-  ASSERT_FALSE(descriptors);
-
-  handler().GetDescriptors(callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(descriptors);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Fails_NoValidDescriptors) {
-  side_panel::mojom::DescriptorsPtr descriptors;
-  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&descriptors](
-              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
-            descriptors = std::move(descriptors_ptr_arg);
-          }));
-  SetUpDescriptorsResponseWithData(
-      R"()]}'
-        {"not_a_valid_descriptor":[
-          {"category":"foo","labels":["bar","baz"]},
-          {"category":"qux","labels":["foobar"]}
-      ]})");
-  ASSERT_FALSE(descriptors);
-
-  handler().GetDescriptors(callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(descriptors);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetDescriptors_Fails_DataIsUnreachable) {
-  side_panel::mojom::DescriptorsPtr descriptors;
-  base::MockCallback<CustomizeChromePageHandler::GetDescriptorsCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_))
-      .Times(1)
-      .WillOnce(testing::Invoke(
-          [&descriptors](
-              side_panel::mojom::DescriptorsPtr descriptors_ptr_arg) {
-            descriptors = std::move(descriptors_ptr_arg);
-          }));
-  SetUpDescriptorsResponseWithNetworkError();
-  ASSERT_FALSE(descriptors);
-
-  handler().GetDescriptors(callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_FALSE(descriptors);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       SearchWallpaper_Success) {
-  optimization_guide::proto::ModelExecutionFeature feature;
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .Times(1)
-      .WillOnce(Invoke(
-          [&feature, &request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            feature = feature_arg;
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
-      callback;
-
-  handler().SearchWallpaper("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  std::string bytes;
-  EXPECT_CALL(mock_ntp_custom_background_service_,
-              SelectLocalBackgroundImage(An<const std::string&>()))
-      .Times(1)
-      .WillOnce(SaveArg<0>(&bytes));
-
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
-  response.add_images("bar");
-  std::string serialized_metadata;
-  response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
-
-  bool success = false;
-  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
-
-  std::move(done_callback).Run(result);
-  EXPECT_EQ("bar", bytes);
-  EXPECT_TRUE(success);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       SearchWallpaper_NoResponse) {
-  optimization_guide::proto::ModelExecutionFeature feature;
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .Times(1)
-      .WillOnce(Invoke(
-          [&feature, &request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            feature = feature_arg;
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
-      callback;
-
-  handler().SearchWallpaper("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  EXPECT_CALL(mock_ntp_custom_background_service_,
-              SelectLocalBackgroundImage(An<const std::string&>()))
-      .Times(0);
-  bool success = true;
-  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
-
-  std::move(done_callback).Run(absl::nullopt);
-  EXPECT_FALSE(success);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       SearchWallpaper_NoImages) {
-  optimization_guide::proto::ModelExecutionFeature feature;
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .Times(1)
-      .WillOnce(Invoke(
-          [&feature, &request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            feature = feature_arg;
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  base::MockCallback<CustomizeChromePageHandler::SearchWallpaperCallback>
-      callback;
-
-  handler().SearchWallpaper("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  EXPECT_CALL(mock_ntp_custom_background_service_,
-              SelectLocalBackgroundImage(An<const std::string&>()))
-      .Times(0);
-
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
-  std::string serialized_metadata;
-  response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
-
-  bool success = true;
-  EXPECT_CALL(callback, Run(_)).Times(1).WillOnce(SaveArg<0>(&success));
-
-  std::move(done_callback).Run(result);
-  EXPECT_FALSE(success);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetWallpaperSearchResults_Success) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .WillOnce(Invoke(
-          [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
-      .Times(2)
-      .WillOnce(Invoke(
-          [&decoder_callback1](const std::string& image_data,
-                               const gfx::Size& desired_image_frame_size,
-                               data_decoder::DataDecoder* data_decoder,
-                               image_fetcher::ImageDecodedCallback callback) {
-            decoder_callback1 = std::move(callback);
-          }))
-      .WillOnce(Invoke(
-          [&decoder_callback2](const std::string& image_data,
-                               const gfx::Size& desired_image_frame_size,
-                               data_decoder::DataDecoder* data_decoder,
-                               image_fetcher::ImageDecodedCallback callback) {
-            decoder_callback2 = std::move(callback);
-          }));
-  base::MockCallback<
-      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
-      callback;
-
-  handler().GetWallpaperSearchResults("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
-
-  // Create test bitmap 1 and add it to response.
-  SkBitmap bitmap1;
-  bitmap1.allocN32Pixels(32, 32);
-  bitmap1.eraseColor(SK_ColorRED);
-  std::vector<unsigned char> encoded1;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
-                                    &encoded1);
-  response.add_images(std::string(encoded1.begin(), encoded1.end()));
-
-  // Create test bitmap 2 and add it to response.
-  SkBitmap bitmap2;
-  bitmap2.allocN32Pixels(32, 32);
-  bitmap2.eraseColor(SK_ColorBLUE);
-  std::vector<unsigned char> encoded2;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
-                                    &encoded2);
-  response.add_images(std::string(encoded2.begin(), encoded2.end()));
-
-  // Serialize and set result to later send to done_callback.
-  std::string serialized_metadata;
-  response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
-
-  std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
-
-  std::move(done_callback).Run(result);
-
-  std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
-  std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
-
-  ASSERT_EQ(static_cast<int>(images.size()), response.images_size());
-
-  // Check that resized encoded versions of the original bitmaps is what we
-  // get back.
-  auto resized_bitmap1 = skia::ImageOperations::Resize(
-      bitmap1, skia::ImageOperations::RESIZE_GOOD, 200, 200);
-  std::vector<unsigned char> resized_encoded1;
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      resized_bitmap1, /*discard_transparency=*/false, &resized_encoded1);
-  EXPECT_EQ(images[0]->image, base::Base64Encode(resized_encoded1));
-
-  auto resized_bitmap2 = skia::ImageOperations::Resize(
-      bitmap2, skia::ImageOperations::RESIZE_GOOD, 200, 200);
-  std::vector<unsigned char> resized_encoded2;
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      resized_bitmap2, /*discard_transparency=*/false, &resized_encoded2);
-  EXPECT_EQ(images[1]->image, base::Base64Encode(resized_encoded2));
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetWallpaperSearchResults_NoResponse) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .WillOnce(Invoke(
-          [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  base::MockCallback<
-      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
-      callback;
-
-  handler().GetWallpaperSearchResults("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
-
-  std::move(done_callback).Run(absl::nullopt);
-
-  EXPECT_EQ(images.size(), 0u);
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       GetWallpaperSearchResults_NoImages) {
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .WillOnce(Invoke(
-          [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  base::MockCallback<
-      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
-      callback;
-
-  handler().GetWallpaperSearchResults("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
-  std::string serialized_metadata;
-  response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
-
-  std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
-
-  std::move(done_callback).Run(result);
-
-  EXPECT_EQ(static_cast<int>(images.size()), response.images_size());
-}
-
-TEST_F(CustomizeChromePageHandlerWithWallpaperSearchTest,
-       SetBackgroundToWallpaperSearchResult) {
-  // Fill wallpaper_search_results_ with 2 bitmaps.
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  optimization_guide::OptimizationGuideModelExecutionResultCallback
-      done_callback;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
-      .WillOnce(Invoke(
-          [&request, &done_callback](
-              optimization_guide::proto::ModelExecutionFeature feature_arg,
-              const google::protobuf::MessageLite& request_arg,
-              optimization_guide::OptimizationGuideModelExecutionResultCallback
-                  done_callback_arg) {
-            ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
-            request.CheckTypeAndMergeFrom(request_arg);
-            done_callback = std::move(done_callback_arg);
-          }));
-  EXPECT_CALL(mock_image_decoder(), DecodeImage(_, _, _, _))
-      .Times(2)
-      .WillOnce(Invoke(
-          [&decoder_callback1](const std::string& image_data,
-                               const gfx::Size& desired_image_frame_size,
-                               data_decoder::DataDecoder* data_decoder,
-                               image_fetcher::ImageDecodedCallback callback) {
-            decoder_callback1 = std::move(callback);
-          }))
-      .WillOnce(Invoke(
-          [&decoder_callback2](const std::string& image_data,
-                               const gfx::Size& desired_image_frame_size,
-                               data_decoder::DataDecoder* data_decoder,
-                               image_fetcher::ImageDecodedCallback callback) {
-            decoder_callback2 = std::move(callback);
-          }));
-  base::MockCallback<
-      CustomizeChromePageHandler::GetWallpaperSearchResultsCallback>
-      callback;
-
-  handler().GetWallpaperSearchResults("foo", callback.Get());
-  EXPECT_EQ("foo", request.query());
-
-  chrome_intelligence_modelexecution_proto::WallpaperSearchResponse response;
-
-  // Create test bitmap 1 and add it to response.
-  SkBitmap bitmap1;
-  bitmap1.allocN32Pixels(32, 32);
-  bitmap1.eraseColor(SK_ColorRED);
-  std::vector<unsigned char> encoded1;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap1, /*discard_transparency=*/false,
-                                    &encoded1);
-  response.add_images(std::string(encoded1.begin(), encoded1.end()));
-
-  // Create test bitmap 2 and add it to response.
-  SkBitmap bitmap2;
-  bitmap2.allocN32Pixels(32, 32);
-  bitmap2.eraseColor(SK_ColorBLUE);
-  std::vector<unsigned char> encoded2;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap2, /*discard_transparency=*/false,
-                                    &encoded2);
-  response.add_images(std::string(encoded2.begin(), encoded2.end()));
-
-  // Serialize and set result to later send to done_callback.
-  std::string serialized_metadata;
-  response.SerializeToString(&serialized_metadata);
-  auto result = absl::make_optional(optimization_guide::proto::Any());
-  result->set_value(serialized_metadata);
-  result->set_type_url("type.googleapis.com/" + response.GetTypeName());
-
-  std::vector<side_panel::mojom::WallpaperSearchResultPtr> images;
-  EXPECT_CALL(callback, Run(_)).WillOnce(MoveArg(&images));
-
-  std::move(done_callback).Run(result);
-
-  std::move(decoder_callback1).Run(gfx::Image::CreateFrom1xBitmap(bitmap1));
-  std::move(decoder_callback2).Run(gfx::Image::CreateFrom1xBitmap(bitmap2));
-
-  // Set background to bitmap2.
-  SkBitmap bitmap;
-  EXPECT_CALL(mock_ntp_custom_background_service_,
-              SelectLocalBackgroundImage(An<const SkBitmap&>()))
-      .WillOnce(SaveArg<0>(&bitmap));
-
-  handler().SetBackgroundToWallpaperSearchResult(images[1]->id);
-
-  // Check that the 2nd bitmap was selected by comparing color, since the
-  // 2 bitmaps are different colors.
-  EXPECT_EQ(bitmap.getColor(0, 0), bitmap2.getColor(0, 0));
 }

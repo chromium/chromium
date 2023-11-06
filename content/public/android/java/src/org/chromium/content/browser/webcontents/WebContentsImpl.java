@@ -21,15 +21,16 @@ import android.view.ViewStructure;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
@@ -668,11 +669,23 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
-            boolean shouldShowContextMenu) {
+    public void selectAroundCaret(
+            @SelectionGranularity int granularity,
+            boolean shouldShowHandle,
+            boolean shouldShowContextMenu,
+            int startOffset,
+            int endOffset,
+            int surroundingTextLength) {
         checkNotDestroyed();
-        WebContentsImplJni.get().selectAroundCaret(
-                mNativeWebContentsAndroid, granularity, shouldShowHandle, shouldShowContextMenu);
+        WebContentsImplJni.get()
+                .selectAroundCaret(
+                        mNativeWebContentsAndroid,
+                        granularity,
+                        shouldShowHandle,
+                        shouldShowContextMenu,
+                        startOffset,
+                        endOffset,
+                        surroundingTextLength);
     }
 
     @Override
@@ -1202,8 +1215,16 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         boolean isFullscreenForCurrentTab(long nativeWebContentsAndroid);
         void exitFullscreen(long nativeWebContentsAndroid);
         void scrollFocusedEditableNodeIntoView(long nativeWebContentsAndroid);
-        void selectAroundCaret(long nativeWebContentsAndroid, int granularity,
-                boolean shouldShowHandle, boolean shouldShowContextMenu);
+
+        void selectAroundCaret(
+                long nativeWebContentsAndroid,
+                int granularity,
+                boolean shouldShowHandle,
+                boolean shouldShowContextMenu,
+                int startOffset,
+                int endOffset,
+                int surroundingTextLength);
+
         void adjustSelectionByCharacterOffset(long nativeWebContentsAndroid, int startAdjust,
                 int endAdjust, boolean showSelectionMenu);
         GURL getLastCommittedURL(long nativeWebContentsAndroid);

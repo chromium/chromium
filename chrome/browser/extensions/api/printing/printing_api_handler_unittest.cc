@@ -352,7 +352,7 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     EXPECT_FALSE(error);
     EXPECT_TRUE(job_id);
     EXPECT_TRUE(submit_job_status);
-    EXPECT_EQ(api::printing::SUBMIT_JOB_STATUS_OK, submit_job_status);
+    EXPECT_EQ(api::printing::SubmitJobStatus::kOk, submit_job_status);
     // Only lacros needs to report the print job to ash chrome.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_EQ(1u, TakePrintJobs().size());
@@ -434,15 +434,15 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     PrintingAPIHandlerParam,
     testing::Values(Param{crosapi::mojom::PrintJobStatus::kUnknown,
-                          api::printing::JOB_STATUS_PENDING},
+                          api::printing::JobStatus::kPending},
                     Param{crosapi::mojom::PrintJobStatus::kStarted,
-                          api::printing::JOB_STATUS_IN_PROGRESS},
+                          api::printing::JobStatus::kInProgress},
                     Param{crosapi::mojom::PrintJobStatus::kDone,
-                          api::printing::JOB_STATUS_PRINTED},
+                          api::printing::JobStatus::kPrinted},
                     Param{crosapi::mojom::PrintJobStatus::kError,
-                          api::printing::JOB_STATUS_FAILED},
+                          api::printing::JobStatus::kFailed},
                     Param{crosapi::mojom::PrintJobStatus::kCancelled,
-                          api::printing::JOB_STATUS_CANCELED}));
+                          api::printing::JobStatus::kCanceled}));
 
 // Test that `OnJobStatusChanged` is dispatched when the print job status is
 // changed.
@@ -486,7 +486,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinters_OnePrinter) {
   EXPECT_EQ(kName, idl_printer.name);
   EXPECT_EQ(kDescription, idl_printer.description);
   EXPECT_EQ(kUri, idl_printer.uri);
-  EXPECT_EQ(api::printing::PRINTER_SOURCE_POLICY, idl_printer.source);
+  EXPECT_EQ(api::printing::PrinterSource::kPolicy, idl_printer.source);
   EXPECT_FALSE(idl_printer.is_default);
   EXPECT_EQ(absl::nullopt, idl_printer.recently_used_rank);
 }
@@ -571,7 +571,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_NoCapabilities) {
   auto [capabilities, printer_status, error] = printer_info_future.Take();
   EXPECT_FALSE(capabilities);
   ASSERT_TRUE(printer_status);
-  EXPECT_EQ(api::printing::PRINTER_STATUS_UNREACHABLE, printer_status);
+  EXPECT_EQ(api::printing::PrinterStatus::kUnreachable, printer_status);
   EXPECT_FALSE(error);
 }
 
@@ -627,7 +627,7 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
               testing::UnorderedElementsAre("PORTRAIT", "LANDSCAPE", "AUTO"));
 
   ASSERT_TRUE(printer_status);
-  EXPECT_EQ(api::printing::PRINTER_STATUS_OUT_OF_PAPER, printer_status);
+  EXPECT_EQ(api::printing::PrinterStatus::kOutOfPaper, printer_status);
   EXPECT_FALSE(error);
 }
 
@@ -869,7 +869,7 @@ TEST_F(PrintingAPIHandlerUnittest, CancelJob) {
 
   // Now the job is canceled.
   event_observer.CheckJobStatusEvent(kExtensionId, job_id,
-                                     api::printing::JOB_STATUS_CANCELED);
+                                     api::printing::JobStatus::kCanceled);
 }
 
 }  // namespace extensions

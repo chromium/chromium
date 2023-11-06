@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.metrics.UmaUtils;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
@@ -225,35 +226,41 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         // waiting for FirstRunFlowSequencer.
         createFirstPage();
 
-        mFirstRunFlowSequencer = new FirstRunFlowSequencer(
-                this, getProfileSupplier(), getChildAccountStatusSupplier()) {
-            @Override
-            public void onFlowIsKnown(Bundle freProperties) {
-                assert freProperties != null;
-                mFreProperties = freProperties;
-                RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.ChildStatusAvailable",
-                        SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
+        mFirstRunFlowSequencer =
+                new FirstRunFlowSequencer(
+                        this, getProfileProviderSupplier(), getChildAccountStatusSupplier()) {
+                    @Override
+                    public void onFlowIsKnown(Bundle freProperties) {
+                        assert freProperties != null;
+                        mFreProperties = freProperties;
+                        RecordHistogram.recordTimesHistogram(
+                                "MobileFre.FromLaunch.ChildStatusAvailable",
+                                SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
-                onInternalStateChanged();
+                        onInternalStateChanged();
 
-                recordFreProgressHistogram(mFreProgressStates.get(0));
-                long inflationCompletion = SystemClock.elapsedRealtime();
-                RecordHistogram.recordTimesHistogram("MobileFre.FromLaunch.FirstFragmentInflatedV2",
-                        inflationCompletion - mIntentCreationElapsedRealtimeMs);
-                getFirstRunAppRestrictionInfo().getCompletionElapsedRealtimeMs(
-                        restrictionsCompletion -> {
-                            if (restrictionsCompletion > inflationCompletion) {
-                                RecordHistogram.recordTimesHistogram(
-                                        "MobileFre.FragmentInflationSpeed.FasterThanAppRestriction",
-                                        restrictionsCompletion - inflationCompletion);
-                            } else {
-                                RecordHistogram.recordTimesHistogram(
-                                        "MobileFre.FragmentInflationSpeed.SlowerThanAppRestriction",
-                                        inflationCompletion - restrictionsCompletion);
-                            }
-                        });
-            }
-        };
+                        recordFreProgressHistogram(mFreProgressStates.get(0));
+                        long inflationCompletion = SystemClock.elapsedRealtime();
+                        RecordHistogram.recordTimesHistogram(
+                                "MobileFre.FromLaunch.FirstFragmentInflatedV2",
+                                inflationCompletion - mIntentCreationElapsedRealtimeMs);
+                        getFirstRunAppRestrictionInfo()
+                                .getCompletionElapsedRealtimeMs(
+                                        restrictionsCompletion -> {
+                                            if (restrictionsCompletion > inflationCompletion) {
+                                                RecordHistogram.recordTimesHistogram(
+                                                        "MobileFre.FragmentInflationSpeed.FasterThanAppRestriction",
+                                                        restrictionsCompletion
+                                                                - inflationCompletion);
+                                            } else {
+                                                RecordHistogram.recordTimesHistogram(
+                                                        "MobileFre.FragmentInflationSpeed.SlowerThanAppRestriction",
+                                                        inflationCompletion
+                                                                - restrictionsCompletion);
+                                            }
+                                        });
+                    }
+                };
         mFirstRunFlowSequencer.start();
         FirstRunStatus.setFirstRunTriggered(true);
         recordFreProgressHistogram(MobileFreProgress.STARTED);
@@ -286,10 +293,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
             onNativeDependenciesFullyInitialized();
         };
-        TemplateUrlServiceFactory.getForProfile(getProfileSupplier().get())
-                .runWhenLoaded(onNativeFinished);
+        Profile profile = getProfileProviderSupplier().get().getOriginalProfile();
+        TemplateUrlServiceFactory.getForProfile(profile).runWhenLoaded(onNativeFinished);
         // Notify feature engagement that FRE occurred.
-        TrackerFactory.getTrackerForProfile(getProfileSupplier().get())
+        TrackerFactory.getTrackerForProfile(profile)
                 .notifyEvent(EventConstants.RESTORE_TABS_ON_FIRST_RUN_SHOW_PROMO);
     }
 

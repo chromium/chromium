@@ -40,14 +40,15 @@ public class BookmarkSearchBoxRow extends LinearLayout {
         super.onFinishInflate();
         mSearchText = findViewById(R.id.search_text);
         mSearchText.setOnEditorActionListener(this::onEditorAction);
-        mSearchText.addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (mSearchTextCallback != null) {
-                    mSearchTextCallback.onResult(charSequence.toString());
-                }
-            }
-        });
+        mSearchText.addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        if (mSearchTextCallback != null) {
+                            mSearchTextCallback.onResult(charSequence.toString());
+                        }
+                    }
+                });
         mClearSearchTextButton = findViewById(R.id.clear_text_button);
     }
 
@@ -62,10 +63,11 @@ public class BookmarkSearchBoxRow extends LinearLayout {
     }
 
     void setFocusChangeCallback(Callback<Boolean> focusChangeCallback) {
-        mSearchText.setOnFocusChangeListener((view, hasFocus) -> {
-            assert view == mSearchText;
-            focusChangeCallback.onResult(hasFocus);
-        });
+        mSearchText.setOnFocusChangeListener(
+                (view, hasFocus) -> {
+                    assert view == mSearchText;
+                    focusChangeCallback.onResult(hasFocus);
+                });
     }
 
     void setHasFocus(boolean modelHasFocus) {
@@ -79,10 +81,11 @@ public class BookmarkSearchBoxRow extends LinearLayout {
     }
 
     void setClearSearchTextButtonRunnable(Runnable onClearSearchTextButtonRunnable) {
-        mClearSearchTextButton.setOnClickListener((view) -> {
-            assert view == mClearSearchTextButton;
-            onClearSearchTextButtonRunnable.run();
-        });
+        mClearSearchTextButton.setOnClickListener(
+                (view) -> {
+                    assert view == mClearSearchTextButton;
+                    onClearSearchTextButtonRunnable.run();
+                });
     }
 
     void setClearSearchTextButtonVisibility(boolean isVisible) {

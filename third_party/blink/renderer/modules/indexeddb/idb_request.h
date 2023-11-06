@@ -224,7 +224,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   IDBTransaction* transaction() const { return transaction_.Get(); }
 
   bool isResultDirty() const { return result_dirty_; }
-  IDBAny* ResultAsAny() const { return result_; }
+  IDBAny* ResultAsAny() const { return result_.Get(); }
 
   // Requests made during index population are implementation details and so
   // events should not be visible to script.

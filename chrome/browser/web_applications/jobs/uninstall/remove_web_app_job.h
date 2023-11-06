@@ -61,7 +61,6 @@ class RemoveWebAppJob : public UninstallJob {
   bool translation_data_deleted_ = false;
   bool isolated_web_app_browsing_data_cleared_ = false;
   bool hooks_uninstalled_ = false;
-  bool pending_app_profile_deletion_ = false;
   bool errors_ = false;
   bool has_isolated_storage_ = false;
   absl::optional<webapps::UninstallResultCode> primary_removal_result_;

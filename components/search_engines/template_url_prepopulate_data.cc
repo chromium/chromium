@@ -1767,7 +1767,8 @@ std::vector<std::unique_ptr<TemplateURLData>> GetPrepopulatedEngines(
       // returned list if it's not already there.
       const TemplateURL* default_search_engine =
           template_url_service->GetDefaultSearchProvider();
-      if (!base::Contains(t_urls, default_search_engine->prepopulate_id(),
+      if (default_search_engine &&
+          !base::Contains(t_urls, default_search_engine->prepopulate_id(),
                           [](const std::unique_ptr<TemplateURLData>& engine) {
                             return engine->prepopulate_id;
                           })) {

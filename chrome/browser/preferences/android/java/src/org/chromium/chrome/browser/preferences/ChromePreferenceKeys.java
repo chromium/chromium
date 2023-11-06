@@ -395,6 +395,9 @@ public final class ChromePreferenceKeys {
     public static final String ISOLATED_SPLITS_DEX_COMPILE_VERSION =
             "Chrome.IsolatedSplits.VersionCode";
 
+    /** Whether the device is from an EEA country. */
+    public static final String IS_EEA_CHOICE_COUNTRY = "Chrome.SearchEngine.IsEeaChoiceCountry";
+
     /**
      * Whether the default search engine is Google.
      */
@@ -599,6 +602,17 @@ public final class ChromePreferenceKeys {
      */
     public static final String PIH_PRIVACY_NOTICE_CLOSED =
             "Chrome.PageInsightsHub.PrivacyNoticeClosedByUser";
+
+    /** Indicates the latest timestamp when Privacy Notice was shown to the user */
+    public static final String PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP =
+            "Chrome.PageInsightsHub.PageInsightsHubLastOpenedTimestamp";
+
+    /**
+     * Indicates the number of times Privacy Notice of Page Insights Hub was opened by user till now
+     * . The privacy notice is not shown after it has been shown 3 times.
+     */
+    public static final String PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT =
+            "Chrome.PageInsightsHub.NumberOfTimesPageInsightsHubOpenedByUser";
 
     /**
      * Save the timestamp of the last time that we record metrics on whether user enables the price
@@ -965,7 +979,6 @@ public final class ChromePreferenceKeys {
      */
     @CheckDiscard("Validation is performed in tests and in debug builds.")
     static List<String> getKeysInUse() {
-        // clang-format off
         return Arrays.asList(
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED,
                 ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
@@ -1025,6 +1038,7 @@ public final class ChromePreferenceKeys {
                 INCOGNITO_REAUTH_PROMO_CARD_ENABLED,
                 INCOGNITO_REAUTH_PROMO_SHOW_COUNT,
                 INCOGNITO_TAB_COUNT,
+                IS_EEA_CHOICE_COUNTRY,
                 IS_LAST_VISITED_TAB_SRP,
                 IS_DSE_GOOGLE,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
@@ -1063,6 +1077,8 @@ public final class ChromePreferenceKeys {
                 PASSWORD_PROTECTION_ACCOUNTS,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PIH_PRIVACY_NOTICE_CLOSED,
+                PIH_PRIVACY_NOTICE_LAST_SHOWN_TIMESTAMP,
+                PIH_PRIVACY_NOTICE_SHOWN_TOTAL_COUNT,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,
                 PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD,
@@ -1104,7 +1120,6 @@ public final class ChromePreferenceKeys {
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_TIME_MS_PREFIX.pattern(),
                 WEB_FEED_INTRO_WEB_FEED_ID_SHOWN_COUNT_PREFIX.pattern(),
                 WEB_SIGNIN_ACCOUNT_PICKER_ACTIVE_DISMISSAL_COUNT);
-        // clang-format on
     }
 
     private ChromePreferenceKeys() {}

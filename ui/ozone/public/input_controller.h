@@ -29,7 +29,7 @@ enum class HapticTouchpadEffectStrength;
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Platform-specific interface for controlling input devices.
 //

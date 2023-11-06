@@ -4,8 +4,6 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_connector.h"
 
-#include <vector>
-
 #include "base/functional/bind.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
@@ -41,20 +39,6 @@ void WaylandBufferManagerConnector::OnGpuServiceLaunched(
   buffer_manager_host_->SetTerminateGpuCallback(std::move(on_terminate_gpu_cb));
   terminate_callback_ = std::move(terminate_callback);
 
-  // Bug fix ids are sent from the server one by one asynchronously. Wait for
-  // all bug fix ids are ready before initializing WaylandBufferManagerGpu. If
-  // bug fix ids are already ready, it immediately calls OnAllBugFixesSent
-  // synchronously.
-  // TODO(crbug.com/1487446): This always runs synchronously now due to the
-  // temporal solution for avoiding the race condition. It may return empty bug
-  // fix ids while there are ids sent from Ash.
-  buffer_manager_host_->WaitForAllBugFixIds(
-      base::BindOnce(&WaylandBufferManagerConnector::OnAllBugFixesSent,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void WaylandBufferManagerConnector::OnAllBugFixesSent(
-    const std::vector<uint32_t>& bug_fix_ids) {
   auto pending_remote = buffer_manager_host_->BindInterface();
 
   mojo::Remote<ozone::mojom::WaylandBufferManagerGpu> buffer_manager_gpu_remote;
@@ -75,7 +59,8 @@ void WaylandBufferManagerConnector::OnAllBugFixesSent(
       buffer_manager_host_->SupportsAcquireFence(),
       buffer_manager_host_->SupportsOverlays(),
       buffer_manager_host_->GetSurfaceAugmentorVersion(),
-      buffer_manager_host_->SupportsSinglePixelBuffer(), bug_fix_ids);
+      buffer_manager_host_->SupportsSinglePixelBuffer(),
+      buffer_manager_host_->GetServerVersion());
 }
 
 void WaylandBufferManagerConnector::OnTerminateGpuProcess(std::string message) {

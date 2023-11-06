@@ -77,8 +77,8 @@ LocalTestServer::~LocalTestServer() {
 
 bool LocalTestServer::GetTestServerPath(base::FilePath* testserver_path) const {
   base::FilePath testserver_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &testserver_dir)) {
-    LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &testserver_dir)) {
+    LOG(ERROR) << "Failed to get DIR_SRC_TEST_DATA_ROOT";
     return false;
   }
   testserver_dir = testserver_dir.Append(FILE_PATH_LITERAL("net"))
@@ -155,8 +155,9 @@ bool LocalTestServer::Init(const base::FilePath& document_root) {
   DCHECK(!GetPort());
 
   base::FilePath src_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir)) {
     return false;
+  }
   SetResourcePath(src_dir.Append(document_root),
                   src_dir.AppendASCII("net")
                       .AppendASCII("data")
@@ -168,8 +169,8 @@ bool LocalTestServer::Init(const base::FilePath& document_root) {
 absl::optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
     const {
   base::FilePath third_party_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &third_party_dir)) {
-    LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &third_party_dir)) {
+    LOG(ERROR) << "Failed to get DIR_SRC_TEST_DATA_ROOT";
     return absl::nullopt;
   }
   third_party_dir = third_party_dir.AppendASCII("third_party");

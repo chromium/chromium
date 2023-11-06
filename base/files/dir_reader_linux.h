@@ -65,7 +65,9 @@ class DirReaderLinux {
     if (r == 0)
       return false;
     if (r < 0) {
-      DPLOG(FATAL) << "getdents64 failed";
+      if (errno != ENOENT) {
+        DPLOG(FATAL) << "getdents64 failed";
+      }
       return false;
     }
     size_ = static_cast<size_t>(r);

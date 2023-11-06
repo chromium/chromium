@@ -252,12 +252,6 @@ TabManagerDelegate::TabManagerDelegate(
     : tab_manager_(tab_manager),
       focused_process_(new FocusedProcess()),
       mem_stat_(mem_stat) {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
   registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
                  content::NotificationService::AllBrowserContextsAndSources());
   auto* activation_client = GetActivationClient();
@@ -418,23 +412,34 @@ void TabManagerDelegate::AdjustFocusedTabScore(base::ProcessHandle pid) {
   }
 }
 
+void TabManagerDelegate::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  ListProcessesThrottled();
+  if (!host_observation_.IsObservingSource(host)) {
+    host_observation_.AddObservation(host);
+  }
+}
+
+void TabManagerDelegate::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  oom_score_map_.erase(host->GetProcess().Handle());
+  host_observation_.RemoveObservation(host);
+}
+
+void TabManagerDelegate::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  oom_score_map_.erase(host->GetProcess().Handle());
+  // The observation may have already been removed in RenderProcessExited().
+  if (host_observation_.IsObservingSource(host)) {
+    host_observation_.RemoveObservation(host);
+  }
+}
+
 void TabManagerDelegate::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CREATED:
-      ListProcessesThrottled();
-      break;
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED:
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
-      // Calling ListProcessesThrottled in this case may cause crash in the
-      // browser shutdown process. When a renderer process is terminated,
-      // resourced would not count its memory usage.
-      content::RenderProcessHost* host =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      oom_score_map_.erase(host->GetProcess().Handle());
-      break;
-    }
     case content::NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED: {
       bool visible = *content::Details<bool>(details).ptr();
       if (visible) {
@@ -880,16 +885,21 @@ void TabManagerDelegate::ListProcesses() {
     DecisionDetails decision_details;
     bool is_protected = false;
     bool is_visible = false;
+    bool is_focused = false;
     if (!lifecycle_unit->CanDiscard(
             ::mojom::LifecycleUnitDiscardReason::EXTERNAL, &decision_details)) {
       if (!decision_details.reasons().empty() &&
           decision_details.FailureReason() ==
               DecisionFailureReason::LIVE_STATE_VISIBLE) {
         is_visible = true;
+
+        if (lifecycle_unit->GetLastFocusedTime() == base::TimeTicks::Max()) {
+          is_focused = true;
+        }
       }
       is_protected = true;
     }
-    processes.emplace_back(pid, is_protected, is_visible);
+    processes.emplace_back(pid, is_protected, is_visible, is_focused);
   }
 
   ReportProcesses(processes);

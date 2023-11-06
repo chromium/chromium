@@ -40,43 +40,6 @@
 #include "url/gurl.h"
 
 namespace arc {
-
-// Script for clicking OK button on the selector.
-const char kScriptClickOk[] =
-    "(function() { document.querySelector('#ok-button').click(); })();";
-
-// Script for clicking Cancel button on the selector.
-const char kScriptClickCancel[] =
-    "(function() { document.querySelector('#cancel-button').click(); })();";
-
-// Script for clicking a directory element in the left pane of the selector.
-// %s should be replaced by the target directory name wrapped by double-quotes.
-const char kScriptClickDirectory[] =
-    "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  Array.from(dirs).filter(a => a.innerText === %s)[0].click();"
-    "})();";
-
-// Script for clicking a file element in the right pane of the selector.
-// %s should be replaced by the target file name wrapped by double-quotes.
-const char kScriptClickFile[] =
-    "(function() {"
-    "  var evt = document.createEvent('MouseEvents');"
-    "  evt.initMouseEvent('mousedown', true, false);"
-    "  var files = document.querySelectorAll('#file-list .file');"
-    "  Array.from(files).filter(a => a.getAttribute('file-name') === %s)[0]"
-    "      .dispatchEvent(evt);"
-    "})();";
-
-// Script for querying UI elements (directories and files) shown on the selector.
-const char kScriptGetElements[] =
-    "(function() {"
-    "  var dirs = document.querySelectorAll('#directory-tree .entry-name');"
-    "  var files = document.querySelectorAll('#file-list .file');"
-    "  return {dirNames: Array.from(dirs, a => a.innerText),"
-    "          fileNames: Array.from(files, a => a.getAttribute('file-name'))};"
-    "})();";
-
 namespace {
 
 constexpr char kRecentAllFakePath[] = "/.fake-entry/recent/all";

@@ -158,6 +158,12 @@ const phoneHubRegEx =
     new RegExp('app[ ]?stream(ing)?|phone|camera[ ]?roll', 'i');
 
 /**
+ * Regular expression to check for wifi-related keywords.
+ */
+const wifiRegEx =
+    new RegExp('\\b(wifi|wi\-fi|internet|network|hotspot)\\b', 'i');
+
+/**
  * @fileoverview
  * 'feedback-flow' manages the navigation among the steps to be taken.
  */
@@ -200,6 +206,12 @@ export class FeedbackFlowElement extends PolymerElement {
      * @type {boolean}
      */
     this.shouldShowBluetoothCheckbox_;
+
+    /**
+     * Whether to show the Wifi debug Logs checkbox in share data page.
+     * @type {boolean}
+     */
+    this.shouldShowWifiDebugLogsCheckbox_ = false;
 
     /**
      * Whether to show the Link Cross Device Dogfood Feedback checkbox in share
@@ -410,6 +422,7 @@ export class FeedbackFlowElement extends PolymerElement {
       assistantDebugInfoAllowed: false,
       fromSettingsSearch: feedbackInfo.fromSettingsSearch ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
+      wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
       pageUrl: {url: feedbackInfo.pageUrl ?? ''},
       fromAssistant: feedbackInfo.fromAssistant ?? false,
@@ -542,6 +555,8 @@ export class FeedbackFlowElement extends PolymerElement {
         this.shouldShowBluetoothCheckbox_ = this.feedbackContext_ !== null &&
             this.feedbackContext_.isInternalAccount &&
             this.isDescriptionRelatedToBluetooth(this.description_);
+        this.shouldShowWifiDebugLogsCheckbox_ =
+            this.computeShouldShowWifiDebugLogsCheckbox_();
         this.shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox_ =
             this.feedbackContext_ !== null &&
             loadTimeData.getBoolean(
@@ -610,6 +625,13 @@ export class FeedbackFlowElement extends PolymerElement {
       default:
         console.warn('unexpected state: ', event.detail.currentState);
     }
+  }
+
+  /** @private */
+  computeShouldShowWifiDebugLogsCheckbox_() {
+    return this.feedbackContext_ && this.feedbackContext_.isInternalAccount &&
+        this.feedbackContext_.wifiDebugLogsAllowed &&
+        wifiRegEx.test(this.description_);
   }
 
   /** @private */
@@ -714,6 +736,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   getIsUserLoggedInForTesting() {
     return this.isUserLoggedIn_;
+  }
+
+  /**
+   * @returns {boolean}
+   */
+  getShouldShowWifiDebugLogsCheckboxForTesting() {
+    return this.shouldShowWifiDebugLogsCheckbox_;
   }
 
   /**

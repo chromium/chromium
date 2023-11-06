@@ -22,6 +22,7 @@ class GooglePhotosAlbumsFetcher;
 class GooglePhotosSharedAlbumsFetcher;
 class GooglePhotosEnabledFetcher;
 class GooglePhotosPhotosFetcher;
+class SeaPenFetcher;
 
 // Delegate class for creating backdrop fetchers. Abstract class to allow
 // mocking out in test.
@@ -55,6 +56,9 @@ class WallpaperFetcherDelegate {
       const AccountId& account_id,
       ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
           callback) const = 0;
+
+  virtual std::unique_ptr<SeaPenFetcher> CreateSeaPenFetcher(
+      Profile* profile) const = 0;
 };
 
 class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
@@ -94,6 +98,9 @@ class WallpaperFetcherDelegateImpl : public WallpaperFetcherDelegate {
       const AccountId& account_id,
       ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
           callback) const override;
+
+  std::unique_ptr<SeaPenFetcher> CreateSeaPenFetcher(
+      Profile* profile) const override;
 };
 
 }  // namespace wallpaper_handlers

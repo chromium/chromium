@@ -23,7 +23,9 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   CSSMathFunctionValue(const CSSMathExpressionNode* expression,
                        ValueRange range);
 
-  const CSSMathExpressionNode* ExpressionNode() const { return expression_; }
+  const CSSMathExpressionNode* ExpressionNode() const {
+    return expression_.Get();
+  }
 
   scoped_refptr<const CalculationValue> ToCalcValue(
       const CSSLengthResolver&) const;
@@ -31,9 +33,6 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   bool MayHaveRelativeUnit() const;
 
   CalculationResultCategory Category() const { return expression_->Category(); }
-  bool CanBeResolvedWithConversionData() const {
-    return expression_->CanBeResolvedWithConversionData();
-  }
 
   bool IsAngle() const { return Category() == kCalcAngle; }
   bool IsLength() const { return Category() == kCalcLength; }

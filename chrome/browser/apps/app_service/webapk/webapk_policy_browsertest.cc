@@ -32,7 +32,7 @@ constexpr char kWebApkPackageName[] = "org.chromium.webapk.browsertest";
 
 absl::optional<arc::ArcFeatures> GetArcFeatures() {
   arc::ArcFeatures arc_features;
-  arc_features.build_props["ro.product.cpu.abilist"] = "x86";
+  arc_features.build_props.abi_list = "x86";
   return arc_features;
 }
 

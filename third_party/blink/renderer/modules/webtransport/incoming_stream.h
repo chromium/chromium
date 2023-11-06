@@ -56,7 +56,7 @@ class MODULES_EXPORT IncomingStream final
   ReadableStream* Readable() const {
     DVLOG(1) << "IncomingStream::readable() called";
 
-    return readable_;
+    return readable_.Get();
   }
 
   // Called from WebTransport via a WebTransportStream class. May execute

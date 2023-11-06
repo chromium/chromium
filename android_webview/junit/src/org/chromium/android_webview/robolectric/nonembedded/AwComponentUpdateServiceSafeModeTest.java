@@ -37,8 +37,7 @@ public class AwComponentUpdateServiceSafeModeTest {
     private File mDirectory;
     private AwComponentUpdateService mComponentUpdateService;
 
-    @Mock
-    private SafeModeController mMockSafeModeController;
+    @Mock private SafeModeController mMockSafeModeController;
 
     @Before
     public void setUp() {
@@ -56,7 +55,8 @@ public class AwComponentUpdateServiceSafeModeTest {
 
     @After
     public void tearDown() {
-        Assert.assertTrue("Failed to delete " + mDirectory.getAbsolutePath(),
+        Assert.assertTrue(
+                "Failed to delete " + mDirectory.getAbsolutePath(),
                 FileUtils.recursivelyDeleteFile(mDirectory, null));
     }
 

@@ -32,9 +32,9 @@ class FieldFiller {
       const AutofillField& field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      FormFieldData* field_data,
+      const FormFieldData* field_data,
       const std::u16string& cvc,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
   // Set |field_data|'s value to the right value in |profile_or_credit_card|.
@@ -56,7 +56,7 @@ class FieldFiller {
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData* field_data,
       const std::u16string& cvc,
-      mojom::AutofillActionPersistence action_persistence,
+      mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill = nullptr);
 
   // Returns the phone number value for the given `field_max_length`. The
@@ -69,9 +69,10 @@ class FieldFiller {
 
   // Returns the index of the shortest entry in the given select field of which
   // |value| is a substring. Returns -1 if no such entry exists.
-  static int FindShortestSubstringMatchInSelect(const std::u16string& value,
-                                                bool ignore_whitespace,
-                                                const FormFieldData* field);
+  static int FindShortestSubstringMatchInSelect(
+      const std::u16string& value,
+      bool ignore_whitespace,
+      base::span<const SelectOption> field_options);
 
  private:
   const std::string app_locale_;

@@ -70,11 +70,12 @@ component("gpu") {
     visibility += [ "//content/common" ]
   }
 
-  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
-  if (!use_runtime_vlog) {
-    # Enable VLOG(1) when using build time VLOG.
-    defines += [ "ENABLED_VLOG_LEVEL=1" ]
-  }
+  defines = [
+    "MEDIA_GPU_IMPLEMENTATION",
+
+    # Enable VLOG(1) so that they are included in field feedbacks.
+    "ENABLED_VLOG_LEVEL=1",
+  ]
 
   sources = [
     "gpu_video_accelerator_util.cc",
@@ -172,6 +173,12 @@ component("gpu") {
       "android/video_frame_factory_impl.cc",
       "android/video_frame_factory_impl.h",
     ]
+    if (proprietary_codecs) {
+      sources += [
+        "android/ndk_audio_encoder.cc",
+        "android/ndk_audio_encoder.h",
+      ]
+    }
     defines += [
       # We need to reference functions and constants from NDK API levels
       # beyond the one Chromium compiles with by default.
@@ -314,6 +321,10 @@ source_set("common") {
     "accelerated_video_decoder.h",
     "codec_picture.cc",
     "codec_picture.h",
+    "exponential_moving_average.cc",
+    "exponential_moving_average.h",
+    "frame_size_estimator.cc",
+    "frame_size_estimator.h",
     "gpu_video_decode_accelerator_helpers.cc",
     "gpu_video_decode_accelerator_helpers.h",
     "gpu_video_encode_accelerator_helpers.cc",
@@ -451,7 +462,10 @@ if (use_v4l2_codec || use_vaapi) {
 
     # vaapi_dmabuf_video_frame_mapper
     if (use_vaapi) {
-      deps += [ "//media/gpu/vaapi" ]
+      deps += [
+        "//media/gpu/vaapi",
+        "//media/gpu/vaapi:common",
+      ]
     }
   }
 
@@ -580,6 +594,8 @@ source_set("unit_tests") {
     "//ui/gl:test_support",
   ]
   sources = [
+    "exponential_moving_average_unittest.cc",
+    "frame_size_estimator_unittest.cc",
     "h264_decoder_unittest.cc",
     "hrd_buffer_unittest.cc",
   ]

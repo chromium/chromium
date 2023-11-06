@@ -30,8 +30,8 @@
 #include "components/password_manager/core/browser/mock_password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -61,7 +61,6 @@ constexpr char kTestProxyOrigin[] = "http://proxy.com/";
 constexpr char kTestProxySignonRealm[] = "proxy.com/realm";
 constexpr char kTestURL[] = "https://example.com/login/";
 constexpr char16_t kTestUsername[] = u"Username";
-constexpr char16_t kTestUsername2[] = u"Username2";
 constexpr char16_t kTestPassword[] = u"12345";
 
 class MockPasswordManagerClient
@@ -141,80 +140,6 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(translate::TranslateDriver*, GetTranslateDriver, (), (override));
   MOCK_METHOD(void, ShowAutofillSettings, (autofill::PopupType), (override));
   MOCK_METHOD(void,
-              ShowUnmaskPrompt,
-              (const autofill::CreditCard&,
-               const autofill::CardUnmaskPromptOptions&,
-               base::WeakPtr<autofill::CardUnmaskDelegate>),
-              (override));
-  MOCK_METHOD(void,
-              OnUnmaskVerificationResult,
-              (PaymentsRpcResult),
-              (override));
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              ShowLocalCardMigrationDialog,
-              (base::OnceClosure),
-              (override));
-  MOCK_METHOD(void,
-              ConfirmMigrateLocalCardToCloud,
-              (const autofill::LegalMessageLines&,
-               const std::string&,
-               const std::vector<autofill::MigratableCreditCard>&,
-               LocalCardMigrationCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowLocalCardMigrationResults,
-              (const bool,
-               const std::u16string&,
-               const std::vector<autofill::MigratableCreditCard>&,
-               MigrationDeleteCardCallback),
-              (override));
-  MOCK_METHOD(void,
-              ConfirmSaveIbanLocally,
-              (const autofill::Iban&, bool, LocalSaveIbanPromptCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowWebauthnOfferDialog,
-              (WebauthnDialogCallback),
-              (override));
-  MOCK_METHOD(void,
-              ShowWebauthnVerifyPendingDialog,
-              (WebauthnDialogCallback),
-              (override));
-  MOCK_METHOD(void, UpdateWebauthnOfferDialogWithError, (), (override));
-  MOCK_METHOD(bool, CloseWebauthnDialog, (), (override));
-  MOCK_METHOD(void,
-              OfferVirtualCardOptions,
-              (const std::vector<autofill::CreditCard*>&,
-               base::OnceCallback<void(const std::string&)>),
-              (override));
-#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  MOCK_METHOD(void,
-              ConfirmAccountNameFixFlow,
-              (base::OnceCallback<void(const std::u16string&)>),
-              (override));
-  MOCK_METHOD(
-      void,
-      ConfirmExpirationDateFixFlow,
-      (const autofill::CreditCard&,
-       base::OnceCallback<void(const std::u16string&, const std::u16string&)>),
-      (override));
-#endif
-  MOCK_METHOD(void,
-              ConfirmSaveCreditCardLocally,
-              (const autofill::CreditCard&,
-               autofill::AutofillClient::SaveCreditCardOptions,
-               LocalSaveCardPromptCallback),
-              (override));
-  MOCK_METHOD(void,
-              ConfirmSaveCreditCardToCloud,
-              (const autofill::CreditCard&,
-               const autofill::LegalMessageLines&,
-               SaveCreditCardOptions,
-               UploadSaveCardPromptCallback),
-              (override));
-  MOCK_METHOD(void, CreditCardUploadCompleted, (bool), (override));
-  MOCK_METHOD(void,
               ConfirmCreditCardFillAssist,
               (const autofill::CreditCard&, base::OnceClosure),
               (override));
@@ -251,8 +176,7 @@ class MockAutofillClient : public autofill::AutofillClient {
               (override));
   MOCK_METHOD(void,
               UpdateAutofillPopupDataListValues,
-              (const std::vector<std::u16string>&,
-               const std::vector<std::u16string>&),
+              (base::span<const autofill::SelectOption>),
               (override));
   MOCK_METHOD(void, PinPopupView, (), (override));
   MOCK_METHOD(PopupOpenArgs,
@@ -277,7 +201,7 @@ class MockAutofillClient : public autofill::AutofillClient {
   MOCK_METHOD(bool, IsPasswordManagerEnabled, (), (override));
   MOCK_METHOD(void,
               DidFillOrPreviewForm,
-              (autofill::mojom::AutofillActionPersistence action_persistence,
+              (autofill::mojom::ActionPersistence action_persistence,
                autofill::AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
@@ -388,31 +312,6 @@ class PasswordManagerUtilTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
   syncer::TestSyncService sync_service_;
 };
-
-TEST(PasswordManagerUtil, TrimUsernameOnlyCredentials) {
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  std::vector<std::unique_ptr<PasswordForm>> expected_forms;
-  forms.push_back(std::make_unique<PasswordForm>(GetTestAndroidCredential()));
-  expected_forms.push_back(
-      std::make_unique<PasswordForm>(GetTestAndroidCredential()));
-
-  PasswordForm username_only;
-  username_only.scheme = PasswordForm::Scheme::kUsernameOnly;
-  username_only.signon_realm = kTestAndroidRealm;
-  username_only.username_value = kTestUsername2;
-  forms.push_back(std::make_unique<PasswordForm>(username_only));
-
-  username_only.federation_origin =
-      url::Origin::Create(GURL(kTestFederationURL));
-  username_only.skip_zero_click = false;
-  forms.push_back(std::make_unique<PasswordForm>(username_only));
-  username_only.skip_zero_click = true;
-  expected_forms.push_back(std::make_unique<PasswordForm>(username_only));
-
-  TrimUsernameOnlyCredentials(&forms);
-
-  EXPECT_THAT(forms, UnorderedPasswordFormElementsAre(&expected_forms));
-}
 
 TEST(PasswordManagerUtil, GetSignonRealmWithProtocolExcluded) {
   PasswordForm http_form;
@@ -922,19 +821,6 @@ TEST(PasswordManagerUtil, ConstructGURLWithScheme) {
   }
 }
 
-TEST(PasswordManagerUtil, IsValidPasswordURL) {
-  std::vector<std::pair<GURL, bool>> test_cases = {
-      {GURL("noscheme.com"), false},
-      {GURL("https://;/valid"), true},
-      {GURL("https://^/invalid"), false},
-      {GURL("scheme://unsupported"), false},
-      {GURL("http://example.com"), true},
-      {GURL("https://test.com/login"), true}};
-  for (const auto& test_case : test_cases) {
-    EXPECT_EQ(test_case.second, IsValidPasswordURL(test_case.first));
-  }
-}
-
 TEST(PasswordManagerUtil, GetSignonRealm) {
   std::vector<std::pair<GURL, std::string>> test_cases = {
       {GURL("http://example.com/"), "http://example.com/"},
@@ -986,6 +872,24 @@ TEST_F(PasswordManagerUtilTest, CanUseBiometricAuthAndroidAutomotive) {
   }
 
   EXPECT_TRUE(CanUseBiometricAuth(authenticator_.get(), &mock_client_));
+}
+
+TEST_F(PasswordManagerUtilTest, UsesUPMForLocalM2FalseWhenFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+
+  EXPECT_FALSE(UsesUPMForLocalM2(&pref_service_));
+}
+
+TEST_F(PasswordManagerUtilTest, UsesUPMForLocalM2TrueWhenFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+
+  EXPECT_TRUE(UsesUPMForLocalM2(&pref_service_));
 }
 
 #endif

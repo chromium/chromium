@@ -39,10 +39,10 @@
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/highlight/highlight.h"
+#include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_range.h"
@@ -52,7 +52,7 @@
 
 namespace blink {
 
-AXInlineTextBox::AXInlineTextBox(NGAbstractInlineTextBox* inline_text_box,
+AXInlineTextBox::AXInlineTextBox(AbstractInlineTextBox* inline_text_box,
                                  AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache), inline_text_box_(inline_text_box) {}
 
@@ -122,7 +122,7 @@ void AXInlineTextBox::GetWordBoundaries(Vector<int>& word_starts,
     return;
   }
 
-  Vector<NGAbstractInlineTextBox::WordBoundaries> boundaries;
+  Vector<AbstractInlineTextBox::WordBoundaries> boundaries;
   inline_text_box_->GetWordBoundaries(boundaries);
   word_starts.reserve(boundaries.size());
   word_ends.reserve(boundaries.size());
@@ -185,13 +185,13 @@ ax::mojom::blink::WritingDirection AXInlineTextBox::GetTextDirection() const {
     return AXObject::GetTextDirection();
 
   switch (inline_text_box_->GetDirection()) {
-    case NGAbstractInlineTextBox::kLeftToRight:
+    case AbstractInlineTextBox::kLeftToRight:
       return ax::mojom::blink::WritingDirection::kLtr;
-    case NGAbstractInlineTextBox::kRightToLeft:
+    case AbstractInlineTextBox::kRightToLeft:
       return ax::mojom::blink::WritingDirection::kRtl;
-    case NGAbstractInlineTextBox::kTopToBottom:
+    case AbstractInlineTextBox::kTopToBottom:
       return ax::mojom::blink::WritingDirection::kTtb;
-    case NGAbstractInlineTextBox::kBottomToTop:
+    case AbstractInlineTextBox::kBottomToTop:
       return ax::mojom::blink::WritingDirection::kBtt;
   }
 
@@ -209,8 +209,8 @@ Document* AXInlineTextBox::GetDocument() const {
   return CachedParentObject() ? CachedParentObject()->GetDocument() : nullptr;
 }
 
-NGAbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
-  return inline_text_box_;
+AbstractInlineTextBox* AXInlineTextBox::GetInlineTextBox() const {
+  return inline_text_box_.Get();
 }
 
 AXObject* AXInlineTextBox::NextOnLine() const {
@@ -220,7 +220,7 @@ AXObject* AXInlineTextBox::NextOnLine() const {
   if (inline_text_box_->IsLast())
     return ParentObject()->NextOnLine();
 
-  if (NGAbstractInlineTextBox* next_on_line = inline_text_box_->NextOnLine()) {
+  if (AbstractInlineTextBox* next_on_line = inline_text_box_->NextOnLine()) {
     return AXObjectCache().GetOrCreate(next_on_line, nullptr);
   }
   return nullptr;
@@ -233,8 +233,7 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   if (inline_text_box_->IsFirst())
     return ParentObject()->PreviousOnLine();
 
-  NGAbstractInlineTextBox* previous_on_line =
-      inline_text_box_->PreviousOnLine();
+  AbstractInlineTextBox* previous_on_line = inline_text_box_->PreviousOnLine();
   if (previous_on_line)
     return AXObjectCache().GetOrCreate(previous_on_line, nullptr);
 

@@ -99,13 +99,6 @@ const char kHistogramsPreservedFileWritten[] =
 
 }  // namespace
 
-rlwe::StatusOr<std::unique_ptr<psm_rlwe::PrivateMembershipRlweClient>>
-PsmDelegateImpl::CreatePsmClient(
-    psm_rlwe::RlweUseCase use_case,
-    const std::vector<psm_rlwe::RlwePlaintextId>& plaintext_ids) {
-  return psm_rlwe::PrivateMembershipRlweClient::Create(use_case, plaintext_ids);
-}
-
 ReportController* ReportController::Get() {
   return g_ash_report_controller;
 }
@@ -202,7 +195,7 @@ ReportController::ReportController(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Time chrome_first_run_time,
     base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
-    std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate)
+    std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager)
     : chrome_device_params_(chrome_device_params),
       local_state_(local_state),
       url_loader_factory_(url_loader_factory),
@@ -212,9 +205,9 @@ ReportController::ReportController(
       statistics_provider_(system::StatisticsProvider::GetInstance()),
       oobe_completed_timer_(std::make_unique<base::OneShotTimer>()),
       clock_(base::DefaultClock::GetInstance()),
-      psm_delegate_(std::move(psm_delegate)) {
+      psm_client_manager_(std::move(psm_client_manager)) {
   DCHECK(local_state);
-  DCHECK(psm_delegate_.get());
+  DCHECK(psm_client_manager_.get());
   DCHECK(!g_ash_report_controller);
 
   g_ash_report_controller = this;
@@ -454,7 +447,7 @@ void ReportController::StartReport() {
   // Create instances of use cases and parameters.
   use_case_params_ = std::make_unique<device_metrics::UseCaseParameters>(
       active_ts_, chrome_device_params_, url_loader_factory_,
-      high_entropy_seed_, local_state_, std::move(psm_delegate_));
+      high_entropy_seed_, local_state_, std::move(psm_client_manager_));
   one_day_impl_ =
       std::make_unique<device_metrics::OneDayImpl>(use_case_params_.get());
   twenty_eight_day_impl_ = std::make_unique<device_metrics::TwentyEightDayImpl>(

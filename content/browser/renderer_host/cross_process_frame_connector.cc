@@ -430,6 +430,7 @@ void CrossProcessFrameConnector::OnVisibilityChanged(
 
   // TODO(https://crbug.com/1014212) Remove this CHECK when the bug is fixed.
   CHECK(current_child_frame_host());
+  current_child_frame_host()->VisibilityChanged(visibility_);
 
   // If there is an inner WebContents, it should be notified of the change in
   // the visibility. The Show/Hide methods will not be called if an inner

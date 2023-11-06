@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
+#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/site_instance.h"
@@ -28,9 +30,12 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -328,6 +333,28 @@ std::vector<content::BrowserContext*> GetAllRelatedProfiles(
   }
 
   return related_contexts;
+}
+
+void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode) {
+  profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
+                                  in_developer_mode);
+  SetCurrentDeveloperMode(util::GetBrowserContextId(profile),
+                          in_developer_mode);
+  RendererStartupHelperFactory::GetForBrowserContext(profile)
+      ->OnDeveloperModeChanged(in_developer_mode);
+
+  // kDynamicUserScript scripts are allowed if and only if the user is in dev
+  // mode (since they allow raw code execution). Notify the user script manager
+  // to properly enable or disable any scripts.
+  UserScriptManager* user_script_manager =
+      ExtensionSystem::Get(profile)->user_script_manager();
+  if (!user_script_manager) {
+    CHECK_IS_TEST();  // `user_script_manager` can be null in unit tests.
+    return;
+  }
+
+  user_script_manager->SetUserScriptSourceEnabledForExtensions(
+      UserScript::Source::kDynamicUserScript, in_developer_mode);
 }
 
 }  // namespace util

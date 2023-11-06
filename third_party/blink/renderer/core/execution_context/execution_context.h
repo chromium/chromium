@@ -327,17 +327,17 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual FrameOrWorkerScheduler* GetScheduler() = 0;
 
   v8::Isolate* GetIsolate() const { return isolate_; }
-  Agent* GetAgent() const { return agent_; }
+  Agent* GetAgent() const { return agent_.Get(); }
 
   v8::MicrotaskQueue* GetMicrotaskQueue() const;
 
   OriginTrialContext* GetOriginTrialContext() const {
-    return origin_trial_context_;
+    return origin_trial_context_.Get();
   }
 
   RuntimeFeatureStateOverrideContext* GetRuntimeFeatureStateOverrideContext()
       const override {
-    return runtime_feature_state_override_context_;
+    return runtime_feature_state_override_context_.Get();
   }
 
   virtual TrustedTypePolicyFactory* GetTrustedTypes() const { return nullptr; }
@@ -473,8 +473,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   };
 
   // Returns true if this execution context has obtained storage access via the
-  // Storage Access API. In practice, this can only return true for
-  // LocalDOMWindows.
+  // Storage Access API.
   virtual bool HasStorageAccess() const { return false; }
 
  protected:

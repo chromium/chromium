@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
@@ -34,19 +35,18 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_clipper.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_viewport_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
@@ -1226,6 +1226,24 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         if (object_.HasHiddenBackface()) {
           state.backface_visibility =
               TransformPaintPropertyNode::BackfaceVisibility::kHidden;
+        } else if (RuntimeEnabledFeatures::
+                       BackfaceVisibilityNewInheritanceEnabled()) {
+          if (!context_.can_inherit_backface_visibility ||
+              style.Has3DTransformOperation()) {
+            // We want to set backface-visibility back to visible, if the
+            // parent doesn't allow this element to inherit backface visibility
+            // (e.g. if the parent preserves 3d), or this element has a
+            // syntactically-3D transform in *any* of the transform properties
+            // (not just 'transform'). This means that backface-visibility on
+            // an ancestor element no longer affects this element.
+            state.backface_visibility =
+                TransformPaintPropertyNode::BackfaceVisibility::kVisible;
+          } else {
+            // Otherwise we want to inherit backface-visibility.
+            DCHECK_EQ(
+                state.backface_visibility,
+                TransformPaintPropertyNode::BackfaceVisibility::kInherited);
+          }
         } else if (state.direct_compositing_reasons !=
                    CompositingReason::kNone) {
           // The above condition fixes a CompositeAfterPaint regression
@@ -2568,7 +2586,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
             if (needs_effect_node) {
               EffectPaintPropertyNode::State effect_state;
               effect_state.local_transform_space = context_.current.transform;
-              effect_state.output_clip = context_.current.clip;
+              if (properties_->OverflowClip()) {
+                // Scrollbars are not clipped by OverflowClip, so the output
+                // clip should be the parent of the overflow clip.
+                DCHECK_EQ(context_.current.clip, properties_->OverflowClip());
+                effect_state.output_clip = context_.current.clip->Parent();
+              } else {
+                effect_state.output_clip = context_.current.clip;
+              }
               effect_state.compositor_element_id =
                   scrollable_area->GetScrollbarElementId(orientation);
 
@@ -2656,7 +2681,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // scrolling contents.
       if (object_.HasTransform() && object_.StyleRef().BackfaceVisibility() ==
                                         EBackfaceVisibility::kHidden) {
-        state.flags.delegates_to_parent_for_backface = true;
+        if (RuntimeEnabledFeatures::BackfaceVisibilityNewInheritanceEnabled()) {
+          CHECK_EQ(state.backface_visibility,
+                   TransformPaintPropertyNode::BackfaceVisibility::kInherited);
+        } else {
+          state.flags.delegates_to_parent_for_backface = true;
+        }
       }
 
       auto effective_change_type = properties_->UpdateScrollTranslation(
@@ -3102,6 +3132,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateForChildren() {
   }
 #endif
 
+  // Child transform nodes should not inherit backface visibility if the parent
+  // transform node preserves 3d. This is before UpdatePerspective() because
+  // perspective itself doesn't affect backface visibility inheritance.
+  context_.can_inherit_backface_visibility =
+      context_.should_flatten_inherited_transform;
+
   if (properties_) {
     UpdateInnerBorderRadiusClip();
     UpdateOverflowClip();
@@ -3242,7 +3278,7 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
         fragment_context.absolute_position.paint_offset_root =
             fragment_context.fixed_position.paint_offset_root = &object_;
 
-    object_.GetMutableForPainting().FirstFragment().ClearNextFragment();
+    object_.GetMutableForPainting().FragmentList().Shrink(1);
   }
 
   if (object_.HasLayer()) {
@@ -3265,7 +3301,8 @@ void PaintPropertyTreeBuilder::UpdateFragmentData() {
     context_.fragment_context.current.fragmentainer_idx =
         pre_paint_info_->fragmentainer_idx;
   } else {
-    fragment.ClearNextFragment();
+    DCHECK_EQ(&fragment, &object_.FirstFragment());
+    object_.GetMutableForPainting().FragmentList().Shrink(1);
 
     if (context_.fragment_context.current.fragmentainer_idx == WTF::kNotFound) {
       // We're not fragmented, but we may have been previously. Reset the

@@ -14,27 +14,34 @@ import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
-/**
- * A native page holding a {@link BookmarkManagerCoordinator} on _tablet_.
- */
+/** A native page holding a {@link BookmarkManagerCoordinator} on _tablet_. */
 public class BookmarkPage extends BasicNativePage {
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private String mTitle;
 
     /**
      * Create a new instance of the bookmarks page.
+     *
      * @param componentName The current activity component, used to open bookmarks.
      * @param snackbarManager Allows control over the app snackbar.
      * @param isIncognito Whether the bookmark UI is loaded in incognito mode.
      * @param host A NativePageHost to load urls.
      */
-    public BookmarkPage(ComponentName componentName, SnackbarManager snackbarManager,
-            boolean isIncognito, NativePageHost host) {
+    public BookmarkPage(
+            ComponentName componentName,
+            SnackbarManager snackbarManager,
+            boolean isIncognito,
+            NativePageHost host) {
         super(host);
 
         mBookmarkManagerCoordinator =
-                new BookmarkManagerCoordinator(host.getContext(), componentName, false, isIncognito,
-                        snackbarManager, Profile.getLastUsedRegularProfile(),
+                new BookmarkManagerCoordinator(
+                        host.getContext(),
+                        componentName,
+                        false,
+                        isIncognito,
+                        snackbarManager,
+                        Profile.getLastUsedRegularProfile(),
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
         mBookmarkManagerCoordinator.setBasicNativePage(this);
         mTitle = host.getContext().getResources().getString(R.string.bookmarks);

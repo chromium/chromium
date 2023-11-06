@@ -144,9 +144,11 @@ RemoteDevice CreateRemoteDeviceForTest() {
       kTestRemoteDeviceName, kTestRemoteDevicePiiFreeName,
       kTestRemoteDevicePublicKey, kTestRemoteDevicePSK,
       kTestRemoteDeviceLastUpdateTimeMillis, software_features,
-      {multidevice::BeaconSeed(
-          kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
-          base::Time::FromJavaTime(kBeaconSeedEndTimeMillis))},
+      {multidevice::BeaconSeed(kBeaconSeedData,
+                               base::Time::FromMillisecondsSinceUnixEpoch(
+                                   kBeaconSeedStartTimeMillis),
+                               base::Time::FromMillisecondsSinceUnixEpoch(
+                                   kBeaconSeedEndTimeMillis))},
       kTestRemoteDeviceBluetoothPublicAddress);
 }
 

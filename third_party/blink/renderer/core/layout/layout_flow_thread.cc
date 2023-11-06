@@ -120,10 +120,6 @@ void LayoutFlowThread::RemoveColumnSetFromThread(
 void LayoutFlowThread::ValidateColumnSets() {
   NOT_DESTROYED();
   column_sets_invalidated_ = false;
-  if (!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-    // Called to get the maximum logical width for the columnSet.
-    UpdateLogicalWidth();
-  }
   GenerateColumnSetIntervalTree();
 }
 

@@ -450,7 +450,7 @@ void MimeHandlerViewGuest::ReadyToCommitNavigation(
   const GURL& url = navigation_handle->GetURL();
   if (url.SchemeIs(kExtensionScheme) &&
       url.host_piece() == extension_misc::kPdfExtensionId) {
-    // The unseasoned PDF viewer will navigate to the stream URL (using
+    // The PDF viewer will navigate to the stream URL (using
     // PdfNavigtionThrottle), rather than using it as a subresource.
     return;
   }

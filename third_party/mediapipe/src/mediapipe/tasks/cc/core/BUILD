@@ -261,8 +261,10 @@ cc_library_with_tflite(
     deps = [
         "//mediapipe/framework:calculator_cc_proto",
         "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework:executor",
         "//mediapipe/framework/port:status",
         "//mediapipe/framework/tool:name_util",
+        "//mediapipe/gpu:gpu_shared_data_internal",
         "//mediapipe/tasks/cc:common",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/container:flat_hash_map",
@@ -319,6 +321,7 @@ cc_library(
         ":task_runner",
         ":utils",
         "//mediapipe/framework:calculator_cc_proto",
+        "//mediapipe/framework:executor",
         "//mediapipe/framework/port:requires",
         "//mediapipe/framework/port:status",
         "//mediapipe/tasks/cc:common",

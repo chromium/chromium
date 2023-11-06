@@ -89,9 +89,10 @@ TEST_F(MirrorLayerTest, MirrorCount) {
   auto mirrored = Layer::Create();
   mirrored->SetLayerTreeHost(layer_tree_host_.get());
 
-  layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
-                               /*has_updates=*/true);
-  layer_tree_host_->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  auto commit_state = layer_tree_host_->WillCommit(/*completion_event=*/nullptr,
+                                                   /*has_updates=*/true);
+  layer_tree_host_->CommitComplete(commit_state->source_frame_number,
+                                   {base::TimeTicks(), base::TimeTicks::Now()});
   layer_tree_host_->property_trees()->set_needs_rebuild(false);
   EXPECT_EQ(0, mirrored->mirror_count());
 

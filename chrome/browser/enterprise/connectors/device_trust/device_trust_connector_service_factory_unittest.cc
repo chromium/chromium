@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -20,7 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -59,12 +57,7 @@ class DeviceTrustConnectorServiceFactoryBaseTest {
 
 class DeviceTrustConnectorServiceFactoryTest
     : public DeviceTrustConnectorServiceFactoryBaseTest,
-      public ::testing::Test {
- protected:
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled, true);
-  }
-};
+      public ::testing::Test {};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DeviceTrustConnectorServiceFactoryTest, CreateForRegularProfile) {
@@ -91,27 +84,8 @@ TEST_F(DeviceTrustConnectorServiceFactoryTest, NullForIncognitoProfile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class DeviceTrustConnectorServiceFactoryParamTest
-    : public DeviceTrustConnectorServiceFactoryBaseTest,
-      public ::testing::TestWithParam<bool> {
-  void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features{
-        enterprise_connectors::kDeviceTrustConnectorEnabled};
-    std::vector<base::test::FeatureRef> disabled_features;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (GetParam()) {
-      enabled_features.push_back(
-          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
-    } else {
-      disabled_features.push_back(
-          ash::features::kLoginScreenDeviceTrustConnectorEnabled);
-    }
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-};
 
-TEST_P(DeviceTrustConnectorServiceFactoryParamTest,
+TEST_F(DeviceTrustConnectorServiceFactoryTest,
        CreatedForSigninProfileChromeOS) {
   TestingProfile::Builder builder;
   builder.SetPath(base::FilePath(FILE_PATH_LITERAL(chrome::kInitialProfile)));
@@ -129,12 +103,9 @@ TEST_P(DeviceTrustConnectorServiceFactoryParamTest,
   // Profile.
   DeviceTrustConnectorService* device_trust_connector_service =
       DeviceTrustConnectorServiceFactory::GetForProfile(signin_profile);
-  EXPECT_EQ(device_trust_connector_service != nullptr, GetParam());
+  EXPECT_TRUE(device_trust_connector_service);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         DeviceTrustConnectorServiceFactoryParamTest,
-                         ::testing::Values(true, false));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_connectors

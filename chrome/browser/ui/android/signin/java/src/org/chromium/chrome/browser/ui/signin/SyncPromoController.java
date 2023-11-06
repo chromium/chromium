@@ -255,8 +255,7 @@ public class SyncPromoController {
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
                 return canShowNTPPromo();
             case SigninAccessPoint.RECENT_TABS:
-                // There is no impression limit or dismiss button in Recent Tabs promo.
-                return true;
+                return canShowRecentTabsPromo();
             case SigninAccessPoint.SETTINGS:
                 return canShowSettingsPromo();
             default:
@@ -316,6 +315,11 @@ public class SyncPromoController {
                                                 SigninAccessPoint.BOOKMARK_MANAGER))
                         < MAX_IMPRESSIONS_BOOKMARKS
                 && !isPromoDismissed;
+    }
+
+    private boolean canShowRecentTabsPromo() {
+        return !SyncServiceFactory.getForProfile(mProfile)
+                .isTypeManagedByPolicy(UserSelectableType.TABS);
     }
 
     // Find the visible account for sync promos

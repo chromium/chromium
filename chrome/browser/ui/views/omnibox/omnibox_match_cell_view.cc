@@ -563,10 +563,11 @@ gfx::Size OmniboxMatchCellView::CalculatePreferredSize() const {
   // amount of space is allocated.
   int width = 0;
   if (OmniboxFieldTrial::IsActionsUISimplificationEnabled()) {
-    width = GetInsets().width() + GetTextIndent() +
-            content_view_->GetPreferredSize().width();
+    width += GetInsets().width() + GetTextIndent() +
+             tail_suggest_common_prefix_width_ +
+             content_view_->GetPreferredSize().width();
 
-    int description_width = description_view_->GetPreferredSize().width();
+    const int description_width = description_view_->GetPreferredSize().width();
     if (description_width > 0) {
       width += separator_view_->GetPreferredSize().width() + description_width;
     }

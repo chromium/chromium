@@ -186,14 +186,10 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
 
-  auto source_registration_time_config =
-      mojom::SourceRegistrationTimeConfig::kInclude;
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingNullAggregatableReports)) {
-    ASSIGN_OR_RETURN(source_registration_time_config,
-                     ParseAggregatableSourceRegistrationTime(registration.Find(
-                         kAggregatableSourceRegistrationTime)));
-  }
+  ASSIGN_OR_RETURN(
+      mojom::SourceRegistrationTimeConfig source_registration_time_config,
+      ParseAggregatableSourceRegistrationTime(
+          registration.Find(kAggregatableSourceRegistrationTime)));
 
   return TriggerRegistration(
       std::move(filters), debug_key, std::move(aggregatable_dedup_keys),
@@ -287,12 +283,9 @@ base::Value::Dict TriggerRegistration::ToJson() const {
              aggregation_coordinator_origin->Serialize());
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingNullAggregatableReports)) {
     dict.Set(kAggregatableSourceRegistrationTime,
              SerializeAggregatableSourceRegistrationTime(
                  source_registration_time_config));
-  }
 
   return dict;
 }

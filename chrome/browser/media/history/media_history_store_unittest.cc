@@ -197,7 +197,8 @@ INSTANTIATE_TEST_SUITE_P(
                     TestState::kSavingBrowserHistoryDisabled));
 
 TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
-  const auto now_before = (base::Time::Now() - base::Minutes(1)).ToJsTime();
+  const auto now_before =
+      (base::Time::Now() - base::Minutes(1)).InMillisecondsFSinceUnixEpoch();
 
   // Create a media player watch time and save it to the playbacks table.
   GURL url("http://google.com/test");
@@ -205,7 +206,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
                                            base::Seconds(60), base::TimeDelta(),
                                            true, false);
   service()->SavePlayback(watch_time);
-  const auto now_after_a = base::Time::Now().ToJsTime();
+  const auto now_after_a = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   // Save the watch time a second time.
   service()->SavePlayback(watch_time);
@@ -213,7 +214,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback) {
   // Wait until the playbacks have finished saving.
   WaitForDB();
 
-  const auto now_after_b = base::Time::Now().ToJsTime();
+  const auto now_after_b = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   // Verify that the playback table contains the expected number of items.
   std::vector<mojom::MediaHistoryPlaybackRowPtr> playbacks =
@@ -405,7 +406,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
   GURL url("http://google.com/test");
   GURL url_alt("http://example.org/test");
 
-  const auto url_now_before = base::Time::Now().ToJsTime();
+  const auto url_now_before = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   {
     // Record a watchtime for audio/video for 30 seconds.
@@ -443,7 +444,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
     WaitForDB();
   }
 
-  const auto url_now_after = base::Time::Now().ToJsTime();
+  const auto url_now_after = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   {
     // Record a watchtime for audio/video for 60 seconds on a different origin.
@@ -454,7 +455,7 @@ TEST_P(MediaHistoryStoreUnitTest, SavePlayback_IncrementAggregateWatchtime) {
     WaitForDB();
   }
 
-  const auto url_alt_after = base::Time::Now().ToJsTime();
+  const auto url_alt_after = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   {
     // Check the playbacks were recorded.

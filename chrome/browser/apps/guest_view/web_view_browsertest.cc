@@ -4712,7 +4712,8 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
 
 // Makes sure that a webview will display correctly after reloading it after a
 // crash.
-IN_PROC_BROWSER_TEST_F(WebViewTest, ReloadAfterCrash) {
+// TODO(https://crbug.com/1494743): Flaky on Win,Mac,ChromeOS,Linux.
+IN_PROC_BROWSER_TEST_F(WebViewTest, DISABLED_ReloadAfterCrash) {
   // Load guest and wait for it to appear.
   LoadAppWithGuest("web_view/simple");
 

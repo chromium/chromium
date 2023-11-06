@@ -58,7 +58,7 @@ class CheckedContiguousIterator {
   // See https://wg21.link/n4042 for details.
   template <
       typename U,
-      std::enable_if_t<std::is_convertible<U (*)[], T (*)[]>::value>* = nullptr>
+      std::enable_if_t<std::is_convertible_v<U (*)[], T (*)[]>>* = nullptr>
   constexpr CheckedContiguousIterator(const CheckedContiguousIterator<U>& other)
       : start_(other.start_), current_(other.current_), end_(other.end_) {
     // We explicitly don't delegate to the 3-argument constructor here. Its

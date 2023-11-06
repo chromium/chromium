@@ -125,6 +125,19 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the shortcut tree item with the label to have focused (aka
+   * "selected" in the old tree implementation) state.
+   *
+   * @param {string} label Label of the tree item
+   * @return {!Promise<!ElementObject>}
+   */
+  async waitForFocusedShortcutItemByLabel(label) {
+    return this.remoteCall_.waitForElement(
+        this.appId_,
+        this.selectors_.itemByLabel(label, {focused: true, shortcut: true}));
+  }
+
+  /**
    * Wait for the tree item with the label to have the the current directory
    * aria-description attribute.
    *
@@ -201,18 +214,17 @@ export class DirectoryTreePageObject {
   }
 
   /**
-   * Get the icon type of the tree item.
+   * Get the volume type of the tree item.
    *
    * @param {?ElementObject} item The tree item.
    * @returns {string}
    */
-  getItemIconType(item) {
+  getItemVolumeType(item) {
     if (!item) {
       chrome.test.fail('Item is not a valid tree item.');
       return '';
     }
-    return this.useNewTree_ ? item.attributes['icon'] :
-                              item.attributes['volume-type-for-testing'];
+    return item.attributes['volume-type-for-testing'];
   }
 
   /**
@@ -1324,6 +1336,14 @@ class DirectoryTreeSelectors_ {
    */
   itemItselfByType(type, isPlaceholder) {
     if (this.useNewTree) {
+      // volume type for "My files" is "downloads", but in the code when we
+      // query item by "downloads" type, what we want is the actual Downloads
+      // folder, hence the special handling here.
+      if (type === 'downloads') {
+        return `${this.item}[data-navigation-key^="${
+            REAL_ENTRY_PATH_PREFIX}"][icon="downloads"]`;
+      }
+
       return isPlaceholder ?
           `${this.item}[data-navigation-key^="${
               FAKE_ENTRY_PATH_PREFIX}"][icon="${type}"]` :
@@ -1343,6 +1363,15 @@ class DirectoryTreeSelectors_ {
    * @return {string}
    */
   groupRootItemItselfByType(type) {
+    // For EntryList, there are some differences between the old/new tree on the
+    // icon names. Format: <old-tree-icon-name>: <new-tree-icon-name>.
+    const iconNameMap = {
+      'drive': 'service_drive',
+      'removable': 'usb',
+    };
+    if (this.useNewTree && type in iconNameMap) {
+      type = iconNameMap[type];
+    }
     return this.useNewTree ?
         `${this.item}[data-navigation-key^="${ENTRY_LIST_PATH_PREFIX}"][icon="${
             type}"]` :

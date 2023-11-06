@@ -55,7 +55,7 @@ android_library("native_main_runner_java") {
 
   srcjar_deps = [ ":native_main_runner_jni" ]
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
-  deps = [ "//base:jni_java" ]
+  deps = [ "//third_party/jni_zero:jni_zero_java" ]
 }
 
 android_library("native_test_java") {
@@ -65,11 +65,11 @@ android_library("native_test_java") {
     ":native_main_runner_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//build/android:build_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//testing/android/reporter:reporter_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":native_test_jni" ]
   sources = [

@@ -23,6 +23,9 @@ class InfoBarContainerView : public views::AccessiblePaneView,
   InfoBarContainerView& operator=(const InfoBarContainerView&) = delete;
   ~InfoBarContainerView() override;
 
+  // Returns true if there are no infobars.
+  bool IsEmpty() const;
+
   // views::AccessiblePaneView:
   void Layout() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

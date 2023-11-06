@@ -48,9 +48,7 @@ import org.chromium.content_public.browser.test.util.DOMUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration tests for address accessory views.
- */
+/** Integration tests for address accessory views. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AddressAccessoryIntegrationTest {
@@ -67,20 +65,25 @@ public class AddressAccessoryIntegrationTest {
 
     private void loadTestPage(ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate)
             throws TimeoutException {
-        mHelper.loadTestPage("/chrome/test/data/autofill/autofill_test_form.html", false, false,
+        mHelper.loadTestPage(
+                "/chrome/test/data/autofill/autofill_test_form.html",
+                false,
+                false,
                 keyboardDelegate);
-        new AutofillTestHelper().setProfile(AutofillProfile.builder()
-                                                    .setFullName("Marcus McSpartangregor")
-                                                    .setCompanyName("Acme Inc")
-                                                    .setStreetAddress("1 Main\nApt A")
-                                                    .setRegion("CA")
-                                                    .setLocality("San Francisco")
-                                                    .setPostalCode("94102")
-                                                    .setCountryCode("US")
-                                                    .setPhoneNumber("(415) 999-0000")
-                                                    .setEmailAddress("marc@acme-mail.inc")
-                                                    .setLanguageCode("en")
-                                                    .build());
+        new AutofillTestHelper()
+                .setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Marcus McSpartangregor")
+                                .setCompanyName("Acme Inc")
+                                .setStreetAddress("1 Main\nApt A")
+                                .setRegion("CA")
+                                .setLocality("San Francisco")
+                                .setPostalCode("94102")
+                                .setCountryCode("US")
+                                .setPhoneNumber("(415) 999-0000")
+                                .setEmailAddress("marc@acme-mail.inc")
+                                .setLanguageCode("en")
+                                .build());
         DOMUtils.waitForNonZeroNodeBounds(mHelper.getWebContents(), "NAME_FIRST");
     }
 
@@ -89,9 +92,11 @@ public class AddressAccessoryIntegrationTest {
     public void testAddressSheetIsAvailable() {
         mHelper.loadTestPage(false);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mHelper.getOrCreateAddressAccessorySheet() != null;
-        }, "Address sheet should be bound to accessory sheet.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mHelper.getOrCreateAddressAccessorySheet() != null;
+                },
+                "Address sheet should be bound to accessory sheet.");
     }
 
     @Test
@@ -104,8 +109,10 @@ public class AddressAccessoryIntegrationTest {
         mHelper.waitForKeyboardAccessoryToBeShown();
 
         // Click the tab to show the sheet and hide the keyboard.
-        whenDisplayed(allOf(withContentDescription(R.string.address_accessory_sheet_toggle),
-                              not(isAssignableFrom(TextView.class))))
+        whenDisplayed(
+                        allOf(
+                                withContentDescription(R.string.address_accessory_sheet_toggle),
+                                not(isAssignableFrom(TextView.class))))
                 .perform(click());
         mHelper.waitForKeyboardToDisappear();
         whenDisplayed(withId(R.id.addresses_sheet));
@@ -121,8 +128,10 @@ public class AddressAccessoryIntegrationTest {
 
         // Scroll to last element and click the second icon:
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
-                        actionOnItem(isKeyboardAccessoryTabLayout(),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
+                        actionOnItem(
+                                isKeyboardAccessoryTabLayout(),
                                 selectTabWithDescription(R.string.address_accessory_sheet_toggle)));
 
         // Wait for the sheet to come up and be stable.
@@ -131,8 +140,9 @@ public class AddressAccessoryIntegrationTest {
         // Click a suggestion.
         whenDisplayed(withText("Marcus McSpartangregor")).perform(click());
 
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return mHelper.getFieldText("NAME_FIRST").equals("Marcus McSpartangregor");
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return mHelper.getFieldText("NAME_FIRST").equals("Marcus McSpartangregor");
+                });
     }
 }

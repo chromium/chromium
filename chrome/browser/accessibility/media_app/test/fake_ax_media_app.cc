@@ -19,8 +19,12 @@ void FakeAXMediaApp::AccessibilityEnabledChanged(bool enabled) {
   accessibility_enabled_ = enabled;
 }
 
+content::BrowserContext* FakeAXMediaApp::GetBrowserContext() const {
+  return nullptr;
+}
+
 SkBitmap FakeAXMediaApp::RequestBitmap(uint64_t page_index) {
-  last_page_index_ = page_index;
+  page_indices_with_bitmap_.push_back(page_index);
   SkBitmap fake_bitmap;
   fake_bitmap.allocN32Pixels(/*width=*/1, /*height=*/1, /*isOpaque=*/false);
   return fake_bitmap;

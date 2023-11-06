@@ -8,10 +8,9 @@
 #include <memory>
 #include <string>
 
-#include <base/files/file.h>
-#include <base/sequence_checker.h>
-#include <base/thread_annotations.h>
-
+#include "base/files/file.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "components/reporting/health/health_module_delegate.h"
 #include "components/reporting/health/health_module_files.h"
 #include "components/reporting/proto/synced/record.pb.h"

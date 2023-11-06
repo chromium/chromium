@@ -77,6 +77,11 @@ class InstrumentedPackageBuilder(object):
 
     self.init_build_env(eval(args.env))
 
+    self._git_url = args.git_url
+    self._git_revision = args.git_revision
+
+    self._no_configure = args.no_configure
+
     # Initialized later.
     self._source_dir = None
     self._source_archives = None
@@ -127,27 +132,32 @@ class InstrumentedPackageBuilder(object):
       shutil.rmtree(self._working_dir, ignore_errors=True)
       os.makedirs(self._working_dir)
 
-      # Download one source package at a time, otherwise, there will
-      # be connection errors in gnutls_handshake().
-      lock = open('apt-source-lock', 'w')
-      fcntl.flock(lock, fcntl.LOCK_EX)
-      self.shell_call('apt-get source %s' % self._package,
-                      cwd=self._working_dir)
-      fcntl.flock(lock, fcntl.LOCK_UN)
+      if self._git_url:
+        command = 'git clone %s' % self._git_url
+        self.shell_call(command, cwd=self._working_dir)
+      else:
+        # Download one source package at a time, otherwise, there will
+        # be connection errors in gnutls_handshake().
+        lock = open('apt-source-lock', 'w')
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        command = 'apt-get source %s' % self._package
+        self.shell_call(command, cwd=self._working_dir)
+        fcntl.flock(lock, fcntl.LOCK_UN)
 
     (dirpath, dirnames, filenames) = next(os.walk(self._working_dir))
 
     if len(dirnames) != 1:
-      raise Exception(
-          '`apt-get source %s\' must create exactly one subdirectory.'
-              % self._package)
-    self._source_dir = os.path.join(dirpath, dirnames[0], '')
-
-    if len(filenames) == 0:
-      raise Exception('Can\'t find source archives after `apt-get source %s\'.'
-         % self._package)
-    self._source_archives = \
-        [os.path.join(dirpath, filename) for filename in filenames]
+      raise Exception( '`%s\' must create exactly one subdirectory.' % command)
+    self._source_component = dirnames[0]
+    self._source_dir = os.path.join(dirpath, self._source_component, '')
+    if self._git_url:
+      self.shell_call('git checkout %s' % self._git_revision,
+                      cwd=self._source_dir)
+    else:
+      if len(filenames) == 0:
+        raise Exception('Can\'t find source files after `%s\'.' % command)
+      self._source_archives = \
+          [os.path.join(dirpath, filename) for filename in filenames]
 
     return get_fresh_source
 
@@ -165,8 +175,12 @@ class InstrumentedPackageBuilder(object):
     """
     shutil.rmtree(self._source_archives_dir, ignore_errors=True)
     os.makedirs(self._source_archives_dir)
-    for filename in self._source_archives:
-      shutil.copy(filename, self._source_archives_dir)
+    if self._git_url:
+      dest = os.path.join(self._source_archives_dir, self._source_component)
+      shutil.copytree(self._source_dir, dest)
+    else:
+      for filename in self._source_archives:
+        shutil.copy(filename, self._source_archives_dir)
     for patch in self._patches:
       shutil.copy(patch, self._source_archives_dir)
 
@@ -240,20 +254,21 @@ class InstrumentedPackageBuilder(object):
     """Invokes `make install'."""
     self.make(['install'] + args, **kwargs)
 
-  def build_and_install(self):
+  def build_and_install(self, targets=[]):
     """Builds and installs the DSOs.
 
     Builds the package with ./configure + make, installs it to a temporary
     location, then moves the relevant files to their permanent location.
     """
-    configure_cmd = './configure --libdir=/%s/ %s' % (
-        self._libdir, self._extra_configure_flags)
-    self.shell_call(configure_cmd, env=self._build_env, cwd=self._source_dir)
+    if not self._no_configure:
+      configure_cmd = './configure --libdir=/%s/ %s' % (
+          self._libdir, self._extra_configure_flags)
+      self.shell_call(configure_cmd, env=self._build_env, cwd=self._source_dir)
 
     # Some makefiles use BUILDROOT or INSTALL_ROOT instead of DESTDIR.
     args = ['DESTDIR', 'BUILDROOT', 'INSTALL_ROOT']
     make_args = ['%s=%s' % (name, self.temp_dir()) for name in args]
-    self.make(make_args)
+    self.make(make_args + targets)
 
     self.make_install(make_args)
 
@@ -522,6 +537,11 @@ class NSSBuilder(InstrumentedPackageBuilder):
           shutil.copy(full_path, self.dest_libdir())
 
 
+class ZlibBuilder(InstrumentedPackageBuilder):
+  def build_and_install(self):
+    super().build_and_install(['libz.so.1.2.11'])
+
+
 class StubBuilder(InstrumentedPackageBuilder):
   def download_build_install(self):
     self._touch(os.path.join(self._destdir, '%s.txt' % self._package))
@@ -559,6 +579,9 @@ def main():
   # The LIBDIR argument to configure/make.
   parser.add_argument('--libdir', default='lib')
   parser.add_argument('--env', default='')
+  parser.add_argument('--git-url', default='')
+  parser.add_argument('--git-revision', default='')
+  parser.add_argument('--no-configure', action='store_true')
 
   # Ignore all empty arguments because in several cases gyp passes them to the
   # script, but ArgumentParser treats them as positional arguments instead of
@@ -580,6 +603,8 @@ def main():
     builder = LibcurlBuilder(args, clobber)
   elif args.build_method == 'custom_libpci3':
     builder = Libpci3Builder(args, clobber)
+  elif args.build_method == 'custom_zlib':
+    builder = ZlibBuilder(args, clobber)
   elif args.build_method == 'debian':
     builder = DebianBuilder(args, clobber)
   elif args.build_method == 'meson':

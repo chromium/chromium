@@ -421,8 +421,11 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_MIC_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the microphone permission is in the ask state and the site can prompt the user to ask if allow the site to use your microphone.">
       Can ask to use your microphone
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to MIDI devices.">
-      Can ask to connect to MIDI devices
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI permission is in the ask state and the site can prompt the user to ask if they allow the site to use MIDI devices.">
+      Can ask to use your MIDI devices
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MIDI_SYSEX_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the MIDI_SYSEX permission is in the ask state and the site can prompt the user to ask if they allow the site to control and reprogram MIDI devices.">
+      Can ask to control and reprogram your MIDI devices
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the notification permission is in the ask state and the site can prompt the user to ask if they want to receive notifications.">
       Can ask to send notifications
@@ -530,7 +533,7 @@
     <!-- Permission change infobar. -->
     <if expr="not is_android">
       <message name="IDS_PAGE_INFO_INFOBAR_TEXT" desc="The string shown in the infobar after the user has changed site permissions settings, reminding them to reload the page in order for the new settings to take effect.  Deliberately similar to IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING, but used for an different permission setting so they are not combined. If updating the one, please update the other or consult the extensions and privacy teams.">
-        To apply your updated settings to this site, reload this page
+        Reload this page to apply your updated settings on this site
       </message>
       <message name="IDS_PAGE_INFO_INFOBAR_BUTTON" desc="The string used in the infobar button allowing the user to reload the page directly from the infobar.">
         Reload
@@ -738,11 +741,17 @@
   <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="The description of cookies in Cookies Subpage with placeholder for link to settings.">
     Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="SETTINGS">$1<ex>Settings</ex></ph>.
   </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
+   Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble. Contains a link to the Tracking Protection settings page.">
     Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
   </message>
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
     You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info bubble in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
+    Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK">$1<ex>manage your tracking protections</ex></ph>.
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_SETTINGS_LINK" desc="The text of the link to cookies settings.">
     Settings
@@ -777,14 +786,11 @@
   <message name="IDS_PAGE_INFO_COOKIES_ALLOWED_SITES_COUNT" desc="The label of the count for sites with allowed cookies on the page. This text will be shown on the cookies dialog button.">
     {NUM_COOKIES, plural, =0 {No sites allowed} =1 {1 site allowed} other {# sites allowed}}
   </message>
-   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening cookies in use dialog in cookies subpage.">
-    Manage cookies and site data
-  </message>
-   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_DIALOG_BUTTON_TITLE" desc="Title of the button on the Tracking Protection subpage that opens the 'Cookies and site data' dialog.">
+   <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TITLE" desc="The title on the button opening on-device site data dialog.">
     Manage on-device site data
   </message>
-  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage cookies and site data' button. The following screen shows cookies and other forms of site data used by the site the user is viewing.">
-    Review a list of cookies and site data in a new window
+  <message name="IDS_PAGE_INFO_COOKIES_DIALOG_BUTTON_TOOLTIP" desc="A tooltip that appears when the user hovers over the 'Manage on-device site data' button. The following screen shows on-device site data used by the site the user is viewing.">
+    Review a list of on-device site data in a new window
   </message>
   <message name="IDS_PAGE_INFO_FPS_BUTTON_TOOLTIP" desc="The tooltip of first-party sets button in cookies subpage, which opens 'All Sites' settings page in a new tab with a filter for this set's pages.">
     See related sites in a new tab
@@ -903,6 +909,9 @@
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the page info bubble if cookies were allowed by the user and they won't be automatically blocked again the future.">
     You allowed third-party cookies for this site
+  </message>
+  <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Tracking Protection subpage bubble telling the user they allowed third-party cookies on the current site.">
+    You allowed third-party cookies on this site
   </message>
   <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info bubble after the user has allowed third-party cookies on a site explaining the trade-off of their decision.">
     This means that most site features should work, but you have less protection

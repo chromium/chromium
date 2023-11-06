@@ -7,6 +7,7 @@
     "namespace": "windows",
     "description": "Use the <code>chrome.windows</code> API to interact with browser windows. You can use this API to create, modify, and rearrange windows in the browser.",
     "compiler_options": {
+      "modernised_enums": true,
       "implemented_in": "chrome/browser/extensions/api/tabs/tabs_api.h"
     },
     "types": [

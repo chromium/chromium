@@ -267,8 +267,8 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
         NSString* toast_origin_url =
             [user_info objectForKey:kNotificationOrigin];
         GURL toast_origin = GURL(base::SysNSStringToUTF8(toast_origin_url));
-        if (!origin.has_value() ||
-            url::IsSameOriginWith(toast_origin, *origin)) {
+        if (!block_origin.has_value() ||
+            url::IsSameOriginWith(toast_origin, *block_origin)) {
           auto profile_identifier = mojom::ProfileIdentifier::New(
               base::SysNSStringToUTF8(toast_profile_id), toast_incognito);
           notifications.push_back(mojom::NotificationIdentifier::New(

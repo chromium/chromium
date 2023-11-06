@@ -22,16 +22,13 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
-/**
- * Tests for {@link SnackbarCollection}.
- */
+/** Tests for {@link SnackbarCollection}. */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class SnackbarCollectionUnitTest {
     private static final String ACTION_TITLE = "stack";
     private static final String NOTIFICATION_TITLE = "queue";
 
-    @Mock
-    private SnackbarController mMockController;
+    @Mock private SnackbarController mMockController;
 
     @Before
     public void setUp() {
@@ -53,7 +50,9 @@ public class SnackbarCollectionUnitTest {
         collection.add(actionBar);
         verify(mMockController, times(1)).onDismissNoAction(null);
         assertFalse(collection.isEmpty());
-        assertEquals("Notification snackbar should not cover action snackbar!", actionBar,
+        assertEquals(
+                "Notification snackbar should not cover action snackbar!",
+                actionBar,
                 collection.getCurrent());
 
         collection.removeCurrentDueToAction();
@@ -76,7 +75,9 @@ public class SnackbarCollectionUnitTest {
         collection.add(notiBar);
         verify(mMockController, times(0)).onDismissNoAction(null);
         assertFalse(collection.isEmpty());
-        assertEquals("Action snackbar should not be covered by notification snackbars!", actionBar,
+        assertEquals(
+                "Action snackbar should not be covered by notification snackbars!",
+                actionBar,
                 collection.getCurrent());
 
         collection.removeCurrentDueToAction();
@@ -143,8 +144,9 @@ public class SnackbarCollectionUnitTest {
         collection.removeMatchingSnackbars(mMockController, dataToRemove);
         while (!collection.isEmpty()) {
             Snackbar removed = collection.removeCurrentDueToAction();
-            assertFalse(mMockController == removed.getController()
-                    && dataToRemove.equals(removed.getActionData()));
+            assertFalse(
+                    mMockController == removed.getController()
+                            && dataToRemove.equals(removed.getActionData()));
         }
     }
 
@@ -156,11 +158,17 @@ public class SnackbarCollectionUnitTest {
         SnackbarCollection collection = new SnackbarCollection();
         assertTrue(collection.isEmpty());
 
-        Snackbar snackbar = Snackbar.make(
-                NOTIFICATION_TITLE, null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_TEST_SNACKBAR);
+        Snackbar snackbar =
+                Snackbar.make(
+                        NOTIFICATION_TITLE,
+                        null,
+                        Snackbar.TYPE_NOTIFICATION,
+                        Snackbar.UMA_TEST_SNACKBAR);
         collection.add(snackbar);
         assertFalse("Snackbar collection should contain a snackbar.", collection.isEmpty());
-        assertEquals("The currently displayed snackbar is incorrect.", snackbar,
+        assertEquals(
+                "The currently displayed snackbar is incorrect.",
+                snackbar,
                 collection.getCurrent());
         collection.removeCurrentDueToTimeout();
         verifyNoMoreInteractions(mMockController);
@@ -172,7 +180,10 @@ public class SnackbarCollectionUnitTest {
     }
 
     private Snackbar makeNotificationSnackbar(SnackbarController controller) {
-        return Snackbar.make(NOTIFICATION_TITLE, controller, Snackbar.TYPE_NOTIFICATION,
+        return Snackbar.make(
+                NOTIFICATION_TITLE,
+                controller,
+                Snackbar.TYPE_NOTIFICATION,
                 Snackbar.UMA_TEST_SNACKBAR);
     }
 

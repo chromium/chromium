@@ -62,7 +62,7 @@ function onMoveEntryRequested(options, onSuccess, onError) {
 
   // Move the metadata with changing the 'name' field.
   var newMetadata =
-      JSON.parse(JSON.stringify(test_util.defaultMetadata[options.sourcePath]));
+      structuredClone(test_util.defaultMetadata[options.sourcePath]);
   newMetadata.name = options.targetPath.split('/').pop();
   test_util.defaultMetadata[options.targetPath] = newMetadata;
 

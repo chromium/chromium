@@ -38,12 +38,10 @@
 #import "components/sync_user_events/user_event_service.h"
 #import "components/trusted_vault/trusted_vault_service.h"
 #import "components/variations/service/google_groups_updater_service.h"
-#import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_sync_service_factory.h"
-#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
-#import "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#import "ios/chrome/browser/dom_distiller/model/dom_distiller_service_factory.h"
 #import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/metrics/google_groups_updater_service_factory.h"
@@ -51,7 +49,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_receiver_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_sender_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
-#import "ios/chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
+#import "ios/chrome/browser/power_bookmarks/model/power_bookmark_service_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -74,31 +72,6 @@
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
-
-namespace {
-syncer::ModelTypeSet FilterTypesWithAccountStorage(
-    syncer::ModelTypeSet types,
-    ChromeBrowserState* browser_state) {
-  if (types.Has(syncer::PASSWORDS) &&
-      !IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::IMPLICIT_ACCESS)) {
-    DVLOG(1) << "Passwords account-storage is not enabled.";
-    types.Remove(syncer::PASSWORDS);
-  }
-  if (types.Has(syncer::BOOKMARKS) &&
-      !ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state)) {
-    DVLOG(1) << "Bookmarks account-storage is not enabled";
-    types.Remove(syncer::BOOKMARKS);
-  }
-  if (types.Has(syncer::READING_LIST) &&
-      !ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
-          browser_state)) {
-    DVLOG(1) << "Reading List account-storage is not enabled";
-    types.Remove(syncer::READING_LIST);
-  }
-  return types;
-}
-}  // namespace
 
 IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
     : browser_state_(browser_state) {
@@ -126,32 +99,35 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
       SupervisedUserSettingsServiceFactory::GetForBrowserState(browser_state);
 #endif
 
+  sync_bookmarks::BookmarkSyncService* local_or_syncable_bookmark_sync_service =
+      ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state_);
+  sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service =
+      ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
+          browser_state_);
+
   component_factory_ =
       std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, ::GetChannel(), web::GetUIThreadTaskRunner({}), db_thread_,
           profile_web_data_service_, account_web_data_service_,
           profile_password_store_, account_password_store_,
-          ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkSyncServiceFactory::GetForBrowserState(
-              browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service);
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
   local_data_migration_helper_ =
       std::make_unique<browser_sync::LocalDataMigrationHelper>(
           profile_password_store_.get(), account_password_store_.get(),
-          ios::LocalOrSyncableBookmarkModelFactory::GetForBrowserState(
-              browser_state_),
-          ios::AccountBookmarkModelFactory::GetForBrowserState(browser_state_),
+          local_or_syncable_bookmark_sync_service,
+          account_bookmark_sync_service,
           ReadingListModelFactory::GetAsDualReadingListModelForBrowserState(
               browser_state_));
 }
@@ -247,7 +223,7 @@ IOSChromeSyncClient::GetSyncInvalidationsService() {
 trusted_vault::TrustedVaultClient*
 IOSChromeSyncClient::GetTrustedVaultClient() {
   return IOSTrustedVaultServiceFactory::GetForBrowserState(browser_state_)
-      ->GetTrustedVaultClient();
+      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 scoped_refptr<syncer::ExtensionsActivity>
@@ -309,13 +285,10 @@ void IOSChromeSyncClient::GetLocalDataDescriptions(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(
         std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  local_data_query_helper_->Run(
-      FilterTypesWithAccountStorage(types, browser_state_),
-      std::move(callback));
+  local_data_query_helper_->Run(types, std::move(callback));
 }
 
 void IOSChromeSyncClient::TriggerLocalDataMigration(
     syncer::ModelTypeSet types) {
-  local_data_migration_helper_->Run(
-      FilterTypesWithAccountStorage(types, browser_state_));
+  local_data_migration_helper_->Run(types);
 }

@@ -64,7 +64,7 @@ class CORE_EXPORT ScrollbarTheme {
   ScrollbarPart HitTestRootFramePosition(const Scrollbar&, const gfx::Point&);
 
   virtual int ScrollbarThickness(float scale_from_dip,
-                                 EScrollbarWidth scrollbar_width) {
+                                 EScrollbarWidth scrollbar_width) const {
     return 0;
   }
   virtual int ScrollbarMargin(float scale_from_dip,
@@ -73,7 +73,17 @@ class CORE_EXPORT ScrollbarTheme {
   }
 
   virtual bool IsSolidColor() const { return false; }
+  virtual SkColor4f GetSolidColor(
+      const absl::optional<Color>& css_thumb_color) const {
+    NOTREACHED_NORETURN();
+  }
   virtual bool UsesOverlayScrollbars() const { return false; }
+  virtual bool UsesFluentOverlayScrollbars() const { return false; }
+  virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      Scrollbar&,
+      gfx::Rect& rect) const {
+    return rect;
+  }
   virtual void UpdateScrollbarOverlayColorTheme(const Scrollbar&) {}
 
   // If true, scrollbars that become invisible (i.e. overlay scrollbars that

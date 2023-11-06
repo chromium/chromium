@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,7 +51,8 @@ class OpenerHeuristicTabHelper
 
    private:
     // Emit the OpenerHeuristic.PopupPastInteraction UKM event if we have all
-    // the necessary information.
+    // the necessary information, and create a storage access grant if
+    // supported.
     void EmitPastInteractionIfReady();
     // Emit the OpenerHeuristic.TopLevel UKM event.
     void EmitTopLevel(const GURL& tracker_url,
@@ -84,6 +86,8 @@ class OpenerHeuristicTabHelper
     size_t url_index_ = 0;
     bool interaction_reported_ = false;
     bool toplevel_reported_ = false;
+
+    scoped_refptr<content_settings::CookieSettings> cookie_settings_;
   };
 
   ~OpenerHeuristicTabHelper() override;

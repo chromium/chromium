@@ -33,15 +33,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link TabGroupUtils}.
- */
+/** Tests for {@link TabGroupUtils}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupUtilsUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
@@ -53,14 +50,10 @@ public class TabGroupUtilsUnitTest {
     private static final int POSITION2 = 1;
     private static final int POSITION3 = 2;
 
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    TabGroupModelFilter mTabGroupModelFilter;
+    @Mock TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Mock TabGroupModelFilter mTabGroupModelFilter;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -89,9 +82,11 @@ public class TabGroupUtilsUnitTest {
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab2);
 
-        assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab1),
+        assertThat(
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab1),
                 equalTo(mTab1));
-        assertThat(TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab2),
+        assertThat(
+                TabGroupUtils.getSelectedTabInGroupForTab(mTabModelSelector, mTab2),
                 equalTo(mTab1));
     }
 

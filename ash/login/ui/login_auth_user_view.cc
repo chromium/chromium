@@ -413,7 +413,7 @@ views::Button* LoginAuthUserView::TestApi::pin_password_toggle() const {
   return view_->pin_password_toggle_;
 }
 
-views::Button* LoginAuthUserView::TestApi::online_sign_in_message() const {
+views::LabelButton* LoginAuthUserView::TestApi::online_sign_in_message() const {
   return view_->online_sign_in_button_;
 }
 
@@ -570,8 +570,6 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
                           base::Unretained(this)),
       button_message);
   online_sign_in_button_ = online_sign_in_button.get();
-  online_sign_in_button_->SetText(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_ONLINE_SIGN_IN_MESSAGE));
 
   auto disabled_auth_message = std::make_unique<DisabledAuthMessageView>();
   disabled_auth_message_ = disabled_auth_message.get();

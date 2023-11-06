@@ -11,7 +11,8 @@
           "--passthrough",
           "-v",
           "--stable-jobs",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -22,7 +23,8 @@
             "kvm": "1",
             "os": "Linux"
           },
-          "idempotent": false
+          "idempotent": false,
+          "shards": 2
         },
         "test": "telemetry_gpu_integration_test_fuchsia",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"

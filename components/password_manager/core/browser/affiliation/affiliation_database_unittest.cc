@@ -295,7 +295,8 @@ TEST_F(AffiliationDatabaseTest, MigrateFromVersion1) {
   CloseDatabase();
   AffiliationDatabase::Delete(db_path());
   base::FilePath src_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   base::FilePath sql_path_v1 = src_root_dir.AppendASCII("components")
                                    .AppendASCII("test")
                                    .AppendASCII("data")
@@ -336,7 +337,8 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion2) {
   CloseDatabase();
   AffiliationDatabase::Delete(db_path());
   base::FilePath src_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   base::FilePath sql_path_v2 = src_root_dir.AppendASCII("components")
                                    .AppendASCII("test")
                                    .AppendASCII("data")
@@ -365,7 +367,8 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion3) {
   CloseDatabase();
   AffiliationDatabase::Delete(db_path());
   base::FilePath src_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   base::FilePath sql_path_v3 = src_root_dir.AppendASCII("components")
                                    .AppendASCII("test")
                                    .AppendASCII("data")
@@ -406,7 +409,8 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion4) {
   CloseDatabase();
   AffiliationDatabase::Delete(db_path());
   base::FilePath src_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   base::FilePath sql_path_v3 = src_root_dir.AppendASCII("components")
                                    .AppendASCII("test")
                                    .AppendASCII("data")
@@ -450,7 +454,8 @@ TEST_F(AffiliationDatabaseTest, InitializeFromVersion5) {
   CloseDatabase();
   AffiliationDatabase::Delete(db_path());
   base::FilePath src_root_dir;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root_dir));
   base::FilePath sql_path_v5 = src_root_dir.AppendASCII("components")
                                    .AppendASCII("test")
                                    .AppendASCII("data")

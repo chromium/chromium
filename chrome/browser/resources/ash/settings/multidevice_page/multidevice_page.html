@@ -83,8 +83,20 @@
               actionable$=
                   "[[!isNearbyShareDisallowedByPolicy_(pageContentData)]]"
               on-click="nearbyShareClick_">
-            <iron-icon icon="os-settings:nearby-share">
-            </iron-icon>
+            <if expr="_google_chrome">
+              <template is="dom-if" if="[[isNameEnabled_]]" restamp>
+                <iron-icon icon="nearby-share-internal:nearby-share">
+                </iron-icon>
+              </template>
+              <template is="dom-if" if="[[!isNameEnabled_]]" restamp>
+                <iron-icon icon="os-settings:nearby-share">
+                </iron-icon>
+              </template>
+            </if>
+            <if expr="not _google_chrome">
+              <iron-icon icon="os-settings:nearby-share">
+              </iron-icon>
+            </if>
             <div class="middle settings-box-text">
               <div id="nearbyShareLabel" aria-hidden="true">
                 $i18n{nearbyShareTitle}

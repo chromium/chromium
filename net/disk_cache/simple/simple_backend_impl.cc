@@ -655,8 +655,10 @@ void SimpleBackendImpl::InitializeIndex(CompletionOnceCallback callback,
   if (result.net_error == net::OK) {
     index_->SetMaxSize(result.max_size);
 #if BUILDFLAG(IS_ANDROID)
-    if (app_status_listener_)
-      index_->set_app_status_listener(app_status_listener_);
+    if (app_status_listener_getter_) {
+      index_->set_app_status_listener_getter(
+          std::move(app_status_listener_getter_));
+    }
 #endif
     index_->Initialize(result.cache_dir_mtime);
   }
@@ -818,20 +820,23 @@ EntryResult SimpleBackendImpl::OpenEntryFromHash(uint64_t entry_hash,
     return EntryResult::MakeError(net::ERR_IO_PENDING);
   }
 
-  auto has_active = active_entries_.find(entry_hash);
-  if (has_active != active_entries_.end()) {
-    return OpenEntry(has_active->second->key(), net::HIGHEST,
-                     std::move(callback));
-  }
+  std::pair<EntryMap::iterator, bool> insert_result =
+      active_entries_.insert(EntryMap::value_type(entry_hash, nullptr));
+  EntryMap::iterator& it = insert_result.first;
+  const bool did_insert = insert_result.second;
 
-  auto simple_entry = base::MakeRefCounted<SimpleEntryImpl>(
-      GetCacheType(), path_, cleanup_tracker_.get(), entry_hash,
-      entry_operations_mode_, this, file_tracker_, file_operations_factory_,
-      net_log_, GetNewEntryPriority(net::HIGHEST));
-  EntryResultCallback backend_callback =
-      base::BindOnce(&SimpleBackendImpl::OnEntryOpenedFromHash, AsWeakPtr(),
-                     entry_hash, simple_entry, std::move(callback));
-  return simple_entry->OpenEntry(std::move(backend_callback));
+  // This needs to be here to keep the new entry alive until ->OpenEntry.
+  scoped_refptr<SimpleEntryImpl> simple_entry;
+  if (did_insert) {
+    simple_entry = base::MakeRefCounted<SimpleEntryImpl>(
+        GetCacheType(), path_, cleanup_tracker_.get(), entry_hash,
+        entry_operations_mode_, this, file_tracker_, file_operations_factory_,
+        net_log_, GetNewEntryPriority(net::HIGHEST));
+    it->second = simple_entry.get();
+    simple_entry->SetActiveEntryProxy(
+        ActiveEntryProxy::Create(entry_hash, this));
+  }
+  return it->second->OpenEntry(std::move(callback));
 }
 
 net::Error SimpleBackendImpl::DoomEntryFromHash(
@@ -859,38 +864,6 @@ net::Error SimpleBackendImpl::DoomEntryFromHash(
   entry_hash_vector.push_back(entry_hash);
   DoomEntries(&entry_hash_vector, std::move(callback));
   return net::ERR_IO_PENDING;
-}
-
-void SimpleBackendImpl::OnEntryOpenedFromHash(
-    uint64_t hash,
-    const scoped_refptr<SimpleEntryImpl>& simple_entry,
-    EntryResultCallback callback,
-    EntryResult result) {
-  if (result.net_error() != net::OK) {
-    std::move(callback).Run(std::move(result));
-    return;
-  }
-
-  std::pair<EntryMap::iterator, bool> insert_result =
-      active_entries_.insert(EntryMap::value_type(hash, simple_entry.get()));
-  EntryMap::iterator& it = insert_result.first;
-  const bool did_insert = insert_result.second;
-  if (did_insert) {
-    // There was no active entry corresponding to this hash. We've already put
-    // the entry opened from hash in the |active_entries_|. We now provide the
-    // proxy object to the entry.
-    it->second->SetActiveEntryProxy(ActiveEntryProxy::Create(hash, this));
-    std::move(callback).Run(std::move(result));
-  } else {
-    // The entry was made active while we waiting for the open from hash to
-    // finish. The entry created from hash needs to be closed, and the one
-    // in |active_entries_| can be returned to the caller.
-    Entry* entry_from_result = result.ReleaseEntry();
-    DCHECK_EQ(entry_from_result, simple_entry.get());
-    simple_entry->Close();
-    EntryResult reopen_result = it->second->OpenEntry(std::move(callback));
-    DCHECK_EQ(reopen_result.net_error(), net::ERR_IO_PENDING);
-  }
 }
 
 void SimpleBackendImpl::DoomEntriesComplete(

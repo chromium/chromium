@@ -21,26 +21,19 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 
-/**
- * Unit tests for PartnerBookmarksReader.
- */
+/** Unit tests for PartnerBookmarksReader. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PartnerBookmarksReaderTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    Context mContextMock;
+    @Mock Context mContextMock;
 
-    @Mock
-    PartnerBookmarksReader.Natives mJniMock;
+    @Mock PartnerBookmarksReader.Natives mJniMock;
 
-    @Mock
-    PartnerBrowserCustomizations mBrowserCustomizations;
+    @Mock PartnerBrowserCustomizations mBrowserCustomizations;
 
-    @Captor
-    ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
+    @Captor ArgumentCaptor<Runnable> mBrowserCustomizationsInitCallback;
 
     @Before
     public void setUp() {
@@ -149,8 +142,8 @@ public class PartnerBookmarksReaderTest {
         mBrowserCustomizationsInitCallback.getValue().run();
         reader.onBookmarksRead();
 
-        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(
-                Mockito.anyLong(), Mockito.eq(reader));
+        Mockito.verify(mJniMock)
+                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.eq(reader));
     }
 
     @Test
@@ -164,7 +157,7 @@ public class PartnerBookmarksReaderTest {
         reader.onBookmarksRead();
         mBrowserCustomizationsInitCallback.getValue().run();
 
-        Mockito.verify(mJniMock).partnerBookmarksCreationComplete(
-                Mockito.anyLong(), Mockito.eq(reader));
+        Mockito.verify(mJniMock)
+                .partnerBookmarksCreationComplete(Mockito.anyLong(), Mockito.eq(reader));
     }
 }

@@ -17,6 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
 #include "components/exo/buffer.h"
@@ -325,8 +326,8 @@ Surface::Surface()
   window_->Init(ui::LAYER_NOT_DRAWN);
   window_->SetEventTargeter(std::make_unique<CustomWindowTargeter>());
   window_->set_owned_by_parent(false);
-  WMHelper::GetInstance()->SetDragDropDelegate(window_.get());
 }
+
 Surface::~Surface() {
   for (SurfaceObserver& observer : observers_)
     observer.OnSurfaceDestroying(this);
@@ -362,6 +363,14 @@ Surface::~Surface() {
 // static
 Surface* Surface::AsSurface(const aura::Window* window) {
   return window->GetProperty(kSurfaceKey);
+}
+
+std::vector<aura::Window*> Surface::GetChildWindows() const {
+  std::vector<aura::Window*> children;
+  for (const auto& [sub_surface, _] : sub_surfaces_) {
+    children.push_back(sub_surface->window());
+  }
+  return children;
 }
 
 void Surface::Attach(Buffer* buffer) {

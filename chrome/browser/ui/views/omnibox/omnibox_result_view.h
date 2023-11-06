@@ -96,6 +96,8 @@ class OmniboxResultView : public views::View {
   void OnThemeChanged() override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
+
   gfx::Image GetIcon() const;
 
   // Updates the highlight state of the row, as well as conditionally shows

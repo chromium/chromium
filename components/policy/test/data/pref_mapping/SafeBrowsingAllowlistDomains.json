@@ -1,0 +1,36 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SafeBrowsingAllowlistDomains": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.safe_browsing_whitelist_domains": {
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

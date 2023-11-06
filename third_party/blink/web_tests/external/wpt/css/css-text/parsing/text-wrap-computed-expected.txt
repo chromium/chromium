@@ -1,0 +1,43 @@
+This is a testharness.js-based test.
+[PASS] Property text-wrap value 'wrap'
+[PASS] Property text-wrap value 'nowrap'
+[FAIL] Property text-wrap value 'auto'
+  assert_true: 'auto' is a supported value for text-wrap. expected true got false
+[PASS] Property text-wrap value 'balance'
+[FAIL] Property text-wrap value 'stable'
+  assert_true: 'stable' is a supported value for text-wrap. expected true got false
+[PASS] Property text-wrap value 'pretty'
+[FAIL] Property text-wrap value 'wrap auto'
+  assert_true: 'wrap auto' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'wrap balance'
+  assert_true: 'wrap balance' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'wrap pretty'
+  assert_true: 'wrap pretty' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'wrap stable'
+  assert_true: 'wrap stable' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'auto wrap'
+  assert_true: 'auto wrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'balance wrap'
+  assert_true: 'balance wrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'pretty wrap'
+  assert_true: 'pretty wrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'stable wrap'
+  assert_true: 'stable wrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'nowrap auto'
+  assert_true: 'nowrap auto' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'nowrap balance'
+  assert_true: 'nowrap balance' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'nowrap pretty'
+  assert_true: 'nowrap pretty' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'nowrap stable'
+  assert_true: 'nowrap stable' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'auto nowrap'
+  assert_true: 'auto nowrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'balance nowrap'
+  assert_true: 'balance nowrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'pretty nowrap'
+  assert_true: 'pretty nowrap' is a supported value for text-wrap. expected true got false
+[FAIL] Property text-wrap value 'stable nowrap'
+  assert_true: 'stable nowrap' is a supported value for text-wrap. expected true got false
+Harness: the test ran to completion.
+

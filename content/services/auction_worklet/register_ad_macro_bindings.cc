@@ -74,7 +74,7 @@ void RegisterAdMacroBindings::RegisterAdMacro(
   };
 
   if (base::FeatureList::IsEnabled(
-          blink::features::kFencedFramesM119Features)) {
+          blink::features::kFencedFramesM120FeaturesPart1)) {
     if (ContainsDisallowedCharacters(macro_name) ||
         ContainsDisallowedCharacters(macro_value)) {
       args.GetIsolate()->ThrowException(

@@ -118,7 +118,7 @@ class EventCounter : public ui::EventHandler {
 };
 
 bool InOverviewSession() {
-  return Shell::Get()->overview_controller()->InOverviewSession();
+  return OverviewController::Get()->InOverviewSession();
 }
 
 int GetOffsetY(int offset) {

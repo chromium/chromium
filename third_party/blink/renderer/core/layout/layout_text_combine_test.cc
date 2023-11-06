@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
@@ -24,7 +24,7 @@ class LayoutTextCombineTest : public RenderingTest {
   std::string AsInkOverflowString(const LayoutBlockFlow& root) {
     std::ostringstream ostream;
     ostream << std::endl;
-    for (NGInlineCursor cursor(root); cursor; cursor.MoveToNext()) {
+    for (InlineCursor cursor(root); cursor; cursor.MoveToNext()) {
       ostream << cursor.CurrentItem() << std::endl;
       ostream << "                 Rect "
               << cursor.CurrentItem()->RectInContainerFragment() << std::endl;
@@ -38,7 +38,7 @@ class LayoutTextCombineTest : public RenderingTest {
     return ostream.str();
   }
 
-  static PhysicalRect ContentsInkOverflow(const NGFragmentItem& item) {
+  static PhysicalRect ContentsInkOverflow(const FragmentItem& item) {
     if (const NGPhysicalBoxFragment* box_fragment = item.BoxFragment()) {
       return box_fragment->ContentsInkOverflow();
     }
@@ -1504,7 +1504,7 @@ TEST_F(LayoutTextCombineTest, WithTextIndent) {
   SetBodyInnerHTML("<div id=root>ab<c id=combine>XYZ</c>de</div>");
   const auto& text_xyz = *To<Text>(GetElementById("combine")->firstChild());
 
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(*text_xyz.GetLayoutObject());
 
   EXPECT_EQ(PhysicalRect(0, 0, 60, 20),

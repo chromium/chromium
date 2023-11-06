@@ -119,19 +119,19 @@ bool PlatformSensorAmbientLightMac::StartSensor(
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0));
 
   kern_return_t kr = IOServiceAddInterestNotification(
-      light_sensor_port_.get(), light_sensor_service_, kIOGeneralInterest,
+      light_sensor_port_.get(), light_sensor_service_.get(), kIOGeneralInterest,
       IOServiceCallback, this, light_sensor_notification_.InitializeInto());
   if (kr != KERN_SUCCESS)
     return false;
 
   kr = IOServiceAddInterestNotification(
-      light_sensor_port_.get(), light_sensor_service_, kIOBusyInterest,
+      light_sensor_port_.get(), light_sensor_service_.get(), kIOBusyInterest,
       IOServiceCallback, this,
       light_sensor_busy_notification_.InitializeInto());
   if (kr != KERN_SUCCESS)
     return false;
 
-  kr = IOServiceOpen(light_sensor_service_, mach_task_self(), 0,
+  kr = IOServiceOpen(light_sensor_service_.get(), mach_task_self(), 0,
                      light_sensor_object_.InitializeInto());
   if (kr != KERN_SUCCESS)
     return false;
@@ -156,8 +156,8 @@ bool PlatformSensorAmbientLightMac::ReadAndUpdate() {
   uint32_t scalar_output_count = 2;
   uint64_t lux_values[2];
   kern_return_t kr = IOConnectCallMethod(
-      light_sensor_object_, LmuFunctionIndex::kGetSensorReadingID, nullptr, 0,
-      nullptr, 0, lux_values, &scalar_output_count, nullptr, 0);
+      light_sensor_object_.get(), LmuFunctionIndex::kGetSensorReadingID,
+      nullptr, 0, nullptr, 0, lux_values, &scalar_output_count, nullptr, 0);
 
   if (kr != KERN_SUCCESS)
     return false;

@@ -50,9 +50,7 @@ import org.chromium.components.query_tiles.TestTileProvider;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for the query tiles section on new tab page.
- */
+/** Tests for the query tiles section on new tab page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP})
@@ -62,6 +60,7 @@ public class QueryTileSectionTest {
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     // TODO(https://crbug.com/1469931) Remove after flakes are understood/fixed.
     @Rule
     public DumpThreadsOnFailureRule mDumpThreadsOnFailureRule = new DumpThreadsOnFailureRule();
@@ -77,7 +76,7 @@ public class QueryTileSectionTest {
         // in Java, allowing our mDumpThreadsOnFailureRule to trigger.
         IdlingPolicies.setMasterPolicyTimeout(10, TimeUnit.SECONDS);
 
-        mTileProvider = new TestTileProvider(2 /* levels */, 8 /* count */);
+        mTileProvider = new TestTileProvider(/* levels= */ 2, /* count= */ 8);
         TileProviderFactory.setTileProviderForTesting(mTileProvider);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
@@ -133,10 +132,12 @@ public class QueryTileSectionTest {
     }
 
     private void waitForSearchResultsPage() {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("The SRP was never loaded.",
-                    ChromeTabUtils.getUrlOnUiThread(mTab).getValidSpecOrEmpty(),
-                    Matchers.containsString(SEARCH_URL_PATTERN));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The SRP was never loaded.",
+                            ChromeTabUtils.getUrlOnUiThread(mTab).getValidSpecOrEmpty(),
+                            Matchers.containsString(SEARCH_URL_PATTERN));
+                });
     }
 }

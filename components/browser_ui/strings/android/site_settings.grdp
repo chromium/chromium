@@ -16,9 +16,6 @@
   <message name="IDS_ALL_SITES" desc='Title of the "All sites" settings screen that allows the user to see permissions for all websites. [CHAR_LIMIT=32]'>
     All sites
   </message>
-  <message name="IDS_ADS_PERMISSION_TITLE" desc="Title for the ads permission [CHAR_LIMIT=32]">
-    Ads
-  </message>
   <message name="IDS_ANTI_ABUSE_PERMISSION_TITLE" desc="Title for the anti-abuse permission [CHAR_LIMIT=32]">
     Auto-verify
   </message>
@@ -64,6 +61,9 @@
   <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_DISABLED" desc="3 of 3 possible states for the Third-party cookies setting. This text appears beneath the 'Third-party cookies' button label." >
     Third-party cookies are blocked
   </message>
+  <message name="IDS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="1 of 2 possible states for the Tracking Protection cookies setting. This text appears beneath the 'Tracking Protection' button label.">
+    Third-party cookies are limited
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_IDLE_DETECTION" desc="Title of the permission to detect user activity [CHAR_LIMIT=32]">
     Your device use
   </message>
@@ -79,8 +79,11 @@
   <message name="IDS_WEBSITE_SETTINGS_USE_MIC" desc="The category filter 'Mic' for site settings.">
     Microphone
   </message>
+  <message name="IDS_MIDI_PERMISSION_TITLE" desc="Title of the permission that allows a website to use MIDI devices [CHAR_LIMIT=32]">
+    MIDI devices
+  </message>
   <message name="IDS_MIDI_SYSEX_PERMISSION_TITLE" desc="Title of the permission that allows a website to get full control of MIDI devices [CHAR_LIMIT=32]">
-    Allow full control of MIDI devices
+    MIDI device control / reprogram
   </message>
   <message name="IDS_MOTION_SENSORS_PERMISSION_TITLE" desc="Title of the permission to use device's motion sensors (accelerometer, gyroscope, magnetometer) [CHAR_LIMIT=32]">
     Motion sensors
@@ -114,6 +117,9 @@
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TITLE" desc="Title of the permission to allow embedded content to access cookies and site data [CHAR_LIMIT=32]">
     Embedded content
+  </message>
+  <message name="IDS_TRACKING_PROTECTION_SETTINGS_TITLE" desc="Title of the Tracking Protection category in Site Settings [CHAR_LIMIT=32]">
+    Tracking Protection
   </message>
 
   <!-- Site settings global toggles -->
@@ -368,9 +374,6 @@
   <message name="IDS_INTRUSIVE_ADS_INFORMATION" desc="The extra information at the top of the Site Details page when the site tends to show intrusive ads">
     This site shows intrusive or misleading ads
   </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED" desc="A setting that, if turned on, will block intrusive or misleading ads on sites that have a history of showing such ads.">
-    Block ads on sites that show intrusive or misleading ads
-  </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_ADS_BLOCKED_LIST" desc="Summary text explaining that the Ads permission is set to block ads on some sites. To be shown in the list of permission categories.">
     Blocked on some sites
   </message>
@@ -499,9 +502,6 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_BLOCK_ADDITION" desc="Additional text used to explain the block cookies option in settings">
     Features on many sites may not work
-  </message>
-  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_COOKIE_ALLOWED" desc="Summary text explaining that sites are allowed to use cookies and that it is the recommended setting.">
-    Allow sites to save and read cookie data (recommended)
   </message>
   <message name="IDS_WEBSITE_SETTINGS_ADD_SITE_DESCRIPTION_COOKIES_ALLOW" desc="The description for the allow Cookies for website dialog.">
     Allow cookies for a specific site.
@@ -854,4 +854,14 @@
     Don’t apply dark theme for a specific site
   </message>
 
+  <!-- Storage access -->
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_STORAGE_ACCESS_ALLOWED" desc="One of two radio buttons on the Embedded content settings page. If a user chooses this option, they're allowing a new permission prompt that may get shown as the user browses sites. In the description below, “Google Docs” is just used as an example. 1) “use info” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
+    Sites can ask to use info they've saved about you
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_CATEGORY_STORAGE_ACCESS_BLOCKED" desc="The second of two radio buttons on the Embedded content settings page. If a user chooses this option, they're not allowing a new permission prompt that may get shown as the user browses sites. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. 1) “use info” means retrieve existing info and save additional info. 2) “they've' saved about you”: Google Docs can only prompt the user for permission on www.myfavoritesite.com if the user has previously used Google Docs.">
+    Sites are blocked from asking you to use info they've saved about you
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_STORAGE_ACCESS_PAGE_DESCRIPTION" desc="The body description on the Embedded content settings page.">
+    Sites you visit can embed content from other sites, for example images, ads, and text. These other sites can ask for permission to use info they've saved about you as you browse the site. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more about embedded content<ph name="END_LINK">&lt;/link&gt;</ph>
+  </message>
 </grit-part>

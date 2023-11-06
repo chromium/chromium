@@ -40,7 +40,7 @@ import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
-import {listenOnce} from '//resources/js/util_ts.js';
+import {listenOnce} from '//resources/js/util.js';
 import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender, DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -1038,6 +1038,9 @@ export class PowerBookmarksListElement extends PolymerElement {
           {bookmark: chrome.bookmarks.BookmarkTreeNode, event: MouseEvent}>) {
     event.preventDefault();
     event.stopPropagation();
+    if (!event.detail.bookmark) {
+      return;
+    }
     const priceTracked = this.isPriceTracked(event.detail.bookmark);
     const priceTrackingEligible =
         this.isPriceTrackingEligible_(event.detail.bookmark);

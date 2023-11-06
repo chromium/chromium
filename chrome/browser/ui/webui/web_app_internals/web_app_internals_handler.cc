@@ -19,8 +19,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_dev_mode.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -33,8 +37,10 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom-shared.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -47,6 +53,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -72,9 +79,7 @@ constexpr char kInstallationProcessErrorLog[] = "InstallationProcessErrorLog";
 constexpr char kAppShimRegistryLocalStorage[] = "AppShimRegistryLocalStorage";
 #endif
 constexpr char kWebAppDirectoryDiskState[] = "WebAppDirectoryDiskState";
-#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kIsolatedWebAppUpdateManager[] = "IsolatedWebAppUpdateManager";
-#endif
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -106,9 +111,7 @@ base::Value::Dict BuildIndexJson() {
 #if BUILDFLAG(IS_MAC)
   index.Append(kAppShimRegistryLocalStorage);
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
   index.Append(kIsolatedWebAppUpdateManager);
-#endif
   index.Append(kWebAppDirectoryDiskState);
 
   return root;
@@ -311,14 +314,12 @@ base::Value::Dict BuildAppShimRegistryLocalStorageJson() {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
 base::Value BuildIsolatedWebAppUpdaterManagerJson(
     web_app::WebAppProvider& provider) {
   return base::Value(
       base::Value::Dict().Set(kIsolatedWebAppUpdateManager,
                               provider.iwa_update_manager().AsDebugValue()));
 }
-#endif
 
 void BuildDirectoryState(base::FilePath file_or_folder,
                          base::Value::Dict* folder) {
@@ -393,7 +394,7 @@ void SendError(
     const std::string& error_message) {
   auto result = mojom::InstallIsolatedWebAppResult::New();
   result->success = false;
-  result->error = std::string("could not get web app provider");
+  result->error = error_message;
   std::move(callback).Run(std::move(result));
 }
 
@@ -463,9 +464,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
 #if BUILDFLAG(IS_MAC)
   root.Append(BuildAppShimRegistryLocalStorageJson());
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
   root.Append(BuildIsolatedWebAppUpdaterManagerJson(*provider));
-#endif
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&BuildWebAppDiskStateJson,
@@ -577,20 +576,8 @@ void WebAppInternalsHandler::OnInstallIsolatedWebAppFromDevModeProxy(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 void WebAppInternalsHandler::ClearExperimentalWebAppIsolationData(
     ClearExperimentalWebAppIsolationDataCallback callback) {
-  CHECK(web_app::ResolveExperimentalWebAppIsolationFeature() !=
-        web_app::ExperimentalWebAppIsolationMode::kDisabled);
-
-  // Remove app profiles.
-  auto* profile_manager = g_browser_process->profile_manager();
-  for (auto* profile_entry : profile_manager->GetProfileAttributesStorage()
-                                 .GetAllProfilesAttributes()) {
-    auto path = profile_entry->GetPath();
-    if (Profile::IsWebAppProfilePath(path)) {
-      profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
-          path, base::DoNothing(),
-          ProfileMetrics::ProfileDelete::DELETE_PROFILE_USER_MANAGER);
-    }
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      chromeos::features::kExperimentalWebAppStoragePartitionIsolation));
 
   // Remove app storage partitions.
   auto helper = base::MakeRefCounted<ObliterateStoragePartitionHelper>(
@@ -617,4 +604,80 @@ void WebAppInternalsHandler::SearchForIsolatedWebAppUpdates(
   size_t queued_task_count = manager.DiscoverUpdatesNow();
   std::move(callback).Run(base::StringPrintf(
       "queued %zu update discovery tasks", queued_task_count));
+}
+
+void WebAppInternalsHandler::GetIsolatedWebAppDevModeProxyAppInfo(
+    GetIsolatedWebAppDevModeProxyAppInfoCallback callback) {
+  if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
+  if (!provider) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  std::vector<mojom::IwaDevProxyAppInfoPtr> installed_dev_mode_proxy_apps;
+  for (const web_app::WebApp& app : provider->registrar_unsafe().GetApps()) {
+    if (!app.isolation_data().has_value()) {
+      continue;
+    }
+    auto* location =
+        absl::get_if<web_app::DevModeProxy>(&app.isolation_data()->location);
+    if (location == nullptr) {
+      continue;
+    }
+
+    installed_dev_mode_proxy_apps.emplace_back(mojom::IwaDevProxyAppInfo::New(
+        app.app_id(), app.untranslated_name(), location->proxy_url,
+        app.isolation_data()->version.GetString()));
+  }
+
+  std::move(callback).Run(std::move(installed_dev_mode_proxy_apps));
+}
+
+void WebAppInternalsHandler::UpdateDevProxyIsolatedWebApp(
+    const webapps::AppId& app_id,
+    UpdateDevProxyIsolatedWebAppCallback callback) {
+  if (!web_app::IsIwaDevModeEnabled(&*profile_)) {
+    std::move(callback).Run("IWA dev mode is not enabled");
+    return;
+  }
+
+  auto* provider = web_app::WebAppProvider::GetForWebApps(&profile_.get());
+  if (!provider) {
+    std::move(callback).Run("could not get web app provider");
+    return;
+  }
+
+  auto* app = provider->registrar_unsafe().GetAppById(app_id);
+  if (!app || !app->isolation_data().has_value()) {
+    std::move(callback).Run("could not find installed IWA");
+    return;
+  }
+  if (!absl::holds_alternative<web_app::DevModeProxy>(
+          app->isolation_data()->location)) {
+    std::move(callback).Run("can only update dev-mode proxy apps");
+    return;
+  }
+
+  auto url_info = web_app::IsolatedWebAppUrlInfo::Create(app->manifest_id());
+  if (!url_info.has_value()) {
+    std::move(callback).Run("unable to create UrlInfo from start url");
+    return;
+  }
+
+  auto& manager = provider->iwa_update_manager();
+  manager.DiscoverApplyAndPrioritizeLocalDevModeUpdate(
+      app->isolation_data()->location, *url_info,
+      base::BindOnce([](base::expected<base::Version, std::string> result) {
+        if (result.has_value()) {
+          return base::StrCat(
+              {"Update to version ", result->GetString(),
+               " successful (refresh this page to reflect the update)."});
+        }
+        return "Update failed: " + result.error();
+      }).Then(std::move(callback)));
 }

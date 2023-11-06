@@ -49,7 +49,7 @@ class ClearButtonElement final : public HTMLDivElement {
 
  private:
   void DetachLayoutTree(bool performing_reattach) override;
-  bool IsFocusable() const override { return false; }
+  bool IsFocusable(bool) const override { return false; }
   void DefaultEventHandler(Event&) override;
   bool IsClearButtonElement() const override;
 

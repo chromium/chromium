@@ -42,6 +42,12 @@ COMPONENT_EXPORT(CHROMEOS_STARTUP)
 base::ScopedFD CreateMemFDFromBrowserPostLoginParams(
     const crosapi::mojom::BrowserPostLoginParamsPtr& data);
 
+// The Lacros process exited because the post-login parameters received
+// from Ash are either empty or invalid (Lacros-only).
+// We define a new Chrome result code here, and static_assert that there
+// are no conflicts in chrome/common/chrome_result_codes.h.
+inline constexpr int RESULT_CODE_INVALID_POST_LOGIN_PARAMS = 38;
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_STARTUP_STARTUP_H_

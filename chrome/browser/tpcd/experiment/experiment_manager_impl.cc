@@ -51,7 +51,7 @@ ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
   }
 
   if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
-      profile->IsOffTheRecord()) {
+      (profile->IsOffTheRecord() || profile->IsGuestSession())) {
     return nullptr;
   }
 
@@ -77,6 +77,7 @@ ExperimentManagerImpl::ExperimentManagerImpl() {
     local_state->SetInteger(prefs::kTPCDExperimentClientStateVersion,
                             currentVersion);
     local_state->ClearPref(prefs::kTPCDExperimentClientState);
+    did_version_change_ = true;
   }
 
   // If client eligibility is already known, do not recompute it.
@@ -174,6 +175,10 @@ absl::optional<bool> ExperimentManagerImpl::IsClientEligible() const {
       // invalid
       return false;
   }
+}
+
+bool ExperimentManagerImpl::DidVersionChange() const {
+  return did_version_change_;
 }
 
 }  // namespace tpcd::experiment

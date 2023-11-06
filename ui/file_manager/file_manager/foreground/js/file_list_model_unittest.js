@@ -4,7 +4,7 @@
 
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {str} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
 
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME, GroupHeader} from './file_list_model.js';
 import {MetadataModel} from './metadata/metadata_model.js';
@@ -27,6 +27,7 @@ const TEST_METADATA = {
   },
 };
 
+/** @type {*} */
 let originalNow;
 
 export function setUp() {
@@ -40,6 +41,7 @@ export function tearDown() {
   window.Date.now = originalNow;
 }
 
+// @ts-ignore: error TS7006: Parameter 'names' implicitly has an 'any' type.
 function assertFileListModelElementNames(fileListModel, names) {
   assertEquals(fileListModel.length, names.length);
   for (let i = 0; i < fileListModel.length; i++) {
@@ -47,11 +49,14 @@ function assertFileListModelElementNames(fileListModel, names) {
   }
 }
 
+// @ts-ignore: error TS7006: Parameter 'names' implicitly has an 'any' type.
 function assertEntryArrayEquals(entryArray, names) {
   assertEquals(entryArray.length, names.length);
+  // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
   assertArrayEquals(entryArray.map((e) => e.name), names);
 }
 
+// @ts-ignore: error TS7006: Parameter 'names' implicitly has an 'any' type.
 function makeSimpleFileListModel(names) {
   const fileListModel = new FileListModel(createFakeMetadataModel({}));
   for (let i = 0; i < names.length; i++) {
@@ -72,8 +77,10 @@ function createFakeMetadataModel(data) {
       const result = [];
       for (let i = 0; i < entries.length; i++) {
         const metadata = {};
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (!entries[i].isDirectory && data[entries[i].name]) {
           for (let j = 0; j < names.length; j++) {
+            // @ts-ignore: error TS2532: Object is possibly 'undefined'.
             metadata[names[j]] = data[entries[i].name][names[j]];
           }
         }
@@ -149,14 +156,24 @@ export function testSplice() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.added, ['p', 'b']);
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.removed, ['n']);
     // The first inserted item, 'p', should be at index:3 after splice.
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     assertEquals(event.index, 3);
   });
 
   fileListModel.addEventListener('permuted', event => {
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     assertArrayEquals(event.permutation, [0, 2, -1, 4]);
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     assertEquals(event.newLength, 5);
   });
 
@@ -169,14 +186,24 @@ export function testSpliceWithoutSortStatus() {
   const fileListModel = makeSimpleFileListModel(['d', 'a', 'x', 'n']);
 
   fileListModel.addEventListener('splice', event => {
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.added, ['p', 'b']);
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.removed, ['x']);
     // The first inserted item, 'p', should be at index:2 after splice.
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     assertEquals(event.index, 2);
   });
 
   fileListModel.addEventListener('permuted', event => {
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     assertArrayEquals(event.permutation, [0, 1, -1, 4]);
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     assertEquals(event.newLength, 5);
   });
 
@@ -193,15 +220,25 @@ export function testSpliceWithoutAddingNewItems() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.added, []);
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.removed, ['n']);
     // The first item after insertion/deletion point is 'x', which should be at
     // 2nd position after the sort.
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     assertEquals(event.index, 2);
   });
 
   fileListModel.addEventListener('permuted', event => {
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     assertArrayEquals(event.permutation, [0, 1, -1, 2]);
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     assertEquals(event.newLength, 3);
   });
 
@@ -214,13 +251,23 @@ export function testSpliceWithoutDeletingItems() {
   fileListModel.sort('name', 'asc');
 
   fileListModel.addEventListener('splice', event => {
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.added, ['p', 'b']);
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     assertEntryArrayEquals(event.removed, []);
+    // @ts-ignore: error TS2339: Property 'index' does not exist on type
+    // 'Event'.
     assertEquals(event.index, 4);
   });
 
   fileListModel.addEventListener('permuted', event => {
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     assertArrayEquals(event.permutation, [0, 2, 3, 5]);
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     assertEquals(event.newLength, 6);
   });
 
@@ -506,6 +553,7 @@ export function testGroupByDirectory() {
     const files = Object.keys(test.metadataMap).map(fileName => {
       return {
         name: fileName,
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         isDirectory: test.metadataMap[fileName].isDirectory,
       };
     });

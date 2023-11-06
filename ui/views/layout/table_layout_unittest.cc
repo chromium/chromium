@@ -6,6 +6,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -29,6 +31,8 @@ std::unique_ptr<View> CreateSizedView(const gfx::Size& size) {
 
 // View that lets you set the minimum size.
 class MinSizeView : public View {
+  METADATA_HEADER(MinSizeView, View)
+
  public:
   explicit MinSizeView(const gfx::Size& min_size) : min_size_(min_size) {}
 
@@ -50,6 +54,9 @@ std::unique_ptr<MinSizeView> CreateViewWithMinAndPref(const gfx::Size& min,
   view->SetPreferredSize(pref);
   return view;
 }
+
+BEGIN_METADATA(MinSizeView)
+END_METADATA
 
 }  // namespace
 

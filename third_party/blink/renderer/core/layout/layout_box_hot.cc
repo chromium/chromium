@@ -5,9 +5,9 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
@@ -143,7 +143,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
 
     // Any floats might need to move, causing lines to wrap differently,
     // needing re-layout, either in cached result or in new constraint space.
-    if (!cached_layout_result->ExclusionSpace().IsEmpty() ||
+    if (!cached_layout_result->GetExclusionSpace().IsEmpty() ||
         new_space.HasFloats()) {
       return nullptr;
     }
@@ -225,7 +225,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     is_margin_strut_equal =
         new_space.GetMarginStrut() == old_space.GetMarginStrut();
     is_exclusion_space_equal =
-        new_space.ExclusionSpace() == old_space.ExclusionSpace();
+        new_space.GetExclusionSpace() == old_space.GetExclusionSpace();
     bool is_clearance_offset_equal =
         new_space.ClearanceOffset() == old_space.ClearanceOffset();
 
@@ -385,8 +385,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         // which will end up crossing the fragmentation line.
         auto DoFloatsCrossFragmentationLine = [&]() -> bool {
           const auto& result_exclusion_space =
-              cached_layout_result->ExclusionSpace();
-          if (result_exclusion_space != old_space.ExclusionSpace()) {
+              cached_layout_result->GetExclusionSpace();
+          if (result_exclusion_space != old_space.GetExclusionSpace()) {
             LayoutUnit block_end_offset =
                 FragmentainerOffsetAtBfc(new_space) +
                 result_exclusion_space.ClearanceOffset(EClear::kBoth);
@@ -453,7 +453,7 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   }
 
   if (is_fragmented) {
-    if (cached_layout_result->ExclusionSpace().HasFragmentainerBreak()) {
+    if (cached_layout_result->GetExclusionSpace().HasFragmentainerBreak()) {
       // The final exclusion space is a processed version of the old one when
       // hitting the cache. One thing we don't support is copying the
       // fragmentation bits over correctly. That's something we could fix, if
@@ -531,8 +531,8 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
       is_margin_strut_equal && !needs_cached_result_update) {
     // In order not to rebuild the internal derived-geometry "cache" of float
     // data, we need to move this to the new "output" exclusion space.
-    cached_layout_result->ExclusionSpace().MoveAndUpdateDerivedGeometry(
-        new_space.ExclusionSpace());
+    cached_layout_result->GetExclusionSpace().MoveAndUpdateDerivedGeometry(
+        new_space.GetExclusionSpace());
     return cached_layout_result;
   }
 
@@ -544,21 +544,6 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     SetCachedLayoutResult(new_result, FragmentIndex(break_token));
 
   return new_result;
-}
-
-void LayoutBox::SetSnapContainer(LayoutBox* new_container) {
-  NOT_DESTROYED();
-  LayoutBox* old_container = SnapContainer();
-  if (old_container == new_container)
-    return;
-
-  if (old_container)
-    old_container->RemoveSnapArea(*this);
-
-  EnsureRareData().snap_container_ = new_container;
-
-  if (new_container)
-    new_container->AddSnapArea(*this);
 }
 
 const NGPhysicalBoxFragment* LayoutBox::GetPhysicalFragment(

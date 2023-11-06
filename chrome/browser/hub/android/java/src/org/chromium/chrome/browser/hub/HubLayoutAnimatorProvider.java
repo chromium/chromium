@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.hub;
 
 import android.animation.AnimatorSet;
+import android.graphics.Bitmap;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.SyncOneshotSupplier;
 
 /**
@@ -48,4 +51,16 @@ public interface HubLayoutAnimatorProvider {
      * provide a fallback animation in its place.
      */
     void supplyAnimatorNow();
+
+    /**
+     * Returns a callback that will be called exactly once with a thumbnail for the current tab that
+     * can be used for the animation. The callback may receive a null bitmap if no bitmap is
+     * available. Returning null instead of a callback indicates to {@link HubLayout} that a
+     * thumbnail will not be used for this animation and will allow the {@link HubLayout} to skip
+     * the work of transferring the bitmap from native up to Java.
+     */
+    @Nullable
+    default Callback<Bitmap> getThumbnailCallback() {
+        return null;
+    }
 }

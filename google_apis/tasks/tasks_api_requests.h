@@ -44,8 +44,8 @@ class ListTaskListsRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<TaskLists>, ApiErrorCode>)>;
 
   ListTaskListsRequest(RequestSender* sender,
-                       Callback callback,
-                       const std::string& page_token = "");
+                       const std::string& page_token,
+                       Callback callback);
   ListTaskListsRequest(const ListTaskListsRequest&) = delete;
   ListTaskListsRequest& operator=(const ListTaskListsRequest&) = delete;
   ~ListTaskListsRequest() override;
@@ -66,8 +66,8 @@ class ListTaskListsRequest : public UrlFetchRequestBase {
   static std::unique_ptr<TaskLists> Parse(std::string json);
   void OnDataParsed(std::unique_ptr<TaskLists> task_lists);
 
-  Callback callback_;
   const std::string page_token_;
+  Callback callback_;
 
   base::WeakPtrFactory<ListTaskListsRequest> weak_ptr_factory_{this};
 };
@@ -82,9 +82,9 @@ class ListTasksRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<Tasks>, ApiErrorCode>)>;
 
   ListTasksRequest(RequestSender* sender,
-                   Callback callback,
                    const std::string& task_list_id,
-                   const std::string& page_token = "");
+                   const std::string& page_token,
+                   Callback callback);
   ListTasksRequest(const ListTasksRequest&) = delete;
   ListTasksRequest& operator=(const ListTasksRequest&) = delete;
   ~ListTasksRequest() override;
@@ -105,9 +105,9 @@ class ListTasksRequest : public UrlFetchRequestBase {
   static std::unique_ptr<Tasks> Parse(std::string json);
   void OnDataParsed(std::unique_ptr<Tasks> task_lists);
 
-  Callback callback_;
   const std::string task_list_id_;
   const std::string page_token_;
+  Callback callback_;
 
   base::WeakPtrFactory<ListTasksRequest> weak_ptr_factory_{this};
 };
@@ -117,13 +117,14 @@ class ListTasksRequest : public UrlFetchRequestBase {
 // https://developers.google.com/tasks/reference/rest/v1/tasks/patch
 class PatchTaskRequest : public UrlFetchRequestBase {
  public:
-  using Callback = base::OnceCallback<void(ApiErrorCode status_code)>;
+  using Callback = base::OnceCallback<void(
+      base::expected<std::unique_ptr<Task>, ApiErrorCode>)>;
 
   PatchTaskRequest(RequestSender* sender,
-                   Callback callback,
                    const std::string& task_list_id,
                    const std::string& task_id,
-                   const TaskRequestPayload& payload);
+                   const TaskRequestPayload& payload,
+                   Callback callback);
   PatchTaskRequest(const PatchTaskRequest&) = delete;
   PatchTaskRequest& operator=(const PatchTaskRequest&) = delete;
   ~PatchTaskRequest() override;
@@ -144,10 +145,13 @@ class PatchTaskRequest : public UrlFetchRequestBase {
   void RunCallbackOnPrematureFailure(ApiErrorCode code) override;
 
  private:
-  Callback callback_;
+  static std::unique_ptr<Task> Parse(std::string json);
+  void OnDataParsed(std::unique_ptr<Task> task_lists);
+
   const std::string task_list_id_;
   const std::string task_id_;
   const TaskRequestPayload payload_;
+  Callback callback_;
 
   base::WeakPtrFactory<PatchTaskRequest> weak_ptr_factory_{this};
 };

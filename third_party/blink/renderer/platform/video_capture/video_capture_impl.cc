@@ -29,6 +29,7 @@
 #include "base/token.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
@@ -607,19 +608,24 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
 #endif
       CHECK_EQ(gpu_memory_buffer_->GetFormat(),
                gfx::BufferFormat::YUV_420_BIPLANAR);
-      buffer_context_->gmb_resources()->mailboxes[plane] =
-          create_multiplanar_image
-              ? sii->CreateSharedImage(
-                    multiplanar_si_format, gpu_memory_buffer_->GetSize(),
-                    frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
-                    kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer",
-                    gpu_memory_buffer_->CloneHandle())
-              : sii->CreateSharedImage(
-                    gpu_memory_buffer_.get(),
-                    buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
-                    planes[plane], frame_info_->color_space,
-                    kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-                    "VideoCaptureFrameBuffer");
+      if (create_multiplanar_image) {
+        auto client_shared_image = sii->CreateSharedImage(
+            multiplanar_si_format, gpu_memory_buffer_->GetSize(),
+            frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer",
+            gpu_memory_buffer_->CloneHandle());
+        CHECK(client_shared_image);
+        buffer_context_->gmb_resources()->mailboxes[plane] =
+            client_shared_image->mailbox();
+      } else {
+        buffer_context_->gmb_resources()->mailboxes[plane] =
+            sii->CreateSharedImage(
+                gpu_memory_buffer_.get(),
+                buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
+                planes[plane], frame_info_->color_space,
+                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                "VideoCaptureFrameBuffer");
+      }
     } else {
       sii->UpdateSharedImage(
           buffer_context_->gmb_resources()->release_sync_token,
@@ -702,7 +708,7 @@ struct VideoCaptureImpl::ClientInfo {
   media::VideoCaptureParams params;
   VideoCaptureStateUpdateCB state_update_cb;
   VideoCaptureDeliverFrameCB deliver_frame_cb;
-  VideoCaptureCropVersionCB crop_version_cb;
+  VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_cb;
   VideoCaptureNotifyFrameDroppedCB frame_dropped_cb;
 };
 
@@ -771,7 +777,7 @@ void VideoCaptureImpl::StartCapture(
     const media::VideoCaptureParams& params,
     const VideoCaptureStateUpdateCB& state_update_cb,
     const VideoCaptureDeliverFrameCB& deliver_frame_cb,
-    const VideoCaptureCropVersionCB& crop_version_cb,
+    const VideoCaptureSubCaptureTargetVersionCB& sub_capture_target_version_cb,
     const VideoCaptureNotifyFrameDroppedCB& frame_dropped_cb) {
   DVLOG(1) << __func__ << " |device_id_| = " << device_id_;
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
@@ -781,7 +787,7 @@ void VideoCaptureImpl::StartCapture(
   client_info.params = params;
   client_info.state_update_cb = state_update_cb;
   client_info.deliver_frame_cb = deliver_frame_cb;
-  client_info.crop_version_cb = crop_version_cb;
+  client_info.sub_capture_target_version_cb = sub_capture_target_version_cb;
   client_info.frame_dropped_cb = frame_dropped_cb;
 
   switch (state_) {
@@ -1120,11 +1126,12 @@ void VideoCaptureImpl::OnFrameDropped(
   }
 }
 
-void VideoCaptureImpl::OnNewCropVersion(uint32_t crop_version) {
+void VideoCaptureImpl::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
   for (const auto& client : clients_) {
-    client.second.crop_version_cb.Run(crop_version);
+    client.second.sub_capture_target_version_cb.Run(sub_capture_target_version);
   }
 }
 

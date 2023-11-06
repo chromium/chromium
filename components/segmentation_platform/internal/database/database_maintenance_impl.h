@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/database_maintenance.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
+#include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/proto/types.pb.h"
 
@@ -39,7 +40,6 @@ class SignalStorageConfig;
 class DatabaseMaintenanceImpl : public DatabaseMaintenance {
  public:
   using SignalIdentifier = std::pair<uint64_t, proto::SignalType>;
-  using CleanupItem = std::tuple<uint64_t, proto::SignalType, base::Time>;
 
   explicit DatabaseMaintenanceImpl(const base::flat_set<SegmentId>& segment_ids,
                                    base::Clock* clock,

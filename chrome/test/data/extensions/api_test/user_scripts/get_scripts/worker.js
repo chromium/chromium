@@ -12,7 +12,8 @@ chrome.test.runTests([
         matches: ['*://*/*'],
         excludeMatches: ['*://abc.com/*'],
         allFrames: true,
-        js: [{file: 'empty.js'}]
+        js: [{file: 'empty.js'}],
+        world: chrome.userScripts.ExecutionWorld.MAIN
       },
       {
         id: 'script2',
@@ -34,14 +35,16 @@ chrome.test.runTests([
         excludeMatches: ['*://abc.com/*'],
         allFrames: true,
         js: [{file: 'empty.js'}],
-        runAt: 'document_idle'
+        runAt: 'document_idle',
+        world: chrome.userScripts.ExecutionWorld.MAIN
       },
       {
         id: 'script2',
         matches: ['*://requested.com/*'],
         js: [{file: 'empty2.js'}],
         allFrames: false,
-        runAt: 'document_end'
+        runAt: 'document_end',
+        world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
       }
     ];
 
@@ -104,7 +107,8 @@ chrome.test.runTests([
       matches: ['*://*/*'],
       allFrames: false,
       js: [{file: 'empty.js'}],
-      runAt: 'document_idle'
+      runAt: 'document_idle',
+      world: chrome.userScripts.ExecutionWorld.USER_SCRIPT
     }];
 
     await chrome.userScripts.register(scriptsToRegister);

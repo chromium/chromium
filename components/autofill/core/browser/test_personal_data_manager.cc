@@ -142,14 +142,6 @@ void TestPersonalDataManager::UpdateCreditCard(const CreditCard& credit_card) {
   }
 }
 
-void TestPersonalDataManager::AddFullServerCreditCard(
-    const CreditCard& credit_card) {
-  // Though the name is AddFullServerCreditCard, this test class treats masked
-  // and full server cards equally, relying on their preset RecordType to
-  // differentiate them.
-  AddServerCreditCard(credit_card);
-}
-
 const std::string& TestPersonalDataManager::GetDefaultCountryCodeForNewAddress()
     const {
   if (default_country_code_.empty())
@@ -330,6 +322,35 @@ void TestPersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(
   PersonalDataManager::SetPaymentMethodsMandatoryReauthEnabled(enabled);
 }
 
+void TestPersonalDataManager::AddServerCvc(int64_t instrument_id,
+                                           const std::u16string& cvc) {
+  auto card_iterator =
+      std::find_if(server_credit_cards_.begin(), server_credit_cards_.end(),
+                   [instrument_id](auto& card) {
+                     return card->instrument_id() == instrument_id;
+                   });
+
+  if (card_iterator != server_credit_cards_.end()) {
+    card_iterator->get()->set_cvc(cvc);
+  }
+}
+
+void TestPersonalDataManager::ClearServerCvcs() {
+  for (CreditCard* card : PersonalDataManager::GetServerCreditCards()) {
+    if (!card->cvc().empty()) {
+      card->clear_cvc();
+    }
+  }
+}
+
+void TestPersonalDataManager::ClearLocalCvcs() {
+  for (CreditCard* card : PersonalDataManager::GetLocalCreditCards()) {
+    if (!card->cvc().empty()) {
+      card->clear_cvc();
+    }
+  }
+}
+
 void TestPersonalDataManager::ClearProfiles() {
   synced_local_profiles_.clear();
   account_profiles_.clear();
@@ -369,6 +390,11 @@ void TestPersonalDataManager::AddAutofillOfferData(
   std::unique_ptr<AutofillOfferData> data =
       std::make_unique<AutofillOfferData>(offer_data);
   autofill_offer_data_.emplace_back(std::move(data));
+  NotifyPersonalDataObserver();
+}
+
+void TestPersonalDataManager::AddServerIban(const Iban& iban) {
+  server_ibans_.push_back(std::make_unique<Iban>(iban));
   NotifyPersonalDataObserver();
 }
 

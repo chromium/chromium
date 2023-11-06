@@ -82,7 +82,7 @@ void VideoToolboxDecompressionSessionImpl::Invalidate() {
     return;
   }
 
-  VTDecompressionSessionInvalidate(session_);
+  VTDecompressionSessionInvalidate(session_.get());
   session_.reset();
 
   // Drop in-flight OnOutput() tasks. Reassignment of |weak_this_| is safe
@@ -95,7 +95,7 @@ void VideoToolboxDecompressionSessionImpl::Invalidate() {
 bool VideoToolboxDecompressionSessionImpl::IsValid() {
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  return session_;
+  return session_.get();
 }
 
 bool VideoToolboxDecompressionSessionImpl::CanAcceptFormat(
@@ -103,7 +103,8 @@ bool VideoToolboxDecompressionSessionImpl::CanAcceptFormat(
   DVLOG(4) << __func__;
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   CHECK(session_);
-  return VTDecompressionSessionCanAcceptFormatDescription(session_, format);
+  return VTDecompressionSessionCanAcceptFormatDescription(session_.get(),
+                                                          format);
 }
 
 bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
@@ -116,7 +117,7 @@ bool VideoToolboxDecompressionSessionImpl::DecodeFrame(CMSampleBufferRef sample,
       kVTDecodeFrame_EnableAsynchronousDecompression;
 
   OSStatus status = VTDecompressionSessionDecodeFrame(
-      session_, sample, decode_flags, context, nullptr);
+      session_.get(), sample, decode_flags, context, nullptr);
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "VTDecompressionSessionDecodeFrame()";

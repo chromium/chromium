@@ -54,10 +54,11 @@ ClipboardIOS::~ClipboardIOS() {
 void ClipboardIOS::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardIOS::GetSource(ClipboardBuffer buffer) const {
+absl::optional<DataTransferEndpoint> ClipboardIOS::GetSource(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return absl::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
@@ -452,7 +453,7 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
   base::apple::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateDeviceRGB());
   UIImage* image =
-      skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space);
+      skia::SkBitmapToUIImageWithColorSpace(bitmap, 1.0f, color_space.get());
   if (!image) {
     NOTREACHED() << "SkBitmapToUIImageWithColorSpace failed";
     return;

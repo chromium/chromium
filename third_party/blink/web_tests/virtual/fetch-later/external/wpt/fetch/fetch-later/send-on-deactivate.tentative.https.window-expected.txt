@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS fetchLater() does not send on page entering BFCache.
-PASS Call fetchLater() when BFCached with activationTimeout=0 sends immediately.
-PASS fetchLater() sends on navigating away a page w/o BFCache.
-Harness: the test ran to completion.
-

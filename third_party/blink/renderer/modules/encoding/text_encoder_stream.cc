@@ -46,7 +46,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       return ScriptPromise();
     const String input = input_resource;
     if (input.empty())
-      return ScriptPromise::CastUndefined(script_state_);
+      return ScriptPromise::CastUndefined(script_state_.Get());
 
     const absl::optional<UChar> high_surrogate = pending_high_surrogate_;
     pending_high_surrogate_ = absl::nullopt;
@@ -64,7 +64,7 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
       bool have_output =
           Encode16BitString(input, high_surrogate, &prefix, &result);
       if (!have_output)
-        return ScriptPromise::CastUndefined(script_state_);
+        return ScriptPromise::CastUndefined(script_state_.Get());
     }
 
     DOMUint8Array* array =
@@ -72,14 +72,14 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     controller->enqueue(script_state_, ScriptValue::From(script_state_, array),
                         exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   // Implements the "encode and flush" algorithm.
   ScriptPromise Flush(TransformStreamDefaultController* controller,
                       ExceptionState& exception_state) override {
     if (!pending_high_surrogate_.has_value())
-      return ScriptPromise::CastUndefined(script_state_);
+      return ScriptPromise::CastUndefined(script_state_.Get());
 
     const std::string replacement_character = ReplacementCharacterInUtf8();
     const uint8_t* u8buffer =
@@ -92,10 +92,10 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
                                             replacement_character.length()))),
         exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

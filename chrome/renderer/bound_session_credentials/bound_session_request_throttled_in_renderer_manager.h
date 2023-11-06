@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -29,7 +29,7 @@ class BoundSessionRequestThrottledInRendererManager
           BoundSessionRequestThrottledInRendererManager> {
  public:
   static scoped_refptr<BoundSessionRequestThrottledInRendererManager> Create(
-      mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+      mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
           pending_remote);
 
   BoundSessionRequestThrottledInRendererManager(
@@ -39,9 +39,9 @@ class BoundSessionRequestThrottledInRendererManager
 
   // Binds `remote_`.
   // This function must be called before any calls to
-  // `OnRequestBlockedOnCookie()`.
+  // `HandleRequestBlockedOnCookie()`.
   void Initialize(
-      mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
+      mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
           pending_remote);
 
   // Called when bound session requests are blocked on expired cookie. This call
@@ -53,14 +53,14 @@ class BoundSessionRequestThrottledInRendererManager
   // This class expects `callback` to be bound to the sequence on which it
   // should run.
   // Marked virtual for testing.
-  virtual void OnRequestBlockedOnCookie(
-      BoundSessionRequestThrottledListener::
+  virtual void HandleRequestBlockedOnCookie(
+      BoundSessionRequestThrottledHandler::
           ResumeOrCancelThrottledRequestCallback callback);
 
  private:
-  using UnblockAction = BoundSessionRequestThrottledListener::UnblockAction;
+  using UnblockAction = BoundSessionRequestThrottledHandler::UnblockAction;
   using ResumeOrCancelThrottledRequestCallback =
-      BoundSessionRequestThrottledListener::
+      BoundSessionRequestThrottledHandler::
           ResumeOrCancelThrottledRequestCallback;
 
   friend class base::RefCountedThreadSafe<
@@ -71,7 +71,7 @@ class BoundSessionRequestThrottledInRendererManager
   BoundSessionRequestThrottledInRendererManager();
   virtual ~BoundSessionRequestThrottledInRendererManager();
 
-  void CallRemoteOnRequestBlockedOnCookie();
+  void CallRemoteHandleRequestBlockedOnCookie();
 
   void OnRemoteDisconnected();
   void CancelAllDeferredRequests();
@@ -80,7 +80,7 @@ class BoundSessionRequestThrottledInRendererManager
 
   std::vector<ResumeOrCancelThrottledRequestCallback>
       resume_or_cancel_deferred_request_callbacks_;
-  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledListener> remote_;
+  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> remote_;
   SEQUENCE_CHECKER(my_sequence_checker_);
 };
 #endif  // CHROME_RENDERER_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_REQUEST_THROTTLED_IN_RENDERER_MANAGER_H_

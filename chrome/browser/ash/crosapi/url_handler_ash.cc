@@ -75,26 +75,16 @@ absl::optional<ash::SystemWebAppType> GetSystemAppForURL(Profile* profile,
   return swa_manager ? swa_manager->GetSystemAppForURL(url) : absl::nullopt;
 }
 
-void OpenUrlInternalContinue(Profile* profile,
-                             GURL target_url,
-                             const GURL& original_url) {
+void OpenUrlInternalContinue(Profile* profile, const GURL& url) {
   DCHECK(ash::SystemWebAppManager::Get(profile)->IsAppEnabled(
       ash::SystemWebAppType::OS_URL_HANDLER));
 
   ash::SystemWebAppType swa_type =
-      GetSystemAppForURL(profile, target_url)
+      GetSystemAppForURL(profile, url)
           .value_or(ash::SystemWebAppType::OS_URL_HANDLER);
 
-  // This is a hack for chrome://camera-app URLs with queries, as sent by
-  // assistant.
-  // TODO(crbug.com/1445145): Figure out how to get rid of this.
-  if (swa_type == ash::SystemWebAppType::CAMERA &&
-      !gurl_os_handler_utils::IsAshOsUrl(original_url)) {
-    target_url = original_url;
-  }
-
   ash::SystemAppLaunchParams launch_params;
-  launch_params.url = target_url;
+  launch_params.url = url;
   int64_t display_id =
       display::Screen::GetScreen()->GetDisplayForNewWindows().id();
   ash::LaunchSystemWebAppAsync(profile, swa_type, launch_params,
@@ -104,7 +94,9 @@ void OpenUrlInternalContinue(Profile* profile,
 }  // namespace
 
 // TODO(neis): Find a way to unify this code with the one in os_url_handler.cc.
-bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
+bool UrlHandlerAsh::OpenUrlInternal(GURL url) {
+  url = gurl_os_handler_utils::SanitizeAshUrl(url);
+
   Profile* profile = Profile::FromBrowserContext(
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
           user_manager::UserManager::Get()->GetPrimaryUser()));
@@ -117,16 +109,14 @@ bool UrlHandlerAsh::OpenUrlInternal(const GURL& url) {
     return false;
   }
 
-  GURL target_url = gurl_os_handler_utils::GetTargetURLFromLacrosURL(url);
-  if (!ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(target_url)) {
+  if (!ChromeWebUIControllerFactory::GetInstance()->CanHandleUrl(url)) {
     LOG(ERROR) << "Invalid URL passed to UrlHandlerAsh::OpenUrl: " << url;
     return false;
   }
 
   // Wait for all SWAs to be registered before continuing.
   ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
-      FROM_HERE,
-      base::BindOnce(&OpenUrlInternalContinue, profile, target_url, url));
+      FROM_HERE, base::BindOnce(&OpenUrlInternalContinue, profile, url));
   return true;
 }
 

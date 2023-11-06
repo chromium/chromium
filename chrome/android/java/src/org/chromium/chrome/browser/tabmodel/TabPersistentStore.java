@@ -685,8 +685,9 @@ public class TabPersistentStore {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabRestoreMethod", tabRestoreMethod, TabRestoreMethod.NUM_ENTRIES);
             Tab tab =
-                    mTabCreatorManager.getTabCreator(isIncognito)
-                            .createFrozenTab(tabState, tabToRestore.id, isIncognito, restoredIndex);
+                    mTabCreatorManager
+                            .getTabCreator(isIncognito)
+                            .createFrozenTab(tabState, tabToRestore.id, restoredIndex);
         } else {
             if (!mSkipSavingNonActiveNtps && UrlUtilities.isNTPUrl(tabToRestore.url) && !setAsActive
                     && !tabToRestore.fromMerge) {
@@ -1351,7 +1352,8 @@ public class TabPersistentStore {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public File getTabStateFile(int tabId, boolean encrypted) {
-        return TabStateFileManager.getTabStateFile(getStateDirectory(), tabId, encrypted);
+        return TabStateFileManager.getTabStateFile(
+                getStateDirectory(), tabId, encrypted, /* isFlatBuffer= */ false);
     }
 
     /**
@@ -1489,6 +1491,7 @@ public class TabPersistentStore {
                     }
                 });
         performPersistedTabDataMaintenance(null);
+        TabStateFileManager.cleanupUnusedFiles(getStateDirectory());
     }
 
     @VisibleForTesting

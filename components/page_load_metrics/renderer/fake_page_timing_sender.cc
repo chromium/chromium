@@ -36,9 +36,10 @@ void FakePageTimingSender::SendTiming(
 void FakePageTimingSender::SetUpSmoothnessReporting(
     base::ReadOnlySharedMemoryRegion shared_memory) {}
 
-FakePageTimingSender::PageTimingValidator::PageTimingValidator()
-    : expected_input_timing(mojom::InputTiming::New()),
-      actual_input_timing(mojom::InputTiming::New()) {}
+FakePageTimingSender::PageTimingValidator::PageTimingValidator() {
+  expected_input_timing.max_event_durations =
+      mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
+}
 
 FakePageTimingSender::PageTimingValidator::~PageTimingValidator() {
   VerifyExpectedTimings();
@@ -88,22 +89,27 @@ void FakePageTimingSender::PageTimingValidator::
   }
 }
 
-void FakePageTimingSender::PageTimingValidator::UpdateExpectedInputTiming(
-    const base::TimeDelta input_delay) {
-  expected_input_timing->num_input_events++;
-  expected_input_timing->total_input_delay += input_delay;
-  expected_input_timing->total_adjusted_input_delay += base::Milliseconds(
-      std::max(int64_t(0), input_delay.InMilliseconds() - int64_t(50)));
+void FakePageTimingSender::PageTimingValidator::UpdateExpectedInteractionTiming(
+    const base::TimeDelta interaction_duration,
+    mojom::UserInteractionType interaction_type) {
+  expected_input_timing.num_interactions++;
+  expected_input_timing.max_event_durations->get_user_interaction_latencies()
+      .emplace_back(mojom::UserInteractionLatency::New(interaction_duration,
+                                                       interaction_type));
 }
-void FakePageTimingSender::PageTimingValidator::VerifyExpectedInputTiming()
-    const {
-  ASSERT_EQ(expected_input_timing.is_null(), actual_input_timing.is_null());
-  ASSERT_EQ(expected_input_timing->num_input_events,
-            actual_input_timing->num_input_events);
-  ASSERT_EQ(expected_input_timing->total_input_delay,
-            actual_input_timing->total_input_delay);
-  ASSERT_EQ(expected_input_timing->total_adjusted_input_delay,
-            actual_input_timing->total_adjusted_input_delay);
+void FakePageTimingSender::PageTimingValidator::
+    VerifyExpectedInteractionTiming() const {
+  ASSERT_EQ(expected_input_timing.num_interactions,
+            actual_input_timing.num_interactions);
+  auto& expected_latencies = expected_input_timing.max_event_durations
+                                 ->get_user_interaction_latencies();
+  auto& actual_latencies =
+      actual_input_timing.max_event_durations->get_user_interaction_latencies();
+
+  for (size_t i = 0; i < expected_latencies.size(); ++i) {
+    ASSERT_EQ(expected_latencies[i]->interaction_latency,
+              actual_latencies[i]->interaction_latency);
+  }
 }
 
 void FakePageTimingSender::PageTimingValidator::
@@ -185,10 +191,21 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
   actual_main_frame_intersection_rect_ = metadata->main_frame_intersection_rect;
   actual_main_frame_viewport_rect_ = metadata->main_frame_viewport_rect;
 
-  actual_input_timing->num_input_events += new_input_timing->num_input_events;
-  actual_input_timing->total_input_delay += new_input_timing->total_input_delay;
-  actual_input_timing->total_adjusted_input_delay +=
-      new_input_timing->total_adjusted_input_delay;
+  if (new_input_timing->num_interactions > 0 &&
+      actual_input_timing.num_interactions == 0) {
+    actual_input_timing.max_event_durations =
+        mojom::UserInteractionLatencies::NewUserInteractionLatencies({});
+  }
+  actual_input_timing.num_interactions = new_input_timing->num_interactions;
+  for (const mojom::UserInteractionLatencyPtr& user_interaction :
+       new_input_timing->max_event_durations
+           ->get_user_interaction_latencies()) {
+    actual_input_timing.max_event_durations->get_user_interaction_latencies()
+        .emplace_back(mojom::UserInteractionLatency::New(
+            user_interaction->interaction_latency,
+            user_interaction->interaction_type));
+  }
+
   actual_subresource_load_metrics_ = subresource_load_metrics;
 
   VerifyExpectedTimings();

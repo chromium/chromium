@@ -134,7 +134,8 @@ std::u16string FilesPolicyDialog::Info::GetMessage() const {
 void FilesPolicyDialog::Info::SetMessage(
     const absl::optional<std::u16string>& message) {
   if (message.has_value() && !message->empty()) {
-    message_ = message.value();
+    message_ = l10n_util::GetStringFUTF16(
+        IDS_POLICY_DLP_FROM_YOUR_ADMIN_MESSAGE, message.value());
     is_custom_message_ = true;
   }
 }
@@ -173,7 +174,7 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
 FilesPolicyDialog::~FilesPolicyDialog() = default;
 
 views::Widget* FilesPolicyDialog::CreateWarnDialog(
-    OnDlpRestrictionCheckedWithJustificationCallback callback,
+    WarningWithJustificationCallback callback,
     dlp::FileAction action,
     gfx::NativeWindow modal_parent,
     Info dialog_info,

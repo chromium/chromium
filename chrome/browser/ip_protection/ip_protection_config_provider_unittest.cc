@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 
+#include "base/base64.h"
 #include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/ip_protection/get_proxy_config.pb.h"
@@ -15,6 +17,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/third_party/quiche/src/quiche/blind_sign_auth/blind_sign_auth_interface.h"
+#include "net/third_party/quiche/src/quiche/blind_sign_auth/proto/spend_token_data.pb.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +31,42 @@ constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
 constexpr char kTestEmail[] = "test@example.com";
+
+privacy::ppn::PrivacyPassTokenData CreateMockPrivacyPassToken(
+    std::string token_value) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+
+  // The PrivacyPassTokenData values get base64-encoded by BSA, so simulate that
+  // here.
+  std::string encoded_token_value;
+  std::string encoded_extension_value;
+
+  base::Base64Encode(token_value, &encoded_token_value);
+  base::Base64Encode("mock-extension-value", &encoded_extension_value);
+
+  privacy_pass_token_data.set_token(std::move(encoded_token_value));
+  privacy_pass_token_data.set_encoded_extensions(
+      std::move(encoded_extension_value));
+
+  return privacy_pass_token_data;
+}
+
+// Creates a `quiche::BlindSignToken()` in the format that the BSA library
+// will return them.
+quiche::BlindSignToken CreateMockBlindSignToken(std::string token_value,
+                                                base::Time expiration) {
+  quiche::BlindSignToken blind_sign_token;
+
+  if (net::features::kIpPrivacyBsaEnablePrivacyPass.Get()) {
+    privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
+        CreateMockPrivacyPassToken(std::move(token_value));
+    blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
+  } else {
+    blind_sign_token.token = std::move(token_value);
+  }
+  blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
+  return blind_sign_token;
+}
 
 class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
  public:
@@ -135,9 +174,7 @@ enum class PrimaryAccountBehavior {
 class IpProtectionConfigProviderTest : public testing::Test {
  protected:
   IpProtectionConfigProviderTest()
-      : absl_expiration_time_(absl::Now() + absl::Hours(1)),
-        base_expiration_time_(
-            base::Time::FromTimeT(absl::ToTimeT(absl_expiration_time_))) {}
+      : expiration_time_(base::Time::Now() + base::Hours(1)) {}
 
   void SetUp() override {
     getter_ = std::make_unique<IpProtectionConfigProvider>(IdentityManager(),
@@ -174,7 +211,9 @@ class IpProtectionConfigProviderTest : public testing::Test {
       }
     }
 
-    getter_->TryGetAuthTokens(num_tokens, tokens_future_.GetCallback());
+    getter_->TryGetAuthTokens(num_tokens,
+                              network::mojom::IpProtectionProxyLayer::kProxyA,
+                              tokens_future_.GetCallback());
 
     switch (primary_account_behavior_) {
       case PrimaryAccountBehavior::kNone:
@@ -229,6 +268,18 @@ class IpProtectionConfigProviderTest : public testing::Test {
     }
   }
 
+  // Converts a mock token value and expiration time into the struct that will
+  // be passed to the network service, including the formatting that the
+  // `IpProtectionConfigProvider()` will do.
+  static network::mojom::BlindSignedAuthTokenPtr CreateMockBlindSignedAuthToken(
+      std::string token_value,
+      base::Time expiration) {
+    quiche::BlindSignToken blind_sign_token =
+        CreateMockBlindSignToken(token_value, expiration);
+    return IpProtectionConfigProvider::CreateBlindSignedAuthToken(
+        std::move(blind_sign_token));
+  }
+
   // The behavior of the identity manager.
   PrimaryAccountBehavior primary_account_behavior_ =
       PrimaryAccountBehavior::kReturnsToken;
@@ -245,10 +296,8 @@ class IpProtectionConfigProviderTest : public testing::Test {
   // TaskEnvironment.
   signin::IdentityTestEnvironment identity_test_env_;
 
-  // A convenient expiration time for fake tokens, in the future. These specify
-  // the same time with two types.
-  absl::Time absl_expiration_time_;
-  base::Time base_expiration_time_;
+  // A convenient expiration time for fake tokens, in the future.
+  base::Time expiration_time_;
 
   base::HistogramTester histogram_tester_;
 
@@ -263,12 +312,50 @@ class IpProtectionConfigProviderTest : public testing::Test {
   std::unique_ptr<MockBlindSignAuth> bsa_;
 };
 
+enum class TokenFormatTestCase {
+  kTokenFormatRegular,
+  kTokenFormatPrivacyPass,
+};
+
+class IpProtectionConfigProviderTest_TokenFormat
+    : public IpProtectionConfigProviderTest,
+      public ::testing::WithParamInterface<TokenFormatTestCase> {
+ public:
+  IpProtectionConfigProviderTest_TokenFormat() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kEnableIpProtectionProxy,
+        {{net::features::kIpPrivacyBsaEnablePrivacyPass.name,
+          IsPrivacyPassTokenFormatEnabled() ? "true" : "false"}});
+  }
+
+  bool IsPrivacyPassTokenFormatEnabled() const {
+    return GetParam() == TokenFormatTestCase::kTokenFormatPrivacyPass;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IpProtectionConfigProviderTest_TokenFormat,
+    testing::ValuesIn({TokenFormatTestCase::kTokenFormatRegular,
+                       TokenFormatTestCase::kTokenFormatPrivacyPass}),
+    [](const testing::TestParamInfo<TokenFormatTestCase>& info) {
+      switch (info.param) {
+        case (TokenFormatTestCase::kTokenFormatRegular):
+          return "TokenFormatRegular";
+        case (TokenFormatTestCase::kTokenFormatPrivacyPass):
+          return "TokenFormatPrivacyPass";
+      }
+    });
+
 // The success case: a primary account is available, and BSA gets a token for
 // it.
-TEST_F(IpProtectionConfigProviderTest, Success) {
+TEST_P(IpProtectionConfigProviderTest_TokenFormat, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_},
-                   {"single-use-2", absl_expiration_time_}};
+  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
+                   CreateMockBlindSignToken("single-use-2", expiration_time_)};
 
   TryGetAuthTokens(2);
 
@@ -276,10 +363,10 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   EXPECT_EQ(bsa_->num_tokens_, 2);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
-  expected.push_back(network::mojom::BlindSignedAuthToken::New(
-      "single-use-1", base_expiration_time_));
-  expected.push_back(network::mojom::BlindSignedAuthToken::New(
-      "single-use-2", base_expiration_time_));
+  expected.push_back(
+      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_));
+  expected.push_back(
+      CreateMockBlindSignedAuthToken("single-use-2", expiration_time_));
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -291,6 +378,30 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
 // BSA returns no tokens.
 TEST_F(IpProtectionConfigProviderTest, NoTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
+
+  TryGetAuthTokens(1);
+
+  EXPECT_TRUE(bsa_->get_tokens_called_);
+  EXPECT_EQ(bsa_->num_tokens_, 1);
+  EXPECT_EQ(bsa_->oauth_token_, "access_token");
+  ExpectTryGetAuthTokensResultFailed(
+      IpProtectionConfigProvider::kTransientBackoff);
+  histogram_tester_.ExpectUniqueSample(
+      kTryGetAuthTokensResultHistogram,
+      IpProtectionTryGetAuthTokensResult::kFailedBSAOther, 1);
+  histogram_tester_.ExpectTotalCount(kOAuthTokenFetchHistogram, 1);
+  histogram_tester_.ExpectTotalCount(kTokenBatchHistogram, 0);
+}
+
+// BSA returns malformed tokens.
+TEST_P(IpProtectionConfigProviderTest_TokenFormat, MalformedTokens) {
+  if (!IsPrivacyPassTokenFormatEnabled()) {
+    // We can't detect malformed tokens unless the privacy pass token format is
+    // being used.
+    return;
+  }
+  primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
+  bsa_->tokens_ = {{"invalid-token-proto-data", absl::Now() + absl::Hours(1)}};
 
   TryGetAuthTokens(1);
 
@@ -383,8 +494,8 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
 // The CanUseChromeIpProtection capability is not present (`kUnknown`).
 TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
-  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_},
-                   {"single-use-2", absl_expiration_time_}};
+  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
+                   CreateMockBlindSignToken("single-use-2", expiration_time_)};
 
   TryGetAuthTokens(2);
 
@@ -392,10 +503,10 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   EXPECT_EQ(bsa_->oauth_token_, "access_token");
   EXPECT_EQ(bsa_->num_tokens_, 2);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
-  expected.push_back(network::mojom::BlindSignedAuthToken::New(
-      "single-use-1", base_expiration_time_));
-  expected.push_back(network::mojom::BlindSignedAuthToken::New(
-      "single-use-2", base_expiration_time_));
+  expected.push_back(
+      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_));
+  expected.push_back(
+      CreateMockBlindSignedAuthToken("single-use-2", expiration_time_));
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -459,7 +570,7 @@ TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersBackoffReset) {
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
 
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_}};
+  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_)};
 
   TryGetAuthTokens(1);
 
@@ -485,7 +596,8 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
       absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>,
       absl::optional<base::Time>>
       tokens_future;
-  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA,
+                            tokens_future.GetCallback());
   const absl::optional<base::Time>& try_again_after =
       tokens_future.Get<absl::optional<base::Time>>();
   ASSERT_TRUE(try_again_after);
@@ -495,9 +607,10 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
 
-  bsa_->tokens_ = {{"single-use-1", absl_expiration_time_}};
+  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_)};
   tokens_future.Clear();
-  getter_->TryGetAuthTokens(1, tokens_future.GetCallback());
+  getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA,
+                            tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
   const absl::optional<std::vector<network::mojom::BlindSignedAuthTokenPtr>>&
@@ -573,4 +686,17 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListFailure) {
   getter_->GetProxyList(proxy_list_future.GetCallback());
   ASSERT_TRUE(proxy_list_future.Wait()) << "GetProxyList did not call back";
   EXPECT_EQ(proxy_list_future.Get(), absl::nullopt);
+}
+
+// Do a basic check of the token formats.
+TEST_P(IpProtectionConfigProviderTest_TokenFormat, TokenFormat) {
+  network::mojom::BlindSignedAuthTokenPtr result =
+      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_);
+
+  if (IsPrivacyPassTokenFormatEnabled()) {
+    EXPECT_TRUE(base::StartsWith((*result).token, "PrivateToken token="));
+    EXPECT_NE((*result).token.find("extensions="), std::string::npos);
+  } else {
+    EXPECT_TRUE(base::StartsWith((*result).token, "Bearer "));
+  }
 }

@@ -11,10 +11,10 @@ import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
-import {util} from '../../common/js/util.js';
+import {descriptorEqual} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {USER_CANCELLED, XfPasswordDialog} from '../../widgets/xf_password_dialog.js';
 
@@ -399,10 +399,10 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
   const taskHistory = /** @type {!TaskHistory} */ ({
     getLastExecutedTime: function(
         descriptor: chrome.fileManagerPrivate.FileTaskDescriptor) {
-      if (util.descriptorEqual(descriptor, oldTaskDescriptor)) {
+      if (descriptorEqual(descriptor, oldTaskDescriptor)) {
         return 10000;
       }
-      if (util.descriptorEqual(descriptor, latestTaskDescriptor)) {
+      if (descriptorEqual(descriptor, latestTaskDescriptor)) {
         return 20000;
       }
       return 0;
@@ -437,7 +437,7 @@ export async function testOpenWithMostRecentlyExecuted(done: () => void) {
       [mockEntry], taskHistory as TaskHistory, fileManager.crostini,
       fileManager.progressCenter, fileManager.taskController);
   await tasks.executeDefault();
-  assertTrue(util.descriptorEqual(latestTaskDescriptor, executedTask!));
+  assertTrue(descriptorEqual(latestTaskDescriptor, executedTask!));
 
   done();
 }

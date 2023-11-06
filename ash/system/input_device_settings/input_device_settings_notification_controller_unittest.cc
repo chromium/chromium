@@ -5,9 +5,12 @@
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/test/test_system_tray_client.h"
+#include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ash/mojom/simulate_right_click_modifier.mojom-shared.h"
 #include "ui/events/ash/mojom/six_pack_shortcut_modifier.mojom-shared.h"
@@ -48,6 +51,15 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
   }
 };
 
+class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void,
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
+              (override));
+};
+
 }  // namespace
 
 class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
@@ -70,6 +82,10 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    auto delegate = std::make_unique<MockNewWindowDelegate>();
+    new_window_delegate_ = delegate.get();
+    delegate_provider_ =
+        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
     message_center_ = std::make_unique<TestMessageCenter>();
     controller_ = std::make_unique<InputDeviceSettingsNotificationController>(
@@ -83,8 +99,12 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
   }
 
  protected:
+  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+      new_window_delegate_;
   std::unique_ptr<TestMessageCenter> message_center_;
   std::unique_ptr<InputDeviceSettingsNotificationController> controller_;
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
@@ -305,6 +325,34 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
 }
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotifyPeripheralCustomization) {
+  size_t expected_notification_count = 1;
+  const mojom::Mouse kMouse1 = mojom::Mouse(
+      /*name=*/"Razer Basilisk V3",
+      /*is_external=*/false,
+      /*id=*/1,
+      /*device_key=*/"fake-device-key1",
+      /*customization_restriction=*/
+      mojom::CustomizationRestriction::kAllowCustomizations,
+      mojom::MouseSettings::New());
+  const mojom::GraphicsTablet kGraphicsTablet2 = mojom::GraphicsTablet(
+      /*name=*/"Wacom Intuos S",
+      /*id=*/2,
+      /*device_key=*/"fake-device-key2", mojom::GraphicsTabletSettings::New());
+  controller()->NotifyMouseIsCustomizable(kMouse1);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_mouse_1"));
+
+  controller()->NotifyGraphicsTabletIsCustomizable(kGraphicsTablet2);
+  EXPECT_EQ(expected_notification_count++,
+            message_center()->NotificationCount());
+  EXPECT_TRUE(message_center()->FindVisibleNotificationById(
+      "peripheral_customization_graphics_tablet_2"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
        SixPackRewriteNotificationOnlyShownForActiveUserSessions) {
   GetSessionControllerClient()->LockScreen();
   controller()->NotifySixPackRewriteBlockedBySetting(
@@ -312,6 +360,21 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
       ui::mojom::SixPackShortcutModifier::kSearch,
       /*device_id=*/1);
   EXPECT_EQ(message_center()->NotificationCount(), 0u);
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest, LearnMoreButtonClicked) {
+  controller()->NotifySixPackRewriteBlockedBySetting(
+      ui::VKEY_DELETE, ui::mojom::SixPackShortcutModifier::kAlt,
+      ui::mojom::SixPackShortcutModifier::kSearch,
+      /*device_id=*/1);
+  EXPECT_CALL(
+      new_window_delegate(),
+      OpenUrl(GURL("https://support.google.com/chromebook?p=keyboard_settings"),
+              NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+              NewWindowDelegate::Disposition::kNewForegroundTab));
+  message_center()->ClickOnNotificationButton(
+      "delete_six_pack_rewrite_blocked_by_setting_1",
+      NotificationButtonIndex::BUTTON_LEARN_MORE);
 }
 
 }  // namespace ash

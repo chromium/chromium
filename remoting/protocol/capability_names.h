@@ -8,32 +8,39 @@
 namespace remoting::protocol {
 
 // Used for negotiating client-host capabilities for touch events.
-constexpr char kTouchEventsCapability[] = "touchEvents";
+inline constexpr char kTouchEventsCapability[] = "touchEvents";
 
-constexpr char kSendInitialResolution[] = "sendInitialResolution";
-constexpr char kRateLimitResizeRequests[] = "rateLimitResizeRequests";
+inline constexpr char kSendInitialResolution[] = "sendInitialResolution";
+inline constexpr char kRateLimitResizeRequests[] = "rateLimitResizeRequests";
 
-constexpr char kFileTransferCapability[] = "fileTransfer";
-constexpr char kRtcLogTransferCapability[] = "rtcLogTransfer";
+inline constexpr char kFileTransferCapability[] = "fileTransfer";
+inline constexpr char kRtcLogTransferCapability[] = "rtcLogTransfer";
 
-constexpr char kRemoteOpenUrlCapability[] = "remoteOpenUrl";
-constexpr char kRemoteWebAuthnCapability[] = "remoteWebAuthn";
+inline constexpr char kRemoteOpenUrlCapability[] = "remoteOpenUrl";
+inline constexpr char kRemoteWebAuthnCapability[] = "remoteWebAuthn";
 
 // TODO(joedow): Ideally these would be dynamically created via the
 // DataChannelManager, we should consider moving them there if we begin using
 // WebRTC data channels for individual features more frequently.
-constexpr char kLockWorkstationAction[] = "lockWorkstationAction";
-constexpr char kSendAttentionSequenceAction[] = "sendAttentionSequenceAction";
+inline constexpr char kLockWorkstationAction[] = "lockWorkstationAction";
+inline constexpr char kSendAttentionSequenceAction[] =
+    "sendAttentionSequenceAction";
 
 // Host supports ICE or SDP restart request from control message. Only used for
 // WebRTC clients.
-constexpr char kWebrtcIceSdpRestartAction[] = "webrtcIceSdpRestartAction";
+inline constexpr char kWebrtcIceSdpRestartAction[] =
+    "webrtcIceSdpRestartAction";
 
 // Host supports creating one video-stream per monitor.
-constexpr char kMultiStreamCapability[] = "multiStream";
+inline constexpr char kMultiStreamCapability[] = "multiStream";
 
 // Host supports display layouts controlled by the client.
-constexpr char kClientControlledLayoutCapability[] = "clientControlledLayout";
+inline constexpr char kClientControlledLayoutCapability[] =
+    "clientControlledLayout";
+
+// Host supports injection of events with fractional coordinates.
+inline constexpr char kFractionalCoordinatesCapability[] =
+    "fractionalCoordinates";
 
 }  // namespace remoting::protocol
 

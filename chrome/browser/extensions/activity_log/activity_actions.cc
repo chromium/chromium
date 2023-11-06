@@ -168,7 +168,7 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
   }
 
   result.extension_id = extension_id();
-  result.time = time().ToJsTime();
+  result.time = time().InMillisecondsFSinceUnixEpoch();
   result.count = count();
   result.api_call = api_name();
   result.args = Serialize(args());

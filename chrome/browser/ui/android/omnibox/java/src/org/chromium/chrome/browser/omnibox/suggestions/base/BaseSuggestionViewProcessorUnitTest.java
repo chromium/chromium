@@ -32,15 +32,12 @@ import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for {@link BaseSuggestionViewProcessor}.
- */
+/** Tests for {@link BaseSuggestionViewProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseSuggestionViewProcessorUnitTest {
     private static final int FAKE_STRING_LENGTH = 10;
 
-    @Mock
-    Spannable mText;
+    @Mock Spannable mText;
 
     private ArgumentMatcher<StyleSpan> mIsHighlightStyle;
 
@@ -75,7 +72,10 @@ public class BaseSuggestionViewProcessorUnitTest {
         assertTrue(
                 BaseSuggestionViewProcessor.applyHighlightToMatchRegions(mText, classifications));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart), eq(FAKE_STRING_LENGTH),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart),
+                        eq(FAKE_STRING_LENGTH),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
 
         // Check that the total amount of calls to setSpan.
@@ -94,7 +94,10 @@ public class BaseSuggestionViewProcessorUnitTest {
         assertTrue(
                 BaseSuggestionViewProcessor.applyHighlightToMatchRegions(mText, classifications));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart), eq(matchEnd),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart),
+                        eq(matchEnd),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
 
         // Check that the total amount of calls to setSpan.
@@ -118,10 +121,16 @@ public class BaseSuggestionViewProcessorUnitTest {
         assertTrue(
                 BaseSuggestionViewProcessor.applyHighlightToMatchRegions(mText, classifications));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart1), eq(matchEnd1),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart1),
+                        eq(matchEnd1),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart2), eq(matchEnd2),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart2),
+                        eq(matchEnd2),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
 
         // Check that the total amount of calls to setSpan.
@@ -141,10 +150,16 @@ public class BaseSuggestionViewProcessorUnitTest {
         assertTrue(
                 BaseSuggestionViewProcessor.applyHighlightToMatchRegions(mText, classifications));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart1), eq(matchStart2),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart1),
+                        eq(matchStart2),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
         verify(mText, times(1))
-                .setSpan(argThat(mIsHighlightStyle), eq(matchStart2), eq(FAKE_STRING_LENGTH),
+                .setSpan(
+                        argThat(mIsHighlightStyle),
+                        eq(matchStart2),
+                        eq(FAKE_STRING_LENGTH),
                         eq(Spannable.SPAN_EXCLUSIVE_EXCLUSIVE));
 
         // Check that the total amount of calls to setSpan.

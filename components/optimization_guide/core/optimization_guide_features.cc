@@ -302,11 +302,6 @@ BASE_FEATURE(kOptimizationGuidePersonalizedFetching,
              "OptimizationPersonalizedHintsFetching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether to resolve all URLs (minus fragments) to the same URL.
-BASE_FEATURE(kOptimizationGuideHintsURLKeyedCacheDropFragments,
-             "OptimizationGuideHintsURLKeyedCacheDropFragments",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables text embeddings to annotated on every page visit and later queried.
 BASE_FEATURE(kQueryInMemoryTextEmbeddings,
              "QueryInMemoryTextEmbeddings",
@@ -596,10 +591,6 @@ bool ShouldEnablePersonalizedMetadata(proto::RequestContext request_context) {
   return allowed_contexts.Has(request_context);
 }
 
-std::set<std::string> GetOAuthScopesForPersonalizedMetadata() {
-  return GetOauthScopesForFeature(kOptimizationGuidePersonalizedFetching);
-}
-
 bool ShouldOverrideOptimizationTargetDecisionForMetricsPurposes(
     proto::OptimizationTarget optimization_target) {
   if (optimization_target != proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)
@@ -866,11 +857,6 @@ bool ShouldPersistSalientImageMetadata(const std::string& locale,
          IsSupportedCountryForFeature(
              country_code, kPageContentAnnotationsPersistSalientImageMetadata,
              "us");
-}
-
-bool ShouldDropFragmentsForURLKeyedHintCacheKey() {
-  return base::FeatureList::IsEnabled(
-      kOptimizationGuideHintsURLKeyedCacheDropFragments);
 }
 
 bool ShouldQueryEmbeddings() {

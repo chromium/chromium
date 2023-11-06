@@ -577,7 +577,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   auto app = app_management::mojom::App::New();
   app->id = update.AppId();
   app->type = update.AppType();
-  app->title = update.Name();
+  app->title = update.ShortName();
 
   for (const auto& permission : update.Permissions()) {
     if (permission->permission_type == apps::PermissionType::kStorage &&
@@ -630,7 +630,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
 #else
   // This allows us to bypass showing the supported links item on the PWA app
   // settings page on Windows, Mac and Linux platforms.
-  if (base::FeatureList::IsEnabled(apps::features::kDesktopPWAsLinkCapturing)) {
+  if (apps::features::ShouldShowLinkCapturingUX()) {
     app->supported_links = GetSupportedLinksForPWAs(app->id, *provider);
   } else {
     app->supported_links = std::vector<std::string>();
@@ -728,8 +728,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
   app->publisher_id = update.PublisherId();
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAppEnableScopeExtensions)) {
+  if (!provider->registrar_unsafe().GetScopeExtensions(app->id).empty()) {
     app->formatted_origin = GetFormattedOrigin(app->id, *provider);
     app->scope_extensions = GetScopeExtensions(app->id, *provider);
   }

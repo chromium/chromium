@@ -37,7 +37,7 @@ class MojoServiceEventsObserverBase : public MetricEventObserver {
   }
 
   void SetOnEventObservedCallback(MetricRepeatingCallback cb) override {
-    DCHECK(!on_event_observed_cb_);
+    CHECK(!on_event_observed_cb_);
     on_event_observed_cb_ = std::move(cb);
   }
 

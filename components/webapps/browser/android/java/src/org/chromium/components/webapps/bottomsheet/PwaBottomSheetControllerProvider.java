@@ -6,8 +6,9 @@ package org.chromium.components.webapps.bottomsheet;
 
 import android.graphics.Bitmap;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.UnownedUserDataKey;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.webapps.WebappInstallSource;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;

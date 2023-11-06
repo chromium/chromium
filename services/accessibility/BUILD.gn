@@ -23,6 +23,8 @@ source_set("lib") {
     sources = [
       "assistive_technology_controller_impl.cc",
       "assistive_technology_controller_impl.h",
+      "features/autoclick_client_interface_binder.cc",
+      "features/autoclick_client_interface_binder.h",
       "features/automation_internal_bindings.cc",
       "features/automation_internal_bindings.h",
       "features/bindings_isolate_holder.cc",
@@ -44,6 +46,8 @@ source_set("lib") {
       "features/mojo/mojo_watcher.h",
       "features/registered_wrappable.cc",
       "features/registered_wrappable.h",
+      "features/speech_recognition_interface_binder.cc",
+      "features/speech_recognition_interface_binder.h",
       "features/text_decoder.cc",
       "features/text_decoder.h",
       "features/text_encoder.cc",

@@ -16,9 +16,7 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabImpl;
 
-/**
- * Unit tests for {@link CustomTabCountObserver}.
- */
+/** Unit tests for {@link CustomTabCountObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CustomTabCountObserverUnitTest {
     @Rule
@@ -67,12 +65,18 @@ public class CustomTabCountObserverUnitTest {
 
     private void assertTabCountsRecorded(int count, String reason) {
         String histogram = "CustomTabs.TabCounts.UniqueTabsSeen";
-        Assert.assertEquals(String.format("<%s> with should recorded <%d> times. Reason: %s",
-                                    histogram, count, reason),
-                count, RecordHistogram.getHistogramTotalCountForTesting(histogram));
-        Assert.assertEquals(String.format("<%s> with sample <%d> is not recorded. Reason: %s",
-                                    histogram, count, reason),
-                1, RecordHistogram.getHistogramValueCountForTesting(histogram, count));
+        Assert.assertEquals(
+                String.format(
+                        "<%s> with should recorded <%d> times. Reason: %s",
+                        histogram, count, reason),
+                count,
+                RecordHistogram.getHistogramTotalCountForTesting(histogram));
+        Assert.assertEquals(
+                String.format(
+                        "<%s> with sample <%d> is not recorded. Reason: %s",
+                        histogram, count, reason),
+                1,
+                RecordHistogram.getHistogramValueCountForTesting(histogram, count));
     }
 
     private TabImpl newTabWithId(int id) {

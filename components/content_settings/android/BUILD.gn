@@ -21,10 +21,10 @@ android_library("java") {
   ]
   deps = [
     ":content_settings_enums_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -57,6 +57,7 @@ java_cpp_enum("content_settings_enums_javagen") {
     "../core/browser/cookie_settings.h",
     "../core/common/content_settings.h",
     "../core/common/content_settings_types.h",
+    "../core/common/cookie_blocking_3pcd_status.h",
     "../core/common/cookie_controls_breakage_confidence_level.h",
     "../core/common/cookie_controls_enforcement.h",
     "../core/common/cookie_controls_status.h",

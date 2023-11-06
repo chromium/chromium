@@ -395,6 +395,7 @@ bool ManifestDemuxer::AppendAndParseData(base::StringPiece role,
 void ManifestDemuxer::OnError(PipelineStatus error) {
   DCHECK(media_task_runner_->RunsTasksInCurrentSequence());
   cancelable_next_event_.Cancel();
+  weak_factory_.InvalidateWeakPtrs();
 
   if (pending_init_) {
     std::move(pending_init_).Run(std::move(error).AddHere());
@@ -419,6 +420,14 @@ void ManifestDemuxer::SetGroupStartTimestamp(base::StringPiece role,
                                              base::TimeDelta time) {
   chunk_demuxer_->SetGroupStartTimestampIfInSequenceMode(std::string(role),
                                                          time);
+}
+
+void ManifestDemuxer::SetEndOfStream() {
+  chunk_demuxer_->MarkEndOfStream(PIPELINE_OK);
+}
+
+void ManifestDemuxer::UnsetEndOfStream() {
+  chunk_demuxer_->UnmarkEndOfStream();
 }
 
 ChunkDemuxer* ManifestDemuxer::GetChunkDemuxerForTesting() {

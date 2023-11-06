@@ -1,116 +1,179 @@
 This is a testharness.js-based test.
-Found 112 tests; 96 PASS, 16 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Can set 'white-space-collapse' to CSS-wide keywords: initial
-PASS Can set 'white-space-collapse' to CSS-wide keywords: inherit
-PASS Can set 'white-space-collapse' to CSS-wide keywords: unset
-PASS Can set 'white-space-collapse' to CSS-wide keywords: revert
-PASS Can set 'white-space-collapse' to var() references:  var(--A)
-PASS Can set 'white-space-collapse' to the 'collapse' keyword: collapse
-FAIL Can set 'white-space-collapse' to the 'discard' keyword: discard Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'white-space-collapse' to the 'preserve' keyword: preserve
-PASS Can set 'white-space-collapse' to the 'preserve-breaks' keyword: preserve-breaks
-FAIL Can set 'white-space-collapse' to the 'preserve-spaces' keyword: preserve-spaces Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'white-space-collapse' to the 'break-spaces' keyword: break-spaces
-PASS Setting 'white-space-collapse' to a length: 0px throws TypeError
-PASS Setting 'white-space-collapse' to a length: -3.14em throws TypeError
-PASS Setting 'white-space-collapse' to a length: 3.14cm throws TypeError
-PASS Setting 'white-space-collapse' to a length: calc(0px + 0em) throws TypeError
-PASS Setting 'white-space-collapse' to a percent: 0% throws TypeError
-PASS Setting 'white-space-collapse' to a percent: -3.14% throws TypeError
-PASS Setting 'white-space-collapse' to a percent: 3.14% throws TypeError
-PASS Setting 'white-space-collapse' to a percent: calc(0% + 0%) throws TypeError
-PASS Setting 'white-space-collapse' to a time: 0s throws TypeError
-PASS Setting 'white-space-collapse' to a time: -3.14ms throws TypeError
-PASS Setting 'white-space-collapse' to a time: 3.14s throws TypeError
-PASS Setting 'white-space-collapse' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'white-space-collapse' to an angle: 0deg throws TypeError
-PASS Setting 'white-space-collapse' to an angle: 3.14rad throws TypeError
-PASS Setting 'white-space-collapse' to an angle: -3.14deg throws TypeError
-PASS Setting 'white-space-collapse' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'white-space-collapse' to a flexible length: 0fr throws TypeError
-PASS Setting 'white-space-collapse' to a flexible length: 1fr throws TypeError
-PASS Setting 'white-space-collapse' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'white-space-collapse' to a number: 0 throws TypeError
-PASS Setting 'white-space-collapse' to a number: -3.14 throws TypeError
-PASS Setting 'white-space-collapse' to a number: 3.14 throws TypeError
-PASS Setting 'white-space-collapse' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'white-space-collapse' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'white-space-collapse' to a transform: perspective(10em) throws TypeError
-PASS Setting 'white-space-collapse' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-PASS Can set 'text-wrap' to CSS-wide keywords: initial
-PASS Can set 'text-wrap' to CSS-wide keywords: inherit
-PASS Can set 'text-wrap' to CSS-wide keywords: unset
-PASS Can set 'text-wrap' to CSS-wide keywords: revert
-PASS Can set 'text-wrap' to var() references:  var(--A)
-PASS Can set 'text-wrap' to the 'wrap' keyword: wrap
-PASS Can set 'text-wrap' to the 'nowrap' keyword: nowrap
-PASS Can set 'text-wrap' to the 'balance' keyword: balance
-FAIL Can set 'text-wrap' to the 'stable' keyword: stable Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
-PASS Can set 'text-wrap' to the 'pretty' keyword: pretty
-PASS Setting 'text-wrap' to a length: 0px throws TypeError
-PASS Setting 'text-wrap' to a length: -3.14em throws TypeError
-PASS Setting 'text-wrap' to a length: 3.14cm throws TypeError
-PASS Setting 'text-wrap' to a length: calc(0px + 0em) throws TypeError
-PASS Setting 'text-wrap' to a percent: 0% throws TypeError
-PASS Setting 'text-wrap' to a percent: -3.14% throws TypeError
-PASS Setting 'text-wrap' to a percent: 3.14% throws TypeError
-PASS Setting 'text-wrap' to a percent: calc(0% + 0%) throws TypeError
-PASS Setting 'text-wrap' to a time: 0s throws TypeError
-PASS Setting 'text-wrap' to a time: -3.14ms throws TypeError
-PASS Setting 'text-wrap' to a time: 3.14s throws TypeError
-PASS Setting 'text-wrap' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'text-wrap' to an angle: 0deg throws TypeError
-PASS Setting 'text-wrap' to an angle: 3.14rad throws TypeError
-PASS Setting 'text-wrap' to an angle: -3.14deg throws TypeError
-PASS Setting 'text-wrap' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'text-wrap' to a flexible length: 0fr throws TypeError
-PASS Setting 'text-wrap' to a flexible length: 1fr throws TypeError
-PASS Setting 'text-wrap' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'text-wrap' to a number: 0 throws TypeError
-PASS Setting 'text-wrap' to a number: -3.14 throws TypeError
-PASS Setting 'text-wrap' to a number: 3.14 throws TypeError
-PASS Setting 'text-wrap' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'text-wrap' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'text-wrap' to a transform: perspective(10em) throws TypeError
-PASS Setting 'text-wrap' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-FAIL Can set 'white-space-trim' to CSS-wide keywords: initial Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to CSS-wide keywords: inherit Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to CSS-wide keywords: unset Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to CSS-wide keywords: revert Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to var() references:  var(--A) Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to the 'none' keyword: none Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to the 'discard-before' keyword: discard-before Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to the 'discard-after' keyword: discard-after Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-FAIL Can set 'white-space-trim' to the 'discard-inner' keyword: discard-inner Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
-PASS Setting 'white-space-trim' to a length: 0px throws TypeError
-PASS Setting 'white-space-trim' to a length: -3.14em throws TypeError
-PASS Setting 'white-space-trim' to a length: 3.14cm throws TypeError
-PASS Setting 'white-space-trim' to a length: calc(0px + 0em) throws TypeError
-PASS Setting 'white-space-trim' to a percent: 0% throws TypeError
-PASS Setting 'white-space-trim' to a percent: -3.14% throws TypeError
-PASS Setting 'white-space-trim' to a percent: 3.14% throws TypeError
-PASS Setting 'white-space-trim' to a percent: calc(0% + 0%) throws TypeError
-PASS Setting 'white-space-trim' to a time: 0s throws TypeError
-PASS Setting 'white-space-trim' to a time: -3.14ms throws TypeError
-PASS Setting 'white-space-trim' to a time: 3.14s throws TypeError
-PASS Setting 'white-space-trim' to a time: calc(0s + 0ms) throws TypeError
-PASS Setting 'white-space-trim' to an angle: 0deg throws TypeError
-PASS Setting 'white-space-trim' to an angle: 3.14rad throws TypeError
-PASS Setting 'white-space-trim' to an angle: -3.14deg throws TypeError
-PASS Setting 'white-space-trim' to an angle: calc(0rad + 0deg) throws TypeError
-PASS Setting 'white-space-trim' to a flexible length: 0fr throws TypeError
-PASS Setting 'white-space-trim' to a flexible length: 1fr throws TypeError
-PASS Setting 'white-space-trim' to a flexible length: -3.14fr throws TypeError
-PASS Setting 'white-space-trim' to a number: 0 throws TypeError
-PASS Setting 'white-space-trim' to a number: -3.14 throws TypeError
-PASS Setting 'white-space-trim' to a number: 3.14 throws TypeError
-PASS Setting 'white-space-trim' to a number: calc(2 + 3) throws TypeError
-PASS Setting 'white-space-trim' to a transform: translate(50%, 50%) throws TypeError
-PASS Setting 'white-space-trim' to a transform: perspective(10em) throws TypeError
-PASS Setting 'white-space-trim' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
-FAIL 'white-space-trim' does not support 'discard-before discard-after' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
-FAIL 'white-space-trim' does not support 'discard-before discard-inner' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
-FAIL 'white-space-trim' does not support 'discard-after discard-inner' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
-FAIL 'white-space-trim' does not support 'discard-before discard-after discard-inner' Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
+Found 144 tests; 113 PASS, 31 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] Can set 'white-space-collapse' to CSS-wide keywords: initial
+[PASS] Can set 'white-space-collapse' to CSS-wide keywords: inherit
+[PASS] Can set 'white-space-collapse' to CSS-wide keywords: unset
+[PASS] Can set 'white-space-collapse' to CSS-wide keywords: revert
+[PASS] Can set 'white-space-collapse' to var() references:  var(--A)
+[PASS] Can set 'white-space-collapse' to the 'collapse' keyword: collapse
+[FAIL] Can set 'white-space-collapse' to the 'discard' keyword: discard
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[PASS] Can set 'white-space-collapse' to the 'preserve' keyword: preserve
+[PASS] Can set 'white-space-collapse' to the 'preserve-breaks' keyword: preserve-breaks
+[FAIL] Can set 'white-space-collapse' to the 'preserve-spaces' keyword: preserve-spaces
+  Failed to execute 'set' on 'StylePropertyMap': Invalid type for property
+[PASS] Can set 'white-space-collapse' to the 'break-spaces' keyword: break-spaces
+[PASS] Setting 'white-space-collapse' to a length: 0px throws TypeError
+[PASS] Setting 'white-space-collapse' to a length: -3.14em throws TypeError
+[PASS] Setting 'white-space-collapse' to a length: 3.14cm throws TypeError
+[PASS] Setting 'white-space-collapse' to a length: calc(0px + 0em) throws TypeError
+[PASS] Setting 'white-space-collapse' to a percent: 0% throws TypeError
+[PASS] Setting 'white-space-collapse' to a percent: -3.14% throws TypeError
+[PASS] Setting 'white-space-collapse' to a percent: 3.14% throws TypeError
+[PASS] Setting 'white-space-collapse' to a percent: calc(0% + 0%) throws TypeError
+[PASS] Setting 'white-space-collapse' to a time: 0s throws TypeError
+[PASS] Setting 'white-space-collapse' to a time: -3.14ms throws TypeError
+[PASS] Setting 'white-space-collapse' to a time: 3.14s throws TypeError
+[PASS] Setting 'white-space-collapse' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'white-space-collapse' to an angle: 0deg throws TypeError
+[PASS] Setting 'white-space-collapse' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'white-space-collapse' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'white-space-collapse' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'white-space-collapse' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'white-space-collapse' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'white-space-collapse' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'white-space-collapse' to a number: 0 throws TypeError
+[PASS] Setting 'white-space-collapse' to a number: -3.14 throws TypeError
+[PASS] Setting 'white-space-collapse' to a number: 3.14 throws TypeError
+[PASS] Setting 'white-space-collapse' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'white-space-collapse' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'white-space-collapse' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'white-space-collapse' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: initial
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: inherit
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: unset
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to CSS-wide keywords: revert
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to var() references:  var(--A)
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to the 'wrap' keyword: wrap
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[FAIL] Can set 'text-wrap-mode' to the 'nowrap' keyword: nowrap
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-mode
+[PASS] Setting 'text-wrap-mode' to a length: 0px throws TypeError
+[PASS] Setting 'text-wrap-mode' to a length: -3.14em throws TypeError
+[PASS] Setting 'text-wrap-mode' to a length: 3.14cm throws TypeError
+[PASS] Setting 'text-wrap-mode' to a length: calc(0px + 0em) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a percent: 0% throws TypeError
+[PASS] Setting 'text-wrap-mode' to a percent: -3.14% throws TypeError
+[PASS] Setting 'text-wrap-mode' to a percent: 3.14% throws TypeError
+[PASS] Setting 'text-wrap-mode' to a percent: calc(0% + 0%) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a time: 0s throws TypeError
+[PASS] Setting 'text-wrap-mode' to a time: -3.14ms throws TypeError
+[PASS] Setting 'text-wrap-mode' to a time: 3.14s throws TypeError
+[PASS] Setting 'text-wrap-mode' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'text-wrap-mode' to an angle: 0deg throws TypeError
+[PASS] Setting 'text-wrap-mode' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'text-wrap-mode' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'text-wrap-mode' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'text-wrap-mode' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'text-wrap-mode' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'text-wrap-mode' to a number: 0 throws TypeError
+[PASS] Setting 'text-wrap-mode' to a number: -3.14 throws TypeError
+[PASS] Setting 'text-wrap-mode' to a number: 3.14 throws TypeError
+[PASS] Setting 'text-wrap-mode' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'text-wrap-mode' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: initial
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: inherit
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: unset
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to CSS-wide keywords: revert
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to var() references:  var(--A)
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to the 'auto' keyword: auto
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to the 'balance' keyword: balance
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to the 'stable' keyword: stable
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[FAIL] Can set 'text-wrap-style' to the 'pretty' keyword: pretty
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: text-wrap-style
+[PASS] Setting 'text-wrap-style' to a length: 0px throws TypeError
+[PASS] Setting 'text-wrap-style' to a length: -3.14em throws TypeError
+[PASS] Setting 'text-wrap-style' to a length: 3.14cm throws TypeError
+[PASS] Setting 'text-wrap-style' to a length: calc(0px + 0em) throws TypeError
+[PASS] Setting 'text-wrap-style' to a percent: 0% throws TypeError
+[PASS] Setting 'text-wrap-style' to a percent: -3.14% throws TypeError
+[PASS] Setting 'text-wrap-style' to a percent: 3.14% throws TypeError
+[PASS] Setting 'text-wrap-style' to a percent: calc(0% + 0%) throws TypeError
+[PASS] Setting 'text-wrap-style' to a time: 0s throws TypeError
+[PASS] Setting 'text-wrap-style' to a time: -3.14ms throws TypeError
+[PASS] Setting 'text-wrap-style' to a time: 3.14s throws TypeError
+[PASS] Setting 'text-wrap-style' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'text-wrap-style' to an angle: 0deg throws TypeError
+[PASS] Setting 'text-wrap-style' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'text-wrap-style' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'text-wrap-style' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'text-wrap-style' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'text-wrap-style' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'text-wrap-style' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'text-wrap-style' to a number: 0 throws TypeError
+[PASS] Setting 'text-wrap-style' to a number: -3.14 throws TypeError
+[PASS] Setting 'text-wrap-style' to a number: 3.14 throws TypeError
+[PASS] Setting 'text-wrap-style' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'text-wrap-style' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'text-wrap-style' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'text-wrap-style' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[FAIL] Can set 'white-space-trim' to CSS-wide keywords: initial
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to CSS-wide keywords: inherit
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to CSS-wide keywords: unset
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to CSS-wide keywords: revert
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to var() references:  var(--A)
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to the 'none' keyword: none
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to the 'discard-before' keyword: discard-before
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to the 'discard-after' keyword: discard-after
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[FAIL] Can set 'white-space-trim' to the 'discard-inner' keyword: discard-inner
+  Failed to execute 'set' on 'StylePropertyMap': Invalid propertyName: white-space-trim
+[PASS] Setting 'white-space-trim' to a length: 0px throws TypeError
+[PASS] Setting 'white-space-trim' to a length: -3.14em throws TypeError
+[PASS] Setting 'white-space-trim' to a length: 3.14cm throws TypeError
+[PASS] Setting 'white-space-trim' to a length: calc(0px + 0em) throws TypeError
+[PASS] Setting 'white-space-trim' to a percent: 0% throws TypeError
+[PASS] Setting 'white-space-trim' to a percent: -3.14% throws TypeError
+[PASS] Setting 'white-space-trim' to a percent: 3.14% throws TypeError
+[PASS] Setting 'white-space-trim' to a percent: calc(0% + 0%) throws TypeError
+[PASS] Setting 'white-space-trim' to a time: 0s throws TypeError
+[PASS] Setting 'white-space-trim' to a time: -3.14ms throws TypeError
+[PASS] Setting 'white-space-trim' to a time: 3.14s throws TypeError
+[PASS] Setting 'white-space-trim' to a time: calc(0s + 0ms) throws TypeError
+[PASS] Setting 'white-space-trim' to an angle: 0deg throws TypeError
+[PASS] Setting 'white-space-trim' to an angle: 3.14rad throws TypeError
+[PASS] Setting 'white-space-trim' to an angle: -3.14deg throws TypeError
+[PASS] Setting 'white-space-trim' to an angle: calc(0rad + 0deg) throws TypeError
+[PASS] Setting 'white-space-trim' to a flexible length: 0fr throws TypeError
+[PASS] Setting 'white-space-trim' to a flexible length: 1fr throws TypeError
+[PASS] Setting 'white-space-trim' to a flexible length: -3.14fr throws TypeError
+[PASS] Setting 'white-space-trim' to a number: 0 throws TypeError
+[PASS] Setting 'white-space-trim' to a number: -3.14 throws TypeError
+[PASS] Setting 'white-space-trim' to a number: 3.14 throws TypeError
+[PASS] Setting 'white-space-trim' to a number: calc(2 + 3) throws TypeError
+[PASS] Setting 'white-space-trim' to a transform: translate(50%, 50%) throws TypeError
+[PASS] Setting 'white-space-trim' to a transform: perspective(10em) throws TypeError
+[PASS] Setting 'white-space-trim' to a transform: translate3d(0px, 1px, 2px) translate(0px, 1px) rotate3d(1, 2, 3, 45deg) rotate(45deg) scale3d(1, 2, 3) scale(1, 2) skew(1deg, 1deg) skewX(1deg) skewY(45deg) perspective(1px) matrix3d(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16) matrix(1, 2, 3, 4, 5, 6) throws TypeError
+[FAIL] 'white-space-trim' does not support 'discard-before discard-after'
+  Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
+[FAIL] 'white-space-trim' does not support 'discard-before discard-inner'
+  Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
+[FAIL] 'white-space-trim' does not support 'discard-after discard-inner'
+  Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
+[FAIL] 'white-space-trim' does not support 'discard-before discard-after discard-inner'
+  Failed to execute 'get' on 'StylePropertyMapReadOnly': Invalid propertyName: white-space-trim
 Harness: the test ran to completion.
 

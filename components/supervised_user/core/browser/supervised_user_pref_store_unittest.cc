@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -13,6 +14,7 @@
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/supervised_user/core/browser/supervised_user_pref_store.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/base/pref_names.h"
@@ -113,16 +115,34 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_FALSE(fixture.changed_prefs()->FindDictByDottedPath(
       prefs::kSupervisedUserManualHosts));
 
-  // kForceGoogleSafeSearch defaults to true and kForceYouTubeRestrict defaults
-  // to Moderate for supervised users.
-  EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
-                  policy::policy_prefs::kForceGoogleSafeSearch),
-              Optional(true));
+  // kForceGoogleSafeSearch defaults to true if the relevant feature flag is
+  // enabled.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kForceGoogleSafeSearchForSupervisedUsers)) {
+    EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
+                    policy::policy_prefs::kForceGoogleSafeSearch),
+                Optional(true));
+  } else {
+    EXPECT_FALSE(
+        fixture.changed_prefs()
+            ->FindBoolByDottedPath(policy::policy_prefs::kForceGoogleSafeSearch)
+            .has_value());
+  }
+
+  // kForceYouTubeRestrict defaults to 'moderate' for supervised users on
+  // Android and ChromeOS only.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   int force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
           .value_or(safe_search_api::YOUTUBE_RESTRICT_OFF);
   EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_MODERATE);
+#else
+  EXPECT_FALSE(
+      fixture.changed_prefs()
+          ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
+          .has_value());
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(fixture.changed_prefs()->FindBoolByDottedPath(
@@ -156,8 +176,8 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   ASSERT_TRUE(manual_hosts);
   EXPECT_TRUE(*manual_hosts == hosts);
 
-  // kForceGoogleSafeSearch and kForceYouTubeRestrict can be configured by the
-  // custodian, overriding the hardcoded default.
+  // kForceGoogleSafeSearch can be configured by the custodian, overriding the
+  // hardcoded default.
   fixture.changed_prefs()->clear();
   service_.SetLocalSetting(supervised_user::kForceSafeSearch,
                            base::Value(false));
@@ -166,11 +186,20 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
                   policy::policy_prefs::kForceGoogleSafeSearch),
               Optional(false));
 
+  // kForceYouTubeRestrict can be configured by the custodian on Android and
+  // ChromeOS only.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   force_youtube_restrict =
       fixture.changed_prefs()
           ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
           .value_or(safe_search_api::YOUTUBE_RESTRICT_MODERATE);
   EXPECT_EQ(force_youtube_restrict, safe_search_api::YOUTUBE_RESTRICT_OFF);
+#else
+  EXPECT_FALSE(
+      fixture.changed_prefs()
+          ->FindIntByDottedPath(policy::policy_prefs::kForceYouTubeRestrict)
+          .has_value());
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // The custodian can allow sites and apps to request permissions.

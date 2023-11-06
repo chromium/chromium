@@ -55,7 +55,8 @@ TEST_F(LegacyTechGeneratorTest, Test) {
   EXPECT_EQ(data.line, report->line());
   base::Time midnight;
   ASSERT_TRUE(base::Time::FromUTCExploded(kTestDateInMidnight, &midnight));
-  EXPECT_EQ(midnight.ToJavaTime(), report->event_timestamp_millis());
+  EXPECT_EQ(midnight.InMillisecondsSinceUnixEpoch(),
+            report->event_timestamp_millis());
 }
 
 }  // namespace enterprise_reporting

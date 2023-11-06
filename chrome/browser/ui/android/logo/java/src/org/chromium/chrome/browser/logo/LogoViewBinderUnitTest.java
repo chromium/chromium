@@ -22,6 +22,8 @@ import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -43,8 +45,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.LoadingView;
 
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
-
 // TODO(crbug.com/1394983): For the LogoViewTest and LogoViewBinderUnitTest, that's the nice thing
 //  about only have 1 test file, where all test cases go into the single test file.
 
@@ -61,20 +61,15 @@ public class LogoViewBinderUnitTest {
     private static final String ANIMATED_LOGO_URL =
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private LogoView mMockLogoView;
+    @Mock private LogoView mMockLogoView;
 
-    @Mock
-    LogoBridge.Natives mLogoBridgeJniMock;
+    @Mock LogoBridge.Natives mLogoBridgeJniMock;
 
-    @Mock
-    LogoBridge mLogoBridge;
+    @Mock LogoBridge mLogoBridge;
 
-    @Mock
-    ImageFetcher mImageFetcher;
+    @Mock ImageFetcher mImageFetcher;
 
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();
@@ -141,15 +136,23 @@ public class LogoViewBinderUnitTest {
     @UiThreadTest
     @SmallTest
     public void testEndFadeAnimation() {
-        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null,
-                "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
+        Logo logo =
+                new Logo(
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+                        null,
+                        null,
+                        "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
         assertNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
         assertNull(mLogoView.getFadeAnimationForTesting());
-        Logo newLogo = new Logo(Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888),
-                "https://www.google.com", null, null);
+        Logo newLogo =
+                new Logo(
+                        Bitmap.createBitmap(2, 2, Bitmap.Config.ARGB_8888),
+                        "https://www.google.com",
+                        null,
+                        null);
         mLogoModel.set(LogoProperties.LOGO, newLogo);
         assertNotNull(mLogoView.getFadeAnimationForTesting());
         mLogoModel.set(LogoProperties.SET_END_FADE_ANIMATION, true);
@@ -160,8 +163,12 @@ public class LogoViewBinderUnitTest {
     @UiThreadTest
     @SmallTest
     public void testUpdateLogo() {
-        Logo logo = new Logo(Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8), null, null,
-                "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
+        Logo logo =
+                new Logo(
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8),
+                        null,
+                        null,
+                        "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json");
         assertNull(mLogoView.getFadeAnimationForTesting());
         assertNotEquals(logo.image, mLogoView.getNewLogoForTesting());
         mLogoModel.set(LogoProperties.LOGO, logo);
@@ -173,8 +180,9 @@ public class LogoViewBinderUnitTest {
     @UiThreadTest
     @SmallTest
     public void testDefaultGoogleLogo() {
-        Bitmap defaultLogo = BitmapFactory.decodeResource(
-                mLogoView.getContext().getResources(), R.drawable.google_logo);
+        Bitmap defaultLogo =
+                BitmapFactory.decodeResource(
+                        mLogoView.getContext().getResources(), R.drawable.google_logo);
         assertNotEquals(defaultLogo, mLogoView.getDefaultGoogleLogoForTesting());
         mLogoModel.set(LogoProperties.DEFAULT_GOOGLE_LOGO, defaultLogo);
         assertEquals(defaultLogo, mLogoView.getDefaultGoogleLogoForTesting());

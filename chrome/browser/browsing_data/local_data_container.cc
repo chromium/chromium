@@ -41,8 +41,11 @@ LocalDataContainer::CreateFromStoragePartition(
   if (base::FeatureList::IsEnabled(
           browsing_data::features::kMigrateStorageToBDM)) {
     return std::make_unique<LocalDataContainer>(
-        base::MakeRefCounted<browsing_data::CookieHelper>(
-            storage_partition, is_cookie_deletion_disabled_callback),
+        base::FeatureList::IsEnabled(
+            browsing_data::features::kDeprecateCookiesTreeModel)
+            ? nullptr
+            : base::MakeRefCounted<browsing_data::CookieHelper>(
+                  storage_partition, is_cookie_deletion_disabled_callback),
         /*database_helper=*/nullptr,
         /*local_storage_helper=*/nullptr,
         /*session_storage_helper=*/nullptr,
@@ -191,6 +194,24 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     cache_storage_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnCacheStorageModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  // TODO(crbug.com/1271155): When `kDeprecateCookiesTreeModel` is enabled the
+  // `LocalDataContainer` does not have any backends left to run asynchronously
+  // which causes any added observers post model build to be skipped. Posting a
+  // batch to UI thread to maintain async behaviour and allow time for observers
+  // to be added to the CookiesTreeModel before it notifies build completion.
+  // This is a temporary fix until this model could be deprecated and tests are
+  // updated.
+  if (base::FeatureList::IsEnabled(
+          browsing_data::features::kDeprecateCookiesTreeModel) &&
+      batches_started == 0) {
+    batches_started++;
+    auto scoped_notifier =
+        std::make_unique<CookiesTreeModel::ScopedBatchUpdateNotifier>(
+            model_.get(), model_->GetRoot());
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::DoNothingWithBoundArgs(std::move(scoped_notifier)));
   }
 
   // Don't reset batches, as some completions may have been reported

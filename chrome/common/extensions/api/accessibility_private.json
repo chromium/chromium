@@ -6,6 +6,7 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
+      "modernised_enums": true,
       "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_ash.h"
     },
     "description": "none",

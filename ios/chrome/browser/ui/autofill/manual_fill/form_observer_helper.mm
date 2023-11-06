@@ -48,16 +48,7 @@
 }
 
 - (void)dealloc {
-  if (_webState) {
-    _formActivityObserverBridge.reset();
-    _webState = nullptr;
-  }
-  if (_webStateList) {
-    _webStateList->RemoveObserver(_webStateListObserver.get());
-    _webStateListObserver.reset();
-    _webStateList = nullptr;
-  }
-  _formActivityObserverBridge.reset();
+  [self disconnect];
 }
 
 #pragma mark - FormActivityObserver
@@ -100,6 +91,10 @@
   }
 }
 
+- (void)webStateListDestroyed:(WebStateList*)webStateList {
+  [self disconnect];
+}
+
 #pragma mark - Setters
 
 // Sets the new web state and detaches from the previous web state.
@@ -113,6 +108,20 @@
   if (_webState) {
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
+  }
+}
+
+#pragma mark - Private
+
+- (void)disconnect {
+  if (_webState) {
+    _formActivityObserverBridge.reset();
+    _webState = nullptr;
+  }
+  if (_webStateList) {
+    _webStateList->RemoveObserver(_webStateListObserver.get());
+    _webStateListObserver.reset();
+    _webStateList = nullptr;
   }
 }
 

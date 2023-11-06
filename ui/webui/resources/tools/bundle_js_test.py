@@ -18,6 +18,7 @@ class BundleJsTest(unittest.TestCase):
 
   def setUp(self):
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
+    self.maxDiff = None
 
   def tearDown(self):
     shutil.rmtree(self._out_folder)
@@ -50,14 +51,30 @@ class BundleJsTest(unittest.TestCase):
       rel_path = os.path.relpath(abs_path, _CWD)
       self.assertIn(os.path.normpath(rel_path), depfile_content)
 
-  def _run_bundle(self, input_args):
-    input_path = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'src')
+  def _get_external_paths_args(self):
     resources_path = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'resources')
     custom_dir_foo = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'external',
                                   'foo')
+    custom_dir_baz = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'external',
+                                  'baz')
     custom_dir_bar = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'external',
                                   'bar')
-    args = input_args + [
+    return [
+        '--external_paths',
+        '//resources|%s' % resources_path,
+        'chrome://resources|%s' % resources_path,
+        'chrome-untrusted://resources|%s' % resources_path,
+        # Test case where an exact URL is redirected, not just a prefix.
+        'some-fake-scheme://foo/baz.js|%s' %
+        os.path.abspath(os.path.join(custom_dir_baz, 'baz.js')),
+        'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir_foo),
+        'some-fake-scheme://bar|%s' % os.path.abspath(custom_dir_bar),
+    ]
+
+  def _run_bundle(self, custom_args):
+    input_path = os.path.join(_HERE_DIR, 'tests', 'bundle_js', 'src')
+
+    args = [
         '--depfile',
         os.path.join(self._out_folder, 'depfile.d'),
         '--target_name',
@@ -66,13 +83,7 @@ class BundleJsTest(unittest.TestCase):
         input_path,
         '--out_folder',
         self._out_folder,
-        '--external_paths',
-        '//resources|%s' % resources_path,
-        'chrome://resources|%s' % resources_path,
-        'chrome-untrusted://resources|%s' % resources_path,
-        'some-fake-scheme://foo|%s' % os.path.abspath(custom_dir_foo),
-        'some-fake-scheme://bar|%s' % os.path.abspath(custom_dir_bar),
-    ]
+    ] + self._get_external_paths_args() + custom_args
     bundle_js.main(args)
 
   def testSimpleBundle(self):

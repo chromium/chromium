@@ -13,7 +13,7 @@ import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js
 testcase.restoreSortColumn = async () => {
   const EXPECTED_FILES = TestEntryInfo.getExpectedRows([
     ENTRIES.photos,     // 'photos' (directory)
-    ENTRIES.world,      // 'world.ogv', 59943 bytes
+    ENTRIES.world,      // 'world.ogv', 56758 bytes
     ENTRIES.beautiful,  // 'Beautiful Song.ogg', 13410 bytes
     ENTRIES.desktop,    // 'My Desktop Background.png', 272 bytes
     ENTRIES.hello,      // 'hello.txt', 51 bytes

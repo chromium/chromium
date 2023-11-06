@@ -3,7 +3,7 @@ Tests that pause on exception in internal script does not crash.
 Script source was shown.
 Script execution paused.
 Call stack:
-    0) throwException (debugger-pause-in-internal.js:15)
-    1) handleClick (debugger-pause-in-internal.js:20)
+    0) throwException (debugger-pause-in-internal.js:17)
+    1) handleClick (debugger-pause-in-internal.js:22)
 Script execution resumed.
 

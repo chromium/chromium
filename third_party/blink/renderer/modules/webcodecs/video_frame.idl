@@ -8,8 +8,7 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
 
 [
     Exposed=(Window,DedicatedWorker),
-    Serializable,
-    RuntimeEnabled=WebCodecs
+    Serializable
 ] interface VideoFrame {
   [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoFrameFromImage]
   constructor(CanvasImageSource source, optional VideoFrameInit init = {});

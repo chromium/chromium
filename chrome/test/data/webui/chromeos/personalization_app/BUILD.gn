@@ -42,9 +42,11 @@ build_webui_tests("build_webui_tests") {
     "personalization_toast_element_test.ts",
     "sea_pen_collection_element_test.ts",
     "sea_pen_images_element_test.ts",
+    "sea_pen_recent_wallpapers_element_test.ts",
     "test_ambient_interface_provider.ts",
     "test_keyboard_backlight_interface_provider.ts",
     "test_personalization_store.ts",
+    "test_sea_pen_interface_provider.ts",
     "test_theme_interface_provider.ts",
     "test_user_interface_provider.ts",
     "test_wallpaper_interface_provider.ts",
@@ -71,6 +73,4 @@ build_webui_tests("build_webui_tests") {
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
-
-  resource_path_prefix = "chromeos_personalization_app"
 }

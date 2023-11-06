@@ -15,8 +15,7 @@ Status StatusWaiter::status() {
   return Get();
 }
 
-const std::unique_ptr<std::vector<TokenId>>&
-GetTokensExecutionWaiter::token_ids() {
+const std::vector<TokenId>& GetTokensExecutionWaiter::token_ids() {
   return Get<0>();
 }
 

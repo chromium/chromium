@@ -9,15 +9,9 @@
 
 namespace enterprise_connectors {
 
-// Controls whether the Device Trust connector client code is enabled or not.
-BASE_DECLARE_FEATURE(kDeviceTrustConnectorEnabled);
-
 // Controls whether the key rotation flow, triggered by a remote command, is
 // enabled or not.
 BASE_DECLARE_FEATURE(kDTCKeyRotationEnabled);
-
-// Return true if the device trust connector Finch feature is enabled.
-bool IsDeviceTrustConnectorFeatureEnabled();
 
 // Return true if the key rotation flow is enabled.
 bool IsKeyRotationEnabled();

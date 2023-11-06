@@ -79,6 +79,9 @@ class AwSafeBrowsingBlockingPage : public safe_browsing::BaseBlockingPage {
   // Holds a copy of the resource request that triggered this blocking page,
   // only used with committed interstitials.
   std::unique_ptr<AwWebResourceRequest> resource_request_;
+
+  // Timestamp of when the safe browsing blocking page was shown to the user.
+  int64_t warning_shown_ts_;
 };
 
 }  // namespace android_webview

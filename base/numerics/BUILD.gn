@@ -25,5 +25,6 @@ source_set("base_numerics") {
     "ranges.h",
     "safe_conversions.h",
     "safe_math.h",
+    "wrapping_math.h",
   ]
 }

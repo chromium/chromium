@@ -185,6 +185,12 @@ void DevToolsRendererChannel::ChildTargetCreated(
     scoped_refptr<WorkerDevToolsAgentHost> agent_host =
         WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
             devtools_worker_token);
+    if (!agent_host) {
+      // If `agent_host` is nullptr, we can assume that `DedicatedWorkerHost`
+      // has been destructed while handling `DedicatedWorker::ContinueStart`.
+      // We do not need to continue in that case.
+      return;
+    }
     agent_host->ChildWorkerCreated(
         url, name,
         base::BindOnce(&DevToolsRendererChannel::ChildTargetDestroyed,

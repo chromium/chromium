@@ -176,14 +176,9 @@ class TranslateFrameBinderFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-// TODO(crbug.com/1443415): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_NotBindingInFencedFrame DISABLED_NotBindingInFencedFrame
-#else
-#define MAYBE_NotBindingInFencedFrame NotBindingInFencedFrame
-#endif
+// TODO(crbug.com/1443415): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(TranslateFrameBinderFencedFrameBrowserTest,
-                       MAYBE_NotBindingInFencedFrame) {
+                       DISABLED_NotBindingInFencedFrame) {
   TestTranslateDriverBindingContentBrowserClient test_browser_client;
   auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
 

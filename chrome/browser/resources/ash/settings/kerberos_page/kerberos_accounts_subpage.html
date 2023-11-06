@@ -25,11 +25,10 @@
     margin-inline-end: 1em;
   }
 
-  #add-account-icon {
+  #addAccountIcon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
     background-color: currentColor;
     height: 24px;
-    margin-inline-end: 0.5em;
     width: 24px;
   }
 
@@ -78,7 +77,7 @@
   <cr-button id="add-account-button" on-click="onAddAccountClick_"
       disabled="[[!addAccountsAllowed_]]"
       deep-link-focus-id$="[[Setting.kAddKerberosTicketV2]]">
-    <div id="add-account-icon"></div>
+    <div id="addAccountIcon" slot="prefix-icon"></div>
     $i18n{kerberosAccountsAddAccountLabel}
   </cr-button>
 </div>

@@ -41,6 +41,12 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
     return;
   }
 
+  if (frame_sink_id.sink_id() <=
+      uint32_t{std::numeric_limits<int32_t>::max()}) {
+    receivers_.ReportBadMessage("Sink ID out of range");
+    return;
+  }
+
   auto destroy_callback =
       base::BindOnce(&EmbeddedFrameSinkProviderImpl::DestroyEmbeddedFrameSink,
                      base::Unretained(this), frame_sink_id);

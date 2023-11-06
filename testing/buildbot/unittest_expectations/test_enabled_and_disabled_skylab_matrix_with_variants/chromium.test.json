@@ -4,10 +4,12 @@
   "Fake Tester": {
     "skylab_tests": [
       {
+        "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "octopus",
         "cros_img": "octopus-release/R89-13655.0.0",
         "name": "tast.basic OCTOPUS_TOT",
         "suite": "tast.basic",
+        "tast_expr": "dummy expr",
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"

@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/ip_protection_proxy_list_manager.h"
 #include "services/network/ip_protection_proxy_list_manager_impl.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -56,6 +57,7 @@ class MockIpProtectionConfigGetter
   void Reset() { expected_get_proxy_list_calls_.clear(); }
 
   void TryGetAuthTokens(uint32_t batch_size,
+                        network::mojom::IpProtectionProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override {
     NOTREACHED_NORETURN();
   }

@@ -271,8 +271,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
   base::File visual_tflite_model = std::move(model_and_tflite.second);
 
   bool model_valid = false;
-  int model_version_field = 0;
-
   bool tflite_valid = visual_tflite_model.IsValid();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           kOverrideCsdModelFlag) &&
@@ -286,8 +284,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
           base::ReadOnlySharedMemoryRegion::Create(model_str.length());
       if (mapped_region_.IsValid()) {
         model_type_ = CSDModelType::kFlatbuffer;
-        model_version_field =
-            flat::GetClientSideModel(model_str.data())->version();
         memcpy(mapped_region_.mapping.memory(), model_str.data(),
                model_str.length());
 
@@ -324,14 +320,6 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
 
   base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
                             model_valid);
-
-  if (model_valid) {
-    // At time of writing, versions go up to 25. We set a max version of 100
-    // to give some room.
-    const int kMaxVersion = 100;
-    base::UmaHistogramExactLinear("SBClientPhishing.ModelDynamicUpdateVersion",
-                                  model_version_field, kMaxVersion + 1);
-  }
 
   if (tflite_valid) {
     visual_tflite_model_ = std::move(visual_tflite_model);
@@ -410,6 +398,11 @@ bool ClientSidePhishingModel::IsModelMetadataImageEmbeddingVersionMatching() {
   return trigger_model_version_.has_value() &&
          embedding_model_version_.has_value() &&
          trigger_model_version_.value() == embedding_model_version_.value();
+}
+
+int ClientSidePhishingModel::GetTriggerModelVersion() {
+  return trigger_model_version_.has_value() ? trigger_model_version_.value()
+                                            : 0;
 }
 
 ClientSidePhishingModel::~ClientSidePhishingModel() {
@@ -553,8 +546,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bool model_valid = false;
-  int model_version_field = 0;
-
   bool tflite_valid = visual_tflite_model.IsValid();
 
   // TODO (andysjlim): Move to a helper function once protobuf feature is
@@ -571,8 +562,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
           base::ReadOnlySharedMemoryRegion::Create(model_str.length());
       if (mapped_region_.IsValid()) {
         model_type_ = CSDModelType::kFlatbuffer;
-        model_version_field =
-            flat::GetClientSideModel(model_str.data())->version();
         memcpy(mapped_region_.mapping.memory(), model_str.data(),
                model_str.length());
       } else {
@@ -584,15 +573,6 @@ void ClientSidePhishingModel::SetModelStringForTesting(
 
     base::UmaHistogramBoolean("SBClientPhishing.ModelDynamicUpdateSuccess",
                               model_valid);
-
-    if (model_valid) {
-      // At time of writing, versions go up to 25. We set a max version of 100
-      // to give some room.
-      const int kMaxVersion = 100;
-      base::UmaHistogramExactLinear(
-          "SBClientPhishing.ModelDynamicUpdateVersion", model_version_field,
-          kMaxVersion + 1);
-    }
 
     if (tflite_valid) {
       visual_tflite_model_ = std::move(visual_tflite_model);

@@ -14,6 +14,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"
 #include "ui/android/screen_android.h"
+#include "ui/android/ui_android_features.h"
 #include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
@@ -21,15 +22,6 @@
 #include "ui/gfx/icc_profile.h"
 
 namespace ui {
-
-namespace {
-
-// Feature controlling whether or not HDR is enabled on Android.
-// TODO(https://crbug.com/1430768): Leave this as a kill switch until Android U
-// ships.
-BASE_FEATURE(kAndroidHDR, "AndroidHDR", base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace
 
 using base::android::AttachCurrentThread;
 using display::Display;

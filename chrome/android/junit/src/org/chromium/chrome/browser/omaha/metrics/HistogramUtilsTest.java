@@ -21,13 +21,15 @@ public class HistogramUtilsTest {
     @Test
     public void testStartHistogram() {
         HistogramUtils.recordStartedUpdateHistogram(false);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", 0));
         UmaRecorderHolder.resetForTesting();
 
         HistogramUtils.recordStartedUpdateHistogram(true);
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", 1));
         UmaRecorderHolder.resetForTesting();

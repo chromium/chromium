@@ -2395,13 +2395,6 @@ void RenderWidgetHostViewAura::CreateDelegatedFrameHostClient() {
   delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
       frame_sink_id_, delegated_frame_host_client_.get(),
       false /* should_register_frame_sink_id */);
-
-  // Let the page-level input event router know about our surface ID
-  // namespace for surface-based hit testing.
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()->delegate()->GetInputEventRouter()->AddFrameSinkIdOwner(
-        GetFrameSinkId(), this);
-  }
 }
 
 void RenderWidgetHostViewAura::UpdateCursorIfOverSelf() {

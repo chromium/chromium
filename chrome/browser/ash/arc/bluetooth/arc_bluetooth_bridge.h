@@ -369,6 +369,8 @@ class ArcBluetoothBridge
   static void EnsureFactoryBuilt();
 
  protected:
+  friend class ArcBluetoothBridgeTest;
+
   virtual void HandlePoweredOn() = 0;
 
   void ReserveAdvertisementHandleImpl(
@@ -391,6 +393,7 @@ class ArcBluetoothBridge
   void StopLEScanImpl();
 
   virtual void ResetLEScanSession();
+  virtual bool IsDiscoveringOrScanning();
   void StartLEScanOffTimer();
 
   // The callback function triggered by le_scan_off_timer_.
@@ -637,12 +640,10 @@ class ArcBluetoothBridge
   // Discovery session created by StartLEScan().
   std::unique_ptr<device::BluetoothDiscoverySession> le_scan_session_;
   // Discovered devices in the current discovery session started by
-  // StartDiscovery(). We don't need to keep track of this for StartLEScan()
-  // since Android don't have a callback for new found devices in LE scan. When
-  // a new advertisement of an LE device comes, DeviceAdertismentReceived() will
-  // be called and we pass the result to Android via OnLEDeviceFound(), and then
-  // it will notify the LE scanner in Android.
+  // StartDiscovery().
   std::set<std::string> discovered_devices_;
+  // Scanned devices in the current scan session started by StartLEScan().
+  std::set<std::string> scanned_devices_;
   std::unordered_map<std::string,
                      std::unique_ptr<device::BluetoothGattNotifySession>>
       notification_session_;

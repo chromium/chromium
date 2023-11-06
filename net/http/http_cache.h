@@ -41,10 +41,6 @@
 
 class GURL;
 
-namespace base::android {
-class ApplicationStatusListener;
-}  // namespace base::android
-
 namespace net {
 
 class HttpNetworkSession;
@@ -79,8 +75,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
         base::OnceCallback<void(disk_cache::BackendResult)> callback) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
-    virtual void SetAppStatusListener(
-        base::android::ApplicationStatusListener* app_status_listener) {}
+    virtual void SetAppStatusListenerGetter(
+        disk_cache::ApplicationStatusListenerGetter
+            app_status_listener_getter) {}
 #endif
   };
 
@@ -109,8 +106,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
         base::OnceCallback<void(disk_cache::BackendResult)> callback) override;
 
 #if BUILDFLAG(IS_ANDROID)
-    void SetAppStatusListener(
-        base::android::ApplicationStatusListener* app_status_listener) override;
+    void SetAppStatusListenerGetter(disk_cache::ApplicationStatusListenerGetter
+                                        app_status_listener_getter) override;
 #endif
 
    private:
@@ -122,8 +119,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     int max_bytes_;
     bool hard_reset_;
 #if BUILDFLAG(IS_ANDROID)
-    raw_ptr<base::android::ApplicationStatusListener, DanglingUntriaged>
-        app_status_listener_ = nullptr;
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter_;
 #endif
   };
 

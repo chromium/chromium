@@ -38,7 +38,10 @@ static_library("status") {
 }
 
 source_set("status_macros") {
-  sources = [ "status_macros.h" ]
+  sources = [
+    "status_macros.cc",
+    "status_macros.h",
+  ]
   public_deps = [ "//base" ]
   deps = [ ":status" ]
 }
@@ -56,7 +59,6 @@ source_set("test_callbacks_support") {
     "mock_clock.h",
     "test_support_callbacks.cc",
     "test_support_callbacks.h",
-    "test_util.h",
   ]
 
   deps = [

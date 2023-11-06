@@ -241,9 +241,8 @@ void SimulateFillForm(const FormData& form_data,
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->ApplyAutofillAction(mojom::AutofillActionType::kFill,
-                                      mojom::AutofillActionPersistence::kFill,
-                                      form_data);
+  autofill_agent->ApplyFormAction(mojom::ActionType::kFill,
+                                  mojom::ActionPersistence::kFill, form_data);
 }
 
 // Simulates receiving a message from the browser to fill a form.
@@ -303,9 +302,8 @@ void SimulateFillFormWithNonFillableFields(
   autofill_agent->FormControlElementClicked(
       fname_element.To<WebInputElement>());
 
-  autofill_agent->ApplyAutofillAction(mojom::AutofillActionType::kFill,
-                                      mojom::AutofillActionPersistence::kFill,
-                                      data);
+  autofill_agent->ApplyFormAction(mojom::ActionType::kFill,
+                                  mojom::ActionPersistence::kFill, data);
 }
 
 }  // end namespace

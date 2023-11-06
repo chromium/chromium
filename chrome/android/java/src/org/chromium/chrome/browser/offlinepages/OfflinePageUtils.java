@@ -152,8 +152,8 @@ public class OfflinePageUtils {
             WebContents webContents = tab.getWebContents();
             if (webContents == null) return false;
 
-            OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(
-                    Profile.fromWebContents(tab.getWebContents()));
+            OfflinePageBridge offlinePageBridge =
+                    getInstance().getOfflinePageBridge(tab.getProfile());
             if (offlinePageBridge == null) return false;
 
             return offlinePageBridge.isOfflinePage(webContents);
@@ -161,8 +161,7 @@ public class OfflinePageUtils {
 
         @Override
         public boolean isShowingOfflinePreview(Tab tab) {
-            OfflinePageBridge offlinePageBridge =
-                    getOfflinePageBridge(Profile.fromWebContents(tab.getWebContents()));
+            OfflinePageBridge offlinePageBridge = getOfflinePageBridge(tab.getProfile());
             if (offlinePageBridge == null) return false;
             return offlinePageBridge.isShowingOfflinePreview(tab.getWebContents());
         }
@@ -261,8 +260,7 @@ public class OfflinePageUtils {
         // Making sure tab is worth keeping.
         if (shouldSkipSavingTabOffline(tab)) return;
 
-        OfflinePageBridge offlinePageBridge =
-                getInstance().getOfflinePageBridge(Profile.fromWebContents(tab.getWebContents()));
+        OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(tab.getProfile());
         if (offlinePageBridge == null) return;
 
         WebContents webContents = tab.getWebContents();
@@ -320,8 +318,7 @@ public class OfflinePageUtils {
      *                      saving the page succeeds.
      */
     public static boolean saveAndSharePage(Tab tab, final Callback<ShareParams> shareCallback) {
-        OfflinePageBridge offlinePageBridge =
-                getInstance().getOfflinePageBridge(Profile.fromWebContents(tab.getWebContents()));
+        OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(tab.getProfile());
 
         if (offlinePageBridge == null) {
             Log.e(TAG, "Unable to share current tab as an offline page.");
@@ -397,8 +394,7 @@ public class OfflinePageUtils {
             }
         }
 
-        OfflinePageBridge offlinePageBridge =
-                getInstance().getOfflinePageBridge(Profile.fromWebContents(tab.getWebContents()));
+        OfflinePageBridge offlinePageBridge = getInstance().getOfflinePageBridge(tab.getProfile());
 
         if (offlinePageBridge == null) {
             Log.e(TAG, "Unable to share current tab as an offline page.");

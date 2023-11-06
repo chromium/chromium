@@ -25,6 +25,10 @@ namespace floss {
 
 class FlossBluetoothTelephonyClientTest : public testing::Test {
  public:
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUpMocks() {
     bluetooth_telephony_path_ =
         FlossDBusClient::GenerateBluetoothTelephonyPath(adapter_index_);
@@ -80,7 +84,7 @@ class FlossBluetoothTelephonyClientTest : public testing::Test {
         .Times(1);
     EXPECT_EQ(callback_count_, 0);
     client_->Init(bus_.get(), kBluetoothTelephonyInterface, adapter_index_,
-                  base::DoNothing());
+                  GetCurrVersion(), base::DoNothing());
     client_->SetPhoneOpsEnabled(
         base::BindOnce(
             &FlossBluetoothTelephonyClientTest::SetPhoneOpsEnabledCallback,

@@ -99,8 +99,9 @@ public final class ApiHelperForM {
         return userManager.isSystemUser();
     }
 
-    /*
+    /**
      * See {@link ActionMode#invalidateContentRect()}.
+     *
      * @param actionMode
      */
     public static void invalidateContentRectOnActionMode(ActionMode actionMode) {

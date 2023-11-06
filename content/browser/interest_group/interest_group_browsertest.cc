@@ -24,6 +24,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/pattern.h"
@@ -36,10 +37,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/web_package/web_bundle_builder.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
@@ -355,7 +359,8 @@ class AllowlistedOriginContentBrowserClient
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api) override {
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting) override {
     return allow_list_.contains(destination_origin);
   }
 
@@ -686,8 +691,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
          blink::features::kBiddingAndScoringDebugReportingAPI,
          blink::features::kFledgeDirectFromSellerSignalsHeaderAdSlot,
          blink::features::kFledgeClearOriginJoinedAdInterestGroups,
-         blink::features::kFencedFramesM119Features,
-         features::kBackForwardCache},
+         blink::features::kFencedFramesM120FeaturesPart1,
+         features::kBackForwardCache, features::kFledgeUseInterestGroupCache},
         /*disabled_features=*/
         {blink::features::kFencedFrames});
   }
@@ -1062,8 +1067,7 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
             ->GetPrimaryMainFrame();
     url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
 
-    std::vector<content::StorageInterestGroup> initial_groups =
-        GetAllInterestGroupDetails();
+    auto initial_groups = GetAllInterestGroupDetails();
 
     std::string result = ClearOriginJoinedInterestGroups(owner, groups_to_keep,
                                                          execution_target);
@@ -1071,26 +1075,26 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     bool success = (result == kSuccess);
 
     for (const auto& group : initial_groups) {
-      const std::string& name = group.interest_group.name;
-      int final_join_count = GetJoinCount(group.interest_group.owner, name);
+      const std::string& name = group->interest_group.name;
+      int final_join_count = GetJoinCount(group->interest_group.owner, name);
 
       // If the leave failed, nothing should have changed.
       if (!success) {
-        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+        EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
         continue;
       }
 
-      if (owner != group.interest_group.owner ||
-          main_frame_origin != group.joining_origin) {
+      if (owner != group->interest_group.owner ||
+          main_frame_origin != group->joining_origin) {
         // Groups with different origins or joined by different origins should
         // not be modified in any way.
-        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+        EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
       } else if (groups_to_keep &&
                  std::find(groups_to_keep->begin(), groups_to_keep->end(),
                            name) != groups_to_keep->end()) {
         // Interest groups that are excluded by name also should not be
         // modified.
-        EXPECT_EQ(group.bidding_browser_signals->join_count, final_join_count);
+        EXPECT_EQ(group->bidding_browser_signals->join_count, final_join_count);
       } else {
         // Other interest groups should have been left.
         EXPECT_EQ(0, final_join_count);
@@ -1112,29 +1116,30 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_group_owners;
   }
 
-  std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
+  scoped_refptr<StorageInterestGroups> GetInterestGroupsForOwner(
       const url::Origin& owner) {
-    std::vector<StorageInterestGroup> interest_groups;
+    scoped_refptr<StorageInterestGroups> result;
     base::RunLoop run_loop;
     manager_->GetInterestGroupsForOwner(
-        owner, base::BindLambdaForTesting(
-                   [&run_loop, &interest_groups](
-                       std::vector<StorageInterestGroup> groups) {
-                     interest_groups = std::move(groups);
-                     run_loop.Quit();
-                   }));
+        owner,
+        base::BindLambdaForTesting(
+            [&result, &run_loop](scoped_refptr<StorageInterestGroups> groups) {
+              result = std::move(groups);
+              run_loop.Quit();
+            }));
     run_loop.Run();
-    return interest_groups;
+    return result;
   }
 
-  std::vector<content::StorageInterestGroup> GetAllInterestGroupDetails() {
-    std::vector<content::StorageInterestGroup> interest_groups;
+  std::vector<const SingleStorageInterestGroup> GetAllInterestGroupDetails() {
+    std::vector<const SingleStorageInterestGroup> interest_groups;
     for (const auto& owner : GetAllInterestGroupsOwners()) {
-      std::vector<content::StorageInterestGroup> owner_groups =
+      scoped_refptr<StorageInterestGroups> owner_groups =
           GetInterestGroupsForOwner(owner);
-      interest_groups.insert(interest_groups.end(),
-                             std::make_move_iterator(owner_groups.begin()),
-                             std::make_move_iterator(owner_groups.end()));
+      for (const SingleStorageInterestGroup& group :
+           owner_groups->GetInterestGroups()) {
+        interest_groups.push_back(group);
+      }
     }
     return interest_groups;
   }
@@ -1142,8 +1147,8 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::vector<blink::InterestGroupKey> GetAllInterestGroups() {
     std::vector<blink::InterestGroupKey> interest_groups;
     for (const auto& storage_group : GetAllInterestGroupDetails()) {
-      interest_groups.emplace_back(storage_group.interest_group.owner,
-                                   storage_group.interest_group.name);
+      interest_groups.emplace_back(storage_group->interest_group.owner,
+                                   storage_group->interest_group.name);
     }
     return interest_groups;
   }
@@ -1402,7 +1407,7 @@ function provideAdditionalBids(seller, nonce, bidStringList,
   // Waits until the `condition` callback over the interest groups returns true.
   void WaitForInterestGroupsSatisfying(
       const url::Origin& owner,
-      base::RepeatingCallback<bool(const std::vector<StorageInterestGroup>&)>
+      base::RepeatingCallback<bool(scoped_refptr<StorageInterestGroups>)>
           condition) {
     while (true) {
       if (condition.Run(GetInterestGroupsForOwner(owner))) {
@@ -3157,7 +3162,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
-  ASSERT_EQ(storage_groups.size(), 1u);
+  ASSERT_EQ(storage_groups->size(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -3211,7 +3216,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, JoinInterestGroupLifetimeMs) {
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
-  ASSERT_EQ(storage_groups.size(), 1u);
+  ASSERT_EQ(storage_groups->size(), 1u);
   // Unfortunately, we can't use MOCK_TIME in browser tests, and blink code
   // doesn't run in unit tests, so we can't verify the expiry time, since
   // base::Time clocks can skew backwards.
@@ -3244,7 +3249,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       {TestInterestGroupObserver::kJoin, test_origin, "cars"},
   });
   auto storage_groups = GetInterestGroupsForOwner(test_origin);
-  ASSERT_EQ(storage_groups.size(), 1u);
+  ASSERT_EQ(storage_groups->size(), 1u);
   // Unfortunately, we can't use MOCK_TIME in browser tests, and blink code
   // doesn't run in unit tests, so we can't verify the expiry time, since
   // base::Time clocks can skew backwards.
@@ -3394,12 +3399,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(url),
-      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+      base::BindLambdaForTesting([](scoped_refptr<StorageInterestGroups>
                                         groups) {
-        if (groups.size() != 1) {
+        if (groups->size() != 1) {
           return false;
         }
-        const auto& group = groups[0].interest_group;
+        const auto& group = groups->GetInterestGroups()[0]->interest_group;
         return group.all_sellers_capabilities ==
                    blink::SellerCapabilitiesType(
                        {blink::SellerCapabilities::kInterestGroupCounts,
@@ -3452,9 +3457,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                         {blink::SellerCapabilities::kLatencyStats})
                     .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   EXPECT_EQ(group.all_sellers_capabilities,
             blink::SellerCapabilitiesType(
                 {blink::SellerCapabilities::kLatencyStats}));
@@ -3489,9 +3496,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
               .SetSizeGroups({{{"group_1", {"size_1"}}}})
               .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url,
@@ -3528,9 +3537,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                          blink::AuctionServerRequestFlagsEnum::kIncludeFullAds})
                     .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   EXPECT_TRUE(group.auction_server_request_flags.Has(
       blink::AuctionServerRequestFlagsEnum::kOmitAds));
   EXPECT_TRUE(group.auction_server_request_flags.Has(
@@ -3560,9 +3571,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                      /*ad_render_id=*/absl::nullopt}}})
               .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 2u);
   EXPECT_EQ(group.ads.value()[0].render_url,
@@ -3602,9 +3615,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                            /*ad_render_id=*/"456def"}}})
                     .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url,
@@ -3642,9 +3657,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                      /*allowed_reporting_origins=*/allowed_reporting_origins}}})
               .Build()));
 
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url,
@@ -3691,9 +3708,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForAccessObserved({
       {TestInterestGroupObserver::kJoin, origin, "cars"},
   });
-  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
-  ASSERT_EQ(groups.size(), 1u);
-  const blink::InterestGroup& group = groups[0].interest_group;
+  scoped_refptr<StorageInterestGroups> groups =
+      GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups->size(), 1u);
+  const blink::InterestGroup& group =
+      groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   const auto& ad_component = group.ad_components.value()[0];
@@ -4631,10 +4650,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
     WaitForAccessObserved({
         {TestInterestGroupObserver::kJoin, origin, "cars"},
     });
-    std::vector<StorageInterestGroup> groups =
+    scoped_refptr<StorageInterestGroups> groups =
         GetInterestGroupsForOwner(origin);
-    ASSERT_EQ(groups.size(), 1u);
-    const blink::InterestGroup& group = groups[0].interest_group;
+    ASSERT_EQ(groups->size(), 1u);
+    const blink::InterestGroup& group =
+        groups->GetInterestGroups()[0]->interest_group;
     ASSERT_TRUE(group.additional_bid_key.has_value());
     EXPECT_EQ(*group.additional_bid_key, kAdditionalBidKey);
   }
@@ -4999,7 +5019,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+class InterestGroupAggregationCoordinatorBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  InterestGroupAggregationCoordinatorBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivateAggregationApiMultipleCloudProviders,
+         aggregation_service::kAggregationServiceMultipleCloudProviders},
+        /*disabled_features=*/{});
+  }
+
+  ~InterestGroupAggregationCoordinatorBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
                        JoinInterestGroupInvalidAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5008,7 +5044,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          aggregationCoordinatorOrigin: 'https://invalid^&',
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'https://invalid^&'
+          }
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -5022,13 +5060,45 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "aggregationCoordinatorOrigin 'https://invalid^&' for "
-      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      "SyntaxError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'https://invalid^&' must be a valid https "
+      "origin.",
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
-IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
+                       JoinInterestGroupValidAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: $2,
+          }
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "done",
+      EvalJs(shell(),
+             JsReplace(
+                 kScriptTemplate, origin_string.c_str(),
+                 aggregation_service::kDefaultAggregationCoordinatorAwsCloud)));
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupAggregationCoordinatorBrowserTest,
                        JoinInterestGroupNonHTTPSAggregationCoordinatorOrigin) {
   const char kScriptTemplate[] = R"(
 (async function() {
@@ -5037,7 +5107,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
         {
           name: 'cars',
           owner: $1,
-          aggregationCoordinatorOrigin: 'http://coordinator.test/',
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'http://coordinator.test/',
+          }
         },
         /*joinDurationSec=*/1);
   } catch (e) {
@@ -5051,9 +5123,41 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
 
   EXPECT_EQ(
-      "TypeError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
-      "aggregationCoordinatorOrigin 'http://coordinator.test/' for "
-      "AuctionAdInterestGroup with name 'cars' must be a valid https origin.",
+      "SyntaxError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'http://coordinator.test/' must be a valid "
+      "https origin.",
+      EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterestGroupAggregationCoordinatorBrowserTest,
+    JoinInterestGroupUnsupportedAggregationCoordinatorOrigin) {
+  const char kScriptTemplate[] = R"(
+(async function() {
+  try {
+    await navigator.joinAdInterestGroup(
+        {
+          name: 'cars',
+          owner: $1,
+          privateAggregationConfig: {
+            aggregationCoordinatorOrigin: 'https://coordinator.test/',
+          }
+        },
+        /*joinDurationSec=*/1);
+  } catch (e) {
+    return e.toString();
+  }
+  return 'done';
+})())";
+
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  std::string origin_string = url::Origin::Create(url).Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      "DataError: Failed to execute 'joinAdInterestGroup' on 'Navigator': "
+      "aggregationCoordinatorOrigin 'https://coordinator.test/' is not a "
+      "recognized coordinator origin.",
       EvalJs(shell(), JsReplace(kScriptTemplate, origin_string.c_str())));
 }
 
@@ -6788,8 +6892,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   console_observer.SetPattern(
-      "*Worklet error: Ignoring signed additional bid on auction with seller "
-      "'https://a.test:*' due to invalid base64.*");
+      "*Worklet error: Unable to base64-decode a signed additional bid.*");
 
   const char kAuctionConfigTemplate[] = R"({
       seller: $1,
@@ -7107,12 +7210,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForInterestGroupsSatisfying(
       test_origin,
       base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 2) {
+          [](scoped_refptr<StorageInterestGroups> groups) {
+            if (groups->size() != 2) {
               return false;
             }
-            for (const StorageInterestGroup& group : groups) {
-              if (group.interest_group.all_sellers_capabilities !=
+            for (const SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
+              if (group->interest_group.all_sellers_capabilities !=
                   blink::SellerCapabilitiesType(
                       {blink::SellerCapabilities::kInterestGroupCounts,
                        blink::SellerCapabilities::kLatencyStats})) {
@@ -7203,13 +7307,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForInterestGroupsSatisfying(
       test_origin,
       base::BindLambdaForTesting(
-          [&test_origin](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 2) {
+          [&test_origin](scoped_refptr<StorageInterestGroups> groups) {
+            if (groups->size() != 2) {
               return false;
             }
-            for (const StorageInterestGroup& group : groups) {
+            for (const SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
               const auto& seller_capabilities =
-                  group.interest_group.seller_capabilities;
+                  group->interest_group.seller_capabilities;
               if (!seller_capabilities) {
                 return false;
               }
@@ -7312,13 +7417,14 @@ IN_PROC_BROWSER_TEST_F(
   WaitForInterestGroupsSatisfying(
       test_origin,
       base::BindLambdaForTesting(
-          [&test_origin](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 2) {
+          [&test_origin](scoped_refptr<StorageInterestGroups> groups) {
+            if (groups->size() != 2) {
               return false;
             }
-            for (const StorageInterestGroup& group : groups) {
+            for (const SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
               const auto& seller_capabilities =
-                  group.interest_group.seller_capabilities;
+                  group->interest_group.seller_capabilities;
               if (!seller_capabilities) {
                 return false;
               }
@@ -7417,12 +7523,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForInterestGroupsSatisfying(
       test_origin,
       base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 2) {
+          [](scoped_refptr<StorageInterestGroups> groups) {
+            if (groups->size() != 2) {
               return false;
             }
-            for (const StorageInterestGroup& group : groups) {
-              if (group.interest_group.all_sellers_capabilities !=
+            for (const SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
+              if (group->interest_group.all_sellers_capabilities !=
                   blink::SellerCapabilitiesType(
                       {blink::SellerCapabilities::kInterestGroupCounts,
                        blink::SellerCapabilities::kLatencyStats})) {
@@ -8895,6 +9002,266 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
   NavigateFencedFrameAndWait(urn_url, expected_ad_url, shell());
 }
 
+// Test that `LeaveAdInterestGroup()` cannot be invoked without arguments in
+// regular iframes. An error message should be shown.
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       ArgumentsRequiredForLeaveGroupInRegularIframe) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  auto filter =
+      [](const content::WebContentsConsoleObserver::Message& message) {
+        return message.log_level == blink::mojom::ConsoleMessageLevel::kError;
+      };
+  console_observer.SetFilter(base::BindRepeating(filter));
+
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  ASSERT_TRUE(console_observer.Wait());
+  ASSERT_FALSE(console_observer.messages().empty());
+  EXPECT_EQ(console_observer.GetMessageAt(0),
+            "Owner and name are required to call LeaveAdInterestGroup outside "
+            "of a fenced frame or an opaque origin iframe.");
+}
+
+// Test that `LeaveAdInterestGroup()` works in urn iframe that is same origin to
+// the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       SameOriginUrnIframeLeaveGroupSucceed) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The ad url is same origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL("a.test", "/echo?render_cars");
+  ASSERT_TRUE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group should succeed. Do it by calling
+  // Javascript directly instead of loading a page that does this
+  // to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  // The leave should be observed.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  EXPECT_TRUE(GetAllInterestGroups().empty());
+}
+
+// Test that `LeaveAdInterestGroup()` fails in urn iframe that is cross origin
+// to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       CrossOriginUrnIframeLeaveGroupFail) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL("b.test", "/echo?render_cars");
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group should fail. Do it by calling Javascript
+  // directly instead of loading a page that does this to avoid races with
+  // logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  EXPECT_TRUE(ExecJs(iframe, "navigator.leaveAdInterestGroup()"));
+
+  // No leave should be observed.
+  WaitForAccessObserved({});
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
+// Load the ad in an urn iframe. Test that `LeaveAdInterestGroup()` works from
+// a nested regular iframe that is same origin to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       LeaveGroupFromSameOriginNestedIframeSucceed) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The inner url is same origin to the interest group owner.
+  GURL inner_url = https_server_->GetURL(
+      "a.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  ASSERT_TRUE(test_origin.IsSameOriginWith(inner_url));
+
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
+  GURL::Replacements rep;
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
+                                          inner_url.spec(), /*use_plus=*/false);
+  rep.SetQueryStr(query);
+  ad_url = ad_url.ReplaceComponents(rep);
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group from the nested iframe should succeed.
+  // Do it by calling Javascript directly instead of loading a page that does
+  // this to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  RenderFrameHost* nested_iframe = ChildFrameAt(iframe, 0);
+  EXPECT_TRUE(ExecJs(nested_iframe, "navigator.leaveAdInterestGroup()"));
+
+  // The leave should be observed.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  EXPECT_TRUE(GetAllInterestGroups().empty());
+}
+
+// Load the ad in an urn iframe. Test that `LeaveAdInterestGroup()` fails from
+// a nested regular iframe that is cross origin to the interset group owner.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       LeaveGroupFromCrossOriginNestedIframeFail) {
+  GURL test_url = https_server_->GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  url::Origin test_origin = url::Origin::Create(test_url);
+  // The inner url is cross origin to the interest group owner.
+  GURL inner_url = https_server_->GetURL(
+      "b.test", "/set-header?Supports-Loading-Mode: fenced-frame");
+  ASSERT_FALSE(test_origin.IsSameOriginWith(inner_url));
+
+  // The ad url is cross origin to the interest group owner.
+  GURL ad_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/outer_inner_frame_as_param.html");
+  GURL::Replacements rep;
+  std::string query = "innerFrame=" + base::EscapeUrlEncodedData(
+                                          inner_url.spec(), /*use_plus=*/false);
+  rep.SetQueryStr(query);
+  ad_url = ad_url.ReplaceComponents(rep);
+  ASSERT_FALSE(test_origin.IsSameOriginWith(ad_url));
+
+  AttachInterestGroupObserver();
+  EXPECT_EQ(kSuccess, JoinInterestGroupAndVerify(
+                          blink::TestInterestGroupBuilder(
+                              /*owner=*/test_origin,
+                              /*name=*/"cars")
+                              .SetBiddingUrl(https_server_->GetURL(
+                                  "a.test", "/interest_group/bidding_logic.js"))
+                              .SetAds({{{ad_url, /*metadata=*/absl::nullopt}}})
+                              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndWaitForURLAndNavigateIframe(
+      JsReplace(
+          R"({
+              seller: $1,
+              decisionLogicURL: $2,
+              interestGroupBuyers: [$1]
+            })",
+          test_origin,
+          https_server_->GetURL("a.test", "/interest_group/decision_logic.js")),
+      ad_url));
+
+  // InterestGroupAccessObserver should see the join and auction.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // Leaving the winning interest group from the nested iframe should fail.
+  // Do it by calling Javascript directly instead of loading a page that does
+  // this to avoid races with logging kBin or kWin.
+  RenderFrameHost* iframe =
+      ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
+  RenderFrameHost* nested_iframe = ChildFrameAt(iframe, 0);
+  EXPECT_TRUE(ExecJs(nested_iframe, "navigator.leaveAdInterestGroup()"));
+
+  // No leave should be observed.
+  WaitForAccessObserved({});
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
 // Runs two ad auctions with fenced frames enabled. Both auctions should
 // succeed and are then loaded in separate fenced frames. Both auctions try to
 // leave the interest group, but only the one whose ad matches the joining
@@ -9176,11 +9543,10 @@ perBuyerSignals: {$1: {even: 'more', x: 4.5}}
 
   // Wait for the interest group to disappear.
   WaitForInterestGroupsSatisfying(
-      test_origin,
-      base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) -> bool {
-            return groups.empty();
-          }));
+      test_origin, base::BindLambdaForTesting(
+                       [](scoped_refptr<StorageInterestGroups> groups) -> bool {
+                         return groups->size() == 0;
+                       }));
 }
 
 // Creates a Fenced Frame and then tries to use the leaveAdInterestGroup API.
@@ -9980,21 +10346,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
 
   // Both owners have one interest group in storage, and both interest groups
   // have no `prev_wins`.
-  std::vector<StorageInterestGroup> storage_interest_groups =
-      GetInterestGroupsForOwner(origin);
-  EXPECT_EQ(storage_interest_groups.size(), 1u);
-  EXPECT_EQ(
-      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
-      0u);
-  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
-            0);
-  std::vector<StorageInterestGroup> storage_interest_groups2 =
-      GetInterestGroupsForOwner(origin2);
-  EXPECT_EQ(storage_interest_groups2.size(), 1u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.size(),
+  auto storage_interest_groups = GetInterestGroupsForOwner(origin);
+  EXPECT_EQ(storage_interest_groups->size(), 1u);
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
             0u);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
+            0);
+  auto storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
+  EXPECT_EQ(storage_interest_groups2->size(), 1u);
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
+            0u);
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             0);
 
   // Start observer after joins.
@@ -10026,21 +10392,23 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   WaitForAccessObserved(
       {{TestInterestGroupObserver::kLoaded, origin, "cars"},
        {TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
-  EXPECT_EQ(
-      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
-      1u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.size(),
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
             0u);
-  EXPECT_EQ(storage_interest_groups.front()
-                .bidding_browser_signals->prev_wins.front()
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.front()
                 ->ad_json,
             JsReplace(R"({"metadata":"{\"ad\":\"metadata\",\"here\":[1,2]}",)"
                       R"("renderURL":$1})",
                       ad1_url));
-  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             1);
 
   // Run auction again. Interest group shoes of owner `test_url2` wins.
@@ -10058,20 +10426,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   WaitForAccessObserved(
       {{TestInterestGroupObserver::kLoaded, origin, "cars"},
        {TestInterestGroupObserver::kLoaded, origin2, "shoes"}});
-  EXPECT_EQ(
-      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
-      1u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.size(),
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
             1u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.front()
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.front()
                 ->ad_json,
             JsReplace(R"({"renderURL":$1})", ad2_url));
   // First interest group didn't bid this time.
-  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             2);
 
   // Run auction third time, and only interest group "shoes" bids this time.
@@ -10094,20 +10464,22 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   // `test_url2`'s interest group shoes has two `prev_wins` in storage.
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
-  EXPECT_EQ(
-      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
-      1u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.size(),
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.size(),
             2u);
-  EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_browser_signals->prev_wins.back()
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->prev_wins.back()
                 ->ad_json,
             JsReplace(R"({"renderURL":$1})", ad2_url));
   // First interest group didn't bid this time.
-  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2->GetInterestGroups()[0]
+                ->bidding_browser_signals->bid_count,
             3);
 }
 
@@ -10169,12 +10541,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   // Wait for database to be updated with the win, which may happen after the
   // auction completes.
   WaitForInterestGroupsSatisfying(
-      origin_a,
-      base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) -> bool {
-            EXPECT_EQ(1u, groups.size());
-            return groups[0].bidding_browser_signals->prev_wins.size() == 1u;
-          }));
+      origin_a, base::BindLambdaForTesting(
+                    [](scoped_refptr<StorageInterestGroups> groups) -> bool {
+                      EXPECT_EQ(1u, groups->size());
+                      return groups->GetInterestGroups()[0]
+                                 ->bidding_browser_signals->prev_wins.size() ==
+                             1u;
+                    }));
 
   // Run auction again on the same page. Interest group shoes of owner
   // `test_url2` wins.
@@ -10192,12 +10565,13 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ReportingMultipleAuctions) {
   // Wait for database to be updated with the win, which may happen after the
   // auction completes.
   WaitForInterestGroupsSatisfying(
-      origin_b,
-      base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) -> bool {
-            EXPECT_EQ(1u, groups.size());
-            return groups[0].bidding_browser_signals->prev_wins.size() == 1u;
-          }));
+      origin_b, base::BindLambdaForTesting(
+                    [](scoped_refptr<StorageInterestGroups> groups) -> bool {
+                      EXPECT_EQ(1u, groups->size());
+                      return groups->GetInterestGroups()[0]
+                                 ->bidding_browser_signals->prev_wins.size() ==
+                             1u;
+                    }));
 
   // Run the third auction on another page c.test, and only interest group
   // "shoes" of c.test bids this time.
@@ -10555,30 +10929,6 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
 
   // Calling navigator.adAuctionComponents on the new frame should fail.
   EXPECT_FALSE(GetAdAuctionComponentsInJS(ad_frame, 1));
-}
-
-// Test with an ad component that tries to leave the group. Verify that leaving
-// the group from within an ad component has no effect
-IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest, AdComponentsLeave) {
-  url::Origin test_origin =
-      url::Origin::Create(https_server_->GetURL("a.test", "/"));
-  GURL ad_component_url = https_server_->GetURL(
-      "d.test", "/fenced_frames/ad_that_leaves_interest_group.html");
-  AttachInterestGroupObserver();
-
-  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
-
-  // InterestGroupAccessObserver should see the join and auction, but not the
-  // implicit leave since it was blocked.
-  WaitForAccessObserved(
-      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
-       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
-       {TestInterestGroupObserver::kBid, test_origin, "cars"},
-       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
-
-  // The ad shouldn't have left the interest group when the component ad was
-  // shown.
-  EXPECT_EQ(1u, GetAllInterestGroups().size());
 }
 
 // Test navigating multiple fenced frames to the same render URL from a single
@@ -12765,12 +13115,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, Update) {
 
   WaitForInterestGroupsSatisfying(
       test_origin,
-      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+      base::BindLambdaForTesting([](scoped_refptr<StorageInterestGroups>
                                         groups) {
-        if (groups.size() != 1) {
+        if (groups->size() != 1) {
           return false;
         }
-        const auto& group = groups[0].interest_group;
+        const auto& group = groups->GetInterestGroups()[0]->interest_group;
         return group.name == "cars" && group.priority == 0.0 &&
                group.execution_mode ==
                    blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
@@ -12842,12 +13192,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, DeprecatedDailyUpdateUrl) {
 
   WaitForInterestGroupsSatisfying(
       test_origin,
-      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+      base::BindLambdaForTesting([](scoped_refptr<StorageInterestGroups>
                                         groups) {
-        if (groups.size() != 1) {
+        if (groups->size() != 1) {
           return false;
         }
-        const auto& group = groups[0].interest_group;
+        const auto& group = groups->GetInterestGroups()[0]->interest_group;
         return group.name == "cars" && group.priority == 0.0 &&
                group.execution_mode ==
                    blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
@@ -12922,12 +13272,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
 
   WaitForInterestGroupsSatisfying(
       test_origin,
-      base::BindLambdaForTesting([](const std::vector<StorageInterestGroup>&
+      base::BindLambdaForTesting([](scoped_refptr<StorageInterestGroups>
                                         groups) {
-        if (groups.size() != 1) {
+        if (groups->size() != 1) {
           return false;
         }
-        const auto& group = groups[0].interest_group;
+        const auto& group = groups->GetInterestGroups()[0]->interest_group;
         return group.name == "cars" && group.priority == 0.0 &&
                group.execution_mode ==
                    blink::InterestGroup::ExecutionMode::kGroupedByOriginMode &&
@@ -12991,11 +13341,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   WaitForInterestGroupsSatisfying(
       test_origin,
       base::BindLambdaForTesting(
-          [](const std::vector<StorageInterestGroup>& groups) {
-            if (groups.size() != 1) {
+          [](scoped_refptr<StorageInterestGroups> groups) {
+            if (groups->size() != 1) {
               return false;
             }
-            const auto& group = groups[0].interest_group;
+            const auto& group = groups->GetInterestGroups()[0]->interest_group;
             return group.name == "cars" && group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
                        "/interest_group/bidding_logic.js" &&
@@ -13673,10 +14023,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(initial_bidding_url),
       base::BindLambdaForTesting(
-          [&](const std::vector<StorageInterestGroup>& storage_groups) {
+          [&](scoped_refptr<StorageInterestGroups> storage_groups) {
             bool found_updated_group = false;
-            for (const auto& storage_group : storage_groups) {
-              const blink::InterestGroup& group = storage_group.interest_group;
+            for (const auto& storage_group :
+                 storage_groups->GetInterestGroups()) {
+              const blink::InterestGroup& group = storage_group->interest_group;
               if (group.name == kPubliclyUpdateGroupName) {
                 EXPECT_EQ(initial_bidding_url, group.bidding_url);
               } else {
@@ -13808,25 +14159,27 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   WaitForInterestGroupsSatisfying(
       url::Origin::Create(initial_bidding_url_c),
       base::BindLambdaForTesting(
-          [&](const std::vector<StorageInterestGroup>& storage_groups) {
-            return storage_groups.size() == 1 &&
-                   storage_groups[0].interest_group.bidding_url ==
-                       new_bidding_url_c;
+          [&](scoped_refptr<StorageInterestGroups> storage_groups) {
+            return storage_groups->size() == 1 &&
+                   storage_groups->GetInterestGroups()[0]
+                           ->interest_group.bidding_url == new_bidding_url_c;
           }));
 
   // By this point, all the interest group updates should have completed.
-  std::vector<StorageInterestGroup> a_groups =
+  scoped_refptr<StorageInterestGroups> a_groups =
       GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_a));
-  ASSERT_EQ(a_groups.size(), 1u);
-  EXPECT_EQ(a_groups[0].interest_group.bidding_url, new_bidding_url_a);
+  ASSERT_EQ(a_groups->size(), 1u);
+  EXPECT_EQ(a_groups->GetInterestGroups()[0]->interest_group.bidding_url,
+            new_bidding_url_a);
 
-  std::vector<StorageInterestGroup> b_groups =
+  scoped_refptr<StorageInterestGroups> b_groups =
       GetInterestGroupsForOwner(url::Origin::Create(initial_bidding_url_b));
-  ASSERT_EQ(b_groups.size(), 1u);
+  ASSERT_EQ(b_groups->size(), 1u);
 
   // Because it was updated on a public address, the update for b.test didn't
   // happen.
-  EXPECT_EQ(b_groups[0].interest_group.bidding_url, initial_bidding_url_b);
+  EXPECT_EQ(b_groups->GetInterestGroups()[0]->interest_group.bidding_url,
+            initial_bidding_url_b);
 }
 
 // Join interest groups with local (private) update URLs, and run auctions from
@@ -13972,9 +14325,10 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
   const GURL new_ad_url = GURL("https://example.com/render2");
 
   auto check_for_new_ad_url = base::BindLambdaForTesting(
-      [&](const std::vector<StorageInterestGroup>& storage_groups) {
-        EXPECT_EQ(storage_groups.size(), 1u);
-        const blink::InterestGroup& group = storage_groups[0].interest_group;
+      [&](scoped_refptr<StorageInterestGroups> storage_groups) {
+        EXPECT_EQ(storage_groups->size(), 1u);
+        const blink::InterestGroup& group =
+            storage_groups->GetInterestGroups()[0]->interest_group;
         EXPECT_TRUE(group.ads.has_value());
         EXPECT_EQ(group.ads->size(), 1u);
         if (group.ads.value()[0].render_url == new_ad_url) {
@@ -13989,8 +14343,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
 
   // Check that interest group A's ad URL was not updated.
   auto storage_groups = GetInterestGroupsForOwner(interest_group_a_origin);
-  ASSERT_EQ(storage_groups.size(), 1u);
-  const blink::InterestGroup& group = storage_groups[0].interest_group;
+  ASSERT_EQ(storage_groups->size(), 1u);
+  const blink::InterestGroup& group =
+      storage_groups->GetInterestGroups()[0]->interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(initial_ad_url, group.ads.value()[0].render_url);
@@ -15328,6 +15683,85 @@ IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
   run_loop.Run();
 }
 
+class LeaveAdInterestGroupFromAdComponentBrowserTest
+    : public base::test::WithFeatureOverride,
+      public InterestGroupFencedFrameBrowserTest {
+ public:
+  LeaveAdInterestGroupFromAdComponentBrowserTest()
+      : base::test::WithFeatureOverride(
+            blink::features::kFencedFramesM120FeaturesPart2) {}
+
+  ~LeaveAdInterestGroupFromAdComponentBrowserTest() override = default;
+
+  bool IsLeaveAdInterestGroupFromAdComponentEnabled() { return GetParam(); }
+};
+
+// Before M120: Leaving the interest group an ad component is not supported.
+// M120 and afterwards: Leaving the group from an ad component that is same
+// origin to interest group owner should succeed.
+IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+                       SameOriginAdComponentsLeaveSucceedFrom120) {
+  url::Origin test_origin =
+      url::Origin::Create(https_server_->GetURL("a.test", "/"));
+  GURL ad_component_url = https_server_->GetURL(
+      "a.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+  AttachInterestGroupObserver();
+
+  // The main frame will have an origin of "a.test".
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  if (IsLeaveAdInterestGroupFromAdComponentEnabled()) {
+    // InterestGroupAccessObserver should see the join, auction and the leave.
+    WaitForAccessObserved(
+        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {TestInterestGroupObserver::kBid, test_origin, "cars"},
+         {TestInterestGroupObserver::kWin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLeave, test_origin, "cars"}});
+  } else {
+    // InterestGroupAccessObserver should see the join and auction, but not the
+    // leave.
+    WaitForAccessObserved(
+        {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+         {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+         {TestInterestGroupObserver::kBid, test_origin, "cars"},
+         {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+  }
+
+  // The state of the interest groups depends on the feature toggle.
+  EXPECT_EQ(GetAllInterestGroups().empty(),
+            IsLeaveAdInterestGroupFromAdComponentEnabled());
+}
+
+// Leaving the group from a site that is cross origin to interest group owner
+// should always fail, regardless of whether this is an ad component or not.
+IN_PROC_BROWSER_TEST_P(LeaveAdInterestGroupFromAdComponentBrowserTest,
+                       CrossOriginAdComponentsLeaveFail) {
+  url::Origin test_origin =
+      url::Origin::Create(https_server_->GetURL("a.test", "/"));
+  GURL ad_component_url = https_server_->GetURL(
+      "b.test", "/fenced_frames/ad_that_leaves_interest_group.html");
+  AttachInterestGroupObserver();
+
+  // The main frame will have an origin of "a.test".
+  ASSERT_NO_FATAL_FAILURE(RunBasicAuctionWithAdComponents(ad_component_url));
+
+  // InterestGroupAccessObserver should see the join and auction, but not the
+  // implicit leave since it was blocked due to cross origin to the interest
+  // group owner.
+  WaitForAccessObserved(
+      {{TestInterestGroupObserver::kJoin, test_origin, "cars"},
+       {TestInterestGroupObserver::kLoaded, test_origin, "cars"},
+       {TestInterestGroupObserver::kBid, test_origin, "cars"},
+       {TestInterestGroupObserver::kWin, test_origin, "cars"}});
+
+  // The ad should not leave the interest group.
+  EXPECT_EQ(1u, GetAllInterestGroups().size());
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    LeaveAdInterestGroupFromAdComponentBrowserTest);
+
 class InterestGroupAuctionLimitBrowserTest : public InterestGroupBrowserTest {
  public:
   InterestGroupAuctionLimitBrowserTest() {
@@ -15591,6 +16025,14 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
     : public InterestGroupFencedFrameBrowserTest,
       public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
+  InterestGroupAdComponentAutomaticBeaconBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {blink::features::kFencedFramesM120FeaturesPart2},
+        /*disabled_features=*/
+        {});
+  }
+
   std::unique_ptr<NetworkResponder> CreateNetworkResponder() override {
     // Fenced frame window.fence.reportEvent API requires a responder that
     // handles beacons sent to the reporting url.
@@ -15718,6 +16160,9 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
       EXPECT_TRUE(observer.last_navigation_succeeded());
     }
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test window.fence.reportEvent from an ad component frame is disallowed:
@@ -15852,8 +16297,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-// Test `reserved.top_navigation` beacon from an ad component frame nested in
-// the main ad frame:
+// Test automatic beacons from an ad component frames nested in the main ad
+// frame:
 // 1. Run an auction with an ad component.
 // 2. Load the ad in a top-level frame.
 // 3. Load the ad component in the nested frame.
@@ -15877,7 +16322,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -15896,8 +16341,8 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
-// Test `reserved.top_navigation` beacon from an ad component frame nested in
-// the main ad frame:
+// Test automatic beacons from an ad component frames nested in the main ad
+// frame:
 // 1. Run an auction with an ad component.
 // 2. Load the ad in a top-level frame.
 // 3. Load the ad component in the nested frame.
@@ -15921,7 +16366,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -15961,7 +16406,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16032,7 +16477,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: '',
                             destination: ['seller']
                           }
@@ -16071,7 +16516,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             eventData: 'should be igonred',
                             destination: ['seller']
                           }
@@ -16116,7 +16561,7 @@ IN_PROC_BROWSER_TEST_P(InterestGroupAdComponentAutomaticBeaconBrowserTest,
   EXPECT_TRUE(ExecJs(ad_component_frame, (R"(
                         window.fence.setReportEventDataForAutomaticBeacons(
                           {
-                            eventType: 'reserved.top_navigation',
+                            eventType: 'reserved.top_navigation_commit',
                             destination: ['seller']
                           }
                         );

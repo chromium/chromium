@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
       base::UserMetricsAction("MobileTrackingPriceSettingsBack"));
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

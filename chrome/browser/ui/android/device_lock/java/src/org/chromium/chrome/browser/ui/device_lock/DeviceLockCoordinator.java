@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -38,6 +39,10 @@ public class DeviceLockCoordinator {
          * The user has decided to dismiss the dialog without setting a device lock.
          */
         void onDeviceLockRefused();
+
+        /** Returns which source the user accessed the device lock UI from. */
+        @DeviceLockActivityLauncher.Source
+        String getSource();
     }
 
     private final DeviceLockMediator mMediator;

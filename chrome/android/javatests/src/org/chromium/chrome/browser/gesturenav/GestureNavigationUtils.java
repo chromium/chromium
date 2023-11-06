@@ -21,8 +21,11 @@ public final class GestureNavigationUtils {
     public GestureNavigationUtils(ChromeTabbedActivityTestRule rule) {
         mActivityTestRule = rule;
         DisplayMetrics displayMetrics = new DisplayMetrics();
-        mActivityTestRule.getActivity().getWindowManager().getDefaultDisplay().getMetrics(
-                displayMetrics);
+        mActivityTestRule
+                .getActivity()
+                .getWindowManager()
+                .getDefaultDisplay()
+                .getMetrics(displayMetrics);
         mEdgeWidthPx = displayMetrics.density * NavigationHandler.EDGE_WIDTH_DP;
 
         HistoryNavigationCoordinator coordinator = getNavigationCoordinator();
@@ -39,11 +42,11 @@ public final class GestureNavigationUtils {
     }
 
     public void swipeFromLeftEdge() {
-        swipeFromEdge(/*leftEdge=*/true);
+        swipeFromEdge(/* leftEdge= */ true);
     }
 
     public void swipeFromRightEdge() {
-        swipeFromEdge(/*leftEdge=*/false);
+        swipeFromEdge(/* leftEdge= */ false);
     }
 
     public void swipeFromEdge(boolean leftEdge) {
@@ -76,7 +79,10 @@ public final class GestureNavigationUtils {
 
     private void swipe(boolean leftEdge, float startx, float endx, float y) {
         swipeAndHold(leftEdge, startx, endx, y);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mNavigationHandler.release(true); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNavigationHandler.release(true);
+                });
     }
 
     private void swipeAndHold(boolean leftEdge, float startx, float endx, float y) {
@@ -86,19 +92,20 @@ public final class GestureNavigationUtils {
         final float step = Math.signum(endx - startx) * distancePx;
         final int eventCounts = (int) ((endx - startx) / step);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mNavigationHandler.onDown();
-            float nextx = startx + step;
-            for (int i = 0; i < eventCounts; i++, nextx += step) {
-                mNavigationHandler.onScroll(startx, -step, 0, nextx, y);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mNavigationHandler.onDown();
+                    float nextx = startx + step;
+                    for (int i = 0; i < eventCounts; i++, nextx += step) {
+                        mNavigationHandler.onScroll(startx, -step, 0, nextx, y);
+                    }
+                });
     }
 
     private HistoryNavigationCoordinator getNavigationCoordinator() {
         TabbedRootUiCoordinator uiCoordinator =
-                (TabbedRootUiCoordinator) mActivityTestRule.getActivity()
-                        .getRootUiCoordinatorForTesting();
+                (TabbedRootUiCoordinator)
+                        mActivityTestRule.getActivity().getRootUiCoordinatorForTesting();
         return uiCoordinator.getHistoryNavigationCoordinatorForTesting();
     }
 }

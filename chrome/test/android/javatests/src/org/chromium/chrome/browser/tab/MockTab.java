@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -26,35 +27,27 @@ public class MockTab extends TabImpl {
     private Long mTimestampMillis;
     private Integer mParentId;
 
-    /**
-     * Create a new Tab for testing and initializes Tab UserData objects.
-     */
-    public static MockTab createAndInitialize(int id, boolean incognito) {
-        MockTab tab = new MockTab(id, incognito);
+    /** Create a new Tab for testing and initializes Tab UserData objects. */
+    public static MockTab createAndInitialize(int id, Profile profile) {
+        MockTab tab = new MockTab(id, profile);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
-    /**
-     * Create a new Tab for testing and initializes Tab UserData objects.
-     */
+    /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(
-            int id, boolean incognito, @TabLaunchType int tabLaunchType) {
-        MockTab tab = new MockTab(id, incognito, tabLaunchType);
+            int id, Profile profile, @TabLaunchType int tabLaunchType) {
+        MockTab tab = new MockTab(id, profile, tabLaunchType);
         tab.initialize(null, null, null, null, null, false, null, false);
         return tab;
     }
 
-    /**
-     * Constructor for id and incognito attribute. Tests often need to initialize
-     * these two fields only.
-     */
-    public MockTab(int id, boolean incognito) {
-        super(id, incognito, null);
+    public MockTab(int id, Profile profile) {
+        this(id, profile, null);
     }
 
-    public MockTab(int id, boolean incognito, @TabLaunchType Integer type) {
-        super(id, incognito, type);
+    public MockTab(int id, Profile profile, @TabLaunchType Integer type) {
+        super(id, profile, type);
     }
 
     @Override

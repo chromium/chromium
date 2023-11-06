@@ -5,8 +5,8 @@
 import '../widgets/xf_breadcrumb.js';
 
 import {recordUserAction} from '../common/js/metrics.js';
+import {str} from '../common/js/translations.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
-import {str} from '../common/js/util.js';
 import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import type {FileKey} from '../state/file_key.js';

@@ -6,6 +6,7 @@
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_H_
 
 #include <stddef.h>
+#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -36,10 +37,6 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 namespace supervised_user {
 class SupervisedUserSettingsService;
 
@@ -60,8 +57,6 @@ class SupervisedUserService : public KeyedService,
   SupervisedUserService& operator=(const SupervisedUserService&) = delete;
 
   ~SupervisedUserService() override;
-
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   supervised_user::RemoteWebApprovalsManager& remote_web_approvals_manager() {
     return remote_web_approvals_manager_;
@@ -132,12 +127,6 @@ class SupervisedUserService : public KeyedService,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  // TODO(https://crbug.com/1288986): Enable web filter metrics reporting in
-  // LaCrOS.
-  // Reports FamilyUser.WebFilterType and FamilyUser.ManagedSiteList
-  // metrics. Ignores reporting when AreWebFilterPrefsDefault() is true.
-  void ReportNonDefaultWebFilterValue() const;
-
   // Returns true if both: the user is a type of Family Link supervised account
   // and the platform supports Family Link supervision features.
   // This method should be prefered on gating child-specific features if there
@@ -180,6 +169,12 @@ class SupervisedUserService : public KeyedService,
       SupervisedUserServiceExtensionTest,
       ExtensionManagementPolicyProviderWithSUInitiatedInstalls);
   FRIEND_TEST_ALL_PREFIXES(SupervisedUserServiceTest, InterstitialBannerState);
+  FRIEND_TEST_ALL_PREFIXES(SupervisedUserNavigationThrottleTest,
+                           BlockedMatureSitesRecordedInBlockSafeSitesBucket);
+
+  // Method used in testing to set the given test_filter as the url_filter_
+  void SetURLFilterForTesting(
+      std::unique_ptr<SupervisedUserURLFilter> test_filter);
 
   FirstTimeInterstitialBannerState GetUpdatedBannerState(
       FirstTimeInterstitialBannerState original_state);
@@ -229,7 +224,7 @@ class SupervisedUserService : public KeyedService,
   // True only when |Shutdown()| method has been called.
   bool did_shutdown_ = false;
 
-  SupervisedUserURLFilter url_filter_;
+  std::unique_ptr<SupervisedUserURLFilter> url_filter_;
 
   const bool can_show_first_time_interstitial_banner_;
 

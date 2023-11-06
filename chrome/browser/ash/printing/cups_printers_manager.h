@@ -10,6 +10,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/ash/printing/printer_installation_manager.h"
@@ -60,14 +62,15 @@ class CupsPrintersManager : public PrinterInstallationManager,
     virtual ~Observer() = default;
   };
 
-  class LocalPrintersObserver {
+  class LocalPrintersObserver : public base::CheckedObserver {
    public:
     // This endpoint is only triggered for the following scenarios:
     //   1. A new local printer is either plugged in or detected on the network.
     //   2. A local printer receives an updated printer status.
     virtual void OnLocalPrintersUpdated() {}
 
-    virtual ~LocalPrintersObserver() = default;
+   protected:
+    ~LocalPrintersObserver() override = default;
   };
 
   using PrinterStatusCallback =
@@ -152,5 +155,25 @@ class CupsPrintersManager : public PrinterInstallationManager,
 };
 
 }  // namespace ash
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<
+    ash::CupsPrintersManager,
+    ash::CupsPrintersManager::LocalPrintersObserver> {
+  static void AddObserver(
+      ash::CupsPrintersManager* source,
+      ash::CupsPrintersManager::LocalPrintersObserver* observer) {
+    source->AddLocalPrintersObserver(observer);
+  }
+  static void RemoveObserver(
+      ash::CupsPrintersManager* source,
+      ash::CupsPrintersManager::LocalPrintersObserver* observer) {
+    source->RemoveLocalPrintersObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // CHROME_BROWSER_ASH_PRINTING_CUPS_PRINTERS_MANAGER_H_

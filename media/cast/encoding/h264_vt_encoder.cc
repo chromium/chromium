@@ -94,15 +94,15 @@ class H264VideoToolboxEncoder::VideoFrameFactoryImpl final
 
     // Allocate a pixel buffer from the pool and return a wrapper VideoFrame.
     base::apple::ScopedCFTypeRef<CVPixelBufferRef> buffer;
-    auto status = CVPixelBufferPoolCreatePixelBuffer(kCFAllocatorDefault, pool_,
-                                                     buffer.InitializeInto());
+    auto status = CVPixelBufferPoolCreatePixelBuffer(
+        kCFAllocatorDefault, pool_.get(), buffer.InitializeInto());
     if (status != kCVReturnSuccess) {
       DLOG(ERROR) << "CVPixelBufferPoolCreatePixelBuffer failed: " << status;
       return nullptr;
     }
 
     DCHECK(buffer);
-    return VideoFrame::WrapCVPixelBuffer(buffer, timestamp);
+    return VideoFrame::WrapCVPixelBuffer(buffer.get(), timestamp);
   }
 
   void Update(const base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef>& pool,
@@ -267,7 +267,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
   // are guaranteed that the output callback will not execute again.
   OSStatus status = VTCompressionSessionCreate(
       kCFAllocatorDefault, frame_size_.width(), frame_size_.height(),
-      kCMVideoCodecType_H264, encoder_spec, buffer_attributes,
+      kCMVideoCodecType_H264, encoder_spec.get(), buffer_attributes.get(),
       nullptr /* compressedDataAllocator */,
       &H264VideoToolboxEncoder::CompressionCallback,
       reinterpret_cast<void*>(this), compression_session_.InitializeInto());
@@ -290,7 +290,7 @@ void H264VideoToolboxEncoder::ResetCompressionSession() {
 
   // Update the video frame factory.
   base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef> pool(
-      VTCompressionSessionGetPixelBufferPool(compression_session_),
+      VTCompressionSessionGetPixelBufferPool(compression_session_.get()),
       base::scoped_policy::RETAIN);
   video_frame_factory_->Update(pool, frame_size_);
 
@@ -350,7 +350,7 @@ void H264VideoToolboxEncoder::DestroyCompressionSession() {
     video_frame_factory_->Update(
         base::apple::ScopedCFTypeRef<CVPixelBufferPoolRef>(nullptr),
         frame_size_);
-    VTCompressionSessionInvalidate(compression_session_);
+    VTCompressionSessionInvalidate(compression_session_.get());
     compression_session_.reset();
   }
 }
@@ -415,8 +415,9 @@ bool H264VideoToolboxEncoder::EncodeVideoFrame(
   // Submit the frame to the compression session. The function returns as soon
   // as the frame has been enqueued.
   OSStatus status = VTCompressionSessionEncodeFrame(
-      compression_session_, pixel_buffer, timestamp_cm, CMTime{0, 0, 0, 0},
-      frame_props, reinterpret_cast<void*>(request.release()), nullptr);
+      compression_session_.get(), pixel_buffer.get(), timestamp_cm,
+      CMTime{0, 0, 0, 0}, frame_props.get(),
+      reinterpret_cast<void*>(request.release()), nullptr);
   if (status != noErr) {
     DLOG(ERROR) << " VTCompressionSessionEncodeFrame failed: " << status;
     metrics_provider_->SetError(
@@ -478,8 +479,8 @@ void H264VideoToolboxEncoder::EmitFrames() {
   if (!compression_session_)
     return;
 
-  OSStatus status = VTCompressionSessionCompleteFrames(compression_session_,
-                                                       CMTime{0, 0, 0, 0});
+  OSStatus status = VTCompressionSessionCompleteFrames(
+      compression_session_.get(), CMTime{0, 0, 0, 0});
   if (status != noErr) {
     DLOG(ERROR) << " VTCompressionSessionCompleteFrames failed: " << status;
   }

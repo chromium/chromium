@@ -134,7 +134,8 @@ void TryAddingMetadata(
 
   auto metadata = phonehub::BrowserTabsModel::BrowserTabMetadata(
       GURL(*url), base::UTF8ToUTF16(*title),
-      base::Time::FromJsTime(*last_accessed_timestamp), favicon);
+      base::Time::FromMillisecondsSinceUnixEpoch(*last_accessed_timestamp),
+      favicon);
 
   metadatas.push_back(metadata);
 }
@@ -518,7 +519,7 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
   absl::optional<double> js_timestamp =
       notification_data_value.FindDouble("timestamp");
   CHECK(js_timestamp);
-  auto timestamp = base::Time::FromJsTime(*js_timestamp);
+  auto timestamp = base::Time::FromMillisecondsSinceUnixEpoch(*js_timestamp);
 
   absl::optional<int> importance_as_int =
       notification_data_value.FindInt("importance");

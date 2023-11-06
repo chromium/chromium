@@ -1,6 +1,7 @@
 Name: PSM (Private Set Membership) client side
-URL: None
-Version: 15-Sep-2023
+URL: N/A - The repository is internal to Google
+Version: N/A
+Date: 2023-09-15
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: yes

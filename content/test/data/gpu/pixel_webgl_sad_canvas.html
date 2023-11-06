@@ -27,10 +27,6 @@ var numFramesBeforeEnd = 180;
 // period.
 var numContextLosses = 0;
 
-// Test harness looks for this to know when to kill the GPU process
-// the second time.
-var contextRestored = false;
-
 var gl;
 
 function clearToRed() {
@@ -71,7 +67,7 @@ function contextRestoredHandler()
 {
   console.log("Context restored");
   clearToRed();
-  contextRestored = true;
+  sendResult("CONTINUE");
 }
 
 function waitForFinish()

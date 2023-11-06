@@ -23,26 +23,20 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for BySelectorUi2Locator
- */
+/** Tests for BySelectorUi2Locator */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class BySelectorUi2LocatorTest {
     private BySelector mSelector;
 
-    @Mock
-    private UiDevice mDevice;
+    @Mock private UiDevice mDevice;
 
-    @Mock
-    private UiObject2 mRoot;
+    @Mock private UiObject2 mRoot;
 
-    @Mock
-    private UiObject2 mResult0;
+    @Mock private UiObject2 mResult0;
 
-    @Mock
-    private UiObject2 mResult1;
+    @Mock private UiObject2 mResult1;
 
     private List<UiObject2> mResults;
 

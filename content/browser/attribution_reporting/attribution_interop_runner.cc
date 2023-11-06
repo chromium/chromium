@@ -34,7 +34,9 @@
 #include "base/values.h"
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
+#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
@@ -42,7 +44,9 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
+#include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
+#include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
@@ -54,14 +58,15 @@
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/send_result.h"
-#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -70,6 +75,8 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::mojom::RegistrationType;
+
+constexpr int64_t kNavigationId(-1);
 
 base::TimeDelta TimeOffset(base::Time time_origin) {
   return time_origin - base::Time::UnixEpoch();
@@ -283,12 +290,40 @@ class AttributionEventHandler : public AttributionObserver {
         return;
       }
 
-      manager_->HandleSource(
-          StorableSource(std::move(event.reporting_origin),
-                         std::move(*registration),
-                         std::move(event.context_origin), *event.source_type,
-                         /*is_within_fenced_frame=*/false),
-          GlobalRenderFrameHostId());
+      auto* attribution_data_host_manager = manager_->GetDataHostManager();
+
+      mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+
+      switch (*event.source_type) {
+        case attribution_reporting::mojom::SourceType::kNavigation: {
+          const blink::AttributionSrcToken attribution_src_token;
+          attribution_data_host_manager->RegisterNavigationDataHost(
+              data_host_remote.BindNewPipeAndPassReceiver(),
+              attribution_src_token);
+          attribution_data_host_manager->NotifyNavigationRegistrationStarted(
+              attribution_src_token, AttributionInputEvent(),
+              event.context_origin,
+              /*is_within_fenced_frame=*/false, GlobalRenderFrameHostId(),
+              /*navigation_id=*/kNavigationId, /*devtools_request_id=*/"");
+          attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
+              attribution_src_token);
+          break;
+        }
+        case attribution_reporting::mojom::SourceType::kEvent:
+          attribution_data_host_manager->RegisterDataHost(
+              data_host_remote.BindNewPipeAndPassReceiver(),
+              std::move(event.context_origin),
+              /*is_within_fenced_frame=*/false,
+              attribution_reporting::mojom::RegistrationEligibility::
+                  kSourceOrTrigger,
+              GlobalRenderFrameHostId(),
+              /*last_navigation_id=*/kNavigationId);
+          break;
+      }
+
+      data_host_remote->SourceDataAvailable(std::move(event.reporting_origin),
+                                            std::move(*registration));
+      data_host_remote.FlushForTesting();  // IN-TEST
       return;
     }
 
@@ -299,13 +334,19 @@ class AttributionEventHandler : public AttributionObserver {
       return;
     }
 
-    manager_->HandleTrigger(
-        AttributionTrigger(std::move(event.reporting_origin),
-                           std::move(*registration),
-                           std::move(event.context_origin),
-                           /*verifications=*/{},
-                           /*is_within_fenced_frame=*/false),
-        GlobalRenderFrameHostId());
+    mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
+
+    manager_->GetDataHostManager()->RegisterDataHost(
+        data_host_remote.BindNewPipeAndPassReceiver(),
+        std::move(event.context_origin),
+        /*is_within_fenced_frame=*/false,
+        attribution_reporting::mojom::RegistrationEligibility::kSourceOrTrigger,
+        GlobalRenderFrameHostId(),
+        /*last_navigation_id=*/kNavigationId);
+    data_host_remote->TriggerDataAvailable(std::move(event.reporting_origin),
+                                           std::move(*registration),
+                                           /*verifications=*/{});
+    data_host_remote.FlushForTesting();  // IN-TEST
   }
 
   std::vector<AttributionInteropOutput::UnparsableRegistration>
@@ -408,7 +449,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
           GetAggregationServiceProcessingUrl(url::Origin::Create(
               GURL(::aggregation_service::kAggregationServiceCoordinatorAwsCloud
                        .Get()))),
-          PublicKeyset({aggregation_service::GenerateKey().public_key},
+          PublicKeyset({aggregation_service::TestHpkeKey().GetPublicKey()},
                        /*fetch_time=*/base::Time::Now(),
                        /*expiry_time=*/base::Time::Max()));
 

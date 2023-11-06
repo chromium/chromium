@@ -114,7 +114,7 @@ class FooService {
   // Flushes state to disk async and replies.
   FlushAndReply(base::OnceClosure on_done) {
     DCHECK(owning_sequence_->RunsTasksInCurrentSequence());
-    backend_task_runner_->PostTaskAndReply(
+    backend_task_runner_->PostTaskAndReply(FROM_HERE,
         base::BindOnce(&FooBackend::Flush, Unretained(backend_.get()),
         std::move(on_done)));
   }

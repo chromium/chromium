@@ -76,7 +76,7 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
-  public_deps = [ "//ios/chrome/browser/dom_distiller" ]
+  public_deps = [ "//ios/chrome/browser/dom_distiller/model" ]
   allow_circular_includes_from = [ ":reading_list_remover" ]
 }
 
@@ -96,7 +96,7 @@ source_set("reading_list_remover") {
     # a protobuf header from dom_distiller.
     # the inclusion of reading_list_download_service.h is allowed using
     # allow_circular_includes_from.
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
   ]
 }
 
@@ -132,6 +132,7 @@ source_set("unit_tests") {
     "favicon_web_state_dispatcher_impl_unittest.mm",
     "offline_page_tab_helper_unittest.mm",
     "offline_url_utils_unittest.mm",
+    "reading_list_browser_agent_unittest.mm",
     "reading_list_web_state_observer_unittest.mm",
     "url_downloader_unittest.mm",
   ]
@@ -142,13 +143,18 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/favicon/ios",
+    "//components/prefs:test_support",
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/sync/base",
     "//components/sync/model",
-    "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/test",
@@ -156,6 +162,7 @@ source_set("unit_tests") {
     "//net",
     "//services/network:test_support",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 }

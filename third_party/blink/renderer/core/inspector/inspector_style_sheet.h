@@ -147,6 +147,7 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
 
   String FinalURL();
   bool SetText(const String&, ExceptionState&) override;
+  void CSSOMStyleSheetTextReplaced(const String&);
   bool GetText(String* result) override;
   void MarkForSync() { marked_for_sync_ = true; }
   void SyncTextIfNeeded();

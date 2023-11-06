@@ -67,13 +67,13 @@ base::mac::ScopedIOObject<io_service_t> GetDiskImageAncestorForMedia(
   // This is highly unlikely. media as passed in is expected to be of class
   // IOMedia. Since the media service's entire ancestor chain will be checked,
   // though, check it as well.
-  if (IOObjectConformsTo(media, disk_image_class)) {
+  if (IOObjectConformsTo(media.get(), disk_image_class)) {
     return media;
   }
 
   io_iterator_t iterator_ref;
   kern_return_t kr = IORegistryEntryCreateIterator(
-      media, kIOServicePlane,
+      media.get(), kIOServicePlane,
       kIORegistryIterateRecursively | kIORegistryIterateParents, &iterator_ref);
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "IORegistryEntryCreateIterator";
@@ -88,9 +88,9 @@ base::mac::ScopedIOObject<io_service_t> GetDiskImageAncestorForMedia(
   // disk image, and the disk image file's path can be determined by examining
   // the image-path property.
   for (base::mac::ScopedIOObject<io_service_t> ancestor(
-           IOIteratorNext(iterator));
-       ancestor; ancestor.reset(IOIteratorNext(iterator))) {
-    if (IOObjectConformsTo(ancestor, disk_image_class)) {
+           IOIteratorNext(iterator.get()));
+       ancestor; ancestor.reset(IOIteratorNext(iterator.get()))) {
+    if (IOObjectConformsTo(ancestor.get(), disk_image_class)) {
       return ancestor;
     }
   }
@@ -126,7 +126,8 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
     if (di_device) {
       if (image_path) {
         base::apple::ScopedCFTypeRef<CFTypeRef> disk_image_url_cftyperef(
-            IORegistryEntryCreateCFProperty(di_device, CFSTR("DiskImageURL"),
+            IORegistryEntryCreateCFProperty(di_device.get(),
+                                            CFSTR("DiskImageURL"),
                                             /*allocator=*/nullptr,
                                             /*options=*/0));
         if (!disk_image_url_cftyperef) {
@@ -139,9 +140,10 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
             base::apple::CFCast<CFStringRef>(disk_image_url_cftyperef.get());
         if (!disk_image_url_string) {
           base::apple::ScopedCFTypeRef<CFStringRef> observed_type_cf(
-              CFCopyTypeIDDescription(CFGetTypeID(disk_image_url_cftyperef)));
+              CFCopyTypeIDDescription(
+                  CFGetTypeID(disk_image_url_cftyperef.get())));
           LOG(ERROR) << "DiskImageURL: expected CFString, observed "
-                     << base::SysCFStringRefToUTF8(observed_type_cf);
+                     << base::SysCFStringRefToUTF8(observed_type_cf.get());
           return true;
         }
 
@@ -155,13 +157,14 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
         }
 
         base::apple::ScopedCFTypeRef<CFStringRef> disk_image_path(
-            CFURLCopyFileSystemPath(disk_image_url, kCFURLPOSIXPathStyle));
+            CFURLCopyFileSystemPath(disk_image_url.get(),
+                                    kCFURLPOSIXPathStyle));
         if (!disk_image_path) {
           LOG(ERROR) << "CFURLCopyFileSystemPath failed";
           return true;
         }
 
-        *image_path = base::SysCFStringRefToUTF8(disk_image_path);
+        *image_path = base::SysCFStringRefToUTF8(disk_image_path.get());
       }
 
       return true;
@@ -176,7 +179,8 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
     if (hdix_drive) {
       if (image_path) {
         base::apple::ScopedCFTypeRef<CFTypeRef> image_path_cftyperef(
-            IORegistryEntryCreateCFProperty(hdix_drive, CFSTR("image-path"),
+            IORegistryEntryCreateCFProperty(hdix_drive.get(),
+                                            CFSTR("image-path"),
                                             /*allocator=*/nullptr,
                                             /*options=*/0));
         if (!image_path_cftyperef) {
@@ -188,9 +192,9 @@ bool MediaResidesOnDiskImage(base::mac::ScopedIOObject<io_service_t> media,
             base::apple::CFCast<CFDataRef>(image_path_cftyperef.get());
         if (!image_path_data) {
           base::apple::ScopedCFTypeRef<CFStringRef> observed_type_cf(
-              CFCopyTypeIDDescription(CFGetTypeID(image_path_cftyperef)));
+              CFCopyTypeIDDescription(CFGetTypeID(image_path_cftyperef.get())));
           LOG(ERROR) << "image-path: expected CFData, observed "
-                     << base::SysCFStringRefToUTF8(observed_type_cf);
+                     << base::SysCFStringRefToUTF8(observed_type_cf.get());
           return true;
         }
 
@@ -263,13 +267,13 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
   }
 
   // There needs to be exactly one matching service.
-  base::mac::ScopedIOObject<io_service_t> media(IOIteratorNext(iterator));
+  base::mac::ScopedIOObject<io_service_t> media(IOIteratorNext(iterator.get()));
   if (!media) {
     LOG(ERROR) << "IOIteratorNext: no service";
     return DiskImageStatusFailure;
   }
   base::mac::ScopedIOObject<io_service_t> unexpected_service(
-      IOIteratorNext(iterator));
+      IOIteratorNext(iterator.get()));
   if (unexpected_service) {
     LOG(ERROR) << "IOIteratorNext: too many services";
     return DiskImageStatusFailure;
@@ -612,14 +616,14 @@ bool SynchronousDAOperation(const char* name,
   } else if (callback_data->dissenter) {
     if (callback_data->can_log) {
       CFStringRef status_string_cf =
-          DADissenterGetStatusString(callback_data->dissenter);
+          DADissenterGetStatusString(callback_data->dissenter.get());
       std::string status_string;
       if (status_string_cf) {
         status_string.assign(" ");
         status_string.append(base::SysCFStringRefToUTF8(status_string_cf));
       }
       LOG(ERROR) << name << ": dissenter: "
-                 << DADissenterGetStatus(callback_data->dissenter)
+                 << DADissenterGetStatus(callback_data->dissenter.get())
                  << status_string;
     }
     return false;
@@ -656,7 +660,7 @@ void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
   }
 
   base::apple::ScopedCFTypeRef<DADiskRef> disk(DADiskCreateFromBSDName(
-      /*allocator=*/nullptr, session, dmg_bsd_device_name.c_str()));
+      /*allocator=*/nullptr, session.get(), dmg_bsd_device_name.c_str()));
   if (!disk.get()) {
     LOG(ERROR) << "DADiskCreateFromBSDName";
     return;
@@ -667,13 +671,13 @@ void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
   // be able to unmount all mounted filesystems from the disk image, and eject
   // the image. This is harmless if dmg_bsd_device_name already referred to a
   // "whole disk."
-  disk.reset(DADiskCopyWholeDisk(disk));
+  disk.reset(DADiskCopyWholeDisk(disk.get()));
   if (!disk.get()) {
     LOG(ERROR) << "DADiskCopyWholeDisk";
     return;
   }
 
-  base::mac::ScopedIOObject<io_service_t> media(DADiskCopyIOMedia(disk));
+  base::mac::ScopedIOObject<io_service_t> media(DADiskCopyIOMedia(disk.get()));
   if (!media.get()) {
     LOG(ERROR) << "DADiskCopyIOMedia";
     return;
@@ -689,15 +693,13 @@ void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
 
   // SynchronousDADiskUnmount and SynchronousDADiskEject require that the
   // session be scheduled with the current run loop.
-  ScopedDASessionScheduleWithRunLoop session_run_loop(session,
-                                                      CFRunLoopGetCurrent(),
-                                                      kCFRunLoopCommonModes);
+  ScopedDASessionScheduleWithRunLoop session_run_loop(
+      session.get(), CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
 
   // Retry the unmount in a loop to give anything that may have been in use on
   // the disk image (such as crashpad_handler) a chance to exit.
   int tries = 15;
-  while (!SynchronousDADiskUnmount(disk,
-                                   kDADiskUnmountOptionWhole,
+  while (!SynchronousDADiskUnmount(disk.get(), kDADiskUnmountOptionWhole,
                                    --tries == 0)) {
     if (tries == 0) {
       LOG(ERROR) << "SynchronousDADiskUnmount";
@@ -706,7 +708,7 @@ void EjectAndTrashDiskImage(const std::string& dmg_bsd_device_name) {
     sleep(1);
   }
 
-  if (!SynchronousDADiskEject(disk, kDADiskEjectOptionDefault)) {
+  if (!SynchronousDADiskEject(disk.get(), kDADiskEjectOptionDefault)) {
     LOG(ERROR) << "SynchronousDADiskEject";
     return;
   }

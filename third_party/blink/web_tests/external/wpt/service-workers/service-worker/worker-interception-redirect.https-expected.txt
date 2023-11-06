@@ -1,58 +1,44 @@
 This is a testharness.js-based test.
-Found 54 tests; 31 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS initialize global state
-PASS Case #1: network scope1->scope2 (classic DedicatedWorker)
-PASS Case #1: network scope1->scope2 (module DedicatedWorker)
-FAIL Case #1: network scope1->scope2 (classic SharedWorker) assert_equals: expected "the worker script was served from network" but got "sw2 saw the request for the worker script"
-FAIL Case #1: network scope1->scope2 (module SharedWorker) assert_equals: expected "the worker script was served from network" but got "sw2 saw the request for the worker script"
-PASS Case #2: network scope1->out-scope (classic DedicatedWorker)
-PASS Case #2: network scope1->out-scope (module DedicatedWorker)
-PASS Case #2: network scope1->out-scope (classic SharedWorker)
-PASS Case #2: network scope1->out-scope (module SharedWorker)
-FAIL Case #3: sw scope1->scope2 (classic DedicatedWorker) assert_unreached: Worker error Reached unreachable code
-FAIL Case #3: sw scope1->scope2 (module DedicatedWorker) assert_unreached: Worker error Reached unreachable code
-PASS Case #3: sw scope1->scope2 (classic SharedWorker)
-PASS Case #3: sw scope1->scope2 (module SharedWorker)
-FAIL Case #4: sw scope1->out-scope (classic DedicatedWorker) assert_unreached: Worker error Reached unreachable code
-FAIL Case #4: sw scope1->out-scope (module DedicatedWorker) assert_unreached: Worker error Reached unreachable code
-PASS Case #4: sw scope1->out-scope (classic SharedWorker)
-PASS Case #4: sw scope1->out-scope (module SharedWorker)
-PASS cleanup global state
-FAIL Case #1: network scope1->scope2 (classic DedicatedWorker, importScripts()) assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/scope2/import-scripts-echo.py" but got "importScripts: served from network (scope2/)"
-FAIL Case #1: network scope1->scope2 (classic DedicatedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/scope2/simple.txt" but got "fetch(): a simple text file (scope2/)\n"
-PASS Case #1: network scope1->scope2 (classic DedicatedWorker, location.href)
-PASS Case #1: network scope1->scope2 (module DedicatedWorker, importScripts())
-FAIL Case #1: network scope1->scope2 (module DedicatedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/scope2/simple.txt" but got "fetch(): a simple text file (scope2/)\n"
-PASS Case #1: network scope1->scope2 (module DedicatedWorker, location.href)
-FAIL Case #1: network scope1->scope2 (classic SharedWorker, importScripts()) assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/scope2/import-scripts-echo.py" but got "sw2 saw importScripts from the worker: /service-workers/service-worker/resources/subdir/import-scripts-echo.py"
-FAIL Case #1: network scope1->scope2 (classic SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/scope2/simple.txt" but got "fetch(): sw2 saw the fetch from the worker: /service-workers/service-worker/resources/subdir/simple.txt"
-FAIL Case #1: network scope1->scope2 (classic SharedWorker, location.href) assert_equals: location.href expected "https://web-platform.test:8444/service-workers/service-worker/resources/scope2/worker_interception_redirect_webworker.py" but got "https://web-platform.test:8444/service-workers/service-worker/resources/subdir/worker_interception_redirect_webworker.py?greeting=sw2%20saw%20the%20request%20for%20the%20worker%20script"
-PASS Case #1: network scope1->scope2 (module SharedWorker, importScripts())
-FAIL Case #1: network scope1->scope2 (module SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/scope2/simple.txt" but got "fetch(): sw2 saw the fetch from the worker: /service-workers/service-worker/resources/subdir/simple.txt"
-FAIL Case #1: network scope1->scope2 (module SharedWorker, location.href) assert_equals: location.href expected "https://web-platform.test:8444/service-workers/service-worker/resources/scope2/worker_interception_redirect_webworker.py" but got "https://web-platform.test:8444/service-workers/service-worker/resources/subdir/worker_interception_redirect_webworker.py?greeting=sw2%20saw%20the%20request%20for%20the%20worker%20script"
-FAIL Case #2: network scope1->out-scope (classic DedicatedWorker, importScripts()) assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py" but got "importScripts: served from network"
-FAIL Case #2: network scope1->out-scope (classic DedicatedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #2: network scope1->out-scope (classic DedicatedWorker, location.href)
-PASS Case #2: network scope1->out-scope (module DedicatedWorker, importScripts())
-FAIL Case #2: network scope1->out-scope (module DedicatedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #2: network scope1->out-scope (module DedicatedWorker, location.href)
-FAIL Case #2: network scope1->out-scope (classic SharedWorker, importScripts()) assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py" but got "importScripts: served from network"
-FAIL Case #2: network scope1->out-scope (classic SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #2: network scope1->out-scope (classic SharedWorker, location.href)
-PASS Case #2: network scope1->out-scope (module SharedWorker, importScripts())
-FAIL Case #2: network scope1->out-scope (module SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #2: network scope1->out-scope (module SharedWorker, location.href)
-PASS Case #3: sw scope1->scope2 (classic SharedWorker, importScripts())
-PASS Case #3: sw scope1->scope2 (classic SharedWorker, fetch())
-PASS Case #3: sw scope1->scope2 (classic SharedWorker, location.href)
-PASS Case #3: sw scope1->scope2 (module SharedWorker, importScripts())
-PASS Case #3: sw scope1->scope2 (module SharedWorker, fetch())
-PASS Case #3: sw scope1->scope2 (module SharedWorker, location.href)
-FAIL Case #4: sw scope1->out-scope (classic SharedWorker, importScripts()) assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py" but got "importScripts: served from network"
-FAIL Case #4: sw scope1->out-scope (classic SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #4: sw scope1->out-scope (classic SharedWorker, location.href)
-PASS Case #4: sw scope1->out-scope (module SharedWorker, importScripts())
-FAIL Case #4: sw scope1->out-scope (module SharedWorker, fetch()) assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
-PASS Case #4: sw scope1->out-scope (module SharedWorker, location.href)
+[PASS] initialize global state
+[FAIL] Case #1: network scope1->scope2 (classic DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #1: network scope1->scope2 (module DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #1: network scope1->scope2 (classic SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #1: network scope1->scope2 (module SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #2: network scope1->out-scope (classic DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #2: network scope1->out-scope (module DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #2: network scope1->out-scope (classic SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #2: network scope1->out-scope (module SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #3: sw scope1->scope2 (classic DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #3: sw scope1->scope2 (module DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #3: sw scope1->scope2 (classic SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #3: sw scope1->scope2 (module SharedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #4: sw scope1->out-scope (classic DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[FAIL] Case #4: sw scope1->out-scope (module DedicatedWorker)
+  assert_unreached: Worker error Reached unreachable code
+[PASS] Case #4: sw scope1->out-scope (classic SharedWorker)
+[PASS] Case #4: sw scope1->out-scope (module SharedWorker)
+[PASS] cleanup global state
+[FAIL] Case #4: sw scope1->out-scope (classic SharedWorker, importScripts())
+  assert_equals: expected "sw1 saw importScripts from the worker: /service-workers/service-worker/resources/import-scripts-echo.py" but got "importScripts: served from network"
+[FAIL] Case #4: sw scope1->out-scope (classic SharedWorker, fetch())
+  assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
+[PASS] Case #4: sw scope1->out-scope (classic SharedWorker, location.href)
+[PASS] Case #4: sw scope1->out-scope (module SharedWorker, importScripts())
+[FAIL] Case #4: sw scope1->out-scope (module SharedWorker, fetch())
+  assert_equals: expected "fetch(): sw1 saw the fetch from the worker: /service-workers/service-worker/resources/simple.txt" but got "fetch(): a simple text file\n"
+[PASS] Case #4: sw scope1->out-scope (module SharedWorker, location.href)
 Harness: the test ran to completion.
 

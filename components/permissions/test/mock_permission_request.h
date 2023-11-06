@@ -23,6 +23,8 @@ class MockPermissionRequest : public PermissionRequest {
   MockPermissionRequest(const GURL& requesting_origin,
                         RequestType request_type,
                         PermissionRequestGestureType gesture_type);
+  MockPermissionRequest(RequestType request_type,
+                        bool embedded_permission_element_initiated);
 
   ~MockPermissionRequest() override;
 

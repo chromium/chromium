@@ -570,9 +570,6 @@ void ParseConfigFields(const base::Feature* feature,
       }
       *output.snooze_params = parsed_snooze_params;
     } else if (key == kGroupsKey && output.groups) {
-      if (!base::FeatureList::IsEnabled(kIPHGroups)) {
-        continue;
-      }
       std::vector<std::string> groups;
       if (!ParseGroups(param_value, &groups, feature, known_groups)) {
         stats::RecordConfigParsingEvent(

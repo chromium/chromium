@@ -11,12 +11,12 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "build/buildflag.h"
+#include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
-#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 #include "content/public/browser/file_system_access_permission_context.h"
@@ -79,6 +79,27 @@ std::vector<std::string> GetRelativePathAsVectorOfStrings(
 #endif  //  BUILDFLAG(IS_WIN)
 }
 
+blink::mojom::FileSystemAccessEntryPtr CreateEntryForUrl(
+    FileSystemAccessManagerImpl& manager,
+    const FileSystemAccessManagerImpl::BindingContext& binding_context,
+    const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
+    const storage::FileSystemURL& url,
+    FileSystemAccessPermissionContext::HandleType handle_type) {
+  switch (handle_type) {
+    case FileSystemAccessPermissionContext::HandleType::kFile:
+      return blink::mojom::FileSystemAccessEntry::New(
+          blink::mojom::FileSystemAccessHandle::NewFile(
+              manager.CreateFileHandle(binding_context, url, handle_state)),
+          url.virtual_path().BaseName().AsUTF8Unsafe());
+    case FileSystemAccessPermissionContext::HandleType::kDirectory:
+      return blink::mojom::FileSystemAccessEntry::New(
+          blink::mojom::FileSystemAccessHandle::NewDirectory(
+              manager.CreateDirectoryHandle(binding_context, url,
+                                            handle_state)),
+          url.virtual_path().BaseName().AsUTF8Unsafe());
+  }
+}
+
 }  // namespace
 
 FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
@@ -139,7 +160,7 @@ void FileSystemAccessObserverObservation::OnChanges(
 
   std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
   for (const auto& change : changes) {
-    if (change.error) {
+    if (change.type->is_errored()) {
       // TODO(https://crbug.com/1019297): Consider destroying `observation_`...
       // Or don't bother passing along errored changes from the WatcherManager
       // to its Observations in the first place.
@@ -153,35 +174,27 @@ void FileSystemAccessObserverObservation::OnChanges(
     // It is illegal to receive a change outside of the observed scope.
     CHECK(observation_->scope().Contains(change.url));
 
-    blink::mojom::FileSystemAccessEntryPtr changed_entry, root_entry;
-    switch (GetHandleType(handle_)) {
-        // TODO(https://crbug.com/1425601): Don't assume the `HandleType` of the
-        // changed path is the same as `handle_`'s.
-      case FileSystemAccessPermissionContext::HandleType::kDirectory:
-        changed_entry = blink::mojom::FileSystemAccessEntry::New(
-            blink::mojom::FileSystemAccessHandle::NewDirectory(
-                manager->CreateDirectoryHandle(binding_context, change.url,
-                                               handle_state)),
-            change.url.virtual_path().BaseName().AsUTF8Unsafe());
-        root_entry = blink::mojom::FileSystemAccessEntry::New(
-            blink::mojom::FileSystemAccessHandle::NewDirectory(
-                manager->CreateDirectoryHandle(binding_context, handle_url,
-                                               handle_state)),
-            handle_url.virtual_path().BaseName().AsUTF8Unsafe());
+    blink::mojom::FileSystemAccessEntryPtr root_entry =
+        CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,
+                          GetHandleType(handle_));
+    FileSystemAccessPermissionContext::HandleType changed_entry_handle_type;
+    switch (change.file_path_type) {
+      case FileSystemAccessChangeSource::FilePathType::kUnknown:
+        // Fall back to using the same handle type as the root handle.
+        changed_entry_handle_type = GetHandleType(handle_);
         break;
-      case FileSystemAccessPermissionContext::HandleType::kFile:
-        changed_entry = blink::mojom::FileSystemAccessEntry::New(
-            blink::mojom::FileSystemAccessHandle::NewFile(
-                manager->CreateFileHandle(binding_context, change.url,
-                                          handle_state)),
-            change.url.virtual_path().BaseName().AsUTF8Unsafe());
-        root_entry = blink::mojom::FileSystemAccessEntry::New(
-            blink::mojom::FileSystemAccessHandle::NewFile(
-                manager->CreateFileHandle(binding_context, handle_url,
-                                          handle_state)),
-            handle_url.virtual_path().BaseName().AsUTF8Unsafe());
+      case FileSystemAccessChangeSource::FilePathType::kDirectory:
+        changed_entry_handle_type =
+            FileSystemAccessPermissionContext::HandleType::kDirectory;
+        break;
+      case FileSystemAccessChangeSource::FilePathType::kFile:
+        changed_entry_handle_type =
+            FileSystemAccessPermissionContext::HandleType::kFile;
         break;
     }
+    blink::mojom::FileSystemAccessEntryPtr changed_entry =
+        CreateEntryForUrl(*manager, binding_context, handle_state, change.url,
+                          changed_entry_handle_type);
 
     const base::FilePath& root_path = handle_url.path();
     const base::FilePath& changed_path = change.url.path();
@@ -199,9 +212,7 @@ void FileSystemAccessObserverObservation::OnChanges(
         blink::mojom::FileSystemAccessChangeMetadata::New(
             std::move(root_entry), std::move(changed_entry),
             GetRelativePathAsVectorOfStrings(relative_path)),
-        // TODO(https://crbug.com/1425601): Support change types.
-        blink::mojom::FileSystemAccessChangeType::NewModified(
-            blink::mojom::FileSystemAccessChangeTypeModified::New())));
+        change.type->Clone()));
   }
 
   remote_->OnFileChanges(std::move(mojo_changes));

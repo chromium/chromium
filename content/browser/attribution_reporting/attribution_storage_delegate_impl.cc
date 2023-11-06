@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
@@ -21,15 +20,17 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
-#include "content/browser/attribution_reporting/combinatorics.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -40,15 +41,6 @@ namespace {
 
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::mojom::SourceType;
-
-// The max possible number of state combinations given a valid input.
-constexpr int64_t kMaxNumCombinations = 4191844505805495;
-
-bool GenerateWithRate(double r) {
-  DCHECK_GE(r, 0);
-  DCHECK_LE(r, 1);
-  return base::RandDouble() < r;
-}
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
 GetNullAggregatableReportsForLookback(
@@ -207,135 +199,39 @@ void AttributionStorageDelegateImpl::ShuffleTriggerVerifications(
 double AttributionStorageDelegateImpl::GetRandomizedResponseRate(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
-    int max_event_level_reports) const {
+    attribution_reporting::MaxEventLevelReports max_event_level_reports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return content::GetRandomizedResponseRate(
-      GetNumStates(source_type, event_report_windows, max_event_level_reports),
+      GetNumStates(attribution_reporting::TriggerSpecs::Default(
+                       source_type, event_report_windows),
+                   max_event_level_reports),
       config_.event_level_limit.randomized_response_epsilon);
-}
-
-int64_t AttributionStorageDelegateImpl::GetNumStates(
-    SourceType source_type,
-    const EventReportWindows& event_report_windows,
-    int max_event_level_reports) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return GetNumberOfStarsAndBarsSequences(
-      /*num_stars=*/max_event_level_reports,
-      /*num_bars=*/TriggerDataCardinality(source_type) *
-          event_report_windows.end_times().size());
 }
 
 AttributionStorageDelegate::GetRandomizedResponseResult
 AttributionStorageDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const EventReportWindows& event_report_windows,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RandomizedResponseData response = DoRandomizedResponse(
+      attribution_reporting::TriggerSpecs::Default(source_type,
+                                                   event_report_windows),
+      max_event_level_reports,
+      config_.event_level_limit.randomized_response_epsilon);
 
-  const int64_t num_states =
-      GetNumStates(source_type, event_report_windows, max_event_level_reports);
-
-  const double rate = content::GetRandomizedResponseRate(
-      num_states, config_.event_level_limit.randomized_response_epsilon);
-
-  const double capacity = ComputeChannelCapacity(num_states, rate);
-
-  if (capacity > GetMaxChannelCapacity(source_type)) {
+  if (response.channel_capacity() > GetMaxChannelCapacity(source_type)) {
     return base::unexpected(ExceedsChannelCapacityLimit());
   }
 
   switch (noise_mode_) {
-    case AttributionNoiseMode::kDefault: {
-      return RandomizedResponseData(
-          rate, GenerateWithRate(rate)
-                    ? absl::make_optional(GetRandomFakeReports(
-                          source_type, event_report_windows,
-                          max_event_level_reports, source_time, num_states))
-                    : absl::nullopt);
-    }
+    case AttributionNoiseMode::kDefault:
+      return response;
     case AttributionNoiseMode::kNone:
-      return RandomizedResponseData(rate, absl::nullopt);
+      return RandomizedResponseData(response.rate(),
+                                    response.channel_capacity(), absl::nullopt);
   }
-}
-
-std::vector<AttributionStorageDelegate::FakeReport>
-AttributionStorageDelegateImpl::GetRandomFakeReports(
-    SourceType source_type,
-    const EventReportWindows& event_report_windows,
-    int max_event_level_reports,
-    base::Time source_time,
-    int64_t num_states) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
-
-  DCHECK_EQ(num_states, GetNumStates(source_type, event_report_windows,
-                                     max_event_level_reports));
-
-  const int64_t sequence_index =
-      static_cast<int64_t>(base::RandGenerator(num_states));
-  DCHECK_GE(sequence_index, 0);
-  DCHECK_LE(sequence_index, kMaxNumCombinations);
-
-  return GetFakeReportsForSequenceIndex(source_type, event_report_windows,
-                                        max_event_level_reports, source_time,
-                                        sequence_index);
-}
-
-std::vector<AttributionStorageDelegate::FakeReport>
-AttributionStorageDelegateImpl::GetFakeReportsForSequenceIndex(
-    SourceType source_type,
-    const EventReportWindows& event_report_windows,
-    int max_event_level_reports,
-    base::Time source_time,
-    int64_t random_stars_and_bars_sequence_index) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(noise_mode_, AttributionNoiseMode::kDefault);
-
-  const int trigger_data_cardinality = TriggerDataCardinality(source_type);
-
-  const std::vector<int> bars_preceding_each_star =
-      GetBarsPrecedingEachStar(GetStarIndices(
-          /*num_stars=*/max_event_level_reports,
-          /*num_bars=*/trigger_data_cardinality *
-              event_report_windows.end_times().size(),
-          /*sequence_index=*/random_stars_and_bars_sequence_index));
-
-  std::vector<FakeReport> fake_reports;
-
-  // an output state is uniquely determined by an ordering of c stars and w*d
-  // bars, where:
-  // w = the number of reporting windows
-  // c = the maximum number of reports for a source
-  // d = the trigger data cardinality for a source
-  for (int num_bars : bars_preceding_each_star) {
-    if (num_bars == 0) {
-      continue;
-    }
-
-    auto result = std::div(num_bars - 1, trigger_data_cardinality);
-
-    const int trigger_data = result.rem;
-    DCHECK_GE(trigger_data, 0);
-    DCHECK_LT(trigger_data, trigger_data_cardinality);
-
-    base::Time report_time = event_report_windows.ReportTimeAtWindow(
-        source_time, /*window_index=*/result.quot);
-    // The last trigger time will always fall within a report window, no matter
-    // the report window's start time.
-    base::Time trigger_time = LastTriggerTimeForReportTime(report_time);
-
-    DCHECK_EQ(event_report_windows.ComputeReportTime(source_time, trigger_time),
-              report_time);
-
-    fake_reports.push_back({
-        .trigger_data = static_cast<uint64_t>(trigger_data),
-        .trigger_time = trigger_time,
-        .report_time = report_time,
-    });
-  }
-  DCHECK_LE(fake_reports.size(), static_cast<size_t>(max_event_level_reports));
-  return fake_reports;
 }
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
@@ -344,12 +240,6 @@ AttributionStorageDelegateImpl::GetNullAggregatableReports(
     base::Time trigger_time,
     absl::optional<base::Time> attributed_source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!base::FeatureList::IsEnabled(
-          attribution_reporting::features::
-              kAttributionReportingNullAggregatableReports)) {
-    return {};
-  }
 
   switch (noise_mode_) {
     case AttributionNoiseMode::kDefault:

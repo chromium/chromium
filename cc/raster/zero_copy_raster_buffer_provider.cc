@@ -19,6 +19,7 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -128,10 +129,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
                        gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
-      backing_->mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format_, resource_size_, resource_color_space_,
           kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
           "ZeroCopyRasterTile", gpu_memory_buffer_->CloneHandle());
+      CHECK(client_shared_image);
+      backing_->mailbox = client_shared_image->mailbox();
     } else {
       sii->UpdateSharedImage(backing_->returned_sync_token, backing_->mailbox);
     }
@@ -165,15 +168,15 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
       if (backing_->mailbox.IsZero()) {
         uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_SCANOUT;
-        backing_->mailbox = sii->CreateSharedImage(
+        auto client_shared_image = sii->CreateSharedImage(
             format_, resource_size_, resource_color_space_,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
             "ZeroCopyRasterTile", gpu::kNullSurfaceHandle, kBufferUsage);
-      }
-
-      if (backing_->mailbox.IsZero()) {
-        LOG(ERROR) << "Creation of MappableSharedImage failed.";
-        return;
+        if (!client_shared_image) {
+          LOG(ERROR) << "Creation of MappableSharedImage failed.";
+          return;
+        }
+        backing_->mailbox = client_shared_image->mailbox();
       }
 
       mapping = sii->MapSharedImage(backing_->mailbox);

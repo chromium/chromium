@@ -221,7 +221,7 @@ const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory{
 
 BASE_FEATURE(kShoppingCollection,
              "ShoppingCollection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingList, "ShoppingList", base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
@@ -237,11 +237,11 @@ BASE_FEATURE(kShoppingListRegionLaunched,
 
 BASE_FEATURE(kShoppingListTrackByDefault,
              "ShoppingListTrackByDefault",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingListWAARestrictionRemoval,
              "ShoppingListWAARestrictionRemoval",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
@@ -292,6 +292,14 @@ BASE_FEATURE(kParcelTracking,
 BASE_FEATURE(kParcelTrackingRegionLaunched,
              "ParcelTrackingRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kParcelTrackingTestData,
+             "ParcelTrackingTestData",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kParcelTrackingTestDataParam[] = "ParcelTrackingTestData";
+const char kParcelTrackingTestDataParamDelivered[] = "Delivered";
+const char kParcelTrackingTestDataParamInProgress[] = "InProgress";
+const char kParcelTrackingTestDataParamOutForDelivery[] = "OutForDelivery";
 
 // Params for Discount Consent V2 in the NTP Cart module.
 const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =

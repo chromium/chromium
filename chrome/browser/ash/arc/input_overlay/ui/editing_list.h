@@ -5,35 +5,38 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UI_EDITING_LIST_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/events/event.h"
 #include "ui/views/view.h"
+
+namespace ui {
+class LocatedEvent;
+}  // namespace ui
 
 namespace views {
 class Label;
+class LabelButton;
 class ScrollView;
+class TableLayoutView;
 }  // namespace views
-
-namespace ash {
-class IconButton;
-}  // namespace ash
 
 namespace arc::input_overlay {
 
 class DisplayOverlayController;
 
 // EditingList contains the list of controls.
-//    _________________________________
-//   |icon|       "Editing"       |icon|
-//   |   ___________________________   |
+//   +---------------------------------+
+//   ||"Controls"|       |icon||"Done"||
+//   ||"Create button"|             |+||
+//   |  +---------------------------+  |
 //   |  |                           |  |
-//   |  |    zero-state or          |  |
+//   |  |    empty or               |  |
 //   |  |    scrollable list        |  |
-//   |  |___________________________|  |
-//   |_________________________________|
-//
+//   |  |                           |  |
+//   |  +---------------------------+  |
+//   +---------------------------------+
 class EditingList : public views::View, public TouchInjectorObserver {
  public:
   METADATA_HEADER(EditingList);
@@ -63,14 +66,30 @@ class EditingList : public views::View, public TouchInjectorObserver {
 
   // Add top buttons and title.
   void AddHeader();
-  // Add the zero state view when there are no actions / controls.
-  void AddZeroStateContent();
+  // Adds the UI row for creating new actions.
+  void AddActionAddRow();
   // Add the list view for the actions / controls.
   void AddControlListContent();
+
+  // Updates changes depending on whether `is_zero_state` is true.
+  void UpdateOnZeroState(bool is_zero_state);
+
+  // Updates the `add_container_` background. If `add_background` is true, add
+  // a default background to `add_container_`. Otherwise, remove the background.
+  void UpdateAddContainerBackground(bool add_background);
+
+  // Updates the `scroll_view_` when the `scroll_content_` changes. If
+  // `scroll_to_bottom` is true, scroll `scroll_view_` to the bottom.
+  void UpdateScrollView(bool scroll_to_bottom);
+  // Called when `scroll_view_` is scrolled.
+  void OnScrollViewScrolled();
+  // Returns true if `scroll_view_` is scrolled with an offset.
+  bool HasScrollOffset();
 
   // Functions related to buttons.
   void OnAddButtonPressed();
   void OnDoneButtonPressed();
+  void OnHelpButtonPressed();
   void UpdateAddButtonState();
 
   // Drag operations.
@@ -89,6 +108,7 @@ class EditingList : public views::View, public TouchInjectorObserver {
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void OnThemeChanged() override;
 
   // TouchInjectorObserver:
   void OnActionAdded(Action& action) override;
@@ -104,15 +124,22 @@ class EditingList : public views::View, public TouchInjectorObserver {
   raw_ptr<views::View> scroll_content_;
   // It wraps `scroll_content_` and adds scrolling feature.
   raw_ptr<views::ScrollView> scroll_view_;
+
   // Label for list header.
   raw_ptr<views::Label> editing_header_label_;
-  raw_ptr<ash::IconButton> add_button_;
+
+  // UIs in the row of creating new action.
+  raw_ptr<views::TableLayoutView> add_container_;
+  raw_ptr<views::Label> add_title_;
+  raw_ptr<views::LabelButton> add_button_;
 
   // Used to tell if the zero state view shows up.
   bool is_zero_state_ = false;
 
   // LocatedEvent's position when drag starts.
   gfx::Point start_drag_event_pos_;
+
+  base::CallbackListSubscription on_scroll_view_scrolled_subscription_;
 };
 
 }  // namespace arc::input_overlay

@@ -14,9 +14,14 @@ source_set("features") {
 static_library("browser") {
   sources = [
     "compose_client.h",
+    "compose_dialog_controller.h",
     "compose_manager.h",
     "compose_manager_impl.cc",
     "compose_manager_impl.h",
+    "compose_metrics.cc",
+    "compose_metrics.h",
+    "config.cc",
+    "config.h",
   ]
 
   public_deps = [ ":features" ]

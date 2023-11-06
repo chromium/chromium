@@ -12,10 +12,10 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_almanac_connector.h"
+#include "chrome/browser/apps/app_service/promise_apps/promise_app_metrics.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_utils.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_wrapper.h"
@@ -25,6 +25,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "google_apis/google_api_keys.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -180,6 +181,7 @@ void PromiseAppService::OnAppUpdate(const apps::AppUpdate& update) {
   // Delete the promise app.
   PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id.value());
   promise_app->status = PromiseStatus::kSuccess;
+  promise_app->installed_app_id = update.AppId();
   OnPromiseApp(std::move(promise_app));
 }
 
@@ -214,12 +216,16 @@ void PromiseAppService::OnGetPromiseAppInfoCompleted(
   // promise app item. When an icon is requested, the PromiseAppIconCache will
   // fallback to returning a placeholder icon.
   if (!promise_app_info.has_value() ||
+      !promise_app_info->GetName().has_value() ||
       promise_app_info->GetIcons().size() == 0) {
-    PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
-    promise_app->should_show = true;
-    promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+    RecordPromiseAppIconType(PromiseAppIconType::kPlaceholderIcon);
+    SetPromiseAppReadyToShow(package_id);
     return;
   }
+
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->name = promise_app_info->GetName().value();
+  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
 
   pending_download_count_[package_id] = promise_app_info->GetIcons().size();
 
@@ -269,11 +275,13 @@ void PromiseAppService::OnIconDownloaded(
     return;
   }
   pending_download_count_.erase(package_id);
+  RecordPromiseAppIconType(
+      promise_app_icon_cache_->DoesPackageIdHaveIcons(package_id)
+          ? PromiseAppIconType::kRealIcon
+          : PromiseAppIconType::kPlaceholderIcon);
 
   // Update the promise app so it can show to the user.
-  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
-  promise_app->should_show = true;
-  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+  SetPromiseAppReadyToShow(package_id);
 }
 
 bool PromiseAppService::IsRegisteredInAppRegistryCache(
@@ -302,6 +310,30 @@ bool PromiseAppService::IsRegisteredInAppRegistryCache(
         return;
       });
   return is_registered;
+}
+
+void PromiseAppService::SetPromiseAppReadyToShow(const PackageId& package_id) {
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->should_show = true;
+  promise_app_registry_cache_->OnPromiseApp(std::move(promise_app));
+}
+
+void PromiseAppService::OnApkWebAppInstallationFinished(
+    const std::string& package_name) {
+  PackageId package_id(AppType::kArc, package_name);
+
+  // Successful APK web app installations are already handled during a call to
+  // observers via AppRegistryCache::OnAppUpdate which happens before this
+  // method is called.
+  if (!promise_app_registry_cache_->HasPromiseApp(package_id)) {
+    return;
+  }
+
+  // We get to this point if the APK web installation failed. In this case, we
+  // should remove the promise app and consider it a cancellation.
+  PromiseAppPtr promise_app = std::make_unique<PromiseApp>(package_id);
+  promise_app->status = PromiseStatus::kCancelled;
+  OnPromiseApp(std::move(promise_app));
 }
 
 }  // namespace apps

@@ -10,7 +10,7 @@ layer at (0,0)
         LayoutText {#text} at (0,0) size 1145x53
           text run at (0,0) width 1145: "This tests to make sure that the caret is visible in the black background by getting the caret color from the color of the"
           text run at (0,27) width 974: "element(span) containing the text, not the parent element(div) that has the contentEditable attribute."
-      LayoutNGBlockFlow {DIV} at (0,78) size 1176x84 [border: (3px solid #FF0000)]
+      LayoutNGBlockFlow {DIV} at (0,78) size 1176x84 [border: (3px solid #FF0000) (3px solid #FF0000) (3px solid #FF0000) (3px solid #FF0000)]
         LayoutInline {SPAN} at (21,22) size 279x40 [color=#FFFFFF] [bgcolor=#000000]
           LayoutText {#text} at (21,22) size 279x40
             text run at (21,22) width 279: "Where is my caret?"

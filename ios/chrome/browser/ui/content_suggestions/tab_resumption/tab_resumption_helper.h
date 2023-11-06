@@ -9,7 +9,9 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "url/gurl.h"
 
 class Browser;
 class FaviconLoader;
@@ -27,7 +29,10 @@ class SessionSyncService;
 // Helper class to control the tab resumption feature.
 class TabResumptionHelper {
  public:
-  TabResumptionHelper(Browser* browser);
+  TabResumptionHelper(const TabResumptionHelper&) = delete;
+  TabResumptionHelper& operator=(const TabResumptionHelper&) = delete;
+
+  explicit TabResumptionHelper(Browser* browser);
 
   // Type for completion block for GetLastTabResumptionItem().
   typedef void (^TabResumptionItemCompletionBlock)(TabResumptionItem*);
@@ -40,9 +45,20 @@ class TabResumptionHelper {
   // Sets `can_show_most_recent_item`.
   void SetCanSHowMostRecentItem(const bool show);
 
+  // Opens the last synced tab from another device.
+  void OpenDistantTab();
+
  private:
   // Bool that tracks if a most recent tab item can be displayed.
   bool can_show_most_recent_item_ = true;
+  // Last distant tab resumption item URL.
+  GURL last_distant_item_url_;
+
+  // Tab identifier of the last distant tab resumption item.
+  SessionID tab_id_ = SessionID::InvalidValue();
+  // Session tag of the last distant tab resumption item.
+  std::string session_tag_;
+
   // The owning Browser.
   raw_ptr<Browser> browser_ = nullptr;
   // Loads favicons.

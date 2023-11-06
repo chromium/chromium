@@ -9,8 +9,8 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as Application from 'devtools/panels/application/application.js';
 import * as Common from 'devtools/core/common/common.js';
 import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel preview for resources of different types.\n`);

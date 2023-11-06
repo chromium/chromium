@@ -6,7 +6,6 @@
  * @fileoverview Test suite for chrome://color-internals/
  */
 
-GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const HOST_ORIGIN = 'chrome://color-internals';
@@ -24,10 +23,6 @@ var ColorInternalsUIBrowserTest = class extends testing.Test {
   /** @override */
   get isAsync() {
     return true;
-  }
-  /** @override */
-  get featureList() {
-    return {enabled: ['chromeos::features::kJelly']};
   }
 };
 
@@ -58,17 +53,16 @@ TEST_F('ColorInternalsUIBrowserTest', 'DisplaysWallpaperColors', async () => {
     resolve();
   });
 
-  const prominentColorsContainer =
-      document.getElementById('wallpaper-prominent-colors-container');
-  assertGT(
-      prominentColorsContainer.querySelectorAll('.wallpaper-color-container')
-          .length,
-      1, 'more than 1 wallpaper prominent color should be displayed');
-
   const kMeanContainer =
       document.getElementById('wallpaper-k-mean-color-container');
   assertEquals(
       kMeanContainer.querySelectorAll('.wallpaper-color-container').length, 1,
       'one k mean color should be displayed');
+
+  const celebiContainer =
+      document.getElementById('wallpaper-celebi-color-container');
+  assertEquals(
+      celebiContainer.querySelectorAll('.wallpaper-color-container').length, 1,
+      'one celebi color should be displayed');
   testDone();
 });

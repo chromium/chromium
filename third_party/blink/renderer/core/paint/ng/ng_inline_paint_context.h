@@ -7,7 +7,7 @@
 
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_decorating_box.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -22,7 +22,7 @@ class CORE_EXPORT NGInlinePaintContext {
   using DecoratingBoxList = HeapVector<NGDecoratingBox, 4>;
   const DecoratingBoxList& DecoratingBoxes() const { return decorating_boxes_; }
 
-  NGInlineCursor CursorForDescendantsOfLine() const {
+  InlineCursor CursorForDescendantsOfLine() const {
     return line_cursor_->CursorForDescendants();
   }
 
@@ -30,13 +30,13 @@ class CORE_EXPORT NGInlinePaintContext {
   void PushDecoratingBox(Args&&... args) {
     decorating_boxes_.emplace_back(std::forward<Args>(args)...);
   }
-  void PushDecoratingBoxAncestors(const NGInlineCursor& inline_box);
+  void PushDecoratingBoxAncestors(const InlineCursor& inline_box);
   void PushDecoratingBoxes(const base::span<NGDecoratingBox>& boxes);
   void PopDecoratingBox(wtf_size_t size);
   void ClearDecoratingBoxes(
       DecoratingBoxList* saved_decorating_boxes = nullptr);
 
-  void SetLineBox(const NGInlineCursor& line_cursor);
+  void SetLineBox(const InlineCursor& line_cursor);
   void ClearLineBox();
 
   const PhysicalOffset& PaintOffset() const { return paint_offset_; }
@@ -49,7 +49,7 @@ class CORE_EXPORT NGInlinePaintContext {
     STACK_ALLOCATED();
 
    public:
-    ScopedInlineItem(const NGFragmentItem& inline_item,
+    ScopedInlineItem(const FragmentItem& inline_item,
                      NGInlinePaintContext* inline_context);
     ~ScopedInlineItem();
 
@@ -65,7 +65,7 @@ class CORE_EXPORT NGInlinePaintContext {
     STACK_ALLOCATED();
 
    public:
-    ScopedInlineBoxAncestors(const NGInlineCursor& inline_box,
+    ScopedInlineBoxAncestors(const InlineCursor& inline_box,
                              NGInlinePaintContext* inline_context);
     ~ScopedInlineBoxAncestors();
 
@@ -78,7 +78,7 @@ class CORE_EXPORT NGInlinePaintContext {
     STACK_ALLOCATED();
 
    public:
-    ScopedLineBox(const NGInlineCursor& line_cursor,
+    ScopedLineBox(const InlineCursor& line_cursor,
                   NGInlinePaintContext* inline_context);
     ~ScopedLineBox();
 
@@ -101,14 +101,14 @@ class CORE_EXPORT NGInlinePaintContext {
 
  private:
   wtf_size_t SyncDecoratingBox(
-      const NGFragmentItem& item,
+      const FragmentItem& item,
       DecoratingBoxList* saved_decorating_boxes = nullptr);
 
   DecoratingBoxList decorating_boxes_;
   // The last |AppliedTextDecorations| |this| was synchronized with.
   const Vector<AppliedTextDecoration, 1>* last_decorations_ = nullptr;
   const Vector<AppliedTextDecoration, 1>* line_decorations_ = nullptr;
-  absl::optional<NGInlineCursor> line_cursor_;
+  absl::optional<InlineCursor> line_cursor_;
   PhysicalOffset paint_offset_;
 };
 

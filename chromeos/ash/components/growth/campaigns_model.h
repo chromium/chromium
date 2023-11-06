@@ -158,6 +158,8 @@ class DemoModeTargeting : public TargetingBase {
   const base::Value::List* GetStoreIds() const;
   const base::Value::List* GetRetailers() const;
   const base::Value::List* GetCountries() const;
+  const std::string* GetAppMinVersion() const;
+  const std::string* GetAppMaxVersion() const;
   const absl::optional<bool> TargetCloudGamingDevice() const;
   const absl::optional<bool> TargetFeatureAwareDevice() const;
 };

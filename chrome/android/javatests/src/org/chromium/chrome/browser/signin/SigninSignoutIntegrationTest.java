@@ -62,9 +62,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
-/**
- * Test the lifecycle of sign-in and sign-out.
- */
+/** Test the lifecycle of sign-in and sign-out. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SigninSignoutIntegrationTest {
@@ -83,20 +81,16 @@ public class SigninSignoutIntegrationTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
-    @Rule
-    public final JniMocker mocker = new JniMocker();
+    @Rule public final JniMocker mocker = new JniMocker();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
-    @Mock
-    private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
+    @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
-    @Mock
-    private SigninManager.SignInStateObserver mSignInStateObserverMock;
+    @Mock private SigninManager.SignInStateObserver mSignInStateObserverMock;
 
     private SigninManager mSigninManager;
 
@@ -106,11 +100,13 @@ public class SigninSignoutIntegrationTest {
     public void setUp() {
         mocker.mock(SigninMetricsUtilsJni.TEST_HOOKS, mSigninMetricsUtilsNativeMock);
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSigninManager = IdentityServicesProvider.get().getSigninManager(
-                    Profile.getLastUsedRegularProfile());
-            mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mSigninManager =
+                            IdentityServicesProvider.get()
+                                    .getSigninManager(Profile.getLastUsedRegularProfile());
+                    mSigninManager.addSignInStateObserver(mSignInStateObserverMock);
+                });
     }
 
     @After
@@ -123,23 +119,33 @@ public class SigninSignoutIntegrationTest {
     @LargeTest
     public void testSignIn() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
-        var signinHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.SignIn.Completed", SigninAccessPoint.SETTINGS);
-        var syncHistogram = HistogramWatcher.newSingleRecordWatcher(
-                "Signin.SyncOptIn.Completed", SigninAccessPoint.SETTINGS);
+        var signinHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Completed", SigninAccessPoint.SETTINGS);
+        var syncHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SyncOptIn.Completed", SigninAccessPoint.SETTINGS);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccountAndWaitForSeeding(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+        CoreAccountInfo coreAccountInfo =
+                mSigninTestRule.addAccountAndWaitForSeeding(
+                        AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
 
-        SyncConsentActivity syncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
-                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
-                });
+        SyncConsentActivity syncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mActivityTestRule.getActivity(),
+                                            SigninAccessPoint.SETTINGS,
+                                            AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
+                        });
         assertSignedOut();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
+                () -> {
+                    syncConsentActivity.findViewById(R.id.button_primary).performClick();
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
@@ -166,16 +172,23 @@ public class SigninSignoutIntegrationTest {
     public void testSignInAndEnableSyncNonDisplayableAccountEmail() {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(
-                SigninTestRule.generateChildEmail(AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
-                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        CoreAccountInfo coreAccountInfo =
+                mSigninTestRule.addAccount(
+                        SigninTestRule.generateChildEmail(
+                                AccountManagerTestRule.TEST_ACCOUNT_EMAIL),
+                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         mSigninTestRule.waitForSeeding();
-        SyncConsentActivity syncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
-                            coreAccountInfo.getEmail());
-                });
+        SyncConsentActivity syncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mActivityTestRule.getActivity(),
+                                            SigninAccessPoint.SETTINGS,
+                                            coreAccountInfo.getEmail());
+                        });
 
         // The child account will be automatically signed in.
         CriteriaHelper.pollUiThread(
@@ -184,16 +197,22 @@ public class SigninSignoutIntegrationTest {
 
         assertNotSyncing();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
+                () -> {
+                    syncConsentActivity.findViewById(R.id.button_primary).performClick();
+                });
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
         // Enabling Sync will invoke SignInStateObserverMock.onSignedIn() a second time.
         verify(mSignInStateObserverMock, times(2)).onSignedIn();
         verify(mSignInStateObserverMock, never()).onSignedOut();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(coreAccountInfo,
-                    mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            coreAccountInfo,
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                });
     }
 
     @Test
@@ -239,9 +258,11 @@ public class SigninSignoutIntegrationTest {
         onView(withId(R.id.remove_local_data)).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         assertSignedOut();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                });
     }
 
     @Test
@@ -253,9 +274,11 @@ public class SigninSignoutIntegrationTest {
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
         assertSignedOut();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                });
     }
 
     @Test
@@ -265,19 +288,26 @@ public class SigninSignoutIntegrationTest {
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
         CoreAccountInfo coreChildAccountInfo =
                 mSigninTestRule.addChildTestAccountThenWaitForSignin();
-        SyncConsentActivity syncConsentActivity = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), SyncConsentActivity.class, () -> {
-                    SyncConsentActivityLauncherImpl.get().launchActivityForPromoDefaultFlow(
-                            mActivityTestRule.getActivity(), SigninAccessPoint.SETTINGS,
-                            coreChildAccountInfo.getEmail());
-                });
+        SyncConsentActivity syncConsentActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SyncConsentActivity.class,
+                        () -> {
+                            SyncConsentActivityLauncherImpl.get()
+                                    .launchActivityForPromoDefaultFlow(
+                                            mActivityTestRule.getActivity(),
+                                            SigninAccessPoint.SETTINGS,
+                                            coreChildAccountInfo.getEmail());
+                        });
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mSignInStateObserverMock).onSignedIn();
 
         assertNotSyncing();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { syncConsentActivity.findViewById(R.id.button_primary).performClick(); });
+                () -> {
+                    syncConsentActivity.findViewById(R.id.button_primary).performClick();
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
@@ -298,38 +328,58 @@ public class SigninSignoutIntegrationTest {
 
     private void addOneTestBookmark() {
         Assert.assertNull("This method should be called only once!", mBookmarkModel);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel = BookmarkModel.getForProfile(Profile.fromWebContents(
-                    mActivityTestRule.getActivity().getActivityTab().getWebContents()));
-            mBookmarkModel.loadFakePartnerBookmarkShimForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkModel =
+                            BookmarkModel.getForProfile(
+                                    mActivityTestRule.getActivity().getActivityTab().getProfile());
+                    mBookmarkModel.loadFakePartnerBookmarkShimForTesting();
+                });
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
-            mBookmarkModel.addBookmark(mBookmarkModel.getDefaultFolder(), 0, "Test Bookmark",
-                    new GURL("http://google.com"));
-            Assert.assertEquals(1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            0, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                    mBookmarkModel.addBookmark(
+                            mBookmarkModel.getDefaultFolder(),
+                            0,
+                            "Test Bookmark",
+                            new GURL("http://google.com"));
+                    Assert.assertEquals(
+                            1, mBookmarkModel.getChildCount(mBookmarkModel.getDefaultFolder()));
+                });
     }
 
     private void assertSignedIn() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Account should be signed in!",
-                    mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Account should be signed in!",
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .hasPrimaryAccount(ConsentLevel.SYNC));
+                });
     }
 
     private void assertSignedOut() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse("Account should be signed out!",
-                    mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SIGNIN));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            "Account should be signed out!",
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .hasPrimaryAccount(ConsentLevel.SIGNIN));
+                });
     }
 
     private void assertNotSyncing() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse("Account should not be syncing!",
-                    mSigninManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            "Account should not be syncing!",
+                            mSigninManager
+                                    .getIdentityManager()
+                                    .hasPrimaryAccount(ConsentLevel.SYNC));
+                });
     }
 }

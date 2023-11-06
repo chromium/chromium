@@ -27,6 +27,7 @@ class ClipboardItem final : public ScriptWrappable {
   ScriptPromise getType(ScriptState* script_state,
                         const String& type,
                         ExceptionState& exception_state) const;
+  static bool supports(const String& type);
 
   const HeapVector<std::pair<String, ScriptPromise>>& GetItems() const {
     return items_;

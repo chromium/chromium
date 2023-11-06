@@ -52,7 +52,7 @@ void DemoSetupScreen::OnUserAction(const base::Value::List& args) {
   } else if (action_id == kUserActionClose) {
     exit_callback_.Run(Result::CANCELED);
   } else if (action_id == kUserActionPowerwash) {
-    SessionManagerClient::Get()->StartDeviceWipe();
+    SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
   } else {
     BaseScreen::OnUserAction(args);
   }

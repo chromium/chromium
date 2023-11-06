@@ -85,6 +85,8 @@ std::string GetStringNameForOptimizationType(
       return "ShoppingDiscounts";
     case proto::OptimizationType::COMPOSE:
       return "Compose";
+    case proto::OptimizationType::PIX_PAYMENT_MERCHANT_ALLOWLIST:
+      return "PixPaymentMerchantAllowlist";
   }
 
   // The returned string is used to record histograms for the optimization type.

@@ -120,7 +120,7 @@ void CheckV2Migration(base::FilePath sql_path) {
 
 const base::FilePath GetTestDataDir() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return path.AppendASCII("components/test/data/omnibox");
 }
 

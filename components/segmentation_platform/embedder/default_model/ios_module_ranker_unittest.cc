@@ -79,7 +79,7 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
   input[32] = 0;  // safety_check_freshness
   input[33] = 0;  // tab_resumption_freshness
   input[34] = 0;  // parcel_tracking_freshness
-  ExpectClassifierResults(input, {kSafetyCheck, kParcelTracking, kShortcuts,
+  ExpectClassifierResults(input, {kParcelTracking, kSafetyCheck, kShortcuts,
                                   kMostVisitedTiles, kTabResumption});
 
   input[30] = 1;  // mvt_freshness
@@ -87,7 +87,7 @@ TEST_F(IosModuleRankerTest, ExecuteModelWithFreshnessInputOnly) {
   input[32] = 2;  // safety_check_freshness
   input[33] = 2;  // tab_resumption_freshness
   input[34] = 1;  // parcel_tracking_freshness
-  ExpectClassifierResults(input, {kSafetyCheck, kParcelTracking, kShortcuts,
+  ExpectClassifierResults(input, {kParcelTracking, kSafetyCheck, kShortcuts,
                                   kMostVisitedTiles, kTabResumption});
 }
 

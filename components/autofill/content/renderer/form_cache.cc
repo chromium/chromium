@@ -54,6 +54,8 @@ using blink::WebVector;
 
 namespace autofill {
 
+using form_util::ExtractOption;
+
 namespace {
 
 blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
@@ -179,9 +181,8 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
         return true;
       };
 
-  constexpr form_util::ExtractMask extract_mask =
-      static_cast<form_util::ExtractMask>(form_util::EXTRACT_VALUE |
-                                          form_util::EXTRACT_OPTIONS);
+  constexpr DenseSet<ExtractOption> extract_options = {ExtractOption::kValue,
+                                                       ExtractOption::kOptions};
 
   WebDocument document = frame_->GetDocument();
   if (document.IsNull())
@@ -190,7 +191,7 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
   for (const WebFormElement& form_element : document.Forms()) {
     FormData form;
     if (!WebFormElementToFormData(form_element, WebFormControlElement(),
-                                  field_data_manager, extract_mask, &form,
+                                  field_data_manager, extract_options, &form,
                                   nullptr)) {
       continue;
     }
@@ -210,9 +211,9 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
       form_util::GetUnownedIframeElements(document);
 
   FormData synthetic_form;
-  if (!UnownedFormElementsToFormData(control_elements, iframe_elements, nullptr,
-                                     document, field_data_manager, extract_mask,
-                                     &synthetic_form, nullptr)) {
+  if (!UnownedFormElementsToFormData(
+          control_elements, iframe_elements, nullptr, document,
+          field_data_manager, extract_options, &synthetic_form, nullptr)) {
     PruneInitialValueCaches(observed_unique_renderer_ids);
     return r;
   }
@@ -407,8 +408,7 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
           "\nform signature in host form: ",
           field.host_form_signature,
           "\nalternative form signature: ",
-          base::NumberToString(
-              CalculateAlternativeFormSignature(form.data).value()),
+          form.alternative_signature,
           "\nfield frame token: ",
           frame_token.ToString(),
           "\nform renderer id: ",

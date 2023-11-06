@@ -3,132 +3,141 @@
 <script src="../../../../resources/testharnessreport.js"></script>
 <script src="../../../../resources/compositor-controls.js"></script>
 <script src="../../../../resources/gesture-util.js"></script>
-<body style="margin:0">
-  <div id="container" style="width: 500px; height: 200px; overflow-y: scroll; overflow-x: scroll">
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<style>
+  body {
+    margin: 0;
+  }
+  #container {
+    width: 500px;
+    height: 200px;
+    overflow: scroll;
+  }
+  #box {
+    height: 100px;
+    font-size: xx-large;
+    margin-top: 50px;
+  }
+  #spacer {
+    background-color: green;
+    height: 1000px;
+    width: 1000px;
+  }
+</style>
+<body>
+  <div id="container">
       <form>
-        <input id="box" size="10" style="height:100px; font-size:xx-large" type="text" value="asasd;flkajsd;flkasjdf;alksdjf;alskdfja;lksdja;sdlfjkas;ldkf"></input>
+        <input id="box" size="10" type="text"
+          value="asasd;flkajsd;flkasjdf;alksdjf;alskdfja;lksdja;sdlfjkas;ldkf">
+        </input>
       </form>
-      <div style="background: green; height: 1000px; width: 1000px"></div>
+      <div id="spacer"></div>
   </div>
 </body>
-
-<script type="text/javascript">
-setAnimationRequiresRaster();
-var gestureX = 100;
-var gestureY = 50;
-var box = document.getElementById("box");
-var container = document.getElementById("container");
-var fullyScrolled;
-
-function calculateFullScroll() {
-  fullyScrolled = box.scrollWidth - box.clientWidth;
-
-  // FIXME: Mac has a quirk where the text box text can actually be scrolled a little bit
-  // past the end. That is, scrollLeft = (scrollWidth - clientWidth) + 2 on Mac. Once
-  // this is fixed we can remove this adjustment.
+<script>
+const box = document.getElementById("box");
+const container = document.getElementById("container");
+// Determine the scroll range for the input field. This range is not necessarily
+// the difference between the scroll and client width due to quirks on Mac.
+const fullyScrolled = (() => {
   box.scrollLeft = 100000;
-  fullyScrolled += box.scrollLeft - fullyScrolled;
-
+  let limit = box.scrollLeft;
   box.scrollLeft = 0;
-}
-
-calculateFullScroll();
-
+  return limit;
+})();
 async function resetScroll() {
-  container.scrollLeft = 0;
+  await waitForScrollReset(container);
+  assert_equals(container.scrollLeft, 0);
+  assert_equals(container.scrollTop, 0);
+  // An input field is not a scroll-container, and changing its position does
+  // not trigger a scrollend event. Thus, we cannot use waitForScrollReset here.
   box.scrollLeft = 0;
-  container.scrollTop = 0;
   box.scrollTop = 0;
-  await waitForCompositorCommit();
+  return waitForCompositorCommit();
 }
-
+function dragGesture(deltaX, deltaY, scroller, options = {}) {
+  // Scrolling is less than drag amount by the touch slop unless we apply
+  // compensation.
+  options.adjust_for_touch_slop =  true;
+  // Suppress pause to enable fling momentum.
+  const position = elementCenter(box);
+  if (scroller == container) {
+    // Container will process a scrollend event.
+    return touchScroll(position.x, position.y, deltaX, deltaY, scroller,
+                       options);
+  } else {
+    // Scrolling in the input field will not trigger a scrollend event.
+    return touchDrag(position.x, position.y, deltaX, deltaY,
+                     options).then(() => {
+      // Rare exception where we can't use waitForScrollendEvent.
+      return waitForAnimationEndTimeBased(() => {
+        return scroller.scrollLeft;
+      });
+    });
+  }
+}
+function swipeGesture(deltaX, deltaY, scroller) {
+  // Suppress pause to enable fling momentum.
+  return dragGesture(deltaX, deltaY, scroller,
+                     { prevent_fling_pause_ms: 0 });
+}
 promise_test (async () => {
   await resetScroll();
-  assert_equals(box.scrollLeft, 0);
+  await swipeGesture(-40, 0, box);
+  assert_greater_than(box.scrollLeft, 40);
   assert_equals(container.scrollLeft, 0);
-
-  await swipe(40, gestureX, gestureY, "left", SPEED_INSTANT);
-  await waitFor(() => { return box.scrollLeft > 40} );
-  assert_equals(container.scrollLeft, 0);
-
   await resetScroll();
-  assert_equals(box.scrollTop, 0);
-
   // Flinging input text past the scrollable width shouldn't scroll containing
   // div.
-  await swipe(fullyScrolled + 500, gestureX, gestureY, "left", SPEED_INSTANT);
-  await waitFor(() => { return box.scrollLeft == fullyScrolled; });
-  // Wait for 100 RAFs to make sure the scroll does not propagate to the
-  // container.
-  await conditionHolds(() => { return container.scrollLeft == 0; });
-
-  // Flinging fully scrolled input text should fling containing div.
-  await swipe(60, gestureX, gestureY, "left", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return container.scrollLeft; }, 700, 20);
-  assert_greater_than(container.scrollLeft, 60);
+  box.scrollLeft = fullyScrolled - 40;
+  await swipeGesture(-40, 0, box);
   assert_equals(box.scrollLeft, fullyScrolled);
-}, "gesture fling on input field");
-
+  assert_equals(container.scrollLeft, 0);
+  // // Flinging fully scrolled input text should fling containing div.
+  await swipeGesture(-40, 0, container);
+  assert_greater_than(container.scrollLeft, 40);
+  assert_equals(box.scrollLeft, fullyScrolled);
+}, "gesture fling on an input field with x overflow only propagates if at " +
+   "the scroll limit");
 promise_test (async () => {
   await resetScroll();
-  assert_equals(box.scrollLeft, 0);
-  assert_equals(container.scrollLeft, 0);
-
   // Gesture scrolling input text should scroll text the specified amount.
-  await smoothScroll(60, gestureX, gestureY, GestureSourceType.TOUCH_INPUT,
-      "right");
-  await waitFor(() => {
-      return approx_equals(60, box.scrollLeft, 2);
-  });
+  await dragGesture(-40, 0, box);
+  assert_approx_equals(box.scrollLeft, 40, 2);
   assert_equals(container.scrollLeft, 0);
-
   await resetScroll();
-
   // Gesture scrolling input text past scroll width shouldn't scroll container
   // div.
-  await smoothScroll(fullyScrolled + 50, gestureX, gestureY,
-    GestureSourceType.TOUCH_INPUT, "right");
-  await waitFor(() => { return box.scrollLeft == fullyScrolled; });
+  box.scrollLeft = fullyScrolled - 20;
+  await dragGesture(-40, 0, box);
+  assert_equals(box.scrollLeft, fullyScrolled);
   assert_equals(container.scrollLeft, 0);
-}, "gesture scroll on input field");
-
+}, "gesture scroll on an input field with x overflow only propagates if at " +
+   "the scroll limit");
 promise_test (async () => {
   await resetScroll();
-  assert_equals(box.scrollTop, 0);
-  assert_equals(container.scrollTop, 0);
-
   // Vertically gesture scrolling input text should scroll containing div the
   // specified amount.
-  await smoothScroll(60, gestureX, gestureY, GestureSourceType.TOUCH_INPUT,
-      "down");
-  await waitFor(() => {
-      return approx_equals(60, container.scrollTop, 2);
-  });
+  await dragGesture(0, -40, container);
   assert_equals(box.scrollTop, 0);
-
+  assert_approx_equals(container.scrollTop, 40, 2);
   await resetScroll();
-  assert_equals(box.scrollTop, 0);
-  assert_equals(container.scrollTop, 0);
   // Vertically flinging input text should scroll the containing div the
   // specified amount.
-  await swipe(60, gestureX, gestureY, "up", SPEED_INSTANT);
-  await waitForAnimationEnd(() => { return container.scrollTop; }, 700, 20);
-  assert_greater_than(container.scrollTop, 60);
+  await swipeGesture(0, -50, container);
   assert_equals(box.scrollTop, 0);
-}, "vertical scroll on input feild");
-
+  assert_greater_than(container.scrollTop, 60);
+}, "vertical scroll on an input field  without y overflow propagates.");
 promise_test (async () => {
   await resetScroll();
   box.value = "short";
-  assert_equals(box.scrollLeft, 0);
-  assert_equals(container.scrollLeft, 0);
   assert_greater_than_equal(box.clientWidth, box.scrollWidth);
-
-  await smoothScroll(60, gestureX, gestureY, GestureSourceType.TOUCH_INPUT,
-      "right");
-  await waitFor(() => {
-      return approx_equals(60, container.scrollLeft, 2);
-  });
+  // Input box dimensions accommodate text and a scroll gesture on the input
+  // propagates to the container.
+  await dragGesture(-60, 0, container);
   assert_equals(box.scrollLeft, 0);
-}, "non-overflow scroll behavior");
+  assert_approx_equals(container.scrollLeft, 60, 2);
+}, "horizontal scroll on an input field without x overflow propagates.");
 </script>

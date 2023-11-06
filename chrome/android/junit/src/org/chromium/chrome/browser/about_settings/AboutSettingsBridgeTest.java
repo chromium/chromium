@@ -24,10 +24,8 @@ import org.chromium.base.test.util.JniMocker;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AboutSettingsBridgeTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private AboutSettingsBridge.Natives mNativeMock;
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private AboutSettingsBridge.Natives mNativeMock;
 
     @Before
     public void setUp() {

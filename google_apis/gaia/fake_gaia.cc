@@ -203,7 +203,7 @@ FakeGaia::SyncTrustedVaultKeys::~SyncTrustedVaultKeys() = default;
 
 FakeGaia::FakeGaia() : issue_oauth_code_cookie_(false) {
   base::FilePath source_root_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
   CHECK(base::ReadFileToString(
       source_root_dir.Append(base::FilePath(kEmbeddedSetupChromeos)),
       &embedded_setup_chromeos_response_));

@@ -790,12 +790,6 @@ mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   return renderer_host_.get();
 }
 
-int RenderThreadImpl::GenerateRoutingID() {
-  int32_t routing_id = MSG_ROUTING_NONE;
-  render_message_filter()->GenerateRoutingID(&routing_id);
-  return routing_id;
-}
-
 bool RenderThreadImpl::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
@@ -884,7 +878,6 @@ void RenderThreadImpl::InitializeRenderer(
     const std::string& user_agent,
     const blink::UserAgentMetadata& user_agent_metadata,
     const std::vector<std::string>& cors_exempt_header_list,
-    network::mojom::AttributionSupport attribution_support,
     blink::mojom::OriginTrialsSettingsPtr origin_trials_settings) {
   DCHECK(user_agent_.IsNull());
 
@@ -892,7 +885,6 @@ void RenderThreadImpl::InitializeRenderer(
   GetContentClient()->renderer()->DidSetUserAgent(user_agent);
   user_agent_metadata_ = user_agent_metadata;
   cors_exempt_header_list_ = cors_exempt_header_list;
-  attribution_support_ = attribution_support;
 
   blink::WebVector<blink::WebString> web_cors_exempt_header_list(
       cors_exempt_header_list.size());
@@ -1801,16 +1793,6 @@ void RenderThreadImpl::SetRenderingColorSpace(
 gfx::ColorSpace RenderThreadImpl::GetRenderingColorSpace() {
   DCHECK(IsMainThread());
   return rendering_color_space_;
-}
-
-network::mojom::AttributionSupport
-RenderThreadImpl::GetAttributionReportingSupport() {
-  return attribution_support_;
-}
-
-void RenderThreadImpl::SetAttributionReportingSupport(
-    network::mojom::AttributionSupport attribution_support) {
-  attribution_support_ = attribution_support;
 }
 
 std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(

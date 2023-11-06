@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -103,7 +103,6 @@ crbug.com/1338989 [ linux amd angle-vulkan ] MediaPipe_mediapipe_scoob_part2_tes
 
 crbug.com/1206463 [ android android-nexus-5x ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ android android-pixel-4 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
-crbug.com/1206463 [ chromeos chromeos-board-kevin ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ fuchsia fuchsia-board-qemu-x64 ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ linux display-server-wayland intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]
 crbug.com/1206463 [ linux display-server-x intel ] MediaPipe_mediapipe_face_mesh_test [ Failure ]

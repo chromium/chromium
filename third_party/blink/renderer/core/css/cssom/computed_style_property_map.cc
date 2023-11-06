@@ -52,7 +52,7 @@ bool ComputedStylePropertyMap::ComparePropertyNames(
 Element* ComputedStylePropertyMap::StyledElement() const {
   DCHECK(element_);
   if (!pseudo_id_) {
-    return element_;
+    return element_.Get();
   }
   if (PseudoElement* pseudo_element = element_->GetPseudoElement(pseudo_id_)) {
     return pseudo_element;

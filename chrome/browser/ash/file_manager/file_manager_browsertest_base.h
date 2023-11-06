@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -164,13 +165,6 @@ class FileManagerBrowserTestBase
     // Whether test should run with the DriveFsMirroring flag.
     bool enable_mirrorsync = false;
 
-    // Whether test should run with the FilesInlineSyncStatus flag.
-    bool enable_inline_sync_status = false;
-
-    // Whether test should run with the FilesInlineSyncStatusProgressEvents
-    // flag.
-    bool enable_inline_sync_status_progress_events = false;
-
     // Whether test should enable the file transfer connector.
     bool enable_file_transfer_connector = false;
 
@@ -180,8 +174,9 @@ class FileManagerBrowserTestBase
     // Whether test should use report-only mode for the file transfer connector.
     bool file_transfer_connector_report_only = false;
 
-    // Whether tests should enable V2 of search.
-    bool enable_search_v2 = false;
+    // Whether tests should set up justification mode for the file transfer
+    // connector.
+    bool bypass_requires_justification = false;
 
     // Whether tests should enable local image search by query.
     bool enable_local_image_search = false;
@@ -256,10 +251,12 @@ class FileManagerBrowserTestBase
 
   class MockFileTasksObserver;
 
-  // Launches the test extension with manifest |manifest_name|. The extension
-  // manifest_name file should reside in the specified |path| relative to the
-  // Chromium src directory.
-  void LaunchExtension(const base::FilePath& path, const char* manifest_name);
+  // Launches the test extension with manifest `manifest_name`. The extension
+  // manifest_name file should reside in the specified `path` relative to the
+  // Chromium `root` directory.
+  void LaunchExtension(base::BasePathKey root,
+                       const base::FilePath& path,
+                       const char* manifest_name);
 
   // Runs the test: awaits chrome.test messsage commands and chrome.test PASS
   // or FAIL messsages to process. |OnCommand| is used to handle the commands

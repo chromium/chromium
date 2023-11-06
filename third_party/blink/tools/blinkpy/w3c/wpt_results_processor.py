@@ -17,26 +17,32 @@ import time
 from typing import (
     Any,
     Dict,
+    FrozenSet,
     Iterator,
     List,
+    Literal,
     NamedTuple,
     Optional,
     Set,
     Tuple,
     TypedDict,
 )
-from urllib.parse import urlsplit
 
 import mozinfo
 
 from blinkpy.common import path_finder
-from blinkpy.common import wpt_results_diff
+from blinkpy.common.html_diff import html_diff
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.unified_diff import unified_diff
-from blinkpy.w3c.wpt_metadata import RunInfo
 from blinkpy.web_tests.port.base import Port
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.testharness_results import (
+    LineType,
+    Status,
+    TestharnessLine,
+    format_testharness_baseline,
+)
 from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_view
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
@@ -46,12 +52,56 @@ from blinkpy.web_tests.models.typ_types import (
 )
 
 path_finder.bootstrap_wpt_imports()
-from wptrunner import manifestexpected, wptmanifest
-from wptrunner.manifestexpected import TestNode
-from wptrunner.wptmanifest import node as wptnode
-from wptrunner.wptmanifest.backends import static
+from wptrunner import wpttest
 
 _log = logging.getLogger(__name__)
+_status_mapping = collections.OrderedDict([
+    ('OK', ResultType.Pass),
+    ('FAIL', ResultType.Failure),
+    ('PASS', ResultType.Pass),
+    ('TIMEOUT', ResultType.Timeout),
+    ('ERROR', ResultType.Failure),
+    ('CRASH', ResultType.Crash),
+    ('PRECONDITION_FAILED', ResultType.Failure),
+    ('SKIP', ResultType.Skip),
+    ('NOTRUN', ResultType.Failure),
+])
+
+RunInfo = Dict[str, Any]
+TestType = Literal[tuple(wpttest.manifest_test_cls)]
+
+
+def wptrunner_to_chromium_status(status: str) -> str:
+    return _status_mapping[status]
+
+
+@memoized
+def chromium_to_wptrunner_statuses(
+    statuses: FrozenSet[str],
+    test_type: TestType,
+    subtest: bool = False,
+) -> Set[str]:
+    wptrunner_statuses = {
+        wptrunner_status
+        for wptrunner_status, chromium_status in _status_mapping.items()
+        if chromium_status in statuses
+    }
+    test_cls = wpttest.manifest_test_cls[test_type]
+    if subtest:
+        result_cls = test_cls.subtest_result_cls
+        assert result_cls, f'{test_type!r} tests cannot have subtests'
+    else:
+        result_cls = test_cls.result_cls
+    return wptrunner_statuses & result_cls.statuses
+
+
+def normalize_statuses(statuses: Iterator[str]) -> List[str]:
+    status_order = list(_status_mapping.keys())
+    # Some Chromium statuses may map to more than one wptrunner status (e.g.,
+    # ResultType.FAIL -> FAIL, PRECONDITION_FAILED), so return a list of
+    # statuses instead of a single status. Also, return them in a well-defined
+    # order (generally, most commonly used statuses to least).
+    return sorted(set(statuses), key=status_order.index)
 
 
 class WPTResult(Result):
@@ -62,24 +112,10 @@ class WPTResult(Result):
      1. Maps more specific wptrunner statuses to web test ones (which are then
         mapped to ResultDB ones within typ).
      2. Handles subtests. See below for an explanation of status priority.
-     3. Format (sub)test statuses and messages into WPT metadata or logs.
+     3. Format (sub)test statuses and messages into baselines or logs.
     """
 
-    _wptrunner_to_chromium_statuses = {
-        'OK': ResultType.Pass,
-        'PASS': ResultType.Pass,
-        'FAIL': ResultType.Failure,
-        'ERROR': ResultType.Failure,
-        'PRECONDITION_FAILED': ResultType.Failure,
-        'TIMEOUT': ResultType.Timeout,
-        'EXTERNAL-TIMEOUT': ResultType.Timeout,
-        'CRASH': ResultType.Crash,
-        'INTERNAL-ERROR': ResultType.Crash,
-        'SKIP': ResultType.Skip,
-        'NOTRUN': ResultType.Failure,
-    }
-
-    _status_priority = [
+    status_priority = [
         # Sorted from least to most "interesting" statuses. A status is more
         # "interesting" when it indicates the test did not run to completion.
         ResultType.Pass,
@@ -89,17 +125,33 @@ class WPTResult(Result):
         ResultType.Crash,
     ]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, test_type: Optional[str] = None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.testharness_results = []
         self.messages = []
+        self.test_type = test_type
         self.has_stderr = False
         self.image_diff_stats = None
-        self._test_section = wptnode.DataNode(_test_basename(self.name))
 
-    def _add_expected_status(self, section: wptnode.DataNode, status: str):
-        expectation = wptnode.KeyValueNode('expected')
-        expectation.append(wptnode.ValueNode(status))
-        section.append(expectation)
+    def _maybe_add_testharness_result(self,
+                                      status: str,
+                                      message: Optional[str] = None,
+                                      subtest: Optional[str] = None):
+        if self.test_type not in ['testharness', 'wdspec']:
+            return
+
+        try:
+            status = Status[status]
+        except KeyError:
+            return
+        # The optimizer removes unnecessary PASS lines later.
+        line_type = LineType.SUBTEST if subtest else LineType.HARNESS_ERROR
+        result = TestharnessLine(line_type, frozenset([status]), message,
+                                 subtest)
+        if subtest:
+            self.testharness_results.append(result)
+        else:
+            self.testharness_results.insert(0, result)
 
     def _maybe_set_statuses(self, status: str, expected: Set[str]):
         """Set this result's actual/expected statuses.
@@ -115,11 +167,8 @@ class WPTResult(Result):
         overrides a subtest-level status when they have the same priority.
         """
         unexpected = status not in expected
-        actual = self._wptrunner_to_chromium_statuses[status]
-        expected = {
-            self._wptrunner_to_chromium_statuses[status]
-            for status in expected
-        }
+        actual = wptrunner_to_chromium_status(status)
+        expected = set(map(wptrunner_to_chromium_status, expected))
         # Converting wptrunner to ResultDB statuses is lossy, so it's possible
         # for the wptrunner result to be unexpected, but ResultDB status
         # `actual` maps to a member of `expected`. Removing the common status
@@ -136,7 +185,7 @@ class WPTResult(Result):
     def _result_priority(self, status: str,
                          unexpected: bool) -> Tuple[bool, bool, int]:
         incomplete = status in {ResultType.Timeout, ResultType.Crash}
-        return (incomplete, unexpected, self._status_priority.index(status))
+        return (incomplete, unexpected, self.status_priority.index(status))
 
     def update_from_subtest(self,
                             subtest: str,
@@ -146,10 +195,7 @@ class WPTResult(Result):
         if message:
             self.messages.append('%s: %s\n' % (subtest, message))
             self.has_stderr = True
-        subtest_section = wptnode.DataNode(subtest)
-        self._add_expected_status(subtest_section, status)
-        self._test_section.append(subtest_section)
-
+        self._maybe_add_testharness_result(status, message, subtest)
         # Any result against a subtest not expected to run is considered an
         # unexpected pass (and therefore won't cause a build failure).
         if status != 'NOTRUN' and 'NOTRUN' in expected:
@@ -164,32 +210,17 @@ class WPTResult(Result):
         if message:
             self.messages.insert(0, 'Harness: %s\n' % message)
             self.has_stderr = True
-        self._add_expected_status(self._test_section, status)
+        self._maybe_add_testharness_result(status, message)
         self._maybe_set_statuses(status, expected)
 
-    @property
-    def actual_metadata(self) -> str:
-        return wptmanifest.serialize(self._test_section)
-
-    def test_section(self, run_info: RunInfo) -> TestNode:
-        # Wrap the test AST node in a root node representing a metadata file,
-        # which is the shape `static.compile_ast(...)` expects.
-        root = wptnode.DataNode()
-        root.append(self._test_section)
-        test_file_expectations = static.compile_ast(
-            root,
-            run_info,
-            manifestexpected.data_cls_getter,
-            test_path=self.file_path)
-        return test_file_expectations.get_test(self._test_section.data)
-
-
-def _test_basename(test_id: str) -> str:
-    # The test "basename" is test path + query string + fragment
-    path_parts = urlsplit(test_id).path.rsplit('/', maxsplit=1)
-    if len(path_parts) == 1:
-        return test_id
-    return test_id[len(path_parts[0]) + 1:]
+    def get_result(self):
+        header = (LineType.TESTHARNESS_HEADER if self.test_type
+                  == 'testharness' else LineType.WDSPEC_HEADER)
+        return [
+            TestharnessLine(header),
+            *self.testharness_results,
+            TestharnessLine(LineType.FOOTER),
+        ]
 
 
 class Event(NamedTuple):
@@ -211,43 +242,6 @@ class EventProcessingError(ValueError):
 
 class StreamShutdown(Exception):
     """Exception to halt event processing."""
-
-
-def update_with_static_expectations(test_or_subtest: TestNode):
-    """Update a (sub)test's metadata with evaluated expectations.
-
-    wptrunner manages test expectations with a high-level API (i.e.,
-    manifestexpected) calling low-level ones dealing with the abstract syntax
-    tree (i.e., wptmanifest). This function transfers the expectations evaluated
-    against run info from the high-level `TestNode` object to the low-level AST.
-
-    Note:
-        This function destructively modifies the AST.
-    """
-    if test_or_subtest.node:
-        for child_node in test_or_subtest.node.children:
-            if (isinstance(child_node, wptnode.KeyValueNode)
-                    and child_node.data == 'expected'):
-                # Overwrite any branches or default values with the statically
-                # evaluated expectation.
-                for status_or_condition in list(child_node.children):
-                    status_or_condition.remove()
-                try:
-                    statuses = test_or_subtest.get('expected')
-                except KeyError:
-                    # Remove the `expected` key with no value
-                    child_node.remove()
-                    continue
-                if isinstance(statuses, str):
-                    child_node.append(wptnode.ValueNode(statuses))
-                else:
-                    assert isinstance(statuses, list)
-                    statuses_node = wptnode.ListNode()
-                    for status in statuses:
-                        statuses_node.append(wptnode.ValueNode(status))
-                    child_node.append(statuses_node)
-    for child_item in test_or_subtest.iterchildren():
-        update_with_static_expectations(child_item)
 
 
 class ReftestScreenshot(TypedDict):
@@ -469,6 +463,7 @@ class WPTResultsProcessor:
             took=0,
             worker=0,
             file_path=self._file_path_for_test(test),
+            test_type=self.get_test_type(test),
             pid=event.pid)
 
     def get_path_from_test_root(self, test: str) -> str:
@@ -652,89 +647,44 @@ class WPTResultsProcessor:
             data = json.dumps(data, sort_keys=True)
         self._crash_log.append(data + '\n')
 
-    def _read_expected_metadata(self, test_name: str,
-                                file_path: str) -> TestNode:
-        """Try to locate the expected output of this test, if it exists.
-
-        The expected output of a test is checked in to the source tree beside
-        the test itself with a ".ini" extension. The absence of such a file
-        implies the test is expected to be all-PASS.
-
-        Raises:
-            ValueError: If the expected metadata was unreadable or unparsable.
-        """
-        if self.path_finder.is_wpt_internal_path(test_name):
-            metadata_root = self.path_finder.path_from_web_tests(
-                'wpt_internal')
-        else:
-            metadata_root = self.path_finder.path_from_wpt_tests()
-        test_file_subpath = self.fs.relpath(file_path, metadata_root)
-        manifest = manifestexpected.get_manifest(metadata_root,
-                                                 test_file_subpath,
-                                                 self.run_info)
-        if not manifest:
-            raise FileNotFoundError
-        test_manifest = manifest.get_test(_test_basename(test_name))
-        if not test_manifest:
-            raise ValueError('test ID does not exist')
-        update_with_static_expectations(test_manifest)
-        return test_manifest
-
     def _write_text_results(self, result: WPTResult, artifacts: Artifacts):
         """Write actual, expected, and diff text outputs to disk, if possible.
 
-        If the expected output (WPT metadata) is missing, this method will not
-        produce diff, but will still produce pretty diff.
+        If either the actual or expected output is missing (i.e., all-pass), no
+        diffs are produced.
 
         Arguments:
             result: WPT test result.
             artifacts: Artifact manager (note that this is not the artifact ID
                 to paths mapping itself).
         """
+        actual_text = None
         actual_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_ACTUAL, '.txt')
-        actual_text = result.actual_metadata
-        artifacts.CreateArtifact('actual_text', actual_subpath,
-                                 actual_text.encode())
+        if result.testharness_results:
+            actual_text = format_testharness_baseline(
+                result.get_result(), '/html/dom/reflection' in result.name)
+            artifacts.CreateArtifact('actual_text', actual_subpath,
+                                     actual_text.encode())
 
-        expected = None
-        try:
-            expected = self._read_expected_metadata(result.name,
-                                                    result.file_path)
-        except FileNotFoundError:
-            _log.debug('".ini" file for "%s" does not exist.',
-                       result.file_path)
-        except (ValueError, KeyError, wptmanifest.parser.ParseError) as error:
-            _log.warning('Unable to parse metadata for %s: %s', result.name,
-                         error)
-
-        if expected:
-            expected_text = wptmanifest.serialize(expected.node)
-            expected_subpath = self.port.output_filename(
-                result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
+        expected_text = self.port.expected_text(result.name)
+        expected_subpath = self.port.output_filename(
+            result.name, test_failures.FILENAME_SUFFIX_EXPECTED, '.txt')
+        if expected_text:
+            expected_text = expected_text.decode().strip() + '\n'
             artifacts.CreateArtifact('expected_text', expected_subpath,
                                      expected_text.encode())
 
-            diff_content = unified_diff(
-                expected_text,
-                actual_text,
-                expected_subpath,
-                actual_subpath,
-            )
-            diff_subpath = self.port.output_filename(
-                result.name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
-            artifacts.CreateArtifact('text_diff', diff_subpath,
-                                     diff_content.encode())
 
-        test_type = self.get_test_type(result.name)
-        if not test_type:
-            raise EventProcessingError(f'Unknown test type: {result.name!r}')
-        actual = result.test_section(self.run_info)
-        actual.set('type', test_type)
-        if expected:
-            expected.set('type', test_type)
-        html_diff_content = wpt_results_diff.wpt_results_diff(actual, expected)
-
+        if not actual_text or not expected_text:
+            return
+        diff_content = unified_diff(expected_text, actual_text,
+                                    expected_subpath, actual_subpath)
+        diff_subpath = self.port.output_filename(
+            result.name, test_failures.FILENAME_SUFFIX_DIFF, '.txt')
+        artifacts.CreateArtifact('text_diff', diff_subpath,
+                                 diff_content.encode())
+        html_diff_content = html_diff(expected_text, actual_text)
         html_diff_subpath = self.port.output_filename(
             result.name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
         artifacts.CreateArtifact('pretty_text_diff', html_diff_subpath,
@@ -817,7 +767,8 @@ class WPTResultsProcessor:
                                   self.artifacts_dir))
         image_diff_stats = None
         if result.actual not in [ResultType.Pass, ResultType.Skip]:
-            self._write_text_results(result, artifacts)
+            if result.test_type in {'testharness', 'wdspec'}:
+                self._write_text_results(result, artifacts)
             screenshots = (extra or {}).get('reftest_screenshots') or []
             if screenshots:
                 image_diff_stats = self._write_screenshots(

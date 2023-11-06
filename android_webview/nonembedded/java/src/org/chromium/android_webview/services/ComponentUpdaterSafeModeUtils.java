@@ -4,6 +4,7 @@
 
 package org.chromium.android_webview.services;
 
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
@@ -39,7 +40,7 @@ public class ComponentUpdaterSafeModeUtils {
         }
         Set<String> actions = controller.queryActions(packageName);
 
-        if (actions.isEmpty() || !actions.contains(ComponentUpdaterResetSafeModeAction.ID)) {
+        if (actions.isEmpty() || !actions.contains(SafeModeActionIds.RESET_COMPONENT_UPDATER)) {
             RecordHistogram.recordBooleanHistogram(
                     HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, false);
             return false;

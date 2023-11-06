@@ -423,6 +423,21 @@ DomCode RelocateModifier(DomCode code, DomKeyLocation location) {
   return code;
 }
 
+KeyboardCode RelocateKeyboardCode(KeyboardCode key_code,
+                                  DomKeyLocation location) {
+  // Note: currently, we're using SHIFT/CONTROL, instead of
+  // LSFHIT,RSHIFT/LCONTROL,RCONTROL, so {L,R}WIN are only candidate to be
+  // replaced.
+  switch (key_code) {
+    case VKEY_LWIN:
+    case VKEY_RWIN:
+      return location == DomKeyLocation::RIGHT ? VKEY_RWIN : VKEY_LWIN;
+    default:
+      break;
+  }
+  return key_code;
+}
+
 // Returns true if |mouse_event| was generated from a touchpad device.
 bool IsFromTouchpadDevice(const MouseEvent& mouse_event) {
   for (const InputDevice& touchpad :
@@ -1150,8 +1165,9 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     if (remapped_key->remap_to == ui::mojom::ModifierKey::kCapsLock) {
       characteristic_flag |= EF_CAPS_LOCK_ON;
     }
-    state->code = RelocateModifier(
-        state->code, KeycodeConverter::DomCodeToLocation(incoming.code));
+    auto original_location = KeycodeConverter::DomCodeToLocation(incoming.code);
+    state->code = RelocateModifier(state->code, original_location);
+    state->key_code = RelocateKeyboardCode(state->key_code, original_location);
   }
 
   // Next, remap modifier bits.

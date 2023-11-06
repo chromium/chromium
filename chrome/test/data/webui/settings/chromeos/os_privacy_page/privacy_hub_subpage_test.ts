@@ -5,11 +5,11 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {MediaDevicesProxy, PrivacyHubBrowserProxyImpl, SettingsPrivacyHubSubpage} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, CrToggleElement, MetricsConsentBrowserProxyImpl, OsSettingsPrivacyPageElement, PaperTooltipElement, Router, routes, SecureDnsMode, settingMojom, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {DomRepeat, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -203,26 +203,27 @@ async function parametrizedPrivacyHubSubpageTestsuite(
     assertTrue(suggestedContent.checked);
   });
 
-  test('Deep link to Geolocation toggle on privacy hub', async () => {
+  test('Deep link to Geolocation area on privacy hub', async () => {
     const params = new URLSearchParams();
-    params.append('settingId', '1118');
+    const settingId = settingMojom.Setting.kGeolocationOnOff;
+    params.append('settingId', settingId.toString());
     Router.getInstance().navigateTo(routes.PRIVACY_HUB, params);
 
     flush();
 
-    const toggleElement =
-        privacyHubSubpage.shadowRoot!.querySelector('#geolocationToggle');
+    const linkRowElement =
+        privacyHubSubpage.shadowRoot!.querySelector('#geolocationAreaLinkRow');
     if (privacyHubVersion === PrivacyHubVersion.V0) {
-      assertEquals(null, toggleElement);
+      assertEquals(null, linkRowElement);
     } else if (privacyHubVersion === PrivacyHubVersion.V0AndLocation) {
-      assert(toggleElement);
+      assert(linkRowElement);
       const deepLinkElement =
-          toggleElement.shadowRoot!.querySelector('cr-toggle');
+          linkRowElement.shadowRoot!.querySelector('cr-icon-button');
       assert(deepLinkElement);
       await waitAfterNextRender(deepLinkElement);
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
-          'Geolocation toggle should be focused for settingId=1118.');
+          `Geolocation link row should be focused for settingId=${settingId}`);
     }
   });
 
@@ -801,12 +802,12 @@ suite('<settings-privacy-hub-subpage> app permissions', () => {
   test('Navigate to the microphone subpage', async () => {
     createSubpage();
 
-    const microphoneSubpageLinkWrapper =
-        privacyHubSubpage.shadowRoot!.querySelector<HTMLButtonElement>(
-            '#microphoneSubpageLinkWrapper');
-    assertTrue(!!microphoneSubpageLinkWrapper);
+    const microphoneSubpageLink =
+        privacyHubSubpage.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#microphoneSubpageLink');
+    assertTrue(!!microphoneSubpageLink);
 
-    microphoneSubpageLinkWrapper.click();
+    microphoneSubpageLink.click();
     await waitAfterNextRender(privacyHubSubpage);
 
     assertEquals(

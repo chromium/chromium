@@ -71,6 +71,10 @@ namespace gcm {
 class GCMDriver;
 }
 
+namespace os_crypt_async {
+class OSCryptAsync;
+}
+
 namespace policy {
 class ChromeBrowserPolicyConnector;
 class PolicyService;
@@ -219,6 +223,8 @@ class BrowserProcessImpl : public BrowserProcess,
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
+
+  os_crypt_async::OSCryptAsync* os_crypt_async() override;
 
   BuildState* GetBuildState() override;
 
@@ -458,6 +464,8 @@ class BrowserProcessImpl : public BrowserProcess,
   // breadcrumbs logging is disabled.
   std::unique_ptr<breadcrumbs::ApplicationBreadcrumbsLogger>
       application_breadcrumbs_logger_;
+
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -5,7 +5,5 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "history_clusters_internals"
-
   files = [ "history_clusters_internals_test.ts" ]
 }

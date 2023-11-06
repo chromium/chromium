@@ -33,11 +33,11 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtilsUnitTest.ShadowMu
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
-/**
- * Unit tests for {@link MultiWindowUtils}.
- */
+/** Unit tests for {@link MultiWindowUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMultiInstanceManagerApi31.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowMultiInstanceManagerApi31.class})
 public class MultiWindowUtilsUnitTest {
     /** Shadows {@link MultiInstanceManagerApi31} class for testing. */
     @Implements(MultiInstanceManagerApi31.class)
@@ -83,51 +83,48 @@ public class MultiWindowUtilsUnitTest {
     private boolean mCustomMultiWindowSupported;
     private Context mContext;
 
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    TabModel mNormalTabModel;
-    @Mock
-    TabModel mIncognitoTabModel;
-    @Mock
-    private ActivityInfo mActivityInfo;
-    @Mock
-    private PackageManager mPackageManager;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock TabModel mNormalTabModel;
+    @Mock TabModel mIncognitoTabModel;
+    @Mock private ActivityInfo mActivityInfo;
+    @Mock private PackageManager mPackageManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mUtils = new MultiWindowUtils() {
-            @Override
-            public boolean isInMultiWindowMode(Activity activity) {
-                return mIsInMultiWindowMode;
-            }
+        mUtils =
+                new MultiWindowUtils() {
+                    @Override
+                    public boolean isInMultiWindowMode(Activity activity) {
+                        return mIsInMultiWindowMode;
+                    }
 
-            @Override
-            public boolean isInMultiDisplayMode(Activity activity) {
-                return mIsInMultiDisplayMode;
-            }
+                    @Override
+                    public boolean isInMultiDisplayMode(Activity activity) {
+                        return mIsInMultiDisplayMode;
+                    }
 
-            @Override
-            public boolean areMultipleChromeInstancesRunning(Context context) {
-                return mIsMultipleInstanceRunning;
-            }
+                    @Override
+                    public boolean areMultipleChromeInstancesRunning(Context context) {
+                        return mIsMultipleInstanceRunning;
+                    }
 
-            @Override
-            public boolean aospMultiWindowModeSupported() {
-                return mIsAutosplitSupported;
-            }
+                    @Override
+                    public boolean aospMultiWindowModeSupported() {
+                        return mIsAutosplitSupported;
+                    }
 
-            @Override
-            public boolean customMultiWindowModeSupported() {
-                return mCustomMultiWindowSupported;
-            }
+                    @Override
+                    public boolean customMultiWindowModeSupported() {
+                        return mCustomMultiWindowSupported;
+                    }
 
-            @Override
-            public Class<? extends Activity> getOpenInOtherWindowActivity(Activity current) {
-                return Activity.class;
-            }
-        };
+                    @Override
+                    public Class<? extends Activity> getOpenInOtherWindowActivity(
+                            Activity current) {
+                        return Activity.class;
+                    }
+                };
     }
 
     @After
@@ -149,7 +146,8 @@ public class MultiWindowUtilsUnitTest {
             boolean canEnter = mIsAutosplitSupported || mCustomMultiWindowSupported;
             assertEquals(
                     " api-s: " + mIsAutosplitSupported + " vendor: " + mCustomMultiWindowSupported,
-                    canEnter, mUtils.canEnterMultiWindowMode(null));
+                    canEnter,
+                    mUtils.canEnterMultiWindowMode(null));
         }
     }
 
@@ -164,10 +162,15 @@ public class MultiWindowUtilsUnitTest {
 
             // 'openInOtherWindow' is supported if we are already in multi-window/display mode.
             boolean openInOtherWindow = (mIsInMultiWindowMode || mIsInMultiDisplayMode);
-            assertEquals("multi-window: " + mIsInMultiWindowMode
-                            + " multi-display: " + mIsInMultiDisplayMode
-                            + " multi-instance: " + mIsMultipleInstanceRunning,
-                    openInOtherWindow, mUtils.isOpenInOtherWindowSupported(null));
+            assertEquals(
+                    "multi-window: "
+                            + mIsInMultiWindowMode
+                            + " multi-display: "
+                            + mIsInMultiDisplayMode
+                            + " multi-instance: "
+                            + mIsMultipleInstanceRunning,
+                    openInOtherWindow,
+                    mUtils.isOpenInOtherWindowSupported(null));
         }
     }
 
@@ -177,14 +180,21 @@ public class MultiWindowUtilsUnitTest {
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
 
         // Instance with no tabs (ID_1) still counts as long as it is alive.
-        writeInstanceInfo(INSTANCE_ID_0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/2, TASK_ID_5);
-        writeInstanceInfo(INSTANCE_ID_1, URL_2, /*tabCount=*/0, /*incognitoTabCount=*/0, TASK_ID_6);
-        writeInstanceInfo(INSTANCE_ID_2, URL_3, /*tabCount=*/6, /*incognitoTabCount=*/2, TASK_ID_7);
+        writeInstanceInfo(
+                INSTANCE_ID_0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 2, TASK_ID_5);
+        writeInstanceInfo(
+                INSTANCE_ID_1, URL_2, /* tabCount= */ 0, /* incognitoTabCount= */ 0, TASK_ID_6);
+        writeInstanceInfo(
+                INSTANCE_ID_2, URL_3, /* tabCount= */ 6, /* incognitoTabCount= */ 2, TASK_ID_7);
         assertEquals(3, MultiWindowUtils.getInstanceCount());
 
         // Instance with no running task is not taken into account if there is no normal tab,
         // regardless of the # of incognito tabs.
-        writeInstanceInfo(INSTANCE_ID_1, URL_2, /*tabCount=*/0, /*incognitoTabCount=*/2,
+        writeInstanceInfo(
+                INSTANCE_ID_1,
+                URL_2,
+                /* tabCount= */ 0,
+                /* incognitoTabCount= */ 2,
                 MultiWindowUtils.INVALID_TASK_ID);
         assertEquals(2, MultiWindowUtils.getInstanceCount());
     }
@@ -201,12 +211,14 @@ public class MultiWindowUtilsUnitTest {
         // Simulate opening of 1 less than the max number of instances.
         for (int i = 0; i < maxInstances - 1; i++) {
             ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
-            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
+            writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
         int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
-        assertEquals("The default instance ID should be returned.",
-                MultiWindowUtils.INVALID_INSTANCE_ID, instanceId);
+        assertEquals(
+                "The default instance ID should be returned.",
+                MultiWindowUtils.INVALID_INSTANCE_ID,
+                instanceId);
     }
 
     @Test
@@ -222,11 +234,11 @@ public class MultiWindowUtilsUnitTest {
         // time for IDs 0 -> |maxInstances - 1| in increasing order of recency.
         for (int i = 0; i < maxInstances; i++) {
             ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
-            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
+            writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
         // Simulate last access of instance ID 0.
-        writeInstanceInfo(0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, 0);
+        writeInstanceInfo(0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, 0);
 
         int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
         assertEquals("The last accessed instance ID should be returned.", 0, instanceId);
@@ -245,18 +257,19 @@ public class MultiWindowUtilsUnitTest {
         // time for IDs 0 -> |maxInstances - 1| in increasing order of recency.
         for (int i = 0; i < maxInstances; i++) {
             ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(i, false);
-            writeInstanceInfo(i, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, i);
+            writeInstanceInfo(i, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, i);
         }
 
         // Simulate last access of instance ID 0.
-        writeInstanceInfo(0, URL_1, /*tabCount=*/3, /*incognitoTabCount=*/0, 0);
+        writeInstanceInfo(0, URL_1, /* tabCount= */ 3, /* incognitoTabCount= */ 0, 0);
         // Simulate destruction of the activity represented by instance ID 0.
         ShadowMultiInstanceManagerApi31.updateWindowIdsOfRunningTabbedActivities(0, true);
 
         int instanceId = MultiWindowUtils.getRunningInstanceIdForViewIntent();
         assertEquals(
                 "The instance ID of a running activity that was last accessed should be returned.",
-                maxInstances - 1, instanceId);
+                maxInstances - 1,
+                instanceId);
     }
 
     private void writeInstanceInfo(

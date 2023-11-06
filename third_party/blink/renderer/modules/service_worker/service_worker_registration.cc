@@ -220,7 +220,7 @@ const AtomicString& ServiceWorkerRegistration::InterfaceName() const {
 NavigationPreloadManager* ServiceWorkerRegistration::navigationPreload() {
   if (!navigation_preload_)
     navigation_preload_ = MakeGarbageCollected<NavigationPreloadManager>(this);
-  return navigation_preload_;
+  return navigation_preload_.Get();
 }
 
 String ServiceWorkerRegistration::scope() const {

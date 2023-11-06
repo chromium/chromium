@@ -57,7 +57,7 @@ class TestObserver : public GpuDataManagerObserver {
 };
 
 static base::Time GetTimeForTesting() {
-  return base::Time::FromDoubleT(1000);
+  return base::Time::FromSecondsSinceUnixEpoch(1000);
 }
 
 static GURL GetDomain1ForTesting() {

@@ -33,8 +33,13 @@
            withBounds:(NSRect)bounds
          initialIndex:(int)index;
 
-// Hides a popup menu if it's visible.
-- (void)hide;
+// Cancels the display of a menu if it is shown. This is called in situations
+// where Blink is asking for the cancellation (e.g. the page closed or the
+// contents of the menu changed so the menu has to be rebuilt). Because this is
+// driven by Blink, and in some cases Blink will immediately re-issue the menu,
+// this is a synchronous cancellation with no animation. See
+// https://crbug.com/812260.
+- (void)cancelSynchronously;
 
 // Returns the index of selected menu item, or its initial value (-1) if no item
 // was selected.

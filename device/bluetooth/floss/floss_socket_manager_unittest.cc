@@ -34,6 +34,10 @@ class FlossSocketManagerTest : public testing::Test {
  public:
   FlossSocketManagerTest() = default;
 
+  base::Version GetCurrVersion() {
+    return floss::version::GetMaximalSupportedVersion();
+  }
+
   void SetUpMocks() {
     adapter_path_ = FlossDBusClient::GenerateAdapterPath(adapter_index_);
     sockmgr_proxy_ = base::MakeRefCounted<::dbus::MockObjectProxy>(
@@ -91,7 +95,7 @@ class FlossSocketManagerTest : public testing::Test {
 
   void Init() {
     sockmgr_->Init(bus_.get(), kSocketManagerInterface, adapter_index_,
-                   base::DoNothing());
+                   GetCurrVersion(), base::DoNothing());
   }
 
   void SetupListeningSocket() {

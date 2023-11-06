@@ -6,6 +6,7 @@
 
 #include <fontconfig/fontconfig.h>
 
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"

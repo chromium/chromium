@@ -8,32 +8,37 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/kids_chrome_management_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace supervised_user {
 namespace {
 
 using ::testing::IsEmpty;
 using ::testing::Not;
 
-}  // namespace
-
 class SupervisedUserPreferencesTest : public ::testing::Test {
  public:
   void SetUp() override {
-    pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
-                                                 std::string());
-    pref_service_.registry()->RegisterBooleanPref(
-        prefs::kChildAccountStatusKnown, false);
-    for (const char* pref : supervised_user::kCustodianInfoPrefs) {
-      pref_service_.registry()->RegisterStringPref(pref, std::string());
-    }
+    auto* registry = pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
   }
 
  protected:
   TestingPrefServiceSimple pref_service_;
 };
+
+TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefs) {
+  // Checks the preference registration from the Setup.
+  EXPECT_EQ(
+      pref_service_.GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
+      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
+  EXPECT_EQ(pref_service_.GetBoolean(prefs::kSupervisedUserSafeSites), true);
+  // TODO(b/306376651): When we migrate more preference reading methods in this
+  // library, add more test cases for their correct default values.
+}
 
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControls) {
   supervised_user::EnableParentalControls(pref_service_);
@@ -100,3 +105,6 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
     }
   }
 }
+
+}  // namespace
+}  // namespace supervised_user

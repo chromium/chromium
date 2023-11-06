@@ -20,6 +20,7 @@ import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.
 import {OobeTypes} from '../../components/oobe_types.js';
 import { OobeI18nBehavior, OobeI18nBehaviorInterface } from '../../components/behaviors/oobe_i18n_behavior.js';
 import { loadTimeData } from '../../i18n_setup.js';
+import { QrCodeCanvas } from '../../components/qr_code_canvas.js';
 
 
 /**
@@ -34,14 +35,6 @@ export const QuickStartUIState = {
   GAIA_CREDENTIALS: 'gaia_credentials',
   FIDO_ASSERTION_RECEIVED: 'fido_assertion_received',
 };
-
-// TODO(b/246697586) Figure out the right DPI.
-// The size of each tile in pixels.
-const QR_CODE_TILE_SIZE = 5;
-
-// TODO(b/246698826) Figure out the dark light modes.
-// Styling for filled tiles in the QR code.
-const QR_CODE_FILL_STYLE = '#000000';
 
 /**
  * @constructor
@@ -72,10 +65,6 @@ class QuickStartScreen extends QuickStartScreenBase {
         // Should be in sync with the C++ enum (ash::quick_start::Shape).
         value: {CIRCLE: 0, DIAMOND: 1, TRIANGLE: 2, SQUARE: 3},
         readOnly: true,
-      },
-      canvasSize_: {
-        type: Number,
-        value: 0,
       },
       ssid_: {
         type: String,
@@ -108,11 +97,11 @@ class QuickStartScreen extends QuickStartScreenBase {
   constructor() {
     super();
     this.UI_STEPS = QuickStartUIState;
-    this.canvasSize_ = 0;
     this.password_ = '';
     this.ssid_ = '';
     this.discoverableName_ = '';
     this.usePinInsteadOfQrForVerification_ = false;
+    this.qrCodeCanvas = null;
   }
 
   get EXTERNAL_API() {
@@ -128,10 +117,7 @@ class QuickStartScreen extends QuickStartScreenBase {
   }
 
   getVerificationSubtitle(title) {
-    const stringId = this.usePinInsteadOfQrForVerification_ ?
-      'quickStartSetupSubtitlePinCode' :
-      'quickStartSetupSubtitleQrCode';
-    return this.i18nAdvanced(stringId, {
+    return this.i18nAdvanced('quickStartSetupSubtitle', {
       substitutions:
         [loadTimeData.getString('deviceType'), this.discoverableName_],
     });
@@ -141,6 +127,9 @@ class QuickStartScreen extends QuickStartScreenBase {
   ready() {
     super.ready();
     this.initializeLoginScreen('QuickStartScreen');
+
+    // Helper for drawing the QR code using circles as per spec.
+    this.qrCodeCanvas = new QrCodeCanvas(this.getCanvas_());
   }
 
   /** @override */
@@ -168,24 +157,9 @@ class QuickStartScreen extends QuickStartScreenBase {
   setQRCode(qrCode) {
     this.usePinInsteadOfQrForVerification_ = false;
     this.setUIStep(QuickStartUIState.VERIFICATION);
-
-    const qrSize = Math.round(Math.sqrt(qrCode.length));
-    this.canvasSize_ = qrSize * QR_CODE_TILE_SIZE;
     flush();
-    const context = this.getCanvasContext_();
-    context.clearRect(0, 0, this.canvasSize_, this.canvasSize_);
-    context.fillStyle = QR_CODE_FILL_STYLE;
-    let index = 0;
-    for (let x = 0; x < qrSize; x++) {
-      for (let y = 0; y < qrSize; y++) {
-        if (qrCode[index]) {
-          context.fillRect(
-              x * QR_CODE_TILE_SIZE, y * QR_CODE_TILE_SIZE, QR_CODE_TILE_SIZE,
-              QR_CODE_TILE_SIZE);
-        }
-        index++;
-      }
-    }
+
+    this.qrCodeCanvas.setData(qrCode);
   }
 
   setPin(pin) {
@@ -208,8 +182,8 @@ class QuickStartScreen extends QuickStartScreenBase {
     this.setUIStep(QuickStartUIState.FIDO_ASSERTION_RECEIVED);
   }
 
-  getCanvasContext_() {
-    return this.shadowRoot.querySelector('#qrCodeCanvas').getContext('2d');
+  getCanvas_() {
+    return this.shadowRoot.querySelector('#qrCodeCanvas');
   }
 
   onWifiConnectedNextClicked_() {

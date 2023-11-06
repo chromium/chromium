@@ -34,9 +34,9 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
 
   void Trace(Visitor* visitor) const override;
 
-  GPU* gpu() const { return gpu_; }
+  GPU* gpu() const { return gpu_.Get(); }
   GPUSupportedFeatures* features() const;
-  GPUSupportedLimits* limits() const { return limits_; }
+  GPUSupportedLimits* limits() const { return limits_.Get(); }
   bool isFallbackAdapter() const;
   WGPUBackendType backendType() const;
   bool SupportsMultiPlanarFormats() const;
@@ -56,8 +56,8 @@ class GPUAdapter final : public ScriptWrappable, public DawnObjectBase {
 
  private:
   void OnRequestDeviceCallback(ScriptState* script_state,
-                               ScriptPromiseResolver* resolver,
                                const GPUDeviceDescriptor* descriptor,
+                               ScriptPromiseResolver* resolver,
                                WGPURequestDeviceStatus status,
                                WGPUDevice dawn_device,
                                const char* error_message);

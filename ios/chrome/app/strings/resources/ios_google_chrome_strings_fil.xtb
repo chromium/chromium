@@ -4,7 +4,9 @@
 <translation id="1105362920864247682">I-clear ang Data Mula sa Pagba-browse sa Chrome.</translation>
 <translation id="1143896152279775643">Ise-save ang iyong password sa Google Password Manager para sa <ph name="EMAIL" />.</translation>
 <translation id="1180362651362502943">Patuloy na gamitin ang data sa Chrome sa iyong Google Account.</translation>
+<translation id="1200396280085622191">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe at iba pang app.</translation>
 <translation id="1282031177488366470">Tumulong sa Pagpapahusay sa Mga Feature at Performance ng Chrome</translation>
+<translation id="1320619893013575407">Na-off mo ang pag-sign in sa Chrome.</translation>
 <translation id="1333745675627230582">Laruin ang Chrome Dino</translation>
 <translation id="1352919863522755794">Hindi masuri ng Google Password Manager ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="1407843355326180937">Mag-sign in sa site na ito at sa Chrome para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
@@ -33,16 +35,19 @@ Mga bagay na dapat isaalang-alang:
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Awtomatikong gamitin ang Chrome kapag nag-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="1917964099031477364">Aalisin sa Chrome at sa iba pang Google app sa device na ito ang account na ito at anumang hindi naka-save na data.</translation>
+<translation id="1987779152850321833">Kumpletuhin ang mga iminumungkahing pagkilos na ito sa ibaba para masulit ang Chrome.</translation>
 <translation id="2009224836393115614">Hindi masuri ng Chrome ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2056123005618757196">Makagawa ng mas maraming bagay gamit ang simple, secure, at mas mabilis na ngayong Google Chrome.</translation>
 <translation id="2120238739383482109">Mabubuksan ang mga bookmark sa Chrome.</translation>
 <translation id="2147651015520127414">Na-verify ng Chrome na ang <ph name="ISSUER" /> ang nagbigay sa certificate ng website na ito.</translation>
 <translation id="2199719347983604670">Data mula sa Chrome sync</translation>
+<translation id="2242467532204595597">Gamitin ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="2311240109311056604">Mabubuksan ang Dino Game ng Chrome.</translation>
 <translation id="2339201583852607431">Ise-save sa iyong Google Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="2342919707875585281">Ibabahagi ng Chrome ang iyong lokasyon sa mga site na pinapayagan mo.</translation>
 <translation id="2347208864470321755">Kapag naka-on ang tampok na ito, mag-aalok ang Chrome na magsalin ng mga pahina na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2414068465746584414">Sa Mga Setting ng iyong device, buksan ang "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" at piliin ang "Chrome"</translation>
+<translation id="2423077901494354337">Masusulit mo na ngayon ang Chrome sa iyong device.</translation>
 <translation id="2427791862912929107">May mga feature ang Chrome na nakakatulong sa iyong pamahalaan ang data mo sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Para madaling makuha ang iyong mga naka-save na password sa iba mo pang app, gamitin ang Chrome para sa AutoFill</translation>
@@ -61,6 +66,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="2876628302275096482">Matuto pa tungkol sa kung <ph name="BEGIN_LINK" />paano pinapanatiling pribado ng Chrome ang iyong data<ph name="END_LINK" /></translation>
 <translation id="2957447865124070833">Piliin ang <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="3030414234702425231">Dahil magsa-sign out ka sa account na pinapamahalaan ng <ph name="SIGNOUT_MANAGED_DOMAIN" />, made-delete ang iyong data sa Chrome sa device na ito. Mananatili ang data mo sa iyong Google Account.</translation>
+<translation id="309672519329227863">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app.</translation>
 <translation id="3167189358072330585">Hindi gumagana ang iyong account sa Google Chrome. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
 <translation id="3173834708294760622">Page ng Google Chrome</translation>
 <translation id="3196546062792660320">Nakakatipid ka ng oras sa Chrome sa pamamagitan ng pagdadala ng iyong mga account sa web. Maaari kang magdagdag o mag-alis ng mga account sa Mga Setting.</translation>
@@ -71,6 +77,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="3503014945441706099">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chrome na ito</translation>
 <translation id="3522659714780527202">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chrome, i-on ang pag-sync</translation>
 <translation id="3533694711092285624">Walang naka-save na password. Masusuri ng Chrome ang iyong mga password kapag na-save mo ang mga ito.</translation>
+<translation id="3577555362230509265">Gamitin ang Chrome sa iba pang app.</translation>
 <translation id="3594076341410558780">I-hide ang “Sulitin ang Chrome”</translation>
 <translation id="3655656110921623717">Nangangahulugan itong hihilingin ng Chrome ang pang-mobile na site sa lahat ng pagkakataon.</translation>
 <translation id="3720541637541300822">I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome</translation>
@@ -91,6 +98,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4251174643044751591">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chrome.</translation>
 <translation id="4453284704333523777">Pamahalaan ang Mga Setting ng Chrome</translation>
+<translation id="4471662743048412085">I-track ang Mga Na-detect na Package sa Chrome</translation>
 <translation id="4508370294876102450">Buksan ang Chrome Mula sa Anumang App</translation>
 <translation id="4523886039239821078">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Paki-uninstall.</translation>
 <translation id="4633328489441962921">Hindi matingnan ng Chrome kung may mga update</translation>
@@ -139,6 +147,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6181930887571472871">Lumipat sa Chrome</translation>
 <translation id="6238746320622508509">Payagan ang Chrome na i-lock ang iyong mga tab na Incognito.</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6348855835728304880">I-access ang iyong mga password sa Chrome at higit pa sa iba pang app sa device na ito.</translation>
 <translation id="6412673304250309937">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chrome. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="6427126399757991875">Sine-set up ng iyong organisasyon ang Chrome...</translation>
 <translation id="6545449117344801102">Dine-detect ng Chrome ang mga address at ginagamit nito ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon.</translation>
@@ -167,6 +176,7 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
 <translation id="7187993566681480880">Pinapanatili kang ligtas sa Chrome at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
 <translation id="7200524487407690471">Awtomatikong pinapatakbo ng Chrome ang Pag-check sa Kaligtasan araw-araw para panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa. Makakakita ka ng higit pa tungkol sa Pag-check sa Kaligtasan sa Mga Setting.</translation>
 <translation id="72119412072970160">Puwede mong gamitin ang mga password na na-save mo sa Google Password Manager sa iba pang app sa iyong iPad.</translation>
+<translation id="723787869754590019">Gamitin ang Chrome para sa Autofill</translation>
 <translation id="7254380941803999489">Itakda ang Chrome Bilang Default na Browser</translation>
 <translation id="7261678641327190792">Hindi masuri ng Chrome ang iyong mga password</translation>
 <translation id="7272930098487145294">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chrome na magdagdag sa iyong mga larawan</translation>
@@ -206,8 +216,10 @@ Ang taong may passphrase mo lang ang makakapagbasa sa iyong naka-encrypt na data
   2. I-tap ang Default na Browser App
   3. Piliin ang Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8577978202917232774">Batay ang mga suhestyon sa iyong aktibidad sa pag-browse sa iba mo pang device. Para makatanggap ng mga suhestyon, mag-sign in sa Chrome sa lahat ng iyong device.</translation>
 <translation id="8587647598504233556">I-tap ang "Chrome" pagkatapos ay "Default na Browser App."</translation>
 <translation id="8603022514504485810">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
+<translation id="8727043961453758442">Sulitin ang Chrome</translation>
 <translation id="8736550665979974340">Manatiling Ligtas sa Google Chrome</translation>
 <translation id="8760668027640688122">Magbukas ng Bagong Tab sa Chrome</translation>
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
@@ -233,4 +245,5 @@ Mga bagay na dapat isaalang-alang:
 <translation id="9112744793181547300">Itakda ang Chrome bilang Default?</translation>
 <translation id="9122931302567044771">Nangangahulugan itong hihilingin ng Chrome ang pang-desktop na site sa lahat ng pagkakataon.</translation>
 <translation id="9181628561061032322">Mabubuksan ang Mga Kamakailang Tab sa Chrome.</translation>
+<translation id="97300214378190234">Gamitin ang Chrome sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>
 </translationbundle>

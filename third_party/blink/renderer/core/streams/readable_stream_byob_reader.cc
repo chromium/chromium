@@ -27,7 +27,8 @@ class ReadableStreamBYOBReader::BYOBReaderReadIntoRequest final
       : resolver_(resolver) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  DOMArrayBufferView* chunk) const override {
+                  DOMArrayBufferView* chunk,
+                  ExceptionState& exception_state) const override {
     auto* read_result = ReadableStreamReadResult::Create();
     read_result->setValue(
         ScriptValue(script_state->GetIsolate(),

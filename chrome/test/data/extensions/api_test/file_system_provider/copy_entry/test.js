@@ -51,7 +51,7 @@ function onCopyEntryRequested(options, onSuccess, onError) {
 
   // Copy the metadata, but change the 'name' field.
   var newMetadata =
-      JSON.parse(JSON.stringify(test_util.defaultMetadata[options.sourcePath]));
+      structuredClone(test_util.defaultMetadata[options.sourcePath]);
   newMetadata.name = options.targetPath.split('/').pop();
   test_util.defaultMetadata[options.targetPath] = newMetadata;
 

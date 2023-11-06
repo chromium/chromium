@@ -3754,9 +3754,12 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
     EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
     UpdateBeginFrameTime(support_.get(), frame_time);
     submit_frame();
-    // Immediately after submitting frame, because there is presentation
-    // feedback queued up, ShouldSendBeginFrame should always return true.
-    EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
+    // Until we reach throttling we should return true.
+    if (i < CompositorFrameSinkSupport::kUndrawnFrameLimit) {
+      EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
+    } else {
+      EXPECT_FALSE(ShouldSendBeginFrame(support_.get(), frame_time));
+    }
     // Clear the presentation feedbacks.
     UpdateBeginFrameTime(support_.get(), frame_time);
   }
@@ -3779,9 +3782,12 @@ TEST_F(DisplayTest, BeginFrameThrottling) {
     EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
     UpdateBeginFrameTime(support_.get(), frame_time);
     submit_frame();
-    // Immediately after submitting frame, because there is presentation
-    // feedback queued up, ShouldSendBeginFrame should always return true.
-    EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
+    // Until we reach throttling we should return true.
+    if (i < CompositorFrameSinkSupport::kUndrawnFrameLimit) {
+      EXPECT_TRUE(ShouldSendBeginFrame(support_.get(), frame_time));
+    } else {
+      EXPECT_FALSE(ShouldSendBeginFrame(support_.get(), frame_time));
+    }
     // Clear the presentation feedbacks.
     UpdateBeginFrameTime(support_.get(), frame_time);
   }
@@ -3892,9 +3898,12 @@ TEST_F(DisplayTest, DontThrottleWhenParentBlocked) {
     UpdateBeginFrameTime(sub_support.get(), frame_time);
     sub_support->SubmitCompositorFrame(sub_local_surface_id,
                                        MakeDefaultCompositorFrame());
-    // Immediately after submitting frame, because there is presentation
-    // feedback queued up, ShouldSendBeginFrame should always return true.
-    EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    // Until we reach throttling we should return true.
+    if (i < CompositorFrameSinkSupport::kUndrawnFrameLimit) {
+      EXPECT_TRUE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    } else {
+      EXPECT_FALSE(ShouldSendBeginFrame(sub_support.get(), frame_time));
+    }
     // Clear the presentation feedbacks.
     UpdateBeginFrameTime(sub_support.get(), frame_time);
   }

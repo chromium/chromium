@@ -102,6 +102,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
         EventType.CHECKED_STATE_DESCRIPTION_CHANGED,
         this.onCheckedStateChanged);
     this.addListener_(EventType.COLLAPSED, this.onEventIfInRange);
+    this.addListener_(EventType.CONTROLS_CHANGED, this.onControlsChanged);
     this.addListener_(EventType.EXPANDED, this.onEventIfInRange);
     this.addListener_(EventType.IMAGE_FRAME_UPDATED, this.onImageFrameUpdated);
     this.addListener_(EventType.INVALID_STATUS_CHANGED, this.onEventIfInRange);
@@ -222,6 +223,15 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
           intents: evt.intents,
         });
     this.onEventIfInRange(event);
+  }
+
+  /** @param {!ChromeVoxEvent} event */
+  onControlsChanged(event) {
+    if (event.target.role === RoleType.TAB) {
+      new Output()
+          .withSpeech(CursorRange.fromNode(event.target), null, event.type)
+          .go();
+    }
   }
 
   /**

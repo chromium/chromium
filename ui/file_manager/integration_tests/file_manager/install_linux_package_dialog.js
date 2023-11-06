@@ -43,11 +43,11 @@ testcase.installLinuxPackageDialog = async () => {
     // returns as a single string. These values come from
     // fake_cicerone_client.cc.
     return elements[0] &&
-        elements[0].text ==
-            ('Details' +
-             'Application: Fake Package' +
-             'Version: 1.0' +
-             'Description: A package that is fake') ||
+        elements[0].innerText ==
+            ('Details\n' +
+             'Application: Fake Package\n' +
+             'Version: 1.0\n' +
+             'Description: A package that is fake\n') ||
         pending(caller, 'Waiting for installation to start.');
   });
 

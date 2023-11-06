@@ -158,7 +158,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback;
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback;
-    VideoCaptureCropVersionInternalCallback crop_version_callback;
+    VideoCaptureSubCaptureTargetVersionInternalCallback
+        sub_capture_target_version_callback;
     VideoTrackSettingsInternalCallback settings_callback;
     VideoTrackFormatInternalCallback format_callback;
   };
@@ -174,17 +175,18 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
       delete;
 
   // Add |frame_callback|, |encoded_frame_callback| to receive video frames on
-  // the video task runner, |crop_version_callback| to receive notifications
-  // when a new crop version is acknowledged, and |settings_callback| to set
-  // track settings on the main thread. |frame_callback| will however be
-  // released on the main render thread.
+  // the video task runner, |sub_capture_target_version_callback| to receive
+  // notifications when a new sub-capture-target version is acknowledged, and
+  // |settings_callback| to set track settings on the main thread.
+  // |frame_callback| will however be released on the main render thread.
   void AddCallbacks(
       const MediaStreamVideoTrack* track,
       VideoCaptureDeliverFrameInternalCallback frame_callback,
       VideoCaptureNotifyFrameDroppedInternalCallback
           notify_frame_dropped_callback,
       DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-      VideoCaptureCropVersionInternalCallback crop_version_callback,
+      VideoCaptureSubCaptureTargetVersionInternalCallback
+          sub_capture_target_version_callback,
       VideoTrackSettingsInternalCallback settings_callback,
       VideoTrackFormatInternalCallback format_callback);
 
@@ -211,7 +213,8 @@ class VideoTrackAdapter::VideoFrameResolutionAdapter
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
 
-  void NewCropVersionOnVideoTaskRunner(uint32_t crop_version);
+  void NewSubCaptureTargetVersionOnVideoTaskRunner(
+      uint32_t sub_capture_target_version);
 
   // Returns true if all arguments match with the output of this adapter.
   bool SettingsMatch(const VideoTrackAdapterSettings& settings) const;
@@ -314,7 +317,8 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureCropVersionInternalCallback crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionInternalCallback
+        sub_capture_target_version_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
@@ -332,7 +336,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::AddCallbacks(
       std::move(frame_callback),
       std::move(notify_frame_dropped_callback),
       std::move(encoded_frame_callback),
-      std::move(crop_version_callback),
+      std::move(sub_capture_target_version_callback),
       std::move(settings_callback),
       std::move(format_callback)};
   callbacks_.emplace(track, std::move(track_callbacks));
@@ -462,10 +466,12 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverEncodedVideoFrame(
 }
 
 void VideoTrackAdapter::VideoFrameResolutionAdapter::
-    NewCropVersionOnVideoTaskRunner(uint32_t crop_version) {
+    NewSubCaptureTargetVersionOnVideoTaskRunner(
+        uint32_t sub_capture_target_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(video_sequence_checker_);
   for (const auto& callback : callbacks_) {
-    callback.second.crop_version_callback.Run(crop_version);
+    callback.second.sub_capture_target_version_callback.Run(
+        sub_capture_target_version);
   }
 }
 
@@ -606,7 +612,7 @@ void VideoTrackAdapter::AddTrack(
     VideoCaptureDeliverFrameCB frame_callback,
     VideoCaptureNotifyFrameDroppedCB notify_frame_dropped_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
     VideoTrackSettingsCallback settings_callback,
     VideoTrackFormatCallback format_callback,
     const VideoTrackAdapterSettings& settings) {
@@ -620,7 +626,8 @@ void VideoTrackAdapter::AddTrack(
           CrossThreadBindRepeating(std::move(frame_callback)),
           CrossThreadBindRepeating(std::move(notify_frame_dropped_callback)),
           CrossThreadBindRepeating(std::move(encoded_frame_callback)),
-          CrossThreadBindRepeating(std::move(crop_version_callback)),
+          CrossThreadBindRepeating(
+              std::move(sub_capture_target_version_callback)),
           CrossThreadBindRepeating(std::move(settings_callback)),
           CrossThreadBindRepeating(std::move(format_callback)), settings));
 }
@@ -631,7 +638,8 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
     VideoCaptureNotifyFrameDroppedInternalCallback
         notify_frame_dropped_callback,
     DeliverEncodedVideoFrameInternalCallback encoded_frame_callback,
-    VideoCaptureCropVersionInternalCallback crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionInternalCallback
+        sub_capture_target_version_callback,
     VideoTrackSettingsInternalCallback settings_callback,
     VideoTrackFormatInternalCallback format_callback,
     const VideoTrackAdapterSettings& settings) {
@@ -649,11 +657,12 @@ void VideoTrackAdapter::AddTrackOnVideoTaskRunner(
     adapters_.push_back(adapter);
   }
 
-  adapter->AddCallbacks(
-      track, std::move(frame_callback),
-      std::move(notify_frame_dropped_callback),
-      std::move(encoded_frame_callback), std::move(crop_version_callback),
-      std::move(settings_callback), std::move(format_callback));
+  adapter->AddCallbacks(track, std::move(frame_callback),
+                        std::move(notify_frame_dropped_callback),
+                        std::move(encoded_frame_callback),
+                        std::move(sub_capture_target_version_callback),
+                        std::move(settings_callback),
+                        std::move(format_callback));
 }
 
 void VideoTrackAdapter::RemoveTrack(const MediaStreamVideoTrack* track) {
@@ -849,7 +858,7 @@ void VideoTrackAdapter::ReconfigureTrackOnVideoTaskRunner(
         track, std::move(track_callbacks.frame_callback),
         std::move(track_callbacks.notify_frame_dropped_callback),
         std::move(track_callbacks.encoded_frame_callback),
-        std::move(track_callbacks.crop_version_callback),
+        std::move(track_callbacks.sub_capture_target_version_callback),
         std::move(track_callbacks.settings_callback),
         std::move(track_callbacks.format_callback), settings);
   }
@@ -895,11 +904,16 @@ void VideoTrackAdapter::OnFrameDroppedOnVideoTaskRunner(
   }
 }
 
-void VideoTrackAdapter::NewCropVersionOnVideoTaskRunner(uint32_t crop_version) {
+void VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner(
+    uint32_t sub_capture_target_version) {
   DCHECK(video_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("media", "VideoTrackAdapter::NewCropVersionOnVideoTaskRunner");
-  for (const auto& adapter : adapters_)
-    adapter->NewCropVersionOnVideoTaskRunner(crop_version);
+  TRACE_EVENT0(
+      "media",
+      "VideoTrackAdapter::NewSubCaptureTargetVersionOnVideoTaskRunner");
+  for (const auto& adapter : adapters_) {
+    adapter->NewSubCaptureTargetVersionOnVideoTaskRunner(
+        sub_capture_target_version);
+  }
 }
 
 void VideoTrackAdapter::CheckFramesReceivedOnVideoTaskRunner() {

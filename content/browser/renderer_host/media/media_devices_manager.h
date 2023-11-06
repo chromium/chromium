@@ -99,23 +99,21 @@ class CONTENT_EXPORT MediaDevicesManager
                         EnumerationCallback callback);
 
   // Performs a possibly cached device enumeration for the requested device
-  // types and reports the results to |callback|. The enumeration results are
+  // types and reports the results to `callback`. The enumeration results are
   // translated for use by the renderer process and frame identified with
-  // |render_process_id| and |render_frame_id|, based on the frame origin's
+  // `render_frame_host_id`, based on the frame origin's
   // permissions, an internal media-device salts.
-  // If |request_video_input_capabilities| is true, video formats supported
-  // by each device are returned in |callback|. These video formats are in
+  // If `request_video_input_capabilities` is true, video formats supported
+  // by each device are returned in `callback`. These video formats are in
   // no particular order and may contain duplicate entries.
-  void EnumerateDevices(int render_process_id,
-                        int render_frame_id,
+  void EnumerateDevices(GlobalRenderFrameHostId render_frame_host_id,
                         const BoolDeviceTypes& requested_types,
                         bool request_video_input_capabilities,
                         bool request_audio_input_capabilities,
                         EnumerateDevicesCallback callback);
 
   uint32_t SubscribeDeviceChangeNotifications(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       const BoolDeviceTypes& subscribe_types,
       mojo::PendingRemote<blink::mojom::MediaDevicesListener> listener);
   void UnsubscribeDeviceChangeNotifications(uint32_t subscription_id);
@@ -171,8 +169,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
   struct SubscriptionRequest {
     SubscriptionRequest(
-        int render_process_id,
-        int render_frame_id,
+        GlobalRenderFrameHostId render_frame_host_id,
         const BoolDeviceTypes& subscribe_types,
         mojo::Remote<blink::mojom::MediaDevicesListener> listener);
     SubscriptionRequest(SubscriptionRequest&&);
@@ -180,8 +177,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
     SubscriptionRequest& operator=(SubscriptionRequest&&);
 
-    int render_process_id;
-    int render_frame_id;
+    GlobalRenderFrameHostId render_frame_host_id;
     BoolDeviceTypes subscribe_types;
     mojo::Remote<blink::mojom::MediaDevicesListener> listener_;
 
@@ -228,8 +224,7 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Helpers to handle enumeration results for a renderer process.
   void CheckPermissionsForEnumerateDevices(
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       const BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -299,16 +294,14 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin);
   void OnSaltAndOriginForSubscription(
       uint32_t subscription_id,
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos,
       bool devices_changed,
       const MediaDeviceSaltAndOrigin& salt_and_origin);
   void CheckPermissionForDeviceChange(
       uint32_t subscription_id,
-      int render_process_id,
-      int render_frame_id,
+      GlobalRenderFrameHostId render_frame_host_id,
       MediaDeviceType type,
       const blink::WebMediaDeviceInfoArray& device_infos,
       const MediaDeviceSaltAndOrigin& salt_and_origin);

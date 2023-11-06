@@ -246,8 +246,8 @@ bool IsV8Initialized() {
 
 void SetUpV8() {
   if (!gin::IsolateHolder::Initialized()) {
-    // TODO(crbug.com/1111024): V8 flags for the Unseasoned Viewer need to be
-    // set up as soon as the renderer process is created in the constructor of
+    // TODO(crbug.com/1111024): V8 flags for the PDF Viewer need to be set up as
+    // soon as the renderer process is created in the constructor of
     // `content::RenderProcessImpl`.
     const char* recommended = FPDF_GetRecommendedV8Flags();
     v8::V8::SetFlagsFromString(recommended, strlen(recommended));
@@ -2147,11 +2147,13 @@ void PDFiumEngine::ZoomUpdated(double new_zoom_level) {
 }
 
 void PDFiumEngine::RotateClockwise() {
+  SaveSelection();
   desired_layout_options_.RotatePagesClockwise();
   ProposeNextDocumentLayout();
 }
 
 void PDFiumEngine::RotateCounterclockwise() {
+  SaveSelection();
   desired_layout_options_.RotatePagesCounterclockwise();
   ProposeNextDocumentLayout();
 }
@@ -2179,6 +2181,7 @@ void PDFiumEngine::SetReadOnly(bool enable) {
 }
 
 void PDFiumEngine::SetDocumentLayout(DocumentLayout::PageSpread page_spread) {
+  SaveSelection();
   desired_layout_options_.set_page_spread(page_spread);
   ProposeNextDocumentLayout();
 }
@@ -3334,9 +3337,11 @@ void PDFiumEngine::DrawSelections(int progressive_index,
   int page_index = progressive_paints_[progressive_index].page_index();
   gfx::Rect dirty_in_screen = progressive_paints_[progressive_index].rect();
 
-  void* region = nullptr;
-  int stride;
-  GetRegion(dirty_in_screen.origin(), image_data, region, stride);
+  const absl::optional<RegionData> region =
+      GetRegion(dirty_in_screen.origin(), image_data);
+  if (!region.has_value()) {
+    return;
+  }
 
   std::vector<gfx::Rect> highlighted_rects;
   gfx::Rect visible_rect = GetVisibleRect();
@@ -3353,7 +3358,7 @@ void PDFiumEngine::DrawSelections(int progressive_index,
         continue;
 
       visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
-      Highlight(region, stride, visible_selection, kHighlightColorR,
+      Highlight(region.value(), visible_selection, kHighlightColorR,
                 kHighlightColorG, kHighlightColorB, highlighted_rects);
     }
   }
@@ -3365,7 +3370,7 @@ void PDFiumEngine::DrawSelections(int progressive_index,
       continue;
 
     visible_selection.Offset(-dirty_in_screen.OffsetFromOrigin());
-    Highlight(region, stride, visible_selection, kHighlightColorR,
+    Highlight(region.value(), visible_selection, kHighlightColorR,
               kHighlightColorG, kHighlightColorB, highlighted_rects);
   }
 }
@@ -3399,14 +3404,15 @@ int PDFiumEngine::GetProgressiveIndex(int page_index) const {
 ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
                                             bool has_alpha,
                                             SkBitmap& image_data) const {
-  void* region;
-  int stride;
-  GetRegion(rect.origin(), image_data, region, stride);
-  if (!region)
+  const absl::optional<RegionData> region =
+      GetRegion(rect.origin(), image_data);
+  if (!region.has_value()) {
     return nullptr;
+  }
   int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
   return ScopedFPDFBitmap(
-      FPDFBitmap_CreateEx(rect.width(), rect.height(), format, region, stride));
+      FPDFBitmap_CreateEx(rect.width(), rect.height(), format,
+                          region.value().buffer.data(), region.value().stride));
 }
 
 void PDFiumEngine::GetPDFiumRect(int page_index,
@@ -3480,16 +3486,12 @@ gfx::RectF PDFiumEngine::GetPageBoundingBox(int page_index) {
   return page->GetBoundingBox();
 }
 
-void PDFiumEngine::Highlight(void* buffer,
-                             int stride,
+void PDFiumEngine::Highlight(const RegionData& region,
                              const gfx::Rect& rect,
                              int color_red,
                              int color_green,
                              int color_blue,
                              std::vector<gfx::Rect>& highlighted_rects) const {
-  if (!buffer)
-    return;
-
   gfx::Rect new_rect = rect;
   for (const auto& highlighted : highlighted_rects)
     new_rect.Subtract(highlighted);
@@ -3509,6 +3511,8 @@ void PDFiumEngine::Highlight(void* buffer,
   int h = new_rect.height();
 
   for (int y = t; y < t + h; ++y) {
+    base::span<uint8_t> row =
+        region.buffer.subspan(y * region.stride, region.stride);
     for (int x = l; x < l + w; ++x) {
       bool overlaps = false;
       for (size_t i : overlapping_rect_indices) {
@@ -3521,7 +3525,7 @@ void PDFiumEngine::Highlight(void* buffer,
       if (overlaps)
         continue;
 
-      uint8_t* pixel = static_cast<uint8_t*>(buffer) + y * stride + x * 4;
+      uint8_t* pixel = row.data() + x * 4;
       pixel[0] = static_cast<uint8_t>(pixel[0] * (color_blue / 255.0));
       pixel[1] = static_cast<uint8_t>(pixel[1] * (color_green / 255.0));
       pixel[2] = static_cast<uint8_t>(pixel[2] * (color_red / 255.0));
@@ -3630,6 +3634,16 @@ bool PDFiumEngine::MouseDownState::Matches(
   return true;
 }
 
+PDFiumEngine::RegionData::RegionData(base::span<uint8_t> buffer, size_t stride)
+    : buffer(buffer), stride(stride) {}
+
+PDFiumEngine::RegionData::RegionData(RegionData&&) = default;
+
+PDFiumEngine::RegionData& PDFiumEngine::RegionData::operator=(RegionData&&) =
+    default;
+
+PDFiumEngine::RegionData::~RegionData() = default;
+
 void PDFiumEngine::DeviceToPage(int page_index,
                                 const gfx::Point& device_point,
                                 double* page_x,
@@ -3709,31 +3723,31 @@ void PDFiumEngine::DrawPageShadow(const gfx::Rect& page_rc,
   DrawShadow(image_data, shadow_rect, page_rect, clip_rect, *page_shadow_);
 }
 
-void PDFiumEngine::GetRegion(const gfx::Point& location,
-                             SkBitmap& image_data,
-                             void*& region,
-                             int& stride) const {
+absl::optional<PDFiumEngine::RegionData> PDFiumEngine::GetRegion(
+    const gfx::Point& location,
+    SkBitmap& image_data) const {
   if (image_data.isNull()) {
     DCHECK(plugin_size().IsEmpty());
-    stride = 0;
-    region = nullptr;
-    return;
+    return absl::nullopt;
   }
-  char* buffer = static_cast<char*>(image_data.getPixels());
-  stride = image_data.rowBytes();
+
+  uint8_t* buffer = static_cast<uint8_t*>(image_data.getPixels());
+  if (!buffer) {
+    return absl::nullopt;
+  }
 
   gfx::Point offset_location = location + page_offset_;
   // TODO: update this when we support BIDI and scrollbars can be on the left.
-  if (!buffer ||
-      !gfx::Rect(gfx::PointAtOffsetFromOrigin(page_offset_), plugin_size())
+  if (!gfx::Rect(gfx::PointAtOffsetFromOrigin(page_offset_), plugin_size())
            .Contains(offset_location)) {
-    region = nullptr;
-    return;
+    return absl::nullopt;
   }
 
-  buffer += location.y() * stride;
-  buffer += (location.x() + page_offset_.x()) * 4;
-  region = buffer;
+  size_t stride = image_data.rowBytes();
+  base::span<uint8_t> buffer_span(buffer, image_data.height() * stride);
+  size_t x_offset = location.x() + page_offset_.x();
+  size_t offset = location.y() * stride + x_offset * 4;
+  return PDFiumEngine::RegionData(buffer_span.subspan(offset), stride);
 }
 
 void PDFiumEngine::OnSelectionTextChanged() {
@@ -3807,6 +3821,8 @@ gfx::Size PDFiumEngine::ApplyDocumentLayout(
   // the scroll position has not. Re-adjust.
   // TODO(thestig): It would be better to also restore the position on the page.
   client_->ScrollToPage(most_visible_page);
+
+  RestoreSelection();
 
   return layout_.size();
 }
@@ -3919,6 +3935,22 @@ void PDFiumEngine::SetSelection(const PageCharacterIndex& selection_start_index,
       end_char_index = sel_end_index.char_index;
     selection_.push_back(PDFiumRange(pages_[i].get(), start_char_index,
                                      end_char_index - start_char_index));
+  }
+}
+
+void PDFiumEngine::SaveSelection() {
+  // The PDFiumRange in the `selection_` has stored some previously cached
+  // information. The `saved_selection_` needs a fresh PDFiumRange for future
+  // use.
+  for (const auto& item : selection_) {
+    saved_selection_.push_back(PDFiumRange(
+        pages_[item.page_index()].get(), item.char_index(), item.char_count()));
+  }
+}
+
+void PDFiumEngine::RestoreSelection() {
+  if (!saved_selection_.empty()) {
+    selection_ = std::move(saved_selection_);
   }
 }
 

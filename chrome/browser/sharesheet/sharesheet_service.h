@@ -75,14 +75,7 @@ class SharesheetService : public KeyedService {
                   LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
-  void ShowBubble(content::WebContents* web_contents,
-                  apps::IntentPtr intent,
-                  bool contains_hosted_document,
-                  LaunchSource source,
-                  DeliveredCallback delivered_callback,
-                  CloseCallback close_callback = base::NullCallback());
   void ShowBubble(apps::IntentPtr intent,
-                  bool contains_hosted_document,
                   LaunchSource source,
                   GetNativeWindowCallback get_native_window_callback,
                   DeliveredCallback delivered_callback,
@@ -112,8 +105,7 @@ class SharesheetService : public KeyedService {
                             const std::u16string& active_action);
   // If the files to share contains a Google Drive hosted document, only the
   // drive share action will be shown.
-  bool HasShareTargets(const apps::IntentPtr& intent,
-                       bool contains_hosted_document);
+  bool HasShareTargets(const apps::IntentPtr& intent);
   Profile* GetProfile();
   const gfx::VectorIcon* GetVectorIcon(const std::u16string& display_name);
 
@@ -122,7 +114,6 @@ class SharesheetService : public KeyedService {
   // ==========================================================================
   void ShowBubbleForTesting(gfx::NativeWindow native_window,
                             apps::IntentPtr intent,
-                            bool contains_hosted_document,
                             LaunchSource source,
                             DeliveredCallback delivered_callback,
                             CloseCallback close_callback,
@@ -136,13 +127,11 @@ class SharesheetService : public KeyedService {
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
 
   void PrepareToShowBubble(apps::IntentPtr intent,
-                           bool contains_hosted_document,
                            GetNativeWindowCallback get_native_window_callback,
                            DeliveredCallback delivered_callback,
                            CloseCallback close_callback);
 
-  std::vector<TargetInfo> GetActionsForIntent(const apps::IntentPtr& intent,
-                                              bool contains_hosted_document);
+  std::vector<TargetInfo> GetActionsForIntent(const apps::IntentPtr& intent);
 
   void LoadAppIcons(std::vector<apps::IntentLaunchInfo> intent_launch_info,
                     std::vector<TargetInfo> targets,

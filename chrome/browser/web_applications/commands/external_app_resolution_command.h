@@ -162,7 +162,6 @@ class ExternalAppResolutionCommand
 
   absl::optional<webapps::AppId> installed_placeholder_app_id_;
 
-  bool bypass_service_worker_check_ = false;
   webapps::WebappInstallSource install_surface_;
   absl::optional<WebAppInstallParams> install_params_;
 

@@ -32,7 +32,12 @@ namespace gpu {
 class SharedImageInterface;
 }  // namespace gpu
 
+namespace viz {
+class ContextProvider;
+}  // namespace viz
+
 namespace device {
+class OpenXrViewConfiguration;
 
 // TODO(https://crbug.com/1441072): Refactor this class.
 struct SwapChainInfo {
@@ -105,9 +110,6 @@ class OpenXrGraphicsBinding {
   virtual XrResult EnumerateSwapchainImages(
       const XrSwapchain& color_swapchain) = 0;
 
-  // Clears the list of images allocated during `EnumerateSwapchainImages`.
-  virtual void ClearSwapChainImages() = 0;
-
   // Returns a list of mutable SwapChainInfo objects. While the items themselves
   // are mutable, the list is not.
   // TODO(https://crbug.com/1441072): Make SwapChainInfo internal to the child
@@ -136,6 +138,16 @@ class OpenXrGraphicsBinding {
   // Causes the GraphicsBinding to render the currently active swapchain image.
   // TODO(https://crbug.com/1454943): Make pure virtual
   virtual bool Render();
+
+  // Sets the layers for each view in the view configuration, which are
+  // submitted back to OpenXR on xrEndFrame. This is where we specify where in
+  // the texture each view is, as well as the properties of the views.
+  void PrepareViewConfigForRender(const XrSwapchain& color_swapchain,
+                                  OpenXrViewConfiguration& view_config);
+
+  // Returns whether or not the current Swapchain is actually using SharedImages
+  // or not.
+  bool IsUsingSharedImages();
 
   // Returns the previously set swapchain image size, or 0,0 if one is not set.
   gfx::Size GetSwapchainImageSize();
@@ -166,7 +178,21 @@ class OpenXrGraphicsBinding {
   // the next frame.
   XrResult ReleaseActiveSwapchainImage(XrSwapchain color_swapchain);
 
+  // Clears the list of images allocated during `EnumerateSwapchainImages` and
+  // if a context_provider is provided and the Swapchain entries have had
+  // corresponding SharedImages created via `CreateSharedImages` will also clean
+  // up those SharedImages.
+  void DestroySwapchainImages(viz::ContextProvider* context_provider);
+
  protected:
+  // Internal helper to clear the list of images allocated during
+  // `EnumerateSwapchainImages`, since the child classes own the actual list.
+  virtual void ClearSwapchainImages() = 0;
+
+  // Indicates whether the graphics binding expects the submitted image to need
+  // to be flipped when being submitted to the runtime.
+  virtual bool ShouldFlipSubmittedImage() = 0;
+
   // Will be called when SetSwapchainImageSize is called, even if a change is
   // not made, to allow child classes/concrete implementations to override any
   // state that they may need to override as a result of the swapchain image

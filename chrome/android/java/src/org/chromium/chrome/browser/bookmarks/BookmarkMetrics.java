@@ -26,22 +26,36 @@ public class BookmarkMetrics {
     /** Report a sort option was used in the bookmarks manager. */
     public static void reportBookmarkManagerSortChanged(
             @BookmarkRowSortOrder int bookmarkRowSortOrder) {
-        RecordHistogram.recordEnumeratedHistogram("Bookmarks.MobileBookmarkManager.SortOptionUsed",
-                bookmarkRowSortOrder, BookmarkRowSortOrder.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.SortOptionUsed",
+                bookmarkRowSortOrder,
+                BookmarkRowSortOrder.COUNT);
     }
 
     /** Report a visuals option was used in the bookmarks manager. */
     public static void reportBookmarkManagerDisplayPrefChanged(
             @BookmarkRowDisplayPref int bookmarkRowDisplayPref) {
         RecordHistogram.recordEnumeratedHistogram(
-                "Bookmarks.MobileBookmarkManager.DisplayOptionUsed", bookmarkRowDisplayPref,
+                "Bookmarks.MobileBookmarkManager.DisplayOptionUsed",
+                bookmarkRowDisplayPref,
                 BookmarkRowDisplayPref.COUNT);
+    }
+
+    /** Report a filter was shown in the bookmarks manager. */
+    public static void reportBookmarkManagerFilterShown(
+            @BookmarkManagerFilter int bookmarkManagerFilter) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.FilterShown",
+                bookmarkManagerFilter,
+                BookmarkManagerFilter.COUNT);
     }
 
     /** Report a filter was used in the bookmarks manager. */
     public static void reportBookmarkManagerFilterUsed(
             @BookmarkManagerFilter int bookmarkManagerFilter) {
-        RecordHistogram.recordEnumeratedHistogram("Bookmarks.MobileBookmarkManager.FilterUsed",
-                bookmarkManagerFilter, BookmarkManagerFilter.COUNT);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Bookmarks.MobileBookmarkManager.FilterUsed2",
+                bookmarkManagerFilter,
+                BookmarkManagerFilter.COUNT);
     }
 }

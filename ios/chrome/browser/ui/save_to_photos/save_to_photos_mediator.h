@@ -24,6 +24,19 @@ struct Referrer;
 class WebState;
 }  // namespace web
 
+// Photos app product identifier passed to the StoreKit view.
+extern NSString* const kGooglePhotosAppProductIdentifier;
+
+// This campaign token is passed to the StoreKit view so the number of Photos
+// app installs from Chrome can be measured. This should not be modified.
+extern NSString* const kGooglePhotosStoreKitCampaignToken;
+
+// Photos app URL template to open the "Recently added" view.
+extern NSString* const kGooglePhotosRecentlyAddedURLString;
+
+// Photos app URL scheme to check if the Photos app is installed.
+extern NSString* const kGooglePhotosAppURLScheme;
+
 // Save to Photos mediator. This UI is presented when the user has selected an
 // image to be saved in their Photos library e.g. Google Photos. It lets the
 // user select an account as destination and notifies the user of progress and

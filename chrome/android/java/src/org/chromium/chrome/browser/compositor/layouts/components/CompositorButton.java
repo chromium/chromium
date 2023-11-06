@@ -73,6 +73,8 @@ public class CompositorButton implements VirtualView {
     private float mOpacity;
     private float mClickSlop;
     private boolean mIsPressed;
+    private boolean mIsPressedFromMouse;
+    private boolean mIsHovered;
     private boolean mIsVisible;
     private boolean mIsIncognito;
     private boolean mIsEnabled;
@@ -229,10 +231,24 @@ public class CompositorButton implements VirtualView {
      */
     public void setPressed(boolean state) {
         mIsPressed = state;
+
+        // clear isPressedFromMouse state.
+        if (!state) {
+            setPressedFromMouse(false);
+        }
     }
 
     /**
-     * @return The visiblity of the button.
+     * @param state The pressed state of the button.
+     * @param fromMouse Whether the event originates from a mouse.
+     */
+    public void setPressed(boolean state, boolean fromMouse) {
+        mIsPressed = state;
+        mIsPressedFromMouse = fromMouse;
+    }
+
+    /**
+     * @return The visibility of the button.
      */
     public boolean isVisible() {
         return mIsVisible;
@@ -297,7 +313,7 @@ public class CompositorButton implements VirtualView {
      * @return Whether or not that click occurred inside of the button + slop area.
      */
     @Override
-    public boolean checkClicked(float x, float y) {
+    public boolean checkClickedOrHovered(float x, float y) {
         if (mOpacity < 1.f || !mIsVisible || !mIsEnabled) return false;
 
         mCacheBounds.set(mBounds);
@@ -317,7 +333,7 @@ public class CompositorButton implements VirtualView {
      * @return      Whether or not the button is selected after the event.
      */
     public boolean drag(float x, float y) {
-        if (!checkClicked(x, y)) {
+        if (!checkClickedOrHovered(x, y)) {
             setPressed(false);
             return false;
         }
@@ -326,13 +342,15 @@ public class CompositorButton implements VirtualView {
 
     /**
      * Set state for an onDown event.
-     * @param x     The x offset of the event.
-     * @param y     The y offset of the event.
-     * @return      Whether or not the close button was selected.
+     *
+     * @param x The x offset of the event.
+     * @param y The y offset of the event.
+     * @param fromMouse Whether the event originates from a mouse.
+     * @return Whether or not the close button was selected.
      */
-    public boolean onDown(float x, float y) {
-        if (checkClicked(x, y)) {
-            setPressed(true);
+    public boolean onDown(float x, float y, boolean fromMouse) {
+        if (checkClickedOrHovered(x, y)) {
+            setPressed(true, fromMouse);
             return true;
         }
         return false;
@@ -344,8 +362,8 @@ public class CompositorButton implements VirtualView {
      * @return      If the button was clicked or not.
      */
     public boolean click(float x, float y) {
-        if (checkClicked(x, y)) {
-            setPressed(false);
+        if (checkClickedOrHovered(x, y)) {
+            setPressed(false, false);
             return true;
         }
         return false;
@@ -357,7 +375,46 @@ public class CompositorButton implements VirtualView {
      */
     public boolean onUpOrCancel() {
         boolean state = isPressed();
-        setPressed(false);
+        setPressed(false, false);
         return state;
+    }
+
+    /**
+     * Set whether button is hovered on.
+     *
+     * @param isHovered Whether the button is hovered on.
+     */
+    public void setHovered(boolean isHovered) {
+        mIsHovered = isHovered;
+    }
+
+    /**
+     * @Return Whether the button is hovered on.
+     */
+    public boolean isHovered() {
+        return mIsHovered;
+    }
+
+    /**
+     * Set whether the button is pressed from mouse.
+     *
+     * @param isPressedFromMouse Whether the button is pressed from mouse.
+     */
+    private void setPressedFromMouse(boolean isPressedFromMouse) {
+        mIsPressedFromMouse = isPressedFromMouse;
+    }
+
+    /**
+     * @Return Whether the button is pressed from mouse.
+     */
+    public boolean isPressedFromMouse() {
+        return mIsPressed && mIsPressedFromMouse;
+    }
+
+    /**
+     * @Return Whether hover background should be applied to the button.
+     */
+    public boolean getShouldApplyHoverBackground() {
+        return isHovered() || isPressedFromMouse();
     }
 }

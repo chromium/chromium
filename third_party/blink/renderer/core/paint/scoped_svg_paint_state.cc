@@ -109,6 +109,13 @@ void ScopedSVGPaintState::ApplyPaintPropertyState(
 }
 
 void ScopedSVGPaintState::ApplyMaskIfNecessary() {
+  if (RuntimeEnabledFeatures::CSSMaskingInteropEnabled()) {
+    if (!(object_.IsSVGRoot() || object_.IsSVGForeignObject()) &&
+        object_.StyleRef().HasMask()) {
+      should_paint_mask_ = true;
+    }
+    return;
+  }
   SVGResourceClient* client = SVGResources::GetClient(object_);
   if (!client)
     return;

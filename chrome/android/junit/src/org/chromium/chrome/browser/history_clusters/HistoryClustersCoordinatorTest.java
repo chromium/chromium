@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -79,8 +79,10 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /** Unit tests for HistoryClustersCoordinator. */
 @RunWith(ChromeRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
 @SuppressWarnings("DoNotMock") // Mocks GURL.
 public class HistoryClustersCoordinatorTest {
     private static final String INCOGNITO_EXTRA = "IN_INCOGNITO";
@@ -110,7 +112,10 @@ public class HistoryClustersCoordinatorTest {
         @Nullable
         @Override
         public <SerializableList extends List<String> & Serializable> Intent getOpenUrlIntent(
-                GURL gurl, boolean inIncognito, boolean createNewTab, boolean inTabGroup,
+                GURL gurl,
+                boolean inIncognito,
+                boolean createNewTab,
+                boolean inTabGroup,
                 @Nullable SerializableList additionalUrls) {
             mOpenUrlIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             mOpenUrlIntent.putExtra(INCOGNITO_EXTRA, inIncognito);
@@ -125,8 +130,8 @@ public class HistoryClustersCoordinatorTest {
 
         @Nullable
         @Override
-        public TabCreator getTabCreator(boolean isIncognito) {
-            return mTabCreator;
+        public AsyncTabLauncher getTabLauncher(boolean isIncognito) {
+            return mTabLauncher;
         }
 
         @Override
@@ -162,33 +167,20 @@ public class HistoryClustersCoordinatorTest {
         }
     }
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private HistoryClustersBridge mHistoryClustersBridge;
-    @Mock
-    LargeIconBridge.Natives mMockLargeIconBridgeJni;
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private TabLayout mToggleView;
-    @Mock
-    private TabCreator mTabCreator;
-    @Mock
-    private GURL mGurl1;
-    @Mock
-    private GURL mGurl2;
-    @Mock
-    private HistoryClustersMetricsLogger mMetricsLogger;
-    @Mock
-    private SnackbarManager mSnackbarManager;
+    @Mock private Tab mTab;
+    @Mock private Profile mProfile;
+    @Mock private HistoryClustersBridge mHistoryClustersBridge;
+    @Mock LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private TabLayout mToggleView;
+    @Mock private AsyncTabLauncher mTabLauncher;
+    @Mock private GURL mGurl1;
+    @Mock private GURL mGurl2;
+    @Mock private HistoryClustersMetricsLogger mMetricsLogger;
+    @Mock private SnackbarManager mSnackbarManager;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -218,23 +210,60 @@ public class HistoryClustersCoordinatorTest {
         HistoryClustersBridge.setInstanceForTesting(mHistoryClustersBridge);
         doReturn(mPromise).when(mHistoryClustersBridge).queryClusters(anyString());
 
-        mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "foo.com", new ArrayList<>(),
-                new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
-        mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "bar.com", new ArrayList<>(),
-                new ArrayList<>(), mGurl2, 123L, new ArrayList<>());
-        mCluster = new HistoryCluster(Arrays.asList(mVisit1, mVisit2), "\"label\"", "label",
-                Collections.emptyList(), 123L, Arrays.asList("pugs", "terriers"));
-        mClusterResult = new HistoryClustersResult(Arrays.asList(mCluster),
-                new LinkedHashMap<>(ImmutableMap.of("label", 1)), "dogs", false, false);
+        mVisit1 =
+                new ClusterVisit(
+                        1.0F,
+                        mGurl1,
+                        "Title 1",
+                        "foo.com",
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        mGurl1,
+                        123L,
+                        new ArrayList<>());
+        mVisit2 =
+                new ClusterVisit(
+                        1.0F,
+                        mGurl2,
+                        "Title 2",
+                        "bar.com",
+                        new ArrayList<>(),
+                        new ArrayList<>(),
+                        mGurl2,
+                        123L,
+                        new ArrayList<>());
+        mCluster =
+                new HistoryCluster(
+                        Arrays.asList(mVisit1, mVisit2),
+                        "\"label\"",
+                        "label",
+                        Collections.emptyList(),
+                        123L,
+                        Arrays.asList("pugs", "terriers"));
+        mClusterResult =
+                new HistoryClustersResult(
+                        Arrays.asList(mCluster),
+                        new LinkedHashMap<>(ImmutableMap.of("label", 1)),
+                        "dogs",
+                        false,
+                        false);
         mHistoryClustersDelegate = new TestHistoryClustersDelegate();
 
         mActivityScenario =
-                ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
-                    mActivity = activity;
-                    mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
-                            mTemplateUrlService, mHistoryClustersDelegate, mMetricsLogger,
-                            mSelectionDelegate, mSnackbarManager);
-                });
+                ActivityScenario.launch(ChromeTabbedActivity.class)
+                        .onActivity(
+                                activity -> {
+                                    mActivity = activity;
+                                    mHistoryClustersCoordinator =
+                                            new HistoryClustersCoordinator(
+                                                    mProfile,
+                                                    activity,
+                                                    mTemplateUrlService,
+                                                    mHistoryClustersDelegate,
+                                                    mMetricsLogger,
+                                                    mSelectionDelegate,
+                                                    mSnackbarManager);
+                                });
     }
 
     @After
@@ -250,9 +279,11 @@ public class HistoryClustersCoordinatorTest {
         assertEquals(intent, mHistoryActivityIntent);
         assertTrue(intent.hasExtra(HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS));
         assertTrue(intent.hasExtra(HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY));
-        assertTrue(intent.getBooleanExtra(
-                HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false));
-        assertEquals(intent.getStringExtra(HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY),
+        assertTrue(
+                intent.getBooleanExtra(
+                        HistoryClustersConstants.EXTRA_SHOW_HISTORY_CLUSTERS, false));
+        assertEquals(
+                intent.getStringExtra(HistoryClustersConstants.EXTRA_HISTORY_CLUSTERS_QUERY),
                 "pandas");
     }
 
@@ -261,16 +292,22 @@ public class HistoryClustersCoordinatorTest {
     public void testOpenHistoryClustersUiTablet_renameDisabled() {
         mRenameEnabled = false;
         mHistoryClustersCoordinator.openHistoryClustersUi("pandas");
-        verify(mTab).loadUrl(argThat(
-                HistoryClustersMediatorTest.hasSameUrl("chrome://history/journeys?q=pandas")));
+        verify(mTab)
+                .loadUrl(
+                        argThat(
+                                HistoryClustersMediatorTest.hasSameUrl(
+                                        "chrome://history/journeys?q=pandas")));
     }
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
     public void testOpenHistoryClustersUiTablet() {
         mHistoryClustersCoordinator.openHistoryClustersUi("pandas");
-        verify(mTab).loadUrl(argThat(
-                HistoryClustersMediatorTest.hasSameUrl("chrome://history/grouped?q=pandas")));
+        verify(mTab)
+                .loadUrl(
+                        argThat(
+                                HistoryClustersMediatorTest.hasSameUrl(
+                                        "chrome://history/grouped?q=pandas")));
     }
 
     @Test
@@ -287,9 +324,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testSearchMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
         mHistoryClustersCoordinator.onMenuItemClick(
@@ -299,9 +338,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testCloseMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
         assertFalse(mActivity.isFinishing());
@@ -311,9 +352,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testOpenInNewTabMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
         mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
@@ -332,9 +375,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testOpenInNewIncognitoTabMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
         mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
@@ -353,9 +398,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testToggleInfoMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         ShadowLooper.idleMainLooper();
         assertNotNull(toolbar);
         assertTrue(mHistoryClustersDelegate.shouldShowPrivacyDisclaimerSupplier().get());
@@ -374,9 +421,11 @@ public class HistoryClustersCoordinatorTest {
 
     @Test
     public void testDeleteMenuItem() {
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
 
         mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1, mVisit2)));
         mHistoryClustersCoordinator.onMenuItemClick(
@@ -395,9 +444,11 @@ public class HistoryClustersCoordinatorTest {
         clipboardManager.setPrimaryClip(ClipData.newPlainText(null, "placeholder_val"));
         doReturn("http://spec1.com").when(mGurl1).getSpec();
 
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
 
         mSelectionDelegate.setSelectedItems(new HashSet<>(Arrays.asList(mVisit1)));
         mHistoryClustersCoordinator.onMenuItemClick(
@@ -435,9 +486,11 @@ public class HistoryClustersCoordinatorTest {
         doReturn("http://spec1.com").when(mGurl1).getSpec();
         doReturn("http://spec2.com").when(mGurl2).getSpec();
 
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar);
 
         mSelectionDelegate.setSelectedItems(
@@ -469,13 +522,15 @@ public class HistoryClustersCoordinatorTest {
         viewHolder = recyclerView.findViewHolderForAdapterPosition(1);
         assertTrue(viewHolder.itemView instanceof HistoryClustersItemView);
         endButton = viewHolder.itemView.findViewById(R.id.end_button);
-        assertEquals(endButton.getContentDescription(),
+        assertEquals(
+                endButton.getContentDescription(),
                 mActivity.getString(R.string.accessibility_list_remove_button, mVisit1.getTitle()));
 
         viewHolder = recyclerView.findViewHolderForAdapterPosition(2);
         assertTrue(viewHolder.itemView instanceof HistoryClustersItemView);
         endButton = viewHolder.itemView.findViewById(R.id.end_button);
-        assertEquals(endButton.getContentDescription(),
+        assertEquals(
+                endButton.getContentDescription(),
                 mActivity.getString(R.string.accessibility_list_remove_button, mVisit2.getTitle()));
     }
 
@@ -483,9 +538,11 @@ public class HistoryClustersCoordinatorTest {
     public void testMenuItemVisibility() {
         mIsSeparateActivity = false;
         mHistoryClustersCoordinator.inflateActivityView();
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
 
         assertNotNull(toolbar);
         assertNull(toolbar.getMenu().findItem(R.id.close_menu_id));
@@ -493,9 +550,11 @@ public class HistoryClustersCoordinatorTest {
 
         mIsSeparateActivity = true;
         mHistoryClustersCoordinator.inflateActivityView();
-        toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                          .findViewById(R.id.selectable_list)
-                          .findViewById(R.id.action_bar);
+        toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
 
         assertNotNull(toolbar);
         assertNotNull(toolbar.getMenu().findItem(R.id.close_menu_id));
@@ -516,9 +575,11 @@ public class HistoryClustersCoordinatorTest {
         mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
         fulfillPromise(mPromise, mClusterResult);
 
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
 
         assertFalse(toolbar.getMenu().findItem(R.id.info_menu_id).isVisible());
 
@@ -542,9 +603,11 @@ public class HistoryClustersCoordinatorTest {
         mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
         fulfillPromise(mPromise, mClusterResult);
 
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNotNull(toolbar.getMenu().findItem(R.id.optout_menu_id));
     }
 
@@ -554,9 +617,11 @@ public class HistoryClustersCoordinatorTest {
         mHistoryClustersCoordinator.setInitialQuery(QueryState.forQueryless());
         fulfillPromise(mPromise, mClusterResult);
 
-        HistoryClustersToolbar toolbar = mHistoryClustersCoordinator.getActivityContentView()
-                                                 .findViewById(R.id.selectable_list)
-                                                 .findViewById(R.id.action_bar);
+        HistoryClustersToolbar toolbar =
+                mHistoryClustersCoordinator
+                        .getActivityContentView()
+                        .findViewById(R.id.selectable_list)
+                        .findViewById(R.id.action_bar);
         assertNull(toolbar.getMenu().findItem(R.id.optout_menu_id));
     }
 

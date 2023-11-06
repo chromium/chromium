@@ -9,22 +9,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
-// Feature flag to enable default browser blue dot promo.
-BASE_DECLARE_FEATURE(kDefaultBrowserBlueDotPromo);
-
 // Feature flag to enable the Payments Bottom Sheet.
 BASE_DECLARE_FEATURE(kIOSPaymentsBottomSheet);
-
-// Enum for blue dot promo user groups (control/experiment) and its param. The
-// reason why we need a custom control group is to disable other independent
-// default browser promos, which are already shipped.
-enum class BlueDotPromoUserGroup {
-  kAllDBPromosDisabled,
-  kAllDBPromosEnabled,
-  kOnlyBlueDotPromoEnabled,
-};
-extern const base::FeatureParam<BlueDotPromoUserGroup>
-    kBlueDotPromoUserGroupParam;
 
 // Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
 // always disabled by default, because it is used to verify that enabling
@@ -76,10 +62,6 @@ enum class DefaultBrowserPromoGenericTailoredArm {
 extern const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
     kDefaultBrowserPromoGenericTailoredParam;
 
-// Feature flag that allows full screen default browser promos to be added to
-// the promo manager.
-BASE_DECLARE_FEATURE(kDefaultBrowserRefactoringPromoManager);
-
 // Feature flag that enables the default browser video promo.
 BASE_DECLARE_FEATURE(kDefaultBrowserVideoPromo);
 
@@ -126,9 +108,6 @@ BASE_DECLARE_FEATURE(kEnableLensInKeyboard);
 // Feature flag to enable the Lens entrypoint in the new tab page.
 BASE_DECLARE_FEATURE(kEnableLensInNTP);
 
-// Feature flag to enable the Lens context menu alternate text string.
-BASE_DECLARE_FEATURE(kEnableLensContextMenuAltText);
-
 // Feature flag to enable the Lens "Search copied image" omnibox entrypoint.
 BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 
@@ -151,6 +130,9 @@ BASE_DECLARE_FEATURE(kEnableShortenedPasswordAutoFillInstruction);
 
 // Feature flag to enable Apple Calendar event in experience kit.
 BASE_DECLARE_FEATURE(kEnableExpKitAppleCalendar);
+
+// Feature flag / Kill Switch for TCRex.
+BASE_DECLARE_FEATURE(kTCRexKillSwitch);
 
 // When enabled uses new transitions in the TabGrid.
 BASE_DECLARE_FEATURE(kTabGridNewTransitions);
@@ -202,10 +184,18 @@ extern const char kBottomOmniboxDefaultSettingParamSafariSwitcher[];
 // Feature flag to change the default position of the omnibox.
 BASE_DECLARE_FEATURE(kBottomOmniboxDefaultSetting);
 
+// Feature flag to retrieve device switcher results for omnibox default
+// position. Enabled by default.
+BASE_DECLARE_FEATURE(kBottomOmniboxDeviceSwitcherResults);
+
 // Returns true if `kBottomOmniboxSteadyState` feature flag is enabled and the
 // current device is a phone. This checks that the flag is enabled, not that the
 // omnibox is currently at the bottom.
 bool IsBottomOmniboxSteadyStateEnabled();
+
+// Returns true if `kBottomOmniboxDeviceSwitcherResults` feature flag is
+// enabled.
+bool IsBottomOmniboxDeviceSwitcherResultsEnabled();
 
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
@@ -226,27 +216,40 @@ BASE_DECLARE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste);
 // Feature flag to try using the page theme color in the top toolbar
 BASE_DECLARE_FEATURE(kThemeColorInTopToolbar);
 
+// Feature flag to try using the page theme color as dynamic color for the
+// toolbars.
+BASE_DECLARE_FEATURE(kDynamicThemeColor);
+
+// Feature flag to try using the page background color as dynamic color for the
+// toolbars.
+BASE_DECLARE_FEATURE(kDynamicBackgroundColor);
+
 // Feature flag enabling tab grid refactoring.
 BASE_DECLARE_FEATURE(kTabGridRefactoring);
 
 // Whether the Safety Check module should be shown in the Magic Stack.
 bool IsSafetyCheckMagicStackEnabled();
 
-// Kill switch to control the blocking of the simultaneous cell selection in
-// ChromeTableViewController.
-BASE_DECLARE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch);
+// Feature flag enabling Save to Drive.
+BASE_DECLARE_FEATURE(kIOSSaveToDrive);
 
 // Feature flag enabling Save to Photos.
 BASE_DECLARE_FEATURE(kIOSSaveToPhotos);
-
-// Kill switch to control the `settingsWillBeDismissed` bug fix (see
-// crbug.com/1482284).
-BASE_DECLARE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch);
 
 // Enables the new UIEditMenuInteraction system to be used in place of
 // UIMenuController which was deprecated in iOS 16.
 // TODO(crbug.com/1489734) Remove Flag once the minimum iOS deployment version
 // has been increased to iOS 16.
 BASE_DECLARE_FEATURE(kEnableUIEditMenuInteraction);
+
+// Causes the restore shorty and re-signin flows to offer a history opt-in
+// screen. This only has any effect if kReplaceSyncPromosWithSignInPromos is
+// also enabled.
+BASE_DECLARE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin);
+
+// Enables batch upload entry point from the Bookmarks Manager.
+// Note: This has no effect if kReplaceSyncPromosWithSignInPromos is not
+// enabled.
+BASE_DECLARE_FEATURE(kEnableBatchUploadFromBookmarksManager);
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

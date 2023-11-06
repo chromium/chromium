@@ -87,7 +87,7 @@ message InProgressInfo {
   optional int64 range_request_from = 31;
   optional int64 range_request_to = 32;
   optional string serialized_embedder_download_data = 33;
-  optional int64 notification_id = 34;
+  reserved 34;
 }
 
 // Stores various metadata related to a download.

@@ -1666,25 +1666,6 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
-        "name": "service_manager_unittests",
-        "swarming": {
-          "dimensions": {
-            "cpu": null,
-            "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
-          },
-          "expiration": 64800,
-          "hard_timeout": 43200,
-          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "service_manager_unittests",
-        "test_id_prefix": "ninja://services/service_manager/tests:service_manager_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
         "name": "services_unittests",
         "swarming": {
           "dimensions": {

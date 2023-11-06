@@ -98,12 +98,15 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   // the request and avoid overloading the server in this case.
   // is not accepting requests for the moment.
   int error = -1;
-  if (!net_error && response_code_ == 200)
+  int extra_code1 = 0;
+  if (!net_error && response_code_ == 200) {
     error = 0;
-  else if (response_code_ != -1)
+  } else if (response_code_ != -1) {
     error = response_code_;
-  else
+    extra_code1 = net_error;
+  } else {
     error = net_error;
+  }
 
   const bool is_handled = error == 0 || IsHttpServerError(error);
 
@@ -116,6 +119,7 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
   download_metrics.url = url();
   download_metrics.downloader = DownloadMetrics::kUrlFetcher;
   download_metrics.error = error;
+  download_metrics.extra_code1 = extra_code1;
   // Tests expected -1, in case of failures and no content is available.
   download_metrics.downloaded_bytes = error ? -1 : content_size;
   download_metrics.total_bytes = total_bytes_;

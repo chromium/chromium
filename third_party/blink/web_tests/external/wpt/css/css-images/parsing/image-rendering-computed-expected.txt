@@ -1,8 +1,11 @@
 This is a testharness.js-based test.
-PASS Property image-rendering value 'auto'
-FAIL Property image-rendering value 'smooth' assert_true: 'smooth' is a supported value for image-rendering. expected true got false
-FAIL Property image-rendering value 'high-quality' assert_true: 'high-quality' is a supported value for image-rendering. expected true got false
-FAIL Property image-rendering value 'crisp-edges' assert_true: 'crisp-edges' is a supported value for image-rendering. expected true got false
-PASS Property image-rendering value 'pixelated'
+[PASS] Property image-rendering value 'auto'
+[FAIL] Property image-rendering value 'smooth'
+  assert_true: 'smooth' is a supported value for image-rendering. expected true got false
+[FAIL] Property image-rendering value 'high-quality'
+  assert_true: 'high-quality' is a supported value for image-rendering. expected true got false
+[FAIL] Property image-rendering value 'crisp-edges'
+  assert_true: 'crisp-edges' is a supported value for image-rendering. expected true got false
+[PASS] Property image-rendering value 'pixelated'
 Harness: the test ran to completion.
 

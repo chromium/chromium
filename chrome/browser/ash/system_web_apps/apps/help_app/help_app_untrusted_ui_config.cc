@@ -85,6 +85,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
   source->AddBoolean("HelpAppDynamicHomePageBanner", true);
   source->AddBoolean("HelpAppReleaseNotes", true);
   source->AddBoolean(
+      "HelpAppHomePageAppArticles",
+      base::FeatureList::IsEnabled(ash::features::kHelpAppHomePageAppArticles));
+  source->AddBoolean(
       "HelpAppLauncherSearch",
       base::FeatureList::IsEnabled(features::kHelpAppLauncherSearch) &&
           base::FeatureList::IsEnabled(features::kEnableLocalSearchService));

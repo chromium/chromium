@@ -513,8 +513,7 @@ TEST_F(AutofillPopupControllerImplTest,
 TEST_F(AutofillPopupControllerImplTest,
        ManualFallBackTriggerSource_IgnoresClickOutsideCheck) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry},
-                  AutofillSuggestionTriggerSource::
-                      kManualFallbackForAutocompleteUnrecognized);
+                  AutofillSuggestionTriggerSource::kManualFallbackAddress);
 
   // Generate a popup, so it can be hidden later. It doesn't matter what the
   // external_delegate thinks is being shown in the process, since we are just
@@ -528,30 +527,24 @@ TEST_F(AutofillPopupControllerImplTest,
 
 TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
   ShowSuggestions(manager(), {PopupItemId::kAddressEntry});
-
-  // Add one data list entry.
-  std::u16string value1 = u"data list value 1";
-  std::vector<std::u16string> data_list_values{value1};
-  std::u16string label1 = u"data list label 1";
-  std::vector<std::u16string> data_list_labels{label1};
-
-  client().popup_controller(manager()).UpdateDataListValues(data_list_values,
-                                                            data_list_labels);
+  std::vector<SelectOption> options = {
+      {.value = u"data list value 1", .content = u"data list label 1"}};
+  client().popup_controller(manager()).UpdateDataListValues(options);
 
   ASSERT_EQ(3, client().popup_controller(manager()).GetLineCount());
 
   Suggestion result0 = client().popup_controller(manager()).GetSuggestionAt(0);
-  EXPECT_EQ(value1, result0.main_text.value);
-  EXPECT_EQ(value1,
+  EXPECT_EQ(options[0].value, result0.main_text.value);
+  EXPECT_EQ(options[0].value,
             client().popup_controller(manager()).GetSuggestionMainTextAt(0));
   ASSERT_EQ(1u, result0.labels.size());
   ASSERT_EQ(1u, result0.labels[0].size());
-  EXPECT_EQ(label1, result0.labels[0][0].value);
+  EXPECT_EQ(options[0].content, result0.labels[0][0].value);
   EXPECT_EQ(std::u16string(), result0.additional_label);
-  EXPECT_EQ(label1, client()
-                        .popup_controller(manager())
-                        .GetSuggestionLabelsAt(0)[0][0]
-                        .value);
+  EXPECT_EQ(options[0].content, client()
+                                    .popup_controller(manager())
+                                    .GetSuggestionLabelsAt(0)[0][0]
+                                    .value);
   EXPECT_EQ(PopupItemId::kDatalistEntry, result0.popup_item_id);
 
   Suggestion result1 = client().popup_controller(manager()).GetSuggestionAt(1);
@@ -567,20 +560,16 @@ TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
   EXPECT_EQ(PopupItemId::kAddressEntry, result2.popup_item_id);
 
   // Add two data list entries (which should replace the current one).
-  std::u16string value2 = u"data list value 2";
-  data_list_values.push_back(value2);
-  std::u16string label2 = u"data list label 2";
-  data_list_labels.push_back(label2);
-
-  client().popup_controller(manager()).UpdateDataListValues(data_list_values,
-                                                            data_list_labels);
+  options.push_back(
+      {.value = u"data list value 1", .content = u"data list label 1"});
+  client().popup_controller(manager()).UpdateDataListValues(options);
   ASSERT_EQ(4, client().popup_controller(manager()).GetLineCount());
 
   // Original one first, followed by new one, then separator.
   EXPECT_EQ(
-      value1,
+      options[0].value,
       client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
-  EXPECT_EQ(value1,
+  EXPECT_EQ(options[0].value,
             client().popup_controller(manager()).GetSuggestionMainTextAt(0));
   ASSERT_EQ(
       1u,
@@ -588,18 +577,18 @@ TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(label1, client()
-                        .popup_controller(manager())
-                        .GetSuggestionAt(0)
-                        .labels[0][0]
-                        .value);
+  EXPECT_EQ(options[0].content, client()
+                                    .popup_controller(manager())
+                                    .GetSuggestionAt(0)
+                                    .labels[0][0]
+                                    .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(0).additional_label);
   EXPECT_EQ(
-      value2,
+      options[1].value,
       client().popup_controller(manager()).GetSuggestionAt(1).main_text.value);
-  EXPECT_EQ(value2,
+  EXPECT_EQ(options[1].value,
             client().popup_controller(manager()).GetSuggestionMainTextAt(1));
   ASSERT_EQ(
       1u,
@@ -607,11 +596,11 @@ TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(1).labels[0].size());
-  EXPECT_EQ(label2, client()
-                        .popup_controller(manager())
-                        .GetSuggestionAt(1)
-                        .labels[0][0]
-                        .value);
+  EXPECT_EQ(options[1].content, client()
+                                    .popup_controller(manager())
+                                    .GetSuggestionAt(1)
+                                    .labels[0][0]
+                                    .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(1).additional_label);
@@ -620,9 +609,8 @@ TEST_F(AutofillPopupControllerImplTest, UpdateDataListValues) {
       client().popup_controller(manager()).GetSuggestionAt(2).popup_item_id);
 
   // Clear all data list values.
-  data_list_values.clear();
-  client().popup_controller(manager()).UpdateDataListValues(data_list_values,
-                                                            data_list_labels);
+  options.clear();
+  client().popup_controller(manager()).UpdateDataListValues(options);
 
   ASSERT_EQ(1, client().popup_controller(manager()).GetLineCount());
   EXPECT_EQ(
@@ -635,17 +623,13 @@ TEST_F(AutofillPopupControllerImplTest, PopupsWithOnlyDataLists) {
   ShowSuggestions(manager(), {PopupItemId::kDatalistEntry});
 
   // Replace the datalist element with a new one.
-  std::u16string value1 = u"data list value 1";
-  std::vector<std::u16string> data_list_values{value1};
-  std::u16string label1 = u"data list label 1";
-  std::vector<std::u16string> data_list_labels{label1};
-
-  client().popup_controller(manager()).UpdateDataListValues(data_list_values,
-                                                            data_list_labels);
+  std::vector<SelectOption> options = {
+      {.value = u"data list value 1", .content = u"data list label 1"}};
+  client().popup_controller(manager()).UpdateDataListValues(options);
 
   ASSERT_EQ(1, client().popup_controller(manager()).GetLineCount());
   EXPECT_EQ(
-      value1,
+      options[0].value,
       client().popup_controller(manager()).GetSuggestionAt(0).main_text.value);
   ASSERT_EQ(
       1u,
@@ -653,11 +637,11 @@ TEST_F(AutofillPopupControllerImplTest, PopupsWithOnlyDataLists) {
   ASSERT_EQ(
       1u,
       client().popup_controller(manager()).GetSuggestionAt(0).labels[0].size());
-  EXPECT_EQ(label1, client()
-                        .popup_controller(manager())
-                        .GetSuggestionAt(0)
-                        .labels[0][0]
-                        .value);
+  EXPECT_EQ(options[0].content, client()
+                                    .popup_controller(manager())
+                                    .GetSuggestionAt(0)
+                                    .labels[0][0]
+                                    .value);
   EXPECT_EQ(
       std::u16string(),
       client().popup_controller(manager()).GetSuggestionAt(0).additional_label);
@@ -668,9 +652,8 @@ TEST_F(AutofillPopupControllerImplTest, PopupsWithOnlyDataLists) {
   // Clear datalist values and check that the popup becomes hidden.
   EXPECT_CALL(client().popup_controller(manager()),
               Hide(PopupHidingReason::kNoSuggestions));
-  data_list_values.clear();
-  client().popup_controller(manager()).UpdateDataListValues(data_list_values,
-                                                            data_list_values);
+  options.clear();
+  client().popup_controller(manager()).UpdateDataListValues(options);
 }
 
 TEST_F(AutofillPopupControllerImplTest, GetOrCreateAndroid) {

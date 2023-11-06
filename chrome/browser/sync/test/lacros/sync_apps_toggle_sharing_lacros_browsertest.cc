@@ -8,7 +8,6 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/common/chrome_constants.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/sync_service_impl.h"
@@ -19,10 +18,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-// Version of crosapi that is guaranteed to have SyncUserSettingsClient API (
-// exposed by SyncService crosapi).
-const uint32_t kMinCrosapiVersionWithSyncUserSettingsClient = 80;
 
 class DatatypeSyncActiveStateChecker : public SingleClientStatusChangeChecker {
  public:
@@ -81,28 +76,10 @@ class SyncAppsToggleSharingLacrosBrowserTest : public SyncTest {
       content::BrowserMainParts* browser_main_parts) override {
     SyncTest::CreatedBrowserMainParts(browser_main_parts);
 
-    // If SyncService Crosapi interface is not available on this version of
-    // ash-chrome, this test suite will no-op.
-    if (!IsServiceAvailable()) {
-      return;
-    }
-
     // Replace the production SyncService Crosapi interface with a fake for
     // testing.
-    mojo::Remote<crosapi::mojom::SyncService>& remote =
-        chromeos::LacrosService::Get()
-            ->GetRemote<crosapi::mojom::SyncService>();
-    remote.reset();
-    sync_mojo_service_.BindReceiver(remote.BindNewPipeAndPassReceiver());
-  }
-
-  bool IsServiceAvailable() const {
-    const chromeos::LacrosService* lacros_service =
-        chromeos::LacrosService::Get();
-    return lacros_service &&
-           lacros_service->IsAvailable<crosapi::mojom::SyncService>() &&
-           chromeos::BrowserParamsProxy::Get()->CrosapiVersion() >=
-               kMinCrosapiVersionWithSyncUserSettingsClient;
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        sync_mojo_service_.BindNewPipeAndPassRemote());
   }
 
   syncer::FakeSyncUserSettingsClientAsh& client_ash() {
@@ -123,6 +100,15 @@ class SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi : public SyncTest {
   }
   ~SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi() override = default;
 
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    SyncTest::CreatedBrowserMainParts(browser_main_parts);
+    // Mimic SyncUserSettingsClient Crosapi not available
+    sync_mojo_service_.SetFakeSyncUserSettingsClientAshAvailable(false);
+    chromeos::LacrosService::Get()->InjectRemoteForTesting(
+        sync_mojo_service_.BindNewPipeAndPassRemote());
+  }
+
   base::FilePath GetProfileBaseName(int index) override {
     // Apps toggle sharing is enabled only for the main profile, so SyncTest
     // should setup sync using it.
@@ -131,6 +117,7 @@ class SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi : public SyncTest {
   }
 
  private:
+  syncer::FakeSyncMojoService sync_mojo_service_;
   base::test::ScopedFeatureList override_features_;
 };
 
@@ -144,9 +131,6 @@ IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTestWithoutCrosapi,
 
 IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
                        ShouldEnableAndDisableAppsSync) {
-  if (!IsServiceAvailable()) {
-    GTEST_SKIP() << "Unsupported Ash version.";
-  }
   ASSERT_TRUE(SetupSync());
   client_ash().SetAppsSyncIsEnabled(/*enabled=*/true);
   EXPECT_TRUE(DatatypeSyncActiveStateChecker(
@@ -161,9 +145,6 @@ IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SyncAppsToggleSharingLacrosBrowserTest,
                        ShouldEnableAppsTypeInTransportOnlyMode) {
-  if (!IsServiceAvailable()) {
-    GTEST_SKIP() << "Unsupported Ash version.";
-  }
   ASSERT_TRUE(SetupClients());
 
   // Setup a primary account, but don't actually enable Sync-the-feature (so

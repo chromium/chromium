@@ -9,13 +9,20 @@
 
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 
 namespace net {
 
 // Converts a PAC result element (commonly called a PAC string) to/from a
-// ProxyServer. Note that this only deals with a single proxy server element
-// separated out from the complete semicolon-delimited PAC result string.
+// ProxyServer / ProxyChain. Note that this only deals with a single proxy
+// element separated out from the complete semicolon-delimited PAC result
+// string.
+//
+// TODO(https://crbug.com/1491092): Update this once we add support for parsing
+// multi-hop proxies into a ProxyChain. Also, remove the ProxyServer functions
+// once we've updated the code to use ProxyChains instead (assuming these are no
+// longer needed).
 //
 // PAC result elements have the format:
 // <scheme>" "<host>[":"<port>]
@@ -32,8 +39,7 @@ namespace net {
 // If <port> is omitted, it will be assumed as the default port for the
 // chosen scheme (via ProxyServer::GetDefaultPortForScheme()).
 //
-// If parsing fails the returned proxy will have scheme
-// `ProxyServer::SCHEME_INVALID`.
+// Returns an invalid ProxyServer / ProxyChain if parsing fails.
 //
 // Examples:
 //   "PROXY foopy:19"   {scheme=HTTP, host="foopy", port=19}
@@ -42,8 +48,12 @@ namespace net {
 //   "HTTPS foopy:123"  {scheme=HTTPS, host="foopy", port=123}
 //   "QUIC foopy:123"   {scheme=QUIC, host="foopy", port=123}
 //   "BLAH xxx:xx"      INVALID
+NET_EXPORT ProxyChain
+PacResultElementToProxyChain(base::StringPiece pac_result_element);
 NET_EXPORT ProxyServer
 PacResultElementToProxyServer(base::StringPiece pac_result_element);
+NET_EXPORT std::string ProxyChainToPacResultElement(
+    const ProxyChain& proxy_chain);
 NET_EXPORT std::string ProxyServerToPacResultElement(
     const ProxyServer& proxy_server);
 
@@ -79,6 +89,8 @@ NET_EXPORT std::string ProxyServerToPacResultElement(
 //   "quic://foopy:17"  {scheme=QUIC, host="foopy", port=17}
 //   "direct://"        {scheme=DIRECT}
 //   "foopy:X"          INVALID -- bad port.
+NET_EXPORT ProxyChain ProxyUriToProxyChain(base::StringPiece uri,
+                                           ProxyServer::Scheme default_scheme);
 NET_EXPORT ProxyServer
 ProxyUriToProxyServer(base::StringPiece uri,
                       ProxyServer::Scheme default_scheme);

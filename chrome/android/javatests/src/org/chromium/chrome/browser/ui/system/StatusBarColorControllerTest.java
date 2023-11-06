@@ -68,18 +68,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
- * {@link StatusBarColorController} tests.
- * There are additional status bar color tests in {@link BrandColorTest}.
+ * {@link StatusBarColorController} tests. There are additional status bar color tests in {@link
+ * BrandColorTest}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class StatusBarColorControllerTest {
-    // clang-format on
     @ClassRule
     public static DisableAnimationsTestRule sEnableAnimationsRule =
             new DisableAnimationsTestRule(false);
+
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -97,9 +96,7 @@ public class StatusBarColorControllerTest {
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
     }
 
-    /**
-     * Test that the status bar color is toggled when toggling incognito while in overview mode.
-     */
+    /** Test that the status bar color is toggled when toggling incognito while in overview mode. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -112,17 +109,23 @@ public class StatusBarColorControllerTest {
                 ChromeColors.getPrimaryBackgroundColor(activity, true);
 
         sActivityTestRule.loadUrlInNewTab(
-                "about:blank", true /* incognito */, TabLaunchType.FROM_CHROME_UI);
+                "about:blank", /* incognito= */ true, TabLaunchType.FROM_CHROME_UI);
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tabModelSelector.selectModel(true /* incognito */); });
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
-        });
+                () -> {
+                    tabModelSelector.selectModel(/* incognito= */ true);
+                });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLayoutManager()
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+                });
 
         waitForStatusBarColor(activity, expectedOverviewIncognitoColor);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { tabModelSelector.selectModel(false /* incognito */); });
+                () -> {
+                    tabModelSelector.selectModel(/* incognito= */ false);
+                });
         ThemeTestUtils.assertStatusBarColor(activity, expectedOverviewStandardColor);
     }
 
@@ -137,21 +140,23 @@ public class StatusBarColorControllerTest {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
 
-        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/theme_color_test.html");
+        String pageWithBrandColorUrl =
+                sActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/theme_color_test.html");
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLayoutManager()
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+                });
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
-    /**
-     * Test that the default color is used in Start surface without surface polish enabled.
-     */
+    /** Test that the default color is used in Start surface without surface polish enabled. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -162,16 +167,16 @@ public class StatusBarColorControllerTest {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getLayoutManager().showLayout(LayoutType.START_SURFACE, false /* animate */);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLayoutManager()
+                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
+                });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
-    /**
-     * Test that a polished color is used in NTP with surface polish enabled.
-     */
+    /** Test that a polished color is used in NTP with surface polish enabled. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -179,8 +184,9 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testPolishStatusBarColorNtp() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedPolishedStandardColor = ChromeColors.getSurfaceColor(
-                activity, R.dimen.home_surface_background_color_elevation);
+        final int expectedPolishedStandardColor =
+                ChromeColors.getSurfaceColor(
+                        activity, R.dimen.home_surface_background_color_elevation);
 
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
@@ -190,9 +196,7 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColor(activity, expectedPolishedStandardColor);
     }
 
-    /**
-     * Test that the default color is used in Start surface without surface polish enabled.
-     */
+    /** Test that the default color is used in Start surface without surface polish enabled. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -221,27 +225,30 @@ public class StatusBarColorControllerTest {
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorNotIgnoredInStartSurfaceWithSurfacePolishEnabled() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedPolishedStandardColor = ChromeColors.getSurfaceColor(
-                activity, R.dimen.home_surface_background_color_elevation);
+        final int expectedPolishedStandardColor =
+                ChromeColors.getSurfaceColor(
+                        activity, R.dimen.home_surface_background_color_elevation);
         final int expectedDefaultStandardColor = ChromeColors.getDefaultThemeColor(activity, false);
 
         // Verifies that the status bar color uses a polished color for Start surface.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getLayoutManager().showLayout(LayoutType.START_SURFACE, false /* animate */);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLayoutManager()
+                            .showLayout(LayoutType.START_SURFACE, /* animate= */ false);
+                });
         StartSurfaceTestUtils.waitForStartSurfaceVisible(activity);
         waitForStatusBarColor(activity, expectedPolishedStandardColor);
 
         // Verifies that the status bar color unchanged on Tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false /* animate */);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.getLayoutManager()
+                            .showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+                });
         waitForStatusBarColor(activity, expectedDefaultStandardColor);
     }
 
-    /**
-     * Test that the status indicator color is included in the color calculation correctly.
-     */
+    /** Test that the status indicator color is included in the color calculation correctly. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -249,7 +256,8 @@ public class StatusBarColorControllerTest {
     public void testColorWithStatusIndicator() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
+                sActivityTestRule
+                        .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
         final Supplier<Integer> statusBarColor = () -> activity.getWindow().getStatusBarColor();
@@ -259,7 +267,8 @@ public class StatusBarColorControllerTest {
         // the same color as the current status bar color.
         Assert.assertEquals(
                 "Wrong initial value returned by #getStatusBarColorWithoutStatusIndicator().",
-                initialColor, statusBarColorController.getStatusBarColorWithoutStatusIndicator());
+                initialColor,
+                statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set a status indicator color.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -269,44 +278,52 @@ public class StatusBarColorControllerTest {
 
         // StatusBarColorController#getStatusBarColorWithoutStatusIndicator should still return the
         // initial color.
-        Assert.assertEquals("Wrong value returned by #getStatusBarColorWithoutStatusIndicator().",
-                initialColor, statusBarColorController.getStatusBarColorWithoutStatusIndicator());
+        Assert.assertEquals(
+                "Wrong value returned by #getStatusBarColorWithoutStatusIndicator().",
+                initialColor,
+                statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.setStatusBarScrimFraction(.5f));
 
         // The resulting color should be a scrimmed version of the status bar color.
-        Assert.assertEquals("Wrong status bar color w/ scrim.", getScrimmedColor(Color.BLUE, .5f),
+        Assert.assertEquals(
+                "Wrong status bar color w/ scrim.",
+                getScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Remove scrim.
-            statusBarColorController.setStatusBarScrimFraction(.0f);
-            // Set the status indicator color to the default, i.e. transparent.
-            statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Remove scrim.
+                    statusBarColorController.setStatusBarScrimFraction(.0f);
+                    // Set the status indicator color to the default, i.e. transparent.
+                    statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
+                });
 
         // Now, the status bar color should be back to the initial color.
         Assert.assertEquals(
                 "Wrong status bar color after the status indicator color is set to default.",
-                initialColor, statusBarColor.get().intValue());
+                initialColor,
+                statusBarColor.get().intValue());
     }
 
-    /**
-     * Test that the theme color is cleared when the Omnibox gains focus.
-     */
+    /** Test that the theme color is cleared when the Omnibox gains focus. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE}) // Status bar is always black on tablets
     public void testBrandColorIgnoredWhenOmniboxIsFocused() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedFocusedColor = ChromeColors.getSurfaceColor(
-                activity, org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        final int expectedFocusedColor =
+                ChromeColors.getSurfaceColor(
+                        activity,
+                        org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
-        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/theme_color_test.html");
+        String pageWithBrandColorUrl =
+                sActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/theme_color_test.html");
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         waitForStatusBarColor(activity, Color.RED);
@@ -329,11 +346,15 @@ public class StatusBarColorControllerTest {
     public void testBrandColorIgnoredWhenOmniboxIsFocused_FeatureMatchToolbarColorEnabled()
             throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-        final int expectedFocusedColor = ChromeColors.getSurfaceColor(
-                activity, org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
+        final int expectedFocusedColor =
+                ChromeColors.getSurfaceColor(
+                        activity,
+                        org.chromium.chrome.R.dimen.omnibox_suggestion_dropdown_bg_elevation);
 
-        String pageWithBrandColorUrl = sActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/theme_color_test.html");
+        String pageWithBrandColorUrl =
+                sActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/theme_color_test.html");
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
         mOmniboxUtils.waitAnimationsComplete();
@@ -362,7 +383,8 @@ public class StatusBarColorControllerTest {
     public void testColorWithStatusIndicator_FeatureMatchToolbarColorEnabled() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
+                sActivityTestRule
+                        .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
         final Supplier<Integer> statusBarColor = () -> activity.getWindow().getStatusBarColor();
@@ -372,7 +394,8 @@ public class StatusBarColorControllerTest {
         // the same color as the current status bar color.
         Assert.assertEquals(
                 "Wrong initial value returned by #getStatusBarColorWithoutStatusIndicator().",
-                initialColor, statusBarColorController.getStatusBarColorWithoutStatusIndicator());
+                initialColor,
+                statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set a status indicator color.
         TestThreadUtils.runOnUiThreadBlocking(
@@ -382,32 +405,36 @@ public class StatusBarColorControllerTest {
 
         // StatusBarColorController#getStatusBarColorWithoutStatusIndicator should still return the
         // initial color.
-        Assert.assertEquals("Wrong value returned by #getStatusBarColorWithoutStatusIndicator().",
-                initialColor, statusBarColorController.getStatusBarColorWithoutStatusIndicator());
+        Assert.assertEquals(
+                "Wrong value returned by #getStatusBarColorWithoutStatusIndicator().",
+                initialColor,
+                statusBarColorController.getStatusBarColorWithoutStatusIndicator());
 
         // Set scrim.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.setStatusBarScrimFraction(.5f));
 
-        Assert.assertEquals("Wrong status bar color w/ scrim", getScrimmedColor(Color.BLUE, .5f),
+        Assert.assertEquals(
+                "Wrong status bar color w/ scrim",
+                getScrimmedColor(Color.BLUE, .5f),
                 statusBarColor.get().intValue());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Remove scrim.
-            statusBarColorController.setStatusBarScrimFraction(.0f);
-            // Set the status indicator color to the default, i.e. transparent.
-            statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Remove scrim.
+                    statusBarColorController.setStatusBarScrimFraction(.0f);
+                    // Set the status indicator color to the default, i.e. transparent.
+                    statusBarColorController.onStatusIndicatorColorChanged(Color.TRANSPARENT);
+                });
 
         // Now, the status bar color should be back to the initial color.
         Assert.assertEquals(
                 "Wrong status bar color after the status indicator color is set to default.",
-                initialColor, statusBarColor.get().intValue());
+                initialColor,
+                statusBarColor.get().intValue());
     }
 
-    /**
-     * Test status bar color for Tab Strip Redesign Folio.
-     */
+    /** Test status bar color for Tab Strip Redesign Folio. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -416,27 +443,29 @@ public class StatusBarColorControllerTest {
     public void testStatusBarColorForTabStripRedesignFolioTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
+                sActivityTestRule
+                        .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
 
         // Before enable tab strip redesign, status bar should be black.
-        assertEquals("Wrong initial value returned before enable Tab Strip Redesign Folio",
-                Color.BLACK, activity.getWindow().getStatusBarColor());
+        assertEquals(
+                "Wrong initial value returned before enable Tab Strip Redesign Folio",
+                Color.BLACK,
+                activity.getWindow().getStatusBarColor());
 
         // Enable Tab strip redesign folio, and status bar color should update to the same as folio
         // background color.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_FOLIO.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.updateStatusBarColor());
-        assertEquals("Wrong value returned for Tab Strip Redesign Folio.",
+        assertEquals(
+                "Wrong value returned for Tab Strip Redesign Folio.",
                 TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
                 activity.getWindow().getStatusBarColor());
     }
 
-    /**
-     * Test status bar color for Tab Strip Redesign Detached.
-     */
+    /** Test status bar color for Tab Strip Redesign Detached. */
     @Test
     @LargeTest
     @Feature({"StatusBar"})
@@ -445,34 +474,38 @@ public class StatusBarColorControllerTest {
     public void testStatusBarColorForTabStripRedesignDetachedTablet() throws Exception {
         final ChromeActivity activity = sActivityTestRule.getActivity();
         final StatusBarColorController statusBarColorController =
-                sActivityTestRule.getActivity()
+                sActivityTestRule
+                        .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getStatusBarColorController();
 
         // Before enable tab strip redesign, status bar should be black.
-        assertEquals("Wrong initial value returned before enable Tab Strip Redesign Detached",
-                Color.BLACK, activity.getWindow().getStatusBarColor());
+        assertEquals(
+                "Wrong initial value returned before enable Tab Strip Redesign Detached",
+                Color.BLACK,
+                activity.getWindow().getStatusBarColor());
 
         // Enable Tab strip redesign detached, and status bar color should update to the same as
         // detached background color.
         TabManagementFieldTrial.TAB_STRIP_REDESIGN_ENABLE_DETACHED.setForTesting(true);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> statusBarColorController.updateStatusBarColor());
-        assertEquals("Wrong value returned for Tab Strip Redesign Detached.",
+        assertEquals(
+                "Wrong value returned for Tab Strip Redesign Detached.",
                 TabUiThemeUtil.getTabStripBackgroundColor(activity, false),
                 activity.getWindow().getStatusBarColor());
     }
 
-    /**
-     * Test status bar is always black in Automotive devices.
-     */
+    /** Test status bar is always black in Automotive devices. */
     @Test
     @SmallTest
     @Feature({"StatusBar, Automotive Toolbar"})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
     public void testStatusBarBlackInAutomotive() {
         final ChromeActivity activity = sActivityTestRule.getActivity();
-        assertEquals("Status bar should always be black in automotive devices.", Color.BLACK,
+        assertEquals(
+                "Status bar should always be black in automotive devices.",
+                Color.BLACK,
                 activity.getWindow().getStatusBarColor());
     }
 
@@ -484,10 +517,13 @@ public class StatusBarColorControllerTest {
 
     private void waitForStatusBarColor(Activity activity, int expectedColor)
             throws ExecutionException, TimeoutException {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    activity.getWindow().getStatusBarColor(), Matchers.is(expectedColor));
-        }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getWindow().getStatusBarColor(), Matchers.is(expectedColor));
+                },
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void waitForStatusBarColorToMatchToolbarColor(Activity activity)
@@ -498,18 +534,29 @@ public class StatusBarColorControllerTest {
                 toolbar instanceof ToolbarPhone);
 
         final int toolbarColor = ((ToolbarPhone) toolbar).getBackgroundDrawable().getColor();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activity.getWindow().getStatusBarColor(), Matchers.is(toolbarColor));
-        }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getWindow().getStatusBarColor(), Matchers.is(toolbarColor));
+                },
+                CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void scrollUpToolbarUntilPinnedAtTop(Activity activity) {
         Resources resources = activity.getResources();
         // Drag the Feed header title to scroll the toolbar to the top.
-        int toY = -resources.getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
-                - activity.findViewById(R.id.logo_holder).getHeight();
-        TestTouchUtils.dragCompleteView(InstrumentationRegistry.getInstrumentation(),
-                activity.findViewById(R.id.header_title), 0, 0, 0, toY, 10);
+        int toY =
+                -resources.getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
+                        - activity.findViewById(R.id.logo_holder).getHeight();
+        TestTouchUtils.dragCompleteView(
+                InstrumentationRegistry.getInstrumentation(),
+                activity.findViewById(R.id.header_title),
+                0,
+                0,
+                0,
+                toY,
+                10);
 
         // Toolbar layout view should show.
         onViewWaiting(withId(R.id.toolbar));

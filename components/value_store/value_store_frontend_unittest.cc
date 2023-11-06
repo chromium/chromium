@@ -27,7 +27,8 @@ class ValueStoreFrontendTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
     base::FilePath src_db(
         test_data_dir.AppendASCII("components/test/data/value_store"));
     db_path_ = temp_dir_.GetPath().AppendASCII("temp_db");

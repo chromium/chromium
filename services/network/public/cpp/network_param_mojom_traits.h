@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_version.h"
@@ -123,6 +124,19 @@ class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
 
   static bool Read(network::mojom::ProxyServerDataView data,
                    net::ProxyServer* out);
+};
+
+template <>
+class COMPONENT_EXPORT(NETWORK_CPP_NETWORK_PARAM)
+    StructTraits<network::mojom::ProxyChainDataView, net::ProxyChain> {
+ public:
+  static const absl::optional<std::vector<net::ProxyServer>>& proxy_servers(
+      const net::ProxyChain& c) {
+    return c.proxy_servers_if_valid();
+  }
+
+  static bool Read(network::mojom::ProxyChainDataView data,
+                   net::ProxyChain* out);
 };
 
 template <>

@@ -46,6 +46,9 @@ BASE_FEATURE(kIPHDesktopCustomizeChromeFeature,
 BASE_FEATURE(kIPHDesktopCustomizeChromeRefreshFeature,
              "IPH_DesktopCustomizeChromeRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHDesktopNewTabPageModulesCustomizeFeature,
+             "IPH_DesktopNewTabPageModulesCustomize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHDownloadToolbarButtonFeature,
              "IPH_DownloadToolbarButton",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -87,6 +90,9 @@ BASE_FEATURE(kIPHPasswordsWebAppProfileSwitchFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPasswordManagerShortcutFeature,
              "IPH_PasswordManagerShortcut",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPasswordSharingFeature,
+             "IPH_PasswordSharingFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHPowerBookmarksSidePanelFeature,
              "IPH_PowerBookmarksSidePanel",
@@ -130,6 +136,9 @@ BASE_FEATURE(kIPHSideSearchPageActionLabelFeature,
 BASE_FEATURE(kIPHTabSearchFeature,
              "IPH_TabSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHTrackingProtectionOffboardingFeature,
+             "IPH_TrackingProtectionOffboarding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHTrackingProtectionOnboardingFeature,
              "IPH_TrackingProtectionOnboarding",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -187,6 +196,9 @@ BASE_FEATURE(kIPHAutoDarkUserEducationMessageFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature,
              "IPH_AutoDarkUserEducationMessageOptIn",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHCCTMinimized,
+             "IPH_CCTMinimized",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHContextualPageActionsQuietVariantFeature,
              "IPH_ContextualPageActions_QuietVariant",
@@ -256,6 +268,9 @@ BASE_FEATURE(kIPHRequestDesktopSiteOptInFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHRequestDesktopSiteExceptionsGenericFeature,
              "IPH_RequestDesktopSiteExceptionsGeneric",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHRequestDesktopSiteWindowSettingFeature,
+             "IPH_RequestDesktopSiteWindowSetting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHShoppingListSaveFlowFeature,
              "IPH_ShoppingListSaveFlow",
@@ -494,7 +509,7 @@ BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoWhatsNewFeature,
              "IPH_iOSPromoWhatsNew",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoPostRestoreFeature,
              "IPH_iOSPromoPostRestore",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -531,6 +546,9 @@ BASE_FEATURE(kIPHiOSPromoPasswordManagerWidgetFeature,
 BASE_FEATURE(kIPHiOSChoiceScreenFeature,
              "IPH_iOSChoiceScreenFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSParcelTrackingFeature,
+             "IPH_iOSParcelTrackingFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
@@ -558,7 +576,7 @@ BASE_FEATURE(kIPHCookieControlsFeature,
              base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPH3pcdUserBypassFeature,
              "IPH_3pcdUserBypass",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
         // BUILDFLAG(IS_FUCHSIA)

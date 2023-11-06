@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/print_servers_provider.h"
@@ -72,6 +73,10 @@ class FakePrintServersProvider : public PrintServersProvider {
     return print_servers_;
   }
 
+  base::WeakPtr<PrintServersProvider> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void SetPrintServers(absl::optional<std::vector<PrintServer>> print_servers) {
     print_servers_ = print_servers;
     if (observer_) {
@@ -83,6 +88,7 @@ class FakePrintServersProvider : public PrintServersProvider {
  private:
   absl::optional<std::vector<PrintServer>> print_servers_;
   raw_ptr<PrintServersProvider::Observer, ExperimentalAsh> observer_ = nullptr;
+  base::WeakPtrFactory<FakePrintServersProvider> weak_ptr_factory_{this};
 };
 
 class PrintServersManagerTest : public testing::Test,

@@ -122,6 +122,7 @@ cc_library(
         "//mediapipe/tasks/cc/components/processors/proto:image_preprocessing_graph_options_cc_proto",
         "//mediapipe/tasks/cc/core:model_resources",
         "//mediapipe/tasks/cc/core/proto:acceleration_cc_proto",
+        "//mediapipe/tasks/cc/core/proto:base_options_cc_proto",
         "//mediapipe/tasks/cc/vision/utils:image_tensor_specs",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",
@@ -132,8 +133,6 @@ cc_library(
 
 # TODO: Enable this test
 
-# TODO: Investigate rewriting the build rule to only link
-# the Bert Preprocessor if it's needed.
 cc_library(
     name = "text_preprocessing_graph",
     srcs = ["text_preprocessing_graph.cc"],
@@ -169,6 +168,7 @@ cc_library(
     deps = [
         "//mediapipe/calculators/core:split_vector_calculator",
         "//mediapipe/calculators/core:split_vector_calculator_cc_proto",
+        "//mediapipe/calculators/tensor:tensors_dequantization_calculator",
         "//mediapipe/calculators/tensor:tensors_to_detections_calculator",
         "//mediapipe/calculators/tensor:tensors_to_detections_calculator_cc_proto",
         "//mediapipe/calculators/tflite:ssd_anchors_calculator",

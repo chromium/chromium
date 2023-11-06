@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Run web platform tests as described in //docs/testing/web_platform_tests_wptrunner.md"""
+"""Run web platform tests as described in //docs/testing/run_web_platform_tests.md"""
 
 import argparse
 import contextlib
@@ -24,9 +24,10 @@ from blinkpy.tool.blink_tool import BlinkTool
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
 from blinkpy.web_tests.controllers.web_test_finder import WebTestFinder
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.port import factory
 from blinkpy.wpt_tests.product import make_product_registry
+from blinkpy.wpt_tests.test_loader import TestLoader
 
 path_finder.bootstrap_wpt_imports()
 import mozlog
@@ -126,6 +127,10 @@ class StructuredLogAdapter(logging.Handler):
 
 
 class WPTAdapter:
+    PORT_NAME_BY_PRODUCT = {
+        'chrome': 'chrome',
+    }
+
     def __init__(self, product, port, options, paths):
         self.product = product
         self.port = port
@@ -136,6 +141,7 @@ class WPTAdapter:
         self.paths = paths
         self.failure_threshold = 0
         self.crash_timeout_threshold = 0
+        self._expectations = TestExpectations(self.port)
 
     @classmethod
     def from_args(cls,
@@ -147,7 +153,13 @@ class WPTAdapter:
         # only run virtual tests for content shell
         cls._ensure_value(options, 'no_virtual_tests',
                           options.product != 'content_shell')
-        port = host.port_factory.get(port_name, options)
+
+        if options.product in cls.PORT_NAME_BY_PRODUCT:
+            port = host.port_factory.get(
+                cls.PORT_NAME_BY_PRODUCT[options.product], options)
+        else:
+            port = host.port_factory.get(port_name, options)
+
         if options.product == 'chrome':
             port.set_option_default('driver_name', port.CHROME_NAME)
         product = make_product(port, options)
@@ -198,6 +210,7 @@ class WPTAdapter:
             install_webdriver=False,
             channel='nightly',
             affected=None,
+            logcat_dir=None,
         )
 
         # Install customized versions of `mozlog` formatters.
@@ -312,8 +325,8 @@ class WPTAdapter:
             runner_options.timeout_multiplier = self.options.timeout_multiplier
         elif (self.options.enable_sanitizer
               or self.options.configuration == 'Debug'):
-            runner_options.timeout_multiplier = 2
-            logger.info('Defaulting to 2x timeout multiplier because '
+            runner_options.timeout_multiplier = 5
+            logger.info('Defaulting to 5x timeout multiplier because '
                         'the build is debug or sanitized')
 
         if self.using_upstream_wpt:
@@ -371,24 +384,6 @@ class WPTAdapter:
             # https://github.com/web-platform-tests/wpt/blob/9593290a/tools/wptrunner/wptrunner/wptcommandline.py#L190
             runner_options.debugger_args = ' '.join(self.options.wrapper[1:])
 
-    def _prepare_lists(self, test_names):
-        tests_to_skip = set()
-        for test in test_names:
-            if (self.port.virtual_test_skipped_due_to_platform_config(test)
-                    or self.port.skipped_due_to_exclusive_virtual_tests(test)):
-                tests_to_skip.add(test)
-                continue
-
-            if self.options.enable_sanitizer and Port.is_wpt_idlharness_test(
-                    test):
-                tests_to_skip.update({test})
-
-        tests_to_run = [
-            test for test in test_names if test not in tests_to_skip
-        ]
-
-        return tests_to_run, tests_to_skip
-
     def _collect_tests(self):
         finder = WebTestFinder(self.port, self.options)
 
@@ -413,8 +408,14 @@ class WPTAdapter:
 
         # sharding the tests the same way as in RWT
         test_names = finder.split_into_chunks(all_test_names)
-
-        tests_to_run, _ = self._prepare_lists(test_names)
+        # TODO(crbug.com/1426296): Actually log these tests as
+        # `test_{start,end}` in `mozlog` so that they're recorded in the results
+        # JSON (and shown in `results.html`).
+        tests_to_skip = finder.skip_tests(self.paths, test_names,
+                                          self._expectations)
+        tests_to_run = [
+            test for test in test_names if test not in tests_to_skip
+        ]
 
         if not tests_to_run and not self.options.zero_tests_executed_ok:
             logger.error('No tests to run.')
@@ -532,6 +533,7 @@ class WPTAdapter:
             self._create_extra_run_info(self.fs.join(tmp_dir, 'mozinfo.json'),
                                         tests_root)
 
+            TestLoader.install(self.port, self._expectations)
             stack.enter_context(
                 self.process_and_upload_results(runner_options, tmp_dir))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
@@ -728,6 +730,10 @@ def parse_arguments(argv):
     params = vars(parser.parse_args(argv))
     args = params.pop('tests')
     options = optparse.Values(params)
+    # Parameter needed by `WebTestFinder`. TODO(crbug.com/1426296): Port
+    # `--no-expectations` to `run_wpt_tests.py`, and skip reporting results when
+    # the flag is passed.
+    options.no_expectations = False
     # Directly tie Xvfb usage to headless mode. Xvfb can supercede a real X
     # server and therefore should never be started in `--no-headless` mode.
     # Conversely, the default headless mode should always start Xvfb.

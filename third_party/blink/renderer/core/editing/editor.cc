@@ -99,7 +99,8 @@ namespace {
 bool IsInPasswordFieldWithUnrevealedPassword(const Position& position) {
   if (auto* input =
           DynamicTo<HTMLInputElement>(EnclosingTextControl(position))) {
-    return (input->type() == input_type_names::kPassword) &&
+    return input->FormControlType() ==
+               mojom::blink::FormControlType::kInputPassword &&
            !input->ShouldRevealPassword();
   }
   return false;

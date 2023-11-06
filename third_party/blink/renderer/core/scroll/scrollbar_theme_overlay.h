@@ -48,7 +48,7 @@ class CORE_EXPORT ScrollbarThemeOverlay : public ScrollbarTheme {
       float new_position) const override;
 
   int ScrollbarThickness(float scale_from_dip,
-                         EScrollbarWidth scrollbar_width) override;
+                         EScrollbarWidth scrollbar_width) const override;
   int ScrollbarMargin(float scale_from_dip,
                       EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;

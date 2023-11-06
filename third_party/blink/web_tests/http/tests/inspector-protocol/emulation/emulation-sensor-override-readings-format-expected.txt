@@ -1,0 +1,26 @@
+Tests setSensorOverrideReadings validates the readings format
+{
+    error : {
+        code : -32602
+        message : This sensor type requires an 'xyz' parameter
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : This sensor type requires a 'single' parameter
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : This sensor type requires a 'quaternion' parameter
+    }
+    id : <number>
+    sessionId : <string>
+}
+

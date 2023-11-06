@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -274,18 +274,8 @@ crbug.com/1417006 [ fuchsia web-engine-shell ] conformance/extensions/oes-textur
 crbug.com/1136205 [ chromeos ] conformance/textures/misc/video-rotation.html [ Skip ]
 crbug.com/1136205 [ fuchsia ] conformance/textures/misc/video-rotation.html [ Skip ]
 
-# Texture compression is only expected to be available on desktop GPUs.
-crbug.com/1080360 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_bptc [ Skip ]
-crbug.com/1080401 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_texture_compression_rgtc [ Skip ]
-crbug.com/1080408 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc [ Skip ]
-crbug.com/1080377 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_compressed_texture_s3tc_srgb [ Skip ]
-
 # The following test is very slow and therefore times out on Android bot.
 [ android ] conformance/rendering/multisample-corruption.html [ Skip ]
-
-# GPU supports ES 3.2, but supporting draw_buffers on WebGL 1.0/ ES 2.0 requires
-# a significant amount of emulation.
-crbug.com/1080411 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_draw_buffers [ Skip ]
 
 # Extensions not available on Samsung A13s
 crbug.com/1372155 [ android android-sm-a135m ] WebglExtension_EXT_color_buffer_half_float [ Skip ]
@@ -394,7 +384,7 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough an
 # The "Slow" expectations in this section are expected to stick around, i.e.
 # they are not attributed to some known issue that needs resolving.
 
-crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+[ linux debug ] conformance/rendering/multisample-corruption.html [ Slow ]
 
 ###################
 # Failures/Flakes #
@@ -547,6 +537,8 @@ crbug.com/784817 [ mac nvidia-0xfe9 ] conformance/glsl/bugs/init-array-with-loop
 
 ## Mac / M1 / OpenGL ##
 
+crbug.com/1493524 [ mac apple passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ RetryOnFailure ]
+
 
 ####################
 # Linux failures   #
@@ -648,7 +640,6 @@ crbug.com/1209254 [ android android-nexus-5x android-chromium passthrough ] conf
 crbug.com/1276552 [ android-pixel-4 android-r passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/canvas/render-after-resize-test.html [ Failure ]
 
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
-crbug.com/1289303 [ android android-sm-a235m ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 crbug.com/1289303 [ android-pixel-4 android-r angle-disabled no-passthrough ] conformance/textures/misc/texture-video-transparent.html [ Failure ]
 
 ## Samsung failures ##

@@ -6,7 +6,7 @@
 // feature lives in ash. These tests make use of the crosapi to set the value
 // in ash. Thus, they run as lacros_chrome_browsertests. This test verifies the
 // hehavior of the onChange callback.
-// Run with lacros_chrome_browsertests_run_in_series \
+// Run with lacros_chrome_browsertests \
 //     --gtest_filter=ExtensionPreferenceLacrosBrowserTest.Lacros
 
 // Listen until |event| has fired with the |expected| value.

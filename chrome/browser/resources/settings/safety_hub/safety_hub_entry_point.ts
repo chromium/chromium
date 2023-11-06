@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // clang-format off
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../icons.html.js';
 import './safety_hub_module.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -57,6 +57,11 @@ export class SettingsSafetyHubEntryPointElement extends
       },
 
       subheaderString_: String,
+
+      headerIconColor_: {
+        type: String,
+        computed: 'computeHeaderIconColor_(hasRecommendations_)',
+      },
     };
   }
 
@@ -67,6 +72,7 @@ export class SettingsSafetyHubEntryPointElement extends
   private hasRecommendations_: boolean;
   private headerString_: string;
   private subheaderString_: string;
+  private headerIconColor_: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -88,6 +94,10 @@ export class SettingsSafetyHubEntryPointElement extends
   private computeHeaderString_() {
     return this.hasRecommendations_ ? this.i18n('safetyHubEntryPointHeader') :
                                       '';
+  }
+
+  private computeHeaderIconColor_() {
+    return this.hasRecommendations_ ? 'blue' : '';
   }
 
   private onClick_() {

@@ -1,327 +1,335 @@
 This is a testharness.js-based test.
 Found 323 tests; 315 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") after
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") after assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">obar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(0, 0, 255)\">ar</span>"
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") after
-FAIL [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") before
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") after
-PASS [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") after
-FAIL [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") before assert_equals: Wrong result returned expected true but got false
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") before
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") after
-PASS [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") after
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>": execCommand("foreColor", false, "#ff0000") return value
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" compare innerHTML
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
-PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
-PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-FAIL [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 255, 0.5)\">b</span>c" but got "a<font color=\"rgba(0, 0, 255, 0.5)\">b</font>c"
-PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
-PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-FAIL [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 0, 0)\">b</span>c" but got "a<font color=\"rgba(0, 0, 0, 0)\">b</font>c"
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
+[FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before
+  assert_equals: Wrong result returned expected true but got false
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") after
+[FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") after
+  assert_equals: Wrong result returned (after color normalization) expected "rgb(0, 0, 255)" but got "rgb(0, 0, 0)"
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("stylewithcss") after
+[FAIL] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") before
+  assert_equals: Wrong result returned expected true but got false
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "fo[o<font color=brown>bar</font>b]az" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>b]ar</font>baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>ba[r</font>]baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo[<font color=brown>bar</font>]baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo<font color=brown>[bar]</font>baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "foo{<font color=brown>bar</font>}baz" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<font color=brown>fo[o</font><span style=color:brown>b]ar</span>" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
+[FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">obar</span>" but got "<span style=\"color:rgb(165, 42, 42)\">fo</span><span style=\"color:rgb(0, 0, 255)\">ob</span><span style=\"color:rgb(0, 0, 255)\">ar</span>"
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") after
+[FAIL] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") before
+  assert_equals: Wrong result returned expected true but got false
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","true"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>": execCommand("forecolor", false, "#0000FF") return value
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" compare innerHTML
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("stylewithcss") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("stylewithcss") after
+[FAIL] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") before
+  assert_equals: Wrong result returned expected true but got false
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") before
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandIndeterm("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandState("forecolor") after
+[PASS] [["stylewithcss","false"],["forecolor","#0000FF"]] "<span style=color:brown>fo[o</span><span style=color:#0000ff>b]ar</span>" queryCommandValue("forecolor") after
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[abc]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[abc]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=\"7\" face=monospace>[abc]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>[a]bc</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font size=7>ab[c]</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>[a]bc</font>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>": execCommand("foreColor", false, "#ff0000") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#ff0000"]] "<font face=monospace>ab[c]</font>" compare innerHTML
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","true"],["foreColor","#0000FF"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","true"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","true"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 255, 0.5)\">b</span>c" but got "a<font color=\"rgba(0, 0, 255, 0.5)\">b</font>c"
+[PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
+[PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","true"],["foreColor","transparent"],["styleWithCSS","false"],["insertText","b"]] "a[]c" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a<span style=\"color:rgba(0, 0, 0, 0)\">b</span>c" but got "a<font color=\"rgba(0, 0, 0, 0)\">b</font>c"
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "#0000FF") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","#0000FF"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgb(0, 0, 255)") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","rgb(0, 0, 255)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "rgba(0, 0, 255, 0.5)") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","rgba(0, 0, 255, 0.5)"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("foreColor", false, "transparent") return value
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("styleWithCSS", false, "true") return value
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c": execCommand("insertText", false, "b") return value
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["foreColor","transparent"],["styleWithCSS","true"],["insertText","b"]] "a[]c" compare innerHTML
 Harness: the test ran to completion.
 

@@ -4,22 +4,17 @@
 
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 
+#include <utility>
 #include <vector>
 
-#include "base/barrier_callback.h"
-#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/token.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_background_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -34,27 +29,15 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/model_execution.pb.h"
-#include "components/optimization_guide/proto/wallpaper_search.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "skia/ext/image_operations.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/codec/png_codec.h"
 #include "ui/native_theme/native_theme.h"
 
 CustomizeChromePageHandler::CustomizeChromePageHandler(
@@ -63,8 +46,7 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
     mojo::PendingRemote<side_panel::mojom::CustomizeChromePage> pending_page,
     NtpCustomBackgroundService* ntp_custom_background_service,
     content::WebContents* web_contents,
-    const std::vector<std::pair<const std::string, int>> module_id_names,
-    image_fetcher::ImageDecoder* image_decoder)
+    const std::vector<std::pair<const std::string, int>> module_id_names)
     : ntp_custom_background_service_(ntp_custom_background_service),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       web_contents_(web_contents),
@@ -72,8 +54,6 @@ CustomizeChromePageHandler::CustomizeChromePageHandler(
           NtpBackgroundServiceFactory::GetForProfile(profile_)),
       theme_service_(ThemeServiceFactory::GetForProfile(profile_)),
       module_id_names_(module_id_names),
-      data_decoder_(std::make_unique<data_decoder::DataDecoder>()),
-      image_decoder_(*image_decoder),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)) {
   CHECK(ntp_custom_background_service_);
@@ -251,6 +231,8 @@ void CustomizeChromePageHandler::UpdateTheme() {
     background_image->snapshot_url =
         custom_background->custom_background_snapshot_url;
     background_image->is_uploaded_image = custom_background->is_uploaded_image;
+    background_image->local_background_id =
+        custom_background->local_background_id;
     background_image->title =
         custom_background->custom_background_attribution_line_1;
     background_image->collection_id = custom_background->collection_id;
@@ -385,297 +367,6 @@ void CustomizeChromePageHandler::UpdateModulesSettings() {
 
 void CustomizeChromePageHandler::UpdateScrollToSection() {
   ScrollToSection(last_requested_section_);
-}
-
-void CustomizeChromePageHandler::GetDescriptors(
-    GetDescriptorsCallback callback) {
-  callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr);
-  if (get_descriptors_callback_) {
-    return;
-  }
-  get_descriptors_callback_ = std::move(callback);
-
-  net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("customize_chrome_page_handler", R"(
-        semantics {
-          sender: "Customize Chrome"
-          description:
-            "This service downloads different configurations "
-            "for Customize Chrome."
-          trigger:
-            "Opening Customize Chrome on the Desktop NTP, "
-            "if Google is the default search provider "
-            "and the user is signed in."
-          data: "None."
-          destination: GOOGLE_OWNED_SERVICE
-          internal {
-            contacts {
-              email: "chrome-desktop-ntp@google.com"
-            }
-          }
-          user_data {
-            type: NONE
-          }
-          last_reviewed: "2023-10-10"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Users can control this feature by signing out or "
-            "selecting a non-Google default search engine in Chrome "
-            "settings under 'Search Engine'."
-          chrome_policy {
-            DefaultSearchProviderEnabled {
-              policy_options {mode: MANDATORY}
-              DefaultSearchProviderEnabled: false
-            }
-          }
-        })");
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(
-      "https://static.corp.google.com/chrome-wallpaper-search/"
-      "descriptors_en-US.json");
-  resource_request->request_initiator =
-      url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
-  simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), traffic_annotation);
-  simple_url_loader_->DownloadToString(
-      profile_->GetURLLoaderFactory().get(),
-      base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsRetrieved,
-                     weak_ptr_factory_.GetWeakPtr()),
-      1024 * 1024);
-}
-
-void CustomizeChromePageHandler::SearchWallpaper(
-    const std::string& query,
-    SearchWallpaperCallback callback) {
-  callback =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), false);
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) ||
-      !base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
-    return;
-  }
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-  if (!optimization_guide_keyed_service) {
-    return;
-  }
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  request.set_query(query);
-  optimization_guide_keyed_service->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      request,
-      base::BindOnce(&CustomizeChromePageHandler::WallpaperSearchCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CustomizeChromePageHandler::GetWallpaperSearchResults(
-    const std::string& query,
-    GetWallpaperSearchResultsCallback callback) {
-  callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-      std::move(callback),
-      std::vector<side_panel::mojom::WallpaperSearchResultPtr>());
-  if (!base::FeatureList::IsEnabled(
-          ntp_features::kCustomizeChromeWallpaperSearch) ||
-      !base::FeatureList::IsEnabled(
-          optimization_guide::features::kOptimizationGuideModelExecution)) {
-    return;
-  }
-  auto* optimization_guide_keyed_service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
-  if (!optimization_guide_keyed_service) {
-    return;
-  }
-  chrome_intelligence_modelexecution_proto::WallpaperSearchRequest request;
-  request.set_query(query);
-  optimization_guide_keyed_service->ExecuteModel(
-      optimization_guide::proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
-      request,
-      base::BindOnce(
-          &CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void CustomizeChromePageHandler::SetBackgroundToWallpaperSearchResult(
-    const base::Token& result_id) {
-  CHECK(base::Contains(wallpaper_search_results_, result_id));
-  ntp_custom_background_service_->SelectLocalBackgroundImage(
-      wallpaper_search_results_[result_id]);
-}
-
-void CustomizeChromePageHandler::OnDescriptorsRetrieved(
-    std::unique_ptr<std::string> response_body) {
-  if (!response_body) {
-    // Network errors (i.e. the server did not provide a response).
-    DVLOG(1) << "Request failed with error: " << simple_url_loader_->NetError();
-    std::move(get_descriptors_callback_).Run(nullptr);
-    return;
-  }
-
-  std::string response;
-  response.swap(*response_body);
-  // The response may start with . Ignore this.
-  const char kXSSIResponsePreamble[] = ")]}'";
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
-  }
-  data_decoder_->ParseJson(
-      response,
-      base::BindOnce(&CustomizeChromePageHandler::OnDescriptorsJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CustomizeChromePageHandler::OnDescriptorsJsonParsed(
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value() || !result->is_dict()) {
-    DVLOG(1) << "Parsing JSON failed: " << result.error();
-    std::move(get_descriptors_callback_).Run(nullptr);
-    return;
-  }
-
-  const base::Value::List* descriptor_a =
-      result->GetDict().FindList("descriptor_a");
-  const base::Value::List* descriptor_b =
-      result->GetDict().FindList("descriptor_b");
-  const base::Value::List* descriptor_c_labels =
-      result->GetDict().FindList("descriptor_c");
-  if (!descriptor_a || !descriptor_b || !descriptor_c_labels) {
-    DVLOG(1) << "Parsing JSON failed: no valid descriptors.";
-    std::move(get_descriptors_callback_).Run(nullptr);
-    return;
-  }
-
-  std::vector<side_panel::mojom::DescriptorAPtr> mojo_descriptor_a_list;
-  if (descriptor_a) {
-    for (const auto& descriptor : *descriptor_a) {
-      const base::Value::Dict& descriptor_a_dict = descriptor.GetDict();
-      auto* category = descriptor_a_dict.FindString("category");
-      auto* label_values = descriptor_a_dict.FindList("labels");
-      if (!category || !label_values) {
-        continue;
-      }
-      auto mojo_descriptor_a = side_panel::mojom::DescriptorA::New();
-      mojo_descriptor_a->category = *category;
-      std::vector<std::string> labels;
-      for (const auto& label_value : *label_values) {
-        labels.push_back(label_value.GetString());
-      }
-      mojo_descriptor_a->labels = std::move(labels);
-      mojo_descriptor_a_list.push_back(std::move(mojo_descriptor_a));
-    }
-  }
-  auto mojo_descriptors = side_panel::mojom::Descriptors::New();
-  mojo_descriptors->descriptor_a = std::move(mojo_descriptor_a_list);
-  std::vector<side_panel::mojom::DescriptorBPtr> mojo_descriptor_b_list;
-  if (descriptor_b) {
-    for (const auto& descriptor : *descriptor_b) {
-      const base::Value::Dict& descriptor_b_dict = descriptor.GetDict();
-      auto* label = descriptor_b_dict.FindString("label");
-      auto* image_path = descriptor_b_dict.FindString("image");
-      if (!label || !image_path) {
-        continue;
-      }
-      auto mojo_descriptor_b = side_panel::mojom::DescriptorB::New();
-      mojo_descriptor_b->label = *label;
-      mojo_descriptor_b->image_path = *image_path;
-      mojo_descriptor_b_list.push_back(std::move(mojo_descriptor_b));
-    }
-  }
-  mojo_descriptors->descriptor_b = std::move(mojo_descriptor_b_list);
-  std::vector<std::string> mojo_descriptor_c_labels;
-  if (descriptor_c_labels) {
-    for (const auto& label_value : *descriptor_c_labels) {
-      mojo_descriptor_c_labels.push_back(label_value.GetString());
-    }
-  }
-  mojo_descriptors->descriptor_c = std::move(mojo_descriptor_c_labels);
-  std::move(get_descriptors_callback_).Run(std::move(mojo_descriptors));
-}
-
-void CustomizeChromePageHandler::WallpaperSearchCallback(
-    SearchWallpaperCallback callback,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
-  if (!result.has_value()) {
-    return;
-  }
-  auto response = optimization_guide::ParsedAnyMetadata<
-      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
-      result.value());
-  if (response->images_size() < 1) {
-    return;
-  }
-  if (ntp_custom_background_service_) {
-    ntp_custom_background_service_->SelectLocalBackgroundImage(
-        response->images(0));
-  }
-  std::move(callback).Run(true);
-}
-
-void CustomizeChromePageHandler::OnWallpaperSearchResultsRetrieved(
-    GetWallpaperSearchResultsCallback callback,
-    optimization_guide::OptimizationGuideModelExecutionResult result) {
-  if (!result.has_value()) {
-    return;
-  }
-  auto response = optimization_guide::ParsedAnyMetadata<
-      chrome_intelligence_modelexecution_proto::WallpaperSearchResponse>(
-      result.value());
-  if (response->images().empty()) {
-    return;
-  }
-  auto barrier = base::BarrierCallback<SkBitmap>(
-      response->images_size(),
-      base::BindOnce(
-          &CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
-  // Decode each image that is sent back for security purposes. Switched them
-  // from gfx::Image to SkBitmap before passing to the barrier callback because
-  // of some issues with const gfx::Image& and base::BarrierCallback.
-  for (auto& image : response->images()) {
-    image_decoder_->DecodeImage(
-        image, gfx::Size(), nullptr,
-        base::BindOnce(
-            [](base::RepeatingCallback<void(SkBitmap)> barrier,
-               const gfx::Image& image) {
-              std::move(barrier).Run(image.AsBitmap());
-            },
-            barrier));
-  }
-}
-
-// Save the full sized bitmaps and create a much smaller image version of each
-// for sending back to the UI through the callback. Re-encode the bitmap and
-// make it base64 for easy reading by the UI.
-void CustomizeChromePageHandler::OnWallpaperSearchResultsDecoded(
-    GetWallpaperSearchResultsCallback callback,
-    std::vector<SkBitmap> bitmaps) {
-  std::vector<side_panel::mojom::WallpaperSearchResultPtr> thumbnails;
-
-  for (auto& bitmap : bitmaps) {
-    SkBitmap small_bitmap = skia::ImageOperations::Resize(
-        bitmap, skia::ImageOperations::RESIZE_GOOD, 200, 200);
-    std::vector<unsigned char> encoded;
-    const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-        small_bitmap, /*discard_transparency=*/false, &encoded);
-    if (success) {
-      auto thumbnail = side_panel::mojom::WallpaperSearchResult::New();
-      auto id = base::Token::CreateRandom();
-      wallpaper_search_results_[id] = std::move(bitmap);
-      thumbnail->image = base::Base64Encode(encoded);
-      thumbnail->id = std::move(id);
-      thumbnails.push_back(std::move(thumbnail));
-    }
-  }
-
-  std::move(callback).Run(std::move(thumbnails));
 }
 
 void CustomizeChromePageHandler::LogEvent(NTPLoggingEventType event) {

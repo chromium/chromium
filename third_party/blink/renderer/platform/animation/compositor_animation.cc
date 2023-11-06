@@ -11,9 +11,16 @@
 
 namespace blink {
 
-std::unique_ptr<CompositorAnimation> CompositorAnimation::Create() {
-  return std::make_unique<CompositorAnimation>(
-      cc::Animation::Create(cc::AnimationIdProvider::NextAnimationId()));
+std::unique_ptr<CompositorAnimation> CompositorAnimation::Create(
+    absl::optional<int> replaced_cc_animation_id) {
+  auto compositor_animation = std::make_unique<CompositorAnimation>(
+      cc::Animation::Create(replaced_cc_animation_id
+                                ? *replaced_cc_animation_id
+                                : cc::AnimationIdProvider::NextAnimationId()));
+  if (replaced_cc_animation_id) {
+    compositor_animation->CcAnimation()->set_use_start_time_from_impl();
+  }
+  return compositor_animation;
 }
 
 std::unique_ptr<CompositorAnimation>
@@ -41,6 +48,11 @@ CompositorAnimation::~CompositorAnimation() {
 
 cc::Animation* CompositorAnimation::CcAnimation() const {
   return animation_.get();
+}
+
+int CompositorAnimation::CcAnimationId() const {
+  CHECK(CcAnimation());
+  return CcAnimation()->id();
 }
 
 void CompositorAnimation::SetAnimationDelegate(

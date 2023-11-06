@@ -319,7 +319,7 @@ public class ToolbarSwipeLayout extends Layout {
             RecordUserAction.record("MobileSideSwipeFinished");
         }
 
-        startHiding(mToTab.getId(), false);
+        startHiding(mToTab.getId());
 
         float start = mOffsetTarget;
         float end = offsetTo;
@@ -514,7 +514,7 @@ public class ToolbarSwipeLayout extends Layout {
 
         mToTab = fromTabIndex < toTabIndex ? mRightTab : mLeftTab;
         float end = fromTabIndex < toTabIndex ? -getWidth() : getWidth();
-        startHiding(toTabId, false);
+        startHiding(toTabId);
         doTabSwitchAnimation(toTabId, 0f, end, SWITCH_TO_TAB_DURATION_MS);
     }
 

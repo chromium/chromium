@@ -264,7 +264,7 @@ int ProxyResolverMac::GetProxyForURL(
   base::apple::ScopedCFTypeRef<CFDictionaryRef> empty_dictionary(
       CFDictionaryCreate(nullptr, nullptr, nullptr, 0, nullptr, nullptr));
   base::apple::ScopedCFTypeRef<CFArrayRef> dummy_result(
-      CFNetworkCopyProxiesForURL(query_url_ref.get(), empty_dictionary));
+      CFNetworkCopyProxiesForURL(query_url_ref.get(), empty_dictionary.get()));
 
   // We cheat here. We need to act as if we were synchronous, so we pump the
   // runloop ourselves. Our caller moved us to a new thread anyway, so this is
@@ -312,7 +312,7 @@ int ProxyResolverMac::GetProxyForURL(
   }
   observer.RemoveFromCurrentRunLoop(private_runloop_mode);
 
-  DCHECK(result != nullptr);
+  DCHECK(result);
 
   if (CFGetTypeID(result) == CFErrorGetTypeID()) {
     // TODO(avi): do something better than this
@@ -321,7 +321,7 @@ int ProxyResolverMac::GetProxyForURL(
   }
   base::apple::ScopedCFTypeRef<CFArrayRef> proxy_array_ref(
       base::apple::CFCastStrict<CFArrayRef>(result));
-  DCHECK(proxy_array_ref != nullptr);
+  DCHECK(proxy_array_ref);
 
   ProxyList proxy_list;
 
@@ -330,7 +330,7 @@ int ProxyResolverMac::GetProxyForURL(
     CFDictionaryRef proxy_dictionary =
         base::apple::CFCastStrict<CFDictionaryRef>(
             CFArrayGetValueAtIndex(proxy_array_ref.get(), i));
-    DCHECK(proxy_dictionary != nullptr);
+    DCHECK(proxy_dictionary);
 
     // The dictionary may have the following keys:
     // - kCFProxyTypeKey : The type of the proxy

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
@@ -379,19 +380,25 @@ IN_PROC_BROWSER_TEST_F(
   // CONTACT_INFO should be disabled by default for explicit-passphrase users.
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  // AUTOFILL_WALLET_DATA should be disabled when CONTACT_INFO is disabled.
-  // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
-  // decoupled from kAutofill.
-  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
+    // AUTOFILL_WALLET_DATA should be disabled when CONTACT_INFO is disabled.
+    // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
+    // decoupled from kAutofill.
+    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
+        syncer::AUTOFILL_WALLET_DATA));
+  }
 
   // Enabling kAutofill to enable CONTACT_INFO.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kAutofill, true);
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
-  GetSyncService(0)->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPayments, true);
+  if (!base::FeatureList::IsEnabled(
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
+    // TODO(crbug.com/1435431): This should be removed once kPayments is
+    // decoupled from kAutofill.
+    GetSyncService(0)->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPayments, true);
+  }
 
   ASSERT_NE(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
@@ -400,8 +407,6 @@ IN_PROC_BROWSER_TEST_F(
   // CONTACT_INFO and AUTOFILL_WALLET_DATA should be enabled.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::AUTOFILL_WALLET_DATA));
 }

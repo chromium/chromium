@@ -217,82 +217,59 @@ ConfigBase::~ConfigBase() {
   policy_.ClearAndDelete();  // Allocated by MakeBrokerPolicyMemory.
 }
 
-ResultCode ConfigBase::AddRule(SubSystem subsystem,
-                               Semantics semantics,
-                               const wchar_t* pattern) {
+sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {
   DCHECK(IsOnCreatingThread());
-  DCHECK(!configured_);
-  ResultCode result = AddRuleInternal(subsystem, semantics, pattern);
-  LOG_IF(ERROR, result != SBOX_ALL_OK)
-      << "Failed to add sandbox rule."
-      << " error = " << result
-      << ", subsystem = " << static_cast<int>(subsystem)
-      << ", semantics = " << static_cast<int>(semantics) << ", pattern = '"
-      << pattern << "'";
-  return result;
-}
-
-ResultCode ConfigBase::AddRuleInternal(SubSystem subsystem,
-                                       Semantics semantics,
-                                       const wchar_t* pattern) {
   DCHECK(!configured_);
   if (!policy_) {
     policy_ = MakeBrokerPolicyMemory();
+    DCHECK(!policy_maker_);
     policy_maker_ = std::make_unique<LowLevelPolicy>(policy_);
   }
-  DCHECK(policy_maker_);
+  return policy_maker_.get();
+}
 
-  switch (subsystem) {
-    case SubSystem::kFiles: {
-      if (!FileSystemPolicy::GenerateRules(pattern, semantics,
-                                           policy_maker_.get())) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SubSystem::kNamedPipes: {
-      if (!NamedPipePolicy::GenerateRules(pattern, semantics,
-                                          policy_maker_.get())) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SubSystem::kWin32kLockdown: {
-      DCHECK_EQ(MITIGATION_WIN32K_DISABLE,
-                mitigations_ & MITIGATION_WIN32K_DISABLE)
-          << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
-             "rules.";
-      if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(
-              pattern, semantics, policy_maker_.get())) {
-        NOTREACHED();
-        return SBOX_ERROR_BAD_PARAMS;
-      }
-      break;
-    }
-    case SubSystem::kSignedBinary: {
-      // Signed intercept rules only supported on Windows 10 TH2 and above. This
-      // must match the version checks in process_mitigations.cc for
-      // consistency.
-      if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
-        DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
-                  mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
-            << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
-               "policy rules.";
-        if (!SignedPolicy::GenerateRules(pattern, semantics,
-                                         policy_maker_.get())) {
-          NOTREACHED();
-          return SBOX_ERROR_BAD_PARAMS;
-        }
-      }
-      break;
-    }
-    case SubSystem::kProcess: {
-      return SBOX_ERROR_UNSUPPORTED;
+ResultCode ConfigBase::AllowFileAccess(FileSemantics semantics,
+                                       const wchar_t* pattern) {
+  if (!FileSystemPolicy::GenerateRules(pattern, semantics, PolicyMaker())) {
+    NOTREACHED();
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  return SBOX_ALL_OK;
+}
+
+ResultCode ConfigBase::AllowNamedPipes(const wchar_t* pattern) {
+  if (!NamedPipePolicy::GenerateRules(pattern, PolicyMaker())) {
+    NOTREACHED();
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  return SBOX_ALL_OK;
+}
+
+ResultCode ConfigBase::SetFakeGdiInit() {
+  DCHECK_EQ(MITIGATION_WIN32K_DISABLE, mitigations_ & MITIGATION_WIN32K_DISABLE)
+      << "Enable MITIGATION_WIN32K_DISABLE before adding win32k policy "
+         "rules.";
+  if (!ProcessMitigationsWin32KLockdownPolicy::GenerateRules(PolicyMaker())) {
+    NOTREACHED();
+    return SBOX_ERROR_BAD_PARAMS;
+  }
+  return SBOX_ALL_OK;
+}
+
+ResultCode ConfigBase::AllowExtraDlls(const wchar_t* pattern) {
+  // Signed intercept rules only supported on Windows 10 TH2 and above. This
+  // must match the version checks in process_mitigations.cc for
+  // consistency.
+  if (base::win::GetVersion() >= base::win::Version::WIN10_TH2) {
+    DCHECK_EQ(MITIGATION_FORCE_MS_SIGNED_BINS,
+              mitigations_ & MITIGATION_FORCE_MS_SIGNED_BINS)
+        << "Enable MITIGATION_FORCE_MS_SIGNED_BINS before adding signed "
+           "policy rules.";
+    if (!SignedPolicy::GenerateRules(pattern, PolicyMaker())) {
+      NOTREACHED();
+      return SBOX_ERROR_BAD_PARAMS;
     }
   }
-
   return SBOX_ALL_OK;
 }
 

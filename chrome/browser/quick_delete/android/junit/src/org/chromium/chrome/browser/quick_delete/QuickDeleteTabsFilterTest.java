@@ -29,6 +29,7 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -36,9 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Robolectric tests for {@link QuickDeleteTabsFilter}.
- */
+/** Robolectric tests for {@link QuickDeleteTabsFilter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -48,13 +47,13 @@ public class QuickDeleteTabsFilterTest {
     private QuickDeleteTabsFilter mQuickDeleteTabsFilter;
     private final List<MockTab> mMockTabList = new ArrayList<>();
 
-    @Mock
-    private TabModel mTabModelMock;
+    @Mock private TabModel mTabModelMock;
+    @Mock private Profile mProfileMock;
 
     private void createTabsAndUpdateTabModel(int countOfTabs) {
         // Create tabs.
         for (int id = 0; id < countOfTabs; id++) {
-            MockTab mockTab = new MockTab(id, /*incognito=*/false);
+            MockTab mockTab = new MockTab(id, mProfileMock);
             mockTab.setRootId(id);
             mMockTabList.add(mockTab);
         }
@@ -144,8 +143,10 @@ public class QuickDeleteTabsFilterTest {
         mQuickDeleteTabsFilter.setCurrentTimeForTesting(INITIAL_TIME_IN_MS + FIFTEEN_MINUTES_IN_MS);
 
         // Tab_1: Within 15 minutes range.
-        mMockTabList.get(1).setLastNavigationCommittedTimestampMillis(
-                INITIAL_TIME_IN_MS + FIFTEEN_MINUTES_IN_MS);
+        mMockTabList
+                .get(1)
+                .setLastNavigationCommittedTimestampMillis(
+                        INITIAL_TIME_IN_MS + FIFTEEN_MINUTES_IN_MS);
 
         List<Tab> filteredTabs =
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(TimePeriod.LAST_15_MINUTES);
@@ -171,9 +172,11 @@ public class QuickDeleteTabsFilterTest {
         // Initiate quick delete tabs closure.
         List<Tab> filteredTabs =
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(TimePeriod.LAST_15_MINUTES);
-        doNothing().when(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        doNothing()
+                .when(mTabModelMock)
+                .closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete(TimePeriod.LAST_15_MINUTES);
-        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
     }
 
     @Test(expected = IllegalStateException.class)
@@ -193,8 +196,10 @@ public class QuickDeleteTabsFilterTest {
 
         // Set these mock tabs 1 week apart, total of 5 weeks.
         for (int i = 0; i < countOfTabs; ++i) {
-            mMockTabList.get(i).setLastNavigationCommittedTimestampMillis(
-                    INITIAL_TIME_IN_MS + ONE_WEEK_IN_MS * (i + 1));
+            mMockTabList
+                    .get(i)
+                    .setLastNavigationCommittedTimestampMillis(
+                            INITIAL_TIME_IN_MS + ONE_WEEK_IN_MS * (i + 1));
         }
 
         // 5 weeks passes...
@@ -206,9 +211,11 @@ public class QuickDeleteTabsFilterTest {
                 mQuickDeleteTabsFilter.getListOfTabsToBeClosed(TimePeriod.ALL_TIME);
         assertEquals(5, filteredTabs.size());
 
-        doNothing().when(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        doNothing()
+                .when(mTabModelMock)
+                .closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete(TimePeriod.ALL_TIME);
-        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
     }
 
     @Test
@@ -220,8 +227,10 @@ public class QuickDeleteTabsFilterTest {
 
         // Set these mock tabs 1 week apart, total of 5 weeks.
         for (int i = 0; i < countOfTabs; ++i) {
-            mMockTabList.get(i).setLastNavigationCommittedTimestampMillis(
-                    INITIAL_TIME_IN_MS + ONE_WEEK_IN_MS * (i + 1));
+            mMockTabList
+                    .get(i)
+                    .setLastNavigationCommittedTimestampMillis(
+                            INITIAL_TIME_IN_MS + ONE_WEEK_IN_MS * (i + 1));
         }
 
         // 5 weeks passes...
@@ -235,8 +244,10 @@ public class QuickDeleteTabsFilterTest {
         // The oldest tab created in the first week should not be filtered out.
         assertFalse(filteredTabs.contains(mMockTabList.get(0)));
 
-        doNothing().when(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        doNothing()
+                .when(mTabModelMock)
+                .closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
         mQuickDeleteTabsFilter.closeTabsFilteredForQuickDelete(TimePeriod.FOUR_WEEKS);
-        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /*canUndo=*/eq(false));
+        verify(mTabModelMock).closeMultipleTabs(eq(filteredTabs), /* canUndo= */ eq(false));
     }
 }

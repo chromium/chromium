@@ -213,16 +213,9 @@ The crash occurred while a raw_ptr<T> object containing a dangling pointer was b
 MiraclePtr should make this crash non-exploitable in regular builds.
 ```
 
-MiraclePtr is active on Windows, Android, Linux, Mac, ChromeOS platforms as of main position
-[1136369](https://chromium-review.googlesource.com/c/chromium/src/+/4478673), and enabled in
-non-renderer processes as of main position [1160500](https://chromium-review.googlesource.com/c/chromium/src/+/4629828)
-, in effect as of Chrome 117.
+MiraclePtr is now active on all Chrome platforms in non-renderer processes as of 118.
+Severity assessments are made with consideration of all active release channels (Dev, Beta, Stable, and Extended Stable);
+BRP is now enabled in all active release channels.
 
-MiraclePtr is not yet active on Lacros, which has been made available to a subset of users.
-Until BRP is enabled for Lacros or unless the bug is verified to only impact a
-platform for which BRP is enabled, severity level should not be determined or impacted by
-MiraclePtr.
-
-If a bug only impacts a platform on which BRP is enabled _AND_ M116 or later and is marked
-`MiraclePtr Status:PROTECTED`, it should be downgraded by one severity level. (For example,
-a bug that would previously be High severity would now be only Medium severity).
+If a bug is marked `MiraclePtr Status:PROTECTED`, it should be downgraded by one severity level.
+(For example, a bug that would previously be High severity would now be only Medium severity).

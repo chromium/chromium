@@ -15,7 +15,6 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram.h"
@@ -26,10 +25,8 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/process/process_handle.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -735,7 +732,11 @@ PersistentHistogramAllocator::GetOrCreateStatisticsRecorderHistogram(
   return StatisticsRecorder::RegisterOrDeleteDuplicate(existing);
 }
 
-GlobalHistogramAllocator::~GlobalHistogramAllocator() = default;
+GlobalHistogramAllocator::~GlobalHistogramAllocator() {
+  // GlobalHistogramAllocator should never be destroyed because Histogram
+  // objects may keep pointers to its memory.
+  NOTREACHED();
+}
 
 // static
 void GlobalHistogramAllocator::CreateWithPersistentMemory(
@@ -744,10 +745,8 @@ void GlobalHistogramAllocator::CreateWithPersistentMemory(
     size_t page_size,
     uint64_t id,
     StringPiece name) {
-  Set(WrapUnique(
-      new GlobalHistogramAllocator(std::make_unique<PersistentMemoryAllocator>(
-          base, size, page_size, id, name,
-          PersistentMemoryAllocator::kReadWrite))));
+  Set(new GlobalHistogramAllocator(std::make_unique<PersistentMemoryAllocator>(
+      base, size, page_size, id, name, PersistentMemoryAllocator::kReadWrite)));
 }
 
 // static
@@ -755,8 +754,8 @@ void GlobalHistogramAllocator::CreateWithLocalMemory(
     size_t size,
     uint64_t id,
     StringPiece name) {
-  Set(WrapUnique(new GlobalHistogramAllocator(
-      std::make_unique<LocalPersistentMemoryAllocator>(size, id, name))));
+  Set(new GlobalHistogramAllocator(
+      std::make_unique<LocalPersistentMemoryAllocator>(size, id, name)));
 }
 
 #if !BUILDFLAG(IS_NACL)
@@ -794,10 +793,10 @@ bool GlobalHistogramAllocator::CreateWithFile(const FilePath& file_path,
     return false;
   }
 
-  Set(WrapUnique(new GlobalHistogramAllocator(
+  Set(new GlobalHistogramAllocator(
       std::make_unique<FilePersistentMemoryAllocator>(
           std::move(mmfile), 0, id, name,
-          PersistentMemoryAllocator::kReadWrite))));
+          PersistentMemoryAllocator::kReadWrite)));
   Get()->SetPersistentLocation(file_path);
   return true;
 }
@@ -941,20 +940,19 @@ void GlobalHistogramAllocator::CreateWithSharedMemoryRegion(
     return;
   }
 
-  Set(WrapUnique(new GlobalHistogramAllocator(
+  Set(new GlobalHistogramAllocator(
       std::make_unique<WritableSharedPersistentMemoryAllocator>(
-          std::move(mapping), 0, StringPiece()))));
+          std::move(mapping), 0, StringPiece())));
 }
 
 // static
-void GlobalHistogramAllocator::Set(
-    std::unique_ptr<GlobalHistogramAllocator> allocator) {
+void GlobalHistogramAllocator::Set(GlobalHistogramAllocator* allocator) {
   // Releasing or changing an allocator is extremely dangerous because it
   // likely has histograms stored within it. If the backing memory is also
   // also released, future accesses to those histograms will seg-fault.
   CHECK(!subtle::NoBarrier_Load(&g_histogram_allocator));
   subtle::Release_Store(&g_histogram_allocator,
-                        reinterpret_cast<intptr_t>(allocator.release()));
+                        reinterpret_cast<intptr_t>(allocator));
   size_t existing = StatisticsRecorder::GetHistogramCount();
 
   DVLOG_IF(1, existing)
@@ -968,8 +966,7 @@ GlobalHistogramAllocator* GlobalHistogramAllocator::Get() {
 }
 
 // static
-std::unique_ptr<GlobalHistogramAllocator>
-GlobalHistogramAllocator::ReleaseForTesting() {
+GlobalHistogramAllocator* GlobalHistogramAllocator::ReleaseForTesting() {
   GlobalHistogramAllocator* histogram_allocator = Get();
   if (!histogram_allocator)
     return nullptr;
@@ -986,7 +983,8 @@ GlobalHistogramAllocator::ReleaseForTesting() {
   }
 
   subtle::Release_Store(&g_histogram_allocator, 0);
-  return WrapUnique(histogram_allocator);
+  ANNOTATE_LEAKING_OBJECT_PTR(histogram_allocator);
+  return histogram_allocator;
 }
 
 void GlobalHistogramAllocator::SetPersistentLocation(const FilePath& location) {

@@ -65,21 +65,29 @@ public class PriceCardViewTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams params =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup view = new FrameLayout(getActivity());
-            getActivity().setContentView(view, params);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup view = new FrameLayout(getActivity());
+                    getActivity().setContentView(view, params);
 
-            ViewGroup tabView = (ViewGroup) getActivity().getLayoutInflater().inflate(
-                    R.layout.closable_tab_grid_card_item, view, false);
-            tabView.setVisibility(View.VISIBLE);
+                    ViewGroup tabView =
+                            (ViewGroup)
+                                    getActivity()
+                                            .getLayoutInflater()
+                                            .inflate(
+                                                    R.layout.closable_tab_grid_card_item,
+                                                    view,
+                                                    false);
+                    tabView.setVisibility(View.VISIBLE);
 
-            view.addView(tabView);
+                    view.addView(tabView);
 
-            mPriceCardView = tabView.findViewById(R.id.price_info_box_outer);
-        });
+                    mPriceCardView = tabView.findViewById(R.id.price_info_box_outer);
+                });
     }
 
     @Override

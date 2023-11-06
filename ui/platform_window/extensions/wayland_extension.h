@@ -9,6 +9,10 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace ui {
 
 class PlatformWindow;
@@ -57,6 +61,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) WaylandExtension {
   // Sets the top inset (header) height which is reserved or occupied by the top
   // window frame.
   virtual void SetTopInset(int height) = 0;
+
+  // Gets the radius of each corner of the browser window in dps. The radii is
+  // specified by the platform.
+  virtual gfx::RoundedCornersF GetWindowCornersRadii() = 0;
 #endif
 
   // Signals the underneath platform to shows a preview for the given window

@@ -81,7 +81,7 @@ ScrollTimeline::ScrollTimeline(Document* document,
       axis_(axis) {}
 
 Element* ScrollTimeline::RetainingElement() const {
-  return reference_element_;
+  return reference_element_.Get();
 }
 
 // TODO(crbug.com/1060384): This section is missing from the spec rewrite.

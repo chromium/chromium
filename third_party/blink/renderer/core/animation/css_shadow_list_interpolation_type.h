@@ -48,10 +48,10 @@ class CSSShadowListInterpolationType : public CSSInterpolationType {
       EffectModel::CompositeOperation,
       ConversionCheckers&) const final;
   InterpolationValue PerformAdditiveComposition(
-      std::unique_ptr<InterpolableList> interpolable_list,
+      InterpolableList* interpolable_list,
       const InterpolationValue& underlying) const;
   InterpolationValue PerformAccumulativeComposition(
-      std::unique_ptr<InterpolableList> interpolable_list,
+      InterpolableList* interpolable_list,
       const InterpolationValue& underlying) const;
 };
 

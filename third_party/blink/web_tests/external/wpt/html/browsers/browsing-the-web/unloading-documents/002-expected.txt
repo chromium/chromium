@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL document.open in unload assert_equals: expected "0123456789Z" but got "016789Z"
+[FAIL] document.open in unload
+  assert_equals: expected "0123456789Z" but got "016789Z"
 Harness: the test ran to completion.
 

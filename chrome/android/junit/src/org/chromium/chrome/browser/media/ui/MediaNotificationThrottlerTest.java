@@ -27,7 +27,9 @@ import org.chromium.components.browser_ui.media.MediaNotificationInfo;
  * correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationThrottlerTest extends MediaNotificationTestBase {
     private static final int THROTTLE_MILLIS =
             MediaNotificationController.Throttler.THROTTLE_MILLIS;

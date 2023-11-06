@@ -191,14 +191,16 @@ FakeSecurityDomainsServer::HandleRequest(
 
   std::unique_ptr<net::test_server::HttpResponse> response;
   if (http_request.GetURL() ==
-      GetFullJoinSecurityDomainsURLForTesting(server_url_)) {
+      GetFullJoinSecurityDomainsURLForTesting(server_url_,
+                                              SecurityDomainId::kChromeSync)) {
     response = HandleJoinSecurityDomainsRequest(http_request);
   } else if (base::StartsWith(
                  http_request.GetURL().spec(),
                  server_url_.spec() + kSecurityDomainMemberNamePrefix)) {
     response = HandleGetSecurityDomainMemberRequest(http_request);
   } else if (http_request.GetURL() ==
-             GetFullGetSecurityDomainURLForTesting(server_url_)) {
+             GetFullGetSecurityDomainURLForTesting(
+                 server_url_, SecurityDomainId::kChromeSync)) {
     response = HandleGetSecurityDomainRequest(http_request);
   } else {
     base::AutoLock autolock(lock_);

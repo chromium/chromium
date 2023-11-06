@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS 'all' shorthand alone
-PASS 'all' shorthand with 'width' and 'height'
-PASS 'all' shorthand with 'direction' and 'unicode-bidi'
-PASS 'all' shorthand with 'width', 'height' and custom properties
-FAIL 'all' shorthand with all longhands assert_equals: expected "all: inherit; direction: inherit; unicode-bidi: inherit;" but got "all: inherit; direction: inherit; unicode-bidi: inherit; -webkit-border-image: inherit;"
+[PASS] 'all' shorthand alone
+[PASS] 'all' shorthand with 'width' and 'height'
+[PASS] 'all' shorthand with 'direction' and 'unicode-bidi'
+[PASS] 'all' shorthand with 'width', 'height' and custom properties
+[FAIL] 'all' shorthand with all longhands
+  assert_equals: expected "all: inherit; direction: inherit; unicode-bidi: inherit;" but got "all: inherit; direction: inherit; unicode-bidi: inherit; -webkit-border-image: inherit;"
 Harness: the test ran to completion.
 

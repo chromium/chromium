@@ -16,7 +16,7 @@
  *
  */
 
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -26,8 +26,7 @@ const testSuites = 'chromeos/ash_common/ash_common_unified_test.js';
 this['AshCommon'] = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return `chrome://webui-test/test_loader.html?module=${
-        testSuites}&host=test`;
+    return `chrome://webui-test/test_loader.html?module=${testSuites}`;
   }
 
   /** @override */

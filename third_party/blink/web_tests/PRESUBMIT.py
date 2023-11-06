@@ -18,20 +18,20 @@ from html.parser import HTMLParser
 from typing import List
 
 
-def _CheckTestharnessResults(input_api, output_api):
-    """Checks for all-PASS generic baselines for testharness.js tests.
+def _CheckTestharnessWdspecResults(input_api, output_api):
+    """Checks for all-PASS generic baselines for testharness/wdspec tests.
 
-    These files are unnecessary because for testharness.js tests, if there is no
+    These files are unnecessary because for testharness/wdspec tests, if there is no
     baseline file then the test is considered to pass when the output is all
     PASS. Note that only generic baselines are checked because platform specific
     and virtual baselines might be needed to prevent fallback.
     """
-    baseline_files = _TestharnessGenericBaselinesToCheck(input_api)
+    baseline_files = _TxtGenericBaselinesToCheck(input_api)
     if not baseline_files:
         return []
 
-    checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-        '..', 'tools', 'check_testharness_expected_pass.py')
+    checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(), '..',
+                                          'tools', 'check_expected_pass.py')
 
     # When running git cl presubmit --all this presubmit may be asked to check
     # ~19,000 files. Passing these on the command line would far exceed Windows
@@ -59,8 +59,8 @@ def _CheckTestharnessResults(input_api, output_api):
     return []
 
 
-def _TestharnessGenericBaselinesToCheck(input_api):
-    """Returns a list of paths of generic baselines for testharness.js tests."""
+def _TxtGenericBaselinesToCheck(input_api):
+    """Returns a list of paths of generic baselines for testharness/wdspec tests."""
     baseline_files = []
     this_dir = input_api.PresubmitLocalPath()
     for f in input_api.AffectedFiles():
@@ -511,7 +511,7 @@ def _FilterForSuites(suites):
 
 def CheckChangeOnUpload(input_api, output_api):
     results = []
-    results.extend(_CheckTestharnessResults(input_api, output_api))
+    results.extend(_CheckTestharnessWdspecResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
     # `_CheckTestExpectations()` updates the WPT manifests for
@@ -532,7 +532,7 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
     results = []
-    results.extend(_CheckTestharnessResults(input_api, output_api))
+    results.extend(_CheckTestharnessWdspecResults(input_api, output_api))
     results.extend(_CheckFilesUsingEventSender(input_api, output_api))
     results.extend(_CheckTestExpectations(input_api, output_api))
     # `_CheckTestExpectations()` updates the WPT manifests for

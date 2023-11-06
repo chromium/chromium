@@ -181,9 +181,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @Override
-    public void onSignInToIdp() {
+    public void onSignInToIdp(GURL idpLoginUrl) {
         if (mNativeView != 0) {
-            AccountSelectionBridgeJni.get().onSignInToIdp(mNativeView);
+            AccountSelectionBridgeJni.get().onSignInToIdp(mNativeView, idpLoginUrl);
         }
     }
 
@@ -205,7 +205,9 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
                 String[] accountFields, GURL accountPictureUrl, boolean isSignedIn);
         void onDismiss(long nativeAccountSelectionViewAndroid,
                 @IdentityRequestDialogDismissReason int dismissReason);
-        void onSignInToIdp(long nativeAccountSelectionViewAndroid);
+
+        void onSignInToIdp(long nativeAccountSelectionViewAndroid, GURL idpLoginUrl);
+
         void onMoreDetails(long nativeAccountSelectionViewAndroid);
     }
 }

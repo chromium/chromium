@@ -32,9 +32,9 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests the implementation of {@link ChromeActivity#onGetDirectActions} and
- * {@link ChromeActivity#onPerformDirectAction} and its integration with the
- * {@link DirectActionCoordinator}.
+ * Tests the implementation of {@link ChromeActivity#onGetDirectActions} and {@link
+ * ChromeActivity#onPerformDirectAction} and its integration with the {@link
+ * DirectActionCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -43,8 +43,7 @@ public class DirectActionsInActivityTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
+    @Rule public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
 
     private UserActionTester mActionTester;
 
@@ -83,41 +82,53 @@ public class DirectActionsInActivityTest {
     public void testCallDirectAction() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Register a single direct action called "test"
-            mDirectActionRule.getCoordinator().register(new DirectActionHandler() {
-                @Override
-                public void reportAvailableDirectActions(DirectActionReporter reporter) {
-                    reporter.addDirectAction("test");
-                }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Register a single direct action called "test"
+                    mDirectActionRule
+                            .getCoordinator()
+                            .register(
+                                    new DirectActionHandler() {
+                                        @Override
+                                        public void reportAvailableDirectActions(
+                                                DirectActionReporter reporter) {
+                                            reporter.addDirectAction("test");
+                                        }
 
-                @Override
-                public boolean performDirectAction(
-                        String actionId, Bundle arguments, Callback<Bundle> callback) {
-                    if (!"test".equals(actionId)) return false;
+                                        @Override
+                                        public boolean performDirectAction(
+                                                String actionId,
+                                                Bundle arguments,
+                                                Callback<Bundle> callback) {
+                                            if (!"test".equals(actionId)) return false;
 
-                    Bundle bundle = new Bundle();
-                    bundle.putBoolean("ran_test", true);
-                    callback.onResult(bundle);
-                    return true;
-                }
-            });
-        });
+                                            Bundle bundle = new Bundle();
+                                            bundle.putBoolean("ran_test", true);
+                                            callback.onResult(bundle);
+                                            return true;
+                                        }
+                                    });
+                });
 
         mActionTester = new UserActionTester();
 
-        assertThat(DirectActionTestUtils.callOnGetDirectActions(getActivity()),
+        assertThat(
+                DirectActionTestUtils.callOnGetDirectActions(getActivity()),
                 Matchers.hasItem("test"));
         assertThat(mActionTester.getActions(), Matchers.hasItem("Android.DirectAction.List"));
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.DirectAction.Perform", DirectActionUsageHistogram.DirectActionId.UNKNOWN);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DirectAction.Perform",
+                        DirectActionUsageHistogram.DirectActionId.UNKNOWN);
         DirectActionTestUtils.callOnPerformDirectActions(
                 getActivity(), "doesnotexist", (r) -> fail("Unexpected result: " + r));
         histogramWatcher.assertExpected();
 
-        histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.DirectAction.Perform", DirectActionUsageHistogram.DirectActionId.OTHER);
+        histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.DirectAction.Perform",
+                        DirectActionUsageHistogram.DirectActionId.OTHER);
         Bundle result = new Bundle();
         DirectActionTestUtils.callOnPerformDirectActions(
                 getActivity(), "test", (r) -> result.putAll((Bundle) r));

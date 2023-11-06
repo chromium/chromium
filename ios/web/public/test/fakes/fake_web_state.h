@@ -30,6 +30,7 @@ namespace web {
 class FakeWebState : public WebState {
  public:
   FakeWebState();
+  explicit FakeWebState(WebStateID unique_identifier);
   ~FakeWebState() override;
 
   // WebState implementation.

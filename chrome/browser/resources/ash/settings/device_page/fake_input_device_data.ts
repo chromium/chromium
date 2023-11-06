@@ -373,7 +373,7 @@ export const fakeMice: Mouse[] = [
     deviceKey: 'test:key',
     name: 'MX Anywhere 2S',
     isExternal: false,
-    customizationRestriction: CustomizationRestriction.kAllowCustomizations,
+    customizationRestriction: CustomizationRestriction.kDisableKeyEventRewrites,
     settings: {
       swapRight: false,
       sensitivity: 1,

@@ -9,14 +9,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -37,6 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/subscriber_crosapi.h"
+#include "chromeos/constants/chromeos_features.h"
 #endif
 
 namespace apps {
@@ -111,6 +113,44 @@ class FakePublisherForProxyTest : public AppPublisher {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+// FakeAppRegistryCacheObserver is used to test OnAppUpdate.
+class FakeAppRegistryCacheObserver : public apps::AppRegistryCache::Observer {
+ public:
+  explicit FakeAppRegistryCacheObserver(apps::AppRegistryCache* cache) {
+    app_registry_cache_observer_.Observe(cache);
+  }
+
+  ~FakeAppRegistryCacheObserver() override = default;
+
+  // apps::AppRegistryCache::Observer overrides.
+  void OnAppUpdate(const apps::AppUpdate& update) override {
+    if (base::Contains(app_ids_, update.AppId())) {
+      app_ids_.erase(update.AppId());
+    }
+    if (app_ids_.empty() && !result_.GetCallback().is_null()) {
+      std::move(result_.GetCallback()).Run();
+    }
+  }
+
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override {
+    app_registry_cache_observer_.Reset();
+  }
+
+  void WaitForOnAppUpdate(const std::set<std::string>& app_ids) {
+    app_ids_ = app_ids;
+    EXPECT_TRUE(result_.Wait());
+  }
+
+ private:
+  base::test::TestFuture<void> result_;
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
+
+  std::set<std::string> app_ids_;
+};
+
 class FakeSubscriberForProxyTest : public SubscriberCrosapi {
  public:
   explicit FakeSubscriberForProxyTest(Profile* profile)
@@ -135,6 +175,10 @@ class FakeSubscriberForProxyTest : public SubscriberCrosapi {
 #endif
 
 class AppServiceProxyTest : public testing::Test {
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(kAppServiceStorage);
+  }
+
  protected:
   using UniqueReleaser = std::unique_ptr<apps::IconLoader::Releaser>;
 
@@ -178,6 +222,23 @@ class AppServiceProxyTest : public testing::Test {
   void OverrideAppServiceProxyInnerIconLoader(AppServiceProxy* proxy,
                                               apps::IconLoader* icon_loader) {
     proxy->OverrideInnerIconLoaderForTesting(icon_loader);
+  }
+
+  void WaitForAppServiceProxyReady(AppServiceProxy* proxy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    base::test::TestFuture<void> result;
+    if (!proxy->OnReady()) {
+      proxy->on_ready_ = std::make_unique<base::OneShotEvent>();
+    }
+    proxy->OnReady()->Post(FROM_HERE, result.GetCallback());
+    EXPECT_TRUE(result.Wait());
+#endif
+  }
+
+  void SetOnReadyForTesting(AppServiceProxy* proxy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    proxy->is_on_apps_ready_ = true;
+#endif
   }
 
   int NumOuterFinishedCallbacks() { return num_outer_finished_callbacks_; }
@@ -304,8 +365,9 @@ TEST_F(AppServiceProxyIconTest, IconCoalescer) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 class AppServiceProxyShortcutIconTest : public AppServiceProxyTest {
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+    scoped_feature_list_.InitWithFeatures(
+        {kAppServiceStorage, chromeos::features::kCrosWebAppShortcutUiUpdate},
+        {});
   }
 
  protected:
@@ -534,6 +596,7 @@ TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
   TestingProfile profile;
   AppServiceProxy* const proxy =
       AppServiceProxyFactory::GetForProfile(&profile);
+  WaitForAppServiceProxyReady(proxy);
 
   {
     std::vector<AppPtr> apps;
@@ -546,6 +609,7 @@ TEST_F(AppServiceProxyTest, ReinitializeClearsCache) {
   EXPECT_EQ(proxy->AppRegistryCache().GetAppType(kTestAppId), AppType::kWeb);
 
   proxy->ReinitializeForTesting(proxy->profile());
+  WaitForAppServiceProxyReady(proxy);
 
   EXPECT_EQ(proxy->AppRegistryCache().GetAppType(kTestAppId),
             AppType::kUnknown);
@@ -1133,6 +1197,7 @@ TEST_F(AppServiceProxyTest, LaunchCallback) {
 
 TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
   AppServiceProxy proxy(nullptr);
+  SetOnReadyForTesting(&proxy);
 
   const char kAppId1[] = "abcdefg";
   const GURL kTestUrl = GURL("https://www.example.com/");
@@ -1181,6 +1246,36 @@ TEST_F(AppServiceProxyTest, GetAppsForIntentBestHandler) {
   // scheme-only filter which should have been discarded.
   EXPECT_EQ(1U, intent_launch_info.size());
   EXPECT_EQ("name 2", intent_launch_info[0].activity_name);
+}
+
+TEST_F(AppServiceProxyTest, CreatePublisherAfterReadAppStorage) {
+  TestingProfile profile;
+  constexpr char kTestAppId[] = "arc";
+
+  AppServiceProxy* const proxy =
+      AppServiceProxyFactory::GetForProfile(&profile);
+
+  FakeAppRegistryCacheObserver observer(&proxy->AppRegistryCache());
+
+  // Add the OnApps task to the OnReady post task list.
+  proxy->OnReady()->Post(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        std::vector<AppPtr> apps;
+        apps.push_back(std::make_unique<App>(AppType::kArc, kTestAppId));
+        proxy->OnApps(std::move(apps), AppType::kArc,
+                      /*should_notify_initialized=*/false);
+      }));
+
+  // Verify no apps added to AppRegistryCache.
+  EXPECT_TRUE(proxy->AppRegistryCache().GetAllApps().empty());
+
+  // Wait for reading AppStorage, then create publishers, and verify apps are
+  // added to AppRegistryCache.
+  std::set<std::string> app_ids;
+  app_ids.insert(kTestAppId);
+  observer.WaitForOnAppUpdate(app_ids);
+  EXPECT_FALSE(proxy->AppRegistryCache().GetAllApps().empty());
+  EXPECT_EQ(AppType::kArc, proxy->AppRegistryCache().GetAppType(kTestAppId));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

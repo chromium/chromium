@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
+#include "base/no_destructor.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,8 +67,13 @@ ToolbarController::ToolbarController(
       element_flex_order_start_(element_flex_order_start),
       toolbar_container_view_(toolbar_container_view),
       overflow_button_(overflow_button) {
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return;
+  }
+
   for (ui::ElementIdentifier id : element_ids) {
-    views::View* toolbar_element = FindToolbarElementWithId(id);
+    auto* const toolbar_element =
+        FindToolbarElementWithId(toolbar_container_view_, id);
     if (!toolbar_element) {
       continue;
     }
@@ -80,10 +91,15 @@ ToolbarController::ToolbarController(
                     ->WithOrder(element_flex_order_start++);
     toolbar_element->SetProperty(views::kFlexBehaviorKey, flex_spec);
 
-    // Create pop out state and pop out handlers to support pop out.
+    // Check `element_info_map` is constructed correctly i.e.
+    // 1. keys should be a super set of `element_ids_`,
+    // 2. ResponsiveElementInfo::activate_identifier is non-null.
     auto it = element_info_map.find(id);
-    if (it != element_info_map.end() &&
-        it->second.observed_identifier.has_value()) {
+    CHECK(it != element_info_map.end());
+    CHECK(it->second.activate_identifier);
+
+    // Create pop out state and pop out handlers to support pop out.
+    if (it->second.observed_identifier.has_value()) {
       auto state = std::make_unique<PopOutState>();
       if (original_spec) {
         state->original_spec =
@@ -104,27 +120,62 @@ ToolbarController::~ToolbarController() = default;
 ToolbarController::ResponsiveElementInfoMap
 ToolbarController::GetDefaultElementInfoMap() {
   // TODO(crbug.com/1445573): Fill in observed identifier.
-  return ToolbarController::ResponsiveElementInfoMap({
-      {kToolbarExtensionsContainerElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS,
-        kExtensionsMenuButtonElementId}},
-      {kToolbarSidePanelContainerElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL}},
-      {kToolbarHomeButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME}},
-      {kToolbarChromeLabsButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS, kToolbarChromeLabsBubbleElementId}},
-      {kToolbarMediaButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
-        kToolbarMediaBubbleElementId}},
-      {kToolbarDownloadButtonElementId,
-       {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS,
-        kToolbarDownloadBubbleElementId}},
-      {kToolbarForwardButtonElementId, {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD}},
-  });
+  return ToolbarController::ResponsiveElementInfoMap(
+      {{kToolbarExtensionsContainerElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_EXTENSIONS,
+         kExtensionsMenuButtonElementId}},
+       {kToolbarSidePanelContainerElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL,
+         kToolbarSidePanelButtonElementId}},
+       {kToolbarHomeButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_HOME, kToolbarHomeButtonElementId}},
+       {kToolbarChromeLabsButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_LABS, kToolbarChromeLabsButtonElementId,
+         kToolbarChromeLabsBubbleElementId}},
+       {kToolbarMediaButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
+         kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId}},
+       {kToolbarDownloadButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_DOWNLOADS, kToolbarDownloadButtonElementId,
+         kToolbarDownloadBubbleElementId}},
+       {kToolbarForwardButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_FORWARD, kToolbarForwardButtonElementId}},
+       {kToolbarAvatarButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE, kToolbarAvatarButtonElementId,
+         kToolbarAvatarBubbleElementId}},
+       {kToolbarNewTabButtonElementId,
+        {IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB, kToolbarNewTabButtonElementId}}});
+}
+
+// Every activate identifier should have an action name in order to emit
+// metrics. Please update action names in actions.xml to match this map.
+std::string ToolbarController::GetActionNameFromElementIdentifier(
+    ui::ElementIdentifier identifier) {
+  static const base::NoDestructor<
+      base::flat_map<ui::ElementIdentifier, base::StringPiece>>
+      identifier_to_action_name_map({
+          {kToolbarAvatarButtonElementId, "AvatarButton"},
+          {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
+          {kToolbarDownloadButtonElementId, "DownloadButton"},
+          {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
+          {kToolbarForwardButtonElementId, "ForwardButton"},
+          {kToolbarHomeButtonElementId, "HomeButton"},
+          {kToolbarMediaButtonElementId, "MediaButton"},
+          {kToolbarNewTabButtonElementId, "NewTabButton"},
+          {kToolbarSidePanelButtonElementId, "SidePanelButton"},
+      });
+
+  const auto it = identifier_to_action_name_map->find(identifier);
+  return it == identifier_to_action_name_map->end()
+             ? std::string()
+             : base::StrCat({"ResponsiveToolbar.OverflowMenuItemActivated.",
+                             it->second});
 }
 
 bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
-  views::View* element = FindToolbarElementWithId(identifier);
+  auto* const element =
+      FindToolbarElementWithId(toolbar_container_view_, identifier);
+
   if (!element) {
     LOG(ERROR) << "Cannot find toolbar element id: " << identifier;
     return false;
@@ -153,7 +204,9 @@ bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
 }
 
 bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
-  views::View* element = FindToolbarElementWithId(identifier);
+  auto* const element =
+      FindToolbarElementWithId(toolbar_container_view_, identifier);
+
   if (!element) {
     LOG(ERROR) << "Cannot find toolbar element id: " << identifier;
     return false;
@@ -177,52 +230,93 @@ bool ToolbarController::EndPopOut(ui::ElementIdentifier identifier) {
 bool ToolbarController::ShouldShowOverflowButton() {
   // Once at least one button has been dropped by layout manager show overflow
   // button.
-  return GetOverflowedElements().size() > 0;
+  for (ui::ElementIdentifier id : element_ids_) {
+    if (IsOverflowed(id)) {
+      return true;
+    }
+  }
+  return false;
 }
 
-std::u16string ToolbarController::GenerateMenuText(const views::View* element) {
-  ui::ElementIdentifier id = element->GetProperty(views::kElementIdentifierKey);
-  CHECK(id);
-
+std::u16string ToolbarController::GetMenuText(ui::ElementIdentifier id) {
   return l10n_util::GetStringUTF16(element_info_map_.at(id).menu_text_id);
 }
 
-const views::View* ToolbarController::FindToolbarElementWithId(
-    ui::ElementIdentifier id) const {
-  const views::View::Views toolbar_elements =
-      toolbar_container_view_->children();
-  for (const views::View* element : toolbar_elements) {
-    if (element->GetProperty(views::kElementIdentifierKey) == id) {
-      return element;
+views::View* ToolbarController::FindToolbarElementWithId(
+    views::View* view,
+    ui::ElementIdentifier id) {
+  if (!view) {
+    return nullptr;
+  }
+  if (view->GetProperty(views::kElementIdentifierKey) == id) {
+    return view;
+  }
+  for (auto* child : view->children()) {
+    if (auto* result = FindToolbarElementWithId(child, id)) {
+      return result;
     }
   }
   return nullptr;
 }
 
-std::vector<const views::View*> ToolbarController::GetOverflowedElements() {
-  std::vector<const views::View*> overflowed_buttons;
-  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
-      toolbar_container_view_->GetLayoutManager());
+std::vector<ui::ElementIdentifier> ToolbarController::GetOverflowedElements() {
+  std::vector<ui::ElementIdentifier> overflowed_buttons;
+  if (ToolbarControllerUtil::PreventOverflow()) {
+    return overflowed_buttons;
+  }
   for (ui::ElementIdentifier id : element_ids_) {
-    const views::View* toolbar_element = FindToolbarElementWithId(id);
-    if (flex_layout->CanBeVisible(toolbar_element) &&
-        !toolbar_element->GetVisible()) {
-      overflowed_buttons.push_back(toolbar_element);
+    if (IsOverflowed(id)) {
+      overflowed_buttons.push_back(id);
     }
   }
   return overflowed_buttons;
+}
+
+bool ToolbarController::IsOverflowed(ui::ElementIdentifier id) {
+  const auto* const toolbar_element =
+      FindToolbarElementWithId(toolbar_container_view_, id);
+  const views::FlexLayout* flex_layout = static_cast<views::FlexLayout*>(
+      toolbar_container_view_->GetLayoutManager());
+  return flex_layout->CanBeVisible(toolbar_element) &&
+         !toolbar_element->GetVisible();
 }
 
 std::unique_ptr<ui::SimpleMenuModel>
 ToolbarController::CreateOverflowMenuModel() {
   CHECK(overflow_button_->GetVisible());
   auto menu_model = std::make_unique<ui::SimpleMenuModel>(this);
-  int menu_id_start = 0;
-  for (auto* toolbar_element : GetOverflowedElements()) {
-    menu_model->AddItem(menu_id_start++, GenerateMenuText(toolbar_element));
+  for (size_t i = 0; i < element_ids_.size(); ++i) {
+    if (IsOverflowed(element_ids_[i])) {
+      menu_model->AddItem(i, GetMenuText(element_ids_[i]));
+    }
   }
   return menu_model;
 }
 
-void ToolbarController::ExecuteCommand(int command_id, int event_flags) {}
+ui::ElementIdentifier ToolbarController::GetHiddenElementOfCommandId(
+    int command_id) const {
+  return element_ids_.at(command_id);
+}
 
+bool ToolbarController::IsCommandIdEnabled(int command_id) const {
+  const auto* const element = FindToolbarElementWithId(
+      toolbar_container_view_, element_ids_.at(command_id));
+  return element->GetEnabled();
+}
+
+void ToolbarController::ExecuteCommand(int command_id, int event_flags) {
+  ui::ElementIdentifier activate_identifier =
+      element_info_map_.at(GetHiddenElementOfCommandId(command_id))
+          .activate_identifier;
+  const auto* const element =
+      FindToolbarElementWithId(toolbar_container_view_, activate_identifier);
+  CHECK(element);
+  const auto* button = AsViewClass<views::Button>(element);
+  button->button_controller()->NotifyClick();
+
+  std::string action_name =
+      GetActionNameFromElementIdentifier(activate_identifier);
+  if (!action_name.empty()) {
+    base::RecordAction(base::UserMetricsAction(action_name.c_str()));
+  }
+}

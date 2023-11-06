@@ -32,6 +32,12 @@ std::string AddPrefixToDynamicScriptId(const std::string& script_id,
 // prefix) is valid. Populates `error` if invalid.
 bool IsScriptIdValid(const std::string& script_id, std::string* error);
 
+// Returns whether new scripts added for the extension with the given
+// `extension_id` should be allowed in incognito contexts.
+bool ScriptsShouldBeAllowedInIncognito(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
+
 // Returns a set of unique dynamic script IDs (with an added prefix
 // corresponding to `source`) for all given `scripts`. If the script is invalid
 // or duplicated in `existing_script_ids` or the new ids, populates error and
@@ -80,7 +86,6 @@ std::unique_ptr<UserScriptList> UpdateScripts(
     base::RepeatingCallback<std::unique_ptr<UserScript>(
         Script& new_script,
         Script& existent_script,
-        int definition_index,
         std::u16string* parse_error)> apply_update_callback,
     std::string* error) {
   // Retrieve the metadata of all loaded scripts with `source`.
@@ -109,13 +114,13 @@ std::unique_ptr<UserScriptList> UpdateScripts(
   std::u16string parse_error;
   auto parsed_scripts = std::make_unique<UserScriptList>();
   parsed_scripts->reserve(scripts_to_update.size());
-  for (size_t i = 0; i < scripts_to_update.size(); ++i) {
-    Script& new_script = scripts_to_update[i];
+  for (Script& new_script : scripts_to_update) {
     CHECK(base::Contains(loaded_scripts_metadata, new_script.id));
     Script& existent_script = loaded_scripts_metadata[new_script.id];
 
+    // Note: `new_script` and `existent_script` may be unsafe to use after this.
     std::unique_ptr<UserScript> script =
-        apply_update_callback.Run(new_script, existent_script, i, &parse_error);
+        apply_update_callback.Run(new_script, existent_script, &parse_error);
     if (!script) {
       CHECK(!parse_error.empty());
       *error = base::UTF16ToASCII(parse_error);

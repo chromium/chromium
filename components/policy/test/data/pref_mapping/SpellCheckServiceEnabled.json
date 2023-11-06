@@ -1,0 +1,34 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "spellcheck.use_spelling_service": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "SpellCheckServiceEnabled": true
+        },
+        "prefs": {
+          "spellcheck.use_spelling_service": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

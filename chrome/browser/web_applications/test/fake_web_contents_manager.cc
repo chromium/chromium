@@ -64,6 +64,10 @@ class FakeWebContentsManager::FakeUrlLoader : public WebAppUrlLoader {
     const GURL& url = load_url_params.url;
     CHECK(manager_);
     DVLOG(1) << "FakeWebContentsManager::FakeUrlLoader::LoadUrl " << url.spec();
+
+    manager_->load_url_tracker_.Run(std::ref(load_url_params), web_contents,
+                                    url_comparison);
+
     auto page_it = manager_->page_state_.find(url);
     if (page_it == manager_->page_state_.end()) {
       DLOG(WARNING) << "No page state at url: " << url.spec();
@@ -247,7 +251,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
 
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
-      bool bypass_service_worker_check,
       CheckInstallabilityCallback callback,
       absl::optional<webapps::InstallableParams> params) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -274,15 +277,6 @@ class FakeWebContentsManager::FakeWebAppDataRetriever
       std::move(page.on_manifest_fetch).Run();
     }
 
-    if (!bypass_service_worker_check && !page.has_service_worker) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              std::move(callback), page.opt_manifest.Clone(), page.manifest_url,
-              false,
-              webapps::InstallableStatusCode::NO_MATCHING_SERVICE_WORKER));
-      return;
-    }
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), page.opt_manifest.Clone(),
@@ -417,6 +411,11 @@ FakeWebContentsManager::GetOrCreatePageState(const GURL& gurl) {
 }
 void FakeWebContentsManager::DeletePageState(const GURL& gurl) {
   page_state_.erase(gurl);
+}
+
+void FakeWebContentsManager::TrackLoadUrlCalls(
+    LoadUrlTracker load_url_tracker) {
+  load_url_tracker_ = std::move(load_url_tracker);
 }
 
 base::WeakPtr<FakeWebContentsManager> FakeWebContentsManager::GetWeakPtr() {

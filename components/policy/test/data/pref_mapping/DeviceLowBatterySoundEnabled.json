@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLowBatterySoundEnabled": false
+        },
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLowBatterySoundEnabled": true
+        },
+        "prefs": {
+          "ash.low_battery_sound.enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

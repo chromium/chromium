@@ -35,6 +35,7 @@ public class AddUsernameDialogContentView extends LinearLayout {
                         mUsernameChangedCallback.onResult(username.toString());
                     }
                 });
+        usernameInput.requestFocus();
     }
 
     void setPassword(String password) {

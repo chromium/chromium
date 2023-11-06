@@ -30,14 +30,10 @@ import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStor
 /** Tests for {@link TabModelOrchestrator} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabModelOrchestratorUnitTest {
-    @Mock
-    private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
-    @Mock
-    private TabModel mMockTabModel;
-    @Mock
-    private TabModelSelectorBase mMockTabModelSelectorBase;
-    @Mock
-    private TabPersistentStore mMockTabPersistentStore;
+    @Mock private ObservableSupplierImpl<TabModelStartupInfo> mMockTabModelStartupInfoSupplier;
+    @Mock private TabModel mMockTabModel;
+    @Mock private TabModelSelectorBase mMockTabModelSelectorBase;
+    @Mock private TabPersistentStore mMockTabPersistentStore;
 
     private TabModelOrchestrator mTabModelOrchestrator;
     private ArgumentCaptor<TabPersistentStoreObserver> mObserverCaptor;
@@ -48,12 +44,13 @@ public class TabModelOrchestratorUnitTest {
 
         when(mMockTabModelSelectorBase.getModel(anyBoolean())).thenReturn(mMockTabModel);
 
-        mTabModelOrchestrator = new TabModelOrchestrator() {
-            @Override
-            public TabModelSelectorBase getTabModelSelector() {
-                return mMockTabModelSelectorBase;
-            }
-        };
+        mTabModelOrchestrator =
+                new TabModelOrchestrator() {
+                    @Override
+                    public TabModelSelectorBase getTabModelSelector() {
+                        return mMockTabModelSelectorBase;
+                    }
+                };
         mTabModelOrchestrator.setTabPersistentStoreForTesting(mMockTabPersistentStore);
 
         mObserverCaptor = ArgumentCaptor.forClass(TabPersistentStoreObserver.class);
@@ -83,9 +80,13 @@ public class TabModelOrchestratorUnitTest {
         assertEquals("Unexpected standard tab count.", numStandardTabs, startupInfo.standardCount);
         assertEquals(
                 "Unexpected incognito tab count.", numIncognitoTabs, startupInfo.incognitoCount);
-        assertEquals("Unexpected standard active tab index.", standardIndex,
+        assertEquals(
+                "Unexpected standard active tab index.",
+                standardIndex,
                 startupInfo.standardActiveIndex);
-        assertEquals("Unexpected incognito active tab index.", incognitoIndex,
+        assertEquals(
+                "Unexpected incognito active tab index.",
+                incognitoIndex,
                 startupInfo.incognitoActiveIndex);
     }
 
@@ -110,14 +111,22 @@ public class TabModelOrchestratorUnitTest {
         assertEquals("Unexpected standard tab count.", numStandardTabs, startupInfo.standardCount);
         assertEquals(
                 "Unexpected incognito tab count.", numIncognitoTabs, startupInfo.incognitoCount);
-        assertEquals("Merged tab states shouldn't set the standard active tab index.",
-                TabModel.INVALID_TAB_INDEX, startupInfo.standardActiveIndex);
-        assertEquals("Merged tab states shouldn't set the incognito active tab index.",
-                TabModel.INVALID_TAB_INDEX, startupInfo.incognitoActiveIndex);
+        assertEquals(
+                "Merged tab states shouldn't set the standard active tab index.",
+                TabModel.INVALID_TAB_INDEX,
+                startupInfo.standardActiveIndex);
+        assertEquals(
+                "Merged tab states shouldn't set the incognito active tab index.",
+                TabModel.INVALID_TAB_INDEX,
+                startupInfo.incognitoActiveIndex);
     }
 
-    private void readTabState(int numStandardTabs, int numIncognitoTabs, int standardIndex,
-            int incognitoIndex, boolean fromMerge) {
+    private void readTabState(
+            int numStandardTabs,
+            int numIncognitoTabs,
+            int standardIndex,
+            int incognitoIndex,
+            boolean fromMerge) {
         TabPersistentStoreObserver observer = mObserverCaptor.getValue();
         int index = 0;
 

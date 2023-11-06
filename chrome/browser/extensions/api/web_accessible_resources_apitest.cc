@@ -189,16 +189,13 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesApiTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  std::string script = base::StringPrintf(
-      R"(
-      (async () => {
+  static constexpr char kScript[] =
+      R"((async () => {
         await chrome.scripting.executeScript(
           {target: {tabId: %d}, files: ['test.js']})
-      })();
-    )",
-      tab_id);
+      })();)";
   BackgroundScriptExecutor::ExecuteScriptAsync(
-      profile(), extension->id(), base::StringPrintf(script.c_str(), tab_id));
+      profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -218,7 +215,7 @@ class WebAccessibleResourcesDynamicUrlApiTest : public ExtensionApiTest {
  protected:
   const Extension* GetExtension(const char* manifest_piece) {
     // manifest.json.
-    const char* kManifestStub = R"({
+    static constexpr char kManifestStub[] = R"({
       "name": "Test",
       "version": "1.0",
       "manifest_version": 3,
@@ -240,7 +237,7 @@ class WebAccessibleResourcesDynamicUrlApiTest : public ExtensionApiTest {
     test_dir_.WriteManifest(kManifest);
 
     // content.js
-    const char* kTestScript = R"(
+    static constexpr char kTestScript[] = R"(
       // Verify that web accessible resource can be fetched.
       async function run(expectOk, filename, identifier) {
         return new Promise(async resolve => {
@@ -303,7 +300,7 @@ class WebAccessibleResourcesDynamicUrlApiTest : public ExtensionApiTest {
 
 // Load dynamic web accessible resource from a content script.
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlApiTest, ContentScript) {
-  const char* kManifest = R"(
+  static constexpr char kManifest[] = R"(
     "content_scripts": [
       {
         "matches": ["<all_urls>"],
@@ -325,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlApiTest, ContentScript) {
 IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlApiTest, ExecuteScript) {
   // Load extension.
   WriteFile(FILE_PATH_LITERAL("worker.js"), "// Intentionally blank.");
-  const char* kManifest = R"(
+  static constexpr char kManifest[] = R"(
     "permissions": ["scripting"],
     "background": {"service_worker": "worker.js"}
   )";
@@ -338,16 +335,13 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesDynamicUrlApiTest, ExecuteScript) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), gurl));
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   const int tab_id = ExtensionTabUtil::GetTabId(web_contents);
-  std::string script = base::StringPrintf(
-      R"(
-      (async () => {
+  static constexpr char kScript[] =
+      R"((async () => {
         await chrome.scripting.executeScript(
           {target: {tabId: %d}, files: ['content.js']})
-      })();
-    )",
-      tab_id);
+      })();)";
   BackgroundScriptExecutor::ExecuteScriptAsync(
-      profile(), extension->id(), base::StringPrintf(script.c_str(), tab_id));
+      profile(), extension->id(), base::StringPrintf(kScript, tab_id));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

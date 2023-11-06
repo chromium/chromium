@@ -260,6 +260,8 @@ static_library("browser") {
     "open_tab_provider.h",
     "page_classification_functions.cc",
     "page_classification_functions.h",
+    "provider_state_service.cc",
+    "provider_state_service.h",
     "query_tile_provider.cc",
     "query_tile_provider.h",
     "remote_suggestions_service.cc",
@@ -544,11 +546,11 @@ if (is_android) {
     ]
     deps = [
       ":java_resources",
-      "//base:jni_java",
       "//chrome/browser/flags:java",
       "//components/embedder_support/android:util_java",
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
@@ -568,7 +570,6 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/browser_ui/settings/android:java",
       "//components/browser_ui/styles/android:java_resources",
@@ -582,6 +583,7 @@ if (is_android) {
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_interpolator_interpolator_java",
+      "//third_party/jni_zero:jni_zero_java",
       "//third_party/metrics_proto:metrics_proto_java",
       "//ui/android:ui_full_java",
       "//url:gurl_java",
@@ -661,6 +663,7 @@ if (is_android) {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_autocomplete_provider.cc",
     "fake_autocomplete_provider.h",
     "fake_autocomplete_provider_client.cc",
     "fake_autocomplete_provider_client.h",
@@ -765,6 +768,7 @@ source_set("unit_tests") {
     "bookmark_provider_unittest.cc",
     "bookmark_scoring_signals_annotator_unittest.cc",
     "builtin_provider_unittest.cc",
+    "calculator_provider_unittest.cc",
     "clipboard_provider_unittest.cc",
     "document_provider_unittest.cc",
     "document_suggestions_service_unittest.cc",
@@ -785,6 +789,7 @@ source_set("unit_tests") {
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
     "omnibox_metrics_provider_unittest.cc",
+    "omnibox_popup_selection_unittest.cc",
     "omnibox_prefs_unittest.cc",
     "omnibox_triggered_feature_service_unittest.cc",
     "omnibox_view_unittest.cc",
@@ -928,6 +933,7 @@ mojom("mojo_bindings") {
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

@@ -1962,21 +1962,6 @@ IN_PROC_BROWSER_TEST_P(
       "form-validation-message-removed-after-error-corrected.html"));
 }
 
-// TODO(https://crbug.com/1461931): Flaky on the following platforms.
-#if BUILDFLAG(IS_LINUX) || (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
-#define MAYBE_AccessibilityFormValidationMessageAfterHideTimeout \
-  DISABLED_AccessibilityFormValidationMessageAfterHideTimeout
-#else
-#define MAYBE_AccessibilityFormValidationMessageAfterHideTimeout \
-  AccessibilityFormValidationMessageAfterHideTimeout
-#endif  // BUILDFLAG(IS_LINUX)
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    MAYBE_AccessibilityFormValidationMessageAfterHideTimeout) {
-  RunHtmlTest(
-      FILE_PATH_LITERAL("form-validation-message-after-hide-timeout.html"));
-}
-
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityFrameset) {
   RunHtmlTest(FILE_PATH_LITERAL("frameset.html"));
 }
@@ -3579,8 +3564,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, XmlInIframeCrash) {
   RunRegressionTest(FILE_PATH_LITERAL("xml-in-iframe-crash.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ActivedescendantCrash) {
-  RunRegressionTest(FILE_PATH_LITERAL("activedescendant-crash.html"));
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       RelationPointsToInvalidNodesCrash) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("relation-points-to-invalid-nodes-crash.html"));
 }
 
 // TODO(crbug.com/1191098): Test is flaky on all platforms.

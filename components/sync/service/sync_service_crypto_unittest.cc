@@ -952,7 +952,7 @@ TEST_F(
 
 TEST_F(SyncServiceCryptoTest,
        ShouldNotGetRecoverabilityIfKeystorePassphraseUsed) {
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kKeystorePassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
@@ -973,7 +973,6 @@ TEST_F(SyncServiceCryptoTest,
       .WillByDefault(ReturnRef(kEmptySyncStatus));
 
   base::HistogramTester histogram_tester;
-  trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
@@ -998,7 +997,7 @@ TEST_F(SyncServiceCryptoTest,
   ON_CALL(engine_, GetDetailedStatus()).WillByDefault(ReturnRef(sync_status));
 
   base::HistogramTester histogram_tester;
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
@@ -1032,7 +1031,6 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
       .WillByDefault(ReturnRef(kEmptySyncStatus));
 
   base::HistogramTester histogram_tester;
-  trusted_vault_client_.SetIsRecoverabilityDegraded(false);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
@@ -1046,7 +1044,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponChange) {
   // Changing the state notifies observers and should lead to a change in
   // IsTrustedVaultRecoverabilityDegraded().
   EXPECT_CALL(delegate_, CryptoStateChanged());
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_TRUE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 
@@ -1063,7 +1061,7 @@ TEST_F(SyncServiceCryptoTest,
       .WillByDefault(ReturnRef(kEmptySyncStatus));
 
   base::HistogramTester histogram_tester;
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
@@ -1077,7 +1075,7 @@ TEST_F(SyncServiceCryptoTest,
   // Changing the state notifies observers and should lead to a change in
   // IsTrustedVaultRecoverabilityDegraded().
   EXPECT_CALL(delegate_, CryptoStateChanged());
-  trusted_vault_client_.SetIsRecoverabilityDegraded(false);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(false);
   EXPECT_TRUE(trusted_vault_client_.CompleteAllPendingRequests());
   EXPECT_FALSE(crypto_.IsTrustedVaultRecoverabilityDegraded());
 
@@ -1093,7 +1091,7 @@ TEST_F(SyncServiceCryptoTest, ShouldReportDegradedRecoverabilityUponRetrieval) {
       .WillByDefault(ReturnRef(kEmptySyncStatus));
 
   base::HistogramTester histogram_tester;
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
 
   // Mimic startup with trusted vault keys being required.
   crypto_.OnTrustedVaultKeyRequired();
@@ -1142,7 +1140,7 @@ TEST_F(SyncServiceCryptoTest,
 
   // Mimic a browser startup in |kTrustedVaultPassphrase| with no additional
   // keys required and degraded recoverability state.
-  trusted_vault_client_.SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_.SetIsRecoveryMethodRequired(true);
   crypto_.OnPassphraseTypeChanged(PassphraseType::kTrustedVaultPassphrase,
                                   base::Time::Now());
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);

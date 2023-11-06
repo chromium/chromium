@@ -8,6 +8,8 @@ component("manta") {
   sources = [
     "features.cc",
     "features.h",
+    "manta_service.cc",
+    "manta_service.h",
     "manta_service_callbacks.cc",
     "manta_service_callbacks.h",
     "manta_status.h",
@@ -24,6 +26,7 @@ component("manta") {
   deps = [
     "proto",
     "//components/endpoint_fetcher",
+    "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
     "//net",
   ]

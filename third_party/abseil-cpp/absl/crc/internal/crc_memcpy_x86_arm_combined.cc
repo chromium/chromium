@@ -98,7 +98,7 @@ inline void LargeTailCopy(crc32c_t* crcs, char** dst, const char** src,
     for (size_t i = 0; i < vec_regions; i++) {
       size_t region = i;
 
-      auto* vsrc = reinterpret_cast<const V128u*>(*src + region_size * region);
+      auto* vsrc = reinterpret_cast<const V128*>(*src + region_size * region);
       auto* vdst = reinterpret_cast<V128*>(*dst + region_size * region);
 
       // Load the blocks, unaligned
@@ -262,7 +262,7 @@ crc32c_t AcceleratedCrcMemcpyEngine<vec_regions, int_regions>::Compute(
         size_t region = (j + i) % kRegions;
 
         auto* vsrc =
-            reinterpret_cast<const V128u*>(src_bytes + region_size * region);
+            reinterpret_cast<const V128*>(src_bytes + region_size * region);
         auto* vdst = reinterpret_cast<V128*>(dst_bytes + region_size * region);
 
         // Load and CRC data.

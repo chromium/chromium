@@ -572,9 +572,9 @@ class Stringifier(WithOwner):
         return self._attribute
 
 
-class AsyncIterable(WithExtendedAttributes, WithDebugInfo):
+class AsyncIterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-async-iterable"""
-    class IR(WithExtendedAttributes, WithDebugInfo):
+    class IR(WithExtendedAttributes, WithExposure, WithDebugInfo):
         def __init__(self,
                      key_type=None,
                      value_type=None,
@@ -594,6 +594,7 @@ class AsyncIterable(WithExtendedAttributes, WithDebugInfo):
                 isinstance(argument, Argument.IR) for argument in arguments)
 
             WithExtendedAttributes.__init__(self, extended_attributes)
+            WithExposure.__init__(self)
             WithDebugInfo.__init__(self, debug_info)
 
             self.key_type = key_type
@@ -607,6 +608,7 @@ class AsyncIterable(WithExtendedAttributes, WithDebugInfo):
         assert isinstance(owner, Interface)
 
         WithExtendedAttributes.__init__(self, ir, readonly=True)
+        WithExposure.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
 
         self._key_type = ir.key_type
@@ -660,14 +662,15 @@ class AsyncIterable(WithExtendedAttributes, WithDebugInfo):
         return self._arguments
 
 
-class Iterable(WithDebugInfo):
+class Iterable(WithExtendedAttributes, WithExposure, WithDebugInfo):
     """https://webidl.spec.whatwg.org/#idl-iterable"""
 
-    class IR(WithDebugInfo):
+    class IR(WithExtendedAttributes, WithExposure, WithDebugInfo):
         def __init__(self,
                      key_type=None,
                      value_type=None,
                      operations=None,
+                     extended_attributes=None,
                      debug_info=None):
             assert key_type is None or isinstance(key_type, IdlType)
             assert isinstance(value_type, IdlType)
@@ -677,6 +680,8 @@ class Iterable(WithDebugInfo):
                 isinstance(operation, Operation.IR)
                 for operation in operations)
 
+            WithExtendedAttributes.__init__(self, extended_attributes)
+            WithExposure.__init__(self)
             WithDebugInfo.__init__(self, debug_info)
 
             self.key_type = key_type
@@ -688,6 +693,8 @@ class Iterable(WithDebugInfo):
         assert isinstance(ir, Iterable.IR)
         assert isinstance(owner, Interface)
 
+        WithExtendedAttributes.__init__(self, ir, readonly=True)
+        WithExposure.__init__(self, ir, readonly=True)
         WithDebugInfo.__init__(self, ir)
 
         self._key_type = ir.key_type

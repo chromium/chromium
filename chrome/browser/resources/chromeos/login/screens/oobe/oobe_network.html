@@ -4,7 +4,7 @@
   }
 </style>
 <oobe-adaptive-dialog id="networkDialog" role="dialog"
-    on-show-dialog="onShown_"
+    on-show-dialog="onShown_" for-step="default"
     aria-label$="[[i18nDynamic(locale, 'networkSectionTitle')]]">
   <iron-icon slot="icon" icon="oobe-32:wifi">
   </iron-icon>
@@ -12,7 +12,7 @@
     [[i18nDynamic(locale, 'networkSectionTitle')]]
   </h1>
   <div slot="subtitle" id="subtitleText">
-    [[getSubtitleMessage_(locale, errorMessage_)]]
+    [[getSubtitleMessage_(locale, errorMessage_, useQuickStartSubtitle_)]]
   </div>
   <div slot="content" class="layout vertical">
     <network-select-login id="networkSelectLogin"
@@ -39,3 +39,16 @@
     </oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
+
+<oobe-loading-dialog id="connectingDialog" for-step="quick-start-connecting"
+    title-key="networkScreenConnectingToWifiTitle"
+    subtitle-key="networkScreenQuickStartTransferWifiSubtitle">
+  <iron-icon slot="icon" icon="oobe-20:quick-start-wifi">
+  </iron-icon>
+  <!-- TODO(b/300389592): Add a WiFi name to subtitle -->
+  <div slot="cancel-button">
+    <oobe-text-button id="cancelButton" on-click="onCancelClicked_"
+        text-key="cancelButton">
+    </oobe-text-button>
+  </div>
+</oobe-loading-dialog>

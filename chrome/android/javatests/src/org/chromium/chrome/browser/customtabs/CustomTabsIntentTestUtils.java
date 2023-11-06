@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
 
 /**
- * Utility class that contains convenience calls related with intent creation for
- * custom tabs testing.
+ * Utility class that contains convenience calls related with intent creation for custom tabs
+ * testing.
  */
 public class CustomTabsIntentTestUtils {
     /**
@@ -54,8 +54,12 @@ public class CustomTabsIntentTestUtils {
         }
 
         @Override
-        public void onSendFinished(PendingIntent pendingIntent, Intent intent, int resultCode,
-                String resultData, Bundle resultExtras) {
+        public void onSendFinished(
+                PendingIntent pendingIntent,
+                Intent intent,
+                int resultCode,
+                String resultData,
+                Bundle resultExtras) {
             if (pendingIntent.equals(mPendingIntent)) {
                 mCallbackIntent = intent;
                 mCallbackHelper.notifyCalled();
@@ -68,17 +72,19 @@ public class CustomTabsIntentTestUtils {
      * the {@link CustomTabActivity}.
      */
     public static Intent createMinimalCustomTabIntent(Context context, String url) {
-        return createCustomTabIntent(context, url, /*launchAsNewTask=*/true, builder -> {});
+        return createCustomTabIntent(context, url, /* launchAsNewTask= */ true, builder -> {});
     }
 
-    /**
-     * Creates an Intent that launches a CustomTabActivity, allows some customization.
-     */
-    public static Intent createCustomTabIntent(Context context, String url, boolean launchAsNewTask,
+    /** Creates an Intent that launches a CustomTabActivity, allows some customization. */
+    public static Intent createCustomTabIntent(
+            Context context,
+            String url,
+            boolean launchAsNewTask,
             Callback<CustomTabsIntent.Builder> customizer) {
         CustomTabsIntent.Builder builder =
-                new CustomTabsIntent.Builder(CustomTabsSession.createMockSessionForTesting(
-                        new ComponentName(context, ChromeLauncherActivity.class)));
+                new CustomTabsIntent.Builder(
+                        CustomTabsSession.createMockSessionForTesting(
+                                new ComponentName(context, ChromeLauncherActivity.class)));
         customizer.onResult(builder);
         CustomTabsIntent customTabsIntent = builder.build();
         Intent intent = customTabsIntent.intent;
@@ -105,6 +111,7 @@ public class CustomTabsIntentTestUtils {
     /**
      * Creates the simplest intent that is sufficient to let {@link ChromeLauncherActivity} launch
      * the {@link CustomTabActivity}. Allows specification of a theme.
+     *
      * @param context The instrumentation context to use.
      * @param url The URL to load in the incognito CCT.
      * @param inNightMode Whether the CCT should be launched in night mode.
@@ -112,10 +119,16 @@ public class CustomTabsIntentTestUtils {
      */
     public static Intent createMinimalCustomTabIntentWithTheme(
             Context context, String url, boolean inNightMode) {
-        return createCustomTabIntent(context, url, /*launchAsNewTask=*/true, builder -> {
-            builder.setColorScheme(inNightMode ? CustomTabsIntent.COLOR_SCHEME_DARK
-                                               : CustomTabsIntent.COLOR_SCHEME_LIGHT);
-        });
+        return createCustomTabIntent(
+                context,
+                url,
+                /* launchAsNewTask= */ true,
+                builder -> {
+                    builder.setColorScheme(
+                            inNightMode
+                                    ? CustomTabsIntent.COLOR_SCHEME_DARK
+                                    : CustomTabsIntent.COLOR_SCHEME_LIGHT);
+                });
     }
 
     /**
@@ -124,7 +137,6 @@ public class CustomTabsIntentTestUtils {
      * @param customTabIntent The intent to modify.
      * @param numEntries The number of menu entries to add.
      * @param menuTitle The title of the menu.
-     *
      * @return The pending intent associated with the menu entries.
      */
     public static PendingIntent addMenuEntriesToIntent(
@@ -139,15 +151,17 @@ public class CustomTabsIntentTestUtils {
      * @param numEntries The number of menu entries to add.
      * @param callbackIntent The intent to use as the base for the pending intent.
      * @param menuTitle The title of the menu.
-     *
      * @return The pending intent associated with the menu entry.
      */
     public static PendingIntent addMenuEntriesToIntent(
             Intent customTabIntent, int numEntries, Intent callbackIntent, String menuTitle) {
-        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
-                0, callbackIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-                        | IntentUtils.getPendingIntentMutabilityFlag(true));
+        PendingIntent pi =
+                PendingIntent.getBroadcast(
+                        ApplicationProvider.getApplicationContext(),
+                        0,
+                        callbackIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                                | IntentUtils.getPendingIntentMutabilityFlag(true));
         ArrayList<Bundle> menuItems = new ArrayList<>();
         for (int i = 0; i < numEntries; i++) {
             Bundle bundle = new Bundle();
@@ -166,7 +180,6 @@ public class CustomTabsIntentTestUtils {
      * @param description The description about the icon which will be added.
      * @param pi The pending intent that would be triggered when the icon is clicked on.
      * @param id A unique id for this new icon.
-     *
      * @return Returns the bundle encapsulating the toolbar item.
      */
     public static Bundle makeToolbarItemBundle(
@@ -187,20 +200,25 @@ public class CustomTabsIntentTestUtils {
      * @param icon The icon representing the action button.
      * @param description The description associated with the action button.
      * @param id The unique id that would be used for this new Action button.
-     *
      * @return The {@link PendingIntent} that will be triggered when the action button is clicked.
      */
     public static PendingIntent addActionButtonToIntent(
             Intent intent, Bitmap icon, String description, int id) {
-        PendingIntent pi = PendingIntent.getBroadcast(ApplicationProvider.getApplicationContext(),
-                0, new Intent(), IntentUtils.getPendingIntentMutabilityFlag(true));
-        intent.putExtra(CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
+        PendingIntent pi =
+                PendingIntent.getBroadcast(
+                        ApplicationProvider.getApplicationContext(),
+                        0,
+                        new Intent(),
+                        IntentUtils.getPendingIntentMutabilityFlag(true));
+        intent.putExtra(
+                CustomTabsIntent.EXTRA_ACTION_BUTTON_BUNDLE,
                 makeToolbarItemBundle(icon, description, pi, id));
         return pi;
     }
 
     /**
      * Sets the {@link CustomTabsIntent.ShareState} of the custom tab.
+     *
      * @param intent The intent to modify.
      * @param shareState The {@link CustomTabsIntent.ShareState} being set.
      */

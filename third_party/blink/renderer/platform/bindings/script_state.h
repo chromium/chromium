@@ -282,7 +282,7 @@ class ScriptStateProtectingContext final
 
   void Trace(Visitor* visitor) const { visitor->Trace(script_state_); }
 
-  ScriptState* Get() const { return script_state_; }
+  ScriptState* Get() const { return script_state_.Get(); }
   void Reset() {
     script_state_ = nullptr;
     context_.Clear();

@@ -28,6 +28,13 @@ class AutomationTestUtils {
   // strings.
   void WaitForPageLoad(const std::string& url);
 
+  // Gets the bounds of the root web area with the given URL in
+  // density-independent pixels.
+  // Note that the URL should not use backtick quotes, or if so they
+  // should be escaped, to avoid collisions with the Javascript
+  // strings.
+  gfx::Rect GetBoundsOfRootWebArea(const std::string& url);
+
   // Gets the value of the node with the given `class_name`.
   std::string GetValueForNodeWithClassName(const std::string& class_name);
 
@@ -46,6 +53,10 @@ class AutomationTestUtils {
   // Will wait for the node to exist if it does not exist already.
   void SetFocusOnNode(const std::string& name, const std::string& role);
 
+  // Checks if a given node exists in the tree. Does not wait if the
+  // node does not exist.
+  bool NodeExistsNoWait(const std::string& name, const std::string& role);
+
   // Various event waiters. This is the automation equivalent of
   // AccessibilityNotificationWaiter.
 
@@ -56,6 +67,10 @@ class AutomationTestUtils {
   // Waits for a chrome.automation.EventType.VALUE_CHANGED event to be fired
   // on the desktop node.
   void WaitForValueChangedEvent();
+
+  // Waits for a chrome.automation.EventType.CHILDREN_CHANGED event to be fired
+  // on the desktop node.
+  void WaitForChildrenChangedEvent();
 
  private:
   std::string ExecuteScriptInExtensionPage(const std::string& script);

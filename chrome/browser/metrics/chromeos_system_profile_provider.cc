@@ -234,7 +234,7 @@ void ChromeOSSystemProfileProvider::OnArcFeaturesParsed(
     LOG(WARNING) << "ArcFeatures not available on this build";
     return;
   }
-  arc_release_ = features->build_props.at("ro.build.version.release");
+  arc_release_ = features->build_props.release_version;
 }
 
 void ChromeOSSystemProfileProvider::OnTpmManagerGetRwVersionInfo(

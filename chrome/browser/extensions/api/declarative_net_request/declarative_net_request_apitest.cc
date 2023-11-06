@@ -14,6 +14,10 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/browser/api/declarative_net_request/utils.h"
+#include "extensions/common/extension_features.h"
+#include "extensions/test/extension_test_message_listener.h"
+#include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
@@ -96,15 +100,61 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, DynamicRules) {
   ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
 }
 
+class DeclarativeNetRequestSafeRulesLazyApiTest
+    : public DeclarativeNetRequestLazyApiTest {
+ public:
+  DeclarativeNetRequestSafeRulesLazyApiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kDeclarativeNetRequestSafeRuleLimits);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         DeclarativeNetRequestSafeRulesLazyApiTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(EventPage,
+                         DeclarativeNetRequestSafeRulesLazyApiTest,
+                         ::testing::Values(ContextType::kEventPage));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         DeclarativeNetRequestSafeRulesLazyApiTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
 // Flaky on ASAN/MSAN: https://crbug.com/1167168
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_DynamicRulesLimits DISABLED_DynamicRulesLimits
 #else
 #define MAYBE_DynamicRulesLimits DynamicRulesLimits
 #endif
-IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest,
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestSafeRulesLazyApiTest,
                        MAYBE_DynamicRulesLimits) {
-  ASSERT_TRUE(RunExtensionTest("dynamic_rules_limits")) << message_;
+  ExtensionTestMessageListener listener("ready", ReplyBehavior::kWillReply);
+
+  // Set up overrides for rule limits and send them to the test extension. This
+  // is done because running the test with the actual rule limits will be very
+  // slow.
+  base::AutoReset<int> dynamic_rule_limit_override =
+      extensions::declarative_net_request::
+          CreateScopedDynamicRuleLimitOverrideForTesting(200);
+  base::AutoReset<int> unsafe_dynamic_rule_limit_override =
+      extensions::declarative_net_request::
+          CreateScopedUnsafeDynamicRuleLimitOverrideForTesting(50);
+  base::AutoReset<int> regex_rule_limit_override = extensions::
+      declarative_net_request::CreateScopedRegexRuleLimitOverrideForTesting(50);
+  std::string rule_limits = base::StringPrintf(
+      R"({"ruleLimit":%d,"unsafeRuleLimit":%d,"regexRuleLimit":%d})", 200, 50,
+      50);
+
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("dynamic_rules_limits"));
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  extensions::ResultCatcher result_catcher;
+  listener.Reply(rule_limits);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestLazyApiTest, OnRulesMatchedDebug) {

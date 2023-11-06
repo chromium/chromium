@@ -183,9 +183,8 @@ class SupportsWeakPtrBase {
   // Precondition: t != nullptr
   template<typename Derived>
   static WeakPtr<Derived> StaticAsWeakPtr(Derived* t) {
-    static_assert(
-        std::is_base_of<internal::SupportsWeakPtrBase, Derived>::value,
-        "AsWeakPtr argument must inherit from SupportsWeakPtr");
+    static_assert(std::is_base_of_v<internal::SupportsWeakPtrBase, Derived>,
+                  "AsWeakPtr argument must inherit from SupportsWeakPtr");
     using Base = typename decltype(ExtractSinglyInheritedBase(t))::Base;
     // Ensure SupportsWeakPtr<Base>::AsWeakPtr() is called even if the subclass
     // hides or overloads it.

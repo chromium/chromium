@@ -9,6 +9,7 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 
 from contextlib import AbstractContextManager
 from typing import IO, Iterable, List, Optional
@@ -76,7 +77,17 @@ class ScopedFfxConfig(AbstractContextManager):
 
 
 def test_connection(target_id: Optional[str]) -> None:
-    """Run an echo test to verify that the device can be connected to."""
+    """Run echo tests to verify that the device can be connected to.
+
+    Devices may not be connectable right after being discovered by ffx, so this
+    function retries up to 1 minute before throwing an exception.
+    """
+    start_sec = time.time()
+    while time.time() - start_sec < 60:
+        if run_ffx_command(cmd=('target', 'echo'),
+                           target_id=target_id,
+                           check=False).returncode == 0:
+            return
 
     run_ffx_command(cmd=('target', 'echo'), target_id=target_id)
 
@@ -121,7 +132,8 @@ class FfxTestRunner(AbstractContextManager):
     def run_test(self,
                  component_uri: str,
                  test_args: Optional[Iterable[str]] = None,
-                 node_name: Optional[str] = None) -> subprocess.Popen:
+                 node_name: Optional[str] = None,
+                 test_realm: Optional[str] = None) -> subprocess.Popen:
         """Starts a subprocess to run a test on a target.
         Args:
             component_uri: The test component URI.
@@ -132,8 +144,11 @@ class FfxTestRunner(AbstractContextManager):
         """
         command = [
             'test', 'run', '--output-directory', self._results_dir,
-            component_uri
         ]
+        if test_realm:
+            command.append("--realm")
+            command.append(test_realm)
+        command.append(component_uri)
         if test_args:
             command.append('--')
             command.extend(test_args)

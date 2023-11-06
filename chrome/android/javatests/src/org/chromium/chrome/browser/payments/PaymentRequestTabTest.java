@@ -44,21 +44,35 @@ public class PaymentRequestTabTest {
     @Before
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
-        String billingAddressId = helper.setProfile(AutofillProfile.builder()
-                                                            .setFullName("Jon Doe")
-                                                            .setCompanyName("Google")
-                                                            .setStreetAddress("340 Main St")
-                                                            .setRegion("CA")
-                                                            .setLocality("Los Angeles")
-                                                            .setPostalCode("90291")
-                                                            .setCountryCode("US")
-                                                            .setPhoneNumber("555-555-5555")
-                                                            .setEmailAddress("jon.doe@google.com")
-                                                            .setLanguageCode("en-US")
-                                                            .build());
-        helper.setCreditCard(new CreditCard("", "https://example.test", true, true, "Jon Doe",
-                "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                billingAddressId, "" /* serverId */));
+        String billingAddressId =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("555-555-5555")
+                                .setEmailAddress("jon.doe@google.com")
+                                .setLanguageCode("en-US")
+                                .build());
+        helper.setCreditCard(
+                new CreditCard(
+                        "",
+                        "https://example.test",
+                        true,
+                        true,
+                        "Jon Doe",
+                        "4111111111111111",
+                        "1111",
+                        "12",
+                        "2050",
+                        "visa",
+                        R.drawable.visa_card,
+                        billingAddressId,
+                        /* serverId= */ ""));
     }
 
     /** If the user switches tabs somehow, the dialog is dismissed. */
@@ -76,9 +90,15 @@ public class PaymentRequestTabTest {
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
         TestThreadUtils.runOnUiThreadBlocking(
-                (Runnable) () -> mPaymentRequestTestRule.getActivity().getTabCreator(false).createNewTab(
-                                new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI,
-                                null));
+                (Runnable)
+                        () ->
+                                mPaymentRequestTestRule
+                                        .getActivity()
+                                        .getTabCreator(false)
+                                        .createNewTab(
+                                                new LoadUrlParams("about:blank"),
+                                                TabLaunchType.FROM_CHROME_UI,
+                                                null));
         mPaymentRequestTestRule.getDismissed().waitForCallback(0);
     }
 
@@ -96,10 +116,12 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModel currentModel = mPaymentRequestTestRule.getActivity().getCurrentTabModel();
-            TabModelUtils.closeCurrentTab(currentModel);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel currentModel =
+                            mPaymentRequestTestRule.getActivity().getCurrentTabModel();
+                    TabModelUtils.closeCurrentTab(currentModel);
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(0);
     }
 
@@ -117,10 +139,13 @@ public class PaymentRequestTabTest {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(0, mPaymentRequestTestRule.getDismissed().getCallCount());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModel currentModel = mPaymentRequestTestRule.getActivity().getCurrentTabModel();
-            TabModelUtils.getCurrentTab(currentModel).loadUrl(new LoadUrlParams("about:blank"));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel currentModel =
+                            mPaymentRequestTestRule.getActivity().getCurrentTabModel();
+                    TabModelUtils.getCurrentTab(currentModel)
+                            .loadUrl(new LoadUrlParams("about:blank"));
+                });
         mPaymentRequestTestRule.getDismissed().waitForCallback(0);
     }
 }

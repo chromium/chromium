@@ -80,7 +80,6 @@ class WebAppDataRetriever : content::WebContentsObserver {
   // Performs installability check and invokes |callback| with manifest.
   virtual void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
-      bool bypass_service_worker_check,
       CheckInstallabilityCallback callback,
       absl::optional<webapps::InstallableParams> params = absl::nullopt);
 

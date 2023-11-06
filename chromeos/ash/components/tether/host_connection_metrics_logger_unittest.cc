@@ -216,7 +216,64 @@ TEST_F(HostConnectionMetricsLoggerTest,
 }
 
 TEST_F(HostConnectionMetricsLoggerTest,
-       RecordConnectionResultFailureClientConnection_CanceledByUser) {
+       RecordConnectionResultFailure_InvalidWifiApConfig) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::
+          CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG,
+      test_devices_[0].GetDeviceId());
+
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          INVALID_WIFI_AP_CONFIG);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailure_InvalidActiveExistingSoftApConfig) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::
+          CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG,
+      test_devices_[0].GetDeviceId());
+
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       RecordConnectionResultFailure_InvalidNewSoftApConfig) {
+  SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
+
+  metrics_logger_->RecordConnectionToHostResult(
+      HostConnectionMetricsLogger::ConnectionToHostResult::
+          CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG,
+      test_devices_[0].GetDeviceId());
+
+  VerifyFailure(
+      HostConnectionMetricsLogger::ConnectionToHostResult_FailureEventType::
+          INVALID_NEW_SOFT_AP_CONFIG);
+  VerifySuccess(HostConnectionMetricsLogger::
+                    ConnectionToHostResult_SuccessEventType::FAILURE);
+  VerifyProvisioningFailure(
+      HostConnectionMetricsLogger::
+          ConnectionToHostResult_ProvisioningFailureEventType::OTHER);
+}
+
+TEST_F(HostConnectionMetricsLoggerTest,
+       DISABLED_RecordConnectionResultFailureClientConnection_CanceledByUser) {
   SetActiveHostToConnecting(test_devices_[0].GetDeviceId());
 
   metrics_logger_->RecordConnectionToHostResult(

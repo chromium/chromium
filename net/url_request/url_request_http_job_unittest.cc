@@ -25,6 +25,8 @@
 #include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
+#include "net/base/load_flags.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/request_priority.h"
@@ -216,7 +218,7 @@ class URLRequestHttpJobWithProxy {
   std::unique_ptr<URLRequestContext> context_;
 };
 
-// Tests that when proxy is not used, the proxy server is set correctly on the
+// Tests that when a proxy is not used, the proxy chain is set correctly on the
 // URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   URLRequestHttpJobWithProxy http_job_with_proxy(nullptr);
@@ -238,14 +240,15 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestFailureWithoutProxy) {
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
-  EXPECT_EQ(ProxyServer::Direct(), request->proxy_server());
+  EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
 }
 
-// Tests that when one proxy is in use and the connection to the proxy server
-// fails, the proxy server is still set correctly on the URLRequest.
+// Tests that when one proxy chain is in use and the connection to a proxy
+// server in the proxy chain fails, the proxy chain is still set correctly on
+// the URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   const char kSimpleProxyGetMockWrite[] =
       "GET http://www.example.com/ HTTP/1.1\r\n"
@@ -255,12 +258,12 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
       "Accept-Encoding: gzip, deflate\r\n"
       "Accept-Language: en-us,fr\r\n\r\n";
 
-  const ProxyServer proxy_server =
-      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+  const ProxyChain proxy_chain =
+      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_server),
+          ProxyChainToPacResultElement(proxy_chain),
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleProxyGetMockWrite)};
@@ -283,26 +286,27 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   delegate.RunUntilComplete();
 
   EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
-  // When request fails due to proxy connection errors, the proxy server should
-  // still be set on the |request|.
-  EXPECT_EQ(proxy_server, request->proxy_server());
+  // When request fails due to proxy connection errors, the proxy chain should
+  // still be set on the `request`.
+  EXPECT_EQ(proxy_chain, request->proxy_chain());
   EXPECT_EQ(0, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(0, request->GetTotalReceivedBytes());
 }
 
-// Tests that when two proxies are in use and the connection to the first proxy
-// server fails, the proxy server is set correctly on the URLRequest.
+// Tests that when two proxy chains are in use and the connection to a proxy
+// server in the first proxy chain fails, the proxy chain is set correctly on
+// the URLRequest.
 TEST_F(URLRequestHttpJobWithProxyTest,
        TestContentLengthSuccessfulRequestWithTwoProxies) {
-  const ProxyServer proxy_server =
-      ProxyUriToProxyServer("http://origin.net:80", ProxyServer::SCHEME_HTTP);
+  const ProxyChain proxy_chain =
+      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
 
-  // Connection to |proxy_server| would fail. Request should be fetched over
+  // Connection to `proxy_chain` would fail. Request should be fetched over
   // DIRECT.
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_server) + "; DIRECT",
+          ProxyChainToPacResultElement(proxy_chain) + "; DIRECT",
           TRAFFIC_ANNOTATION_FOR_TESTS);
 
   MockWrite writes[] = {MockWrite(kSimpleGetMockWrite)};
@@ -332,7 +336,7 @@ TEST_F(URLRequestHttpJobWithProxyTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_THAT(delegate.request_status(), IsOk());
-  EXPECT_EQ(ProxyServer::Direct(), request->proxy_server());
+  EXPECT_EQ(ProxyChain::Direct(), request->proxy_chain());
   EXPECT_EQ(12, request->received_response_content_length());
   EXPECT_EQ(CountWriteBytes(writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadBytes(reads), request->GetTotalReceivedBytes());
@@ -1095,6 +1099,178 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
       EXPECT_EQ(1u, r->url_chain().size());
     }
     EXPECT_EQ(GURL(test.url_expected), r->url());
+  }
+}
+
+TEST_F(URLRequestHttpJobTest, ShouldBypassHSTS) {
+  // Setup HSTS state.
+  context_->transport_security_state()->AddHSTS(
+      "upgrade.test", base::Time::Now() + base::Seconds(30), true);
+  ASSERT_TRUE(
+      context_->transport_security_state()->ShouldUpgradeToSSL("upgrade.test"));
+
+  struct TestCase {
+    const char* url;
+    bool bypass_hsts;
+    const char* url_expected;
+  } cases[] = {
+    {"http://upgrade.test/example.crl", true,
+     "http://upgrade.test/example.crl"},
+    // This test ensures that the HSTS check and upgrade happens prior to cache
+    // and socket pool checks
+    {"http://upgrade.test/example.crl", false,
+     "https://upgrade.test/example.crl"},
+    {"http://upgrade.test", false, "https://upgrade.test"},
+    {"http://upgrade.test:1080", false, "https://upgrade.test:1080"},
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+    {"ws://upgrade.test/example.crl", true, "ws://upgrade.test/example.crl"},
+    {"ws://upgrade.test/example.crl", false, "wss://upgrade.test/example.crl"},
+    {"ws://upgrade.test", false, "wss://upgrade.test"},
+    {"ws://upgrade.test:1080", false, "wss://upgrade.test:1080"},
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+  };
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(test.url);
+
+    GURL url = GURL(test.url);
+    // This is needed to bypass logic that rejects using URLRequests directly
+    // for WebSocket requests.
+    bool is_for_websockets = url.SchemeIsWSOrWSS();
+
+    TestDelegate d;
+    TestNetworkDelegate network_delegate;
+    std::unique_ptr<URLRequest> r(context_->CreateRequest(
+        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
+        is_for_websockets));
+    if (test.bypass_hsts) {
+      r->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
+      r->set_allow_credentials(false);
+    }
+
+    net_log_observer_.Clear();
+    r->Start();
+    d.RunUntilComplete();
+
+    if (test.bypass_hsts) {
+      EXPECT_EQ(0, d.received_redirect_count());
+      EXPECT_EQ(1u, r->url_chain().size());
+    } else {
+      auto entries = net_log_observer_.GetEntriesWithType(
+          net::NetLogEventType::URL_REQUEST_REDIRECT_JOB);
+      int redirects = entries.size();
+      for (const auto& entry : entries) {
+        EXPECT_EQ("HSTS", GetStringValueFromParams(entry, "reason"));
+      }
+      EXPECT_EQ(1, redirects);
+      EXPECT_EQ(1, d.received_redirect_count());
+      EXPECT_EQ(2u, r->url_chain().size());
+    }
+    EXPECT_EQ(GURL(test.url_expected), r->url());
+  }
+}
+
+namespace {
+std::unique_ptr<test_server::HttpResponse> HandleRequest(
+    const std::string_view& content,
+    const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_content(content);
+  return std::move(response);
+}
+}  // namespace
+
+// This test checks that if an HTTP connection was made for a request that has
+// the should_bypass_hsts flag set to true, subsequent calls to the exact same
+// URL WITHOUT should_bypass_hsts=true will be upgraded to HTTPS early
+// enough in the process such that the HTTP socket connection is not re-used,
+// and the request does not have a hit in the cache.
+TEST_F(URLRequestHttpJobTest, ShouldBypassHSTSResponseAndConnectionNotReused) {
+  constexpr std::string_view kSecureContent = "Secure: Okay Content";
+  constexpr std::string_view kInsecureContent = "Insecure: Bad Content";
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  auto context = context_builder->Build();
+
+  // The host of all EmbeddedTestServer URLs is 127.0.0.1.
+  context->transport_security_state()->AddHSTS(
+      "127.0.0.1", base::Time::Now() + base::Seconds(30), true);
+  ASSERT_TRUE(
+      context->transport_security_state()->ShouldUpgradeToSSL("127.0.0.1"));
+
+  GURL::Replacements replace_scheme;
+  replace_scheme.SetSchemeStr("https");
+  GURL insecure_url;
+  GURL secure_url;
+
+  int common_port = 0;
+
+  // Create an HTTP request that is not upgraded to the should_bypass_hsts flag,
+  // and ensure that the response is stored in the cache.
+  {
+    EmbeddedTestServer http_server(EmbeddedTestServer::TYPE_HTTP);
+    http_server.AddDefaultHandlers(base::FilePath());
+    http_server.RegisterRequestHandler(
+        base::BindRepeating(&HandleRequest, kInsecureContent));
+    ASSERT_TRUE(http_server.Start());
+    common_port = http_server.port();
+
+    insecure_url = http_server.base_url();
+    ASSERT_TRUE(insecure_url.SchemeIs("http"));
+    secure_url = insecure_url.ReplaceComponents(replace_scheme);
+    ASSERT_TRUE(secure_url.SchemeIs("https"));
+
+    net_log_observer_.Clear();
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(
+        context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
+                               TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->SetLoadFlags(net::LOAD_SHOULD_BYPASS_HSTS);
+    req->set_allow_credentials(false);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_EQ(kInsecureContent, delegate.data_received());
+    // There should be 2 cache event entries, one for beginning the read and one
+    // for finishing the read.
+    EXPECT_EQ(2u, net_log_observer_
+                      .GetEntriesWithType(
+                          net::NetLogEventType::HTTP_CACHE_ADD_TO_ENTRY)
+                      .size());
+    ASSERT_TRUE(http_server.ShutdownAndWaitUntilComplete());
+  }
+  // Test that a request with the same URL will be upgraded as long as
+  // should_bypass_hsts flag is not set, and doesn't have an cache hit or
+  // re-use an existing socket connection.
+  {
+    EmbeddedTestServer https_server(EmbeddedTestServer::TYPE_HTTPS);
+    https_server.AddDefaultHandlers(base::FilePath());
+    https_server.RegisterRequestHandler(
+        base::BindRepeating(&HandleRequest, kSecureContent));
+    ASSERT_TRUE(https_server.Start(common_port));
+
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(
+        context->CreateRequest(insecure_url, DEFAULT_PRIORITY, &delegate,
+                               TRAFFIC_ANNOTATION_FOR_TESTS));
+    req->set_allow_credentials(false);
+    req->Start();
+    delegate.RunUntilRedirect();
+    // Ensure that the new URL has an upgraded protocol. This ensures that when
+    // the redirect request continues, the HTTP socket connection from before
+    // will not be re-used, given that "protocol" is one of the fields used to
+    // create a socket connection. Documentation here:
+    // https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/life-of-a-url-request.md
+    // under "Socket Pools" section.
+    EXPECT_EQ(delegate.redirect_info().new_url, secure_url);
+    EXPECT_TRUE(delegate.redirect_info().new_url.SchemeIs("https"));
+    EXPECT_THAT(delegate.request_status(), net::ERR_IO_PENDING);
+
+    req->FollowDeferredRedirect(absl::nullopt /* removed_headers */,
+                                absl::nullopt /* modified_headers */);
+    delegate.RunUntilComplete();
+    EXPECT_EQ(kSecureContent, delegate.data_received());
+    EXPECT_FALSE(req->was_cached());
+    ASSERT_TRUE(https_server.ShutdownAndWaitUntilComplete());
   }
 }
 

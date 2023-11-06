@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 """Module for shared/commonly used type hinting."""
 
-from collections import namedtuple
+import datetime
 from enum import Enum
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, NamedTuple
 
 TagTupleType = Tuple[str, ...]
 # TODO(crbug.com/1358735): Remove this and update both GPU and Web test
@@ -26,11 +26,17 @@ AggregatedResultsType = Dict[str, TestToTagsType]
 # {
 #   'test_suite': {
 #     'test_name': {
-#       ('typ', 'tags', 'as', 'tuple'): [ (status, url), (status, url) ],
+#       ('typ', 'tags', 'as', 'tuple'):
+#       [ (status, url, date), (status, url, date) ],
 #     },
 #   },
 # }
-ResultTupleType = namedtuple('ResultTupleType', ['status', 'build_url'])
+class ResultTupleType(NamedTuple):
+  status: str
+  build_url: str
+  date: datetime.date
+
+
 TagsToResultType = Dict[TagTupleType, List[ResultTupleType]]
 TestStatusToTagsType = Dict[str, TagsToResultType]
 AggregatedStatusResultsType = Dict[str, TestStatusToTagsType]

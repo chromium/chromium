@@ -35,12 +35,20 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-shared.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_set.h"
+#include "extensions/common/manifest_handlers/background_info.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
@@ -102,8 +110,16 @@ PushMessagingNotificationManager::~PushMessagingNotificationManager() = default;
 void PushMessagingNotificationManager::EnforceUserVisibleOnlyRequirements(
     const GURL& origin,
     int64_t service_worker_registration_id,
-    EnforceRequirementsCallback message_handled_callback) {
+    EnforceRequirementsCallback message_handled_callback,
+    bool requested_user_visible_only) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (ShouldSkipUserVisibleOnlyRequirements(origin,
+                                            requested_user_visible_only)) {
+    std::move(message_handled_callback)
+        .Run(/* did_show_generic_notification= */ false);
+    return;
+  }
 
   // TODO(johnme): Relax this heuristic slightly.
   scoped_refptr<PlatformNotificationContext> notification_context =
@@ -254,3 +270,39 @@ void PushMessagingNotificationManager::DidWriteNotificationData(
   std::move(message_handled_callback)
       .Run(/* did_show_generic_notification= */ true);
 }
+
+bool PushMessagingNotificationManager::ShouldSkipUserVisibleOnlyRequirements(
+    const GURL& origin,
+    bool requested_user_visible_only) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (origin.SchemeIs(extensions::kExtensionScheme)) {
+    return ShouldSkipExtensionUserVisibleOnlyRequirements(
+        origin, requested_user_visible_only);
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  // Returning true is an exception, so default to deny for anything we don't
+  // explicitly identify.
+  return false;
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool PushMessagingNotificationManager::
+    ShouldSkipExtensionUserVisibleOnlyRequirements(
+        const GURL& origin,
+        bool requested_user_visible_only) {
+  // Worker based extensions are exempt from the user visible requirement only
+  // if they request it.
+  if (!requested_user_visible_only) {
+    return false;
+  }
+  const extensions::ExtensionSet& extensions =
+      extensions::ExtensionRegistry::Get(profile_)->enabled_extensions();
+  const extensions::Extension* extension =
+      extensions.GetExtensionOrAppByURL(origin);
+  if (!extension) {
+    return false;
+  }
+  return extensions::BackgroundInfo::IsServiceWorkerBased(extension);
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)

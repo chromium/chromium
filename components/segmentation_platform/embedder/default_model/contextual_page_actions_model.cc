@@ -22,26 +22,25 @@ constexpr SegmentId kSegmentId =
     SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING;
 constexpr int64_t kOneDayInSeconds = 86400;
 // Parameters for share action model.
-constexpr int64_t kShareOutputCollectionDelayInSec = 300;
 constexpr std::array<MetadataWriter::UMAFeature, 6> kShareUMAFeatures = {
     MetadataWriter::UMAFeature::FromUserAction(
         "MobileMenuShare",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
     MetadataWriter::UMAFeature::FromUserAction(
         "Omnibox.EditUrlSuggestion.Share",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
     MetadataWriter::UMAFeature::FromUserAction(
         "MobileActionMode.Share",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
     MetadataWriter::UMAFeature::FromUserAction(
         "MobileMenuDirectShare",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
     MetadataWriter::UMAFeature::FromUserAction(
         "Omnibox.EditUrlSuggestion.Copy",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
     MetadataWriter::UMAFeature::FromUserAction(
         "Tab.Screenshot",
-        kShareOutputCollectionDelayInSec),
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec),
 };
 
 constexpr std::array<const char*, 2> kContextualPageActionModelLabels = {
@@ -86,8 +85,11 @@ ContextualPageActionsModel::GetModelConfig() {
     writer.AddUmaFeatures(kShareUMAFeatures.data(), kShareUMAFeatures.size(),
                           false);
 
+    metadata.set_upload_tensors(true);
+
     // Add share output collection with delay.
-    writer.AddDelayTrigger(kShareOutputCollectionDelayInSec);
+    writer.AddDelayTrigger(
+        ContextualPageActionsModel::kShareOutputCollectionDelayInSec);
     writer.AddUmaFeatures(kShareUMAFeatures.data(), kShareUMAFeatures.size(),
                           true);
   }

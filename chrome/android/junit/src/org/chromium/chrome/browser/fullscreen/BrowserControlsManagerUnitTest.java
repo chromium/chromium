@@ -50,36 +50,24 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.ui.util.TokenHolder;
 
-/**
- * Unit tests for {@link BrowserControlsManager}.
- */
+/** Unit tests for {@link BrowserControlsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BrowserControlsManagerUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     // Since these tests don't depend on the heights being pixels, we can use these as dpi directly.
     private static final int TOOLBAR_HEIGHT = 56;
     private static final int EXTRA_TOP_CONTROL_HEIGHT = 20;
 
-    @Mock
-    private Activity mActivity;
-    @Mock
-    private ControlContainer mControlContainer;
-    @Mock
-    private View mContainerView;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private ActivityTabProvider mActivityTabProvider;
-    @Mock
-    private android.content.res.Resources mResources;
-    @Mock
-    private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private ContentView mContentView;
+    @Mock private Activity mActivity;
+    @Mock private ControlContainer mControlContainer;
+    @Mock private View mContainerView;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private ActivityTabProvider mActivityTabProvider;
+    @Mock private android.content.res.Resources mResources;
+    @Mock private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
+    @Mock private Tab mTab;
+    @Mock private ContentView mContentView;
 
     private UserDataHost mUserDataHost = new UserDataHost();
     private BrowserControlsManager mBrowserControlsManager;
@@ -107,15 +95,20 @@ public class BrowserControlsManagerUnitTest {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
         mBrowserControlsManager = spy(browserControlsManager);
-        mBrowserControlsManager.initialize(mControlContainer, mActivityTabProvider,
-                mTabModelSelector, R.dimen.control_container_height);
+        mBrowserControlsManager.initialize(
+                mControlContainer,
+                mActivityTabProvider,
+                mTabModelSelector,
+                R.dimen.control_container_height);
         mBrowserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
         when(mBrowserControlsManager.getTab()).thenReturn(mTab);
     }
 
     @Test
     public void testInitialTopControlsHeight() {
-        assertEquals("Wrong initial top controls height.", TOOLBAR_HEIGHT,
+        assertEquals(
+                "Wrong initial top controls height.",
+                TOOLBAR_HEIGHT,
                 mBrowserControlsManager.getTopControlsHeight());
     }
 
@@ -138,9 +131,12 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
         mBrowserControlsManager.setTopControlsHeight(topControlsHeight, topControlsMinHeight);
 
-        assertNotEquals("Min-height offset shouldn't immediately change.", topControlsMinHeight,
+        assertNotEquals(
+                "Min-height offset shouldn't immediately change.",
+                topControlsMinHeight,
                 mBrowserControlsManager.getTopControlsMinHeightOffset());
-        assertNotNull("Animator should be initialized.",
+        assertNotNull(
+                "Animator should be initialized.",
                 mBrowserControlsManager.getControlsAnimatorForTesting());
 
         for (long time = 50;
@@ -149,17 +145,22 @@ public class BrowserControlsManagerUnitTest {
             int previousMinHeightOffset = mBrowserControlsManager.getTopControlsMinHeightOffset();
             int previousContentOffset = mBrowserControlsManager.getContentOffset();
             mBrowserControlsManager.getControlsAnimatorForTesting().setCurrentPlayTime(time);
-            assertThat(mBrowserControlsManager.getTopControlsMinHeightOffset(),
+            assertThat(
+                    mBrowserControlsManager.getTopControlsMinHeightOffset(),
                     greaterThan(previousMinHeightOffset));
             assertThat(
                     mBrowserControlsManager.getContentOffset(), greaterThan(previousContentOffset));
         }
 
         mBrowserControlsManager.getControlsAnimatorForTesting().end();
-        assertEquals("Min-height offset should be equal to min-height after animation.",
-                mBrowserControlsManager.getTopControlsMinHeightOffset(), topControlsMinHeight);
-        assertEquals("Content offset should be equal to controls height after animation.",
-                mBrowserControlsManager.getContentOffset(), topControlsHeight);
+        assertEquals(
+                "Min-height offset should be equal to min-height after animation.",
+                mBrowserControlsManager.getTopControlsMinHeightOffset(),
+                topControlsMinHeight);
+        assertEquals(
+                "Content offset should be equal to controls height after animation.",
+                mBrowserControlsManager.getContentOffset(),
+                topControlsHeight);
         assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
     }
 
@@ -174,9 +175,12 @@ public class BrowserControlsManagerUnitTest {
         mBrowserControlsManager.setAnimateBrowserControlsHeightChanges(true);
         mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
 
-        assertNotEquals("Min-height offset shouldn't immediately change.", 0,
+        assertNotEquals(
+                "Min-height offset shouldn't immediately change.",
+                0,
                 mBrowserControlsManager.getTopControlsMinHeightOffset());
-        assertNotNull("Animator should be initialized.",
+        assertNotNull(
+                "Animator should be initialized.",
                 mBrowserControlsManager.getControlsAnimatorForTesting());
 
         for (long time = 50;
@@ -185,16 +189,19 @@ public class BrowserControlsManagerUnitTest {
             int previousMinHeightOffset = mBrowserControlsManager.getTopControlsMinHeightOffset();
             int previousContentOffset = mBrowserControlsManager.getContentOffset();
             mBrowserControlsManager.getControlsAnimatorForTesting().setCurrentPlayTime(time);
-            assertThat(mBrowserControlsManager.getTopControlsMinHeightOffset(),
+            assertThat(
+                    mBrowserControlsManager.getTopControlsMinHeightOffset(),
                     lessThan(previousMinHeightOffset));
             assertThat(mBrowserControlsManager.getContentOffset(), lessThan(previousContentOffset));
         }
 
         mBrowserControlsManager.getControlsAnimatorForTesting().end();
-        assertEquals("Min-height offset should be equal to the min-height after animation.",
+        assertEquals(
+                "Min-height offset should be equal to the min-height after animation.",
                 mBrowserControlsManager.getTopControlsMinHeight(),
                 mBrowserControlsManager.getTopControlsMinHeightOffset());
-        assertEquals("Content offset should be equal to controls height after animation.",
+        assertEquals(
+                "Content offset should be equal to controls height after animation.",
                 mBrowserControlsManager.getTopControlsHeight(),
                 mBrowserControlsManager.getContentOffset());
         assertNull(mBrowserControlsManager.getControlsAnimatorForTesting());
@@ -210,24 +217,35 @@ public class BrowserControlsManagerUnitTest {
                 TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT, EXTRA_TOP_CONTROL_HEIGHT);
 
         verify(mBrowserControlsManager).showAndroidControls(false);
-        assertEquals("Controls should be fully shown after changing the height.",
+        assertEquals(
+                "Controls should be fully shown after changing the height.",
                 TOOLBAR_HEIGHT + EXTRA_TOP_CONTROL_HEIGHT,
                 mBrowserControlsManager.getContentOffset());
-        assertEquals("Controls should be fully shown after changing the height.", 0,
+        assertEquals(
+                "Controls should be fully shown after changing the height.",
+                0,
                 mBrowserControlsManager.getTopControlOffset());
-        assertEquals("Min-height offset should be equal to the min-height after height changes.",
-                EXTRA_TOP_CONTROL_HEIGHT, mBrowserControlsManager.getTopControlsMinHeightOffset());
+        assertEquals(
+                "Min-height offset should be equal to the min-height after height changes.",
+                EXTRA_TOP_CONTROL_HEIGHT,
+                mBrowserControlsManager.getTopControlsMinHeightOffset());
 
         // Decrease the height.
         mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
 
         // Controls should be fully shown after changing the height.
         verify(mBrowserControlsManager, times(2)).showAndroidControls(false);
-        assertEquals("Controls should be fully shown after changing the height.", TOOLBAR_HEIGHT,
+        assertEquals(
+                "Controls should be fully shown after changing the height.",
+                TOOLBAR_HEIGHT,
                 mBrowserControlsManager.getContentOffset());
-        assertEquals("Controls should be fully shown after changing the height.", 0,
+        assertEquals(
+                "Controls should be fully shown after changing the height.",
+                0,
                 mBrowserControlsManager.getTopControlOffset());
-        assertEquals("Min-height offset should be equal to the min-height after height changes.", 0,
+        assertEquals(
+                "Min-height offset should be equal to the min-height after height changes.",
+                0,
                 mBrowserControlsManager.getTopControlsMinHeightOffset());
     }
 
@@ -243,12 +261,18 @@ public class BrowserControlsManagerUnitTest {
 
         // Controls visibility and offsets should be managed by native.
         verify(mBrowserControlsManager, never()).showAndroidControls(anyBoolean());
-        assertEquals("Content offset should have the initial value before round-trip to native.",
-                contentOffset, mBrowserControlsManager.getContentOffset());
-        assertEquals("Controls offset should have the initial value before round-trip to native.",
-                controlOffset, mBrowserControlsManager.getTopControlOffset());
-        assertEquals("Min-height offset should have the initial value before round-trip to native.",
-                minHeightOffset, mBrowserControlsManager.getTopControlsMinHeightOffset());
+        assertEquals(
+                "Content offset should have the initial value before round-trip to native.",
+                contentOffset,
+                mBrowserControlsManager.getContentOffset());
+        assertEquals(
+                "Controls offset should have the initial value before round-trip to native.",
+                controlOffset,
+                mBrowserControlsManager.getTopControlOffset());
+        assertEquals(
+                "Min-height offset should have the initial value before round-trip to native.",
+                minHeightOffset,
+                mBrowserControlsManager.getTopControlsMinHeightOffset());
 
         verify(mBrowserControlsStateProviderObserver)
                 .onTopControlsHeightChanged(
@@ -259,21 +283,29 @@ public class BrowserControlsManagerUnitTest {
         minHeightOffset = EXTRA_TOP_CONTROL_HEIGHT;
 
         // Simulate the offset coming from cc::BrowserControlsOffsetManager.
-        mBrowserControlsManager.getTabControlsObserverForTesting().onBrowserControlsOffsetChanged(
-                mTab, controlOffset, 0, contentOffset, minHeightOffset, 0);
+        mBrowserControlsManager
+                .getTabControlsObserverForTesting()
+                .onBrowserControlsOffsetChanged(
+                        mTab, controlOffset, 0, contentOffset, minHeightOffset, 0);
 
         // Decrease the height.
         mBrowserControlsManager.setTopControlsHeight(TOOLBAR_HEIGHT, 0);
 
         // Controls visibility and offsets should be managed by native.
         verify(mBrowserControlsManager, never()).showAndroidControls(anyBoolean());
-        assertEquals("Controls should be fully shown after getting the offsets from native.",
-                contentOffset, mBrowserControlsManager.getContentOffset());
-        assertEquals("Controls should be fully shown after getting the offsets from native.",
-                controlOffset, mBrowserControlsManager.getTopControlOffset());
-        assertEquals("Min-height offset should be equal to the min-height"
+        assertEquals(
+                "Controls should be fully shown after getting the offsets from native.",
+                contentOffset,
+                mBrowserControlsManager.getContentOffset());
+        assertEquals(
+                "Controls should be fully shown after getting the offsets from native.",
+                controlOffset,
+                mBrowserControlsManager.getTopControlOffset());
+        assertEquals(
+                "Min-height offset should be equal to the min-height"
                         + " after getting the offsets from native.",
-                minHeightOffset, mBrowserControlsManager.getTopControlsMinHeightOffset());
+                minHeightOffset,
+                mBrowserControlsManager.getTopControlsMinHeightOffset());
 
         verify(mBrowserControlsStateProviderObserver).onTopControlsHeightChanged(TOOLBAR_HEIGHT, 0);
     }
@@ -283,19 +315,24 @@ public class BrowserControlsManagerUnitTest {
     public void testShowAndroidControlsObserver() {
         BrowserControlsManager browserControlsManager =
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
-        browserControlsManager.initialize(mControlContainer, mActivityTabProvider,
-                mTabModelSelector, R.dimen.control_container_height);
+        browserControlsManager.initialize(
+                mControlContainer,
+                mActivityTabProvider,
+                mTabModelSelector,
+                R.dimen.control_container_height);
         browserControlsManager.addObserver(mBrowserControlsStateProviderObserver);
 
-        doAnswer(invocation -> {
-            ((Runnable) invocation.getArguments()[0]).run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            ((Runnable) invocation.getArguments()[0]).run();
+                            return null;
+                        })
                 .when(mContainerView)
                 .postOnAnimation(any());
 
-        int token = browserControlsManager.hideAndroidControlsAndClearOldToken(
-                TokenHolder.INVALID_TOKEN);
+        int token =
+                browserControlsManager.hideAndroidControlsAndClearOldToken(
+                        TokenHolder.INVALID_TOKEN);
         verify(mContainerView).setVisibility(View.INVISIBLE);
         verify(mBrowserControlsStateProviderObserver)
                 .onAndroidControlsVisibilityChanged(View.INVISIBLE);
@@ -313,8 +350,11 @@ public class BrowserControlsManagerUnitTest {
                 new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
         Assert.assertEquals(View.INVISIBLE, browserControlsManager.getAndroidControlsVisibility());
 
-        browserControlsManager.initialize(mControlContainer, mActivityTabProvider,
-                mTabModelSelector, R.dimen.control_container_height);
+        browserControlsManager.initialize(
+                mControlContainer,
+                mActivityTabProvider,
+                mTabModelSelector,
+                R.dimen.control_container_height);
         when(mContainerView.getVisibility()).thenReturn(View.VISIBLE);
         Assert.assertEquals(View.VISIBLE, browserControlsManager.getAndroidControlsVisibility());
 

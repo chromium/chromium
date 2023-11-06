@@ -58,8 +58,6 @@ class VIZ_SERVICE_EXPORT DisplayResourceProviderSkia
     ExternalUseClient::ImageContext* LockResource(
         ResourceId resource_id,
         bool maybe_concurrent_reads,
-        bool is_video_plane,
-        sk_sp<SkColorSpace> override_color_space = nullptr,
         bool raw_draw_if_possible = false);
 
     // Unlock all locked resources with a |sync_token|.  The |sync_token| should

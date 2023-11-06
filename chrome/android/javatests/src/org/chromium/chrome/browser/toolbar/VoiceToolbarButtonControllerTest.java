@@ -70,14 +70,12 @@ public final class VoiceToolbarButtonControllerTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private String mTestPageUrl;
     private String mButtonString;
 
-    @Mock
-    VoiceRecognitionHandler mVoiceRecognitionHandler;
+    @Mock VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -92,10 +90,12 @@ public final class VoiceToolbarButtonControllerTest {
     @Before
     public void setUp() {
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
-        ((LocationBarCoordinator) sActivityTestRule.getActivity()
-                        .getToolbarManager()
-                        .getToolbarLayoutForTesting()
-                        .getLocationBar())
+        ((LocationBarCoordinator)
+                        sActivityTestRule
+                                .getActivity()
+                                .getToolbarManager()
+                                .getToolbarLayoutForTesting()
+                                .getLocationBar())
                 .setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
 
         // Now that we've replaced the handler with a mock, load another page so the button provider
@@ -103,13 +103,19 @@ public final class VoiceToolbarButtonControllerTest {
         mTestPageUrl = sActivityTestRule.getTestServer().getURL(TEST_PAGE);
         sActivityTestRule.loadUrl(mTestPageUrl);
 
-        mButtonString = sActivityTestRule.getActivity().getResources().getString(
-                R.string.accessibility_toolbar_btn_mic);
+        mButtonString =
+                sActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.accessibility_toolbar_btn_mic);
     }
 
     private void assertButtonMissingOrNonVoice() {
         ViewUtils.waitForViewCheckingState(
-                allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        isEnabled(),
                         withContentDescription(mButtonString)),
                 ViewUtils.VIEW_GONE | ViewUtils.VIEW_NULL);
     }
@@ -119,8 +125,12 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledOnNTP() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
-                isEnabled(), withContentDescription(mButtonString)));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        isEnabled(),
+                        withContentDescription(mButtonString)));
 
         sActivityTestRule.loadUrl(UrlConstants.NTP_URL);
 
@@ -143,8 +153,12 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonDisabledOnIncognito() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
-                isEnabled(), withContentDescription(mButtonString)));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        isEnabled(),
+                        withContentDescription(mButtonString)));
 
         sActivityTestRule.newIncognitoTabFromMenu();
 
@@ -156,48 +170,70 @@ public final class VoiceToolbarButtonControllerTest {
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledDuringModal() {
         // Ensure the button starts visible.
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
-                isEnabled(), withContentDescription(mButtonString)));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        isEnabled(),
+                        withContentDescription(mButtonString)));
 
         // Get a reference to the button before the modal is opened as it's harder to get after.
         View button = sActivityTestRule.getActivity().findViewById(R.id.optional_toolbar_button);
 
-        ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
-            @Override
-            public void onClick(PropertyModel model, int buttonType) {}
+        ModalDialogProperties.Controller controller =
+                new ModalDialogProperties.Controller() {
+                    @Override
+                    public void onClick(PropertyModel model, int buttonType) {}
 
-            @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {}
-        };
+                    @Override
+                    public void onDismiss(PropertyModel model, int dismissalCause) {}
+                };
 
-        PropertyModel dialogModel = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                    .with(ModalDialogProperties.CONTROLLER, controller)
-                    .build();
-        });
+        PropertyModel dialogModel =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                                    .with(ModalDialogProperties.CONTROLLER, controller)
+                                    .build();
+                        });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivityTestRule.getActivity().getModalDialogManager().showDialog(
-                    dialogModel, ModalDialogType.APP);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule
+                            .getActivity()
+                            .getModalDialogManager()
+                            .showDialog(dialogModel, ModalDialogType.APP);
+                });
 
-        assertThat(button,
+        assertThat(
+                button,
                 allOf(isDisplayed(), not(isEnabled()), withContentDescription(mButtonString)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivityTestRule.getActivity().getModalDialogManager().dismissDialog(
-                    dialogModel, DialogDismissalCause.UNKNOWN);
-        });
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.optional_toolbar_button), isDisplayed(),
-                isEnabled(), withContentDescription(mButtonString)));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sActivityTestRule
+                            .getActivity()
+                            .getModalDialogManager()
+                            .dismissDialog(dialogModel, DialogDismissalCause.UNKNOWN);
+                });
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.optional_toolbar_button),
+                        isDisplayed(),
+                        isEnabled(),
+                        withContentDescription(mButtonString)));
     }
 
     @Test
     @MediumTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarStartsVoiceRecognition() {
-        onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
-                              withContentDescription(mButtonString)))
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.optional_toolbar_button),
+                                isDisplayed(),
+                                isEnabled(),
+                                withContentDescription(mButtonString)))
                 .perform(click());
 
         verify(mVoiceRecognitionHandler).startVoiceRecognition(VoiceInteractionSource.TOOLBAR);

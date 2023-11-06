@@ -19,17 +19,25 @@ namespace ash {
 class AutoSnapController : public wm::ActivationChangeObserver,
                            public aura::WindowObserver {
  public:
-  explicit AutoSnapController(aura::Window* root_window);
+  AutoSnapController(aura::Window* root_window);
 
   AutoSnapController(const AutoSnapController&) = delete;
   AutoSnapController& operator=(const AutoSnapController&) = delete;
 
   ~AutoSnapController() override;
 
+  // Called by `OverviewSession` when the `gained_active` window is being
+  // activated. Returns true if `gained_active` was snapped, false otherwise.
+  bool OnWindowActivatingFromOverview(ActivationReason reason,
+                                      aura::Window* gained_active);
+
   // wm::ActivationChangeObserver:
+  void OnWindowActivating(ActivationReason reason,
+                          aura::Window* gained_active,
+                          aura::Window* lost_active) override;
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,
-                         aura::Window* lost_active) override;
+                         aura::Window* lost_active) override {}
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;
@@ -40,7 +48,8 @@ class AutoSnapController : public wm::ActivationChangeObserver,
 
  private:
   // Auto-snaps `window` in split view upon gaining active or becoming visible.
-  void AutoSnapWindowIfNeeded(aura::Window* window);
+  // Returns true if `window` was snapped, false otherwise.
+  bool AutoSnapWindowIfNeeded(aura::Window* window);
 
   void AddWindow(aura::Window* window);
   void RemoveWindow(aura::Window* window);

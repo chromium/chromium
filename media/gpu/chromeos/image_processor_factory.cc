@@ -174,7 +174,8 @@ std::unique_ptr<ImageProcessor> CreateLibYUVImageProcessorWithInputCandidates(
     return nullptr;
 
   if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21) &&
-      input_candidates[0].fourcc != Fourcc(Fourcc::MT2T)) {
+      input_candidates[0].fourcc != Fourcc(Fourcc::MT2T) &&
+      input_candidates[0].fourcc != Fourcc(Fourcc::NV12)) {
     return nullptr;
   }
 
@@ -210,11 +211,13 @@ std::unique_ptr<ImageProcessor> CreateGLImageProcessorWithInputCandidates(
   if (input_candidates.size() != 1)
     return nullptr;
 
-  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21))
+  if (input_candidates[0].fourcc != Fourcc(Fourcc::MM21) &&
+      input_candidates[0].fourcc != Fourcc(Fourcc::NV12)) {
     return nullptr;
+  }
 
   ImageProcessor::PortConfig input_config(
-      Fourcc(Fourcc::MM21), input_candidates[0].size, /*planes=*/{},
+      input_candidates[0].fourcc, input_candidates[0].size, /*planes=*/{},
       input_visible_rect, {VideoFrame::STORAGE_DMABUFS});
   ImageProcessor::PortConfig output_config(
       Fourcc(Fourcc::NV12), output_size, /*planes=*/{}, gfx::Rect(output_size),

@@ -33,6 +33,9 @@ def __parse(ctx, cfg_file):
         if line.startswith("exec_timeout="):
             reproxy_config["exec_timeout"] = line.removeprefix("exec_timeout=")
 
+        if line.startswith("reclient_timeout="):
+            reproxy_config["reclient_timeout"] = line.removeprefix("reclient_timeout=")
+
         if line.startswith("inputs="):
             reproxy_config["inputs"] = line.removeprefix("inputs=").split(",")
 

@@ -1,0 +1,69 @@
+<style include="md-select">
+:host {
+  display: block;
+  cursor: default;
+}
+
+.md-select {
+  text-align: start;
+}
+
+.md-select div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#dropdownContainer {
+  overflow: hidden;
+  position: absolute;
+  border-radius: 12px;
+  box-shadow: var(--cr-elevation-3);
+  z-index: 999;
+  background: var(--color-side-panel-card-background);
+  width: 220px;
+}
+
+#dropdownContainer {
+  display: none;
+}
+
+:host([expanded_]) #dropdownContainer {
+  display: block;
+}
+
+#dropdown {
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: visible;
+  padding: 12px 0;
+  max-height: 456px;
+  width: 100%;
+}
+
+#dropdown::-webkit-scrollbar {
+  background: transparent;
+  width: 3px;
+}
+
+#dropdown::-webkit-scrollbar-thumb {
+  background: var(--color-side-panel-scrollbar-thumb);
+}
+</style>
+
+<button id="input" class="md-select"
+    role="combobox" tabindex="0"
+    aria-controls="dropdown"
+    aria-expanded="[[expanded_]]"
+    aria-haspopup="listbox"
+    aria-activedescendant$="[[getAriaActiveDescendant_(highlightedElement_)]]"
+    on-click="onInputClick_"
+    on-focusout="onInputFocusout_">
+  <div>[[getInputLabel_(label, selectedElement_)]]</div>
+</button>
+<div id="dropdownContainer">
+  <div id="dropdown" role="listbox" on-click="onDropdownClick_"
+      on-pointerdown="onDropdownPointerdown_">
+    <slot></slot>
+  </div>
+</div>

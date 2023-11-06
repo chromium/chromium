@@ -1,0 +1,57 @@
+[
+  {
+    "os": [
+      "android",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "linux",
+      "mac",
+      "win",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "user_agent_reduction": {
+            "default_value": 0,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserAgentReduction": 0
+        },
+        "prefs": {
+          "user_agent_reduction": {
+            "location": "user_profile",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserAgentReduction": 1
+        },
+        "prefs": {
+          "user_agent_reduction": {
+            "location": "user_profile",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserAgentReduction": 2
+        },
+        "prefs": {
+          "user_agent_reduction": {
+            "location": "user_profile",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -38,31 +38,20 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link SearchResumptionModuleUtils}.
- */
+/** Unit tests for {@link SearchResumptionModuleUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class SearchResumptionModuleUtilsUnitTest {
-    @Mock
-    private TemplateUrlService mTemplateUrlService;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private SyncService mSyncServiceMock;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Tab mTabToTrack;
-    @Mock
-    private GURL mGurl1;
-    @Mock
-    private GURL mGurl2;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SyncService mSyncServiceMock;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private Profile mProfile;
+    @Mock private Tab mTab;
+    @Mock private Tab mTabToTrack;
+    @Mock private GURL mGurl1;
+    @Mock private GURL mGurl2;
 
     private FeatureList.TestValues mFeatureListValues;
 
@@ -92,7 +81,8 @@ public class SearchResumptionModuleUtilsUnitTest {
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.DEFAULT_ENGINE_NOT_GOOGLE));
@@ -101,7 +91,8 @@ public class SearchResumptionModuleUtilsUnitTest {
         when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(false);
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
         Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_SYNC));
@@ -110,7 +101,8 @@ public class SearchResumptionModuleUtilsUnitTest {
         when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         Assert.assertFalse(SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.NOT_SIGN_IN));
@@ -121,7 +113,8 @@ public class SearchResumptionModuleUtilsUnitTest {
     public void testIsTabToTrackValid() {
         doReturn(true).when(mTabToTrack).isNativePage();
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.TAB_NOT_VALID));
@@ -129,7 +122,8 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mTabToTrack).isNativePage();
         doReturn(true).when(mTabToTrack).isIncognito();
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-        Assert.assertEquals(2,
+        Assert.assertEquals(
+                2,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.TAB_NOT_VALID));
@@ -139,7 +133,8 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mTabToTrack).isIncognito();
         doReturn(true).when(mGurl1).isEmpty();
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-        Assert.assertEquals(3,
+        Assert.assertEquals(
+                3,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.TAB_NOT_VALID));
@@ -149,7 +144,8 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(false).when(mGurl1).isEmpty();
         doReturn(false).when(mGurl1).isValid();
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-        Assert.assertEquals(4,
+        Assert.assertEquals(
+                4,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.TAB_NOT_VALID));
@@ -166,7 +162,8 @@ public class SearchResumptionModuleUtilsUnitTest {
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
                 String.valueOf(expirationTimeSeconds));
         Assert.assertFalse(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         SearchResumptionModuleUtils.UMA_MODULE_NOT_SHOW,
                         ModuleNotShownReason.TAB_EXPIRED));
@@ -180,10 +177,12 @@ public class SearchResumptionModuleUtilsUnitTest {
                 ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                 SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
                 String.valueOf(expirationTimeSeconds));
-        Assert.assertEquals(expirationTimeSeconds,
+        Assert.assertEquals(
+                expirationTimeSeconds,
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
-                        SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM, 0));
+                        SearchResumptionModuleUtils.TAB_EXPIRATION_TIME_PARAM,
+                        0));
         Assert.assertTrue(SearchResumptionModuleUtils.isTabToTrackValid(mTabToTrack));
     }
 
@@ -208,13 +207,15 @@ public class SearchResumptionModuleUtilsUnitTest {
         doReturn(url2).when(mGurl2).getSpec();
         doReturn(mGurl1).when(result).getLastUrlToTrack();
         doReturn(mGurl2).when(mTabToTrack).getUrl();
-        Assert.assertFalse(TextUtils.equals(
-                result.getLastUrlToTrack().getSpec(), mTabToTrack.getUrl().getSpec()));
+        Assert.assertFalse(
+                TextUtils.equals(
+                        result.getLastUrlToTrack().getSpec(), mTabToTrack.getUrl().getSpec()));
         Assert.assertNull(SearchResumptionModuleUtils.mayGetCachedResults(mTab, mTabToTrack));
 
         doReturn(mGurl1).when(mTabToTrack).getUrl();
-        Assert.assertTrue(TextUtils.equals(
-                result.getLastUrlToTrack().getSpec(), mTabToTrack.getUrl().getSpec()));
+        Assert.assertTrue(
+                TextUtils.equals(
+                        result.getLastUrlToTrack().getSpec(), mTabToTrack.getUrl().getSpec()));
         Assert.assertEquals(
                 result, SearchResumptionModuleUtils.mayGetCachedResults(mTab, mTabToTrack));
     }

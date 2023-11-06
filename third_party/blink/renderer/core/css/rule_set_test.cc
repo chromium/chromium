@@ -659,6 +659,84 @@ TEST(RuleSetTest, NestedStyleScope) {
   EXPECT_EQ(nullptr, b_rule_scope->Parent()->Parent());
 }
 
+TEST(RuleSetTest, SingleScope) {
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      @scope {
+        div { color: green; }
+      }
+    )CSS");
+    EXPECT_TRUE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      @scope {
+        div { color: green; }
+        div { color: red; }
+        div { color: blue; }
+      }
+    )CSS");
+    EXPECT_TRUE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      @scope (.a) {
+        div { color: green; }
+      }
+    )CSS");
+    EXPECT_TRUE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      @scope (.a) {
+        div { color: green; }
+      }
+      div { color: red; }
+    )CSS");
+    EXPECT_FALSE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      div { color: red; }
+      @scope (.a) {
+        div { color: green; }
+      }
+    )CSS");
+    EXPECT_FALSE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      @scope {
+        div { color: green; }
+      }
+      div { color: red; }
+    )CSS");
+    EXPECT_FALSE(sheet.GetRuleSet().SingleScope());
+  }
+
+  {
+    css_test_helpers::TestStyleSheet sheet;
+    sheet.AddCSSRules(R"CSS(
+      div { color: red; }
+      @scope {
+        div { color: green; }
+      }
+    )CSS");
+    EXPECT_FALSE(sheet.GetRuleSet().SingleScope());
+  }
+}
+
 class RuleSetCascadeLayerTest : public SimTest {
  public:
   using LayerName = StyleRuleBase::LayerName;
@@ -684,7 +762,7 @@ class RuleSetCascadeLayerTest : public SimTest {
   }
 
   const CascadeLayer* ImplicitOuterLayer() {
-    return GetRuleSet().implicit_outer_layer_;
+    return GetRuleSet().implicit_outer_layer_.Get();
   }
 
   const RuleData& GetIdRule(const char* key) {

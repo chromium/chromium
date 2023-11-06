@@ -164,9 +164,12 @@ void CauseSignal(int sig, int code) {
  * Arm architecture.
  */
 #if defined(ARCH_CPU_X86_FAMILY)
-      [[maybe_unused]] volatile int a = 42;
-      volatile int b = 0;
-      a = a / b;
+      // Dividing by zero is undefined in C, so the compiler is permitted to
+      // optimize out the division. Instead, divide using inline assembly. As
+      // this instruction will trap anyway, we skip declaring any clobbers or
+      // output registers.
+      int a = 42, b = 0;
+      asm volatile("idivl %2" : : "a"(0), "d"(a), "r"(b));
 #endif
       break;
     }

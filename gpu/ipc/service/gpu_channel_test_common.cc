@@ -56,8 +56,7 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
   void DidDestroyChannel(int client_id) override {}
   void DidDestroyAllChannels() override {}
   void DidDestroyOffscreenContext(const GURL& active_url) override {}
-  void DidLoseContext(bool offscreen,
-                      error::ContextLostReason reason,
+  void DidLoseContext(error::ContextLostReason reason,
                       const GURL& active_url) override {}
   void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
                        const std::string& key,

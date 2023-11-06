@@ -138,13 +138,6 @@ target(_libcxx_target_type, "libc++") {
     ]
   }
 
-  if (enable_iterator_debugging) {
-    sources += [
-      "//third_party/libc++/src/src/debug.cpp",
-      "//third_party/libc++/src/src/legacy_debug_handler.cpp",
-    ]
-  }
-
   include_dirs = [ "//third_party/libc++/src/src" ]
   if (is_win) {
     sources += [

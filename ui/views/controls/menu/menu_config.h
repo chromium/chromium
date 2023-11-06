@@ -19,7 +19,6 @@ class MenuController;
 class MenuItemView;
 
 constexpr int kMenuCheckSize = 16;
-constexpr int kSubmenuArrowSize = 8;
 
 // Layout type information for menu items. Use the instance() method to obtain
 // the MenuConfig for the current platform.
@@ -89,6 +88,9 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Horizontal border padding in a menu item for ash system ui layout.
   int ash_item_horizontal_border_padding = 0;
+
+  // Size (width and height) of arrow bounding box.
+  int arrow_size = 8;
 
   // Padding between the arrow and the edge.
   int arrow_to_edge_padding = 8;

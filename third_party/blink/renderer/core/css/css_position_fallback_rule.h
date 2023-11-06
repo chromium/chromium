@@ -26,7 +26,7 @@ class StyleRulePositionFallback final : public StyleRuleGroup {
   }
 
   void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
-  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
 
   void TraceAfterDispatch(Visitor*) const;
 

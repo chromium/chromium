@@ -342,7 +342,7 @@ AnimatorDefinition* AnimationWorkletGlobalScope::FindDefinitionForTest(
     const String& name) {
   auto it = animator_definitions_.find(name);
   if (it != animator_definitions_.end())
-    return it->value;
+    return it->value.Get();
   return nullptr;
 }
 

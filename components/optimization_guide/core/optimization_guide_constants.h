@@ -21,6 +21,9 @@ extern const char kOptimizationGuideServiceGetHintsDefaultURL[];
 // hosts features from.
 extern const char kOptimizationGuideServiceGetModelsDefaultURL[];
 
+// The remote Optimization Guide Service production server to execute models.
+extern const char kOptimizationGuideServiceModelExecutionDefaultURL[];
+
 // The local histogram used to record that the component hints are stored in
 // the cache and are ready for use.
 extern const char kLoadedHintLocalHistogramString[];

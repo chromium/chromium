@@ -27,7 +27,6 @@ using testing::SaveArg;
 namespace segmentation_platform {
 using SignalType = proto::SignalType;
 using SignalIdentifier = std::pair<uint64_t, SignalType>;
-using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
 
 namespace {
 constexpr auto kTestSegmentId =

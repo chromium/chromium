@@ -47,14 +47,14 @@ void CreateAndPostKeyEvent(int keycode,
   base::apple::ScopedCFTypeRef<CGEventRef> eventRef(
       CGEventCreateKeyboardEvent(nullptr, keycode, pressed));
   if (eventRef) {
-    CGEventSetFlags(eventRef, static_cast<CGEventFlags>(flags));
+    CGEventSetFlags(eventRef.get(), static_cast<CGEventFlags>(flags));
     if (!unicode.empty()) {
       CGEventKeyboardSetUnicodeString(
-          eventRef, unicode.size(),
+          eventRef.get(), unicode.size(),
           reinterpret_cast<const UniChar*>(unicode.data()));
     }
     VLOG(3) << "Injecting key " << (pressed ? "down" : "up") << " event.";
-    CGEventPost(kCGSessionEventTap, eventRef);
+    CGEventPost(kCGSessionEventTap, eventRef.get());
   }
 }
 
@@ -90,7 +90,7 @@ void CreateAndPostScrollWheelEvent(int32_t delta_x, int32_t delta_y) {
       CGEventCreateScrollWheelEvent(nullptr, kCGScrollEventUnitPixel, 2,
                                     delta_y, delta_x));
   if (eventRef) {
-    CGEventPost(kCGSessionEventTap, eventRef);
+    CGEventPost(kCGSessionEventTap, eventRef.get());
   }
 }
 

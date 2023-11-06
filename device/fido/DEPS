@@ -20,4 +20,9 @@ include_rules = [
   "+third_party/cros_system_api",
   "+third_party/microsoft_webauthn",
   "+ui/base/l10n",
+
+  # TODO(https://crbug.com/1459620): Remove these when the enclave client
+  # utility is deleted.
+  "+mojo/core/embedder",
+  "+services/cert_verifier",
 ]

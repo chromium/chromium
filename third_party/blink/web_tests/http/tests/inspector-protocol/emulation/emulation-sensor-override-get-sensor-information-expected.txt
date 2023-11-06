@@ -1,0 +1,49 @@
+Tests getOverriddenSensorInformation delivers correct information
+Calling getOverriddenSensorInformation() with a sensor type that is not overridden
+{
+    error : {
+        code : -32602
+        message : This sensor type is not being overridden with a virtual sensor
+    }
+    id : <number>
+    sessionId : <string>
+}
+
+Overriding sensor type with sane frequencies
+
+Calling getOverriddenSensorInformation() on a stopped sensor
+{
+    id : <number>
+    result : {
+        requestedSamplingFrequency : 0
+    }
+    sessionId : <string>
+}
+
+Starting sensor with a frequency that is too high
+{
+    id : <number>
+    result : {
+        requestedSamplingFrequency : 4
+    }
+    sessionId : <string>
+}
+
+Starting sensor with a frequency that is too low
+{
+    id : <number>
+    result : {
+        requestedSamplingFrequency : 0.5
+    }
+    sessionId : <string>
+}
+
+Stopping sensor and retrieving information
+{
+    id : <number>
+    result : {
+        requestedSamplingFrequency : 0
+    }
+    sessionId : <string>
+}
+

@@ -438,8 +438,14 @@ void AutocompleteResult::SortAndCull(
         }
       } else {
         if (omnibox::IsNTPPage(page_classification)) {
-          sections.push_back(
-              std::make_unique<IOSNTPZpsSection>(suggestion_groups_map_));
+          size_t num_trending_queries =
+              OmniboxFieldTrial::kInspireMeAdditionalTrendingQueries.Get();
+          size_t num_psuggest_queries =
+              OmniboxFieldTrial::kInspireMePsuggestQueries.Get();
+
+          sections.push_back(std::make_unique<IOSNTPZpsSection>(
+              num_trending_queries, num_psuggest_queries,
+              suggestion_groups_map_));
         } else if (omnibox::IsSearchResultsPage(page_classification)) {
           sections.push_back(
               std::make_unique<IOSSRPZpsSection>(suggestion_groups_map_));

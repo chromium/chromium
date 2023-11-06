@@ -121,7 +121,8 @@ std::string CompanionUrlBuilder::BuildCompanionUrlParamProto(
         url_params.mutable_query_start_time();
     int64_t nanoseconds_in_milliseconds = 1e6;
     int64_t time_nanoseconds =
-        text_query_start_time->ToJavaTime() * nanoseconds_in_milliseconds;
+        text_query_start_time->InMillisecondsSinceUnixEpoch() *
+        nanoseconds_in_milliseconds;
     query_start_time->set_seconds(time_nanoseconds /
                                   base::Time::kNanosecondsPerSecond);
     query_start_time->set_nanos(time_nanoseconds %

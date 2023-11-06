@@ -10,11 +10,11 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_data.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
+#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -31,11 +31,11 @@
 
 namespace blink {
 
+class ExclusionSpace;
+class LineBoxFragmentBuilder;
 class NGBoxFragmentBuilder;
 class NGColumnSpannerPath;
-class NGExclusionSpace;
 class NGFragmentBuilder;
-class NGLineBoxFragmentBuilder;
 
 // The NGLayoutResult stores the resulting data from layout. This includes
 // geometry information in form of a NGPhysicalFragment, which is kept around
@@ -200,7 +200,7 @@ class CORE_EXPORT NGLayoutResult final
   const NGColumnSpannerPath* ColumnSpannerPath() const {
     if (rare_data_) {
       if (const RareData::BlockData* data = rare_data_->GetBlockData())
-        return data->column_spanner_path;
+        return data->column_spanner_path.Get();
     }
     return nullptr;
   }
@@ -221,16 +221,16 @@ class CORE_EXPORT NGLayoutResult final
     if (!rare_data_) {
       return nullptr;
     }
-    return rare_data_->early_break;
+    return rare_data_->early_break.Get();
   }
 
-  const NGExclusionSpace& ExclusionSpace() const {
+  const ExclusionSpace& GetExclusionSpace() const {
     if (bitfields_.has_rare_data_exclusion_space) {
       DCHECK(rare_data_);
       return rare_data_->exclusion_space;
     }
 
-    return space_.ExclusionSpace();
+    return space_.GetExclusionSpace();
   }
 
   EStatus Status() const { return static_cast<EStatus>(bitfields_.status); }
@@ -391,7 +391,7 @@ class CORE_EXPORT NGLayoutResult final
     return data ? data->table_column_count : 0;
   }
 
-  const NGGridLayoutData* GridLayoutData() const {
+  const GridLayoutData* GetGridLayoutData() const {
     if (!rare_data_) {
       return nullptr;
     }
@@ -593,21 +593,20 @@ class CORE_EXPORT NGLayoutResult final
                  const NGPhysicalFragment* physical_fragment,
                  NGBoxFragmentBuilder*);
 
-  using NGLineBoxFragmentBuilderPassKey =
-      base::PassKey<NGLineBoxFragmentBuilder>;
+  using LineBoxFragmentBuilderPassKey = base::PassKey<LineBoxFragmentBuilder>;
   // This constructor requires a non-null fragment and sets a success status.
-  NGLayoutResult(NGLineBoxFragmentBuilderPassKey,
+  NGLayoutResult(LineBoxFragmentBuilderPassKey,
                  const NGPhysicalFragment* physical_fragment,
-                 NGLineBoxFragmentBuilder*);
+                 LineBoxFragmentBuilder*);
 
   void Trace(Visitor*) const;
 
  private:
   friend class MutableForOutOfFlow;
 
-  static NGExclusionSpace MergeExclusionSpaces(
+  static ExclusionSpace MergeExclusionSpaces(
       const NGLayoutResult& other,
-      const NGExclusionSpace& new_input_exclusion_space,
+      const ExclusionSpace& new_input_exclusion_space,
       LayoutUnit bfc_line_offset,
       LayoutUnit block_offset_delta);
 
@@ -660,10 +659,10 @@ class CORE_EXPORT NGLayoutResult final
       GridData() = default;
       GridData(const GridData& other) {
         grid_layout_data =
-            std::make_unique<NGGridLayoutData>(*other.grid_layout_data);
+            std::make_unique<GridLayoutData>(*other.grid_layout_data);
       }
 
-      std::unique_ptr<const NGGridLayoutData> grid_layout_data;
+      std::unique_ptr<const GridLayoutData> grid_layout_data;
     };
 
     struct LineData {
@@ -910,7 +909,7 @@ class CORE_EXPORT NGLayoutResult final
       LayoutUnit minimal_space_shortage = kIndefiniteSize;
     };
     LayoutUnit block_size_for_fragmentation = kIndefiniteSize;
-    NGExclusionSpace exclusion_space;
+    ExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;
 
     LayoutUnit annotation_overflow;

@@ -89,23 +89,18 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Instrumentation tests for the context menu.
- */
+/** Instrumentation tests for the context menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.GOOGLE_BASE_URL + "=http://example.com/"
+})
 public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart {
 
-    @Mock
-    private ContextMenuItemDelegate mItemDelegate;
-    @Mock
-    private ShareDelegate mShareDelegate;
+    @Mock private ContextMenuItemDelegate mItemDelegate;
+    @Mock private ShareDelegate mShareDelegate;
 
-    // clang-format on
-    @Rule
-    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
     private static final String TEST_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
@@ -120,27 +115,29 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
 
     // Test chip delegate that always returns valid chip render params.
-    private static final ChipDelegate FAKE_CHIP_DELEGATE = new ChipDelegate() {
-        @Override
-        public boolean isChipSupported() {
-            return true;
-        }
+    private static final ChipDelegate FAKE_CHIP_DELEGATE =
+            new ChipDelegate() {
+                @Override
+                public boolean isChipSupported() {
+                    return true;
+                }
 
-        @Override
-        public void getChipRenderParams(Callback<ChipRenderParams> callback) {
-            // Do nothing.
-        }
+                @Override
+                public void getChipRenderParams(Callback<ChipRenderParams> callback) {
+                    // Do nothing.
+                }
 
-        @Override
-        public void onMenuClosed() {
-            // Do nothing.
-        }
+                @Override
+                public void onMenuClosed() {
+                    // Do nothing.
+                }
 
-        @Override
-        public boolean isValidChipRenderParams(ChipRenderParams chipRenderParams) {
-            return true;
-        }
-    };
+                @Override
+                public boolean isValidChipRenderParams(ChipRenderParams chipRenderParams) {
+                    return true;
+                }
+            };
+
     // Test Lens chip delegate that always returns valid chip render params.
     private void setupLensChipDelegate() {
         LensChipDelegate.setShouldSkipIsEnabledCheckForTesting(true);
@@ -158,8 +155,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     @Override
     public void customMainActivityStart() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mTestUrl = mTestServer.getURL(TEST_PATH);
         deleteTestFiles();
         mDownloadTestRule.startMainActivityWithURL(mTestUrl);
@@ -179,8 +177,11 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // Allow DiskWrites temporarily in main thread to avoid
         // violation during copying under emulator environment.
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "testLink",
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "testLink",
                     R.id.contextmenu_copy_link_address);
         }
 
@@ -195,8 +196,11 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // Allow DiskWrites temporarily in main thread to avoid
         // violation during copying under emulator environment.
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "testImageLink",
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "testImageLink",
                     R.id.contextmenu_copy_link_address);
         }
 
@@ -224,27 +228,37 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         final CallbackHelper newTabCallback = new CallbackHelper();
         final AtomicReference<Tab> newTab = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDownloadTestRule.getActivity().getTabModelSelector().addObserver(
-                    new TabModelSelectorObserver() {
-                        @Override
-                        public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                            if (tab.getParentId() != activityTab.getId()) {
-                                return;
-                            }
-                            newTab.set(tab);
-                            newTabCallback.notifyCalled();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDownloadTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .addObserver(
+                                    new TabModelSelectorObserver() {
+                                        @Override
+                                        public void onNewTabCreated(
+                                                Tab tab, @TabCreationState int creationState) {
+                                            if (tab.getParentId() != activityTab.getId()) {
+                                                return;
+                                            }
+                                            newTab.set(tab);
+                                            newTabCallback.notifyCalled();
 
-                            mDownloadTestRule.getActivity().getTabModelSelector().removeObserver(
-                                    this);
-                        }
-                    });
-        });
+                                            mDownloadTestRule
+                                                    .getActivity()
+                                                    .getTabModelSelector()
+                                                    .removeObserver(this);
+                                        }
+                                    });
+                });
 
         int callbackCount = newTabCallback.getCallCount();
 
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), activityTab, domId,
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                activityTab,
+                domId,
                 R.id.contextmenu_open_image_in_new_tab);
 
         try {
@@ -256,8 +270,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // Only check for the URL matching as the tab will not be fully created in svelte mode.
         final String expectedUrl = mTestServer.getURL(expectedPath);
         CriteriaHelper.pollUiThread(
-                ()
-                        -> Criteria.checkThat(ChromeTabUtils.getUrlStringOnUiThread(newTab.get()),
+                () ->
+                        Criteria.checkThat(
+                                ChromeTabUtils.getUrlStringOnUiThread(newTab.get()),
                                 Matchers.is(expectedUrl)));
     }
 
@@ -267,14 +282,18 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
-        CriteriaHelper.pollUiThread(() -> {
-            return !mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Context menu did not have window focus");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Context menu did not have window focus");
 
         InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-        CriteriaHelper.pollUiThread(() -> {
-            return mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Activity did not regain focus.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Activity did not regain focus.");
     }
 
     @Test
@@ -291,10 +310,12 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Chip popoup was initialized.",
-                    menuCoordinator.getCurrentPopupWindowForTesting());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNull(
+                            "Chip popoup was initialized.",
+                            menuCoordinator.getCurrentPopupWindowForTesting());
+                });
     }
 
     @Test
@@ -310,14 +331,17 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            menuCoordinator.simulateTranslateImageClassificationForTesting();
-            Assert.assertTrue("Chip popoup not showing.",
-                    menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-            menuCoordinator.clickChipForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    menuCoordinator.simulateTranslateImageClassificationForTesting();
+                    Assert.assertTrue(
+                            "Chip popoup not showing.",
+                            menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+                    menuCoordinator.clickChipForTesting();
+                });
 
-        Assert.assertFalse("Chip popoup still showing.",
+        Assert.assertFalse(
+                "Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
     }
 
@@ -335,18 +359,24 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Dismiss context menu.
-        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
-                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+        TestTouchUtils.singleClickView(
+                InstrumentationRegistry.getInstrumentation(),
+                tab.getView(),
+                tab.getView().getWidth() - 5,
+                tab.getView().getHeight() - 5);
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChipRenderParams chipRenderParams =
-                    menuCoordinator.simulateImageClassificationForTesting();
-            menuCoordinator.getChipRenderParamsCallbackForTesting(FAKE_CHIP_DELEGATE)
-                    .bind(chipRenderParams)
-                    .run();
-            Assert.assertNull("Chip popoup was initialized.",
-                    menuCoordinator.getCurrentPopupWindowForTesting());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChipRenderParams chipRenderParams =
+                            menuCoordinator.simulateImageClassificationForTesting();
+                    menuCoordinator
+                            .getChipRenderParamsCallbackForTesting(FAKE_CHIP_DELEGATE)
+                            .bind(chipRenderParams)
+                            .run();
+                    Assert.assertNull(
+                            "Chip popoup was initialized.",
+                            menuCoordinator.getCurrentPopupWindowForTesting());
+                });
     }
 
     // Assert that focus is unchanged and that the chip popup does not block the dismissal of the
@@ -365,16 +395,23 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> menuCoordinator.simulateTranslateImageClassificationForTesting());
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
-        CriteriaHelper.pollUiThread(() -> {
-            return !mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Context menu did not have window focus");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Context menu did not have window focus");
 
-        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
-                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+        TestTouchUtils.singleClickView(
+                InstrumentationRegistry.getInstrumentation(),
+                tab.getView(),
+                tab.getView().getWidth() - 5,
+                tab.getView().getHeight() - 5);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Activity did not regain focus.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Activity did not regain focus.");
     }
 
     @Test
@@ -391,10 +428,12 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertNull("Chip popoup was initialized.",
-                    menuCoordinator.getCurrentPopupWindowForTesting());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNull(
+                            "Chip popoup was initialized.",
+                            menuCoordinator.getCurrentPopupWindowForTesting());
+                });
     }
 
     @Test
@@ -410,14 +449,17 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         // Needs to run on UI thread so creation happens on same thread as dismissal.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            menuCoordinator.simulateShoppyImageClassificationForTesting();
-            Assert.assertTrue("Chip popoup not showing.",
-                    menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
-            menuCoordinator.clickChipForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    menuCoordinator.simulateShoppyImageClassificationForTesting();
+                    Assert.assertTrue(
+                            "Chip popoup not showing.",
+                            menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
+                    menuCoordinator.clickChipForTesting();
+                });
 
-        Assert.assertFalse("Chip popoup still showing.",
+        Assert.assertFalse(
+                "Chip popoup still showing.",
                 menuCoordinator.getCurrentPopupWindowForTesting().isShowing());
     }
 
@@ -436,16 +478,23 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> menuCoordinator.simulateShoppyImageClassificationForTesting());
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
-        CriteriaHelper.pollUiThread(() -> {
-            return !mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Context menu did not have window focus");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Context menu did not have window focus");
 
-        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
-                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+        TestTouchUtils.singleClickView(
+                InstrumentationRegistry.getInstrumentation(),
+                tab.getView(),
+                tab.getView().getWidth() - 5,
+                tab.getView().getHeight() - 5);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Activity did not regain focus.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Activity did not regain focus.");
     }
 
     @Test
@@ -454,16 +503,23 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menuCoordinator = ContextMenuUtils.openContextMenu(tab, "testImage");
         Assert.assertNotNull("Context menu was not properly created", menuCoordinator);
-        CriteriaHelper.pollUiThread(() -> {
-            return !mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Context menu did not have window focus");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Context menu did not have window focus");
 
-        TestTouchUtils.singleClickView(InstrumentationRegistry.getInstrumentation(), tab.getView(),
-                tab.getView().getWidth() - 5, tab.getView().getHeight() - 5);
+        TestTouchUtils.singleClickView(
+                InstrumentationRegistry.getInstrumentation(),
+                tab.getView(),
+                tab.getView().getWidth() - 5,
+                tab.getView().getHeight() - 5);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return mDownloadTestRule.getActivity().hasWindowFocus();
-        }, "Activity did not regain focus.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mDownloadTestRule.getActivity().hasWindowFocus();
+                },
+                "Activity did not regain focus.");
     }
 
     @Test
@@ -474,13 +530,19 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // DiskWrite and UnBufferedIo violations during copying under
         // emulator environment.
         try (CloseableOnMainThread ignored =
-                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "testEmail", R.id.contextmenu_copy);
+                CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "testEmail",
+                    R.id.contextmenu_copy);
         }
 
-        Assert.assertEquals("Copied email address is not correct",
-                "someone1@example.com,someone2@example.com", getClipboardText());
+        Assert.assertEquals(
+                "Copied email address is not correct",
+                "someone1@example.com,someone2@example.com",
+                getClipboardText());
     }
 
     @Test
@@ -490,8 +552,12 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // Allow DiskWrites temporarily in main thread to avoid
         // violation during copying under emulator environment.
         try (CloseableOnMainThread ignored = CloseableOnMainThread.StrictMode.allowDiskWrites()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "testTel", R.id.contextmenu_copy);
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "testTel",
+                    R.id.contextmenu_copy);
         }
 
         Assert.assertEquals("Copied tel number is not correct", "10000000000", getClipboardText());
@@ -516,11 +582,11 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     }
 
     /**
-     * Opens a link and image in new tabs and verifies the order of the tabs. Also verifies that
-     * the parent page remains in front after opening links in new tabs.
+     * Opens a link and image in new tabs and verifies the order of the tabs. Also verifies that the
+     * parent page remains in front after opening links in new tabs.
      *
-     * This test only applies in tabbed mode. In document mode, Android handles the ordering of the
-     * tabs.
+     * <p>This test only applies in tabbed mode. In document mode, Android handles the ordering of
+     * the tabs.
      */
     @Test
     @LargeTest
@@ -528,49 +594,69 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         TabModel tabModel = mDownloadTestRule.getActivity().getCurrentTabModel();
         int numOpenedTabs = tabModel.getCount();
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, "testLink", R.id.contextmenu_open_in_new_tab);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                "testLink",
+                R.id.contextmenu_open_in_new_tab);
         int indexOfLinkPage = numOpenedTabs;
         final int expectedNumOpenedTabs = indexOfLinkPage + 1;
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Number of open tabs does not match", tabModel.getCount(),
-                    Matchers.is(expectedNumOpenedTabs));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Number of open tabs does not match",
+                            tabModel.getCount(),
+                            Matchers.is(expectedNumOpenedTabs));
+                });
         numOpenedTabs = expectedNumOpenedTabs;
 
         // Wait for any new tab animation to finish if we're being driven by the compositor.
-        final LayoutManagerImpl layoutDriver = mDownloadTestRule.getActivity()
-                                                       .getCompositorViewHolderForTesting()
-                                                       .getLayoutManager();
-        CriteriaHelper.pollUiThread(() -> {
-            return layoutDriver.getActiveLayout().shouldDisplayContentOverlay();
-        }, "Background tab animation not finished.");
+        final LayoutManagerImpl layoutDriver =
+                mDownloadTestRule
+                        .getActivity()
+                        .getCompositorViewHolderForTesting()
+                        .getLayoutManager();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return layoutDriver.getActiveLayout().shouldDisplayContentOverlay();
+                },
+                "Background tab animation not finished.");
 
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, "testLink2",
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                "testLink2",
                 R.id.contextmenu_open_in_new_tab);
         int indexOfLinkPage2 = numOpenedTabs;
         final int expectedNumOpenedTabs2 = indexOfLinkPage2 + 1;
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Number of open tabs does not match", tabModel.getCount(),
-                    Matchers.is(expectedNumOpenedTabs2));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Number of open tabs does not match",
+                            tabModel.getCount(),
+                            Matchers.is(expectedNumOpenedTabs2));
+                });
         numOpenedTabs = expectedNumOpenedTabs2;
 
         // Verify the Url is still the same of Parent page.
-        Assert.assertEquals(mTestUrl,
+        Assert.assertEquals(
+                mTestUrl,
                 ChromeTabUtils.getUrlStringOnUiThread(
                         mDownloadTestRule.getActivity().getActivityTab()));
 
         // Verify that the background tabs were opened in the expected order.
         String newTabUrl =
                 mTestServer.getURL("/chrome/test/data/android/contextmenu/test_link.html");
-        Assert.assertEquals(newTabUrl,
+        Assert.assertEquals(
+                newTabUrl,
                 ChromeTabUtils.getUrlStringOnUiThread(tabModel.getTabAt(indexOfLinkPage)));
 
         String imageUrl =
                 mTestServer.getURL("/chrome/test/data/android/contextmenu/test_link2.html");
-        Assert.assertEquals(imageUrl,
+        Assert.assertEquals(
+                imageUrl,
                 ChromeTabUtils.getUrlStringOnUiThread(tabModel.getTabAt(indexOfLinkPage2)));
     }
 
@@ -581,13 +667,21 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testLink");
 
-        Integer[] expectedItems = {R.id.contextmenu_open_in_new_tab_in_group,
-                R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_save_link_as, R.id.contextmenu_copy_link_text,
-                R.id.contextmenu_copy_link_address, R.id.contextmenu_share_link,
-                R.id.contextmenu_read_later};
-        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
-                new Integer[] {R.id.contextmenu_open_in_ephemeral_tab});
+        Integer[] expectedItems = {
+            R.id.contextmenu_open_in_new_tab_in_group,
+            R.id.contextmenu_open_in_new_tab,
+            R.id.contextmenu_open_in_incognito_tab,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_copy_link_text,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_share_link,
+            R.id.contextmenu_read_later
+        };
+        expectedItems =
+                addItemsIf(
+                        EphemeralTabCoordinator.isSupported(),
+                        expectedItems,
+                        new Integer[] {R.id.contextmenu_open_in_ephemeral_tab});
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -599,9 +693,13 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
 
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_search_by_image,
-                R.id.contextmenu_share_image, R.id.contextmenu_copy_image};
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_search_by_image,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image
+        };
         Integer[] featureItems = {R.id.contextmenu_open_image_in_ephemeral_tab};
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
@@ -618,9 +716,13 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
 
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_search_by_image,
-                R.id.contextmenu_share_image, R.id.contextmenu_copy_image};
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_search_by_image,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image
+        };
         Integer[] featureItems = {R.id.contextmenu_open_image_in_ephemeral_tab};
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
@@ -637,9 +739,13 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
 
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_search_with_google_lens,
-                R.id.contextmenu_share_image, R.id.contextmenu_copy_image};
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_search_with_google_lens,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image
+        };
         Integer[] featureItems = {R.id.contextmenu_open_image_in_ephemeral_tab};
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
@@ -649,15 +755,18 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
+    @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
     public void testContextMenuRetrievesImageOptions_NoDefaultSearchEngine()
             throws TimeoutException {
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
 
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image};
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image
+        };
         Integer[] featureItems = {R.id.contextmenu_open_image_in_ephemeral_tab};
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
@@ -667,7 +776,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @Policies.Add({ @Policies.Item(key = "DefaultSearchProviderEnabled", string = "false") })
+    @Policies.Add({@Policies.Item(key = "DefaultSearchProviderEnabled", string = "false")})
     public void testContextMenuRetrievesImageOptions_NoDefaultSearchEngineLensEnabled()
             throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
@@ -676,9 +785,12 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
 
         // Search with Google Lens is only supported when Google is the default search provider.
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image};
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image
+        };
         Integer[] featureItems = {R.id.contextmenu_open_image_in_ephemeral_tab};
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
@@ -693,14 +805,22 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImageLink");
 
-        Integer[] expectedItems = {R.id.contextmenu_open_in_new_tab_in_group,
-                R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
-                R.id.contextmenu_save_image, R.id.contextmenu_open_image_in_new_tab,
-                R.id.contextmenu_search_by_image, R.id.contextmenu_share_image,
-                R.id.contextmenu_share_link, R.id.contextmenu_copy_image};
-        Integer[] featureItems = {R.id.contextmenu_open_in_ephemeral_tab,
-                R.id.contextmenu_open_image_in_ephemeral_tab};
+        Integer[] expectedItems = {
+            R.id.contextmenu_open_in_new_tab_in_group,
+            R.id.contextmenu_open_in_new_tab,
+            R.id.contextmenu_open_in_incognito_tab,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_search_by_image,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_share_link,
+            R.id.contextmenu_copy_image
+        };
+        Integer[] featureItems = {
+            R.id.contextmenu_open_in_ephemeral_tab, R.id.contextmenu_open_image_in_ephemeral_tab
+        };
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -717,14 +837,22 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImageLink");
 
-        Integer[] expectedItems = {R.id.contextmenu_open_in_new_tab_in_group,
-                R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
-                R.id.contextmenu_save_image, R.id.contextmenu_open_image_in_new_tab,
-                R.id.contextmenu_search_with_google_lens, R.id.contextmenu_share_image,
-                R.id.contextmenu_share_link, R.id.contextmenu_copy_image};
-        Integer[] featureItems = {R.id.contextmenu_open_in_ephemeral_tab,
-                R.id.contextmenu_open_image_in_ephemeral_tab};
+        Integer[] expectedItems = {
+            R.id.contextmenu_open_in_new_tab_in_group,
+            R.id.contextmenu_open_in_new_tab,
+            R.id.contextmenu_open_in_incognito_tab,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_search_with_google_lens,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_share_link,
+            R.id.contextmenu_copy_image
+        };
+        Integer[] featureItems = {
+            R.id.contextmenu_open_in_ephemeral_tab, R.id.contextmenu_open_image_in_ephemeral_tab
+        };
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -733,26 +861,34 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     @Test
     @SmallTest
     @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:orderShareImageBeforeLens/true"})
+    @CommandLineFlags.Add({
+        "enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_CHIP + "<FakeStudyName",
+        "force-fieldtrials=FakeStudyName/Enabled",
+        "force-fieldtrial-params=FakeStudyName.Enabled:orderShareImageBeforeLens/true"
+    })
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testContextMenuShareImageStillAddedWhenReordered() throws TimeoutException {
+    public void testContextMenuShareImageStillAddedWhenReordered() throws TimeoutException {
         LensUtils.setFakePassableLensEnvironmentForTesting(true);
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImageLink");
 
-        Integer[] expectedItems = {R.id.contextmenu_open_in_new_tab_in_group,
-                R.id.contextmenu_open_in_new_tab, R.id.contextmenu_open_in_incognito_tab,
-                R.id.contextmenu_copy_link_address, R.id.contextmenu_save_link_as,
-                R.id.contextmenu_save_image, R.id.contextmenu_open_image_in_new_tab,
-                R.id.contextmenu_share_image, R.id.contextmenu_search_with_google_lens,
-                R.id.contextmenu_share_link, R.id.contextmenu_copy_image};
-        Integer[] featureItems = {R.id.contextmenu_open_in_ephemeral_tab,
-                R.id.contextmenu_open_image_in_ephemeral_tab};
+        Integer[] expectedItems = {
+            R.id.contextmenu_open_in_new_tab_in_group,
+            R.id.contextmenu_open_in_new_tab,
+            R.id.contextmenu_open_in_incognito_tab,
+            R.id.contextmenu_copy_link_address,
+            R.id.contextmenu_save_link_as,
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_search_with_google_lens,
+            R.id.contextmenu_share_link,
+            R.id.contextmenu_copy_image
+        };
+        Integer[] featureItems = {
+            R.id.contextmenu_open_in_ephemeral_tab, R.id.contextmenu_open_image_in_ephemeral_tab
+        };
         expectedItems =
                 addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems, featureItems);
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -783,70 +919,22 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
 
         ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
-        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
-                new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
+        Integer[] expectedItems = {
+            R.id.contextmenu_save_image,
+            R.id.contextmenu_open_image_in_new_tab,
+            R.id.contextmenu_share_image,
+            R.id.contextmenu_copy_image,
+            R.id.contextmenu_search_with_google_lens
+        };
+        expectedItems =
+                addItemsIf(
+                        EphemeralTabCoordinator.isSupported(),
+                        expectedItems,
+                        new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
         String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
-        Assert.assertTrue("Context menu item name should be \'Search image with Google\'.",
-                title.startsWith("Search image with Google"));
-        assertMenuItemsAreEqual(menu, expectedItems);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:useLensContextMenuAlternateText1/true"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testSearchImageWithGoogleLensAltText1MenuItemName() throws Throwable {
-        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-
-        LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
-        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
-                new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
-        String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
-        Assert.assertTrue("Context menu item name should be \'Search image with Google\'.",
-                title.startsWith("Search image with Google"));
-        assertMenuItemsAreEqual(menu, expectedItems);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "ContextMenu"})
-    @CommandLineFlags.
-    Add({"enable-features=" + ChromeFeatureList.CONTEXT_MENU_GOOGLE_LENS_SEARCH_OPTIMIZATIONS
-                    + "<FakeStudyName",
-            "force-fieldtrials=FakeStudyName/Enabled",
-            "force-fieldtrial-params=FakeStudyName.Enabled:useLensContextMenuAlternateText2/true"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void
-    testSearchImageWithGoogleLensAltText2MenuItemName() throws Throwable {
-        Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-
-        LensUtils.setFakePassableLensEnvironmentForTesting(true);
-        hardcodeTestImageForSharing(TEST_JPG_IMAGE_FILE_EXTENSION);
-
-        ContextMenuCoordinator menu = ContextMenuUtils.openContextMenu(tab, "testImage");
-        Integer[] expectedItems = {R.id.contextmenu_save_image,
-                R.id.contextmenu_open_image_in_new_tab, R.id.contextmenu_share_image,
-                R.id.contextmenu_copy_image, R.id.contextmenu_search_with_google_lens};
-        expectedItems = addItemsIf(EphemeralTabCoordinator.isSupported(), expectedItems,
-                new Integer[] {R.id.contextmenu_open_image_in_ephemeral_tab});
-        String title = getMenuTitleFromItem(menu, R.id.contextmenu_search_with_google_lens);
-        Assert.assertTrue("Context menu item name should be \'Search inside image with Google\'.",
-                title.startsWith("Search inside image with Google"));
+        Assert.assertTrue(
+                "Context menu item name should be \'Search image with Google Lens\'.",
+                title.startsWith("Search image with Google Lens"));
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -863,22 +951,29 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         // DiskWrite and UnBufferedIo violations during copying under
         // emulator environment.
         try (CloseableOnMainThread ignored =
-                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "dataUrlIcon",
+                CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "dataUrlIcon",
                     R.id.contextmenu_copy_image);
         }
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            Clipboard.getInstance().getImageUri(), Matchers.notNullValue());
+                });
 
         String imageUriString = Clipboard.getInstance().getImageUri().toString();
 
-        Assert.assertTrue("Image content prefix is not correct",
+        Assert.assertTrue(
+                "Image content prefix is not correct",
                 imageUriString.startsWith(
                         "content://org.chromium.chrome.tests.FileProvider/images/screenshot/"));
-        Assert.assertTrue("Image extension is not correct",
+        Assert.assertTrue(
+                "Image extension is not correct",
                 imageUriString.endsWith(TEST_GIF_IMAGE_FILE_EXTENSION));
 
         // Clean up the clipboard.
@@ -895,29 +990,51 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         ContextMenuHelper contextMenuHelper =
                 ContextMenuHelper.createForTesting(0, tab.getWebContents());
-        ContextMenuParams params = new ContextMenuParams(0, 0, new GURL("http://example.com/"),
-                GURL.emptyGURL(), "", GURL.emptyGURL(), GURL.emptyGURL(), "", null, false, 0, 0,
-                MenuSourceType.MENU_SOURCE_TOUCH, /*getOpenedFromHighlight=*/true,
-                /*additionalNavigationParams=*/null);
-        ContextMenuPopulatorFactory populatorFactory = new ChromeContextMenuPopulatorFactory(
-                mItemDelegate,
-                ()
-                        -> mShareDelegate,
-                ChromeContextMenuPopulator.ContextMenuMode.NORMAL, ExternalAuthUtils.getInstance());
-        Integer[] expectedItems = {R.id.contextmenu_share_highlight,
-                R.id.contextmenu_remove_highlight, R.id.contextmenu_learn_more};
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ContextMenuHelper.setMenuShownCallbackForTests((coordinator) -> {
-                assertMenuItemsAreEqual(coordinator, expectedItems);
-                Assert.assertEquals(
-                        1, RecordHistogram.getHistogramTotalCountForTesting("ContextMenu.Shown"));
-                Assert.assertEquals(1,
-                        RecordHistogram.getHistogramTotalCountForTesting(
-                                "ContextMenu.Shown.SharedHighlightingInteraction"));
-            });
-            contextMenuHelper.showContextMenuForTesting(
-                    populatorFactory, params, null, tab.getView(), 0);
-        });
+        ContextMenuParams params =
+                new ContextMenuParams(
+                        0,
+                        0,
+                        new GURL("http://example.com/"),
+                        GURL.emptyGURL(),
+                        "",
+                        GURL.emptyGURL(),
+                        GURL.emptyGURL(),
+                        "",
+                        null,
+                        false,
+                        0,
+                        0,
+                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        /* getOpenedFromHighlight= */ true,
+                        /* additionalNavigationParams= */ null);
+        ContextMenuPopulatorFactory populatorFactory =
+                new ChromeContextMenuPopulatorFactory(
+                        mItemDelegate,
+                        () -> mShareDelegate,
+                        ChromeContextMenuPopulator.ContextMenuMode.NORMAL,
+                        ExternalAuthUtils.getInstance());
+        Integer[] expectedItems = {
+            R.id.contextmenu_share_highlight,
+            R.id.contextmenu_remove_highlight,
+            R.id.contextmenu_learn_more
+        };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ContextMenuHelper.setMenuShownCallbackForTests(
+                            (coordinator) -> {
+                                assertMenuItemsAreEqual(coordinator, expectedItems);
+                                Assert.assertEquals(
+                                        1,
+                                        RecordHistogram.getHistogramTotalCountForTesting(
+                                                "ContextMenu.Shown"));
+                                Assert.assertEquals(
+                                        1,
+                                        RecordHistogram.getHistogramTotalCountForTesting(
+                                                "ContextMenu.Shown.SharedHighlightingInteraction"));
+                            });
+                    contextMenuHelper.showContextMenuForTesting(
+                            populatorFactory, params, null, tab.getView(), 0);
+                });
     }
 
     @Test
@@ -927,20 +1044,26 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            var supplier = (ShareDelegateSupplier) ShareDelegateSupplier.from(
-                    mDownloadTestRule.getActivity().getWindowAndroid());
-            Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
-            supplier.set(mShareDelegate);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var supplier =
+                            (ShareDelegateSupplier)
+                                    ShareDelegateSupplier.from(
+                                            mDownloadTestRule.getActivity().getWindowAndroid());
+                    Mockito.doReturn(true).when(mShareDelegate).isSharingHubEnabled();
+                    supplier.set(mShareDelegate);
+                });
 
         // Allow all thread policies temporarily in main thread to avoid
         // DiskWrite and UnBufferedIo violations during copying under
         // emulator environment.
         try (CloseableOnMainThread ignored =
-                        CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
-            ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                    mDownloadTestRule.getActivity(), tab, "testImage",
+                CloseableOnMainThread.StrictMode.allowAllThreadPolicies()) {
+            ContextMenuUtils.selectContextMenuItem(
+                    InstrumentationRegistry.getInstrumentation(),
+                    mDownloadTestRule.getActivity(),
+                    tab,
+                    "testImage",
                     R.id.contextmenu_share_image);
         }
 
@@ -948,12 +1071,16 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
                 ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
-                .share(shareParamsCaptor.capture(), chromeExtrasCaptor.capture(),
+                .share(
+                        shareParamsCaptor.capture(),
+                        chromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
-        Assert.assertTrue("Content being shared is expected to be image.",
+        Assert.assertTrue(
+                "Content being shared is expected to be image.",
                 shareParamsCaptor.getValue().getFileContentType().startsWith("image"));
-        Assert.assertTrue("Share with share sheet expect to record the last used.",
+        Assert.assertTrue(
+                "Share with share sheet expect to record the last used.",
                 chromeExtrasCaptor.getValue().saveLastUsed());
     }
 
@@ -963,13 +1090,20 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
 
         // Set share delegate before triggering context menu, so the mocked share delegate is used.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            var supplier = (ShareDelegateSupplier) ShareDelegateSupplier.from(
-                    mDownloadTestRule.getActivity().getWindowAndroid());
-            supplier.set(mShareDelegate);
-        });
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, "testImage", R.id.contextmenu_share_link);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    var supplier =
+                            (ShareDelegateSupplier)
+                                    ShareDelegateSupplier.from(
+                                            mDownloadTestRule.getActivity().getWindowAndroid());
+                    supplier.set(mShareDelegate);
+                });
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                "testImage",
+                R.id.contextmenu_share_link);
 
         verify(mShareDelegate).share(any(), any(), eq(ShareOrigin.CONTEXT_MENU));
 
@@ -977,12 +1111,16 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         ArgumentCaptor<ChromeShareExtras> chromeExtrasCaptor =
                 ArgumentCaptor.forClass(ChromeShareExtras.class);
         verify(mShareDelegate)
-                .share(shareParamsCaptor.capture(), chromeExtrasCaptor.capture(),
+                .share(
+                        shareParamsCaptor.capture(),
+                        chromeExtrasCaptor.capture(),
                         eq(ShareOrigin.CONTEXT_MENU));
 
-        Assert.assertFalse("Link being shared is empty.",
+        Assert.assertFalse(
+                "Link being shared is empty.",
                 TextUtils.isEmpty(shareParamsCaptor.getValue().getUrl()));
-        Assert.assertTrue("Share with share sheet expect to record the last used.",
+        Assert.assertTrue(
+                "Share with share sheet expect to record the last used.",
                 chromeExtrasCaptor.getValue().saveLastUsed());
     }
 
@@ -990,9 +1128,10 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     /**
      * Takes all the visible items on the menu and compares them to a the list of expected items.
+     *
      * @param menu A context menu that is displaying visible items.
      * @param expectedItems A list of items that is expected to appear within a context menu. The
-     *                      list does not need to be ordered.
+     *     list does not need to be ordered.
      */
     private void assertMenuItemsAreEqual(ContextMenuCoordinator menu, Integer... expectedItems) {
         List<Integer> actualItems = new ArrayList<>();
@@ -1002,7 +1141,9 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
             }
         }
 
-        assertThat("Populated menu items were:" + getMenuTitles(menu), actualItems,
+        assertThat(
+                "Populated menu items were:" + getMenuTitles(menu),
+                actualItems,
                 Matchers.containsInAnyOrder(expectedItems));
     }
 
@@ -1010,8 +1151,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         StringBuilder items = new StringBuilder();
         for (int i = 0; i < menu.getCount(); i++) {
             if (menu.getItem(i).type >= CONTEXT_MENU_ITEM) {
-                items.append("\n").append(
-                        menu.getItem(i).model.get(ContextMenuItemProperties.TEXT));
+                items.append("\n")
+                        .append(menu.getItem(i).model.get(ContextMenuItemProperties.TEXT));
             }
         }
         return items.toString();
@@ -1032,6 +1173,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     /**
      * Adds items to the baseItems if the given condition is true.
+     *
      * @param condition The condition to check for whether to add items or not.
      * @param baseItems The base list of items to add to.
      * @param additionalItems The additional items to add.
@@ -1047,13 +1189,18 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
         return variableItems.toArray(baseItems);
     }
 
-    private void saveMediaFromContextMenu(String mediaDOMElement, int saveMenuID,
-            String expectedFilename) throws TimeoutException, SecurityException, IOException {
+    private void saveMediaFromContextMenu(
+            String mediaDOMElement, int saveMenuID, String expectedFilename)
+            throws TimeoutException, SecurityException, IOException {
         // Select "save [image/video]" in that menu.
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
         int callCount = mDownloadTestRule.getChromeDownloadCallCount();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, mediaDOMElement, saveMenuID);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                mediaDOMElement,
+                saveMenuID);
 
         // Wait for the download to complete and see if we got the right file
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
@@ -1062,20 +1209,25 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
     private String getClipboardText() throws Throwable {
         final AtomicReference<String> clipboardTextRef = new AtomicReference<>();
-        mDownloadTestRule.runOnUiThread(() -> {
-            ClipboardManager clipMgr =
-                    (ClipboardManager) mDownloadTestRule.getActivity().getSystemService(
-                            Context.CLIPBOARD_SERVICE);
-            ClipData clipData = clipMgr.getPrimaryClip();
-            Assert.assertNotNull("Primary clip is null", clipData);
-            Assert.assertTrue("Primary clip contains no items.", clipData.getItemCount() > 0);
-            clipboardTextRef.set(clipData.getItemAt(0).getText().toString());
-        });
+        mDownloadTestRule.runOnUiThread(
+                () -> {
+                    ClipboardManager clipMgr =
+                            (ClipboardManager)
+                                    mDownloadTestRule
+                                            .getActivity()
+                                            .getSystemService(Context.CLIPBOARD_SERVICE);
+                    ClipData clipData = clipMgr.getPrimaryClip();
+                    Assert.assertNotNull("Primary clip is null", clipData);
+                    Assert.assertTrue(
+                            "Primary clip contains no items.", clipData.getItemCount() > 0);
+                    clipboardTextRef.set(clipData.getItemAt(0).getText().toString());
+                });
         return clipboardTextRef.get();
     }
 
     /**
      * Hardcode image bytes to non-null arbitrary data.
+     *
      * @param extension Image file extension.
      */
     private void hardcodeTestImageForSharing(String extension) {
@@ -1090,7 +1242,8 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
     }
 
     private void assertStringContains(String subString, String superString) {
-        Assert.assertTrue("String '" + superString + "' does not contain '" + subString + "'",
+        Assert.assertTrue(
+                "String '" + superString + "' does not contain '" + subString + "'",
                 superString.contains(subString));
     }
 

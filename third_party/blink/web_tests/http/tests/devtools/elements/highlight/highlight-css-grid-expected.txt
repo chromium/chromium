@@ -93,7 +93,7 @@ paddedGrid{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [
@@ -390,7 +390,7 @@ nestedGrid{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutNGGrid",
+    "layoutObjectName": "LayoutGrid",
     "showAccessibilityInfo": true
   },
   "gridInfo": [

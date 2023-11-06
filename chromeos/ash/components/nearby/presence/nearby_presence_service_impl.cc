@@ -42,6 +42,22 @@ namespace {
   }
 }
 
+::nearby::internal::Metadata ConvertMetadataFromMojom(
+    ash::nearby::presence::mojom::Metadata* metadata) {
+  ::nearby::internal::Metadata proto;
+
+  proto.set_device_type(ConvertMojomDeviceType(metadata->device_type));
+  proto.set_account_name(metadata->account_name);
+  proto.set_user_name(metadata->user_name);
+  proto.set_device_name(metadata->device_name);
+  proto.set_user_name(metadata->user_name);
+  proto.set_device_profile_url(metadata->device_profile_url);
+  proto.set_bluetooth_mac_address(
+      std::string(metadata->bluetooth_mac_address.begin(),
+                  metadata->bluetooth_mac_address.end()));
+  return proto;
+}
+
 ash::nearby::presence::NearbyPresenceService::Action ConvertActionToActionType(
     ash::nearby::presence::mojom::ActionType action_type) {
   switch (action_type) {
@@ -80,9 +96,8 @@ BuildPresenceDevice(ash::nearby::presence::mojom::PresenceDevicePtr device) {
 
   // TODO(b/276642472): Populate actions and rssi fields.
   return ash::nearby::presence::NearbyPresenceService::PresenceDevice(
-      ConvertMojomDeviceType(device->device_type), device->stable_device_id,
-      device->endpoint_id, device->device_name, actions,
-      /*rssi_=*/-65);
+      ConvertMetadataFromMojom(device->metadata.get()),
+      device->stable_device_id, device->endpoint_id, actions, /*rssi_=*/-65);
 }
 
 }  // namespace

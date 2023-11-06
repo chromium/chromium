@@ -194,6 +194,8 @@ extern NSString* const kShippingBoxFillSymbol;
 extern NSString* const kButtonProgrammableSymbol;
 extern NSString* const kCircleCircleFillSymbol;
 extern NSString* const kLockSymbol;
+extern NSString* const kRulerSymbol;
+extern NSString* const kLaptopAndIphoneSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

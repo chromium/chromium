@@ -234,7 +234,7 @@ TlsVectorState GetTlsVectorStateAndValue(PlatformThreadLocalStorage::TLSKey key,
   // typical Chromium builds where the code is in a dynamic library. For the
   // static executable case, this is likely equivalent.
   static_assert(
-      std::is_same<PlatformThreadLocalStorage::TLSKey, pthread_key_t>::value,
+      std::is_same_v<PlatformThreadLocalStorage::TLSKey, pthread_key_t>,
       "The special-case below assumes that the platform TLS implementation is "
       "pthread.");
 

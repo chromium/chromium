@@ -70,7 +70,7 @@ using testing::Return;
 // system update.
 int64_t GetSystemTimeInPastAsMsSinceUptime(base::TimeDelta delta) {
   const base::Time cur_time = base::Time::NowFromSystemTime();
-  return (cur_time - delta).ToJavaTime();
+  return (cur_time - delta).InMillisecondsSinceUnixEpoch();
 }
 
 class ScopedTestArcVmDelegate

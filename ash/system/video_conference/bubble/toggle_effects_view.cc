@@ -18,12 +18,12 @@
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_utils.h"
-#include "ash/utility/haptics_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -122,7 +122,8 @@ class ToggleEffectsButtonLabel : public views::Label {
         0)));
   }
 
-  gfx::Size CalculatePreferredSize() const override {
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds &available_size) const override {
     // TODO(crbug.com/1349528): The size constraint is not passed down from
     // the views tree in the first round of layout, so multiline label might
     // be broken here. We need to explicitly set the size to fix this.
@@ -161,8 +162,7 @@ END_METADATA
 
 ToggleEffectsButton::ToggleEffectsButton(
     views::Button::PressedCallback callback,
-    const gfx::VectorIcon* enabled_vector_icon,
-    const gfx::VectorIcon* disabled_vector_icon,
+    const gfx::VectorIcon* vector_icon,
     bool toggle_state,
     const std::u16string& label_text,
     const int accessible_name_id,
@@ -172,8 +172,7 @@ ToggleEffectsButton::ToggleEffectsButton(
     : callback_(callback),
       toggled_(toggle_state),
       effect_id_(effect_id),
-      enabled_vector_icon_(enabled_vector_icon),
-      disabled_vector_icon_(disabled_vector_icon),
+      vector_icon_(vector_icon),
       accessible_name_id_(accessible_name_id) {
   SetCallback(base::BindRepeating(&ToggleEffectsButton::OnButtonClicked,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -245,7 +244,7 @@ void ToggleEffectsButton::OnButtonClicked(const ui::Event& event) {
       video_conference_utils::GetEffectHistogramNameForClick(effect_id_),
       toggled_);
 
-  haptics_util::PlayHapticToggleEffect(
+  chromeos::haptics_util::PlayHapticToggleEffect(
       !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
 
   UpdateColorsAndBackground();
@@ -268,8 +267,7 @@ void ToggleEffectsButton::UpdateColorsAndBackground() {
       toggled_ ? cros_tokens::kCrosSysSystemOnPrimaryContainer
                : cros_tokens::kCrosSysOnSurface;
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      toggled_ ? *enabled_vector_icon_ : *disabled_vector_icon_,
-      foreground_color_id, kIconSize));
+      *vector_icon_, foreground_color_id, kIconSize));
   label_->SetEnabledColorId(foreground_color_id);
 }
 
@@ -319,11 +317,9 @@ ToggleEffectsView::ToggleEffectsView(
       // `current_state` can only be a `bool` for a toggle effect.
       bool toggle_state = current_state.value() != 0;
       const VcEffectState* state = tile->GetState(/*index=*/0);
-      CHECK(state->disabled_icon())
-          << "Toggle effects must define a disabled icon.";
       row_view->AddChildView(std::make_unique<ToggleEffectsButton>(
-          state->button_callback(), state->icon(), state->disabled_icon(),
-          toggle_state, state->label_text(), state->accessible_name_id(),
+          state->button_callback(), state->icon(), toggle_state,
+          state->label_text(), state->accessible_name_id(),
           tile->container_id(), tile->id(), /*num_button_per_row=*/row.size()));
     }
 

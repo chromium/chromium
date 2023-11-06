@@ -30,14 +30,14 @@
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
+  # b/308463545: Fails on chromeos-jacuzzi-chrome-skylab due to low disk space.
+  "crostini.ResizeInstallation.stable@jacuzzi",
+
   # https://crbug.com/1379756
   "inputs.VirtualKeyboardHandwriting.floating",
 
   # crbug.com/1263233
   "security.SharedFilesystemState",
-
-  # https://crbug.com/1269880: Flaky.
-  "ui.ChromeCrashReporterMetrics.success_crashpad",
 
   # https://crbug.com/1276549: Flaky.
   "ui.ChromeCrashReporterMetrics.success_breakpad",
@@ -50,12 +50,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/296821415
   "ui.ChromeCrashLoggedIn.browser_crashpad",
   "ui.ChromeCrashLoggedIn.browser_crashpad_mock_consent",
-
-  # https://crbug.com/1279285: Flaky.
-  "policy.AllowWakeLocks",
-
-  # https://crbug.com/1311242
-  "policy.ImagesForURLCheck.allowlist",
 
   # https://crbug.com/1282372
   "security.SELinuxFilesARC",
@@ -74,17 +68,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1307940
   "policy.URLCheck.blocklist",
-
-  # https://crbug.com/1309288
-  "policy.AudioCaptureAllowed",
-  "policy.AlternateErrorPagesEnabled",
-
-  # https://crbug.com/1309052
-  "policy.ShowHomeButton",
-  "policy.ShowLogoutButtonInTray",
-
-  # https://crbug.com/1309466
-  "arc.StartStop.vm",
 
   # https://crbug.com/1309492
   "arc.DragDrop.chrome_to_android",
@@ -119,26 +102,9 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1362182
   "feedback.AttachFile",
 
-  # https://crbug.com/1366112
-  "crostini.ResizeInstallation.stable",
-
-  # b/271636906
-  "crostini.SecureCopyPaste.copy_wayland_bullseye_stable",
-  "crostini.SecureCopyPaste.copy_x11_bullseye_stable",
-  "crostini.SecureCopyPaste.paste_wayland_bullseye_stable",
-  "crostini.RestartIcon.buster_stable",
-  "crostini.RestartIcon.bullseye_stable",
-
-  # https://crbug.com/1368586
-  "u2fd.WebauthnUsingPassword.gsc",
-  "u2fd.WebauthnUsingPassword.gsc_lacros",
-
   # https://crbug.com/1368859
   "arc.Drivefs",
   "arc.Drivefs.vm",
-
-  # https://crbug.com/1361163
-  "lacros.AudioPinnedStream.play",
 
   # https://crbug.com/1392911
   "login.RestrictSignin",
@@ -146,12 +112,10 @@ tast_disabled_tests_from_chrome_all = [
   # https://crbug.com/1402224
   "audio.PlaybackAudioControls",
 
-  # https://crbug.com/1236234
-  "lacros.AudioPlay",
-
-  # https://crbug.com/1415861
+  # https://crbug.com/1415861, b/302636099
   "crostini.ResizeRestart.bullseye_stable",
   "crostini.ResizeRestart.buster_stable",
+  "crostini.ResizeRestart.bookworm_stable",
 
   # b/287525851
   "arc.AudioValidity.playback",
@@ -168,9 +132,6 @@ tast_disabled_tests_from_chrome_all = [
 
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
-
-  # b/302415044: Until LKGM 15643.0.0
-  "crostini.BackupRestore.bullseye_stable",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
@@ -208,6 +169,9 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1446233
   "tast.arc.IntentForward.lacros_vm",
+
+  # https://crbug.com/1497315
+  "ui.ChromeCrashEarly.strict_lacros",
 
   # https://b/294268366
   "ui.ForceRegion.lacros",

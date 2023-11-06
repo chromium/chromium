@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/editor_menu/editor_menu_view.h"
 
+#include <algorithm>
 #include <array>
 #include <string_view>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/badge_painter.h"
 #include "ui/views/controls/button/image_button.h"
@@ -54,7 +54,8 @@ constexpr char kWidgetName[] = "EditorMenuViewWidget";
 
 constexpr gfx::Insets kTitleContainerInsets = gfx::Insets::TLBR(12, 16, 12, 14);
 
-constexpr int kSettingsIconSizeDip = 20;
+// Min width in rewrite mode to ensure there is space for the chips.
+constexpr int kEditorMenuRewriteModeMinWidth = 288;
 
 // Spacing to apply between and around chips.
 constexpr int kChipsHorizontalPadding = 8;
@@ -156,7 +157,10 @@ void EditorMenuView::OnWidgetVisibilityChanged(views::Widget* widget,
 }
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
-  const int editor_menu_width = GetEditorMenuWidth(anchor_view_bounds.width());
+  const int editor_menu_width = editor_menu_mode_ == EditorMenuMode::kWrite
+                                    ? anchor_view_bounds.width()
+                                    : std::max(anchor_view_bounds.width(),
+                                               kEditorMenuRewriteModeMinWidth);
   UpdateChipsContainer(editor_menu_width);
 
   GetWidget()->SetBounds(GetEditorMenuBounds(
@@ -204,20 +208,11 @@ void EditorMenuView::AddTitleContainer() {
   layout->SetFlexForView(spacer, 1);
 
   settings_button_ =
-      title_container_->AddChildView(std::make_unique<views::ImageButton>(
+      title_container_->AddChildView(views::ImageButton::CreateIconButton(
           base::BindRepeating(&EditorMenuView::OnSettingsButtonPressed,
-                              weak_factory_.GetWeakPtr())));
-  settings_button_->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP));
-  settings_button_->SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kSettingsOutlineIcon,
-                                     ui::kColorSysOnSurface,
-                                     kSettingsIconSizeDip));
-  views::InkDrop::Get(settings_button_)
-      ->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(settings_button_)->SetBaseColorId(ui::kColorIcon);
-  settings_button_->SetHasInkDropActionOnClick(true);
+                              weak_factory_.GetWeakPtr()),
+          vector_icons::kSettingsOutlineIcon,
+          l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
 
   title_container_->SetProperty(views::kMarginsKey, kTitleContainerInsets);
 }

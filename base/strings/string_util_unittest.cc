@@ -355,59 +355,53 @@ TEST(StringUtilTest, TruncateUTF8ToByteSize) {
 TEST(StringUtilTest, as_wcstr) {
   char16_t rw_buffer[10] = {};
   static_assert(
-      std::is_same<wchar_t*, decltype(as_writable_wcstr(rw_buffer))>::value,
-      "");
+      std::is_same_v<wchar_t*, decltype(as_writable_wcstr(rw_buffer))>, "");
   EXPECT_EQ(static_cast<void*>(rw_buffer), as_writable_wcstr(rw_buffer));
 
   std::u16string rw_str(10, '\0');
-  static_assert(
-      std::is_same<wchar_t*, decltype(as_writable_wcstr(rw_str))>::value, "");
+  static_assert(std::is_same_v<wchar_t*, decltype(as_writable_wcstr(rw_str))>,
+                "");
   EXPECT_EQ(static_cast<const void*>(rw_str.data()), as_writable_wcstr(rw_str));
 
   const char16_t ro_buffer[10] = {};
-  static_assert(
-      std::is_same<const wchar_t*, decltype(as_wcstr(ro_buffer))>::value, "");
+  static_assert(std::is_same_v<const wchar_t*, decltype(as_wcstr(ro_buffer))>,
+                "");
   EXPECT_EQ(static_cast<const void*>(ro_buffer), as_wcstr(ro_buffer));
 
   const std::u16string ro_str(10, '\0');
-  static_assert(std::is_same<const wchar_t*, decltype(as_wcstr(ro_str))>::value,
-                "");
+  static_assert(std::is_same_v<const wchar_t*, decltype(as_wcstr(ro_str))>, "");
   EXPECT_EQ(static_cast<const void*>(ro_str.data()), as_wcstr(ro_str));
 
   StringPiece16 piece = ro_buffer;
-  static_assert(std::is_same<const wchar_t*, decltype(as_wcstr(piece))>::value,
-                "");
+  static_assert(std::is_same_v<const wchar_t*, decltype(as_wcstr(piece))>, "");
   EXPECT_EQ(static_cast<const void*>(piece.data()), as_wcstr(piece));
 }
 
 TEST(StringUtilTest, as_u16cstr) {
   wchar_t rw_buffer[10] = {};
   static_assert(
-      std::is_same<char16_t*, decltype(as_writable_u16cstr(rw_buffer))>::value,
-      "");
+      std::is_same_v<char16_t*, decltype(as_writable_u16cstr(rw_buffer))>, "");
   EXPECT_EQ(static_cast<void*>(rw_buffer), as_writable_u16cstr(rw_buffer));
 
   std::wstring rw_str(10, '\0');
   static_assert(
-      std::is_same<char16_t*, decltype(as_writable_u16cstr(rw_str))>::value,
-      "");
+      std::is_same_v<char16_t*, decltype(as_writable_u16cstr(rw_str))>, "");
   EXPECT_EQ(static_cast<const void*>(rw_str.data()),
             as_writable_u16cstr(rw_str));
 
   const wchar_t ro_buffer[10] = {};
   static_assert(
-      std::is_same<const char16_t*, decltype(as_u16cstr(ro_buffer))>::value,
-      "");
+      std::is_same_v<const char16_t*, decltype(as_u16cstr(ro_buffer))>, "");
   EXPECT_EQ(static_cast<const void*>(ro_buffer), as_u16cstr(ro_buffer));
 
   const std::wstring ro_str(10, '\0');
-  static_assert(
-      std::is_same<const char16_t*, decltype(as_u16cstr(ro_str))>::value, "");
+  static_assert(std::is_same_v<const char16_t*, decltype(as_u16cstr(ro_str))>,
+                "");
   EXPECT_EQ(static_cast<const void*>(ro_str.data()), as_u16cstr(ro_str));
 
   WStringPiece piece = ro_buffer;
-  static_assert(
-      std::is_same<const char16_t*, decltype(as_u16cstr(piece))>::value, "");
+  static_assert(std::is_same_v<const char16_t*, decltype(as_u16cstr(piece))>,
+                "");
   EXPECT_EQ(static_cast<const void*>(piece.data()), as_u16cstr(piece));
 }
 #endif  // defined(WCHAR_T_IS_UTF16)

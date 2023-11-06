@@ -15,15 +15,6 @@
 
 # Keeps for method level annotations.
 -keepclasseswithmembers,allowaccessmodification class ** {
-  @org.chromium.base.annotations.AccessedByNative <fields>;
-}
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.chromium.base.annotations.CalledByNative <methods>;
-}
--keepclasseswithmembers,includedescriptorclasses,allowaccessmodification class ** {
-  @org.chromium.base.annotations.CalledByNativeUnchecked <methods>;
-}
--keepclasseswithmembers,allowaccessmodification class ** {
   @org.chromium.build.annotations.UsedByReflection <methods>;
 }
 -keepclasseswithmembers,allowaccessmodification class ** {

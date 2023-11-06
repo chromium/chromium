@@ -146,7 +146,7 @@ void GameFetcher::OnAppWithLocaleListUpdated(
   last_results_ = GetAppsForCurrentLocale(app_with_locale_list);
   std::map<std::string, Result*> map;
   for (auto& result : last_results_) {
-    map.emplace(result.GetAppId(), &result);
+    map.emplace(result.GetIconId(), &result);
   }
   app_id_to_result_ = map;
   result_callback_list_.Notify(last_results_);

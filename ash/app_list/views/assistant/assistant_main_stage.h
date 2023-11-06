@@ -74,6 +74,7 @@ class ASH_EXPORT AppListAssistantMainStage
 
  private:
   void InitLayout();
+  void InitLayoutWithIph();
   std::unique_ptr<views::View> CreateContentLayoutContainer();
   std::unique_ptr<views::View> CreateMainContentLayoutContainer();
   std::unique_ptr<views::View> CreateDividerLayoutContainer();

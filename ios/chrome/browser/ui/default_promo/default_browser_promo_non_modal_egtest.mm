@@ -66,15 +66,6 @@ id<GREYMatcher> FakeOmniboxMatcher() {
 - (void)tearDown {
   [super tearDown];
   [ChromeEarlGreyAppInterface clearDefaultBrowserPromoData];
-  [ChromeEarlGreyAppInterface disableDefaultBrowserPromo];
-}
-
-// Disable the default browser blue dot feature flag (which blocks this promo).
-// TODO(crbug.com/1410229) remove when fully launched and no longer behing flag.
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  config.features_disabled.push_back(kDefaultBrowserBlueDotPromo);
-  return config;
 }
 
 // Test that a non modal default modal promo appears when it is triggered by

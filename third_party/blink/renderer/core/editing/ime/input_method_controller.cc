@@ -71,6 +71,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool NeedsIncrementalInsertion(const LocalFrame& frame,
@@ -257,10 +259,10 @@ int ComputeAutocapitalizeFlags(const Element* element) {
   // autocapitalization hint" for the focused element:
   // https://html.spec.whatwg.org/C/#used-autocapitalization-hint
   if (auto* input = DynamicTo<HTMLInputElement>(*html_element)) {
-    const AtomicString& input_type = input->type();
-    if (input_type == input_type_names::kEmail ||
-        input_type == input_type_names::kUrl ||
-        input_type == input_type_names::kPassword) {
+    FormControlType input_type = input->FormControlType();
+    if (input_type == FormControlType::kInputEmail ||
+        input_type == FormControlType::kInputUrl ||
+        input_type == FormControlType::kInputPassword) {
       // The autocapitalize IDL attribute value is ignored for these input
       // types, so we set the None flag.
       return kWebTextInputFlagAutocapitalizeNone;
@@ -1854,27 +1856,29 @@ WebTextInputType InputMethodController::TextInputType() const {
     return kWebTextInputTypeNone;
 
   if (auto* input = DynamicTo<HTMLInputElement>(*element)) {
-    const AtomicString& type = input->type();
+    FormControlType type = input->FormControlType();
 
     if (input->IsDisabledOrReadOnly())
       return kWebTextInputTypeNone;
 
-    if (type == input_type_names::kPassword)
-      return kWebTextInputTypePassword;
-    if (type == input_type_names::kSearch)
-      return kWebTextInputTypeSearch;
-    if (type == input_type_names::kEmail)
-      return kWebTextInputTypeEmail;
-    if (type == input_type_names::kNumber)
-      return kWebTextInputTypeNumber;
-    if (type == input_type_names::kTel)
-      return kWebTextInputTypeTelephone;
-    if (type == input_type_names::kUrl)
-      return kWebTextInputTypeURL;
-    if (type == input_type_names::kText)
-      return kWebTextInputTypeText;
-
-    return kWebTextInputTypeNone;
+    switch (type) {
+      case FormControlType::kInputPassword:
+        return kWebTextInputTypePassword;
+      case FormControlType::kInputSearch:
+        return kWebTextInputTypeSearch;
+      case FormControlType::kInputEmail:
+        return kWebTextInputTypeEmail;
+      case FormControlType::kInputNumber:
+        return kWebTextInputTypeNumber;
+      case FormControlType::kInputTelephone:
+        return kWebTextInputTypeTelephone;
+      case FormControlType::kInputUrl:
+        return kWebTextInputTypeURL;
+      case FormControlType::kInputText:
+        return kWebTextInputTypeText;
+      default:
+        return kWebTextInputTypeNone;
+    }
   }
 
   if (auto* textarea = DynamicTo<HTMLTextAreaElement>(*element)) {

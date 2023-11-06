@@ -367,9 +367,40 @@ Additional details:
   <message name="IDS_POLICY_PROTO_PARSING_ERROR" desc="Text displayed when error is encountered during policy parsing/decoding.">
     Policy parsing error: <ph name="ERROR">$1<ex>Invalid JSON string: Line: 1, column: 14</ex></ph>
   </message>
-    <message name="IDS_POLICY_HEX_COLOR_ERROR" desc="Error message in the policy summary page for the BrowserThemeColor policy when the policy value is an invalid hex color.">
-      Value "<ph name="VALUE">$1<ex>#zzzzzz</ex></ph>" is an invalid hex color.
-    </message>
+  <message name="IDS_POLICY_HEX_COLOR_ERROR" desc="Error message in the policy summary page for the BrowserThemeColor policy when the policy value is an invalid hex color.">
+    Value "<ph name="VALUE">$1<ex>#zzzzzz</ex></ph>" is an invalid hex color.
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_MAX_PROVIDERS_LIMIT_ERROR" desc="The text displayed in the status column of the SiteSearchSettings policy when the max number of search providers is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>1000</ex></ph> entries.
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT" desc="The text displayed in the status column of the SiteSearchSettings policy when there is more than one entry using the same shortcut.">
+    Ignored non-unique shortcut: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut contains a space character.">
+    Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut starts with the @ character.">
+    Shortcut can't start with the @ character: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the SiteSearchSettings policy when there is no valid entry in the policy.">
+    The list contains no valid search provider.
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is defined as an empty string.">
+    Shortcut can't be empty
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a name is defined as an empty string.">
+    Name can't be empty
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL is defined as an empty string.">
+    URL can't be empty
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
+    URL doesn't include required replacement string <ph name="SEARCH_TERMS_REPLACEMENT">"{searchTerms}"</ph>: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
+  </message>
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
+    Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
+  </message>
+
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">
@@ -1026,6 +1057,9 @@ Additional details:
   <message name="IDS_POLICY_DLP_CLIPBOARD_BUBBLE_MESSAGE" desc="Text for a bubble that informs the user that their copy and paste action has been blocked/warned with a link to a help center article about Data Leak Prevention.">
     <ph name="BUBBLE_MESSAGE">$1<ex>Pasting from corp.google.com to this location is blocked by administrator policy</ex></ph>. <ph name="LEARN_MORE_TEXT">$2<ex>Learn more</ex></ph>
   </message>
+  <message name="IDS_POLICY_DLP_FROM_YOUR_ADMIN_MESSAGE" desc="Introductory text specifying to users that the following message comes from their administrator.">
+    From your administrator: "<ph name="ADMIN_MESSAGE">$1<ex>Files transfer is blocked by a company policy.</ex></ph>"
+  </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_BLOCK_TITLE" desc="The title of the notification informing the user that downloading files is blocked.">
     Blocked download
   </message>
@@ -1096,6 +1130,24 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DLP_FILES_BLOCK_MESSAGE" desc="The message for notification shown when an action (e.g. open, upload) of several files was blocked, that the user can review in more detail by opening a dialog.">
     Review for further details
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before downlading a file.">
+    Provide reason for downloading (required)
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_UPLOAD_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before uploading a file.">
+    Provide reason for uploading (required)
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_COPY_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before copying a file.">
+    Provide reason for copying (required)
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_MOVE_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before moving a file.">
+    Provide reason for moving (required)
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_OPEN_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before opening a file.">
+    Provide reason for opening (required)
+  </message>
+  <message name="IDS_POLICY_DLP_FILES_TRANSFER_JUSTIFICATION_LABEL" desc="Text shown in a label above an input area where the user should provide a justification before transferring a file.">
+    Provide reason for transferring (required)
   </message>
   <message name="IDS_POLICY_DLP_FILES_DOWNLOAD_TIMEOUT_TITLE" desc="The title for notification shown after a DLP files warning times out.">
     Downloading timed out

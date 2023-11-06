@@ -170,14 +170,12 @@ crosapi::mojom::ProbeUsbBusInfoPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BusInfoPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::kUsbBusInfo:
+    case cros_healthd::mojom::BusInfo::Tag::kUsbBusInfo:
       return crosapi::mojom::ProbeBusInfo::NewUsbBusInfo(
           ConvertProbePtr(std::move(input->get_usb_bus_info())));
-    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::kPciBusInfo:
-    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::
-        kThunderboltBusInfo:
-    case cros_healthd::mojom::internal::BusInfo_Data::BusInfo_Tag::
-        kUnmappedField:
+    case cros_healthd::mojom::BusInfo::Tag::kPciBusInfo:
+    case cros_healthd::mojom::BusInfo::Tag::kThunderboltBusInfo:
+    case cros_healthd::mojom::BusInfo::Tag::kUnmappedField:
       return nullptr;
   }
 }
@@ -190,12 +188,11 @@ crosapi::mojom::ProbeBusInfoPtr UncheckedConvertPtr(
 crosapi::mojom::ProbeBusResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BusResultPtr input) {
   switch (input->which()) {
-    case cros_healthd::mojom::internal::BusResult_Data::BusResult_Tag::
-        kBusDevices:
+    case cros_healthd::mojom::BusResult::Tag::kBusDevices:
       return crosapi::mojom::ProbeBusResult::NewBusDevicesInfo(
           ConvertPtrVector<crosapi::mojom::ProbeBusInfoPtr>(
               std::move(input->get_bus_devices())));
-    case cros_healthd::mojom::internal::BusResult_Data::BusResult_Tag::kError:
+    case cros_healthd::mojom::BusResult::Tag::kError:
       return crosapi::mojom::ProbeBusResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }

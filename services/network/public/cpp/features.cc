@@ -364,7 +364,7 @@ BASE_FEATURE(kLocalNetworkAccessAllowPotentiallyTrustworthySameOrigin,
 // are allowed to access private insecure subresources with user's permission.
 BASE_FEATURE(kPrivateNetworkAccessPermissionPrompt,
              "PrivateNetworkAccessPermissionPrompt",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessControlAllowMethodsInCORSPreflightSpecConformant,
              "AccessControlAllowMethodsInCORSPreflightSpecConformant",

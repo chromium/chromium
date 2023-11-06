@@ -1,0 +1,37 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  sources = [
+    "infobar_tab_pickup_consumer.h",
+    "infobar_tab_pickup_table_view_controller.h",
+    "infobar_tab_pickup_table_view_controller.mm",
+    "infobar_tab_pickup_table_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ui/base",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "infobar_tab_pickup_constants.h",
+    "infobar_tab_pickup_constants.mm",
+  ]
+  deps = [ "//base" ]
+}

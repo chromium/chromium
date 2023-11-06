@@ -33,14 +33,14 @@ struct DynamicParams {
 
 // Allows the renderer to notify the browser process that requests in renderer
 // are throttled and require a fresh short lived cookie.
-interface BoundSessionRequestThrottledListener {
+interface BoundSessionRequestThrottledHandler {
   // Called to notify the browser process when a network request requires a
   // fresh cookie. This triggers a cookie refresh request and will
   // run the callback to release the request upon success, failure or timeout.
   // Note: The callback might be called synchronously in process if the
   // previous conditions apply.
   [EnableIf=enable_bound_session_credentials]
-  OnRequestBlockedOnCookie() => ();
+  HandleRequestBlockedOnCookie() => ();
 };
 
 interface ChromeOSListener {
@@ -58,7 +58,7 @@ interface RendererConfiguration {
   // the merge session is still running - otherwise not set.
   // |content_settings_manager| may be sent as an optimization to avoid
   // requesting it from the browser process, and may be null.
-  // |bound_session_request_throttled_listener| is passed only if the buildflag
+  // |bound_session_request_throttled_handler| is passed only if the buildflag
   // `enable_bound_session_credentials` is enabled. It can be null if bound
   // sessions are not supported yet for the current profile type.
   SetInitialConfiguration(
@@ -66,8 +66,8 @@ interface RendererConfiguration {
       pending_receiver<ChromeOSListener>? chromeos_listener,
       pending_remote<content_settings.mojom.ContentSettingsManager>?
           content_settings_manager,
-      pending_remote<BoundSessionRequestThrottledListener>?
-          bound_session_request_throttled_listener);
+      pending_remote<BoundSessionRequestThrottledHandler>?
+          bound_session_request_throttled_handler);
 
   // Update renderer configuration with settings that can change.
   SetConfiguration(DynamicParams params);

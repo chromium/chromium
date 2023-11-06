@@ -232,15 +232,13 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView = menu.findViewById(R.id.context_menu_list_view);
         mListView.setAdapter(adapter);
 
-        // Note: clang-format does a bad job formatting lambdas so we turn it off here.
-        // clang-format off
         adapter.registerType(
                 ListItemType.HEADER,
                 new LayoutViewBuilder(R.layout.context_menu_header),
                 ContextMenuHeaderViewBinder::bind);
         adapter.registerType(
                 ListItemType.DIVIDER,
-                new LayoutViewBuilder(R.layout.app_menu_divider),
+                new LayoutViewBuilder(R.layout.list_section_divider),
                 (m, v, p) -> {});
         adapter.registerType(
                 ListItemType.CONTEXT_MENU_ITEM,
@@ -250,7 +248,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                 ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON,
                 new LayoutViewBuilder(R.layout.context_menu_share_row),
                 ContextMenuItemWithIconButtonViewBinder::bind);
-        // clang-format on
 
         mListView.setOnItemClickListener((p, v, pos, id) -> {
             assert id != INVALID_ITEM_ID;

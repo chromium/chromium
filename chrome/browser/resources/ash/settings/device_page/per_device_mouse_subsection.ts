@@ -24,10 +24,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
@@ -238,8 +238,8 @@ export class SettingsPerDeviceMouseSubsectionElement extends
   private customizationRestriction: CustomizationRestriction;
 
   private showCustomizeButtonRow(): boolean {
-    return this.customizationRestriction ===
-        CustomizationRestriction.kAllowCustomizations &&
+    return (this.customizationRestriction !==
+            CustomizationRestriction.kDisallowCustomizations) &&
         this.isPeripheralCustomizationEnabled_;
   }
 

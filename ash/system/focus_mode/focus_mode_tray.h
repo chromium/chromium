@@ -44,6 +44,7 @@ class FocusModeTray : public TrayBackgroundView,
 
   // FocusModeController::Observer:
   void OnFocusModeChanged(bool in_focus_session) override;
+  void OnTimerTick() override;
 
  private:
   // Updates the image and color of the icon.

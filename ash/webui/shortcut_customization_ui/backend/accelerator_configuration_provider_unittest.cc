@@ -34,6 +34,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -61,8 +62,10 @@ using NonConfigurableActionToParts =
 
 namespace {
 using shortcut_customization::mojom::AcceleratorResultDataPtr;
+using shortcut_customization::mojom::EditDialogCompletedActions;
 using shortcut_customization::mojom::SimpleAccelerator;
 using shortcut_customization::mojom::SimpleAcceleratorPtr;
+using shortcut_customization::mojom::Subactions;
 using shortcut_customization::mojom::UserAction;
 
 using mojom::AcceleratorConfigResult;
@@ -1205,6 +1208,11 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kSwitchToNextIme)}),
+      shortcut_ui::ModificationType::kRemove, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1252,6 +1260,11 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAccelerator) {
             "Ash.ShortcutCustomization.CustomizationAction",
             ash::shortcut_ui::ShortcutCustomizationAction::kRemoveAccelerator,
             1);
+        histogram_tester_->ExpectBucketCount(
+            base::StrCat({"Ash.ShortcutCustomization.ModifyType.",
+                          GetAcceleratorActionName(
+                              AcceleratorAction::kSwitchToNextIme)}),
+            shortcut_ui::ModificationType::kRemove, 1);
       }));
   base::RunLoop().RunUntilIdle();
 }
@@ -1392,6 +1405,16 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kRemove, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kReset, 0);
 
   // Initialize with all custom accelerators.
   const AcceleratorData test_data[] = {
@@ -1449,6 +1472,16 @@ TEST_F(AcceleratorConfigurationProviderTest, RemoveAndResoreDefault) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kResetAction, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kRemove, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kReset, 1);
 
   // Verify the accelerator was restored.
   updated_accelerators = config->GetAllAccelerators();
@@ -1961,6 +1994,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kAdd, 0);
 
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
@@ -2004,6 +2042,11 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNoConflict) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kAddAccelerator, 1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kAdd, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest, AddHiddenAccelerator) {
@@ -2593,6 +2636,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
   histogram_tester_->ExpectBucketCount(
       "Ash.ShortcutCustomization.CustomizationAction",
       ash::shortcut_ui::ShortcutCustomizationAction::kReplaceAccelerator, 0);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kEdit, 0);
 
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
@@ -2631,6 +2679,11 @@ TEST_F(AcceleratorConfigurationProviderTest, ReplaceDefaultAccelerator) {
       GetEncodedShortcut(new_accelerator.modifiers(),
                          new_accelerator.key_code()),
       1);
+  histogram_tester_->ExpectBucketCount(
+      base::StrCat(
+          {"Ash.ShortcutCustomization.ModifyType.",
+           GetAcceleratorActionName(AcceleratorAction::kToggleMirrorMode)}),
+      shortcut_ui::ModificationType::kEdit, 1);
 
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
@@ -3169,6 +3222,91 @@ TEST_F(AcceleratorConfigurationProviderTest, UserActions) {
                    "ShortcutCustomization_StartReplaceAccelerator"));
   EXPECT_EQ(1, user_action_tester_->GetActionCount(
                    "ShortcutCustomization_SuccessfullyModified"));
+}
+TEST_F(AcceleratorConfigurationProviderTest, EditDialogCompetedActionsMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kNoAction, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kRemove, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kResetRemoveEditAdd, 0);
+
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kNoAction);
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kRemove);
+  provider_->RecordEditDialogCompletedActions(
+      EditDialogCompletedActions::kResetRemoveEditAdd);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kNoAction, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kRemove, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditDialogCompletedActions",
+      EditDialogCompletedActions::kResetRemoveEditAdd, 1);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, MainNavigationCategoryMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kGeneral, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kAccessibility, 0);
+
+  provider_->RecordMainCategoryNavigation(mojom::AcceleratorCategory::kGeneral);
+  provider_->RecordMainCategoryNavigation(
+      mojom::AcceleratorCategory::kAccessibility);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kGeneral, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.MainCategoryNavigation",
+      mojom::AcceleratorCategory::kAccessibility, 1);
+}
+
+TEST_F(AcceleratorConfigurationProviderTest, SubactionsMetrics) {
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kErrorCancel, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kErrorCancel, 0);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 0);
+
+  provider_->RecordAddOrEditSubactions(/*is_add=*/true,
+                                       Subactions::kErrorCancel);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/true,
+                                       Subactions::kNoErrorSuccess);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/false,
+                                       Subactions::kErrorCancel);
+  provider_->RecordAddOrEditSubactions(/*is_add=*/false,
+                                       Subactions::kNoErrorSuccess);
+
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kErrorCancel, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.AddAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kErrorCancel, 1);
+  histogram_tester_->ExpectBucketCount(
+      "Ash.ShortcutCustomization.EditAcceleratorSubactions",
+      Subactions::kNoErrorSuccess, 1);
 }
 
 TEST_F(AcceleratorConfigurationProviderTest,

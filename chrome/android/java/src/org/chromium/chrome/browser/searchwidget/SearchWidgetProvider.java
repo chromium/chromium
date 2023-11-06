@@ -38,16 +38,16 @@ import java.util.function.Consumer;
 /**
  * Widget that lets the user search using their default search engine.
  *
- * Because this is a BroadcastReceiver, it dies immediately after it runs.  A new one is created
+ * <p>Because this is a BroadcastReceiver, it dies immediately after it runs. A new one is created
  * for each new broadcast.
  *
- * This class avoids loading the native library because it can be triggered at regular intervals by
- * Android when it tells widgets that they need updates.
+ * <p>This class avoids loading the native library because it can be triggered at regular intervals
+ * by Android when it tells widgets that they need updates.
  *
- * Methods on instances of this class called directly by Android (when a broadcast is received e.g.)
- * catch all Exceptions up to some number of times before letting them go through to allow us to get
- * a crash stack.  This is done to prevent Android from labeling the whole process as "bad" and
- * blocking taps on the widget.  See http://crbug.com/712061.
+ * <p>Methods on instances of this class called directly by Android (when a broadcast is received
+ * e.g.) catch all Exceptions up to some number of times before letting them go through to allow us
+ * to get a crash stack. This is done to prevent Android from labeling the whole process as "bad"
+ * and blocking taps on the widget. See http://crbug.com/712061.
  */
 public class SearchWidgetProvider extends AppWidgetProvider {
     /** Wraps up all things that a {@link SearchWidgetProvider} can request things from. */
@@ -94,6 +94,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     /** Number of consecutive crashes this widget will absorb before giving up. */
     private static final int CRASH_LIMIT = 3;
+
     private static final Object DELEGATE_LOCK = new Object();
 
     @SuppressLint("StaticFieldLeak")
@@ -105,20 +106,23 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onUpdate(final Context context, final AppWidgetManager manager, final int[] ids) {
-        run(new Runnable() {
-            @Override
-            public void run() {
-                performUpdate(ids, null);
-            }
-        });
+        run(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        performUpdate(ids, null);
+                    }
+                });
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static PendingIntent createIntent(Context context, boolean startVoiceSearch) {
         // Launch the SearchActivity.
         Intent searchIntent =
-                new Intent(startVoiceSearch ? SearchActivityConstants.ACTION_START_VOICE_SEARCH
-                                            : SearchActivityConstants.ACTION_START_TEXT_SEARCH);
+                new Intent(
+                        startVoiceSearch
+                                ? SearchActivityConstants.ACTION_START_VOICE_SEARCH
+                                : SearchActivityConstants.ACTION_START_TEXT_SEARCH);
 
         searchIntent.setClass(context, SearchActivity.class);
         searchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -128,7 +132,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         Bundle optionsBundle =
                 ActivityOptionsCompat.makeCustomAnimation(context, R.anim.activity_open_enter, 0)
                         .toBundle();
-        return PendingIntent.getActivity(context, 0, searchIntent,
+        return PendingIntent.getActivity(
+                context,
+                0,
+                searchIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false),
                 optionsBundle);
@@ -141,8 +148,12 @@ public class SearchWidgetProvider extends AppWidgetProvider {
         if (prefs == null) prefs = SearchActivityPreferencesManager.getCurrent();
 
         for (int id : ids) {
-            RemoteViews views = createWidgetViews(
-                    delegate.getContext(), id, prefs.searchEngineName, prefs.voiceSearchAvailable);
+            RemoteViews views =
+                    createWidgetViews(
+                            delegate.getContext(),
+                            id,
+                            prefs.searchEngineName,
+                            prefs.voiceSearchAvailable);
             delegate.updateAppWidget(id, views);
         }
     }
@@ -158,9 +169,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
                 R.id.microphone_icon, isVoiceSearchAvailable ? View.VISIBLE : View.GONE);
 
         // Update what string is displayed by the widget.
-        String text = TextUtils.isEmpty(engineName) || !shouldShowFullString()
-                ? context.getString(R.string.search_widget_default)
-                : context.getString(R.string.search_with_product, engineName);
+        String text =
+                TextUtils.isEmpty(engineName) || !shouldShowFullString()
+                        ? context.getString(R.string.search_widget_default)
+                        : context.getString(R.string.search_with_product, engineName);
         views.setCharSequence(R.id.title, "setHint", text);
 
         return views;
@@ -202,8 +214,10 @@ public class SearchWidgetProvider extends AppWidgetProvider {
 
             if (numCrashes < CRASH_LIMIT) {
                 // Absorb the crash.
-                Log.e(SearchActivity.TAG,
-                        "Absorbing exception caught when attempting to launch widget.", e);
+                Log.e(
+                        SearchActivity.TAG,
+                        "Absorbing exception caught when attempting to launch widget.",
+                        e);
             } else {
                 // Too many crashes have happened consecutively.  Let Android handle it.
                 throw e;

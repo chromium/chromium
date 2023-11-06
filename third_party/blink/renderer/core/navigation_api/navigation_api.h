@@ -76,7 +76,7 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
   HeapVector<Member<NavigationHistoryEntry>> entries();
   void updateCurrentEntry(NavigationUpdateCurrentEntryOptions*,
                           ExceptionState&);
-  NavigationTransition* transition() const { return transition_; }
+  NavigationTransition* transition() const { return transition_.Get(); }
 
   bool canGoBack() const;
   bool canGoForward() const;
@@ -124,7 +124,7 @@ class CORE_EXPORT NavigationApi final : public EventTarget {
 
   // EventTarget overrides:
   const AtomicString& InterfaceName() const final;
-  ExecutionContext* GetExecutionContext() const final { return window_; }
+  ExecutionContext* GetExecutionContext() const final { return window_.Get(); }
   void AddedEventListener(const AtomicString&, RegisteredEventListener&) final;
   void RemovedEventListener(const AtomicString&,
                             const RegisteredEventListener&) final;

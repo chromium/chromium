@@ -25,22 +25,16 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for {@link AutoTranslateSnackbarController}
- */
+/** Unit tests for {@link AutoTranslateSnackbarController} */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutoTranslateSnackbarControllerTest {
     private static final int NATIVE_SNACKBAR_VIEW = 1001;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Mock
-    AutoTranslateSnackbarController.Natives mMockJni;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock AutoTranslateSnackbarController.Natives mMockJni;
 
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
+    @Mock private WindowAndroid mWindowAndroid;
 
     @Before
     public void setUp() {

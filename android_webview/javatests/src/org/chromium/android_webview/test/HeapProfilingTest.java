@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -21,11 +23,16 @@ import org.chromium.components.heap_profiling.multi_process.HeapProfilingTestShi
 /**
  * Tests suite for heap profiling.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @OnlyRunIn(MULTI_PROCESS)
-public class HeapProfilingTest {
+public class HeapProfilingTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
+
+    public HeapProfilingTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {}
@@ -33,10 +40,12 @@ public class HeapProfilingTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1163744")
-    @CommandLineFlags.Add({"memlog=browser", "memlog-stack-mode=native-include-thread-names",
-            "memlog-sampling-rate=1"})
-    public void
-    testModeBrowser() {
+    @CommandLineFlags.Add({
+        "memlog=browser",
+        "memlog-stack-mode=native-include-thread-names",
+        "memlog-sampling-rate=1"
+    })
+    public void testModeBrowser() {
         HeapProfilingTestShim shim = new HeapProfilingTestShim();
         Assert.assertTrue(
                 shim.runTestForMode("browser", false, "native-include-thread-names", false, false));

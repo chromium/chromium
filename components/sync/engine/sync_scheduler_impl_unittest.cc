@@ -280,7 +280,7 @@ class SyncSchedulerImplTest : public testing::Test {
     syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        std::move(syncer), false);
+        std::move(syncer), false, false);
     SetDefaultLocalChangeNudgeDelays();
   }
 
@@ -415,7 +415,7 @@ class SyncSchedulerImplTest : public testing::Test {
     syncer_ = syncer.get();
     scheduler_ = std::make_unique<SyncSchedulerImpl>(
         "TestSyncScheduler", BackoffDelayProvider::FromDefaults(), context(),
-        std::move(syncer), true);
+        std::move(syncer), true, false);
     SetDefaultLocalChangeNudgeDelays();
   }
 
@@ -433,7 +433,7 @@ class SyncSchedulerImplTest : public testing::Test {
                                     base::TimeDelta poll_interval,
                                     base::Time now) {
     return SyncSchedulerImpl::ComputeLastPollOnStart(last_poll, poll_interval,
-                                                     now);
+                                                     now, false);
   }
 
  protected:

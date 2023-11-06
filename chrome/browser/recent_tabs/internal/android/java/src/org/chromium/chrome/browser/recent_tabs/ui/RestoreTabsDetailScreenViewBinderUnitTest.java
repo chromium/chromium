@@ -53,10 +53,8 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class RestoreTabsDetailScreenViewBinderUnitTest {
-    @Mock
-    private RestoreTabsDetailScreenCoordinator.Delegate mMockDelegate;
-    @Mock
-    private TabItemViewBinder.BindContext mBindContext;
+    @Mock private RestoreTabsDetailScreenCoordinator.Delegate mMockDelegate;
+    @Mock private TabItemViewBinder.BindContext mBindContext;
 
     private Activity mActivity;
     private View mRestoreTabsDetailView;
@@ -67,38 +65,50 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mRestoreTabsDetailView = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_bottom_sheet, /*root=*/null);
+        mRestoreTabsDetailView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_bottom_sheet, /* root= */ null);
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(VISIBLE, false)
-                         .with(DEVICE_MODEL_LIST, new ModelList())
-                         .with(REVIEW_TABS_MODEL_LIST, new ModelList())
-                         .with(NUM_TABS_DESELECTED, 0)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(VISIBLE, false)
+                        .with(DEVICE_MODEL_LIST, new ModelList())
+                        .with(REVIEW_TABS_MODEL_LIST, new ModelList())
+                        .with(NUM_TABS_DESELECTED, 0)
+                        .build();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
-                new RestoreTabsDetailScreenViewBinder.ViewHolder(
-                        mRestoreTabsDetailView, mBindContext),
-                RestoreTabsDetailScreenViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new RestoreTabsDetailScreenViewBinder.ViewHolder(
+                                mRestoreTabsDetailView, mBindContext),
+                        RestoreTabsDetailScreenViewBinder::bind);
     }
 
     @Test
     public void testSetDeviceScreen() {
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         ModelList deviceItems = mModel.get(DEVICE_MODEL_LIST);
-        PropertyModel model = ForeignSessionItemProperties.create(
-                /*session=*/session, /*isSelected=*/true, /*onClickListener=*/() -> {});
+        PropertyModel model =
+                ForeignSessionItemProperties.create(
+                        /* session= */ session,
+                        /* isSelected= */ true,
+                        /* onClickListener= */ () -> {});
         deviceItems.add(new ListItem(DetailItemType.DEVICE, model));
 
         mModel.set(DETAIL_SCREEN_TITLE, R.string.restore_tabs_device_screen_sheet_title);
-        mModel.set(DETAIL_SCREEN_BACK_CLICK_HANDLER,
-                () -> { mModel.set(CURRENT_SCREEN, HOME_SCREEN); });
+        mModel.set(
+                DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                () -> {
+                    mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+                });
         mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
 
-        View allTabsSelectionStateButton = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        View allTabsSelectionStateButton =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals(View.GONE, allTabsSelectionStateButton.getVisibility());
 
         View openTabsButton =
@@ -121,11 +131,15 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
 
     @Test
     public void testOnDeviceScreen_setDetailScreenModelList() {
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", 32L, new ArrayList<>(), FormFactor.PHONE);
         ModelList deviceItems = mModel.get(DEVICE_MODEL_LIST);
-        PropertyModel model = ForeignSessionItemProperties.create(
-                /*session=*/session, /*isSelected=*/true, /*onClickListener=*/() -> {});
+        PropertyModel model =
+                ForeignSessionItemProperties.create(
+                        /* session= */ session,
+                        /* isSelected= */ true,
+                        /* onClickListener= */ () -> {});
         deviceItems.add(new ListItem(DetailItemType.DEVICE, model));
 
         mModel.set(DETAIL_SCREEN_TITLE, R.string.restore_tabs_device_screen_sheet_title);
@@ -143,16 +157,21 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
 
         mModel.set(DETAIL_SCREEN_TITLE, R.string.restore_tabs_review_tabs_screen_sheet_title);
-        mModel.set(DETAIL_SCREEN_BACK_CLICK_HANDLER,
-                () -> { mModel.set(CURRENT_SCREEN, HOME_SCREEN); });
+        mModel.set(
+                DETAIL_SCREEN_BACK_CLICK_HANDLER,
+                () -> {
+                    mModel.set(CURRENT_SCREEN, HOME_SCREEN);
+                });
         mModel.set(CURRENT_SCREEN, REVIEW_TABS_SCREEN);
 
-        TextView allTabsSelectionStateButtonText = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        TextView allTabsSelectionStateButtonText =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals("Deselect all", allTabsSelectionStateButtonText.getText());
 
-        View allTabsSelectionStateButton = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        View allTabsSelectionStateButton =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals(View.VISIBLE, allTabsSelectionStateButton.getVisibility());
         Assert.assertNotNull(allTabsSelectionStateButton);
         allTabsSelectionStateButton.performClick();
@@ -198,8 +217,9 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
         mModel.set(DETAIL_SCREEN_TITLE, R.string.restore_tabs_review_tabs_screen_sheet_title);
         mModel.set(CURRENT_SCREEN, REVIEW_TABS_SCREEN);
 
-        TextView allTabsSelectionStateButtonText1 = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        TextView allTabsSelectionStateButtonText1 =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals("Deselect all", allTabsSelectionStateButtonText1.getText());
 
         TextView openTabsButtonText1 =
@@ -208,8 +228,9 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
 
         mModel.set(NUM_TABS_DESELECTED, 1);
 
-        TextView allTabsSelectionStateButtonText2 = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        TextView allTabsSelectionStateButtonText2 =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals("Select all", allTabsSelectionStateButtonText2.getText());
 
         TextView openTabsButtonText2 =
@@ -218,8 +239,9 @@ public class RestoreTabsDetailScreenViewBinderUnitTest {
 
         mModel.set(NUM_TABS_DESELECTED, 2);
 
-        TextView allTabsSelectionStateButtonText3 = mRestoreTabsDetailView.findViewById(
-                R.id.restore_tabs_button_change_all_tabs_selection);
+        TextView allTabsSelectionStateButtonText3 =
+                mRestoreTabsDetailView.findViewById(
+                        R.id.restore_tabs_button_change_all_tabs_selection);
         Assert.assertEquals("Select all", allTabsSelectionStateButtonText3.getText());
 
         TextView openTabsButtonText3 =

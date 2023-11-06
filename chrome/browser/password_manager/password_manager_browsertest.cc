@@ -66,8 +66,8 @@
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -2185,6 +2185,45 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
   }
 
   EXPECT_TRUE(prompt_observer.IsSavePromptShownAutomatically());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordManagerBrowserTest,
+    IFrameDetachedRightAfterFormSubmission_UpdateBubbleShown) {
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.password_value = u"pw";
+  signin_form.username_value = u"temp";
+  password_store->AddLogin(signin_form);
+
+  NavigateToFile("/password/frame_detached_after_submit.html");
+
+  content::RenderFrameHost* iframe_rfh = nullptr;
+  RenderFrameHost()->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    if (!rfh->IsInPrimaryMainFrame()) {
+      iframe_rfh = rfh;
+      return;
+    }
+  });
+  ASSERT_TRUE(iframe_rfh);
+
+  BubbleObserver prompt_observer(WebContents());
+  content::RenderFrameDeletedObserver iframe_observer(iframe_rfh);
+  std::string fill_and_submit =
+      "var iframe = document.getElementById('password_reset_iframe');"
+      "var frame_doc = iframe.contentDocument;"
+      "frame_doc.getElementById('password_field').value = 'random';"
+      "frame_doc.getElementById('confirm_password_field').value = 'random';"
+      "frame_doc.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit));
+  ASSERT_TRUE(iframe_observer.WaitUntilDeleted());
+
+  prompt_observer.WaitForAutomaticUpdatePrompt();
+  EXPECT_TRUE(prompt_observer.IsUpdatePromptShownAutomatically());
 }
 
 // Check that a username and password are filled into forms in iframes

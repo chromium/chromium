@@ -1,0 +1,36 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultLocalFontsSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.local_fonts": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultLocalFontsSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.local_fonts": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

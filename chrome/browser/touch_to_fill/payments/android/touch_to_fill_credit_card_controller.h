@@ -7,11 +7,8 @@
 
 #include <memory>
 
-#include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
-#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_keyboard_suppressor.h"

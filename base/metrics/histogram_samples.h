@@ -273,7 +273,7 @@ class BASE_EXPORT HistogramSamples {
   //   external object. The callers guarantees the value will outlive this
   //   instance.
   std::unique_ptr<Metadata> meta_owned_;
-  raw_ptr<Metadata, LeakedDanglingUntriaged> meta_;
+  raw_ptr<Metadata> meta_;
 };
 
 class BASE_EXPORT SampleCountIterator {

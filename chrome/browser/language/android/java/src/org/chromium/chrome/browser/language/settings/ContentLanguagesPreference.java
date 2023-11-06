@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItemWithEndIcon;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItemWithEndIcon;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -23,11 +23,11 @@ import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -66,7 +66,8 @@ public class ContentLanguagesPreference extends Preference {
                 ListItem item = buildMenuListItemWithEndIcon(
                         R.string.languages_item_option_offer_to_translate, 0, endIconResId,
                         info.isTranslateSupported());
-                item.model.set(ListMenuItemProperties.TINT_COLOR_ID,
+                item.model.set(
+                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
                         R.color.default_icon_color_accent1_tint_list);
 
                 // Add checked icon at the end.
@@ -119,11 +120,15 @@ public class ContentLanguagesPreference extends Preference {
                     notifyDataSetChanged();
                 }
             };
-            ((LanguageRowViewHolder) holder).setMenuButtonDelegate(() -> {
-                LanguagesManager.recordImpression(
-                        LanguagesManager.LanguageSettingsPageType.LANGUAGE_OVERFLOW_MENU_OPENED);
-                return new BasicListMenu(mContext, menuItems, delegate);
-            });
+            ((LanguageRowViewHolder) holder)
+                    .setMenuButtonDelegate(
+                            () -> {
+                                LanguagesManager.recordImpression(
+                                        LanguagesManager.LanguageSettingsPageType
+                                                .LANGUAGE_OVERFLOW_MENU_OPENED);
+                                return BrowserUiListMenuUtils.getBasicListMenu(
+                                        mContext, menuItems, delegate);
+                            });
         }
 
         @Override

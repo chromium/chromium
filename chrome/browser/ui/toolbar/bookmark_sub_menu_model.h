@@ -19,6 +19,8 @@ class ReadingListSubMenuModel;
 class BookmarkSubMenuModel : public ui::SimpleMenuModel {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowBookmarkBarMenuItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowBookmarkSidePanelItem);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReadingListMenuItem);
 
   BookmarkSubMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                        Browser* browser);

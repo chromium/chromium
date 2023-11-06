@@ -845,8 +845,6 @@ public class ExternalNavigationHandler {
 
         @MimeTypeUtils.Type
         int mimeType = MimeTypeUtils.getMimeTypeForUrl(params.getUrl());
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.Intent.OpenFileType", mimeType, MimeTypeUtils.NUM_MIME_TYPE_ENTRIES);
         String permissionNeeded = MimeTypeUtils.getPermissionNameForMimeType(mimeType);
 
         if (permissionNeeded == null) return false;

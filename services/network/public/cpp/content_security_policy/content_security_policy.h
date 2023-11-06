@@ -22,6 +22,39 @@ class HttpResponseHeaders;
 namespace network {
 class CSPContext;
 
+// The field |allowed_if_wildcard_does_not_match_ws| is the result assuming '*'
+// doesn't match ws or wss, and |allowed_if_wildcard_does_not_match_ftp| is the
+// result assuming '*' doesn't match ftp. These two are only for logging.
+class COMPONENT_EXPORT(NETWORK_CPP) CSPCheckResult {
+ public:
+  explicit CSPCheckResult(bool);
+
+  CSPCheckResult& operator&=(const CSPCheckResult&);
+
+  bool operator==(const CSPCheckResult&) const;
+
+  explicit operator bool() const;
+
+  static CSPCheckResult Allowed();
+  static CSPCheckResult Blocked();
+  static CSPCheckResult AllowedOnlyIfWildcardMatchesWs();
+  static CSPCheckResult AllowedOnlyIfWildcardMatchesFtp();
+
+  bool WouldBlockIfWildcardDoesNotMatchWs() const;
+  bool WouldBlockIfWildcardDoesNotMatchFtp() const;
+
+  bool IsAllowed() const;
+
+ private:
+  CSPCheckResult(bool allowed,
+                 bool allowed_if_wildcard_does_not_match_ws,
+                 bool allowed_if_wildcard_does_not_match_ftp);
+
+  bool allowed_;
+  bool allowed_if_wildcard_does_not_match_ws_;
+  bool allowed_if_wildcard_does_not_match_ftp_;
+};
+
 // Return the next Content Security Policy directive after |directive| in
 // |original_directive|'s fallback list:
 // https://w3c.github.io/webappsec-csp/#directive-fallback-list.
@@ -66,20 +99,21 @@ bool ParseSource(mojom::CSPDirectiveName directive_name,
                  mojom::CSPSource* csp_source,
                  std::vector<std::string>& parsing_errors);
 
-// Return true when the |policy| allows a request to the |url| in relation to
-// the |directive| for a given |context|.
+// Return a CSPCheckResult that allows when the |policy| allows a request to the
+// |url| in relation to the |directive| for a given |context|.
 // Note: Any policy violation are reported to the |context|.
 COMPONENT_EXPORT(NETWORK_CPP)
-bool CheckContentSecurityPolicy(const mojom::ContentSecurityPolicyPtr& policy,
-                                mojom::CSPDirectiveName directive,
-                                const GURL& url,
-                                const GURL& url_before_redirects,
-                                bool has_followed_redirect,
-                                bool is_response_check,
-                                CSPContext* context,
-                                const mojom::SourceLocationPtr& source_location,
-                                bool is_form_submission,
-                                bool is_opaque_fenced_frame = false);
+CSPCheckResult CheckContentSecurityPolicy(
+    const mojom::ContentSecurityPolicyPtr& policy,
+    mojom::CSPDirectiveName directive,
+    const GURL& url,
+    const GURL& url_before_redirects,
+    bool has_followed_redirect,
+    bool is_response_check,
+    CSPContext* context,
+    const mojom::SourceLocationPtr& source_location,
+    bool is_form_submission,
+    bool is_opaque_fenced_frame = false);
 
 // Return true if the set of |policies| contains one "Upgrade-Insecure-request"
 // directive.

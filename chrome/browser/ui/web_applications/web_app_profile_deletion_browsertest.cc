@@ -335,8 +335,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(
-      deleting_web_contents.get(), /*bypass_service_worker_check=*/true,
-      installability_future.GetCallback());
+      deleting_web_contents.get(), installability_future.GetCallback());
   EXPECT_TRUE(installability_future.Wait());
 
   EXPECT_EQ(installability_future.Get<webapps::InstallableStatusCode>(),
@@ -355,8 +354,7 @@ IN_PROC_BROWSER_TEST_F(WebAppProfileDeletionTest_WebContentsGracefulShutdown,
                          webapps::InstallableStatusCode>
       installability_future;
   data_retriever.CheckInstallabilityAndRetrieveManifest(
-      deleting_web_contents.get(), /*bypass_service_worker_check=*/true,
-      installability_future.GetCallback());
+      deleting_web_contents.get(), installability_future.GetCallback());
   EXPECT_TRUE(installability_future.Wait());
 
   base::test::TestFuture<IconsDownloadedResult, IconsMap,

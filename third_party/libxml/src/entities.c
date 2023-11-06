@@ -113,7 +113,7 @@ xmlEntitiesWarn(xmlParserErrors code, const char *msg, const xmlChar *str1)
 /*
  * xmlFreeEntity : clean-up an entity record.
  */
-static void
+void
 xmlFreeEntity(xmlEntityPtr entity)
 {
     xmlDictPtr dict = NULL;

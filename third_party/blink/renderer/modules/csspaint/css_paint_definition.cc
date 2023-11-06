@@ -97,7 +97,6 @@ PaintRecord CSSPaintDefinition::Paint(
   // Do subpixel snapping for the |container_size|.
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
       ToRoundedSize(container_size), context_settings_, zoom,
-      /*device_scale_factor=*/1,
       global_scope_->GetTaskRunner(TaskType::kMiscPlatformAPI), global_scope_);
   PaintSize* paint_size = MakeGarbageCollected<PaintSize>(specified_size);
 

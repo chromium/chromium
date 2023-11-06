@@ -47,18 +47,9 @@
     #checkmark {
       --iron-icon-fill-color: var(--cros-icon-color-prominent);
     }
-
-    paper-spinner-lite {
-      height: 16px;
-      vertical-align: middle;
-      width: 16px;
-    }
 </style>
 <div id="container" class="flex layout horizontal center" selectable>
   <div id="details">
-    <iron-media-query query="(prefers-color-scheme: dark)"
-        query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
     <!-- The item's aria properties are set in profile_discovery_list_page. -->
     <div class="flex settings-box-text">
       <div id="profileTitleLabel">
@@ -70,11 +61,7 @@
       hidden$="[[!selected]]">
     <iron-icon id="checkmark"
         icon="cellular-setup:checked"
-        tabindex="-1"
-        hidden$="[[showLoadingIndicator]]">
+        tabindex="-1">
     </iron-icon>
-    <paper-spinner-lite active
-        hidden$="[[!showLoadingIndicator]]">
-    </paper-spinner-lite>
   </div>
 </div>

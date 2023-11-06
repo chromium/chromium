@@ -15,6 +15,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/widget/widget.h"
 
 namespace policy {
 
@@ -33,18 +34,40 @@ views::Widget::InitParams GetWidgetInitParams(aura::Window* parent) {
 
 std::unique_ptr<views::Widget> CreateWidget(
     aura::Window* parent,
-    std::unique_ptr<views::View> contents) {
+    std::unique_ptr<views::View> contents,
+    const gfx::Rect widget_bounds) {
   auto widget = std::make_unique<views::Widget>();
   widget->Init(GetWidgetInitParams(parent));
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_NONE);
   widget->SetContentsView(std::move(contents));
-  widget->SetSize(gfx::Size(400, 200));
+  widget->SetBounds(widget_bounds);
   widget->GetNativeWindow()->SetId(
       ash::kShellWindowId_AdminWasPresentNotificationWindow);
   return widget;
 }
 
+aura::Window* GetWidgetParentContainer() {
+  return ash::Shell::GetPrimaryRootWindow()->GetChildById(
+      ash::kShellWindowId_LockScreenContainersContainer);
+}
+
+gfx::Rect GetFullscreenBounds() {
+  return ash::Shell::GetPrimaryRootWindow()->GetBoundsInRootWindow();
+}
+
 }  // namespace
+
+class RemoteActivityNotificationController::WidgetController {
+ public:
+  explicit WidgetController(std::unique_ptr<views::Widget> widget)
+      : widget_(std::move(widget)) {
+    widget_->Show();
+  }
+  ~WidgetController() { widget_->Hide(); }
+
+ private:
+  std::unique_ptr<views::Widget> widget_;
+};
 
 RemoteActivityNotificationController::RemoteActivityNotificationController(
     PrefService& local_state,
@@ -63,8 +86,10 @@ void RemoteActivityNotificationController::OnLoginOrLockScreenVisible() {
   Init();
 }
 
-void RemoteActivityNotificationController::OnCurtainSessionStarted() {
-  local_state_->SetBoolean(prefs::kRemoteAdminWasPresent, true);
+void RemoteActivityNotificationController::OnClientConnected() {
+  if (is_current_session_curtained_.Run()) {
+    local_state_->SetBoolean(prefs::kRemoteAdminWasPresent, true);
+  }
 }
 
 // TODO(b/299143143): Add id for the new UI view and check if the button click
@@ -75,10 +100,7 @@ void RemoteActivityNotificationController::ClickNotificationButtonForTesting() {
 }
 
 void RemoteActivityNotificationController::OnNotificationCloseButtonClick() {
-  if (widget_) {
-    widget_->Hide();
-    widget_.reset();
-  }
+  HideNotification();
 
   // To make sure remote admin cannot dismiss the notification permanently
   // themselves by starting a new session.
@@ -99,15 +121,18 @@ void RemoteActivityNotificationController::ShowNotification() {
   CHECK(ash::Shell::HasInstance());
   CHECK(ash::Shell::GetPrimaryRootWindow()->GetRootWindow());
 
-  widget_ = CreateWidget(
-      ash::Shell::GetPrimaryRootWindow()->GetChildById(
-          ash::kShellWindowId_LockScreenContainersContainer),
+  auto notification_view =
       std::make_unique<RemoteActivityNotificationView>(base::BindRepeating(
           &RemoteActivityNotificationController::OnNotificationCloseButtonClick,
-          base::Unretained(this))));
-  widget_->Show();
-  widget_->SetBounds(
-      ash::Shell::GetPrimaryRootWindow()->GetBoundsInRootWindow());
+          base::Unretained(this)));
+
+  widget_controller_ = std::make_unique<WidgetController>(
+      CreateWidget(GetWidgetParentContainer(), std::move(notification_view),
+                   GetFullscreenBounds()));
+}
+
+void RemoteActivityNotificationController::HideNotification() {
+  widget_controller_ = nullptr;
 }
 
 }  // namespace policy

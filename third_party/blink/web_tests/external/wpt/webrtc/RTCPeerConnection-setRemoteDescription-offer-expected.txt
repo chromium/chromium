@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS setRemoteDescription with valid offer should succeed
-PASS setRemoteDescription multiple times should succeed
-PASS setRemoteDescription multiple times with different offer should succeed
-FAIL setRemoteDescription(offer) with invalid SDP should reject with RTCError assert_equals: Expect error detail field to set to sdp-syntax-error expected (string) "sdp-syntax-error" but got (undefined) undefined
-PASS setRemoteDescription(offer) from have-local-offer state should reject with InvalidStateError
-Harness: the test ran to completion.
-

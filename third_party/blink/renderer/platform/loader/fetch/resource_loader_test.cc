@@ -161,8 +161,9 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
   MojoResult result = CreateDataPipe(&options, producer, consumer);
   ASSERT_EQ(result, MOJO_RESULT_OK);
 
-  loader->DidReceiveResponse(WrappedResourceResponse(response));
-  loader->DidStartLoadingResponseBody(std::move(consumer));
+  loader->DidReceiveResponse(WrappedResourceResponse(response),
+                             std::move(consumer),
+                             /*cached_metadata=*/absl::nullopt);
   loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
 
   uint32_t num_bytes = 2;
@@ -241,7 +242,7 @@ class TestRawResourceClient final
     RawResourceClient::Trace(visitor);
   }
 
-  BytesConsumer* body() { return body_; }
+  BytesConsumer* body() { return body_.Get(); }
 
  private:
   Member<BytesConsumer> body_;
@@ -463,10 +464,11 @@ bool WillFollowRedirect(ResourceLoader* loader, KURL new_url) {
                              /*report_security_info=*/true, /*request_id=*/1);
   bool has_devtools_request_id = false;
   std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders modified_headers;
   return loader->WillFollowRedirect(
       new_url, net::SiteForCookies(), /*new_referrer=*/String(),
       network::mojom::ReferrerPolicy::kAlways, "GET", response,
-      has_devtools_request_id, &removed_headers,
+      has_devtools_request_id, &removed_headers, modified_headers,
       /*insecure_scheme_was_upgraded=*/false);
 }
 
@@ -525,73 +527,6 @@ TEST_F(ResourceLoaderTest, CrossOriginRedirect_NoAuthorization) {
   ::testing::Mock::VerifyAndClear(UseCounter());
 }
 
-class ResourceLoaderIsolatedCodeCacheTest : public ResourceLoaderTest {
- protected:
-  bool LoadAndCheckIsolatedCodeCache(ResourceResponse response) {
-    const scoped_refptr<const SecurityOrigin> origin =
-        SecurityOrigin::Create(foo_url_);
-
-    auto* properties =
-        MakeGarbageCollected<TestResourceFetcherProperties>(origin);
-    FetchContext* context = MakeGarbageCollected<MockFetchContext>();
-    auto* fetcher = MakeResourceFetcher(properties, context);
-    ResourceRequest request;
-    request.SetUrl(foo_url_);
-    request.SetRequestContext(mojom::blink::RequestContextType::FETCH);
-
-    FetchParameters fetch_parameters =
-        FetchParameters::CreateForTest(std::move(request));
-    Resource* resource = RawResource::Fetch(fetch_parameters, fetcher, nullptr);
-    ResourceLoader* loader = resource->Loader();
-
-    loader->DidReceiveResponse(WrappedResourceResponse(response));
-    return loader->should_use_isolated_code_cache_;
-  }
-};
-
-TEST_F(ResourceLoaderIsolatedCodeCacheTest, ResponseFromNetwork) {
-  ResourceResponse response(foo_url_);
-  response.SetHttpStatusCode(200);
-  EXPECT_EQ(true, LoadAndCheckIsolatedCodeCache(response));
-}
-
-TEST_F(ResourceLoaderIsolatedCodeCacheTest,
-       SyntheticResponseFromServiceWorker) {
-  ResourceResponse response(foo_url_);
-  response.SetHttpStatusCode(200);
-  response.SetWasFetchedViaServiceWorker(true);
-  EXPECT_EQ(false, LoadAndCheckIsolatedCodeCache(response));
-}
-
-TEST_F(ResourceLoaderIsolatedCodeCacheTest,
-       PassThroughResponseFromServiceWorker) {
-  ResourceResponse response(foo_url_);
-  response.SetHttpStatusCode(200);
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetUrlListViaServiceWorker(Vector<KURL>(1, foo_url_));
-  EXPECT_EQ(true, LoadAndCheckIsolatedCodeCache(response));
-}
-
-TEST_F(ResourceLoaderIsolatedCodeCacheTest,
-       DifferentUrlResponseFromServiceWorker) {
-  ResourceResponse response(foo_url_);
-  response.SetHttpStatusCode(200);
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetUrlListViaServiceWorker(Vector<KURL>(1, bar_url_));
-  EXPECT_EQ(false, LoadAndCheckIsolatedCodeCache(response));
-}
-
-TEST_F(ResourceLoaderIsolatedCodeCacheTest, CacheResponseFromServiceWorker) {
-  ResourceResponse response(foo_url_);
-  response.SetHttpStatusCode(200);
-  response.SetWasFetchedViaServiceWorker(true);
-  response.SetCacheStorageCacheName("dummy");
-  // The browser does support code cache for cache_storage Responses, but they
-  // are loaded via a different mechanism.  So the ResourceLoader code caching
-  // value should be false here.
-  EXPECT_EQ(false, LoadAndCheckIsolatedCodeCache(response));
-}
-
 class ResourceLoaderSubresourceFilterCnameAliasTest
     : public ResourceLoaderTest {
  public:
@@ -618,7 +553,9 @@ class ResourceLoaderSubresourceFilterCnameAliasTest
 
   void GiveResponseToLoader(ResourceResponse response, ResourceLoader* loader) {
     CreateMojoDataPipe();
-    loader->DidReceiveResponse(WrappedResourceResponse(response));
+    loader->DidReceiveResponse(WrappedResourceResponse(response),
+                               /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                               /*cached_metadata=*/absl::nullopt);
   }
 
  protected:

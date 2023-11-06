@@ -38,6 +38,14 @@ PreviewPageLoadMetricsObserver::OnPrerenderStart(
   return CONTINUE_OBSERVING;
 }
 
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PreviewPageLoadMetricsObserver::OnPreviewStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  status_ = Status::kPreviewed;
+  return CONTINUE_OBSERVING;
+}
+
 PreviewPageLoadMetricsObserver::ObservePolicy
 PreviewPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
@@ -67,8 +75,15 @@ void PreviewPageLoadMetricsObserver::OnComplete(
   RecordMetrics();
 }
 
+void PreviewPageLoadMetricsObserver::DidActivatePreviewedPage(
+    base::TimeTicks activation_time) {
+  status_ = Status::kPromoted;
+}
+
 PreviewPageLoadMetricsObserver::PageVisitType
 PreviewPageLoadMetricsObserver::RecordPageVisitType() {
+  CHECK_EQ(status_, Status::kNotPreviewed);
+
   PageVisitType type;
   const page_load_metrics::PageLoadMetricsObserverDelegate& delegate =
       GetDelegate();
@@ -96,6 +111,13 @@ PreviewPageLoadMetricsObserver::RecordPageVisitType() {
 }
 
 void PreviewPageLoadMetricsObserver::RecordMetrics() {
+  if (status_ != Status::kNotPreviewed) {
+    base::UmaHistogramEnumeration("PageLoad.Experimental.PreviewFinalStatus",
+                                  ConvertStatusToPreviewFinalStatus(status_));
+    return;
+  }
+
+  CHECK_EQ(status_, Status::kNotPreviewed);
   PageVisitType page_visit_type = RecordPageVisitType();
   if (currently_in_foreground_ && !last_time_shown_.is_null()) {
     total_foreground_duration_ += base::TimeTicks::Now() - last_time_shown_;
@@ -153,4 +175,18 @@ void PreviewPageLoadMetricsObserver::CheckPageTransitionType(
                                    ui::PAGE_TRANSITION_FIRST)) {
     is_first_navigation_ = true;
   }
+}
+
+PreviewPageLoadMetricsObserver::PreviewFinalStatus
+PreviewPageLoadMetricsObserver::ConvertStatusToPreviewFinalStatus(
+    PreviewPageLoadMetricsObserver::Status status) {
+  switch (status) {
+    case Status::kNotPreviewed:
+      NOTREACHED_NORETURN();
+    case Status::kPreviewed:
+      return PreviewFinalStatus::kPreviewed;
+    case Status::kPromoted:
+      return PreviewFinalStatus::kPromoted;
+  }
+  NOTREACHED_NORETURN();
 }

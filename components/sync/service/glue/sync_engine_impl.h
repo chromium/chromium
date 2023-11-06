@@ -96,6 +96,7 @@ class SyncEngineImpl : public SyncEngine,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
+  void RecordNigoriMemoryUsageAndCountsHistograms() override;
 
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;

@@ -6,15 +6,16 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   TestRunner.addResult(`Tests active mixed content blocking in the security panel.\n`);
   await TestRunner.showPanel('security');
 
-  TestRunner.mainTarget.model(Security.SecurityModel)
+  TestRunner.mainTarget.model(Security.SecurityModel.SecurityModel)
       .dispatchEventToListeners(
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
-        new Security.PageVisibleSecurityState(
+        new Security.SecurityModel.PageVisibleSecurityState(
           Protocol.Security.SecurityState.Neutral, /* certificateSecurityState= */ null,
           /* safetyTipInfo= */ null, /* securityStateIssueIds= */ ['scheme-is-not-cryptographic']));
 
@@ -25,7 +26,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SecurityTestRunner.dispatchRequestFinished(request);
 
   var explanations =
-      Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 

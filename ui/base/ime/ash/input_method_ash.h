@@ -72,8 +72,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
       uint32_t end,
       const std::vector<ui::ImeTextSpan>& text_spans) override;
   gfx::Range GetAutocorrectRange() override;
-  gfx::Rect GetAutocorrectCharacterBounds() override;
-  gfx::Rect GetTextFieldBounds() override;
   void SetAutocorrectRange(const gfx::Range& range,
                            SetAutocorrectRangeDoneCallback callback) override;
   absl::optional<ui::GrammarFragment> GetGrammarFragmentAtCursor() override;
@@ -93,7 +91,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodAsh
   ui::InputMethod* GetInputMethod() override;
   void ConfirmComposition(bool reset_engine) override;
   bool HasCompositionText() override;
-  std::u16string GetCompositionText() override;
   ukm::SourceId GetClientSourceForMetrics() override;
 
  protected:

@@ -166,6 +166,8 @@ class ChromeAssistantUtilTest : public testing::Test {
   ~ChromeAssistantUtilTest() override = default;
 
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
@@ -178,8 +180,6 @@ class ChromeAssistantUtilTest : public testing::Test {
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<ash::FakeChromeUserManager>());
 
     ui::DeviceDataManager::CreateInstance();
   }
@@ -187,10 +187,10 @@ class ChromeAssistantUtilTest : public testing::Test {
   void TearDown() override {
     ui::DeviceDataManager::DeleteInstance();
     identity_test_env_adaptor_.reset();
-    user_manager_enabler_.reset();
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
+    fake_user_manager_.Reset();
   }
 
   TestingProfile* profile() { return profile_; }
@@ -200,8 +200,7 @@ class ChromeAssistantUtilTest : public testing::Test {
   }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    return fake_user_manager_.Get();
   }
 
   AccountId GetActiveDirectoryUserAccountId(const TestingProfile* profile) {
@@ -231,8 +230,9 @@ class ChromeAssistantUtilTest : public testing::Test {
   base::ScopedTempDir data_dir_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   // Owned by |profile_manager_|
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
       nullptr;

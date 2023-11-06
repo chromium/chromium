@@ -23,6 +23,7 @@ source_set("printer_provider") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//components/device_event_log",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/common",

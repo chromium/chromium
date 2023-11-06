@@ -70,7 +70,9 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginVertical="@dimen/readaloud_expanded_player_title_margin_vertical"
             android:layout_gravity="center_horizontal"
-            android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"/>
+            android:textAppearance="@style/TextAppearance.Headline2Thick.Primary"
+            android:ellipsize="end"
+            android:maxLines="1"/>
 
         <!-- Publisher button. -->
         <LinearLayout
@@ -87,6 +89,8 @@ found in the LICENSE file.
                 android:layout_marginLeft="@dimen/readaloud_expanded_player_publisher_margin_left"
                 android:layout_marginVertical="@dimen/readaloud_expanded_player_publisher_margin_vertical"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:ellipsize="end"
+                android:maxLines="1"
                 tools:ignore="RtlHardcoded"/>
                 <!-- RtlHardcoded: The chevron always is drawn on the right, so we use marginLeft instead of marginStart. -->
             <ImageView

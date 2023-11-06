@@ -8,8 +8,20 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-source_set("jni_helpers") {
-  sources = [ "jni_int_wrapper.h" ]
+source_set("jni_export") {
+  sources = [ "jni_export.h" ]
+}
+
+source_set("jni_zero") {
+  sources = [
+    "jni_int_wrapper.h",
+    "jni_zero_helper.h",
+  ]
+
+  public_deps = [
+    ":jni_export",
+    "//base",
+  ]
 }
 
 if (enable_java_templates && is_android) {

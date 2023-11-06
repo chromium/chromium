@@ -113,6 +113,8 @@ non_web_component_files = [
   "cr_scrollable_behavior.js",
   "event_target.js",
   "event_tracker.js",
+  "fake_method_resolver.js",
+  "fake_observables.js",
   "focus_row_js.js",
   "focus_row_behavior.js",
   "focus_without_ink_js.js",
@@ -150,6 +152,8 @@ web_component_files_ts = [
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
   "quick_unlock/fingerprint_progress.ts",
+  "shortcut_input_ui/shortcut_input.ts",
+  "shortcut_input_ui/shortcut_input_key.ts",
 ]
 
 non_web_component_files_ts = [
@@ -159,11 +163,21 @@ non_web_component_files_ts = [
   "quick_unlock/utils.ts",
   "typescript_utils/strict_query.ts",
   "quick_unlock/lock_screen_constants.ts",
+  "shortcut_input_ui/fake_shortcut_input_provider.ts",
+  "shortcut_input_ui/shortcut_utils.ts",
 ]
 
 mojo_files_ts = [
   "connectivity/passpoint.mojom-webui.ts",
   "hotspot/cros_hotspot_config.mojom-webui.ts",
+  "shortcut_input_ui/accelerator_actions.mojom-webui.ts",
+  "shortcut_input_ui/accelerator_keys.mojom-webui.ts",
+  "shortcut_input_ui/input_device_settings.mojom-webui.ts",
+  "shortcut_input_ui/shortcut_input_provider.mojom-webui.ts",
+  "shortcut_input_ui/extended_fkeys_modifier.mojom-webui.ts",
+  "shortcut_input_ui/modifier_key.mojom-webui.ts",
+  "shortcut_input_ui/simulate_right_click_modifier.mojom-webui.ts",
+  "shortcut_input_ui/six_pack_shortcut_modifier.mojom-webui.ts",
 ]
 
 icons_html_files = [
@@ -171,9 +185,11 @@ icons_html_files = [
   "multidevice_setup/icons.html",
   "navigation_icons.html",
 
+  "auth_setup/auth_setup_icons.html",
   "bluetooth/bluetooth_icons.html",
   "cellular_setup/cellular_setup_icons.html",
   "network/network_icons.html",
+  "shortcut_input_ui/icons.html",
   "quick_unlock/pin_keyboard_icons.html",
   "quick_unlock/fingerprint_progress_icons.html",
 ]
@@ -260,6 +276,7 @@ ts_library("build_ts") {
     ":preprocess_ts",
     "connectivity:copy_mojo_files",
     "hotspot:copy_mojo_files",
+    "shortcut_input_ui:copy_mojo_files",
   ]
 }
 
@@ -277,8 +294,6 @@ generate_grd("build_html_css_wrapper_files_grdp") {
 
 generate_grd("build_grd") {
   input_files = [
-    "fake_method_resolver.js",
-    "fake_observables.js",
     "keyboard_layouts.js",
 
     # Test runner used by file manager tests, webui_resource_browsertest.cc, and
@@ -294,7 +309,6 @@ generate_grd("build_grd") {
     "cellular_setup/default_esim_profile.svg",
     "cellular_setup/default_esim_profile_dark.svg",
     "cellular_setup/spinner.json",
-    "cellular_setup/spinner_dark.json",
     "hotspot/hotspot_dot.svg",
     "hotspot/hotspot_inner.svg",
     "hotspot/hotspot-off.svg",
@@ -413,8 +427,15 @@ generate_definitions_js_files = [
   "network_health/routine_group.html.js",
   "network_health/routine_group.js",
   "network/mojo_interface_provider.js",
+  "network/network_config_element_behavior.js",
   "network/network_listener_behavior.js",
   "network/network_list_types.js",
+  "network/network_proxy_exclusions.html.js",
+  "network/network_proxy_exclusions.js",
+  "network/network_proxy_input.html.js",
+  "network/network_proxy_input.js",
+  "network/network_select.html.js",
+  "network/network_select.js",
   "network/network_shared.css.js",
   "network/onc_mojo.js",
   "quick_unlock/fingerprint_progress.html.js",
@@ -422,6 +443,9 @@ generate_definitions_js_files = [
   "quick_unlock/pin_keyboard.html.js",
   "quick_unlock/pin_keyboard_icons.html.js",
   "quick_unlock/setup_pin_keyboard.html.js",
+  "shortcut_input_ui/shortcut_input_key.html.js",
+  "shortcut_input_ui/icons.html.js",
+  "shortcut_input_ui/shortcut_input.html.js",
   "traffic_counters/traffic_counters_adapter.js",
   "util.js",
 ]

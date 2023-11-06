@@ -7,7 +7,6 @@ import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.j
 
 import {DialogType} from '../../../common/js/dialog_type.js';
 import {queryRequiredElement} from '../../../common/js/dom_utils.js';
-import {util} from '../../../common/js/util.js';
 import {FileListModel, GROUP_BY_FIELD_DIRECTORY, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
 
@@ -86,22 +85,30 @@ export class ListContainer {
     /**
      * @type {FileListModel}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'FileListModel'.
     this.dataModel = null;
 
     /**
      * @type {ListThumbnailLoader}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'ListThumbnailLoader'.
     this.listThumbnailLoader = null;
 
     /**
      * @type {ListSelectionModel|ListSingleSelectionModel}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'ListSelectionModel | ListSingleSelectionModel'.
     this.selectionModel = null;
 
     /**
      * Data model which is used as a placefolder in inactive file list.
      * @type {FileListModel}
      */
+    // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+    // 'FileListModel'.
     this.emptyDataModel = null;
 
     /**
@@ -145,25 +152,34 @@ export class ListContainer {
 
     // Disables context menu by long-tap when long-tap would transition to
     // multi-select mode, but keep it enabled for two-finger tap.
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     this.element.addEventListener('touchstart', function(e) {
+      // @ts-ignore: error TS2339: Property 'currentList' does not exist on type
+      // '(Anonymous function)'.
       if (e.touches.length > 1 || this.currentList.selectedItem) {
         this.allowContextMenuByTouch_ = true;
       }
     }.bind(this), {passive: true});
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     this.element.addEventListener('touchend', function(e) {
       if (e.touches.length == 0) {
         // contextmenu event will be sent right after touchend.
         setTimeout(function() {
           this.allowContextMenuByTouch_ = false;
+          // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because
+          // it does not have a type annotation.
         }.bind(this));
       }
     }.bind(this));
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     this.element.addEventListener('contextmenu', function(e) {
       // Block context menu triggered by touch event unless either:
       // - It is right after a multi-touch, or
       // - We were already in multi-select mode, or
       // - No items are selected (i.e. long-tap on empty area in the current
       // folder).
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       if (this.currentList.selectedItem && !this.allowContextMenuByTouch_ &&
           e.sourceCapabilities && e.sourceCapabilities.firesTouchEvents) {
         e.stopPropagation();
@@ -173,8 +189,10 @@ export class ListContainer {
 
     // Ensure the list and grid are marked ARIA single select for save as.
     if (type === DialogType.SELECT_SAVEAS_FILE) {
+      // @ts-ignore: error TS2339: Property 'querySelector' does not exist on
+      // type 'FileTable'.
       const list = table.querySelector('#file-list');
-      list.setAttribute('aria-multiselectable', 'false');
+      list?.setAttribute('aria-multiselectable', 'false');
       grid.setAttribute('aria-multiselectable', 'false');
     }
   }
@@ -190,6 +208,8 @@ export class ListContainer {
         return this.grid;
     }
     assertNotReached();
+    // To appease tsc:
+    return this.table;
   }
 
   /**
@@ -203,6 +223,8 @@ export class ListContainer {
         return this.grid;
     }
     assertNotReached();
+    // To appease tsc:
+    return this.table.list;
   }
 
   /**
@@ -210,6 +232,8 @@ export class ListContainer {
    */
   startBatchUpdates() {
     this.table.startBatchUpdates();
+    // @ts-ignore: error TS2339: Property 'startBatchUpdates' does not exist on
+    // type 'FileGrid'.
     this.grid.startBatchUpdates();
   }
 
@@ -218,6 +242,8 @@ export class ListContainer {
    */
   endBatchUpdates() {
     this.table.endBatchUpdates();
+    // @ts-ignore: error TS2339: Property 'endBatchUpdates' does not exist on
+    // type 'FileGrid'.
     this.grid.endBatchUpdates();
   }
 
@@ -250,9 +276,13 @@ export class ListContainer {
         this.table.dataModel = this.dataModel;
         this.table.setListThumbnailLoader(this.listThumbnailLoader);
         this.table.selectionModel = this.selectionModel;
+        // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
+        // 'FileTable'.
         this.table.hidden = false;
         this.grid.hidden = true;
         this.grid.selectionModel = this.emptySelectionModel_;
+        // @ts-ignore: error TS2345: Argument of type 'null' is not assignable
+        // to parameter of type 'ListThumbnailLoader'.
         this.grid.setListThumbnailLoader(null);
         this.grid.dataModel = this.emptyDataModel;
         break;
@@ -265,10 +295,17 @@ export class ListContainer {
         }
         this.grid.dataModel = this.dataModel;
         this.grid.setListThumbnailLoader(this.listThumbnailLoader);
+        // @ts-ignore: error TS2322: Type 'ListSelectionModel |
+        // ListSingleSelectionModel' is not assignable to type
+        // 'ListSelectionModel'.
         this.grid.selectionModel = this.selectionModel;
         this.grid.hidden = false;
+        // @ts-ignore: error TS2339: Property 'hidden' does not exist on type
+        // 'FileTable'.
         this.table.hidden = true;
         this.table.selectionModel = this.emptySelectionModel_;
+        // @ts-ignore: error TS2345: Argument of type 'null' is not assignable
+        // to parameter of type 'ListThumbnailLoader'.
         this.table.setListThumbnailLoader(null);
         this.table.dataModel = this.emptyDataModel;
         break;
@@ -288,6 +325,8 @@ export class ListContainer {
   findListItemForNode(node) {
     const item = this.currentList.getListItemAncestor(node);
     // TODO(serya): list should check that.
+    // @ts-ignore: error TS2322: Type 'ListItem | null' is not assignable to
+    // type 'ListItem'.
     return item && this.currentList.isItem(item) ?
         assertInstanceof(item, ListItem) :
         null;
@@ -315,9 +354,14 @@ export class ListContainer {
    * @return {boolean} True if the menu has action item. Otherwise, false.
    * @private
    */
+  // @ts-ignore: error TS6133: 'contextMenuHasActions_' is declared but its
+  // value is never read.
   contextMenuHasActions_() {
     const menu = document.querySelector('#file-context-menu');
+    // @ts-ignore: error TS18047: 'menu' is possibly 'null'.
     const menuItems = menu.querySelectorAll('cr-menu-item, hr');
+    // @ts-ignore: error TS2488: Type 'NodeListOf<Element>' must have a
+    // '[Symbol.iterator]()' method that returns an iterator.
     for (const item of menuItems) {
       if (!item.hasAttribute('hidden') && !item.hasAttribute('disabled') &&
           (window.getComputedStyle(item).display != 'none')) {
@@ -334,7 +378,11 @@ export class ListContainer {
    * @private
    */
   onContextMenu_(e) {
+    // @ts-ignore: error TS2339: Property 'sourceCapabilities' does not exist on
+    // type 'Event'.
     if (!this.allowContextMenuByTouch_ && e.sourceCapabilities &&
+        // @ts-ignore: error TS2339: Property 'sourceCapabilities' does not
+        // exist on type 'Event'.
         e.sourceCapabilities.firesTouchEvents) {
       this.focus();
     }
@@ -347,6 +395,8 @@ export class ListContainer {
    */
   onKeyDown_(event) {
     // Ignore keydown handler in the rename input box.
+    // @ts-ignore: error TS2339: Property 'tagName' does not exist on type
+    // 'EventTarget'.
     if (event.srcElement.tagName == 'INPUT') {
       event.stopImmediatePropagation();
       return;
@@ -360,15 +410,23 @@ export class ListContainer {
    */
   onKeyPress_(event) {
     // Ignore keypress handler in the rename input box.
+    // @ts-ignore: error TS2339: Property 'metaKey' does not exist on type
+    // 'Event'.
     if (event.srcElement.tagName == 'INPUT' || event.ctrlKey || event.metaKey ||
+        // @ts-ignore: error TS2339: Property 'altKey' does not exist on type
+        // 'Event'.
         event.altKey) {
       event.stopImmediatePropagation();
       return;
     }
 
     const now = new Date();
+    // @ts-ignore: error TS2339: Property 'charCode' does not exist on type
+    // 'Event'.
     const character = String.fromCharCode(event.charCode).toLowerCase();
     const text =
+        // @ts-ignore: error TS2363: The right-hand side of an arithmetic
+        // operation must be of type 'any', 'number', 'bigint' or an enum type.
         now - this.textSearchState.date > 1000 ? '' : this.textSearchState.text;
     this.textSearchState.text = text + character;
     this.textSearchState.date = now;
@@ -406,6 +464,8 @@ ListContainer.ListType = {
  * @type {Array<ListContainer.ListType>}
  * @const
  */
+// @ts-ignore: error TS4104: The type 'readonly string[]' is 'readonly' and
+// cannot be assigned to the mutable type 'string[]'.
 ListContainer.ListTypesForUMA = Object.freeze([
   ListContainer.ListType.UNINITIALIZED,
   ListContainer.ListType.DETAIL,

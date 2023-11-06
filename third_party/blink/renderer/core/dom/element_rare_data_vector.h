@@ -37,9 +37,9 @@ class DisplayLockContext;
 class ContainerQueryData;
 class ResizeObserver;
 class ResizeObservation;
+class StyleScopeData;
 class CustomElementDefinition;
 class PopoverData;
-class CSSToggleMap;
 class HTMLElement;
 
 enum class ElementFlags;
@@ -85,17 +85,17 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kResizeObserverData = 17,
     kCustomElementDefinition = 18,
     kPopoverData = 19,
-    kToggleMap = 20,
-    kPartNamesMap = 21,
-    kNonce = 22,
-    kIsValue = 23,
-    kSavedLayerScrollOffset = 24,
-    kAnchorPositionScrollData = 25,
-    kAnchorElementObserver = 26,
-    kImplicitlyAnchoredElementCount = 27,
-    kLastRememberedBlockSize = 28,
-    kLastRememberedInlineSize = 29,
-    kRestrictionTargetId = 30,
+    kPartNamesMap = 20,
+    kNonce = 21,
+    kIsValue = 22,
+    kSavedLayerScrollOffset = 23,
+    kAnchorPositionScrollData = 24,
+    kAnchorElementObserver = 25,
+    kImplicitlyAnchoredElementCount = 26,
+    kLastRememberedBlockSize = 27,
+    kLastRememberedInlineSize = 28,
+    kRestrictionTargetId = 29,
+    kStyleScopeData = 30,
 
     kNumFields = 31,
   };
@@ -252,6 +252,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   ContainerQueryData* GetContainerQueryData() const;
   void ClearContainerQueryData();
 
+  StyleScopeData& EnsureStyleScopeData();
+  StyleScopeData* GetStyleScopeData() const;
+
   // Returns the crop-ID if one was set, or nullptr otherwise.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
   // Sets a crop-ID on the item. Must be called at most once. Cannot be used
@@ -283,9 +286,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   PopoverData* GetPopoverData() const;
   PopoverData& EnsurePopoverData();
   void RemovePopoverData();
-
-  CSSToggleMap* GetToggleMap() const;
-  CSSToggleMap& EnsureToggleMap(Element* owner_element);
 
   bool HasElementFlag(ElementFlags mask) const {
     return element_flags_ & static_cast<uint16_t>(mask);
@@ -381,6 +381,14 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetAncestorsOrSiblingsAffectedByHoverInHas() {
     has_invalidation_flags_.ancestors_or_siblings_affected_by_hover_in_has =
         true;
+  }
+  bool AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const {
+    return has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_view_transition_in_has;
+  }
+  void SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas() {
+    has_invalidation_flags_
+        .ancestors_or_siblings_affected_by_active_view_transition_in_has = true;
   }
   bool AncestorsOrSiblingsAffectedByActiveInHas() const {
     return has_invalidation_flags_

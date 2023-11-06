@@ -188,7 +188,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
       MigrationDeleteCardCallback delete_local_card_callback) override;
   void ConfirmSaveIbanLocally(const Iban& iban,
                               bool should_show_prompt,
-                              LocalSaveIbanPromptCallback callback) override;
+                              SaveIbanPromptCallback callback) override;
+  void ConfirmUploadIbanToCloud(const Iban& iban,
+                                const LegalMessageLines& legal_message_lines,
+                                bool should_show_prompt,
+                                SaveIbanPromptCallback callback) override;
   void ShowWebauthnOfferDialog(
       WebauthnDialogCallback offer_dialog_callback) override;
   void ShowWebauthnVerifyPendingDialog(
@@ -240,8 +244,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillPopupDelegate> delegate) override;
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override;
+      base::span<const SelectOption> datalist) override;
   std::vector<Suggestion> GetPopupSuggestions() const override;
   void PinPopupView() override;
   PopupOpenArgs GetReopenPopupArgs(
@@ -267,7 +270,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       base::OnceClosure no_interactive_authentication_callback) override;
   bool IsAutocompleteEnabled() const override;
   bool IsPasswordManagerEnabled() override;
-  void DidFillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
+  void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
   void DidFillOrPreviewField(const std::u16string& autofilled_value,

@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html>
-<head>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/testdriver.js"></script>
@@ -8,8 +7,7 @@
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
-</head>
-<body>
+
 <input type="week" id="week-0" value="2019-W17" max="2019-W21">
 <input type="week" id="week-1" value="2019-W20" min="2019-W17">
 <input type="week" id="week-2" value="2019-W25" step="3">
@@ -85,5 +83,3 @@ promise_test(() => {
 }, "Week picker: If same week in next month is invalid, next month button should choose closest value -- larger week case");
 
 </script>
-</body>
-</html>

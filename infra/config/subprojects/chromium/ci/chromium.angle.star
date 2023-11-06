@@ -5,6 +5,7 @@
 
 load("//lib/builders.star", "reclient", "sheriff_rotations", "xcode")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -14,6 +15,7 @@ ci.defaults.set(
     pool = ci.gpu.POOL,
     sheriff_rotations = sheriff_rotations.ANGLE,
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
+    health_spec = health_spec.DEFAULT,
     properties = {
         "perf_dashboard_machine_group": "ChromiumANGLE",
     },

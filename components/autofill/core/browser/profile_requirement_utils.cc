@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/profile_requirement_utils.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -43,9 +45,9 @@ GetAutofillProfileRequirementResult(const AutofillProfile& profile,
               << LogMessage::kImportAddressProfileFromFormFailed
               << "Missing required " <<
               [&] {
-                std::vector<base::StringPiece> type_names;
-                for (auto& type : types) {
-                  type_names.push_back(FieldTypeToStringPiece(type));
+                std::vector<std::string_view> type_names;
+                for (ServerFieldType type : types) {
+                  type_names.push_back(FieldTypeToStringView(type));
                 }
                 return base::JoinString(type_names, " or ");
               }()

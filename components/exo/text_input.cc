@@ -217,9 +217,7 @@ size_t TextInput::ConfirmCompositionText(bool keep_selection) {
   const auto& [surrounding_text, utf16_offset, cursor_pos, composition] =
       predicted_state;
 
-  if (!(base::FeatureList::IsEnabled(
-            ash::features::kExoExtendedConfirmComposition) &&
-        delegate_->ConfirmComposition(keep_selection))) {
+  if (!delegate_->ConfirmComposition(keep_selection)) {
     // Fallback to SetCursor and Commit if ConfirmComposition is not supported.
     // TODO(b/265853952): Remove once all versions of Lacros supports
     // ConfirmComposition.

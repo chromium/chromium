@@ -18,25 +18,22 @@ class InterpolationType;
 
 // Represents an interpolated value between an adjacent pair of
 // PropertySpecificKeyframes.
-class TypedInterpolationValue {
-  USING_FAST_MALLOC(TypedInterpolationValue);
-
+class TypedInterpolationValue
+    : public GarbageCollected<TypedInterpolationValue> {
  public:
   TypedInterpolationValue(const InterpolationType& type,
-                          std::unique_ptr<InterpolableValue> interpolable_value,
+                          InterpolableValue* interpolable_value,
                           scoped_refptr<const NonInterpolableValue>
                               non_interpolable_value = nullptr)
       : type_(type),
-        value_(std::move(interpolable_value),
-               std::move(non_interpolable_value)) {
+        value_(interpolable_value, std::move(non_interpolable_value)) {
     DCHECK(value_.interpolable_value);
   }
 
-  std::unique_ptr<TypedInterpolationValue> Clone() const {
+  TypedInterpolationValue* Clone() const {
     InterpolationValue copy = value_.Clone();
-    return std::make_unique<TypedInterpolationValue>(
-        type_, std::move(copy.interpolable_value),
-        std::move(copy.non_interpolable_value));
+    return MakeGarbageCollected<TypedInterpolationValue>(
+        type_, copy.interpolable_value, std::move(copy.non_interpolable_value));
   }
 
   const InterpolationType& GetType() const { return type_; }
@@ -49,6 +46,8 @@ class TypedInterpolationValue {
   const InterpolationValue& Value() const { return value_; }
 
   InterpolationValue& MutableValue() { return value_; }
+
+  void Trace(Visitor* v) const { v->Trace(value_); }
 
  private:
   const InterpolationType& type_;

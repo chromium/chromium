@@ -53,9 +53,15 @@ class OfferNotificationBubbleViews : public AutofillBubbleBase,
       ShowGPayPromoCodeOffer_WhenGPayPromoCodeOfferAndShoppingServiceOfferAreBothAvailable);
   FRIEND_TEST_ALL_PREFIXES(
       OfferNotificationBubbleViewsInteractiveUiTest,
+      ShowShoppingServiceFreeListingOffer_RecordHistoryClusterUsageRelatedMetrics);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsInteractiveUiTest,
       ShowShoppingServiceFreeListingOffer_WhenGPayPromoCodeOfferNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(OfferNotificationBubbleViewsInteractiveUiTest,
                            TooltipAndAccessibleName);
+  FRIEND_TEST_ALL_PREFIXES(
+      OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
+      RecordHistoryClusterUsageRelatedMetrics);
   FRIEND_TEST_ALL_PREFIXES(
       OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest,
       ShowShoppingServiceFreeListingOffer_WhenNavigatedFromChromeHistoryCluster);

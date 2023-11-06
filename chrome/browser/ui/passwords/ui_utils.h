@@ -80,7 +80,7 @@ std::u16string GetManagePasswordsDialogTitleText(
 
 // Returns text that is used when manage passwords bubble is used as a
 // confirmation.
-std::u16string GetConfirmationManagePasswordsDialogTitleText();
+std::u16string GetConfirmationManagePasswordsDialogTitleText(bool is_update);
 
 // Returns an username in the form that should be shown in the bubble.
 std::u16string GetDisplayUsername(const password_manager::PasswordForm& form);

@@ -11,6 +11,8 @@
 // includes "Add tab to Reading List" and "Show Reading List" entries.
 class ReadingListSubMenuModel : public ui::SimpleMenuModel {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kReadingListMenuShowUI);
+
   explicit ReadingListSubMenuModel(ui::SimpleMenuModel::Delegate* delegate);
 
   ReadingListSubMenuModel(const ReadingListSubMenuModel&) = delete;

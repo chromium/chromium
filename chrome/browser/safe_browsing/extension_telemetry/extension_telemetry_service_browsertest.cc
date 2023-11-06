@@ -27,6 +27,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -174,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
+    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
     const RemoteHostInfo& remote_host_contacted_info_websocket =
         remote_host_contacted_info.remote_host(1);
     EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(),
@@ -182,6 +184,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
               kExtensionContactedHost);
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
+    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+              RemoteHostInfo::EXTENSION);
   }
 }
 
@@ -677,6 +681,7 @@ IN_PROC_BROWSER_TEST_P(
     EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
     EXPECT_EQ(remote_host_info.connection_protocol(),
               RemoteHostInfo::HTTP_HTTPS);
+    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::EXTENSION);
     const RemoteHostInfo& remote_host_contacted_info_websocket =
         remote_host_contacted_info.remote_host(1);
     EXPECT_EQ(remote_host_contacted_info_websocket.contact_count(), 1u);
@@ -684,6 +689,11 @@ IN_PROC_BROWSER_TEST_P(
               kExtensionContactedHost);
     EXPECT_EQ(remote_host_contacted_info_websocket.connection_protocol(),
               RemoteHostInfo::WEBSOCKET);
+    // TODO(crbug.com/1494413): Verify unspecified contact initiator for
+    // websocket connections until that information becomes available in the
+    // renderer throttles.
+    EXPECT_EQ(remote_host_contacted_info_websocket.contacted_by(),
+              RemoteHostInfo::CONTACT_INITIATOR_UNSPECIFIED);
   }
   // Using MergeHistogramDeltasForTesting syncs the browser and renderer process
   // logs.
@@ -696,6 +706,102 @@ IN_PROC_BROWSER_TEST_P(
   histogram_tester.ExpectBucketCount(
       "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
       true, 1);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
+    DetectsWebRequestFromContentScript) {
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  static constexpr char kManifest[] =
+      R"({
+        "name": "Content Script Extension",
+        "manifest_version": 3,
+        "version": "0.0.1",
+        "permissions": ["scripting"],
+        "host_permissions": ["*://example.com/*"],
+        "content_scripts": [
+          {
+            "matches": ["<all_urls>"],
+            "js": ["content_script.js"],
+            "run_at": "document_start",
+            "all_frames": true
+          }
+        ]
+      })";
+
+  static constexpr char kContentScript[] =
+      R"(
+        chrome.test.getConfig(function(config) {
+          var baseUrl = 'http://example.com:' + config.testServer.port;
+          chrome.test.runTests([async function makeRequest() {
+            let url = `${baseUrl}/extensions/test_file.txt`;
+            let response = await fetch(url);
+            let text = await response.text();
+            chrome.test.assertEq('Hello!', text);
+            chrome.test.sendMessage('done');
+            chrome.test.succeed();
+          }]);
+        });
+      )";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
+  const auto* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to URL, trigger content script and wait.
+  ExtensionTestMessageListener listener("done");
+  GURL url = embedded_test_server()->GetURL("example.com",
+                                            "/extensions/test_file.txt");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  // Retrieve extension telemetry service instance.
+  auto* telemetry_service =
+      ExtensionTelemetryServiceFactory::GetForProfile(profile());
+  // Successfully retrieve the extension telemetry instance.
+  ASSERT_NE(telemetry_service, nullptr);
+  ASSERT_TRUE(IsTelemetryServiceEnabled(telemetry_service));
+
+  // Generate telemetry report and verify.
+  {
+    // Verify the contents of telemetry report generated.
+    std::unique_ptr<TelemetryReport> telemetry_report_pb =
+        GetTelemetryReport(telemetry_service);
+    ASSERT_NE(telemetry_report_pb, nullptr);
+    auto extension_report = base::ranges::find_if(
+        telemetry_report_pb->reports(), [&](const auto& report) {
+          return report.extension().id() == extension->id();
+        });
+    EXPECT_EQ(extension_report->extension().id(), extension->id());
+    EXPECT_EQ(extension_report->extension().name(), "Content Script Extension");
+    EXPECT_EQ(extension_report->extension().version(), kExtensionVersion);
+    // Verify the designated test extension's report has signal data.
+    ASSERT_EQ(extension_report->signals().size(), 1);
+    // Verify that extension store has been cleared after creating a telemetry
+    // report.
+    EXPECT_TRUE(IsExtensionStoreEmpty(telemetry_service));
+
+    // Verify signal proto from the reports.
+    const ExtensionTelemetryReportRequest_SignalInfo& signal =
+        extension_report->signals()[0];
+    const RemoteHostContactedInfo& remote_host_contacted_info =
+        signal.remote_host_contacted_info();
+    ASSERT_EQ(remote_host_contacted_info.remote_host_size(), 1);
+    EXPECT_TRUE(remote_host_contacted_info.collected_from_new_interception());
+
+    const RemoteHostInfo& remote_host_info =
+        remote_host_contacted_info.remote_host(0);
+    EXPECT_EQ(remote_host_info.contact_count(), 1u);
+    EXPECT_EQ(remote_host_info.url(), kExtensionContactedHost);
+    EXPECT_EQ(remote_host_info.connection_protocol(),
+              RemoteHostInfo::HTTP_HTTPS);
+    EXPECT_EQ(remote_host_info.contacted_by(), RemoteHostInfo::CONTENT_SCRIPT);
+  }
 }
 
 }  // namespace safe_browsing

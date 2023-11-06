@@ -25,7 +25,7 @@ struct SameSizeAsNGConstraintSpace {
     BfcOffset bfc_offset;
     void* rare_data;
   };
-  NGExclusionSpace exclusion_space;
+  ExclusionSpace exclusion_space;
   unsigned bitfields[1];
 };
 

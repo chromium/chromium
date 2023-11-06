@@ -29,6 +29,7 @@
 <translation id="109942774857561566">Мне надакучыла</translation>
 <translation id="1104084341931202936">Паказаць налады спецыяльных магчымасцей</translation>
 <translation id="1104621072296271835">Разам вашы прылады працуюць яшчэ лепей</translation>
+<translation id="1106446201446919638">Падключана 1 прылада. Пры выкарыстанні хот-спота Wi-Fi не ўключаецца.</translation>
 <translation id="1111021433905331574">Змяніць колер падсветкі клавіятуры можна праз меню "Налады &gt; <ph name="APP_TITLE" />"</translation>
 <translation id="1117719261843403176">Уключыць або выключыць мабільны інтэрнэт. <ph name="STATE" />.</translation>
 <translation id="112308213915226829">Аўтаматычна хаваць паліцу</translation>
@@ -115,12 +116,14 @@
 <translation id="1391102559483454063">Уключана</translation>
 <translation id="1407069428457324124">Цёмная тэма</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Для пераходу паміж датамі выкарыстоўвайце клавішы са стрэлкамі</translation>
+<translation id="141170878022560212">Сярэдняя кнопка</translation>
 <translation id="1414271762428216854">Усталяваная праграма (<ph name="APP_NAME" />)</translation>
 <translation id="1414919006379339073">Закрыць бягучае акно</translation>
 <translation id="1415846719612499304">Паказаць спіс сетак. <ph name="STATE_TEXT" />.</translation>
 <translation id="1419738280318246476">Каб выканаць дзеянне па апавяшчэнні, разблакіруйце прыладу</translation>
 <translation id="1420408895951708260">Уключыць або выключыць Начную падсветку. <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">Так</translation>
+<translation id="1435537621343861112">Не ўдаецца пачаць галасавы ўвод. Мікрафон выключаны.</translation>
 <translation id="1455242230282523554">Паказаць моўныя налады</translation>
 <translation id="1460620680449458626">Гук выключаны.</translation>
 <translation id="14648076227129703">Доступ да камеры атрымаюць праграмы "<ph name="APP1_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
@@ -191,6 +194,7 @@
 <translation id="1737078180382804488">Не наладжваць прагляд апавяшчэнняў з тэлефона</translation>
 <translation id="174102739345480129">Маркер выключаны.</translation>
 <translation id="1743570585616704562">Не распазнана</translation>
+<translation id="1743927604032653654">Згарнуць апавяшчэнне "<ph name="NOTIFICATION_TITLE" />"</translation>
 <translation id="1746730358044914197">Метады ўводу наладжаны адміністратарам.</translation>
 <translation id="1747336645387973286">тэрмін выканання: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
@@ -201,16 +205,13 @@
 <translation id="1757857692711134412">Выключана да захаду сонца</translation>
 <translation id="1768366657309696705">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + кропка. Каб выканаць дзеянне клавішы Insert, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace.</translation>
 <translation id="1770726142253415363">Перамешчана на радок <ph name="ROW_NUMBER" />, у слупок <ph name="COLUMN_NUMBER" />.</translation>
-<translation id="1771458705381257690">Каб наладзіць прыладу, адкрыйце праграму "<ph name="NAME" />"</translation>
 <translation id="1771761307086386028">Прагартаць управа</translation>
 <translation id="1774796056689732716">Каляндар, <ph name="CURRENT_MONTH_YEAR" />, дата, якая цяпер выбрана, – <ph name="DATE" />.</translation>
 <translation id="1775598828170459419">Паказваецца <ph name="NUM_SHOWN_ITEMS" /> з <ph name="NUM_TOTAL_ITEMS" /></translation>
 <translation id="178347895271755507">Наладзіць прагляд нядаўніх фота, медыяфайлаў і апавяшчэнняў з тэлефона</translation>
 <translation id="1787955149152357925">Выключана</translation>
 <translation id="1796561540704213354">Вэб-сайты, у тым ліку наведаныя і адкрытыя вамі старонкі</translation>
-<translation id="1797271123677381264">Не помню пароль</translation>
 <translation id="181103072419391116">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />; сетка знаходзіцца пад кіраваннем адміністратара</translation>
-<translation id="1815245884418711390">Уключыць або выключыць хот-спот. Хот-спот выключаны.</translation>
 <translation id="1816896987747843206">Доступ да камеры атрымаюць усе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру</translation>
 <translation id="1823280932251546115">Панэль стану, час <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">Адкрыць акно выбару эмодзі</translation>
 <translation id="2088116547584365419">гульні</translation>
 <translation id="209965399369889474">Няма падключэння да сеткі</translation>
+<translation id="2107581415810719320">Іншая кнопка <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Ваш кабель USB-C не падыходзіць для выкарыстання з Thunderbolt. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="2108303511227308752">Змянілася прызначэнне спалучэння клавіш Alt + Backspace. Каб выканаць дзеянне клавішы Delete, націсніце <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
 <translation id="2126242104232412123">Новы стол</translation>
@@ -307,11 +309,9 @@
 <translation id="2258734398699965611">Прапанаваныя файлы</translation>
 <translation id="2268130516524549846">Bluetooth выключаны</translation>
 <translation id="2268813581635650749">Выйсці адусюль</translation>
-<translation id="2269016722240250274">Мікрафон выкарыстоўваецца адной з праграм</translation>
 <translation id="2276987123919776440">15 хв</translation>
 <translation id="2277103315734023688">Перайсці ўперад</translation>
 <translation id="2282073721614284166">Адкрыць спасылку ва ўкладцы</translation>
-<translation id="2284237890386182187">Няма падключаных прылад</translation>
 <translation id="2292698582925480719">Маштаб паказу</translation>
 <translation id="229397294990920565">Ідзе выключэнне мабільнай перадачы даных...</translation>
 <translation id="2295777434187870477">Мікрафон уключаны, выключыць яго можна з дапамогай гэтага пераключальніка.</translation>
@@ -361,6 +361,7 @@
 <translation id="2465145153332031561">Стан акумулятара: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, колькасць цыклаў: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Пацвердзіце раздзяляльнасць</translation>
 <translation id="2475982808118771221">Адбылася памылка</translation>
+<translation id="2478076885740497414">Усталяваць праграму</translation>
 <translation id="2482878487686419369">Апавяшчэнні</translation>
 <translation id="2484513351006226581">Каб пераключыць раскладку клавіятуры, націсніце <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2487915095798731898">Далучыцца</translation>
@@ -504,6 +505,7 @@
 <translation id="3105917916468784889">Зрабіць здымак экрана</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3113492864356515707">Вылучыць папярэдні элемент на панэлі доступу</translation>
+<translation id="311799651966070385">Закрыць напамін</translation>
 <translation id="3120421559657122717">Завяршыць працу прылады?</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3125690294288312932">Тып задання</translation>
@@ -519,6 +521,7 @@
 <translation id="3160929076476941240">2 гадз</translation>
 <translation id="3161500364292033097">Закрыць працоўны стол і вокны</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> выконвае адкат на прыладзе <ph name="DEVICE_TYPE" />. Налады прылады будуць скінуты, а ўсе даныя выдалены.</translation>
+<translation id="3170769098533255179">Няма падключаных прылад. Пры выкарыстанні хот-спота Wi-Fi не ўключаецца.</translation>
 <translation id="3171170659304083361">Налады спосабаў уводу</translation>
 <translation id="3176221688814061633">На вашым ноўтбуку Chromebook або прыладзе з Bluetooth выкарыстоўваецца старая версія Bluetooth. Каб палепшыць якасць гуку, уключыце Bluetooth Super Resolution ці скарыстайце ўбудаваны мікрафон.</translation>
 <translation id="3181441307743005334">Перазапуск можа заняць некаторы час</translation>
@@ -532,6 +535,7 @@
 <translation id="3217205077783620295">Гук уключаны, выключыць яго можна з дапамогай гэтага пераключальніка.</translation>
 <translation id="3226991577105957773">+ яшчэ <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Мікрафон</translation>
+<translation id="3233611303007751344">Рэжым энергазберажэння выключаны</translation>
 <translation id="324366796737464147">Падаўленне шуму</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Тып задання: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -552,12 +556,15 @@
 <translation id="3306386552969601301">Некалькі (<ph name="DEVICECOUNT" />) прылад падключана да хот-спота прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Уключаны рэжым ноўтбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
+<translation id="3317779231018057649">Падключана прылад: <ph name="DEVICECOUNT" />. Пры выкарыстанні хот-спота Wi-Fi не ўключаецца.</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
 <translation id="332827762492701193">Апавяшчэнні схаваны</translation>
+<translation id="3333674550998107387">Разгарнуць апавяшчэнне "<ph name="NOTIFICATION_TITLE" />"</translation>
 <translation id="3339826665088060472">Здыманне экрана, інструменты для стварэння здымкаў і запісаў экрана</translation>
 <translation id="3340978935015468852">налады</translation>
 <translation id="3341303451326249809">Здымак экрана зроблены</translation>
 <translation id="334252345105450327">Зрабіць здымак экрана</translation>
+<translation id="3346728094401457853">Увядзіце пароль прылады для ўліковага запісу <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">Вылучыць тэкст ад курсора да канца радка</translation>
 <translation id="3349345708646875009">Адкрыць менеджар заданняў</translation>
 <translation id="3364721542077212959">Інструменты для пяра</translation>
@@ -571,7 +578,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">Уключыць галасавы ўвод?</translation>
 <translation id="3394432020929931914">, разгорнута</translation>
-<translation id="3400357268283240774">Дадатковыя налады</translation>
 <translation id="3405101454990027959">Уключыць доступ да мікрафона</translation>
 <translation id="3408735331120433841">Вы цяпер трансліруеце свой экран.</translation>
 <translation id="3409584356742878290">Паказаць або схаваць інспектар інструментаў распрацоўшчыка</translation>
@@ -590,6 +596,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Прылада USB-C</translation>
+<translation id="3454555520521576458">Памер можна змяняць</translation>
 <translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">1 прылада падключана да хот-спота прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">Скінуць каэфіцыент маштабавання</translation>
@@ -619,7 +626,6 @@
 <translation id="3563775809269155755">Уключыць хот-спот</translation>
 <translation id="3566240529365775567">Адкрывалася толькі што</translation>
 <translation id="3571734092741541777">Наладзіць</translation>
-<translation id="3572988532398145777">Нельга разгарнуць апавяшчэнне, калі адкрыта панэль. Спачатку закрыйце панэль ніжэй.</translation>
 <translation id="3573179567135747900">Вярнуць вярнуцца да мовы: <ph name="FROM_LOCALE" /> (патрабуецца перазапуск)</translation>
 <translation id="3576141592585647168">Змена часавага пояса</translation>
 <translation id="3577473026931028326">Нешта пайшло не так. Паўтарыце спробу.</translation>
@@ -632,8 +638,6 @@
 <translation id="3600061223661453002">Выкл.</translation>
 <translation id="3604801046548457007">Стол <ph name="DESK_TITILE" /> створаны</translation>
 <translation id="3606978283550408104">Дысплэй Брайля падключаны.</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">Пры ўключэнні мабільнай перадачы даных таксама ўключыцца Bluetooth</translation>
 <translation id="3616113530831147358">Аўдыя</translation>
 <translation id="3616883743181209306">Меню перамешчана ў правы верхні вугал экрана.</translation>
@@ -683,9 +687,7 @@
 <translation id="3781910048497807059">Перайсці да папярэдняй панэлі</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Блакіроўка</translation>
-<translation id="3789841737615482174">Усталяваць</translation>
 <translation id="3796215473395753611">Alt + стрэлка ўверх</translation>
-<translation id="3796746699333205839">Камера і мікрафон выкарыстоўваюцца адной з праграм</translation>
 <translation id="3798670284305777884">Дынамік (унутраны)</translation>
 <translation id="3799080171973636491">Вы націснулі спалучэнне клавіш для поўнаэкраннай лупы. Уключыць яе?</translation>
 <translation id="380165613292957338">Вітаю! Чым магу дапамагчы?</translation>
@@ -693,7 +695,7 @@
 <translation id="3824784079442479685">Доступ да камеры атрымае праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="3825680296690914697">Здадзена: <ph name="NUM_TURNED_IN" /> з <ph name="TOTAL_NUM_OF_SUBMISSIONS" />. Праверана: <ph name="NUM_GRADED" />.</translation>
 <translation id="3826099427150913765">Пераключыцца на пароль</translation>
-<translation id="383058930331066723">Уключаны рэжым эканоміі зараду</translation>
+<translation id="383058930331066723">Рэжым энергазберажэння ўключаны</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затым <ph name="KEY_ONE" />, або <ph name="KEY_TWO" />, або <ph name="KEY_THREE" />, або <ph name="KEY_FOUR" /></translation>
@@ -702,7 +704,6 @@
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
-<translation id="3865912916886104060">Няма падключаных прылад. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="3886872229787704059">Адкрывалася сёння</translation>
 <translation id="3891340733213178823">Каб выйсці з уліковага запісу, двойчы націсніце "Ctrl+Shift+Q".</translation>
 <translation id="3893630138897523026">ChromeVox (галасавая зваротная сувязь)</translation>
@@ -711,6 +712,7 @@
 <translation id="3899995891769452915">Галасавы ўвод</translation>
 <translation id="3900355044994618856">Сеанс завершыцца праз <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">Ідзе падключэнне да сеткі <ph name="NAME" /></translation>
+<translation id="3906954721959377182">Планшэт</translation>
 <translation id="3922427723338465344">{0,plural, =1{Вярніцеся да ранейшай версіі АС на працягу 1 хвіліны}one{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}few{Вярніцеся да ранейшай версіі АС на працягу # хвілін}many{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}other{Вярніцеся да ранейшай версіі АС на працягу # хвіліны}}</translation>
 <translation id="3923494859158167397">Мабільныя сеткі не наладжаны</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, падзеі загружаюцца.</translation>
@@ -771,6 +773,8 @@
 <translation id="4146671046252289537">Перайсці ў канец наступнага слова</translation>
 <translation id="4146833061457621061">Уключыць музыку</translation>
 <translation id="4150201353443180367">Дысплэй</translation>
+<translation id="4156293514828496577">Засталося <ph name="PERCENTAGE" />% зараду акумулятара (прыкладна на <ph name="TIME_LEFT" />).
+Некаторыя функцыі абмежаваны, каб павялічыць час працы ад акумулятара.</translation>
 <translation id="4165275524535002941">Кабель можа быць несумяшчальным з дысплэямі</translation>
 <translation id="4177415338862979658">Націсніце, каб даведацца больш</translation>
 <translation id="4177913004758410636">{0,plural, =1{Абнавіце прыладу на працягу дня}one{Абнавіце прыладу на працягу # дня}few{Абнавіце прыладу на працягу # дзён}many{Абнавіце прыладу на працягу # дзён}other{Абнавіце прыладу на працягу # дня}}</translation>
@@ -787,7 +791,6 @@
 <translation id="4197790712631116042">Выключана</translation>
 <translation id="4201033867194214117">Функцыя "<ph name="FEATURE_NAME" />" недаступная.</translation>
 <translation id="4201051445878709314">Паказаць папярэдні месяц</translation>
-<translation id="4202362334312791952">Падключана 1 прылада. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="4209973997261364186">Wi-Fi уключаны</translation>
 <translation id="4212472694152630271">Пераключыцца на PIN-код</translation>
 <translation id="4215497585250573029">Налады VPN</translation>
@@ -815,6 +818,7 @@
 <translation id="428715201724021596">Ідзе падключэнне да профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="4294319844246081198">Добрай раніцы, <ph name="GIVEN_NAME" />!</translation>
 <translation id="4296136865091727875">Выдаліць усе апавяшчэнні (<ph name="COUNT" />)</translation>
+<translation id="4300272766492248925">Адкрыць праграму</translation>
 <translation id="430191667033048642">Праграма <ph name="MOVED_APP_NAME" /> перамешчана ў папку <ph name="FOLDER_NAME" />.</translation>
 <translation id="4302592941791324970">Недаступна</translation>
 <translation id="4303223480529385476">Разгарнуць панэль стану</translation>
@@ -831,6 +835,7 @@
 <translation id="4364101114148522660">Ідзе запіс: <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">Налады трансляцыі</translation>
 <translation id="4375482231364171368">Выканаць пошук у адрасным радку</translation>
+<translation id="4378154925671717803">Тэлефон</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%</translation>
 <translation id="4378551569595875038">Падключэнне...</translation>
 <translation id="4379531060876907730">Гэта інструменты для пяра</translation>
@@ -880,6 +885,7 @@
 <translation id="4566144812051858745">Мне не цікавыя ніякія прапановы</translation>
 <translation id="4569753163207712681">Прагляд нядаўніх фота, медыяфайлаў і праграм з тэлефона</translation>
 <translation id="4573176682887762361">"Увесці [слова або фразу]"</translation>
+<translation id="4577188182049003486">Пры ўключэнні хот-спота Wi-Fi выключаецца</translation>
 <translation id="4577274620589681794">Час выйшаў · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">Уключыць перадпрагляд</translation>
 <translation id="4578906031062871102">Меню налад адкрыта</translation>
@@ -887,6 +893,7 @@
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4611292653554630842">Увайсці</translation>
+<translation id="462160925400706389"><ph name="NAME" />: падключана</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4628757576491864469">Прылады</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ацэнка: <ph name="RATING_SCORE" /></translation>
@@ -901,6 +908,7 @@
 <translation id="4659419629803378708">ChromeVox уключаны</translation>
 <translation id="4666911709726371538">Іншыя праграмы</translation>
 <translation id="4667099493359681081">Ідзе спампоўванне файла "<ph name="FILENAME" />"</translation>
+<translation id="4672539464599646374">Рэжым энергазберажэння ўключаны</translation>
 <translation id="468293128311738995">Праграмы з вашага тэлефона</translation>
 <translation id="4690510401873698237">Паліца ўнізе</translation>
 <translation id="4696813013609194136">Разблакіруйце прыладу бацькоўскім кодам</translation>
@@ -969,7 +977,6 @@
 <translation id="4936329710968938986">Для ўсіх: выключана</translation>
 <translation id="4937170330762390348">З дапамогай галасавога ўводу вы можаце ўводзіць тэкст голасам. Націсніце клавішу галасавога ўводу або, калі вы знаходзіцеся ў тэкставым полі, значок мікрафона ўнізе экрана. Для галасавога ўводу зададзена наступная мова: <ph name="LANGUAGE" />. Каб вы маглі выкарыстоўваць галасавы ўвод па-за сеткай, будуць спампаваны файлы распазнавання маўлення. Змяніць мову для галасавога ўводу можна ў любы час у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="4938176435186993759">Схаваць усе прапановы</translation>
-<translation id="4943007472417128747">Хот-спот выключаны для выкарыстання Wi-Fi. Каб выкарыстоўваць хот-спот, выключыце Wi-Fi.</translation>
 <translation id="4945196315133970626">Выключыць апавяшчэнні</translation>
 <translation id="4946376291507881335">Зняць</translation>
 <translation id="495046168593986294">Прагартаць уверх</translation>
@@ -990,7 +997,6 @@
 <translation id="5009463889040999939">Ідзе перайменаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="5016558321564993266">Уключыць або выключыць маркер. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Катэгорыі пошуку</translation>
-<translation id="5029356738310729434">Доступ да мікрафона прылады дазволены</translation>
 <translation id="5030659775136592441">Паказаць менеджар закладак</translation>
 <translation id="5030687792513154421">Час выйшаў</translation>
 <translation id="5033299697334913360">Каб зняць увесь экран, націсніце ў любым яго месцы</translation>
@@ -1061,6 +1067,8 @@
 <translation id="5297704307811127955">Выключана</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5303319262469238330">Засталося <ph name="PERCENTAGE" />% зараду акумулятара.
+Некаторыя функцыі абмежаваны, каб павялічыць час працы ад акумулятара.</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5313326810920013265">Налады Bluetooth</translation>
 <translation id="5314219114274263156">Запіс экрана зроблены</translation>
@@ -1094,7 +1102,6 @@
 <translation id="5426063383988017631">Меню налад закрыта</translation>
 <translation id="5428899915242071344">Пачаць выбар</translation>
 <translation id="5429993543155113935">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца</translation>
-<translation id="5430931332414098647">Імгненны рэжым мадэма</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5433020815079095860">Аўдыяўваход</translation>
 <translation id="544691375626129091">Усе даступныя карыстальнікі ўжо дададзены да гэтага сеанса.</translation>
@@ -1123,6 +1130,7 @@
 <translation id="554893713779400387">Уключыць або выключыць галасавы ўвод</translation>
 <translation id="5551456515017410630">Адкрыць або закрыць каляндар</translation>
 <translation id="5551974246223970793">Пры пошуку на старонцы перайсці да наступнага супадзення</translation>
+<translation id="5555639311269196631">Выключыць хот-спот</translation>
 <translation id="5558091555391176027">Уключыць або выключыць рэжым высокай бачнасці для функцыі "Абагульванне паблізу"</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Адкрыць новую ўкладку ў новым акне ў рэжыме інкогніта</translation>
@@ -1168,7 +1176,6 @@
 <translation id="5707775774148071965">Ваша прылада падтрымлівае больш высокую хуткасць перадачы даных, чым кабель. Прадукцыйнасць прылады можа быць абмежавана.</translation>
 <translation id="5710450975648804523">Рэжым "Не турбаваць" уключаны</translation>
 <translation id="571295407079589142">Мабільная перадача даных выключана</translation>
-<translation id="5716891621595980681">Падключана прылад: <ph name="DEVICECOUNT" />. Каб вы маглі выкарыстоўваць хот-спот, Wi-Fi выключыцца.</translation>
 <translation id="5727460725221669831">Калі вы забылі пароль або нядаўна мянялі пароль Уліковага запісу Google, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
 <translation id="5740328398383587084">Абагульванне паблізу</translation>
@@ -1186,9 +1193,11 @@
 <translation id="5774295353725270860">Адкрыць праграму "Файлы"</translation>
 <translation id="5777841717266010279">Спыніць абагульванне экрана?</translation>
 <translation id="5779721926447984944">Замацаваныя файлы</translation>
+<translation id="5785221443435874078">Выдаліць гэту прапанову</translation>
 <translation id="5788127256798019331">Файлы Play</translation>
 <translation id="5788535737706478207">Адкрыць апошнюю закрытую ўкладку або акно</translation>
 <translation id="5790085346892983794">Выканана</translation>
+<translation id="5802516411616338943">Адкрыць хуткія налады</translation>
 <translation id="5804651031882187592">Выключыце наладу блакіроўкі SIM-карты</translation>
 <translation id="5805809050170488595">Націсніце, каб актываваць сетку <ph name="NETWORK_NAME" /></translation>
 <translation id="5823239091726045201">Google Задачы (вэб-версія)</translation>
@@ -1206,8 +1215,6 @@
 <translation id="5876535466645959772">Выбраны спіс пусты. Каб дадаць новую задачу, перайдзіце ўніз старонкі.</translation>
 <translation id="5876666360658629066">Увядзіце бацькоўскі код</translation>
 <translation id="5881540930187678962">Наладзьце Тэлефонны цэнтр пазней</translation>
-<translation id="5881663018261910378">Выключана</translation>
-<translation id="5883017113634523865">Каб пабачыць усе даступныя функцыі, усталюйце спадарожную праграму для праграмы "<ph name="NAME" />" з Google Play</translation>
 <translation id="5887954372087850114">Акно "<ph name="WINDOW_TITLE" />" прызначана для працоўнага стала "<ph name="DESK_TITLE" />". Прызначэнне гэтага акна для іншых працоўных сталоў скасавана</translation>
 <translation id="588817334757907802">Адкрыць файл у браўзеры Chrome</translation>
 <translation id="5895138241574237353">Перазапусціць</translation>
@@ -1216,9 +1223,9 @@
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5911231045062997865">Вокны Lacros цяпер не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
+<translation id="5916646100036936191">Новае апавяшчэнне, усяго <ph name="NOTIFICATION_COUNT" /></translation>
 <translation id="5916664084637901428">Уключана</translation>
 <translation id="5920710855273935292">Мікрафон выключаны.</translation>
-<translation id="5924855612669061715">Хот-спот уключаны</translation>
 <translation id="5946788582095584774">Стан функцыі "<ph name="FEATURE_NAME" />": уключана.</translation>
 <translation id="5947494881799873997">Вярнуць</translation>
 <translation id="595202126637698455">Уключана трасіроўка прадукцыйнасці</translation>
@@ -1234,6 +1241,7 @@
 <translation id="598407983968395253">Выкарыстаць шаблон</translation>
 <translation id="598882571027504733">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook.</translation>
 <translation id="6000279412553873020">Клавішы, кнопкі і іншае</translation>
+<translation id="6002122790816966947">Вашы прылады</translation>
 <translation id="6012623610530968780">Старонка <ph name="SELECTED_PAGE" /> з <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">Вылучыць наступны элемент на панэлі доступу</translation>
 <translation id="6015573907265691211">Пазначыць як выкананае</translation>
@@ -1266,7 +1274,6 @@
 <translation id="6095008505822982596">Хуткасць маўлення</translation>
 <translation id="6095425951508823973">Дадаць падключэнне праз <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Зменена ў мінулым месяцы</translation>
-<translation id="6099793635444444289">Не ўдалося пачаць галасавы ўвод, бо мікрафон выключаны</translation>
 <translation id="6103838137565245112">сістэма</translation>
 <translation id="6114505516289286752">Спампаваны файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1302,6 +1309,7 @@
 <translation id="6231419273573514727">Прадукцыйнасць перыферыйных прылад можа быць абмежаванай</translation>
 <translation id="6232891689835436217">Зараз <ph name="APP_NAME" /> выкарыстоўвае камеру і мікрафон</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">Нізкі зарад акумулятара. Уключаны рэжым энергазберажэння.</translation>
 <translation id="6247728804802644171">Адкрыць апавяшчэнні</translation>
 <translation id="6254629735336163724">Зафіксаваны гарызантальны фармат</translation>
 <translation id="6259254695169772643">Для выбару выкарыстайце стыло</translation>
@@ -1311,6 +1319,7 @@
 <translation id="6284232397434400372">Раздзяляльнасць зменена</translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>
 <translation id="6291221004442998378">Не зараджаецца</translation>
+<translation id="6298183524022479114">Наладзьце гэту прыладу ў праграме</translation>
 <translation id="6309219492973062892">Націснуць на значкі 1-8 на панэлі доступу</translation>
 <translation id="6315170314923504164">Галасавы ўвод</translation>
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
@@ -1334,7 +1343,6 @@
 <translation id="643147933154517414">Усё гатова</translation>
 <translation id="6431865393913628856">Запіс экрана</translation>
 <translation id="643593192654616063">Аб'ём сховішча, якое выкарыстоўваецца: <ph name="STORAGE_IN_USE_SIZE" />. Агульны аб'ём сховішча: <ph name="STORAGE_TOTAL_SIZE" />.</translation>
-<translation id="6442259747294754014">Доступ да мікрафона прылады забаронены</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">цэнтральны працэсар</translation>
 <translation id="6446225358675593408">Пошук відарысаў па апісанні таго, што на іх адлюстравана</translation>
@@ -1416,6 +1424,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Выкарыстоўваюцца камера і мікрафон</translation>
 <translation id="6739144137573853180">ПЕРАЙСЦІ Ў НАЛАДЫ</translation>
+<translation id="6747985245839783873">Узровень зараду акумулятара: <ph name="PERCENTAGE" />%. Уключаны рэжым энергазберажэння.</translation>
 <translation id="6751052314767925245">Гэтай функцыяй кіруе адміністратар</translation>
 <translation id="6751826523481687655">Трасіроўка прадукцыйнасці ўключана</translation>
 <translation id="6752912906630585008">Стол <ph name="REMOVED_DESK" /> быў выдалены і аб'яднаны са Сталом <ph name="RECEIVE_DESK" /></translation>
@@ -1432,7 +1441,6 @@
 <translation id="679368458793552943">Павялічыць маштаб пры ўключанай лупе</translation>
 <translation id="6794287755901682422">Гэты элемент мае: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
 <translation id="6801878137098616817">Зменена нядаўна</translation>
-<translation id="6802196538183166658">Адкрыць хуткія налады пры выбары часу</translation>
 <translation id="6802687695197837794">Доступ атрымаюць праграмы "<ph name="APP1_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазволы выкарыстоўваць мікрафон і камеру</translation>
 <translation id="6803622936009808957">Не ўдалося ўключыць рэжым адлюстравання дысплэяў, бо не была знойдзена раздзяляльнасць, якая б падтрымлівалася. Выкарыстоўваецца рэжым "Пашыраны працоўны стол".</translation>
 <translation id="6809556495807506746">Налады недаступныя</translation>
@@ -1460,7 +1468,6 @@
 <translation id="6912841030378044227">Перайсці ў адрасны радок</translation>
 <translation id="6912901278692845878">Кароткі агляд</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
-<translation id="6920245099716267363">Уключыць або выключыць хот-спот. Хот-спот уключаны, падключана 1 прылада.</translation>
 <translation id="692135145298539227">выдаліць</translation>
 <translation id="6929081673585394903">Паказаць элементы кіравання</translation>
 <translation id="6931576957638141829">Захаваць у</translation>
@@ -1515,6 +1522,7 @@
 <translation id="7131634465328662194">Будзе выкананы аўтаматычны выхад.</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144942256906679589">Стан акумулятара</translation>
+<translation id="7145639536026937076">Акумулятар зараджаецца, узровень зараду: <ph name="PERCENTAGE" />%. Уключаны рэжым энергазберажэння.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1523,17 +1531,15 @@
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
+<translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7229029500464092426">Даступны аб'ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. Для ўсталявання абнаўлення патрабуецца перазапуск Chromebook. Гэта можа заняць да 1 хвіліны.</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>
 <translation id="7258828758145722155">Зменена ўчора</translation>
 <translation id="726276584504105859">Каб перайсці ў рэжым падзеленага экрана, перацягніце акно сюды</translation>
 <translation id="7262906531272962081">Стварыць напамін</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> –
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" />. Выберыце падзею, каб азнаёміцца з падрабязнымі звесткамі пра яе ў Календары Google.</translation>
 <translation id="7302889331339392448">Імгненныя субцітры выключаны.</translation>
 <translation id="7303365578352795231">Адказ выконваецца на іншай прыладзе.</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1556,8 +1562,7 @@
 <translation id="7377481913241237033">Падключыцца з дапамогай кода</translation>
 <translation id="7378203170292176219">Выберыце вобласць запісу з дапамогай перацягвання</translation>
 <translation id="7378594059915113390">Элементы кіравання мультымедыйным змесцівам</translation>
-<translation id="7378889811480108604">Рэжым эканоміі зараду выключаны</translation>
-<translation id="7382640522316003298">Уключыць або выключыць хот-спот. Хот-спот уключаны. Падключана прылад: <ph name="DEVICECOUNT" />.</translation>
+<translation id="7378889811480108604">Рэжым энергазберажэння выключаны</translation>
 <translation id="7382680553121047388">Укл.</translation>
 <translation id="7384028040782072252">Каб змяніць парадак размяшчэння праграм, націсніце правай кнопкай мышы ў любым месцы экрана</translation>
 <translation id="7386767620098596324">Уключыць або выключыць падключэнне да сеткі. <ph name="STATE_TEXT" />.</translation>
@@ -1572,7 +1577,6 @@
 <translation id="742594950370306541">Камера выкарыстоўваецца.</translation>
 <translation id="742608627846767349">Добрай раніцы,</translation>
 <translation id="743058460480092004">Камера і мікрафон выкарыстоўваюцца.</translation>
-<translation id="7452560014878697800">Камера выкарыстоўваецца адной з праграм</translation>
 <translation id="7453330308669753048">Вынік выдалены з гісторыі пошуку</translation>
 <translation id="7459485586006128091">З-за ўнутранай памылкі хот-спот быў выключаны. Паспрабуйце падключыцца паўторна праз некалькі хвілін.</translation>
 <translation id="7461924472993315131">PIN-код</translation>
@@ -1582,6 +1586,7 @@
 <translation id="7489261257412536105">Увайсці ў поўнаэкранны рэжым або выйсці з яго</translation>
 <translation id="7490360161041035804">Важныя файлы, у тым ліку файлы Google Дыска, можна замацоўваць. Навядзіце ўказальнік на элемент або адкрыйце Файлы і націсніце на элемент правай кнопкай мышы.</translation>
 <translation id="7497767806359279797">Выбраць мову і клавіятуру</translation>
+<translation id="7507162824403726948">Завяршыце працэдуру спраўджання асобы</translation>
 <translation id="7508690557411636492">Адкрывалася ў мінулым месяцы</translation>
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
 <translation id="7512509370370076552">Спалучэнне клавіш для дзеяння "Націснуць правай кнопкай мышы" зменена з Alt + Левая кнопка мышы на <ph name="LAUNCHER_KEY_NAME" /> + Левая кнопка мышы</translation>
@@ -1728,7 +1733,6 @@
 <translation id="8036504271468642248">Папярэдні сказ</translation>
 <translation id="8042893070933512245">Адкрыць меню налад спецыяльных магчымасцей</translation>
 <translation id="8044457332620420407">Падсветка клавіятуры выключана</translation>
-<translation id="8048077032188362328">Адміністратар выключыў хот-спот.</translation>
 <translation id="8048123526339889627">Налады Bluetooth</translation>
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
@@ -1749,7 +1753,6 @@
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8131994907636310308">Закрыць усплывальнае паведамленне аб сартаванні</translation>
 <translation id="8132793192354020517">Падключана да сеткі "<ph name="NAME" />"</translation>
-<translation id="8135163608236671037">Уключыць або выключыць хот-спот. Хот-спот уключаны, падключаных прылад няма.</translation>
 <translation id="8138705869659070104">Спачатку наладзьце прыладу</translation>
 <translation id="813913629614996137">Ідзе ініцыялізацыя...</translation>
 <translation id="8142441511840089262">Падвойнае націсканне</translation>
@@ -1917,6 +1920,7 @@
 <translation id="8878886163241303700">Экран пашыраецца</translation>
 <translation id="888982883502837004">Для вашай прылады даступныя абнаўленні ўбудаванага праграмнага забеспячэння. Націсніце, каб паглядзець і ўсталяваць іх.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будзе выдалены назаўсёды</translation>
+<translation id="889790758758811533">Засталося <ph name="PERCENTAGE" />% зараду акумулятара (прыкладна на <ph name="TIME_LEFT" />). Падключыце прыладу да крыніцы сілкавання.</translation>
 <translation id="88986195241502842">Page Down</translation>
 <translation id="8905919797434099235">(Без назвы)</translation>
 <translation id="890616557918890486">Змяніць крыніцу</translation>

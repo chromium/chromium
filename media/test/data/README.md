@@ -851,6 +851,9 @@ shaka/packager/tools/pssh/pssh-box.py --common-system-id --key-id 30313233343536
 
 ### HLS
 
+#### bear-1280x720-hls-clear-mpl.m3u8
+A single-segment hls media playlist which plays bear-1280x720-hls.ts.
+
 #### bear-1280x720-hls.ts
 Produced using Apple's mediafilesegmenter tool with bear-1280x720.ts as input,
 with no encryption.
@@ -865,6 +868,10 @@ manually and prepended to convey the encryption metadata, notably key id and IV)
 ```
 mediafilesegmenter -S -P -k 'key_iv.bin' -t 10 -start-segments-with-iframe -f 'output/' bear-1280x720.ts
 ```
+
+#### HLS - directory
+Samples of assorted playlist types and a README file explaining how each sample
+is generated.
 
 #### bear-1280x720-hls-with-CAT.ts
 Same as bear-1280x720-hls.ts but with an extra TS packet prepended. This is the

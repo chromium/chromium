@@ -28,7 +28,7 @@ bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
   if ((io_surface_ =
            CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
                            /*should_clear=*/false))) {
-    DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_);
+    DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
     return true;
   } else {
     LOG(ERROR) << "Unable to create IOSurface!";
@@ -41,7 +41,8 @@ bool GpuMemoryBufferTrackerApple::IsSameGpuMemoryBuffer(
   if (!is_external_io_surface_) {
     return false;
   }
-  return IOSurfaceGetID(io_surface_) == IOSurfaceGetID(handle.io_surface);
+  return IOSurfaceGetID(io_surface_.get()) ==
+         IOSurfaceGetID(handle.io_surface.get());
 }
 
 bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
@@ -51,13 +52,13 @@ bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
   if (is_external_io_surface_) {
     return false;
   }
-  gfx::Size surface_size(IOSurfaceGetWidth(io_surface_),
-                         IOSurfaceGetHeight(io_surface_));
+  gfx::Size surface_size(IOSurfaceGetWidth(io_surface_.get()),
+                         IOSurfaceGetHeight(io_surface_.get()));
   return format == PIXEL_FORMAT_NV12 && dimensions == surface_size;
 }
 
 uint32_t GpuMemoryBufferTrackerApple::GetMemorySizeInBytes() {
-  return IOSurfaceGetAllocSize(io_surface_);
+  return IOSurfaceGetAllocSize(io_surface_.get());
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
@@ -80,7 +81,7 @@ GpuMemoryBufferTrackerApple::DuplicateAsMojoBuffer() {
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
-  DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_);
+  DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
   gfx::GpuMemoryBufferHandle gmb_handle;
   gmb_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   gmb_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;

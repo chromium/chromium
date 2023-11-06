@@ -444,8 +444,9 @@ void SafeBrowsingLoudErrorUI::PopulateBillingLoadTimeData(
 void SafeBrowsingLoudErrorUI::UpdateInterstitialInteractionData(
     SecurityInterstitialCommand command) {
   int new_occurrence_count = 1;
-  int64_t new_first_timestamp = base::Time::Now().ToJavaTime();
-  int64_t new_last_timestamp = base::Time::Now().ToJavaTime();
+  int64_t new_first_timestamp =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
+  int64_t new_last_timestamp = base::Time::Now().InMillisecondsSinceUnixEpoch();
   // If this is not the first occurrence, use data in the map for correct
   // occurrence and first timestamp values.
   if (auto interaction_data = interstitial_interaction_data_->find(command);

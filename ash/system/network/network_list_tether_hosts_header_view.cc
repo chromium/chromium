@@ -15,7 +15,7 @@ namespace ash {
 NetworkListTetherHostsHeaderView::NetworkListTetherHostsHeaderView(
     NetworkListNetworkHeaderView::Delegate* delegate)
     : NetworkListNetworkHeaderView(delegate,
-                                   IDS_ASH_STATUS_TRAY_NETWORK_TETHER,
+                                   IDS_ASH_STATUS_TRAY_NETWORK_TETHER_HOSTS,
                                    kUnifiedMenuSignalCellular0Icon) {
   DCHECK(base::FeatureList::IsEnabled(features::kInstantHotspotRebrand));
 }

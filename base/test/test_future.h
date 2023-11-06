@@ -171,7 +171,7 @@ class TestFuture {
  public:
   using TupleType = std::tuple<std::decay_t<Types>...>;
 
-  static_assert(std::tuple_size<TupleType>::value > 0,
+  static_assert(std::tuple_size_v<TupleType> > 0,
                 "Don't use TestFuture<> but use TestFuture<void> instead");
 
   TestFuture() = default;

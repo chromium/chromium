@@ -83,7 +83,6 @@ enum class BrowsingDataDeletionCondition {
 };
 
 struct FeatureConditions {
-  bool feature_enabled;
   BrowsingDataDeletionCondition data_deletion_condition;
   BrowserType browser_type;
 };
@@ -100,20 +99,11 @@ class ChromeBrowsingDataLifetimeManagerTest
  protected:
   ChromeBrowsingDataLifetimeManagerTest() {
     std::vector<base::test::FeatureRef> features{
-        browsing_data::features::kEnableBrowsingDataLifetimeManager,
         // WebSQL is disabled by default as of M119 (crbug/695592).
         // Enable feature in tests during deprecation trial and enterprise
         // policy support.
         blink::features::kWebSQLAccess};
-    if (GetParam().feature_enabled) {
-      features.push_back(browsing_data::features::
-                             kDataRetentionPoliciesDisableSyncTypesNeeded);
-      InitFeatureLists(std::move(features), {});
-    } else {
-      InitFeatureLists(std::move(features),
-                       {browsing_data::features::
-                            kDataRetentionPoliciesDisableSyncTypesNeeded});
-    }
+    InitFeatureLists(std::move(features), {});
   }
 
   ~ChromeBrowsingDataLifetimeManagerTest() override = default;
@@ -558,7 +548,7 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerShutdownTest,
                        PRE_PRE_BrowserShutdown) {
   // browsing_history
   history_service()->AddPage(GURL("https://www.website.com"),
-                             base::Time::FromDoubleT(1000),
+                             base::Time::FromSecondsSinceUnixEpoch(1000),
                              history::VisitSource::SOURCE_BROWSED);
   VerifyHistorySize(1u);
 
@@ -653,19 +643,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBrowsingDataLifetimeManagerShutdownTest,
     ::testing::ValuesIn(std::vector<FeatureConditions> {
-      {false, BrowsingDataDeletionCondition::SyncDisabled,
-       BrowserType::Incognito},
-          {false, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Default},
-          {true, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Incognito},
-          {true, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Default},
+      {BrowsingDataDeletionCondition::SyncDisabled, BrowserType::Incognito},
+          {BrowsingDataDeletionCondition::SyncDisabled, BrowserType::Default},
 #if !BUILDFLAG(IS_CHROMEOS)
-          {true, BrowsingDataDeletionCondition::BrowserSigninDisabled,
+          {BrowsingDataDeletionCondition::BrowserSigninDisabled,
            BrowserType::Incognito},
       {
-        true, BrowsingDataDeletionCondition::BrowserSigninDisabled,
+        BrowsingDataDeletionCondition::BrowserSigninDisabled,
             BrowserType::Default
       }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -677,19 +661,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
     ::testing::ValuesIn(std::vector<FeatureConditions> {
-      {false, BrowsingDataDeletionCondition::SyncDisabled,
-       BrowserType::Incognito},
-          {false, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Default},
-          {true, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Incognito},
-          {true, BrowsingDataDeletionCondition::SyncDisabled,
-           BrowserType::Default},
+      {BrowsingDataDeletionCondition::SyncDisabled, BrowserType::Incognito},
+          {BrowsingDataDeletionCondition::SyncDisabled, BrowserType::Default},
 #if BUILDFLAG(IS_ANDROID)
-          {true, BrowsingDataDeletionCondition::BrowserSigninDisabled,
+          {BrowsingDataDeletionCondition::BrowserSigninDisabled,
            BrowserType::Incognito},
       {
-        true, BrowsingDataDeletionCondition::BrowserSigninDisabled,
+        BrowsingDataDeletionCondition::BrowserSigninDisabled,
             BrowserType::Default
       }
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -11,13 +11,13 @@
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -47,9 +47,8 @@ namespace blink {
 
 namespace {
 
-inline const DisplayItemClient& AsDisplayItemClient(
-    const NGInlineCursor& cursor,
-    bool for_selection) {
+inline const DisplayItemClient& AsDisplayItemClient(const InlineCursor& cursor,
+                                                    bool for_selection) {
   if (UNLIKELY(for_selection)) {
     if (const auto* selection_client =
             cursor.Current().GetSelectionDisplayItemClient())
@@ -58,12 +57,12 @@ inline const DisplayItemClient& AsDisplayItemClient(
   return *cursor.Current().GetDisplayItemClient();
 }
 
-inline PhysicalRect PhysicalBoxRect(const NGInlineCursor& cursor,
+inline PhysicalRect PhysicalBoxRect(const InlineCursor& cursor,
                                     const PhysicalOffset& paint_offset,
                                     const PhysicalOffset& parent_offset,
                                     const LayoutTextCombine* text_combine) {
   PhysicalRect box_rect;
-  if (const auto* svg_data = cursor.CurrentItem()->SvgFragmentData()) {
+  if (const auto* svg_data = cursor.CurrentItem()->GetSvgFragmentData()) {
     box_rect = PhysicalRect::FastAndLossyFromRectF(svg_data->rect);
     const float scale = svg_data->length_adjust_scale;
     if (scale != 1.0f) {
@@ -87,9 +86,9 @@ inline PhysicalRect PhysicalBoxRect(const NGInlineCursor& cursor,
   return box_rect;
 }
 
-inline const NGInlineCursor& InlineCursorForBlockFlow(
-    const NGInlineCursor& cursor,
-    absl::optional<NGInlineCursor>* storage) {
+inline const InlineCursor& InlineCursorForBlockFlow(
+    const InlineCursor& cursor,
+    absl::optional<InlineCursor>* storage) {
   if (*storage)
     return **storage;
   *storage = cursor;
@@ -121,8 +120,9 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
   if (!ruby_text)
     return true;
-  if (!NGInlineCursor(*ruby_text))
+  if (!InlineCursor(*ruby_text)) {
     return true;
+  }
   const LineLogicalSide ruby_logical_side =
       parent->StyleRef().GetRubyPosition() == RubyPosition::kBefore
           ? LineLogicalSide::kOver
@@ -300,7 +300,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   if (UNLIKELY(!is_printing && !is_rendering_resource &&
                paint_info.phase != PaintPhase::kTextClip &&
                layout_object->IsSelected())) {
-    const NGInlineCursor& root_inline_cursor =
+    const InlineCursor& root_inline_cursor =
         InlineCursorForBlockFlow(cursor_, &inline_cursor_for_block_flow_);
 
     // Empty selections might be the boundary of the document selection, and
@@ -327,13 +327,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
       DynamicTo<LayoutSVGInlineText>(layout_object);
   float scaling_factor = 1.0f;
   if (UNLIKELY(svg_inline_text)) {
-    DCHECK_EQ(text_item.Type(), NGFragmentItem::kSvgText);
+    DCHECK_EQ(text_item.Type(), FragmentItem::kSvgText);
     scaling_factor = svg_inline_text->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     visual_rect = gfx::ToEnclosingRect(
         svg_inline_text->Parent()->VisualRectInLocalSVGCoordinates());
   } else {
-    DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
+    DCHECK_NE(text_item.Type(), FragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
     ink_overflow.Move(physical_box.offset);
     visual_rect = ToEnclosingRect(ink_overflow);

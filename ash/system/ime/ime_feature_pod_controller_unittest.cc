@@ -10,7 +10,6 @@
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -25,24 +24,15 @@
 namespace ash {
 
 // Tests manually control their session state.
-class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
-                                    public testing::WithParamInterface<bool> {
+class IMEFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
-  IMEFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
+  IMEFeaturePodControllerTest() = default;
 
   IMEFeaturePodControllerTest(const IMEFeaturePodControllerTest&) = delete;
   IMEFeaturePodControllerTest& operator=(const IMEFeaturePodControllerTest&) =
       delete;
 
   ~IMEFeaturePodControllerTest() override = default;
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
 
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
@@ -52,7 +42,6 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
 
   void TearDown() override {
     tile_.reset();
-    button_.reset();
     controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -60,11 +49,7 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
  protected:
   void SetUpButton() {
     controller_ = std::make_unique<IMEFeaturePodController>(tray_controller());
-    if (IsQsRevampEnabled()) {
-      tile_ = controller_->CreateTile();
-    } else {
-      button_ = base::WrapUnique(controller_->CreateButton());
-    }
+    tile_ = controller_->CreateTile();
   }
 
   UnifiedSystemTrayController* tray_controller() {
@@ -73,28 +58,20 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
         ->unified_system_tray_controller();
   }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
-  }
+  bool IsButtonVisible() { return tile_->GetVisible(); }
 
-  const std::u16string GetTooltipText() {
-    return IsQsRevampEnabled() ? tile_->GetTooltipText()
-                               : button_->label_button()->GetTooltipText();
-  }
+  const std::u16string GetTooltipText() { return tile_->GetTooltipText(); }
 
   const char* GetToggledOnHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOn"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOn";
+    return "Ash.QuickSettings.FeaturePod.ToggledOn";
   }
 
   const char* GetToggledOffHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOff"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOff";
+    return "Ash.QuickSettings.FeaturePod.ToggledOff";
   }
 
   const char* GetDiveInHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.DiveIn"
-                               : "Ash.UnifiedSystemView.FeaturePod.DiveIn";
+    return "Ash.QuickSettings.FeaturePod.DiveIn";
   }
 
   // Creates |count| simulated active IMEs.
@@ -125,9 +102,7 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
 
   void PressLabel() { controller_->OnLabelPressed(); }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IMEFeaturePodController> controller_;
-  std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 
   // IMEs
@@ -136,16 +111,11 @@ class IMEFeaturePodControllerTest : public NoSessionAshTestBase,
   std::vector<ImeMenuItem> menu_items_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         IMEFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(IMEFeaturePodControllerTest, Labels) {
+TEST_F(IMEFeaturePodControllerTest, Labels) {
   SetUpButton();
 
-  std::u16string label = IsQsRevampEnabled()
-                             ? tile_->label()->GetText()
-                             : button_->label_button()->GetLabelText();
+  std::u16string label = tile_->label()->GetText();
+
   EXPECT_EQ(label, u"Keyboard");
 
   SetActiveIMECount(2);
@@ -153,14 +123,12 @@ TEST_P(IMEFeaturePodControllerTest, Labels) {
   available_imes_[0].short_name = u"US";
   available_imes_[1].short_name = u"FR";
   RefreshImeController();
-  std::u16string sub_label = IsQsRevampEnabled()
-                                 ? tile_->sub_label()->GetText()
-                                 : button_->label_button()->GetSubLabelText();
+  std::u16string sub_label = tile_->sub_label()->GetText();
   EXPECT_EQ(sub_label, u"US");
 }
 
 // Tests that if the pod button is hidden if less than 2 IMEs are present.
-TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
+TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
   SetUpButton();
 
   SetActiveIMECount(0);
@@ -171,7 +139,7 @@ TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityIMECount) {
   EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
+TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
   SetUpButton();
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
 
@@ -183,7 +151,7 @@ TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityImeMenuActive) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
+TEST_F(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
   SetUpButton();
 
   Shell::Get()->ime_controller()->SetImesManagedByPolicy(true);
@@ -202,7 +170,7 @@ TEST_P(IMEFeaturePodControllerTest, ButtonVisibilityPolicy) {
 #else
 #define MAYBE_IconUMATracking IconUMATracking
 #endif
-TEST_P(IMEFeaturePodControllerTest, MAYBE_IconUMATracking) {
+TEST_F(IMEFeaturePodControllerTest, MAYBE_IconUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
@@ -227,7 +195,7 @@ TEST_P(IMEFeaturePodControllerTest, MAYBE_IconUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(IMEFeaturePodControllerTest, LabelUMATracking) {
+TEST_F(IMEFeaturePodControllerTest, LabelUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
@@ -253,7 +221,7 @@ TEST_P(IMEFeaturePodControllerTest, LabelUMATracking) {
 }
 
 // Tests the tooltip changes after the IME refreshes.
-TEST_P(IMEFeaturePodControllerTest, TooltipText) {
+TEST_F(IMEFeaturePodControllerTest, TooltipText) {
   SetUpButton();
 
   SetActiveIMECount(2);

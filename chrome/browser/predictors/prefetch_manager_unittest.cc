@@ -45,9 +45,7 @@ namespace {
 
 using ::testing::UnorderedElementsAreArray;
 
-class FakePrefetchManagerDelegate
-    : public PrefetchManager::Delegate,
-      public base::SupportsWeakPtr<FakePrefetchManagerDelegate> {
+class FakePrefetchManagerDelegate : public PrefetchManager::Delegate {
  public:
   void PrefetchInitiated(const GURL& url, const GURL& prefetch_url) override {
     prefetched_urls_for_main_frame_url_[url].insert(prefetch_url);
@@ -81,11 +79,16 @@ class FakePrefetchManagerDelegate
 
   void ClearPrefetchedURLs() { prefetched_urls_for_main_frame_url_ = {}; }
 
+  base::WeakPtr<FakePrefetchManagerDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   base::flat_map<GURL, base::flat_set<GURL>>
       prefetched_urls_for_main_frame_url_;
   base::flat_set<GURL> finished_urls_;
   base::flat_map<GURL, base::OnceClosure> done_callbacks_;
+  base::WeakPtrFactory<FakePrefetchManagerDelegate> weak_ptr_factory_{this};
 };
 
 // Creates a NetworkAnonymizationKey for a main frame navigation to URL.

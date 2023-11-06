@@ -226,14 +226,15 @@ void ChromeAppListModelUpdater::AddAppItemToFolder(
   app_item->SetChromeFolderId(folder_id);
   ChromeAppListItem* item_added =
       item_manager_->AddChromeItem(std::move(app_item));
-
+  const bool is_placeholder_icon = item_data->is_placeholder_icon;
   item_data->folder_id.clear();
   model_.AddItemToFolder(CreateAppListItem(std::move(item_data), this),
                          folder_id);
   // Set the item's default icon if it has one.
   if (!item_added->icon().isNull()) {
     ash::AppListItem* item = model_.FindItem(item_added->id());
-    item->SetDefaultIconAndColor(item_added->icon(), item_added->icon_color());
+    item->SetDefaultIconAndColor(item_added->icon(), item_added->icon_color(),
+                                 is_placeholder_icon);
   }
 
   if (add_from_local) {
@@ -394,6 +395,18 @@ void ChromeAppListModelUpdater::UpdateProgress(const std::string& id,
   model_.SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetAccessibleName(const std::string& id,
+                                                  const std::string& name) {
+  TRACE_EVENT0("ui", "ChromeAppListModelUpdater::UpdateAccessibleName");
+  ChromeAppListItem* item = FindItem(id);
+  if (!item) {
+    return;
+  }
+  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
+  data->accessible_name = name;
+  model_.SetItemMetadata(id, std::move(data));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeAppListItem that talk to ash directly.
 
@@ -407,7 +420,8 @@ void ChromeAppListModelUpdater::SetItemIconVersion(const std::string& id,
 void ChromeAppListModelUpdater::SetItemIconAndColor(
     const std::string& id,
     const gfx::ImageSkia& icon,
-    const ash::IconColor& icon_color) {
+    const ash::IconColor& icon_color,
+    bool is_placeholder_icon) {
   TRACE_EVENT0("ui", "ChromeAppListModelUpdater::SetItemIconAndColor");
   if (icon.isNull())
     return;
@@ -428,7 +442,7 @@ void ChromeAppListModelUpdater::SetItemIconAndColor(
 
   // Two similar icons may generate the same extracted icon color value.
   // Therefore, always update the app list item icon.
-  item->SetDefaultIconAndColor(icon, icon_color);
+  item->SetDefaultIconAndColor(icon, icon_color, is_placeholder_icon);
 
   std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
   MaybeUpdatePositionWhenIconColorChange(data.get());
@@ -456,9 +470,7 @@ void ChromeAppListModelUpdater::SetItemBadgeIcon(
   if (!item) {
     return;
   }
-  std::unique_ptr<ash::AppListItemMetadata> data = item->CloneMetadata();
-  data->badge_icon = badge_icon;
-  model_.SetItemMetadata(id, std::move(data));
+  item->SetHostBadgeIcon(badge_icon);
 }
 
 void ChromeAppListModelUpdater::SetItemName(const std::string& id,
@@ -770,8 +782,8 @@ void ChromeAppListModelUpdater::OnAppListItemUpdated(ash::AppListItem* item) {
   // Do not update the icon or the color of `chrome_item` if `item` is not
   // in icon update process.
   if (!item_with_icon_update_ || *item_with_icon_update_ != item->id()) {
-    item->SetDefaultIconAndColor(chrome_item->icon(),
-                                 chrome_item->icon_color());
+    item->SetDefaultIconAndColor(chrome_item->icon(), chrome_item->icon_color(),
+                                 item->GetMetadata()->is_placeholder_icon);
   }
 
   const std::string copy_id = item->id();

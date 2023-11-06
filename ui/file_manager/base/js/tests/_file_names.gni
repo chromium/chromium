@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_js_files = [
+  "file_manager/background/js/file_manager_base.js",
+  "file_manager/background/js/file_operation_manager.js",
+  "file_manager/background/js/file_operation_util.js",
+  "base/js/tests/testing_convert_to_ts.js",
+]
+
+ts_files = [
+  # Common.
+  "file_manager/common/js/api.ts",
+  "file_manager/common/js/cr_ui.ts",
+]
+
+ts_test_files = [
+  # Common.
+  "file_manager/common/js/entry_utils_unittest.ts",
+  "file_manager/common/js/file_types_base_unittest.ts",
+]
+
+unittest_files = [
+  "base/js/tests/testing_convert_to_ts_unittest.js",
+
+  # Common:
+  "file_manager/common/js/array_data_model_unittest.js",
+  "file_manager/common/js/async_util_unittest.js",
+]

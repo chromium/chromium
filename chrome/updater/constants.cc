@@ -104,6 +104,7 @@ const char kDevOverrideKeyGroupPolicies[] = "group_policies";
 const char kDevOverrideKeyOverinstallTimeout[] = "overinstall_timeout";
 const char kDevOverrideKeyIdleCheckPeriodSeconds[] = "idle_check_period";
 const char kDevOverrideKeyManagedDevice[] = "managed_device";
+const char kDevOverrideKeyEnableDiffUpdates[] = "enable_diff_updates";
 
 // Policy Management constants.
 const char kProxyModeDirect[] = "direct";

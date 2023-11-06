@@ -52,10 +52,13 @@ import java.util.List;
  */
 @DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
 @RunWith(ParameterizedRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT,
-        ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES})
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT,
+    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES
+})
 public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivityTestCase {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
+
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -67,26 +70,17 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
-    @Mock
-    private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
-    @Mock
-    private PersonalDataManager mPersonalDataManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private SyncService mSyncService;
+    @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
+    @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
+    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private Profile mProfile;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SyncService mSyncService;
 
     private SaveUpdateAddressProfilePromptController mPromptController;
     private SaveUpdateAddressProfilePrompt mPrompt;
@@ -100,16 +94,20 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @Override
     public void setUpTest() throws Exception {
         MockitoAnnotations.initMocks(this);
-        runOnUiThreadBlocking(() -> {
-            PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
-            when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-            SyncServiceFactory.setInstanceForTesting(mSyncService);
-            IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-            when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+                    when(mPersonalDataManager.getDefaultCountryCodeForNewAddress())
+                            .thenReturn("US");
+                    SyncServiceFactory.setInstanceForTesting(mSyncService);
+                    IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+                    when(mIdentityServicesProvider.getIdentityManager(any()))
+                            .thenReturn(mIdentityManager);
+                });
 
-        mPromptController = SaveUpdateAddressProfilePromptController.create(
-                NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
+        mPromptController =
+                SaveUpdateAddressProfilePromptController.create(
+                        NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
 
         mJniMocker.mock(
                 SaveUpdateAddressProfilePromptControllerJni.TEST_HOOKS, mPromptControllerJni);
@@ -133,19 +131,29 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @MediumTest
     @Feature({"RenderTest"})
     public void saveLocalOrSyncAddress() throws Exception {
-        View dialogView = runOnUiThreadBlocking(() -> {
-            mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
-                    getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/false);
-            mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
-                    /*negativeButtonText=*/"Cancel");
-            mPrompt.setSaveOrMigrateDetails(
-                    /*address=*/"321 Spear Street", /*email=*/"example@example.com",
-                    /*phone=*/"+0000000000000");
-            mPrompt.show();
-            return mPrompt.getDialogViewForTesting();
-        });
+        View dialogView =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mPrompt =
+                                    new SaveUpdateAddressProfilePrompt(
+                                            mPromptController,
+                                            getActivity().getModalDialogManager(),
+                                            getActivity(),
+                                            mProfile,
+                                            AutofillProfile.builder().build(),
+                                            /* isUpdate= */ false,
+                                            /* isMigrationToAccount= */ false);
+                            mPrompt.setDialogDetails(
+                                    /* title= */ "Dialog title",
+                                    /* positiveButtonText= */ "Accept",
+                                    /* negativeButtonText= */ "Cancel");
+                            mPrompt.setSaveOrMigrateDetails(
+                                    /* address= */ "321 Spear Street",
+                                    /* email= */ "example@example.com",
+                                    /* phone= */ "+0000000000000");
+                            mPrompt.show();
+                            return mPrompt.getDialogViewForTesting();
+                        });
         mRenderTestRule.render(dialogView, "save_local_or_sync_address");
     }
 
@@ -153,24 +161,35 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @MediumTest
     @Feature({"RenderTest"})
     public void saveAccountAddress() throws Exception {
-        View dialogView = runOnUiThreadBlocking(() -> {
-            mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
-                    getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/false);
-            mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
-                    /*negativeButtonText=*/"Cancel");
-            mPrompt.setSaveOrMigrateDetails(
-                    /*address=*/"321 Spear Street", /*email=*/"example@example.com",
-                    /*phone=*/"+0000000000000");
-            mPrompt.setSourceNotice(
-                    getActivity()
-                            .getString(
-                                    R.string.autofill_address_will_be_saved_in_account_source_notice)
-                            .replace("$1", "example@gmail.com"));
-            mPrompt.show();
-            return mPrompt.getDialogViewForTesting();
-        });
+        View dialogView =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mPrompt =
+                                    new SaveUpdateAddressProfilePrompt(
+                                            mPromptController,
+                                            getActivity().getModalDialogManager(),
+                                            getActivity(),
+                                            mProfile,
+                                            AutofillProfile.builder().build(),
+                                            /* isUpdate= */ false,
+                                            /* isMigrationToAccount= */ false);
+                            mPrompt.setDialogDetails(
+                                    /* title= */ "Dialog title",
+                                    /* positiveButtonText= */ "Accept",
+                                    /* negativeButtonText= */ "Cancel");
+                            mPrompt.setSaveOrMigrateDetails(
+                                    /* address= */ "321 Spear Street",
+                                    /* email= */ "example@example.com",
+                                    /* phone= */ "+0000000000000");
+                            mPrompt.setSourceNotice(
+                                    getActivity()
+                                            .getString(
+                                                    R.string
+                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                            .replace("$1", "example@gmail.com"));
+                            mPrompt.show();
+                            return mPrompt.getDialogViewForTesting();
+                        });
         mRenderTestRule.render(dialogView, "save_account_address");
     }
 
@@ -178,24 +197,35 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @MediumTest
     @Feature({"RenderTest"})
     public void migrateAddress() throws Exception {
-        View dialogView = runOnUiThreadBlocking(() -> {
-            mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
-                    getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/false,
-                    /*isMigrationToAccount=*/true);
-            mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
-                    /*negativeButtonText=*/"Cancel");
-            mPrompt.setSaveOrMigrateDetails(
-                    /*address=*/"321 Spear Street", /*email=*/"example@example.com",
-                    /*phone=*/"+0000000000000");
-            mPrompt.setSourceNotice(
-                    getActivity()
-                            .getString(
-                                    R.string.autofill_address_will_be_saved_in_account_source_notice)
-                            .replace("$1", "example@gmail.com"));
-            mPrompt.show();
-            return mPrompt.getDialogViewForTesting();
-        });
+        View dialogView =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mPrompt =
+                                    new SaveUpdateAddressProfilePrompt(
+                                            mPromptController,
+                                            getActivity().getModalDialogManager(),
+                                            getActivity(),
+                                            mProfile,
+                                            AutofillProfile.builder().build(),
+                                            /* isUpdate= */ false,
+                                            /* isMigrationToAccount= */ true);
+                            mPrompt.setDialogDetails(
+                                    /* title= */ "Dialog title",
+                                    /* positiveButtonText= */ "Accept",
+                                    /* negativeButtonText= */ "Cancel");
+                            mPrompt.setSaveOrMigrateDetails(
+                                    /* address= */ "321 Spear Street",
+                                    /* email= */ "example@example.com",
+                                    /* phone= */ "+0000000000000");
+                            mPrompt.setSourceNotice(
+                                    getActivity()
+                                            .getString(
+                                                    R.string
+                                                            .autofill_address_will_be_saved_in_account_source_notice)
+                                            .replace("$1", "example@gmail.com"));
+                            mPrompt.show();
+                            return mPrompt.getDialogViewForTesting();
+                        });
         mRenderTestRule.render(dialogView, "migrate_address");
     }
 
@@ -203,19 +233,29 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @MediumTest
     @Feature({"RenderTest"})
     public void updateLocalOrSyncAddress() throws Exception {
-        View dialogView = runOnUiThreadBlocking(() -> {
-            mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
-                    getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/true,
-                    /*isMigrationToAccount=*/false);
-            mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
-                    /*negativeButtonText=*/"Cancel");
-            mPrompt.setUpdateDetails(
-                    /*subtitle=*/"Update your address", /*oldDetails=*/"321 Spear Street",
-                    /*newDetails=*/"123 Lake Street");
-            mPrompt.show();
-            return mPrompt.getDialogViewForTesting();
-        });
+        View dialogView =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mPrompt =
+                                    new SaveUpdateAddressProfilePrompt(
+                                            mPromptController,
+                                            getActivity().getModalDialogManager(),
+                                            getActivity(),
+                                            mProfile,
+                                            AutofillProfile.builder().build(),
+                                            /* isUpdate= */ true,
+                                            /* isMigrationToAccount= */ false);
+                            mPrompt.setDialogDetails(
+                                    /* title= */ "Dialog title",
+                                    /* positiveButtonText= */ "Accept",
+                                    /* negativeButtonText= */ "Cancel");
+                            mPrompt.setUpdateDetails(
+                                    /* subtitle= */ "Update your address",
+                                    /* oldDetails= */ "321 Spear Street",
+                                    /* newDetails= */ "123 Lake Street");
+                            mPrompt.show();
+                            return mPrompt.getDialogViewForTesting();
+                        });
         mRenderTestRule.render(dialogView, "update_local_or_sync_address");
     }
 
@@ -223,24 +263,35 @@ public class SaveUpdateAddressProfilePromptRenderTest extends BlankUiTestActivit
     @MediumTest
     @Feature({"RenderTest"})
     public void updateAccountAddress() throws Exception {
-        View dialogView = runOnUiThreadBlocking(() -> {
-            mPrompt = new SaveUpdateAddressProfilePrompt(mPromptController,
-                    getActivity().getModalDialogManager(), getActivity(), mProfile,
-                    AutofillProfile.builder().build(), /*isUpdate=*/true,
-                    /*isMigrationToAccount=*/false);
-            mPrompt.setDialogDetails(/*title=*/"Dialog title", /*positiveButtonText=*/"Accept",
-                    /*negativeButtonText=*/"Cancel");
-            mPrompt.setUpdateDetails(
-                    /*subtitle=*/"Update your address", /*oldDetails=*/"321 Spear Street",
-                    /*newDetails=*/"123 Lake Street");
-            mPrompt.setSourceNotice(
-                    getActivity()
-                            .getString(
-                                    R.string.autofill_address_already_saved_in_account_source_notice)
-                            .replace("$1", "example@gmail.com"));
-            mPrompt.show();
-            return mPrompt.getDialogViewForTesting();
-        });
+        View dialogView =
+                runOnUiThreadBlocking(
+                        () -> {
+                            mPrompt =
+                                    new SaveUpdateAddressProfilePrompt(
+                                            mPromptController,
+                                            getActivity().getModalDialogManager(),
+                                            getActivity(),
+                                            mProfile,
+                                            AutofillProfile.builder().build(),
+                                            /* isUpdate= */ true,
+                                            /* isMigrationToAccount= */ false);
+                            mPrompt.setDialogDetails(
+                                    /* title= */ "Dialog title",
+                                    /* positiveButtonText= */ "Accept",
+                                    /* negativeButtonText= */ "Cancel");
+                            mPrompt.setUpdateDetails(
+                                    /* subtitle= */ "Update your address",
+                                    /* oldDetails= */ "321 Spear Street",
+                                    /* newDetails= */ "123 Lake Street");
+                            mPrompt.setSourceNotice(
+                                    getActivity()
+                                            .getString(
+                                                    R.string
+                                                            .autofill_address_already_saved_in_account_source_notice)
+                                            .replace("$1", "example@gmail.com"));
+                            mPrompt.show();
+                            return mPrompt.getDialogViewForTesting();
+                        });
         mRenderTestRule.render(dialogView, "update_local_or_sync_address");
     }
 }

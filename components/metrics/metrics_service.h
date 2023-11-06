@@ -110,6 +110,11 @@ class MetricsService {
   // recording is not currently running.
   std::string GetClientId() const;
 
+  // Get the low entropy source values.
+  int GetLowEntropySource();
+  int GetOldLowEntropySource();
+  int GetPseudoLowEntropySource();
+
   // Set an external provided id for the metrics service. This method can be
   // set by a caller which wants to explicitly control the *next* id used by the
   // metrics service. Note that setting the external client id will *not* change

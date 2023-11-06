@@ -89,7 +89,8 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
     fake_host_device_timestamp_manager_ =
         std::make_unique<FakeHostDeviceTimestampManager>();
     fake_oobe_completion_tracker_ = std::make_unique<OobeCompletionTracker>();
-    test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMillis));
+    test_clock_->SetNow(
+        base::Time::FromMillisecondsSinceUnixEpoch(kTestTimeMillis));
     session_manager_ = std::make_unique<session_manager::SessionManager>();
   }
 
@@ -199,7 +200,8 @@ class MultiDeviceSetupAccountStatusChangeDelegateNotifierTest
   }
 
   void FastForward(int64_t time_delta) {
-    test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMillis + time_delta));
+    test_clock_->SetNow(base::Time::FromMillisecondsSinceUnixEpoch(
+        kTestTimeMillis + time_delta));
     if (fake_delegate_) {
       delegate_notifier_->FlushForTesting();
     }

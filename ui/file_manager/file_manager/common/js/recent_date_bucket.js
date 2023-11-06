@@ -8,7 +8,7 @@
 
 import {SearchRecency} from '../../externs/ts/state.js';
 
-import {util} from './util.js';
+import {getLocaleBasedWeekStart} from './translations.js';
 
 /**
  * Given a date and now date, return the date bucket it belongs to.
@@ -32,7 +32,7 @@ export function getRecentDateBucket(date, now) {
     return chrome.fileManagerPrivate.RecentDateBucket.YESTERDAY;
   }
   const startOfThisWeek = new Date(startOfToday);
-  const localeBasedWeekStart = util.getLocaleBasedWeekStart();
+  const localeBasedWeekStart = getLocaleBasedWeekStart();
   const daysDiff = (startOfToday.getDay() - localeBasedWeekStart + 7) % 7;
   startOfThisWeek.setDate(startOfToday.getDate() - daysDiff);
   if (date >= startOfThisWeek) {
@@ -81,6 +81,8 @@ export function getTranslationKeyForDateBucket(dateBucket) {
       'RECENT_TIME_HEADING_OLDER',
     ],
   ]);
+  // @ts-ignore: error TS2322: Type 'string | undefined' is not assignable to
+  // type 'string'.
   return DATE_BUCKET_TO_TRANSLATION_KEY_MAP.get(dateBucket);
 }
 

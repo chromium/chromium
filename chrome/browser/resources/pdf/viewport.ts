@@ -6,7 +6,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util_ts.js';
+import {hasKeyModifiers, isRTL} from 'chrome://resources/js/util.js';
 
 import {ExtendedKeyEvent, FittingType, Point, Rect} from './constants.js';
 import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
@@ -1535,8 +1535,12 @@ export class Viewport implements ViewportInterface {
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
-    let spaceOnLeft =
-        (this.size.width - this.documentDimensions_.width * zoom) / 2;
+    const scrollbarWidth = this.documentHasScrollbars().vertical ?
+        this.scrollContent_.scrollbarWidth :
+        0;
+    let spaceOnLeft = (this.size.width - scrollbarWidth -
+                       this.documentDimensions_.width * zoom) /
+        2;
     spaceOnLeft = Math.max(spaceOnLeft, 0);
 
     return {

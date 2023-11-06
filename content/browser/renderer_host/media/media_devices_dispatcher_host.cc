@@ -29,6 +29,7 @@
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
@@ -36,7 +37,7 @@
 #include "url/origin.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/media/capture/crop_id_web_contents_helper.h"
+#include "content/browser/media/capture/sub_capture_target_id_web_contents_helper.h"
 #endif
 
 using blink::mojom::MediaDeviceType;
@@ -74,22 +75,20 @@ struct MediaDevicesDispatcherHost::AudioInputCapabilitiesRequest {
 
 // static
 void MediaDevicesDispatcherHost::Create(
-    int render_process_id,
-    int render_frame_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaDevicesDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_stream_manager->media_devices_manager()->RegisterDispatcherHost(
-      std::make_unique<MediaDevicesDispatcherHost>(
-          render_process_id, render_frame_id, media_stream_manager),
+      std::make_unique<MediaDevicesDispatcherHost>(render_frame_host_id,
+                                                   media_stream_manager),
       std::move(receiver));
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](int render_process_id, int render_frame_id) {
+                     [](GlobalRenderFrameHostId render_frame_host_id) {
                        RenderFrameHost* render_frame_host =
-                           RenderFrameHost::FromID(render_process_id,
-                                                   render_frame_id);
+                           RenderFrameHost::FromID(render_frame_host_id);
 
                        if (!render_frame_host)
                          return;
@@ -100,15 +99,13 @@ void MediaDevicesDispatcherHost::Create(
                                BackForwardCacheDisable::DisabledReasonId::
                                    kMediaDevicesDispatcherHost));
                      },
-                     render_process_id, render_frame_id));
+                     render_frame_host_id));
 }
 
 MediaDevicesDispatcherHost::MediaDevicesDispatcherHost(
-    int render_process_id,
-    int render_frame_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager)
-    : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
+    : render_frame_host_id_(render_frame_host_id),
       media_stream_manager_(media_stream_manager),
       num_pending_audio_input_parameters_(0) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -138,7 +135,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
   if ((!request_audio_input && !request_video_input && !request_audio_output) ||
       (request_video_input_capabilities && !request_video_input) ||
       (request_audio_input_capabilities && !request_audio_input)) {
-    ReceivedBadMessage(render_process_id_,
+    ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
@@ -152,7 +149,7 @@ void MediaDevicesDispatcherHost::EnumerateDevices(
       request_audio_output;
 
   media_stream_manager_->media_devices_manager()->EnumerateDevices(
-      render_process_id_, render_frame_id_, devices_to_enumerate,
+      render_frame_host_id_, devices_to_enumerate,
       request_video_input_capabilities, request_audio_input_capabilities,
       std::move(client_callback));
 }
@@ -165,7 +162,7 @@ void MediaDevicesDispatcherHost::GetVideoInputCapabilities(
       base::BindOnce(
           media_stream_manager_->media_devices_manager()
               ->get_salt_and_origin_cb(),
-          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          render_frame_host_id_,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID,
               weak_factory_.GetWeakPtr(), std::move(client_callback)))));
@@ -182,7 +179,7 @@ void MediaDevicesDispatcherHost::GetAllVideoInputDeviceFormats(
       base::BindOnce(
           media_stream_manager_->media_devices_manager()
               ->get_salt_and_origin_cb(),
-          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          render_frame_host_id_,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
               weak_factory_.GetWeakPtr(), hashed_device_id,
@@ -201,7 +198,7 @@ void MediaDevicesDispatcherHost::GetAvailableVideoInputDeviceFormats(
       base::BindOnce(
           media_stream_manager_->media_devices_manager()
               ->get_salt_and_origin_cb(),
-          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          render_frame_host_id_,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &MediaDevicesDispatcherHost::GetVideoInputDeviceFormats,
               weak_factory_.GetWeakPtr(), hashed_device_id,
@@ -216,7 +213,7 @@ void MediaDevicesDispatcherHost::GetAudioInputCapabilities(
       base::BindOnce(
           media_stream_manager_->media_devices_manager()
               ->get_salt_and_origin_cb(),
-          GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
+          render_frame_host_id_,
           base::BindPostTaskToCurrentDefault(base::BindOnce(
               &MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID,
               weak_factory_.GetWeakPtr(), std::move(client_callback)))));
@@ -231,7 +228,7 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
 
   if (!subscribe_audio_input && !subscribe_video_input &&
       !subscribe_audio_output) {
-    ReceivedBadMessage(render_process_id_,
+    ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
@@ -244,10 +241,10 @@ void MediaDevicesDispatcherHost::AddMediaDevicesListener(
   devices_to_subscribe[static_cast<size_t>(MediaDeviceType::kMediaAudioOuput)] =
       subscribe_audio_output;
 
-  uint32_t subscription_id = media_stream_manager_->media_devices_manager()
-                                 ->SubscribeDeviceChangeNotifications(
-                                     render_process_id_, render_frame_id_,
-                                     devices_to_subscribe, std::move(listener));
+  uint32_t subscription_id =
+      media_stream_manager_->media_devices_manager()
+          ->SubscribeDeviceChangeNotifications(
+              render_frame_host_id_, devices_to_subscribe, std::move(listener));
   subscription_ids_.push_back(subscription_id);
 }
 
@@ -256,27 +253,27 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!config) {
-    ReceivedBadMessage(render_process_id_,
+    ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MDDH_NULL_CAPTURE_HANDLE_CONFIG);
     return;
   }
 
   static_assert(sizeof(decltype(config->capture_handle)::value_type) == 2, "");
   if (config->capture_handle.length() > 1024) {
-    ReceivedBadMessage(render_process_id_,
+    ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MDDH_INVALID_CAPTURE_HANDLE);
     return;
   }
 
   if (config->all_origins_permitted && !config->permitted_origins.empty()) {
-    ReceivedBadMessage(render_process_id_,
+    ReceivedBadMessage(render_frame_host_id_.child_id,
                        bad_message::MDDH_INVALID_ALL_ORIGINS_PERMITTED);
     return;
   }
 
   for (const auto& origin : config->permitted_origins) {
     if (origin.opaque()) {
-      ReceivedBadMessage(render_process_id_,
+      ReceivedBadMessage(render_frame_host_id_.child_id,
                          bad_message::MDDH_INVALID_PERMITTED_ORIGIN);
       return;
     }
@@ -284,30 +281,31 @@ void MediaDevicesDispatcherHost::SetCaptureHandleConfig(
 
   if (capture_handle_config_callback_for_testing_) {
     capture_handle_config_callback_for_testing_.Run(
-        render_process_id_, render_frame_id_, config->Clone());
+        render_frame_host_id_.child_id, render_frame_host_id_.frame_routing_id,
+        config->Clone());
   }
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](int render_process_id, int render_frame_id,
+          [](GlobalRenderFrameHostId render_frame_host_id,
              blink::mojom::CaptureHandleConfigPtr config) {
             DCHECK_CURRENTLY_ON(BrowserThread::UI);
             RenderFrameHostImpl* const rfhi =
-                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+                RenderFrameHostImpl::FromID(render_frame_host_id);
             if (!rfhi || !rfhi->IsActive()) {
               return;
             }
             if (rfhi->GetParentOrOuterDocument()) {
               // Would be overkill to add thread-hopping just to support a test,
               // so we execute directly.
-              bad_message::ReceivedBadMessage(render_process_id,
+              bad_message::ReceivedBadMessage(render_frame_host_id.child_id,
                                               bad_message::MDDH_NOT_TOP_LEVEL);
               return;
             }
             rfhi->delegate()->SetCaptureHandleConfig(std::move(config));
           },
-          render_process_id_, render_frame_id_, std::move(config)));
+          render_frame_host_id_, std::move(config)));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -319,30 +317,34 @@ void MediaDevicesDispatcherHost::CloseFocusWindowOfOpportunity(
       /*is_from_timer=*/false);
 }
 
-void MediaDevicesDispatcherHost::ProduceCropId(ProduceCropIdCallback callback) {
+void MediaDevicesDispatcherHost::ProduceSubCaptureTargetId(
+    media::mojom::SubCaptureTargetType type,
+    ProduceSubCaptureTargetIdCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
-          [](int render_process_id, int render_frame_id) {
+          [](GlobalRenderFrameHostId render_frame_host_id,
+             media::mojom::SubCaptureTargetType type) {
             RenderFrameHostImpl* const rfh =
-                RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
+                RenderFrameHostImpl::FromID(render_frame_host_id);
             if (!rfh || !rfh->IsActive()) {
               return std::string();  // Might have been asynchronously closed.
             }
 
-            WebContents* const web_contents =
+            WebContents* const wc =
                 WebContents::FromRenderFrameHost(rfh->GetMainFrame());
-            DCHECK(web_contents);
+            DCHECK(wc);
 
             // No-op if already created.
-            CropIdWebContentsHelper::CreateForWebContents(web_contents);
+            SubCaptureTargetIdWebContentsHelper::CreateForWebContents(wc);
 
-            return CropIdWebContentsHelper::FromWebContents(web_contents)
-                ->ProduceCropId();
+            SubCaptureTargetIdWebContentsHelper* const helper =
+                SubCaptureTargetIdWebContentsHelper::FromWebContents(wc);
+            return helper->ProduceId(type);
           },
-          render_process_id_, render_frame_id_),
+          render_frame_host_id_, type),
       std::move(callback));
 }
 #endif
@@ -352,7 +354,7 @@ void MediaDevicesDispatcherHost::GetDefaultVideoInputDeviceID(
     const MediaDeviceSaltAndOrigin& salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   GetDefaultMediaDeviceID(
-      MediaDeviceType::kMediaVideoInput, render_process_id_, render_frame_id_,
+      MediaDeviceType::kMediaVideoInput, render_frame_host_id_,
       base::BindOnce(&MediaDevicesDispatcherHost::GotDefaultVideoInputDeviceID,
                      weak_factory_.GetWeakPtr(), std::move(client_callback),
                      salt_and_origin));
@@ -467,7 +469,7 @@ void MediaDevicesDispatcherHost::GetDefaultAudioInputDeviceID(
 
   DCHECK(current_audio_input_capabilities_.empty());
   GetDefaultMediaDeviceID(
-      MediaDeviceType::kMediaAudioInput, render_process_id_, render_frame_id_,
+      MediaDeviceType::kMediaAudioInput, render_frame_host_id_,
       base::BindOnce(&MediaDevicesDispatcherHost::GotDefaultAudioInputDeviceID,
                      weak_factory_.GetWeakPtr()));
 }

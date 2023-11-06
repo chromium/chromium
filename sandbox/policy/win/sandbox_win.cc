@@ -181,15 +181,14 @@ bool AddWindowsFontsDir(TargetConfig* config) {
     return false;
   }
 
-  ResultCode result =
-      config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
-                      directory.value().c_str());
+  ResultCode result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
+                                              directory.value().c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
   std::wstring directory_str = directory.value() + L"\\*";
-  result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
-                           directory_str.c_str());
+  result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
+                                   directory_str.c_str());
   if (result != SBOX_ALL_OK)
     return false;
 
@@ -271,9 +270,8 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
     return SBOX_ERROR_GENERIC;
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
   {
-    ResultCode result =
-        config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowReadonly,
-                        pdb_path.value().c_str());
+    ResultCode result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
+                                                pdb_path.value().c_str());
     if (result != SBOX_ALL_OK) {
       return result;
     }
@@ -295,9 +293,8 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
     base::FilePath sancov_path =
         base::FilePath(coverage_dir).Append(L"*.sancov");
     {
-      ResultCode result =
-          config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                          sancov_path.value().c_str());
+      ResultCode result = config->AllowFileAccess(FileSemantics::kAllowAny,
+                                                  sancov_path.value().c_str());
       if (result != SBOX_ALL_OK) {
         return result;
       }
@@ -462,6 +459,9 @@ std::wstring GetAppContainerProfileName(const std::string& appcontainer_id,
     case Sandbox::kNetwork:
       sandbox_base_name = std::string("cr.sb.net");
       break;
+    case Sandbox::kOnDeviceModelExecution:
+      sandbox_base_name = std::string("cr.sb.odm");
+      break;
     case Sandbox::kWindowsSystemProxyResolver:
       sandbox_base_name = std::string("cr.sb.pxy");
       break;
@@ -495,6 +495,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
       sandbox_type != Sandbox::kXrCompositing &&
       sandbox_type != Sandbox::kMediaFoundationCdm &&
       sandbox_type != Sandbox::kNetwork &&
+      sandbox_type != Sandbox::kOnDeviceModelExecution &&
       sandbox_type != Sandbox::kWindowsSystemProxyResolver) {
     return SBOX_ERROR_UNSUPPORTED;
   }
@@ -508,6 +509,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     AddCapabilitiesFromString(
         container,
         command_line.GetSwitchValueNative(switches::kAddGpuAppContainerCaps));
+    container->SetEnableLowPrivilegeAppContainer(
+        base::FeatureList::IsEnabled(features::kGpuLPAC));
   }
 
   if (sandbox_type == Sandbox::kXrCompositing) {
@@ -515,6 +518,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kLpacPnpNotifications);
     AddCapabilitiesFromString(container, command_line.GetSwitchValueNative(
                                              switches::kAddXrAppContainerCaps));
+    // Note: does not use LPAC.
   }
 
   if (sandbox_type == Sandbox::kMediaFoundationCdm) {
@@ -535,6 +539,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
     container->AddCapability(kMediaFoundationCdmFiles);
     container->AddCapability(kMediaFoundationCdmData);
+    container->SetEnableLowPrivilegeAppContainer(true);
   }
 
   if (sandbox_type == Sandbox::kNetwork) {
@@ -549,18 +554,16 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         features::kWinSboxNetworkServiceSandboxIsLPAC));
   }
 
+  if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
+    container->AddImpersonationCapability(kChromeInstallFiles);
+    container->AddCapability(kLpacPnpNotifications);
+    container->SetEnableLowPrivilegeAppContainer(true);
+  }
+
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(kLpacServicesManagement);
     container->AddCapability(kLpacEnterprisePolicyChangeNotifications);
-  }
-
-  // Enable LPAC for the following processes. Notably not for the kXrCompositing
-  // service.
-  if ((sandbox_type == Sandbox::kGpu &&
-       base::FeatureList::IsEnabled(features::kGpuLPAC)) ||
-      sandbox_type == Sandbox::kMediaFoundationCdm ||
-      sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     container->SetEnableLowPrivilegeAppContainer(true);
   }
 
@@ -676,8 +679,8 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     if (logging::IsLoggingToFileEnabled()) {
       auto log_path = logging::GetLogFileFullPath();
       DCHECK(base::FilePath(log_path).IsAbsolute());
-      result = config->AddRule(SubSystem::kFiles, Semantics::kFilesAllowAny,
-                               log_path.c_str());
+      result =
+          config->AllowFileAccess(FileSemantics::kAllowAny, log_path.c_str());
       if (result != SBOX_ALL_OK) {
         return result;
       }
@@ -836,8 +839,7 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  return config->AddRule(SubSystem::kWin32kLockdown, Semantics::kFakeGdiInit,
-                         nullptr);
+  return config->SetFakeGdiInit();
 #else  // !defined(NACL_WIN64)
   return SBOX_ALL_OK;
 #endif
@@ -896,6 +898,10 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
     return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
   if (sandbox_type == Sandbox::kNetwork) {
+    return true;
+  }
+
+  if (sandbox_type == Sandbox::kOnDeviceModelExecution) {
     return true;
   }
 
@@ -1086,6 +1092,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
 #endif
     case Sandbox::kNetwork:
       return "Network";
+    case Sandbox::kOnDeviceModelExecution:
+      return "On-Device Model Execution";
     case Sandbox::kCdm:
       return "CDM";
     case Sandbox::kPrintCompositor:

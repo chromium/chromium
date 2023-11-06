@@ -47,6 +47,10 @@ class COMPONENT_EXPORT(UI_BASE) SimpleMenuModel : public MenuModel {
     // in-product help.
     virtual bool IsCommandIdAlerted(int command_id) const;
 
+    // Determines if |element_id| should be rendered with an alert for
+    // in-product help.
+    virtual bool IsElementIdAlerted(ui::ElementIdentifier element_id) const;
+
     // Some command ids have labels and icons that change over time.
     virtual bool IsItemForCommandIdDynamic(int command_id) const;
     virtual std::u16string GetLabelForCommandId(int command_id) const;

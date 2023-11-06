@@ -682,21 +682,8 @@ void OpenXrApiWrapper::OnContextProviderLost() {
 }
 
 void OpenXrApiWrapper::ReleaseColorSwapchainImages() {
-  if (context_provider_ && graphics_binding_) {
-    gpu::SharedImageInterface* shared_image_interface =
-        context_provider_->SharedImageInterface();
-    for (SwapChainInfo& info : graphics_binding_->GetSwapChainImages()) {
-      if (shared_image_interface && !info.mailbox_holder.mailbox.IsZero() &&
-          info.mailbox_holder.sync_token.HasData()) {
-        shared_image_interface->DestroySharedImage(
-            info.mailbox_holder.sync_token, info.mailbox_holder.mailbox);
-      }
-      info.Clear();
-    }
-  }
-
   if (graphics_binding_) {
-    graphics_binding_->ClearSwapChainImages();
+    graphics_binding_->DestroySwapchainImages(context_provider_.get());
   }
 }
 
@@ -709,16 +696,6 @@ void OpenXrApiWrapper::CreateSharedMailboxes() {
       context_provider_->SharedImageInterface();
   // Create the MailboxHolders for each texture in the swap chain
   graphics_binding_->CreateSharedImages(shared_image_interface);
-}
-
-bool OpenXrApiWrapper::IsUsingSharedImages() const {
-  if (!graphics_binding_) {
-    return false;
-  }
-
-  const auto swapchain_info = graphics_binding_->GetSwapChainImages();
-  return ((swapchain_info.size() > 1) &&
-          !swapchain_info[0].mailbox_holder.mailbox.IsZero());
 }
 
 XrResult OpenXrApiWrapper::CreateSpace(XrReferenceSpaceType type,
@@ -821,7 +798,8 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
 
   RETURN_IF_XR_FAILED(
       LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, primary_view_config_));
-  RETURN_IF_XR_FAILED(PrepareViewConfigForRender(primary_view_config_));
+  graphics_binding_->PrepareViewConfigForRender(color_swapchain_,
+                                                primary_view_config_);
 
   if (base::Contains(enabled_features_,
                      mojom::XRSessionFeature::SECONDARY_VIEWS)) {
@@ -829,7 +807,7 @@ XrResult OpenXrApiWrapper::UpdateViewConfigurations() {
       OpenXrViewConfiguration& config = view_config.second;
       if (config.Active()) {
         RETURN_IF_XR_FAILED(LocateViews(XR_REFERENCE_SPACE_TYPE_LOCAL, config));
-        RETURN_IF_XR_FAILED(PrepareViewConfigForRender(config));
+        graphics_binding_->PrepareViewConfigForRender(color_swapchain_, config);
       }
     }
   }
@@ -882,58 +860,6 @@ XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
   return XR_SUCCESS;
 }
 
-// Sets the layers for each view in the view configuration, which are submitted
-// back to OpenXR on xrEndFrame. This is where we specify where in the texture
-// each view is, as well as the properties of the views.
-XrResult OpenXrApiWrapper::PrepareViewConfigForRender(
-    OpenXrViewConfiguration& view_config) {
-  DCHECK(view_config.Active());
-
-  uint32_t x_offset = view_config.Viewport().x();
-  for (uint32_t view_index = 0; view_index < view_config.Views().size();
-       view_index++) {
-    const XrView& view = view_config.Views()[view_index];
-
-    XrCompositionLayerProjectionView& projection_view =
-        view_config.GetProjectionView(view_index);
-    const XrViewConfigurationView& properties =
-        view_config.Properties()[view_index];
-    projection_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
-    projection_view.pose = view.pose;
-    projection_view.fov.angleLeft = view.fov.angleLeft;
-    projection_view.fov.angleRight = view.fov.angleRight;
-    projection_view.subImage.swapchain = color_swapchain_;
-    // Since we're in double wide mode, the texture array only has one texture
-    // and is always index 0. If secondary views are enabled, those views are
-    // also in this same texture array.
-    projection_view.subImage.imageArrayIndex = 0;
-    projection_view.subImage.imageRect.extent.width =
-        properties.recommendedImageRectWidth;
-    projection_view.subImage.imageRect.extent.height =
-        properties.recommendedImageRectHeight;
-    projection_view.subImage.imageRect.offset.x = x_offset;
-    x_offset += properties.recommendedImageRectWidth;
-
-    if (IsUsingSharedImages()) {
-      // WebGL layers always give us flipped content. We need to instruct OpenXR
-      // to flip the content before showing it to the user. Some XR runtimes
-      // are able to efficiently do this as part of existing post processing
-      // steps.
-      projection_view.subImage.imageRect.offset.y = 0;
-      projection_view.fov.angleUp = view.fov.angleDown;
-      projection_view.fov.angleDown = view.fov.angleUp;
-    } else {
-      projection_view.subImage.imageRect.offset.y =
-          graphics_binding_->GetSwapchainImageSize().height() -
-          properties.recommendedImageRectHeight;
-      projection_view.fov.angleUp = view.fov.angleUp;
-      projection_view.fov.angleDown = view.fov.angleDown;
-    }
-  }
-
-  return XR_SUCCESS;
-}
-
 XrResult OpenXrApiWrapper::EndFrame() {
   DCHECK(pending_frame_);
   DCHECK(HasBlendMode());
@@ -946,8 +872,8 @@ XrResult OpenXrApiWrapper::EndFrame() {
       graphics_binding_->ReleaseActiveSwapchainImage(color_swapchain_));
 
   // Each view configuration has its own layer, which was populated in
-  // PrepareViewConfigForRender. These layers are all put into XrFrameEndInfo
-  // and passed to xrEndFrame.
+  // GraphicsBinding::PrepareViewConfigForRender. These layers are all put into
+  // XrFrameEndInfo and passed to xrEndFrame.
   OpenXrLayers layers(local_space_, blend_mode_,
                       primary_view_config_.ProjectionViews());
 

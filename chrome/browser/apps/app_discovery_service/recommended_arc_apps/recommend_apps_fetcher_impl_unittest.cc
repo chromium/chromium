@@ -66,14 +66,13 @@ constexpr char kOneAppResponse[] = R"({"recommendedApp": [{
 // Creates a fake ARC features to be used for these tests.
 arc::ArcFeatures CreateArcFeaturesForTest() {
   arc::ArcFeatures arc_features;
-  arc_features.build_props["ro.build.version.sdk"] = kTestArcSdkVersion;
-  arc_features.build_props["ro.build.fingerprint"] = kTestDeviceFingerprint;
+  arc_features.build_props.sdk_version = kTestArcSdkVersion;
+  arc_features.build_props.fingerprint = kTestDeviceFingerprint;
   arc_features.play_store_version = kTestArcPlayStoreVersion;
 
   std::vector<std::string> abi_list(std::begin(kTestArcAbiList),
                                     std::end(kTestArcAbiList));
-  arc_features.build_props["ro.product.cpu.abilist"] =
-      base::JoinString(abi_list, ",");
+  arc_features.build_props.abi_list = base::JoinString(abi_list, ",");
 
   for (const char* feature : kTestArcFeatures) {
     arc_features.feature_map[feature] = 1;

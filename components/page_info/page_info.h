@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/web_contents.h"
@@ -346,10 +347,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   void PresentSitePermissionsForTesting() { PresentSitePermissions(); }
 
-  bool IsTrackingProtection3pcdEnabled() const;
-
-  bool AreAllThirdPartyCookiesBlocked() const;
-
  private:
   FRIEND_TEST_ALL_PREFIXES(PageInfoTest,
                            ShowInfoBarWhenAllowingThirdPartyCookies);
@@ -367,6 +364,7 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;
@@ -556,6 +554,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+
+  CookieBlocking3pcdStatus blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   base::Time cookie_exception_expiration_;
 

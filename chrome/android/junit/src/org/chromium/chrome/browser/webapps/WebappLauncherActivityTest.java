@@ -57,9 +57,7 @@ public class WebappLauncherActivityTest {
         assertNull(WebApkIntentDataProviderFactory.create(intent));
     }
 
-    /**
-     * Test the launch intent created by {@link WebappLauncherActivity} for old-style WebAPKs.
-     */
+    /** Test the launch intent created by {@link WebappLauncherActivity} for old-style WebAPKs. */
     @Test
     public void testOldStyleLaunchIntent() {
         registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
@@ -76,9 +74,7 @@ public class WebappLauncherActivityTest {
         assertNotNull(WebApkIntentDataProviderFactory.create(launchIntent));
     }
 
-    /**
-     * Test the launch intent created by {@link WebappLauncherActivity} for new-style WebAPKs.
-     */
+    /** Test the launch intent created by {@link WebappLauncherActivity} for new-style WebAPKs. */
     @Test
     public void testNewStyleLaunchIntent() {
         registerWebApk(WEBAPK_PACKAGE_NAME, START_URL);
@@ -98,7 +94,7 @@ public class WebappLauncherActivityTest {
         Bundle bundle = new Bundle();
         bundle.putString(WebApkMetaDataKeys.START_URL, START_URL);
         WebApkTestHelper.registerWebApkWithMetaData(
-                webApkPackage, bundle, null /* shareTargetMetaData */);
+                webApkPackage, bundle, /* shareTargetMetaData= */ null);
         WebApkTestHelper.addIntentFilterForUrl(webApkPackage, startUrl);
     }
 

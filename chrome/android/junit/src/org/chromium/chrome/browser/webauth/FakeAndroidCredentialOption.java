@@ -10,9 +10,7 @@ import android.util.ArraySet;
 
 import java.util.Set;
 
-/**
- * Fake implementation of the Android Credential Manager CredentialOption object.
- */
+/** Fake implementation of the Android Credential Manager CredentialOption object. */
 public final class FakeAndroidCredentialOption {
     private final String mType;
     private final Bundle mCredentialRetrievalData;
@@ -40,8 +38,11 @@ public final class FakeAndroidCredentialOption {
         return mAllowedProviders;
     }
 
-    private FakeAndroidCredentialOption(String type, Bundle credentialRetrievalData,
-            Bundle candidateQueryData, boolean isSystemProviderRequired,
+    private FakeAndroidCredentialOption(
+            String type,
+            Bundle credentialRetrievalData,
+            Bundle candidateQueryData,
+            boolean isSystemProviderRequired,
             ArraySet<ComponentName> allowedProviders) {
         mType = type;
         mCredentialRetrievalData = credentialRetrievalData;
@@ -50,9 +51,7 @@ public final class FakeAndroidCredentialOption {
         mAllowedProviders = allowedProviders;
     }
 
-    /**
-     * Builder for FakeAndroidCredentialOption.
-     */
+    /** Builder for FakeAndroidCredentialOption. */
     public static final class Builder {
         private String mType;
         private Bundle mCredentialRetrievalData;
@@ -82,8 +81,12 @@ public final class FakeAndroidCredentialOption {
         }
 
         public FakeAndroidCredentialOption build() {
-            return new FakeAndroidCredentialOption(mType, mCredentialRetrievalData,
-                    mCandidateQueryData, mIsSystemProviderRequired, mAllowedProviders);
+            return new FakeAndroidCredentialOption(
+                    mType,
+                    mCredentialRetrievalData,
+                    mCandidateQueryData,
+                    mIsSystemProviderRequired,
+                    mAllowedProviders);
         }
     }
 }

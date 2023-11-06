@@ -64,10 +64,9 @@ suite('emoji-picker-offline-gif', () => {
             findInEmojiPicker('#list-container', '#groups', 'emoji-error');
         assert(errorElement);
 
-        const genericErrorImage =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container img');
-        assertEquals(
-            genericErrorImage!.getAttribute('src'), 'generic_error.svg');
+        const genericErrorImageNew =
+            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+        assert(genericErrorImageNew);
 
         const errorText = errorElement!.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');
@@ -85,10 +84,9 @@ suite('emoji-picker-offline-gif', () => {
         const errorElement = results!.querySelector('.no-result > emoji-error');
         assert(errorElement);
 
-        const genericErrorImage =
-            errorElement!.shadowRoot!.querySelector('.gif-error-container img');
-        assertEquals(
-            genericErrorImage!.getAttribute('src'), 'generic_error.svg');
+        const genericErrorImageNew =
+            errorElement!.shadowRoot!.querySelector('.gif-error-container svg');
+        assert(genericErrorImageNew);
 
         const errorText = errorElement!.shadowRoot!.querySelector(
             '.gif-error-container > .error-text');

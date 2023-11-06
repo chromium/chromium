@@ -20,6 +20,7 @@
 #include "extensions/browser/service_worker/worker_id.h"
 #include "extensions/common/api/messaging/port_id.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/mojom/message_port.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -65,7 +66,10 @@ class ExtensionMessagePort : public MessagePort {
       base::WeakPtr<ChannelDelegate> channel_delegate,
       const PortId& port_id,
       const std::string& extension_id,
-      const ChannelEndpoint& endpoint);
+      const ChannelEndpoint& endpoint,
+      mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+          port_host);
 
   ExtensionMessagePort(base::WeakPtr<ChannelDelegate> channel_delegate,
                        const PortId& port_id,
@@ -110,26 +114,28 @@ class ExtensionMessagePort : public MessagePort {
 
   // Unregisters a frame as a receiver / sender. When there are no registered
   // frames any more, the port closes via CloseChannel().
-  void UnregisterFrame(content::RenderFrameHost* render_frame_host);
+  bool UnregisterFrame(content::RenderFrameHost* render_frame_host);
 
-  // Returns whether or not a live frame or Service Worker is present for this
-  // port.
-  bool HasReceivers() const;
+  // Unregisters all the frames whose outermost main frame is `main_frame`. When
+  // there are no registered frames any more, the port closes via
+  // CloseChannel().
+  // It returns if the port and the associated channel is closed.
+  bool UnregisterFramesUnderMainFrame(content::RenderFrameHost* main_frame);
 
   // Methods to register/unregister a Service Worker endpoint for this port.
   void RegisterWorker(const WorkerId& worker_id);
-  void UnregisterWorker(const WorkerId& worker_id);
+  bool UnregisterWorker(const WorkerId& worker_id);
   void UnregisterWorker(int render_process_id, int worker_thread_id);
 
   // Immediately close the port and its associated channel.
   void CloseChannel();
 
-  using IPCBuilderCallback =
-      base::RepeatingCallback<std::unique_ptr<IPC::Message>(const IPCTarget&)>;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // Sends IPC messages to the renderer for all registered frames and/or service
   // workers.
+  using IPCBuilderCallback =
+      base::RepeatingCallback<std::unique_ptr<IPC::Message>(const IPCTarget&)>;
   void SendToPort(IPCBuilderCallback ipc_builder);
-
   void SendToIPCTarget(const IPCTarget& target,
                        std::unique_ptr<IPC::Message> message);
 
@@ -151,11 +157,21 @@ class ExtensionMessagePort : public MessagePort {
       const IPCTarget& target);
   std::unique_ptr<IPC::Message> BuildDeliverMessageIPC(const Message& message,
                                                        const IPCTarget& target);
+#else
+  using SendCallback = base::RepeatingCallback<void(mojom::MessagePort*)>;
+  void SendToPort(SendCallback send_callback);
+#endif
 
   // Check if this activity of this type on this port would keep servicer worker
   // alive.
   bool IsServiceWorkerActivity(Activity::Type activity_type);
 
+  bool ShouldSkipFrameForBFCache(content::RenderFrameHost* render_frame_host);
+
+#if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  void OnConnectResponse(bool success);
+  void Prune();
+#endif
 
   ExtensionId extension_id_;
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
@@ -164,15 +180,23 @@ class ExtensionMessagePort : public MessagePort {
   // true for a receiver port.
   bool for_all_extension_contexts_ = false;
 
-  // When the port is used as a sender, this set contains only one element.
+  // When the port is used as a sender, this map contains only one element.
   // If used as a receiver, it may contain any number of frames.
-  // This set is populated before the first message is sent to the destination,
+  // This map is populated before the first message is sent to the destination,
   // and shrinks over time when the port is rejected by the recipient frame, or
   // when the frame is removed or unloaded.
-  std::set<content::RenderFrameHost*> frames_;
+  std::map<content::RenderFrameHost*,
+           mojo::AssociatedRemote<mojom::MessagePort>>
+      frames_;
 
   // Service Worker endpoints for this port.
-  std::set<WorkerId> service_workers_;
+  std::map<WorkerId, mojo::AssociatedRemote<mojom::MessagePort>>
+      service_workers_;
+
+  // The set of frames and workers that have not been connected yet. These
+  // should only have items during connection setup time.
+  std::set<content::RenderFrameHost*> pending_frames_;
+  std::set<WorkerId> pending_service_workers_;
 
   // GUIDs of Service Workers that have pending keepalive requests inflight.
   std::map<WorkerId, std::vector<base::Uuid>> pending_keepalive_uuids_;
@@ -195,6 +219,8 @@ class ExtensionMessagePort : public MessagePort {
   // Used in IncrementLazyKeepaliveCount
   raw_ptr<ExtensionHost, DanglingUntriaged> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
+
+  base::WeakPtrFactory<ExtensionMessagePort> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

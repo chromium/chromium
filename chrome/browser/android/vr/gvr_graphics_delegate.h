@@ -13,8 +13,9 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/vr/base_graphics_delegate.h"
+#include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/render_info.h"
 #include "device/vr/util/sliding_average.h"
 #include "third_party/gvr-android-sdk/src/libraries/headers/vr/gvr/capi/include/gvr.h"
@@ -37,6 +38,8 @@ class GpuFence;
 }
 
 namespace gl {
+class GLContext;
+class GLShareGroup;
 class GLSurface;
 class SurfaceTexture;
 }  // namespace gl
@@ -70,7 +73,7 @@ struct Viewport {
   }
 };
 
-class GvrGraphicsDelegate : public BaseGraphicsDelegate {
+class GvrGraphicsDelegate : public GraphicsDelegate {
  public:
   using WebXrTokenSignaledCallback =
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>;
@@ -115,9 +118,10 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   gfx::Size webxr_surface_size() const { return webxr_surface_size_; }
 
  private:
+  enum ContextId { kNone = -1, kMainContext, kSkiaContext, kNumContexts };
+
   // GraphicsDelegate overrides.
   FovRectangles GetRecommendedFovs() override;
-  float GetZNear() override;
   RenderInfo GetRenderInfo(FrameType frame_type,
                            const gfx::Transform& head_pose) override;
   RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs) override;
@@ -127,6 +131,17 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   void PrepareBufferForBrowserUi() override;
   void OnFinishedDrawingBuffer() override;
   void GetWebXrDrawParams(int* texture_id, Transform* uv_transform) override;
+  bool RunInSkiaContext(base::OnceClosure callback) override;
+  // The following GraphicsDelegate overrides are only called by
+  // vr_browser_renderer_thread_win and thus are not used here. They will be
+  // relevant for GraphicsDelegateAndroid.
+  bool PreRender() override;
+  void PostRender() override;
+  mojo::PlatformHandle GetTexture() override;
+  const gpu::SyncToken& GetSyncToken() override;
+  void ResetMemoryBuffer() override;
+  bool BindContext() override;
+  void ClearContext() override;
   // End GraphicsDelegate overrides.
 
   void UIBoundsChanged(int width, int height);
@@ -141,6 +156,14 @@ class GvrGraphicsDelegate : public BaseGraphicsDelegate {
   bool WebVrPoseByteIsValid(int pose_index_byte);
 
   void WebVrWaitForServerFence();
+
+  void SwapSurfaceBuffers();
+
+  bool MakeContextCurrent(ContextId context_id);
+
+  scoped_refptr<gl::GLShareGroup> share_group_;
+  scoped_refptr<gl::GLContext> contexts_[kNumContexts];
+  ContextId curr_context_id_ = kNone;
 
   raw_ptr<device::WebXrPresentationState> webxr_;
 

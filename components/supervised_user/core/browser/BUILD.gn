@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 static_library("supervised_user_preferences") {
   sources = [
     "supervised_user_preferences.cc",
@@ -15,10 +11,15 @@ static_library("supervised_user_preferences") {
   deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/supervised_user/core/browser/proto",
     "//components/supervised_user/core/common",
   ]
+
+  if (is_android) {
+    deps += [ "//components/supervised_user/android:supervised_user_preferences_jni_headers" ]
+  }
 }
 
 static_library("list_family_members_service") {
@@ -132,6 +133,7 @@ static_library("browser") {
     "//components/policy/core/common:common_constants",
     "//components/pref_registry",
     "//components/safe_search_api",
+    "//components/safe_search_api:safe_search_client",
     "//components/supervised_user/core/browser/proto",
     "//extensions/buildflags",
     "//third_party/protobuf:protobuf_lite",
@@ -169,6 +171,7 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
+    "kids_chrome_management_client_unittest.cc",
     "kids_management_url_checker_client_unittest.cc",
     "list_family_members_service_unittest.cc",
     "parental_control_metrics_unittest.cc",
@@ -213,10 +216,4 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/base",
   ]
-}
-
-if (is_android) {
-  java_cpp_enum("supervised_user_url_filter_enum_javagen") {
-    sources = [ "supervised_user_url_filter.h" ]
-  }
 }

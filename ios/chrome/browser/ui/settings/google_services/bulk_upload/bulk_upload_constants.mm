@@ -4,5 +4,18 @@
 
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
 
+NSString* const kBulkUploadTableViewAccessibilityIdentifier =
+    @"BulkUploadTableViewAccessibilityIdentifier";
+
+NSString* const kBulkUploadTableViewPasswordsItemAccessibilityIdentifer =
+    @"BulkUploadTableViewPasswordsItemAccessibilityIdentifer";
+NSString* const kBulkUploadTableViewBookmarksItemAccessibilityIdentifer =
+    @"BulkUploadTableViewBookmarksItemAccessibilityIdentifer";
+NSString* const kBulkUploadTableViewReadingListItemAccessibilityIdentifer =
+    @"BulkUploadTableViewReadingListItemAccessibilityIdentifer";
+
+NSString* const kBulkUploadSaveButtonAccessibilityIdentifer =
+    @"BulkUploadSaveButtonAccessibilityIdentifer";
+
 @implementation BulkUploadViewItem
 @end

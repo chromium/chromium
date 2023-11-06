@@ -20,6 +20,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -118,6 +120,8 @@ std::unique_ptr<ui::test::EventGenerator> CreateEventGenerator(
 }
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
+  METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
+
  public:
   explicit TestBubbleDialogDelegateView(View* anchor)
       : BubbleDialogDelegateView(anchor, BubbleBorder::NONE) {}
@@ -130,6 +134,9 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
   mutable bool reset_controls_called_ = false;
 };
+
+BEGIN_METADATA(TestBubbleDialogDelegateView)
+END_METADATA
 
 // Convenience to make constructing a GestureEvent simpler.
 ui::GestureEvent CreateTestGestureEvent(ui::EventType type, int x, int y) {
@@ -170,6 +177,8 @@ class TestWidgetRemovalsObserver : public WidgetRemovalsObserver {
 // A view that keeps track of the events it receives, and consumes all scroll
 // gesture events and ui::ET_SCROLL events.
 class ScrollableEventCountView : public EventCountView {
+  METADATA_HEADER(ScrollableEventCountView, EventCountView)
+
  public:
   ScrollableEventCountView() = default;
 
@@ -201,8 +210,13 @@ class ScrollableEventCountView : public EventCountView {
   }
 };
 
+BEGIN_METADATA(ScrollableEventCountView)
+END_METADATA
+
 // A view that implements GetMinimumSize.
 class MinimumSizeFrameView : public NativeFrameView {
+  METADATA_HEADER(MinimumSizeFrameView, NativeFrameView)
+
  public:
   explicit MinimumSizeFrameView(Widget* frame) : NativeFrameView(frame) {}
 
@@ -215,6 +229,9 @@ class MinimumSizeFrameView : public NativeFrameView {
   // Overridden from View:
   gfx::Size GetMinimumSize() const override { return gfx::Size(300, 400); }
 };
+
+BEGIN_METADATA(MinimumSizeFrameView)
+END_METADATA
 
 // An event handler that simply keeps a count of the different types of events
 // it receives.
@@ -289,12 +306,18 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromDelegate) {
   EXPECT_EQ(delegate.internal_name(), widget->GetName());
 }
 
-TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
-  class ViewWithClassName : public View {
-   public:
-    const char* GetClassName() const override { return "ViewWithClassName"; }
-  };
+namespace {
 
+class ViewWithClassName : public View {
+  METADATA_HEADER(ViewWithClassName, View)
+};
+
+BEGIN_METADATA(ViewWithClassName)
+END_METADATA
+
+}  // namespace
+
+TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
   WidgetDelegate delegate;
   auto view = std::make_unique<ViewWithClassName>();
   auto* contents = delegate.SetContentsView(std::move(view));
@@ -308,27 +331,36 @@ TEST_F(WidgetWithCustomParamsTest, NamePropagatedFromContentsViewClassName) {
   EXPECT_EQ(contents->GetClassName(), widget->GetName());
 }
 
+namespace {
+
+class TestView : public View {
+  METADATA_HEADER(TestView, View)
+
+ public:
+  ~TestView() override = default;
+
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    auto* native_theme = GetNativeTheme();
+    if (native_theme && native_theme->user_color()) {
+      user_color_ = *native_theme->user_color();
+    }
+  }
+
+  SkColor user_color() const { return user_color_; }
+
+ private:
+  SkColor user_color_ = SK_ColorWHITE;
+};
+
+BEGIN_METADATA(TestView)
+END_METADATA
+
+}  // namespace
+
 TEST_F(WidgetWithCustomParamsTest, InitWithNativeTheme) {
   // Verify that `InitParams::native_theme` is applied during widget
   // initialization.
-
-  class TestView : public View {
-   public:
-    ~TestView() override = default;
-
-    void OnThemeChanged() override {
-      View::OnThemeChanged();
-      auto* native_theme = GetNativeTheme();
-      if (native_theme && native_theme->user_color()) {
-        user_color_ = *native_theme->user_color();
-      }
-    }
-
-    SkColor user_color() const { return user_color_; }
-
-   private:
-    SkColor user_color_ = SK_ColorWHITE;
-  };
 
   const SkColor test_color = SkColorSetARGB(1, 2, 3, 4);
 
@@ -351,44 +383,51 @@ TEST_F(WidgetWithCustomParamsTest, InitWithNativeTheme) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+struct SkottieColors {
+  bool operator==(const SkottieColors& other) const {
+    return color1 == other.color1 && color1_shade1 == other.color1_shade1 &&
+           color1_shade2 == other.color1_shade2 && color2 == other.color2 &&
+           color3 == other.color3 && color4 == other.color4 &&
+           color5 == other.color5 && color6 == other.color6 &&
+           base_color == other.base_color &&
+           secondary_color == other.secondary_color;
+  }
+  bool operator!=(const SkottieColors& other) const {
+    return !operator==(other);
+  }
+
+  SkColor color1, color1_shade1, color1_shade2, color2, color3, color4, color5,
+      color6, base_color, secondary_color;
+};
+
+class ViewObservingSkottieColors : public View {
+  METADATA_HEADER(ViewObservingSkottieColors, View)
+
+ public:
+  void OnThemeChanged() override {
+    View::OnThemeChanged();
+    const ui::ColorProvider* provider = GetColorProvider();
+    history.push_back({provider->GetColor(ui::kColorNativeColor1),
+                       provider->GetColor(ui::kColorNativeColor1Shade1),
+                       provider->GetColor(ui::kColorNativeColor1Shade2),
+                       provider->GetColor(ui::kColorNativeColor2),
+                       provider->GetColor(ui::kColorNativeColor3),
+                       provider->GetColor(ui::kColorNativeColor4),
+                       provider->GetColor(ui::kColorNativeColor5),
+                       provider->GetColor(ui::kColorNativeColor6),
+                       provider->GetColor(ui::kColorNativeBaseColor),
+                       provider->GetColor(ui::kColorNativeSecondaryColor)});
+  }
+
+  std::vector<SkottieColors> history;
+};
+
+BEGIN_METADATA(ViewObservingSkottieColors)
+END_METADATA
+}  // namespace
+
 TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
-  struct SkottieColors {
-    bool operator==(const SkottieColors& other) const {
-      return color1 == other.color1 && color1_shade1 == other.color1_shade1 &&
-             color1_shade2 == other.color1_shade2 && color2 == other.color2 &&
-             color3 == other.color3 && color4 == other.color4 &&
-             color5 == other.color5 && color6 == other.color6 &&
-             base_color == other.base_color &&
-             secondary_color == other.secondary_color;
-    }
-    bool operator!=(const SkottieColors& other) const {
-      return !operator==(other);
-    }
-
-    SkColor color1, color1_shade1, color1_shade2, color2, color3, color4,
-        color5, color6, base_color, secondary_color;
-  };
-
-  class ViewObservingSkottieColors : public View {
-   public:
-    void OnThemeChanged() override {
-      View::OnThemeChanged();
-      const ui::ColorProvider* provider = GetColorProvider();
-      history.push_back({provider->GetColor(ui::kColorNativeColor1),
-                         provider->GetColor(ui::kColorNativeColor1Shade1),
-                         provider->GetColor(ui::kColorNativeColor1Shade2),
-                         provider->GetColor(ui::kColorNativeColor2),
-                         provider->GetColor(ui::kColorNativeColor3),
-                         provider->GetColor(ui::kColorNativeColor4),
-                         provider->GetColor(ui::kColorNativeColor5),
-                         provider->GetColor(ui::kColorNativeColor6),
-                         provider->GetColor(ui::kColorNativeBaseColor),
-                         provider->GetColor(ui::kColorNativeSecondaryColor)});
-    }
-
-    std::vector<SkottieColors> history;
-  };
-
   // |widget1| has low background elevation and is created in light mode.
   ui::NativeTheme* theme = ui::NativeTheme::GetInstanceForNativeUi();
   theme->set_use_dark_colors(false);
@@ -422,7 +461,8 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
   // Check that |contents1| and |contents2| were notified of the theme update.
   ASSERT_EQ(2u, contents1->history.size());
   ASSERT_EQ(2u, contents2->history.size());
-  // Check that the Skottie colors were actually changed with the notification.
+  // Check that the Skottie colors were actually changed with the
+  // notification.
   EXPECT_NE(contents1->history[0u], contents1->history[1u]);
   EXPECT_NE(contents2->history[0u], contents2->history[1u]);
   // Check that |contents1| and |contents2| have different Skottie colors.
@@ -467,8 +507,9 @@ TEST_F(WidgetWithCustomParamsTest, SkottieColorsTest) {
   ASSERT_EQ(3u, contents2->history.size());
   ASSERT_EQ(2u, contents3->history.size());
   ASSERT_EQ(2u, contents4->history.size());
-  // Check that |contents1| and |contents2| are back to the Skottie colors they
-  // started with. It should not matter if dark mode is toggled on and back off.
+  // Check that |contents1| and |contents2| are back to the Skottie colors
+  // they started with. It should not matter if dark mode is toggled on and
+  // back off.
   EXPECT_EQ(contents1->history[0u], contents1->history[2u]);
   EXPECT_EQ(contents2->history[0u], contents2->history[2u]);
   // Check that |contents3| and |contents4| still have the same Skottie colors
@@ -2844,6 +2885,22 @@ class DesktopAuraTestValidPaintWidget : public Widget, public WidgetObserver {
   base::ScopedObservation<Widget, WidgetObserver> observation_{this};
 };
 
+namespace {
+
+class ContentsView : public View {
+  METADATA_HEADER(ContentsView, View)
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
+    node_data->SetNameExplicitlyEmpty();
+    // Focusable Views need a valid role.
+    node_data->role = ax::mojom::Role::kDialog;
+  }
+};
+
+BEGIN_METADATA(ContentsView)
+END_METADATA
+
+}  // namespace
+
 class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
  public:
   std::unique_ptr<views::Widget> CreateTestWidget(
@@ -2866,14 +2923,6 @@ class DesktopAuraPaintWidgetTest : public DesktopWidgetTest {
   DesktopAuraTestValidPaintWidget* paint_widget() { return paint_widget_; }
 
  private:
-  class ContentsView : public View {
-    void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-      node_data->SetNameExplicitlyEmpty();
-      // Focusable Views need a valid role.
-      node_data->role = ax::mojom::Role::kDialog;
-    }
-  };
-
   raw_ptr<DesktopAuraTestValidPaintWidget, DanglingUntriaged> paint_widget_ =
       nullptr;
 };
@@ -3303,6 +3352,8 @@ class ClosingEventObserver : public ui::EventObserver {
 };
 
 class ClosingView : public View {
+  METADATA_HEADER(ClosingView, View)
+
  public:
   explicit ClosingView(Widget* widget) : widget_(widget) {}
 
@@ -3322,6 +3373,9 @@ class ClosingView : public View {
  private:
   raw_ptr<Widget> widget_;
 };
+
+BEGIN_METADATA(ClosingView)
+END_METADATA
 
 // Ensures that when multiple objects are intercepting OS-level events, that one
 // can safely close a Widget that has capture.
@@ -3989,6 +4043,8 @@ TEST_F(WidgetTest, NoCrashOnWidgetDeleteWithPendingEvents) {
 
 // A view that consumes mouse-pressed event and gesture-tap-down events.
 class RootViewTestView : public View {
+  METADATA_HEADER(RootViewTestView, View)
+
  public:
   RootViewTestView() = default;
 
@@ -4000,6 +4056,9 @@ class RootViewTestView : public View {
       event->SetHandled();
   }
 };
+
+BEGIN_METADATA(RootViewTestView)
+END_METADATA
 
 // Checks if RootView::*_handler_ fields are unset when widget is hidden.
 // Fails on chromium.webkit Windows bot, see crbug.com/264872.
@@ -4560,6 +4619,8 @@ TEST_F(WidgetTest, NotifyDragControllerWhenDragWillStart) {
 // of a gesture event seen by each View is in the local coordinate space
 // of that View.
 class GestureLocationView : public EventCountView {
+  METADATA_HEADER(GestureLocationView, EventCountView)
+
  public:
   GestureLocationView() = default;
 
@@ -4585,6 +4646,9 @@ class GestureLocationView : public EventCountView {
   // The expected location of a gesture event dispatched to |this|.
   gfx::Point expected_location_;
 };
+
+BEGIN_METADATA(GestureLocationView)
+END_METADATA
 
 // Verifies that the location of a gesture event is always in the local
 // coordinate space of the View receiving the event while bubbling.
@@ -4692,6 +4756,8 @@ TEST_F(WidgetTest, GetAllChildWidgets) {
 // Used by DestroyChildWidgetsInOrder. On destruction adds the supplied name to
 // a vector.
 class DestroyedTrackingView : public View {
+  METADATA_HEADER(DestroyedTrackingView, View)
+
  public:
   DestroyedTrackingView(const std::string& name,
                         std::vector<std::string>* add_to)
@@ -4706,6 +4772,9 @@ class DestroyedTrackingView : public View {
   const std::string name_;
   raw_ptr<std::vector<std::string>> add_to_;
 };
+
+BEGIN_METADATA(DestroyedTrackingView)
+END_METADATA
 
 class WidgetChildDestructionTest : public DesktopWidgetTest {
  public:
@@ -4841,6 +4910,8 @@ TEST_F(DesktopWidgetTest, MAYBE_DeleteInSetFullscreen) {
 namespace {
 
 class FullscreenAwareFrame : public views::NonClientFrameView {
+  METADATA_HEADER(FullscreenAwareFrame, views::NonClientFrameView)
+
  public:
   explicit FullscreenAwareFrame(views::Widget* widget) : widget_(widget) {}
 
@@ -4874,6 +4945,9 @@ class FullscreenAwareFrame : public views::NonClientFrameView {
   raw_ptr<views::Widget> widget_;
   bool fullscreen_layout_called_ = false;
 };
+
+BEGIN_METADATA(FullscreenAwareFrame)
+END_METADATA
 
 }  // namespace
 
@@ -5227,6 +5301,8 @@ TEST_F(WidgetTest, ZOrderLevel) {
 namespace {
 
 class ScaleFactorView : public View {
+  METADATA_HEADER(ScaleFactorView, View)
+
  public:
   ScaleFactorView() = default;
 
@@ -5246,6 +5322,9 @@ class ScaleFactorView : public View {
  private:
   float last_scale_factor_ = 0.f;
 };
+
+BEGIN_METADATA(ScaleFactorView)
+END_METADATA
 
 }  // namespace
 

@@ -11,6 +11,7 @@
 extern NSString* const kVoiceSearchInputAccessoryViewID;
 // Height and width for the paste button.
 extern CGFloat const kPasteButtonSize;
+extern CGFloat const kOmniboxAssistiveKeyboardSymbolPointSize;
 
 @protocol OmniboxAssistiveKeyboardDelegate;
 

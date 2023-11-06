@@ -162,7 +162,8 @@ class MojoFileAccessor : public zip::FileAccessor {
 
     info->is_directory =
         file_info->type == filesystem::mojom::FsFileType::DIRECTORY;
-    info->last_modified = base::Time::FromDoubleT(file_info->mtime);
+    info->last_modified =
+        base::Time::FromSecondsSinceUnixEpoch(file_info->mtime);
     return true;
   }
 
@@ -218,7 +219,7 @@ void ZipFileCreator::WriteZipFile(
       .src_files = relative_paths,
       .progress_callback = base::BindRepeating(&ZipFileCreator::OnProgress,
                                                this, std::cref(listener)),
-      .progress_period = base::Milliseconds(1000),
+      .progress_period = base::Seconds(1),
       .recursive = true,
       .continue_on_error = true,
   });

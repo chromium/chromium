@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
@@ -271,7 +270,9 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
         final GURL currentUrl = currentTab.getUrl();
         mFaviconHelper.getLocalFaviconImageForURL(
-                Profile.fromWebContents(currentTab.getWebContents()), currentTab.getUrl(), 0,
+                currentTab.getProfile(),
+                currentTab.getUrl(),
+                0,
                 (image, iconUrl) -> {
                     if (mTabProvider.getTab() == null
                             || !currentUrl.equals(mTabProvider.getTab().getUrl())) {

@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Verify that tab keeps selected as the persistence binding comes in.\n`);
@@ -19,8 +20,8 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   fs.root.addFile('bar.js', 'window.bar = ()=>\'bar\';');
   await fs.reportCreatedPromise();
 
-  var fsSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem);
-  var networkSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network);
+  var fsSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.FileSystem);
+  var networkSourceCode = await TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network);
   var barSourceCode = await TestRunner.waitForUISourceCode('bar.js');
   Sources.SourcesPanel.SourcesPanel.instance().showUISourceCode(barSourceCode, 0, 0);
   Sources.SourcesPanel.SourcesPanel.instance().showUISourceCode(networkSourceCode, 0, 0);

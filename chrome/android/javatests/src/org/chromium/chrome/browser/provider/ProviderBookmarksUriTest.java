@@ -23,17 +23,14 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
-/**
- * Tests the use of the Bookmark URI as part of the Android provider public API.
- */
+/** Tests the use of the Bookmark URI as part of the Android provider public API. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.UNIT_TESTS)
 public class ProviderBookmarksUriTest {
-    @Rule
-    public ProviderTestRule mProviderTestRule = new ProviderTestRule();
+    @Rule public ProviderTestRule mProviderTestRule = new ProviderTestRule();
 
-    private static final byte[] FAVICON_DATA = { 1, 2, 3 };
+    private static final byte[] FAVICON_DATA = {1, 2, 3};
 
     private Uri mBookmarksUri;
 
@@ -43,8 +40,14 @@ public class ProviderBookmarksUriTest {
                 ChromeBrowserProviderImpl.getBookmarksApiUri(ContextUtils.getApplicationContext());
     }
 
-    private Uri addBookmark(String url, String title, long lastVisitTime, long created, int visits,
-            byte[] icon, int isBookmark) {
+    private Uri addBookmark(
+            String url,
+            String title,
+            long lastVisitTime,
+            long created,
+            int visits,
+            byte[] icon,
+            int isBookmark) {
         ContentValues values = new ContentValues();
         values.put(BookmarkColumns.BOOKMARK, isBookmark);
         values.put(BookmarkColumns.DATE, lastVisitTime);
@@ -85,13 +88,27 @@ public class ProviderBookmarksUriTest {
         final int visits = 2;
         final int isBookmark = 1;
 
-        String[] selectionArgs = {url, String.valueOf(lastUpdateTime), String.valueOf(visits),
-                String.valueOf(isBookmark)};
-        Cursor cursor = mProviderTestRule.getContentResolver().query(mBookmarksUri, null,
-                BookmarkColumns.URL + " = ? AND " + BookmarkColumns.DATE + " = ? AND "
-                        + BookmarkColumns.VISITS + " = ? AND " + BookmarkColumns.BOOKMARK
-                        + " = ? AND " + BookmarkColumns.FAVICON + " IS NOT NULL",
-                selectionArgs, null);
+        String[] selectionArgs = {
+            url, String.valueOf(lastUpdateTime), String.valueOf(visits), String.valueOf(isBookmark)
+        };
+        Cursor cursor =
+                mProviderTestRule
+                        .getContentResolver()
+                        .query(
+                                mBookmarksUri,
+                                null,
+                                BookmarkColumns.URL
+                                        + " = ? AND "
+                                        + BookmarkColumns.DATE
+                                        + " = ? AND "
+                                        + BookmarkColumns.VISITS
+                                        + " = ? AND "
+                                        + BookmarkColumns.BOOKMARK
+                                        + " = ? AND "
+                                        + BookmarkColumns.FAVICON
+                                        + " IS NOT NULL",
+                                selectionArgs,
+                                null);
         try {
             Assert.assertEquals(0, cursor.getCount());
         } finally {
@@ -118,11 +135,20 @@ public class ProviderBookmarksUriTest {
         values.put(BookmarkColumns.TITLE, title[1]);
         values.put(BookmarkColumns.VISITS, visits[1]);
         String[] selectionArgs = {String.valueOf(lastUpdateTime[0]), String.valueOf(isBookmark[0])};
-        Assert.assertEquals(0,
-                mProviderTestRule.getContentResolver().update(Uri.parse(""), values,
-                        BookmarkColumns.FAVICON + " IS NOT NULL AND " + BookmarkColumns.DATE
-                                + "= ? AND " + BookmarkColumns.BOOKMARK + " = ?",
-                        selectionArgs));
+        Assert.assertEquals(
+                0,
+                mProviderTestRule
+                        .getContentResolver()
+                        .update(
+                                Uri.parse(""),
+                                values,
+                                BookmarkColumns.FAVICON
+                                        + " IS NOT NULL AND "
+                                        + BookmarkColumns.DATE
+                                        + "= ? AND "
+                                        + BookmarkColumns.BOOKMARK
+                                        + " = ?",
+                                selectionArgs));
     }
 
     @Test
@@ -130,14 +156,22 @@ public class ProviderBookmarksUriTest {
     @Feature({"Android-ContentProvider"})
     public void testDeleteBookmark() {
         final long now = System.currentTimeMillis();
-        final long lastUpdateTime[] = { now, now - 1000 * 60 };
-        final int isBookmark[] = { 1, 0 };
+        final long lastUpdateTime[] = {now, now - 1000 * 60};
+        final int isBookmark[] = {1, 0};
 
         String[] selectionArgs = {String.valueOf(lastUpdateTime[0]), String.valueOf(isBookmark[0])};
-        Assert.assertEquals(0,
-                mProviderTestRule.getContentResolver().delete(mBookmarksUri,
-                        BookmarkColumns.FAVICON + " IS NOT NULL AND " + BookmarkColumns.DATE
-                                + "= ? AND " + BookmarkColumns.BOOKMARK + " = ?",
-                        selectionArgs));
+        Assert.assertEquals(
+                0,
+                mProviderTestRule
+                        .getContentResolver()
+                        .delete(
+                                mBookmarksUri,
+                                BookmarkColumns.FAVICON
+                                        + " IS NOT NULL AND "
+                                        + BookmarkColumns.DATE
+                                        + "= ? AND "
+                                        + BookmarkColumns.BOOKMARK
+                                        + " = ?",
+                                selectionArgs));
     }
 }

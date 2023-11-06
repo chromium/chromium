@@ -67,20 +67,22 @@ std::vector<url::Origin> GetOrigins(const MediaSource::Id& source_id) {
   return allowed_origins;
 }
 
-media::VideoCodec ParseVideoCodec(const MediaSource& media_source) {
+absl::optional<media::VideoCodec> ParseVideoCodec(
+    const MediaSource& media_source) {
   std::string video_codec;
   if (!net::GetValueForKeyInQuery(media_source.url(), "video_codec",
                                   &video_codec)) {
-    return media::VideoCodec::kUnknown;
+    return absl::nullopt;
   }
   return media::remoting::ParseVideoCodec(video_codec);
 }
 
-media::AudioCodec ParseAudioCodec(const MediaSource& media_source) {
+absl::optional<media::AudioCodec> ParseAudioCodec(
+    const MediaSource& media_source) {
   std::string audio_codec;
   if (!net::GetValueForKeyInQuery(media_source.url(), "audio_codec",
                                   &audio_codec)) {
-    return media::AudioCodec::kUnknown;
+    return absl::nullopt;
   }
   return media::remoting::ParseAudioCodec(audio_codec);
 }
@@ -90,10 +92,19 @@ std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
     const std::vector<MediaSinkInternal>& sinks) {
   DCHECK(media_source.IsRemotePlaybackSource());
   std::vector<MediaSinkInternal> compatible_sinks;
+
+  // Return an empty list if the source URL contains invalid codecs. It's
+  // possible that the source URL doesn't include an audio codec, which means
+  // the media content doesn't have an audio track. However, there must exist a
+  // valid video codec.
   auto video_codec = ParseVideoCodec(media_source);
+  if (!video_codec.has_value() ||
+      video_codec.value() == media::VideoCodec::kUnknown) {
+    return compatible_sinks;
+  }
   auto audio_codec = ParseAudioCodec(media_source);
-  if (video_codec == media::VideoCodec::kUnknown ||
-      audio_codec == media::AudioCodec::kUnknown) {
+  if (audio_codec.has_value() &&
+      audio_codec.value() == media::AudioCodec::kUnknown) {
     return compatible_sinks;
   }
 
@@ -101,18 +112,21 @@ std::vector<MediaSinkInternal> GetRemotePlaybackMediaSourceCompatibleSinks(
     const std::string& model_name = sink.cast_data().model_name;
     const bool is_supported_model =
         media::remoting::IsKnownToSupportRemoting(model_name);
-    const bool is_supported_audio_codec =
-        media::remoting::IsAudioCodecCompatible(model_name, audio_codec);
     const bool is_supported_video_codec =
-        media::remoting::IsVideoCodecCompatible(model_name, video_codec);
+        media::remoting::IsVideoCodecCompatible(model_name,
+                                                video_codec.value());
+    const bool is_supported_audio_codec =
+        audio_codec.has_value() ? media::remoting::IsAudioCodecCompatible(
+                                      model_name, audio_codec.value())
+                                : true;
 
-    if (is_supported_model && is_supported_audio_codec &&
-        is_supported_video_codec) {
+    if (is_supported_model && is_supported_video_codec &&
+        is_supported_audio_codec) {
       compatible_sinks.push_back(sink);
     }
-    RecordSinkRemotingCompatibility(is_supported_model,
-                                    is_supported_audio_codec, audio_codec,
-                                    is_supported_video_codec, video_codec);
+    RecordSinkRemotingCompatibility(
+        is_supported_model, is_supported_audio_codec, audio_codec,
+        is_supported_video_codec, video_codec.value());
   }
   return compatible_sinks;
 }
@@ -351,6 +365,7 @@ void CastMediaRouteProvider::OnSinkQueryUpdated(
       mojom::MediaRouteProviderId::CAST, source_id,
       GetRemotePlaybackMediaSourceCompatibleSinks(media_source, sinks),
       GetOrigins(source_id));
+  LOG(ERROR) << "sent sink updates";
 }
 
 }  // namespace media_router

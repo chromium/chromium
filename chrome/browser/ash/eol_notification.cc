@@ -272,9 +272,9 @@ void EolNotification::Click(const absl::optional<int>& button_index,
   } else {
     switch (*button_index) {
       case BUTTON_MORE_INFO: {
-        const GURL url = dismiss_pref_ == prefs::kEolNotificationDismissed
-                             ? GURL(chrome::kEolNotificationURL)
-                             : GURL(chrome::kAutoUpdatePolicyURL);
+        const GURL url(dismiss_pref_ == prefs::kEolNotificationDismissed
+                           ? chrome::kEolNotificationURL
+                           : chrome::kAutoUpdatePolicyURL);
         // Show eol link.
         NewWindowDelegate::GetPrimary()->OpenUrl(
             url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,

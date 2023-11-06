@@ -7,12 +7,12 @@
 
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/device_reauth/chromeos/authenticator_chromeos.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/device_reauth/device_authenticator_common.h"
 
-class DeviceAuthenticatorChromeOS : public ChromeDeviceAuthenticatorCommon {
+class DeviceAuthenticatorChromeOS : public DeviceAuthenticatorCommon {
  public:
   DeviceAuthenticatorChromeOS(
       std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,

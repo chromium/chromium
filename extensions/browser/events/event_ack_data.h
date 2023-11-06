@@ -41,7 +41,7 @@ class EventAckData {
                               EventDispatchSource dispatch_source);
   // Clears the record of our knowledge of an in-flight event with |event_id|.
   //
-  // On failure, |failure_callback| is called synchronously or asynchronously.
+  // On failure, |failure_callback| is called synchronously.
   void DecrementInflightEvent(content::ServiceWorkerContext* context,
                               int render_process_id,
                               int64_t version_id,

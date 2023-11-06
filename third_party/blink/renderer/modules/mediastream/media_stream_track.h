@@ -72,7 +72,7 @@ class MODULES_EXPORT MediaStreamTrack
     MediaStreamSource::ReadyState ready_state;
     // Set only if
     // track_impl_subtype->IsSubclass(BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo())
-    absl::optional<uint32_t> crop_version;
+    absl::optional<uint32_t> sub_capture_target_version;
   };
 
   // See SetFromTransferredStateImplForTesting in ./test/transfer_test_utils.h.
@@ -103,7 +103,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual MediaTrackCapabilities* getCapabilities() const = 0;
   virtual MediaTrackConstraints* getConstraints() const = 0;
   virtual MediaTrackSettings* getSettings() const = 0;
-  virtual MediaStreamTrackVideoStats* stats(ExceptionState&) = 0;
+  virtual MediaStreamTrackVideoStats* stats() = 0;
   virtual CaptureHandle* getCaptureHandle() const = 0;
   virtual ScriptPromise applyConstraints(ScriptState*,
                                          const MediaTrackConstraints*) = 0;

@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     GURL paymentsURL = autofill::payments::GetManageInstrumentsUrl();
     OpenNewTabCommand* command =
         [OpenNewTabCommand commandWithURLFromChrome:paymentsURL];
-    [self.dispatcher closeSettingsUIAndOpenURL:command];
+    [self.applicationHandler closeSettingsUIAndOpenURL:command];
 
     // Don't call [super editButtonPressed] because edit mode is not actually
     // entered in this case.
@@ -150,7 +150,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
                 itemsInSectionWithIdentifier:SectionIdentifierFields]];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

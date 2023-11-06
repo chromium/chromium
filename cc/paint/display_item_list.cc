@@ -294,7 +294,18 @@ void DisplayItemList::AddToValue(base::trace_event::TracedValue* state,
   }
 }
 
-void DisplayItemList::GenerateDiscardableImagesMetadata() {
+void DisplayItemList::GenerateDiscardableImagesMetadataForTesting() const {
+  base::AutoLock lock(image_generation_lock_);
+  if (image_map_) {
+    return;
+  }
+  GenerateDiscardableImagesMetadata();
+}
+
+void DisplayItemList::GenerateDiscardableImagesMetadata() const {
+  image_generation_lock_.AssertAcquired();
+  CHECK(!image_map_);
+
   gfx::Rect bounds;
   if (rtree_.has_valid_bounds()) {
     bounds = rtree_.GetBoundsOrDie();
@@ -303,7 +314,8 @@ void DisplayItemList::GenerateDiscardableImagesMetadata() {
     bounds = gfx::Rect(INT_MAX, INT_MAX);
   }
 
-  image_map_.Generate(paint_op_buffer_, bounds);
+  image_map_.emplace();
+  image_map_->Generate(paint_op_buffer_, bounds);
 }
 
 void DisplayItemList::Reset() {
@@ -313,7 +325,10 @@ void DisplayItemList::Reset() {
 #endif
 
   rtree_.Reset();
-  image_map_.Reset();
+  {
+    base::AutoLock lock(image_generation_lock_);
+    image_map_.reset();
+  }
   paint_op_buffer_.Reset();
   visual_rects_.clear();
   visual_rects_.shrink_to_fit();

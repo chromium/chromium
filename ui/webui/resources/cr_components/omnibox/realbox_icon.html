@@ -18,18 +18,33 @@
     width: 100%;
   }
 
+  :host([expanded-state-icons-chrome-refresh]) #container {
+    border-radius: var(--cr-realbox-icon-border-radius, 4px);
+  }
+
   /* Entities may feature a dominant color background until image loads. */
-  :host-context(cr-realbox-match[has-image]) #container {
+  :host-context(cr-realbox-match[has-image]):host(:not([is-weather-answer])) #container {
     background-color: var(--cr-realbox-icon-container-bg-color,
         var(--container-bg-color));
   }
 
   /* Calculator answer and suggestion answer icons feature a blue background. */
-  :host-context(cr-realbox-match[is-rich-suggestion]:not([has-image])) #container {
+  :host-context(cr-realbox-match[is-rich-suggestion]:not([has-image])):host(:not([has-icon-container-background])) #container {
     background-color: var(--google-blue-600);
     border-radius: 50%;
     height: 24px;
     width: 24px;
+  }
+
+  /* TODO(niharm): Change hex codes to use color tokens when theming is
+  implemented. */
+  /* If icon is for a pedal or AiS, and it is not in the search box, apply background. */
+  :host([has-icon-container-background]:not([in-searchbox])) #container {
+    background-color: #D3E3FD;
+  }
+
+  :host([is-weather-answer]) #container {
+    background-color: var(--color-realbox-background);
   }
 
   #image {
@@ -91,6 +106,11 @@
   :host([in-searchbox][mask-image*='//resources/images/icon_search.svg']) #icon {
     -webkit-mask-size: 20px;  /* Loupe in realbox is larger than in matches. */
   }
+
+  :host([has-icon-container-background]:not([in-searchbox])) #icon {
+    background-color: #041E49;
+  }
+
 </style>
 <div id="container" style="--container-bg-color:
     [[containerBgColor_(match.imageDominantColor, imageLoading_)]];">

@@ -10,8 +10,6 @@ source_set("model") {
   sources = [ "web_navigation_util.h" ]
   deps = [
     ":feature_flags",
-    ":page_placeholder",
-    ":tab_helper_delegates",
     "//base",
     "//components/content_settings/core/browser",
     "//components/error_page/common",

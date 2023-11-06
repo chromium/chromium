@@ -40,9 +40,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case NaClHostMsgStart:
       message_class = ChromeLegacyIpc::CLASS_NACL_HOST;
       break;
-    case EncryptedMediaMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_ENCRYPTED_MEDIA;
-      break;
     case GinJavaBridgeMsgStart:
       message_class = ChromeLegacyIpc::CLASS_GIN_JAVA_BRIDGE;
       break;

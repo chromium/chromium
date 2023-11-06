@@ -17,8 +17,6 @@ blink_modules_sources("shared_storage") {
     "shared_storage.h",
     "shared_storage_blink_mojom_traits.cc",
     "shared_storage_blink_mojom_traits.h",
-    "shared_storage_iterator.cc",
-    "shared_storage_iterator.h",
     "shared_storage_operation_definition.cc",
     "shared_storage_operation_definition.h",
     "shared_storage_worklet.cc",
@@ -35,5 +33,10 @@ blink_modules_sources("shared_storage") {
     "window_shared_storage.h",
   ]
 
-  deps = [ "//third_party/blink/renderer/modules/crypto:crypto" ]
+  deps = [
+    "//components/aggregation_service",
+    "//third_party/blink/renderer/modules/crypto:crypto",
+  ]
+
+  public_deps = [ "//url" ]
 }

@@ -69,8 +69,5 @@ void RecordProcessHistograms(const char* histogram_suffix,
       base::StrCat(
           {"PerformanceMonitor.PackageExitIdleWakeups2.", histogram_suffix}),
       metrics.package_idle_wakeups);
-  base::UmaHistogramCounts100000(
-      base::StrCat({"PerformanceMonitor.EnergyImpact2.", histogram_suffix}),
-      metrics.energy_impact);
 #endif
 }

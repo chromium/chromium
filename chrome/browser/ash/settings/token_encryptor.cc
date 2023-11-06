@@ -10,6 +10,7 @@
 #include <array>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -119,6 +120,9 @@ std::string CryptohomeTokenEncryptor::DecryptWithSystemSalt(
 
 std::string CryptohomeTokenEncryptor::WeakEncryptWithSystemSalt(
     const std::string& token) {
+  // Only tests should ever use this.
+  CHECK_IS_TEST();
+
   // Don't care about token encryption while debugging.
   if (!base::SysInfo::IsRunningOnChromeOS()) {
     return token;

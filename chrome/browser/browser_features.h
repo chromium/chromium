@@ -28,6 +28,10 @@ BASE_DECLARE_FEATURE(kDevToolsVeLogging);
 
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kPlatformKeysAesEncryption);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
 extern const char kBrowserCommandIdParam[];
 
@@ -40,7 +44,6 @@ BASE_DECLARE_FEATURE(kDoubleTapToZoomInTabletMode);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kCopyLinkToText);
 BASE_DECLARE_FEATURE(kMuteNotificationSnoozeAction);
 #endif
 
@@ -66,6 +69,7 @@ BASE_DECLARE_FEATURE(kKeyPinningComponentUpdater);
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kAppBoundEncryptionMetrics);
 BASE_DECLARE_FEATURE(kLockProfileCookieDatabase);
+BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
 #endif
 
@@ -97,12 +101,6 @@ const base::FeatureParam<int>
 // This flag controls whether to trigger prerendering when the default search
 // engine suggests to prerender a search result.
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
-enum class SearchSuggestionPrerenderImplementationType {
-  kUsePrefetch,
-  kIgnorePrefetch,
-};
-extern const base::FeatureParam<SearchSuggestionPrerenderImplementationType>
-    kSearchSuggestionPrerenderImplementationTypeParam;
 // Indicates whether to make search prefetch response shareable to prerender.
 // When allowing this, prerender can only copy the cache but cannot take over
 // the ownership.

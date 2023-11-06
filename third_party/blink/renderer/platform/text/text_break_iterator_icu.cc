@@ -179,7 +179,9 @@ UText* TextClone(UText* destination,
   memcpy(destination, source, size_to_copy);
   destination->pExtra = extra_new;
   destination->flags = flags;
-  memcpy(destination->pExtra, source->pExtra, extra_size);
+  if (extra_size > 0) {
+    memcpy(destination->pExtra, source->pExtra, extra_size);
+  }
   TextFixPointer(source, destination, destination->context);
   TextFixPointer(source, destination, destination->p);
   TextFixPointer(source, destination, destination->q);

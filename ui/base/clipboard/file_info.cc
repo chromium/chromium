@@ -5,6 +5,7 @@
 #include "ui/base/clipboard/file_info.h"
 
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -138,11 +139,8 @@ std::string FilePathToFileURL(const base::FilePath& file_path) {
 #endif
         // Encode space and all control chars.
         c <= ' ') {
-      static const char kHexChars[] = "0123456789ABCDEF";
       url += '%';
-      url += kHexChars[(c >> 4) & 0xf];
-      url += kHexChars[c & 0xf];
-
+      base::AppendHexEncodedByte(static_cast<uint8_t>(c), url);
 #if BUILDFLAG(IS_WIN)
     } else if (c == '\\') {
       // Backslash is converted to slash on windows.

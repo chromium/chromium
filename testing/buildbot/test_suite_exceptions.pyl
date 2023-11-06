@@ -88,7 +88,6 @@
         'args': [
           # https://crbug.com/1414886
           '--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown',
-          '--emulator-debug-tags=kernel',
         ],
         'swarming': {
           'shards': 4,
@@ -337,7 +336,7 @@
           'dimensions': {
             'gpu': None,
           },
-          'shards': 10,
+          'shards': 1,
         },
       },
       'Mac11 Tests': {
@@ -365,7 +364,6 @@
         },
       },
       'Mac13 Tests (dbg)': {
-        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -584,7 +582,7 @@
       },
       'mac10.15-blink-rel': {
         'swarming': {
-          'shards': 8,
+          'shards': 1,
           'hard_timeout': 2400,
         },
       },
@@ -685,7 +683,7 @@
           'dimensions': {
             'gpu': None,
           },
-          'shards': 15,
+          'shards': 1,
         },
       },
       'Mac11 Tests': {
@@ -713,7 +711,6 @@
         },
       },
       'Mac13 Tests (dbg)': {
-        'experiment_percentage': 100,
         'args': [
           '--debug',
         ],
@@ -1024,8 +1021,10 @@
       'Linux Chromium OS ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
+        # And even more slow on linux-chromeos: crbug.com/1491533.
         'swarming': {
-          'shards': 120,
+          'shards': 140,
+          'hard_timeout': 7200,
         },
       },
       'Linux ChromiumOS MSan Tests': {
@@ -1045,10 +1044,6 @@
         },
       },
       'Linux Tests': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
@@ -1058,10 +1053,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.wayland_browser_tests.filter',
         ],
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
@@ -1146,10 +1137,6 @@
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
         ],
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
         'swarming': {
           # This is for slow test execution that often becomes a critical path of
           # swarming jobs. crbug.com/868114
@@ -1231,10 +1218,6 @@
         ],
       },
       'linux-lacros-tester-rel': {
-        # Only retry the individual failed tests instead of rerunning entire
-        # shards.
-        # crbug.com/1473501
-        'retry_only_failed_tests': True,
         'swarming': {
           'shards': 20,
         },
@@ -1399,7 +1382,7 @@
   },
   'chrome_all_tast_tests': {
     'modifications': {
-      'chromeos-amd64-generic-rel': {
+      'chromeos-amd64-generic-rel-renamed': {
         'swarming': {
           'shards': 7,
         },
@@ -1490,7 +1473,6 @@
       'android-13-x64-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter',
-          '--emulator-debug-tags=kernel',
         ],
       },
       'android-13-x64-rel': {
@@ -1614,8 +1596,11 @@
       },
       'android-pie-arm64-rel': {
         'swarming': {
-          # TODO(crbug.com/1462745): Temporarily increase the shard to 3 for the network issue.
-          'shards': 3,
+          'dimensions': {
+            'device_type': 'crosshatch',
+          },
+          # TODO(crbug.com/1462745): Temporarily increase the shard to 5 for the network issue.
+          'shards': 5,
         },
       },
       # Keep this same as android-oreo-x86-rel above
@@ -1631,7 +1616,7 @@
       'android-chrome-pie-x86-wpt-android-specific': {
         'args': [
           '--test-list',
-          '../../third_party/blink/web_tests/TestLists/Default.txt'
+          '../../third_party/blink/web_tests/TestLists/android.filter'
         ]
       },
       'android-chrome-pie-x86-wpt-fyi-rel': {
@@ -1838,7 +1823,13 @@
           'shards': 10, # https://crbug.com/1471857
         },
       },
+      'Linux MSan Tests': {
+        'swarming': {
+          'shards': 10, # https://crbug.com/1497706
+        },
+      },
       'Linux TSan Tests': {
+        'ci_only': True, # https://crbug.com/1498240
         'swarming': {
           'shards': 30,
         },
@@ -1948,7 +1939,7 @@
         'ci_only': True,
         'experiment_percentage': 100,
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1956,7 +1947,7 @@
       },
       'android-12l-x64-fyi-dbg': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1964,8 +1955,7 @@
       },
       'android-13-x64-fyi-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
-          '--emulator-debug-tags=kernel',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -1973,7 +1963,7 @@
       },
       'android-13-x64-rel': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter',
         ],
         'swarming': {
           'shards': 40,
@@ -3076,6 +3066,7 @@
         },
       },
       'Linux TSan Tests': {
+        'ci_only': True, # https://crbug.com/1498240
         # Only retry the individual failed tests instead of rerunning entire
         # shards.
         'retry_only_failed_tests': True,
@@ -3305,7 +3296,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series': {
+  'lacros_chrome_browsertests': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3314,7 +3305,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash beta': {
+  'lacros_chrome_browsertests Lacros version skew testing ash beta': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3323,7 +3314,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash canary': {
+  'lacros_chrome_browsertests Lacros version skew testing ash canary': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3332,7 +3323,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash dev': {
+  'lacros_chrome_browsertests Lacros version skew testing ash dev': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3341,7 +3332,7 @@
       },
     },
   },
-  'lacros_chrome_browsertests_run_in_series Lacros version skew testing ash stable': {
+  'lacros_chrome_browsertests Lacros version skew testing ash stable': {
     'modifications': {
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -3620,15 +3611,6 @@
       'ToTWin64(dbg)',
       'ToTWin64(dll)',
     ],
-  },
-  'oop_network_service_content_browsertests': {
-    'modifications': {
-       'android-12-x64-fyi-rel': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter',
-        ],
-      },
-    },
   },
   'ozone_unittests': {
     'modifications': {
@@ -4055,6 +4037,7 @@
         },
       },
       'Linux TSan Tests': {
+        'ci_only': True, # https://crbug.com/1498240
         'swarming': {
           'shards': 6,
         },
@@ -4173,7 +4156,7 @@
       'android-chrome-pie-x86-wpt-android-specific': {
         'args': [
           '--test-list',
-          '../../third_party/blink/web_tests/TestLists/Default.txt'
+          '../../third_party/blink/web_tests/TestLists/android.filter'
         ]
       },
       'android-webview-pie-x86-wpt-fyi-rel': {
@@ -4802,7 +4785,7 @@
   },
   'webgl_conformance_tests': {
     'modifications': {
-      'chromeos-amd64-generic-rel': {
+      'chromeos-amd64-generic-rel-renamed': {
         'args': [
           # Added to debug crbug.com/1293967.
           '--extra-browser-args=--disable-features=BackgroundVideoPauseOptimization --disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',

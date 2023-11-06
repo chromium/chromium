@@ -29,6 +29,7 @@
 #include <limits>
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/core/dom/attribute_part.h"
 #include "third_party/blink/renderer/core/dom/child_node_part.h"
 #include "third_party/blink/renderer/core/dom/comment.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -288,9 +289,8 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
     if (pending_dom_parts_) {
-      if (task.needs_node_part) {
-        pending_dom_parts_->ConstructNodePart(*task.child);
-      }
+      pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
+                                                    task.dom_parts_needed);
       // TODO(crbug.com/1453291) This is only used by the old style declarative
       // DOM Part syntax, and should be removed.
       pending_dom_parts_->MaybeConstructNodePart(*task.child);
@@ -301,9 +301,8 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
     if (pending_dom_parts_) {
-      if (task.needs_node_part) {
-        pending_dom_parts_->ConstructNodePart(*task.child);
-      }
+      pending_dom_parts_->ConstructDOMPartsIfNeeded(*task.child,
+                                                    task.dom_parts_needed);
       // TODO(crbug.com/1453291) This is only used by the old style declarative
       // DOM Part syntax, and should be removed.
       pending_dom_parts_->MaybeConstructNodePart(*task.child);
@@ -312,7 +311,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   }
 
   // All the cases below this point are only used by the adoption agency.
-  DCHECK(!task.needs_node_part);
+  DCHECK(!task.dom_parts_needed);
 
   if (task.operation == HTMLConstructionSiteTask::kInsertAlreadyParsedChild)
     return ExecuteInsertAlreadyParsedChildTask(task);
@@ -424,7 +423,7 @@ void HTMLConstructionSite::QueueTask(const HTMLConstructionSiteTask& task,
 
 void HTMLConstructionSite::AttachLater(ContainerNode* parent,
                                        Node* child,
-                                       bool needs_node_part,
+                                       const DOMPartsNeeded& dom_parts_needed,
                                        bool self_closing) {
   auto* element = DynamicTo<Element>(child);
   DCHECK(is_scripting_content_allowed_ || !element ||
@@ -436,8 +435,8 @@ void HTMLConstructionSite::AttachLater(ContainerNode* parent,
   task.parent = parent;
   task.child = child;
   task.self_closing = self_closing;
-  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !needs_node_part);
-  task.needs_node_part = needs_node_part;
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled() || !dom_parts_needed);
+  task.dom_parts_needed = dom_parts_needed;
 
   if (ShouldFosterParent()) {
     FosterParent(task.child);
@@ -560,7 +559,7 @@ void HTMLConstructionSite::InsertHTMLHtmlStartTagBeforeHTML(
     element = MakeGarbageCollected<HTMLHtmlElement>(*document_);
   }
   SetAttributes(element, token);
-  AttachLater(attachment_root_, element, token->NeedsNodePart());
+  AttachLater(attachment_root_, element, token->GetDOMPartsNeeded());
   open_elements_.PushHTMLHtmlElement(HTMLStackItem::Create(element, token));
 
   ExecuteQueuedTasks();
@@ -769,7 +768,7 @@ void HTMLConstructionSite::InsertDoctype(AtomicHTMLToken* token) {
       StringImpl::Create8BitIfPossible(token->SystemIdentifier());
   auto* doctype = MakeGarbageCollected<DocumentType>(
       document_, token->GetName(), public_id, system_id);
-  AttachLater(attachment_root_, doctype, /*needs_node_part*/ false);
+  AttachLater(attachment_root_, doctype);
 
   // DOCTYPE nodes are only processed when parsing fragments w/o
   // contextElements, which never occurs.  However, if we ever chose to support
@@ -844,7 +843,7 @@ void HTMLConstructionSite::InsertComment(AtomicHTMLToken* token) {
       }
     }
   }
-  AttachLater(CurrentNode(), &comment_node, /*needs_node_part*/ false);
+  AttachLater(CurrentNode(), &comment_node);
 }
 
 void HTMLConstructionSite::InsertDOMPart(AtomicHTMLToken* token) {
@@ -863,36 +862,34 @@ void HTMLConstructionSite::InsertDOMPart(AtomicHTMLToken* token) {
       pending_dom_parts_->AddChildNodePartEnd(comment_node);
       break;
   }
-  AttachLater(CurrentNode(), &comment_node, /*needs_node_part*/ false);
+  AttachLater(CurrentNode(), &comment_node);
 }
 
 void HTMLConstructionSite::InsertCommentOnDocument(AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
   DCHECK(document_);
-  AttachLater(attachment_root_, Comment::Create(*document_, token->Comment()),
-              /*needs_node_part*/ false);
+  AttachLater(attachment_root_, Comment::Create(*document_, token->Comment()));
 }
 
 void HTMLConstructionSite::InsertCommentOnHTMLHtmlElement(
     AtomicHTMLToken* token) {
   DCHECK_EQ(token->GetType(), HTMLToken::kComment);
   ContainerNode* parent = open_elements_.RootNode();
-  AttachLater(parent, Comment::Create(parent->GetDocument(), token->Comment()),
-              /*needs_node_part*/ false);
+  AttachLater(parent, Comment::Create(parent->GetDocument(), token->Comment()));
 }
 
 void HTMLConstructionSite::InsertHTMLHeadElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   head_ = HTMLStackItem::Create(
       CreateElement(token, html_names::xhtmlNamespaceURI), token);
-  AttachLater(CurrentNode(), head_->GetElement(), token->NeedsNodePart());
+  AttachLater(CurrentNode(), head_->GetElement(), token->GetDOMPartsNeeded());
   open_elements_.PushHTMLHeadElement(head_);
 }
 
 void HTMLConstructionSite::InsertHTMLBodyElement(AtomicHTMLToken* token) {
   DCHECK(!ShouldFosterParent());
   Element* body = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), body, token->NeedsNodePart());
+  AttachLater(CurrentNode(), body, token->GetDOMPartsNeeded());
   open_elements_.PushHTMLBodyElement(HTMLStackItem::Create(body, token));
   if (document_)
     document_->WillInsertBody();
@@ -908,7 +905,7 @@ void HTMLConstructionSite::InsertHTMLFormElement(AtomicHTMLToken* token,
     UseCounter::Count(OwnerDocumentForCurrentNode(),
                       WebFeature::kDemotedFormElement);
   }
-  AttachLater(CurrentNode(), form_element, token->NeedsNodePart());
+  AttachLater(CurrentNode(), form_element, token->GetDOMPartsNeeded());
   open_elements_.Push(HTMLStackItem::Create(form_element, token));
 }
 
@@ -926,10 +923,11 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   HTMLStackItem* template_stack_item =
       HTMLStackItem::Create(template_element, token);
   bool should_attach_template = true;
-  if (declarative_shadow_root_type ==
-          DeclarativeShadowRootType::kStreamingOpen ||
-      declarative_shadow_root_type ==
-          DeclarativeShadowRootType::kStreamingClosed) {
+  if ((declarative_shadow_root_type ==
+           DeclarativeShadowRootType::kStreamingOpen ||
+       declarative_shadow_root_type ==
+           DeclarativeShadowRootType::kStreamingClosed) &&
+      IsA<Element>(open_elements_.TopStackItem()->GetNode())) {
     // Attach the shadow root now
     auto focus_delegation = template_stack_item->GetAttributeItem(
                                 html_names::kShadowrootdelegatesfocusAttr)
@@ -964,10 +962,16 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
   if (should_attach_template) {
     // Attach a normal template element, or the opening tag of a non-streaming
     // declarative shadow root.
-    AttachLater(CurrentNode(), template_element, token->NeedsNodePart());
+    AttachLater(CurrentNode(), template_element, token->GetDOMPartsNeeded());
+    // cant_attach_shadow can happen if we are being asked to attach a
+    // declarative shadowroot to another declarative shadowroot or another
+    // existing shadowroot.
+    bool cant_attach_shadow =
+        !IsA<Element>(open_elements_.TopStackItem()->GetNode());
     DocumentFragment* template_content =
-        template_element->GetDeclarativeShadowRootType() ==
-                DeclarativeShadowRootType::kNone
+        cant_attach_shadow ||
+                template_element->GetDeclarativeShadowRootType() ==
+                    DeclarativeShadowRootType::kNone
             ? template_element->content()
             : template_element->DeclarativeShadowContent();
     if (pending_dom_parts_ && template_content) {
@@ -979,7 +983,7 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
 
 void HTMLConstructionSite::InsertHTMLElement(AtomicHTMLToken* token) {
   Element* element = CreateElement(token, html_names::xhtmlNamespaceURI);
-  AttachLater(CurrentNode(), element, token->NeedsNodePart());
+  AttachLater(CurrentNode(), element, token->GetDOMPartsNeeded());
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -991,7 +995,7 @@ void HTMLConstructionSite::InsertSelfClosingHTMLElementDestroyingToken(
   // doesn't get a chance to tell them that we're done parsing their children.
   AttachLater(CurrentNode(),
               CreateElement(token, html_names::xhtmlNamespaceURI),
-              token->NeedsNodePart(), /*self_closing*/ true);
+              token->GetDOMPartsNeeded(), /*self_closing*/ true);
   // FIXME: Do we want to acknowledge the token's self-closing flag?
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/tokenization.html#acknowledge-self-closing-flag
 }
@@ -1029,7 +1033,7 @@ void HTMLConstructionSite::InsertScriptElement(AtomicHTMLToken* token) {
   }
   SetAttributes(element, token);
   if (is_scripting_content_allowed_)
-    AttachLater(CurrentNode(), element, token->NeedsNodePart());
+    AttachLater(CurrentNode(), element, token->GetDOMPartsNeeded());
   open_elements_.Push(HTMLStackItem::Create(element, token));
 }
 
@@ -1042,8 +1046,8 @@ void HTMLConstructionSite::InsertForeignElement(
 
   Element* element = CreateElement(token, namespace_uri);
   if (is_scripting_content_allowed_ || !element->IsScriptElement()) {
-    DCHECK(!token->NeedsNodePart());
-    AttachLater(CurrentNode(), element, /*needs_node_part*/ false,
+    DCHECK(!token->GetDOMPartsNeeded());
+    AttachLater(CurrentNode(), element, /*dom_parts_needed*/ {},
                 token->SelfClosing());
   }
   if (!token->SelfClosing()) {
@@ -1347,8 +1351,7 @@ void HTMLConstructionSite::ReconstructTheActiveFormattingElements() {
         active_formatting_elements_.at(unopen_entry_index);
     HTMLStackItem* reconstructed =
         CreateElementFromSavedToken(unopened_entry.StackItem());
-    AttachLater(CurrentNode(), reconstructed->GetNode(),
-                /*needs_node_part*/ false);
+    AttachLater(CurrentNode(), reconstructed->GetNode());
     open_elements_.Push(reconstructed);
     unopened_entry.ReplaceElement(reconstructed);
   }
@@ -1498,13 +1501,28 @@ void HTMLConstructionSite::PendingDOMParts::MaybeConstructNodePart(
   }
 }
 
-void HTMLConstructionSite::PendingDOMParts::ConstructNodePart(Node& last_node) {
+void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
+    Node& last_node,
+    const DOMPartsNeeded& dom_parts_needed) {
+  if (!dom_parts_needed) {
+    return;
+  }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!pending_node_part_comment_node_);
-  MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node,
-                                 pending_node_part_metadata_);
-  pending_node_part_comment_node_ = nullptr;
-  pending_node_part_metadata_.clear();
+  DCHECK(pending_node_part_metadata_.empty());
+  // For now, there's no syntax for metadata, so just use empty.
+  Vector<String> metadata;
+  if (dom_parts_needed.needs_node_part) {
+    MakeGarbageCollected<NodePart>(*CurrentPartRoot(), last_node, metadata);
+  }
+  if (!dom_parts_needed.needs_attribute_parts.empty()) {
+    Element& element = To<Element>(last_node);
+    for (auto attribute_name : dom_parts_needed.needs_attribute_parts) {
+      MakeGarbageCollected<AttributePart>(*CurrentPartRoot(), element,
+                                          attribute_name,
+                                          /*automatic*/ true, metadata);
+    }
+  }
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {

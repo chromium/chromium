@@ -1,0 +1,55 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/apple/compile_entitlements.gni")
+import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/rules.gni")
+import("//ios/build/chrome_build.gni")
+import("//ios/build/config.gni")
+
+tweak_info_plist("tweak_info_plist") {
+  info_plist = "Info.plist"
+}
+
+compile_entitlements("compile_entitlements") {
+  substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+  output_name = "$target_gen_dir/eg_open_extension.appex.entitlements"
+  entitlements_templates = [ "eg_open_extension.appex.entitlements" ]
+}
+
+ios_appex_bundle("appex") {
+  output_name = "eg_open_extension"
+  deps = [ ":eg_open" ]
+
+  bundle_deps_filter = [ "//third_party/icu:icudata" ]
+  assert_no_deps = ios_extension_assert_no_deps
+
+  extra_substitutions = [
+    "CHROME_CHANNEL_SCHEME=${url_channel_scheme}-eg",
+    "CHROMIUM_SHORT_NAME=$chromium_short_name",
+  ]
+
+  entitlements_target = ":compile_entitlements"
+  info_plist_target = ":tweak_info_plist"
+  bundle_identifier = "${shared_bundle_id_for_test_apps}.EGOpenExtension"
+}
+
+source_set("eg_open") {
+  sources = [
+    "eg_open_view_controller.h",
+    "eg_open_view_controller.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/common:extension_open_url",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "MobileCoreServices.framework",
+    "UIKit.framework",
+    "UniformTypeIdentifiers.framework",
+  ]
+}

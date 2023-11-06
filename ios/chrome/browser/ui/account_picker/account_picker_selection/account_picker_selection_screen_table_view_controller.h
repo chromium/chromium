@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_consumer.h"
 
 @protocol AccountPickerSelectionScreenTableViewControllerActionDelegate;
@@ -15,7 +15,7 @@
 
 // View controller for AccountPickerSelectionScreenCoordinator.
 @interface AccountPickerSelectionScreenTableViewController
-    : ChromeTableViewController <AccountPickerSelectionScreenConsumer>
+    : LegacyChromeTableViewController <AccountPickerSelectionScreenConsumer>
 
 @property(nonatomic, weak)
     id<AccountPickerSelectionScreenTableViewControllerActionDelegate>

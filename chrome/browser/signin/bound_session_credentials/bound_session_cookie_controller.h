@@ -35,7 +35,7 @@ class BoundSessionCookieController {
     // Called when the cookie refresh request results in a persistent error that
     // can't be fixed by retrying. `BoundSessionCookieController` is expected to
     // be deleted after this call.
-    virtual void TerminateSession() = 0;
+    virtual void OnPersistentErrorEncountered() = 0;
 
     // Called when the bound session parameters change, for example the minimum
     // cookie expiration date changes. Cookie deletion is considered as a change
@@ -45,7 +45,6 @@ class BoundSessionCookieController {
 
   BoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names,
       Delegate* delegate);
 
   virtual ~BoundSessionCookieController();
@@ -56,7 +55,7 @@ class BoundSessionCookieController {
   // The callback will be called once the cookie is fresh or the session is
   // terminated. Note: The callback might be called synchronously if the
   // previous conditions apply.
-  virtual void OnRequestBlockedOnCookie(
+  virtual void HandleRequestBlockedOnCookie(
       base::OnceClosure resume_blocked_request) = 0;
 
   const GURL& url() const { return url_; }

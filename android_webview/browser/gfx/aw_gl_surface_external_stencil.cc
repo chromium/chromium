@@ -309,4 +309,9 @@ bool AwGLSurfaceExternalStencil::IsDrawingToFBO() {
   return stencil_state.stencil_test_enabled;
 }
 
+void AwGLSurfaceExternalStencil::DestroyExternalStencilFramebuffer() {
+  framebuffer_.reset();
+  blit_context_.reset();
+}
+
 }  // namespace android_webview

@@ -21,7 +21,7 @@ CSSFontFamilyValue* CSSFontFamilyValue::Create(
     entry.stored_value->value =
         MakeGarbageCollected<CSSFontFamilyValue>(family_name);
   }
-  return entry.stored_value->value;
+  return entry.stored_value->value.Get();
 }
 
 CSSFontFamilyValue::CSSFontFamilyValue(const AtomicString& str)

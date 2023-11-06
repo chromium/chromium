@@ -289,6 +289,14 @@ class FeaturePromoSpecification {
     return custom_action_dismiss_string_id_;
   }
 
+  // Set menu item element identifiers that should be highlighted while
+  // this FeaturePromo is active.
+  FeaturePromoSpecification& SetHighlightedMenuItem(
+      const ui::ElementIdentifier highlighted_menu_identifier);
+  const ui::ElementIdentifier highlighted_menu_identifier() const {
+    return highlighted_menu_identifier_;
+  }
+
   // Force the subtype to a particular value, bypassing permission checks.
   void set_promo_subtype_for_testing(PromoSubtype promo_subtype) {
     promo_subtype_ = promo_subtype;
@@ -362,6 +370,10 @@ class FeaturePromoSpecification {
 
   // Dismiss string ID for the custom action promo.
   int custom_action_dismiss_string_id_;
+
+  // Identifier of the menu item that should be highlighted while
+  // FeaturePromo is active.
+  ui::ElementIdentifier highlighted_menu_identifier_;
 };
 
 std::ostream& operator<<(std::ostream& oss,

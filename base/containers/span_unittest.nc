@@ -299,6 +299,13 @@ void WontCompile() {
   (void)s;
 }
 
+#elif defined(NCTEST_SPAN_FROM_VOLATILE_ARRAY_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<int>'"]
+
+void WontCompile() {
+  static volatile int array[] = {1, 2, 3};
+  span<int> s(array);
+}
+
 #endif
 
 }  // namespace base

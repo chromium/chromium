@@ -23,6 +23,7 @@
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace content {
@@ -70,7 +71,7 @@ bool WebContentsDelegate::ShouldFocusLocationBarByDefault(WebContents* source) {
   return false;
 }
 
-bool WebContentsDelegate::ShouldFocusPageAfterCrash() {
+bool WebContentsDelegate::ShouldFocusPageAfterCrash(WebContents* source) {
   return true;
 }
 
@@ -154,6 +155,19 @@ void WebContentsDelegate::CreateSmsPrompt(
     const std::string& one_time_code,
     base::OnceCallback<void()> on_confirm,
     base::OnceCallback<void()> on_cancel) {}
+
+bool WebContentsDelegate::CanUseWindowingControls(
+    RenderFrameHost* requesting_frame) {
+  return false;
+}
+
+bool WebContentsDelegate::GetCanResize() {
+  return false;
+}
+
+ui::WindowShowState WebContentsDelegate::GetWindowShowState() const {
+  return ui::SHOW_STATE_DEFAULT;
+}
 
 bool WebContentsDelegate::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
@@ -396,5 +410,15 @@ base::WeakPtr<WebContentsDelegate> WebContentsDelegate::GetDelegateWeakPtr() {
 bool WebContentsDelegate::IsPrivileged() {
   return false;
 }
+
+bool WebContentsDelegate::IsInPreviewMode() const {
+  return false;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+bool WebContentsDelegate::ShouldUseInstancedSystemMediaControls() const {
+  return false;
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -52,9 +52,10 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
     // Retrieve the source display's size.
     base::apple::ScopedCFTypeRef<CGDisplayModeRef> mode(
         CGDisplayCopyDisplayMode(display_id_));
-    const gfx::Size source_size = mode ? gfx::Size(CGDisplayModeGetWidth(mode),
-                                                   CGDisplayModeGetHeight(mode))
-                                       : requested_format_.frame_size;
+    const gfx::Size source_size =
+        mode ? gfx::Size(CGDisplayModeGetWidth(mode.get()),
+                         CGDisplayModeGetHeight(mode.get()))
+             : requested_format_.frame_size;
 
     // Compute the destination frame size using CaptureResolutionChooser.
     gfx::RectF dest_rect_in_frame;
@@ -89,17 +90,18 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
           &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks));
     }
 
-    display_stream_.reset(CGDisplayStreamCreate(
-        display_id_, requested_format_.frame_size.width(),
-        requested_format_.frame_size.height(),
-        kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange, properties, handler));
+    display_stream_.reset(
+        CGDisplayStreamCreate(display_id_, requested_format_.frame_size.width(),
+                              requested_format_.frame_size.height(),
+                              kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange,
+                              properties.get(), handler));
     if (!display_stream_) {
       client()->OnError(
           media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamCreate,
           FROM_HERE, "CGDisplayStreamCreate failed");
       return;
     }
-    CGError error = CGDisplayStreamStart(display_stream_);
+    CGError error = CGDisplayStreamStart(display_stream_.get());
     if (error != kCGErrorSuccess) {
       client()->OnError(
           media::VideoCaptureError::kDesktopCaptureDeviceMacFailedStreamStart,
@@ -111,17 +113,18 @@ class DesktopCaptureDeviceMac : public IOSurfaceCaptureDeviceBase {
     // worker thread where the CFRunLoop does not get serviced.
     // https://crbug.com/1185388
     CFRunLoopAddSource(CFRunLoopGetMain(),
-                       CGDisplayStreamGetRunLoopSource(display_stream_),
+                       CGDisplayStreamGetRunLoopSource(display_stream_.get()),
                        kCFRunLoopCommonModes);
     client()->OnStarted();
   }
   void OnStop() override {
     weak_factory_.InvalidateWeakPtrs();
     if (display_stream_) {
-      CFRunLoopRemoveSource(CFRunLoopGetMain(),
-                            CGDisplayStreamGetRunLoopSource(display_stream_),
-                            kCFRunLoopCommonModes);
-      CGDisplayStreamStop(display_stream_);
+      CFRunLoopRemoveSource(
+          CFRunLoopGetMain(),
+          CGDisplayStreamGetRunLoopSource(display_stream_.get()),
+          kCFRunLoopCommonModes);
+      CGDisplayStreamStop(display_stream_.get());
     }
     display_stream_.reset();
   }

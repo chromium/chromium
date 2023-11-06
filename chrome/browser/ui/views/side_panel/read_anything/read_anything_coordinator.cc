@@ -18,9 +18,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
+#include "chrome/browser/ui/side_panel/read_anything/read_anything_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
+#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -35,6 +37,7 @@
 #include "components/language/core/common/locale_util.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace {
@@ -53,6 +56,11 @@ base::TimeDelta GetDelaySeconds() {
 
 }  // namespace
 
+using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
+    SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
+DECLARE_TEMPLATE_METADATA(SidePanelWebUIViewT_ReadAnythingUntrustedUI,
+                          SidePanelWebUIViewT);
+
 ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
     : BrowserUserData<ReadAnythingCoordinator>(*browser),
       distillable_urls_(GetDistillableURLs()),
@@ -70,6 +78,7 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
+  CreateAndRegisterEntriesForExistingWebContents(browser->tab_strip_model());
 
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     BrowserList::GetInstance()->AddObserver(this);
@@ -78,8 +87,9 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   Browser* browser = &GetBrowser();
-  if (!browser->profile() || !browser->profile()->GetPrefs())
+  if (!browser->profile() || !browser->profile()->GetPrefs()) {
     return;
+  }
 
   // Get user's default language to check for compatible fonts.
   language::LanguageModel* language_model =
@@ -134,29 +144,29 @@ ReadAnythingCoordinator::~ReadAnythingCoordinator() {
   // Read Anything as a side panel entry observer.
   Browser* browser = &GetBrowser();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
+  if (!browser_view) {
     return;
-
-  SidePanelRegistry* global_registry =
-      SidePanelCoordinator::GetGlobalSidePanelRegistry(browser);
-  global_registry->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
+  }
 
   browser->tab_strip_model()->RemoveObserver(this);
   Observe(nullptr);
 }
 
-void ReadAnythingCoordinator::CreateAndRegisterEntry(
-    SidePanelRegistry* global_registry) {
-  auto side_panel_entry = std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kReadAnything,
-      l10n_util::GetStringUTF16(IDS_READING_MODE_TITLE),
-      ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshIcon,
-                                     ui::kColorIcon),
-      base::BindRepeating(&ReadAnythingCoordinator::CreateContainerView,
-                          base::Unretained(this)));
-  side_panel_entry->AddObserver(this);
-  global_registry->Register(std::move(side_panel_entry));
+void ReadAnythingCoordinator::CreateAndRegisterEntriesForExistingWebContents(
+    TabStripModel* tab_strip_model) {
+  for (int index = 0; index < tab_strip_model->GetTabCount(); ++index) {
+    CreateAndRegisterEntryForWebContents(
+        tab_strip_model->GetWebContentsAt(index));
+  }
+}
+
+void ReadAnythingCoordinator::CreateAndRegisterEntryForWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  ReadAnythingTabHelper* tab_helper =
+      ReadAnythingTabHelper::FromWebContents(web_contents);
+  CHECK(tab_helper);
+  tab_helper->CreateAndRegisterEntry();
 }
 
 ReadAnythingController* ReadAnythingCoordinator::GetController() {
@@ -191,52 +201,16 @@ void ReadAnythingCoordinator::RemoveModelObserver(
   model_->RemoveObserver(observer);
 }
 
-void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
+void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryShown() {
   for (Observer& obs : observers_) {
     obs.Activate(true);
   }
 }
 
-void ReadAnythingCoordinator::OnEntryHidden(SidePanelEntry* entry) {
-  DCHECK(entry->key().id() == SidePanelEntry::Id::kReadAnything);
+void ReadAnythingCoordinator::OnReadAnythingSidePanelEntryHidden() {
   for (Observer& obs : observers_) {
     obs.Activate(false);
   }
-}
-
-std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
-  Browser* browser = &GetBrowser();
-  auto web_view =
-      std::make_unique<SidePanelWebUIViewT<ReadAnythingUntrustedUI>>(
-          /* on_show_cb= */ base::RepeatingClosure(),
-          /* close_cb= */ base::RepeatingClosure(),
-          /* contents_wrapper= */
-          std::make_unique<BubbleContentsWrapperT<ReadAnythingUntrustedUI>>(
-              /* webui_url= */ GURL(
-                  chrome::kChromeUIUntrustedReadAnythingSidePanelURL),
-              /* browser_context= */ browser->profile(),
-              /* task_manager_string_id= */ IDS_READING_MODE_TITLE,
-              /* webui_resizes_host= */ false,
-              /* esc_closes_ui= */ false));
-
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    return std::move(web_view);
-  }
-
-  // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      this,
-      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
-      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
-
-  // Create the component.
-  // Note that a coordinator would normally maintain ownership of these objects,
-  // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
-  auto container_view = std::make_unique<ReadAnythingContainerView>(
-      this, std::move(toolbar), std::move(web_view));
-
-  return std::move(container_view);
 }
 
 void ReadAnythingCoordinator::StartPageChangeDelay() {
@@ -263,6 +237,17 @@ void ReadAnythingCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  if (change.type() == TabStripModelChange::Type::kInserted) {
+    for (const auto& inserted_tab : change.GetInsert()->contents) {
+      CreateAndRegisterEntryForWebContents(inserted_tab.contents);
+    }
+  }
+  if (change.type() == TabStripModelChange::Type::kReplaced) {
+    content::WebContents* new_contents = change.GetReplace()->new_contents;
+    if (new_contents) {
+      CreateAndRegisterEntryForWebContents(new_contents);
+    }
+  }
   if (!selection.active_tab_changed()) {
     return;
   }

@@ -248,7 +248,7 @@ TEST_F(BrokeredTcpClientSocketTest, CancelReadIfReady) {
   ASSERT_FALSE(socket_->IsConnected());
 
   net::TestCompletionCallback read_callback;
-  auto read_buf = base::MakeRefCounted<net::IOBuffer>(1);
+  auto read_buf = base::MakeRefCounted<net::IOBufferWithSize>(1);
 
   // Check that we gracefully fail when attempting to read or cancel reads
   // before connecting.
@@ -301,7 +301,7 @@ TEST_F(BrokeredTcpClientSocketTest, CancelReadIfReady) {
 // from transport_client_socket_unittest.cc since tests in //net can't depend on
 // anything outside of //net.
 TEST_F(BrokeredTcpClientSocketTest, IsConnected) {
-  scoped_refptr<net::IOBuffer> buf = base::MakeRefCounted<net::IOBuffer>(4096);
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(4096);
   net::TestCompletionCallback callback;
   uint32_t bytes_read;
   const char kServerReply[] = "HTTP/1.1 404 Not Found";
@@ -370,14 +370,13 @@ TEST_F(BrokeredTcpClientSocketTest, FullDuplex_ReadFirst) {
 
   // Read first.  There's no data, so it should return ERR_IO_PENDING.
   const int kBufLen = 4096;
-  scoped_refptr<net::IOBuffer> buf =
-      base::MakeRefCounted<net::IOBuffer>(kBufLen);
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(kBufLen);
   int rv = socket_->Read(buf.get(), kBufLen, callback.callback());
   EXPECT_THAT(rv, IsError(net::ERR_IO_PENDING));
 
   const int kWriteBufLen = 64 * 1024;
-  scoped_refptr<net::IOBuffer> request_buffer =
-      base::MakeRefCounted<net::IOBuffer>(kWriteBufLen);
+  auto request_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kWriteBufLen);
   char* request_data = request_buffer->data();
   memset(request_data, 'A', kWriteBufLen);
   net::TestCompletionCallback write_callback;
@@ -410,8 +409,8 @@ TEST_F(BrokeredTcpClientSocketTest, FullDuplex_WriteFirst) {
   ConnectClientSocket(&callback);
 
   const int kWriteBufLen = 64 * 1024;
-  scoped_refptr<net::IOBuffer> request_buffer =
-      base::MakeRefCounted<net::IOBuffer>(kWriteBufLen);
+  auto request_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(kWriteBufLen);
   char* request_data = request_buffer->data();
   memset(request_data, 'A', kWriteBufLen);
   net::TestCompletionCallback write_callback;
@@ -433,8 +432,7 @@ TEST_F(BrokeredTcpClientSocketTest, FullDuplex_WriteFirst) {
   // Read() to block on ERR_IO_PENDING too.
 
   const int kBufLen = 4096;
-  scoped_refptr<net::IOBuffer> buf =
-      base::MakeRefCounted<net::IOBuffer>(kBufLen);
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(kBufLen);
   while (true) {
     int rv = socket_->Read(buf.get(), kBufLen, callback.callback());
     ASSERT_TRUE(rv >= 0 || rv == net::ERR_IO_PENDING);
@@ -521,8 +519,7 @@ TEST_F(BrokeredTcpClientSocketTest, Tag) {
   net::SocketTag tag2(getuid(), tag_val2);
   client_socket.ApplySocketTag(tag2);
   const char kRequest1[] = "GET / HTTP/1.0";
-  scoped_refptr<net::IOBuffer> write_buffer1 =
-      base::MakeRefCounted<net::StringIOBuffer>(kRequest1);
+  auto write_buffer1 = base::MakeRefCounted<net::StringIOBuffer>(kRequest1);
   net::TestCompletionCallback write_callback1;
   EXPECT_EQ(client_socket.Write(write_buffer1.get(), strlen(kRequest1),
                                 write_callback1.callback(),

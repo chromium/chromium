@@ -169,10 +169,9 @@ class SqliteIntegrityTest : public DiagnosticsTest {
   }
 
  private:
-  class ErrorRecorder : public base::RefCounted<ErrorRecorder>,
-                        public base::SupportsWeakPtr<ErrorRecorder> {
+  class ErrorRecorder : public base::RefCounted<ErrorRecorder> {
    public:
-    ErrorRecorder() : has_error_(false), sqlite_error_(0), last_errno_(0) {}
+    ErrorRecorder() = default;
 
     ErrorRecorder(const ErrorRecorder&) = delete;
     ErrorRecorder& operator=(const ErrorRecorder&) = delete;
@@ -195,14 +194,19 @@ class SqliteIntegrityTest : public DiagnosticsTest {
                                 message_.c_str());
     }
 
+    base::WeakPtr<ErrorRecorder> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
+
    private:
     friend class base::RefCounted<ErrorRecorder>;
     ~ErrorRecorder() {}
 
-    bool has_error_;
-    int sqlite_error_;
-    int last_errno_;
+    bool has_error_ = false;
+    int sqlite_error_ = 0;
+    int last_errno_ = 0;
     std::string message_;
+    base::WeakPtrFactory<ErrorRecorder> weak_ptr_factory_{this};
   };
 
   uint32_t flags_;

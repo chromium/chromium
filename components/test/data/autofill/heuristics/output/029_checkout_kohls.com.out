@@ -10,7 +10,7 @@ ADDRESS_HOME_ZIP | BILL_TO_ADDRESS<>postal | ZIP Code: |  | BILL_TO_ADDRESS<>fir
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | BILL_PHONE<>areacode | Area Code |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_NUMBER | BILL_PHONE<>exchange | Exchange |  | BILL_TO_ADDRESS<>firstName_1
 PHONE_HOME_EXTENSION | BILL_PHONE<>extension | Extension |  | BILL_TO_ADDRESS<>firstName_1
-PHONE_HOME_WHOLE_NUMBER | bill_phone | Contact Phone: |  | BILL_TO_ADDRESS<>firstName_1
+PHONE_HOME_CITY_AND_NUMBER | bill_phone | Contact Phone: |  | BILL_TO_ADDRESS<>firstName_1
 EMAIL_ADDRESS | CURRENT_USER<>email | E-mail Address: |  | BILL_TO_ADDRESS<>firstName_1
 UNKNOWN_TYPE | EMAIL_OPT_STATUS_ARRAY<>opt_status | Yes, sign me up for Sale Alerts. (optional) | true | BILL_TO_ADDRESS<>firstName_1
 UNKNOWN_TYPE | indShipIsBillTo | Yes | true | BILL_TO_ADDRESS<>firstName_1
@@ -25,5 +25,5 @@ ADDRESS_HOME_ZIP | SHIP_TO_ADDRESS<>postal | ZIP Code: |  | SHIP_TO_ADDRESS<>fir
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | SHIP_PHONE<>areacode | Area Code |  | SHIP_TO_ADDRESS<>firstName_2
 PHONE_HOME_NUMBER | SHIP_PHONE<>exchange | Exchange |  | SHIP_TO_ADDRESS<>firstName_2
 PHONE_HOME_EXTENSION | SHIP_PHONE<>extension | Extension |  | SHIP_TO_ADDRESS<>firstName_2
-PHONE_HOME_WHOLE_NUMBER | ship_phone | Contact Phone: |  | SHIP_TO_ADDRESS<>firstName_2
+PHONE_HOME_CITY_AND_NUMBER | ship_phone | Contact Phone: |  | SHIP_TO_ADDRESS<>firstName_2
 UNKNOWN_TYPE | validShippingMethodList | Shipping Method: | 7037973929746575 | SHIP_TO_ADDRESS<>firstName_2

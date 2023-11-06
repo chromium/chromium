@@ -212,17 +212,8 @@ ParsingContext::ParseFeatureName(const String& feature_name) {
   mojom::blink::PermissionsPolicyFeature feature =
       feature_names_.at(effective_feature_name);
 
-  // TODO(https://crbug.com/1324111): Remove this after OT.
   if (feature == mojom::blink::PermissionsPolicyFeature::kUnload) {
-    if (!execution_context_ ||
-        !RuntimeEnabledFeatures::PermissionsPolicyUnloadEnabled(
-            execution_context_)) {
-      // kUnload should not be recognised unless the OT is enabled.
-      feature = mojom::blink::PermissionsPolicyFeature::kNotFound;
-    } else if (execution_context_->IsWindow()) {
-      // Counter is required for Origin Trial.
-      execution_context_->CountUse(WebFeature::kPermissionsPolicyUnload);
-    }
+    UseCounter::Count(execution_context_, WebFeature::kPermissionsPolicyUnload);
   }
   return feature;
 }
@@ -508,7 +499,7 @@ PermissionsPolicyParser::Node ParsingContext::ParsePermissionsPolicyToIR(
 
     if (!value.params.empty()) {
       for (const auto& param : value.params) {
-        if (param.first == "report-to") {
+        if (param.first == "report-to" && param.second.is_token()) {
           endpoint = String(param.second.GetString());
         }
       }

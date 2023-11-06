@@ -39,7 +39,7 @@ import {invokePolymerMethod} from '../../display_manager.js';
  */
 
 /** @polymerBehavior */
-export var MultiStepBehavior = {
+export const MultiStepBehavior = {
   properties: {
     uiStep: {
       type: String,
@@ -174,7 +174,7 @@ export var MultiStepBehavior = {
    */
   refreshStepBindings_() {
     this.stepElements_ = {};
-    var matches = dom(this.root).querySelectorAll('[for-step]');
+    const matches = dom(this.root).querySelectorAll('[for-step]');
     for (const child of matches) {
       const stepsList = child.getAttribute('for-step');
       for (const stepChunk of stepsList.split(',')) {

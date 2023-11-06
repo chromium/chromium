@@ -5,26 +5,16 @@ found in the LICENSE file.
 -->
 <style>
   .container {
-    box-shadow: var(--cros-elevation-2-shadow);
-    justify-content: space-between;
-    max-width: 336px;
-    min-height: 48px;
-    min-width: 256px;
-  }
-
-  :host-context([theme='legacy']) .container {
-    --cr-toast-background: var(--cros-bg-color-elevation-2-inverted);
-    --cr-toast-button-color: var(--cros-toast-button-color);
-    --cr-toast-text-color: var(--cros-toast-text-color);
-    padding: 0;
-  }
-
-  :host-context([theme='refresh23']) .container {
     --cr-toast-background: var(--cros-sys-base_elevated);
     --cr-toast-button-color: var(--cros-sys-primary);
     --cr-toast-text-color: var(--cros-sys-on_surface);
     border-radius: 8px;
+    box-shadow: var(--cros-elevation-2-shadow);
     font: var(--cros-body-2-font);
+    justify-content: space-between;
+    max-width: 336px;
+    min-height: 48px;
+    min-width: 256px;
     padding: 14px 0;
   }
 
@@ -42,25 +32,11 @@ found in the LICENSE file.
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     display: -webkit-box;
+    margin-inline-start: 24px;
     overflow: hidden;
   }
 
-  :host-context([theme='legacy']) .text {
-    line-height: 20px;
-    margin: 14px 16px;
-  }
-
-  :host-context([theme='refresh23']) .text {
-    margin-inline-start: 24px;
-  }
-
-  :host-context([theme='legacy']) .action {
-    --ink-color: var(--cros-toast-button-color);
-    --paper-ripple-opacity: var(--cros-button-secondary-ripple-opacity);
-    margin: 0 8px !important;
-  }
-
-  :host-context([theme='refresh23']) .action {
+  .action {
     --ink-color: var(--cros-sys-ripple_neutral_on_subtle);
     --paper-ripple-opacity: 100%;
     border-radius: 18px;
@@ -72,14 +48,7 @@ found in the LICENSE file.
     box-shadow: none;
   }
 
-  :host-context([theme='legacy']):host-context(.focus-outline-visible)
-      .action:focus {
-    --focus-shadow-color: none;
-    outline: 2px solid var(--cros-toast-button-color);
-  }
-
-  :host-context([theme='refresh23']):host-context(.focus-outline-visible)
-      .action:focus {
+  :host-context(.focus-outline-visible) .action:focus {
     --focus-shadow-color: none;
     outline: 2px solid var(--cros-sys-focus_ring);
   }

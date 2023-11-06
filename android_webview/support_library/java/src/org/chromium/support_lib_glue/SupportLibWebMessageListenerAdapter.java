@@ -48,8 +48,13 @@ class SupportLibWebMessageListenerAdapter implements WebMessageListener {
     }
 
     @Override
-    public void onPostMessage(final MessagePayload payload, final Uri sourceOrigin,
-            final boolean isMainFrame, final JsReplyProxy replyProxy, final MessagePort[] ports) {
+    public void onPostMessage(
+            final MessagePayload payload,
+            final Uri topLevelOrigin,
+            final Uri sourceOrigin,
+            final boolean isMainFrame,
+            final JsReplyProxy replyProxy,
+            final MessagePort[] ports) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                     mSupportedFeatures, Features.WEB_MESSAGE_LISTENER)) {
             Log.e(TAG, "The AndroidX doesn't have feature: " + Features.WEB_MESSAGE_LISTENER);

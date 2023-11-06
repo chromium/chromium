@@ -127,8 +127,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return;
         }
 
-        if (!mSiteSettingsDelegate.isPrivacySandboxSettings4Enabled()
-                || Website.isEmbeddedPermission(mCategory.getContentSettingsType())) {
+        if (Website.isEmbeddedPermission(mCategory.getContentSettingsType())) {
             String subtitleText;
             if (mSite.representsThirdPartiesOnSite()) {
                 subtitleText = getContext().getString(

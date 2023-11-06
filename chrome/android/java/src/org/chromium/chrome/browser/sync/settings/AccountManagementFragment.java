@@ -262,7 +262,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
         accountsCategory.addPreference(
                 createDividerPreference(R.layout.account_divider_preference));
         accountsCategory.addPreference(createManageYourGoogleAccountPreference());
-        accountsCategory.addPreference(createDividerPreference(R.layout.divider_preference));
+        accountsCategory.addPreference(createDividerPreference(R.layout.horizontal_divider));
 
         for (CoreAccountInfo coreAccountInfo : coreAccountInfos) {
             if (!mSignedInCoreAccountInfo.equals(coreAccountInfo)) {

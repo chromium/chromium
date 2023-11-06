@@ -58,7 +58,6 @@ class ChromeWebAuthenticationDelegate
 
   ~ChromeWebAuthenticationDelegate() override;
 
-#if !BUILDFLAG(IS_ANDROID)
   // content::WebAuthenticationDelegate:
   bool OverrideCallerOriginAndRelyingPartyIdValidation(
       content::BrowserContext* browser_context,
@@ -66,9 +65,6 @@ class ChromeWebAuthenticationDelegate
       const std::string& relying_party_id) override;
   bool OriginMayUseRemoteDesktopClientOverride(
       content::BrowserContext* browser_context,
-      const url::Origin& caller_origin) override;
-  bool IsSecurityLevelAcceptableForWebAuthn(
-      content::RenderFrameHost* rfh,
       const url::Origin& caller_origin) override;
   absl::optional<std::string> MaybeGetRelyingPartyIdOverride(
       const std::string& claimed_relying_party_id,
@@ -86,7 +82,7 @@ class ChromeWebAuthenticationDelegate
   content::WebAuthenticationRequestProxy* MaybeGetRequestProxy(
       content::BrowserContext* browser_context,
       const url::Origin& caller_origin) override;
-#endif
+
 #if BUILDFLAG(IS_MAC)
   absl::optional<TouchIdAuthenticatorConfig> GetTouchIdAuthenticatorConfig(
       content::BrowserContext* browser_context) override;
@@ -252,13 +248,13 @@ class ChromeAuthenticatorRequestDelegate
   void GetPhoneContactableGpmPasskeysForRpId(
       std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Configures an WebAuthn enclave authenticator discovery and provides it with
   // synced passkeys.
   void ConfigureEnclaveDiscovery(
       const std::string& rp_id,
       device::FidoDiscoveryFactory* discovery_factory);
-#endif
+
+  bool EnclaveAuthenticatorAvailable();
 
 #if BUILDFLAG(IS_MAC)
   // DaysSinceDate returns the number of days between `formatted_date` (in ISO

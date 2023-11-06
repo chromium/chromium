@@ -13,6 +13,7 @@
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 using content::BrowserThread;
 
 namespace extensions {
@@ -150,3 +151,4 @@ void ExtensionMessageFilter::SendWakeEventPageResponse(int request_id,
 }
 
 }  // namespace extensions
+#endif

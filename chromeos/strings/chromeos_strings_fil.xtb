@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Mahina ang signal</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Nag-a-update (<ph name="PERCENTAGE_VALUE" />% na ang natapos)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> (na) minuto</translation>
 <translation id="1310380015393971138">Walang available na <ph name="NETWORK_NAME" /> network</translation>
 <translation id="131421566576084655">Hindi available ang petsa ng huling pag-reset ng data</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732">Pinapamahalaan ng <ph name="MANAGER" /> ang user na ito at puwede nitong pamahalaan ang mga setting at subaybayan ang aktibidad ng user sa remote na paraan.</translation>
 <translation id="150962533380566081">Di-wasto ang PUK.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1515129336378114413">home ng browser</translation>
 <translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
 <translation id="1555130319947370107">Asul</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Itakda bilang wallpaper</translation>
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
 <translation id="160633243685262989">Larawan ng Preview</translation>
+<translation id="1611649489706141841">susunod</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
@@ -168,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> (na) larawan</translation>
 <translation id="2157660087437850958">picker ng emoji</translation>
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" /> tuwing magla-log in ka.}=2{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" /> at <ph name="APP_NAME_2" /> tuwing magla-log in ka.}=3{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at <ph name="APP_NAME_3" /> tuwing magla-log in ka.}one{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at # pang app tuwing magla-log in ka.}other{Itinakda ng iyong administrator na awtomatikong magsisimula ang <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" />, at # pang app tuwing magla-log in ka.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
+<translation id="215916044711630446">Naka-disable na ang button na Magdagdag ng APN</translation>
 <translation id="2161394479394250669">Kanselahin ang pag-print</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2163937499206714165">I-on ang dark mode</translation>
@@ -184,6 +189,7 @@
 <translation id="2236746079896696523">Toggle ng backlight ng keyboard</translation>
 <translation id="2240366984605217732">Switch ng layout</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
+<translation id="2267285889943769271">Magdagdag ng screenshot</translation>
 <translation id="2271469253353559191">Iskedyul ng dark mode</translation>
 <translation id="2276999893457278469">Nangungunang content ng tulong</translation>
 <translation id="2279051792571591988">I-restore ang mga default</translation>
@@ -285,6 +291,7 @@
 <translation id="3226405216343213872">Naghahanap ng mga scanner</translation>
 <translation id="3226657629376379887">Menu ng mga pagkilos sa layout</translation>
 <translation id="3246869037381808805">Aalisin ang mga pag-print na lampas 1 araw na</translation>
+<translation id="324961752321393509">Hindi pinapayagan ng iyong administrator na isara ang app na ito</translation>
 <translation id="3268178239013324452">Hindi na-print - Nakabukas ang takip</translation>
 <translation id="3275729367986477355">Larawan ng avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{I-edit ang file}one{I-edit ang mga file}other{I-edit ang mga file}}</translation>
@@ -336,7 +343,6 @@
 <translation id="3604713164406837697">Palitan ang wallpaper</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3606583719724308068">Mataas ang latency sa mga HTTPS na website</translation>
-<translation id="3607216139080387279">Ipakita ang screen saver</translation>
 <translation id="361575905210396100">Salamat sa iyong feedback</translation>
 <translation id="3632579075709132555">Toggle ng Privacy screen</translation>
 <translation id="3651050199673793219">Pumili ng unit ng temperatura</translation>
@@ -348,7 +354,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
 <translation id="3749289110408117711">File name</translation>
-<translation id="3766934827878963937">nang 1 oras</translation>
 <translation id="3771294271822695279">Mga Video File</translation>
 <translation id="3784455785234192852">I-lock</translation>
 <translation id="380097101658023925">mga kontrol sa rgb</translation>
@@ -399,6 +404,7 @@
 <translation id="4117637339509843559">Dark mode</translation>
 <translation id="4130035430755296270">Mag-hover lang para sa higit pang opsyon sa layout</translation>
 <translation id="4131410914670010031">Itim at puti</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Awtomatikong sinimulan ang <ph name="APP_NAME_1" />}one{Awtomatikong sinimulan ang # app}other{Awtomatikong sinimulan ang # na app}}</translation>
 <translation id="4145784616224233563">Firewall ng HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -427,6 +433,7 @@
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
 <translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
+<translation id="4354430579665871434">key</translation>
 <translation id="435692326371619097">Pamahalaan ang mga setting ng APN ng network. Nagtatatag ang mga APN ng koneksyon sa pagitan ng isang cellular network at internet. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">I-reset ang lahat ng shortcut</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
@@ -444,6 +451,7 @@
 <translation id="445059817448385655">Lumang password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pag-scan sa</translation>
+<translation id="4456812688969919973">Naka-disable na ang button na Mag-save ng APN</translation>
 <translation id="4469288414739283461">Screen saver na paggalaw ng mundo</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
@@ -688,6 +696,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">I-on ang madilim na tema</translation>
 <translation id="628726841779494414">Pamahalaan ang iyong mga printer sa mga setting ng printer</translation>
+<translation id="6292095526077353682">Habang nagcha-charge, ipakita ang screen saver sa loob ng</translation>
 <translation id="629550705077076970">pag-dim ng keyboard</translation>
 <translation id="6302401976930124515">Nakansela ang pagsubok na <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Explore app</translation>
@@ -715,6 +724,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Mabagal (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pumunta sa mga setting ng account</translation>
+<translation id="6462978824459367242">Naka-enable na ang button na Magdagdag ng APN</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{I-scan ulit ang page?}=1{I-scan ulit ang page {PAGE_NUMBER}?}one{I-scan ulit ang page {PAGE_NUMBER}?}other{I-scan ulit ang page {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Pinapamahalaan ng <ph name="MANAGER" /></translation>
@@ -749,6 +759,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">taasan ang liwanag ng keyboard</translation>
 <translation id="6692996468359469499">Kumuha ng impormasyon kaugnay ng iyong pinili</translation>
+<translation id="6694534975463174713">lock</translation>
 <translation id="6704062477274546131">Resolution ng DNS</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Backlight ng keyboard</translation>
@@ -939,6 +950,7 @@
 <translation id="8227119283605456246">Mag-attach ng file</translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
 <translation id="8246209727385807362">Hindi kilalang carrier</translation>
+<translation id="8262870577632766028">1 oras</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Kumonekta sa network at i-reload ang page para makita ang wallpaper.</translation>
 <translation id="8291967909914612644">Bansa ng home provider</translation>
@@ -1003,6 +1015,7 @@
 <translation id="8747900814994928677">Kumpirmahin ang pagbabago</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album sa Google Photos</translation>
+<translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Ginagamit ang shortcut para sa "<ph name="CONFLICT_ACCEL_NAME" />". Pumindot ng bagong shortcut. Para palitan ang orihinal na shortcut, pindutin ulit ang shortcut na ito.</translation>
 <translation id="879568662008399081">Posibleng may captive portal ang network na ito</translation>
@@ -1052,6 +1065,7 @@
 <translation id="902638246363752736">Mga setting ng keyboard</translation>
 <translation id="9028832514430399253">I-on ang toggle para piliin ang mga opsyon ng screen saver</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Naka-enable na ang button na Mag-save ng APN</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Mataas ang latency ng resolution ng DNS</translation>
 <translation id="9065203028668620118">I-edit</translation>
@@ -1067,11 +1081,9 @@
 <translation id="9111102763498581341">I-unlock</translation>
 <translation id="9122602430962285795">Para kumonekta ulit, pumunta sa Mga Setting</translation>
 <translation id="9126720536733509015">Mag-save ng maraming pahina sa iisang PDF</translation>
-<translation id="9133104754938025929">Para makatipid sa baterya, gumagana lang ang screen saver habang nagcha-charge.</translation>
 <translation id="9133772297793293778">Pumindot ng 1-4 na modifier at 1 pang key sa iyong keyboard. Para umalis sa editing mode, pindutin ang alt + esc.</translation>
 <translation id="9137526406337347448">Mga Serbisyo ng Google</translation>
 <translation id="9138630967333032450">Kaliwang shift</translation>
-<translation id="9143347780818904997">nang <ph name="MINUTES" /> (na) minuto</translation>
 <translation id="9149391708638971077">Patakbuhin ang pagsusuri sa Memory</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9173638680043580060">Wala nang isang minuto ang natitira</translation>

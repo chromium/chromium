@@ -10,24 +10,34 @@ import {State} from './state.js';
  * See lib/base_store.ts and state/store.ts for the implementation.
  */
 
-/** @record */
 export class Store {
   /** @param {!Object} action */
+  // @ts-ignore: error TS6133: 'action' is declared but its value is never read.
   dispatch(action) {}
 
   /**
    *  @param {!StoreObserver} observer
-   *  @returns {function()} the function to unsubscribe.
+   *  @returns {function():void} the function to unsubscribe.
    */
-  subscribe(observer) {}
+  // @ts-ignore: error TS6133: 'observer' is declared but its value is never
+  // read.
+  subscribe(observer) {
+    return () => {};
+  }
 
   /** @param {!StoreObserver} observer */
+  // @ts-ignore: error TS6133: 'observer' is declared but its value is never
+  // read.
   unsubscribe(observer) {}
 
+  // @ts-ignore: error TS2355: A function whose declared type is neither 'void'
+  // nor 'any' must return a value.
   /** @return {!State} */
   getState() {}
 
   /** @param {!State} initialState */
+  // @ts-ignore: error TS6133: 'initialState' is declared but its value is never
+  // read.
   init(initialState) {}
 }
 
@@ -38,5 +48,7 @@ export class Store {
  */
 class StoreObserver {
   /** @param {!State} newState */
+  // @ts-ignore: error TS6133: 'newState' is declared but its value is never
+  // read.
   onStateChanged(newState) {}
 }

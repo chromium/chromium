@@ -50,23 +50,13 @@
   let blocked_urls = [
     'http://devtools.oopif.test:8000/inspector-protocol/network/resources/nosniff.pl',
     'http://devtools.oopif.test:8000/inspector-protocol/network/resources/simple-iframe.html',
+    'http://devtools.oopif.test:8000/inspector-protocol/network/resources/404.pl',
+    'http://devtools.oopif.test:8000/inspector-protocol/network/resources/content-length-0.pl',
   ];
   for (const url of blocked_urls) {
     session.evaluate(loadImageAndProbe(url));
     testRunner.log(
         `Blocking cross-site document at ${url}: ` +
-        `shouldReportCorbBlocking=${await shouldReportCorbBlocking()}.`);
-  }
-
-  let blocked_unreported_urls = [
-    'http://devtools.oopif.test:8000/inspector-protocol/network/resources/204.pl',
-    'http://devtools.oopif.test:8000/inspector-protocol/network/resources/404.pl',
-    'http://devtools.oopif.test:8000/inspector-protocol/network/resources/content-length-0.pl',
-  ];
-  for (const url of blocked_unreported_urls) {
-    session.evaluate(loadImageAndProbe(url));
-    testRunner.log(
-        `Blocking, but not reporting cross-site document at ${url}: ` +
         `shouldReportCorbBlocking=${await shouldReportCorbBlocking()}.`);
   }
 

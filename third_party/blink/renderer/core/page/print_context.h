@@ -45,7 +45,7 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   explicit PrintContext(LocalFrame*);
   virtual ~PrintContext();
 
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
 
   // These are only valid when inside print mode.
   wtf_size_t PageCount() const { return page_count_; }
@@ -69,14 +69,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   static String PageProperty(LocalFrame*,
                              const char* property_name,
                              uint32_t page_number);
-  static String PageSizeAndMarginsInPixels(LocalFrame*,
-                                           uint32_t page_number,
-                                           int width,
-                                           int height,
-                                           int margin_top,
-                                           int margin_right,
-                                           int margin_bottom,
-                                           int margin_left);
   static int NumberOfPages(LocalFrame*, const gfx::SizeF& page_size_in_pixels);
 
   virtual void Trace(Visitor*) const;

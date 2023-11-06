@@ -418,12 +418,8 @@ PerformanceResourceTiming::serverTiming() const {
 
 void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  ExecutionContext* execution_context =
-      ExecutionContext::From(builder.GetScriptState());
   builder.AddString("initiatorType", initiatorType());
-  if (RuntimeEnabledFeatures::DeliveryTypeEnabled(execution_context)) {
-    builder.AddString("deliveryType", deliveryType());
-  }
+  builder.AddString("deliveryType", deliveryType());
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
     builder.AddString("renderBlockingStatus", renderBlockingStatus());

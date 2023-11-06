@@ -136,6 +136,7 @@ class RenderFrameHostImpl;
 class RenderFrameMetadataProviderImpl;
 class RenderFrameProxyHost;
 class RenderWidgetHost;
+class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
 class ToRenderFrameHost;
@@ -945,23 +946,14 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
         net::CookiePartitionKeyCollection::ContainsAll());
 
 // Sets a cookie for the given url. Uses inclusive SameSiteCookieContext by
-// default, which gets cookies regardless of their SameSite attribute. Returns
-// true on success.
+// default, which gets cookies regardless of their SameSite attribute. The
+// cookie is unpartitioned by default. Returns true on success.
 bool SetCookie(BrowserContext* browser_context,
                const GURL& url,
                const std::string& value,
                net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-
-// Same as `SetCookie`, but sets a Partitioned cookie with the given partition
-// key. `value` is expected to use the `Partitioned` attribute.
-bool SetPartitionedCookie(
-    BrowserContext* browser_context,
-    const GURL& url,
-    const std::string& value,
-    const net::CookiePartitionKey& cookie_partition_key,
-    net::CookieOptions::SameSiteCookieContext context =
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+               net::CookiePartitionKey* cookie_partition_key = nullptr);
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
@@ -1519,9 +1511,9 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
                        const blink::WebInputEvent& event) override;
 
  private:
-  raw_ptr<RenderWidgetHost> render_widget_host_;
+  base::WeakPtr<RenderWidgetHostImpl> render_widget_host_;
   InputEventAckPredicate predicate_;
-  bool event_received_;
+  bool event_received_ = false;
   base::OnceClosure quit_closure_;
 };
 

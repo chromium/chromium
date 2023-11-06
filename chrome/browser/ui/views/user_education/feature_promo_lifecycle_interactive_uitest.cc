@@ -55,7 +55,6 @@ BASE_FEATURE(kFeaturePromoLifecycleTestPromo3,
 }  // namespace
 
 using TestBase = InteractiveBrowserTestT<web_app::WebAppControllerBrowserTest>;
-using CloseReason = user_education::FeaturePromoStorageService::CloseReason;
 
 class FeaturePromoLifecycleUiTest : public TestBase {
  public:
@@ -79,7 +78,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   }
 
  protected:
-  using PromoData = user_education::FeaturePromoStorageService::PromoData;
+  using PromoData = user_education::FeaturePromoData;
 
   using SpecList = std::vector<user_education::FeaturePromoSpecification>;
   virtual SpecList CreatePromos() {
@@ -215,7 +214,7 @@ class FeaturePromoLifecycleUiTest : public TestBase {
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
     return InBrowser(base::BindLambdaForTesting([feature](Browser* browser) {
       GetPromoController(browser)->EndPromo(
-          *feature, user_education::FeaturePromoCloseReason::kAbortPromo);
+          *feature, user_education::EndFeaturePromoReason::kAbortPromo);
     }));
   }
 
@@ -230,11 +229,11 @@ class FeaturePromoLifecycleUiTest : public TestBase {
   }
 
   auto CheckDismissedWithReason(
-      CloseReason close_reason,
+      user_education::FeaturePromoClosedReason close_reason,
       const base::Feature* feature = &kFeaturePromoLifecycleTestPromo) {
     return CheckBrowser(
         base::BindLambdaForTesting([close_reason, feature](Browser* browser) {
-          CloseReason actual_reason;
+          user_education::FeaturePromoClosedReason actual_reason;
           return GetPromoController(browser)->HasPromoBeenDismissed(
                      *feature, &actual_reason) &&
                  actual_reason == close_reason;
@@ -307,7 +306,8 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, HasPromoBeenDismissed) {
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest,
                        HasPromoBeenDismissedWithReason) {
   RunTestSequence(AttemptIPH(true), DismissIPH(),
-                  CheckDismissed(CloseReason::kCancel));
+                  CheckDismissedWithReason(
+                      user_education::FeaturePromoClosedReason::kCancel));
 }
 
 IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, CanReSnooze) {
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoLifecycleUiTest, EndPromoSetsPrefs) {
       AttemptIPH(true), InBrowser(base::BindOnce([](Browser* browser) {
         GetPromoController(browser)->EndPromo(
             kFeaturePromoLifecycleTestPromo,
-            user_education::FeaturePromoCloseReason::kFeatureEngaged);
+            user_education::EndFeaturePromoReason::kFeatureEngaged);
       })),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),

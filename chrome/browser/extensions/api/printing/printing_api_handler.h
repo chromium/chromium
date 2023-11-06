@@ -159,6 +159,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
 
   // BrowserContextKeyedAPI:
   static const bool kServiceIsNULLWhileTesting = true;
+  static const bool kServiceIsCreatedWithBrowserContext = false;
   static const char* service_name() { return "PrintingAPIHandler"; }
 
   const raw_ptr<content::BrowserContext> browser_context_;

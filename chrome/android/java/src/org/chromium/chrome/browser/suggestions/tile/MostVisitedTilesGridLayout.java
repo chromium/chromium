@@ -35,7 +35,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     private int mMaxRows;
     private int mMaxColumns;
     private boolean mSearchProviderHasLogo = true;
-    private boolean mIsNtpAsHomeSurfaceEnabled;
+    private boolean mIsNtpAsHomeSurfaceOnTablet;
     private final int mMvtContainer2SidesMarginTablet;
     private final int mTileViewLandscapeEdgePaddingTablet;
     private final int mTileViewPortraitEdgePaddingTablet;
@@ -89,7 +89,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int totalWidth = Math.min(MeasureSpec.getSize(widthMeasureSpec), mMaxWidth);
-        if (mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet) {
             totalWidth = totalWidth - mMvtContainer2SidesMarginTablet;
         }
         int childCount = getChildCount();
@@ -161,7 +161,7 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     Pair<Integer, Integer> computeHorizontalDimensions(int availableWidth, int numColumns) {
         int gridStart;
         float horizontalSpacing;
-        if (mIsNtpAsHomeSurfaceEnabled) {
+        if (mIsNtpAsHomeSurfaceOnTablet) {
             gridStart = getResources().getConfiguration().orientation
                             == Configuration.ORIENTATION_LANDSCAPE
                     ? mTileViewLandscapeEdgePaddingTablet
@@ -221,8 +221,8 @@ public class MostVisitedTilesGridLayout extends FrameLayout implements MostVisit
     }
 
     @Override
-    public void setIsNtpAsHomeSurfaceEnabled(boolean isNtpAsHomeSurfaceEnabled) {
-        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
+    public void setIsNtpAsHomeSurfaceOnTablet(boolean isNtpAsHomeSurfaceOnTablet) {
+        mIsNtpAsHomeSurfaceOnTablet = isNtpAsHomeSurfaceOnTablet;
     }
 
     public int getMinHorizontalSpacingForTesting() {

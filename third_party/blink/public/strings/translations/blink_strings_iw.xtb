@@ -16,6 +16,7 @@
 <translation id="1729654308190250600">יש להזין ערך בשדה של כתובת האימייל.</translation>
 <translation id="1758486001363313524">אחר...</translation>
 <translation id="1787192514241997742">משך כולל: <ph name="REMAINING_TIME" /></translation>
+<translation id="1800494066469288780">מתן הרשאה למצלמה</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="1832974991323546415">הפעלה במכשיר מרוחק</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -51,6 +52,7 @@
 <translation id="3220661731597678625">השלב הנוכחי</translation>
 <translation id="3321030238473337787">מהירות הפעלה</translation>
 <translation id="3329013043687509092">רווייה</translation>
+<translation id="3377518164566272702">מתן הרשאה למיקרופון ולמצלמה</translation>
 <translation id="3450233048674729344">הערך חייב להיות קטן מ-<ph name="MAXIMUM" /> או שווה לו.</translation>
 <translation id="3732799496749320381">mm</translation>
 <translation id="3754210790023674521">יציאה ממצב תמונה בתוך תמונה</translation>
@@ -66,6 +68,7 @@
 <translation id="4718048029184481307">הפעלה במצב תמונה בתוך תמונה</translation>
 <translation id="4748357248530471599">מעבר מתצוגה באזור המגרעת של המסך למסך מלא</translation>
 <translation id="4763480195061959176">סרטוני וידאו</translation>
+<translation id="4792862212177489858">שיתוף המיקום</translation>
 <translation id="4812940957355064477">יש להזין מספר.</translation>
 <translation id="4912200001568447310">הפריט הנוכחי</translation>
 <translation id="4915360478455618802">הצגת בוחר השעה</translation>
@@ -75,6 +78,7 @@
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> נבחרו</translation>
 <translation id="4992066212339426712">ביטול השתקה</translation>
 <translation id="49969490063480558">יש להזין חלק ואחריו '<ph name="ATSIGN" />'. השדה '<ph name="INVALIDADDRESS" />' אינו מלא.</translation>
+<translation id="5037575921016181960">סיסמה חזקה</translation>
 <translation id="5090250355906949916">מחוון זמן הסרטון</translation>
 <translation id="509897012892853729">הערוץ הכחול</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
@@ -179,6 +183,7 @@
 <translation id="9132465097189459683">אחר...</translation>
 <translation id="9155987714137265666"><ph name="WEEK" />, שמתחיל בתאריך <ph name="WEEK_START_DATE" /></translation>
 <translation id="916607977885256133">תמונה בתוך תמונה</translation>
+<translation id="918430632320614861">מתן הרשאה למיקרופון</translation>
 <translation id="945780513535800434">מסומנת באופן חלקי</translation>
 <translation id="954003015749068518">מעבר אל מצב 'תמונה בתוך תמונה'</translation>
 </translationbundle>

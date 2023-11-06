@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_switches.h"
+#include "base/callback_list.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
@@ -140,6 +141,7 @@
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
 #if BUILDFLAG(IS_WIN)
+#include "base/files/file_util.h"
 #include "base/test/test_reg_util_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -291,6 +293,13 @@ BrowserTestBase::BrowserTestBase() {
   base::i18n::AllowMultipleInitializeCallsForTesting();
 
   embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
+
+#if BUILDFLAG(IS_WIN)
+  // Even if running as admin, browser tests should not write temp files to
+  // secure temp, otherwise any left-over files cannot be cleaned up by the test
+  // runner.
+  base::SetDisableSecureSystemTempForTesting(/*disabled=*/true);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if defined(USE_AURA)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
@@ -910,9 +919,14 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     }
     initial_web_contents_.reset();
 
-    OnRestartNetworkServiceForTesting(
-        base::BindRepeating(&BrowserTestBase::ForceInitializeNetworkProcess,
-                            base::Unretained(this)));
+    base::CallbackListSubscription on_network_service_restarted_subscription =
+        RegisterNetworkServiceProcessGoneHandler(base::BindRepeating(
+            [](BrowserTestBase* browser_test_base, bool crashed) {
+              if (!crashed) {
+                browser_test_base->ForceInitializeNetworkProcess();
+              }
+            },
+            base::Unretained(this)));
 
     SetUpOnMainThread();
 
@@ -943,7 +957,12 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
     TearDownOnMainThread();
     AssertThatNetworkServiceDidNotCrash();
 
-    OnRestartNetworkServiceForTesting(base::NullCallback());
+    // The subscription should be reset after asserting that the network service
+    // did not crash, otherwise a network service restart task might be
+    // processed in AssertThatNetworkServiceDidNotCrash() and the network
+    // service will not be correctly initialized, which causes
+    // AssertThatNetworkServiceDidNotCrash() to incorrectly report crashes.
+    on_network_service_restarted_subscription = {};
   }
 
   PostRunTestOnMainThread();
@@ -966,14 +985,28 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
 }
 
 void BrowserTestBase::SetAllowNetworkAccessToHostResolutions() {
-  const char kManualTestPrefix[] = "MANUAL_";
   // Must be called before Setup() to take effect. This mode can only be
   // used in manual tests to prevent flakiness in tryjobs due to the
   // dependency on network access.
   CHECK(!set_up_called_);
+
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+  // External network access is only allowed for ChromeOS integration tests
+  // running on real devices or VMs.
+  CHECK(base::SysInfo::IsRunningOnChromeOS())
+      << "External network access is only allowed for on device ChromeOS "
+         "integration tests";
+#else
+  const char kManualTestPrefix[] = "MANUAL_";
   CHECK(base::StartsWith(
       testing::UnitTest::GetInstance()->current_test_info()->name(),
       kManualTestPrefix, base::CompareCase::SENSITIVE));
+#endif  // BUILDFLAG(IS_CHROMEOS_DEVICE)
+
+  LOG(WARNING) << "External network access is allowed. "
+               << "This could lead to DoS on web sites and is normally only "
+               << "allowed for manual tests and ChromeOS integration tests on "
+               << "devices.";
   allow_network_access_to_host_resolutions_ = true;
 }
 

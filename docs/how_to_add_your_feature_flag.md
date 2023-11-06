@@ -87,22 +87,23 @@ You have to modify these five files in total.
 
 At first you need to add an entry to __about_flags.cc__,
 __flag_descriptions.cc__ and __flag_descriptions.h__. After that, try running
-the following test.
+the following script which will update enums.xml:
 
 ```bash
-# Build unit_tests
-autoninja -C out/Default unit_tests
-# Run AboutFlagsHistogramTest.CheckHistograms
+# Updates enums.xml
+./tools/metrics/histograms/generate_flag_enums.py --feature <your awesome feature>
+# Run AboutFlagsHistogramTest.CheckHistograms to verify enums.xml
 ./out/Default/unit_tests --gtest_filter=AboutFlagsHistogramTest.CheckHistograms
-# Run AboutFlagsHistogramTest.CheckHistograms on Android
+# Run AboutFlagsHistogramTest.CheckHistograms on Android to verify enums.xml
 ./out/Default/bin/run_unit_tests --gtest_filter=AboutFlagsHistogramTest.CheckHistograms
 ```
 
-That test will ask you to add several entries to enums.xml. After doing so, run
-`git cl format` which will insert the entries in enums.xml in the correct order
-and run the tests again.
-You can refer to [this CL](https://chromium-review.googlesource.com/c/593707) as
-an example.
+*** note
+**NOTE:** If CheckHistograms returns an error, it will ask you to add several
+entries to enums.xml. After doing so, run `git cl format` which will insert the
+entries in enums.xml in the correct order and run the tests again. You can refer
+to [this CL](https://chromium-review.googlesource.com/c/593707) as an example.
+***
 
 Finally, run the following test.
 

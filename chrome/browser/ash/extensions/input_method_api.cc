@@ -22,6 +22,8 @@
 #include "chrome/browser/ash/extensions/dictionary_event_router.h"
 #include "chrome/browser/ash/extensions/ime_menu_event_router.h"
 #include "chrome/browser/ash/extensions/input_method_event_router.h"
+#include "chrome/browser/ash/extensions/language_packs/language_pack_event_router.h"
+#include "chrome/browser/ash/extensions/language_packs/language_packs_extensions_util.h"
 #include "chrome/browser/ash/input_method/autocorrect_manager.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine.h"
 #include "chrome/browser/ash/os_url_handler.h"
@@ -78,10 +80,10 @@ namespace SetCompositionRange =
 namespace OnInputMethodOptionsChanged =
     extensions::api::input_method_private::OnInputMethodOptionsChanged;
 namespace OnAutocorrect = extensions::api::input_method_private::OnAutocorrect;
-namespace GetTextFieldBounds =
-    extensions::api::input_method_private::GetTextFieldBounds;
 namespace GetLanguagePackStatus =
     extensions::api::input_method_private::GetLanguagePackStatus;
+namespace OnLanguagePackStatusChanged =
+    extensions::api::input_method_private::OnLanguagePackStatusChanged;
 
 using ::ash::input_method::InputMethodEngine;
 
@@ -113,31 +115,6 @@ InputMethodEngine* GetEngineIfActive(content::BrowserContext* browser_context,
   InputMethodEngine* engine =
       event_router->GetEngineIfActive(extension_id, error);
   return engine;
-}
-
-input_method_private::LanguagePackStatus ResultToStatus(
-    const ash::language_packs::PackResult& result) {
-  using ash::language_packs::PackResult;
-  if (result.operation_error != PackResult::ErrorCode::kNone) {
-    if (result.operation_error == PackResult::ErrorCode::kNeedReboot) {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERRORNEEDSREBOOT;
-    } else {
-      return input_method_private::LANGUAGE_PACK_STATUS_ERROROTHER;
-    }
-  }
-
-  switch (result.pack_state) {
-    case PackResult::StatusCode::kUnknown:
-      return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
-    case PackResult::StatusCode::kNotInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_NOTINSTALLED;
-    case PackResult::StatusCode::kInProgress:
-      return input_method_private::LANGUAGE_PACK_STATUS_INPROGRESS;
-    case PackResult::StatusCode::kInstalled:
-      return input_method_private::LANGUAGE_PACK_STATUS_INSTALLED;
-  }
-  LOG(ERROR) << "Unexpected PackResult pack_state.";
-  return input_method_private::LANGUAGE_PACK_STATUS_UNKNOWN;
 }
 
 }  // namespace
@@ -447,17 +424,17 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
       switch (segments_arg.style) {
-        case input_method_private::UNDERLINE_STYLE_UNDERLINE:
+        case input_method_private::UnderlineStyle::kUnderline:
           segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_DOUBLEUNDERLINE:
+        case input_method_private::UnderlineStyle::kDoubleUnderline:
           segment_info.style =
               InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_NOUNDERLINE:
+        case input_method_private::UnderlineStyle::kNoUnderline:
           segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;
           break;
-        case input_method_private::UNDERLINE_STYLE_NONE:
+        case input_method_private::UnderlineStyle::kNone:
           EXTENSION_FUNCTION_VALIDATE(false);
           break;
       }
@@ -471,29 +448,6 @@ InputMethodPrivateSetCompositionRangeFunction::Run() {
     return RespondNow(Error(InformativeError(error, static_function_name())));
   }
   return RespondNow(WithArguments(base::Value(true)));
-}
-
-ExtensionFunction::ResponseAction
-InputMethodPrivateGetTextFieldBoundsFunction::Run() {
-  std::string error;
-  InputMethodEngine* engine =
-      GetEngineIfActive(browser_context(), extension_id(), &error);
-  if (!engine)
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-
-  const auto parent_params = GetTextFieldBounds::Params::Create(args());
-  const auto& params = parent_params->parameters;
-  const gfx::Rect rect =
-      engine->InputMethodEngine::GetTextFieldBounds(params.context_id, &error);
-  if (rect.IsEmpty()) {
-    return RespondNow(Error(InformativeError(error, static_function_name())));
-  }
-  base::Value::Dict ret;
-  ret.Set("x", rect.x());
-  ret.Set("y", rect.y());
-  ret.Set("width", rect.width());
-  ret.Set("height", rect.height());
-  return RespondNow(WithArguments(std::move(ret)));
 }
 
 ExtensionFunction::ResponseAction InputMethodPrivateResetFunction::Run() {
@@ -558,9 +512,8 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
   // If there are no language packs associated with an input method, installed
   // is returned.
   if (!handwriting_locale.has_value()) {
-    return RespondNow(
-        WithArguments(ToString(input_method_private::LanguagePackStatus::
-                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+    return RespondNow(WithArguments(
+        ToString(input_method_private::LanguagePackStatus::kInstalled)));
   }
   if (!ash::language_packs::HandwritingLocaleToDlc(*handwriting_locale)
            .has_value()) {
@@ -575,9 +528,8 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
                      "does not have DLC: "
                   << *handwriting_locale;
     }
-    return RespondNow(
-        WithArguments(ToString(input_method_private::LanguagePackStatus::
-                                   LANGUAGE_PACK_STATUS_INSTALLED)));
+    return RespondNow(WithArguments(
+        ToString(input_method_private::LanguagePackStatus::kInstalled)));
   }
 
   ash::language_packs::LanguagePackManager::GetInstance()->GetPackState(
@@ -586,7 +538,7 @@ InputMethodPrivateGetLanguagePackStatusFunction::Run() {
       // this class which has a language pack type in its function signature,
       // which would cause language packs to be included in this file's headers,
       // which would cause a slew of dependency issues.
-      base::BindOnce(&ResultToStatus)
+      base::BindOnce(&chromeos::LanguagePackResultToExtensionStatus)
           .Then(
               base::BindOnce(&InputMethodPrivateGetLanguagePackStatusFunction::
                                  OnGetLanguagePackStatusComplete,
@@ -615,6 +567,8 @@ InputMethodAPI::InputMethodAPI(content::BrowserContext* context)
       ->RegisterObserver(this, OnImeMenuListChanged::kEventName);
   EventRouter::Get(context_)
       ->RegisterObserver(this, OnImeMenuItemsChanged::kEventName);
+  EventRouter::Get(context_)->RegisterObserver(
+      this, OnLanguagePackStatusChanged::kEventName);
   ExtensionFunctionRegistry& registry =
       ExtensionFunctionRegistry::GetInstance();
   registry.RegisterFunction<InputMethodPrivateGetInputMethodConfigFunction>();
@@ -663,6 +617,10 @@ void InputMethodAPI::OnListenerAdded(
              !ime_menu_event_router_.get()) {
     ime_menu_event_router_ =
         std::make_unique<chromeos::ExtensionImeMenuEventRouter>(context_);
+  } else if (details.event_name == OnLanguagePackStatusChanged::kEventName &&
+             !language_pack_event_router_.get()) {
+    language_pack_event_router_ =
+        std::make_unique<chromeos::LanguagePackEventRouter>(context_);
   }
 }
 

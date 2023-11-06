@@ -31,8 +31,8 @@ class AnimationPlaybackEvent final : public Event {
                          const AnimationPlaybackEventInit*);
   ~AnimationPlaybackEvent() override;
 
-  V8CSSNumberish* currentTime() const { return current_time_; }
-  V8CSSNumberish* timelineTime() const { return timeline_time_; }
+  V8CSSNumberish* currentTime() const { return current_time_.Get(); }
+  V8CSSNumberish* timelineTime() const { return timeline_time_.Get(); }
 
   const AtomicString& InterfaceName() const override;
 

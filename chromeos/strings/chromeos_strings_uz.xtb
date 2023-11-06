@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal kuchsiz</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Yangilanmoqda (<ph name="PERCENTAGE_VALUE" />% yakunlandi)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> nomli tarmoq topilmadi</translation>
 <translation id="131421566576084655">Oxirgi asliga qaytarish kuni noaniq</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> bu foydalanuvchi faoliyatini masofadan kuzatishi va boshqarishi mumkin.</translation>
 <translation id="150962533380566081">PUK kod xato.</translation>
 <translation id="1510238584712386396">Ishga tushirish paneli</translation>
+<translation id="1515129336378114413">brauzer bosh sahifasi</translation>
 <translation id="1526389707933164996">Ekran lavhasi animatsiyasi</translation>
 <translation id="152892567002884378">Ovozni kuchaytirish</translation>
 <translation id="1555130319947370107">Ko‘k</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
 <translation id="160633243685262989">Rasmga razm solish</translation>
+<translation id="1611649489706141841">oldinga</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sanasidan keyingi trafik sarfi</translation>
 <translation id="1621067168122174824">Quvvatlanishini tekshirish</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
@@ -168,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> ta rasm</translation>
 <translation id="2157660087437850958">emoji tanlash oynasi</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" /> ishga tushirilishini sozlagan.}=2{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" /> va <ph name="APP_NAME_2" /> ishga tushirilishini sozlagan.}=3{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> va <ph name="APP_NAME_3" /> ishga tushirilishini sozlagan.}other{Administrator har safar hisobga kirganingizda <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> va yana # ta ilova ishga tushirilishini sozlagan.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
+<translation id="215916044711630446">APN kiritish tugmasi faolsizlantirildi</translation>
 <translation id="2161394479394250669">Chop etish vazifasini bekor qilish</translation>
 <translation id="2161656808144014275">Matn</translation>
 <translation id="2163937499206714165">Tungi rejimni yoqish</translation>
@@ -184,6 +189,7 @@
 <translation id="2236746079896696523">Klaviatura orqa chirogʻini yoqish/oʻchirish</translation>
 <translation id="2240366984605217732">Sxemani almashtirish</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
+<translation id="2267285889943769271">Skrinshot kiritish</translation>
 <translation id="2271469253353559191">Tungi rejim rejasi</translation>
 <translation id="2276999893457278469">Eng sara yordam kontenti</translation>
 <translation id="2279051792571591988">Andozalarni tiklash</translation>
@@ -285,6 +291,7 @@
 <translation id="3226405216343213872">Skanerlar qidirilmoqda</translation>
 <translation id="3226657629376379887">Interfeys amallari menyusi</translation>
 <translation id="3246869037381808805">1 kundan eski chop etish vazifalari avtomatik tozalanadi</translation>
+<translation id="324961752321393509">Administrator bu ilovani yopishni taqiqlagan</translation>
 <translation id="3268178239013324452">Bajarilmadi - Eshikchasi ochiq</translation>
 <translation id="3275729367986477355">Avatar rasmi</translation>
 <translation id="3283504360622356314">{0,plural, =1{Faylni tahrirlash}other{Fayllarni tahrirlash}}</translation>
@@ -336,7 +343,6 @@
 <translation id="3604713164406837697">Fon rasmini almashtirish</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
 <translation id="3606583719724308068">HTTPS saytlarga ulanishda yuqori kechikish</translation>
-<translation id="3607216139080387279">Ekran lavhasini chiqarish</translation>
 <translation id="361575905210396100">Fikr-mulohazangiz uchun rahmat</translation>
 <translation id="3632579075709132555">Maxfiylik ekrani tugmasi</translation>
 <translation id="3651050199673793219">Harorat birligini tanlang</translation>
@@ -348,7 +354,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
-<translation id="3766934827878963937">1 soat</translation>
 <translation id="3771294271822695279">Video fayllar</translation>
 <translation id="3784455785234192852">Qulflash</translation>
 <translation id="380097101658023925">rgb boshqaruvi</translation>
@@ -399,6 +404,7 @@
 <translation id="4117637339509843559">Tungi rejim</translation>
 <translation id="4130035430755296270">Boshqa dizayn variantlari uchun kursorni shu joyda ushlab turing</translation>
 <translation id="4131410914670010031">Oq-qora</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> avtomatik ishga tushirildi}other{# ta ilova avtomatik ishga tushirildi}}</translation>
 <translation id="4145784616224233563">HTTP Fayrvol</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Ekran</translation>
@@ -427,6 +433,7 @@
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tugmasi bosildi</translation>
+<translation id="4354430579665871434">tugma</translation>
 <translation id="435692326371619097">Tarmoq APN sozlamalarini boshqarish. APN sozlamalari mobil tarmoq va internet orasida aloqani taʼminlaydi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Barcha yorliqlarni tiklash</translation>
 <translation id="4378373042927530923">Ishga tushmadi</translation>
@@ -444,6 +451,7 @@
 <translation id="445059817448385655">Eski parol</translation>
 <translation id="4453205916657964690">Quyi tarmoq niqobi</translation>
 <translation id="4454245904991689773">Saqlash joyi</translation>
+<translation id="4456812688969919973">APN saqlash tugmasi faolsizlantirildi</translation>
 <translation id="4469288414739283461">Yer manzaralari ekran lavhasi</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ikkilamchi tarmoq shlyuzi ping qilinmadi</translation>
@@ -688,6 +696,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Tungi mavzuni yoqish</translation>
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
+<translation id="6292095526077353682">Quvvatlashda ekran lavhasi vaqti</translation>
 <translation id="629550705077076970">klaviatura xiraligi</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> sinovi bekor qilindi</translation>
 <translation id="631063167932043783">Ilovani varaqlash</translation>
@@ -715,6 +724,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Zaif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hisob sozlamalarini ochish</translation>
+<translation id="6462978824459367242">APN kiritish tugmasi yoqildi</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Sahifa qayta skanerlansinmi?}=1{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}other{{PAGE_NUMBER} ta sahifani qayta skanerlansinmi?}}</translation>
 <translation id="6472207088655375767">Bir martalik kod</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tomonidan boshqariladi</translation>
@@ -749,6 +759,7 @@
 <translation id="6659594942844771486">Varaq</translation>
 <translation id="6673898378497337661">klaviatura yorqinligini oshirish</translation>
 <translation id="6692996468359469499">Tanlovingizga aloqador axborot olish</translation>
+<translation id="6694534975463174713">qulf</translation>
 <translation id="6704062477274546131">DNS parametrlari</translation>
 <translation id="6723839937902243910">Quvvat</translation>
 <translation id="6723847290197874913">Klaviatura orqa chirogʻi</translation>
@@ -939,6 +950,7 @@
 <translation id="8227119283605456246">Fayl biriktirish</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8246209727385807362">Noma’lum provayder</translation>
+<translation id="8262870577632766028">1 soat</translation>
 <translation id="827422111966801947">Toʻq siyohrang</translation>
 <translation id="8286154143153872371">Fon rasmini koʻrish uchun tarmoqqa ulaning va sahifani yangilang.</translation>
 <translation id="8291967909914612644">Mahalliy ta’minotchi mamlakati</translation>
@@ -1003,6 +1015,7 @@
 <translation id="8747900814994928677">Almashtiruvni tasdiqlang</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos albomi</translation>
+<translation id="8775713578693478175">Modem APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">“<ph name="CONFLICT_ACCEL_NAME" />” tezkor tugmasi band. Yangi tezkor tugmalarni bosing. Asl tezkor tugmani almashtirish uchun bu tezkor tugmani qayta bosing.</translation>
 <translation id="879568662008399081">Bu tarmoqda autentifikatsiya portali boʻlishi mumkin</translation>
@@ -1052,6 +1065,7 @@
 <translation id="902638246363752736">Klaviatura sozlamalari</translation>
 <translation id="9028832514430399253">Tugmani bosib, ekran lavhasi parametrlarini tanlang</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">APN saqlash tugmasi yoqildi.</translation>
 <translation id="9058932992221914855">IPV6</translation>
 <translation id="9062831201344759865">DNS parametrlari koʻp vaqt olmoqda</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
@@ -1067,11 +1081,9 @@
 <translation id="9111102763498581341">Qulfdan yechish</translation>
 <translation id="9122602430962285795">Qayta ulanish uchun Sozlamalarni oching</translation>
 <translation id="9126720536733509015">Bir nechta sahifani bitta PDFga saqlash</translation>
-<translation id="9133104754938025929">Batareyani tejash maqsadida ekran lavhasi faqat quvvatlash vaqtida ishlaydi.</translation>
 <translation id="9133772297793293778">Klaviaturada 1-4 ta modifikator va yana 1 ta boshqa tugmani bosing. Tahrirlash rejimidan chiqish u chun Alt + Esc tugmalarini bosing.</translation>
 <translation id="9137526406337347448">Google xizmatlari</translation>
 <translation id="9138630967333032450">Chap shift</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> daqiqa</translation>
 <translation id="9149391708638971077">Xotirani tekshirish</translation>
 <translation id="9161276708550942948">probel</translation>
 <translation id="9173638680043580060">Bir daqiqadan kamroq vaqt qoldi</translation>

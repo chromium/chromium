@@ -171,7 +171,8 @@ ModuleSystemTestEnvironment::ModuleSystemTestEnvironment(
   context_->v8_context()->Enter();
   assert_natives_ = new AssertNatives(context_);
 
-  bindings_system_ = std::make_unique<NativeExtensionBindingsSystem>(nullptr);
+  bindings_system_ = std::make_unique<NativeExtensionBindingsSystem>(
+      /*delegate=*/nullptr, /*ipc_message_sender=*/nullptr);
 
   {
     std::unique_ptr<ModuleSystem> module_system(

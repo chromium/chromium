@@ -13,6 +13,7 @@ tags must be opened and closed on the same line to avoid validation errors.
 
 * Chrome: `<ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>`
 * ChromeOS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>`
+* ChromeOS Flex: `<ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph>`
 * Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
 * Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`
@@ -24,6 +25,7 @@ tags must be opened and closed on the same line to avoid validation errors.
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
+* Google Photos: `<ph name="GOOGLE_PHOTOS_PRODUCT_NAME">Google Photos</ph>`
 * Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`

@@ -14,15 +14,11 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.mojo.bindings.test.mojom.imported.Point;
 
-/**
- * Testing internal classes of interfaces.
- */
+/** Testing internal classes of interfaces. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MessageHeaderTest {
-    /**
-     * Testing that headers are identical after being serialized/deserialized.
-     */
+    /** Testing that headers are identical after being serialized/deserialized. */
     @Test
     @SmallTest
     public void testSimpleMessageHeader() {
@@ -45,9 +41,7 @@ public class MessageHeaderTest {
         Assert.assertEquals(p.y, p2.y);
     }
 
-    /**
-     * Testing that headers are identical after being serialized/deserialized.
-     */
+    /** Testing that headers are identical after being serialized/deserialized. */
     @Test
     @SmallTest
     public void testMessageWithRequestIdHeader() {
@@ -58,8 +52,10 @@ public class MessageHeaderTest {
         Point p = new Point();
         p.x = xValue;
         p.y = yValue;
-        ServiceMessage message = p.serializeWithHeader(
-                null, new MessageHeader(type, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0));
+        ServiceMessage message =
+                p.serializeWithHeader(
+                        null,
+                        new MessageHeader(type, MessageHeader.MESSAGE_EXPECTS_RESPONSE_FLAG, 0));
         message.setRequestId(requestId);
 
         MessageHeader header = message.getHeader();

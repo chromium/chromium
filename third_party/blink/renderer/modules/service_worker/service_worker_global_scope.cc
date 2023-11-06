@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
@@ -45,6 +46,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
@@ -581,15 +583,15 @@ void ServiceWorkerGlobalScope::RunClassicScript(
 ServiceWorkerClients* ServiceWorkerGlobalScope::clients() {
   if (!clients_)
     clients_ = ServiceWorkerClients::Create();
-  return clients_;
+  return clients_.Get();
 }
 
 ServiceWorkerRegistration* ServiceWorkerGlobalScope::registration() {
-  return registration_;
+  return registration_.Get();
 }
 
 ::blink::ServiceWorker* ServiceWorkerGlobalScope::serviceWorker() {
-  return service_worker_;
+  return service_worker_.Get();
 }
 
 ScriptPromise ServiceWorkerGlobalScope::skipWaiting(ScriptState* script_state) {
@@ -689,7 +691,7 @@ ServiceWorker* ServiceWorkerGlobalScope::GetOrCreateServiceWorker(
 
   auto it = service_worker_objects_.find(info.version_id);
   if (it != service_worker_objects_.end())
-    return it->value;
+    return it->value.Get();
 
   const int64_t version_id = info.version_id;
   ::blink::ServiceWorker* worker =
@@ -1095,6 +1097,10 @@ void ServiceWorkerGlobalScope::DidHandleFetchEvent(
       TRACE_ID_WITH_SCOPE(kServiceWorkerGlobalScopeTraceScope,
                           TRACE_ID_LOCAL(event_id)),
       TRACE_EVENT_FLAG_FLOW_IN, "status", MojoEnumToString(status));
+
+  // Delete the URLLoaderFactory for the RaceNetworkRequest if it's not used.
+  RemoveItemFromRaceNetworkRequests(event_id);
+
   if (!RunEventCallback(&fetch_event_callbacks_, event_queue_.get(), event_id,
                         status)) {
     // The event may have been aborted. Its response callback also needs to be
@@ -1494,6 +1500,7 @@ void ServiceWorkerGlobalScope::AbortCallbackForFetchEvent(
     response_callback_iter->value->TakeValue().reset();
     fetch_response_callbacks_.erase(response_callback_iter);
   }
+  RemoveItemFromRaceNetworkRequests(event_id);
 
   // Run the event callback with the error code.
   auto event_callback_iter = fetch_event_callbacks_.find(event_id);
@@ -1550,10 +1557,11 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
 
   if (params->race_network_request_loader_factory &&
       params->request->service_worker_race_network_request_token) {
-    race_network_request_loader_factories_.insert(
-        String(params->request->service_worker_race_network_request_token
-                   ->ToString()),
-        std::move(params->race_network_request_loader_factory));
+    InsertNewItemToRaceNetworkRequests(
+        event_id,
+        params->request->service_worker_race_network_request_token.value(),
+        std::move(params->race_network_request_loader_factory),
+        params->request->url);
   }
 
   Request* request = Request::Create(
@@ -2765,12 +2773,71 @@ bool ServiceWorkerGlobalScope::SetAttributeEventListener(
 absl::optional<mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>
 ServiceWorkerGlobalScope::FindRaceNetworkRequestURLLoaderFactory(
     const base::UnguessableToken& token) {
-  mojo::PendingRemote<network::mojom::blink::URLLoaderFactory> result =
-      race_network_request_loader_factories_.Take(String(token.ToString()));
+  std::unique_ptr<RaceNetworkRequestInfo> result =
+      race_network_requests_.Take(String(token.ToString()));
   if (result) {
-    return result;
+    race_network_request_fetch_event_ids_.erase(result->fetch_event_id);
+    return absl::optional<
+        mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>>(
+        std::move(result->url_loader_factory));
   }
   return absl::nullopt;
+}
+
+void ServiceWorkerGlobalScope::InsertNewItemToRaceNetworkRequests(
+    int fetch_event_id,
+    const base::UnguessableToken& token,
+    mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
+        url_loader_factory,
+    const KURL& request_url) {
+  auto race_network_request_token = String(token.ToString());
+  auto info = std::make_unique<RaceNetworkRequestInfo>(
+      fetch_event_id, race_network_request_token,
+      std::move(url_loader_factory));
+  race_network_request_fetch_event_ids_.insert(fetch_event_id, info.get());
+  auto insert_result = race_network_requests_.insert(race_network_request_token,
+                                                     std::move(info));
+
+  // DumpWithoutCrashing if the token is empty, or not inserted as a new entry
+  // to |race_network_request_loader_factories_|.
+  // TODO(crbug.com/1492640) Remove DumpWithoutCrashing once we collect data
+  // and identify the cause.
+  static bool has_dumped_without_crashing_for_empty_token = false;
+  static bool has_dumped_without_crashing_for_not_new_entry = false;
+  if (!has_dumped_without_crashing_for_empty_token && token.is_empty()) {
+    has_dumped_without_crashing_for_empty_token = true;
+    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "empty_race_token",
+                          token.is_empty());
+    SCOPED_CRASH_KEY_STRING64("SWGlobalScope", "race_token_string",
+                              token.ToString());
+    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
+                          insert_result.is_new_entry);
+    SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
+                               request_url.GetString().Utf8());
+    base::debug::DumpWithoutCrashing();
+  }
+  if (!has_dumped_without_crashing_for_not_new_entry &&
+      !insert_result.is_new_entry) {
+    has_dumped_without_crashing_for_not_new_entry = true;
+    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "empty_race_token",
+                          token.is_empty());
+    SCOPED_CRASH_KEY_STRING64("SWGlobalScope", "race_token_string",
+                              token.ToString());
+    SCOPED_CRASH_KEY_BOOL("SWGlobalScope", "race_insert_new_entry",
+                          insert_result.is_new_entry);
+    SCOPED_CRASH_KEY_STRING256("SWGlobalScope", "race_request_url",
+                               request_url.GetString().Utf8());
+    base::debug::DumpWithoutCrashing();
+  }
+}
+
+void ServiceWorkerGlobalScope::RemoveItemFromRaceNetworkRequests(
+    int fetch_event_id) {
+  RaceNetworkRequestInfo* info =
+      race_network_request_fetch_event_ids_.Take(fetch_event_id);
+  if (info) {
+    race_network_requests_.erase(info->token);
+  }
 }
 
 }  // namespace blink

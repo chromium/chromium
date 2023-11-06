@@ -80,7 +80,17 @@ class ContentCaptureBrowserTest : public content::ContentBrowserTest {
   content::test::FencedFrameTestHelper fenced_frame_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTest,
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class ContentCaptureBrowserTestNoTestingConfig
+    : public ContentCaptureBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentCaptureBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContentCaptureBrowserTestNoTestingConfig,
                        FencedFrameDidCaptureContent) {
   // 2 frames - main & fenced
   EXPECT_EQ(2u, provider()->GetFrameMapSizeForTesting());

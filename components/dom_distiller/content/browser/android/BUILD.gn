@@ -7,10 +7,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("dom_distiller_content_java") {
   deps = [
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/dom_distiller/core/android:dom_distiller_core_java",
     "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]

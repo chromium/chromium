@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -157,6 +159,33 @@ class IsolatedWebAppUpdatePrepareAndStoreCommandTest : public WebAppTest {
     return page_state;
   }
 
+  base::flat_set<base::FilePath> GetIwaDirContent() {
+    task_environment()->RunUntilIdle();
+
+    base::flat_set<base::FilePath> existing_paths;
+    const base::FilePath iwa_base_dir =
+        profile()->GetPath().Append(kIwaDirName);
+
+    if (!DirectoryExists(iwa_base_dir)) {
+      return existing_paths;
+    }
+
+    base::FileEnumerator iwa_dir_content(
+        iwa_base_dir, false, base::FileEnumerator::FileType::DIRECTORIES);
+    for (auto path = iwa_dir_content.Next(); !path.empty();
+         path = iwa_dir_content.Next()) {
+      existing_paths.insert(path);
+    }
+
+    return existing_paths;
+  }
+
+  // Check that pending update was removed from the file structure.
+  void CheckCleanup(const base::flat_set<base::FilePath>& installed_app_paths) {
+    base::flat_set<base::FilePath> paths = GetIwaDirContent();
+    EXPECT_EQ(paths, installed_app_paths);
+  }
+
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir scoped_temp_dir_;
 
@@ -184,25 +213,24 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, Succeeds) {
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  auto result = PrepareAndStoreUpdateInfo(update_version_);
+  ASSERT_OK_AND_ASSIGN(auto result, PrepareAndStoreUpdateInfo(update_version_));
   EXPECT_THAT(
       result,
-      ValueIs(Field(
-          "update_version",
-          &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
-          Eq(update_version_))));
+      Field("update_version",
+            &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
+            Eq(update_version_)));
+
+  IsolatedWebAppLocation pending_location = result.location;
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(
-      web_app,
-      test::IwaIs(Eq("installed app"),
-                  Eq(WebApp::IsolationData(
-                      installed_location_, installed_version_,
-                      /*controlled_frame_partitions=*/{},
-                      WebApp::IsolationData::PendingUpdateInfo(
-                          InstalledBundle({.path = update_bundle_path_}),
-                          update_version_)))));
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              WebApp::IsolationData::PendingUpdateInfo(
+                                  pending_location, update_version_)))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -215,25 +243,23 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
       url_info_.origin().GetURL().Resolve(kIconPath));
   icon_state.bitmaps = {web_app::CreateSquareIcon(32, SK_ColorWHITE)};
 
-  auto result = PrepareAndStoreUpdateInfo(/*expected_version=*/absl::nullopt);
+  ASSERT_OK_AND_ASSIGN(auto result, PrepareAndStoreUpdateInfo(update_version_));
   EXPECT_THAT(
       result,
-      ValueIs(Field(
-          "update_version",
-          &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
-          Eq(update_version_))));
+      Field("update_version",
+            &IsolatedWebAppUpdatePrepareAndStoreCommandSuccess::update_version,
+            Eq(update_version_)));
 
   const WebApp* web_app =
       provider()->registrar_unsafe().GetAppById(url_info_.app_id());
-  EXPECT_THAT(
-      web_app,
-      test::IwaIs(Eq("installed app"),
-                  Eq(WebApp::IsolationData(
-                      installed_location_, installed_version_,
-                      /*controlled_frame_partitions=*/{},
-                      WebApp::IsolationData::PendingUpdateInfo(
-                          InstalledBundle({.path = update_bundle_path_}),
-                          update_version_)))));
+
+  EXPECT_THAT(web_app,
+              test::IwaIs(Eq("installed app"),
+                          Eq(WebApp::IsolationData(
+                              installed_location_, installed_version_,
+                              /*controlled_frame_partitions=*/{},
+                              WebApp::IsolationData::PendingUpdateInfo(
+                                  result.location, update_version_)))));
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsWhenShuttingDown) {
@@ -279,6 +305,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   installed_version_ = base::Version("3.0.0");
   EXPECT_THAT(update_version_, Eq(base::Version("2.0.0")));
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
@@ -294,6 +322,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -301,6 +330,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   installed_version_ = base::Version("3.0.0");
   EXPECT_THAT(update_version_, Eq(base::Version("2.0.0")));
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
@@ -316,6 +347,7 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
@@ -323,6 +355,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
   installed_location_ = DevModeProxy{
       .proxy_url = url::Origin::Create(GURL("https://example.com"))};
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
@@ -339,10 +373,14 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
   SetTrustedWebBundleIdsForTesting({});
@@ -359,10 +397,14 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfAppNotTrusted) {
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfUrlLoadingFails) {
   InstallIwa();
+
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
   WriteUpdateBundleToDisk();
   auto& page_state = CreateDefaultPageState();
   page_state.url_load_result = WebAppUrlLoader::Result::kFailedErrorPageLoaded;
@@ -378,11 +420,15 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest, FailsIfUrlLoadingFails) {
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
        FailsIfInstallabilityCheckFails) {
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
   auto& page_state = CreateDefaultPageState();
@@ -402,11 +448,15 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
        FailsIfManifestIsInvalid) {
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   auto& page_state = CreateDefaultPageState();
   page_state.opt_manifest->scope = GURL("https://example.com/foo");
@@ -423,11 +473,15 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
        FailsIfIconDownloadFails) {
   InstallIwa();
+  const base::flat_set<base::FilePath> existing_dirs = GetIwaDirContent();
+
   WriteUpdateBundleToDisk();
   CreateDefaultPageState();
 
@@ -443,6 +497,8 @@ TEST_F(IsolatedWebAppUpdatePrepareAndStoreCommandTest,
                               installed_location_, installed_version_,
                               /*controlled_frame_partitions=*/{},
                               /*pending_update_info=*/absl::nullopt))));
+
+  CheckCleanup(existing_dirs);
 }
 
 }  // namespace

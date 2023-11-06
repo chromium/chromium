@@ -29,7 +29,6 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/buildflags/buildflags.h"
-#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -37,6 +36,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "components/content_settings/core/common/features.h"
@@ -164,7 +164,8 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
     }
 
-    enabled_features.push_back({net::features::kTpcdReadHeuristicsGrants, {}});
+    enabled_features.push_back({features::kTpcdHeuristicsGrants,
+                                {{"TpcdReadHeuristicsGrants", "true"}}});
 #if BUILDFLAG(IS_IOS)
     enabled_features.push_back({kImprovedCookieControls, {}});
     disabled_features.push_back(net::features::kTpcdSupportSettings);
@@ -206,7 +207,7 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
     tracking_protection_settings_ =
         std::make_unique<privacy_sandbox::TrackingProtectionSettings>(
             &prefs_,
-            /*onboarding_service=*/nullptr);
+            /*onboarding_service=*/nullptr, /*is_incognito=*/false);
     cookie_settings_ = new CookieSettings(settings_map_.get(), &prefs_,
                                           tracking_protection_settings_.get(),
                                           false, "chrome-extension");
@@ -416,16 +417,18 @@ TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   EXPECT_EQ(
       settings_map_->GetContentSetting(
           GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
       CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
@@ -917,16 +920,18 @@ TEST_P(CookieSettingsTestUserBypass,
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   EXPECT_EQ(
       settings_map_->GetContentSetting(
           GURL(), same_site_url, ContentSettingsType::COOKIES, &exception_info),
       CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(
@@ -1008,8 +1013,9 @@ TEST_P(CookieSettingsTestUserBypass,
                                              &exception_info),
             CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(exception_info.primary_pattern.MatchesAllHosts());
-  EXPECT_EQ(exception_info.secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(first_party_url));
+  EXPECT_EQ(
+      exception_info.secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(first_party_url));
 
   cookie_settings_incognito_->ResetThirdPartyCookieSetting(first_party_url);
   EXPECT_FALSE(cookie_settings_incognito_->IsThirdPartyAccessAllowed(
@@ -1320,6 +1326,40 @@ TEST_P(CookieSettingsTest, GetCookieSettingSAA) {
             CONTENT_SETTING_BLOCK);
 }
 
+// Test that http exceptions also affect websocket requests.
+TEST_P(CookieSettingsTest, GetCookieSettingSAAWebsocket) {
+  const GURL top_level_url = GURL(kFirstPartySite);
+  const GURL url = GURL(kHttpsSite);
+
+  GURL::Replacements ws_replacement;
+  ws_replacement.SetSchemeStr(url::kWsScheme);
+  const GURL ws_url = url.ReplaceComponents(ws_replacement);
+
+  GURL::Replacements wss_replacement;
+  wss_replacement.SetSchemeStr(url::kWssScheme);
+  const GURL wss_url = url.ReplaceComponents(wss_replacement);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  settings_map_->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromURLNoWildcard(url),
+      ContentSettingsPattern::FromURLNoWildcard(top_level_url),
+      ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
+
+  // Https should be allowed.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride());
+  // Secure websocket is also allowed.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                wss_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            SettingWithSaaOverride());
+  // Insecure websocket stays blocked.
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(
+                ws_url, top_level_url, GetCookieSettingOverrides(), nullptr),
+            CONTENT_SETTING_BLOCK);
+}
+
 // A top-level storage access grant should behave similarly to standard SAA
 // grants.
 TEST_P(CookieSettingsTest, GetCookieSettingTopLevelStorageAccess) {
@@ -1523,6 +1563,7 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, top_level_url, GetCookieSettingOverrides(), nullptr),
             SettingWith3pcdMetadataGrantEligibleOverride());
+
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -1535,20 +1576,25 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdMetadataGrants) {
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 top_level_url, url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(
+      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, url));
 
   // Invalid pairs where a |third_url| is used.
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 url, third_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(cookie_settings_->IsAllowedByTpcdMetadataGrant(third_url, url));
+
   EXPECT_EQ(cookie_settings_->GetCookieSetting(
                 third_url, top_level_url, GetCookieSettingOverrides(), nullptr),
             CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(
+      cookie_settings_->IsAllowedByTpcdMetadataGrant(top_level_url, third_url));
 }
 
 TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
   const GURL first_party_url(kFirstPartySite);
   const GURL third_party_url(kAllowedSite);
-  const GURL third_url(kBlockedSite);
   const base::TimeDelta expiration = base::Seconds(5);
 
   base::HistogramTester histogram_tester;
@@ -1556,19 +1602,20 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
 
   prefs_.SetInteger(prefs::kCookieControlsMode,
                     static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
 
   // Expect that cookies are blocked before setting the temporary grant.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 
   cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-      first_party_url, third_party_url, expiration);
+      third_party_url, first_party_url, expiration);
 
   // Expect that cookies are now allowed, and the histogram has been updated.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_ALLOW);
   // Expect 2 total requests for the two calls to GetCookieSetting.
@@ -1583,7 +1630,104 @@ TEST_P(CookieSettingsTest, GetCookieSetting3pcdHeuristicsGrants) {
 
   // Expect that cookies are blocked again after the grant expires.
   EXPECT_EQ(
-      cookie_settings_->GetCookieSetting(first_party_url, third_party_url,
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicOverrides) {
+  const GURL first_party_url(kFirstPartySite);
+  const GURL third_party_url(kAllowedSite);
+  const base::TimeDelta expiration_short = base::Seconds(5);
+  const base::TimeDelta expiration_long = base::Seconds(60);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+  // Expect that cookies are blocked before setting the temporary grant.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Create a grant and verify that cookies are now allowed.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_short);
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Create a longer grant and verify that this extends the TTL of the first
+  // grant.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_long);
+  FastForwardTime(expiration_short + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Create a shorter grant and verify that this does NOT shorten the TTL of the
+  // longer grant.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_url, expiration_short);
+  FastForwardTime(expiration_short + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Expect that cookies are blocked again after the longer grant expires.
+  FastForwardTime(expiration_long + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+}
+
+TEST_P(CookieSettingsTest, SetTemporaryCookieGrantForHeuristicSchemeless) {
+  const GURL first_party_http_url(kHttpSite);
+  const GURL first_party_https_url(kHttpsSite);
+  const GURL third_party_url(kAllowedSite);
+  const base::TimeDelta expiration = base::Seconds(5);
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  prefs_.SetBoolean(prefs::kTrackingProtection3pcdEnabled, true);
+
+  // Expect that cookies are blocked before setting the temporary grant.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Set a (schemeful) cookie grant on the HTTP URL.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_http_url, expiration);
+
+  // This grant should not affect the HTTPS URL.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Set a schemeless cookie grant on the HTTP URL.
+  cookie_settings_->SetTemporaryCookieGrantForHeuristic(
+      third_party_url, first_party_http_url, expiration,
+      /*use_schemeless_patterns=*/true);
+
+  // This grant should enable cookie access on the HTTPS first-party URL.
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
+                                         GetCookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_ALLOW);
+
+  // Expect that cookies are blocked again after the grant expires.
+  FastForwardTime(expiration + base::Seconds(1));
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_party_url, first_party_https_url,
                                          GetCookieSettingOverrides(), nullptr),
       CONTENT_SETTING_BLOCK);
 }

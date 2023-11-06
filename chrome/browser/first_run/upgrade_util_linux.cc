@@ -48,7 +48,7 @@ double GetLastModifiedTimeOfExe() {
                  << exe_file_path.value();
     return saved_last_modified_time_of_exe;
   }
-  return exe_file_info.last_modified.ToDoubleT();
+  return exe_file_info.last_modified.InSecondsFSinceUnixEpoch();
 }
 
 }  // namespace upgrade_util

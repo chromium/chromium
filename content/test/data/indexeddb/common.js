@@ -227,3 +227,12 @@ if (typeof String.prototype.startsWith !== 'function') {
     return this.indexOf(str) === 0;
   };
 }
+
+// Generates a pseudorandom string of the given length.
+function generateRandomString(sizeInKb) {
+  let output = '';
+  for (let i = 0; i < sizeInKb * 1024 / 8 + 1; i++) {
+    output += Math.random().toString(36).slice(2, 10);
+  }
+  return output;
+}

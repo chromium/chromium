@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Property word-boundary-expansion value 'none' computes to 'none' assert_true: word-boundary-expansion doesn't seem to be supported in the computed style expected true got false
-FAIL Property word-boundary-expansion value 'space' computes to 'space' assert_true: word-boundary-expansion doesn't seem to be supported in the computed style expected true got false
-FAIL Property word-boundary-expansion value 'ideographic-space' computes to 'ideographic-space' assert_true: word-boundary-expansion doesn't seem to be supported in the computed style expected true got false
-Harness: the test ran to completion.
-

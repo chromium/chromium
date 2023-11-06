@@ -101,25 +101,30 @@ void HideNativeWindow(gfx::NativeWindow window);
 // Show and focus a native window. Returns true on success.
 [[nodiscard]] bool ShowAndFocusNativeWindow(gfx::NativeWindow window);
 
-// Sends a key press, blocking until the key press is received or the test times
-// out. This uses ui_controls::SendKeyPress, see it for details. Returns true
-// if the event was successfully sent and received.
-[[nodiscard]] bool SendKeyPressSync(const Browser* browser,
-                                    ui::KeyboardCode key,
-                                    bool control,
-                                    bool shift,
-                                    bool alt,
-                                    bool command);
-
-// Sends a key press, blocking until the key press is received or the test times
-// out. This uses ui_controls::SendKeyPress, see it for details. Returns true
-// if the event was successfully sent and received.
-[[nodiscard]] bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
-                                            ui::KeyboardCode key,
-                                            bool control,
-                                            bool shift,
-                                            bool alt,
-                                            bool command);
+// Sends key press and release events to a `browser` or `window`. Waits until at
+// least the key release (or key press, depending on `wait_for`) events have
+// been dispatched, or the test times out. It's useful to wait for key press
+// instead of key release when the target may be deleted in response to key
+// press. This may wait for key release even if `wait_for` is `kKeyPress` on
+// platforms where it's possible to confirm that key release has been dispatched
+// on a deleted target. This uses `ui_controls::SendKeyPress`, see it for
+// details. Returns true if the event was successfully dispatched.
+[[nodiscard]] bool SendKeyPressSync(
+    const Browser* browser,
+    ui::KeyboardCode key,
+    bool control,
+    bool shift,
+    bool alt,
+    bool command,
+    ui_controls::KeyEventType wait_for = ui_controls::kKeyRelease);
+[[nodiscard]] bool SendKeyPressToWindowSync(
+    const gfx::NativeWindow window,
+    ui::KeyboardCode key,
+    bool control,
+    bool shift,
+    bool alt,
+    bool command,
+    ui_controls::KeyEventType wait_for = ui_controls::kKeyRelease);
 
 // Sends a move event blocking until received. Returns true if the event was
 // successfully received. This uses ui_controls::SendMouse***NotifyWhenDone,

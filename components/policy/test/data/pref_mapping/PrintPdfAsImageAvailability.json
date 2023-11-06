@@ -1,0 +1,18 @@
+[
+  {
+    "os": [
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintPdfAsImageAvailability": true
+        },
+        "prefs": {
+          "printing.print_pdf_as_image_availability": {}
+        }
+      }
+    ]
+  }
+]

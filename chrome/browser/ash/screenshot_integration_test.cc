@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <vector>
 
 #include "ash/shell.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,25 +31,60 @@
 
 namespace {
 
+// Returns true if the board is known to support Vulkan compositing.
+bool BoardSupportsVulkanComposite() {
+  // The full board name may have the form "glimmer-signed-mp-v4keys" and we
+  // just want "glimmer".
+  std::vector<std::string> board =
+      base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (board.empty()) {
+    LOG(ERROR) << "Unable to determine LSB release board";
+    return false;
+  }
+  // Vulkan compositing is only supported on a few boards, so use an allow
+  // list.
+  return board[0] == "brya" || board[0] == "volteer" || board[0] == "dedede";
+}
+
 class ScreenshotIntegrationTest : public MixinBasedInProcessBrowserTest,
                                   public testing::WithParamInterface<bool> {
  public:
   ScreenshotIntegrationTest() {
-    if (GetParam()) {
-      feature_list_.InitAndEnableFeature(features::kVulkan);
+    if (UseVulkan()) {
+      // Check for board support because enabling the ScopedFeatureList,
+      // otherwise GPU process initialization will crash before the test body.
+      if (BoardSupportsVulkanComposite()) {
+        feature_list_.InitAndEnableFeature(features::kVulkan);
+      } else {
+        skip_test_ = true;
+      }
     } else {
       feature_list_.InitAndDisableFeature(features::kVulkan);
     }
   }
 
- private:
+  bool UseVulkan() { return GetParam(); }
+
+  // MixinBasedInProcessBrowserTest:
+  void TearDownOnMainThread() override {
+    // Clean up even if the test was skipped.
+    browser()->window()->Close();
+  }
+
+ protected:
   base::test::ScopedFeatureList feature_list_;
+  bool skip_test_ = false;
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
 INSTANTIATE_TEST_SUITE_P(Vulkan, ScreenshotIntegrationTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
+  if (skip_test_) {
+    GTEST_SKIP();
+  }
+
   // Ensure the display is powered on, otherwise the screenshot will fail.
   base::RunLoop run_loop;
   ash::Shell::Get()->display_configurator()->SetDisplayPower(
@@ -70,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
   // screenshots in a loop until we get a valid one.
   SkColor dominant_color;
   bool success = false;
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < 10; ++i) {
     // Sleep for 1 second.
     base::RunLoop run_loop2;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -103,9 +141,6 @@ IN_PROC_BROWSER_TEST_P(ScreenshotIntegrationTest, AverageColor) {
   }
   EXPECT_TRUE(success) << "Final screenshot had invalid dominant color "
                        << std::hex << dominant_color;
-
-  // Clean up.
-  browser()->window()->Close();
 }
 
 }  // namespace

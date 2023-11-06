@@ -13,9 +13,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link ShareServiceImpl}.
- */
+/** Unit tests for {@link ShareServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ShareServiceImplTest {

@@ -7,3 +7,5 @@ file://infra/config/groups/cq-usage/CQ_USAGE_OWNERS
 # CQ usage secondary owners can approve benign path changes but should defer to
 # above if the path might have a large impact on capacity.
 per-file full.cfg=file://infra/config/groups/cq-usage/CQ_USAGE_SECONDARY_OWNERS
+
+per-file mega_cq_bots.txt=*

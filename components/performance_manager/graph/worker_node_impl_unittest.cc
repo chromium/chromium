@@ -57,7 +57,6 @@ TEST_F(WorkerNodeImplTest, ConstProperties) {
   EXPECT_EQ(worker_impl->browser_context_id(), kTestBrowserContextId);
   EXPECT_EQ(worker_impl->worker_type(), kWorkerType);
   EXPECT_EQ(worker_impl->process_node(), process.get());
-  EXPECT_EQ(worker_impl->worker_token(), kTestWorkerToken);
 
   // Test public interface.
   const WorkerNode* worker = worker_impl.get();

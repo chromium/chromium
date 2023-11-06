@@ -42,6 +42,17 @@ enum Opaque {
   kOpaque
 };
 
+// Unlike event-level reporting through reportEvent(), automatic beacons only
+// support a few specified types. Once the event type string is validated in
+// setReportEventDataForAutomaticBeacons(), they are converted into an enum
+// and used as the key in the automatic beacon info mapping stored in the
+// browser.
+enum AutomaticBeaconType {
+  kDeprecatedTopNavigation,
+  kTopNavigationStart,
+  kTopNavigationCommit
+};
+
 union PotentiallyOpaqueURL {
   url.mojom.Url transparent;
   Opaque opaque;

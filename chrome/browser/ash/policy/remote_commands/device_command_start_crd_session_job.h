@@ -114,8 +114,6 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   // The Delegate is used to interact with chrome services and CRD host.
   const raw_ref<Delegate> delegate_;
 
-  bool terminate_session_attempted_ = false;
-
   base::WeakPtrFactory<DeviceCommandStartCrdSessionJob> weak_factory_{this};
 };
 

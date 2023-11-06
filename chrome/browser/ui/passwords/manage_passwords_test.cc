@@ -28,8 +28,8 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -123,7 +123,8 @@ void ManagePasswordsTest::SetupPendingPassword() {
 }
 
 void ManagePasswordsTest::SetupAutomaticPassword() {
-  GetController()->OnAutomaticPasswordSave(CreateFormManager());
+  GetController()->OnAutomaticPasswordSave(CreateFormManager(),
+                                           /*is_update_confirmation=*/false);
 }
 
 void ManagePasswordsTest::SetupAutoSignin(
@@ -137,7 +138,7 @@ void ManagePasswordsTest::SetupAutoSignin(
 void ManagePasswordsTest::SetupSafeState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   SetupPendingPassword();
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       ProfilePasswordStoreFactory::GetForProfile(
@@ -155,7 +156,7 @@ void ManagePasswordsTest::SetupSafeState() {
 void ManagePasswordsTest::SetupMoreToFixState() {
   browser()->profile()->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      (base::Time::Now() - base::Minutes(1)).ToDoubleT());
+      (base::Time::Now() - base::Minutes(1)).InSecondsFSinceUnixEpoch());
   scoped_refptr<password_manager::PasswordStoreInterface> password_store =
       ProfilePasswordStoreFactory::GetForProfile(
           browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);

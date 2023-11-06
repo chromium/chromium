@@ -33,6 +33,7 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
@@ -46,6 +47,7 @@
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "tools/json_schema_compiler/util.h"
@@ -110,8 +112,8 @@ std::unique_ptr<RulesetMatcher> CreateSessionScopedMatcher(
     std::vector<api::declarative_net_request::Rule> rules,
     std::string* error) {
   DCHECK(error);
-  RulesetSource source(kSessionRulesetID, GetDynamicAndSessionRuleLimit(),
-                       extension_id, true /* enabled */);
+  RulesetSource source(kSessionRulesetID, GetSessionRuleLimit(), extension_id,
+                       /*enabled=*/true);
 
   auto parse_flags = RulesetSource::kRaiseErrorOnInvalidRules |
                      RulesetSource::kRaiseErrorOnLargeRegexRules;
@@ -482,7 +484,7 @@ void RulesMonitorService::OnExtensionLoaded(
   if (!HasAPIPermission(*extension))
     return;
 
-  LoadRequestData load_data(extension->id());
+  LoadRequestData load_data(extension->id(), extension->version());
   int expected_ruleset_checksum;
 
   // Static rulesets.
@@ -616,7 +618,9 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     std::vector<int> rule_ids_to_remove,
     std::vector<api::declarative_net_request::Rule> rules_to_add,
     ApiCallback callback) {
-  if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
+  const Extension* extension =
+      extension_registry_->enabled_extensions().GetByID(extension_id);
+  if (!extension) {
     // There is no enabled extension to respond to. While this is probably a
     // no-op, still dispatch the callback to ensure any related bookkeeping is
     // done.
@@ -624,18 +628,17 @@ void RulesMonitorService::UpdateDynamicRulesInternal(
     return;
   }
 
-  LoadRequestData data(extension_id);
+  LoadRequestData data(extension_id, extension->version());
 
   // Calculate available shared rule limits. These limits won't be affected by
   // another simultaneous api call since we ensure that for a given extension,
   // only up to 1 updateDynamicRules/updateSessionRules call is in progress. See
   // the usage of `ApiCallQueue`.
-  RuleCounts shared_rules_limit(GetDynamicAndSessionRuleLimit(),
-                                GetDynamicAndSessionRuleLimit(),
-                                GetRegexRuleLimit());
   RuleCounts session_rules_count =
       GetRuleCounts(extension_id, kSessionRulesetID);
-  RuleCounts available_limit = shared_rules_limit - session_rules_count;
+  RuleCounts available_limit(
+      GetDynamicRuleLimit(), GetUnsafeDynamicRuleLimit(),
+      GetRegexRuleLimit() - session_rules_count.regex_rule_count);
 
   // We are updating the indexed ruleset. Don't set the expected checksum since
   // it'll change.
@@ -682,14 +685,26 @@ void RulesMonitorService::UpdateSessionRulesInternal(
   {
     RuleCounts dynamic_rule_count =
         GetRuleCounts(extension_id, kDynamicRulesetID);
-    RuleCounts shared_rule_limit(GetDynamicAndSessionRuleLimit(),
-                                 GetDynamicAndSessionRuleLimit(),
-                                 GetRegexRuleLimit());
-    RuleCounts available_limit = shared_rule_limit - dynamic_rule_count;
+    RuleCounts available_limit(
+        GetSessionRuleLimit(), GetUnsafeSessionRuleLimit(),
+        GetRegexRuleLimit() - dynamic_rule_count.regex_rule_count);
+
     if (new_rules.size() > available_limit.rule_count) {
       std::move(callback).Run(kSessionRuleCountExceeded);
       return;
     }
+
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+      size_t unsafe_rule_count = base::ranges::count_if(
+          new_rules,
+          [](const dnr_api::Rule& rule) { return !IsRuleSafe(rule); });
+      if (unsafe_rule_count > available_limit.unsafe_rule_count) {
+        std::move(callback).Run(kSessionUnsafeRuleCountExceeded);
+        return;
+      }
+    }
+
     size_t regex_rule_count =
         base::ranges::count_if(new_rules, [](const dnr_api::Rule& rule) {
           return !!rule.condition.regex_filter;
@@ -731,7 +746,7 @@ void RulesMonitorService::UpdateEnabledStaticRulesetsInternal(
     return;
   }
 
-  LoadRequestData load_data(extension_id);
+  LoadRequestData load_data(extension_id, extension->version());
   int expected_ruleset_checksum = -1;
   for (const RulesetID& id_to_enable : ids_to_enable) {
     const DNRManifestData::RulesetInfo& info =
@@ -832,11 +847,16 @@ void RulesMonitorService::OnInitialRulesetsLoadedFromDisk(
   LogMetricsAndUpdateChecksumsIfNeeded(load_data);
 
   // It's possible that the extension has been disabled since the initial load
-  // ruleset request. If it's disabled, do nothing.
+  // ruleset request, or the extension was updated to a new version while the
+  // ruleset for the old version was still loading (and is thus stale). In
+  // either case, do nothing.
+  // TODO(crbug.com/1493992, crbug.com/1386010): Add a test which will cause
+  // this block to be hit when the extension updates.
   const Extension* extension =
       extension_registry_->enabled_extensions().GetByID(load_data.extension_id);
-  if (!extension)
+  if (!extension || (load_data.extension_version != extension->version())) {
     return;
+  }
 
   // Load session-scoped ruleset.
   std::vector<api::declarative_net_request::Rule> session_rules =
@@ -1164,6 +1184,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(WarningServiceFactory::GetInstance());
   DependsOn(PermissionHelper::GetFactoryInstance());
+  DependsOn(WebRequestEventRouterFactory::GetInstance());
 }
 
 }  // namespace extensions

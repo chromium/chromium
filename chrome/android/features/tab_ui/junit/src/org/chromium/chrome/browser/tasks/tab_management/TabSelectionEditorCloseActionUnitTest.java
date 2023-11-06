@@ -24,6 +24,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -46,34 +47,31 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Unit tests for {@link TabSelectionEditorCloseAction}.
- */
+/** Unit tests for {@link TabSelectionEditorCloseAction}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSelectionEditorCloseActionUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    private TabGroupModelFilter mGroupFilter;
-    @Mock
-    private SelectionDelegate<Integer> mSelectionDelegate;
-    @Mock
-    private ActionDelegate mDelegate;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilter mGroupFilter;
+    @Mock private SelectionDelegate<Integer> mSelectionDelegate;
+    @Mock private ActionDelegate mDelegate;
+    @Mock private Profile mProfile;
     private MockTabModel mTabModel;
     private TabSelectionEditorAction mAction;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mAction = TabSelectionEditorCloseAction.createAction(RuntimeEnvironment.application,
-                ShowMode.MENU_ONLY, ButtonType.TEXT, IconPosition.START);
-        mTabModel = spy(new MockTabModel(false, null));
+        mAction =
+                TabSelectionEditorCloseAction.createAction(
+                        RuntimeEnvironment.application,
+                        ShowMode.MENU_ONLY,
+                        ButtonType.TEXT,
+                        IconPosition.START);
+        mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mGroupFilter);
         when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
@@ -86,14 +84,18 @@ public class TabSelectionEditorCloseActionUnitTest {
     @Test
     @SmallTest
     public void testInherentActionProperties() {
-        Assert.assertEquals(R.id.tab_selection_editor_close_menu_item,
+        Assert.assertEquals(
+                R.id.tab_selection_editor_close_menu_item,
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.MENU_ITEM_ID));
-        Assert.assertEquals(R.plurals.tab_selection_editor_close_tabs,
-                mAction.getPropertyModel().get(
-                        TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
-        Assert.assertEquals(true,
+        Assert.assertEquals(
+                R.plurals.tab_selection_editor_close_tabs,
+                mAction.getPropertyModel()
+                        .get(TabSelectionEditorActionProperties.TITLE_RESOURCE_ID));
+        Assert.assertEquals(
+                true,
                 mAction.getPropertyModel().get(TabSelectionEditorActionProperties.TITLE_IS_PLURAL));
-        Assert.assertEquals(R.plurals.accessibility_tab_selection_editor_close_tabs,
+        Assert.assertEquals(
+                R.plurals.accessibility_tab_selection_editor_close_tabs,
                 mAction.getPropertyModel()
                         .get(TabSelectionEditorActionProperties.CONTENT_DESCRIPTION_RESOURCE_ID)
                         .intValue());
@@ -161,12 +163,13 @@ public class TabSelectionEditorCloseActionUnitTest {
                 3, mAction.getPropertyModel().get(TabSelectionEditorActionProperties.ITEM_COUNT));
 
         final CallbackHelper helper = new CallbackHelper();
-        ActionObserver observer = new ActionObserver() {
-            @Override
-            public void preProcessSelectedTabs(List<Tab> tabs) {
-                helper.notifyCalled();
-            }
-        };
+        ActionObserver observer =
+                new ActionObserver() {
+                    @Override
+                    public void preProcessSelectedTabs(List<Tab> tabs) {
+                        helper.notifyCalled();
+                    }
+                };
         mAction.addActionObserver(observer);
 
         Assert.assertTrue(mAction.perform());
@@ -193,8 +196,9 @@ public class TabSelectionEditorCloseActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
-        TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
+        TabListHolder holder =
+                TabSelectionEditorActionUnitTestHelper.configureTabs(
+                        mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());
@@ -229,8 +233,9 @@ public class TabSelectionEditorCloseActionUnitTest {
         tabIdGroups.add(new TabIdGroup(new int[] {4}, false));
         tabIdGroups.add(new TabIdGroup(new int[] {8, 7, 6}, true));
         tabIdGroups.add(new TabIdGroup(new int[] {1}, true));
-        TabListHolder holder = TabSelectionEditorActionUnitTestHelper.configureTabs(
-                mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
+        TabListHolder holder =
+                TabSelectionEditorActionUnitTestHelper.configureTabs(
+                        mTabModel, mGroupFilter, mSelectionDelegate, tabIdGroups, true);
 
         Assert.assertEquals(3, holder.getSelectedTabs().size());
         Assert.assertEquals(5, holder.getSelectedTabs().get(0).getId());

@@ -287,6 +287,8 @@ static_library("unit_test_support") {
   # top-level extensions renderer unit tests.
   testonly = true
   sources = [
+    "api/messaging/mock_message_port_host.cc",
+    "api/messaging/mock_message_port_host.h",
     "api/messaging/send_message_tester.cc",
     "api/messaging/send_message_tester.h",
     "bindings/api_binding_test.cc",
@@ -313,6 +315,7 @@ static_library("unit_test_support") {
     "//content/public/renderer",
     "//content/test:test_support",
     "//extensions:test_support",
+    "//extensions/buildflags",
     "//extensions/common",
     "//gin",
     "//gin:gin_test",
@@ -388,6 +391,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//extensions:extensions_renderer_resources",
     "//extensions:test_support",
+    "//extensions/buildflags",
     "//extensions/common",
     "//gin",
     "//gin:gin_test",

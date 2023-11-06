@@ -33,6 +33,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"  // nogncheck
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -150,7 +151,7 @@ bool IsURLAllowedForSupervisedUser(const GURL& url, Profile* profile) {
   supervised_user::SupervisedUserURLFilter* url_filter =
       supervised_user_service->GetURLFilter();
   if (url_filter->GetFilteringBehaviorForURL(url) ==
-      supervised_user::SupervisedUserURLFilter::BLOCK) {
+      supervised_user::FilteringBehavior::kBlock) {
     return false;
   }
 #endif

@@ -9,7 +9,6 @@
 
 #include <map>
 #include <memory>
-#include <numeric>
 #include <set>
 #include <string>
 #include <utility>
@@ -54,8 +53,11 @@ MATCHER_P(BufferSizeIs, size, "") {
 
 class ConfigBuilder {
  public:
-  explicit ConfigBuilder(uint8_t value)
-      : config_(BuildUsbConfigurationInfoPtr(value, false, false, 0)) {}
+  explicit ConfigBuilder(uint8_t configuration_value)
+      : config_(BuildUsbConfigurationInfoPtr(configuration_value,
+                                             /*self_powered=*/false,
+                                             /*remote_wakeup=*/false,
+                                             /*maximum_power=*/0)) {}
 
   ConfigBuilder(const ConfigBuilder&) = delete;
   ConfigBuilder& operator=(const ConfigBuilder&) = delete;
@@ -413,8 +415,10 @@ class USBDeviceImplTest : public testing::Test {
 
     ASSERT_EQ(packets.size(), packet_lengths.size());
     for (size_t i = 0; i < packets.size(); ++i) {
-      EXPECT_EQ(packets[i]->length, packet_lengths[i])
-          << "Packet lengths differ at index: " << i;
+      if (packets[i]->status == mojom::UsbTransferStatus::COMPLETED) {
+        EXPECT_EQ(packets[i]->length, packet_lengths[i])
+            << "Packet lengths differ at index: " << i;
+      }
     }
 
     std::move(callback).Run(buffer, std::move(packets));
@@ -428,10 +432,8 @@ class USBDeviceImplTest : public testing::Test {
       UsbDeviceHandle::IsochronousTransferCallback& callback) {
     ASSERT_FALSE(mock_outbound_data_.empty());
     const std::vector<uint8_t>& bytes = mock_outbound_data_.front();
-    size_t length =
-        std::accumulate(packet_lengths.begin(), packet_lengths.end(), 0u);
-    ASSERT_EQ(bytes.size(), length);
-    for (size_t i = 0; i < length; ++i) {
+    ASSERT_EQ(buffer->size(), bytes.size());
+    for (size_t i = 0; i < bytes.size(); ++i) {
       EXPECT_EQ(bytes[i], buffer->front()[i])
           << "Contents differ at index: " << i;
     }
@@ -444,8 +446,10 @@ class USBDeviceImplTest : public testing::Test {
 
     ASSERT_EQ(packets.size(), packet_lengths.size());
     for (size_t i = 0; i < packets.size(); ++i) {
-      EXPECT_EQ(packets[i]->length, packet_lengths[i])
-          << "Packet lengths differ at index: " << i;
+      if (packets[i]->status == mojom::UsbTransferStatus::COMPLETED) {
+        EXPECT_EQ(packets[i]->length, packet_lengths[i])
+            << "Packet lengths differ at index: " << i;
+      }
     }
 
     std::move(callback).Run(buffer, std::move(packets));
@@ -1082,6 +1086,122 @@ TEST_F(USBDeviceImplTest, IsochronousTransfer) {
   }
 
   EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, IsochronousTransferOutBufferSizeMismatch) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal);
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  constexpr size_t kPacketCount = 4;
+  constexpr size_t kPacketLength = 8;
+  std::vector<UsbIsochronousPacketPtr> fake_packets;
+  for (size_t i = 0; i < kPacketCount; ++i) {
+    fake_packets.push_back(mojom::UsbIsochronousPacket::New(
+        kPacketLength, kPacketLength, UsbTransferStatus::TRANSFER_ERROR));
+  }
+
+  std::string outbound_data = "aaaaaaaabbbbbbbbccccccccdddddddd";
+  std::vector<uint8_t> fake_outbound_data(outbound_data.size());
+  base::ranges::copy(outbound_data, fake_outbound_data.begin());
+
+  std::string inbound_data = "ddddddddccccccccbbbbbbbbaaaaaaaa";
+  std::vector<uint8_t> fake_inbound_data(inbound_data.size());
+  base::ranges::copy(inbound_data, fake_inbound_data.begin());
+
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/7,
+                                  /*alternate_setting=*/0, /*class_code=*/1,
+                                  /*subclass_code=*/2, /*protocol_code=*/3)
+                    .Build());
+  AddMockOutboundPackets(fake_outbound_data, mojo::Clone(fake_packets));
+  AddMockInboundPackets(fake_inbound_data, mojo::Clone(fake_packets));
+
+  // The `packet_lengths` parameter for IsochronousTransferOut describes the
+  // number of bytes in each packet. Set the size of the last packet one byte
+  // shorter than the buffer size and check that the returned packets indicate
+  // a transfer error.
+  std::vector<uint32_t> short_packet_lengths(kPacketCount, kPacketLength);
+  short_packet_lengths.back() = kPacketLength - 1;
+
+  base::test::TestFuture<std::vector<UsbIsochronousPacketPtr>>
+      transfer_out_future;
+  device->IsochronousTransferOut(
+      /*endpoint_number=*/1, fake_outbound_data, short_packet_lengths,
+      /*timeout=*/0, transfer_out_future.GetCallback());
+  ASSERT_EQ(kPacketCount, transfer_out_future.Get().size());
+  for (const auto& packet : transfer_out_future.Get()) {
+    EXPECT_EQ(packet->status, UsbTransferStatus::TRANSFER_ERROR);
+  }
+
+  EXPECT_CALL(mock_handle(), Close);
+}
+
+TEST_F(USBDeviceImplTest, IsochronousTransferPacketLengthsOverflow) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal);
+
+  base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> open_future;
+  device->Open(open_future.GetCallback());
+  EXPECT_TRUE(open_future.Get()->is_success());
+
+  constexpr size_t kPacketCount = 2;
+  constexpr size_t kPacketLength = 8;
+  std::vector<UsbIsochronousPacketPtr> fake_packets;
+  for (size_t i = 0; i < kPacketCount; ++i) {
+    fake_packets.push_back(mojom::UsbIsochronousPacket::New(
+        kPacketLength, kPacketLength, UsbTransferStatus::TRANSFER_ERROR));
+  }
+
+  std::string outbound_data = "aaaaaaaabbbbbbbb";
+  std::vector<uint8_t> fake_outbound_data(outbound_data.size());
+  base::ranges::copy(outbound_data, fake_outbound_data.begin());
+
+  std::string inbound_data = "bbbbbbbbaaaaaaaa";
+  std::vector<uint8_t> fake_inbound_data(inbound_data.size());
+  base::ranges::copy(inbound_data, fake_inbound_data.begin());
+
+  AddMockConfig(ConfigBuilder(/*configuration_value=*/1)
+                    .AddInterface(/*interface_number=*/7,
+                                  /*alternate_setting=*/0, /*class_code=*/1,
+                                  /*subclass_code=*/2, /*protocol_code=*/3)
+                    .Build());
+  AddMockOutboundPackets(fake_outbound_data, mojo::Clone(fake_packets));
+  AddMockInboundPackets(fake_inbound_data, mojo::Clone(fake_packets));
+
+  // The `packet_lengths` parameter for IsochronousTransferOut and
+  // IsochronousTransferIn describes the number of bytes in each packet. Set
+  // the packet sizes so the total will exceed the maximum value for uint32_t
+  // and check that the returned packets indicate a transfer error.
+  std::vector<uint32_t> overflow_packet_lengths = {0xffffffff, 1};
+
+  base::test::TestFuture<std::vector<UsbIsochronousPacketPtr>>
+      transfer_out_future;
+  device->IsochronousTransferOut(
+      /*endpoint_number=*/1, fake_outbound_data, overflow_packet_lengths,
+      /*timeout=*/0, transfer_out_future.GetCallback());
+  ASSERT_EQ(kPacketCount, transfer_out_future.Get().size());
+  for (const auto& packet : transfer_out_future.Get()) {
+    EXPECT_EQ(packet->status, UsbTransferStatus::TRANSFER_ERROR);
+  }
+
+  base::test::TestFuture<base::span<const uint8_t>,
+                         std::vector<UsbIsochronousPacketPtr>>
+      transfer_in_future;
+  device->IsochronousTransferIn(
+      /*endpoint_number=*/1, overflow_packet_lengths, /*timeout=*/0,
+      transfer_in_future.GetCallback());
+  ASSERT_EQ(kPacketCount, transfer_in_future.Get<1>().size());
+  for (const auto& packet : transfer_in_future.Get<1>()) {
+    EXPECT_EQ(packet->status, UsbTransferStatus::TRANSFER_ERROR);
+  }
+
+  EXPECT_CALL(mock_handle(), Close);
 }
 
 class USBDeviceImplSecurityKeyTest : public USBDeviceImplTest,

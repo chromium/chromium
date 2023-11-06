@@ -19,6 +19,7 @@ source_set("favicon") {
   ]
   deps = [
     "//chrome/app/resources:platform_locale_settings",
+    "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",

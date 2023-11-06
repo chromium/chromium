@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -90,9 +91,11 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      kSharedImageFormat, kBufferSize, color_space, kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType, flags, "TestLabel", kNullSurfaceHandle);
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(kSharedImageFormat, kBufferSize, color_space,
+                             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                             flags, "TestLabel", kNullSurfaceHandle)
+          ->mailbox();
   ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   // Call BeginRasterCHROMIUM.

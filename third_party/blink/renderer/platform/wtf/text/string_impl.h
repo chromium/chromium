@@ -666,7 +666,7 @@ template <typename CharType>
 ALWAYS_INLINE bool Equal(const CharType* a,
                          const CharType* b,
                          wtf_size_t length) {
-  return !memcmp(a, b, length * sizeof(CharType));
+  return std::equal(a, a + length, b);
 }
 
 ALWAYS_INLINE bool Equal(const LChar* a, const UChar* b, wtf_size_t length) {

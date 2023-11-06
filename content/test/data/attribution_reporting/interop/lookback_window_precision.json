@@ -1,0 +1,55 @@
+{
+  "description": "Lookback window with millisecond precision.",
+  "input": {
+    "registrations": [
+      {
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-source",
+          "context_origin": "https://source.test",
+          "source_type": "event"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "source_event_id": "123",
+                "destination": "https://destination.test",
+                "expiry": "86400"
+              }
+            }
+          }
+        ],
+        "timestamp": "0"
+      },
+      {
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [
+                  {
+                    "trigger_data": "1",
+                    "filters": {
+                      "_lookback_window": 1
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "timestamp": "1001"
+      }
+    ]
+  },
+  "output": {
+    "unparsable_registrations": [],
+    "reports": []
+  }
+}

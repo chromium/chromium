@@ -36,7 +36,9 @@ class FileSystemAccessLocalPathWatcher : public FileSystemAccessChangeSource {
           on_source_initialized) override;
 
  private:
-  void OnFilePathChanged(const base::FilePath& changed_path, bool error);
+  void OnFilePathChanged(const base::FilePathWatcher::ChangeInfo& change_info,
+                         const base::FilePath& changed_path,
+                         bool error);
 
   base::SequenceBound<base::FilePathWatcher> watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);

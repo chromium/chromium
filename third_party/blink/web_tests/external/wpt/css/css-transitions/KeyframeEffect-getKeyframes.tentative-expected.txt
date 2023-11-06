@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS KeyframeEffect.getKeyframes() returns expected frames for a simple transition
-PASS KeyframeEffect.getKeyframes() returns frames unaffected by a non-default easing function
-PASS KeyframeEffect.getKeyframes() returns expected frames for a transition with a CSS variable endpoint
-FAIL KeyframeEffect.getKeyframes() returns expected frames for a transition after resetting the effect target assert_equals: properties on ComputedKeyframe #0 expected "composite,computedOffset,easing,left,offset" but got "composite,computedOffset,easing,offset"
+[PASS] KeyframeEffect.getKeyframes() returns expected frames for a simple transition
+[PASS] KeyframeEffect.getKeyframes() returns frames unaffected by a non-default easing function
+[PASS] KeyframeEffect.getKeyframes() returns expected frames for a transition with a CSS variable endpoint
+[FAIL] KeyframeEffect.getKeyframes() returns expected frames for a transition after resetting the effect target
+  assert_equals: properties on ComputedKeyframe #0 expected "composite,computedOffset,easing,left,offset" but got "composite,computedOffset,easing,offset"
 Harness: the test ran to completion.
 

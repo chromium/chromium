@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] unnamespaced lang attribute only works on elements in the HTML namespace
+  assert_true: child matches en-CA expected true got false
+Harness: the test ran to completion.
+

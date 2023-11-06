@@ -77,9 +77,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * Tests for exports started from the local passwords migration warning.
- */
+/** Tests for exports started from the local passwords migration warning. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -91,42 +89,55 @@ public class PasswordMigrationWarningExportFlowTest {
     private FakePasswordManagerHandler mFakePasswordManagerHandler;
     private PasswordMigrationWarningCoordinator mCoordinator;
     private ExportFlow mExportFlow;
-    @Mock
-    private PasswordStoreBridge mPasswordStoreBridge;
+    @Mock private PasswordStoreBridge mPasswordStoreBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mChromeActivityRule.startMainActivityOnBlankPage();
         Context context = mChromeActivityRule.getActivity();
-        BottomSheetController bottomSheetController = mChromeActivityRule.getActivity()
-                                                              .getRootUiCoordinatorForTesting()
-                                                              .getBottomSheetController();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mExportFlow = new ExportFlow();
-            mFakePasswordManagerHandler =
-                    new FakePasswordManagerHandler(PasswordManagerHandlerProvider.getInstance());
-            // Create a password, otherwise the export will not be allowed when there are not
-            // passwords saved.
-            setPasswordSource("https://example.com", "test user", "password");
-            mCoordinator = new PasswordMigrationWarningCoordinator(context,
-                    Profile.getLastUsedRegularProfile(), bottomSheetController,
-                    SyncConsentActivityLauncherImpl.get(), new SettingsLauncherImpl(),
-                    ManageSyncSettings.class, mExportFlow,
-                    (PasswordListObserver observer)
-                            -> PasswordManagerHandlerProvider.getInstance().addObserver(observer),
-                    mPasswordStoreBridge, PasswordMigrationWarningTriggers.CHROME_STARTUP,
-                    (Throwable exception) -> fail());
-            PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
-            mCoordinator.showWarning();
-        });
+        BottomSheetController bottomSheetController =
+                mChromeActivityRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mExportFlow = new ExportFlow();
+                    mFakePasswordManagerHandler =
+                            new FakePasswordManagerHandler(
+                                    PasswordManagerHandlerProvider.getInstance());
+                    // Create a password, otherwise the export will not be allowed when there are
+                    // not passwords saved.
+                    setPasswordSource("https://example.com", "test user", "password");
+                    mCoordinator =
+                            new PasswordMigrationWarningCoordinator(
+                                    context,
+                                    Profile.getLastUsedRegularProfile(),
+                                    bottomSheetController,
+                                    SyncConsentActivityLauncherImpl.get(),
+                                    new SettingsLauncherImpl(),
+                                    ManageSyncSettings.class,
+                                    mExportFlow,
+                                    (PasswordListObserver observer) ->
+                                            PasswordManagerHandlerProvider.getInstance()
+                                                    .addObserver(observer),
+                                    mPasswordStoreBridge,
+                                    PasswordMigrationWarningTriggers.CHROME_STARTUP,
+                                    (Throwable exception) -> fail());
+                    PasswordManagerHandlerProvider.getInstance().passwordListAvailable(1);
+                    mCoordinator.showWarning();
+                });
         // Go to the "More options" screen.
         onViewWaiting(allOf(withId(password_migration_more_options_button), isDisplayed()));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Button button = mChromeActivityRule.getActivity().findViewById(
-                    password_migration_more_options_button);
-            button.performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Button button =
+                            mChromeActivityRule
+                                    .getActivity()
+                                    .findViewById(password_migration_more_options_button);
+                    button.performClick();
+                });
     }
 
     /**
@@ -135,8 +146,10 @@ public class PasswordMigrationWarningExportFlowTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(message = "https://crbug.com/1470333",
-            sdk_is_greater_than = VERSION_CODES.M, sdk_is_less_than = VERSION_CODES.P)
+    @DisableIf.Build(
+            message = "https://crbug.com/1470333",
+            sdk_is_greater_than = VERSION_CODES.M,
+            sdk_is_less_than = VERSION_CODES.P)
     public void testExportIntent() throws Exception {
         ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
         ReauthenticationManager.setScreenLockSetUpOverride(
@@ -148,9 +161,11 @@ public class PasswordMigrationWarningExportFlowTest {
 
         var histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords(mExportFlow.getExportEventHistogramName(),
+                        .expectIntRecords(
+                                mExportFlow.getExportEventHistogramName(),
                                 ExportFlow.PasswordExportEvent.EXPORT_CONFIRMED)
-                        .expectIntRecord(mExportFlow.getExportResultHistogramName2ForTesting(),
+                        .expectIntRecord(
+                                mExportFlow.getExportResultHistogramName2ForTesting(),
                                 HistogramExportResult.SUCCESS)
                         .build();
 
@@ -159,8 +174,9 @@ public class PasswordMigrationWarningExportFlowTest {
         try {
             tempFile = createFakeExportedPasswordsFile();
             // Pretend that passwords have been serialized to go directly to the intent.
-            mFakePasswordManagerHandler.getExportSuccessCallback().onResult(
-                    123, tempFile.getPath());
+            mFakePasswordManagerHandler
+                    .getExportSuccessCallback()
+                    .onResult(123, tempFile.getPath());
 
             Intent result = new Intent();
             outputFile = createFakeSavedPasswordsFile();
@@ -169,17 +185,28 @@ public class PasswordMigrationWarningExportFlowTest {
             intending(hasAction(Intent.ACTION_CREATE_DOCUMENT))
                     .respondWith(new ActivityResult(Activity.RESULT_OK, result));
 
-            onViewWaiting(allOf(withText(R.string.password_settings_export_action_title),
-                                  isCompletelyDisplayed()))
+            onViewWaiting(
+                            allOf(
+                                    withText(R.string.password_settings_export_action_title),
+                                    isCompletelyDisplayed()))
                     .perform(click());
 
             // Assert that the expected intent was detected.
-            intended(allOf(hasAction(equalTo(Intent.ACTION_CREATE_DOCUMENT)),
-                    hasCategories(hasItem(Intent.CATEGORY_OPENABLE)),
-                    hasExtras(hasEntry(Intent.EXTRA_TITLE,
-                            equalTo(mChromeActivityRule.getActivity().getResources().getString(
-                                    R.string.password_manager_default_export_filename)))),
-                    hasType("text/csv")));
+            intended(
+                    allOf(
+                            hasAction(equalTo(Intent.ACTION_CREATE_DOCUMENT)),
+                            hasCategories(hasItem(Intent.CATEGORY_OPENABLE)),
+                            hasExtras(
+                                    hasEntry(
+                                            Intent.EXTRA_TITLE,
+                                            equalTo(
+                                                    mChromeActivityRule
+                                                            .getActivity()
+                                                            .getResources()
+                                                            .getString(
+                                                                    R.string
+                                                                            .password_manager_default_export_filename)))),
+                            hasType("text/csv")));
 
             // Assert that the output file was written.
             Assert.assertTrue(outputFile.length() > 0);
@@ -195,7 +222,9 @@ public class PasswordMigrationWarningExportFlowTest {
         Intents.release();
 
         onViewWaiting(
-                allOf(withText(R.string.exported_passwords_delete_button), isCompletelyDisplayed()))
+                        allOf(
+                                withText(R.string.exported_passwords_delete_button),
+                                isCompletelyDisplayed()))
                 .perform(click());
 
         verify(mPasswordStoreBridge).clearAllPasswords();
@@ -214,7 +243,8 @@ public class PasswordMigrationWarningExportFlowTest {
 
         var exportResultHistogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecords(PasswordMigrationWarningCoordinator.EXPORT_METRICS_ID
+                        .expectIntRecords(
+                                PasswordMigrationWarningCoordinator.EXPORT_METRICS_ID
                                         + PasswordMetricsUtil.EXPORT_RESULT_HISTOGRAM_SUFFIX,
                                 PasswordMetricsUtil.HistogramExportResult.NO_SCREEN_LOCK_SET_UP)
                         .build();
@@ -243,13 +273,15 @@ public class PasswordMigrationWarningExportFlowTest {
         ReauthenticationManager.recordLastReauth(
                 System.currentTimeMillis(), ReauthenticationManager.ReauthScope.BULK);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Disable the timer for progress bar.
-            mExportFlow.getDialogManagerForTesting().replaceCallbackDelayerForTesting(
-                    new ManualCallbackDelayer());
-            // Now call onResume to nudge Chrome into continuing the export flow.
-            mCoordinator.resumeExportFlow();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Disable the timer for progress bar.
+                    mExportFlow
+                            .getDialogManagerForTesting()
+                            .replaceCallbackDelayerForTesting(new ManualCallbackDelayer());
+                    // Now call onResume to nudge Chrome into continuing the export flow.
+                    mCoordinator.resumeExportFlow();
+                });
     }
 
     private void setPasswordSource(String origin, String username, String password) {
@@ -258,8 +290,8 @@ public class PasswordMigrationWarningExportFlowTest {
                         PasswordManagerHandlerProvider::getInstance);
         mFakePasswordManagerHandler.insertPasswordEntryForTesting(origin, username, password);
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> handlerProvider.setPasswordManagerHandlerForTest(
+                () ->
+                        handlerProvider.setPasswordManagerHandlerForTest(
                                 mFakePasswordManagerHandler));
     }
 

@@ -69,14 +69,7 @@ class WebContentsCanGoBackObserverTest : public InProcessBrowserTest {
   ~WebContentsCanGoBackObserverTest() override = default;
 };
 
-// crbug.com/1240655: flaky on Lacros and ASAN.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || defined(ADDRESS_SANITIZER)
-#define MAYBE_CanGoBack_ServerSide DISABLED_CanGoBack_ServerSide
-#else
-#define MAYBE_CanGoBack_ServerSide CanGoBack_ServerSide
-#endif
-IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
-                       MAYBE_CanGoBack_ServerSide) {
+IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest, CanGoBack_ServerSide) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
@@ -110,15 +103,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   CheckCanGoBackOnServer(id, false /* expected_value */);
 }
 
-// TODO(crbug.com/1383542): This test is flaky on Lacros asan builder.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) && defined(ADDRESS_SANITIZER)
-#define MAYBE_CanGoBackMultipleTabs_ServerSide \
-  DISABLED_CanGoBackMultipleTabs_ServerSide
-#else
-#define MAYBE_CanGoBackMultipleTabs_ServerSide CanGoBackMultipleTabs_ServerSide
-#endif
 IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
-                       MAYBE_CanGoBackMultipleTabs_ServerSide) {
+                       CanGoBackMultipleTabs_ServerSide) {
   auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
   ASSERT_TRUE(lacros_service->IsAvailable<crosapi::mojom::TestController>());
@@ -142,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsCanGoBackObserverTest,
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   CheckCanGoBackOnServer(id, true /* expected_value */);
 
-  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUICreditsURL),
+  NavigateToURLWithDisposition(browser(), GURL(chrome::kChromeUIVersionURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 

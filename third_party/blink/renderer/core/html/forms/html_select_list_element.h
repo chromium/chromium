@@ -81,10 +81,10 @@ class CORE_EXPORT HTMLSelectListElement final
 
   PartType AssignedPartType(Node* node) const;
 
-  HTMLElement* ButtonPart() const { return button_part_; }
-  HTMLElement* ListBoxPart() const { return listbox_part_; }
+  HTMLElement* ButtonPart() const { return button_part_.Get(); }
+  HTMLElement* ListBoxPart() const { return listbox_part_.Get(); }
   HTMLElement* SuggestedOptionPopoverForTesting() const {
-    return suggested_option_popover_;
+    return suggested_option_popover_.Get();
   }
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
@@ -164,7 +164,7 @@ class CORE_EXPORT HTMLSelectListElement final
   bool IsLabelable() const override;
 
   // HTMLFormControlElementWithState overrides:
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
   void DefaultEventHandler(Event&) override;
   bool MayTriggerVirtualKeyboard() const override;

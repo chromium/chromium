@@ -73,8 +73,9 @@ TEST(NotificationDataTest, ReflectProperties) {
     actions.push_back(action);
   }
 
-  DOMTimeStamp showTimestamp = base::Time::Now().ToDoubleT() * 1000.0;
-  TimestampTrigger* showTrigger = TimestampTrigger::Create(showTimestamp);
+  const DOMTimeStamp show_timestamp =
+      base::Time::Now().InMillisecondsSinceUnixEpoch();
+  TimestampTrigger* showTrigger = TimestampTrigger::Create(show_timestamp);
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());
@@ -108,7 +109,8 @@ TEST(NotificationDataTest, ReflectProperties) {
   EXPECT_EQ(kNotificationLang, notification_data->lang);
   EXPECT_EQ(kNotificationBody, notification_data->body);
   EXPECT_EQ(kNotificationTag, notification_data->tag);
-  EXPECT_EQ(base::Time::FromJsTime(showTimestamp),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(
+                static_cast<int64_t>(show_timestamp)),
             notification_data->show_trigger_timestamp);
 
   // URLs should be resolved against the base URL of the execution context.
@@ -287,7 +289,7 @@ TEST(NotificationDataTest, DefaultTimestampValue) {
   // wasn't supplied by the developer. "32" has no significance, but an equal
   // comparison of the value could lead to flaky failures.
   EXPECT_NEAR(notification_data->timestamp,
-              base::Time::Now().ToDoubleT() * 1000.0, 32);
+              base::Time::Now().InMillisecondsFSinceUnixEpoch(), 32);
 }
 
 TEST(NotificationDataTest, DirectionValues) {
@@ -350,7 +352,7 @@ TEST(NotificationDataTest, RejectsTriggerTimestampOverAYear) {
   base::Time show_timestamp =
       base::Time::Now() + kMaxNotificationShowTriggerDelay + base::Days(1);
   TimestampTrigger* show_trigger =
-      TimestampTrigger::Create(show_timestamp.ToJsTime());
+      TimestampTrigger::Create(show_timestamp.InMillisecondsFSinceUnixEpoch());
 
   NotificationOptions* options =
       NotificationOptions::Create(scope.GetIsolate());

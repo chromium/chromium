@@ -11,6 +11,10 @@
 #include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 
+namespace base {
+class Version;
+}
+
 namespace growth {
 class CampaignsManager;
 }  // namespace growth
@@ -30,6 +34,7 @@ class CampaignsManagerClientImpl : public growth::CampaignsManagerClient {
   bool IsCloudGamingDevice() const override;
   bool IsFeatureAwareDevice() const override;
   const std::string& GetApplicationLocale() const override;
+  const base::Version& GetDemoModeAppVersion() const override;
 
  private:
   void OnComponentDownloaded(

@@ -8,7 +8,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-styles/color.js';
 
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {ResetPasswordHandler, ResetPasswordHandlerRemote} from './reset_password.mojom-webui.js';
 

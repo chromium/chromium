@@ -24,8 +24,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LogoUtilsUnitTest {
-    @Mock
-    private Resources mResources;
+    @Mock private Resources mResources;
 
     @Before
     public void setUp() {

@@ -21,6 +21,7 @@ namespace {
 const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kStylusPointerAdjustment,
     &blink::features::kStylusRichGestures,
+    &features::kAccessibilityIncludeLongClickAction,
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPerformanceFiltering,
     &features::kAccessibilityPerformanceTesting,

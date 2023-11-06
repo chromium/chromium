@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_detailed_network_view_impl.h"
@@ -18,9 +17,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_observer.h"
@@ -63,10 +60,7 @@ class ChildAddedWaiter : public views::ViewObserver {
 // Pixel tests for the quick settings network detailed view.
 class NetworkDetailedNetworkViewPixelTest : public AshTestBase {
  public:
-  NetworkDetailedNetworkViewPixelTest() {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, chromeos::features::kJelly}, {});
-  }
+  NetworkDetailedNetworkViewPixelTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -87,7 +81,6 @@ class NetworkDetailedNetworkViewPixelTest : public AshTestBase {
   FakeCrosNetworkConfig* cros_network() { return cros_network_.get(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;
 };
 

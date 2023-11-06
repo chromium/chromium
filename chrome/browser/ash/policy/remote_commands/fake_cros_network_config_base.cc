@@ -146,7 +146,8 @@ void FakeCrosNetworkConfigBase::SetTrafficCountersAutoReset(
 
 void FakeCrosNetworkConfigBase::CreateCustomApn(
     const std::string& network_guid,
-    chromeos::network_config::mojom::ApnPropertiesPtr apn) {
+    chromeos::network_config::mojom::ApnPropertiesPtr apn,
+    CreateCustomApnCallback callback) {
   NOTREACHED();
 }
 

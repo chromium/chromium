@@ -53,7 +53,7 @@ class QuotaDatabaseMigrationsTest : public testing::Test {
   // otherwise.
   std::string GetDatabaseData(const char* file) {
     base::FilePath source_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_path);
     source_path = source_path.AppendASCII("storage/test/data/quota_database");
     source_path = source_path.AppendASCII(file);
     EXPECT_TRUE(base::PathExists(source_path));

@@ -13,7 +13,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 #include "chrome/browser/support_tool/data_collector.h"
@@ -56,6 +59,37 @@ namespace {
 // The filename prefix for the file to export the generated file.
 constexpr char kFilenamePrefix[] = "support_packet";
 
+// The path we use to show URL generator page
+// chrome://support-tool/url-generator
+constexpr char kUrlGeneratorPath[] = "url-generator";
+
+// Records the open page action to `kSupportToolWebUIActionHistogram`. There are
+// two possible types of pages that a user can navigate into: main support tool
+// page and URL generator page. We check which was was opened from `url`.
+void RecordOpenPageMetric(const GURL& url) {
+  // We check if the URL has path. If not, it means it's support tool main page.
+  if (!url.has_path()) {
+    base::UmaHistogramEnumeration(
+        kSupportToolWebUIActionHistogram,
+        SupportToolWebUIActionType::kOpenSupportToolPage);
+    return;
+  }
+  std::string trimmed_path;
+  // We remove '/' characters from the path. `url.path_piece()` will return the
+  // '/' along with the path value.
+  base::TrimString(url.path_piece(), "/", &trimmed_path);
+  // Check if the path is URL generator path.
+  if (trimmed_path.compare(kUrlGeneratorPath) == 0) {
+    base::UmaHistogramEnumeration(
+        kSupportToolWebUIActionHistogram,
+        SupportToolWebUIActionType::kOpenURLGeneratorPage);
+    return;
+  }
+  base::UmaHistogramEnumeration(
+      kSupportToolWebUIActionHistogram,
+      SupportToolWebUIActionType::kOpenSupportToolPage);
+}
+
 void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISupportToolHost);
@@ -63,9 +97,6 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   source->AddString("caseId", GetSupportCaseIDFromURL(url));
   source->AddBoolean("enableScreenshot", base::FeatureList::IsEnabled(
                                              features::kSupportToolScreenshot));
-  source->AddBoolean(
-      "enableCopyTokenButton",
-      base::FeatureList::IsEnabled(features::kSupportToolCopyTokenButton));
 
   source->AddLocalizedStrings(SupportToolUI::GetLocalizedStrings());
 
@@ -73,11 +104,14 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
       source, base::make_span(kSupportToolResources, kSupportToolResourcesSize),
       IDR_SUPPORT_TOOL_SUPPORT_TOOL_CONTAINER_HTML);
 
-  source->AddResourcePath("url-generator",
+  source->AddResourcePath(kUrlGeneratorPath,
                           IDR_SUPPORT_TOOL_URL_GENERATOR_CONTAINER_HTML);
 }
 
 }  // namespace
+
+const char kSupportToolWebUIActionHistogram[] =
+    "Browser.SupportTool.SupportToolWebUIAction";
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -209,10 +243,15 @@ base::Value::List SupportToolMessageHandler::GetAccountsList() {
   if (profile->IsGuestSession() || profile->IsIncognitoProfile()) {
     return account_list;
   }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
   for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
-           profile, /*restrict_to_accounts_eligible_for_sync=*/false)) {
-    if (!account.IsEmpty())
+           identity_manager,
+           /*restrict_to_accounts_eligible_for_sync=*/false)) {
+    if (!account.IsEmpty()) {
       account_list.Append(account.email);
+    }
   }
   return account_list;
 }
@@ -323,6 +362,9 @@ void SupportToolMessageHandler::OnDataCollectionDone(
 
 void SupportToolMessageHandler::HandleCancelDataCollection(
     const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      kSupportToolWebUIActionHistogram,
+      SupportToolWebUIActionType::kCancelDataCollection);
   AllowJavascript();
   // Deleting the SupportToolHandler object will stop data collection.
   this->handler_.reset();
@@ -335,8 +377,9 @@ void SupportToolMessageHandler::HandleStartDataExport(
   const base::Value::List* pii_items = args[0].GetIfList();
   DCHECK(pii_items);
   // Early return if the select file dialog is already active.
-  if (select_file_dialog_)
+  if (select_file_dialog_) {
     return;
+  }
 
   selected_pii_to_keep_ = GetPIITypesToKeep(pii_items);
 
@@ -370,6 +413,9 @@ void SupportToolMessageHandler::HandleStartDataExport(
 void SupportToolMessageHandler::FileSelected(const base::FilePath& path,
                                              int index,
                                              void* params) {
+  base::UmaHistogramEnumeration(
+      kSupportToolWebUIActionHistogram,
+      SupportToolWebUIActionType::kCreateSupportPacket);
   FireWebUIListener("support-data-export-started");
   select_file_dialog_.reset();
   if (include_screenshot_) {
@@ -423,6 +469,8 @@ void SupportToolMessageHandler::HandleShowExportedDataInFolder(
 
 void SupportToolMessageHandler::HandleGenerateCustomizedURL(
     const base::Value::List& args) {
+  base::UmaHistogramEnumeration(kSupportToolWebUIActionHistogram,
+                                SupportToolWebUIActionType::kGenerateURL);
   CHECK_EQ(3U, args.size());
   const base::Value& callback_id = args[0];
   std::string case_id = args[1].GetString();
@@ -434,6 +482,8 @@ void SupportToolMessageHandler::HandleGenerateCustomizedURL(
 
 void SupportToolMessageHandler::HandleGenerateSupportToken(
     const base::Value::List& args) {
+  base::UmaHistogramEnumeration(kSupportToolWebUIActionHistogram,
+                                SupportToolWebUIActionType::kGenerateToken);
   CHECK_EQ(2U, args.size());
   const base::Value& callback_id = args[0];
   const base::Value::List* data_collectors = args[1].GetIfList();
@@ -450,9 +500,11 @@ void SupportToolMessageHandler::HandleGenerateSupportToken(
 SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<SupportToolMessageHandler>());
 
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   // Set up the chrome://support-tool/ source.
-  CreateAndAddSupportToolHTMLSource(Profile::FromWebUI(web_ui),
-                                    web_ui->GetWebContents()->GetURL());
+  CreateAndAddSupportToolHTMLSource(Profile::FromWebUI(web_ui), url);
+  // Record the page open action to histogram.
+  RecordOpenPageMetric(url);
 }
 
 SupportToolUI::~SupportToolUI() = default;
@@ -547,6 +599,10 @@ base::Value::Dict SupportToolUI::GetLocalizedStrings() {
   localized_strings.Set(
       "dontIncludeEmailAddress",
       l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_DONT_INCLUDE_EMAIL));
+  localized_strings.Set("selectAll",
+                        l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_ALL));
+  localized_strings.Set(
+      "selectNone", l10n_util::GetStringUTF16(IDS_SUPPORT_TOOL_SELECT_NONE));
   return localized_strings;
 }
 

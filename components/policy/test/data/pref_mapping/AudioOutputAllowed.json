@@ -1,0 +1,30 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "hardware.audio_output_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AudioOutputAllowed": false
+        },
+        "prefs": {
+          "hardware.audio_output_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

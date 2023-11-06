@@ -56,7 +56,7 @@ class PersonalDataManagerCleaner {
 
  private:
   // Applies various fixes and cleanups on autofill addresses.
-  bool ApplyAddressFixesAndCleanups();
+  void ApplyAddressFixesAndCleanups();
 
   // Applies various fixes and cleanups on autofill credit cards.
   void ApplyCardFixesAndCleanups();
@@ -68,28 +68,21 @@ class PersonalDataManagerCleaner {
   // Applies the deduping routine once per major version if the feature is
   // enabled. Calls DedupeProfiles with the content of
   // |PersonalDataManager::GetProfiles()| as a parameter. Removes the profiles
-  // to delete from the database and updates the others. Also updates the credit
-  // cards billing address references. Returns true if the routine was run.
+  // to delete from the database and updates the others.
+  // Returns true if the routine was run.
   bool ApplyDedupingRoutine();
 
   // Goes through all the |existing_profiles| and merges all similar unverified
   // profiles together. Also discards unverified profiles that are similar to a
   // verified profile. All the profiles except the results of the merges will be
   // added to |profile_guids_to_delete|. This routine should be run once per
-  // major version. Records all the merges into the |guids_merge_map|.
+  // major version.
   //
   // This method should only be called by ApplyDedupingRoutine. It is split for
   // testing purposes.
   void DedupeProfiles(
       std::vector<std::unique_ptr<AutofillProfile>>* existing_profiles,
-      std::unordered_set<std::string>* profile_guids_to_delete,
-      std::unordered_map<std::string, std::string>* guids_merge_map) const;
-
-  // Updates the credit cards billing address references based on the merges
-  // that happened during the dedupe, as defined in |guids_merge_map|. Also
-  // updates the cards entries in the database.
-  void UpdateCardsBillingAddressReference(
-      const std::unordered_map<std::string, std::string>& guids_merge_map);
+      std::unordered_set<std::string>* profile_guids_to_delete) const;
 
   // Tries to delete disused addresses once per major version if the
   // feature is enabled.
@@ -103,8 +96,12 @@ class PersonalDataManagerCleaner {
   // the settings page.
   void ClearCreditCardNonSettingsOrigins();
 
-  // True if autofill profile cleanup needs to be performed.
-  bool is_autofill_profile_cleanup_pending_ = false;
+  // True if autofill profile dedupe needs to be performed.
+  bool is_autofill_profile_dedupe_pending_ = true;
+
+  // True if the profile or credit card cleanups need to be performed.
+  bool is_profile_cleanup_pending_ = true;
+  bool is_credit_card_cleanup_pending_ = true;
 
   // The personal data manager, used to load and update the personal data
   // from/to the web database.

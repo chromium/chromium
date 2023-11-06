@@ -29,26 +29,20 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * Tests relating to {@link LevelDBPersistedTabDataStorageFactory}
- */
+/** Tests relating to {@link LevelDBPersistedTabDataStorageFactory} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LevelDBPersistedTabDataStorageFactoryTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
-    @Mock
-    private Profile mProfile1;
+    @Mock private Profile mProfile1;
 
-    @Mock
-    private Profile mProfile2;
+    @Mock private Profile mProfile2;
 
-    @Mock
-    private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
+    @Mock private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     @Before
     public void setUp() throws Exception {

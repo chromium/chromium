@@ -25,9 +25,9 @@
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/node_content_visibility_state.h"
+#include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/cursors.h"
@@ -261,8 +261,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
 
   contrast_info_ = FetchContrast(node);
   if (hovered_node_changed) {
-    if (auto* flexbox =
-            DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+    if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
       flexbox->SetNeedsLayoutForDevtools();
     }
     NodeHighlightRequested(node);
@@ -359,7 +358,7 @@ NodeHighlightTool::NodeHighlightTool(
   std::tie(node_, content_visibility_state_) =
       DetermineContentVisibilityState(node);
   contrast_info_ = FetchContrast(node_);
-  if (auto* flexbox = DynamicTo<LayoutNGFlexibleBox>(node->GetLayoutObject())) {
+  if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
     flexbox->SetNeedsLayoutForDevtools();
   }
 }
@@ -632,18 +631,18 @@ void SourceOrderTool::Draw(float scale) {
   for (Node& child_node : NodeTraversal::ChildrenOf(*node_)) {
     // Don't draw if it's not an element or is not the direct child of the
     // parent node.
-    if (!child_node.IsElementNode())
+    auto* element = DynamicTo<Element>(child_node);
+    if (!element) {
       continue;
-    // Don't draw if it's not rendered/would be ignored by a screen reader.
-    if (child_node.GetComputedStyle()) {
-      bool display_none =
-          child_node.GetComputedStyle()->Display() == EDisplay::kNone;
-      bool visibility_hidden =
-          child_node.GetComputedStyle()->Visibility() == EVisibility::kHidden;
-      if (display_none || visibility_hidden)
-        continue;
     }
-    DrawNode(&child_node, position_number);
+    // Don't draw if it's not rendered/would be ignored by a screen reader.
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (style->Display() == EDisplay::kNone ||
+          style->Visibility() == EVisibility::kHidden) {
+        continue;
+      }
+    }
+    DrawNode(element, position_number);
     position_number++;
   }
 }

@@ -7,20 +7,24 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
+#import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_session.h"
 #import "ios/chrome/browser/synced_sessions/model/distant_tab.h"
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions.h"
-#import "ios/chrome/browser/tabs/tab_sync_util.h"
+#import "ios/chrome/browser/tabs/model/tab_sync_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_browser_agent.h"
@@ -108,6 +112,9 @@ TabResumptionHelper::TabResumptionHelper(Browser* browser) : browser_(browser) {
 
 void TabResumptionHelper::LastTabResumptionItem(
     TabResumptionItemCompletionBlock item_block_handler) {
+  session_tag_ = "";
+  tab_id_ = SessionID::InvalidValue();
+
   if (!IsTabResumptionEnabledForMostRecentTabOnly()) {
     // If sync is enabled and `GetOpenTabsUIDelegate()` returns nullptr, that
     // means the `session_sync_service_` is not fully operational.
@@ -140,9 +147,12 @@ void TabResumptionHelper::LastTabResumptionItem(
     LastActiveDistantTab last_distant_tab = GetLastActiveDistantTab(
         synced_sessions.get(), TabResumptionForXDevicesTimeThreshold());
     if (last_distant_tab.tab) {
-      session = last_distant_tab.session;
       tab = last_distant_tab.tab;
-      last_synced_tab_synced_time = last_distant_tab.tab->last_active_time;
+      if (last_distant_item_url_ != tab->virtual_url) {
+        last_distant_item_url_ = tab->virtual_url;
+        session = last_distant_tab.session;
+        last_synced_tab_synced_time = tab->last_active_time;
+      }
     }
   }
 
@@ -154,6 +164,8 @@ void TabResumptionHelper::LastTabResumptionItem(
     CHECK(!IsTabResumptionEnabledForMostRecentTabOnly());
     LastSyncedTabItemFromLastActiveDistantTab(session, tab, favicon_loader_,
                                               item_block_handler);
+    session_tag_ = session->tag;
+    tab_id_ = tab->tab_id;
   } else if (can_show_most_recent_item_) {
     MostRecentTabItemFromWebState(most_recent_tab, most_recent_tab_opened_time,
                                   favicon_loader_, item_block_handler);
@@ -162,4 +174,27 @@ void TabResumptionHelper::LastTabResumptionItem(
 
 void TabResumptionHelper::SetCanSHowMostRecentItem(const bool show) {
   can_show_most_recent_item_ = show;
+}
+
+void TabResumptionHelper::OpenDistantTab() {
+  ChromeBrowserState* browser_state = browser_->GetBrowserState();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+
+  sync_sessions::OpenTabsUIDelegate* open_tabs_delegate =
+      SessionSyncServiceFactory::GetForBrowserState(browser_state)
+          ->GetOpenTabsUIDelegate();
+
+  const sessions::SessionTab* session_tab = nullptr;
+  if (open_tabs_delegate->GetForeignTab(session_tag_, tab_id_, &session_tab)) {
+    new_tab_page_uma::RecordAction(
+        browser_state->IsOffTheRecord(), web_state_list->GetActiveWebState(),
+        new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
+
+    std::unique_ptr<web::WebState> web_state =
+        session_util::CreateWebStateWithNavigationEntries(
+            browser_state, session_tab->current_navigation_index,
+            session_tab->navigations);
+    web_state_list->ReplaceWebStateAt(web_state_list->active_index(),
+                                      std::move(web_state));
+  }
 }

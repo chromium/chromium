@@ -23,7 +23,7 @@ export const OobeScrollableBehavior = {
     this.scrollableElement_.addEventListener(
       'scroll', this.applyScrollClassTags_.bind(this));
     this.resizeObserver_.observe(this.scrollableElement_);
-    for (var i = 0; i < sizeChangeObservableElemenets.length; ++i) {
+    for (let i = 0; i < sizeChangeObservableElemenets.length; ++i) {
       this.resizeObserver_.observe(sizeChangeObservableElemenets[i]);
     }
   },
@@ -32,7 +32,7 @@ export const OobeScrollableBehavior = {
    * Applies the class tags to topScrollContainer that control the shadows.
    */
   applyScrollClassTags_() {
-    var el = this.scrollableElement_;
+    const el = this.scrollableElement_;
     el.classList.toggle('can-scroll', el.clientHeight < el.scrollHeight);
     el.classList.toggle('is-scrolled', el.scrollTop > 0);
     el.classList.toggle(

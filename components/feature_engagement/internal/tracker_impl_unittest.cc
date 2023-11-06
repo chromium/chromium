@@ -32,6 +32,7 @@
 #include "components/feature_engagement/internal/never_event_storage_validator.h"
 #include "components/feature_engagement/internal/once_condition_validator.h"
 #include "components/feature_engagement/internal/stats.h"
+#include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/internal/time_provider.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/feature_list.h"
@@ -166,26 +167,6 @@ class StoreEverythingEventStorageValidator : public EventStorageValidator {
   }
 };
 
-class TestTimeProvider : public TimeProvider {
- public:
-  TestTimeProvider() = default;
-
-  TestTimeProvider(const TestTimeProvider&) = delete;
-  TestTimeProvider& operator=(const TestTimeProvider&) = delete;
-
-  ~TestTimeProvider() override = default;
-
-  // TimeProvider implementation.
-  uint32_t GetCurrentDay() const override { return 1u; }
-
-  base::Time Now() const override { return now_; }
-
-  void SetCurrentTime(base::Time now) { now_ = now; }
-
- private:
-  base::Time now_;
-};
-
 class TestTrackerAvailabilityModel : public AvailabilityModel {
  public:
   TestTrackerAvailabilityModel() : ready_(true) {}
@@ -315,6 +296,7 @@ class TrackerImplTest : public ::testing::Test {
 
     auto time_provider = std::make_unique<TestTimeProvider>();
     time_provider_ = time_provider.get();
+    time_provider->SetCurrentDay(1u);
 
     event_exporter_ = std::make_unique<TestTrackerEventExporter>();
 
@@ -988,54 +970,6 @@ TEST_F(TrackerImplTest, TestTriggering) {
   VerifyHistograms(true, 1, 3, 0, true, 1, 2, 0, false, 0, 0, 0, true, 0, 4, 0);
 }
 
-TEST_F(TrackerImplTest, TestTriggeringWithSnooze) {
-  // Ensure all initialization is finished.
-  StoringInitializedCallback callback;
-  tracker_->AddOnInitializedCallback(base::BindOnce(
-      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
-  base::RunLoop().RunUntilIdle();
-
-  base::Time now = base::Time::Now();
-  time_provider_->SetCurrentTime(now);
-
-  // The first time a feature with snooze params triggers, it should be shown
-  // with snooze.
-  Tracker::TriggerDetails trigger_details =
-      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
-  EXPECT_TRUE(trigger_details.ShouldShowIph());
-  EXPECT_TRUE(trigger_details.ShouldShowSnooze());
-
-  Event snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  ASSERT_EQ(1, snooze_event.events_size());
-  ASSERT_EQ(1u, snooze_event.events(0).day());
-  ASSERT_EQ(1u, snooze_event.events(0).count());
-  ASSERT_EQ(0u, snooze_event.events(0).snooze_count());
-
-  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
-                                Tracker::SnoozeAction::SNOOZED);
-  snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  trigger_details =
-      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
-  EXPECT_FALSE(trigger_details.ShouldShowIph());
-  EXPECT_FALSE(trigger_details.ShouldShowSnooze());
-  ASSERT_EQ(1u, snooze_event.events(0).snooze_count());
-  ASSERT_EQ(now.ToDeltaSinceWindowsEpoch().InMicroseconds(),
-            snooze_event.last_snooze_time_us());
-  ASSERT_EQ(false, snooze_event.snooze_dismissed());
-
-  // TODO(crbug.com/1238924): Investigate using FeatureConfigConditionValidator
-  // here to test for snooze expiration after snooze's time interval.
-
-  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
-                                Tracker::SnoozeAction::DISMISSED);
-  snooze_event = event_store_->GetEvent(
-      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
-  ASSERT_EQ(1u, snooze_event.events(0).snooze_count());
-  ASSERT_EQ(true, snooze_event.snooze_dismissed());
-}
-
 TEST_F(TrackerImplTest, TestTrackingOnlyTriggering) {
   // Ensure all initialization is finished.
   StoringInitializedCallback callback;
@@ -1697,6 +1631,68 @@ TEST_F(FeatureConfigConditionValidatorTrackerTest, GroupRulesApplied) {
   EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
   tracker_->Dismissed(kTrackerTestFeatureFoo);
   EXPECT_FALSE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureBar));
+}
+
+TEST_F(FeatureConfigConditionValidatorTrackerTest, TestTriggeringWithSnooze) {
+  ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {kTrackerTestFeatureSnooze, kTrackerTestFeatureFoo});
+
+  // Ensure all initialization is finished.
+  StoringInitializedCallback callback;
+  tracker_->AddOnInitializedCallback(base::BindOnce(
+      &StoringInitializedCallback::OnInitialized, base::Unretained(&callback)));
+  base::RunLoop().RunUntilIdle();
+
+  base::Time now = base::Time::Now();
+  time_provider_->SetCurrentTime(now);
+  time_provider_->SetCurrentDay(1u);
+
+  // The first time a feature with snooze params triggers, it should be shown
+  // with snooze.
+  Tracker::TriggerDetails trigger_details =
+      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
+  EXPECT_TRUE(trigger_details.ShouldShowIph());
+  EXPECT_TRUE(trigger_details.ShouldShowSnooze());
+
+  Event snooze_event = event_store_->GetEvent(
+      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
+  ASSERT_EQ(1, snooze_event.events_size());
+  ASSERT_EQ(1u, snooze_event.events(0).day());
+  ASSERT_EQ(1u, snooze_event.events(0).count());
+  ASSERT_EQ(0u, snooze_event.events(0).snooze_count());
+
+  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
+                                Tracker::SnoozeAction::SNOOZED);
+  snooze_event = event_store_->GetEvent(
+      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
+  ASSERT_EQ(1u, snooze_event.events(0).snooze_count());
+  ASSERT_EQ(now.ToDeltaSinceWindowsEpoch().InMicroseconds(),
+            snooze_event.last_snooze_time_us());
+  ASSERT_EQ(false, snooze_event.snooze_dismissed());
+
+  // Now, the feature should be on snooze.
+  trigger_details =
+      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
+  EXPECT_FALSE(trigger_details.ShouldShowIph());
+  EXPECT_FALSE(trigger_details.ShouldShowSnooze());
+
+  // Advance the clock so the snooze expires. Then the feature should be ready
+  // to show again.
+  time_provider_->SetCurrentTime(now + base::Days(8));
+  trigger_details =
+      tracker_->ShouldTriggerHelpUIWithSnooze(kTrackerTestFeatureSnooze);
+  EXPECT_TRUE(trigger_details.ShouldShowIph());
+  EXPECT_TRUE(trigger_details.ShouldShowSnooze());
+
+  tracker_->DismissedWithSnooze(kTrackerTestFeatureSnooze,
+                                Tracker::SnoozeAction::DISMISSED);
+  snooze_event = event_store_->GetEvent(
+      configuration_->GetFeatureConfig(kTrackerTestFeatureSnooze).trigger.name);
+  ASSERT_EQ(1u, snooze_event.events(0).snooze_count());
+  ASSERT_EQ(true, snooze_event.snooze_dismissed());
+
+  EXPECT_TRUE(tracker_->ShouldTriggerHelpUI(kTrackerTestFeatureFoo));
 }
 
 }  // namespace test

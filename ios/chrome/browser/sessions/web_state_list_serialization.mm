@@ -14,6 +14,7 @@
 #import "base/check_op.h"
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
@@ -33,32 +34,60 @@
 
 namespace {
 
+// Whether a particular web state should be kept or filtered out. This checks
+// for empty tabs (i.e. without navigation), and duplicates.
+bool ShouldKeepWebState(const web::WebState* web_state,
+                        const std::set<web::WebStateID>& seen_identifiers,
+                        int& duplicate_count) {
+  if (seen_identifiers.contains(web_state->GetUniqueIdentifier())) {
+    duplicate_count++;
+    return false;
+  }
+
+  if (web_state->GetNavigationItemCount()) {
+    // WebState has navigation history, keep.
+    return true;
+  }
+
+  if (web_state->IsRealized()) {
+    const web::NavigationManager* manager = web_state->GetNavigationManager();
+    if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
+      // WebState has restoration or navigation pending, keep.
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Creates a RemovingIndexes that records the indexes of the WebStates that
+// should not be saved.
+//
 // Some WebState may have no back/forward history. This can happen for
 // multiple reason (one is when opening a new tab on a slow network session,
 // and terminating the app before the navigation can commit, another is when
 // WKWebView intercepts a new tab navigation to an app navigation; there may
-// be other cases). This function creates a RemovingIndexes that records the
-// indexes of the WebStates that should not be saved.
+// be other cases).
+// Some WebState might have become inconsistent and have the same identifier.
+// This remove method removes the duplicates and keeps the first occurrence.
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
+  std::set<web::WebStateID> seen_identifiers;
+  // Count the number of dropped tabs because they are duplicates, for
+  // reporting.
+  int duplicate_count = 0;
   for (int index = 0; index < web_state_list.count(); ++index) {
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
-    if (web_state->GetNavigationItemCount()) {
-      // WebState has navigation history, do not drop.
+    if (ShouldKeepWebState(web_state, seen_identifiers, duplicate_count)) {
+      seen_identifiers.insert(web_state->GetUniqueIdentifier());
       continue;
     }
 
-    if (web_state->IsRealized()) {
-      const web::NavigationManager* manager = web_state->GetNavigationManager();
-      if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
-        // WebState restoration or navigation in progress, do not drop.
-        continue;
-      }
-    }
-
-    // Drop WebState.
     web_state_to_skip_indexes.push_back(index);
   }
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionSave",
+                              duplicate_count);
+
   return RemovingIndexes(std::move(web_state_to_skip_indexes));
 }
 

@@ -381,7 +381,7 @@ void ExtensionSidePanelCoordinator::LoadExtensionIcon() {
 void ExtensionSidePanelCoordinator::UpdateActionItemIcon() {
   CHECK(IsGlobalCoordinator());
   absl::optional<actions::ActionId> extension_action_id =
-      actions::ActionManager::StringToActionId(GetEntryKey().ToString());
+      actions::ActionIdMap::StringToActionId(GetEntryKey().ToString());
   CHECK(extension_action_id.has_value());
   BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
   actions::ActionItem* action_item = actions::ActionManager::Get().FindAction(

@@ -284,14 +284,6 @@ class {test_class} : public DefaultModelTestBase {{
  public:
   {test_class}() : DefaultModelTestBase(std::make_unique<{clas}>()) {{}}
   ~{test_class}() override = default;
-
-  void SetUp() override {{
-    DefaultModelTestBase::SetUp();
-  }}
-
-  void TearDown() override {{
-    DefaultModelTestBase::TearDown();
-  }}
 }};
 
 TEST_F({test_class}, InitAndFetchModel) {{

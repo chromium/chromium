@@ -59,6 +59,27 @@ function recordAddCredentialInteraction(
       AddCredentialFromSettingsUserInteractions.COUNT);
 }
 
+/**
+ * Should be kept in sync with
+ * |password_manager::metrics_util::PasswordNoteAction|.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ */
+export enum PasswordNoteAction {
+  NOTE_ADDED_IN_ADD_DIALOG = 0,
+  NOTE_ADDED_IN_EDIT_DIALOG = 1,
+  NOTE_EDITED_IN_EDIT_DIALOG = 2,
+  NOTE_REMOVED_IN_EDIT_DIALOG = 3,
+  NOTE_NOT_CHANGED = 4,
+  // Must be last.
+  COUNT = 5,
+}
+
+export function recordPasswordNoteAction(action: PasswordNoteAction) {
+  chrome.metricsPrivate.recordEnumerationValue(
+      'PasswordManager.PasswordNoteActionInSettings2', action,
+      PasswordNoteAction.COUNT);
+}
 
 export interface AddPasswordDialogElement {
   $: {
@@ -343,6 +364,9 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
       chrome.metricsPrivate.recordBoolean(
           'PasswordManager.AddCredentialFromSettings.AccountStoreUsed2',
           useAccountStore);
+    }
+    if (this.note_.trim()) {
+      recordPasswordNoteAction(PasswordNoteAction.NOTE_ADDED_IN_ADD_DIALOG);
     }
 
     PasswordManagerImpl.getInstance()

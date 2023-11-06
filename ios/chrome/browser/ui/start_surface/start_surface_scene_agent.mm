@@ -241,18 +241,19 @@ const char kExcessNTPTabsRemoved[] = "IOS.NTP.ExcessRemovedTabCount";
 
 - (void)logBackgroundDurationMetricForActivationLevel:
     (SceneActivationLevel)level {
-  NSInteger timeSinceBackgroundInMinutes =
-      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState) / 60;
-  BOOL isColdStart = (level > SceneActivationLevelBackground &&
-                      self.sceneState.appState.startupInformation.isColdStart);
+  const base::TimeDelta timeSinceBackground =
+      GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
+  const BOOL isColdStart =
+      (level > SceneActivationLevelBackground &&
+       self.sceneState.appState.startupInformation.isColdStart);
   if (isColdStart) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
-                                timeSinceBackgroundInMinutes, 1,
-                                60 * 12 /* 12 hours */, 24);
+                                timeSinceBackground.InMinutes(), 1,
+                                base::Hours(12).InMinutes(), 24);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeWarmStart",
-                                timeSinceBackgroundInMinutes, 1,
-                                60 * 12 /* 12 hours */, 24);
+                                timeSinceBackground.InMinutes(), 1,
+                                base::Hours(12).InMinutes(), 24);
   }
 }
 

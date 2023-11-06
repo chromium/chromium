@@ -18,6 +18,9 @@ void ManageInstallation(PrefService* local_state);
 // Requests installation of Screen AI DLC.
 void Install();
 
+// Requests uninstallation of Screen AI DLC.
+void Uninstall();
+
 int CalculateNextDelayInSecondsForTesting(int delay_in_seconds);
 int base_retry_delay_in_seconds_for_testing();
 int max_install_retries_for_testing();

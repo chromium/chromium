@@ -39,7 +39,7 @@ class InternetDisconnectedURLLoader final : public URLLoader {
   // URLLoader implementation:
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          scoped_refptr<const SecurityOrigin> top_frame_origin,
-                         bool pass_response_pipe_to_client,
+                         bool download_to_blob,
                          bool no_mime_sniffing,
                          base::TimeDelta timeout_interval,
                          URLLoaderClient*,
@@ -57,6 +57,7 @@ class InternetDisconnectedURLLoader final : public URLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override;
   void Freeze(LoaderFreezeMode mode) override;
   void DidChangePriority(WebURLRequest::Priority, int) override;

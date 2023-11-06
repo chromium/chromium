@@ -502,6 +502,22 @@ TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_KeyRelatedHttpFailure) {
       /*expected_count=*/1);
 }
 
+// Regression test for https://crbug.com/1494853
+TEST_F(OhttpKeyServiceTest, NotifyLookupResponse_Backoff) {
+  test_url_loader_factory_->AddResponse(GetExpectedKeyFetchServerUrl(),
+                                        kTestOhttpKey, net::HTTP_FORBIDDEN);
+  // Wait for 2 minutes so the async workflow triggers the backoff mode.
+  task_environment_.FastForwardBy(base::Minutes(2));
+  task_environment_.RunUntilIdle();
+  SetupSuccessResponse();
+  SetupOldKeyAndPendingNewKey();
+  ohttp_key_service_->NotifyLookupResponse(kTestOldOhttpKey, net::HTTP_OK,
+                                           CreateKeyRotatedHeaders());
+
+  // Still returns old key because the service is in backoff mode.
+  FastForwardAndVerifyKeyValue(kTestOldOhttpKey);
+}
+
 TEST_F(OhttpKeyServiceTest, Shutdown) {
   base::MockCallback<OhttpKeyService::Callback> response_callback;
   // Pending callbacks should be run during shutdown.

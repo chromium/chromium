@@ -7,7 +7,9 @@
 
 #include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_selections.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
+#include "content/public/browser/browser_context.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_LACROS), "For Lacros only");
 
@@ -37,6 +39,14 @@ class MetricReportingManagerLacrosShutdownNotifierFactory
 
   MetricReportingManagerLacrosShutdownNotifierFactory();
   ~MetricReportingManagerLacrosShutdownNotifierFactory() override;
+
+  // BrowserContextKeyedServiceFactory:
+  // Selects the proper context to use based on the mapping in
+  // `profile_selections_`.
+  ::content::BrowserContext* GetBrowserContextToUse(
+      ::content::BrowserContext* context) const override;
+
+  const ProfileSelections profile_selections_;
 };
 
 }  // namespace reporting::metrics

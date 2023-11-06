@@ -1,0 +1,41 @@
+Tests setSensorOverrideEnabled fails if enabling the same sensor twice
+Enabling sensor override
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+
+Attempting to enable an already enabled sensor
+{
+    error : {
+        code : -32602
+        message : The specified sensor type is already overridden
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : The specified sensor type is already overridden
+    }
+    id : <number>
+    sessionId : <string>
+}
+
+Removing override and enabling it again
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+

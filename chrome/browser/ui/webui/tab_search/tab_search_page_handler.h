@@ -9,6 +9,9 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
+#include "chrome/browser/ui/tabs/organization/tab_data.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -58,12 +61,23 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   // tab_search::mojom::PageHandler:
   void CloseTab(int32_t tab_id) override;
+  void AcceptTabOrganization(
+      int32_t session_id,
+      int32_t organization_id,
+      const std::u16string& name,
+      std::vector<tab_search::mojom::TabPtr> tabs) override;
+  void RejectTabOrganization(int32_t session_id,
+                             int32_t organization_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
+  void GetTabOrganizationSession(
+      GetTabOrganizationSessionCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
-  void RequestTabOrganization(RequestTabOrganizationCallback callback) override;
+  void RequestTabOrganization() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
+  void SetTabIndex(int32_t index) override;
+  void StartTabGroupTutorial() override;
   void ShowUI() override;
 
   // TabStripModelObserver:
@@ -75,12 +89,21 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
                     int index,
                     TabChangeType change_type) override;
 
+  void OnTabOrganizationSessionChanged();
+
   // BrowserTabStripTrackerDelegate:
   bool ShouldTrackBrowser(Browser* browser) override;
 
   // Returns true if the WebContents hosting the WebUI is visible to the user
   // (in either a fully visible or partially occluded state).
   bool IsWebContentsVisible();
+
+  // Convert TabOrganizations data to mojo serialized objects.
+  tab_search::mojom::TabPtr GetMojoForTabData(TabData* tab_data) const;
+  tab_search::mojom::TabOrganizationPtr GetMojoForTabOrganization(
+      const TabOrganization* organization) const;
+  tab_search::mojom::TabOrganizationSessionPtr GetMojoForTabOrganizationSession(
+      const TabOrganizationSession& session) const;
 
  protected:
   void SetTimerForTesting(std::unique_ptr<base::RetainingOneShotTimer> timer);
@@ -129,9 +152,9 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
       std::set<tab_groups::TabGroupId>& tab_group_ids,
       std::vector<tab_search::mojom::TabGroupPtr>& tab_groups);
 
-  tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
+  tab_search::mojom::TabPtr GetTab(const TabStripModel* tab_strip_model,
                                    content::WebContents* contents,
-                                   int index);
+                                   int index) const;
   tab_search::mojom::RecentlyClosedTabPtr GetRecentlyClosedTab(
       sessions::TabRestoreService::Tab* tab,
       const base::Time& close_time);

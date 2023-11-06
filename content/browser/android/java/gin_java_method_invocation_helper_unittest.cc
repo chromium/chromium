@@ -216,12 +216,14 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleObjectIsGone) {
   NullDispatcherDelegate dispatcher;
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->get_local_ref_called());
-  EXPECT_EQ(kGinJavaBridgeNoError, helper->GetInvocationError());
+  EXPECT_EQ(mojom::GinJavaBridgeError::kGinJavaBridgeNoError,
+            helper->GetInvocationError());
   helper->Invoke();
   EXPECT_TRUE(object_delegate->get_local_ref_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
   EXPECT_TRUE(helper->GetPrimitiveResult().empty());
-  EXPECT_EQ(kGinJavaBridgeObjectIsGone, helper->GetInvocationError());
+  EXPECT_EQ(mojom::GinJavaBridgeError::kGinJavaBridgeObjectIsGone,
+            helper->GetInvocationError());
 }
 
 namespace {
@@ -265,12 +267,14 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleMethodNotFound) {
   NullDispatcherDelegate dispatcher;
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->find_method_called());
-  EXPECT_EQ(kGinJavaBridgeNoError, helper->GetInvocationError());
+  EXPECT_EQ(mojom::GinJavaBridgeError::kGinJavaBridgeNoError,
+            helper->GetInvocationError());
   helper->Invoke();
   EXPECT_TRUE(object_delegate->find_method_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
   EXPECT_TRUE(helper->GetPrimitiveResult().empty());
-  EXPECT_EQ(kGinJavaBridgeMethodNotFound, helper->GetInvocationError());
+  EXPECT_EQ(mojom::GinJavaBridgeError::kGinJavaBridgeMethodNotFound,
+            helper->GetInvocationError());
 }
 
 namespace {
@@ -320,14 +324,16 @@ TEST_F(GinJavaMethodInvocationHelperTest, HandleGetClassInvocation) {
   helper->Init(&dispatcher);
   EXPECT_FALSE(object_delegate->find_method_called());
   EXPECT_FALSE(object_delegate->get_class_called());
-  EXPECT_EQ(kGinJavaBridgeNoError, helper->GetInvocationError());
+  EXPECT_EQ(mojom::GinJavaBridgeError::kGinJavaBridgeNoError,
+            helper->GetInvocationError());
   helper->Invoke();
   EXPECT_TRUE(object_delegate->find_method_called());
   EXPECT_TRUE(object_delegate->get_class_called());
   EXPECT_TRUE(helper->HoldsPrimitiveResult());
   EXPECT_TRUE(helper->GetPrimitiveResult().empty());
-  EXPECT_EQ(kGinJavaBridgeAccessToObjectGetClassIsBlocked,
-            helper->GetInvocationError());
+  EXPECT_EQ(
+      mojom::GinJavaBridgeError::kGinJavaBridgeAccessToObjectGetClassIsBlocked,
+      helper->GetInvocationError());
 }
 
 }  // namespace content

@@ -92,6 +92,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x64",
       "target_os": "android",
+      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_jacoco_coverage": true,
       "use_remoteexec": true
@@ -794,6 +795,34 @@
       "use_thin_lto": false
     }
   },
+  "android-cronet-x64-dbg-14-tests": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "default_min_sdk_version": 21,
+      "disable_file_support": true,
+      "enable_base_tracing": false,
+      "enable_reporting": true,
+      "enable_resource_allowlist_generation": false,
+      "enable_websockets": false,
+      "ffmpeg_branding": "Chrome",
+      "include_transport_security_state_preload_list": false,
+      "is_component_build": false,
+      "is_cronet_build": true,
+      "is_debug": true,
+      "media_use_ffmpeg": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "target_os": "android",
+      "use_crash_key_stubs": true,
+      "use_hashed_jni_names": true,
+      "use_partition_alloc": false,
+      "use_platform_icu_alternatives": true,
+      "use_remoteexec": true,
+      "use_thin_lto": false
+    }
+  },
   "android-cronet-x86-dbg": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
@@ -1096,25 +1125,6 @@
       "use_remoteexec": true
     }
   },
-  "android-inverse-fieldtrials-pie-x86-fyi-rel": {
-    "gn_args": {
-      "android_static_analysis": "off",
-      "dcheck_always_on": true,
-      "debuggable_apks": false,
-      "ffmpeg_branding": "Chrome",
-      "invert_fieldtrials": true,
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "strip_debug_info": true,
-      "symbol_level": 0,
-      "system_webview_package_name": "com.google.android.webview",
-      "target_cpu": "x86",
-      "target_os": "android",
-      "use_dummy_lastchange": true,
-      "use_remoteexec": true
-    }
-  },
   "android-oreo-arm64-dbg": {
     "gn_args": {
       "debuggable_apks": false,
@@ -1375,6 +1385,7 @@
       "system_webview_shell_package_name": "org.chromium.my_webview_shell",
       "target_cpu": "x86",
       "target_os": "android",
+      "use_clang_coverage": true,
       "use_dummy_lastchange": true,
       "use_jacoco_coverage": true,
       "use_remoteexec": true

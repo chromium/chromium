@@ -27,29 +27,12 @@ enum class Desktop {
   kAlternateWinstation,
 };
 
-// Windows subsystems that can have specific rules.
-// Note: The process subsystem  (kProcess) does not evaluate the request
-// exactly like the CreateProcess API does. See the comment at the top of
-// process_thread_dispatcher.cc for more details.
-enum class SubSystem {
-  kFiles,           // Creation and opening of files and pipes.
-  kNamedPipes,      // Creation of named pipes.
-  kProcess,         // Creation of child processes.
-  kWin32kLockdown,  // Win32K Lockdown related policy.
-  kSignedBinary,    // Signed binary policy.
-};
-
-// Allowable semantics when a rule is matched.
-enum class Semantics {
-  kFilesAllowAny,       // Allows open or create for any kind of access that
-                        // the file system supports.
-  kFilesAllowReadonly,  // Allows open or create with read access only
-                        // (includes access to query the attributes of a file).
-  kNamedPipesAllowAny,  // Allows creation of a named pipe.
-  kFakeGdiInit,         // Fakes user32 and gdi32 initialization. This can
-                        // be used to allow the DLLs to load and initialize
-                        // even if the process cannot access that subsystem.
-  kSignedAllowLoad,     // Allows loading the module when CIG is enabled.
+// Allowable semantics when an AllowFileAccess() rule is matched.
+enum class FileSemantics {
+  kAllowAny,       // Allows open or create for any kind of access that
+                   // the file system supports.
+  kAllowReadonly,  // Allows open or create with read access only
+                   // (includes access to query the attributes of a file).
 };
 
 // Policy configuration that can be shared over multiple targets of the same tag
@@ -145,8 +128,8 @@ class [[clang::lto_visibility_public]] TargetConfig {
   virtual void SetJobMemoryLimit(size_t memory_limit) = 0;
 
   // Adds a policy rule effective for processes spawned using this policy.
-  // subsystem: One of the above enumerated windows subsystems.
-  // semantics: One of the above enumerated FileSemantics.
+  // Files matching `pattern` can be opened following FileSemantics.
+  //
   // pattern: A specific full path or a full path with wildcard patterns.
   //   The valid wildcards are:
   //   '*' : Matches zero or more character. Only one in series allowed.
@@ -155,9 +138,27 @@ class [[clang::lto_visibility_public]] TargetConfig {
   //   "c:\\documents and settings\\vince\\*.dmp"
   //   "c:\\documents and settings\\*\\crashdumps\\*.dmp"
   //   "c:\\temp\\app_log_?????_chrome.txt"
-  [[nodiscard]] virtual ResultCode AddRule(SubSystem subsystem,
-                                           Semantics semantics,
-                                           const wchar_t* pattern) = 0;
+  //
+  // Note: Do not add new uses of this function - instead proxy file handles
+  // into your process via normal Chrome IPC.
+  [[nodiscard]] virtual ResultCode AllowFileAccess(FileSemantics semantics,
+                                                   const wchar_t* pattern) = 0;
+
+  // Adds a policy rule effective for processes spawned using this policy.
+  // Named pipes matching `pattern` (see AllowFileAccess) can be created.
+  //
+  // Note: Do not add new uses of this function - instead proxy pipe handles
+  // into your process via normal Chrome IPC.
+  [[nodiscard]] virtual ResultCode AllowNamedPipes(const wchar_t* pattern) = 0;
+
+  // Adds a policy rule effective for processes spawned using this policy.
+  // Modules patching `pattern` (see AllowFileAccess) can still be loaded under
+  // Code-Integrity Guard (MITIGATION_FORCE_MS_SIGNED_BINS).
+  [[nodiscard]] virtual ResultCode AllowExtraDlls(const wchar_t* pattern) = 0;
+
+  // Adds a policy rule effective for processes spawned using this policy.
+  // Fake gdi init to allow user32 and gdi32 to initialize under Win32 Lockdown.
+  [[nodiscard]] virtual ResultCode SetFakeGdiInit() = 0;
 
   // Adds a dll that will be unloaded in the target process before it gets
   // a chance to initialize itself. Typically, dlls that cause the target

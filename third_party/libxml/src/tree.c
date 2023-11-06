@@ -4206,7 +4206,10 @@ xmlStaticCopyNode(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent,
 	    /*
 	     * Humm, we are copying an element whose namespace is defined
 	     * out of the new tree scope. Search it in the original tree
-	     * and add it at the top of the new tree
+	     * and add it at the top of the new tree.
+             *
+             * TODO: Searching the original tree seems unnecessary. We
+             * already have a namespace URI.
 	     */
 	    ns = xmlSearchNs(node->doc, node, node->ns->prefix);
 	    if (ns != NULL) {
@@ -4214,8 +4217,8 @@ xmlStaticCopyNode(xmlNodePtr node, xmlDocPtr doc, xmlNodePtr parent,
 
 		while (root->parent != NULL) root = root->parent;
 		ret->ns = xmlNewNs(root, ns->href, ns->prefix);
-		} else {
-			ret->ns = xmlNewReconciledNs(doc, ret, node->ns);
+            } else {
+                ret->ns = xmlNewReconciledNs(doc, ret, node->ns);
 	    }
 	} else {
 	    /*

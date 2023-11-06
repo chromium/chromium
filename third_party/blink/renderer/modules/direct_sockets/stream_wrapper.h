@@ -33,7 +33,7 @@ class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
   virtual ~StreamWrapper();
 
   State GetState() const { return state_; }
-  ScriptState* GetScriptState() const { return script_state_; }
+  ScriptState* GetScriptState() const { return script_state_.Get(); }
 
   // Checks whether associated stream is locked to a reader/writer.
   virtual bool Locked() const = 0;
@@ -53,7 +53,7 @@ class MODULES_EXPORT StreamWrapper : public GarbageCollectedMixin {
 
 class ReadableStreamWrapper : public StreamWrapper {
  public:
-  ReadableStream* Readable() const { return readable_; }
+  ReadableStream* Readable() const { return readable_.Get(); }
 
   // Checks whether |readable_| is locked to a reader.
   bool Locked() const override;
@@ -78,7 +78,7 @@ class ReadableStreamDefaultWrapper : public ReadableStreamWrapper {
 
   void Trace(Visitor*) const override;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
  protected:
@@ -102,7 +102,7 @@ class ReadableByteStreamWrapper : public ReadableStreamWrapper {
 
   void Trace(Visitor*) const override;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
  protected:
@@ -124,7 +124,7 @@ class WritableStreamWrapper : public StreamWrapper {
  public:
   using ControllerType = WritableStreamDefaultController;
 
-  WritableStream* Writable() const { return writable_; }
+  WritableStream* Writable() const { return writable_.Get(); }
 
   // Checks whether |writable_| is locked to a writer.
   bool Locked() const override;
@@ -142,7 +142,7 @@ class WritableStreamWrapper : public StreamWrapper {
   // Implements UnderlyingSink::write(...)
   virtual ScriptPromise Write(ScriptValue, ExceptionState&) = 0;
 
-  ControllerType* Controller() const { return controller_; }
+  ControllerType* Controller() const { return controller_.Get(); }
   void SetController(ControllerType* controller) { controller_ = controller; }
 
   void Trace(Visitor*) const override;

@@ -46,7 +46,6 @@ absl_source_set("strings") {
     "escaping.h",
     "has_absl_stringify.h",
     "internal/damerau_levenshtein_distance.h",
-    "internal/has_absl_stringify.h",
     "internal/string_constant.h",
     "match.h",
     "numbers.h",
@@ -574,6 +573,20 @@ absl_test("has_absl_stringify_test") {
   sources = [ "has_absl_stringify_test.cc" ]
   deps = [
     ":strings",
+    "//third_party/abseil-cpp/absl/types:optional",
+  ]
+}
+
+absl_source_set("has_ostream_operator") {
+  public = [ "has_ostream_operator.h" ]
+  deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+}
+
+absl_test("has_ostream_operator_test") {
+  sources = [ "has_ostream_operator_test.cc" ]
+  deps = [
+    ":has_ostream_operator",
+    "//third_party/abseil-cpp/absl/types:optional",
   ]
 }
 

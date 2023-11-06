@@ -10,19 +10,20 @@
 
 import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
 import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
+import {assert} from 'chrome://resources/js/assert.js';
 
 import {DialogType, isModal} from '../../common/js/dialog_type.js';
+import {isSameEntry} from '../../common/js/entry_utils.js';
 import {parseActionId} from '../../common/js/file_tasks.js';
 import {FileType} from '../../common/js/file_type.js';
-import {str, util} from '../../common/js/util.js';
+import {getEntryLabel, str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';
 import type {FilesTooltip} from '../elements/files_tooltip.js';
 
-import {CommandHandler} from './file_manager_commands.js';
+import {CommandHandler, DeleteCommand} from './file_manager_commands.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {FileTasks} from './file_tasks.js';
 import {MetadataItem} from './metadata/metadata_item.js';
@@ -56,7 +57,7 @@ export class QuickViewController {
   /**
    * Current selection of selectionHandler.
    */
-  private entries_: Array<Entry|FileEntry> = [];
+  private entries_: Entry[] = [];
 
   /**
    * The tasks for the current entry shown in quick view.
@@ -305,8 +306,9 @@ export class QuickViewController {
     this.checkSelectMode_ = this.fileListSelectionModel_.getCheckSelectMode();
 
     // Delete the entry if the entry can be deleted.
-    CommandHandler.getCommand('delete').deleteEntries(
-        [entry], this.fileManager_, /*permanentlyDelete=*/ false,
+    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
+    deleteCommand.deleteEntries(
+        [entry!], this.fileManager_, /*permanentlyDelete=*/ false,
         this.deleteConfirmDialog_);
   }
 
@@ -314,7 +316,7 @@ export class QuickViewController {
    * Returns true if the entry can be deleted.
    */
   private async canDeleteEntry_(entry: Entry) {
-    const deleteCommand = CommandHandler.getCommand('delete');
+    const deleteCommand = CommandHandler.getCommand('delete') as DeleteCommand;
     return deleteCommand.canDeleteEntries([entry], this.fileManager_);
   }
 
@@ -370,7 +372,7 @@ export class QuickViewController {
     if (this.quickView_ && this.quickView_.isOpened() &&
         this.entries_[this.currentSelection_]) {
       const entry = this.entries_[this.currentSelection_]!;
-      if (!util.isSameEntry(entry, this.quickViewModel_.getSelectedEntry()!)) {
+      if (!isSameEntry(entry, this.quickViewModel_.getSelectedEntry()!)) {
         this.updateQuickView_();
       }
     }
@@ -467,7 +469,7 @@ export class QuickViewController {
     const typeInfo = FileType.getType(entry, firstItem?.contentMimeType);
     const type = typeInfo.type;
     const locationInfo = this.volumeManager_.getLocationInfo(entry);
-    const label = util.getEntryLabel(locationInfo, entry);
+    const label = getEntryLabel(locationInfo, entry);
     const entryIsOnDrive = locationInfo && locationInfo.isDriveBased;
     const thumbnailUrl = firstItem ? firstItem.thumbnailUrl : undefined;
     const modificationTime = firstItem ? firstItem.modificationTime : undefined;

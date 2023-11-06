@@ -110,7 +110,8 @@ export class InjectedScriptLoader {
   async executeCodeInAllTabs_(tabs) {
     for (const tab of tabs) {
       // Inject the ChromeVox content script code into the tab.
-      await Promise.all(this.code_.map(script => this.execute_(script, tab)));
+      await Promise.all(
+          Object.values(this.code_).map(script => this.execute_(script, tab)));
     }
   }
 

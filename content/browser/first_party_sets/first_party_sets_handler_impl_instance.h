@@ -89,7 +89,10 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
       const net::SchemefulSite* top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) override;
-
+  bool ForEachEffectiveSetEntry(
+      const net::FirstPartySetsContextConfig& config,
+      base::FunctionRef<bool(const net::SchemefulSite&,
+                             const net::FirstPartySetEntry&)> f) const override;
   void GetPersistedSetsForTesting(
       const std::string& browser_context_id,
       base::OnceCallback<
@@ -183,14 +186,21 @@ class CONTENT_EXPORT FirstPartySetsHandlerImplInstance
   absl::optional<net::GlobalFirstPartySets> global_sets_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
-  bool embedder_will_provide_public_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
+  // Whether the First-Party Sets feature should behave as "enabled" or not,
+  // according to the embedder.
+  const bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  // We use a OnceCallback to ensure we only pass along the sets once
-  // during Chrome's lifetime (modulo reconfiguring the network service).
-  base::circular_deque<base::OnceClosure> on_sets_ready_callbacks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // A queue of tasks waiting to run once this instance has the full
+  // GlobalFirstPartySets instance. If `enabled_` is true, then this queue is
+  // non-null until `global_sets_` is non-nullopt. Otherwise, it is always
+  // nullptr.
+  std::unique_ptr<base::circular_deque<base::OnceClosure>>
+      on_sets_ready_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  // A helper object to handle loading and combining First-Party Sets from
+  // different sources (i.e. the command-line flag and the list provided by the
+  // embedder). This is nullptr if `enabled_` is false; and it is nullptr after
+  // `global_sets_` has been set.
   std::unique_ptr<FirstPartySetsLoader> sets_loader_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

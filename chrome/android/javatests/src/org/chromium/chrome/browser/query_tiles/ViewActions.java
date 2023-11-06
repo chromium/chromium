@@ -20,15 +20,16 @@ final class ViewActions {
 
     /**
      * Creates a {@link ViewAction} that will scroll to a certain element in the list.
+     *
      * @param position The position in the {@link RecyclerView} to scroll to.
-     * @return         A {@link ViewAction} that will scroll a {@link RecyclerView} to {@code
-     *                 position}.
+     * @return A {@link ViewAction} that will scroll a {@link RecyclerView} to {@code position}.
      */
     public static ViewAction scrollTo(int position) {
         return new ViewAction() {
             @Override
             public Matcher<View> getConstraints() {
-                return AllOf.allOf(ViewMatchers.isAssignableFrom(RecyclerView.class),
+                return AllOf.allOf(
+                        ViewMatchers.isAssignableFrom(RecyclerView.class),
                         ViewMatchers.isDisplayed());
             }
 

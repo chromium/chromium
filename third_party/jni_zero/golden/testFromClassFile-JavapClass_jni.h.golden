@@ -13,15 +13,17 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char kClassPath_org_jni_1zero_samples_JavapClass[];
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_org_jni_1zero_samples_JavapClass[];
 const char kClassPath_org_jni_1zero_samples_JavapClass[] = "org/jni_zero/samples/JavapClass";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass> g_org_jni_1zero_samples_JavapClass_clazz(nullptr);
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
+    g_org_jni_1zero_samples_JavapClass_clazz(nullptr);
 #ifndef org_jni_1zero_samples_JavapClass_clazz_defined
 #define org_jni_1zero_samples_JavapClass_clazz_defined
 inline jclass org_jni_1zero_samples_JavapClass_clazz(JNIEnv* env) {
@@ -51,7 +53,7 @@ static std::atomic<jmethodID> g_org_jni_1zero_samples_JavapClass_Constructor0(nu
 static base::android::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(JNIEnv* env) {
   jclass clazz = org_jni_1zero_samples_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      org_jni_1zero_samples_JavapClass_clazz(env), NULL);
+      org_jni_1zero_samples_JavapClass_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -75,7 +77,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__b
     jboolean p0) {
   jclass clazz = org_jni_1zero_samples_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      org_jni_1zero_samples_JavapClass_clazz(env), NULL);
+      org_jni_1zero_samples_JavapClass_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -99,7 +101,7 @@ static base::android::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__i
     JniIntWrapper p0) {
   jclass clazz = org_jni_1zero_samples_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      org_jni_1zero_samples_JavapClass_clazz(env), NULL);
+      org_jni_1zero_samples_JavapClass_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -214,7 +216,7 @@ static base::android::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(JNIEnv*
     const base::android::JavaRef<jobjectArray>& p1) {
   jclass clazz = org_jni_1zero_samples_JavapClass_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
-      org_jni_1zero_samples_JavapClass_clazz(env), NULL);
+      org_jni_1zero_samples_JavapClass_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -263,7 +265,7 @@ static base::android::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticInt
     const base::android::JavaRef<jstring>& p0) {
   jclass clazz = org_jni_1zero_samples_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      org_jni_1zero_samples_JavapClass_clazz(env), NULL);
+      org_jni_1zero_samples_JavapClass_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<

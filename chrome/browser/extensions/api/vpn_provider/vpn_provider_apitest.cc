@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/test_future.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -189,7 +190,8 @@ class VpnProviderApiTestLacros : public VpnProviderApiTestBase {
   }
   void OnPlatformMessage(const std::string& configuration_name,
                          api_vpn::PlatformMessage message) override {
-    controller_->OnPlatformMessage(extension_id(), configuration_name, message);
+    controller_->OnPlatformMessage(extension_id(), configuration_name,
+                                   base::to_underlying(message));
   }
   void OnPacketReceived(const std::string& configuration_name,
                         const std::vector<char>& data) override {
@@ -238,7 +240,8 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
   void OnPlatformMessage(const std::string& configuration_name,
                          api_vpn::PlatformMessage message) override {
     test_client_->OnPlatformMessage(
-        shill::kObjectPathBase + GetKey(configuration_name), message);
+        shill::kObjectPathBase + GetKey(configuration_name),
+        base::to_underlying(message));
   }
   void OnPacketReceived(const std::string& configuration_name,
                         const std::vector<char>& data) override {
@@ -325,7 +328,8 @@ class VpnProviderApiTestAsh : public VpnProviderApiTestBase {
     DCHECK(base::Contains(mapping, extension_id));
     auto* service = mapping.at(extension_id).get();
     service->DispatchOnPlatformMessageEvent(
-        configuration_name, api_vpn::PLATFORM_MESSAGE_ERROR, error_message);
+        configuration_name,
+        base::to_underlying(api_vpn::PlatformMessage::kError), error_message);
   }
 
   void ClearNetworkProfiles() {
@@ -392,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, DestroyConnectedConfig) {
   EXPECT_TRUE(HasService(service_path));
   EXPECT_FALSE(IsConfigConnected());
 
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_CONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
   EXPECT_TRUE(IsConfigConnected());
 
   EXPECT_TRUE(RunTest("destroyConnectedConfigSetup"));
@@ -525,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
 #endif
 
   extensions::ResultCatcher catcher;
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_CONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
   ASSERT_TRUE(catcher.GetNextResult());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -533,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   EXPECT_EQ(1, test_client_->set_parameters_counter_);
   EXPECT_EQ(1, test_client_->update_connection_state_counter_);
   EXPECT_EQ(1, test_client_->send_packet_counter_);
-  EXPECT_EQ(api_vpn::VPN_CONNECTION_STATE_CONNECTED,
+  EXPECT_EQ(base::to_underlying(api_vpn::VpnConnectionState::kConnected),
             test_client_->update_connection_state_counter_);
   for (size_t i = 0; i < std::size(kParameterValues); ++i) {
     const std::string* value =
@@ -550,7 +554,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, VpnSuccess) {
   OnPacketReceived(kTestConfig, packet);
   ASSERT_TRUE(catcher.GetNextResult());
 
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
   ASSERT_TRUE(catcher.GetNextResult());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -598,7 +602,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PepperProxy) {
   // PLATFORM_MESSAGE_CONNECTED.
   EXPECT_TRUE(RunTest("createConfigConnectForBind"));
   ASSERT_TRUE(catcher.GetNextResult());
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_CONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
   ASSERT_TRUE(catcher.GetNextResult());
 
   // Synchronously bind the fake pepper proxy.
@@ -615,7 +619,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PepperProxy) {
 
   // Assert that pepper proxy receives an OnUnbind event on
   // PLATFORM_MESSAGE_DISCONNECTED.
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
   ASSERT_TRUE(catcher.GetNextResult());
   ASSERT_TRUE(unbind.Wait());
 }
@@ -661,9 +665,9 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, PlatformMessage) {
   EXPECT_TRUE(RunTest("platformMessage"));
   ASSERT_TRUE(catcher.GetNextResult());
 
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_CONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kConnected);
   ASSERT_TRUE(catcher.GetNextResult());
-  OnPlatformMessage(kTestConfig, api_vpn::PLATFORM_MESSAGE_DISCONNECTED);
+  OnPlatformMessage(kTestConfig, api_vpn::PlatformMessage::kDisconnected);
   ASSERT_TRUE(catcher.GetNextResult());
 }
 

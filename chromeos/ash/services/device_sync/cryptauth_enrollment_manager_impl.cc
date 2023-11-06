@@ -181,7 +181,7 @@ bool CryptAuthEnrollmentManagerImpl::IsEnrollmentValid() const {
 }
 
 base::Time CryptAuthEnrollmentManagerImpl::GetLastEnrollmentTime() const {
-  return base::Time::FromDoubleT(pref_service_->GetDouble(
+  return base::Time::FromSecondsSinceUnixEpoch(pref_service_->GetDouble(
       prefs::kCryptAuthEnrollmentLastEnrollmentTimeSeconds));
 }
 
@@ -203,7 +203,7 @@ void CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished(bool success) {
   if (success) {
     pref_service_->SetDouble(
         prefs::kCryptAuthEnrollmentLastEnrollmentTimeSeconds,
-        clock_->Now().ToDoubleT());
+        clock_->Now().InSecondsFSinceUnixEpoch());
     pref_service_->SetInteger(prefs::kCryptAuthEnrollmentReason,
                               cryptauth::INVOCATION_REASON_UNKNOWN);
   }

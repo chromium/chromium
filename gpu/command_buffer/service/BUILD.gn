@@ -189,6 +189,8 @@ target(link_target_type, "gles2_sources") {
     "graphite_cache_controller.h",
     "graphite_image_provider.cc",
     "graphite_image_provider.h",
+    "graphite_utils.cc",
+    "graphite_utils.h",
     "id_manager.cc",
     "id_manager.h",
     "indexed_buffer_binding_host.cc",
@@ -424,6 +426,8 @@ target(link_target_type, "gles2_sources") {
       "shared_image/ozone_image_backing.h",
       "shared_image/ozone_image_backing_factory.cc",
       "shared_image/ozone_image_backing_factory.h",
+      "shared_image/ozone_image_gl_textures_holder.cc",
+      "shared_image/ozone_image_gl_textures_holder.h",
     ]
     deps += [
       "//ui/base:features",

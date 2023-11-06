@@ -42,10 +42,10 @@ namespace crosapi {
 
 class ArcAsh;
 class AudioServiceAsh;
-class AuthenticationAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
+class GuestOsSkForwarderFactoryAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
 class ChromeAppKioskServiceAsh;
@@ -55,6 +55,7 @@ class ClipboardHistoryAsh;
 class ContentProtectionAsh;
 class CrosapiDependencyRegistry;
 class DeskAsh;
+class DeskProfilesAsh;
 class DeskTemplateAsh;
 class DeviceAttributesAsh;
 class DeviceLocalAccountExtensionServiceAsh;
@@ -157,8 +158,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindArc(mojo::PendingReceiver<mojom::Arc> receiver) override;
   void BindAudioService(
       mojo::PendingReceiver<mojom::AudioService> receiver) override;
-  void BindAuthentication(
-      mojo::PendingReceiver<mojom::Authentication> receiver) override;
   void BindAutomationDeprecated(
       mojo::PendingReceiver<mojom::Automation> receiver) override;
   void BindAutomationFactory(
@@ -169,6 +168,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindBrowserCdmFactory(mojo::GenericPendingReceiver receiver) override;
   void BindBrowserServiceHost(
       mojo::PendingReceiver<mojom::BrowserServiceHost> receiver) override;
+  void BindBrowserShortcutPublisher(
+      mojo::PendingReceiver<mojom::AppShortcutPublisher> receiver) override;
   void BindBrowserVersionService(
       mojo::PendingReceiver<mojom::BrowserVersionService> receiver) override;
   void BindCertDatabase(
@@ -190,6 +191,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
   void BindDesk(mojo::PendingReceiver<mojom::Desk> receiver) override;
+  void BindDeskProfileObserver(
+      mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) override;
   void BindDeskTemplate(
       mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(
@@ -390,11 +393,16 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::WebKioskService> receiver) override;
   void BindWebPageInfoFactory(
       mojo::PendingReceiver<mojom::WebPageInfoFactory> receiver) override;
+  void BindGuestOsSkForwarderFactory(
+      mojo::PendingReceiver<mojom::GuestOsSkForwarderFactory> receiver)
+      override;
   void OnBrowserStartup(mojom::BrowserInfoPtr browser_info) override;
   void REMOVED_29(
       mojo::PendingReceiver<mojom::SystemDisplayDeprecated> receiver) override;
   void REMOVED_105(mojo::PendingReceiver<mojom::FirewallHoleServiceDeprecated>
                        receiver) override;
+  void REMOVED_62(
+      mojo::PendingReceiver<mojom::AuthenticationDeprecated> receiver) override;
 
   AutomationAsh* automation_ash() { return automation_ash_.get(); }
 
@@ -413,6 +421,8 @@ class CrosapiAsh : public mojom::Crosapi {
   }
 
   DeskAsh* desk_ash() { return desk_ash_.get(); }
+
+  DeskProfilesAsh* desk_profiles_ash() { return desk_profiles_ash_.get(); }
 
   DeskTemplateAsh* desk_template_ash() { return desk_template_ash_.get(); }
 
@@ -574,10 +584,11 @@ class CrosapiAsh : public mojom::Crosapi {
 
   std::unique_ptr<ArcAsh> arc_ash_;
   std::unique_ptr<AudioServiceAsh> audio_service_ash_;
-  std::unique_ptr<AuthenticationAsh> authentication_ash_;
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
+  std::unique_ptr<GuestOsSkForwarderFactoryAsh>
+      guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
@@ -586,6 +597,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeskAsh> desk_ash_;
+  std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
   std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceLocalAccountExtensionServiceAsh>

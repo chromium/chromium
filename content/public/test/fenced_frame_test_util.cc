@@ -51,7 +51,9 @@ FencedFrameTestHelper::FencedFrameTestHelper() {
        {blink::features::kFencedFramesAPIChanges, {}},
        {blink::features::kFencedFramesDefaultMode, {}},
        {features::kFencedFramesEnforceFocus, {}},
-       {blink::features::kFencedFramesM119Features, {}}},
+       {blink::features::kFencedFramesM120FeaturesPart1, {}},
+       {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
+       {blink::features::kFencedFramesM120FeaturesPart2, {}}},
       {/* disabled_features */});
 }
 

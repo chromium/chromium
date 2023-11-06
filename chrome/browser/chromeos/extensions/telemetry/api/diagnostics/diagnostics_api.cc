@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
@@ -498,6 +499,12 @@ void OsDiagnosticsRunAudioDriverRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunAudioDriverRoutine(GetOnResult());
 }
 
+// OsDiagnosticsRunFanRoutineFunction -------------------------------
+
+void OsDiagnosticsRunFanRoutineFunction::RunIfAllowed() {
+  GetRemoteService()->RunFanRoutine(GetOnResult());
+}
+
 // OsDiagnosticsCreateMemoryRoutineFunction ------------------------------------
 
 void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
@@ -532,10 +539,56 @@ void OsDiagnosticsCreateMemoryRoutineFunction::RunIfAllowed() {
     return;
   }
 
-  cx_diag::CreateMemoryRoutineResponse response;
+  cx_diag::CreateRoutineResponse response;
   response.uuid = result->AsLowercaseString();
   Respond(
       ArgumentList(cx_diag::CreateMemoryRoutine::Results::Create(response)));
+}
+
+// OsDiagnosticsCreateVolumeButtonRoutineFunction
+// ------------------------------------
+
+void OsDiagnosticsCreateVolumeButtonRoutineFunction::RunIfAllowed() {
+  absl::optional<cx_diag::CreateVolumeButtonRoutine::Params> params(
+      cx_diag::CreateVolumeButtonRoutine::Params::Create(args()));
+
+  if (!params.has_value() || params.value().args.timeout_seconds <= 0 ||
+      params.value().args.button_type == cx_diag::VolumeButtonType::kNone) {
+    SetBadMessage();
+    Respond(BadMessage());
+    return;
+  }
+
+  auto volume_button_arg =
+      crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+  volume_button_arg->type =
+      converters::diagnostics::ConvertVolumeButtonRoutineButtonType(
+          params.value().args.button_type);
+  volume_button_arg->timeout =
+      base::Seconds(params.value().args.timeout_seconds);
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto result = routines_manager->CreateRoutine(
+      extension_id(),
+      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+          std::move(volume_button_arg)));
+
+  if (!result.has_value()) {
+    switch (result.error()) {
+      case DiagnosticRoutineManager::kAppUiClosed:
+        Respond(Error("Companion app UI is not open."));
+        break;
+      case DiagnosticRoutineManager::kExtensionUnloaded:
+        Respond(Error("Extension has been unloaded."));
+        break;
+    }
+    return;
+  }
+
+  cx_diag::CreateRoutineResponse response;
+  response.uuid = result->AsLowercaseString();
+  Respond(ArgumentList(
+      cx_diag::CreateVolumeButtonRoutine::Results::Create(response)));
 }
 
 // OsDiagnosticsStartRoutineFunction -------------------------------------------
@@ -611,6 +664,57 @@ void OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction::OnResult(
 
   Respond(
       ArgumentList(cx_diag::IsMemoryRoutineArgumentSupported::Results::Create(
+          response.value())));
+}
+
+// OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction
+// -----------------------
+
+void OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction::
+    RunIfAllowed() {
+  auto params =
+      GetParams<cx_diag::IsVolumeButtonRoutineArgumentSupported::Params>();
+  if (!params.has_value() || params.value().args.timeout_seconds <= 0 ||
+      params.value().args.button_type == cx_diag::VolumeButtonType::kNone) {
+    return;
+  }
+
+  auto* routines_manager = DiagnosticRoutineManager::Get(browser_context());
+  auto volume_button_args =
+      crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgument::New();
+  volume_button_args->type =
+      converters::diagnostics::ConvertVolumeButtonRoutineButtonType(
+          params.value().args.button_type);
+  volume_button_args->timeout =
+      base::Seconds(params.value().args.timeout_seconds);
+
+  auto args =
+      crosapi::mojom::TelemetryDiagnosticRoutineArgument::NewVolumeButton(
+          std::move(volume_button_args));
+  routines_manager->IsRoutineArgumentSupported(
+      std::move(args),
+      base::BindOnce(
+          &OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction::
+              OnResult,
+          this));
+}
+
+void OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction::OnResult(
+    crosapi::mojom::TelemetryExtensionSupportStatusPtr result) {
+  if (result.is_null()) {
+    RespondWithError("API internal error.");
+    return;
+  }
+
+  auto response = ParseRoutineArgumentSupportResult(std::move(result));
+
+  if (!response.has_value()) {
+    RespondWithError(response.error());
+    return;
+  }
+
+  Respond(ArgumentList(
+      cx_diag::IsVolumeButtonRoutineArgumentSupported::Results::Create(
           response.value())));
 }
 

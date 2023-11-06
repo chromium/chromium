@@ -58,7 +58,7 @@ class GlobalCookieStoreImpl final
       cookie_store_ = MakeGarbageCollected<CookieStore>(execution_context,
                                                         std::move(backend));
     }
-    return cookie_store_;
+    return cookie_store_.Get();
   }
 
   void Trace(Visitor* visitor) const override {

@@ -40,6 +40,8 @@ using autofill::password_generation::PasswordGenerationType;
 using password_manager::metrics_util::GenerationDialogChoice;
 using password_manager::prefs::kPasswordGenerationBottomSheetDismissCount;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
+using TouchToFillOutcome =
+    password_manager::metrics_util::TouchToFillPasswordGenerationTriggerOutcome;
 
 PasswordGenerationControllerImpl::~PasswordGenerationControllerImpl() = default;
 
@@ -108,7 +110,12 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
     return;
   generation_element_data_ =
       std::make_unique<PasswordGenerationElementData>(ui_data);
-  ShowDialog(PasswordGenerationType::kManual);
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet)) {
+    ShowDialog(PasswordGenerationType::kManual);
+  } else {
+    ShowBottomSheet(PasswordGenerationType::kManual);
+  }
 }
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
@@ -132,7 +139,12 @@ void PasswordGenerationControllerImpl::OnGenerationRequested(
     manual_generation_requested_ = true;
     client_->GeneratePassword(type);
   } else {
-    ShowDialog(PasswordGenerationType::kAutomatic);
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::kPasswordGenerationBottomSheet)) {
+      ShowDialog(PasswordGenerationType::kAutomatic);
+    } else {
+      ShowBottomSheet(PasswordGenerationType::kAutomatic);
+    }
   }
   ResetPasswordGenerationDismissBottomSheetCount();
 }
@@ -274,25 +286,57 @@ bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(
     bool has_saved_credentials) {
   CHECK(touch_to_fill_generation_state_ != TouchToFillState::kIsShowing);
 
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationBottomSheet)) {
+    return false;
+  }
+
+  if (has_saved_credentials) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kHasSavedCredentials);
+    return false;
+  }
+
   bool dismissed_4_times_in_a_row =
       client_->GetPrefs()->GetInteger(
           kPasswordGenerationBottomSheetDismissCount) >=
       TouchToFillPasswordGenerationController::kMaxAllowedNumberOfDismisses;
-
-  if (has_saved_credentials ||
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationBottomSheet) ||
-      touch_to_fill_generation_state_ == TouchToFillState::kWasShown ||
-      dismissed_4_times_in_a_row) {
+  if (dismissed_4_times_in_a_row) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kDismissed4TimesInARow);
     return false;
   }
 
+  if (touch_to_fill_generation_state_ == TouchToFillState::kWasShown) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kShownBefore);
+    return false;
+  }
+
+  if (ShowBottomSheet(PasswordGenerationType::kTouchToFill)) {
+    password_manager::metrics_util::
+        LogTouchToFillPasswordGenerationTriggerOutcome(
+            TouchToFillOutcome::kShown);
+    return true;
+  }
+
+  password_manager::metrics_util::
+      LogTouchToFillPasswordGenerationTriggerOutcome(
+          TouchToFillOutcome::kFailedToDisplay);
+  return false;
+}
+
+bool PasswordGenerationControllerImpl::ShowBottomSheet(
+    PasswordGenerationType type) {
   touch_to_fill_generation_controller_ =
       create_touch_to_fill_generation_controller_.Run();
   std::string account =
       password_manager::GetDisplayableAccountName(&GetWebContents());
   if (!touch_to_fill_generation_controller_->ShowTouchToFill(
-          std::move(account), client_->GetPrefs())) {
+          std::move(account), type, client_->GetPrefs())) {
     return false;
   }
 

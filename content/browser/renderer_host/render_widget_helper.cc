@@ -66,7 +66,10 @@ void RenderWidgetHelper::Init(int render_process_id) {
 
 int RenderWidgetHelper::GetNextRoutingID() {
   int next_routing_id = next_routing_id_.GetNext();
-  CHECK_LT(next_routing_id, std::numeric_limits<int>::max());
+  // Routing IDs are also used for `FrameSinkId` values from the browser.
+  // The must be in the range of [0, INT_MAX] as the renderer generates
+  // the rest of the range.
+  CHECK_LT(next_routing_id, std::numeric_limits<int32_t>::max());
   return next_routing_id + 1;
 }
 

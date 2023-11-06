@@ -5,7 +5,9 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_MANAGER_H_
 
 #include <map>
+#include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -28,12 +30,16 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
+class OnDeviceModelExecutionConfigInterpreter;
+class OnDeviceModelServiceController;
 
 class ModelExecutionManager {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
+      std::unique_ptr<OnDeviceModelServiceController>
+          on_device_model_service_controller,
       OptimizationGuideLogger* optimization_guide_logger);
 
   ~ModelExecutionManager();
@@ -50,7 +56,8 @@ class ModelExecutionManager {
   void OnModelExecuteResponse(
       proto::ModelExecutionFeature feature,
       OptimizationGuideModelExecutionResultCallback callback,
-      base::optional_ref<const proto::ExecuteResponse> execute_response);
+      base::expected<const proto::ExecuteResponse,
+                     OptimizationGuideModelExecutionError> execute_response);
 
   // Owned by OptimizationGuideKeyedService and outlives `this`.
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
@@ -71,6 +78,18 @@ class ModelExecutionManager {
 
   // The set of OAuth scopes to use for requesting access token.
   std::set<std::string> oauth_scopes_;
+
+  // Controller for the on-device service.
+  std::unique_ptr<OnDeviceModelServiceController>
+      on_device_model_service_controller_;
+
+  // Interpreter of the on-device model execution configuration.
+  std::unique_ptr<OnDeviceModelExecutionConfigInterpreter>
+      on_device_model_execution_config_interpreter_;
+
+  // The path for the on-device model. Can be empty when it was not populated
+  // yet. Can be overridden from command-line.
+  base::FilePath on_device_model_path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

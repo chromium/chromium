@@ -202,8 +202,8 @@ class CORE_EXPORT Animation : public EventTarget,
   double playbackRate() const;
   void setPlaybackRate(double, ExceptionState& = ASSERT_NO_EXCEPTION);
 
-  AnimationTimeline* TimelineInternal() { return timeline_; }
-  AnimationTimeline* TimelineInternal() const { return timeline_; }
+  AnimationTimeline* TimelineInternal() { return timeline_.Get(); }
+  AnimationTimeline* TimelineInternal() const { return timeline_.Get(); }
 
   // Note that this function returns the *exposed* timeline, which may be
   // different from the the timeline the Animation is actually attached to.
@@ -419,7 +419,7 @@ class CORE_EXPORT Animation : public EventTarget,
 
   CompositorAnimations::FailureReasons
   CheckCanStartAnimationOnCompositorInternal() const;
-  void CreateCompositorAnimation();
+  void CreateCompositorAnimation(absl::optional<int> replaced_cc_animation_id);
   void DestroyCompositorAnimation();
   void AttachCompositorTimeline();
   void DetachCompositorTimeline();
@@ -616,9 +616,13 @@ class CORE_EXPORT Animation : public EventTarget,
     USING_PRE_FINALIZER(CompositorAnimationHolder, Dispose);
 
    public:
-    static CompositorAnimationHolder* Create(Animation*);
+    static CompositorAnimationHolder* Create(
+        Animation*,
+        absl::optional<int> replaced_cc_animation_id);
 
-    explicit CompositorAnimationHolder(Animation*);
+    explicit CompositorAnimationHolder(
+        Animation*,
+        absl::optional<int> replaced_cc_animation_id);
 
     void Detach();
 

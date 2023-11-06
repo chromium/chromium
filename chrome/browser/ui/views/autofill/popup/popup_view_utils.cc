@@ -533,13 +533,51 @@ BubbleBorder::Arrow GetOptimalPopupPlacement(
   return arrow;
 }
 
-bool IsGroupFillingPopupItemId(PopupItemId popup_item_id) {
+int GetMainTextStyleForPopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
-      return true;
-    default:
-      return false;
+      return views::style::TextStyle::STYLE_SECONDARY;
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kTitle:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
+      return views::style::TextStyle::STYLE_PRIMARY;
   }
 }
 
@@ -559,7 +597,34 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
     case PopupItemId::kEditAddressProfile:
     case PopupItemId::kDeleteAddressProfile:
       return true;
-    default:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
+    case PopupItemId::kFieldByFieldFilling:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kTitle:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
       return false;
   }
 }
@@ -567,13 +632,56 @@ bool IsFooterPopupItemId(PopupItemId popup_item_id) {
 bool IsExpandablePopupItemId(PopupItemId popup_item_id) {
   switch (popup_item_id) {
     case PopupItemId::kAddressEntry:
+    case PopupItemId::kDevtoolsTestAddresses:
     case PopupItemId::kFillFullAddress:
     case PopupItemId::kFillFullName:
+    case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber:
     case PopupItemId::kFieldByFieldFilling:
       return true;
-    default:
+    case PopupItemId::kAccountStoragePasswordEntry:
+    case PopupItemId::kAccountStorageUsernameEntry:
+    case PopupItemId::kAllSavedPasswordsEntry:
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kClearForm:
+    case PopupItemId::kCompose:
+    case PopupItemId::kCreateNewPlusAddress:
+    case PopupItemId::kCreditCardEntry:
+    case PopupItemId::kDatalistEntry:
+    case PopupItemId::kDevtoolsTestAddressEntry:
+    case PopupItemId::kDeleteAddressProfile:
+    case PopupItemId::kEditAddressProfile:
+    case PopupItemId::kFillEverythingFromAddressProfile:
+    case PopupItemId::kFillExistingPlusAddress:
+    case PopupItemId::kGeneratePasswordEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kInsecureContextPaymentDisabledMessage:
+    case PopupItemId::kMerchantPromoCodeEntry:
+    case PopupItemId::kMixedFormMessage:
+    case PopupItemId::kPasswordAccountStorageEmpty:
+    case PopupItemId::kPasswordAccountStorageOptIn:
+    case PopupItemId::kPasswordAccountStorageOptInAndGenerate:
+    case PopupItemId::kPasswordAccountStorageReSignin:
+    case PopupItemId::kPasswordEntry:
+    case PopupItemId::kScanCreditCard:
+    case PopupItemId::kSeePromoCodeDetails:
+    case PopupItemId::kSeparator:
+    case PopupItemId::kShowAccountCards:
+    case PopupItemId::kTitle:
+    case PopupItemId::kUsernameEntry:
+    case PopupItemId::kVirtualCreditCardEntry:
+    case PopupItemId::kWebauthnCredential:
+    case PopupItemId::kWebauthnSignInWithAnotherDevice:
       return false;
   }
+}
+
+bool ShouldApplyNewAutofillPopupStyle() {
+  return base::FeatureList::IsEnabled(
+             features::kAutofillShowAutocompleteDeleteButton) ||
+         base::FeatureList::IsEnabled(
+             features::kAutofillGranularFillingAvailable);
 }
 
 }  // namespace autofill

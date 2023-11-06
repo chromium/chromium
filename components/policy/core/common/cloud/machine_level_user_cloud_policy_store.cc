@@ -211,7 +211,8 @@ MachineLevelUserCloudPolicyStore::CreateValidator(
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
   if (has_policy()) {
     validator->ValidateTimestamp(
-        base::Time::FromJavaTime(policy()->timestamp()), option);
+        base::Time::FromMillisecondsSinceUnixEpoch(policy()->timestamp()),
+        option);
   }
   validator->ValidatePayload();
   return validator;

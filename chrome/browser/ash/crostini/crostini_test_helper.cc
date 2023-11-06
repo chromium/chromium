@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
@@ -32,18 +31,15 @@ constexpr SkColor kTestContainerBadgeColor = SK_ColorBLUE;
 
 CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
                                        bool enable_crostini)
-    : profile_(profile) {
+    : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+      profile_(profile) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
 
   ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<ash::FakeChromeUserManager>());
-  auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
-      user_manager::UserManager::Get());
   auto account = AccountId::FromUserEmailGaiaId("test@example.com", "12345");
-  fake_user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
       account, false, user_manager::USER_TYPE_REGULAR, profile);
-  fake_user_manager->LoginUser(account);
+  fake_user_manager_->LoginUser(account);
 
   if (enable_crostini) {
     EnableCrostini(profile);

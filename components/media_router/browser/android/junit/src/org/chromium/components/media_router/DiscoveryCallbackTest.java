@@ -30,9 +30,7 @@ import org.chromium.base.test.util.Feature;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Robolectric tests for DiscoveryCallback.
- */
+/** Robolectric tests for DiscoveryCallback. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DiscoveryCallbackTest extends BrowserMediaRouterTestBase {

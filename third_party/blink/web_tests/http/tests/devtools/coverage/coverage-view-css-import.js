@@ -8,7 +8,6 @@ import {CoverageTestRunner} from 'coverage_test_runner';
 (async function() {
   TestRunner.addResult(
       `Test if coverage view also shows completly uncovered css files\n`);
-  await TestRunner.loadLegacyModule('panels/coverage');
   await TestRunner.navigatePromise(
       TestRunner.url('resources/css-coverage-import.html'));
 

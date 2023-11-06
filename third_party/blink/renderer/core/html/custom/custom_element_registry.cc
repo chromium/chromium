@@ -285,7 +285,7 @@ CustomElementDefinition* CustomElementRegistry::DefinitionForName(
   const auto it = name_map_.find(name);
   if (it == name_map_.end())
     return nullptr;
-  return it->value;
+  return it->value.Get();
 }
 
 CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
@@ -293,7 +293,7 @@ CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
   const auto it = constructor_map_.find(constructor);
   if (it == constructor_map_.end())
     return nullptr;
-  return it->value;
+  return it->value.Get();
 }
 
 CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
@@ -303,7 +303,7 @@ CustomElementDefinition* CustomElementRegistry::DefinitionForConstructor(
           constructor);
   if (it == constructor_map_.end())
     return nullptr;
-  return it->value;
+  return it->value.Get();
 }
 
 void CustomElementRegistry::AddCandidate(Element& candidate) {

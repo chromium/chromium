@@ -11,7 +11,6 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -87,7 +86,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
-              FillCreditCardFormImpl,
+              FillCreditCardForm,
               (const FormData& form,
                const FormFieldData& field,
                const CreditCard& credit_card,
@@ -96,14 +95,14 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               FillOrPreviewCreditCardForm,
-              (mojom::AutofillActionPersistence action_persistence,
+              (mojom::ActionPersistence action_persistence,
                const FormData& form,
                const FormFieldData& field,
                const CreditCard* credit_card,
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
               FillOrPreviewVirtualCardInformation,
-              (mojom::AutofillActionPersistence action_persistence,
+              (mojom::ActionPersistence action_persistence,
                const std::string& guid,
                const FormData& form,
                const FormFieldData& field,
@@ -671,7 +670,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, ScanCreditCardIsCalled) {
   touch_to_fill_delegate_->ScanCreditCard();
 
   CreditCard credit_card = autofill::test::GetCreditCard();
-  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardFormImpl);
+  EXPECT_CALL(*browser_autofill_manager_, FillCreditCardForm);
   touch_to_fill_delegate_->OnCreditCardScanned(credit_card);
   EXPECT_EQ(touch_to_fill_delegate_->IsShowingTouchToFill(), false);
 }

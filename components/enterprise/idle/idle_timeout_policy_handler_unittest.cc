@@ -11,10 +11,8 @@
 #include "base/json/values_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "components/browsing_data/core/features.h"
 #include "components/enterprise/idle/action_type.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -338,89 +336,11 @@ TEST_F(IdleTimeoutPolicyHandlerTest, AllActions) {
                   static_cast<int>(ActionType::kReloadPages)));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(IdleTimeoutPolicyHandlerTest, SyncNotDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      false);
-  SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
-  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
-  base::Value::List list;
-  list.Append("close_browsers");
-  list.Append("show_profile_picker");
-  list.Append("clear_browsing_history");
-  list.Append("clear_download_history");
-  list.Append("clear_cookies_and_other_site_data");
-  list.Append("clear_cached_images_and_files");
-  list.Append("clear_password_signin");
-  list.Append("clear_autofill");
-  list.Append("clear_site_settings");
-  list.Append("clear_hosted_app_data");
-  SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(std::move(list)));
-
-  CheckAndApplyPolicySettings();
-
-  // Should have these errors.
-  EXPECT_THAT(errors(),
-              UnorderedElementsAre(
-                  u"These actions require the SyncDisabled policy to be set to "
-                  u"Enabled: clear_browsing_history, clear_password_signin, "
-                  u"clear_autofill, clear_site_settings."));
-
-  // Prefs should not be set.
-  const base::Value* pref_value;
-  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
-  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
-}
-
-TEST_F(IdleTimeoutPolicyHandlerTest, SyncDisabledIsFalse) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      false);
-  policies().Erase(policy::key::kSyncDisabled);
-  SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
-  base::Value::List list;
-  list.Append("close_browsers");
-  list.Append("show_profile_picker");
-  list.Append("clear_browsing_history");
-  list.Append("clear_download_history");
-  list.Append("clear_cookies_and_other_site_data");
-  list.Append("clear_cached_images_and_files");
-  list.Append("clear_password_signin");
-  list.Append("clear_autofill");
-  list.Append("clear_site_settings");
-  list.Append("clear_hosted_app_data");
-  SetPolicyValue(policy::key::kIdleTimeoutActions,
-                 base::Value(std::move(list)));
-
-  CheckAndApplyPolicySettings();
-
-  // Should have these errors.
-  EXPECT_THAT(errors(),
-              UnorderedElementsAre(
-                  u"These actions require the SyncDisabled policy to be set to "
-                  u"Enabled: clear_browsing_history, clear_password_signin, "
-                  u"clear_autofill, clear_site_settings."));
-
-  // Prefs should not be set.
-  const base::Value* pref_value;
-  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeout, &pref_value));
-  EXPECT_FALSE(prefs().GetValue(prefs::kIdleTimeoutActions, &pref_value));
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_ANDROID)
-
 // When browser sign in is disabled by policy, the clear actions should
-// be applied and the error map and messages should be empty
+// be applied and the error map and messages should be empty.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(IdleTimeoutPolicyHandlerTest, BrowserSigninDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      true);
+  SetPolicyValue(policy::key::kSyncDisabled, base::Value(false));
   SetPolicyValue(policy::key::kIdleTimeout, base::Value(15));
   SetPolicyValue(policy::key::kBrowserSignin, base::Value(0));
 
@@ -451,10 +371,6 @@ TEST_F(IdleTimeoutPolicyHandlerTest, BrowserSigninDisabled) {
 #endif
 
 TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatureState(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded,
-      true);
   // Start with sync prefs enabled so we can sense that they have changed.
   prefs().SetBoolean(syncer::prefs::internal::kSyncAutofill, true);
   prefs().SetBoolean(syncer::prefs::internal::kSyncPreferences, true);
@@ -503,12 +419,12 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   EXPECT_TRUE(pref_value->is_list());
   EXPECT_THAT(pref_value->GetList(),
               testing::ElementsAre(
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kCloseBrowsers),
                   static_cast<int>(ActionType::kShowProfilePicker),
                   static_cast<int>(ActionType::kClearDownloadHistory),
                   static_cast<int>(ActionType::kClearHostedAppData),
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
                   static_cast<int>(ActionType::kClearBrowsingHistory),
                   static_cast<int>(ActionType::kClearCookiesAndOtherSiteData),
                   static_cast<int>(ActionType::kClearCachedImagesAndFiles),
@@ -522,7 +438,11 @@ TEST_F(IdleTimeoutPolicyHandlerTest, SyncTypesDisabledForClearActions) {
   bool enabled;
   ASSERT_TRUE(
       prefs().GetBoolean(syncer::prefs::internal::kSyncPreferences, &enabled));
+#if BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(enabled);
+#else
   EXPECT_FALSE(enabled);
+#endif  // BUILDFLAG(IS_IOS)
   ASSERT_TRUE(
       prefs().GetBoolean(syncer::prefs::internal::kSyncHistory, &enabled));
   EXPECT_FALSE(enabled);

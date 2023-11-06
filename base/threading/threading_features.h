@@ -28,6 +28,7 @@ extern const BASE_EXPORT Feature kUserInteractiveCompositingMac;
 
 #if BUILDFLAG(IS_WIN)
 BASE_EXPORT BASE_DECLARE_FEATURE(kAboveNormalCompositingBrowserWin);
+BASE_EXPORT BASE_DECLARE_FEATURE(kBackgroundThreadNormalMemoryPriorityWin);
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);

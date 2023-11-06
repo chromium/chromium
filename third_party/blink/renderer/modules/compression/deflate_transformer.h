@@ -31,7 +31,7 @@ class DeflateTransformer final : public TransformStreamTransformer {
   ScriptPromise Flush(TransformStreamDefaultController*,
                       ExceptionState&) override;
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor*) const override;
 

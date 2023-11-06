@@ -506,7 +506,7 @@ class string_view {
   // Overload of `string_view::find_first_of()` for finding a substring of a
   // different C-style string `s` within the `string_view`.
   size_type find_first_of(const char* s, size_type pos,
-                                    size_type count) const {
+                          size_type count) const {
     return find_first_of(string_view(s, count), pos);
   }
 
@@ -589,6 +589,58 @@ class string_view {
   size_type find_last_not_of(const char* s, size_type pos = npos) const {
     return find_last_not_of(string_view(s), pos);
   }
+
+#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
+  // string_view::starts_with()
+  //
+  // Returns true if the `string_view` starts with the prefix `s`.
+  //
+  // This method only exists when targeting at least C++20.
+  // If support for C++ prior to C++20 is required, use `absl::StartsWith()`
+  // from `//absl/strings/match.h` for compatibility.
+  constexpr bool starts_with(string_view s) const noexcept {
+    return s.empty() ||
+           (size() >= s.size() &&
+            ABSL_INTERNAL_STRING_VIEW_MEMCMP(data(), s.data(), s.size()) == 0);
+  }
+
+  // Overload of `string_view::starts_with()` that returns true if `c` is the
+  // first character of the `string_view`.
+  constexpr bool starts_with(char c) const noexcept {
+    return !empty() && front() == c;
+  }
+
+  // Overload of `string_view::starts_with()` that returns true if the
+  // `string_view` starts with the C-style prefix `s`.
+  constexpr bool starts_with(const char* s) const {
+    return starts_with(string_view(s));
+  }
+
+  // string_view::ends_with()
+  //
+  // Returns true if the `string_view` ends with the suffix `s`.
+  //
+  // This method only exists when targeting at least C++20.
+  // If support for C++ prior to C++20 is required, use `absl::EndsWith()`
+  // from `//absl/strings/match.h` for compatibility.
+  constexpr bool ends_with(string_view s) const noexcept {
+    return s.empty() || (size() >= s.size() && ABSL_INTERNAL_STRING_VIEW_MEMCMP(
+                                                   data() + (size() - s.size()),
+                                                   s.data(), s.size()) == 0);
+  }
+
+  // Overload of `string_view::ends_with()` that returns true if `c` is the
+  // last character of the `string_view`.
+  constexpr bool ends_with(char c) const noexcept {
+    return !empty() && back() == c;
+  }
+
+  // Overload of `string_view::ends_with()` that returns true if the
+  // `string_view` ends with the C-style suffix `s`.
+  constexpr bool ends_with(const char* s) const {
+    return ends_with(string_view(s));
+  }
+#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG >= 202002L
 
  private:
   // The constructor from std::string delegates to this constructor.

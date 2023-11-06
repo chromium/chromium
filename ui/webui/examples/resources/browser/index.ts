@@ -109,8 +109,7 @@ function navigateToAddressBarUrl() {
       // validation error when sending this call to the browser. Successful
       // construction indicates a valid URL.
       const src = new URL(addressBar.value);
-      const mojoSrc = new MojoUrl();
-      mojoSrc.url = src.toString();
+      const mojoSrc: MojoUrl = {url: src.toString()};
       webview.navigate(mojoSrc);
     } catch (error) {
       console.error(error);

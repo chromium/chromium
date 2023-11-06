@@ -4,6 +4,7 @@ include_rules = [
     "-cc/mojom",
     "-cc/test",
     "+components/viz/common",
+    "+media/base/media_switches.h",
     "+gpu/command_buffer/client/shared_memory_limits.h",
     "+gpu/command_buffer/common/context_creation_attribs.h",
     "+gpu/ipc/client/gpu_channel_host.h",
@@ -14,6 +15,4 @@ include_rules = [
     "+ui/base/ime/mojom/text_input_state.mojom-blink.h",
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h",
     "+ui/base/ui_base_types.h",
-    "+ui/display/screen_info.h",
-    "+ui/gfx/mojom/delegated_ink_metadata.mojom-blink.h",
 ]

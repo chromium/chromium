@@ -39,9 +39,26 @@ class RecentModelFactory;
 // All member functions must be called on the UI thread.
 class RecentModel : public KeyedService {
  public:
+  using FileType = RecentSource::FileType;
+
+  // Stores all parameters that identify either the current or cached search
+  // performed by the recent model.
+  struct SearchCriteria {
+    // The query used to match against file names, e.g., "my-file".
+    std::string query;
+    // The maximum age of accepted files measured as a delta from now.
+    base::TimeDelta now_delta;
+    // The type of files accepted, e.g., images, documents, etc.
+    FileType file_type;
+
+    bool operator==(const SearchCriteria& other) const {
+      return query == other.query && now_delta == other.now_delta &&
+             file_type == other.file_type;
+    }
+  };
+
   using GetRecentFilesCallback =
       base::OnceCallback<void(const std::vector<RecentFile>& files)>;
-  using FileType = RecentSource::FileType;
 
   RecentModel(const RecentModel&) = delete;
   RecentModel& operator=(const RecentModel&) = delete;
@@ -60,6 +77,8 @@ class RecentModel : public KeyedService {
   // Results might be internally cached for better performance.
   void GetRecentFiles(storage::FileSystemContext* file_system_context,
                       const GURL& origin,
+                      const std::string& query,
+                      const base::TimeDelta& now_delta,
                       FileType file_type,
                       bool invalidate_cache,
                       GetRecentFilesCallback callback);
@@ -81,27 +100,32 @@ class RecentModel : public KeyedService {
   friend class RecentModelTest;
   friend class RecentModelCacheTest;
   FRIEND_TEST_ALL_PREFIXES(RecentModelTest, GetRecentFiles_UmaStats);
-  FRIEND_TEST_ALL_PREFIXES(RecentModelCacheTest,
-                           GetRecentFiles_InvalidateCache);
 
   static const char kLoadHistogramName[];
 
   explicit RecentModel(Profile* profile);
   explicit RecentModel(std::vector<std::unique_ptr<RecentSource>> sources);
 
+  // The method called by each of the recent source workers, once they complete
+  // their task. This method monitors the number of calls and once it is equal
+  // to the number of started recent source workers, it calls
+  // OnGetRecentFilesCompleted method.
   void OnGetRecentFiles(uint32_t run_on_sequence_id,
                         size_t max_files,
                         const base::Time& cutoff_time,
-                        FileType file_type,
+                        const SearchCriteria& search_criteria,
                         std::vector<RecentFile> files);
-  void OnGetRecentFilesCompleted(FileType file_type);
+
+  // This method is called by OnGetRecentFiles once all started recent source
+  // workers complete their tasks.
+  void OnGetRecentFilesCompleted(const SearchCriteria& search_criteria);
+
   void ClearCache();
 
   // The callback invoked by the deadline timer.
-  void OnScanTimeout(FileType file_type);
+  void OnScanTimeout(const SearchCriteria& search_criteria);
 
   void SetMaxFilesForTest(size_t max_files);
-  void SetForcedCutoffTimeForTest(const base::Time& forced_cutoff_time);
 
   std::vector<std::unique_ptr<RecentSource>> sources_;
 
@@ -109,15 +133,12 @@ class RecentModel : public KeyedService {
   // default except for unit tests.
   size_t max_files_ = 1000;
 
-  // If this is set to non-null, it is used as a cut-off time. Should be used
-  // only in unit tests.
-  absl::optional<base::Time> forced_cutoff_time_;
-
   // Cached GetRecentFiles() response.
   absl::optional<std::vector<RecentFile>> cached_files_ = absl::nullopt;
 
-  // File type of the cached GetRecentFiles() response.
-  FileType cached_files_type_ = FileType::kAll;
+  // The parameters of the last query. These are used to check if the
+  // cached content can be re-used.
+  SearchCriteria cached_search_criteria_;
 
   // Timer to clear the cache.
   base::OneShotTimer cache_clear_timer_;

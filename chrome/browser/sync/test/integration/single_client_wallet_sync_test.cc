@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -89,7 +90,8 @@ MATCHER(AddressHasConverted, "") {
 
 const char kLocalGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kDifferentBillingAddressId[] = "another address entity ID";
-const base::Time kArbitraryDefaultTime = base::Time::FromDoubleT(25);
+const base::Time kArbitraryDefaultTime =
+    base::Time::FromSecondsSinceUnixEpoch(25);
 
 template <class T>
 class AutofillWebDataServiceConsumer : public WebDataServiceConsumer {
@@ -1327,11 +1329,17 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
       GetSyncService(0)->GetSetupInProgressHandle();
 
-  // TODO(crbug.com/1435431): kAutofill is used here to mimic what the UI does,
-  // but could be removed once the coupling is relaxed.
-  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-      /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill,
-                                  syncer::UserSelectableType::kPayments});
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncDecoupleAddressPaymentSettings)) {
+    GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kPayments});
+  } else {
+    // TODO(crbug.com/1435431): kAutofill is used here to mimic what the UI
+    // does, but could be removed once the coupling is relaxed.
+    GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+        /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill,
+                                    syncer::UserSelectableType::kPayments});
+  }
 
   // Once the user finishes the setup, the newly selected data types will
   // actually get configured.

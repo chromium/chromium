@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -21,10 +20,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-
-namespace message_center {
-class MessagePopupView;
-}  // namespace message_center
 
 namespace ui {
 class Event;
@@ -37,7 +32,6 @@ class Widget;
 namespace ash {
 
 class AutozoomToastController;
-class AshMessagePopupCollection;
 class CameraMicTrayItemView;
 class ChannelIndicatorView;
 class CurrentLocaleView;
@@ -45,7 +39,6 @@ class HotspotTrayView;
 class ImeModeView;
 class ManagedDeviceTrayItemView;
 class NetworkTrayView;
-class NotificationGroupingController;
 class NotificationIconsController;
 class PrivacyIndicatorsTrayItemView;
 class PrivacyScreenToastController;
@@ -56,7 +49,6 @@ class TimeTrayItemView;
 class UnifiedSliderBubbleController;
 class UnifiedSliderView;
 class UnifiedSystemTrayBubble;
-class UnifiedMessageCenterBubble;
 
 // The UnifiedSystemTray is the system menu of Chromium OS, which is a clickable
 // rounded rectangle typically located on the bottom right corner of the screen,
@@ -216,8 +208,6 @@ class ASH_EXPORT UnifiedSystemTray
   TrayBubbleView* GetBubbleView() override;
   const char* GetClassName() const override;
   absl::optional<AcceleratorAction> GetAcceleratorAction() const override;
-  void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                    bool visible) override;
 
   // ShelfConfig::Observer:
   void OnShelfConfigUpdated() override;
@@ -244,16 +234,8 @@ class ASH_EXPORT UnifiedSystemTray
 
   std::u16string GetAccessibleNameForQuickSettingsBubble();
 
-  AshMessagePopupCollection* GetMessagePopupCollection();
-
-  NotificationGroupingController* GetNotificationGroupingController();
-
   scoped_refptr<UnifiedSystemTrayModel> model() { return model_; }
   UnifiedSystemTrayBubble* bubble() { return bubble_.get(); }
-
-  UnifiedMessageCenterBubble* message_center_bubble() {
-    return message_center_bubble_.get();
-  }
 
   PrivacyIndicatorsTrayItemView* privacy_indicators_view() {
     return privacy_indicators_view_;
@@ -266,8 +248,6 @@ class ASH_EXPORT UnifiedSystemTray
   UnifiedSliderBubbleController* slider_bubble_controller() {
     return slider_bubble_controller_.get();
   }
-
-  CameraMicTrayItemView* camera_view() { return camera_view_; }
 
   CameraMicTrayItemView* mic_view() { return mic_view_; }
 
@@ -284,33 +264,22 @@ class ASH_EXPORT UnifiedSystemTray
   friend class SystemTrayTestApi;
   friend class UnifiedSystemTrayTest;
 
-  // Private class implements `MessageCenterUiDelegate`.
-  class UiDelegate;
-
   // Forwarded from `UiDelegate`.
   void ShowBubbleInternal();
   void HideBubbleInternal();
   void UpdateNotificationInternal();
   void UpdateNotificationAfterDelay();
 
-  // Forwarded to `UiDelegate`.
-  message_center::MessagePopupView* GetPopupViewForNotificationID(
-      const std::string& notification_id);
-
   // Adds the tray item to the the unified system tray container. An unowned
   // pointer is stored in `tray_items_`.
   template <typename T>
   T* AddTrayItemToContainer(std::unique_ptr<T> tray_item_view);
 
-  // Destroys the `bubble_` and the `message_center_bubble_`, also handles
+  // Destroys the `bubble_`, also handles
   // removing bubble related observers.
-  void DestroyBubbles();
-
-  std::unique_ptr<UiDelegate> ui_delegate_;
+  void DestroyBubble();
 
   std::unique_ptr<UnifiedSystemTrayBubble> bubble_;
-
-  std::unique_ptr<UnifiedMessageCenterBubble> message_center_bubble_;
 
   // Model class that stores `UnifiedSystemTray`'s UI specific variables.
   scoped_refptr<UnifiedSystemTrayModel> model_;

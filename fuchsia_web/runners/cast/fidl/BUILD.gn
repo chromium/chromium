@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
+import("//third_party/fuchsia-gn-sdk/src/fidl_library.gni")
 
 # Only allow use by targets in this directory unless explicitly specified.
 visibility = [ ":*" ]

@@ -48,6 +48,8 @@
 
 @interface OCMArg(CrExtensions)
 + (id)conformsToProtocol:(Protocol*)protocol;
++ (id)invokeBlockOnQueue:(dispatch_queue_t)queue
+                withArgs:(id)first, ... NS_REQUIRES_NIL_TERMINATION;
 @end
 
 @interface OCMockObject (CrExtensions)

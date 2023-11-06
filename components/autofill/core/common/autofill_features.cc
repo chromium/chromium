@@ -90,14 +90,9 @@ BASE_FEATURE(kAutofillContentEditables,
              "AutofillContentEditables",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the payment methods sync toggle is decoupled from autofill.
-// TODO(crbug.com/1435431): Cleanup when launched.
-BASE_FEATURE(kAutofillDecoupleAddressPaymentSyncSettings,
-             "AutofillDecoupleAddressPaymentSyncSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Crowdsourcing already prefers PHONE_HOME_CITY_AND_NUMBER over
 // PHONE_HOME_WHOLE_NUMBER. With this feature, local heuristics do the same.
+// TODO(crbug.com/1474308): Clean up when launched.
 BASE_FEATURE(kAutofillDefaultToCityAndNumber,
              "AutofillDefaultToCityAndNumber",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -244,6 +239,12 @@ BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,
              "AutofillEnableSupportForParsingWithSharedLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls if heuristic field parsing should be performed on email-only forms.
+// TODO(crbug.com/1493145): Remove when/if launched.
+BASE_FEATURE(kAutofillEnableEmailHeuristicOnlyAddressForms,
+             "AutofillEnableEmailHeuristicOnlyAddressForms",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if Chrome support filling and importing apartment numbers.
 // TODO(crbug.com/1153715): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForApartmentNumbers,
@@ -328,9 +329,11 @@ BASE_FEATURE(kAutofillExtractAllDatalists,
              "AutofillExtractAllDatalists",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables support to submit feedback on Autofill. Used only in Desktop.
-BASE_FEATURE(kAutofillFeedback,
-             "AutofillFeedback",
+// Replaces cached web elements in AutofillAgent and FormTracker by their
+// renderer ids.
+// DONOTSUMBIT: Disable.
+BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,
+             "AutofillReplaceCachedWebElementsByRendererIds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Makes AutofillProfile::IsSubsetOfForFieldSet stop ignoring street address
@@ -349,11 +352,6 @@ BASE_FEATURE(kAutofillUseI18nAddressModel,
 
 // Changes Autofill Clear Form into Undo Autofill.
 BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Makes is_autofilled = true cached only after filling and not previewing.
-BASE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill,
-             "AutofillOnlyCacheIsAutofilledOnFill",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables converging towards the longer or shorter street address in profile
 // merging.
@@ -456,6 +454,11 @@ BASE_FEATURE(kAutofillOverridePredictions,
 // The override specification in string form.
 const base::FeatureParam<std::string> kAutofillOverridePredictionsSpecification{
     &kAutofillOverridePredictions, "spec", "[]"};
+
+// The override specification using alternative_form_signature in string form.
+const base::FeatureParam<std::string>
+    kAutofillOverridePredictionsForAlternativeFormSignaturesSpecification{
+        &kAutofillOverridePredictions, "alternative_signature_spec", "[]"};
 
 // If enabled, Autofill will first look at field labels and then at field
 // attributes when classifying address fields in Mexico.
@@ -611,6 +614,13 @@ BASE_FEATURE(kAutofillGranularFillingAvailable,
              "AutofillGranularFillingAvailable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls whether field filling through the context menu will be available for
+// the unclassified fields.
+// TODO(crbug.com/1493361): Clean up when launched.
+BASE_FEATURE(kAutofillForUnclassifiedFieldsAvailable,
+             "AutofillForUnclassifiedFieldsAvailable",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether testing forms using devtools will be available.
 // TODO(crbug.com/1459990): Clean up when launched.
 BASE_FEATURE(kAutofillTestFormWithDevtools,
@@ -621,6 +631,12 @@ BASE_FEATURE(kAutofillTestFormWithDevtools,
 // not met.
 BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
              "AutofillSilentProfileUpdateForInsufficientImport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Sends text change events for textarea elements. When this is off, only input
+// elements send text change events.
+BASE_FEATURE(kAutofillTextAreaChangeEvents,
+             "AutofillTextAreaChangeEvents",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, on form submit, observations for every used profile are

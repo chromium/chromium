@@ -107,11 +107,11 @@ void VerifyReport(
   }
 
   for (size_t i = 0; i < expected_num_processing_urls; ++i) {
-    EXPECT_EQ(payloads[i].key_id, encryption_keys[i].public_key.id);
+    EXPECT_EQ(payloads[i].key_id, encryption_keys[i].key_id());
 
     std::vector<uint8_t> decrypted_payload =
         aggregation_service::DecryptPayloadWithHpke(
-            payloads[i].payload, encryption_keys[i].full_hpke_key,
+            payloads[i].payload, encryption_keys[i].full_hpke_key(),
             expected_serialized_shared_info);
     ASSERT_FALSE(decrypted_payload.empty());
 
@@ -229,20 +229,21 @@ TEST_P(AggregatableReportTest,
   AggregatableReportSharedInfo expected_shared_info =
       request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
-  std::vector<aggregation_service::TestHpkeKey> hpke_keys = {
-      aggregation_service::GenerateKey("id123"),
-      aggregation_service::GenerateKey("456abc")};
+
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
+  hpke_keys.emplace_back("456abc");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
           std::move(request),
-          {hpke_keys[0].public_key, hpke_keys[1].public_key});
+          {hpke_keys[0].GetPublicKey(), hpke_keys[1].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, hpke_keys,
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -256,18 +257,18 @@ TEST_P(AggregatableReportTest, ValidTeeBasedRequest_ValidReportReturned) {
       request.shared_info().Clone();
   size_t expected_num_processing_urls = request.processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request), {hpke_key.public_key});
+          std::move(request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -296,18 +297,18 @@ TEST_P(AggregatableReportTest,
       request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(*request), {hpke_key.public_key});
+          std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -340,18 +341,18 @@ TEST_P(AggregatableReportTest,
       request->shared_info().Clone();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(*request), {hpke_key.public_key});
+          std::move(*request), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -372,18 +373,18 @@ TEST_P(AggregatableReportTest,
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls,
                    /*expected_debug_key=*/absl::nullopt,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -408,17 +409,17 @@ TEST_P(AggregatableReportTest,
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyReport(report, expected_payload_contents, expected_shared_info,
                    expected_num_processing_urls, expected_debug_key,
-                   /*expected_additional_fields=*/{}, {hpke_key},
+                   /*expected_additional_fields=*/{}, std::move(hpke_keys),
                    /*should_pad_contributions=*/GetParam()));
 }
 
@@ -440,17 +441,17 @@ TEST_P(AggregatableReportTest, AdditionalFieldsPresent_ValidReportReturned) {
       request->payload_contents();
   size_t expected_num_processing_urls = request->processing_urls().size();
 
-  aggregation_service::TestHpkeKey hpke_key =
-      aggregation_service::GenerateKey("id123");
+  std::vector<aggregation_service::TestHpkeKey> hpke_keys;
+  hpke_keys.emplace_back("id123");
 
   absl::optional<AggregatableReport> report =
       AggregatableReport::Provider().CreateFromRequestAndPublicKeys(
-          std::move(request.value()), {hpke_key.public_key});
+          std::move(request.value()), {hpke_keys[0].GetPublicKey()});
 
   ASSERT_NO_FATAL_FAILURE(VerifyReport(
       report, expected_payload_contents, example_request.shared_info(),
       expected_num_processing_urls, /*expected_debug_key=*/absl::nullopt,
-      expected_additional_fields, {hpke_key},
+      expected_additional_fields, std::move(hpke_keys),
       /*should_pad_contributions=*/GetParam()));
 }
 
@@ -702,7 +703,7 @@ TEST_P(AggregatableReportTest, GetAsJsonAdditionalFields_ValidJsonReturned) {
 TEST_P(AggregatableReportTest,
        SharedInfoDebugModeDisabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -725,7 +726,7 @@ TEST_P(AggregatableReportTest,
 TEST_P(AggregatableReportTest,
        SharedInfoDebugModeEnabled_SerializeAsJsonReturnsExpectedString) {
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -752,7 +753,7 @@ TEST_P(AggregatableReportTest, SharedInfoAdditionalFields) {
   additional_fields.Set("bar", "2");
   additional_fields.Set("baz", "3");
   AggregatableReportSharedInfo shared_info(
-      base::Time::FromJavaTime(1234567890123),
+      base::Time::FromMillisecondsSinceUnixEpoch(1234567890123),
       /*report_id=*/
       base::Uuid::ParseLowercase("21abd97f-73e8-4b88-9389-a9fee6abda5e"),
       url::Origin::Create(GURL("https://reporting.example")),
@@ -884,6 +885,85 @@ TEST_P(AggregatableReportTest, MaxContributionsAllowed) {
             20);
 }
 
+TEST_P(AggregatableReportTest, AggregationCoordinatorOrigin) {
+  const struct {
+    absl::optional<url::Origin> aggregation_coordinator_origin;
+    bool creation_should_succeed;
+    const char* description;
+  } kTestCases[] = {
+      {absl::nullopt, true, "default coordinator"},
+      {url::Origin::Create(GURL("https://aws.example.test")), true,
+       "valid coordinator"},
+      {url::Origin::Create(GURL("https://a.test")), false,
+       "invalid coordinator"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    AggregatableReportRequest example_request =
+        aggregation_service::CreateExampleRequest();
+
+    AggregationServicePayloadContents payload_contents =
+        example_request.payload_contents();
+    payload_contents.aggregation_coordinator_origin =
+        test_case.aggregation_coordinator_origin;
+
+    absl::optional<AggregatableReportRequest> request =
+        AggregatableReportRequest::Create(
+            payload_contents, example_request.shared_info().Clone());
+
+    EXPECT_EQ(request.has_value(), test_case.creation_should_succeed);
+
+    if (!request.has_value()) {
+      continue;
+    }
+
+    // The coordinator origin is correctly serialized and deserialized
+    std::vector<uint8_t> proto = request->Serialize();
+    absl::optional<AggregatableReportRequest> parsed_request =
+        AggregatableReportRequest::Deserialize(proto);
+    EXPECT_EQ(parsed_request.value()
+                  .payload_contents()
+                  .aggregation_coordinator_origin,
+              test_case.aggregation_coordinator_origin);
+  }
+}
+
+TEST_P(AggregatableReportTest, AggregationCoordinatorOriginAllowlistChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws.example.test"},
+       {"gcp_cloud", "https://gcp.example.test"}});
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregationServicePayloadContents payload_contents =
+      example_request.payload_contents();
+  payload_contents.aggregation_coordinator_origin =
+      url::Origin::Create(GURL("https://aws.example.test"));
+
+  AggregatableReportRequest request =
+      AggregatableReportRequest::Create(payload_contents,
+                                        example_request.shared_info().Clone())
+          .value();
+
+  std::vector<uint8_t> proto = request.Serialize();
+
+  // Change the allowlist between serializing and deserializing
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ::aggregation_service::kAggregationServiceMultipleCloudProviders,
+      {{"aws_cloud", "https://aws2.example.test"},
+       {"gcp_cloud", "https://gcp2.example.test"}});
+
+  // Expect the report to fail to be recreated.
+  absl::optional<AggregatableReportRequest> parsed_request =
+      AggregatableReportRequest::Deserialize(proto);
+  EXPECT_FALSE(parsed_request.has_value());
+}
+
 TEST_P(AggregatableReportTest, ReportingPathEmpty_NotSetInRequest) {
   AggregatableReportRequest example_request =
       aggregation_service::CreateExampleRequest(
@@ -943,7 +1023,7 @@ TEST(AggregatableReportProtoMigrationTest,
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
@@ -988,7 +1068,7 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/
@@ -1005,9 +1085,10 @@ TEST(AggregatableReportProtoMigrationTest, NegativeDebugKey_ParsesCorrectly) {
       deserialized_request.value(), expected_request));
 }
 
-TEST(AggregatableReportProtoMigrationTest, NoAdditionalFields_ParsesCorrectly) {
-  // An `AggregatableReport` serialized before `additional_fields` was added to
-  // the proto definition.
+TEST(AggregatableReportProtoMigrationTest,
+     NoAdditionalFieldsOrAggregationCoordinatorOrigin_ParsesCorrectly) {
+  // An `AggregatableReport` serialized before `additional_fields` and
+  // `aggregataion_coordinator_origin` were added to the proto definition.
   const char kHexEncodedOldProto[] =
       "0A071205107B18C803126208D0DA8693FDBECF17122431323334353637382D393061622D"
       "346364652D386631322D3334353637383930616263641A1368747470733A2F2F6578616D"
@@ -1031,7 +1112,7 @@ TEST(AggregatableReportProtoMigrationTest, NoAdditionalFields_ParsesCorrectly) {
               /*aggregation_coordinator_origin=*/absl::nullopt,
               /*max_contributions_allowed=*/1),
           AggregatableReportSharedInfo(
-              base::Time::FromJavaTime(1652984901234),
+              base::Time::FromMillisecondsSinceUnixEpoch(1652984901234),
               base::Uuid::ParseLowercase(
                   "12345678-90ab-4cde-8f12-34567890abcd"),
               /*reporting_origin=*/

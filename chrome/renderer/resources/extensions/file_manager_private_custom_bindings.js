@@ -332,13 +332,18 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getRecentFiles',
       function(
-          restriction, file_type, invalidate_cache, successCallback,
-          failureCallback) {
+          restriction, query, cutoffDays, file_type, invalidate_cache,
+          successCallback, failureCallback) {
         let resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(getExternalFileEntry);
         };
+        // Due to C++integer limits we bind the JavaScript value to 0 .. 65535.
+        // Negative values are not accepted as this means files modified in the
+        // future. This limit means that x days after June 6, 2149 users will
+        // not be able to ask for files modified before Jan 01 + x, 1970.
+        const clampedCutoffDays = Math.min(Math.max(0, cutoffDays), 65535);
         fileManagerPrivateInternal.getRecentFiles(
-            restriction, file_type, invalidate_cache,
+            restriction, query, clampedCutoffDays, file_type, invalidate_cache,
             callbackAdaptor(successCallback, failureCallback, resultHandler));
       });
 

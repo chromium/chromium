@@ -57,4 +57,20 @@ TEST_F(NetworkServiceResourceBlockListTest, Matches_ResourceIsInExperiment) {
                                 CreateIsolationInfo("http://top.com")));
 }
 
+TEST_F(NetworkServiceResourceBlockListTest, Matches_SkipBypassWithOpaqueSite) {
+  MaskedDomainList mdl;
+  auto* resourceOwner = mdl.add_resource_owners();
+  resourceOwner->set_owner_name("foo");
+  auto* resource = resourceOwner->add_owned_resources();
+  resource->set_domain("example.com");
+  resource->add_experiments(
+      masked_domain_list::Resource_Experiment_EXPERIMENT_AFP);
+
+  NetworkServiceResourceBlockList blockList;
+  blockList.UseMaskedDomainList(mdl);
+
+  EXPECT_TRUE(blockList.Matches(GURL("http://example.com"),
+                                net::IsolationInfo::CreateTransient()));
+}
+
 }  // namespace network

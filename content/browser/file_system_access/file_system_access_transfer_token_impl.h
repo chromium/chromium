@@ -76,7 +76,7 @@ class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
   const base::UnguessableToken token_;
   const FileSystemAccessPermissionContext::HandleType handle_type_;
   // Raw pointer since FileSystemAccessManagerImpl owns `this`.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
   const FileSystemAccessManagerImpl::SharedHandleState handle_state_;

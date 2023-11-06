@@ -84,19 +84,18 @@ settings_api::PrefObject GeneratedHttpsFirstModePref::GetPrefObject() const {
 
   settings_api::PrefObject pref_object;
   pref_object.key = kGeneratedHttpsFirstModePref;
-  pref_object.type = settings_api::PREF_TYPE_BOOLEAN;
+  pref_object.type = settings_api::PrefType::kBoolean;
   pref_object.value = base::Value(backing_preference->GetValue()->GetBool() ||
                                   is_advanced_protection_enabled);
   pref_object.user_control_disabled = is_advanced_protection_enabled;
 
   if (!backing_preference->IsUserModifiable()) {
     // The pref was disabled by the enterprise policy.
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     extensions::settings_private::GeneratedPref::ApplyControlledByFromPref(
         &pref_object, backing_preference);
   } else if (backing_preference->GetRecommendedValue()) {
-    pref_object.enforcement =
-        settings_api::Enforcement::ENFORCEMENT_RECOMMENDED;
+    pref_object.enforcement = settings_api::Enforcement::kRecommended;
     pref_object.recommended_value =
         base::Value(backing_preference->GetRecommendedValue()->GetBool());
   }

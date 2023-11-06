@@ -83,6 +83,10 @@ const char kDebugLoggingEnabled[] = "enable-optimization-guide-debug-logs";
 // accessible on Android, but may work.
 const char kModelOverride[] = "optimization-guide-model-override";
 
+// Overrides the on-device model file paths for on-device model execution.
+const char kOnDeviceModelExecutionOverride[] =
+    "optimization-guide-ondevice-model-execution-override";
+
 // Triggers validation of the model. Used for manual testing.
 const char kModelValidate[] = "optimization-guide-model-validate";
 
@@ -213,6 +217,14 @@ absl::optional<std::string> GetModelOverride() {
   if (!command_line->HasSwitch(kModelOverride))
     return absl::nullopt;
   return command_line->GetSwitchValueASCII(kModelOverride);
+}
+
+absl::optional<std::string> GetOnDeviceModelExecutionOverride() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(kOnDeviceModelExecutionOverride)) {
+    return absl::nullopt;
+  }
+  return command_line->GetSwitchValueASCII(kOnDeviceModelExecutionOverride);
 }
 
 bool ShouldLogPageContentAnnotationsInput() {

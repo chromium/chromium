@@ -12,6 +12,7 @@ include_rules = [
   "+content/web_test/common",
   "+device/bluetooth",
   "+services/device/public/cpp/test",
+  "+services/device/public/mojom",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/proxy_resolver",

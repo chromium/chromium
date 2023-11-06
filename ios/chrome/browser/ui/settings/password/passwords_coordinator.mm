@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/settings/password/passwords_coordinator.h"
 
-#import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -17,14 +16,18 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
+#import "ios/chrome/browser/passwords/model/metrics/ios_password_manager_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -168,18 +171,32 @@ using password_manager::WarningType;
       /*successfulReauthTimeAccessor=*/self.mediator);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  self.passwordsViewController = [[PasswordManagerViewController alloc]
-      initWithChromeAccountManagerService:accountManagerService
-                              prefService:browserState->GetPrefs()
-                   shouldOpenInSearchMode:
-                       self.openViewControllerForPasswordSearch];
 
-  self.passwordsViewController.handler = self;
-  self.passwordsViewController.delegate = self.mediator;
-  self.passwordsViewController.dispatcher = self.dispatcher;
-  self.passwordsViewController.presentationDelegate = self;
-  self.passwordsViewController.reauthenticationModule = self.reauthModule;
-  self.passwordsViewController.imageDataSource = self.mediator;
+  PasswordManagerViewController* passwordsViewController =
+      [[PasswordManagerViewController alloc]
+          initWithChromeAccountManagerService:accountManagerService
+                                  prefService:browserState->GetPrefs()
+                       shouldOpenInSearchMode:
+                           self.openViewControllerForPasswordSearch];
+  self.passwordsViewController = passwordsViewController;
+
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  passwordsViewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  passwordsViewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  passwordsViewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  passwordsViewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  passwordsViewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
+  passwordsViewController.handler = self;
+  passwordsViewController.delegate = self.mediator;
+  passwordsViewController.presentationDelegate = self;
+  passwordsViewController.reauthenticationModule = self.reauthModule;
+  passwordsViewController.imageDataSource = self.mediator;
 
   self.mediator.consumer = self.passwordsViewController;
 
@@ -600,7 +617,8 @@ using password_manager::WarningType;
   }
   // Record only once during the lifetime of self.
   _recordedPasswordManagerVisit = YES;
-  UMA_HISTOGRAM_BOOLEAN("PasswordManager.iOS.PasswordManagerVisit", true);
+  password_manager::LogPasswordManagerSurfaceVisit(
+      password_manager::PasswordManagerSurface::kPasswordList);
 }
 
 - (void)dismissActionSheetCoordinator {

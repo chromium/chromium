@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.multiwindow;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -25,10 +25,11 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -219,7 +220,8 @@ public class InstanceSwitcherCoordinator {
                 }
             }
         };
-        BasicListMenu listMenu = new BasicListMenu(mContext, moreMenu, moreMenuDelegate);
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(mContext, moreMenu, moreMenuDelegate);
         listMenu.addContentViewClickRunnable(
                 () -> { RecordUserAction.record("Android.WindowManager.SecondaryMenu"); });
         builder.with(InstanceSwitcherItemProperties.MORE_MENU, () -> listMenu);

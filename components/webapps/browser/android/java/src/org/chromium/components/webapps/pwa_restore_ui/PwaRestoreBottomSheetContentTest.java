@@ -20,9 +20,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/**
- * Unit tests for {@link PwaRestoreBottomSheetContent}.
- */
+/** Unit tests for {@link PwaRestoreBottomSheetContent}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.PAUSED)
 public final class PwaRestoreBottomSheetContentTest {
@@ -40,9 +38,12 @@ public final class PwaRestoreBottomSheetContentTest {
         // BottomSheetContent. Note that the view is not initialized, and therefore it does not
         // inflate its layout. That means attempts to access the underlying content view are not
         // likely to work.
-        PwaRestoreBottomSheetView mockedView = Mockito.mock(PwaRestoreBottomSheetView.class,
-                Mockito.withSettings().useConstructor(mActivity).defaultAnswer(
-                        Mockito.RETURNS_MOCKS));
+        PwaRestoreBottomSheetView mockedView =
+                Mockito.mock(
+                        PwaRestoreBottomSheetView.class,
+                        Mockito.withSettings()
+                                .useConstructor(mActivity)
+                                .defaultAnswer(Mockito.RETURNS_MOCKS));
         PwaRestoreBottomSheetContent pwaRestoreBottomSheetContent =
                 new PwaRestoreBottomSheetContent((PwaRestoreBottomSheetView) mockedView);
 
@@ -52,11 +53,14 @@ public final class PwaRestoreBottomSheetContentTest {
         Assert.assertEquals(
                 BottomSheetContent.ContentPriority.LOW, pwaRestoreBottomSheetContent.getPriority());
         pwaRestoreBottomSheetContent.setPriority(BottomSheetContent.ContentPriority.HIGH);
-        Assert.assertEquals(BottomSheetContent.ContentPriority.HIGH,
+        Assert.assertEquals(
+                BottomSheetContent.ContentPriority.HIGH,
                 pwaRestoreBottomSheetContent.getPriority());
 
-        Assert.assertEquals(BottomSheetContent.HeightMode.DISABLED,
-                pwaRestoreBottomSheetContent.getHalfHeightRatio(), 0.0001);
+        Assert.assertEquals(
+                BottomSheetContent.HeightMode.DISABLED,
+                pwaRestoreBottomSheetContent.getHalfHeightRatio(),
+                0.0001);
         Assert.assertEquals(1f, pwaRestoreBottomSheetContent.getFullHeightRatio(), 0.0001);
         Assert.assertEquals(0, pwaRestoreBottomSheetContent.getVerticalScrollOffset());
         Assert.assertFalse(pwaRestoreBottomSheetContent.swipeToDismissEnabled());
@@ -64,11 +68,14 @@ public final class PwaRestoreBottomSheetContentTest {
         int accessibilityId = R.string.pwa_restore_bottom_sheet_accessibility;
         Assert.assertEquals(
                 accessibilityId, pwaRestoreBottomSheetContent.getSheetContentDescriptionStringId());
-        Assert.assertEquals(accessibilityId,
+        Assert.assertEquals(
+                accessibilityId,
                 pwaRestoreBottomSheetContent.getSheetHalfHeightAccessibilityStringId());
-        Assert.assertEquals(accessibilityId,
+        Assert.assertEquals(
+                accessibilityId,
                 pwaRestoreBottomSheetContent.getSheetFullHeightAccessibilityStringId());
-        Assert.assertEquals(accessibilityId,
+        Assert.assertEquals(
+                accessibilityId,
                 pwaRestoreBottomSheetContent.getSheetClosedAccessibilityStringId());
     }
 }

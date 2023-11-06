@@ -50,6 +50,16 @@ enum class ShortcutCustomizationAction {
   kMaxValue = kResetAll,
 };
 
+// Enum for histograms, must be kept in sync with the equivalent enum in
+// enums.xml - `ShortcutCustomizationModificationType`.
+enum class ModificationType {
+  kAdd,
+  kEdit,
+  kRemove,
+  kReset,
+  kMaxValue = kReset,
+};
+
 class AcceleratorConfigurationProvider
     : public shortcut_customization::mojom::AcceleratorConfigurationProvider,
       public ui::InputDeviceEventObserver,
@@ -128,6 +138,15 @@ class AcceleratorConfigurationProvider
   void RestoreAllDefaults(RestoreAllDefaultsCallback callback) override;
   void RecordUserAction(
       shortcut_customization::mojom::UserAction user_action) override;
+  void RecordMainCategoryNavigation(
+      mojom::AcceleratorCategory category) override;
+  void RecordAddOrEditSubactions(
+      bool is_add,
+      shortcut_customization::mojom::Subactions subactions) override;
+
+  void RecordEditDialogCompletedActions(
+      shortcut_customization::mojom::EditDialogCompletedActions
+          completed_actions) override;
 
   // ui::InputDeviceEventObserver:
   void OnInputDeviceConfigurationChanged(uint8_t input_device_types) override;

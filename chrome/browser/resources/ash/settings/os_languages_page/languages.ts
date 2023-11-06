@@ -43,8 +43,8 @@ const kLanguageCodeToTranslateCode = {
 // Translate still uses the old versions. TODO(michaelpg): Chrome does too.
 // Follow up with Translate owners to understand the right thing to do.
 const kTranslateLanguageSynonyms = {
-  'he': 'iw',
-  'jv': 'jw',
+  he: 'iw',
+  jv: 'jw',
 } as const;
 
 // The fake language name used for ARC IMEs. The value must be in sync with the
@@ -54,9 +54,6 @@ const kArcImeLanguage = '_arc_ime_language_';
 // The IME ID for the Accessibility Common extension used by Dictation.
 export const ACCESSIBILITY_COMMON_IME_ID =
     '_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation';
-
-// How often to poll language packs for pack updates.
-const LANGUAGE_PACKS_POLLING_RATE_MS = 1000;
 
 interface ModelArgs {
   // Unused.
@@ -234,7 +231,6 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       Map<string, chrome.languageSettingsPrivate.InputMethod[]>;
   private enabledInputMethodSet_: Set<string>;
   private originalProspectiveUILanguage_?: string;
-  private languagePackPollIntervalId?: number = undefined;
 
   // Bound methods.
   // Instances of SettingsLanguagesElement below should be replaced with
@@ -254,6 +250,14 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
   private boundOnInputMethodChanged_:
       OmitThisParameter<SettingsLanguagesElement['onInputMethodChanged_']>|
       null = null;
+  private boundOnLanguagePackStatusChanged_: OmitThisParameter<
+      SettingsLanguagesElement['onLanguagePackStatusChanged_']>|null = null;
+
+  // loadTimeData flags.
+  // We do not expect this to change over the lifetime of this element, so this
+  // is not included in `properties()` above.
+  private languagePacksInSettingsEnabled_ =
+      loadTimeData.getBoolean('languagePacksInSettingsEnabled');
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -330,13 +334,15 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
       this.languageSettingsPrivate_.getSpellcheckDictionaryStatuses().then(
           this.boundOnSpellcheckDictionariesChanged_);
 
-      if (loadTimeData.getBoolean('languagePacksInSettingsEnabled')) {
-        // Poll language packs now to prevent test flakiness.
+      if (this.languagePacksInSettingsEnabled_) {
+        // Get the initial state of language pack statuses.
         // Do so in the next microtask to prevent `connectedCallback()` from
         // failing and stalling tests.
-        Promise.resolve().then(() => this.pollLanguagePacks_());
-        this.languagePackPollIntervalId = setInterval(
-            () => this.pollLanguagePacks_(), LANGUAGE_PACKS_POLLING_RATE_MS);
+        Promise.resolve().then(() => this.fetchMissingLanguagePackStatuses_());
+        this.boundOnLanguagePackStatusChanged_ =
+            this.onLanguagePackStatusChanged_.bind(this);
+        this.inputMethodPrivate_.onLanguagePackStatusChanged.addListener(
+            this.boundOnLanguagePackStatusChanged_);
       }
 
       this.resolver_.resolve(undefined);
@@ -373,9 +379,10 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           .removeListener(this.boundOnSpellcheckDictionariesChanged_);
       this.boundOnSpellcheckDictionariesChanged_ = null;
     }
-
-    if (this.languagePackPollIntervalId !== undefined) {
-      clearInterval(this.languagePackPollIntervalId);
+    if (this.boundOnLanguagePackStatusChanged_) {
+      this.inputMethodPrivate_.onLanguagePackStatusChanged.removeListener(
+          this.boundOnLanguagePackStatusChanged_);
+      this.boundOnLanguagePackStatusChanged_ = null;
     }
   }
 
@@ -1214,6 +1221,9 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
           enabledInputMethodSet.has(inputMethod));
     }
     this.set('languages.inputMethods.enabled', enabledInputMethods);
+    if (this.languagePacksInSettingsEnabled_) {
+      this.fetchMissingLanguagePackStatuses_();
+    }
   }
 
   addInputMethod(id: string): void {
@@ -1315,23 +1325,41 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     return inputMethod.displayName;
   }
 
-  private pollLanguagePacks_(): void {
+  private setLanguagePackStatus_(
+      id: string, status: chrome.inputMethodPrivate.LanguagePackStatus): void {
+    this.set(
+        ['languages', 'inputMethods', 'imeLanguagePackStatus', id], status);
+  }
+
+  /**
+   * Fetch the language pack status of enabled input methods which we do not
+   * have a status for.
+   */
+  private fetchMissingLanguagePackStatuses_(): void {
     if (!this.languages) {
       return;
     }
     // Safety: `LanguagesModel.inputMethods` is always defined on CrOS.
     for (const inputMethod of this.languages.inputMethods!.enabled) {
-      void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
-          .then((status) => {
-            this.set(
-                [
-                  'languages',
-                  'inputMethods',
-                  'imeLanguagePackStatus',
-                  inputMethod.id,
-                ],
-                status);
-          });
+      if (this.languages.inputMethods!.imeLanguagePackStatus[inputMethod.id] ===
+          undefined) {
+        // Explicitly set this input method status to unknown to prevent future
+        // calls of this method from fetching this again.
+        this.languages.inputMethods!.imeLanguagePackStatus[inputMethod.id] =
+            chrome.inputMethodPrivate.LanguagePackStatus.UNKNOWN;
+
+        void this.inputMethodPrivate_.getLanguagePackStatus(inputMethod.id)
+            .then((status) => {
+              this.setLanguagePackStatus_(inputMethod.id, status);
+            });
+      }
+    }
+  }
+
+  private onLanguagePackStatusChanged_(
+      change: chrome.inputMethodPrivate.LanguagePackStatusChange): void {
+    for (const engineId of change.engineIds) {
+      this.setLanguagePackStatus_(engineId, change.status);
     }
   }
 

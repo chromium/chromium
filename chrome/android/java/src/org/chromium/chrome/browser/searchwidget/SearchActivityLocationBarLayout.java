@@ -47,12 +47,18 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     @Override
-    public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
-            @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
+    public void initialize(
+            @NonNull AutocompleteCoordinator autocompleteCoordinator,
+            @NonNull UrlBarCoordinator urlCoordinator,
+            @NonNull StatusCoordinator statusCoordinator,
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
-        super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
-                locationBarDataProvider, searchEngineLogoUtils);
+        super.initialize(
+                autocompleteCoordinator,
+                urlCoordinator,
+                statusCoordinator,
+                locationBarDataProvider,
+                searchEngineLogoUtils);
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -60,24 +66,30 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         GradientDrawable backgroundDrawable =
                 ToolbarPhone.createModernLocationBarBackground(getContext());
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(getContext())) {
-            backgroundDrawable.setTint(OmniboxFeatures.shouldShowActiveColorOnOmnibox()
+            backgroundDrawable.setTint(
+                    OmniboxFeatures.shouldShowActiveColorOnOmnibox()
                             ? ChromeColors.getSurfaceColor(
                                     getContext(), R.dimen.omnibox_suggestion_bg_elevation)
-                            : ChromeColors.getSurfaceColor(getContext(),
+                            : ChromeColors.getSurfaceColor(
+                                    getContext(),
                                     R.dimen.omnibox_suggestion_dropdown_bg_elevation));
             if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-                backgroundDrawable.setCornerRadius(getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_bg_round_corner_radius));
+                backgroundDrawable.setCornerRadius(
+                        getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_bg_round_corner_radius));
             }
             setPaddingRelative(
                     getResources().getDimensionPixelSize(R.dimen.location_bar_start_padding_modern),
-                    getPaddingTop(), getPaddingEnd(), getPaddingBottom());
+                    getPaddingTop(),
+                    getPaddingEnd(),
+                    getPaddingBottom());
         }
         setBackground(backgroundDrawable);
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
-        setUrlFocusChangePercent(1f);
+        setUrlFocusChangePercent(1f, 1f, 1f, /* isUrlFocusChangeInProgress */ false);
     }
 
     @Override
@@ -89,7 +101,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     }
 
     /** Called when the SearchActivity has finished initialization. */
-    void onDeferredStartup(@SearchType int searchType,
+    void onDeferredStartup(
+            @SearchType int searchType,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull WindowAndroid windowAndroid) {
         SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
@@ -109,13 +122,16 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     /**
      * Begins a new query.
+     *
      * @param searchType The type of search to invoke.
      * @param optionalText Prepopulate with a query, this may be null.
      * @param voiceRecognitionHandler Handler responsible for managing voice searches.
      * @param windowAndroid WindowAndroid context.
      */
     @VisibleForTesting
-    public void beginQuery(@SearchType int searchType, @Nullable String optionalText,
+    public void beginQuery(
+            @SearchType int searchType,
+            @Nullable String optionalText,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull WindowAndroid windowAndroid) {
         // Clear the text regardless of the promo decision.  This allows the user to enter text
@@ -123,7 +139,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         // logic is performed.
         mUrlCoordinator.setUrlBarData(
                 UrlBarData.forNonUrlText(optionalText == null ? "" : optionalText),
-                UrlBar.ScrollType.NO_SCROLL, SelectionState.SELECT_ALL);
+                UrlBar.ScrollType.NO_SCROLL,
+                SelectionState.SELECT_ALL);
 
         if (mPendingSearchPromoDecision || (searchType != SearchType.TEXT && !mNativeInitialized)) {
             mPendingBeginQuery = true;
@@ -133,7 +150,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         beginQueryInternal(searchType, voiceRecognitionHandler, windowAndroid);
     }
 
-    private void beginQueryInternal(@SearchType int searchType,
+    private void beginQueryInternal(
+            @SearchType int searchType,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull WindowAndroid windowAndroid) {
         assert !mPendingSearchPromoDecision;
@@ -173,8 +191,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
 
         // Voice recognition is not available. Fall back to regular text search.
-        Toast.makeText(getContext(), R.string.quick_action_search_widget_message_no_voice_search,
-                     Toast.LENGTH_LONG)
+        Toast.makeText(
+                        getContext(),
+                        R.string.quick_action_search_widget_message_no_voice_search,
+                        Toast.LENGTH_LONG)
                 .show();
         focusTextBox();
     }
@@ -198,39 +218,41 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
         LensController lensController = LensController.getInstance();
         LensQueryParams lensParams =
-                new LensQueryParams
-                        .Builder(LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                new LensQueryParams.Builder(
+                                LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
                                 mLocationBarDataProvider.isIncognito(),
                                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext()))
                         .build();
         if (lensController.isLensEnabled(lensParams)) {
-            lensController.startLens(windowAndroid,
-                    new LensIntentParams
-                            .Builder(LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+            lensController.startLens(
+                    windowAndroid,
+                    new LensIntentParams.Builder(
+                                    LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
                                     mLocationBarDataProvider.isIncognito())
                             .build());
             return;
         }
 
-        Toast.makeText(getContext(), R.string.quick_action_search_widget_message_no_google_lens,
-                     Toast.LENGTH_LONG)
+        Toast.makeText(
+                        getContext(),
+                        R.string.quick_action_search_widget_message_no_google_lens,
+                        Toast.LENGTH_LONG)
                 .show();
         // No need to focus, because the Text field should already be focused.
     }
 
-    /**
-     * Focus the Omnibox and present the cached suggestions.
-     */
+    /** Focus the Omnibox and present the cached suggestions. */
     void focusTextBox() {
-        mUrlBar.post(() -> {
-            if (mUrlCoordinator == null || mAutocompleteCoordinator == null) {
-                return;
-            }
+        mUrlBar.post(
+                () -> {
+                    if (mUrlCoordinator == null || mAutocompleteCoordinator == null) {
+                        return;
+                    }
 
-            mUrlBar.requestFocus();
-            mUrlCoordinator.setKeyboardVisibility(true, false);
-            mAutocompleteCoordinator.startCachedZeroSuggest();
-        });
+                    mUrlBar.requestFocus();
+                    mUrlCoordinator.setKeyboardVisibility(true, false);
+                    mAutocompleteCoordinator.startCachedZeroSuggest();
+                });
     }
 
     @Override

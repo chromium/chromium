@@ -13,6 +13,7 @@
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_error_dialog.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chrome/browser/printing/print_view_manager_base.h"
@@ -40,6 +41,39 @@
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "ui/base/ui_base_types.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
+#endif
+
+namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+std::unique_ptr<KeyedService> BuildTestCupsPrintJobManager(
+    content::BrowserContext* context) {
+  return std::make_unique<ash::TestCupsPrintJobManager>(
+      Profile::FromBrowserContext(context));
+}
+
+std::unique_ptr<KeyedService> BuildFakeCupsPrintersManager(
+    content::BrowserContext* context) {
+  return std::make_unique<ash::FakeCupsPrintersManager>();
+}
+
+void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+  ash::CupsPrintJobManagerFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&BuildTestCupsPrintJobManager));
+  ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactory(
+      context, base::BindRepeating(&BuildFakeCupsPrintersManager));
+}
+
+#endif
+
+}  // namespace
 
 using ::content::WebContents;
 using ::extensions::MimeHandlerViewGuest;
@@ -70,10 +104,24 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     // Avoid getting blocked by modal print error dialogs. Must be called after
     // the UI thread is up and running.
     SetShowPrintErrorDialogForTest(base::DoNothing());
+    if (UseService()) {
+      print_backend_service_ =
+          printing::PrintBackendServiceTestImpl::LaunchForTesting(
+              test_remote_, test_print_backend_.get(), /*sandboxed=*/true);
+    }
     PDFExtensionTestBase::SetUpOnMainThread();
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpInProcessBrowserTestFixture() override {
+    create_services_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(
+                base::BindRepeating(&OnWillCreateBrowserContextServices));
+  }
+#endif
   void TearDownOnMainThread() override {
     PDFExtensionTestBase::TearDownOnMainThread();
+    printing::PrintBackendServiceManager::ResetForTesting();
     SetShowPrintErrorDialogForTest(base::NullCallback());
   }
   void TearDown() override {
@@ -131,9 +179,15 @@ class PDFExtensionPrintingTest : public PDFExtensionTestBase,
     print_job_destroyed_ = true;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::CallbackListSubscription create_services_subscription_;
+#endif
+
   scoped_refptr<printing::TestPrintBackend> test_print_backend_ =
       base::MakeRefCounted<printing::TestPrintBackend>();
   printing::BrowserPrintingContextFactoryForTest test_printing_context_factory_;
+  mojo::Remote<printing::mojom::PrintBackendService> test_remote_;
+  std::unique_ptr<printing::PrintBackendServiceTestImpl> print_backend_service_;
   bool observing_print_job_ = false;
   bool print_job_destroyed_ = false;
   raw_ptr<base::RunLoop> run_loop_ = nullptr;
@@ -291,8 +345,11 @@ class PDFExtensionBasicPrintingTest : public PDFExtensionPrintingTest {
   }
 };
 
+// TODO(https://crbug.com/1488085): Test is flaky.
+// Note that MAYBE_ContextMenuPrintCommandExtensionMainFrame is already
+// defined above.
 IN_PROC_BROWSER_TEST_P(PDFExtensionBasicPrintingTest,
-                       ContextMenuPrintCommandExtensionMainFrame) {
+                       MAYBE_ContextMenuPrintCommandExtensionMainFrame) {
   MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(
       embedded_test_server()->GetURL("/pdf/test.pdf"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest);

@@ -29,14 +29,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/**
- * Tests to ensure/validate the interactions with the PropertyModel.
- */
+/** Tests to ensure/validate the interactions with the PropertyModel. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PropertyModelTest {
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
+    @Rule public ExpectedException thrown = ExpectedException.none();
 
     public static WritableBooleanPropertyKey BOOLEAN_PROPERTY_A = new WritableBooleanPropertyKey();
     public static WritableBooleanPropertyKey BOOLEAN_PROPERTY_B = new WritableBooleanPropertyKey();
@@ -61,8 +58,9 @@ public class PropertyModelTest {
 
     @Test
     public void getAllSetProperties() {
-        PropertyModel model = new PropertyModel(
-                BOOLEAN_PROPERTY_A, FLOAT_PROPERTY_A, INT_PROPERTY_A, OBJECT_PROPERTY_A);
+        PropertyModel model =
+                new PropertyModel(
+                        BOOLEAN_PROPERTY_A, FLOAT_PROPERTY_A, INT_PROPERTY_A, OBJECT_PROPERTY_A);
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(INT_PROPERTY_A, 42);
         Collection<PropertyKey> setProperties = model.getAllSetProperties();
@@ -187,8 +185,9 @@ public class PropertyModelTest {
 
     @Test
     public void duplicateSetChangeSuppression() {
-        PropertyModel model = new PropertyModel(
-                BOOLEAN_PROPERTY_A, FLOAT_PROPERTY_A, INT_PROPERTY_A, OBJECT_PROPERTY_A);
+        PropertyModel model =
+                new PropertyModel(
+                        BOOLEAN_PROPERTY_A, FLOAT_PROPERTY_A, INT_PROPERTY_A, OBJECT_PROPERTY_A);
         model.set(BOOLEAN_PROPERTY_A, true);
         model.set(FLOAT_PROPERTY_A, 1f);
         model.set(INT_PROPERTY_A, -1);
@@ -236,11 +235,14 @@ public class PropertyModelTest {
         model2.set(BOOLEAN_PROPERTY_A, true);
         model2.set(BOOLEAN_PROPERTY_B, false);
 
-        Assert.assertTrue("BOOLEAN_PROPERTY_A should be equal",
+        Assert.assertTrue(
+                "BOOLEAN_PROPERTY_A should be equal",
                 model1.compareValue(model2, BOOLEAN_PROPERTY_A));
-        Assert.assertFalse("BOOLEAN_PROPERTY_B should not be equal",
+        Assert.assertFalse(
+                "BOOLEAN_PROPERTY_B should not be equal",
                 model1.compareValue(model2, BOOLEAN_PROPERTY_B));
-        Assert.assertFalse("BOOLEAN_PROPERTY_C should not be equal",
+        Assert.assertFalse(
+                "BOOLEAN_PROPERTY_C should not be equal",
                 model1.compareValue(model2, BOOLEAN_PROPERTY_C));
     }
 
@@ -278,9 +280,11 @@ public class PropertyModelTest {
 
         Assert.assertTrue(
                 "FLOAT_PROPERTY_A should be equal", model1.compareValue(model2, FLOAT_PROPERTY_A));
-        Assert.assertFalse("FLOAT_PROPERTY_B should not be equal",
+        Assert.assertFalse(
+                "FLOAT_PROPERTY_B should not be equal",
                 model1.compareValue(model2, FLOAT_PROPERTY_B));
-        Assert.assertFalse("FLOAT_PROPERTY_C should not be equal",
+        Assert.assertFalse(
+                "FLOAT_PROPERTY_C should not be equal",
                 model1.compareValue(model2, FLOAT_PROPERTY_C));
     }
 
@@ -299,15 +303,19 @@ public class PropertyModelTest {
         model2.set(OBJECT_PROPERTY_A, sharedObject);
         model2.set(OBJECT_PROPERTY_B, "Test");
 
-        Assert.assertTrue("OBJECT_PROPERTY_A should be equal",
+        Assert.assertTrue(
+                "OBJECT_PROPERTY_A should be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_A));
-        Assert.assertTrue("OBJECT_PROPERTY_B should be equal",
+        Assert.assertTrue(
+                "OBJECT_PROPERTY_B should be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_B));
-        Assert.assertFalse("OBJECT_PROPERTY_C should not be equal",
+        Assert.assertFalse(
+                "OBJECT_PROPERTY_C should not be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_C));
 
         model2.set(OBJECT_PROPERTY_B, "Test2");
-        Assert.assertFalse("OBJECT_PROPERTY_B should not be equal",
+        Assert.assertFalse(
+                "OBJECT_PROPERTY_B should not be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_B));
     }
 
@@ -321,7 +329,8 @@ public class PropertyModelTest {
         PropertyModel model2 = new PropertyModel(OBJECT_PROPERTY_SKIP_EQUALITY);
         model2.set(OBJECT_PROPERTY_SKIP_EQUALITY, sharedObject);
 
-        Assert.assertFalse("OBJECT_PROPERTY_A should not be equal",
+        Assert.assertFalse(
+                "OBJECT_PROPERTY_A should not be equal",
                 model1.compareValue(model2, OBJECT_PROPERTY_SKIP_EQUALITY));
     }
 }

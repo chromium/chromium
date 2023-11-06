@@ -16,11 +16,10 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_tablet_buttons_subpage.html.js';
-import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
 import {ActionChoice, GraphicsTablet, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
 
@@ -61,6 +60,7 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
   private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
   private previousRoute_: Route|null = null;
+  private isInitialized_: boolean = false;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -85,9 +85,13 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return;
     }
     this.previousRoute_ = route;
-    if (this.hasGraphicsTablets() &&
-        (!this.selectedTablet ||
-         this.selectedTablet.id !== this.getGraphicsTabletIdFromUrl())) {
+
+    if (!this.hasGraphicsTablets()) {
+      return;
+    }
+
+    if (!this.selectedTablet ||
+        this.selectedTablet.id !== this.getGraphicsTabletIdFromUrl()) {
       await this.initializeTablet();
     }
     this.inputDeviceSettingsProvider_.startObserving(this.selectedTablet.id);
@@ -98,14 +102,17 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
    * query, initializing the page and pref with the tablet data.
    */
   private async initializeTablet(): Promise<void> {
+    this.isInitialized_ = false;
+
     const tabletId = this.getGraphicsTabletIdFromUrl();
+    const searchedGraphicsTablet = this.graphicsTablets.find(
+        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
+    this.selectedTablet = castExists(searchedGraphicsTablet);
     this.buttonActionList_ =
         (await this.inputDeviceSettingsProvider_
              .getActionsForGraphicsTabletButtonCustomization())
             ?.options;
-    const searchedGraphicsTablet = this.graphicsTablets.find(
-        (graphicsTablet: GraphicsTablet) => graphicsTablet.id === tabletId);
-    this.selectedTablet = castExists(searchedGraphicsTablet);
+    this.isInitialized_ = true;
   }
 
   private getGraphicsTabletIdFromUrl(): number {
@@ -126,9 +133,13 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
       return;
     }
 
-    if (!this.hasGraphicsTablets() ||
-        !this.isTabletConnected(this.getGraphicsTabletIdFromUrl())) {
+    if (!this.hasGraphicsTablets()) {
       Router.getInstance().navigateTo(routes.DEVICE);
+      return;
+    }
+
+    if (!this.isTabletConnected(this.getGraphicsTabletIdFromUrl())) {
+      Router.getInstance().navigateTo(routes.GRAPHICS_TABLET);
       return;
     }
     await this.initializeTablet();
@@ -136,12 +147,12 @@ export class SettingsCustomizeTabletButtonsSubpageElement extends
   }
 
   onSettingsChanged(): void {
-    // TODO(yyhyyh@): Remove the if-condition after mojo api is done.
-    if (this.inputDeviceSettingsProvider_ instanceof
-        FakeInputDeviceSettingsProvider) {
-      this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
-          this.selectedTablet!.id, this.selectedTablet!.settings);
+    if (!this.isInitialized_) {
+      return;
     }
+
+    this.inputDeviceSettingsProvider_.setGraphicsTabletSettings(
+        this.selectedTablet!.id, this.selectedTablet!.settings);
   }
 
   private getDescription_(): string {

@@ -58,7 +58,7 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
+#include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -230,7 +230,6 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
       alternative_error_page_info->alternative_error_page_params
           .FindBool(error_page::kOverrideErrorPage)
           .value_or(false)) {
-    DCHECK(base::FeatureList::IsEnabled(features::kPWAsDefaultOfflinePage));
     base::UmaHistogramSparse("Net.ErrorPageCounts.WebAppAlternativeErrorPage",
                              -error.reason());
     resource_id = alternative_error_page_info->resource_id;
@@ -261,8 +260,7 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
   base::StringPiece template_html(extracted_string.data(),
                                   extracted_string.size());
   DCHECK(!template_html.empty()) << "unable to load template.";
-  // "t" is the id of the template's root node.
-  *error_html = webui::GetTemplatesHtml(template_html, page_state.strings, "t");
+  *error_html = webui::GetLocalizedHtml(template_html, page_state.strings);
   return page_state;
 }
 

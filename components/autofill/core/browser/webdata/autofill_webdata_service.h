@@ -29,7 +29,7 @@ class SequencedTaskRunner;
 
 namespace autofill {
 
-class AutofillEntry;
+class AutocompleteEntry;
 class AutofillWebDataBackend;
 class AutofillWebDataBackendImpl;
 class AutofillWebDataServiceObserverOnDBSequence;
@@ -93,15 +93,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetServerProfiles(
       WebDataServiceConsumer* consumer);
 
-  // Schedules a task to convert server profiles to local profiles, comparing
-  // profiles using |app_locale| and filling in |primary_account_email| into
-  // newly converted profiles. The task only converts profiles that have not
-  // been converted before.
-  // TODO(crbug.com/1348294): Delete this function, which is unused.
-  void ConvertWalletAddressesAndUpdateWalletCards(
-      const std::string& app_locale,
-      const std::string& primary_account_email);
-
   // Schedules a task to count the number of unique autofill values contained
   // in the time interval [|begin|, |end|). |begin| and |end| can be null
   // to indicate no time limitation.
@@ -110,13 +101,12 @@ class AutofillWebDataService : public WebDataServiceBase {
       const base::Time& end,
       WebDataServiceConsumer* consumer);
 
-  // Schedules a task to update autofill entries in the web database.
-  void UpdateAutofillEntries(
-      const std::vector<AutofillEntry>& autofill_entries);
+  // Schedules a task to update autocomplete entries in the web database.
+  void UpdateAutocompleteEntries(
+      const std::vector<AutocompleteEntry>& autocomplete_entries);
 
   void SetAutofillProfileChangedCallback(
-      base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
-          change_cb);
+      base::RepeatingCallback<void(const AutofillProfileChange&)> change_cb);
 
   // Schedules a task to add a local IBAN to the web database.
   void AddLocalIban(const Iban& iban);
@@ -157,6 +147,9 @@ class AutofillWebDataService : public WebDataServiceBase {
   void UpdateServerCvc(int64_t instrument_id, const std::u16string& cvc);
   void RemoveServerCvc(int64_t instrument_id);
   void ClearServerCvcs();
+
+  // Method to clear all the local CVCs from the web database.
+  void ClearLocalCvcs();
 
   // Initiates the request for local/server credit cards.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
@@ -248,8 +241,7 @@ class AutofillWebDataService : public WebDataServiceBase {
  protected:
   ~AutofillWebDataService() override;
 
-  void NotifyAutofillMultipleChangedOnUISequence(syncer::ModelType model_type);
-  void NotifyAutofillAddressConversionCompletedOnUISequence();
+  void NotifyOnAutofillChangedBySyncOnUISequence(syncer::ModelType model_type);
 
   base::WeakPtr<AutofillWebDataService> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();

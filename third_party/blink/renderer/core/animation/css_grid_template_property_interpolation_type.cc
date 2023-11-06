@@ -103,22 +103,23 @@ class UnderlyingGridTrackListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingGridTrackListChecker(const InterpolationValue& underlying)
-      : underlying_(underlying.Clone()) {}
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
   ~UnderlyingGridTrackListChecker() final = default;
 
  private:
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
-    return To<InterpolableGridTrackList>(*underlying_.interpolable_value)
+    return To<InterpolableGridTrackList>(
+               *underlying_->underlying().interpolable_value)
                .Equals(To<InterpolableGridTrackList>(
                    *underlying.interpolable_value)) &&
            To<CSSGridTrackListNonInterpolableValue>(
-               *underlying_.non_interpolable_value)
+               *underlying_->underlying().non_interpolable_value)
                .Equals(To<CSSGridTrackListNonInterpolableValue>(
                    *underlying.non_interpolable_value));
   }
 
-  const InterpolationValue underlying_;
+  const Persistent<const InterpolationValueGCed> underlying_;
 };
 
 class InheritedGridTrackListChecker
@@ -160,7 +161,7 @@ class InheritedGridTrackListChecker
 };
 
 // static
-std::unique_ptr<InterpolableValue>
+InterpolableValue*
 CSSGridTemplatePropertyInterpolationType::CreateInterpolableGridTrackList(
     const NGGridTrackList& track_list,
     float zoom) {

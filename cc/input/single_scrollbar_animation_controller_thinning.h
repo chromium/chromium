@@ -22,13 +22,12 @@ class ScrollbarAnimationControllerClient;
 // ScrollbarAnimationControllerThinning for one scrollbar
 class CC_EXPORT SingleScrollbarAnimationControllerThinning {
  public:
-  static constexpr float kIdleThicknessScale = 0.4f;
-
   static std::unique_ptr<SingleScrollbarAnimationControllerThinning> Create(
       ElementId scroll_element_id,
       ScrollbarOrientation orientation,
       ScrollbarAnimationControllerClient* client,
-      base::TimeDelta thinning_duration);
+      base::TimeDelta thinning_duration,
+      float idle_thickness_scale);
 
   SingleScrollbarAnimationControllerThinning(
       const SingleScrollbarAnimationControllerThinning&) = delete;
@@ -56,9 +55,8 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   void StartAnimation();
   void StopAnimation();
 
-  void UpdateThumbThicknessScale();
-
   void DidScrollUpdate();
+  void DidRequestShow();
 
   void DidMouseDown();
   void DidMouseUp();
@@ -75,7 +73,8 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
       ElementId scroll_element_id,
       ScrollbarOrientation orientation,
       ScrollbarAnimationControllerClient* client,
-      base::TimeDelta thinning_duration);
+      base::TimeDelta thinning_duration,
+      float idle_thickness_scale);
 
   ScrollbarLayerImplBase* GetScrollbar() const;
   float AnimationProgressAtTime(base::TimeTicks now);
@@ -85,7 +84,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   // a bar or kDecrease it (thin).
   enum class AnimationChange { kNone, kIncrease, kDecrease };
   float ThumbThicknessScaleAt(float progress) const;
-  float CurrentThumbThicknessScale() const;
+  float CurrentForcedThumbThicknessScale() const;
   void CalculateThicknessShouldChange(const gfx::PointF& device_viewport_point);
 
   float AdjustScale(float new_value,
@@ -93,6 +92,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
                     AnimationChange animation_change,
                     float min_value,
                     float max_value);
+  void UpdateThumbThicknessScale();
   void ApplyThumbThicknessScale(float thumb_thickness_scale);
 
   raw_ptr<ScrollbarAnimationControllerClient> client_;
@@ -119,6 +119,7 @@ class CC_EXPORT SingleScrollbarAnimationControllerThinning {
   // DidScrollUpdate() to check the pointers proximity to the thumb in case of a
   // scroll.
   gfx::PointF device_viewport_last_pointer_location_{-1, -1};
+  const float idle_thickness_scale_;
 };
 
 }  // namespace cc

@@ -14,12 +14,11 @@ js_type_check("closure_compile_jsmodules") {
   closure_flags = default_closure_args + [
                     "language_in=ECMASCRIPT_2020",
                     "jscomp_error=strictCheckTypes",
-                    "js_module_root=gen/ui/file_manager/tsc/",
+                    "js_module_root=gen/ui/file_manager/image_loader/preprocessed/",
                     "js_module_root=gen/ui/file_manager/",
                     "js_module_root=" +
                         rebase_path("//ui/file_manager/", root_build_dir),
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
   deps = [
@@ -28,10 +27,10 @@ js_type_check("closure_compile_jsmodules") {
     ":image_loader_util",
     ":image_orientation",
     ":image_request_task",
+    ":js_from_files_app",
     ":load_image_request",
     ":piex_loader",
     ":scheduler",
-    "//ui/file_manager:js_from_ts",
   ]
 }
 
@@ -81,6 +80,7 @@ js_library("load_image_request") {
 
 js_library("image_loader_client") {
   deps = [ ":load_image_request" ]
+
   externs_list = [
     "$externs_path/chrome.js",
     "$externs_path/chrome_extensions.js",
@@ -148,17 +148,15 @@ js_test_type_check("js_test_type_check") {
 
   closure_flags = strict_error_checking_closure_args + [
                     "language_in=ECMASCRIPT_2020",
-                    "js_module_root=./gen/ui",
-                    "js_module_root=./gen/ui/file_manager/tsc/",
+                    "js_module_root=./gen/ui/file_manager/image_loader/preprocessed/",
                     "js_module_root=" +
                         rebase_path("//ui/file_manager/", root_build_dir),
                     "js_module_root=./gen/ui/file_manager/",
                     "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
                     "browser_resolver_prefix_replacements=\"chrome://file-manager/=./file_manager/\"",
-                    "hide_warnings_for=gen/ui/file_manager/tsc/",
                     "browser_resolver_prefix_replacements=\"chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/=./image_loader/\"",
                   ]
-  extra_deps = [ "//ui/file_manager:js_from_ts" ]
+  extra_deps = [ ":js_from_files_app" ]
 }
 
 group("closure_compile") {
@@ -166,20 +164,6 @@ group("closure_compile") {
   deps = [
     ":closure_compile_jsmodules",
     ":js_test_type_check",
-  ]
-}
-
-group("js_modules") {
-  deps = [
-    ":cache",
-    ":image_loader",
-    ":image_loader_client",
-    ":image_loader_util",
-    ":image_orientation",
-    ":image_request_task",
-    ":load_image_request",
-    ":piex_loader",
-    ":scheduler",
   ]
 }
 
@@ -203,6 +187,16 @@ copy("from_files_app") {
   } else {
     deps = [ "//ui/file_manager:build_ts" ]
   }
+}
+
+# image_loader_client.js depends on this file from Files app for the type-checking.
+js_library("js_from_files_app") {
+  sources = [
+    "$preprocess_folder/file_manager/common/js/file_types_base.js",
+    "$preprocess_folder/file_manager/common/js/file_types_data.js",
+    "$preprocess_folder/file_manager/common/js/lru_cache.js",
+  ]
+  extra_deps = [ ":from_files_app" ]
 }
 
 copy("copy_src") {

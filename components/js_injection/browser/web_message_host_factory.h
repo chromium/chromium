@@ -24,6 +24,7 @@ class WebMessageHostFactory {
   // Creates a WebMessageHost for the specified page. |proxy| is valid for
   // the life of the host and may be used to send messages back to the page.
   virtual std::unique_ptr<WebMessageHost> CreateHost(
+      const std::string& top_level_origin_string,
       const std::string& origin_string,
       bool is_main_frame,
       WebMessageReplyProxy* proxy) = 0;

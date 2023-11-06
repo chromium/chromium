@@ -6,18 +6,24 @@
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 namespace {
@@ -28,6 +34,49 @@ bool g_is_chrome_build =
 #else
     false;
 #endif
+
+search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
+    Profile& profile) {
+  if (!search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kFeatureSuppressed;
+  }
+
+  if (!SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(
+          profile, /*try_claim=*/false)) {
+    return search_engines::SearchEngineChoiceScreenConditions::
+        kProfileOutOfScope;
+  }
+
+  bool is_regular_profile = profile.IsRegularProfile();
+#if BUILDFLAG(IS_CHROMEOS)
+  is_regular_profile &= !chromeos::IsManagedGuestSession() &&
+                        !chromeos::IsKioskSession() &&
+                        !profiles::IsChromeAppKioskSession();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  is_regular_profile &= !profile.IsGuestSession();
+#endif
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
+
+  return search_engines::GetStaticChoiceScreenConditions(
+      CHECK_DEREF(g_browser_process->policy_service()),
+      /*profile_properties=*/
+      {.is_regular_profile = is_regular_profile,
+       .pref_service = profile.GetPrefs()},
+      CHECK_DEREF(template_url_service));
+}
+
+bool IsProfileEligibleForChoiceScreen(Profile& profile) {
+  auto eligibility_conditions = ComputeProfileEligibility(profile);
+  RecordChoiceScreenProfileInitCondition(eligibility_conditions);
+  return eligibility_conditions ==
+         search_engines::SearchEngineChoiceScreenConditions::kEligible;
+}
+
 }  // namespace
 
 SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
@@ -65,32 +114,36 @@ SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
   return base::AutoReset<bool>(&g_is_chrome_build, force_chrome_build);
 }
 
-bool SearchEngineChoiceServiceFactory::IsProfileEligibleForChoiceScreen(
-    const policy::PolicyService& policy_service,
-    Profile& profile) const {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return false;
+// static
+bool SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(Profile& profile,
+                                                               bool try_claim) {
+  base::CommandLine* const command_line =
+      base::CommandLine::ForCurrentProcess();
+  // Force-enable the choice screen for testing the screen itself.
+  if (command_line->HasSwitch(switches::kForceSearchEngineChoiceScreen)) {
+    return true;
   }
 
-  bool is_regular_profile = profile.IsRegularProfile();
-#if BUILDFLAG(IS_CHROMEOS)
-  is_regular_profile &= !profiles::IsManagedGuestSession() &&
-                        !chromeos::IsKioskSession() &&
-                        !profiles::IsChromeAppKioskSession();
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  is_regular_profile &= !profile.IsGuestSession();
-#endif
+  auto* local_state = g_browser_process->local_state();
+  CHECK(local_state);
+  if (!local_state->HasPrefPath(prefs::kSearchEnginesChoiceProfile)) {
+    if (try_claim) {
+      // Claim the dialog so other profiles don't trigger.
+      local_state->SetFilePath(prefs::kSearchEnginesChoiceProfile,
+                               profile.GetBaseName());
+    }
+    return true;
+  }
 
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile);
-  return search_engines::ShouldShowChoiceScreen(
-      policy_service,
-      /*profile_properties=*/
-      {.is_regular_profile = is_regular_profile,
-       .pref_service = profile.GetPrefs()},
-      template_url_service);
+  return profile.GetBaseName() ==
+         local_state->GetFilePath(prefs::kSearchEnginesChoiceProfile);
+}
+
+// static
+bool SearchEngineChoiceServiceFactory::
+    IsProfileEligibleForChoiceScreenForTesting(Profile& profile) {
+  CHECK_IS_TEST();
+  return IsProfileEligibleForChoiceScreen(profile);
 }
 
 std::unique_ptr<KeyedService>
@@ -99,12 +152,12 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!g_is_chrome_build) {
     return nullptr;
   }
-  auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
 
-  if (!IsProfileEligibleForChoiceScreen(
-          CHECK_DEREF(g_browser_process->policy_service()), profile)) {
+  auto& profile = CHECK_DEREF(Profile::FromBrowserContext(context));
+  if (!IsProfileEligibleForChoiceScreen(profile)) {
     return nullptr;
   }
+
   TemplateURLService& template_url_service =
       CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
   return std::make_unique<SearchEngineChoiceService>(profile,

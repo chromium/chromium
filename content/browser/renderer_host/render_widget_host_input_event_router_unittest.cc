@@ -75,15 +75,16 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   }
 
  private:
-  raw_ptr<RenderWidgetHostViewBase> parent_view_;
-  raw_ptr<RenderWidgetHostViewBase> root_view_;
+  raw_ptr<RenderWidgetHostViewBase> parent_view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewBase> root_view_ = nullptr;
 };
 
 class StubHitTestQuery : public viz::HitTestQuery {
  public:
   StubHitTestQuery(RenderWidgetHostViewBase* hittest_result,
                    bool query_renderer)
-      : hittest_result_(hittest_result), query_renderer_(query_renderer) {}
+      : hittest_result_(hittest_result->GetWeakPtr()),
+        query_renderer_(query_renderer) {}
   ~StubHitTestQuery() override = default;
 
   viz::Target FindTargetForLocationStartingFromImpl(
@@ -91,6 +92,8 @@ class StubHitTestQuery : public viz::HitTestQuery {
       const gfx::PointF& location,
       const viz::FrameSinkId& sink_id,
       bool is_location_relative_to_parent) const override {
+    CHECK(hittest_result_);
+
     return {hittest_result_->GetFrameSinkId(), gfx::PointF(),
             viz::HitTestRegionFlags::kHitTestMouse |
                 viz::HitTestRegionFlags::kHitTestTouch |
@@ -99,7 +102,7 @@ class StubHitTestQuery : public viz::HitTestQuery {
   }
 
  private:
-  raw_ptr<const RenderWidgetHostViewBase, DanglingUntriaged> hittest_result_;
+  base::WeakPtr<const RenderWidgetHostViewBase> hittest_result_;
   const bool query_renderer_;
 };
 
@@ -168,10 +171,11 @@ class MockInputTargetClient : public viz::mojom::InputTargetClient {
   void FrameSinkIdAt(const gfx::PointF& point,
                      const uint64_t trace_id,
                      FrameSinkIdAtCallback callback) override {
-    if (forward_callback_)
+    if (forward_callback_) {
       std::move(forward_callback_).Run(std::move(callback));
-    else if (callback)
+    } else if (callback) {
       std::move(callback).Run(viz::FrameSinkId(), point);
+    }
   }
 
   base::OnceCallback<void(FrameSinkIdAtCallback)> forward_callback_;
@@ -212,12 +216,15 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     site_instance_group_root_ =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             browser_context_.get(), process_host_root_.get()));
+    auto routing_id = process_host_root_->GetNextRoutingID();
     widget_host_root_ = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
-        site_instance_group_root_->GetSafeRef(),
-        process_host_root_->GetNextRoutingID(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_root_,
+                                                 routing_id),
+        site_instance_group_root_->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
+    widget_host_root_->SetViewIsFrameSinkIdOwner(true);
 
     mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
     mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
@@ -272,12 +279,15 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
     child.site_instance_group =
         base::WrapRefCounted(SiteInstanceGroup::CreateForTesting(
             site_instance_group_root_.get(), child.process_host.get()));
+    auto routing_id = child.process_host->GetNextRoutingID();
     child.widget_host = RenderWidgetHostImpl::Create(
         /*frame_tree=*/nullptr, &delegate_,
-        child.site_instance_group->GetSafeRef(),
-        child.process_host->GetNextRoutingID(),
+        RenderWidgetHostImpl::DefaultFrameSinkId(*child.site_instance_group,
+                                                 routing_id),
+        child.site_instance_group->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());
+    child.widget_host->SetViewIsFrameSinkIdOwner(true);
     child.view = std::make_unique<TestRenderWidgetHostViewChildFrame>(
         child.widget_host.get());
     child.frame_connector = std::make_unique<MockFrameConnector>(
@@ -1007,8 +1017,9 @@ TEST_F(RenderWidgetHostInputEventRouterTest, QueryResultAfterChildViewDead) {
         // Simulate destruction of the view.
         factory->InvalidateWeakPtrs();
 
-        if (callback)
+        if (callback) {
           std::move(callback).Run(ret, gfx::PointF());
+        }
       },
       child.view->GetFrameSinkId(),
       &view_root_->RenderWidgetHostViewBase::weak_factory_);
@@ -1191,19 +1202,23 @@ class DelegatedInkPointTest
                                 ui::LatencyInfo(ui::SourceEventType::TOUCH));
 
       // Need to send a new press event after ending the previous touch.
-      if (use_exit_event)
+      if (use_exit_event) {
         sent_touch_press_ = false;
+      }
     } else {
       blink::WebInputEvent::Type event_type =
           blink::WebInputEvent::Type::kMouseMove;
-      if (use_enter_event)
+      if (use_enter_event) {
         event_type = blink::WebInputEvent::Type::kMouseEnter;
-      if (use_exit_event)
+      }
+      if (use_exit_event) {
         event_type = blink::WebInputEvent::Type::kMouseLeave;
+      }
 
       int modifiers = 0;
-      if (!Hovering(match_test_hovering_state))
+      if (!Hovering(match_test_hovering_state)) {
         modifiers = blink::WebInputEvent::kLeftButtonDown;
+      }
 
       blink::WebMouseEvent mouse_event(event_type, modifiers, timestamp,
                                        kPointerId);
@@ -1231,8 +1246,9 @@ class DelegatedInkPointTest
  private:
   void SendTouchPress(const gfx::PointF& requested_touch_location) {
     DCHECK(GetEventParam() == TestEvent::kTouchEvent);
-    if (sent_touch_press_)
+    if (sent_touch_press_) {
       return;
+    }
 
     // Location of the press event doesn't matter, so long as it doesn't exactly
     // match the location of the subsequent move event. If they match, then the
@@ -1292,15 +1308,17 @@ struct DelegatedInkPointTestPassToString {
       const {
     std::string suffix;
 
-    if (std::get<0>(type.param) == TestEvent::kMouseEvent)
+    if (std::get<0>(type.param) == TestEvent::kMouseEvent) {
       suffix.append("Mouse");
-    else
+    } else {
       suffix.append("Touch");
+    }
 
-    if (std::get<1>(type.param) == HoveringState::kHovering)
+    if (std::get<1>(type.param) == HoveringState::kHovering) {
       suffix.append("Hovering");
-    else
+    } else {
       suffix.append("NotHovering");
+    }
 
     return suffix;
   }

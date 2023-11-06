@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!-- Tests that tickmarks get painted and scrollbar transitions
+     to full mode. -->
+<script src='../../../resources/gesture-util.js'></script>
+<script src='../../../resources/testharness.js'></script>
+<style>
+  body,
+  html {
+    width: 2000px;
+    height: 2000px;
+    margin: 0;
+    background-color: green;
+  }
+</style>
+<span id='elt'>&nbsp;</span>
+<script>
+  window.onload = async () => {
+    if (!internals)
+      return;
+
+    testRunner.waitUntilDone();
+
+    let range = document.createRange();
+    let elt = document.getElementById('elt');
+    range.selectNodeContents(elt);
+    internals.addTextMatchMarker(range, 'kActive');
+
+    await waitForCompositorCommit();
+    testRunner.notifyDone();
+  }
+</script>

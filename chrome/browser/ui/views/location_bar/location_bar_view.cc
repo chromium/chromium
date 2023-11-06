@@ -60,6 +60,7 @@
 #include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_layout.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
@@ -110,6 +111,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -297,7 +299,7 @@ void LocationBarView::Init() {
   selected_keyword_view_ = AddChildView(std::make_unique<SelectedKeywordView>(
       this, TemplateURLServiceFactory::GetForProfile(profile_), font_list));
 
-  if (browser_ && apps::features::LinkCapturingUiUpdateEnabled()) {
+  if (browser_ && apps::features::ShouldShowLinkCapturingUX()) {
     intent_chip_ =
         AddChildView(std::make_unique<IntentChipButton>(browser_, this));
   }
@@ -337,8 +339,9 @@ void LocationBarView::Init() {
     if (base::FeatureList::IsEnabled(kWebOTPCrossDevice))
       params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
-    if (!apps::features::LinkCapturingUiUpdateEnabled())
+    if (!apps::features::ShouldShowLinkCapturingUX()) {
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
+    }
     params.types_enabled.push_back(PageActionIconType::kPwaInstall);
     params.types_enabled.push_back(PageActionIconType::kFind);
     params.types_enabled.push_back(PageActionIconType::kTranslate);
@@ -347,6 +350,9 @@ void LocationBarView::Init() {
 
     if (dom_distiller::IsDomDistillerEnabled() && browser_->is_type_normal()) {
       params.types_enabled.push_back(PageActionIconType::kReaderMode);
+    }
+    if (features::IsReadAnythingOmniboxIconEnabled()) {
+      params.types_enabled.push_back(PageActionIconType::kReadAnything);
     }
     params.types_enabled.push_back(PageActionIconType::kCookieControls);
     params.types_enabled.push_back(
@@ -1483,11 +1489,7 @@ void LocationBarView::OnTouchUiChanged() {
 }
 
 bool LocationBarView::ShouldChipOverrideLocationIcon() {
-  bool has_visible_chip =
-      chip_controller_ && chip_controller_->chip()->GetVisible();
-  return has_visible_chip &&
-         base::FeatureList::IsEnabled(
-             permissions::features::kChipLocationBarIconOverride);
+  return chip_controller_ && chip_controller_->chip()->GetVisible();
 }
 
 bool LocationBarView::IsEditingOrEmpty() const {
@@ -1562,8 +1564,7 @@ bool LocationBarView::ShowPageInfoDialog() {
 }
 
 void LocationBarView::RecordPageInfoMetrics() {
-  if (base::FeatureList::IsEnabled(permissions::features::kConfirmationChip) &&
-      chip_controller_) {
+  if (chip_controller_) {
     bool confirmation_chip_collapsed_recently =
         base::TimeTicks::Now() - confirmation_chip_collapsed_time_ <=
         permissions::kConfirmationConsiderationDurationForUma;

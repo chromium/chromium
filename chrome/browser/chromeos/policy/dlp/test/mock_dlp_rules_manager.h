@@ -15,7 +15,7 @@
 namespace policy {
 class MockDlpRulesManager : public DlpRulesManager {
  public:
-  MockDlpRulesManager();
+  explicit MockDlpRulesManager(Profile* profile);
   ~MockDlpRulesManager() override;
 
   MOCK_CONST_METHOD2(IsRestricted,
@@ -54,7 +54,8 @@ class MockDlpRulesManager : public DlpRulesManager {
 
   MOCK_CONST_METHOD0(IsReportingEnabled, bool());
 
-  MOCK_CONST_METHOD0(GetReportingManager, DlpReportingManager*());
+  MOCK_CONST_METHOD0(GetReportingManager,
+                     data_controls::DlpReportingManager*());
 
   MOCK_CONST_METHOD0(GetDlpFilesController, DlpFilesController*());
 
@@ -73,7 +74,8 @@ class MockDlpRulesManager : public DlpRulesManager {
       std::vector<uint64_t>(const std::vector<FileMetadata>& files_entries,
                             const GURL& destination));
 
-  MOCK_METHOD(void, OnPolicyUpdate, (), (override));
+  MOCK_METHOD(void, OnDataControlsRulesUpdate, ());
+  MOCK_METHOD(void, OnDataLeakPreventionRulesUpdate, ());
 };
 
 }  // namespace policy

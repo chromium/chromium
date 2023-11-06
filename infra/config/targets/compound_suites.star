@@ -177,10 +177,26 @@ targets.legacy_compound_suite(
 targets.legacy_compound_suite(
     name = "chromeos_vm_gtests",
     basic_suites = [
+        "chromeos_system_friendly_gtests",
+        "chromeos_integration_tests",
+    ],
+)
+
+targets.legacy_compound_suite(
+    name = "chromeos_vm_gtests_and_tast",
+    basic_suites = [
         "chromeos_browser_all_tast_tests",
         "chromeos_browser_integration_tests",
         "chromeos_system_friendly_gtests",
         "chromeos_integration_tests",
+    ],
+)
+
+targets.legacy_compound_suite(
+    name = "chromeos_vm_tast",
+    basic_suites = [
+        "chromeos_browser_all_tast_tests",
+        "chromeos_browser_integration_tests",
     ],
 )
 
@@ -381,6 +397,9 @@ targets.legacy_compound_suite(
         "telemetry_perf_unittests_isolated_scripts",
         "vulkan_swiftshader_isolated_scripts",
         "chromium_web_tests_high_dpi_isolated_scripts",
+        # TODO(crbug.com/1498364): Remove this once the BackgroundResourceFetch
+        # feature launches.
+        "chromium_web_tests_brfetch_isolated_scripts",
     ],
 )
 
@@ -773,6 +792,15 @@ targets.legacy_compound_suite(
         "gpu_dawn_perf_smoke_isolated_scripts",
         "gpu_dawn_webgpu_blink_web_tests",
         "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
+    ],
+)
+
+targets.legacy_compound_suite(
+    name = "gpu_dawn_compat_telemetry_tests",
+    basic_suites = [
+        "gpu_dawn_webgpu_compat_cts",
+        "gpu_dawn_webgpu_cts",
+        "gpu_dawn_web_platform_webgpu_cts_force_swiftshader",
     ],
 )
 
@@ -1325,6 +1353,20 @@ targets.legacy_compound_suite(
     basic_suites = [
         "system_webview_shell_instrumentation_tests",
         "webview_bot_instrumentation_test_apk_gtest",
+        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+        "webview_bot_unittests_gtest",
+        "webview_cts_tests_gtest",
+        "webview_cts_tests_gtest_no_field_trial",
+        "webview_ui_instrumentation_tests",
+        "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.legacy_compound_suite(
+    name = "webview_fyi_bot_all_gtests",
+    basic_suites = [
+        "system_webview_shell_instrumentation_tests",
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
         "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
         "webview_bot_unittests_gtest",
         "webview_cts_tests_gtest",

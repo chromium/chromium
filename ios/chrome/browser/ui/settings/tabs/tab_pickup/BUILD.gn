@@ -15,18 +15,22 @@ source_set("tab_pickup") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
+    "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/settings/utils",
   ]
 }
 
 source_set("tab_pickup_ui") {
   sources = [
+    "tab_pickup_settings_commands.h",
     "tab_pickup_settings_consumer.h",
     "tab_pickup_settings_table_view_controller.h",
     "tab_pickup_settings_table_view_controller.mm",
@@ -40,8 +44,9 @@ source_set("tab_pickup_ui") {
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
@@ -53,15 +58,18 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_pickup_settings_egtest.mm" ]
   deps = [
-    "//base:i18n",
+    "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/policy:policy_code_generate",
+    "//components/signin/public/base",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/tabs/tab_pickup:features",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings/google_services:constants",
     "//ios/chrome/browser/ui/settings/tabs:tabs_constants",

@@ -118,37 +118,37 @@ api::printing::PrinterStatus PrinterErrorCodeToIdl(
     proto::PrintJobInfo_PrinterErrorCode error_code_proto) {
   switch (error_code_proto) {
     case proto::PrintJobInfo_PrinterErrorCode_NO_ERROR:
-      return api::printing::PRINTER_STATUS_AVAILABLE;
+      return api::printing::PrinterStatus::kAvailable;
     case proto::PrintJobInfo_PrinterErrorCode_PAPER_JAM:
-      return api::printing::PRINTER_STATUS_PAPER_JAM;
+      return api::printing::PrinterStatus::kPaperJam;
     case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_PAPER:
-      return api::printing::PRINTER_STATUS_OUT_OF_PAPER;
+      return api::printing::PrinterStatus::kOutOfPaper;
     case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_INK:
-      return api::printing::PRINTER_STATUS_OUT_OF_INK;
+      return api::printing::PrinterStatus::kOutOfInk;
     case proto::PrintJobInfo_PrinterErrorCode_DOOR_OPEN:
-      return api::printing::PRINTER_STATUS_DOOR_OPEN;
+      return api::printing::PrinterStatus::kDoorOpen;
     case proto::PrintJobInfo_PrinterErrorCode_PRINTER_UNREACHABLE:
-      return api::printing::PRINTER_STATUS_UNREACHABLE;
+      return api::printing::PrinterStatus::kUnreachable;
     case proto::PrintJobInfo_PrinterErrorCode_TRAY_MISSING:
-      return api::printing::PRINTER_STATUS_TRAY_MISSING;
+      return api::printing::PrinterStatus::kTrayMissing;
     case proto::PrintJobInfo_PrinterErrorCode_OUTPUT_FULL:
-      return api::printing::PRINTER_STATUS_OUTPUT_FULL;
+      return api::printing::PrinterStatus::kOutputFull;
     case proto::PrintJobInfo_PrinterErrorCode_STOPPED:
-      return api::printing::PRINTER_STATUS_STOPPED;
+      return api::printing::PrinterStatus::kStopped;
     case proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED:
     case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
     case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
-      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+      return api::printing::PrinterStatus::kGenericIssue;
     case proto::PrintJobInfo_PrinterErrorCode_EXPIRED_CERTIFICATE:
-      return api::printing::PRINTER_STATUS_EXPIRED_CERTIFICATE;
+      return api::printing::PrinterStatus::kExpiredCertificate;
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
     case proto::
         PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
-      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+      return api::printing::PrinterStatus::kGenericIssue;
   }
-  return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+  return api::printing::PrinterStatus::kGenericIssue;
 }
 
 }  // namespace

@@ -204,8 +204,7 @@ class OSDevToolsTest : public testing::Test {
   }
 
   void EvalJS(int call_id, std::string script, bool use_io = false) {
-    std::string cmd_template =
-        R"JSON(
+    static constexpr char kCmdTemplate[] = R"JSON(
       {
         "id": %d,
         "method": "Runtime.evaluate",
@@ -214,9 +213,9 @@ class OSDevToolsTest : public testing::Test {
           "contextId": 1
         }
       }
-      )JSON";
+    )JSON";
     std::string to_eval =
-        base::StringPrintf(cmd_template.c_str(), call_id, script.c_str());
+        base::StringPrintf(kCmdTemplate, call_id, script.c_str());
     EvalCommand(call_id, "Runtime.evaluate", to_eval, use_io);
   }
 

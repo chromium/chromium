@@ -407,7 +407,7 @@ BASE_FEATURE(kUseAndroidOverlayForSecureOnly,
 // Allows usage of OS-level (platform) audio encoders.
 BASE_FEATURE(kPlatformAudioEncoder,
              "PlatformAudioEncoder",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -449,6 +449,11 @@ BASE_FEATURE(kCdmHostVerification,
 BASE_FEATURE(kCdmProcessSiteIsolation,
              "CdmProcessSiteIsolation",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the "Save Video Frame As" context menu item.
+BASE_FEATURE(kContextMenuSaveVideoFrameAs,
+             "ContextMenuSaveVideoFrameAs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the "Copy Video Frame" context menu item.
 BASE_FEATURE(kContextMenuCopyVideoFrame,
@@ -557,6 +562,10 @@ BASE_FEATURE(kShowForceRespectUiGainsToggle,
 BASE_FEATURE(kCrOSSystemVoiceIsolationOption,
              "CrOSSystemVoiceIsolationOption",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAudioFlexibleLoopbackForSystemLoopback,
+             "AudioFlexibleLoopbackForSystemLoopback",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 // Make MSE garbage collection algorithm more aggressive when we are under
@@ -582,7 +591,7 @@ BASE_FEATURE(kUseWritePixelsYUV,
 // hardware video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
              "UseMultiPlaneFormatForHardwareVideo",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -593,7 +602,7 @@ BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
 // software video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
              "UseMultiPlaneFormatForSoftwareVideo",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -761,11 +770,6 @@ BASE_FEATURE(kUseMediaHistoryStore,
              "UseMediaHistoryStore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Use R16 texture for 9-16 bit channel instead of half-float conversion by CPU.
-BASE_FEATURE(kUseR16Texture,
-             "use-r16-texture",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the Unified Autoplay policy by overriding the platform's default
 // autoplay policy.
 BASE_FEATURE(kUnifiedAutoplay,
@@ -847,10 +851,6 @@ BASE_FEATURE(kVaapiH264TemporalLayerHWEncoding,
 BASE_FEATURE(kVaapiVp8TemporalLayerHWEncoding,
              "VaapiVp8TemporalLayerEncoding",
              base::FEATURE_ENABLED_BY_DEFAULT);
-// Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
-BASE_FEATURE(kVaapiVp9kSVCHWEncoding,
-             "VaapiVp9kSVCHWEncoding",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Enable VP9 S-mode encoding with HW encoder for webrtc use case on ChromeOS.
 BASE_FEATURE(kVaapiVp9SModeHWEncoding,
              "VaapiVp9SModeHWEncoding",
@@ -874,6 +874,11 @@ BASE_FEATURE(kVideoBlitColorAccuracy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
+// Use VideoToolbox for AV1 hardware decoding.
+BASE_FEATURE(kVideoToolboxAv1Decoding,
+             "VideoToolboxAv1Decoding",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Use the new VideoToolboxVideoDecoder for hardware decoding.
 BASE_FEATURE(kVideoToolboxVideoDecoder,
              "VideoToolboxVideoDecoder",
@@ -885,16 +890,6 @@ BASE_FEATURE(kVideoToolboxVideoDecoder,
 BASE_FEATURE(kWebRTCColorAccuracy,
              "WebRTCColorAccuracy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
-BASE_FEATURE(kVp9kSVCHWDecoding,
-             "Vp9kSVCHWDecoding",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
 
 // Takes a reference on a video frame, keeping it alive during the duration of a
 // video.requestVideoFrameCallback call. Doesn't change anything to the API for
@@ -958,7 +953,7 @@ BASE_FEATURE(kLiveCaptionLogFlickerRate,
 // speech recognition results.
 BASE_FEATURE(kLiveCaptionUseGreedyTextStabilizer,
              "LiveCaptionUseGreedyTextStabilizer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Use a wait-k approach to reduce flickering when translating partial speech
 // recognition results.
@@ -1206,6 +1201,7 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
              "ChromeOSHWVBREncoding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(USE_VAAPI)
 // Enable the hardware-accelerated direct video decoder instead of the one
 // needing the VdaVideoDecoder adapter. This flag is used mainly as a
 // chrome:flag for developers debugging issues as well as to be able to
@@ -1214,6 +1210,7 @@ BASE_FEATURE(kChromeOSHWVBREncoding,
 BASE_FEATURE(kUseChromeOSDirectVideoDecoder,
              "UseChromeOSDirectVideoDecoder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(USE_VAAPI)
 
 // Limit the number of concurrent hardware decoder instances on ChromeOS.
 BASE_FEATURE(kLimitConcurrentDecoderInstances,
@@ -1242,7 +1239,7 @@ BASE_FEATURE(kPreferSoftwareMT21,
              "PreferSoftwareMT21",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 // ChromeOS has one of two VideoDecoder implementations active based on
 // SoC/board specific configurations that are sent via command line flags. This
 // switch allows using the non default implementation for testing.
@@ -1250,7 +1247,7 @@ BASE_FEATURE(kPreferSoftwareMT21,
 BASE_FEATURE(kUseAlternateVideoDecoderImplementation,
              "UseAlternateVideoDecoderImplementation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(USE_VAAPI)
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
 #if BUILDFLAG(IS_WIN)
@@ -1466,12 +1463,6 @@ BASE_FEATURE(kRecordWebAudioEngagement,
              "RecordWebAudioEngagement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables reporting "smpteSt2086" HDR Metadata as supported in the
-// MediaCapabilities API.
-BASE_FEATURE(kSupportSmpteSt2086HdrMetadata,
-             "SupportSmpteSt2086HdrMetadata",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The following Media Engagement flags are not enabled on mobile platforms:
 // - MediaEngagementBypassAutoplayPolicies: enables the Media Engagement Index
 //   data to be esude to override autoplay policies. An origin with a high MEI
@@ -1652,7 +1643,7 @@ BASE_FEATURE(kTheoraVideoCodec,
 // allowed through the web in Chrome, but may be enabled by the local file app.
 BASE_FEATURE(kCrOSLegacyMediaFormats,
              "CrOSLegacyMediaFormats",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 #endif
 

@@ -22,8 +22,23 @@ using ::chromeos::WindowStateType;
 
 }  // namespace
 
-SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2)
-    : window1_(window1), window2_(window2) {
+SnapGroup::SnapGroup(aura::Window* window1, aura::Window* window2) {
+  auto* window_state1 = WindowState::Get(window1);
+  auto* window_state2 = WindowState::Get(window2);
+  CHECK(window_state1->IsSnapped() && window_state2->IsSnapped() &&
+        window_state1->GetStateType() != window_state2->GetStateType());
+
+  // Always assign `window1_` to the primary window and `window2_` to the
+  // secondary window.
+  if (window_state1->GetStateType() ==
+      chromeos::WindowStateType::kPrimarySnapped) {
+    window1_ = window1;
+    window2_ = window2;
+  } else {
+    window1_ = window2;
+    window2_ = window1;
+  }
+
   auto* split_view_controller =
       SplitViewController::Get(window1_->GetRootWindow());
   CHECK_EQ(split_view_controller->state(),
@@ -48,6 +63,27 @@ void SnapGroup::MinimizeWindows() {
   window2_state->Minimize();
 }
 
+void SnapGroup::SwapWindows() {
+  base::AutoReset<bool> auto_reset(&is_swapping_, true);
+  auto* window_state1 = WindowState::Get(window1_);
+  auto* window_state2 = WindowState::Get(window2_);
+  CHECK_EQ(chromeos::WindowStateType::kPrimarySnapped,
+           window_state1->GetStateType());
+  CHECK_EQ(chromeos::WindowStateType::kSecondarySnapped,
+           window_state2->GetStateType());
+  const WindowSnapWMEvent snap_secondary(
+      WM_EVENT_SNAP_SECONDARY,
+      window_state1->snap_ratio().value_or(chromeos::kDefaultSnapRatio),
+      WindowSnapActionSource::kNotSpecified);
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY,
+      window_state2->snap_ratio().value_or(chromeos::kDefaultSnapRatio),
+      WindowSnapActionSource::kNotSpecified);
+  window_state1->OnWMEvent(&snap_secondary);
+  window_state2->OnWMEvent(&snap_primary);
+  std::swap(window1_, window2_);
+}
+
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
   if (window != window1_ && window != window2_) {
     return;
@@ -59,6 +95,10 @@ void SnapGroup::OnWindowDestroying(aura::Window* window) {
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
                                            chromeos::WindowStateType old_type) {
+  if (is_swapping_) {
+    // The windows can be swapped without breaking the group.
+    return;
+  }
   if (chromeos::IsSnappedWindowStateType(old_type) &&
       window_state->IsMinimized()) {
     // The windows can be minimized without breaking the group.

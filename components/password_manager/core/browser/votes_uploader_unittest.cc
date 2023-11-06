@@ -658,6 +658,7 @@ TEST_F(VotesUploaderTest, NoSingleUsernameDataNoUpload) {
   VotesUploader votes_uploader(&client_, false);
   EXPECT_CALL(mock_autofill_download_manager_, StartUploadRequest).Times(0);
   base::HistogramTester histogram_tester;
+  votes_uploader.set_should_send_username_first_flow_votes(true);
   votes_uploader.MaybeSendSingleUsernameVotes();
 
   histogram_tester.ExpectUniqueSample(
@@ -685,13 +686,15 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   form_predictions.fields.back().signature = kSingleUsernameFieldSignature;
 
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       form_predictions,
       /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -725,13 +728,14 @@ TEST_F(VotesUploaderTest, UploadNotSingleUsernameForWhitespaces) {
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
   VotesUploader votes_uploader(&client_, false);
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId,
       /*username_value=*/u"some search query",
       MakeSimpleSingleUsernamePredictions(),
       /*stored_credentials=*/{}, PasswordFormHadMatchingUsername(false)));
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/u"saved_value");
+      /*saved_username=*/u"saved_value", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -776,13 +780,15 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSuggestedAndAccepted) {
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -829,14 +835,15 @@ TEST_F(VotesUploaderTest, SingleUsernameOtherValueSuggestedAndAccepted) {
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/suggested_value);
+      /*saved_username=*/suggested_value, /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -882,14 +889,16 @@ TEST_F(VotesUploaderTest, SingleUsernameValueSetInPrompt) {
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   std::u16string suggested_value = u"other_value";
   votes_uploader.set_suggested_username(suggested_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   ServerFieldTypeSet expected_types = {SINGLE_USERNAME};
@@ -934,12 +943,14 @@ TEST_F(VotesUploaderTest, SingleUsernameValueDeletedInPrompt) {
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Upload on the username form.
@@ -985,13 +996,15 @@ TEST_F(VotesUploaderTest, NotSingleUsernameValueDeletedInPrompt) {
 
   VotesUploader votes_uploader(&client_, false);
   std::u16string single_username_candidate_value = u"username_candidate_value";
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData(
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(
       kSingleUsernameRendererId, single_username_candidate_value,
       MakeSimpleSingleUsernamePredictions(), /*stored_credentials=*/{},
       PasswordFormHadMatchingUsername(false)));
   std::u16string other_value = u"other_value";
   votes_uploader.set_suggested_username(other_value);
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
   // Expect no upload on username form, as th signal is not informative to us.
   EXPECT_CALL(mock_autofill_download_manager_,
@@ -1023,9 +1036,11 @@ TEST_F(VotesUploaderTest, SingleUsernameNoUsernameCandidate) {
       features::kUsernameFirstFlowFallbackCrowdsourcing);
 
   VotesUploader votes_uploader(&client_, false);
-  votes_uploader.set_single_username_vote_data(SingleUsernameVoteData());
+  votes_uploader.add_single_username_vote_data(SingleUsernameVoteData());
   votes_uploader.set_suggested_username(u"");
-  votes_uploader.CalculateUsernamePromptEditState(/*saved_username=*/u"");
+  votes_uploader.CalculateUsernamePromptEditState(
+      /*saved_username=*/u"", /*all_alternative_usernames=*/{});
+  votes_uploader.set_should_send_username_first_flow_votes(true);
 
   votes_uploader.MaybeSendSingleUsernameVotes();
 
@@ -1113,7 +1128,8 @@ TEST_F(VotesUploaderTest, ForgotPasswordFormVote) {
       PasswordFormHadMatchingUsername(false)));
   votes_uploader.set_suggested_username(single_username_candidate_value);
   votes_uploader.CalculateUsernamePromptEditState(
-      /*saved_username=*/single_username_candidate_value);
+      /*saved_username=*/single_username_candidate_value,
+      /*all_alternative_usernames=*/{});
 
   // Upload on the username form.
   ServerFieldTypeSet expected_types = {
@@ -1150,7 +1166,7 @@ TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffOverlapsWithFpf) {
                               /*stored_credentials=*/{},
                               PasswordFormHadMatchingUsername(false));
 
-  votes_uploader.set_single_username_vote_data(data);
+  votes_uploader.add_single_username_vote_data(data);
   votes_uploader.AddForgotPasswordVoteData(data);
 
   base::HistogramTester histogram_tester;
@@ -1172,7 +1188,7 @@ TEST_F(VotesUploaderTest, SingleUsernameVoteDataUffNoOverlapWithFpf) {
                                MakeSimpleSingleUsernamePredictions(),
                                /*stored_credentials=*/{},
                                PasswordFormHadMatchingUsername(false));
-  votes_uploader.set_single_username_vote_data(data1);
+  votes_uploader.add_single_username_vote_data(data1);
 
   SingleUsernameVoteData data2(FieldRendererId(200), u"also_maybe_username",
                                MakeSimpleSingleUsernamePredictions(),

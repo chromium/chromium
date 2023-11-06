@@ -9,8 +9,10 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BundleUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
 import org.chromium.chrome.browser.readaloud.player.expanded.ExpandedPlayerCoordinator;
 import org.chromium.chrome.browser.readaloud.player.mini.MiniPlayerCoordinator;
 import org.chromium.chrome.modules.readaloud.Playback;
@@ -37,12 +39,33 @@ public class PlayerCoordinator implements Player {
     private final ExpandedPlayerCoordinator mExpandedPlayer;
     private Playback mPlayback;
 
-    public PlayerCoordinator(Context context, ViewStub miniPlayerStub, Delegate delegate) {
-        // Note, context isn't used yet but will be needed by the expanded player.
+    // TODO remove internal call and then remove this constructor
+    public PlayerCoordinator(
+            Context splitContext, ViewStub miniPlayerViewStubm, Delegate delegate) {
+        this(delegate);
+    }
+
+    public PlayerCoordinator(Delegate delegate) {
         mObserverList = new ObserverList<Observer>();
-        PropertyModel model = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mMiniPlayer = new MiniPlayerCoordinator(miniPlayerStub, model);
-        mExpandedPlayer = new ExpandedPlayerCoordinator(context, delegate, model);
+        PropertyModel model =
+                new PropertyModel.Builder(PlayerProperties.ALL_KEYS)
+                        // TODO Set voice and highlighting from settings when needed.
+                        .with(
+                                PlayerProperties.SPEED,
+                                ReadAloudPrefs.getSpeed(delegate.getPrefService()))
+                        .build();
+        // This Context can be used to inflate views from the split.
+        Context contextForInflation =
+                BundleUtils.createContextForInflation(
+                        delegate.getActivity(), "read_aloud_playback");
+        mMiniPlayer =
+                new MiniPlayerCoordinator(
+                        delegate.getActivity(),
+                        contextForInflation,
+                        model,
+                        delegate.getBrowserControlsSizer(),
+                        delegate.getLayoutManager());
+        mExpandedPlayer = new ExpandedPlayerCoordinator(contextForInflation, delegate, model);
         mMediator = new PlayerMediator(/* coordinator= */ this, delegate, model);
         mDelegate = delegate;
     }
@@ -88,6 +111,7 @@ public class PlayerCoordinator implements Player {
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
         mMediator.setPlayback(playback);
         mMediator.setPlaybackState(currentPlaybackState);
+        mPlayback = playback;
     }
 
     @Override
@@ -99,7 +123,9 @@ public class PlayerCoordinator implements Player {
 
     /** Show expanded player. */
     void expand() {
-        // TODO implement
+        if (mPlayback != null) {
+            mExpandedPlayer.show();
+        }
     }
 
     @Override

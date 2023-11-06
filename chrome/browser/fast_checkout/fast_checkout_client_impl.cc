@@ -138,10 +138,11 @@ FastCheckoutClientImpl::FastCheckoutClientImpl(
           }),
           base::BindRepeating([](autofill::AutofillManager& manager,
                                  autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field) {
+                                 autofill::FieldGlobalId field,
+                                 const autofill::FormData& form_data) {
             return GetDelegate(manager) &&
-                   GetDelegate(manager)->IntendsToShowFastCheckout(manager,
-                                                                   form, field);
+                   GetDelegate(manager)->IntendsToShowFastCheckout(
+                       manager, form, field, form_data);
           }),
           base::Seconds(1)) {
   driver_factory_observation_.Observe(
@@ -411,10 +412,12 @@ void FastCheckoutClientImpl::TryToFillForms() {
         form_filling_states_[std::make_pair(form->form_signature(),
                                             autofill::FormType::kAddressForm)] =
             FillingState::kFilling;
-        static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
-            ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
-        autofill_manager_->FillProfileForm(
-            *autofill_profile, form->ToFormData(), *field,
+        auto* bam = static_cast<autofill::BrowserAutofillManager*>(
+            autofill_manager_.get());
+        bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kAddress, run_id_);
+        bam->FillOrPreviewProfileForm(
+            autofill::mojom::ActionPersistence::kFill, form->ToFormData(),
+            *field, *autofill_profile,
             autofill::AutofillTriggerDetails(
                 autofill::AutofillTriggerSource::kFastCheckout));
       }
@@ -452,9 +455,10 @@ void FastCheckoutClientImpl::FillCreditCardForm(
   form_filling_states_[std::make_pair(form.form_signature(),
                                       autofill::FormType::kCreditCardForm)] =
       FillingState::kFilling;
-  static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get())
-      ->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
-  autofill_manager_->FillCreditCardForm(
+  auto* bam =
+      static_cast<autofill::BrowserAutofillManager*>(autofill_manager_.get());
+  bam->SetFastCheckoutRunId(autofill::FieldTypeGroup::kCreditCard, run_id_);
+  bam->FillCreditCardForm(
       form.ToFormData(), field, credit_card, cvc,
       {.trigger_source = autofill::AutofillTriggerSource::kFastCheckout});
 }

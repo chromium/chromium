@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "native_printing.device_external_print_servers_allowlist": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceExternalPrintServersAllowlist": [
+            "id4",
+            "id7",
+            "id10"
+          ]
+        },
+        "prefs": {
+          "native_printing.device_external_print_servers_allowlist": {
+            "location": "local_state",
+            "value": [
+              "id4",
+              "id7",
+              "id10"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

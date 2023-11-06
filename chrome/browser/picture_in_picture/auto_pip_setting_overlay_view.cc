@@ -27,10 +27,11 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     const GURL& origin,
     const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
-    views::BubbleBorder::Arrow arrow) {
+    views::BubbleBorder::Arrow arrow)
+    : show_timer_(std::make_unique<base::OneShotTimer>()) {
   CHECK(result_cb);
 
-  auto_pip_setting_view_ = std::make_unique<AutoPipSettingView>(
+  init_.auto_pip_setting_view_ = std::make_unique<AutoPipSettingView>(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
@@ -51,16 +52,39 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
   FadeInLayer(background_->layer());
 }
 
-void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent) {
+void AutoPipSettingOverlayView::ShowBubble(gfx::NativeView parent,
+                                           PipWindowType pip_window_type) {
   DCHECK(parent);
-  auto_pip_setting_view_->set_parent_window(parent);
-  views::BubbleDialogDelegate::CreateBubble(std::move(auto_pip_setting_view_))
-      ->Show();
+  init_.auto_pip_setting_view_->set_parent_window(parent);
+  auto_pip_setting_view_ = init_.auto_pip_setting_view_.get();
+  widget_ = views::BubbleDialogDelegate::CreateBubble(
+      std::move(init_.auto_pip_setting_view_));
+
+  // Delay showing the bubble, for document pip, until after the scrim animation
+  // completes.
+  if (pip_window_type == PipWindowType::kDocumentPip) {
+    show_timer_->Start(
+        FROM_HERE, base::Milliseconds(kFadeInDurationMs),
+        base::BindOnce(
+            &views::Widget::ShowInactive,
+            // base::Unretained() is safe since the timer is cancelled if the
+            // WidgetObserver notices that the widget is being destroyed.
+            base::Unretained(widget_)));
+  } else {
+    widget_->ShowInactive();
+  }
+
+  bubble_size_ = widget_->GetWindowBoundsInScreen().size();
+  widget_->AddObserver(this);
 }
 
 void AutoPipSettingOverlayView::OnHideView() {
   // Hide the semi-opaque background layer.
   SetVisible(false);
+}
+
+gfx::Size AutoPipSettingOverlayView::GetBubbleSize() const {
+  return bubble_size_;
 }
 
 void AutoPipSettingOverlayView::FadeInLayer(ui::Layer* layer) {
@@ -72,9 +96,31 @@ void AutoPipSettingOverlayView::FadeInLayer(ui::Layer* layer) {
       .SetOpacity(layer, kOverlayViewOpacity, gfx::Tween::LINEAR);
 }
 
+bool AutoPipSettingOverlayView::WantsEvent(const gfx::Point& point) {
+  if (!auto_pip_setting_view_) {
+    return false;
+  }
+
+  return auto_pip_setting_view_->WantsEvent(point);
+}
+
 AutoPipSettingOverlayView::~AutoPipSettingOverlayView() {
+  if (widget_) {
+    // If we're being deleted and our widget still exists, then ensure that it
+    // closes.
+    widget_->RemoveObserver(this);
+    widget_.ExtractAsDangling()->CloseWithReason(
+        views::Widget::ClosedReason::kUnspecified);
+  }
   background_ = nullptr;
-  auto_pip_setting_view_.reset();
+  auto_pip_setting_view_ = nullptr;
+}
+
+void AutoPipSettingOverlayView::OnWidgetDestroying(views::Widget*) {
+  show_timer_.reset();
+  auto_pip_setting_view_ = nullptr;
+  widget_->RemoveObserver(this);
+  widget_ = nullptr;
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView, views::View)

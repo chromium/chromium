@@ -144,21 +144,33 @@ class SkiaGoldSession():
       SkiaGoldSession.StatusCodes signifying the result of the comparison.
       |error| is an error message describing the status if not successful.
     """
+    # TODO(b/295350872): Remove this and other timestamp logging in this code
+    # once the source of flaky slowness is tracked down.
+    logging.info('Starting Gold auth')
+    start_time = time.time()
     auth_rc, auth_stdout = self.Authenticate(use_luci=use_luci,
                                              service_account=service_account)
+    logging.info('Gold auth took %fs', time.time() - start_time)
     if auth_rc:
       return self.StatusCodes.AUTH_FAILURE, auth_stdout
 
+    logging.info('Starting Gold initialization')
+    start_time = time.time()
     init_rc, init_stdout = self.Initialize()
+    logging.info('Gold initialization took %fs', time.time() - start_time)
     if init_rc:
       return self.StatusCodes.INIT_FAILURE, init_stdout
 
+    logging.info('Starting Gold comparison in shared code')
+    start_time = time.time()
     compare_rc, compare_stdout = self.Compare(
         name=name,
         png_file=png_file,
         inexact_matching_args=inexact_matching_args,
         optional_keys=optional_keys,
         force_dryrun=force_dryrun)
+    logging.info('Gold comparison in shared code took %fs',
+                 time.time() - start_time)
     if not compare_rc:
       return self.StatusCodes.SUCCESS, None
 
@@ -334,8 +346,15 @@ class SkiaGoldSession():
           '%s:%s' % (k, v),
       ])
 
+    logging.info('Starting Gold triage link file clear')
+    start_time = time.time()
     self._ClearTriageLinkFile()
+    logging.info('Gold triage link file clear took %fs',
+                 time.time() - start_time)
+    logging.info('Starting Gold comparison command')
+    start_time = time.time()
     rc, stdout = self._RunCmdForRcAndOutput(compare_cmd)
+    logging.info('Gold comparison command took %fs', time.time() - start_time)
 
     self._comparison_results[name] = self.ComparisonResults()
     if rc == 0:
@@ -352,8 +371,11 @@ class SkiaGoldSession():
           self._GeneratePublicTriageLink(cl_triage_link)
     else:
       try:
+        logging.info('Starting triage link file read')
+        start_time = time.time()
         with open(self._triage_link_file) as tlf:
           triage_link = tlf.read().strip()
+        logging.info('Triage link file read took %fs', time.time() - start_time)
         if not triage_link:
           self._comparison_results[name].triage_link_omission_reason = (
               'Gold did not provide a triage link. This is likely a bug on '

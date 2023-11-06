@@ -87,12 +87,12 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
-      isSimon_: {
+      isBootAnimation_: {
         type: Boolean,
         value: function() {
           return (
-              loadTimeData.valueExists('isOobeSimonEnabled') &&
-              loadTimeData.getBoolean('isOobeSimonEnabled'));
+              loadTimeData.valueExists('isBootAnimationEnabled') &&
+              loadTimeData.getBoolean('isBootAnimationEnabled'));
         },
         readOnly: true,
       },
@@ -337,7 +337,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
    * Determines if AnimationSlot is needed for specific flow
    */
   showAnimationSlot() {
-    return !this.isSimon_;
+    return !this.isBootAnimation_;
   }
 }
 

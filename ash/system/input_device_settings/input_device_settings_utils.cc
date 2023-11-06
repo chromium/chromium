@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
@@ -15,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -25,15 +27,6 @@
 namespace ash {
 
 namespace {
-
-struct VendorProductId {
-  uint16_t vendor_id;
-  uint16_t product_id;
-  constexpr bool operator<(const VendorProductId& other) const {
-    return vendor_id == other.vendor_id ? product_id < other.product_id
-                                        : vendor_id < other.vendor_id;
-  }
-};
 
 std::string HexEncode(uint16_t v) {
   // Load the bytes into the bytes array in reverse order as hex number should
@@ -54,6 +47,15 @@ bool ExistingSettingsHasValue(base::StringPiece setting_key,
 }
 
 }  // namespace
+
+constexpr bool VendorProductId::operator<(const VendorProductId& other) const {
+  return vendor_id == other.vendor_id ? product_id < other.product_id
+                                      : vendor_id < other.vendor_id;
+}
+
+bool VendorProductId::operator==(const VendorProductId& other) const {
+  return vendor_id == other.vendor_id && product_id == other.product_id;
+}
 
 // `kIsoLevel5ShiftMod3` is not a valid modifier value.
 bool IsValidModifier(int val) {
@@ -392,12 +394,10 @@ mojom::ButtonRemappingPtr ConvertDictToButtonRemapping(
     if (!dom_code || !vkey || !dom_key || !modifiers) {
       return nullptr;
     }
+    ui::KeyboardCode vkey_value = static_cast<ui::KeyboardCode>(*vkey);
     remapping_action = mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(static_cast<::ui::KeyboardCode>(
-                                 /*vkey=*/*vkey),
-                             /*dom_code=*/*dom_code,
-                             /*dom_key=*/*dom_key,
-                             /*modifiers=*/*modifiers));
+        mojom::KeyEvent::New(vkey_value, *dom_code, *dom_key, *modifiers,
+                             base::UTF16ToUTF8(GetKeyDisplay(vkey_value))));
   } else if (accelerator_action) {
     remapping_action = mojom::RemappingAction::NewAcceleratorAction(
         static_cast<ash::AcceleratorAction>(*accelerator_action));

@@ -60,6 +60,7 @@
 #include "net/base/filename_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
@@ -157,7 +158,7 @@ std::unique_ptr<Page::ScreencastFrameMetadata> BuildScreencastFrameMetadata(
           .SetDeviceHeight(content_size_dip.height())
           .SetScrollOffsetX(root_scroll_offset_dip.x())
           .SetScrollOffsetY(root_scroll_offset_dip.y())
-          .SetTimestamp(base::Time::Now().ToDoubleT())
+          .SetTimestamp(base::Time::Now().InSecondsFSinceUnixEpoch())
           .Build();
   return page_metadata;
 }
@@ -1626,6 +1627,22 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
   }
 }
 
+std::unique_ptr<Page::BackForwardCacheBlockingDetails>
+BlockingDetailsToProtocol(const blink::mojom::BlockingDetailsPtr& details) {
+  auto blocking_details = Page::BackForwardCacheBlockingDetails::Create();
+  if (details->url.has_value()) {
+    blocking_details.SetUrl(details->url.value());
+  }
+  if (details->function_name.has_value()) {
+    blocking_details.SetFunction(details->function_name.value());
+  }
+  CHECK(details->line_number > 0);
+  CHECK(details->column_number > 0);
+  return blocking_details.SetLineNumber(details->line_number - 1)
+      .SetColumnNumber(details->column_number - 1)
+      .Build();
+}
+
 Page::BackForwardCacheNotRestoredReason
 DisableForRenderFrameHostReasonToProtocol(
     BackForwardCache::DisabledReason reason) {
@@ -1851,13 +1868,18 @@ MapDisableForRenderFrameHostReasonToType(
   return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
 }
 
+using BlockingDetailsMap =
+    std::map<blink::scheduler::WebSchedulerTrackedFeature,
+             std::vector<blink::mojom::BlockingDetailsPtr>>;
+
 std::unique_ptr<protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>
 CreateNotRestoredExplanation(
     const BackForwardCacheCanStoreDocumentResult::NotRestoredReasons
         not_restored_reasons,
     const blink::scheduler::WebSchedulerTrackedFeatures blocklisted_features,
     const BackForwardCacheCanStoreDocumentResult::DisabledReasonsMap&
-        disabled_reasons) {
+        disabled_reasons,
+    const BlockingDetailsMap& details) {
   auto reasons = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanation>>();
 
@@ -1868,11 +1890,32 @@ CreateNotRestoredExplanation(
       DCHECK(!blocklisted_features.Empty());
       for (blink::scheduler::WebSchedulerTrackedFeature feature :
            blocklisted_features) {
-        reasons->emplace_back(
+        // Details are not always present for blocklisted features, because the
+        // number of details reported is limited.
+        auto details_list = std::make_unique<
+            protocol::Array<Page::BackForwardCacheBlockingDetails>>();
+        CHECK(details.contains(feature));
+        for (const auto& detail : details.at(feature)) {
+          if (detail->line_number != 0 && detail->column_number != 0) {
+            details_list->push_back(BlockingDetailsToProtocol(detail));
+          } else {
+            // Details are not captured.
+            CHECK(!detail->url.has_value() || detail->url == "");
+            CHECK(!detail->function_name.has_value() ||
+                  detail->function_name == "");
+          }
+        }
+        auto explanation =
             Page::BackForwardCacheNotRestoredExplanation::Create()
                 .SetType(MapBlocklistedFeatureToType(feature))
                 .SetReason(BlocklistedFeatureToProtocol(feature))
-                .Build());
+                .Build();
+
+        if (!details_list->empty()) {
+          explanation->SetDetails(std::move(details_list));
+        }
+
+        reasons->emplace_back(std::move(explanation));
       }
     } else if (not_restored_reason ==
                BackForwardCacheMetrics::NotRestoredReason::
@@ -1906,7 +1949,8 @@ CreateNotRestoredExplanationTree(
   auto explanation = CreateNotRestoredExplanation(
       tree_result.GetDocumentResult().not_restored_reasons(),
       tree_result.GetDocumentResult().blocklisted_features(),
-      tree_result.GetDocumentResult().disabled_reasons());
+      tree_result.GetDocumentResult().disabled_reasons(),
+      tree_result.GetDocumentResult().blocking_details_map());
 
   auto children_array = std::make_unique<
       protocol::Array<Page::BackForwardCacheNotRestoredExplanationTree>>();
@@ -1973,7 +2017,7 @@ void PageHandler::BackForwardCacheNotUsed(
 
   auto explanation = CreateNotRestoredExplanation(
       result->not_restored_reasons(), result->blocklisted_features(),
-      result->disabled_reasons());
+      result->disabled_reasons(), result->blocking_details_map());
 
   // TODO(crbug.com/1281855): |tree_result| should not be nullptr when |result|
   // has the reasons.

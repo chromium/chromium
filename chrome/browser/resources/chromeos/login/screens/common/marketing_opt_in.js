@@ -57,6 +57,17 @@ const MarketingOptInStep = {
 MarketingScreenElementBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   optInVisibility: boolean,
+ *   optInDefaultState: boolean,
+ *   legalFooterVisibility: boolean,
+ *   cloudGamingDevice: boolean,
+ * }}
+ */
+let MarketingScreenData;
+
+/**
  * @polymer
  */
 class MarketingOptIn extends MarketingScreenElementBase {
@@ -143,6 +154,9 @@ class MarketingOptIn extends MarketingScreenElementBase {
     this.$.animation.playing = played;
   }
 
+  /**
+   * @param {MarketingScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     this.marketingOptInVisible_ =
         'optInVisibility' in data && data.optInVisibility;

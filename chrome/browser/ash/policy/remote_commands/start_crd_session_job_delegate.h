@@ -50,9 +50,8 @@ class StartCrdSessionJobDelegate {
   // Checks if an active CRD session exists.
   virtual bool HasActiveSession() const = 0;
 
-  // Terminates the currently active CRD session, and runs `callback` once it
-  // is terminated.
-  virtual void TerminateSession(base::OnceClosure callback) = 0;
+  // Terminates the currently active CRD session.
+  virtual void TerminateSession() = 0;
 
   // Attempts to start CRD host and get Auth Code.
   // `session_finished_callback` is invoked when an active crd session is

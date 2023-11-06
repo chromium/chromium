@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/views/location_bar/old_cookie_controls_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/read_anything_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/location_bar/zoom_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -203,6 +204,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<qrcode_generator::QRCodeGeneratorIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kReadAnything:
+        add_page_action_icon(type, std::make_unique<ReadAnythingIconView>(
+                                       params.command_updater, params.browser,
+                                       params.icon_label_bubble_delegate,
+                                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kReaderMode:
         DCHECK(params.command_updater);

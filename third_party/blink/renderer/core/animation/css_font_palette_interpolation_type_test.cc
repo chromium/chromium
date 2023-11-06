@@ -61,7 +61,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest,
                                       *element->GetComputedStyle());
 
   const InterpolableFontPalette* interpolable_font_palette =
-      To<InterpolableFontPalette>(result.interpolable_value.get());
+      To<InterpolableFontPalette>(result.interpolable_value.Get());
   scoped_refptr<FontPalette> font_palette =
       interpolable_font_palette->GetFontPalette();
 
@@ -80,7 +80,7 @@ TEST_F(CSSFontPaletteInterpolationTypeTest, MaybeConvertValue) {
                                                          conversion_checkers);
 
   const InterpolableFontPalette* interpolable_font_palette =
-      To<InterpolableFontPalette>(result.interpolable_value.get());
+      To<InterpolableFontPalette>(result.interpolable_value.Get());
   scoped_refptr<FontPalette> font_palette =
       interpolable_font_palette->GetFontPalette();
 

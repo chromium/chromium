@@ -13,51 +13,6 @@ import "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojo
 // and FIDO assertion.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface QuickStartDecoder {
-  // Decode a D2D BootstrapConfigurations in response to BootstrapOptions.
-  // From this struct we will obtain the Cryptauth DeviceID of the phone
-  // for Unified Setup. We will also need to ensure that we receive an
-  // appropriate BootstrapConfigurations to ensure that BootstrapOptions
-  // was set correctly on the phone.
-  DecodeBootstrapConfigurations(array<uint8>? data) => (
-    BootstrapConfigurations? bootstrap_configurations,
-    QuickStartDecoderError? error);
-
-  // Decode a D2D response to a request for Wifi Credentials
-  // This response is JSON, with a Base64 encoded JSON payload
-  DecodeWifiCredentialsResponse(array<uint8>? data) => (
-    WifiCredentials? credentials, QuickStartDecoderError? error);
-
-  // Decode a simple ack response to a message notifying the source device that
-  // the target device will update and reboot. This response is JSON, with a
-  // Base64 encoded JSON payload. The response contains an |ack_received|
-  // boolean, which should always be 'true', but we handle the error case when
-  // the value is unexpectedly 'false'. If the ack key isn't found in the
-  // response, |error| will be non-null and |notify_source_of_update_response|
-  // will be null.
-  DecodeNotifySourceOfUpdateResponse(array<uint8>? data) => (
-    NotifySourceOfUpdateResponse? notify_source_of_update_response,
-    QuickStartDecoderError? error);
-
-  // Decode a FIDO CTAP2 GetAssertionResponse from the phone into a struct
-  // that details fields we need to pass along to GAIA as well as error
-  // codes from the CBOR decoding step and from the phone.
-  DecodeGetAssertionResponse(array<uint8>? data) => (
-   FidoAssertionResponse? response, QuickStartDecoderError? error);
-
-  // Decode UserVerificationMethod message indicating whether the user will
-  // be verified by the phone.
-  DecodeUserVerificationMethod(array<uint8>? data) => (
-    UserVerificationMethod? response, QuickStartDecoderError? error);
-
-  // Decode UserVerificationRequested message, indicating we are waiting
-  // for the user to pass a verification prompt.
-  DecodeUserVerificationRequested(array<uint8>? data) => (
-    UserVerificationRequested? response, QuickStartDecoderError? error);
-
-  // Decode the UserVerificationResult sent from the target device.
-  DecodeUserVerificationResult(array<uint8>? data) => (
-    UserVerificationResponse? response, QuickStartDecoderError? error);
-
   // Decode any kind of Quick Start message and return either a
   // QuickStartMessage, which is a union over all the message types, or an
   // error if the data cannot be parsed as any known message.

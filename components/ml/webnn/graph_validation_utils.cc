@@ -9,28 +9,16 @@
 #include <set>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 
 namespace webnn {
 
 namespace {
-
-bool IsFloatingPointType(Operand::DataType data_type) {
-  switch (data_type) {
-    case Operand::DataType::kFloat32:
-    case Operand::DataType::kFloat16:
-      return true;
-    case Operand::DataType::kInt32:
-    case Operand::DataType::kUint32:
-    case Operand::DataType::kInt8:
-    case Operand::DataType::kUint8:
-      return false;
-  }
-  NOTREACHED_NORETURN();
-}
 
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
@@ -380,6 +368,102 @@ base::expected<Operand, std::string> ValidateConv2dAndInferOutput(
   return Operand(input.data_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidatePadAndInferOutput(
+    const Operand& input,
+    base::span<const uint32_t> beginning_padding,
+    base::span<const uint32_t> ending_padding) {
+  // Validate the beginning_padding and ending_padding.
+  const auto input_shape = input.dimensions;
+  auto input_rank = input_shape.size();
+  if (beginning_padding.size() != input_rank) {
+    return base::unexpected(
+        "The length of beginningPadding must be "
+        "equal to the rank of the input tensor.");
+  }
+  if (ending_padding.size() != input_rank) {
+    return base::unexpected(
+        "The length of endingPadding must be "
+        "equal to the rank of the input tensor.");
+  }
+
+  // Infer the output.
+  // Each dimension of the output tensor can be calculated as follow:
+  // input_size = input_shape[i];
+  // output_size = beginning_padding + input_size + ending_padding.
+  std::vector<uint32_t> output_shape(input_rank);
+  for (size_t i = 0; i < input_rank; ++i) {
+    auto checked_output_size = base::MakeCheckedNum<uint32_t>(input_shape[i]) +
+                               beginning_padding[i] + ending_padding[i];
+    if (!checked_output_size.AssignIfValid(&output_shape[i])) {
+      return base::unexpected(base::StringPrintf(
+          "The padding of dimension (%zu) is too large.", i));
+    }
+  }
+
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+base::expected<Operand, std::string> ValidateMatmulAndInferOutput(
+    const Operand& a,
+    const Operand& b) {
+  if (a.data_type != b.data_type) {
+    return base::unexpected("The types of first two inputs don't match.");
+  }
+
+  std::vector<uint32_t> a_dimensions = a.dimensions;
+  std::vector<uint32_t> b_dimensions = b.dimensions;
+
+  // Based on the WG discussion:
+  // https://github.com/webmachinelearning/webnn/issues/470, prototype the
+  // matmul without 1-D input tensors support.
+  if (a_dimensions.size() < 2 || b_dimensions.size() < 2) {
+    return base::unexpected(
+        "The rank of input must be larger than or equal to 2.");
+  }
+
+  // The number of columns in the first matrix must be equal to the number of
+  // rows in the second matrix.
+  const uint32_t a_cols = a_dimensions[a_dimensions.size() - 1];
+  const uint32_t a_rows = a_dimensions[a_dimensions.size() - 2];
+  const uint32_t b_cols = b_dimensions[b_dimensions.size() - 1];
+  const uint32_t b_rows = b_dimensions[b_dimensions.size() - 2];
+  if (a_cols != b_rows) {
+    return base::unexpected(base::StringPrintf(
+        "The number of columns (%u) in the first matrix isn't equal to "
+        "the number of rows (%u) in the second matrix.",
+        a_cols, b_rows));
+  }
+
+  size_t output_rank = std::max(a_dimensions.size(), b_dimensions.size());
+  std::vector<uint32_t> output_dimensions;
+  // Figure out the output shape by broadcasting all the dimensions except the
+  // last two. The output is 2-D tensor of shape [M, N].
+  if (a_dimensions.size() > 2 && b_dimensions.size() > 2) {
+    std::vector<uint32_t> sliced_a_dimensions(a_dimensions.begin(),
+                                              a_dimensions.end() - 2);
+    std::vector<uint32_t> sliced_b_dimensions(b_dimensions.begin(),
+                                              b_dimensions.end() - 2);
+    absl::optional<std::vector<uint32_t>> optional_output_dimensions =
+        BroadcastShapes(sliced_a_dimensions, sliced_b_dimensions, true);
+    if (!optional_output_dimensions) {
+      return base::unexpected("The matmul input shapes are not broadcastable.");
+    }
+    output_dimensions = *optional_output_dimensions;
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else if (a_dimensions.size() == 2 && b_dimensions.size() == 2) {
+    output_dimensions.push_back(a_rows);
+    output_dimensions.push_back(b_cols);
+  } else {
+    output_dimensions =
+        a_dimensions.size() > b_dimensions.size() ? a_dimensions : b_dimensions;
+    output_dimensions[output_rank - 2] = a_rows;
+    output_dimensions[output_rank - 1] = b_cols;
+  }
+  CHECK_EQ(output_rank, output_dimensions.size());
+  return Operand(a.data_type, std::move(output_dimensions));
+}
+
 base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
     const Operand& input,
     const Pool2dAttributes& attributes) {
@@ -495,6 +579,97 @@ base::expected<Operand, std::string> ValidatePool2dAndInferOutput(
                       input_channels};
       break;
   }
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+// The current WebNN spec doesn't define the calculation formula of the output
+// size for resample2d. An issue has been filed to track it -
+// https://github.com/webmachinelearning/webnn/issues/360.
+base::expected<uint32_t, std::string> CalculateResample2dOutputSize(
+    const uint32_t input_size,
+    const float scale) {
+  // Calculate the output size in double precision floating point number that
+  // ensures values of type uint32_t can be exactly represented.
+  // https://en.wikipedia.org/wiki/Double-precision_floating-point_format#Precision_limitations_on_integer_values
+  auto checked_output_size = base::MakeCheckedNum<double>(input_size) * scale;
+
+  // Check if the value is valid for rounding to uint32_t type.
+  if (!checked_output_size.IsValid<uint32_t>()) {
+    return base::unexpected("The scale is too large.");
+  }
+  const uint32_t output_size =
+      base::ClampFloor<uint32_t>(double(checked_output_size.ValueOrDie()));
+  if (output_size == 0) {
+    return base::unexpected("The scale is too small.");
+  }
+  return output_size;
+}
+
+base::expected<Operand, std::string> ValidateResample2dAndInferOutput(
+    const Operand& input,
+    const absl::variant<base::span<const float>, base::span<const uint32_t>>&
+        scales_or_sizes,
+    base::span<const uint32_t> axes) {
+  // Validate the input.
+  const auto& input_shape = input.dimensions;
+  if (input_shape.size() != 4) {
+    return base::unexpected("The input must be a 4-D tensor.");
+  }
+
+  // Validate axes.
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-resample2d,
+  // the valid values in the sequence are [0, 1], [1, 2] or [2, 3].
+  if (axes.size() != 2) {
+    return base::unexpected("The length of axes should be 2.");
+  }
+  if (!((axes[0] == 0 && axes[1] == 1) || (axes[0] == 1 && axes[1] == 2) ||
+        (axes[0] == 2 && axes[1] == 3))) {
+    return base::unexpected("The values of axes are invalid.");
+  }
+
+  // Validate scales or sizes and infer the output.
+  std::vector<uint32_t> output_shape(input_shape);
+  if (absl::holds_alternative<base::span<const float>>(scales_or_sizes)) {
+    const auto& scales = absl::get<base::span<const float>>(scales_or_sizes);
+    if (scales.size() != 2) {
+      return base::unexpected("The length of scales should be 2.");
+    }
+    if (scales[0] < 0 || scales[1] < 0) {
+      return base::unexpected("All scales should be greater than 0.");
+    }
+
+    auto output_height =
+        CalculateResample2dOutputSize(input_shape[axes[0]], scales[0]);
+    if (!output_height.has_value()) {
+      return base::unexpected("Failed to calculate the output height: " +
+                              output_height.error());
+    }
+    output_shape[axes[0]] = output_height.value();
+
+    auto output_width =
+        CalculateResample2dOutputSize(input_shape[axes[1]], scales[1]);
+    if (!output_width.has_value()) {
+      return base::unexpected("Failed to calculate the output width: " +
+                              output_width.error());
+    }
+    output_shape[axes[1]] = output_width.value();
+  } else if (absl::holds_alternative<base::span<const uint32_t>>(
+                 scales_or_sizes)) {
+    const auto& sizes = absl::get<base::span<const uint32_t>>(scales_or_sizes);
+    if (sizes.size() != 2) {
+      return base::unexpected("The length of sizes should be 2.");
+    }
+    if (sizes[0] == 0 || sizes[1] == 0) {
+      return base::unexpected("All sizes should be greater than 0.");
+    }
+
+    output_shape[axes[0]] = sizes[0];
+    output_shape[axes[1]] = sizes[1];
+  } else {
+    NOTREACHED_NORETURN();
+  }
+
   return Operand(input.data_type, std::move(output_shape));
 }
 
@@ -625,6 +800,27 @@ base::expected<Operand, std::string> ValidateConcatAndInferOutput(
   return Operand(output_type, std::move(output_shape));
 }
 
+base::expected<Operand, std::string> ValidatePreluAndInferOutput(
+    const Operand& input,
+    const Operand& slope) {
+  if (input.data_type != slope.data_type) {
+    return base::unexpected(
+        "The type of slope doesn't match the type of input.");
+  }
+  if (!IsFloatingPointType(input.data_type)) {
+    return base::unexpected(
+        "The type of input and slope must be one of the floating point types.");
+  }
+  // BroadcastShape unidirectionally broadcasts slope.dimensions to
+  // input.dimensions.
+  if (!BroadcastShapes(slope.dimensions, input.dimensions, false)) {
+    return base::unexpected(
+        "The shape of slope is not broadcastable to the shape of input.");
+  }
+
+  return Operand(input.data_type, input.dimensions);
+}
+
 base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
     const Operand& input,
     base::span<const uint32_t> permutation) {
@@ -643,6 +839,112 @@ base::expected<Operand, std::string> ValidateTransposeAndInferOutput(
   std::vector<uint32_t> output_shape(input_rank);
   for (size_t i = 0; i < input_rank; ++i) {
     output_shape[i] = input_dimensions[permutation[i]];
+  }
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+SliceAttributes::SliceAttributes() = default;
+SliceAttributes::~SliceAttributes() = default;
+
+SliceAttributes::SliceAttributes(SliceAttributes&& other) = default;
+SliceAttributes& SliceAttributes::operator=(SliceAttributes&& other) = default;
+
+base::expected<Operand, std::string> ValidateSliceAndInferOutput(
+    const Operand& input,
+    const SliceAttributes& attributes) {
+  if (!attributes.sizes.size()) {
+    return base::unexpected("The length of sizes must be not be zero.");
+  }
+
+  const auto input_rank = input.dimensions.size();
+  if (attributes.starts.size() != input_rank) {
+    return base::unexpected(
+        "The length of starts must be equal to the rank of the input tensor.");
+  }
+
+  if (attributes.sizes.size() != input_rank) {
+    return base::unexpected(
+        "The length of sizes must be equal to the rank of the input tensor.");
+  }
+
+  for (uint32_t i = 0; i < input_rank; ++i) {
+    if (attributes.starts[i] >= input.dimensions[i]) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the starting index to slice must "
+          "be less than input size (%u).",
+          i, input.dimensions[i]));
+    }
+
+    // WebNN plans to allow 0 size dimensions and an issue has been filed to
+    // track it: https://github.com/webmachinelearning/webnn/issues/391.
+    if (attributes.sizes[i] == 0) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the number of elements to slice "
+          "must not be 0.",
+          i));
+    }
+
+    auto checked_ending_index =
+        base::MakeCheckedNum<uint32_t>(attributes.starts[i]) +
+        attributes.sizes[i];
+    if (!checked_ending_index.IsValid<uint32_t>()) {
+      return base::unexpected(base::StringPrintf(
+          "For dimension (%u): the ending index to slice is too large.", i));
+    }
+
+    if (checked_ending_index.ValueOrDie() > input.dimensions[i]) {
+      return base::unexpected(
+          base::StringPrintf("For dimension (%u): the ending index to slice "
+                             "must not be greater than input size (%u).",
+                             i, input.dimensions[i]));
+    }
+  }
+
+  // The output is a tensor the same as the specified slice sizes.
+  std::vector<uint32_t> output_shape;
+  output_shape.assign(attributes.sizes.begin(), attributes.sizes.end());
+  return Operand(input.data_type, std::move(output_shape));
+}
+
+base::expected<Operand, std::string> ValidateReduceAndInferOutput(
+    ReduceKind kind,
+    const Operand& input,
+    base::span<const uint32_t> axes,
+    bool keep_dimensions) {
+  auto input_dimensions = input.dimensions;
+  auto input_rank = input_dimensions.size();
+  auto validation_result = ValidateAxes(axes, input_rank);
+  if (!validation_result.has_value()) {
+    return base::unexpected(validation_result.error());
+  }
+
+  if (kind == ReduceKind::kL2 || kind == ReduceKind::kMean ||
+      kind == ReduceKind::kLogSum || kind == ReduceKind::kLogSumExp) {
+    if (!IsFloatingPointType(input.data_type)) {
+      return base::unexpected(
+          "The input type must be one of the floating point types.");
+    }
+  }
+
+  std::vector<uint32_t> output_shape;
+  if (keep_dimensions) {
+    output_shape = input_dimensions;
+    for (auto axis : axes) {
+      output_shape[axis] = 1;
+    }
+  } else {
+    for (size_t i = 0; i < input_rank; i++) {
+      if (!base::Contains(axes, i)) {
+        output_shape.push_back(input_dimensions[i]);
+      }
+    }
+  }
+  // Currently, WebNN doesn't support using empty dimensions to represent a
+  // scalar. An issue has been filed to track it -
+  // https://github.com/webmachinelearning/webnn/issues/390. As a workaround, we
+  // set output_shape to {1} to represent a scalar output.
+  if (output_shape.size() == 0) {
+    output_shape.push_back(1);
   }
   return Operand(input.data_type, std::move(output_shape));
 }
@@ -770,6 +1072,20 @@ absl::optional<PaddingSizes> CalculateConv2dPadding(AutoPad auto_pad,
     return absl::nullopt;
   }
   return PaddingSizes({.begin = padding_begin, .end = padding_end});
+}
+
+bool IsFloatingPointType(Operand::DataType data_type) {
+  switch (data_type) {
+    case Operand::DataType::kFloat32:
+    case Operand::DataType::kFloat16:
+      return true;
+    case Operand::DataType::kInt32:
+    case Operand::DataType::kUint32:
+    case Operand::DataType::kInt8:
+    case Operand::DataType::kUint8:
+      return false;
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace webnn

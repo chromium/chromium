@@ -101,8 +101,8 @@ TEST(VariationsStudyFilteringTest, CheckStudyChannel) {
 
 TEST(VariationsStudyFilteringTest, CheckStudyFormFactor) {
   const Study::FormFactor form_factors[] = {
-      Study::DESKTOP,     Study::PHONE, Study::TABLET,    Study::KIOSK,
-      Study::MEET_DEVICE, Study::TV,    Study::AUTOMOTIVE};
+      Study::DESKTOP,     Study::PHONE, Study::TABLET,     Study::KIOSK,
+      Study::MEET_DEVICE, Study::TV,    Study::AUTOMOTIVE, Study::FOLDABLE};
 
   ASSERT_EQ(Study::FormFactor_ARRAYSIZE,
             static_cast<int>(std::size(form_factors)));

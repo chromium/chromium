@@ -29,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {
@@ -82,6 +83,7 @@ void ReadError<Xkb::KeyboardError>(Xkb::KeyboardError* error_,
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 template <>
 COMPONENT_EXPORT(X11)
 void ReadEvent<Xkb::NewKeyboardNotifyEvent>(Xkb::NewKeyboardNotifyEvent* event_,

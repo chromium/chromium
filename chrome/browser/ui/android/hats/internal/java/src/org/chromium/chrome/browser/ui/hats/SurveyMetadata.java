@@ -33,6 +33,10 @@ class SurveyMetadata {
     @VisibleForTesting
     static final String KEY_PREFIX_DATE_DICE_ROLLED = "Chrome.Survey.Date.DiceRolled.";
 
+    /** Key represent the last date any survey prompt is shown. */
+    static final String KEY_LAST_PROMPT_DISPLAYED_DATE =
+            "Chrome.Survey.Date.LastPromptDisplayedDate";
+
     private static final int INVALID_DATE = -1;
     private static Integer sDateForTesting;
 
@@ -93,14 +97,20 @@ class SurveyMetadata {
     private Integer mLastPromptDisplayedDate;
 
     /**
+     * Internal class used by SurveyThrottler presenting survey metadata.
+     *
      * @param triggerId TriggerId for a certain survey. See {@link SurveyConfig}.
-     * @param currentDayOfTheYear The supplier that gives {@link java.util.Calendar.DAY_OF_YEAR}.
+     * @param encodedDateSupplier The supplier that gives an encoded date.
      */
-    SurveyMetadata(String triggerId, @NonNull Supplier<Integer> currentDayOfTheYearSupplier) {
+    SurveyMetadata(String triggerId, @NonNull Supplier<Integer> encodedDateSupplier) {
         mCurrentDateSupplier =
-                sDateForTesting == null ? currentDayOfTheYearSupplier : () -> sDateForTesting;
+                sDateForTesting == null ? encodedDateSupplier : () -> sDateForTesting;
         mPrefKeyPromptDisplayedDate = KEY_PREFIX_DATE_PROMPT_DISPLAYED + triggerId;
         mPrefKeyDiceRolledDate = KEY_PREFIX_DATE_DICE_ROLLED + triggerId;
+    }
+
+    static int getLastPromptDisplayedDateForAnySurvey() {
+        return Holder.getSharedPref().getInt(KEY_LAST_PROMPT_DISPLAYED_DATE, INVALID_DATE);
     }
 
     int getCurrentDate() {
@@ -135,5 +145,6 @@ class SurveyMetadata {
 
         mLastPromptDisplayedDate = getCurrentDate();
         Holder.setIntegerPref(mPrefKeyPromptDisplayedDate, mLastPromptDisplayedDate);
+        Holder.setIntegerPref(KEY_LAST_PROMPT_DISPLAYED_DATE, mLastPromptDisplayedDate);
     }
 }

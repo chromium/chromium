@@ -29,14 +29,14 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests the Contextual Search Manager using instrumentation tests.
- */
+/** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION
+})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 // TODO(crbug.com/1338223):update the tests to be batched.
@@ -49,21 +49,22 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         super.setUp();
     }
 
-    //============================================================================================
+    // ============================================================================================
     // UMA assertions
-    //============================================================================================
+    // ============================================================================================
 
     /**
-     * UMA assertions for a sequence of user actions that peek and expand the panel with
-     * Related Searches showing and then close the panel without selecting any suggestion.
+     * UMA assertions for a sequence of user actions that peek and expand the panel with Related
+     * Searches showing and then close the panel without selecting any suggestion.
      */
     private void assertUmaForPeekAndExpandWithRSearchesEnabled() throws Exception {
         assertUmaForPeekAndExpandWithRSearchesEnabled(-1);
     }
 
     /**
-     * UMA assertions for a sequence of user actions that peek and expand the panel with
-     * Related Searches showing and then close the panel.
+     * UMA assertions for a sequence of user actions that peek and expand the panel with Related
+     * Searches showing and then close the panel.
+     *
      * @param whichSuggestion Which suggestion was selected. A value of -1 means none.
      */
     private void assertUmaForPeekAndExpandWithRSearchesEnabled(int whichSuggestion)
@@ -81,7 +82,8 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
                 relatedSearchesCount,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Search.ContextualSearch.All.Searches", 1));
-        Assert.assertEquals("Failed to log a search that was not seen in the "
+        Assert.assertEquals(
+                "Failed to log a search that was not seen in the "
                         + "Search.ContextualSearch.All.Searches histogram!",
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -99,7 +101,8 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
                 relatedSearchesCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Search.RelatedSearches.NumberOfSuggestionsClicked2"));
-        Assert.assertEquals("Failed to log all the right Related Searches chips as clicked in the "
+        Assert.assertEquals(
+                "Failed to log all the right Related Searches chips as clicked in the "
                         + "Search.RelatedSearches.SelectedCarouselIndex histogram!",
                 relatedSearchesCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -138,7 +141,8 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
                         + "in the Search.RelatedSearches.CTR histogram!",
                 relatedSearchesCount,
                 RecordHistogram.getHistogramValueCountForTesting("Search.RelatedSearches.CTR", 1));
-        Assert.assertEquals("Failed to log that the carousel is shown and it was not scrolled "
+        Assert.assertEquals(
+                "Failed to log that the carousel is shown and it was not scrolled "
                         + "in the Search.RelatedSearches.CarouselScrolled histogram!",
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -172,7 +176,7 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
                         + "in the Search.RelatedSearches.CarouselLastVisibleItemPosition "
                         + "histogram!",
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.RelatedSearches.CarouselLastVisibleItemPosition")
+                                "Search.RelatedSearches.CarouselLastVisibleItemPosition")
                         >= 0);
     }
 
@@ -183,27 +187,27 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         // histograms. See https://crbug.com/1270962.
     }
 
-    //============================================================================================
+    // ============================================================================================
     // Test Cases. Many of these tests check histograms, which have issues running batched.
-    //============================================================================================
+    // ============================================================================================
 
-    /**
-     * Tests that a simple Tap with language determination triggers translation.
-     */
+    /** Tests that a simple Tap with language determination triggers translation. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
     public void testTapWithLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving a German word should trigger translation.
-        mFakeServer.setExpectations("german",
+        mFakeServer.setExpectations(
+                "german",
                 new ResolvedSearchTerm.Builder(false, 200, "Deutsche", "Deutsche")
                         .setContextLanguage("de")
                         .build());
         simulateResolveSearch("german");
 
         // Make sure we tried to trigger translate.
-        Assert.assertTrue("Translation was not forced with the current request URL: "
+        Assert.assertTrue(
+                "Translation was not forced with the current request URL: "
                         + mManager.getRequest().getSearchUrl(),
                 mManager.getRequest().isTranslationForced());
     }
@@ -217,10 +221,12 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         FeatureList.setTestFeatures(ENABLE_RELATED_SEARCHES_IN_BAR);
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
-        Assert.assertFalse("Related Searches should have been requested but were not!",
+        Assert.assertFalse(
+                "Related Searches should have been requested but were not!",
                 mFakeServer.getSearchContext().getRelatedSearchesStamp().isEmpty());
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Expand the panel and assert that it ends up in the right place.
         expandPanelAndAssert();
@@ -238,7 +244,8 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         mFakeServer.reset();
         FakeResolveSearch fakeSearch = simulateResolveSearch("intelligence");
         ResolvedSearchTerm resolvedSearchTerm = fakeSearch.getResolvedSearchTerm();
-        Assert.assertTrue("Related Searches results should have been returned but were not!",
+        Assert.assertTrue(
+                "Related Searches results should have been returned but were not!",
                 !resolvedSearchTerm.relatedSearchesJson().isEmpty());
         // Expand the panel and assert that it ends up in the right place.
         expandPanelAndAssert();
@@ -248,14 +255,17 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
         final int chipToSelect = 3;
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> relatedSearchesControl.selectChipForTest(chipToSelect));
-        Assert.assertEquals("The Related Searches query was not shown in the Bar!",
-                "Selection Related 3", mPanel.getSearchBarControl().getSearchTerm());
+        Assert.assertEquals(
+                "The Related Searches query was not shown in the Bar!",
+                "Selection Related 3",
+                mPanel.getSearchBarControl().getSearchTerm());
 
         // Collapse the panel back to the peeking state
         peekPanel();
         Assert.assertEquals(
                 "The default query was not shown in the Bar after returning to peeking state!",
-                "Intelligence", mPanel.getSearchBarControl().getSearchTerm());
+                "Intelligence",
+                mPanel.getSearchBarControl().getSearchTerm());
 
         // Close the panel
         closePanel();

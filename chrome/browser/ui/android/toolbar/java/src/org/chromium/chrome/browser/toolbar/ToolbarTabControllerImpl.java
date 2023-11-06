@@ -166,9 +166,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     private void recordHomeButtonUserPerProfileType() {
         Tab tab = mTabSupplier.get();
         if (tab == null) return;
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        if (profile == null) return;
-
+        Profile profile = tab.getProfile();
         @BrowserProfileType
         int type = Profile.getBrowserProfileTypeFromProfile(profile);
         RecordHistogram.recordEnumeratedHistogram(

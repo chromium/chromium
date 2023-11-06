@@ -326,7 +326,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
     replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
         IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
-        base::ASCIIToUTF16(chrome::kUserBypassHelpCenterURL));
+        chrome::kUserBypassHelpCenterURL);
 
   } else {
     replacements["hideBlockCookiesToggle"] = "";

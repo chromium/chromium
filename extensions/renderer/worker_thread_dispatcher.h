@@ -14,16 +14,20 @@
 #include "base/values.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/public/renderer/worker_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/automation_registry.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/service_worker_host.mojom.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "ipc/ipc_sync_message_filter.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/shared_associated_remote.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -58,13 +62,13 @@ struct PortId;
 // 2) A thread-safe version of IPC::Sender, so we can safely send IPC from
 // worker thread (this TODO formerly referred to content::ThreadSafeSender
 // which no longer exists).
-class WorkerThreadDispatcher : public content::RenderThreadObserver,
-                               public IPC::Sender
+class WorkerThreadDispatcher :
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    ,
-                               public mojom::EventDispatcher
+    public content::RenderThreadObserver,
+    public IPC::Sender,
+    public mojom::EventDispatcher,
 #endif
-{
+    public NativeExtensionBindingsSystem::Delegate {
  public:
   WorkerThreadDispatcher();
 
@@ -82,18 +86,18 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void Init(content::RenderThread* render_thread);
 
-  // IPC::Sender:
-  bool Send(IPC::Message* message) override;
-
   void AddWorkerData(
       blink::WebServiceWorkerContextProxy* proxy,
       int64_t service_worker_version_id,
-      base::UnguessableToken activation_sequence,
+      const absl::optional<base::UnguessableToken>& activation_sequence,
       ScriptContext* script_context,
       std::unique_ptr<NativeExtensionBindingsSystem> bindings_system);
   void RemoveWorkerData(int64_t service_worker_version_id);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  // IPC::Sender:
+  bool Send(IPC::Message* message) override;
+
   // Called when a service worker context was initialized.
   void DidInitializeContext(int64_t service_worker_version_id);
 
@@ -106,10 +110,10 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   void RequestWorker(mojom::RequestParamsPtr params);
   void SendResponseAck(const base::Uuid& request_uuid);
-#endif
 
   // content::RenderThreadObserver:
   bool OnControlMessageReceived(const IPC::Message& message) override;
+#endif
 
   // Updates bindings of all Service Workers for |extension_id|, after extension
   // permission update.
@@ -117,14 +121,14 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   // each Service Workers.
   bool UpdateBindingsForWorkers(const ExtensionId& extension_id);
 
+  // Updates bindings for every extension service worker context, assuming
+  // changes that can affect API availability.
+  void UpdateAllServiceWorkerBindings();
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   // Posts mojom::EventRouter::AddListenerForServiceWorker to the IO thread to
   // call it with GetEventRouterOnIO().
-  void SendAddEventListener(const std::string& extension_id,
-                            const GURL& scope,
-                            const std::string& event_name,
-                            int64_t service_worker_version_id,
-                            int worker_thread_id);
+  void SendAddEventListener(mojom::EventListenerPtr event_listener);
 
   // Posts mojom::EventRouter::AddLazyListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
@@ -149,11 +153,7 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   // Posts mojom::EventRouter::RemoveListenerForServiceWorker to the IO thread
   // to call it with GetEventRouterOnIO().
-  void SendRemoveEventListener(const std::string& extension_id,
-                               const GURL& scope,
-                               const std::string& event_name,
-                               int64_t service_worker_version_id,
-                               int worker_thread_id);
+  void SendRemoveEventListener(mojom::EventListenerPtr event_listener);
 
   // Posts mojom::EventRouter::RemoveLazyListenerForServiceWorker to the IO
   // thread to call it with GetEventRouterOnIO().
@@ -186,18 +186,21 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
 
   // Mojo interface implementation, called from the main thread.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args) override;
+                     base::Value::List event_args,
+                     DispatchEventCallback callback) override;
 #endif
+
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
 
  private:
+  static void UpdateBindingsOnWorkerThread(
+      const absl::optional<ExtensionId>& extension_id);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   static bool HandlesMessageOnWorkerThread(const IPC::Message& message);
   static void ForwardIPC(int worker_thread_id, const IPC::Message& message);
-  static void UpdateBindingsOnWorkerThread(const ExtensionId& extension_id);
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   static void DispatchEventOnWorkerThread(mojom::DispatchEventParamsPtr params,
                                           base::Value::List event_args);
-#endif
-
   void OnMessageReceivedOnWorkerThread(int worker_thread_id,
                                        const IPC::Message& message);
 
@@ -205,11 +208,6 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void PostTaskToIOThread(base::OnceClosure task);
 
   // IPC handlers.
-  void OnResponseWorker(int worker_thread_id,
-                        int request_id,
-                        bool succeeded,
-                        ExtensionMsg_ResponseWorkerData response,
-                        const std::string& error);
   void OnValidateMessagePort(int worker_thread_id, const PortId& id);
   void OnDispatchOnConnect(int worker_thread_id,
                            const ExtensionMsg_OnConnectData& connect_data);
@@ -219,20 +217,25 @@ class WorkerThreadDispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void DispatchEventHelper(mojom::DispatchEventParamsPtr params,
                            base::Value::List event_args);
+
+  void PostTaskToMainThread(base::OnceClosure task);
 #endif
 
-  // IPC sender. Belongs to the render thread, but thread safe.
-  scoped_refptr<IPC::SyncMessageFilter> message_filter_;
+  // Helper method to update bindings. If `extension_id` is non-null, updates
+  // only bindings for that extension; otherwise, updates all bindings.
+  // Returns true if the task to each worker thread posts correctly.
+  bool UpdateBindingsHelper(const absl::optional<ExtensionId>& extension_id);
 
   using IDToTaskRunnerMap = std::map<base::PlatformThreadId, base::TaskRunner*>;
   IDToTaskRunnerMap task_runner_map_;
   base::Lock task_runner_map_lock_;
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  // IPC sender. Belongs to the render thread, but thread safe.
+  scoped_refptr<IPC::SyncMessageFilter> message_filter_;
+  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
   mojo::AssociatedRemote<mojom::EventRouter> event_router_remote_;
   mojo::AssociatedRemote<mojom::ServiceWorkerHost> service_worker_host_;
   mojo::AssociatedRemote<mojom::RendererAutomationRegistry>

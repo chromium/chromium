@@ -150,7 +150,7 @@ base::expected<FilterValues, FilterValuesError> ParseFilterValuesFromJSON(
 
 base::Value::Dict FilterValuesToJson(const FilterValues& filter_values) {
   base::Value::Dict dict;
-  for (auto [key, values] : filter_values) {
+  for (const auto& [key, values] : filter_values) {
     base::Value::List list;
     for (const auto& value : values) {
       list.Append(value);

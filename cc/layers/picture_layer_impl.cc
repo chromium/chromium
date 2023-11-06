@@ -1709,11 +1709,19 @@ float PictureLayerImpl::MinimumRasterContentsScaleForWillChangeTransform()
   DCHECK(AffectedByWillChangeTransformHint());
   float native_scale = ideal_device_scale_ * ideal_page_scale_;
   float ideal_scale = ideal_contents_scale_key();
-  // Clamp will-change: transform layers to be at least the native scale,
-  // unless the scale is too small to avoid too many tiles using too much tile
-  // memory.
+  // We want to use the same raster scale as much as possible during the
+  // lifetime of a will-change:transform layer to avoid rerasterization.
+  // Normally, we clamp the raster scale to be at least the native scale, to
+  // make most HTML contents not too blurry (e.g. at least the texts are
+  // legible) if the ideal scale increases above the native scale in the future.
   if (ideal_scale < native_scale * kMinScaleRatioForWillChangeTransform) {
-    // Don't let the scale too small compared to the ideal scale.
+    // However, if the native scale is too big compared to the ideal scale,
+    // we want to use a smaller scale to avoid too many tiles using too much
+    // memory. This is mainly to avoid problems in SVG apps that use large
+    // integer geometries in elements under a very small overall scale to avoid
+    // floating-point errors in geometries. The return value is smaller than
+    // ideal_scale to reduce rerasterizations when the ideal scale changes to
+    // be even smaller in the future.
     return ideal_scale * kMinScaleRatioForWillChangeTransform;
   }
   return native_scale;

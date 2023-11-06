@@ -78,9 +78,7 @@ class UpdateServiceInternalProxyImplImpl
                            __uuidof(IUpdaterInternalSystem)> {
  public:
   explicit UpdateServiceInternalProxyImplImpl(UpdaterScope scope)
-      : ProxyImplBase(scope,
-                      JoinVectors(GetSideBySideInterfaces(scope),
-                                  GetActiveInterfaces(scope))) {}
+      : ProxyImplBase(scope) {}
 
   static auto GetClassGuid(UpdaterScope scope) {
     return IsSystemInstall(scope) ? __uuidof(UpdaterInternalSystemClass)

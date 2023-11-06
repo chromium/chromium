@@ -15,7 +15,7 @@ import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener
 // <if expr="is_chromeos">
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 // </if>
-import {hasKeyModifiers} from 'chrome://resources/js/util_ts.js';
+import {hasKeyModifiers} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DarkModeMixin} from '../dark_mode_mixin.js';

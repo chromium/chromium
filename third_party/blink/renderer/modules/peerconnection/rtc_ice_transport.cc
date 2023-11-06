@@ -171,15 +171,15 @@ RTCIceTransport::getRemoteCandidates() const {
 }
 
 RTCIceCandidatePair* RTCIceTransport::getSelectedCandidatePair() const {
-  return selected_candidate_pair_;
+  return selected_candidate_pair_.Get();
 }
 
 RTCIceParameters* RTCIceTransport::getLocalParameters() const {
-  return local_parameters_;
+  return local_parameters_.Get();
 }
 
 RTCIceParameters* RTCIceTransport::getRemoteParameters() const {
-  return remote_parameters_;
+  return remote_parameters_.Get();
 }
 
 void RTCIceTransport::OnGatheringStateChanged(

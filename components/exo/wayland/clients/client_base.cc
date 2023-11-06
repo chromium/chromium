@@ -1179,7 +1179,10 @@ void ClientBase::SetupAuraShellIfAvailable() {
       [](void* data, struct zaura_shell* zaura_shell) {},
       [](void* data, struct zaura_shell* zaura_shell,
          const char* compositor_version) {},
-      [](void* data, struct zaura_shell* zaura_shell) {}};
+      [](void* data, struct zaura_shell* zaura_shell) {},
+      [](void* data, struct zaura_shell* zaura_shell,
+         uint32_t upper_left_radius, uint32_t upper_right_radius,
+         uint32_t lower_right_radius, uint32_t lower_left_radius) {}};
   zaura_shell_add_listener(globals_.aura_shell.get(), &kAuraShellListener,
                            this);
 

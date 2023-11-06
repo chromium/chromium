@@ -15,7 +15,7 @@ source_set("core") {
   public_deps = [ "//components/autofill/core/browser/proto" ]
   deps = [
     "//base",
-    "//components/password_manager/core/common:features",
+    "//components/password_manager/core/browser/features:password_features",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -46,7 +46,7 @@ source_set("unit_tests") {
   deps = [
     ":generation",
     "//base/test:test_support",
-    "//components/password_manager/core/common:features",
+    "//components/password_manager/core/browser/features:password_features",
     "//services/network:test_support",
     "//testing/gtest",
   ]

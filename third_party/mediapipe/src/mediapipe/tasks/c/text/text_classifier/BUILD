@@ -30,6 +30,7 @@ cc_library(
         "//mediapipe/tasks/c/core:base_options_converter",
         "//mediapipe/tasks/cc/text/text_classifier",
         "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/status",
     ],
     alwayslink = 1,
 )
@@ -66,4 +67,20 @@ cc_binary(
         "notap",
     ],
     deps = [":text_classifier_lib"],
+)
+
+cc_test(
+    name = "text_classifier_test",
+    srcs = ["text_classifier_test.cc"],
+    data = ["//mediapipe/tasks/testdata/text:bert_text_classifier_models"],
+    linkstatic = 1,
+    deps = [
+        ":text_classifier_lib",
+        "//mediapipe/framework/deps:file_path",
+        "//mediapipe/framework/port:gtest",
+        "//mediapipe/tasks/c/components/containers:category",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
 )

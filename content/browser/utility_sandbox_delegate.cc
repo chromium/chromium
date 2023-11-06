@@ -55,6 +55,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kService ||
       sandbox_type_ == sandbox::mojom::Sandbox::kServiceWithJit ||
       sandbox_type_ == sandbox::mojom::Sandbox::kNetwork ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceModelExecution ||
       sandbox_type_ == sandbox::mojom::Sandbox::kCdm ||
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||

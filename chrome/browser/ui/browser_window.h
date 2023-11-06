@@ -628,8 +628,8 @@ class BrowserWindow : public ui::BaseWindow {
   // actually closed.
   virtual bool CloseFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoCloseReason close_reason =
-          user_education::FeaturePromoCloseReason::kFeatureEngaged) = 0;
+      user_education::EndFeaturePromoReason end_promo_reason =
+          user_education::EndFeaturePromoReason::kFeatureEngaged) = 0;
 
   // Closes the bubble for a feature promo but continues the promo; returns a
   // handle that can be used to end the promo when it is destructed. The handle
@@ -661,6 +661,13 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns true when the borderless mode should be displayed instead
   // of a full titlebar. This is only supported for desktop web apps.
   virtual bool IsBorderlessModeEnabled() const = 0;
+
+  // Sends the resizable boolean set via `window.setResizable(bool)` API to
+  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
+  // default.
+  virtual void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) = 0;
+  virtual bool GetCanResize() = 0;
+  virtual ui::WindowShowState GetWindowShowState() const = 0;
 
   // Shows the Chrome Labs bubble if enabled.
   virtual void ShowChromeLabs() = 0;

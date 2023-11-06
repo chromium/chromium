@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1178581264944972037">Pausatu</translation>
+<translation id="2558806128245168542">Joan atzera</translation>
 <translation id="3523426587027570423">"Entzun orri honetan dagoena" erreproduzigailua ixteko, sakatu hau.</translation>
+<translation id="4431240646217225907">Nabarmendu testua eta egin gora eta behera automatikoki</translation>
 <translation id="4654641641922242357">"Entzun orri honetan dagoena" erreproduzigailua.</translation>
 <translation id="4731877163452936634">Erreprodukzio-abiadura: <ph name="PLAYBACK_SPEED" />. Sakatu hau aldatzeko.</translation>
 <translation id="5234971936051226002">"Entzun orri honetan dagoena" erreproduzigailua minimizatuta dago.</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
+<translation id="6315170314923504164">Ahotsa</translation>
+<translation id="6550675742724504774">Aukerak</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
+<translation id="6831043979455480757">Itzuli</translation>
 <translation id="6846298663435243399">Kargatzen…</translation>
 <translation id="7587250070160020374">Chrome orain erreproduzitzen ari da</translation>
 <translation id="7945822420239537236">Aurreratu <ph name="NUMBER_OF_SECONDS" /> segundo</translation>

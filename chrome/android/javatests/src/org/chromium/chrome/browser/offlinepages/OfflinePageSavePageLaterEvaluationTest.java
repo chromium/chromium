@@ -53,18 +53,14 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Tests OfflinePageBridge.SavePageLater over a batch of urls.
- * Tests against a list of top EM urls, try to call SavePageLater on each of the url. It also
- * record metrics (failure rate, time elapsed etc.) by writing metrics to a file on external
- * storage.
+ * Tests OfflinePageBridge.SavePageLater over a batch of urls. Tests against a list of top EM urls,
+ * try to call SavePageLater on each of the url. It also record metrics (failure rate, time elapsed
+ * etc.) by writing metrics to a file on external storage.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class OfflinePageSavePageLaterEvaluationTest {
-    /**
-     * Class which is used to calculate time difference.
-     */
-
+    /** Class which is used to calculate time difference. */
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -72,9 +68,11 @@ public class OfflinePageSavePageLaterEvaluationTest {
         public void setStartTime(Long startTime) {
             mStartTime = startTime;
         }
+
         public void setEndTime(Long endTime) {
             mEndTime = endTime;
         }
+
         // Return time delta in milliseconds.
         public Long getTimeDelta() {
             return mEndTime - mStartTime;
@@ -127,37 +125,42 @@ public class OfflinePageSavePageLaterEvaluationTest {
     @After
     public void tearDown() throws Exception {
         NotificationManager notificationManager =
-                (NotificationManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.NOTIFICATION_SERVICE);
+                (NotificationManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
         final Semaphore mClearingSemaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            assert mBridge != null;
-            mBridge.getRequestsInQueue(new Callback<SavePageRequest[]>() {
-                @Override
-                public void onResult(SavePageRequest[] results) {
-                    ArrayList<Long> ids = new ArrayList<Long>(results.length);
-                    for (int i = 0; i < results.length; i++) {
-                        ids.add(results[i].getRequestId());
-                    }
-                    mBridge.removeRequestsFromQueue(ids, new Callback<Integer>() {
-                        @Override
-                        public void onResult(Integer removedCount) {
-                            mClearingSemaphore.release();
-                        }
-                    });
-                }
-            });
-        });
-        checkTrue(mClearingSemaphore.tryAcquire(REMOVE_REQUESTS_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    assert mBridge != null;
+                    mBridge.getRequestsInQueue(
+                            new Callback<SavePageRequest[]>() {
+                                @Override
+                                public void onResult(SavePageRequest[] results) {
+                                    ArrayList<Long> ids = new ArrayList<Long>(results.length);
+                                    for (int i = 0; i < results.length; i++) {
+                                        ids.add(results[i].getRequestId());
+                                    }
+                                    mBridge.removeRequestsFromQueue(
+                                            ids,
+                                            new Callback<Integer>() {
+                                                @Override
+                                                public void onResult(Integer removedCount) {
+                                                    mClearingSemaphore.release();
+                                                }
+                                            });
+                                }
+                            });
+                });
+        checkTrue(
+                mClearingSemaphore.tryAcquire(REMOVE_REQUESTS_TIMEOUT_MS, TimeUnit.MILLISECONDS),
                 "Timed out when clearing remaining requests!");
         mBridge.closeLog();
         mBridge.destroy();
     }
 
-    /**
-     * Get a reader for a given input file path.
-     */
+    /** Get a reader for a given input file path. */
     private BufferedReader getInputStream(String inputFilePath) throws FileNotFoundException {
         FileReader fileReader =
                 new FileReader(new File(Environment.getExternalStorageDirectory(), inputFilePath));
@@ -165,17 +168,13 @@ public class OfflinePageSavePageLaterEvaluationTest {
         return bufferedReader;
     }
 
-    /**
-     * Get a writer for given output file path.
-     */
+    /** Get a writer for given output file path. */
     private OutputStreamWriter getOutputStream(String outputFilePath) throws IOException {
         File outputFile = new File(Environment.getExternalStorageDirectory(), outputFilePath);
         return new FileWriter(outputFile);
     }
 
-    /**
-     * Get the directory on external storage for storing saved pages.
-     */
+    /** Get the directory on external storage for storing saved pages. */
     private File getExternalArchiveDir() {
         File externalArchiveDir =
                 new File(Environment.getExternalStorageDirectory(), SAVED_PAGES_EXTERNAL_PATH);
@@ -200,16 +199,12 @@ public class OfflinePageSavePageLaterEvaluationTest {
         return externalArchiveDir;
     }
 
-    /**
-     * Print log message in output file through evaluation bridge.
-     */
+    /** Print log message in output file through evaluation bridge. */
     private void log(String tag, String format, Object... args) {
         mBridge.log(tag, String.format(format, args));
     }
 
-    /**
-     * Assert the condition is true, otherwise abort the test and log.
-     */
+    /** Assert the condition is true, otherwise abort the test and log. */
     private void checkTrue(boolean condition, String message) {
         if (!condition) {
             log(TAG, message);
@@ -219,41 +214,47 @@ public class OfflinePageSavePageLaterEvaluationTest {
 
     /**
      * Initializes the evaluation bridge which will be used.
+     *
      * @param useCustomScheduler True if customized scheduler (the one with immediate scheduling)
-     *                           will be used. False otherwise.
+     *     will be used. False otherwise.
      */
     private void initializeBridgeForProfile(final boolean useTestingScheduler)
             throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            // TODO (https://crbug.com/714249):  Add incognito mode tests to check that
-            // OfflinePageEvaluationBridge is null for incognito.
-            Profile profile = Profile.getLastUsedRegularProfile();
-            mBridge = new OfflinePageEvaluationBridge(profile, useTestingScheduler);
-            if (mBridge == null) {
-                Assert.fail("OfflinePageEvaluationBridge initialization failed!");
-                return;
-            }
-            if (mBridge.isOfflinePageModelLoaded()) {
-                semaphore.release();
-                return;
-            }
-            mBridge.addObserver(new OfflinePageEvaluationObserver() {
-                @Override
-                public void offlinePageModelLoaded() {
-                    semaphore.release();
-                    mBridge.removeObserver(this);
-                }
-            });
-        });
-        checkTrue(semaphore.tryAcquire(PAGE_MODEL_LOAD_TIMEOUT_MS, TimeUnit.MILLISECONDS),
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // TODO (https://crbug.com/714249):  Add incognito mode tests to check that
+                    // OfflinePageEvaluationBridge is null for incognito.
+                    Profile profile = Profile.getLastUsedRegularProfile();
+                    mBridge = new OfflinePageEvaluationBridge(profile, useTestingScheduler);
+                    if (mBridge == null) {
+                        Assert.fail("OfflinePageEvaluationBridge initialization failed!");
+                        return;
+                    }
+                    if (mBridge.isOfflinePageModelLoaded()) {
+                        semaphore.release();
+                        return;
+                    }
+                    mBridge.addObserver(
+                            new OfflinePageEvaluationObserver() {
+                                @Override
+                                public void offlinePageModelLoaded() {
+                                    semaphore.release();
+                                    mBridge.removeObserver(this);
+                                }
+                            });
+                });
+        checkTrue(
+                semaphore.tryAcquire(PAGE_MODEL_LOAD_TIMEOUT_MS, TimeUnit.MILLISECONDS),
                 "Timed out when loading OfflinePageModel!");
     }
 
     /**
      * Set up the input/output, bridge and observer we're going to use.
+     *
      * @param useCustomScheduler True if customized scheduler (the one with immediate scheduling)
-     *                           will be used. False otherwise.
+     *     will be used. False otherwise.
      */
     protected void setUpIOAndBridge(final boolean useCustomScheduler) throws InterruptedException {
         try {
@@ -269,38 +270,58 @@ public class OfflinePageSavePageLaterEvaluationTest {
         }
 
         initializeBridgeForProfile(useCustomScheduler);
-        mObserver = new OfflinePageEvaluationObserver() {
-            public void savePageRequestAdded(SavePageRequest request) {
-                RequestMetadata metadata = new RequestMetadata();
-                metadata.mId = request.getRequestId();
-                metadata.mUrl = request.getUrl();
-                metadata.mStatus = -1;
-                TimeDelta timeDelta = new TimeDelta();
-                timeDelta.setStartTime(System.currentTimeMillis());
-                metadata.mTimeDelta = timeDelta;
-                mRequestMetadata.put(request.getRequestId(), metadata);
-                log(TAG, "SavePageRequest Added for %s with id %d.", metadata.mUrl, metadata.mId);
-            }
-            public void savePageRequestCompleted(SavePageRequest request, int status) {
-                RequestMetadata metadata = mRequestMetadata.get(request.getRequestId());
-                metadata.mTimeDelta.setEndTime(System.currentTimeMillis());
-                if (metadata.mStatus == -1) {
-                    mCount++;
-                    log(TAG_PROGRESS, "%s is saved with result: %s. (%d/%d)", metadata.mUrl,
-                            statusToString(status), mCount, mUrls.size());
-                } else {
-                    log(TAG, "The request for url: " + metadata.mUrl
-                                    + " has more than one completion callbacks!");
-                    log(TAG, "Previous status: " + metadata.mStatus + ". Current: " + status);
-                }
-                metadata.mStatus = status;
-                if (mCount == mUrls.size() || mCount % mScheduleBatchSize == 0) {
-                    mCompletionLatch.countDown();
-                    return;
-                }
-            }
-            public void savePageRequestChanged(SavePageRequest request) {}
-        };
+        mObserver =
+                new OfflinePageEvaluationObserver() {
+                    public void savePageRequestAdded(SavePageRequest request) {
+                        RequestMetadata metadata = new RequestMetadata();
+                        metadata.mId = request.getRequestId();
+                        metadata.mUrl = request.getUrl();
+                        metadata.mStatus = -1;
+                        TimeDelta timeDelta = new TimeDelta();
+                        timeDelta.setStartTime(System.currentTimeMillis());
+                        metadata.mTimeDelta = timeDelta;
+                        mRequestMetadata.put(request.getRequestId(), metadata);
+                        log(
+                                TAG,
+                                "SavePageRequest Added for %s with id %d.",
+                                metadata.mUrl,
+                                metadata.mId);
+                    }
+
+                    public void savePageRequestCompleted(SavePageRequest request, int status) {
+                        RequestMetadata metadata = mRequestMetadata.get(request.getRequestId());
+                        metadata.mTimeDelta.setEndTime(System.currentTimeMillis());
+                        if (metadata.mStatus == -1) {
+                            mCount++;
+                            log(
+                                    TAG_PROGRESS,
+                                    "%s is saved with result: %s. (%d/%d)",
+                                    metadata.mUrl,
+                                    statusToString(status),
+                                    mCount,
+                                    mUrls.size());
+                        } else {
+                            log(
+                                    TAG,
+                                    "The request for url: "
+                                            + metadata.mUrl
+                                            + " has more than one completion callbacks!");
+                            log(
+                                    TAG,
+                                    "Previous status: "
+                                            + metadata.mStatus
+                                            + ". Current: "
+                                            + status);
+                        }
+                        metadata.mStatus = status;
+                        if (mCount == mUrls.size() || mCount % mScheduleBatchSize == 0) {
+                            mCompletionLatch.countDown();
+                            return;
+                        }
+                    }
+
+                    public void savePageRequestChanged(SavePageRequest request) {}
+                };
         mBridge.addObserver(mObserver);
         try {
             File logOutputFile =
@@ -313,12 +334,16 @@ public class OfflinePageSavePageLaterEvaluationTest {
 
     /**
      * Calls SavePageLater on the bridge to try to offline an url.
+     *
      * @param url The url to be saved.
      * @param namespace The namespace this request belongs to.
      */
     private void savePageLater(final String url, final String namespace) {
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
-                () -> { mBridge.savePageLater(url, namespace, mIsUserRequested); });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mBridge.savePageLater(url, namespace, mIsUserRequested);
+                });
     }
 
     private void processUrls(List<String> urls) throws InterruptedException, IOException {
@@ -391,9 +416,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
         }
     }
 
-    /**
-     * Get saved offline pages and align them with the metadata we got from testing.
-     */
+    /** Get saved offline pages and align them with the metadata we got from testing. */
     private void loadSavedPages() throws TimeoutException {
         for (OfflinePageItem page : OfflineTestUtil.getAllPages()) {
             mRequestMetadata.get(page.getOfflineId()).mPage = page;
@@ -423,14 +446,11 @@ public class OfflinePageSavePageLaterEvaluationTest {
 
     /**
      * Writes test results to output file. The format would be:
-     * URL;OFFLINE_STATUS;FILE_SIZE;TIME_SINCE_TEST_START
-     * If page loading failed, size and timestamp would not be written to file.
-     * Examples:
-     * http://indianrail.gov.in/;START_COUNT_EXCEEDED
-     * http://www.21cineplex.com/;SUCCESS;1160 KB;171700
-     * https://www.google.com/;SUCCESS;110 KB;273805
-     * At the end of the file there will be a summary:
-     * Total requested URLs: XX, Completed: XX, Failed: XX, Failure Rate: XX.XX%
+     * URL;OFFLINE_STATUS;FILE_SIZE;TIME_SINCE_TEST_START If page loading failed, size and timestamp
+     * would not be written to file. Examples: http://indianrail.gov.in/;START_COUNT_EXCEEDED
+     * http://www.21cineplex.com/;SUCCESS;1160 KB;171700 https://www.google.com/;SUCCESS;110
+     * KB;273805 At the end of the file there will be a summary: Total requested URLs: XX,
+     * Completed: XX, Failed: XX, Failure Rate: XX.XX%
      */
     private void writeResults() throws IOException {
         loadSavedPages();
@@ -454,9 +474,16 @@ public class OfflinePageSavePageLaterEvaluationTest {
                     }
                     continue;
                 }
-                output.write(metadata.mUrl + DELIMITER + statusToString(status) + DELIMITER
-                        + page.getFileSize() / 1000 + " KB" + DELIMITER
-                        + metadata.mTimeDelta.getTimeDelta() + NEW_LINE);
+                output.write(
+                        metadata.mUrl
+                                + DELIMITER
+                                + statusToString(status)
+                                + DELIMITER
+                                + page.getFileSize() / 1000
+                                + " KB"
+                                + DELIMITER
+                                + metadata.mTimeDelta.getTimeDelta()
+                                + NEW_LINE);
                 // Move the page to external storage if external archive exists.
                 File originalPage = new File(page.getFilePath());
                 File externalPage = new File(externalArchiveDir, originalPage.getName());
@@ -464,10 +491,15 @@ public class OfflinePageSavePageLaterEvaluationTest {
                     log(TAG, "Saved page for url " + page.getUrl() + " cannot be moved.");
                 }
             }
-            output.write(String.format(
-                    "Total requested URLs: %d, Completed: %d, Failed: %d, Failure Rate: %.2f%%"
-                            + NEW_LINE,
-                    mUrls.size(), mCount, failedCount, (failedCount * 100.0 / mCount)));
+            output.write(
+                    String.format(
+                            "Total requested URLs: %d, Completed: %d, Failed: %d, Failure Rate:"
+                                    + " %.2f%%"
+                                    + NEW_LINE,
+                            mUrls.size(),
+                            mCount,
+                            failedCount,
+                            (failedCount * 100.0 / mCount)));
         } catch (FileNotFoundException e) {
             Log.e(TAG, e.getMessage(), e);
         } finally {
@@ -477,9 +509,7 @@ public class OfflinePageSavePageLaterEvaluationTest {
         }
     }
 
-    /**
-     * Method to parse config files for test parameters.
-     */
+    /** Method to parse config files for test parameters. */
     public void parseConfigFile() throws IOException {
         Properties properties = new Properties();
         InputStream inputStream = null;
@@ -492,8 +522,9 @@ public class OfflinePageSavePageLaterEvaluationTest {
             mScheduleBatchSize = Integer.parseInt(properties.getProperty("ScheduleBatchSize"));
         } catch (FileNotFoundException e) {
             Log.e(TAG, e.getMessage(), e);
-            Assert.fail(String.format(
-                    "Config file %s is not found, aborting the test.", CONFIG_FILE_PATH));
+            Assert.fail(
+                    String.format(
+                            "Config file %s is not found, aborting the test.", CONFIG_FILE_PATH));
         } catch (NumberFormatException e) {
             Log.e(TAG, e.getMessage(), e);
             Assert.fail("Error parsing config file, aborting test.");
@@ -505,13 +536,12 @@ public class OfflinePageSavePageLaterEvaluationTest {
     }
 
     /**
-     * The test is the entry point for all kinds of testing of SavePageLater.
-     * It is encouraged to use run_offline_page_evaluation_test.py to run this test.
-     * TimeoutScale is set to 4, in case we hit the hard limit for @Manual tests(10 hours)
-     * and gets killed. It expand the timeout to 10 * 4 hours.
-     * We won't be treating svelte devices differently so enable the feature which would let
-     * immediate processing also works on svelte devices. This flag will *not* affect normal
-     * devices.
+     * The test is the entry point for all kinds of testing of SavePageLater. It is encouraged to
+     * use run_offline_page_evaluation_test.py to run this test. TimeoutScale is set to 4, in case
+     * we hit the hard limit for @Manual tests(10 hours) and gets killed. It expand the timeout to
+     * 10 * 4 hours. We won't be treating svelte devices differently so enable the feature which
+     * would let immediate processing also works on svelte devices. This flag will *not* affect
+     * normal devices.
      */
     @Test
     @Manual

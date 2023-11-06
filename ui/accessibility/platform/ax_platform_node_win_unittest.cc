@@ -4040,7 +4040,6 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   root.role = ax::mojom::Role::kList;
   root.SetName("fake name");
   root.AddStringAttribute(ax::mojom::StringAttribute::kAccessKey, "Ctrl+Q");
-  root.AddStringAttribute(ax::mojom::StringAttribute::kLanguage, "en-us");
   root.AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts, "Alt+F4");
   root.AddStringAttribute(ax::mojom::StringAttribute::kDescription,
                           "fake description");
@@ -4083,8 +4082,6 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaPropertiesPropertyId,
                      L"readonly=true;expanded=false;multiline=false;"
                      L"multiselectable=false;required=false;setsize=2");
-  constexpr int en_us_lcid = 1033;
-  EXPECT_UIA_INT_EQ(root_node, UIA_CulturePropertyId, en_us_lcid);
   EXPECT_UIA_BSTR_EQ(root_node, UIA_NamePropertyId, L"fake name");
   EXPECT_UIA_INT_EQ(root_node, UIA_ControlTypePropertyId,
                     int{UIA_ListControlTypeId});
@@ -4483,7 +4480,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
 TEST_F(AXPlatformNodeWinTest, UIAGetDescribedByPropertyId) {
   AXNodeData root;
   std::vector<AXNodeID> describedby_ids = {2, 3, 4};
-  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
+  root.AddIntListAttribute(ax::mojom::IntListAttribute::kDetailsIds,
                            describedby_ids);
   root.id = 1;
   root.role = ax::mojom::Role::kMarquee;
@@ -4838,8 +4835,8 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_HelpText) {
   TestAXTreeUpdate update(std::string(R"HTML(
     ++1 kRootWebArea
     ++++2 kTextField name="name-from-title" state=kEditable stringAttribute=kPlaceholder,placeholder
-    ++++3 kTextField state=kEditable name="name-from-title"   
-    ++++4 kTextField name="name-from-placeholder" state=kEditable 
+    ++++3 kTextField state=kEditable name="name-from-title"
+    ++++4 kTextField name="name-from-placeholder" state=kEditable
     ++++5 kTextField state=kEditable name="name-from-attribute" stringAttribute=kToolTip,tooltip
     ++++6 kTextField state=kEditable name="name-from-attribute"
   )HTML"));
@@ -7753,6 +7750,20 @@ TEST_F(AXPlatformNodeWinTest, SanitizeStringAttributeForIA2) {
   std::string output;
   AXPlatformNodeWin::SanitizeStringAttributeForIA2(input, &output);
   EXPECT_EQ("\\\\\\:\\=\\,\\;", output);
+}
+
+TEST_F(AXPlatformNodeWinTest, AriaRoleForInsertionAndDeletion) {
+  TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++2 kContentInsertion
+    ++++3 kContentDeletion
+  )HTML"));
+  Init(update);
+
+  EXPECT_UIA_BSTR_EQ(GetIRawElementProviderSimpleFromChildIndex(0),
+                     UIA_AriaRolePropertyId, L"insertion");
+  EXPECT_UIA_BSTR_EQ(GetIRawElementProviderSimpleFromChildIndex(1),
+                     UIA_AriaRolePropertyId, L"deletion");
 }
 
 //

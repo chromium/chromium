@@ -14,7 +14,7 @@
 #include "chrome/browser/device_reauth/mac/authenticator_mac.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "device/fido/mac/scoped_touch_id_test_environment.h"
 #include "device/fido/mac/touch_id_context.h"
@@ -24,7 +24,7 @@ namespace {
 
 using MockAuthResultCallback =
     base::MockCallback<DeviceAuthenticatorMac::AuthenticateCallback>;
-using password_manager::metrics_util::ReauthResult;
+using device_reauth::ReauthResult;
 
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 constexpr char kHistogramName[] =

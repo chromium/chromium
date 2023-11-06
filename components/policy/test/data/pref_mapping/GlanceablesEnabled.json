@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "ash.glanceables_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check true policy value",
+        "policies": {
+          "GlanceablesEnabled": true
+        },
+        "prefs": {
+          "ash.glanceables_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check false policy value",
+        "policies": {
+          "GlanceablesEnabled": false
+        },
+        "prefs": {
+          "ash.glanceables_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

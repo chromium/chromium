@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Network from 'devtools/panels/network/network.js';
 import * as SourceFrame from 'devtools/ui/legacy/components/source_frame/source_frame.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';

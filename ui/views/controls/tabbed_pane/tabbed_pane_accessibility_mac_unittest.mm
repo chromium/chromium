@@ -43,12 +43,7 @@ id GetLegacyA11yAttributeValue(id obj, NSString* attribute) {
 
 class TabbedPaneAccessibilityMacTest : public WidgetTest {
  public:
-  TabbedPaneAccessibilityMacTest() : widget_(nullptr), tabbed_pane_(nullptr) {}
-
-  TabbedPaneAccessibilityMacTest(const TabbedPaneAccessibilityMacTest&) =
-      delete;
-  TabbedPaneAccessibilityMacTest& operator=(
-      const TabbedPaneAccessibilityMacTest&) = delete;
+  static constexpr int kTabbedPaneID = 123;
 
   // WidgetTest:
   void SetUp() override {
@@ -62,20 +57,25 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
     tabbed_pane->AddTab(u"Tab 1", std::make_unique<View>());
     tabbed_pane->AddTab(u"Tab 2", std::make_unique<View>());
     tabbed_pane->Layout();
+    tabbed_pane->SetID(kTabbedPaneID);
 
-    tabbed_pane_ =
-        widget_->GetContentsView()->AddChildView(std::move(tabbed_pane));
+    widget_->GetContentsView()->AddChildView(std::move(tabbed_pane));
     widget_->Show();
   }
 
   void TearDown() override {
-    widget_->CloseNow();
+    widget_.ExtractAsDangling()->CloseNow();
     WidgetTest::TearDown();
+  }
+
+  TabbedPane* tabbed_pane() {
+    return static_cast<TabbedPane*>(
+        widget_->GetContentsView()->GetViewByID(kTabbedPaneID));
   }
 
   TabbedPaneTab* GetTabAt(size_t index) {
     return static_cast<TabbedPaneTab*>(
-        tabbed_pane_->tab_strip_->children()[index]);
+        tabbed_pane()->tab_strip_->children()[index]);
   }
 
   id<NSAccessibility> A11yElementAtPoint(const gfx::Point& point) {
@@ -90,8 +90,7 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
-  raw_ptr<TabbedPane, DanglingUntriaged> tabbed_pane_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.

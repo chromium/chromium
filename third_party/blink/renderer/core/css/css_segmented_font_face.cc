@@ -223,16 +223,16 @@ void CSSSegmentedFontFace::WillUseRange(
       font_description, range_set));
 }
 
-bool CSSSegmentedFontFace::CheckFont(const String& text) const {
+bool CSSSegmentedFontFace::CheckFont(UChar32 c) const {
   return font_faces_->ForEachUntilFalse(WTF::BindRepeating(
-      [](const String& text, Member<FontFace> font_face) -> bool {
+      [](UChar32 c, Member<FontFace> font_face) -> bool {
         if (font_face->LoadStatus() != FontFace::kLoaded &&
-            font_face->CssFontFace()->Ranges()->IntersectsWith(text)) {
+            font_face->CssFontFace()->Ranges()->Contains(c)) {
           return false;
         }
         return true;
       },
-      text));
+      c));
 }
 
 void CSSSegmentedFontFace::Match(const String& text,

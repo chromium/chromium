@@ -110,15 +110,15 @@ TEST_F(CrashReporterBreadcrumbObserverTest, MAYBE_ProductDataOverflow) {
   // Linux uses Breakpad, which breaks the crash key value up into chunks of 127
   // characters each, named <crash key>__1, <crash key>__2, etc. These must be
   // summed to determine the total length of the breadcrumbs crash string.
-  static const std::string kBreakpadNameFormat =
-      std::string(breadcrumbs::kBreadcrumbsProductDataKey) + "__%d";
   int chunk = 1;
   size_t chunk_length = 0;
   size_t breadcrumbs_crash_string_length = 0;
   do {
-    chunk_length = crash_reporter::GetCrashKeyValue(
-                       base::StringPrintf(kBreakpadNameFormat.c_str(), chunk))
-                       .length();
+    chunk_length =
+        crash_reporter::GetCrashKeyValue(
+            base::StringPrintf("%s__%d",
+                               breadcrumbs::kBreadcrumbsProductDataKey, chunk))
+            .length();
     breadcrumbs_crash_string_length += chunk_length;
     chunk++;
   } while (chunk_length > 0);

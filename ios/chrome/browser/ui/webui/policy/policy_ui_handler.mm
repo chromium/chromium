@@ -24,8 +24,10 @@
 #import "components/policy/core/browser/webui/policy_webui_constants.h"
 #import "components/policy/core/browser/webui/statistics_collector.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/policy/core/common/policy_map.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/core/common/policy_types.h"
 #import "components/policy/core/common/schema.h"
 #import "components/policy/core/common/schema_map.h"
@@ -146,6 +148,24 @@ void PolicyUIHandler::RegisterMessages() {
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
                                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "setLocalTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleSetLocalTestPolicies,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revertLocalTestPolicies",
+      base::BindRepeating(&PolicyUIHandler::HandleRevertLocalTestPolicies,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "restartBrowser",
+      base::BindRepeating(&PolicyUIHandler::HandleRestartBrowser,
+                          base::Unretained(this)));
+
+  web_ui()->RegisterMessageCallback(
+      "setUserAffiliation",
+      base::BindRepeating(&PolicyUIHandler::HandleSetUserAffiliation,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "getPolicyLogs",
       base::BindRepeating(&PolicyUIHandler::HandleGetPolicyLogs,
                           base::Unretained(this)));
@@ -174,8 +194,56 @@ void PolicyUIHandler::HandleUploadReport(const base::Value::List& args) {
   }
 }
 
+void PolicyUIHandler::HandleSetLocalTestPolicies(
+    const base::Value::List& args) {
+  std::string json_policies_string = args[1].GetString();
+
+  policy::LocalTestPolicyProvider* local_test_provider =
+      static_cast<policy::LocalTestPolicyProvider*>(
+          GetApplicationContext()
+              ->GetBrowserPolicyConnector()
+              ->local_test_policy_provider());
+
+  CHECK(local_test_provider);
+
+  ChromeBrowserState::FromWebUIIOS(web_ui())
+      ->GetPolicyConnector()
+      ->UseLocalTestPolicyProvider();
+
+  local_test_provider->LoadJsonPolicies(json_policies_string);
+  web_ui()->ResolveJavascriptCallback(args[0], true);
+}
+
+void PolicyUIHandler::HandleRevertLocalTestPolicies(
+    const base::Value::List& args) {
+  ChromeBrowserState::FromWebUIIOS(web_ui())
+      ->GetPolicyConnector()
+      ->RevertUseLocalTestPolicyProvider();
+}
+
+void PolicyUIHandler::HandleRestartBrowser(const base::Value::List& args) {
+  CHECK(args.size() == 2);
+  std::string policies = args[1].GetString();
+
+  // Set policies to preference
+  PrefService* prefs = GetApplicationContext()->GetLocalState();
+  prefs->SetString(policy::policy_prefs::kLocalTestPoliciesForNextStartup,
+                   policies);
+}
+
+void PolicyUIHandler::HandleSetUserAffiliation(const base::Value::List& args) {
+  CHECK_EQ(static_cast<int>(args.size()), 2);
+  bool affiliated = args[1].GetBool();
+
+  auto* local_test_provider = static_cast<policy::LocalTestPolicyProvider*>(
+      GetApplicationContext()
+          ->GetBrowserPolicyConnector()
+          ->local_test_policy_provider());
+  local_test_provider->SetUserAffiliated(affiliated);
+  web_ui()->ResolveJavascriptCallback(args[0], true);
+}
+
 void PolicyUIHandler::HandleGetPolicyLogs(const base::Value::List& args) {
-  DCHECK(policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
   web_ui()->ResolveJavascriptCallback(
       args[0], policy::PolicyLogger::GetInstance()->GetAsList());
 }

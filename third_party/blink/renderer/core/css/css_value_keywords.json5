@@ -439,6 +439,15 @@
     "xor",
     // highlight
     "plus-lighter",
+
+    //
+    // mask-composite
+    //
+    // "add",
+    "subtract",
+    "intersect",
+    "exclude",
+
     //
     // vertical-align
     //
@@ -498,6 +507,7 @@
     "flex",
     "grid",
     //"math",
+    //"ruby",
     // The order must match the order found in IsDisplayBox().
     "contents",
     //none
@@ -510,6 +520,8 @@
     "table-column",
     "table-cell",
     "table-caption",
+    "ruby-base",
+    "ruby-text",
     // The order must match the order found in IsDisplayLegacy().
     "inline-block",
     "inline-table",
@@ -832,11 +844,6 @@
     "manual",
 
     // -webkit-appearance
-    // The order here must match the order in the ControlPart enum in
-    // theme_types.h.
-    // All appearance values that should be accepted by the parser should be
-    // listed between 'checkbox' and 'textarea'. This is checked in
-    // CSSParserFastPaths::IsValidKeywordPropertyAndValue.
     "checkbox",
     "radio",
     "button",
@@ -1183,6 +1190,11 @@
     // mask-type
     "alpha",
     "luminance",
+
+    // mask-mode
+    // alpha
+    // luminance
+    "match-source",
 
     // color-interpolation / color-interpolation-filters
     // auto
@@ -1659,20 +1671,6 @@
     // Layered @import rule
     "layer",
 
-    // toggle-root
-    "group",
-    "self",
-    "cycle",
-    "cycle-on",
-
-    // toggle-trigger
-    "prev",
-    "next",
-    "set",
-
-    // toggle-visibility
-    "toggle",
-
     // color-contrast()
     "color-contrast",
     "vs",
@@ -1727,6 +1725,7 @@
     // scroll()
     "root",
     "nearest",
+    "self",
 
     // transition-behavior
     "allow-discrete",

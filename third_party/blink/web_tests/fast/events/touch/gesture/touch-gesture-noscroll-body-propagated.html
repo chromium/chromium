@@ -2,119 +2,78 @@
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
 <script src="../../../../resources/gesture-util.js"></script>
-<style type="text/css">
-#touchtarget {
-  width: 100px;
-  height: 100px;
-  background: white;
-  overflow:scroll;
+<script src="../../../../resources/testdriver.js"></script>
+<script src="../../../../resources/testdriver-actions.js"></script>
+<script src="../../../../resources/testdriver-vendor.js"></script>
+<style>
+html {
+  overflow-y: hidden;
 }
 
-::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
+body {
+  margin: 0;
 }
 
-#greenbox {
-  width: 100px;
-  height: 100px;
+.greenbox {
+  width: 20vh;
+  height: 20vh;
   background: green;
   padding: 0px;
   margin: 0px;
 }
 
-#redbox {
-  width: 100px;
-  height: 100px;
+.redbox {
+  width: 20vh;
+  height: 20vh;
   background: red;
   padding: 0px;
   margin: 0px;
 }
 
-td {
-  padding: 0px;
+.scrollable {
+  position: relative;
+  overflow: scroll;
 }
+
+.content {
+  height: 200%;
+  width: 200%;
+}
+
 </style>
-<body style="margin:0; overflow-y:hidden;" onload="buildPage();">
-<div id="touchtarget">
-  <table border="0" cellspacing="0px" id="tablefoo">
-    <tr>
-      <td><div id="redbox"></div></td>
-      <td><div id="greenbox"></div></td>
-    </tr>
-    <tr>
-      <td><div id="greenbox"></div></td>
-      <td><div id="greenbox"></div></td>
-    </tr>
-  </table>
-</div>
-
-<table id="table_to_fill">
-    <tr><td><div id="greenbox"></div></td></tr>
-    <tr><td><div id="redbox"></div></td></tr>
-</table>
+<body>
+  <div class="redbox"></div>
+  <div class="greenbox"></div>
+  <div class="redbox scrollable" id="target">
+    <div class="content"></div>
+  </div>
+  <div class="greenbox"></div>
+  <div class="redbox"></div>
+  <div class="greenbox"></div>
 </body>
-
-<script type="text/javascript">
-var expectedGesturesTotal = 2;
-var gesturesOccurred = 0;
-var scrollAmountX = [0, 0];
-var scrollAmountY = [0, 0];
-var scrollEventsOccurred = 0;
-var expectedScrollEventsOccurred = 0;
-var scrolledElement = document.scrollingElement;
-
-// Always construct a page larger than the vertical height of the window.
-function buildPage() {
-  var table = document.getElementById('table_to_fill');
-  var targetHeight = document.body.offsetHeight;
-  var cellPairHeight = table.offsetHeight;
-  var numberOfReps = targetHeight / cellPairHeight * 2;
-  var i;
-  for (i = 0; i < numberOfReps; i++) {
-    var p = document.createElement('tr');
-    p.innerHTML = '<td><div id="greenbox"></div></td>';
-    table.appendChild(p);
-    var p = document.createElement('tr');
-    p.innerHTML = '<td><div id="redbox"></div></td>';
-    table.appendChild(p);
-  }
-
-  window.addEventListener("scroll", recordScroll);
-}
-
-var x = 95;
-var y = 12;
-function firstGestureScroll() {
-  return smoothScroll(110, x, y, GestureSourceType.TOUCH_INPUT, "down",
-      SPEED_INSTANT);
-}
-
-function secondGestureScroll() {
-  x = 12;
-  y = 97;
-  return smoothScroll(295, x, y, GestureSourceType.TOUCH_INPUT, "down",
-      SPEED_INSTANT);
-}
-
-function touchTargetScrollTop() {
-  return document.getElementById('touchtarget').scrollTop;
-}
-
+<script>
 promise_test (async () => {
-  await firstGestureScroll();
-  // wait for the iframe to fully scroll, then wait for 100 rafs to make sure
-  // that the rest of the delta does not propagate to the outer div.
-  await waitForAnimationEnd(touchTargetScrollTop, 500, 20);
-  await conditionHolds(() => { return notScrolled(); });
-  
-  // Since the touchTarget div is already at its extent the scrolling
-  // propagates to the document. However the page does not scroll since the
-  // body element has overflow-y:hidden.
-  await secondGestureScroll();
-  await conditionHolds(() => { return notScrolled(); });
-  assert_equals(scrollEventsOccurred, expectedScrollEventsOccurred);
-}, 'This tests that a page cannot be scrolled vertically with touch if its ' +
-   'body has style overflow-y:hidden and the scroll event is propagated ' +
-   'from a scrollable child div.');
+  waitForCompositorCommit();
+
+  // first scroll scrolls inner content.
+  const position = elementCenter(target);
+  const margin = 20;
+  const scrollRange = target.scrollWidth - target.clientHeight;
+  const dx = 0;
+  const dy = -(position.y - margin);
+  await touchScroll(position.x, position.y, dx, dy, target);
+  assert_equals(target.scrollTop, scrollRange);
+  await raf();
+  await raf();
+  assert_equals(document.scrollingElement.scrollTop, 0);
+
+  // Scroll propagation does not trigger scroll since body has overflow:hidden.
+  await touchDrag(position.x, position.y, 0, -40);
+  await raf();
+  await raf();
+  assert_equals(target.scrollTop, scrollRange);
+  assert_equals(document.scrollingElement.scrollTop, 0);
+}, 'This tests that a page cannot be scrolled vertically with touch if the ' +
+   'document\'s scrolling-element has style overflow-y:hidden and the scroll ' +
+   'event is propagated from a scrollable child div.');
 </script>

@@ -73,7 +73,7 @@ public class ProcessedValue {
      * Creates a new ProcessedValue storing a time. When moved to native it'll be converted into a
      * base::Time value.
      * @param timeMillis A time value coming from {@code System.currentTimeMillis()}, when moved to
-     *         native it'll be passed to base::Time::FromJavaTime.
+     *         native it'll be passed to base::Time::FromMillisecondsSinceUnixEpoch.
      * @return a ProcessedValue instance of type TIME.
      */
     public static ProcessedValue fromTimeMillis(long timeMillis) {

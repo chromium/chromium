@@ -393,7 +393,7 @@ bool OpenFilesWithBrowser(Profile* profile,
   for (const FileSystemURL& file_url : file_urls) {
     if (ash::FileSystemBackend::CanHandleURL(file_url)) {
       num_opened +=
-          util::OpenFileWithBrowser(profile, file_url, action_id) ? 1 : 0;
+          util::OpenFileWithAppOrBrowser(profile, file_url, action_id) ? 1 : 0;
     }
   }
   return num_opened > 0;
@@ -801,48 +801,51 @@ bool ExecuteFileTask(Profile* profile,
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsWebDriveOfficeTask(task)) {
-    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
-                              ash::cloud_upload::CloudProvider::kGoogleDrive);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kOpenInitialCloudProviderMetric,
+        ash::cloud_upload::CloudProvider::kGoogleDrive);
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionDriveMetric(file_url);
     }
     const bool started = ExecuteWebDriveOfficeTask(
         profile, task, file_urls, modal_parent,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kGoogleDrive));
+            ash::cloud_upload::CloudProvider::kGoogleDrive, file_urls.size()));
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
   } else if (IsOpenInOfficeTask(task)) {
-    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
-                              ash::cloud_upload::CloudProvider::kOneDrive);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kOpenInitialCloudProviderMetric,
+        ash::cloud_upload::CloudProvider::kOneDrive);
     for (const FileSystemURL& file_url : file_urls) {
       RecordOfficeOpenExtensionOneDriveMetric(file_url);
     }
     const bool started = ExecuteOpenInOfficeTask(
         profile, task, file_urls, modal_parent,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kOneDrive));
+            ash::cloud_upload::CloudProvider::kOneDrive, file_urls.size()));
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
   } else {
-    UMA_HISTOGRAM_ENUMERATION(ash::cloud_upload::kOpenCloudProviderMetric,
-                              ash::cloud_upload::CloudProvider::kNone);
+    UMA_HISTOGRAM_ENUMERATION(
+        ash::cloud_upload::kOpenInitialCloudProviderMetric,
+        ash::cloud_upload::CloudProvider::kNone);
   }
   // TODO(b/284800493): Add a test that VirtualTasks get run.
   if (IsVirtualTask(task)) {
@@ -851,10 +854,10 @@ bool ExecuteFileTask(Profile* profile,
     if (done) {
       if (started) {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+            extensions::api::file_manager_private::TaskResult::kOpened, "");
       } else {
         std::move(done).Run(
-            extensions::api::file_manager_private::TASK_RESULT_FAILED, "");
+            extensions::api::file_manager_private::TaskResult::kFailed, "");
       }
     }
     return true;
@@ -869,7 +872,7 @@ bool ExecuteFileTask(Profile* profile,
         OpenFilesWithBrowser(profile, file_urls, parsed_action_id);
     if (result && done) {
       std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+          extensions::api::file_manager_private::TaskResult::kOpened, "");
     }
     return result;
   }
@@ -910,7 +913,7 @@ bool ExecuteFileTask(Profile* profile,
                                  params);
     if (done) {
       std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_OPENED, "");
+          extensions::api::file_manager_private::TaskResult::kOpened, "");
     }
     return true;
   }

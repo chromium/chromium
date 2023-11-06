@@ -18,9 +18,7 @@ import org.chromium.chrome.test.util.browser.Features;
 
 import java.util.Arrays;
 
-/**
- * Tests functionality related to TabContext
- */
+/** Tests functionality related to TabContext */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabSuggestionTest {
@@ -37,8 +35,7 @@ public class TabSuggestionTest {
     private static final TabContext.TabInfo TAB_INFO =
             new TabContext.TabInfo(ID, TITLE, TAB_URL, ORIGINAL_URL, TIMESTAMP, VISIBLE_URL);
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -47,8 +44,12 @@ public class TabSuggestionTest {
 
     @Test
     public void testNonEmptySuggestions() {
-        TabSuggestion tabSuggestion = new TabSuggestion(
-                Arrays.asList(TAB_INFO), TAB_SUGGESTION_ACTION, PROVIDER_NAME, TAB_GROUP_ID);
+        TabSuggestion tabSuggestion =
+                new TabSuggestion(
+                        Arrays.asList(TAB_INFO),
+                        TAB_SUGGESTION_ACTION,
+                        PROVIDER_NAME,
+                        TAB_GROUP_ID);
         Assert.assertNotNull(tabSuggestion.getTabsInfo());
         Assert.assertEquals(tabSuggestion.getTabsInfo().size(), 1);
         Assert.assertEquals(tabSuggestion.getTabsInfo().get(0), TAB_INFO);

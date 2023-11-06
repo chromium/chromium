@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
@@ -35,12 +36,12 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/apps/app_service/app_icon/dip_px_util.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
@@ -85,6 +86,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/features.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -117,6 +119,7 @@ namespace {
 
 constexpr char kTestPackageName[] = "fake.package.name2";
 constexpr char kTestPackageName4[] = "fake.package.name4";
+constexpr char kTestPackageName5[] = "fake.package.name5";
 constexpr char kFrameworkPackageName[] = "android";
 
 constexpr int kFrameworkNycVersion = 25;
@@ -165,8 +168,10 @@ class FakeAppIconLoaderDelegate : public AppIconLoaderDelegate {
     return true;
   }
 
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override {
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      const absl::optional<gfx::ImageSkia>& badge_image) override {
     app_id_ = app_id;
     image_ = image;
 
@@ -501,6 +506,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
     // Validating decoded content does not fit well for unit tests.
     ArcAppIcon::DisableSafeDecodingForTesting();
+
+    scoped_feature_list_.InitAndEnableFeature(arc::kPerAppLanguage);
   }
 
   void TearDown() override {
@@ -513,8 +520,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
   ArcState GetArcState() const { return GetParam(); }
 
   ChromeShelfController* CreateShelfController() {
-    shelf_controller_ = std::make_unique<ChromeShelfController>(
-        profile_.get(), model_.get(), /*shelf_item_factory=*/nullptr);
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(profile_.get(), model_.get());
     shelf_controller_->SetProfileForTest(profile_.get());
     shelf_controller_->SetShelfControllerHelperForTest(
         std::make_unique<ShelfControllerHelper>(profile_.get()));
@@ -659,6 +666,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       EXPECT_EQ(package->sync, package_info->should_sync);
       EXPECT_EQ(package->vpn_provider, package_info->vpn_provider);
       EXPECT_EQ(package->preinstalled, package_info->preinstalled);
+      EXPECT_EQ(package->game_controls_opt_out,
+                package_info->game_controls_opt_out);
       EXPECT_EQ(package->permission_states, package_info->permissions);
       EXPECT_EQ(package->web_app_info.is_null(),
                 package_info->web_app_info.is_null());
@@ -676,6 +685,15 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
                   package_info->web_app_info->is_web_only_twa);
         EXPECT_EQ(package->web_app_info->certificate_sha256_fingerprint,
                   package_info->web_app_info->certificate_sha256_fingerprint);
+      }
+      EXPECT_EQ(package->locale_info.is_null(),
+                package_info->locale_info.is_null());
+      if (!package->locale_info.is_null() &&
+          !package_info->locale_info.is_null()) {
+        EXPECT_EQ(package->locale_info->supported_locales,
+                  package_info->locale_info->supported_locales);
+        EXPECT_EQ(package->locale_info->selected_locale,
+                  package_info->locale_info->selected_locale);
       }
     }
   }
@@ -848,6 +866,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
     prefs->SimulateDefaultAppAvailabilityTimeoutForTesting();
   }
 
+  void ResetFeatureFlag() { scoped_feature_list_.Reset(); }
+
   AppListControllerDelegate* controller() { return controller_.get(); }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -888,6 +908,7 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
       scoped_callback_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
   std::unique_ptr<ash::ShelfModel> model_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ArcAppModelBuilderRecreate : public ArcAppModelBuilderTest {
@@ -1165,13 +1186,11 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
 
   void RemoveAppsFromIconLoader(std::vector<std::string>& app_ids) {
     // Update the icon key to fetch the new icon and avoid icon catch,
-    apps_util::IncrementingIconKeyFactory icon_key_factory;
     std::vector<apps::AppPtr> apps;
     for (const auto& app_id : app_ids) {
       auto app = std::make_unique<apps::App>(apps::AppType::kArc, app_id);
       app->icon_key =
-          std::move(*icon_key_factory.CreateIconKey(apps::IconEffects::kNone));
-      app->icon_key->raw_icon_updated = true;
+          apps::IconKey(/*raw_icon_updated=*/true, apps::IconEffects::kNone);
       apps.push_back(std::move(app));
     }
 
@@ -1413,11 +1432,24 @@ TEST_P(ArcAppModelBuilderTest, ArcPackagePref) {
   package->last_backup_android_id = 2;
   package->last_backup_time = 2;
   package->preinstalled = true;
+  package->game_controls_opt_out = true;
   AddPackage(package);
   ValidateHavePackages(fake_packages());
 
   // Update web_app_info of the last package to null.
   UpdatePackage(CreatePackage(kTestPackageName4));
+  ValidateHavePackages(fake_packages());
+}
+
+TEST_P(ArcAppModelBuilderTest, ArcPackagePref_PerAppLanguageFlagDisabled) {
+  ValidateHavePackages({});
+  ResetFeatureFlag();
+
+  app_instance()->SendRefreshPackageList(
+      ArcAppTest::ClonePackages(fake_packages()));
+
+  // Update locale_info of the locale info test package to null.
+  UpdatePackage(CreatePackage(kTestPackageName5));
   ValidateHavePackages(fake_packages());
 }
 
@@ -2163,6 +2195,10 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
                             &arc::mojom::ArcPackageInfo::package_name,
                             fake_packages()[3]->package_name)))
       .Times(1);
+  EXPECT_CALL(observer, OnPackageInstalled(testing::Field(
+                            &arc::mojom::ArcPackageInfo::package_name,
+                            fake_packages()[4]->package_name)))
+      .Times(1);
   app_instance()->SendRefreshPackageList(
       ArcAppTest::ClonePackages(fake_packages()));
 
@@ -2179,6 +2215,9 @@ TEST_P(ArcAppModelBuilderTest, AppLifeCycleEventsOnPackageListRefresh) {
       .Times(1);
   EXPECT_CALL(observer,
               OnPackageRemoved(fake_packages()[3]->package_name, false))
+      .Times(1);
+  EXPECT_CALL(observer,
+              OnPackageRemoved(fake_packages()[4]->package_name, false))
       .Times(1);
 
   std::vector<arc::mojom::ArcPackageInfoPtr> packages;

@@ -52,6 +52,9 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
       mojo::PendingRemote<tab_search::mojom::Page> page,
       mojo::PendingReceiver<tab_search::mojom::PageHandler> receiver) override;
 
+  bool ShowTabOrganizationFRE();
+  int TabIndex();
+
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<TabSearchPageHandler> page_handler_;
   MetricsReporter metrics_reporter_;

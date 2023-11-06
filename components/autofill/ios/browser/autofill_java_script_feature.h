@@ -27,9 +27,6 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   // needed.
   static AutofillJavaScriptFeature* GetInstance();
 
-  // Adds a delay between filling the form fields in frame.
-  void AddJSDelayInFrame(web::WebFrame* frame);
-
   // Extracts forms from a web `frame`. Only forms with at least
   // `required_fields_count` fields are extracted. `callback` is called
   // with the JSON string of forms of a web page.  `callback` cannot be nil.
@@ -42,6 +39,13 @@ class AutofillJavaScriptFeature : public web::JavaScriptFeature {
   void FillActiveFormField(web::WebFrame* frame,
                            base::Value::Dict data,
                            base::OnceCallback<void(BOOL)> callback);
+
+  // Fills `data` into the `unique_renderer_id` in `data`, then executes
+  // callback. This is similar to `FillActiveFormField`, but does not require
+  // that the target element be the active element.
+  void FillSpecificFormField(web::WebFrame* frame,
+                             base::Value::Dict data,
+                             base::OnceCallback<void(BOOL)> callback);
 
   // Fills a number of fields in the same named form for full-form Autofill.
   // Applies Autofill CSS (i.e. yellow background) to filled elements.

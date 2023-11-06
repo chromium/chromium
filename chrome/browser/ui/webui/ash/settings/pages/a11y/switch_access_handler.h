@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_SWITCH_ACCESS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_A11Y_SWITCH_ACCESS_HANDLER_H_
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -30,7 +31,15 @@ class SwitchAccessHandler : public ::settings::SettingsPageUIHandler,
   // ui::EventHandler overrides.
   void OnKeyEvent(ui::KeyEvent* event) override;
 
+ protected:
+  base::OnceClosure on_pre_target_handler_added_for_testing_ =
+      base::DoNothing();
+  bool skip_pre_target_handler_for_testing_ = false;
+
  private:
+  friend class SwitchAccessHandlerTest;
+
+  void AddPreTargetHandler();
   void HandleRefreshAssignmentsFromPrefs(const base::Value::List& args);
   void HandleNotifySwitchAccessActionAssignmentPaneActive(
       const base::Value::List& args);

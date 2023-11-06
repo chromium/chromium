@@ -803,7 +803,7 @@ class AcceleratorControllerTestWithClamshellSplitView
  private:
   void EnterOverviewAndDragTo(aura::Window* window,
                               const gfx::Point& destination) {
-    DCHECK(!Shell::Get()->overview_controller()->InOverviewSession());
+    CHECK(!OverviewController::Get()->InOverviewSession());
     ToggleOverview();
 
     ui::test::EventGenerator* generator = GetEventGenerator();
@@ -1276,11 +1276,9 @@ TEST_F(AcceleratorControllerTest, DontToggleFullscreenWhenOverviewStarts) {
   generator->PressKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
   generator->PressKey(ui::VKEY_ZOOM, ui::EF_NONE);
   EXPECT_FALSE(WindowState::Get(widget->GetNativeWindow())->IsFullscreen());
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_TRUE(Shell::Get()
-                  ->overview_controller()
-                  ->overview_session()
-                  ->IsWindowInOverview(widget->GetNativeWindow()));
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->overview_session()->IsWindowInOverview(
+      widget->GetNativeWindow()));
 }
 
 // Tests that window shortcuts don't work on a minimized, i.e. not visible,
@@ -1293,7 +1291,7 @@ TEST_F(AcceleratorControllerTest, MinimizedWindowInOverview) {
   EXPECT_TRUE(window_state->IsMinimized());
   ToggleOverview();
   GetEventGenerator()->PressKey(ui::VKEY_OEM_4, ui::EF_ALT_DOWN);
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   EXPECT_TRUE(window_state->IsMinimized());
 }
 

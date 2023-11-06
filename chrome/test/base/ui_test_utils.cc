@@ -601,17 +601,23 @@ TabAddedWaiter::TabAddedWaiter(Browser* browser) {
   browser->tab_strip_model()->AddObserver(this);
 }
 
-void TabAddedWaiter::Wait() {
+content::WebContents* TabAddedWaiter::Wait() {
   TRACE_EVENT0("test", "TabAddedWaiter::Wait");
   run_loop_.Run();
+  return web_contents_;
 }
 
 void TabAddedWaiter::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (change.type() == TabStripModelChange::kInserted)
+  if (web_contents_) {
+    return;
+  }
+  if (change.type() == TabStripModelChange::kInserted) {
+    web_contents_ = change.GetInsert()->contents[0].contents;
     run_loop_.Quit();
+  }
 }
 
 AllBrowserTabAddedWaiter::AllBrowserTabAddedWaiter() {

@@ -1167,6 +1167,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrintPreviewHandlerTest, GetPrinters) {
+  base::HistogramTester histogram_tester;
   Initialize();
 
   // Check all three printer types that implement
@@ -1189,6 +1190,10 @@ TEST_F(PrintPreviewHandlerTest, GetPrinters) {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     CheckWebUIResponse(data, callback_id_in, true);
   }
+  histogram_tester.ExpectTotalCount("PrintPreview.GetPrintersTime.Extension",
+                                    1);
+  histogram_tester.ExpectTotalCount("PrintPreview.GetPrintersTime.Local", 1);
+  histogram_tester.ExpectTotalCount("PrintPreview.GetPrintersTime.PDF", 0);
 }
 
 // Validates the 'printing.printer_type_deny_list' pref by placing the extension

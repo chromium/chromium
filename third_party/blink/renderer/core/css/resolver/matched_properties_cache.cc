@@ -278,7 +278,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // The cache assumes static knowledge about which properties are inherited.
   // Without a flat tree parent, StyleBuilder::ApplyProperty will not
   // SetChildHasExplicitInheritance on the parent style.
-  if (!state.ParentNode() || parent_style.ChildHasExplicitInheritance()) {
+  if (!state.ParentElement() || parent_style.ChildHasExplicitInheritance()) {
     return false;
   }
 

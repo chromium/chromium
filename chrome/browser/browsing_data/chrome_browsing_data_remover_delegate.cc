@@ -109,8 +109,8 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
-#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
@@ -874,6 +874,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
         ->ClearHttpAuthCache(
             delete_begin_.is_null() ? base::Time::Min() : delete_begin_,
             delete_end_.is_null() ? base::Time::Max() : delete_end_,
+            filter_builder->BuildNetworkServiceFilter(),
             CreateTaskCompletionClosureForMojo(
                 TracingDataType::kHttpAuthCache));
 

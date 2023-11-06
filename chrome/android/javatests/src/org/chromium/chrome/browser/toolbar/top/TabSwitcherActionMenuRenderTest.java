@@ -26,17 +26,15 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render tests for tab switcher long-press menu popup.
- */
+/** Render tests for tab switcher long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase {
@@ -83,23 +81,29 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
     }
 
     private void showMenu() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            TabSwitcherActionMenuCoordinator coordinator = new TabSwitcherActionMenuCoordinator();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    TabSwitcherActionMenuCoordinator coordinator =
+                            new TabSwitcherActionMenuCoordinator();
 
-            coordinator.displayMenu(activity, new ListMenuButton(activity, null),
-                    coordinator.buildMenuItems(), null);
+                    coordinator.displayMenu(
+                            activity,
+                            new ListMenuButton(activity, null),
+                            coordinator.buildMenuItems(),
+                            null);
 
-            mView = coordinator.getContentView();
-            if (mView.getParent() != null) {
-                ((ViewGroup) mView.getParent()).removeView(mView);
-            }
+                    mView = coordinator.getContentView();
+                    if (mView.getParent() != null) {
+                        ((ViewGroup) mView.getParent()).removeView(mView);
+                    }
 
-            int popupWidth =
-                    activity.getResources().getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
-            mView.setBackground(
-                    AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
-            activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
-        });
+                    int popupWidth =
+                            activity.getResources()
+                                    .getDimensionPixelSize(R.dimen.tab_switcher_menu_width);
+                    mView.setBackground(
+                            AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
+                    activity.setContentView(mView, new LayoutParams(popupWidth, WRAP_CONTENT));
+                });
     }
 }

@@ -100,15 +100,8 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
 
   // Paint the badge over top of the battery, if applicable.
   if (info_.icon_badge) {
-    SkColor badge_color;
-    if (use_alert_color) {
-      badge_color = resolved_colors_.alert_color;
-    } else if (features::IsBatterySaverAvailable()) {
-      badge_color = resolved_colors_.badge_color;
-    } else {
-      badge_color = resolved_colors_.foreground_color;
-    }
-
+    SkColor badge_color = use_alert_color ? resolved_colors_.alert_color
+                                          : resolved_colors_.badge_color;
     PaintVectorIcon(canvas, *info_.icon_badge, size().height(), badge_color);
   }
 }

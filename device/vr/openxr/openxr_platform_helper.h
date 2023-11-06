@@ -45,6 +45,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   using PlatformCreateInfoReadyCallback =
       base::OnceCallback<void(void* create_info)>;
 
+  using PlatormInitiatedShutdownCallback = base::OnceClosure;
+
   // Gets the set of RequiredExtensions that need to be present on the platform.
   static void GetRequiredExtensions(std::vector<const char*>& extensions);
 
@@ -88,7 +90,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // `XrInstanceCreateInfo`.`next`.
   virtual void GetPlatformCreateInfo(
       const device::OpenXrCreateInfo& create_info,
-      PlatformCreateInfoReadyCallback) = 0;
+      PlatformCreateInfoReadyCallback result_callback,
+      PlatormInitiatedShutdownCallback shutdown_callback) = 0;
 
   // Used to create an XrInstance. As the different platforms may have
   // different lifetime requirements, xrCreateInstance should only be called via
@@ -102,7 +105,8 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
 
   void CreateInstanceWithCreateInfo(
       absl::optional<OpenXrCreateInfo> create_info,
-      CreateInstanceCallback);
+      CreateInstanceCallback instance_ready_callback,
+      PlatormInitiatedShutdownCallback shutdown_callback);
 
   // Destroys the instance and sets it to XR_NULL_HANDLE on success. As the
   // different platforms may have different lifetime requirements, this should

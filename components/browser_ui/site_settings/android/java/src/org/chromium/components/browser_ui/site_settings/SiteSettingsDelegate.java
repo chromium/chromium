@@ -66,11 +66,6 @@ public interface SiteSettingsDelegate {
     boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
 
     /**
-     * @return true if the PrivacySandboxSettings4 feature is enabled.
-     */
-    boolean isPrivacySandboxSettings4Enabled();
-
-    /**
      * @return true if the UserBypassUI feature is enabled.
      */
     boolean isUserBypassUIEnabled();
@@ -119,6 +114,9 @@ public interface SiteSettingsDelegate {
      */
     void launchProtectedContentHelpAndFeedbackActivity(Activity currentActivity);
 
+    /** Launches the Storage Access API help center link in a Chrome Custom Tab. */
+    void launchStorageAccessHelpActivity(Activity currentActivity);
+
     /**
      * @return The set of all origins that have a WebAPK or TWA installed.
      */
@@ -155,6 +153,16 @@ public interface SiteSettingsDelegate {
      * @return true if the origin is part of the managed FirstPartySet.
      */
     boolean isPartOfManagedFirstPartySet(String origin);
+
+    /***
+     * @return true if the Tracking Protection UI should be displayed.
+     */
+    boolean shouldShowTrackingProtectionUI();
+
+    /***
+     * @return true if all third-party cookies are blocked when Tracking Protection is on.
+     */
+    boolean isBlockAll3PCDEnabledInTrackingProtection();
 
     /***
      * @return Enables/disables First Party Sets data access.

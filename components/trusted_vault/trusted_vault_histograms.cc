@@ -37,7 +37,8 @@ std::string GetReasonSuffix(TrustedVaultURLFetchReasonForUMA reason) {
 enum class SecurityDomainIdOrInvalidForUma {
   kInvalid = 0,
   kChromeSync = 1,
-  kMaxValue = kChromeSync,
+  kPasskeys = 2,
+  kMaxValue = kPasskeys,
 };
 
 SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
@@ -48,6 +49,8 @@ SecurityDomainIdOrInvalidForUma GetSecurityDomainIdOrInvalidForUma(
   switch (*security_domain) {
     case SecurityDomainId::kChromeSync:
       return SecurityDomainIdOrInvalidForUma::kChromeSync;
+    case SecurityDomainId::kPasskeys:
+      return SecurityDomainIdOrInvalidForUma::kPasskeys;
   }
   NOTREACHED_NORETURN();
 }

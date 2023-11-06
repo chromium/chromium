@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/share_highlight_command.h"
 #import "ios/chrome/browser/ui/text_fragments/text_fragments_mediator.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/text_fragments/text_fragments_manager.h"
 #import "ios/web/public/web_state.h"

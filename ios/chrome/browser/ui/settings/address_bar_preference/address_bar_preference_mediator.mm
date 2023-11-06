@@ -17,11 +17,11 @@
 
 @implementation AddressBarPreferenceMediator
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithOriginalPrefService:(PrefService*)originalPrefService {
   self = [super init];
   if (self) {
     _bottomOmniboxEnabled =
-        [[PrefBackedBoolean alloc] initWithPrefService:prefService
+        [[PrefBackedBoolean alloc] initWithPrefService:originalPrefService
                                               prefName:prefs::kBottomOmnibox];
     [_bottomOmniboxEnabled setObserver:self];
   }

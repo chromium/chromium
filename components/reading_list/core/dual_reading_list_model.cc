@@ -232,16 +232,32 @@ bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
 void DualReadingListModel::MarkAllForUploadToSyncServerIfNeeded() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!account_model_->IsTrackingSyncMetadata()) {
+    return;
+  }
+
   base::AutoReset<bool> auto_reset_suppress_observer_notifications(
       &suppress_observer_notifications_, true);
 
   for (const GURL& url : local_or_syncable_model_->GetKeys()) {
-    if (NeedsExplicitUploadToSyncServer(url)) {
-      scoped_refptr<ReadingListEntry> entry = GetEntryByURL(url)->Clone();
-      local_or_syncable_model_->RemoveEntryByURL(url);
-      account_model_->AddEntry(entry, reading_list::ADDED_VIA_CURRENT_APP);
-    }
+    scoped_refptr<ReadingListEntry> entry = GetEntryByURL(url)->Clone();
+    local_or_syncable_model_->RemoveEntryByURL(url);
+    // If the url already exists in the account model, remove the account entry
+    // first before adding the "merged" entry back to the account model.
+    // Note: This workaround is used than just using AddOrReplaceEntry() to
+    // avoid ReadingListModelBeganBatchUpdates() being triggered inside
+    // AddOrReplaceEntry(), which causes observers to be notified even though
+    // this particular function does not need to send any notifications at all
+    // (including ReadingListModelBeganBatchUpdates).
+    account_model_->RemoveEntryByURL(url);
+    account_model_->AddEntry(std::move(entry),
+                             reading_list::ADDED_VIA_CURRENT_APP);
+    // The entry state counters do not need to updated since no value was
+    // "effectively" removed from the dual reading list model.
   }
+  // Ensure that the local model is empty since all the entries should have been
+  // moved to the account model, including the common entries.
+  CHECK_EQ(0u, local_or_syncable_model_->size());
 }
 
 const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
@@ -783,12 +799,17 @@ void DualReadingListModel::UpdateEntryStateCountersOnEntryInsertion(
   }
 }
 
-ReadingListModel* DualReadingListModel::GetLocalOrSyncableModel() {
-  return local_or_syncable_model_.get();
-}
-
-ReadingListModel* DualReadingListModel::GetAccountModel() {
-  return account_model_.get();
+base::flat_set<GURL> DualReadingListModel::GetKeysThatNeedUploadToSyncServer()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!local_or_syncable_model_->IsTrackingSyncMetadata() ||
+        !account_model_->IsTrackingSyncMetadata());
+  // If `local_or_syncable_model_` is used for sync, no data needs explicit
+  // upload to the sync server.
+  if (local_or_syncable_model_->IsTrackingSyncMetadata()) {
+    return {};
+  }
+  return local_or_syncable_model_->GetKeys();
 }
 
 }  // namespace reading_list

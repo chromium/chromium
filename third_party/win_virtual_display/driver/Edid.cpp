@@ -6,7 +6,7 @@
 namespace display::test {
 bool EdidTimingEntry::SetMode(unsigned short width,
                               unsigned short height,
-                              unsigned char freq) {
+                              unsigned short freq) {
   if (width < 256 || width > 2288) {
     return false;
   }
@@ -25,7 +25,7 @@ bool EdidTimingEntry::SetMode(unsigned short width,
     return false;  // Invalid aspect ratio.
   }
   x_pixels = static_cast<unsigned char>((width / 8) - 31);
-  vertical_frequency = freq - 60;
+  vertical_frequency = static_cast<unsigned char>(freq - 60);
   return true;
 }
 

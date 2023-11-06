@@ -10,6 +10,7 @@
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -25,6 +26,21 @@ namespace performance_manager::policies {
 class ReportPageProcessesPolicy : public GraphOwned,
                                   public PageNode::ObserverDefaultImpl {
  public:
+  struct PageProcess {
+    PageProcess(base::ProcessId pid,
+                bool host_protected_page,
+                bool host_visible_page,
+                bool host_focused_page)
+        : pid(pid),
+          host_protected_page(host_protected_page),
+          host_visible_page(host_visible_page),
+          host_focused_page(host_focused_page) {}
+    base::ProcessId pid;
+    bool host_protected_page;
+    bool host_visible_page;
+    bool host_focused_page;
+  };
+
   ReportPageProcessesPolicy();
   ~ReportPageProcessesPolicy() override;
   ReportPageProcessesPolicy(const ReportPageProcessesPolicy& other) = delete;
@@ -46,23 +62,30 @@ class ReportPageProcessesPolicy : public GraphOwned,
   // These members are protected for testing.
   void HandlePageNodeEvents();
 
-  // Reports the background process list to the resource manager daemon
-  // (resourced). Based on the background process list, resourced determines
-  // when to release memory from Chrome or VMs or containers.
+  // Reports the page process list to the resource manager daemon (resourced).
+  // Based on the process list, resourced determines when to release memory
+  // from Chrome or VMs or containers.
+  //
   // It's virtual for testing.
-  virtual void ReportBackgroundProcesses(std::vector<base::ProcessId> pids);
+  virtual void ReportPageProcesses(std::vector<PageProcess> processes);
 
  private:
   // ReportPageProcessesPolicy is active when receiving page node events.
   void HandlePageNodeEventsThrottled();
 
-  // Returns a vector of pids of the main frame renderer process of the
-  // |candidates| (the child frame renderer processes are ignored). The order of
-  // the pids is corresponding to the order of the |candidates|.
-  std::vector<base::ProcessId> GetUniquePids(
-      const std::vector<PageNodeSortProxy>& candidates);
+  // Called by |delayed_report_timer_|.
+  void HandlePageNodeEventsDelayed();
 
-  base::TimeTicks last_report_ = base::TimeTicks::Now();
+  // List the processes associated with the page nodes in |candidates|.
+  // The input |candidates| should be sorted with descending importance.
+  void ListPageProcesses(const std::vector<PageNodeSortProxy>& candidates);
+
+  // Indicates if there is an unhandled page node event.
+  bool has_delayed_events_;
+
+  // Delay the reporting if it's less than the minimum interval since last
+  // reporting.
+  base::RetainingOneShotTimer delayed_report_timer_;
 
   raw_ptr<Graph> graph_ = nullptr;
 

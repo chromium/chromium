@@ -417,13 +417,13 @@ void EnrollmentLauncherImpl::OnEnrollmentFinished(
 
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
-  LOG(WARNING) << "Enrollment finished, status: " << status.status();
+  LOG(WARNING) << "Enrollment finished, code: " << status.enrollment_code();
   ReportEnrollmentStatus(status);
   if (oauth_status_ != OAUTH_NOT_STARTED) {
     oauth_status_ = OAUTH_FINISHED;
   }
 
-  if (status.status() != policy::EnrollmentStatus::SUCCESS) {
+  if (status.enrollment_code() != policy::EnrollmentStatus::Code::kSuccess) {
     status_consumer_->OnEnrollmentError(status);
     return;
   }
@@ -483,12 +483,12 @@ void EnrollmentLauncherImpl::ReportAuthStatus(
 
 void EnrollmentLauncherImpl::ReportEnrollmentStatus(
     policy::EnrollmentStatus status) {
-  switch (status.status()) {
-    case policy::EnrollmentStatus::SUCCESS:
+  switch (status.enrollment_code()) {
+    case policy::EnrollmentStatus::Code::kSuccess:
       UMA(policy::kMetricEnrollmentOK);
       return;
-    case policy::EnrollmentStatus::REGISTRATION_FAILED:
-    case policy::EnrollmentStatus::POLICY_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationFailed:
+    case policy::EnrollmentStatus::Code::kPolicyFetchFailed:
       switch (status.client_status()) {
         case policy::DM_STATUS_SUCCESS:
           NOTREACHED();
@@ -571,19 +571,19 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
           break;
       }
       break;
-    case policy::EnrollmentStatus::REGISTRATION_BAD_MODE:
+    case policy::EnrollmentStatus::Code::kRegistrationBadMode:
       UMA(policy::kMetricEnrollmentInvalidEnrollmentMode);
       break;
-    case policy::EnrollmentStatus::NO_STATE_KEYS:
+    case policy::EnrollmentStatus::Code::kNoStateKeys:
       UMA(policy::kMetricEnrollmentNoStateKeys);
       break;
-    case policy::EnrollmentStatus::VALIDATION_FAILED:
+    case policy::EnrollmentStatus::Code::kValidationFailed:
       UMA(policy::kMetricEnrollmentPolicyValidationFailed);
       break;
-    case policy::EnrollmentStatus::STORE_ERROR:
+    case policy::EnrollmentStatus::Code::kStoreError:
       UMA(policy::kMetricEnrollmentCloudPolicyStoreError);
       break;
-    case policy::EnrollmentStatus::LOCK_ERROR:
+    case policy::EnrollmentStatus::Code::kLockError:
       switch (status.lock_status()) {
         case InstallAttributes::LOCK_SUCCESS:
         case InstallAttributes::LOCK_NOT_READY:
@@ -615,30 +615,48 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
           break;
       }
       break;
-    case policy::EnrollmentStatus::ROBOT_AUTH_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotAuthFetchFailed:
       UMA(policy::kMetricEnrollmentRobotAuthCodeFetchFailed);
       break;
-    case policy::EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotRefreshFetchFailed:
       UMA(policy::kMetricEnrollmentRobotRefreshTokenFetchFailed);
       break;
-    case policy::EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kRobotRefreshStoreFailed:
       UMA(policy::kMetricEnrollmentRobotRefreshTokenStoreFailed);
       break;
-    case policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED:
+    case policy::EnrollmentStatus::Code::kAttributeUpdateFailed:
       UMA(policy::kMetricEnrollmentAttributeUpdateFailed);
       break;
-    case policy::EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kRegistrationCertFetchFailed:
+      // Report general attestation-based registration error and granular per
+      // attestation failure.
       UMA(policy::kMetricEnrollmentRegistrationCertificateFetchFailed);
+      switch (status.attestation_status()) {
+        case attestation::ATTESTATION_SUCCESS:
+          NOTREACHED();
+          break;
+        case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
+          UMA(policy::
+                  kMetricEnrollmentRegistrationCertificateFetchUnspecifiedFailure);
+          break;
+        case attestation::ATTESTATION_SERVER_BAD_REQUEST_FAILURE:
+          UMA(policy::kMetricEnrollmentRegistrationCertificateFetchBadRequest);
+          break;
+        case attestation::ATTESTATION_NOT_AVAILABLE:
+          UMA(policy::
+                  kMetricEnrollmentRegistrationCertificateFetchNotAvailable);
+          break;
+      }
       break;
-    case policy::EnrollmentStatus::NO_MACHINE_IDENTIFICATION:
+    case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       UMA(policy::kMetricEnrollmentNoDeviceIdentification);
       break;
-    case policy::EnrollmentStatus::ACTIVE_DIRECTORY_POLICY_FETCH_FAILED:
+    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
       NOTREACHED_NORETURN();
-    case policy::EnrollmentStatus::DM_TOKEN_STORE_FAILED:
+    case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       UMA(policy::kMetricEnrollmentStoreDMTokenFailed);
       break;
-    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+    case policy::EnrollmentStatus::Code::kMayNotBlockDevMode:
       UMA(policy::kMetricEnrollmentMayNotBlockDevMode);
       break;
   }

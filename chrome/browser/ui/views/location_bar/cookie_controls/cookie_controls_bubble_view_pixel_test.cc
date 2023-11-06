@@ -39,6 +39,7 @@ void ApplySetting(content_settings::CookieSettings* cookie_settings,
                   bool cookies_enabled,
                   CookieControlsEnforcement enforcement) {
   switch (enforcement) {
+    case (CookieControlsEnforcement::kEnforcedByTpcdGrant):
     case (CookieControlsEnforcement::kNoEnforcement): {
       if (cookies_enabled) {
         cookie_settings->SetCookieSettingForUserBypass(url);
@@ -229,6 +230,9 @@ INSTANTIATE_TEST_SUITE_P(
       switch (std::get<2>(info.param)) {
         case (CookieControlsEnforcement::kNoEnforcement):
           name << "none";
+          break;
+        case (CookieControlsEnforcement::kEnforcedByTpcdGrant):
+          name << "grant";
           break;
         case (CookieControlsEnforcement::kEnforcedByPolicy):
           name << "policy";

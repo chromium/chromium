@@ -325,6 +325,7 @@ void RecentTabsSubMenuModel::RegisterLogMenuMetricsCallback(
 void RecentTabsSubMenuModel::Build() {
   // The menu contains:
   // - History to open the full history tab.
+  // - History to open in side panel.
   // - Separator
   // - Recently closed header, then list of local recently closed tabs/windows,
   //   then separator
@@ -343,8 +344,10 @@ void RecentTabsSubMenuModel::Build() {
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
     InsertItemWithStringIdAt(1, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
                              IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL);
-    SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
-                   vector_icons::kHistoryChromeRefreshIcon);
+    if (features::IsChromeRefresh2023()) {
+      SetCommandIcon(this, IDC_SHOW_HISTORY_CLUSTERS_SIDE_PANEL,
+                     vector_icons::kHistoryChromeRefreshIcon);
+    }
   }
   AddSeparator(ui::NORMAL_SEPARATOR);
   history_separator_index_ = GetItemCount() - 1;

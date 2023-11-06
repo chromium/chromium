@@ -6,62 +6,71 @@ found in the LICENSE file.
 -->
 
 <!-- A toolbar layout designed for page insight bottom-sheet -->
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/sheet_tab_toolbar_height"
-    android:orientation="vertical">
-
-    <ImageView
-        android:id="@+id/drag_handlebar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:paddingVertical="10dp"
-        android:importantForAccessibility="no"
-        android:src="@drawable/drag_handlebar" />
-
-    <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
-        android:id="@+id/page_insights_feed_header"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="@dimen/page_insights_header_text_margin"
-        android:drawableStart="@drawable/page_insights_icon"
-        android:drawablePadding="@dimen/page_insights_title_margin"
-        android:text="@string/page_insights_hub_title_text"
-        android:textAppearance="@style/TextAppearance.Headline2.Primary.Baseline"/>
-
+    android:layout_height="wrap_content">
     <LinearLayout
-        android:id="@+id/page_insights_child_page_header"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:orientation="horizontal"
-        android:importantForAccessibility="no"
-        android:visibility="gone">
+        android:layout_width="0dp"
+        android:layout_height="@dimen/page_insights_toolbar_height"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintWidth_max="@dimen/page_insights_max_width"
+        android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/page_insights_back_button"
+        <ImageView
+            android:id="@+id/drag_handlebar"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="15dp"
-            android:src="@drawable/ic_arrow_back_24dp"
-            app:tint="@color/default_icon_color_baseline"
-            android:background="@android:color/transparent"
-            android:importantForAccessibility="yes"
-            android:contentDescription="@string/page_insights_back_button_description"/>
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingTop="12dp"
+            android:importantForAccessibility="no"
+            android:src="@drawable/drag_handlebar" />
 
-        <TextView
-            android:id="@+id/page_insights_child_title"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:paddingVertical="3dp"
-            android:paddingHorizontal="5dp"
-            android:textAppearance="@style/TextAppearance.TextAccentLarge.Primary.Baseline"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:orientation="horizontal"
+            android:importantForAccessibility="no">
+
+            <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
+                android:id="@+id/page_insights_feed_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginStart="@dimen/page_insights_header_text_margin"
+                android:layout_gravity="center"
+                android:drawableStart="@drawable/page_insights_icon"
+                android:drawablePadding="@dimen/page_insights_title_margin"
+                android:text="@string/page_insights_hub_title_text"
+                android:textAppearance="@style/TextAppearance.Headline2.Primary.Baseline"/>
+
+            <ImageButton
+                android:id="@+id/page_insights_back_button"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:paddingStart="4dp"
+                android:src="@drawable/ic_arrow_back_24dp"
+                app:tint="@color/default_icon_color_baseline"
+                android:background="@android:color/transparent"
+                android:importantForAccessibility="yes"
+                android:contentDescription="@string/page_insights_back_button_description"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/page_insights_child_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingStart="4dp"
+                android:textAppearance="@style/TextAppearance.TextAccentLarge.Primary.Baseline"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
     </LinearLayout>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

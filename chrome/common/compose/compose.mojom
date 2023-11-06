@@ -6,47 +6,150 @@ module compose.mojom;
 
 // Interface for setting up connection to allow calls between the compose dialog
 // web page and native code.
-interface ComposeDialogPageHandlerFactory {
+interface ComposeSessionPageHandlerFactory {
   // Called from dialog compose JS to set up native handler.
-  CreateComposeDialogPageHandler(
-      pending_receiver<ComposeDialogPageHandler> handler,
+  CreateComposeSessionPageHandler(
+      pending_receiver<ComposeClientPageHandler> client_handler,
+      pending_receiver<ComposeSessionPageHandler> handler,
       pending_remote<ComposeDialog> dialog);
 };
 
+// Configuration parameter used in compose requests.
 enum Tone {
   kUnset,
   kFormal,
   kCasual,
 };
 
+// Configuration parameter used in compose requests.
 enum Length {
   kUnset,
   kShorter,
   kLonger,
 };
 
+// Status code used in compose responses.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep in sync with
+// ComposeResponseStatus in src/tools/metrics/histograms/enums.xml.
 enum ComposeStatus {
-  kOk,
-  kError,
+  kOk = 0,
+  // Generic error, not specified.
+  kError = 1,
+  // Request was unable to be processed.
+  kNotSuccessful = 2,
+  // Server may have not responded.
+  kTryAgain = 3,
+  // Server is likely overloaded, cannot handle a response right now.
+  kTryAgainLater = 4,
+  // If the feature is somehow disabled.
+  kMisconfiguration = 5,
+  // If permission is denied (e.g. user is not logged in.)
+  kPermissionDenied = 6,
 };
 
+// Configuration parameters used in compose requests.
 struct StyleModifiers {
   Tone tone;
   Length length;
 };
 
+// The response to compose requests. `response_text` is only valid if `status`
+// is kOk.
 struct ComposeResponse {
   ComposeStatus status;
   string result;
+  // Whether undo is possible to a prior state before this response.
+  bool undo_available;
 };
 
-// Interface for calls from Compose dialog JS into the native handler.
-interface ComposeDialogPageHandler {
+// Snapshot of state that can describe current state or be used to
+// fully restore a previous state.
+struct ComposeState {
+  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // non-trivial to use from untrustworthy processes.
+  // State for the WebUI session. This should be considered opaque and is
+  // unsafe to parse in the browser process.
+  string webui_state;
+  // Modifiers used in the response captured in this state.
+  StyleModifiers style;
+  // Response from compose service. This is not present if the request
+  // has not been completed. The response is present if the request has
+  // completed, even if the response status is an error.
+  ComposeResponse? response;
+  // Whether a request is pending. False can also mean that the
+  // request was not made.
+  bool has_pending_request;
+};
+
+
+// Information needed by the WebUI to show a new or restored
+// compose dialog.
+struct OpenMetadata {
+  // Renderer provided text selection.
+  string initial_input;
+  ComposeState compose_state;
+};
+
+// The trigger for dismissing the compose dialog.
+enum CloseReason {
+  // The X button on the upper-right of the dialog.
+  kCloseButton,
+  // The Insert button of the dialog.
+  kInsertButton,
+};
+
+// Interface for calls from Compose dialog JS into the Browser process.
+interface ComposeSessionPageHandler {
   // Asks the Browser to compose `input` with `stye` applied. Response contains
   // the modified output.
-  Compose(StyleModifiers style, string input) => (ComposeResponse response);
+  Compose(StyleModifiers style, string input);
+
+  // Asks the native handler to store `webui_state` for the last field the user
+  // selected compose on.
+  // TODO(crbug.com/1493364): Change this field to a type that's opaque and
+  // non-trivial to use from untrustworthy processes.
+  // State for the WebUI session. This should be considered opaque and is
+  // unsafe to parse in the browser process.
+  SaveWebUIState(string webui_state);
+
+  // Inform the Browser that the response has been accepted by the user.
+  // Should only be called if the ComposeResponse received is valid.
+  // Boolean success indicates if the result was accepted successfully.
+  AcceptComposeResult() => (bool success);
+
+  // Asks the native handler for state information needed for opening the
+  // compose dialog for the last field the user selected compose on.
+  RequestInitialState() => (OpenMetadata initial_state);
+
+  // Asks the native handler to return the `last_state`. A null return means
+  // that there are no undoable states remaining. Calling `Undo()` and
+  // simultaneously closing the dialog (i.e., disconnecting the IPC pipe) may
+  // result in the state being undone, or remaining the same. This depends on
+  // which action executes first. If the IPC pipe disconnects, the Promise will
+  // reject/fail, which should not be confused with a null return. In that case,
+  // an undoable state may exist, but the call failed due to the broken pipe.
+  Undo() => (ComposeState? last_state);
+
+  // Asks the Browser to open a new tab navigated to the Compose bug report
+  // Buganizer.
+  OpenBugReportingLink();
 };
 
-// Interface for calls from native code into Compose dialog JS.
+// Interface for calls from Compose dialog JS into the Browser process.
+interface ComposeClientPageHandler {
+  // Asks the receiver to show the compose dialog.
+  ShowUI();
+  // Asks the receiver to close the compose dialog. `reason` describes
+  // the user action that triggered the close.
+  CloseUI(CloseReason reason);
+};
+
+// Interface for calls from the Browser process into Compose dialog JS.
 interface ComposeDialog {
+  // Called when a compose request is fulfilled, either by the model execution
+  // service or due to an error. Because compose requests can outlive this
+  // WebUI, this is an event rather than a callback on the original `Compose`
+  // call above.
+  ResponseReceived(ComposeResponse response);
 };

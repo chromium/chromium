@@ -46,6 +46,8 @@ class ProtobufHttpStatus {
   explicit ProtobufHttpStatus(net::Error net_error);
   explicit ProtobufHttpStatus(const protobufhttpclient::Status& status);
   ProtobufHttpStatus(Code code, const std::string& error_message);
+  ProtobufHttpStatus(const protobufhttpclient::Status& status,
+                     const std::string& response_body);
   ~ProtobufHttpStatus();
 
   // Indicates whether the http request was successful based on the status code.
@@ -57,9 +59,14 @@ class ProtobufHttpStatus {
   // The message that describes the error.
   const std::string& error_message() const { return error_message_; }
 
+  // The body of the response received. This field is only present when
+  // SetAllowHttpErrorResults() is set to true for the request.
+  const std::string& response_body() const { return response_body_; }
+
  private:
   Code error_code_;
   std::string error_message_;
+  std::string response_body_;
 };
 
 }  // namespace remoting

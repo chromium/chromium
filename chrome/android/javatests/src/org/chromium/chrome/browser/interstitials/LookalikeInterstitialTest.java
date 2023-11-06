@@ -30,14 +30,14 @@ import org.chromium.net.test.EmbeddedTestServer;
 /** Tests for the Lookalike URL interstitial (aka confusables). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @MediumTest
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-// clang-format off
-@ParameterizedCommandLineFlags({
-  @Switches(),
-  @Switches("enable-features=" + ChromeFeatureList.LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI),
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
 })
-// clang-format on
+@ParameterizedCommandLineFlags({
+    @Switches(),
+    @Switches("enable-features=" + ChromeFeatureList.LOOKALIKE_NAVIGATION_URL_SUGGESTIONS_UI),
+})
 public class LookalikeInterstitialTest {
     private static final String INTERSTITIAL_TITLE_PREFIX = "Continue to ";
 
@@ -51,16 +51,19 @@ public class LookalikeInterstitialTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityFromLauncher();
-        mServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     @Test
     @Ignore("crbug/941488")
     public void testBasicInterstitialShown() throws Exception {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        ChromeTabUtils.loadUrlOnUiThread(tab,
-                mServer.getURLWithHostName("xn--googl-fsa.com", // googlé.com
+        ChromeTabUtils.loadUrlOnUiThread(
+                tab,
+                mServer.getURLWithHostName(
+                        "xn--googl-fsa.com", // googlé.com
                         "/chrome/test/data/android/navigate/simple.html"));
 
         // Wait for the interstitial page to commit and check the page title.

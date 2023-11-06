@@ -4,8 +4,8 @@
 
 import {TestRunner} from 'test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests TestRunner.RuntimeAgent.evaluate can handle invalid Unicode code points and non-characters.\n`);

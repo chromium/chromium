@@ -44,8 +44,9 @@ void GhostImageView::Init(const gfx::Rect& drop_target_bounds,
 }
 
 void GhostImageView::FadeOut() {
-  if (is_hiding_)
+  if (is_hiding_) {
     return;
+  }
   is_hiding_ = true;
   DoAnimation(true /* fade out */);
 }
@@ -97,7 +98,7 @@ void GhostImageView::OnImplicitAnimationsCompleted() {
   delete this;
 }
 
-BEGIN_METADATA(GhostImageView, views::View)
+BEGIN_METADATA(GhostImageView)
 END_METADATA
 
 }  // namespace ash

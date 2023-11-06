@@ -1842,88 +1842,76 @@ IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
   EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
 }
 
-// Tests that insertion handles are properly positioned at 2x DSF and that the
-// magnifier is updated with the insertion handle.
+// Tests that insertion handles are properly positioned at 2x DSF.
 IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
                        InsertionHandleCoordinates) {
-  // Set the test page up.
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
   InitSelectionController(true);
-
   RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  // Tap inside the textfield and wait for the insertion cursor.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_SHOWN);
+  // Tap inside a textfield and wait for the insertion cursor to appear.
+  TapAndWaitForCursor(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInTextfield(2)));
 
-  gfx::PointF point = GetPointInTextfield(2);
+  // Cursor bounds should be a zero-width rect.
+  const gfx::RectF cursor_bounds =
+      rwhva->selection_controller()->GetVisibleRectBetweenBounds();
+  EXPECT_EQ(cursor_bounds.size(), gfx::SizeF(0, kCharacterHeight));
+  // Insertion handle should be shown just below the cursor.
+  const gfx::RectF handle_rect =
+      rwhva->selection_controller()->GetEndHandleRect();
+  EXPECT_LE(cursor_bounds.bottom(), handle_rect.y());
+  EXPECT_LE(handle_rect.y(), cursor_bounds.bottom() + 10);
 
-  ui::GestureEventDetails gesture_tap_down_details(ui::ET_GESTURE_TAP_DOWN);
-  gesture_tap_down_details.set_device_type(
-      ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-  ui::GestureEvent gesture_tap_down(2, 2, 0, ui::EventTimeForNow(),
-                                    gesture_tap_down_details);
-  rwhva->OnGestureEvent(&gesture_tap_down);
-  ui::GestureEventDetails tap_details(ui::ET_GESTURE_TAP);
-  tap_details.set_device_type(ui::GestureDeviceType::DEVICE_TOUCHSCREEN);
-  tap_details.set_tap_count(1);
-  ui::GestureEvent tap(point.x(), point.y(), 0, ui::EventTimeForNow(),
-                       tap_details);
-  rwhva->OnGestureEvent(&tap);
-
-  selection_controller_client()->Wait();
-
-  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
-
-  gfx::RectF initial_handle_rect =
-      rwhva->selection_controller()->GetStartHandleRect();
-
-  // Move the insertion handle. Touch the handle first.
-  gfx::Point handle_point =
-      gfx::ToRoundedPoint(initial_handle_rect.CenterPoint());
-
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_DRAG_STARTED);
-  ui::TouchEvent touch_down(
-      ui::ET_TOUCH_PRESSED, handle_point, ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_down);
-  selection_controller_client()->Wait();
-
-  // Move it.
+  // Drag to move the cursor handle one character right.
   selection_controller_client()->InitWaitForSelectionEvent(
       ui::INSERTION_HANDLE_MOVED);
-  handle_point.Offset(10, 0);
-  ui::TouchEvent touch_move(
-      ui::ET_TOUCH_MOVED, handle_point, ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_move);
+  generator.PressTouch(ConvertPointFromView(rwhva, generator.delegate(),
+                                            handle_rect.CenterPoint()));
+  generator.MoveTouchBy(kScaleFactor * kCharacterWidth, 0);
   selection_controller_client()->Wait();
 
-  // The magnifier should be shown after the insertion handle moves.
-  EXPECT_TRUE(selection_controller_client()->IsMagnifierVisible());
+  // Cursor handle should have moved one character right.
+  EXPECT_EQ(rwhva->selection_controller()->GetEndHandleRect(),
+            handle_rect + gfx::Vector2dF(kCharacterWidth, 0));
+}
 
-  // Then release.
-  selection_controller_client()->InitWaitForSelectionEvent(
-      ui::INSERTION_HANDLE_DRAG_STOPPED);
-  ui::TouchEvent touch_up(ui::ET_TOUCH_RELEASED, handle_point,
-                          ui::EventTimeForNow(),
-                          ui::PointerDetails(ui::EventPointerType::kTouch, 0));
-  rwhva->OnTouchEvent(&touch_up);
-  selection_controller_client()->Wait();
+// Tests that the magnifier is correctly shown when dragging a insertion handle.
+IN_PROC_BROWSER_TEST_F(TouchSelectionControllerClientAuraScaleFactorTest,
+                       InsertionHandleDragShowsMagnifier) {
+  ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/touch_selection.html"));
+  InitSelectionController(true);
+  RenderWidgetHostViewAura* rwhva = GetRenderWidgetHostViewAura();
+  ui::test::EventGenerator generator(rwhva->GetNativeView()->GetRootWindow());
 
-  gfx::RectF moved_handle_rect =
-      rwhva->selection_controller()->GetStartHandleRect();
+  // Tap inside a textfield and wait for the insertion cursor to appear.
+  TapAndWaitForCursor(generator,
+                      ConvertPointFromView(rwhva, generator.delegate(),
+                                           GetPointInTextfield(2)));
 
-  // The handle should have moved to the right and the magnifier should no
-  // longer be shown.
-  EXPECT_EQ(initial_handle_rect.y(), moved_handle_rect.y());
-  EXPECT_LT(initial_handle_rect.x(), moved_handle_rect.x());
+  // Magnifier should be hidden if no drag is in progress.
   EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
 
-  EXPECT_EQ(ui::TouchSelectionController::INSERTION_ACTIVE,
-            rwhva->selection_controller()->active_status());
+  // Drag to move the cursor handle one character right.
+  const gfx::RectF handle_rect =
+      rwhva->selection_controller()->GetEndHandleRect();
+  selection_controller_client()->InitWaitForSelectionEvent(
+      ui::INSERTION_HANDLE_MOVED);
+  generator.PressTouch(ConvertPointFromView(rwhva, generator.delegate(),
+                                            handle_rect.CenterPoint()));
+  generator.MoveTouchBy(kScaleFactor * kCharacterWidth, 0);
+  selection_controller_client()->Wait();
+
+  // Magnifier should be shown while dragging the handle.
+  EXPECT_TRUE(selection_controller_client()->IsMagnifierVisible());
+
+  // Release touch to end the drag.
+  generator.ReleaseTouch();
+
+  // Magnifier should be hidden after the drag is released.
+  EXPECT_FALSE(selection_controller_client()->IsMagnifierVisible());
 }
 
 }  // namespace content

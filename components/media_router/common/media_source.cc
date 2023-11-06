@@ -106,9 +106,9 @@ MediaSource MediaSource::ForRemotePlayback(int tab_id,
                                            media::VideoCodec video_codec,
                                            media::AudioCodec audio_codec) {
   return MediaSource(
-      base::StringPrintf(blink::kRemotePlaybackDesktopUrlFormat, tab_id,
+      base::StringPrintf(blink::kRemotePlaybackDesktopUrlFormat,
                          media::GetCodecName(video_codec).c_str(),
-                         media::GetCodecName(audio_codec).c_str()));
+                         media::GetCodecName(audio_codec).c_str(), tab_id));
 }
 
 // static

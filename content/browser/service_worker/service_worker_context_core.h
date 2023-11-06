@@ -410,6 +410,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                         WarmUpServiceWorkerCallback callback);
 
   absl::optional<WarmUpRequest> PopNextWarmUpRequest();
+  bool IsWaitingForWarmUp(const blink::StorageKey& key) const;
 
   bool IsProcessingWarmingUp() const { return is_processing_warming_up_; }
   void BeginProcessingWarmingUp() { is_processing_warming_up_ = true; }

@@ -16,6 +16,7 @@ namespace blink {
 class Document;
 class Element;
 class IdTargetObserver;
+class ImageResourceObserver;
 class LayoutSVGResourceContainer;
 class QualifiedName;
 class SVGFilterPrimitiveStandardAttributes;
@@ -47,9 +48,12 @@ class TreeScope;
 // SVGResources are created, and managed, either by SVGTreeScopeResources
 // (local) or CSSURIValue (external), and have SVGResourceClients as a means to
 // deliver change notifications. Clients that are interested in change
-// notifications hence need to register a SVGResourceClient with the
-// SVGResource. Most commonly this registration would take place when the
-// computed style changes.
+// notifications hence need to register a SVGResourceClient or a
+// ImageResourceObserver with the SVGResource. Most commonly this registration
+// would take place when the computed style changes. If an
+// ImageResourceObserver is registered, an SVGResourceClient is created
+// internally, which can be accessed using
+// SVGResource::GetObserverResourceClient() if needed.
 //
 // The element is bound either when the SVGResource is created (for local
 // resources) or after the referenced resource has completed loading (for
@@ -68,7 +72,7 @@ class SVGResource : public GarbageCollected<SVGResource> {
   virtual void Load(Document&) {}
   virtual void LoadWithoutCSP(Document&) {}
 
-  Element* Target() const { return target_; }
+  Element* Target() const { return target_.Get(); }
   // Returns the target's LayoutObject (if target exists and is attached to the
   // layout tree). Also perform cycle-checking, and may thus return nullptr if
   // this SVGResourceClient -> SVGResource reference would start a cycle.
@@ -82,6 +86,11 @@ class SVGResource : public GarbageCollected<SVGResource> {
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
+
+  void AddObserver(ImageResourceObserver&);
+  void RemoveObserver(ImageResourceObserver&);
+
+  SVGResourceClient* GetObserverResourceClient(ImageResourceObserver&);
 
   virtual void Trace(Visitor*) const;
 
@@ -104,6 +113,11 @@ class SVGResource : public GarbageCollected<SVGResource> {
     CycleState cached_cycle_check = kNeedCheck;
   };
   mutable HeapHashMap<Member<SVGResourceClient>, ClientEntry> clients_;
+
+  class ImageResourceObserverWrapper;
+  HeapHashMap<Member<ImageResourceObserver>,
+              Member<ImageResourceObserverWrapper>>
+      observer_wrappers_;
 };
 
 // Local resource reference (see SVGResource.)

@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
@@ -26,9 +27,49 @@ using blink::mojom::FederatedAuthRequestResult;
 
 namespace content::webid {
 
+bool IsSameOriginWithAncestors(const url::Origin& origin,
+                               RenderFrameHost* render_frame_host) {
+  while (render_frame_host) {
+    if (!origin.IsSameOriginWith(render_frame_host->GetLastCommittedOrigin())) {
+      return false;
+    }
+    render_frame_host = render_frame_host->GetParent();
+  }
+  return true;
+}
+
 void SetIdpSigninStatus(content::BrowserContext* context,
+                        int frame_tree_node_id,
                         const url::Origin& origin,
                         blink::mojom::IdpSigninStatus status) {
+  FrameTreeNode* frame_tree_node = nullptr;
+  // frame_tree_node_id may be invalid if we are loading the first frame
+  // of the tab.
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+    // If the id was not kFrameTreeNodeInvalidId, but the lookup failed, we
+    // ignore the load because we cannot do same-origin checks.
+    if (!frame_tree_node) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kFrameTreeLookupFailed);
+      return;
+    }
+  }
+  // Make sure we're same-origin with our ancestors.
+  if (frame_tree_node) {
+    if (frame_tree_node->IsInFencedFrameTree()) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kInFencedFrame);
+      return;
+    }
+
+    if (!IsSameOriginWithAncestors(origin, frame_tree_node->parent())) {
+      RecordSetLoginStatusIgnoredReason(
+          FedCmSetLoginStatusIgnoredReason::kCrossOrigin);
+      return;
+    }
+  }
+
   auto* delegate = context->GetFederatedIdentityPermissionContext();
   if (!delegate) {
     // The embedder may not have a delegate (e.g. webview)
@@ -215,6 +256,16 @@ std::string GetConsoleErrorMessageFromResult(
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
       return "Provider's token is invalid.";
     }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenIdpErrorResponse: {
+      return "Provider is unable to issue a token, but provided details on the "
+             "error that occurred.";
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingIdTokenCrossSiteIdpErrorResponse: {
+      return "Provider is unable to issue a token, but provided details on the "
+             "error that occurred. The error URL must be same-site with the "
+             "config URL.";
+    }
     case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidContentType: {
       return "Provider's token endpoint content type must be a JSON content "
              "type.";
@@ -253,24 +304,9 @@ std::string GetConsoleErrorMessageFromResult(
 
 FedCmIdpSigninStatusMode GetIdpSigninStatusMode(RenderFrameHost& host,
                                                 const url::Origin& idp_origin) {
-  RuntimeFeatureStateDocumentData* rfs_document_data =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(&host);
-  // Should not be null as this gets initialized when the host gets created.
-  DCHECK(rfs_document_data);
-  std::vector<url::Origin> third_party_origins = {idp_origin};
-  // This includes origin trials.
-  bool runtime_enabled =
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmIdpSigninStatusEnabled() ||
-      rfs_document_data->runtime_feature_state_read_context()
-          .IsFedCmIdpSigninStatusEnabledForThirdParty(
-              host.GetLastCommittedOrigin(), third_party_origins);
-
-  FedCmIdpSigninStatusMode flag_mode = GetFedCmIdpSigninStatusFlag();
-  if (flag_mode == FedCmIdpSigninStatusMode::METRICS_ONLY && runtime_enabled) {
-    return FedCmIdpSigninStatusMode::ENABLED;
-  }
-  return flag_mode;
+  // TODO(crbug.com/1487668): Remove this function in favor of
+  // GetFedCmIdpSigninStatusFlag.
+  return GetFedCmIdpSigninStatusFlag();
 }
 
 std::string FormatUrlWithDomain(const GURL& url, bool for_display) {

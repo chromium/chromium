@@ -10,6 +10,7 @@ include_rules = [
     "+ui/accessibility/ax_enum_util.h",
     "+ui/accessibility/ax_enums.mojom-blink.h",
     "+ui/accessibility/ax_enums.mojom-blink-forward.h",
+    "+ui/accessibility/ax_error_types.h",
     "+ui/accessibility/ax_event.h",
     "+ui/accessibility/ax_mode.h",
     "+ui/accessibility/ax_node_data.h",

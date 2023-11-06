@@ -1,0 +1,319 @@
+<html>
+  <head>
+    <script>
+      function loadFromClipboard(hideCrashHandlers) {
+        for (let b of document.querySelectorAll("button")) b.style.display = "none";
+        navigator.clipboard.readText().then(text => {
+          makeRows(computeGrid(tagWithFPID(parseLines(text)), hideCrashHandlers));
+          document.querySelector("#controls").style.display = "block";
+        });
+      }
+
+      function parseLines(str) {
+        let lines = [];
+        const logLineHeaderRegex = /^\[(?<process>[^:]*):(?<thread>[^:]*):(?<time>[^:]*):(?<level>[^:]*):(?<location>[^:]*)\] (?<text>.*)/;
+        for (let l of str.split("\n")) {
+          let match = logLineHeaderRegex.exec(l);
+          if (match !== null) {
+            lines.push({"process": match.groups.process, "thread": match.groups.thread, "time": match.groups.time, "level": match.groups.level, "location": match.groups.location, "text": match.groups.text + "\n"});
+          } else {
+            if (lines.length == 0) lines.push({"process": 0, "thread": 0, "time": "", "level": 0, "location": "", "text": l + "\n"});
+            else lines[lines.length - 1].text += l + "\n";
+          }
+        }
+        let linesEqual = (a, b) => {
+          return (
+            a.process == b.process
+            && a.thread == b.thread
+            && a.time == b.time
+            && a.level == b.level
+            && a.location == b.location
+            && a.text == b.text);
+        }
+        let lines2 = [];
+        outer: for (let l of lines) {
+          for (let ll of lines2) {
+            if (linesEqual(l, ll)) continue outer;
+          }
+          lines2.push(l);
+        }
+        lines = lines2;
+        lines.sort((a, b) => a.time.localeCompare(b.time));
+
+        return lines;
+      }
+
+      // PID reuse is common in longer logs. Split processes at
+      // "UpdaterMain (.*) returned .*."
+      function tagWithFPID(lines) {
+        let fpid = 0;
+        let openPids = {};
+        const finalLine = /UpdaterMain \(--[a-zA-Z-]+\) returned .+/
+        for (let l of lines) {
+          if (!openPids.hasOwnProperty(l.process)) {
+            openPids[l.process] = fpid++;
+          }
+          l.fpid = openPids[l.process];
+          if (l.text.match(finalLine) != null) delete(openPids[l.process]);
+        }
+        return lines;
+      }
+
+      function computeGrid(lines, hideCrashHandlers) {
+        let grid = [];
+        let firstLineByProcess = {};
+        let lastLineByProcess = {};
+
+        // Crash handlers are recognized by having all logs from updater.cc
+        // contain --crash-handler.
+        if (hideCrashHandlers) {
+          let crashHandlers = {};
+          let notCrashHandlers = {};
+          for (let l of lines) {
+            if (l.location.indexOf("updater.cc") == 0 && l.text.indexOf("command line:") > 0) {
+              if (l.text.indexOf("--crash-handler") >= 0) {
+                crashHandlers[l.fpid] = true;
+              } else {
+                notCrashHandlers[l.fpid] = true;
+              }
+            }
+          }
+          for (let p in notCrashHandlers) delete(crashHandlers[p]);
+          lines = lines.filter(l => !crashHandlers.hasOwnProperty(l.fpid));
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+          let p = lines[i].fpid;
+          if (!firstLineByProcess.hasOwnProperty(p)) firstLineByProcess[p] = i;
+          lastLineByProcess[p] = i;
+        }
+
+        let procColumns = [];
+        const BLANK = {"type": "blank"};
+        for (let i = 0; i < lines.length;) {
+          for (let j = 0; j < procColumns.length; j++) {
+            if (procColumns[j] != -1 && lastLineByProcess[procColumns[j]] < i) procColumns[j] = -1;
+          }
+          let p = lines[i].fpid;
+          let x = procColumns.indexOf(p);
+          outer: if (x == -1) {
+            for (let j = 0; j < procColumns.length; j++) {
+              if (procColumns[j] == -1) {
+                procColumns[j] = p;
+                x = j;
+                break outer;
+              }
+            }
+            procColumns.push(p);
+            x = procColumns.length - 1;
+          }
+
+          let start_line = i;
+          let llines = [];
+          while (i < lines.length && lines[i].fpid == lines[start_line].fpid && lines[i].time.substring(0, 4) == lines[start_line].time.substring(0, 4)) {
+            llines.push(lines[i]);
+            i++;
+          }
+
+          let gridRow = [];
+          for (let j = 0; j < procColumns.length; j++) {
+            if (j == x) gridRow.push({"type": "line", "lines": llines});
+            else if (procColumns[j] == -1) gridRow.push(BLANK);
+            else gridRow.push({"type": "processBlank", "fpid": procColumns[j]});
+          }
+          grid.push(gridRow);
+        }
+
+        for (let r of grid) while (r.length < procColumns.length) r.push(BLANK);
+        return grid;
+      }
+
+      function makeRows(grid) {
+        let colors_hints = [
+          {"hint": "--windows-service --service=update-internal ", "color": [168, 218, 181]},
+          {"hint": "--windows-service --service=update ",          "color": [138, 180, 248]},
+          {"hint": "--server --service=update-internal ",          "color": [168, 218, 181]},
+          {"hint": "--server --service=update ",                   "color": [138, 180, 248]},
+          {"hint": "--crash-handler",                              "color": [240, 240, 240]},
+          {"hint": "--install",                                    "color": [255, 255, 200]},
+          {"hint": "--update",                                     "color": [200, 255, 200]},
+          {"hint": "--uninstall",                                  "color": [255, 120, 120]},
+          {"hint": "--uninstall-self",                             "color": [255, 180, 180]},
+          {"hint": "--uninstall-if-unused",                        "color": [255, 150, 150]},
+          {"hint": "--wake ",                                      "color": [254, 239, 195]},
+          {"hint": "--wake-all",                                   "color": [255, 235, 215]},
+          {"hint": "--test",                                       "color": [220, 220, 220]},
+        ];
+
+        let colorBaseMap = {};
+        let colorMap = {};
+
+        let isFirstFromProcess = (process) => {
+          return !colorMap.hasOwnProperty(process);
+        }
+
+        for (let r of grid) {
+          for (let c of r) {
+            if (c.type == "line") {
+              for (let l of c.lines) {
+                if (colorBaseMap.hasOwnProperty(l.fpid)) break;
+                if (l.location.indexOf("updater.cc") == 0) {
+                  for (let ch of colors_hints) {
+                    if (l.text.indexOf(ch.hint) > 0) {
+                      colorBaseMap[l.fpid] = ch.color;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        let getColor = (fpid) => {
+          if (!colorMap.hasOwnProperty(fpid)) {
+            let c = [220, 80, 80];
+            if (colorBaseMap.hasOwnProperty(fpid)) {
+              c = colorBaseMap[fpid];
+            }
+            let r = Math.random() * 10 - 5;
+            colorMap[fpid] = c.map(c => Math.max(0, Math.min(255, c + r)));
+          }
+          return "rgb(" + colorMap[fpid].join(",") + ")";
+        }
+
+        let t = document.querySelector("table");
+        let lastdate = "";
+        for (let r of grid) {
+          let tr = document.createElement("tr");
+          let rdate = lastdate;
+          let wrotedate = false;
+          for (let i = 0; i < r.length; i++) {
+            if (r[i].type == "line") rdate = r[i].lines[0].time.substring(0, 4);
+          }
+          for (let i = 0; i < r.length; i++) {
+            let c = r[i];
+            let td = document.createElement("td");
+            if (c.type == "blank") {
+              td.appendChild(document.createElement("div"));
+              td.addEventListener("click", () => expandColumn(-1));
+              if (rdate != lastdate) {
+                td.style.borderTop = "1px dotted #aaa";
+                if (!wrotedate) {
+                  td.appendChild(document.createTextNode(rdate.substring(0, 2) + "/" + rdate.substring(2, 4)));
+                  td.style.textAlign = "center";
+                  td.style.color = "#aaa";
+                  td.style.verticalAlign = "top";
+                  wrotedate = true;
+                }
+              }
+            } else if (c.type == "processBlank") {
+              td.style.background = getColor(c.fpid);
+              td.appendChild(document.createElement("div"));
+              td.addEventListener("click", () => expandColumn(i));
+            } else if (c.type == "line") {
+              if (isFirstFromProcess(c.lines[0].fpid)) {
+                td.style.borderRadius = "8px 8px 0 0";
+              }
+              td.style.background = getColor(c.lines[0].fpid);
+              for (let l of c.lines) td.appendChild(makeDiv(l));
+              td.addEventListener("click", () => expandColumn(i));
+            }
+            tr.appendChild(td);
+          }
+          t.appendChild(tr);
+          lastdate = rdate;
+        }
+      }
+
+      function makeDiv(line) {
+        let div = document.createElement("div");
+
+        let makeInfo = (type) => {
+          let s = document.createElement("span");
+          s.className = "lineinfo_" + type;
+          s.appendChild(document.createTextNode(line[type]));
+          div.appendChild(s);
+        }
+        makeInfo("process");
+        makeInfo("thread");
+        makeInfo("time");
+        makeInfo("level");
+        makeInfo("location");
+        div.appendChild(document.createTextNode(line.text));
+        return div;
+      }
+
+      function expandColumn(i) {
+        for (let td of document.querySelectorAll("tr:first-child > td")) {
+          td.className = i == 0 ? "expanded" : "";
+          i--;
+        }
+      }
+
+      function toggle(type) {
+        for (let e of document.querySelectorAll(".lineinfo_" + type)) {
+          e.style.display = event.target.checked ? "inline-block" : "none";
+        }
+      }
+    </script>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      td {
+        max-width: 4vw;
+        overflow: hidden;
+        transition: max-width 0.2s;
+      }
+      td.expanded {
+        max-width: 80vw;
+      }
+      td > div {
+        width: 80vw;
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      button {
+        margin: 2em;
+        width: 30%;
+        font-size: 200%;
+      }
+      .lineinfo_process, .lineinfo_thread, .lineinfo_time, .lineinfo_level, .lineinfo_location {
+        margin-right: 1em;
+        display: none;
+      }
+      #controls {
+        position: fixed;
+        right: 0;
+        text-align: right;
+        display: none;
+        color: #fff;
+        padding: 0.1em 0 0 0.3em;
+        background-color: #000;
+        border-radius: 0 0 0 1em;
+      }
+      #controls label {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <label>Process ID<input type="checkbox" onchange="toggle('process')"></input></label>
+      <label>Thread ID<input type="checkbox" onchange="toggle('thread')"></input></label>
+      <label>Time<input type="checkbox" onchange="toggle('time')"></input></label>
+      <label>Level<input type="checkbox" onchange="toggle('level')"></input></label>
+      <label>Location<input type="checkbox" onchange="toggle('location')"></input></label>
+    </div>
+    <button onclick="loadFromClipboard(false)">Load from clipboard</button>
+    <button onclick="loadFromClipboard(true)">Load from clipboard (hide crash handlers)</button>
+    <table></table>
+  </body>
+</html>

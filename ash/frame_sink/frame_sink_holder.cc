@@ -22,9 +22,12 @@ namespace ash {
 
 FrameSinkHolder::FrameSinkHolder(
     std::unique_ptr<cc::LayerTreeFrameSink> frame_sink,
-    const GetCompositorFrameCallback callback)
+    const GetCompositorFrameCallback get_compositor_frame_callback,
+    const OnFirstFrameRequestedCallback on_first_frame_requested_callback)
     : frame_sink_(std::move(frame_sink)),
-      get_compositor_frame_callback_(std::move(callback)) {
+      get_compositor_frame_callback_(std::move(get_compositor_frame_callback)),
+      on_first_frame_requested_callback_(
+          std::move(on_first_frame_requested_callback)) {
   frame_sink_->BindToClient(this);
 }
 
@@ -161,9 +164,12 @@ bool FrameSinkHolder::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
     return false;
   }
 
-  viz::BeginFrameAck current_begin_frame_ack(args, false);
+  if (!first_frame_requested_) {
+    first_frame_requested_ = true;
+    on_first_frame_requested_callback_.Run();
+  }
 
-  first_frame_requested_ = true;
+  viz::BeginFrameAck current_begin_frame_ack(args, false);
 
   if (pending_compositor_frame_ack_ ||
       !(pending_compositor_frame_ || auto_update_)) {

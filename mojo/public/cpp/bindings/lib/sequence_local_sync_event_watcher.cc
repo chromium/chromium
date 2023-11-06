@@ -173,7 +173,10 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
   }
 
  private:
-  using StorageSlotType = base::SequenceLocalStorageSlot<SequenceLocalState>;
+  // GenericSequenceLocalStorageSlot needs to be specified since
+  // SequenceLocalStorageSlot doesn't support forward declared types.
+  using StorageSlotType =
+      base::GenericSequenceLocalStorageSlot<SequenceLocalState>;
   static StorageSlotType& GetStorageSlot() {
     static StorageSlotType storage;
     return storage;

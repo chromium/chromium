@@ -106,7 +106,7 @@ TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {
       []() {
         static int i = 0;
         i++;
-        return base::Time::FromDoubleT(i);
+        return base::Time::FromSecondsSinceUnixEpoch(i);
       },
       nullptr, nullptr);
 

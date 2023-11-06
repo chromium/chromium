@@ -902,6 +902,8 @@ bool ThreadGroupImpl::WorkerThreadDelegateImpl::CanGetWorkLockRequired(
   const bool is_on_idle_workers_set = outer_->IsOnIdleSetLockRequired(worker);
   DCHECK_EQ(is_on_idle_workers_set, outer_->idle_workers_set_.Contains(worker));
 
+  // This occurs when the when WorkerThread::Delegate::WaitForWork() times out
+  // (i.e. when the worker's wakes up after GetSleepTimeout()).
   if (is_on_idle_workers_set) {
     if (CanCleanupLockRequired(worker))
       CleanupLockRequired(executor, worker);
@@ -984,9 +986,9 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
   DCHECK_LT(workers_.size(), kMaxNumberOfWorkers);
   DCHECK(idle_workers_set_.IsEmpty());
 
-  // WorkerThread needs |lock_| as a predecessor for its thread lock
-  // because in WakeUpOneWorker, |lock_| is first acquired and then
-  // the thread lock is acquired when WakeUp is called on the worker.
+  // WorkerThread needs |lock_| as a predecessor for its thread lock because in
+  // GetWork(), |lock_| is first acquired and then the thread lock is acquired
+  // when GetLastUsedTime() is called on the worker by CanGetWorkLockRequired().
   scoped_refptr<WorkerThread> worker = MakeRefCounted<WorkerThread>(
       thread_type_hint_,
       std::make_unique<WorkerThreadDelegateImpl>(

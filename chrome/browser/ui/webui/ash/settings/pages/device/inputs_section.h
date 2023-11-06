@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
@@ -52,7 +52,10 @@ class InputsSection : public OsSettingsSection,
                           Profile* profile,
                           bool show_message) override;
 
+  // Not owned by this class
+  raw_ptr<Profile> profile_;
   raw_ptr<PrefService> pref_service_;
+
   PrefChangeRegistrar pref_change_registrar_;
 
   // Used to monitor input method changes.

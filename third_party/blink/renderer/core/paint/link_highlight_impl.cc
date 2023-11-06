@@ -46,10 +46,10 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -268,11 +268,7 @@ void LinkHighlightImpl::UpdateAfterPrePaint() {
     return;
   DCHECK(!object->GetFrameView()->ShouldThrottleRendering());
 
-  wtf_size_t fragment_count = 0;
-  for (const auto* fragment = &object->FirstFragment(); fragment;
-       fragment = fragment->NextFragment())
-    ++fragment_count;
-
+  wtf_size_t fragment_count = object->FragmentList().size();
   if (fragment_count != fragments_.size()) {
     fragments_.resize(fragment_count);
     SetNeedsRepaintAndCompositingUpdate();
@@ -314,12 +310,12 @@ void LinkHighlightImpl::Paint(GraphicsContext& context) {
       use_rounded_rects = false;
 
     // TODO(yosin): We should remove following if-statement once we release
-    // NGFragmentItem to renderer rounded rect even if nested inline, e.g.
+    // FragmentItem to renderer rounded rect even if nested inline, e.g.
     // <a>ABC<b>DEF</b>GHI</a>.
     // See gesture-tapHighlight-simple-nested.html
     if (use_rounded_rects && object->IsLayoutInline() &&
         object->IsInLayoutNGInlineFormattingContext()) {
-      NGInlineCursor cursor;
+      InlineCursor cursor;
       cursor.MoveTo(*object);
       // When |LayoutInline| has more than one children, we render square
       // rectangle as |NGPaintFragment|.

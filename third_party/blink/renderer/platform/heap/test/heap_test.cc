@@ -1942,8 +1942,8 @@ TEST_F(HeapTest, HeapWeakCollectionTypes) {
         PreciselyCollectGarbage();
         unsigned count = 0;
         for (int i = 0; i < 128; i += 2) {
-          bool first_alive = keep_numbers_alive->at(i);
-          bool second_alive = keep_numbers_alive->at(i + 1);
+          bool first_alive = keep_numbers_alive->at(i) != nullptr;
+          bool second_alive = keep_numbers_alive->at(i + 1) != nullptr;
           if (first_alive && (collection_number == kWeakStrongIndex ||
                               collection_number == kStrongWeakIndex))
             second_alive = true;
@@ -2764,7 +2764,7 @@ class Link1 : public GarbageCollected<Link1> {
 
   void Trace(Visitor* visitor) const { visitor->Trace(link_); }
 
-  IntWrapper* Link() { return link_; }
+  IntWrapper* Link() { return link_.Get(); }
 
  private:
   Member<IntWrapper> link_;

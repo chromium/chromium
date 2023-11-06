@@ -13,7 +13,7 @@ XRCamera::XRCamera(XRFrame* frame)
     : frame_(frame), size_(*(frame_->session()->CameraImageSize())) {}
 
 XRFrame* XRCamera::Frame() const {
-  return frame_;
+  return frame_.Get();
 }
 
 void XRCamera::Trace(Visitor* visitor) const {

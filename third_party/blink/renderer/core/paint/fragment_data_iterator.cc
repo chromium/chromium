@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
 
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/fragment_data.h"
 
@@ -28,14 +28,16 @@ AccompaniedFragmentIterator::AccompaniedFragmentIterator(
 
 const NGPhysicalBoxFragment*
 AccompaniedFragmentIterator::GetPhysicalBoxFragment() const {
-  if (ng_layout_box_)
-    return ng_layout_box_->GetPhysicalFragment(box_fragment_index_);
+  if (ng_layout_box_) {
+    return ng_layout_box_->GetPhysicalFragment(idx_);
+  }
   return nullptr;
 }
 
 bool AccompaniedFragmentIterator::Advance() {
-  if (!fragment_data_)
+  if (IsDone()) {
     return false;
+  }
 
   if (cursor_) {
     wtf_size_t fragmentainer_index = cursor_->ContainerFragmentIndex();
@@ -47,33 +49,34 @@ bool AccompaniedFragmentIterator::Advance() {
       return true;
   }
 
+#if DCHECK_IS_ON()
+  wtf_size_t previous_idx = idx_;
+#endif
+
   FragmentDataIterator::Advance();
 
-  if (!fragment_data_) {
+  if (IsDone()) {
 #if DCHECK_IS_ON()
     // We're done, since there are no more FragmentData entries. Assert that
     // this agrees with the NG side of things.
     if (cursor_) {
       DCHECK(!*cursor_);
     } else if (ng_layout_box_) {
-      DCHECK_EQ(ng_layout_box_->PhysicalFragmentCount(),
-                box_fragment_index_ + 1);
+      DCHECK_EQ(ng_layout_box_->PhysicalFragmentCount(), previous_idx + 1);
     }
 #endif
     ng_layout_box_ = nullptr;
     return false;
   }
 
-  if (ng_layout_box_)
-    box_fragment_index_++;
-
 #if DCHECK_IS_ON()
   // We have another FragmentData entry, so we're not done. Assert that this
   // agrees with the NG side of things.
-  if (ng_layout_box_)
-    DCHECK_GT(ng_layout_box_->PhysicalFragmentCount(), box_fragment_index_);
-  else if (cursor_)
+  if (ng_layout_box_) {
+    DCHECK_GT(ng_layout_box_->PhysicalFragmentCount(), idx_);
+  } else if (cursor_) {
     DCHECK(*cursor_);
+  }
 #endif
 
   return true;

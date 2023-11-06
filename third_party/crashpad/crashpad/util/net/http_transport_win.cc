@@ -24,6 +24,7 @@
 
 #include <iterator>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"

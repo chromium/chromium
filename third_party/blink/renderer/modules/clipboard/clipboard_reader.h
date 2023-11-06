@@ -62,7 +62,7 @@ class ClipboardReader : public GarbageCollected<ClipboardReader> {
   // An empty `utf8_bytes` indicates that the encoding step failed.
   virtual void NextRead(Vector<uint8_t> utf8_bytes) = 0;
 
-  SystemClipboard* system_clipboard() { return system_clipboard_; }
+  SystemClipboard* system_clipboard() { return system_clipboard_.Get(); }
   // This ClipboardPromise owns this ClipboardReader. Subclasses use `promise_`
   // to report the Blob output, or to obtain the execution context.
   Member<ClipboardPromise> promise_;

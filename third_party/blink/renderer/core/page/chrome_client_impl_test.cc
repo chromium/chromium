@@ -270,7 +270,7 @@ class PagePopupSuppressionTest : public testing::Test {
     LocalFrame* frame = main_frame_->GetFrame();
     DateTimeChooserParameters params;
     params.locale = DefaultLanguage();
-    params.type = input_type_names::kTime;
+    params.type = InputType::Type::kTime;
     DateTimeChooser* chooser = chrome_client_impl_->OpenDateTimeChooser(
         frame, date_time_chooser_client_, params);
     if (chooser)
@@ -324,7 +324,7 @@ class MockFileChooserClient : public GarbageCollected<MockFileChooserClient>,
   void FilesChosen(FileChooserFileInfoList, const base::FilePath&) override {}
   void WillOpenPopup() override {}
 
-  LocalFrame* FrameOrNull() const override { return frame_; }
+  LocalFrame* FrameOrNull() const override { return frame_.Get(); }
 
   Member<LocalFrame> frame_;
 };

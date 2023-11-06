@@ -362,6 +362,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // See DesktopWindowTreeHost::ShouldUseDesktopNativeCursorManager().
   bool use_desktop_native_cursor_manager_ = false;
 
+#if BUILDFLAG(IS_WIN)
+  // Used to track and discard duplicate events; Windows appears to
+  // generate them in some circumstances after a key press.
+  gfx::Point last_mouse_loc_;
+#endif
+
   // The following factory is used to provide references to the
   // DesktopNativeWidgetAura instance and used for calls to close to run drop
   // callback.

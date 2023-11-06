@@ -7,6 +7,7 @@ package org.chromium.chrome.features.start_surface;
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,8 +47,10 @@ import org.chromium.chrome.browser.init.ChromeActivityNativeDelegate;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -919,11 +922,20 @@ public class StartSurfaceCoordinator implements StartSurface {
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
             // We always pass the parameter isTablet to be false here since StartSurfaceCoordinator
             // is only created on phones.
-            mTabSwitcherModule = new SingleTabSwitcherCoordinator(mActivity,
-                    mView.getCarouselTabSwitcherContainer(), null, mTabModelSelector,
-                    /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
-                    /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null,
-                    /* snapshotParentViewRunnable */ null, mTabContentManager, null);
+            mTabSwitcherModule =
+                    new SingleTabSwitcherCoordinator(
+                            mActivity,
+                            mView.getCarouselTabSwitcherContainer(),
+                            null,
+                            mTabModelSelector,
+                            /* isShownOnNtp= */ false,
+                            /* isTablet */ false,
+                            /* isScrollableMvtEnabled */ true,
+                            /* mostRecentTab= */ null,
+                            /* singleTabCardClickedCallback */ null,
+                            /* snapshotParentViewRunnable */ null,
+                            mTabContentManager,
+                            null);
         }
         boolean isScrollableMVTEnabled =
                 !ReturnToChromeUtil.shouldImproveStartWhenFeedIsDisabled(mActivity);
@@ -1060,6 +1072,21 @@ public class StartSurfaceCoordinator implements StartSurface {
     }
 
     private void initializeOffsetChangedListener() {
+        // Scroll-dependeng fake box transition of states (e.g., height) undergoes 3 phases:
+        //   Phase 1: Fake box is far from top: Keep original states (e.g., large height). Related
+        //     variables are fake*BeforeAnimation.
+        //   Phase 2: Fake box just reaches top: Interpolate states (e.g., shrink height). Related
+        //     variables are fake*ForAnimation.
+        //   Phase 3: Fake box is at top: Match real box states (e.g., small height). Related
+        //     variables are real*.
+        // For Surface Polish, Phase 2 is more complex:
+        //   Phase 2A: Fake box *nearing* top: Interpolate height reduction to reach some fixed
+        //     intermediate value (fakeHeightForAnimation). The top border also linear reaches the
+        //     final at a slower rate. This phase encroaches upon Phase 1. Related variables are
+        //     *BeforeRealAnimation or fake*ForAnimation.
+        //   Phase 2B: Fake box reaches top: Same as Phase 2; interpolate all states. Related
+        //     variables are fake*ForAnimation.
+
         int realVerticalMargin = getPixelSize(R.dimen.location_bar_vertical_margin);
         int logoInSurfaceHeight = getLogoInSurfaceHeight();
 
@@ -1070,20 +1097,39 @@ public class StartSurfaceCoordinator implements StartSurface {
         int fakeHeightBeforeAnimation = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.ntp_search_box_height_polish)
                 : fakeHeightForAnimation;
+        // The gap between the top of fake box and its final position for Phase 2A to start.
         int heightReducedBeforeRealAnimation = fakeHeightBeforeAnimation - fakeHeightForAnimation;
 
         int fakeEndPadding = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.fake_search_box_end_padding)
                 : getPixelSize(R.dimen.search_box_end_padding);
-        // realEndPadding is 0;
+        // realEndPadding is 0 when surface is not polished;
+        int realEndPadding =
+            mIsSurfacePolishEnabled
+                ? getPixelSize(R.dimen.location_bar_end_padding)
+                + getPixelSize(R.dimen.location_bar_url_action_offset_polish)
+                : 0;
+        int endPaddingDiff = fakeEndPadding - realEndPadding;
 
         // fakeTranslationX is 0;
-        int realTranslationX = getPixelSize(R.dimen.location_bar_status_icon_width)
-                + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
-                + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
-                        - (mIsSurfacePolishEnabled
-                                        ? getPixelSize(R.dimen.fake_search_box_start_padding)
-                                        : getPixelSize(R.dimen.search_box_start_padding)));
+        int realTranslationX;
+        if (mIsSurfacePolishEnabled) {
+            realTranslationX =
+                OmniboxResourceProvider.getFocusedStatusViewLeftSpacing(mActivity)
+                    + getPixelSize(R.dimen.status_view_highlight_size)
+                    + getPixelSize(
+                    OmniboxFeatures.shouldShowModernizeVisualUpdate(mActivity)
+                        && OmniboxFeatures.shouldShowSmallBottomMargin()
+                        ? R.dimen.location_bar_icon_end_padding_focused_smaller
+                        : R.dimen.location_bar_icon_end_padding_focused)
+                    - getPixelSize(R.dimen.fake_search_box_start_padding);
+        } else {
+            realTranslationX =
+                getPixelSize(R.dimen.location_bar_status_icon_width)
+                    + getPixelSize(R.dimen.location_bar_icon_end_padding_focused)
+                    + (getPixelSize(R.dimen.fake_search_box_lateral_padding)
+                    - (getPixelSize(R.dimen.search_box_start_padding)));
+        }
 
         int fakeButtonSize = mIsSurfacePolishEnabled
                 ? getPixelSize(R.dimen.location_bar_action_icon_width)
@@ -1095,7 +1141,17 @@ public class StartSurfaceCoordinator implements StartSurface {
                 : getPixelSize(R.dimen.tasks_surface_location_bar_url_button_start_margin);
         // realLensButtonStartMargin is 0;
 
+        float fakeSearchTextSize = mIsSurfacePolishEnabled
+            ? getTextSizeFromDimen(R.dimen.location_bar_url_text_size_polish)
+            : getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+        float realSearchTextSize = getTextSizeFromDimen(R.dimen.location_bar_url_text_size);
+
         TasksView tasksView = mTasksSurface != null ? (TasksView) mTasksSurface.getView() : mView;
+
+        // Explicitly assign fake search box container height, so it won't resizes in Phase 2* along
+        // with its interior. This prevents content underneath from shifting, which can have adverse
+        // interaction with scroll from swiping.
+        tasksView.updateFakeSearchBoxContainer(fakeHeightBeforeAnimation);
 
         mOffsetChangedListenerToGenerateScrollEvents = (appBarLayout, verticalOffset) -> {
             for (ScrollListener scrollListener : mScrollListeners) {
@@ -1106,29 +1162,27 @@ public class StartSurfaceCoordinator implements StartSurface {
                     mStartSurfaceMediator.getTopToolbarPlaceholderHeight()
                     + (mStartSurfaceMediator.isLogoVisible() ? logoInSurfaceHeight : 0)
                     - realVerticalMargin;
-            int startPointToReduceHeight =
-                    fakeSearchBoxToRealSearchBoxTop - heightReducedBeforeRealAnimation;
-
             int scrolledHeight = -verticalOffset;
-
             int fakeHeight;
             if (mIsSurfacePolishEnabled) {
-                if (scrolledHeight < fakeSearchBoxToRealSearchBoxTop
-                        && scrolledHeight >= startPointToReduceHeight) {
-                    // Reduce both the search box and its container's height before the animation.
+                // Detect and handle Phase 2A. Otherwise reuse the original flow, but tweak
+                // |fakeHeight| for Phase 2B.
+                int startPointToReduceHeight =
+                        fakeSearchBoxToRealSearchBoxTop - heightReducedBeforeRealAnimation;
+
+                if (scrolledHeight < startPointToReduceHeight) {
+                    // Phase 1.
                     fakeHeight = fakeHeightBeforeAnimation;
-                    int reducedHeight = MathUtils.clamp(scrolledHeight - startPointToReduceHeight,
-                            0, heightReducedBeforeRealAnimation);
-                    int newHeight = fakeHeight - reducedHeight;
-                    tasksView.updateFakeSearchBoxLayoutAndContainer(newHeight);
+
+                } else if (scrolledHeight < fakeSearchBoxToRealSearchBoxTop) {
+                    // Phase 2A: Shrink height at the same rate as scrolling.
+                    int reducedHeight = scrolledHeight - startPointToReduceHeight;
+                    tasksView.updateFakeSearchBoxHeight(fakeHeightBeforeAnimation - reducedHeight);
                     return;
-                } else if (scrolledHeight >= fakeSearchBoxToRealSearchBoxTop) {
-                    // Have reduced both the search box and its container's height and is in
-                    // animation.
-                    fakeHeight = fakeHeightForAnimation;
+
                 } else {
-                    // Haven't started to reduce both the search box and its container's height.
-                    fakeHeight = fakeHeightBeforeAnimation;
+                    // Phase 2B and Phase 3.
+                    fakeHeight = fakeHeightForAnimation;
                 }
             } else {
                 fakeHeight = fakeHeightBeforeAnimation;
@@ -1145,12 +1199,13 @@ public class StartSurfaceCoordinator implements StartSurface {
             // StartSurfaceToolbarMediator#updateTranslationY, which scroll up the start surface
             // toolbar together with the header.
             tasksView.updateFakeSearchBox(fakeHeight - reducedHeight, reducedHeight,
-                    (int) (fakeEndPadding * (1 - expansionFraction)),
+                    (int) (endPaddingDiff * (1 - expansionFraction) + realEndPadding),
                     SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(false)
                             ? realTranslationX * expansionFraction
                             : 0,
                     (int) (fakeButtonSize + (realButtonSize - fakeButtonSize) * expansionFraction),
-                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)), fakeHeight);
+                    (int) (fakeLensButtonStartMargin * (1 - expansionFraction)),
+                fakeSearchTextSize + (realSearchTextSize - fakeSearchTextSize) * expansionFraction);
 
             if(mIsSurfacePolishEnabled && scrolledHeight > appBarLayout.getHeight()){
                 ViewUtils.requestLayout(appBarLayout,
@@ -1162,6 +1217,23 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     private int getPixelSize(int id) {
         return mActivity.getResources().getDimensionPixelSize(id);
+    }
+
+    /**
+     * Gets the text size based on a dimension resource. The return value is in SP.
+     * @param id The resource ID of the dimension value.
+     */
+    private float getTextSizeFromDimen(int id) {
+        TypedValue typedValue = new TypedValue();
+        Resources resources = mActivity.getResources();
+        resources.getValue(id, typedValue, true);
+
+        if (typedValue.type == TypedValue.TYPE_DIMENSION &&
+            (typedValue.data & TypedValue.COMPLEX_UNIT_MASK) == TypedValue.COMPLEX_UNIT_SP) {
+            return TypedValue.complexToFloat(typedValue.data);
+        }
+
+        return -1;
     }
 
     public void initializeMVTiles() {

@@ -41,11 +41,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Custom TestRule for tests that need to download a file.
  *
- * This has to be a base class because some classes (like BrowserEvent) are exposed only
- * to children of ChromeActivityTestCaseBase. It is a very broken approach to sharing
- * but the only other option is to refactor the ChromeActivityTestCaseBase implementation
- * and all of our test cases.
- *
+ * <p>This has to be a base class because some classes (like BrowserEvent) are exposed only to
+ * children of ChromeActivityTestCaseBase. It is a very broken approach to sharing but the only
+ * other option is to refactor the ChromeActivityTestCaseBase implementation and all of our test
+ * cases.
  */
 public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     private static final String TAG = "DownloadTestBase";
@@ -61,12 +60,13 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Checks if a file has downloaded. Is agnostic to the mechanism by which the file
-     * has downloaded.
-     * @param fileName Expected file name. Path is built by appending filename to
-     * the system downloads path.
+     * Checks if a file has downloaded. Is agnostic to the mechanism by which the file has
+     * downloaded.
+     *
+     * @param fileName Expected file name. Path is built by appending filename to the system
+     *     downloads path.
      * @param expectedContents Expected contents of the file, or null if the contents should not be
-     * checked.
+     *     checked.
      */
     public boolean hasDownloaded(String fileName, String expectedContents) {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
@@ -85,14 +85,12 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Check the download exists in DownloadManager by matching the local file
-     * path.
+     * Check the download exists in DownloadManager by matching the local file path.
      *
-     * @param fileName Expected file name. Path is built by appending filename to
-     * the system downloads path.
-     *
+     * @param fileName Expected file name. Path is built by appending filename to the system
+     *     downloads path.
      * @param expectedContents Expected contents of the file, or null if the contents should not be
-     * checked.
+     *     checked.
      */
     public boolean hasDownload(String fileName, String expectedContents) throws IOException {
         File downloadedFile = getDownloadedPath(fileName);
@@ -141,9 +139,7 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
-    /**
-     * Delete all download entries in DownloadManager and delete the corresponding files.
-     */
+    /** Delete all download entries in DownloadManager and delete the corresponding files. */
     private void cleanUpAllDownloads() {
         DownloadManager manager =
                 (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
@@ -177,17 +173,21 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     private String mLastDownloadFilePath;
-    private final CallbackHelper mHttpDownloadFinished = new CallbackHelper();
+    private CallbackHelper mHttpDownloadFinished = new CallbackHelper();
     private TestDownloadManagerServiceObserver mDownloadManagerServiceObserver;
 
     public int getChromeDownloadCallCount() {
         return mHttpDownloadFinished.getCallCount();
     }
 
+    protected void resetCallbackHelper() {
+        mHttpDownloadFinished = new CallbackHelper();
+    }
+
     public boolean waitForChromeDownloadToFinish(int currentCallCount) {
         boolean eventReceived = true;
         try {
-            mHttpDownloadFinished.waitForCallback(currentCallCount, 1, 5, TimeUnit.SECONDS);
+            mHttpDownloadFinished.waitForCallback(currentCallCount, 1, 10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             eventReceived = false;
         }
@@ -195,9 +195,10 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public List<DownloadItem> getAllDownloads() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService.getDownloadManagerService().getAllDownloads(null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadManagerService.getDownloadManagerService().getAllDownloads(null);
+                });
         return mAllDownloads;
     }
 
@@ -245,39 +246,46 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
 
     @Override
     public Statement apply(final Statement base, Description description) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                setUp();
-                base.evaluate();
-                tearDown();
-            }
-        }, description);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        setUp();
+                        base.evaluate();
+                        tearDown();
+                    }
+                },
+                description);
     }
 
     private void setUp() throws Exception {
         mActivityStart.customMainActivityStart();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadDialogBridge.setPromptForDownloadAndroid(DownloadPromptStatus.DONT_SHOW);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadDialogBridge.setPromptForDownloadAndroid(
+                            DownloadPromptStatus.DONT_SHOW);
+                });
 
         cleanUpAllDownloads();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mDownloadManagerServiceObserver = new TestDownloadManagerServiceObserver();
-            DownloadManagerService.getDownloadManagerService().addDownloadObserver(
-                    mDownloadManagerServiceObserver);
-            OfflineContentAggregatorFactory.get().addObserver(new TestDownloadBackendObserver());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mDownloadManagerServiceObserver = new TestDownloadManagerServiceObserver();
+                    DownloadManagerService.getDownloadManagerService()
+                            .addDownloadObserver(mDownloadManagerServiceObserver);
+                    OfflineContentAggregatorFactory.get()
+                            .addObserver(new TestDownloadBackendObserver());
+                });
     }
 
     private void tearDown() {
         cleanUpAllDownloads();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            DownloadManagerService.getDownloadManagerService().removeDownloadObserver(
-                    mDownloadManagerServiceObserver);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DownloadManagerService.getDownloadManagerService()
+                            .removeDownloadObserver(mDownloadManagerServiceObserver);
+                });
     }
 
     public void deleteFilesInDownloadDirectory(String... filenames) {
@@ -307,9 +315,9 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     /**
      * Interface for Download tests to define actions that starts the activity.
      *
-     * This method will be called in DownloadTestRule's setUp process, which means
-     * it would happen before Test class' own setUp() call
-     **/
+     * <p>This method will be called in DownloadTestRule's setUp process, which means it would
+     * happen before Test class' own setUp() call
+     */
     public interface CustomMainActivityStart {
         void customMainActivityStart() throws InterruptedException;
     }

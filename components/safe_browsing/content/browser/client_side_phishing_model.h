@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
-#include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
 #include "components/safe_browsing/core/common/proto/client_model.pb.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -86,6 +85,8 @@ class ClientSidePhishingModel
   bool HasImageEmbeddingModel();
 
   bool IsModelMetadataImageEmbeddingVersionMatching();
+
+  int GetTriggerModelVersion();
 
   void SetVisualTfLiteModelForTesting(base::File file);
   // Overrides model type.

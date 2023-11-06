@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {SecurityInterstitialCommandId, sendCommand} from 'chrome://interstitials/common/resources/interstitial_common.js';
+import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 // Other constants defined in security_interstitial_page.h.
 const SB_DISPLAY_ENHANCED_PROTECTION_MESSAGE =
     'displayEnhancedProtectionMessage';
 
 // This sets up the enhanced protection message.
-function setupEnhancedProtectionMessage() {
+export function setupEnhancedProtectionMessage() {
   const interstitialType = loadTimeData.getString('type');
   if (interstitialType !== 'SAFEBROWSING' && interstitialType !== 'SSL' &&
       interstitialType !== 'CAPTIVE_PORTAL') {

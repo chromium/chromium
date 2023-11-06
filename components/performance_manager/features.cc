@@ -49,37 +49,6 @@ const base::FeatureParam<base::TimeDelta>
         &kPerformanceControlsBatteryPerformanceSurvey, "battery_lookback",
         base::Days(8)};
 
-BASE_FEATURE(kHeuristicMemorySaver,
-             "HeuristicMemorySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If 0, uses a default value from heuristic_memory_saver_policy.cc.
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverThresholdReachedHeartbeatInterval{
-        &kHeuristicMemorySaver, "threshold_reached_heartbeat_interval",
-        base::TimeDelta()};
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverThresholdNotReachedHeartbeatInterval{
-        &kHeuristicMemorySaver, "threshold_not_reached_heartbeat_interval",
-        base::TimeDelta()};
-const base::FeatureParam<base::TimeDelta>
-    kHeuristicMemorySaverMinimumTimeInBackground{&kHeuristicMemorySaver,
-                                                 "minimum_time_in_background",
-                                                 base::TimeDelta()};
-
-// If < 0, uses a default value from heuristic_memory_saver_policy.cc.
-const base::FeatureParam<int>
-    kHeuristicMemorySaverAvailableMemoryThresholdPercent{
-        &kHeuristicMemorySaver, "threshold_percent", -1};
-const base::FeatureParam<int> kHeuristicMemorySaverAvailableMemoryThresholdMb{
-    &kHeuristicMemorySaver, "threshold_mb", -1};
-const base::FeatureParam<int> kHeuristicMemorySaverPageCacheDiscountMac{
-    &kHeuristicMemorySaver, "mac_page_cache_available_percent", -1};
-
-BASE_FEATURE(kForceHeuristicMemorySaver,
-             "ForceHeuristicMemorySaver",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHighEfficiencyMultistateMode,
              "HighEfficiencyMultistateMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -88,16 +57,16 @@ const base::FeatureParam<bool> kHighEfficiencyShowRecommendedBadge{
 
 BASE_FEATURE(kDiscardedTabTreatment,
              "DiscardedTabTreatment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMemoryUsageInHovercards,
              "MemoryUsageInHovercards",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDiscardExceptionsImprovements,
              "DiscardExceptionsImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kMemorySavingsReportingImprovements,
              "MemorySavingsReportingImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kExpandedHighEfficiencyChipFrequency{
     &kMemorySavingsReportingImprovements,
@@ -105,12 +74,12 @@ const base::FeatureParam<base::TimeDelta> kExpandedHighEfficiencyChipFrequency{
 
 const base::FeatureParam<int> kExpandedHighEfficiencyChipThresholdBytes{
     &kMemorySavingsReportingImprovements,
-    "expanded_high_efficiency_chip_threshold_bytes", 200 * 1024 * 1024};
+    "expanded_high_efficiency_chip_threshold_bytes", 197 * 1024 * 1024};
 
 const base::FeatureParam<base::TimeDelta>
     kExpandedHighEfficiencyChipDiscardedDuration{
         &kMemorySavingsReportingImprovements,
-        "expanded_high_efficiency_chip_discarded_duration", base::Hours(6)};
+        "expanded_high_efficiency_chip_discarded_duration", base::Hours(3)};
 
 const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes{
     &kMemorySavingsReportingImprovements,
@@ -126,7 +95,7 @@ const base::FeatureParam<int> kHighEfficiencyChartPmf99PercentileBytes{
     "high_efficiency_chart_pmf_99_percentile_bytes", 800 * 1024 * 1024};
 
 const base::FeatureParam<double> kDiscardedTabTreatmentOpacity{
-    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.5};
+    &kDiscardedTabTreatment, "discard_tab_treatment_opacity", 0.8};
 
 const base::FeatureParam<int> kDiscardedTabTreatmentOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
@@ -146,7 +115,7 @@ constexpr base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>::Option
 const base::FeatureParam<MemoryUsageInHovercardsUpdateTrigger>
     kMemoryUsageInHovercardsUpdateTrigger{
         &kMemoryUsageInHovercards, "memory_update_trigger",
-        MemoryUsageInHovercardsUpdateTrigger::kBackground,
+        MemoryUsageInHovercardsUpdateTrigger::kNavigation,
         &kMemoryUsageInHovercardsUpdateTriggerOptions};
 
 BASE_FEATURE(kPerformanceControlsSidePanel,

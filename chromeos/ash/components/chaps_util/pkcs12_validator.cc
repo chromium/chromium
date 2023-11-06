@@ -92,10 +92,6 @@ Pkcs12ReaderStatusCode GetFirstCertNicknameWithSubject(
         LOG(ERROR) << MakePkcs12CertImportErrorMessage(get_cert_result);
         continue;
       }
-      if (!x509_cert) {
-        LOG(ERROR) << "Empty certificate received from Pkcs12ReaderStatusCode";
-        continue;
-      }
 
       std::string nickname;
       Pkcs12ReaderStatusCode label_fetch_result =
@@ -134,12 +130,6 @@ Pkcs12ReaderStatusCode GetScopedCert(
 }
 
 }  // namespace
-
-CertData::CertData() = default;
-CertData::~CertData() = default;
-
-KeyData::KeyData() = default;
-KeyData::~KeyData() = default;
 
 std::string MakePkcs12CertImportErrorMessage(
     Pkcs12ReaderStatusCode error_code) {
@@ -219,9 +209,10 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
   }
 
   // Searching using X509 cert.
-  Pkcs12ReaderStatusCode res =
-      pkcs12_reader.DoesKeyForCertExist(slot, scoped_cert);
+  Pkcs12ReaderStatusCode res = pkcs12_reader.DoesKeyForCertExist(
+      slot, Pkcs12ReaderCertSearchType::kPlainType, scoped_cert);
   if (res == Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(WARNING) << "Private key is already installed in slot";
     is_key_installed = true;
     return Pkcs12ReaderStatusCode::kSuccess;
   }
@@ -232,8 +223,10 @@ Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
   }
 
   // Searching using DER form of X509 cert.
-  res = pkcs12_reader.DoesKeyForDerCertExist(slot, scoped_cert);
+  res = pkcs12_reader.DoesKeyForCertExist(
+      slot, Pkcs12ReaderCertSearchType::kDerType, scoped_cert);
   if (res == Pkcs12ReaderStatusCode::kSuccess) {
+    LOG(WARNING) << "Private key is already installed in slot";
     is_key_installed = true;
     return Pkcs12ReaderStatusCode::kSuccess;
   }

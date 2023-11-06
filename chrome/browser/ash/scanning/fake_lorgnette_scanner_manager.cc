@@ -75,6 +75,8 @@ void FakeLorgnetteScannerManager::GetScannerNames(
 }
 
 void FakeLorgnetteScannerManager::GetScannerInfoList(
+    LocalScannerFilter local_only,
+    SecureScannerFilter secure_only,
     GetScannerInfoListCallback callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), list_scanners_response_));

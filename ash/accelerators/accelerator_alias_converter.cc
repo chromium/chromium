@@ -134,8 +134,6 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
     case ui::TopRowActionKey::kForward:
     case ui::TopRowActionKey::kRefresh:
     case ui::TopRowActionKey::kKeyboardBacklightToggle:
-    case ui::TopRowActionKey::kKeyboardBacklightDown:
-    case ui::TopRowActionKey::kKeyboardBacklightUp:
     case ui::TopRowActionKey::kPrivacyScreenToggle:
     case ui::TopRowActionKey::kAllApplications:
       return false;
@@ -144,6 +142,8 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
     case ui::TopRowActionKey::kOverview:
     case ui::TopRowActionKey::kScreenBrightnessDown:
     case ui::TopRowActionKey::kScreenBrightnessUp:
+    case ui::TopRowActionKey::kKeyboardBacklightDown:
+    case ui::TopRowActionKey::kKeyboardBacklightUp:
     case ui::TopRowActionKey::kMicrophoneMute:
     case ui::TopRowActionKey::kVolumeMute:
     case ui::TopRowActionKey::kVolumeDown:

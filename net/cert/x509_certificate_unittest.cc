@@ -20,14 +20,14 @@
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/pem.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
+#include "third_party/boringssl/src/pki/pem.h"
 
 using base::HexEncode;
 using base::Time;
@@ -99,10 +99,10 @@ void CheckGoogleCert(const scoped_refptr<X509Certificate>& google_cert,
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = google_cert->valid_start();
-  EXPECT_EQ(valid_from, valid_start.ToDoubleT());
+  EXPECT_EQ(valid_from, valid_start.InSecondsFSinceUnixEpoch());
 
   const Time& valid_expiry = google_cert->valid_expiry();
-  EXPECT_EQ(valid_to, valid_expiry.ToDoubleT());
+  EXPECT_EQ(valid_to, valid_expiry.InSecondsFSinceUnixEpoch());
 
   EXPECT_EQ(expected_fingerprint, X509Certificate::CalculateFingerprint256(
                                       google_cert->cert_buffer()));
@@ -158,10 +158,14 @@ TEST(X509CertificateTest, WebkitCertParsing) {
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = webkit_cert->valid_start();
-  EXPECT_EQ(1205883319, valid_start.ToDoubleT());  // Mar 18 23:35:19 2008 GMT
+  EXPECT_EQ(
+      1205883319,
+      valid_start.InSecondsFSinceUnixEpoch());  // Mar 18 23:35:19 2008 GMT
 
   const Time& valid_expiry = webkit_cert->valid_expiry();
-  EXPECT_EQ(1300491319, valid_expiry.ToDoubleT());  // Mar 18 23:35:19 2011 GMT
+  EXPECT_EQ(
+      1300491319,
+      valid_expiry.InSecondsFSinceUnixEpoch());  // Mar 18 23:35:19 2011 GMT
 
   std::vector<std::string> dns_names;
   EXPECT_TRUE(webkit_cert->GetSubjectAltName(&dns_names, nullptr));
@@ -205,14 +209,18 @@ TEST(X509CertificateTest, ThawteCertParsing) {
 
   // Use DoubleT because its epoch is the same on all platforms
   const Time& valid_start = thawte_cert->valid_start();
-  EXPECT_EQ(1227052800, valid_start.ToDoubleT());  // Nov 19 00:00:00 2008 GMT
+  EXPECT_EQ(
+      1227052800,
+      valid_start.InSecondsFSinceUnixEpoch());  // Nov 19 00:00:00 2008 GMT
 
   const Time& valid_expiry = thawte_cert->valid_expiry();
-  EXPECT_EQ(1263772799, valid_expiry.ToDoubleT());  // Jan 17 23:59:59 2010 GMT
+  EXPECT_EQ(
+      1263772799,
+      valid_expiry.InSecondsFSinceUnixEpoch());  // Jan 17 23:59:59 2010 GMT
 }
 
 // Test that all desired AttributeAndValue pairs can be extracted when only
-// a single RelativeDistinguishedName is present. "Normally" there is only
+// a single bssl::RelativeDistinguishedName is present. "Normally" there is only
 // one AVA per RDN, but some CAs place all AVAs within a single RDN.
 // This is a regression test for http://crbug.com/101009
 TEST(X509CertificateTest, MultivalueRDN) {
@@ -265,7 +273,7 @@ TEST(X509CertificateTest, InvalidPrintableStringIsUtf8) {
           "subject_printable_string_containing_utf8_client_cert.pem"),
       &file_data));
 
-  net::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(file_data, {"CERTIFICATE"});
   ASSERT_TRUE(pem_tokenizer.GetNext());
   std::string cert_der(pem_tokenizer.data());
   ASSERT_FALSE(pem_tokenizer.GetNext());
@@ -617,8 +625,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   base::StringPiece contents;
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
-      &contents));
+      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
+      &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
   ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);
@@ -636,8 +644,8 @@ TEST(X509CertificateTest, ExtractExtension) {
   ASSERT_TRUE(uid_cert);
   ASSERT_TRUE(asn1::ExtractExtensionFromDERCert(
       x509_util::CryptoBufferAsStringPiece(uid_cert->cert_buffer()),
-      der::Input(kBasicConstraintsOid).AsStringView(), &present, &critical,
-      &contents));
+      bssl::der::Input(bssl::kBasicConstraintsOid).AsStringView(), &present,
+      &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_FALSE(critical);
   ASSERT_EQ(base::StringPiece("\x30\x00", 2), contents);

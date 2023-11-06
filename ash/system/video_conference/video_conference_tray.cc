@@ -136,10 +136,10 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
       accessible_name_id_(accessible_name_id),
       icon_(icon),
       capturing_icon_(capturing_icon) {
-  SetBackgroundToggledColorId(cros_tokens::kCrosSysSystemNegativeContainer);
-  SetIconToggledColorId(cros_tokens::kCrosSysSystemOnNegativeContainer);
+  SetBackgroundToggledColor(cros_tokens::kCrosSysSystemNegativeContainer);
+  SetIconToggledColor(cros_tokens::kCrosSysSystemOnNegativeContainer);
 
-  SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase1);
+  SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase1);
 
   SetToggledVectorIcon(*toggled_icon);
 
@@ -352,7 +352,7 @@ void VideoConferenceTray::OnAnimationEnded() {
 
   auto* controller = VideoConferenceTrayController::Get();
   controller->MaybeRunNudgeRequest();
-  controller->MaybeShowSpeakOnMuteOptInNudge(this);
+  controller->MaybeShowSpeakOnMuteOptInNudge();
 }
 
 bool VideoConferenceTray::ShouldEnterPushedState(const ui::Event& event) {

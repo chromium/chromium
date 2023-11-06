@@ -11,13 +11,16 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 
+#include "base/feature_list.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
+#include "components/strings/grit/components_strings.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/libaddressinput/messages.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
@@ -160,15 +163,26 @@ AutofillCountry::address_format_extensions() const {
         .placed_after = ServerFieldType::ADDRESS_HOME_ZIP,
         .separator_before_label = "\n",
         .large_sized = true}}};
+  static constexpr std::array<AddressFormatExtension, 1> mx_extensions{
+      {{.type = ServerFieldType::ADDRESS_HOME_ADMIN_LEVEL2,
+        .label_id = IDS_AUTOFILL_ADDRESS_EDIT_DIALOG_HISPANIC_MUNICIPIO,
+        .placed_after = ServerFieldType::ADDRESS_HOME_DEPENDENT_LOCALITY,
+        .separator_before_label = "\n",
+        .large_sized = true}}};
 
-  static constexpr auto extensions =
-      base::MakeFixedFlatMap<base::StringPiece,
-                             base::span<const AddressFormatExtension>>({
-          {"FR", fr_extensions},
-          {"GB", gb_extensions},
-      });
+  std::vector<std::pair<std::string, base::span<const AddressFormatExtension>>>
+      overrides = {{"FR", fr_extensions}, {"GB", gb_extensions}};
 
-  auto* it = extensions.find(country_code_);
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForAdminLevel2)) {
+    overrides.emplace_back("MX", mx_extensions);
+  }
+
+  auto extensions =
+      base::MakeFlatMap<std::string, base::span<const AddressFormatExtension>>(
+          std::move(overrides));
+
+  auto it = extensions.find(country_code_);
   if (it != extensions.end())
     return it->second;
   return {};

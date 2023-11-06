@@ -29,6 +29,7 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xproto_internal.h"
 
 namespace x11 {
@@ -125,6 +126,7 @@ void ReadError<Shm::BadSegError>(Shm::BadSegError* error_, ReadBuffer* buffer) {
 
   DUMP_WILL_BE_CHECK_LE(buf.offset, 32ul);
 }
+
 Future<Shm::QueryVersionReply> Shm::QueryVersion(
     const Shm::QueryVersionRequest& request) {
   if (!connection_->Ready() || !present())

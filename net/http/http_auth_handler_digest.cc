@@ -263,21 +263,15 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(base::StringPiece name,
       algorithm_ = Algorithm::MD5;
     } else if (base::EqualsCaseInsensitiveASCII(value, "md5-sess")) {
       algorithm_ = Algorithm::MD5_SESS;
-    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256") &&
-               base::FeatureList::IsEnabled(
-                   features::kDigestAuthEnableSecureAlgorithms)) {
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256")) {
       algorithm_ = Algorithm::SHA256;
-    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256-sess") &&
-               base::FeatureList::IsEnabled(
-                   features::kDigestAuthEnableSecureAlgorithms)) {
+    } else if (base::EqualsCaseInsensitiveASCII(value, "sha-256-sess")) {
       algorithm_ = Algorithm::SHA256_SESS;
     } else {
       DVLOG(1) << "Unknown value of algorithm";
       return false;  // FAIL -- unsupported value of algorithm.
     }
-  } else if (base::EqualsCaseInsensitiveASCII(name, "userhash") &&
-             base::FeatureList::IsEnabled(
-                 features::kDigestAuthEnableSecureAlgorithms)) {
+  } else if (base::EqualsCaseInsensitiveASCII(name, "userhash")) {
     userhash_ = base::EqualsCaseInsensitiveASCII(value, "true");
   } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.

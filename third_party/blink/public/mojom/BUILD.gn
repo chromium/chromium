@@ -44,11 +44,11 @@ mojom("mojom_platform") {
     "clipboard/clipboard.mojom",
     "close_watcher/close_listener.mojom",
     "commit_result/commit_result.mojom",
+    "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",
     "context_menu/context_menu.mojom",
     "conversions/attribution_data_host.mojom",
     "conversions/conversions.mojom",
-    "cookie_deprecation_label/cookie_deprecation_label.mojom",
     "cookie_manager/cookie_manager_automation.mojom",
     "cookie_store/cookie_store.mojom",
     "crash/crash_memory_metrics_reporter.mojom",
@@ -66,7 +66,6 @@ mojom("mojom_platform") {
     "dom_storage/session_storage_namespace.mojom",
     "dom_storage/storage_area.mojom",
     "drag/drag.mojom",
-    "environment_integrity/environment_integrity_service.mojom",
     "favicon/favicon_url.mojom",
     "feature_observer/feature_observer.mojom",
     "fenced_frame/fenced_frame_config.mojom",
@@ -88,6 +87,7 @@ mojom("mojom_platform") {
     "file_system_access/file_system_access_transfer_token.mojom",
     "filesystem/file_system.mojom",
     "font_access/font_access.mojom",
+    "forms/form_control_type.mojom",
     "geolocation/geolocation_service.mojom",
     "hid/hid.mojom",
     "hyphenation/hyphenation.mojom",
@@ -191,6 +191,7 @@ mojom("mojom_platform") {
     "security_context/insecure_request_policy.mojom",
     "selection_menu/selection_menu_behavior.mojom",
     "sensor/web_sensor_provider.mojom",
+    "sensor/web_sensor_provider_automation.mojom",
     "service_worker/controller_service_worker_mode.mojom",
     "service_worker/dispatch_fetch_event_params.mojom",
     "service_worker/service_worker_ancestor_frame_type.mojom",
@@ -336,6 +337,7 @@ mojom("mojom_platform") {
   } else {
     sources += [
       "direct_sockets/direct_sockets.mojom",
+      "printing/web_printing.mojom",
       "serial/serial.mojom",
     ]
   }
@@ -1360,10 +1362,6 @@ mojom("mojom_core") {
     enabled_features += [ "use_aura" ]
   }
 
-  if (is_android || is_ios) {
-    enabled_features += [ "is_android_or_ios" ]
-  }
-
   shared_cpp_typemaps = [
     {
       types = [
@@ -1554,6 +1552,7 @@ mojom("mojom_modules") {
     "indexeddb/indexeddb.mojom",
     "shared_storage/shared_storage.mojom",
     "shared_storage/shared_storage_worklet_service.mojom",
+    "storage_access/storage_access_handle.mojom",
   ]
 
   public_deps = [
@@ -1561,6 +1560,7 @@ mojom("mojom_modules") {
     ":mojom_core",
     "//mojo/public/mojom/base",
     "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 
   overridden_deps_blink = [

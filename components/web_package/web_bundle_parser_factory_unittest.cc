@@ -27,7 +27,7 @@ using testing::UnorderedElementsAreArray;
 
 base::FilePath GetTestFilePath(const base::FilePath& path) {
   base::FilePath test_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &test_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_path);
   test_path = test_path.Append(
       base::FilePath(FILE_PATH_LITERAL("components/test/data/web_package")));
   return test_path.Append(path);

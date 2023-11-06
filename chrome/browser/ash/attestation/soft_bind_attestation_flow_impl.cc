@@ -19,15 +19,15 @@
 #include "crypto/random.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/asn1_util.h"
-#include "net/cert/pem.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/der/tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
+#include "third_party/boringssl/src/pki/pem.h"
 #include "third_party/securemessage/proto/securemessage.pb.h"
 
 namespace ash {
@@ -341,7 +341,7 @@ void SoftBindAttestationFlowImpl::OnCertificateSigned(
 
   std::vector<std::string> cert_chain_with_leaf = {pem_encoded_cert};
 
-  net::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
   while (pem_tokenizer.GetNext()) {
     std::string pem_encoded_intermediate_cert;
     net::X509Certificate::GetPEMEncodedFromDER(pem_tokenizer.data(),
@@ -387,7 +387,7 @@ bool SoftBindAttestationFlowImpl::IsAttestationAllowedByPolicy() const {
 CertificateExpiryStatus SoftBindAttestationFlowImpl::CheckExpiry(
     const std::string& certificate_chain) {
   int num_certificates = 0;
-  net::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
+  bssl::PEMTokenizer pem_tokenizer(certificate_chain, {"CERTIFICATE"});
   while (pem_tokenizer.GetNext()) {
     ++num_certificates;
     scoped_refptr<net::X509Certificate> x509 =

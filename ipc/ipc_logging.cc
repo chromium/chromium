@@ -143,13 +143,16 @@ void Logging::OnSendMessage(Message* message) {
   } else {
     // If the time has already been set (i.e. by ChannelProxy), keep that time
     // instead as it's more accurate.
-    if (!message->sent_time())
-      message->set_sent_time(Time::Now().ToInternalValue());
+    if (!message->sent_time()) {
+      message->set_sent_time(
+          Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+    }
   }
 }
 
 void Logging::OnPreDispatchMessage(const Message& message) {
-  message.set_received_time(Time::Now().ToInternalValue());
+  message.set_received_time(
+      Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 void Logging::OnPostDispatchMessage(const Message& message) {
@@ -250,26 +253,27 @@ void Logging::Log(const LogData& data) {
       message_name = data.message_name;
     }
     double receive_delay =
-        (Time::FromInternalValue(data.receive) -
-         Time::FromInternalValue(data.sent)).InSecondsF();
+        (Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.receive)) -
+         Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.sent)))
+            .InSecondsF();
     double dispatch_delay =
-        (Time::FromInternalValue(data.dispatch) -
-         Time::FromInternalValue(data.sent)).InSecondsF();
-    fprintf(stderr,
-            "ipc %d %s %s%s %s%s\n  %18.5f %s%18.5f %s%18.5f%s\n",
-            data.routing_id,
-            data.flags.c_str(),
+        (Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.dispatch)) -
+         Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.sent)))
+            .InSecondsF();
+    fprintf(stderr, "ipc %d %s %s%s %s%s\n  %18.5f %s%18.5f %s%18.5f%s\n",
+            data.routing_id, data.flags.c_str(),
             ANSIEscape(sender_ ? ANSI_COLOR_BLUE : ANSI_COLOR_CYAN),
-            message_name.c_str(),
-            ANSIEscape(ANSI_COLOR_RESET),
+            message_name.c_str(), ANSIEscape(ANSI_COLOR_RESET),
             data.params.c_str(),
-            Time::FromInternalValue(data.sent).ToDoubleT(),
+            Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.sent))
+                .InSecondsFSinceUnixEpoch(),
             ANSIEscape(DelayColor(receive_delay)),
-            Time::FromInternalValue(data.receive).ToDoubleT(),
+            Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.receive))
+                .InSecondsFSinceUnixEpoch(),
             ANSIEscape(DelayColor(dispatch_delay)),
-            Time::FromInternalValue(data.dispatch).ToDoubleT(),
-            ANSIEscape(ANSI_COLOR_RESET)
-            );
+            Time::FromDeltaSinceWindowsEpoch(base::Microseconds(data.dispatch))
+                .InSecondsFSinceUnixEpoch(),
+            ANSIEscape(ANSI_COLOR_RESET));
   }
 }
 
@@ -305,7 +309,7 @@ void GenerateLogData(const Message& message, LogData* data, bool get_params) {
     data->flags = flags;
     data->sent = message.sent_time();
     data->receive = message.received_time();
-    data->dispatch = Time::Now().ToInternalValue();
+    data->dispatch = Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
     data->params = params;
     data->message_name = message_name;
   }

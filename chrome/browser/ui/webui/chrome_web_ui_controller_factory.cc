@@ -74,7 +74,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "components/commerce/content/browser/commerce_internals_ui.h"
 #include "components/commerce/core/commerce_constants.h"
 #include "components/compose/buildflags.h"
@@ -110,7 +109,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
@@ -121,10 +119,6 @@
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "chrome/browser/ui/webui/nacl_ui.h"
-#endif
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-#include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -197,7 +191,9 @@
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
+#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -261,7 +257,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/ui/webui/extensions/extensions_ui.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
@@ -294,10 +289,6 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
-#endif
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-#include "chrome/browser/ui/webui/lens/lens_ui.h"
 #endif
 
 #if BUILDFLAG(PLATFORM_CFM)
@@ -550,7 +541,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   if (profile->IsGuestSession() &&
       (url.host_piece() == chrome::kChromeUIAppLauncherPageHost ||
-       url.host_piece() == chrome::kChromeUIBookmarksHost ||
        url.host_piece() == chrome::kChromeUIHistoryHost ||
        url.host_piece() == chrome::kChromeUIExtensionsHost ||
        url.host_piece() == chrome::kChromeUINewTabPageHost ||
@@ -560,17 +550,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chrome::kChromeUIAppServiceInternalsHost)
     return &NewWebUI<AppServiceInternalsUI>;
-  // Bookmarks are part of NTP on Android.
-  if (url.host_piece() == chrome::kChromeUIBookmarksHost)
-    return &NewWebUI<BookmarksUI>;
   if (url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
     return &NewWebUI<PasswordManagerUI>;
   }
   if (url.host_piece() == chrome::kChromeUICommanderHost)
     return &NewWebUI<CommanderUI>;
-  // Downloads list on Android uses the built-in download manager.
-  if (url.host_piece() == chrome::kChromeUIDownloadsHost)
-    return &NewWebUI<DownloadsUI>;
   // Identity API is not available on Android.
   if (url.host_piece() == chrome::kChromeUIIdentityInternalsHost)
     return &NewWebUI<IdentityInternalsUI>;
@@ -754,18 +738,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ManagementUI>;
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  if (url.host_piece() == chrome::kChromeUIPrintHost) {
-    if (profile->GetPrefs()->GetBoolean(prefs::kPrintPreviewDisabled))
-      return nullptr;
-    // Filter out everything except chrome://print/ and test_loader.html.
-    if (url.path() != "/" && url.path() != "/test_loader.html") {
-      return nullptr;
-    }
-    return &NewWebUI<printing::PrintPreviewUI>;
-  }
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   if (url.host_piece() == chrome::kChromeUITabStripHost) {
     return &NewWebUI<TabStripUI>;
@@ -901,12 +873,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIPrivacySandboxDialogHost)
     return &NewWebUI<PrivacySandboxDialogUI>;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  if (url.host_piece() == chrome::kChromeUILensHost) {
-    return &NewWebUI<LensUI>;
-  }
-#endif
 
   return nullptr;
 }
@@ -1170,6 +1136,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIBluetoothInternalsURL),
     GURL(chrome::kChromeUIBluetoothPairingURL),
     GURL(chrome::kChromeUIBorealisCreditsURL),
+    GURL(chrome::kChromeUIBorealisInstallerUrl),
     GURL(chrome::kChromeUICloudUploadURL),
     GURL(chrome::kChromeUIConnectivityDiagnosticsAppURL),
     GURL(chrome::kChromeUICrashesUrl),
@@ -1213,39 +1180,6 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUIVmUrl),
     GURL(scalable_iph::kScalableIphDebugURL),
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    // IME extension's Japanese options page. Opened via OS_URL_HANDLER SWA
-    // by InputMethodPrivateOpenOptionsPageFunction when Lacros is the only
-    // browser.
-    // TODO(b/250997017): Remove this once the Japanese options are
-    // in-settings.
-    GURL(extensions::kIMEJPOptionsURL),
-
-    // Option pages of accessibility extensions. Opened via OS_URL_HANDLER
-    // SWA by ash::settings::AccessibilityHandler when Lacros is the only
-    // browser.
-    GURL(base::StrCat({extensions::kExtensionScheme,
-                       url::kStandardSchemeSeparator,
-                       extension_misc::kChromeVoxExtensionId,
-                       extension_misc::kChromeVoxOptionsPath})),
-    GURL(base::StrCat({extensions::kExtensionScheme,
-                       url::kStandardSchemeSeparator,
-                       extension_misc::kEspeakSpeechSynthesisExtensionId,
-                       extension_misc::kEspeakSpeechSynthesisOptionsPath})),
-    // This file doesn't exist but the options page links to it (b/269703827),
-    // so we have to list it here anyways to prevent opening an Ash window on
-    // e.g. shift-click.
-    // TODO(b/269703827): Revisit when Espeak is fixed.
-    GURL(base::StrCat({extensions::kExtensionScheme,
-                       url::kStandardSchemeSeparator,
-                       extension_misc::kEspeakSpeechSynthesisExtensionId,
-                       "/COPYING"})),
-    GURL(base::StrCat({extensions::kExtensionScheme,
-                       url::kStandardSchemeSeparator,
-                       extension_misc::kGoogleSpeechSynthesisExtensionId,
-                       extension_misc::kGoogleSpeechSynthesisOptionsPath})),
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     // Pages that only exist in Lacros, where they are reachable via chrome://.
     // TODO(neis): Some of these still exist in Ash (but are inaccessible) and
@@ -1259,13 +1193,14 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
 }
 
 bool ChromeWebUIControllerFactory::CanHandleUrl(const GURL& url) {
-  return crosapi::gurl_os_handler_utils::IsUrlInList(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      crosapi::gurl_os_handler_utils::GetTargetURLFromLacrosURL(url),
-#else
-      crosapi::gurl_os_handler_utils::SanitizeAshURL(url),
-#endif
-      GetListOfAcceptableURLs());
+  if (url.SchemeIs(extensions::kExtensionScheme) && url.has_host()) {
+    std::string extension_id = url.host();
+    return extensions::ExtensionRunsInOS(extension_id);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::gurl_os_handler_utils::IsAshUrlInList(
+      url, GetListOfAcceptableURLs());
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)

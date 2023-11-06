@@ -33,6 +33,7 @@
 #include "content/public/common/content_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "services/video_capture/public/mojom/video_effects_manager.mojom.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -236,20 +237,24 @@ void VideoCaptureManager::Close(
   sessions_.erase(session_it);
 }
 
-void VideoCaptureManager::Crop(
+void VideoCaptureManager::ApplySubCaptureTarget(
     const base::UnguessableToken& session_id,
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target,
+    uint32_t sub_capture_target_version,
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   VideoCaptureController* const controller =
       LookupControllerBySessionId(session_id);
   if (!controller || !controller->IsDeviceAlive()) {
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
-  controller->Crop(crop_id, crop_version, std::move(callback));
+  controller->ApplySubCaptureTarget(type, target, sub_capture_target_version,
+                                    std::move(callback));
 }
 
 void VideoCaptureManager::QueueStartDevice(

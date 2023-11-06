@@ -29,6 +29,8 @@ namespace browsing_topics {
 
 namespace {
 
+const int kTaxonomyVersionV2 = 2;
+
 const char kPageTopicsModelMetadataTypeUrl[] =
     "type.googleapis.com/"
     "google.internal.chrome.optimizationguide.v1.PageTopicsModelMetadata";
@@ -111,7 +113,7 @@ class BrowsingTopicsAnnotatorImplTest : public testing::Test {
   void SendModelToAnnotatorSkipWaiting(
       const absl::optional<optimization_guide::proto::Any>& model_metadata) {
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")
@@ -157,6 +159,7 @@ TEST_F(
     GetContentModelAnnotationsFromOutputNonNumericAndLowWeightCategoriesPruned) {
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
                               ->mutable_category_params();
   category_params->set_max_categories(4);
@@ -184,6 +187,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
        GetContentModelAnnotationsFromOutputNoneWeightTooStrong) {
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
                               ->mutable_category_params();
   category_params->set_max_categories(4);
@@ -212,6 +216,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
        GetContentModelAnnotationsFromOutputNoneInTopButNotStrongSoPruned) {
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
                               ->mutable_category_params();
   category_params->set_max_categories(4);
@@ -239,6 +244,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
        GetContentModelAnnotationsFromOutputPrunedAfterNormalization) {
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
                               ->mutable_category_params();
   category_params->set_max_categories(4);
@@ -269,6 +275,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
 TEST_F(BrowsingTopicsAnnotatorImplTest, NoneCategoryBelowMinWeight) {
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(123);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   auto* category_params = model_metadata.mutable_output_postprocessing_params()
                               ->mutable_category_params();
   category_params->set_max_categories(4);
@@ -356,6 +363,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest, HostPreprocessingV2) {
   any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(kTopicsModelVersion);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   model_metadata.SerializeToString(any_metadata.mutable_value());
 
   SendModelToAnnotator(any_metadata);
@@ -410,6 +418,7 @@ TEST_F(BrowsingTopicsAnnotatorImplTest, PreprocessingNewVersion) {
   any_metadata.set_type_url(kPageTopicsModelMetadataTypeUrl);
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
   model_metadata.set_version(kTopicsModelVersion + 1);
+  model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
   model_metadata.SerializeToString(any_metadata.mutable_value());
 
   SendModelToAnnotator(any_metadata);
@@ -440,12 +449,12 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
   scoped_feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{blink::features::kBrowsingTopicsParameters,
-        {{"taxonomy_version", "2"}}}},
+        {{"taxonomy_version", "12345"}}}},
       /*disabled_features=*/{
           optimization_guide::features::kPreventLongRunningPredictionModels});
 
   optimization_guide::proto::PageTopicsModelMetadata model_metadata;
-  model_metadata.set_taxonomy_version(2);
+  model_metadata.set_taxonomy_version(12345);
 
   optimization_guide::proto::Any any_metadata;
   any_metadata.set_type_url(
@@ -457,56 +466,6 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
   absl::optional<optimization_guide::ModelInfo> model_info =
       annotator()->GetBrowsingTopicsModelInfo();
   EXPECT_TRUE(model_info);
-}
-
-TEST_F(BrowsingTopicsAnnotatorImplTest,
-       DifferentTaxonomyVersions_ModelUpdateSkipped) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{blink::features::kBrowsingTopicsParameters,
-        {{"taxonomy_version", "2"}}}},
-      /*disabled_features=*/{
-          optimization_guide::features::kPreventLongRunningPredictionModels});
-
-  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
-  model_metadata.set_taxonomy_version(1);
-
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-
-  SendModelToAnnotatorSkipWaiting(any_metadata);
-
-  absl::optional<optimization_guide::ModelInfo> model_info =
-      annotator()->GetBrowsingTopicsModelInfo();
-  EXPECT_FALSE(model_info);
-}
-
-TEST_F(BrowsingTopicsAnnotatorImplTest,
-       TaxonomyConfiguredVersion1ServerVersion1_ModelUpdateSkipped) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{blink::features::kBrowsingTopicsParameters,
-        {{"taxonomy_version", "1"}}}},
-      /*disabled_features=*/{
-          optimization_guide::features::kPreventLongRunningPredictionModels});
-
-  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
-  model_metadata.set_taxonomy_version(1);
-
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-
-  SendModelToAnnotatorSkipWaiting(any_metadata);
-
-  absl::optional<optimization_guide::ModelInfo> model_info =
-      annotator()->GetBrowsingTopicsModelInfo();
-  EXPECT_FALSE(model_info);
 }
 
 TEST_F(BrowsingTopicsAnnotatorImplTest,
@@ -531,30 +490,6 @@ TEST_F(BrowsingTopicsAnnotatorImplTest,
   absl::optional<optimization_guide::ModelInfo> model_info =
       annotator()->GetBrowsingTopicsModelInfo();
   EXPECT_TRUE(model_info);
-}
-
-TEST_F(BrowsingTopicsAnnotatorImplTest,
-       TaxonomyConfiguredVersion2ServerVersionEmpty_ModelUpdateSkipped) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {{blink::features::kBrowsingTopicsParameters,
-        {{"taxonomy_version", "2"}}}},
-      /*disabled_features=*/{
-          optimization_guide::features::kPreventLongRunningPredictionModels});
-
-  optimization_guide::proto::PageTopicsModelMetadata model_metadata;
-
-  optimization_guide::proto::Any any_metadata;
-  any_metadata.set_type_url(
-      "type.googleapis.com/com.foo.PageTopicsModelMetadata");
-  model_metadata.SerializeToString(any_metadata.mutable_value());
-
-  SendModelToAnnotatorSkipWaiting(any_metadata);
-
-  absl::optional<optimization_guide::ModelInfo> model_info =
-      annotator()->GetBrowsingTopicsModelInfo();
-  EXPECT_FALSE(model_info);
 }
 
 class BrowsingTopicsAnnotatorOverrideListTest
@@ -585,6 +520,7 @@ class BrowsingTopicsAnnotatorOverrideListTest
       const base::flat_set<base::FilePath>& additional_files) {
     optimization_guide::proto::PageTopicsModelMetadata model_metadata;
     model_metadata.set_version(123);
+    model_metadata.set_taxonomy_version(kTaxonomyVersionV2);
 
     optimization_guide::proto::Any any_metadata;
     any_metadata.set_type_url(
@@ -592,7 +528,7 @@ class BrowsingTopicsAnnotatorOverrideListTest
     model_metadata.SerializeToString(any_metadata.mutable_value());
 
     base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
     base::FilePath model_file_path =
         source_root_dir.AppendASCII("components")
             .AppendASCII("test")

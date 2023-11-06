@@ -9,6 +9,7 @@
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/page_load_metrics/renderer/fake_page_timing_sender.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
@@ -56,7 +57,7 @@ class PageTimingMetricsSenderTest : public testing::Test {
 };
 
 TEST_F(PageTimingMetricsSenderTest, Basic) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
@@ -83,7 +84,7 @@ TEST_F(PageTimingMetricsSenderTest, Basic) {
 }
 
 TEST_F(PageTimingMetricsSenderTest, CoalesceMultipleTimings) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
   base::TimeDelta load_event = base::Milliseconds(4);
 
   mojom::PageLoadTiming timing;
@@ -109,7 +110,7 @@ TEST_F(PageTimingMetricsSenderTest, CoalesceMultipleTimings) {
 }
 
 TEST_F(PageTimingMetricsSenderTest, MultipleTimings) {
-  base::Time nav_start = base::Time::FromDoubleT(10);
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(10);
   base::TimeDelta load_event = base::Milliseconds(4);
 
   mojom::PageLoadTiming timing;
@@ -140,7 +141,7 @@ TEST_F(PageTimingMetricsSenderTest, MultipleTimings) {
 TEST_F(PageTimingMetricsSenderTest, SendTimingOnSendLatest) {
   mojom::PageLoadTiming timing;
   InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(10);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(10);
 
   // This test wants to verify behavior in the PageTimingMetricsSender
   // destructor. The EXPECT_CALL will be satisfied when the |metrics_sender_|
@@ -152,28 +153,6 @@ TEST_F(PageTimingMetricsSenderTest, SendTimingOnSendLatest) {
   ASSERT_TRUE(metrics_sender_->mock_timer()->IsRunning());
 
   metrics_sender_->SendLatest();
-}
-
-TEST_F(PageTimingMetricsSenderTest, SendInputEvents) {
-  mojom::PageLoadTiming timing;
-  InitPageLoadTimingForTest(&timing);
-  base::TimeDelta input_delay_1 = base::Milliseconds(40);
-  base::TimeDelta input_delay_2 = base::Milliseconds(60);
-
-  metrics_sender_->Update(timing.Clone(),
-                          PageTimingMetadataRecorder::MonotonicTiming());
-  validator_.ExpectPageLoadTiming(timing);
-  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
-
-  metrics_sender_->DidObserveInputDelay(input_delay_1);
-  validator_.UpdateExpectedInputTiming(input_delay_1);
-
-  metrics_sender_->DidObserveInputDelay(input_delay_2);
-  validator_.UpdateExpectedInputTiming(input_delay_2);
-
-  // Fire the timer to trigger sending of features via an SendTiming call.
-  metrics_sender_->mock_timer()->Fire();
-  validator_.VerifyExpectedInputTiming();
 }
 
 TEST_F(PageTimingMetricsSenderTest, SendSubresourceLoadMetrics) {
@@ -370,6 +349,41 @@ TEST_F(PageTimingMetricsSenderTest, SendMainFrameViewportRect) {
 
   metrics_sender_->mock_timer()->Fire();
   validator_.VerifyExpectedMainFrameViewportRect();
+}
+
+TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
+  mojom::PageLoadTiming timing;
+  InitPageLoadTimingForTest(&timing);
+  base::TimeDelta interaction_duration_1 = base::Milliseconds(90);
+  base::TimeTicks interaction_start_1 = base::TimeTicks::Now();
+  base::TimeTicks interaction_end_1 =
+      interaction_start_1 + interaction_duration_1;
+  base::TimeDelta interaction_duration_2 = base::Milliseconds(600);
+  base::TimeTicks interaction_start_2 =
+      base::TimeTicks::Now() + base::Milliseconds(2000);
+  base::TimeTicks interaction_end_2 =
+      interaction_start_2 + interaction_duration_2;
+
+  metrics_sender_->Update(timing.Clone(),
+                          PageTimingMetadataRecorder::MonotonicTiming());
+  validator_.ExpectPageLoadTiming(timing);
+  validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
+
+  metrics_sender_->DidObserveUserInteraction(
+      interaction_start_1, interaction_end_1,
+      blink::UserInteractionType::kKeyboard);
+  validator_.UpdateExpectedInteractionTiming(
+      interaction_duration_1, mojom::UserInteractionType::kKeyboard);
+
+  metrics_sender_->DidObserveUserInteraction(
+      interaction_start_2, interaction_end_2,
+      blink::UserInteractionType::kTapOrClick);
+  validator_.UpdateExpectedInteractionTiming(
+      interaction_duration_2, mojom::UserInteractionType::kTapOrClick);
+
+  // Fire the timer to trigger sending of features via an SendTiming call.
+  metrics_sender_->mock_timer()->Fire();
+  validator_.VerifyExpectedInteractionTiming();
 }
 
 TEST_F(PageTimingMetricsSenderTest, FirstContentfulPaintForcesSend) {

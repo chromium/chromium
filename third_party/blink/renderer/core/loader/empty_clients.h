@@ -150,7 +150,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   bool OpenBeforeUnloadConfirmPanelDelegate(LocalFrame*, bool) override {
     return true;
   }
-  void CloseWindowSoon() override {}
+  void CloseWindow() override {}
   Page* CreateWindowDelegate(LocalFrame*,
                              const FrameLoadRequest&,
                              const AtomicString&,
@@ -449,6 +449,11 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
     return nullptr;
   }
 
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() override {
+    return nullptr;
+  }
+
   void AnnotatedRegionsChanged() override {}
   base::UnguessableToken GetDevToolsFrameToken() const override {
     return base::UnguessableToken::Create();
@@ -461,6 +466,10 @@ class CORE_EXPORT EmptyLocalFrameClient : public LocalFrameClient {
 
   scoped_refptr<WebWorkerFetchContext> CreateWorkerFetchContext() override {
     return base::MakeRefCounted<EmptyWebWorkerFetchContext>();
+  }
+
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override {
+    return nullptr;
   }
 
  protected:

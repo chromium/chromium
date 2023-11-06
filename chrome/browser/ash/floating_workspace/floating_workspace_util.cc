@@ -22,9 +22,9 @@ namespace ash {
 
 namespace {
 
-PrefService* GetPrimaryUserPrefService() {
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  auto* user_profile = ProfileHelper::Get()->GetProfileByUser(primary_user);
+PrefService* GetActiveUserPrefService() {
+  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  auto* user_profile = ProfileHelper::Get()->GetProfileByUser(active_user);
   return user_profile->GetPrefs();
 }
 
@@ -43,7 +43,7 @@ bool IsFloatingWorkspaceV1Enabled() {
 }
 
 bool IsFloatingWorkspaceV2Enabled() {
-  PrefService* pref_service = GetPrimaryUserPrefService();
+  PrefService* pref_service = GetActiveUserPrefService();
   DCHECK(pref_service);
 
   const PrefService::Preference* floating_workspace_pref =

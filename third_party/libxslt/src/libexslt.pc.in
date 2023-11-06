@@ -8,6 +8,6 @@ Name: libexslt
 Version: @LIBEXSLT_VERSION@
 Description: EXSLT Extension library
 Requires: libxml-2.0, libxslt
-Cflags: @EXSLT_INCLUDEDIR@
+Cflags: @EXSLT_INCLUDEDIR@ @LIBEXSLT_CFLAGS@
 Libs: @EXSLT_LIBDIR@ -lexslt
 Libs.private: @EXSLT_PRIVATE_LIBS@

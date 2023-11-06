@@ -2,40 +2,64 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/on_device_model/public/cpp/on_device_model.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/on_device_model_service.h"
 
 namespace on_device_model {
 namespace {
 
-class OnDeviceModel : public mojom::OnDeviceModel {
+class SessionImpl : public OnDeviceModel::Session {
  public:
-  explicit OnDeviceModel(mojom::LoadModelParamsPtr params)
-      : params_(std::move(params)) {}
-  ~OnDeviceModel() override = default;
+  SessionImpl() = default;
+  ~SessionImpl() override = default;
 
-  OnDeviceModel(const OnDeviceModel&) = delete;
-  OnDeviceModel& operator=(const OnDeviceModel&) = delete;
+  SessionImpl(const SessionImpl&) = delete;
+  SessionImpl& operator=(const SessionImpl&) = delete;
+
+  void AddContext(mojom::InputOptionsPtr input) override {
+    context_.push_back(input->text);
+  }
 
   void Execute(
-      const std::string& input,
+      mojom::InputOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override {
     mojo::Remote<mojom::StreamingResponder> remote(std::move(response));
-    remote->OnResponse("Model: " + params_->path.MaybeAsASCII() + "\n");
-    remote->OnResponse("Input: " + input + "\n");
+    for (const std::string& context : context_) {
+      remote->OnResponse("Context: " + context + "\n");
+    }
+    remote->OnResponse("Input: " + input->text + "\n");
     remote->OnComplete();
   }
 
  private:
-  const mojom::LoadModelParamsPtr params_;
+  std::vector<std::string> context_;
+};
+
+class OnDeviceModelImpl : public OnDeviceModel {
+ public:
+  OnDeviceModelImpl() = default;
+  ~OnDeviceModelImpl() override = default;
+
+  OnDeviceModelImpl(const OnDeviceModelImpl&) = delete;
+  OnDeviceModelImpl& operator=(const OnDeviceModelImpl&) = delete;
+
+  std::unique_ptr<Session> CreateSession() override {
+    return std::make_unique<SessionImpl>();
+  }
 };
 
 }  // namespace
 
 // static
-std::unique_ptr<mojom::OnDeviceModel> OnDeviceModelService::CreateModel(
-    mojom::LoadModelParamsPtr params) {
-  return std::make_unique<OnDeviceModel>(std::move(params));
+std::unique_ptr<OnDeviceModel> OnDeviceModelService::CreateModel(
+    ModelAssets assets) {
+  return std::make_unique<OnDeviceModelImpl>();
+}
+
+// static
+mojom::PerformanceClass OnDeviceModelService::GetEstimatedPerformanceClass() {
+  return mojom::PerformanceClass::kError;
 }
 
 }  // namespace on_device_model

@@ -4,11 +4,7 @@
 
 #include "chrome/browser/signin/web_signin_interceptor.h"
 
-#include <string>
-
-#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 
 ScopedWebSigninInterceptionBubbleHandle::
     ~ScopedWebSigninInterceptionBubbleHandle() = default;
@@ -22,7 +18,8 @@ bool SigninInterceptionHeuristicOutcomeIsSuccess(
          outcome ==
              SigninInterceptionHeuristicOutcome::kInterceptEnterpriseForced ||
          outcome == SigninInterceptionHeuristicOutcome::
-                        kInterceptEnterpriseForcedProfileSwitch;
+                        kInterceptEnterpriseForcedProfileSwitch ||
+         outcome == SigninInterceptionHeuristicOutcome::kInterceptChromeSignin;
 }
 
 WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
@@ -30,14 +27,12 @@ WebSigninInterceptor::Delegate::BubbleParameters::BubbleParameters(
     AccountInfo intercepted_account,
     AccountInfo primary_account,
     SkColor profile_highlight_color,
-    bool show_guest_option,
     bool show_link_data_option,
     bool show_managed_disclaimer)
     : interception_type(interception_type),
       intercepted_account(intercepted_account),
       primary_account(primary_account),
       profile_highlight_color(profile_highlight_color),
-      show_guest_option(show_guest_option),
       show_link_data_option(show_link_data_option),
       show_managed_disclaimer(show_managed_disclaimer) {}
 

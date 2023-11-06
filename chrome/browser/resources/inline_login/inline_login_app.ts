@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-
 // <if expr="chromeos_ash">
 import 'chrome://chrome-signin/arc_account_picker/arc_account_picker_app.js';
 import './gaia_action_buttons/gaia_action_buttons.js';
@@ -20,7 +19,7 @@ import './strings.m.js';
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {isRTL} from 'chrome://resources/js/util_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -116,7 +115,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * The auth extension host instance.
        */
-      authExtHost_: {
+      authenticator_: {
         type: Object,
         value: null,
       },
@@ -193,7 +192,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
   private loading_: boolean;
   private verifyingAccount_: boolean;
-  private authExtHost_: Authenticator|null;
+  private authenticator_: Authenticator|null;
 
   // <if expr="chromeos_ash">
   private shouldSkipWelcomePage_: boolean;
@@ -227,8 +226,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     }
     // </if>
 
-    this.authExtHost_ = new Authenticator(this.$.signinFrame);
-    this.addAuthExtHostListeners_();
+    this.authenticator_ = new Authenticator(this.$.signinFrame);
+    this.addAuthenticatorListeners_();
     this.browserProxy_.initialize();
   }
 
@@ -236,8 +235,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     super.connectedCallback();
 
     this.addWebUiListener(
-        'load-auth-extension',
-        (data: AuthParams) => this.loadAuthExtension_(data));
+        'load-authenticator',
+        (data: AuthParams) => this.loadAuthenticator_(data));
     this.addWebUiListener(
         'send-lst-fetch-results',
         (arg: string) => this.sendLstFetchResults_(arg));
@@ -249,22 +248,22 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     // </if>
   }
 
-  private addAuthExtHostListeners_() {
-    assert(this.authExtHost_);
-    this.authExtHost_.addEventListener(
+  private addAuthenticatorListeners_() {
+    assert(this.authenticator_);
+    this.authenticator_.addEventListener(
         'dropLink', e => this.onDropLink_(e as CustomEvent<string>));
-    this.authExtHost_.addEventListener(
+    this.authenticator_.addEventListener(
         'newWindow',
         e => this.onNewWindow_(e as CustomEvent<NewWindowProperties>));
-    this.authExtHost_.addEventListener('ready', () => this.onAuthReady_());
-    this.authExtHost_.addEventListener(
+    this.authenticator_.addEventListener('ready', () => this.onAuthReady_());
+    this.authenticator_.addEventListener(
         'resize', e => this.onResize_(e as CustomEvent<string>));
-    this.authExtHost_.addEventListener(
+    this.authenticator_.addEventListener(
         'authCompleted',
         e => this.onAuthCompleted_(e as CustomEvent<AuthCompletedCredentials>));
-    this.authExtHost_.addEventListener(
+    this.authenticator_.addEventListener(
         'showIncognito', () => this.onShowIncognito_());
-    this.authExtHost_.addEventListener(
+    this.authenticator_.addEventListener(
         'getAccounts', () => this.onGetAccounts_());
   }
 
@@ -288,7 +287,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     if (this.isLoginPrimaryAccount_) {
       this.browserProxy_.recordAction('Signin_SigninPage_Shown');
     }
-    this.browserProxy_.authExtensionReady();
+    this.browserProxy_.authenticatorReady();
   }
 
   private onResize_(e: CustomEvent<string>) {
@@ -314,8 +313,8 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
   private onGetAccounts_() {
     this.browserProxy_.getAccounts().then(result => {
-      assert(this.authExtHost_);
-      this.authExtHost_.getAccountsResponse(result);
+      assert(this.authenticator_);
+      this.authenticator_.getAccountsResponse(result);
     });
   }
 
@@ -323,9 +322,9 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * Loads auth extension.
    * @param data Parameters for auth extension.
    */
-  private loadAuthExtension_(data: AuthParams) {
-    assert(this.authExtHost_);
-    this.authExtHost_.load(data.authMode, data);
+  private loadAuthenticator_(data: AuthParams) {
+    assert(this.authenticator_);
+    this.authenticator_.load(data.authMode, data);
     this.loading_ = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
     // <if expr="chromeos_ash">
@@ -543,9 +542,9 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
   // </if>
 
-  setAuthExtHostForTest(authExtHost: Authenticator) {
-    this.authExtHost_ = authExtHost;
-    this.addAuthExtHostListeners_();
+  setAuthenticatorForTest(authenticator: Authenticator) {
+    this.authenticator_ = authenticator;
+    this.addAuthenticatorListeners_();
   }
 }
 

@@ -91,7 +91,7 @@ absl::optional<uint16_t> RTCIceCandidate::sdpMLineIndex() const {
 }
 
 RTCIceCandidatePlatform* RTCIceCandidate::PlatformCandidate() const {
-  return platform_candidate_;
+  return platform_candidate_.Get();
 }
 
 void RTCIceCandidate::Trace(Visitor* visitor) const {

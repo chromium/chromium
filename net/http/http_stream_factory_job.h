@@ -342,6 +342,7 @@ class HttpStreamFactory::Job
                               bool is_websocket);
 
   // Called in Job constructor. Use |spdy_session_key_| after construction.
+  // TODO(crbug.com/1491092): Update to take a proxy_chain.
   static SpdySessionKey GetSpdySessionKey(
       const ProxyServer& proxy_server,
       const GURL& origin_url,
@@ -371,7 +372,7 @@ class HttpStreamFactory::Job
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
   SSLConfig server_ssl_config_;
-  SSLConfig proxy_ssl_config_;
+  SSLConfig base_proxy_ssl_config_;
   const NetLogWithSource net_log_;
 
   const CompletionRepeatingCallback io_callback_;

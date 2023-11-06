@@ -39,9 +39,9 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 
@@ -174,7 +174,7 @@ absl::optional<TextDirection> DirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    const NGInlineCursor& cursor = ComputeNGCaretPosition(adjusted).cursor;
+    const InlineCursor& cursor = ComputeCaretPosition(adjusted).cursor;
     if (cursor)
       return cursor.Current().ResolvedDirection();
     return absl::nullopt;
@@ -194,7 +194,7 @@ absl::optional<TextDirection> LineDirectionAt(
     return absl::nullopt;
 
   if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-    NGInlineCursor line = ComputeNGCaretPosition(adjusted).cursor;
+    InlineCursor line = ComputeCaretPosition(adjusted).cursor;
     if (!line)
       return absl::nullopt;
     line.MoveToContainingLine();

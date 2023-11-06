@@ -5,8 +5,11 @@
 package org.chromium.components.privacy_sandbox;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.Mockito.when;
@@ -31,9 +34,7 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
-/**
- * Tests for TrackingProtectionSettings.
- */
+/** Tests for TrackingProtectionSettings. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class TrackingProtectionSettingsTest {
@@ -41,17 +42,13 @@ public class TrackingProtectionSettingsTest {
     public final BlankUiTestActivitySettingsTestRule mSettingsRule =
             new BlankUiTestActivitySettingsTestRule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private WebsitePreferenceBridge.Natives mBridgeMock;
+    @Mock private WebsitePreferenceBridge.Natives mBridgeMock;
 
-    @Mock
-    private BrowserContextHandle mContextHandleMock;
+    @Mock private BrowserContextHandle mContextHandleMock;
 
-    @Mock
-    private TrackingProtectionDelegate mDelegate;
+    @Mock private TrackingProtectionDelegate mDelegate;
 
     private TrackingProtectionSettings mFragment;
 
@@ -65,12 +62,19 @@ public class TrackingProtectionSettingsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mBridgeMock);
-        mSettingsRule.launchPreference(TrackingProtectionSettings.class, null, (fragment) -> {
-            ((TrackingProtectionSettings) fragment).setTrackingProtectionDelegate(mDelegate);
-        });
-        mFragment = (TrackingProtectionSettings) mSettingsRule.getPreferenceFragment();
 
         when(mDelegate.getBrowserContext()).thenReturn(mContextHandleMock);
+    }
+
+    private void launchTrackingProtectionSettings() {
+        mSettingsRule.launchPreference(
+                TrackingProtectionSettings.class,
+                null,
+                (fragment) -> {
+                    ((TrackingProtectionSettings) fragment)
+                            .setTrackingProtectionDelegate(mDelegate);
+                });
+        mFragment = (TrackingProtectionSettings) mSettingsRule.getPreferenceFragment();
     }
 
     @Test
@@ -78,7 +82,26 @@ public class TrackingProtectionSettingsTest {
     public void testShowTrackingProtectionUi() {
         when(mDelegate.isBlockAll3PCDEnabled()).thenReturn(true);
         when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
+
+        launchTrackingProtectionSettings();
+
         onView(withText(R.string.privacy_sandbox_tracking_protection_description))
                 .check(matches(isDisplayed()));
+        onView(withId(R.id.preference_card)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTrackingProtectionOffboardingCard() {
+        when(mDelegate.isBlockAll3PCDEnabled()).thenReturn(true);
+        when(mDelegate.isDoNotTrackEnabled()).thenReturn(true);
+        when(mDelegate.shouldShowSettingsOffboardingNotice()).thenReturn(true);
+
+        launchTrackingProtectionSettings();
+
+        onView(withId(R.id.preference_card)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.close_icon)).perform(click());
+        onView(withId(R.id.preference_card)).check(doesNotExist());
     }
 }

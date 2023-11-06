@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,7 +29,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -120,7 +120,7 @@ struct SharedStorageWritableTestCase {
   bool use_secure_document_url;
   const char* base_url;
   const char* input_html;
-  bool expected_shared_storage_writable;
+  bool expected_shared_storage_writable_opted_in;
 };
 
 class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
@@ -285,13 +285,13 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
   void SharedStorageWritableRequestVerification(
       Document* document,
-      bool expected_shared_storage_writable) {
+      bool expected_shared_storage_writable_opted_in) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
 
-    EXPECT_EQ(expected_shared_storage_writable,
-              resource->GetResourceRequest().GetSharedStorageWritable());
+    EXPECT_EQ(expected_shared_storage_writable_opted_in,
+              resource->GetResourceRequest().GetSharedStorageWritableOptedIn());
   }
 
  protected:
@@ -471,8 +471,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
   void Test(AttributionSrcTestCase test_case) {
     SCOPED_TRACE(test_case.input_html);
 
-    ScopedTestingPlatformSupport<AttributionTestingPlatformSupport> platform;
-    platform->attribution_support = test_case.attribution_support;
+    GetPage().SetAttributionSupport(test_case.attribution_support);
 
     HTMLMockHTMLResourcePreloader preloader(GetDocument().Url());
     KURL base_url(test_case.base_url);
@@ -514,21 +513,10 @@ class HTMLPreloadScannerTest : public PageTestBase {
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
     preloader.SharedStorageWritableRequestVerification(
-        &GetDocument(), test_case.expected_shared_storage_writable);
+        &GetDocument(), test_case.expected_shared_storage_writable_opted_in);
   }
 
  private:
-  class AttributionTestingPlatformSupport : public TestingPlatformSupport {
-   public:
-    network::mojom::AttributionSupport GetAttributionReportingSupport()
-        override {
-      return attribution_support;
-    }
-
-    network::mojom::AttributionSupport attribution_support =
-        network::mojom::AttributionSupport::kWeb;
-  };
-
   std::unique_ptr<HTMLPreloadScanner> scanner_;
 };
 
@@ -1707,23 +1695,23 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
       // Insecure context
       {kInsecureDocumentUrl, kSecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // No sharedstoragewritable attribute
       {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // Irrelevant element type
       {kSecureDocumentUrl, kSecureBaseURL,
        "<video poster='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/false},
+       /*expected_shared_storage_writable_opted_in=*/false},
       // Secure context, sharedstoragewritable attribute
       // Base (initial) URL does not affect SharedStorageWritable eligibility
       {kSecureDocumentUrl, kInsecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/true},
+       /*expected_shared_storage_writable_opted_in=*/true},
       // Secure context, sharedstoragewritable attribute
       {kSecureDocumentUrl, kSecureBaseURL,
        "<img src='/image' sharedstoragewritable>",
-       /*expected_shared_storage_writable=*/true},
+       /*expected_shared_storage_writable_opted_in=*/true},
   };
 
   for (const auto& test_case : test_cases) {
@@ -1732,6 +1720,38 @@ TEST_F(HTMLPreloadScannerTest, testSharedStorageWritable) {
              /*use_secure_document_url=*/test_case.use_secure_document_url);
     Test(test_case);
   }
+}
+
+class HTMLPreloadScannerLCPPLazyLoadImageTest : public HTMLPreloadScannerTest {
+ public:
+  HTMLPreloadScannerLCPPLazyLoadImageTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kLCPPLazyLoadImagePreload,
+        {{blink::features::kLCPCriticalPathPredictorPreloadLazyLoadImageType
+              .name,
+          "native_lazy_loading"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(HTMLPreloadScannerLCPPLazyLoadImageTest,
+       TokenStreamMatcherWithLoadingLazy) {
+  ElementLocator locator;
+  auto* c = locator.add_components()->mutable_id();
+  c->set_id_attr("target");
+
+  TokenStreamMatcherTestCase test_case = {locator,
+                                          R"HTML(
+    <div>
+      <img src="not-interesting.jpg">
+      <img src="super-interesting.jpg" id="target" loading="lazy">
+      <img src="not-interesting2.jpg">
+    </div>
+    )HTML",
+                                          "super-interesting.jpg"};
+  Test(test_case);
 }
 
 }  // namespace blink

@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,6 +23,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -46,6 +49,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/third_party/quiche/src/quiche/oblivious_http/oblivious_http_client.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
@@ -91,6 +95,11 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   return true;
 }
 
+// This function is used as a callback to verify
+// `InterestGroup::Ad::allowed_reporting_origins` are attested. These origins
+// are specified as part of the ads during `joinAdInterestGroup()` and
+// `updateAdInterestGroups()`. They receive reporting beacons sent by
+// `reportEvent()` when reporting to custom urls.
 bool AreAllowedReportingOriginsAttested(
     BrowserContext* browser_context,
     const std::vector<url::Origin>& origins) {
@@ -99,7 +108,8 @@ bool AreAllowedReportingOriginsAttested(
              ->browser()
              ->IsPrivacySandboxReportingDestinationAttested(
                  browser_context, origin,
-                 PrivacySandboxInvokingAPI::kProtectedAudience)) {
+                 PrivacySandboxInvokingAPI::kProtectedAudience,
+                 /*post_impression_reporting=*/true)) {
       return false;
     }
   }
@@ -148,6 +158,23 @@ void AdAuctionServiceImpl::JoinInterestGroup(
   base::Time max_expiry = base::Time::Now() + kMaxExpiry;
   if (updated_group.expiry > max_expiry) {
     updated_group.expiry = max_expiry;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kPrivateAggregationApiMultipleCloudProviders) ||
+      !base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    // Override with the default if a non-default coordinator is specified when
+    // the feature is disabled.
+    updated_group.aggregation_coordinator_origin = absl::nullopt;
+  }
+
+  if (updated_group.aggregation_coordinator_origin &&
+      !aggregation_service::IsAggregationCoordinatorOriginAllowed(
+          updated_group.aggregation_coordinator_origin.value())) {
+    ReportBadMessageAndDeleteThis(
+        "Unexpected request: aggregationCoordinatorOrigin is not supported.");
+    return;
   }
 
   // `base::Unretained` is safe here since the `BrowserContext` owns the
@@ -201,37 +228,48 @@ void AdAuctionServiceImpl::LeaveInterestGroupForDocument() {
     return;
   }
 
-  if (!render_frame_host().IsNestedWithinFencedFrame()) {
-    ReportBadMessageAndDeleteThis(
-        "Unexpected request: LeaveInterestGroupForDocument only supported "
-        "within fenced frames");
+  // Get interest group owner and name from the ad auction data, which is part
+  // of the fenced frame properties. Here the fenced frame properties are
+  // obtained from the closest ancestor that has valid fenced frame properties.
+  // This is because both top-level ads and ad components may have ad auction
+  // data.
+  const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+      GetFrame()->frame_tree_node()->GetFencedFrameProperties(
+          FencedFramePropertiesNodeSource::kClosestAncestor);
+
+  // This frame is neither a fenced frame or an urn iframe itself, nor it is
+  // nested within a fenced frame or an urn iframe.
+  if (!fenced_frame_properties.has_value()) {
+    devtools_instrumentation::LogWorkletMessage(
+        *GetFrame(), blink::mojom::ConsoleMessageLevel::kError,
+        "Owner and name are required to call LeaveAdInterestGroup outside of "
+        "a fenced frame or an opaque origin iframe.");
     return;
   }
 
-  // Get interest group owner and name. AdAuctionDocumentData is created as
-  // part of navigation to a mapped URN URL. We need to find the top-level
-  // fenced frame, since only the top-level frame has the document data.
-  RenderFrameHost* rfh = &render_frame_host();
-  while (!rfh->IsFencedFrameRoot()) {
-    rfh = rfh->GetParentOrOuterDocument();
-    if (!rfh) {
-      return;
-    }
-  }
-  AdAuctionDocumentData* auction_data =
-      AdAuctionDocumentData::GetForCurrentDocument(rfh);
-  if (!auction_data) {
+  if (!fenced_frame_properties->ad_auction_data_.has_value()) {
     return;
   }
 
-  if (auction_data->interest_group_owner() != origin()) {
+  if (fenced_frame_properties->is_ad_component_ &&
+      !base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM120FeaturesPart2)) {
+    // The ability to leave interest group from an ad component is not supported
+    // before M120.
+    return;
+  }
+
+  const blink::FencedFrame::AdAuctionData& auction_data =
+      fenced_frame_properties->ad_auction_data_->GetValueIgnoringVisibility();
+
+  if (auction_data.interest_group_owner != origin()) {
     // The ad page calling LeaveAdInterestGroup is not the owner of the group.
     return;
   }
 
   GetInterestGroupManager().LeaveInterestGroup(
-      blink::InterestGroupKey(auction_data->interest_group_owner(),
-                              auction_data->interest_group_name()),
+      blink::InterestGroupKey(auction_data.interest_group_owner,
+                              auction_data.interest_group_name),
       main_frame_origin_);
 }
 
@@ -345,10 +383,14 @@ void AdAuctionServiceImpl::RunAdAuction(
     return;
   }
 
+  AdAuctionPageData* ad_auction_page_data =
+      PageUserData<AdAuctionPageData>::GetOrCreateForPage(
+          render_frame_host().GetPage());
+
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &auction_nonce_manager_,
       &GetInterestGroupManager(), render_frame_host().GetBrowserContext(),
-      private_aggregation_manager_,
+      private_aggregation_manager_, ad_auction_page_data,
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(
@@ -358,8 +400,6 @@ void AdAuctionServiceImpl::RunAdAuction(
       render_frame_host().GetPageUkmSourceId(), GetClientSecurityState(),
       GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
-                          base::Unretained(this)),
-      base::BindRepeating(&AdAuctionServiceImpl::GetAdAuctionPageData,
                           base::Unretained(this)),
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
@@ -478,8 +518,8 @@ void AdAuctionServiceImpl::GetInterestGroupAdAuctionData(
 
   // If the interest group API is not allowed for this origin do nothing.
   if (!IsInterestGroupAPIAllowed(
-          ContentBrowserClient::InterestGroupApiOperation::kSell, origin())) {
-    std::move(callback).Run({}, {}, "Invalid Operation");
+          ContentBrowserClient::InterestGroupApiOperation::kSell, seller)) {
+    std::move(callback).Run({}, {}, "Attestation Failed");
     return;
   }
 
@@ -667,11 +707,6 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
       origin);
 }
 
-AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
-  return PageUserData<AdAuctionPageData>::GetForPage(
-      render_frame_host().GetPage());
-}
-
 void AdAuctionServiceImpl::OnAuctionComplete(
     RunAdAuctionCallback callback,
     GURL urn_uuid,
@@ -772,7 +807,9 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   blink::FencedFrame::RedactedFencedFrameConfig config =
       current_fenced_frame_urls_map.AssignFencedFrameURLAndInterestGroupInfo(
           urn_uuid, requested_ad_size, *ad_descriptor,
-          std::move(ad_auction_data), reporter->OnNavigateToWinningAdCallback(),
+          std::move(ad_auction_data),
+          reporter->OnNavigateToWinningAdCallback(
+              GetFrame()->GetFrameTreeNodeId()),
           ad_component_descriptors, reporter->fenced_frame_reporter());
   std::move(callback).Run(/*aborted_by_script=*/false, std::move(config));
 
@@ -859,14 +896,19 @@ void AdAuctionServiceImpl::OnGotAuctionData(
 
   state.data = std::move(data);
   absl::optional<url::Origin> coordinator = state.coordinator;
+  scoped_refptr<network::WrapperSharedURLLoaderFactory> loader =
+      GetRefCountedTrustedURLLoaderFactory();
+  network::WrapperSharedURLLoaderFactory* loader_ptr = loader.get();
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      GetRefCountedTrustedURLLoaderFactory().get(), std::move(coordinator),
+      loader_ptr, std::move(coordinator),
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(state)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(state),
+                     std::move(loader)));
 }
 
 void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
     BiddingAndAuctionDataConstructionState state,
+    scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
     base::expected<BiddingAndAuctionServerKey, std::string> maybe_key) {
   if (!maybe_key.has_value()) {
     std::move(state.callback).Run({}, {}, maybe_key.error());
@@ -899,6 +941,8 @@ void AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey(
       std::move(*maybe_request).ReleaseContext(), state.start_time);
   ad_auction_page_data->RegisterAdAuctionRequestContext(state.request_id,
                                                         std::move(context));
+  // Pre-warm data decoder.
+  ad_auction_page_data->GetDecoderFor(state.seller)->GetService();
 
   size_t start_offset = 0;
   if (base::FeatureList::IsEnabled(kBiddingAndAuctionEncryptionMediaType)) {

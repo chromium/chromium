@@ -85,14 +85,14 @@ class JetStream2(_JetStream2Base):
     emails=['omerkatz@chromium.org'],
     component='Blink>JavaScript>GarbageCollection',
     documentation_url='https://browserbench.org/JetStream2.0/in-depth.html')
-class JetStream2MinorMC(JetStream2):
-  """Latest JetStream2 with the MinorMC flag.
+class JetStream2NoMinorMS(JetStream2):
+  """Latest JetStream2 without the MinorMS flag.
 
-  Shows the performance of upcoming MinorMC young generation GC in V8.
+  Shows the performance with Scavenger young generation GC in V8.
   """
   @classmethod
   def Name(cls):
-    return 'jetstream2-minormc'
+    return 'jetstream2-nominorms'
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')

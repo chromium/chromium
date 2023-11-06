@@ -44,7 +44,7 @@ class LayoutQuote final : public LayoutInline {
 
   PseudoElement* GetOwningPseudo() const {
     NOT_DESTROYED();
-    return owning_pseudo_;
+    return owning_pseudo_.Get();
   }
   bool IsInScope() const {
     NOT_DESTROYED();
@@ -52,7 +52,7 @@ class LayoutQuote final : public LayoutInline {
   }
   StyleContainmentScope* GetScope() const {
     NOT_DESTROYED();
-    return scope_;
+    return scope_.Get();
   }
   void SetScope(StyleContainmentScope* scope) {
     NOT_DESTROYED();

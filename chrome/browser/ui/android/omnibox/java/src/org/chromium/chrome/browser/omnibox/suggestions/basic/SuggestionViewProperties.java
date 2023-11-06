@@ -13,9 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-/**
- * The properties associated with rendering the default suggestion view.
- */
+/** The properties associated with rendering the default suggestion view. */
 public @interface SuggestionViewProperties {
     /** Whether suggestion is a search suggestion. */
     static final WritableBooleanPropertyKey IS_SEARCH_SUGGESTION = new WritableBooleanPropertyKey();
@@ -34,8 +32,10 @@ public @interface SuggestionViewProperties {
     @VisibleForTesting
     static final WritableBooleanPropertyKey ALLOW_WRAP_AROUND = new WritableBooleanPropertyKey();
 
-    static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
-            IS_SEARCH_SUGGESTION, TEXT_LINE_1_TEXT, TEXT_LINE_2_TEXT, ALLOW_WRAP_AROUND};
+    static final PropertyKey[] ALL_UNIQUE_KEYS =
+            new PropertyKey[] {
+                IS_SEARCH_SUGGESTION, TEXT_LINE_1_TEXT, TEXT_LINE_2_TEXT, ALLOW_WRAP_AROUND
+            };
 
     static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, BaseSuggestionViewProperties.ALL_KEYS);

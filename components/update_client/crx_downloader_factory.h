@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_CRX_DOWNLOADER_FACTORY_H_
 #define COMPONENTS_UPDATE_CLIENT_CRX_DOWNLOADER_FACTORY_H_
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace update_client {
 
@@ -32,7 +34,9 @@ class CrxDownloaderFactory
 };
 
 scoped_refptr<CrxDownloaderFactory> MakeCrxDownloaderFactory(
-    scoped_refptr<NetworkFetcherFactory> network_fetcher_factory);
+    scoped_refptr<NetworkFetcherFactory> network_fetcher_factory,
+    absl::optional<base::FilePath> background_downloader_cache_path =
+        absl::nullopt);
 
 }  // namespace update_client
 

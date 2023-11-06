@@ -77,6 +77,6 @@ blink_core_tests_scroll = [
   "scrollbar_theme_overlay_test.cc",
 ]
 
-if (use_aura) {
+if (is_win) {
   blink_core_tests_scroll += [ "scrollbar_theme_fluent_unittest.cc" ]
 }

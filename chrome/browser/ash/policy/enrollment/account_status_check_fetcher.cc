@@ -11,22 +11,16 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/uuid.h"
-#include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "url/gurl.h"
 
 namespace policy {
 
@@ -129,11 +123,11 @@ AccountStatusCheckFetcher::AccountStatusCheckFetcher(
 AccountStatusCheckFetcher::~AccountStatusCheckFetcher() = default;
 
 void AccountStatusCheckFetcher::Fetch(FetchCallback callback,
-                                      bool fetch_entollment_nudge_policy) {
+                                      bool fetch_enrollment_nudge_policy) {
   CHECK(!callback_);
   CHECK(callback);
   callback_ = std::move(callback);
-  is_fetching_enrollment_nudge_policy_ = fetch_entollment_nudge_policy;
+  is_fetching_enrollment_nudge_policy_ = fetch_enrollment_nudge_policy;
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           service_,
@@ -147,7 +141,7 @@ void AccountStatusCheckFetcher::Fetch(FetchCallback callback,
   em::CheckUserAccountRequest* request =
       config->request()->mutable_check_user_account_request();
   request->set_user_email(email_);
-  request->set_enrollment_nudge_request(fetch_entollment_nudge_policy);
+  request->set_enrollment_nudge_request(fetch_enrollment_nudge_policy);
   fetch_request_job_ = service_->CreateJob(std::move(config));
 }
 

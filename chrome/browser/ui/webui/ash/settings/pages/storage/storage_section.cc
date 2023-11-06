@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_ui.h"
@@ -112,7 +112,7 @@ void StorageSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "storageAndroidAppsExternalDrivesNote",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_STORAGE_ANDROID_APPS_ACCESS_EXTERNAL_DRIVES_NOTE,
-          base::ASCIIToUTF16(chrome::kArcExternalStorageLearnMoreURL)));
+          chrome::kArcExternalStorageLearnMoreURL));
 
   html_source->AddBoolean("isExternalStorageEnabled",
                           IsExternalStorageEnabled(profile()));

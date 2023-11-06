@@ -37,8 +37,7 @@ import org.chromium.content.browser.JavaBridgeActivityTestRule.Controller;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(JavaBridgeActivityTestRule.BATCH)
 public class JavaBridgeArrayTest {
-    @Rule
-    public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
+    @Rule public JavaBridgeActivityTestRule mActivityTestRule = new JavaBridgeActivityTestRule();
 
     private static class TestObject extends Controller {
         private boolean mBooleanValue;
@@ -55,11 +54,13 @@ public class JavaBridgeArrayTest {
             mBooleanValue = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setIntValue(int x) {
             mIntValue = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setStringValue(String x) {
             mStringValue = x;
@@ -70,10 +71,12 @@ public class JavaBridgeArrayTest {
             waitForResult();
             return mBooleanValue;
         }
+
         public synchronized int waitForIntValue() {
             waitForResult();
             return mIntValue;
         }
+
         public synchronized String waitForStringValue() {
             waitForResult();
             return mStringValue;
@@ -84,6 +87,7 @@ public class JavaBridgeArrayTest {
             mIntArray = x;
             notifyResultIsReady();
         }
+
         @JavascriptInterface
         public synchronized void setIntIntArray(int[][] x) {
             mIntIntArray = x;
@@ -94,6 +98,7 @@ public class JavaBridgeArrayTest {
             waitForResult();
             return mIntArray;
         }
+
         public synchronized int[][] waitForIntIntArray() {
             waitForResult();
             return mIntIntArray;

@@ -4,15 +4,16 @@
 
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
 #import "ios/chrome/browser/autofill/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_iph_presenter.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
-#import "ios/chrome/browser/download/download_manager_tab_helper.h"
-#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
+#import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/follow/follow_iph_presenter.h"
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
-#import "ios/chrome/browser/itunes_urls/itunes_urls_handler_tab_helper.h"
+#import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/lens_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/overscroll_actions/model/overscroll_actions_tab_helper.h"
@@ -30,7 +31,7 @@
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/download/download_manager_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
@@ -40,8 +41,8 @@
 #import "ios/chrome/browser/web/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper.h"
 #import "ios/chrome/browser/web/repost_form_tab_helper_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installation_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installation_observer.h"
+#import "ios/chrome/browser/web_state_list/model/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
@@ -166,6 +167,8 @@
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(
         _priceNotificationsIPHPresenter);
   }
+  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
+      _appLauncherBrowserPresentationProvider);
 }
 
 - (void)uninstallDependencyForWebState:(web::WebState*)webState {
@@ -225,6 +228,9 @@
   if (priceNotificationsTabHelper) {
     priceNotificationsTabHelper->SetPriceNotificationsIPHPresenter(nil);
   }
+
+  AppLauncherTabHelper::FromWebState(webState)->SetBrowserPresentationProvider(
+      nil);
 }
 
 @end

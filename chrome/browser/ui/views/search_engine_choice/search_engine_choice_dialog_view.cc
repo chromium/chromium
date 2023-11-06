@@ -132,8 +132,11 @@ void SearchEngineChoiceDialogView::Initialize() {
                      ->GetAs<SearchEngineChoiceUI>();
   CHECK(web_ui);
   // Unretained is fine because this outlives the inner web UI.
-  web_ui->Initialize(base::BindOnce(
-      &SearchEngineChoiceDialogView::ShowNativeView, base::Unretained(this)));
+  web_ui->Initialize(/*display_dialog_callback=*/base::BindOnce(
+                         &SearchEngineChoiceDialogView::ShowNativeView,
+                         base::Unretained(this)),
+                     /*on_choice_made_callback=*/base::OnceClosure(),
+                     SearchEngineChoiceService::EntryPoint::kDialog);
 
   SetUseDefaultFillLayout(true);
 }

@@ -156,8 +156,8 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     EXPECT_EQ(limit1.daily_limit(), limit2.daily_limit());
     // Compare JavaTime, because some precision is lost when serializing
     // and deserializing.
-    EXPECT_EQ(limit1.last_updated().ToJavaTime(),
-              limit2.last_updated().ToJavaTime());
+    EXPECT_EQ(limit1.last_updated().InMillisecondsSinceUnixEpoch(),
+              limit2.last_updated().InMillisecondsSinceUnixEpoch());
   }
 
  private:

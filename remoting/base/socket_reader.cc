@@ -34,7 +34,7 @@ void SocketReader::Init(net::Socket* socket,
 
 void SocketReader::DoRead() {
   while (true) {
-    read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
+    read_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize);
     int result = socket_->Read(
         read_buffer_.get(), kReadBufferSize,
         base::BindOnce(&SocketReader::OnRead, weak_factory_.GetWeakPtr()));

@@ -130,7 +130,8 @@ AppServiceAppItem::AppServiceAppItem(
     SetPromisePackageId(package_id.value().ToString());
   }
 
-  const bool is_new_install = !sync_item && IsNewInstall(app_update);
+  const bool is_new_install =
+      (!sync_item || sync_item->is_new) && IsNewInstall(app_update);
   DVLOG(1) << "New AppServiceAppItem is_new_install " << is_new_install
            << " from update " << app_update;
   SetIsNewInstall(is_new_install);
@@ -147,8 +148,10 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update) {
 
 void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
                                     bool in_constructor) {
-  if (in_constructor || app_update.NameChanged()) {
-    SetName(app_update.Name());
+  if (in_constructor || app_update.ShortNameChanged()) {
+    // We display the short name rather than the full name here since
+    // each launcher item only has a limited space.
+    SetName(app_update.ShortName());
   }
 
   if (in_constructor || app_update.IconKeyChanged()) {

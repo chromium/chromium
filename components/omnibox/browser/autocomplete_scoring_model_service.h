@@ -40,6 +40,13 @@ class AutocompleteScoringModelService : public KeyedService {
   AutocompleteScoringModelService& operator=(
       const AutocompleteScoringModelService&) = delete;
 
+  // Passthrough to
+  // `AutocompleteScoringModelHandler::AddOnModelUpdatedCallback()`.
+  void AddOnModelUpdatedCallback(base::OnceClosure callback);
+
+  // Returns the version from the model info.
+  int GetModelVersion() const;
+
   // Invokes the model to score the given `scoring_signals` and calls
   // `result_callback` with an optional prediction score from the model. If the
   // model is not available or the model input cannot be generated from the

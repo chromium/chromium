@@ -12,6 +12,7 @@
         "responses": [
           {
             "url": "https://reporter.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
@@ -20,8 +21,7 @@
                   "a": "0x159",
                   "b": "0x5"
                 },
-                // Will be cleared as debug_permission is not set.
-                "source_debug_key": "12345"
+                "debug_key": "12345"
               }
             }
           }
@@ -238,6 +238,7 @@
               "limit": "65536",
               "source_event_id": "123",
               "source_site": "https://source.test",
+              "source_debug_key": "12345",
               "trigger_debug_key": "6789"
             },
             "type": "trigger-aggregate-insufficient-budget"
@@ -270,7 +271,8 @@
               "key": "0x559",
               "value": 65535
             }
-          ]
+          ],
+          "source_debug_key": "12345"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3602000"
@@ -283,7 +285,8 @@
               "key": "0xa85",
               "value": 1
             }
-          ]
+          ],
+          "source_debug_key": "12345"
         },
         "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
         "report_time": "3604000"

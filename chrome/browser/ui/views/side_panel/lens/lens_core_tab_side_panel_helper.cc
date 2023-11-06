@@ -77,11 +77,6 @@ bool IsSidePanelEnabledForLens(content::WebContents* web_contents) {
          lens::features::IsLensSidePanelEnabled();
 }
 
-bool IsSidePanelEnabledForLensRegionSearch(content::WebContents* web_contents) {
-  return IsSidePanelEnabledForLens(web_contents) &&
-         lens::features::IsLensSidePanelEnabledForRegionSearch();
-}
-
 bool IsSidePanelEnabledFor3PDse(content::WebContents* web_contents) {
   return lens::internal::IsSidePanelEnabled(web_contents) &&
          !search::DefaultSearchProviderIsGoogle(

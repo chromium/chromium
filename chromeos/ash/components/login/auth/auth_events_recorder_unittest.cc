@@ -29,12 +29,12 @@ std::string GetAuthEventsCrashKeyValue() {
 
   // Breakpad breaks the crash key value up into chunks into chunks labeled
   // name__1 through name__N.
-  static const std::string kCrashKeyName = "auth-events__%d";
+  static constexpr char kCrashKeyName[] = "auth-events__%d";
   std::string chunk;
   int index = 0;
   do {
     chunk = crash_reporter::GetCrashKeyValue(
-        base::StringPrintf(kCrashKeyName.c_str(), ++index));
+        base::StringPrintf(kCrashKeyName, ++index));
     result += chunk;
   } while (chunk.length() > 0);
   return result;

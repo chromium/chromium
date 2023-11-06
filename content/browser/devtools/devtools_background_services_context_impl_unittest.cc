@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -111,7 +113,9 @@ class DevToolsBackgroundServicesContextTest
               blink::mojom::kInvalidServiceWorkerRegistrationId);
 
     browser_client_ = std::make_unique<TestBrowserClient>();
-    SetBrowserClientForTesting(browser_client_.get());
+    scoped_content_browser_client_setting_ =
+        std::make_unique<ScopedContentBrowserClientSetting>(
+            browser_client_.get());
 
     SimulateBrowserRestart();
   }
@@ -267,10 +271,21 @@ class DevToolsBackgroundServicesContextTest
   std::unique_ptr<DevToolsBackgroundServicesContextImpl> context_;
   scoped_refptr<ServiceWorkerRegistration> service_worker_registration_;
   std::unique_ptr<ContentBrowserClient> browser_client_;
+  std::unique_ptr<ScopedContentBrowserClientSetting>
+      scoped_content_browser_client_setting_;
 };
 
+// Flaky on Fuchsia.
+// TODO(crbug.com/1492963): Reenable test on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_NothingStoredWithRecordingModeOff \
+  DISABLED_NothingStoredWithRecordingModeOff
+#else
+#define MAYBE_NothingStoredWithRecordingModeOff \
+  NothingStoredWithRecordingModeOff
+#endif
 TEST_F(DevToolsBackgroundServicesContextTest,
-       NothingStoredWithRecordingModeOff) {
+       MAYBE_NothingStoredWithRecordingModeOff) {
   // Initially there are no entries.
   EXPECT_TRUE(GetLoggedBackgroundServiceEvents().empty());
 

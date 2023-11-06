@@ -4,7 +4,6 @@
 
 #include "components/reporting/util/status.h"
 
-#include <stdio.h>
 #include <utility>
 
 #include "base/logging.h"

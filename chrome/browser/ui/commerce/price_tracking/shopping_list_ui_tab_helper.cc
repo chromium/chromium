@@ -41,10 +41,17 @@
 #include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+
+using SidePanelWebUIViewT_ShoppingInsightsSidePanelUI =
+    SidePanelWebUIViewT<ShoppingInsightsSidePanelUI>;
+BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_ShoppingInsightsSidePanelUI,
+                        SidePanelWebUIViewT)
+END_METADATA
 
 namespace commerce {
 
@@ -436,18 +443,18 @@ void ShoppingListUiTabHelper::SetPriceTrackingState(
 
   base::OnceCallback<void(bool)> wrapped_callback = base::BindOnce(
       [](base::WeakPtr<ShoppingListUiTabHelper> helper,
-         base::OnceCallback<void(bool)> callback, bool success) {
+         base::OnceCallback<void(bool)> callback, bool is_tracked,
+         bool success) {
         if (helper) {
           if (success) {
-            helper->is_cluster_id_tracked_by_user_ =
-                helper->pending_tracking_state_.value();
+            helper->is_cluster_id_tracked_by_user_ = is_tracked;
           }
           helper->pending_tracking_state_.reset();
         }
 
         std::move(callback).Run(success);
       },
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), enable);
 
   pending_tracking_state_.emplace(enable);
 

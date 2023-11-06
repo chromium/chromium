@@ -19,19 +19,15 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
-/**
- * Tests for the Default Offline behavior.
- */
+/** Tests for the Default Offline behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTest {
@@ -42,13 +38,10 @@ public class WebappDefaultOfflineTest {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
     }
 
-    /**
-     * Simulates what happens when you launch a web app when the network is down.
-     */
+    /** Simulates what happens when you launch a web app when the network is down. */
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOffline() throws Exception {
         // Make sure the navigations to the test app result in a 404 error.
         final String testAppUrl =
@@ -62,17 +55,23 @@ public class WebappDefaultOfflineTest {
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        assertEquals("\"shortname\"",
+        assertEquals(
+                "\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"You're offline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"You're offline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
-        assertEquals("\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
+        assertEquals(
+                "\"data:image/png;base64," + WebappActivityTestRule.TEST_ICON + "\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.getElementById('icon').src;"));
-        assertEquals("\"inline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"inline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('offlineIcon').style.display;"));
     }
 

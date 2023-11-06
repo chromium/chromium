@@ -12,7 +12,6 @@ import '../../components/buttons/oobe_text_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
-import '../../components/oobe_display_size_selector.js';
 import '../../components/oobe_icons.html.js';
 
 import {CrSliderElement} from '//resources/cr_elements/cr_slider/cr_slider.js';
@@ -22,6 +21,7 @@ import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../component
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
+import {OobeDisplaySizeSelector} from '../../components/oobe_display_size_selector.js';
 
 /**
  * @constructor
@@ -52,6 +52,23 @@ const UserAction = {
   NEXT: 'next',
   RETURN: 'return',
 };
+
+/**
+ * @typedef {{
+ *   sizeSelector: OobeDisplaySizeSelector,
+ * }}
+ */
+DisplaySizeScreenElementBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   availableSizes: Array<number>,
+ *   currentSize: number,
+ *   shouldShowReturn: boolean,
+ * }}
+ */
+let DisplaySizeScreenData;
 
 /**
  * @polymer
@@ -92,6 +109,9 @@ class DisplaySizeScreen extends DisplaySizeScreenElementBase {
     this.initializeLoginScreen('DisplaySizeScreen');
   }
 
+  /**
+   * @param {DisplaySizeScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     this.$.sizeSelector.init(data['availableSizes'], data['currentSize']);
     this.shouldShowReturn_ = data['shouldShowReturn'];

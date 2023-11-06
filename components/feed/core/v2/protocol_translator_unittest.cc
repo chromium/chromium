@@ -40,7 +40,8 @@ AccountInfo TestAccountInfo() {
 feedwire::Response TestWireResponse() {
   // Read and parse response.binarypb.
   base::FilePath response_file_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &response_file_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT,
+                               &response_file_path));
   response_file_path = response_file_path.AppendASCII(kResponsePbPath);
 
   CHECK(base::PathExists(response_file_path));

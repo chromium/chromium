@@ -57,9 +57,9 @@ class CORE_EXPORT FetchResponseData final
   FetchResponseData* CreateOpaqueFilteredResponse() const;
   FetchResponseData* CreateOpaqueRedirectFilteredResponse() const;
 
-  FetchResponseData* InternalResponse() { return internal_response_; }
+  FetchResponseData* InternalResponse() { return internal_response_.Get(); }
   const FetchResponseData* InternalResponse() const {
-    return internal_response_;
+    return internal_response_.Get();
   }
 
   FetchResponseData* Clone(ScriptState*, ExceptionState& exception_state);
@@ -74,7 +74,7 @@ class CORE_EXPORT FetchResponseData final
   AtomicString StatusMessage() const { return status_message_; }
   FetchHeaderList* HeaderList() const { return header_list_.Get(); }
   FetchHeaderList* InternalHeaderList() const;
-  BodyStreamBuffer* Buffer() const { return buffer_; }
+  BodyStreamBuffer* Buffer() const { return buffer_.Get(); }
   String MimeType() const;
   // Returns the BodyStreamBuffer of |m_internalResponse| if any. Otherwise,
   // returns |m_buffer|.

@@ -108,7 +108,7 @@ URLSearchParams* DOMURL::searchParams() {
   if (!search_params_)
     search_params_ = URLSearchParams::Create(Url().Query(), this);
 
-  return search_params_;
+  return search_params_.Get();
 }
 
 void DOMURL::Update() {

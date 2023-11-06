@@ -14,7 +14,6 @@
 #include "net/base/ip_address.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/webrtc/rtc_base/async_resolver_interface.h"
 
 namespace sharing {
 

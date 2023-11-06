@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
 
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
-#include "chrome/browser/ui/views/lens/lens_static_page_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
+#include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
@@ -41,6 +42,13 @@ GURL CreateURLForNewTab(const GURL& original_url) {
 
 void OpenLensSidePanel(Browser* browser,
                        const content::OpenURLParams& url_params) {
+  if (companion::ShouldUseContextualLensPanelForImageSearch(browser)) {
+    auto* coordinator =
+        SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
+    coordinator->ShowLens(url_params);
+    return;
+  }
+
   LensSidePanelCoordinator::GetOrCreateForBrowser(browser)
       ->RegisterEntryAndShow(url_params);
 }
@@ -49,10 +57,11 @@ views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  CHECK(browser_view);
   // Our anchor should be the browser view's top container view. This makes sure
   // that we account for side panel width and the top container view.
-  views::View* anchor =
-      BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
+  views::View* anchor = browser_view->contents_web_view();
   return views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<LensRegionSearchInstructionsView>(
           anchor, std::move(close_callback), std::move(escape_callback)));
@@ -83,16 +92,6 @@ content::WebContents* GetLensUnifiedSidePanelWebContentsForTesting(
       lens_side_panel_coordinator->GetViewWebContentsForTesting();
   DCHECK(web_contents);
   return web_contents;
-}
-
-void OpenLensStaticPage(Browser* browser) {
-  DCHECK(browser);
-  auto lens_static_page_data = std::make_unique<lens::LensStaticPageData>();
-  lens_static_page_data->lens_static_page_controller =
-      std::make_unique<lens::LensStaticPageController>(browser);
-  lens_static_page_data->lens_static_page_controller->OpenStaticPage();
-  browser->SetUserData(LensStaticPageData::kDataKey,
-                       std::move(lens_static_page_data));
 }
 
 }  // namespace lens

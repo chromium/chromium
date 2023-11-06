@@ -45,6 +45,11 @@ api::os_diagnostics::MemoryRoutineFinishedInfo UncheckedConvertPtr(
     base::Uuid uuid,
     bool has_passed);
 
+api::os_diagnostics::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed);
+
 }  // namespace unchecked
 
 api::os_diagnostics::ExceptionReason Convert(

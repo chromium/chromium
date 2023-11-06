@@ -157,6 +157,8 @@ class BrowserDataBackMigrator : public BrowserDataBackMigratorBase {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorFilesSetupTest,
                            MovesLacrosItemsToAshDirCorrectly);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
+                           MovesMergedItemsBackToAshCorrectly);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
                            MergesAshOnlyPreferencesCorrectly);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataBackMigratorTest,
                            MergesDictSplitPreferencesCorrectly);

@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_ACCESS_MANAGER_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -14,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -182,6 +180,10 @@ class CreditCardAccessManager
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
+  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
+      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsClient::UnmaskResponseDetails& response_details)
+      override;
 
   void SetUnmaskDetailsRequestInProgressForTesting(
       bool unmask_details_request_in_progress) {
@@ -191,12 +193,6 @@ class CreditCardAccessManager
   bool ShouldOfferFidoOptInDialogForTesting(
       const CreditCardCvcAuthenticator::CvcAuthenticationResponse& response) {
     return ShouldOfferFidoOptInDialog(response);
-  }
-
-  void OnVirtualCardUnmaskResponseReceivedForTesting(
-      AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details) {
-    OnVirtualCardUnmaskResponseReceived(result, response_details);
   }
 
   void OnRiskBasedAuthenticationCancelledForTesting() {
@@ -366,15 +362,6 @@ class CreditCardAccessManager
 
   // Helper function to fetch local or full server cards.
   void FetchLocalOrFullServerCard();
-
-  // Callback function invoked when risk data is fetched for a virtual card.
-  void OnDidGetVirtualCardUnmaskRiskData(const std::string& risk_data);
-
-  // Callback function invoked when an unmask response for a virtual card has
-  // been received.
-  void OnVirtualCardUnmaskResponseReceived(
-      AutofillClient::PaymentsRpcResult result,
-      payments::PaymentsClient::UnmaskResponseDetails& response_details);
 
   // Invoked when CreditCardAccessManager stops waiting for UnmaskDetails to
   // return. If OnDidGetUnmaskDetails() has been invoked,

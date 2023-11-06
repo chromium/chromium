@@ -19,7 +19,6 @@
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/web_contents_proxy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -37,8 +36,9 @@ class TabConnectednessAccess;
 enum class PagePropertyFlag {
   kIsVisible,  // initializes PageNode::IsVisible()
   kMin = kIsVisible,
-  kIsAudible,  // initializes PageNode::IsAudible()
-  kMax = kIsAudible,
+  kIsAudible,            // initializes PageNode::IsAudible()
+  kHasPictureInPicture,  // initializes PageNode::HasPictureInPicture()
+  kMax = kHasPictureInPicture,
 };
 using PagePropertyFlags = base::
     EnumSet<PagePropertyFlag, PagePropertyFlag::kMin, PagePropertyFlag::kMax>;
@@ -73,6 +73,37 @@ class PageNodeImpl
 
   ~PageNodeImpl() override;
 
+  // Partial PageNode implementation:
+  const std::string& GetBrowserContextID() const override;
+  resource_attribution::PageContext GetResourceContext() const override;
+  EmbeddingType GetEmbeddingType() const override;
+  PageType GetType() const override;
+  bool IsFocused() const override;
+  bool IsVisible() const override;
+  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
+  bool IsAudible() const override;
+  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
+      const override;
+  bool HasPictureInPicture() const override;
+  LoadingState GetLoadingState() const override;
+  ukm::SourceId GetUkmSourceID() const override;
+  LifecycleState GetLifecycleState() const override;
+  bool IsHoldingWebLock() const override;
+  bool IsHoldingIndexedDBLock() const override;
+  int64_t GetNavigationID() const override;
+  const std::string& GetContentsMimeType() const override;
+  base::TimeDelta GetTimeSinceLastNavigation() const override;
+  const GURL& GetMainFrameUrl() const override;
+  uint64_t EstimateMainFramePrivateFootprintSize() const override;
+  bool HadFormInteraction() const override;
+  bool HadUserEdits() const override;
+  const WebContentsProxy& GetContentsProxy() const override;
+  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
+      const override;
+  PageState GetPageState() const override;
+  uint64_t EstimateResidentSetSize() const override;
+  uint64_t EstimatePrivateFootprintSize() const override;
+
   // Returns the web contents associated with this page node. It is valid to
   // call this function on any thread but the weak pointer must only be
   // dereferenced on the UI thread.
@@ -86,6 +117,7 @@ class PageNodeImpl
   void SetIsFocused(bool is_focused);
   void SetIsVisible(bool is_visible);
   void SetIsAudible(bool is_audible);
+  void SetHasPictureInPicture(bool has_picture_in_picture);
   void SetLoadingState(LoadingState loading_state);
   void SetUkmSourceId(ukm::SourceId ukm_source_id);
   void OnFaviconUpdated();
@@ -120,12 +152,12 @@ class PageNodeImpl
   const std::string& browser_context_id() const;
   FrameNodeImpl* opener_frame_node() const;
   FrameNodeImpl* embedder_frame_node() const;
-  resource_attribution::PageContext resource_context() const;
   EmbeddingType embedding_type() const;
   PageType type() const;
   bool is_focused() const;
   bool is_visible() const;
   bool is_audible() const;
+  bool has_picture_in_picture() const;
   LoadingState loading_state() const;
   ukm::SourceId ukm_source_id() const;
   LifecycleState lifecycle_state() const;
@@ -230,40 +262,12 @@ class PageNodeImpl
  private:
   friend class PageNodeImplDescriber;
 
-  // PageNode implementation.
-  PageState GetPageState() const override;
-  const std::string& GetBrowserContextID() const override;
+  // Partial PageNode implementation:
   const FrameNode* GetOpenerFrameNode() const override;
   const FrameNode* GetEmbedderFrameNode() const override;
-  resource_attribution::PageContext GetResourceContext() const override;
-  EmbeddingType GetEmbeddingType() const override;
-  PageType GetType() const override;
-  bool IsFocused() const override;
-  bool IsVisible() const override;
-  base::TimeDelta GetTimeSinceLastVisibilityChange() const override;
-  bool IsAudible() const override;
-  absl::optional<base::TimeDelta> GetTimeSinceLastAudibleChange()
-      const override;
-  LoadingState GetLoadingState() const override;
-  ukm::SourceId GetUkmSourceID() const override;
-  LifecycleState GetLifecycleState() const override;
-  bool IsHoldingWebLock() const override;
-  bool IsHoldingIndexedDBLock() const override;
-  int64_t GetNavigationID() const override;
-  const std::string& GetContentsMimeType() const override;
-  base::TimeDelta GetTimeSinceLastNavigation() const override;
   const FrameNode* GetMainFrameNode() const override;
   bool VisitMainFrameNodes(const FrameNodeVisitor& visitor) const override;
   const base::flat_set<const FrameNode*> GetMainFrameNodes() const override;
-  const GURL& GetMainFrameUrl() const override;
-  uint64_t EstimateMainFramePrivateFootprintSize() const override;
-  bool HadFormInteraction() const override;
-  bool HadUserEdits() const override;
-  const WebContentsProxy& GetContentsProxy() const override;
-  const absl::optional<freezing::FreezingVote>& GetFreezingVote()
-      const override;
-  uint64_t EstimateResidentSetSize() const override;
-  uint64_t EstimatePrivateFootprintSize() const override;
 
   // NodeBase:
   void OnJoiningGraph() override;
@@ -361,6 +365,12 @@ class PageNodeImpl
   ObservedProperty::NotifiesOnlyOnChanges<bool,
                                           &PageNodeObserver::OnIsAudibleChanged>
       is_audible_ GUARDED_BY_CONTEXT(sequence_checker_){false};
+  // Whether or not the page is displaying content in picture-in-picture. Driven
+  // by browser instrumentation. Initialized on construction.
+  ObservedProperty::NotifiesOnlyOnChanges<
+      bool,
+      &PageNodeObserver::OnHasPictureInPictureChanged>
+      has_picture_in_picture_ GUARDED_BY_CONTEXT(sequence_checker_){false};
   // The loading state. This is driven by instrumentation in the browser
   // process.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<

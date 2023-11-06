@@ -15,10 +15,12 @@
 #include "base/timer/timer.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -39,7 +41,9 @@ class CookieControlsController
   CookieControlsController(
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       scoped_refptr<content_settings::CookieSettings> original_cookie_settings,
-      HostContentSettingsMap* settings_map);
+      HostContentSettingsMap* settings_map,
+      privacy_sandbox::TrackingProtectionSettings*
+          tracking_protection_settings);
   CookieControlsController(const CookieControlsController& other) = delete;
   CookieControlsController& operator=(const CookieControlsController& other) =
       delete;
@@ -81,6 +85,7 @@ class CookieControlsController
   struct Status {
     CookieControlsStatus status;
     CookieControlsEnforcement enforcement;
+    CookieBlocking3pcdStatus blocking_status;
     base::Time expiration;
   };
 
@@ -135,11 +140,12 @@ class CookieControlsController
 
   // Determine the confidence of site being broken and user needing to use
   // cookie controls. It affects the prominence of UI entry points. It takes
-  // into account blocked third-party cookie access, exceptions
-  // lifecycle, site engagement index and recent user activity (like frequent
-  // page reloads).
+  // into account blocked third-party cookie access, enforcement by 3PCD
+  // metadata grant, exceptions lifecycle, site engagement index and recent user
+  // activity (like frequent page reloads).
   CookieControlsBreakageConfidenceLevel GetConfidenceLevel(
       CookieControlsStatus status,
+      CookieControlsEnforcement enforcement,
       int allowed_sites,
       int blocked_sites,
       int bounce_count);
@@ -189,6 +195,10 @@ class CookieControlsController
   // This may be null.
   scoped_refptr<content_settings::CookieSettings> original_cookie_settings_;
   raw_ptr<HostContentSettingsMap> settings_map_;
+  // TrackingProtectionSettings class for the current profile. Corresponds to
+  // the regular profile if in incognito, since TP settings should still apply.
+  raw_ptr<privacy_sandbox::TrackingProtectionSettings>
+      tracking_protection_settings_;
 
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>

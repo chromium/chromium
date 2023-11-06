@@ -306,8 +306,13 @@ enum class TrainingDataCollectionEvent {
   kTrainingDataMissing = 19,
   kOnDecisionTimeTypeMistmatch = 20,
   kDelayTriggerSampled = 21,
-  kMaxValue = kDelayTriggerSampled,
+  kContinousExactPredictionTimeCollectionStart = 22,
+  kContinousExactPredictionTimeCollectionSuccess = 23,
+  kMaxValue = kContinousExactPredictionTimeCollectionSuccess
 };
+
+std::string TrainingDataCollectionEventToErrorMsg(
+    TrainingDataCollectionEvent event);
 
 // Records analytics for training data collection.
 void RecordTrainingDataCollectionEvent(SegmentId segment_id,

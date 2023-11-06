@@ -22,7 +22,7 @@ void FakeMissiveClient::Init() {
   DCHECK(base::SequencedTaskRunner::HasCurrentDefault());
   DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
   origin_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
-  is_disabled_ = false;
+  is_initialized_ = true;
 }
 
 void FakeMissiveClient::EnqueueRecord(

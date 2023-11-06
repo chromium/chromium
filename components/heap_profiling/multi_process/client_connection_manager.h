@@ -11,11 +11,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 namespace content {
 class RenderProcessHost;
@@ -28,8 +28,8 @@ enum class Mode;
 
 // This class is responsible for connecting HeapProfilingClients to the
 // HeapProfilingService.
-//   * It registers itself as a content::NotificationObserver to listen for the
-//     creation of the renderer processes.
+//   * It inherits from content::RenderProcessHostCreationObserver to listen for
+//     the creation of the renderer processes.
 //   * It registers itself as a content::BrowserChildProcessObserver to listen
 //     for the creation of non-renderer processes.
 // When a new process is created, it checks the current |Mode| to see whether
@@ -47,7 +47,7 @@ enum class Mode;
 class ClientConnectionManager
     : public content::BrowserChildProcessObserver,
       public content::RenderProcessHostCreationObserver,
-      content::NotificationObserver {
+      public content::RenderProcessHostObserver {
  public:
   // The owner of this instance must guarantee that |controller_| outlives this
   // class.
@@ -98,11 +98,16 @@ class ClientConnectionManager
   // content::RenderProcessHostCreationObserver
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
-  // NotificationObserver
-  // Observe connection of renderer child processes.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // RenderProcessHostObserver:
+  // RenderProcessHostDestroyed() corresponds to death of an underlying
+  // RenderProcess. RenderProcessExited() corresponds to when the
+  // RenderProcessHost's lifetime is ending. Ideally, we'd only listen to the
+  // former, but if the RenderProcessHost is destroyed before the RenderProcess,
+  // then the former is never observed.
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   bool ShouldProfileNewRenderer(content::RenderProcessHost* renderer);
 
@@ -116,7 +121,10 @@ class ClientConnectionManager
   base::WeakPtr<Controller> controller_;
 
   Mode mode_;
-  content::NotificationRegistrar registrar_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // This is used to identify the currently profiled renderers. Elements should
   // only be accessed on the UI thread and their values should be considered

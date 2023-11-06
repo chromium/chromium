@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_repeater.h"
 
+#include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
@@ -52,7 +52,8 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
       // repeated root.
       if (break_token->SequenceNumber() != sequence_number) {
         break_token = NGBlockBreakToken::CreateForBreakInRepeatedFragment(
-            node, sequence_number, break_token->ConsumedBlockSize());
+            node, sequence_number, break_token->ConsumedBlockSize(),
+            break_token->IsAtBlockEnd());
       }
     } else if (idx + 1 < fragment_count) {
       // Unless it's the very last fragment, it needs a break token.
@@ -83,7 +84,8 @@ void UpdateBreakTokens(LayoutBox& layout_box) {
           fragmentainer_break_token =
               NGBlockBreakToken::CreateForBreakInRepeatedFragment(
                   node, fragmentainer_sequence_number,
-                  fragmentainer_break_token->ConsumedBlockSize());
+                  fragmentainer_break_token->ConsumedBlockSize(),
+                  /* is_at_block_end */ false);
           fragmentainer.GetMutableForCloning().SetBreakToken(
               fragmentainer_break_token);
         }
@@ -155,8 +157,8 @@ void NGFragmentRepeater::CloneChildFragments(
         child.fragment = child_box;
       }
     } else if (child->IsLineBox()) {
-      child.fragment = NGPhysicalLineBoxFragment::Clone(
-          To<NGPhysicalLineBoxFragment>(*child.fragment.Get()));
+      child.fragment = PhysicalLineBoxFragment::Clone(
+          To<PhysicalLineBoxFragment>(*child.fragment.Get()));
     }
   }
 }

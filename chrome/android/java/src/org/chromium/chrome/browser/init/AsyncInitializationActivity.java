@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.WindowManager;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -26,6 +27,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetecto
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcherImpl;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.share.ShareHelper;
@@ -78,6 +81,7 @@ public abstract class AsyncInitializationActivity
     private long mOnPauseBeforeFoldRecreateTimestampMs;
 
     private ActivityWindowAndroid mWindowAndroid;
+    private OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private Bundle mSavedInstanceState;
     private int mCurrentOrientation;
     private boolean mDestroyed;
@@ -376,6 +380,7 @@ public abstract class AsyncInitializationActivity
 
         mWindowAndroid = createWindowAndroid();
         mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
+        mProfileProviderSupplier = createProfileProvider();
 
         mStartupDelayed = shouldDelayBrowserStartup();
 
@@ -669,6 +674,20 @@ public abstract class AsyncInitializationActivity
      */
     public @Nullable ActivityWindowAndroid getWindowAndroid() {
         return mWindowAndroid;
+    }
+
+    /**
+     * Handles creating the {@link ProfileProvider} for the given Activity.
+     *
+     * <p>Implementers should not assume the native library is loaded when this is triggered.
+     */
+    protected abstract @NonNull OneshotSupplier<ProfileProvider> createProfileProvider();
+
+    /** Return a supplier for the ProfileProvider. */
+    public OneshotSupplier<ProfileProvider> getProfileProviderSupplier() {
+        // TODO(crbug/1464647): Convert to a thrown exception if no asserts are discovered.
+        assert mProfileProviderSupplier != null;
+        return mProfileProviderSupplier;
     }
 
     /**

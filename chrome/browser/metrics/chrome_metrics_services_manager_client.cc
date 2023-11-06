@@ -313,6 +313,18 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     auto* init_params = chromeos::BrowserParamsProxy::Get();
     if (init_params->MetricsServiceClientId().has_value())
       client_id = init_params->MetricsServiceClientId().value();
+    // Beginning M120 this should always be there. Note:
+    // The LES numbers are kept stable over the lifetime of the session.
+    // They get read when the system is statrting up in Ash. So they do not
+    // need to be updated at a later time in the session.
+    const crosapi::mojom::EntropySourcePtr& entropy_source =
+        init_params->EntropySource();
+    if (entropy_source) {
+      // This needs to be called before `metrics::MetricsStateManager::Create`.
+      metrics::EntropyState::SetExternalPrefs(
+          local_state_, entropy_source->low_entropy,
+          entropy_source->old_low_entropy, entropy_source->pseudo_low_entropy);
+    }
 #endif
 
     metrics_state_manager_ = metrics::MetricsStateManager::Create(

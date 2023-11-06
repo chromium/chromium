@@ -279,6 +279,7 @@ enum APIPermissionID {
   kAccessibilityServicePrivate = 252,
   kUserScripts = 253,
   kChromeOSBluetoothPeripheralsInfo = 254,
+  kEnterpriseKioskInput = 255,
 
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml

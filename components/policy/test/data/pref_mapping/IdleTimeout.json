@@ -1,0 +1,34 @@
+[
+  {
+    "os": [
+      "android",
+      "linux",
+      "mac",
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleTimeout": 10,
+          "IdleTimeoutActions": []
+        },
+        "prefs": {
+          "idle_timeout": {
+            "value": "600000000"
+          }
+        }
+      },
+      {
+        "policies": {
+          "IdleTimeout": 0,
+          "IdleTimeoutActions": []
+        },
+        "prefs": {
+          "idle_timeout": {
+            "value": "60000000"
+          }
+        }
+      }
+    ]
+  }
+]

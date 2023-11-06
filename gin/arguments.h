@@ -99,7 +99,7 @@ class GIN_EXPORT Arguments {
   // Returns all arguments. Since this doesn't require any conversion, it
   // cannot fail. This does not rely on or modify the current position in the
   // array used by Get/PeekNext().
-  std::vector<v8::Local<v8::Value>> GetAll() const;
+  v8::LocalVector<v8::Value> GetAll() const;
 
   // Returns the original v8::FunctionCallbackInfo used to construct this
   // Arguments if it exists, or nullptr otherwise.

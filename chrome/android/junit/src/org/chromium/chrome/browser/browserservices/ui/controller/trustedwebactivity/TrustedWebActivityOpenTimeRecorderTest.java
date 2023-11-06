@@ -35,22 +35,15 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link TrustedWebActivityOpenTimeRecorder}.
- */
+/** Tests for {@link TrustedWebActivityOpenTimeRecorder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TrustedWebActivityOpenTimeRecorderTest {
-    @Mock
-    ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    CurrentPageVerifier mCurrentPageVerifier;
-    @Mock
-    TrustedWebActivityUmaRecorder mUmaRecorder;
-    @Mock
-    ActivityTabProvider mTabProvider;
-    @Captor
-    ArgumentCaptor<Runnable> mVerificationObserverCaptor;
+    @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock CurrentPageVerifier mCurrentPageVerifier;
+    @Mock TrustedWebActivityUmaRecorder mUmaRecorder;
+    @Mock ActivityTabProvider mTabProvider;
+    @Captor ArgumentCaptor<Runnable> mVerificationObserverCaptor;
 
     private TrustedWebActivityOpenTimeRecorder mRecorder;
 
@@ -60,8 +53,9 @@ public class TrustedWebActivityOpenTimeRecorderTest {
         doNothing()
                 .when(mCurrentPageVerifier)
                 .addVerificationObserver(mVerificationObserverCaptor.capture());
-        mRecorder = new TrustedWebActivityOpenTimeRecorder(
-                mLifecycleDispatcher, mCurrentPageVerifier, mUmaRecorder, mTabProvider);
+        mRecorder =
+                new TrustedWebActivityOpenTimeRecorder(
+                        mLifecycleDispatcher, mCurrentPageVerifier, mUmaRecorder, mTabProvider);
 
         Tab tab = mock(Tab.class);
         WebContents webContents = mock(WebContents.class);

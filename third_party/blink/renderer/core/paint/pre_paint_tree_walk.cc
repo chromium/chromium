@@ -11,13 +11,13 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -121,8 +121,6 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view,
   // Block fragmentation doesn't cross frame boundaries.
   context.ResetFragmentation();
 
-  // ancestor_scroll_container_paint_layer does not cross frame boundaries.
-  context.ancestor_scroll_container_paint_layer = nullptr;
   if (context.tree_builder_context) {
     PaintPropertyTreeBuilder::SetupContextForFrame(
         frame_view, *context.tree_builder_context);
@@ -353,7 +351,9 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   // FragmentData objects. Otherwise they will be left alone.
   bool allow_update = context.NeedsTreeBuilderContext();
 
-  FragmentData* fragment_data = &object.GetMutableForPainting().FirstFragment();
+  FragmentDataList& fragment_list =
+      object.GetMutableForPainting().FragmentList();
+  FragmentData* fragment_data = &fragment_list;
 
   // BR elements never fragment. While there are parts of the code that depend
   // on the correct paint offset (getBoundingClientRect(), etc.), we don't need
@@ -368,81 +368,103 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
   // first FragmentData needs it, so do all the others.
   bool needs_paint_properties = fragment_data->PaintProperties();
 
-  wtf_size_t fragment_id = pre_paint_info.fragmentainer_idx;
-  if (pre_paint_info.is_first_for_node) {
-    if (allow_update) {
-      if (fragment_data->FragmentID() < fragment_id) {
-        fragment_data->ClearNextFragment();
-      } else {
-        // We're at the first fragment. Mark all additional FragmentData
-        // objects, so that we can tell that they have been kept from a previous
-        // pre-paint pass.
-        for (FragmentData* next = fragment_data->NextFragment(); next;
-             next = next->NextFragment())
-          next->SetNeedsUpdate(true);
-      }
-    }
-  } else {
-    FragmentData* last_fragment = nullptr;
-    // If fragment_data->NeedsUpdate() is true, a fragment ID mismatch is
-    // possible. Otherwise just loop through the FragmentData entries until we
-    // find the matching ID (or reach the end). The IDs are in ascending order,
-    // but they may not always be contiguous, as some nodes may lack a fragment
-    // representation certain fragmentainers.
-    do {
-      if (fragment_data->FragmentID() == fragment_id)
-        break;
-      if (fragment_data->NeedsUpdate()) {
-        // Fragment ID mismatch. In some cases (typically when out-of-flow
-        // layout inserts fragmentainers on its own) we might skip a container
-        // in a given fragmentainer. We can re-use this FragmentData entry and
-        // just update the fragment ID. The important thing here is that we stop
-        // even if the ID is lower than what we're looking for.
-        DCHECK(allow_update);
-        break;
-      }
-      DCHECK_LT(fragment_data->FragmentID(), fragment_id);
-      last_fragment = fragment_data;
-      fragment_data = fragment_data->NextFragment();
-    } while (fragment_data);
-
-    if (!fragment_data) {
-      // We don't need any additional fragments for culled inlines - unless this
-      // is the highlighted link (in which case even culled inlines get paint
-      // effects).
-      if (!object.IsBox() && !object.HasInlineFragments() &&
-          !IsLinkHighlighted(object))
+  wtf_size_t fragment_data_idx = 0;
+  if (!pre_paint_info.is_first_for_node) {
+    if (pre_paint_info.is_inside_fragment_child) {
+      if (!object.HasInlineFragments() && !IsLinkHighlighted(object)) {
+        // We don't need any additional fragments for culled inlines - unless
+        // this is the highlighted link (in which case even culled inlines get
+        // paint effects).
         return nullptr;
+      }
 
+      const auto& parent_fragment = *pre_paint_info.box_fragment;
+      // Find the start container fragment for this inline element, so that we
+      // can figure out how far we've got, compared to that.
+      InlineCursor cursor(
+          *To<LayoutBlockFlow>(parent_fragment.GetLayoutObject()));
+      cursor.MoveToIncludingCulledInline(object);
+      DCHECK_GE(BoxFragmentIndex(parent_fragment),
+                cursor.ContainerFragmentIndex());
+      wtf_size_t parent_fragment_idx = BoxFragmentIndex(parent_fragment);
+
+      const auto& container =
+          *To<LayoutBlockFlow>(parent_fragment.GetLayoutObject());
+      if (container.MayBeNonContiguousIfc()) {
+        // The number of FragmentData entries must agree with the number of
+        // fragments with items. Unfortunately, text and non-atomic inlines may
+        // be "non-contiguous". This is for instance the case if there's a float
+        // that takes up the entire fragmentainer somewhere in the middle (or at
+        // the beginning, or at the end). Another example is during printing, if
+        // monolithic content overflows and takes up the entire next page,
+        // leaving no space for any line boxes that would otherwise be there.
+        wtf_size_t walker_idx = cursor.ContainerFragmentIndex();
+        bool found_in_parent = false;
+        while (cursor.Current()) {
+          cursor.MoveToNextForSameLayoutObject();
+          wtf_size_t idx = cursor.ContainerFragmentIndex();
+          if (walker_idx < idx) {
+            // We've moved to the next fragmentainer where the object occurs.
+            // Note that |idx| may have skipped fragmentainers here, if the
+            // object isn't represented in some fragmentainer.
+            if (idx > parent_fragment_idx) {
+              // We've walked past the parent fragment.
+              break;
+            }
+            fragment_data_idx++;
+            walker_idx = idx;
+          }
+          if (idx == parent_fragment_idx) {
+            found_in_parent = true;
+            break;
+          }
+        }
+
+        if (!found_in_parent) {
+          return nullptr;
+        }
+      } else {
+        // The inline formatting context is contiguous.
+        fragment_data_idx =
+            parent_fragment_idx - cursor.ContainerFragmentIndex();
+      }
+    } else {
+      // Box fragments are always contiguous, i.e. fragmentainers are never
+      // skipped.
+      fragment_data_idx = BoxFragmentIndex(*pre_paint_info.box_fragment);
+    }
+
+    if (fragment_data_idx < fragment_list.size()) {
+      fragment_data = &fragment_list.at(fragment_data_idx);
+    } else {
       DCHECK(allow_update);
+      fragment_data = &fragment_list.AppendNewFragment();
+      DCHECK_EQ(fragment_data_idx + 1, fragment_list.size());
 
       // When we add FragmentData entries, we need to make sure that we update
       // paint properties. The object may not have been marked for an update, if
       // the reason for creating an additional FragmentData was that the
       // fragmentainer block-size shrunk, for instance.
-      if (!last_fragment->NextFragment())
-        object.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
-      fragment_data = &last_fragment->EnsureNextFragment();
+      object.GetMutableForPainting().SetOnlyThisNeedsPaintPropertyUpdate();
     }
   }
 
   if (pre_paint_info.is_last_for_node) {
     // We have reached the end. There may be more data entries that were
     // needed in the previous layout, but not any more. Clear them.
-    if (allow_update)
-      fragment_data->ClearNextFragment();
-    else
-      DCHECK(!fragment_data->NextFragment());
+    if (allow_update) {
+      fragment_list.Shrink(fragment_data_idx + 1);
+    } else {
+      DCHECK_EQ(fragment_data_idx + 1, fragment_list.size());
+    }
   }
 
   if (allow_update) {
-    fragment_data->SetNeedsUpdate(false);
-    fragment_data->SetFragmentID(fragment_id);
+    fragment_data->SetFragmentID(pre_paint_info.fragmentainer_idx);
     if (needs_paint_properties)
       fragment_data->EnsurePaintProperties();
   } else {
-    DCHECK(!fragment_data->NeedsUpdate());
-    DCHECK_EQ(fragment_data->FragmentID(), fragment_id);
+    DCHECK_EQ(fragment_data->FragmentID(), pre_paint_info.fragmentainer_idx);
     DCHECK(!needs_paint_properties || fragment_data->PaintProperties());
   }
 
@@ -680,6 +702,7 @@ PrePaintTreeWalk::RebuildContextForMissedDescendant(
 
 void PrePaintTreeWalk::WalkMissedChildren(
     const NGPhysicalBoxFragment& fragment,
+    bool is_in_fragment_traversal,
     const PrePaintTreeWalkContext& context) {
   if (pending_missables_.empty())
     return;
@@ -725,9 +748,13 @@ void PrePaintTreeWalk::WalkMissedChildren(
                                         descendant_context);
     }
 
-    NGPrePaintInfo pre_paint_info =
-        CreatePrePaintInfo(child, descendant_context);
-    Walk(descendant_object, descendant_context, &pre_paint_info);
+    if (is_in_fragment_traversal) {
+      NGPrePaintInfo pre_paint_info =
+          CreatePrePaintInfo(child, descendant_context);
+      Walk(descendant_object, descendant_context, &pre_paint_info);
+    } else {
+      Walk(descendant_object, descendant_context, /* pre_paint_info */ nullptr);
+    }
   }
 }
 
@@ -855,7 +882,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
     const LayoutObject& parent_object,
     const NGPhysicalBoxFragment* parent_fragment,
     const PrePaintTreeWalkContext& context) {
-  absl::optional<NGInlineCursor> inline_cursor;
+  absl::optional<InlineCursor> inline_cursor;
   for (const LayoutObject* child = parent_object.SlowFirstChild(); child;
        // Stay on the |child| while iterating fragments of |child|.
        child = inline_cursor ? child : child->NextSibling()) {
@@ -914,7 +941,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
            inline_cursor->MoveToNextForSameLayoutObject()) {
         // Check if the search is limited to descendants of |parent_fragment|.
         DCHECK_EQ(&inline_cursor->ContainerFragment(), parent_fragment);
-        const NGFragmentItem& item = *inline_cursor->Current().Item();
+        const FragmentItem& item = *inline_cursor->Current().Item();
         DCHECK_EQ(item.GetLayoutObject(), child);
 
         is_last_for_node = item.IsLastForNode();
@@ -1175,7 +1202,7 @@ void PrePaintTreeWalk::WalkChildren(
   }
 
   if (has_missable_children) {
-    WalkMissedChildren(*fragment, context);
+    WalkMissedChildren(*fragment, !!traversable_fragment, context);
   }
 }
 

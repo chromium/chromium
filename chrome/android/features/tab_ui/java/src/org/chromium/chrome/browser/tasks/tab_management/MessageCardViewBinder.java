@@ -43,7 +43,7 @@ class MessageCardViewBinder {
             itemView.setDescriptionTextTemplate(
                     model.get(MessageCardViewProperties.DESCRIPTION_TEXT_TEMPLATE));
         } else if (MessageCardViewProperties.ICON_PROVIDER == propertyKey) {
-            itemView.setIcon(model.get(MessageCardViewProperties.ICON_PROVIDER).getIconDrawable());
+            updateIconDrawable(model, itemView);
         } else if (MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION == propertyKey) {
             itemView.setDismissButtonContentDescription(
                     model.get(MessageCardViewProperties.DISMISS_BUTTON_CONTENT_DESCRIPTION));
@@ -63,6 +63,17 @@ class MessageCardViewBinder {
             itemView.setIconVisibility(model.get(MessageCardViewProperties.IS_ICON_VISIBLE));
         } else if (MessageCardViewProperties.IS_INCOGNITO == propertyKey) {
             itemView.updateMessageCardColor(model.get(MessageCardViewProperties.IS_INCOGNITO));
+        }
+    }
+
+    static void updateIconDrawable(PropertyModel model, MessageCardView itemView) {
+        MessageCardView.IconProvider provider = model.get(MessageCardViewProperties.ICON_PROVIDER);
+
+        if (provider != null) {
+            provider.fetchIconDrawable(
+                    (drawable) -> {
+                        itemView.setIcon(drawable);
+                    });
         }
     }
 }

@@ -13,6 +13,8 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/menu/menu_controller.h"
@@ -31,6 +33,8 @@ const char16_t kTestTopLevelDragData[] = u"test_top_level_drag_data";
 
 // A simple view which can be dragged.
 class TestDragView : public views::View {
+  METADATA_HEADER(TestDragView, views::View)
+
  public:
   TestDragView();
 
@@ -61,8 +65,13 @@ void TestDragView::WriteDragData(const gfx::Point& point,
   data->SetString(kTestNestedDragData);
 }
 
+BEGIN_METADATA(TestDragView)
+END_METADATA
+
 // A simple view to serve as a drop target.
 class TestTargetView : public views::View {
+  METADATA_HEADER(TestTargetView, views::View)
+
  public:
   TestTargetView() = default;
 
@@ -156,6 +165,9 @@ void TestTargetView::PerformDrop(
   dropped_ = true;
   output_drag_op = DragOperation::kMove;
 }
+
+BEGIN_METADATA(TestTargetView)
+END_METADATA
 
 }  // namespace
 

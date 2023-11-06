@@ -40,9 +40,7 @@ import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test suite for SyncErrorCardPreference
- */
+/** Test suite for SyncErrorCardPreference */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -50,8 +48,7 @@ import java.util.concurrent.TimeoutException;
 public class SyncErrorCardPreferenceTest {
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_error badge
     // for Sync error card.
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
@@ -98,10 +95,12 @@ public class SyncErrorCardPreferenceTest {
 
     private void assertSyncError(@SyncSettingsUtils.SyncError int expectedSyncError) {
         @SyncSettingsUtils.SyncError
-        int currentSyncError = TestThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> SyncSettingsUtils.getSyncError(SyncServiceFactory.getForProfile(
-                                Profile.getLastUsedRegularProfile())));
+        int currentSyncError =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                SyncSettingsUtils.getSyncError(
+                                        SyncServiceFactory.getForProfile(
+                                                Profile.getLastUsedRegularProfile())));
         Assert.assertEquals(
                 "SyncError did not match expected value", expectedSyncError, currentSyncError);
     }
@@ -117,7 +116,8 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(SyncSettingsUtils.SyncError.AUTH_ERROR);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_auth_error_with_new_title_and_upm");
     }
 
@@ -131,7 +131,8 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(SyncSettingsUtils.SyncError.CLIENT_OUT_OF_DATE);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_client_out_of_date_with_new_title");
     }
 
@@ -160,7 +161,8 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(SyncSettingsUtils.SyncError.PASSPHRASE_REQUIRED);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_passphrase_required_with_new_title");
     }
 
@@ -176,7 +178,8 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(SyncSettingsUtils.SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_key_required_with_new_title");
     }
 
@@ -193,7 +196,8 @@ public class SyncErrorCardPreferenceTest {
         assertSyncError(SyncSettingsUtils.SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_key_required_for_passwords_with_new_title");
     }
 
@@ -211,7 +215,8 @@ public class SyncErrorCardPreferenceTest {
                 SyncSettingsUtils.SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_recoverability_degraded_for_everything_with_new_title");
     }
 
@@ -229,7 +234,8 @@ public class SyncErrorCardPreferenceTest {
                 SyncSettingsUtils.SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_trusted_vault_recoverability_degraded_for_passwords_with_new_title");
     }
 
@@ -240,12 +246,12 @@ public class SyncErrorCardPreferenceTest {
     public void testSyncErrorCardForSyncSetupIncomplete(boolean nightModeEnabled) throws Exception {
         // Passing a null SyncService instance here would sign-in the user but
         // FirstSetupComplete will be unset.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync(
-                /* syncService= */ null);
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync(/* syncService= */ null);
         assertSyncError(SyncSettingsUtils.SyncError.SYNC_SETUP_INCOMPLETE);
 
         mSettingsActivityTestRule.startSettingsActivity();
-        mRenderTestRule.render(getPersonalizedSyncPromoView(),
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(),
                 "sync_error_card_sync_setup_incomplete_with_new_title");
     }
 
@@ -253,10 +259,14 @@ public class SyncErrorCardPreferenceTest {
         // Ensure that AccountInfoServiceProvider populated ProfileDataCache before checking the
         // view.
         CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountInfoServiceProvider.getPromise().then(
-                    accountInfoService -> { callbackHelper.notifyCalled(); });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AccountInfoServiceProvider.getPromise()
+                            .then(
+                                    accountInfoService -> {
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
         try {
             callbackHelper.waitForFirst();
         } catch (TimeoutException e) {

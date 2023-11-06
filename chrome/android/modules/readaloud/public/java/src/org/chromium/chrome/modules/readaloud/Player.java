@@ -8,8 +8,11 @@ import android.app.Activity;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
 
 import java.util.List;
 import java.util.Map;
@@ -41,9 +44,21 @@ public interface Player {
         void previewVoice(PlaybackVoice voice);
         /** Navigate to the tab associated with the current playback */
         void navigateToPlayingTab();
-
         /** Returns the Activity in which the player UI should live. */
         Activity getActivity();
+
+        /** Returns the current profile's PrefService. */
+        PrefService getPrefService();
+
+        /** Returns the BrowserControlsSizer to allow pushing web contents up. */
+        BrowserControlsSizer getBrowserControlsSizer();
+
+        /**
+         * Returns the LayoutManager, needed for showing the mini player SceneLayer which is drawn
+         * in place of the mini player layout during browser controls resizing when showing and
+         * hiding.
+         */
+        LayoutManager getLayoutManager();
     }
 
     /** Observer interface to provide updates about player UI. */

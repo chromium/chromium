@@ -50,14 +50,15 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
+@Config(
+        manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
-    @Rule
-    public final JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
+
+    @Rule public final JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     private CustomTabActivityNavigationController mNavigationController;
 
@@ -83,7 +84,8 @@ public class CustomTabActivityNavigationControllerTest {
                         .expectIntRecord(
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.MINIMIZE_APP)
-                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                        .expectIntRecord(
+                                BackPressManager.getHistogramForTesting(),
                                 BackPressManager.getHistogramValueForTesting(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
@@ -129,14 +131,17 @@ public class CustomTabActivityNavigationControllerTest {
                         .expectIntRecord(
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
-                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                        .expectIntRecord(
+                                BackPressManager.getHistogramForTesting(),
                                 BackPressManager.getHistogramValueForTesting(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
-        doAnswer((Answer<Void>) invocation -> {
-            env.tabProvider.swapTab(env.prepareTab());
-            return null;
-        })
+        doAnswer(
+                        (Answer<Void>)
+                                invocation -> {
+                                    env.tabProvider.swapTab(env.prepareTab());
+                                    return null;
+                                })
                 .when(mTabController)
                 .closeTab();
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
@@ -156,10 +161,14 @@ public class CustomTabActivityNavigationControllerTest {
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
                         .build();
-        doAnswer((Answer<Void>) invocation -> {
-            env.tabProvider.swapTab(env.prepareTab());
-            return null;
-        }).when(mTabController).closeTab();
+        doAnswer(
+                        (Answer<Void>)
+                                invocation -> {
+                                    env.tabProvider.swapTab(env.prepareTab());
+                                    return null;
+                                })
+                .when(mTabController)
+                .closeTab();
         Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
@@ -175,7 +184,8 @@ public class CustomTabActivityNavigationControllerTest {
                         .expectIntRecord(
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
-                        .expectIntRecord(BackPressManager.getHistogramForTesting(),
+                        .expectIntRecord(
+                                BackPressManager.getHistogramForTesting(),
                                 BackPressManager.getHistogramValueForTesting(
                                         BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
                         .build();
@@ -217,8 +227,7 @@ public class CustomTabActivityNavigationControllerTest {
     public void finishes_whenDoneReparenting() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        doNothing().when(mTabController).detachAndStartReparenting(any(), any(),
-                captor.capture());
+        doNothing().when(mTabController).detachAndStartReparenting(any(), any(), captor.capture());
 
         mNavigationController.openCurrentUrlInBrowser();
 

@@ -35,7 +35,9 @@ MojoResult WriteMessageRaw(MessagePipeHandle message_pipe,
 
   DCHECK(buffer);
   DCHECK_GE(buffer_size, base::checked_cast<uint32_t>(num_bytes));
-  memcpy(buffer, bytes, num_bytes);
+  if (num_bytes > 0) {
+    memcpy(buffer, bytes, num_bytes);
+  }
 
   MojoWriteMessageOptions write_options;
   write_options.struct_size = sizeof(write_options);

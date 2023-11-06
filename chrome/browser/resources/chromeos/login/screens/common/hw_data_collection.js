@@ -23,7 +23,6 @@ import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_hos
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 
 
-
 /**
  * @constructor
  * @extends {PolymerElement}
@@ -33,6 +32,14 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 const HWDataCollectionScreenElementBase = mixinBehaviors(
     [OobeDialogHostBehavior, OobeI18nBehavior, LoginScreenBehavior],
     PolymerElement);
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   hwDataUsageEnabled: boolean,
+ * }}
+ */
+let HWDataCollectionScreenData;
 
 /**
  * @polymer
@@ -59,6 +66,10 @@ class HWDataCollectionScreen extends HWDataCollectionScreenElementBase {
     super();
   }
 
+  /**
+   * Event handler that is invoked just before the screen is shown.
+   * @param {HWDataCollectionScreenData} data Screen init payload
+   */
   onBeforeShow(data) {
     this.dataUsageChecked =
         'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;

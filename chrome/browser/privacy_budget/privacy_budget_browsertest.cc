@@ -101,8 +101,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestEnableRandomSampling,
   EXPECT_TRUE(settings->IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
-                       SamplingScreenAPIs) {
+IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder, SamplingAPIs) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   content::DOMMessageQueue messages(web_contents());
@@ -116,17 +115,17 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
-                          "/privacy_budget/samples_screen_attributes.html")));
+                          "/privacy_budget/samples_some_surfaces.html")));
 
   // The document calls a bunch of instrumented functions and sends a message
   // back to the test. Receipt of the message indicates that the script
   // successfully completed.
-  std::string screen_scrape;
-  ASSERT_TRUE(messages.WaitForMessage(&screen_scrape));
+  std::string scraped_apis;
+  ASSERT_TRUE(messages.WaitForMessage(&scraped_apis));
 
   // The contents of the received message isn't used for anything other than
   // diagnostics.
-  SCOPED_TRACE(screen_scrape);
+  SCOPED_TRACE(scraped_apis);
 
   // Navigating away from the test page causes the document to be unloaded. That
   // will cause any buffered metrics to be flushed.
@@ -165,6 +164,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
               blink::mojom::WebFeature::kV8Screen_AvailTop_AttributeGetter)),
           Key(HashFeature(
               blink::mojom::WebFeature::kV8Screen_AvailWidth_AttributeGetter)),
+          Key(HashFeature(blink::mojom::WebFeature::kNavigatorDoNotTrack)),
       }));
 }
 
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
 
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(), embedded_test_server()->GetURL(
-                          "/privacy_budget/samples_screen_attributes.html")));
+                          "/privacy_budget/samples_some_surfaces.html")));
 
   // The document calls a bunch of instrumented functions and sends a message
   // back to the test. Receipt of the message indicates that the script

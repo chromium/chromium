@@ -40,7 +40,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
+import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
@@ -49,11 +49,8 @@ import org.chromium.ui.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
-/**
- * A fragment that provides a UI for various caBLE v2 actions.
- */
-public class CableAuthenticatorUI
-        extends Fragment implements OnClickListener, WebAuthenticationDelegate.IntentSender {
+/** A fragment that provides a UI for various caBLE v2 actions. */
+public class CableAuthenticatorUI extends Fragment implements OnClickListener, FidoIntentSender {
     private static final String TAG = "CableAuthenticatorUI";
 
     // ENABLE_BLUETOOTH_REQUEST_CODE is a random int used to identify responses

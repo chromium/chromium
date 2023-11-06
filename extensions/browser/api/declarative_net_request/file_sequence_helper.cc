@@ -30,6 +30,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/error_utils.h"
+#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
@@ -216,6 +217,18 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
+    size_t unsafe_rule_count = base::ranges::count_if(
+        *new_rules,
+        [](const dnr_api::Rule& rule) { return !IsRuleSafe(rule); });
+    if (unsafe_rule_count > rule_limit.unsafe_rule_count) {
+      *status = UpdateDynamicRulesStatus::kErrorUnsafeRuleCountExceeded;
+      *error = kDynamicUnsafeRuleCountExceeded;
+      return false;
+    }
+  }
+
   size_t regex_rule_count = base::ranges::count_if(
       *new_rules,
       [](const dnr_api::Rule& rule) { return !!rule.condition.regex_filter; });
@@ -366,8 +379,10 @@ void RulesetInfo::CreateVerifiedMatcher() {
       source_.CreateVerifiedMatcher(*expected_checksum_, &matcher_);
 }
 
-LoadRequestData::LoadRequestData(ExtensionId extension_id)
-    : extension_id(std::move(extension_id)) {}
+LoadRequestData::LoadRequestData(ExtensionId extension_id,
+                                 base::Version extension_version)
+    : extension_id(std::move(extension_id)),
+      extension_version(std::move(extension_version)) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;

@@ -115,6 +115,8 @@ component("bindings_base") {
     "tracing_helpers.h",
     "type_converter.h",
     "union_traits.h",
+    "urgent_message_scope.cc",
+    "urgent_message_scope.h",
   ]
 
   defines = [ "IS_MOJO_CPP_BINDINGS_BASE_IMPL" ]

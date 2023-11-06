@@ -1099,7 +1099,9 @@ TEST_F(WelcomeTourControllerRunTest, ToastPause) {
   ASSERT_TRUE(toast_manager);
 
   // Cache helper to check if a toast matching `kToastId` is showing.
-  auto is_showing_toast = [&]() { return toast_manager->IsRunning(kToastId); };
+  auto is_showing_toast = [&]() {
+    return toast_manager->IsToastShown(kToastId);
+  };
 
   // Cache helper to show a toast matching `kToastId`.
   auto show_toast = [&]() {

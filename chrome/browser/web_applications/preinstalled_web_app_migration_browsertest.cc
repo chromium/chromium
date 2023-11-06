@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     return info;
   });
   preinstalled_apps.apps.push_back(std::move(options));
-  EXPECT_EQ(1u, GetPreinstalledWebApps().size());
+  EXPECT_EQ(1u, GetPreinstalledWebApps(*profile()).size());
   // Set up pre-migration state.
   {
     base::HistogramTester histograms;
@@ -840,7 +840,6 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
     info->title = u"New app";
 
     WebAppInstallParams install_params;
-    install_params.bypass_service_worker_check = true;
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode,
                            bool /*did_uninstall_and_replace*/>
         future;

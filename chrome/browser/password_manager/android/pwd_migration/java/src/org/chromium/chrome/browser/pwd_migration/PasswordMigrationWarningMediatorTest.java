@@ -68,65 +68,66 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Tests for {@link PasswordMigrationWarningMediator}.
- */
+/** Tests for {@link PasswordMigrationWarningMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PasswordMigrationWarningMediatorTest {
     private static final String TEST_EMAIL = "user@domain.com";
     private static final String FULL_NAME = "full name";
     private static final AccountInfo ACCOUNT_INFO =
-            new AccountInfo(new CoreAccountId("gaia-id-user"), TEST_EMAIL, "gaia-id-user",
-                    FULL_NAME, "given name", null, new AccountCapabilities(new HashMap<>()));
-    private static final AccountInfo NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO = new AccountInfo(
-            new CoreAccountId("gaia-id-user"), TEST_EMAIL, "gaia-id-user", FULL_NAME, "given name",
-            null,
-            new AccountCapabilities(new HashMap<>(Map.of(
-                    AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
-                    false))));
+            new AccountInfo(
+                    new CoreAccountId("gaia-id-user"),
+                    TEST_EMAIL,
+                    "gaia-id-user",
+                    FULL_NAME,
+                    "given name",
+                    null,
+                    new AccountCapabilities(new HashMap<>()));
+    private static final AccountInfo NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO =
+            new AccountInfo(
+                    new CoreAccountId("gaia-id-user"),
+                    TEST_EMAIL,
+                    "gaia-id-user",
+                    FULL_NAME,
+                    "given name",
+                    null,
+                    new AccountCapabilities(
+                            new HashMap<>(
+                                    Map.of(
+                                            AccountCapabilitiesConstants
+                                                    .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                                            false))));
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private PasswordMigrationWarningMediator mMediator;
     private PropertyModel mModel;
-    @Mock
-    private FragmentManager mFragmentManager;
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private MigrationWarningOptionsHandler mOptionsHandler;
-    @Mock
-    private UserPrefs.Natives mUserPrefsJni;
-    @Mock
-    private PrefService mPrefService;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private SigninManager mSigninManager;
+    @Mock private FragmentManager mFragmentManager;
+    @Mock private BottomSheetController mBottomSheetController;
+    @Mock private Profile mProfile;
+    @Mock private MigrationWarningOptionsHandler mOptionsHandler;
+    @Mock private UserPrefs.Natives mUserPrefsJni;
+    @Mock private PrefService mPrefService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private SyncService mSyncService;
+    @Mock private SigninManager mSigninManager;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
-        mMediator = new PasswordMigrationWarningMediator(
-                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
-        mModel = PasswordMigrationWarningProperties.createDefaultModel(
-                mMediator::onShown, mMediator::onDismissed, mMediator);
+        mMediator =
+                new PasswordMigrationWarningMediator(
+                        mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.CHROME_STARTUP);
+        mModel =
+                PasswordMigrationWarningProperties.createDefaultModel(
+                        mMediator::onShown, mMediator::onDismissed, mMediator);
         mMediator.initializeModel(mModel);
 
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -152,7 +153,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnDismissedFromIntroScreenRecordsUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.DISMISS_INTRODUCTION)
                         .build();
 
@@ -168,7 +170,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnDismissedFromMoreOptionsScreenRecordsUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.DISMISS_MORE_OPTIONS)
                         .build();
 
@@ -200,7 +203,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnMoreOptionsRecordsUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.MORE_OPTIONS)
                         .build();
 
@@ -222,7 +226,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnAcknowledgeRecordsUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.GOT_IT)
                         .build();
 
@@ -249,7 +254,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnCancelRecordsUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.CANCEL)
                         .build();
 
@@ -284,7 +290,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnNextRecordsSyncUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.SYNC)
                         .build();
 
@@ -297,7 +304,8 @@ public class PasswordMigrationWarningMediatorTest {
     public void testOnNextRecordsExportUserAction() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
+                        .expectIntRecord(
+                                PASSWORD_MIGRATION_WARNING_USER_ACTIONS,
                                 PasswordMigrationWarningUserActions.EXPORT)
                         .build();
 
@@ -405,8 +413,9 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testOnShownDoesntSetPrefIfNotOnStartup() {
-        PasswordMigrationWarningMediator mediator = new PasswordMigrationWarningMediator(
-                mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.TOUCH_TO_FILL);
+        PasswordMigrationWarningMediator mediator =
+                new PasswordMigrationWarningMediator(
+                        mProfile, mOptionsHandler, PasswordMigrationWarningTriggers.TOUCH_TO_FILL);
         mediator.onShown();
         verify(mPrefService, never())
                 .setBoolean(Pref.LOCAL_PASSWORD_MIGRATION_WARNING_SHOWN_AT_STARTUP, true);
@@ -452,13 +461,14 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testRecordEmptySheetClosedWithoutUserInteraction() {
-        var histogram = HistogramWatcher.newBuilder()
-                                .expectIntRecords(
-                                        PasswordMetricsUtil
-                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
-                                        PasswordMigrationWarningSheetStateAtClosing
-                                                .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION)
-                                .build();
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                PasswordMetricsUtil
+                                        .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                PasswordMigrationWarningSheetStateAtClosing
+                                        .EMPTY_SHEET_CLOSED_WITHOUT_USER_INTERACTION)
+                        .build();
 
         mMediator.onSheetClosed(StateChangeReason.NONE, false);
 
@@ -467,13 +477,14 @@ public class PasswordMigrationWarningMediatorTest {
 
     @Test
     public void testRecordEmptySheetClosedByUserInteraction() {
-        var histogram = HistogramWatcher.newBuilder()
-                                .expectIntRecords(
-                                        PasswordMetricsUtil
-                                                .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
-                                        PasswordMigrationWarningSheetStateAtClosing
-                                                .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION)
-                                .build();
+        var histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                PasswordMetricsUtil
+                                        .PASSWORD_MIGRATION_WARNING_SHEET_STATE_AT_CLOSING,
+                                PasswordMigrationWarningSheetStateAtClosing
+                                        .EMPTY_SHEET_CLOSED_BY_USER_INTERACTION)
+                        .build();
 
         mMediator.onSheetClosed(StateChangeReason.BACK_PRESS, false);
 

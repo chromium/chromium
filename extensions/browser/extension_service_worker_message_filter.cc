@@ -22,6 +22,8 @@
 
 namespace extensions {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
 namespace {
 
 class ShutdownNotifierFactory
@@ -131,4 +133,5 @@ void ExtensionServiceWorkerMessageFilter::DidFailDecrementInflightEvent() {
   bad_message::ReceivedBadMessage(this, bad_message::ESWMF_BAD_EVENT_ACK);
 }
 
+#endif
 }  // namespace extensions

@@ -94,9 +94,14 @@ bool FakeWebAppUiManager::IsAppInQuickLaunchBar(
   return false;
 }
 
-bool FakeWebAppUiManager::IsInAppWindow(content::WebContents* web_contents,
-                                        const webapps::AppId* app_id) const {
+bool FakeWebAppUiManager::IsInAppWindow(
+    content::WebContents* web_contents) const {
   return false;
+}
+
+const webapps::AppId* FakeWebAppUiManager::GetAppIdForWindow(
+    content::WebContents* web_contents) const {
+  return nullptr;
 }
 
 bool FakeWebAppUiManager::CanReparentAppTabToWindow(
@@ -130,7 +135,7 @@ void FakeWebAppUiManager::ShowWebAppIdentityUpdateDialog(
   std::move(callback).Run(identity_update_dialog_action_for_testing.value());
 }
 
-base::Value FakeWebAppUiManager::LaunchWebApp(
+void FakeWebAppUiManager::WaitForFirstRunAndLaunchWebApp(
     apps::AppLaunchParams params,
     LaunchWebAppWindowSetting launch_setting,
     Profile& profile,
@@ -147,7 +152,6 @@ base::Value FakeWebAppUiManager::LaunchWebApp(
     on_launch_web_app_callback_.Run(std::move(params),
                                     std::move(launch_setting));
   }
-  return base::Value("FakeWebAppUiManager::LaunchWebApp");
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -173,7 +177,7 @@ content::WebContents* FakeWebAppUiManager::CreateNewTab() {
 }
 
 bool FakeWebAppUiManager::IsWebContentsActiveTabInBrowser(
-     content::WebContents* web_contents) {
+    content::WebContents* web_contents) {
   return true;
 }
 
@@ -208,5 +212,9 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
 
 void FakeWebAppUiManager::LaunchIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}
+
+void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(
+    content::WebContents* web_contents,
+    const std::string& launch_name) {}
 
 }  // namespace web_app

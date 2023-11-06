@@ -717,6 +717,21 @@ IN_PROC_BROWSER_TEST_P(
        {PrivacySandboxPromptHelper::SettingsPrivacySandboxPromptHelperEvent::
             kSearchEngineChoiceDialogShown,
         1}});
+
+  // Make a search engine choice to close the dialog.
+  SearchEngineChoiceService* search_engine_choice_service =
+      SearchEngineChoiceServiceFactory::GetForProfile(browser()->profile());
+  search_engine_choice_service->NotifyChoiceMade(
+      /*prepopulate_id=*/1, SearchEngineChoiceService::EntryPoint::kDialog);
+
+  // Make sure that the Privacy Sandbox prompt doesn't get displayed on the next
+  // navigation.
+  EXPECT_CALL(*mock_privacy_sandbox_service(),
+              PromptOpenedForBrowser(browser(), testing::_))
+      .Times(0);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 }
 
 INSTANTIATE_TEST_SUITE_P(

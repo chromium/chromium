@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
@@ -182,6 +183,9 @@ bool OffscreenCanvasRenderingContext2D::CanCreateCanvas2dResourceProvider()
 CanvasResourceProvider*
 OffscreenCanvasRenderingContext2D::GetOrCreateCanvasResourceProvider() const {
   DCHECK(Host() && Host()->IsOffscreenCanvas());
+  if (HostAsOffscreenCanvas() != nullptr) {
+    HostAsOffscreenCanvas()->CheckForGpuContextLost();
+  }
   return static_cast<OffscreenCanvas*>(Host())->GetOrCreateResourceProvider();
 }
 
@@ -237,9 +241,17 @@ ExecutionContext* OffscreenCanvasRenderingContext2D::GetTopExecutionContext()
 }
 
 ImageBitmap* OffscreenCanvasRenderingContext2D::TransferToImageBitmap(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmap2D;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
+
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`transferToImageBitmap()` cannot be called while layers are opened.");
+    return nullptr;
+  }
 
   if (!GetOrCreateCanvasResourceProvider())
     return nullptr;
@@ -416,12 +428,19 @@ void OffscreenCanvasRenderingContext2D::TryRestoreContextEvent(
   // If lost mode is |kRealLostContext|, it means the context was not lost due
   // to surface failure but rather due to a an eviction, which means image
   // buffer exists.
-  if (context_lost_mode_ == kRealLostContext &&
-      GetOrCreateCanvasResourceProvider() &&
-      GetCanvasResourceProvider()->Canvas()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
+  if (context_lost_mode_ == kRealLostContext) {
+    CHECK(HostAsOffscreenCanvas() != nullptr);
+    // Let the OffscreenCanvas know that it should attempt to recreate the
+    // resource dispatcher in order to restore the context.
+    HostAsOffscreenCanvas()->SetRestoringGpuContext(true);
+    bool valid_resource_provider =
+        GetOrCreateCanvasResourceProvider() != nullptr;
+    HostAsOffscreenCanvas()->SetRestoringGpuContext(false);
+    if (valid_resource_provider && GetCanvasResourceProvider()->Canvas()) {
+      try_restore_context_event_timer_.Stop();
+      DispatchContextRestoredEvent(nullptr);
+      return;
+    }
   }
 
   // It gets here if lost mode is |kRealLostContext| and it fails to create a

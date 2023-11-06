@@ -27,6 +27,9 @@ crosapi::mojom::TelemetryDiagnosticMemtesterResultPtr UncheckedConvertPtr(
 crosapi::mojom::TelemetryDiagnosticMemoryRoutineDetailPtr UncheckedConvertPtr(
     cros_healthd::mojom::MemoryRoutineDetailPtr input);
 
+crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineDetailPtr
+UncheckedConvertPtr(cros_healthd::mojom::VolumeButtonRoutineDetailPtr input);
+
 crosapi::mojom::TelemetryDiagnosticRoutineStateInitializedPtr
 UncheckedConvertPtr(cros_healthd::mojom::RoutineStateInitializedPtr input);
 
@@ -53,6 +56,9 @@ cros_healthd::mojom::RoutineArgumentPtr UncheckedConvertPtr(
 
 cros_healthd::mojom::MemoryRoutineArgumentPtr UncheckedConvertPtr(
     crosapi::mojom::TelemetryDiagnosticMemoryRoutineArgumentPtr input);
+
+cros_healthd::mojom::VolumeButtonRoutineArgumentPtr UncheckedConvertPtr(
+    crosapi::mojom::TelemetryDiagnosticVolumeButtonRoutineArgumentPtr input);
 
 }  // namespace unchecked
 

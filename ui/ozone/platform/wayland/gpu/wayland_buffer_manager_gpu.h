@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <map>
 #include <memory>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -66,7 +65,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_overlays,
       uint32_t supported_surface_augmentor_version,
       bool supports_single_pixel_buffer,
-      const std::vector<uint32_t>& bug_fix_ids) override;
+      const base::Version& server_version) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the

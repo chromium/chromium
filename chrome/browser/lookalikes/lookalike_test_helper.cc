@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace test {
-#include "components/url_formatter/spoof_checks/top_domains/browsertest_domains-trie-inc.cc"
+#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
 }
 
 LookalikeTestHelper::LookalikeTestHelper(ukm::TestUkmRecorder* ukm_recorder)

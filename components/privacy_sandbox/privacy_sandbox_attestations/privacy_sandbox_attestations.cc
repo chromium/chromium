@@ -16,8 +16,11 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
+#include "base/observer_list_threadsafe.h"
 #include "base/strings/string_split.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -27,6 +30,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_parser.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/privacy_sandbox_attestations_observer.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -211,11 +215,13 @@ bool PrivacySandboxAttestations::IsOverridden(
 void PrivacySandboxAttestations::SetAllPrivacySandboxAttestedForTesting(
     bool all_attested) {
   is_all_apis_attested_for_testing_ = all_attested;
+  NotifyObserversOnAttestationsLoaded();
 }
 
 void PrivacySandboxAttestations::SetAttestationsForTesting(
     absl::optional<PrivacySandboxAttestationsMap> attestations_map) {
   attestations_map_ = std::move(attestations_map);
+  NotifyObserversOnAttestationsLoaded();
 }
 
 base::Version PrivacySandboxAttestations::GetVersionForTesting() const {
@@ -235,7 +241,9 @@ void PrivacySandboxAttestations::
 
 PrivacySandboxAttestations::PrivacySandboxAttestations()
     : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      observers_(new base::ObserverListThreadSafe<
+                 content::PrivacySandboxAttestationsObserver>()) {}
 
 void PrivacySandboxAttestations::LoadAttestationsInternal(
     base::Version version,
@@ -258,7 +266,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
     if (file_version_.CompareTo(version) >= 0) {
       // The existing attestations map is of newer or same version, do not
       // parse.
-      RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+      OnAttestationsLoaded();
       return;
     }
   }
@@ -270,7 +278,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
   if (!stream.is_open()) {
     // File does not exist.
     attestations_parse_progress_ = Progress::kFinished;
-    RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+    OnAttestationsLoaded();
     return;
   }
 
@@ -283,14 +291,14 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
   if (sentinel_file.IsPresent()) {
     // An existing sentinel file implies previous parsing has crashed.
     attestations_parse_progress_ = Progress::kFinished;
-    RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+    OnAttestationsLoaded();
     return;
   }
 
   if (!sentinel_file.Create()) {
     // Failed to create the sentinel file.
     attestations_parse_progress_ = Progress::kFinished;
-    RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+    OnAttestationsLoaded();
     return;
   }
 
@@ -303,7 +311,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
   if (!attestations_map.has_value()) {
     // The parsing failed.
     attestations_parse_progress_ = Progress::kFinished;
-    RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+    OnAttestationsLoaded();
     return;
   }
 
@@ -320,7 +328,7 @@ void PrivacySandboxAttestations::LoadAttestationsInternal(
   if (!sentinel_file.Remove()) {
     // Failed to remove the sentinel file.
     attestations_parse_progress_ = Progress::kFinished;
-    RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+    OnAttestationsLoaded();
     return;
   }
 
@@ -343,7 +351,7 @@ void PrivacySandboxAttestations::SetParsedAttestations(
   file_version_ = std::move(version);
   attestations_map_ = std::move(attestations_map);
 
-  RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+  OnAttestationsLoaded();
 }
 
 void PrivacySandboxAttestations::RunLoadAttestationsDoneCallbackForTesting() {
@@ -359,6 +367,49 @@ bool PrivacySandboxAttestations::
     return true;
   }
   return false;
+}
+
+void PrivacySandboxAttestations::OnAttestationsLoaded() {
+  NotifyObserversOnAttestationsLoaded();
+
+  RunLoadAttestationsDoneCallbackForTesting();  // IN-TEST
+}
+
+void PrivacySandboxAttestations::NotifyObserversOnAttestationsLoaded() {
+  observers_->Notify(
+      FROM_HERE,
+      &content::PrivacySandboxAttestationsObserver::OnAttestationsLoaded);
+}
+
+bool PrivacySandboxAttestations::AddObserver(
+    content::PrivacySandboxAttestationsObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // When the feature is disabled, the attestations are not enforced and the
+  // attestations are not loaded. Returning true so that the observers don't
+  // have to wait indefinitely.
+  if (!base::FeatureList::IsEnabled(
+          privacy_sandbox::kEnforcePrivacySandboxAttestations)) {
+    return true;
+  }
+
+  observers_->AddObserver(observer);
+
+  return IsEverLoaded();
+}
+
+void PrivacySandboxAttestations::RemoveObserver(
+    content::PrivacySandboxAttestationsObserver* observer) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  observers_->RemoveObserver(observer);
+}
+
+bool PrivacySandboxAttestations::IsEverLoaded() const {
+  // TODO(crbug.com/1498498): Add lock to `attestations_parse_progress_`.
+  return attestations_map_.has_value() ||
+         attestations_parse_progress_ == Progress::kFinished ||
+         is_all_apis_attested_for_testing_;
 }
 
 }  // namespace privacy_sandbox

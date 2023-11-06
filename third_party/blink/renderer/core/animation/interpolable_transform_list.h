@@ -15,19 +15,23 @@
 
 namespace blink {
 
+class CSSToLengthConversionData;
 class CSSValue;
-class StyleResolverState;
 
 // Represents a blink::TransformOperations, converted into a form that can be
 // interpolated from/to.
 class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
  public:
-  InterpolableTransformList(TransformOperations&& operations)
-      : operations_(std::move(operations)) {}
+  InterpolableTransformList(
+      TransformOperations&& operations,
+      TransformOperations::BoxSizeDependentMatrixBlending box_size_dependent)
+      : operations_(std::move(operations)),
+        box_size_dependent_(box_size_dependent) {}
 
-  static std::unique_ptr<InterpolableTransformList> ConvertCSSValue(
+  static InterpolableTransformList* ConvertCSSValue(
       const CSSValue&,
-      const StyleResolverState*);
+      const CSSToLengthConversionData&,
+      TransformOperations::BoxSizeDependentMatrixBlending);
 
   // Return the underlying TransformOperations. Usually called after composition
   // and interpolation, to apply the results back to the style.
@@ -49,9 +53,12 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   void Add(const InterpolableValue& other) final { NOTREACHED(); }
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override { InterpolableValue::Trace(v); }
+
  private:
   InterpolableTransformList* RawClone() const final {
-    return new InterpolableTransformList(TransformOperations(operations_));
+    return MakeGarbageCollected<InterpolableTransformList>(
+        TransformOperations(operations_), box_size_dependent_);
   }
   InterpolableTransformList* RawCloneAndZero() const final {
     NOTREACHED();
@@ -59,6 +66,7 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   }
 
   TransformOperations operations_;
+  TransformOperations::BoxSizeDependentMatrixBlending box_size_dependent_;
 };
 
 template <>

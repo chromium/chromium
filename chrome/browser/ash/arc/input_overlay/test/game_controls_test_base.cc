@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/test/game_controls_test_base.h"
 
-#include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/public/cpp/window_properties.h"
@@ -19,12 +19,6 @@
 #include "ui/lottie/resource.h"
 
 namespace arc::input_overlay {
-
-namespace {
-
-constexpr char kEnabledPackageName[] = "org.chromium.arc.testapp.inputoverlay";
-
-}  // namespace
 
 GameControlsTestBase::GameControlsTestBase()
     : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
@@ -67,8 +61,9 @@ void GameControlsTestBase::SetUp() {
   profile_ = std::make_unique<TestingProfile>();
   arc_app_test_.set_wait_compatibility_mode(true);
   arc_app_test_.SetUp(profile_.get());
-  arc_app_test_.app_instance()->set_game_control_applicable_pkg(
-      kEnabledPackageName);
+  SimulatedAppInstalled(task_environment(), arc_app_test_, kEnabledPackageName,
+                        /*is_gc_opt_out=*/false,
+                        /*is_game=*/true);
 
   arc_test_input_overlay_manager_ = base::WrapUnique(
       new ArcInputOverlayManager(/*BrowserContext=*/nullptr,
@@ -78,7 +73,7 @@ void GameControlsTestBase::SetUp() {
   ash::Shell::GetPrimaryRootWindow()->SetBounds(gfx::Rect(1000, 800));
   widget_ = CreateArcWindowSyncAndWait(
       task_environment(), ash::Shell::GetPrimaryRootWindow(),
-      gfx::Rect(310, 300, 300, 200), kEnabledPackageName);
+      gfx::Rect(310, 300, 300, 280), kEnabledPackageName);
 
   touch_injector_ = GetTouchInjector(widget_->GetNativeWindow());
   controller_ = GetDisplayOverlayController();

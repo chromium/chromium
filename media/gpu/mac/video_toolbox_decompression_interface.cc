@@ -112,10 +112,11 @@ bool VideoToolboxDecompressionInterface::Process() {
     std::unique_ptr<VideoToolboxDecodeMetadata>& metadata =
         pending_decodes_.front().second;
 
-    CMFormatDescriptionRef format = CMSampleBufferGetFormatDescription(sample);
+    CMFormatDescriptionRef format =
+        CMSampleBufferGetFormatDescription(sample.get());
 
     // Handle format changes.
-    if (decompression_session_->IsValid() && format != active_format_) {
+    if (decompression_session_->IsValid() && format != active_format_.get()) {
       if (decompression_session_->CanAcceptFormat(format)) {
         active_format_.reset(format, base::scoped_policy::RETAIN);
       } else {
@@ -138,7 +139,7 @@ bool VideoToolboxDecompressionInterface::Process() {
 
     // Submit the sample for decoding.
     void* context = static_cast<void*>(metadata.get());
-    if (!decompression_session_->DecodeFrame(sample, context)) {
+    if (!decompression_session_->DecodeFrame(sample.get(), context)) {
       return false;
     }
 
@@ -170,11 +171,11 @@ bool VideoToolboxDecompressionInterface::CreateSession(
 
 #if BUILDFLAG(IS_MAC)
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
       session_metadata.allow_software_decoding ? kCFBooleanFalse
                                                : kCFBooleanTrue);
@@ -222,11 +223,12 @@ bool VideoToolboxDecompressionInterface::CreateSession(
   base::apple::ScopedCFTypeRef<CFNumberRef> cf_pixel_format(
       CFNumberCreate(kCFAllocatorDefault, kCFNumberIntType, &pixel_format));
 
-  CFDictionarySetValue(image_config, kCVPixelBufferPixelFormatTypeKey,
-                       cf_pixel_format);
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferPixelFormatTypeKey,
+                       cf_pixel_format.get());
 
   // Create the session.
-  if (!decompression_session_->Create(format, decoder_config, image_config)) {
+  if (!decompression_session_->Create(format, decoder_config.get(),
+                                      image_config.get())) {
     return false;
   }
 
@@ -270,7 +272,7 @@ void VideoToolboxDecompressionInterface::OnOutput(
 
   if (flags & kVTDecodeInfo_FrameDropped) {
     CHECK(!image);
-  } else if (!image || CFGetTypeID(image) != CVPixelBufferGetTypeID()) {
+  } else if (!image || CFGetTypeID(image.get()) != CVPixelBufferGetTypeID()) {
     MEDIA_LOG(ERROR, media_log_.get())
         << "Decoded image is not a CVPixelBuffer";
     NotifyError(DecoderStatus::Codes::kPlatformDecodeFailure);

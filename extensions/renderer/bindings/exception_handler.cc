@@ -121,7 +121,7 @@ void ExceptionHandler::SetHandlerForContext(v8::Local<v8::Context> context,
 void ExceptionHandler::RunExtensionCallback(
     v8::Local<v8::Context> context,
     v8::Local<v8::Function> extension_callback,
-    std::vector<v8::Local<v8::Value>> callback_arguments,
+    v8::LocalVector<v8::Value> callback_arguments,
     const std::string& message) {
   v8::TryCatch try_catch(context->GetIsolate());
 

@@ -83,6 +83,12 @@ class DownloadBubbleContentsView : public views::View,
   void ProcessDeepScanPress(
       const ContentId& id,
       base::optional_ref<const std::string> password) override;
+  void ProcessLocalDecryptionPress(
+      const offline_items_collection::ContentId& id,
+      base::optional_ref<const std::string> password) override;
+  void ProcessLocalPasswordInProgressClick(
+      const offline_items_collection::ContentId& id,
+      DownloadCommands::Command command) override;
   bool IsEncryptedArchive(const ContentId& id) override;
   bool HasPreviousIncorrectPassword(const ContentId& id) override;
 

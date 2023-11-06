@@ -72,7 +72,7 @@ class SyncEncryptionPassphraseTableViewControllerTest
     TurnSyncErrorOff();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[SyncEncryptionPassphraseTableViewController alloc]
         initWithBrowser:browser_.get()];
   }

@@ -125,24 +125,18 @@ WebMediaPlayer::NetworkState PipelineErrorToNetworkState(
 
 void ReportMetrics(WebMediaPlayer::LoadType load_type,
                    const WebURL& url,
-                   const WebLocalFrame& frame,
                    media::MediaLog* media_log) {
   DCHECK(media_log);
 
   // Report URL scheme, such as http, https, file, blob etc. Only do this for
   // URL based loads, otherwise it's not very useful.
-  if (load_type == WebMediaPlayer::kLoadTypeURL)
+  if (load_type == WebMediaPlayer::kLoadTypeURL) {
     UMA_HISTOGRAM_ENUMERATION("Media.URLScheme2", GetMediaURLScheme(url));
+  }
 
   // Report load type, such as URL, MediaSource or MediaStream.
   UMA_HISTOGRAM_ENUMERATION("Media.LoadType", load_type,
                             WebMediaPlayer::kLoadTypeMax + 1);
-
-  // Report load type separately for ad frames.
-  if (frame.IsAdFrame()) {
-    UMA_HISTOGRAM_ENUMERATION("Ads.Media.LoadType", load_type,
-                              WebMediaPlayer::kLoadTypeMax + 1);
-  }
 }
 
 media::OutputDeviceStatusCB ConvertToOutputDeviceStatusCB(

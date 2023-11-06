@@ -335,7 +335,12 @@ DelayBasedBeginFrameSource::DelayBasedBeginFrameSource(
   time_source_->SetClient(this);
 }
 
-DelayBasedBeginFrameSource::~DelayBasedBeginFrameSource() = default;
+DelayBasedBeginFrameSource::~DelayBasedBeginFrameSource() {
+  if (max_vrr_interval_.has_value()) {
+    UMA_HISTOGRAM_COUNTS_10M("Viz.BeginFrameSource.VrrFrameCount",
+                             vrr_tick_count_);
+  }
+}
 
 void DelayBasedBeginFrameSource::OnUpdateVSyncParameters(
     base::TimeTicks timebase,
@@ -414,6 +419,14 @@ void DelayBasedBeginFrameSource::SetDynamicBeginFrameDeadlineOffsetSource(
 void DelayBasedBeginFrameSource::SetMaxVrrInterval(
     const absl::optional<base::TimeDelta>& max_vrr_interval) {
   DCHECK(!max_vrr_interval.has_value() || max_vrr_interval->is_positive());
+
+  // If VRR is deactivating, record the number of frames produced.
+  if (max_vrr_interval_.has_value() && !max_vrr_interval.has_value()) {
+    UMA_HISTOGRAM_COUNTS_10M("Viz.BeginFrameSource.VrrFrameCount",
+                             vrr_tick_count_);
+    vrr_tick_count_ = 0;
+  }
+
   max_vrr_interval_ = max_vrr_interval;
 }
 
@@ -430,6 +443,9 @@ void DelayBasedBeginFrameSource::OnTimerTick() {
       "viz", "DelayBasedBeginFrameSource::OnTimerTick", "frame_time",
       last_begin_frame_args_.frame_time.since_origin().InMicroseconds(),
       "interval", last_begin_frame_args_.interval.InMicroseconds());
+  if (max_vrr_interval_.has_value()) {
+    vrr_tick_count_++;
+  }
   base::flat_set<BeginFrameObserver*> observers(observers_);
   for (auto* obs : observers)
     IssueBeginFrameToObserver(obs, last_begin_frame_args_);

@@ -36,7 +36,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -164,10 +163,8 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     client_->test_ukm_recorder_ = test_ukm_recorder_.get();
 
     Profile* profile = ProfileManager::GetActiveUserProfile();
-    instance_registry_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                              ->InstanceRegistry();
-    app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                               ->AppRegistryCache();
+    app_service_proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile);
+    instance_registry_ = &app_service_proxy_->InstanceRegistry();
     capability_cache_ =
         apps::AppCapabilityAccessCacheWrapper::Get()
             .GetAppCapabilityAccessCache(user_manager::UserManager::Get()
@@ -182,8 +179,8 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(MakeApp(app_id, /*has_camera_permission=*/false,
                              /*has_microphone_permission=*/false, app_type));
-    app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                                /*should_notify_initialized=*/false);
+    app_service_proxy_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                               /*should_notify_initialized=*/false);
   }
 
   // Update the permission of current `app_id`.
@@ -193,8 +190,8 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(MakeApp(app_id, has_camera_permission,
                              has_microphone_permission, GetAppType(app_id)));
-    app_registry_cache_->OnApps(std::move(deltas), apps::AppType::kUnknown,
-                                /*should_notify_initialized=*/false);
+    app_service_proxy_->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                               /*should_notify_initialized=*/false);
   }
 
   // Set the camera/michrophone accessing info for app with `app_id`.
@@ -250,10 +247,10 @@ class VideoConferenceAppServiceClientTest : public InProcessBrowserTest {
   }
 
  protected:
+  raw_ptr<apps::AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
+      app_service_proxy_ = nullptr;
   raw_ptr<apps::InstanceRegistry, DanglingUntriaged | ExperimentalAsh>
       instance_registry_ = nullptr;
-  raw_ptr<apps::AppRegistryCache, DanglingUntriaged | ExperimentalAsh>
-      app_registry_cache_ = nullptr;
   raw_ptr<apps::AppCapabilityAccessCache, DanglingUntriaged | ExperimentalAsh>
       capability_cache_ = nullptr;
   raw_ptr<VideoConferenceAppServiceClient, DanglingUntriaged | ExperimentalAsh>

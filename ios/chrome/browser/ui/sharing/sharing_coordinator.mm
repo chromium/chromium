@@ -189,7 +189,9 @@ BOOL CreateDestinationDirectoryAndRemoveObsoleteFiles() {
 
 // Stop this coordinator and start a new one.
 - (void)stopAndStartNewCoordinator {
-  [self.activityHandler stopAndStartSharingCoordinator];
+  id<ActivityServiceCommands> activityServiceHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ActivityServiceCommands);
+  [activityServiceHandler stopAndStartSharingCoordinator];
 }
 
 #pragma mark - ChromeCoordinator

@@ -6,7 +6,6 @@
 
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -18,6 +17,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/overview/scoped_overview_animation_settings.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
@@ -79,17 +79,8 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
 
   shadow_layer->SetVisible(true);
 
-  const bool continuous_scroll =
-      features::IsContinuousOverviewScrollAnimationEnabled() &&
-      Shell::Get()->overview_controller()->is_continuous_scroll_in_progress();
-  gfx::Rect shadow_content_bounds =
-      gfx::Rect(item_widget_->GetNativeWindow()->GetTargetBounds().size());
-  if (!is_jellyroll_enabled || continuous_scroll) {
-    shadow_content_bounds.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
-  }
-
-  shadow_content_bounds.ClampToCenteredSize(
-      gfx::ToRoundedSize(shadow_bounds_in_screen.size()));
+  gfx::Rect shadow_content_bounds(
+      gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
   shadow_->SetRoundedCornerRadius(
       is_jellyroll_enabled ? kOverviewItemCornerRadius : 0);
@@ -118,7 +109,7 @@ void OverviewItemBase::HandleMouseEvent(const ui::MouseEvent& event) {
   // search+space will select the item, leaving overview.
   const gfx::PointF screen_location =
       event.target() ? event.target()->GetScreenLocationF(event)
-                     : gfx::PointF(GetTargetBoundsInScreen().CenterPoint());
+                     : gfx::PointF(GetWindowsUnionScreenBounds().CenterPoint());
   switch (event.type()) {
     case ui::ET_MOUSE_PRESSED:
       HandlePressEvent(screen_location, /*from_touch_gesture=*/false);
@@ -230,15 +221,17 @@ void OverviewItemBase::HandleGestureEventForTabletModeLayout(
 
 views::Widget::InitParams OverviewItemBase::CreateOverviewItemWidgetParams(
     aura::Window* parent_window,
-    const std::string& widget_name) const {
+    const std::string& widget_name,
+    bool accept_events) const {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  // TODO(sammiequon): Investigate if this parameter is necessary.
   params.visible_on_all_workspaces = true;
   params.name = widget_name;
   params.activatable = views::Widget::InitParams::Activatable::kDefault;
-  params.accept_events = true;
+  params.accept_events = accept_events;
   params.parent = parent_window;
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   return params;

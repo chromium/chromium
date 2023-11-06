@@ -95,7 +95,7 @@ class NavigateAndTriggerInstallDialogCommand
   raw_ptr<Profile> profile_ = nullptr;
 
   webapps::AppId app_id_;
-  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  base::WeakPtr<content::WebContents> web_contents_;
   base::Value::List error_log_;
 
   base::WeakPtrFactory<NavigateAndTriggerInstallDialogCommand> weak_factory_{

@@ -37,8 +37,9 @@ interface GpuHost {
   // Called when all channels are destroyed by client. Not called for tearing
   // down all channels due to lost context.
   DidDestroyAllChannels();
-  DidLoseContext(bool offscreen,
-                 ContextLostReason reason,
+
+  // Called when gpu service lost one of the contexts.
+  DidLoseContext(ContextLostReason reason,
                  url.mojom.Url active_url);
 
   // Tells the GPU host that the GPUInfo has been updated in the GPU

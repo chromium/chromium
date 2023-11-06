@@ -243,6 +243,14 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
     return std::u16string();
 
   if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling) &&
+      options_.card_save_type ==
+          AutofillClient::CardSaveType::kCardSaveWithCvc) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
+  }
+
+  if (base::FeatureList::IsEnabled(
           features::kAutofillEnableNewSaveCardBubbleUi)) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V4);
@@ -294,11 +302,26 @@ std::u16string SaveCardBubbleControllerImpl::GetDeclineButtonText() const {
   }
 }
 
-const AccountInfo& SaveCardBubbleControllerImpl::GetAccountInfo() {
-  if (account_info_.IsEmpty())
-    FetchAccountInfo();
+AccountInfo SaveCardBubbleControllerImpl::GetAccountInfo() {
+  // The results of this call should not be cached because the user can update
+  // their account info at any time.
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return AccountInfo();
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return AccountInfo();
+  }
+  PersonalDataManager* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile);
+  if (!personal_data_manager) {
+    return AccountInfo();
+  }
 
-  return account_info_;
+  return identity_manager->FindExtendedAccountInfo(
+      personal_data_manager->GetAccountInfoForPaymentsServer());
 }
 
 Profile* SaveCardBubbleControllerImpl::GetProfile() const {
@@ -611,21 +634,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_) {
     observer_for_testing_->OnBubbleShown();
   }
-}
-
-void SaveCardBubbleControllerImpl::FetchAccountInfo() {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
-    return;
-  auto* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile);
-  if (!personal_data_manager)
-    return;
-  account_info_ = identity_manager->FindExtendedAccountInfo(
-      personal_data_manager->GetAccountInfoForPaymentsServer());
 }
 
 void SaveCardBubbleControllerImpl::ShowBubble() {

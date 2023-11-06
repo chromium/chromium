@@ -164,7 +164,7 @@ class BorealisDisallowedDialog : public DialogDelegate {
                      l10n_util::GetStringUTF16(IDS_CLOSE));
     }
     InitializeView(*behaviour, title_id);
-    SetModalType(ui::MODAL_TYPE_NONE);
+    SetModalType(ui::MODAL_TYPE_SYSTEM);
     SetOwnedByWidget(true);
     SetShowCloseButton(false);
     set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -257,8 +257,6 @@ void ShowDisallowedDialog(AllowStatus status, int title_id) {
       StatusBehaviour(status), title_id);
   g_instance_ = views::DialogDelegate::CreateDialogWidget(std::move(delegate),
                                                           nullptr, nullptr);
-  g_instance_->GetNativeWindow()->SetProperty(
-      ash::kShelfIDKey, ash::ShelfID(::borealis::kInstallerAppId).Serialize());
   g_instance_->Show();
 }
 

@@ -319,7 +319,6 @@ void ReportCombinedSubscriptionCountAtEngagementTime(int subscription_count) {
 bool IsGoodExplicitInteraction(FeedUserActionType action) {
   switch (action) {
     case FeedUserActionType::kAddedToReadLater:
-    case FeedUserActionType::kTappedCrowButton:
     case FeedUserActionType::kTappedFollowButton:
     case FeedUserActionType::kShare:
     case FeedUserActionType::kTappedAddToReadingList:
@@ -727,7 +726,6 @@ void MetricsReporter::OtherUserAction(const StreamType& stream_type,
       RecordInteraction(stream_type);
       break;
     case FeedUserActionType::kAddedToReadLater:
-    case FeedUserActionType::kTappedCrowButton:
     case FeedUserActionType::kTappedFollowButton:
     case FeedUserActionType::kEphemeralChange:
     case FeedUserActionType::kEphemeralChangeRejected:

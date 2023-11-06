@@ -1171,7 +1171,6 @@ void FakeUserDataAuthClient::ExtendAuthSession(
     ExtendAuthSessionCallback callback) {
   ::user_data_auth::ExtendAuthSessionReply reply;
   ReplyOnReturn auto_reply(&reply, std::move(callback));
-
   auto error = CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET;
   auto* session_data =
       GetAuthenticatedAuthSession(request.auth_session_id(), &error);

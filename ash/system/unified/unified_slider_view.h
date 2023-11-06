@@ -46,9 +46,8 @@ class UnifiedSliderListener : public views::SliderListener {
   void TrackValueChangeUMA(bool going_up);
 };
 
-// Base view class of a slider row in `UnifiedSystemTray`. It has a button on
-// the left side and a slider on the right side.
-// For QsRevamp: the slider has an `ImageView` icon on top of the slider.
+// Base view class of a slider row in `UnifiedSystemTray`. The slider has an
+// `ImageView` icon on top of the slider.
 class UnifiedSliderView : public views::View {
  public:
   METADATA_HEADER(UnifiedSliderView);

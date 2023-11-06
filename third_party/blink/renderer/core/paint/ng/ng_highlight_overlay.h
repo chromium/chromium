@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
+#include "third_party/blink/renderer/core/layout/inline/text_offset_range.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -162,7 +163,7 @@ class CORE_EXPORT NGHighlightOverlay {
       const Node*,
       const HighlightRegistry*,
       bool is_generated_text_fragment,
-      const NGTextFragmentPaintInfo& originating,
+      absl::optional<TextOffsetRange> dom_offsets,
       const LayoutSelectionStatus* selection,
       const DocumentMarkerVector& custom,
       const DocumentMarkerVector& grammar,

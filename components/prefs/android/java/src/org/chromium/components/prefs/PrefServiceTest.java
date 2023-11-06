@@ -29,10 +29,8 @@ public class PrefServiceTest {
     private static final String PREF = "42";
     private static final long NATIVE_HANDLE = 117;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private PrefService.Natives mNativeMock;
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private PrefService.Natives mNativeMock;
 
     PrefService mPrefService;
 

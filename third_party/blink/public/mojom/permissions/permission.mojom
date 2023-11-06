@@ -111,6 +111,15 @@ struct EmbeddedPermissionRequestDescriptor {
 // start listening to permission changes.
 interface PermissionService {
   HasPermission(PermissionDescriptor permission) => (PermissionStatus status);
+  // Calling this method is only possible when the type attribute of
+  // <permission> element is set. The return callback will be invoked to
+  // indicate if PEPC is |allowed| to be created or not. If PEPC is allowed to
+  // be created, the callback will be invoked with the status of the respective
+  // permissions. If PEPC is NOT allowed (i.e. in fenced frames) the PEPC object
+  // will clean up itself.
+  RegisterPageEmbeddedPermissionControl(
+    array<PermissionDescriptor> permissions)
+      => (bool allowed, array<PermissionStatus>? statuses);
   // Calling this method indicates the user has explicitly requested the
   // permission by clicking on the `HTMLPermissionElement`. Asks for a list of
   // permissions and returns `EmbeddedPermissionControlResult` defined above

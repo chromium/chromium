@@ -24,23 +24,18 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 
-/**
- * Unit tests for {@link BackPressHelper}.
- */
+/** Unit tests for {@link BackPressHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BackPressHelperUnitTest {
-    @Mock
-    private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler;
-    @Mock
-    private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler2;
-    @Mock
-    private LifecycleOwner mLifecycleOwner;
+    @Mock private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler;
+    @Mock private BackPressHelper.ObsoleteBackPressedHandler mBackPressedHandler2;
+    @Mock private LifecycleOwner mLifecycleOwner;
     private LifecycleRegistry mLifecycle;
-    @Mock
-    private Runnable mFallbackRunnable;
+    @Mock private Runnable mFallbackRunnable;
 
     private OnBackPressedDispatcher mOnBackPressedDispatcher;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -55,13 +50,20 @@ public class BackPressHelperUnitTest {
         doReturn(true).when(mBackPressedHandler).onBackPressed();
 
         // The last-added one is invoked first: mBackPressedHandler -> mBackPressedHandler2
-        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mBackPressedHandler2,
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mBackPressedHandler2,
                 SecondaryActivity.DOWNLOAD);
-        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mBackPressedHandler,
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mBackPressedHandler,
                 SecondaryActivity.HISTORY);
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.SecondaryActivity", SecondaryActivity.HISTORY);
         mLifecycle.setCurrentState(Lifecycle.State.STARTED);
         mOnBackPressedDispatcher.onBackPressed();
 
@@ -75,13 +77,20 @@ public class BackPressHelperUnitTest {
     public void testInvokeNextCallbackIfNotConsumed() {
         doReturn(false).when(mBackPressedHandler).onBackPressed();
         doReturn(true).when(mBackPressedHandler2).onBackPressed();
-        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mBackPressedHandler2,
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mBackPressedHandler2,
                 SecondaryActivity.DOWNLOAD);
-        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mBackPressedHandler,
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mBackPressedHandler,
                 SecondaryActivity.HISTORY);
 
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.BackPress.SecondaryActivity", SecondaryActivity.DOWNLOAD);
         mLifecycle.setCurrentState(Lifecycle.State.STARTED);
         mOnBackPressedDispatcher.onBackPressed();
 
@@ -94,14 +103,18 @@ public class BackPressHelperUnitTest {
     @Test
     public void testInvokeFallbackRunnableIfNotHandled() {
         doReturn(false).when(mBackPressedHandler).onBackPressed();
-        BackPressHelper.create(mLifecycleOwner, mOnBackPressedDispatcher, mBackPressedHandler,
+        BackPressHelper.create(
+                mLifecycleOwner,
+                mOnBackPressedDispatcher,
+                mBackPressedHandler,
                 SecondaryActivity.HISTORY);
         mLifecycle.setCurrentState(Lifecycle.State.STARTED);
         mOnBackPressedDispatcher.onBackPressed();
 
-        var histogramWatcher = HistogramWatcher.newBuilder()
-                                       .expectNoRecords("Android.BackPress.SecondaryActivity")
-                                       .build();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BackPress.SecondaryActivity")
+                        .build();
         verify(mFallbackRunnable).run();
         histogramWatcher.assertExpected();
     }

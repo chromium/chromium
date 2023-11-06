@@ -20,7 +20,7 @@ source_set("menu") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/policy:policy_util",
-    "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser_state",

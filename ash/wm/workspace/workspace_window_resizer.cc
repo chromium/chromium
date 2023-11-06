@@ -17,7 +17,6 @@
 #include "ash/screen_util.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/default_window_resizer.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/drag_window_resizer.h"
@@ -39,7 +38,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/wm/features.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/window.h"
@@ -1611,7 +1610,7 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
 
   // Fire a haptic event if necessary.
   if (need_haptic_feedback) {
-    haptics_util::PlayHapticTouchpadEffect(
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
         ui::HapticTouchpadEffect::kSnap,
         ui::HapticTouchpadEffectStrength::kMedium);
   }

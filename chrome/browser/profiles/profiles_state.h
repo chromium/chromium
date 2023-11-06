@@ -108,9 +108,6 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile);
 // a BrowsingDataRemover to delete all the Profile's data.
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path);
 
-// Returns true if the current session is a managed guest session.
-bool IsManagedGuestSession();
-
 // Returns true if the current session is a Demo session.
 bool IsDemoSession();
 

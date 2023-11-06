@@ -6,12 +6,12 @@ component("common") {
   output_name = "learning_common"
   visibility = [
     "//media/learning",
+    "//media/learning/common:unit_tests",
     "//media/learning/impl:*",
     "//media/learning/impl:test_support",
+    "//media/learning/mojo:*",
     "//media/learning/mojo/public/cpp:*",
     "//media/learning/mojo/public/mojom:*",
-    "//media/learning/mojo:*",
-    "//media/learning/common:unit_tests",
 
     # Actual client code
     "//media/capabilities",
@@ -47,6 +47,8 @@ component("common") {
     "//base",
     "//services/metrics/public/cpp:metrics_cpp",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

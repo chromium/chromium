@@ -6,7 +6,6 @@
 #define EXTENSIONS_RENDERER_BINDINGS_API_BINDING_TYPES_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "v8/include/v8.h"
@@ -61,7 +60,7 @@ enum class AsyncResponseType {
 using AddConsoleError = base::RepeatingCallback<void(v8::Local<v8::Context>,
                                                      const std::string& error)>;
 
-using V8ArgumentList = std::vector<v8::Local<v8::Value>>;
+using V8ArgumentList = v8::LocalVector<v8::Value>;
 
 using ResultModifierFunction =
     base::OnceCallback<V8ArgumentList(const V8ArgumentList&,

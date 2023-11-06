@@ -6,7 +6,6 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
@@ -24,6 +23,8 @@ function createFakeFileFilter() {
      * @param {Entry} entry File entry.
      * @return {boolean} True if the file should be shown.
      */
+    // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+    // read.
     filter(entry) {
       return true;
     }
@@ -46,16 +47,6 @@ export function createFakeDirectoryModel() {
 
       /** @private @type {!FileFilter} */
       this.fileFilter_ = createFakeFileFilter();
-
-      /** @private @type {FilesAppDirEntry} */
-      this.myFiles_ = null;
-    }
-
-    /**
-     * @param {FilesAppDirEntry} myFilesEntry
-     */
-    setMyFiles(myFilesEntry) {
-      this.myFiles_ = myFilesEntry;
     }
 
     /**
@@ -69,11 +60,13 @@ export function createFakeDirectoryModel() {
      * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry} Current directory.
      */
     getCurrentDirEntry() {
+      // @ts-ignore: error TS2322: Type 'null' is not assignable to type
+      // 'FileSystemDirectoryEntry | FilesAppDirEntry | FakeEntry'.
       return null;
     }
 
     /**
-     * @returns {?VolumeInfo}
+     * @returns {?import("../../externs/volume_info.js").VolumeInfo}
      */
     getCurrentVolumeInfo() {
       return null;
@@ -99,6 +92,8 @@ export function createFakeDirectoryModel() {
      * @param {function()=} opt_callback Executed if the directory loads
      *     successfully.
      */
+    // @ts-ignore: error TS6133: 'dirEntry' is declared but its value is never
+    // read.
     changeDirectoryEntry(dirEntry, opt_callback) {
       if (opt_callback) {
         opt_callback();

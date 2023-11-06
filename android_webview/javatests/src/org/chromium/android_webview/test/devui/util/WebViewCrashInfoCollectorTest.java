@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Unit tests for WebViewCrashInfoCollector.
- */
+/** Unit tests for WebViewCrashInfoCollector. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
@@ -54,12 +52,13 @@ public class WebViewCrashInfoCollectorTest {
 
         @Override
         public CrashInfoLoader[] create() {
-            CrashInfoLoader loader = new CrashInfoLoader() {
-                @Override
-                public List<CrashInfo> loadCrashesInfo() {
-                    return mCrashInfoList;
-                }
-            };
+            CrashInfoLoader loader =
+                    new CrashInfoLoader() {
+                        @Override
+                        public List<CrashInfo> loadCrashesInfo() {
+                            return mCrashInfoList;
+                        }
+                    };
             return new CrashInfoLoader[] {loader};
         }
     }
@@ -72,12 +71,18 @@ public class WebViewCrashInfoCollectorTest {
     /**
      * Create a hidden {@link CrashInfo} object for testing.
      *
-     * {@code appPackageName} is used as a representative of crash keys in tests.
+     * <p>{@code appPackageName} is used as a representative of crash keys in tests.
      */
-    public static CrashInfo createHiddenCrash(String localId, long captureTime, String uploadId,
-            long uploadTime, String appPackageName, UploadState state) {
-        CrashInfo crashInfo = createCrashInfoForTesting(
-                localId, captureTime, uploadId, uploadTime, appPackageName, state);
+    public static CrashInfo createHiddenCrash(
+            String localId,
+            long captureTime,
+            String uploadId,
+            long uploadTime,
+            String appPackageName,
+            UploadState state) {
+        CrashInfo crashInfo =
+                createCrashInfoForTesting(
+                        localId, captureTime, uploadId, uploadTime, appPackageName, state);
         crashInfo.isHidden = true;
 
         return crashInfo;
@@ -105,32 +110,63 @@ public class WebViewCrashInfoCollectorTest {
         return null;
     }
 
-    /**
-     * Test that merging {@code CrashInfo} that has the same {@code localID} works correctly.
-     */
+    /** Test that merging {@code CrashInfo} that has the same {@code localID} works correctly. */
     @Test
     @SmallTest
     public void testMergeDuplicates() {
-        List<CrashInfo> testList = Arrays.asList(createCrashInfoForTesting("xyz123", 112233445566L,
-                                                         null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "xyz123", 112233445566L, null, -1, "com.test.package", null),
-                createCrashInfoForTesting(
-                        "abc456", 445566778899L, null, -1, "org.test.package", null),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, null),
-                createCrashInfoForTesting(
-                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
+        List<CrashInfo> testList =
+                Arrays.asList(
+                        createCrashInfoForTesting(
+                                "xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "def789",
+                                -1,
+                                "55667788",
+                                123344556677L,
+                                null,
+                                UploadState.UPLOADED),
+                        createCrashInfoForTesting(
+                                "abc456", -1, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "xyz123", 112233445566L, null, -1, "com.test.package", null),
+                        createCrashInfoForTesting(
+                                "abc456", 445566778899L, null, -1, "org.test.package", null),
+                        createCrashInfoForTesting("abc456", -1, null, -1, null, null),
+                        createCrashInfoForTesting(
+                                "xyz123",
+                                -1,
+                                "11223344",
+                                223344556677L,
+                                null,
+                                UploadState.UPLOADED));
         List<CrashInfo> uniqueList = WebViewCrashInfoCollector.mergeDuplicates(testList);
-        Assert.assertThat(uniqueList,
-                containsInAnyOrder(equalsTo(createCrashInfoForTesting("abc456", 445566778899L, null,
-                                           -1, "org.test.package", UploadState.PENDING)),
-                        equalsTo(createCrashInfoForTesting("xyz123", 112233445566L, "11223344",
-                                223344556677L, "com.test.package", UploadState.UPLOADED)),
-                        equalsTo(createCrashInfoForTesting("def789", -1, "55667788", 123344556677L,
-                                null, UploadState.UPLOADED))));
+        Assert.assertThat(
+                uniqueList,
+                containsInAnyOrder(
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "abc456",
+                                        445566778899L,
+                                        null,
+                                        -1,
+                                        "org.test.package",
+                                        UploadState.PENDING)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "xyz123",
+                                        112233445566L,
+                                        "11223344",
+                                        223344556677L,
+                                        "com.test.package",
+                                        UploadState.UPLOADED)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "def789",
+                                        -1,
+                                        "55667788",
+                                        123344556677L,
+                                        null,
+                                        UploadState.UPLOADED))));
     }
 
     /**
@@ -139,22 +175,42 @@ public class WebViewCrashInfoCollectorTest {
     @Test
     @SmallTest
     public void testMergeDuplicatesAndIgnoreHidden() {
-        List<CrashInfo> testList = Arrays.asList(
-                createHiddenCrash("xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
-                createHiddenCrash("abc456", -1, null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "xyz123", 112233445566L, null, -1, "com.test.package", null),
-                createCrashInfoForTesting(
-                        "abc456", 445566778899L, null, -1, "org.test.package", null),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, null),
-                createCrashInfoForTesting(
-                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
+        List<CrashInfo> testList =
+                Arrays.asList(
+                        createHiddenCrash(
+                                "xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "def789",
+                                -1,
+                                "55667788",
+                                123344556677L,
+                                null,
+                                UploadState.UPLOADED),
+                        createHiddenCrash("abc456", -1, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "xyz123", 112233445566L, null, -1, "com.test.package", null),
+                        createCrashInfoForTesting(
+                                "abc456", 445566778899L, null, -1, "org.test.package", null),
+                        createCrashInfoForTesting("abc456", -1, null, -1, null, null),
+                        createCrashInfoForTesting(
+                                "xyz123",
+                                -1,
+                                "11223344",
+                                223344556677L,
+                                null,
+                                UploadState.UPLOADED));
         List<CrashInfo> uniqueList = WebViewCrashInfoCollector.mergeDuplicates(testList);
-        Assert.assertThat(uniqueList,
-                containsInAnyOrder(equalsTo(createCrashInfoForTesting(
-                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED))));
+        Assert.assertThat(
+                uniqueList,
+                containsInAnyOrder(
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "def789",
+                                        -1,
+                                        "55667788",
+                                        123344556677L,
+                                        null,
+                                        UploadState.UPLOADED))));
     }
 
     /**
@@ -164,50 +220,85 @@ public class WebViewCrashInfoCollectorTest {
     @Test
     @SmallTest
     public void testSortByRecentCaptureTime() {
-        List<CrashInfo> testList = Arrays.asList(createCrashInfoForTesting("xyz123", -1, "11223344",
-                                                         123L, null, UploadState.UPLOADED),
-                createCrashInfoForTesting(
-                        "def789", 111L, "55667788", 100L, null, UploadState.UPLOADED),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting("ghijkl", 112L, null, -1, "com.test.package", null),
-                createCrashInfoForTesting("abc456", 112L, null, 112L, "org.test.package", null),
-                createCrashInfoForTesting(null, 100, "11223344", -1, "com.test.package", null),
-                createCrashInfoForTesting("abc123", 100, null, -1, null, null));
+        List<CrashInfo> testList =
+                Arrays.asList(
+                        createCrashInfoForTesting(
+                                "xyz123", -1, "11223344", 123L, null, UploadState.UPLOADED),
+                        createCrashInfoForTesting(
+                                "def789", 111L, "55667788", 100L, null, UploadState.UPLOADED),
+                        createCrashInfoForTesting(
+                                "abc456", -1, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "ghijkl", 112L, null, -1, "com.test.package", null),
+                        createCrashInfoForTesting(
+                                "abc456", 112L, null, 112L, "org.test.package", null),
+                        createCrashInfoForTesting(
+                                null, 100, "11223344", -1, "com.test.package", null),
+                        createCrashInfoForTesting("abc123", 100, null, -1, null, null));
         WebViewCrashInfoCollector.sortByMostRecent(testList);
-        Assert.assertThat(testList,
-                contains(equalsTo(createCrashInfoForTesting(
-                                 "abc456", 112L, null, 112L, "org.test.package", null)),
-                        equalsTo(createCrashInfoForTesting(
-                                "ghijkl", 112L, null, -1, "com.test.package", null)),
-                        equalsTo(createCrashInfoForTesting(
-                                "def789", 111L, "55667788", 100L, null, UploadState.UPLOADED)),
-                        equalsTo(createCrashInfoForTesting(
-                                null, 100, "11223344", -1, "com.test.package", null)),
+        Assert.assertThat(
+                testList,
+                contains(
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "abc456", 112L, null, 112L, "org.test.package", null)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "ghijkl", 112L, null, -1, "com.test.package", null)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "def789",
+                                        111L,
+                                        "55667788",
+                                        100L,
+                                        null,
+                                        UploadState.UPLOADED)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        null, 100, "11223344", -1, "com.test.package", null)),
                         equalsTo(createCrashInfoForTesting("abc123", 100, null, -1, null, null)),
-                        equalsTo(createCrashInfoForTesting(
-                                "xyz123", -1, "11223344", 123L, null, UploadState.UPLOADED)),
-                        equalsTo(createCrashInfoForTesting(
-                                "abc456", -1, null, -1, null, UploadState.PENDING))));
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "xyz123",
+                                        -1,
+                                        "11223344",
+                                        123L,
+                                        null,
+                                        UploadState.UPLOADED)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "abc456", -1, null, -1, null, UploadState.PENDING))));
     }
 
-    /**
-     * Test loading, sort and filter crashes.
-     */
+    /** Test loading, sort and filter crashes. */
     @Test
     @SmallTest
     public void testLoadCrashesInfoFilteredNoLimit() {
-        List<CrashInfo> testList = Arrays.asList(createCrashInfoForTesting("xyz123", 112233445566L,
-                                                         null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, UploadState.PENDING),
-                createCrashInfoForTesting(
-                        "xyz123", 112233445566L, null, -1, "com.test.package", null),
-                createCrashInfoForTesting(
-                        "abc456", 445566778899L, null, -1, "org.test.package", null),
-                createCrashInfoForTesting("abc456", -1, null, -1, null, null),
-                createCrashInfoForTesting(
-                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
+        List<CrashInfo> testList =
+                Arrays.asList(
+                        createCrashInfoForTesting(
+                                "xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "def789",
+                                -1,
+                                "55667788",
+                                123344556677L,
+                                null,
+                                UploadState.UPLOADED),
+                        createCrashInfoForTesting(
+                                "abc456", -1, null, -1, null, UploadState.PENDING),
+                        createCrashInfoForTesting(
+                                "xyz123", 112233445566L, null, -1, "com.test.package", null),
+                        createCrashInfoForTesting(
+                                "abc456", 445566778899L, null, -1, "org.test.package", null),
+                        createCrashInfoForTesting("abc456", -1, null, -1, null, null),
+                        createCrashInfoForTesting(
+                                "xyz123",
+                                -1,
+                                "11223344",
+                                223344556677L,
+                                null,
+                                UploadState.UPLOADED));
 
         WebViewCrashInfoCollector collector =
                 new WebViewCrashInfoCollector(new CrashInfoLoadersTestFactory(testList));
@@ -215,16 +306,28 @@ public class WebViewCrashInfoCollectorTest {
         // Get crashes with UPLOAD state only.
         List<CrashInfo> result =
                 collector.loadCrashesInfo(c -> c.uploadState == UploadState.UPLOADED);
-        Assert.assertThat(result,
-                contains(equalsTo(createCrashInfoForTesting("xyz123", 112233445566L, "11223344",
-                                 223344556677L, "com.test.package", UploadState.UPLOADED)),
-                        equalsTo(createCrashInfoForTesting("def789", -1, "55667788", 123344556677L,
-                                null, UploadState.UPLOADED))));
+        Assert.assertThat(
+                result,
+                contains(
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "xyz123",
+                                        112233445566L,
+                                        "11223344",
+                                        223344556677L,
+                                        "com.test.package",
+                                        UploadState.UPLOADED)),
+                        equalsTo(
+                                createCrashInfoForTesting(
+                                        "def789",
+                                        -1,
+                                        "55667788",
+                                        123344556677L,
+                                        null,
+                                        UploadState.UPLOADED))));
     }
 
-    /**
-     * Test updating crash JSON log file with the new crash info
-     */
+    /** Test updating crash JSON log file with the new crash info */
     @Test
     @SmallTest
     public void testUpdateCrashLogFileWithNewCrashInfo() throws Throwable {
@@ -240,9 +343,7 @@ public class WebViewCrashInfoCollectorTest {
         Assert.assertThat(resultCrashInfo, equalsTo(newCrashInfo));
     }
 
-    /**
-     * Test updating non-existing crash JSON log file with the new crash info
-     */
+    /** Test updating non-existing crash JSON log file with the new crash info */
     @Test
     @SmallTest
     public void testUpdateNonExistingCrashLogFileWithNewCrashInfo() throws Throwable {

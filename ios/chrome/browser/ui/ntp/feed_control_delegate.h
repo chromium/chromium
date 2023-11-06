@@ -33,6 +33,12 @@
 // Returns the index of the last visible feed card.
 - (NSUInteger)lastVisibleFeedCardIndex;
 
+// Sets the visibility of the feed and the feed header.
+- (void)setFeedAndHeaderVisibility:(BOOL)visible;
+
+// Updates the feed header when the default search engine changes.
+- (void)updateFeedForDefaultSearchEngineChanged;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_CONTROL_DELEGATE_H_

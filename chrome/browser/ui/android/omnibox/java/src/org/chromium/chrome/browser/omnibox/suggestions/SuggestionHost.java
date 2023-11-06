@@ -46,9 +46,8 @@ public interface SuggestionHost {
     void onOmniboxActionClicked(@NonNull OmniboxAction action);
 
     /**
-     * Triggered when the user long presses the omnibox suggestion.
-     * Deletes the entire AutocompleteMatch. Execution of this method implies removal of the
-     * AutocompleteMatch.
+     * Triggered when the user long presses the omnibox suggestion. Deletes the entire
+     * AutocompleteMatch. Execution of this method implies removal of the AutocompleteMatch.
      *
      * @param suggestion Long-pressed Suggestion.
      * @param titleText The title to display in the delete dialog.
@@ -56,9 +55,9 @@ public interface SuggestionHost {
     void onDeleteMatch(@NonNull AutocompleteMatch suggestion, @NonNull String titleText);
 
     /**
-     * Triggered when the user long presses the omnibox suggestion element (eg. tile).
-     * Performs partial deletion of an AutocompleteMatch, focusing on the supplied element.
-     * Execution of this method does not imply removal of the AutocompleteMatch.
+     * Triggered when the user long presses the omnibox suggestion element (eg. tile). Performs
+     * partial deletion of an AutocompleteMatch, focusing on the supplied element. Execution of this
+     * method does not imply removal of the AutocompleteMatch.
      *
      * @param suggestion Long-pressed Suggestion.
      * @param titleText The title to display in the delete dialog.
@@ -82,14 +81,10 @@ public interface SuggestionHost {
      */
     void setOmniboxEditingText(@NonNull String text);
 
-    /**
-     * Clear focus, close the suggestions list and complete the interaction with the Omnibox.
-     */
+    /** Clear focus, close the suggestions list and complete the interaction with the Omnibox. */
     void finishInteraction();
 
-    /**
-     * Returns query extracted from GURL.
-     */
+    /** Returns query extracted from GURL. */
     @Nullable
     String queryFromGurl(GURL url);
 }

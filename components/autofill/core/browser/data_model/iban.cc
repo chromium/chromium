@@ -353,9 +353,9 @@ void Iban::set_value(const std::u16string& value) {
   // never set the `kPrefixLength` and `kSuffixLength` in a way where they can
   // be longer than the total length of the IBAN.
   CHECK(value_.length() >= kPrefixLength + kSuffixLength);
-  set_prefix(value_.substr(0, kPrefixLength));
-  set_suffix(value_.substr(value_.length() - kSuffixLength));
-  set_length(value_.length());
+  prefix_ = value_.substr(0, kPrefixLength);
+  suffix_ = value_.substr(value_.length() - kSuffixLength);
+  length_ = value_.length();
 }
 
 void Iban::set_nickname(const std::u16string& nickname) {
@@ -368,6 +368,21 @@ void Iban::set_nickname(const std::u16string& nickname) {
   nickname_ =
       base::CollapseWhitespace(nickname_,
                                /*trim_sequences_with_line_breaks=*/true);
+}
+
+void Iban::set_prefix(std::u16string prefix) {
+  CHECK_NE(record_type_, Iban::kLocalIban);
+  prefix_ = std::move(prefix);
+}
+
+void Iban::set_suffix(std::u16string suffix) {
+  CHECK_NE(record_type_, Iban::kLocalIban);
+  suffix_ = std::move(suffix);
+}
+
+void Iban::set_length(int length) {
+  CHECK_NE(record_type_, Iban::kLocalIban);
+  length_ = length;
 }
 
 bool Iban::IsValid() {
@@ -418,6 +433,31 @@ std::u16string Iban::GetIdentifierStringForAutofillDisplay(
 
 std::u16string Iban::GetStrippedValue() const {
   return value_;
+}
+
+bool Iban::MatchesPrefixSuffixAndLength(const Iban& iban) const {
+  // Unlike the `Compare()` function, which seeks an exact match between
+  // `prefix_`, `suffix_`, and `length_`, the comparison performed here involves
+  // matching the prefixes between each other and similarly comparing the
+  // suffixes between each other This approach is adopted because the `prefix`,
+  // `suffix`, and `length` received from the server are considered the
+  // source of truth. Therefore, even if the values of `kPrefixLength` or
+  // `kSuffixLength` change later, leading to differences in length between the
+  // client and server, it remains essential to match substrings and identify
+  // the matched IBAN.
+  bool prefix_matched = base::StartsWith(prefix(), iban.prefix()) ||
+                        base::StartsWith(iban.prefix(), prefix());
+  if (!prefix_matched) {
+    return false;
+  }
+
+  bool suffix_matched = base::EndsWith(suffix(), iban.suffix()) ||
+                        base::EndsWith(iban.suffix(), suffix());
+  if (!suffix_matched) {
+    return false;
+  }
+
+  return length() == iban.length();
 }
 
 }  // namespace autofill

@@ -83,11 +83,19 @@ enum PasswordGenerationEvent {
   EVENT_ENUM_COUNT
 };
 
+// The enum, which identifies where the password generation was triggered.
+// Used to determine the histogram name for metrics reporting.
 enum class PasswordGenerationType {
-  // The user was automatically shown the possibility to generate a password.
+  // The possibility for automatic generation was detected and the user
+  // requested the generation.
   kAutomatic,
-  // The user had to manually request password generation.
-  kManual
+  // The possibility for automatic generation was not detected and the user
+  // manually requested the password generation.
+  kManual,
+  // The possibility for automatic generation was detected and the password
+  // generation bottom sheet was automatically triggered without the user
+  // choice.
+  kTouchToFill,
 };
 
 // Wrapper to store the user interactions with the password generation bubble.

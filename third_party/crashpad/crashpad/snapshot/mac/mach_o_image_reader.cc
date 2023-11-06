@@ -22,6 +22,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"

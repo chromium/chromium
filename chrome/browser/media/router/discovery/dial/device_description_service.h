@@ -84,6 +84,12 @@ class DeviceDescriptionService {
       const DialDeviceData& device_data,
       const DialDeviceDescriptionData& description_data);
 
+  // Overridden by unit tests.
+  virtual std::unique_ptr<DeviceDescriptionFetcher> CreateFetcher(
+      const DialDeviceData& device_data,
+      base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
+      base::OnceCallback<void(const std::string&)> error_cb);
+
  private:
   friend class DeviceDescriptionServiceTest;
   friend class TestDeviceDescriptionService;

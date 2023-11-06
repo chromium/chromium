@@ -234,8 +234,8 @@ jboolean CronetBidirectionalStreamAdapter::WritevData(
                            i, 1, &limit);
     DCHECK_LE(pos, limit);
     scoped_refptr<net::WrappedIOBuffer> write_buffer =
-        base::MakeRefCounted<net::WrappedIOBuffer>(static_cast<char*>(data) +
-                                                   pos);
+        base::MakeRefCounted<net::WrappedIOBuffer>(
+            static_cast<char*>(data) + pos, limit - pos);
     pending_write_data->write_buffer_list.push_back(write_buffer);
     pending_write_data->write_buffer_len_list.push_back(limit - pos);
   }

@@ -44,13 +44,6 @@ const CSSSelector* StyleScope::To() const {
   return nullptr;
 }
 
-bool StyleScope::HasImplicitRoot(Element* element) const {
-  if (!contents_) {
-    return false;
-  }
-  return contents_->HasOwnerParentElementOrAdoptiveHost(element);
-}
-
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               const CSSParserContext* context,
                               CSSNestingType nesting_type,

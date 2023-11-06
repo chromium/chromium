@@ -61,6 +61,7 @@ class AppBannerManagerDesktop
   bool IsWebAppConsideredInstalled() const override;
   bool IsAppFullyInstalledForSiteUrl(const GURL& site_url) const override;
   bool IsAppPartiallyInstalledForSiteUrl(const GURL& site_url) const override;
+  bool IsInAppBrowsingContext() const override;
   void SaveInstallationDismissedForMl(const GURL& manifest_id) override;
   void SaveInstallationIgnoredForMl(const GURL& manifest_id) override;
   void SaveInstallationAcceptedForMl(const GURL& manifest_id) override;

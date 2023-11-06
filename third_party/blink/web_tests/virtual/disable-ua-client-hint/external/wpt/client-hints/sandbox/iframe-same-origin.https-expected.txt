@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Same origin sandboxed iframe with allow-same-origin flag does send client hint headers assert_equals: message from opened frame expected "PASS" but got "FAIL sec-ch-ua True None"
+[FAIL] Same origin sandboxed iframe with allow-same-origin flag does send client hint headers
+  assert_equals: message from opened frame expected "PASS" but got "FAIL sec-ch-ua True None"
 Harness: the test ran to completion.
 

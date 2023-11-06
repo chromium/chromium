@@ -5,6 +5,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -120,10 +121,14 @@ void SignInAndEnableSync() {
 - (void)setUp {
   [super setUp];
 
-  // Make sure the pref is in its non-default state (which should be the case
-  // for all tests that do not test the first run experience flow).
+  // Make sure the following pref is in its non-default state (which should be
+  // the case for all tests that do not test the first run experience flow).
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+  // Make sure the password sharing pref is in its default state.
+  [ChromeEarlGrey
+      setBoolValue:YES
+       forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 }
 
 - (void)tearDown {
@@ -133,6 +138,10 @@ void SignInAndEnableSync() {
   // for all tests that do not test the first run experience flow).
   [ChromeEarlGrey setBoolValue:YES
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
+  // Reset the password sharing pref to its default state.
+  [ChromeEarlGrey
+      setBoolValue:YES
+       forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 
   [super tearDown];
 }
@@ -172,6 +181,19 @@ void SignInAndEnableSync() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testShareButtonVisibilityWithSharingPolicyDisabled {
+  [ChromeEarlGrey
+      setBoolValue:NO
+       forUserPref:password_manager::prefs::kPasswordSharingEnabled];
+
+  SignInAndEnableSync();
+  [self saveExamplePasswordAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 - (void)testFamilyPickerCancelFlow {
@@ -247,7 +269,8 @@ void SignInAndEnableSync() {
       assertWithMatcher:grey_notNil()];
 }
 
-- (void)testTappingGotItInFamilyPromoInviteMembersView {
+// Disabled due to https://crbug.com/1496889
+- (void)DISABLED_testTappingGotItInFamilyPromoInviteMembersView {
   // Override family status with
   // `FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -372,19 +395,16 @@ void SignInAndEnableSync() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonId)]
       performAction:grey_tap()];
 
-  // Check that the next button is not visible without any rows selected.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kPasswordPickerNextButtonId)]
-      assertWithMatcher:grey_not(grey_enabled())];
-
-  // Select first row and click "Next".
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"username1"),
-                                          grey_sufficientlyVisible(), nil)]
-      performAction:grey_tap()];
+  // Check that the next button is enabled by default.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerNextButtonId)]
       assertWithMatcher:grey_enabled()];
+
+  // Select second row and click "Next".
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_accessibilityID(@"username2"),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kPasswordPickerNextButtonId)]
       performAction:grey_tap()];

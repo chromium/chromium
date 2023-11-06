@@ -3451,5 +3451,231 @@ TEST_F(
                                             /*unread_size=*/1ul));
 }
 
+TEST_F(DualReadingListModelTest,
+       ShouldMaintainCountsWhenMarkAllForUploadToSyncServerIfNeeded) {
+  const GURL kLocalUrl("http://local_url.com/");
+  const GURL kAccountUrl("http://account_url.com/");
+  const GURL kCommonUrl("http://common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kLocalUrl, clock_.Now()),
+       TestEntryBuilder(kCommonUrl, clock_.Now())},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountUrl, clock_.Now()),
+          TestEntryBuilder(kCommonUrl, clock_.Now())}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/3ul, /*unseen_size=*/3ul,
+                                            /*unread_size=*/3ul));
+
+  dual_model_->MarkAllForUploadToSyncServerIfNeeded();
+
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/3ul, /*unseen_size=*/3ul,
+                                            /*unread_size=*/3ul));
+}
+
+TEST_F(
+    DualReadingListModelTest,
+    ShouldMaintainSeenAndReadStatusWhenMarkAllForUploadToSyncServerIfNeeded) {
+  const GURL kUnseenLocalUrl("http://unseen_local_url.com/");
+  const GURL kUnreadLocalUrl("http://unread_local_url.com/");
+  const GURL kReadLocalUrl("http://read_local_url.com/");
+  const GURL kUnseenAccountUrl("http://unseen_account_url.com/");
+  const GURL kUnreadAccountUrl("http://unread_account_url.com/");
+  const GURL kReadAccountUrl("http://read_account_url.com/");
+  // Seen in account model but unseen in local model.
+  const GURL kUnreadCommonUrl1("http://unread_common_url_1.com/");
+  // Seen in local model but unseen in account model.
+  const GURL kUnreadCommonUrl2("http://unread_common_url_2.com/");
+  // Read in account model but unread in local model.
+  const GURL kReadCommonUrl1("http://read_common_url_1.com/");
+  // Read in local model but unread in account model.
+  const GURL kReadCommonUrl2("http://read_common_url_2.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_or_syncable_entries_builders=*/
+      {TestEntryBuilder(kUnseenLocalUrl, clock_.Now()),
+       TestEntryBuilder(kUnreadLocalUrl, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadLocalUrl, clock_.Now()).SetRead(),
+       TestEntryBuilder(kUnreadCommonUrl1, clock_.Now()),
+       TestEntryBuilder(kUnreadCommonUrl2, clock_.Now()).SetRead(false),
+       TestEntryBuilder(kReadCommonUrl1, clock_.Now()),
+       TestEntryBuilder(kReadCommonUrl2, clock_.Now())
+           .SetRead(clock_.Now() + base::Seconds(1))},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kUnseenAccountUrl, clock_.Now()),
+          TestEntryBuilder(kUnreadAccountUrl, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kReadAccountUrl, clock_.Now()).SetRead(),
+          TestEntryBuilder(kUnreadCommonUrl1, clock_.Now()).SetRead(false),
+          TestEntryBuilder(kUnreadCommonUrl2, clock_.Now()),
+          TestEntryBuilder(kReadCommonUrl1, clock_.Now())
+              .SetRead(clock_.Now() + base::Seconds(1)),
+          TestEntryBuilder(kReadCommonUrl2, clock_.Now())}));
+  ASSERT_TRUE(dual_model_->loaded());
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadLocalUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl1),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl2),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl1),
+            StorageStateForTesting::kExistsInBothModels);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl2),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_THAT(dual_model_, HasCountersEqual(/*size=*/10ul, /*unseen_size=*/2ul,
+                                            /*unread_size=*/6ul));
+
+  dual_model_->MarkAllForUploadToSyncServerIfNeeded();
+
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenLocalUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadLocalUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadLocalUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnseenAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadAccountUrl),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl1),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kUnreadCommonUrl2),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl1),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kReadCommonUrl2),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  EXPECT_THAT(dual_model_, HasCountersEqual(/*size=*/10ul, /*unseen_size=*/2ul,
+                                            /*unread_size=*/6ul));
+}
+
+TEST_F(DualReadingListModelTest,
+       ShouldClearLocalModelUponMarkAllForUploadToSyncServerIfNeeded) {
+  const GURL kLocalURL("http://local_url.com/");
+  const GURL kAccountURL("http://account_url.com/");
+  const GURL kCommonURL("http://common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalURL,
+                                                           clock_.Now())
+                                              .SetTitle("local_entry_title"),
+                                          TestEntryBuilder(kCommonURL,
+                                                           clock_.Now())
+                                              .SetTitle("common_entry_title")},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountURL, clock_.Now())
+              .SetTitle("account_entry_title"),
+          TestEntryBuilder(kCommonURL, clock_.Now())
+              .SetTitle("common_entry_title")}));
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonURL),
+            StorageStateForTesting::kExistsInBothModels);
+
+  ASSERT_TRUE(dual_model_->NeedsExplicitUploadToSyncServer(kLocalURL));
+  ASSERT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kAccountURL));
+  ASSERT_FALSE(dual_model_->NeedsExplicitUploadToSyncServer(kCommonURL));
+
+  EXPECT_CALL(observer_, ReadingListWillRemoveEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListWillAddEntry).Times(0);
+  EXPECT_CALL(observer_, ReadingListDidApplyChanges).Times(0);
+
+  dual_model_->MarkAllForUploadToSyncServerIfNeeded();
+
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  EXPECT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+
+  EXPECT_THAT(dual_model_->GetEntryByURL(kLocalURL),
+              MatchesEntry(kLocalURL, "local_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kAccountURL),
+              MatchesEntry(kAccountURL, "account_entry_title"));
+  EXPECT_THAT(dual_model_->GetEntryByURL(kCommonURL),
+              MatchesEntry(kCommonURL, "common_entry_title"));
+
+  // Local model should be cleared even though the common entry was not actually
+  // moved.
+  EXPECT_EQ(local_or_syncable_model_ptr_->size(), 0u);
+}
+
+TEST_F(DualReadingListModelTest,
+       ShouldReturnAllLocalKeysUponGetKeysThatNeedUploadToSyncServer) {
+  const GURL kLocalURL("http://local_url.com/");
+  const GURL kAccountURL("http://account_url.com/");
+  const GURL kCommonURL("http://common_url.com/");
+
+  ASSERT_TRUE(ResetStorageAndMimicSignedInSyncDisabled(
+      /*initial_local_entries_builders=*/{TestEntryBuilder(kLocalURL,
+                                                           clock_.Now())
+                                              .SetTitle("local_entry_title"),
+                                          TestEntryBuilder(kCommonURL,
+                                                           clock_.Now())
+                                              .SetTitle("common_entry_title")},
+      /*initial_account_entries_builders=*/{
+          TestEntryBuilder(kAccountURL, clock_.Now())
+              .SetTitle("account_entry_title"),
+          TestEntryBuilder(kCommonURL, clock_.Now())
+              .SetTitle("common_entry_title")}));
+
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kLocalURL),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kAccountURL),
+            StorageStateForTesting::kExistsInAccountModelOnly);
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kCommonURL),
+            StorageStateForTesting::kExistsInBothModels);
+
+  base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
+  EXPECT_EQ(keys, base::flat_set<GURL>({kLocalURL, kCommonURL}));
+}
+
+TEST_F(
+    DualReadingListModelTest,
+    ShouldReturnNullIfLocalOrSyncableModelIsSyncingUponGetKeysThatNeedUploadToSyncServer) {
+  ASSERT_TRUE(
+      ResetStorageAndMimicSyncEnabled(/*initial_syncable_entries_builders=*/{
+          TestEntryBuilder(kUrl, clock_.Now())}));
+  ASSERT_EQ(dual_model_->GetStorageStateForURLForTesting(kUrl),
+            StorageStateForTesting::kExistsInLocalOrSyncableModelOnly);
+
+  base::flat_set<GURL> keys = dual_model_->GetKeysThatNeedUploadToSyncServer();
+  EXPECT_THAT(keys, ::testing::IsEmpty());
+}
+
 }  // namespace
 }  // namespace reading_list

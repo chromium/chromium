@@ -4,104 +4,126 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 
-#include "build/chromeos_buildflags.h"
-#include "net/http/http_status_code.h"
+#include <string_view>
 
 namespace policy {
+namespace {
+std::string_view ToStringView(EnrollmentStatus::Code enrollment_code) {
+  switch (enrollment_code) {
+    case EnrollmentStatus::Code::kSuccess:
+      return "Success";
+    case EnrollmentStatus::Code::kNoStateKeys:
+      return "NoStateKeys";
+    case EnrollmentStatus::Code::kRegistrationFailed:
+      return "RegistrationFailed";
+    case EnrollmentStatus::Code::kRegistrationBadMode:
+      return "RegistrationBadMode";
+    case EnrollmentStatus::Code::kRobotAuthFetchFailed:
+      return "RobotAuthFetchFailed";
+    case EnrollmentStatus::Code::kRobotRefreshFetchFailed:
+      return "RobotRefreshFetchFailed";
+    case EnrollmentStatus::Code::kRobotRefreshStoreFailed:
+      return "RobotRefreshStoreFailed";
+    case EnrollmentStatus::Code::kPolicyFetchFailed:
+      return "PolicyFetchFailed";
+    case EnrollmentStatus::Code::kValidationFailed:
+      return "ValidationFailed";
+    case EnrollmentStatus::Code::kLockError:
+      return "LockError";
+    case EnrollmentStatus::Code::kStoreError:
+      return "StoreError";
+    case EnrollmentStatus::Code::kAttributeUpdateFailed:
+      return "AttributeUpdateFailed";
+    case EnrollmentStatus::Code::kRegistrationCertFetchFailed:
+      return "RegistrationCertFetchFailed";
+    case EnrollmentStatus::Code::kNoMachineIdentification:
+      return "NoMachineIdentification";
+    case EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
+      return "ActiveDirectoryPolicyFetchFailed";
+    case EnrollmentStatus::Code::kDmTokenStoreFailed:
+      return "DmTokenStoreFailed";
+    case EnrollmentStatus::Code::kMayNotBlockDevMode:
+      return "MayNotBlockDevMode";
+  }
+}
+}  // namespace
 
 // static
-EnrollmentStatus EnrollmentStatus::ForStatus(Status status) {
-  return CreateEnrollmentStatusWithoutLockError(
-      status, DM_STATUS_SUCCESS, CloudPolicyStore::STATUS_OK,
-      CloudPolicyValidatorBase::VALIDATION_OK);
+EnrollmentStatus EnrollmentStatus::ForEnrollmentCode(Code enrollment_code) {
+  EnrollmentStatus status;
+  status.enrollment_code_ = enrollment_code;
+  return status;
+}
+
+// static
+EnrollmentStatus EnrollmentStatus::ForAttestationError(
+    ash::attestation::AttestationStatus attestation_status) {
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kRegistrationCertFetchFailed;
+  status.attestation_status_ = attestation_status;
+  return status;
 }
 
 // static
 EnrollmentStatus EnrollmentStatus::ForRegistrationError(
     DeviceManagementStatus client_status) {
-  return CreateEnrollmentStatusWithoutLockError(
-      REGISTRATION_FAILED, client_status, CloudPolicyStore::STATUS_OK,
-      CloudPolicyValidatorBase::VALIDATION_OK);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kRegistrationFailed;
+  status.client_status_ = client_status;
+  return status;
 }
 
 // static
 EnrollmentStatus EnrollmentStatus::ForRobotAuthFetchError(
     DeviceManagementStatus client_status) {
-  return CreateEnrollmentStatusWithoutLockError(
-      ROBOT_AUTH_FETCH_FAILED, client_status, CloudPolicyStore::STATUS_OK,
-      CloudPolicyValidatorBase::VALIDATION_OK);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kRobotAuthFetchFailed;
+  status.client_status_ = client_status;
+  return status;
 }
 
 // static
 EnrollmentStatus EnrollmentStatus::ForFetchError(
     DeviceManagementStatus client_status) {
-  return CreateEnrollmentStatusWithoutLockError(
-      POLICY_FETCH_FAILED, client_status, CloudPolicyStore::STATUS_OK,
-      CloudPolicyValidatorBase::VALIDATION_OK);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kPolicyFetchFailed;
+  status.client_status_ = client_status;
+  return status;
 }
 
 // static
 EnrollmentStatus EnrollmentStatus::ForValidationError(
     CloudPolicyValidatorBase::Status validation_status) {
-  return CreateEnrollmentStatusWithoutLockError(
-      VALIDATION_FAILED, DM_STATUS_SUCCESS, CloudPolicyStore::STATUS_OK,
-      validation_status);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kValidationFailed;
+  status.validation_status_ = validation_status;
+  return status;
 }
 
 // static
 EnrollmentStatus EnrollmentStatus::ForStoreError(
     CloudPolicyStore::Status store_error,
     CloudPolicyValidatorBase::Status validation_status) {
-  return CreateEnrollmentStatusWithoutLockError(STORE_ERROR, DM_STATUS_SUCCESS,
-                                                store_error, validation_status);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kStoreError;
+  status.store_status_ = store_error;
+  return status;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 EnrollmentStatus EnrollmentStatus::ForLockError(
     ash::InstallAttributes::LockResult lock_status) {
-  return EnrollmentStatus(LOCK_ERROR, DM_STATUS_SUCCESS,
-                          CloudPolicyStore::STATUS_OK,
-                          CloudPolicyValidatorBase::VALIDATION_OK, lock_status);
+  EnrollmentStatus status;
+  status.enrollment_code_ = Code::kLockError;
+  status.lock_status_ = lock_status;
+  return status;
 }
 
-EnrollmentStatus::EnrollmentStatus(
-    EnrollmentStatus::Status status,
-    DeviceManagementStatus client_status,
-    CloudPolicyStore::Status store_status,
-    CloudPolicyValidatorBase::Status validation_status,
-    ash::InstallAttributes::LockResult lock_status)
-    : status_(status),
-      client_status_(client_status),
-      store_status_(store_status),
-      validation_status_(validation_status),
-      lock_status_(lock_status) {}
-#else
-EnrollmentStatus::EnrollmentStatus(
-    EnrollmentStatus::Status status,
-    DeviceManagementStatus client_status,
-    CloudPolicyStore::Status store_status,
-    CloudPolicyValidatorBase::Status validation_status)
-    : status_(status),
-      client_status_(client_status),
-      store_status_(store_status),
-      validation_status_(validation_status) {}
-#endif
+EnrollmentStatus::EnrollmentStatus() = default;
 
-// static
-EnrollmentStatus EnrollmentStatus::CreateEnrollmentStatusWithoutLockError(
-    Status status,
-    DeviceManagementStatus client_status,
-    CloudPolicyStore::Status store_status,
-    CloudPolicyValidatorBase::Status validation_status) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return EnrollmentStatus(status, client_status, store_status,
-                          validation_status,
-                          ash::InstallAttributes::LOCK_SUCCESS);
-#else
-  return EnrollmentStatus(status, client_status, store_status,
-                          validation_status);
-#endif
+std::ostream& operator<<(std::ostream& os,
+                         const EnrollmentStatus::Code& enrollment_code) {
+  return os << ToStringView(enrollment_code);
 }
 
 }  // namespace policy

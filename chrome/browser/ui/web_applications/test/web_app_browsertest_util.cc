@@ -102,7 +102,6 @@ webapps::AppId InstallWebAppFromPage(Browser* browser, const GURL& app_url) {
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const webapps::AppId& installed_app_id,
@@ -153,7 +152,6 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(&AutoAcceptDialogCallback),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const webapps::AppId& installed_app_id,

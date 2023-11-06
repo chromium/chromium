@@ -28,13 +28,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Unit tests for {@link SharedPreferencesManager}.
- */
+/** Unit tests for {@link SharedPreferencesManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedPreferencesManagerTest {
-    @Mock
-    private PreferenceKeyChecker mChecker;
+    @Mock private PreferenceKeyChecker mChecker;
 
     private static final KeyPrefix TEST_PREFIX = new KeyPrefix("TestPrefix.*");
     private static final String PREFIXED_KEY_1 = TEST_PREFIX.createKey("stemA");
@@ -242,7 +239,8 @@ public class SharedPreferencesManagerTest {
         mSubject.writeStringSet("string_set_key", new HashSet<>(Collections.singletonList("bar")));
         mSubject.addToStringSet("string_set_key", "foo");
 
-        assertEquals(new HashSet<>(Arrays.asList("foo", "bar")),
+        assertEquals(
+                new HashSet<>(Arrays.asList("foo", "bar")),
                 mSubject.readStringSet("string_set_key"));
     }
 
@@ -251,7 +249,8 @@ public class SharedPreferencesManagerTest {
     public void testAddToStringSetDefault() {
         mSubject.addToStringSet("string_set_key", "foo");
 
-        assertEquals(new HashSet<>(Collections.singletonList("foo")),
+        assertEquals(
+                new HashSet<>(Collections.singletonList("foo")),
                 mSubject.readStringSet("string_set_key"));
     }
 
@@ -261,7 +260,8 @@ public class SharedPreferencesManagerTest {
         mSubject.writeStringSet("string_set_key", new HashSet<>(Arrays.asList("foo", "bar")));
         mSubject.removeFromStringSet("string_set_key", "foo");
 
-        assertEquals(new HashSet<>(Collections.singletonList("bar")),
+        assertEquals(
+                new HashSet<>(Collections.singletonList("bar")),
                 mSubject.readStringSet("string_set_key"));
     }
 

@@ -35,48 +35,48 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for {@link ScreenshotShareSheetMediator}.
- */
+/** Tests for {@link ScreenshotShareSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-// clang-format off
 public class ScreenshotShareSheetMediatorUnitTest {
-    // clang-format on
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    Runnable mDeleteRunnable;
+    @Mock Runnable mDeleteRunnable;
 
-    @Mock
-    Runnable mSaveRunnable;
+    @Mock Runnable mSaveRunnable;
 
-    @Mock
-    Callback<Runnable> mInstallRunnable;
+    @Mock Callback<Runnable> mInstallRunnable;
 
-    @Mock
-    Activity mContext;
+    @Mock Activity mContext;
 
-    @Mock
-    WindowAndroid mWindowAndroid;
+    @Mock WindowAndroid mWindowAndroid;
 
-    @Mock
-    ChromeOptionShareCallback mShareCallback;
+    @Mock ChromeOptionShareCallback mShareCallback;
 
     private PropertyModel mModel;
 
     private static class MockScreenshotShareSheetMediator extends ScreenshotShareSheetMediator {
         private boolean mGenerateTemporaryUriFromBitmapCalled;
 
-        MockScreenshotShareSheetMediator(Context context, PropertyModel propertyModel,
-                Runnable deleteRunnable, Runnable saveRunnable, WindowAndroid windowAndroid,
+        MockScreenshotShareSheetMediator(
+                Context context,
+                PropertyModel propertyModel,
+                Runnable deleteRunnable,
+                Runnable saveRunnable,
+                WindowAndroid windowAndroid,
                 ChromeOptionShareCallback chromeOptionShareCallback,
                 Callback<Runnable> installCallback) {
-            super(context, propertyModel, deleteRunnable, saveRunnable, windowAndroid,
-                    JUnitTestGURLs.EXAMPLE_URL.getSpec(), chromeOptionShareCallback,
+            super(
+                    context,
+                    propertyModel,
+                    deleteRunnable,
+                    saveRunnable,
+                    windowAndroid,
+                    JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                    chromeOptionShareCallback,
                     installCallback);
         }
+
         @Override
         protected void generateTemporaryUriFromBitmap(
                 String fileName, Bitmap bitmap, Callback<Uri> callback) {
@@ -86,7 +86,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
         public boolean generateTemporaryUriFromBitmapCalled() {
             return mGenerateTemporaryUriFromBitmapCalled;
         }
-    };
+    }
+    ;
 
     private MockScreenshotShareSheetMediator mMediator;
 
@@ -104,8 +105,15 @@ public class ScreenshotShareSheetMediatorUnitTest {
 
         mModel = new PropertyModel(ScreenshotShareSheetViewProperties.ALL_KEYS);
 
-        mMediator = new MockScreenshotShareSheetMediator(mContext, mModel, mDeleteRunnable,
-                mSaveRunnable, mWindowAndroid, mShareCallback, mInstallRunnable);
+        mMediator =
+                new MockScreenshotShareSheetMediator(
+                        mContext,
+                        mModel,
+                        mDeleteRunnable,
+                        mSaveRunnable,
+                        mWindowAndroid,
+                        mShareCallback,
+                        mInstallRunnable);
     }
 
     @Test
@@ -115,7 +123,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.DELETE);
 
         verify(mDeleteRunnable).run();
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Sharing.ScreenshotFallback.Action",
                         ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.DELETE));
@@ -128,7 +137,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.SAVE);
 
         verify(mSaveRunnable).run();
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Sharing.ScreenshotFallback.Action",
                         ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SAVE));
@@ -142,7 +152,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
 
         Assert.assertTrue(mMediator.generateTemporaryUriFromBitmapCalled());
         verify(mDeleteRunnable).run();
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Sharing.ScreenshotFallback.Action",
                         ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.SHARE));
@@ -155,7 +166,8 @@ public class ScreenshotShareSheetMediatorUnitTest {
         callback.onResult(ScreenshotShareSheetViewProperties.NoArgOperation.INSTALL);
 
         verify(mInstallRunnable).onResult(any());
-        Assert.assertEquals(1,
+        Assert.assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Sharing.ScreenshotFallback.Action",
                         ScreenshotShareSheetMetrics.ScreenshotShareSheetAction.EDIT));

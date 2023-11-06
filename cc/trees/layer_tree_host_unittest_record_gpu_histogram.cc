@@ -28,7 +28,8 @@ TEST(LayerTreeHostRecordGpuHistogramTest, SingleThreaded) {
   EXPECT_FALSE(commit_state->needs_gpu_rasterization_histogram);
   EXPECT_FALSE(
       host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
-  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
+  host->CommitComplete(commit_state->source_frame_number,
+                       {base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_FALSE(
       host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
 }
@@ -52,8 +53,9 @@ TEST(LayerTreeHostRecordGpuHistogramTest, Threaded) {
     DebugScopedSetImplThread impl(host->GetTaskRunnerProvider());
     host->host_impl()->RecordGpuRasterizationHistogram();
   }
+  host->CommitComplete(commit_state->source_frame_number,
+                       {base::TimeTicks(), base::TimeTicks::Now()});
   commit_state.reset();
-  host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
   EXPECT_FALSE(
       host->GetPendingCommitState()->needs_gpu_rasterization_histogram);
 }

@@ -53,10 +53,12 @@ using testing::Return;
 
 using Checkpoint = testing::MockFunction<void(int step)>;
 
-constexpr base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
+constexpr auto kExampleTime =
+    base::Time::FromMillisecondsSinceUnixEpoch(1652984901234);
 
 constexpr char kExampleOriginUrl[] = "https://origin.example";
 constexpr char kExampleMainFrameUrl[] = "https://main_frame.example";
+constexpr char kExampleCoordinatorUrl[] = "https://coordinator.example";
 
 class PrivateAggregationManagerImplUnderTest
     : public PrivateAggregationManagerImpl {
@@ -124,13 +126,19 @@ class PrivateAggregationManagerImplTest : public testing::Test {
                  base::WrapUnique(host_.get()),
                  base::WrapUnique(aggregation_service_.get())) {}
 
+  ~PrivateAggregationManagerImplTest() override {
+    budgeter_ = nullptr;
+    host_ = nullptr;
+    aggregation_service_ = nullptr;
+  }
+
  protected:
   BrowserTaskEnvironment task_environment_;
 
   // Keep pointers around for EXPECT_CALL.
-  raw_ptr<MockPrivateAggregationBudgeter, DanglingUntriaged> budgeter_;
-  raw_ptr<MockPrivateAggregationHost, DanglingUntriaged> host_;
-  raw_ptr<MockAggregationService, DanglingUntriaged> aggregation_service_;
+  raw_ptr<MockPrivateAggregationBudgeter> budgeter_;
+  raw_ptr<MockPrivateAggregationHost> host_;
+  raw_ptr<MockAggregationService> aggregation_service_;
 
   testing::StrictMock<PrivateAggregationManagerImplUnderTest> manager_;
 };
@@ -294,15 +302,15 @@ TEST_F(PrivateAggregationManagerImplTest,
                 ConsumeBudget(
                     expected_request.payload_contents().contributions[0].value,
                     example_key, _))
-        .WillOnce(Invoke([&checkpoint](
-                             int, const PrivateAggregationBudgetKey&,
-                             base::OnceCallback<void(
-                                 PrivateAggregationBudgeter::RequestResult)>
-                                 on_done) {
-          checkpoint.Call(1);
-          std::move(on_done).Run(PrivateAggregationBudgeter::RequestResult::
-                                     kInsufficientSmallerScopeBudget);
-        }));
+        .WillOnce(Invoke(
+            [&checkpoint](
+                int, const PrivateAggregationBudgetKey&,
+                base::OnceCallback<void(
+                    PrivateAggregationBudgeter::RequestResult)> on_done) {
+              checkpoint.Call(1);
+              std::move(on_done).Run(PrivateAggregationBudgeter::RequestResult::
+                                         kInsufficientSmallerScopeBudget);
+            }));
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(*aggregation_service_, ScheduleReport).Times(0);
   }
@@ -863,53 +871,77 @@ TEST_F(PrivateAggregationManagerImplTest,
       url::Origin::Create(GURL(kExampleOriginUrl));
   const url::Origin example_main_frame_origin =
       url::Origin::Create(GURL(kExampleMainFrameUrl));
+  const url::Origin example_coordinator_origin =
+      url::Origin::Create(GURL(kExampleCoordinatorUrl));
 
-  EXPECT_CALL(*host_,
-              BindNewReceiver(
-                  example_origin, example_main_frame_origin,
-                  PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                  testing::Eq(absl::nullopt), testing::Eq(absl::nullopt), _))
+  EXPECT_CALL(
+      *host_,
+      BindNewReceiver(example_origin, example_main_frame_origin,
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                      testing::Eq(absl::nullopt), testing::Eq(absl::nullopt),
+                      testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
       /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
+      /*aggregation_coordinator_origin=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(*host_,
-              BindNewReceiver(example_origin, example_main_frame_origin,
-                              PrivateAggregationBudgetKey::Api::kSharedStorage,
-                              testing::Eq(absl::nullopt),
-                              testing::Eq(absl::nullopt), _))
+  EXPECT_CALL(
+      *host_,
+      BindNewReceiver(example_origin, example_main_frame_origin,
+                      PrivateAggregationBudgetKey::Api::kSharedStorage,
+                      testing::Eq(absl::nullopt), testing::Eq(absl::nullopt),
+                      testing::Eq(absl::nullopt), _))
       .WillOnce(Return(false));
   EXPECT_FALSE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage,
       /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
+      /*aggregation_coordinator_origin=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
-  EXPECT_CALL(*host_, BindNewReceiver(
-                          example_origin, example_main_frame_origin,
-                          PrivateAggregationBudgetKey::Api::kProtectedAudience,
-                          testing::Eq("example_context_id"),
-                          testing::Eq(absl::nullopt), _))
+  EXPECT_CALL(*host_,
+              BindNewReceiver(
+                  example_origin, example_main_frame_origin,
+                  PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                  testing::Eq("example_context_id"), testing::Eq(absl::nullopt),
+                  testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kProtectedAudience,
       "example_context_id", /*timeout=*/absl::nullopt,
+      /*aggregation_coordinator_origin=*/absl::nullopt,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 
   EXPECT_CALL(*host_,
               BindNewReceiver(example_origin, example_main_frame_origin,
                               PrivateAggregationBudgetKey::Api::kSharedStorage,
                               testing::Eq("example_context_id"),
-                              testing::Eq(base::Seconds(5)), _))
+                              testing::Eq(base::Seconds(5)),
+                              testing::Eq(absl::nullopt), _))
       .WillOnce(Return(true));
   EXPECT_TRUE(manager_.BindNewReceiver(
       example_origin, example_main_frame_origin,
       PrivateAggregationBudgetKey::Api::kSharedStorage, "example_context_id",
       /*timeout=*/base::Seconds(5),
+      /*aggregation_coordinator_origin=*/absl::nullopt,
+      mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
+
+  EXPECT_CALL(
+      *host_,
+      BindNewReceiver(example_origin, example_main_frame_origin,
+                      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+                      testing::Eq(absl::nullopt), testing::Eq(absl::nullopt),
+                      testing::Eq(example_coordinator_origin), _))
+      .WillOnce(Return(true));
+  EXPECT_TRUE(manager_.BindNewReceiver(
+      example_origin, example_main_frame_origin,
+      PrivateAggregationBudgetKey::Api::kProtectedAudience,
+      /*context_id=*/absl::nullopt, /*timeout=*/absl::nullopt,
+      example_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>()));
 }
 

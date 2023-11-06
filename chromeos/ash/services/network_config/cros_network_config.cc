@@ -84,6 +84,8 @@ const char kErrorAccessToSharedConfig[] = "Error.CannotChangeSharedConfig";
 const char kErrorInvalidONCConfiguration[] = "Error.InvalidONCConfiguration";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
 const char kErrorNotReady[] = "Error.NotReady";
+const char kErrorUserIsProhibitedFromConfiguringVpn[] =
+    "Error.UserIsProhibitedFromConfiguringVpn";
 
 // Default traffic counter reset day.
 const int kDefaultResetDay = 1;
@@ -2654,6 +2656,13 @@ void CrosNetworkConfig::ConfigureNetwork(mojom::ConfigPropertiesPtr properties,
     return;
   }
 
+  if (properties->type_config->is_vpn() &&
+      network_configuration_handler_->IsProhibitedFromConfiguringVpn()) {
+    std::move(callback).Run(/*guid=*/absl::nullopt,
+                            kErrorUserIsProhibitedFromConfiguringVpn);
+    return;
+  }
+
   absl::optional<base::Value::Dict> onc =
       GetOncFromConfigProperties(properties.get(), /*guid=*/absl::nullopt);
   if (!onc) {
@@ -2699,7 +2708,7 @@ void CrosNetworkConfig::ForgetNetwork(const std::string& guid,
                                       ForgetNetworkCallback callback) {
   if (!network_configuration_handler_) {
     NET_LOG(ERROR) << "ForgetNetwork called with no handler";
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   const NetworkState* network =
@@ -2707,7 +2716,7 @@ void CrosNetworkConfig::ForgetNetwork(const std::string& guid,
   if (!network || network->profile_path().empty()) {
     NET_LOG(ERROR) << "ForgetNetwork called with unconfigured network: "
                    << guid;
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2718,7 +2727,7 @@ void CrosNetworkConfig::ForgetNetwork(const std::string& guid,
                                                        &onc_source)) {
     if (onc_source == ::onc::ONC_SOURCE_USER_POLICY) {
       // Prevent a policy controlled configuration removal.
-      std::move(callback).Run(false);
+      std::move(callback).Run(/*success=*/false);
       return;
     }
     if (onc_source == ::onc::ONC_SOURCE_DEVICE_POLICY)
@@ -2768,18 +2777,18 @@ void CrosNetworkConfig::SetNetworkTypeEnabledState(
     bool enabled,
     SetNetworkTypeEnabledStateCallback callback) {
   if (!NetworkTypeCanBeDisabled(type)) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   NetworkTypePattern pattern = MojoTypeToPattern(type);
   if (!network_state_handler_->IsTechnologyAvailable(pattern)) {
     NET_LOG(ERROR) << "Technology unavailable: " << type;
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   if (network_state_handler_->IsTechnologyProhibited(pattern)) {
     NET_LOG(ERROR) << "Technology prohibited: " << type;
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2789,7 +2798,7 @@ void CrosNetworkConfig::SetNetworkTypeEnabledState(
   // not have a 'success' callback (and errors are already logged).
   technology_state_controller_->SetTechnologiesEnabled(
       pattern, enabled, network_handler::ErrorCallback());
-  std::move(callback).Run(true);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void CrosNetworkConfig::SetCellularSimState(
@@ -2799,7 +2808,7 @@ void CrosNetworkConfig::SetCellularSimState(
       network_state_handler_->GetDeviceStateByType(
           NetworkTypePattern::Cellular());
   if (!device_state || device_state->IsSimAbsent()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2808,7 +2817,7 @@ void CrosNetworkConfig::SetCellularSimState(
   // When unblocking a PUK locked SIM, a new PIN must be provided.
   if (lock_type == shill::kSIMLockPuk && !sim_state->new_pin) {
     NET_LOG(ERROR) << "SetCellularSimState: PUK locked and no pin provided.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2863,7 +2872,7 @@ void CrosNetworkConfig::SetCellularSimState(
 void CrosNetworkConfig::SetCellularSimStateSuccess(int callback_id) {
   auto iter = set_cellular_sim_state_callbacks_.find(callback_id);
   DCHECK(iter != set_cellular_sim_state_callbacks_.end());
-  std::move(iter->second).Run(true);
+  std::move(iter->second).Run(/*success=*/true);
   set_cellular_sim_state_callbacks_.erase(iter);
 }
 
@@ -2872,7 +2881,7 @@ void CrosNetworkConfig::SetCellularSimStateFailure(
     const std::string& error_name) {
   auto iter = set_cellular_sim_state_callbacks_.find(callback_id);
   DCHECK(iter != set_cellular_sim_state_callbacks_.end());
-  std::move(iter->second).Run(false);
+  std::move(iter->second).Run(/*success=*/false);
   set_cellular_sim_state_callbacks_.erase(iter);
 }
 
@@ -2888,7 +2897,7 @@ void CrosNetworkConfig::SelectCellularMobileNetwork(
         network_state_handler_->GetDeviceState(network_state->device_path());
   }
   if (!device_state) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -2906,7 +2915,7 @@ void CrosNetworkConfig::SelectCellularMobileNetwork(
 void CrosNetworkConfig::SelectCellularMobileNetworkSuccess(int callback_id) {
   auto iter = select_cellular_mobile_network_callbacks_.find(callback_id);
   DCHECK(iter != select_cellular_mobile_network_callbacks_.end());
-  std::move(iter->second).Run(true);
+  std::move(iter->second).Run(/*success=*/true);
   select_cellular_mobile_network_callbacks_.erase(iter);
 }
 
@@ -2915,7 +2924,7 @@ void CrosNetworkConfig::SelectCellularMobileNetworkFailure(
     const std::string& error_name) {
   auto iter = select_cellular_mobile_network_callbacks_.find(callback_id);
   DCHECK(iter != select_cellular_mobile_network_callbacks_.end());
-  std::move(iter->second).Run(false);
+  std::move(iter->second).Run(/*success=*/false);
   select_cellular_mobile_network_callbacks_.erase(iter);
 }
 
@@ -3122,7 +3131,7 @@ void CrosNetworkConfig::StartDisconnect(const std::string& guid,
                                         StartDisconnectCallback callback) {
   std::string service_path = GetServicePathFromGuid(guid);
   if (service_path.empty()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -3140,7 +3149,7 @@ void CrosNetworkConfig::StartDisconnect(const std::string& guid,
 void CrosNetworkConfig::StartDisconnectSuccess(int callback_id) {
   auto iter = start_disconnect_callbacks_.find(callback_id);
   DCHECK(iter != start_disconnect_callbacks_.end());
-  std::move(iter->second).Run(true);
+  std::move(iter->second).Run(/*success=*/true);
   start_disconnect_callbacks_.erase(iter);
 }
 
@@ -3148,7 +3157,7 @@ void CrosNetworkConfig::StartDisconnectFailure(int callback_id,
                                                const std::string& error_name) {
   auto iter = start_disconnect_callbacks_.find(callback_id);
   DCHECK(iter != start_disconnect_callbacks_.end());
-  std::move(iter->second).Run(false);
+  std::move(iter->second).Run(/*success=*/false);
   start_disconnect_callbacks_.erase(iter);
 }
 
@@ -3373,19 +3382,19 @@ void CrosNetworkConfig::SetTrafficCountersAutoReset(
   if (day && !auto_reset) {
     NET_LOG(ERROR) << "Failed to set auto reset day for " << guid
                    << ": auto reset must be enabled.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   if (!day && auto_reset) {
     NET_LOG(ERROR) << "Failed to enable auto reset for " << guid << ": a valid "
                    << "day between 1 and 31 (inclusive) must be provided.";
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   if (day && (day->value < 1 || day->value > 31)) {
     NET_LOG(ERROR) << "Failed to set auto reset day " << day->value << " for "
                    << guid << ": day must be between 1 and 31 (inclusive)";
-    std::move(callback).Run(false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   NetworkHandler::Get()
@@ -3395,15 +3404,17 @@ void CrosNetworkConfig::SetTrafficCountersAutoReset(
       ->network_metadata_store()
       ->SetDayOfTrafficCountersAutoReset(
           guid, day ? absl::optional<int>(day->value) : absl::nullopt);
-  std::move(callback).Run(true);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
-                                        mojom::ApnPropertiesPtr apn) {
+                                        mojom::ApnPropertiesPtr apn,
+                                        CreateCustomApnCallback callback) {
   if (!features::IsApnRevampEnabled()) {
     receivers_.ReportBadMessage(
         "CreateCustomApn cannot be called if the APN Revamp feature flag is "
         "disabled.");
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -3414,6 +3425,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                    << network_guid << ".";
     CellularNetworkMetricsLogger::LogCreateCustomApnResult(
         /*success=*/false, std::move(apn));
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -3429,6 +3441,7 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
           << "CreateCustomApn: Cannot create new custom APN for network: "
           << network_guid << ". Network already has the max amount allowed: "
           << mojom::kMaxNumCustomApns;
+      std::move(callback).Run(/*success=*/false);
       return;
     }
 
@@ -3443,10 +3456,13 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
 
   NET_LOG(USER) << "CreateCustomApn: Setting custom APNs for: " << network_guid
                 << ": " << new_apns.size();
-  if (!DoesDefaultApnExist(new_apns)) {
-    NET_LOG(ERROR)
-        << "CreateCustomApn: Cannot create new custom APN without a "
-        << "default type if no custom APN with a default type exist yet.";
+
+  if (!DoesDefaultApnExist(new_apns) &&
+      apn->state == mojom::ApnState::kEnabled) {
+    NET_LOG(ERROR) << "CreateCustomApn: Cannot create new custom APN in "
+                      "enabled state without a default type if no custom APN "
+                      "with a default type exist yet.";
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -3454,8 +3470,8 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
       network_guid, *network, CustomApnListToOnc(network_guid, &new_apns),
       base::BindOnce(
           [](const std::string& guid, base::Value::List new_apns,
-             mojom::ApnPropertiesPtr apn, bool success,
-             const std::string& message) {
+             mojom::ApnPropertiesPtr apn, CreateCustomApnCallback callback,
+             bool success, const std::string& message) {
             if (success) {
               NetworkHandler::Get()->network_metadata_store()->SetCustomApnList(
                   guid, std::move(new_apns));
@@ -3465,10 +3481,11 @@ void CrosNetworkConfig::CreateCustomApn(const std::string& network_guid,
                      "list in Shill for network: "
                   << guid << ": [" << message << ']';
             }
+            std::move(callback).Run(success);
             CellularNetworkMetricsLogger::LogCreateCustomApnResult(
                 success, std::move(apn));
           },
-          network_guid, new_apns.Clone(), std::move(apn)));
+          network_guid, new_apns.Clone(), std::move(apn), std::move(callback)));
 }
 
 void CrosNetworkConfig::RemoveCustomApn(const std::string& network_guid,

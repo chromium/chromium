@@ -32,6 +32,7 @@ export class TestBrowserService extends TestBrowserProxy implements
       'recordHistogram',
       'recordLongTime',
       'removeVisits',
+      'setLastSelectedTab',
       'startTurnOnSyncFlow',
     ]);
 
@@ -74,6 +75,10 @@ export class TestBrowserService extends TestBrowserProxy implements
       return this.delayedRemove_.promise;
     }
     return Promise.resolve();
+  }
+
+  setLastSelectedTab(lastSelectedTab: number) {
+    this.methodCalled('setLastSelectedTab', lastSelectedTab);
   }
 
   // Resolves the removeVisits promise. delayRemove() must be called first.

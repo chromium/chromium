@@ -105,7 +105,8 @@ void RemoteDeviceV2LoaderImpl::AddRemoteDevice(const CryptAuthDevice& device,
       user_email, device.instance_id(), device.device_name,
       beto_metadata ? beto_metadata->no_pii_device_name() : std::string(),
       beto_metadata ? beto_metadata->public_key() : std::string(), psk,
-      device.last_update_time.ToJavaTime(), device.feature_states,
+      device.last_update_time.InMillisecondsSinceUnixEpoch(),
+      device.feature_states,
       beto_metadata ? multidevice::FromCryptAuthV2SeedRepeatedPtrField(
                           beto_metadata->beacon_seeds())
                     : std::vector<multidevice::BeaconSeed>(),

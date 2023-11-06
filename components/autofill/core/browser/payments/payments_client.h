@@ -65,8 +65,8 @@ typedef base::OnceCallback<void(
 
 // Billable service number is defined in Payments server to distinguish
 // different requests.
-inline constexpr int kUnmaskCardBillableServiceNumber = 70154;
-inline constexpr int kUploadCardBillableServiceNumber = 70073;
+inline constexpr int kUnmaskPaymentMethodBillableServiceNumber = 70154;
+inline constexpr int kUploadPaymentMethodBillableServiceNumber = 70073;
 inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
 
 class PaymentsRequest;
@@ -189,6 +189,17 @@ class PaymentsClient {
     // should be used for the autofill error dialog as they will provide detail
     // into the specific error that occurred.
     absl::optional<AutofillErrorDialogContext> autofill_error_dialog_context;
+  };
+
+  // A collection of information required to make an unmask IBAN request.
+  struct UnmaskIbanRequestDetails {
+    UnmaskIbanRequestDetails();
+    UnmaskIbanRequestDetails(const UnmaskIbanRequestDetails& other);
+    ~UnmaskIbanRequestDetails();
+
+    int billable_service_number = 0;
+    int64_t billing_customer_number = 0;
+    int64_t instrument_id;
   };
 
   // Information required to either opt-in or opt-out a user for FIDO
@@ -365,6 +376,20 @@ class PaymentsClient {
     std::vector<ClientBehaviorConstants> client_behavior_signals;
   };
 
+  // A collection of information required to make an IBAN upload request.
+  struct UploadIbanRequestDetails {
+    UploadIbanRequestDetails();
+    UploadIbanRequestDetails(const UploadIbanRequestDetails& other);
+    ~UploadIbanRequestDetails();
+
+    std::string app_locale;
+    int billable_service_number = 0;
+    int64_t billing_customer_number = 0;
+    std::u16string context_token;
+    std::u16string value;
+    std::string nickname;
+  };
+
   // An enum set in the GetUploadDetailsRequest indicating the source of the
   // request when uploading a card to Google Payments. It should stay consistent
   // with the same enum in Google Payments server code.
@@ -458,6 +483,13 @@ class PaymentsClient {
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               UnmaskResponseDetails&)> callback);
 
+  // Triggers a request to the Payments server to unmask an IBAN. `callback` is
+  // the callback function that is triggered when a response is received from
+  // the server and the full IBAN value is returned via callback.
+  void UnmaskIban(const UnmaskIbanRequestDetails& request_details,
+                  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                                          const std::u16string&)> callback);
+
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.
   void OptChange(const OptChangeRequestDetails request_details,
@@ -498,6 +530,34 @@ class PaymentsClient {
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const PaymentsClient::UploadCardResponseDetails&)>
           callback);
+
+  // Determine if the user meets the Payments service conditions for upload.
+  // The service uses `app_locale` and `billing_customer_number` to determine
+  // which legal message to display. `billable_service_number` is defined in
+  // the Payments server to distinguish different requests and is set in the
+  // GetIbanUploadDetails request. `callback` is the callback function that is
+  // triggered when a response is received from the server, and the callback is
+  // triggered with that response's result. The legal message will always be
+  // returned upon a successful response via `callback`. A successful response
+  // does not guarantee that the legal message is valid, callers should parse
+  // the legal message and use it to decide if IBAN upload save should be
+  // offered.
+  virtual void GetIbanUploadDetails(
+      const std::string& app_locale,
+      int64_t billing_customer_number,
+      int billable_service_number,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const std::u16string&,
+                              std::unique_ptr<base::Value::Dict>)> callback);
+
+  // The user has indicated that they would like to upload an IBAN. This request
+  // will fail server-side if a successful call to GetIbanUploadDetails has not
+  // already been made. `details` contains all necessary information to build
+  // an `UploadIbanRequest`. `callback` is the callback function that is
+  // triggered when a response is received from the server.
+  void UploadIban(
+      const UploadIbanRequestDetails& details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user has indicated that they would like to migrate their local credit
@@ -545,13 +605,12 @@ class PaymentsClient {
  private:
   friend class PaymentsClientTest;
 
-  // Initiates a Payments request using the state in |request|. If
-  // |authenticate| is true, ensures that an OAuth token is avialble first.
-  // Takes ownership of |request|.
-  void IssueRequest(std::unique_ptr<PaymentsRequest> request,
-                    bool authenticate);
+  // Initiates a Payments request using the state in `request`, ensuring that an
+  // OAuth token is available first. Takes ownership of `request`.
+  void IssueRequest(std::unique_ptr<PaymentsRequest> request);
 
-  // Creates |resource_request_| to be used later in StartRequest().
+  // Creates `resource_request_` to be used later in
+  // SetOAuth2TokenAndStartRequest().
   void InitializeResourceRequest();
 
   // Callback from |simple_url_loader_|.
@@ -569,11 +628,8 @@ class PaymentsClient {
   // Initiates a new OAuth2 token request.
   void StartTokenFetch(bool invalidate_old);
 
-  // Adds the token to |simple_url_loader_| and starts the request.
+  // Creates `simple_url_loader_`, adds the token to it, and starts the request.
   void SetOAuth2TokenAndStartRequest();
-
-  // Creates |simple_url_loader_| and calls it to start the request.
-  void StartRequest();
 
   // The URL loader factory for the request.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

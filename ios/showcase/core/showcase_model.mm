@@ -99,30 +99,9 @@ BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
       showcase::kUseCaseKey : @"Bubble",
     },
     @{
-      showcase::kClassForDisplayKey : @"GridViewController",
-      showcase::kClassForInstantiationKey : @"SCGridCoordinator",
-      showcase::kUseCaseKey : @"Grid UI",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"GridCell",
-      showcase::kClassForInstantiationKey : @"SCGridCellViewController",
-      showcase::kUseCaseKey : @"Grid cells",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"TabGridViewController",
-      showcase::kClassForInstantiationKey : @"SCTabGridCoordinator",
-      showcase::kUseCaseKey : @"Full tab grid UI",
-    },
-    @{
-      showcase::
-      kClassForDisplayKey : @"TabGridTopToolbar, TabGridBottomToolbar",
-      showcase::kClassForInstantiationKey : @"SCToolbarsViewController",
-      showcase::kUseCaseKey : @"Toolbars for tab grid",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"TopAlignedImageView",
-      showcase::kClassForInstantiationKey : @"SCImageViewController",
-      showcase::kUseCaseKey : @"ImageView with top aligned aspect fill",
+      showcase::kClassForDisplayKey : @"SideSwipeBubbleView",
+      showcase::kClassForInstantiationKey : @"SCSideSwipeBubbleViewController",
+      showcase::kUseCaseKey : @"Side Swipe Bubble",
     },
     @{
       showcase::kClassForDisplayKey : @"RecentTabsTableViewController",

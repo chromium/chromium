@@ -33,10 +33,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
+#include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safety_check/test_update_check_helper.h"
@@ -127,7 +127,7 @@ class TestTimestampDelegate : public TimestampDelegate {
     // 1 second before midnight Dec 31st 2020, so that -(24h-1s) is still on the
     // same day. This test time is hard coded to prevent DST flakiness, see
     // crbug.com/1066576.
-    return base::Time::FromDoubleT(1609459199).LocalMidnight() -
+    return base::Time::FromSecondsSinceUnixEpoch(1609459199).LocalMidnight() -
            base::Seconds(1);
   }
 };
@@ -201,7 +201,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     std::vector<extensions::api::passwords_private::PasswordUiEntry> insecure;
     for (int i = 0; i < leaked_password_count_; ++i) {
       insecure.push_back(CreateInsecureCredential(
-          i, extensions::api::passwords_private::COMPROMISE_TYPE_LEAKED));
+          i, extensions::api::passwords_private::CompromiseType::kLeaked));
       if (i < muted_leaked_password_count_) {
         insecure[i].compromised_info->is_muted = true;
       }
@@ -209,17 +209,17 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
     for (int i = 0; i < phished_password_count_; ++i) {
       insecure.push_back(CreateInsecureCredential(
           insecure.size(),
-          extensions::api::passwords_private::COMPROMISE_TYPE_PHISHED));
+          extensions::api::passwords_private::CompromiseType::kPhished));
     }
     for (int i = 0; i < weak_password_count_; ++i) {
       insecure.push_back(CreateInsecureCredential(
           insecure.size(),
-          extensions::api::passwords_private::COMPROMISE_TYPE_WEAK));
+          extensions::api::passwords_private::CompromiseType::kWeak));
     }
     for (int i = 0; i < reused_password_count_; ++i) {
       insecure.push_back(CreateInsecureCredential(
           insecure.size(),
-          extensions::api::passwords_private::COMPROMISE_TYPE_REUSED));
+          extensions::api::passwords_private::CompromiseType::kReused));
     }
     return insecure;
   }
@@ -253,7 +253,7 @@ class TestPasswordsDelegate : public extensions::TestPasswordsPrivateDelegate {
   int total_ = 0;
   int test_credential_counter_ = 0;
   extensions::api::passwords_private::PasswordCheckState state_ =
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE;
+      extensions::api::passwords_private::PasswordCheckState::kIdle;
   scoped_refptr<password_manager::TestPasswordStore> store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
   password_manager::FakeAffiliationService affiliation_service_;
@@ -890,7 +890,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
+      extensions::api::passwords_private::PasswordCheckState::kRunning);
   EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
@@ -903,7 +903,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_StaleSafeThenCompromised) {
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
+      extensions::api::passwords_private::PasswordCheckState::kIdle);
   const base::Value::Dict* event = GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords, static_cast<int>(SafetyCheckHandler::PasswordsStatus::kSafe));
   EXPECT_TRUE(event);
@@ -926,7 +926,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kRunning);
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
+      extensions::api::passwords_private::PasswordCheckState::kRunning);
   EXPECT_TRUE(GetSafetyCheckStatusChangedWithDataIfExists(
       kPasswords,
       static_cast<int>(SafetyCheckHandler::PasswordsStatus::kChecking)));
@@ -942,7 +942,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_SafeStateThenMoreEvents) {
 
   // The check is completed with another safe state.
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
+      extensions::api::passwords_private::PasswordCheckState::kIdle);
   test_leak_service_->set_state_and_notify(
       password_manager::BulkLeakCheckService::State::kIdle);
   // This time the safe state should be reflected.
@@ -1358,7 +1358,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   auto is_leaked = password_manager::IsLeaked(false);
   safety_check_->PerformSafetyCheck();
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_RUNNING);
+      extensions::api::passwords_private::PasswordCheckState::kRunning);
   test_passwords_delegate_->SetProgress(1, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
@@ -1382,7 +1382,7 @@ TEST_F(SafetyCheckHandlerTest, CheckPasswords_Progress) {
   // Final update comes after status change, so no new progress message should
   // be present.
   test_passwords_delegate_->SetPasswordCheckState(
-      extensions::api::passwords_private::PASSWORD_CHECK_STATE_IDLE);
+      extensions::api::passwords_private::PasswordCheckState::kIdle);
   test_passwords_delegate_->SetProgress(3, 3);
   static_cast<password_manager::BulkLeakCheckService::Observer*>(
       safety_check_.get())
@@ -1549,7 +1549,8 @@ TEST_F(SafetyCheckHandlerTest, CheckParentRanDisplayString) {
   // same day. This test time is hard coded to prevent DST flakiness, see
   // crbug.com/1066576.
   const base::Time system_time =
-      base::Time::FromDoubleT(1609459199).LocalMidnight() - base::Seconds(1);
+      base::Time::FromSecondsSinceUnixEpoch(1609459199).LocalMidnight() -
+      base::Seconds(1);
   // Display strings for given time deltas in seconds.
   std::vector<std::tuple<std::u16string, int>> tuples{
       std::make_tuple(u"a moment ago", 1),

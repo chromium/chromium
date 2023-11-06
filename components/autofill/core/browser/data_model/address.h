@@ -19,10 +19,10 @@ namespace autofill {
 // A form group that stores address information.
 class Address : public FormGroup {
  public:
-  Address();
   explicit Address(AddressCountryCode country_code);
   ~Address() override;
 
+  Address(const Address& address);
   Address& operator=(const Address& address);
   bool operator==(const Address& other) const;
   bool operator!=(const Address& other) const { return !operator==(other); }
@@ -84,7 +84,7 @@ class Address : public FormGroup {
   std::unique_ptr<AddressComponent> structured_address_;
 
   // Whether the structured address uses the legacy hierarchy.
-  bool is_legacy_address_;
+  bool is_legacy_address_ = true;
 };
 
 }  // namespace autofill

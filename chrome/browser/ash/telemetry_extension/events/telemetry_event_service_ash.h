@@ -5,22 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_ASH_H_
 #define CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_EVENTS_TELEMETRY_EVENT_SERVICE_ASH_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace ash {
 
@@ -62,11 +56,11 @@ class TelemetryEventServiceAsh : public crosapi::mojom::TelemetryEventService {
 
   // Called by a connection when it is reset from either side (crosapi or
   // cros_healthd). Unregisters the connection.
-  void OnConnectionClosed(CrosHealthdEventForwarder* closed_connection);
+  void OnConnectionClosed(SelfOwnedMojoProxyInterface* closed_connection);
 
  private:
   // Currently open connections.
-  std::vector<std::unique_ptr<CrosHealthdEventForwarder>> observers_;
+  std::vector<raw_ptr<SelfOwnedMojoProxyInterface>> observers_;
 
   // Support any number of connections.
   mojo::ReceiverSet<crosapi::mojom::TelemetryEventService> receivers_;

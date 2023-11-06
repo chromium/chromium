@@ -291,6 +291,12 @@ class ServiceWorkerInternalsHandler::PartitionObserver
       handler_->OnVersionStateChanged(partition_id_, version_id);
     }
   }
+  void OnVersionRouterRulesChanged(int64_t, const std::string&) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    if (handler_) {
+      handler_->OnVersionRouterRulesChanged();
+    }
+  }
   void OnErrorReported(
       int64_t version_id,
       const GURL& scope,
@@ -432,6 +438,10 @@ void ServiceWorkerInternalsHandler::OnVersionStateChanged(int partition_id,
                                                           int64_t version_id) {
   FireWebUIListener("version-state-changed", base::Value(partition_id),
                     base::Value(base::NumberToString(version_id)));
+}
+
+void ServiceWorkerInternalsHandler::OnVersionRouterRulesChanged() {
+  FireWebUIListener("version-router-rules-changed");
 }
 
 void ServiceWorkerInternalsHandler::OnErrorEvent(

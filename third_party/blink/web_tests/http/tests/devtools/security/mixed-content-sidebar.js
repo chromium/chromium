@@ -6,16 +6,17 @@ import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Security from 'devtools/panels/security/security.js';
 
 (async function() {
   TestRunner.addResult(
       `Tests that the sidebar uses the correct styling for mixed content subresources.\n`);
   await TestRunner.showPanel('security');
 
-  const pageVisibleSecurityState = new Security.PageVisibleSecurityState(
+  const pageVisibleSecurityState = new Security.SecurityModel.PageVisibleSecurityState(
     Protocol.Security.SecurityState.Neutral, null, null,
     ['displayed-mixed-content', 'ran-mixed-content']);
-  TestRunner.mainTarget.model(Security.SecurityModel)
+  TestRunner.mainTarget.model(Security.SecurityModel.SecurityModel)
       .dispatchEventToListeners(
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
@@ -31,7 +32,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   SecurityTestRunner.dispatchRequestFinished(active);
 
   TestRunner.addResult('Origin sidebar:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.SecurityPanel.instance().sidebarTree.element);
 
   TestRunner.completeTest();
 })();

@@ -4,7 +4,8 @@
 
 package org.chromium.components.page_info;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.WebContents;
 
 /**

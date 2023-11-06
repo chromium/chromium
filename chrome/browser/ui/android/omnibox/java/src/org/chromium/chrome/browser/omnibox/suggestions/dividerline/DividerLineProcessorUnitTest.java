@@ -17,9 +17,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
-/**
- * Tests for {@link DividerLineProcessor}.
- */
+/** Tests for {@link DividerLineProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.PER_CLASS)
 public class DividerLineProcessorUnitTest {
@@ -36,10 +34,13 @@ public class DividerLineProcessorUnitTest {
         Assert.assertEquals(OmniboxSuggestionUiType.DIVIDER_LINE, mProcessor.getViewTypeId());
 
         int minimumHeight =
-                ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                        R.dimen.divider_height)
-                + ContextUtils.getApplicationContext().getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_list_divider_line_padding);
+                ContextUtils.getApplicationContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.divider_height)
+                        + ContextUtils.getApplicationContext()
+                                .getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_list_divider_line_padding);
         Assert.assertEquals(minimumHeight, mProcessor.getMinimumViewHeight());
 
         Assert.assertNotNull(mProcessor.createModel());

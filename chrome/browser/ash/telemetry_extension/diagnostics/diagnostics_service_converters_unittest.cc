@@ -92,6 +92,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kBluetoothScanning);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothPairing),
             crosapi::DiagnosticsRoutineEnum::kBluetoothPairing);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kFan),
+            crosapi::DiagnosticsRoutineEnum::kFan);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

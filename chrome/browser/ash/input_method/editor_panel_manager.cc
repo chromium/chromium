@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chromeos/crosapi/mojom/editor_panel.mojom.h"
 
 namespace ash::input_method {
@@ -81,9 +82,9 @@ void EditorPanelManager::BindEditorClient() {
 
 void EditorPanelManager::GetEditorPanelContext(
     GetEditorPanelContextCallback callback) {
-  // Cache the caret bounds of the current text context, so that we can properly
-  // anchor UI bubbles that are triggered by and shown after the editor panel.
-  delegate_->CacheContextCaretBounds();
+  // Cache the current text context, so that any input fields that are part of
+  // the editor panel do not interfere with the context.
+  delegate_->CacheContext();
 
   // TODO(b/295059934): Get the panel mode from the editor mediator.
   const auto editor_panel_mode = GetEditorPanelMode(delegate_->GetEditorMode());
@@ -142,6 +143,22 @@ void EditorPanelManager::OnEditorMenuVisibilityChanged(bool visible) {
 
 bool EditorPanelManager::IsEditorMenuVisible() const {
   return is_editor_menu_visible_;
+}
+
+void EditorPanelManager::LogEditorMode(
+    crosapi::mojom::EditorPanelMode mode) {
+  LogEditorNativeUIShowOpportunityState(delegate_->GetEditorOpportunityMode());
+  switch (mode) {
+    case crosapi::mojom::EditorPanelMode::kRewrite:
+      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kRewrite);
+      return;
+    case crosapi::mojom::EditorPanelMode::kWrite:
+      LogEditorState(EditorStates::kNativeUIShown, EditorMode::kWrite);
+      return;
+    case crosapi::mojom::EditorPanelMode::kBlocked:
+    case crosapi::mojom::EditorPanelMode::kPromoCard:
+      return;
+  }
 }
 
 }  // namespace ash::input_method

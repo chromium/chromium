@@ -8,8 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
-#include "components/password_manager/core/browser/import/csv_password.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
 
@@ -240,6 +238,7 @@ std::vector<CredentialUIEntry::DomainInfo>
 CredentialUIEntry::GetAffiliatedDomains() const {
   std::vector<CredentialUIEntry::DomainInfo> domains;
   std::set<std::string> unique_urls;
+  CHECK(!facets.empty());
   for (const auto& facet : facets) {
     CredentialUIEntry::DomainInfo domain;
     domain.signon_realm = facet.signon_realm;

@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="el">
 <translation id="1178581264944972037">Παύση</translation>
+<translation id="2558806128245168542">Μετάβαση πίσω</translation>
 <translation id="3523426587027570423">Πατήστε για να κλείσετε την "Ακρόαση αυτής της σελίδας".</translation>
+<translation id="4431240646217225907">Επισήμανση κειμένου και αυτόματη κύλιση</translation>
 <translation id="4654641641922242357">Πρόγραμμα αναπαραγωγής "Ακρόαση αυτής της σελίδας".</translation>
 <translation id="4731877163452936634">Ταχύτητα αναπαραγωγής: <ph name="PLAYBACK_SPEED" />. Κάντε κλικ για αλλαγή.</translation>
 <translation id="5234971936051226002">Το πρόγραμμα αναπαραγωγής "Ακρόαση αυτής της σελίδας" ελαχιστοποιήθηκε.</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
+<translation id="6315170314923504164">Φωνή</translation>
+<translation id="6550675742724504774">Επιλογές</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
+<translation id="6831043979455480757">Μετάφραση</translation>
 <translation id="6846298663435243399">Φόρτωση…</translation>
 <translation id="7587250070160020374">Γίνεται αναπαραγωγή του Chrome</translation>
 <translation id="7945822420239537236">Προώθηση <ph name="NUMBER_OF_SECONDS" /> δευτερόλεπτα</translation>

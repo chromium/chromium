@@ -10,12 +10,15 @@
 #include "base/strings/string_piece.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace policy {
+class PolicyMap;
+}
+
 namespace user_manager {
 class User;
 }
 
 namespace ash::standalone_browser {
-
 // Represents the policy indicating how to launch Lacros browser, named
 // LacrosAvailability. The values shall be consistent with the controlling
 // policy.
@@ -29,6 +32,21 @@ enum class LacrosAvailability {
   // Indicates that Lacros (if allowed) is the only available browser.
   kLacrosOnly = 4
 };
+
+// The internal name in about_flags.cc for the lacros-availablility-policy
+// config.
+inline constexpr char kLacrosAvailabilityPolicyInternalName[] =
+    "lacros-availability-policy";
+
+// The commandline flag name of lacros-availability-policy.
+// The value should be the policy value as defined just below.
+// The values need to be consistent with kLacrosAvailabilityMap above.
+inline constexpr char kLacrosAvailabilityPolicySwitch[] =
+    "lacros-availability-policy";
+inline constexpr char kLacrosAvailabilityPolicyUserChoice[] = "user_choice";
+inline constexpr char kLacrosAvailabilityPolicyLacrosDisabled[] =
+    "lacros_disabled";
+inline constexpr char kLacrosAvailabilityPolicyLacrosOnly[] = "lacros_only";
 
 // When this feature is enabled, Lacros is allowed to roll out by policy to
 // Googlers.
@@ -51,6 +69,11 @@ COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 LacrosAvailability DetermineLacrosAvailabilityFromPolicyValue(
     const user_manager::User* user,
     base::StringPiece policy_value);
+
+// Returns LacrosAvailability policy for the given `user` and its `policy_map`.
+// This function may take a look at more surrounding context.
+LacrosAvailability GetLacrosAvailability(const user_manager::User* user,
+                                         const policy::PolicyMap& policy_map);
 
 // Returns true if the given user's profile is associated with a google internal
 // account. This includes @managedchrome.com accounts.

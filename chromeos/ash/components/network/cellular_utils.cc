@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
@@ -19,6 +20,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_profile.h"
 #include "chromeos/ash/components/network/network_profile_handler.h"
+#include "crypto/sha2.h"
 
 namespace ash {
 
@@ -33,6 +35,16 @@ const char kSmdsAndroidStaging[] = "1$lpa.live.esimdiscovery.dev$";
 
 namespace {
 const char kNonShillCellularNetworkPathPrefix[] = "/non-shill-cellular/";
+
+std::string GetLogSafeEid(const std::string& eid) {
+  const SystemSaltGetter::RawSalt* salt = SystemSaltGetter::Get()->GetRawSalt();
+  if (!salt) {
+    return std::string();
+  }
+  return crypto::SHA256HashString(
+      eid + SystemSaltGetter::ConvertRawSaltToHexString(*salt));
+}
+
 }  // namespace
 
 base::flat_set<dbus::ObjectPath> GetProfilePathsFromEuicc(
@@ -101,12 +113,18 @@ std::vector<CellularESimProfile> GenerateProfilesFromEuicc(
 
 const base::flat_map<int32_t, std::string> GetESimSlotToEidMap() {
   base::flat_map<int32_t, std::string> esim_slot_to_eid;
-  for (auto& euicc_path : HermesManagerClient::Get()->GetAvailableEuiccs()) {
+  const std::vector<dbus::ObjectPath>& available_euiccs =
+      HermesManagerClient::Get()->GetAvailableEuiccs();
+  VLOG(1) << "GetESimSlotToEidMap(): Num available EUICCs: "
+          << available_euiccs.size();
+  for (auto& euicc_path : available_euiccs) {
     HermesEuiccClient::Properties* properties =
         HermesEuiccClient::Get()->GetProperties(euicc_path);
     int32_t slot_id = properties->physical_slot().value();
     std::string eid = properties->eid().value();
     esim_slot_to_eid.emplace(slot_id, eid);
+    VLOG(1) << "EUICC: " << euicc_path.value() << ", slot id: " << slot_id
+            << ", eid: " << GetLogSafeEid(eid);
   }
   return esim_slot_to_eid;
 }
@@ -132,8 +150,12 @@ const DeviceState::CellularSIMSlotInfos GetSimSlotInfosWithUpdatedEid(
       GetESimSlotToEidMap();
 
   DeviceState::CellularSIMSlotInfos sim_slot_infos = device->GetSimSlotInfos();
+  VLOG(1) << "GetSimSlotInfosWithUpdatedEid(): Num SIM slot infos: "
+          << sim_slot_infos.size();
   for (auto& sim_slot_info : sim_slot_infos) {
     const std::string shill_provided_eid = sim_slot_info.eid;
+    VLOG(1) << "SIM slot id: " << sim_slot_info.slot_id
+            << ", Shill provided eid: " << GetLogSafeEid(shill_provided_eid);
 
     // If there is no associated |slot_id| in the map, the SIM slot info refers
     // to a pSIM, and the Hermes provided data is irrelevant.

@@ -38,6 +38,7 @@
 #include "ui/views/border.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
 namespace {
@@ -308,7 +309,12 @@ void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
 
   // Painting Discard Ring
   const ui::ColorProvider* color_provider = GetColorProvider();
-  SkColor ring_color = color_provider->GetColor(ui::kColorSysStateDisabled);
+  const views::Widget* widget = GetWidget();
+  SkColor ring_color =
+      color_provider->GetColor(widget && widget->ShouldPaintAsActive()
+                                   ? kColorTabDiscardRingFrameActive
+                                   : kColorTabDiscardRingFrameInactive);
+
   float ring_color_opacity =
       static_cast<float>(SkColorGetA(ring_color)) / SK_AlphaOPAQUE;
   cc::PaintFlags flags;

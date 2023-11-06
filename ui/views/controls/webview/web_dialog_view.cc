@@ -273,7 +273,7 @@ GURL WebDialogView::GetDialogContentURL() const {
 }
 
 void WebDialogView::GetWebUIMessageHandlers(
-    std::vector<WebUIMessageHandler*>* handlers) const {
+    std::vector<WebUIMessageHandler*>* handlers) {
   if (delegate_)
     delegate_->GetWebUIMessageHandlers(handlers);
 }
@@ -301,10 +301,6 @@ void WebDialogView::OnDialogShown(content::WebUI* webui) {
 
 void WebDialogView::OnDialogClosed(const std::string& json_retval) {
   Detach();
-  if (delegate_) {
-    // Store the dialog content area size.
-    delegate_->StoreDialogSize(GetContentsBounds().size());
-  }
 
   if (GetWidget())
     GetWidget()->Close();

@@ -5,8 +5,7 @@
 // https://github.com/WICG/web-codecs
 [
     Exposed=(Window,DedicatedWorker),
-    Serializable,
-    RuntimeEnabled=WebCodecs
+    Serializable
 ] interface AudioData {
    [CallWith=ScriptState, RaisesException]
    constructor(AudioDataInit init);

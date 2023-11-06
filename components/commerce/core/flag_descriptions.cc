@@ -37,6 +37,10 @@ const char kChromeCartDomBasedHeuristicsName[] =
 const char kChromeCartDomBasedHeuristicsDescription[] =
     "Enable DOM-based heuristics for ChromeCart.";
 
+const char kParcelTrackingTestDataName[] = "Parcel Tracking Test Data";
+const char kParcelTrackingTestDataDescription[] =
+    "The parcel status API returns fake data for testing.";
+
 const char kPriceInsightsName[] = "Price Insights";
 const char kPriceInsightsDescription[] = "Enable price insights experiment.";
 

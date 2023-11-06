@@ -1,0 +1,13 @@
+<script>
+document.addEventListener('prerenderingchange', () => {
+  // Initiate a fetch request so that the test can recognize that the page
+  // activation is done, but navigation events are not delivered for the
+  // activation as expected. If we wrongly deliver them, it should appear before
+  // this fetch events.
+  fetch('initiator_new_tab.html');
+});
+</script>
+<!--
+  Synchronous script loading that indicates the page is ready to activate.
+-->
+<script src="empty.js"/>

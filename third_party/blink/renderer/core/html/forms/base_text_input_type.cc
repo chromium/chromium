@@ -144,7 +144,7 @@ bool BaseTextInputType::SupportsSelectionAPI() const {
   return true;
 }
 
-bool BaseTextInputType::ShouldAutoDirUseValue() const {
+bool BaseTextInputType::IsAutoDirectionalityFormAssociated() const {
   return true;
 }
 

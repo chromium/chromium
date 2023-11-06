@@ -87,10 +87,10 @@ ObservationType GetObservationTypeForEditedField(
     return ObservationType::kEditedValueCleared;
   }
 
-  if (IsWithinLevenshteinDistance(
-          base::ToLowerASCII(profile.GetInfo(type, app_locale)),
-          base::ToLowerASCII(edited_value),
-          ProfileTokenQuality::kMaximumLevenshteinDistance)) {
+  if (LevenshteinDistance(base::ToLowerASCII(profile.GetInfo(type, app_locale)),
+                          base::ToLowerASCII(edited_value),
+                          ProfileTokenQuality::kMaximumLevenshteinDistance) <=
+      ProfileTokenQuality::kMaximumLevenshteinDistance) {
     return ObservationType::kEditedToSimilarValue;
   }
 
@@ -140,6 +140,26 @@ ProfileTokenQuality::ProfileTokenQuality(const ProfileTokenQuality& other) =
     default;
 
 ProfileTokenQuality::~ProfileTokenQuality() = default;
+
+bool ProfileTokenQuality::operator==(const ProfileTokenQuality& other) const {
+  if (profile_->guid() != other.profile_->guid() ||
+      observations_.size() != other.observations_.size()) {
+    return false;
+  }
+  // Element-wise comparison between `observations_` and `other.observations_`.
+  // base::circular_deque<> intentionally doesn't define a comparison operator.
+  using map_entry_t =
+      std::pair<ServerFieldType, base::circular_deque<Observation>>;
+  return base::ranges::equal(observations_, other.observations_,
+                             [](const map_entry_t& a, const map_entry_t& b) {
+                               return a.first == b.first &&
+                                      base::ranges::equal(a.second, b.second);
+                             });
+}
+
+bool ProfileTokenQuality::operator!=(const ProfileTokenQuality& other) const {
+  return !operator==(other);
+}
 
 // static
 bool ProfileTokenQuality::IsStoredType(ServerFieldType type) {
@@ -209,8 +229,7 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
         pdm.GetProfileByGUID(*field->autofill_source_profile_guid());
     if (profile && profile->token_quality().AddObservationsForFilledForm(
                        form_structure, form_data, pdm)) {
-      // TODO(crbug.com/1453650): Update `*profile` in the database, once
-      // `AutofillTable` supports storing token quality.
+      pdm.UpdateProfile(*profile);
     }
   }
 }
@@ -339,6 +358,30 @@ void ProfileTokenQuality::CopyObservationsForStoredType(
 void ProfileTokenQuality::ResetObservationsForStoredType(ServerFieldType type) {
   CHECK(IsStoredType(type));
   observations_.erase(type);
+}
+
+void ProfileTokenQuality::ResetObservationsForDifferingTokens(
+    const AutofillProfile& other) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillTrackProfileTokenQuality)) {
+    return;
+  }
+  for (ServerFieldType type :
+       AutofillTable::GetStoredTypesForAutofillProfile()) {
+    if (profile_->GetRawInfo(type) != other.GetRawInfo(type)) {
+      ResetObservationsForStoredType(type);
+    }
+  }
+}
+
+bool ProfileTokenQuality::Observation::operator==(
+    const ProfileTokenQuality::Observation& other) const {
+  return type == other.type && form_hash == other.form_hash;
+}
+
+bool ProfileTokenQuality::Observation::operator!=(
+    const ProfileTokenQuality::Observation& other) const {
+  return !operator==(other);
 }
 
 ProfileTokenQuality::FormSignatureHash

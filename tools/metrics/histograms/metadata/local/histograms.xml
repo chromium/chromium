@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}AddOrUpdateLatency" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}DailySearch" units="count"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -141,7 +141,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}NumberResults" units="count"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -166,7 +166,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}ResponseStatus"
-    enum="LocalSearchServiceResponseStatus" expires_after="2024-02-20">
+    enum="LocalSearchServiceResponseStatus" expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalSearchService.{IndexId}SearchLatency" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <summary>
@@ -222,7 +222,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoSizeInKB" units="KB"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrime" units="ms"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.MojoTimeToPrimeFor{LocalStorageSizes}" units="ms"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LocalStorage.RendererAreaCacheHit"
-    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-02-04">
+    enum="LocalStorageRendererAreaCacheHitEnum" expires_after="2024-04-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -267,17 +267,6 @@ chromium-metrics-reviews@google.com.
     opened.
 
     Warning: this histogram was expired from M78 to M92; data may be missing.
-  </summary>
-</histogram>
-
-<histogram name="LocalStorage.RendererLocalStorageSizeInKB" units="KB"
-    expires_after="2023-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Size of the HTML5 LocalStorage DB in KB in the renderer-side cache.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
   </summary>
 </histogram>
 

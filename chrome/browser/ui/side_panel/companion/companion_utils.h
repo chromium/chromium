@@ -54,6 +54,9 @@ bool IsNewBadgeEnabledForSearchMenuItem(const Browser* browser);
 // should be pinned to the toolbar by default.
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service);
 
+// Returns true if feature for enabling the "contextual" Lens panel is enabled.
+bool ShouldUseContextualLensPanelForImageSearch(const Browser* browser);
+
 }  // namespace companion
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_UTILS_H_

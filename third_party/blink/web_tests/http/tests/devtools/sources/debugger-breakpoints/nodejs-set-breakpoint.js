@@ -8,6 +8,7 @@ import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as Host from 'devtools/core/host/host.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
 
 (async function() {
   TestRunner.addResult(`Verify that front-end is able to set breakpoint for node.js scripts.\n`);
@@ -25,7 +26,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   async function didShowScriptSource(sourceFrame) {
     TestRunner.addResult('Setting breakpoint:');
     TestRunner.addSniffer(
-        Bindings.BreakpointManager.ModelBreakpoint.prototype, 'addResolvedLocation', breakpointResolved);
+        Breakpoints.BreakpointManager.ModelBreakpoint.prototype, 'addResolvedLocation', breakpointResolved);
     await SourcesTestRunner.setBreakpoint(sourceFrame, 1, '', true);
   }
 

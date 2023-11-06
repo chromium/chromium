@@ -24,6 +24,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -48,7 +49,8 @@ void CallInitiateOnSequence(
         StatusOr<std::pair<int64_t /*total*/, std::string /*session_token*/>>)>
         cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoInitiate(origin_path, upload_parameters, std::move(cb));
@@ -64,7 +66,8 @@ void CallNextStepOnSequence(
                                                std::string /*session_token*/>>)>
         cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoNextStep(total, uploaded, session_token,
@@ -76,7 +79,8 @@ void CallFinalizeOnSequence(
     std::string_view session_token,
     base::OnceCallback<void(StatusOr<std::string /*access_parameters*/>)> cb) {
   if (!delegate) {
-    std::move(cb).Run(Status(error::UNAVAILABLE, "Delegate is unavailable"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::UNAVAILABLE, "Delegate is unavailable")));
     return;
   }
   delegate->DoFinalize(session_token, std::move(cb));
@@ -130,16 +134,17 @@ void FileUploadJob::Manager::Register(
              base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
             // Retry count must allow the job to run.
             if (log_upload_event.upload_settings().retry_count() < 1) {
-              std::move(result_cb).Run(
-                  Status(error::INVALID_ARGUMENT, "Too many upload attempts"));
+              std::move(result_cb).Run(base::unexpected(
+                  Status(error::INVALID_ARGUMENT, "Too many upload attempts")));
               return;
             }
             // Serialize settings to get the map key.
             std::string serialized_settings;
             if (!log_upload_event.upload_settings().SerializeToString(
                     &serialized_settings)) {
-              std::move(result_cb).Run(Status(
-                  error::INVALID_ARGUMENT, "Job settings failed to serialize"));
+              std::move(result_cb).Run(
+                  base::unexpected(Status(error::INVALID_ARGUMENT,
+                                          "Job settings failed to serialize")));
               return;
             }
             // Now add the job to the map.
@@ -187,8 +192,8 @@ void FileUploadJob::Manager::Register(
               // is likely the one that caused this, do not upload it
               // (otherwise we would lose track of the job if the device
               // restarts).
-              std::move(result_cb).Run(
-                  Status(error::ALREADY_EXISTS, "Duplicate event"));
+              std::move(result_cb).Run(base::unexpected(
+                  Status(error::ALREADY_EXISTS, "Duplicate event")));
               return;
             }
             // Attach the event to the job.
@@ -438,13 +443,13 @@ void FileUploadJob::DoneInitiate(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t total = 0L;
   std::string_view session_token;
-  std::tie(total, session_token) = result.ValueOrDie();
+  std::tie(total, session_token) = result.value();
   if (total <= 0L) {
     Status{error::FAILED_PRECONDITION, "Empty upload"}.SaveTo(
         tracker_.mutable_status());
@@ -505,13 +510,13 @@ void FileUploadJob::DoneNextStep(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
   int64_t uploaded = 0L;
   std::string_view session_token;
-  std::tie(uploaded, session_token) = result.ValueOrDie();
+  std::tie(uploaded, session_token) = result.value();
   if (session_token.empty()) {
     Status{error::DATA_LOSS, "Job has lost session_token"}.SaveTo(
         tracker_.mutable_status());
@@ -569,11 +574,11 @@ void FileUploadJob::DoneFinalize(
     StatusOr<std::string /*access_parameters*/> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(job_sequence_checker_);
   CHECK(event_helper_) << "Event must be associated with the job";
-  if (!result.ok()) {
-    result.status().SaveTo(tracker_.mutable_status());
+  if (!result.has_value()) {
+    result.error().SaveTo(tracker_.mutable_status());
     return;
   }
-  std::string_view access_parameters = result.ValueOrDie();
+  std::string_view access_parameters = result.value();
   if (access_parameters.empty()) {
     Status{error::FAILED_PRECONDITION, "Access parameters not set"}.SaveTo(
         tracker_.mutable_status());

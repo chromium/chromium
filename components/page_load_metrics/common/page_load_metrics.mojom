@@ -146,23 +146,12 @@ struct InteractiveTiming {
   // The timestamp of the event whose delay is reported by GetFirstInputDelay().
   mojo_base.mojom.TimeDelta? first_input_timestamp;
 
-  // Queueing Time of the meaningful input event with longest delay. Meaningful
-  // input events are click, tap, key press, cancellable touchstart, or pointer
-  // down followed by a pointer up.
-  mojo_base.mojom.TimeDelta? longest_input_delay;
-
-  // The timestamp of the event whose delay is reported as longest_input_delay.
-  mojo_base.mojom.TimeDelta? longest_input_timestamp;
-
   // The latency between user input and display update for the first scroll after
   // a navigation.
   mojo_base.mojom.TimeDelta? first_scroll_delay;
 
   // The timestamp of the user's first scroll after a navigation.
   mojo_base.mojom.TimeDelta? first_scroll_timestamp;
-
-  // The duration of event handlers processing the first input event.
-  mojo_base.mojom.TimeDelta? first_input_processing_time;
 };
 
 // PageLoadTiming contains timing metrics associated with a page load. Many of
@@ -509,17 +498,6 @@ struct CpuTiming {
 
 // Metrics about general input delay.
 struct InputTiming {
-  // The sum of all input delay.
-  mojo_base.mojom.TimeDelta total_input_delay;
-
-  // The sum of all adjusted input delay. We adjust each input delay by
-  // subtracting a small number, currently 50ms but subject to change in the
-  // future. And if the subtraction result is negative, we will use 0ms.
-  mojo_base.mojom.TimeDelta total_adjusted_input_delay;
-
-  // The number of input events, including click, tap, key press,
-  // cancellable touchstart, or pointer down followed by a pointer up.
-  uint64 num_input_events = 0;
 
   // The number of user interactions, including click, tap and key press.
   uint64 num_interactions = 0;

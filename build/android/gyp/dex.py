@@ -183,7 +183,15 @@ def _RunD8(dex_cmd, input_paths, output_path, warnings_as_errors,
       build_utils.CheckOutput(dex_cmd,
                               stderr_filter=stderr_filter,
                               fail_on_output=warnings_as_errors)
-    except Exception:
+    except Exception as e:
+      if isinstance(e, build_utils.CalledProcessError):
+        output = e.output  # pylint: disable=no-member
+        if "global synthetic for 'Record desugaring'" in output:
+          sys.stderr.write('Java records are not supported.\n')
+          sys.stderr.write(
+              'See https://chromium.googlesource.com/chromium/src/+/' +
+              'main/styleguide/java/java.md#Records\n')
+          sys.exit(1)
       if orig_dex_cmd is not dex_cmd:
         sys.stderr.write('Full command: ' + shlex.join(orig_dex_cmd) + '\n')
       raise

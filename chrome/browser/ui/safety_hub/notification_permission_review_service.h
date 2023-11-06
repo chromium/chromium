@@ -110,9 +110,6 @@ class NotificationPermissionsReviewService : public SafetyHubService,
   void Shutdown() override;
 
   // SafetyHubService implementation.
-  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
-      const base::Value::Dict& dict) override;
-
   // Returns a weak pointer to the service.
   base::WeakPtr<SafetyHubService> GetAsWeakRef() override;
 

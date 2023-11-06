@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_fake_response_reader_factory.h"
 #include "chrome/browser/web_applications/test/mock_data_retriever.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
@@ -125,7 +125,7 @@ auto ReturnManifest(const blink::mojom::ManifestPtr& manifest,
                     const GURL& manifest_url,
                     webapps::InstallableStatusCode error_code =
                         webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
-  constexpr int kCallbackArgumentIndex = 2;
+  constexpr int kCallbackArgumentIndex = 1;
 
   return DoAll(
       WithArg<kCallbackArgumentIndex>(
@@ -458,8 +458,7 @@ TEST_F(IsolatedWebAppInstallCommandHelperRetrieveManifestTest,
   std::unique_ptr<MockDataRetriever> fake_data_retriever =
       CreateDefaultDataRetriever(url_info.origin().GetURL());
   EXPECT_CALL(*fake_data_retriever,
-              CheckInstallabilityAndRetrieveManifest(
-                  _, /*bypass_service_worker_check=*/IsTrue(), _, _))
+              CheckInstallabilityAndRetrieveManifest(_, _, _))
       .WillOnce(
           ReturnManifest(CreateDefaultManifest(url_info.origin().GetURL()),
                          CreateDefaultManifestURL(url_info.origin().GetURL())));
@@ -565,7 +564,7 @@ INSTANTIATE_TEST_SUITE_P(
             .version = u"\xD801",
             .error = "Failed to convert manifest `version` from UTF16 to UTF8",
             .test_name = "InvalidUtf8"},
-        InvalidVersionParam{.version = u"10",
+        InvalidVersionParam{.version = u"10abc",
                             .error = "Failed to parse `version`",
                             .test_name = "InvalidVersionFormat"}),
     [](const ::testing::TestParamInfo<
@@ -825,6 +824,140 @@ TEST_F(InstallIsolatedWebAppCommandHelperManifestIconsTest,
   EXPECT_THAT(
       result,
       ErrorIs(HasSubstr("Error during icon downloading: AbortedDueToFailure")));
+}
+
+struct VerifyRelocationVisitor {
+  explicit VerifyRelocationVisitor(base::FilePath profile_dir,
+                                   base::FilePath source_path)
+      : profile_dir_(std::move(profile_dir)),
+        source_path_(std::move(source_path)) {}
+
+  void operator()(const InstalledBundle& location) {
+    // Check that the bundle was copied to the profile's IWA directory.
+    EXPECT_TRUE(base::PathExists(location.path));
+    EXPECT_TRUE(base::PathExists(source_path_));
+    EXPECT_EQ(location.path.DirName().DirName(),
+              profile_dir_.Append(kIwaDirName));
+    EXPECT_EQ(location.path.BaseName(), base::FilePath(kMainSwbnFileName));
+  }
+
+  void operator()(const DevModeBundle& location) {
+    // Dev mode bundle should not be relocated.
+    EXPECT_EQ(location.path, source_path_);
+    EXPECT_TRUE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeProxy& location) {}
+
+ private:
+  base::FilePath profile_dir_;
+  base::FilePath source_path_;
+};
+
+struct VerifyCleanupVisitor {
+  void operator()(const InstalledBundle& location) {
+    // The copied to profile directory bundles should be deleted on cleanup.
+    EXPECT_FALSE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeBundle& location) {
+    // Dev mode bundle are not copied to the profile dir and because of that
+    // should not be deleted.
+    EXPECT_TRUE(base::PathExists(location.path));
+  }
+
+  void operator()(const DevModeProxy& location) {}
+};
+
+TEST(InstallIsolatedWebAppCommandHelperRelocationTest, NormalFlow) {
+  using RelocationResult = base::expected<IsolatedWebAppLocation, std::string>;
+  base::test::TaskEnvironment task_environment;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath profile_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("profile"), &profile_dir));
+
+  // A directory where source files are stored.
+  base::FilePath src_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("src"), &src_dir));
+
+  // Installed bundle case.
+  {
+    base::FilePath src_installed_bundle;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(src_dir, &src_installed_bundle));
+
+    IsolatedWebAppLocation installed_bundle_location =
+        InstalledBundle{.path = src_installed_bundle};
+
+    // Check that relocation works.
+    base::test::TestFuture<RelocationResult> future;
+    CopyLocationToProfileDirectory(profile_dir, installed_bundle_location,
+                                   future.GetCallback());
+    RelocationResult result = future.Take();
+    EXPECT_TRUE(result.has_value());
+    absl::visit(VerifyRelocationVisitor{profile_dir, src_installed_bundle},
+                result.value());
+
+    // Check that cleanup works.
+    base::test::TestFuture<void> cleanup_future;
+    CleanupLocationIfOwned(profile_dir, result.value(),
+                           cleanup_future.GetCallback());
+    ASSERT_TRUE(cleanup_future.Wait());
+    absl::visit(VerifyCleanupVisitor{}, result.value());
+  }
+
+  // Dev mode bundle case.
+  {
+    base::FilePath src_dev_mode_bundle;
+    ASSERT_TRUE(base::CreateTemporaryFileInDir(src_dir, &src_dev_mode_bundle));
+
+    IsolatedWebAppLocation dev_mode_location =
+        DevModeBundle{.path = src_dev_mode_bundle};
+
+    // Check that relocation works.
+    base::test::TestFuture<RelocationResult> future;
+    CopyLocationToProfileDirectory(profile_dir, dev_mode_location,
+                                   future.GetCallback());
+    RelocationResult result = future.Take();
+    EXPECT_TRUE(result.has_value());
+    absl::visit(VerifyRelocationVisitor{profile_dir, src_dev_mode_bundle},
+                result.value());
+
+    // Check that cleanup works.
+    base::test::TestFuture<void> cleanup_future;
+    CleanupLocationIfOwned(profile_dir, result.value(),
+                           cleanup_future.GetCallback());
+    ASSERT_TRUE(cleanup_future.Wait());
+    absl::visit(VerifyCleanupVisitor{}, result.value());
+  }
+}
+
+TEST(InstallIsolatedWebAppCommandHelperRelocationTest, CleanupNotOwned) {
+  base::test::TaskEnvironment task_environment;
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  base::FilePath profile_dir;
+  ASSERT_TRUE(base::CreateTemporaryDirInDir(
+      temp_dir.GetPath(), FILE_PATH_LITERAL("profile"), &profile_dir));
+
+  // Create a file that is not in the owned IWA directory.
+  base::FilePath bundle_path;
+  ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir.GetPath(), &bundle_path));
+
+  // Trying to cleanup the location that is not owned.
+  IsolatedWebAppLocation location = InstalledBundle{.path = bundle_path};
+  base::test::TestFuture<void> cleanup_future;
+  CleanupLocationIfOwned(profile_dir, location, cleanup_future.GetCallback());
+  ASSERT_TRUE(cleanup_future.Wait());
+
+  // Not owned file should not be deleted.
+  EXPECT_TRUE(base::PathExists(bundle_path));
 }
 
 }  // namespace

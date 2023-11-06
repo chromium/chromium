@@ -57,7 +57,9 @@ grit("components_resources") {
 
   deps = [
     ":about_credits",
+    "//components/neterror/resources:bundle_js",
     "//components/security_interstitials/content/resources:build_ts",
+    "//components/security_interstitials/core/browser/resources:bundle_js",
   ]
 
   if (!is_ios) {

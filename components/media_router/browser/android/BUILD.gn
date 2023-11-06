@@ -17,7 +17,6 @@ android_library("java") {
     "$google_play_services_package:google_play_services_cast_framework_java",
     "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
@@ -28,6 +27,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_media_media_java",
     "//third_party/androidx:androidx_mediarouter_mediarouter_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   sources = [
@@ -107,13 +107,13 @@ android_library("test_support_java") {
     "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//base:jni_java",
     "//components/browser_ui/media/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -142,6 +142,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/components/media_router/caf/ShadowCastMediaSource.java",
     "junit/src/org/chromium/components/media_router/caf/ShadowMediaRouter.java",
     "junit/src/org/chromium/components/media_router/caf/remoting/CafRemotingMediaRouteProviderTest.java",
+    "junit/src/org/chromium/components/media_router/caf/remoting/RemotingMediaSourceTest.java",
     "junit/src/org/chromium/components/media_router/caf/remoting/RemotingSessionControllerTest.java",
   ]
 

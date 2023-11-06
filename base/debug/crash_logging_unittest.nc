@@ -7,7 +7,7 @@
 
 #include "base/debug/crash_logging.h"
 
-#if defined(NCTEST_SCOPED_CRASH_KEY_BOOL_ON_NON_BOOL_ARG)  // [r"static assertion failed due to requirement 'std::is_same<int, bool>::value': SCOPED_CRASH_KEY_BOOL must be passed a boolean value\."]
+#if defined(NCTEST_SCOPED_CRASH_KEY_BOOL_ON_NON_BOOL_ARG)  // [r"static assertion failed due to requirement 'std::is_same_v<int, bool>': SCOPED_CRASH_KEY_BOOL must be passed a boolean value\."]
 
 void WontCompile() {
   SCOPED_CRASH_KEY_BOOL(category, name, 1);

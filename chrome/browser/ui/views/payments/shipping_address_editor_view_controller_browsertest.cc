@@ -48,7 +48,8 @@ const char16_t kCountryWithoutStates[] = u"Albania";
 const char16_t kCountryWithoutStatesCode[] = u"AL";
 const char16_t kCountryWithoutStatesPhoneNumber[] = u"+35542223446";
 
-const base::Time kJanuary2017 = base::Time::FromDoubleT(1484505871);
+const base::Time kJanuary2017 =
+    base::Time::FromSecondsSinceUnixEpoch(1484505871);
 
 }  // namespace
 

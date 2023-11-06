@@ -37,6 +37,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -292,6 +295,30 @@ void TabStripModel::AddObserver(TabStripModelObserver* observer) {
 void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
   observer->StoppedObserving(TabStripModelObserver::ModelPasskey(), this);
   observers_.RemoveObserver(observer);
+}
+
+int TabStripModel::GetIndexOfTab(TabHandle tab_handle) const {
+  const TabModel* tab_model = tab_handle.Get();
+  if (tab_model == nullptr) {
+    return kNoTab;
+  }
+
+  const auto is_same_tab = [tab_model](const std::unique_ptr<TabModel>& other) {
+    return other.get() == tab_model;
+  };
+
+  const auto iter =
+      std::find_if(contents_data_.cbegin(), contents_data_.cend(), is_same_tab);
+  if (iter == contents_data_.cend()) {
+    return kNoTab;
+  }
+  return iter - contents_data_.begin();
+}
+
+TabHandle TabStripModel::GetTabHandleAt(int index) const {
+  CHECK(ContainsIndex(index));
+
+  return contents_data_[index]->GetHandle();
 }
 
 bool TabStripModel::ContainsIndex(int index) const {
@@ -1316,6 +1343,9 @@ bool TabStripModel::IsContextMenuCommandEnabled(
              delegate()->CanMoveTabsToWindow(indices);
     }
 
+    case CommandOrganizeTabs:
+      return true;
+
     case CommandFollowSite:
     case CommandUnfollowSite: {
       std::vector<int> indices = GetIndicesForCommand(context_index);
@@ -1532,6 +1562,16 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       break;
     }
 
+    case CommandOrganizeTabs: {
+      base::RecordAction(UserMetricsAction("TabContextMenu_OrganizeTabs"));
+      const Browser* const browser =
+          chrome::FindBrowserWithTab(GetWebContentsAt(context_index));
+      TabOrganizationService* const service =
+          TabOrganizationServiceFactory::GetForProfile(profile_);
+      service->StartRequest(browser);
+      break;
+    }
+
     case CommandFollowSite: {
       base::RecordAction(UserMetricsAction("DesktopFeed.FollowSite"));
       FollowSites(GetIndicesForCommand(context_index));
@@ -1646,6 +1686,9 @@ bool TabStripModel::ContextMenuCommandToBrowserCommand(int cmd_id,
       break;
     case CommandCloseTab:
       *browser_cmd = IDC_CLOSE_TAB;
+      break;
+    case CommandOrganizeTabs:
+      *browser_cmd = IDC_ORGANIZE_TABS;
       break;
     default:
       *browser_cmd = 0;

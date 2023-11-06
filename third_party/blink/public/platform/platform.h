@@ -48,7 +48,6 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_sink.h"
-#include "services/network/public/mojom/attribution.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
@@ -63,6 +62,7 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/resource_scale_factor.h"
+#include "ui/gl/angle_implementation.h"
 #include "v8/include/v8-local-handle.h"
 
 class SkCanvas;
@@ -459,6 +459,8 @@ class BLINK_PLATFORM_EXPORT Platform {
     bool optimus = false;
     bool using_gpu_compositing = false;
     bool using_passthrough_command_decoder = false;
+    gl::ANGLEImplementation angle_implementation =
+        gl::ANGLEImplementation::kNone;
     WebString vendor_info;
     WebString renderer_info;
     WebString driver_version;
@@ -760,15 +762,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual void AppendContentSecurityPolicy(
       const WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) {}
-
-  // Attribution Reporting API ------------------------------------
-
-  // Returns whether web or OS-level Attribution Reporting is supported.
-  // See
-  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
-  virtual network::mojom::AttributionSupport GetAttributionReportingSupport() {
-    return network::mojom::AttributionSupport::kWeb;
-  }
 
 #if BUILDFLAG(IS_ANDROID)
   // User Level Memory Pressure Signal Generator ------------------

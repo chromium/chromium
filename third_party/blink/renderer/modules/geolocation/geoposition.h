@@ -49,7 +49,7 @@ class Geoposition final : public ScriptWrappable {
   }
 
   EpochTimeStamp timestamp() const { return timestamp_; }
-  GeolocationCoordinates* coords() const { return coordinates_; }
+  GeolocationCoordinates* coords() const { return coordinates_.Get(); }
 
  private:
   Member<GeolocationCoordinates> coordinates_;

@@ -202,9 +202,8 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
     app->intent_filters.push_back(apps_util::MakeIntentFilterForUrlScope(url));
     std::vector<apps::AppPtr> apps;
     apps.push_back(std::move(app));
-    app_service_proxy_->AppRegistryCache().OnApps(
-        std::move(apps), apps::AppType::kArc,
-        false /* should_notify_initialized */);
+    app_service_proxy_->OnApps(std::move(apps), apps::AppType::kArc,
+                               false /* should_notify_initialized */);
     return app_id;
   }
 

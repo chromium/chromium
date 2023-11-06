@@ -2191,7 +2191,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
   LoadHTML(kMultipageHTML);
   GetMainFrame()->SelectRange(blink::WebRange(1, 3),
                               blink::WebLocalFrame::kHideSelectionHandle,
-                              blink::mojom::SelectionMenuBehavior::kHide);
+                              blink::mojom::SelectionMenuBehavior::kHide,
+                              blink::WebLocalFrame::kSelectionSetFocus);
 
   print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 
@@ -2213,7 +2214,8 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
   LoadHTML(kMultipageHTML);
   GetMainFrame()->SelectRange(blink::WebRange(1, 8),
                               blink::WebLocalFrame::kHideSelectionHandle,
-                              blink::mojom::SelectionMenuBehavior::kHide);
+                              blink::mojom::SelectionMenuBehavior::kHide,
+                              blink::WebLocalFrame::kSelectionSetFocus);
 
   print_settings().Set(kSettingShouldPrintSelectionOnly, true);
 

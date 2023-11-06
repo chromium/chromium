@@ -49,7 +49,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoSize" units="MiB"
-    expires_after="2024-01-31">
+    expires_after="2024-04-28">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <summary>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Virtualization.{Name}.Disk.{Duration}.IoTicks"
-    units="Milliseconds" expires_after="2024-01-31">
+    units="Milliseconds" expires_after="2024-04-28">
   <owner>uekawa@google.com</owner>
   <owner>takayas@google.com</owner>
   <summary>

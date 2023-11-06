@@ -5,7 +5,7 @@
 // clang-format off
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteDetailsElement, SiteSettingSource, SiteSettingsPrefsBrowserProxyImpl, WebsiteUsageBrowserProxy, WebsiteUsageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router, routes} from 'chrome://settings/settings.js';
@@ -52,6 +52,9 @@ suite('SiteDetails', function() {
 
   // Initialize a site-details before each test.
   setup(function() {
+    loadTimeData.overrideValues({
+      blockMidiByDefault: true,
+    });
     prefs = createSiteSettingsPrefs(
         [],
         [
@@ -100,7 +103,7 @@ suite('SiteDetails', function() {
               ContentSettingsTypes.BACKGROUND_SYNC,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
-              ContentSettingsTypes.MIDI_DEVICES,
+              ContentSettingsTypes.MIDI,
               [createRawSiteException('https://foo.com:443')]),
           createContentSettingTypeToValuePair(
               ContentSettingsTypes.PROTECTED_CONTENT,

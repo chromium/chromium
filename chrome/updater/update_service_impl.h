@@ -142,6 +142,26 @@ class UpdateServiceImpl : public UpdateService {
 
 namespace internal {
 UpdateService::Result ToResult(update_client::Error error);
+
+void GetComponents(
+    scoped_refptr<Configurator> config,
+    scoped_refptr<PersistedData> persisted_data,
+    const AppClientInstallData& app_client_install_data,
+    const AppInstallDataIndex& app_install_data_index,
+    UpdateService::Priority priority,
+    bool update_blocked,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        callback);
+
+#if BUILDFLAG(IS_WIN)
+std::string GetInstallerText(UpdateService::ErrorCategory error_category,
+                             int error_code,
+                             int extra_code,
+                             bool is_installer_error = false);
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace internal
 
 }  // namespace updater

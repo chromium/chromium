@@ -11,9 +11,8 @@
 #include "chromeos/ash/services/recording/color_quantization.h"
 #include "chromeos/ash/services/recording/lzw_pixel_color_indices_writer.h"
 #include "chromeos/ash/services/recording/recording_encoder.h"
-#include "media/base/audio_bus.h"
+#include "chromeos/ash/services/recording/rgb_video_frame.h"
 #include "media/base/video_frame.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace recording {
 
@@ -233,19 +232,24 @@ void GifEncoder::InitializeVideoEncoder(
 }
 
 void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
-  // This bitmap is backed up by the same memory containing the bytes of the
-  // frame. `SkBitmap` makes it more convenient to extract the colors from the
-  // video frame. Once we extract the color palette and pixel color indices from
-  // the `bitmap`, we no longer need it, nor need the video `frame`.
-  const SkBitmap bitmap = WrapVideoFrameInBitmap(*frame);
-  BuildColorPaletteAndPixelIndices(bitmap, color_palette_,
-                                   pixel_color_indices_);
-
-  const gfx::Size visible_size = frame->visible_rect().size();
-  DCHECK_EQ(pixel_color_indices_.size(),
-            static_cast<size_t>(visible_size.GetArea()));
+  // Extract the frame time first thing in case we need to call
+  // `TimeTicks::Now()`.
   const auto frame_time =
       frame->metadata().reference_time.value_or(base::TimeTicks::Now());
+
+  // This bitmap is backed up by the same memory containing the bytes of the
+  // frame. `SkBitmap` makes it more convenient to extract the colors from the
+  // video frame. `RgbVideoFrame` will copy only the RGB pixels out of the
+  // bitmap. This is needed so that we can modify the colors of these pixels
+  // when we implement dithering. The video `frame`'s memory itself cannot be
+  // modified, as it is backed by a read-only shared memory region. Once we copy
+  // the pixel colors into `rgb_video_frame`, we no longer need the video
+  // `frame`.
+  RgbVideoFrame rgb_video_frame(WrapVideoFrameInBitmap(*frame));
+
+  const gfx::Size visible_size = frame->visible_rect().size();
+  DCHECK_EQ(rgb_video_frame.num_pixels(),
+            static_cast<size_t>(visible_size.GetArea()));
 
   // We're done with the frame, release it immediately before we spend cycles
   // doing the encoding and writing to the file. This returns it back to the
@@ -254,9 +258,14 @@ void GifEncoder::EncodeVideo(scoped_refptr<media::VideoFrame> frame) {
   // reaching that limit often.
   frame.reset();
 
+  BuildColorPaletteAndPixelIndices(rgb_video_frame, color_palette_,
+                                   pixel_color_indices_);
+
+  DCHECK_EQ(pixel_color_indices_.size(), rgb_video_frame.num_pixels());
+
   WriteGraphicControlExtension(frame_time);
   const auto color_bit_depth = CalculateColorBitDepth(color_palette_);
-  WriteImageDescriptor(visible_size, color_bit_depth);
+  WriteImageDescriptor(rgb_video_frame, color_bit_depth);
   WriteColorPalette(color_bit_depth);
   lzw_encoder_.EncodeAndWrite(pixel_color_indices_, color_bit_depth);
 
@@ -360,7 +369,7 @@ void GifEncoder::WriteGraphicControlExtension(
   gif_file_writer_.WriteByte(0);
 }
 
-void GifEncoder::WriteImageDescriptor(const gfx::Size& frame_size,
+void GifEncoder::WriteImageDescriptor(const RgbVideoFrame& rgb_video_frame,
                                       uint8_t color_bit_depth) {
   DCHECK_LE(color_bit_depth, kMaxColorBitDepth);
 
@@ -373,8 +382,8 @@ void GifEncoder::WriteImageDescriptor(const gfx::Size& frame_size,
   // The "top" (or Y coordinate) of the frame.
   gif_file_writer_.WriteShort(0);
   // The frame size.
-  gif_file_writer_.WriteShort(frame_size.width());
-  gif_file_writer_.WriteShort(frame_size.height());
+  gif_file_writer_.WriteShort(rgb_video_frame.width());
+  gif_file_writer_.WriteShort(rgb_video_frame.height());
 
   // Write the Image Descriptor bitfields such that we specify that we're using
   // a non-sorted, non-interlaced local color table of size 2 ^ color_bit_depth
@@ -396,9 +405,9 @@ void GifEncoder::WriteColorPalette(uint8_t color_bit_depth) {
   const size_t end = std::min(table_size, color_palette_.size());
   for (size_t i = 0; i < end; ++i) {
     const auto& color = color_palette_[i];
-    gif_file_writer_.WriteByte(SkColorGetR(color));
-    gif_file_writer_.WriteByte(SkColorGetG(color));
-    gif_file_writer_.WriteByte(SkColorGetB(color));
+    gif_file_writer_.WriteByte(color.r);
+    gif_file_writer_.WriteByte(color.g);
+    gif_file_writer_.WriteByte(color.b);
   }
 
   // The color table size that we write to the GIF file has to be a multiple of

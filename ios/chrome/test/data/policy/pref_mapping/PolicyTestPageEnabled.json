@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy_test_page_enabled": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "PolicyTestPageEnabled": true
+        },
+        "prefs": {
+          "policy_test_page_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PolicyTestPageEnabled": false
+        },
+        "prefs": {
+          "policy_test_page_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

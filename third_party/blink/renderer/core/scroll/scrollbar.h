@@ -110,7 +110,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   virtual void OffsetDidChange(mojom::blink::ScrollType scroll_type);
 
   virtual void DisconnectFromScrollableArea();
-  ScrollableArea* GetScrollableArea() const { return scrollable_area_; }
+  ScrollableArea* GetScrollableArea() const { return scrollable_area_.Get(); }
 
   int PressedPos() const { return pressed_pos_; }
 
@@ -129,6 +129,7 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
   // IsPlatformOverlayScrollbar() but we don't bother it because
   // overflow:overlay might be deprecated soon.
   virtual bool IsOverlayScrollbar() const;
+  virtual bool IsFluentOverlayScrollbarMinimalMode() const;
 
   bool ShouldParticipateInHitTesting();
 
@@ -206,12 +207,15 @@ class CORE_EXPORT Scrollbar : public GarbageCollected<Scrollbar>,
 
   float EffectiveZoom() const;
   bool ContainerIsRightToLeft() const;
+  bool ContainerIsFormControl() const;
 
   // scrollbar-width CSS property
   EScrollbarWidth CSSScrollbarWidth() const;
   // scrollbar-color CSS property
   absl::optional<blink::Color> ScrollbarThumbColor() const;
   absl::optional<blink::Color> ScrollbarTrackColor() const;
+
+  virtual bool IsOpaque() const;
 
   // The LayoutObject that supplies our style information. If the scrollbar is
   // for a document, this is:

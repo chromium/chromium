@@ -4,42 +4,18 @@
 
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_forwarder.h"
 
-#include <cstdint>
-#include <string>
 #include <utility>
 
-#include "base/check.h"
-#include "base/functional/bind.h"
 #include "chrome/browser/ash/telemetry_extension/events/telemetry_event_service_converters.h"
-#include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
-#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
 CrosHealthdEventForwarder::CrosHealthdEventForwarder(
-    crosapi::mojom::TelemetryEventCategoryEnum category,
-    base::OnceCallback<void(CrosHealthdEventForwarder*)> on_disconnect,
-    mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> crosapi_remote)
-    : category_(category),
-      deleter_callback_(std::move(on_disconnect)),
-      crosapi_observer_(std::move(crosapi_remote)),
-      cros_healthd_receiver_(this) {
-  cros_healthd::ServiceConnection::GetInstance()
-      ->GetEventService()
-      ->AddEventObserver(converters::events::Convert(category),
-                         cros_healthd_receiver_.BindNewPipeAndPassRemote());
-
-  cros_healthd_receiver_.set_disconnect_with_reason_handler(
-      base::BindOnce(&CrosHealthdEventForwarder::OnCrosHealthdDisconnect,
-                     weak_factory.GetWeakPtr()));
-
-  crosapi_observer_.set_disconnect_handler(
-      base::BindOnce(&CrosHealthdEventForwarder::OnCrosapiDisconnect,
-                     weak_factory.GetWeakPtr()));
-}
+    mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> crosapi_remote,
+    crosapi::mojom::TelemetryEventCategoryEnum category)
+    : category_(category), remote_(std::move(crosapi_remote)) {}
 
 CrosHealthdEventForwarder::~CrosHealthdEventForwarder() = default;
 
@@ -49,43 +25,43 @@ void CrosHealthdEventForwarder::OnEvent(
   switch (category_) {
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton: {
       if (event->is_touchpad_button_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch: {
       if (event->is_touchpad_touch_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected: {
       if (event->is_touchpad_connected_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenTouch: {
       if (event->is_touchscreen_touch_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kTouchscreenConnected: {
       if (event->is_touchscreen_connected_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusTouch: {
       if (event->is_stylus_touch_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusConnected: {
       if (event->is_stylus_connected_event_info()) {
-        crosapi_observer_->OnEvent(std::move(event));
+        remote_->OnEvent(std::move(event));
       }
       return;
     }
@@ -97,7 +73,7 @@ void CrosHealthdEventForwarder::OnEvent(
     case crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage:
     case crosapi::mojom::TelemetryEventCategoryEnum::kExternalDisplay: {
-      crosapi_observer_->OnEvent(std::move(event));
+      remote_->OnEvent(std::move(event));
       return;
     }
     case crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField: {
@@ -107,22 +83,9 @@ void CrosHealthdEventForwarder::OnEvent(
   }
 }
 
-void CrosHealthdEventForwarder::OnCrosHealthdDisconnect(
-    uint32_t custom_reason,
-    const std::string& description) {
-  crosapi_observer_.ResetWithReason(custom_reason, description);
-  CallDeleter();
-}
-
-void CrosHealthdEventForwarder::OnCrosapiDisconnect() {
-  cros_healthd_receiver_.reset();
-  CallDeleter();
-}
-
-void CrosHealthdEventForwarder::CallDeleter() {
-  DCHECK(deleter_callback_) << "The connection has been reset twice";
-  // After calling `deleter_callback_`, this is destroyed.
-  std::move(deleter_callback_).Run(this);
+mojo::Remote<crosapi::mojom::TelemetryEventObserver>&
+CrosHealthdEventForwarder::GetRemote() {
+  return remote_;
 }
 
 }  // namespace ash

@@ -37,14 +37,18 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SpareChildConnectionTest {
-    @Mock
-    private ChildProcessConnection.ServiceCallback mServiceCallback;
+    @Mock private ChildProcessConnection.ServiceCallback mServiceCallback;
 
     // A connection allocator not used to create connections.
     private final ChildConnectionAllocator mWrongConnectionAllocator =
-            ChildConnectionAllocator.createFixedForTesting(null, "org.chromium.test",
-                    "TestServiceName", 3 /* serviceCount */, false /* bindToCaller */,
-                    false /* bindAsExternalService */, false /* useStrongBinding */);
+            ChildConnectionAllocator.createFixedForTesting(
+                    null,
+                    "org.chromium.test",
+                    "TestServiceName",
+                    /* serviceCount= */ 3,
+                    /* bindToCaller= */ false,
+                    /* bindAsExternalService= */ false,
+                    /* useStrongBinding= */ false);
 
     // The allocator used to allocate the actual connection.
     private ChildConnectionAllocator mConnectionAllocator;
@@ -54,13 +58,19 @@ public class SpareChildConnectionTest {
         private TestChildProcessConnection mConnection;
 
         @Override
-        public ChildProcessConnection createConnection(Context context, ComponentName serviceName,
-                ComponentName fallbackServiceName, boolean bindToCaller,
-                boolean bindAsExternalService, Bundle serviceBundle, String instanceName) {
+        public ChildProcessConnection createConnection(
+                Context context,
+                ComponentName serviceName,
+                ComponentName fallbackServiceName,
+                boolean bindToCaller,
+                boolean bindAsExternalService,
+                Bundle serviceBundle,
+                String instanceName) {
             // We expect to create only one connection in these tests.
             assert mConnection == null;
-            mConnection = new TestChildProcessConnection(
-                    serviceName, bindToCaller, bindAsExternalService, serviceBundle);
+            mConnection =
+                    new TestChildProcessConnection(
+                            serviceName, bindToCaller, bindAsExternalService, serviceBundle);
             return mConnection;
         }
 
@@ -75,7 +85,8 @@ public class SpareChildConnectionTest {
         public void simulateConnectionDied() {
             mConnection.getServiceCallback().onChildProcessDied(mConnection);
         }
-    };
+    }
+    ;
 
     private final TestConnectionFactory mTestConnectionFactory = new TestConnectionFactory();
 
@@ -89,13 +100,19 @@ public class SpareChildConnectionTest {
         // asserts are not triggered.
         LauncherThread.setCurrentThreadAsLauncherThread();
 
-        mConnectionAllocator = ChildConnectionAllocator.createFixedForTesting(null,
-                "org.chromium.test.spare_connection", "TestServiceName", 5 /* serviceCount */,
-                false /* bindToCaller */, false /* bindAsExternalService */,
-                false /* useStrongBinding */);
+        mConnectionAllocator =
+                ChildConnectionAllocator.createFixedForTesting(
+                        null,
+                        "org.chromium.test.spare_connection",
+                        "TestServiceName",
+                        /* serviceCount= */ 5,
+                        /* bindToCaller= */ false,
+                        /* bindAsExternalService= */ false,
+                        /* useStrongBinding= */ false);
         mConnectionAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
-        mSpareConnection = new SpareChildConnection(
-                null /* context */, mConnectionAllocator, null /* serviceBundle */);
+        mSpareConnection =
+                new SpareChildConnection(
+                        /* context= */ null, mConnectionAllocator, /* serviceBundle= */ null);
     }
 
     @After

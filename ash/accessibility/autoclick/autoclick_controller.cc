@@ -304,6 +304,9 @@ void AutoclickController::HandleAutoclickScrollableBoundsFound(
     return;
   menu_bubble_controller_->SetScrollPosition(bounds_in_screen,
                                              scroll_location_);
+  if (scrollable_bounds_callback_for_testing_) {
+    scrollable_bounds_callback_for_testing_.Run(bounds_in_screen);
+  }
 }
 
 void AutoclickController::UpdateAutoclickMenuBoundsIfNeeded() {

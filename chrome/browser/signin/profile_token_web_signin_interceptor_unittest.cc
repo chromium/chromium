@@ -143,8 +143,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
-      AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
+      AccountInfo(), SkColor(), /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/true);
 
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
@@ -174,8 +173,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
                                       ->GetNumberOfProfiles();
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
-      AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
+      AccountInfo(), SkColor(), /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
@@ -204,8 +202,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
                                       ->GetNumberOfProfiles();
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kEnterprise, AccountInfo(),
-      AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
+      AccountInfo(), SkColor(), /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/true);
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(
                               _, MatchBubbleParameters(expected_parameters), _))
@@ -241,8 +238,7 @@ TEST_F(ProfileTokenWebSigninInterceptorTest,
 
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
       WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
-      AccountInfo(), AccountInfo(), SkColor(), /*show_guest_option=*/false,
-      /*show_link_data_option=*/false,
+      AccountInfo(), AccountInfo(), SkColor(), /*show_link_data_option=*/false,
       /*show_managed_disclaimer=*/true);
 
   EXPECT_CALL(*delegate_, ShowSigninInterceptionBubble(

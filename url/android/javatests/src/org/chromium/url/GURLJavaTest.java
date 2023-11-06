@@ -30,8 +30,7 @@ import java.net.URISyntaxException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class GURLJavaTest {
-    @Mock
-    GURL.Natives mGURLMocks;
+    @Mock GURL.Natives mGURLMocks;
 
     @Before
     public void setUp() {
@@ -159,45 +158,47 @@ public class GURLJavaTest {
     @SuppressWarnings(value = "AuthLeak")
     public void testSerialization() {
         GURL cases[] = {
-                // Common Standard URLs.
-                new GURL("https://www.google.com"),
-                new GURL("https://www.google.com/"),
-                new GURL("https://www.google.com/maps.htm"),
-                new GURL("https://www.google.com/maps/"),
-                new GURL("https://www.google.com/index.html"),
-                new GURL("https://www.google.com/index.html?q=maps"),
-                new GURL("https://www.google.com/index.html#maps/"),
-                new GURL("https://foo:bar@www.google.com/maps.htm"),
-                new GURL("https://www.google.com/maps/au/index.html"),
-                new GURL("https://www.google.com/maps/au/north"),
-                new GURL("https://www.google.com/maps/au/north/"),
-                new GURL("https://www.google.com/maps/au/index.html?q=maps#fragment/"),
-                new GURL("http://www.google.com:8000/maps/au/index.html?q=maps#fragment/"),
-                new GURL("https://www.google.com/maps/au/north/?q=maps#fragment"),
-                new GURL("https://www.google.com/maps/au/north?q=maps#fragment"),
-                // Less common standard URLs.
-                new GURL("filesystem:http://www.google.com/temporary/bar.html?baz=22"),
-                new GURL("file:///temporary/bar.html?baz=22"),
-                new GURL("ftp://foo/test/index.html"),
-                new GURL("gopher://foo/test/index.html"),
-                new GURL("ws://foo/test/index.html"),
-                // Non-standard,
-                new GURL("chrome://foo/bar.html"),
-                new GURL("httpa://foo/test/index.html"),
-                new GURL("blob:https://foo.bar/test/index.html"),
-                new GURL("about:blank"),
-                new GURL("data:foobar"),
-                new GURL("scheme:opaque_data"),
-                // Invalid URLs.
-                new GURL("foobar"),
-                // URLs containing the delimiter
-                new GURL("https://www.google.ca/" + GURL.SERIALIZER_DELIMITER + ",foo"),
-                new GURL("https://www.foo" + GURL.SERIALIZER_DELIMITER + "bar.com"),
+            // Common Standard URLs.
+            new GURL("https://www.google.com"),
+            new GURL("https://www.google.com/"),
+            new GURL("https://www.google.com/maps.htm"),
+            new GURL("https://www.google.com/maps/"),
+            new GURL("https://www.google.com/index.html"),
+            new GURL("https://www.google.com/index.html?q=maps"),
+            new GURL("https://www.google.com/index.html#maps/"),
+            new GURL("https://foo:bar@www.google.com/maps.htm"),
+            new GURL("https://www.google.com/maps/au/index.html"),
+            new GURL("https://www.google.com/maps/au/north"),
+            new GURL("https://www.google.com/maps/au/north/"),
+            new GURL("https://www.google.com/maps/au/index.html?q=maps#fragment/"),
+            new GURL("http://www.google.com:8000/maps/au/index.html?q=maps#fragment/"),
+            new GURL("https://www.google.com/maps/au/north/?q=maps#fragment"),
+            new GURL("https://www.google.com/maps/au/north?q=maps#fragment"),
+            // Less common standard URLs.
+            new GURL("filesystem:http://www.google.com/temporary/bar.html?baz=22"),
+            new GURL("file:///temporary/bar.html?baz=22"),
+            new GURL("ftp://foo/test/index.html"),
+            new GURL("gopher://foo/test/index.html"),
+            new GURL("ws://foo/test/index.html"),
+            // Non-standard,
+            new GURL("chrome://foo/bar.html"),
+            new GURL("httpa://foo/test/index.html"),
+            new GURL("blob:https://foo.bar/test/index.html"),
+            new GURL("about:blank"),
+            new GURL("data:foobar"),
+            new GURL("scheme:opaque_data"),
+            // Invalid URLs.
+            new GURL("foobar"),
+            // URLs containing the delimiter
+            new GURL("https://www.google.ca/" + GURL.SERIALIZER_DELIMITER + ",foo"),
+            new GURL("https://www.foo" + GURL.SERIALIZER_DELIMITER + "bar.com"),
         };
 
         GURLJni.TEST_HOOKS.setInstanceForTesting(mGURLMocks);
-        doThrow(new RuntimeException("Should not re-initialize for deserialization when the "
-                        + "version hasn't changed."))
+        doThrow(
+                        new RuntimeException(
+                                "Should not re-initialize for deserialization when the "
+                                        + "version hasn't changed."))
                 .when(mGURLMocks)
                 .init(any(), any());
         for (GURL url : cases) {
@@ -215,36 +216,35 @@ public class GURLJavaTest {
     @Test
     public void testSerializationWithVersionSkew() {
         GURL url = new GURL("https://www.google.com");
-        String serialization = (GURL.SERIALIZER_VERSION + 1)
-                + ",0,0,0,0,foo,https://url.bad,blah,0,".replace(',', GURL.SERIALIZER_DELIMITER)
-                + url.getSpec();
+        String serialization =
+                (GURL.SERIALIZER_VERSION + 1)
+                        + ",0,0,0,0,foo,https://url.bad,blah,0,"
+                                .replace(',', GURL.SERIALIZER_DELIMITER)
+                        + url.getSpec();
         serialization = prependLengthToSerialization(serialization);
         GURL out = GURL.deserialize(serialization);
         deepAssertEquals(url, out);
     }
 
-    /**
-     * Tests that fields that aren't visible to java code are correctly serialized.
-     */
+    /** Tests that fields that aren't visible to java code are correctly serialized. */
     @SmallTest
     @Test
     public void testSerializationOfPrivateFields() {
-        String serialization = GURL.SERIALIZER_VERSION
-                + ",true,"
-                // Outer Parsed.
-                + "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,false,true,"
-                // Inner Parsed.
-                + "17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,true,false,"
-                + "chrome://foo/bar.html";
+        String serialization =
+                GURL.SERIALIZER_VERSION
+                        + ",true,"
+                        // Outer Parsed.
+                        + "1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,false,true,"
+                        // Inner Parsed.
+                        + "17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,true,false,"
+                        + "chrome://foo/bar.html";
         serialization = serialization.replace(',', GURL.SERIALIZER_DELIMITER);
         serialization = prependLengthToSerialization(serialization);
         GURL url = GURL.deserialize(serialization);
         Assert.assertEquals(url.serialize(), serialization);
     }
 
-    /**
-     * Tests serialized GURL truncated by storage.
-     */
+    /** Tests serialized GURL truncated by storage. */
     @SmallTest
     @Test
     public void testTruncatedDeserialization() {
@@ -254,9 +254,7 @@ public class GURLJavaTest {
         Assert.assertEquals(url, GURL.emptyGURL());
     }
 
-    /**
-     * Tests serialized GURL truncated by storage.
-     */
+    /** Tests serialized GURL truncated by storage. */
     @SmallTest
     @Test
     public void testCorruptedSerializations() {
@@ -288,6 +286,26 @@ public class GURLJavaTest {
         Assert.assertFalse(url1.domainIs("images.google.com"));
     }
 
+    // Test that replaceComponents is hooked up correctly.
+    @SmallTest
+    @Test
+    @SuppressWarnings(value = "AuthLeak")
+    public void testReplaceComponents() {
+        GURL url = new GURL("http://user:pass@google.com:99/foo;bar?q=a#ref");
+
+        GURL unchanged = url.replaceComponents(null, false, null, false);
+        Assert.assertEquals("user", unchanged.getUsername());
+        Assert.assertEquals("pass", unchanged.getPassword());
+
+        GURL cleared = url.replaceComponents(null, true, null, true);
+        Assert.assertTrue(cleared.getUsername().isEmpty());
+        Assert.assertTrue(cleared.getPassword().isEmpty());
+
+        GURL changed = url.replaceComponents("newusername", false, "newpassword", false);
+        Assert.assertEquals("newusername", changed.getUsername());
+        Assert.assertEquals("newpassword", changed.getPassword());
+    }
+
     // Tests Mojom conversion.
     @SmallTest
     @Test
@@ -306,7 +324,8 @@ public class GURLJavaTest {
         Assert.assertEquals("", new GURL(new String(new byte[] {1, 1, 1})).toMojom().url);
 
         // Too long.
-        Assert.assertEquals("",
+        Assert.assertEquals(
+                "",
                 new GURL("https://www.google.com/".concat("a".repeat(2 * 1024 * 1024)))
                         .toMojom()
                         .url);

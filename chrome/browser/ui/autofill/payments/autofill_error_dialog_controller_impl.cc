@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -27,7 +28,8 @@ void AutofillErrorDialogControllerImpl::Show(
 
   DCHECK(autofill_error_dialog_view_ == nullptr);
   error_dialog_context_ = autofill_error_dialog_context;
-  autofill_error_dialog_view_ = AutofillErrorDialogView::CreateAndShow(this);
+  autofill_error_dialog_view_ =
+      AutofillErrorDialogView::CreateAndShow(this, web_contents_);
 
   base::UmaHistogramEnumeration("Autofill.ErrorDialogShown",
                                 autofill_error_dialog_context.type);
@@ -117,10 +119,6 @@ const std::u16string AutofillErrorDialogControllerImpl::GetDescription() {
 const std::u16string AutofillErrorDialogControllerImpl::GetButtonLabel() {
   return l10n_util::GetStringUTF16(
       IDS_AUTOFILL_ERROR_DIALOG_NEGATIVE_BUTTON_LABEL);
-}
-
-content::WebContents* AutofillErrorDialogControllerImpl::GetWebContents() {
-  return web_contents_;
 }
 
 void AutofillErrorDialogControllerImpl::Dismiss() {

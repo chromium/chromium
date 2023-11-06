@@ -10,7 +10,7 @@
 #include "ui/aura/aura_export.h"
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 }
 
 namespace aura {

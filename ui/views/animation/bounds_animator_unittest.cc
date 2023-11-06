@@ -12,6 +12,8 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/animation/test_animation_delegate.h"
 #include "ui/views/view.h"
@@ -59,6 +61,8 @@ bool OwnedDelegate::deleted_ = false;
 bool OwnedDelegate::canceled_ = false;
 
 class TestView : public View {
+  METADATA_HEADER(TestView, View)
+
  public:
   TestView() = default;
 
@@ -83,6 +87,9 @@ class TestView : public View {
   gfx::Rect dirty_rect_;
   int repaint_count_ = 0;
 };
+
+BEGIN_METADATA(TestView)
+END_METADATA
 
 class RTLAnimationTestDelegate : public gfx::AnimationDelegate {
  public:

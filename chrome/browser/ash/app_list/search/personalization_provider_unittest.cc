@@ -86,7 +86,8 @@ class PersonalizationProviderTest : public testing::Test {
     app_service_proxy_->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
 
     // Insert dummy map values so that the stub_icon_loader knows of the app.
-    stub_icon_loader.timelines_by_app_id_[web_app::kPersonalizationAppId] = 1;
+    stub_icon_loader.update_version_by_app_id_[web_app::kPersonalizationAppId] =
+        1;
 
     mock_handler_ = std::make_unique<MockSearchHandler>();
     provider_ = std::make_unique<PersonalizationProvider>(profile_,

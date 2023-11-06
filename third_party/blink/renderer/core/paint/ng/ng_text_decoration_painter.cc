@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -15,7 +15,7 @@ namespace blink {
 
 NGTextDecorationPainter::NGTextDecorationPainter(
     NGTextPainter& text_painter,
-    const NGFragmentItem& text_item,
+    const FragmentItem& text_item,
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     const TextPaintStyle& text_style,
@@ -54,7 +54,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
           ? selection_->GetSelectionStyle().selection_text_decoration
           : absl::nullopt;
 
-  if (text_item_.Type() == NGFragmentItem::kSvgText &&
+  if (text_item_.Type() == FragmentItem::kSvgText &&
       paint_info_.IsRenderingResourceSubtree()) {
     // Need to recompute a scaled font and a scaling factor because they
     // depend on the scaling factor of an element referring to the text.
@@ -86,7 +86,7 @@ void NGTextDecorationPainter::UpdateDecorationInfo(
         decoration_rect.offset, decoration_rect.InlineSize(), style,
         text_painter_.InlineContext(), effective_selection_decoration,
         decoration_override, &text_item_.ScaledFont(),
-        MinimumThickness1(text_item_.Type() != NGFragmentItem::kSvgText));
+        MinimumThickness1(text_item_.Type() != FragmentItem::kSvgText));
   }
 }
 

@@ -10,7 +10,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace extensions {
@@ -56,7 +55,11 @@ class AppWindowFrameView : public views::NonClientFrameView {
   void SetResizeSizes(int resize_inside_bounds_size,
                       int resize_outside_bounds_size,
                       int resize_area_corner_size);
+  void SetFrameCornerRadius(int radius);
   int resize_inside_bounds_size() const { return resize_inside_bounds_size_; }
+
+ protected:
+  bool draw_frame() const { return draw_frame_; }
 
  private:
   // views::NonClientFrameView implementation.
@@ -98,6 +101,9 @@ class AppWindowFrameView : public views::NonClientFrameView {
 
   // Size in pixels of the lower-right corner resize handle.
   int resize_area_corner_size_ = 16;
+
+  // Radius for the top two corners of the frame.
+  int frame_corner_radius_ = 0;
 };
 
 }  // namespace apps

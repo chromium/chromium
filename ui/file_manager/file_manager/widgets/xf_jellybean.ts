@@ -8,14 +8,14 @@
  * @suppress{missingProperties}
  */
 
-import {util} from '../common/js/util.js';
+import {isCrosComponentsEnabled} from '../common/js/flags.js';
 
 import {customElement, html, XfBase} from './xf_base.js';
 
 @customElement('xf-jellybean')
 export class XfJellybean extends XfBase {
   override render() {
-    if (util.isCrosComponentsEnabled()) {
+    if (isCrosComponentsEnabled()) {
       return html`
         <slot name="jelly">
           Jelly
@@ -32,7 +32,7 @@ export class XfJellybean extends XfBase {
   override firstUpdated() {
     // Jellybean status does not change during runtime. We can cleanup the
     // unused variant.
-    const unusedElements = util.isCrosComponentsEnabled() ?
+    const unusedElements = isCrosComponentsEnabled() ?
         this.querySelectorAll('[slot="old"]') :
         this.querySelectorAll('[slot="jelly"]');
     unusedElements.forEach((el: Element) => el.remove());

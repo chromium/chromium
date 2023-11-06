@@ -64,9 +64,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for the "edit url" omnibox suggestion.
- */
+/** Unit tests for the "edit url" omnibox suggestion. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {EditUrlSuggestionProcessorUnitTest.ShadowSadTab.class})
 public final class EditUrlSuggestionProcessorUnitTest {
@@ -120,19 +118,26 @@ public final class EditUrlSuggestionProcessorUnitTest {
     public void setUp() {
         mJniMocker.mock(UkmRecorderJni.TEST_HOOKS, mUkmRecorderJniMock);
 
-        mOldClipboardManager = ((ClipboardImpl) Clipboard.getInstance())
-                                       .overrideClipboardManagerForTesting(mClipboardManager);
+        mOldClipboardManager =
+                ((ClipboardImpl) Clipboard.getInstance())
+                        .overrideClipboardManagerForTesting(mClipboardManager);
 
         mContext = ContextUtils.getApplicationContext();
-        mMatch = new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
-                         .setIsSearch(false)
-                         .setDisplayText(SEARCH_URL_1.getSpec())
-                         .setDescription(MATCH_TITLE)
-                         .setUrl(SEARCH_URL_1)
-                         .build();
+        mMatch =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setIsSearch(false)
+                        .setDisplayText(SEARCH_URL_1.getSpec())
+                        .setDescription(MATCH_TITLE)
+                        .setUrl(SEARCH_URL_1)
+                        .build();
 
-        mProcessor = new EditUrlSuggestionProcessor(
-                mContext, mSuggestionHost, mImageSupplier, mTabSupplier, mShareDelegateSupplier);
+        mProcessor =
+                new EditUrlSuggestionProcessor(
+                        mContext,
+                        mSuggestionHost,
+                        mImageSupplier,
+                        mTabSupplier,
+                        mShareDelegateSupplier);
         mModel = mProcessor.createModel();
 
         doReturn(mTab).when(mTabSupplier).get();
@@ -153,9 +158,10 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectNonMatchingUrlWhatYouTyped() {
-        var match = new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
-                            .setUrl(SEARCH_URL_1)
-                            .build();
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setUrl(SEARCH_URL_1)
+                        .build();
 
         // URLs don't match - this suggestion should be ignored.
         doReturn(SEARCH_URL_2).when(mTab).getUrl();
@@ -205,9 +211,10 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectSearchWhatYouTyped() {
-        var match = new AutocompleteMatchBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
-                            .setUrl(SEARCH_URL_1)
-                            .build();
+        var match =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
+                        .setUrl(SEARCH_URL_1)
+                        .build();
         // Suggestion should be rejected even though URLs match.
         when(mTab.getUrl()).thenReturn(SEARCH_URL_1);
         assertFalse(mProcessor.doesProcessSuggestion(match, 0));
@@ -220,7 +227,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
         assertEquals(3, mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).size());
         assertEquals(TAB_TITLE, mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
-        assertEquals(SEARCH_URL_1.getSpec(),
+        assertEquals(
+                SEARCH_URL_1.getSpec(),
                 mModel.get(SuggestionViewProperties.TEXT_LINE_2_TEXT).toString());
     }
 
@@ -233,14 +241,16 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void populateModel_substituteFallbackInformationForLoadingTab() {
-        mMatch = new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
-                         .setDisplayText(SEARCH_URL_1.getSpec())
-                         .setDescription("")
-                         .setUrl(SEARCH_URL_1)
-                         .build();
+        mMatch =
+                new AutocompleteMatchBuilder(OmniboxSuggestionType.URL_WHAT_YOU_TYPED)
+                        .setDisplayText(SEARCH_URL_1.getSpec())
+                        .setDescription("")
+                        .setUrl(SEARCH_URL_1)
+                        .build();
         doReturn(true).when(mTab).isLoading();
         mProcessor.populateModel(mMatch, mModel, 0);
-        assertEquals(mContext.getResources().getText(R.string.tab_loading_default_title),
+        assertEquals(
+                mContext.getResources().getText(R.string.tab_loading_default_title),
                 mModel.get(SuggestionViewProperties.TEXT_LINE_1_TEXT).toString());
     }
 
@@ -258,7 +268,8 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mProcessor.populateModel(mMatch, mModel, 0);
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
         verify(mSuggestionHost).finishInteraction();
-        verify(mShareDelegate, times(1)).share(mTab, /*shareDirectly=*/false, ShareOrigin.EDIT_URL);
+        verify(mShareDelegate, times(1))
+                .share(mTab, /* shareDirectly= */ false, ShareOrigin.EDIT_URL);
         // Note: UkmRecorder requires WebContents to report metrics.
         // In the even WebContents is not available, we should not interact with UkmRecorder.
         verifyNoMoreInteractions(mUkmRecorderJniMock);
@@ -272,7 +283,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
         mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS).get(ACTION_SHARE).callback.run();
         verify(mSuggestionHost).finishInteraction();
 
-        verify(mShareDelegate).share(mTab, /*shareDirectly=*/false, ShareOrigin.EDIT_URL);
+        verify(mShareDelegate).share(mTab, /* shareDirectly= */ false, ShareOrigin.EDIT_URL);
         verify(mUkmRecorderJniMock)
                 .recordEventWithBooleanMetric(
                         any(), eq("Omnibox.EditUrlSuggestion.Share"), eq("HasOccurred"));
@@ -308,8 +319,11 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
         // ClipData doesn't implement equals, but their string representations matching should be
         // good enough.
-        ClipData clip = new ClipData("url", new String[] {"text/x-moz-url", "text/plain"},
-                new ClipData.Item(SEARCH_URL_1.getSpec()));
+        ClipData clip =
+                new ClipData(
+                        "url",
+                        new String[] {"text/x-moz-url", "text/plain"},
+                        new ClipData.Item(SEARCH_URL_1.getSpec()));
         assertEquals(clip.toString(), argument.getValue().toString());
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

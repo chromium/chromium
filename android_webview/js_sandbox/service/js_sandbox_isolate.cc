@@ -303,7 +303,7 @@ class JsSandboxIsolate::InspectorClient final
   double currentTimeMS() override {
     // Note: although this is not monotonically increasing time, this reflects
     // the behaviour of Blink code.
-    return base::Time::Now().ToDoubleT() * 1000.0;
+    return base::Time::Now().InMillisecondsFSinceUnixEpoch();
   }
 
  private:

@@ -352,6 +352,10 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // Posts a task to invoke DestroySelf() ASAP.
   void ScheduleSelfDestruction();
 
+  void UpdateThreadIdsPostVerification(
+      base::flat_set<base::PlatformThreadId> thread_ids,
+      bool passed_verification);
+
   const raw_ptr<mojom::CompositorFrameSinkClient> client_;
 
   const raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;

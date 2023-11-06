@@ -10,12 +10,24 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
+#include "components/search/ntp_features.h"
 
 namespace autofill::autofill_metrics {
 
+namespace {
+bool ShouldBreakDownUsageFromHistoryCluster() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpHistoryClustersModuleDiscounts) ||
+         base::FeatureList::IsEnabled(commerce::kShowDiscountOnNavigation);
+}
+}  // namespace
+
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
-    bool is_reshow) {
+    bool is_reshow,
+    const GURL& url) {
   std::string histogram_name = "Autofill.OfferNotificationBubbleOffer.";
   // Switch to different sub-histogram depending on offer type being displayed.
   switch (offer_type) {
@@ -27,6 +39,10 @@ void LogOfferNotificationBubbleOfferMetric(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
+      if (ShouldBreakDownUsageFromHistoryCluster()) {
+        base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
+                                  commerce::UrlContainsDiscountUtmTag(url));
+      }
       break;
     case AutofillOfferData::OfferType::UNKNOWN:
       NOTREACHED();
@@ -36,7 +52,8 @@ void LogOfferNotificationBubbleOfferMetric(
 }
 
 void LogOfferNotificationBubblePromoCodeButtonClicked(
-    AutofillOfferData::OfferType offer_type) {
+    AutofillOfferData::OfferType offer_type,
+    const GURL& url) {
   std::string histogram_name =
       "Autofill.OfferNotificationBubblePromoCodeButtonClicked.";
   // Switch to different sub-histogram depending on offer type being displayed.
@@ -47,6 +64,10 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += "FreeListingCouponOffer";
+      if (ShouldBreakDownUsageFromHistoryCluster()) {
+        base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
+                                  commerce::UrlContainsDiscountUtmTag(url));
+      }
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
@@ -210,12 +231,17 @@ void LogSyncedOfferDataBeingValid(bool valid) {
   base::UmaHistogramBoolean("Autofill.Offer.SyncedOfferDataBeingValid", valid);
 }
 
-void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type) {
+void LogPageLoadsWithOfferIconShown(AutofillOfferData::OfferType offer_type,
+                                    const GURL& url) {
   std::string histogram_name = "Autofill.PageLoadsWithOfferIconShowing";
   // Switch to different sub-histogram depending on offer type being displayed.
   switch (offer_type) {
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       histogram_name += ".FreeListingCouponOffer";
+      if (ShouldBreakDownUsageFromHistoryCluster()) {
+        base::UmaHistogramBoolean(histogram_name + ".FromHistoryCluster",
+                                  commerce::UrlContainsDiscountUtmTag(url));
+      }
       break;
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
       histogram_name += "CardLinkedOffer";

@@ -340,13 +340,18 @@ bool MetafileSkia::SaveToFileDescriptor(int fd) const {
   std::vector<uint8_t> buffer(std::min(kMaximumBufferSize, asset->getLength()));
   do {
     size_t read_size = asset->read(&buffer[0], buffer.size());
-    if (read_size == 0u)
+    bool is_at_end = read_size < buffer.size();
+    if (read_size == 0u) {
       break;
+    }
     DCHECK_GE(buffer.size(), read_size);
     buffer.resize(read_size);
-    if (!base::WriteFileDescriptor(fd, buffer))
+    if (!base::WriteFileDescriptor(fd, buffer)) {
       return false;
-  } while (!asset->isAtEnd());
+    } else if (is_at_end) {
+      break;
+    }
+  } while (true);
 
   return true;
 }
@@ -362,14 +367,18 @@ bool MetafileSkia::SaveTo(base::File* file) const {
   std::vector<uint8_t> buffer(std::min(kMaximumBufferSize, asset->getLength()));
   do {
     size_t read_size = asset->read(&buffer[0], buffer.size());
-    if (read_size == 0)
+    bool is_at_end = read_size < buffer.size();
+    if (read_size == 0) {
       break;
+    }
     DCHECK_GE(buffer.size(), read_size);
     if (!file->WriteAtCurrentPosAndCheck(
             base::make_span(&buffer[0], read_size))) {
       return false;
+    } else if (is_at_end) {
+      break;
     }
-  } while (!asset->isAtEnd());
+  } while (true);
 
   return true;
 }

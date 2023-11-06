@@ -35,6 +35,13 @@ namespace blink {
 GCObservation::GCObservation(v8::Local<v8::Value> observed_value)
     : observed_(v8::Isolate::GetCurrent(), observed_value) {
   CHECK(!wasCollected());
+  if (observed_value->IsObject()) {
+    // If `observed_value` is an object, compute a hash for it which would
+    // exempt it from unmodified api object reclamation optimization in V8.
+    observed_value->ToObject(v8::Isolate::GetCurrent()->GetCurrentContext())
+        .ToLocalChecked()
+        ->GetIdentityHash();
+  }
   observed_.SetPhantom();
 }
 

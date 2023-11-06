@@ -6,13 +6,16 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/url_util.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -216,6 +219,11 @@ bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings() const {
          MitigationsEnabledFor3pcd();
 }
 
+bool CookieSettingsBase::ShouldConsider3pcdHeuristicsGrantsSettings() const {
+  return features::kTpcdReadHeuristicsGrants.Get() &&
+         MitigationsEnabledFor3pcd();
+}
+
 bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
     net::CookieSettingOverrides overrides) const {
   return overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible);
@@ -243,13 +251,24 @@ bool CookieSettingsBase::ShouldConsiderTopLevelStorageAccessGrants(
 
 CookieSettingsBase::CookieSettingWithMetadata
 CookieSettingsBase::GetCookieSettingInternal(
-    const GURL& url,
+    const GURL& request_url,
     const GURL& first_party_url,
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
     SettingInfo* info) const {
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
+      "ContentSettings.GetCookieSettingInternal.Duration");
+
+  // Apply http and https exceptions to ws and wss schemes.
+  const GURL* url = &request_url;
+  GURL websocket_mapped_url;
+  if (url->SchemeIsWSOrWSS()) {
+    websocket_mapped_url = net::ChangeWebSocketSchemeToHttpScheme(request_url);
+    url = &websocket_mapped_url;
+  }
+
   // Auto-allow in extensions or for WebUI embedding a secure origin.
-  if (ShouldAlwaysAllowCookies(url, first_party_url)) {
+  if (ShouldAlwaysAllowCookies(*url, first_party_url)) {
     return {/*cookie_setting=*/CONTENT_SETTING_ALLOW,
             /*third_party_blocking_scope=*/absl::nullopt,
             /*is_explicit_setting=*/false};
@@ -258,7 +277,7 @@ CookieSettingsBase::GetCookieSettingInternal(
   // First get any host-specific settings.
   SettingInfo setting_info;
   ContentSetting setting = GetContentSetting(
-      url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
+      *url, first_party_url, ContentSettingsType::COOKIES, &setting_info);
   if (info) {
     *info = setting_info;
   }
@@ -279,25 +298,30 @@ CookieSettingsBase::GetCookieSettingInternal(
   }
 
   if (block_third && ShouldConsider3pcdMetadataGrantsSettings() &&
-      IsAllowed(GetContentSetting(url, first_party_url,
+      IsAllowed(GetContentSetting(*url, first_party_url,
                                   ContentSettingsType::TPCD_METADATA_GRANTS))) {
     block_third = false;
     FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                    ACCESS_ALLOWED_3PCD_METADATA_GRANT);
+    if (info) {
+      info->source = SETTING_SOURCE_TPCD_GRANT;
+    }
   }
 
   if (block_third && ShouldConsider3pcdSupportSettings() &&
-      GetContentSetting(url, first_party_url,
+      GetContentSetting(*url, first_party_url,
                         ContentSettingsType::TPCD_SUPPORT) ==
           CONTENT_SETTING_ALLOW) {
     block_third = false;
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_3PCD);
+    if (info) {
+      info->source = SETTING_SOURCE_TPCD_GRANT;
+    }
   }
 
-  if (block_third &&
-      base::FeatureList::IsEnabled(net::features::kTpcdReadHeuristicsGrants) &&
-      GetContentSetting(url, first_party_url,
+  if (block_third && ShouldConsider3pcdHeuristicsGrantsSettings() &&
+      GetContentSetting(*url, first_party_url,
                         ContentSettingsType::TPCD_HEURISTICS_GRANTS) ==
           CONTENT_SETTING_ALLOW) {
     block_third = false;
@@ -309,7 +333,7 @@ CookieSettingsBase::GetCookieSettingInternal(
     bool has_storage_access_opt_in =
         ShouldConsiderStorageAccessGrants(overrides);
     bool has_storage_access_permission_grant =
-        IsAllowedByStorageAccessGrant(url, first_party_url);
+        IsAllowedByStorageAccessGrant(*url, first_party_url);
 
     net::cookie_util::FireStorageAccessInputHistogram(
         has_storage_access_opt_in, has_storage_access_permission_grant);
@@ -323,7 +347,7 @@ CookieSettingsBase::GetCookieSettingInternal(
 
     if (IsStorageAccessApiEnabled() &&
         ShouldConsiderTopLevelStorageAccessGrants(overrides) &&
-        GetContentSetting(url, first_party_url,
+        GetContentSetting(*url, first_party_url,
                           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS) ==
             CONTENT_SETTING_ALLOW) {
       block_third = false;

@@ -26,9 +26,9 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   }
 
   const CSSValue* GetNativeValue(const CSSPropertyID& property_id) {
-    Element* node = GetDocument().getElementById(AtomicString("target"));
+    Element* element = GetDocument().getElementById(AtomicString("target"));
     return CSSProperty::Get(property_id)
-        .CSSValueFromComputedStyle(node->ComputedStyleRef(),
+        .CSSValueFromComputedStyle(element->ComputedStyleRef(),
                                    nullptr /* layout_object */,
                                    false /* allow_visited_style */);
   }
@@ -43,7 +43,7 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
         GetDocument().documentElement());
   }
 
-  Node* PageNode() { return GetDocument().documentElement(); }
+  Element* RootElement() { return GetDocument().documentElement(); }
 
  private:
   Persistent<CSSComputedStyleDeclaration> declaration_;
@@ -55,11 +55,11 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, NativePropertyAccessors) {
   Vector<AtomicString> empty_custom_properties;
 
   UpdateAllLifecyclePhasesForTest();
-  Node* node = PageNode();
+  Element* element = RootElement();
 
   PrepopulatedComputedStylePropertyMap* map =
       MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
-          GetDocument(), node->ComputedStyleRef(), native_properties,
+          GetDocument(), element->ComputedStyleRef(), native_properties,
           empty_custom_properties);
 
   DummyExceptionStateForTesting exception_state;
@@ -95,11 +95,11 @@ TEST_F(PrepopulatedComputedStylePropertyMapTest, CustomPropertyAccessors) {
       {AtomicString("--foo"), AtomicString("--bar")});
 
   UpdateAllLifecyclePhasesForTest();
-  Node* node = PageNode();
+  Element* element = RootElement();
 
   PrepopulatedComputedStylePropertyMap* map =
       MakeGarbageCollected<PrepopulatedComputedStylePropertyMap>(
-          GetDocument(), node->ComputedStyleRef(), empty_native_properties,
+          GetDocument(), element->ComputedStyleRef(), empty_native_properties,
           custom_properties);
 
   DummyExceptionStateForTesting exception_state;

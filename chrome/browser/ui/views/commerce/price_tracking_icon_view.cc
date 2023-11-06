@@ -23,6 +23,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -315,6 +316,8 @@ bool PriceTrackingIconView::IsPriceTracking() const {
 bool PriceTrackingIconView::ShouldShowFirstUseExperienceBubble() const {
   return profile_->GetPrefs()->GetBoolean(
              prefs::kShouldShowPriceTrackFUEBubble) &&
+         !profile_->GetPrefs()->HasPrefPath(
+             commerce::kPriceEmailNotificationsEnabled) &&
          !IsPriceTracking();
 }
 

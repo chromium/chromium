@@ -27,13 +27,6 @@ void CopyNaClCommandLineArguments(base::CommandLine* cmd_line) {
     switches::kLoggingLevel,
     switches::kVerboseLoggingInNacl,
     switches::kNoErrorDialogs,
-#if BUILDFLAG(IS_APPLE)
-    sandbox::policy::switches::kEnableSandboxLogging,
-#endif
-#if BUILDFLAG(IS_WIN)
-    switches::kDisableHighResTimer,
-    switches::kRaiseTimerFrequency,
-#endif
   };
   cmd_line->CopySwitchesFrom(browser_command_line, kSwitchNames);
 }

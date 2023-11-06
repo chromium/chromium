@@ -435,7 +435,7 @@ void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
 
   promo_controller->EndPromo(
       feature_engagement::kIPHPasswordsAccountStorageFeature,
-      user_education::FeaturePromoCloseReason::kAbortPromo);
+      user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
 void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_view_transition_options.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -15,7 +16,6 @@
 
 namespace blink {
 class DOMViewTransition;
-class V8ViewTransitionCallback;
 
 class CORE_EXPORT ViewTransitionSupplement
     : public GarbageCollected<ViewTransitionSupplement>,
@@ -30,11 +30,21 @@ class CORE_EXPORT ViewTransitionSupplement
 
   // Creates and starts a same-document ViewTransition initiated using the
   // script API.
+  // With callback:
   static DOMViewTransition* startViewTransition(
       ScriptState*,
       Document&,
       V8ViewTransitionCallback* callback,
       ExceptionState&);
+  // With options
+  static DOMViewTransition* startViewTransition(ScriptState*,
+                                                Document&,
+                                                ViewTransitionOptions* options,
+                                                ExceptionState&);
+  // Without callback or options:
+  static DOMViewTransition* startViewTransition(ScriptState*,
+                                                Document&,
+                                                ExceptionState&);
 
   // Creates a ViewTransition to cache the state of a Document before a
   // navigation. The cached state is provided to the caller using the
@@ -79,9 +89,18 @@ class CORE_EXPORT ViewTransitionSupplement
   void WillInsertBody();
 
  private:
-  DOMViewTransition* StartTransition(Document& document,
-                                     V8ViewTransitionCallback* callback,
-                                     ExceptionState& exception_state);
+  static DOMViewTransition* StartViewTransitionInternal(
+      ScriptState*,
+      Document&,
+      V8ViewTransitionCallback* callback,
+      const absl::optional<Vector<String>>& types,
+      ExceptionState&);
+
+  DOMViewTransition* StartTransition(
+      Document& document,
+      V8ViewTransitionCallback* callback,
+      const absl::optional<Vector<String>>& types,
+      ExceptionState& exception_state);
   void StartTransition(Document& document,
                        ViewTransition::ViewTransitionStateCallback callback);
   void StartTransition(Document& document,

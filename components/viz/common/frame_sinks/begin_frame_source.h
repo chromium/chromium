@@ -397,6 +397,7 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   base::flat_set<BeginFrameObserver*> observers_;
   base::TimeTicks last_timebase_;
   absl::optional<base::TimeDelta> max_vrr_interval_ = absl::nullopt;
+  int vrr_tick_count_ = 0;
   BeginFrameArgs last_begin_frame_args_;
   BeginFrameArgsGenerator begin_frame_args_generator_;
 };

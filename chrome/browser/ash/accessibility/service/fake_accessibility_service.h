@@ -5,17 +5,22 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SERVICE_FAKE_ACCESSIBILITY_SERVICE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/accessibility/service/accessibility_service_router.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom.h"
+#include "services/accessibility/public/mojom/autoclick.mojom.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
+#include "services/accessibility/public/mojom/file_loader.mojom.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom-forward.h"
+#include "services/accessibility/public/mojom/speech_recognition.mojom.h"
 #include "services/accessibility/public/mojom/tts.mojom.h"
-#include "services/accessibility/public/mojom/user_interface.mojom-forward.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_event.h"
@@ -29,7 +34,8 @@ namespace ash {
 class FakeAccessibilityService
     : public ax::AccessibilityServiceRouter,
       public ax::mojom::Automation,
-      public ax::mojom::AssistiveTechnologyController {
+      public ax::mojom::AssistiveTechnologyController,
+      public ax::mojom::Autoclick {
  public:
   FakeAccessibilityService();
   FakeAccessibilityService(const FakeAccessibilityService&) = delete;
@@ -70,6 +76,10 @@ class FakeAccessibilityService
       const std::vector<ax::mojom::AssistiveTechnologyType>& enabled_features)
       override;
 
+  // In the service, V8 JS implements autoclick.
+  // ax::mojom::Autoclick:
+  void RequestScrollableBoundsForPoint(const gfx::Point& point) override;
+
   //
   // Methods for testing.
   //
@@ -77,8 +87,8 @@ class FakeAccessibilityService
   // Whether the service client remote is bound.
   bool IsBound() const;
 
-  // Waits for EnableAssistiveTechnology to be called.
-  void WaitForATChanged();
+  // Waits for EnableAssistiveTechnology to be called |count| times.
+  void WaitForATChangeCount(int count);
 
   // Gets the currently enabled assistive technology types.
   const std::set<ax::mojom::AssistiveTechnologyType>& GetEnabledATs() const {
@@ -90,6 +100,8 @@ class FakeAccessibilityService
   // Allows tests to bind APIs multiple times, mimicking multiple
   // V8 instances in the service.
   void BindAnotherAutomation();
+  void BindAnotherAutoclickClient();
+  void BindAnotherSpeechRecognition();
   void BindAnotherTts();
   void BindAnotherUserInterface();
 
@@ -102,6 +114,17 @@ class FakeAccessibilityService
 
   // Waits for Automation events to come in.
   void WaitForAutomationEvents();
+
+  //
+  // Methods to pretend a SpeechRecognition request came from the service.
+  //
+
+  void RequestSpeechRecognitionStart(
+      ax::mojom::StartOptionsPtr options,
+      base::OnceCallback<void(ax::mojom::SpeechRecognitionStartInfoPtr)>
+          callback);
+  void RequestSpeechRecognitionStop(ax::mojom::StopOptionsPtr options,
+                                    base::OnceCallback<void()> callback);
 
   //
   // Methods to pretend a TTS request came from the service.
@@ -142,11 +165,19 @@ class FakeAccessibilityService
 
   void RequestOpenSettingsSubpage(const std::string& subpage);
 
+  void RequestShowConfirmationDialog(
+      const std::string& title,
+      const std::string& description,
+      const absl::optional<std::string>& cancel_name,
+      ax::mojom::UserInterface::ShowConfirmationDialogCallback callback);
+
   void RequestSetFocusRings(
       std::vector<ax::mojom::FocusRingInfoPtr> focus_rings,
       ax::mojom::AssistiveTechnologyType at_type);
 
   void RequestSetHighlights(const std::vector<gfx::Rect>& rects, SkColor color);
+
+  void RequestSetVirtualKeyboardVisible(bool is_visible);
 
   // Getters for automation events.
   std::vector<ui::AXTreeID> tree_destroyed_events() const {
@@ -162,7 +193,22 @@ class FakeAccessibilityService
     return location_changes_;
   }
 
+  // Loads a file indicated by |relative_path|, which must be a relative path.
+  // The base path used to load paths from is the base accessibility resources
+  // directory in ChromeOS. |callback| runs when the operation is completed.
+  void RequestLoadFile(
+      base::FilePath relative_path,
+      ax::mojom::AccessibilityFileLoader::LoadCallback callback);
+
+  void set_autoclick_scrollable_bounds(const gfx::Rect& bounds) {
+    autoclick_scrollable_bounds_ = bounds;
+  }
+
  private:
+  // Emulates V8 getting the autoclick receiver in the service process.
+  void OnAutoclickBoundCallback(
+      mojo::PendingReceiver<ax::mojom::Autoclick> autoclick_receiver);
+
   base::OnceClosure change_ATs_closure_;
   std::set<ax::mojom::AssistiveTechnologyType> enabled_ATs_;
   base::OnceClosure automation_events_closure_;
@@ -172,11 +218,20 @@ class FakeAccessibilityService
   std::vector<ui::AXTreeID> accessibility_events_;
   std::vector<ui::AXTreeID> location_changes_;
 
+  gfx::Rect autoclick_scrollable_bounds_;
+
   std::map<ax::mojom::AssistiveTechnologyType, int> connect_devtools_counts;
+
+  // Number of times ATs changed state.
+  int at_change_count_ = 0;
+  int expected_count_ = 0;
 
   mojo::AssociatedReceiverSet<ax::mojom::Automation> automation_receivers_;
   mojo::RemoteSet<ax::mojom::AutomationClient> automation_client_remotes_;
 
+  mojo::RemoteSet<ax::mojom::SpeechRecognition> sr_remotes_;
+  mojo::RemoteSet<ax::mojom::AutoclickClient> autoclick_client_remotes_;
+  mojo::ReceiverSet<ax::mojom::Autoclick> autoclick_receivers_;
   mojo::RemoteSet<ax::mojom::Tts> tts_remotes_;
   mojo::RemoteSet<ax::mojom::UserInterface> ux_remotes_;
 
@@ -184,6 +239,7 @@ class FakeAccessibilityService
       at_controller_receivers_;
   mojo::Remote<ax::mojom::AccessibilityServiceClient>
       accessibility_service_client_remote_;
+  mojo::Remote<ax::mojom::AccessibilityFileLoader> file_loader_remote_;
 };
 
 }  // namespace ash

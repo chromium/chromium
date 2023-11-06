@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/version.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace ash {
@@ -29,6 +30,12 @@ bool IsCloudGamingDevice();
 // Whether the demo device has additional features enabled by the feature
 // management module.
 bool IsFeatureAwareDevice();
+
+// The demo mode app component version.
+base::Version AppVersion();
+
+// The demo mode resources component version.
+base::Version ResourcesVersion();
 
 // Builds and returns a DemoModeDimensions proto from the individual dimension
 // values

@@ -6,6 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_MOCK_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace privacy_sandbox_test_util {
@@ -51,6 +52,10 @@ class MockPrivacySandboxSettings
                const url::Origin&,
                content::RenderFrameHost*),
               (override, const));
+  MOCK_METHOD(bool,
+              IsAttributionReportingTransitionalDebuggingAllowed,
+              (const url::Origin&, const url::Origin&),
+              (override, const));
   MOCK_METHOD(void,
               SetFledgeJoiningAllowed,
               (const std::string&, bool),
@@ -90,8 +95,8 @@ class MockPrivacySandboxSettings
               IsPrivateAggregationDebugModeAllowed,
               (const url::Origin&, const url::Origin&),
               (override, const));
-  MOCK_METHOD(bool,
-              IsCookieDeprecationExperimentCurrentlyEligible,
+  MOCK_METHOD(privacy_sandbox::TpcdExperimentEligibility,
+              GetCookieDeprecationExperimentCurrentEligibility,
               (),
               (override, const));
   MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (override, const));

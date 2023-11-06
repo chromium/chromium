@@ -145,7 +145,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
       continue;
     }
     candidates.emplace_back(page_node, false, page_node->IsVisible(),
-                            is_protected,
+                            is_protected, page_node->IsFocused(),
                             page_node->GetTimeSinceLastVisibilityChange());
   }
   // Sorts with ascending importance.
@@ -309,6 +309,11 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
 
   if (page_node->GetTimeSinceLastVisibilityChange() <
       minimum_time_in_background) {
+    return CanDiscardResult::kProtected;
+  }
+
+  // Don't discard pages that are displaying content in picture-in-picture.
+  if (page_node->HasPictureInPicture()) {
     return CanDiscardResult::kProtected;
   }
 

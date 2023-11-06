@@ -9,9 +9,10 @@ package manta.proto;
 
 enum FeatureName {
   reserved 1 to 4;
-  reserved 6 to 301, 303;
+  reserved 6 to 300, 303;
 
   IMAGE_TEST = 5;
+  CHROMEOS_WALLPAPER = 301;
   TEXT_TEST = 302;
 }
 
@@ -64,11 +65,13 @@ message Image {
 }
 
 message OutputData {
-  reserved 3, 4;
+  reserved 3, 4, 5;
   oneof output_data {
     string text = 1;
     Image image = 2;
   }
+
+  optional uint32 generation_seed = 6;
 }
 
 message Response {

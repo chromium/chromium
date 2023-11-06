@@ -59,8 +59,6 @@ SpeculationHostImpl::SpeculationHostImpl(
 
 SpeculationHostImpl::~SpeculationHostImpl() = default;
 
-// TODO(crbug/1384419): Add devtools_navigation_token to the preloading related
-// CDPs for Devtools.
 void SpeculationHostImpl::UpdateSpeculationCandidates(
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

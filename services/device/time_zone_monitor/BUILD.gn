@@ -18,6 +18,8 @@ source_set("time_zone_monitor") {
     "time_zone_monitor.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromecast_buildflags",
@@ -87,8 +89,8 @@ if (is_android) {
     sources = [ "android/java/src/org/chromium/device/time_zone_monitor/TimeZoneMonitor.java" ]
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

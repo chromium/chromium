@@ -4,9 +4,12 @@
 
 package org.chromium.components.permissions;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import android.graphics.Bitmap;
+
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -34,9 +37,6 @@ public class PermissionDialogDelegate {
     /** Text shown in the dialog. */
     private String mMessageText;
 
-    /** Optional secondary text shown in the dialog. */
-    private String mSecondaryText;
-
     /** Text shown on the primary button, e.g. "Allow". */
     private String mPrimaryButtonText;
 
@@ -60,10 +60,6 @@ public class PermissionDialogDelegate {
 
     public String getMessageText() {
         return mMessageText;
-    }
-
-    public String getSecondaryText() {
-        return mSecondaryText;
     }
 
     public String getPrimaryButtonText() {
@@ -111,41 +107,66 @@ public class PermissionDialogDelegate {
      */
     @CalledByNative
     private void dismissFromNative() {
+        assert mDialogController != null;
         mDialogController.dismissFromNative(this);
+    }
+
+    @CalledByNative
+    private void updateIcon(Bitmap icon) {
+        assert mDialogController != null;
+        mDialogController.updateIcon(icon);
+    }
+
+    @CalledByNative
+    private int getIconSizeInPx() {
+        assert mDialogController != null;
+        return mDialogController.getIconSizeInPx();
     }
 
     /**
      * Called from C++ by |nativeDelegatePtr| to instantiate this class.
      *
-     * @param nativeDelegatePtr     The native counterpart that this object owns.
-     * @param window                   The window to create the dialog for.
-     * @param contentSettingsTypes  The content settings types requested by this dialog.
-     * @param iconId                The id of the icon to display in the dialog.
-     * @param message               The message to display in the dialog.
-     * @param secondaryText         The secondary text to display in the dialog bellow the message.
-     * @param primaryTextButton     The text to display on the primary button.
-     * @param secondaryTextButton   The text to display on the primary button.
+     * @param nativeDelegatePtr The native counterpart that this object owns.
+     * @param window The window to create the dialog for.
+     * @param contentSettingsTypes The content settings types requested by this dialog.
+     * @param iconId The id of the icon to display in the dialog.
+     * @param message The message to display in the dialog.
+     * @param primaryTextButton The text to display on the primary button.
+     * @param secondaryTextButton The text to display on the primary button.
      */
     @CalledByNative
-    private static PermissionDialogDelegate create(long nativeDelegatePtr, WindowAndroid window,
-            int[] contentSettingsTypes, int iconId, String message, String secondaryText,
-            String primaryButtonText, String secondaryButtonText) {
-        return new PermissionDialogDelegate(nativeDelegatePtr, window, contentSettingsTypes, iconId,
-                message, secondaryText, primaryButtonText, secondaryButtonText);
+    private static PermissionDialogDelegate create(
+            long nativeDelegatePtr,
+            WindowAndroid window,
+            int[] contentSettingsTypes,
+            int iconId,
+            String message,
+            String primaryButtonText,
+            String secondaryButtonText) {
+        return new PermissionDialogDelegate(
+                nativeDelegatePtr,
+                window,
+                contentSettingsTypes,
+                iconId,
+                message,
+                primaryButtonText,
+                secondaryButtonText);
     }
 
-    /**
-     * Upon construction, this class takes ownership of the passed in native delegate.
-     */
-    private PermissionDialogDelegate(long nativeDelegatePtr, WindowAndroid window,
-            int[] contentSettingsTypes, int iconId, String message, String secondaryText,
-            String primaryButtonText, String secondaryButtonText) {
+    /** Upon construction, this class takes ownership of the passed in native delegate. */
+    private PermissionDialogDelegate(
+            long nativeDelegatePtr,
+            WindowAndroid window,
+            int[] contentSettingsTypes,
+            int iconId,
+            String message,
+            String primaryButtonText,
+            String secondaryButtonText) {
         mNativeDelegatePtr = nativeDelegatePtr;
         mWindow = window;
         mContentSettingsTypes = contentSettingsTypes;
         mDrawableId = iconId;
         mMessageText = message;
-        mSecondaryText = secondaryText;
         mPrimaryButtonText = primaryButtonText;
         mSecondaryButtonText = secondaryButtonText;
     }

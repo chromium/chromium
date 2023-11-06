@@ -152,6 +152,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "open_in_new.icon",
     "open_in_new_chrome_refresh.icon",
     "open_in_new_off_chrome_refresh.icon",
+    "overflow_button.icon",
+    "overflow_button_touch.icon",
     "overflow_chevron.icon",
     "paintbrush.icon",
     "palette.icon",

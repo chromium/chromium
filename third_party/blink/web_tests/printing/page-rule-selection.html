@@ -19,53 +19,6 @@
     if (window.testRunner) {
         testRunner.dumpAsText();
 
-        debug("Default margin is auto.");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "auto");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "auto");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "auto");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "auto");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "auto");
-
-        debug("Set margin to 100px.");
-        appendStyle("@page { margin:100px; }");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "100");
-
-        debug("Set margin for right pages to 50px. The first page is a right page.");
-        appendStyle("@page :right { margin:50px; }");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "100");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "50");
-
-        debug("Set margin for left pages to 75px.");
-        appendStyle("@page :left { margin:75px; }");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "75");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "75");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "50");
-
-        debug("Set margin for the first page to 125px.");
-        appendStyle("@page :first { margin:125px; }");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "125");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "75");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "75");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "50");
-
-        debug("Change the document direction to RTL. This makes the first page a left page.");
-        document.getElementById("html_element").setAttribute("dir", "rtl");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 0)", "125");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 1)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 2)", "75");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 3)", "50");
-        shouldBeEqualToString("internals.pageProperty('margin-left', 4)", "75");
-
         debug("Check font update and line height override.");
         appendStyle("@page { line-height:1em; }");
         appendStyle("@page { font-family:Futura; }");

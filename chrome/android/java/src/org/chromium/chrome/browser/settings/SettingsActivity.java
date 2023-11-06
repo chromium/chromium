@@ -16,7 +16,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -245,9 +244,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 getMainFragment() instanceof CustomDividerFragment
                         ? (CustomDividerFragment) getMainFragment()
                         : null;
-        mItemDecoration =
-                new PaddedItemDecorationWithDivider(
-                        getItemOffsets(mUiConfig.getCurrentDisplayStyle()));
+        Supplier<Integer> itemOffsetSupplier =
+                () -> getItemOffset(mUiConfig.getCurrentDisplayStyle());
+        mItemDecoration = new PaddedItemDecorationWithDivider(itemOffsetSupplier);
         Drawable dividerDrawable = getDividerDrawable();
         // Early return if (a)Fragment implements CustomDividerFragment and explicitly don't
         // want a divider OR (b) dividerDrawable not defined.
@@ -273,29 +272,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     }
 
     @NonNull
-    private Pair<Integer, Integer> getItemOffsets(DisplayStyle displayStyle) {
+    private Integer getItemOffset(DisplayStyle displayStyle) {
         if (displayStyle.isWide()) {
-            int widePadding =
-                    ViewResizerUtil.computePaddingForWideDisplay(this, mMinWidePaddingPixels);
-            return new Pair(widePadding, widePadding);
-        } else {
-            // Default to preference item paddings (if view does not define padding) for
-            // non-wide display.
-            TypedArray paddingArray =
-                    getTheme()
-                            .obtainStyledAttributes(
-                                    new int[] {
-                                        R.attr.listPreferredItemPaddingStart,
-                                        R.attr.listPreferredItemPaddingEnd
-                                    });
-            try {
-                return new Pair(
-                        (int) paddingArray.getDimension(0, 0f),
-                        (int) paddingArray.getDimension(1, 0f));
-            } finally {
-                paddingArray.recycle();
-            }
+            return ViewResizerUtil.computePaddingForWideDisplay(this, mMinWidePaddingPixels);
         }
+        return 0;
     }
 
     private boolean hasPreferenceRecyclerView(RecyclerView recyclerView) {
@@ -318,11 +299,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     }
                 }, (ViewGroup) sheetContainer.getParent(), getColor(R.color.default_scrim_color));
 
-        // clang-format off
         mBottomSheetController = BottomSheetControllerFactory.createBottomSheetController(
                 () -> mScrim, (sheet) -> {}, getWindow(),
                 KeyboardVisibilityDelegate.getInstance(), () -> sheetContainer);
-        // clang-format on
 
         mBottomSheetControllerSupplier.set(mBottomSheetController);
     }
@@ -607,8 +586,11 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             AutofillOptionsCoordinator.createFor((AutofillOptionsFragment) fragment);
         }
         if (fragment instanceof TrackingProtectionSettings) {
-            ((TrackingProtectionSettings) fragment)
-                    .setTrackingProtectionDelegate(new ChromeTrackingProtectionDelegate(mProfile));
+            TrackingProtectionSettings tpFragment = ((TrackingProtectionSettings) fragment);
+            tpFragment.setTrackingProtectionDelegate(
+                    new ChromeTrackingProtectionDelegate(mProfile));
+            tpFragment.setCustomTabIntentHelper(
+                    LaunchIntentDispatcher::createCustomTabActivityIntent);
         }
     }
 
@@ -676,9 +658,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         if (hasPreferenceRecyclerView(recyclerView)) {
-            if (mItemDecoration != null) {
-                mItemDecoration.setItemOffsets(getItemOffsets(newDisplayStyle));
-            }
             // Invalidate decorations to reset.
             recyclerView.invalidateItemDecorations();
         }

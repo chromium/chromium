@@ -9,7 +9,6 @@ include_rules = [
   # Dependencies.
   "+base/cancelable_callback.h",
   "+base/containers/circular_deque.h",
-  "+base/strings/string_number_conversions.h",
   "+base/strings/utf_string_conversions.h",
   "+base/task/task_runner.h",
   "+base/threading/thread.h",
@@ -40,7 +39,6 @@ include_rules = [
 
 specific_include_rules = {
   ".*_unittest.*": [
-    "+base/strings/string_split.h",
     "+base/task/current_thread.h",
     "+base/threading/thread.h",
     "+components/viz/test",
@@ -48,7 +46,6 @@ specific_include_rules = {
     "+media/renderers",
     "+media/video/fake_gpu_memory_buffer.h",
     "+gin/v8_initializer.h",
-    "+mojo/core/embedder/embedder.h",
 
     # Allow test support dependencies.
     "+third_party/blink/renderer/platform/media/testing",

@@ -120,7 +120,6 @@ void TabLayer::SetProperties(int id,
                              bool anonymize_toolbar,
                              int toolbar_textbox_resource_id,
                              int toolbar_textbox_background_color,
-                             float toolbar_y_offset,
                              float content_offset) {
   if (alpha <= 0) {
     layer_->SetHideLayerAndSubtree(true);
@@ -192,7 +191,7 @@ void TabLayer::SetProperties(int id,
   toolbar_layer_->PushResource(
       toolbar_resource_id, toolbar_background_color, anonymize_toolbar,
       toolbar_textbox_background_color, toolbar_textbox_resource_id, 0,
-      toolbar_y_offset, false, false);
+      content_offset, false, false);
   toolbar_layer_->UpdateProgressBar(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   float toolbar_impact_height = 0;

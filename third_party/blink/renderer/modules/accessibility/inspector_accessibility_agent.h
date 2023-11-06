@@ -210,6 +210,8 @@ class MODULES_EXPORT InspectorAccessibilityAgent
       timers_;
 
   HeapHashMap<WeakMember<Document>, Vector<AXQuery>> queries_;
+
+  HeapHashSet<WeakMember<Document>> load_complete_needs_processing_;
 };
 
 }  // namespace blink

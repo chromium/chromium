@@ -12,9 +12,7 @@ import androidx.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-/**
- * TBD: Write more tests for the sample app
- */
+/** TBD: Write more tests for the sample app */
 @RunWith(AndroidJUnit4.class)
 public class CronetSampleTest {
     @Test

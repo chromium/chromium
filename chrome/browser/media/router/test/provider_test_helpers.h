@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
@@ -105,6 +107,21 @@ class TestDialURLFetcher : public DialURLFetcher {
                     const absl::optional<std::string>&,
                     int));
   void StartDownload() override;
+
+ private:
+  const raw_ptr<network::TestURLLoaderFactory> factory_;
+};
+
+class TestDeviceDescriptionFetcher : public DeviceDescriptionFetcher {
+ public:
+  TestDeviceDescriptionFetcher(
+      const DialDeviceData& device_data,
+      base::OnceCallback<void(const DialDeviceDescriptionData&)> success_cb,
+      base::OnceCallback<void(const std::string&)> error_cb,
+      network::TestURLLoaderFactory* factory);
+  ~TestDeviceDescriptionFetcher() override;
+
+  void Start() override;
 
  private:
   const raw_ptr<network::TestURLLoaderFactory> factory_;

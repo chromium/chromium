@@ -193,13 +193,13 @@ class GlProcessor : public ImageToTensorConverter {
 
           constexpr float kInputImageRangeMin = 0.0f;
           constexpr float kInputImageRangeMax = 1.0f;
-          ASSIGN_OR_RETURN(auto transform,
-                           GetValueRangeTransformation(kInputImageRangeMin,
-                                                       kInputImageRangeMax,
-                                                       range_min, range_max));
+          MP_ASSIGN_OR_RETURN(auto transform,
+                              GetValueRangeTransformation(
+                                  kInputImageRangeMin, kInputImageRangeMax,
+                                  range_min, range_max));
           auto tensor_view = output_tensor.GetOpenGlTexture2dWriteView();
           MP_RETURN_IF_ERROR(ExtractSubRect(input_texture, roi,
-                                            /*flip_horizontaly=*/false,
+                                            /*flip_horizontally=*/false,
                                             transform.scale, transform.offset,
                                             output_shape, &tensor_view));
           return absl::OkStatus();
@@ -210,7 +210,9 @@ class GlProcessor : public ImageToTensorConverter {
 
   absl::Status ExtractSubRect(const mediapipe::GlTexture& texture,
                               const RotatedRect& sub_rect,
-                              bool flip_horizontaly, float alpha, float beta,
+                              bool flip_horizontally,
+                              float alpha,
+                              float beta,
                               const Tensor::Shape& output_shape,
                               Tensor::OpenGlTexture2dView* output) {
     const int output_height = output_shape.dims[1];
@@ -263,13 +265,13 @@ class GlProcessor : public ImageToTensorConverter {
     ABSL_LOG_IF(FATAL, !gl_context) << "GlContext is not bound to the thread.";
     if (gl_context->GetGlVersion() == mediapipe::GlVersion::kGLES2) {
       GetTransposedRotatedSubRectToRectTransformMatrix(
-          sub_rect, texture.width(), texture.height(), flip_horizontaly,
+          sub_rect, texture.width(), texture.height(), flip_horizontally,
           &transform_mat);
       glUniformMatrix4fv(matrix_id_, 1, GL_FALSE, transform_mat.data());
     } else {
       GetRotatedSubRectToRectTransformMatrix(sub_rect, texture.width(),
-                                             texture.height(), flip_horizontaly,
-                                             &transform_mat);
+                                             texture.height(),
+                                             flip_horizontally, &transform_mat);
       glUniformMatrix4fv(matrix_id_, 1, GL_TRUE, transform_mat.data());
     }
 

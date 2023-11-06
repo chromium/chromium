@@ -33,7 +33,7 @@ void OriginTrialStateHostImpl::Create(
 }
 
 void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
-    base::flat_map<::blink::mojom::RuntimeFeatureState,
+    base::flat_map<::blink::mojom::RuntimeFeature,
                    ::blink::mojom::OriginTrialFeatureStatePtr>
         origin_trial_features) {
   // TODO(crbug.com/1377000): RuntimeFeatureState does not yet support
@@ -47,9 +47,8 @@ void OriginTrialStateHostImpl::ApplyFeatureDiffForOriginTrial(
     return;
   }
   // Perform security checks by ensuring the following:
-  base::flat_map<::blink::mojom::RuntimeFeatureState, bool>
-      validated_features{};
-  base::flat_map<::blink::mojom::RuntimeFeatureState, std::vector<std::string>>
+  base::flat_map<::blink::mojom::RuntimeFeature, bool> validated_features{};
+  base::flat_map<::blink::mojom::RuntimeFeature, std::vector<std::string>>
       possible_third_party_features{};
   for (const auto& feature_pair : origin_trial_features) {
     // Ensure the tokens we received are valid for this feature and origin.

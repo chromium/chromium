@@ -22,6 +22,7 @@
 #include "components/update_client/network.h"
 #include "components/update_client/task_traits.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_client_metrics.h"
 #include "components/update_client/url_fetcher_downloader.h"
 #include "components/update_client/utils.h"
 
@@ -30,6 +31,7 @@ namespace update_client {
 CrxDownloader::DownloadMetrics::DownloadMetrics()
     : downloader(kNone),
       error(0),
+      extra_code1(0),
       downloaded_bytes(-1),
       total_bytes(-1),
       download_time_ms(0) {}
@@ -51,8 +53,9 @@ GURL CrxDownloader::url() const {
 
 const std::vector<CrxDownloader::DownloadMetrics>
 CrxDownloader::download_metrics() const {
-  if (!successor_)
+  if (!successor_) {
     return download_metrics_;
+  }
 
   std::vector<DownloadMetrics> retval(successor_->download_metrics());
   retval.insert(retval.begin(), download_metrics_.begin(),
@@ -104,6 +107,7 @@ void CrxDownloader::OnDownloadComplete(
     const DownloadMetrics& download_metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  metrics::RecordCRXDownloadComplete(result.error);
   if (result.error) {
     main_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError, this,
@@ -121,8 +125,9 @@ void CrxDownloader::OnDownloadComplete(
           // the hash of the CRX does not match the |expected_hash|. The input
           // file is deleted in case of errors.
           [](const base::FilePath& filepath, const std::string& expected_hash) {
-            if (VerifyFileHash256(filepath, expected_hash))
+            if (VerifyFileHash256(filepath, expected_hash)) {
               return CrxDownloaderError::NONE;
+            }
             DeleteFileAndEmptyParentDirectory(filepath);
             return CrxDownloaderError::BAD_HASH;
           },
@@ -155,8 +160,9 @@ void CrxDownloader::OnDownloadProgress(int64_t downloaded_bytes,
                                        int64_t total_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_callback_.is_null())
+  if (progress_callback_.is_null()) {
     return;
+  }
 
   progress_callback_.Run(downloaded_bytes, total_bytes);
 }
@@ -191,6 +197,7 @@ void CrxDownloader::HandleDownloadError(
 
   // Try downloading using the next downloader.
   if (successor_ && !urls_.empty()) {
+    metrics::RecordCRXDownloaderFallback();
     successor_->StartDownload(urls_, expected_hash_,
                               std::move(download_callback_));
     return;

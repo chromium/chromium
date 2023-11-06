@@ -23,6 +23,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {getTemplate} from './app.html.js';
 import {SearchEngineChoice, SearchEngineChoiceBrowserProxy} from './browser_proxy.js';
+import {PageHandlerRemote} from './search_engine_choice.mojom-webui.js';
 
 export interface SearchEngineChoiceAppElement {
   $: {
@@ -30,6 +31,7 @@ export interface SearchEngineChoiceAppElement {
     infoDialog: CrDialogElement,
     searchEngineOmnibox: HTMLElement,
     submitButton: CrButtonElement,
+    infoLink: HTMLElement,
   };
 }
 
@@ -88,6 +90,12 @@ export class SearchEngineChoiceAppElement extends
   private selectedChoice_: string;
   private fakeOmniboxText_: string;
   private fakeOmniboxIconPath_: string;
+  private pageHandler_: PageHandlerRemote;
+
+  constructor() {
+    super();
+    this.pageHandler_ = SearchEngineChoiceBrowserProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -108,12 +116,13 @@ export class SearchEngineChoiceAppElement extends
     });
 
     afterNextRender(this, () => {
-      SearchEngineChoiceBrowserProxy.getInstance().handler.displayDialog();
+      this.pageHandler_.displayDialog();
     });
   }
 
   private onLinkClicked_() {
     this.$.infoDialog.showModal();
+    this.pageHandler_.handleLearnMoreLinkClicked();
   }
 
   private isSubmitButtonDisabled_() {
@@ -121,9 +130,8 @@ export class SearchEngineChoiceAppElement extends
   }
 
   private onSubmitClicked_() {
-    SearchEngineChoiceBrowserProxy.getInstance()
-        .handler.handleSearchEngineChoiceSelected(
-            parseInt(this.selectedChoice_));
+    this.pageHandler_.handleSearchEngineChoiceSelected(
+        parseInt(this.selectedChoice_));
   }
 
   private onInfoDialogButtonClicked_() {

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -457,9 +458,11 @@ std::u16string ErrorToString(int error_code) {
       break;
     default:
       // Render small error values as integers, and larger values as hex.
-      error_string = base::StringPrintf(
-          (error_code >= 0 && error_code < 65536) ? "%lu" : "0x%08lX",
-          static_cast<unsigned long>(error_code));
+      error_string =
+          (error_code >= 0 && error_code < 65536)
+              ? base::NumberToString(error_code)
+              : base::StringPrintf("0x%08lX",
+                                   static_cast<unsigned long>(error_code));
   }
 
   return base::UTF8ToUTF16(error_string);

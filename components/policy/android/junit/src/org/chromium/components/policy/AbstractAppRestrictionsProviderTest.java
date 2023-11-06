@@ -34,16 +34,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Robolectric test for AbstractAppRestrictionsProvider.
- */
+/** Robolectric test for AbstractAppRestrictionsProvider. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class AbstractAppRestrictionsProviderTest {
-    /**
-     * Minimal concrete class implementing AbstractAppRestrictionsProvider.
-     */
+    /** Minimal concrete class implementing AbstractAppRestrictionsProvider. */
     private class DummyAppRestrictionsProvider extends AbstractAppRestrictionsProvider {
         public DummyAppRestrictionsProvider(Context context) {
             super(context);
@@ -68,8 +64,12 @@ public class AbstractAppRestrictionsProviderTest {
         }
 
         @Override
-        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
-                String broadcastPermission, Handler scheduler, int flags) {
+        public Intent registerReceiver(
+                BroadcastReceiver receiver,
+                IntentFilter filter,
+                String broadcastPermission,
+                Handler scheduler,
+                int flags) {
             Intent intent =
                     super.registerReceiver(receiver, filter, broadcastPermission, scheduler, flags);
             mReceiverCount.getAndIncrement();
@@ -93,8 +93,11 @@ public class AbstractAppRestrictionsProviderTest {
         }
 
         @Override
-        public Intent registerReceiver(BroadcastReceiver receiver, IntentFilter filter,
-                String broadcastPermission, Handler scheduler) {
+        public Intent registerReceiver(
+                BroadcastReceiver receiver,
+                IntentFilter filter,
+                String broadcastPermission,
+                Handler scheduler) {
             Intent intent =
                     super.registerReceiver(receiver, filter, broadcastPermission, scheduler);
             mReceiverCount.getAndIncrement();
@@ -123,9 +126,7 @@ public class AbstractAppRestrictionsProviderTest {
         private AtomicInteger mLastRegisteredReceiverFlags;
     }
 
-    /**
-     * Test method for {@link AbstractAppRestrictionsProvider#refresh()}.
-     */
+    /** Test method for {@link AbstractAppRestrictionsProvider#refresh()}. */
     @Test
     public void testRefresh() {
         // We want to control precisely when background tasks run
@@ -156,9 +157,7 @@ public class AbstractAppRestrictionsProviderTest {
         verify(combinedProvider).onSettingsAvailable(0, b1);
     }
 
-    /**
-     * Test method for {@link AbstractAppRestrictionsProvider#startListeningForPolicyChanges()}.
-     */
+    /** Test method for {@link AbstractAppRestrictionsProvider#startListeningForPolicyChanges()}. */
     @Test
     public void testStartListeningForPolicyChanges() {
         DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());
@@ -184,9 +183,7 @@ public class AbstractAppRestrictionsProviderTest {
         }
     }
 
-    /**
-     * Test method for {@link AbstractAppRestrictionsProvider#stopListening()}.
-     */
+    /** Test method for {@link AbstractAppRestrictionsProvider#stopListening()}. */
     @Test
     public void testStopListening() {
         DummyContext dummyContext = new DummyContext(ApplicationProvider.getApplicationContext());

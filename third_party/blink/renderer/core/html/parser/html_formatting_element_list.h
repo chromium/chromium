@@ -60,7 +60,7 @@ class HTMLFormattingElementList {
 
     bool IsMarker() const { return !item_; }
 
-    HTMLStackItem* StackItem() const { return item_; }
+    HTMLStackItem* StackItem() const { return item_.Get(); }
     Element* GetElement() const {
       // The fact that !item_ == IsMarker() is an implementation detail callers
       // should check IsMarker() before calling GetElement().

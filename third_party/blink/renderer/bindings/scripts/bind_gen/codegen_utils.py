@@ -123,7 +123,7 @@ def collect_forward_decls_and_include_headers(idl_types):
                 "third_party/blink/renderer/platform/wtf/text/wtf_string.h")
         elif idl_type.is_typedef:
             pass
-        elif idl_type.is_void:
+        elif idl_type.is_undefined:
             pass
         elif idl_type.type_definition_object:
             type_def_obj = idl_type.type_definition_object

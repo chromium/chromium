@@ -30,6 +30,13 @@ enum {
   PATH_END
 };
 
+// Returns true if the user data directory has been initialized,
+// false otherwise.
+bool IsInitializedUserDataDir();
+
+// Signals that the user data directory has been initialized.
+void SetInitializedUserDataDir();
+
 // Call once to register the provide for the path keys defined above.
 void RegisterPathProvider();
 

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -144,6 +145,7 @@ void RecentDiskSource::OnReadDirectory(
     bool has_more) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(params_.has_value());
+  const std::u16string q16 = base::UTF8ToUTF16(params_->query());
 
   for (const auto& entry : entries) {
     // Ignore directories and files that start with dot.
@@ -161,6 +163,9 @@ void RecentDiskSource::OnReadDirectory(
       ScanDirectory(subpath, depth + 1);
     } else {
       if (!MatchesFileType(entry.name, params_.value().file_type())) {
+        continue;
+      }
+      if (!FileNameMatches(base::UTF8ToUTF16(entry.name.value()), q16)) {
         continue;
       }
       storage::FileSystemURL url = BuildDiskURL(subpath);

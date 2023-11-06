@@ -33,6 +33,8 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   bool is_horizontal_shelf() const { return is_horizontal_shelf_; }
   bool is_expanded() const { return is_expanded_; }
 
+  void SetDefaultChildToFocus(views::View* default_child_to_focus);
+
   // Calculate the width in horizontal alignment based on the screen size, and
   // the height in vertical alignment.
   int GetPreferredLength() const;
@@ -78,9 +80,20 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
 
   DeskButton* GetDeskButton() const;
 
-  void set_default_last_focusable_child(bool default_last_focusable_child) {
-    default_last_focusable_child_ = default_last_focusable_child;
-  }
+  // Returns the first focusable view within the widget with the context of
+  // LRT/RTL.
+  views::View* GetFirstFocusableView() const;
+
+  // Returns the last focusable view within the widget with the context of
+  // LRT/RTL.
+  views::View* GetLastFocusableView() const;
+
+  // Stores the current focused view for desk button widget.
+  void StoreDeskButtonFocus();
+
+  // Restores focus to the stored focused view of desk button widget if there is
+  // one.
+  void RestoreDeskButtonFocus();
 
  private:
   class DelegateView;
@@ -93,6 +106,8 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // before focusing out.
   void FocusOut(bool reverse);
 
+  bool IsChildFocusableView(views::View* view);
+
   // views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;
 
@@ -104,9 +119,16 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   bool is_horizontal_shelf_;
   bool is_expanded_;
 
-  // When true, the default focus of the desk button widget is the last
-  // focusable child.
-  bool default_last_focusable_child_ = false;
+  // Default child view to focus when `OnNativeWidgetActivationChanged()`
+  // occurs. When it's not null, it should point to the desk button, the
+  // previous desk button, or the next desk button.
+  raw_ptr<views::View, ExperimentalAsh> default_child_to_focus_ = nullptr;
+
+  // Stored focused view for the widget. This is used to restore the focus to
+  // the desk button when the desk bar is closed. When it's not null, it should
+  // point to the desk button, the previous desk button, or the next desk
+  // button.
+  raw_ptr<views::View, ExperimentalAsh> stored_focused_view_ = nullptr;
 };
 
 }  // namespace ash

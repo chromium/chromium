@@ -11,7 +11,7 @@
 
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   test::api::callbacks::ReturnsObject::Results::SomeObject some_object;
-  some_object.state = test::api::callbacks::ENUMERATION_FOO;
+  some_object.state = test::api::callbacks::Enumeration::kFoo;
   base::Value results(
       test::api::callbacks::ReturnsObject::Results::Create(some_object));
 
@@ -24,7 +24,7 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
 
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsMultipleResultCreate) {
   test::api::callbacks::ReturnsMultiple::Results::SomeObject some_object;
-  some_object.state = test::api::callbacks::ENUMERATION_FOO;
+  some_object.state = test::api::callbacks::Enumeration::kFoo;
   base::Value results(
       test::api::callbacks::ReturnsMultiple::Results::Create(5, some_object));
 

@@ -209,9 +209,6 @@ class ChromeContentRendererClient
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-  static mojo::AssociatedRemote<chrome::mojom::PluginInfoHost>&
-  GetPluginInfoHost();
-
   static blink::WebPlugin* CreatePlugin(
       content::RenderFrame* render_frame,
       const blink::WebPluginParams& params,

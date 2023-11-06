@@ -1,17 +1,31 @@
 This is a testharness.js-based test.
-FAIL "screenx=141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL " screenx = 141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL "screenx==141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL "\nscreenx= 141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL ",screenx=141,," should set left position of opened window assert_equals: expected 141 but got 0
-FAIL "SCREENX=141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL "screenX=141" should set left position of opened window assert_equals: expected 141 but got 0
-FAIL "screeny=142" should set top position of opened window assert_equals: expected 142 but got 0
-FAIL " screeny = 142" should set top position of opened window assert_equals: expected 142 but got 0
-FAIL "screeny==142" should set top position of opened window assert_equals: expected 142 but got 0
-FAIL "\nscreeny= 142" should set top position of opened window assert_equals: expected 142 but got 0
-FAIL ",screeny=142,," should set top position of opened window assert_equals: expected 142 but got 0
-FAIL "SCREENY=142" should set top position of opened window assert_equals: expected 142 but got 0
-FAIL "screenY=142" should set top position of opened window assert_equals: expected 142 but got 0
+[FAIL] "screenx=141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] " screenx = 141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "screenx==141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "\nscreenx= 141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] ",screenx=141,," should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "SCREENX=141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "screenX=141" should set left position of opened window
+  assert_equals: expected 141 but got 0
+[FAIL] "screeny=142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] " screeny = 142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "screeny==142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "\nscreeny= 142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] ",screeny=142,," should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "SCREENY=142" should set top position of opened window
+  assert_equals: expected 142 but got 0
+[FAIL] "screenY=142" should set top position of opened window
+  assert_equals: expected 142 but got 0
 Harness: the test ran to completion.
 

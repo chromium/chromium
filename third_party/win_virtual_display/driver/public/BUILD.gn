@@ -6,5 +6,11 @@
 # for this shared public file which is shared between the driver and client
 # code which * is * built with ninja.
 source_set("public") {
-  sources = [ "properties.h" ]
+  sources = [
+    "properties.cc",
+    "properties.h",
+  ]
+  deps = [
+    "//base",
+  ]
 }

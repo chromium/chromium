@@ -565,6 +565,8 @@ component("bluetooth") {
         "floss/floss_sdp_types.h",
         "floss/floss_socket_manager.cc",
         "floss/floss_socket_manager.h",
+        "floss/floss_version.cc",
+        "floss/floss_version.h",
         "floss/test_helpers.h",
       ]
       if (is_chromeos) {
@@ -691,10 +693,10 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//components/location/android:location_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

@@ -77,6 +77,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/gpu/graphite/Surface.h"
 #include "third_party/skia/include/private/chromium/GrDeferredDisplayList.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
 #include "ui/gfx/color_space.h"
@@ -1030,35 +1031,31 @@ bool SkiaOutputSurfaceImplOnGpu::FlushSurface(
     SkSurface* surface,
     std::vector<GrBackendSemaphore>& end_semaphores,
     gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
-    GrGpuFinishedProc finished_proc,
-    GrGpuFinishedContext finished_context) {
+    GrGpuFinishedProc ganesh_finished_proc,
+    GrGpuFinishedContext ganesh_finished_context,
+    skgpu::graphite::GpuFinishedProc graphite_finished_proc,
+    skgpu::graphite::GpuFinishedContext graphite_finished_context) {
   return FlushInternal(surface, end_semaphores, scoped_write_access,
-                       finished_proc, finished_context);
-}
-
-bool SkiaOutputSurfaceImplOnGpu::FlushContext(
-    std::vector<GrBackendSemaphore>& end_semaphores,
-    gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
-    GrGpuFinishedProc finished_proc,
-    GrGpuFinishedContext finished_context) {
-  return FlushInternal(/*surface=*/nullptr, end_semaphores, scoped_write_access,
-                       finished_proc, finished_context);
+                       ganesh_finished_proc, ganesh_finished_context,
+                       graphite_finished_proc, graphite_finished_context);
 }
 
 bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
     SkSurface* surface,
     std::vector<GrBackendSemaphore>& end_semaphores,
     gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_write_access,
-    GrGpuFinishedProc finished_proc,
-    GrGpuFinishedContext finished_context) {
+    GrGpuFinishedProc ganesh_finished_proc,
+    GrGpuFinishedContext ganesh_finished_context,
+    skgpu::graphite::GpuFinishedProc graphite_finished_proc,
+    skgpu::graphite::GpuFinishedContext graphite_finished_context) {
   gl::ScopedProgressReporter scoped_process_reporter(
       context_state_->progress_reporter());
   if (gr_context()) {
     GrFlushInfo flush_info;
     flush_info.fNumSemaphores = end_semaphores.size();
     flush_info.fSignalSemaphores = end_semaphores.data();
-    flush_info.fFinishedProc = finished_proc;
-    flush_info.fFinishedContext = finished_context;
+    flush_info.fFinishedProc = ganesh_finished_proc;
+    flush_info.fFinishedContext = ganesh_finished_context;
     gpu::AddVulkanCleanupTaskForSkiaFlush(vulkan_context_provider_,
                                           &flush_info);
     GrSemaphoresSubmitted flush_result =
@@ -1076,6 +1073,9 @@ bool SkiaOutputSurfaceImplOnGpu::FlushInternal(
   if (recording) {
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
+    info.fTargetSurface = surface;
+    info.fFinishedContext = graphite_finished_context;
+    info.fFinishedProc = graphite_finished_proc;
     return graphite_context()->insertRecording(info);
   }
   return false;
@@ -1122,18 +1122,20 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
             &mailbox_access_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
-    if (is_multiplane) {
-      // NOTE: For multiplanar SharedImage there is only one set of semaphores
-      // for all of the planes. Rather than waiting on one of the planes we wait
-      // on the context, which facilitates flushing later: we first flush the
-      // individual surfaces without signaling followed by flushing+signaling
-      // the context.
-      gr_context()->wait(mailbox_access_data.begin_semaphores.size(),
-                         mailbox_access_data.begin_semaphores.data());
-    } else {
-      SkSurface* dest_surface = scoped_write->surface();
-      dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
-                         mailbox_access_data.begin_semaphores.data());
+    if (gr_context()) {
+      if (is_multiplane) {
+        // NOTE: For multiplanar SharedImage there is only one set of semaphores
+        // for all of the planes. Rather than waiting on one of the planes we
+        // wait on the context, which facilitates flushing later: we first flush
+        // the individual surfaces without signaling followed by
+        // flushing+signaling the context.
+        gr_context()->wait(mailbox_access_data.begin_semaphores.size(),
+                           mailbox_access_data.begin_semaphores.data());
+      } else {
+        SkSurface* dest_surface = scoped_write->surface();
+        dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
+                           mailbox_access_data.begin_semaphores.data());
+      }
     }
 
     // Semaphores have already been populated in `mailbox_access_data`.
@@ -1178,18 +1180,20 @@ bool SkiaOutputSurfaceImplOnGpu::ImportSurfacesForNV12Planes(
             &mailbox_access_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
 
-    if (is_multiplane) {
-      // NOTE: For multiplanar SharedImage there is only one set of semaphores
-      // for all of the planes. Rather than waiting on one of the planes we wait
-      // on the context, which facilitates flushing later: we first flush the
-      // individual surfaces without signaling followed by flushing+signaling
-      // the context.
-      gr_context()->wait(mailbox_access_data.begin_semaphores.size(),
-                         mailbox_access_data.begin_semaphores.data());
-    } else {
-      SkSurface* dest_surface = scoped_write->surface();
-      dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
-                         mailbox_access_data.begin_semaphores.data());
+    if (gr_context()) {
+      if (is_multiplane) {
+        // NOTE: For multiplanar SharedImage there is only one set of semaphores
+        // for all of the planes. Rather than waiting on one of the planes we
+        // wait on the context, which facilitates flushing later: we first flush
+        // the individual surfaces without signaling followed by
+        // flushing+signaling the context.
+        gr_context()->wait(mailbox_access_data.begin_semaphores.size(),
+                           mailbox_access_data.begin_semaphores.data());
+      } else {
+        SkSurface* dest_surface = scoped_write->surface();
+        dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
+                           mailbox_access_data.begin_semaphores.data());
+      }
     }
 
     // Semaphores have already been populated in `mailbox_access_data`.
@@ -1218,7 +1222,6 @@ void SkiaOutputSurfaceImplOnGpu::BlendBitmapOverlays(
   }
 }
 
-// TODO(crbug.com/1452092): Make this path work with Graphite.
 void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     SkSurface* surface,
     copy_output::RenderPassGeometry geometry,
@@ -1305,6 +1308,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     if (!blit_target_image_rect.Contains(blit_destination_rect)) {
       // Send empty result, the blit target image is not large enough to fit the
       // results.
+      DVLOG(1) << "blit target image is not large enough to fit results";
       return;
     }
   } else {
@@ -1324,12 +1328,24 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
   }
 
   // Create a destination for the scaled & clipped result:
-  auto intermediate_surface = SkSurfaces::RenderTarget(
-      gr_context(), skgpu::Budgeted::kYes,
-      SkImageInfo::Make(gfx::SizeToSkISize(intermediate_dst_size),
-                        SkColorType::kRGBA_8888_SkColorType,
-                        SkAlphaType::kPremul_SkAlphaType,
-                        color_space.ToSkColorSpace()));
+  sk_sp<SkSurface> intermediate_surface;
+  if (gr_context()) {
+    intermediate_surface = SkSurfaces::RenderTarget(
+        gr_context(), skgpu::Budgeted::kYes,
+        SkImageInfo::Make(gfx::SizeToSkISize(intermediate_dst_size),
+                          SkColorType::kRGBA_8888_SkColorType,
+                          SkAlphaType::kPremul_SkAlphaType,
+                          color_space.ToSkColorSpace()));
+  } else {
+    CHECK(graphite_context());
+    intermediate_surface = SkSurfaces::RenderTarget(
+        graphite_recorder(),
+        SkImageInfo::Make(gfx::SizeToSkISize(intermediate_dst_size),
+                          SkColorType::kRGBA_8888_SkColorType,
+                          SkAlphaType::kPremul_SkAlphaType,
+                          color_space.ToSkColorSpace()),
+        skgpu::Mipmapped::kNo);
+  }
 
   if (!intermediate_surface) {
     DVLOG(1) << "failed to create surface for the intermediate texture";
@@ -1354,7 +1370,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
                         request->blit_request());
   }
 
-  gr_context()->flush(intermediate_surface.get());
+  if (gr_context()) {
+    gr_context()->flush(intermediate_surface.get());
+  }
 
   auto intermediate_image = intermediate_surface->makeImageSnapshot();
   if (!intermediate_image) {
@@ -1439,12 +1457,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
         mailbox_holders, color_space, is_multiplane);
   }
 
-  bool should_submit = false;
+  bool should_submit_gr_context = false;
   size_t num_mailboxes = is_multiplane ? 1 : CopyOutputResult::kNV12MaxPlanes;
   for (size_t i = 0; i < num_mailboxes; ++i) {
     mailbox_access_datas[i].representation->SetCleared();
 
-    should_submit |= !mailbox_access_datas[i].end_semaphores.empty();
+    should_submit_gr_context |= !mailbox_access_datas[i].end_semaphores.empty();
 
     // Prepare a per-mailbox context that will notify the per-request context
     // that the GPU-side work for this mailbox has completed.
@@ -1460,29 +1478,37 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       ++num_readbacks_pending_;
     }
 
-    bool flush_succeeded = false;
-    if (is_multiplane) {
+    if (is_multiplane && gr_context()) {
       // Flush the individual surfaces followed by flushing the context and
       // signaling.
       gr_context()->flush(plane_surfaces[0], GrFlushInfo());
       gr_context()->flush(plane_surfaces[1], GrFlushInfo());
-      flush_succeeded = FlushContext(
-          mailbox_access_datas[i].end_semaphores,
-          mailbox_access_datas[i].scoped_write.get(),
-          should_wait_for_gpu_work
-              ? &NV12SingleMailboxReadyContext::OnMailboxReady
-              : nullptr,
-          should_wait_for_gpu_work ? nv12_plane_ready.release() : nullptr);
-    } else {
-      flush_succeeded = FlushSurface(
-          plane_surfaces[i], mailbox_access_datas[i].end_semaphores,
-          mailbox_access_datas[i].scoped_write.get(),
-          should_wait_for_gpu_work
-              ? &NV12SingleMailboxReadyContext::OnMailboxReady
-              : nullptr,
-          should_wait_for_gpu_work ? nv12_plane_ready.release() : nullptr);
     }
 
+    auto* finished_context =
+        should_wait_for_gpu_work ? nv12_plane_ready.release() : nullptr;
+    auto* plane_surface = is_multiplane ? nullptr : plane_surfaces[i];
+    bool flush_succeeded = false;
+    if (gr_context()) {
+      flush_succeeded =
+          FlushSurface(plane_surface, mailbox_access_datas[i].end_semaphores,
+                       mailbox_access_datas[i].scoped_write.get(),
+                       should_wait_for_gpu_work
+                           ? &NV12SingleMailboxReadyContext::OnMailboxReady
+                           : nullptr,
+                       finished_context);
+    } else {
+      CHECK(graphite_context());
+      skgpu::graphite::GpuFinishedProc graphite_proc =
+          [](void* context, skgpu::CallbackResult result) {
+            NV12SingleMailboxReadyContext::OnMailboxReady(context);
+          };
+      flush_succeeded = FlushSurface(
+          plane_surface, mailbox_access_datas[i].end_semaphores,
+          mailbox_access_datas[i].scoped_write.get(),
+          /*ganesh_finished_proc=*/nullptr, /*ganesh_finished_context=*/nullptr,
+          should_wait_for_gpu_work ? graphite_proc : nullptr, finished_context);
+    }
     if (!flush_succeeded) {
       // TODO(penghuang): handle vulkan device lost.
       FailedSkiaFlush("CopyOutputNV12 plane_surfaces[i]->flush()");
@@ -1490,8 +1516,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     }
   }
 
-  if (should_submit && !gr_context()->submit()) {
+  if (should_submit_gr_context && !gr_context()->submit()) {
     DLOG(ERROR) << "CopyOutputNV12 gr_context->submit() failed";
+    return;
+  }
+
+  if (graphite_context() && !graphite_context()->submit()) {
+    DLOG(ERROR) << "CopyOutputNV12 graphite_context->submit() failed";
     return;
   }
 
@@ -1933,27 +1964,22 @@ bool SkiaOutputSurfaceImplOnGpu::Initialize() {
 }
 
 bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
-  gl::GLSurfaceFormat format;
-  if (PreferRGB565ResourcesForDisplay() &&
-      !renderer_settings_.requires_alpha_channel) {
-    format.SetRGB565();
-  }
-
   if (dependency_->IsOffscreen()) {
-    gl_surface_ = dependency_->CreateGLSurface(nullptr, format);
-    if (!gl_surface_) {
-      return false;
-    }
-
     output_device_ = std::make_unique<SkiaOutputDeviceOffscreen>(
         context_state_, gfx::SurfaceOrigin::kTopLeft,
         renderer_settings_.requires_alpha_channel,
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    presenter_ =
-        dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(), format);
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
     if (!presenter_) {
+      gl::GLSurfaceFormat format;
+#if BUILDFLAG(IS_ANDROID)
+      if (PreferRGB565ResourcesForDisplay() &&
+          !renderer_settings_.requires_alpha_channel) {
+        format.SetRGB565();
+      }
+#endif
       gl_surface_ =
           dependency_->CreateGLSurface(weak_ptr_factory_.GetWeakPtr(), format);
       if (!gl_surface_) {
@@ -2020,8 +2046,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
   }
 
   if (dependency_->IsOffscreen()) {
-    DCHECK(gl_surface_);
-    DCHECK_EQ(gl_surface_->IsOffscreen(), true);
+    DCHECK(!gl_surface_);
   } else if (gl_surface_) {
     // OnScreen GLSurfaces are never Surfaceless except on windows where a bit
     // of work needed to make it use Presenter.
@@ -2062,8 +2087,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   output_presenter =
       OutputPresenterFuchsia::Create(window_surface_.get(), dependency_);
 #else
-  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
-                                            gl::GLSurfaceFormat());
+  presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
   if (presenter_) {
     output_presenter = std::make_unique<OutputPresenterGL>(
         presenter_, dependency_, shared_image_factory_.get(),
@@ -2140,8 +2164,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           GetDidSwapBuffersCompleteCallback());
     }
 #elif BUILDFLAG(IS_WIN)
-    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
-                                              gl::GLSurfaceFormat());
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
     if (presenter_) {
       output_device_ = std::make_unique<SkiaOutputDeviceDCompPresenter>(
           shared_image_representation_factory_.get(), context_state_.get(),
@@ -2158,8 +2181,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
       output_device_ = std::move(output_device);
     }
 #elif BUILDFLAG(IS_APPLE)
-    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(),
-                                              gl::GLSurfaceFormat());
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
 #if BUILDFLAG(IS_MAC)
     if (features::UseGpuVsync()) {
       presenter_->SetVSyncDisplayID(renderer_settings_.display_id);
@@ -2191,9 +2213,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForMetal() {
         shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    gl::GLSurfaceFormat format;
-    presenter_ =
-        dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr(), format);
+    presenter_ = dependency_->CreatePresenter(weak_ptr_factory_.GetWeakPtr());
     CHECK(presenter_);
 
 #if BUILDFLAG(IS_MAC)

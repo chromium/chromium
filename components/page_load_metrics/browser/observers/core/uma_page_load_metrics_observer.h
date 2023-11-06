@@ -6,10 +6,12 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_CORE_UMA_PAGE_LOAD_METRICS_OBSERVER_H_
 
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "components/page_load_metrics/browser/observers/click_input_tracker.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/perfetto/include/perfetto/tracing/event_context.h"
 
 namespace internal {
 
@@ -215,6 +217,12 @@ class UmaPageLoadMetricsObserver
       base::TimeTicks app_background_time);
   void RecordV8MemoryHistograms();
   void RecordNormalizedResponsivenessMetrics();
+
+  void EmitFCPTraceEvent(base::TimeDelta first_contentful_paint_timing);
+
+  void EmitLCPTraceEvent(base::TimeDelta largest_contentful_paint_timing);
+
+  void EmitInstantTraceEvent(base::TimeDelta duration, const char event_name[]);
 
   content::NavigationHandleTiming navigation_handle_timing_;
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -35,7 +36,18 @@
 
 namespace extensions {
 
+namespace {
+
 constexpr const char kSimulatedResourcePath[] = "/simulated-resource.html";
+
+// Returns the IDs of all divs in a page; used for testing script injections.
+constexpr char kGetDivIds[] =
+    R"(let childIds = [];
+       for (const child of document.body.children)
+         childIds.push(child.id);
+       JSON.stringify(childIds.sort());)";
+
+}  // namespace
 
 class ScriptingAPITest : public ExtensionApiTest {
  public:
@@ -138,9 +150,20 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, CSSRemoval) {
   ASSERT_TRUE(RunExtensionTest("scripting/remove_css")) << message_;
 }
 
-// TODO(crbug.com/1491650): Re-enable this test
-IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DISABLED_DynamicContentScripts) {
-  ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts")) << message_;
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, RegisterContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/register_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, GetContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/get_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, UnregisterContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/unregister_scripts")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest, UpdateContentScripts) {
+  ASSERT_TRUE(RunExtensionTest("scripting/update_scripts")) << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptParameters) {
@@ -153,6 +176,92 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptParameters) {
 IN_PROC_BROWSER_TEST_F(ScriptingAPITest, DynamicContentScriptsMainWorld) {
   ASSERT_TRUE(RunExtensionTest("scripting/dynamic_scripts_main_world"))
       << message_;
+}
+
+// Unregisters a pending script and verifies that the script is unregistered
+// and doesn't inject.
+// Regression test for https://crbug.com/1496907.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       RapidDynamicContentScriptRegistrationAndUnregistration) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["scripting"],
+           "host_permissions": ["*://example.com/*"]
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           async function registerScripts() {
+             const scripts =
+                 [
+                   {
+                     id: 'script_1',
+                     matches: ['http://example.com/*'],
+                     js: ['script1.js'],
+                     runAt: 'document_end',
+                   },
+                   {
+                     id: 'script_2',
+                     matches: ['http://example.com/*'],
+                     js: ['script2.js'],
+                     runAt: 'document_end',
+                   }
+                 ];
+
+             // Call to register the two scripts, then immediately (before
+             // registration is complete) unregister script 1.
+             const registered =
+                 chrome.scripting.registerContentScripts(scripts);
+             const unregistered =
+                 chrome.scripting.unregisterContentScripts({ids: ['script_1']});
+             await Promise.allSettled([registered, unregistered]);
+
+             // Only script 2 should still be registered.
+             const registeredScripts =
+                 await chrome.scripting.getRegisteredContentScripts();
+             chrome.test.assertEq(['script_2'],
+                                  registeredScripts.map(script => script.id));
+
+             chrome.test.succeed();
+         }]);)";
+  static constexpr char kScript1Js[] =
+      R"(var div = document.createElement('div');
+         div.id = 'injected_1';
+         document.body.appendChild(div);)";
+  static constexpr char kScript2Js[] =
+      R"(console.warn('injectory');var div = document.createElement('div');
+         div.id = 'injected_2';
+         document.body.appendChild(div);)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script1.js"), kScript1Js);
+  test_dir.WriteFile(FILE_PATH_LITERAL("script2.js"), kScript2Js);
+
+  // The extension registers two scripts and then immediately unregistered
+  // the first; it also verifies the API indicates only the second script
+  // is still registered.
+  ResultCatcher result_catcher;
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+
+  // Verify that only the second script injects (i.e., that the first script
+  // really was unregistered). Regression test for https://crbug.com/1496907.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* new_frame =
+      ui_test_utils::NavigateToURL(browser(), url);
+
+  static constexpr char kGetInjectedIds[] =
+      R"(const divs = document.body.getElementsByTagName('div');
+         JSON.stringify(Array.from(divs).map(div => div.id));)";
+
+  EXPECT_EQ(R"(["injected_2"])", content::EvalJs(new_frame, kGetInjectedIds));
 }
 
 // Test that if an extension with persistent scripts is quickly unloaded while
@@ -467,6 +576,75 @@ IN_PROC_BROWSER_TEST_F(ScriptingAPITest, InjectImmediately) {
   EXPECT_EQ(base::Value(expected_immediate_result), get_immediate_result());
 }
 
+// Verifies dynamic scripts are properly injected in incognito.
+// Regression test for https://crbug.com/1495191.
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       PRE_DynamicContentScriptsInjectInIncognito) {
+  // Load up two extensions, one that's allowed in incognito and one that's
+  // not.
+  const Extension* incognito_allowed =
+      LoadExtension(test_data_dir_.AppendASCII("scripting/incognito_allowed"),
+                    {.allow_in_incognito = true});
+  const Extension* incognito_disallowed = LoadExtension(
+      test_data_dir_.AppendASCII("scripting/incognito_disallowed"),
+      {.allow_in_incognito = false});
+  ASSERT_TRUE(incognito_allowed);
+  ASSERT_TRUE(incognito_disallowed);
+
+  auto register_scripts = [this](const ExtensionId& extension_id) {
+    ResultCatcher result_catcher;
+    BackgroundScriptExecutor::ExecuteScriptAsync(profile(), extension_id,
+                                                 "registerScript();");
+    ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+  };
+
+  // In each extension, register a script that will inject a div with a given
+  // ID indicating if it injected.
+  register_scripts(incognito_allowed->id());
+  register_scripts(incognito_disallowed->id());
+
+  // Navigate to a page in the on-the-record profile. Both extensions should
+  // inject.
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* regular_page =
+      ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
+            content::EvalJs(regular_page, kGetDivIds));
+
+  // Now, navigate to a page in incognito. Only the incognito-allowed extension
+  // should inject.
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), page_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(incognito_web_contents);
+
+  EXPECT_EQ(R"(["incognito-allowed"])",
+            content::EvalJs(incognito_web_contents, kGetDivIds));
+}
+
+IN_PROC_BROWSER_TEST_F(ScriptingAPITest,
+                       DynamicContentScriptsInjectInIncognito) {
+  // Repeat the steps of navigating to an on-the-record and off-the-record page
+  // to validate injection after a restart. This verifies the incognito bit
+  // is properly set when restoring scripts after a restart.
+
+  const GURL page_url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  content::RenderFrameHost* regular_page =
+      ui_test_utils::NavigateToURL(browser(), page_url);
+  EXPECT_EQ(R"(["incognito-allowed","incognito-disallowed"])",
+            content::EvalJs(regular_page, kGetDivIds));
+
+  Browser* incognito_browser = OpenURLOffTheRecord(profile(), page_url);
+  content::WebContents* incognito_web_contents =
+      incognito_browser->tab_strip_model()->GetActiveWebContents();
+  content::WaitForLoadStop(incognito_web_contents);
+
+  EXPECT_EQ(R"(["incognito-allowed"])",
+            content::EvalJs(incognito_web_contents, kGetDivIds));
+}
+
 // Base test fixture for tests spanning multiple sessions where a custom arg is
 // set before the test is run.
 class PersistentScriptingAPITest : public ScriptingAPITest {
@@ -542,13 +720,8 @@ class ScriptingAPIPrerenderingTest : public ScriptingAPITest {
   content::test::ScopedPrerenderFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1351648): disabled on Mac due to flakiness.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Basic DISABLED_Basic
-#else  // BUILDFLAG(IS_MAC)
-#define MAYBE_Basic Basic
-#endif  // BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, MAYBE_Basic) {
+// TODO(crbug.com/1351648): disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(ScriptingAPIPrerenderingTest, DISABLED_Basic) {
   ASSERT_TRUE(RunExtensionTest("scripting/prerendering")) << message_;
 }
 
@@ -564,12 +737,15 @@ class ScriptingAndUserScriptsAPITest : public ScriptingAPITest {
       const ScriptingAndUserScriptsAPITest&) = delete;
   ~ScriptingAndUserScriptsAPITest() override = default;
 
+  void SetUpOnMainThread() override {
+    ScriptingAPITest::SetUpOnMainThread();
+    // The userScripts API is only available to users in developer mode.
+    util::SetDeveloperModeForProfile(profile(), true);
+  }
+
  private:
-  // The userScripts API is currently behind a channel and feature restriction.
-  // TODO(crbug.com/1472902): Remove channel override when user scripts API goes
-  // to stable.
-  ScopedCurrentChannel current_channel_override_{
-      version_info::Channel::UNKNOWN};
+  // The userScripts API is currently behind a feature restriction.
+  // TODO(crbug.com/1472902): Remove once the feature is stable for awhile.
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

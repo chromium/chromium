@@ -19,6 +19,7 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
   static std::unique_ptr<RenderWidgetHostImpl> Create(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
+      viz::FrameSinkId frame_sink_id,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden);
@@ -37,6 +38,7 @@ class TestRenderWidgetHost : public RenderWidgetHostImpl {
  private:
   TestRenderWidgetHost(FrameTree* frame_tree,
                        RenderWidgetHostDelegate* delegate,
+                       viz::FrameSinkId frame_sink_id,
                        base::SafeRef<SiteInstanceGroup> site_instance_group,
                        int32_t routing_id,
                        bool hidden);

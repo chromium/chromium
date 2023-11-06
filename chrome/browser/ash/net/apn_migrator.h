@@ -69,6 +69,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ApnMigrator
                               absl::optional<base::Value::Dict> properties,
                               absl::optional<std::string> error);
 
+  void CreateCustomApn(const std::string& iccid,
+                       const std::string& network_guid,
+                       chromeos::network_config::mojom::ApnPropertiesPtr apn,
+                       absl::optional<base::OnceCallback<void(bool)>>
+                           success_callback = absl::nullopt);
+
+  void CompleteMigrationAttempt(const std::string& iccid, bool success);
+
   NetworkMetadataStore* GetNetworkMetadataStore();
 
   void set_network_metadata_store_for_testing(

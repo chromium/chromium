@@ -106,8 +106,16 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysOnPrimary};
   mixer[kColorSidePanelCustomizeChromeThemeSnapshotBackground] = {
       ui::kColorSysTonalContainer};
+  mixer[kColorSidePanelCustomizeChromeWallpaperSearchTileBackground] = {
+      ui::kColorSysSurface2};
   mixer[kColorSidePanelCustomizeChromeWebStoreBorder] = {
       ui::kColorSysNeutralOutline};
+
+  /* Commerce */
+  mixer[kColorSidePanelCommerceGraphAxis] = {ui::kColorSysDivider};
+  mixer[kColorSidePanelCommerceGraphBubbleBackground] = {
+      ui::kColorSysTonalContainer};
+  mixer[kColorSidePanelCommerceGraphLine] = {ui::kColorLinkForegroundDefault};
 
   // Note anything below here will only apply if themes aren't being used.
   if (!ShouldApplyChromeMaterialOverrides(key)) {

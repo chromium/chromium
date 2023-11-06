@@ -17,6 +17,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/web_applications/app_service/web_apps_with_shortcuts_test.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -49,6 +49,10 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "components/ukm/test_ukm_recorder.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
 #endif
 
 namespace web_app {
@@ -81,7 +85,8 @@ bool HandlesIntent(const apps::AppPtr& app, const apps::IntentPtr& intent) {
 
 }  // namespace
 
-class WebAppPublisherHelperTest : public testing::Test {
+class WebAppPublisherHelperTest : public testing::Test,
+                                  public WebAppsWithShortcutsTest {
  public:
   WebAppPublisherHelperTest() = default;
   WebAppPublisherHelperTest(const WebAppPublisherHelperTest&) = delete;
@@ -90,10 +95,11 @@ class WebAppPublisherHelperTest : public testing::Test {
   ~WebAppPublisherHelperTest() override = default;
 
   void SetUp() override {
-    profile_ = std::make_unique<TestingProfile>();
+    TestingProfile::Builder builder;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    profile_->SetIsMainProfile(true);
-#endif
+    builder.SetIsMainProfile(true);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    profile_ = builder.Build();
 
     provider_ = WebAppProvider::GetForWebApps(profile());
 
@@ -364,14 +370,17 @@ TEST_F(WebAppPublisherHelperTest, PublishPartnerSyncAppAsSync) {
   EXPECT_EQ(app->install_reason, apps::InstallReason::kSync);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
+  EnableCrosWebAppShortcutUiUpdate(true);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LoopbackCrosapiAppServiceProxy loopback(profile());
+#endif
+
   EXPECT_EQ(0, no_op_delegate_.num_publish_called());
   GURL shortcut_url("https://example-shortcut.com/");
   auto shortcut_id = CreateShortcut(shortcut_url, "Shortcut");
+
   EXPECT_EQ(0, no_op_delegate_.num_publish_called());
 
   provider_->install_manager().NotifyWebAppInstalled(shortcut_id);
@@ -465,12 +474,11 @@ TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesNotPublishDelta) {
 // we still want to publish shortcuts as web app. This is checking old behaviour
 // does not break.
 TEST_F(WebAppPublisherHelperTest, UpdateShortcutDoesPublishDelta) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kCrosWebAppShortcutUiUpdate);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  EnableCrosWebAppShortcutUiUpdate(false);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  LoopbackCrosapiAppServiceProxy loopback(profile());
+#endif
   int expected_called_num = 0;
   EXPECT_EQ(expected_called_num, no_op_delegate_.num_publish_called());
   GURL shortcut_url("https://example-shortcut.com/");

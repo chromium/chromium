@@ -52,8 +52,8 @@ class Document;
 class Frame;
 class LayoutBlock;
 class LayoutBox;
-class LayoutNGTable;
 class LayoutObject;
+class LayoutTable;
 class LayoutText;
 class LocalFrame;
 class Page;
@@ -120,7 +120,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
     STACK_ALLOCATED();
 
    public:
-    explicit TableLayoutScope(LayoutNGTable*);
+    explicit TableLayoutScope(LayoutTable*);
   };
 
   class NGLayoutScope {
@@ -315,7 +315,7 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   void EndLayout(LayoutBlock*);
   void RegisterInlineSize(const LayoutBlock& ng_block, LayoutUnit inline_size);
   void UnregisterInlineSize(const LayoutBlock& ng_block);
-  void InflateAutoTable(LayoutNGTable*);
+  void InflateAutoTable(LayoutTable*);
   float Inflate(LayoutObject*,
                 InflateBehavior = kThisBlockOnly,
                 float multiplier = 0);

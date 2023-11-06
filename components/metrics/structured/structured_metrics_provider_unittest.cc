@@ -150,10 +150,7 @@ class StructuredMetricsProviderTest : public testing::Test {
                                        0);
   }
 
-  bool RecorderInitialized() {
-    return provider_->recorder().is_init_state(
-        StructuredMetricsRecorder::InitState::kInitialized);
-  }
+  bool RecorderInitialized() { return provider_->recorder().IsInitialized(); }
 
  protected:
   std::unique_ptr<TestSystemProfileProvider> system_profile_provider_;

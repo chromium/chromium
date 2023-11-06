@@ -406,12 +406,22 @@ TEST_F(NetworkMetricsHelperTest, CellularESim) {
   histogram_tester_->ExpectTotalCount(
       kCellularESimConnectResultNonUserInitiatedHistogram, 1);
 
+  shill_service_client_->SetServiceProperty(
+      kTestServicePath, shill::kErrorProperty,
+      base::Value(shill::kErrorInvalidAPN));
+  base::RunLoop().RunUntilIdle();
   NetworkMetricsHelper::LogUserInitiatedConnectionResult(
-      kTestGuid, shill::kErrorNotRegistered);
+      kTestGuid, shill::kErrorConnectFailed);
   histogram_tester_->ExpectTotalCount(
       kCellularConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kCellularConnectResultUserInitiatedHistogram,
+      UserInitiatedConnectResult::kErrorInvalidAPN, 1);
   histogram_tester_->ExpectTotalCount(
       kCellularESimConnectResultUserInitiatedHistogram, 1);
+  histogram_tester_->ExpectBucketCount(
+      kCellularESimConnectResultUserInitiatedHistogram,
+      UserInitiatedConnectResult::kErrorInvalidAPN, 1);
   histogram_tester_->ExpectTotalCount(
       kCellularPSimConnectResultUserInitiatedHistogram, 0);
 

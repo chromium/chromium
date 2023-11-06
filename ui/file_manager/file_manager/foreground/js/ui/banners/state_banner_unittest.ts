@@ -6,9 +6,9 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
 import {waitUntil} from '../../../../common/js/test_error_reporting.js';
 import {decorate} from '../../../../common/js/ui.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
 import {StateBanner} from './state_banner.js';
@@ -53,10 +53,8 @@ export function setUp() {
  * button is clicked.
  */
 export async function testAdditionalButtonCanBeClicked() {
-  const mockVisitURL = mockUtilVisitURL();
   stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
-  assertEquals(mockVisitURL.getURL(), 'http://test.com');
-  mockVisitURL.restoreVisitURL();
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**
@@ -93,12 +91,11 @@ export async function testChromeOsSettingsLink() {
 }
 
 /**
- * Test that a href with no subpage, still calls util.visitURL as there is no
+ * Test that a href with no subpage, still calls visitURL as there is no
  * internal method to make the chrome://os-settings/ page appear except for
  * link capturing.
  */
 export async function testChromeOsSettingsNoSubpageLink() {
-  const mockVisitURL = mockUtilVisitURL();
   const osSettingsLink = 'chrome://os-settings/';
   document.body.innerHTML = getTrustedHTML`
     <state-banner>
@@ -110,8 +107,7 @@ export async function testChromeOsSettingsNoSubpageLink() {
   `;
   stateBanner = document.body.querySelector<StateBanner>('state-banner')!;
   stateBanner.querySelector<CrButtonElement>('[slot="extra-button"]')!.click();
-  assertEquals(mockVisitURL.getURL(), osSettingsLink);
-  mockVisitURL.restoreVisitURL();
+  assertEquals(getLastVisitedURL(), osSettingsLink);
 }
 
 /**

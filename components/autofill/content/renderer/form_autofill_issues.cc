@@ -11,6 +11,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -20,13 +21,16 @@
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_label_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 using blink::WebDocument;
 using blink::WebElement;
 using blink::WebElementCollection;
 using blink::WebFormControlElement;
+using blink::WebFormElement;
 using blink::WebInputElement;
 using blink::WebLabelElement;
+using blink::WebLocalFrame;
 using blink::WebString;
 using blink::WebVector;
 using blink::mojom::GenericIssueErrorType;
@@ -36,6 +40,8 @@ namespace autofill::form_issues {
 using form_util::IsAutofillableElement;
 
 namespace {
+
+constexpr size_t kMaxNumberOfDevtoolsIssuesEmitted = 100;
 
 constexpr base::StringPiece kFor = "for";
 constexpr base::StringPiece kAriaLabelledBy = "aria-labelledby";
@@ -284,6 +290,42 @@ CheckForLabelsWithIncorrectForAttribute(
     }
   }
   return form_issues;
+}
+
+void MaybeEmitFormIssuesToDevtools(blink::WebLocalFrame& web_local_frame,
+                                   base::span<const FormData> forms) {
+  // TODO(crbug.com/1399414): Only calculate and emit these issues if devtools
+  // is open.
+  if (!base::FeatureList::IsEnabled(features::kAutofillEnableDevtoolsIssues)) {
+    return;
+  }
+
+  WebDocument document = web_local_frame.GetDocument();
+  std::vector<blink::WebAutofillClient::FormIssue> form_issues;
+  // Get issues from forms input elements.
+  for (const WebFormElement& form_element : document.Forms()) {
+    form_issues = form_issues::GetFormIssues(
+        form_element.GetFormControlElements(), std::move(form_issues));
+  }
+  // Get issues from input elements that belong to no form.
+  form_issues = form_issues::GetFormIssues(
+      form_util::GetUnownedAutofillableFormFieldElements(document),
+      std::move(form_issues));
+  // Look for fields that after parsed were found to have labels incorrectly
+  // used.
+  for (const FormData& form : forms) {
+    form_issues = form_issues::CheckForLabelsWithIncorrectForAttribute(
+        document, form.fields, std::move(form_issues));
+  }
+  if (form_issues.size() > kMaxNumberOfDevtoolsIssuesEmitted) {
+    form_issues.erase(form_issues.begin() + kMaxNumberOfDevtoolsIssuesEmitted,
+                      form_issues.end());
+  }
+  for (const blink::WebAutofillClient::FormIssue& form_issue : form_issues) {
+    web_local_frame.AddGenericIssue(form_issue.issue_type,
+                                    form_issue.violating_node,
+                                    form_issue.violating_node_attribute);
+  }
 }
 
 }  // namespace autofill::form_issues

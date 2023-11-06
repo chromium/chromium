@@ -304,7 +304,7 @@ void KeystoreServiceAsh::GetKeyStores(GetKeyStoresCallback callback) {
 // static
 void KeystoreServiceAsh::DidGetKeyStores(
     GetKeyStoresCallback callback,
-    std::unique_ptr<std::vector<TokenId>> platform_keys_token_ids,
+    const std::vector<TokenId> platform_keys_token_ids,
     chromeos::platform_keys::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -312,7 +312,7 @@ void KeystoreServiceAsh::DidGetKeyStores(
 
   if (status == chromeos::platform_keys::Status::kSuccess) {
     std::vector<mojom::KeystoreType> key_stores;
-    for (auto token_id : *platform_keys_token_ids) {
+    for (const TokenId token_id : platform_keys_token_ids) {
       switch (token_id) {
         case TokenId::kUser:
           key_stores.push_back(mojom::KeystoreType::kUser);

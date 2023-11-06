@@ -4,9 +4,6 @@
 
 #include "chromeos/ash/services/libassistant/chromium_api_delegate.h"
 
-#include <utility>
-
-#include "base/task/single_thread_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace ash::libassistant {

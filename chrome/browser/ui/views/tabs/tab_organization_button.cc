@@ -7,7 +7,8 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
+#include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,6 +29,7 @@ constexpr int kTabOrganizeCloseButtonSize = 16;
 
 TabOrganizationButton::TabOrganizationButton(
     TabStripController* tab_strip_controller,
+    TabOrganizationService* tab_organization_service,
     PressedCallback pressed_callback,
     Edge flat_edge)
     : TabStripControlButton(
@@ -36,7 +38,9 @@ TabOrganizationButton::TabOrganizationButton(
                               base::Unretained(this)),
           l10n_util::GetStringUTF16(IDS_TAB_ORGANIZE),
           flat_edge),
-      pressed_callback_(std::move(pressed_callback)) {
+      service_(tab_organization_service),
+      pressed_callback_(std::move(pressed_callback)),
+      browser_(tab_strip_controller->GetBrowser()) {
   auto* const layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout_manager->set_main_axis_alignment(
@@ -53,11 +57,10 @@ TabOrganizationButton::TabOrganizationButton(
       gfx::Insets().set_left(kTabOrganizeLabelMargin);
   label()->SetProperty(views::kMarginsKey, label_margin);
 
-  UpdateForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
-  UpdateForegroundFrameInactiveColorId(
-      kColorNewTabButtonForegroundFrameInactive);
-  UpdateBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
-  UpdateBackgroundFrameInactiveColorId(
+  SetForegroundFrameActiveColorId(kColorNewTabButtonForegroundFrameActive);
+  SetForegroundFrameInactiveColorId(kColorNewTabButtonForegroundFrameInactive);
+  SetBackgroundFrameActiveColorId(kColorNewTabButtonCRBackgroundFrameActive);
+  SetBackgroundFrameInactiveColorId(
       kColorNewTabButtonCRBackgroundFrameInactive);
 
   set_paint_transparent_for_custom_image_theme(false);
@@ -84,10 +87,8 @@ gfx::Size TabOrganizationButton::CalculatePreferredSize() const {
 }
 
 void TabOrganizationButton::ButtonPressed(const ui::Event& event) {
-  CHECK(session_);
-  if (session_->request()->state() ==
-      TabOrganizationRequest::State::NOT_STARTED) {
-    session_->StartRequest();
+  if (service_ && browser_) {
+    service_->StartRequest(browser_);
   }
   pressed_callback_.Run(event);
 }

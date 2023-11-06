@@ -22,10 +22,12 @@
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -37,7 +39,7 @@
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service.h"
 #import "ios/chrome/browser/sync/model/sync_setup_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
@@ -151,25 +153,35 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   UITableViewStyle style = _accountState == SyncSettingsAccountState::kSignedIn
                                ? UITableViewStyleInsetGrouped
                                : ChromeTableViewStyle();
-  self.viewController =
+  ManageSyncSettingsTableViewController* viewController =
       [[ManageSyncSettingsTableViewController alloc] initWithStyle:style];
+  self.viewController = viewController;
 
   NSString* title = self.mediator.overrideViewControllerTitle;
   if (!title) {
     title = self.delegate.manageSyncSettingsCoordinatorTitle;
   }
-  self.viewController.title = title;
-  self.viewController.isAccountStateSignedIn =
+  viewController.title = title;
+  viewController.isAccountStateSignedIn =
       _accountState == SyncSettingsAccountState::kSignedIn;
-  self.viewController.serviceDelegate = self.mediator;
-  self.viewController.presentationDelegate = self;
-  self.viewController.modelDelegate = self.mediator;
-  self.viewController.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
+  viewController.serviceDelegate = self.mediator;
+  viewController.presentationDelegate = self;
+  viewController.modelDelegate = self.mediator;
 
-  self.mediator.consumer = self.viewController;
-  [self.baseNavigationController pushViewController:self.viewController
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  viewController.applicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  viewController.browserHandler =
+      HandlerForProtocol(dispatcher, BrowserCommands);
+  viewController.browsingDataHandler =
+      HandlerForProtocol(dispatcher, BrowsingDataCommands);
+  viewController.settingsHandler =
+      HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+  viewController.snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+
+  self.mediator.consumer = viewController;
+  [self.baseNavigationController pushViewController:viewController
                                            animated:YES];
   _syncObserver = std::make_unique<SyncObserverBridge>(self, self.syncService);
 }
@@ -394,11 +406,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     controllerToPush = [[SyncEncryptionTableViewController alloc]
         initWithBrowser:self.browser];
   }
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  controllerToPush.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      self.browser->GetCommandDispatcher());
+
+  [self.viewController configureHandlersForRootViewController:controllerToPush];
   [self.baseNavigationController pushViewController:controllerToPush
                                            animated:YES];
 }

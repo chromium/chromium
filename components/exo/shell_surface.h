@@ -118,10 +118,10 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   // Start an interactive resize of surface. |component| is one of the windows
   // HT constants (see ui/base/hit_test.h) and describes in what direction the
   // surface should be resized.
-  void StartResize(int component);
+  bool StartResize(int component);
 
   // Start an interactive move of surface.
-  void StartMove();
+  bool StartMove();
 
   // Sends a wayland request to the surface to rotate focus within itself. If
   // the client was able to rotate, it will return a "handled" response,
@@ -221,7 +221,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
 
   bool GetCanResizeFromSizeConstraints() const override;
 
-  void AttemptToStartDrag(int component);
+  bool AttemptToStartDrag(int component);
 
   // Utility methods to resolve the initial bounds for the first commit.
   gfx::Rect GetInitialBoundsForState(

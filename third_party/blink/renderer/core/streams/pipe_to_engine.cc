@@ -47,7 +47,8 @@ class PipeToEngine::PipeToReadRequest final : public ReadRequest {
   explicit PipeToReadRequest(PipeToEngine* instance) : instance_(instance) {}
 
   void ChunkSteps(ScriptState* script_state,
-                  v8::Local<v8::Value> chunk) const override {
+                  v8::Local<v8::Value> chunk,
+                  ExceptionState&) const override {
     scoped_refptr<scheduler::EventLoop> event_loop =
         ExecutionContext::From(script_state)->GetAgent()->event_loop();
     v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
@@ -156,7 +157,7 @@ ScriptPromise PipeToEngine::Start(ReadableStream* readable,
     //      return promise.
     if (signal->aborted()) {
       AbortAlgorithm(signal);
-      return promise_->GetScriptPromise(script_state_);
+      return promise_->GetScriptPromise(script_state_.Get());
     }
 
     //   c. Add abortAlgorithm to signal.
@@ -192,7 +193,7 @@ ScriptPromise PipeToEngine::Start(ReadableStream* readable,
   }
 
   // 16. Return promise.
-  return promise_->GetScriptPromise(script_state_);
+  return promise_->GetScriptPromise(script_state_.Get());
 }
 
 bool PipeToEngine::CheckInitialState() {
@@ -283,7 +284,9 @@ v8::Local<v8::Promise> PipeToEngine::AbortAlgorithmAction() {
         ReadableStream::Cancel(script_state_, Readable(), error)));
   }
 
-  return ScriptPromise::All(script_state_, actions).V8Value().As<v8::Promise>();
+  return ScriptPromise::All(script_state_.Get(), actions)
+      .V8Value()
+      .As<v8::Promise>();
 }
 
 v8::Local<v8::Value> PipeToEngine::HandleNextEvent(v8::Local<v8::Value>) {
@@ -310,9 +313,13 @@ v8::Local<v8::Value> PipeToEngine::HandleNextEvent(v8::Local<v8::Value>) {
     return Undefined();
   }
 
+  ExceptionState exception_state(script_state_->GetIsolate(),
+                                 ExceptionContextType::kUnknown, "", "");
+
   is_reading_ = true;
   auto* read_request = MakeGarbageCollected<PipeToReadRequest>(this);
-  ReadableStreamDefaultReader::Read(script_state_, reader_, read_request);
+  ReadableStreamDefaultReader::Read(script_state_, reader_, read_request,
+                                    exception_state);
   return Undefined();
 }
 

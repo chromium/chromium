@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-FAIL Block layout border box is expected width. bb.getBoxQuads is not a function
-FAIL Block layout margin box is expected width. bb.getBoxQuads is not a function
-FAIL Flex layout border box is expected width. fb.getBoxQuads is not a function
-FAIL Flex layout margin box is expected width. fb.getBoxQuads is not a function
-FAIL Flex layout border box is expected height. fb.getBoxQuads is not a function
-FAIL Flex layout margin box is expected height. fb.getBoxQuads is not a function
+[FAIL] Block layout border box is expected width.
+  bb.getBoxQuads is not a function
+[FAIL] Block layout margin box is expected width.
+  bb.getBoxQuads is not a function
+[FAIL] Flex layout border box is expected width.
+  fb.getBoxQuads is not a function
+[FAIL] Flex layout margin box is expected width.
+  fb.getBoxQuads is not a function
+[FAIL] Flex layout border box is expected height.
+  fb.getBoxQuads is not a function
+[FAIL] Flex layout margin box is expected height.
+  fb.getBoxQuads is not a function
 Harness: the test ran to completion.
 

@@ -92,6 +92,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
@@ -535,28 +536,10 @@ void WebViewImpl::SetNoStatePrefetchClient(
                                      *page_, no_state_prefetch_client));
 }
 
-void WebViewImpl::CloseWindowSoon() {
-  // Ask the RenderViewHost with a local main frame to initiate close.  We
-  // could be called from deep in Javascript.  If we ask the RenderViewHost to
-  // close now, the window could be closed before the JS finishes executing,
-  // thanks to nested message loops running and handling the resulting
-  // disconnecting `page_broadcast_`. So instead, post a message back to the
-  // message loop, which won't run until the JS is complete, and then the
-  // RouteCloseEvent/RequestClose request can be sent.
-  GetPage()
-      ->GetPageScheduler()
-      ->GetAgentGroupScheduler()
-      .DefaultTaskRunner()
-      ->PostTask(FROM_HERE,
-                 WTF::BindOnce(&WebViewImpl::DoDeferredCloseWindowSoon,
-                               weak_ptr_factory_.GetWeakPtr()));
-}
-
-void WebViewImpl::DoDeferredCloseWindowSoon() {
+void WebViewImpl::CloseWindow() {
   // Have the browser process a close request. We should have either a
   // |local_main_frame_host_remote_| or |remote_main_frame_host_remote_|.
   // This method will not execute if Close has been called as WeakPtrs
-  // will be invalidated in Close.
   if (GetPage()->MainFrame()->IsLocalFrame()) {
     DCHECK(local_main_frame_host_remote_);
     local_main_frame_host_remote_->RequestClose();
@@ -1893,7 +1876,11 @@ void WebViewImpl::SetPageFocus(bool enable) {
     LocalFrame* focused_frame = page_->GetFocusController().FocusedFrame();
     if (focused_frame) {
       // Finish an ongoing composition to delete the composition node.
-      if (focused_frame->GetInputMethodController().HasComposition()) {
+      if (focused_frame->GetInputMethodController().GetActiveEditContext()) {
+        focused_frame->GetInputMethodController()
+            .GetActiveEditContext()
+            ->FinishComposingText(WebInputMethodController::kKeepSelection);
+      } else if (focused_frame->GetInputMethodController().HasComposition()) {
         // TODO(editing-dev): The use of
         // UpdateStyleAndLayout needs to be audited.
         // See http://crbug.com/590369 for more details.
@@ -2412,9 +2399,22 @@ void WebViewImpl::SetPageLifecycleStateInternal(
                             !old_state->is_in_back_forward_cache;
   bool restoring_from_bfcache = !new_state->is_in_back_forward_cache &&
                                 old_state->is_in_back_forward_cache;
+  // `hiding_page` indicates that the page is switching visibility states in a
+  // way that we should treat as a change.  There are two definitions of this
+  // (see below), but both require that the new state is not `kVisible`.
   bool hiding_page =
-      (new_state->visibility != mojom::blink::PageVisibilityState::kVisible) &&
-      (old_state->visibility == mojom::blink::PageVisibilityState::kVisible);
+      new_state->visibility != mojom::blink::PageVisibilityState::kVisible;
+  if (RuntimeEnabledFeatures::DispatchHiddenVisibilityTransitionsEnabled()) {
+    // Dispatch a visibility change from `kVisible` to either hidden state, and
+    // also between the two hidden states.
+    hiding_page &= (old_state->visibility != new_state->visibility);
+  } else {
+    // Dispatch a visibility change only when entering or leaving `kVisible` to
+    // one of the two hidden states, but not when switching between `kHidden`
+    // and `kHiddenButPainting` in either direction.
+    hiding_page &=
+        (old_state->visibility == mojom::blink::PageVisibilityState::kVisible);
+  }
   bool showing_page =
       (new_state->visibility == mojom::blink::PageVisibilityState::kVisible) &&
       (old_state->visibility != mojom::blink::PageVisibilityState::kVisible);
@@ -2440,11 +2440,7 @@ void WebViewImpl::SetPageLifecycleStateInternal(
     // we're navigating away from a page, if the page is already hidden.
     DispatchPagehide(new_state->pagehide_dispatch);
   }
-  // Both `kHidden` and `kHiddenButPainting` count as `hiding_page`, but we also
-  // want to dispatch events if we switch between the two.  Otherwise, things
-  // that might want to start painting (e.g., video), won't find out about it.
-  if (hiding_page ||
-      (!showing_page && old_state->visibility != new_state->visibility)) {
+  if (hiding_page) {
     SetVisibilityState(new_state->visibility, /*is_initial_state=*/false);
   }
   if (storing_in_bfcache) {
@@ -3047,12 +3043,10 @@ void WebViewImpl::DidAccessInitialMainDocument() {
   local_main_frame_host_remote_->DidAccessInitialMainDocument();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void WebViewImpl::SetResizable(bool resizable) {
   DCHECK(local_main_frame_host_remote_);
   local_main_frame_host_remote_->SetResizable(resizable);
 }
-#endif
 
 void WebViewImpl::UpdateTargetURL(const WebURL& url,
                                   const WebURL& fallback_url) {
@@ -3788,14 +3782,16 @@ void WebViewImpl::DidChangeRootLayer(bool root_layer_exists) {
   if (root_layer_exists) {
     if (!device_emulation_transform_.IsIdentity())
       UpdateDeviceEmulationTransform();
-  } else {
-    // When the document in an already-attached main frame is being replaced by
-    // a navigation then DidChangeRootLayer(false) will be called. Since we are
-    // navigating, defer BeginMainFrames until the new document is ready for
-    // them.
+  } else if (!MainFrameImpl()->FrameWidgetImpl()->WillBeDestroyed()) {
+    // When the document in an already-attached main frame is being replaced
+    // by a navigation then DidChangeRootLayer(false) will be called. Since we
+    // are navigating, defer BeginMainFrames until the new document is ready
+    // for them.
     //
-    // TODO(crbug.com/936696): This should not be needed once we always swap
-    // frames when swapping documents.
+    // If WillBeDestroyed() is true, it means we're swapping the frame as well
+    // as the document for this navigation. BeginMainFrames are instead
+    // deferred for a newly attached frame via DidAttachLocalMainFrame(). See
+    // crbug.com/936696.
     scoped_defer_main_frame_update_ =
         MainFrameImpl()->FrameWidgetImpl()->DeferMainFrameUpdate();
   }
@@ -3897,10 +3893,15 @@ void WebViewImpl::SetVisibilityState(
   DCHECK(GetPage());
   GetPage()->SetVisibilityState(visibility_state, is_initial_state);
   // Do not throttle if the page should be painting.
-  GetPage()->GetPageScheduler()->SetPageVisible(
-      visibility_state == mojom::blink::PageVisibilityState::kVisible ||
-      visibility_state ==
-          mojom::blink::PageVisibilityState::kHiddenButPainting);
+  bool is_visible =
+      visibility_state == mojom::blink::PageVisibilityState::kVisible;
+  if (RuntimeEnabledFeatures::DispatchHiddenVisibilityTransitionsEnabled()) {
+    // Treat `kHiddenButPainting` as visible for page scheduling; we don't want
+    // to throttle timers, etc.
+    is_visible |= visibility_state ==
+                  mojom::blink::PageVisibilityState::kHiddenButPainting;
+  }
+  GetPage()->GetPageScheduler()->SetPageVisible(is_visible);
   // Notify observers of the change.
   if (!is_initial_state) {
     for (auto& observer : observers_)
@@ -4011,6 +4012,14 @@ void WebViewImpl::UpdatePageBrowsingContextGroup(
   CHECK(page);
 
   page->UpdateBrowsingContextGroup(browsing_context_group_info);
+}
+
+void WebViewImpl::SetPageAttributionSupport(
+    network::mojom::AttributionSupport support) {
+  Page* page = GetPage();
+  CHECK(page);
+
+  page->SetAttributionSupport(support);
 }
 
 }  // namespace blink

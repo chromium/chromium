@@ -13,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -129,6 +131,10 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -170,10 +176,6 @@ auto& GetViewCommandMap() {
   return kViewCommandMap;
 }
 
-constexpr int kToolbarDividerWidth = 2;
-constexpr int kToolbarDividerHeight = 16;
-constexpr int kToolbarDividerCornerRadius = 1;
-constexpr int kToolbarDividerSpacing = 9;
 constexpr int kBrowserAppMenuRefreshExpandedMargin = 5;
 constexpr int kBrowserAppMenuRefreshCollapsedMargin = 2;
 
@@ -391,7 +393,8 @@ void ToolbarView::Init() {
     toolbar_divider_ =
         container_view_->AddChildView(std::move(toolbar_divider));
     toolbar_divider_->SetPreferredSize(
-        gfx::Size(kToolbarDividerWidth, kToolbarDividerHeight));
+        gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
+                  GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
   }
 
   if (base::FeatureList::IsEnabled(features::kSidePanelPinning)) {
@@ -462,9 +465,22 @@ void ToolbarView::Init() {
       (browser_->profile()->IsOffTheRecord() &&
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  show_avatar_toolbar_button = !profiles::IsManagedGuestSession();
+  show_avatar_toolbar_button = !chromeos::IsManagedGuestSession();
 #endif
   avatar_->SetVisible(show_avatar_toolbar_button);
+
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
+  auto new_tab_button = std::make_unique<ToolbarButton>(base::BindRepeating(
+      &ToolbarView::NewTabButtonPressed, base::Unretained(this)));
+  new_tab_button->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
+  new_tab_button->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  new_tab_button->SetVectorIcon(kNewTabToolbarButtonIcon);
+  new_tab_button->SetVisible(false);
+  new_tab_button->SetProperty(views::kElementIdentifierKey,
+                              kToolbarNewTabButtonElementId);
+  new_tab_button_ = container_view_->AddChildView(std::move(new_tab_button));
+#endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
     overflow_button_ =
@@ -571,15 +587,20 @@ void ToolbarView::UpdateCustomTabBarVisibility(bool visible, bool animate) {
 
 void ToolbarView::UpdateForWebUITabStrip() {
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
-  if (browser_view_->webui_tab_strip() && app_menu_button_) {
+  if (!new_tab_button_) {
+    return;
+  }
+  if (browser_view_->webui_tab_strip()) {
+    const int button_height = GetLayoutConstant(TOOLBAR_BUTTON_HEIGHT);
+    new_tab_button_->SetPreferredSize(gfx::Size(button_height, button_height));
+    new_tab_button_->SetVisible(true);
     const size_t insertion_index =
-        container_view_->GetIndexOf(app_menu_button_).value();
-    container_view_->AddChildViewAt(
-        browser_view_->webui_tab_strip()->CreateNewTabButton(),
-        insertion_index);
+        container_view_->GetIndexOf(new_tab_button_).value();
     container_view_->AddChildViewAt(
         browser_view_->webui_tab_strip()->CreateTabCounter(), insertion_index);
     LoadImages();
+  } else {
+    new_tab_button_->SetVisible(false);
   }
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 }
@@ -610,7 +631,7 @@ void ToolbarView::ShowIntentPickerBubble(
     highlighted_button =
 
         GetPageActionIconView(PageActionIconType::kClickToCall);
-  } else if (apps::features::LinkCapturingUiUpdateEnabled()) {
+  } else if (apps::features::ShouldShowLinkCapturingUX()) {
     highlighted_button = GetIntentChipButton();
   } else {
     highlighted_button =
@@ -791,18 +812,32 @@ void ToolbarView::Layout() {
   // indicator of overflow not the cause. (See crbug.com/1484294)
   // In the first pass turn off overflow button right before each layout.
   // TODO(pengchaocai): Explore possible optimizations.
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
-    toolbar_controller_->SetOverflowButtonVisible(false);
-  }
-
-  // Call super implementation to ensure layout manager and child layouts
-  // happen.
-  AccessiblePaneView::Layout();
-
-  if (base::FeatureList::IsEnabled(features::kResponsiveToolbar) &&
-      toolbar_controller_->ShouldShowOverflowButton()) {
-    // This is the second pass layout that shows overflow button if necessary.
-    toolbar_controller_->SetOverflowButtonVisible(true);
+  if (toolbar_controller_) {
+    // TODO(crbug.com/1499021) Move this logic into LayoutManager.
+    views::ManualLayoutUtil manual_layout_util(layout_manager_);
+    const bool was_overflow_button_visible =
+        toolbar_controller_->overflow_button()->GetVisible();
+    manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
+                                     true);
+    AccessiblePaneView::Layout();
+    if (toolbar_controller_->ShouldShowOverflowButton()) {
+      // This is the second pass layout that shows overflow button if necessary.
+      manual_layout_util.SetViewHidden(toolbar_controller_->overflow_button(),
+                                       false);
+      AccessiblePaneView::Layout();
+      if (!was_overflow_button_visible) {
+        base::RecordAction(
+            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonShown"));
+      }
+    } else {
+      if (was_overflow_button_visible) {
+        base::RecordAction(
+            base::UserMetricsAction("ResponsiveToolbar.OverflowButtonHidden"));
+      }
+    }
+  } else {
+    // Call super implementation to ensure layout manager and child layouts
+    // happen.
     AccessiblePaneView::Layout();
   }
 }
@@ -837,6 +872,13 @@ void ToolbarView::UpdateClipPath() {
 void ToolbarView::ActiveStateChanged() {
   background_view_left_->SchedulePaint();
   background_view_right_->SchedulePaint();
+}
+
+void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
+  chrome::ExecuteCommand(browser_view_->browser(), IDC_NEW_TAB);
+  UMA_HISTOGRAM_ENUMERATION("Tab.NewTab",
+                            NewTabTypes::NEW_TAB_BUTTON_IN_TOOLBAR_FOR_TOUCH,
+                            NewTabTypes::NEW_TAB_ENUM_COUNT);
 }
 
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -928,8 +970,9 @@ void ToolbarView::InitLayout() {
   }
 
   if (toolbar_divider_) {
-    toolbar_divider_->SetProperty(views::kMarginsKey,
-                                  gfx::Insets::VH(0, kToolbarDividerSpacing));
+    toolbar_divider_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_DIVIDER_SPACING)));
   }
 
   if (base::FeatureList::IsEnabled(features::kResponsiveToolbar)) {
@@ -939,6 +982,7 @@ void ToolbarView::InitLayout() {
     // TODO(crbug.com/1479588): Ignore containers till issue addressed.
     toolbar_controller_ = std::make_unique<ToolbarController>(
         std::vector<ui::ElementIdentifier>{
+            kToolbarAvatarButtonElementId, kToolbarNewTabButtonElementId,
             kToolbarForwardButtonElementId, kToolbarDownloadButtonElementId,
             kToolbarMediaButtonElementId, kToolbarHomeButtonElementId,
             kToolbarChromeLabsButtonElementId},
@@ -1000,11 +1044,13 @@ void ToolbarView::LayoutCommon() {
       extend_buttons_to_edge ? interior_margin.right() : 0);
 
   if (toolbar_divider_ && extensions_container_) {
-    toolbar_divider_->SetVisible(extensions_container_->GetVisible());
+    views::ManualLayoutUtil(layout_manager_)
+        .SetViewHidden(toolbar_divider_, !extensions_container_->GetVisible());
     const SkColor toolbar_extension_separator_color =
         GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
     toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
-        toolbar_extension_separator_color, kToolbarDividerCornerRadius));
+        toolbar_extension_separator_color,
+        GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
   }
   // Cast button visibility is controlled externally.
 }

@@ -143,7 +143,7 @@ class DownloadUIModel {
         // Link text length.
         size_t length = 0;
         // Action to perform when the link is clicked.
-        DownloadCommands::Command command = DownloadCommands::Command::MAX;
+        DownloadCommands::Command command;
       };
 
       // The entire label string with link, i.e. "Learn why Chrome blocks some

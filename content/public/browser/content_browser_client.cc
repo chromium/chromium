@@ -418,18 +418,6 @@ AllowServiceWorkerResult ContentBrowserClient::AllowServiceWorker(
   return AllowServiceWorkerResult::Yes();
 }
 
-void ContentBrowserClient::SetCanResizeFromWebAPI(
-    content::Page* page,
-    absl::optional<bool> can_resize) {}
-
-bool ContentBrowserClient::GetCanResize(content::Page* page) {
-#if BUILDFLAG(IS_ANDROID)
-  return false;
-#else
-  return true;
-#endif
-}
-
 bool ContentBrowserClient::MayDeleteServiceWorkerRegistration(
     const GURL& scope,
     BrowserContext* browser_context) {
@@ -553,13 +541,25 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
 bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api) {
+    content::PrivacySandboxInvokingAPI invoking_api,
+    bool post_impression_reporting) {
   return false;
 }
 
 void ContentBrowserClient::OnAuctionComplete(
     RenderFrameHost* render_frame_host,
     InterestGroupManager::InterestGroupDataKey data_key) {}
+
+network::mojom::AttributionSupport ContentBrowserClient::GetAttributionSupport(
+    AttributionReportingOsApiState state,
+    content::WebContents* web_contents) {
+  switch (state) {
+    case AttributionReportingOsApiState::kDisabled:
+      return network::mojom::AttributionSupport::kWeb;
+    case AttributionReportingOsApiState::kEnabled:
+      return network::mojom::AttributionSupport::kWebAndOs;
+  }
+}
 
 bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     content::BrowserContext* browser_context,
@@ -568,10 +568,6 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
     const url::Origin* source_origin,
     const url::Origin* destination_origin,
     const url::Origin* reporting_origin) {
-  return true;
-}
-
-bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
 
@@ -877,6 +873,14 @@ void ContentBrowserClient::RemovePresentationObserver(
     PresentationObserver* observer,
     WebContents* web_contents) {}
 
+bool ContentBrowserClient::AddPrivacySandboxAttestationsObserver(
+    PrivacySandboxAttestationsObserver* observer) {
+  return true;
+}
+
+void ContentBrowserClient::RemovePrivacySandboxAttestationsObserver(
+    PrivacySandboxAttestationsObserver* observer) {}
+
 void ContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,
     const content::OpenURLParams& params,
@@ -1179,13 +1183,19 @@ bool ContentBrowserClient::CreateThreadPool(base::StringPiece name) {
   return true;
 }
 
+bool ContentBrowserClient::IsSecurityLevelAcceptableForWebAuthn(
+    content::RenderFrameHost* rfh,
+    const url::Origin& caller_origin) {
+  return true;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
 WebAuthenticationDelegate*
 ContentBrowserClient::GetWebAuthenticationDelegate() {
   static base::NoDestructor<WebAuthenticationDelegate> delegate;
   return delegate.get();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 ContentBrowserClient::GetWebAuthenticationRequestDelegate(
     RenderFrameHost* render_frame_host) {
@@ -1582,6 +1592,13 @@ bool ContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
     content::BrowserContext*,
     const url::Origin&) {
   return true;
+}
+
+bool ContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
+    content::BrowserContext* browser_context,
+    const GURL& destination_url,
+    const url::Origin& top_frame_origin) {
+  return false;
 }
 
 bool ContentBrowserClient::

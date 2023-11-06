@@ -96,6 +96,8 @@ String ToScalabilityMode(wc_fuzzer::ConfigureVideoEncoder_ScalabilityMode mode);
 
 String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode);
 
+String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint);
+
 String ToAlphaOption(wc_fuzzer::ConfigureVideoEncoder_AlphaOption option);
 
 String ToAacFormat(wc_fuzzer::AacFormat format);

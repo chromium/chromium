@@ -57,8 +57,8 @@ export class OobeContentDialog extends OobeContentDialogBase {
 
   onBeforeShow() {
     this.shadowRoot.querySelector('#lazy').get();
-    var contentContainer = this.shadowRoot.querySelector('#contentContainer');
-    var scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
+    const contentContainer = this.shadowRoot.querySelector('#contentContainer');
+    const scrollContainer = this.shadowRoot.querySelector('#scrollContainer');
     if (!scrollContainer || !contentContainer) {
       return;
     }

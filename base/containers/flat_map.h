@@ -235,12 +235,12 @@ class flat_map : public ::base::internal::
   iterator insert_or_assign(const_iterator hint, K&& key, M&& obj);
 
   template <class K, class... Args>
-  std::enable_if_t<std::is_constructible<key_type, K&&>::value,
+  std::enable_if_t<std::is_constructible_v<key_type, K&&>,
                    std::pair<iterator, bool>>
   try_emplace(K&& key, Args&&... args);
 
   template <class K, class... Args>
-  std::enable_if_t<std::is_constructible<key_type, K&&>::value, iterator>
+  std::enable_if_t<std::is_constructible_v<key_type, K&&>, iterator>
   try_emplace(const_iterator hint, K&& key, Args&&... args);
 
   // --------------------------------------------------------------------------
@@ -324,7 +324,7 @@ template <class Key, class Mapped, class Compare, class Container>
 template <class K, class... Args>
 auto flat_map<Key, Mapped, Compare, Container>::try_emplace(K&& key,
                                                             Args&&... args)
-    -> std::enable_if_t<std::is_constructible<key_type, K&&>::value,
+    -> std::enable_if_t<std::is_constructible_v<key_type, K&&>,
                         std::pair<iterator, bool>> {
   return tree::emplace_key_args(
       key, std::piecewise_construct,
@@ -337,7 +337,7 @@ template <class K, class... Args>
 auto flat_map<Key, Mapped, Compare, Container>::try_emplace(const_iterator hint,
                                                             K&& key,
                                                             Args&&... args)
-    -> std::enable_if_t<std::is_constructible<key_type, K&&>::value, iterator> {
+    -> std::enable_if_t<std::is_constructible_v<key_type, K&&>, iterator> {
   return tree::emplace_hint_key_args(
              hint, key, std::piecewise_construct,
              std::forward_as_tuple(std::forward<K>(key)),

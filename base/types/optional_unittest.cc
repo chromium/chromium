@@ -204,12 +204,12 @@ class NonTriviallyDestructibleOverloadAddressOf {
 
 }  // anonymous namespace
 
-static_assert(std::is_trivially_destructible<std::optional<int>>::value,
+static_assert(std::is_trivially_destructible_v<std::optional<int>>,
               "OptionalIsTriviallyDestructible");
 
-static_assert(!std::is_trivially_destructible<
-                  std::optional<NonTriviallyDestructible>>::value,
-              "OptionalIsTriviallyDestructible");
+static_assert(
+    !std::is_trivially_destructible_v<std::optional<NonTriviallyDestructible>>,
+    "OptionalIsTriviallyDestructible");
 
 TEST(OptionalTest, DefaultConstructor) {
   {
@@ -565,7 +565,7 @@ TEST(OptionalTest, ForwardConstructor) {
       Test(int a) {}  // NOLINT(runtime/explicit)
     };
     // If T is convertible from U, it is not marked as explicit.
-    static_assert(std::is_convertible<int, Test>::value,
+    static_assert(std::is_convertible_v<int, Test>,
                   "Int should be convertible to Test.");
     ([](std::optional<Test> param) {})(1);
   }
@@ -1179,7 +1179,7 @@ TEST(OptionalTest, Emplace) {
   {
     std::optional<std::vector<int>> a;
     auto& ref = a.emplace({2, 3});
-    static_assert(std::is_same<std::vector<int>&, decltype(ref)>::value, "");
+    static_assert(std::is_same_v<std::vector<int>&, decltype(ref)>, "");
     EXPECT_TRUE(a);
     EXPECT_THAT(*a, ElementsAre(2, 3));
     EXPECT_EQ(&ref, &*a);
@@ -1188,7 +1188,7 @@ TEST(OptionalTest, Emplace) {
   {
     std::optional<std::vector<int>> a;
     auto& ref = a.emplace({4, 5}, std::allocator<int>());
-    static_assert(std::is_same<std::vector<int>&, decltype(ref)>::value, "");
+    static_assert(std::is_same_v<std::vector<int>&, decltype(ref)>, "");
     EXPECT_TRUE(a);
     EXPECT_THAT(*a, ElementsAre(4, 5));
     EXPECT_EQ(&ref, &*a);
@@ -2258,9 +2258,9 @@ TEST(OptionalTest, Noexcept) {
 TEST(OptionalTest, OverrideAddressOf) {
   // Objects with an overloaded address-of should not trigger the overload for
   // arrow or copy assignment.
-  static_assert(std::is_trivially_destructible<
-                    TriviallyDestructibleOverloadAddressOf>::value,
-                "Trivially...AddressOf must be trivially destructible.");
+  static_assert(
+      std::is_trivially_destructible_v<TriviallyDestructibleOverloadAddressOf>,
+      "Trivially...AddressOf must be trivially destructible.");
   std::optional<TriviallyDestructibleOverloadAddressOf> optional;
   TriviallyDestructibleOverloadAddressOf n;
   optional = n;
@@ -2273,8 +2273,8 @@ TEST(OptionalTest, OverrideAddressOf) {
   const auto& const_optional = optional;
   const_optional->const_method();
 
-  static_assert(!std::is_trivially_destructible<
-                    NonTriviallyDestructibleOverloadAddressOf>::value,
+  static_assert(!std::is_trivially_destructible_v<
+                    NonTriviallyDestructibleOverloadAddressOf>,
                 "NotTrivially...AddressOf must not be trivially destructible.");
   std::optional<NonTriviallyDestructibleOverloadAddressOf> nontrivial_optional;
   NonTriviallyDestructibleOverloadAddressOf n1;

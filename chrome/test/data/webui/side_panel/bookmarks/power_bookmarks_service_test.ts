@@ -171,7 +171,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
+    bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     shoppingListApi = new TestShoppingListApiProxy();
@@ -242,7 +242,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByNewestWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    bookmarksApi.setFolders(structuredClone(complexFolders));
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');
@@ -264,7 +264,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByOldestWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    bookmarksApi.setFolders(structuredClone(complexFolders));
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');
@@ -286,7 +286,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
   });
 
   test('SortsByLastOpenedWithComplexDescendants', async () => {
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(complexFolders)));
+    bookmarksApi.setFolders(structuredClone(complexFolders));
     service.startListening();
 
     await delegate.whenCalled('onBookmarksLoaded');

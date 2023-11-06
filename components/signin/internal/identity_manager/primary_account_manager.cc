@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/debug/stack_trace.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -26,11 +26,25 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 using signin::PrimaryAccountChangeEvent;
 
+BASE_FEATURE(kRestorePrimaryAccountInfo,
+             "RestorePrimaryAccountInfo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 namespace {
+
+enum class InitializePrefState {
+  kWithPrimaryAccountId_NotConsentedForSync = 0,
+  kWithPrimaryAccountId_ConsentedForSync = 1,
+  kEmptyPrimaryAccountId_NotConsentedForSync = 2,
+  kEmptyPrimaryAccountId_ConsentedForSync = 3,
+  kMaxValue = kEmptyPrimaryAccountId_ConsentedForSync,
+};
+
 void LogPrimaryAccountChangeMetrics(
     PrimaryAccountChangeEvent event_details,
     absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
@@ -86,6 +100,24 @@ void LogPrimaryAccountChangeMetrics(
       break;
   }
 }
+
+void LogPrimaryAccountPrefsOnInitialize(const std::string& pref_account_id,
+                                        bool pref_consented_to_sync) {
+  if (pref_account_id.empty()) {
+    base::UmaHistogramEnumeration(
+        "Signin.PAMInitialize.PrimaryAccountPrefs",
+        pref_consented_to_sync
+            ? InitializePrefState::kEmptyPrimaryAccountId_ConsentedForSync
+            : InitializePrefState::kEmptyPrimaryAccountId_NotConsentedForSync);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Signin.PAMInitialize.PrimaryAccountPrefs",
+        pref_consented_to_sync
+            ? InitializePrefState::kWithPrimaryAccountId_ConsentedForSync
+            : InitializePrefState::kWithPrimaryAccountId_NotConsentedForSync);
+  }
+}
+
 }  // namespace
 
 // A wrapper around PrefService that sets prefs only when updated. It can be
@@ -160,34 +192,35 @@ void PrimaryAccountManager::RegisterPrefs(PrefRegistrySimple* registry) {
                                std::string());
 }
 
-void PrimaryAccountManager::Initialize(PrefService* local_state) {
-  // Should never call Initialize() twice.
-  DCHECK(!IsInitialized());
-  initialized_ = true;
+void PrimaryAccountManager::PrepareToLoadPrefs() {
+  // Check this method is only called before loading the primary account.
+  CHECK(!IsInitialized());
+
+  PrefService* prefs = client_->GetPrefs();
 
   // If the user is clearing the token service from the command line, then
   // clear their login info also (not valid to be logged in without any
   // tokens).
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
-                                      /*commit_on_destroy*/ false);
-  if (cmd_line->HasSwitch(switches::kClearTokenService))
-    SetPrimaryAccountInternal(CoreAccountInfo(), false, scoped_pref_commit);
+  if (cmd_line->HasSwitch(switches::kClearTokenService)) {
+    prefs->SetString(prefs::kGoogleServicesAccountId, "");
+    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
+  }
 
   std::string pref_account_id =
-      client_->GetPrefs()->GetString(prefs::kGoogleServicesAccountId);
+      prefs->GetString(prefs::kGoogleServicesAccountId);
 
   // Initial value for the kGoogleServicesConsentedToSync preference if it is
   // missing.
   const PrefService::Preference* consented_pref =
-      client_->GetPrefs()->FindPreference(
-          prefs::kGoogleServicesConsentedToSync);
+      prefs->FindPreference(prefs::kGoogleServicesConsentedToSync);
   if (consented_pref->IsDefaultValue()) {
-    client_->GetPrefs()->SetBoolean(prefs::kGoogleServicesConsentedToSync,
-                                    !pref_account_id.empty());
+    prefs->SetBoolean(prefs::kGoogleServicesConsentedToSync,
+                      !pref_account_id.empty());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Migrate primary account ID from email to Gaia ID if needed.
   if (!pref_account_id.empty()) {
     if (account_tracker_service_->GetMigrationState() ==
         AccountTrackerService::MIGRATION_IN_PROGRESS) {
@@ -196,28 +229,125 @@ void PrimaryAccountManager::Initialize(PrefService* local_state) {
       // |account_info.gaia| could be empty if |account_id| is already gaia id.
       if (!account_info.gaia.empty()) {
         pref_account_id = account_info.gaia;
-        client_->GetPrefs()->SetString(prefs::kGoogleServicesAccountId,
-                                       account_info.gaia);
+        prefs->SetString(prefs::kGoogleServicesAccountId, account_info.gaia);
       }
     }
   }
 #endif
+}
 
-  bool consented =
-      client_->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync);
+std::pair<CoreAccountInfo, PrimaryAccountManager::InitializeAccountInfoState>
+PrimaryAccountManager::GetOrRestorePrimaryAccountInfoOnInitialize(
+    const std::string& pref_account_id,
+    bool pref_consented_to_sync) {
+  // Check this method is only called before loading the primary account.
+  CHECK(!IsInitialized());
+
+  // This method must only be called when the primary account pref is non-empty.
+  CHECK(!pref_account_id.empty());
   CoreAccountId account_id = CoreAccountId::FromString(pref_account_id);
+  CHECK(!account_id.empty());
+
   CoreAccountInfo account_info =
       account_tracker_service_->GetAccountInfo(account_id);
-  if (consented) {
-    DCHECK(!account_info.account_id.empty());
-    // First reset the state, because SetSyncPrimaryAccountInternal() can
-    // only be called if there is no primary account.
+  if (!account_info.IsEmpty()) {
+    return std::make_pair(account_info,
+                          InitializeAccountInfoState::kAccountInfoAvailable);
+  }
+
+  if (!pref_consented_to_sync) {
+    return std::make_pair(CoreAccountInfo(),
+                          InitializeAccountInfoState::
+                              kEmptyAccountInfo_RestoreFailedNotSyncConsented);
+  }
+
+  PrefService* prefs = client_->GetPrefs();
+  std::string last_syncing_gaia_id =
+      prefs->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
+  if (last_syncing_gaia_id.empty()) {
+    return std::make_pair(CoreAccountInfo(),
+                          InitializeAccountInfoState::
+                              kEmptyAccountInfo_RestoreFailedNoLastSyncGaiaId);
+  }
+  std::string last_syncing_email =
+      prefs->GetString(prefs::kGoogleServicesLastSyncingUsername);
+  if (last_syncing_email.empty()) {
+    return std::make_pair(CoreAccountInfo(),
+                          InitializeAccountInfoState::
+                              kEmptyAccountInfo_RestoreFailedNoLastSyncEmail);
+  }
+
+  if (account_id != account_tracker_service_->PickAccountIdForAccount(
+                        last_syncing_gaia_id, last_syncing_email)) {
+    return std::make_pair(
+        CoreAccountInfo(),
+        InitializeAccountInfoState::
+            kEmptyAccountInfo_RestoreFailedAccountIdDontMatch);
+  }
+
+  if (base::FeatureList::IsEnabled(kRestorePrimaryAccountInfo)) {
+    CHECK_EQ(account_id,
+             account_tracker_service_->SeedAccountInfo(
+                 last_syncing_gaia_id, last_syncing_email,
+                 signin_metrics::AccessPoint::
+                     ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD));
+
+    return std::make_pair(account_tracker_service_->GetAccountInfo(account_id),
+                          InitializeAccountInfoState::
+                              kEmptyAccountInfo_RestoreSuccessFromLastSyncInfo);
+  } else {
+    return std::make_pair(
+        CoreAccountInfo(),
+        InitializeAccountInfoState::
+            kEmptyAccountInfo_RestoreFailedAsRestoreFeatureIsDisabled);
+  }
+}
+
+void PrimaryAccountManager::Initialize() {
+  // Should never call Initialize() twice.
+  CHECK(!IsInitialized());
+
+  // Prepare prefs before loading them.
+  PrepareToLoadPrefs();
+
+  PrefService* prefs = client_->GetPrefs();
+  std::string pref_account_id =
+      prefs->GetString(prefs::kGoogleServicesAccountId);
+  bool pref_consented_to_sync =
+      prefs->GetBoolean(prefs::kGoogleServicesConsentedToSync);
+  LogPrimaryAccountPrefsOnInitialize(pref_account_id, pref_consented_to_sync);
+
+  ScopedPrefCommit scoped_pref_commit(client_->GetPrefs(),
+                                      /*commit_on_destroy=*/false);
+  if (pref_account_id.empty()) {
     SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                               scoped_pref_commit);
-    SetSyncPrimaryAccountInternal(account_info);
   } else {
-    SetPrimaryAccountInternal(account_info, consented, scoped_pref_commit);
+    auto [account_info, account_info_state] =
+        GetOrRestorePrimaryAccountInfoOnInitialize(pref_account_id,
+                                                   pref_consented_to_sync);
+    base::UmaHistogramEnumeration(
+        "Signin.PAMInitialize.PrimaryAccountInfoState", account_info_state);
+
+    if (pref_consented_to_sync && !account_info.IsEmpty()) {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/true,
+                                scoped_pref_commit);
+
+      // Ensure that the last syncing account data is consistent with the
+      // primary account.
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingGaiaId,
+                                   account_info.gaia);
+      scoped_pref_commit.SetString(prefs::kGoogleServicesLastSyncingUsername,
+                                   account_info.email);
+    } else {
+      SetPrimaryAccountInternal(account_info, /*consented_to_sync=*/false,
+                                scoped_pref_commit);
+    }
   }
+
+  // PrimaryAccountManager is initialized once the primary account and consent
+  // level are loaded.
+  initialized_ = true;
 
   // Instrument metrics to know what fraction of users without a primary
   // account previously did have one, with sync enabled.
@@ -325,12 +455,14 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
   const std::string& account_id = primary_account_info_.account_id.ToString();
   if (account_id.empty()) {
     DCHECK(!consented_to_sync);
+    consented_to_sync_ = false;
     scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, "");
     scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync, false);
   } else {
+    consented_to_sync_ = consented_to_sync;
     scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
     scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
-                                  consented_to_sync);
+                                  consented_to_sync_);
   }
 }
 
@@ -359,17 +491,14 @@ void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
 
 bool PrimaryAccountManager::HasPrimaryAccount(
     signin::ConsentLevel consent_level) const {
-  bool consented_pref =
-      client_->GetPrefs()->GetBoolean(prefs::kGoogleServicesConsentedToSync);
-  if (primary_account_info().account_id.empty()) {
-    DCHECK(!consented_pref);
-    return false;
-  }
+  // Shound not be called before the consent level is loaded in memory.
+  CHECK(IsInitialized());
+
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:
-      return true;
+      return !primary_account_info_.account_id.empty();
     case signin::ConsentLevel::kSync:
-      return consented_pref;
+      return !primary_account_info_.account_id.empty() && consented_to_sync_;
   }
 }
 
@@ -465,12 +594,9 @@ void PrimaryAccountManager::OnSignoutDecisionReached(
                                       /*commit_on_destroy*/ false);
   switch (remove_option) {
     case RemoveAccountsOption::kRemoveAllAccounts:
-      // TODO(crbug.com/1491558): Remove the stack trace from the log once the
-      // flakiness is resolved.
       VLOG(0)
-          << "Revoking all refresh tokens on server. Reason: sign out; source="
-          << static_cast<int>(signout_source_metric) << "; stack trace:\n"
-          << base::debug::StackTrace().ToString();
+          << "Revoking all refresh tokens on server. Reason: sign out; source: "
+          << static_cast<int>(signout_source_metric);
       SetPrimaryAccountInternal(CoreAccountInfo(), /*consented_to_sync=*/false,
                                 scoped_pref_commit);
       token_service_->RevokeAllCredentials(

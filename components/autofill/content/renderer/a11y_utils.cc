@@ -8,22 +8,26 @@
 
 namespace autofill {
 
-void SetAutofillState(const blink::WebInputElement& element,
-                      mojom::AutofillState state) {
+void SetAutofillSuggestionAvailability(
+    const blink::WebInputElement& element,
+    mojom::AutofillSuggestionAvailability suggestion_availability) {
   if (!element.IsNull()) {
-    auto to_blink_enum = [](mojom::AutofillState state) {
-      switch (state) {
-        case mojom::AutofillState::kAutofillAvailable:
-          return blink::WebAXAutofillState::kAutofillAvailable;
-        case mojom::AutofillState::kAutocompleteAvailable:
-          return blink::WebAXAutofillState::kAutocompleteAvailable;
-        case mojom::AutofillState::kNoSuggestions:
-          return blink::WebAXAutofillState::kNoSuggestions;
+    auto to_blink_enum = [](mojom::AutofillSuggestionAvailability
+                                suggestion_availability) {
+      switch (suggestion_availability) {
+        case mojom::AutofillSuggestionAvailability::kAutofillAvailable:
+          return blink::WebAXAutofillSuggestionAvailability::kAutofillAvailable;
+        case mojom::AutofillSuggestionAvailability::kAutocompleteAvailable:
+          return blink::WebAXAutofillSuggestionAvailability::
+              kAutocompleteAvailable;
+        case mojom::AutofillSuggestionAvailability::kNoSuggestions:
+          return blink::WebAXAutofillSuggestionAvailability::kNoSuggestions;
       }
       NOTREACHED_NORETURN();
     };
-    blink::WebAXObject::FromWebNode(element).HandleAutofillStateChanged(
-        to_blink_enum(state));
+    blink::WebAXObject::FromWebNode(element)
+        .HandleAutofillSuggestionAvailabilityChanged(
+            to_blink_enum(suggestion_availability));
   }
 }
 }  // namespace autofill

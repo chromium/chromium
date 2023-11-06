@@ -201,7 +201,7 @@ export const INPUT_TYPE_MESSAGE_IDS = {
 
 /**
  * @typedef {{
- *    node: chrome.automation.AutomationNode,
+ *    node: ?chrome.automation.AutomationNode,
  *    outputFormat: (string|!OutputFormatTree),
  *    outputBuffer: !Array<Spannable>,
  *    outputFormatLogger: !OutputFormatLogger,

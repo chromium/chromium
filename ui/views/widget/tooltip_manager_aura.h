@@ -48,6 +48,7 @@ class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
   int GetMaxWidth(const gfx::Point& location) const override;
   const gfx::FontList& GetFontList() const override;
   void UpdateTooltip() override;
+  void UpdateTooltipForFocus(View* view) override;
   void TooltipTextChanged(View* view) override;
 
  private:

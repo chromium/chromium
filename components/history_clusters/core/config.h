@@ -174,6 +174,13 @@ struct Config {
   // aren't too many strong navigation matches.
   int omnibox_history_cluster_provider_score = 900;
 
+  // If enabled, will inherit the score from the matched search suggestion
+  // minus 1. This will force the journey suggestion immediately after the
+  // search suggestion, except if there's a tie with another suggestion, in
+  // which case it's indeterminate which is ordered first. If enabled,
+  // `omnibox_history_cluster_provider_score` becomes a no-op.
+  bool omnibox_history_cluster_provider_inherit_search_match_score = false;
+
   // If `omnibox_history_cluster_provider_on_navigation_intents` is false, this
   // threshold helps determine when the user is intending to perform a
   // navigation. Meaningless if either `omnibox_history_cluster_provider` is

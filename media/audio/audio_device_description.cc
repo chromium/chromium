@@ -141,4 +141,10 @@ AudioDeviceDescription::AudioDeviceDescription(std::string device_name,
       unique_id(std::move(unique_id)),
       group_id(std::move(group_id)) {}
 
+bool AudioDeviceDescription::operator==(
+    const AudioDeviceDescription& other) const {
+  return device_name == other.device_name && unique_id == other.unique_id &&
+         group_id == other.group_id;
+}
+
 }  // namespace media

@@ -920,6 +920,9 @@
                   '|components/policy/'\
                   '|docs/website/site/administrators/',
     },
+    'cros_commercial_policy_proto': {
+      'filepath': 'components/policy/proto/chrome_device_policy.proto',
+    },
     'cros_reporting': {
       'filepath': 'chrome/browser/policy/messaging_layer/'\
                   '|chrome/browser/ash/policy/status_collector/'\
@@ -1028,6 +1031,11 @@
     'disk_cache': {
       'filepath': 'net/disk_cache/|http_cache',
     },
+    'display': {
+      'filepath': 'ui/display/|'\
+                  'ash/display/|'\
+                  'chrome/browser/ui/webui/ash/settings/pages/device/display_settings/',
+    },
     'dom_storage': {
       'filepath': 'content/common/dom_storage/|'\
                   'content/browser/dom_storage/|'\
@@ -1044,7 +1052,8 @@
     'download_status_updater_chromeos': {
       'filepath': 'chrome/browser/ash/crosapi/download_status_updater|' \
                   'chrome/browser/download/download_status_updater_lacros|' \
-                  'chrome/browser/lacros/download_status_updater'
+                  'chrome/browser/lacros/download_status_updater|' \
+                  'chrome/browser/ui/ash/download_status/'
     },
     'downloads_ui': {
       'filepath': 'chrome/browser/resources/downloads/|' \
@@ -1767,10 +1776,9 @@
     'prerender': {
       'filepath': 'chrome/browser/chrome_content_browser_client_binder_policies' \
                   '|chrome/browser/predictors/autocomplete_action_predictor\.(cc|h)$' \
-                  '|chrome/browser/preloading/prefetch/search_prefetch/' \
-                  '|chrome/browser/preloading/prerender/' \
+                  '|chrome/browser/preloading/' \
                   '|content/browser/mojo_binder_policy' \
-                  '|content/browser/preloading/prerender/'
+                  '|content/browser/preloading/'
     },
     'presentation': {
       'filepath': 'content/browser/presentation/' \
@@ -2432,7 +2440,8 @@
                           'jsaul+autofillwatch@google.com',
                           'shgar+autofillwatch@google.com',
                           'siashah+autofillwatch@chromium.org',
-                          'siyua+autofillwatch@chromium.org'],
+                          'siyua+autofillwatch@chromium.org',
+                          'vinnypersky+autofillwatch@google.com'],
     'background_fetch': ['peter@chromium.org',
                          'rayankans+watch@chromium.org',
                          'nator+watch@chromium.org'],
@@ -2730,6 +2739,7 @@
               'wiss+watch-creator@chromium.org',
               'wry+watch-creator@chromium.org',],
     'cros_commercial_policy': ['enterprise-policy-review@google.com'],
+    'cros_commercial_policy_proto': ['vsavu+watch@google.com'],
     'cros_reporting': ['cros-reporting-reviews@google.com'],
     'crosapi': ['ffred+watch@chromium.org', 'tluk+watch@chromium.org'],
     'crosapi_mojom': ['elkurin+watch@chromium.org'],
@@ -2776,6 +2786,7 @@
              'wanderview+watch-dips@chromium.org'],
     'discardable_memory': ['thiabaud+watch-discardable-memory@google.com'],
     'disk_cache': ['gavinp+disk@chromium.org'],
+    'display': ['zhangwenyu+watch@google.com'],
     'dom_storage': ['dmurph+watchingdomstorage@chromium.org'],
     'download': ['dtrainor+watch@chromium.org'],
     'download_bubble': ['xinghuilu+watch@chromium.org',

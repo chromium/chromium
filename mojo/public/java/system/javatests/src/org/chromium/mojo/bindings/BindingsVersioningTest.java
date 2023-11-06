@@ -29,8 +29,7 @@ import org.chromium.mojo.system.impl.CoreImpl;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class BindingsVersioningTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
     private static Rect newRect(int factor) {
         Rect rect = new Rect();
@@ -52,9 +51,7 @@ public class BindingsVersioningTest {
         return struct;
     }
 
-    /**
-     * Testing serializing old struct version to newer one.
-     */
+    /** Testing serializing old struct version to newer one. */
     @Test
     @SmallTest
     public void testOldToNew() {
@@ -125,9 +122,10 @@ public class BindingsVersioningTest {
             v7.fRect = newRect(5);
             v7.fString = "hello";
             v7.fArray = new byte[] {10, 9, 8};
-            v7.fMessagePipe = CoreImpl.getInstance()
-                                      .acquireNativeHandle(expectedHandle)
-                                      .toMessagePipeHandle();
+            v7.fMessagePipe =
+                    CoreImpl.getInstance()
+                            .acquireNativeHandle(expectedHandle)
+                            .toMessagePipeHandle();
             v7.fBool = true;
             MultiVersionStruct expected = new MultiVersionStruct();
             expected.fInt32 = 123;
@@ -148,9 +146,7 @@ public class BindingsVersioningTest {
         }
     }
 
-    /**
-     * Testing serializing new struct version to older one.
-     */
+    /** Testing serializing new struct version to older one. */
     @Test
     @SmallTest
     public void testNewToOld() {
@@ -207,9 +203,10 @@ public class BindingsVersioningTest {
             expected.fBool = true;
 
             MultiVersionStruct input = struct;
-            input.fMessagePipe = CoreImpl.getInstance()
-                                         .acquireNativeHandle(expectedHandle)
-                                         .toMessagePipeHandle();
+            input.fMessagePipe =
+                    CoreImpl.getInstance()
+                            .acquireNativeHandle(expectedHandle)
+                            .toMessagePipeHandle();
 
             MultiVersionStructV7 output = MultiVersionStructV7.deserialize(input.serialize(null));
 

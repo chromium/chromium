@@ -65,8 +65,14 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
     base::UmaHistogramBoolean(
         "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
         false);
+    // TODO(crbug.com/1494413): Refactor |isolated_world_origin| info in
+    // websockets to track extension requests from content scripts. Even though
+    // |kExtension| is passed down for |ContactInitiatorType| now, the browser
+    // side will declare unspecified for websocket connections. The correct
+    // |ContactInitiatorType| will be passed down once the refactoring is done.
     extension_web_request_reporter_->SendWebRequestData(
-        origin_extension_id, url, mojom::WebRequestProtocolType::kWebSocket);
+        origin_extension_id, url, mojom::WebRequestProtocolType::kWebSocket,
+        mojom::WebRequestContactInitiatorType::kExtension);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

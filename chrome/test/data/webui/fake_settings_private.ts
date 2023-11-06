@@ -11,13 +11,6 @@ import {FakeChromeEvent} from './fake_chrome_event.js';
 /** @fileoverview Fake implementation of chrome.settingsPrivate for testing. */
 
 /**
- * Creates a deep copy of the object.
- */
-function deepCopy(obj: object): object {
-  return JSON.parse(JSON.stringify(obj));
-}
-
-/**
  * Fake of chrome.settingsPrivate API. Use by setting
  * CrSettingsPrefs.deferInitialization to true, then passing a
  * FakeSettingsPrivate to settings-prefs#initialize().
@@ -48,7 +41,8 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
     const prefs = [];
     for (const key in this.prefs) {
       prefs.push(
-          deepCopy(this.prefs[key]!) as chrome.settingsPrivate.PrefObject);
+          structuredClone(this.prefs[key]!) as
+          chrome.settingsPrivate.PrefObject);
     }
     return Promise.resolve(prefs);
   }
@@ -67,10 +61,10 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
     assertNotEquals(true, this.disallowSetPref_);
 
     const changed = JSON.stringify(pref!.value) !== JSON.stringify(value);
-    pref!.value = deepCopy(value);
+    pref!.value = structuredClone(value);
     // Like chrome.settingsPrivate, send a notification when prefs change.
     if (changed) {
-      this.sendPrefChanges([{key: key, value: deepCopy(value)}]);
+      this.sendPrefChanges([{key: key, value: structuredClone(value)}]);
     }
     return Promise.resolve(true);
   }
@@ -80,7 +74,7 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
     const pref = this.prefs[key];
     assertNotEquals(undefined, pref);
     return Promise.resolve(
-        deepCopy(pref!) as chrome.settingsPrivate.PrefObject);
+        structuredClone(pref!) as chrome.settingsPrivate.PrefObject);
   }
 
   // Functions used by tests.
@@ -108,7 +102,7 @@ export class FakeSettingsPrivate extends TestBrowserProxy {
       const pref = this.prefs[change.key];
       assertNotEquals(undefined, pref);
       pref!.value = change.value;
-      prefs.push(deepCopy(pref!) as chrome.settingsPrivate.PrefObject);
+      prefs.push(structuredClone(pref!) as chrome.settingsPrivate.PrefObject);
     }
     this.onPrefsChanged.callListeners(prefs);
   }

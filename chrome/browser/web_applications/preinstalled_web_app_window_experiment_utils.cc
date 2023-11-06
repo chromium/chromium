@@ -27,11 +27,11 @@
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"  // nogncheck
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -216,7 +216,7 @@ bool AnyWebAppsInstalledByPolicy(WebAppRegistrar& registrar) {
 
 // Managed Guest Sessions and ephemeral profiles are not eligible.
 bool ProfileIsEligible(Profile* profile) {
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 

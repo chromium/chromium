@@ -229,9 +229,13 @@ bool CanBeAutoRevoked(ContentSettingsType type,
 
 bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
                                    const RuleMetaData& metadata) {
-  return type == ContentSettingsType::STORAGE_ACCESS &&
-         metadata.session_model() ==
-             content_settings::SessionModel::NonRestorableUserSession;
+  switch (type) {
+    case ContentSettingsType::STORAGE_ACCESS:
+    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
+      return metadata.session_model() == SessionModel::NonRestorableUserSession;
+    default:
+      return false;
+  }
 }
 
 }  // namespace content_settings

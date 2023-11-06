@@ -4,7 +4,6 @@
 
 #include "ash/system/media/quick_settings_media_view_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/media/mock_media_notification_provider.h"
 #include "ash/system/media/quick_settings_media_view.h"
@@ -27,8 +26,8 @@ class QuickSettingsMediaViewControllerTest : public AshTestBase {
   ~QuickSettingsMediaViewControllerTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kQsRevamp, media::kGlobalMediaControlsCrOSUpdatedUI}, {});
+    feature_list_.InitWithFeatures({media::kGlobalMediaControlsCrOSUpdatedUI},
+                                   {});
     AshTestBase::SetUp();
     provider_ = std::make_unique<MockMediaNotificationProvider>();
 

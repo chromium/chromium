@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -15,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -28,75 +32,83 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /** Unit tests for {@link PageImageServiceQueue}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PageImageServiceQueueTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private Callback<GURL> mBookmarkUrlCallback;
-    @Mock
-    private Callback<GURL> mQueuedBookmarkUrlCallback;
-    @Mock
-    private SyncService mSyncService;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private Callback<GURL> mBookmarkUrlCallback;
+    @Mock private Callback<GURL> mQueuedBookmarkUrlCallback;
+    @Mock private SyncService mSyncService;
+    @Captor private ArgumentCaptor<Callback<GURL>> mGurlCallbackCaptor;
 
     private PageImageServiceQueue mPageImageServiceQueue;
 
     @Before
     public void setUp() {
-        // Setup bookmark url fetching.
-        doCallback(1, (Callback<GURL> callback) -> {
-            callback.onResult(JUnitTestGURLs.EXAMPLE_URL);
-        }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
-
         doReturn(true).when(mSyncService).isSyncFeatureActive();
         doReturn(Collections.singleton(ModelType.BOOKMARKS))
                 .when(mSyncService)
                 .getActiveDataTypes();
         mPageImageServiceQueue =
-                new PageImageServiceQueue(mBookmarkModel, /*maxFetchRequests*/ 1, mSyncService);
+                new PageImageServiceQueue(mBookmarkModel, /* maxFetchRequests= */ 1, mSyncService);
     }
 
     @Test
     public void testQueuedRequests() {
-        List<Callback<GURL>> urlCallbacks = new ArrayList<>();
-        // Intentionally do nothing so the requests stack up.
-        doCallback(1, (Callback<GURL> callback) -> {
-            urlCallbacks.add(callback);
-        }).when(mBookmarkModel).getImageUrlForBookmark(any(), any());
-
         // Our limit is 1 for testing.
         mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
 
         // Then add one more.
         mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_2, mQueuedBookmarkUrlCallback);
 
-        verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
+        verify(mBookmarkModel)
+                .getImageUrlForBookmark(eq(JUnitTestGURLs.URL_1), mGurlCallbackCaptor.capture());
         // Run the 1st callback and verify that the queued one is executed.
-        urlCallbacks.get(0).onResult(null); // value here doesn't matter.
-        verify(mBookmarkModel, times(2)).getImageUrlForBookmark(any(), any());
+        mGurlCallbackCaptor.getValue().onResult(null); // value here doesn't matter.
+        verify(mBookmarkModel).getImageUrlForBookmark(eq(JUnitTestGURLs.URL_2), any());
     }
 
     @Test
     public void testCachedRequest() {
+        doCallback(1, (Callback<GURL> callback) -> callback.onResult(JUnitTestGURLs.EXAMPLE_URL))
+                .when(mBookmarkModel)
+                .getImageUrlForBookmark(any(), any());
+
         mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
-
-        // The result from URL_1 should be in the queue
-        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mQueuedBookmarkUrlCallback);
-
         verify(mBookmarkUrlCallback).onResult(any());
+        verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
+
+        // The result from URL_1 should be in the cache.
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mQueuedBookmarkUrlCallback);
         verify(mQueuedBookmarkUrlCallback).onResult(any());
         // The value should have been cached and bookmark model only queried for the 1st request.
         verify(mBookmarkModel, times(1)).getImageUrlForBookmark(any(), any());
+    }
+
+    @Test
+    public void testCachedRunsPending() {
+        reset(mBookmarkModel);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_1, mBookmarkUrlCallback);
+        mPageImageServiceQueue.getSalientImageUrl(JUnitTestGURLs.URL_2, mBookmarkUrlCallback);
+        verify(mBookmarkModel)
+                .getImageUrlForBookmark(eq(JUnitTestGURLs.URL_1), mGurlCallbackCaptor.capture());
+
+        // As soon as the first request runs, the second should synchronously execute as well since
+        // it's satisfiable by just the cache. The third request should show up in the callbacks.
+        mGurlCallbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
+        verify(mBookmarkUrlCallback, times(2)).onResult(any());
+        verify(mBookmarkModel)
+                .getImageUrlForBookmark(eq(JUnitTestGURLs.URL_2), mGurlCallbackCaptor.capture());
+
+        mGurlCallbackCaptor.getValue().onResult(JUnitTestGURLs.EXAMPLE_URL);
+        verify(mBookmarkUrlCallback, times(3)).onResult(any());
     }
 
     @Test

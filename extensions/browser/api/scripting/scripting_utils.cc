@@ -9,6 +9,7 @@
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/user_script.h"
@@ -60,6 +61,17 @@ bool IsScriptIdValid(const std::string& script_id, std::string* error) {
   }
 
   return true;
+}
+
+bool ScriptsShouldBeAllowedInIncognito(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context) {
+  // Note: We explicitly use `util::IsIncognitoEnabled()` (and not
+  // `ExtensionFunction::include_incognito_information()`) since the latter
+  // excludes the on-the-record context of a split-mode extension. Since user
+  // scripts are shared across profiles, we should use the overall setting for
+  // the extension.
+  return util::IsIncognitoEnabled(extension_id, browser_context);
 }
 
 bool RemoveScripts(

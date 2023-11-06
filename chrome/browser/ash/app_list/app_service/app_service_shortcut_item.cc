@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_shortcut_context_menu.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_update.h"
 #include "ui/gfx/image/image_skia_operations.h"
 
@@ -124,11 +125,14 @@ void AppServiceShortcutItem::OnLoadIcon(apps::IconValuePtr icon_value,
   // icons.
   // TODO(crbug.com/1480423): Remove this when the actual visual is done in the
   // UI.
-  gfx::ImageSkia icon_with_badge =
-      gfx::ImageSkiaOperations::CreateIconWithBadge(icon_value->uncompressed,
-                                                    badge_value->uncompressed);
+  if (chromeos::features::IsSeparateWebAppShortcutBadgeIconEnabled()) {
+    SetIcon(icon_value->uncompressed, false);
+  } else {
+    gfx::ImageSkia icon_with_badge =
+        gfx::ImageSkiaOperations::CreateIconWithBadge(
+            icon_value->uncompressed, badge_value->uncompressed);
 
-  SetIcon(icon_with_badge, icon_value->is_placeholder_icon);
-
+    SetIcon(icon_with_badge, icon_value->is_placeholder_icon);
+  }
   SetBadgeIcon(badge_value->uncompressed);
 }

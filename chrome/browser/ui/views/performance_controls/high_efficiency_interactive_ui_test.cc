@@ -447,34 +447,6 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       EnsureNotPresent(kHighEfficiencyChipElementId));
 }
 
-// Clicking on the settings link in high efficiency dialog bubble should open
-// a new tab and navigate to the performance settings page
-IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
-                       BubbleSettingsLinkNavigates) {
-  constexpr char kPerformanceSettingsLinkViewName[] = "performance_link";
-
-  RunTestSequence(
-      InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
-      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
-      DiscardAndSelectTab(0, kFirstTabContents),
-      SelectTab(kTabStripElementId, 1), SelectTab(kTabStripElementId, 0),
-      CheckChipIsCollapsedState(), PressButton(kHighEfficiencyChipElementId),
-      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
-      InAnyContext(NameViewRelative(
-          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
-          kPerformanceSettingsLinkViewName,
-          base::BindOnce([](views::StyledLabel* label) -> views::View* {
-            return label->GetFirstLinkForTesting();
-          }))),
-      MoveMouseTo(kPerformanceSettingsLinkViewName), ClickMouse(),
-      Check(base::BindLambdaForTesting(
-          [&]() { return browser()->tab_strip_model()->GetTabCount() == 3; })),
-      InstrumentTab(kPerformanceSettingsTab, 2),
-      WaitForWebContentsReady(kPerformanceSettingsTab,
-                              GURL(chrome::kChromeUIPerformanceSettingsURL)));
-}
-
 // High Efficiency Dialog bubble should close after clicking the "OK" button
 IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
                        CloseBubbleOnOkButtonClick) {
@@ -565,11 +537,13 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
       ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
       WaitForShow(kHighEfficiencyChipElementId),
       PressButton(kHighEfficiencyChipElementId),
-      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      WaitForShow(HighEfficiencyResourceView::
+                      kHighEfficiencyResourceViewMemorySavingsElementId),
       CheckView(
-          HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
+          HighEfficiencyResourceView::
+              kHighEfficiencyResourceViewMemorySavingsElementId,
           base::BindOnce(
-              [](Browser* browser, views::StyledLabel* label) {
+              [](Browser* browser, views::Label* label) {
                 content::WebContents* web_contents =
                     browser->tab_strip_model()->GetWebContentsAt(0);
                 auto* pre_discard_resource_usage = performance_manager::

@@ -135,33 +135,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
     return GetInterfaceVersion<CrosapiInterface>() >= 0;
   }
 
-  // TODO(crbug.com/1434530): remove these specializations in M116 or later
-  // These specialization are needed because of crbug.com/1434530.
-  // Older ash-chrome with this bug won't provide version information about
-  // AutomationFactory, SelectFile, and VolumeManager. Thus, without these
-  // specializations, there will possibly be problems under a version skew
-  // environment (i.e. using older ash with newer lacros).
-  template <>
-  bool IsSupported<crosapi::mojom::AutomationFactory>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version &&
-           version.value() >=
-               Crosapi::MethodMinVersions::kBindAutomationFactoryMinVersion;
-  }
-  template <>
-  bool IsSupported<crosapi::mojom::SelectFile>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version && version.value() >=
-                          Crosapi::MethodMinVersions::kBindSelectFileMinVersion;
-  }
-  template <>
-  bool IsSupported<crosapi::mojom::VolumeManager>() const {
-    absl::optional<uint32_t> version = CrosapiVersion();
-    return version &&
-           version.value() >=
-               Crosapi::MethodMinVersions::kBindVolumeManagerMinVersion;
-  }
-
   // Returns whether this interface uses the automatic registration system to be
   // available for immediate use at startup. Any crosapi interface can be
   // registered by using ConstructRemote.

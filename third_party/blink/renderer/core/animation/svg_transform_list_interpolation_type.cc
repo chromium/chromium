@@ -56,13 +56,12 @@ struct DowncastTraits<SVGTransformNonInterpolableValue> {
 
 namespace {
 
-std::unique_ptr<InterpolableValue> TranslateToInterpolableValue(
-    SVGTransform* transform) {
+InterpolableValue* TranslateToInterpolableValue(SVGTransform* transform) {
   gfx::Vector2dF translate = transform->Translate();
-  auto result = std::make_unique<InterpolableList>(2);
-  result->Set(0, std::make_unique<InterpolableNumber>(translate.x()));
-  result->Set(1, std::make_unique<InterpolableNumber>(translate.y()));
-  return std::move(result);
+  auto* result = MakeGarbageCollected<InterpolableList>(2);
+  result->Set(0, MakeGarbageCollected<InterpolableNumber>(translate.x()));
+  result->Set(1, MakeGarbageCollected<InterpolableNumber>(translate.y()));
+  return result;
 }
 
 SVGTransform* TranslateFromInterpolableValue(const InterpolableValue& value) {
@@ -75,13 +74,12 @@ SVGTransform* TranslateFromInterpolableValue(const InterpolableValue& value) {
   return transform;
 }
 
-std::unique_ptr<InterpolableValue> ScaleToInterpolableValue(
-    SVGTransform* transform) {
+InterpolableValue* ScaleToInterpolableValue(SVGTransform* transform) {
   gfx::Vector2dF scale = transform->Scale();
-  auto result = std::make_unique<InterpolableList>(2);
-  result->Set(0, std::make_unique<InterpolableNumber>(scale.x()));
-  result->Set(1, std::make_unique<InterpolableNumber>(scale.y()));
-  return std::move(result);
+  auto* result = MakeGarbageCollected<InterpolableList>(2);
+  result->Set(0, MakeGarbageCollected<InterpolableNumber>(scale.x()));
+  result->Set(1, MakeGarbageCollected<InterpolableNumber>(scale.y()));
+  return result;
 }
 
 SVGTransform* ScaleFromInterpolableValue(const InterpolableValue& value) {
@@ -94,14 +92,13 @@ SVGTransform* ScaleFromInterpolableValue(const InterpolableValue& value) {
   return transform;
 }
 
-std::unique_ptr<InterpolableValue> RotateToInterpolableValue(
-    SVGTransform* transform) {
+InterpolableValue* RotateToInterpolableValue(SVGTransform* transform) {
   gfx::PointF rotation_center = transform->RotationCenter();
-  auto result = std::make_unique<InterpolableList>(3);
-  result->Set(0, std::make_unique<InterpolableNumber>(transform->Angle()));
-  result->Set(1, std::make_unique<InterpolableNumber>(rotation_center.x()));
-  result->Set(2, std::make_unique<InterpolableNumber>(rotation_center.y()));
-  return std::move(result);
+  auto* result = MakeGarbageCollected<InterpolableList>(3);
+  result->Set(0, MakeGarbageCollected<InterpolableNumber>(transform->Angle()));
+  result->Set(1, MakeGarbageCollected<InterpolableNumber>(rotation_center.x()));
+  result->Set(2, MakeGarbageCollected<InterpolableNumber>(rotation_center.y()));
+  return result;
 }
 
 SVGTransform* RotateFromInterpolableValue(const InterpolableValue& value) {
@@ -115,9 +112,8 @@ SVGTransform* RotateFromInterpolableValue(const InterpolableValue& value) {
   return transform;
 }
 
-std::unique_ptr<InterpolableValue> SkewXToInterpolableValue(
-    SVGTransform* transform) {
-  return std::make_unique<InterpolableNumber>(transform->Angle());
+InterpolableValue* SkewXToInterpolableValue(SVGTransform* transform) {
+  return MakeGarbageCollected<InterpolableNumber>(transform->Angle());
 }
 
 SVGTransform* SkewXFromInterpolableValue(const InterpolableValue& value) {
@@ -127,9 +123,8 @@ SVGTransform* SkewXFromInterpolableValue(const InterpolableValue& value) {
   return transform;
 }
 
-std::unique_ptr<InterpolableValue> SkewYToInterpolableValue(
-    SVGTransform* transform) {
-  return std::make_unique<InterpolableNumber>(transform->Angle());
+InterpolableValue* SkewYToInterpolableValue(SVGTransform* transform) {
+  return MakeGarbageCollected<InterpolableNumber>(transform->Angle());
 }
 
 SVGTransform* SkewYFromInterpolableValue(const InterpolableValue& value) {
@@ -139,9 +134,8 @@ SVGTransform* SkewYFromInterpolableValue(const InterpolableValue& value) {
   return transform;
 }
 
-std::unique_ptr<InterpolableValue> ToInterpolableValue(
-    SVGTransform* transform,
-    SVGTransformType transform_type) {
+InterpolableValue* ToInterpolableValue(SVGTransform* transform,
+                                       SVGTransformType transform_type) {
   switch (transform_type) {
     case SVGTransformType::kTranslate:
       return TranslateToInterpolableValue(transform);
@@ -191,23 +185,26 @@ const Vector<SVGTransformType>& GetTransformTypes(
 class SVGTransformListChecker : public InterpolationType::ConversionChecker {
  public:
   explicit SVGTransformListChecker(const InterpolationValue& underlying)
-      : underlying_(underlying.Clone()) {}
+      : underlying_(MakeGarbageCollected<InterpolationValueGCed>(underlying)) {}
 
   bool IsValid(const InterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     // TODO(suzyh): change maybeConvertSingle so we don't have to recalculate
     // for changes to the interpolable values
-    if (!underlying && !underlying_)
+    if (!underlying && !underlying_) {
       return true;
-    if (!underlying || !underlying_)
+    }
+    if (!underlying || !underlying_) {
       return false;
-    return underlying_.interpolable_value->Equals(
+    }
+    return underlying_->underlying().interpolable_value->Equals(
                *underlying.interpolable_value) &&
-           GetTransformTypes(underlying_) == GetTransformTypes(underlying);
+           GetTransformTypes(underlying_->underlying()) ==
+               GetTransformTypes(underlying);
   }
 
  private:
-  const InterpolationValue underlying_;
+  const Persistent<const InterpolationValueGCed> underlying_;
 };
 
 }  // namespace
@@ -224,10 +221,11 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertNeutral(
 InterpolationValue SVGTransformListInterpolationType::MaybeConvertSVGValue(
     const SVGPropertyBase& svg_value) const {
   const auto* svg_list = DynamicTo<SVGTransformList>(svg_value);
-  if (!svg_list)
+  if (!svg_list) {
     return nullptr;
+  }
 
-  auto result = std::make_unique<InterpolableList>(svg_list->length());
+  auto* result = MakeGarbageCollected<InterpolableList>(svg_list->length());
 
   Vector<SVGTransformType> transform_types;
   for (wtf_size_t i = 0; i < svg_list->length(); i++) {
@@ -241,8 +239,7 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSVGValue(
     transform_types.push_back(transform_type);
   }
   return InterpolationValue(
-      std::move(result),
-      SVGTransformNonInterpolableValue::Create(transform_types));
+      result, SVGTransformNonInterpolableValue::Create(transform_types));
 }
 
 InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
@@ -251,7 +248,7 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   Vector<SVGTransformType> types;
-  Vector<std::unique_ptr<InterpolableValue>> interpolable_parts;
+  HeapVector<Member<InterpolableValue>> interpolable_parts;
 
   if (keyframe.Composite() == EffectModel::kCompositeAdd) {
     if (underlying) {
@@ -271,13 +268,15 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
             .CloneForAnimation(
                 To<SVGPropertySpecificKeyframe>(keyframe).Value());
     InterpolationValue value = MaybeConvertSVGValue(*svg_value);
-    if (!value)
+    if (!value) {
       return nullptr;
+    }
     types.AppendVector(GetTransformTypes(value));
     interpolable_parts.push_back(std::move(value.interpolable_value));
   }
 
-  auto interpolable_list = std::make_unique<InterpolableList>(types.size());
+  auto* interpolable_list =
+      MakeGarbageCollected<InterpolableList>(types.size());
   wtf_size_t interpolable_list_index = 0;
   for (auto& part : interpolable_parts) {
     auto& list = To<InterpolableList>(*part);
@@ -288,7 +287,7 @@ InterpolationValue SVGTransformListInterpolationType::MaybeConvertSingle(
     }
   }
 
-  return InterpolationValue(std::move(interpolable_list),
+  return InterpolationValue(interpolable_list,
                             SVGTransformNonInterpolableValue::Create(types));
 }
 
@@ -300,16 +299,18 @@ SVGPropertyBase* SVGTransformListInterpolationType::AppliedSVGValue(
   const Vector<SVGTransformType>& transform_types =
       To<SVGTransformNonInterpolableValue>(non_interpolable_value)
           ->TransformTypes();
-  for (wtf_size_t i = 0; i < list.length(); ++i)
+  for (wtf_size_t i = 0; i < list.length(); ++i) {
     result->Append(FromInterpolableValue(*list.Get(i), transform_types.at(i)));
+  }
   return result;
 }
 
 PairwiseInterpolationValue SVGTransformListInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  if (GetTransformTypes(start) != GetTransformTypes(end))
+  if (GetTransformTypes(start) != GetTransformTypes(end)) {
     return nullptr;
+  }
 
   return PairwiseInterpolationValue(std::move(start.interpolable_value),
                                     std::move(end.interpolable_value),

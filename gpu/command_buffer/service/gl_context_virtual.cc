@@ -23,13 +23,14 @@ GLContextVirtual::GLContextVirtual(
       shared_context_(shared_context),
       delegate_(delegate) {}
 
-bool GLContextVirtual::Initialize(gl::GLSurface* compatible_surface,
-                                  const gl::GLContextAttribs& attribs) {
+bool GLContextVirtual::InitializeImpl(gl::GLSurface* compatible_surface,
+                                      const gl::GLContextAttribs& attribs) {
   SetGLStateRestorer(new GLStateRestorerImpl(delegate_));
   return shared_context_->MakeVirtuallyCurrent(this, compatible_surface);
 }
 
 void GLContextVirtual::Destroy() {
+  OnContextWillDestroy();
   shared_context_->OnReleaseVirtuallyCurrent(this);
   shared_context_ = nullptr;
 }

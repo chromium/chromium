@@ -221,7 +221,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_USAGE));
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
@@ -247,7 +247,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_USAGE));
 
   // `ApplyIncrementalSyncChanges()` returns an error if it fails.
   EXPECT_FALSE(bridge()->ApplyIncrementalSyncChanges(
@@ -273,7 +273,7 @@ TEST_F(AutofillWalletUsageDataSyncBridgeTest, ApplyDisableSyncChanges) {
 
   EXPECT_CALL(backend(), CommitChanges());
   EXPECT_CALL(backend(),
-              NotifyOfMultipleAutofillChanges(syncer::AUTOFILL_WALLET_USAGE));
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_USAGE));
 
   bridge()->ApplyDisableSyncChanges(/*delete_metadata_change_list=*/
                                     bridge()->CreateMetadataChangeList());

@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/mwb_shared_vars.css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import './infinite_list.js';
+import './tab_organization_shared_style.css.js';
 import './tab_search_group_item.js';
 import './tab_search_item.js';
 import './title_item.js';
@@ -20,7 +21,7 @@ import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {MetricsReporter, MetricsReporterImpl} from 'chrome://resources/js/metrics_reporter/metrics_reporter.js';
-import {listenOnce} from 'chrome://resources/js/util_ts.js';
+import {listenOnce} from 'chrome://resources/js/util.js';
 import {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -128,6 +129,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         type: Number,
         value: () =>
             loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount'),
+      },
+
+      tabOrganizationEnabled: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: () => loadTimeData.getBoolean('tabOrganizationEnabled'),
       },
     };
   }

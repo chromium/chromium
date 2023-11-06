@@ -288,7 +288,8 @@ absl::optional<CWSInfoService::CWSInfo> CWSInfoService::GetCWSInfo(
     if (last_update_time_millis_str &&
         base::StringToInt64(*last_update_time_millis_str,
                             &last_update_time_millis)) {
-      info.last_update_time = base::Time::FromJavaTime(last_update_time_millis);
+      info.last_update_time =
+          base::Time::FromMillisecondsSinceUnixEpoch(last_update_time_millis);
     }
 
     info.violation_type = static_cast<CWSViolationType>(

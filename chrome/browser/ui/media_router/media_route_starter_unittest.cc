@@ -68,7 +68,8 @@ constexpr char kStartPresentationUrl[] = "https://startpresentrequest.com/";
 constexpr char kStartOriginUrl[] = "https://start.fakeurl/";
 
 constexpr char kRemotePlaybackUrl[] =
-    "remote-playback://<encoded-data>?video_codec=vp8&audio_codec=mp3";
+    "remote-playback:media-element?source=encoded_data&video_codec=vp8&audio_"
+    "codec=mp3";
 
 class MockPresentationRequestSourceObserver
     : public PresentationRequestSourceObserver {
@@ -837,8 +838,9 @@ TEST_F(MediaRouteStarterTest, StartRoute_StartPresentationContext_Cast) {
   EXPECT_EQ(kStartPresentationUrl, route_request_result()->presentation_url());
 }
 
+// TODO(crbug.com/1494156) Test is flaky on all platforms.
 TEST_F(MediaRouteStarterTest,
-       StartRoute_StartPresentationContext_RemotePlayback) {
+       DISABLED_StartRoute_StartPresentationContext_RemotePlayback) {
   auto start_presentation_context = CreateStartPresentationContext(
       CreatePresentationRequest(kRemotePlaybackUrl, kStartOriginUrl));
 
@@ -851,12 +853,12 @@ TEST_F(MediaRouteStarterTest,
 
   StartRemotePlayback(cast_sink());
 
+  // TODO(crbug.com/1491212): Update test case once `tab_id` is removed from the
+  // Remote Playback presentation url.
   EXPECT_EQ(mojom::RouteRequestResultCode::OK,
             route_request_result()->result_code());
-  EXPECT_EQ(
-      "remote-playback://"
-      "<encoded-data>?video_codec=vp8&audio_codec=mp3&tab_id=1",
-      route_request_result()->presentation_url());
+  EXPECT_EQ(base::StrCat({kRemotePlaybackUrl, "&tab_id=1"}),
+            route_request_result()->presentation_url());
 }
 
 // Demonstrates that failures to create presentation routes from start

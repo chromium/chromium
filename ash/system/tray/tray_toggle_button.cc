@@ -6,7 +6,7 @@
 
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
-#include "ash/utility/haptics_util.h"
+#include "chromeos/utils/haptics_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,7 +49,7 @@ void TrayToggleButton::OnThemeChanged() {
 }
 
 void TrayToggleButton::NotifyClick(const ui::Event& event) {
-  haptics_util::PlayHapticToggleEffect(
+  chromeos::haptics_util::PlayHapticToggleEffect(
       !GetIsOn(), ui::HapticTouchpadEffectStrength::kMedium);
   views::ToggleButton::NotifyClick(event);
 }

@@ -11,11 +11,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/apps/link_capturing/apps_intent_picker_delegate.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/models/image_model.h"
@@ -34,21 +34,22 @@ class IntentPickerTabHelper
   ~IntentPickerTabHelper() override;
 
   // Displays the intent picker icon in the omnibox, based on the last committed
-  // URL in |web_contents|.
-  static void MaybeShowIntentPickerIcon(content::WebContents* web_contents);
+  // URL for the current web_contents.
+  void MaybeShowIntentPickerIcon();
 
   // Shows the intent picker bubble to present a choice between apps to handle
   // |url|. May launch directly into an app based on user preferences and
   // installed apps.
-  static void ShowIntentPickerBubbleOrLaunchApp(
-      content::WebContents* web_contents,
-      const GURL& url);
+  void ShowIntentPickerBubbleOrLaunchApp(const GURL& url);
 
   // Shows or hides the intent picker icon for |web_contents|. Always shows a
   // generic picker icon, even if MaybeShowIconForApps() had previously applied
   // app-specific customizations.
   static void ShowOrHideIcon(content::WebContents* web_contents,
                              bool should_show_icon);
+
+  // Returns the size, in dp, of app icons shown in the intent picker bubble.
+  static int GetIntentPickerBubbleIconSize();
 
   // Shows or hides the intent picker icon for this tab a list of |apps| which
   // can handle a link intent. Visible for testing.
@@ -85,7 +86,7 @@ class IntentPickerTabHelper
   void OnAppIconLoaded(std::vector<apps::IntentPickerAppInfo> apps,
                        IntentPickerIconLoaderCallback callback,
                        size_t index,
-                       apps::IconValuePtr icon_value);
+                       ui::ImageModel app_icon);
 
   void LoadAppIcon(std::vector<apps::IntentPickerAppInfo> apps,
                    size_t index,
@@ -93,7 +94,7 @@ class IntentPickerTabHelper
 
   void UpdateExpandedState(bool should_show_icon);
   void OnAppIconLoadedForChip(const std::string& app_id,
-                              apps::IconValuePtr icon);
+                              ui::ImageModel app_icon);
   // Shows or hides the intent icon, with customizations specific to link intent
   // handling.
   void ShowIconForLinkIntent(bool should_show_icon);
@@ -147,6 +148,8 @@ class IntentPickerTabHelper
   ui::ImageModel current_app_icon_;
 
   base::OnceClosure icon_update_closure_for_testing_;
+
+  std::unique_ptr<apps::AppsIntentPickerDelegate> intent_picker_delegate_;
 
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>

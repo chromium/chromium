@@ -231,11 +231,13 @@ TEST(AXNodeTest, TreeWalking) {
             root_node->GetLastUnignoredChildCrossingTreeBoundary()->id());
 
   EXPECT_EQ(static_text_0_0_ignored.id,
-            root_node->GetDeepestFirstChild()->id());
-  EXPECT_EQ(paragraph_0.id, root_node->GetDeepestFirstUnignoredChild()->id());
+            root_node->GetDeepestFirstDescendant()->id());
+  EXPECT_EQ(paragraph_0.id,
+            root_node->GetDeepestFirstUnignoredDescendant()->id());
 
-  EXPECT_EQ(button_3_1.id, root_node->GetDeepestLastChild()->id());
-  EXPECT_EQ(button_3_1.id, root_node->GetDeepestLastUnignoredChild()->id());
+  EXPECT_EQ(button_3_1.id, root_node->GetDeepestLastDescendant()->id());
+  EXPECT_EQ(button_3_1.id,
+            root_node->GetDeepestLastUnignoredDescendant()->id());
 
   {
     std::vector<AXNode*> siblings;

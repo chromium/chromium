@@ -276,10 +276,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // should implement the resource-specific behavior.
   virtual void SetSerializedCachedMetadata(mojo_base::BigBuffer data);
 
-  // Gets whether the serialized cached metadata must contain a hash of the
-  // source text. For resources other than ScriptResource, this is always false.
-  virtual bool CodeCacheHashRequired() const;
-
   AtomicString HttpContentType() const;
 
   bool WasCanceled() const { return error_ && error_->IsCancellation(); }

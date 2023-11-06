@@ -15,11 +15,11 @@ import '../settings_shared.css.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {ContainerInfo, GuestId} from '../guest_os/guest_os_browser_proxy.js';
 import {equalContainerId} from '../guest_os/guest_os_container_select.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, routes} from '../router.js';
 
 import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, DEFAULT_CROSTINI_GUEST_ID, DEFAULT_CROSTINI_VM} from './crostini_browser_proxy.js';
@@ -28,7 +28,7 @@ import {getTemplate} from './crostini_export_import.html.js';
 const SettingsCrostiniExportImportElementBase =
     DeepLinkingMixin(RouteObserverMixin(WebUiListenerMixin(PolymerElement)));
 
-class SettingsCrostiniExportImportElement extends
+export class SettingsCrostiniExportImportElement extends
     SettingsCrostiniExportImportElementBase {
   static get is() {
     return 'settings-crostini-export-import';

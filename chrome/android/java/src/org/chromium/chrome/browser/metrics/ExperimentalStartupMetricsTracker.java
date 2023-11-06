@@ -68,13 +68,17 @@ public class ExperimentalStartupMetricsTracker {
             boolean shouldTrack =
                     navigation.hasCommitted()
                             && !navigation.isErrorPage()
-                            && UrlUtilities.isHttpOrHttps(navigation.getUrl());
+                            && UrlUtilities.isHttpOrHttps(navigation.getUrl())
+                            && !navigation.isSameDocument();
             if (!shouldTrack) {
                 // When navigation leads to an error page, download or chrome:// URLs, avoid
                 // recording both commit and FCP.
+                //
+                // In rare cases a same-document navigation can commit before all other
+                // http(s)+non-error navigations (crbug.com/1492721). Filter out such scenarios
+                // since they are counter-intuitive.
                 destroy();
             } else {
-                assert !navigation.isSameDocument() : "The first commit cannot be same-document";
                 mFirstNavigationCommitted = true;
                 recordNavigationCommitMetrics(SystemClock.uptimeMillis() - mActivityStartTimeMs);
             }

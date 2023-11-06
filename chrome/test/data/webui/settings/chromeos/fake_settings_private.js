@@ -15,7 +15,7 @@ import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
  * @return {*}
  */
 function deepCopy(obj) {
-  return JSON.parse(JSON.stringify(obj));
+  return structuredClone(obj);
 }
 
 /**

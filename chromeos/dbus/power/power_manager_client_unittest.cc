@@ -15,9 +15,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "chromeos/dbus/power_manager/thermal.pb.h"
@@ -239,17 +239,16 @@ class PowerMonitorTestObserverLocal
 
   void OnThermalStateChange(
       PowerThermalObserver::DeviceThermalState new_state) override {
-    ASSERT_TRUE(cb_);
     base::test::PowerMonitorTestObserver::OnThermalStateChange(new_state);
-    std::move(cb_).Run();
+    test_future_.GetCallback().Run(new_state);
   }
 
-  void set_cb_for_testing(base::OnceCallback<void()> cb) {
-    cb_ = std::move(cb);
+  PowerThermalObserver::DeviceThermalState GetThermalState() {
+    return test_future_.Take();
   }
 
  private:
-  base::OnceCallback<void()> cb_;
+  base::test::TestFuture<PowerThermalObserver::DeviceThermalState> test_future_;
 };
 
 }  // namespace
@@ -726,13 +725,7 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
     dbus::MessageWriter(&signal).AppendProtoAsArrayOfBytes(proto);
     EmitSignal(&signal);
 
-    base::RunLoop run_loop;
-    observer.set_cb_for_testing(base::BindLambdaForTesting([&] {
-      run_loop.Quit();
-      EXPECT_EQ(observer.last_thermal_state(), p.expected_state);
-    }));
-
-    run_loop.Run();
+    EXPECT_EQ(observer.GetThermalState(), p.expected_state);
   }
 
   base::PowerMonitor::RemovePowerThermalObserver(&observer);

@@ -15,6 +15,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/slim/layer.h"
 #include "chrome/android/chrome_jni_headers/TabImpl_jni.h"
 #include "chrome/android/chrome_jni_headers/TabUtils_jni.h"
@@ -231,12 +232,11 @@ bool TabAndroid::IsIncognito() const {
 
 base::Time TabAndroid::GetLastShownTimestamp() const {
   JNIEnv* env = base::android::AttachCurrentThread();
-  const long timestamp =
+  const int64_t timestamp =
       Java_TabImpl_getLastShownTimestamp(env, weak_java_tab_.get(env));
-  if (timestamp == -1) {
-    return base::Time();
-  }
-  return base::Time::FromJavaTime(timestamp);
+  return (timestamp == -1)
+             ? base::Time()
+             : base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
 }
 
 void TabAndroid::DeleteFrozenNavigationEntries(

@@ -34,21 +34,17 @@ import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.browserservices.intents.BitmapHelper;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflineTestUtil;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for the Default Offline behavior when loading a TWA (and failing to).
- */
+/** Tests for the Default Offline behavior when loading a TWA (and failing to). */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDefaultOfflineTwaTest {
@@ -71,8 +67,9 @@ public class WebappDefaultOfflineTwaTest {
 
     private static BitmapDrawable getTestIconDrawable(Resources resources, String imageAsString) {
         byte[] bytes = Base64.decode(imageAsString.getBytes(), Base64.DEFAULT);
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(
-                resources, BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
+        BitmapDrawable bitmapDrawable =
+                new BitmapDrawable(
+                        resources, BitmapFactory.decodeByteArray(bytes, 0, bytes.length));
         return bitmapDrawable;
     }
 
@@ -149,23 +146,29 @@ public class WebappDefaultOfflineTwaTest {
 
         // Ensure that web_app_default_offline.html is showing the correct values.
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-        assertEquals("\"shortname\"",
+        assertEquals(
+                "\"shortname\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         tab.getWebContents(), "document.title;"));
-        assertEquals("\"You're offline\"",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
+        assertEquals(
+                "\"You're offline\"",
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(),
                         "document.getElementById('default-web-app-msg').textContent;"));
 
-        String imageAsString = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab.getWebContents(), "document.getElementById('icon').src;");
+        String imageAsString =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), "document.getElementById('icon').src;");
         // Remove the base64 prefix and convert the line-feeds (%0A) so that the strings can be
         // compared.
-        imageAsString = imageAsString.substring(
-                "\"data:image/png;base64,".length(), imageAsString.length() - 1);
+        imageAsString =
+                imageAsString.substring(
+                        "\"data:image/png;base64,".length(), imageAsString.length() - 1);
         imageAsString = imageAsString.replaceAll("%0A", "\n");
 
         BitmapDrawable expectedDrawable =
-                getTestIconDrawable(mCustomTabActivityTestRule.getActivity().getResources(),
+                getTestIconDrawable(
+                        mCustomTabActivityTestRule.getActivity().getResources(),
                         WebappActivityTestRule.TEST_ICON);
         String expectedString =
                 BitmapHelper.encodeBitmapAsString(expectedDrawable.getBitmap()).trim();
@@ -175,7 +178,6 @@ public class WebappDefaultOfflineTwaTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOfflineTwaWithoutVerification() throws Exception {
         // Test default offline behavior without asset link verification, which causes the app to
         // run in CCT (and is what happens when TWAs load for the first time without network
@@ -186,7 +188,6 @@ public class WebappDefaultOfflineTwaTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @EnableFeatures(ChromeFeatureList.PWA_DEFAULT_OFFLINE_PAGE)
     public void testDefaultOfflineTwaWithVerification() throws Exception {
         testDefaultOfflineTwa(true); // Run with asset link verification.
     }

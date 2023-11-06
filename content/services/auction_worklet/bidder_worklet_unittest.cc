@@ -340,7 +340,7 @@ class BidderWorkletTest : public testing::Test {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
     experiment_group_id_ = absl::nullopt;
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
@@ -7024,6 +7024,12 @@ class BidderWorkletSharedStorageAPIEnabledTest : public BidderWorkletTest {
  public:
   BidderWorkletSharedStorageAPIEnabledTest() {
     feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+
+    // Set the shared-storage permissions policy to allowed.
+    permissions_policy_state_ =
+        mojom::AuctionWorkletPermissionsPolicyState::New(
+            /*private_aggregation_allowed=*/true,
+            /*shared_storage_allowed=*/true);
   }
 
  protected:
@@ -7366,7 +7372,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/false,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
 
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(
@@ -7388,7 +7394,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
   }
 
   // Large bucket
@@ -7706,7 +7712,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/false,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
 
     RunReportWinWithFunctionBodyExpectingResult(
         R"(
@@ -7722,7 +7728,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, ReportWin) {
     permissions_policy_state_ =
         mojom::AuctionWorkletPermissionsPolicyState::New(
             /*private_aggregation_allowed=*/true,
-            /*shared_storage_allowed=*/true);
+            /*shared_storage_allowed=*/false);
   }
 
   // Large bucket
@@ -9100,7 +9106,7 @@ class BidderWorkletAdMacroReportingEnabledTest : public BidderWorkletTest {
   BidderWorkletAdMacroReportingEnabledTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kAdAuctionReportingWithMacroApi,
-                              blink::features::kFencedFramesM119Features},
+                              blink::features::kFencedFramesM120FeaturesPart1},
         /*disabled_features=*/{});
   }
 

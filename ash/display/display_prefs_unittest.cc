@@ -471,6 +471,13 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   ASSERT_TRUE(display_zoom_1);
   EXPECT_NEAR(*display_zoom_1, zoom_factor_1, 0.0001);
 
+  const base::Value::Dict* display_zoom_dict_1 =
+      property->FindDict("display_zoom_factor_map");
+  absl::optional<double> display_zoom_from_map_1 =
+      display_zoom_dict_1->FindDouble("300x200");
+  ASSERT_TRUE(display_zoom_from_map_1);
+  EXPECT_NEAR(*display_zoom_from_map_1, zoom_factor_1, 0.0001);
+
   // Internal display never registered the resolution.
   EXPECT_FALSE(property->FindInt("width"));
   EXPECT_FALSE(property->FindInt("height"));
@@ -513,6 +520,13 @@ TEST_F(DisplayPrefsTest, BasicStores) {
       property->FindDouble("display_zoom_factor");
   ASSERT_TRUE(display_zoom_2);
   EXPECT_NEAR(*display_zoom_2, zoom_factor_2, 0.0001);
+
+  const base::Value::Dict* display_zoom_dict_2 =
+      property->FindDict("display_zoom_factor_map");
+  absl::optional<double> display_zoom_from_map_2 =
+      display_zoom_dict_2->FindDouble("500x400");
+  ASSERT_TRUE(display_zoom_from_map_2);
+  EXPECT_NEAR(*display_zoom_from_map_2, zoom_factor_2, 0.0001);
 
   EXPECT_FALSE(property->FindInt("insets_top"));
   EXPECT_FALSE(property->FindInt("insets_left"));
@@ -603,8 +617,12 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // Set new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
       display::SynthesizeDisplayIdFromSeed(id2), display::Display::ROTATE_0,
-      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
-      display::kVrrNotCapable, absl::nullopt);
+      /*overscan_insets=*/nullptr, /*resolution_in_pixels=*/gfx::Size(500, 400),
+      /*device_scale_factor=*/1.0f, /*display_zoom_factor=*/1.0f,
+      /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
+      /*is_interlaced=*/false,
+      /*variable_refresh_rate_state=*/display::kVrrNotCapable,
+      /*vsync_rate_min=*/absl::nullopt);
 
   UpdateDisplay("300x200*2, 600x500#600x500|500x400");
   EXPECT_FALSE(display_manager()->IsInMirrorMode());
@@ -633,8 +651,12 @@ TEST_F(DisplayPrefsTest, BasicStores) {
   // Set yet another new display's selected resolution.
   display_manager()->RegisterDisplayProperty(
       display::SynthesizeDisplayIdFromSeed(id2), display::Display::ROTATE_0,
-      nullptr, gfx::Size(500, 400), 1.0f, 1.0f, 60.f, false,
-      display::kVrrNotCapable, absl::nullopt);
+      /*overscan_insets=*/nullptr, /*resolution_in_pixels=*/gfx::Size(500, 400),
+      /*device_scale_factor=*/1.0f, /*display_zoom_factor=*/1.0f,
+      /*display_zoom_factor_map=*/{}, /*refresh_rate=*/60.f,
+      /*is_interlaced=*/false,
+      /*variable_refresh_rate_state=*/display::kVrrNotCapable,
+      /*vsync_rate_min=*/absl::nullopt);
   // Disconnect 2nd display first to generate new id for external display.
   UpdateDisplay("300x200*2");
   UpdateDisplay("300x200*2, 500x400#600x500|500x400%60.0f");

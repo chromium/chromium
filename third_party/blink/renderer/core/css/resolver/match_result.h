@@ -197,7 +197,7 @@ class CORE_EXPORT MatchResult {
     if (tree_scopes_.empty()) {
       return nullptr;
     }
-    return tree_scopes_.back();
+    return tree_scopes_.back().Get();
   }
 
   const TreeScope& ScopeFromTreeOrder(uint16_t tree_order) const {

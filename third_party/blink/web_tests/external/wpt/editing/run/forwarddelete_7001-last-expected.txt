@@ -1,264 +1,273 @@
 This is a testharness.js-based test.
 Found 260 tests; 251 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"3\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"3\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" checks for modifications to non-editable content
-FAIL [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") before
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") after
-PASS [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
-PASS [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
-PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
-PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
-PASS [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
-PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
-PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
-PASS [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"3\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"3\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"4\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font size=\"4\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font color=\"blue\">foo</font><font size=\"5\">bar</font></p>" but got "<p><font color=\"blue\">foo</font><span style=\"font-size:x-large\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font color=blue>foo[]</font><p><font size=5>bar</font>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\"5\">foo</font><font color=\"blue\">bar</font></p>" but got "<p><font size=\"5\">foo</font><span style=\"color:rgb(0, 0, 255)\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("fontSize") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=5>foo[]</font><p><font color=blue>bar</font>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("defaultparagraphseparator", false, "div") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("defaultparagraphseparator", false, "p") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" checks for modifications to non-editable content
+[FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font face=\"monospace\">foo</font><font face=\"sans-serif\">bar</font></p>" but got "<p><font face=\"monospace\">foo</font><span style=\"font-family:sans-serif\">bar</span></p>"
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") before
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandIndeterm("fontName") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandState("fontName") after
+[PASS] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font face=monospace>foo[]</font><p><font face=sans-serif>bar</font>" queryCommandValue("fontName") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]</span><br></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<p><span style=\"color:rgb(0, 0, 255)\">foo[]<br></span></p><span style=\"color:rgb(255, 0, 0)\">bar</span>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]</span><br><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("styleWithCSS", false, "false") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>": execCommand("forwarddelete", false, "") return value
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" checks for modifications to non-editable content
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" compare innerHTML
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") before
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandIndeterm("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandState("foreColor") after
+[PASS] [["styleWithCSS","false"],["forwarddelete",""]] "<span style=\"color:rgb(0, 0, 255)\">foo[]<br></span><p><span style=\"color:rgb(255, 0, 0)\">bar</span></p>" queryCommandValue("foreColor") after
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><ul><li>def]</li></ul></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><ul><li>[abc</li></ul><ul><li>def]</li></ul></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><ol><li>[abc</li></ol><ul><li>def]</li></ul></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li><span>def]</span></li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li><span>[abc</span></li><li><span>def]</span></li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def] </li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li> [abc</li><li>def] </li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul><li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ul>\n<li>[abc</li><li>def]</li>\n</ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ol><li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ol><li> [abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+[PASS] [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>": execCommand("forwarddelete", false, "") return value
+[PASS] [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" checks for modifications to non-editable content
+[PASS] [["forwarddelete",""]] "<ol>\n<li>[abc</li></ol><ul><li>def]</li></ul>" compare innerHTML
+[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}": execCommand("delete", false, "") return value
+[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" checks for modifications to non-editable content
+[PASS] [["delete",""]] "{<ul><li>abc<span>def</span>ghi</li><li>jkl<span>opq</span>rst</li></ul>}" compare innerHTML
 Harness: the test ran to completion.
 

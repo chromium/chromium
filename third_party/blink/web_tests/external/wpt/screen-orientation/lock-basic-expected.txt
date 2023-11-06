@@ -1,6 +1,8 @@
 This is a testharness.js-based test.
-PASS Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.
-FAIL Test that screen.orientation.lock returns a pending promise. assert_true: Expected landscape orientation for "landscape", got "portrait-primary" expected true got false
-FAIL Test that screen.orientation.lock() is actually async assert_true: Expected type to start with landscape, got "portrait-primary" expected true got false
+[PASS] Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.
+[FAIL] Test that screen.orientation.lock returns a pending promise.
+  assert_true: Expected landscape orientation for "landscape", got "portrait-primary" expected true got false
+[FAIL] Test that screen.orientation.lock() is actually async
+  assert_true: Expected type to start with landscape, got "portrait-primary" expected true got false
 Harness: the test ran to completion.
 

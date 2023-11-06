@@ -120,6 +120,7 @@ ci.builder(
         short_name = "asn",
     ),
     main_console_view = "main",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -229,12 +230,14 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.builder(
-    name = "chromeos-amd64-generic-rel",
+    name = "chromeos-amd64-generic-rel-renamed",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a renamed builder of chromeos-amd64-generic-rel.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -257,6 +260,115 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "simple|release|x64",
         short_name = "rel",
+    ),
+    main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.builder(
+    name = "chromeos-amd64-generic-rel",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a compile only builder for Ash chrome." +
+                       " This builder also build Lacros with alternative toolchain.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release|x64",
+        short_name = "compile",
+    ),
+    main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "chromeos-amd64-generic-rel-gtest",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a tester builder for Ash chrome." +
+                       " This builder only run gtest.",
+    triggered_by = ["ci/chromeos-amd64-generic-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release|x64",
+        short_name = "gtest",
+    ),
+    main_console_view = "main",
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+)
+
+ci.thin_tester(
+    name = "chromeos-amd64-generic-rel-tast",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a tester builder for Ash chrome." +
+                       " This builder only run tast tests.",
+    triggered_by = ["ci/chromeos-amd64-generic-rel"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["chromeos", "checkout_lacros_sdk"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.RELEASE,
+            target_arch = builder_config.target_arch.INTEL,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.CHROMEOS,
+            target_cros_boards = [
+                "amd64-generic",
+            ],
+            cros_boards_with_qemu_images = "amd64-generic-vm",
+        ),
+        build_gs_bucket = "chromium-chromiumos-archive",
+    ),
+    # TODO(crbug.com/1471166): enable gardener rotation.
+    sheriff_rotations = args.ignore_default(None),
+    tree_closing = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release|x64",
+        short_name = "tast",
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
@@ -534,6 +646,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -569,6 +682,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -607,6 +721,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -748,6 +863,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 
@@ -782,6 +898,7 @@ ci.thin_tester(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 ci.builder(
@@ -813,6 +930,7 @@ ci.builder(
     ),
     main_console_view = "main",
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-desktop-engprod@google.com",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
 )
 

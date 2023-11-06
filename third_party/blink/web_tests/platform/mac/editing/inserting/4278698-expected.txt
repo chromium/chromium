@@ -15,10 +15,10 @@ layer at (0,0)
       LayoutNGBlockFlow {P} at (0,52) size 784x18
         LayoutText {#text} at (0,0) size 450x18
           text run at (0,0) width 450: "If successful, you should see 'a' followed by 10 spaces followed by 'b'."
-      LayoutNGBlockFlow {DIV} at (0,96) size 784x23 [border: (2px solid #FFAAAA)]
-        LayoutNGBlockFlow {PRE} at (2,2) size 780x19 [border: (2px solid #AAAAFF)]
+      LayoutNGBlockFlow {DIV} at (0,96) size 784x23 [border: (2px solid #FFAAAA) (2px solid #FFAAAA) (2px solid #FFAAAA) (2px solid #FFAAAA)]
+        LayoutNGBlockFlow {PRE} at (2,2) size 780x19 [border: (2px solid #AAAAFF) (2px solid #AAAAFF) (2px solid #AAAAFF) (2px solid #AAAAFF)]
           LayoutText {#text} at (2,2) size 94x15
             text run at (2,2) width 94: "a          b"
 layer at (8,94)
-  LayoutNGBlockFlow {HR} at (0,86) size 784x2 [border: (1px inset #EEEEEE)]
+  LayoutNGBlockFlow {HR} at (0,86) size 784x2 [border: (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE)]
 caret: position 3 of child 0 {#text} of child 1 {PRE} of child 7 {DIV} of body

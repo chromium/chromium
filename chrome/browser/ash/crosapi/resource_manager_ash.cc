@@ -44,13 +44,27 @@ void ResourceManagerAsh::AddMemoryPressureObserver(
   observers_.Add(std::move(remote));
 }
 
-void ResourceManagerAsh::ReportBackgroundProcesses(
+void ResourceManagerAsh::DEPRECATED_ReportBackgroundProcesses(
     const std::vector<int32_t>& pids) {
+  NOTREACHED();
+}
+
+void ResourceManagerAsh::ReportPageProcesses(
+    std::vector<mojom::PageProcessPtr> page_processes) {
   ash::ResourcedClient* client = ash::ResourcedClient::Get();
-  if (client) {
-    client->ReportBackgroundProcesses(ash::ResourcedClient::Component::kLacros,
-                                      pids);
+  if (!client) {
+    return;
   }
+
+  std::vector<ash::ResourcedClient::Process> processes;
+  for (auto& page_process : page_processes) {
+    processes.emplace_back(page_process->pid, page_process->host_protected_page,
+                           page_process->host_visible_page,
+                           page_process->host_focused_page);
+  }
+
+  client->ReportBrowserProcesses(ash::ResourcedClient::Component::kLacros,
+                                 processes);
 }
 
 }  // namespace crosapi

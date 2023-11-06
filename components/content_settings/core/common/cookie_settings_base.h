@@ -226,27 +226,11 @@ class CookieSettingsBase {
   // access.
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
-  bool ShouldConsider3pcdSupportSettings() const;
-
-  bool ShouldConsider3pcdMetadataGrantsSettings() const;
-
   // Returns a set of overrides that includes Storage Access API and Top-Level
   // Storage Access API overrides iff the config booleans indicate that Storage
   // Access API and Top-Level Storage Access API should unlock access to DOM
   // storage.
   net::CookieSettingOverrides SettingOverridesForStorage() const;
-
-  // Returns true iff the query should consider Storage Access API permission
-  // grants.
-  bool ShouldConsiderStorageAccessGrants(
-      net::CookieSettingOverrides overrides) const;
-
-  // Returns true iff the query should consider top-level Storage Access API
-  // permission grants. Note that this is handled similarly to storage access
-  // grants, but applies to subresources more broadly (at the top-level rather
-  // than only for a single frame).
-  bool ShouldConsiderTopLevelStorageAccessGrants(
-      net::CookieSettingOverrides overrides) const;
 
   // Controls whether Storage Access API grants allow access to unpartitioned
   // *storage*, in addition to unpartitioned cookies. This is static so that all
@@ -272,6 +256,10 @@ class CookieSettingsBase {
       net::CookieSettingOverrides overrides,
       SettingInfo* info) const;
 
+  // Returns true iff the query for third-party cookie access should consider
+  // grants awarded by the global allowlist.
+  bool ShouldConsider3pcdMetadataGrantsSettings() const;
+
  private:
   // Returns a content setting for the requested parameters and populates |info|
   // if not null. Implementations might only implement a subset of all
@@ -286,6 +274,22 @@ class CookieSettingsBase {
 
   bool IsAllowedByStorageAccessGrant(const GURL& url,
                                      const GURL& first_party_url) const;
+
+  bool ShouldConsider3pcdSupportSettings() const;
+
+  bool ShouldConsider3pcdHeuristicsGrantsSettings() const;
+
+  // Returns true iff the query should consider Storage Access API permission
+  // grants.
+  bool ShouldConsiderStorageAccessGrants(
+      net::CookieSettingOverrides overrides) const;
+
+  // Returns true iff the query should consider top-level Storage Access API
+  // permission grants. Note that this is handled similarly to storage access
+  // grants, but applies to subresources more broadly (at the top-level rather
+  // than only for a single frame).
+  bool ShouldConsiderTopLevelStorageAccessGrants(
+      net::CookieSettingOverrides overrides) const;
 
   // Returns whether requests for |url| and |first_party_url| should always
   // be allowed. Called before checking other cookie settings.

@@ -16,8 +16,10 @@ public class SecurityStatusIcon {
      * @return the id of the resource identifying the icon corresponding to the securityLevel.
      */
     @DrawableRes
-    public static int getSecurityIconResource(@ConnectionSecurityLevel int securityLevel,
-            boolean isSmallDevice, boolean skipIconForNeutralState,
+    public static int getSecurityIconResource(
+            @ConnectionSecurityLevel int securityLevel,
+            boolean isSmallDevice,
+            boolean skipIconForNeutralState,
             boolean useUpdatedConnectionSecurityIndicators) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.NONE:

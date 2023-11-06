@@ -171,7 +171,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // also be called to update accordingly.
   // TODO(npm): update the |page_scheduler_| directly in this method.
   void SetMainFrame(Frame*);
-  Frame* MainFrame() const { return main_frame_; }
+  Frame* MainFrame() const { return main_frame_.Get(); }
 
   void SetPreviousMainFrameForLocalSwap(
       LocalFrame* previous_main_frame_for_local_swap) {
@@ -179,7 +179,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   }
 
   LocalFrame* GetPreviousMainFrameForLocalSwap() {
-    return previous_main_frame_for_local_swap_;
+    return previous_main_frame_for_local_swap_.Get();
   }
 
   // Escape hatch for existing code that assumes that the root frame is
@@ -449,8 +449,25 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // place.
   void UpdateBrowsingContextGroup(const blink::BrowsingContextGroupInfo&);
 
+  // Attribution Reporting API ------------------------------------
+  // Sets whether web or OS-level Attribution Reporting is supported
+  void SetAttributionSupport(
+      network::mojom::AttributionSupport attribution_support);
+
+  // Returns whether web or OS-level Attribution Reporting is supported. See
+  // https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
+  network::mojom::AttributionSupport GetAttributionSupport() {
+    return attribution_support_;
+  }
+
+  // Called on a new Page, passing an old Page as the parameter, when doing a
+  // LocalFrame <-> LocalFrame swap when committing a navigation, to ensure that
+  // the close task will still be processed after the swap.
+  void TakeCloseTaskHandler(Page* old_page);
+
  private:
   friend class ScopedPagePauser;
+  class CloseTaskHandler;
 
   void InitGroup();
 
@@ -610,6 +627,10 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   // The information determining the browsing context group this page lives in.
   BrowsingContextGroupInfo browsing_context_group_info_;
+
+  network::mojom::AttributionSupport attribution_support_;
+
+  Member<CloseTaskHandler> close_task_handler_;
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<Page>;

@@ -123,7 +123,8 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_->SetElideBehavior(gfx::FADE_TAIL);
 
-  if (features::IsChromeRefresh2023()) {
+  if (features::IsChromeRefresh2023() &&
+      base::FeatureList::IsEnabled(features::kChromeRefresh2023TopChromeFont)) {
     title_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
   }
 

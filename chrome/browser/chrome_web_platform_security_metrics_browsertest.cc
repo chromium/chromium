@@ -6,16 +6,19 @@
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
@@ -35,8 +38,7 @@ constexpr char kPnaPath[] =
 // However, since ContentBrowserClientImpl::LogWebFeatureForCurrentPage() is
 // currently left blank in content/, metrics logging can't be tested from
 // content/. So it is tested from chrome/ instead.
-class ChromeWebPlatformSecurityMetricsBrowserTest
-    : public InProcessBrowserTest {
+class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
  public:
   using WebFeature = blink::mojom::WebFeature;
 
@@ -49,8 +51,8 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
             network::features::kCrossOriginOpenerPolicy,
             // SharedArrayBuffer is needed for these tests.
             features::kSharedArrayBuffer,
-            // Some LNA worker feature relies on this.
-            // TODO(https://crbug.com/1430451): Remove this once LNA for workers
+            // Some PNA worker feature relies on this.
+            // TODO(https://crbug.com/1430451): Remove this once PNA for workers
             // metric logging doesn't rely on kPlzDedicatedWorker
             blink::features::kPlzDedicatedWorker,
         },
@@ -288,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 // the correct WebFeature is use-counted to reflect the suppressed error.
 IN_PROC_BROWSER_TEST_F(
     ChromeWebPlatformSecurityMetricsBrowserTest,
-    PrivateNetworkAccessFetchWithPreflightRepliedWithoutLNAHeaders) {
+    PrivateNetworkAccessFetchWithPreflightRepliedWithoutPNAHeaders) {
   ASSERT_EQ(true, content::NavigateToURL(
                       web_contents(),
                       https_server().GetURL(
@@ -309,8 +311,59 @@ IN_PROC_BROWSER_TEST_F(
   CheckCounter(WebFeature::kPrivateNetworkAccessPreflightWarning, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ChromeWebPlatformSecurityMetricsBrowserTest,
+    PrivateNetworkAccessPolicyEnabledFetchWithPreflightRepliedWithoutPNAHeaders) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_EQ(true, content::NavigateToURL(
+                      web_contents(),
+                      https_server().GetURL(
+                          "a.com",
+                          "/private_network_access/"
+                          "no-favicon-treat-as-public-address.html")));
+
+  // The server does not reply with valid CORS headers, so the preflight fails.
+  // The enforcement feature is not enabled however, so the error is suppressed.
+  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
+  ASSERT_EQ(false,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace(
+                    "fetch($1).then(response => response.ok, error => false)",
+                    https_server().GetURL("b.com", "/cors-ok.txt"))));
+}
+
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       LocalNetworkAccessFetchInWorker) {
+                       PrivateNetworkAccessPolicyEnabledFetchWithPreflight) {
+  policy::PolicyMap policies;
+  SetPolicy(&policies, policy::key::kPrivateNetworkAccessRestrictionsEnabled,
+            base::Value(true));
+  UpdateProviderPolicy(policies);
+
+  ASSERT_EQ(true, content::NavigateToURL(
+                      web_contents(),
+                      https_server().GetURL(
+                          "a.com",
+                          "/private_network_access/"
+                          "no-favicon-treat-as-public-address.html")));
+
+  // The server does not reply with valid CORS headers, so the preflight fails.
+  // The enforcement feature is not enabled however, so the error is suppressed.
+  // Instead, a warning is shown in DevTools and a WebFeature use-counted.
+  ASSERT_EQ(true,
+            content::EvalJs(
+                web_contents(),
+                content::JsReplace(
+                    "fetch($1).then(response => response.ok, error => false)",
+                    https_server().GetURL("b.com", kPnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       PrivateNetworkAccessFetchInWorker) {
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
@@ -348,7 +401,7 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
-                       LocalNetworkAccessFetchInSharedWorker) {
+                       PrivateNetworkAccessFetchInSharedWorker) {
   ASSERT_EQ(true,
             content::NavigateToURL(
                 web_contents(), https_server().GetURL("a.com",
@@ -511,6 +564,54 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
   LoadIFrame(sub_document_url);
   ExpectHistogramIncreasedBy(1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       LogCSPFrameSrcWildcardMatchFeature) {
+  struct {
+    const char* csp_frame_src;
+    const char* sub_document_url;
+    int expected_kCspWouldBlockIfWildcardDoesNotMatchWs;
+    int expected_kCspWouldBlockIfWildcardDoesNotMatchFtp;
+  } test_cases[] = {
+      {"*", "http://example.com", 0, 0},
+      // Feature shouldn't be logged if matches explicitly.
+      {"ftp:*", "ftp://example.com", 0, 0},
+      {"ws:*", "ws://example.com", 0, 0},
+      {"wss:*", "wss://example.com", 0, 0},
+      // Feature should be logged if matched with wildcard.
+      {"*", "ftp://example.com", 0, 1},
+      {"*", "ws://example.com", 1, 0},
+      {"*", "wss://example.com", 1, 0},
+  };
+  int total_kCspWouldBlockIfWildcardDoesNotMatchWs = 0;
+  int total_kCspWouldBlockIfWildcardDoesNotMatchFtp = 0;
+  for (const auto& test_case : test_cases) {
+    GURL main_document_url = https_server().GetURL(
+        "a.com",
+        base::StrCat({"/set-header?Content-Security-Policy: frame-src ",
+                      test_case.csp_frame_src, ";"}));
+    url::Origin main_document_origin = url::Origin::Create(main_document_url);
+    GURL sub_document_url = GURL(test_case.sub_document_url);
+    EXPECT_TRUE(content::NavigateToURL(web_contents(), main_document_url));
+
+    content::TestNavigationObserver load_observer(web_contents());
+    EXPECT_TRUE(
+        content::ExecJs(web_contents(), content::JsReplace(R"(
+      let iframe = document.createElement("iframe");
+      iframe.src = $1;
+      document.body.appendChild(iframe);
+    )",
+                                                           sub_document_url)));
+    load_observer.Wait();
+
+    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs,
+                 total_kCspWouldBlockIfWildcardDoesNotMatchWs +=
+                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchWs);
+    CheckCounter(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp,
+                 total_kCspWouldBlockIfWildcardDoesNotMatchFtp +=
+                 test_case.expected_kCspWouldBlockIfWildcardDoesNotMatchFtp);
+  }
 }
 
 // Check kCrossOriginSubframeWithoutEmbeddingControl reporting. Cross-origin

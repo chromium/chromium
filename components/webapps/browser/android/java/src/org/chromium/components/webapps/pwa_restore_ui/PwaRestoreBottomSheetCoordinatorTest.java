@@ -32,17 +32,16 @@ import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.pwa_restore_ui.PwaRestoreProperties.ViewState;
 import org.chromium.ui.shadows.ShadowColorUtils;
 
-/**
- * Instrumentation tests for PWA Restore bottom sheet.
- */
+/** Instrumentation tests for PWA Restore bottom sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowColorUtils.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowColorUtils.class})
 @LooperMode(LooperMode.Mode.PAUSED)
 public class PwaRestoreBottomSheetCoordinatorTest {
     Activity mActivity;
 
-    @Mock
-    private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BottomSheetController mBottomSheetControllerMock;
 
     @Before
     public void setUp() {
@@ -58,8 +57,9 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     @Test
     @MediumTest
     public void testViewInitialization() {
-        PwaRestoreBottomSheetCoordinator coordinator = new PwaRestoreBottomSheetCoordinator(
-                mActivity, mBottomSheetControllerMock, /* backArrowId= */ 0);
+        PwaRestoreBottomSheetCoordinator coordinator =
+                new PwaRestoreBottomSheetCoordinator(
+                        mActivity, mBottomSheetControllerMock, /* backArrowId= */ 0);
 
         View bottomSheetView = coordinator.getBottomSheetToolbarViewForTesting();
         {
@@ -83,8 +83,9 @@ public class PwaRestoreBottomSheetCoordinatorTest {
             Assert.assertEquals(expected, title.getText());
 
             TextView description = contentSheetView.findViewById(R.id.description);
-            expected = "Choose web apps to restore on this device. Apps shown here are based on "
-                    + "your Chrome history.";
+            expected =
+                    "Choose web apps to restore on this device. Apps shown here are based on "
+                            + "your Chrome history.";
             Assert.assertEquals(expected, description.getText());
 
             View pwaList = contentSheetView.findViewById(R.id.pwa_list);
@@ -101,27 +102,31 @@ public class PwaRestoreBottomSheetCoordinatorTest {
     @Test
     @MediumTest
     public void testShowAndExpand() {
-        PwaRestoreBottomSheetCoordinator coordinator = new PwaRestoreBottomSheetCoordinator(
-                mActivity, mBottomSheetControllerMock, /* backArrowId= */ 0);
+        PwaRestoreBottomSheetCoordinator coordinator =
+                new PwaRestoreBottomSheetCoordinator(
+                        mActivity, mBottomSheetControllerMock, /* backArrowId= */ 0);
 
         coordinator.show();
 
         // Calling show() results in the bottom sheet showing (peeking).
-        Assert.assertEquals(ViewState.PREVIEW,
+        Assert.assertEquals(
+                ViewState.PREVIEW,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).requestShowContent(any(), eq(true));
 
         coordinator.onReviewButtonClicked();
 
         // Clicking the Review button results in the sheet expanding.
-        Assert.assertEquals(ViewState.VIEW_PWA_LIST,
+        Assert.assertEquals(
+                ViewState.VIEW_PWA_LIST,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).expandSheet();
 
         coordinator.onBackButtonClicked();
 
         // Clicking the Back button results in the sheet going back to peeking state.
-        Assert.assertEquals(ViewState.PREVIEW,
+        Assert.assertEquals(
+                ViewState.PREVIEW,
                 coordinator.getModelForTesting().get(PwaRestoreProperties.VIEW_STATE));
         verify(mBottomSheetControllerMock, times(1)).collapseSheet(eq(true));
     }

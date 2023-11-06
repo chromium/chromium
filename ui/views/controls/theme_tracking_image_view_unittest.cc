@@ -53,21 +53,23 @@ class ThemeTrackingImageViewTest : public ViewsTestBase {
   bool IsDarkMode() const { return is_dark_; }
   void SetIsDarkMode(bool is_dark) {
     is_dark_ = is_dark;
-    if (view_)
-      view_->OnThemeChanged();
+    if (view()) {
+      view()->OnThemeChanged();
+    }
   }
 
   void SetView(std::unique_ptr<ThemeTrackingImageView> view) {
-    view_ = widget_->SetContentsView(std::move(view));
-    view_->SetBounds(0, 0, kImageSize, kImageSize);
+    widget_->SetContentsView(std::move(view))
+        ->SetBounds(0, 0, kImageSize, kImageSize);
   }
 
-  ThemeTrackingImageView* view() { return view_; }
+  ThemeTrackingImageView* view() {
+    return static_cast<ThemeTrackingImageView*>(widget_->GetContentsView());
+  }
   Widget* widget() { return widget_.get(); }
 
  private:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<ThemeTrackingImageView, DanglingUntriaged> view_ = nullptr;
 
   bool is_dark_ = false;
 };

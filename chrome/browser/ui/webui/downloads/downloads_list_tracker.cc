@@ -125,7 +125,7 @@ std::string TimeFormatLongDate(const base::Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
       icu::DateFormat::createDateInstance(icu::DateFormat::kLong));
   icu::UnicodeString date_string;
-  formatter->format(static_cast<UDate>(time.ToDoubleT() * 1000), date_string);
+  formatter->format(time.InMillisecondsFSinceUnixEpoch(), date_string);
   return base::UTF16ToUTF8(base::i18n::UnicodeStringToString16(date_string));
 }
 
@@ -327,6 +327,10 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       if (download_item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
         state = downloads::mojom::State::kPromptForScanning;
+      } else if (download_item->GetDangerType() ==
+                 download::
+                     DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING) {
+        state = downloads::mojom::State::kPromptForLocalPasswordScanning;
       } else if (download_item->GetDangerType() ==
                  download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING) {
         state = downloads::mojom::State::kAsyncScanning;

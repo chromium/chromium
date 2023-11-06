@@ -293,7 +293,8 @@ class DriveUploadHandlerTest
   base::RepeatingClosure on_transfer_complete_callback_;
 
   std::unique_ptr<ash::cloud_upload::CloudOpenMetrics> cloud_open_metrics_ =
-      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive);
+      std::make_unique<CloudOpenMetrics>(CloudProvider::kGoogleDrive,
+                                         /*file_count=*/1);
   base::SafeRef<CloudOpenMetrics> cloud_open_metrics_ref_ =
       cloud_open_metrics_->GetSafeRef();
 

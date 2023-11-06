@@ -71,9 +71,10 @@ void ShowWebAppInstallDialog(
 // the browser containing the app calling the API. |sub_apps| contains the
 // information to represent each app to the user.
 views::Widget* CreateSubAppsInstallDialogWidget(
-    const std::string_view parent_app_name,
-    const std::string_view parent_app_scope,
+    const std::u16string parent_app_name,
+    const std::u16string parent_app_scope,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
+    base::RepeatingClosure settings_page_callback,
     gfx::NativeWindow window);
 
 // When an app changes its icon or name, that is considered an app identity
@@ -169,6 +170,10 @@ void ShowWebAppDetailedInstallDialog(
 // Sets whether |ShowPWAInstallBubble| should accept immediately without any
 // user interaction.
 void SetAutoAcceptPWAInstallConfirmationForTesting(bool auto_accept);
+
+// Shows the Isolated Web App manual install wizard.
+void LaunchIsolatedWebAppInstaller(Profile* profile,
+                                   const base::FilePath& bundle_path);
 
 }  // namespace web_app
 

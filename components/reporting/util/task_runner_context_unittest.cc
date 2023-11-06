@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -337,7 +338,7 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
     void Pick(size_t index) {
       CheckOnValidSequence();
       if (index < vector_->size()) {
-        if (!vector_->at(index).ok()) {
+        if (!vector_->at(index).has_value()) {
           Schedule(&ActionsWithStatusOrContext::Pick, base::Unretained(this),
                    index + 1);
           return;
@@ -345,7 +346,8 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
         Response(std::move(vector_->at(index)));
         return;
       }
-      Response(Status(error::OUT_OF_RANGE, "All statuses are OK"));
+      Response(
+          base::unexpected(Status(error::OUT_OF_RANGE, "All statuses are OK")));
     }
 
     void OnStart() override { Pick(0); }
@@ -355,18 +357,17 @@ TEST_F(TaskRunner, ActionsWithStatusOrPtr) {
 
   const int kI = 0;
   std::vector<StatusOrPtr> vector;
-  vector.emplace_back(Status(error::CANCELLED, "Cancelled"));
-  vector.emplace_back(Status(error::CANCELLED, "Cancelled"));
-  vector.emplace_back(Status(error::CANCELLED, "Cancelled"));
-  vector.emplace_back(Status(error::CANCELLED, "Cancelled"));
-  vector.emplace_back(Status(error::CANCELLED, "Cancelled"));
+  for (int i = 0; i < 5; ++i) {
+    vector.emplace_back(
+        base::unexpected(Status(error::CANCELLED, "Cancelled")));
+  }
   vector.emplace_back(std::make_unique<WrappedValue>(kI));
   test::TestEvent<StatusOrPtr> test_event;
   Start<ActionsWithStatusOrContext>(
       &vector, test_event.cb(), base::SequencedTaskRunner::GetCurrentDefault());
   const StatusOrPtr result = test_event.result();
-  ASSERT_TRUE(result.ok()) << result.status();
-  EXPECT_EQ(result.ValueOrDie()->value(), kI);
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_EQ(result.value()->value(), kI);
 }
 
 }  // namespace

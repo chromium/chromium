@@ -123,9 +123,9 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
 
   net::URLRequestContext& context() { return *context_; }
 
-  void CreateSharedStorageRequestHelper(bool shared_storage_writable) {
+  void CreateSharedStorageRequestHelper(bool shared_storage_writable_eligible) {
     helper_ = std::make_unique<SharedStorageRequestHelper>(
-        shared_storage_writable, observer_.get());
+        shared_storage_writable_eligible, observer_.get());
   }
 
   [[nodiscard]] mojom::URLLoaderNetworkServiceObserver* MaybeGetHeaderObserver(
@@ -222,50 +222,101 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
 TEST_F(SharedStorageRequestHelperTest,
        SharedStorageWritableHeaderRemoved_EligibityRemoved) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
-  EXPECT_TRUE(helper_->shared_storage_writable());
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/true);
+  EXPECT_TRUE(helper_->shared_storage_writable_eligible());
 
   std::vector<std::string> removed_headers(
-      {std::string(kSharedStorageWritableHeader.data(),
-                   kSharedStorageWritableHeader.size())});
-  helper_->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
-  EXPECT_FALSE(helper_->shared_storage_writable());
+      {std::string(kSecSharedStorageWritableHeader.data(),
+                   kSecSharedStorageWritableHeader.size())});
+  helper_->UpdateSharedStorageWritableEligible(removed_headers,
+                                               /*modified_headers=*/{});
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
 }
 
 TEST_F(SharedStorageRequestHelperTest,
        SharedStorageWritableHeaderNotRemoved_EligibityNotRemoved) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
-  EXPECT_TRUE(helper_->shared_storage_writable());
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/true);
+  EXPECT_TRUE(helper_->shared_storage_writable_eligible());
 
-  std::vector<std::string> removed_headers;
-  helper_->RemoveEligibilityIfSharedStorageWritableRemoved(removed_headers);
-  EXPECT_TRUE(helper_->shared_storage_writable());
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               /*modified_headers=*/{});
+  EXPECT_TRUE(helper_->shared_storage_writable_eligible());
+}
+
+TEST_F(SharedStorageRequestHelperTest,
+       SharedStorageWritableHeaderAdded_EligibityRestored) {
+  GURL request_url = GetHttpsRequestURL();
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+
+  net::HttpRequestHeaders modified_headers;
+  modified_headers.SetHeader(kSecSharedStorageWritableHeader, "?1");
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               modified_headers);
+  EXPECT_TRUE(helper_->shared_storage_writable_eligible());
+}
+
+TEST_F(SharedStorageRequestHelperTest,
+       SharedStorageWritableHeaderNotAdded_EligibityNotRestored) {
+  GURL request_url = GetHttpsRequestURL();
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               /*modified_headers=*/{});
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+}
+
+TEST_F(SharedStorageRequestHelperTest,
+       IncorrectSharedStorageWritableHeaderAdded_EligibityNotRestored) {
+  GURL request_url = GetHttpsRequestURL();
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+
+  net::HttpRequestHeaders modified_headers;
+  // Unparsable.
+  modified_headers.SetHeader(kSecSharedStorageWritableHeader, "can=not=parse");
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               modified_headers);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+
+  // Parses to a token item instead of a boolean item.
+  modified_headers.SetHeader(kSecSharedStorageWritableHeader, "hello");
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               modified_headers);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
+
+  // Wrong boolean value.
+  modified_headers.SetHeader(kSecSharedStorageWritableHeader, "?0");
+  helper_->UpdateSharedStorageWritableEligible(/*removed_headers=*/{},
+                                               modified_headers);
+  EXPECT_FALSE(helper_->shared_storage_writable_eligible());
 }
 
 TEST_F(SharedStorageRequestHelperTest,
        ProcessOutgoingRequest_Eligible_RequestHeaderAdded) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/true);
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
   std::string value;
   EXPECT_TRUE(request->extra_request_headers().GetHeader(
-      kSharedStorageWritableHeader, &value));
-  EXPECT_EQ(value, kSharedStorageWritableValue);
+      kSecSharedStorageWritableHeader, &value));
+  EXPECT_EQ(value, kSecSharedStorageWritableValue);
 }
 
 TEST_F(SharedStorageRequestHelperTest,
        ProcessOutgoingRequest_NotEligible_RequestHeaderNotAdded) {
   GURL request_url = GetHttpsRequestURL();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
   std::unique_ptr<net::URLRequest> request = CreateTestUrlRequest(request_url);
   RunProcessOutgoingRequest(request.get());
 
   std::string value;
   EXPECT_FALSE(request->extra_request_headers().GetHeader(
-      kSharedStorageWritableHeader, &value));
+      kSecSharedStorageWritableHeader, &value));
 }
 
 TEST_F(SharedStorageRequestHelperTest,
@@ -275,7 +326,7 @@ TEST_F(SharedStorageRequestHelperTest,
   RegisterSharedStorageHandlerAndStartServer(kHeader);
 
   const GURL kUrl = GetRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -298,7 +349,7 @@ TEST_F(SharedStorageRequestHelperTest,
   RegisterSharedStorageHandlerAndStartServer(kHeader);
 
   const GURL kUrl = GetRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/true);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -323,7 +374,7 @@ TEST_F(SharedStorageRequestHelperTest,
   // Get a request whose response will have the Shared-Storage-Write header even
   // though we don't have a helper.
   const GURL kUrl = GetSharedStorageBypassRequestURLFromServer();
-  CreateSharedStorageRequestHelper(/*shared_storage_writable=*/false);
+  CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/false);
   auto r = CreateTestUrlRequest(kUrl);
   r->Start();
   EXPECT_TRUE(r->is_pending());
@@ -349,7 +400,7 @@ class SharedStorageRequestHelperProcessHeaderTest
     : public SharedStorageRequestHelperTest {
  public:
   [[nodiscard]] std::unique_ptr<net::URLRequest> CreateSharedStorageRequest() {
-    CreateSharedStorageRequestHelper(/*shared_storage_writable=*/true);
+    CreateSharedStorageRequestHelper(/*shared_storage_writable_eligible=*/true);
     GURL request_url = GetRequestURLFromServer();
     request_origin_ = url::Origin::Create(request_url);
     auto request = CreateTestUrlRequest(request_url);
@@ -357,8 +408,8 @@ class SharedStorageRequestHelperProcessHeaderTest
 
     std::string value;
     EXPECT_TRUE(request->extra_request_headers().GetHeader(
-        kSharedStorageWritableHeader, &value));
-    EXPECT_EQ(value, kSharedStorageWritableValue);
+        kSecSharedStorageWritableHeader, &value));
+    EXPECT_EQ(value, kSecSharedStorageWritableValue);
     return request;
   }
 

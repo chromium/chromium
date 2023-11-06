@@ -6,13 +6,15 @@
 
 #include <Foundation/Foundation.h>
 
-#include "content/browser/renderer_host/popup_menu_helper_mac.h"
 #include "content/browser/sandbox_parameters_mac.h"
 #include "net/test/test_data_directory.h"
 
 // This file is also used in iOS, so we skip including AppKit.h in the iOS port.
 #if BUILDFLAG(IS_MAC)
 #include <AppKit/AppKit.h>
+#include "content/browser/renderer_host/popup_menu_helper_mac.h"
+#elif BUILDFLAG(IS_IOS)
+#include "content/browser/renderer_host/popup_menu_helper_ios.h"
 #endif
 
 namespace content {
@@ -50,9 +52,9 @@ void SetDefaultsToWebTestValues() {
 void WebTestBrowserPlatformInitialize() {
   SetDefaultsToWebTestValues();
 
-#if BUILDFLAG(IS_MAC)
   PopupMenuHelper::DontShowPopupMenuForTesting();
 
+#if BUILDFLAG(IS_MAC)
   // Expand the network service sandbox to allow reading the test TLS
   // certificates.
   SetNetworkTestCertsDirectoryForTesting(net::GetTestCertsDirectory());

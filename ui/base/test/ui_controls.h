@@ -13,6 +13,8 @@
 
 namespace ui_controls {
 
+enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
+
 // A set of utility functions to generate native events in platform
 // independent way. Note that since the implementations depend on a window being
 // top level, these can only be called from test suites that are not sharded.
@@ -62,15 +64,15 @@ bool SendKeyPress(gfx::NativeWindow window,
                   bool shift,
                   bool alt,
                   bool command);
-bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
-                                ui::KeyboardCode key,
-                                bool control,
-                                bool shift,
-                                bool alt,
-                                bool command,
-                                base::OnceClosure task);
-
-enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
+bool SendKeyPressNotifyWhenDone(
+    gfx::NativeWindow window,
+    ui::KeyboardCode key,
+    bool control,
+    bool shift,
+    bool alt,
+    bool command,
+    base::OnceClosure task,
+    KeyEventType wait_for = KeyEventType::kKeyRelease);
 
 // The keys that may be held down while generating a keyboard/mouse event.
 enum AcceleratorState {

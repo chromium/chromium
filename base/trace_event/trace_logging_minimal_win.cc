@@ -10,16 +10,18 @@
 #include "base/logging.h"
 #include "base/numerics/checked_math.h"
 
+TlmProvider::TlmProvider() noexcept = default;
+
 TlmProvider::~TlmProvider() {
   Unregister();
 }
 
 TlmProvider::TlmProvider(const char* provider_name,
                          const GUID& provider_guid,
-                         PENABLECALLBACK enable_callback,
-                         void* enable_callback_context) noexcept {
-  ULONG status = Register(provider_name, provider_guid, enable_callback,
-                          enable_callback_context);
+                         base::RepeatingCallback<void(EventControlCode)>
+                             on_updated_callback) noexcept {
+  ULONG status =
+      Register(provider_name, provider_guid, std::move(on_updated_callback));
   LOG_IF(ERROR, status != ERROR_SUCCESS) << "Provider resistration failure";
 }
 
@@ -53,8 +55,8 @@ void TlmProvider::Unregister() noexcept {
 
 ULONG TlmProvider::Register(const char* provider_name,
                             const GUID& provider_guid,
-                            PENABLECALLBACK enable_callback,
-                            void* enable_callback_context) noexcept {
+                            base::RepeatingCallback<void(EventControlCode)>
+                                on_updated_callback) noexcept {
   // Calling Register when already registered is a fatal error.
   CHECK_EQ(reg_handle_, 0ULL);
 
@@ -72,8 +74,7 @@ ULONG TlmProvider::Register(const char* provider_name,
   // Fill in MetadataSize field at offset 0.
   *reinterpret_cast<uint16_t*>(provider_metadata_) = provider_metadata_size_;
 
-  enable_callback_ = enable_callback;
-  enable_callback_context_ = enable_callback_context;
+  on_updated_callback_ = std::move(on_updated_callback);
   ULONG status =
       EventRegister(&provider_guid, StaticEnableCallback, this, &reg_handle_);
   if (status != ERROR_SUCCESS)
@@ -112,23 +113,23 @@ void TlmProvider::StaticEnableCallback(const GUID* source_id,
   if (!callback_context)
     return;
 
-  TlmProvider* pProvider = static_cast<TlmProvider*>(callback_context);
+  TlmProvider* provider = static_cast<TlmProvider*>(callback_context);
   switch (is_enabled) {
     case EVENT_CONTROL_CODE_DISABLE_PROVIDER:
-      pProvider->level_plus1_ = 0;
+      provider->level_plus1_ = 0;
       break;
     case EVENT_CONTROL_CODE_ENABLE_PROVIDER:
-      pProvider->level_plus1_ =
+      provider->level_plus1_ =
           level != 0 ? static_cast<unsigned>(level) + 1u : 256u;
-      pProvider->keyword_any_ = match_any_keyword;
-      pProvider->keyword_all_ = match_all_keyword;
       break;
   }
+  provider->keyword_any_ = match_any_keyword;
+  provider->keyword_all_ = match_all_keyword;
 
-  if (pProvider->enable_callback_) {
-    pProvider->enable_callback_(source_id, is_enabled, level, match_any_keyword,
-                                match_all_keyword, filter_data,
-                                pProvider->enable_callback_context_);
+  if (provider->on_updated_callback_ &&
+      is_enabled <= static_cast<size_t>(EventControlCode::kHighest)) {
+    provider->on_updated_callback_.Run(
+        static_cast<EventControlCode>(is_enabled));
   }
 }
 

@@ -11,7 +11,7 @@ import '../strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {Log, VersionInfo} from './types.js';
 
@@ -22,7 +22,7 @@ let versionInfo: VersionInfo;
 function dumpFileWithJsonContents() {
   const dumpObject = {versionInfo, logs};
 
-  const data = JSON.stringify(dumpObject);
+  const data = JSON.stringify(dumpObject, null, 3);
   const filename = 'policy_logs_dump.json';
 
   const blob = new Blob([data], {'type': 'application/json'});
@@ -72,13 +72,6 @@ async function fetchLogs() {
 }
 
 function initialize() {
-  // TODO(b/251799119): Add instructions on how to enable the page.
-  if (!loadTimeData.getBoolean('loggingEnabled')) {
-    getRequiredElement('logs-disabled-container').hidden = false;
-    getRequiredElement('logs-enabled-container').hidden = true;
-    return;
-  }
-
   displayVersionInfo();
 
   const fetchLogsAndDisplay = () => fetchLogs().then(displayList);

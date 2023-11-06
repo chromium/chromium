@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 
-#include <jni.h>
 #include <string>
+
+#include <jni.h>
 
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +24,7 @@ class TouchToFillPasswordGenerationBridge {
                     std::u16string password,
                     std::string account) = 0;
   virtual void Hide() = 0;
-  virtual void OnDismissed(JNIEnv* env) = 0;
+  virtual void OnDismissed(JNIEnv* env, bool generated_password_accepted) = 0;
   virtual void OnGeneratedPasswordAccepted(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& password) = 0;

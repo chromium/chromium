@@ -162,7 +162,7 @@ TEST(MediaSourceTest, ForPresentationUrl) {
 
 TEST(MediaSourceTest, ForRemotePlayback) {
   constexpr char kRemotePlaybackUrl[] =
-      "remote-playback:media-session?tab_id=1&video_codec=vp8&audio_codec=aac";
+      "remote-playback:media-session?video_codec=vp8&audio_codec=aac&tab_id=1";
   auto source = MediaSource::ForRemotePlayback(1, media::VideoCodec::kVP8,
                                                media::AudioCodec::kAAC);
   EXPECT_EQ(kRemotePlaybackUrl, source.id());

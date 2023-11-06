@@ -9,7 +9,7 @@
 #include "chrome/browser/password_manager/password_manager_test_util.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"

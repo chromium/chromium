@@ -55,6 +55,16 @@ class DownloadBubbleSecurityView : public views::View,
         const offline_items_collection::ContentId& id,
         base::optional_ref<const std::string> password) = 0;
 
+    // Processes the local decryption prompt being accepted/ignored.
+    virtual void ProcessLocalDecryptionPress(
+        const offline_items_collection::ContentId& id,
+        base::optional_ref<const std::string> password) = 0;
+
+    // Processes clicks on the in-progress view for local decryption scans.
+    virtual void ProcessLocalPasswordInProgressClick(
+        const offline_items_collection::ContentId& id,
+        DownloadCommands::Command command) = 0;
+
     // Return whether the download item is an encrypted archive.
     virtual bool IsEncryptedArchive(
         const offline_items_collection::ContentId& id) = 0;
@@ -157,6 +167,10 @@ class DownloadBubbleSecurityView : public views::View,
   // Deep scanning is complicated enough that this button click is separate from
   // the others. Returns whether the dialog should close.
   bool ProcessDeepScanClick();
+
+  // Prompting for local archive decryption is complicated enough that handling
+  // these button presses is handled separately.
+  bool ProcessLocalPasswordDecryptionClick();
 
   // Must outlive this.
   const raw_ptr<Delegate> delegate_;

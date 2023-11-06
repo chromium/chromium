@@ -96,8 +96,7 @@ bool CanPerformRestore(const AccountId& account_id) {
 
 class FullRestoreServiceTest : public testing::Test {
  public:
-  FullRestoreServiceTest()
-      : user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
+  FullRestoreServiceTest() = default;
 
   ~FullRestoreServiceTest() override = default;
 
@@ -105,6 +104,7 @@ class FullRestoreServiceTest : public testing::Test {
   FullRestoreServiceTest& operator=(const FullRestoreServiceTest&) = delete;
 
   void SetUp() override {
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName("user.test@gmail.com");
@@ -115,7 +115,7 @@ class FullRestoreServiceTest : public testing::Test {
     account_id_ =
         AccountId::FromUserEmailGaiaId("usertest@gmail.com", "1234567890");
     const auto* user = GetFakeUserManager()->AddUser(account_id_);
-    GetFakeUserManager()->LoginUser(account_id_);
+    fake_user_manager_->LoginUser(account_id_);
     ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
                                                             profile_.get());
 
@@ -129,8 +129,7 @@ class FullRestoreServiceTest : public testing::Test {
   void TearDown() override { profile_.reset(); }
 
   FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
+    return fake_user_manager_.Get();
   }
 
   void CreateFullRestoreServiceForTesting() {
@@ -273,9 +272,10 @@ class FullRestoreServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
 
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
-  user_manager::ScopedUserManager user_manager_enabler_;
   AccountId account_id_;
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;

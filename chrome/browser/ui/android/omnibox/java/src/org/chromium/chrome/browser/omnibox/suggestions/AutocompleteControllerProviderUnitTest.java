@@ -36,11 +36,11 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Tests for {@link AutocompleteMediator}.
- */
+/** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowLog.class, ShadowLooper.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowLog.class, ShadowLooper.class})
 public class AutocompleteControllerProviderUnitTest {
     private static final long NATIVE_CONTROLLER_1 = 111;
     private static final long NATIVE_CONTROLLER_2 = 222;

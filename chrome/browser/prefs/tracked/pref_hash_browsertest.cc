@@ -607,7 +607,11 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly set the DSE (it's otherwise NULL by default, preventing
     // thorough testing of the PROTECTION_ENABLED_DSE level).
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 
@@ -687,7 +691,11 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
     // Explicitly verify the result of reported resets.
 
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
     default_search_manager.GetDefaultSearchEngine(&dse_source);
@@ -1153,7 +1161,11 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
   void SetupPreferences() override {
     // Set user selected default search engine.
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 
@@ -1218,7 +1230,11 @@ class PrefHashBrowserTestDefaultSearch : public PrefHashBrowserTestBase {
 
   void VerifyReactionToPrefAttack() override {
     DefaultSearchManager default_search_manager(
-        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback());
+        profile()->GetPrefs(), DefaultSearchManager::ObserverCallback()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+        , profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
     DefaultSearchManager::Source dse_source =
         static_cast<DefaultSearchManager::Source>(-1);
 

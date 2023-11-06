@@ -71,13 +71,18 @@ void ChromeRenderViewTest::SetUp() {
   // RenderFrame doesn't expose its Agent objects, because it has no need to
   // store them directly (they're stored as RenderFrameObserver*).  So just
   // create another set. They destroy themselves in OnDestruct().
-  password_autofill_agent_ = new autofill::TestPasswordAutofillAgent(
-      GetMainRenderFrame(), &associated_interfaces_);
-  password_generation_ = new autofill::PasswordGenerationAgent(
-      GetMainRenderFrame(), password_autofill_agent_, &associated_interfaces_);
-  autofill_agent_ =
-      new AutofillAgent(GetMainRenderFrame(), password_autofill_agent_,
-                        password_generation_, &associated_interfaces_);
+  auto unique_password_autofill_agent =
+      std::make_unique<autofill::TestPasswordAutofillAgent>(
+          GetMainRenderFrame(), &associated_interfaces_);
+  password_autofill_agent_ = unique_password_autofill_agent.get();
+  auto unique_password_generation =
+      std::make_unique<autofill::PasswordGenerationAgent>(
+          GetMainRenderFrame(), password_autofill_agent_.get(),
+          &associated_interfaces_);
+  password_generation_ = unique_password_generation.get();
+  autofill_agent_ = new AutofillAgent(
+      GetMainRenderFrame(), std::move(unique_password_autofill_agent),
+      std::move(unique_password_generation), &associated_interfaces_);
 }
 
 void ChromeRenderViewTest::TearDown() {

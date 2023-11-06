@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> daripada tab anda sudah lama tidak digunakan. Tutup tab?</translation>
+<translation id="1155815720264022949">Mahu menutup tab lama?</translation>
+<translation id="1215127405478249895">Semak tab</translation>
 <translation id="125153950246128346">Ketik untuk melihat tab lain</translation>
 <translation id="1499635324672558517">Tutup semua tab Inkognito?</translation>
 <translation id="1657719826150349398">Alihkan tab ke bawah</translation>
@@ -45,9 +47,11 @@
 <translation id="5073204694187207510">Sembunyikan grid skrin penuh</translation>
 <translation id="5076161749301278626">Lihat ulasan gedung?</translation>
 <translation id="5082793167783849073">Bandingkan halaman dengan pantas dengan membuat kumpulan. Untuk bermula, sentuh &amp; tahan pautan.</translation>
+<translation id="5303274951032363933">{TABS_COUNT,plural, =1{Anda mempunyai <ph name="TABS_COUNT_ONE" /> tab yang tidak digunakan baru-baru ini}other{Anda mempunyai <ph name="TABS_COUNT_MANY" /> tab yang tidak digunakan baru-baru ini}}</translation>
 <translation id="5339733443032484186">Tab terakhir anda</translation>
 <translation id="5490235265819901748">Kumpulan tab dikembangkan</translation>
 <translation id="5494920125229734069">Pilih semua</translation>
+<translation id="5545379293264651575">Tutup tanpa membuat semakan</translation>
 <translation id="5556417849629758491">Lihat maklumat kedai, pilihan tersedia berhampiran bahagian atas skrin</translation>
 <translation id="5558362125926932819">Tutup kumpulan tab dengan <ph name="NUMBER_OF_TABS" /> tab</translation>
 <translation id="5580090775658607195"><ph name="TAB_COUNT" /> tab dihimpunkan</translation>

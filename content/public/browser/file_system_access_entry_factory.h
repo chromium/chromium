@@ -34,20 +34,29 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
   // parameter. This url will be used for verifications later for SafeBrowsing
   // and Quarantine Service if used for writes.
   struct CONTENT_EXPORT BindingContext {
+    // Used for frames that have an associated rfh (e.g. Dedicated Workers,
+    // Render Frame Host).
     BindingContext(const blink::StorageKey& storage_key,
                    const GURL& url,
-                   GlobalRenderFrameHostId frame_id)
-        : storage_key(storage_key), url(url), frame_id(frame_id) {}
+                   GlobalRenderFrameHostId frame_id,
+                   bool is_worker = false)
+        : storage_key(storage_key),
+          url(url),
+          frame_id(frame_id),
+          is_worker(is_worker) {}
+    // Used for frames that don't have an associated rfh (e.g. Service Workers,
+    // Shared Workers).
     BindingContext(const blink::StorageKey& storage_key,
                    const GURL& url,
                    int worker_process_id)
         : storage_key(storage_key),
           url(url),
-          frame_id(worker_process_id, MSG_ROUTING_NONE) {}
+          frame_id(worker_process_id, MSG_ROUTING_NONE),
+          is_worker(true) {}
     blink::StorageKey storage_key;
     GURL url;
     GlobalRenderFrameHostId frame_id;
-    bool is_worker() const { return !frame_id; }
+    bool is_worker;
     int process_id() const { return frame_id.child_id; }
   };
 

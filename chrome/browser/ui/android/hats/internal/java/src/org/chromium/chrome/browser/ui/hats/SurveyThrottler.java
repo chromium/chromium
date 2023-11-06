@@ -12,6 +12,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.components.browser_ui.util.date.CalendarFactory;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -27,6 +28,8 @@ import java.util.Random;
  * based on the probability.
  */
 public class SurveyThrottler {
+    private static final int MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED = 180;
+
     /**
      * Reasons that the user was rejected from being selected for a survey Note: these values cannot
      * change and must match the SurveyFilteringResult enum in enums.xml because they're written to
@@ -41,6 +44,7 @@ public class SurveyThrottler {
         FilteringResult.USER_SELECTED_FOR_SURVEY,
         FilteringResult.FIRST_TIME_USER,
         FilteringResult.USER_PROMPT_SURVEY,
+        FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY,
         FilteringResult.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -53,9 +57,10 @@ public class SurveyThrottler {
         int USER_SELECTED_FOR_SURVEY = 6;
         int FIRST_TIME_USER = 8;
         int USER_PROMPT_SURVEY = 9;
+        int OTHER_SURVEY_DISPLAYED_RECENTLY = 10;
 
         // Number of entries
-        int NUM_ENTRIES = 10;
+        int NUM_ENTRIES = 11;
     }
 
     private final SurveyConfig mSurveyConfig;
@@ -126,6 +131,12 @@ public class SurveyThrottler {
             return false;
         }
 
+        if (today - SurveyMetadata.getLastPromptDisplayedDateForAnySurvey()
+                < MIN_DAYS_BETWEEN_ANY_PROMPT_DISPLAYED) {
+            recordSurveyFilteringResult(FilteringResult.OTHER_SURVEY_DISPLAYED_RECENTLY);
+            return false;
+        }
+
         getMetadata().setDiceRolled();
         if (isSelectedWithByRandom()) {
             recordSurveyFilteringResult(FilteringResult.USER_SELECTED_FOR_SURVEY);
@@ -137,9 +148,9 @@ public class SurveyThrottler {
     }
 
     private SurveyMetadata getMetadata() {
-        // Create the metadata lazily since getDayOfYear might be blocking.
+        // Create the metadata lazily since getEncodedDate might be blocking.
         if (mMetadata == null) {
-            mMetadata = new SurveyMetadata(mSurveyConfig.mTriggerId, this::getDayOfYear);
+            mMetadata = new SurveyMetadata(mSurveyConfig.mTriggerId, this::getEncodedDate);
         }
         return mMetadata;
     }
@@ -149,11 +160,17 @@ public class SurveyThrottler {
         return new Random().nextFloat() <= mSurveyConfig.mProbability;
     }
 
-    /** @return The day of the year for today. */
+    /**
+     * Return the encoded date as int based on the current year and day of year from the calendar.
+     */
     @VisibleForTesting
-    int getDayOfYear() {
+    int getEncodedDate() {
         ThreadUtils.assertOnBackgroundThread();
-        return Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+        return getEncodedDateImpl(CalendarFactory.get());
+    }
+
+    static int getEncodedDateImpl(Calendar calendar) {
+        return calendar.get(Calendar.YEAR) * 366 + calendar.get(Calendar.DAY_OF_YEAR);
     }
 
     private static void recordSurveyFilteringResult(@FilteringResult int value) {

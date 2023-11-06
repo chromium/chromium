@@ -6,7 +6,23 @@
 
 namespace compose::features {
 
-// Enables the compose feature.
 BASE_FEATURE(kEnableCompose, "Compose", base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kEnableComposeInputMinWords{&kEnableCompose,
+                                                          "input_min_words", 3};
+const base::FeatureParam<int> kEnableComposeInputMaxWords{
+    &kEnableCompose, "input_max_words", 500};
+const base::FeatureParam<int> kEnableComposeInputMaxChars{
+    &kEnableCompose, "input_max_chars", 2500};
 
+BASE_FEATURE(kEnableComposeNudge,
+             "ComposeNudge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kFillMultiLine,
+             "FillMultiLine",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableComposeLanguageBypass,
+             "ComposeLanguageBypass",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace compose::features

@@ -34,6 +34,8 @@ static_library("usb") {
     "webusb_descriptors.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
@@ -231,9 +233,9 @@ if (is_android) {
     sources = java_sources_needing_jni
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

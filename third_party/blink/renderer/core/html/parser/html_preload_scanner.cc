@@ -232,7 +232,8 @@ class TokenPreloadScanner::StartTagScanner {
       const PictureData& picture_data,
       const CachedDocumentParameters& document_parameters,
       const PreloadRequest::ExclusionInfo* exclusion_info,
-      bool treat_links_as_in_body) {
+      bool treat_links_as_in_body,
+      bool is_potentially_lcp_element) {
     PreloadRequest::RequestType request_type =
         PreloadRequest::kRequestTypePreload;
     absl::optional<ResourceType> type;
@@ -322,7 +323,8 @@ class TokenPreloadScanner::StartTagScanner {
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
     if (type == ResourceType::kImage && is_img &&
-        IsLazyLoadImageDeferable(document_parameters)) {
+        IsLazyLoadImageDeferable(document_parameters,
+                                 is_potentially_lcp_element)) {
       return nullptr;
     }
     // Do not set integrity metadata for <link> elements for destinations not
@@ -569,9 +571,16 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
   bool IsLazyLoadImageDeferable(
-      const CachedDocumentParameters& document_parameters) {
+      const CachedDocumentParameters& document_parameters,
+      bool is_potentially_lcp_element) {
     if (document_parameters.lazy_load_image_setting ==
         LocalFrame::LazyLoadImageSetting::kDisabled) {
+      return false;
+    }
+
+    if (is_potentially_lcp_element &&
+        document_parameters.preload_lazy_load_image_type ==
+            features::LcppPreloadLazyLoadImageType::kNativeLazyLoading) {
       return false;
     }
 
@@ -1037,7 +1046,8 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
       }
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, picture_data_, *document_parameters_,
-          exclusion_info_.get(), seen_img_ || seen_body_);
+          exclusion_info_.get(), seen_img_ || seen_body_,
+          potentially_lcp_element);
       if (request) {
         request->SetInitiatorPosition(
             TextPosition(source.CurrentLine(), source.CurrentColumn()));
@@ -1213,6 +1223,8 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
+  preload_lazy_load_image_type =
+      features::kLCPCriticalPathPredictorPreloadLazyLoadImageType.Get();
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
 }

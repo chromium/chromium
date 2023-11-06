@@ -73,6 +73,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 // --- ReplacementFragment helper class
 
 class ReplacementFragment final {
@@ -1720,9 +1722,10 @@ bool ReplaceSelectionCommand::ShouldPerformSmartReplace() const {
   TextControlElement* text_control =
       EnclosingTextControl(PositionAtStartOfInsertedContent().DeepEquivalent());
   auto* html_input_element = DynamicTo<HTMLInputElement>(text_control);
-  if (html_input_element &&
-      html_input_element->type() == input_type_names::kPassword)
+  if (html_input_element && html_input_element->FormControlType() ==
+                                FormControlType::kInputPassword) {
     return false;  // Disable smart replace for password fields.
+  }
 
   return true;
 }

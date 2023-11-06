@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+[FAIL] Basic declarative DOM Parts (Main Document)
+  doc.getPartRoot is not a function
+[FAIL] Basic declarative DOM Parts (Template)
+  doc.getPartRoot is not a function
+[FAIL] Basic declarative DOM Parts (Clone)
+  doc.getPartRoot is not a function
+[FAIL] Basic declarative DOM Parts (PartClone)
+  template.content.getPartRoot is not a function
+[FAIL] Post-parsing structure of child parts, and stickiness
+  document.getPartRoot is not a function
+[FAIL] Parser only behavior - adding parseparts does nothing
+  document.getPartRoot is not a function
+[FAIL] Just parts, no text before
+  document.getPartRoot is not a function
+[FAIL] Self closing elements can't use parseparts
+  document.getPartRoot is not a function
+[FAIL] Second head element can't use parseparts
+  document.getPartRoot is not a function
+[FAIL] Foreign content should support Parts
+  document.getPartRoot is not a function
+[FAIL] Not quite parts syntax - none should become parts, and nothing should crash
+  document.getPartRoot is not a function
+Harness: the test ran to completion.
+

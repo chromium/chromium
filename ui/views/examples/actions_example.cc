@@ -623,7 +623,8 @@ void ActionsExample::CreateActions(actions::ActionManager* manager) {
           .Build());
 }
 
-void ActionsExample::ActionInvoked(actions::ActionItem* action) {
+void ActionsExample::ActionInvoked(actions::ActionItem* action,
+                                   actions::ActionInvocationContext context) {
   auto bool_to_string = [](bool value) {
     return value ? kBoolStrings[1] : kBoolStrings[0];
   };
@@ -655,7 +656,8 @@ void ActionsExample::ActionSelected() {
   action_tooltip_text_->SetText(action_item->GetTooltipText());
 }
 
-void ActionsExample::AssignAction(actions::ActionItem* action) {
+void ActionsExample::AssignAction(actions::ActionItem* action,
+                                  actions::ActionInvocationContext context) {
   auto index = controls_->GetSelectedIndex();
   if (!index || controls_->GetModel()->GetItemCount() == 0) {
     return;
@@ -672,7 +674,8 @@ void ActionsExample::AssignAction(actions::ActionItem* action) {
   }
 }
 
-void ActionsExample::CreateControl(actions::ActionItem* action) {
+void ActionsExample::CreateControl(actions::ActionItem* action,
+                                   actions::ActionInvocationContext context) {
   static int control_num = 0;
   std::unique_ptr<View> new_view;
   const absl::optional<size_t> selected_index =

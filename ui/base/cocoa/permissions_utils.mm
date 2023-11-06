@@ -72,7 +72,7 @@ bool TryPromptUserForScreenCapture() {
             ^(CGDisplayStreamFrameStatus status, uint64_t displayTime,
               IOSurfaceRef frameSurface, CGDisplayStreamUpdateRef updateRef){
             }));
-    return stream != nullptr;
+    return !!stream;
   }
 }
 

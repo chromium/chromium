@@ -235,6 +235,8 @@ class SystemNetworkContextManager {
   void UpdateEnforceLocalAnchorConstraintsEnabled();
 #endif
 
+  void UpdateIPv6ReachabilityOverrideEnabled();
+
   // The PrefService to retrieve all the pref values.
   raw_ptr<PrefService> local_state_;
 

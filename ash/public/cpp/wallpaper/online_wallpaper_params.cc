@@ -14,8 +14,6 @@ namespace ash {
 
 OnlineWallpaperParams::OnlineWallpaperParams(
     const AccountId& in_account_id,
-    uint64_t in_asset_id,
-    const GURL& in_url,
     const std::string& in_collection_id,
     WallpaperLayout in_layout,
     bool in_preview_mode,
@@ -24,8 +22,6 @@ OnlineWallpaperParams::OnlineWallpaperParams(
     uint64_t in_unit_id,
     const std::vector<OnlineWallpaperVariant>& in_variants)
     : account_id(in_account_id),
-      asset_id(in_asset_id),
-      url(in_url),
       collection_id(in_collection_id),
       layout(in_layout),
       preview_mode(in_preview_mode),
@@ -49,8 +45,6 @@ std::ostream& operator<<(std::ostream& os,
                          const OnlineWallpaperParams& params) {
   os << "OnlineWallpaperParams:" << std::endl
      << "  account_id: " << params.account_id << std::endl
-     << "  asset_id: " << params.asset_id << std::endl
-     << "  url: " << params.url << std::endl
      << "  collection_id: " << params.collection_id << std::endl
      << "  layout: " << params.layout << std::endl
      << "  preview_mode: " << params.preview_mode << std::endl

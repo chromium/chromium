@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL base element with unparseable href should have .href getter return attr value assert_equals: expected "//test:test" but got ""
-Harness: the test ran to completion.
-

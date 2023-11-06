@@ -89,10 +89,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   // base::File::Flags values.
   base::FileErrorOr<base::File> OpenFile(const base::FilePath& path, int flags);
 
-  // Writes a file atomically using the ImportantFileWriter.
-  bool WriteFileAtomically(const base::FilePath& path,
-                           const std::string& contents);
-
   // Creates a new directory at |path|. Any needed parent directories above
   // |path| are also created if they don't already exist.
   base::File::Error CreateDirectory(const base::FilePath& path);
@@ -101,10 +97,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
   // successful.  Not recursive.  Will fail if there are subdirectories.  This
   // will return true if |path| does not exist.
   bool DeleteFile(const base::FilePath& path);
-
-  // Recursively deletes the directory at |path| if it exists and returns true
-  // iff successful.  This will return true if |path| does not exist.
-  bool DeletePathRecursively(const base::FilePath& path);
 
   // Retrieves information about a file or directory at |path|. Returns a valid
   // base::File::Info value on success, or null on failure.
@@ -117,10 +109,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
     bool can_write = false;
   };
   absl::optional<PathAccessInfo> GetPathAccess(const base::FilePath& path);
-
-  // Returns the maximum length of path component on the volume containing the
-  // directory |path|, in the number of FilePath::CharType, or -1 on failure.
-  absl::optional<int> GetMaximumPathComponentLength(const base::FilePath& path);
 
   // Renames a file from |old_path| to |new_path|. Must be atomic.
   base::File::Error RenameFile(const base::FilePath& old_path,
@@ -144,10 +132,6 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_FILESYSTEM_SUPPORT) FilesystemProxy {
 
   // Sets the length of the given file to |length| bytes.
   bool SetOpenedFileLength(base::File* file, uint64_t length);
-
-  // Returns the total number of bytes used by all the files under |path|.
-  // If the path does not exist the function returns 0.
-  int64_t ComputeDirectorySize(const base::FilePath& path);
 
  private:
   // For restricted FilesystemProxy instances, this returns a FilePath

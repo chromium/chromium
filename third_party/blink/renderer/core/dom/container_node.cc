@@ -987,6 +987,83 @@ void ContainerNode::ParserAppendChild(Node* new_child) {
   NotifyNodeInserted(*new_child, ChildrenChangeSource::kParser);
 }
 
+void ContainerNode::ParserAppendChildInDocumentFragment(Node* new_child) {
+  DCHECK(new_child);
+  DCHECK(CheckParserAcceptChild(*new_child));
+  DCHECK(!new_child->IsDocumentFragment());
+  DCHECK(!IsA<HTMLTemplateElement>(this));
+  DCHECK_EQ(new_child->GetDocument(), GetDocument());
+  DCHECK_EQ(&new_child->GetTreeScope(), &GetTreeScope());
+  DCHECK_EQ(new_child->parentNode(), nullptr);
+  EventDispatchForbiddenScope assert_no_event_dispatch;
+  ScriptForbiddenScope forbid_script;
+  AppendChildCommon(*new_child);
+  DCHECK_EQ(new_child->ConnectedSubframeCount(), 0u);
+  // TODO(sky): This has to happen for every add. It seems like it should be
+  // better factored.
+  ChildListMutationScope(*this).ChildAdded(*new_child);
+  probe::DidInsertDOMNode(this);
+}
+
+void ContainerNode::ParserFinishedBuildingDocumentFragment() {
+  EventDispatchForbiddenScope assert_no_event_dispatch;
+  ScriptForbiddenScope forbid_script;
+  const bool may_contain_shadow_roots = GetDocument().MayContainShadowRoots();
+
+  const ChildrenChange change =
+      ChildrenChange::ForFinishingBuildingDocumentFragmentTree();
+  for (Node& node : NodeTraversal::DescendantsOf(*this)) {
+    NotifyNodeAtEndOfBuildingFragmentTree(node, change,
+                                          may_contain_shadow_roots);
+  }
+
+  if (GetDocument().ShouldInvalidateNodeListCaches(nullptr)) {
+    GetDocument().InvalidateNodeListCaches(nullptr);
+  }
+}
+
+void ContainerNode::NotifyNodeAtEndOfBuildingFragmentTree(
+    Node& node,
+    const ChildrenChange& change,
+    bool may_contain_shadow_roots) {
+  // Fast path parser only creates disconnected nodes.
+  DCHECK(!node.isConnected());
+
+  if (may_contain_shadow_roots) {
+    node.CheckSlotChangeAfterInserted();
+  }
+
+  // As an optimization we don't notify leaf nodes when when inserting
+  // into detached subtrees that are not in a shadow tree, unless the
+  // node has DOM Parts attached.
+  if (!node.IsContainerNode() && !IsInShadowTree() && !node.GetDOMParts()) {
+    return;
+  }
+
+  // NotifyNodeInserted() keeps a list of nodes to call
+  // DidNotifySubtreeInsertionsToDocument() on if InsertedInto() returns
+  // kInsertionShouldCallDidNotifySubtreeInsertions, but only if the node
+  // is connected. None of the nodes are connected at this point, so it's
+  // not needed here.
+  node.InsertedInto(*this);
+
+  if (ShadowRoot* shadow_root = node.GetShadowRoot()) {
+    for (Node& shadow_node :
+         NodeTraversal::InclusiveDescendantsOf(*shadow_root)) {
+      NotifyNodeAtEndOfBuildingFragmentTree(shadow_node, change,
+                                            may_contain_shadow_roots);
+    }
+  }
+
+  // No node-lists should have been created at this (otherwise
+  // InvalidateNodeListCaches() would need to be called).
+  DCHECK(!HasRareData() || !RareData()->NodeLists());
+
+  if (node.IsContainerNode()) {
+    DynamicTo<ContainerNode>(node)->ChildrenChanged(change);
+  }
+}
+
 DISABLE_CFI_PERF
 void ContainerNode::NotifyNodeInserted(Node& root,
                                        ChildrenChangeSource source) {
@@ -1020,9 +1097,9 @@ void ContainerNode::NotifyNodeInsertedInternal(
   ScriptForbiddenScope forbid_script;
 
   for (Node& node : NodeTraversal::InclusiveDescendantsOf(root)) {
-    // As an optimization we don't notify leaf nodes when when inserting
-    // into detached subtrees that are not in a shadow tree, unless the
-    // node has DOM Parts attached.
+    // As an optimization we don't notify leaf nodes when inserting into
+    // detached subtrees that are not in a shadow tree, unless the node has DOM
+    // Parts attached.
     if (!isConnected() && !IsInShadowTree() && !node.IsContainerNode() &&
         !node.GetDOMParts()) {
       continue;
@@ -1086,6 +1163,12 @@ void ContainerNode::DetachLayoutTree(bool performing_reattach) {
 void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   GetDocument().IncDOMTreeVersion();
   GetDocument().NotifyChangeChildren(*this, change);
+  if (change.type ==
+      ChildrenChangeType::kFinishedBuildingDocumentFragmentTree) {
+    // The rest of this is not necessary when building a DocumentFragment.
+    return;
+  }
+
   InvalidateNodeListCachesInAncestors(nullptr, nullptr, &change);
   if (change.IsChildRemoval() ||
       change.type == ChildrenChangeType::kAllChildrenRemoved) {
@@ -1099,13 +1182,15 @@ void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
     inserted_node->ClearFlatTreeNodeDataIfHostChanged(*this);
   if (!InActiveDocument())
     return;
-  if (IsElementNode() && !GetComputedStyle()) {
-    // There is no need to mark for style recalc if the parent element does not
-    // Already have a ComputedStyle. For instance if we insert nodes into a
-    // display:none subtree. If this ContainerNode gets a ComputedStyle during
-    // the next style recalc, we will traverse into the inserted children since
-    // the ComputedStyle goes from null to non-null.
-    return;
+  if (Element* element = DynamicTo<Element>(this)) {
+    if (!element->GetComputedStyle()) {
+      // There is no need to mark for style recalc if the parent element does
+      // not already have a ComputedStyle. For instance if we insert nodes into
+      // a display:none subtree. If this ContainerNode gets a ComputedStyle
+      // during the next style recalc, we will traverse into the inserted
+      // children since the ComputedStyle goes from null to non-null.
+      return;
+    }
   }
   if (inserted_node->IsContainerNode() || inserted_node->IsTextNode())
     inserted_node->SetStyleChangeOnInsertion();
@@ -1127,164 +1212,6 @@ PhysicalRect ContainerNode::BoundingBox() const {
   if (!GetLayoutObject())
     return PhysicalRect();
   return GetLayoutObject()->AbsoluteBoundingBoxRectHandlingEmptyInline();
-}
-
-// This is used by FrameSelection to denote when the active-state of the page
-// has changed independent of the focused element changing.
-void ContainerNode::FocusStateChanged() {
-  // If we're just changing the window's active state and the focused node has
-  // no layoutObject we can just ignore the state change.
-  if (!GetLayoutObject())
-    return;
-
-  StyleChangeType change_type =
-      GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
-          ? kSubtreeStyleChange
-          : kLocalStyleChange;
-  SetNeedsStyleRecalc(
-      change_type,
-      StyleChangeReasonForTracing::CreateWithExtraData(
-          style_change_reason::kPseudoClass, style_change_extra_data::g_focus));
-
-  if (auto* this_element = DynamicTo<Element>(this))
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
-
-  InvalidateIfHasEffectiveAppearance();
-  FocusVisibleStateChanged();
-  FocusWithinStateChanged();
-}
-
-void ContainerNode::FocusVisibleStateChanged() {
-  if (!RuntimeEnabledFeatures::CSSFocusVisibleEnabled())
-    return;
-  StyleChangeType change_type =
-      GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
-          ? kSubtreeStyleChange
-          : kLocalStyleChange;
-  SetNeedsStyleRecalc(change_type,
-                      StyleChangeReasonForTracing::CreateWithExtraData(
-                          style_change_reason::kPseudoClass,
-                          style_change_extra_data::g_focus_visible));
-
-  if (auto* this_element = DynamicTo<Element>(this))
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
-}
-
-void ContainerNode::FocusWithinStateChanged() {
-  if (GetComputedStyle() && GetComputedStyle()->AffectedByFocusWithin()) {
-    StyleChangeType change_type =
-        GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
-            ? kSubtreeStyleChange
-            : kLocalStyleChange;
-    SetNeedsStyleRecalc(change_type,
-                        StyleChangeReasonForTracing::CreateWithExtraData(
-                            style_change_reason::kPseudoClass,
-                            style_change_extra_data::g_focus_within));
-  }
-  if (auto* this_element = DynamicTo<Element>(this))
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
-}
-
-void ContainerNode::SetFocused(bool received,
-                               mojom::blink::FocusType focus_type) {
-  // Recurse up author shadow trees to mark shadow hosts if it matches :focus.
-  // TODO(kochi): Handle UA shadows which marks multiple nodes as focused such
-  // as <input type="date"> the same way as author shadow.
-  if (ShadowRoot* root = ContainingShadowRoot()) {
-    if (!root->IsUserAgent())
-      OwnerShadowHost()->SetFocused(received, focus_type);
-  }
-
-  if (IsFocused() == received)
-    return;
-
-  Node::SetFocused(received, focus_type);
-
-  FocusStateChanged();
-
-  if (GetLayoutObject() || received)
-    return;
-
-  auto* this_element = DynamicTo<Element>(this);
-  // If :focus sets display: none, we lose focus but still need to recalc our
-  // style.
-  if (!this_element || !this_element->ChildrenOrSiblingsAffectedByFocus()) {
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::CreateWithExtraData(
-                            style_change_reason::kPseudoClass,
-                            style_change_extra_data::g_focus));
-  }
-  if (this_element)
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
-
-  if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    if (!this_element ||
-        !this_element->ChildrenOrSiblingsAffectedByFocusVisible()) {
-      SetNeedsStyleRecalc(kLocalStyleChange,
-                          StyleChangeReasonForTracing::CreateWithExtraData(
-                              style_change_reason::kPseudoClass,
-                              style_change_extra_data::g_focus_visible));
-    }
-    if (this_element)
-      this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
-  }
-
-  if (!this_element ||
-      !this_element->ChildrenOrSiblingsAffectedByFocusWithin()) {
-    SetNeedsStyleRecalc(kLocalStyleChange,
-                        StyleChangeReasonForTracing::CreateWithExtraData(
-                            style_change_reason::kPseudoClass,
-                            style_change_extra_data::g_focus_within));
-  }
-  if (this_element)
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
-}
-
-void ContainerNode::SetHasFocusWithinUpToAncestor(bool flag, Node* ancestor) {
-  for (ContainerNode* node = this; node && node != ancestor;
-       node = FlatTreeTraversal::Parent(*node)) {
-    node->SetHasFocusWithin(flag);
-    node->FocusWithinStateChanged();
-  }
-}
-
-void ContainerNode::SetDragged(bool new_value) {
-  if (new_value == IsDragged())
-    return;
-
-  Node::SetDragged(new_value);
-
-  // If :-webkit-drag sets display: none we lose our dragging but still need
-  // to recalc our style.
-  if (!GetLayoutObject()) {
-    if (new_value)
-      return;
-    auto* this_element = DynamicTo<Element>(this);
-    if (this_element && this_element->ChildrenOrSiblingsAffectedByDrag()) {
-      this_element->PseudoStateChanged(CSSSelector::kPseudoDrag);
-
-    } else {
-      SetNeedsStyleRecalc(kLocalStyleChange,
-                          StyleChangeReasonForTracing::CreateWithExtraData(
-                              style_change_reason::kPseudoClass,
-                              style_change_extra_data::g_drag));
-    }
-    return;
-  }
-
-  if (GetComputedStyle()->AffectedByDrag()) {
-    StyleChangeType change_type =
-        GetComputedStyle()->HasPseudoElementStyle(kPseudoIdFirstLetter)
-            ? kSubtreeStyleChange
-            : kLocalStyleChange;
-    SetNeedsStyleRecalc(change_type,
-                        StyleChangeReasonForTracing::CreateWithExtraData(
-                            style_change_reason::kPseudoClass,
-                            style_change_extra_data::g_drag));
-  }
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByDrag())
-    this_element->PseudoStateChanged(CSSSelector::kPseudoDrag);
 }
 
 HTMLCollection* ContainerNode::children() {

@@ -7,7 +7,7 @@ import("//build/config/features.gni")
 import(
     "//chrome/browser/resources/chromeos/accessibility/tools/run_jsbundler.gni")
 import("//chrome/common/features.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
@@ -77,10 +77,9 @@ run_jsbundler("switch_access_copied_files") {
     "nodes/tab_node.js",
     "nodes/window_node.js",
     "point_scan_manager.js",
-    "preference_manager.js",
+    "settings_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
-    "switch_access_loader.js",
     "switch_access_predicate.js",
     "text_navigation_manager.js",
   ]
@@ -165,7 +164,7 @@ js_type_check("closure_compile") {
     ":navigator",
     ":navigator_interfaces",
     ":point_scan_manager",
-    ":preference_manager",
+    ":settings_manager",
     ":slider_node",
     ":switch_access",
     ":switch_access_constants",
@@ -201,10 +200,11 @@ js_library("auto_scan_manager") {
 }
 
 js_library("switch_access_loader") {
+  sources = [ "../switch_access_loader.js" ]
   deps = [
     ":commands",
     ":navigator",
-    ":preference_manager",
+    ":settings_manager",
     ":switch_access",
     "../common:instance_checker",
   ]
@@ -417,7 +417,7 @@ js_library("point_scan_manager") {
   externs_list = [ "$externs_path/accessibility_private.js" ]
 }
 
-js_library("preference_manager") {
+js_library("settings_manager") {
   deps = [ ":switch_access_constants" ]
   externs_list = [ "$externs_path/settings_private.js" ]
 }
@@ -438,6 +438,7 @@ js_library("switch_access") {
     ":auto_scan_manager",
     ":menu_manager",
     ":navigator",
+    ":settings_manager",
     ":switch_access_constants",
     "../common:constants",
     "../common:flags",

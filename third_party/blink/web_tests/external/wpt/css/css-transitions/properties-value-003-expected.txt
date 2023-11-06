@@ -1,110 +1,124 @@
 This is a testharness.js-based test.
 Found 106 tests; 92 PASS, 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS border-top-left-radius border-radius(px) / values
-PASS border-top-left-radius border-radius(px) / events
-PASS border-top-left-radius border-radius(px-px) / values
-PASS border-top-left-radius border-radius(px-px) / events
-PASS border-top-right-radius border-radius(px) / values
-PASS border-top-right-radius border-radius(px) / events
-PASS border-top-right-radius border-radius(px-px) / values
-PASS border-top-right-radius border-radius(px-px) / events
-PASS border-bottom-left-radius border-radius(px) / values
-PASS border-bottom-left-radius border-radius(px) / events
-PASS border-bottom-left-radius border-radius(px-px) / values
-PASS border-bottom-left-radius border-radius(px-px) / events
-PASS border-bottom-right-radius border-radius(px) / values
-PASS border-bottom-right-radius border-radius(px) / events
-PASS border-bottom-right-radius border-radius(px-px) / values
-PASS border-bottom-right-radius border-radius(px-px) / events
-PASS background-image image(url) / values
-PASS background-image image(url) / events
-PASS background-image image(data) / values
-PASS background-image image(data) / events
-FAIL background-image image(gradient) / values assert_not_equals: must not be target value after start got disallowed value "-webkit-linear-gradient(top, rgb(186, 218, 85), rgb(240, 117, 117))"
-FAIL background-image image(gradient) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-image:2s" but got ""
-FAIL background-size background-size(keyword) / values assert_not_equals: must not be target value after start got disallowed value "contain"
-FAIL background-size background-size(keyword) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "background-size:2s" but got ""
-PASS box-shadow box-shadow(shadow) / values
-PASS box-shadow box-shadow(shadow) / events
-PASS font-size-adjust number(integer) / values
-PASS font-size-adjust number(integer) / events
-PASS font-size-adjust number(decimal) / values
-PASS font-size-adjust number(decimal) / events
-PASS font-stretch font-stretch(keyword) / values
-PASS font-stretch font-stretch(keyword) / events
-PASS text-decoration-color color(rgba) / values
-PASS text-decoration-color color(rgba) / events
-PASS column-count integer(integer) / values
-PASS column-count integer(integer) / events
-PASS column-gap length(pt) / values
-PASS column-gap length(pt) / events
-PASS column-gap length(pc) / values
-PASS column-gap length(pc) / events
-PASS column-gap length(px) / values
-PASS column-gap length(px) / events
-PASS column-gap length(em) / values
-PASS column-gap length(em) / events
-PASS column-gap length(ex) / values
-PASS column-gap length(ex) / events
-PASS column-gap length(mm) / values
-PASS column-gap length(mm) / events
-PASS column-gap length(cm) / values
-PASS column-gap length(cm) / events
-PASS column-gap length(in) / values
-PASS column-gap length(in) / events
-PASS column-rule-color color(rgba) / values
-PASS column-rule-color color(rgba) / events
-PASS column-rule-width length(pt) / values
-PASS column-rule-width length(pt) / events
-PASS column-rule-width length(pc) / values
-PASS column-rule-width length(pc) / events
-PASS column-rule-width length(px) / values
-PASS column-rule-width length(px) / events
-PASS column-rule-width length(em) / values
-PASS column-rule-width length(em) / events
-PASS column-rule-width length(ex) / values
-PASS column-rule-width length(ex) / events
-PASS column-rule-width length(mm) / values
-PASS column-rule-width length(mm) / events
-PASS column-rule-width length(cm) / values
-PASS column-rule-width length(cm) / events
-PASS column-rule-width length(in) / values
-PASS column-rule-width length(in) / events
-PASS column-width length(pt) / values
-PASS column-width length(pt) / events
-PASS column-width length(pc) / values
-PASS column-width length(pc) / events
-PASS column-width length(px) / values
-PASS column-width length(px) / events
-PASS column-width length(em) / values
-PASS column-width length(em) / events
-PASS column-width length(ex) / values
-PASS column-width length(ex) / events
-PASS column-width length(mm) / values
-PASS column-width length(mm) / events
-PASS column-width length(cm) / values
-PASS column-width length(cm) / events
-PASS column-width length(in) / values
-PASS column-width length(in) / events
-PASS transform transform(rotate) / values
-PASS transform transform(rotate) / events
-PASS transform-origin horizontal(keyword) / values
-PASS transform-origin horizontal(keyword) / events
-FAIL display display(static to absolute) / values assert_not_equals: must not be target value after start got disallowed value "block"
-FAIL display display(static to absolute) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "display:2s" but got ""
-FAIL display display(block to inline-block) / values assert_not_equals: must not be target value after start got disallowed value "inline-block"
-FAIL display display(block to inline-block) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "display:2s" but got ""
-FAIL position position(static to absolute) / values assert_not_equals: must not be target value after start got disallowed value "absolute"
-FAIL position position(static to absolute) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
-FAIL position position(relative to absolute) / values assert_not_equals: must not be target value after start got disallowed value "absolute"
-FAIL position position(relative to absolute) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
-FAIL position position(absolute to fixed) / values assert_not_equals: must not be target value after start got disallowed value "fixed"
-FAIL position position(absolute to fixed) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
-PASS object-view-box object-view-box(inset) / values
-PASS object-view-box object-view-box(inset) / events
-PASS object-view-box object-view-box(rect) / values
-PASS object-view-box object-view-box(rect) / events
-PASS object-view-box object-view-box(xywh) / values
-PASS object-view-box object-view-box(xywh) / events
+[PASS] border-top-left-radius border-radius(px) / values
+[PASS] border-top-left-radius border-radius(px) / events
+[PASS] border-top-left-radius border-radius(px-px) / values
+[PASS] border-top-left-radius border-radius(px-px) / events
+[PASS] border-top-right-radius border-radius(px) / values
+[PASS] border-top-right-radius border-radius(px) / events
+[PASS] border-top-right-radius border-radius(px-px) / values
+[PASS] border-top-right-radius border-radius(px-px) / events
+[PASS] border-bottom-left-radius border-radius(px) / values
+[PASS] border-bottom-left-radius border-radius(px) / events
+[PASS] border-bottom-left-radius border-radius(px-px) / values
+[PASS] border-bottom-left-radius border-radius(px-px) / events
+[PASS] border-bottom-right-radius border-radius(px) / values
+[PASS] border-bottom-right-radius border-radius(px) / events
+[PASS] border-bottom-right-radius border-radius(px-px) / values
+[PASS] border-bottom-right-radius border-radius(px-px) / events
+[PASS] background-image image(url) / values
+[PASS] background-image image(url) / events
+[PASS] background-image image(data) / values
+[PASS] background-image image(data) / events
+[FAIL] background-image image(gradient) / values
+  assert_not_equals: must not be target value after start got disallowed value "-webkit-linear-gradient(top, rgb(186, 218, 85), rgb(240, 117, 117))"
+[FAIL] background-image image(gradient) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "background-image:2s" but got ""
+[FAIL] background-size background-size(keyword) / values
+  assert_not_equals: must not be target value after start got disallowed value "contain"
+[FAIL] background-size background-size(keyword) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "background-size:2s" but got ""
+[PASS] box-shadow box-shadow(shadow) / values
+[PASS] box-shadow box-shadow(shadow) / events
+[PASS] font-size-adjust number(integer) / values
+[PASS] font-size-adjust number(integer) / events
+[PASS] font-size-adjust number(decimal) / values
+[PASS] font-size-adjust number(decimal) / events
+[PASS] font-stretch font-stretch(keyword) / values
+[PASS] font-stretch font-stretch(keyword) / events
+[PASS] text-decoration-color color(rgba) / values
+[PASS] text-decoration-color color(rgba) / events
+[PASS] column-count integer(integer) / values
+[PASS] column-count integer(integer) / events
+[PASS] column-gap length(pt) / values
+[PASS] column-gap length(pt) / events
+[PASS] column-gap length(pc) / values
+[PASS] column-gap length(pc) / events
+[PASS] column-gap length(px) / values
+[PASS] column-gap length(px) / events
+[PASS] column-gap length(em) / values
+[PASS] column-gap length(em) / events
+[PASS] column-gap length(ex) / values
+[PASS] column-gap length(ex) / events
+[PASS] column-gap length(mm) / values
+[PASS] column-gap length(mm) / events
+[PASS] column-gap length(cm) / values
+[PASS] column-gap length(cm) / events
+[PASS] column-gap length(in) / values
+[PASS] column-gap length(in) / events
+[PASS] column-rule-color color(rgba) / values
+[PASS] column-rule-color color(rgba) / events
+[PASS] column-rule-width length(pt) / values
+[PASS] column-rule-width length(pt) / events
+[PASS] column-rule-width length(pc) / values
+[PASS] column-rule-width length(pc) / events
+[PASS] column-rule-width length(px) / values
+[PASS] column-rule-width length(px) / events
+[PASS] column-rule-width length(em) / values
+[PASS] column-rule-width length(em) / events
+[PASS] column-rule-width length(ex) / values
+[PASS] column-rule-width length(ex) / events
+[PASS] column-rule-width length(mm) / values
+[PASS] column-rule-width length(mm) / events
+[PASS] column-rule-width length(cm) / values
+[PASS] column-rule-width length(cm) / events
+[PASS] column-rule-width length(in) / values
+[PASS] column-rule-width length(in) / events
+[PASS] column-width length(pt) / values
+[PASS] column-width length(pt) / events
+[PASS] column-width length(pc) / values
+[PASS] column-width length(pc) / events
+[PASS] column-width length(px) / values
+[PASS] column-width length(px) / events
+[PASS] column-width length(em) / values
+[PASS] column-width length(em) / events
+[PASS] column-width length(ex) / values
+[PASS] column-width length(ex) / events
+[PASS] column-width length(mm) / values
+[PASS] column-width length(mm) / events
+[PASS] column-width length(cm) / values
+[PASS] column-width length(cm) / events
+[PASS] column-width length(in) / values
+[PASS] column-width length(in) / events
+[PASS] transform transform(rotate) / values
+[PASS] transform transform(rotate) / events
+[PASS] transform-origin horizontal(keyword) / values
+[PASS] transform-origin horizontal(keyword) / events
+[FAIL] display display(static to absolute) / values
+  assert_not_equals: must not be target value after start got disallowed value "block"
+[FAIL] display display(static to absolute) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "display:2s" but got ""
+[FAIL] display display(block to inline-block) / values
+  assert_not_equals: must not be target value after start got disallowed value "inline-block"
+[FAIL] display display(block to inline-block) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "display:2s" but got ""
+[FAIL] position position(static to absolute) / values
+  assert_not_equals: must not be target value after start got disallowed value "absolute"
+[FAIL] position position(static to absolute) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
+[FAIL] position position(relative to absolute) / values
+  assert_not_equals: must not be target value after start got disallowed value "absolute"
+[FAIL] position position(relative to absolute) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
+[FAIL] position position(absolute to fixed) / values
+  assert_not_equals: must not be target value after start got disallowed value "fixed"
+[FAIL] position position(absolute to fixed) / events
+  assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
+[PASS] object-view-box object-view-box(inset) / values
+[PASS] object-view-box object-view-box(inset) / events
+[PASS] object-view-box object-view-box(rect) / values
+[PASS] object-view-box object-view-box(rect) / events
+[PASS] object-view-box object-view-box(xywh) / values
+[PASS] object-view-box object-view-box(xywh) / events
 Harness: the test ran to completion.
 

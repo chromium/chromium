@@ -185,8 +185,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
-  context_->SetVideoTrack({0, 3000u});
-  context_->SetAudioTrack({1, 44100u});
+  context_->SetVideoTrack({0, kVideoTimescale});
+  context_->SetAudioTrack({1, kAudioTimescale});
 
   // Populates the boxes during Mp4Muxer::OnEncodedVideo.
   mp4::writable_boxes::Movie mp4_moov_box;
@@ -264,8 +264,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieTrackAndMediaHeader) {
   constexpr size_t kVideoIndex = 0;
   constexpr size_t kAudioIndex = 1;
 
-  context_->SetVideoTrack({kVideoIndex, 3000u});
-  context_->SetAudioTrack({kAudioIndex, 44100u});
+  context_->SetVideoTrack({kVideoIndex, kVideoTimescale});
+  context_->SetAudioTrack({kAudioIndex, kAudioTimescale});
 
   mp4::writable_boxes::Movie mp4_moov_box;
   base::Time creation_time = base::Time::FromTimeT(0x1234567);
@@ -730,13 +730,12 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
 
-  context_->SetVideoTrack({0, 3000u});
-  context_->SetAudioTrack({1, 44100u});
+  context_->SetVideoTrack({0, kVideoTimescale});
+  context_->SetAudioTrack({1, kAudioTimescale});
 
-  // TODO(crbug.com://1465031): The client passes the timestamp.
-  // Duration conversion will be done in the box writer.
   constexpr uint32_t kSampleDurations[] = {960, 960, 960};
-  constexpr uint32_t kVideoSampleDurationsAfterTimescale[] = {2880, 2880, 2880};
+  constexpr uint32_t kVideoSampleDurationsAfterTimescale[] = {28800, 28800,
+                                                              28800};
   constexpr uint32_t kAudioSampleDurationsAfterTimescale[] = {42336, 42336,
                                                               42336};
 
@@ -773,6 +772,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
     video_fragment.header.default_sample_flags = static_cast<S>(
         mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsNo);
 
+    video_fragment.decode_time.track_id = 1;
     video_fragment.decode_time.base_media_decode_time =
         base::Milliseconds(kVideoBaseDecodeTime);
 
@@ -826,6 +826,7 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
          static_cast<S>(
              mp4::writable_boxes::FragmentSampleFlags::kSampleFlagDependsYes));
 
+    audio_fragment.decode_time.track_id = 2u;
     audio_fragment.decode_time.base_media_decode_time =
         base::Milliseconds(kAudioBaseDecodeTime);
 
@@ -917,14 +918,16 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
             traf_boxes[0].header.default_sample_flags);
 
   // `tfdt` test of video.
-  EXPECT_EQ(kVideoBaseDecodeTime, traf_boxes[0].decode_time.decode_time);
+  EXPECT_EQ(ConvertToTimescale(base::Milliseconds(kVideoBaseDecodeTime),
+                               kVideoTimescale),
+            traf_boxes[0].decode_time.decode_time);
 
   // `trun` test of video.
   uint32_t mdat_video_data_offset;
 
   ASSERT_EQ(1u, traf_boxes[0].runs.size());
   EXPECT_EQ(kSampleCount, traf_boxes[0].runs[0].sample_count);
-  EXPECT_EQ(208u, traf_boxes[0].runs[0].data_offset);
+  EXPECT_EQ(216u, traf_boxes[0].runs[0].data_offset);
   mdat_video_data_offset = traf_boxes[0].runs[0].data_offset;
 
   ASSERT_EQ(kSampleCount, traf_boxes[0].runs[0].sample_durations.size());
@@ -951,7 +954,9 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4Fragments) {
       traf_boxes[1].header.default_sample_flags);
 
   // `tfdt` test of audio.
-  EXPECT_EQ(kAudioBaseDecodeTime, traf_boxes[1].decode_time.decode_time);
+  EXPECT_EQ(ConvertToTimescale(base::Milliseconds(kAudioBaseDecodeTime),
+                               kAudioTimescale),
+            traf_boxes[1].decode_time.decode_time);
 
   // `trun` test of audio.
   ASSERT_EQ(1u, traf_boxes[1].runs.size());
@@ -1028,8 +1033,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MfraBox) {
   // Tests `mfra` box writer.
   std::vector<uint8_t> written_data;
   CreateContext(written_data);
-  context_->SetVideoTrack({1, 3000u});
-  context_->SetAudioTrack({0, 44100u});
+  context_->SetVideoTrack({1, kVideoTimescale});
+  context_->SetAudioTrack({0, kAudioTimescale});
 
   mp4::writable_boxes::TrackFragmentRandomAccess video_randome_access;
   video_randome_access.track_id = 2;

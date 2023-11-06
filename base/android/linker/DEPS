@@ -3,6 +3,7 @@ include_rules = [
   # directory.
   "-base",
   "+base/android/linker",
+  "+third_party/jni_zero/jni_export.h",
 ]
 
 # Allow using //base in unittests. These unittests are included in targets that

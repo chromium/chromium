@@ -34,6 +34,9 @@ class ASH_EXPORT UiResource {
   gpu::SyncToken sync_token;
   viz::SharedImageFormat format;
   gfx::Size resource_size;
+  // Set this to false if UiResource is not responsible for calling
+  // DestroySharedImage() on `mailbox` in its destructor.
+  bool owns_mailbox = true;
 
   // This id can be used to identify the resource back to the type of source
   // generating the resourse. It must be a non-zero number.

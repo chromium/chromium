@@ -23,7 +23,7 @@ jvalue CoerceJavaScriptValueToJavaValue(JNIEnv* env,
                                         const JavaType& target_type,
                                         bool coerce_to_string,
                                         const ObjectRefs& object_refs,
-                                        GinJavaBridgeError* error);
+                                        mojom::GinJavaBridgeError* error);
 
 void ReleaseJavaValueIfRequired(JNIEnv* env,
                                 jvalue* value,

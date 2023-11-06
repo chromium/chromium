@@ -10,8 +10,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -183,31 +181,4 @@ bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {
       });
 
   return found;
-}
-
-bool DoesFirstPartyPrecedeThirdParty(content::WebContents* web_contents,
-                                     const GURL& first_party_url,
-                                     const GURL& third_party_url) {
-  if (web_contents == nullptr) {
-    return false;
-  }
-  content::NavigationController& nav_controller = web_contents->GetController();
-  const std::string first_party_site = GetSiteForDIPS(first_party_url);
-  const std::string third_party_site = GetSiteForDIPS(third_party_url);
-
-  bool third_party_started = false;
-  for (int ind = nav_controller.GetCurrentEntryIndex(); ind >= 0; ind--) {
-    std::string cur_site =
-        GetSiteForDIPS(nav_controller.GetEntryAtIndex(ind)->GetURL());
-
-    if (third_party_started && cur_site != third_party_site) {
-      return (cur_site == first_party_site);
-    }
-
-    if (cur_site == third_party_site) {
-      third_party_started = true;
-    }
-  }
-
-  return false;
 }

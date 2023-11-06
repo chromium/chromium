@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/proxy_server.h"
+#include "net/base/proxy_chain.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/socket_test_util.h"
@@ -28,7 +28,8 @@ TEST(HttpProxyClientSocketTest, Tag) {
   // |socket| takes ownership of |tagging_sock|, but the test keeps a non-owning
   // pointer to it.
   HttpProxyClientSocket socket(
-      std::move(tagging_sock), /*user_agent=*/"", HostPortPair(), ProxyServer(),
+      std::move(tagging_sock), /*user_agent=*/"", HostPortPair(), ProxyChain(),
+      /*proxy_chain_index=*/0,
       /*http_auth_controller=*/nullptr,
       /*proxy_delegate=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
 

@@ -84,6 +84,8 @@ std::unique_ptr<AddressComponent> BuildTreeNode(
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
     case ADDRESS_HOME_LINE3:
+    case ADDRESS_HOME_APT:
+    case ADDRESS_HOME_APT_TYPE:
     case ADDRESS_HOME_OVERFLOW:
     case ADDRESS_HOME_OVERFLOW_AND_LANDMARK:
     case ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK:
@@ -180,14 +182,16 @@ TreeEdgesList GetTreeEdges(AddressCountryCode country_code) {
   // Always use legacy rules while `kAutofillUseI18nAddressModel` is not rolled
   // out.
   if (!base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    return kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second;
+    return kAutofillModelRules.find(kLegacyHierarchyCountryCode.value())
+        ->second;
   }
 
   auto* it = kAutofillModelRules.find(country_code.value());
 
   // If the entry is not defined, use the legacy rules.
   return it == kAutofillModelRules.end()
-             ? kAutofillModelRules.find(kLegacyHierarchyCountryCode)->second
+             ? kAutofillModelRules.find(kLegacyHierarchyCountryCode.value())
+                   ->second
              : it->second;
 }
 
@@ -207,7 +211,7 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 
   auto result = BuildSubTree(tree_def, ADDRESS_HOME_ADDRESS);
 
-  if (!country_code->empty()) {
+  if (!country_code->empty() && country_code != kLegacyHierarchyCountryCode) {
     // Set the address model country to the one requested.
     result->SetValueForType(ADDRESS_HOME_COUNTRY,
                             base::UTF8ToUTF16(country_code.value()),
@@ -219,20 +223,24 @@ std::unique_ptr<AddressComponent> CreateAddressComponentModel(
 std::u16string GetFormattingExpression(ServerFieldType field_type,
                                        AddressCountryCode country_code) {
   if (base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
-    auto* it =
-        kAutofillFormattingRulesMap.find({country_code.value(), field_type});
-    // If `country_code` is specified, return a custom formatting expression if
-    // exists.
-    if (!country_code->empty() && it != kAutofillFormattingRulesMap.end()) {
-      return std::u16string(it->second);
+    // If `country_code` is specified, return the corresponding formatting
+    // expression if they exist. Note that it should not fallback to a legacy
+    // expression, as these ones refer to a different hierarchy.
+    if (IsCustomHierarchyAvailableForCountry(country_code)) {
+      auto* it =
+          kAutofillFormattingRulesMap.find({country_code.value(), field_type});
+
+      return it != kAutofillFormattingRulesMap.end()
+                 ? std::u16string(it->second)
+                 : u"";
     }
 
     // Otherwise return a legacy formatting expression that exists.
     auto* legacy_it = kAutofillFormattingRulesMap.find(
-        {kLegacyHierarchyCountryCode, field_type});
-    if (legacy_it != kAutofillFormattingRulesMap.end()) {
-      return std::u16string(legacy_it->second);
-    }
+        {kLegacyHierarchyCountryCode.value(), field_type});
+    return legacy_it != kAutofillFormattingRulesMap.end()
+               ? std::u16string(legacy_it->second)
+               : u"";
   }
 
   auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
@@ -244,19 +252,18 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     std::string_view value,
     ServerFieldType field_type,
     AddressCountryCode country_code) {
-  auto* it = kAutofillParsingRulesMap.find({country_code.value(), field_type});
-  // If `country_code` is specified, attempt to parse the `value` using a custom
-  // parsing structure (if exist).
-  if (!country_code->empty() && it != kAutofillParsingRulesMap.end()) {
-    return it->second->Parse(value);
-  }
-
+  // If `country_code` is specified, attempt to parse the `value` using a
+  // custom parsing structure (if exist).
   // Otherwise try using a legacy parsing expression (if exist).
-  auto* legacy_it =
-      kAutofillParsingRulesMap.find({kLegacyHierarchyCountryCode, field_type});
-  return legacy_it != kAutofillParsingRulesMap.end()
-             ? legacy_it->second->Parse(value)
-             : absl::nullopt;
+  AddressCountryCode country_code_for_parsing =
+      IsCustomHierarchyAvailableForCountry(country_code)
+          ? country_code
+          : kLegacyHierarchyCountryCode;
+
+  auto* it = kAutofillParsingRulesMap.find(
+      {country_code_for_parsing.value(), field_type});
+  return it != kAutofillParsingRulesMap.end() ? it->second->Parse(value)
+                                              : absl::nullopt;
 }
 
 bool IsTypeEnabledForCountry(ServerFieldType field_type,
@@ -278,7 +285,7 @@ bool IsTypeEnabledForCountry(ServerFieldType field_type,
 }
 
 bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
-  if (country_code->empty() ||
+  if (country_code->empty() || country_code == kLegacyHierarchyCountryCode ||
       !base::FeatureList::IsEnabled(features::kAutofillUseI18nAddressModel)) {
     return false;
   }

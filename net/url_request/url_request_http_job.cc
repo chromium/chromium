@@ -43,6 +43,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/trace_constants.h"
 #include "net/base/tracing.h"
 #include "net/base/url_util.h"
@@ -208,6 +209,15 @@ enum class ContentEncodingType {
   kMaxValue = kZstd,
 };
 
+bool IsSameSiteIgnoringWebSocketProtocol(const net::SchemefulSite& initiator,
+                                         const GURL& request_url) {
+  net::SchemefulSite request_site = net::SchemefulSite(
+      request_url.SchemeIsHTTPOrHTTPS()
+          ? request_url
+          : net::ChangeWebSocketSchemeToHttpScheme(request_url));
+  return initiator == request_site;
+}
+
 }  // namespace
 
 namespace net {
@@ -222,14 +232,25 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   // Check for reasons not to return a URLRequestHttpJob. These don't apply to
   // https and wss requests.
   if (!url.SchemeIsCryptographic()) {
-    // Check for HSTS upgrade.
-    TransportSecurityState* hsts =
-        request->context()->transport_security_state();
-    if (hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log())) {
-      return std::make_unique<URLRequestRedirectJob>(
-          request, UpgradeSchemeToCryptographic(url),
-          // Use status code 307 to preserve the method, so POST requests work.
-          RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
+    // If the request explicitly has been marked to bypass HSTS, ensure that
+    // the request is in no-credential mode so that the http site can't read
+    // or set cookies which are shared across http/https, then skip the
+    // upgrade.
+    if (((request->load_flags() & net::LOAD_SHOULD_BYPASS_HSTS) ==
+         net::LOAD_SHOULD_BYPASS_HSTS)) {
+      CHECK(request->allow_credentials() == false);
+    } else {
+      // Check for HSTS upgrade.
+      TransportSecurityState* hsts =
+          request->context()->transport_security_state();
+      if (hsts && hsts->ShouldUpgradeToSSL(url.host(), request->net_log())) {
+        return std::make_unique<URLRequestRedirectJob>(
+            request, UpgradeSchemeToCryptographic(url),
+            // Use status code 307 to preserve the method, so POST requests
+            // work.
+            RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT,
+            "HSTS");
+      }
     }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -304,8 +325,8 @@ void URLRequestHttpJob::Start() {
   request()->cookie_setting_overrides().PutOrRemove(
       net::CookieSettingOverride::kStorageAccessGrantEligible,
       request()->has_storage_access() && request_initiator_site().has_value() &&
-          request_initiator_site().value() ==
-              net::SchemefulSite(request()->url()));
+          IsSameSiteIgnoringWebSocketProtocol(request_initiator_site().value(),
+                                              request()->url()));
 
   UMA_HISTOGRAM_BOOLEAN("Net.HttpJob.CanIncludeCookies",
                         ShouldAddCookieHeader());
@@ -959,7 +980,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     }
 
     // Check cookie accessibility with cookie_settings.
-    if (cookie && !CanSetCookie(*cookie, &options, &returned_status)) {
+    if (cookie && !CanSetCookie(*cookie, &options, first_party_set_metadata_,
+                                &returned_status)) {
       // Cookie allowed by cookie_settings checks could be blocked explicitly,
       // e.g. via Android Webview APIs, we need to manually add exclusion reason
       // in this case.
@@ -1071,7 +1093,7 @@ void URLRequestHttpJob::OnStartCompleted(int result) {
   }
 
   if (transaction_ && transaction_->GetResponseInfo()) {
-    SetProxyServer(transaction_->GetResponseInfo()->proxy_server);
+    SetProxyChain(transaction_->GetResponseInfo()->proxy_chain);
   }
 
   if (result == OK) {

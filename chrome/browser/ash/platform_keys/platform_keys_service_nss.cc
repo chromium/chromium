@@ -536,18 +536,16 @@ class GetTokensState : public NSSOperationState {
   ~GetTokensState() override = default;
 
   void OnError(const base::Location& from, Status status) override {
-    CallBack(from, std::unique_ptr<std::vector<TokenId>>() /* no token ids */,
-             status);
+    CallBack(from, std::vector<TokenId>() /* no token ids */, status);
   }
 
-  void OnSuccess(const base::Location& from,
-                 std::unique_ptr<std::vector<TokenId>> token_ids) {
+  void OnSuccess(const base::Location& from, std::vector<TokenId> token_ids) {
     CallBack(from, std::move(token_ids), Status::kSuccess);
   }
 
  private:
   void CallBack(const base::Location& from,
-                std::unique_ptr<std::vector<TokenId>> token_ids,
+                std::vector<TokenId> token_ids,
                 Status status) {
     auto bound_callback =
         base::BindOnce(std::move(callback_), std::move(token_ids), status);
@@ -1326,19 +1324,19 @@ void RemoveKeyWithDb(std::unique_ptr<RemoveKeyState> state,
 void GetTokensWithDB(std::unique_ptr<GetTokensState> state,
                      net::NSSCertDatabase* cert_db) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  auto token_ids = std::make_unique<std::vector<TokenId>>();
+  std::vector<TokenId> token_ids;
 
   // The user token will be unavailable in case of no logged in user in this
   // profile.
   if (cert_db->GetPrivateSlot()) {
-    token_ids->push_back(TokenId::kUser);
+    token_ids.push_back(TokenId::kUser);
   }
 
   if (cert_db->GetSystemSlot()) {
-    token_ids->push_back(TokenId::kSystem);
+    token_ids.push_back(TokenId::kSystem);
   }
 
-  DCHECK(!token_ids->empty());
+  DCHECK(!token_ids.empty());
 
   state->OnSuccess(FROM_HERE, std::move(token_ids));
 }

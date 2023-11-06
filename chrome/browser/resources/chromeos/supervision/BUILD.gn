@@ -2,14 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-generated_grd = "$target_gen_dir/resources.grd"
-resource_path_prefix = "supervision"
 
 # grdp for resources shared by OOBE.
 generate_grd("build_oobe_grdp") {
@@ -20,62 +14,15 @@ generate_grd("build_oobe_grdp") {
   resource_path_prefix = "images"
 }
 
-generate_grd("build_grd") {
-  out_grd = generated_grd
+build_webui("build") {
   grd_prefix = "supervision"
+  grd_resource_path_prefix = "supervision"
+  static_files = [ "supervision_icon.png" ]
 
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/chrome/browser/resources/chromeos/supervision/",
-          root_build_dir)
-  input_files = [
-    "supervised_user_error.js",
-    "supervised_user_offline.js",
+  web_component_files = [
+    "supervised_user_error.ts",
+    "supervised_user_offline.ts",
   ]
-}
 
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = generated_grd
-  deps = [
-    ":build_grd",
-    ":web_components",
-  ]
-  outputs = [
-    "grit/supervision_resources.h",
-    "grit/supervision_resources_map.cc",
-    "grit/supervision_resources_map.h",
-    "supervision_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":supervised_user_error",
-    ":supervised_user_offline",
-  ]
-}
-
-js_library("supervised_user_error") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("supervised_user_offline") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "supervised_user_error.js",
-    "supervised_user_offline.js",
-  ]
+  ts_deps = [ "//third_party/polymer/v3_0:library" ]
 }

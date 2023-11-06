@@ -21,7 +21,7 @@ PaymentInstruments* PaymentManager::instruments() {
     instruments_ = MakeGarbageCollected<PaymentInstruments>(
         manager_, registration_->GetExecutionContext());
   }
-  return instruments_;
+  return instruments_.Get();
 }
 
 const String& PaymentManager::userHint() {

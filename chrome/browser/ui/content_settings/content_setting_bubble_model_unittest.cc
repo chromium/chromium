@@ -143,8 +143,8 @@ TEST_F(ContentSettingBubbleModelTest, Cookies) {
   std::u16string title = bubble_content.title;
   EXPECT_FALSE(title.empty());
   ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
-  EXPECT_FALSE(bubble_content.custom_link.empty());
-  EXPECT_TRUE(bubble_content.custom_link_enabled);
+  EXPECT_TRUE(bubble_content.custom_link.empty());
+  EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
 
   WebContentsTester::For(web_contents())
@@ -161,15 +161,13 @@ TEST_F(ContentSettingBubbleModelTest, Cookies) {
   EXPECT_FALSE(bubble_content_2.title.empty());
   EXPECT_NE(title, bubble_content_2.title);
   ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_EQ(bubble_content_2.radio_group.radio_items[0],
-            l10n_util::GetStringUTF16(IDS_ALLOWED_COOKIES_NO_ACTION));
   EXPECT_EQ(
-      bubble_content_2.radio_group.radio_items[1],
-      l10n_util::GetStringFUTF16(IDS_ALLOWED_COOKIES_BLOCK,
-                                 url_formatter::FormatUrlForSecurityDisplay(
-                                     web_contents()->GetLastCommittedURL())));
-  EXPECT_FALSE(bubble_content_2.custom_link.empty());
-  EXPECT_TRUE(bubble_content_2.custom_link_enabled);
+      bubble_content_2.radio_group.radio_items[0],
+      l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
+  EXPECT_EQ(bubble_content_2.radio_group.radio_items[1],
+            l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
+  EXPECT_TRUE(bubble_content_2.custom_link.empty());
+  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
   EXPECT_FALSE(bubble_content_2.manage_text.empty());
 }
 

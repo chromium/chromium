@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_ink_overflow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/line_relative_rect.h"
@@ -45,8 +45,8 @@ LayoutTextCombine* LayoutTextCombine::CreateAnonymous(LayoutText* text_child) {
 }
 
 String LayoutTextCombine::GetTextContent() const {
-  DCHECK(!NeedsCollectInlines() && GetNGInlineNodeData()) << this;
-  return GetNGInlineNodeData()->ItemsData(false).text_content;
+  DCHECK(!NeedsCollectInlines() && GetInlineNodeData()) << this;
+  return GetInlineNodeData()->ItemsData(false).text_content;
 }
 
 // static
@@ -146,7 +146,7 @@ PhysicalRect LayoutTextCombine::AdjustRectForBoundingBox(
 }
 
 PhysicalRect LayoutTextCombine::ComputeTextBoundsRectForHitTest(
-    const NGFragmentItem& text_item,
+    const FragmentItem& text_item,
     const PhysicalOffset& inline_root_offset) const {
   DCHECK(text_item.IsText()) << text_item;
   PhysicalRect rect = text_item.SelfInkOverflow();
@@ -221,7 +221,7 @@ LineRelativeRect LayoutTextCombine::ComputeTextFrameRect(
 }
 
 PhysicalRect LayoutTextCombine::RecalcContentsInkOverflow(
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   const ComputedStyle& style = Parent()->StyleRef();
   DCHECK(style.GetFont().GetFontDescription().IsVerticalBaseline());
 

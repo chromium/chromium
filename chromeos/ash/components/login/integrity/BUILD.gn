@@ -18,6 +18,7 @@ component("integrity") {
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
     "//chromeos/ash/components/login/auth",
+    "//chromeos/dbus/power",
     "//components/account_id",
     "//components/prefs",
     "//components/user_manager",

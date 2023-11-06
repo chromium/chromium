@@ -506,7 +506,8 @@ DeclarativeNetRequestGetMatchedRulesFunction::Run() {
       tab_id = *params->filter->tab_id;
 
     if (params->filter->min_time_stamp)
-      min_time_stamp = base::Time::FromJsTime(*params->filter->min_time_stamp);
+      min_time_stamp = base::Time::FromMillisecondsSinceUnixEpoch(
+          *params->filter->min_time_stamp);
   }
 
   // Return an error if an invalid tab ID is specified. The unknown tab ID is

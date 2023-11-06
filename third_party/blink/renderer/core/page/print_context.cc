@@ -279,35 +279,6 @@ String PrintContext::PageProperty(LocalFrame* frame,
   return String("pageProperty() unimplemented for: ") + property_name;
 }
 
-String PrintContext::PageSizeAndMarginsInPixels(LocalFrame* frame,
-                                                uint32_t page_number,
-                                                int width,
-                                                int height,
-                                                int margin_top,
-                                                int margin_right,
-                                                int margin_bottom,
-                                                int margin_left) {
-  WebPrintPageDescription description;
-  description.size.SetSize(width, height);
-  description.margin_top = margin_top;
-  description.margin_right = margin_right;
-  description.margin_bottom = margin_bottom;
-  description.margin_left = margin_left;
-
-  // Named pages aren't supported here, because this function may be called
-  // without laying out first.
-  const ComputedStyle* style = frame->GetDocument()->StyleForPage(
-      page_number, /* page_name */ AtomicString());
-  frame->GetDocument()->GetPageDescription(*style, &description);
-
-  return "(" + String::Number(floor(description.size.width())) + ", " +
-         String::Number(floor(description.size.height())) + ") " +
-         String::Number(description.margin_top) + ' ' +
-         String::Number(description.margin_right) + ' ' +
-         String::Number(description.margin_bottom) + ' ' +
-         String::Number(description.margin_left);
-}
-
 // static
 int PrintContext::NumberOfPages(LocalFrame* frame,
                                 const gfx::SizeF& page_size_in_pixels) {

@@ -197,9 +197,8 @@ IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
           new_shell->web_contents()->GetController());
   // Create the restored entry.
   std::unique_ptr<NavigationEntryImpl> restored_entry = entry->Clone();
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
-  restored_entry->SetPageState(page_state, context.get());
+  NavigationEntryRestoreContextImpl context;
+  restored_entry->SetPageState(page_state, &context);
   EXPECT_EQ(main_url, restored_entry->root_node()->frame_entry->url());
   ASSERT_EQ(1U, restored_entry->root_node()->children.size());
   EXPECT_EQ(child_frame_url,

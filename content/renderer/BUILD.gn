@@ -52,6 +52,8 @@ target(link_target_type, "renderer") {
     "accessibility/render_accessibility_manager.h",
     "agent_scheduling_group.cc",
     "agent_scheduling_group.h",
+    "background_resource_fetch_assets.cc",
+    "background_resource_fetch_assets.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
     "content_security_policy_util.cc",

@@ -46,14 +46,11 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link ImplicitPriceDropSubscriptionsManager}.
- */
+/** Tests for {@link ImplicitPriceDropSubscriptionsManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ImplicitPriceDropSubscriptionsManagerUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
@@ -97,16 +94,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         }
     }
 
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    ShoppingService mShoppingService;
-    @Captor
-    ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
+    @Mock TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock ShoppingService mShoppingService;
+    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -120,15 +112,27 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mTab1 = prepareTab(TAB1_ID, URL1, POSITION1);
         mTab2 = prepareTab(TAB2_ID, URL2, POSITION2);
         // Mock that tab1 and tab2 are both stale tabs.
-        long fakeTimestamp = System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                + TimeUnit.DAYS.toMillis(7);
+        long fakeTimestamp =
+                System.currentTimeMillis()
+                        - TimeUnit.SECONDS.toMillis(
+                                ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                        + TimeUnit.DAYS.toMillis(7);
         doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
-        mSubscription1 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.OFFER_ID, OFFER1_ID, ManagementType.CHROME_MANAGED, null);
-        mSubscription2 = new CommerceSubscription(SubscriptionType.PRICE_TRACK,
-                IdentifierType.OFFER_ID, OFFER2_ID, ManagementType.CHROME_MANAGED, null);
+        mSubscription1 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.OFFER_ID,
+                        OFFER1_ID,
+                        ManagementType.CHROME_MANAGED,
+                        null);
+        mSubscription2 =
+                new CommerceSubscription(
+                        SubscriptionType.PRICE_TRACK,
+                        IdentifierType.OFFER_ID,
+                        OFFER2_ID,
+                        ManagementType.CHROME_MANAGED,
+                        null);
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -153,9 +157,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     public void testInitialSubscription_WithDuplicateURL() {
         mTab1 = prepareTab(TAB1_ID, URL1, POSITION1);
         mTab2 = prepareTab(TAB2_ID, URL1, POSITION2);
-        long fakeTimestamp = System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                + TimeUnit.DAYS.toMillis(7);
+        long fakeTimestamp =
+                System.currentTimeMillis()
+                        - TimeUnit.SECONDS.toMillis(
+                                ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                        + TimeUnit.DAYS.toMillis(7);
         doReturn(fakeTimestamp).when(mTab1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mTab2).getTimestampMillis();
         mImplicitSubscriptionsManager.setupForFetchOfferId(mTab1, mTab2, OFFER1_ID, OFFER2_ID);
@@ -173,9 +179,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_TabTooOld() {
-        doReturn(System.currentTimeMillis()
-                - TimeUnit.SECONDS.toMillis(ShoppingPersistedTabData.getStaleTabThresholdSeconds())
-                - TimeUnit.DAYS.toMillis(7))
+        doReturn(
+                        System.currentTimeMillis()
+                                - TimeUnit.SECONDS.toMillis(
+                                        ShoppingPersistedTabData.getStaleTabThresholdSeconds())
+                                - TimeUnit.DAYS.toMillis(7))
                 .when(mTab1)
                 .getTimestampMillis();
 
@@ -269,9 +277,11 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     }
 
     private void verifyEligibleSubscriptionMetrics(int eligibleCount, int totalCount) {
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(TAB_ELIGIBLE_HISTOGRAM, 1),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(TAB_ELIGIBLE_HISTOGRAM, 1),
                 equalTo(eligibleCount));
-        assertThat(RecordHistogram.getHistogramTotalCountForTesting(TAB_ELIGIBLE_HISTOGRAM),
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(TAB_ELIGIBLE_HISTOGRAM),
                 equalTo(totalCount));
     }
 }

@@ -44,20 +44,15 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class FindInPageDirectActionHandlerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private DirectActionReporter mMockedReporter;
+    @Mock private DirectActionReporter mMockedReporter;
 
-    @Mock
-    private AppCompatEditText mMockedEditText;
+    @Mock private AppCompatEditText mMockedEditText;
 
-    @Mock
-    private WebContents mWebContents;
+    @Mock private WebContents mWebContents;
 
-    @Mock
-    private FindToolbarManager mMockedFindToolbarManager;
+    @Mock private FindToolbarManager mMockedFindToolbarManager;
 
     private DirectActionHandler mHandler;
 
@@ -89,8 +84,9 @@ public class FindInPageDirectActionHandlerTest {
     @SmallTest
     public void testEmptyStringIgnored() {
         List<Bundle> responses = new ArrayList<>();
-        assertTrue(mHandler.performDirectAction(
-                "find_in_page", Bundle.EMPTY, (response) -> responses.add(response)));
+        assertTrue(
+                mHandler.performDirectAction(
+                        "find_in_page", Bundle.EMPTY, (response) -> responses.add(response)));
         assertThat(responses, Matchers.hasSize(1));
         // We still want to bring up the find toolbar.
         verify(mMockedFindToolbarManager).showToolbar();
@@ -104,17 +100,16 @@ public class FindInPageDirectActionHandlerTest {
         List<Bundle> responses = new ArrayList<>();
         Bundle args = new Bundle();
         args.putString("SEARCH_QUERY", "search string");
-        assertTrue(mHandler.performDirectAction(
-                "find_in_page", args, (response) -> responses.add(response)));
+        assertTrue(
+                mHandler.performDirectAction(
+                        "find_in_page", args, (response) -> responses.add(response)));
         assertThat(responses, Matchers.hasSize(1));
 
         verify(mMockedFindToolbarManager).showToolbar();
         verify(mMockedFindToolbarManager).setFindQuery("search string");
     }
 
-    /**
-     * A simple action definition for testing.
-     */
+    /** A simple action definition for testing. */
     private static class FakeDirectActionDefinition implements Definition {
         final String mId;
         List<FakeParameter> mParameters = new ArrayList<>();
@@ -141,8 +136,7 @@ public class FindInPageDirectActionHandlerTest {
     private static class FakeParameter {
         final String mName;
 
-        @Type
-        final int mType;
+        @Type final int mType;
         final boolean mRequired;
 
         FakeParameter(String name, @Type int type, boolean required) {

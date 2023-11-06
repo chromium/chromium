@@ -52,11 +52,6 @@ class Browser;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Activity Handler.
-// Adding this to be able to tell the BrowserCoordinator to start a new
-// coordinator after stopping this one.
-@property(nonatomic, weak) id<ActivityServiceCommands> activityHandler;
-
 // If there is a download currently happening, this cancels it and triggers a
 // new coordinator to be created.
 - (void)cancelIfNecessaryAndCreateNewCoordinator;

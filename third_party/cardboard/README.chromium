@@ -19,3 +19,4 @@ Local Modifications:
 * Created local override for CardboardQrCode_getSavedDeviceParams function in cardboard.cc to prevent undefined behavior.
 * Created local override for OpenGL ES 2.0 renderer to include Chromium header with custom bindings.
 * Created local configuration header file with the OpenGL ES 2.0 binding customization required by setting the CARDBOARD_USE_CUSTOM_GL_BINDINGS buildflag.
+* Created local override for sdk/sensors/android/device_accelerometer_sensor.cc and device_gyroscope_sensor.cc to support updating minimum SDK version to 26 due to deprecated ASensorManager_getInstance() function. See crbug.com/1497732.

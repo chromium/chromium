@@ -247,8 +247,8 @@ void HttpNetworkSession::RemoveResponseDrainer(
 
 ClientSocketPool* HttpNetworkSession::GetSocketPool(
     SocketPoolType pool_type,
-    const ProxyServer& proxy_server) {
-  return GetSocketPoolManager(pool_type)->GetSocketPool(proxy_server);
+    const ProxyChain& proxy_chain) {
+  return GetSocketPoolManager(pool_type)->GetSocketPool(proxy_chain);
 }
 
 base::Value HttpNetworkSession::SocketPoolInfoToValue() const {
@@ -367,7 +367,8 @@ CommonConnectJobParams HttpNetworkSession::CreateCommonConnectJobParams(
       context_.http_user_agent_settings, &ssl_client_context_,
       context_.socket_performance_watcher_factory,
       context_.network_quality_estimator, context_.net_log,
-      for_websockets ? &websocket_endpoint_lock_manager_ : nullptr);
+      for_websockets ? &websocket_endpoint_lock_manager_ : nullptr,
+      context_.http_server_properties);
 }
 
 ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(

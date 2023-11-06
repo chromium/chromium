@@ -115,6 +115,15 @@ inline constexpr char kSyncEncryptionBootstrapToken[] =
 inline constexpr char kSyncPassphrasePromptMutedProductVersion[] =
     "sync.passphrase_prompt_muted_product_version";
 
+// Overall status of Sync-the-feature for the Sync-to-Signin migration,
+// expressed as SyncFeatureStatusForSyncToSigninMigration.
+inline constexpr char kSyncFeatureStatusForSyncToSigninMigration[] =
+    "sync.feature_status_for_sync_to_signin";
+// Prefix for boolean per-data-type statuses, to be suffixed with "." plus
+// GetModelTypeLowerCaseRootTag().
+inline constexpr char kSyncDataTypeStatusForSyncToSigninMigrationPrefix[] =
+    "sync.data_type_status_for_sync_to_signin";
+
 }  // namespace internal
 }  // namespace syncer::prefs
 

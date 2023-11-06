@@ -81,6 +81,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // OverviewItemBase:
   aura::Window* GetWindow() override;
   std::vector<aura::Window*> GetWindows() override;
+  bool HasVisibleOnAllDesksWindow() override;
   bool Contains(const aura::Window* target) const override;
   OverviewItem* GetLeafItemForWindow(aura::Window* window) override;
   void RestoreWindow(bool reset_transform, bool animate) override;
@@ -91,7 +92,7 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   float GetItemScale(int height) override;
   void ScaleUpSelectedItem(OverviewAnimationType animation_type) override;
   void EnsureVisible() override;
-  gfx::RectF GetTargetBoundsInScreen() const override;
+  gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   OverviewFocusableView* GetFocusableView() const override;
@@ -171,14 +172,9 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
                      OverviewAnimationType animation_type,
                      bool is_first_update);
 
-  // Updates the |item_widget|'s bounds. Any change in bounds will be animated
-  // from the current bounds to the new bounds as per the |animation_type|.
+  // Updates the `item_widget`'s bounds. Any change in bounds will be animated
+  // from the current bounds to the new bounds as per the `animation_type`.
   void UpdateHeaderLayout(OverviewAnimationType animation_type);
-
-  // Updates the bounds of `item_widget` if the feature flag Jellyroll is
-  // enabled. Once the feature is fully launched, this function will be renamed
-  // to `UpdateHeaderLayout` and the function above should be removed.
-  void UpdateHeaderLayoutCrOSNext(OverviewAnimationType animation_type);
 
   // Animates opacity of the |transform_window_| and its caption to |opacity|
   // using |animation_type|.
@@ -234,16 +230,6 @@ class ASH_EXPORT OverviewItem : public OverviewItemBase,
   // windows in the future, combine these.
   std::unique_ptr<DragWindowController> item_mirror_for_dragging_;
   std::unique_ptr<DragWindowController> window_mirror_for_dragging_;
-
-  // True if the windows are still alive so they can have a closing animation.
-  // These windows should not be used in calculations for
-  // OverviewGrid::PositionWindows.
-  bool animating_to_close_ = false;
-
-  // True if this overview item is currently being dragged around.
-  bool is_being_dragged_ = false;
-
-  bool prepared_for_overview_ = false;
 
   // Disable animations on the contained window while it is being managed by the
   // overview item.

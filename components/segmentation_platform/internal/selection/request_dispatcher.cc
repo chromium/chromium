@@ -141,20 +141,6 @@ void RequestDispatcher::CallbackWrapper(
   stats::RecordClassificationRequestTotalDuration(
       *config, base::Time::Now() - start_time);
 
-  if (!is_cached_result && raw_result.status == PredictionStatus::kSucceeded) {
-    // Verify if this does not accidentally overwrite results for cached
-    // segments.
-    // TODO(ssid): Remove this check in the future if current system looks good.
-    CHECK(!config->auto_execute_and_cache)
-        << "Overwriting results without checking TTL "
-        << config->segmentation_key;
-    // Cache model execution results in prefs in case they are useful to fetch
-    // results early startup without database, or to record field trials for the
-    // session based on ondemand executions.
-    storage_service_->cached_result_writer()->CacheModelExecution(
-        config, raw_result.result);
-  }
-
   ResultType result(PredictionStatus::kFailed);
   PostProcess(std::move(raw_result), result);
   VLOG(1) << "Computed result for " << segmentation_key << ": "

@@ -73,15 +73,13 @@ class FakeFileStreamReader : public FileStreamReader {
  public:
   explicit FakeFileStreamReader(const std::string& contents)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
-            base::MakeRefCounted<net::StringIOBuffer>(
-                std::make_unique<std::string>(contents)),
+            base::MakeRefCounted<net::StringIOBuffer>(contents),
             contents.size())),
         net_error_(net::OK),
         size_(contents.size()) {}
   FakeFileStreamReader(const std::string& contents, uint64_t size)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
-            base::MakeRefCounted<net::StringIOBuffer>(
-                std::make_unique<std::string>(contents)),
+            base::MakeRefCounted<net::StringIOBuffer>(contents),
             contents.size())),
         net_error_(net::OK),
         size_(size) {}
@@ -279,7 +277,8 @@ class BlobReaderTest : public ::testing::Test {
   }
 
   scoped_refptr<net::IOBuffer> CreateBuffer(uint64_t size) {
-    return base::MakeRefCounted<net::IOBuffer>(static_cast<size_t>(size));
+    return base::MakeRefCounted<net::IOBufferWithSize>(
+        static_cast<size_t>(size));
   }
 
   bool IsReaderTotalSizeCalculated() {
@@ -309,8 +308,7 @@ TEST_F(BlobReaderTest, BasicMemory) {
   EXPECT_TRUE(reader_->IsInMemory());
   CheckSizeCalculatedSynchronously(kDataSize, size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kDataSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kDataSize);
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -341,8 +339,7 @@ TEST_F(BlobReaderTest, BasicFile) {
   EXPECT_FALSE(reader_->IsInMemory());
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -376,8 +373,7 @@ TEST_F(BlobReaderTest, BasicFileSystem) {
 
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -405,8 +401,7 @@ TEST_F(BlobReaderTest, BasicReadableDataHandle) {
 
   EXPECT_FALSE(reader_->has_side_data());
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -460,8 +455,7 @@ TEST_F(BlobReaderTest, BufferLargerThanMemory) {
                                           &SetValue<int>, &size_result)));
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -516,8 +510,7 @@ TEST_F(BlobReaderTest, BufferSmallerThanMemory) {
                                           &SetValue<int>, &size_result)));
   CheckSizeCalculatedSynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -561,8 +554,7 @@ TEST_F(BlobReaderTest, SegmentedBufferAndMemory) {
                                           &SetValue<int>, &size_result)));
   CheckSizeCalculatedSynchronously(kTotalSize, size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
   current_value = 0;
   for (size_t i = 0; i < kTotalSize / kBufferSize; i++) {
@@ -605,8 +597,7 @@ TEST_F(BlobReaderTest, FileAsync) {
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -646,8 +637,7 @@ TEST_F(BlobReaderTest, FileSystemAsync) {
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kData.size(), size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -776,8 +766,7 @@ TEST_F(BlobReaderTest, ReadableDataHandleMultipleSlices) {
   // Verify this condition while we are here.
   EXPECT_FALSE(reader_->IsSingleMojoDataItem());
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
 
   int bytes_read = 0;
   int async_bytes_read = 0;
@@ -920,8 +909,7 @@ TEST_F(BlobReaderTest, FileSomeAsyncSegmentedOffsetsUnknownSizes) {
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kTotalSize, size_result);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kBufferSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kBufferSize);
 
   current_value = 0;
   for (size_t i = 0; i < kTotalSize / kBufferSize; i++) {
@@ -1063,8 +1051,7 @@ TEST_F(BlobReaderTest, FileErrorsSync) {
                                           &SetValue<int>, &size_result)));
   reader->SetReturnError(net::ERR_FILE_NOT_FOUND);
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
   int bytes_read = 0;
   int async_bytes_read = 0;
   EXPECT_EQ(BlobReader::Status::NET_ERROR,
@@ -1109,8 +1096,7 @@ TEST_F(BlobReaderTest, FileErrorsAsync) {
   reader->SetAsyncRunner(
       base::SingleThreadTaskRunner::GetCurrentDefault().get());
 
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kData.size());
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kData.size());
   int bytes_read = 0;
   int async_bytes_read = 0;
   EXPECT_EQ(BlobReader::Status::IO_PENDING,
@@ -1207,8 +1193,7 @@ TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {
   context_.NotifyTransportComplete(kUuid);
   base::RunLoop().RunUntilIdle();
   CheckSizeCalculatedAsynchronously(kDataSize, size_result);
-  scoped_refptr<net::IOBuffer> buffer =
-      base::MakeRefCounted<net::IOBuffer>(kDataSize);
+  auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(kDataSize);
 
   int bytes_read = 0;
   int async_bytes_read = 0;

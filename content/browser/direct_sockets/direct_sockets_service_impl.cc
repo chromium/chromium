@@ -8,11 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/process_lock.h"
-#include "content/browser/renderer_host/isolated_context_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/direct_sockets_delegate.h"
 #include "content/public/browser/document_service.h"
+#include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -232,7 +232,7 @@ void DirectSocketsServiceImpl::CreateForFrame(
         "Permissions policy blocks access to Direct Sockets.");
     return;
   }
-  if (!IsFrameSufficientlyIsolated(render_frame_host)) {
+  if (!HasIsolatedContextCapability(render_frame_host)) {
     mojo::ReportBadMessage(
         "Frame is not sufficiently isolated to use Direct Sockets.");
     return;

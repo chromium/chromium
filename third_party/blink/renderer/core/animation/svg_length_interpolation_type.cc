@@ -11,8 +11,7 @@
 
 namespace blink {
 
-std::unique_ptr<InterpolableValue>
-SVGLengthInterpolationType::NeutralInterpolableValue() {
+InterpolableValue* SVGLengthInterpolationType::NeutralInterpolableValue() {
   return InterpolableLength::CreateNeutral();
 }
 

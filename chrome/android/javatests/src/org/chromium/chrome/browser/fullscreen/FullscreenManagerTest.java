@@ -61,12 +61,10 @@ import org.chromium.content_public.browser.test.util.UiUtils;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test suite for verifying the behavior of various fullscreen actions.
- */
+/** Test suite for verifying the behavior of various fullscreen actions. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
 @Batch(Batch.PER_CLASS)
 public class FullscreenManagerTest {
@@ -74,114 +72,80 @@ public class FullscreenManagerTest {
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private static final String LONG_HTML_WITH_AUTO_FOCUS_INPUT_TEST_PAGE =
-            UrlUtils.encodeHtmlDataUri("<html>"
-                    + "<body style='height:10000px;'>"
-                    + "<p>The text input is focused automatically on load."
-                    + " The browser controls should not hide when page is scrolled.</p><br/>"
-                    + "<input id=\"input_text\" type=\"text\" autofocus/>"
-                    + "</body>"
-                    + "</html>");
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><body style='height:10000px;'><p>The text input is focused automatically"
+                        + " on load. The browser controls should not hide when page is"
+                        + " scrolled.</p><br/><input id=\"input_text\" type=\"text\" autofocus/>"
+                        + "</body></html>");
 
-    private static final String LONG_HTML_TEST_PAGE = UrlUtils.encodeHtmlDataUri("<html>"
-            + "<head>"
-            + "  <meta name=\"viewport\" content=\"width=device-width\">"
-            + "</head>"
-            + "<body style='height:100000px;'>"
-            + "</body>"
-            + "</html>");
-    private static final String LONG_FULLSCREEN_API_HTML_TEST_PAGE = UrlUtils.encodeHtmlDataUri(
-            "<html>"
-            + "<head>"
-            + "  <meta name=\"viewport\" "
-            + "    content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\" />"
-            + "  <script>"
-            + "    function toggleFullScreen() {"
-            + "      if (document.webkitIsFullScreen) {"
-            + "        document.webkitCancelFullScreen();"
-            + "      } else {"
-            + "        document.body.webkitRequestFullScreen();"
-            + "      }"
-            + "    };"
-            + "  </script>"
-            + "  <style>"
-            + "    body:-webkit-full-screen { background: red; width: 100%; }"
-            + "  </style>"
-            + "</head>"
-            + "<body style='height:10000px;' onclick='toggleFullScreen();'>"
-            + "</body>"
-            + "</html>");
+    private static final String LONG_HTML_TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html>"
+                            + "<head>"
+                            + "  <meta name=\"viewport\" content=\"width=device-width\">"
+                            + "</head>"
+                            + "<body style='height:100000px;'>"
+                            + "</body>"
+                            + "</html>");
+    private static final String LONG_FULLSCREEN_API_HTML_TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head>  <meta name=\"viewport\"     content=\"width=device-width,"
+                        + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    function"
+                        + " toggleFullScreen() {      if (document.webkitIsFullScreen) {       "
+                        + " document.webkitCancelFullScreen();      } else {       "
+                        + " document.body.webkitRequestFullScreen();      }    };  </script> "
+                        + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
+                        + " </style></head><body style='height:10000px;'"
+                        + " onclick='toggleFullScreen();'></body></html>");
     private static final String LONG_FULLSCREEN_API_HTML_WITH_OPTIONS_TEST_PAGE =
-            UrlUtils.encodeHtmlDataUri("<html>"
-                    + "<head>"
-                    + "  <meta name=\"viewport\" "
-                    + "    content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0\" />"
-                    + "  <script>"
-                    + "    var mode = 0;"
-                    + "    function toggleFullScreen() {"
-                    + "      if (mode == 0) {"
-                    + "        document.body.requestFullscreen({navigationUI: \"show\"});"
-                    + "        mode++;"
-                    + "      } else if (mode == 2) {"
-                    + "        document.body.requestFullscreen({navigationUI: \"hide\"});"
-                    + "        mode++;"
-                    + "      } else if (mode == 1 || mode == 3) {"
-                    + "        document.exitFullscreen();"
-                    + "        mode++;"
-                    + "      }"
-                    + "    };"
-                    + "  </script>"
-                    + "  <style>"
-                    + "    body:-webkit-full-screen { background: red; width: 100%; }"
-                    + "  </style>"
-                    + "</head>"
-                    + "<body style='height:10000px;' onclick='toggleFullScreen();'>"
-                    + "</body>"
-                    + "</html>");
-    private static final String SCROLL_OFFSET_TEST_PAGE = UrlUtils.encodeHtmlDataUri("<html>"
-            + "<head>"
-            + "  <meta name=viewport content='width=device-width, initial-scale=1.0'>"
-            + "</head>"
-            + "<body style='margin: 0; height: 200vh'>"
-            + "  <div style='width: 150vw'>wide</div>"
-            + "  <script>"
-            + "    load_promise = new Promise(r => {onload = r});"
-            + "    resize_promise = null;"
-            + "    reached_bottom = () => {"
-            + "      return Math.abs("
-            + "        (se => se.scrollHeight - (se.scrollTop + visualViewport.offsetTop +"
-            + "          visualViewport.height))(document.scrollingElement)"
-            + "      ) < 1;"
-            + "    };"
-            + "    start_listening_for_on_resize = () => {"
-            + "      resize_promise = new Promise(r => {onresize = r});"
-            + "      return true;"
-            + "    };"
-            + "  </script>"
-            + "</body>"
-            + "</html>");
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head>  <meta name=\"viewport\"     content=\"width=device-width,"
+                        + " initial-scale=1.0, maximum-scale=1.0\" />  <script>    var mode = 0;   "
+                        + " function toggleFullScreen() {      if (mode == 0) {       "
+                        + " document.body.requestFullscreen({navigationUI: \"show\"});       "
+                        + " mode++;      } else if (mode == 2) {       "
+                        + " document.body.requestFullscreen({navigationUI: \"hide\"});       "
+                        + " mode++;      } else if (mode == 1 || mode == 3) {       "
+                        + " document.exitFullscreen();        mode++;      }    };  </script> "
+                        + " <style>    body:-webkit-full-screen { background: red; width: 100%; } "
+                        + " </style></head><body style='height:10000px;'"
+                        + " onclick='toggleFullScreen();'></body></html>");
+    private static final String SCROLL_OFFSET_TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head>  <meta name=viewport content='width=device-width,"
+                        + " initial-scale=1.0'></head><body style='margin: 0; height: 200vh'>  <div"
+                        + " style='width: 150vw'>wide</div>  <script>    load_promise = new"
+                        + " Promise(r => {onload = r});    resize_promise = null;    reached_bottom"
+                        + " = () => {      return Math.abs(        (se => se.scrollHeight -"
+                        + " (se.scrollTop + visualViewport.offsetTop +         "
+                        + " visualViewport.height))(document.scrollingElement)      ) < 1;    };   "
+                        + " start_listening_for_on_resize = () => {      resize_promise = new"
+                        + " Promise(r => {onresize = r});      return true;    };  </script></body>"
+                        + "</html>");
 
-    private static final String FULLSCREEN_WITH_SELECTION_POPUP = UrlUtils.encodeHtmlDataUri(
-            "<html onmousedown=\"rfsSelectAll()\" onclick=\"selectAllChildren()\">"
-            + "<script>"
-            + "    function rfsSelectAll() {"
-            + "        document.documentElement.requestFullscreen();"
-            + "        document.execCommand(\"selectAll\");"
-            + "    }"
-            + "    function selectAllChildren() {"
-            + "        document.getSelection().selectAllChildren(paragraph1);"
-            + "    }"
-            + "</script>"
-            + "<body>"
-            + "    <img style=\"margin-top: 9999px;\"></img>"
-            + "    <p id=\"paragraph1\">"
-            + "        <!-- Trigger Translate Menu -->"
-            + "        A[="
-            + "        ?:TLv"
-            + "        S9y"
-            + "        <!-- Trigger Translate Menu -->"
-            + "    </p>"
-            + "</body>"
-            + "</html>");
+    private static final String FULLSCREEN_WITH_SELECTION_POPUP =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html onmousedown=\"rfsSelectAll()\" onclick=\"selectAllChildren()\">"
+                            + "<script>"
+                            + "    function rfsSelectAll() {"
+                            + "        document.documentElement.requestFullscreen();"
+                            + "        document.execCommand(\"selectAll\");"
+                            + "    }"
+                            + "    function selectAllChildren() {"
+                            + "        document.getSelection().selectAllChildren(paragraph1);"
+                            + "    }"
+                            + "</script>"
+                            + "<body>"
+                            + "    <img style=\"margin-top: 9999px;\"></img>"
+                            + "    <p id=\"paragraph1\">"
+                            + "        <!-- Trigger Translate Menu -->"
+                            + "        A[="
+                            + "        ?:TLv"
+                            + "        S9y"
+                            + "        <!-- Trigger Translate Menu -->"
+                            + "    </p>"
+                            + "</body>"
+                            + "</html>");
 
     @Before
     public void setUp() {
@@ -259,14 +223,19 @@ public class FullscreenManagerTest {
     }
 
     private boolean getPersistentFullscreenMode() {
-        boolean b1 = TestThreadUtils.runOnUiThreadBlockingNoException(
-                mActivityTestRule.getActivity()
-                        .getFullscreenManager()::getPersistentFullscreenMode);
-        Boolean b2 = TestThreadUtils.runOnUiThreadBlockingNoException(
-                mActivityTestRule.getActivity()
-                        .getFullscreenManager()
-                        .getPersistentFullscreenModeSupplier()::get);
-        Assert.assertTrue("Fullscreen mode supplier is holding a different value.",
+        boolean b1 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        mActivityTestRule.getActivity().getFullscreenManager()
+                                ::getPersistentFullscreenMode);
+        Boolean b2 =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        mActivityTestRule
+                                        .getActivity()
+                                        .getFullscreenManager()
+                                        .getPersistentFullscreenModeSupplier()
+                                ::get);
+        Assert.assertTrue(
+                "Fullscreen mode supplier is holding a different value.",
                 (b2 == null && !b1) || Objects.equals(b1, b2));
         return b1;
     }
@@ -303,11 +272,13 @@ public class FullscreenManagerTest {
         // the test (See https://b/10387660)
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            View view = tab.getContentView();
-            view.setSystemUiVisibility(
-                    view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_FULLSCREEN);
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    View view = tab.getContentView();
+                    view.setSystemUiVisibility(
+                            view.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_FULLSCREEN);
+                });
         FullscreenTestUtils.waitForFullscreenFlag(tab, true, mActivityTestRule.getActivity());
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
     }
@@ -397,7 +368,9 @@ public class FullscreenManagerTest {
                 mActivityTestRule.getActivity().getBrowserControlsManager();
 
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
                 mActivityTestRule, mActivityTestRule.getActivity().getActivityTab());
@@ -429,7 +402,9 @@ public class FullscreenManagerTest {
 
         BrowserControlsManager browserControlsManager = activity.getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         Point displaySize = new Point();
         activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
@@ -440,8 +415,10 @@ public class FullscreenManagerTest {
                 webContents, "load_promise.then(() => { domAutomationController.send(true); });");
 
         FullscreenManagerTestUtils.fling(mActivityTestRule, 0, -displaySize.y * 20);
-        Assert.assertEquals("true",
-                JavaScriptUtils.runJavascriptWithAsyncResult(webContents,
+        Assert.assertEquals(
+                "true",
+                JavaScriptUtils.runJavascriptWithAsyncResult(
+                        webContents,
                         "resize_promise.then(() => {"
                                 + "  domAutomationController.send(reached_bottom());"
                                 + "});"));
@@ -469,8 +446,14 @@ public class FullscreenManagerTest {
 
         long downTime = SystemClock.uptimeMillis();
         TouchCommon.dragStart(mActivityTestRule.getActivity(), dragX, dragStartY, downTime);
-        TouchCommon.dragTo(mActivityTestRule.getActivity(), dragX, dragX, dragStartY, dragFullY,
-                100, downTime);
+        TouchCommon.dragTo(
+                mActivityTestRule.getActivity(),
+                dragX,
+                dragX,
+                dragStartY,
+                dragFullY,
+                100,
+                downTime);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
         TouchCommon.dragEnd(mActivityTestRule.getActivity(), dragX, dragFullY, downTime);
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(mActivityTestRule, 0);
@@ -487,7 +470,9 @@ public class FullscreenManagerTest {
         BrowserControlsManager browserControlsManager =
                 mActivityTestRule.getActivity().getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
 
@@ -514,7 +499,9 @@ public class FullscreenManagerTest {
         BrowserControlsManager browserControlsManager =
                 mActivityTestRule.getActivity().getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         FullscreenManagerTestUtils.scrollBrowserControls(mActivityTestRule, false);
 
@@ -541,7 +528,9 @@ public class FullscreenManagerTest {
         BrowserControlsManager browserControlsManager =
                 mActivityTestRule.getActivity().getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TouchCommon.singleClickView(tab.getView());
@@ -559,7 +548,9 @@ public class FullscreenManagerTest {
         BrowserControlsManager browserControlsManager =
                 mActivityTestRule.getActivity().getBrowserControlsManager();
         CriteriaHelper.pollUiThread(
-                () -> { return browserControlsManager.getTopControlOffset() == 0f; });
+                () -> {
+                    return browserControlsManager.getTopControlOffset() == 0f;
+                });
 
         int browserControlsHeight = browserControlsManager.getTopControlsHeight();
         float dragX = 50f;
@@ -574,8 +565,8 @@ public class FullscreenManagerTest {
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TouchCommon.singleClickView(tab.getView());
-        JavaScriptUtils.executeJavaScriptAndWaitForResult(tab.getWebContents(),
-                "document.getElementById('input_text').blur();");
+        JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                tab.getWebContents(), "document.getElementById('input_text').blur();");
         waitForEditableNodeToLoseFocus(tab);
 
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
@@ -604,11 +595,14 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Navigation bar not hidden.",
-                    (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-                            == 0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Navigation bar not hidden.",
+                            (view.getSystemUiVisibility()
+                                            & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                                    == 0);
+                });
 
         TestTouchUtils.sleepForDoubleTapTimeout(InstrumentationRegistry.getInstrumentation());
         TouchCommon.singleClickView(view);
@@ -624,11 +618,14 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
                 mActivityTestRule, -browserControlsHeight);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertTrue("Navigation bar hidden.",
-                    (view.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
-                            != 0);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            "Navigation bar hidden.",
+                            (view.getSystemUiVisibility()
+                                            & View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)
+                                    != 0);
+                });
         TestTouchUtils.sleepForDoubleTapTimeout(InstrumentationRegistry.getInstrumentation());
         TouchCommon.singleClickView(view);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
@@ -643,7 +640,8 @@ public class FullscreenManagerTest {
     public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
         // Click to trigger java scripts callback
-        TestTouchUtils.singleClick(InstrumentationRegistry.getInstrumentation(),
+        TestTouchUtils.singleClick(
+                InstrumentationRegistry.getInstrumentation(),
                 mActivityTestRule.getActivity().getResources().getDisplayMetrics().widthPixels
                         * 0.5f,
                 mActivityTestRule.getActivity().getResources().getDisplayMetrics().heightPixels
@@ -651,28 +649,31 @@ public class FullscreenManagerTest {
 
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         final TabWebContentsDelegateAndroid delegate = TabTestUtils.getTabWebContentsDelegate(tab);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Sometimes text bubble is shown and consumes the back press event.
-            BackPressManager backPressManager =
-                    mActivityTestRule.getActivity().getBackPressManagerForTesting();
-            if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
-                backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Sometimes text bubble is shown and consumes the back press event.
+                    BackPressManager backPressManager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
+                        backPressManager.removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
+                    }
+                });
 
         final SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    return SelectionPopupController.fromWebContents(tab.getWebContents());
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return SelectionPopupController.fromWebContents(tab.getWebContents());
+                        });
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreenFlag(tab, true, mActivityTestRule.getActivity());
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, true);
         Assert.assertTrue(controller.isSelectActionBarShowing());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+                });
 
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
         FullscreenTestUtils.waitForFullscreenFlag(tab, false, mActivityTestRule.getActivity());
@@ -690,21 +691,22 @@ public class FullscreenManagerTest {
     }
 
     private void waitForEditableNodeToLoseFocus(final Tab tab) {
-        CriteriaHelper.pollUiThread(() -> {
-            SelectionPopupController controller =
-                    SelectionPopupController.fromWebContents(tab.getWebContents());
-            return !controller.isFocusedNodeEditable();
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    SelectionPopupController controller =
+                            SelectionPopupController.fromWebContents(tab.getWebContents());
+                    return !controller.isFocusedNodeEditable();
+                });
     }
 
     /**
      * Enter or exit the tab switcher with animations and wait for the scene to change.
+     *
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
     private void setTabSwitcherModeAndWait(boolean inSwitcher) {
         LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
-        @LayoutType
-        int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        @LayoutType int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
         LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, false);
     }
 
@@ -715,11 +717,12 @@ public class FullscreenManagerTest {
         launchOnFullscreenMode(LONG_HTML_TEST_PAGE);
         Assert.assertTrue(getPersistentFullscreenMode());
 
-        float pixelDensity = InstrumentationRegistry.getInstrumentation()
-                                     .getContext()
-                                     .getResources()
-                                     .getDisplayMetrics()
-                                     .density;
+        float pixelDensity =
+                InstrumentationRegistry.getInstrumentation()
+                        .getContext()
+                        .getResources()
+                        .getDisplayMetrics()
+                        .density;
         View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
@@ -729,7 +732,8 @@ public class FullscreenManagerTest {
     }
 
     private int getPageHeight() throws Throwable {
-        return Integer.parseInt(JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                getWebContents(), "window.innerHeight"));
+        return Integer.parseInt(
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        getWebContents(), "window.innerHeight"));
     }
 }

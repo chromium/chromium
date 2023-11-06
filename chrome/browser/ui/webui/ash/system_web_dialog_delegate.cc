@@ -178,9 +178,6 @@ GURL SystemWebDialogDelegate::GetDialogContentURL() const {
   return gurl_;
 }
 
-void SystemWebDialogDelegate::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
 void SystemWebDialogDelegate::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDialogWidth, kDialogHeight);
 }

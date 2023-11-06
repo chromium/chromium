@@ -9,59 +9,87 @@
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
+
 namespace {
 
 #if DCHECK_IS_ON()
-void AppendNodeToString(NGLayoutInputNode node,
+void AppendSubtreeToString(const NGBlockNode&,
+                           const NGLayoutInputNode* target,
+                           StringBuilder*,
+                           unsigned indent);
+
+void IndentForDump(const NGLayoutInputNode& node,
+                   const NGLayoutInputNode* target,
+                   StringBuilder* string_builder,
+                   unsigned indent) {
+  unsigned start_col = 0;
+  if (node && target && node == *target) {
+    string_builder->Append("*");
+    start_col = 1;
+  }
+  for (unsigned i = start_col; i < indent; i++) {
+    string_builder->Append(" ");
+  }
+}
+
+void AppendNodeToString(const NGLayoutInputNode& node,
+                        const NGLayoutInputNode* target,
                         StringBuilder* string_builder,
                         unsigned indent = 2) {
   if (!node)
     return;
   DCHECK(string_builder);
 
+  IndentForDump(node, target, string_builder, indent);
   string_builder->Append(node.ToString());
   string_builder->Append("\n");
 
-  StringBuilder indent_builder;
-  for (unsigned i = 0; i < indent; i++)
-    indent_builder.Append(" ");
-
   if (auto* block_node = DynamicTo<NGBlockNode>(node)) {
-    NGLayoutInputNode first_child = block_node->FirstChild();
-    for (NGLayoutInputNode node_runner = first_child; node_runner;
-         node_runner = node_runner.NextSibling()) {
-      string_builder->Append(indent_builder.ToString());
-      AppendNodeToString(node_runner, string_builder, indent + 2);
-    }
-  }
-
-  if (auto* inline_node = DynamicTo<NGInlineNode>(node)) {
+    AppendSubtreeToString(*block_node, target, string_builder, indent + 2);
+  } else if (auto* inline_node = DynamicTo<InlineNode>(node)) {
     const auto& items = inline_node->ItemsData(false).items;
-    for (const NGInlineItem& inline_item : items) {
-      string_builder->Append(indent_builder.ToString());
+    indent += 2;
+    for (const InlineItem& inline_item : items) {
+      NGBlockNode child_node(nullptr);
+      if (auto* box = DynamicTo<LayoutBox>(inline_item.GetLayoutObject())) {
+        child_node = NGBlockNode(box);
+      }
+      IndentForDump(child_node, target, string_builder, indent);
       string_builder->Append(inline_item.ToString());
       string_builder->Append("\n");
+      if (child_node) {
+        // Dump the subtree of an atomic inline, float, block-in-inline, etc.
+        AppendSubtreeToString(child_node, target, string_builder, indent + 2);
+      }
     }
-    NGLayoutInputNode next_sibling = inline_node->NextSibling();
-    for (NGLayoutInputNode node_runner = next_sibling; node_runner;
-         node_runner = node_runner.NextSibling()) {
-      string_builder->Append(indent_builder.ToString());
-      AppendNodeToString(node_runner, string_builder, indent + 2);
-    }
+    DCHECK(!inline_node->NextSibling());
+  }
+}
+
+void AppendSubtreeToString(const NGBlockNode& node,
+                           const NGLayoutInputNode* target,
+                           StringBuilder* string_builder,
+                           unsigned indent) {
+  NGLayoutInputNode first_child = node.FirstChild();
+  for (NGLayoutInputNode node_runner = first_child; node_runner;
+       node_runner = node_runner.NextSibling()) {
+    AppendNodeToString(node_runner, target, string_builder, indent);
   }
 }
 #endif
@@ -70,7 +98,7 @@ void AppendNodeToString(NGLayoutInputNode node,
 
 bool NGLayoutInputNode::IsSlider() const {
   if (const auto* input = DynamicTo<HTMLInputElement>(box_->GetNode()))
-    return input->type() == input_type_names::kRange;
+    return input->FormControlType() == FormControlType::kInputRange;
   return false;
 }
 
@@ -84,22 +112,22 @@ bool NGLayoutInputNode::IsSvgText() const {
 
 bool NGLayoutInputNode::IsEmptyTableSection() const {
   return box_->IsTableSection() &&
-         To<LayoutNGTableSection>(box_.Get())->IsEmpty();
+         To<LayoutTableSection>(box_.Get())->IsEmpty();
 }
 
 wtf_size_t NGLayoutInputNode::TableColumnSpan() const {
   DCHECK(IsTableCol() || IsTableColgroup());
-  return To<LayoutNGTableColumn>(box_.Get())->Span();
+  return To<LayoutTableColumn>(box_.Get())->Span();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellColspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_.Get())->ColSpan();
+  return To<LayoutTableCell>(box_.Get())->ColSpan();
 }
 
 wtf_size_t NGLayoutInputNode::TableCellRowspan() const {
   DCHECK(box_->IsTableCell());
-  return To<LayoutNGTableCell>(box_.Get())->ComputedRowSpan();
+  return To<LayoutTableCell>(box_.Get())->ComputedRowSpan();
 }
 
 bool NGLayoutInputNode::IsTextControlPlaceholder() const {
@@ -156,9 +184,8 @@ void NGLayoutInputNode::IntrinsicSize(
 }
 
 NGLayoutInputNode NGLayoutInputNode::NextSibling() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
-  return inline_node ? inline_node->NextSibling()
-                     : To<NGBlockNode>(*this).NextSibling();
+  auto* inline_node = DynamicTo<InlineNode>(this);
+  return inline_node ? nullptr : To<NGBlockNode>(*this).NextSibling();
 }
 
 PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
@@ -168,13 +195,24 @@ PhysicalSize NGLayoutInputNode::InitialContainingBlockSize() const {
 }
 
 String NGLayoutInputNode::ToString() const {
-  auto* inline_node = DynamicTo<NGInlineNode>(this);
+  auto* inline_node = DynamicTo<InlineNode>(this);
   return inline_node ? inline_node->ToString()
                      : To<NGBlockNode>(*this).ToString();
 }
 
 #if DCHECK_IS_ON()
-void NGLayoutInputNode::ShowNodeTree() const {
+String NGLayoutInputNode::DumpNodeTree(const NGLayoutInputNode* target) const {
+  StringBuilder string_builder;
+  string_builder.Append(".:: Layout input node tree ::.\n");
+  AppendNodeToString(*this, target, &string_builder);
+  return string_builder.ToString();
+}
+
+String NGLayoutInputNode::DumpNodeTreeFromRoot() const {
+  return NGBlockNode(box_->View()).DumpNodeTree(this);
+}
+
+void NGLayoutInputNode::ShowNodeTree(const NGLayoutInputNode* target) const {
   if (getenv("RUNNING_UNDER_RR")) {
     // Printing timestamps requires an IPC to get the local time, which
     // does not work in an rr replay session. Just disable timestamp printing
@@ -185,10 +223,11 @@ void NGLayoutInputNode::ShowNodeTree() const {
     logging::SetLogItems(true, true, false, false);
   }
 
-  StringBuilder string_builder;
-  string_builder.Append(".:: LayoutNG Node Tree ::.\n");
-  AppendNodeToString(*this, &string_builder);
-  DLOG(INFO) << "\n" << string_builder.ToString().Utf8();
+  DLOG(INFO) << "\n" << DumpNodeTree(target).Utf8();
+}
+
+void NGLayoutInputNode::ShowNodeTreeFromRoot() const {
+  NGBlockNode(box_->View()).ShowNodeTree(this);
 }
 #endif
 

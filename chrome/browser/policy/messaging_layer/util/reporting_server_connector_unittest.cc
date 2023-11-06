@@ -11,7 +11,6 @@
 
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
@@ -26,6 +25,10 @@
 #include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -46,20 +49,13 @@ using testing::WithArg;
 
 namespace reporting {
 
-struct ReportingServerConnectorTestCase {
-  std::string test_name;
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-};
-
 // Test ReportingServerConnector(). Because the function essentially obtains
 // cloud_policy_client through a series of linear function calls, it's not
 // meaningful to check whether the CloudPolicyClient matches the expectation,
 // which would essentially repeat the function itself. Rather, the test focus
 // on whether the callback is triggered for the right number of times and on
 // the right thread, which are the only addition of the function.
-class ReportingServerConnectorTest
-    : public ::testing::TestWithParam<ReportingServerConnectorTestCase> {
+class ReportingServerConnectorTest : public ::testing::Test {
  protected:
   void SetUp() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -88,12 +84,8 @@ class ReportingServerConnectorTest
 #endif
 };
 
-TEST_P(ReportingServerConnectorTest,
+TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnUIThread) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(GetParam().enabled_features,
-                                       GetParam().disabled_features);
-
   // Call `ReportingServerConnector::UploadEncryptedReport` from the UI.
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
   content::GetUIThreadTaskRunner({})->PostTask(
@@ -109,15 +101,11 @@ TEST_P(ReportingServerConnectorTest,
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 
-TEST_P(ReportingServerConnectorTest,
+TEST_F(ReportingServerConnectorTest,
        ExecuteUploadEncryptedReportingOnArbitraryThread) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(GetParam().enabled_features,
-                                       GetParam().disabled_features);
-
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
   // thread pool.
   test::TestEvent<StatusOr<base::Value::Dict>> response_event;
@@ -134,7 +122,7 @@ TEST_P(ReportingServerConnectorTest,
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 
 // This test verifies that we can upload from an unmanaged device when the
@@ -151,13 +139,11 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
   chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params));
 #endif
 
-  // Enable EnableEncryptedReportingClientForUpload and
-  // EnableReportingFromUnmanagedDevices features. Both are required to
+  // Enable EnableReportingFromUnmanagedDevices feature. Required to
   // upload records from an unmanaged device.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kEnableReportingFromUnmanagedDevices,
-                            kEnableEncryptedReportingClientForUpload},
+      /*enabled_features=*/{kEnableReportingFromUnmanagedDevices},
       /*disabled_features=*/{});
 
   // Call `ReportingServerConnector::UploadEncryptedReport` from the
@@ -179,18 +165,8 @@ TEST_F(ReportingServerConnectorTest, UploadFromUnmanagedDevice) {
 
   test_env_.SimulateResponseForRequest(0);
 
-  EXPECT_OK(response_event.result());
+  EXPECT_TRUE(response_event.result().has_value());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-INSTANTIATE_TEST_SUITE_P(
-    ReportingServerConnectorTests,
-    ReportingServerConnectorTest,
-    ::testing::ValuesIn<ReportingServerConnectorTestCase>(
-        {{.test_name = "EncryptedReportingClientDisabled",
-          .disabled_features = {kEnableEncryptedReportingClientForUpload}},
-         {.test_name = "EncryptedReportingClientEnabled",
-          .enabled_features = {kEnableEncryptedReportingClientForUpload}}}),
-    [](const ::testing::TestParamInfo<ReportingServerConnectorTest::ParamType>&
-           info) { return info.param.test_name; });
 }  // namespace reporting

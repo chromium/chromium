@@ -52,11 +52,18 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
   ~TestMessageCenter() override = default;
 
+  void SetAddNotificationCallback(base::OnceClosure add_notification_callback) {
+    add_notification_callback_ = std::move(add_notification_callback);
+  }
+
   // message_center::FakeMessageCenter:
   void AddNotification(
       std::unique_ptr<message_center::Notification> notification) override {
     EXPECT_FALSE(notification_);
     notification_ = std::move(notification);
+    if (add_notification_callback_) {
+      std::move(add_notification_callback_).Run();
+    }
   }
 
   void RemoveNotification(const std::string& id, bool by_user) override {
@@ -90,6 +97,7 @@ class TestMessageCenter : public message_center::FakeMessageCenter {
 
  private:
   std::unique_ptr<message_center::Notification> notification_;
+  base::OnceClosure add_notification_callback_;
 };
 
 }  // namespace

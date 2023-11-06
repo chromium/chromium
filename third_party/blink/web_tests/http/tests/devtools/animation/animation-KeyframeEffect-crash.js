@@ -23,7 +23,6 @@ import * as UI from 'devtools/ui/legacy/legacy.js';
   `);
 
   await UI.ViewManager.ViewManager.instance().showView('animations');
-  var timeline = Animation.AnimationTimeline.instance();
   TestRunner.evaluateInPage('startAnimationWithKeyframeEffect()');
   ElementsTestRunner.waitForAnimationAdded(step2);
 

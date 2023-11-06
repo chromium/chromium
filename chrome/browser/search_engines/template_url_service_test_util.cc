@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/search_engines/chrome_template_url_service_client.h"
 #include "chrome/test/base/testing_profile.h"
@@ -186,7 +187,11 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
+      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; })
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      , profile()->IsMainProfile()
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  );
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load)

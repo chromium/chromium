@@ -205,6 +205,7 @@ class UserPerformanceTuningManager {
 
   void Start();
 
+  void UpdateHighEfficiencyModeState();
   void OnHighEfficiencyModePrefChanged();
   void OnHighEfficiencyModeTimeBeforeDiscardChanged();
 

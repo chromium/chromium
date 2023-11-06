@@ -151,31 +151,31 @@ EvtWdfDriverDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
   // Read the properties structure sent from the client code that created
   // the software device.
   WDF_DEVICE_PROPERTY_DATA propertyRead;
-  WDF_DEVICE_PROPERTY_DATA_INIT(&propertyRead, &DisplayConfigurationProperty);
+  WDF_DEVICE_PROPERTY_DATA_INIT(&propertyRead,
+                                &display::test::DisplayConfigurationProperty);
   propertyRead.Lcid = LOCALE_NEUTRAL;
   propertyRead.Flags = PLUGPLAY_PROPERTY_PERSISTENT;
-  DriverProperties driver_properties;
+  display::test::DriverProperties driver_properties;
   ULONG requiredSize = 0;
   DEVPROPTYPE propType;
-  Status =
-      WdfDeviceQueryPropertyEx(Device, &propertyRead, sizeof(DriverProperties),
-                               &driver_properties, &requiredSize, &propType);
+  Status = WdfDeviceQueryPropertyEx(
+      Device, &propertyRead, sizeof(display::test::DriverProperties),
+      &driver_properties, &requiredSize, &propType);
   if (!NT_SUCCESS(Status)) {
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
                 "WdfDeviceQueryPropertyEx failed: %!STATUS!", Status);
     return Status;
   }
+  const std::vector<display::test::MonitorMode>& requested_modes =
+      driver_properties.requested_modes();
+  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "num_displays: %llu",
+              requested_modes.size());
 
-  TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "num_displays: %d",
-              driver_properties.monitor_count);
-
-  for (int i = 0; i < driver_properties.monitor_count; i++) {
-    TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "Checking for display #%d", i);
+  for (const auto& mode : requested_modes) {
     display::test::IndirectMonitor indirect_monitor;
-    auto mode = driver_properties.requested_modes[i];
     display::test::Edid edid(indirect_monitor.pEdidBlock.data());
-    bool success =
-        edid.GetTimingEntry(0)->SetMode(mode.width, mode.height, mode.vSync);
+    bool success = edid.GetTimingEntry(0)->SetMode(mode.width(), mode.height(),
+                                                   mode.v_sync());
     if (!success) {
       TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "SetMode() unsuccessful");
     }
@@ -184,7 +184,7 @@ EvtWdfDriverDeviceAdd(WDFDRIVER Driver, PWDFDEVICE_INIT pDeviceInit) {
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
                 "Width (Modified EDID,Chosen Mode) (Inside "
                 "EvtWdfDriverDeviceAdd): %ld, %hu",
-                edid.GetTimingEntry(0)->GetWidth(), mode.width);
+                edid.GetTimingEntry(0)->GetWidth(), mode.width());
     indirect_monitor.pModeList.push_back(mode);
     pContext->pContext->monitors.push_back(indirect_monitor);
   }
@@ -460,31 +460,13 @@ EvtIddCxParseMonitorDescription(const IDARG_IN_PARSEMONITORDESCRIPTION* pInArgs,
     display::test::Edid edid(
         reinterpret_cast<unsigned char*>(pInArgs->MonitorDescription.pData));
 
-    // TODO: Return STATUS_INVALID_PARAMETER for monitors not belonging to this
-    // driver.
-    bool success = false;
-    for (size_t i = 0; i < DriverProperties::kSupportedModesCount; i++) {
-      if (edid.GetTimingEntry(0)->GetWidth() ==
-              DriverProperties::kSupportedModes[i].width &&
-          edid.GetTimingEntry(0)->GetHeight() ==
-              DriverProperties::kSupportedModes[i].height &&
-          edid.GetTimingEntry(0)->GetVerticalFrequency() ==
-              DriverProperties::kSupportedModes[i].vSync) {
-        success = true;
-        break;
-      }
-    }
-    if (!success) {
-      return STATUS_INVALID_PARAMETER;
-    }
-
     TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
                 "Making the displays requested: %ld, %ld, %ld",
                 edid.GetTimingEntry(0)->GetWidth(),
                 edid.GetTimingEntry(0)->GetHeight(),
                 edid.GetTimingEntry(0)->GetVerticalFrequency());
 
-    pInArgs->pMonitorModes[0] = display::test::Methods::CreateIddCxMonitorMode(
+    pInArgs->pMonitorModes[0] = display::test::CreateIddCxMonitorMode(
         edid.GetTimingEntry(0)->GetWidth(), edid.GetTimingEntry(0)->GetHeight(),
         edid.GetTimingEntry(0)->GetVerticalFrequency(),
         IDDCX_MONITOR_MODE_ORIGIN_MONITORDESCRIPTOR);
@@ -518,18 +500,15 @@ _Use_decl_annotations_ NTSTATUS EvtIddCxMonitorGetDefaultModes(
     for (DWORD ModeIndex = 0;
          ModeIndex < pMonitorContextWrapper->pContext->default_mode_list.size();
          ModeIndex++) {
-      TraceEvents(
-          TRACE_LEVEL_ERROR, TRACE_DRIVER,
-          "Making the default modes: %hu, %hu, %hu",
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].width,
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].height,
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].vSync);
-      pInArgs->pDefaultMonitorModes
-          [ModeIndex] = display::test::Methods::CreateIddCxMonitorMode(
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].width,
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].height,
-          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex].vSync,
-          IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
+      const display::test::MonitorMode mode =
+          pMonitorContextWrapper->pContext->default_mode_list[ModeIndex];
+      TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER,
+                  "Making the default modes: %hu, %hu, %hu", mode.width(),
+                  mode.height(), mode.v_sync());
+      pInArgs->pDefaultMonitorModes[ModeIndex] =
+          display::test::CreateIddCxMonitorMode(
+              mode.width(), mode.height(), mode.v_sync(),
+              IDDCX_MONITOR_MODE_ORIGIN_DRIVER);
     }
 
     pOutArgs->DefaultMonitorModeBufferOutputCount = static_cast<UINT>(
@@ -555,26 +534,16 @@ EvtIddCxMonitorQueryModes(IDDCX_MONITOR MonitorObject,
 
   TraceEvents(TRACE_LEVEL_ERROR, TRACE_DRIVER, "MonitorQueryModes");
 
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(3840, 2160, 60));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 144));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 90));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(2560, 1440, 60));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 144));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 90));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1920, 1080, 60));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1600, 900, 60));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1024, 768, 75));
-  TargetModes.push_back(
-      display::test::Methods::CreateIddCxTargetMode(1024, 768, 60));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(3840, 2160, 60));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(2560, 1440, 144));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(2560, 1440, 90));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(2560, 1440, 60));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1920, 1080, 144));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1920, 1080, 90));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1920, 1080, 60));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1600, 900, 60));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1024, 768, 75));
+  TargetModes.push_back(display::test::CreateIddCxTargetMode(1024, 768, 60));
 
   pOutArgs->TargetModeBufferOutputCount = static_cast<UINT>(TargetModes.size());
 

@@ -84,15 +84,14 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     // that breaks every mock test because they aren't expecting a call to
     // GetId().
     if (request.second) {
-      FIDO_LOG(DEBUG) << "<- " << static_cast<int>(request.first) << " "
+      FIDO_LOG(DEBUG) << "<- " << request.first << " "
                       << cbor::DiagnosticWriter::Write(*request.second);
       absl::optional<std::vector<uint8_t>> cbor_bytes =
           cbor::Writer::Write(*request.second);
       DCHECK(cbor_bytes);
       request_bytes = std::move(*cbor_bytes);
     } else {
-      FIDO_LOG(DEBUG) << "<- " << static_cast<int>(request.first)
-                      << " (no payload)";
+      FIDO_LOG(DEBUG) << "<- " << request.first << " (no payload)";
     }
 
     request_bytes.insert(request_bytes.begin(),
@@ -133,8 +132,12 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
 
     auto response_code = GetResponseCode(*device_response);
     if (response_code != CtapDeviceResponseCode::kSuccess) {
-      FIDO_LOG(DEBUG) << "-> (CTAP2 error code " << +device_response->at(0)
-                      << ")";
+      if (response_code == CtapDeviceResponseCode::kCtap2ErrInvalidCBOR) {
+        FIDO_LOG(DEBUG) << "-> (Unknown CTAP2 error code "
+                        << static_cast<int>(device_response->at(0)) << ")";
+      } else {
+        FIDO_LOG(DEBUG) << "-> (CTAP2 error code " << response_code << ")";
+      }
       std::move(this->callback()).Run(response_code, absl::nullopt);
       return;
     }

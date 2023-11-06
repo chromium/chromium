@@ -7,11 +7,17 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/substring_set_matcher/matcher_string_pattern.h"
 #include "chrome/browser/enterprise/data_controls/dlp_rules_manager_base.h"
+#include "components/enterprise/data_controls/rule.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+class Profile;
 
 namespace data_controls {
 
@@ -45,7 +51,7 @@ class ChromeDlpRulesManager : public policy::DlpRulesManagerBase {
       RuleMetadata* out_rule_metadata) const override;
 
  protected:
-  ChromeDlpRulesManager();
+  explicit ChromeDlpRulesManager(Profile* profile);
   ~ChromeDlpRulesManager() override;
 
   template <typename T>
@@ -81,6 +87,19 @@ class ChromeDlpRulesManager : public policy::DlpRulesManagerBase {
       const std::map<Restriction, std::map<RuleId, Level>>& restrictions_map,
       const bool ignore_allow = false) const;
 
+  // Parse the "DataControlsRules" policy if the corresponding experiment is
+  // enabled, and populate `rules_`.
+  void OnDataControlsRulesUpdate();
+
+  // Parse the "DataLeakPrevention*" policies and populate corresponding class
+  // data members. Virtual to be overridden in the CrOS implementation of this
+  // class.
+  virtual void OnDataLeakPreventionRulesUpdate();
+
+  // The profile with which we are associated. Not owned. For CrOS, it's
+  // currently always the main/primary profile.
+  const raw_ptr<Profile> profile_ = nullptr;
+
   // Map from the restrictions to their configured rules IDs and levels.
   std::map<Restriction, std::map<RuleId, Level>> restrictions_map_;
 
@@ -109,8 +128,13 @@ class ChromeDlpRulesManager : public policy::DlpRulesManagerBase {
   // Map from RuleIds to the rule metadata.
   std::map<RuleId, RuleMetadata> rules_id_metadata_mapping_;
 
-  // TODO(b/280449704): Implement a cross-platform version of this.
-  virtual void OnPolicyUpdate() = 0;
+  // Watches changes to the "DataControlsRules" policy. Does nothing if the
+  // "EnableDesktopDataControls" experiment is disabled.
+  PrefChangeRegistrar data_controls_rules_registrar_;
+
+  // List of rules created from the "DataControlsRules" policy. Empty if the
+  // "EnableDesktopDataControls" experiment is disabled.
+  std::vector<Rule> rules_;
 };
 
 }  // namespace data_controls

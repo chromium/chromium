@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media;
 
 import android.app.AppOpsManager;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
 import org.chromium.base.TraceEvent;
@@ -29,6 +30,11 @@ public abstract class PictureInPicture {
         // Some versions of Android crash when the activity enters Picture-in-Picture
         // immediately after it exits Picture-in-Picture. See b/143784148
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return false;
+        }
+        // Some devices may not support PiP, such as automotive. See b/267249289.
+        if (!context.getPackageManager()
+                .hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
             return false;
         }
         try (TraceEvent e = TraceEvent.scoped("PictureInPicture::isEnabled")) {

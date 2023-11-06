@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS scroll-margin on input widget
-Harness: the test ran to completion.
-

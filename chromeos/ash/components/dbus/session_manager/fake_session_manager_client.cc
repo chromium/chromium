@@ -121,7 +121,8 @@ std::vector<std::string> ReadCreateStateKeysStub(const base::FilePath& path) {
     for (int i = 0; i < 5; ++i) {
       contents += crypto::SHA256HashString(
           base::NumberToString(i) +
-          base::NumberToString(base::Time::Now().ToJavaTime()));
+          base::NumberToString(
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
     StoreFiles({{path, contents}});
   }
@@ -405,7 +406,8 @@ void FakeSessionManagerClient::LoadShillProfile(
       base::BindOnce(on_load_shill_profile_callback_, cryptohome_id));
 }
 
-void FakeSessionManagerClient::StartDeviceWipe() {
+void FakeSessionManagerClient::StartDeviceWipe(
+    chromeos::VoidDBusMethodCallback callback) {
   start_device_wipe_call_count_++;
   if (!on_start_device_wipe_callback_.is_null()) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -861,6 +863,12 @@ bool FakeSessionManagerClient::GetFlagsForUser(
   }
 
   return true;
+}
+
+void FakeSessionManagerClient::NotifySessionStopping() const {
+  for (auto& observer : observers_) {
+    observer.SessionStopping();
+  }
 }
 
 const std::string& FakeSessionManagerClient::device_policy() const {

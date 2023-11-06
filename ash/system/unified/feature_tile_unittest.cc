@@ -40,10 +40,6 @@ class MockFeaturePodController : public FeaturePodControllerBase {
 
   ~MockFeaturePodController() override = default;
 
-  FeaturePodButton* CreateButton() override {
-    return new FeaturePodButton(/*controller=*/this);
-  }
-
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override {
     auto tile = std::make_unique<FeatureTile>(
         base::BindRepeating(&FeaturePodControllerBase::OnLabelPressed,

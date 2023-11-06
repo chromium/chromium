@@ -27,14 +27,13 @@
 #include "base/one_shot_event.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/types/optional_util.h"
-#include "base/version.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/scripting/scripting_constants.h"
 #include "extensions/browser/api/scripting/scripting_utils.h"
+#include "extensions/browser/api/scripts_internal/script_serialization.h"
 #include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/content_verifier.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -45,6 +44,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/api/content_scripts.h"
+#include "extensions/common/api/scripts_internal.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/default_locale_handler.h"
 #include "extensions/common/message_bundle.h"
@@ -386,125 +386,146 @@ void LoadScriptsOnFileTaskRunner(
                                 std::move(memory)));
 }
 
-// Converts the list of values in `list` to a UserScriptList.
-UserScriptList ConvertValueToScripts(const Extension& extension,
-                                     const base::Value::List& list) {
-  const int valid_schemes = UserScript::ValidUserScriptSchemes(
-      scripting::kScriptsCanExecuteEverywhere);
-
-  UserScriptList scripts;
-  bool script_without_prefix_retrieved = false;
-  for (const base::Value& value : list) {
-    std::u16string error;
-    std::unique_ptr<api::content_scripts::ContentScript> content_script =
-        api::content_scripts::ContentScript::FromValueDeprecated(value, &error);
-
-    if (!content_script) {
-      continue;
-    }
-
-    const auto& dict = value.GetDict();
-    auto* id = dict.FindString(scripting::kId);
-    if (!id || id->empty()) {
-      continue;
-    }
-
-    auto script = std::make_unique<UserScript>();
-
-    // If a UserScript does not have a prefixed ID, then we can assume it's a
-    // dynamic content script. as is the case historically.
-    // TODO(crbug.com/1385165): Remove handling code for un-prefixed IDs once
-    // all UserScript IDs have been migrated to using prefixes.
-    bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
-    if (is_id_prefixed) {
-      script->set_id(*id);
-      // TODO(crbug.com/1473082): This is incorrect, it should record when id is
-      // NOT prefixed. Fix and properly update the histogram.
-      script_without_prefix_retrieved = true;
-    } else {
-      script->set_id(scripting::AddPrefixToDynamicScriptId(
-          *id, UserScript::Source::kDynamicContentScript));
-    }
-
-    script->set_host_id(
-        mojom::HostID(mojom::HostID::HostType::kExtensions, extension.id()));
-
-    if (content_script->all_frames)
-      script->set_match_all_frames(*content_script->all_frames);
-    script->set_run_location(
-        script_parsing::ConvertManifestRunLocation(content_script->run_at));
-    script->set_execution_world(ConvertExecutionWorld(content_script->world));
-
-    if (!script_parsing::ParseMatchPatterns(
-            content_script->matches,
-            base::OptionalToPtr(content_script->exclude_matches),
-            extension.creation_flags(), scripting::kScriptsCanExecuteEverywhere,
-            valid_schemes, scripting::kAllUrlsIncludesChromeUrls, script.get(),
-            &error, /*wants_file_access=*/nullptr,
-            /*definition_index=*/absl::nullopt)) {
-      continue;
-    }
-
-    if (!script_parsing::ParseFileSources(
-            &extension, base::OptionalToPtr(content_script->js),
-            base::OptionalToPtr(content_script->css),
-            /*definition_index=*/0, script.get(), &error)) {
-      continue;
-    }
-
-    scripts.push_back(std::move(script));
+// Attempts to coerce a `dict` from an `api::content_scripts::ContentScript` to
+// an `api::scripts_internal::SerializedUserScript`, returning absl::nullopt on
+// failure.
+// TODO(https://crbug.com/1494155): Remove this when migration is complete.
+absl::optional<api::scripts_internal::SerializedUserScript>
+ContentScriptDictToSerializedUserScript(const base::Value::Dict& dict) {
+  auto content_script = api::content_scripts::ContentScript::FromValue(dict);
+  if (!content_script.has_value()) {
+    return absl::nullopt;  // Bad entry.
   }
 
-  base::UmaHistogramBoolean(
-      "Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved",
-      script_without_prefix_retrieved);
-  return scripts;
+  auto* id = dict.FindString(scripting::kId);
+  if (!id || id->empty()) {
+    return absl::nullopt;  // Bad entry.
+  }
+
+  // If a UserScript does not have a prefixed ID, then we can assume it's a
+  // dynamic content script, as was historically the case.
+  std::string id_to_use;
+  api::scripts_internal::Source source =
+      api::scripts_internal::Source::kDynamicContentScript;
+  bool is_id_prefixed = (*id)[0] == UserScript::kReservedScriptIDPrefix;
+  if (is_id_prefixed) {
+    // Note: We don't use UserScript::GetSourceForScriptID() since:
+    // - That method allows for static content scripts, which aren't stored
+    //   here, and
+    // - That method requires input to be valid (crashing otherwise), and we
+    //   have no guarantee of that here.
+    if (base::StartsWith(*id, UserScript::kDynamicContentScriptPrefix)) {
+      source = api::scripts_internal::Source::kDynamicContentScript;
+    } else if (base::StartsWith(*id, UserScript::kDynamicUserScriptPrefix)) {
+      source = api::scripts_internal::Source::kDynamicUserScript;
+    } else {
+      // Invalid script source. Bad entry.
+      return absl::nullopt;
+    }
+    id_to_use = *id;
+  } else {
+    id_to_use = scripting::AddPrefixToDynamicScriptId(
+        *id, UserScript::Source::kDynamicContentScript);
+    source = api::scripts_internal::Source::kDynamicContentScript;
+  }
+
+  // At this point, the entry is considered valid, and we just convert it over
+  // to the serialized type.
+
+  auto file_strings_to_script_sources = [](std::vector<std::string> files) {
+    std::vector<api::scripts_internal::ScriptSource> sources;
+    sources.reserve(files.size());
+    for (auto& file : files) {
+      api::scripts_internal::ScriptSource source;
+      source.file = std::move(file);
+      sources.push_back(std::move(source));
+    }
+    return sources;
+  };
+
+  auto convert_run_at = [](api::content_scripts::RunAt run_at) {
+    switch (run_at) {
+      case api::content_scripts::RunAt::kDocumentStart:
+        return api::extension_types::RunAt::kDocumentStart;
+      case api::content_scripts::RunAt::kDocumentEnd:
+        return api::extension_types::RunAt::kDocumentEnd;
+      case api::content_scripts::RunAt::kDocumentIdle:
+        return api::extension_types::RunAt::kDocumentIdle;
+      case api::content_scripts::RunAt::kNone:
+        return api::extension_types::RunAt::kNone;
+    }
+  };
+
+  api::scripts_internal::SerializedUserScript serialized_script;
+  serialized_script.all_frames = content_script->all_frames;
+  if (content_script->css) {
+    serialized_script.css =
+        file_strings_to_script_sources(std::move(*content_script->css));
+  }
+  serialized_script.exclude_matches =
+      std::move(content_script->exclude_matches);
+  serialized_script.exclude_globs = std::move(content_script->exclude_globs);
+  serialized_script.id = std::move(id_to_use);
+  serialized_script.include_globs = std::move(content_script->include_globs);
+  if (content_script->js) {
+    serialized_script.js =
+        file_strings_to_script_sources(std::move(*content_script->js));
+  }
+  serialized_script.matches = std::move(content_script->matches);
+  serialized_script.match_origin_as_fallback =
+      content_script->match_origin_as_fallback;
+  serialized_script.run_at = convert_run_at(content_script->run_at);
+  serialized_script.source = source;
+  serialized_script.world = content_script->world;
+
+  return serialized_script;
 }
 
-// TODO(crbug.com/1248314): Eventually use
-// api::scripting::RegisteredContentScript instead as an intermediate type which
-// then gets converted to base::Value.
-api::content_scripts::ContentScript CreateContentScriptObject(
-    const UserScript& script) {
-  api::content_scripts::ContentScript content_script;
+// Converts the list of values in `list` to a UserScriptList.
+UserScriptList ConvertValueToScripts(const Extension& extension,
+                                     bool allowed_in_incognito,
+                                     const base::Value::List& list) {
+  UserScriptList scripts;
+  for (const base::Value& value : list) {
+    if (!value.is_dict()) {
+      continue;  // Bad entry; no recovery.
+    }
 
-  content_script.matches.reserve(script.url_patterns().size());
-  for (const URLPattern& pattern : script.url_patterns())
-    content_script.matches.push_back(pattern.GetAsString());
+    absl::optional<api::scripts_internal::SerializedUserScript>
+        serialized_script;
 
-  if (!script.exclude_url_patterns().is_empty()) {
-    content_script.exclude_matches.emplace();
-    content_script.exclude_matches->reserve(
-        script.exclude_url_patterns().size());
-    for (const URLPattern& pattern : script.exclude_url_patterns())
-      content_script.exclude_matches->push_back(pattern.GetAsString());
+    // Check for the `source` key as a sentinel to determine if the underlying
+    // type is the old one we used, api::content_scripts::ContentScript, or is
+    // the new api::scripts_internal::SerializedUserScript. The `source` key is
+    // only present on the new type.
+    if (!value.GetDict().Find("source")) {
+      // It's the old type, or could be a bad entry.
+
+      // TODO(https://crbug.com/1494155): Add UMA and forced-migration so we
+      // can remove this code.
+      serialized_script =
+          ContentScriptDictToSerializedUserScript(value.GetDict());
+    } else {
+      serialized_script =
+          api::scripts_internal::SerializedUserScript::FromValue(value);
+    }
+
+    if (!serialized_script || serialized_script->id.empty()) {
+      continue;  // Bad entry.
+    }
+
+    std::unique_ptr<UserScript> parsed_script =
+        script_serialization::ParseSerializedUserScript(
+            *serialized_script, extension, allowed_in_incognito);
+
+    if (!parsed_script) {
+      continue;  // Bad entry.
+    }
+
+    scripts.push_back(std::move(parsed_script));
   }
 
-  // File paths may be normalized in the returned object and can differ slightly
-  // compared to what was originally passed into registerContentScripts.
-  if (!script.js_scripts().empty()) {
-    content_script.js.emplace();
-    content_script.js->reserve(script.js_scripts().size());
-    for (const auto& js_script : script.js_scripts())
-      content_script.js->push_back(js_script->relative_path().AsUTF8Unsafe());
-  }
-
-  if (!script.css_scripts().empty()) {
-    content_script.css.emplace();
-    content_script.css->reserve(script.css_scripts().size());
-    for (const auto& css_script : script.css_scripts())
-      content_script.css->push_back(css_script->relative_path().AsUTF8Unsafe());
-  }
-
-  content_script.all_frames = script.match_all_frames();
-  content_script.match_origin_as_fallback =
-      script.match_origin_as_fallback() ==
-      MatchOriginAsFallbackBehavior::kAlways;
-
-  content_script.run_at =
-      script_parsing::ConvertRunLocationToManifestType(script.run_location());
-  content_script.world = ConvertExecutionWorldForAPI(script.execution_world());
-  return content_script;
+  return scripts;
 }
 
 // Gets an extension's manifest scripts' metadata; i.e., gets a list of
@@ -526,6 +547,25 @@ std::unique_ptr<UserScriptList> GetManifestScriptsMetadata(
     script_vector->push_back(std::move(script_copy));
   }
   return script_vector;
+}
+
+// Returns a copy of the dynamic `script` info, which includes the script
+// content when its source is inline code.
+std::unique_ptr<UserScript> CopyDynamicScriptInfo(const UserScript& script) {
+  std::unique_ptr<UserScript> script_metadata =
+      UserScript::CopyMetadataFrom(script);
+
+  // When the script source is inline code, we need to add the content of the
+  // script to the script metadata so it can be properly persisted/retrieved.
+  for (size_t i = 0; i < script_metadata->js_scripts().size(); i++) {
+    auto& content = script_metadata->js_scripts().at(i);
+    if (content->source() == UserScript::Content::Source::kInlineCode) {
+      std::string inline_code = script.js_scripts().at(i)->GetContent().data();
+      content->set_content(std::move(inline_code));
+    }
+  }
+
+  return script_metadata;
 }
 
 }  // namespace
@@ -608,24 +648,40 @@ void ExtensionUserScriptLoader::AddDynamicScripts(
     std::unique_ptr<UserScriptList> scripts,
     std::set<std::string> persistent_script_ids,
     DynamicScriptsModifiedCallback callback) {
-  auto scripts_metadata = std::make_unique<UserScriptList>();
-  for (const std::unique_ptr<UserScript>& script : *scripts) {
-    // Only proceed with adding scripts that the extension still intends to add.
-    // This guards again an edge case where scripts registered by an API call
-    // are quickly unregistered.
-    if (base::Contains(pending_dynamic_script_ids_, script->id()))
-      scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
-  }
+  // Only proceed with adding scripts that the extension still intends to add.
+  // This guards again an edge case where scripts registered by an API call
+  // are quickly unregistered.
+  base::EraseIf(*scripts, [pending_ids = this->pending_dynamic_script_ids_](
+                              const std::unique_ptr<UserScript>& script) {
+    return !base::Contains(pending_ids, script->id());
+  });
 
-  if (scripts_metadata->empty()) {
+  if (scripts->empty()) {
     std::move(callback).Run(/*error=*/absl::nullopt);
     return;
   }
 
+  auto scripts_to_add = std::make_unique<UserScriptList>();
+  for (const auto& script : *scripts) {
+    // Additionally, only add scripts to the set of active scripts in renderers
+    // (through `AddScripts()`) if the `source` for that script is enabled.
+    if (!base::Contains(disabled_sources_, script->GetSource())) {
+      // TODO(crbug.com/1496555): This results in an additional copy being
+      // stored in the browser for each of these scripts. Optimize the usage of
+      // inline code.
+      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+    }
+  }
+
+  // Note: the sets of `scripts_to_add` and `scripts` are now deliberately
+  // different. `scripts_to_add` includes the scripts that should be added to
+  // the base `UserScriptLoader`, which then notifies any renderers. `scripts`
+  // contains *all* (that weren't unregistered by the extension) so that they
+  // are properly serialized and stored for future browser sessions.
   AddScripts(
-      std::move(scripts),
+      std::move(scripts_to_add),
       base::BindOnce(&ExtensionUserScriptLoader::OnDynamicScriptsAdded,
-                     weak_factory_.GetWeakPtr(), std::move(scripts_metadata),
+                     weak_factory_.GetWeakPtr(), std::move(scripts),
                      std::move(persistent_script_ids), std::move(callback)));
 }
 
@@ -651,6 +707,49 @@ void ExtensionUserScriptLoader::ClearDynamicScripts(
     UserScript::Source source,
     DynamicScriptsModifiedCallback callback) {
   RemoveDynamicScripts(GetDynamicScriptIDs(source), std::move(callback));
+}
+
+void ExtensionUserScriptLoader::SetSourceEnabled(UserScript::Source source,
+                                                 bool enabled) {
+  bool currently_enabled = disabled_sources_.count(source) == 0;
+  if (enabled == currently_enabled) {
+    return;  // Nothing's changed; our work here is done.
+  }
+
+  if (enabled) {
+    // Re-enable any previously-disabled scripts.
+    disabled_sources_.erase(source);
+    auto scripts_to_add = std::make_unique<UserScriptList>();
+    for (const auto& script : loaded_dynamic_scripts_) {
+      if (script->GetSource() == source) {
+        scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      }
+    }
+
+    if (scripts_to_add->empty()) {
+      // There were no registered scripts of the given source. Nothing more to
+      // do.
+      return;
+    }
+
+    // Note: This just adds the scripts (which this object already tracked)
+    // back into the base UserScriptLoader, which finishes loading the files (if
+    // necessary) and sends them out to relevant renderers. Because the scripts
+    // are already loaded, we don't need to do anything after adding them (e.g.
+    // no need to re-store them).
+    AddScripts(std::move(scripts_to_add), base::DoNothing());
+  } else {  // Disabling a source.
+    disabled_sources_.insert(source);
+    std::set<std::string> ids = GetDynamicScriptIDs(source);
+    if (ids.empty()) {
+      // No registered scripts with the given source. Nothing more to do.
+      return;
+    }
+
+    // See comment above: no need for any callback here because the stored
+    // scripts are unchanged.
+    RemoveScripts(ids, base::DoNothing());
+  }
 }
 
 void ExtensionUserScriptLoader::UpdateDynamicScripts(
@@ -764,7 +863,8 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::SetDynamicScripts(
     if (!base::Contains(persistent_dynamic_script_ids, script->id()))
       continue;
 
-    base::Value::Dict value = CreateContentScriptObject(*script).ToValue();
+    base::Value::Dict value =
+        script_serialization::SerializeUserScript(*script).ToValue();
     value.Set(scripting::kId, script->id());
 
     scripts_value.Append(std::move(value));
@@ -789,8 +889,9 @@ void ExtensionUserScriptLoader::DynamicScriptsStorageHelper::
 
   UserScriptList scripts;
   if (value && value->is_list()) {
-    UserScriptList dynamic_scripts =
-        ConvertValueToScripts(*extension, value->GetList());
+    UserScriptList dynamic_scripts = ConvertValueToScripts(
+        *extension, util::IsIncognitoEnabled(extension->id(), browser_context_),
+        value->GetList());
 
     // TODO(crbug.com/1385165): Write back `dynamic_scripts` into the StateStore
     // if scripts in the StateStore do not have prefixed IDs.
@@ -829,41 +930,43 @@ void ExtensionUserScriptLoader::OnExtensionSystemReady() {
 }
 
 void ExtensionUserScriptLoader::OnInitialDynamicScriptsReadFromStateStore(
-    std::unique_ptr<UserScriptList> scripts,
+    std::unique_ptr<UserScriptList> manifest_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptList initial_dynamic_scripts) {
-  auto dynamic_scripts_metadata = std::make_unique<UserScriptList>();
+  std::unique_ptr<UserScriptList> scripts_to_add = std::move(manifest_scripts);
   for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
-    dynamic_scripts_metadata->push_back(UserScript::CopyMetadataFrom(*script));
-    pending_dynamic_script_ids_.insert(script->id());
+    // Only add the script to the `UserScriptLoader`'s set (thus sending it to
+    // renderers) if the script source type is enabled.
+    if (!base::Contains(disabled_sources_, script->GetSource())) {
+      scripts_to_add->push_back(CopyDynamicScriptInfo(*script));
+      pending_dynamic_script_ids_.insert(script->id());
+    }
   }
 
-  scripts->insert(scripts->end(),
-                  std::make_move_iterator(initial_dynamic_scripts.begin()),
-                  std::make_move_iterator(initial_dynamic_scripts.end()));
-
-  AddScripts(std::move(scripts),
+  AddScripts(std::move(scripts_to_add),
              base::BindOnce(
                  &ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded,
-                 weak_factory_.GetWeakPtr(),
-                 std::move(dynamic_scripts_metadata), std::move(callback)));
+                 weak_factory_.GetWeakPtr(), std::move(initial_dynamic_scripts),
+                 std::move(callback)));
 }
 
 void ExtensionUserScriptLoader::OnInitialExtensionScriptsLoaded(
-    std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+    UserScriptList initial_dynamic_scripts,
     UserScriptLoader::ScriptsLoadedCallback callback,
     UserScriptLoader* loader,
     const absl::optional<std::string>& error) {
-  for (const std::unique_ptr<UserScript>& script : *initial_dynamic_scripts)
+  for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
     pending_dynamic_script_ids_.erase(script->id());
+  }
 
   if (!error.has_value()) {
-    for (const std::unique_ptr<UserScript>& script : *initial_dynamic_scripts)
+    for (const std::unique_ptr<UserScript>& script : initial_dynamic_scripts) {
       persistent_dynamic_script_ids_.insert(script->id());
+    }
     loaded_dynamic_scripts_.insert(
         loaded_dynamic_scripts_.end(),
-        std::make_move_iterator(initial_dynamic_scripts->begin()),
-        std::make_move_iterator(initial_dynamic_scripts->end()));
+        std::make_move_iterator(initial_dynamic_scripts.begin()),
+        std::make_move_iterator(initial_dynamic_scripts.end()));
   }
 
   std::move(callback).Run(loader, error);
@@ -931,8 +1034,12 @@ bool ExtensionUserScriptLoader::HasInitialDynamicScripts(
   bool has_scripting_permission =
       extension.permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kScripting);
-  if (!has_scripting_permission)
+  bool has_users_scripts_permission =
+      extension.permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kUserScripts);
+  if (!has_scripting_permission && !has_users_scripts_permission) {
     return false;
+  }
 
   URLPatternSet initial_dynamic_patterns =
       scripting::GetPersistentScriptURLPatterns(browser_context(),

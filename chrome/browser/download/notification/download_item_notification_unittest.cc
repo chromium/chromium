@@ -183,10 +183,9 @@ class DownloadItemNotificationTest : public testing::Test {
     app->policy_ids = {app_id};
     apps.push_back(std::move(app));
 
-    apps::AppServiceProxyFactory::GetForProfile(profile_)
-        ->AppRegistryCache()
-        .OnApps(std::move(apps), apps::AppType::kChromeApp,
-                /*should_notify_initialized=*/false);
+    apps::AppServiceProxyFactory::GetForProfile(profile_)->OnApps(
+        std::move(apps), apps::AppType::kChromeApp,
+        /*should_notify_initialized=*/false);
   }
 #endif
 

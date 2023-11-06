@@ -29,6 +29,15 @@ void ValidateSampleFlags(uint32_t flags) {
   CHECK_EQ(flags & ~(allowed_sample_flags), 0u);
 }
 
+bool IsVideoTrackBox(const Mp4MuxerContext& context, uint32_t track_id) {
+  // The Mp4MuxerDelegate sets the track id with plus 1 over track index,
+  // which is 0 based on the internal fragments list.
+  if (auto video_track = context.GetVideoTrack()) {
+    return (video_track.value().index + 1) == track_id;
+  }
+  return false;
+}
+
 }  // namespace
 
 // Mp4MovieFragmentBoxWriter (`moof`) class.
@@ -167,9 +176,16 @@ Mp4TrackFragmentDecodeTimeBoxWriter::~Mp4TrackFragmentDecodeTimeBoxWriter() =
 void Mp4TrackFragmentDecodeTimeBoxWriter::Write(BoxByteStream& writer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.StartBox(mp4::FOURCC_TFDT);
+  writer.StartFullBox(mp4::FOURCC_TFDT);
 
-  writer.WriteU64(box_.base_media_decode_time.InMilliseconds());
+  uint32_t timescale = 0;
+  if (IsVideoTrackBox(context(), box_.track_id)) {
+    timescale = context().GetVideoTrack().value().timescale;
+  } else {
+    timescale = context().GetAudioTrack().value().timescale;
+  }
+
+  writer.WriteU64(ConvertToTimescale(box_.base_media_decode_time, timescale));
 
   writer.EndBox();
 }

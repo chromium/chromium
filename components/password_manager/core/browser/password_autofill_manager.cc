@@ -650,9 +650,10 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
                            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)));
 
   password_manager_driver_->SetSuggestionAvailability(
-      element_id, autofill_available
-                      ? autofill::mojom::AutofillState::kAutofillAvailable
-                      : autofill::mojom::AutofillState::kNoSuggestions);
+      element_id,
+      autofill_available
+          ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
+          : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(

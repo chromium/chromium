@@ -281,9 +281,4 @@ bool WaylandWindowManager::IsWindowValid(const WaylandWindow* window) const {
   return false;
 }
 
-bool WaylandWindowManager::HasObserverForTesting(
-    const WaylandWindowObserver& observer) const {
-  return observers_.HasObserver(&observer);
-}
-
 }  // namespace ui

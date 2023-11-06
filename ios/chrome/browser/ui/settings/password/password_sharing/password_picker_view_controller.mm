@@ -8,7 +8,6 @@
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/password_picker_view_controller_presentation_delegate.h"
@@ -26,9 +25,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCredential = kItemTypeEnumZero,
 };
-
-// Size of the accessory view symbol.
-const CGFloat kAccessorySymbolSize = 22;
 
 }  // namespace
 
@@ -59,12 +55,9 @@ const CGFloat kAccessorySymbolSize = 22;
               style:UIBarButtonItemStylePlain
              target:self
              action:@selector(nextButtonTapped)];
-  nextButton.enabled = NO;
   self.navigationItem.rightBarButtonItem = nextButton;
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
       kPasswordPickerNextButtonId;
-
-  self.tableView.allowsMultipleSelection = YES;
 
   [self loadModel];
 }
@@ -80,20 +73,28 @@ const CGFloat kAccessorySymbolSize = 22;
   }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  // Select first row by default.
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+  [self.tableView selectRowAtIndexPath:indexPath
+                              animated:NO
+                        scrollPosition:UITableViewScrollPositionNone];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-      [[UIImageView alloc] initWithImage:[self checkmarkCircleIcon]];
-  [self setNextButtonStatus];
+  [tableView cellForRowAtIndexPath:indexPath].accessoryType =
+      UITableViewCellAccessoryCheckmark;
 }
 
 - (void)tableView:(UITableView*)tableView
     didDeselectRowAtIndexPath:(NSIndexPath*)indexPath {
-  [tableView cellForRowAtIndexPath:indexPath].accessoryView =
-      [[UIImageView alloc] initWithImage:[self circleIcon]];
-  [self setNextButtonStatus];
+  [tableView cellForRowAtIndexPath:indexPath].accessoryType =
+      UITableViewCellAccessoryNone;
 }
 
 #pragma mark - UITableViewDataSource
@@ -115,9 +116,11 @@ const CGFloat kAccessorySymbolSize = 22;
   cell.userInteractionEnabled = YES;
   cell.textLabel.numberOfLines = 1;
   cell.detailTextLabel.numberOfLines = 1;
-  cell.accessoryView = [[UIImageView alloc]
-      initWithImage:cell.isSelected ? [self checkmarkCircleIcon]
-                                    : [self circleIcon]];
+  if (indexPath.row == tableView.indexPathForSelectedRow.row) {
+    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  } else {
+    cell.accessoryType = UITableViewCellAccessoryNone;
+  }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
   TableViewURLItem* URLItem =
@@ -156,32 +159,15 @@ const CGFloat kAccessorySymbolSize = 22;
 
 #pragma mark - Private
 
-- (UIImage*)checkmarkCircleIcon {
-  return DefaultSymbolWithPointSize(kCheckmarkCircleFillSymbol,
-                                    kAccessorySymbolSize);
-}
-
-- (UIImage*)circleIcon {
-  return DefaultSymbolWithPointSize(kCircleSymbol, kAccessorySymbolSize);
-}
-
 - (void)cancelButtonTapped {
   [self.delegate passwordPickerWasDismissed:self];
 }
 
 - (void)nextButtonTapped {
-  std::vector<password_manager::CredentialUIEntry> selectedCredentials;
-  for (NSIndexPath* indexPath in self.tableView.indexPathsForSelectedRows) {
-    selectedCredentials.push_back(_credentials[indexPath.row]);
-  }
-  [self.delegate passwordPickerClosed:self
-              withSelectedCredentials:selectedCredentials];
-}
-
-// Enables next button if any row is selected or disables it otherwise.
-- (void)setNextButtonStatus {
-  self.navigationItem.rightBarButtonItem.enabled =
-      self.tableView.indexPathsForSelectedRows.count > 0;
+  [self.delegate
+        passwordPickerClosed:self
+      withSelectedCredential:_credentials[self.tableView.indexPathForSelectedRow
+                                              .row]];
 }
 
 @end

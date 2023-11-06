@@ -22,6 +22,11 @@
 
 namespace display {
 
+// A map between display mode size and zoom factor, used to preserve
+// the zoom factor when the user changes the display mode.
+using DisplaySizeToZoomFactorMap =
+    std::map</*size_as_string=*/std::string, /*zoom_factor=*/float>;
+
 // A class that represents the display's mode info.
 class DISPLAY_MANAGER_EXPORT ManagedDisplayMode {
  public:
@@ -145,6 +150,7 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   ~ManagedDisplayInfo();
 
   int64_t id() const { return id_; }
+  void set_display_id(int64_t id) { id_ = id; }
 
   int64_t port_display_id() const { return port_display_id_; }
   void set_port_display_id(int64_t id) { port_display_id_ = id; }
@@ -179,6 +185,12 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
 
   float zoom_factor() const { return zoom_factor_; }
   void set_zoom_factor(float zoom_factor) { zoom_factor_ = zoom_factor; }
+
+  const DisplaySizeToZoomFactorMap& zoom_factor_map() const {
+    return zoom_factor_map_;
+  }
+
+  void AddZoomFactorForSize(const std::string& size, float zoom_factor);
 
   float refresh_rate() const { return refresh_rate_; }
   void set_refresh_rate(float refresh_rate) { refresh_rate_ = refresh_rate; }
@@ -408,6 +420,9 @@ class DISPLAY_MANAGER_EXPORT ManagedDisplayInfo {
   // multiplicatively to the device scale factor to get the effecting scaling
   // for a display.
   float zoom_factor_;
+
+  // A map between display resolution and the zoom level applied.
+  DisplaySizeToZoomFactorMap zoom_factor_map_;
 
   // The value of the current display mode refresh rate.
   float refresh_rate_;

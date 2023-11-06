@@ -272,9 +272,8 @@ TEST(IPCTest, IPCLeak) {
   for (auto test : test_data) {
     TestRunner runner;
     // There has to be a policy allocated for the child to have one to replace.
-    runner.AddRule(sandbox::SubSystem::kFiles,
-                   sandbox::Semantics::kFilesAllowReadonly,
-                   L"c:\\Windows\\System32\\Nothing.txt");
+    runner.AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                           L"c:\\Windows\\System32\\Nothing.txt");
     std::wstring command = std::wstring(L"IPC_Leak ");
     command += std::to_wstring(test.test_id);
     EXPECT_EQ(test.expected_result,

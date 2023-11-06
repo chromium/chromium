@@ -5,7 +5,8 @@
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
@@ -22,6 +23,26 @@ const iwaInstallUrl = getRequiredElement('iwa-install-url') as HTMLInputElement;
 const iwaSelectFileButton =
     getRequiredElement('iwa-select-bundle') as HTMLButtonElement;
 const iwaSearchForUpdatesButton = getRequiredElement('iwa-search-for-updates');
+
+/**
+ * Converts a mojo origin into a user-readable string, omitting default ports.
+ * @param origin Origin to convert
+ *
+ * TODO(b/304717391): Extract origin serialization logic from here and use it
+ * everywhere `url.mojom.Origin` is serialized in JS/TS.
+ */
+function originToText(origin: Origin): string {
+  if (origin.host.length === 0) {
+    return 'null';
+  }
+
+  let result = origin.scheme + '://' + origin.host;
+  if (!(origin.scheme === 'https' && origin.port === 443) &&
+      !(origin.scheme === 'http' && origin.port === 80)) {
+    result += ':' + origin.port;
+  }
+  return result;
+}
 
 getRequiredElement('copy-button').addEventListener('click', async () => {
   navigator.clipboard.writeText(await debugInfoAsJsonString);
@@ -75,8 +96,7 @@ async function iwaInstallSubmit() {
 
   iwaInstallMessageDiv.innerText = `Installing IWA: ${iwaInstallUrl.value}...`;
 
-  const location = new Url();
-  location.url = iwaInstallUrl.value;
+  const location: Url = {url: iwaInstallUrl.value};
 
   const installFromDevProxy =
       await webAppInternalsHandler.installIsolatedWebAppFromDevProxy(location);
@@ -146,6 +166,48 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (loadTimeData.getBoolean('experimentalIsIwaDevModeEnabled')) {
       // Unhide the IWA install div.
       getRequiredElement('iwa-install-div').style.display = '';
+
+      const devModeProxyAppList =
+          getRequiredElement('iwa-dev-mode-proxy-app-list');
+      const {apps: devModeProxyApps} =
+          await webAppInternalsHandler.getIsolatedWebAppDevModeProxyAppInfo();
+      for (const devModeProxyApp of devModeProxyApps) {
+        const li = document.createElement('li');
+
+        li.innerText =
+            `${devModeProxyApp.name} (${devModeProxyApp.installedVersion}) -> ${
+                originToText(devModeProxyApp.proxyOrigin)}`;
+
+        const updateMsg = document.createElement('p');
+
+        const updateBtn = document.createElement('button');
+        updateBtn.className = 'iwa-update-btn';
+        updateBtn.innerText = 'Perform update now';
+        updateBtn.onclick = async () => {
+          const oldText = updateBtn.innerText;
+          try {
+            updateBtn.disabled = true;
+            updateBtn.innerText =
+                'Performing update... (close the IWA if it is currently open!)';
+
+            const {result} =
+                await webAppInternalsHandler.updateDevProxyIsolatedWebApp(
+                    devModeProxyApp.appId);
+            updateMsg.innerText = result;
+          } finally {
+            updateBtn.innerText = oldText;
+            updateBtn.disabled = false;
+          }
+        };
+
+        li.appendChild(updateBtn);
+        li.appendChild(updateMsg);
+
+        devModeProxyAppList.appendChild(li);
+      }
+
+      // Unhide the div that hides the list of dev mode proxy apps.
+      getRequiredElement('iwa-dev-mode-proxy-updates').style.display = '';
     }
   }
 });

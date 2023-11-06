@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
@@ -275,7 +274,7 @@ class AppUsageTelemetrySamplerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageData) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
@@ -322,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest, ReportUsageData) {
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataWhenSyncDisabled) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
@@ -366,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataWhenPolicyDisabled) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 
@@ -392,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppUsageTelemetrySamplerBrowserTest,
                        PRE_ReportUsageDataOnSessionTermination) {
-  // Dummy case that sets up the affiliated user through SetUpOnMainThread
+  // Simple case that sets up the affiliated user through SetUpOnMainThread
   // PRE-condition.
 }
 

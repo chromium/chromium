@@ -30,6 +30,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -42,9 +43,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Integration tests for IncognitoNewTabPage.
- */
+/** Integration tests for IncognitoNewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.INCOGNITO_NTP_REVAMP})
@@ -59,18 +58,29 @@ public class RevampedIncognitoNewTabPageTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private void setCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
-            prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.setInteger(PrefNames.COOKIE_CONTROLS_MODE, mode);
+                });
     }
 
     private void assertCookieControlsMode(@CookieControlsMode int mode) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals(UserPrefs.get(Profile.getLastUsedRegularProfile())
-                                        .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
-                    mode);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                    .getInteger(PrefNames.COOKIE_CONTROLS_MODE),
+                            mode);
+                });
+    }
+
+    private void enableTrackingProtection() {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PrefService prefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
+                    prefService.setBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED, true);
+                });
     }
 
     /**
@@ -89,9 +99,7 @@ public class RevampedIncognitoNewTabPageTest {
         onView(withId(R.id.revamped_cookie_controls_card_toggle)).check(matches(isChecked()));
     }
 
-    /**
-     * Test cookie controls toggle turns on and off cookie controls mode as expected.
-     */
+    /** Test cookie controls toggle turns on and off cookie controls mode as expected. */
     @Test
     @SmallTest
     public void testCookieControlsToggleChanges() throws Exception {
@@ -113,9 +121,7 @@ public class RevampedIncognitoNewTabPageTest {
         assertCookieControlsMode(CookieControlsMode.OFF);
     }
 
-    /**
-     * Test cookie controls disabled if managed by settings.
-     */
+    /** Test cookie controls disabled if managed by settings. */
     @Test
     @SmallTest
     public void testCookieControlsToggleManaged() throws Exception {
@@ -141,5 +147,15 @@ public class RevampedIncognitoNewTabPageTest {
         onView(withId(toggle_id)).check(matches(not(isEnabled())));
         setCookieControlsMode(CookieControlsMode.OFF);
         onView(withId(toggle_id)).check(matches(allOf(isNotChecked(), isEnabled())));
+    }
+
+    /** Test the tracking protection layout. */
+    @Test
+    @SmallTest
+    public void testTrackingProtection() throws Exception {
+        enableTrackingProtection();
+        sActivityTestRule.newIncognitoTabFromMenu();
+        onView(withId(R.id.revamped_tracking_protection_card))
+                .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 }

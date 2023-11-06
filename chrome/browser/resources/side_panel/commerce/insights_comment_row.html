@@ -1,10 +1,18 @@
 <style>
+  :host {
+    display: flex;
+  }
+
   #commentRow {
     display: inline;
     max-width: 100%;
     color: var(--cr-secondary-text-color);
     font-size: 11px;
     line-height: 20px;
+  }
+
+  :host-context([chrome-refresh-2023]) #commentRow {
+    line-height: 16px;
   }
 
   .link {

@@ -140,12 +140,13 @@ base::Value::Dict NetLogFailParam(uint16_t code,
 
 class DependentIOBuffer : public WrappedIOBuffer {
  public:
-  DependentIOBuffer(scoped_refptr<IOBuffer> buffer, size_t offset)
-      : WrappedIOBuffer(buffer->data() + offset), buffer_(std::move(buffer)) {}
+  DependentIOBuffer(scoped_refptr<IOBufferWithSize> buffer, size_t offset)
+      : WrappedIOBuffer(buffer->data() + offset, buffer->size() - offset),
+        buffer_(std::move(buffer)) {}
 
  private:
   ~DependentIOBuffer() override = default;
-  scoped_refptr<IOBuffer> buffer_;
+  scoped_refptr<IOBufferWithSize> buffer_;
 };
 
 }  // namespace
@@ -268,12 +269,14 @@ void WebSocketChannel::SendAddChannelRequest(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, site_for_cookies,
-      isolation_info, additional_headers, traffic_annotation,
+      has_storage_access, isolation_info, additional_headers,
+      traffic_annotation,
       base::BindOnce(&WebSocketStream::CreateAndConnectStream));
 }
 
@@ -397,14 +400,15 @@ void WebSocketChannel::SendAddChannelRequestForTesting(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, site_for_cookies,
-      isolation_info, additional_headers, traffic_annotation,
-      std::move(callback));
+      has_storage_access, isolation_info, additional_headers,
+      traffic_annotation, std::move(callback));
 }
 
 void WebSocketChannel::SetClosingHandshakeTimeoutForTesting(
@@ -422,6 +426,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     const std::vector<std::string>& requested_subprotocols,
     const url::Origin& origin,
     const SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
     NetworkTrafficAnnotationTag traffic_annotation,
@@ -439,8 +444,9 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   auto connect_delegate = std::make_unique<ConnectDelegate>(this);
   stream_request_ = std::move(callback).Run(
       socket_url_, requested_subprotocols, origin, site_for_cookies,
-      isolation_info, additional_headers, url_request_context_.get(),
-      NetLogWithSource(), traffic_annotation, std::move(connect_delegate));
+      has_storage_access, isolation_info, additional_headers,
+      url_request_context_.get(), NetLogWithSource(), traffic_annotation,
+      std::move(connect_delegate));
   SetState(CONNECTING);
 }
 
@@ -714,7 +720,7 @@ ChannelState WebSocketChannel::HandleFrameByState(
       DVLOG(1) << "Got Ping of size " << payload.size();
       if (state_ == CONNECTED) {
         auto buffer = base::MakeRefCounted<IOBuffer>(payload.size());
-        memcpy(buffer->data(), payload.data(), payload.size());
+        base::ranges::copy(payload, buffer->data());
         return SendFrameInternal(true, WebSocketFrameHeader::kOpCodePong,
                                  std::move(buffer), payload.size());
       }
@@ -933,7 +939,7 @@ ChannelState WebSocketChannel::SendClose(uint16_t code,
     // Special case: translate kWebSocketErrorNoStatusReceived into a Close
     // frame with no payload.
     DCHECK(reason.empty());
-    body = base::MakeRefCounted<IOBuffer>(0);
+    body = base::MakeRefCounted<IOBuffer>();
   } else {
     const size_t payload_length = kWebSocketCloseCodeLength + reason.length();
     body = base::MakeRefCounted<IOBuffer>(payload_length);

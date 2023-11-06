@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/i18n/message_formatter.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/common/storage_type.h"
 #import "components/policy/policy_constants.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
@@ -10,12 +12,18 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
+#import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -61,8 +69,7 @@ void SignInWithPromoFromAccountSettings(FakeSystemIdentity* fake_identity,
       performAction:grey_tap()];
   if (expect_history_sync) {
     [[EarlGrey selectElementWithMatcher:
-                   grey_accessibilityID(
-                       kPromoStylePrimaryActionAccessibilityIdentifier)]
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
   [ChromeEarlGreyUI waitForAppToIdle];
@@ -102,6 +109,46 @@ void DismissSignOutSnackbar() {
       performAction:grey_tap()];
 }
 
+// Adds a bookmark. The storage type is determined based on if the user is
+// signed in or not.
+void SaveBookmark(NSString* title, NSString* url) {
+  bookmarks::StorageType storageType = bookmarks::StorageType::kAccount;
+  if ([SigninEarlGreyAppInterface isSignedOut]) {
+    storageType = bookmarks::StorageType::kLocalOrSyncable;
+  }
+  [BookmarkEarlGrey addBookmarkWithTitle:title URL:url inStorage:storageType];
+}
+
+// Expects a batch upload recommendation item on the current screen with
+// `message_id` string formatted for `count` local items and `email` user email
+// id.
+void ExpectBatchUploadRecommendationItem(int message_id,
+                                         int count,
+                                         NSString* email) {
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(message_id), "count", count, "email",
+          base::SysNSStringToUTF16(email)));
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_accessibilityID(
+                         kBatchUploadRecommendationItemAccessibilityIdentifier),
+                     grey_accessibilityLabel(text), grey_sufficientlyVisible(),
+                     nil)] assertWithMatcher:grey_notNil()];
+}
+
+// Waits for snackbar item to show up after pressing save on the batch upload
+// page.
+void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
+  NSString* text = base::SysUTF16ToNSString(
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(IDS_IOS_BULK_UPLOAD_SNACKBAR_MESSAGE),
+          "count", count, "email", base::SysNSStringToUTF16(email)));
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:grey_accessibilityLabel(
+                                                       text)];
+}
+
 }  // namespace
 
 // Integration tests using the Google services settings screen.
@@ -119,6 +166,20 @@ void DismissSignOutSnackbar() {
   } else {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+    config.features_enabled.push_back(syncer::kSyncEnableBatchUploadLocalData);
+  }
+  if ([self
+          isRunningTest:@selector(testDeCouplingOfAddressAndPaymentToggles)]) {
+    config.features_enabled.push_back(
+        syncer::kSyncDecoupleAddressPaymentSettings);
+    config.features_enabled.push_back(
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
+  }
+  if ([self isRunningTest:@selector(testCouplingOfAddressAndPaymentToggles)]) {
+    config.features_disabled.push_back(
+        syncer::kSyncDecoupleAddressPaymentSettings);
+    config.features_enabled.push_back(
+        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
   }
   return config;
 }
@@ -533,6 +594,653 @@ void DismissSignOutSnackbar() {
                                           /*is_toggled_on=*/NO,
                                           /*enabled=*/YES)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests closing the account settings with a remote signout.
+- (void)testAccountSettingsWithRemoteSignout_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Remove fakeIdentity from device.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+
+  // Check that Settings is presented.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Verify the error section is not showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for passwords.
+- (void)testBulkUploadDescriptionTextForPasswords {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password1", @"user1",
+                                                @"https://example1.com");
+  password_manager_test_utils::SavePasswordForm(@"password2", @"user2",
+                                                @"https://example2.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM, 2,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for bookmarks.
+- (void)testBulkUploadDescriptionTextForBookmarks {
+  // Add local data.
+  SaveBookmark(@"foo", @"https://www.foo.com");
+  SaveBookmark(@"bar", @"https://www.bar.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for reading list.
+- (void)testBulkUploadDescriptionTextForReadingList {
+  // Add local data.
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 1,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload button description in the account settings
+// contains the correct string for passwords and other data type.
+- (void)testBulkUploadDescriptionTextForPasswordsAndOthers {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Find and match the batch upload recommendation item text.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_AND_ITEMS_ITEM, 1,
+      fakeIdentity.userEmail);
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+// - Bookmarks
+// - Reading list
+- (void)testBulkUploadPageForAllDataTypes {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+- (void)testBulkUploadPageForPasswordsOnly {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the batch upload page contains the correct listed data types:
+// - Passwords
+// - Bookmarks
+- (void)testBulkUploadPageForPasswordsAndBookmarks {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that only rows for the correct data types exist.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that bulk upload moves the following data types to account:
+// - Passwords
+- (void)testBulkUploadForPasswords {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that switches for Passwords is ON.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+  // Turn switches for Bookmarks and Reading List to OFF.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Mock reauth since passwords needs upload.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // Delay the auth result to be able to validate that the passwords are not
+  // visible until the result is emitted.
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Tap on the save button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadSaveButtonAccessibilityIdentifer)]
+      performAction:grey_tap()];
+
+  // Verify the "manage sync" view is not visible yet.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Successful auth should remove blocking view and "manage sync" view should
+  // be visible.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
+
+  // Remove mock to keep the app in the same state as before running the test.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
+
+  // Ensure the correct snackbar appears.
+  ExpectBatchUploadConfirmationSnackbar(1, fakeIdentity.userEmail);
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Ensure that the batch upload dialog section has been modified on the
+  // account settings page.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_ITEMS_ITEM, 2,
+      fakeIdentity.userEmail);
+
+  // TODO(crbug.com/1482823): Test that items were actually moved.
+}
+
+// Tests that bulk upload moves the following data types to account:
+// - Bookmarks
+// - Reading List
+- (void)testBulkUploadForBookmarksAndReadingList {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that switches for Bookmarks and Reading List are ON.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+  // Turn switch for Passwords to OFF.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+
+  // Tap on the save button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadSaveButtonAccessibilityIdentifer)]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
+  // Ensure the correct snackbar appears.
+  ExpectBatchUploadConfirmationSnackbar(2, fakeIdentity.userEmail);
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Ensure that the batch upload dialog section has been modified on the
+  // account settings page.
+  ExpectBatchUploadRecommendationItem(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_PASSWORDS_ITEM, 1,
+      fakeIdentity.userEmail);
+
+  // TODO(crbug.com/1482823): Test that items were actually moved.
+}
+
+// Tests that bulk upload moves the following data types to account:
+// - Passwords
+// - Bookmarks
+// - Reading List
+- (void)testBulkUploadForAllDataTypes {
+  // Add local data.
+  password_manager_test_utils::SavePasswordForm(@"password", @"user",
+                                                @"https://example.com");
+  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  SaveBookmark(@"foo", @"https://www.foo.com");
+
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Sign in with fake identity using the settings sign-in promo.
+  SignInWithPromoFromAccountSettings(fakeIdentity, /*expect_history_sync=*/YES);
+
+  // Open the "manage sync" view.
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Tap on the batch upload button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify the bulk upload view is popped.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that switches for all data types are ON.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewPasswordsItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewBookmarksItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TableViewSwitchCell(
+                     kBulkUploadTableViewReadingListItemAccessibilityIdentifer,
+                     YES)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Mock reauth since passwords needs upload.
+  [PasswordSettingsAppInterface setUpMockReauthenticationModule];
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
+  // Delay the auth result to be able to validate that the passwords are not
+  // visible until the result is emitted.
+  [PasswordSettingsAppInterface
+      mockReauthenticationModuleShouldReturnSynchronously:NO];
+
+  // Tap on the save button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kBulkUploadSaveButtonAccessibilityIdentifer)]
+      performAction:grey_tap()];
+
+  // Verify the "manage sync" view is not visible yet.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Successful auth should remove blocking view and "manage sync" view should
+  // be visible.
+  [PasswordSettingsAppInterface mockReauthenticationModuleReturnMockedResult];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier)];
+
+  // Remove mock to keep the app in the same state as before running the test.
+  [PasswordSettingsAppInterface removeMockReauthenticationModule];
+
+  // Ensure the correct snackbar appears.
+  ExpectBatchUploadConfirmationSnackbar(3, fakeIdentity.userEmail);
+
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Ensure that the batch upload dialog section does not exist anymore.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kBatchUploadRecommendationItemAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBatchUploadAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+
+  // TODO(crbug.com/1482823): Test that items were actually moved.
+}
+
+// Runs only when `kSyncDecoupleAddressPaymentSettings` is disabled. Tests that
+// the payments and address toggles are coupled together.
+// TODO(crbug.com/1435431): Remove the test once
+// `kSyncDecoupleAddressPaymentSettings` gets launched.
+- (void)testCouplingOfAddressAndPaymentToggles {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Toggle off the address.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncAutofillIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+
+  // Verify that the Payments is not enabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPaymentsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/NO)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Toggle on the address.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncAutofillIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
+
+  // Verify that the Payments is enabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPaymentsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Runs only when `kSyncDecoupleAddressPaymentSettings` is enabled. Tests that
+// the payments and address toggles have been decoupled.
+- (void)testDeCouplingOfAddressAndPaymentToggles {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Toggle off the address.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncAutofillIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+
+  // Verify that the Payments is still enabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPaymentsIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the account settings and the user actionable error view are dismissed
+// on account removal.
+- (void)testAccountSettingsWithErrorDismissed_SyncToSigninEnabled {
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify the error section is showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap "Enter Passphrase" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      performAction:grey_tap()];
+
+  // Remove fakeIdentity from device.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Check that user is signed out and back to Settings main view.
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests the account settings and the encryption view are dismissed
+// on account removal.
+- (void)testAccountSettingsAndEncryptionDismissed_SyncToSigninEnabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Scroll to the bottom to view all section.
+  id<GREYMatcher> scroll_view_matcher =
+      grey_accessibilityID(kManageSyncTableViewAccessibilityIdentifier);
+  [[EarlGrey selectElementWithMatcher:scroll_view_matcher]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+
+  // Verify the encryption item is shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEncryptionAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the encryption item.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEncryptionAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Remove fakeIdentity from device.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Check that user is signed out and back to Settings main view.
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [SigninEarlGrey verifySignedOut];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsCollectionView()]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

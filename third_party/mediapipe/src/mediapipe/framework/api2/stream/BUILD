@@ -238,6 +238,50 @@ cc_test(
 )
 
 cc_library(
+    name = "merge",
+    hdrs = ["merge.h"],
+    deps = [
+        "//mediapipe/calculators/core:merge_calculator",
+        "//mediapipe/framework/api2:builder",
+    ],
+)
+
+cc_test(
+    name = "merge_test",
+    srcs = ["merge_test.cc"],
+    deps = [
+        ":merge",
+        "//mediapipe/framework:calculator_framework",
+        "//mediapipe/framework/api2:builder",
+        "//mediapipe/framework/port:gtest",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+    ],
+)
+
+cc_library(
+    name = "presence",
+    hdrs = ["presence.h"],
+    deps = [
+        "//mediapipe/calculators/core:packet_presence_calculator",
+        "//mediapipe/framework/api2:builder",
+    ],
+)
+
+cc_test(
+    name = "presence_test",
+    srcs = ["presence_test.cc"],
+    deps = [
+        ":presence",
+        "//mediapipe/framework:calculator_cc_proto",
+        "//mediapipe/framework/api2:builder",
+        "//mediapipe/framework/port:gtest",
+        "//mediapipe/framework/port:gtest_main",
+        "//mediapipe/framework/port:parse_text_proto",
+    ],
+)
+
+cc_library(
     name = "rect_transformation",
     srcs = ["rect_transformation.cc"],
     hdrs = ["rect_transformation.h"],

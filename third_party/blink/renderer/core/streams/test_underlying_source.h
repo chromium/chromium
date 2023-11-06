@@ -26,7 +26,7 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   void Error(ScriptValue value) { Controller()->Error(value); }
   double DesiredSize() { return Controller()->DesiredSize(); }
 
-  ScriptPromise Start(ScriptState* script_state) override {
+  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
     return ScriptPromise::CastUndefined(script_state);

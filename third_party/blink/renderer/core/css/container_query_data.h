@@ -36,7 +36,7 @@ class ContainerQueryData final : public GarbageCollected<ContainerQueryData>,
   bool SkippedStyleRecalc() const { return child_change_.has_value(); }
 
   ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
-    return container_query_evaluator_;
+    return container_query_evaluator_.Get();
   }
   void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
     container_query_evaluator_ = evaluator;

@@ -455,21 +455,26 @@ public class ProcessInitializationHandler {
             GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();
             GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics();
         });
-        deferredStartupHandler.addDeferredTask(() -> {
-            // OptimizationTypes which we give a guarantee will be registered when we pass the
-            // onDeferredStartup() signal to OptimizationGuide.
-            List<HintsProto.OptimizationType> registeredTypesAllowList = new ArrayList<>();
-            registeredTypesAllowList.addAll(
-                    ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup());
-            new OptimizationGuideBridgeFactory(registeredTypesAllowList)
-                    .create()
-                    .onDeferredStartup();
-            // TODO(crbug.com/1355893) Move to PersistedTabData.onDeferredStartup
-            if (PriceTrackingFeatures.isPriceTrackingEligible()
-                    && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled()) {
-                ShoppingPersistedTabData.onDeferredStartup();
-            }
-        });
+        deferredStartupHandler.addDeferredTask(
+                () -> {
+                    // OptimizationTypes which we give a guarantee will be registered when we pass
+                    // the
+                    // onDeferredStartup() signal to OptimizationGuide.
+                    Profile profile = Profile.getLastUsedRegularProfile();
+                    List<HintsProto.OptimizationType> registeredTypesAllowList = new ArrayList<>();
+                    registeredTypesAllowList.addAll(
+                            ShoppingPersistedTabData.getShoppingHintsToRegisterOnDeferredStartup(
+                                    profile));
+                    new OptimizationGuideBridgeFactory(registeredTypesAllowList)
+                            .create()
+                            .onDeferredStartup();
+                    // TODO(crbug.com/1355893) Move to PersistedTabData.onDeferredStartup
+                    if (PriceTrackingFeatures.isPriceTrackingEligible(profile)
+                            && ShoppingPersistedTabData.isPriceTrackingWithOptimizationGuideEnabled(
+                                    profile)) {
+                        ShoppingPersistedTabData.onDeferredStartup();
+                    }
+                });
         deferredStartupHandler.addDeferredTask(() -> {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEATURE_NOTIFICATION_GUIDE)) {
                 FeatureNotificationGuideServiceFactory.getForProfile(

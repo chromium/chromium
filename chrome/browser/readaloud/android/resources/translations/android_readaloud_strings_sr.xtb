@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="1178581264944972037">Паузирај</translation>
+<translation id="2558806128245168542">Идите назад</translation>
 <translation id="3523426587027570423">Додирните да бисте затворили плејер Слушајте ову страницу.</translation>
+<translation id="4431240646217225907">Истакни текст и омогући аутоматско скроловање</translation>
 <translation id="4654641641922242357">Плејер Слушајте ову страницу.</translation>
 <translation id="4731877163452936634">Брзина репродукције: <ph name="PLAYBACK_SPEED" /> Кликните да бисте променили.</translation>
 <translation id="5234971936051226002">Плејер Слушајте ову страницу је умањен.</translation>
 <translation id="5596627076506792578">Још опција</translation>
+<translation id="6315170314923504164">Глас</translation>
+<translation id="6550675742724504774">Опције</translation>
 <translation id="6790428901817661496">Пусти</translation>
+<translation id="6831043979455480757">Преведи</translation>
 <translation id="6846298663435243399">Учитава се...</translation>
 <translation id="7587250070160020374">Chrome тренутно пушта</translation>
 <translation id="7945822420239537236">Премотајте <ph name="NUMBER_OF_SECONDS" /> сек унапред</translation>

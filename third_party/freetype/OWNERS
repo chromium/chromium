@@ -1,5 +1,6 @@
 bungeman@chromium.org
 drott@chromium.org
+moonira@chromium.org
 
 # To ease rolling.
 per-file README.chromium=file://skia/OWNERS

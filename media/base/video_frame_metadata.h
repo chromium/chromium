@@ -72,13 +72,12 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // https://crbug.com/1327560.
   absl::optional<gfx::Rect> region_capture_rect;
 
-  // Whenever cropTo() is called, Blink increments the crop_version and records
-  // a Promise as associated with that crop_version.
-  // When Blink observes a frame with this new version or a later one,
-  // Blink resolves the Promise.
-  // Frames associated with a source which cannot be cropped will always
-  // have this value set to zero.
-  uint32_t crop_version = 0;
+  // Whenever cropTo() or restrictTo() are called, Blink increments the
+  // sub_capture_target_version and records a Promise as associated with that
+  // sub_capture_target_version. When Blink observes a frame with this new
+  // version or a later one, Blink resolves the Promise. Frames associated with
+  // a source which cannot be cropped will always have this value set to zero.
+  uint32_t sub_capture_target_version = 0;
 
   // Indicates that mailbox created in one context, is also being used in a
   // different context belonging to another share group and video frames are

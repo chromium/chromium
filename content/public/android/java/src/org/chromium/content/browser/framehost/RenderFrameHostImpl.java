@@ -6,11 +6,12 @@ package org.chromium.content.browser.framehost;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.UnguessableToken;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -202,16 +203,26 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin,
-            boolean isPaymentCredentialGetAssertion) {
+    public void performGetAssertionWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            boolean isPaymentCredentialGetAssertion,
+            Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback) {
         if (mNativeRenderFrameHostAndroid == 0) {
-            return new WebAuthSecurityChecksResults(
-                    AuthenticatorStatus.UNKNOWN_ERROR, false /*unused*/);
+            var result =
+                    new WebAuthSecurityChecksResults(
+                            AuthenticatorStatus.UNKNOWN_ERROR, false /*unused*/);
+            callback.onResult(result);
+            return;
         }
-        return RenderFrameHostImplJni.get().performGetAssertionWebAuthSecurityChecks(
-                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
-                effectiveOrigin, isPaymentCredentialGetAssertion);
+        RenderFrameHostImplJni.get()
+                .performGetAssertionWebAuthSecurityChecks(
+                        mNativeRenderFrameHostAndroid,
+                        RenderFrameHostImpl.this,
+                        relyingPartyId,
+                        effectiveOrigin,
+                        isPaymentCredentialGetAssertion,
+                        callback);
     }
 
     @CalledByNative
@@ -226,12 +237,24 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public int performMakeCredentialWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
-        if (mNativeRenderFrameHostAndroid == 0) return AuthenticatorStatus.UNKNOWN_ERROR;
-        return RenderFrameHostImplJni.get().performMakeCredentialWebAuthSecurityChecks(
-                mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
-                effectiveOrigin, isPaymentCredentialCreation);
+    public void performMakeCredentialWebAuthSecurityChecks(
+            String relyingPartyId,
+            Origin effectiveOrigin,
+            boolean isPaymentCredentialCreation,
+            Callback<Integer> callback) {
+        if (mNativeRenderFrameHostAndroid == 0) {
+            callback.onResult(AuthenticatorStatus.UNKNOWN_ERROR);
+            return;
+        }
+
+        RenderFrameHostImplJni.get()
+                .performMakeCredentialWebAuthSecurityChecks(
+                        mNativeRenderFrameHostAndroid,
+                        RenderFrameHostImpl.this,
+                        relyingPartyId,
+                        effectiveOrigin,
+                        isPaymentCredentialCreation,
+                        callback);
     }
 
     @Override
@@ -288,13 +311,23 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void terminateRendererDueToBadMessage(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller, int reason);
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        RenderFrameHost.WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
-                long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
-                String relyingPartyId, Origin effectiveOrigin,
-                boolean isPaymentCredentialGetAssertion);
-        int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
-                RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
-                boolean isPaymentCredentialCreation);
+
+        void performGetAssertionWebAuthSecurityChecks(
+                long nativeRenderFrameHostAndroid,
+                RenderFrameHostImpl caller,
+                String relyingPartyId,
+                Origin effectiveOrigin,
+                boolean isPaymentCredentialGetAssertion,
+                Callback<RenderFrameHost.WebAuthSecurityChecksResults> callback);
+
+        void performMakeCredentialWebAuthSecurityChecks(
+                long nativeRenderFrameHostAndroid,
+                RenderFrameHostImpl caller,
+                String relyingPartyId,
+                Origin effectiveOrigin,
+                boolean isPaymentCredentialCreation,
+                Callback<Integer> callback);
+
         int getLifecycleState(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void insertVisualStateCallback(
                 long nativeRenderFrameHostAndroid, Callback<Boolean> callback);

@@ -41,4 +41,8 @@ BASE_FEATURE(kMetricsServiceDeltaSnapshotInBg,
              "MetricsServiceDeltaSnapshotInBg",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kReportingServiceAlwaysFlush,
+             "ReportingServiceAlwaysFlush",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace metrics::features

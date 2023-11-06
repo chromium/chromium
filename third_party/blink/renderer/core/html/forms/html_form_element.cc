@@ -74,6 +74,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 bool HasFormInBetween(const Node* root, const Node* descendant) {
@@ -599,9 +601,10 @@ FormData* HTMLFormElement::ConstructEntryList(
     if (!element.IsDisabledFormControl())
       control->AppendToFormData(form_data);
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-      if (input->type() == input_type_names::kPassword &&
-          !input->Value().empty())
+      if (input->FormControlType() == FormControlType::kInputPassword &&
+          !input->Value().empty()) {
         form_data.SetContainsPasswordData(true);
+      }
     }
   }
   DispatchEvent(*MakeGarbageCollected<FormDataEvent>(form_data));

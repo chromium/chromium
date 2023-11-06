@@ -39,19 +39,15 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Unit tests for IntentHandler. These tests require use of the native library.
- */
+/** Unit tests for IntentHandler. These tests require use of the native library. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class IntentHandlerNativeTest {
     private static final String GOOGLE_URL = "https://www.google.com";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
@@ -102,7 +98,8 @@ public class IntentHandlerNativeTest {
         bundle.putString("Referer", GOOGLE_URL);
         Intent headersIntent = new Intent(Intent.ACTION_VIEW);
         headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
-        Assert.assertEquals("Accept: application/xhtml+xml",
+        Assert.assertEquals(
+                "Accept: application/xhtml+xml",
                 IntentHandler.getExtraHeadersFromIntent(headersIntent));
         Assert.assertNull(IntentHandler.getReferrerUrlIncludingExtraHeaders(headersIntent));
     }
@@ -119,7 +116,8 @@ public class IntentHandlerNativeTest {
         bundle.putString("Referer", GOOGLE_URL);
         Intent headersIntent = new Intent(Intent.ACTION_VIEW);
         headersIntent.putExtra(Browser.EXTRA_HEADERS, bundle);
-        Assert.assertEquals("Content-Language: de-DE, en-CA\nAccept: application/xhtml+xml",
+        Assert.assertEquals(
+                "Content-Language: de-DE, en-CA\nAccept: application/xhtml+xml",
                 IntentHandler.getExtraHeadersFromIntent(headersIntent));
         Assert.assertNull(IntentHandler.getReferrerUrlIncludingExtraHeaders(headersIntent));
     }
@@ -174,8 +172,9 @@ public class IntentHandlerNativeTest {
         // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
         Context context = ApplicationProvider.getApplicationContext();
-        Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                context, "https://www.google.com/");
+        Intent headersIntent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        context, "https://www.google.com/");
 
         Bundle headers = new Bundle();
         headers.putString("bearer-token", "Some token");
@@ -188,8 +187,9 @@ public class IntentHandlerNativeTest {
         connection.newSession(token);
         connection.overridePackageNameForSessionForTesting(token, "app1");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> ChromeOriginVerifier.addVerificationOverride("app1",
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                "app1",
                                 Origin.create(headersIntent.getData()),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 
@@ -206,8 +206,9 @@ public class IntentHandlerNativeTest {
         // Check that non-allowlisted headers from extras are passed
         // when origin is verified.
         Context context = ApplicationProvider.getApplicationContext();
-        Intent headersIntent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                context, "https://www.google.com/");
+        Intent headersIntent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        context, "https://www.google.com/");
 
         Bundle headers = new Bundle();
         headers.putString("bearer-token", "Some token");
@@ -220,8 +221,9 @@ public class IntentHandlerNativeTest {
         connection.newSession(token);
         connection.overridePackageNameForSessionForTesting(token, "app1");
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> ChromeOriginVerifier.addVerificationOverride("app2",
+                () ->
+                        ChromeOriginVerifier.addVerificationOverride(
+                                "app2",
                                 Origin.create(headersIntent.getData()),
                                 CustomTabsService.RELATION_USE_AS_ORIGIN));
 

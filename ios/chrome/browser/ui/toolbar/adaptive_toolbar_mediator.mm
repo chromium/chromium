@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -323,7 +323,9 @@
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
-  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar)) {
+  if (base::FeatureList::IsEnabled(kThemeColorInTopToolbar) ||
+      base::FeatureList::IsEnabled(kDynamicThemeColor) ||
+      base::FeatureList::IsEnabled(kDynamicBackgroundColor)) {
     [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
     [self.consumer
         setUnderPageBackgroundColor:self.webState

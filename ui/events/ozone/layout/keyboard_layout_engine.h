@@ -14,7 +14,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // A KeyboardLayoutEngine provides a platform-independent interface to
 // key mapping. Key mapping provides a meaning (DomKey and character,

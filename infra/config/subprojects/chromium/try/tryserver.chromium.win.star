@@ -44,6 +44,8 @@ try_.builder(
     mirrors = [
         "ci/win-asan",
     ],
+    cores = 16,
+    ssd = True,
     execution_timeout = 9 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )
@@ -64,6 +66,7 @@ try_.builder(
     mirrors = [
         "ci/win-archive-rel",
     ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -91,6 +94,7 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 5,
+        "chromium.pre_retry_shards_without_patch_compile": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -143,6 +147,7 @@ try_.builder(
     mirrors = [
         "ci/win32-archive-rel",
     ],
+    contact_team_email = "chrome-desktop-engprod@google.com",
 )
 
 try_.builder(
@@ -207,12 +212,14 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10_chromium_x64_dbg_ng",
+    name = "win10-dbg",
     mirrors = [
         "ci/Win x64 Builder (dbg)",
         "ci/Win10 Tests x64 (dbg)",
     ],
+    cores = 16,
     os = os.WINDOWS_10,
+    ssd = True,
 )
 
 try_.builder(
@@ -249,17 +256,6 @@ try_.builder(
         ],
     ),
     use_clang_coverage = True,
-)
-
-try_.builder(
-    name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
-    mirrors = [
-        "ci/Win x64 Builder",
-        "ci/Win10 Tests x64",
-        "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
-    ],
-    os = os.WINDOWS_10,
 )
 
 try_.builder(

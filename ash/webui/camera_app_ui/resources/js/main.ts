@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './lit/svg-wrapper.js';
+import './lit/components/record-time-chip.js';
+import './lit/components/svg-wrapper.js';
 
 import {
   ColorChangeUpdater,
@@ -26,7 +27,6 @@ import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
 import * as expert from './expert.js';
-import {Flag} from './flag.js';
 import {GalleryButton} from './gallerybutton.js';
 import {Intent} from './intent.js';
 import * as Comlink from './lib/comlink.js';
@@ -198,13 +198,6 @@ function setupEffect() {
   });
 }
 
-function setupExperimentalFeatures() {
-  if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
-    const modeButton = dom.get('#time-lapse-mode', HTMLDivElement);
-    modeButton.classList.remove('hidden');
-  }
-}
-
 /**
  * Handles pressed keys.
  */
@@ -278,12 +271,15 @@ async function setupDynamicColor(): Promise<void> {
       document.head.appendChild(link);
     });
   }
-  if (loadTimeData.getChromeFlag(Flag.JELLY)) {
-    ColorChangeUpdater.forDocument().start();
-    await loadCSS('chrome://theme/colors.css?sets=ref,sys');
-  } else {
-    await loadCSS(util.expandPath('/css/colors_default.css'));
-  }
+  ColorChangeUpdater.forDocument().start();
+  // Note that this has to be loaded after
+  // ColorChangeUpdater.forDocument.start() is called, since we override the
+  // force dark theme on the color_change_listener BindInterface in
+  // camera_app_ui.cc
+  // TODO(pihsun): Check if there's way to override color scheme earlier before
+  // HTML load, so the CSS can be put into .html file instead of being injected
+  // by JS.
+  await loadCSS('chrome://theme/colors.css?sets=ref,sys');
 }
 
 async function setupMultiWindowHandling(
@@ -511,7 +507,6 @@ async function main() {
   setupToggles();
   localStorage.cleanup();
   setupEffect();
-  setupExperimentalFeatures();
   preloadImages();
   preloadSounds();
   setupSvgs();

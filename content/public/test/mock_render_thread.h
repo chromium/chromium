@@ -64,7 +64,6 @@ class MockRenderThread : public RenderThread {
       int32_t routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
-  int GenerateRoutingID() override;
   bool GenerateFrameRoutingID(int32_t& routing_id,
                               blink::LocalFrameToken& frame_token,
                               base::UnguessableToken& devtools_frame_token,
@@ -91,7 +90,6 @@ class MockRenderThread : public RenderThread {
   void WriteIntoTrace(
       perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto)
       override;
-  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
 
   // Returns a new, unique routing ID that can be assigned to the next view,
   // widget, or frame.

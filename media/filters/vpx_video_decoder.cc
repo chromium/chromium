@@ -24,6 +24,7 @@
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_aspect_ratio.h"
+#include "media/filters/ffmpeg_video_decoder.h"
 #include "media/filters/frame_buffer_pool.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8dx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_decoder.h"
@@ -233,8 +234,8 @@ bool VpxVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config) {
   // When enabled, ffmpeg handles VP8 that doesn't have alpha, and
   // VpxVideoDecoder will handle VP8 with alpha. FFvp8 is being deprecated.
   // See http://crbug.com/992235.
-  if (base::FeatureList::IsEnabled(kFFmpegDecodeOpaqueVP8) &&
-      config.codec() == VideoCodec::kVP8 &&
+  if (config.codec() == VideoCodec::kVP8 &&
+      FFmpegVideoDecoder::IsCodecSupported(config.codec()) &&
       config.alpha_mode() == VideoDecoderConfig::AlphaMode::kIsOpaque) {
     return false;
   }

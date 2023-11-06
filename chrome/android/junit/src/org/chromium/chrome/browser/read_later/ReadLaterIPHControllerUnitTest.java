@@ -37,23 +37,15 @@ import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ReadLaterIPHControllerUnitTest {
-    @Rule
-    public TestRule mFeaturesProcessor = new JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new JUnitProcessor();
 
-    @Mock
-    Activity mActivity;
-    @Mock
-    View mToolbarMenuButton;
-    @Mock
-    AppMenuHandler mAppMenuHandler;
-    @Mock
-    UserEducationHelper mUserEducationHelper;
-    @Mock
-    Context mContext;
-    @Mock
-    Resources mResources;
-    @Captor
-    ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
+    @Mock Activity mActivity;
+    @Mock View mToolbarMenuButton;
+    @Mock AppMenuHandler mAppMenuHandler;
+    @Mock UserEducationHelper mUserEducationHelper;
+    @Mock Context mContext;
+    @Mock Resources mResources;
+    @Captor ArgumentCaptor<IPHCommand> mIPHCommandCaptor;
 
     ReadLaterIPHController mController;
 
@@ -63,8 +55,9 @@ public class ReadLaterIPHControllerUnitTest {
         doReturn(mResources).when(mContext).getResources();
         doReturn(mContext).when(mToolbarMenuButton).getContext();
 
-        mController = new ReadLaterIPHController(
-                mActivity, mToolbarMenuButton, mAppMenuHandler, mUserEducationHelper);
+        mController =
+                new ReadLaterIPHController(
+                        mActivity, mToolbarMenuButton, mAppMenuHandler, mUserEducationHelper);
     }
 
     @Test

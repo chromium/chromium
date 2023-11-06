@@ -175,7 +175,7 @@ void EncryptedReportingUploadProvider::UploadHelper::
 void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
     StatusOr<std::unique_ptr<UploadClient>> client_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenced_task_checker_);
-  if (!client_result.ok()) {
+  if (!client_result.has_value()) {
     upload_client_request_in_progress_ = false;
     PostNewUploadClientRequest();
     return;
@@ -183,7 +183,7 @@ void EncryptedReportingUploadProvider::UploadHelper::OnUploadClientResult(
   sequenced_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UploadHelper::UpdateUploadClient,
                                 weak_ptr_factory_.GetWeakPtr(),
-                                std::move(client_result.ValueOrDie())));
+                                std::move(client_result.value())));
 }
 
 void EncryptedReportingUploadProvider::UploadHelper::UpdateUploadClient(

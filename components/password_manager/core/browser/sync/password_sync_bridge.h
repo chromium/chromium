@@ -9,7 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/password_store_change.h"
-#include "components/password_manager/core/browser/password_store_sync.h"
+#include "components/password_manager/core/browser/sync/password_store_sync.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"

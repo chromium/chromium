@@ -1018,6 +1018,9 @@
   <message name="IDS_SETTINGS_CLEAR_PERIOD_15_MINUTES" desc="The option to delete browsing data from the last 15 minutes.">
     Last 15 minutes
   </message>
+  <message name="IDS_SETTINGS_CLEAR_PERIOD_NOT_SELECTED" desc="This is the text that is shown in the clear browsing data time range dropdown until the user selected a time range from this dropdown.">
+    Select a time range
+  </message>
   <message name="IDS_SETTINGS_NOTIFICATION_WARNING" desc="A warning that notifications will be disabled by deleting cookies for this site.">
     Notifications will be disabled
   </message>
@@ -1759,6 +1762,15 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL" desc="Text of the Web and App Activity label in the completion card of the 'Privacy Guide'.">
     Web &#38; App Activity
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_HEADERIDS__ADDITIONAL_SETTINGS" translateable="false" desc="sub header label for compose in the 'Privacy Guide'.">
+   Additional settings
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_HEADER" translateable="false" desc="Header for compose in the 'Privacy Guide'.">
+   Compose
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPOSE_DESCRIPTION" translateable="false" desc="a descitpion of compose in the 'Privacy Guide'.">
+   Offer Autofill assistance in eligible fields
+  </message>
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_CARD_HEADER" desc="Header of the 'make searches and browsing better' card in the 'Privacy Guide'.">
     Choose your search and browsing quality
   </message>
@@ -1842,11 +1854,8 @@
   <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_CARD_HEADER" desc="Header of the 'search suggestions' card in the 'Privacy Guide'.">
     Choose whether to get additional search suggestions
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'search suggestions' in the 'Privacy Guide'.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SEARCH_SUGGESTIONS_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'search suggestions' in the 'Privacy Guide'.">
     When you click or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_SEARCH_SUGGESTIONS_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of 'search suggestions' in the 'Privacy Guide'.">
-    What you type in the address bar or search box is sent to your default search engine
   </message>
 
   <!-- Safety check -->
@@ -1962,9 +1971,6 @@
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_LABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This label is for the toggle that allows users to switch off/on this functionality.">
     Automatically remove permissions from unused sites
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_CHECK_UNUSED_SITE_PERMISSIONS_SETTING_SUBLABEL" desc="By default Chrome auto-revokes (disables) permissions (e.g. Camera, Location, etc.) for websites that were not visited for a while. This sublabel is for the toggle that allows users to switch off/on this functionality.">
-    To protect your data, remove permissions from sites you haven't visited in recently. Doesn't stop notifications.
   </message>
   <message name="IDS_SETTINGS_SAFETY_CHECK_UPDATES_PRIMARY_LABEL" desc="'Updates' is an element in safety check that shows the update status of Chrome.">
     Updates
@@ -2242,16 +2248,16 @@
   </message>
   <message name="IDS_SETTINGS_ADVANCED_PROTECTION_PROGRAM_DESC" desc="Description of the Google
     Advanced Protection Program">
-    Safeguards the personal Google Accounts of anyone at risk of targeted attacks
+    Provides Google’s strongest account security for people at risk of targeted attacks
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE" desc="Text for HTTPS-Only Mode toggle in Security settings">
     Always use secure connections
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION_ADVANCED_PROTECTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings when the user can't change the setting">
-    Upgrade navigations to HTTPS and warn you before loading sites that don't support it. You can't change this setting because you have Advanced Protection enabled.
+    Use HTTPS whenever possible and get warned before loading sites that don’t support it. You can’t change this setting because you have Advanced Protection enabled.
   </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates
@@ -2275,27 +2281,21 @@
     Use secure DNS
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-    Determines how to connect to websites over a secure connection
+    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System)
   </message>
   <if expr="chromeos_ash">
     <message name="IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION" desc="Secondary, continued explanation of secure DNS in Privacy options">
-      Determines how to connect to websites over a secure connection. This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
+      Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>
     </message>
   </if>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the radio button that puts secure DNS in auto-upgrade mode">
-    With your current service provider
-  </message>
-  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION_SECONDARY" desc="Secondary, continued explanation of the radio button that puts secure DNS in auto-upgrade mode">
-    Secure DNS may not be available all the time
-  </message>
-  <message name="IDS_SETTINGS_SECURE_MODE_DESCRIPTION_ACCESSIBILITY_LABEL" desc="Accessibility label for the radio button that puts secure DNS in secure mode">
-    With a provider of your choice
+  <message name="IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION" desc="Text of the select option that puts secure DNS in auto-upgrade mode">
+    OS default (when available)
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL" desc="Accessibility label for the dropdown menu containing secure resolvers">
     Provider options
   </message>
-  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Text of the radio button that allows a secure resolver to be selected from a dropdown menu">
-    With
+  <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_DESCRIPTION" desc="Label for the select menu that allows a secure resolver to be selected">
+    Select DNS Provider
   </message>
   <message name="IDS_SETTINGS_SECURE_DROPDOWN_MODE_PRIVACY_POLICY" desc="Text that displays a link to the privacy policy of the resolver selected from a dropdown menu">
     See this provider's <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>privacy policy<ph name="END_LINK">&lt;/a&gt;</ph>
@@ -2306,8 +2306,11 @@
   <message name="IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL" desc="Substring of the secure DNS setting when secure DNS is disabled due to detection of OS-level parental controls">
     This setting is disabled because parental controls are on
   </message>
+  <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION" desc="Text of the select option that is used for a custom secure DNS provider">
+    Add custom DNS service provider
+  </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_PLACEHOLDER" desc="Placeholder text for a textbox where users can enter a custom secure DNS provider">
-    Enter custom provider
+    Enter custom DNS query URL
   </message>
   <message name="IDS_SETTINGS_SECURE_DNS_CUSTOM_FORMAT_ERROR" desc="Error text for an incorrectly formatted entry for the custom secure DNS provider">
     Enter a correctly formatted URL
@@ -3281,10 +3284,10 @@
   <message name="IDS_SETTINGS_TRACKING_PROTECTION_SITES_ALLOWED_COOKIES_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites are allowed to use third-party cookies. Explains that third-party cookies are also allowed for subdomains of the listed sites.">
     Affects the sites listed here and their subdomains. For example, adding “google.com” means that third-party cookies can also be active for mail.google.com, because it’s part of google.com.
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is unavailable." translateable="false">
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE" desc="Notice text on the top of the 'Third-party cookies' settings page telling users that Tracking Protection is temporarily unavailable.">
     Tracking Protection is temporarily unavailable. While Chrome is updating this feature, sites can temporarily use third-party cookies unless you block them. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the Tracking Protection rollback notice." translateable="false">
+  <message name="IDS_SETTINGS_TRACKING_PROTECTION_ROLLBACK_NOTICE_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the 'Learn more' link in the Tracking Protection rollback notice.">
     Learn more about Tracking Protection availability
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_APP_PROTOCOL_HANDLERS" desc="Label for the app protocol handlers (e.g. mailto) in site settings.">
@@ -3573,7 +3576,7 @@
     Delete
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIE_REMOVE_SITE" desc="Label for the trashcan button to delete all cookies and site data for a specific site (ex: all the cookies set on google.com).">
-    Remove <ph name="SITE">$1<ex>google.com</ex></ph>
+    Delete site data and permissions for <ph name="SITE">$1<ex>google.com</ex></ph>
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_RESET_ALL" desc="Text for the button that resets the site's permissions back to the defaults.">
     Reset
@@ -3944,7 +3947,7 @@
   <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_ONE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
     When you use some features, they can send parts of open pages, related recent pages, and their URLs to Google
   </message>
-  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
+  <message name="IDS_SETTINGS_PAGE_CONTENT_THINGS_TO_CONSIDER_BULLET_THREE" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables features that provide contextual help for currently opened pages.">
     This setting doesn't change the availability of Google Translate or Lens
   </message>
 
@@ -4335,16 +4338,16 @@
 
   <!-- Safety Hub -->
   <message name="IDS_SETTINGS_SAFETY_HUB" desc="Name of a page in settings that gives users an overview over their safety status and where users can take action to improve their safety.">
-    Safety Hub
+    Safety Check
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Hub page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Hub.">
-    Go to Safety Hub
+  <message name="IDS_SETTINGS_SAFETY_HUB_ENTRY_POINT_BUTTON" desc="This is the label of a button that takes users to the Safety Check page in Chrome settings. This button appears in a section in privacy settings next to a text that gives more details on Safety Check.">
+    Go to Safety Check
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_CARD_SECTION_HEADER" desc="The title of the first section in the Safety Hub page. The 'Safety at a glance' section gives an overview about the current state of passwords, browser version and safe browsing setting of the browser. ">
     Safety at a glance
   </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Hub page. The 'Safety recommendation' section shows actionable modules about permissions and extensions based on the current state of the browser.">
-    Safety recommendation
+  <message name="IDS_SETTINGS_SAFETY_HUB_PAGE_MODULE_SECTION_HEADER" desc="The title of the second section in the Safety Check page. The 'Safety recommendations' section shows actionable modules about permissions and extensions based on the current state of the browser.">
+    Safety recommendations
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_EMPTY_STATE_MODULE_HEADER" desc="The header of the 'Empty State Module' in the Safety Hub page. The 'Empty State Module' is visible if there is no safety recommendation.">
     Nothing else needs your attention right now
@@ -4370,6 +4373,9 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_CHECK_SUBHEADER_NO_PASSWORDS_POLICY" desc="Subtitle of the passwords card in SafetyHub when there are no saved passwords and saving of passwords is disabled through enterprise policy. This text is shown below the header 'No saved passwords'. It explains that the SafetyHub features for passwords are not available since the user's organization has a policy in place that prevents the user from saving passwords in Chrome.">
     Your organization turned off saving passwords
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORD_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Password card in this page shows if there is any insecure password stored. This string is for the accesibility label for the card to call out where to navigation will happen (chrome://password-manager/passwords) if the card is clicked.">
+    Go to Google Password Manager
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_ON_ENHANCED_HEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the headline of the Safe Browsing card when the current state is Enhanced protection.">
     Enhanced Safe Browsing is on
   </message>
@@ -4394,6 +4400,9 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_SB_OFF_USER_SUBHEADER" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is the body text of the Safe Browsing card when the current state is No protection because the user has turned it off.">
     Turn on Safe Browsing to get protection against dangerous sites
   </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SB_NAVIGATION_ARIA_LABEL" desc="Safety Check settings page (chrome://settings/safetyCheck) gives users an overview over their safety status. Safe browsing card in this page shows the current state of Safe browsing setting (chrome://settings/security). This string is for the accesibility label for the card to call out where to navigation will happen (chrome://settings/security) if the card is clicked.">
+    Go to Safe Browsing settings
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_GO_SITE_SETTINGS_ITEM" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. 'Unused Site Permissions' in this page shows unused websites for which permissions have been revoked. This label is for the action menu item that navigates users to the site settings page.">
     Go to site settings
   </message>
@@ -4406,22 +4415,111 @@
   <message name="IDS_SETTINGS_SAFETY_HUB_USER_EDU_SAFE_BROWSING_HEADER" desc="The header of the second item in the 'User Education Module' in the Safety Hub page. This item explains Safe Browsing.">
     Safe Browsing
   </message>
+  <if expr="not is_chromeos">
+    <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
+      Relaunch to finish update. Your tabs will reopen.
+    </message>
+  </if>
+  <if expr="is_chromeos">
+    <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
+      Restart your device to finish updating
+    </message>
+  </if>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_PRIMARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {Review 1 site that recently sent a lot of notifications}
+     other {Review {NUM_SITES} sites that recently sent a lot of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATION_PERMISSIONS_SECONDARY_LABEL" desc="'Review Notification Permissions' shows the websites that send a lot of notifications. This label is the header of the module in the Safety Check page (chrome://settings/SafetyCheck). The number represents the number of notification permissions to be reviewed.">
+    {NUM_SITES, plural,
+     =1 {You can stop this site from sending future notifications.}
+     other {You can stop these sites from sending future notifications.}}
+  </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION" desc="The unused site permissions module of Safety Hub revokes permissions of sites that the user hasn't visited in a while. This label is for the notification in Chrome's three-dot menu indicating for how many sites the permission was revoked.">
     {NUM_SITES, plural,
-      =1 {Permissions removed from 1 unused site}
-      other {Permissions removed from {NUM_SITES} sites}}
-  </message>
-  <message name="IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART" desc="Safety Hub settings page (chrome://settings/safetyHub) gives users an overview over their safety status. The version card, which this text is a part of, informs the user whether their Chrome is up to date. This text is shown when Chrome is not up to date but there is an update available and the user needs to restart their browser to finish the update. Shown below the title 'Chrome is out of date'.">
-    Relaunch to finish update. Your tabs will reopen.
+      =1 {Removed permissions for 1 unused site}
+      other {Removed permissions for {NUM_SITES} unused sites}}
   </message>
   <message name="IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION" desc="The review notification permissions module of Safety Hub marks sites that send a lot of notifications for review by the user. This label is for the notification in Chrome's three-dot menu indicating how many sites should be reviewed.">
     {NUM_SITES, plural,
-      =1 {Review 1 website with lots of notifications}
-      other {Review {NUM_SITES} websites with lots of notifications}}
+      =1 {Found 1 site with lots of notifications}
+      other {Found {NUM_SITES} sites with lots of notifications}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_COMPROMISED_PASSWORDS_MENU_NOTIFICATION" desc="The password check module of Safety Hub warns users if there is any insecure credential. This label is for the notification in Chrome's three-dot menu indicating how many passwords are compromised.">
+    {NUM_SITES, plural,
+      =1 {Found 1 compromised password}
+      other {Found {NUM_SITES} compromised passwords}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION" desc="The extension module of Safety Hub warns users if any downloaded extension is malware or policy violated. This label is for the notification in Chrome's three-dot menu indicating how many extension are marked as unsafe.">
+    {NUM_SITES, plural,
+      =1 {Turned off 1 unsafe extension}
+      other {Turned off {NUM_SITES} unsafe extensions}}
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION" desc="When Safe Browsing is disabled, the proactive Safety Hub feature encourages users to turn on the feature. This label is for the notification in Chrome's three-dot menu.">
+    Safe Browsing is off
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PASSWORDS_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of passwords module.">
+    Passwords
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MODULE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of Safe Browsing module.">
+    Safe Browsing
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of extensions module.">
+    Extensions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of extensions module.">
+    extensions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of notifications module.">
+    Notifications
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_NOTIFICATIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of notifications module.">
+    notifications
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_UPPERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the upper case version (i.e. version that comes first in the sentence) for the name of permissions module.">
+    Permissions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_PERMISSIONS_MODULE_LOWERCASE_NAME" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations. This string is the lower case version (i.e. version that comes in the middle of the sentence) for the name of permissions module.">
+    permissions
+  </message>
+  <message name="IDS_SETTINGS_SAFETY_HUB_MODULE_NAME_SEPARATOR" desc="The entry point shown on the screenshot leads to Safety Check settings page (chrome://settings/safetyCheck) when at least on of the Safety Check modules have recommendations. The subheader of the entry point lists the modules with recommendations using a separator between them (in English it is a comma used between all items in a series). This string is the separator between the module names and is used like 'Passwords, extensions, notifications'.">
+    ,
   </message>
 
   <!-- Experimental enterprise plus_addresses settings strings -->
   <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="A button in settings for management of experimental enterprise plus addresses" translateable="false">
     Lorem Ipsum
+  </message>
+
+  <!-- Experimental settings strings -->
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_PAGE_TITLE" desc="Title of page holding experimental settings" translateable="false">
+    Advanced
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_SECTION_TITLE" desc="Title of section holding experimental settings" translateable="false">
+    Additional settings
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_LABEL" desc="Toggle primary description" translateable="false">
+    Show additional settings
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE_MAIN_SUBLABEL" desc="Toggle secondary description" translateable="false">
+    Show additional settings
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_LABEL" desc="Toggle primary description" translateable="false">
+    Autofill helper
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE1_SUBLABEL" desc="Toggle secondary description" translateable="false">
+    Enables autofill helper on certain input fields
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description" translateable="false">
+    Context menu tab group
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description" translateable="false">
+    Show tab group controls in the context menu
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="Toggle primary description" translateable="false">
+    Expanded theme gallery
+  </message>
+  <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL" desc="Toggle secondary description" translateable="false">
+    Shows more theme options in appearance customization
   </message>
 </grit-part>

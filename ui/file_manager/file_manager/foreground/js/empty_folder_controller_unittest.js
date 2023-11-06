@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {createChild} from '../../common/js/dom_utils.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
-import {MockEntry} from '../../common/js/mock_entry.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
-import {str, util} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
+import {FileErrorToDomError} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 import {PropStatus} from '../../externs/ts/state.js';
-import {VolumeInfo} from '../../externs/volume_info.js';
 import {constants} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/ducks/search.js';
 import {convertVolumeInfoAndMetadataToVolume} from '../../state/ducks/volumes.js';
@@ -69,6 +68,8 @@ export function setUp() {
   createChild(svg, undefined, 'use');
 
   directoryModel = createFakeDirectoryModel();
+  // @ts-ignore: error TS2345: Argument of type 'MockMetadataModel' is not
+  // assignable to parameter of type 'MetadataModel'.
   fileListModel = new FileListModel(new MockMetadataModel({}));
   directoryModel.getFileList = () => fileListModel;
   directoryModel.isSearching = () => false;
@@ -83,6 +84,8 @@ export function setUp() {
   // Mock fileManagerPrivate.getCustomActions for |testShownForODFS|.
   const mockChrome = {
     fileManagerPrivate: {
+      // @ts-ignore: error TS7006: Parameter 'callback' implicitly has an 'any'
+      // type.
       getCustomActions: function(entries, callback) {
         // This is called for the test when Reauthentication Required state is
         // true.
@@ -106,36 +109,56 @@ export function testNoFilesMessage() {
   directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
 
   // For all filter.
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
+      // @ts-ignore: error TS2341: Property 'label_' is private and only
+      // accessible within class 'EmptyFolderController'.
       str('RECENT_EMPTY_FOLDER'), emptyFolderController.label_.innerText);
   // For audio filter.
   recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.AUDIO;
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
+      // @ts-ignore: error TS2341: Property 'label_' is private and only
+      // accessible within class 'EmptyFolderController'.
       str('RECENT_EMPTY_AUDIO_FOLDER'), emptyFolderController.label_.innerText);
   // For document filter.
   recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.DOCUMENT;
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_DOCUMENTS_FOLDER'),
+      // @ts-ignore: error TS2341: Property 'label_' is private and only
+      // accessible within class 'EmptyFolderController'.
       emptyFolderController.label_.innerText);
   // For image filter.
   recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.IMAGE;
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_IMAGES_FOLDER'),
+      // @ts-ignore: error TS2341: Property 'label_' is private and only
+      // accessible within class 'EmptyFolderController'.
       emptyFolderController.label_.innerText);
   // For video filter.
   recentEntry.fileCategory = chrome.fileManagerPrivate.FileCategory.VIDEO;
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
   assertEquals(
       str('RECENT_EMPTY_VIDEOS_FOLDER'),
+      // @ts-ignore: error TS2341: Property 'label_' is private and only
+      // accessible within class 'EmptyFolderController'.
       emptyFolderController.label_.innerText);
 }
 
@@ -148,8 +171,12 @@ export function testHiddenForNonRecent() {
   directoryModel.getCurrentRootType = () =>
       VolumeManagerCommon.RootType.DOWNLOADS;
 
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertTrue(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   assertEquals('', emptyFolderController.label_.innerText);
 }
 
@@ -161,10 +188,16 @@ export function testHiddenForScanning() {
   // Mock current directory to Recent.
   directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.RECENT;
   // Mock scanning.
+  // @ts-ignore: error TS2341: Property 'isScanning_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.isScanning_ = true;
 
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertTrue(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   assertEquals('', emptyFolderController.label_.innerText);
 }
 
@@ -178,8 +211,12 @@ export function testHiddenForFiles() {
   // Current file list has 1 item.
   fileListModel.push({name: 'a.txt', isDirectory: false, toURL: () => 'a.txt'});
 
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertTrue(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   assertEquals('', emptyFolderController.label_.innerText);
 }
 
@@ -206,14 +243,19 @@ export function testHiddenForODFS() {
 
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
-    return /** @type {!VolumeInfo} */ (odfsVolumeInfo);
+    return /** @type {!import("../../externs/volume_info.js").VolumeInfo} */ (
+        odfsVolumeInfo);
   };
 
   // Complete the scan with no error.
+  // @ts-ignore: error TS2341: Property 'onScanFinished_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.onScanFinished_();
 
   // Expect that the empty-folder element is hidden.
   assertTrue(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   assertEquals('', emptyFolderController.label_.innerText);
 }
 
@@ -223,8 +265,12 @@ export function testHiddenForODFS() {
  */
 export function testShownForTrash() {
   directoryModel.getCurrentRootType = () => VolumeManagerCommon.RootType.TRASH;
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   const text = emptyFolderController.label_.innerText;
   assertTrue(text.includes(str('EMPTY_TRASH_FOLDER_TITLE')));
 }
@@ -235,6 +281,7 @@ export function testShownForTrash() {
  * Add ODFS to the store so that the |isInteractive| state of the volume can be
  * set and read.
  * @suppress {accessControls} access private method in test.
+ * @param {()=>void} done
  */
 export async function testShownForODFS(done) {
   // Add ODFS volume to the store.
@@ -253,20 +300,26 @@ export async function testShownForODFS(done) {
 
   // Set ODFS as the volume.
   directoryModel.getCurrentVolumeInfo = function() {
-    return /** @type {!VolumeInfo} */ (odfsVolumeInfo);
+    return /** @type {!import("../../externs/volume_info.js").VolumeInfo} */ (
+        odfsVolumeInfo);
   };
 
   // Pass a NO_MODIFICATION_ALLOWED_ERR error (triggers a call to
   // getCustomActions to which is stubbed out to return reauthentication
   // required as true).
   const event = new Event('scan-failed');
-  event.error = {name: util.FileError.NO_MODIFICATION_ALLOWED_ERR};
+  // @ts-ignore: error TS2339: Property 'error' does not exist on type 'Event'.
+  event.error = {name: FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR};
+  // @ts-ignore: error TS2341: Property 'onScanFailed_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.onScanFailed_(event);
 
   // Expect that the empty-folder element is shown and the sign in link is
   // present. Need to wait for |updateUI_| to be called as the check for
   // reauthentication is required is asynchronous.
   await waitUntil(() => !element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   await waitUntil(() => emptyFolderController.label_.querySelector('.sign-in'));
   done();
 }
@@ -280,6 +333,8 @@ export function testShowNoSearchResult() {
   store.init(getEmptyState());
   // Test 1: Store indicates we are not searching. No matter if the directory is
   // empty or not, we must not show "No matching search results" panel.
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertTrue(element.hidden);
 
@@ -291,8 +346,12 @@ export function testShowNoSearchResult() {
     options: undefined,
   }));
 
+  // @ts-ignore: error TS2341: Property 'updateUI_' is private and only
+  // accessible within class 'EmptyFolderController'.
   emptyFolderController.updateUI_();
   assertFalse(element.hidden);
+  // @ts-ignore: error TS2341: Property 'label_' is private and only accessible
+  // within class 'EmptyFolderController'.
   const text = emptyFolderController.label_.innerText;
   assertTrue(text.includes(str('SEARCH_NO_MATCHING_RESULTS_TITLE')));
 

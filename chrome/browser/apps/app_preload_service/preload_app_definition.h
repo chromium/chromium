@@ -9,8 +9,8 @@
 #include <string>
 
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 class GURL;
 

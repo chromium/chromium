@@ -11,8 +11,9 @@
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
+#include "third_party/blink/renderer/core/paint/ng/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_highlight_painter.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
@@ -357,7 +358,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
 
 NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
     Type type,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const PhysicalRect& rect_in_container,
@@ -379,7 +380,7 @@ NGInkOverflow::Type NGInkOverflow::SetTextInkOverflow(
 
 NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
     Type type,
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -447,7 +448,7 @@ NGInkOverflow::Type NGInkOverflow::SetSvgTextInkOverflow(
 
 // static
 absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const NGTextFragmentPaintInfo& text_info,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -531,7 +532,7 @@ LogicalRect NGInkOverflow::ComputeEmphasisMarkOverflow(
 
 // static
 LogicalRect NGInkOverflow::ComputeDecorationOverflow(
-    const NGInlineCursor& cursor,
+    const InlineCursor& cursor,
     const ComputedStyle& style,
     const Font& scaled_font,
     const PhysicalOffset& container_offset,
@@ -569,7 +570,7 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
     // node. Ideally we would use cursor.Current().GetNode() but that's const
     // and the style functions we need to access pseudo styles take non-const
     // nodes.
-    const NGFragmentItem* fragment_item = cursor.CurrentItem();
+    const FragmentItem* fragment_item = cursor.CurrentItem();
     if (!fragment_item->IsText() || fragment_item->IsGeneratedText()) {
       return accumulated_bound;
     }
@@ -602,21 +603,25 @@ LogicalRect NGInkOverflow::ComputeDecorationOverflow(
         accumulated_bound.Unite(custom_bound);
       }
     }
-
     if (do_spelling_grammar) {
       DocumentMarkerVector spelling_markers = controller.MarkersFor(
           *text_node, DocumentMarker::MarkerTypes::Spelling());
-      LogicalRect spelling_bound = ComputeMarkerOverflow(
-          spelling_markers, DocumentMarker::kSpelling, fragment_item, text_node,
-          style, scaled_font, container_offset, ink_overflow, inline_context);
-      accumulated_bound.Unite(spelling_bound);
+      if (!spelling_markers.empty()) {
+        LogicalRect spelling_bound = ComputeMarkerOverflow(
+            spelling_markers, DocumentMarker::kSpelling, fragment_item,
+            text_node, style, scaled_font, container_offset, ink_overflow,
+            inline_context);
+        accumulated_bound.Unite(spelling_bound);
+      }
 
       DocumentMarkerVector grammar_markers = controller.MarkersFor(
           *text_node, DocumentMarker::MarkerTypes::Grammar());
-      LogicalRect grammar_bound = ComputeMarkerOverflow(
-          grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
-          style, scaled_font, container_offset, ink_overflow, inline_context);
-      accumulated_bound.Unite(grammar_bound);
+      if (!grammar_markers.empty()) {
+        LogicalRect grammar_bound = ComputeMarkerOverflow(
+            grammar_markers, DocumentMarker::kGrammar, fragment_item, text_node,
+            style, scaled_font, container_offset, ink_overflow, inline_context);
+        accumulated_bound.Unite(grammar_bound);
+      }
     }
   }
   return accumulated_bound;
@@ -668,7 +673,7 @@ LogicalRect NGInkOverflow::ComputeAppliedDecorationOverflow(
 LogicalRect NGInkOverflow::ComputeMarkerOverflow(
     const DocumentMarkerVector& markers,
     const DocumentMarker::MarkerType type,
-    const NGFragmentItem* fragment_item,
+    const FragmentItem* fragment_item,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -677,18 +682,18 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
     const NGInlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
   auto* pseudo_style =
-      fragment_item->Type() == NGFragmentItem::kSvgText
+      fragment_item->Type() == FragmentItem::kSvgText
           ? nullptr
           : HighlightStyleUtils::HighlightPseudoStyle(
                 text_node, style, NGHighlightPainter::PseudoFor(type));
+  const TextOffsetRange fragment_dom_offsets =
+      NGHighlightPainter::GetFragmentDOMOffsets(
+          *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
-    const unsigned marker_start_offset =
-        NGHighlightPainter::GetTextContentOffset(*text_node,
-                                                 marker->StartOffset());
-    const unsigned marker_end_offset = NGHighlightPainter::GetTextContentOffset(
-        *text_node, marker->EndOffset());
-    if (marker_start_offset > fragment_item->EndOffset() ||
-        marker_end_offset < fragment_item->StartOffset()) {
+    std::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets) {
       return LogicalRect();
     }
     LogicalRect decoration_bound;
@@ -715,7 +720,7 @@ LogicalRect NGInkOverflow::ComputeMarkerOverflow(
 
 LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
     const DocumentMarkerVector& markers,
-    const NGFragmentItem* fragment_item,
+    const FragmentItem* fragment_item,
     Text* text_node,
     const ComputedStyle& style,
     const Font& scaled_font,
@@ -723,20 +728,20 @@ LogicalRect NGInkOverflow::ComputeCustomHighlightOverflow(
     const LogicalRect& ink_overflow,
     const NGInlinePaintContext* inline_context) {
   LogicalRect accumulated_bound;
+  const TextOffsetRange fragment_dom_offsets =
+      NGHighlightPainter::GetFragmentDOMOffsets(
+          *text_node, fragment_item->StartOffset(), fragment_item->EndOffset());
+  MarkerRangeMappingContext mapping_context(*text_node, fragment_dom_offsets);
   for (auto marker : markers) {
-    const unsigned marker_start_offset =
-        NGHighlightPainter::GetTextContentOffset(*text_node,
-                                                 marker->StartOffset());
-    const unsigned marker_end_offset = NGHighlightPainter::GetTextContentOffset(
-        *text_node, marker->EndOffset());
-    if (marker_start_offset > fragment_item->EndOffset() ||
-        marker_end_offset < fragment_item->StartOffset()) {
+    std::optional<TextOffsetRange> marker_offsets =
+        mapping_context.GetTextContentOffsets(*marker);
+    if (!marker_offsets) {
       return LogicalRect();
     }
 
     const CustomHighlightMarker& highlight_marker =
         To<CustomHighlightMarker>(*marker);
-    const auto* pseudo_style = fragment_item->Type() == NGFragmentItem::kSvgText
+    const auto* pseudo_style = fragment_item->Type() == FragmentItem::kSvgText
                                    ? nullptr
                                    : HighlightStyleUtils::HighlightPseudoStyle(
                                          text_node, style, kPseudoIdHighlight,

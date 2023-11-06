@@ -591,16 +591,17 @@ TEST(NSMenuItemAdditionsTest, TestMOnDifferentLayouts) {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(filter, kTISPropertyInputSourceType,
+  CFDictionarySetValue(filter.get(), kTISPropertyInputSourceType,
                        kTISTypeKeyboardLayout);
 
   // Docs say that including all layouts instead of just the active ones is
   // slow, but there's no way around that.
   base::apple::ScopedCFTypeRef<CFArrayRef> list(
-      TISCreateInputSourceList(filter, /*includeAllInstalled=*/true));
+      TISCreateInputSourceList(filter.get(), /*includeAllInstalled=*/true));
 
-  for (CFIndex i = 0; i < CFArrayGetCount(list); ++i) {
-    TISInputSourceRef ref = (TISInputSourceRef)CFArrayGetValueAtIndex(list, i);
+  for (CFIndex i = 0; i < CFArrayGetCount(list.get()); ++i) {
+    TISInputSourceRef ref =
+        (TISInputSourceRef)CFArrayGetValueAtIndex(list.get(), i);
 
     NSUInteger key_code = 0x2e;  // "m" on a US layout and most other layouts.
 

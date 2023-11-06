@@ -52,6 +52,7 @@ namespace {
 
 const int kProcessId = 5;
 const int kRenderId = 6;
+const GlobalRenderFrameHostId kRenderFrameHostId{kProcessId, kRenderId};
 const size_t kNumFakeVideoDevices = 3;
 const char kNormalVideoDeviceID[] = "/dev/video0";
 const char kNoFormatsVideoDeviceID[] = "/dev/video1";
@@ -130,7 +131,7 @@ class MediaDevicesDispatcherHostTest
     media_stream_manager_ = std::make_unique<MediaStreamManager>(
         audio_system_.get(), std::move(video_capture_provider));
     host_ = std::make_unique<MediaDevicesDispatcherHost>(
-        kProcessId, kRenderId, media_stream_manager_.get());
+        kRenderFrameHostId, media_stream_manager_.get());
     media_stream_manager_->media_devices_manager()
         ->set_get_salt_and_origin_cb_for_testing(base::BindRepeating(
             &MediaDevicesDispatcherHostTest::GetSaltAndOrigin,
@@ -712,7 +713,7 @@ TEST_P(MediaDevicesDispatcherHostTest,
        RegisterAndUnregisterWithMediaDevicesManager) {
   {
     mojo::Remote<blink::mojom::MediaDevicesDispatcherHost> client;
-    MediaDevicesDispatcherHost::Create(kProcessId, kRenderId,
+    MediaDevicesDispatcherHost::Create(kRenderFrameHostId,
                                        media_stream_manager_.get(),
                                        client.BindNewPipeAndPassReceiver());
     EXPECT_TRUE(client.is_bound());

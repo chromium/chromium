@@ -40,15 +40,12 @@ bool IsEmpty(const page_load_metrics::mojom::DocumentTiming& timing) {
 
 bool IsEmpty(const page_load_metrics::mojom::InteractiveTiming& timing) {
   return !timing.first_input_delay && !timing.first_input_timestamp &&
-         !timing.longest_input_delay && !timing.longest_input_timestamp &&
-         !timing.first_scroll_delay && !timing.first_scroll_timestamp &&
-         !timing.first_input_processing_time;
+         !timing.first_scroll_delay && !timing.first_scroll_timestamp;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::InputTiming& timing) {
-  return !timing.total_input_delay.InMilliseconds() &&
-         !timing.total_adjusted_input_delay.InMilliseconds() &&
-         !timing.num_input_events;
+  // TODO(sullivan): Adjust this to be based on max_event_durations
+  return !timing.num_interactions;
 }
 
 bool IsEmpty(const page_load_metrics::mojom::PaintTiming& timing) {

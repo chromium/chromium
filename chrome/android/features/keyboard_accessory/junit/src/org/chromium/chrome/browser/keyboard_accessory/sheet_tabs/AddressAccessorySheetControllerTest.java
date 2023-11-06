@@ -45,19 +45,16 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
 
-/**
- * Controller tests for the address accessory sheet.
- */
+/** Controller tests for the address accessory sheet. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomShadowAsyncTask.class})
 public class AddressAccessorySheetControllerTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private AccessorySheetTabView mMockView;
-    @Mock
-    private ListObservable.ListObserver<Void> mMockItemListObserver;
+    @Mock private AccessorySheetTabView mMockView;
+    @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
 
     private AddressAccessorySheetCoordinator mCoordinator;
     private AccessorySheetTabItemsModel mSheetDataPieces;
@@ -142,10 +139,12 @@ public class AddressAccessorySheetControllerTest {
         final AccessorySheetData testData =
                 new AccessorySheetData(AccessoryTabType.ADDRESSES, "Addresses for this site", "");
         testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Street", "Street", "", true, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Name", "Name", "", false, null));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Street", "Street", "", true, field -> {}));
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);
@@ -170,10 +169,12 @@ public class AddressAccessorySheetControllerTest {
 
         // As soon UserInfo is available, discard the title.
         testData.getUserInfoList().add(new UserInfo("", false));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Name", "Name", "", false, null));
-        testData.getUserInfoList().get(0).addField(
-                new UserInfoField("Address", "Address for Name", "", true, field -> {}));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Name", "Name", "", false, null));
+        testData.getUserInfoList()
+                .get(0)
+                .addField(new UserInfoField("Address", "Address for Name", "", true, field -> {}));
         testProvider.notifyObservers(testData);
 
         assertThat(mSheetDataPieces.size(), is(1));

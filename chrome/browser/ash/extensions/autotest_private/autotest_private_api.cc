@@ -62,6 +62,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -509,6 +510,24 @@ api::autotest_private::HotseatState GetHotseatState(
       return api::autotest_private::HotseatState::kShownHomeLauncher;
     case ash::HotseatState::kExtended:
       return api::autotest_private::HotseatState::kExtended;
+  }
+
+  NOTREACHED();
+}
+
+api::autotest_private::WakefulnessMode GetWakefulnessMode(
+    arc::mojom::WakefulnessMode mode) {
+  switch (mode) {
+    case arc::mojom::WakefulnessMode::ASLEEP:
+      return api::autotest_private::WakefulnessMode::kAsleep;
+    case arc::mojom::WakefulnessMode::AWAKE:
+      return api::autotest_private::WakefulnessMode::kAwake;
+    case arc::mojom::WakefulnessMode::DOZING:
+      return api::autotest_private::WakefulnessMode::kDozing;
+    case arc::mojom::WakefulnessMode::DREAMING:
+      return api::autotest_private::WakefulnessMode::kDreaming;
+    case arc::mojom::WakefulnessMode::UNKNOWN:
+      return api::autotest_private::WakefulnessMode::kUnknown;
   }
 
   NOTREACHED();
@@ -1863,13 +1882,14 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcStateFunction::Run() {
 
   arc_state.provisioned = arc::IsArcProvisioned(profile);
   arc_state.tos_needed = arc::IsArcTermsOfServiceNegotiationNeeded(profile);
-  arc_state.pre_start_time =
-      pre_start_time.is_null()
-          ? 0
-          : (now_time - (now_ticks - pre_start_time)).ToJsTime();
+  arc_state.pre_start_time = pre_start_time.is_null()
+                                 ? 0
+                                 : (now_time - (now_ticks - pre_start_time))
+                                       .InMillisecondsFSinceUnixEpoch();
   arc_state.start_time = start_time.is_null()
                              ? 0
-                             : (now_time - (now_ticks - start_time)).ToJsTime();
+                             : (now_time - (now_ticks - start_time))
+                                   .InMillisecondsFSinceUnixEpoch();
 
   return RespondNow(WithArguments(arc_state.ToValue()));
 }
@@ -2065,14 +2085,9 @@ AutotestPrivateGetLacrosInfoFunction::ToLacrosState(
 
 // static
 api::autotest_private::LacrosMode
-AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(
-    crosapi::browser_util::LacrosMode lacrosMode) {
-  switch (lacrosMode) {
-    case crosapi::browser_util::LacrosMode::kDisabled:
-      return api::autotest_private::LacrosMode::kDisabled;
-    case crosapi::browser_util::LacrosMode::kOnly:
-      return api::autotest_private::LacrosMode::kOnly;
-  }
+AutotestPrivateGetLacrosInfoFunction::ToLacrosMode(bool is_enabled) {
+  return is_enabled ? api::autotest_private::LacrosMode::kOnly
+                    : api::autotest_private::LacrosMode::kDisabled;
 }
 
 ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
@@ -2090,7 +2105,8 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
                    ? ""
                    : browser_manager->lacros_path().DirName().MaybeAsASCII())
           .Set("mode", api::autotest_private::ToString(ToLacrosMode(
-                           crosapi::browser_util::GetLacrosMode())))));
+                           crosapi::browser_util::IsLacrosEnabled())))
+          .Set("isEnabled", crosapi::browser_util::IsLacrosEnabled())));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2124,8 +2140,10 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcAppFunction::Run() {
           .Set("activity", std::move(app_info->activity))
           .Set("intentUri", std::move(app_info->intent_uri))
           .Set("iconResourceId", std::move(app_info->icon_resource_id))
-          .Set("lastLaunchTime", app_info->last_launch_time.ToJsTime())
-          .Set("installTime", app_info->install_time.ToJsTime())
+          .Set("lastLaunchTime",
+               app_info->last_launch_time.InMillisecondsFSinceUnixEpoch())
+          .Set("installTime",
+               app_info->install_time.InMillisecondsFSinceUnixEpoch())
           .Set("sticky", app_info->sticky)
           .Set("notificationsEnabled", app_info->notifications_enabled)
           .Set("ready", app_info->ready)
@@ -2218,7 +2236,7 @@ ExtensionFunction::ResponseAction AutotestPrivateGetArcPackageFunction::Run() {
     package_value.Set("lastBackupTime",
                       base::Time::FromDeltaSinceWindowsEpoch(
                           base::Microseconds(package_info->last_backup_time))
-                          .ToJsTime());
+                          .InMillisecondsFSinceUnixEpoch());
     package_value.Set("shouldSync", package_info->should_sync);
     package_value.Set("vpnProvider", package_info->vpn_provider);
   }
@@ -2883,7 +2901,9 @@ AutotestPrivateRegisterComponentFunction::Run() {
 
   g_browser_process->platform_part()
       ->cros_component_manager()
-      ->RegisterCompatiblePath(params->name, base::FilePath(params->path));
+      ->RegisterCompatiblePath(
+          params->name, component_updater::CompatibleComponentInfo(
+                            base::FilePath(params->path), absl::nullopt));
 
   return RespondNow(NoArguments());
 }
@@ -4436,13 +4456,14 @@ void AutotestPrivateWaitForDisplayRotationFunction::
 
 absl::optional<ExtensionFunction::ResponseValue>
 AutotestPrivateWaitForDisplayRotationFunction::CheckScreenRotationAnimation() {
-  auto* root_window = ash::Shell::GetRootWindowForDisplayId(display_id_);
-  if (!root_window) {
+  auto* root_controller =
+      ash::Shell::GetRootWindowControllerWithDisplayId(display_id_);
+  if (!root_controller || !root_controller->GetScreenRotationAnimator()) {
     return Error(base::StringPrintf(
         "Invalid display_id; no root window found for the display id %" PRId64,
         display_id_));
   }
-  auto* animator = ash::ScreenRotationAnimator::GetForRootWindow(root_window);
+  auto* animator = root_controller->GetScreenRotationAnimator();
   if (!animator->IsRotating()) {
     display::Display display;
     display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,
@@ -5063,11 +5084,11 @@ AutotestPrivateRemoveActiveDeskFunction::
 
 ExtensionFunction::ResponseAction
 AutotestPrivateRemoveActiveDeskFunction::Run() {
-  // Check whether overview mode is active before removing the desk. In case of
+  // Check whether overview mode was active before removing the desk. In case of
   // split view, the desk removal may cause overview to end, but what matters is
-  // whether overview mode is active before.
-  const bool in_overview =
-      ash::Shell::Get()->overview_controller()->InOverviewSession();
+  // whether overview mode was active before.
+  const bool was_in_overview =
+      ash::OverviewController::Get()->InOverviewSession();
 
   if (!ash::AutotestDesksApi().RemoveActiveDesk(base::BindOnce(
           &AutotestPrivateRemoveActiveDeskFunction::OnAnimationComplete,
@@ -5075,11 +5096,12 @@ AutotestPrivateRemoveActiveDeskFunction::Run() {
     return RespondNow(WithArguments(false));
   }
 
-  // In overview, the desk removal animation does
-  // not apply, so we should not wait for it.
-  if (in_overview) {
+  // In overview, the desk removal animation does not apply, so we should not
+  // wait for it.
+  if (was_in_overview) {
     return RespondNow(WithArguments(true));
   }
+
   return RespondLater();
 }
 
@@ -6654,7 +6676,6 @@ AutotestPrivateIsFeatureEnabledFunction::Run() {
   static const base::Feature* const kAllowList[] = {
       // clang-format off
       &ash::features::kPrivacyIndicators,
-      &ash::features::kQsRevamp,
       &ash::features::kVideoConference,
       &chromeos::features::kJelly,
       &kDisabledFeatureForTest,
@@ -6733,6 +6754,73 @@ AutotestPrivateSetArcInteractiveStateFunction::Run() {
   power_instance->SetInteractive(params->enabled);
 
   return RespondNow(NoArguments());
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateIsFieldTrialActiveFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateIsFieldTrialActiveFunction::
+    AutotestPrivateIsFieldTrialActiveFunction() = default;
+
+AutotestPrivateIsFieldTrialActiveFunction::
+    ~AutotestPrivateIsFieldTrialActiveFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateIsFieldTrialActiveFunction::Run() {
+  absl::optional<api::autotest_private::IsFieldTrialActive::Params> params =
+      api::autotest_private::IsFieldTrialActive::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  return RespondNow(
+      WithArguments(base::FieldTrialList::IsTrialActive(params->feature_name)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateGetArcWakefulnessModeFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateGetArcWakefulnessModeFunction::
+    AutotestPrivateGetArcWakefulnessModeFunction() = default;
+
+AutotestPrivateGetArcWakefulnessModeFunction::
+    ~AutotestPrivateGetArcWakefulnessModeFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateGetArcWakefulnessModeFunction::Run() {
+  arc::ArcServiceManager* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager) {
+    return RespondNow(Error("ARC service manager is not available"));
+  }
+
+  arc::ArcBridgeService* arc_bridge_service =
+      arc_service_manager->arc_bridge_service();
+
+  if (!arc_bridge_service) {
+    return RespondNow(Error(
+        "ARC service manager exist, but ARC bridge service is not available"));
+  }
+
+  arc::mojom::PowerInstance* power_instance =
+      ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service->power(), SetInteractive);
+
+  if (!power_instance) {
+    return RespondNow(
+        Error("ARC bridge exist, but ARC power service is not available"));
+  }
+
+  power_instance->GetWakefulnessMode(
+      base::BindOnce(&AutotestPrivateGetArcWakefulnessModeFunction::
+                         OnGetWakefulnessStateRespond,
+                     this));
+
+  return RespondLater();
+}
+
+void AutotestPrivateGetArcWakefulnessModeFunction::OnGetWakefulnessStateRespond(
+    arc::mojom::WakefulnessMode mode) {
+  return Respond(
+      WithArguments(api::autotest_private::ToString(GetWakefulnessMode(mode))));
 }
 
 ///////////////////////////////////////////////////////////////////////////////

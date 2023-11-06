@@ -19,17 +19,18 @@ import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('SettingsMenu', function() {
   let settingsMenu: SettingsMenuElement;
+  let routes: SettingsRoutes;
 
-  setup(function() {
+  function createSettingsMenu() {
+    routes = Router.getInstance().getRoutes();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     settingsMenu = document.createElement('settings-menu');
-    settingsMenu.pageVisibility = pageVisibility;
     document.body.appendChild(settingsMenu);
     flush();
-  });
+  }
 
-  teardown(function() {
-    settingsMenu.remove();
+  setup(function() {
+    createSettingsMenu();
   });
 
   // Test that navigating via the paper menu always clears the current
@@ -49,41 +50,21 @@ suite('SettingsMenu', function() {
     settingsMenu.$.people.click();
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
-});
-
-suite('SettingsMenuReset', function() {
-  let settingsMenu: SettingsMenuElement;
-  let routes: SettingsRoutes;
-
-  setup(function() {
-    // <if expr="_google_chrome">
-    loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
-    Router.resetInstanceForTesting(buildRouter());
-    // </if>
-    routes = Router.getInstance().getRoutes();
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    Router.getInstance().navigateTo(routes.RESET, undefined);
-    settingsMenu = document.createElement('settings-menu');
-    document.body.appendChild(settingsMenu);
-    flush();
-  });
-
-  teardown(function() {
-    settingsMenu.remove();
-  });
 
   test('openResetSection', function() {
+    Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
   });
 
   test('navigateToAnotherSection', function() {
+    Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     let path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
-    Router.getInstance().navigateTo(routes.PEOPLE, undefined);
+    Router.getInstance().navigateTo(routes.PEOPLE);
     flush();
 
     path = new window.URL(selector.selected.toString()).pathname;
@@ -91,11 +72,12 @@ suite('SettingsMenuReset', function() {
   });
 
   test('navigateToBasic', function() {
+    Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     const path = new window.URL(selector.selected.toString()).pathname;
     assertEquals('/reset', path);
 
-    Router.getInstance().navigateTo(routes.BASIC, undefined);
+    Router.getInstance().navigateTo(routes.BASIC);
     flush();
 
     // BASIC has no sub page selected.
@@ -104,7 +86,10 @@ suite('SettingsMenuReset', function() {
 
   // <if expr="_google_chrome">
   test('navigateToGetMostChrome', function() {
-    Router.getInstance().navigateTo(routes.GET_MOST_CHROME, undefined);
+    loadTimeData.overrideValues({showGetTheMostOutOfChromeSection: true});
+    Router.resetInstanceForTesting(buildRouter());
+    createSettingsMenu();
+    Router.getInstance().navigateTo(routes.GET_MOST_CHROME);
     flush();
 
     // GET_MOST_CHROME should select the 'About Chrome' entry.

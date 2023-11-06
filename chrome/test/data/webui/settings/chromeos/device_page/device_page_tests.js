@@ -189,6 +189,7 @@ suite('SettingsDevicePage', function() {
     provider.setFakeMice(fakeMice);
     provider.setFakePointingSticks(fakePointingSticks);
     provider.setFakeTouchpads(fakeTouchpads);
+    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
 
     await init();
     assertTrue(isVisible(devicePage.shadowRoot.querySelector('#displayRow')));
@@ -339,7 +340,7 @@ suite('SettingsDevicePage', function() {
   });
 
   test(
-      'per-device-mouse row visibility based on devices connected',
+      'per-device-pointing-stick row visibility based on devices connected',
       async function() {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
@@ -383,6 +384,49 @@ suite('SettingsDevicePage', function() {
     await init();
     assertFalse(isVisible(
         devicePage.shadowRoot.querySelector('#perDeviceKeyboardRow')));
+  });
+
+  test(
+      'graphics tablet row visibility based on devices connected',
+      async function() {
+        const provider = new FakeInputDeviceSettingsProvider();
+        setInputDeviceSettingsProviderForTesting(provider);
+        provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+
+        // Tests with flag on.
+        setPeripheralCustomizationEnabled(true);
+        await init();
+
+        assertTrue(
+            isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
+
+        provider.setFakeGraphicsTablets([]);
+        await flushTasks();
+        assertFalse(
+            isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
+
+        provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+        await flushTasks();
+        assertTrue(
+            isVisible(devicePage.shadowRoot.querySelector('#tabletRow')));
+      });
+
+  test('graphics tablet subpage navigates back to device page', async () => {
+    const provider = new FakeInputDeviceSettingsProvider();
+    setInputDeviceSettingsProviderForTesting(provider);
+    provider.setFakeGraphicsTablets(fakeGraphicsTablets);
+
+    // Tests with flag on.
+    setPeripheralCustomizationEnabled(true);
+    await init();
+
+    const row = assert(devicePage.shadowRoot.querySelector(`#tabletRow`));
+    row.click();
+    assertEquals(routes.GRAPHICS_TABLET, Router.getInstance().currentRoute);
+
+    provider.setFakeGraphicsTablets([]);
+    await flushTasks();
+    assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
   });
 
   suite(assert(TestNames.PerDeviceKeyboard), function() {

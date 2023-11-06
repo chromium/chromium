@@ -17,7 +17,10 @@ URLLoaderTestDelegate::~URLLoaderTestDelegate() = default;
 
 void URLLoaderTestDelegate::DidReceiveResponse(URLLoaderClient* original_client,
                                                const WebURLResponse& response) {
-  original_client->DidReceiveResponse(response);
+  original_client->DidReceiveResponse(
+      response,
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/absl::nullopt);
 }
 
 void URLLoaderTestDelegate::DidReceiveData(URLLoaderClient* original_client,

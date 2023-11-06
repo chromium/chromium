@@ -103,6 +103,7 @@ class MockResourceRequestSender : public ResourceRequestSender {
       WebVector<std::unique_ptr<URLLoaderThrottle>> throttles,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       base::OnceCallback<void(mojom::blink::RendererEvictionReason)>
           evict_from_bfcache_callback,
       base::RepeatingCallback<void(size_t)>
@@ -212,6 +213,7 @@ class TestURLLoaderClient : public URLLoaderClient {
                           const WebURLResponse& passed_redirect_response,
                           bool& report_raw_headers,
                           std::vector<std::string>*,
+                          net::HttpRequestHeaders&,
                           bool insecure_scheme_was_upgraded) override {
     EXPECT_TRUE(loader_);
 
@@ -230,7 +232,10 @@ class TestURLLoaderClient : public URLLoaderClient {
     EXPECT_TRUE(loader_);
   }
 
-  void DidReceiveResponse(const WebURLResponse& response) override {
+  void DidReceiveResponse(
+      const WebURLResponse& response,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override {
     EXPECT_TRUE(loader_);
     EXPECT_FALSE(did_receive_response_);
 
@@ -238,14 +243,12 @@ class TestURLLoaderClient : public URLLoaderClient {
     response_ = response;
     if (delete_on_receive_response_) {
       loader_.reset();
+      return;
     }
-  }
-
-  void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle response_body) override {
     DCHECK(!response_body_);
-    DCHECK(response_body);
-    response_body_ = std::move(response_body);
+    if (body) {
+      response_body_ = std::move(body);
+    }
   }
 
   void DidReceiveData(const char* data, size_t dataLength) override {
@@ -335,7 +338,7 @@ class URLLoaderTest : public testing::Test {
         /*no_mime_sniffing=*/false,
         std::make_unique<ResourceLoadInfoNotifierWrapper>(
             /*resource_load_info_notifier=*/nullptr),
-        client());
+        /*code_cache_host=*/nullptr, client());
     ASSERT_TRUE(resource_request_client());
   }
 
@@ -353,8 +356,8 @@ class URLLoaderTest : public testing::Test {
         redirect_info, network::mojom::URLResponseHead::New(),
         /*follow_redirect_callback=*/
         WTF::BindOnce(
-            [](bool* callback_called,
-               std::vector<std::string> removed_headers) {
+            [](bool* callback_called, std::vector<std::string> removed_headers,
+               net::HttpRequestHeaders modified_headers) {
               *callback_called = true;
             },
             WTF::Unretained(&callback_called)));
@@ -364,17 +367,16 @@ class URLLoaderTest : public testing::Test {
 
   void DoReceiveResponse() {
     EXPECT_FALSE(client()->did_receive_response());
-    resource_request_client()->OnReceivedResponse(
-        network::mojom::URLResponseHead::New());
-    EXPECT_TRUE(client()->did_receive_response());
-  }
 
-  void DoStartLoadingResponseBody() {
     mojo::ScopedDataPipeConsumerHandle handle_to_pass;
     MojoResult rv = mojo::CreateDataPipe(nullptr, body_handle_, handle_to_pass);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
-    resource_request_client()->OnStartLoadingResponseBody(
-        std::move(handle_to_pass));
+
+    resource_request_client()->OnReceivedResponse(
+        network::mojom::URLResponseHead::New(), std::move(handle_to_pass),
+        /*cached_metadata=*/absl::nullopt,
+        /*response_arrival_at_renderer=*/base::TimeTicks::Now());
+    EXPECT_TRUE(client()->did_receive_response());
   }
 
   void DoCompleteRequest() {
@@ -423,7 +425,6 @@ class URLLoaderTest : public testing::Test {
 TEST_F(URLLoaderTest, Success) {
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
   EXPECT_FALSE(sender()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
@@ -433,7 +434,6 @@ TEST_F(URLLoaderTest, Redirect) {
   DoStartAsyncRequest();
   DoReceiveRedirect();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
   EXPECT_FALSE(sender()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
@@ -442,7 +442,6 @@ TEST_F(URLLoaderTest, Redirect) {
 TEST_F(URLLoaderTest, Failure) {
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoFailRequest();
   EXPECT_FALSE(sender()->canceled());
 }
@@ -465,7 +464,6 @@ TEST_F(URLLoaderTest, DeleteOnFinish) {
   client()->set_delete_on_finish();
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoCompleteRequest();
 }
 
@@ -473,7 +471,6 @@ TEST_F(URLLoaderTest, DeleteOnFail) {
   client()->set_delete_on_fail();
   DoStartAsyncRequest();
   DoReceiveResponse();
-  DoStartLoadingResponseBody();
   DoFailRequest();
 }
 
@@ -600,16 +597,15 @@ TEST_F(URLLoaderTest, SyncLengths) {
   scoped_refptr<BlobDataHandle> downloaded_blob;
 
   client()->loader()->LoadSynchronously(
-      std::move(request), /*url_request_extra_data=*/nullptr,
-      /*pass_response_pipe_to_client=*/false, /*no_mime_sniffing=*/false,
-      base::TimeDelta(), nullptr, response, error, data, encoded_data_length,
-      encoded_body_length, downloaded_blob,
+      std::move(request), /*top_frame_origin=*/nullptr,
+      /*download_to_blob=*/false,
+      /*no_mime_sniffing=*/false, base::TimeDelta(), nullptr, response, error,
+      data, encoded_data_length, encoded_body_length, downloaded_blob,
       std::make_unique<ResourceLoadInfoNotifierWrapper>(
           /*resource_load_info_notifier=*/nullptr));
 
   EXPECT_EQ(kEncodedBodyLength, encoded_body_length);
   EXPECT_EQ(kEncodedDataLength, encoded_data_length);
-  EXPECT_FALSE(downloaded_blob);
 }
 
 // Verifies that WebURLResponse::Create() copies AuthChallengeInfo to the

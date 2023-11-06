@@ -68,10 +68,10 @@ base::Value::Dict AXTreeFormatterMac::BuildTreeForSelector(
     const AXTreeSelector& selector) const {
   base::apple::ScopedCFTypeRef<AXUIElementRef> node;
   std::tie(node, std::ignore) = FindAXUIElement(selector);
-  if (node == nil) {
+  if (!node) {
     return base::Value::Dict();
   }
-  return BuildTreeForAXUIElement(node);
+  return BuildTreeForAXUIElement(node.get());
 }
 
 base::Value::Dict AXTreeFormatterMac::BuildTreeForAXUIElement(

@@ -41,7 +41,7 @@ using SurfaceTouchCallback =
                                  bool touching,
                                  int32_t pointer_id,
                                  const gfx::PointF& location)>;
-using SurfaceDestroyedCallback = base::OnceClosure;
+using JavaShutdownCallback = base::OnceClosure;
 
 using XrSessionButtonTouchedCallback = base::OnceClosure;
 
@@ -68,15 +68,15 @@ class XrJavaCoordinator {
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,
       SurfaceTouchCallback touch_callback,
-      SurfaceDestroyedCallback destroyed_callback) = 0;
+      JavaShutdownCallback destroyed_callback) = 0;
   virtual void RequestVrSession(
       int render_process_id,
       int render_frame_id,
       const CompositorDelegateProvider& compositor_delegate_provider,
-      device::SurfaceReadyCallback ready_callback,
-      device::SurfaceTouchCallback touch_callback,
-      device::SurfaceDestroyedCallback destroyed_callback,
-      device::XrSessionButtonTouchedCallback button_touched_callback) = 0;
+      SurfaceReadyCallback ready_callback,
+      SurfaceTouchCallback touch_callback,
+      JavaShutdownCallback destroyed_callback,
+      XrSessionButtonTouchedCallback button_touched_callback) = 0;
   virtual void EndSession() = 0;
 };
 

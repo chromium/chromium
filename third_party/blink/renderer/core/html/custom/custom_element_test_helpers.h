@@ -96,7 +96,7 @@ class TestCustomElementDefinition : public CustomElementDefinition {
   ScriptValue GetConstructorForScript() override { return ScriptValue(); }
 
   V8CustomElementConstructor* GetV8CustomElementConstructor() override {
-    return constructor_;
+    return constructor_.Get();
   }
 
   bool RunConstructor(Element& element) override;

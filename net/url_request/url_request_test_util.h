@@ -321,10 +321,12 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       net::CookieAccessResultList& excluded_cookies) override;
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const override;
-  bool OnCanSetCookie(const URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      CookieInclusionStatus* inclusion_status) override;
+  bool OnCanSetCookie(
+      const URLRequest& request,
+      const net::CanonicalCookie& cookie,
+      CookieOptions* options,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieInclusionStatus* inclusion_status) override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,
       const GURL& target_url,
@@ -387,10 +389,12 @@ class FilteringTestNetworkDelegate : public TestNetworkDelegate {
   FilteringTestNetworkDelegate();
   ~FilteringTestNetworkDelegate() override;
 
-  bool OnCanSetCookie(const URLRequest& request,
-                      const net::CanonicalCookie& cookie,
-                      CookieOptions* options,
-                      CookieInclusionStatus* inclusion_status) override;
+  bool OnCanSetCookie(
+      const URLRequest& request,
+      const net::CanonicalCookie& cookie,
+      CookieOptions* options,
+      const net::FirstPartySetMetadata& first_party_set_metadata,
+      CookieInclusionStatus* inclusion_status) override;
 
   void SetCookieFilter(std::string filter) {
     cookie_name_filter_ = std::move(filter);

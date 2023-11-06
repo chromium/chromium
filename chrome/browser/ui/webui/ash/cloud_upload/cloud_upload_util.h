@@ -153,7 +153,9 @@ enum class OfficeTaskResult {
   kFailedToOpen = 6,
   kCopied = 7,
   kCancelledAtFallback = 8,
-  kMaxValue = kCancelledAtFallback,
+  kCancelledAtSetup = 9,
+  kLocalFileTask = 10,
+  kMaxValue = kLocalFileTask,
 };
 
 // The result of the "Upload to cloud" workflow for Office files.
@@ -187,43 +189,81 @@ enum class OfficeFilesUploadResult {
   kSyncError = 20,
   kSyncCancelledAndDeleted = 21,
   kSyncCancelledAndTrashed = 22,
-  kMaxValue = kSyncCancelledAndTrashed,
+  kUploadNotStartedReauthenticationRequired = 23,
+  kMaxValue = kUploadNotStartedReauthenticationRequired,
 };
 
 constexpr char kGoogleDriveTaskResultMetricName[] =
     "FileBrowser.OfficeFiles.TaskResult.Drive";
+constexpr char kGoogleDriveTaskResultMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.GoogleDrive.MetricState";
+
 constexpr char kOneDriveTaskResultMetricName[] =
     "FileBrowser.OfficeFiles.TaskResult.OneDrive";
+constexpr char kOneDriveTaskResultMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.TaskResult.OneDrive.MetricState";
+
 constexpr char kGoogleDriveUploadResultMetricName[] =
     "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive";
+constexpr char kGoogleDriveUploadResultMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.GoogleDrive.MetricState";
+
 constexpr char kOneDriveUploadResultMetricName[] =
     "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive";
+constexpr char kOneDriveUploadResultMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.UploadResult.OneDrive.MetricState";
 
 constexpr char kGoogleDriveMoveErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Move";
+constexpr char kGoogleDriveMoveErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Move.MetricState";
+
 constexpr char kGoogleDriveCopyErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Copy";
+constexpr char kGoogleDriveCopyErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.GoogleDrive.Copy.MetricState";
+
 constexpr char kOneDriveMoveErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Move";
+constexpr char kOneDriveMoveErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Move.MetricState";
+
 constexpr char kOneDriveCopyErrorMetricName[] =
     "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy";
+constexpr char kOneDriveCopyErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Open.IOTaskError.OneDrive.Copy.MetricState";
 
 constexpr char kDriveOpenSourceVolumeMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive";
+constexpr char kDriveOpenSourceVolumeMetricStateMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.GoogleDrive.MetricState";
+
 constexpr char kOneDriveOpenSourceVolumeMetric[] =
     "FileBrowser.OfficeFiles.Open.SourceVolume.MicrosoftOneDrive";
+constexpr char kOneDriveOpenSourceVolumeMetricStateMetric[] =
+    "FileBrowser.OfficeFiles.Open.SourceVolume.OneDrive.MetricState";
 
-constexpr char kOpenCloudProviderMetric[] =
+constexpr char kOpenInitialCloudProviderMetric[] =
     "FileBrowser.OfficeFiles.Open.CloudProvider";
 
 constexpr char kDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive";
+constexpr char kDriveTransferRequiredMetricStateMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.GoogleDrive.MetricState";
+
 constexpr char kOneDriveTransferRequiredMetric[] =
     "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive";
+constexpr char kOneDriveTransferRequiredMetricStateMetric[] =
+    "FileBrowser.OfficeFiles.Open.TransferRequired.OneDrive.MetricState";
 
 constexpr char kDriveErrorMetricName[] = "FileBrowser.OfficeFiles.Errors.Drive";
+constexpr char kDriveErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Errors.GoogleDrive.MetricState";
+
 constexpr char kOneDriveErrorMetricName[] =
     "FileBrowser.OfficeFiles.Errors.OneDrive";
+constexpr char kOneDriveErrorMetricStateMetricName[] =
+    "FileBrowser.OfficeFiles.Errors.OneDrive.MetricState";
 
 // Query actions for this path to get ODFS Metadata.
 const char kODFSMetadataQueryPath[] = "/";

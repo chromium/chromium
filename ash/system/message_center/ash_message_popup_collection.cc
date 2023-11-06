@@ -17,11 +17,13 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/fullscreen_notification_blocker.h"
 #include "ash/system/message_center/message_center_constants.h"
 #include "ash/system/message_center/message_view_factory.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -30,18 +32,22 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/shadow_types.h"
 
@@ -82,6 +88,13 @@ AshMessagePopupCollection::NotifierCollisionHandler::
 void AshMessagePopupCollection::NotifierCollisionHandler::
     OnPopupCollectionHeightChanged() {
   if (!features::IsNotifierCollisionEnabled()) {
+    return;
+  }
+
+  // Ignore changes happen to the popup collection height when bubble changes is
+  // being handled. This is to avoid crashes (b/305781721) when we handle both
+  // the bubble and the collection height changes at the same time.
+  if (is_handling_bubble_change_) {
     return;
   }
 
@@ -168,6 +181,10 @@ void AshMessagePopupCollection::NotifierCollisionHandler::
   if (!features::IsNotifierCollisionEnabled()) {
     return;
   }
+
+  // This is to make sure that we don't close the bubble through
+  // `OnPopupCollectionHeightChanged()` to avoid crashes (b/305781721).
+  base::AutoReset<bool> reset(&is_handling_bubble_change_, true);
 
   int previous_baseline_offset = baseline_offset_;
 
@@ -270,10 +287,14 @@ void AshMessagePopupCollection::NotifierCollisionHandler::OnHotseatStateChanged(
 ///////////////////////////////////////////////////////////////////////////////
 // AshMessagePopupCollection:
 
-AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
-    : screen_(nullptr), shelf_(shelf) {
+AshMessagePopupCollection::AshMessagePopupCollection(display::Screen* screen,
+                                                     Shelf* shelf)
+    : screen_(screen), shelf_(shelf) {
   notifier_collision_handler_ =
       std::make_unique<NotifierCollisionHandler>(this);
+  StartObserving(screen_,
+                 screen_->GetDisplayNearestWindow(
+                     shelf_->GetStatusAreaWidget()->GetNativeWindow()));
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
@@ -382,6 +403,18 @@ void AshMessagePopupCollection::NotifyPopupClosed(
   popup->message_view()->RemoveObserver(this);
   if (last_pop_up_added_ == popup)
     last_pop_up_added_ = nullptr;
+}
+
+void AshMessagePopupCollection::NotifySilentNotification(
+    const std::string& notification_id) {
+  // Have any active screen reader announce the incoming silent notification.
+  const views::View* status_area_widget_delegate =
+      shelf_->GetStatusAreaWidget()->status_area_widget_delegate();
+  CHECK(status_area_widget_delegate);
+  status_area_widget_delegate->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringFUTF16Int(
+          IDS_ASH_MESSAGE_CENTER_SILENT_NOTIFICATION_ANNOUNCEMENT,
+          (int)message_center::MessageCenter::Get()->NotificationCount()));
 }
 
 void AshMessagePopupCollection::NotifyPopupCollectionHeightChanged() {

@@ -31,7 +31,6 @@ import "ash/components/arc/mojom/keyboard_shortcut.mojom";
 import "ash/components/arc/mojom/keymaster.mojom";
 import "ash/components/arc/mojom/keymint.mojom";
 import "ash/components/arc/mojom/kiosk.mojom";
-import "ash/components/arc/mojom/lock_screen.mojom";
 import "ash/components/arc/mojom/media_session.mojom";
 import "ash/components/arc/mojom/memory.mojom";
 import "ash/components/arc/mojom/metrics.mojom";
@@ -65,7 +64,7 @@ import "ash/components/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
 // Next MinVersion: 66
-// Deprecated method IDs: 101, 105, 121, 132, 136, 137, 153, 154, 160
+// Deprecated method IDs: 101, 105, 121, 132, 134, 136, 137, 153, 154, 160
 // Next method ID: 171
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -179,10 +178,6 @@ interface ArcBridgeHost {
   // Notifies Chrome that the KioskInstance interface is ready.
   [MinVersion=20] OnKioskInstanceReady@126(
       pending_remote<KioskInstance> instance_remote);
-
-  // Notifies Chrome that the LockScreenInstance interface is ready.
-  [MinVersion=29] OnLockScreenInstanceReady@134(
-      pending_remote<LockScreenInstance> instance_remote);
 
   // Notifies Chrome that the MediaSessionInstance interface is ready.
   [MinVersion=43] OnMediaSessionInstanceReady@148(

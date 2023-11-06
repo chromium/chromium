@@ -28,7 +28,6 @@
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/discoverable_credential_metadata.h"
@@ -41,9 +40,6 @@
 #include "device/fido/test_callback_receiver.h"
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
-#include "net/ssl/ssl_info.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -991,100 +987,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(),
       url::Origin::Create(GURL("https://other.example.com"))));
-}
-
-class DisableWebAuthnWithBrokenCertsTest
-    : public ChromeAuthenticatorRequestDelegateTest {};
-
-TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelNotAcceptable) {
-  GURL url("https://doofenshmirtz.evil");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  net::SSLInfo ssl_info;
-  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  simulator->SetSSLInfo(std::move(ssl_info));
-  simulator->Commit();
-  EXPECT_FALSE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
-}
-
-TEST_F(DisableWebAuthnWithBrokenCertsTest, ExtensionSupported) {
-  GURL url("chrome-extension://extensionid");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  net::SSLInfo ssl_info;
-  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  simulator->SetSSLInfo(std::move(ssl_info));
-  simulator->Commit();
-  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
-}
-
-TEST_F(DisableWebAuthnWithBrokenCertsTest, EnterpriseOverride) {
-  PrefService* prefs =
-      Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
-  prefs->SetBoolean(webauthn::pref_names::kAllowWithBrokenCerts, true);
-  GURL url("https://doofenshmirtz.evil");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  net::SSLInfo ssl_info;
-  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  simulator->SetSSLInfo(std::move(ssl_info));
-  simulator->Commit();
-  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
-}
-
-TEST_F(DisableWebAuthnWithBrokenCertsTest, Localhost) {
-  GURL url("http://localhost");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
-}
-
-TEST_F(DisableWebAuthnWithBrokenCertsTest, SecurityLevelAcceptable) {
-  GURL url("https://owca.org");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  net::SSLInfo ssl_info;
-  ssl_info.cert_status = 0;  // ok.
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  simulator->SetSSLInfo(std::move(ssl_info));
-  simulator->Commit();
-  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
-}
-
-// Regression test for crbug.com/1421174.
-TEST_F(DisableWebAuthnWithBrokenCertsTest, IgnoreCertificateErrorsFlag) {
-  base::test::ScopedCommandLine scoped_command_line;
-  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
-      switches::kIgnoreCertificateErrors);
-  GURL url("https://doofenshmirtz.evil");
-  ChromeWebAuthenticationDelegate delegate;
-  auto simulator =
-      content::NavigationSimulator::CreateBrowserInitiated(url, web_contents());
-  net::SSLInfo ssl_info;
-  ssl_info.cert_status = net::CERT_STATUS_DATE_INVALID;
-  ssl_info.cert =
-      net::ImportCertFromFile(net::GetTestCertsDirectory(), "ok_cert.pem");
-  simulator->SetSSLInfo(std::move(ssl_info));
-  simulator->Commit();
-  EXPECT_TRUE(delegate.IsSecurityLevelAcceptableForWebAuthn(
-      main_rfh(), url::Origin::Create(url)));
 }
 
 }  // namespace

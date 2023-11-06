@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {CoverageTestRunner} from 'coverage_test_runner';
 
+import * as Coverage from 'devtools/panels/coverage/coverage.js';
+
 (async function() {
   TestRunner.addResult(`Tests the coverage list view after suspending the coverage model.\n`);
-  await TestRunner.loadLegacyModule('panels/coverage');
   await TestRunner.loadHTML(`
       <p class="class">
       </p>
@@ -33,7 +34,7 @@ import {CoverageTestRunner} from 'coverage_test_runner';
   await CoverageTestRunner.suspendCoverageModel();
   await CoverageTestRunner.resumeCoverageModel();
 
-  var coverageView = Coverage.CoverageView.instance();
+  var coverageView = Coverage.CoverageView.CoverageView.instance();
   coverageView.clear();
 
   await CoverageTestRunner.startCoverage(true);

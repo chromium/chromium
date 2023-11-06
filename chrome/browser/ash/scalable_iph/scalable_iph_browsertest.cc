@@ -29,11 +29,13 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/phonehub/fake_feature_status_provider.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
@@ -201,6 +203,7 @@ class ScalableIphBrowserTestFeatureOffDebugOn : public ScalableIphBrowserTest {
  public:
   ScalableIphBrowserTestFeatureOffDebugOn() {
     enable_scalable_iph_ = false;
+    setup_scalable_iph_ = false;
     CHECK(enable_scalable_iph_debug_)
         << "Debug feature is on by default for ScalableIphBrowserTest";
   }
@@ -214,6 +217,44 @@ class ScalableIphBrowserTestPreinstallApps : public ScalableIphBrowserTest {
     command_line->RemoveSwitch(switches::kDisableDefaultApps);
     command_line->AppendSwitch(
         ash::switches::kAllowDefaultShelfPinLayoutIgnoringSync);
+  }
+};
+
+class ScalableIphBrowserTestHelpApp
+    : public ScalableIphBrowserTestPreinstallApps {
+ public:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    AppendVersionNumber(params);
+    base::test::FeatureRefAndParams test_config(TestIphFeature(), params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    base::test::FeatureRefAndParams help_app_feature(
+        ash::features::kHelpAppWelcomeTips, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, help_app_feature, test_config}, {});
+  }
+
+  void SetUpOnMainThread() override {
+    ScalableIphBrowserTestPreinstallApps::SetUpOnMainThread();
+
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
+  }
+};
+
+class ScalableIphBrowserTestHelpAppParameterized
+    : public ScalableIphBrowserTestHelpApp,
+      public testing::WithParamInterface<TestEnvironment> {
+ public:
+  void SetUp() override {
+    SetTestEnvironment(GetParam());
+    setup_scalable_iph_ = false;
+
+    ScalableIphBrowserTestHelpApp::SetUp();
   }
 };
 
@@ -294,6 +335,17 @@ class ScalableIphBrowserTestCustomConditionBase
   }
 
   virtual void AppendCustomCondition(base::FieldTrialParams& params) = 0;
+};
+
+class ScalableIphBrowserTestTriggerEvent
+    : public ScalableIphBrowserTestCustomConditionBase {
+ protected:
+  void AppendCustomCondition(base::FieldTrialParams& params) override {
+    params[FullyQualified(
+        TestIphFeature(),
+        scalable_iph::kCustomConditionTriggerEventParamName)] =
+        scalable_iph::kEventNameUnlocked;
+  }
 };
 
 class ScalableIphBrowserTestNetworkConnection
@@ -938,6 +990,16 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
       scalable_iph::kWebAppYouTubeAppId));
 }
 
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
+  if (!IsGoogleChrome()) {
+    GTEST_SKIP()
+        << "Google Chrome is required for preinstall apps used by this test";
+    return;
+  }
+
+  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
+}
+
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestOobe, SessionState) {
   // This is testing post login OOBE screens. In post login OOBE screens:
   // - A profile should be loaded.
@@ -1014,6 +1076,31 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestVersionNumberInvalid, Invalid) {
       .Times(0);
   TriggerConditionsCheckWithAFakeEvent(
       scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+// `ScalableIphBrowserTestTriggerEvent` is set up with
+// x_CustomConditionTriggerEvent: ScalableIphUnlocked.
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestTriggerEvent, TriggerEvent) {
+  EnableTestIphFeature();
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+
+  // Record an uninterested event. Confirm that this won't trigger an IPH
+  // trigger condition check.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(0);
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kFiveMinTick);
+  testing::Mock::VerifyAndClearExpectations(mock_tracker());
+
+  // Record an unlocked event, which is an interested event. Confirm that this
+  // triggers an IPH trigger condition check.
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(::testing::Ref(TestIphFeature())))
+      .Times(1);
+  scalable_iph->RecordEvent(scalable_iph::ScalableIph::Event::kUnlocked);
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 }
 
@@ -1418,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestBubble, ClickBubble) {
                   ::testing::Eq(scalable_iph::ActionType::kOpenGoogleDocs)));
 
   views::View* nudge_button =
-      ash::Shell::Get()->anchored_nudge_manager()->GetNudgeFirstButtonForTest(
+      ash::Shell::Get()->anchored_nudge_manager()->GetNudgePrimaryButtonForTest(
           kTestBubbleId);
   ui::test::EventGenerator event_generator(ash::Shell::GetPrimaryRootWindow());
   event_generator.MoveMouseTo(nudge_button->GetBoundsInScreen().CenterPoint());
@@ -1540,4 +1627,24 @@ IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestParameterized,
                        ScalableIphNotAvailable) {
   EXPECT_EQ(nullptr,
             ScalableIphFactory::GetForBrowserContext(browser()->profile()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NoHelpAppPin,
+    ScalableIphBrowserTestHelpAppParameterized,
+    testing::Values(
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kGuest),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kManaged),
+        TestEnvironment(
+            ash::DeviceStateMixin::State::OOBE_COMPLETED_CONSUMER_OWNED,
+            UserSessionType::kRegularNonOwner)),
+    &TestEnvironment::GenerateTestName);
+
+IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestHelpAppParameterized,
+                       HelpAppNotPinnedToShelf) {
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
 }

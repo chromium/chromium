@@ -74,6 +74,8 @@ class TestOsFeedbackDelegate : public OsFeedbackDelegate {
                                  : kSignedInUserEmail;
   }
 
+  bool IsWifiDebugLogsAllowed() const override { return false; }
+
   int GetPerformanceTraceId() override { return kPerformanceTraceId; }
 
   void GetScreenshotPng(GetScreenshotPngCallback callback) override {
@@ -167,6 +169,7 @@ TEST_F(FeedbackServiceProviderTest, GetFeedbackContext) {
   EXPECT_EQ(kPerformanceTraceId, feedback_context->trace_id);
   EXPECT_EQ(kHasLinkedCrossDevicePhone,
             feedback_context->has_linked_cross_device_phone);
+  EXPECT_FALSE(feedback_context->wifi_debug_logs_allowed);
 }
 
 // Test that GetScreenshotPng returns a response with correct status.

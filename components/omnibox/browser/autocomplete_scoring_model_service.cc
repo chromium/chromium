@@ -41,6 +41,16 @@ AutocompleteScoringModelService::AutocompleteScoringModelService(
 
 AutocompleteScoringModelService::~AutocompleteScoringModelService() = default;
 
+void AutocompleteScoringModelService::AddOnModelUpdatedCallback(
+    base::OnceClosure callback) {
+  url_scoring_model_handler_->AddOnModelUpdatedCallback(std::move(callback));
+}
+
+int AutocompleteScoringModelService::GetModelVersion() const {
+  auto info = url_scoring_model_handler_->GetModelInfo();
+  return info.has_value() ? info->GetVersion() : -1;
+}
+
 void AutocompleteScoringModelService::ScoreAutocompleteUrlMatch(
     base::CancelableTaskTracker* tracker,
     const ScoringSignals& scoring_signals,

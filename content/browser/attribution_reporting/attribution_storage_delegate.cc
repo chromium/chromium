@@ -4,50 +4,18 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 
-#include <stdint.h>
-
-#include <utility>
-#include <vector>
-
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/notreached.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
 namespace {
 using ::attribution_reporting::mojom::SourceType;
 
-using RandomizedResponse =
-    ::content::AttributionStorageDelegate::RandomizedResponse;
-using RandomizedResponseData =
-    ::content::AttributionStorageDelegate::RandomizedResponseData;
 }  // namespace
-
-RandomizedResponseData::RandomizedResponseData(double rate,
-                                               RandomizedResponse response)
-    : rate_(rate), response_(std::move(response)) {
-  DCHECK_GE(rate_, 0);
-  DCHECK_LE(rate_, 1);
-}
-
-RandomizedResponseData::~RandomizedResponseData() = default;
-
-RandomizedResponseData::RandomizedResponseData(const RandomizedResponseData&) =
-    default;
-
-RandomizedResponseData& RandomizedResponseData::operator=(
-    const RandomizedResponseData&) = default;
-
-RandomizedResponseData::RandomizedResponseData(RandomizedResponseData&&) =
-    default;
-
-RandomizedResponseData& RandomizedResponseData::operator=(
-    RandomizedResponseData&&) = default;
 
 AttributionStorageDelegate::AttributionStorageDelegate(
     const AttributionConfig& config)
@@ -107,18 +75,6 @@ AttributionConfig::DestinationRateLimit
 AttributionStorageDelegate::GetDestinationRateLimit() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return config_.destination_rate_limit;
-}
-
-uint64_t AttributionStorageDelegate::TriggerDataCardinality(
-    SourceType source_type) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (source_type) {
-    case SourceType::kNavigation:
-      return config_.event_level_limit
-          .navigation_source_trigger_data_cardinality;
-    case SourceType::kEvent:
-      return config_.event_level_limit.event_source_trigger_data_cardinality;
-  }
 }
 
 }  // namespace content

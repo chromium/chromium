@@ -30,7 +30,8 @@ public final class EngagementTimeUtilTest {
     public void timeSinceLastEngagement_shouldReportElapsedTimeSinceLastEngagement() {
         long currentTimeMillis = System.currentTimeMillis();
         mEngagementTimeUtil.setCurrentTime(currentTimeMillis);
-        assertEquals(TEST_ELAPSED_MS,
+        assertEquals(
+                TEST_ELAPSED_MS,
                 mEngagementTimeUtil.timeSinceLastEngagement(currentTimeMillis - TEST_ELAPSED_MS));
     }
 
@@ -38,7 +39,8 @@ public final class EngagementTimeUtilTest {
     public void timeSinceLastEngagement_shouldReportInvalidIfNegative() {
         long currentTimeMillis = System.currentTimeMillis();
         mEngagementTimeUtil.setCurrentTime(currentTimeMillis);
-        assertEquals(-1,
+        assertEquals(
+                -1,
                 mEngagementTimeUtil.timeSinceLastEngagement(
                         System.currentTimeMillis() + TEST_ELAPSED_MS));
     }
@@ -47,7 +49,8 @@ public final class EngagementTimeUtilTest {
     public void timeSinceLastEngagement_shouldReportElapsedTimeBetweenTimestamps() {
         long currentTimeMillis = System.currentTimeMillis();
         mEngagementTimeUtil.setCurrentTime(currentTimeMillis);
-        assertEquals(TEST_ELAPSED_MS,
+        assertEquals(
+                TEST_ELAPSED_MS,
                 mEngagementTimeUtil.timeSinceLastEngagement(
                         currentTimeMillis - (2L * TEST_ELAPSED_MS),
                         currentTimeMillis - TEST_ELAPSED_MS));

@@ -27,7 +27,7 @@ base::FilePath g_deqp_log_dir;
 bool RunKhronosGLCTSTest(const char* test_name) {
   // Load test expectations, and return early if a test is marked as FAIL.
   base::FilePath src_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &src_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_path);
   base::FilePath test_expectations_path =
       src_path.Append(FILE_PATH_LITERAL("gpu")).
       Append(FILE_PATH_LITERAL("khronos_glcts_support")).

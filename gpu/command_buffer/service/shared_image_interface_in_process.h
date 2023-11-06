@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
 #include "gpu/gpu_gles2_export.h"
@@ -66,41 +67,45 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
 
   // SharedImageInterface:
   ~SharedImageInterfaceInProcess() override;
-  Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
-                            gpu::SurfaceHandle surface_handle) override;
-  Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
-                            base::span<const uint8_t> pixel_data) override;
-  Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
-                            SurfaceHandle surface_handle,
-                            gfx::BufferUsage buffer_usage) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      base::span<const uint8_t> pixel_data) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      SurfaceHandle surface_handle,
+      gfx::BufferUsage buffer_usage) override;
   std::unique_ptr<SharedImageInterface::ScopedMapping> MapSharedImage(
       const Mailbox& mailbox) override;
-  Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                            const gfx::Size& size,
-                            const gfx::ColorSpace& color_space,
-                            GrSurfaceOrigin surface_origin,
-                            SkAlphaType alpha_type,
-                            uint32_t usage,
-                            base::StringPiece debug_label,
-                            gfx::GpuMemoryBufferHandle buffer_handle) override;
+  scoped_refptr<ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gfx::GpuMemoryBufferHandle buffer_handle) override;
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                             GpuMemoryBufferManager* gpu_memory_buffer_manager,
                             gfx::BufferPlane plane,
@@ -116,6 +121,9 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
                          const Mailbox& mailbox) override;
   void DestroySharedImage(const SyncToken& sync_token,
                           const Mailbox& mailbox) override;
+  void DestroySharedImage(
+      const SyncToken& sync_token,
+      scoped_refptr<ClientSharedImage> client_shared_image) override;
   void AddReferenceToSharedImage(const SyncToken& sync_token,
                                  const Mailbox& mailbox,
                                  uint32_t usage) override;
@@ -236,8 +244,7 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   void GetCapabilitiesOnGpu(base::WaitableEvent* completion,
                             SharedImageCapabilities* out_capabilities);
 
-  GpuMemoryBufferHandleInfo GetGpuMemoryBufferHandleInfo(
-      const Mailbox& mailbox);
+  gfx::GpuMemoryBuffer* GetGpuMemoryBuffer(const Mailbox& mailbox);
 
   // Used to schedule work on the gpu thread. This is a raw pointer for now
   // since the ownership of SingleTaskSequence would be the same as the
@@ -253,8 +260,8 @@ class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
   // Accessed on any thread.
   base::Lock lock_;
   uint64_t next_fence_sync_release_ GUARDED_BY(lock_) = 1;
-  base::flat_map<Mailbox, GpuMemoryBufferHandleInfo> gmb_handle_infos_
-      GUARDED_BY(lock_);
+  base::flat_map<Mailbox, std::unique_ptr<gfx::GpuMemoryBuffer>>
+      gpu_memory_buffers_ GUARDED_BY(lock_);
 
   // Accessed on compositor thread.
   // This is used to get NativePixmap, and is only used when SharedImageManager

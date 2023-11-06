@@ -13,7 +13,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_base.h"
@@ -136,10 +136,14 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
   auto* gained_active_widget =
       views::Widget::GetWidgetForNativeView(gained_active);
 
+  if (bubble_widget == gained_active_widget) {
+    return;
+  }
+
   // Don't close the bubble if a transient child is gaining or losing
-  // activation.
-  if (bubble_widget == gained_active_widget ||
-      ::wm::HasTransientAncestor(gained_active,
+  // activation (i.e. b/303382616: the network info bubble is a transcient child
+  // of the QS bubble and activating it should not close the QS bubble).
+  if (::wm::HasTransientAncestor(gained_active,
                                  bubble_widget->GetNativeWindow()) ||
       (lost_active && ::wm::HasTransientAncestor(
                           lost_active, bubble_widget->GetNativeWindow()))) {
@@ -149,8 +153,8 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
   // If the activated window is a popup notification, interacting with it
   // should not close the bubble.
   if (features::IsNotifierCollisionEnabled() &&
-      active_status_area_widget->unified_system_tray()
-          ->GetMessagePopupCollection()
+      active_status_area_widget->notification_center_tray()
+          ->popup_collection()
           ->IsWidgetAPopupNotification(gained_active_widget)) {
     return;
   }

@@ -70,5 +70,5 @@ dictionary AuctionAdInterestGroup {
 
   DOMString additionalBidKey;
 
-  USVString aggregationCoordinatorOrigin;
+  ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
 };

@@ -20,9 +20,12 @@
 class GURL;
 class PrefRegistrySimple;
 
+namespace data_controls {
+class DlpReportingManager;
+}  // namespace data_controls
+
 namespace policy {
 
-class DlpReportingManager;
 class DlpFilesController;
 
 class DlpRulesManagerImpl : public DlpRulesManager,
@@ -46,7 +49,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
       const GURL& source,
       Restriction restriction) const override;
   bool IsReportingEnabled() const override;
-  DlpReportingManager* GetReportingManager() const override;
+  data_controls::DlpReportingManager* GetReportingManager() const override;
   DlpFilesController* GetDlpFilesController() const override;
 
   size_t GetClipboardCheckSizeLimitInBytes() const override;
@@ -64,7 +67,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   DlpRulesManagerImpl(PrefService* local_state, Profile* profile);
 
  private:
-  void OnPolicyUpdate() override;
+  void OnDataLeakPreventionRulesUpdate() override;
 
   // Used to track kDlpRulesList local state pref.
   PrefChangeRegistrar pref_change_registrar_;
@@ -79,14 +82,10 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   url_matcher::URLMatcherConditionSet::Vector dst_conditions_;
 
   // System-wide singleton instantiated when required by rules configuration.
-  std::unique_ptr<DlpReportingManager> reporting_manager_;
+  std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
 
   // System-wide singleton instantiated when there are rules involving files.
   std::unique_ptr<DlpFilesController> files_controller_;
-
-  // The profile with which we are associated. Not owned. It's currently always
-  // the main/primary profile.
-  const raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Observe to re-notify DLP daemon in case of restart.

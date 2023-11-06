@@ -90,8 +90,11 @@ enum class CastStreamingFrameDropReason {
   // we may drop the frame after encoding instead.
   kInFlightDurationTooHighAfterEncoding = 6,
 
+  // Reported by the OpenscreenFrameSender.
+  kInvalidReferencedFrameId = 7,
+
   // Should stay updated as the maximum enum value above.
-  kMaxValue = kInFlightDurationTooHighAfterEncoding
+  kMaxValue = kInvalidReferencedFrameId
 };
 
 }  // namespace cast

@@ -1,13 +1,18 @@
 This is a testharness.js-based test.
-PASS Property text-transform value 'none'
-PASS Property text-transform value 'capitalize'
-PASS Property text-transform value 'uppercase'
-PASS Property text-transform value 'lowercase'
-FAIL Property text-transform value 'full-width' assert_true: 'full-width' is a supported value for text-transform. expected true got false
-FAIL Property text-transform value 'full-size-kana' assert_true: 'full-size-kana' is a supported value for text-transform. expected true got false
-PASS Property text-transform value 'math-auto'
-FAIL Property text-transform value 'capitalize full-width' assert_true: 'capitalize full-width' is a supported value for text-transform. expected true got false
-FAIL Property text-transform value 'full-width full-size-kana' assert_true: 'full-width full-size-kana' is a supported value for text-transform. expected true got false
-FAIL Property text-transform value 'uppercase full-width full-size-kana' assert_true: 'uppercase full-width full-size-kana' is a supported value for text-transform. expected true got false
+[PASS] Property text-transform value 'none'
+[PASS] Property text-transform value 'capitalize'
+[PASS] Property text-transform value 'uppercase'
+[PASS] Property text-transform value 'lowercase'
+[FAIL] Property text-transform value 'full-width'
+  assert_true: 'full-width' is a supported value for text-transform. expected true got false
+[FAIL] Property text-transform value 'full-size-kana'
+  assert_true: 'full-size-kana' is a supported value for text-transform. expected true got false
+[PASS] Property text-transform value 'math-auto'
+[FAIL] Property text-transform value 'capitalize full-width'
+  assert_true: 'capitalize full-width' is a supported value for text-transform. expected true got false
+[FAIL] Property text-transform value 'full-width full-size-kana'
+  assert_true: 'full-width full-size-kana' is a supported value for text-transform. expected true got false
+[FAIL] Property text-transform value 'uppercase full-width full-size-kana'
+  assert_true: 'uppercase full-width full-size-kana' is a supported value for text-transform. expected true got false
 Harness: the test ran to completion.
 

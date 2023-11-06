@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/password_manager/sync_handler.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/policy_indicator_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -329,6 +330,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_VIEW_FAMILY},
     {"sharePasswordMemeberUnavailable",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_MEMBER_UNAVAILABLE},
+    {"sharePasswordManagedByAdmin",
+     IDS_PASSWORD_MANAGER_UI_SHARING_IS_MANAGED_BY_ADMIN},
     {"sharePasswordNotAvailable",
      IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_AVAILABLE},
     {"sharePasswordErrorDescription",
@@ -384,26 +387,26 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
      IDS_PASSWORD_MANAGER_UI_BIOMETRIC_AUTHENTICATION_FOR_FILLING_TOGGLE_SUBLABEL_WIN},
 #endif
   };
-  for (const auto& str : kStrings)
+  for (const auto& str : kStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
   source->AddString(
       "passwordsSectionDescription",
-      l10n_util::GetStringFUTF16(
-          IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
-          base::ASCIIToUTF16(chrome::kPasswordManagerLearnMoreURL)));
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORDS_DESCRIPTION,
+                                 chrome::kPasswordManagerLearnMoreURL));
 
   source->AddString(
       "sharePasswordNotFamilyMember",
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NOT_FAMILY_MEMBER,
-          base::ASCIIToUTF16(chrome::kFamilyGroupCreateURL)));
+          chrome::kFamilyGroupCreateURL));
 
   source->AddString(
       "sharePasswordNoOtherFamilyMembers",
       l10n_util::GetStringFUTF16(
           IDS_PASSWORD_MANAGER_UI_SHARE_PASSWORD_NO_OTHER_FAMILY_MEMBERS,
-          base::ASCIIToUTF16(chrome::kFamilyGroupViewURL)));
+          chrome::kFamilyGroupViewURL));
 
   source->AddString("familyGroupViewURL", chrome::kFamilyGroupViewURL);
 
@@ -425,10 +428,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       "createPasskeysInICloudKeychainToggleVisible",
       base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));
 #endif
-
-  source->AddBoolean("enablePasswordsImportM2",
-                     base::FeatureList::IsEnabled(
-                         password_manager::features::kPasswordsImportM2));
 
   source->AddBoolean(
       "enableSendPasswords",
@@ -599,6 +598,7 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<settings::PasskeysHandler>());
 #endif
   auto* source = CreateAndAddPasswordsUIHTMLSource(profile, web_ui);
+  policy_indicator::AddLocalizedStrings(source);
   AddPluralStrings(web_ui);
   ManagedUIHandler::Initialize(web_ui, source);
   content::URLDataSource::Add(profile,

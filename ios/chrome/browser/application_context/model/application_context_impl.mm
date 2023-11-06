@@ -162,7 +162,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
                                    GetSharedURLLoaderFactory());
   }
 
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::MaybeEnableBasedOnChannel(GetLocalState(), ::GetChannel())) {
     // Start crash reporter listening for breadcrumb events. Collected
     // breadcrumbs will be attached to crash reports.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();
@@ -570,9 +570,9 @@ void ApplicationContextImpl::CreateLocalState() {
 
   sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
-  net::ClientSocketPoolManager::set_max_sockets_per_proxy_server(
+  net::ClientSocketPoolManager::set_max_sockets_per_proxy_chain(
       net::HttpNetworkSession::NORMAL_SOCKET_POOL,
-      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyServer, 99),
+      std::max(std::min<int>(net::kDefaultMaxSocketsPerProxyChain, 99),
                net::ClientSocketPoolManager::max_sockets_per_group(
                    net::HttpNetworkSession::NORMAL_SOCKET_POOL)));
 

@@ -170,9 +170,11 @@ class ArcAppListPrefs : public KeyedService,
                 bool should_sync,
                 bool vpn_provider,
                 bool preinstalled,
+                bool game_controls_opt_out,
                 base::flat_map<arc::mojom::AppPermission,
                                arc::mojom::PermissionStatePtr> permissions,
-                arc::mojom::WebAppInfoPtr web_app_info);
+                arc::mojom::WebAppInfoPtr web_app_info,
+                arc::mojom::PackageLocaleInfoPtr locale_info);
     ~PackageInfo();
 
     std::string package_name;
@@ -184,10 +186,13 @@ class ArcAppListPrefs : public KeyedService,
     // If the package is pre-installed in the system image. This is true even
     // after the package is updated.
     bool preinstalled;
+    // True if the package has the Game Controls Opt Out metadata set to true.
+    bool game_controls_opt_out;
     // Maps app permission to permission states
     base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
         permissions;
     arc::mojom::WebAppInfoPtr web_app_info;
+    arc::mojom::PackageLocaleInfoPtr locale_info;
   };
 
   class Observer : public base::CheckedObserver {

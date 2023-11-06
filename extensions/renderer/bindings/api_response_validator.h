@@ -7,7 +7,6 @@
 
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -75,18 +74,17 @@ class APIResponseValidator {
 
   // Validates a response against the expected schema. By default, this will
   // NOTREACHED() in cases of validation failure.
-  void ValidateResponse(
-      v8::Local<v8::Context> context,
-      const std::string& method_name,
-      const std::vector<v8::Local<v8::Value>> response_arguments,
-      const std::string& api_error,
-      CallbackType callback_type);
+  void ValidateResponse(v8::Local<v8::Context> context,
+                        const std::string& method_name,
+                        const v8::LocalVector<v8::Value>& response_arguments,
+                        const std::string& api_error,
+                        CallbackType callback_type);
 
   // Validates a collection of event arguments against the expected schema.
   // By default, this will NOTREACHED() in cases of validation failure.
   void ValidateEvent(v8::Local<v8::Context> context,
                      const std::string& event_name,
-                     const std::vector<v8::Local<v8::Value>>& event_args);
+                     const v8::LocalVector<v8::Value>& event_args);
 
  private:
   // The type reference map; guaranteed to outlive this object.

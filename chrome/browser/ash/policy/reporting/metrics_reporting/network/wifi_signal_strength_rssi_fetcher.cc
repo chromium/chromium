@@ -46,7 +46,7 @@ void OnGetProperties(base::queue<std::string> service_path_queue,
       DVLOG(1) << "Error: " << error.value();
     }
   } else {
-    DCHECK(!base::Contains(path_rssi_map, service_path));
+    CHECK(!base::Contains(path_rssi_map, service_path));
 
     absl::optional<int> rssi =
         properties->FindDict(kWiFi)->FindInt(kSignalStrengthRssi);

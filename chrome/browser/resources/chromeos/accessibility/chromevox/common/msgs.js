@@ -47,6 +47,20 @@ export class Msgs {
   }
 
   /**
+   * Returns the message with the given message ID, formatted for the given
+   * count.
+   *
+   * @param {string} messageId
+   * @param {number} count
+   * @param {Array<string>=} opt_subs Substitution strings.
+   * @return {string} The localized and formatted message.
+   */
+  static getMsgWithCount(messageId, count, opt_subs) {
+    return new goog.i18n.MessageFormat(Msgs.getMsg(messageId, opt_subs))
+        .format({COUNT: count});
+  }
+
+  /**
    * Processes an HTML DOM, replacing text content with translated text messages
    * on elements marked up for translation.  Elements whose class attributes
    * contain the 'i18n' class name are expected to also have an msgid

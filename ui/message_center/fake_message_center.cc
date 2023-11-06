@@ -185,7 +185,13 @@ void FakeMessageCenter::ResetSinglePopup(const std::string& id) {}
 void FakeMessageCenter::DisplayedNotification(const std::string& id,
                                               const DisplaySource source) {}
 
-void FakeMessageCenter::SetQuietMode(bool in_quiet_mode) {}
+void FakeMessageCenter::SetQuietMode(bool in_quiet_mode,
+                                     QuietModeSourceType type) {}
+
+QuietModeSourceType FakeMessageCenter::GetLastQuietModeChangeSourceType()
+    const {
+  return QuietModeSourceType::kUserAction;
+}
 
 void FakeMessageCenter::SetSpokenFeedbackEnabled(bool enabled) {}
 

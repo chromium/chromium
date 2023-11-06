@@ -40,10 +40,12 @@ std::string DataWithTimestamp::ToDebugString(
   for (const DataWithTimestamp& data : data_with_timestamps) {
     ss << "\n  (data: " << data.DataInHex() << ", start: "
        << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
-              base::Time::FromJavaTime(data.start_timestamp_ms)))
+              base::Time::FromMillisecondsSinceUnixEpoch(
+                  data.start_timestamp_ms)))
        << ", end: "
        << base::UTF16ToUTF8(base::TimeFormatShortDateAndTimeWithTimeZone(
-              base::Time::FromJavaTime(data.end_timestamp_ms)))
+              base::Time::FromMillisecondsSinceUnixEpoch(
+                  data.end_timestamp_ms)))
        << "),";
   }
   ss << "\n]";

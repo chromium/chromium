@@ -65,6 +65,9 @@ extern const char kWebUITabStripOpened[];
 // The PWA was installed by the user.
 extern const char kDesktopPwaInstalled[];
 
+// A module's actions were clicked on the NewTabPage.
+extern const char kDesktopNTPModuleUsed[];
+
 // The user entered the special "focus help bubble" accelerator.
 extern const char kFocusHelpBubbleAcceleratorPressed[];
 
@@ -199,6 +202,12 @@ extern const char kDefaultBrowserVideoPromoConditionsMet[];
 
 // The user has triggered the Lens button in the Omnibox keyboard.
 extern const char kLensButtonKeyboardUsed[];
+
+// The user has triggered Parcel Tracking.
+extern const char kParcelTrackingTriggered[];
+
+// The user has tracked a parcel.
+extern const char kParcelTracked[];
 
 #endif  // BUILDFLAG(IS_IOS)
 

@@ -7,6 +7,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_pin_type.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/data_device.h"
@@ -194,11 +195,17 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
   // Create a external surface, bind with a window id.
   auto external_shell_surface = test::ShellSurfaceBuilder({20, 20})
                                     .SetOrigin({10, 10})
+                                    .DisableSupportsFloatedState()
                                     .BuildClientControlledShellSurface();
   auto* external_shell_surface_observer = external_shell_surface.get();
+  auto* external_window =
+      external_shell_surface->GetWidget()->GetNativeWindow();
 
   // Set external shell surface focus.
-  external_shell_surface->GetWidget()->GetNativeWindow()->Focus();
+  external_window->Focus();
+  // Floated state support is disabled.
+  ASSERT_FALSE(
+      external_window->GetProperty(chromeos::kSupportsFloatedStateKey));
 
   property_resolver()->PutClientControlledShellSurface(
       kSessionId, std::move(external_shell_surface));
@@ -217,8 +224,11 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
   EXPECT_EQ(shell_surface.get(), external_shell_surface_observer);
   EXPECT_EQ(surface_with_id.get(), shell_surface->root_surface());
 
+  auto* const window = shell_surface->root_surface()->window();
   // Focus state transferred to new root surface.
-  EXPECT_TRUE(shell_surface->root_surface()->window()->HasFocus());
+  EXPECT_TRUE(window->HasFocus());
+  // Floated state support should be updated according to the new option.
+  EXPECT_TRUE(window->GetProperty(chromeos::kSupportsFloatedStateKey));
 }
 
 TEST_F(DisplayTest, CreateSubSurface) {

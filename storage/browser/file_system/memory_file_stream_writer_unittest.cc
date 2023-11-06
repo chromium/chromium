@@ -67,8 +67,8 @@ class MemoryFileStreamWriterTest : public FileStreamWriterTest {
     base::File::Info info;
     EXPECT_EQ(base::File::FILE_OK, file_util()->GetFileInfo(path, &info));
 
-    scoped_refptr<net::IOBuffer> content =
-        base::MakeRefCounted<net::IOBuffer>(static_cast<size_t>(info.size));
+    auto content = base::MakeRefCounted<net::IOBufferWithSize>(
+        static_cast<size_t>(info.size));
     EXPECT_EQ(info.size,
               file_util_->ReadFile(path, 0, content.get(), info.size));
 

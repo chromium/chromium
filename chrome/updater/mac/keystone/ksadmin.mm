@@ -47,16 +47,6 @@
 
 namespace updater {
 
-namespace {
-
-std::string ReadPlist(const std::string& path, const std::string& key) {
-  return base::SysNSStringToUTF8([NSDictionary
-      dictionaryWithContentsOfFile:base::SysUTF8ToNSString(
-                                       path)][base::SysUTF8ToNSString(key)]);
-}
-
-}  // namespace
-
 // base::CommandLine can't be used because it enforces that all switches are
 // lowercase, but ksadmin has case-sensitive switches. This argument parser
 // converts an argv set into a map of switch name to switch value; for example
@@ -133,8 +123,9 @@ bool HasSwitch(const std::string& arg,
   if (!base::Contains(*aliases, arg))
     return false;
   for (const auto& alias : aliases->at(arg)) {
-    if (base::Contains(switches, alias))
+    if (base::Contains(switches, alias)) {
       return true;
+    }
   }
   return false;
 }
@@ -199,7 +190,6 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   if (path &&
       [NSFileManager.defaultManager
           fileExistsAtPath:base::apple::FilePathToNSString(path.value())]) {
-    // Updater is already installed.
     return;
   }
 
@@ -213,6 +203,7 @@ void MaybeInstallUpdater(UpdaterScope scope) {
   if (!setup_path || ![NSFileManager.defaultManager
                          fileExistsAtPath:base::apple::FilePathToNSString(
                                               setup_path.value())]) {
+    VLOG(2) << "No existing updater to install from.";
     return;
   }
 
@@ -407,7 +398,6 @@ void KSAdminApp::Register() {
   registration.version = base::Version(SwitchValue(kCommandVersion));
   registration.existence_checker_path =
       base::FilePath(SwitchValue(kCommandXCPath));
-
   const std::string brand_key = SwitchValue(kCommandBrandKey);
   if (!brand_key.empty() &&
       brand_key != base::SysNSStringToUTF8(kCRUTicketBrandKey)) {
@@ -418,22 +408,22 @@ void KSAdminApp::Register() {
   const std::string tag_key = SwitchValue(kCommandTagKey);
   const std::string tag_path = SwitchValue(kCommandTagPath);
   if (tag_key.empty() != tag_path.empty()) {
-    PrintUsage("--tag-key must be set if and only if --tag_path is set.");
+    PrintUsage("--tag-key must be set if and only if --tag-path is set.");
     return;
-  }
-  if (!tag_key.empty()) {
-    registration.ap = ReadPlist(tag_path, tag_key);
+  } else if (!tag_key.empty() && !tag_path.empty()) {
+    registration.ap_path = base::FilePath(tag_path);
+    registration.ap_key = tag_key;
   }
 
   const std::string version_key = SwitchValue(kCommandVersionKey);
   const std::string version_path = SwitchValue(kCommandVersionPath);
   if (version_key.empty() != version_path.empty()) {
     PrintUsage(
-        "--version-key must be set if and only if --version_path is set.");
+        "--version-key must be set if and only if --version-path is set.");
     return;
-  }
-  if (!version_key.empty()) {
-    registration.version = base::Version(ReadPlist(version_path, version_key));
+  } else if (!version_key.empty() && !version_path.empty()) {
+    registration.version_path = base::FilePath(version_path);
+    registration.version_key = version_key;
   }
 
   if (registration.app_id.empty()) {

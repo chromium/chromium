@@ -62,7 +62,7 @@ class CORE_EXPORT LargestTextPaintManager final
 
   inline TextRecord* LargestText() {
     DCHECK(!largest_text_ || !largest_text_->paint_time.is_null());
-    return largest_text_;
+    return largest_text_.Get();
   }
   void MaybeUpdateLargestText(TextRecord* record);
   void MaybeUpdateLargestIgnoredText(const LayoutObject&,

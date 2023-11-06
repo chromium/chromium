@@ -6,6 +6,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
@@ -30,6 +31,10 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace extensions {
 
@@ -74,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectAppWindowView) {
   ASSERT_EQ(2u, info->views.size());
   const api::developer_private::ExtensionView* window_view = nullptr;
   for (const auto& view : info->views) {
-    if (view.type == api::developer_private::VIEW_TYPE_APP_WINDOW) {
+    if (view.type == api::developer_private::ViewType::kAppWindow) {
       window_view = &view;
       break;
     }
@@ -118,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectEmbeddedOptionsPage) {
   // The embedded options page should show up.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  ASSERT_EQ(api::developer_private::VIEW_TYPE_EXTENSION_GUEST, view.type);
+  ASSERT_EQ(api::developer_private::ViewType::kExtensionGuest, view.type);
 
   // Inspect the embedded options page.
   auto function =
@@ -172,9 +177,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(
-      api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
-      view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kExtensionServiceWorkerBackground,
+            view.type);
   // The service worker should be inactive (indicated by -1 for
   // the process id).
   EXPECT_EQ(-1, view.render_process_id);
@@ -229,9 +233,8 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   // There should be a worker based background for the extension.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(
-      api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
-      view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kExtensionServiceWorkerBackground,
+            view.type);
   EXPECT_NE(-1, view.render_process_id);
 
   // Inspect the service worker page.
@@ -307,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   {
     const api::developer_private::ExtensionView& view = info->views[0];
     EXPECT_EQ(
-        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        api::developer_private::ViewType::kExtensionServiceWorkerBackground,
         view.type);
     EXPECT_NE(-1, view.render_process_id);
     main_render_process_id = view.render_process_id;
@@ -328,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest,
   int incognito_render_process_id = -1;
   for (auto& view : info->views) {
     EXPECT_EQ(
-        api::developer_private::VIEW_TYPE_EXTENSION_SERVICE_WORKER_BACKGROUND,
+        api::developer_private::ViewType::kExtensionServiceWorkerBackground,
         view.type);
     EXPECT_NE(-1, view.render_process_id);
     if (view.incognito) {
@@ -420,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
   // metadata.
   ASSERT_EQ(1u, info->views.size());
   const api::developer_private::ExtensionView& view = info->views[0];
-  EXPECT_EQ(api::developer_private::VIEW_TYPE_OFFSCREEN_DOCUMENT, view.type);
+  EXPECT_EQ(api::developer_private::ViewType::kOffscreenDocument, view.type);
   content::WebContents* offscreen_contents =
       offscreen_document->host_contents();
   EXPECT_EQ(offscreen_url.spec(), view.url);
@@ -455,6 +458,61 @@ IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, InspectOffscreenDocument) {
 
   // Tidy up.
   DevToolsWindowTesting::CloseDevToolsWindowSync(dev_tools_window);
+}
+
+IN_PROC_BROWSER_TEST_F(DeveloperPrivateApiTest, UninstallMultipleExtensions) {
+  // Load first extension.
+  static constexpr char kManifest_0[] =
+      R"({
+           "name": "Multiple extensions uninstall test 0",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir_0;
+  test_dir_0.WriteManifest(kManifest_0);
+  const Extension* extension_0 = LoadExtension(test_dir_0.UnpackedPath());
+  ASSERT_TRUE(extension_0);
+  std::string extension_0_id = extension_0->id();
+
+  // Load second extension.
+  static constexpr char kManifest_1[] =
+      R"({
+           "name": "Multiple extensions uninstall test 1",
+           "manifest_version": 3,
+           "version": "0.1"
+         })";
+  TestExtensionDir test_dir_1;
+  test_dir_1.WriteManifest(kManifest_1);
+  const Extension* extension_1 = LoadExtension(test_dir_1.UnpackedPath());
+  ASSERT_TRUE(extension_1);
+  std::string extension_1_id = extension_1->id();
+
+  auto function = base::MakeRefCounted<
+      api::DeveloperPrivateRemoveMultipleExtensionsFunction>();
+  std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
+      new ExtensionFunctionDispatcher(profile()));
+  function->SetDispatcher(dispatcher->AsWeakPtr());
+
+  std::string args =
+      base::StrCat({"[[\"", extension_0_id, "\", \"", extension_1_id, "\"]]"});
+  function->SetArgs(base::test::ParseJsonList(args));
+
+  // Create a waiter to wait for the uninstall dialog to show up.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "ExtensionMultipleUninstallDialog");
+  api_test_utils::SendResponseHelper response_helper(function.get());
+
+  function->RunWithValidation().Execute();
+
+  auto* widget = waiter.WaitIfNeededAndGet();
+  widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+  response_helper.WaitForResponse();
+
+  // Verify the extensions are uninstalled.
+  EXPECT_FALSE(extension_registry()->GetExtensionById(
+      extension_0_id, ExtensionRegistry::EVERYTHING));
+  EXPECT_FALSE(extension_registry()->GetExtensionById(
+      extension_1_id, ExtensionRegistry::EVERYTHING));
 }
 
 }  // namespace extensions

@@ -20,9 +20,7 @@ import org.chromium.base.test.util.Feature;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Sink observation tests for BrowserMediaRouter.
- */
+/** Sink observation tests for BrowserMediaRouter. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTestBase {
@@ -32,10 +30,13 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID1, mRouteProvider, new ArrayList<MediaSink>());
 
         assertEquals(1, mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().size());
-        assertEquals(1,
+        assertEquals(
+                1,
                 mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().get(SOURCE_ID1).size());
-        assertEquals(0,
-                mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
+        assertEquals(
+                0,
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
                         .get(SOURCE_ID1)
                         .get(mRouteProvider)
                         .size());
@@ -54,17 +55,22 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID1, mRouteProvider, sinkList);
 
         assertEquals(1, mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().size());
-        assertEquals(1,
+        assertEquals(
+                1,
                 mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().get(SOURCE_ID1).size());
-        assertEquals(1,
-                mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
+        assertEquals(
+                1,
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
                         .get(SOURCE_ID1)
                         .get(mRouteProvider)
                         .size());
-        assertTrue(mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
-                           .get(SOURCE_ID1)
-                           .get(mRouteProvider)
-                           .contains(sink));
+        assertTrue(
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
+                        .get(SOURCE_ID1)
+                        .get(mRouteProvider)
+                        .contains(sink));
 
         assertEquals(1, mBrowserMediaRouter.getSinksPerSourceForTest().size());
         assertEquals(1, mBrowserMediaRouter.getSinksPerSourceForTest().get(SOURCE_ID1).size());
@@ -82,24 +88,32 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
         mBrowserMediaRouter.onSinksReceived(SOURCE_ID2, mRouteProvider, sinkList);
 
         assertEquals(2, mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().size());
-        assertEquals(1,
+        assertEquals(
+                1,
                 mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().get(SOURCE_ID1).size());
-        assertEquals(0,
-                mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
+        assertEquals(
+                0,
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
                         .get(SOURCE_ID1)
                         .get(mRouteProvider)
                         .size());
-        assertEquals(1,
+        assertEquals(
+                1,
                 mBrowserMediaRouter.getSinksPerSourcePerProviderForTest().get(SOURCE_ID2).size());
-        assertEquals(1,
-                mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
+        assertEquals(
+                1,
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
                         .get(SOURCE_ID2)
                         .get(mRouteProvider)
                         .size());
-        assertTrue(mBrowserMediaRouter.getSinksPerSourcePerProviderForTest()
-                           .get(SOURCE_ID2)
-                           .get(mRouteProvider)
-                           .contains(sink));
+        assertTrue(
+                mBrowserMediaRouter
+                        .getSinksPerSourcePerProviderForTest()
+                        .get(SOURCE_ID2)
+                        .get(mRouteProvider)
+                        .contains(sink));
         assertEquals(2, mBrowserMediaRouter.getSinksPerSourceForTest().size());
         assertEquals(0, mBrowserMediaRouter.getSinksPerSourceForTest().get(SOURCE_ID1).size());
         assertEquals(1, mBrowserMediaRouter.getSinksPerSourceForTest().get(SOURCE_ID2).size());

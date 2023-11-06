@@ -42,7 +42,7 @@ VIEWS_EXAMPLES_EXPORT void LogStatus(const std::string& string);
 // Same as LogStatus(), but with a format string.
 template <typename... Args>
 void PrintStatus(const char* format, Args... args) {
-  LogStatus(base::StringPrintf(format, args...));
+  LogStatus(base::StringPrintfNonConstexpr(format, args...));
 }
 
 }  // namespace examples

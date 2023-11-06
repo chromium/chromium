@@ -589,6 +589,30 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // `target_bounds_in_screen`.
   void AnimateDragImageLayer(const gfx::Rect& target_bounds_in_screen);
 
+  using PendingAppsLayersMap =
+      std::map<std::string, std::unique_ptr<ui::LayerTreeOwner>>;
+
+  // Add a copy of a layer from an app that is pending for removal into
+  // `pending_promise_apps_removals_`.
+  void AddPendingLayerOwnerForPromiseApp(
+      const std::string& id,
+      std::unique_ptr<ui::LayerTreeOwner> layer_owner);
+
+  // Animate the transition of an incoming app if there was previously a promise
+  // app in place.
+  void AnimateTransitionForPromiseApps(views::View* view,
+                                       ui::Layer* promise_app_layer,
+                                       base::OnceClosure callback);
+
+  // Called when the transition animation between apps is done.
+  void FinishAnimationForPromiseApps(const std::string& pending_app_id);
+
+  // Duplicates the layer for the `promise_app_view` and adds it to
+  // `pending_promise_apps_removals_` if an animation would be required for it
+  // on the future.
+  void MaybeDuplicatePromiseAppForRemoval(ShelfAppButton* promise_app_view,
+                                          const ShelfItem& item);
+
   // The model; owned by Launcher.
   const raw_ptr<ShelfModel, ExperimentalAsh> model_;
 
@@ -776,6 +800,10 @@ class ASH_EXPORT ShelfView : public views::AccessiblePaneView,
   // The layer that contains the icon image for the item under the drag cursor.
   // Assigned before the dropping animation is scheduled.
   std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_;
+
+  // A list of pending promise app layers to be removed when the actual app is
+  // pushed into the apps grid.
+  PendingAppsLayersMap pending_promise_apps_removals_;
 
   base::WeakPtrFactory<ShelfView> weak_factory_{this};
 };

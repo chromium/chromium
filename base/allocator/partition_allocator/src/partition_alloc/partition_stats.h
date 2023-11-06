@@ -56,6 +56,14 @@ struct ThreadAllocStats {
   uint64_t dealloc_total_size;
 };
 
+struct LightweightQuarantineStats {
+  size_t size_in_bytes;
+  size_t count;
+  size_t cumulative_size_in_bytes;
+  size_t cumulative_count;
+  size_t quarantine_miss_count;  // Object too large.
+};
+
 // Struct used to retrieve total memory usage of a partition. Used by
 // PartitionStatsDumper implementation.
 struct PartitionMemoryStats {

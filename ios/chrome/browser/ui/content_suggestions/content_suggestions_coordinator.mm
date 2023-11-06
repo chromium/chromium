@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -55,6 +56,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -74,6 +76,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack_parcel_list_half_sheet_table_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -84,6 +87,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_default_browser_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_show_more_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -146,6 +150,7 @@
   // The edit half sheet for toggling all Magic Stack modules.
   MagicStackHalfSheetTableViewController*
       _magicStackHalfSheetTableViewController;
+  MagicStackHalfSheetMediator* _magicStackHalfSheetMediator;
 
   // The parcel list half sheet to see all tracked parcels.
   MagicStackParcelListHalfSheetTableViewController*
@@ -258,6 +263,11 @@
   self.contentSuggestionsViewController.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsViewController.setUpListViewDelegate = self;
+  self.contentSuggestionsViewController.layoutGuideCenter =
+      LayoutGuideCenterForBrowser(self.browser);
+  self.contentSuggestionsViewController.parcelTrackingCommandHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         ParcelTrackingOptInCommands);
 
   self.contentSuggestionsMediator.consumer =
       self.contentSuggestionsViewController;
@@ -281,6 +291,8 @@
   self.sharingCoordinator = nil;
   [_defaultBrowserPromoCoordinator stop];
   _defaultBrowserPromoCoordinator = nil;
+  [_magicStackHalfSheetMediator disconnect];
+  _magicStackHalfSheetMediator = nil;
   [_magicStackHalfSheetTableViewController.presentingViewController
       dismissViewControllerAnimated:NO
                          completion:nil];
@@ -353,9 +365,15 @@
 
 - (void)didTapMagicStackEditButton {
   _magicStackHalfSheetTableViewController =
-      [[MagicStackHalfSheetTableViewController alloc]
-          initWithPrefService:GetApplicationContext()->GetLocalState()];
+      [[MagicStackHalfSheetTableViewController alloc] init];
+
+  _magicStackHalfSheetMediator = [[MagicStackHalfSheetMediator alloc]
+      initWithPrefService:GetApplicationContext()->GetLocalState()];
+  _magicStackHalfSheetMediator.consumer =
+      _magicStackHalfSheetTableViewController;
   _magicStackHalfSheetTableViewController.delegate = self;
+  _magicStackHalfSheetTableViewController.modelDelegate =
+      _magicStackHalfSheetMediator;
 
   UINavigationController* navViewController = [[UINavigationController alloc]
       initWithRootViewController:_magicStackHalfSheetTableViewController];
@@ -401,6 +419,8 @@
 #pragma mark - MagicStackHalfSheetTableViewControllerDelegate
 
 - (void)dismissMagicStackHalfSheet {
+  [_magicStackHalfSheetMediator disconnect];
+  _magicStackHalfSheetMediator = nil;
   [_magicStackHalfSheetTableViewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:nil];
@@ -537,9 +557,9 @@
   CHECK(IsSafetyCheckMagicStackEnabled());
 
   [self.NTPMetricsDelegate safetyCheckOpened];
-  [self.contentSuggestionsMetricsRecorder
-      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                  kSafetyCheck];
+  [self.contentSuggestionsMediator
+      logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                         kSafetyCheck];
 
   IOSChromeSafetyCheckManager* safetyCheckManager =
       IOSChromeSafetyCheckManagerFactory::GetForBrowserState(
@@ -590,6 +610,17 @@
 #pragma mark - SetUpListViewDelegate
 
 - (void)didSelectSetUpListItem:(SetUpListItemType)type {
+  if (IsMagicStackEnabled()) {
+    if (set_up_list_utils::ShouldShowCompactedSetUpListModule()) {
+      [self.contentSuggestionsMediator
+          logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                             kCompactedSetUpList];
+    } else {
+      [self.contentSuggestionsMediator
+          logMagicStackEngagementForType:SetUpListModuleTypeForSetUpListType(
+                                             type)];
+    }
+  }
   [self.contentSuggestionsMetricsRecorder recordSetUpListItemSelected:type];
   [self.NTPMetricsDelegate setUpListItemOpened];
   PrefService* localState = GetApplicationContext()->GetLocalState();

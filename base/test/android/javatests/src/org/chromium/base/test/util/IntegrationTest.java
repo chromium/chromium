@@ -11,16 +11,14 @@ import java.lang.annotation.Target;
 
 /**
  * This annotation is for integration tests.
- * <p>
- * Examples of integration tests are tests that rely on real instances of the
- * application's services and components (e.g. Search) to test the system as
- * a whole. These tests may use additional command-line flags to configure the
- * existing backends to use.
- * <p>
- * Such tests are likely NOT reliable enough to run on tree closing bots and
- * should only be run on FYI bots.
+ *
+ * <p>Examples of integration tests are tests that rely on real instances of the application's
+ * services and components (e.g. Search) to test the system as a whole. These tests may use
+ * additional command-line flags to configure the existing backends to use.
+ *
+ * <p>Such tests are likely NOT reliable enough to run on tree closing bots and should only be run
+ * on FYI bots.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface IntegrationTest {
-}
+public @interface IntegrationTest {}

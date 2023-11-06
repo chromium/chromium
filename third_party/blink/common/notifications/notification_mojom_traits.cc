@@ -76,7 +76,7 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
   platform_notification_data->data.assign(data.begin(), data.end());
 
   platform_notification_data->timestamp =
-      base::Time::FromJsTime(notification_data.timestamp());
+      base::Time::FromMillisecondsSinceUnixEpoch(notification_data.timestamp());
 
   platform_notification_data->renotify = notification_data.renotify();
 

@@ -253,8 +253,35 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
           ? ConvertUTF8ToJavaString(env, primary_account_id->ToString())
           : nullptr;
   signin::
-      Java_ProfileOAuth2TokenServiceDelegate_seedAndReloadAccountsWithPrimaryAccount(
+      Java_ProfileOAuth2TokenServiceDelegate_legacySeedAndReloadAccountsWithPrimaryAccount(
           env, java_ref_, j_account_id);
+}
+
+void ProfileOAuth2TokenServiceDelegateAndroid::
+    SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
+        JNIEnv* env,
+        const base::android::JavaParamRef<jobjectArray>& j_core_account_infos,
+        const base::android::JavaParamRef<jobject>& j_primary_account_id) {
+  std::vector<CoreAccountInfo> core_account_infos;
+  for (size_t i = 0; i < SafeGetArrayLength(env, j_core_account_infos); i++) {
+    base::android::ScopedJavaLocalRef<jobject> core_account_info_java(
+        env, env->GetObjectArrayElement(j_core_account_infos.obj(), i));
+    core_account_infos.push_back(
+        ConvertFromJavaCoreAccountInfo(env, core_account_info_java));
+  }
+
+  CoreAccountId primary_account_id =
+      ConvertFromJavaCoreAccountId(env, j_primary_account_id);
+  account_tracker_service_->SeedAccountsInfo(core_account_infos,
+                                             primary_account_id);
+  std::vector<CoreAccountId> account_ids;
+  for (const CoreAccountInfo& account_info : core_account_infos) {
+    CoreAccountId id(account_info.account_id);
+    if (!id.empty()) {
+      account_ids.push_back(std::move(id));
+    }
+  }
+  UpdateAccountList(primary_account_id, GetValidAccounts(), account_ids);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
@@ -467,11 +494,8 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
                       CREDENTIALS_REJECTED_BY_SERVER);
   }
 
-  const base::Time expiration_time =
-      expiration_time_secs == 0
-          ? base::Time()
-          : base::Time::FromJavaTime(expiration_time_secs * 1000);
-
-  std::move(*heap_callback).Run(err, token, expiration_time);
+  std::move(*heap_callback)
+      .Run(err, token,
+           base::Time::FromSecondsSinceUnixEpoch(expiration_time_secs));
 }
 }  // namespace signin

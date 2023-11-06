@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "dbus/object_manager.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/floss/floss_version.h"
 
 namespace base {
 class Thread;
@@ -169,7 +170,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   }
 
   // Returns true if Object Manager is supported.
-  bool IsObjectManagerSupported() const { return object_manager_supported_; }
+  bool IsObjectManagerSupported() const {
+    return object_manager_supported_ && mgmt_client_present_;
+  }
 
   // Shuts down the existing adapter clients and initializes a new set for the
   // given adapter. When the new adapter clients are ready, calls the |on_ready|
@@ -230,6 +233,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   void OnObjectManagerSupported(dbus::Response* response);
   void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
+  void OnManagerClientInitComplete();
 
   // Initializes the manager client
   void InitializeManagerClient();
@@ -266,6 +270,9 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
   bool object_manager_support_known_ = false;
   bool object_manager_supported_ = false;
 
+  // Whether the manager client has been initialized successfully.
+  bool mgmt_client_present_ = false;
+
   bool adapter_interface_present_ = false;
   bool adapter_logging_interface_present_ = false;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -278,6 +285,10 @@ class DEVICE_BLUETOOTH_EXPORT FlossDBusManager
 
   // Currently active Bluetooth adapter
   int active_adapter_ = kInvalidAdapter;
+
+  // Floss API version exported by Floss daemon or
+  // specified by a test stub for unit tests.
+  base::Version version_;
 
   // Callback for when adapter clients are ready after init.
   std::unique_ptr<ClientInitializer> client_on_ready_;

@@ -30,6 +30,7 @@
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -92,9 +93,12 @@ class AutofillManager
     virtual void OnBeforeTextFieldDidChange(AutofillManager& manager,
                                             FormGlobalId form,
                                             FieldGlobalId field) {}
+
+    // TODO(crbug.com/1331312): Get rid of `text_value`.
     virtual void OnAfterTextFieldDidChange(AutofillManager& manager,
                                            FormGlobalId form,
-                                           FieldGlobalId field) {}
+                                           FieldGlobalId field,
+                                           std::u16string text_value) {}
 
     virtual void OnBeforeTextFieldDidScroll(AutofillManager& manager,
                                             FormGlobalId form,
@@ -112,7 +116,8 @@ class AutofillManager
 
     virtual void OnBeforeAskForValuesToFill(AutofillManager& manager,
                                             FormGlobalId form,
-                                            FieldGlobalId field) {}
+                                            FieldGlobalId field,
+                                            const FormData& form_data) {}
     virtual void OnAfterAskForValuesToFill(AutofillManager& manager,
                                            FormGlobalId form,
                                            FieldGlobalId field) {}
@@ -158,7 +163,7 @@ class AutofillManager
     virtual void OnFillOrPreviewDataModelForm(
         AutofillManager& manager,
         FormGlobalId form,
-        mojom::AutofillActionPersistence action_persistence,
+        mojom::ActionPersistence action_persistence,
         base::span<const FormFieldData* const> filled_fields,
         absl::variant<const AutofillProfile*, const CreditCard*>
             profile_or_credit_card) {}
@@ -205,6 +210,15 @@ class AutofillManager
   // Returns true only if the previewed form should be cleared.
   virtual bool ShouldClearPreviewedForm() = 0;
 
+  // Records filling information and routes the filling back to the driver.
+  // TODO(crbug.com/1331312): Replace FormFieldData parameter by FieldGlobalId.
+  virtual void FillOrPreviewField(mojom::ActionPersistence action_persistence,
+                                  mojom::TextReplacement text_replacement,
+                                  const FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& value,
+                                  PopupItemId popup_item_id) = 0;
+
   // Invoked when the value of textfield is changed.
   // |bounding_box| are viewport coordinates.
   // Virtual for testing.
@@ -248,17 +262,6 @@ class AutofillManager
   virtual void OnFormSubmitted(const FormData& form,
                                bool known_success,
                                mojom::SubmissionSource source);
-
-  void FillCreditCardForm(const FormData& form,
-                          const FormFieldData& field,
-                          const CreditCard& credit_card,
-                          const std::u16string& cvc,
-                          const AutofillTriggerDetails& trigger_details);
-
-  void FillProfileForm(const AutofillProfile& profile,
-                       const FormData& form,
-                       const FormFieldData& field,
-                       const AutofillTriggerDetails& trigger_details);
 
   // Invoked when |form| has been filled with the value given by
   // FillOrPreviewForm.
@@ -423,18 +426,6 @@ class AutofillManager
   virtual void OnDidFillAutofillFormDataImpl(
       const FormData& form,
       const base::TimeTicks timestamp) = 0;
-
-  virtual void FillCreditCardFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const CreditCard& credit_card,
-      const std::u16string& cvc,
-      const AutofillTriggerDetails& trigger_details) = 0;
-  virtual void FillProfileFormImpl(
-      const FormData& form,
-      const FormFieldData& field,
-      const AutofillProfile& profile,
-      const AutofillTriggerDetails& trigger_details) = 0;
 
   virtual void OnFocusNoLongerOnFormImpl(bool had_interacted_form) = 0;
 

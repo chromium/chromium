@@ -20,6 +20,8 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -142,6 +144,8 @@ TEST_F(NativeWidgetAuraTest, CenterWindowSmallParentNotAtOrigin) {
 
 // View which handles both mouse and gesture events.
 class EventHandlingView : public View {
+  METADATA_HEADER(EventHandlingView, View)
+
  public:
   EventHandlingView() = default;
   EventHandlingView(const EventHandlingView&) = delete;
@@ -174,6 +178,9 @@ class EventHandlingView : public View {
  private:
   std::set<ui::EventType> handled_gestures_set_;
 };
+
+BEGIN_METADATA(EventHandlingView)
+END_METADATA
 
 // Verifies that when the mouse click interrupts the gesture scroll, the view
 // where the gesture scroll starts should receive the scroll end event.
@@ -488,6 +495,8 @@ TEST_F(NativeWidgetAuraTest, GetClientAreaScreenBounds) {
 
 // View subclass that tracks whether it has gotten a gesture event.
 class GestureTrackingView : public View {
+  METADATA_HEADER(GestureTrackingView, View)
+
  public:
   GestureTrackingView() = default;
 
@@ -513,6 +522,9 @@ class GestureTrackingView : public View {
   // Dictates what OnGestureEvent() returns.
   bool consume_gesture_event_ = true;
 };
+
+BEGIN_METADATA(GestureTrackingView)
+END_METADATA
 
 // Verifies a capture isn't set on touch press and that the view that gets
 // the press gets the release.

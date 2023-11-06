@@ -73,6 +73,7 @@ void NavigationHandleObserver::DidFinishNavigation(
   navigation_handle_timing_ = navigation_handle->GetNavigationHandleTiming();
 
   handle_ = nullptr;
+  content_settings_ = navigation_handle->GetContentSettingsForTesting();
 }
 
 std::string NavigationHandleObserver::GetNormalizedResponseHeader(

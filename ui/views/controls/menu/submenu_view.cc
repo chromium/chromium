@@ -110,7 +110,7 @@ void SubmenuView::UpdateMenuPartSizes() {
   if (config.reserve_dedicated_arrow_column &&
       base::ranges::any_of(menu_items, &MenuItemView::HasSubmenu)) {
     trailing_padding_ +=
-        kSubmenuArrowSize +
+        config.arrow_size +
         (base::Contains(menu_items, MenuItemView::Type::kActionableSubMenu,
                         &MenuItemView::GetType)
              ? config.actionable_submenu_arrow_to_edge_padding

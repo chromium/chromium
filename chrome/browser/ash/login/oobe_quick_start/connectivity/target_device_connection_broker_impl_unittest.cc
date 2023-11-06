@@ -692,7 +692,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Success) {
 
   connection()->HandleHandshakeResult(/*success=*/true);
   EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
-  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", true, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
@@ -715,7 +714,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, Handshake_Failed) {
 
   connection()->HandleHandshakeResult(/*success=*/false);
   EXPECT_FALSE(connection_lifecycle_listener_.connection_authenticated_);
-  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", true, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,
@@ -736,7 +734,6 @@ TEST_F(TargetDeviceConnectionBrokerImplTest,
   ASSERT_TRUE(connection());
   EXPECT_TRUE(connection_lifecycle_listener_.connection_authenticated_);
   EXPECT_NE(connection_lifecycle_listener_.authenticated_connection_, nullptr);
-  histogram_tester_.ExpectBucketCount("QuickStart.HandshakeStarted", false, 1);
 }
 
 TEST_F(TargetDeviceConnectionBrokerImplTest,

@@ -29,6 +29,7 @@
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
 <translation id="1104084341931202936">แสดงการตั้งค่าการเข้าถึงพิเศษ</translation>
 <translation id="1104621072296271835">อุปกรณ์จะทำงานได้ดียิ่งขึ้นเมื่อใช้ร่วมกัน</translation>
+<translation id="1106446201446919638">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="1111021433905331574">คุณเปลี่ยนสีไฟแบ็กไลต์ของแป้นพิมพ์ได้ในการตั้งค่า &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">เปิด/ปิดอินเทอร์เน็ตมือถือ <ph name="STATE" /></translation>
 <translation id="112308213915226829">ซ่อนชั้นวางโดยอัตโนมัติ</translation>
@@ -115,12 +116,14 @@
 <translation id="1391102559483454063">เปิด</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> ใช้ปุ่มลูกศรเพื่อไปยังวันที่ต่างๆ</translation>
+<translation id="141170878022560212">ปุ่มกลาง</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ติดตั้งแอปแล้ว</translation>
 <translation id="1414919006379339073">ปิดหน้าต่างปัจจุบัน</translation>
 <translation id="1415846719612499304">แสดงรายการเครือข่าย <ph name="STATE_TEXT" /></translation>
 <translation id="1419738280318246476">ปลดล็อกอุปกรณ์เพื่อดำเนินการแจ้งเตือน</translation>
 <translation id="1420408895951708260">เปิด/ปิดแสงตอนกลางคืน <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ยอมรับ</translation>
+<translation id="1435537621343861112">เริ่มการพิมพ์ตามคำบอกไม่ได้ เนื่องจากไมค์ปิดอยู่</translation>
 <translation id="1455242230282523554">แสดงการตั้งค่าภาษา</translation>
 <translation id="1460620680449458626">ระดับเสียงปิดเสียงอยู่</translation>
 <translation id="14648076227129703">การดำเนินการนี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
@@ -191,6 +194,7 @@
 <translation id="1737078180382804488">ปิดการตั้งค่าการดูการแจ้งเตือนของโทรศัพท์</translation>
 <translation id="174102739345480129">ปิดตัวทำเครื่องหมายอยู่</translation>
 <translation id="1743570585616704562">ไม่รู้จักลายนิ้วมือ</translation>
+<translation id="1743927604032653654">ยุบการแจ้งเตือนเกี่ยวกับ<ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
 <translation id="1747336645387973286">วันที่ครบกำหนด <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -201,16 +205,13 @@
 <translation id="1757857692711134412">ปิดจนถึงพระอาทิตย์ตก</translation>
 <translation id="1768366657309696705">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด <ph name="LAUNCHER_KEY_NAME" /> + จุด หากต้องการใช้แป้น Insert ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Shift + Backspace</translation>
 <translation id="1770726142253415363">ย้ายไปที่แถว <ph name="ROW_NUMBER" /> คอลัมน์ <ph name="COLUMN_NUMBER" /></translation>
-<translation id="1771458705381257690">เปิด <ph name="NAME" /> เพื่อตั้งค่าและปรับแต่งอุปกรณ์</translation>
 <translation id="1771761307086386028">เลื่อนไปทางขวา</translation>
 <translation id="1774796056689732716">ปฏิทิน, <ph name="CURRENT_MONTH_YEAR" />, เลือกวันที่ <ph name="DATE" /> อยู่</translation>
 <translation id="1775598828170459419">กำลังแสดง <ph name="NUM_SHOWN_ITEMS" /> จาก <ph name="NUM_TOTAL_ITEMS" /> รายการ</translation>
 <translation id="178347895271755507">ตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
 <translation id="1787955149152357925">ปิด</translation>
 <translation id="1796561540704213354">เว็บไซต์จะรวมหน้าเว็บที่คุณเคยเข้าชมและหน้าเว็บที่เคยเปิด</translation>
-<translation id="1797271123677381264">ลืมรหัสผ่าน</translation>
 <translation id="181103072419391116">ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />, จัดการโดยผู้ดูแลระบบ</translation>
-<translation id="1815245884418711390">เปิด/ปิดฮอตสปอต ฮอตสปอตปิดอยู่</translation>
 <translation id="1816896987747843206">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องได้</translation>
 <translation id="1823280932251546115">ถาดสถานะ เวลา <ph name="TIME" />,
         <ph name="BATTERY" />
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">เปิดเครื่องมือเลือกอีโมจิ</translation>
 <translation id="2088116547584365419">เกม</translation>
 <translation id="209965399369889474">ไม่ได้เชื่อมต่อกับเครือข่าย</translation>
+<translation id="2107581415810719320">ปุ่มอื่นๆ <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">สาย USB-C ที่ใช้ไม่รองรับ Thunderbolt และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="2108303511227308752">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Alt + Backspace หากต้องการใช้แป้น Delete ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
 <translation id="2126242104232412123">เดสก์ใหม่</translation>
@@ -307,11 +309,9 @@
 <translation id="2258734398699965611">ไฟล์ที่แนะนำ</translation>
 <translation id="2268130516524549846">ปิดใช้งานบลูทูธแล้ว</translation>
 <translation id="2268813581635650749">ออกจากระบบทั้งหมด</translation>
-<translation id="2269016722240250274">มีแอปพลิเคชันกำลังใช้ไมโครโฟน</translation>
 <translation id="2276987123919776440">15 นาที</translation>
 <translation id="2277103315734023688">ไปข้างหน้า</translation>
 <translation id="2282073721614284166">เปิดลิงก์ในแท็บ</translation>
-<translation id="2284237890386182187">เปิดอยู่ ไม่มีอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="2292698582925480719">ระดับการแสดงผล</translation>
 <translation id="229397294990920565">กำลังปิดอินเทอร์เน็ตมือถือ...</translation>
 <translation id="2295777434187870477">ไมค์เปิดอยู่ การปิดไมค์จะปิดเสียงการป้อนข้อมูล</translation>
@@ -361,6 +361,7 @@
 <translation id="2465145153332031561">ประสิทธิภาพแบตเตอรี่ <ph name="BATTERY_HEALTH_PERCENTAGE" />%, จำนวนรอบ <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ยืนยันความละเอียด</translation>
 <translation id="2475982808118771221">มีข้อผิดพลาดเกิดขึ้น</translation>
+<translation id="2478076885740497414">ติดตั้งแอป</translation>
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="2484513351006226581">กด <ph name="KEYBOARD_SHORTCUT" /> เพื่อสลับรูปแบบแป้นพิมพ์</translation>
 <translation id="2487915095798731898">เข้าร่วม</translation>
@@ -504,6 +505,7 @@
 <translation id="3105917916468784889">จับภาพหน้าจอ</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (บลูทูธ)</translation>
 <translation id="3113492864356515707">ไฮไลต์รายการก่อนหน้าบนแถบ</translation>
+<translation id="311799651966070385">ปิดการกระตุ้นเตือน</translation>
 <translation id="3120421559657122717">ปิดอุปกรณ์ใช่ไหม</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ประเภทงานของชั้นเรียน</translation>
@@ -519,6 +521,7 @@
 <translation id="3160929076476941240">2 ชม.</translation>
 <translation id="3161500364292033097">ปิดเดสก์และหน้าต่าง</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> จะย้อนกลับเวอร์ชันของ <ph name="DEVICE_TYPE" /> อุปกรณ์จะรีเซ็ตและระบบจะลบข้อมูลทั้งหมด</translation>
+<translation id="3170769098533255179">ไม่มีอุปกรณ์ที่เชื่อมต่อ Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="3171170659304083361">การตั้งค่าวิธีการป้อนข้อมูล</translation>
 <translation id="3176221688814061633">Chromebook หรืออุปกรณ์บลูทูธของคุณกำลังใช้บลูทูธเวอร์ชันเก่า เปิด Bluetooth Super Resolution หรือใช้ไมโครโฟนภายในเพื่อคุณภาพเสียงที่ดีกว่า</translation>
 <translation id="3181441307743005334">การรีสตาร์ทอาจใช้เวลาสักพัก</translation>
@@ -532,6 +535,7 @@
 <translation id="3217205077783620295">ระดับเสียงเปิดอยู่ สลับเปิด/ปิดเพื่อปิดเสียง</translation>
 <translation id="3226991577105957773">และอีก <ph name="COUNT" /> รายการ</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
+<translation id="3233611303007751344">ปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
 <translation id="324366796737464147">การลดเสียงรบกวน</translation>
 <translation id="3249513730522716925">ย้ายหน้าต่าง <ph name="WINDOW_TITLE" /> จากเดสก์ <ph name="ACTIVE_DESK" /> ไปยังเดสก์ <ph name="TARGET_DESK" /> แล้ว</translation>
 <translation id="3253743281242075461">ประเภทงานของชั้นเรียน: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -552,12 +556,15 @@
 <translation id="3306386552969601301">อุปกรณ์ <ph name="DEVICECOUNT" /> เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">เปลี่ยนเป็นโหมดแล็ปท็อปแล้ว</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> ยังมีสิทธิ์ลงชื่อเข้าใช้ภายหลังได้</translation>
+<translation id="3317779231018057649">มีอุปกรณ์ที่เชื่อมต่ออยู่ <ph name="DEVICECOUNT" /> เครื่อง Wi-Fi จะยังคงปิดอยู่ขณะใช้ฮอตสปอต</translation>
 <translation id="3321628682574733415">รหัสผู้ปกครองไม่ถูกต้อง</translation>
 <translation id="332827762492701193">การแจ้งเตือนซ่อนอยู่</translation>
+<translation id="3333674550998107387">ขยายการแจ้งเตือนเกี่ยวกับ<ph name="NOTIFICATION_TITLE" /></translation>
 <translation id="3339826665088060472">การจับภาพหน้าจอคือเครื่องมือในการถ่ายภาพหน้าจอและบันทึกหน้าจอ</translation>
 <translation id="3340978935015468852">การตั้งค่า</translation>
 <translation id="3341303451326249809">จับภาพหน้าจอแล้ว</translation>
 <translation id="334252345105450327">จับภาพหน้าจอ</translation>
+<translation id="3346728094401457853">ป้อนรหัสผ่านของอุปกรณ์สำหรับ <ph name="EMAIL" /></translation>
 <translation id="334927402682780278">เลือกข้อความจากเคอร์เซอร์ไปจนถึงท้ายบรรทัด</translation>
 <translation id="3349345708646875009">เปิดตัวจัดการงาน</translation>
 <translation id="3364721542077212959">เครื่องมือสไตลัส</translation>
@@ -571,7 +578,6 @@
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3389599499324569679">เปิดการพิมพ์ตามคำบอกใช่ไหม</translation>
 <translation id="3394432020929931914">, ขยายแล้ว</translation>
-<translation id="3400357268283240774">การตั้งค่าเพิ่มเติม</translation>
 <translation id="3405101454990027959">เปิดการเข้าถึงไมโครโฟน</translation>
 <translation id="3408735331120433841">กำลังแคสต์หน้าจออยู่ในขณะนี้</translation>
 <translation id="3409584356742878290">แสดงหรือซ่อนตัวตรวจสอบเครื่องมือสำหรับนักพัฒนาแอป</translation>
@@ -590,6 +596,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> นาที</translation>
 <translation id="3445925074670675829">อุปกรณ์ USB-C</translation>
+<translation id="3454555520521576458">ปรับขนาดได้</translation>
 <translation id="3455468639467374593">เทมเพลต <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204">อุปกรณ์ 1 เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="346243998268439747">รีเซ็ตระดับการซูม</translation>
@@ -619,7 +626,6 @@
 <translation id="3563775809269155755">เปิดใช้ฮอตสปอต</translation>
 <translation id="3566240529365775567">เปิดเมื่อสักครู่</translation>
 <translation id="3571734092741541777">ตั้งค่า</translation>
-<translation id="3572988532398145777">คุณขยายการแจ้งเตือนขณะที่แผงเปิดอยู่ไม่ได้ โปรดปิดแผงด้านล่างก่อน</translation>
 <translation id="3573179567135747900">เปลี่ยนกลับเป็น "<ph name="FROM_LOCALE" />" (จำเป็นต้องรีสตาร์ต)</translation>
 <translation id="3576141592585647168">เปลี่ยนแปลงเขตเวลา</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
@@ -632,8 +638,6 @@
 <translation id="3600061223661453002">ปิด</translation>
 <translation id="3604801046548457007">สร้างเดสก์ <ph name="DESK_TITILE" /> แล้ว</translation>
 <translation id="3606978283550408104">เชื่อมต่ออุปกรณ์แสดงผลอักษรเบรลล์แล้ว</translation>
-<translation id="3609301425104788351"><ph name="MIC" />,
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">การเปิดใช้อินเทอร์เน็ตมือถือจะเปิดใช้บลูทูธ</translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3616883743181209306">เมนูได้ย้ายไปอยู่ที่มุมขวาบนของหน้าจอ</translation>
@@ -679,9 +683,7 @@
 <translation id="3781910048497807059">ย้ายโฟกัสไปยังแผงก่อนหน้า</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">ล็อก</translation>
-<translation id="3789841737615482174">ติดตั้ง</translation>
 <translation id="3796215473395753611">Alt + ลูกศรขึ้น</translation>
-<translation id="3796746699333205839">มีแอปพลิเคชันกำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="3798670284305777884">ลำโพง (ภายใน)</translation>
 <translation id="3799080171973636491">คุณกดแป้นพิมพ์ลัดสำหรับแว่นขยายทั้งหน้าจอ จะเปิดแว่นขยายไหม</translation>
 <translation id="380165613292957338">สวัสดี มีอะไรให้ฉันช่วยไหม</translation>
@@ -698,7 +700,6 @@
 <translation id="385300504083504382">จุดเริ่มต้น</translation>
 <translation id="3859364108019690">สตรีมแอปไม่ได้</translation>
 <translation id="3861651314799684201">กด Enter เพื่อบันทึกแบบเต็มหน้าจอ</translation>
-<translation id="3865912916886104060">ไม่มีอุปกรณ์ที่เชื่อมต่อ ระบบจะปิด Wi-Fi เพื่อเริ่มใช้ฮอตสปอต</translation>
 <translation id="3886872229787704059">เปิดวันนี้</translation>
 <translation id="3891340733213178823">กด Ctrl+Shift+Q 2 ครั้งเพื่อออกจากระบบ</translation>
 <translation id="3893630138897523026">ChromeVox (การตอบสนองด้วยเสียง)</translation>
@@ -707,6 +708,7 @@
 <translation id="3899995891769452915">ป้อนข้อมูลด้วยเสียง</translation>
 <translation id="3900355044994618856">เซสชันจะสิ้นสุดใน <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
+<translation id="3906954721959377182">แท็บเล็ต</translation>
 <translation id="3922427723338465344">{0,plural, =1{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน 1 นาที}other{เปลี่ยนอุปกรณ์เป็นเวอร์ชันก่อนหน้าภายใน # นาที}}</translation>
 <translation id="3923494859158167397">ไม่ได้ตั้งค่าเครือข่ายมือถือ</translation>
 <translation id="3925540965556789199"><ph name="DATE" />, กำลังโหลดกิจกรรม</translation>
@@ -767,6 +769,7 @@
 <translation id="4146671046252289537">ย้ายไปยังจุดสิ้นสุดของคำถัดไป</translation>
 <translation id="4146833061457621061">เปิดเพลง</translation>
 <translation id="4150201353443180367">การแสดงผล</translation>
+<translation id="4156293514828496577">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="4165275524535002941">สายสัญญาณอาจไม่รองรับจอแสดงผล</translation>
 <translation id="4177415338862979658">คลิกเพื่อดูรายละเอียด</translation>
 <translation id="4177913004758410636">{0,plural, =1{อัปเดตอุปกรณ์ภายใน 1 วัน}other{อัปเดตอุปกรณ์ภายใน # วัน}}</translation>
@@ -783,7 +786,6 @@
 <translation id="4197790712631116042">ปิด</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> ไม่พร้อมใช้งาน</translation>
 <translation id="4201051445878709314">แสดงเดือนที่ผ่านมา</translation>
-<translation id="4202362334312791952">มีอุปกรณ์ที่เชื่อมต่ออยู่ 1 เครื่อง ระบบจะปิด Wi-Fi เพื่อเริ่มใช้ฮอตสปอต</translation>
 <translation id="4209973997261364186">Wi-Fi เปิดอยู่</translation>
 <translation id="4212472694152630271">เปลี่ยนไปใช้ PIN</translation>
 <translation id="4215497585250573029">การตั้งค่า VPN</translation>
@@ -811,6 +813,7 @@
 <translation id="428715201724021596">กำลังเชื่อมต่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">ล้างการแจ้งเตือนทั้งหมด <ph name="COUNT" /> รายการ</translation>
+<translation id="4300272766492248925">เปิดแอป</translation>
 <translation id="430191667033048642">ย้าย <ph name="MOVED_APP_NAME" /> ไปยังโฟลเดอร์ <ph name="FOLDER_NAME" /> แล้ว</translation>
 <translation id="4302592941791324970">ไม่พร้อมใช้งาน</translation>
 <translation id="4303223480529385476">ขยายพื้นที่แสดงสถานะ</translation>
@@ -827,6 +830,7 @@
 <translation id="4364101114148522660">กำลังบันทึก <ph name="DURATION" /></translation>
 <translation id="4371348193907997655">การตั้งค่าการแคสต์</translation>
 <translation id="4375482231364171368">ค้นหาในแถบที่อยู่</translation>
+<translation id="4378154925671717803">โทรศัพท์</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" /> ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" /> เปอร์เซ็นต์</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
 <translation id="4379531060876907730">นี่คือเครื่องมือสไตลัส</translation>
@@ -876,6 +880,7 @@
 <translation id="4566144812051858745">ไม่สนใจคำแนะนำใดๆ</translation>
 <translation id="4569753163207712681">ดูรูปภาพ สื่อ และแอปล่าสุดของโทรศัพท์</translation>
 <translation id="4573176682887762361">"พิมพ์[คำหรือวลี]"</translation>
+<translation id="4577188182049003486">เมื่อเปิดฮอตสปอตไว้ Wi-Fi จะปิด</translation>
 <translation id="4577274620589681794">หมดเวลา · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">แสดงตัวอย่าง</translation>
 <translation id="4578906031062871102">เมนูการตั้งค่าเปิดอยู่</translation>
@@ -883,6 +888,7 @@
 <translation id="4585337515783392668">หยุดแคสต์ไปยังเครื่องรับที่ไม่รู้จัก</translation>
 <translation id="4596144739579517758">ธีมมืดปิดอยู่</translation>
 <translation id="4611292653554630842">ลงชื่อเข้าสู่ระบบ</translation>
+<translation id="462160925400706389">เชื่อมต่อ <ph name="NAME" /> แล้ว</translation>
 <translation id="4623167406982293031">ยืนยันบัญชี</translation>
 <translation id="4628757576491864469">อุปกรณ์</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, การให้ดาว <ph name="RATING_SCORE" /></translation>
@@ -897,6 +903,7 @@
 <translation id="4659419629803378708">เปิดใช้ ChromeVox แล้ว</translation>
 <translation id="4666911709726371538">แสดงแอปเพิ่มเติม</translation>
 <translation id="4667099493359681081">กำลังดาวน์โหลด <ph name="FILENAME" /></translation>
+<translation id="4672539464599646374">เปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
@@ -965,7 +972,6 @@
 <translation id="4936329710968938986">ทุกคน ปิดอยู่</translation>
 <translation id="4937170330762390348">ฟีเจอร์การพิมพ์ตามคำบอกช่วยให้คุณพิมพ์ด้วยเสียงได้ กดแป้นให้พิมพ์ตามคำบอกหรือเลือกไอคอนไมโครโฟนที่ด้านล่างของหน้าจอเมื่อคุณอยู่ในช่องข้อความ ภาษาสำหรับการพิมพ์ตามคำบอกตั้งค่าเป็น<ph name="LANGUAGE" /> จะมีการดาวน์โหลดไฟล์คำพูดเพื่อให้คุณใช้การพิมพ์ตามคำบอกแบบออฟไลน์ได้ คุณเปลี่ยนภาษาสำหรับการพิมพ์ตามคำบอกได้ทุกเมื่อในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="4938176435186993759">ซ่อนคำแนะนำทั้งหมด</translation>
-<translation id="4943007472417128747">ปิดฮอตสปอตเพื่อใช้ Wi-Fi แล้ว หากต้องการใช้ฮอตสปอต ให้ปิด Wi-Fi</translation>
 <translation id="4945196315133970626">ปิดการแจ้งเตือน</translation>
 <translation id="4946376291507881335">จับภาพ</translation>
 <translation id="495046168593986294">เลื่อนขึ้น</translation>
@@ -986,7 +992,6 @@
 <translation id="5009463889040999939">กำลังเปลี่ยนชื่อโปรไฟล์ การดำเนินการนี้อาจใช้เวลาสักครู่</translation>
 <translation id="5016558321564993266">เปิด/ปิดตัวทำเครื่องหมาย <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">หมวดหมู่การค้นหา</translation>
-<translation id="5029356738310729434">การเข้าถึงไมโครโฟนของอุปกรณ์เปิดอยู่</translation>
 <translation id="5030659775136592441">แสดงการจัดการบุ๊กมาร์ก</translation>
 <translation id="5030687792513154421">หมดเวลา</translation>
 <translation id="5033299697334913360">คลิกที่ใดก็ได้เพื่อจับภาพแบบเต็มหน้าจอ</translation>
@@ -1057,6 +1062,8 @@
 <translation id="5297704307811127955">ปิด</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5302048478445481009">ภาษา</translation>
+<translation id="5303319262469238330">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />%
+ระบบจำกัดฟีเจอร์บางอย่างเพื่อเพิ่มอายุการใช้งานแบตเตอรี่</translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5313326810920013265">การตั้งค่าบลูทูธ</translation>
 <translation id="5314219114274263156">อัดหน้าจอแล้ว</translation>
@@ -1090,7 +1097,6 @@
 <translation id="5426063383988017631">เมนูการตั้งค่าปิดแล้ว</translation>
 <translation id="5428899915242071344">เริ่มเลือก</translation>
 <translation id="5429993543155113935">ขณะนี้ยังไม่รองรับหน้าต่างที่ไม่ระบุตัวตน</translation>
-<translation id="5430931332414098647">การเชื่อมต่อ Wi-Fi ฮอตสปอตจากมือถือโดยอัตโนมัติ</translation>
 <translation id="5431318178759467895">สี</translation>
 <translation id="5433020815079095860">อินพุตเสียง</translation>
 <translation id="544691375626129091">เพิ่มผู้ใช้ที่มีทั้งหมดลงในเซสชันนี้แล้ว</translation>
@@ -1119,6 +1125,7 @@
 <translation id="554893713779400387">สลับการเขียนตามคำบอก</translation>
 <translation id="5551456515017410630">เปิด/ปิดปฏิทิน</translation>
 <translation id="5551974246223970793">เมื่อค้นหาในหน้า ให้ไปยังรายการถัดไปที่ตรงกับการค้นหา</translation>
+<translation id="5555639311269196631">ปิดฮอตสปอต</translation>
 <translation id="5558091555391176027">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
 <translation id="5570122939431135380">เปิดแท็บใหม่ในหน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
@@ -1164,7 +1171,6 @@
 <translation id="5707775774148071965">อุปกรณ์รองรับอัตราข้อมูลที่สูงกว่าสายสัญญาณ และอาจจำกัดประสิทธิภาพของอุปกรณ์</translation>
 <translation id="5710450975648804523">โหมดห้ามรบกวนเปิดอยู่</translation>
 <translation id="571295407079589142">อินเทอร์เน็ตมือถือปิดอยู่</translation>
-<translation id="5716891621595980681">มีอุปกรณ์ที่เชื่อมต่ออยู่ <ph name="DEVICECOUNT" /> เครื่อง ระบบจะปิด Wi-Fi เพื่อเริ่มใช้ฮอตสปอต</translation>
 <translation id="5727460725221669831">หากคุณลืมรหัสผ่านหรือเปลี่ยนรหัสผ่านของบัญชี Google เมื่อเร็วๆ นี้ ให้ลองกู้คืนผู้ใช้รายนี้</translation>
 <translation id="573413375004481890">อุปกรณ์นี้รองรับจอแสดงผลทั้งหมดไม่ได้ ระบบจึงยกเลิกการเชื่อมต่อจอแสดงผลจอหนึ่ง</translation>
 <translation id="5740328398383587084">การแชร์ใกล้เคียง</translation>
@@ -1182,6 +1188,7 @@
 <translation id="5774295353725270860">เปิดแอปพลิเคชันไฟล์</translation>
 <translation id="5777841717266010279">ต้องการหยุดแชร์หน้าจอไหม</translation>
 <translation id="5779721926447984944">ไฟล์ที่ปักหมุดไว้</translation>
+<translation id="5785221443435874078">นำคำแนะนำนี้ออก</translation>
 <translation id="5788127256798019331">ไฟล์ Play</translation>
 <translation id="5788535737706478207">เปิดแท็บหรือหน้าต่างที่ปิดล่าสุดขึ้นมาอีกครั้ง</translation>
 <translation id="5790085346892983794">สำเร็จ</translation>
@@ -1202,8 +1209,6 @@
 <translation id="5876535466645959772">รายการที่เลือกไว้ว่างเปล่า นำทางลงเพื่อเพิ่มงานใหม่</translation>
 <translation id="5876666360658629066">กรอกรหัสผู้ปกครอง</translation>
 <translation id="5881540930187678962">ตั้งค่าฮับโทรศัพท์ภายหลัง</translation>
-<translation id="5881663018261910378">ปิดอยู่</translation>
-<translation id="5883017113634523865">ติดตั้งแอปของ <ph name="NAME" /> จาก Google Play เพื่อดูฟีเจอร์ที่ใช้ได้ทั้งหมด</translation>
 <translation id="5887954372087850114">กำหนดหน้าต่าง <ph name="WINDOW_TITLE" /> ให้กับ <ph name="DESK_TITLE" /> และยกเลิกการกำหนดจากเดสก์อื่นๆ ทั้งหมดแล้ว</translation>
 <translation id="588817334757907802">เปิดไฟล์ในเบราว์เซอร์ Chrome</translation>
 <translation id="5895138241574237353">ปิดแล้วเปิดอีกครั้ง</translation>
@@ -1214,7 +1219,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">เปิด</translation>
 <translation id="5920710855273935292">ปิดเสียงไมค์อยู่</translation>
-<translation id="5924855612669061715">ฮอตสปอตเปิดอยู่</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> เปิดอยู่</translation>
 <translation id="5947494881799873997">ย้อนกลับ</translation>
 <translation id="595202126637698455">เปิดใช้งานการติดตามการปฏิบัติงานแล้ว</translation>
@@ -1230,6 +1234,7 @@
 <translation id="598407983968395253">ใช้เทมเพลต</translation>
 <translation id="598882571027504733">หากต้องการรับอัปเดต ให้รีสตาร์ท Chromebook ในขณะที่ยังเชื่อมต่อกับแป้นพิมพ์</translation>
 <translation id="6000279412553873020">แป้น ปุ่ม และอื่นๆ</translation>
+<translation id="6002122790816966947">อุปกรณ์ของคุณ</translation>
 <translation id="6012623610530968780">หน้า <ph name="SELECTED_PAGE" /> จาก <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="601304062528754300">ไฮไลต์รายการถัดไปบนแถบ</translation>
 <translation id="6015573907265691211">ทำเครื่องหมายว่าเสร็จแล้ว</translation>
@@ -1262,7 +1267,6 @@
 <translation id="6095008505822982596">ความเร็วในการพูด</translation>
 <translation id="6095425951508823973">เพิ่มการเชื่อมต่อกับ <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">แก้ไขในเดือนที่ผ่านมา</translation>
-<translation id="6099793635444444289">เริ่มพิมพ์ตามคำบอกไม่ได้เนื่องจากปิดเสียงไมโครโฟนอยู่</translation>
 <translation id="6103838137565245112">ระบบ</translation>
 <translation id="6114505516289286752">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />แล้ว</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" /> <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1298,6 +1302,7 @@
 <translation id="6231419273573514727">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัด</translation>
 <translation id="6232891689835436217">"<ph name="APP_NAME" />" กำลังใช้กล้องและไมโครโฟน</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">แบตเตอรี่เหลือน้อย เปิดโหมดประหยัดแบตเตอรี่แล้ว</translation>
 <translation id="6247728804802644171">เปิดการแจ้งเตือน</translation>
 <translation id="6254629735336163724">ล็อกไว้ที่แนวนอนแล้ว</translation>
 <translation id="6259254695169772643">ใช้สไตลัสเพื่อเลือก</translation>
@@ -1307,6 +1312,7 @@
 <translation id="6284232397434400372">เปลี่ยนความละเอียดแล้ว</translation>
 <translation id="6288235558961782912">คุณจะเพิ่ม <ph name="USER_EMAIL_ADDRESS" /> ได้อีกครั้งในภายหลังโดยต้องได้รับอนุญาตจากผู้ปกครอง</translation>
 <translation id="6291221004442998378">ไม่ได้เสียบชาร์จ</translation>
+<translation id="6298183524022479114">ปรับแต่งอุปกรณ์นี้ในแอป</translation>
 <translation id="6309219492973062892">คลิกหรือแตะไอคอนแถบ 1-8</translation>
 <translation id="6315170314923504164">เสียง</translation>
 <translation id="6324916366299863871">แก้ไขทางลัด</translation>
@@ -1330,7 +1336,6 @@
 <translation id="643147933154517414">เสร็จเรียบร้อย</translation>
 <translation id="6431865393913628856">บันทึกหน้าจอ</translation>
 <translation id="643593192654616063">กำลังใช้พื้นที่เก็บข้อมูล <ph name="STORAGE_IN_USE_SIZE" /> จากทั้งหมด <ph name="STORAGE_TOTAL_SIZE" /></translation>
-<translation id="6442259747294754014">การเข้าถึงไมโครโฟนของอุปกรณ์ปิดอยู่</translation>
 <translation id="6445835306623867477"><ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6446225358675593408">ค้นหารูปภาพตามเนื้อหา</translation>
@@ -1412,6 +1417,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">ใช้กล้องและไมโครโฟนอยู่</translation>
 <translation id="6739144137573853180">ไปที่การตั้งค่า</translation>
+<translation id="6747985245839783873">แบตเตอรี่เหลือ <ph name="PERCENTAGE" /> เปอร์เซ็นต์ โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="6751052314767925245">บังคับใช้โดยผู้ดูแลระบบของคุณ</translation>
 <translation id="6751826523481687655">การติดตามประสิทธิภาพเปิดอยู่</translation>
 <translation id="6752912906630585008">นำเดสก์ <ph name="REMOVED_DESK" /> ออกและรวมเข้ากับเดสก์ <ph name="RECEIVE_DESK" /> แล้ว</translation>
@@ -1428,7 +1434,6 @@
 <translation id="679368458793552943">ซูมเข้าเมื่อแว่นขยายเปิดอยู่</translation>
 <translation id="6794287755901682422">รายการนี้มี <ph name="GLANCEABLES_TASK_ITEM_METADATA" /></translation>
 <translation id="6801878137098616817">แก้ไขเมื่อเร็วๆ นี้</translation>
-<translation id="6802196538183166658">เปิดการตั้งค่าด่วนโดยเลือกเวลา</translation>
 <translation id="6802687695197837794">การดำเนินการนี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์สามารถเข้าถึงกล้องและไมโครโฟนได้</translation>
 <translation id="6803622936009808957">ไม่สามารถแสดงผลคู่ขนานได้เนื่องจากไม่พบความละเอียดที่สนับสนุน เข้าสู่เดสก์ท็อปแบบขยายแทน</translation>
 <translation id="6809556495807506746">การควบคุมไม่พร้อมใช้งาน</translation>
@@ -1456,7 +1461,6 @@
 <translation id="6912841030378044227">โฟกัสแถบที่อยู่</translation>
 <translation id="6912901278692845878">การแนะนำสั้นๆ</translation>
 <translation id="6919251195245069855">ไม่พบสมาร์ทการ์ดของคุณ ลองใหม่</translation>
-<translation id="6920245099716267363">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ 1 เครื่อง</translation>
 <translation id="692135145298539227">นำออก</translation>
 <translation id="6929081673585394903">แสดงการควบคุม</translation>
 <translation id="6931576957638141829">บันทึกไปยัง</translation>
@@ -1511,6 +1515,7 @@
 <translation id="7131634465328662194">คุณจะออกจากระบบโดยอัตโนมัติ</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144942256906679589">สถานะแบตเตอรี่</translation>
+<translation id="7145639536026937076">แบตเตอรี่เหลือ <ph name="PERCENTAGE" />% และกำลังชาร์จ โหมดประหยัดแบตเตอรี่เปิดอยู่</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
@@ -1519,17 +1524,15 @@
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>
+<translation id="7219573373513695352">ไม่ได้เชื่อมต่ออุปกรณ์</translation>
 <translation id="7229029500464092426">ใช้หน่วยความจำแล้ว <ph name="AVAILABLE_MEMORY" /> | รวมทั้งหมด <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" /> Chromebook นี้ต้องรีสตาร์ทเพื่อใช้การอัปเดต ซึ่งอาจใช้เวลาถึง 1 นาที</translation>
 <translation id="7256634071279256947">ไมโครโฟนด้านหลัง</translation>
 <translation id="7258828758145722155">แก้ไขเมื่อวานนี้</translation>
 <translation id="726276584504105859">ลากมาที่นี่เพื่อใช้การแยกหน้าจอ</translation>
 <translation id="7262906531272962081">สร้างการช่วยเตือน</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + Backspace</translation>
-<translation id="7297440678881127227"><ph name="START_TIME" /> ถึง
-        <ph name="END_TIME" />,
-        <ph name="TIME_ZONE" />,
-        <ph name="EVENT_SUMMARY" /> เลือกเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="7302889331339392448">คำบรรยายสดปิดอยู่</translation>
 <translation id="7303365578352795231">กำลังรับสายในอุปกรณ์อื่น</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1553,7 +1556,6 @@
 <translation id="7378203170292176219">ลากเพื่อเลือกพื้นที่ที่จะบันทึก</translation>
 <translation id="7378594059915113390">การควบคุมสื่อ</translation>
 <translation id="7378889811480108604">โหมดประหยัดแบตเตอรี่ปิดอยู่</translation>
-<translation id="7382640522316003298">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ เชื่อมต่ออุปกรณ์อยู่ <ph name="DEVICECOUNT" /> เครื่อง</translation>
 <translation id="7382680553121047388">เปิด</translation>
 <translation id="7384028040782072252">คลิกขวาที่ใดก็ได้เพื่อเรียงลำดับแอปใหม่</translation>
 <translation id="7386767620098596324">เปิด/ปิดการเชื่อมต่อเครือข่าย <ph name="STATE_TEXT" /></translation>
@@ -1568,7 +1570,6 @@
 <translation id="742594950370306541">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="742608627846767349">สวัสดียามเช้า</translation>
 <translation id="743058460480092004">ใช้กล้องถ่ายรูปและไมโครโฟนอยู่</translation>
-<translation id="7452560014878697800">มีแอปพลิเคชันกำลังใช้กล้อง</translation>
 <translation id="7453330308669753048">นำผลลัพธ์ในประวัติการค้นหาออกแล้ว</translation>
 <translation id="7459485586006128091">ปิดฮอตสปอตแล้วเนื่องจากมีข้อผิดพลาดภายใน โปรดลองเชื่อมต่อใหม่ในอีกสักครู่</translation>
 <translation id="7461924472993315131">ปักหมุด</translation>
@@ -1578,6 +1579,7 @@
 <translation id="7489261257412536105">เข้าหรือออกจากโหมดเต็มหน้าจอ</translation>
 <translation id="7490360161041035804">คุณปักหมุดไฟล์ที่สำคัญ รวมถึงไฟล์ใน Google ไดรฟ์ได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7497767806359279797">เลือกภาษาและแป้นพิมพ์</translation>
+<translation id="7507162824403726948">ยืนยันตัวตนให้เสร็จสิ้น</translation>
 <translation id="7508690557411636492">เปิดในเดือนที่ผ่านมา</translation>
 <translation id="7509246181739783082">ยืนยันตัวตนของคุณ</translation>
 <translation id="7512509370370076552">อัปเดตแป้นพิมพ์ลัดสำหรับการคลิกขวาจาก Alt + คลิกเป็นแป้น <ph name="LAUNCHER_KEY_NAME" /> + คลิกแล้ว</translation>
@@ -1724,7 +1726,6 @@
 <translation id="8036504271468642248">ประโยคก่อนหน้า</translation>
 <translation id="8042893070933512245">เปิดเมนูการตั้งค่าการช่วยเหลือพิเศษ</translation>
 <translation id="8044457332620420407">ไฟแบ็กไลต์ของแป้นพิมพ์ปิดอยู่</translation>
-<translation id="8048077032188362328">ผู้ดูแลระบบของคุณได้ปิดฮอตสปอตไว้</translation>
 <translation id="8048123526339889627">การตั้งค่าบลูทูธ</translation>
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
@@ -1745,7 +1746,6 @@
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8131994907636310308">ปิดข้อความโทสต์การจัดเรียง</translation>
 <translation id="8132793192354020517">เชื่อมต่อกับ <ph name="NAME" /></translation>
-<translation id="8135163608236671037">เปิด/ปิดฮอตสปอต ฮอตสปอตเปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
 <translation id="8138705869659070104">เปิดใช้งานหลังตั้งค่าอุปกรณ์</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8142441511840089262">ดับเบิลคลิก</translation>
@@ -1913,6 +1913,7 @@
 <translation id="8878886163241303700">กำลังขยายหน้าจอ</translation>
 <translation id="888982883502837004">มีการอัปเดตเฟิร์มแวร์พร้อมใช้งานกับอุปกรณ์ คลิกเพื่อตรวจสอบและอัปเดต</translation>
 <translation id="8896630965521842259">ระบบจะลบ <ph name="DESK_TEMPLATE_NAME" /> ออกอย่างถาวร</translation>
+<translation id="889790758758811533">แบตเตอรี่เหลืออยู่ <ph name="PERCENTAGE" />% (ใช้ได้อีกประมาณ <ph name="TIME_LEFT" />) โปรดเชื่อมต่ออุปกรณ์กับแหล่งจ่ายไฟ</translation>
 <translation id="88986195241502842">เลื่อนหน้าลง</translation>
 <translation id="8905919797434099235">(ไม่มีชื่อ)</translation>
 <translation id="890616557918890486">เปลี่ยนแหล่งที่มา</translation>

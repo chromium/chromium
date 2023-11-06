@@ -1,0 +1,8 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++View textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="menu"]
+++++MenuItem textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="menuitemcheckbox"]
+++++++TextView text:"Menu item 1" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++MenuItem textSize:16.00 style:0 bundle:[aria-checked="true", display="block", htmlTag="div", role="menuitemcheckbox"]
+++++++TextView text:"Menu item 2" textSize:16.00 style:0 bundle:[display="", htmlTag=""]
+++++MenuItem textSize:16.00 style:0 bundle:[aria-checked="mixed", display="block", htmlTag="div", role="menuitemcheckbox"]
+++++++TextView text:"Menu item 3" textSize:16.00 style:0 bundle:[display="", htmlTag=""]

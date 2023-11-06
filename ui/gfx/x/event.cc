@@ -24,7 +24,9 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
   auto* xcb_event = reinterpret_cast<xcb_generic_event_t*>(
       const_cast<uint8_t*>(event_bytes->data()));
   uint8_t response_type = xcb_event->response_type & ~kSendEventMask;
-  send_event_ = xcb_event->response_type & kSendEventMask;
+  if (xcb_event->response_type & kSendEventMask) {
+    send_event_ = true;
+  }
   sequence_ = xcb_event->full_sequence;
   // On the wire, events are 32 bytes except for generic events which are
   // trailed by additional data.  XCB inserts an extended 4-byte sequence
@@ -36,9 +38,10 @@ Event::Event(scoped_refptr<base::RefCountedMemory> event_bytes,
     const size_t extended_length = ge->length * 4;
     memmove(&ge->full_sequence, &ge[1], extended_length);
   }
-
-  ReadBuffer buf(event_bytes);
-  ReadEvent(this, connection, &buf);
+  connection->GetEventTypeAndOp(event_bytes->data(), &type_id_, &opcode_);
+  if (type_id_) {
+    raw_event_ = event_bytes;
+  }
 }
 
 Event::Event(Event&& event) {
@@ -46,18 +49,33 @@ Event::Event(Event&& event) {
 }
 
 Event& Event::operator=(Event&& event) {
-  event_ = std::move(event.event_);
-  type_id_ = event.type_id_;
-  sequence_ = event.sequence_;
   send_event_ = event.send_event_;
+  fabricated_ = event.fabricated_;
+  type_id_ = event.type_id_;
+  opcode_ = event.opcode_;
+  sequence_ = event.sequence_;
+  raw_event_ = std::move(event.raw_event_);
+  event_ = std::move(event.event_);
 
   // Clear the old instance, to make sure it's in a valid state.
-  event.type_id_ = 0;
-  event.sequence_ = 0;
   event.send_event_ = false;
+  event.fabricated_ = false;
+  event.type_id_ = 0;
+  event.opcode_ = 0;
+  event.sequence_ = 0;
   return *this;
 }
 
 Event::~Event() = default;
+
+void Event::Parse(void* event, Parser parser, Deleter deleter) {
+  DUMP_WILL_BE_CHECK(type_id_);
+  DUMP_WILL_BE_CHECK(!event_);
+  DUMP_WILL_BE_CHECK(raw_event_);
+  ReadBuffer read_buffer(raw_event_);
+  parser(event, &read_buffer);
+  event_ = {event, deleter};
+  raw_event_.reset();
+}
 
 }  // namespace x11

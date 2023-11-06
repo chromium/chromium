@@ -6,12 +6,13 @@ package org.chromium.chrome.browser.ui.device_lock;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT;
-import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.IN_SIGN_IN_FLOW;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_DISMISS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_GO_TO_OS_SETTINGS_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USER_UNDERSTANDS_CLICKED;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_USE_WITHOUT_AN_ACCOUNT_CLICKED;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.PREEXISTING_DEVICE_LOCK;
+import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.SOURCE;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.UI_ENABLED;
 import static org.chromium.components.browser_ui.device_lock.DeviceLockBridge.DEVICE_LOCK_PAGE_HAS_BEEN_PASSED;
 
@@ -25,8 +26,11 @@ import android.content.SharedPreferences;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountReauthenticationUtils;
@@ -70,17 +74,22 @@ public class DeviceLockMediator {
         mWindowAndroid = windowAndroid;
         mDeviceLockAuthenticatorBridge = deviceLockAuthenticatorBridge;
         mAccountReauthenticationUtils = accountReauthenticationUtils;
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(PREEXISTING_DEVICE_LOCK, isDeviceLockPresent())
-                         .with(DEVICE_SUPPORTS_PIN_CREATION_INTENT,
-                                 DeviceLockUtils.isDeviceLockCreationIntentSupported(mActivity))
-                         .with(IN_SIGN_IN_FLOW, account != null)
-                         .with(UI_ENABLED, true)
-                         .with(ON_CREATE_DEVICE_LOCK_CLICKED, v -> onCreateDeviceLockClicked())
-                         .with(ON_GO_TO_OS_SETTINGS_CLICKED, v -> onGoToOSSettingsClicked())
-                         .with(ON_USER_UNDERSTANDS_CLICKED, v -> onUserUnderstandsClicked())
-                         .with(ON_DISMISS_CLICKED, v -> delegate.onDeviceLockRefused())
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(PREEXISTING_DEVICE_LOCK, isDeviceLockPresent())
+                        .with(
+                                DEVICE_SUPPORTS_PIN_CREATION_INTENT,
+                                DeviceLockUtils.isDeviceLockCreationIntentSupported(mActivity))
+                        .with(UI_ENABLED, true)
+                        .with(SOURCE, mDelegate.getSource())
+                        .with(ON_CREATE_DEVICE_LOCK_CLICKED, v -> onCreateDeviceLockClicked())
+                        .with(ON_GO_TO_OS_SETTINGS_CLICKED, v -> onGoToOSSettingsClicked())
+                        .with(ON_USER_UNDERSTANDS_CLICKED, v -> onUserUnderstandsClicked())
+                        .with(
+                                ON_USE_WITHOUT_AN_ACCOUNT_CLICKED,
+                                v -> onUseWithoutAnAccountClicked())
+                        .with(ON_DISMISS_CLICKED, v -> onDismissClicked())
+                        .build();
     }
 
     PropertyModel getModel() {
@@ -98,21 +107,39 @@ public class DeviceLockMediator {
     }
 
     private void onCreateDeviceLockClicked() {
+        DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                DeviceLockDialogAction.CREATE_DEVICE_LOCK_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockDirectlyIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onGoToOSSettingsClicked() {
+        DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                DeviceLockDialogAction.GO_TO_OS_SETTINGS_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         navigateToDeviceLockCreation(DeviceLockUtils.createDeviceLockThroughOSSettingsIntent(),
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
     }
 
     private void onUserUnderstandsClicked() {
+        DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                DeviceLockDialogAction.USER_UNDERSTANDS_CLICKED, mDelegate.getSource());
         mModel.set(UI_ENABLED, false);
         triggerDeviceLockChallenge(
                 () -> maybeTriggerAccountReauthenticationChallenge(this::setDeviceLockReady));
+    }
+
+    private void onUseWithoutAnAccountClicked() {
+        DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                DeviceLockDialogAction.USE_WITHOUT_AN_ACCOUNT_CLICKED, mDelegate.getSource());
+        mDelegate.onDeviceLockRefused();
+    }
+
+    private void onDismissClicked() {
+        DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                DeviceLockDialogAction.DISMISS_CLICKED, mDelegate.getSource());
+        mDelegate.onDeviceLockRefused();
     }
 
     private void setDeviceLockReady() {
@@ -126,11 +153,16 @@ public class DeviceLockMediator {
             onSuccess.run();
             return;
         }
-        mWindowAndroid.showIntent(intent, (resultCode, data) -> {
-            if (isDeviceLockPresent()) {
-                onSuccess.run();
-            }
-        }, null);
+        mWindowAndroid.showIntent(
+                intent,
+                (resultCode, data) -> {
+                    if (isDeviceLockPresent()) {
+                        onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
+                    }
+                },
+                null);
     }
 
     private void triggerDeviceLockChallenge(Runnable onSuccess) {
@@ -139,11 +171,16 @@ public class DeviceLockMediator {
             onSuccess.run();
             return;
         }
-        mDeviceLockAuthenticatorBridge.reauthenticate((authSucceeded) -> {
-            if (authSucceeded) {
-                onSuccess.run();
-            }
-        });
+        mDeviceLockAuthenticatorBridge.reauthenticate(
+                (authSucceeded) -> {
+                    RecordHistogram.recordBooleanHistogram(
+                            "Android.Automotive.DeviceLockOutcome", authSucceeded);
+                    if (authSucceeded) {
+                        onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
+                    }
+                });
     }
 
     private void maybeTriggerAccountReauthenticationChallenge(Runnable onSuccess) {
@@ -157,11 +194,17 @@ public class DeviceLockMediator {
                         ChromeFeatureList.ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW,
                         ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW_PARAM, 10);
         mAccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
-                getAccountManager(), mAccount, mActivity, (confirmationResult) -> {
+                getAccountManager(),
+                mAccount,
+                mActivity,
+                (confirmationResult) -> {
                     if (confirmationResult
                             == AccountReauthenticationUtils.ConfirmationResult.SUCCESS) {
                         onSuccess.run();
+                    } else {
+                        mModel.set(UI_ENABLED, true);
                     }
-                }, TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
+                },
+                TimeUnit.MINUTES.toMillis(accountReauthenticationRecentTimeWindowMinutes));
     }
 }

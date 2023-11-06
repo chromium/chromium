@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="1178581264944972037">หยุดชั่วคราว</translation>
+<translation id="2558806128245168542">ย้อนกลับ</translation>
 <translation id="3523426587027570423">แตะเพื่อปิด "ฟังหน้านี้"</translation>
+<translation id="4431240646217225907">ไฮไลต์ข้อความและการเลื่อนอัตโนมัติ</translation>
 <translation id="4654641641922242357">โปรแกรมเล่น "ฟังหน้านี้"</translation>
 <translation id="4731877163452936634">ความเร็วในการเล่น: <ph name="PLAYBACK_SPEED" /> คลิกเพื่อเปลี่ยน</translation>
 <translation id="5234971936051226002">โปรแกรมเล่น "ฟังหน้านี้" ที่ย่อขนาดอยู่</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
+<translation id="6315170314923504164">เสียง</translation>
+<translation id="6550675742724504774">ตัวเลือก</translation>
 <translation id="6790428901817661496">เล่น</translation>
+<translation id="6831043979455480757">แปลภาษา</translation>
 <translation id="6846298663435243399">กำลังโหลด…</translation>
 <translation id="7587250070160020374">กําลังเล่น Chrome</translation>
 <translation id="7945822420239537236">กรอไปข้างหน้า <ph name="NUMBER_OF_SECONDS" /> วินาที</translation>

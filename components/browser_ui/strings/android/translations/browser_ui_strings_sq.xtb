@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Na ndihmo të përmirësojmë Chrome duke na treguar se pse ke lejuar kukit e palëve të treta. <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pauzë</translation>
 <translation id="1181037720776840403">Hiq</translation>
+<translation id="1192844206376121885">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Para</translation>
 <translation id="1242008676835033345">Integruar në <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -21,10 +22,10 @@
 <translation id="1384959399684842514">Shkarkimi u ndërpre</translation>
 <translation id="1415402041810619267">URL e prerë</translation>
 <translation id="1426410128494586442">Po</translation>
-<translation id="1446450296470737166">Lejo kontrollin e plotë të pajisjeve MIDI</translation>
 <translation id="1448064542941920355">Zvogëlo zmadhimin</translation>
 <translation id="1510341833810331442">Sajtet nuk lejohen të ruajnë të dhëna në pajisjen tënde</translation>
 <translation id="1547123415014299762">Kukit e palëve të treta lejohen</translation>
+<translation id="1568470248891039841">Sajtet që viziton mund të integrojnë përmbajtje nga sajte të tjera, p.sh. imazhe, reklama dhe tekste. Këto sajte të tjera mund të kërkojnë leje që të përdorin informacionet që kanë ruajtur në lidhje me ty kur ti shfleton në sajt. <ph name="BEGIN_LINK" />Mëso më shumë për përmbajtjet e integruara<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Veprime të reja të disponueshme pranë kreut të ekranit</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Sajtet e lidhura</translation>
@@ -41,7 +42,6 @@
 <translation id="187227595286001730">Sajtet e lidhura mund ta shikojnë aktivitetin tënd në këtë grup</translation>
 <translation id="1887786770086287077">Qasja te vendndodhja është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Mbyll</translation>
-<translation id="1919345977826869612">Reklamat</translation>
 <translation id="1919950603503897840">Zgjidh kontaktet</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Bëje tekstin dhe imazhet më të mëdha ose më të vogla për të gjitha sajtet që viziton ti</translation>
@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Edhe pse mbanin syzet e gjelbra mbi sy, në fillim Dorotia dhe miqtë e saj u verbuan nga</translation>
 <translation id="2176704795966505152">Shfaq opsionin e zmadhimit në menynë kryesore</translation>
 <translation id="2182457891543959921">Pyet përpara se të lejosh krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës (rekomandohet)</translation>
+<translation id="2185965788978862351">Kjo do të fshijë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet ose nga aplikacionet në ekranin bazë.</translation>
 <translation id="2194856509914051091">Gjëra për t'u pasur parasysh</translation>
 <translation id="2212565012507486665">Lejo kukit</translation>
 <translation id="2228071138934252756">Për të lejuar që <ph name="APP_NAME" /> të ketë qasje te kamera jote, aktivizo gjithashtu kamerën në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
@@ -71,7 +72,6 @@
 <translation id="2289270750774289114">Pyet kur një sajt dëshiron të zbulojë pajisjet Bluetooth në afërsi (rekomandohet)</translation>
 <translation id="2315043854645842844">Përzgjedhja e certifikatës nga ana e klientit nuk mbështetet nga sistemi operativ.</translation>
 <translation id="2321958826496381788">Zvarrit rrëshqitësin derisa të arrish ta lexosh këtë pa u munduar. Teksti duhet të duket të paktën kaq i madh pas trokitjes dy herë mbi një paragraf.</translation>
-<translation id="2329473609445770916">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2379925928934107488">Kur është e mundur, zbato temën e errët për sajtet kur Chrome përdor temën e errët</translation>
 <translation id="2387895666653383613">Shkallëzimi i tekstit</translation>
@@ -82,6 +82,7 @@
 <translation id="2434158240863470628">Shkarkimi përfundoi <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Veçoritë në disa sajte mund të mos funksionojnë në "Modalitetin 'e fshehtë'"</translation>
 <translation id="2442870161001914531">Kërko gjithmonë sajtin për desktop</translation>
+<translation id="2469312991797799607">Ky veprim do të fshijë të gjitha të dhënat dhe kukit për <ph name="ORIGIN" /> dhe të gjitha sajtet nën të</translation>
 <translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2482878487686419369">Njoftimet</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
@@ -111,10 +112,11 @@
 <translation id="2891975107962658722">Blloko një sajt që të mos ruajë të dhëna në pajisjen tënde</translation>
 <translation id="2903493209154104877">Adresat</translation>
 <translation id="2910701580606108292">Pyet përpara se sajtet të lejohen të luajnë përmbajtje të mbrojtura</translation>
-<translation id="2913331724188855103">Lejo faqet të ruajnë dhe lexojnë të dhënat e kukive (rekomandohet)</translation>
 <translation id="2932883381142163287">Raporto abuzim</translation>
 <translation id="2968755619301702150">Shikuesi i certifikatave</translation>
+<translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="3008272652534848354">Rivendos autorizimet</translation>
+<translation id="3013291976881901233">Pajisjet MIDI</translation>
 <translation id="301521992641321250">Bllokuar automatikisht</translation>
 <translation id="3069226013421428034">Lejo identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
@@ -129,7 +131,6 @@
 <translation id="3198916472715691905">Të dhënat e ruajtura <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Për të lejuar që <ph name="APP_NAME" /> të të dërgojë njoftime, aktivizo gjithashtu njoftimet në <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
-<translation id="3248611290851046188">Ky sajt përcakton interesat që sajtet e tjera mund të përdorin për të të shfaqur reklama. Gjithashtu, ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="3277252321222022663">Lejoju faqeve të të hapin sensorët (rekomandohet)</translation>
 <translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
 <translation id="3295019059349372795">Kapitulli 11: Qyteti i mrekullueshëm i smeraldtë i Ozit</translation>
@@ -156,7 +157,6 @@
 <translation id="3721953990244350188">Hiq dhe shfaq veprimin tjetër të disponueshëm</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
-<translation id="3794286421982011626">Një sajt që viziton mund të ruajë informacione për gjërat që ti po bën që ai të mund të funksionojë siç pritet, p.sh. për të të mbajtur të identifikuar në një sajt ose për të ruajtur artikuj në karrocën e blerjeve. Shpesh sajtet i ruajnë këto informacione përkohësisht në pajisjen tënde.</translation>
 <translation id="3797520601150691162">Mos zbato temën e errët për një sajt specifik</translation>
 <translation id="3803367742635802571">Sajtet që viziton mund të mos funksionojnë siç pritet</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -171,6 +171,7 @@
 <translation id="3918378745482005425">Disa veçori mund të mos funksionojnë. Sajtet e lidhura mund të përdorin përsëri kukit e palëve të treta.</translation>
 <translation id="3955193568934677022">Lejo që sajtet të luajnë përmbajtje të mbrojtur (rekomandohet)</translation>
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
+<translation id="3974105241379491420">Sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Rreth kësaj faqeje</translation>
@@ -193,7 +194,6 @@
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
-<translation id="4428065317363009941">Personalizimi i reklamave</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="443552056913301231">Ky veprim do të fshijë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Hiq zërin për një sajt specifik.</translation>
@@ -229,6 +229,7 @@
 <translation id="5063480226653192405">Përdorimi</translation>
 <translation id="5091013926750941408">Sajti për celular</translation>
 <translation id="509133520954049755">Kërko pamjen për desktop</translation>
+<translation id="5099358668261120049">Kjo do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë.</translation>
 <translation id="5100237604440890931">I palosur - kliko për ta zgjeruar</translation>
 <translation id="5123685120097942451">Skeda "e fshehtë"</translation>
 <translation id="5186036860380548585">Opsionet ofrohen pranë kreut të ekranit</translation>
@@ -245,12 +246,11 @@
 <translation id="5335288049665977812">Lejoji sajtet të ekzekutojnë JavaScript (rekomandohet)</translation>
 <translation id="534295439873310000">Pajisjet me NFC</translation>
 <translation id="5344522958567249764">Menaxho privatësinë e reklamave</translation>
+<translation id="5389626883706033615">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 tjetër)}other{(+ # të tjerë)}}</translation>
 <translation id="5403592356182871684">Emrat</translation>
-<translation id="5412236728747081950">Ky sajt merr interesat e tua nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="5438097262470833822">Kjo zgjedhje do të rivendosë autorizimet për <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Koha e kaluar: <ph name="ELAPSED_TIME" /> nga <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Blloko reklamat në sajtet që shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" /> është lejuar, <ph name="PERMISSION_2" /> është bllokuar</translation>
 <translation id="5505264765875738116">Sajtet nuk mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="5516455585884385570">Hap cilësimet e njoftimeve</translation>
@@ -277,6 +277,7 @@
 <translation id="5916664084637901428">Aktiv</translation>
 <translation id="5922853908706496913">Po ndan ekranin tënd</translation>
 <translation id="5922967540311291836">Blloko kukit e palëve të treta</translation>
+<translation id="5923512600150154850">Kjo do të fshijë <ph name="DATASIZE" /> të dhëna dhe kuki të ruajtura nga sajtet.</translation>
 <translation id="5939518447894949180">Rivendos</translation>
 <translation id="5964247741333118902">Përmbajtjet e integruara</translation>
 <translation id="5968921426641056619">Fut adresën e uebit</translation>
@@ -292,6 +293,7 @@
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6181444274883918285">Shto përjashtim për sajt</translation>
 <translation id="6192792657125177640">Përjashtimet</translation>
+<translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
 <translation id="6205314730813004066">Privatësia e reklamave</translation>
 <translation id="6207207788774442484">Fshi të dhënat dhe rivendos lejet</translation>
@@ -302,6 +304,7 @@
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
 <translation id="6320088164292336938">Dridhja</translation>
+<translation id="6344622098450209924">Mbrojtja nga gjurmimi</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
 <translation id="640163077447496506">Skadon sot</translation>
@@ -332,6 +335,7 @@
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
 <translation id="6912998170423641340">Blloko sajtet që të mos lexojnë tekstin dhe imazhet nga kujtesa e fragmenteve</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
+<translation id="6950072572526089586">Një sajt që viziton mund të ruajë informacione për gjërat që ti po bën që ai të mund të funksionojë siç pritet, p.sh. për të të mbajtur të identifikuar në një sajt ose për të ruajtur artikuj në karrocën e blerjeve. Shpesh sajtet i ruajnë këto informacione përkohësisht në pajisjen tënde.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6981982820502123353">Qasja</translation>
 <translation id="6992289844737586249">Pyet përpara se sajtet të lejohen të përdorin mikrofonin (rekomandohet)</translation>
@@ -345,12 +349,14 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Rifresko</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
+<translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
 <translation id="7203150201908454328">I zgjeruar</translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
 <translation id="723171743924126238">Zgjidh imazhet</translation>
 <translation id="7243308994586599757">Opsionet janë të disponueshme pranë fundit të ekranit</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> të zgjedhura</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> janë lejuar</translation>
+<translation id="7284451015630589124">I ke bllokuar sajtet që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Ti i bllokon zakonisht njoftimet. Për t'i lejuar, trokit te "Detajet".</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7368695150573390554">Çdo e dhënë offline do të fshihet</translation>
@@ -363,7 +369,6 @@
 <translation id="7554752735887601236">Një sajt po përdor mikrofonin tënd</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>
 <translation id="757524316907819857">Blloko sajtet që të mos luajnë përmbajtje të mbrojtura</translation>
-<translation id="7577900504646297215">Menaxho interesat</translation>
 <translation id="7594634374516752650">U lidh me një pajisje me Bluetooth</translation>
 <translation id="7641339528570811325">Pastro të dhënat e shfletimit...</translation>
 <translation id="7649070708921625228">Ndihma</translation>
@@ -430,6 +435,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajt të <ph name="FPS_OWNER" />}other{Kukit lejohen për <ph name="FPS_MEMBERS_COUNT" /> sajte të <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Lejuar (rekomandohet)</translation>
 <translation id="8609465669617005112">Lëviz lart</translation>
+<translation id="8649036394979866943">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet për të <ph name="BEGIN_LINK" />menaxhuar mbrojtjet nga gjurmimi<ph name="END_LINK" /></translation>
 <translation id="8676374126336081632">Pastro hyrjen</translation>
 <translation id="8681886425883659911">Reklama që janë bllokuar në sajte që dihet se shfaqin reklama ndërhyrëse ose mashtruese</translation>
 <translation id="868929229000858085">Kërko te kontaktet e tua</translation>
@@ -452,6 +458,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Veçoria NFC është joaktive për këtë pajisje. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Blloko sajtet që të mos shikojnë dhe ndryshojnë informacionin në pajisjet NFC</translation>
+<translation id="8944485226638699751">Të kufizuara</translation>
 <translation id="8958424370300090006">Blloko kukit për një sajt specifik.</translation>
 <translation id="8959122750345127698">Lundrimi është i paarritshëm: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Harro</translation>

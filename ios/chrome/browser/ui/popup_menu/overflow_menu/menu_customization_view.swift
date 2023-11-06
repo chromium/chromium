@@ -29,6 +29,11 @@ struct MenuCustomizationView: View {
   /// The namespace for the animation of this view appearing or disappearing.
   let namespace: Namespace.ID
 
+  /// Focus state to allow setting VoiceOver focus to the page header when
+  /// the page appears.
+  @AccessibilityFocusState
+  private var headerFocused: Bool
+
   init(
     actionCustomizationModel: ActionCustomizationModel,
     destinationCustomizationModel: DestinationCustomizationModel,
@@ -47,53 +52,59 @@ struct MenuCustomizationView: View {
   }
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      header
-      OverflowMenuDestinationList(
-        destinations: $destinationCustomizationModel.shownDestinations, metricsHandler: nil,
-        uiConfiguration: uiConfiguration, dragHandler: dragHandler, namespace: namespace
-      )
-      .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
-      .frame(height: OverflowMenuListStyle.destinationListHeight)
-      if destinationCustomizationModel.hiddenDestinations.count > 0 {
-        Text(
-          L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE)
-        )
-        .fontWeight(.semibold)
-        .padding([.leading], Self.leadingPadding)
-        .accessibilityAddTraits(.isHeader)
+    GeometryReader { geometry in
+      VStack(alignment: .leading, spacing: 0) {
+        header
         OverflowMenuDestinationList(
-          destinations: $destinationCustomizationModel.hiddenDestinations, metricsHandler: nil,
-          uiConfiguration: uiConfiguration, namespace: namespace
-        ).frame(height: OverflowMenuListStyle.destinationListHeight)
-      }
-      Divider()
-      List {
-        createDefaultSection {
-          HStack {
-            VStack(alignment: .leading) {
-              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
-              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION))
-                .font(.caption)
-            }
-            Spacer()
-            Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {
-              Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
-            }
-            .labelsHidden()
-            .tint(.chromeBlue)
-          }
-          .accessibilityElement(children: .combine)
-        }
-        OverflowMenuActionSection(
-          actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil
+          destinations: $destinationCustomizationModel.shownDestinations,
+          width: geometry.size.width, metricsHandler: nil,
+          uiConfiguration: uiConfiguration, dragHandler: dragHandler, namespace: namespace
         )
+        .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
+        if destinationCustomizationModel.hiddenDestinations.count > 0 {
+          Text(
+            L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE)
+          )
+          .fontWeight(.semibold)
+          .padding([.leading], Self.leadingPadding)
+          .accessibilityAddTraits(.isHeader)
+          OverflowMenuDestinationList(
+            destinations: $destinationCustomizationModel.hiddenDestinations,
+            width: geometry.size.width, metricsHandler: nil,
+            uiConfiguration: uiConfiguration, namespace: namespace
+          )
+        }
+        Divider()
+        List {
+          createDefaultSection {
+            HStack {
+              VStack(alignment: .leading) {
+                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
+                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_DESCRIPTION))
+                  .font(.caption)
+              }
+              Spacer()
+              Toggle(isOn: $destinationCustomizationModel.destinationUsageEnabled) {
+                Text(L10nUtils.stringWithFixup(messageId: IDS_IOS_OVERFLOW_MENU_SORT_TITLE))
+              }
+              .labelsHidden()
+              .tint(.chromeBlue)
+            }
+            .accessibilityElement(children: .combine)
+          }
+          OverflowMenuActionSection(
+            actionGroup: actionCustomizationModel.actionsGroup, metricsHandler: nil
+          )
+        }
+        .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
       }
-      .matchedGeometryEffect(id: MenuCustomizationAnimationID.actions, in: namespace)
+      .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
+      .overflowMenuListStyle()
+      .environment(\.editMode, .constant(.active))
+      .onAppear {
+        headerFocused = true
+      }
     }
-    .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
-    .overflowMenuListStyle()
-    .environment(\.editMode, .constant(.active))
   }
 
   /// Custom header for this view. This should look like a `NavigationView`'s
@@ -123,6 +134,7 @@ struct MenuCustomizationView: View {
         )
         .fontWeight(.semibold)
         .lineLimit(1)
+        .accessibilityFocused($headerFocused)
         .accessibilityAddTraits(.isHeader)
       }
       .layoutPriority(1000)

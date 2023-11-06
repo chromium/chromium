@@ -6,10 +6,11 @@ package org.chromium.components.search_engines;
 
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.url.GURL;
@@ -389,6 +390,16 @@ public class TemplateUrlService {
                 mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
     }
 
+    /**
+     * Whether the device is from an EEA country. This is consistent with countries which are
+     * eligible for the EEA default search engine choice prompt. "Default country: or "country at
+     * install" are used for SearchEngineChoiceCountry. It might be different than what LocaleUtils
+     * returns.
+     */
+    public boolean isEeaChoiceCountry() {
+        return TemplateUrlServiceJni.get().isEeaChoiceCountry(mNativeTemplateUrlServiceAndroid);
+    }
+
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
@@ -432,5 +443,7 @@ public class TemplateUrlService {
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         String[] getImageUrlAndPostContent(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
+
+        boolean isEeaChoiceCountry(long nativeTemplateUrlServiceAndroid);
     }
 }

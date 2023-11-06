@@ -82,12 +82,10 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** End-to-end tests for TabGroupUi component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @Batch(Batch.PER_CLASS)
 public class TabGroupUiTest {
-    // clang-format on
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -104,8 +102,7 @@ public class TabGroupUiTest {
                     .setRevision(1)
                     .build();
 
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Before
     public void setUp() {
@@ -150,12 +147,13 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 4);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView =
-                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-            recyclerViewReference.set(stripRecyclerView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                    recyclerViewReference.set(stripRecyclerView);
+                });
         mRenderTestRule.render(recyclerViewReference.get(), "5th_tab_selected");
     }
 
@@ -175,12 +173,13 @@ public class TabGroupUiTest {
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 9);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView =
-                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-            recyclerViewReference.set(stripRecyclerView);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                    recyclerViewReference.set(stripRecyclerView);
+                });
         mRenderTestRule.render(recyclerViewReference.get(), "10th_tab_selected");
     }
 
@@ -199,16 +198,20 @@ public class TabGroupUiTest {
         // Select the first tab in group and add one new tab to group.
         clickFirstCardFromTabSwitcher(cta);
         clickNthTabInDialog(cta, 0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
-            RecyclerView stripRecyclerView =
-                    bottomToolbar.findViewById(R.id.tab_list_recycler_view);
-            recyclerViewReference.set(stripRecyclerView);
-            // Disable animation to reduce flakiness.
-            stripRecyclerView.setItemAnimator(null);
-        });
-        onView(allOf(withId(R.id.toolbar_right_button), withParent(withId(R.id.main_content)),
-                       withEffectiveVisibility(VISIBLE)))
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup bottomToolbar = cta.findViewById(R.id.bottom_controls);
+                    RecyclerView stripRecyclerView =
+                            bottomToolbar.findViewById(R.id.tab_list_recycler_view);
+                    recyclerViewReference.set(stripRecyclerView);
+                    // Disable animation to reduce flakiness.
+                    stripRecyclerView.setItemAnimator(null);
+                });
+        onView(
+                        allOf(
+                                withId(R.id.toolbar_right_button),
+                                withParent(withId(R.id.main_content)),
+                                withEffectiveVisibility(VISIBLE)))
                 .perform(click());
         mRenderTestRule.render(recyclerViewReference.get(), "11th_tab_selected");
     }
@@ -229,32 +232,36 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_recycler_view),
-                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
 
         // The strip should be hidden when omnibox is focused.
         onView(withId(R.id.url_bar)).perform(click());
-        onView(allOf(withId(R.id.tab_list_recycler_view),
-                       isDescendantOfA(withId(R.id.bottom_controls))))
+        onView(
+                        allOf(
+                                withId(R.id.tab_list_recycler_view),
+                                isDescendantOfA(withId(R.id.bottom_controls))))
                 .check(matches(withEffectiveVisibility((INVISIBLE))));
     }
 
     @Test
     @MediumTest
-    // clang-format off
     @CommandLineFlags.Add({
-            "enable-features=IPH_TabGroupsTapToSeeAnotherTab<TabGroupsTapToSeeAnotherTab",
-            "force-fieldtrials=TabGroupsTapToSeeAnotherTab/Enabled/",
-            "force-fieldtrial-params=TabGroupsTapToSeeAnotherTab.Enabled:availability/any/" +
-                    "event_trigger/" +
-                    "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A30;storage%3A365/" +
-                    "event_trigger2/" +
-                    "name%3Aiph_tabgroups_strip;comparator%3A<2;window%3A90;storage%3A365/" +
-                    "event_used/" +
-                    "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/" +
-                    "session_rate/<1"})
+        "enable-features=IPH_TabGroupsTapToSeeAnotherTab<TabGroupsTapToSeeAnotherTab",
+        "force-fieldtrials=TabGroupsTapToSeeAnotherTab/Enabled/",
+        "force-fieldtrial-params=TabGroupsTapToSeeAnotherTab.Enabled:availability/any/"
+                + "event_trigger/"
+                + "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A30;storage%3A365/"
+                + "event_trigger2/"
+                + "name%3Aiph_tabgroups_strip;comparator%3A<2;window%3A90;storage%3A365/"
+                + "event_used/"
+                + "name%3Aiph_tabgroups_strip;comparator%3A==0;window%3A365;storage%3A365/"
+                + "session_rate/<1"
+    })
     public void testIphBottomSheetSuppression() throws Exception {
-        // clang-format on
 
         // Create a tab group with 2 tabs, and turn on enable_launch_bug_fix variation.
         finishActivity(sActivityTestRule.getActivity());
@@ -268,8 +275,11 @@ public class TabGroupUiTest {
         sActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
-        ViewUtils.waitForVisibleView(allOf(withId(R.id.tab_list_recycler_view),
-                isDescendantOfA(withId(R.id.bottom_controls)), isCompletelyDisplayed()));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withId(R.id.tab_list_recycler_view),
+                        isDescendantOfA(withId(R.id.bottom_controls)),
+                        isCompletelyDisplayed()));
         assertTrue(isTabStripIphShowing(cta));
 
         // Show a bottom sheet, and the IPH should be hidden.
@@ -277,21 +287,27 @@ public class TabGroupUiTest {
                 cta.getRootUiCoordinatorForTesting().getBottomSheetController();
         final BottomSheetTestSupport bottomSheetTestSupport =
                 new BottomSheetTestSupport(bottomSheetController);
-        runOnUiThreadBlocking(() -> {
-            TestBottomSheetContent bottomSheetContent =
-                    new TestBottomSheetContent(cta, BottomSheetContent.ContentPriority.HIGH, false);
-            bottomSheetController.requestShowContent(bottomSheetContent, false);
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    TestBottomSheetContent bottomSheetContent =
+                            new TestBottomSheetContent(
+                                    cta, BottomSheetContent.ContentPriority.HIGH, false);
+                    bottomSheetController.requestShowContent(bottomSheetContent, false);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
+                });
         assertFalse(isTabStripIphShowing(cta));
 
         // Hide the bottom sheet, and the IPH should reshow.
         runOnUiThreadBlocking(() -> bottomSheetTestSupport.setSheetState(SheetState.HIDDEN, false));
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(bottomSheetController.getSheetState(), is(SheetState.HIDDEN));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            bottomSheetController.getSheetState(), is(SheetState.HIDDEN));
+                });
         assertTrue(isTabStripIphShowing(cta));
 
         // When the IPH is clicked and dismissed, opening bottom sheet should never reshow it.
@@ -299,14 +315,18 @@ public class TabGroupUiTest {
                 .inRoot(withDecorView(not(cta.getWindow().getDecorView())))
                 .perform(click());
         assertFalse(isTabStripIphShowing(cta));
-        runOnUiThreadBlocking(() -> {
-            TestBottomSheetContent bottomSheetContent =
-                    new TestBottomSheetContent(cta, BottomSheetContent.ContentPriority.HIGH, false);
-            bottomSheetController.requestShowContent(bottomSheetContent, false);
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    TestBottomSheetContent bottomSheetContent =
+                            new TestBottomSheetContent(
+                                    cta, BottomSheetContent.ContentPriority.HIGH, false);
+                    bottomSheetController.requestShowContent(bottomSheetContent, false);
+                });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            bottomSheetController.getSheetState(), not(is(SheetState.HIDDEN)));
+                });
         assertFalse(isTabStripIphShowing(cta));
     }
 

@@ -191,7 +191,8 @@ base::expected<size_t, Error> GzipSourceStream::FilterData(
         input_state_ = replay_state_;
         size_t bytes_used;
         scoped_refptr<IOBuffer> replay_buffer =
-            base::MakeRefCounted<WrappedIOBuffer>(replay_data_.data());
+            base::MakeRefCounted<WrappedIOBuffer>(replay_data_.data(),
+                                                  replay_data_.size());
         base::expected<size_t, Error> result =
             FilterData(output_buffer, output_buffer_size, replay_buffer.get(),
                        replay_data_.size(), &bytes_used, upstream_end_reached);

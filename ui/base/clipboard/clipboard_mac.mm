@@ -123,10 +123,11 @@ ClipboardMac::~ClipboardMac() {
 void ClipboardMac::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-DataTransferEndpoint* ClipboardMac::GetSource(ClipboardBuffer buffer) const {
+absl::optional<DataTransferEndpoint> ClipboardMac::GetSource(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return nullptr;
+  return absl::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(

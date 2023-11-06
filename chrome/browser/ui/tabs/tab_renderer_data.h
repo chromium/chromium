@@ -20,7 +20,7 @@ class TabStripModel;
 
 // Wraps the state needed by the renderers.
 struct TabRendererData {
-  static TabRendererData FromTabInModel(TabStripModel* model, int index);
+  static TabRendererData FromTabInModel(const TabStripModel* model, int index);
 
   TabRendererData();
   TabRendererData(const TabRendererData& other);

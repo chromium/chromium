@@ -5,6 +5,8 @@
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -288,7 +290,7 @@ class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
  public:
   void JoinSet(std::string id,
                base::OnceCallback<void(bool)> callback) override {
-    requested_ids_.emplace_back(std::move(id));
+    joined_ids_.emplace_back(std::move(id));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
@@ -296,22 +298,31 @@ class MockAnonymityServiceDelegate : public KAnonymityServiceDelegate {
   void QuerySets(
       std::vector<std::string> ids,
       base::OnceCallback<void(std::vector<bool>)> callback) override {
+    size_t num_ids = ids.size();
+    query_ids_.emplace_back(std::move(ids));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::vector<bool>(ids.size(), true)));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), std::vector<bool>(num_ids, true)));
   }
   base::TimeDelta GetJoinInterval() override { return kJoinInterval; }
 
   base::TimeDelta GetQueryInterval() override { return kQueryInterval; }
 
-  std::vector<std::string> TakeRequestedIDs() {
+  std::vector<std::string> TakeJoinedIDs() {
     std::vector<std::string> retval;
-    std::swap(retval, requested_ids_);
+    std::swap(retval, joined_ids_);
+    return retval;
+  }
+
+  std::vector<std::vector<std::string>> TakeQueryIDs() {
+    std::vector<std::vector<std::string>> retval;
+    std::swap(retval, query_ids_);
     return retval;
   }
 
  private:
-  std::vector<std::string> requested_ids_;
+  std::vector<std::string> joined_ids_;
+  std::vector<std::vector<std::string>> query_ids_;
 };
 
 class InterestGroupKAnonymityManagerTestWithMock
@@ -353,9 +364,41 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
   task_environment().FastForwardBy(base::Minutes(1));
 
   // Should have no duplicates.
-  std::vector<std::string> joined_ids = delegate()->TakeRequestedIDs();
+  std::vector<std::string> joined_ids = delegate()->TakeJoinedIDs();
   base::flat_set<std::string> id_set(joined_ids);
   EXPECT_EQ(joined_ids.size(), id_set.size());
+}
+
+TEST_F(InterestGroupKAnonymityManagerTestWithMock, QuerySetShouldBatch) {
+  auto manager = CreateManager();
+  const GURL top_frame = GURL("https://www.example.com/foo");
+  const url::Origin owner = url::Origin::Create(top_frame);
+
+  // Each ad creates 2 k-anon entries. We want enough ads to just exceed the
+  // batch size limit.
+  const size_t kNumAds = kQueryBatchSizeLimit / 2 + 1;
+
+  blink::InterestGroup group1 = MakeInterestGroup(owner, "foo");
+  group1.ads->clear();
+  for (size_t i = 0; i < kNumAds; i++) {
+    group1.ads->emplace_back(blink::InterestGroup::Ad(
+        GURL(base::StrCat(
+            {"https://www.foo.com/ad", base::NumberToString(i), ".html"})),
+        /*metadata=*/""));
+  }
+  // Join by itself triggers an update.
+  manager->JoinInterestGroup(group1, top_frame);
+
+  // k-anonymity update happens here.
+  task_environment().FastForwardBy(base::Minutes(1));
+
+  // The queries should have been split into 1 group of the max size and 1 group
+  // of the remaining one.
+  std::vector<std::vector<std::string>> queried_batches =
+      delegate()->TakeQueryIDs();
+  ASSERT_EQ(2u, queried_batches.size());
+  EXPECT_EQ(kQueryBatchSizeLimit, queried_batches[0].size());
+  EXPECT_EQ(2u, queried_batches[1].size());
 }
 
 }  // namespace content

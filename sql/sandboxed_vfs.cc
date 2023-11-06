@@ -109,12 +109,12 @@ sqlite3_vfs SqliteVfsFor(SandboxedVfs* sandboxed_vfs, const char* name) {
 
 // SQLite measures time according to the Julian calendar.
 base::Time SqliteEpoch() {
-  constexpr const double kMicroSecondsPerDay = 24 * 60 * 60 * 1000;
   // The ".5" is intentional -- days in the Julian calendar start at noon.
   // The offset is in the SQLite source code (os_unix.c) multiplied by 10.
   constexpr const double kUnixEpochAsJulianDay = 2440587.5;
 
-  return base::Time::FromJsTime(-kUnixEpochAsJulianDay * kMicroSecondsPerDay);
+  return base::Time::FromMillisecondsSinceUnixEpoch(
+      -kUnixEpochAsJulianDay * base::Time::kMillisecondsPerDay);
 }
 
 #if DCHECK_IS_ON()

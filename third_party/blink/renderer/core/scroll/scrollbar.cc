@@ -556,12 +556,22 @@ void Scrollbar::MouseMoved(const WebMouseEvent& evt) {
 void Scrollbar::MouseEntered() {
   if (scrollable_area_)
     scrollable_area_->MouseEnteredScrollbar(*this);
+  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+    scrollable_area_->GetLayoutBox()
+        ->GetFrameView()
+        ->SetPaintArtifactCompositorNeedsUpdate();
+  }
 }
 
 void Scrollbar::MouseExited() {
   if (scrollable_area_)
     scrollable_area_->MouseExitedScrollbar(*this);
   SetHoveredPart(kNoPart);
+  if (theme_.UsesFluentOverlayScrollbars() && scrollable_area_) {
+    scrollable_area_->GetLayoutBox()
+        ->GetFrameView()
+        ->SetPaintArtifactCompositorNeedsUpdate();
+  }
 }
 
 void Scrollbar::MouseUp(const WebMouseEvent& mouse_event) {
@@ -770,6 +780,11 @@ bool Scrollbar::IsOverlayScrollbar() const {
   return theme_.UsesOverlayScrollbars();
 }
 
+bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
+  return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
+         pressed_part_ != kThumbPart;
+}
+
 bool Scrollbar::ShouldParticipateInHitTesting() {
   // Non-overlay scrollbars should always participate in hit testing.
   if (!IsOverlayScrollbar())
@@ -889,6 +904,16 @@ bool Scrollbar::ContainerIsRightToLeft() const {
   return false;
 }
 
+bool Scrollbar::ContainerIsFormControl() const {
+  if (!style_source_) {
+    return false;
+  }
+  if (const auto* element = DynamicTo<Element>(style_source_->GetNode())) {
+    return element->IsFormControlElement();
+  }
+  return false;
+}
+
 EScrollbarWidth Scrollbar::CSSScrollbarWidth() const {
   if (style_source_) {
     return style_source_->StyleRef().ScrollbarWidth();
@@ -908,6 +933,19 @@ absl::optional<blink::Color> Scrollbar::ScrollbarTrackColor() const {
     return style_source_->StyleRef().ScrollbarTrackColorResolved();
   }
   return absl::nullopt;
+}
+
+bool Scrollbar::IsOpaque() const {
+  if (IsOverlayScrollbar()) {
+    return false;
+  }
+
+  absl::optional<blink::Color> track_color = ScrollbarTrackColor();
+  if (!track_color) {
+    // The native themes should ensure opaqueness of non-overlay scrollbars.
+    return true;
+  }
+  return track_color->IsOpaque();
 }
 
 mojom::blink::ColorScheme Scrollbar::UsedColorScheme() const {

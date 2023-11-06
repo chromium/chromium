@@ -1,0 +1,39 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "check_for_recommended": false,
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SuggestedContentEnabled": false
+        },
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "SuggestedContentEnabled": true
+        },
+        "prefs": {
+          "settings.suggested_content_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

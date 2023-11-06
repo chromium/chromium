@@ -6,7 +6,10 @@
 #define COMPONENTS_METRICS_STRUCTURED_KEY_DATA_PROVIDER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/metrics/structured/key_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -21,37 +24,58 @@ namespace metrics::structured {
 // be ready once InitializeProfileKey has been called.
 class KeyDataProvider {
  public:
-  KeyDataProvider() = default;
+  // Observer to be notified of events regarding the KeyDataProvider state.
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when a key is ready to be used.
+    virtual void OnKeyReady() = 0;
+  };
+
+  KeyDataProvider();
 
   KeyDataProvider(const KeyDataProvider& key_data_provider) = delete;
   KeyDataProvider& operator=(const KeyDataProvider& key_data_provider) = delete;
 
-  virtual ~KeyDataProvider() = default;
+  virtual ~KeyDataProvider();
 
-  // Initializes the device key data.
-  virtual void InitializeDeviceKey(base::OnceClosure callback) = 0;
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
-  // Called whenever a profile key should be initialized.
-  virtual void InitializeProfileKey(const base::FilePath& profile_path,
-                                    base::OnceClosure callback) = 0;
+  // Returns true if the keys are ready to be used.
+  virtual bool IsReady() = 0;
 
-  // Returns the device key data.
+  // Called whenever a profile is added.
+  virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
+
+  // Retrieves the ID for given |project_name|.
   //
-  // Returns nullptr if InitializeDeviceKey() has not been called or is in
-  // progress.
-  virtual KeyData* GetDeviceKeyData() = 0;
+  // If no valid key is found for |project_name|, this function will return
+  // absl::nullopt.
+  virtual absl::optional<uint64_t> GetId(const std::string& project_name) = 0;
 
-  // Returns the profile key data, if available. A call to HasProfileKey()
-  // should guarantee that this value will not be nullptr.
+  // Retrieves the secondary ID for given |project_name|.
   //
-  // Returns nullptr otherwise.
-  virtual KeyData* GetProfileKeyData() = 0;
+  // If no valid secondary key is found for |project_name|, this function will
+  // return absl::nullopt.
+  //
+  // TODO(b/290096302): Refactor event sequence populator so there is no
+  // dependency on concepts such as device/profile in //components.
+  virtual absl::optional<uint64_t> GetSecondaryId(
+      const std::string& project_name) = 0;
+
+  // Retrieves the key data to be used for |project_name|. Returns nullptr if
+  // the KeyData is not available for given |project_name|.
+  virtual KeyData* GetKeyData(const std::string& project_name) = 0;
 
   // Deletes all key data associated with the provider.
   virtual void Purge() = 0;
 
-  virtual bool HasProfileKey() = 0;
-  virtual bool HasDeviceKey() = 0;
+ protected:
+  // Notifies observers that the key is ready.
+  void NotifyKeyReady();
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace metrics::structured

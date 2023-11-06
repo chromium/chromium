@@ -8,7 +8,7 @@
 
 import './object_fieldset.js';
 
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {Page} from './page.js';
 

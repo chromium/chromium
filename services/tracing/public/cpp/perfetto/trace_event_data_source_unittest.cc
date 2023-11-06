@@ -25,7 +25,7 @@
 #include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/threading/thread_id_name_manager.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -101,9 +101,8 @@ class TraceEventDataSourceTest
     perfetto::internal::TrackRegistry::InitializeInstance();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-    old_thread_name_ =
-        base::ThreadIdNameManager::GetInstance()->GetNameForCurrentThread();
-    base::ThreadIdNameManager::GetInstance()->SetName(kTestThread);
+    old_thread_name_ = base::PlatformThread::GetName();
+    base::PlatformThread::SetName(kTestThread);
     old_process_name_ = base::test::CurrentProcessForTest::GetName();
     old_process_type_ = base::test::CurrentProcessForTest::GetType();
     base::CurrentProcess::GetInstance().SetProcessNameAndType(kTestProcess,
@@ -146,7 +145,7 @@ class TraceEventDataSourceTest
     producer_client_.reset();
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
-    base::ThreadIdNameManager::GetInstance()->SetName(old_thread_name_);
+    base::PlatformThread::SetName(kTestThread);
     base::CurrentProcess::GetInstance().SetProcessNameAndType(
         old_process_name_, old_process_type_);
 

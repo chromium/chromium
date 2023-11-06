@@ -5,6 +5,7 @@
 #import "content/browser/date_time_chooser/ios/date_time_chooser_view_controller.h"
 
 #import "base/notreached.h"
+#import "content/browser/date_time_chooser/ios/date_time_chooser_util.h"
 #import "third_party/blink/public/mojom/choosers/date_time_chooser.mojom.h"
 #import "ui/base/ime/text_input_type.h"
 
@@ -13,8 +14,9 @@ const CGFloat kToolBarHeight = 44;
 @interface DateTimeChooserViewController ()
 // The type to set the date picker mode
 @property(nonatomic, assign) ui::TextInputType type;
-// Initalized time for the date picker
-@property(nonatomic, assign) NSInteger initTimeInMS;
+// Initalized time for the date picker. For TEXT_INPUT_TYPE_MONTH, it is the
+// number of month. Otherwise, it's in milliseconds.
+@property(nonatomic, assign) NSInteger initTime;
 // Updated with the selected date in the date picker
 @property(nonatomic, assign) NSDate* selectedDate;
 @end
@@ -27,34 +29,56 @@ const CGFloat kToolBarHeight = 44;
   }
   _delegate = nil;
   _type = configs->dialog_type;
-  _initTimeInMS = configs->dialog_value;
+  _initTime = configs->dialog_value;
+  // TODO(crbug.com/1461947): Handle other values in `configs` such as minimum
+  // or maximum.
   return self;
 }
 
 - (UIDatePicker*)createUIDatePicker {
   UIDatePicker* datePicker = [[UIDatePicker alloc] init];
+  UIDatePickerMode mode = UIDatePickerModeDate;
+  UIDatePickerStyle style = UIDatePickerStyleAutomatic;
+  NSDate* initValue;
   switch (self.type) {
     case ui::TextInputType::TEXT_INPUT_TYPE_DATE:
-      datePicker.datePickerMode = UIDatePickerModeDate;
+      initValue = [NSDate dateWithTimeIntervalSince1970:self.initTime / 1000];
+      mode = UIDatePickerModeDate;
+      style = UIDatePickerStyleInline;
+      break;
+    case ui::TextInputType::TEXT_INPUT_TYPE_TIME:
+      initValue = [NSDate dateWithTimeIntervalSince1970:self.initTime / 1000];
+      mode = UIDatePickerModeTime;
+      style = UIDatePickerStyleWheels;
       break;
     case ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME:
     case ui::TextInputType::TEXT_INPUT_TYPE_DATE_TIME_LOCAL:
+      initValue = [NSDate dateWithTimeIntervalSince1970:self.initTime / 1000];
+      mode = UIDatePickerModeDateAndTime;
+      style = UIDatePickerStyleInline;
+      break;
     case ui::TextInputType::TEXT_INPUT_TYPE_MONTH:
-    case ui::TextInputType::TEXT_INPUT_TYPE_TIME:
+      initValue = GetDateFromNumberOfMonths(self.initTime);
+      mode = UIDatePickerModeDate;
+      style = UIDatePickerStyleWheels;
+      break;
     case ui::TextInputType::TEXT_INPUT_TYPE_WEEK:
-      // TODO(crbug.com/1461947): Set the mode based on each type and handle the
-      // selected value with the format matched to the mode.
-      datePicker.datePickerMode = UIDatePickerModeDate;
+      initValue = [NSDate dateWithTimeIntervalSince1970:self.initTime / 1000];
+      // UIDatePicker doesn't have a mode for the week number. So, it opens
+      // UIDatePicker with UIDatePickerModeDate and converts the selected
+      // to the week number.
+      mode = UIDatePickerModeDate;
+      style = UIDatePickerStyleInline;
       break;
     default:
       NOTREACHED() << "Invalid type for a DateTimeChooser.";
       break;
   }
-  datePicker.preferredDatePickerStyle = UIDatePickerStyleInline;
 
-  // Convert milliseconds to seconds.
-  NSTimeInterval dialogValue = self.initTimeInMS / 1000;
-  NSDate* initValue = [NSDate dateWithTimeIntervalSince1970:dialogValue];
+  datePicker.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+  datePicker.datePickerMode = mode;
+  datePicker.preferredDatePickerStyle = style;
+
   [datePicker setDate:initValue animated:FALSE];
   [datePicker addTarget:self
                  action:@selector(datePickerValueChanged:)
@@ -67,7 +91,8 @@ const CGFloat kToolBarHeight = 44;
                                                       completion:nil];
   [self.delegate dateTimeChooser:self
             didCloseSuccessfully:FALSE
-                        withDate:self.selectedDate];
+                        withDate:self.selectedDate
+                         forType:self.type];
 }
 
 - (void)doneButtonTapped {
@@ -76,7 +101,8 @@ const CGFloat kToolBarHeight = 44;
   // Convert seconds to miliseconds.
   [self.delegate dateTimeChooser:self
             didCloseSuccessfully:TRUE
-                        withDate:self.selectedDate];
+                        withDate:self.selectedDate
+                         forType:self.type];
 }
 
 - (void)datePickerValueChanged:(UIDatePicker*)datePicker {

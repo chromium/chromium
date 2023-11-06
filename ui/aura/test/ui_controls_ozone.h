@@ -41,7 +41,8 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                                    ui::KeyboardCode key,
                                    int key_event_types,
                                    base::OnceClosure closure,
-                                   int accelerator_state) override;
+                                   int accelerator_state,
+                                   ui_controls::KeyEventType wait_for) override;
   bool SendMouseMove(int screen_x, int screen_y) override;
   bool SendMouseMoveNotifyWhenDone(int screen_x,
                                    int screen_y,

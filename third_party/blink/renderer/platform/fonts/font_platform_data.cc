@@ -186,7 +186,7 @@ bool FontPlatformData::operator==(const FontPlatformData& a) const {
          orientation_ == a.orientation_;
 }
 
-SkFontID FontPlatformData::UniqueID() const {
+SkTypefaceID FontPlatformData::UniqueID() const {
   return Typeface()->uniqueID();
 }
 
@@ -226,7 +226,7 @@ bool FontPlatformData::HasSpaceInLigaturesOrKerning(
 }
 
 unsigned FontPlatformData::GetHash() const {
-  unsigned h = SkTypeface::UniqueID(Typeface());
+  unsigned h = UniqueID();
   h ^= 0x01010101 * ((static_cast<int>(is_hash_table_deleted_value_) << 3) |
                      (static_cast<int>(orientation_) << 2) |
                      (static_cast<int>(synthetic_bold_) << 1) |

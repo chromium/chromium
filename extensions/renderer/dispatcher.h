@@ -29,6 +29,7 @@
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/mojom/renderer.mojom.h"
+#include "extensions/renderer/native_extension_bindings_system.h"
 #include "extensions/renderer/resource_bundle_source_map.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -66,21 +67,24 @@ const int kRendererProfileId = 0;
 class ContentWatcher;
 class DispatcherDelegate;
 class Extension;
-class NativeExtensionBindingsSystem;
 class IPCMessageSender;
 class ScriptContext;
 class ScriptContextSetIterable;
 class ScriptInjectionManager;
 class WorkerScriptContextSet;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 struct Message;
 struct PortId;
+#endif
 
 // Dispatches extension control messages sent to the renderer and stores
 // renderer extension related state.
 class Dispatcher : public content::RenderThreadObserver,
                    public UserScriptSetManager::Observer,
                    public mojom::Renderer,
-                   public mojom::EventDispatcher {
+                   public mojom::EventDispatcher,
+                   public NativeExtensionBindingsSystem::Delegate {
  public:
   explicit Dispatcher(std::unique_ptr<DispatcherDelegate> delegate);
 
@@ -222,7 +226,9 @@ class Dispatcher : public content::RenderThreadObserver,
                            CannotScriptWebstore);
 
   // RenderThreadObserver implementation:
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   bool OnControlMessageReceived(const IPC::Message& message) override;
+#endif
   void RegisterMojoInterfaces(
       blink::AssociatedInterfaceRegistry* associated_interfaces) override;
   void UnregisterMojoInterfaces(
@@ -277,6 +283,7 @@ class Dispatcher : public content::RenderThreadObserver,
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnEventDispatcherRequest(
       mojo::PendingAssociatedReceiver<mojom::EventDispatcher> receiver);
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   void OnDeliverMessage(int worker_thread_id,
                         const PortId& target_port_id,
                         const Message& message);
@@ -285,13 +292,18 @@ class Dispatcher : public content::RenderThreadObserver,
   void OnDispatchOnDisconnect(int worker_thread_id,
                               const PortId& port_id,
                               const std::string& error_message);
+#endif
 
   // mojom::EventDispatcher implementation.
   void DispatchEvent(mojom::DispatchEventParamsPtr params,
-                     base::Value::List event_args) override;
+                     base::Value::List event_args,
+                     DispatchEventCallback callback) override;
 
   // UserScriptSetManager::Observer implementation.
   void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;
+
+  // NativeExtensionBindingsSystem::Delegate implementation.
+  ScriptContextSetIterable* GetScriptContextSet() override;
 
   void UpdateActiveExtensions();
 
@@ -305,8 +317,10 @@ class Dispatcher : public content::RenderThreadObserver,
   // Enable custom element allowlist in Apps.
   void EnableCustomElementAllowlist();
 
-  // Adds or removes bindings for all contexts.
-  void UpdateAllBindings();
+  // Adds or removes bindings for all contexts. `api_permissions_changed`
+  // indicates whether the effective permission state for extensions has
+  // changed and cached features should be re-calculated.
+  void UpdateAllBindings(bool api_permissions_changed);
 
   // Adds or removes bindings for every context belonging to |extension|, due to
   // permissions change in the extension.
@@ -331,6 +345,7 @@ class Dispatcher : public content::RenderThreadObserver,
   // thread, and thus cannot mutate any state or rely on state which can be
   // mutated in Dispatcher.
   std::unique_ptr<NativeExtensionBindingsSystem> CreateBindingsSystem(
+      NativeExtensionBindingsSystem::Delegate* delegate,
       std::unique_ptr<IPCMessageSender> ipc_sender);
 
   void ResumeEvaluationOnWorkerThread(const ExtensionId& extension_id);

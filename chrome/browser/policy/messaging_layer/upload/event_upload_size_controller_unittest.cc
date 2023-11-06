@@ -4,8 +4,10 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <optional>
 #include <string>
 
+#include "base/test/protobuf_matchers.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/testing_network_condition_service.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -14,9 +16,54 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace reporting {
-
+using ::base::test::EqualsProto;
+using ::testing::Matches;
 using ::testing::SizeIs;
+
+namespace reporting {
+namespace {
+
+class EqualsProtoVector {
+ public:
+  static ::testing::Matcher<const std::vector<EncryptedRecord>&> Matcher(
+      const google::protobuf::RepeatedPtrField<EncryptedRecord>&
+          expected_records,
+      std::optional<size_t> expected_count = std::nullopt) {
+    return EqualsProtoVector(
+        expected_records, expected_count.has_value()
+                              ? expected_count.value()
+                              : static_cast<size_t>(expected_records.size()));
+  }
+
+  using is_gtest_matcher = void;
+
+  bool MatchAndExplain(const std::vector<EncryptedRecord>& records,
+                       std::ostream* /*listener*/) const {
+    if (records.size() != expected_count_) {
+      return false;
+    }
+    for (size_t i = 0; i < records.size(); ++i) {
+      if (!Matches(EqualsProto(expected_records_[i]))(records[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(std::ostream* os) const { *os << "All protos match"; }
+
+  void DescribeNegationTo(std::ostream* os) const { *os << "Protos mismatch"; }
+
+ private:
+  EqualsProtoVector(const google::protobuf::RepeatedPtrField<EncryptedRecord>&
+                        expected_records,
+                    size_t expected_count)
+      : expected_records_(expected_records), expected_count_(expected_count) {}
+
+  const google::protobuf::RepeatedPtrField<EncryptedRecord> expected_records_;
+  const size_t expected_count_;
+};
+}  // namespace
 
 // Testing |EventUploadSizeController|. Since a big portion of the class is
 // simply applying a formula, there is no reason to repeat the formula here.
@@ -143,21 +190,17 @@ TEST_F(EventUploadSizeControllerTest, BuildEncryptedRecordsAll) {
   encrypted_records.Add()->set_encrypted_wrapped_record("de");
   encrypted_records.Add()->set_encrypted_wrapped_record("fghi");
 
+  auto matcher = EqualsProtoVector::Matcher(encrypted_records);
+
   const auto results = EventUploadSizeController::BuildEncryptedRecords(
-      encrypted_records,
+      std::move(encrypted_records),
       // This controller would let all records pass.
       ::reporting::EventUploadSizeController(
           network_condition_service, /*new_events_rate=*/1u,
           /*remaining_storage_capacity=*/std::numeric_limits<uint64_t>::max(),
           /*max_file_upload_buffer_size=*/0U));
 
-  ASSERT_THAT(results, SizeIs(static_cast<size_t>(encrypted_records.size())));
-  for (size_t i = 0; i < results.size(); ++i) {
-    std::string result_str, expected_str;
-    results[i].SerializeToString(&result_str);
-    encrypted_records[i].SerializeToString(&expected_str);
-    EXPECT_EQ(result_str, expected_str);
-  }
+  EXPECT_THAT(results, matcher);
 }
 
 // Tests BuildEncryptedRecords when only part of the input are returned.
@@ -186,16 +229,13 @@ TEST_F(EventUploadSizeControllerTest, BuildEncryptedRecordsPart) {
   ASSERT_GE(expected_num_of_records, 2u);
   ASSERT_LT(expected_num_of_records, kNumOfRecords);
 
-  const auto results = EventUploadSizeController::BuildEncryptedRecords(
-      encrypted_records, std::move(event_upload_size_controller));
+  auto matcher =
+      EqualsProtoVector::Matcher(encrypted_records, expected_num_of_records);
 
-  ASSERT_THAT(results, SizeIs(expected_num_of_records));
-  for (size_t i = 0; i < expected_num_of_records; ++i) {
-    std::string result_str, expected_str;
-    results[i].SerializeToString(&result_str);
-    encrypted_records[i].SerializeToString(&expected_str);
-    EXPECT_EQ(result_str, expected_str);
-  }
+  const auto results = EventUploadSizeController::BuildEncryptedRecords(
+      std::move(encrypted_records), std::move(event_upload_size_controller));
+
+  EXPECT_THAT(results, matcher);
 }
 
 // Tests BuildEncryptedRecords when only part of the input are returned and
@@ -234,16 +274,12 @@ TEST_F(EventUploadSizeControllerTest, BuildEncryptedRecordsPartWithRecordCopy) {
                                    network_condition_service,
                                    encrypted_records[0].ByteSizeLong()));
 
+  auto matcher =
+      EqualsProtoVector::Matcher(encrypted_records, expected_num_of_records);
+
   const auto results = EventUploadSizeController::BuildEncryptedRecords(
-      encrypted_records, std::move(event_upload_size_controller));
+      std::move(encrypted_records), std::move(event_upload_size_controller));
 
-  ASSERT_THAT(results, SizeIs(expected_num_of_records));
-  for (size_t i = 0; i < expected_num_of_records; ++i) {
-    std::string result_str, expected_str;
-    results[i].SerializeToString(&result_str);
-    encrypted_records[i].SerializeToString(&expected_str);
-    EXPECT_EQ(result_str, expected_str);
-  }
+  EXPECT_THAT(results, matcher);
 }
-
 }  // namespace reporting

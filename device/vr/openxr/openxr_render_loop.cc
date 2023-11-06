@@ -228,7 +228,7 @@ void OpenXrRenderLoop::EnableSupportedFeatures(
               XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         } else if (feature == device::mojom::XRSessionFeature::HAND_INPUT) {
           return extension_enumeration->ExtensionSupported(
-              kMSFTHandInteractionExtensionName);
+              XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         } else if (feature == device::mojom::XRSessionFeature::HIT_TEST) {
           return extension_enumeration->ExtensionSupported(
               XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
@@ -304,7 +304,7 @@ void OpenXrRenderLoop::ClearPendingFrameInternal() {
 }
 
 bool OpenXrRenderLoop::IsUsingSharedImages() const {
-  return openxr_->IsUsingSharedImages();
+  return graphics_binding_->IsUsingSharedImages();
 }
 
 void OpenXrRenderLoop::SubmitFrame(int16_t frame_index,

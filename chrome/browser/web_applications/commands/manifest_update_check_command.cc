@@ -156,9 +156,7 @@ void ManifestUpdateCheckCommand::DownloadNewManifestJson(
   params.installable_criteria =
       webapps::InstallableCriteria::kValidManifestIgnoreDisplay;
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(),
-      /*bypass_service_worker_check=*/true, std::move(next_step_callback),
-      params);
+      web_contents_.get(), std::move(next_step_callback), params);
 }
 
 void ManifestUpdateCheckCommand::StashNewManifestJson(

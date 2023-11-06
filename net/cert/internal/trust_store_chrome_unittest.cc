@@ -5,25 +5,26 @@
 #include "net/cert/internal/trust_store_chrome.h"
 
 #include "base/containers/span.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace net {
 namespace {
 
 #include "net/data/ssl/chrome_root_store/chrome-root-store-test-data-inc.cc"
 
-std::shared_ptr<const ParsedCertificate> ToParsedCertificate(
+std::shared_ptr<const bssl::ParsedCertificate> ToParsedCertificate(
     const X509Certificate& cert) {
-  CertErrors errors;
-  std::shared_ptr<const ParsedCertificate> parsed = ParsedCertificate::Create(
-      bssl::UpRef(cert.cert_buffer()),
-      x509_util::DefaultParseCertificateOptions(), &errors);
+  bssl::CertErrors errors;
+  std::shared_ptr<const bssl::ParsedCertificate> parsed =
+      bssl::ParsedCertificate::Create(
+          bssl::UpRef(cert.cert_buffer()),
+          x509_util::DefaultParseCertificateOptions(), &errors);
   EXPECT_TRUE(parsed) << errors.ToDebugString();
   return parsed;
 }
@@ -41,11 +42,11 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   ASSERT_EQ(certs.size(), 2u);
 
   for (const auto& cert : certs) {
-    std::shared_ptr<const ParsedCertificate> parsed =
+    std::shared_ptr<const bssl::ParsedCertificate> parsed =
         ToParsedCertificate(*cert);
     ASSERT_TRUE(trust_store_chrome->Contains(parsed.get()));
-    CertificateTrust trust = trust_store_chrome->GetTrust(parsed.get());
-    EXPECT_EQ(CertificateTrust::ForTrustAnchor().ToDebugString(),
+    bssl::CertificateTrust trust = trust_store_chrome->GetTrust(parsed.get());
+    EXPECT_EQ(bssl::CertificateTrust::ForTrustAnchor().ToDebugString(),
               trust.ToDebugString());
   }
 
@@ -55,11 +56,12 @@ TEST(TrustStoreChromeTestNoFixture, ContainsCert) {
   scoped_refptr<X509Certificate> other_cert =
       ImportCertFromFile(GetTestCertsDirectory(), "root_ca_cert.pem");
   ASSERT_TRUE(other_cert);
-  std::shared_ptr<const ParsedCertificate> other_parsed =
+  std::shared_ptr<const bssl::ParsedCertificate> other_parsed =
       ToParsedCertificate(*other_cert);
   ASSERT_FALSE(trust_store_chrome->Contains(other_parsed.get()));
-  CertificateTrust trust = trust_store_chrome->GetTrust(other_parsed.get());
-  EXPECT_EQ(CertificateTrust::ForUnspecified().ToDebugString(),
+  bssl::CertificateTrust trust =
+      trust_store_chrome->GetTrust(other_parsed.get());
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
             trust.ToDebugString());
 }
 

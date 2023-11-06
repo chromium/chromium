@@ -10,7 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -174,7 +174,7 @@ TEST_F(AddPasswordCoordinatorTest,
   CheckAddPasswordIsNotTopViewController();
 
   // Successful auth should reveal add password.
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   CheckAddPasswordIsTopViewController();
 }

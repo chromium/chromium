@@ -7,14 +7,14 @@
  */
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
 var GaiaActionButtonsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://chrome-signin/test_loader.html?module=chromeos/gaia_action_buttons/gaia_action_buttons_test.js&host=test';
+    return 'chrome://chrome-signin/test_loader.html?module=chromeos/gaia_action_buttons/gaia_action_buttons_test.js';
   }
 
   get suiteName() {

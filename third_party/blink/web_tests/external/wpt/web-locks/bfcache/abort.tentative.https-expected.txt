@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-PRECONDITION_FAILED An immediately aborted lock on main thread should not prevent bfcache Could have been BFCached but actually wasn't
-PRECONDITION_FAILED An immediately aborted lock on a worker should not prevent bfcache Could have been BFCached but actually wasn't
-PRECONDITION_FAILED An immediately aborted lock on a nested worker should not prevent bfcache Could have been BFCached but actually wasn't
-PRECONDITION_FAILED An immediately aborted lock on a shared worker should not prevent bfcache Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] An immediately aborted lock on main thread should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] An immediately aborted lock on a worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] An immediately aborted lock on a nested worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
+[PRECONDITION_FAILED] An immediately aborted lock on a shared worker should not prevent bfcache
+  Could have been BFCached but actually wasn't
 Harness: the test ran to completion.
 

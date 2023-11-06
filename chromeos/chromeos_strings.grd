@@ -331,16 +331,19 @@
         Writing help
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
-        What's your writing goal?
+        For example, "write a thank you note"
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in rewrite mode." translateable="false">
         Rewrite
       </message>
       <message name="IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in rewrite mode." translateable="false">
-        Custom (e.g. sound more confident)
+        Custom (for example, "sound more confident")
       </message>
       <message name="IDS_EDITOR_MENU_SETTINGS_TOOLTIP" desc="Tooltip text for the settings button in the Editor Menu." translateable="false">
         Settings
+      </message>
+      <message name="IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP" desc="Tooltip text for the arrow button in the freeform textfield in the Editor Menu." translateable="false">
+        Submit
       </message>
       <message name="IDS_EDITOR_MENU_EXPERIMENT_BADGE" desc="Label on the badge shown next to the Editor Menu title to indicate that it is an experimental feature." translateable="false">
         Experiment
@@ -2527,22 +2530,19 @@
           Off
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_TITLE" desc="Label for the drop down menu of ambient mode duration settings.">
-         Show screen saver
+          While charging, show screen saver for
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_MINUTES" desc="Label for the screen saver duration option in minutes.">
-         for <ph name="MINUTES">$1<ex>10</ex></ph> minutes
+          <ph name="MINUTES">$1<ex>10</ex></ph> minutes
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR" desc="Label for the screen saver duration option 1 hour.">
-         for 1 hour
+          1 hour
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER" desc="Label for the screen saver duration option forever.">
-         forever
-        </message>
-        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_DESCRIPTION" desc="Label for the screen saver duration description.">
-         To conserve battery, screen saver works only while charging.
+          forever
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
-         Image source
+          Image source
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS" desc="Label for the radio button to choose the topic source from Google Photos. The radio button allows the user to set Google Photos for ambient mode, which shows photos to the user when their device is idle.">
           Google Photos
@@ -2604,10 +2604,10 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ALBUMS_SUBPAGE_ALBUM_UNSELECTED" desc="A11y label of an unselected album in ambient mode.">
           Select album <ph name="TITLE">$1<ex>Recent highlights</ex></ph> <ph name="DESC">$2<ex>Your best auto selected photos</ex></ph>
         </message>
-        <message name="IDS_PERONSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE" desc="A message shown when deselecting the last art album.">
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_LAST_ART_ALBUM_MESSAGE" desc="A message shown when deselecting the last art album.">
           A minimum of one Art gallery album needs to be selected
         </message>
-        <message name="IDS_PERONSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL" desc="Label on the close button in the art album dialog.">
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ART_ALBUM_DIALOG_CLOSE_BUTTON_LABEL" desc="Label on the close button in the art album dialog.">
           Got it
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE" desc="Label for the ambient mode animation section.">
@@ -3941,6 +3941,9 @@
         <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL" desc="Label for adding a screenshot and/or a filename.">
           Attach files
         </message>
+        <message name="IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL_LOGGED_OUT" desc="Label for adding a screenshot. Shown to loggout users.">
+          Add screenshot
+        </message>
         <message name="IDS_FEEDBACK_TOOL_REPLACE_FILE_LABEL" desc="Label of the replace file button">
           Replace file
         </message>
@@ -3967,6 +3970,12 @@
         </message>
         <message name="IDS_FEEDBACK_TOOL_BLUETOOTH_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the bluetooth logs hyperlink">
           Include bluetooth logs which captures information such as btsnoop and HCI logs from your current session. The logs will be filtered to remove as much personal identifiable information as possible.&#10;&#10;The information is stored for up to 90 days and access is restricted to the team working on this issue.
+        </message>
+        <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX" translateable="false" desc="Checkbox for Google internal account to attach Wifi debug logs from the current session.">
+          Attach additional Wi-Fi information. <ph name="BEGIN_LINK1">&lt;a id="wifiDebugLogsInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
+        </message>
+        <message name="IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_MESSAGE" translateable="false" desc="Message shown after user clicks on the Wifi debug logs hyperlink">
+          Include proprietary debug data generated by the closed-source firmware of Wi-Fi chipsets. It may include information about the Wi-Fi chip (such as its MAC address), connected and surrounding Wi-Fi access points, and any other data going through the chipsets.&#10;&#10;This data can't be debugged by Google directly and is shared with the chipset vendors so that they can debug and fix any issues Googlers are experiencing. In case the issue needs to be shared with vendors, the data is kept in Buganizer until the bug is resolved.
         </message>
         <message name="IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO" translateable="false" desc="Checkbox for Google internal account to submit a Cross Device Feedback Report.">
           This is an issue between this Chromebook and another device. <ph name="BEGIN_LINK1">&lt;a id="linkCrossDeviceDogfoodFeedbackInfoLink"&gt;</ph>View more details<ph name="END_LINK1">&lt;/a&gt;</ph>.
@@ -4091,9 +4100,11 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CANCEL" desc="Used to cancel action in various modals">
           Cancel
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals" translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT" desc="Used to edit action in various modals">
           Edit
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_EDIT_SHORTCUT" desc="Title for a dialog that allows the user to edit a shortcut.">
+          Edit shortcut
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_CUSTOMIZATION_DISABLED_BY_POLICY_MESSAGE"
             desc="The message shown to indicate that a user policy is in place
@@ -4167,6 +4178,11 @@
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_PLACEHOLDER_LABEL" desc="Placeholder text shown in search input field before user has typed anything.">
           Search shortcuts
+        </message>
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER"
+            desc="The placeholder text that appears in the input box where the
+            user is required to press a key combination for a shortcut.">
+          key
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ACCELERATOR_TEXT_DIVIDER" desc="The text shown between multiple shortcut keys.">
           or
@@ -4306,8 +4322,7 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_BACK" desc="The text read aloud by the screen reader describing the keyboard icon 'back'.">
           back
         </message>
-        <!-- TODO(b/286268215): Translate this string -->
-        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'." translateable="false">
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_FORWARD" desc="The text read aloud by the screen reader describing the keyboard icon 'forward'.">
           forward
         </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH" desc="The text read aloud by the screen reader describing the keyboard icon 'refresh'.">
@@ -4469,6 +4484,12 @@
         <message name="IDS_SETTINGS_APN_INPUT_LABEL" desc="Label for the input field where the APN is specified, the asterisk indicates that this is required">
           APN*
         </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_MAX_CHARS" desc="Error for the APN input field when the maximum character limit is reached">
+          APN can’t have more than <ph name="CHAR_LIMIT">$1<ex>63</ex></ph> characters
+        </message>
+        <message name="IDS_SETTINGS_APN_INPUT_LABEL_ERROR_INVALID_CHAR" desc="Error for the APN input field when an invalid character is used">
+          Can’t use accented letters, non-Latin alphabet, or symbols
+        </message>
         <message name="IDS_SETTINGS_APN_DIALOG_ADVANCED_SETTING" desc="Title for the button which toggles the advanced settings section">
           Advanced settings
         </message>
@@ -4507,6 +4528,9 @@
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_DEFAULT_APN_REQUIRED" desc="Error message that is shown whenever a default APN type is required">
           A default APN is required
+        </message>
+        <message name="IDS_SETTINGS_APN_NAME_MODEM" desc="Label for APNs that are selected by the modem">
+          Modem APN
         </message>
         <message name="IDS_SETTINGS_APN_AUTO_DETECTED" desc="Statement that the APN is automatically detected">
           Automatically detected

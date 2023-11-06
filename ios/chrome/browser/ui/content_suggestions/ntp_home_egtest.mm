@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
-#import "ios/chrome/browser/search_engines/search_engines_app_interface.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/capabilities_types.h"
@@ -109,6 +109,11 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 id<GREYMatcher> notPracticallyVisible() {
   return grey_not(grey_minimumVisiblePercent(0.01));
 }
+
+// Returns a matcher which is true if the view is mostly not visible.
+id<GREYMatcher> mostlyNotVisible() {
+  return grey_not(grey_minimumVisiblePercent(0.33));
+}
 }
 
 // Test case for the NTP home UI. More precisely, this tests the positions of
@@ -124,8 +129,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)setUpForTestCase {
   [super setUpForTestCase];
   // Mark What's New as already-seen so it does not override Bookmarks.
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
   [NTPHomeTestCase setUpHelper];
 }
 
@@ -141,8 +146,8 @@ id<GREYMatcher> notPracticallyVisible() {
 + (void)tearDown {
   [self closeAllTabs];
   // Clean up What's New already-seen.
-  [ChromeEarlGrey removeUserDefaultObjectForKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey setUserDefaultObject:@YES forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES forKey:kWhatsNewM116UsageEntryKey];
 
   [super tearDown];
 }
@@ -266,7 +271,7 @@ id<GREYMatcher> notPracticallyVisible() {
 - (void)MAYBE_testCollectionShortcutsWithWhatsNew {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [ChromeEarlGrey setUserDefaultObject:@NO forKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey setUserDefaultsObject:@NO forKey:kWhatsNewM116UsageEntryKey];
 
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -360,8 +365,9 @@ id<GREYMatcher> notPracticallyVisible() {
   [ChromeEarlGrey sceneOpenURL:GURL("chromewidgetkit://search-widget/search")];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
 }
 
 // Tests that the fake omnibox width is correctly updated after a rotation.
@@ -754,9 +760,9 @@ id<GREYMatcher> notPracticallyVisible() {
   // page.
   [self focusFakebox];
 
-  // Check the fake omnibox is not visible.
+  // Check the fake omnibox is mostly not visible.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -820,9 +826,11 @@ id<GREYMatcher> notPracticallyVisible() {
   // Offset after the fake omnibox has been tapped.
   CGPoint offsetAfterTap = collectionView.contentOffset;
 
-  // Make sure the fake omnibox has been hidden and the collection has moved.
+  // Make sure the fake omnibox has been mostly covered and the collection has
+  // moved.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
+
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_sufficientlyVisible()];
   GREYAssertTrue(offsetAfterTap.y >= origin.y,
@@ -991,6 +999,11 @@ id<GREYMatcher> notPracticallyVisible() {
 }
 
 - (void)testMinimumHeight {
+  // TODO(crbug.com/1493412): Re-enable on iPad
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iPad.");
+  }
+
   [ChromeEarlGreyAppInterface
       setBoolValue:NO
        forUserPref:base::SysUTF8ToNSString(prefs::kArticlesForYouEnabled)];
@@ -1012,15 +1025,25 @@ id<GREYMatcher> notPracticallyVisible() {
                     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
                     index])] assertWithMatcher:grey_sufficientlyVisible()];
   }
-  for (NSInteger index = 0; index < 4; index++) {
+  if (IsMagicStackEnabled()) {
+    // Just check for Magic Stack visibility since the top module shown may
+    // vary.
     [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID([NSString
-                stringWithFormat:
-                    @"%@%li",
-                    kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
-                    index])] assertWithMatcher:grey_sufficientlyVisible()];
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kMagicStackViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  } else {
+    for (NSInteger index = 0; index < 4; index++) {
+      [[EarlGrey
+          selectElementWithMatcher:
+              grey_accessibilityID([NSString
+                  stringWithFormat:
+                      @"%@%li",
+                      kContentSuggestionsShortcutsAccessibilityIdentifierPrefix,
+                      index])] assertWithMatcher:grey_sufficientlyVisible()];
+    }
   }
+
   // Ensures that fake omnibox visibility is correct.
   // On iPads, fake omnibox disappears and becomes real omnibox. On other
   // devices, fake omnibox persists and sticks to top.
@@ -1345,9 +1368,9 @@ id<GREYMatcher> notPracticallyVisible() {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:grey_notVisible()];
-  // Fakebox should be covered.
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 
@@ -1380,9 +1403,9 @@ id<GREYMatcher> notPracticallyVisible() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
       assertWithMatcher:grey_notVisible()];
 
-  // Fakebox should be covered.
+  // Fakebox should be mostly covered.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
-      assertWithMatcher:grey_notVisible()];
+      assertWithMatcher:mostlyNotVisible()];
   GREYWaitForAppToIdle(@"App failed to idle");
 }
 

@@ -36,7 +36,7 @@ namespace {
 
 using BufferEvent = ArcTracingGraphicsModel::BufferEvent;
 using BufferEvents = ArcTracingGraphicsModel::BufferEvents;
-using BufferEventType = ArcTracingGraphicsModel::BufferEventType;
+using EventType = ArcTracingGraphicsModel::EventType;
 
 constexpr char kCustomTracePrefix[] = "customTrace";
 
@@ -67,7 +67,7 @@ constexpr char kFrameDisplayedQuery[] =
 // |ArcTracingEvent| generic events. Each |ArcTracingEvent| may produce graphics
 // event |ArcTracingGraphicsModel::BufferEvent| on start or/and on finish of the
 // event |ArcTracingEvent|. This is organized in form of map
-// |ArcTracingEventMatcher| to the pair of |BufferEventType| which indicates
+// |ArcTracingEventMatcher| to the pair of |EventType| which indicates
 // what to generate on start and on finish of the event.
 class BufferGraphicsEventMapper {
  public:
@@ -77,8 +77,8 @@ class BufferGraphicsEventMapper {
                                          const ArcTracingEvent& event)>;
 
     MappingRule(std::unique_ptr<ArcTracingEventMatcher> matcher,
-                BufferEventType map_start,
-                BufferEventType map_finish,
+                EventType map_start,
+                EventType map_finish,
                 EventTimeCallback start_time_callback = EventTimeCallback())
         : matcher(std::move(matcher)),
           map_start(map_start),
@@ -90,7 +90,7 @@ class BufferGraphicsEventMapper {
       if (!matcher->Match(event))
         return false;
 
-      if (map_start != BufferEventType::kNone) {
+      if (map_start != EventType::kNone) {
         uint64_t start_timestamp = event.GetTimestamp();
         if (event_start_time_callback) {
           start_timestamp = event_start_time_callback.Run(*matcher, event);
@@ -99,7 +99,7 @@ class BufferGraphicsEventMapper {
         collector->push_back(
             ArcTracingGraphicsModel::BufferEvent(map_start, start_timestamp));
       }
-      if (map_finish != BufferEventType::kNone) {
+      if (map_finish != EventType::kNone) {
         collector->push_back(ArcTracingGraphicsModel::BufferEvent(
             map_finish, event.GetEndTimestamp()));
       }
@@ -108,38 +108,35 @@ class BufferGraphicsEventMapper {
     }
 
     std::unique_ptr<ArcTracingEventMatcher> matcher;
-    BufferEventType map_start;
-    BufferEventType map_finish;
+    EventType map_start;
+    EventType map_finish;
     EventTimeCallback event_start_time_callback;
   };
   using MappingRules = std::vector<MappingRule>;
 
   BufferGraphicsEventMapper() {
     // android rules
-    rules_.emplace_back(MappingRule(
+    rules_.emplace_back(
         std::make_unique<ArcTracingEventMatcher>(kDequeueBufferQuery),
-        BufferEventType::kBufferQueueDequeueStart,
-        BufferEventType::kBufferQueueDequeueDone));
+        EventType::kBufferQueueDequeueStart,
+        EventType::kBufferQueueDequeueDone);
     rules_.emplace_back(
-        MappingRule(std::make_unique<ArcTracingEventMatcher>(kQueueBufferQuery),
-                    BufferEventType::kBufferQueueQueueStart,
-                    BufferEventType::kBufferQueueQueueDone));
-    rules_.emplace_back(MappingRule(
+        std::make_unique<ArcTracingEventMatcher>(kQueueBufferQuery),
+        EventType::kBufferQueueQueueStart, EventType::kBufferQueueQueueDone);
+    rules_.emplace_back(
         std::make_unique<ArcTracingEventMatcher>("android:acquireBuffer"),
-        BufferEventType::kBufferQueueAcquire, BufferEventType::kNone));
-    rules_.push_back(MappingRule(
+        EventType::kBufferQueueAcquire, EventType::kNone);
+    rules_.emplace_back(
         std::make_unique<ArcTracingEventMatcher>("android:releaseBuffer"),
-        BufferEventType::kNone, BufferEventType::kBufferQueueReleased));
-    rules_.emplace_back(
-        MappingRule(std::make_unique<ArcTracingEventMatcher>(
-                        "android:handleMessageInvalidate"),
-                    BufferEventType::kSurfaceFlingerInvalidationStart,
-                    BufferEventType::kSurfaceFlingerInvalidationDone));
-    rules_.emplace_back(
-        MappingRule(std::make_unique<ArcTracingEventMatcher>(
-                        "android:handleMessageRefresh"),
-                    BufferEventType::kSurfaceFlingerCompositionStart,
-                    BufferEventType::kSurfaceFlingerCompositionDone));
+        EventType::kNone, EventType::kBufferQueueReleased);
+    rules_.emplace_back(std::make_unique<ArcTracingEventMatcher>(
+                            "android:handleMessageInvalidate"),
+                        EventType::kSurfaceFlingerInvalidationStart,
+                        EventType::kSurfaceFlingerInvalidationDone);
+    rules_.emplace_back(std::make_unique<ArcTracingEventMatcher>(
+                            "android:handleMessageRefresh"),
+                        EventType::kSurfaceFlingerCompositionStart,
+                        EventType::kSurfaceFlingerCompositionDone);
   }
 
   BufferGraphicsEventMapper(const BufferGraphicsEventMapper&) = delete;
@@ -209,8 +206,7 @@ void ScanForCustomEvents(
                        base::CompareCase::SENSITIVE)) {
     DCHECK(!event->GetArgs() || event->GetArgs()->empty());
     out_custom_events->emplace_back(
-        ArcTracingGraphicsModel::BufferEventType::kCustomEvent,
-        event->GetTimestamp(),
+        ArcTracingGraphicsModel::EventType::kCustomEvent, event->GetTimestamp(),
         event->GetName().substr(std::size(kCustomTracePrefix) - 1));
   }
   for (const auto& child : event->children())
@@ -231,8 +227,8 @@ ArcTracingGraphicsModel::BufferEvents GetCustomEvents(
 // periodically. Once it is missed in analyzed buffer events, new jank event is
 // added. |jank_event_type| defines the type of jank.
 void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
-              BufferEventType pulse_event_type,
-              BufferEventType jank_event_type) {
+              EventType pulse_event_type,
+              EventType jank_event_type) {
   // Detect rate first.
   BufferEvents pulse_events;
 
@@ -245,7 +241,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
   SortBufferEventsByTimestamp(&pulse_events);
 
   ArcGraphicsJankDetector jank_detector(base::BindRepeating(
-      [](BufferEventType jank_event_type, BufferEvents* out_janks,
+      [](EventType jank_event_type, BufferEvents* out_janks,
          const base::Time& timestamp) {
         out_janks->emplace_back(
             BufferEvent(jank_event_type,
@@ -278,7 +274,7 @@ void GetChromeTopLevelEvents(const ArcTracingModel& common_model,
   result->buffer_events().resize(1);
   for (const ArcTracingEvent* event :
        common_model.Select(kFrameDisplayedQuery)) {
-    result->buffer_events()[0].emplace_back(BufferEventType::kChromeOSSwapDone,
+    result->buffer_events()[0].emplace_back(EventType::kChromeOSSwapDone,
                                             event->GetTimestamp());
   }
 
@@ -317,9 +313,9 @@ base::Value::Dict SerializeEventsContainer(
   return dictionary;
 }
 
-bool IsInRange(BufferEventType type,
-               BufferEventType type_from_inclusive,
-               BufferEventType type_to_inclusive) {
+bool IsInRange(EventType type,
+               EventType type_from_inclusive,
+               EventType type_to_inclusive) {
   return type >= type_from_inclusive && type <= type_to_inclusive;
 }
 
@@ -339,23 +335,20 @@ bool LoadEvents(const base::Value::List* value,
       return false;
     if (!entry[0].is_int())
       return false;
-    const BufferEventType type =
-        static_cast<BufferEventType>(entry[0].GetInt());
+    const EventType type = static_cast<EventType>(entry[0].GetInt());
 
-    if (!IsInRange(type, BufferEventType::kBufferQueueDequeueStart,
-                   BufferEventType::kBufferFillJank) &&
-        !IsInRange(type, BufferEventType::kExoSurfaceAttach,
-                   BufferEventType::kExoSurfaceCommit) &&
-        !IsInRange(type, BufferEventType::kChromeBarrierOrder,
-                   BufferEventType::kChromeBarrierFlush) &&
-        !IsInRange(type, BufferEventType::kSurfaceFlingerVsyncHandler,
-                   BufferEventType::kVsyncTimestamp) &&
-        !IsInRange(type, BufferEventType::kChromeOSDraw,
-                   BufferEventType::kChromeOSJank) &&
-        !IsInRange(type, BufferEventType::kCustomEvent,
-                   BufferEventType::kCustomEvent) &&
-        !IsInRange(type, BufferEventType::kInputEventCreated,
-                   BufferEventType::kInputEventDeliverEnd)) {
+    if (!IsInRange(type, EventType::kBufferQueueDequeueStart,
+                   EventType::kBufferFillJank) &&
+        !IsInRange(type, EventType::kExoSurfaceAttach,
+                   EventType::kExoSurfaceCommit) &&
+        !IsInRange(type, EventType::kChromeBarrierOrder,
+                   EventType::kChromeBarrierFlush) &&
+        !IsInRange(type, EventType::kSurfaceFlingerVsyncHandler,
+                   EventType::kVsyncTimestamp) &&
+        !IsInRange(type, EventType::kChromeOSDraw, EventType::kChromeOSJank) &&
+        !IsInRange(type, EventType::kCustomEvent, EventType::kCustomEvent) &&
+        !IsInRange(type, EventType::kInputEventCreated,
+                   EventType::kInputEventDeliverEnd)) {
       return false;
     }
 
@@ -419,11 +412,11 @@ bool ReadDuration(const base::Value::Dict* root, uint32_t* duration) {
 
 }  // namespace
 
-ArcTracingGraphicsModel::BufferEvent::BufferEvent(BufferEventType type,
+ArcTracingGraphicsModel::BufferEvent::BufferEvent(EventType type,
                                                   int64_t timestamp)
     : type(type), timestamp(timestamp) {}
 
-ArcTracingGraphicsModel::BufferEvent::BufferEvent(BufferEventType type,
+ArcTracingGraphicsModel::BufferEvent::BufferEvent(EventType type,
                                                   int64_t timestamp,
                                                   const std::string& content)
     : type(type), timestamp(timestamp), content(content) {}
@@ -452,8 +445,12 @@ TraceTimestamps::TraceTimestamps() = default;
 
 TraceTimestamps::~TraceTimestamps() = default;
 
-void TraceTimestamps::Add(base::TimeTicks timestamp) {
-  ticks_ms.emplace_back((timestamp - base::TimeTicks()).InMicroseconds());
+void TraceTimestamps::AddCommit(base::TimeTicks commit_ts) {
+  commits.emplace_back((commit_ts - base::TimeTicks()).InMicroseconds());
+}
+
+void TraceTimestamps::AddPresent(base::TimeTicks present_ts) {
+  presents.emplace_back((present_ts - base::TimeTicks()).InMicroseconds());
 }
 
 ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
@@ -461,7 +458,7 @@ ArcTracingGraphicsModel::ArcTracingGraphicsModel() = default;
 ArcTracingGraphicsModel::~ArcTracingGraphicsModel() = default;
 
 bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
-                                    const TraceTimestamps& commits) {
+                                    const TraceTimestamps& timestamps) {
   Reset();
 
   // TODO(b/296595454): Remove the mapping mechanism as it was only needed
@@ -474,8 +471,12 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   auto& buffer_events =
       view_buffers_[ViewId(1 /* task_id */, kUnknownActivity)].buffer_events();
   buffer_events.emplace_back();
-  for (int64_t ticks : commits.ticks_ms) {
-    buffer_events[0].emplace_back(BufferEventType::kExoSurfaceCommit, ticks);
+  for (int64_t ticks : timestamps.commits) {
+    buffer_events[0].emplace_back(EventType::kExoSurfaceCommit, ticks);
+  }
+  for (int64_t ticks : timestamps.presents) {
+    chrome_top_level_.global_events().emplace_back(
+        EventType::kChromeOSPresentationDone, ticks);
   }
 
   // TODO(khmel): Add more information to resolve owner of custom events. At
@@ -483,10 +484,9 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   const ArcTracingGraphicsModel::BufferEvents custom_events =
       GetCustomEvents(common_model);
   for (auto& it : view_buffers_) {
-    AddJanks(&it.second, BufferEventType::kBufferQueueDequeueStart,
-             BufferEventType::kBufferFillJank);
-    AddJanks(&it.second, BufferEventType::kExoSurfaceCommit,
-             BufferEventType::kExoJank);
+    AddJanks(&it.second, EventType::kBufferQueueDequeueStart,
+             EventType::kBufferFillJank);
+    AddJanks(&it.second, EventType::kExoSurfaceCommit, EventType::kExoJank);
     it.second.global_events().insert(it.second.global_events().end(),
                                      custom_events.begin(),
                                      custom_events.end());
@@ -595,7 +595,7 @@ base::Value::Dict ArcTracingGraphicsModel::Serialize() const {
   if (!platform_.empty())
     information.Set(kKeyPlatform, platform_);
   if (!timestamp_.is_null())
-    information.Set(kKeyTimestamp, timestamp_.ToJsTime());
+    information.Set(kKeyTimestamp, timestamp_.InMillisecondsFSinceUnixEpoch());
   if (!app_title_.empty())
     information.Set(kKeyTitle, app_title_);
   if (!app_icon_png_.empty()) {
@@ -682,7 +682,7 @@ bool ArcTracingGraphicsModel::LoadFromValue(const base::Value::Dict& root) {
     absl::optional<double> timestamp_value =
         informaton->FindDouble(kKeyTimestamp);
     if (timestamp_value)
-      timestamp_ = base::Time::FromJsTime(*timestamp_value);
+      timestamp_ = base::Time::FromMillisecondsSinceUnixEpoch(*timestamp_value);
   } else {
     if (!ReadDuration(&root, &duration_))
       return false;
@@ -707,7 +707,7 @@ bool ArcTracingGraphicsModel::EventsContainer::operator==(
 }
 
 std::ostream& operator<<(std::ostream& os,
-                         ArcTracingGraphicsModel::BufferEventType event_type) {
+                         ArcTracingGraphicsModel::EventType event_type) {
   return os << base::to_underlying(event_type);
 }
 

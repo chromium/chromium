@@ -23,6 +23,9 @@ class AggregationKeys;
 class DestinationSet;
 class EventReportWindows;
 class SuitableOrigin;
+class TriggerConfig;
+class TriggerSpec;
+class TriggerSpecs;
 
 struct AggregatableDedupKey;
 struct EventTriggerData;
@@ -87,6 +90,18 @@ std::ostream& operator<<(std::ostream&, const AggregatableDedupKey&);
 bool operator==(const OsRegistrationItem&, const OsRegistrationItem&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistrationItem&);
+
+bool operator==(const TriggerConfig&, const TriggerConfig&);
+
+std::ostream& operator<<(std::ostream&, const TriggerConfig&);
+
+bool operator==(const TriggerSpec&, const TriggerSpec&);
+
+std::ostream& operator<<(std::ostream&, const TriggerSpec&);
+
+bool operator==(const TriggerSpecs&, const TriggerSpecs&);
+
+std::ostream& operator<<(std::ostream&, const TriggerSpecs&);
 
 }  // namespace attribution_reporting
 

@@ -12,9 +12,9 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom-forward.h"
 #include "third_party/nearby/src/connections/params.h"
+#include "third_party/nearby/src/connections/v3/bandwidth_info.h"
 
-namespace nearby {
-namespace connections {
+namespace nearby::connections {
 
 using StatusCallback = base::OnceCallback<void(mojom::Status)>;
 
@@ -32,10 +32,11 @@ mojom::PayloadStatus PayloadStatusToMojom(PayloadProgressInfo::Status status);
 
 mojom::Medium MediumToMojom(Medium medium);
 
+mojom::BandwidthQuality BandwidthQualityToMojom(v3::Quality quality);
+
 BooleanMediumSelector MediumSelectorFromMojom(
     mojom::MediumSelection* allowed_mediums);
 
-}  // namespace connections
-}  // namespace nearby
+}  // namespace nearby::connections
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_NEARBY_CONNECTIONS_CONVERSIONS_H_

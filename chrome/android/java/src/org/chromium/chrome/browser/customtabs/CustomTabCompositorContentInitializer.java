@@ -71,11 +71,9 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
     @Override
     public void onFinishNativeInitialization() {
         ViewGroup contentContainer = mActivity.findViewById(android.R.id.content);
-        // clang-format off
         LayoutManagerImpl layoutDriver = new LayoutManagerImpl(mCompositorViewHolder.get(),
                 contentContainer, mTabContentManagerSupplier,
             () -> mTopUiThemeColorProvider);
-        // clang-format on
 
         mCompositorViewHolderInitializer.initializeCompositorContent(layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar), contentContainer,

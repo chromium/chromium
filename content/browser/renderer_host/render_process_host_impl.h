@@ -30,6 +30,7 @@
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_worker_impl.h"
 #include "content/browser/child_process_launcher.h"
 #include "content/browser/renderer_host/media/aec_dump_manager_impl.h"
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom-forward.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
+#include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
@@ -333,9 +335,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const GlobalRenderFrameHostId& render_frame_host_id) override;
   void ResumeSocketManagerForRenderFrameHost(
       const GlobalRenderFrameHostId& render_frame_host_id) override;
-
-  void SetAttributionReportingSupport(
-      network::mojom::AttributionSupport) override;
 
   // IPC::Sender via RenderProcessHost.
   bool Send(IPC::Message* msg) override;
@@ -640,6 +639,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override;
+
+  void BindFileBackedBlobFactory(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::FileBackedBlobFactory> receiver);
 
   // Returns an OPFS (origin private file system) associated with
   // `bucket_locator`.
@@ -1359,6 +1362,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   class IOThreadHostImpl;
   friend class IOThreadHostImpl;
   absl::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
+
+  std::unique_ptr<FileBackedBlobFactoryWorkerImpl> file_backed_blob_factory_;
 
   // A WeakPtrFactory which is reset every time ResetIPC() or Cleanup() is run.
   // Used to vend WeakPtrs which are invalidated any time the RenderProcessHost

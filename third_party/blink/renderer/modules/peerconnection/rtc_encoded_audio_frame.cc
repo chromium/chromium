@@ -16,6 +16,10 @@
 namespace blink {
 namespace {
 
+// Limit on the size of encoded frames, to ensure they're not silently dropped
+// later by the RTPSender. See https://crbug.com/1248479.
+const int kMaxAudioFramePayloadByteLength = 1000;
+
 struct SetMetadataValidationOutcome {
   bool allowed;
   String error_msg;
@@ -82,7 +86,7 @@ DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
   if (!frame_data_) {
     frame_data_ = delegate_->CreateDataBuffer();
   }
-  return frame_data_;
+  return frame_data_.Get();
 }
 
 RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
@@ -102,6 +106,9 @@ RTCEncodedAudioFrameMetadata* RTCEncodedAudioFrame::getMetadata() const {
     metadata->setAbsCaptureTime(*delegate_->AbsCaptureTime());
   }
   metadata->setRtpTimestamp(delegate_->RtpTimestamp());
+  if (delegate_->MimeType()) {
+    metadata->setMimeType(WTF::String::FromUTF8(*delegate_->MimeType()));
+  }
   return metadata;
 }
 
@@ -121,6 +128,7 @@ void RTCEncodedAudioFrame::setMetadata(RTCEncodedAudioFrameMetadata* metadata,
 }
 
 void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
+  data_modified_ = true;
   frame_data_ = data;
 }
 
@@ -153,6 +161,11 @@ std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrame::PassWebRtcFrame() {
   SyncDelegate();
   return delegate_->PassWebRtcFrame();
+}
+
+bool RTCEncodedAudioFrame::IsDataTooLarge() {
+  return data_modified_ &&
+         frame_data_->ByteLength() > kMaxAudioFramePayloadByteLength;
 }
 
 void RTCEncodedAudioFrame::Trace(Visitor* visitor) const {

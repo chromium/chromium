@@ -52,7 +52,9 @@ LabelButton::LabelButton(PressedCallback callback,
                                             style::STYLE_PRIMARY)),
       cached_default_button_font_list_(TypographyProvider::Get().GetFont(
           button_context,
-          style::STYLE_DIALOG_BUTTON_DEFAULT)) {
+          style::STYLE_DIALOG_BUTTON_DEFAULT)),
+      appear_disabled_in_inactive_widget_(
+          PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
   ink_drop_container_ = AddChildView(std::make_unique<InkDropContainerView>());
   ink_drop_container_->SetVisible(false);
 
@@ -280,6 +282,13 @@ std::unique_ptr<LabelButtonBorder> LabelButton::CreateDefaultBorder() const {
   auto border = std::make_unique<LabelButtonBorder>();
   border->set_insets(views::LabelButtonAssetBorder::GetDefaultInsets());
   return border;
+}
+
+void LabelButton::SetAppearDisabledInInactiveWidget(bool appear_disabled) {
+  appear_disabled_in_inactive_widget_ = appear_disabled;
+  if (GetWidget()) {
+    AddedToWidget();
+  }
 }
 
 void LabelButton::SetBorder(std::unique_ptr<Border> border) {
@@ -529,7 +538,7 @@ void LabelButton::ChildPreferredSizeChanged(View* child) {
 }
 
 void LabelButton::AddedToWidget() {
-  if (PlatformStyle::kInactiveWidgetControlsAppearDisabled) {
+  if (appear_disabled_in_inactive_widget_) {
     paint_as_active_subscription_ =
         GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
             &LabelButton::VisualStateChanged, base::Unretained(this)));
@@ -617,8 +626,9 @@ gfx::Size LabelButton::GetUnclampedSizeWithoutLabel() const {
 Button::ButtonState LabelButton::GetVisualState() const {
   const auto* widget = GetWidget();
   if (!widget || !widget->CanActivate() ||
-      !PlatformStyle::kInactiveWidgetControlsAppearDisabled)
+      !appear_disabled_in_inactive_widget_) {
     return GetState();
+  }
 
   // Paint as inactive if neither this widget nor its parent should paint as
   // active.

@@ -58,7 +58,7 @@ public final class UiUtils {
         switch (filter) {
             case Filters.FilterType.NONE:
                 return resources.getQuantityString(
-                        R.plurals.accessibility_download_manager_ui_generic, itemCount, itemCount);
+                        R.plurals.accessibility_download_manager_ui_all, itemCount, itemCount);
             case Filters.FilterType.VIDEOS:
                 return resources.getQuantityString(
                         R.plurals.accessibility_download_manager_ui_video, itemCount, itemCount);
@@ -73,7 +73,7 @@ public final class UiUtils {
                         R.plurals.accessibility_download_manager_ui_pages, itemCount, itemCount);
             case Filters.FilterType.OTHER:
                 return resources.getQuantityString(
-                        R.plurals.accessibility_download_manager_ui_generic, itemCount, itemCount);
+                        R.plurals.accessibility_download_manager_ui_other, itemCount, itemCount);
             default:
                 assert false;
                 return null;

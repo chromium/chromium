@@ -35,6 +35,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
@@ -56,13 +57,13 @@ namespace blink {
 
 namespace {
 
-// FIFO Size.
-//
-// TODO(hongchan): This was estimated based on the largest callback buffer size
-// that we would ever need. The current UMA stats indicates that this is, in
-// fact, probably too small. There are Android devices out there with a size of
-// 8000 or so.  We might need to make this larger. See: crbug.com/670747
-constexpr uint32_t kFIFOSize = 96 * 128;
+// This FIFO size of 16,384 was chosend based on the UMA data. It's the nearest
+// multiple of 128 to 16,354 sample-frames, which represents 100% of the
+// histogram from "WebAudio.AudioDestination.HardwareBufferSize".
+// Although a buffer this big is atypical, some Android phones with a Bluetooth
+// audio device report a large buffer size. This redundancy allows such device
+// to play audio via Web Audio API.
+constexpr uint32_t kFIFOSize = 128 * 128;
 
 const char* DeviceStateToString(AudioDestination::DeviceState state) {
   switch (state) {
@@ -117,7 +118,7 @@ int AudioDestination::Render(base::TimeDelta delay,
     base::HistogramBase* histogram = base::LinearHistogram::FactoryGet(
         "WebAudio.AudioDestination.HardwareOutputLatency", 0, 200, 100,
         base::HistogramBase::kUmaTargetedHistogramFlag);
-    histogram->Add(static_cast<int32_t>(delay_seconds * 1000));
+    histogram->Add(base::saturated_cast<int32_t>(delay_seconds * 1000));
     is_latency_metric_collected_ = true;
   }
 

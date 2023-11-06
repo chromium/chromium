@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/components/arc/metrics/arc_daily_metrics.h"
-#include "ash/components/arc/metrics/arc_daily_metrics_prefs.h"
 
 #include <unordered_set>
 
@@ -11,7 +10,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {
@@ -124,11 +122,6 @@ void KillCounts::UpdateUmaDaily() {
 }
 
 }  // namespace
-
-void RegisterDailyMetricsPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kArcDailyMetricsKills);
-  metrics::DailyEvent::RegisterPref(registry, prefs::kArcDailyMetricsSample);
-}
 
 const vm_tools::concierge::VmInfo_VmType
     ArcDailyMetrics::kKillCountTypeVm[ArcDailyMetrics::kKillCountNum] = {

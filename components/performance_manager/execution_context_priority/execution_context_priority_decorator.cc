@@ -45,6 +45,8 @@ ExecutionContextPriorityDecorator::ExecutionContextPriorityDecorator() {
       max_vote_aggregator_.GetVotingChannel());
   frame_audible_voter_.SetVotingChannel(
       max_vote_aggregator_.GetVotingChannel());
+  frame_capturing_video_stream_voter_.SetVotingChannel(
+      max_vote_aggregator_.GetVotingChannel());
   inherit_client_priority_voter_.SetVotingChannel(
       max_vote_aggregator_.GetVotingChannel());
 }
@@ -57,6 +59,7 @@ void ExecutionContextPriorityDecorator::OnPassedToGraph(Graph* graph) {
   graph->AddInitializingFrameNodeObserver(&ad_frame_voter_);
   graph->AddInitializingFrameNodeObserver(&frame_visibility_voter_);
   graph->AddInitializingFrameNodeObserver(&frame_audible_voter_);
+  graph->AddInitializingFrameNodeObserver(&frame_capturing_video_stream_voter_);
   graph->AddFrameNodeObserver(&inherit_client_priority_voter_);
   graph->AddWorkerNodeObserver(&inherit_client_priority_voter_);
 }
@@ -65,6 +68,8 @@ void ExecutionContextPriorityDecorator::OnTakenFromGraph(Graph* graph) {
   // Unsubscribe voters from the graph.
   graph->RemoveWorkerNodeObserver(&inherit_client_priority_voter_);
   graph->RemoveFrameNodeObserver(&inherit_client_priority_voter_);
+  graph->RemoveInitializingFrameNodeObserver(
+      &frame_capturing_video_stream_voter_);
   graph->RemoveInitializingFrameNodeObserver(&frame_audible_voter_);
   graph->RemoveInitializingFrameNodeObserver(&frame_visibility_voter_);
   graph->RemoveInitializingFrameNodeObserver(&ad_frame_voter_);

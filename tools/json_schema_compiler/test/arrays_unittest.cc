@@ -75,9 +75,9 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayReference) {
   ASSERT_TRUE(
       arrays::EnumArrayReference::Populate(value, enum_array_reference));
 
-  arrays::Enumeration expected_types[] = {arrays::ENUMERATION_ONE,
-                                          arrays::ENUMERATION_TWO,
-                                          arrays::ENUMERATION_THREE};
+  arrays::Enumeration expected_types[] = {arrays::Enumeration::kOne,
+                                          arrays::Enumeration::kTwo,
+                                          arrays::Enumeration::kThree};
   EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_types, expected_types + std::size(expected_types)),
             enum_array_reference.types);
@@ -111,9 +111,9 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
   // Test Populate.
   ASSERT_TRUE(arrays::EnumArrayMixed::Populate(value, enum_array_mixed));
 
-  arrays::Enumeration expected_infile_types[] = {arrays::ENUMERATION_ONE,
-                                                 arrays::ENUMERATION_TWO,
-                                                 arrays::ENUMERATION_THREE};
+  arrays::Enumeration expected_infile_types[] = {arrays::Enumeration::kOne,
+                                                 arrays::Enumeration::kTwo,
+                                                 arrays::Enumeration::kThree};
   EXPECT_EQ(std::vector<arrays::Enumeration>(
                 expected_infile_types,
                 expected_infile_types + std::size(expected_infile_types)),
@@ -137,9 +137,9 @@ TEST(JsonSchemaCompilerArrayTest, EnumArrayMixed) {
 TEST(JsonSchemaCompilerArrayTest, OptionalEnumArrayType) {
   {
     std::vector<arrays::Enumeration> enums;
-    enums.push_back(arrays::ENUMERATION_ONE);
-    enums.push_back(arrays::ENUMERATION_TWO);
-    enums.push_back(arrays::ENUMERATION_THREE);
+    enums.push_back(arrays::Enumeration::kOne);
+    enums.push_back(arrays::Enumeration::kTwo);
+    enums.push_back(arrays::Enumeration::kThree);
 
     base::Value::List types;
     for (auto& enum_entry : enums)

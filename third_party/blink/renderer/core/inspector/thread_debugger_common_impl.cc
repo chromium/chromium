@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 namespace blink {
 
 ThreadDebuggerCommonImpl::ThreadDebuggerCommonImpl(v8::Isolate* isolate)
@@ -197,8 +197,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
   static const char kShadowRootOpen[] = "open";
   static const char kShadowRootClosed[] = "closed";
 
-  Vector<v8::Local<v8::Name>> serialized_value_keys;
-  Vector<v8::Local<v8::Value>> serialized_value_values;
+  v8::LocalVector<v8::Name> serialized_value_keys(isolate);
+  v8::LocalVector<v8::Value> serialized_value_values(isolate);
   serialized_value_keys.push_back(V8String(isolate, kNodeType));
   serialized_value_values.push_back(
       v8::Number::New(isolate, node->getNodeType()));
@@ -256,8 +256,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
     serialized_value_values.push_back(
         V8String(isolate, element->namespaceURI()));
 
-    Vector<v8::Local<v8::Name>> node_attributes_keys;
-    Vector<v8::Local<v8::Value>> node_attributes_values;
+    v8::LocalVector<v8::Name> node_attributes_keys(isolate);
+    v8::LocalVector<v8::Value> node_attributes_values(isolate);
 
     for (const Attribute& attribute : element->Attributes()) {
       node_attributes_keys.push_back(
@@ -322,8 +322,8 @@ v8::Local<v8::Object> SerializeNodeToV8Object(
       isolate, v8::Null(isolate), serialized_value_keys.data(),
       serialized_value_values.data(), serialized_value_keys.size());
 
-  Vector<v8::Local<v8::Name>> result_keys;
-  Vector<v8::Local<v8::Value>> result_values;
+  v8::LocalVector<v8::Name> result_keys(isolate);
+  v8::LocalVector<v8::Value> result_values(isolate);
 
   result_keys.push_back(TypeStringKey(isolate));
   result_values.push_back(V8String(isolate, kNode));
@@ -425,8 +425,8 @@ std::unique_ptr<v8_inspector::DeepSerializedValue> DeepSerializeWindow(
     v8::Isolate* isolate) {
   static const char kContextParameterName[] = "context";
 
-  Vector<v8::Local<v8::Name>> keys;
-  Vector<v8::Local<v8::Value>> values;
+  v8::LocalVector<v8::Name> keys(isolate);
+  v8::LocalVector<v8::Value> values(isolate);
 
   keys.push_back(V8String(isolate, kContextParameterName));
   values.push_back(
@@ -650,7 +650,7 @@ ThreadDebuggerCommonImpl::descriptionForValueSubtype(
 }
 
 double ThreadDebuggerCommonImpl::currentTimeMS() {
-  return base::Time::Now().ToDoubleT() * 1000.0;
+  return base::Time::Now().InMillisecondsFSinceUnixEpoch();
 }
 
 bool ThreadDebuggerCommonImpl::isInspectableHeapObject(
@@ -966,20 +966,27 @@ void ThreadDebuggerCommonImpl::GetEventListenersCallback(
   callback_info.GetReturnValue().Set(result);
 }
 
+static uint64_t GetTraceId(ThreadDebuggerCommonImpl* this_thread_debugger,
+                           const v8_inspector::StringView& title_view) {
+  WTF::String title = ToCoreString(title_view);
+  unsigned title_hash = WTF::GetHash(title);
+  return title_hash ^ (reinterpret_cast<uintptr_t>(this_thread_debugger));
+}
+
 void ThreadDebuggerCommonImpl::consoleTime(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeEnd(
-    const v8_inspector::StringView& title) {
-  // TODO(dgozman): we can save on a copy here if trace macro would take a
-  // pointer with length.
+    const v8_inspector::StringView& title_view) {
   TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
-      "blink.console", ToCoreString(title).Utf8().c_str(), this);
+      "blink.console", ToCoreString(title_view).Utf8().c_str(),
+      TRACE_ID_WITH_SCOPE("console.time",
+                          TRACE_ID_LOCAL(GetTraceId(this, title_view))));
 }
 
 void ThreadDebuggerCommonImpl::consoleTimeStamp(

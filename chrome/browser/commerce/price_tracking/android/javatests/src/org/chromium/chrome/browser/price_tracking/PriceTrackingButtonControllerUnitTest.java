@@ -43,32 +43,24 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-/**
- * Unit test for {@link PriceTrackingButtonController}.
- */
+/** Unit test for {@link PriceTrackingButtonController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
-        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+@EnableFeatures({
+    ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+    ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
+})
 public class PriceTrackingButtonControllerUnitTest {
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
     private Activity mActivity;
-    @Mock
-    private Tab mMockTab;
-    @Mock
-    private ObservableSupplier<Tab> mMockTabSupplier;
-    @Mock
-    private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
-    @Mock
-    private TabBookmarker mMockTabBookmarker;
-    @Mock
-    private BottomSheetController mMockBottomSheetController;
-    @Mock
-    private ModalDialogManager mMockModalDialogManager;
-    @Captor
-    private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+    @Mock private Tab mMockTab;
+    @Mock private ObservableSupplier<Tab> mMockTabSupplier;
+    @Mock private Supplier<TabBookmarker> mMockTabBookmarkerSupplier;
+    @Mock private TabBookmarker mMockTabBookmarker;
+    @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private ModalDialogManager mMockModalDialogManager;
+    @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
 
     @Before
     public void setUp() {
@@ -85,8 +77,12 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButtonClick() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
-                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(
+                        mActivity,
+                        mMockTabSupplier,
+                        mMockModalDialogManager,
+                        mMockBottomSheetController,
+                        mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
         ButtonData buttonData = priceTrackingButtonController.get(mMockTab);
 
@@ -98,8 +94,12 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButton_IsDisabledWhenBottomSheetAppears() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
-                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(
+                        mActivity,
+                        mMockTabSupplier,
+                        mMockModalDialogManager,
+                        mMockBottomSheetController,
+                        mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =
                 Mockito.mock(ButtonDataProvider.ButtonDataObserver.class);
@@ -109,8 +109,9 @@ public class PriceTrackingButtonControllerUnitTest {
         // The controller should have registered an observer to listen to bottom sheet events.
         verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
 
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
-                SheetState.FULL, StateChangeReason.NONE);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         Assert.assertFalse(buttonData.isEnabled());
         verify(buttonDataObserver).buttonDataChanged(true);
@@ -119,8 +120,12 @@ public class PriceTrackingButtonControllerUnitTest {
     @Test
     public void testPriceTrackingButton_IsReenabledWhenBottomSheetDismissed() {
         PriceTrackingButtonController priceTrackingButtonController =
-                new PriceTrackingButtonController(mActivity, mMockTabSupplier,
-                        mMockModalDialogManager, mMockBottomSheetController, mock(Drawable.class),
+                new PriceTrackingButtonController(
+                        mActivity,
+                        mMockTabSupplier,
+                        mMockModalDialogManager,
+                        mMockBottomSheetController,
+                        mock(Drawable.class),
                         mMockTabBookmarkerSupplier);
 
         ButtonDataProvider.ButtonDataObserver buttonDataObserver =
@@ -132,12 +137,14 @@ public class PriceTrackingButtonControllerUnitTest {
         verify(mMockBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
 
         // Show bottom sheet to disable button.
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
-                SheetState.FULL, StateChangeReason.NONE);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
 
         // Close the bottom sheet, button should be enabled again.
-        mBottomSheetObserverCaptor.getValue().onSheetStateChanged(
-                SheetState.HIDDEN, StateChangeReason.NONE);
+        mBottomSheetObserverCaptor
+                .getValue()
+                .onSheetStateChanged(SheetState.HIDDEN, StateChangeReason.NONE);
 
         // After the bottom sheet is closed the button should be enabled.
         Assert.assertTrue(buttonData.isEnabled());

@@ -4,8 +4,9 @@
 
 package org.chromium.components.offline_items_collection.bridges;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
@@ -51,7 +52,7 @@ public final class OfflineItemBridge {
             boolean isAccelerated, boolean promoteOrigin, long totalSizeBytes,
             boolean externallyRemoved, long creationTimeMs, long completionTimeMs,
             long lastAccessedTimeMs, boolean isOpenable, String filePath, String mimeType, GURL url,
-            GURL originalUrl, boolean isOffTheRecord, String otrProfileId,
+            GURL originalUrl, boolean isOffTheRecord, String otrProfileId, GURL referrerUrl,
             @OfflineItemState int state, @FailState int failState, @PendingState int pendingState,
             boolean isResumable, boolean allowMetered, long receivedBytes, long progressValue,
             long progressMax, @OfflineItemProgressUnit int progressUnit, long timeRemainingMs,
@@ -79,6 +80,7 @@ public final class OfflineItemBridge {
         item.originalUrl = originalUrl;
         item.isOffTheRecord = isOffTheRecord;
         item.otrProfileId = otrProfileId;
+        item.referrerUrl = referrerUrl;
         item.state = state;
         item.failState = failState;
         item.pendingState = pendingState;

@@ -75,16 +75,6 @@ void LayoutSVGImage::WillBeDestroyed() {
   LayoutSVGModelObject::WillBeDestroyed();
 }
 
-static float ResolveWidthForRatio(float height,
-                                  const gfx::SizeF& intrinsic_ratio) {
-  return height * intrinsic_ratio.width() / intrinsic_ratio.height();
-}
-
-static float ResolveHeightForRatio(float width,
-                                   const gfx::SizeF& intrinsic_ratio) {
-  return width * intrinsic_ratio.height() / intrinsic_ratio.width();
-}
-
 bool LayoutSVGImage::HasOverriddenIntrinsicSize() const {
   NOT_DESTROYED();
   if (!RuntimeEnabledFeatures::ExperimentalPoliciesEnabled())

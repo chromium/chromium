@@ -205,7 +205,7 @@ class ASH_EXPORT CalendarViewController {
   friend class CalendarViewAnimationTest;
   friend class CalendarViewEventListViewTest;
   friend class CalendarViewTest;
-  friend class CalendarViewEventListItemViewJellyTest;
+  friend class CalendarViewEventListItemViewTest;
 
   // Adds the time difference and returns the adjusted time.
   base::Time ApplyTimeDifference(base::Time date);

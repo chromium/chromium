@@ -36,13 +36,12 @@ interface CompatibilityModeInstance {
   SetResizeLockState@0(string package_name,
                        ArcResizeLockState state);
 
-  // Queries whether GIO is applicable for |package_name|. It returns true if
-  // |package_name| is a game app and doesn't have GIO opt-out.
-  [MinVersion=1] IsGioApplicable@1(string package_name) =>
+  // DEPRECATED. Use IsOptimizedForCrosApp() instead.
+  [MinVersion=1] DEPRECATED_IsGioApplicable@1(string package_name) =>
     (bool is_gio_applicable);
 
-  // Queries whether app of |package_name| is an O4C app. It returns true if
-  // |package_name| is an O4C app.
+  // Queries whether app of `package_name` is an Optimized-for-Chromebook (O4C)
+  // app. Returns true if `package_name` is an O4C app.
   [MinVersion=2] IsOptimizedForCrosApp@2(string package_name) =>
-    (bool is_O4C_app);
+    (bool is_o4c_app);
 };

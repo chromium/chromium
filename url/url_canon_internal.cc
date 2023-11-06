@@ -281,11 +281,6 @@ const unsigned char kSharedCharTypeTable[0x100] = {
 };
 // clang-format on
 
-const char kHexCharLookup[0x10] = {
-    '0', '1', '2', '3', '4', '5', '6', '7',
-    '8', '9', 'A', 'B', 'C', 'D', 'E', 'F',
-};
-
 const char kCharToHexLookup[8] = {
     0,         // 0x00 - 0x1f
     '0',       // 0x20 - 0x3f: digits 0 - 9 are 0x30 - 0x39

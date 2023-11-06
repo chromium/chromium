@@ -23,7 +23,10 @@ source_set("backend_factory") {
     ]
   }
 
-  sources = [ "password_store_backend_factory.cc" ]
+  sources = [
+    "password_store_backend_factory.cc",
+    "password_store_backend_factory.h",
+  ]
 }
 
 buildflag_header("password_manager_buildflags") {

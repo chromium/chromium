@@ -136,6 +136,10 @@ void HlsVodRendition::CheckState(
   // If there is nothing more to fetch, then playback should just continue until
   // the end and stop.
   if (!pending_stream_fetch_.has_value() && fetch_queue_ == segments_.end()) {
+    if (!set_stream_end_) {
+      engine_host_->SetEndOfStream();
+      set_stream_end_ = true;
+    }
     std::move(time_remaining_cb).Run(kNoTimestamp);
     return;
   }
@@ -149,6 +153,11 @@ ManifestDemuxer::SeekResponse HlsVodRendition::Seek(base::TimeDelta seek_time) {
 
   if (is_stopped_for_shutdown_) {
     return PIPELINE_ERROR_ABORT;
+  }
+
+  if (set_stream_end_) {
+    set_stream_end_ = false;
+    engine_host_->UnsetEndOfStream();
   }
 
   auto ranges = engine_host_->GetBufferedRanges(role_);

@@ -99,10 +99,17 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
       std::set<std::string> persistent_script_ids,
       ExtensionUserScriptLoader::DynamicScriptsModifiedCallback add_callback);
 
+  // Sets whether scripts with the given `source` should be enabled and
+  // unloads / reloads any scripts with that source as appropriate.
+  void SetSourceEnabled(UserScript::Source source, bool enabled);
+
   // Returns the IDs of all dynamic scripts with `source` for the extension,
   // which includes the IDs of all pending and loaded dynamic scripts.
+  // Note: Some of these scripts may be inactive.
   std::set<std::string> GetDynamicScriptIDs(UserScript::Source source) const;
 
+  // Returns the loaded dynamic scripts. Note: Some of these scripts may be
+  // inactive.
   const UserScriptList& GetLoadedDynamicScripts() const;
 
   // Returns the IDs of all the currently-loaded persistent dynamic scripts for
@@ -182,7 +189,7 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   // Called when the extension's initial set of dynamic scripts have been
   // loaded.
   void OnInitialExtensionScriptsLoaded(
-      std::unique_ptr<UserScriptList> initial_dynamic_scripts,
+      UserScriptList initial_dynamic_scripts,
       ScriptsLoadedCallback callback,
       UserScriptLoader* loader,
       const absl::optional<std::string>& error);
@@ -206,8 +213,8 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
                                const absl::optional<std::string>& error);
 
   // Checks if the extension has initial dynamic scripts by checking if the
-  // extension has the scripting permission, and if URLPatterns from dynamic
-  // scripts are registered in prefs.
+  // extension has the scripting or user scripts permission, and if URLPatterns
+  // from dynamic scripts are registered in prefs.
   bool HasInitialDynamicScripts(const Extension& extension) const;
 
   // The IDs of dynamically registered scripts (e.g. registered by the
@@ -221,7 +228,14 @@ class ExtensionUserScriptLoader : public UserScriptLoader {
   std::set<std::string> pending_dynamic_script_ids_;
 
   // The metadata of dynamic scripts from the extension that have been loaded.
+  // Note: some of these scripts may be disabled; see `disabled_sources_`.
   UserScriptList loaded_dynamic_scripts_;
+
+  // The set of sources to disallow. Scripts with these sources will still be
+  // loaded in this class (in `loaded_dynamic_scripts_`) so that they are still
+  // properly stored and persisted when re-writing the database; however, they
+  // are not added to any renderers or injected.
+  std::set<UserScript::Source> disabled_sources_;
 
   // The IDs of loaded dynamic scripts that persist across sessions.
   std::set<std::string> persistent_dynamic_script_ids_;

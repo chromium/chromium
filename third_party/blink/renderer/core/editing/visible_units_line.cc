@@ -34,9 +34,9 @@
 #include "third_party/blink/renderer/core/editing/inline_box_position.h"
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/line_utils.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ namespace {
 struct VisualOrdering;
 
 static PositionWithAffinity AdjustForSoftLineWrap(
-    const NGInlineCursorPosition& line_box,
+    const InlineCursorPosition& line_box,
     const PositionWithAffinity& position) {
   DCHECK(line_box.IsLineBox());
   if (position.IsNull())
@@ -54,10 +54,10 @@ static PositionWithAffinity AdjustForSoftLineWrap(
       !line_box.HasSoftWrapToNextLine())
     return position;
   // Returns a position after first space causing soft line wrap for editable.
-  if (!NGOffsetMapping::AcceptsPosition(position.GetPosition()))
+  if (!OffsetMapping::AcceptsPosition(position.GetPosition())) {
     return position;
-  const NGOffsetMapping* mapping =
-      NGOffsetMapping::GetFor(position.GetPosition());
+  }
+  const OffsetMapping* mapping = OffsetMapping::GetFor(position.GetPosition());
   if (!mapping) {
     // When |line_box| width has numeric overflow, |position| doesn't have
     // mapping. See http://crbug.com/1098795
@@ -95,14 +95,14 @@ static PositionWithAffinityTemplate<Strategy> EndPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeNGCaretPosition()| on content
+      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
       // hidden by 'text-overflow:ellipsis' so that we always have a non-null
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
-    NGInlineCursor line_box = caret_position.cursor;
+    InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     const PositionWithAffinity end_position = line_box.PositionForEndOfLine();
     return FromPositionInDOMTree<Strategy>(
@@ -133,14 +133,14 @@ PositionWithAffinityTemplate<Strategy> StartPositionForLine(
            !RuntimeEnabledFeatures::BidiCaretAffinityEnabled())
         << "Logical line boundary for BidiCaretAffinity is not implemented yet";
 
-    const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+    const CaretPosition caret_position = ComputeCaretPosition(adjusted);
     if (caret_position.IsNull()) {
-      // TODO(crbug.com/947593): Support |ComputeNGCaretPosition()| on content
+      // TODO(crbug.com/947593): Support |ComputeCaretPosition()| on content
       // hidden by 'text-overflow:ellipsis' so that we always have a non-null
       // |caret_position| here.
       return PositionWithAffinityTemplate<Strategy>();
     }
-    NGInlineCursor line_box = caret_position.cursor;
+    InlineCursor line_box = caret_position.cursor;
     line_box.MoveToContainingLine();
     DCHECK(line_box.Current().IsLineBox()) << line_box;
     return FromPositionInDOMTree<Strategy>(line_box.PositionForStartOfLine());

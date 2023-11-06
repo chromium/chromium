@@ -29,22 +29,23 @@ import java.util.Arrays;
 
 /**
  * The unit tests for PlatformAPIWrapper, NotificationTask and its subclasses. It runs the
- * ContentCapturedTask, ContentUpdateTask, ContentRemovedTask and SessionRemovedTask, then
- * verifies if the PlatformAPIWrapper get the expected parameters.
+ * ContentCapturedTask, ContentUpdateTask, ContentRemovedTask and SessionRemovedTask, then verifies
+ * if the PlatformAPIWrapper get the expected parameters.
  *
- * This test also verifies that the covered code path won't call ContentCaptureSession API
+ * <p>This test also verifies that the covered code path won't call ContentCaptureSession API
  * directly, and verified that all tasks catch the PlatformAPIException correctly.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PlatformAPIWrapperTest {
     /**
-     * This class implements the methods we care, mockito will mock other method
-     * for us. By declaring the method be final, it won't be mocked by mockito.
+     * This class implements the methods we care, mockito will mock other method for us. By
+     * declaring the method be final, it won't be mocked by mockito.
      */
     private abstract static class ViewStructureTestHelper extends ViewStructure {
         private CharSequence mText;
         private Rect mDimens;
+
         @Override
         public final void setText(CharSequence text) {
             mText = text;
@@ -67,8 +68,8 @@ public class PlatformAPIWrapperTest {
     }
 
     /**
-     * This class records the invoked method and the passing parameter in sequence for
-     * verification later.
+     * This class records the invoked method and the passing parameter in sequence for verification
+     * later.
      */
     private static class PlatformAPIWrapperTestHelper extends PlatformAPIWrapper {
         // The Id of API call.
@@ -164,6 +165,7 @@ public class PlatformAPIWrapperTest {
         public void destroyContentCaptureSession(ContentCaptureSession session) {
             mCallbacks.add(DESTROY_CONTENT_CAPTURE_SESSION);
         }
+
         @Override
         public AutofillId newAutofillId(
                 ContentCaptureSession parent, AutofillId rootAutofillId, long id) {
@@ -229,14 +231,13 @@ public class PlatformAPIWrapperTest {
 
     private static final String MAIN_URL = "http://main.domain.com";
     private static final String MAIN_TITLE = "MAIN TITLE";
-    private static final String FAVICON = "[{"
-            + "\"url\":\"http://main.domain.com/favicon\","
-            + "\"type:\":\"favicon\""
-            + "}]";
-    private static final String UPDATED_FAVICON = "[{"
-            + "\"url\":\"http://main.domain.com/favicon\","
-            + "\"type:\":\"updated_favicon\""
-            + "}]";
+    private static final String FAVICON =
+            "[{" + "\"url\":\"http://main.domain.com/favicon\"," + "\"type:\":\"favicon\"" + "}]";
+    private static final String UPDATED_FAVICON =
+            "[{"
+                    + "\"url\":\"http://main.domain.com/favicon\","
+                    + "\"type:\":\"updated_favicon\""
+                    + "}]";
     private static final String UPDATED_MAIN_TITLE = "MAIN TITLE UPDATE";
     private static final long MAIN_ID = 4;
     private static final Rect MAIN_FRAME_RECT = new Rect(0, 0, 200, 200);
@@ -272,9 +273,13 @@ public class PlatformAPIWrapperTest {
     }
 
     private static void verifyCallbacks(int[] expectedCallbacks, int[] results) {
-        Assert.assertArrayEquals("Expect: " + Arrays.toString(expectedCallbacks)
-                        + " Result: " + Arrays.toString(results),
-                expectedCallbacks, results);
+        Assert.assertArrayEquals(
+                "Expect: "
+                        + Arrays.toString(expectedCallbacks)
+                        + " Result: "
+                        + Arrays.toString(results),
+                expectedCallbacks,
+                results);
     }
 
     private static int[] toIntArray(int... callbacks) {
@@ -295,49 +300,99 @@ public class PlatformAPIWrapperTest {
     }
 
     private void verifyVirtualViewStructure(String expectedText, Rect expectedRect, int index) {
-        Assert.assertEquals("Index:" + index, expectedText,
+        Assert.assertEquals(
+                "Index:" + index,
+                expectedText,
                 mPlatformAPIWrapperTestHelper.mCreatedViewStructures.get(index).getText());
-        Assert.assertEquals("Index:" + index, expectedRect,
+        Assert.assertEquals(
+                "Index:" + index,
+                expectedRect,
                 mPlatformAPIWrapperTestHelper.mCreatedViewStructures.get(index).getDimens());
     }
 
     private FrameSession createFrameSession() {
         FrameSession frameSession = new FrameSession(1);
-        frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
-                MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), MAIN_TITLE, FAVICON));
+        frameSession.add(
+                ContentCaptureFrame.createContentCaptureFrame(
+                        MAIN_ID,
+                        MAIN_URL,
+                        MAIN_FRAME_RECT.left,
+                        MAIN_FRAME_RECT.top,
+                        MAIN_FRAME_RECT.width(),
+                        MAIN_FRAME_RECT.height(),
+                        MAIN_TITLE,
+                        FAVICON));
         return frameSession;
     }
 
     private FrameSession createFrameSessionForRemoveTask() {
         FrameSession frameSessionForRemoveTask = createFrameSession();
-        frameSessionForRemoveTask.add(0,
-                ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID, CHILD_URL,
-                        CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                        CHILD_FRAME_RECT.height(), CHILD_TITLE, null));
+        frameSessionForRemoveTask.add(
+                0,
+                ContentCaptureFrame.createContentCaptureFrame(
+                        CHILD_FRAME_ID,
+                        CHILD_URL,
+                        CHILD_FRAME_RECT.left,
+                        CHILD_FRAME_RECT.top,
+                        CHILD_FRAME_RECT.width(),
+                        CHILD_FRAME_RECT.height(),
+                        CHILD_TITLE,
+                        null));
         return frameSessionForRemoveTask;
     }
 
     // The below createFooTask() create the tasks for tests.
     private ContentCapturedTask createContentCapturedTask() {
         FrameSession frameSession = createFrameSession();
-        ContentCaptureFrame data = ContentCaptureFrame.createContentCaptureFrame(CHILD_FRAME_ID,
-                CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top, CHILD_FRAME_RECT.width(),
-                CHILD_FRAME_RECT.height(), CHILD_TITLE, null);
-        ContentCaptureData.createContentCaptureData(data, CHILD1_ID, CHILD1_TEXT, CHILD1_RECT.left,
-                CHILD1_RECT.top, CHILD1_RECT.width(), CHILD1_RECT.height());
-        ContentCaptureData.createContentCaptureData(data, CHILD2_ID, CHILD2_TEXT, CHILD2_RECT.left,
-                CHILD2_RECT.top, CHILD2_RECT.width(), CHILD2_RECT.height());
+        ContentCaptureFrame data =
+                ContentCaptureFrame.createContentCaptureFrame(
+                        CHILD_FRAME_ID,
+                        CHILD_URL,
+                        CHILD_FRAME_RECT.left,
+                        CHILD_FRAME_RECT.top,
+                        CHILD_FRAME_RECT.width(),
+                        CHILD_FRAME_RECT.height(),
+                        CHILD_TITLE,
+                        null);
+        ContentCaptureData.createContentCaptureData(
+                data,
+                CHILD1_ID,
+                CHILD1_TEXT,
+                CHILD1_RECT.left,
+                CHILD1_RECT.top,
+                CHILD1_RECT.width(),
+                CHILD1_RECT.height());
+        ContentCaptureData.createContentCaptureData(
+                data,
+                CHILD2_ID,
+                CHILD2_TEXT,
+                CHILD2_RECT.left,
+                CHILD2_RECT.top,
+                CHILD2_RECT.width(),
+                CHILD2_RECT.height());
         return new ContentCapturedTask(frameSession, data, mRootPlatformSession);
     }
 
     private ContentUpdateTask createChild2ContentUpdateTask() {
         // Modifies child2
-        ContentCaptureFrame changeTextData = ContentCaptureFrame.createContentCaptureFrame(
-                CHILD_FRAME_ID, CHILD_URL, CHILD_FRAME_RECT.left, CHILD_FRAME_RECT.top,
-                CHILD_FRAME_RECT.width(), CHILD_FRAME_RECT.height(), CHILD_TITLE, null);
-        ContentCaptureData.createContentCaptureData(changeTextData, CHILD2_ID, CHILD2_NEW_TEXT,
-                CHILD2_RECT.left, CHILD2_RECT.top, CHILD2_RECT.width(), CHILD2_RECT.height());
+        ContentCaptureFrame changeTextData =
+                ContentCaptureFrame.createContentCaptureFrame(
+                        CHILD_FRAME_ID,
+                        CHILD_URL,
+                        CHILD_FRAME_RECT.left,
+                        CHILD_FRAME_RECT.top,
+                        CHILD_FRAME_RECT.width(),
+                        CHILD_FRAME_RECT.height(),
+                        CHILD_TITLE,
+                        null);
+        ContentCaptureData.createContentCaptureData(
+                changeTextData,
+                CHILD2_ID,
+                CHILD2_NEW_TEXT,
+                CHILD2_RECT.left,
+                CHILD2_RECT.top,
+                CHILD2_RECT.width(),
+                CHILD2_RECT.height());
         return new ContentUpdateTask(createFrameSession(), changeTextData, mRootPlatformSession);
     }
 
@@ -352,22 +407,39 @@ public class PlatformAPIWrapperTest {
     }
 
     private TitleUpdateTask createTitleUpdateTask() {
-        ContentCaptureFrame mainFrame = ContentCaptureFrame.createContentCaptureFrame(MAIN_ID,
-                MAIN_URL, MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, null);
+        ContentCaptureFrame mainFrame =
+                ContentCaptureFrame.createContentCaptureFrame(
+                        MAIN_ID,
+                        MAIN_URL,
+                        MAIN_FRAME_RECT.left,
+                        MAIN_FRAME_RECT.top,
+                        MAIN_FRAME_RECT.width(),
+                        MAIN_FRAME_RECT.height(),
+                        UPDATED_MAIN_TITLE,
+                        null);
         return new TitleUpdateTask(mainFrame, mRootPlatformSession);
     }
 
     private FaviconUpdateTask createFaviconUpdateTask() {
         FrameSession frameSession = new FrameSession(1);
-        frameSession.add(ContentCaptureFrame.createContentCaptureFrame(MAIN_ID, MAIN_URL,
-                MAIN_FRAME_RECT.left, MAIN_FRAME_RECT.top, MAIN_FRAME_RECT.width(),
-                MAIN_FRAME_RECT.height(), UPDATED_MAIN_TITLE, UPDATED_FAVICON));
+        frameSession.add(
+                ContentCaptureFrame.createContentCaptureFrame(
+                        MAIN_ID,
+                        MAIN_URL,
+                        MAIN_FRAME_RECT.left,
+                        MAIN_FRAME_RECT.top,
+                        MAIN_FRAME_RECT.width(),
+                        MAIN_FRAME_RECT.height(),
+                        UPDATED_MAIN_TITLE,
+                        UPDATED_FAVICON));
         return new FaviconUpdateTask(frameSession, mRootPlatformSession);
     }
+
     private void runContentCapturedTask() throws Exception {
-        runTaskAndVerifyCallback(createContentCapturedTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
+        runTaskAndVerifyCallback(
+                createContentCapturedTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
                         PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_APPEARED,
@@ -382,20 +454,25 @@ public class PlatformAPIWrapperTest {
     }
 
     private NullPointerException createMainContentCaptureSessionException() {
-        NullPointerException e = new NullPointerException() {
-            @Override
-            public StackTraceElement[] getStackTrace() {
-                StackTraceElement[] stack = new StackTraceElement[super.getStackTrace().length + 1];
-                int index = 0;
-                for (StackTraceElement s : super.getStackTrace()) {
-                    stack[index++] = s;
-                }
-                stack[index] = new StackTraceElement(
-                        "android.view.contentcapture.MainContentCaptureSession", "sendEvent",
-                        "MainContentCaptureSession.java", 349);
-                return stack;
-            }
-        };
+        NullPointerException e =
+                new NullPointerException() {
+                    @Override
+                    public StackTraceElement[] getStackTrace() {
+                        StackTraceElement[] stack =
+                                new StackTraceElement[super.getStackTrace().length + 1];
+                        int index = 0;
+                        for (StackTraceElement s : super.getStackTrace()) {
+                            stack[index++] = s;
+                        }
+                        stack[index] =
+                                new StackTraceElement(
+                                        "android.view.contentcapture.MainContentCaptureSession",
+                                        "sendEvent",
+                                        "MainContentCaptureSession.java",
+                                        349);
+                        return stack;
+                    }
+                };
         return e;
     }
 
@@ -414,7 +491,8 @@ public class PlatformAPIWrapperTest {
                 .newVirtualViewStructure(
                         mMockedRootContentCaptureSession, mMockedRootAutofillId, MAIN_ID);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .notifyViewAppeared(mMockedRootContentCaptureSession,
+                .notifyViewAppeared(
+                        mMockedRootContentCaptureSession,
                         mPlatformAPIWrapperTestHelper.mCreatedViewStructures.get(0));
         verifyVirtualViewStructure(MAIN_TITLE, MAIN_FRAME_RECT, 0);
 
@@ -422,10 +500,13 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .createContentCaptureSession(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
-                        CHILD_URL, null);
+                        CHILD_URL,
+                        null);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .newAutofillId(mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
-                        mMockedRootAutofillId, CHILD_FRAME_ID);
+                .newAutofillId(
+                        mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
+                        mMockedRootAutofillId,
+                        CHILD_FRAME_ID);
 
         // Verifies the ViewStructure for the child frame.
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
@@ -464,41 +545,52 @@ public class PlatformAPIWrapperTest {
         verifyVirtualViewStructure(CHILD2_TEXT, CHILD2_RECT, 3);
 
         // Modifies child2
-        runTaskAndVerifyCallback(createChild2ContentUpdateTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
+        runTaskAndVerifyCallback(
+                createChild2ContentUpdateTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_TEXT_CHANGED));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewTextChanged(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1),
-                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(2), CHILD2_NEW_TEXT);
+                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(2),
+                        CHILD2_NEW_TEXT);
 
         // Removes the child1 and child2
-        runTaskAndVerifyCallback(createRemoveChildrenTask(),
+        runTaskAndVerifyCallback(
+                createRemoveChildrenTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.NOTIFY_VIEWS_DISAPPEARED));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewsDisappeared(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1),
-                        mMockedRootAutofillId, REMOVED_IDS);
+                        mMockedRootAutofillId,
+                        REMOVED_IDS);
 
         // Remove the child frame
-        runTaskAndVerifyCallback(createSessionRemovedTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.DESTROY_CONTENT_CAPTURE_SESSION,
+        runTaskAndVerifyCallback(
+                createSessionRemovedTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.DESTROY_CONTENT_CAPTURE_SESSION,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_DISAPPEARED));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .destroyContentCaptureSession(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1));
 
         // Updates the title.
-        runTaskAndVerifyCallback(createTitleUpdateTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
+        runTaskAndVerifyCallback(
+                createTitleUpdateTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_TEXT_CHANGED));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .notifyViewTextChanged(mMockedRootContentCaptureSession,
+                .notifyViewTextChanged(
+                        mMockedRootContentCaptureSession,
                         mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(3),
                         UPDATED_MAIN_TITLE);
 
         // Update the favicon
-        runTaskAndVerifyCallback(createFaviconUpdateTask(),
+        runTaskAndVerifyCallback(
+                createFaviconUpdateTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.NOTIFY_FAVICON_UPDATE));
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyFaviconUpdated(
@@ -529,7 +621,8 @@ public class PlatformAPIWrapperTest {
                 .when(mockedApiWrapperTestHelper)
                 .newAutofillId(
                         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.anyLong());
-        runTaskAndVerifyCallbackWithException(createContentCapturedTask(),
+        runTaskAndVerifyCallbackWithException(
+                createContentCapturedTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION));
     }
 
@@ -542,8 +635,10 @@ public class PlatformAPIWrapperTest {
                 .when(mockedApiWrapperTestHelper)
                 .newVirtualViewStructure(
                         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.anyLong());
-        runTaskAndVerifyCallbackWithException(createContentCapturedTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
+        runTaskAndVerifyCallbackWithException(
+                createContentCapturedTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
                         PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID));
     }
 
@@ -555,8 +650,10 @@ public class PlatformAPIWrapperTest {
         doThrow(createMainContentCaptureSessionException())
                 .when(mockedApiWrapperTestHelper)
                 .notifyViewAppeared(ArgumentMatchers.any(), ArgumentMatchers.any());
-        runTaskAndVerifyCallbackWithException(createContentCapturedTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
+        runTaskAndVerifyCallbackWithException(
+                createContentCapturedTask(),
+                toIntArray(
+                        PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
                         PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE));
     }
@@ -572,7 +669,8 @@ public class PlatformAPIWrapperTest {
                         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any());
         runContentCapturedTask();
         // Modifies child2
-        runTaskAndVerifyCallbackWithException(createChild2ContentUpdateTask(),
+        runTaskAndVerifyCallbackWithException(
+                createChild2ContentUpdateTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID));
     }
 
@@ -613,7 +711,8 @@ public class PlatformAPIWrapperTest {
                 .notifyViewDisappeared(ArgumentMatchers.any(), ArgumentMatchers.any());
         runContentCapturedTask();
         // Modifies child2
-        runTaskAndVerifyCallbackWithException(createSessionRemovedTask(),
+        runTaskAndVerifyCallbackWithException(
+                createSessionRemovedTask(),
                 toIntArray(PlatformAPIWrapperTestHelper.DESTROY_CONTENT_CAPTURE_SESSION));
     }
 }

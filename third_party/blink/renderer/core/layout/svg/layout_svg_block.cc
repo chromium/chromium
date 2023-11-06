@@ -169,6 +169,9 @@ void LayoutSVGBlock::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                         TransformState& transform_state,
                                         MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
+  if (this == ancestor) {
+    return;
+  }
   // Convert from local HTML coordinates to local SVG coordinates.
   transform_state.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
@@ -179,9 +182,9 @@ void LayoutSVGBlock::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
                                         TransformState& transform_state,
                                         MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
-  if (this == ancestor)
+  if (this == ancestor) {
     return;
-
+  }
   // Map to local SVG coordinates.
   SVGLayoutSupport::MapAncestorToLocal(*this, ancestor, transform_state, flags);
   // Convert from local SVG coordinates to local HTML coordinates.

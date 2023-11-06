@@ -64,7 +64,7 @@ static int64_t GenerateFormDataIdentifier() {
   // Initialize to the current time to reduce the likelihood of generating
   // identifiers that overlap with those from past/future browser sessions.
   static int64_t next_identifier =
-      static_cast<int64_t>(base::Time::Now().ToDoubleT() * 1000000.0);
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
   return ++next_identifier;
 }
 

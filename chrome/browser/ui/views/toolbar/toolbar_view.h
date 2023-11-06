@@ -177,6 +177,8 @@ class ToolbarView : public views::AccessiblePaneView,
     return toolbar_controller_.get();
   }
 
+  views::View* new_tab_button_for_testing() { return new_tab_button_; }
+
   // LocationBarView::Delegate:
   content::WebContents* GetWebContents() override;
   LocationBarModel* GetLocationBarModel() override;
@@ -270,6 +272,8 @@ class ToolbarView : public views::AccessiblePaneView,
   // Called when active state for the window changes.
   void ActiveStateChanged();
 
+  void NewTabButtonPressed(const ui::Event& event);
+
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only
@@ -296,6 +300,7 @@ class ToolbarView : public views::AccessiblePaneView,
       send_tab_to_self_button_ = nullptr;
   raw_ptr<BrowserAppMenuButton> app_menu_button_ = nullptr;
   raw_ptr<DownloadToolbarButtonView> download_button_ = nullptr;
+  raw_ptr<views::View> new_tab_button_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;

@@ -35,9 +35,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/**
- * Tests for the UsbChooserDialog class.
- */
+/** Tests for the UsbChooserDialog class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(BluetoothChooserDialogTest.DEVICE_DIALOG_BATCH_NAME)
@@ -50,8 +48,7 @@ public class UsbChooserDialogTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
     private String mSelectedDeviceId = "";
 
@@ -77,13 +74,18 @@ public class UsbChooserDialogTest {
     }
 
     private UsbChooserDialog createDialog() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            UsbChooserDialog dialog = new UsbChooserDialog(
-                    /*nativeUsbChooserDialogPtr=*/42, Profile.getLastUsedRegularProfile());
-            dialog.show(sActivityTestRule.getActivity(), "https://origin.example.com/",
-                    ConnectionSecurityLevel.SECURE);
-            return dialog;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    UsbChooserDialog dialog =
+                            new UsbChooserDialog(
+                                    /* nativeUsbChooserDialogPtr= */ 42,
+                                    Profile.getLastUsedRegularProfile());
+                    dialog.show(
+                            sActivityTestRule.getActivity(),
+                            "https://origin.example.com/",
+                            ConnectionSecurityLevel.SECURE);
+                    return dialog;
+                });
     }
 
     private void selectItem(int position) {
@@ -101,12 +103,15 @@ public class UsbChooserDialogTest {
         CriteriaHelper.pollUiThread(() -> button.isEnabled());
         // Make sure the button is properly rendered before clicking.
         CriteriaHelper.pollUiThread(
-                () -> { Criteria.checkThat(button.getHeight(), Matchers.greaterThan(0)); });
+                () -> {
+                    Criteria.checkThat(button.getHeight(), Matchers.greaterThan(0));
+                });
         TouchCommon.singleClickView(button);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mSelectedDeviceId, Matchers.not(Matchers.isEmptyString()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mSelectedDeviceId, Matchers.not(Matchers.isEmptyString()));
+                });
     }
 
     /**
@@ -115,8 +120,9 @@ public class UsbChooserDialogTest {
      * returns the raw string without the tags.
      */
     private static String removeLinkTags(String message) {
-        return message.replaceAll("</?link1>", "").replaceAll(
-                "</?link2>", "").replaceAll("</?link>", "");
+        return message.replaceAll("</?link1>", "")
+                .replaceAll("</?link2>", "")
+                .replaceAll("</?link>", "");
     }
 
     @Test
@@ -150,20 +156,24 @@ public class UsbChooserDialogTest {
         final Button button = (Button) dialog.findViewById(R.id.positive);
         final int position = 1;
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mChooserDialog.addDevice("device_id_0", "device_name_0");
-            mChooserDialog.addDevice("device_id_1", "device_name_1");
-            mChooserDialog.addDevice("device_id_2", "device_name_2");
-            // Show the desired position at the top of the ListView (in case
-            // not all the items can fit on small devices' screens).
-            items.setSelection(position);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mChooserDialog.addDevice("device_id_0", "device_name_0");
+                    mChooserDialog.addDevice("device_id_1", "device_name_1");
+                    mChooserDialog.addDevice("device_id_2", "device_name_2");
+                    // Show the desired position at the top of the ListView (in case
+                    // not all the items can fit on small devices' screens).
+                    items.setSelection(position);
+                });
 
         // After adding items to the dialog, the help message should be showing,
         // the 'Connect' button should still be disabled (since nothing's selected),
         // and the list view should show.
-        Assert.assertEquals(removeLinkTags(sActivityTestRule.getActivity().getString(
-                                    R.string.usb_chooser_dialog_footnote_text)),
+        Assert.assertEquals(
+                removeLinkTags(
+                        sActivityTestRule
+                                .getActivity()
+                                .getString(R.string.usb_chooser_dialog_footnote_text)),
                 statusView.getText().toString());
         Assert.assertFalse(button.isEnabled());
         Assert.assertEquals(View.VISIBLE, items.getVisibility());

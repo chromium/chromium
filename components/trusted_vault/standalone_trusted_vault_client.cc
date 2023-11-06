@@ -22,6 +22,7 @@
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -218,11 +219,41 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
   const base::RepeatingClosure notify_recoverability_degraded_cb_;
 };
 
+constexpr base::FilePath::CharType kChromeSyncTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("trusted_vault.pb");
+constexpr base::FilePath::CharType kChromeSyncDeprecatedTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("Trusted Vault");
+constexpr base::FilePath::CharType kPasskeysTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("passkeys_trusted_vault.pb");
+
+base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
+                                  SecurityDomainId security_domain) {
+  switch (security_domain) {
+    case SecurityDomainId::kChromeSync:
+      return base_dir.Append(kChromeSyncTrustedVaultFilename);
+    case SecurityDomainId::kPasskeys:
+      return base_dir.Append(kPasskeysTrustedVaultFilename);
+  }
+  NOTREACHED_NORETURN();
+}
+
+base::FilePath GetBackendDeprecatedFilePath(const base::FilePath& base_dir,
+                                            SecurityDomainId security_domain) {
+  switch (security_domain) {
+    case SecurityDomainId::kChromeSync:
+      return base_dir.Append(kChromeSyncDeprecatedTrustedVaultFilename);
+    case SecurityDomainId::kPasskeys:
+      // There is no legacy file for passkeys that needs to be migrated.
+      return base::FilePath();
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
-    const base::FilePath& file_path,
-    const base::FilePath& deprecated_file_path,
+    SecurityDomainId security_domain,
+    const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : backend_task_runner_(
@@ -233,13 +264,15 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       ExtractTrustedVaultServiceURLFromCommandLine();
   if (trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
-        trusted_vault_service_gurl, url_loader_factory->Clone(),
+        security_domain, trusted_vault_service_gurl,
+        url_loader_factory->Clone(),
         std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path, deprecated_file_path,
+      GetBackendFilePath(base_dir, security_domain),
+      GetBackendDeprecatedFilePath(base_dir, security_domain),
       std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
           base::BindRepeating(&StandaloneTrustedVaultClient::
                                   NotifyRecoverabilityDegradedChanged,

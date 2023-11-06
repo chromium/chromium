@@ -183,20 +183,16 @@ std::string CreateLibAssistantConfig(
                  .Set("model_revision", 1));
 
   // Enables Libassistant gRPC server for V2.
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
-    const std::string server_addresses =
-        chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device) +
-        "," +
-        chromeos::assistant::GetHttpConnectionServiceAddress(
-            is_chromeos_device);
+  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
+  const std::string server_addresses =
+      chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device) +
+      "," +
+      chromeos::assistant::GetHttpConnectionServiceAddress(is_chromeos_device);
 
-    config.Set("libas_server",
-               Value::Dict()
-                   .Set("libas_server_address", server_addresses)
-                   .Set("enable_display_service", true)
-                   .Set("enable_http_connection_service", true));
-  }
+  config.Set("libas_server", Value::Dict()
+                                 .Set("libas_server_address", server_addresses)
+                                 .Set("enable_display_service", true)
+                                 .Set("enable_http_connection_service", true));
 
   config.Set("discovery", Value::Dict().Set("enable_mdns", false));
 

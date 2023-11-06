@@ -23,6 +23,9 @@ ASH_PUBLIC_EXPORT std::u16string KeycodeToKeyString(
     ui::KeyboardCode key_code,
     bool remap_positional_key = true);
 
+// Returns the string to display in the UI for the given key.
+ASH_PUBLIC_EXPORT std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCELERATORS_UTIL_H_

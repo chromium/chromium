@@ -83,7 +83,7 @@ class ReadableStreamDefaultController : public ReadableStreamController {
                                      v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rs-default-controller-private-pull
-  void PullSteps(ScriptState*, ReadRequest*) override;
+  void PullSteps(ScriptState*, ReadRequest*, ExceptionState&) override;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaultcontroller-releasesteps
   void ReleaseSteps() override;

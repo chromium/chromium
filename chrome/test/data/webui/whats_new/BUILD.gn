@@ -7,8 +7,6 @@ import("../build_webui_tests.gni")
 assert(!is_android)
 
 build_webui_tests("build") {
-  resource_path_prefix = "whats_new"
-
   files = [
     "whats_new_app_test.ts",
     "test_with_command_3.ts",

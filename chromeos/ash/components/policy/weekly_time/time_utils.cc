@@ -49,7 +49,7 @@ bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
     LOG(ERROR) << "Gregorian calendar error = " << u_errorName(status);
     return false;
   }
-  UDate cur_date = static_cast<UDate>(clock->Now().ToDoubleT() *
+  UDate cur_date = static_cast<UDate>(clock->Now().InSecondsFSinceUnixEpoch() *
                                       base::Time::kMillisecondsPerSecond);
   status = U_ZERO_ERROR;
   gregorian_calendar->setTime(cur_date, status);

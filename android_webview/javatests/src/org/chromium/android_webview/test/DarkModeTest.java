@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
@@ -20,14 +22,19 @@ import org.chromium.android_webview.settings.ForceDarkMode;
 /**
  * Tests dark-mode related data are correctly passed to blink.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class DarkModeTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class DarkModeTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    public AwActivityTestRule mRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwContents mContents;
     private AwSettings mSettings;
+
+    public DarkModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() {
@@ -58,11 +65,11 @@ public class DarkModeTest {
         mRule.loadUrlSync(mContents, mContentsClient.getOnPageFinishedHelper(), "about:blank");
         assertNotDarkScheme(mContents);
 
-        // Load web page which supports dark theme and
-        // check prefers-color-scheme is still not set to dark
+        // Load web page which supports dark theme and check prefers-color-scheme is still not set
+        // to dark
         final String supportsDarkScheme =
                 "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
-                + "<body></body></html>";
+                        + "<body></body></html>";
         mRule.loadHtmlSync(
                 mContents, mContentsClient.getOnPageFinishedHelper(), supportsDarkScheme);
         assertNotDarkScheme(mContents);
@@ -94,7 +101,7 @@ public class DarkModeTest {
 
         final String supportsDarkScheme =
                 "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
-                + "<body></body></html>";
+                        + "<body></body></html>";
         mRule.loadHtmlSync(
                 mContents, mContentsClient.getOnPageFinishedHelper(), supportsDarkScheme);
 
@@ -141,7 +148,7 @@ public class DarkModeTest {
         // preferred-color-scheme is set to dark, so media query is applied
         final String supportsDarkScheme =
                 "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
-                + "<body></body></html>";
+                        + "<body></body></html>";
         mRule.loadHtmlSync(
                 mContents, mContentsClient.getOnPageFinishedHelper(), supportsDarkScheme);
         assertDarkScheme(mContents);
@@ -155,8 +162,9 @@ public class DarkModeTest {
     private boolean prefersDarkTheme(AwContents contents) throws Exception {
         final String colorSchemeSelector =
                 "window.matchMedia('(prefers-color-scheme: dark)').matches";
-        String result = mRule.executeJavaScriptAndWaitForResult(
-                contents, mContentsClient, colorSchemeSelector);
+        String result =
+                mRule.executeJavaScriptAndWaitForResult(
+                        contents, mContentsClient, colorSchemeSelector);
 
         return "true".equals(result);
     }

@@ -6,9 +6,12 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
 
@@ -18,57 +21,53 @@ using testing::ElementsAre;
 class AutofillModelVectorizerTest : public testing::Test {
  public:
   void SetUp() override {
-    base::FilePath source_root_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root_dir);
-    dictionary_path_ = source_root_dir.AppendASCII("components")
-                           .AppendASCII("test")
-                           .AppendASCII("data")
-                           .AppendASCII("autofill")
-                           .AppendASCII("ml_model")
-                           .AppendASCII("br_overfitted_dictionary_test.txt");
+    vectorizer_ = VectorizerFromFileContents(GetTestDictionaryPath());
   }
 
  protected:
-  base::FilePath dictionary_path_;
+  AutofillModelVectorizer vectorizer_;
+
+ private:
+  base::FilePath GetTestDictionaryPath() {
+    base::FilePath source_root_dir;
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);
+    return source_root_dir.AppendASCII("components")
+        .AppendASCII("test")
+        .AppendASCII("data")
+        .AppendASCII("autofill")
+        .AppendASCII("ml_model")
+        .AppendASCII("br_overfitted_dictionary_test.txt");
+  }
+
+  AutofillModelVectorizer VectorizerFromFileContents(
+      const base::FilePath& file) {
+    std::string content;
+    CHECK(base::ReadFileToString(file, &content));
+    google::protobuf::RepeatedPtrField<std::string> tokens;
+    for (std::string& token : base::SplitString(
+             content, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+      tokens.Add(std::move(token));
+    }
+    return AutofillModelVectorizer(tokens);
+  }
 };
 
-TEST_F(AutofillModelVectorizerTest, VectorizerIsInitialized) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_NE(model_vectorizer, nullptr);
-}
-
-// Initialize vectorizer with a path that does not exist.
-TEST_F(AutofillModelVectorizerTest, WrongDictionaryPath) {
-  auto missing_path = base::FilePath::FromASCII("missing");
-  EXPECT_EQ(AutofillModelVectorizer::CreateVectorizer(missing_path), nullptr);
-}
-
 TEST_F(AutofillModelVectorizerTest, TokensMappedCorrectly) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_vectorizer->GetDictionarySize(), 787u);
-  EXPECT_EQ(model_vectorizer->TokenToId(u"first"), TokenId(53));
+  EXPECT_EQ(vectorizer_.TokenToId(u"first"), TokenId(53));
 }
 
 // Tests that words out of vocabulary return 1.
 TEST_F(AutofillModelVectorizerTest, WordOutOfVocab) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_vectorizer->TokenToId(u"OutOfVocab"), TokenId(1));
+  EXPECT_EQ(vectorizer_.TokenToId(u"OutOfVocab"), TokenId(1));
 }
 
 // Tests that empty strings return 0 for padding.
 TEST_F(AutofillModelVectorizerTest, EmptyToken) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_EQ(model_vectorizer->TokenToId(u""), TokenId(0));
+  EXPECT_EQ(vectorizer_.TokenToId(u""), TokenId(0));
 }
 
 TEST_F(AutofillModelVectorizerTest, InputVectorizedCorrectly) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_THAT(model_vectorizer->Vectorize(u"Phone 'number"),
+  EXPECT_THAT(vectorizer_.Vectorize(u"Phone 'number"),
               testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
@@ -76,9 +75,7 @@ TEST_F(AutofillModelVectorizerTest, InputVectorizedCorrectly) {
 // If a field label has more than one consecutive whitespace, they
 // should all be removed without any empty strings.
 TEST_F(AutofillModelVectorizerTest, InputHasMoreThanOneWhitespace) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
-  EXPECT_THAT(model_vectorizer->Vectorize(u"Phone   &number  "),
+  EXPECT_THAT(vectorizer_.Vectorize(u"Phone   &number  "),
               testing::ElementsAre(TokenId(49), TokenId(40), TokenId(0),
                                    TokenId(0), TokenId(0)));
 }
@@ -87,10 +84,8 @@ TEST_F(AutofillModelVectorizerTest, InputHasMoreThanOneWhitespace) {
 // only the first kOutputSequenceLength many words should be used and the
 // rest are ignored.
 TEST_F(AutofillModelVectorizerTest, InputHasMoreWordsThanOutputSequenceLength) {
-  auto model_vectorizer =
-      AutofillModelVectorizer::CreateVectorizer(dictionary_path_);
   EXPECT_THAT(
-      model_vectorizer->Vectorize(u"City Number Phone Address Card Last Zip "),
+      vectorizer_.Vectorize(u"City Number Phone Address Card Last Zip "),
       testing::ElementsAre(TokenId(46), TokenId(40), TokenId(49), TokenId(36),
                            TokenId(43)));
 }

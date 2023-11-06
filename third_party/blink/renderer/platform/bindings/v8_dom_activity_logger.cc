@@ -37,10 +37,10 @@ DomActivityLoggersForIsolatedWorld() {
 
 void V8DOMActivityLogger::LogMethod(const char* api_name,
                                     v8::FunctionCallbackInfo<v8::Value> info) {
-  Vector<v8::Local<v8::Value>> loggerArgs;
-  loggerArgs.ReserveInitialCapacity(info.Length());
+  v8::LocalVector<v8::Value> loggerArgs(info.GetIsolate());
+  loggerArgs.reserve(info.Length());
   for (int i = 0; i < info.Length(); ++i) {
-    loggerArgs.UncheckedAppend(info[i]);
+    loggerArgs.push_back(info[i]);
   }
   LogMethod(api_name, info.Length(), loggerArgs.data());
 }

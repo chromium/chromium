@@ -12,14 +12,15 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import java.util.List;
 
 /**
- * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as
- * NTP and tasks surface.
+ * Handles user interaction with the stubbed Omnibox (a.k.a. fakebox) used in the pages such as NTP
+ * and tasks surface.
  */
 public interface OmniboxStub {
     /**
      * Signal a {@link UrlBar} focus change request.
-     * @param shouldBeFocused Whether the focus should be requested or cleared. True requests
-     *        focus and False clears focus.
+     *
+     * @param shouldBeFocused Whether the focus should be requested or cleared. True requests focus
+     *     and False clears focus.
      * @param pastedText The given pasted text when focus, which could be null.
      * @param reason The given reason.
      */
@@ -27,9 +28,10 @@ public interface OmniboxStub {
             boolean shouldBeFocused, @Nullable String pastedText, @OmniboxFocusReason int reason);
 
     /**
-     * Performs a search query on the current {@link Tab}.  This calls {@link
+     * Performs a search query on the current {@link Tab}. This calls {@link
      * TemplateUrlService#getUrlForSearchQuery(String)} to get a url based on {@code query} and
      * loads that url in the current {@link Tab}.
+     *
      * @param query The {@link String} that represents the text query that should be searched for.
      * @param searchParams A list of params for the search query.
      */
@@ -42,6 +44,7 @@ public interface OmniboxStub {
 
     /**
      * Get the {@link VoiceRecognitionHandler}.
+     *
      * @return the {@link VoiceRecognitionHandler}
      */
     @Nullable
@@ -49,23 +52,24 @@ public interface OmniboxStub {
 
     /**
      * Adds a URL focus change listener that will be notified when the URL gains or loses focus.
+     *
      * @param listener The listener to be registered.
      */
     default void addUrlFocusChangeListener(UrlFocusChangeListener listener) {}
 
     /**
      * Removes a URL focus change listener that was previously added.
+     *
      * @param listener The listener to be removed.
      */
     default void removeUrlFocusChangeListener(UrlFocusChangeListener listener) {}
 
-    /**
-     * Returns whether the Lens is currently enabled.
-     */
+    /** Returns whether the Lens is currently enabled. */
     boolean isLensEnabled(@LensEntryPoint int lensEntryPoint);
 
     /**
      * Launches Lens from an entry point.
+     *
      * @param lensEntryPoint the Lens entry point.
      */
     void startLens(@LensEntryPoint int lensEntryPoint);

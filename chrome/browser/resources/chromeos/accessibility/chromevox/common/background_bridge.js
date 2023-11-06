@@ -30,16 +30,6 @@ BackgroundBridge.Braille = {
         BridgeConstants.Braille.Action.BACK_TRANSLATE, cells);
   },
 
-  /**
-   * @param {boolean} enabled
-   * @return {!Promise}
-   */
-  async enableCommandHandler(enabled) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.Braille.TARGET,
-        BridgeConstants.Braille.Action.ENABLE_COMMAND_HANDLER, enabled);
-  },
-
   /** @return {!Promise} */
   async panLeft() {
     return BridgeHelper.sendMessage(
@@ -52,6 +42,17 @@ BackgroundBridge.Braille = {
     return BridgeHelper.sendMessage(
         BridgeConstants.Braille.TARGET,
         BridgeConstants.Braille.Action.PAN_RIGHT);
+  },
+
+  /**
+   * Enables or disables processing of braille commands.
+   * @param {boolean} bypassed
+   * @return {!Promise}
+   */
+  async setBypass(bypassed) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.Braille.TARGET,
+        BridgeConstants.Braille.Action.SET_BYPASS, bypassed);
   },
 
   /**
@@ -168,13 +169,13 @@ BackgroundBridge.EventSource = {
 
 BackgroundBridge.GestureCommandHandler = {
   /**
-   * @param {boolean} enabled
+   * @param {boolean} bypassed
    * @return {!Promise}
    */
-  async setEnabled(enabled) {
+  async setBypass(bypassed) {
     return BridgeHelper.sendMessage(
         BridgeConstants.GestureCommandHandler.TARGET,
-        BridgeConstants.GestureCommandHandler.Action.SET_ENABLED, enabled);
+        BridgeConstants.GestureCommandHandler.Action.SET_BYPASS, bypassed);
   },
 };
 
@@ -190,6 +191,41 @@ BackgroundBridge.EventStreamLogger = {
         BridgeConstants.EventStreamLogger.Action
             .NOTIFY_EVENT_STREAM_FILTER_CHANGED,
         name, enabled);
+  },
+};
+
+BackgroundBridge.ForcedActionPath = {
+  /**
+   * Creates a new user action monitor.
+   * Resolves after all actions in |actions| have been observed.
+   * @param {!Array<{
+   *     type: string,
+   *     value: (string|Object),
+   *     beforeActionMsg: (string|undefined),
+   *     afterActionMsg: (string|undefined)}>} actions
+   * @return {!Promise}
+   */
+  async create(actions) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.CREATE, actions);
+  },
+
+  /**
+   * Destroys the user action monitor.
+   * @return {!Promise}
+   */
+  async destroy() {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.DESTROY);
+  },
+
+  /** @return {!Promise<boolean>} */
+  async onKeyDown(event) {
+    return BridgeHelper.sendMessage(
+        BridgeConstants.ForcedActionPath.TARGET,
+        BridgeConstants.ForcedActionPath.Action.ON_KEY_DOWN, event);
   },
 };
 
@@ -380,41 +416,5 @@ BackgroundBridge.TtsBackground = {
         BridgeConstants.TtsBackground.TARGET,
         BridgeConstants.TtsBackground.Action.UPDATE_PUNCTUATION_ECHO,
         punctuationEcho);
-  },
-};
-
-
-BackgroundBridge.UserActionMonitor = {
-  /**
-   * Creates a new user action monitor.
-   * Resolves after all actions in |actions| have been observed.
-   * @param {!Array<{
-   *     type: string,
-   *     value: (string|Object),
-   *     beforeActionMsg: (string|undefined),
-   *     afterActionMsg: (string|undefined)}>} actions
-   * @return {!Promise}
-   */
-  async create(actions) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.CREATE, actions);
-  },
-
-  /**
-   * Destroys the user action monitor.
-   * @return {!Promise}
-   */
-  async destroy() {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.DESTROY);
-  },
-
-  /** @return {!Promise<boolean>} */
-  async onKeyDown(event) {
-    return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.ON_KEY_DOWN, event);
   },
 };

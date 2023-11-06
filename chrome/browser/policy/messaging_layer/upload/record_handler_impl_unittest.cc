@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -58,18 +59,18 @@ static constexpr int64_t kGenerationId = 1234;
 MATCHER_P(ResponseEquals,
           expected,
           "Compares StatusOr<response> to expected response") {
-  if (!arg.ok()) {
+  if (!arg.has_value()) {
     return false;
   }
-  if (arg.ValueOrDie().sequence_information.GetTypeName() !=
+  if (arg.value().sequence_information.GetTypeName() !=
       expected.sequence_information.GetTypeName()) {
     return false;
   }
-  if (arg.ValueOrDie().sequence_information.SerializeAsString() !=
+  if (arg.value().sequence_information.SerializeAsString() !=
       expected.sequence_information.SerializeAsString()) {
     return false;
   }
-  return arg.ValueOrDie().force_confirm == expected.force_confirm;
+  return arg.value().force_confirm == expected.force_confirm;
 }
 
 class MockFileUploadDelegate : public FileUploadJob::Delegate {
@@ -205,7 +206,7 @@ TEST_P(RecordHandlerImplTest, UploadRecords) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -240,7 +241,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -251,7 +252,7 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
@@ -269,7 +270,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body,
               RequestValidityMatcherBuilder<>::CreateDataUpload()
@@ -283,7 +284,7 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 
@@ -302,7 +303,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -323,7 +324,7 @@ TEST_P(RecordHandlerImplTest, ContainsGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_OK(result) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
@@ -340,7 +341,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -357,7 +358,7 @@ TEST_P(RecordHandlerImplTest, ValidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_OK(result) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -375,7 +376,7 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -390,7 +391,7 @@ TEST_P(RecordHandlerImplTest, InvalidGenerationGuid) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -415,7 +416,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -431,7 +432,7 @@ TEST_P(RecordHandlerImplTest, MissingGenerationGuidFromManagedDeviceIsOk) {
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_OK(result) << result.status();
+  EXPECT_TRUE(result.has_value()) << result.error();
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -456,7 +457,7 @@ TEST_P(RecordHandlerImplTest,
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))
@@ -471,8 +472,8 @@ TEST_P(RecordHandlerImplTest,
   test_env_.SimulateCustomResponseForRequest(0, std::move(response.value()));
 
   const auto result = responder_event.result();
-  EXPECT_FALSE(result.status().ok());
-  EXPECT_THAT(result.status(),
+  EXPECT_FALSE(result.has_value());
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -498,7 +499,7 @@ TEST_P(RecordHandlerImplTest, MissingSequenceInformation) {
   EXPECT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
 
   const auto result = responder_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::FAILED_PRECONDITION)));
 }
 
@@ -514,15 +515,15 @@ TEST_P(RecordHandlerImplTest, ReportsUploadFailure) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
 
   test_env_.SimulateCustomResponseForRequest(
-      0, Status(error::INTERNAL, "Test injected error"));
+      0, base::unexpected(Status(error::INTERNAL, "Test injected error")));
 
   const auto result = response_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::DATA_LOSS)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());
@@ -551,7 +552,7 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response =
@@ -561,7 +562,7 @@ TEST_P(RecordHandlerImplTest, DISABLED_UploadsGapRecordOnServerFailure) {
 
   // Gap records upload.
   task_environment_.RunUntilIdle();
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsGapUploadRequestValid());
 
@@ -605,13 +606,13 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
                           encryption_key_attached_event.repeating_cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   EXPECT_THAT(test_env_.request_body(0), IsDataUploadRequestValid());
 
   test_env_.SimulateCustomResponseForRequest(0, base::Value::Dict());
 
   const auto result = response_event.result();
-  EXPECT_THAT(result.status(),
+  EXPECT_THAT(result.error(),
               Property(&Status::error_code, Eq(error::INTERNAL)));
 
   EXPECT_TRUE(encryption_key_attached_event.no_result());
@@ -633,7 +634,7 @@ TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
                           base::DoNothing());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+  ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1u));
   auto request_body = test_env_.request_body(0);
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   auto response = ResponseBuilder(std::move(request_body))

@@ -120,7 +120,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
 
   settings_api::PrefObject pref_object;
   pref_object.key = generated_pref_name_;
-  pref_object.type = settings_api::PREF_TYPE_NUMBER;
+  pref_object.type = settings_api::PrefType::kNumber;
 
   std::string content_setting_provider;
   const auto content_setting =
@@ -153,7 +153,7 @@ GeneratedPermissionPromptingBehaviorPref::GetPrefObject() const {
   }
 
   if (content_setting_managed) {
-    pref_object.enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
+    pref_object.enforcement = settings_api::Enforcement::kEnforced;
     GeneratedPref::ApplyControlledByFromContentSettingSource(
         &pref_object, SETTING_SOURCE_POLICY);
   }

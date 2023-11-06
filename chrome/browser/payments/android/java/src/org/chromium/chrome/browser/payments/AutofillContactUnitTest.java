@@ -19,9 +19,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.autofill.AutofillProfile;
 
-/**
- * Unit tests for the AutofillContact class.
- */
+/** Unit tests for the AutofillContact class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AutofillContactUnitTest {
@@ -36,12 +34,28 @@ public class AutofillContactUnitTest {
         Context mockContext = spy(RuntimeEnvironment.application);
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
-        AutofillContact contact1 = new AutofillContact(mockContext, dummyProfile, NAME, PHONE,
-                EMAIL, ContactEditor.COMPLETE, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
-        AutofillContact contact2 = new AutofillContact(mockContext, dummyProfile, NAME, PHONE,
-                EMAIL, ContactEditor.COMPLETE, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        AutofillContact contact1 =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
+        AutofillContact contact2 =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
 
         // The return value should be true for identical profiles.
         Assert.assertTrue(contact1.isEqualOrSupersetOf(contact2));
@@ -78,12 +92,28 @@ public class AutofillContactUnitTest {
         doReturn(MESSAGE).when(mockContext).getString(anyInt());
 
         // The merchant does not request a name.
-        AutofillContact contact1 = new AutofillContact(mockContext, dummyProfile, NAME, PHONE,
-                EMAIL, ContactEditor.COMPLETE, false /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
-        AutofillContact contact2 = new AutofillContact(mockContext, dummyProfile, NAME, PHONE,
-                EMAIL, ContactEditor.COMPLETE, false /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        AutofillContact contact1 =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
+        AutofillContact contact2 =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
 
         // The return value should be true for identical profiles.
         Assert.assertTrue(contact1.isEqualOrSupersetOf(contact2));
@@ -105,52 +135,117 @@ public class AutofillContactUnitTest {
 
         // The merchant requests all fields.
         // Since all requested fields are present and valid, The score should be 3.
-        AutofillContact contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.COMPLETE, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        AutofillContact contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(3, contact.getRelevanceScore());
 
         // The name is not valid, the score should be 2.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_NAME, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_NAME,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The phone is not valid, the score should be 2.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_PHONE_NUMBER, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_PHONE_NUMBER,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The email is not valid, the score should be 2.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_EMAIL, true /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The name and phone are not valid, the score should be 1.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_NAME | ContactEditor.INVALID_PHONE_NUMBER,
-                true /* requestName */, true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_NAME | ContactEditor.INVALID_PHONE_NUMBER,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The name and email are not valid, the score should be 1.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_NAME | ContactEditor.INVALID_EMAIL, true /* requestName */,
-                true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_NAME | ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The phone and email are not valid, the score should be 1.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
-                true /* requestName */, true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The name, phone and email are not valid, the score should be 0.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_NAME | ContactEditor.INVALID_PHONE_NUMBER
-                        | ContactEditor.INVALID_EMAIL,
-                true /* requestName */, true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_NAME
+                                | ContactEditor.INVALID_PHONE_NUMBER
+                                | ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ true,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(0, contact.getRelevanceScore());
     }
 
@@ -162,33 +257,73 @@ public class AutofillContactUnitTest {
 
         // The merchant does not request a name.
         // Since all requested fields are present and valid, The score should be 2.
-        AutofillContact contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.COMPLETE, false /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        AutofillContact contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.COMPLETE,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The name is not valid, the score should still be 2.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_NAME, false /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_NAME,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(2, contact.getRelevanceScore());
 
         // The phone is not valid, the score should be 1.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_PHONE_NUMBER, false /* requestName */,
-                true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_PHONE_NUMBER,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The email is not valid, the score should be 1.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_EMAIL, false /* requestName */, true /* requestPhone */,
-                true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(1, contact.getRelevanceScore());
 
         // The phone and email are not valid, the score should be 0.
-        contact = new AutofillContact(mockContext, dummyProfile, NAME, PHONE, EMAIL,
-                ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
-                false /* requestName */, true /* requestPhone */, true /* requestEmail */);
+        contact =
+                new AutofillContact(
+                        mockContext,
+                        dummyProfile,
+                        NAME,
+                        PHONE,
+                        EMAIL,
+                        ContactEditor.INVALID_PHONE_NUMBER | ContactEditor.INVALID_EMAIL,
+                        /* requestName= */ false,
+                        /* requestPhone= */ true,
+                        /* requestEmail= */ true);
         Assert.assertEquals(0, contact.getRelevanceScore());
     }
 }

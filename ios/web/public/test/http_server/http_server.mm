@@ -103,8 +103,9 @@ void HttpServer::StartOrDie(const base::FilePath& files_path) {
   DCHECK([NSThread isMainThread]);
 
   // Registers request handler which serves files from the http test files
-  // directory. The current tests calls full path relative to DIR_SOURCE_ROOT.
-  // Registers the DIR_SOURCE_ROOT to avoid massive test changes.
+  // directory. The current tests calls full path relative to
+  // DIR_SRC_TEST_DATA_ROOT. Registers the DIR_SRC_TEST_DATA_ROOT to avoid
+  // massive test changes.
   embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
   embedded_test_server_->ServeFilesFromDirectory(files_path);
   embedded_test_server_->RegisterDefaultHandler(

@@ -436,9 +436,9 @@ void ChromeClientImpl::SetBeforeUnloadConfirmPanelResultForTesting(
   before_unload_confirm_panel_result_for_testing_ = result;
 }
 
-void ChromeClientImpl::CloseWindowSoon() {
+void ChromeClientImpl::CloseWindow() {
   DCHECK(web_view_);
-  web_view_->CloseWindowSoon();
+  web_view_->CloseWindow();
 }
 
 bool ChromeClientImpl::OpenJavaScriptAlertDelegate(LocalFrame* frame,
@@ -743,12 +743,12 @@ DateTimeChooser* ChromeClientImpl::OpenDateTimeChooser(
   external_date_time_chooser_ =
       MakeGarbageCollected<ExternalDateTimeChooser>(picker_client);
   external_date_time_chooser_->OpenDateTimeChooser(frame, parameters);
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 ExternalDateTimeChooser*
 ChromeClientImpl::GetExternalDateTimeChooserForTesting() {
-  return external_date_time_chooser_;
+  return external_date_time_chooser_.Get();
 }
 
 void ChromeClientImpl::OpenFileChooser(
@@ -875,6 +875,10 @@ void ChromeClientImpl::AttachRootLayer(scoped_refptr<cc::Layer> root_layer,
 
 cc::AnimationHost* ChromeClientImpl::GetCompositorAnimationHost(
     LocalFrame& local_frame) const {
+  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(local_frame);
+  if (!web_frame || web_frame->IsProvisional()) {
+    return nullptr;
+  }
   FrameWidget* widget = local_frame.GetWidgetForLocalRoot();
   DCHECK(widget);
   return widget->AnimationHost();
@@ -923,8 +927,22 @@ bool ChromeClientImpl::HasOpenedPopup() const {
 PopupMenu* ChromeClientImpl::OpenPopupMenu(LocalFrame& frame,
                                            HTMLSelectElement& select) {
   NotifyPopupOpeningObservers();
-  if (WebViewImpl::UseExternalPopupMenus())
+
+  bool use_external_popup_menus = WebViewImpl::UseExternalPopupMenus();
+#if BUILDFLAG(IS_MAC)
+  // There is a bug that is causing popup menus in PWA windows on macOS to
+  // sometimes not appear if using external popup menus. Until that bug is
+  // fixed, use internal menus if this is a PWA window on mac.
+  // TODO(https://crbug.com/1488347): Remove this workaround when the bug
+  // is fixed.
+  if (frame.GetSettings() && !frame.GetSettings()->GetWebAppScope().empty()) {
+    use_external_popup_menus = false;
+  }
+#endif
+
+  if (use_external_popup_menus) {
     return MakeGarbageCollected<ExternalPopupMenu>(frame, select);
+  }
 
   DCHECK(RuntimeEnabledFeatures::PagePopupEnabled());
   return MakeGarbageCollected<InternalPopupMenu>(this, select);

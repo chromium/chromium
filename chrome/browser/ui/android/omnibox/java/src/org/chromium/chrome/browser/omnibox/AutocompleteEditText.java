@@ -26,11 +26,9 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.components.browser_ui.widget.text.VerticallyFixedEditText;
 import org.chromium.ui.text.EmptyTextWatcher;
 
-/**
- * An {@link EditText} that shows autocomplete text at the end.
- */
-public class AutocompleteEditText
-        extends VerticallyFixedEditText implements AutocompleteEditTextModelBase.Delegate {
+/** An {@link EditText} that shows autocomplete text at the end. */
+public class AutocompleteEditText extends VerticallyFixedEditText
+        implements AutocompleteEditTextModelBase.Delegate {
     private static final String TAG = "AutocompleteEdit";
 
     private static final boolean DEBUG = false;
@@ -61,21 +59,26 @@ public class AutocompleteEditText
      * user's typing, so we need to handle this case as well.
      */
     private void addTextWatcherForPaste() {
-        addTextChangedListener(new EmptyTextWatcher() {
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (wasLastEditPaste() && !mIgnoreTextChangesForAutocomplete) {
-                    mOnSanitizing = true;
-                    String text = editable.toString();
-                    String sanitizedText = sanitizeTextForPaste(text);
-                    if (!text.equals(sanitizedText)) {
-                        editable.replace(
-                                0, editable.length(), sanitizedText, 0, sanitizedText.length());
+        addTextChangedListener(
+                new EmptyTextWatcher() {
+                    @Override
+                    public void afterTextChanged(Editable editable) {
+                        if (wasLastEditPaste() && !mIgnoreTextChangesForAutocomplete) {
+                            mOnSanitizing = true;
+                            String text = editable.toString();
+                            String sanitizedText = sanitizeTextForPaste(text);
+                            if (!text.equals(sanitizedText)) {
+                                editable.replace(
+                                        0,
+                                        editable.length(),
+                                        sanitizedText,
+                                        0,
+                                        sanitizedText.length());
+                            }
+                            mOnSanitizing = false;
+                        }
                     }
-                    mOnSanitizing = false;
-                }
-            }
-        });
+                });
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -83,9 +86,7 @@ public class AutocompleteEditText
         return mNativeInitialized ? OmniboxViewUtil.sanitizeTextForPaste(s) : s;
     }
 
-    /**
-     *  Signals that's it safe to call code that requires native to be loaded.
-     */
+    /** Signals that's it safe to call code that requires native to be loaded. */
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
     }
@@ -109,7 +110,7 @@ public class AutocompleteEditText
      * Sets whether text changes should trigger autocomplete.
      *
      * @param ignoreAutocomplete Whether text changes should be ignored and no auto complete
-     *                           triggered.
+     *     triggered.
      */
     public void setIgnoreTextChangesForAutocomplete(boolean ignoreAutocomplete) {
         mIgnoreTextChangesForAutocomplete = ignoreAutocomplete;
@@ -124,13 +125,17 @@ public class AutocompleteEditText
         return mModel.getTextWithoutAutocomplete();
     }
 
-    /** @return Text that includes autocomplete. */
+    /**
+     * @return Text that includes autocomplete.
+     */
     public String getTextWithAutocomplete() {
         if (mModel == null) return "";
         return mModel.getTextWithAutocomplete();
     }
 
-    /** @return Whether any autocomplete information is specified on the current text. */
+    /**
+     * @return Whether any autocomplete information is specified on the current text.
+     */
     @VisibleForTesting
     public boolean hasAutocomplete() {
         if (mModel == null) return false;
@@ -139,8 +144,9 @@ public class AutocompleteEditText
 
     /**
      * Whether we want to be showing inline autocomplete results. We don't want to show them as the
-     * user deletes input. Also if there is a composition (e.g. while using the Japanese IME),
-     * we must not autocomplete or we'll destroy the composition.
+     * user deletes input. Also if there is a composition (e.g. while using the Japanese IME), we
+     * must not autocomplete or we'll destroy the composition.
+     *
      * @return Whether we want to be showing inline autocomplete results.
      */
     public boolean shouldAutocomplete() {
@@ -191,6 +197,7 @@ public class AutocompleteEditText
     /**
      * Autocompletes the text and selects the text that was not entered by the user. Using append()
      * instead of setText() to preserve the soft-keyboard layout.
+     *
      * @param userText user The text entered by the user.
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
      */
@@ -201,8 +208,8 @@ public class AutocompleteEditText
     }
 
     /**
-     * Returns the length of the autocomplete text currently displayed, zero if none is
-     * currently displayed.
+     * Returns the length of the autocomplete text currently displayed, zero if none is currently
+     * displayed.
      */
     public int getAutocompleteLength() {
         if (mModel == null) return 0;
@@ -215,8 +222,11 @@ public class AutocompleteEditText
         // If AutocompleteEditText receives a series of keystrokes(more than 1) from the beginning,
         // the input will be considered as paste. We do this because some IME may paste the text as
         // a series of keystrokes, not from the system copy/paste method.
-        mLastEditWasPaste = (start == 0 && (lengthAfter - lengthBefore) > 1 && !mOnSanitizing
-                && !mIgnoreTextChangesForAutocomplete);
+        mLastEditWasPaste =
+                (start == 0
+                        && (lengthAfter - lengthBefore) > 1
+                        && !mOnSanitizing
+                        && !mIgnoreTextChangesForAutocomplete);
 
         if (mModel != null) mModel.onTextChanged(text, start, lengthBefore, lengthAfter);
     }
@@ -250,9 +260,9 @@ public class AutocompleteEditText
 
     private boolean shouldIgnoreAccessibilityEvent(AccessibilityEvent event) {
         return (mIgnoreTextChangesForAutocomplete
-                       || (mModel != null && mModel.shouldIgnoreAccessibilityEvent()))
+                        || (mModel != null && mModel.shouldIgnoreAccessibilityEvent()))
                 && (event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED
-                           || event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
+                        || event.getEventType() == AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED);
     }
 
     @Override
@@ -345,8 +355,9 @@ public class AutocompleteEditText
 
     @Override
     public String getKeyboardPackageName() {
-        String defaultIme = Settings.Secure.getString(
-                getContext().getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        String defaultIme =
+                Settings.Secure.getString(
+                        getContext().getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
         return defaultIme == null ? "" : defaultIme;
     }
 }

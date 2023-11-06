@@ -6,11 +6,23 @@
 #define CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 
 namespace base {
 class RefCountedMemory;
 }
+
+class BookmarksUIConfig : public content::WebUIConfig {
+ public:
+  BookmarksUIConfig();
+  ~BookmarksUIConfig() override;
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 class BookmarksUI : public content::WebUIController {
  public:

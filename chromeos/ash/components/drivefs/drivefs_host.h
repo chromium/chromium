@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/drivefs/drivefs_auth.h"
 #include "chromeos/ash/components/drivefs/drivefs_session.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
-#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "chromeos/components/drivefs/mojom/drivefs_native_messaging.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -44,7 +43,36 @@ class SyncingStatus;
 }  // namespace mojom
 
 class DriveFsBootstrapListener;
-struct SyncState;
+
+enum class SyncStatus {
+  kNotFound,
+  kMoved,
+  kCompleted,
+  kQueued,
+  kInProgress,
+  kError,
+};
+std::ostream& operator<<(std::ostream& os, const SyncStatus& status);
+
+struct SyncState {
+  SyncStatus status;
+  float progress;  // Range: 0 to 1.
+  base::FilePath path;
+
+  friend std::ostream& operator<<(std::ostream& os, const SyncState& state) {
+    return os << "('" << state.path << "', " << state.status << ", "
+              << (int)(state.progress * 100.f) << "%"
+              << ") ";
+  }
+  bool operator==(const SyncState& state) const {
+    return state.path == path && state.status == status &&
+           std::fabs(state.progress - progress) < 1e-4;
+  }
+
+  inline static SyncState CreateNotFound(const base::FilePath path) {
+    return {SyncStatus::kNotFound, 0, std::move(path)};
+  }
+};
 
 // A host for a DriveFS process. In addition to managing its lifetime via
 // mounting and unmounting, it also bridges between the DriveFS process and the
@@ -139,8 +167,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   base::FilePath GetDataPath() const;
 
   mojom::DriveFs* GetDriveFsInterface() const;
-
-  SyncState GetSyncStateForPath(const base::FilePath& drive_path) const;
 
   // Starts DriveFs search query and returns whether it will be
   // performed localy or remotely. Assumes DriveFS to be mounted.

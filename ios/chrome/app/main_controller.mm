@@ -68,9 +68,9 @@
 #import "ios/chrome/browser/crash_report/model/crash_report_helper.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/download/download_directory_util.h"
-#import "ios/chrome/browser/external_files/external_file_remover_factory.h"
-#import "ios/chrome/browser/external_files/external_file_remover_impl.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/external_files/model/external_file_remover_factory.h"
+#import "ios/chrome/browser/external_files/model/external_file_remover_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
@@ -83,10 +83,10 @@
 #import "ios/chrome/browser/passwords/model/password_manager_util_ios.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
 #import "ios/chrome/browser/screenshot/model/screenshot_metrics_recorder.h"
-#import "ios/chrome/browser/search_engines/extension_search_engine_data_updater.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/sessions/session_service_ios.h"
+#import "ios/chrome/browser/search_engines/model/extension_search_engine_data_updater.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/sessions/session_restoration_util.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
@@ -823,12 +823,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
         dispatch_semaphore_signal(semaphore);
       }
     };
-    if (!web::features::UseSessionSerializationOptimizations()) {
-      [[SessionServiceIOS sharedService]
-          shutdownWithCompletion:completionBlock];
-    } else {
-      completionBlock();
-    }
+
+    ExecuteClosureWhenSessionServiceBackgroundProcessingDone(
+        self.appState.mainBrowserState, base::BindOnce(completionBlock));
 
     if (metrics) {
       metrics->Stop();
@@ -839,10 +836,11 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
       // kills `_chromeMain.reset()` is responsible for.
       GetApplicationContext()->GetLocalState()->CommitPendingWrite(
           {}, base::BindOnce(completionBlock));
-      dispatch_time_t dispatchTime =
-          dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
-      dispatch_semaphore_wait(semaphore, dispatchTime);
     }
+
+    dispatch_time_t dispatchTime =
+        dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC);
+    dispatch_semaphore_wait(semaphore, dispatchTime);
 
     return;
   }

@@ -7,15 +7,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 
 namespace chromeos::editor_menu {
 
 struct PresetTextQuery;
 
 // A label button with an icon and a rounded rectangle border.
-class EditorMenuChipView : public views::LabelButton {
+class EditorMenuChipView : public views::MdTextButton {
  public:
   METADATA_HEADER(EditorMenuChipView);
 
@@ -24,17 +23,6 @@ class EditorMenuChipView : public views::LabelButton {
   EditorMenuChipView(const EditorMenuChipView&) = delete;
   EditorMenuChipView& operator=(const EditorMenuChipView&) = delete;
   ~EditorMenuChipView() override;
-
-  // views::LabelButton:
-  void AddedToWidget() override;
-  void OnThemeChanged() override;
-
- private:
-  void InitLayout();
-
-  void UpdateBackgroundColor() override;
-
-  const raw_ptr<const gfx::VectorIcon> icon_;
 };
 
 }  // namespace chromeos::editor_menu

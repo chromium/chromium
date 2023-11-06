@@ -10,12 +10,14 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ui/ash/auth/legacy_fingerprint_engine.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/privacy/sync_section.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 class Profile;
@@ -73,6 +75,8 @@ class PeopleSection : public OsSettingsSection,
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
+
+  absl::optional<SyncSection> sync_subsection_;
 
   raw_ptr<account_manager::AccountManager, ExperimentalAsh> account_manager_ =
       nullptr;

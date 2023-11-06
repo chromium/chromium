@@ -118,7 +118,7 @@ constexpr void AssertRefCountBaseMatches(...) {}
 template <typename T>
 scoped_refptr<T> AdoptRef(T* obj) {
   using Tag = std::decay_t<decltype(subtle::GetRefCountPreference<T>())>;
-  static_assert(std::is_same<subtle::StartRefCountFromOneTag, Tag>::value,
+  static_assert(std::is_same_v<subtle::StartRefCountFromOneTag, Tag>,
                 "Use AdoptRef only if the reference count starts from one.");
 
   DCHECK(obj);
@@ -247,8 +247,7 @@ class TRIVIAL_ABI scoped_refptr {
 
   // Copy conversion constructor.
   template <typename U,
-            typename = typename std::enable_if<
-                std::is_convertible<U*, T*>::value>::type>
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
   scoped_refptr(const scoped_refptr<U>& r) : scoped_refptr(r.ptr_) {}
 
   // Move constructor. This is required in addition to the move conversion
@@ -257,8 +256,7 @@ class TRIVIAL_ABI scoped_refptr {
 
   // Move conversion constructor.
   template <typename U,
-            typename = typename std::enable_if<
-                std::is_convertible<U*, T*>::value>::type>
+            typename = std::enable_if_t<std::is_convertible_v<U*, T*>>>
   scoped_refptr(scoped_refptr<U>&& r) noexcept : ptr_(r.ptr_) {
     r.ptr_ = nullptr;
   }

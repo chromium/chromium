@@ -15,6 +15,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/ime/constants.h"
 #include "chromeos/ash/services/ime/decoder/decoder_engine.h"
 #include "chromeos/ash/services/ime/decoder/system_engine.h"
@@ -56,10 +57,7 @@ ImeService::ImeService(
     : receiver_(this, std::move(receiver)),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       ime_shared_library_(ime_shared_library_wrapper),
-      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {
-  manager_receivers_.set_disconnect_handler(
-      base::BindRepeating(&ImeService::OnDisconnect, base::Unretained(this)));
-}
+      field_trial_params_retriever_(std::move(field_trial_params_retriever)) {}
 
 ImeService::~ImeService() = default;
 
@@ -93,13 +91,12 @@ void ImeService::ConnectToImeEngine(
   //
   // The extension will only use ConnectToImeEngine, and NativeInputMethodEngine
   // will only use ConnectToInputMethod.
-  if (mode_ == Mode::kConnectedToSystemEngine) {
+  if (system_engine_ && system_engine_->IsConnected()) {
     std::move(callback).Run(/*bound=*/false);
     return;
   }
 
   ResetAllBackendConnections();
-  mode_ = Mode::kConnectedToDecoderEngine;
 
   decoder_engine_ = std::make_unique<DecoderEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -112,7 +109,6 @@ void ImeService::InitializeConnectionFactory(
     mojo::PendingReceiver<mojom::ConnectionFactory> connection_factory,
     InitializeConnectionFactoryCallback callback) {
   ResetAllBackendConnections();
-  mode_ = Mode::kConnectedToSystemEngine;
 
   system_engine_ = std::make_unique<SystemEngine>(
       this, ime_shared_library_->MaybeLoadThenReturnEntryPoints());
@@ -147,7 +143,7 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
       &features::kAssistMultiWord,
       &features::kAutocorrectParamsTuning,
       &features::kFirstPartyVietnameseInput,
-      &features::kLacrosOnly,
+      &ash::standalone_browser::features::kLacrosOnly,
       &features::kSystemJapanesePhysicalTyping,
       &features::kImeDownloaderUpdate,
       &features::kImeUsEnglishModelUpdate,
@@ -171,7 +167,8 @@ bool ImeService::IsFeatureEnabled(const char* feature_name) {
   // TODO(b/290714161): Remove this once the shared library no longer uses
   // LacrosSupport.
   if (strcmp(feature_name, "LacrosSupport") == 0) {
-    return base::FeatureList::IsEnabled(features::kLacrosOnly);
+    return base::FeatureList::IsEnabled(
+        ash::standalone_browser::features::kLacrosOnly);
   }
 
   return false;
@@ -228,10 +225,6 @@ void ImeService::SimpleDownloadFinishedV2(SimpleDownloadCallbackV2 callback,
     callback(SIMPLE_DOWNLOAD_STATUS_OK, url_str.c_str(),
              ResolveDownloadPath(file).c_str());
   }
-}
-
-void ImeService::OnDisconnect() {
-  mode_ = Mode::kNotConnected;
 }
 
 const MojoSystemThunks* ImeService::GetMojoSystemThunks() {

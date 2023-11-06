@@ -15,6 +15,7 @@
 
 namespace {
 constexpr int kMinValidTabsForOrganizing = 2;
+int kNextOrganizationID = 1;
 }
 
 TabOrganization::TabOrganization(
@@ -25,9 +26,19 @@ TabOrganization::TabOrganization(
     : tab_datas_(std::move(tab_datas)),
       names_(names),
       current_name_(current_name),
-      choice_(choice) {}
-TabOrganization::TabOrganization(TabOrganization&& organization) = default;
-TabOrganization::~TabOrganization() = default;
+      choice_(choice),
+      organization_id_(kNextOrganizationID) {
+  kNextOrganizationID++;
+}
+TabOrganization::~TabOrganization() {
+  for (auto& tab_data : tab_datas_) {
+    tab_data->RemoveObserver(this);
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnTabOrganizationDestroyed(organization_id_);
+  }
+}
 
 const std::u16string TabOrganization::GetDisplayName() const {
   if (absl::holds_alternative<size_t>(current_name())) {
@@ -38,6 +49,14 @@ const std::u16string TabOrganization::GetDisplayName() const {
     return absl::get<std::u16string>(current_name());
   }
   return u"";
+}
+
+void TabOrganization::AddObserver(TabOrganization::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabOrganization::RemoveObserver(TabOrganization::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool TabOrganization::IsValidForOrganizing() const {
@@ -56,7 +75,9 @@ bool TabOrganization::IsValidForOrganizing() const {
 
 // TODO(1469128) Add UKM/UMA Logging on user add.
 void TabOrganization::AddTabData(std::unique_ptr<TabData> tab_data) {
+  tab_data->AddObserver(this);
   tab_datas_.emplace_back(std::move(tab_data));
+  NotifyObserversOfUpdate();
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user remove.
@@ -67,12 +88,16 @@ void TabOrganization::RemoveTabData(TabData::TabID tab_id) {
                      return tab_data->tab_id() == tab_id;
                    });
   CHECK(position != tab_datas_.end());
+
+  // The TabData object will notify observers it is being destroyed which will
+  // notify the TabOrganization observers.
   tab_datas_.erase(position);
 }
 
 void TabOrganization::SetCurrentName(
     absl::variant<size_t, std::u16string> new_current_name) {
   current_name_ = new_current_name;
+  NotifyObserversOfUpdate();
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user accept.
@@ -103,10 +128,27 @@ void TabOrganization::Accept() {
       GetDisplayName(), tab_group->visual_data()->color());
   tab_group->SetVisualData(std::move(new_visual_data),
                            tab_group->IsCustomized());
+  NotifyObserversOfUpdate();
 }
 
 // TODO(1469128) Add UKM/UMA Logging on user reject.
 void TabOrganization::Reject() {
   CHECK(!choice_.has_value());
   choice_ = UserChoice::REJECTED;
+
+  NotifyObserversOfUpdate();
+}
+
+void TabOrganization::OnTabDataUpdated(const TabData* tab_data) {
+  NotifyObserversOfUpdate();
+}
+
+void TabOrganization::OnTabDataDestroyed(TabData::TabID tab_id) {
+  NotifyObserversOfUpdate();
+}
+
+void TabOrganization::NotifyObserversOfUpdate() {
+  for (auto& observer : observers_) {
+    observer.OnTabOrganizationUpdated(this);
+  }
 }

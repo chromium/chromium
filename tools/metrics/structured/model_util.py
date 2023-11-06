@@ -16,6 +16,9 @@ import collections
 import re
 
 
+BOOLEAN_REGEX = r'(?i)(true|false|)$'
+
+
 def error(elem, msg):
   """Raise a nicely formatted error with some context."""
   name = elem.attrib.get("name", None)
@@ -132,6 +135,14 @@ def check_children(elem, expected_children):
   if unexpected_children:
     children = " ".join(unexpected_children)
     error(elem, "is missing nodes: " + children)
+
+
+def get_boolean_attr(elem, attr_name):
+  maybe_attr = get_optional_attr(elem, attr_name, BOOLEAN_REGEX)
+  if maybe_attr:
+    return maybe_attr.lower() == 'true'
+  else:
+    return False
 
 
 def check_child_names_unique(elem, tag):

@@ -387,7 +387,7 @@ std::unique_ptr<HttpResponse> HandleSetHeaderWithFile(
   auto http_response = std::make_unique<BasicHttpResponse>();
 
   base::FilePath server_root;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &server_root);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &server_root);
   base::FilePath file_path =
       server_root.AppendASCII(request_url.path().substr(prefix.size() + 1));
   std::string file_content;
@@ -513,7 +513,7 @@ std::unique_ptr<HttpResponse> HandleAuthBasic(const HttpRequest& request) {
       base::FilePath().AppendASCII(request.relative_url.substr(1));
   if (file_path.FinalExtension() == FILE_PATH_LITERAL("gif")) {
     base::FilePath server_root;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &server_root);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &server_root);
     base::FilePath gif_path = server_root.AppendASCII(kLogoPath);
     std::string gif_data;
     base::ReadFileToString(gif_path, &gif_data);

@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/bluetooth/bluetooth_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -23,8 +24,6 @@
 
 using content::BluetoothDelegate;
 
-namespace chrome {
-
 void ShowBluetoothDeviceCredentialsDialog(
     content::WebContents* web_contents,
     const std::u16string& device_identifier,
@@ -34,8 +33,6 @@ void ShowBluetoothDeviceCredentialsDialog(
                                                     std::move(close_callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 }
-
-}  // namespace chrome
 
 namespace {
 

@@ -104,9 +104,10 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
   notification_data->vibration_pattern->Append(vibration_pattern.data(),
                                                vibration_pattern.size());
 
-  notification_data->timestamp = options->hasTimestamp()
-                                     ? static_cast<double>(options->timestamp())
-                                     : base::Time::Now().ToDoubleT() * 1000.0;
+  notification_data->timestamp =
+      options->hasTimestamp()
+          ? static_cast<double>(options->timestamp())
+          : base::Time::Now().InMillisecondsFSinceUnixEpoch();
   notification_data->renotify = options->renotify();
   notification_data->silent = options->silent();
   notification_data->require_interaction = options->requireInteraction();
@@ -179,7 +180,8 @@ mojom::blink::NotificationDataPtr CreateNotificationData(
     UseCounter::Count(context, WebFeature::kNotificationShowTrigger);
 
     auto* timestamp_trigger = options->showTrigger();
-    auto timestamp = base::Time::FromJsTime(timestamp_trigger->timestamp());
+    auto timestamp = base::Time::FromMillisecondsSinceUnixEpoch(
+        base::checked_cast<int64_t>(timestamp_trigger->timestamp()));
 
     if (timestamp - base::Time::Now() > kMaxNotificationShowTriggerDelay) {
       RecordPersistentNotificationDisplayResult(

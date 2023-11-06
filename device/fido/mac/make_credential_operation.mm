@@ -130,7 +130,7 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
   // we perform self-attestation.
   absl::optional<AttestedCredentialData> attested_credential_data =
       MakeAttestedCredentialData(credential.credential_id,
-                                 SecKeyRefToECPublicKey(sec_key_ref));
+                                 SecKeyRefToECPublicKey(sec_key_ref.get()));
   if (!attested_credential_data) {
     FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
@@ -140,8 +140,9 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
   AuthenticatorData authenticator_data = MakeAuthenticatorData(
       credential.metadata.sign_counter_type, request_.rp.id,
       std::move(*attested_credential_data), has_uv);
-  absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
-      authenticator_data, request_.client_data_hash, credential.private_key);
+  absl::optional<std::vector<uint8_t>> signature =
+      GenerateSignature(authenticator_data, request_.client_data_hash,
+                        credential.private_key.get());
   if (!signature) {
     FIDO_LOG(ERROR) << "MakeSignature failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,

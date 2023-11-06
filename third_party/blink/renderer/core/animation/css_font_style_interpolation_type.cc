@@ -31,13 +31,14 @@ class InheritedFontStyleChecker
 
 InterpolationValue CSSFontStyleInterpolationType::CreateFontStyleValue(
     FontSelectionValue font_style) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(font_style));
+  return InterpolationValue(
+      MakeGarbageCollected<InterpolableNumber>(font_style));
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue CSSFontStyleInterpolationType::MaybeConvertInitial(

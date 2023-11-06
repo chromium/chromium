@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PARCEL_TRACKING_INFOBAR_PARCEL_TRACKING_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_INFOBARS_MODALS_PARCEL_TRACKING_INFOBAR_PARCEL_TRACKING_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/infobars/modals/parcel_tracking/infobar_parcel_tracking_modal_consumer.h"
 
 @protocol InfobarModalDelegate;
@@ -15,7 +15,7 @@
 // View controller that represents the content for the parcel tracking
 // infobar modal.
 @interface InfobarParcelTrackingTableViewController
-    : ChromeTableViewController <InfobarParcelTrackingModalConsumer>
+    : LegacyChromeTableViewController <InfobarParcelTrackingModalConsumer>
 
 // Initializes the view controller with the given `delegate` and
 // `presenter`.

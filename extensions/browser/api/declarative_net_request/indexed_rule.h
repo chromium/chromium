@@ -75,17 +75,25 @@ struct IndexedRule {
   absl::optional<api::declarative_net_request::URLTransform> url_transform;
 
   // List of request headers to modify. Valid iff this is a modify headers rule.
-  std::vector<api::declarative_net_request::ModifyHeaderInfo> request_headers;
+  std::vector<api::declarative_net_request::ModifyHeaderInfo>
+      request_headers_to_modify;
 
   // List of response headers to modify. Valid iff this is a modify headers
   // rule.
-  std::vector<api::declarative_net_request::ModifyHeaderInfo> response_headers;
+  std::vector<api::declarative_net_request::ModifyHeaderInfo>
+      response_headers_to_modify;
 
   // Set of tab IDs this rule applies to.
   base::flat_set<int> tab_ids;
 
   // Set of tab IDs this rule doesn't apply to.
   base::flat_set<int> excluded_tab_ids;
+
+  // List of response headers this rule applies to.
+  std::vector<api::declarative_net_request::HeaderInfo> response_headers;
+
+  // List of response headers this rule doesn't apply to.
+  std::vector<std::string> excluded_response_headers;
 };
 
 // Compute the rule priority for indexing, by combining the priority from

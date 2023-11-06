@@ -7,7 +7,7 @@ Running: testSetUp
     - <body>
         - <div>
             - <portal src="http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html">
-                - #document
+                - #document (http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html)
                     - <html>
                           <head></head>
                           <body> </body>

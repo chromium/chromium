@@ -133,7 +133,7 @@ Do you want to allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to use co
 This will otherwise be blocked by your privacy settings. This will allow the content you interacted with to work correctly, but may allow <ph name="EMBEDDED_URL">$1<ex>news.site</ex></ph> to track your activity.
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_EXPLANATION" desc="The body content of a dialog box that's prompting the user for permission. In the description below, “www.myfavoritesite.com” and “Google Docs” are just used as examples. This sentence describes the consequences of granting this permission. When the user agrees, both “www.myfavoritesite.com” and “Google Docs” can know that the user visited www.myfavoritesite.com.A user might visit a site called www.myfavoritesite.com. That site might embed content and services from other sites. Embedded content can include things like text, images, audio, and services (for example, Google Docs). In this example, the dialog box is shown by Google Docs. The permission is to enable a connection between www.myfavoritesite.com and Google Docs and to allow Google Docs to access information that services has previously saved about the user. For example, Google Docs would need this permission to verify the user's identity and display the user's documents as they browse www.myfavoritesite.com.">
-    <ph name="EMBEDDED_URL">$1<ex>google.com</ex></ph> will know that you visited <ph name="TOP_LEVEL_URL">$2<ex>top-level-site.com</ex></ph>.
+    <ph name="EMBEDDED_URL">$1<ex>google.com</ex></ph> will know that you visited <ph name="TOP_LEVEL_URL">$2<ex>top-level-site.com</ex></ph>
   </message>
   <message name="IDS_STORAGE_ACCESS_PERMISSION_TWO_ORIGIN_LINK" desc="The last sentence of a dialog box that's prompting the user for permission. 1) “embedded content” is the name of a setting in Chrome settings.">
     Learn more about embedded content
@@ -368,9 +368,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Your administrator has allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
   <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_ALLOWED" desc="Text informing the user that they already granted permission to the site">
-    You have allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$1<ex>www.google.com</ex></ph>
+    You have allowed <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$2<ex>www.google.com</ex></ph>
   </message>
-  <!-- Embedded permission prompts: permission name fragments -->
+    <message name="IDS_EMBEDDED_PROMPT_PREVIOUSLY_NOT_ALLOWED" desc="Text informing the user that they previously denied permission to the site">
+    You previously didn't allow <ph name="permission">$1<ex>camera</ex></ph> on <ph name="Origin">$1<ex>www.google.com</ex></ph>
+  </message>
+  <message name ="IDS_PERMISSION_OFF_FOR_CHROME" desc="Text informing the user that they have turned the permission off for chrome">
+    You've turned <ph name="permission">$1<ex>camera</ex></ph> off for Chrome.
+  </message>
+    <message name ="IDS_PERMISSION_CHROME_NEEDS_PERMISSION" desc="Text informing the user in the background that Chrome needs a permission in order to use it on the site the user is visiting">
+    Chrome needs your <ph name="permission">$1<ex>camera</ex></ph> to use it on <ph name="Origin">$1<ex>www.google.com</ex></ph>
+  </message>
   <message name="IDS_CAMERA_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera permission">
     camera
   </message>
@@ -380,7 +388,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_CAMERA_AND_MICROPHONE_PERMISSION_NAME_FRAGMENT" desc="Text fragment identifying the camera and microphone permissions">
     camera and microphone
   </message>
-
+  <message name="IDS_MACOS_NAME_FRAGMENT" desc="Text fragment identifying the macOS">
+    macOS
+  </message>
   <!--Embedded permission prompts: button labels-->
   <message name="IDS_EMBEDDED_PROMPT_OK_LABEL" desc="Label used on a button that allows the user to acknowledge and close an informational dialog">
     OK
@@ -389,6 +399,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     Continue allowing
   </message>
   <message name="IDS_EMBEDDED_PROMPT_STOP_ALLOWING" desc="Label on button to stop allowing a permissions , when the user clicks on the embedded permission element but they have previously granted permission to the site">
-    Stop allowing <ph name="permission">$1<ex>camera</ex></ph>
+    Stop allowing
+  </message>
+  <message name="IDS_EMBEDDED_PROMPT_OPEN_SYSTEM_SETTINGS" desc="Label used on a button that on click sends the users to the system settings.">
+    Go to <ph name="operating_system">$1<ex>macOS</ex></ph> settings
+  </message>
+  <message name="IDS_EMBEDDED_PROMPT_CONTINUE_NOT_ALLOWING" desc="Label used on a button that to continue not allowing a permission prompt that the user has previously also not allowed for the site.">
+    Continue not allowing
   </message>
 </grit-part>

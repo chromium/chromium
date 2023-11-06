@@ -87,12 +87,9 @@ class UserScriptsUpdateFunction : public ExtensionFunction {
   // Returns a UserScript object by updating the `original_script` with the
   // `new_script` given delta. If the updated script cannot be parsed, populates
   // `parse_error` and returns nullptr.
-  // Note: While `definition_index` is not used, we have it as a parameter to
-  // match other ApplyUpdate() callbacks.
   std::unique_ptr<UserScript> ApplyUpdate(
       api::user_scripts::RegisteredUserScript& new_script,
       api::user_scripts::RegisteredUserScript& original_script,
-      int definition_index,
       std::u16string* parse_error);
 
   // Called when user script files have been validated.
@@ -100,6 +97,24 @@ class UserScriptsUpdateFunction : public ExtensionFunction {
 
   // Called when user scripts have been updated..
   void OnUserScriptsUpdated(const absl::optional<std::string>& error);
+};
+
+class UserScriptsConfigureWorldFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("userScripts.configureWorld",
+                             USERSCRIPTS_CONFIGUREWORLD)
+
+  UserScriptsConfigureWorldFunction() = default;
+  UserScriptsConfigureWorldFunction(const UserScriptsConfigureWorldFunction&) =
+      delete;
+  const UserScriptsConfigureWorldFunction& operator=(
+      const UserScriptsConfigureWorldFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~UserScriptsConfigureWorldFunction() override = default;
 };
 
 }  // namespace extensions

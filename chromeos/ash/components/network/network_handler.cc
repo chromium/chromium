@@ -270,6 +270,8 @@ void NetworkHandler::InitializePrefServices(
       network_profile_handler_.get()));
   managed_network_configuration_handler_->set_ui_proxy_config_service(
       ui_proxy_config_service_.get());
+  managed_network_configuration_handler_->set_user_prefs(
+      logged_in_profile_prefs);
   network_metadata_store_.reset(new NetworkMetadataStore(
       network_configuration_handler_.get(), network_connection_handler_.get(),
       network_state_handler_.get(),
@@ -297,6 +299,7 @@ void NetworkHandler::ShutdownPrefServices() {
   cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   managed_cellular_pref_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
+  managed_network_configuration_handler_->set_user_prefs(nullptr);
   hidden_network_handler_->SetNetworkMetadataStore(nullptr);
   if (features::IsSuppressTextMessagesEnabled()) {
     text_message_provider_->SetNetworkMetadataStore(nullptr);

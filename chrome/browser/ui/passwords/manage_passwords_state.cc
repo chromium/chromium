@@ -12,6 +12,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 
@@ -131,13 +132,14 @@ void ManagePasswordsState::OnAutomaticPasswordSave(
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
   origin_ = url::Origin::Create(form_manager_->GetURL());
-  SetState(password_manager::ui::CONFIRMATION_STATE);
+  SetState(password_manager::ui::SAVE_CONFIRMATION_STATE);
 }
 
 void ManagePasswordsState::OnSubmittedGeneratedPassword(
     password_manager::ui::State state,
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
-  CHECK(state == password_manager::ui::CONFIRMATION_STATE ||
+  CHECK(state == password_manager::ui::SAVE_CONFIRMATION_STATE ||
+        state == password_manager::ui::UPDATE_CONFIRMATION_STATE ||
         state == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE);
   if (form_manager) {
     ClearData();
@@ -148,10 +150,22 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
       DeepCopyNonPSLVector(form_manager_->GetBestMatches());
   AppendDeepCopyVector(form_manager_->GetFederatedMatches(),
                        &local_credentials_forms_);
+
   // In the confirmation state, a list of saved passwords is displayed, and that
-  // list should contain the just added one.
-  local_credentials_forms_.push_back(
-      std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials()));
+  // list should contain the just added one. This step should be skipped when
+  // pending password is already present in the `local_credentials_forms_`. That
+  // can happen when this is a confirmation of a password update done via
+  // CredentialManager.
+  auto it = base::ranges::find_if(
+      local_credentials_forms_,
+      [this](const std::unique_ptr<PasswordForm>& form) {
+        return ArePasswordFormUniqueKeysEqual(
+            *form, form_manager_->GetPendingCredentials());
+      });
+  if (it == local_credentials_forms_.end()) {
+    local_credentials_forms_.push_back(
+        std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials()));
+  }
 
   origin_ = url::Origin::Create(form_manager_->GetURL());
   SetState(state);

@@ -23,14 +23,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link AreaMotionEventFilter}.
- */
+/** Unit tests for {@link AreaMotionEventFilter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AreaMotionEventFilterUnitTest {
-    @Mock
-    private MotionEventHandler mHandler;
+    @Mock private MotionEventHandler mHandler;
 
     private AreaMotionEventFilter mEventFilter;
     private RectF mTriggerRect;
@@ -59,15 +56,18 @@ public class AreaMotionEventFilterUnitTest {
         // Intercept an ACTION_HOVER_ENTER into the filter area.
         boolean intercepted = mEventFilter.onInterceptHoverEvent(mHoverEnterEvent);
         Assert.assertTrue("Hover enter event into area should be intercepted.", intercepted);
-        Assert.assertTrue("|mHasHoverEnterOrMoveEventInArea| should be set to true.",
+        Assert.assertTrue(
+                "|mHasHoverEnterOrMoveEventInArea| should be set to true.",
                 mEventFilter.getHasHoverEnterOrMoveEventInAreaForTesting());
 
         // Intercept an ACTION_HOVER_EXIT from the filter area.
         intercepted = mEventFilter.onInterceptHoverEvent(mHoverExitEvent);
         Assert.assertTrue("Hover exit event from area should be intercepted.", intercepted);
-        Assert.assertFalse("|mHasHoverEnterOrMoveEventInArea| should be set to false.",
+        Assert.assertFalse(
+                "|mHasHoverEnterOrMoveEventInArea| should be set to false.",
                 mEventFilter.getHasHoverEnterOrMoveEventInAreaForTesting());
-        Assert.assertTrue("|mHoverExitedArea| should be set to true.",
+        Assert.assertTrue(
+                "|mHoverExitedArea| should be set to true.",
                 mEventFilter.getHoverExitedAreaForTesting());
     }
 
@@ -82,7 +82,8 @@ public class AreaMotionEventFilterUnitTest {
         var hoverExitEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_HOVER_EXIT, 50.f, 50.f, 0);
         intercepted = mEventFilter.onInterceptHoverEvent(hoverExitEvent);
         Assert.assertTrue("Hover exit event in area should be intercepted.", intercepted);
-        Assert.assertFalse("|mHasHoverEnterOrMoveEventInArea| should be set to false.",
+        Assert.assertFalse(
+                "|mHasHoverEnterOrMoveEventInArea| should be set to false.",
                 mEventFilter.getHasHoverEnterOrMoveEventInAreaForTesting());
     }
 

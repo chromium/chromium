@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
+
 class BrowserPolicyConnectorIOS;
 
 namespace policy {
@@ -35,6 +38,13 @@ class BrowserStatePolicyConnector {
             BrowserPolicyConnectorIOS* browser_policy_connector,
             policy::ConfigurationPolicyProvider* user_policy_provider);
 
+  // Sets the local_test_policy_provider as active and all other policy
+  // providers to inactive.
+  void UseLocalTestPolicyProvider();
+
+  // Reverts the effects of UseLocalTestPolicyProvider.
+  void RevertUseLocalTestPolicyProvider();
+
   // Shuts this connector down in preparation for destruction.
   void Shutdown();
 
@@ -59,6 +69,9 @@ class BrowserStatePolicyConnector {
   // The default ConfigurationPolicyProvider::IsInitializationComplete()
   // result is true, so take care if a provider overrides that.
   std::vector<policy::ConfigurationPolicyProvider*> policy_providers_;
+
+  raw_ptr<policy::LocalTestPolicyProvider> local_test_policy_provider_ =
+      nullptr;
 
   // The PolicyService that manages policy for this connector's BrowserState.
   std::unique_ptr<policy::PolicyService> policy_service_;

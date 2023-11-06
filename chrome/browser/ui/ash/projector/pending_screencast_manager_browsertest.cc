@@ -96,8 +96,7 @@ class PendingScreencastMangerBrowserTest : public InProcessBrowserTest {
  public:
   PendingScreencastMangerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kProjectorUpdateIndexableText},
-        {ash::features::kFilesInlineSyncStatus});
+        {features::kProjectorUpdateIndexableText}, {});
   }
   PendingScreencastMangerBrowserTest(
       const PendingScreencastMangerBrowserTest&) = delete;
@@ -390,7 +389,8 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest, ValidScreencast) {
   EXPECT_EQ(ps.container_dir(), base::FilePath(kTestScreencastPath));
   EXPECT_EQ(ps.pending_screencast().name, kTestScreencastName);
   EXPECT_EQ(ps.pending_screencast().created_time,
-            GetFileCreatedTime(media_file).ToJsTimeIgnoringNull());
+            GetFileCreatedTime(media_file)
+                .InMillisecondsFSinceUnixEpochIgnoringNull());
 
   // Tests PendingScreencastChangeCallback won't be invoked if pending
   // screencast status doesn't change.
@@ -916,7 +916,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
   app_client->NotifyAppUIActive(false);
   SimulateSyncingEvent(syncing_status);
   WaitForPendingStatusUpdateToBeFinished();
-  VerifyNotificationCount(1);
+  VerifyNotificationCount(0);
 
   // When app is open, the notification gets suppressed again:
   app_client->NotifyAppUIActive(true);
@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(PendingScreencastMangerBrowserTest,
                                  /*transferred_bytes=*/0, syncing_status);
   SimulateSyncingEvent(syncing_status);
   WaitForPendingStatusUpdateToBeFinished();
-  VerifyNotificationCount(1);
+  VerifyNotificationCount(0);
 }
 
 class PendingScreencastMangerMultiProfileTest : public LoginManagerTest {

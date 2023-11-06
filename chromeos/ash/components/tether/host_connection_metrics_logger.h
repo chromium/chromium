@@ -26,7 +26,7 @@ namespace tether {
 // concluded.
 class HostConnectionMetricsLogger : public ActiveHost::Observer {
  public:
-  enum ConnectionToHostResult {
+  enum class ConnectionToHostResult {
     CONNECTION_RESULT_PROVISIONING_FAILED,
     CONNECTION_RESULT_SUCCESS,
     CONNECTION_RESULT_FAILURE_UNKNOWN_ERROR,
@@ -43,6 +43,9 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     CONNECTION_RESULT_FAILURE_INVALID_HOTSPOT_CREDENTIALS,
     CONNECTION_RESULT_FAILURE_SUCCESSFUL_REQUEST_BUT_NO_RESPONSE,
     CONNECTION_RESULT_FAILURE_UNRECOGNIZED_RESPONSE_ERROR,
+    CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG,
+    CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG,
+    CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG,
   };
 
   // Record the result of an attempted host connection.
@@ -64,6 +67,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
  private:
   friend class HostConnectionMetricsLoggerTest;
+  FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
+                           RecordConnectionResultFailure_InvalidWifiApConfig);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
                            RecordConnectionResultProvisioningFailure);
   FRIEND_TEST_ALL_PREFIXES(HostConnectionMetricsLoggerTest,
@@ -90,6 +95,12 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
   FRIEND_TEST_ALL_PREFIXES(
       HostConnectionMetricsLoggerTest,
       RecordConnectionResultFailureClientConnection_CanceledByUser);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailure_InvalidNewSoftApConfig);
+  FRIEND_TEST_ALL_PREFIXES(
+      HostConnectionMetricsLoggerTest,
+      RecordConnectionResultFailure_InvalidActiveExistingSoftApConfig);
   FRIEND_TEST_ALL_PREFIXES(
       HostConnectionMetricsLoggerTest,
       RecordConnectionResultFailureClientConnection_InternalError);
@@ -133,19 +144,19 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
   // InstantTethering.ConnectionToHostResult.ProvisioningFailureRate. Its
   // breakdown, and the breakdown of its subsquent metrics, is described in
   // tools/metrics/histograms/histograms.xml.
-  enum ConnectionToHostResult_ProvisioningFailureEventType {
+  enum class ConnectionToHostResult_ProvisioningFailureEventType {
     PROVISIONING_FAILED = 0,
     OTHER = 1,
     PROVISIONING_FAILURE_MAX
   };
 
-  enum ConnectionToHostResult_SuccessEventType {
+  enum class ConnectionToHostResult_SuccessEventType {
     SUCCESS = 0,
     FAILURE = 1,
     SUCCESS_MAX
   };
 
-  enum ConnectionToHostResult_FailureEventType {
+  enum class ConnectionToHostResult_FailureEventType {
     UNKNOWN_ERROR = 0,
     TETHERING_TIMED_OUT = 1,
     CLIENT_CONNECTION_ERROR = 2,
@@ -157,17 +168,20 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
     INVALID_HOTSPOT_CREDENTIALS = 8,
     SUCCESSFUL_REQUEST_BUT_NO_RESPONSE = 9,
     UNRECOGNIZED_RESPONSE_ERROR = 10,
+    INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG = 11,
+    INVALID_NEW_SOFT_AP_CONFIG = 12,
+    INVALID_WIFI_AP_CONFIG = 13,
     FAILURE_MAX
   };
 
-  enum ConnectionToHostResult_FailureClientConnectionEventType {
+  enum class ConnectionToHostResult_FailureClientConnectionEventType {
     TIMEOUT = 0,
     CANCELED_BY_USER = 1,
     INTERNAL_ERROR = 2,
     FAILURE_CLIENT_CONNECTION_MAX
   };
 
-  enum ConnectionToHostResult_FailureTetheringTimeoutEventType {
+  enum class ConnectionToHostResult_FailureTetheringTimeoutEventType {
     FIRST_TIME_SETUP_WAS_REQUIRED = 0,
     FIRST_TIME_SETUP_WAS_NOT_REQUIRED = 1,
     FAILURE_TETHERING_TIMEOUT_MAX

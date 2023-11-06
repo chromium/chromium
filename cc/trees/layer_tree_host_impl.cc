@@ -117,6 +117,7 @@
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/transition_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -2487,6 +2488,16 @@ absl::optional<LayerTreeHostImpl::SubmitInfo> LayerTreeHostImpl::DrawLayers(
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
     active_tree()->ResetAllChangeTracking();
+
+    // Drop pending event metrics for UI when the frame has no damage because
+    // it could leave the event metrics pending indefinitely and also breaks the
+    // association between input events and screen updates.
+    // See b/297940877.
+    if (settings_.is_layer_tree_for_ui) {
+      std::ignore = active_tree()->TakeEventsMetrics();
+      std::ignore = events_metrics_manager_.TakeSavedEventsMetrics();
+    }
+
     return absl::nullopt;
   }
 
@@ -2882,11 +2893,12 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       viz::PlatformColor::BestSupportedTextureFormat(context_caps);
 
   raster_caps_.tile_overlay_candidate =
-      settings_.resource_settings.use_gpu_memory_buffer_resources &&
+      settings_.use_gpu_memory_buffer_resources &&
       shared_image_caps.supports_scanout_shared_images;
   raster_caps_.tile_texture_target = GL_TEXTURE_2D;
 
-  if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+  if (settings_.gpu_rasterization_disabled ||
+      !context_caps.supports_oop_raster) {
     // This is the GPU compositing but software rasterization path. Pick the
     // best format for GPU textures to be uploaded to.
     raster_caps_.tile_format =
@@ -2906,7 +2918,6 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   }
 
   // GPU compositing + rasterization is enabled if we get this far.
-  CHECK(context_caps.supports_oop_raster);
   raster_caps_.use_gpu_rasterization = true;
 
   raster_caps_.can_use_msaa =
@@ -3940,11 +3951,13 @@ void LayerTreeHostImpl::DidChangeBrowserControlsPosition() {
 }
 
 void LayerTreeHostImpl::DidObserveScrollDelay(
+    int source_frame_number,
     base::TimeDelta scroll_delay,
     base::TimeTicks scroll_timestamp) {
   // Record First Scroll Delay.
   if (!has_observed_first_scroll_delay_) {
-    client_->DidObserveFirstScrollDelay(scroll_delay, scroll_timestamp);
+    client_->DidObserveFirstScrollDelay(source_frame_number, scroll_delay,
+                                        scroll_timestamp);
     has_observed_first_scroll_delay_ = true;
   }
 }
@@ -4608,7 +4621,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     const auto& shared_image_caps =
         context_provider->SharedImageInterface()->GetCapabilities();
     overlay_candidate =
-        settings_.resource_settings.use_gpu_memory_buffer_resources &&
+        settings_.use_gpu_memory_buffer_resources &&
         shared_image_caps.supports_scanout_shared_images &&
         viz::CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(format);
     if (overlay_candidate) {
@@ -4629,10 +4642,12 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
-      mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(bitmap.GetPixels(), bitmap.SizeInBytes()));
+      CHECK(client_shared_image);
+      mailbox = client_shared_image->mailbox();
     } else {
       DCHECK_EQ(bitmap.GetFormat(), UIResourceBitmap::RGBA8);
       SkImageInfo src_info =
@@ -4696,12 +4711,14 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
       viz::RasterContextProvider* context_provider =
           layer_tree_frame_sink_->context_provider();
       auto* sii = context_provider->SharedImageInterface();
-      mailbox = sii->CreateSharedImage(
+      auto client_shared_image = sii->CreateSharedImage(
           format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
           kPremul_SkAlphaType, shared_image_usage, "LayerTreeHostUIResource",
           base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(pixmap.addr()),
               pixmap.computeByteSize()));
+      CHECK(client_shared_image);
+      mailbox = client_shared_image->mailbox();
     }
   }
 
@@ -5209,13 +5226,14 @@ void LayerTreeHostImpl::ApplyFirstScrollTracking(const ui::LatencyInfo& latency,
   // presentation timestamp.
   std::vector<PresentationTimeCallbackBuffer::SuccessfulCallback> callbacks;
   callbacks.push_back(base::BindOnce(
-      [](base::TimeTicks event_creation,
+      [](base::TimeTicks event_creation, int source_frame_number,
          LayerTreeHostImpl* layer_tree_host_impl,
          base::TimeTicks presentation_timestamp) {
         layer_tree_host_impl->DidObserveScrollDelay(
-            presentation_timestamp - event_creation, event_creation);
+            source_frame_number, presentation_timestamp - event_creation,
+            event_creation);
       },
-      creation_timestamp, this));
+      creation_timestamp, active_tree_->source_frame_number(), this));
 
   // Register the callback to run with the presentation timestamp corresponding
   // to the given `frame_token`.

@@ -5,13 +5,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/autofill_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-using autofill::AutofillKey;
+using autofill::AutocompleteKey;
 using autofill_helper::AddKeys;
 using autofill_helper::GetAllKeys;
 using autofill_helper::RemoveKey;
@@ -33,53 +33,53 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest, WebDataServiceSanity) {
   ASSERT_TRUE(SetupSync());
 
   // Client0 adds a key.
-  AddKeys(0, {AutofillKey("name0", "value0")});
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  AddKeys(0, {AutocompleteKey("name0", "value0")});
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(1U, GetAllKeys(0).size());
 
   // Client1 adds a key.
-  AddKeys(1, {AutofillKey("name1", "value1-0")});
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  AddKeys(1, {AutocompleteKey("name1", "value1-0")});
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(2U, GetAllKeys(0).size());
 
   // Client0 adds a key with the same name.
-  AddKeys(0, {AutofillKey("name1", "value1-1")});
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  AddKeys(0, {AutocompleteKey("name1", "value1-1")});
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(3U, GetAllKeys(0).size());
 
   // Client1 removes a key.
-  RemoveKey(1, AutofillKey("name1", "value1-0"));
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  RemoveKey(1, AutocompleteKey("name1", "value1-0"));
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(2U, GetAllKeys(0).size());
 
   // Client0 removes the rest.
-  RemoveKey(0, AutofillKey("name0", "value0"));
-  RemoveKey(0, AutofillKey("name1", "value1-1"));
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  RemoveKey(0, AutocompleteKey("name0", "value0"));
+  RemoveKey(0, AutocompleteKey("name1", "value1-1"));
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(0U, GetAllKeys(0).size());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest, AddUnicodeProfile) {
   ASSERT_TRUE(SetupClients());
 
-  std::set<AutofillKey> keys;
-  keys.insert(AutofillKey(u"Sigur R\u00F3s", u"\u00C1g\u00E6tis byrjun"));
+  std::set<AutocompleteKey> keys;
+  keys.insert(AutocompleteKey(u"Sigur R\u00F3s", u"\u00C1g\u00E6tis byrjun"));
   AddKeys(0, keys);
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest,
                        AddDuplicateNamesToSameProfile) {
   ASSERT_TRUE(SetupClients());
 
-  std::set<AutofillKey> keys;
-  keys.insert(AutofillKey("name0", "value0-0"));
-  keys.insert(AutofillKey("name0", "value0-1"));
-  keys.insert(AutofillKey("name1", "value1"));
+  std::set<AutocompleteKey> keys;
+  keys.insert(AutocompleteKey("name0", "value0-0"));
+  keys.insert(AutocompleteKey("name0", "value0-1"));
+  keys.insert(AutocompleteKey("name1", "value1"));
   AddKeys(0, keys);
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(2U, GetAllKeys(0).size());
 }
 
@@ -87,19 +87,19 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutocompleteSyncTest,
                        AddDuplicateNamesToDifferentProfiles) {
   ASSERT_TRUE(SetupClients());
 
-  std::set<AutofillKey> keys0;
-  keys0.insert(AutofillKey("name0", "value0-0"));
-  keys0.insert(AutofillKey("name1", "value1"));
+  std::set<AutocompleteKey> keys0;
+  keys0.insert(AutocompleteKey("name0", "value0-0"));
+  keys0.insert(AutocompleteKey("name1", "value1"));
   AddKeys(0, keys0);
 
-  std::set<AutofillKey> keys1;
-  keys1.insert(AutofillKey("name0", "value0-1"));
-  keys1.insert(AutofillKey("name2", "value2"));
-  keys1.insert(AutofillKey("name3", "value3"));
+  std::set<AutocompleteKey> keys1;
+  keys1.insert(AutocompleteKey("name0", "value0-1"));
+  keys1.insert(AutocompleteKey("name2", "value2"));
+  keys1.insert(AutocompleteKey("name3", "value3"));
   AddKeys(1, keys1);
 
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(AutofillKeysChecker(0, 1).Wait());
+  EXPECT_TRUE(AutocompleteKeysChecker(0, 1).Wait());
   EXPECT_EQ(5U, GetAllKeys(0).size());
 }
 

@@ -19,7 +19,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -30,10 +30,12 @@
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_assistive_keyboard_views.h"
 #import "ios/chrome/browser/ui/omnibox/keyboard_assist/omnibox_keyboard_accessory_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_mediator.h"
@@ -46,16 +48,15 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/pedal_section_extractor.h"
+#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/browser/ui/omnibox/zero_suggest_prefetch_helper.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-@interface OmniboxCoordinator () <OmniboxViewControllerTextInputDelegate>
-// Object taking care of adding the accessory views to the keyboard.
-@property(nonatomic, strong)
-    OmniboxAssistiveKeyboardDelegateImpl* keyboardDelegate;
+@interface OmniboxCoordinator () <OmniboxViewControllerTextInputDelegate,
+                                  OmniboxAssistiveKeyboardMediatorDelegate>
 
 // View controller managed by this coordinator.
 @property(nonatomic, strong) OmniboxViewController* viewController;
@@ -86,9 +87,14 @@
   // TODO(crbug.com/818636): use a slimmer subclass of OmniboxView,
   // OmniboxPopupViewSuggestionsDelegate instead of OmniboxViewIOS.
   std::unique_ptr<OmniboxViewIOS> _editView;
+
+  /// Object handling interactions in the keyboard accessory view.
+  OmniboxAssistiveKeyboardMediator* _keyboardMediator;
+
+  // The handler for ToolbarCommands.
+  id<ToolbarCommands> _toolbarHandler;
 }
 @synthesize locationBar = _locationBar;
-@synthesize keyboardDelegate = _keyboardDelegate;
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
 
@@ -96,6 +102,9 @@
 
 - (void)start {
   DCHECK(!self.popupCoordinator);
+
+  _toolbarHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
 
   BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
 
@@ -134,33 +143,35 @@
 
   DCHECK(self.locationBar);
 
-  id<OmniboxCommands> focuser =
-      static_cast<id<OmniboxCommands>>(self.browser->GetCommandDispatcher());
+  id<OmniboxCommands> omniboxHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   _editView = std::make_unique<OmniboxViewIOS>(self.textField, self.locationBar,
                                                self.browser->GetBrowserState(),
-                                               focuser);
+                                               omniboxHandler, _toolbarHandler);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
   self.viewController.textChangeDelegate = _editView.get();
 
-  self.keyboardDelegate = [[OmniboxAssistiveKeyboardDelegateImpl alloc] init];
-  self.keyboardDelegate.applicationCommandsHandler = HandlerForProtocol(
+  _keyboardMediator = [[OmniboxAssistiveKeyboardMediator alloc] init];
+  _keyboardMediator.applicationCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
-  self.keyboardDelegate.lensCommandsHandler =
+  _keyboardMediator.lensCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
-  self.keyboardDelegate.qrScannerCommandsHandler = HandlerForProtocol(
+  _keyboardMediator.qrScannerCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), QRScannerCommands);
-  self.keyboardDelegate.layoutGuideCenter =
+  _keyboardMediator.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
-  self.keyboardDelegate.browserCoordinatorCommandsHandler =
+  _keyboardMediator.browserCoordinatorCommandsHandler =
       static_cast<id<BrowserCoordinatorCommands>>(
           self.browser->GetCommandDispatcher());
-  self.keyboardDelegate.omniboxTextField = self.textField;
+  _keyboardMediator.omniboxTextField = self.textField;
+  _keyboardMediator.delegate = self;
+
   self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-      self.textField, kDotComTLD, self.keyboardDelegate, templateURLService,
+      self.textField, kDotComTLD, _keyboardMediator, templateURLService,
       self.bubblePresenter);
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
@@ -188,6 +199,7 @@
     self.keyboardAccessoryView.templateURLService = nil;
   }
 
+  _keyboardMediator = nil;
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
   self.returnDelegate = nil;
@@ -288,6 +300,10 @@
   return self.popupCoordinator.toolbarOmniboxConsumer;
 }
 
+- (UIView<TextFieldViewContaining>*)editView {
+  return self.viewController.viewContainingTextField;
+}
+
 #pragma mark Scribble
 
 - (void)focusOmniboxForScribble {
@@ -297,6 +313,12 @@
 
 - (UIResponder<UITextInput>*)scribbleInput {
   return self.viewController.textField;
+}
+
+#pragma mark - OmniboxAssistiveKeyboardMediatorDelegate
+
+- (void)omniboxAssistiveKeyboardDidTapDebuggerButton {
+  [self.popupCoordinator toggleOmniboxDebuggerView];
 }
 
 #pragma mark - OmniboxViewControllerTextInputDelegate

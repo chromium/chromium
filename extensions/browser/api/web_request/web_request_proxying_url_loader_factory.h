@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -184,7 +185,7 @@ class WebRequestProxyingURLLoaderFactory
                              int error_code);
     void OnAuthRequestHandled(
         WebRequestAPI::AuthRequestCallback callback,
-        ExtensionWebRequestEventRouter::AuthRequiredResponse response);
+        WebRequestEventRouter::AuthRequiredResponse response);
     void ContinueToBeforeRedirect(const net::RedirectInfo& redirect_info,
                                   int error_code);
     void HandleResponseOrRedirectHeaders(

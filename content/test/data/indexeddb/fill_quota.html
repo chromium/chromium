@@ -10,15 +10,6 @@ found in the LICENSE file.
 <script type="text/javascript" src="common.js"></script>
 <script>
 
-// Generates a pseudorandom string of the given length.
-function generateRandomString(sizeInKb) {
-  let output = '';
-  for (let i = 0; i < sizeInKb * 1024 / 8 + 1; i++) {
-    output += Math.random().toString(36).slice(2, 10);
-  }
-  return output;
-}
-
 function test() {
   indexedDBTest(prepareDatabase, startNewTransaction);
 }

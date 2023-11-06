@@ -1,0 +1,24 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IncognitoEnabled": false
+        },
+        "prefs": {
+          "incognito.mode_availability": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

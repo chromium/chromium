@@ -59,6 +59,10 @@
       Symbol: "kIdPasswordRevealButton",
     },
     {
+      name: "password-strong-label",
+      Symbol: "kIdPasswordStrongLabel",
+    },
+    {
       name: "thumb",
       Symbol: "kIdSliderThumb",
     },
@@ -138,6 +142,10 @@
     {
       name: "-internal-datetime-container",
       Symbol: "kPseudoInternalDatetimeContainer",
+    },
+    {
+      name: "-internal-permission-text",
+      Symbol: "kPseudoInternalPermissionTextSpan",
     },
   ],
 }

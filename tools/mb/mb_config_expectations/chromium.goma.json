@@ -31,16 +31,6 @@
       "use_goma": true
     }
   },
-  "Chromium Win Goma RBE ATS Staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
   "Chromium Win Goma RBE Staging": {
     "gn_args": {
       "dcheck_always_on": false,

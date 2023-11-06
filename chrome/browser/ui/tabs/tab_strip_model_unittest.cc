@@ -732,6 +732,68 @@ TEST_F(TabStripModelTest, TestBasicAPI) {
   tabstrip.RemoveObserver(&observer);
 }
 
+TEST_F(TabStripModelTest, TestTabHandlesStaticTabstrip) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
+  const TabHandle handle1 = tabstrip.GetTabHandleAt(0);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+  const TabHandle handle2 = tabstrip.GetTabHandleAt(1);
+
+  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle1));
+  EXPECT_EQ(handle1, tabstrip.GetTabHandleAt(0));
+  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle2));
+  EXPECT_EQ(handle2, tabstrip.GetTabHandleAt(1));
+}
+
+TEST_F(TabStripModelTest, TestTabHandlesMovingTabInSameTabstrip) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
+  const TabHandle handle1 = tabstrip.GetTabHandleAt(0);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+  const TabHandle handle2 = tabstrip.GetTabHandleAt(1);
+
+  tabstrip.MoveWebContentsAt(0, 1, false);
+
+  EXPECT_EQ(0, tabstrip.GetIndexOfTab(handle2));
+  EXPECT_EQ(handle2, tabstrip.GetTabHandleAt(0));
+  EXPECT_EQ(1, tabstrip.GetIndexOfTab(handle1));
+  EXPECT_EQ(handle1, tabstrip.GetTabHandleAt(1));
+}
+
+TEST_F(TabStripModelTest, TestTabHandlesTabClosed) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
+  const TabHandle handle = tabstrip.GetTabHandleAt(0);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+
+  tabstrip.CloseWebContentsAt(0, TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(handle));
+  EXPECT_EQ(nullptr, handle.Get());
+}
+
+TEST_F(TabStripModelTest, TestTabHandlesOutOfBounds) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  tabstrip.AppendWebContents(CreateWebContentsWithID(1), true);
+  tabstrip.AppendWebContents(CreateWebContentsWithID(2), true);
+
+  EXPECT_EQ(TabStripModel::kNoTab, tabstrip.GetIndexOfTab(TabHandle::Null()));
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabHandleAt(2).Get(), "");
+  EXPECT_DEATH_IF_SUPPORTED(tabstrip.GetTabHandleAt(-1).Get(), "");
+}
+
 TEST_F(TabStripModelTest, TestBasicOpenerAPI) {
   TestTabStripModelDelegate delegate;
   TabStripModel tabstrip(&delegate, profile());

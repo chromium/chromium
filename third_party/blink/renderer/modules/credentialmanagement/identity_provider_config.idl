@@ -8,29 +8,29 @@ dictionary IdentityProviderConfig {
   // URL for the Identity Provider Configuration.
   USVString configURL;
   USVString clientId;
+};
+
+dictionary IdentityProviderRequestOptions : IdentityProviderConfig {
   USVString nonce;
   DOMString loginHint;
-  [RuntimeEnabled=FedCmHostedDomain] DOMString hostedDomain;
+  [RuntimeEnabled=FedCmDomainHint] DOMString domainHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
+  // DigitalCredential-specific attributes
+  [RuntimeEnabled=WebIdentityDigitalCredentials] DigitalCredentialProvider holder;
 };
 
-// extends the IdentityProviderConfig with Wallet-specific attributes
-partial dictionary IdentityProviderConfig  {
-  [RuntimeEnabled=WebIdentityMDocs] WalletProvider holder;
-};
-
-dictionary WalletProvider  {
+dictionary DigitalCredentialProvider  {
   // A query selector that is used by wallets to filter credentials for
   // selection.
-  WalletSelector selector;
+  DigitalCredentialSelector selector;
 
   // An opaque map of parameters sent to wallets upon selection.
   record<USVString, USVString> params;
 };
 
-dictionary WalletSelector {
+dictionary DigitalCredentialSelector {
   // A list of desired formats for the credential.
   sequence<USVString> format;
 
@@ -40,18 +40,18 @@ dictionary WalletSelector {
   // The amount of time the verifier intends to retain the credential.
   // Omitting `retention` implies that the identity information will not be stored.
   // How long the verifier intends to retent the credential.
-  WalletStorageDuration retention;
+  DigitalCredentialStorageDuration retention;
 
   // The requested fields.
-  sequence<(WalletFieldRequirement or DOMString)> fields;
+  sequence<(DigitalCredentialFieldRequirement or DOMString)> fields;
 };
 
-dictionary WalletFieldRequirement {
+dictionary DigitalCredentialFieldRequirement {
   required DOMString name;
   DOMString equals;
 };
 
-dictionary WalletStorageDuration {
+dictionary DigitalCredentialStorageDuration {
   // Exactly one of the following must be provided.
   boolean forever;
   long days;

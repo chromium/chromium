@@ -181,7 +181,7 @@ const KURL& WorkerFetchContext::Url() const {
 }
 
 ContentSecurityPolicy* WorkerFetchContext::GetContentSecurityPolicy() const {
-  return content_security_policy_;
+  return content_security_policy_.Get();
 }
 
 void WorkerFetchContext::PrepareRequest(
@@ -198,6 +198,8 @@ void WorkerFetchContext::PrepareRequest(
   request.SetSharedDictionaryWriterEnabled(
       RuntimeEnabledFeatures::CompressionDictionaryTransportEnabled(
           GetExecutionContext()));
+
+  request.SetHasStorageAccess(GetExecutionContext()->HasStorageAccess());
 
   WrappedResourceRequest webreq(request);
   web_context_->WillSendRequest(webreq);
@@ -286,7 +288,7 @@ WorkerFetchContext::GetContentSecurityNotifier() {
 }
 
 ExecutionContext* WorkerFetchContext::GetExecutionContext() const {
-  return global_scope_;
+  return global_scope_.Get();
 }
 
 void WorkerFetchContext::Trace(Visitor* visitor) const {

@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "drivefs.bulk_pinning.visible": {
+            "default_value": true
+          },
+          "drivefs.bulk_pinning_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveFileSyncAvailable": "disabled"
+        },
+        "prefs": {
+          "drivefs.bulk_pinning.visible": {
+            "value": false
+          },
+          "drivefs.bulk_pinning_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveFileSyncAvailable": "visible"
+        },
+        "prefs": {
+          "drivefs.bulk_pinning.visible": {
+            "value": true
+          },
+          "drivefs.bulk_pinning_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

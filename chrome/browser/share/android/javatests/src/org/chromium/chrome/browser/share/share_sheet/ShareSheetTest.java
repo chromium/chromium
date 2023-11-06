@@ -53,8 +53,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The fixture for share sheet tests, which sets up mock system state and
- * implements some utility methods for writing these tests.
+ * The fixture for share sheet tests, which sets up mock system state and implements some utility
+ * methods for writing these tests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
@@ -127,9 +127,8 @@ public class ShareSheetTest {
     }
 
     /**
-     * Configure the sharesheet to use hardcoded layout constants so that the
-     * results of this test don't depend on the screen size or DPI of the device
-     * it's being run on.
+     * Configure the sharesheet to use hardcoded layout constants so that the results of this test
+     * don't depend on the screen size or DPI of the device it's being run on.
      */
     private void setUpLayoutConstants() {
         final int kTileWidth = 64;
@@ -153,7 +152,9 @@ public class ShareSheetTest {
         MockitoAnnotations.initMocks(this);
         sActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
+                () -> {
+                    mProfile = Profile.getLastUsedRegularProfile();
+                });
     }
 
     @After
@@ -164,12 +165,16 @@ public class ShareSheetTest {
     // Open the share sheet from the menu and wait for its open animation to
     // have completed.
     private void openShareSheet() {
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), R.id.share_menu_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                R.id.share_menu_id);
 
-        BottomSheetController controller = sActivityTestRule.getActivity()
-                                                   .getRootUiCoordinatorForTesting()
-                                                   .getBottomSheetController();
+        BottomSheetController controller =
+                sActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
         BottomSheetTestSupport.waitForState(controller, BottomSheetController.SheetState.FULL);
 
         Assert.assertEquals(BottomSheetController.SheetState.FULL, controller.getSheetState());
@@ -177,14 +182,15 @@ public class ShareSheetTest {
 
     // Replace the recent share history with the supplied map of usage counts.
     private void replaceRecentShareHistory(Map<String, Integer> recent) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShareHistoryBridge.clear(mProfile);
-            for (Map.Entry<String, Integer> e : recent.entrySet()) {
-                for (int i = 0; i < e.getValue(); i++) {
-                    ShareHistoryBridge.addShareEntry(mProfile, e.getKey());
-                }
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ShareHistoryBridge.clear(mProfile);
+                    for (Map.Entry<String, Integer> e : recent.entrySet()) {
+                        for (int i = 0; i < e.getValue(); i++) {
+                            ShareHistoryBridge.addShareEntry(mProfile, e.getKey());
+                        }
+                    }
+                });
     }
 
     private void replaceAllShareHistory(Map<String, Integer> all) {
@@ -209,12 +215,12 @@ public class ShareSheetTest {
     }
 
     /**
-     * This class wraps a Context, replacing its PackageManager with a shim
-     * PackageManager that returns a configurable list of packages as available
-     * for ACTION_SEND type intents.
+     * This class wraps a Context, replacing its PackageManager with a shim PackageManager that
+     * returns a configurable list of packages as available for ACTION_SEND type intents.
      */
     private class PackageManagerReplacingContext extends ContextWrapper {
         private ShareSheetTest mTest;
+
         public PackageManagerReplacingContext(Context baseContext, ShareSheetTest test) {
             super(baseContext);
             mTest = test;
@@ -228,7 +234,8 @@ public class ShareSheetTest {
                     if (intent.getAction().equals(Intent.ACTION_SEND)) {
                         return mTest.availableResolveInfos();
                     }
-                    return PackageManagerReplacingContext.super.getPackageManager()
+                    return PackageManagerReplacingContext.super
+                            .getPackageManager()
                             .queryIntentActivities(intent, flags);
                 }
             };
@@ -236,13 +243,15 @@ public class ShareSheetTest {
     }
 
     /**
-     * Returns the list of names of targets shown in the third party row of
-     * the sharing hub, including targets that are off-screen.
+     * Returns the list of names of targets shown in the third party row of the sharing hub,
+     * including targets that are off-screen.
      */
     private List<String> getShown3PTargets() {
-        BottomSheetController controller = sActivityTestRule.getActivity()
-                                                   .getRootUiCoordinatorForTesting()
-                                                   .getBottomSheetController();
+        BottomSheetController controller =
+                sActivityTestRule
+                        .getActivity()
+                        .getRootUiCoordinatorForTesting()
+                        .getBottomSheetController();
         View sheetView = controller.getCurrentSheetContent().getContentView();
         View thirdPartyRow = sheetView.findViewById(R.id.share_sheet_other_apps);
 
@@ -258,9 +267,9 @@ public class ShareSheetTest {
     }
 
     /**
-     * Creates a default test history, which is a map from history names
-     * (which are package + '/' + activity) to usage counts. The generated map
-     * here is: { 'a': 10, 'b': 9, 'c': 8, ..., 'j': 1 }.
+     * Creates a default test history, which is a map from history names (which are package + '/' +
+     * activity) to usage counts. The generated map here is: { 'a': 10, 'b': 9, 'c': 8, ..., 'j': 1
+     * }.
      */
     private Map<String, Integer> defaultTestHistory() {
         char suffix = 'a';
@@ -275,8 +284,8 @@ public class ShareSheetTest {
     }
 
     /**
-     * Creates a default set of available apps. This is a list of package names,
-     * which defaults to { 'a', 'b', 'c', 'd', 'e' }.
+     * Creates a default set of available apps. This is a list of package names, which defaults to {
+     * 'a', 'b', 'c', 'd', 'e' }.
      */
     private List<String> defaultTestSystemApps() {
         List<String> apps = new ArrayList<String>();

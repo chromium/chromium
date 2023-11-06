@@ -48,7 +48,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/system_identity_manager.h"
-#import "ios/chrome/browser/web_state_list/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
@@ -519,14 +519,6 @@ void FlushCookieStoreOnIOThread(
                                                    NSDictionary* bindings) {
         return scene.activationLevel >= SceneActivationLevelForegroundInactive;
       }]];
-}
-
-- (void)setLastTappedWindow:(UIWindow*)window {
-  if (_lastTappedWindow == window) {
-    return;
-  }
-  _lastTappedWindow = window;
-  [self.observers appState:self lastTappedWindowChanged:window];
 }
 
 - (void)initializeUIPreSafeMode {

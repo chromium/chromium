@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/time/default_clock.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
@@ -47,8 +46,7 @@ class IndexedDBBucketContextTest : public testing::Test {
                 "https://example.com")),
         blink::mojom::StorageType::kTemporary);
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        bucket_info, false, base::DefaultClock::GetInstance(),
-        std::make_unique<PartitionedLockManager>(),
+        bucket_info, std::make_unique<PartitionedLockManager>(),
         IndexedDBBucketContext::Delegate(),
         std::make_unique<IndexedDBFakeBackingStore>(), quota_manager_proxy_,
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),

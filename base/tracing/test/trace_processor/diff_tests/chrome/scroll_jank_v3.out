@@ -1,4 +1,4 @@
 "cause_of_jank","sub_cause_of_jank","delay_since_last_frame","vsync_interval"
-"[NULL]","[NULL]",33.462000,16.368000
+"RendererCompositorQueueingDelay","[NULL]",33.462000,16.368000
 "RendererCompositorFinishedToBeginImplFrame","[NULL]",100.274000,16.368000
 "RendererCompositorQueueingDelay","[NULL]",33.404000,16.368000

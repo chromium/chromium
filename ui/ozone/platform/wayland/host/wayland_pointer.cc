@@ -8,6 +8,7 @@
 #include <stylus-unstable-v2-client-protocol.h>
 
 #include "base/logging.h"
+#include "base/version.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
@@ -30,29 +31,6 @@ wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
 #else
       wl::EventDispatchPolicy::kImmediate;
 #endif
-}
-
-bool ShouldSuppressPointerEnterOrLeaveEvents(WaylandConnection* connection) {
-  // Some Compositors (eg Exo) send spurious wl_pointer.enter|leave events
-  // during ongoing tab drag 'n drop operations.
-  //
-  // While this needs to be fixed on the Compositor side, the particular
-  // scenario of bogus events interfere w/ Lacros' tab dragging detaching
-  // and retaching behavior.
-  // Basically, the spurious `wl_pointer.enter` and `wl_pointer.leave` events
-  // conflict with logic that sets the 'focused window' when a
-  // `wl_drag_source.enter` event is received. For this reason, ignore those
-  // events.
-  if (connection->zaura_shell() &&
-      connection->zaura_shell()->HasBugFix(1405471)) {
-    return false;
-  }
-
-  const bool is_dragging_window =
-      connection->window_drag_controller() &&
-      connection->window_drag_controller()->state() !=
-          WaylandWindowDragController::State::kIdle;
-  return is_dragging_window;
 }
 
 }  // namespace
@@ -96,9 +74,8 @@ void WaylandPointer::OnEnter(void* data,
                              wl_fixed_t surface_y) {
   auto* self = static_cast<WaylandPointer*>(data);
 
-  if (ShouldSuppressPointerEnterOrLeaveEvents(self->connection_)) {
-    LOG(ERROR) << "Compositor sent a spurious wl_pointer.enter event during"
-                  " a window drag 'n drop operation. IGNORING.";
+  if (self->connection_->IsDragInProgress()) {
+    VLOG(1) << "Ignoring enter event received during dnd session.";
     return;
   }
 
@@ -125,19 +102,14 @@ void WaylandPointer::OnLeave(void* data,
                              wl_surface* surface) {
   auto* self = static_cast<WaylandPointer*>(data);
 
-  if (ShouldSuppressPointerEnterOrLeaveEvents(self->connection_)) {
-    LOG(ERROR) << "Compositor sent a spurious wl_pointer.leave event during"
-                  " a window drag 'n drop operation. IGNORING.";
+  if (self->connection_->IsDragInProgress()) {
+    VLOG(1) << "Ignoring leave event received during dnd session.";
     return;
   }
 
   self->connection_->serial_tracker().ResetSerial(wl::SerialType::kMouseEnter);
 
-  auto event_dispatch_policy =
-      self->connection_->zaura_shell() &&
-              self->connection_->zaura_shell()->HasBugFix(1352584)
-          ? EventDispatchPolicyForPlatform()
-          : wl::EventDispatchPolicy::kImmediate;
+  auto event_dispatch_policy = EventDispatchPolicyForPlatform();
 
   self->delegate_->OnPointerFocusChanged(
       nullptr, self->delegate_->GetPointerLocation(), event_dispatch_policy);
@@ -150,6 +122,12 @@ void WaylandPointer::OnMotion(void* data,
                               wl_fixed_t surface_x,
                               wl_fixed_t surface_y) {
   auto* self = static_cast<WaylandPointer*>(data);
+
+  if (self->connection_->IsDragInProgress()) {
+    VLOG(1) << "Ignoring motion event received during dnd session.";
+    return;
+  }
+
   gfx::PointF location(wl_fixed_to_double(surface_x),
                        wl_fixed_to_double(surface_y));
   const WaylandWindow* target = self->delegate_->GetPointerTarget();

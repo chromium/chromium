@@ -30,11 +30,6 @@ luci.console_view(
             category = "rbe|staging|win|rel",
         ),
         luci.console_view_entry(
-            builder = "goma/Chromium Win Goma RBE ATS Staging",
-            category = "rbe|staging|win|rel",
-            short_name = "ats",
-        ),
-        luci.console_view_entry(
             builder = "goma/chromeos-amd64-generic-rel-goma-rbe-staging",
             category = "rbe|staging|cros|rel",
         ),

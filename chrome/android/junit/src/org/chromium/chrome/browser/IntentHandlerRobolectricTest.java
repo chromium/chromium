@@ -67,96 +67,124 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class IntentHandlerRobolectricTest {
-    private static final String[] ACCEPTED_NON_HTTP_AND_HTTPS_URLS = {"chrome://newtab",
-            "file://foo.txt", "ftp://www.foo.com", "", "://javascript:80/hello",
-            "ftp@https://confusing:@something.example:5/goat?sayit", "://www.google.com/",
-            "chrome-search://food",
-            "java-scr\nipt://alert", // - is significant
-            "java.scr\nipt://alert", // . is significant
-            "java+scr\nipt://alert", // + is significant
-            "http ://time", "iris.beep:app"};
+    private static final String[] ACCEPTED_NON_HTTP_AND_HTTPS_URLS = {
+        "chrome://newtab",
+        "file://foo.txt",
+        "ftp://www.foo.com",
+        "",
+        "://javascript:80/hello",
+        "ftp@https://confusing:@something.example:5/goat?sayit",
+        "://www.google.com/",
+        "chrome-search://food",
+        "java-scr\nipt://alert", // - is significant
+        "java.scr\nipt://alert", // . is significant
+        "java+scr\nipt://alert", // + is significant
+        "http ://time",
+        "iris.beep:app"
+    };
 
-    private static final String[] REJECTED_INTENT_URLS = {"javascript://", " javascript:alert(1) ",
-            "jar:http://www.example.com/jarfile.jar!/",
-            "jar:http://www.example.com/jarfile.jar!/mypackage/myclass.class",
-            "  \tjava\nscript\n:alert(1)  ", "javascript://window.opener",
-            "   javascript:fun@somethings.com/yeah", " j\na\nr\t:f:oobarz ",
-            "jar://http://@foo.com/test.html", "  jar://https://@foo.com/test.html",
-            "javascript:http//bar.net:javascript/yes.no", " javascript:://window.open(1)",
-            " java script:alert(1)", "~~~javascript://alert"};
+    private static final String[] REJECTED_INTENT_URLS = {
+        "javascript://",
+        " javascript:alert(1) ",
+        "jar:http://www.example.com/jarfile.jar!/",
+        "jar:http://www.example.com/jarfile.jar!/mypackage/myclass.class",
+        "  \tjava\nscript\n:alert(1)  ",
+        "javascript://window.opener",
+        "   javascript:fun@somethings.com/yeah",
+        " j\na\nr\t:f:oobarz ",
+        "jar://http://@foo.com/test.html",
+        "  jar://https://@foo.com/test.html",
+        "javascript:http//bar.net:javascript/yes.no",
+        " javascript:://window.open(1)",
+        " java script:alert(1)",
+        "~~~javascript://alert"
+    };
 
-    private static final String[] VALID_HTTP_AND_HTTPS_URLS = {"http://www.google.com",
-            "http://movies.nytimes.com/movie/review?"
-                    + "res=9405EFDB1E3BE23BBC4153DFB7678382659EDE&partner=Rotten Tomatoes",
-            "https://www.gmail.com", "http://www.example.com/\u00FCmlat.html&q=name",
-            "http://www.example.com/quotation_\"", "http://www.example.com/lessthansymbol_<",
-            "http://www.example.com/greaterthansymbol_>", "http://www.example.com/poundcharacter_#",
-            "http://www.example.com/percentcharacter_%", "http://www.example.com/leftcurlybrace_{",
-            "http://www.example.com/rightcurlybrace_}", "http://www.example.com/verticalpipe_|",
-            "http://www.example.com/backslash_\\", "http://www.example.com/caret_^",
-            "http://www.example.com/tilde_~", "http://www.example.com/leftsquarebracket_[",
-            "http://www.example.com/rightsquarebracket_]", "http://www.example.com/graveaccent_`",
-            "www.example.com", "www.google.com", "www.bing.com", "notreallyaurl",
-            "https:awesome@google.com/haha.gif", "//www.google.com"};
+    private static final String[] VALID_HTTP_AND_HTTPS_URLS = {
+        "http://www.google.com",
+        "http://movies.nytimes.com/movie/review?"
+                + "res=9405EFDB1E3BE23BBC4153DFB7678382659EDE&partner=Rotten Tomatoes",
+        "https://www.gmail.com",
+        "http://www.example.com/\u00FCmlat.html&q=name",
+        "http://www.example.com/quotation_\"",
+        "http://www.example.com/lessthansymbol_<",
+        "http://www.example.com/greaterthansymbol_>",
+        "http://www.example.com/poundcharacter_#",
+        "http://www.example.com/percentcharacter_%",
+        "http://www.example.com/leftcurlybrace_{",
+        "http://www.example.com/rightcurlybrace_}",
+        "http://www.example.com/verticalpipe_|",
+        "http://www.example.com/backslash_\\",
+        "http://www.example.com/caret_^",
+        "http://www.example.com/tilde_~",
+        "http://www.example.com/leftsquarebracket_[",
+        "http://www.example.com/rightsquarebracket_]",
+        "http://www.example.com/graveaccent_`",
+        "www.example.com",
+        "www.google.com",
+        "www.bing.com",
+        "notreallyaurl",
+        "https:awesome@google.com/haha.gif",
+        "//www.google.com"
+    };
 
     private static final String[] REJECTED_GOOGLECHROME_URLS = {
-            IntentHandler.GOOGLECHROME_SCHEME + "://reddit.com",
-            IntentHandler.GOOGLECHROME_SCHEME + "://navigate?reddit.com",
-            IntentHandler.GOOGLECHROME_SCHEME + "://navigate?urlreddit.com",
-            IntentHandler.GOOGLECHROME_SCHEME
-                    + "://navigate?url=content://com.android.chrome.FileProvider",
+        IntentHandler.GOOGLECHROME_SCHEME + "://reddit.com",
+        IntentHandler.GOOGLECHROME_SCHEME + "://navigate?reddit.com",
+        IntentHandler.GOOGLECHROME_SCHEME + "://navigate?urlreddit.com",
+        IntentHandler.GOOGLECHROME_SCHEME
+                + "://navigate?url=content://com.android.chrome.FileProvider",
     };
 
     private static final String[][] INTENT_URLS_AND_TYPES_FOR_MHTML = {
-            {"file://foo.mhtml", ""},
-            {"file://foo.mht", ""},
-            {"file://foo!.mht", ""},
-            {"file://foo!.mhtml", ""},
-            {"file://foo.mhtml", "application/octet-stream"},
-            {"file://foo.mht", "application/octet-stream"},
-            {"file://foo", "multipart/related"},
-            {"file://foo", "message/rfc822"},
-            {"content://example.com/1", "multipart/related"},
-            {"content://example.com/1", "message/rfc822"},
+        {"file://foo.mhtml", ""},
+        {"file://foo.mht", ""},
+        {"file://foo!.mht", ""},
+        {"file://foo!.mhtml", ""},
+        {"file://foo.mhtml", "application/octet-stream"},
+        {"file://foo.mht", "application/octet-stream"},
+        {"file://foo", "multipart/related"},
+        {"file://foo", "message/rfc822"},
+        {"content://example.com/1", "multipart/related"},
+        {"content://example.com/1", "message/rfc822"},
     };
 
     private static final String[][] INTENT_URLS_AND_TYPES_NOT_FOR_MHTML = {
-            {"http://www.example.com", ""},
-            {"ftp://www.example.com", ""},
-            {"file://foo", ""},
-            {"file://foo", "application/octet-stream"},
-            {"file://foo.txt", ""},
-            {"file://foo.mhtml", "text/html"},
-            {"content://example.com/1", ""},
-            {"content://example.com/1", "text/html"},
+        {"http://www.example.com", ""},
+        {"ftp://www.example.com", ""},
+        {"file://foo", ""},
+        {"file://foo", "application/octet-stream"},
+        {"file://foo.txt", ""},
+        {"file://foo.mhtml", "text/html"},
+        {"content://example.com/1", ""},
+        {"content://example.com/1", "text/html"},
     };
 
     private static final Object[][] SHARE_INTENT_CASES = {
-            {"Check this out! https://example.com/foo#bar", "https://example.com/foo#bar", 1},
-            {"This http://www.example.com URL is bussin fr fr.\nhttp://www.example.com/foo",
-                    "http://www.example.com/foo", 2},
-            {"http://one.com https://two.com http://three.com http://four.com", "https://two.com",
-                    4},
-            {"https://example.com", "https://example.com", 1},
-            {"https://example.com Sent from my iPhone.", "https://example.com", 1},
-            {"https://example.com\nSent from my iPhone.", "https://example.com", 1},
-            {"~(_8^(|)", null, 0},
-            {"", null, 0},
-            {null, null, 0},
+        {"Check this out! https://example.com/foo#bar", "https://example.com/foo#bar", 1},
+        {
+            "This http://www.example.com URL is bussin fr fr.\nhttp://www.example.com/foo",
+            "http://www.example.com/foo",
+            2
+        },
+        {"http://one.com https://two.com http://three.com http://four.com", "https://two.com", 4},
+        {"https://example.com", "https://example.com", 1},
+        {"https://example.com Sent from my iPhone.", "https://example.com", 1},
+        {"https://example.com\nSent from my iPhone.", "https://example.com", 1},
+        {"~(_8^(|)", null, 0},
+        {"", null, 0},
+        {null, null, 0},
     };
 
     private static final String GOOGLE_URL = "https://www.google.com";
 
     private Intent mIntent;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Captor
-    ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
+    @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
     private ShadowPowerManager mShadowPowerManager;
     private ShadowKeyguardManager mShadowKeyguardManager;
@@ -202,8 +230,9 @@ public class IntentHandlerRobolectricTest {
         Context appContext = ApplicationProvider.getApplicationContext();
         mShadowPowerManager =
                 Shadows.shadowOf((PowerManager) appContext.getSystemService(Context.POWER_SERVICE));
-        mShadowKeyguardManager = Shadows.shadowOf(
-                (KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE));
+        mShadowKeyguardManager =
+                Shadows.shadowOf(
+                        (KeyguardManager) appContext.getSystemService(Context.KEYGUARD_SERVICE));
     }
 
     @Test
@@ -242,9 +271,10 @@ public class IntentHandlerRobolectricTest {
     public void testAcceptedGoogleChromeSchemeNavigateUrls() {
         String[] expectedAccepts = new String[VALID_HTTP_AND_HTTPS_URLS.length];
         for (int i = 0; i < VALID_HTTP_AND_HTTPS_URLS.length; ++i) {
-            expectedAccepts[i] = IntentHandler.GOOGLECHROME_SCHEME
-                    + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
-                    + VALID_HTTP_AND_HTTPS_URLS[i];
+            expectedAccepts[i] =
+                    IntentHandler.GOOGLECHROME_SCHEME
+                            + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
+                            + VALID_HTTP_AND_HTTPS_URLS[i];
         }
         processUrls(expectedAccepts, true);
     }
@@ -256,9 +286,10 @@ public class IntentHandlerRobolectricTest {
         // Test all of the rejected URLs after prepending googlechrome://navigate?url.
         String[] expectedRejections = new String[REJECTED_INTENT_URLS.length];
         for (int i = 0; i < REJECTED_INTENT_URLS.length; ++i) {
-            expectedRejections[i] = IntentHandler.GOOGLECHROME_SCHEME
-                    + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
-                    + REJECTED_INTENT_URLS[i];
+            expectedRejections[i] =
+                    IntentHandler.GOOGLECHROME_SCHEME
+                            + ExternalNavigationHandler.SELF_SCHEME_NAVIGATE_PREFIX
+                            + REJECTED_INTENT_URLS[i];
         }
         processUrls(expectedRejections, false);
     }
@@ -285,10 +316,15 @@ public class IntentHandlerRobolectricTest {
     public void testUrlFromIntent_WebappUrl() {
         Intent webappLauncherActivityIntent =
                 WebappTestHelper.createMinimalWebappIntent("id", GOOGLE_URL);
-        WebappLauncherActivity.LaunchData launchData = new WebappLauncherActivity.LaunchData("id",
-                GOOGLE_URL, null /* webApkPackageName */, false /* isSplashProvidedByWebApk */);
-        mIntent = WebappLauncherActivity.createIntentToLaunchForWebapp(
-                webappLauncherActivityIntent, launchData);
+        WebappLauncherActivity.LaunchData launchData =
+                new WebappLauncherActivity.LaunchData(
+                        "id",
+                        GOOGLE_URL,
+                        /* webApkPackageName= */ null,
+                        /* isSplashProvidedByWebApk= */ false);
+        mIntent =
+                WebappLauncherActivity.createIntentToLaunchForWebapp(
+                        webappLauncherActivityIntent, launchData);
         Assert.assertEquals(GOOGLE_URL, IntentHandler.getUrlFromIntent(mIntent));
     }
 
@@ -307,11 +343,14 @@ public class IntentHandlerRobolectricTest {
     @Feature({"Android-AppBase"})
     public void testReferrerUrl_customTabIntentWithSession() {
         Context context = ApplicationProvider.getApplicationContext();
-        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
-                context, "https://www.google.com/");
-        Assert.assertTrue(CustomTabsConnection.getInstance().newSession(
-                CustomTabsSessionToken.getSessionTokenFromIntent(intent)));
-        Assert.assertEquals("android-app://org.chromium.chrome",
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        context, "https://www.google.com/");
+        Assert.assertTrue(
+                CustomTabsConnection.getInstance()
+                        .newSession(CustomTabsSessionToken.getSessionTokenFromIntent(intent)));
+        Assert.assertEquals(
+                "android-app://org.chromium.chrome",
                 IntentHandler.getReferrerUrlIncludingExtraHeaders(intent));
     }
 
@@ -349,22 +388,26 @@ public class IntentHandlerRobolectricTest {
 
         // MHTML type with no extra headers.
         intent.setType("multipart/related");
-        Assert.assertEquals("X-Chrome-intent-type: multipart/related",
+        Assert.assertEquals(
+                "X-Chrome-intent-type: multipart/related",
                 IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // MHTML type with extra headers.
         intent.setType("multipart/related");
-        Assert.assertEquals("Foo: bar\nX-Chrome-intent-type: multipart/related",
+        Assert.assertEquals(
+                "Foo: bar\nX-Chrome-intent-type: multipart/related",
                 IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, "Foo: bar"));
 
         // Different MHTML type.
         intent.setType("message/rfc822");
-        Assert.assertEquals("X-Chrome-intent-type: message/rfc822",
+        Assert.assertEquals(
+                "X-Chrome-intent-type: message/rfc822",
                 IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, null));
 
         // Different MHTML type with extra headers.
         intent.setType("message/rfc822");
-        Assert.assertEquals("Foo: bar\nX-Chrome-intent-type: message/rfc822",
+        Assert.assertEquals(
+                "Foo: bar\nX-Chrome-intent-type: message/rfc822",
                 IntentHandler.maybeAddAdditionalContentHeaders(intent, contentUrl, "Foo: bar"));
     }
 
@@ -394,19 +437,22 @@ public class IntentHandlerRobolectricTest {
         assertFalse(intent.getBooleanExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true));
     }
 
-    /**
-     * Test that IntentHandler#shouldIgnoreIntent() returns false for Webapp launch intents.
-     */
+    /** Test that IntentHandler#shouldIgnoreIntent() returns false for Webapp launch intents. */
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIntentWebapp() {
         Intent webappLauncherActivityIntent =
                 WebappTestHelper.createMinimalWebappIntent("id", GOOGLE_URL);
-        WebappLauncherActivity.LaunchData launchData = new WebappLauncherActivity.LaunchData("id",
-                GOOGLE_URL, null /* webApkPackageName */, false /* isSplashProvidedByWebApk */);
-        Intent intent = WebappLauncherActivity.createIntentToLaunchForWebapp(
-                webappLauncherActivityIntent, launchData);
+        WebappLauncherActivity.LaunchData launchData =
+                new WebappLauncherActivity.LaunchData(
+                        "id",
+                        GOOGLE_URL,
+                        /* webApkPackageName= */ null,
+                        /* isSplashProvidedByWebApk= */ false);
+        Intent intent =
+                WebappLauncherActivity.createIntentToLaunchForWebapp(
+                        webappLauncherActivityIntent, launchData);
 
         assertFalse(IntentHandler.shouldIgnoreIntent(intent));
     }
@@ -437,24 +483,23 @@ public class IntentHandlerRobolectricTest {
         assertFalse(IntentHandler.shouldIgnoreIntent(intent));
     }
 
-    /**
-     * Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents.
-     */
+    /** Test that IntentHandler#shouldIgnoreIntent() returns false for Incognito Custom Tab Intents. */
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
     public void testShouldIgnoreIncognitoIntent_customTab() {
         Intent intent = new Intent(GOOGLE_URL);
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
-        assertFalse(IntentHandler.shouldIgnoreIntent(intent, /*isCustomTab=*/true));
+        assertFalse(IntentHandler.shouldIgnoreIntent(intent, /* isCustomTab= */ true));
     }
 
     @Test
     @SmallTest
     public void testIgnoreUnauthenticatedBringToFront() {
         int tabId = 1;
-        Intent intent = IntentHandler.createTrustedBringTabToFrontIntent(
-                tabId, IntentHandler.BringToFrontSource.ACTIVATE_TAB);
+        Intent intent =
+                IntentHandler.createTrustedBringTabToFrontIntent(
+                        tabId, IntentHandler.BringToFrontSource.ACTIVATE_TAB);
         assertEquals(tabId, IntentHandler.getBringTabToFrontId(intent));
 
         intent.removeExtra("trusted_application_code_extra");
@@ -466,8 +511,9 @@ public class IntentHandlerRobolectricTest {
     public void testRewriteFromHistoryIntent() {
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse("about:blank"));
-        intent.setComponent(new ComponentName(
-                ContextUtils.getApplicationContext(), IntentHandlerRobolectricTest.class));
+        intent.setComponent(
+                new ComponentName(
+                        ContextUtils.getApplicationContext(), IntentHandlerRobolectricTest.class));
         intent.setPackage(ContextUtils.getApplicationContext().getPackageName());
         intent.putExtra("key", true);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -492,10 +538,13 @@ public class IntentHandlerRobolectricTest {
         Assert.assertNull(IntentHandler.getUrlFromShareIntent(intent));
         for (Object[] shareCase : SHARE_INTENT_CASES) {
             intent.putExtra(Intent.EXTRA_TEXT, (String) shareCase[0]);
-            int before = RecordHistogram.getHistogramValueCountForTesting(
-                    IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]);
+            int before =
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]);
             Assert.assertEquals((String) shareCase[1], IntentHandler.getUrlFromShareIntent(intent));
-            Assert.assertEquals("Test case: " + (String) shareCase[0], before + 1,
+            Assert.assertEquals(
+                    "Test case: " + (String) shareCase[0],
+                    before + 1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             IntentHandler.SHARE_INTENT_HISTOGRAM, (int) shareCase[2]));
         }
@@ -515,8 +564,8 @@ public class IntentHandlerRobolectricTest {
         Referrer urlReferrer = new Referrer(GOOGLE_URL, 0);
         LoadUrlParams loadUrlParams = new LoadUrlParams(GOOGLE_URL);
         loadUrlParams.setReferrer(urlReferrer);
-        AsyncTabParamsManagerSingleton.getInstance().add(
-                tabId, new AsyncTabCreationParams(loadUrlParams));
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tabId, new AsyncTabCreationParams(loadUrlParams));
 
         LoadUrlParams params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
         Assert.assertEquals("LoadUrlParams should match.", loadUrlParams, params);

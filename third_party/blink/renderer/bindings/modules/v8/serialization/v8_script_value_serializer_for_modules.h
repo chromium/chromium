@@ -20,6 +20,7 @@ namespace blink {
 class CropTarget;
 class FileSystemHandle;
 class MediaSourceHandleImpl;
+class RestrictionTarget;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
 class VideoFrameHandle;
@@ -59,6 +60,7 @@ class MODULES_EXPORT V8ScriptValueSerializerForModules final
                              ScriptWrappable::TypeDispatcher& dispatcher,
                              ExceptionState& exception_state);
   bool WriteCropTarget(CropTarget*);
+  bool WriteRestrictionTarget(RestrictionTarget*);
   bool WriteMediaSourceHandle(MediaSourceHandleImpl* handle,
                               ExceptionState& exception_state);
 };

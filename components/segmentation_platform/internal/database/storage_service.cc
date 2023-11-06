@@ -7,6 +7,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/database/database_maintenance_impl.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
@@ -69,12 +70,13 @@ StorageService::StorageService(
     PrefService* profile_prefs,
     ModelManager::SegmentationModelUpdatedCallback model_updated_callback)
     : config_holder_(std::make_unique<ConfigHolder>(std::move(configs))),
+      client_result_prefs_(std::make_unique<ClientResultPrefs>(profile_prefs)),
       cached_result_provider_(
-          std::make_unique<CachedResultProvider>(profile_prefs,
+          std::make_unique<CachedResultProvider>(client_result_prefs_.get(),
                                                  config_holder_->configs())),
-      cached_result_writer_(std::make_unique<CachedResultWriter>(
-          std::make_unique<ClientResultPrefs>(profile_prefs),
-          clock)),
+      cached_result_writer_(
+          std::make_unique<CachedResultWriter>(client_result_prefs_.get(),
+                                               clock)),
       segment_info_database_(std::make_unique<SegmentInfoDatabase>(
           std::move(segment_db),
           std::make_unique<SegmentInfoCache>())),

@@ -60,7 +60,7 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
     return obj;
   }
 
-  auto ProjectOptions = [env](const std::vector<SelectOption>& options,
+  auto ProjectOptions = [env](base::span<const SelectOption> options,
                               const auto& projection) {
     std::vector<std::u16string> projected_options;
     projected_options.reserve(options.size());
@@ -90,8 +90,11 @@ FormFieldDataAndroidBridgeImpl::GetOrCreateJavaPeer(
       ConvertUTF8ToJavaString(env, field_types.computed_type.ToString()),
       ToJavaArrayOfPredictionStrings(env, field_types.server_predictions),
       field.bounds.x(), field.bounds.y(), field.bounds.right(),
-      field.bounds.bottom(), ToJavaArrayOfStrings(env, field.datalist_values),
-      ToJavaArrayOfStrings(env, field.datalist_labels),
+      field.bounds.bottom(),
+      /*datalistValues=*/
+      ProjectOptions(field.datalist_options, &SelectOption::value),
+      /*datalistLabels=*/
+      ProjectOptions(field.datalist_options, &SelectOption::content),
       /*visible=*/field.IsFocusable(), field.is_autofilled);
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   return obj;

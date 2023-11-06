@@ -10,10 +10,6 @@ BASE_FEATURE(kNewOverflowMenu,
              "NewOverflowMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSmartSortingPriceTrackingDestination,
-             "kSmartSortingPriceTrackingDestination",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOverflowMenuCustomization,
              "OverflowMenuCustomization",
              base::FEATURE_DISABLED_BY_DEFAULT);

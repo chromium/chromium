@@ -8,6 +8,9 @@ import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics;
+import org.chromium.components.browser_ui.device_lock.DeviceLockDialogMetrics.DeviceLockDialogAction;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -21,12 +24,20 @@ public class DeviceLockViewBinder {
             DeviceLockViewBinder.setDescription(model, view);
             DeviceLockViewBinder.setNoticeText(model, view);
             DeviceLockViewBinder.setContinueButton(model, view);
-            DeviceLockViewBinder.setDismissButtonText(model, view);
+            DeviceLockViewBinder.setDismissButton(model, view);
         } else if (propertyKey == DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT) {
             DeviceLockViewBinder.setContinueButton(model, view);
-        } else if (propertyKey == DeviceLockProperties.IN_SIGN_IN_FLOW) {
-            DeviceLockViewBinder.setDismissButtonText(model, view);
+        } else if (propertyKey == DeviceLockProperties.SOURCE) {
+            DeviceLockViewBinder.setDismissButton(model, view);
         } else if (propertyKey == DeviceLockProperties.UI_ENABLED) {
+            if (model.get(DeviceLockProperties.UI_ENABLED)) {
+                int dialogShownAction =
+                        model.get(DeviceLockProperties.PREEXISTING_DEVICE_LOCK)
+                                ? DeviceLockDialogAction.EXISTING_DEVICE_LOCK_DIALOG_SHOWN
+                                : DeviceLockDialogAction.CREATE_DEVICE_LOCK_DIALOG_SHOWN;
+                DeviceLockDialogMetrics.recordDeviceLockDialogAction(
+                        dialogShownAction, model.get(DeviceLockProperties.SOURCE));
+            }
             DeviceLockViewBinder.setUiStyle(model, view);
         } else if (propertyKey == DeviceLockProperties.ON_DISMISS_CLICKED) {
             view.getDismissButton().setOnClickListener(
@@ -77,7 +88,7 @@ public class DeviceLockViewBinder {
 
     private static void setUiStyle(PropertyModel model, DeviceLockView view) {
         if (model.get(DeviceLockProperties.UI_ENABLED)) {
-            view.getProgressBar().setVisibility(View.GONE);
+            view.getProgressBar().setVisibility(View.INVISIBLE);
             view.getTitle().setTextAppearance(R.style.TextAppearance_Headline_Primary);
             view.getDescription().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
             view.getNoticeText().setTextAppearance(R.style.TextAppearance_TextMedium_Primary);
@@ -102,15 +113,22 @@ public class DeviceLockViewBinder {
         }
     }
 
-    private static void setDismissButtonText(PropertyModel model, DeviceLockView view) {
-        if (model.get(DeviceLockProperties.IN_SIGN_IN_FLOW)) {
+    private static void setDismissButton(PropertyModel model, DeviceLockView view) {
+        if (DeviceLockActivityLauncher.isSignInFlow(model.get(DeviceLockProperties.SOURCE))) {
             if (model.get(DeviceLockProperties.PREEXISTING_DEVICE_LOCK)) {
                 view.getDismissButton().setText(R.string.signin_fre_dismiss_button);
+                view.getDismissButton()
+                        .setOnClickListener(
+                                model.get(DeviceLockProperties.ON_USE_WITHOUT_AN_ACCOUNT_CLICKED));
             } else {
                 view.getDismissButton().setText(R.string.dialog_not_now);
+                view.getDismissButton()
+                        .setOnClickListener(model.get(DeviceLockProperties.ON_DISMISS_CLICKED));
             }
         } else {
             view.getDismissButton().setText(R.string.no_thanks);
+            view.getDismissButton()
+                    .setOnClickListener(model.get(DeviceLockProperties.ON_DISMISS_CLICKED));
         }
     }
 }

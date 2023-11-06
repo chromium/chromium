@@ -83,29 +83,27 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
     const StyleScope* style_scope,
-    unsigned*& hash,
-    unsigned* end);
+    Vector<unsigned>& hashes);
 
 inline void CollectDescendantSelectorIdentifierHashes(
     const CSSSelector& selector,
     const StyleScope* style_scope,
-    unsigned*& hash,
-    unsigned* end) {
+    Vector<unsigned>& hashes) {
   switch (selector.Match()) {
     case CSSSelector::kId:
       if (!selector.Value().empty()) {
-        (*hash++) = selector.Value().Hash() * kIdSalt;
+        hashes.push_back(selector.Value().Hash() * kIdSalt);
       }
       break;
     case CSSSelector::kClass:
       if (!selector.Value().empty()) {
-        (*hash++) = selector.Value().Hash() * kClassSalt;
+        hashes.push_back(selector.Value().Hash() * kClassSalt);
       }
       break;
     case CSSSelector::kTag:
       if (selector.TagQName().LocalName() !=
           CSSSelector::UniversalSelectorAtom()) {
-        (*hash++) = selector.TagQName().LocalName().Hash() * kTagNameSalt;
+        hashes.push_back(selector.TagQName().LocalName().Hash() * kTagNameSalt);
       }
       break;
     case CSSSelector::kAttributeExact:
@@ -122,7 +120,7 @@ inline void CollectDescendantSelectorIdentifierHashes(
       auto lower_name = attribute_name.IsLowerASCII()
                             ? attribute_name
                             : attribute_name.LowerASCII();
-      (*hash++) = lower_name.Hash() * kAttributeSalt;
+      hashes.push_back(lower_name.Hash() * kAttributeSalt);
     } break;
     case CSSSelector::kPseudoClass:
       switch (selector.GetPseudoType()) {
@@ -135,8 +133,7 @@ inline void CollectDescendantSelectorIdentifierHashes(
           if (selector_list &&
               CSSSelectorList::Next(*selector_list) == nullptr) {
             CollectDescendantCompoundSelectorIdentifierHashes(
-                selector_list, CSSSelector::kDescendant, style_scope, hash,
-                end);
+                selector_list, CSSSelector::kDescendant, style_scope, hashes);
           }
           break;
         }
@@ -147,7 +144,7 @@ inline void CollectDescendantSelectorIdentifierHashes(
                 CSSSelectorList::Next(*selector_list) == nullptr) {
               CollectDescendantCompoundSelectorIdentifierHashes(
                   selector_list, CSSSelector::kDescendant,
-                  style_scope->Parent(), hash, end);
+                  style_scope->Parent(), hashes);
             }
           }
           break;
@@ -164,8 +161,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     const CSSSelector* selector,
     CSSSelector::RelationType relation,
     const StyleScope* style_scope,
-    unsigned*& hash,
-    unsigned* end) {
+    Vector<unsigned>& hashes) {
   // Skip the rightmost compound. It is handled quickly by the rule hashes.
   bool skip_over_subselectors = true;
   for (const CSSSelector* current = selector; current;
@@ -175,8 +171,8 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kSubSelector:
       case CSSSelector::kScopeActivation:
         if (!skip_over_subselectors) {
-          CollectDescendantSelectorIdentifierHashes(*current, style_scope, hash,
-                                                    end);
+          CollectDescendantSelectorIdentifierHashes(*current, style_scope,
+                                                    hashes);
         }
         break;
       case CSSSelector::kDirectAdjacent:
@@ -189,8 +185,8 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kUAShadow:
       case CSSSelector::kShadowPart:
         skip_over_subselectors = false;
-        CollectDescendantSelectorIdentifierHashes(*current, style_scope, hash,
-                                                  end);
+        CollectDescendantSelectorIdentifierHashes(*current, style_scope,
+                                                  hashes);
         break;
       case CSSSelector::kRelativeDescendant:
       case CSSSelector::kRelativeChild:
@@ -198,9 +194,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kRelativeIndirectAdjacent:
         NOTREACHED();
         break;
-    }
-    if (hash == end) {
-      return;
     }
     relation = current->Relation();
   }
@@ -210,9 +203,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
   DCHECK(ancestor_identifier_filter_);
-  DCHECK(parent_stack_.empty() ||
-         parent_stack_.back() == FlatTreeTraversal::ParentElement(parent));
-  DCHECK(!parent_stack_.empty() || !FlatTreeTraversal::ParentElement(parent));
   parent_stack_.push_back(parent);
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
@@ -257,37 +247,32 @@ void SelectorFilter::PushParent(Element& parent) {
     return;
   }
   DCHECK(ancestor_identifier_filter_);
-  // We may get invoked for some random elements in some wacky cases during
-  // style resolve. Pause maintaining the stack in this case.
-  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent)) {
-    return;
+#if DCHECK_IS_ON()
+  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent) &&
+      parent_stack_.back() != parent.ParentOrShadowHostElement()) {
+    LOG(DFATAL) << "Parent stack must be consistent; pushed " << parent
+                << " with parent " << parent.ParentOrShadowHostElement()
+                << " and flat-tree parent "
+                << FlatTreeTraversal::ParentElement(parent)
+                << ", but the stack contained " << parent_stack_.back()
+                << ", which is neither";
   }
+#endif
   PushParentStackFrame(parent);
 }
 
 void SelectorFilter::PopParent(Element& parent) {
-  // Note that we may get invoked for some random elements in some wacky cases
-  // during style resolve. Pause maintaining the stack in this case.
-  if (!ParentStackIsConsistent(&parent)) {
-    return;
-  }
+  DCHECK(ParentStackIsConsistent(&parent));
   PopParentStackFrame();
 }
 
 void SelectorFilter::CollectIdentifierHashes(
     const CSSSelector& selector,
     const StyleScope* style_scope,
-    unsigned* identifier_hashes,
-    unsigned maximum_identifier_count) {
-  unsigned* hash = identifier_hashes;
-  unsigned* end = identifier_hashes + maximum_identifier_count;
-
+    Vector<unsigned>& bloom_hash_backing) {
   CollectDescendantCompoundSelectorIdentifierHashes(
-      selector.NextSimpleSelector(), selector.Relation(), style_scope, hash,
-      end);
-  if (hash != end) {
-    *hash = 0;
-  }
+      selector.NextSimpleSelector(), selector.Relation(), style_scope,
+      bloom_hash_backing);
 }
 
 void SelectorFilter::Trace(Visitor* visitor) const {

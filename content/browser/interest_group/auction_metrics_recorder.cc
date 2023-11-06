@@ -10,7 +10,9 @@
 
 #include "base/check.h"
 #include "base/functional/invoke.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "content/browser/interest_group/additional_bid_result.h"
 #include "content/browser/interest_group/auction_result.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-shared.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -34,6 +36,15 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   builder_.SetEndToEndLatencyInMillis(
       GetSemanticBucketMinForDurationTiming(e2e_latency.InMilliseconds()));
 
+  if (num_negative_interest_groups_) {
+    builder_.SetNumNegativeInterestGroups(
+        GetExponentialBucketMinForCounts1000(*num_negative_interest_groups_));
+    base::UmaHistogramCustomCounts(
+        "Ads.InterestGroup.Auction.NumNegativeInterestGroups",
+        *num_negative_interest_groups_,
+        /*min=*/1, /*exclusive_max=*/20000, /*buckets=*/50);
+  }
+
   builder_.SetNumDistinctOwnersWithInterestGroups(
       GetExponentialBucketMinForCounts1000(buyers_.size()));
 
@@ -55,6 +66,72 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
   builder_.SetNumBidsFilteredByPerBuyerLimits(
       GetExponentialBucketMinForCounts1000(
           num_bids_filtered_by_per_buyer_limits_));
+
+  builder_.SetNumAdditionalBidsSentForScoring(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_[AdditionalBidResult::kSentForScoring]));
+  builder_.SetNumAdditionalBidsNegativeTargeted(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kNegativeTargeted]));
+  builder_.SetNumAdditionalBidsRejectedDueToInvalidBase64(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToInvalidBase64]));
+  builder_.SetNumAdditionalBidsRejectedDueToSignedBidJsonParseError(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToSignedBidJsonParseError]));
+  builder_.SetNumAdditionalBidsRejectedDueToSignedBidDecodeError(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToSignedBidDecodeError]));
+  builder_.SetNumAdditionalBidsRejectedDueToJsonParseError(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToJsonParseError]));
+  builder_.SetNumAdditionalBidsRejectedDueToDecodeError(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToDecodeError]));
+  builder_.SetNumAdditionalBidsRejectedDueToBuyerNotAllowed(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToBuyerNotAllowed]));
+  builder_.SetNumAdditionalBidsRejectedDueToCurrencyMismatch(
+      GetExponentialBucketMinForCounts1000(
+          additional_bid_result_counts_
+              [AdditionalBidResult::kRejectedDueToCurrencyMismatch]));
+
+  MaybeSetMeanAndMaxLatency(
+      additional_bid_decode_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanAdditionalBidDecodeLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxAdditionalBidDecodeLatencyInMillis);
+
+  builder_.SetNumNegativeInterestGroupsIgnoredDueToInvalidSignature(
+      GetExponentialBucketMinForCounts1000(
+          num_negative_interest_groups_ignored_due_to_invalid_signature_));
+  builder_.SetNumNegativeInterestGroupsIgnoredDueToJoiningOriginMismatch(
+      GetExponentialBucketMinForCounts1000(
+          num_negative_interest_groups_ignored_due_to_joining_origin_mismatch_));
+
+  builder_.SetNumAuctionsWithConfigPromises(
+      GetExponentialBucketMinForCounts1000(
+          config_promises_resolved_latency_aggregator_.GetNumRecords()));
+  MaybeSetMeanAndMaxLatency(
+      config_promises_resolved_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanConfigPromisesResolvedLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxConfigPromisesResolvedLatencyInMillis);
+  MaybeSetMeanAndMaxLatency(
+      config_promises_resolved_critical_path_latency_aggregator_,
+      /*set_mean_function=*/
+      &UkmEntry::SetMeanConfigPromisesResolvedCriticalPathLatencyInMillis,
+      /*set_max_function=*/
+      &UkmEntry::SetMaxConfigPromisesResolvedCriticalPathLatencyInMillis);
 
   builder_.SetNumInterestGroupsWithNoBids(
       GetExponentialBucketMinForCounts1000(num_interest_groups_with_no_bids_));
@@ -214,31 +291,70 @@ void AuctionMetricsRecorder::OnAuctionEnd(AuctionResult auction_result) {
 }
 
 void AuctionMetricsRecorder::OnLoadInterestGroupPhaseComplete() {
+  DCHECK(!bidding_and_scoring_phase_start_time_.has_value());
+  base::TimeTicks now = base::TimeTicks::Now();
+  bidding_and_scoring_phase_start_time_ = now;
+
   base::TimeDelta load_interest_group_phase_latency =
-      base::TimeTicks::Now() - auction_start_time_;
+      bidding_and_scoring_phase_start_time_.value() - auction_start_time_;
   builder_.SetLoadInterestGroupPhaseLatencyInMillis(
       GetSemanticBucketMinForDurationTiming(
           load_interest_group_phase_latency.InMilliseconds()));
 }
 
+void AuctionMetricsRecorder::OnConfigPromisesResolved() {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  base::TimeDelta latency = now - auction_start_time_;
+  config_promises_resolved_latency_aggregator_.RecordLatency(latency);
+  base::UmaHistogramTimes("Ads.InterestGroup.Auction.ConfigPromises.Latency",
+                          latency);
+
+  base::TimeDelta critical_path_latency =
+      bidding_and_scoring_phase_start_time_.has_value()
+          ? now - bidding_and_scoring_phase_start_time_.value()
+          : base::Microseconds(0);
+  config_promises_resolved_critical_path_latency_aggregator_.RecordLatency(
+      critical_path_latency);
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Auction.ConfigPromises.CriticalPathLatency",
+      critical_path_latency);
+}
+
 void AuctionMetricsRecorder::SetNumInterestGroups(int64_t num_interest_groups) {
   builder_.SetNumInterestGroups(
       GetExponentialBucketMinForCounts1000(num_interest_groups));
+  base::UmaHistogramCustomCounts(
+      "Ads.InterestGroup.Auction.NumInterestGroups", num_interest_groups,
+      /*min=*/1, /*exclusive_max=*/2000, /*buckets=*/50);
 }
 
 void AuctionMetricsRecorder::SetNumOwnersWithInterestGroups(
     int64_t num_owners_with_interest_groups) {
   builder_.SetNumOwnersWithInterestGroups(
       GetExponentialBucketMinForCounts1000(num_owners_with_interest_groups));
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.NumOwnersWithInterestGroups",
+      num_owners_with_interest_groups);
 }
 
 void AuctionMetricsRecorder::SetNumSellersWithBidders(
     int64_t num_sellers_with_bidders) {
   builder_.SetNumSellersWithBidders(
       GetExponentialBucketMinForCounts1000(num_sellers_with_bidders));
+  base::UmaHistogramCounts100("Ads.InterestGroup.Auction.NumSellersWithBidders",
+                              num_sellers_with_bidders);
 }
 
-void AuctionMetricsRecorder::ReportBuyer(url::Origin& owner) {
+void AuctionMetricsRecorder::RecordNegativeInterestGroups(
+    int64_t num_negative_interest_groups) {
+  if (!num_negative_interest_groups_) {
+    num_negative_interest_groups_ = 0;
+  }
+  *num_negative_interest_groups_ += num_negative_interest_groups;
+}
+
+void AuctionMetricsRecorder::ReportBuyer(const url::Origin& owner) {
   buyers_.emplace(owner);
 }
 
@@ -267,6 +383,30 @@ void AuctionMetricsRecorder::RecordBidFilteredDuringReprioritization() {
 void AuctionMetricsRecorder::RecordBidsFilteredByPerBuyerLimits(
     int64_t num_bids) {
   num_bids_filtered_by_per_buyer_limits_ += num_bids;
+}
+
+void AuctionMetricsRecorder::RecordAdditionalBidResult(
+    AdditionalBidResult result) {
+  ++additional_bid_result_counts_[result];
+  base::UmaHistogramEnumeration(
+      "Ads.InterestGroup.Auction.AdditionalBids.Result", result);
+}
+
+void AuctionMetricsRecorder::RecordAdditionalBidDecodeLatency(
+    base::TimeDelta latency) {
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Auction.AdditionalBids.DecodeLatency", latency);
+  additional_bid_decode_latency_aggregator_.RecordLatency(latency);
+}
+
+void AuctionMetricsRecorder::
+    RecordNegativeInterestGroupIgnoredDueToInvalidSignature() {
+  ++num_negative_interest_groups_ignored_due_to_invalid_signature_;
+}
+
+void AuctionMetricsRecorder::
+    RecordNegativeInterestGroupIgnoredDueToJoiningOriginMismatch() {
+  ++num_negative_interest_groups_ignored_due_to_joining_origin_mismatch_;
 }
 
 void AuctionMetricsRecorder::SetKAnonymityBidMode(

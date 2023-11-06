@@ -210,6 +210,9 @@ class VIEWS_EXPORT ViewAccessibility {
   void OverridePosInSet(int pos_in_set, int set_size);
   void ClearPosInSetOverride();
 
+  // Overrides the `ax::mojom::BoolAttribute::kSelected` attribute.
+  void OverrideIsSelected(bool selected);
+
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus
   // from the beginning or end of one widget to another when navigating by its

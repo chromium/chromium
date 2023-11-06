@@ -23,8 +23,6 @@
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
-#include "net/cert/ocsp_revocation_status.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/ssl_server_socket.h"
@@ -33,6 +31,8 @@
 #include "net/ssl/ssl_server_config.h"
 #include "net/test/embedded_test_server/http_connection.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/ocsp_revocation_status.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -198,9 +198,10 @@ class EmbeddedTestServer {
       kTryLater,
       kSigRequired,
       kUnauthorized,
-      // The response will not be valid OCSPResponse DER.
+      // The response will not be valid bssl::OCSPResponse DER.
       kInvalidResponse,
-      // OCSPResponse will be valid DER but the contained ResponseData will not.
+      // bssl::OCSPResponse will be valid DER but the contained ResponseData
+      // will not.
       kInvalidResponseData,
     };
 
@@ -243,7 +244,7 @@ class EmbeddedTestServer {
         kMismatch,
       };
 
-      OCSPRevocationStatus cert_status = OCSPRevocationStatus::GOOD;
+      bssl::OCSPRevocationStatus cert_status = bssl::OCSPRevocationStatus::GOOD;
       Date ocsp_date = Date::kValid;
       Serial serial = Serial::kMatch;
     };
@@ -310,7 +311,7 @@ class EmbeddedTestServer {
     std::vector<net::IPAddress> ip_addresses;
 
     // A list of key usages to include in the leaf keyUsage extension.
-    std::vector<KeyUsageBit> key_usages;
+    std::vector<bssl::KeyUsageBit> key_usages;
   };
 
   typedef base::RepeatingCallback<std::unique_ptr<HttpResponse>(
@@ -368,11 +369,14 @@ class EmbeddedTestServer {
 
   // Equivalent of StartAndReturnHandle(), but requires manual Shutdown() by
   // the caller.
-  [[nodiscard]] bool Start(int port = 0);
+  [[nodiscard]] bool Start(int port = 0,
+                           base::StringPiece address = "127.0.0.1");
 
   // Starts listening for incoming connections but will not yet accept them.
-  // Returns whether a listening socket has been succesfully created.
-  [[nodiscard]] bool InitializeAndListen(int port = 0);
+  // Returns whether a listening socket has been successfully created.
+  [[nodiscard]] bool InitializeAndListen(
+      int port = 0,
+      base::StringPiece address = "127.0.0.1");
 
   // Starts the Accept IO Thread and begins accepting connections.
   [[nodiscard]] EmbeddedTestServerHandle
@@ -452,12 +456,12 @@ class EmbeddedTestServer {
   // ServeFilesFromSourceDirectory.
   void ServeFilesFromDirectory(const base::FilePath& directory);
 
-  // Serves files relative to DIR_SOURCE_ROOT.
+  // Serves files relative to DIR_SRC_TEST_DATA_ROOT.
   void ServeFilesFromSourceDirectory(base::StringPiece relative);
   void ServeFilesFromSourceDirectory(const base::FilePath& relative);
 
   // Registers the default handlers and serve additional files from the
-  // |directory| directory, relative to DIR_SOURCE_ROOT.
+  // |directory| directory, relative to DIR_SRC_TEST_DATA_ROOT.
   void AddDefaultHandlers(const base::FilePath& directory);
 
   // Returns the directory that files will be served from if |relative| is

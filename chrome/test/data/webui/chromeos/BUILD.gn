@@ -2,12 +2,122 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromebox_for_meetings/buildflags.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
+import("//chrome/test/include_js_tests.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
+
+if (include_js2gtest_tests) {
+  js2gtest("interactive_ui_tests_js_webui") {
+    test_type = "webui"
+
+    sources = [ "cr_focus_row_behavior_interactive_test.js" ]
+
+    gen_include_files = [
+      "polymer_browser_test_base.js",
+      "polymer_interactive_ui_test.js",
+    ]
+
+    deps = [ "//chrome/browser/ui" ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_webui") {
+    test_type = "webui"
+
+    # Javascript sources. These are combined with the .cc files in the GYP
+    # build and are handled by a rule, but in the GN build they're in a
+    # separate action so need to be separated out.
+    sources = [
+      "../../../../browser/resources/chromeos/login/security_token_pin_browsertest.js",
+      "../../../../browser/ui/webui/ash/certificate_manager_dialog_browsertest.js",
+      "../cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
+      "../settings/chromeos/os_settings_browsertest.js",
+      "account_manager/account_manager_browsertest.js",
+      "arc_account_picker/arc_account_picker_browsertest.js",
+      "ash_common/ash_common_browsertest.js",
+      "ash_common/ash_common_resources_browsertest.js",
+      "ash_common/i18n_process_test.js",
+      "ash_common/post_message_api/post_message_api_browsertest.js",
+      "assertions.js",
+      "async_gen.js",
+      "bluetooth_pairing_dialog_browsertest.js",
+      "borealis_installer/borealis_installer_browsertest.js",
+      "cloud_upload/cloud_upload_dialog_browsertest.js",
+      "cloud_upload/connect_onedrive_browsertest.js",
+      "cloud_upload/file_handler_page_browsertest.js",
+      "cloud_upload/move_confirmation_page_browsertest.js",
+      "edu_coexistence/edu_coexistence_browsertest.js",
+      "edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
+      "emoji_picker/emoji_picker_browsertest.js",
+      "gaia_action_buttons/gaia_action_buttons_browsertest.js",
+      "internet_config_dialog_browsertest.js",
+      "internet_detail_dialog_browsertest.js",
+      "js2gtest_browsertest.js",
+      "network_browsertest.js",
+      "office_fallback/office_fallback_browsertest.js",
+      "set_time_dialog_browsertest.js",
+      "sys_internals/sys_internals_browsertest.js",
+    ]
+
+    gen_include_files = [ "polymer_browser_test_base.js" ]
+
+    deps = [
+      "//build:branding_buildflags",
+      "//build/config/coverage:buildflags",
+      "//chrome/browser/ui",
+      "//crypto:buildflags",
+      "//services/network/public/cpp",
+      "//skia",
+    ]
+
+    if (is_cfm) {
+      sources +=
+          [ "chromebox_for_meetings/cfm_network_settings_browsertest.js" ]
+    }
+
+    data = [ "//ui/webui/resources/js/load_time_data_deprecated.js" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_mojo_lite_webui") {
+    test_type = "mojo_lite_webui"
+
+    deps = [ "//chrome/browser/ui" ]
+
+    sources = [
+      "crostini_installer_browsertest.js",
+      "crostini_upgrader_browsertest.js",
+      "firmware_update/firmware_update_browsertest.js",
+      "os_feedback_ui/os_feedback_browsertest.js",
+      "scanning/scanning_app_browsertest.js",
+      "shimless_rma/shimless_rma_browsertest.js",
+    ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+
+  js2gtest("browser_tests_js_mojo_webui") {
+    test_type = "mojo_webui"
+    sources = [
+      "../nearby_share/nearby_browsertest.js",
+      "../nearby_share/shared/nearby_shared_v3_browsertest.js",
+      "diagnostics/diagnostics_browsertest.js",
+      "manage_mirrorsync/manage_mirrorsync_browsertest.js",
+      "parent_access/parent_access_browsertest.js",
+      "personalization_app/personalization_app_browsertest.js",
+      "print_management/print_management_browsertest.js",
+      "shortcut_customization/shortcut_customization_browsertest.js",
+    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  }
+}
 
 js_type_check("closure_compile_local") {
   is_polymer3 = true
@@ -66,20 +176,92 @@ ts_library("build_ts") {
   composite = true
   tsconfig_base = "../tsconfig_base.json"
   in_files = [
-    "arc_account_picker/test_util.js",
-    "ash_common/i18n_behavior_test.js",
+    "bluetooth_pairing_test.js",
     "chai_assert.js",
+    "crostini_installer_app_test.js",
+    "crostini_upgrader_app_test.js",
     "fake_network_config_mojom.js",
     "fake_passpoint_service_mojom.ts",
+    "internet_config_dialog_test.js",
+    "internet_detail_dialog_test.js",
     "mock_controller.js",
     "mock_controller.m.js",
     "set_time_dialog_test.js",
     "test_browser_proxy.js",
     "test_util.js",
+
+    # Subfolder files. Move these files to their dedicated ts_library()
+    # subfolder targets when migrated to TS.
+    "account_manager/account_migration_welcome_test.js",
+    "account_manager/test_account_manager_browser_proxy.js",
+    "arc_account_picker/arc_account_picker_test.js",
+    "arc_account_picker/test_util.js",
+    "gaia_action_buttons/gaia_action_buttons_test.js",
+    "os_feedback_ui/confirmation_page_test.js",
+    "os_feedback_ui/fake_help_content_provider_test.js",
+    "os_feedback_ui/feedback_flow_test.js",
+    "os_feedback_ui/file_attachment_test.js",
+    "os_feedback_ui/help_content_test.js",
+    "os_feedback_ui/mojo_interface_provider_test.js",
+    "os_feedback_ui/os_feedback_unified_test.js",
+    "os_feedback_ui/search_page_test.js",
+    "os_feedback_ui/share_data_page_test.js",
+    "shimless_rma/all_inputs_disabled_test.js",
+    "shimless_rma/critical_error_page_test.js",
+    "shimless_rma/fake_shimless_rma_service_test.js",
+    "shimless_rma/hardware_error_page_test.js",
+    "shimless_rma/onboarding_choose_destination_page_test.js",
+    "shimless_rma/onboarding_choose_wipe_device_page_test.js",
+    "shimless_rma/onboarding_choose_wp_disable_method_page_test.js",
+    "shimless_rma/onboarding_enter_rsu_wp_disable_code_page_test.js",
+    "shimless_rma/onboarding_landing_page_test.js",
+    "shimless_rma/onboarding_network_page_test.js",
+    "shimless_rma/onboarding_select_components_page_test.js",
+    "shimless_rma/onboarding_update_page_test.js",
+    "shimless_rma/onboarding_wait_for_manual_wp_disable_page_test.js",
+    "shimless_rma/onboarding_wp_disable_complete_page_test.js",
+    "shimless_rma/reboot_page_test.js",
+    "shimless_rma/reimaging_calibration_failed_page_test.js",
+    "shimless_rma/reimaging_calibration_run_page_test.js",
+    "shimless_rma/reimaging_calibration_setup_page_test.js",
+    "shimless_rma/reimaging_device_information_page_test.js",
+    "shimless_rma/reimaging_firmware_update_page_test.js",
+    "shimless_rma/reimaging_provisioning_page_test.js",
+    "shimless_rma/repair_component_chip_test.js",
+    "shimless_rma/shimless_3p_diag_test.js",
+    "shimless_rma/shimless_rma_app_test.js",
+    "shimless_rma/wrapup_finalize_page_test.js",
+    "shimless_rma/wrapup_repair_complete_page_test.js",
+    "shimless_rma/wrapup_restock_page_test.js",
+    "shimless_rma/wrapup_wait_for_manual_wp_enable_page_test.js",
+    "sys_internals/all_tests.js",
+    "sys_internals/api_test.js",
+    "sys_internals/line_chart/data_series_test.js",
+    "sys_internals/line_chart/line_chart_test.js",
+    "sys_internals/line_chart/menu_test.js",
+    "sys_internals/line_chart/scrollbar_test.js",
+    "sys_internals/line_chart/sub_chart_test.js",
+    "sys_internals/line_chart/unit_label_test.js",
+    "sys_internals/page_drawer_test.js",
+    "sys_internals/page_infopage_test.js",
+    "sys_internals/page_switch_test.js",
+    "sys_internals/page_unit_test.js",
+    "sys_internals/test_util.js",
+  ]
+
+  path_mappings = [
+    "chrome://chrome-signin/arc_account_picker/*|" +
+        rebase_path("//chrome/browser/resources/chromeos/arc_account_picker/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
 
   deps = [
     "//ash/webui/common/resources:build_ts",
+    "//chrome/test/data/webui:build_ts",
+    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

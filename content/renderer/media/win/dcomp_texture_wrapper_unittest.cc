@@ -8,6 +8,7 @@
 #include "base/test/task_environment.h"
 #include "content/renderer/media/win/dcomp_texture_factory.h"
 #include "content/renderer/media/win/dcomp_texture_wrapper_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/mock_filters.h"
@@ -29,15 +30,16 @@ class StubClientSharedImageInterface : public gpu::ClientSharedImageInterface {
   StubClientSharedImageInterface() : gpu::ClientSharedImageInterface(nullptr) {}
   gpu::SyncToken GenVerifiedSyncToken() override { return gpu::SyncToken(); }
 
-  gpu::Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 base::StringPiece debug_label,
-                                 gfx::GpuMemoryBufferHandle handle) override {
-    return gpu::Mailbox();
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gfx::GpuMemoryBufferHandle handle) override {
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
   }
 };
 

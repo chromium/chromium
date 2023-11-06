@@ -661,9 +661,6 @@ const std::u16string& DWriteFontFamilyProxy::GetName() {
 }
 
 IDWriteFontFamily* DWriteFontFamilyProxy::LoadFamily() {
-  // The time needed to lock should be included in the reports. They metrics may
-  // include entries of almost zero time when |this| is already loaded though.
-  SCOPED_UMA_HISTOGRAM_TIMER("DirectWrite.Fonts.Proxy.LoadFamilyTime");
   TRACE_EVENT0("dwrite,fonts", "DWriteFontFamilyProxy::LoadFamily");
 
   base::AutoLock family_lock(family_lock_);

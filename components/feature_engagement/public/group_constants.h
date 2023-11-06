@@ -10,9 +10,6 @@
 
 namespace feature_engagement {
 
-// Overall feature controlling whether Groups are enabled.
-BASE_DECLARE_FEATURE(kIPHGroups);
-
 // A feature to ensure all arrays can contain at least one group.
 BASE_DECLARE_FEATURE(kIPHDummyGroup);
 

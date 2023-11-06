@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
 #include "chrome/browser/ash/crosapi/browser_data_back_migrator.h"
@@ -164,17 +164,8 @@ std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(
           profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/false,
           network_delegate);
     case KioskAppType::kWebApp:
-      // TODO(b/242023891): `WebKioskAppServiceLauncher` does not support
-      // Lacros until App Service installation API is available.
-      if (base::FeatureList::IsEnabled(features::kKioskEnableAppService) &&
-          !crosapi::browser_util::IsLacrosEnabled()) {
-        return std::make_unique<WebKioskAppServiceLauncher>(
-            profile, kiosk_app_id.account_id.value(), network_delegate);
-      } else {
-        return std::make_unique<WebKioskAppLauncher>(
-            profile, kiosk_app_id.account_id.value(),
-            /*should_skip_install=*/false, network_delegate);
-      }
+      return std::make_unique<WebKioskAppServiceLauncher>(
+          profile, kiosk_app_id.account_id.value(), network_delegate);
   }
 }
 
@@ -325,15 +316,10 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     CHECK_IS_TEST();
   }
 
-  if (kiosk_app_id.type == KioskAppType::kChromeApp) {
-    KioskAppManager::App app;
-    DCHECK(KioskAppManager::IsInitialized());
-    CHECK(KioskAppManager::Get()->GetApp(*kiosk_app_id.app_id, &app));
-    kiosk_app_id_.account_id = app.account_id;
-    if (auto_launch) {
-      KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-          *kiosk_app_id.app_id);
-    }
+  if (auto_launch && kiosk_app_id.type == KioskAppType::kChromeApp) {
+    CHECK(KioskAppManager::IsInitialized());
+    KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
+        *kiosk_app_id.app_id);
   }
 
   network_ui_controller_->Start();
@@ -348,8 +334,12 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
     return;
   }
 
+  // TODO(b/304981820) remove checks once account_id is no longer optional.
+  CHECK(kiosk_app_id.account_id.has_value());
+  CHECK(kiosk_app_id.account_id.value().is_valid());
+
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
-      *kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
+      kiosk_app_id_.account_id.value(), kiosk_app_id_.type, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 
@@ -387,26 +377,21 @@ void KioskLaunchController::OnProfileLoaded(Profile* profile) {
   // browser_data_migrator.h for details.
   BrowserDataMigratorImpl::ClearMigrationStep(g_browser_process->local_state());
 
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile);
+  const user_manager::User& user =
+      CHECK_DEREF(ProfileHelper::Get()->GetUserByProfile(profile));
 
-  // TODO(b/257210467): Remove the need for CHECK_IS_TEST
-  if (!user) {
-    CHECK_IS_TEST();
-  } else {
-    if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
-            user->GetAccountId(), user->username_hash(),
-            crosapi::browser_util::PolicyInitState::kAfterInit)) {
-      LOG(WARNING) << "Restarting chrome to run profile migration.";
-      return;
-    }
+  if (BrowserDataMigratorImpl::MaybeRestartToMigrate(
+          user.GetAccountId(), user.username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run profile migration.";
+    return;
+  }
 
-    if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
-            user->GetAccountId(), user->username_hash(),
-            crosapi::browser_util::PolicyInitState::kAfterInit)) {
-      LOG(WARNING) << "Restarting chrome to run backward profile migration.";
-      return;
-    }
+  if (BrowserDataBackMigrator::MaybeRestartToMigrateBack(
+          user.GetAccountId(), user.username_hash(),
+          crosapi::browser_util::PolicyInitState::kAfterInit)) {
+    LOG(WARNING) << "Restarting chrome to run backward profile migration.";
+    return;
   }
 
   // This is needed to trigger input method extensions being loaded.

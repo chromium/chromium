@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -27,29 +28,47 @@ class PhantomWindowController;
 // It is meant to be used during dragging by a WindowResizer.
 class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
  public:
-  // The edge position of a window from which to initiate a split.
-  enum class SplitPosition {
-    kNone,
-    kLeft,
-    kRight,
-    kTop,
-    kBottom,
+  // The region of a window from which to initiate a split.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Keep this in sync with `WindowSplittingSplitRegion` in
+  // tools/metrics/histograms/enums.xml.
+  enum class SplitRegion {
+    kNone = 0,
+    kLeft = 1,
+    kRight = 2,
+    kTop = 3,
+    kBottom = 4,
+    kMaxValue = kBottom,
   };
 
-  // Holds bounds of windows after splitting.
-  struct SplitWindowBounds {
+  // The type of action resulting from a completed drag, for logging only.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // Keep this in sync with `WindowSplittingDragType` in
+  // tools/metrics/histograms/enums.xml.
+  enum class DragType {
+    kIncomplete = 0,
+    kNoSplit = 1,
+    kSplit = 2,
+    kMaxValue = kSplit,
+  };
+
+  // Holds info about windows after splitting.
+  struct SplitWindowInfo {
     gfx::Rect topmost_window_bounds;
     gfx::Rect dragged_window_bounds;
+    SplitRegion split_region;
   };
 
-  // Calculates window bounds resulting from window splitting.
+  // Calculates window bounds and other info resulting from window splitting.
   // `topmost_window` is the window to be split.
   // `dragged_window` is the window being dragged over the `topmost_window`.
   // `screen_location` is the screen coordinate of the input event. It must be
   // within the `topmost_window`.
   // Returns nullopt if window can't be split, e.g. the location is not within
   // any trigger area, or the resulting size is smaller than minimum size, etc.
-  static absl::optional<SplitWindowBounds> MaybeSplitWindow(
+  static absl::optional<SplitWindowInfo> MaybeSplitWindow(
       aura::Window* topmost_window,
       aura::Window* dragged_window,
       const gfx::PointF& screen_location);
@@ -80,14 +99,34 @@ class ASH_EXPORT WindowSplitter : public aura::WindowObserver {
 
   void MaybeClearDraggedWindow();
 
+  void RecordMetricsOnEndDrag();
+
+  DragType GetDragType() const;
+
   // The window being dragged.
   raw_ptr<aura::Window> dragged_window_ = nullptr;
 
   // Whether the window can be split upon completing drag.
   bool can_split_window_ = false;
 
+  // Whether the user actually moved enough to be considered a drag.
+  bool is_drag_updated_ = false;
+
+  // Whether the drag operation was completed successfully (instead of e.g.
+  // cancelled).
+  bool is_drag_completed_ = false;
+
+  // The region of a window the split happened, if any;
+  SplitRegion completed_split_region_ = SplitRegion::kNone;
+
   // Gives a preview of how the window will be split.
   std::unique_ptr<PhantomWindowController> phantom_window_controller_;
+
+  // Number of times the phantom window was shown.
+  uint32_t phantom_window_shown_count_ = 0;
+
+  // Time ticks when the drag action started.
+  const base::TimeTicks drag_start_time_;
 };
 
 }  // namespace ash

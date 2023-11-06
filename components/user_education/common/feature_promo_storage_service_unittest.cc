@@ -26,7 +26,7 @@ TEST(FeaturePromoStorageServiceTest, GetSnoozeCount) {
   test::TestFeaturePromoStorageService service;
   EXPECT_EQ(0, service.GetSnoozeCount(kTestIPHFeature));
   EXPECT_EQ(0, service.GetSnoozeCount(kTestIPHFeature2));
-  FeaturePromoStorageService::PromoData data;
+  FeaturePromoData data;
   data.snooze_count = 3;
   service.SavePromoData(kTestIPHFeature, data);
   EXPECT_EQ(3, service.GetSnoozeCount(kTestIPHFeature));
@@ -43,7 +43,7 @@ TEST(FeaturePromoStorageServiceTest, GetShownForApps) {
   test::TestFeaturePromoStorageService service;
   EXPECT_THAT(service.GetShownForApps(kTestIPHFeature), testing::IsEmpty());
   EXPECT_THAT(service.GetShownForApps(kTestIPHFeature2), testing::IsEmpty());
-  FeaturePromoStorageService::PromoData data;
+  FeaturePromoData data;
   data.shown_for_apps.insert(kAppName1);
   data.shown_for_apps.insert(kAppName2);
   service.SavePromoData(kTestIPHFeature, data);

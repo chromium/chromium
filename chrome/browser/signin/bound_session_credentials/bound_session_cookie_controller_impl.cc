@@ -27,11 +27,8 @@ BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
     content::StoragePartition* storage_partition,
     network::NetworkConnectionTracker* network_connection_tracker,
     const bound_session_credentials::BoundSessionParams& bound_session_params,
-    const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
-    : BoundSessionCookieController(bound_session_params,
-                                   cookie_names,
-                                   delegate),
+    : BoundSessionCookieController(bound_session_params, delegate),
       key_service_(key_service),
       storage_partition_(storage_partition),
       network_connection_tracker_(network_connection_tracker),
@@ -80,7 +77,7 @@ bool BoundSessionCookieControllerImpl::IsConnectionTypeAvailableAndOffline() {
          type == network::mojom::ConnectionType::CONNECTION_NONE;
 }
 
-void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
+void BoundSessionCookieControllerImpl::HandleRequestBlockedOnCookie(
     base::OnceClosure resume_blocked_request) {
   if (AreAllCookiesFresh()) {
     // Cookie is fresh.
@@ -203,7 +200,7 @@ void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
   // Transient errors have no impact on future requests.
 
   if (BoundSessionRefreshCookieFetcher::IsPersistentError(result)) {
-    delegate_->TerminateSession();
+    delegate_->OnPersistentErrorEncountered();
     // `this` should be deleted.
   }
 }

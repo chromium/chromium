@@ -47,7 +47,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 // |iph_state| indicates whether or not in-product-help prompted this call.
 bool CreateWebAppFromManifest(
     content::WebContents* web_contents,
-    bool bypass_service_worker_check,
     webapps::WebappInstallSource install_source,
     WebAppInstalledCallback installed_callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);

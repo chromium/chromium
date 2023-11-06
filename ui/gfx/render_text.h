@@ -452,6 +452,8 @@ class GFX_EXPORT RenderText {
   // by the use of SetElideBehavior(...).
   void SetEliding(bool value);
   void ApplyEliding(bool value, const Range& range);
+  // Replace the text by the empty text because it can't fit.
+  void SetTextFullyElided();
 
   // Returns whether this style is enabled consistently across the entire
   // RenderText.
@@ -887,9 +889,12 @@ class GFX_EXPORT RenderText {
   virtual internal::TextRunList* GetRunList() = 0;
   virtual const internal::TextRunList* GetRunList() const = 0;
 
-  // Returns the decorated text corresponding to |range|. Returns false if the
-  // text cannot be retrieved, e.g. if the text is obscured.
-  virtual bool GetDecoratedTextForRange(const Range& range,
+  // Returns the decorated text corresponding to `text_range`, in logical
+  // offsets. The text returned in the decorated text object is the text(), not
+  // the display_text(), and it's not obscured. It's the responsibility of the
+  // callers of this function to replace the text by the password replacement
+  // character if it is obscured and exposed to platform APIs.
+  virtual void GetDecoratedTextForRange(const Range& text_range,
                                         DecoratedText* decorated_text) = 0;
 
   // Logical UTF-16 string data to be drawn.
@@ -959,6 +964,9 @@ class GFX_EXPORT RenderText {
   BreakList<Font::Weight> weights_{Font::Weight::NORMAL};
   internal::StyleArray styles_;
   BreakList<bool> elidings_;
+  // Sets when no codepoint can fit the display width; even the ellipsis. The
+  // layout text must be empty.
+  bool text_fully_elided_ = false;
 
   mutable BreakList<SkColor> layout_colors_;
   mutable BreakList<BaselineStyle> layout_baselines_;

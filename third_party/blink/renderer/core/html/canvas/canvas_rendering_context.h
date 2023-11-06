@@ -74,6 +74,7 @@ class CanvasResourceProvider;
 class ComputedStyle;
 class Document;
 class Element;
+class ExceptionState;
 class ExecutionContext;
 class ImageBitmap;
 class NoAllocDirectCallHost;
@@ -150,7 +151,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   static CanvasRenderingAPI RenderingAPIFromId(const String& id);
 
-  CanvasRenderingContextHost* Host() const { return host_; }
+  CanvasRenderingContextHost* Host() const { return host_.Get(); }
   virtual SkColorInfo CanvasRenderingContextSkColorInfo() const;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage(FlushReason) = 0;
@@ -277,7 +278,10 @@ class CORE_EXPORT CanvasRenderingContext
 
   // OffscreenCanvas-specific methods.
   virtual bool PushFrame() { return false; }
-  virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
+  virtual ImageBitmap* TransferToImageBitmap(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
+    return nullptr;
+  }
 
   // Notification the color scheme of the HTMLCanvasElement may have changed.
   virtual void ColorSchemeMayHaveChanged() {}

@@ -40,8 +40,9 @@ bool Base64DecodeUrlSafe(base::StringPiece input, std::string* output) {
 
 absl::optional<base::Value> ReadJsonTestFile(const char* test_file_name) {
   base::FilePath test_data_dir;
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir)) {
     return absl::nullopt;
+  }
 
   base::FilePath file_path = test_data_dir.AppendASCII("components")
                                  .AppendASCII("test")

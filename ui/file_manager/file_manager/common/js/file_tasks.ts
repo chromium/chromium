@@ -6,8 +6,8 @@ import {FileData} from '../../externs/ts/state.js';
 import {TaskHistory} from '../../foreground/js/task_history.js';
 
 import {FileType} from './file_type.js';
+import {str} from './translations.js';
 import {LEGACY_FILES_EXTENSION_ID, SWA_APP_ID, SWA_FILES_APP_URL, toFilesAppURL} from './url_constants.js';
-import {str} from './util.js';
 
 export interface AnnotatedTask extends chrome.fileManagerPrivate.FileTask {
   iconType: string;

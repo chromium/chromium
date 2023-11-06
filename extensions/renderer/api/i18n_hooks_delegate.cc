@@ -16,8 +16,10 @@
 #include "extensions/common/message_bundle.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
+#include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/service_worker_data.h"
 #include "extensions/renderer/shared_l10n_map.h"
 #include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
@@ -149,12 +151,12 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     const std::string& extension_id,
                                     v8::Local<v8::Value> v8_substitutions,
                                     v8::Local<v8::Value> v8_options,
-                                    IPC::Sender* message_sender,
+                                    SharedL10nMap::IPCTarget* ipc_target,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
 
   std::string message = SharedL10nMap::GetInstance().GetMessage(
-      extension_id, message_name, message_sender);
+      extension_id, message_name, ipc_target);
 
   std::vector<std::string> substitutions;
   // For now, we just suppress all errors, but that's really not the best.
@@ -240,7 +242,7 @@ RequestResult I18nHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (I18nHooksDelegate::*)(
       ScriptContext*, const APISignature::V8ParseResult&);
@@ -280,22 +282,31 @@ RequestResult I18nHooksDelegate::HandleRequest(
 RequestResult I18nHooksDelegate::HandleGetMessage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   DCHECK(script_context->extension());
   DCHECK(arguments[0]->IsString());
 
-  IPC::Sender* message_sender = nullptr;
+  SharedL10nMap::IPCTarget* ipc_target = nullptr;
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   if (script_context->IsForServiceWorker()) {
-    message_sender = WorkerThreadDispatcher::Get();
+    ipc_target = WorkerThreadDispatcher::Get();
   } else {
-    message_sender = script_context->GetRenderFrame();
+    ipc_target = script_context->GetRenderFrame();
   }
+#else
+  if (script_context->IsForServiceWorker()) {
+    ipc_target =
+        WorkerThreadDispatcher::GetServiceWorkerData()->GetRendererHost();
+  } else if (auto* frame = script_context->GetRenderFrame()) {
+    ipc_target = ExtensionFrameHelper::Get(frame)->GetRendererHost();
+  }
+#endif
 
-  v8::Local<v8::Value> message = GetI18nMessage(
-      gin::V8ToString(script_context->isolate(), arguments[0]),
-      script_context->extension()->id(), arguments[1], arguments[2],
-      message_sender, script_context->v8_context());
+  v8::Local<v8::Value> message =
+      GetI18nMessage(gin::V8ToString(script_context->isolate(), arguments[0]),
+                     script_context->extension()->id(), arguments[1],
+                     arguments[2], ipc_target, script_context->v8_context());
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = message;
@@ -317,7 +328,7 @@ RequestResult I18nHooksDelegate::HandleGetUILanguage(
 RequestResult I18nHooksDelegate::HandleDetectLanguage(
     ScriptContext* script_context,
     const APISignature::V8ParseResult& parse_result) {
-  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  const v8::LocalVector<v8::Value>& arguments = *parse_result.arguments;
   DCHECK(arguments[0]->IsString());
 
   v8::Local<v8::Context> v8_context = script_context->v8_context();

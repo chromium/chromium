@@ -587,8 +587,8 @@ IN_PROC_BROWSER_TEST_P(ManualEnrollmentErrorScreenTest,
   enrollment_helper_.ExpectEnrollmentMode(enrollment_config.mode);
   // The test expects the error screen to be shown. Avoid automatic fallback
   enrollment_helper_.ExpectOAuthEnrollmentError(
-      policy::EnrollmentStatus::ForStatus(
-          policy::EnrollmentStatus::REGISTRATION_FAILED));
+      policy::EnrollmentStatus::ForEnrollmentCode(
+          policy::EnrollmentStatus::Code::kRegistrationFailed));
   enrollment_helper_.SetupClearAuth();
 
   enrollment_screen()->SetEnrollmentConfig(enrollment_config);

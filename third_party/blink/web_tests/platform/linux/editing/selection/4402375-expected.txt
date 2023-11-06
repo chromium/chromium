@@ -22,6 +22,6 @@ layer at (0,0)
         LayoutText {#text} at (0,0) size 178x19
           text run at (0,0) width 178: "This text should be selected."
 layer at (8,64)
-  LayoutNGBlockFlow {HR} at (0,56) size 784x2 [border: (1px inset #EEEEEE)]
+  LayoutNGBlockFlow {HR} at (0,56) size 784x2 [border: (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE) (1px inset #EEEEEE)]
 selection start: position 0 of child 1 {#text} of child 6 {DIV} of body
 selection end:   position 29 of child 1 {#text} of child 6 {DIV} of body

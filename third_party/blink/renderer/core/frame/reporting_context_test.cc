@@ -141,7 +141,8 @@ TEST_F(ReportingContextTest, CountQueuedReports) {
   // Checking the feature state with reporting intent should record a potential
   // violation.
   DeprecationReportBody* body = MakeGarbageCollected<DeprecationReportBody>(
-      "FeatureId", base::Time::FromJsTime(2e9), "Test report");
+      "FeatureId", base::Time::FromMillisecondsSinceUnixEpoch(2e9),
+      "Test report");
   Report* report = MakeGarbageCollected<Report>(
       "deprecation", dummy_page_holder->GetDocument().Url().GetString(), body);
 
@@ -162,7 +163,7 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
                                               run_loop.QuitClosure());
 
   auto* body = MakeGarbageCollected<DeprecationReportBody>(
-      "FeatureId", base::Time::FromJsTime(1000), "Test report");
+      "FeatureId", base::Time::FromSecondsSinceUnixEpoch(1), "Test report");
   auto* report = MakeGarbageCollected<Report>(
       "deprecation", win->document()->Url().GetString(), body);
   ReportingContext::From(win)->QueueReport(report);
@@ -171,7 +172,7 @@ TEST_F(ReportingContextTest, DeprecationReportContent) {
   EXPECT_TRUE(reporting_service.DeprecationReportAnticipatedRemoval());
   // We had a bug that anticipatedRemoval had a wrong value only in mojo method
   // calls.
-  EXPECT_EQ(base::Time::FromJsTime(1000),
+  EXPECT_EQ(base::Time::FromSecondsSinceUnixEpoch(1),
             *reporting_service.DeprecationReportAnticipatedRemoval());
 }
 

@@ -166,6 +166,10 @@ class ContentSettingsPattern {
   // Returns a pattern that matches exactly this URL.
   static ContentSettingsPattern FromURLNoWildcard(const GURL& url);
 
+  // Converts a given url to a ContentSettingsPattern that represents a site,
+  // i.e. with domain, path, and port wildcards.
+  static ContentSettingsPattern FromURLToSchemefulSitePattern(const GURL& url);
+
   // Returns a pattern that matches the given pattern specification.
   // Valid patterns specifications are:
   //   - [*.]domain.tld (matches domain.tld and all sub-domains)

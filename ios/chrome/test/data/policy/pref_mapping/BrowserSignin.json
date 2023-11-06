@@ -1,0 +1,42 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "BrowserSignin": 0
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 1
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "BrowserSignin": 2
+        },
+        "prefs": {
+          "signin.browser_signin_policy": {
+            "location": "local_state",
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

@@ -6,14 +6,12 @@ include_rules = [
     "+third_party/blink/renderer/platform/loader",
 
     # Dependencies.
-    "+base/strings/string_number_conversions.h",  # for fetch/ResourceLoadScheduler.cpp
     "+components/link_header_util",  # for LinkHeader.cpp
     "+net/base/load_flags.h",
     "+net/base/net_errors.h",
     "+net/traffic_annotation/network_traffic_annotation_test_helper.h",
     "+net/url_request/redirect_info.h",
     "+services/metrics/public", # for UKM API
-    "+services/network/public",  # for Fetch API and CORS
     "+third_party/blink/renderer/platform/allow_discouraged_type.h",
     "+third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h",
     "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
@@ -58,8 +56,6 @@ specific_include_rules = {
      # This file consists of conversion functions and hence needs to access
      # both the blink and chromium mojom variants.
      "+net/base/request_priority.h",
-     "+net/http/http_request_headers.h",
-     "+net/http/http_util.h",
      "+third_party/blink/public/mojom/blob/blob.mojom.h",
      "+services/network/public/mojom/data_pipe_getter.mojom.h",
   ],

@@ -43,6 +43,7 @@
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/url_loader_factory_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/mojom/event_router.mojom.h"
@@ -111,12 +112,16 @@ ShellContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
 
 void ShellContentBrowserClient::RenderProcessWillLaunch(
     content::RenderProcessHost* host) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC) || BUILDFLAG(ENABLE_NACL)
   int render_process_id = host->GetID();
   BrowserContext* browser_context = browser_main_parts_->browser_context();
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   host->AddFilter(
       new ExtensionMessageFilter(render_process_id, browser_context));
   host->AddFilter(
       new MessagingAPIMessageFilter(render_process_id, browser_context));
+#endif
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
 #if BUILDFLAG(ENABLE_NACL)
@@ -220,11 +225,6 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   associated_registry->AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          render_process_host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, render_process_host->GetID()));
 }
@@ -242,6 +242,12 @@ void ShellContentBrowserClient::
                 std::move(receiver), render_frame_host);
           },
           &render_frame_host));
+  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
+                          render_frame_host.GetGlobalId()));
+  associated_registry.AddInterface<mojom::GuestView>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForExtensions,
+                          render_frame_host.GetGlobalId()));
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

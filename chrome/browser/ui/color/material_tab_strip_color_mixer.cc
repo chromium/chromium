@@ -42,7 +42,7 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
 
   // TODO(tbergquist): Use kColorSysStateHeaderHoverInactive, once it exists.
   mixer[kColorTabBackgroundInactiveHoverFrameInactive] = {
-      ui::kColorSysStateHeaderHover};
+      ui::kColorSysStateHeaderHoverInactive};
 
   mixer[kColorTabBackgroundSelectedFrameActive] = {ui::GetResultingPaintColor(
       ui::kColorSysStateHeaderSelect, kColorTabBackgroundInactiveFrameActive)};
@@ -55,7 +55,8 @@ void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabBackgroundSelectedHoverFrameInactive] = {
       ui::GetResultingPaintColor(ui::kColorSysStateHoverDimBlendProtection,
                                  kColorTabBackgroundSelectedFrameInactive)};
-
+  mixer[kColorTabDiscardRingFrameActive] = {ui::kColorSysStateDisabled};
+  mixer[kColorTabDiscardRingFrameInactive] = {kColorTabDiscardRingFrameActive};
   mixer[kColorTabForegroundActiveFrameActive] = {ui::kColorSysOnSurface};
   mixer[kColorTabForegroundActiveFrameInactive] = {
       kColorTabForegroundActiveFrameActive};

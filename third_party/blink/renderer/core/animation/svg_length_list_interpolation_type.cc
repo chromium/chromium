@@ -25,10 +25,10 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertNeutral(
   if (underlying_length == 0)
     return nullptr;
 
-  auto result = std::make_unique<InterpolableList>(underlying_length);
+  auto* result = MakeGarbageCollected<InterpolableList>(underlying_length);
   for (wtf_size_t i = 0; i < underlying_length; i++)
     result->Set(i, SVGLengthInterpolationType::NeutralInterpolableValue());
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
@@ -37,7 +37,7 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
     return nullptr;
 
   const auto& length_list = To<SVGLengthList>(svg_value);
-  auto result = std::make_unique<InterpolableList>(length_list.length());
+  auto* result = MakeGarbageCollected<InterpolableList>(length_list.length());
   for (wtf_size_t i = 0; i < length_list.length(); i++) {
     InterpolationValue component =
         SVGLengthInterpolationType::MaybeConvertSVGLength(*length_list.at(i));
@@ -45,7 +45,7 @@ InterpolationValue SVGLengthListInterpolationType::MaybeConvertSVGValue(
       return nullptr;
     result->Set(i, std::move(component.interpolable_value));
   }
-  return InterpolationValue(std::move(result));
+  return InterpolationValue(result);
 }
 
 PairwiseInterpolationValue SVGLengthListInterpolationType::MaybeMergeSingles(

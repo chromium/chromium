@@ -5,7 +5,7 @@ layer at (0,0)
     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
       LayoutText {#text} at (0,0) size 0x0
 layer at (8,8)
-  LayoutIFrame {IFRAME} at (0,0) size 204x204 [border: (2px inset #EEEEEE)]
+  LayoutIFrame {IFRAME} at (0,0) size 204x204 [border: (2px inset #EEEEEE) (2px inset #EEEEEE) (2px inset #EEEEEE) (2px inset #EEEEEE)]
     layer at (0,0)
       LayoutView at (0,0) size 200x200
     layer at (0,0)

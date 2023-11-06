@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
 #include "components/manta/manta_service_callbacks.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -34,13 +35,20 @@ constexpr base::TimeDelta kTimeoutMs = base::Seconds(90);
 SnapperProvider::SnapperProvider(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager)
-    : identity_manager_(identity_manager),
-      url_loader_factory_(url_loader_factory) {}
+    : url_loader_factory_(url_loader_factory) {
+  CHECK(identity_manager);
+  identity_manager_observation_.Observe(identity_manager);
+}
 
 SnapperProvider::~SnapperProvider() = default;
 
 void SnapperProvider::Call(const manta::proto::Request& request,
                            MantaProtoResponseCallback done_callback) {
+  if (!identity_manager_observation_.IsObserving()) {
+    std::move(done_callback)
+        .Run(nullptr, {MantaStatusCode::kNoIdentityManager});
+    return;
+  }
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
@@ -53,10 +61,18 @@ void SnapperProvider::Call(const manta::proto::Request& request,
                                     std::move(fetcher)));
 }
 
+void SnapperProvider::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (identity_manager_observation_.IsObservingSource(identity_manager)) {
+    identity_manager_observation_.Reset();
+  }
+}
+
 std::unique_ptr<EndpointFetcher> SnapperProvider::CreateEndpointFetcher(
     const GURL& url,
     const std::vector<std::string>& scopes,
     const std::string& post_data) {
+  CHECK(identity_manager_observation_.IsObserving());
   return std::make_unique<EndpointFetcher>(
       /*url_loader_factory=*/url_loader_factory_,
       /*oauth_consumer_name=*/kOauthConsumerName, /*url=*/url,
@@ -64,7 +80,7 @@ std::unique_ptr<EndpointFetcher> SnapperProvider::CreateEndpointFetcher(
       /*scopes=*/scopes,
       /*timeout_ms=*/kTimeoutMs.InMilliseconds(), /*post_data=*/post_data,
       /*annotation_tag=*/MISSING_TRAFFIC_ANNOTATION,
-      /*identity_manager=*/identity_manager_,
+      /*identity_manager=*/identity_manager_observation_.GetSource(),
       /*consent_level=*/signin::ConsentLevel::kSignin);
 }
 

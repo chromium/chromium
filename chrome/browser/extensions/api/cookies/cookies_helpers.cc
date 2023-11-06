@@ -126,7 +126,8 @@ Cookie CreateCookie(const net::CanonicalCookie& canonical_cookie,
 
   cookie.session = !canonical_cookie.IsPersistent();
   if (canonical_cookie.IsPersistent()) {
-    double expiration_date = canonical_cookie.ExpiryDate().ToDoubleT();
+    double expiration_date =
+        canonical_cookie.ExpiryDate().InSecondsFSinceUnixEpoch();
     if (canonical_cookie.ExpiryDate().is_max() ||
         !std::isfinite(expiration_date)) {
       expiration_date = std::numeric_limits<double>::max();

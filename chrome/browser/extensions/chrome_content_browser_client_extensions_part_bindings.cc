@@ -26,11 +26,6 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     content::RenderProcessHost* host) {
   associated_registry->AddInterface<mojom::EventRouter>(
       base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
-  associated_registry->AddInterface<guest_view::mojom::GuestViewHost>(
-      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
-                          host->GetID()));
-  associated_registry->AddInterface<mojom::GuestView>(base::BindRepeating(
-      &ExtensionsGuestView::CreateForExtensions, host->GetID()));
   associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
       &RendererStartupHelper::BindForRenderer, host->GetID()));
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
@@ -64,6 +59,20 @@ void ChromeContentBrowserClientExtensionsPart::
   associated_registry.AddInterface<mojom::EventRouter>(base::BindRepeating(
       &EventRouter::BindForRenderer, service_worker_version_info.process_id));
 #endif
+}
+
+void ChromeContentBrowserClientExtensionsPart::
+    ExposeInterfacesToRendererForRenderFrameHost(
+        content::RenderFrameHost& frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<mojom::RendererHost>(
+      base::BindRepeating(&RendererStartupHelper::BindForRenderer,
+                          frame_host.GetProcess()->GetID()));
+  associated_registry.AddInterface<guest_view::mojom::GuestViewHost>(
+      base::BindRepeating(&ExtensionsGuestView::CreateForComponents,
+                          frame_host.GetGlobalId()));
+  associated_registry.AddInterface<mojom::GuestView>(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, frame_host.GetGlobalId()));
 }
 
 }  // namespace extensions

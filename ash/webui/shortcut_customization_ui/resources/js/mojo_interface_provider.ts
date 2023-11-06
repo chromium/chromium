@@ -4,11 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorConfigurationProvider, AcceleratorConfigurationProviderRemote, AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from './fake_data.js';
 import {FakeShortcutProvider} from './fake_shortcut_provider.js';
-import {Accelerator, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {Accelerator, AcceleratorCategory, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
 
 /**
  * @fileoverview
@@ -144,6 +144,19 @@ export class ShortcutProviderWrapper implements ShortcutProviderInterface {
 
   recordUserAction(userAction: UserAction): void {
     this.remote.recordUserAction(userAction);
+  }
+
+  recordMainCategoryNavigation(category: AcceleratorCategory): void {
+    this.remote.recordMainCategoryNavigation(category);
+  }
+
+  recordEditDialogCompletedActions(completed_actions:
+                                       EditDialogCompletedActions): void {
+    this.remote.recordEditDialogCompletedActions(completed_actions);
+  }
+
+  recordAddOrEditSubactions(isAdd: boolean, subactions: Subactions): void {
+    this.remote.recordAddOrEditSubactions(isAdd, subactions);
   }
 }
 

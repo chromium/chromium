@@ -420,9 +420,8 @@ v8::MaybeLocal<v8::Value> AuctionV8Helper::CreateValueFromJson(
   return v8::JSON::Parse(context, v8_string);
 }
 
-bool AuctionV8Helper::AppendUtf8StringValue(
-    base::StringPiece utf8_string,
-    std::vector<v8::Local<v8::Value>>* args) {
+bool AuctionV8Helper::AppendUtf8StringValue(base::StringPiece utf8_string,
+                                            v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::String> value;
   if (!CreateUtf8String(utf8_string).ToLocal(&value))
@@ -433,7 +432,7 @@ bool AuctionV8Helper::AppendUtf8StringValue(
 
 bool AuctionV8Helper::AppendJsonValue(v8::Local<v8::Context> context,
                                       base::StringPiece utf8_json,
-                                      std::vector<v8::Local<v8::Value>>* args) {
+                                      v8::LocalVector<v8::Value>* args) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   v8::Local<v8::Value> value;
   if (!CreateValueFromJson(context, utf8_json).ToLocal(&value))

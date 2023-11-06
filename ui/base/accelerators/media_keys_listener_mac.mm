@@ -100,26 +100,26 @@ void MediaKeysListenerImpl::StartEventTapIfNecessary() {
   if (event_tap_) {
     return;
   }
-  DCHECK_EQ(event_tap_, nullptr);
-  DCHECK_EQ(event_tap_source_, nullptr);
+  DCHECK(!event_tap_);
+  DCHECK(!event_tap_source_);
 
   // Add an event tap to intercept the system defined media key events.
   event_tap_.reset(CGEventTapCreate(
       kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionDefault,
       CGEventMaskBit(NX_SYSDEFINED), EventTapCallback, /*userInfo=*/this));
-  if (event_tap_ == nullptr) {
+  if (!event_tap_) {
     LOG(ERROR) << "Error: failed to create event tap.";
     return;
   }
 
   event_tap_source_.reset(CFMachPortCreateRunLoopSource(
-      kCFAllocatorDefault, event_tap_, /*order=*/0));
-  if (event_tap_source_ == nullptr) {
+      kCFAllocatorDefault, event_tap_.get(), /*order=*/0));
+  if (!event_tap_source_) {
     LOG(ERROR) << "Error: failed to create new run loop source.";
     return;
   }
 
-  CFRunLoopAddSource(CFRunLoopGetCurrent(), event_tap_source_,
+  CFRunLoopAddSource(CFRunLoopGetCurrent(), event_tap_source_.get(),
                      kCFRunLoopCommonModes);
 }
 
@@ -127,14 +127,14 @@ void MediaKeysListenerImpl::StopEventTapIfNecessary() {
   if (!event_tap_) {
     return;
   }
-  CFRunLoopRemoveSource(CFRunLoopGetCurrent(), event_tap_source_,
+  CFRunLoopRemoveSource(CFRunLoopGetCurrent(), event_tap_source_.get(),
                         kCFRunLoopCommonModes);
   // Ensure both event tap and source are initialized.
-  DCHECK_NE(event_tap_, nullptr);
-  DCHECK_NE(event_tap_source_, nullptr);
+  DCHECK(event_tap_);
+  DCHECK(event_tap_source_);
 
   // Invalidate the event tap.
-  CFMachPortInvalidate(event_tap_);
+  CFMachPortInvalidate(event_tap_.get());
   event_tap_.reset();
 
   // Release the event tap source.
@@ -168,7 +168,7 @@ CGEventRef MediaKeysListenerImpl::EventTapCallback(CGEventTapProxy proxy,
 
   // Handle the timeout case by re-enabling the tap.
   if (type == kCGEventTapDisabledByTimeout) {
-    CGEventTapEnable(shortcut_listener->event_tap_, true);
+    CGEventTapEnable(shortcut_listener->event_tap_.get(), true);
     return event;
   }
 

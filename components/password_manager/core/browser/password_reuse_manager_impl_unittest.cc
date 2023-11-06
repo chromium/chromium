@@ -12,8 +12,8 @@
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
-#include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -41,10 +41,10 @@ PasswordForm CreateForm(
   form.username_value = std::u16string(username);
   form.password_value = std::u16string(password);
   form.url = GURL(signon_realm);
-  form.date_last_used =
-      base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
-  form.date_created =
-      base::Time::FromDoubleT(1546300800);  // 00:00 Jan 1 2019 UTC
+  form.date_last_used = base::Time::FromSecondsSinceUnixEpoch(
+      1546300800);  // 00:00 Jan 1 2019 UTC
+  form.date_created = base::Time::FromSecondsSinceUnixEpoch(
+      1546300800);  // 00:00 Jan 1 2019 UTC
   form.in_store = store;
   return form;
 }

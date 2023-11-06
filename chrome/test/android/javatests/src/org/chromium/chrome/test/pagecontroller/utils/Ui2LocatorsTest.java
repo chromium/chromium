@@ -34,18 +34,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
-/**
- * Tests for Ui2Locators.
- */
+/** Tests for Ui2Locators. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class Ui2LocatorsTest {
-    @Mock
-    UiDevice mDevice;
+    @Mock UiDevice mDevice;
 
-    @Mock
-    Resources mResources;
+    @Mock Resources mResources;
 
     List<UiObject2> mRootAsList;
     List<UiObject2> mChild0And1;
@@ -53,16 +49,11 @@ public class Ui2LocatorsTest {
     List<UiObject2> mGrandchildren;
     List<UiObject2> mGrandchild1AsList;
 
-    @Mock
-    UiObject2 mRoot;
-    @Mock
-    UiObject2 mChild0;
-    @Mock
-    UiObject2 mChild1;
-    @Mock
-    UiObject2 mGrandchild0;
-    @Mock
-    UiObject2 mGrandchild1;
+    @Mock UiObject2 mRoot;
+    @Mock UiObject2 mChild0;
+    @Mock UiObject2 mChild1;
+    @Mock UiObject2 mGrandchild0;
+    @Mock UiObject2 mGrandchild1;
 
     @Before
     public void setUp() {

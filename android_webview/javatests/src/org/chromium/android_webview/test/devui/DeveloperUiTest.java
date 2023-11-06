@@ -76,10 +76,12 @@ public class DeveloperUiTest {
     // https://github.com/android/android-test/blob/67a30ef587ced6c178eb20eebfc24c769c6daf7f/espresso/core/java/androidx/test/espresso/Espresso.java#L201
     // This matcher is not expected to change, and is not expected to be made public by the
     // Espresso library. It is intended to match the overflow menu button.
-    private static final Matcher<View> OVERFLOW_BUTTON_MATCHER = Matchers.anyOf(
-            allOf(isDisplayed(), ViewMatchers.withContentDescription("More options")),
-            allOf(isDisplayed(),
-                    ViewMatchers.withClassName(Matchers.endsWith("OverflowMenuButton"))));
+    private static final Matcher<View> OVERFLOW_BUTTON_MATCHER =
+            Matchers.anyOf(
+                    allOf(isDisplayed(), ViewMatchers.withContentDescription("More options")),
+                    allOf(
+                            isDisplayed(),
+                            ViewMatchers.withClassName(Matchers.endsWith("OverflowMenuButton"))));
 
     @Rule
     public BaseActivityTestRule<MainActivity> mRule =
@@ -206,13 +208,17 @@ public class DeveloperUiTest {
         openOptionsMenu();
 
         onView(withText("Report WebView Bug")).check(matches(isDisplayed())).perform(click());
-        intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData(hasScheme("https")),
-                IntentMatchers.hasData(hasHost("bugs.chromium.org")),
-                IntentMatchers.hasData(hasPath("/p/chromium/issues/entry")),
-                IntentMatchers.hasData(hasParamWithValue("template", "Webview+Bugs")),
-                IntentMatchers.hasData(hasParamWithValue(
-                        "labels", "Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"))));
+        intended(
+                allOf(
+                        IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                        IntentMatchers.hasData(hasScheme("https")),
+                        IntentMatchers.hasData(hasHost("bugs.chromium.org")),
+                        IntentMatchers.hasData(hasPath("/p/chromium/issues/entry")),
+                        IntentMatchers.hasData(hasParamWithValue("template", "Webview+Bugs")),
+                        IntentMatchers.hasData(
+                                hasParamWithValue(
+                                        "labels",
+                                        "Via-WebView-DevTools,Pri-3,Type-Bug,OS-Android"))));
     }
 
     @Test
@@ -226,10 +232,12 @@ public class DeveloperUiTest {
         // TODO(ntfschr): figure out how to stub startActivity to throw an exception, to verify the
         // case when Play is not installed.
         intending(
-                allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                        IntentMatchers.hasData(hasScheme("market")),
-                        IntentMatchers.hasData(hasHost("details")),
-                        IntentMatchers.hasData(hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))))
+                        allOf(
+                                IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                                IntentMatchers.hasData(hasScheme("market")),
+                                IntentMatchers.hasData(hasHost("details")),
+                                IntentMatchers.hasData(
+                                        hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
         openOptionsMenu();
@@ -237,10 +245,13 @@ public class DeveloperUiTest {
                 .check(matches(isDisplayed()))
                 .perform(click());
 
-        intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData(hasScheme("market")),
-                IntentMatchers.hasData(hasHost("details")),
-                IntentMatchers.hasData(hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))));
+        intended(
+                allOf(
+                        IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                        IntentMatchers.hasData(hasScheme("market")),
+                        IntentMatchers.hasData(hasHost("details")),
+                        IntentMatchers.hasData(
+                                hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))));
     }
 
     @Test
@@ -252,11 +263,14 @@ public class DeveloperUiTest {
         openOptionsMenu();
 
         onView(withText("About WebView DevTools")).check(matches(isDisplayed())).perform(click());
-        intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
-                IntentMatchers.hasData(hasScheme("https")),
-                IntentMatchers.hasData(hasHost("chromium.googlesource.com")),
-                IntentMatchers.hasData(
-                        hasPath("/chromium/src/+/HEAD/android_webview/docs/developer-ui.md"))));
+        intended(
+                allOf(
+                        IntentMatchers.hasAction(Intent.ACTION_VIEW),
+                        IntentMatchers.hasData(hasScheme("https")),
+                        IntentMatchers.hasData(hasHost("chromium.googlesource.com")),
+                        IntentMatchers.hasData(
+                                hasPath(
+                                        "/chromium/src/+/HEAD/android_webview/docs/developer-ui.md"))));
     }
 
     @Test
@@ -356,17 +370,21 @@ public class DeveloperUiTest {
         MainActivity activity = mRule.getActivity();
 
         activity.setIsAtLeastTBuildForTesting(true);
-        activity.runOnUiThread(() -> {
-            // Need to run on the UI thread as it directly changes the view
-            activity.onRequestPermissionsResult(
-                    0, new String[] {"android.permission.POST_NOTIFICATIONS"}, new int[] {0});
-        });
+        activity.runOnUiThread(
+                () -> {
+                    // Need to run on the UI thread as it directly changes the view
+                    activity.onRequestPermissionsResult(
+                            0,
+                            new String[] {"android.permission.POST_NOTIFICATIONS"},
+                            new int[] {0});
+                });
 
         // Getting the permission result should have switched us to fragment_flags
         onView(withId(R.id.fragment_flags)).check(matches(isDisplayed()));
         checkFlagSpinnersEnabledState(true);
 
-        assertFalse("We should no longer need to ask for permission",
+        assertFalse(
+                "We should no longer need to ask for permission",
                 activity.needToRequestPostNotificationPermission());
     }
 }

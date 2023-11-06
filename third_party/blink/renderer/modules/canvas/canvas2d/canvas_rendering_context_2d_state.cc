@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operation.h"
@@ -480,8 +481,8 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
     // Must set font in case the filter uses any font-relative units (em, ex)
     // If font_for_filter_ was never set (ie frame-less documents) use base font
     if (UNLIKELY(!font_for_filter_.GetFontSelector())) {
-      if (const ComputedStyle* computed_style = document.GetComputedStyle()) {
-        font = &computed_style->GetFont();
+      if (LayoutView* layout_view = document.GetLayoutView()) {
+        font = &layout_view->StyleRef().GetFont();
       } else {
         return nullptr;
       }

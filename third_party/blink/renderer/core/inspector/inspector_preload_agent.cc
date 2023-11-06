@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_preload_agent.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
@@ -166,21 +167,22 @@ std::unique_ptr<protocol::Preload::RuleSet> BuildProtocolRuleSet(
                      .build();
 
   auto* source = rule_set.source();
-  auto node_id = source->GetNodeId();
-  auto url = source->GetSourceURL();
-  auto request_id = source->GetRequestId();
-  // Ensured by SpeculationRuleSet's ctor.
-  CHECK_NE(node_id.has_value(), url.has_value() && request_id.has_value());
-  if (node_id.has_value()) {
-    builder->setBackendNodeId(node_id.value());
-  } else {
-    builder->setUrl(url.value());
+  if (source->IsFromInlineScript()) {
+    builder->setBackendNodeId(source->GetNodeId().value());
+  } else if (source->IsFromRequest()) {
+    builder->setUrl(source->GetSourceURL().value());
 
-    String request_id_string =
-        IdentifiersFactory::SubresourceRequestId(request_id.value());
+    String request_id_string = IdentifiersFactory::SubresourceRequestId(
+        source->GetRequestId().value());
     if (!request_id_string.IsNull()) {
       builder->setRequestId(request_id_string);
     }
+  } else {
+    CHECK(source->IsFromBrowserInjected());
+    CHECK(base::FeatureList::IsEnabled(features::kAutoSpeculationRules));
+
+    // TODO(https://crbug.com/1472970): show something nicer than this.
+    builder->setUrl("chrome://auto-speculation-rules");
   }
 
   if (auto error_type = GetProtocolRuleSetErrorType(rule_set.error_type())) {

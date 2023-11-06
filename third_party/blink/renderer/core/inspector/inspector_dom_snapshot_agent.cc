@@ -48,6 +48,8 @@
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 using protocol::Maybe;
 
 namespace {
@@ -552,8 +554,9 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
 
     if (auto* input_element = DynamicTo<HTMLInputElement>(*element)) {
       SetRare(nodes->getInputValue(nullptr), index, input_element->Value());
-      if ((input_element->type() == input_type_names::kRadio) ||
-          (input_element->type() == input_type_names::kCheckbox)) {
+      if ((input_element->FormControlType() == FormControlType::kInputRadio) ||
+          (input_element->FormControlType() ==
+           FormControlType::kInputCheckbox)) {
         if (input_element->Checked()) {
           SetRare(nodes->getInputChecked(nullptr), index);
         }

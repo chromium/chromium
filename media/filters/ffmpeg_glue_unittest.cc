@@ -10,8 +10,10 @@
 
 #include "base/check.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/container_names.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_data_util.h"
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -320,12 +322,13 @@ TEST_F(FFmpegGlueContainerTest, AAC) {
   ExpectContainer(container_names::MediaContainerName::kContainerAAC);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FFmpegGlueContainerTest, AVI) {
+  base::test::ScopedFeatureList scoped_enable(kCrOSLegacyMediaFormats);
   InitializeAndOpen("bear.avi");
   ExpectContainer(container_names::MediaContainerName::kContainerAVI);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Probe something unsupported to ensure we fall back to the our internal guess.

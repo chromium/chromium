@@ -7,15 +7,15 @@
 #include <memory>
 
 #include "base/files/file_util.h"
+#include "net/cert/internal/test_helpers.h"
 #include "net/cert/mock_cert_net_fetcher.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/test_helpers.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -40,19 +40,19 @@ using ::testing::_;
 
 ::testing::AssertionResult ReadTestCert(
     const std::string& file_name,
-    std::shared_ptr<const ParsedCertificate>* result) {
+    std::shared_ptr<const bssl::ParsedCertificate>* result) {
   std::string der;
   ::testing::AssertionResult r =
       ReadTestPem("net/data/cert_issuer_source_aia_unittest/" + file_name,
                   "CERTIFICATE", &der);
   if (!r)
     return r;
-  CertErrors errors;
-  *result = ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der), {},
-                                      &errors);
+  bssl::CertErrors errors;
+  *result = bssl::ParsedCertificate::Create(x509_util::CreateCryptoBuffer(der),
+                                            {}, &errors);
   if (!*result) {
     return ::testing::AssertionFailure()
-           << "ParsedCertificate::Create() failed:\n"
+           << "bssl::ParsedCertificate::Create() failed:\n"
            << errors.ToDebugString();
   }
   return ::testing::AssertionSuccess();
@@ -60,13 +60,13 @@ using ::testing::_;
 
 // CertIssuerSourceAia does not return results for SyncGetIssuersOf.
 TEST(CertIssuerSourceAiaTest, NoSyncResults) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
 
   // No methods on |mock_fetcher| should be called.
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
   CertIssuerSourceAia aia_source(mock_fetcher);
-  ParsedCertificateList issuers;
+  bssl::ParsedCertificateList issuers;
   aia_source.SyncGetIssuersOf(cert.get(), &issuers);
   EXPECT_EQ(0U, issuers.size());
 }
@@ -74,13 +74,13 @@ TEST(CertIssuerSourceAiaTest, NoSyncResults) {
 // If the AuthorityInfoAccess extension is not present, AsyncGetIssuersOf should
 // synchronously indicate no results.
 TEST(CertIssuerSourceAiaTest, NoAia) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_no_aia.pem", &cert));
 
   // No methods on |mock_fetcher| should be called.
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> request;
   aia_source.AsyncGetIssuersOf(cert.get(), &request);
   EXPECT_EQ(nullptr, request);
 }
@@ -91,7 +91,7 @@ TEST(CertIssuerSourceAiaTest, NoAia) {
 // ERR_DISALLOWED_URL_SCHEME properly. If FetchCaIssuers is modified to fail
 // synchronously in that case, this test will be more interesting.
 TEST(CertIssuerSourceAiaTest, FileAia) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_file_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -100,12 +100,12 @@ TEST(CertIssuerSourceAiaTest, FileAia) {
           MockCertNetFetcherRequest::Create(ERR_DISALLOWED_URL_SCHEME))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // No results.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   EXPECT_TRUE(result_certs.empty());
 }
@@ -113,21 +113,21 @@ TEST(CertIssuerSourceAiaTest, FileAia) {
 // If the AuthorityInfoAccess extension contains an invalid URL,
 // AsyncGetIssuersOf should synchronously indicate no results.
 TEST(CertIssuerSourceAiaTest, OneInvalidURL) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_invalid_url_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> request;
   aia_source.AsyncGetIssuersOf(cert.get(), &request);
   EXPECT_EQ(nullptr, request);
 }
 
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert.
 TEST(CertIssuerSourceAiaTest, OneAia) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -138,11 +138,11 @@ TEST(CertIssuerSourceAiaTest, OneAia) {
           intermediate_cert->cert_buffer()))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   ASSERT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
@@ -157,9 +157,9 @@ TEST(CertIssuerSourceAiaTest, OneAia) {
 // modified to synchronously reject disallowed schemes, this test will be more
 // interesting.
 TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_file_and_http_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -174,11 +174,11 @@ TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
           intermediate_cert->cert_buffer()))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   ASSERT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
@@ -189,9 +189,9 @@ TEST(CertIssuerSourceAiaTest, OneFileOneHttpAia) {
 
 // AuthorityInfoAccess with two URIs, one is invalid, the other HTTP.
 TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_invalid_and_http_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -202,11 +202,11 @@ TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
           intermediate_cert->cert_buffer()))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
@@ -221,11 +221,11 @@ TEST(CertIssuerSourceAiaTest, OneInvalidOneHttpAia) {
 // One request completes, results are retrieved, then the next request completes
 // and the results are retrieved.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert2;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -241,13 +241,13 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
           intermediate_cert2->cert_buffer()))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // GetNext() should return intermediate_cert followed by intermediate_cert2.
   // They are returned in two separate batches.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
@@ -266,7 +266,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeries) {
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert,
 // CertNetFetcher request fails.
 TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -277,12 +277,12 @@ TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
       .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // No results.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(0u, result_certs.size());
 }
@@ -290,7 +290,7 @@ TEST(CertIssuerSourceAiaTest, OneAiaHttpError) {
 // AuthorityInfoAccess with a single HTTP url pointing to a single DER cert,
 // CertNetFetcher request completes, but the DER cert fails to parse.
 TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -302,12 +302,12 @@ TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
           std::vector<uint8_t>({1, 2, 3, 4, 5})))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // No results.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(0u, result_certs.size());
 }
@@ -315,9 +315,9 @@ TEST(CertIssuerSourceAiaTest, OneAiaParseError) {
 // AuthorityInfoAccess with two HTTP urls, each pointing to a single DER cert.
 // One request fails.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert2;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert2;
   ASSERT_TRUE(ReadTestCert("i2.pem", &intermediate_cert2));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -335,12 +335,12 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
           intermediate_cert2->cert_buffer()))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // GetNext() should return intermediate_cert2.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert2->der_cert());
@@ -354,9 +354,9 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesFirstFails) {
 // AuthorityInfoAccess with two HTTP urls, each pointing to a single DER cert.
 // First request completes, result is retrieved, then the second request fails.
 TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_two_aia.pem", &cert));
-  std::shared_ptr<const ParsedCertificate> intermediate_cert;
+  std::shared_ptr<const bssl::ParsedCertificate> intermediate_cert;
   ASSERT_TRUE(ReadTestCert("i.pem", &intermediate_cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -374,12 +374,12 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
           ByMove(MockCertNetFetcherRequest::Create(ERR_INVALID_RESPONSE))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // GetNext() should return intermediate_cert.
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(1u, result_certs.size());
   EXPECT_EQ(result_certs.front()->der_cert(), intermediate_cert->der_cert());
@@ -393,7 +393,7 @@ TEST(CertIssuerSourceAiaTest, TwoAiaCompletedInSeriesSecondFails) {
 // AuthorityInfoAccess with six HTTP URLs.  kMaxFetchesPerCert is 5, so the
 // sixth URL should be ignored.
 TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_six_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -423,13 +423,13 @@ TEST(CertIssuerSourceAiaTest, MaxFetchesPerCert) {
   // Note that the sixth URL (http://url-for-aia6/I6.foo) will not be requested.
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
   // GetNext() will not get any certificates (since the first 5 fail to be
   // parsed, and the sixth URL is not attempted).
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(0u, result_certs.size());
 }
@@ -442,7 +442,7 @@ TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
   std::string cert_data;
   ASSERT_TRUE(base::ReadFileToString(cert_path, &cert_data));
 
-  std::shared_ptr<const ParsedCertificate> cert;
+  std::shared_ptr<const bssl::ParsedCertificate> cert;
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   auto mock_fetcher = base::MakeRefCounted<StrictMock<MockCertNetFetcher>>();
@@ -453,11 +453,11 @@ TEST(CertIssuerSourceAiaTest, CertsOnlyCmsMessage) {
           std::vector<uint8_t>(cert_data.begin(), cert_data.end())))));
 
   CertIssuerSourceAia aia_source(mock_fetcher);
-  std::unique_ptr<CertIssuerSource::Request> cert_source_request;
+  std::unique_ptr<bssl::CertIssuerSource::Request> cert_source_request;
   aia_source.AsyncGetIssuersOf(cert.get(), &cert_source_request);
   ASSERT_NE(nullptr, cert_source_request);
 
-  ParsedCertificateList result_certs;
+  bssl::ParsedCertificateList result_certs;
   cert_source_request->GetNext(&result_certs);
   ASSERT_EQ(2u, result_certs.size());
 

@@ -22,16 +22,12 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests basic functionality of LaunchCauseMetrics.
- */
+/** Tests basic functionality of LaunchCauseMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class LaunchCauseMetricsTest {
-    @Mock
-    private Activity mActivity;
+    @Mock private Activity mActivity;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
@@ -160,7 +156,8 @@ public final class LaunchCauseMetricsTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         metrics.recordLaunchCause();
         count++;
-        Assert.assertEquals(count,
+        Assert.assertEquals(
+                count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
 
         metrics.setDisplayOff(false);
@@ -169,7 +166,8 @@ public final class LaunchCauseMetricsTest {
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STARTED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
         metrics.recordLaunchCause();
-        Assert.assertEquals(count,
+        Assert.assertEquals(
+                count,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.FOREGROUND_WHEN_LOCKED));
     }
 

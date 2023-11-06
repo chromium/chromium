@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/files/file_util.h"
+#include "base/process/process.h"
 #include "chromeos/startup/startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -20,7 +21,10 @@ namespace {
 crosapi::mojom::BrowserPostLoginParamsPtr ReadStartupBrowserPostLoginParams() {
   absl::optional<std::string> content = ReadPostLoginData();
   if (!content) {
-    return {};
+    // Ash shut down or crashed, so the pipe is broken.
+    // Lacros should shut down gracefully instead of crashing.
+    base::Process::TerminateCurrentProcessImmediately(
+        RESULT_CODE_INVALID_POST_LOGIN_PARAMS);
   }
 
   crosapi::mojom::BrowserPostLoginParamsPtr result;

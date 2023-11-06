@@ -13,7 +13,7 @@
 namespace {
 // Converts base::Time to NSDate.
 NSDate* NSDateFromTime(const base::Time& time) {
-  return [NSDate dateWithTimeIntervalSince1970:time.ToDoubleT()];
+  return [NSDate dateWithTimeIntervalSince1970:time.InSecondsFSinceUnixEpoch()];
 }
 }  // namespace
 

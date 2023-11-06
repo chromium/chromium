@@ -38,7 +38,7 @@ class GWSPageLoadMetricsObserverTest
   void SimulateTimingWithoutPaint() {
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     tester()->SimulateTimingUpdate(timing);
   }
 
@@ -46,7 +46,7 @@ class GWSPageLoadMetricsObserverTest
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
     timing.parse_timing->parse_start = base::Milliseconds(0);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing.paint_timing->first_paint = base::Milliseconds(0);
     PopulateRequiredTimingFields(&timing);
     tester()->SimulateTimingUpdate(timing);
@@ -61,7 +61,7 @@ class GWSPageLoadMetricsLoggerTest : public testing::Test {};
 TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
@@ -91,7 +91,7 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
 TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.parse_timing->parse_start = base::Milliseconds(1);
   timing.paint_timing->first_contentful_paint = base::Milliseconds(10);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
@@ -116,7 +116,7 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.parse_timing->parse_start = base::Seconds(60);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = base::Seconds(60);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
       base::Seconds(60);
@@ -141,7 +141,7 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.parse_timing->parse_start = base::Microseconds(1);
-  timing.navigation_start = base::Time::FromDoubleT(1);
+  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
   timing.paint_timing->first_contentful_paint = base::Microseconds(1);
   timing.paint_timing->largest_contentful_paint->largest_text_paint =
       base::Microseconds(1);

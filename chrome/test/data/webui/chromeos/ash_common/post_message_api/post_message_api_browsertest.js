@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Polymer BrowserTest fixture.
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -15,7 +15,7 @@ PostMessageAPIModuleTest.prototype = {
 
   /** @override */
   browsePreload:
-      'chrome://chrome-signin/test_loader.html?module=chromeos/ash_common/post_message_api/post_message_api_test.js&host=test',
+      'chrome://chrome-signin/test_loader.html?module=chromeos/ash_common/post_message_api/post_message_api_test.js',
 
   isAsync: true,
 };

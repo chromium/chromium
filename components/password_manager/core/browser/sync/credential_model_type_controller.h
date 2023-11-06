@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
+#include "components/password_manager/core/browser/sync/password_account_storage_settings_watcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/service/model_type_controller.h"
@@ -72,9 +72,6 @@ class CredentialModelTypeController : public syncer::ModelTypeController,
   const raw_ptr<syncer::SyncService> sync_service_;
 
   PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
-
-  // Passed in to LoadModels(), and cached here for later use in Stop().
-  syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

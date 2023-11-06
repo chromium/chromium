@@ -13,16 +13,18 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char kClassPath_org_jni_1zero_samples_SampleNonProxy[];
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char kClassPath_org_jni_1zero_samples_SampleNonProxy[];
 const char kClassPath_org_jni_1zero_samples_SampleNonProxy[] =
     "org/jni_zero/samples/SampleNonProxy";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass> g_org_jni_1zero_samples_SampleNonProxy_clazz(nullptr);
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
+    g_org_jni_1zero_samples_SampleNonProxy_clazz(nullptr);
 #ifndef org_jni_1zero_samples_SampleNonProxy_clazz_defined
 #define org_jni_1zero_samples_SampleNonProxy_clazz_defined
 inline jclass org_jni_1zero_samples_SampleNonProxy_clazz(JNIEnv* env) {
@@ -44,7 +46,7 @@ static jlong JNI_SampleNonProxy_AddBookmark(JNIEnv* env, const base::android::Ja
     jboolean isFolder,
     jlong parentId);
 
-JNI_GENERATOR_EXPORT jlong Java_org_jni_1zero_samples_SampleNonProxy_nativeAddBookmark(
+JNI_BOUNDARY_EXPORT jlong Java_org_jni_1zero_samples_SampleNonProxy_nativeAddBookmark(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -68,7 +70,7 @@ static jlong JNI_SampleNonProxy_AddBookmarkFromAPI(JNIEnv* env, const
     const base::android::JavaParamRef<jstring>& title,
     const base::android::JavaParamRef<jobject>& visits);
 
-JNI_GENERATOR_EXPORT jlong Java_org_jni_1zero_samples_SampleNonProxy_nativeAddBookmarkFromAPI(
+JNI_BOUNDARY_EXPORT jlong Java_org_jni_1zero_samples_SampleNonProxy_nativeAddBookmarkFromAPI(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -92,7 +94,7 @@ static void JNI_SampleNonProxy_CreateHistoricalTabFromState(JNIEnv* env, const
     base::android::JavaParamRef<jbyteArray>& state,
     jint tabIndex);
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_samples_SampleNonProxy_nativeCreateHistoricalTabFromState(
     JNIEnv* env,
     jclass jcaller,
@@ -106,7 +108,7 @@ static void JNI_SampleNonProxy_Destroy(JNIEnv* env, const base::android::JavaPar
     jcaller,
     jint nativeChromeBrowserProvider);
 
-JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeDestroy(
+JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeDestroy(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider) {
@@ -118,7 +120,7 @@ static jint JNI_SampleNonProxy_FindAll(JNIEnv* env, const base::android::JavaPar
     jcaller,
     const base::android::JavaParamRef<jstring>& find);
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeFindAll(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeFindAll(
     JNIEnv* env,
     jobject jcaller,
     jstring find) {
@@ -129,7 +131,7 @@ JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeFindAl
 static base::android::ScopedJavaLocalRef<jobjectArray>
     JNI_SampleNonProxy_GetAutofillProfileGUIDs(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT jobjectArray
+JNI_BOUNDARY_EXPORT jobjectArray
     Java_org_jni_1zero_samples_SampleNonProxy_nativeGetAutofillProfileGUIDs(
     JNIEnv* env,
     jclass jcaller) {
@@ -139,7 +141,7 @@ JNI_GENERATOR_EXPORT jobjectArray
 static base::android::ScopedJavaLocalRef<jstring> JNI_SampleNonProxy_GetDomainAndRegistry(JNIEnv*
     env, const base::android::JavaParamRef<jstring>& url);
 
-JNI_GENERATOR_EXPORT jstring Java_org_jni_1zero_samples_SampleNonProxy_nativeGetDomainAndRegistry(
+JNI_BOUNDARY_EXPORT jstring Java_org_jni_1zero_samples_SampleNonProxy_nativeGetDomainAndRegistry(
     JNIEnv* env,
     jclass jcaller,
     jstring url) {
@@ -149,7 +151,7 @@ JNI_GENERATOR_EXPORT jstring Java_org_jni_1zero_samples_SampleNonProxy_nativeGet
 
 static base::android::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_GetInnerClass(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT jobject Java_org_jni_1zero_samples_SampleNonProxy_nativeGetInnerClass(
+JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_samples_SampleNonProxy_nativeGetInnerClass(
     JNIEnv* env,
     jclass jcaller) {
   return JNI_SampleNonProxy_GetInnerClass(env).Release();
@@ -159,7 +161,7 @@ static base::android::ScopedJavaLocalRef<jbyteArray> JNI_SampleNonProxy_GetState
     env, const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& view);
 
-JNI_GENERATOR_EXPORT jbyteArray Java_org_jni_1zero_samples_SampleNonProxy_nativeGetStateAsByteArray(
+JNI_BOUNDARY_EXPORT jbyteArray Java_org_jni_1zero_samples_SampleNonProxy_nativeGetStateAsByteArray(
     JNIEnv* env,
     jobject jcaller,
     jobject view) {
@@ -174,7 +176,7 @@ static void JNI_SampleNonProxy_GotOrientation(JNIEnv* env, const
     jdouble beta,
     jdouble gamma);
 
-JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeGotOrientation(
+JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeGotOrientation(
     JNIEnv* env,
     jobject jcaller,
     jint nativeDataFetcherImplAndroid,
@@ -188,7 +190,7 @@ JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeGotOri
 static jint JNI_SampleNonProxy_Init(JNIEnv* env, const base::android::JavaParamRef<jobject>&
     jcaller);
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeInit(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   return JNI_SampleNonProxy_Init(env, base::android::JavaParamRef<jobject>(env, jcaller));
@@ -197,7 +199,7 @@ JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeInit(
 static jint JNI_SampleNonProxy_Init(JNIEnv* env, const base::android::JavaParamRef<jobject>&
     jcaller);
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeInit(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   return JNI_SampleNonProxy_Init(env, base::android::JavaParamRef<jobject>(env, jcaller));
@@ -207,7 +209,7 @@ static base::android::ScopedJavaLocalRef<jthrowable>
     JNI_SampleNonProxy_MessWithJavaException(JNIEnv* env, const
     base::android::JavaParamRef<jthrowable>& e);
 
-JNI_GENERATOR_EXPORT jthrowable
+JNI_BOUNDARY_EXPORT jthrowable
     Java_org_jni_1zero_samples_SampleNonProxy_nativeMessWithJavaException(
     JNIEnv* env,
     jclass jcaller,
@@ -224,7 +226,7 @@ static base::android::ScopedJavaLocalRef<jobject> JNI_SampleNonProxy_QueryBitmap
     const base::android::JavaParamRef<jobjectArray>& selectionArgs,
     const base::android::JavaParamRef<jstring>& sortOrder);
 
-JNI_GENERATOR_EXPORT jobject Java_org_jni_1zero_samples_SampleNonProxy_nativeQueryBitmap(
+JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_samples_SampleNonProxy_nativeQueryBitmap(
     JNIEnv* env,
     jobject jcaller,
     jint nativeChromeBrowserProvider,
@@ -244,7 +246,7 @@ static void JNI_SampleNonProxy_SetRecognitionResults(JNIEnv* env, const
     jint sessionId,
     const base::android::JavaParamRef<jobjectArray>& results);
 
-JNI_GENERATOR_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeSetRecognitionResults(
+JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_samples_SampleNonProxy_nativeSetRecognitionResults(
     JNIEnv* env,
     jobject jcaller,
     jint sessionId,

@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module ash.orca.mojom;
 
@@ -150,6 +150,20 @@ interface EditorClient {
 
   // Appends the given text onto the current text input target.
   [MinVersion=6] AppendText@11(string text);
+
+  // Returns the metadata that would be attached to a feedback report for the
+  // result with ID `result_id`.
+  // `result_id` must be a valid ID that was returned from a `TextQueryResult`.
+  // The metadata is a set of key/value pairs.
+  [MinVersion=7] PreviewFeedback@12(string result_id)
+    => (map<string, string> preview);
+
+  // Submits a feedback report for the result with ID `result_id` and
+  // user-specified `user_description`.
+  // `result_id` must be a valid ID that was returned from a `TextQueryResult`.
+  // Converts the metadata associated with `result_id` into a string and
+  // combines it with `user_description` to create the report description.
+  [MinVersion=7] SubmitFeedback@13(string result_id, string user_description);
 };
 
 // Used by the UI to bootstrap the connection with the service.
@@ -187,6 +201,10 @@ interface TextActuator {
 
   // Orders the UI to close.
   [MinVersion=5] CloseUI@5();
+
+  // Submits a feedback report with the specified `description`.
+  // Includes any relevant system level metadata.
+  [MinVersion=7] SubmitFeedback@6(string description);
 };
 
 // An interface that can respond to text query requests with responses.

@@ -69,6 +69,7 @@ const CGFloat kPopOverSourceRectHeight = 1;
 }
 
 - (void)stop {
+  [_mediator reportMetrics];
   [self dismissViewController];
 }
 

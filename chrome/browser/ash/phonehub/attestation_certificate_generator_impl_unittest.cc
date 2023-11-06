@@ -79,7 +79,9 @@ class FakeCryptAuthKeyRegistryFactory
   RAW_PTR_EXCLUSION MockCryptAuthKeyRegistry* instance_ = nullptr;
 };
 
-class AttestationCertificateGeneratorImplTest : public testing::Test {
+class AttestationCertificateGeneratorImplTest
+    : public testing::Test,
+      AttestationCertificateGenerator::Observer {
  public:
   AttestationCertificateGeneratorImplTest()
       : profile_manager_(CreateTestingProfileManager()),
@@ -91,30 +93,46 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
         base::WrapUnique(user_manager_.get()));
     user_manager_->AddUser(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
-    auto soft_bind_attestation_flow =
-        std::make_unique<attestation::FakeSoftBindAttestationFlow>();
-    mock_attestation_flow_ = soft_bind_attestation_flow.get();
-    attestation_certificate_generator_impl_ =
-        std::make_unique<AttestationCertificateGeneratorImpl>(
-            profile_, std::move(soft_bind_attestation_flow));
+  }
+
+  ~AttestationCertificateGeneratorImplTest() override {
+    if (attestation_certificate_generator_impl_) {
+      attestation_certificate_generator_impl_->RemoveObserver(this);
+    }
   }
 
   AttestationCertificateGeneratorImplTest(
       const AttestationCertificateGeneratorImplTest&) = delete;
   AttestationCertificateGeneratorImplTest& operator=(
       const AttestationCertificateGeneratorImplTest&) = delete;
-  ~AttestationCertificateGeneratorImplTest() override = default;
 
-  void OnCertificateGenerated(base::RunLoop* wait_loop,
-                              const std::vector<std::string>& certs,
-                              bool valid) {
+  void TearDown() override { wait_loop_.reset(); }
+
+  // AttestationCertificateGenerator::Observer:
+  void OnCertificateGenerated(const std::vector<std::string>& certs,
+                              bool valid) override {
     is_valid_ = valid;
     certs_ = &certs;
-    wait_loop->Quit();
+    if (wait_loop_) {
+      wait_loop_->Quit();
+    }
   }
 
  protected:
-  const std::vector<std::string> false_certs_ = {"cert"};
+  void Initialize(const std::vector<std::string>& certs) {
+    auto soft_bind_attestation_flow =
+        std::make_unique<attestation::FakeSoftBindAttestationFlow>();
+    mock_attestation_flow_ = soft_bind_attestation_flow.get();
+    mock_attestation_flow_->SetCertificates(certs);
+    attestation_certificate_generator_impl_ =
+        std::make_unique<AttestationCertificateGeneratorImpl>(
+            profile_, std::move(soft_bind_attestation_flow));
+    attestation_certificate_generator_impl_->AddObserver(this);
+  }
+  std::unique_ptr<base::RunLoop> wait_loop_;
+  const std::vector<std::string> valid_certs_ = {"valid_cert"};
+  const std::vector<std::string> second_valid_certs_ = {"valid_cert_2"};
+  const std::vector<std::string> invalid_certs_ = {};
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<AttestationCertificateGeneratorImpl>
       attestation_certificate_generator_impl_;
@@ -139,29 +157,41 @@ class AttestationCertificateGeneratorImplTest : public testing::Test {
 
 TEST_F(AttestationCertificateGeneratorImplTest,
        RetrieveCertificateWithoutCache) {
-  mock_attestation_flow_->SetCertificates(false_certs_);
-  base::RunLoop wait_loop;
+  Initialize(valid_certs_);
+
+  wait_loop_ = std::make_unique<base::RunLoop>();
+  mock_attestation_flow_->SetCertificates(second_valid_certs_);
   // Reset the timestamp to force regenerate certificate.
-  attestation_certificate_generator_impl_
-      ->last_attestation_certificate_generated_time_ = base::Time();
-  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
-      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
-      base::Unretained(this), &wait_loop));
-  wait_loop.Run();
+  attestation_certificate_generator_impl_->last_attestation_completed_time_ =
+      base::Time();
+  attestation_certificate_generator_impl_->RetrieveCertificate();
+  wait_loop_->Run();
+
   EXPECT_TRUE(is_valid_);
-  EXPECT_EQ(*certs_, false_certs_);
+  EXPECT_EQ(*certs_, second_valid_certs_);
 }
 
 TEST_F(AttestationCertificateGeneratorImplTest, RetrieveCertificateWithCache) {
-  mock_attestation_flow_->SetCertificates(false_certs_);
-  base::RunLoop wait_loop;
-  attestation_certificate_generator_impl_->RetrieveCertificate(base::BindOnce(
-      &AttestationCertificateGeneratorImplTest::OnCertificateGenerated,
-      base::Unretained(this), &wait_loop));
-  wait_loop.Run();
+  Initialize(valid_certs_);
+
+  mock_attestation_flow_->SetCertificates(second_valid_certs_);
+  wait_loop_ = std::make_unique<base::RunLoop>();
+  attestation_certificate_generator_impl_->RetrieveCertificate();
+  wait_loop_->Run();
   // Used cached result generated in constructor.
-  EXPECT_FALSE(is_valid_);
-  EXPECT_EQ(*certs_, std::vector<std::string>());
+  EXPECT_TRUE(is_valid_);
+  EXPECT_EQ(*certs_, valid_certs_);
+}
+
+TEST_F(AttestationCertificateGeneratorImplTest, RetryInvalidCerts) {
+  Initialize(invalid_certs_);
+
+  mock_attestation_flow_->SetCertificates(second_valid_certs_);
+  wait_loop_ = std::make_unique<base::RunLoop>();
+  attestation_certificate_generator_impl_->RetrieveCertificate();
+  wait_loop_->Run();
+  EXPECT_TRUE(is_valid_);
+  EXPECT_EQ(*certs_, second_valid_certs_);
 }
 
 }  // namespace ash::phonehub

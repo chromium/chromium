@@ -7,8 +7,8 @@ package org.chromium.components.prefs;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 
 /** PrefService provides read and write access to native PrefService. */
 public class PrefService {
@@ -22,6 +22,11 @@ public class PrefService {
     @CalledByNative
     private void clearNativePtr() {
         mNativePrefServiceAndroid = 0;
+    }
+
+    @CalledByNative
+    private long getNativePointer() {
+        return mNativePrefServiceAndroid;
     }
 
     @VisibleForTesting

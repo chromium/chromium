@@ -28,9 +28,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests relating to {@link LevelDBPersistedDataStorage}
- */
+/** Tests relating to {@link LevelDBPersistedDataStorage} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -57,22 +55,26 @@ public class LevelDBPersistedDataStorageTest {
 
     @Before
     public void setUp() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < mPersistedDataStorage.length; i++) {
-                mPersistedDataStorage[i] = new LevelDBPersistedDataStorage(
-                        Profile.getLastUsedRegularProfile(), NAMESPACES[i]);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < mPersistedDataStorage.length; i++) {
+                        mPersistedDataStorage[i] =
+                                new LevelDBPersistedDataStorage(
+                                        Profile.getLastUsedRegularProfile(), NAMESPACES[i]);
+                    }
+                });
     }
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Both PersistedDataStorage are associated with the same BrowserContext so calling
-            // destroy() on the first one will free the same SessionProtoDB for all of them. Calling
-            // on both would cause call destroy() on a freed SessionProtoDB.
-            mPersistedDataStorage[0].destroy();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Both PersistedDataStorage are associated with the same BrowserContext so
+                    // calling destroy() on the first one will free the same SessionProtoDB for
+                    // all of them.
+                    // Calling on both would cause call destroy() on a freed SessionProtoDB.
+                    mPersistedDataStorage[0].destroy();
+                });
     }
 
     @SmallTest
@@ -142,9 +144,7 @@ public class LevelDBPersistedDataStorageTest {
         loadAndCheckResult1(KEY_1, EMPTY_BYTE_ARRAY);
     }
 
-    /**
-     * Functions for first namespace
-     */
+    /** Functions for first namespace */
     private void save0(String key, byte[] data) throws TimeoutException {
         save(key, data, mPersistedDataStorage[0]);
     }
@@ -157,9 +157,7 @@ public class LevelDBPersistedDataStorageTest {
         delete(key, mPersistedDataStorage[0]);
     }
 
-    /**
-     * Functions for second namespace
-     */
+    /** Functions for second namespace */
     private void save1(String key, byte[] data) throws TimeoutException {
         save(key, data, mPersistedDataStorage[1]);
     }
@@ -176,24 +174,34 @@ public class LevelDBPersistedDataStorageTest {
             throws TimeoutException {
         CallbackHelper ch = new CallbackHelper();
         int chCount = ch.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            persistedDataStorage.saveForTesting(key, data, new Runnable() {
-                @Override
-                public void run() {
-                    ch.notifyCalled();
-                }
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    persistedDataStorage.saveForTesting(
+                            key,
+                            data,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ch.notifyCalled();
+                                }
+                            });
+                });
         ch.waitForCallback(chCount);
     }
 
-    private void loadAndCheckResult(String key, byte[] expected,
-            LevelDBPersistedDataStorage persistedDataStorage) throws TimeoutException {
+    private void loadAndCheckResult(
+            String key, byte[] expected, LevelDBPersistedDataStorage persistedDataStorage)
+            throws TimeoutException {
         LoadCallbackHelper ch = new LoadCallbackHelper();
         int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            persistedDataStorage.load(key, (res) -> { ch.notifyCalled(ByteBuffer.wrap(res)); });
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    persistedDataStorage.load(
+                            key,
+                            (res) -> {
+                                ch.notifyCalled(ByteBuffer.wrap(res));
+                            });
+                });
         ch.waitForCallback(chCount);
         ByteBufferTestUtils.verifyByteBuffer(expected, ch.getRes());
     }
@@ -202,14 +210,17 @@ public class LevelDBPersistedDataStorageTest {
             throws TimeoutException {
         CallbackHelper ch = new CallbackHelper();
         int chCount = ch.getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            persistedDataStorage.deleteForTesting(key, new Runnable() {
-                @Override
-                public void run() {
-                    ch.notifyCalled();
-                }
-            });
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    persistedDataStorage.deleteForTesting(
+                            key,
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    ch.notifyCalled();
+                                }
+                            });
+                });
         ch.waitForCallback(chCount);
     }
 }

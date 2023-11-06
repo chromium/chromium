@@ -112,10 +112,14 @@ void WebGPUTest::Initialize(const Options& options) {
   gpu_preferences.use_passthrough_cmd_decoder =
       gles2::UsePassthroughCommandDecoder(
           base::CommandLine::ForCurrentProcess());
+  if (options.use_skia_graphite) {
+    gpu_preferences.gr_context_type = gpu::GrContextType::kGraphiteDawn;
+  } else {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
-  gpu_preferences.use_vulkan = gpu::VulkanImplementationName::kNative;
-  gpu_preferences.gr_context_type = gpu::GrContextType::kVulkan;
+    gpu_preferences.use_vulkan = gpu::VulkanImplementationName::kNative;
+    gpu_preferences.gr_context_type = gpu::GrContextType::kVulkan;
 #endif
+  }
   gpu_preferences.enable_unsafe_webgpu = options.enable_unsafe_webgpu;
   gpu_preferences.texture_target_exception_list =
       gpu::CreateBufferUsageAndFormatExceptionList();
@@ -216,20 +220,11 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
   // importantly the callbacks will have been called.
   wgpu::Queue queue = device.GetQueue();
   bool done = false;
-#ifdef WGPU_BREAKING_WORK_DONE_SIGNAL_VALUE_CHANGE
   queue.OnSubmittedWorkDone(
       [](WGPUQueueWorkDoneStatus, void* userdata) {
         *static_cast<bool*>(userdata) = true;
       },
       &done);
-#else
-  queue.OnSubmittedWorkDone(
-      0u,
-      [](WGPUQueueWorkDoneStatus, void* userdata) {
-        *static_cast<bool*>(userdata) = true;
-      },
-      &done);
-#endif
 
   while (!done) {
     device.Tick();

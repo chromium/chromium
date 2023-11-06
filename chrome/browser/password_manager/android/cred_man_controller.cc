@@ -9,7 +9,6 @@
 #include "components/password_manager/content/browser/keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 
 namespace password_manager {
@@ -45,12 +44,12 @@ bool CredManController::Show(
   }
   visibility_controller_->SetVisible(std::move(frame_driver));
   filler_ = std::move(filler);
-  cred_man_delegate->SetRequestCompletionCallback(
-      base::BindRepeating(&CredManController::Dismiss, AsWeakPtr()));
+  cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
+      &CredManController::Dismiss, weak_ptr_factory_.GetWeakPtr()));
   cred_man_delegate->SetFillingCallback(
-      base::BindOnce(&CredManController::Fill, AsWeakPtr()));
-  cred_man_delegate->TriggerCredManUi(WebAuthnCredManDelegate::RequestPasswords(
-      base::FeatureList::IsEnabled(features::kPasswordsInCredMan)));
+      base::BindOnce(&CredManController::Fill, weak_ptr_factory_.GetWeakPtr()));
+  cred_man_delegate->TriggerCredManUi(
+      WebAuthnCredManDelegate::RequestPasswords(true));
   return true;
 }
 

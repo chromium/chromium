@@ -137,7 +137,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   }
 
   if (IsFluentOverlayScrollbarEnabled() &&
-      thumb_thickness_scale_factor() <= kIdleThicknessScale &&
+      thumb_thickness_scale_factor() <= GetIdleThicknessScale() &&
       !has_find_in_page_tickmarks()) {
     return;
   }
@@ -158,11 +158,11 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       // track's opacity should be zero. When the thickness scale factor reaches
       // its maximum value (1.f), then the opacity of the tracks should reach
       // it's maximum value (1.f).
-      CHECK_GE(thumb_thickness_scale_factor(), kIdleThicknessScale);
+      CHECK_GE(thumb_thickness_scale_factor(), GetIdleThicknessScale());
       CHECK_LE(thumb_thickness_scale_factor(), 1.f);
       const float opacity_scaled =
-          (thumb_thickness_scale_factor() - kIdleThicknessScale) /
-          (1.f - kIdleThicknessScale);
+          (thumb_thickness_scale_factor() - GetIdleThicknessScale()) /
+          (1.f - GetIdleThicknessScale());
       for (auto& v : opacity) {
         v = opacity_scaled;
       }

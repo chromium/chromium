@@ -39,9 +39,9 @@ BridgeConstants.Braille = {
   TARGET: 'Braille',
   Action: {
     BACK_TRANSLATE: 'backTranslate',
-    ENABLE_COMMAND_HANDLER: 'enableCommandHandler',
     PAN_LEFT: 'panLeft',
     PAN_RIGHT: 'panRight',
+    SET_BYPASS: 'setBypass',
     WRITE: 'write',
   },
 };
@@ -99,10 +99,20 @@ BridgeConstants.EventStreamLogger = {
 };
 
 /** @public {!BridgeEntry} */
+BridgeConstants.ForcedActionPath = {
+  TARGET: 'ForcedActionPath',
+  Action: {
+    CREATE: 'create',
+    DESTROY: 'destroy',
+    ON_KEY_DOWN: 'onKeyDown',
+  },
+};
+
+/** @public {!BridgeEntry} */
 BridgeConstants.GestureCommandHandler = {
   TARGET: 'GestureCommandHandler',
   Action: {
-    SET_ENABLED: 'setEnabled',
+    SET_BYPASS: 'setBypass',
   },
 };
 
@@ -166,16 +176,6 @@ BridgeConstants.TtsBackground = {
     GET_CURRENT_VOICE: 'getCurrentVoice',
     SPEAK: 'speak',
     UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
-  },
-};
-
-/** @public {!BridgeEntry} */
-BridgeConstants.UserActionMonitor = {
-  TARGET: 'UserActionMonitor',
-  Action: {
-    CREATE: 'create',
-    DESTROY: 'destroy',
-    ON_KEY_DOWN: 'onKeyDown',
   },
 };
 

@@ -8,7 +8,9 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/leveldb_proto/testing/fake_db.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/internal/proto/credential.pb.h"
 #include "third_party/nearby/internal/proto/local_credential.pb.h"
 
@@ -126,8 +128,12 @@ class TestNearbyPresenceCredentialStorage
     : public ash::nearby::presence::NearbyPresenceCredentialStorage {
  public:
   TestNearbyPresenceCredentialStorage(
-      std::unique_ptr<leveldb_proto::ProtoDatabase<
-          ::nearby::internal::LocalCredential>> private_db,
+      mojo::PendingReceiver<
+          ash::nearby::presence::mojom::NearbyPresenceCredentialStorage>
+          pending_receiver,
+      std::unique_ptr<
+          leveldb_proto::ProtoDatabase<::nearby::internal::LocalCredential>>
+          private_db,
       std::unique_ptr<
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
           local_public_db,
@@ -135,6 +141,7 @@ class TestNearbyPresenceCredentialStorage
           leveldb_proto::ProtoDatabase<::nearby::internal::SharedCredential>>
           remote_public_db)
       : ash::nearby::presence::NearbyPresenceCredentialStorage(
+            std::move(pending_receiver),
             std::move(private_db),
             std::move(local_public_db),
             std::move(remote_public_db)) {}
@@ -220,9 +227,14 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
     local_public_db_ = local_public_db.get();
     remote_public_db_ = remote_public_db.get();
 
+    // Since `NearbyPresenceCredentialStorage` binds to a `Receiver`, it
+    // must be entangled with a valid `Remote`.
+    mojo::PendingReceiver<mojom::NearbyPresenceCredentialStorage>
+        pending_receiver = remote_.BindNewPipeAndPassReceiver();
+
     credential_storage_ = std::make_unique<TestNearbyPresenceCredentialStorage>(
-        std::move(private_db), std::move(local_public_db),
-        std::move(remote_public_db));
+        std::move(pending_receiver), std::move(private_db),
+        std::move(local_public_db), std::move(remote_public_db));
   }
 
   void InitializeCredentialStorage(base::RunLoop& run_loop,
@@ -248,11 +260,11 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
       mojo_base::mojom::AbslStatusCode expected_result,
       std::vector<mojom::LocalCredentialPtr> local_credentials,
       std::vector<mojom::SharedCredentialPtr> shared_credentials,
-      ::nearby::presence::PublicCredentialType public_credential_type) {
+      ash::nearby::presence::mojom::PublicCredentialType
+          public_credential_type) {
     credential_storage_->SaveCredentials(
         std::move(local_credentials), std::move(shared_credentials),
-        ash::nearby::presence::proto::PublicCredentialTypeToMojom(
-            public_credential_type),
+        public_credential_type,
         base::BindLambdaForTesting(
             [&run_loop,
              expected_result](mojo_base::mojom::AbslStatusCode status) {
@@ -261,10 +273,81 @@ class NearbyPresenceCredentialStorageTest : public testing::Test {
             }));
   }
 
+  // Pre-populates the shared credential database of the specified type with
+  // 3 SharedCredentials. Also pre-populates the private credential database
+  // with 3 LocalCredentials if the 'public_credential_type' is
+  // kLocalPublicCredential. Credentials are generated and inserted in the order
+  // of the anonymous namespace constants.
+  void PrepopulateCredentials(base::RunLoop& run_loop,
+                              ash::nearby::presence::mojom::PublicCredentialType
+                                  public_credential_type) {
+    std::vector<mojom::SharedCredentialPtr> shared_credentials;
+    shared_credentials.emplace_back(CreateSharedCredential(
+        kSecretId_Shared_1, kKeySeed_1, kStartTimeMillis_1, kEndtimeMillis_1,
+        kEncryptedMetadataBytes_1, kMetadataEncryptionTag_1,
+        kConnectionSignatureVerificationKey_1,
+        kAdvertisementSignatureVerificationKey_1,
+        mojom::IdentityType::kIdentityTypePrivate, kVersion_1));
+    shared_credentials.emplace_back(CreateSharedCredential(
+        kSecretId_Shared_2, kKeySeed_2, kStartTimeMillis_2, kEndtimeMillis_2,
+        kEncryptedMetadataBytes_2, kMetadataEncryptionTag_2,
+        kConnectionSignatureVerificationKey_2,
+        kAdvertisementSignatureVerificationKey_2,
+        mojom::IdentityType::kIdentityTypePrivate, kVersion_2));
+    shared_credentials.emplace_back(CreateSharedCredential(
+        kSecretId_Shared_3, kKeySeed_3, kStartTimeMillis_3, kEndtimeMillis_3,
+        kEncryptedMetadataBytes_3, kMetadataEncryptionTag_3,
+        kConnectionSignatureVerificationKey_3,
+        kAdvertisementSignatureVerificationKey_3,
+        mojom::IdentityType::kIdentityTypePrivate, kVersion_3));
+
+    std::vector<mojom::LocalCredentialPtr> local_credentials;
+    // Prevent passing local credentials to a remote credential save.
+    if (public_credential_type ==
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential) {
+      local_credentials.emplace_back(CreateLocalCredential(
+          kSecretId_Local_1, kKeySeed_1, kStartTimeMillis_1,
+          kMetadataEncryptionKeyV0_1, AdvertisementSigningKeyCertificateAlias_1,
+          kAdvertisementPrivateKey_1, ConnectionSigningKeyCertificateAlias_1,
+          kConnectionPrivateKey_1, mojom::IdentityType::kIdentityTypePrivate,
+          kConsumedSalts_1, kMetadataEncryptionKeyV1_1));
+      local_credentials.emplace_back(CreateLocalCredential(
+          kSecretId_Local_2, kKeySeed_2, kStartTimeMillis_2,
+          kMetadataEncryptionKeyV0_2, AdvertisementSigningKeyCertificateAlias_2,
+          kAdvertisementPrivateKey_2, ConnectionSigningKeyCertificateAlias_2,
+          kConnectionPrivateKey_2, mojom::IdentityType::kIdentityTypePrivate,
+          kConsumedSalts_2, kMetadataEncryptionKeyV1_2));
+      local_credentials.emplace_back(CreateLocalCredential(
+          kSecretId_Local_3, kKeySeed_3, kStartTimeMillis_3,
+          kMetadataEncryptionKeyV0_3, AdvertisementSigningKeyCertificateAlias_3,
+          kAdvertisementPrivateKey_3, ConnectionSigningKeyCertificateAlias_3,
+          kConnectionPrivateKey_3, mojom::IdentityType::kIdentityTypePrivate,
+          kConsumedSalts_3, kMetadataEncryptionKeyV1_3));
+    }
+
+    SaveCredentialsWithExpectedResult(
+        run_loop, mojo_base::mojom::AbslStatusCode::kOk,
+        std::move(local_credentials), std::move(shared_credentials),
+        public_credential_type);
+
+    // Only set the callbacks of the databases that are being updated.
+    if (public_credential_type ==
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential) {
+      remote_public_db_->UpdateCallback(true);
+    } else {
+      local_public_db_->UpdateCallback(true);
+      private_db_->UpdateCallback(true);
+    }
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment;
 
   std::unique_ptr<NearbyPresenceCredentialStorage> credential_storage_;
+
+  mojo::Remote<mojom::NearbyPresenceCredentialStorage> remote_;
 
   std::map<std::string, ::nearby::internal::LocalCredential>
       private_db_entries_;
@@ -386,7 +469,8 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_Success) {
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kLocalPublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential);
     local_public_db_->UpdateCallback(true);
     private_db_->UpdateCallback(true);
 
@@ -425,7 +509,8 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Local_PublicFails) {
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kAborted,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kLocalPublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential);
     // Only local public database will have its callback bound as we cancel
     // saving to the private database on public save failure.
     local_public_db_->UpdateCallback(false);
@@ -463,7 +548,8 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kAborted,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kLocalPublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential);
     local_public_db_->UpdateCallback(true);
     private_db_->UpdateCallback(false);
 
@@ -493,7 +579,8 @@ TEST_F(NearbyPresenceCredentialStorageTest, SaveCredentials_Remote_Success) {
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kRemotePublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential);
     // The local credential database callback is never set as it is never
     // updated.
     remote_public_db_->UpdateCallback(true);
@@ -525,7 +612,8 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kAborted,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kRemotePublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential);
     remote_public_db_->UpdateCallback(false);
 
     run_loop.Run();
@@ -559,7 +647,8 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kLocalPublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential);
     local_public_db_->UpdateCallback(true);
     private_db_->UpdateCallback(true);
 
@@ -584,7 +673,8 @@ TEST_F(NearbyPresenceCredentialStorageTest,
     SaveCredentialsWithExpectedResult(
         run_loop, mojo_base::mojom::AbslStatusCode::kOk,
         std::move(local_credentials), std::move(shared_credentials),
-        ::nearby::presence::PublicCredentialType::kRemotePublicCredential);
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential);
     remote_public_db_->UpdateCallback(true);
 
     run_loop.Run();
@@ -593,6 +683,224 @@ TEST_F(NearbyPresenceCredentialStorageTest,
   // The private credentials should be preserved despite an empty vector of
   // private credentials being provided in the remote public credential save.
   EXPECT_EQ(1u, private_db_entries_.size());
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest,
+       GetPublicCredentials_Local_Success) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(3u, local_public_db_entries_.size());
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPublicCredentials(
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential,
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                            credentials) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+              EXPECT_TRUE(credentials.has_value());
+              EXPECT_EQ(credentials->size(), 3u);
+              run_loop.Quit();
+            }));
+
+    local_public_db_->LoadCallback(true);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Local_Fail) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(3u, local_public_db_entries_.size());
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPublicCredentials(
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kLocalPublicCredential,
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                            credentials) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
+              EXPECT_FALSE(credentials.has_value());
+              run_loop.Quit();
+            }));
+
+    local_public_db_->LoadCallback(false);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest,
+       GetPublicCredentials_Remote_Success) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kRemotePublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(3u, remote_public_db_entries_.size());
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPublicCredentials(
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential,
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                            credentials) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+              EXPECT_TRUE(credentials.has_value());
+              EXPECT_EQ(credentials->size(), 3u);
+              run_loop.Quit();
+            }));
+
+    remote_public_db_->LoadCallback(true);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPublicCredentials_Remote_Fail) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kRemotePublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(3u, remote_public_db_entries_.size());
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPublicCredentials(
+        ash::nearby::presence::mojom::PublicCredentialType::
+            kRemotePublicCredential,
+        base::BindLambdaForTesting(
+            [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                        absl::optional<std::vector<mojom::SharedCredentialPtr>>
+                            credentials) {
+              EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
+              EXPECT_FALSE(credentials.has_value());
+              run_loop.Quit();
+            }));
+    remote_public_db_->LoadCallback(false);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Success) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(private_db_entries_.size(), 3u);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
+        [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
+                        credentials) {
+          EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kOk);
+          EXPECT_TRUE(credentials.has_value());
+          EXPECT_EQ(credentials->size(), 3u);
+          run_loop.Quit();
+        }));
+    private_db_->LoadCallback(true);
+
+    run_loop.Run();
+  }
+}
+
+TEST_F(NearbyPresenceCredentialStorageTest, GetPrivateCredentials_Fail) {
+  {
+    base::RunLoop run_loop;
+    FullyInitializeDatabases(run_loop);
+    run_loop.Run();
+  }
+
+  {
+    base::RunLoop run_loop;
+    PrepopulateCredentials(run_loop,
+                           ash::nearby::presence::mojom::PublicCredentialType::
+                               kLocalPublicCredential);
+    run_loop.Run();
+  }
+
+  ASSERT_EQ(private_db_entries_.size(), 3u);
+
+  {
+    base::RunLoop run_loop;
+    credential_storage_->GetPrivateCredentials(base::BindLambdaForTesting(
+        [&run_loop](mojo_base::mojom::AbslStatusCode status,
+                    absl::optional<std::vector<mojom::LocalCredentialPtr>>
+                        credentials) {
+          EXPECT_EQ(status, mojo_base::mojom::AbslStatusCode::kAborted);
+          EXPECT_FALSE(credentials.has_value());
+          run_loop.Quit();
+        }));
+
+    private_db_->LoadCallback(false);
+
+    run_loop.Run();
+  }
 }
 
 }  // namespace ash::nearby::presence

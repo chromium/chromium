@@ -56,8 +56,11 @@ class SubRectExtractorGl {
   // pixels as alpha * x + beta and resizes result into destination.
   absl::Status ExtractSubRectToBuffer(
       const tflite::gpu::gl::GlTexture& texture,
-      const tflite::gpu::HW& texture_size, const RotatedRect& sub_rect,
-      bool flip_horizontaly, float alpha, float beta,
+      const tflite::gpu::HW& texture_size,
+      const RotatedRect& sub_rect,
+      bool flip_horizontally,
+      float alpha,
+      float beta,
       const tflite::gpu::HW& destination_size,
       tflite::gpu::gl::CommandQueue* command_queue,
       tflite::gpu::gl::GlBuffer* destination);
@@ -153,14 +156,17 @@ void main() {
 
 absl::Status SubRectExtractorGl::ExtractSubRectToBuffer(
     const tflite::gpu::gl::GlTexture& texture,
-    const tflite::gpu::HW& texture_size, const RotatedRect& texture_sub_rect,
-    bool flip_horizontaly, float alpha, float beta,
+    const tflite::gpu::HW& texture_size,
+    const RotatedRect& texture_sub_rect,
+    bool flip_horizontally,
+    float alpha,
+    float beta,
     const tflite::gpu::HW& destination_size,
     tflite::gpu::gl::CommandQueue* command_queue,
     tflite::gpu::gl::GlBuffer* destination) {
   std::array<float, 16> transform_mat;
   GetRotatedSubRectToRectTransformMatrix(texture_sub_rect, texture_size.w,
-                                         texture_size.h, flip_horizontaly,
+                                         texture_size.h, flip_horizontally,
                                          &transform_mat);
   MP_RETURN_IF_ERROR(texture.BindAsSampler2D(0));
 
@@ -255,7 +261,7 @@ class GlProcessor : public ImageToTensorConverter {
           << "OpenGL ES 3.1 is required.";
       command_queue_ = tflite::gpu::gl::NewCommandQueue(gpu_info);
 
-      ASSIGN_OR_RETURN(
+      MP_ASSIGN_OR_RETURN(
           auto extractor,
           SubRectExtractorGl::Create(gl_helper_.GetGlContext(),
                                      input_starts_at_bottom, border_mode));
@@ -293,10 +299,10 @@ class GlProcessor : public ImageToTensorConverter {
 
           constexpr float kInputImageRangeMin = 0.0f;
           constexpr float kInputImageRangeMax = 1.0f;
-          ASSIGN_OR_RETURN(auto transform,
-                           GetValueRangeTransformation(kInputImageRangeMin,
-                                                       kInputImageRangeMax,
-                                                       range_min, range_max));
+          MP_ASSIGN_OR_RETURN(auto transform,
+                              GetValueRangeTransformation(
+                                  kInputImageRangeMin, kInputImageRangeMax,
+                                  range_min, range_max));
 
           const int output_size = output_tensor.bytes() / output_shape.dims[0];
           auto buffer_view = output_tensor.GetOpenGlBufferWriteView();
@@ -308,7 +314,7 @@ class GlProcessor : public ImageToTensorConverter {
               input_texture,
               tflite::gpu::HW(source_texture.height(), source_texture.width()),
               roi,
-              /*flip_horizontaly=*/false, transform.scale, transform.offset,
+              /*flip_horizontally=*/false, transform.scale, transform.offset,
               tflite::gpu::HW(output_shape.dims[1], output_shape.dims[2]),
               command_queue_.get(), &output));
 

@@ -19,6 +19,7 @@
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/swap_buffers_complete_params.h"
@@ -282,10 +283,12 @@ void FakeSkiaOutputSurface::CopyOutput(
     // anything into the mailbox, but currently the only tests that use this
     // don't actually check the returned texture data.
     auto* sii = GetSharedImageInterface();
-    gpu::Mailbox local_mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
         color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
         gpu::SHARED_IMAGE_USAGE_GLES2, "CopyOutput", gpu::kNullSurfaceHandle);
+    CHECK(client_shared_image);
+    gpu::Mailbox local_mailbox = client_shared_image->mailbox();
 
     CopyOutputResult::ReleaseCallbacks release_callbacks;
     release_callbacks.push_back(base::BindPostTaskToCurrentDefault(

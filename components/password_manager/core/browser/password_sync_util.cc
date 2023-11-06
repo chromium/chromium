@@ -31,39 +31,21 @@ constexpr char kGoogleChangePasswordSignonRealm[] =
 namespace password_manager {
 namespace sync_util {
 
-std::string GetSyncUsernameIfSyncingPasswords(
+std::string GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
     const syncer::SyncService* sync_service,
     const signin::IdentityManager* identity_manager) {
-  if (!identity_manager)
-    return std::string();
-
-  // Return early if the user has explicitly disabled password sync. Note that
-  // this does not cover the case when sync as a whole is turned off.
-  if (sync_service && !sync_service->GetUserSettings()->GetSelectedTypes().Has(
-                          syncer::UserSelectableType::kPasswords)) {
+  if (!identity_manager) {
     return std::string();
   }
 
-  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
+  // Return early if sync-the-feature isn't turned on or if the user explicitly
+  // disabled password sync.
+  if (!IsSyncFeatureEnabledIncludingPasswords(sync_service)) {
+    return std::string();
+  }
+
+  return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
-}
-
-bool IsSyncAccountCredential(const GURL& url,
-                             const std::u16string& username,
-                             const syncer::SyncService* sync_service,
-                             const signin::IdentityManager* identity_manager) {
-  if (!url.DomainIs("google.com"))
-    return false;
-
-  // The empty username can mean that Chrome did not detect it correctly. For
-  // reasons described in http://crbug.com/636292#c1, the username is suspected
-  // to be the sync username unless proven otherwise.
-  if (username.empty())
-    return true;
-
-  return gaia::AreEmailsSame(
-      base::UTF16ToUTF8(username),
-      GetSyncUsernameIfSyncingPasswords(sync_service, identity_manager));
 }
 
 bool IsSyncAccountEmail(const std::string& username,

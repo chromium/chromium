@@ -37,11 +37,12 @@ inline bool InlineLengthMayChange(const ComputedStyle& style,
   // Percentage inline margins will affect the size if the size is unspecified
   // (auto and similar).
   if (is_unspecified && style.MayHaveMargin() &&
-      (style.MarginStart().IsPercentOrCalc() ||
-       style.MarginEnd().IsPercentOrCalc()) &&
+      (style.MarginInlineStart().IsPercentOrCalc() ||
+       style.MarginInlineEnd().IsPercentOrCalc()) &&
       (new_space.PercentageResolutionInlineSize() !=
-       old_space.PercentageResolutionInlineSize()))
+       old_space.PercentageResolutionInlineSize())) {
     return true;
+  }
 
   if (is_unspecified) {
     if (new_space.AvailableSize().inline_size !=
@@ -279,8 +280,9 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
 
   if (!is_block_size_equal) {
     // Only block-flow supports changing the block-size for simplified layout.
-    if (!node.IsBlockFlow() || node.IsLayoutNGCustom())
+    if (!node.IsBlockFlow() || node.IsCustom()) {
       return NGLayoutCacheStatus::kNeedsLayout;
+    }
 
     // Fieldsets stretch their content to the final block-size, which might
     // affect scrollbars.
@@ -574,13 +576,15 @@ bool MaySkipLayoutWithinBlockFormattingContext(
     if (physical_fragment.HasAdjoiningObjectDescendants()) {
       // Check if the previous position intersects with any floats.
       if (old_expected <
-          old_space.ExclusionSpace().ClearanceOffset(EClear::kBoth))
+          old_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
         return false;
+      }
 
       // Check if the new position intersects with any floats.
       if (new_expected <
-          new_space.ExclusionSpace().ClearanceOffset(EClear::kBoth))
+          new_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
         return false;
+      }
     }
 
     *block_offset_delta = new_expected - old_expected;
@@ -627,8 +631,9 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 
   // Check if the previous position intersects with any floats.
   if (**bfc_block_offset <
-      old_space.ExclusionSpace().ClearanceOffset(EClear::kBoth))
+      old_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
     return false;
+  }
 
   if (is_pushed_by_floats || ancestor_has_clearance_past_adjoining_floats) {
     // If we've been pushed by floats, we assume the new clearance offset.
@@ -659,8 +664,9 @@ bool MaySkipLayoutWithinBlockFormattingContext(
 
   // Check if the new position intersects with any floats.
   if (**bfc_block_offset <
-      new_space.ExclusionSpace().ClearanceOffset(EClear::kBoth))
+      new_space.GetExclusionSpace().ClearanceOffset(EClear::kBoth)) {
     return false;
+  }
 
   return true;
 }

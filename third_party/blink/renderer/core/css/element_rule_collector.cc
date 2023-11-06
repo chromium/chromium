@@ -91,17 +91,17 @@ const CSSStyleSheet* FindStyleSheet(const TreeScope* tree_scope_containing_rule,
                                     const StyleEngine& style_engine,
                                     const StyleRule* rule) {
   if (tree_scope_containing_rule) {
-    for (CSSStyleSheet* sheet :
+    for (const auto& [sheet, rule_set] :
          tree_scope_containing_rule->GetScopedStyleResolver()
-             ->GetStyleSheets()) {
-      if (FindStyleRule(sheet, rule) != nullptr) {
-        return sheet;
+             ->GetActiveStyleSheets()) {
+      if (FindStyleRule(sheet.Get(), rule) != nullptr) {
+        return sheet.Get();
       }
     }
   }
   for (const auto& [sheet, rule_set] : style_engine.ActiveUserStyleSheets()) {
     if (FindStyleRule(sheet.Get(), rule) != nullptr) {
-      return sheet;
+      return sheet.Get();
     }
   }
 
@@ -189,7 +189,7 @@ class Seeker {
     if (iter_ == intervals_.begin()) {
       return nullptr;
     }
-    return std::prev(iter_)->value;
+    return std::prev(iter_)->value.Get();
   }
 
  private:
@@ -333,7 +333,7 @@ ElementRuleCollector::ElementRuleCollector(
       selector_filter_(filter),
       mode_(SelectorChecker::kResolvingStyle),
       can_use_fast_reject_(
-          selector_filter_.ParentStackIsConsistent(context.ParentNode())),
+          selector_filter_.ParentStackIsConsistent(context.ParentElement())),
       matching_ua_rules_(false),
       suppress_visited_(false),
       inside_link_(inside_link),
@@ -369,7 +369,7 @@ inline StyleRuleList* ElementRuleCollector::EnsureStyleRuleList() {
   if (!style_rule_list_) {
     style_rule_list_ = MakeGarbageCollected<StyleRuleList>();
   }
-  return style_rule_list_;
+  return style_rule_list_.Get();
 }
 
 inline RuleIndexList* ElementRuleCollector::EnsureRuleList() {
@@ -477,8 +477,9 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
     if (can_use_fast_reject_ &&
-        selector_filter_.FastRejectSelector<RuleData::kMaximumIdentifierCount>(
-            rule_data.DescendantSelectorIdentifierHashes())) {
+        selector_filter_.FastRejectSelector(
+            rule_data.DescendantSelectorIdentifierHashes(
+                rule_set->BloomHashBacking()))) {
       fast_rejected++;
       if (perf_trace_enabled) {
         selector_statistics_collector.SetWasFastRejected();
@@ -684,6 +685,15 @@ bool ElementRuleCollector::CheckIfAnyRuleMatches(
     const MatchRequest& match_request) {
   return CollectMatchingRulesInternal</*stop_at_first_match=*/true>(
       match_request);
+}
+
+bool ElementRuleCollector::CanRejectScope(const StyleScope& style_scope) {
+  if (!style_scope.IsImplicit()) {
+    return false;
+  }
+  StyleScopeFrame* style_scope_frame = style_recalc_context_.style_scope_frame;
+  return style_scope_frame &&
+         !style_scope_frame->HasSeenImplicitScope(style_scope);
 }
 
 template <bool stop_at_first_match>
@@ -1044,10 +1054,10 @@ void ElementRuleCollector::AppendCSSOMWrapperForRule(
   CSSRule* css_rule = nullptr;
   StyleRule* rule = rule_data->Rule();
   if (tree_scope_containing_rule) {
-    for (CSSStyleSheet* parent_style_sheet :
+    for (const auto& [parent_style_sheet, rule_set] :
          tree_scope_containing_rule->GetScopedStyleResolver()
-             ->GetStyleSheets()) {
-      css_rule = FindStyleRule(parent_style_sheet, rule);
+             ->GetActiveStyleSheets()) {
+      css_rule = FindStyleRule(parent_style_sheet.Get(), rule);
       if (css_rule) {
         break;
       }

@@ -19,6 +19,7 @@
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/windows/d3d11_texture_helper.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
@@ -116,7 +117,7 @@ XrResult OpenXrGraphicsBindingD3D11::EnumerateSwapchainImages(
   return XR_SUCCESS;
 }
 
-void OpenXrGraphicsBindingD3D11::ClearSwapChainImages() {
+void OpenXrGraphicsBindingD3D11::ClearSwapchainImages() {
   color_swapchain_images_.clear();
 }
 
@@ -192,12 +193,14 @@ void OpenXrGraphicsBindingD3D11::CreateSharedImages(
                                         gpu::SHARED_IMAGE_USAGE_GLES2;
 
     gpu::MailboxHolder& mailbox_holder = swap_chain_info.mailbox_holder;
-    mailbox_holder.mailbox = sii->CreateSharedImage(
+    auto client_shared_image = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, buffer_size,
         gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
                         gfx::ColorSpace::TransferID::LINEAR),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, shared_image_usage,
         "OpenXrSwapChain", gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox_holder.mailbox = client_shared_image->mailbox();
     mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
     mailbox_holder.texture_target = GL_TEXTURE_2D;
   }
@@ -264,6 +267,10 @@ bool OpenXrGraphicsBindingD3D11::WaitOnFence(gfx::GpuFence& gpu_fence) {
   swap_chain_info.d3d11_fence = std::move(d3d11_fence);
 
   return true;
+}
+
+bool OpenXrGraphicsBindingD3D11::ShouldFlipSubmittedImage() {
+  return IsUsingSharedImages();
 }
 
 void OpenXrGraphicsBindingD3D11::OnSwapchainImageSizeChanged() {

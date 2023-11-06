@@ -10,6 +10,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
@@ -66,11 +67,11 @@ constexpr char kAccessParameters[] = "http://destination";
 MATCHER_P(ResponseEquals,
           expected,
           "Compares StatusOr<response> to expected response") {
-  if (!arg.ok()) {
-    *result_listener << "Failure status=" << arg.status();
+  if (!arg.has_value()) {
+    *result_listener << "Failure status=" << arg.error();
     return false;
   }
-  const auto& arg_value = arg.ValueOrDie();
+  const auto& arg_value = arg.value();
   if (arg_value.sequence_information.GetTypeName() !=
       expected.sequence_information.GetTypeName()) {
     *result_listener << "Sequence info type mismatch: actual="
@@ -158,18 +159,18 @@ class RecordHandlerUploadTest : public ::testing::Test {
         ReportQueueConfiguration::Create(
             {.event_type = EventType::kDevice, .destination = LOG_UPLOAD})
             .Build();
-    EXPECT_OK(config_result) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.error();
     test::TestEvent<StatusOr<std::unique_ptr<ReportQueue>>> create_queue_event;
-    ReportQueueProvider::CreateQueue(std::move(config_result.ValueOrDie()),
+    ReportQueueProvider::CreateQueue(std::move(config_result.value()),
                                      create_queue_event.cb());
     auto report_queue_result = create_queue_event.result();
     // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
-    ASSERT_OK(report_queue_result) << report_queue_result.status();
+    ASSERT_TRUE(report_queue_result.has_value()) << report_queue_result.error();
 
     // Enqueue event.
     test::TestEvent<Status> enqueue_record_event;
-    std::move(report_queue_result.ValueOrDie())
+    std::move(report_queue_result.value())
         ->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
     const auto enqueue_record_result = enqueue_record_event.result();
     EXPECT_OK(enqueue_record_result) << enqueue_record_result;
@@ -506,7 +507,8 @@ TEST_F(RecordHandlerUploadTest, FailedProcessing) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           });
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
   EXPECT_CALL(*delegate_, DoDeleteFile(StrEq(kUploadFileName))).Times(1);
@@ -602,7 +604,8 @@ TEST_F(RecordHandlerUploadTest, InitiationFailureTriggersRetry) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*total*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           }));
   EXPECT_CALL(*delegate_, DoNextStep).Times(0);
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
@@ -731,7 +734,8 @@ TEST_F(RecordHandlerUploadTest, NextStepFailureTriggersRetry) {
              base::OnceCallback<void(
                  StatusOr<std::pair<int64_t /*uploaded*/,
                                     std::string /*session_token*/>>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           });
   EXPECT_CALL(*delegate_, DoFinalize).Times(0);
 
@@ -854,7 +858,8 @@ TEST_F(RecordHandlerUploadTest, FinalizeFailureTriggersRetry) {
           Invoke([](std::string_view session_token,
                     base::OnceCallback<void(
                         StatusOr<std::string /*access_parameters*/>)> cb) {
-            std::move(cb).Run(Status(error::CANCELLED, "Failure by test"));
+            std::move(cb).Run(
+                base::unexpected(Status(error::CANCELLED, "Failure by test")));
           }));
 
   // Record retry event and then original with status.

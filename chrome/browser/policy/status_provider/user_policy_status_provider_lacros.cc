@@ -49,7 +49,7 @@ base::Value::Dict UserPolicyStatusProviderLacros::GetStatus() {
   // Get last fetched time from policy, since we have no refresh scheduler here.
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
-          ? base::Time::FromJavaTime(policy->timestamp())
+          ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
           : base::Time();
   dict.Set("timeSinceLastRefresh",
            GetTimeSinceLastActionString(last_refresh_time));

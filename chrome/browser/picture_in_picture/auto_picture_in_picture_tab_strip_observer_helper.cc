@@ -60,6 +60,22 @@ void AutoPictureInPictureTabStripObserverHelper::OnTabStripModelChanged(
     ObserveTabStripModel(current_tab_strip_model);
   }
 
+  // We should not try to update our state on an insertion that does not also
+  // change the selection, since the selection change will follow immediately
+  // and we should not trigger based on this intermediate state. Note that there
+  // is a technically possible case where a foreground tab gets inserted into a
+  // different tabstrip as a background tab without ever changing the currently
+  // selected tab. In this particular case, we will not trigger the callback.
+  // Ideally, we would be able to distinguish this case from the case where the
+  // selection will change, but that's not currently feasible and given how
+  // easily/often the insert-and-change case happens and how infrequently the
+  // insert-into-background-from-foreground case comes up, not triggering in
+  // that case is a reasonable tradeoff.
+  if (change.type() == TabStripModelChange::kInserted &&
+      !selection.active_tab_changed()) {
+    return;
+  }
+
   const bool old_is_tab_activated = is_tab_activated_;
   UpdateIsTabActivated(current_tab_strip_model);
   if (is_tab_activated_ == old_is_tab_activated) {
@@ -76,6 +92,12 @@ void AutoPictureInPictureTabStripObserverHelper::UpdateIsTabActivated(
   // until it's been placed back into a tabstrip to prevent triggering the
   // callback unnecessarily.
   if (tab_strip_model) {
+    // If there is not currently a selected tab, then the tabstrip is still
+    // starting up and we should not change our state.
+    if (tab_strip_model->active_index() == TabStripModel::kNoTab) {
+      return;
+    }
+
     is_tab_activated_ =
         tab_strip_model->GetActiveWebContents() == web_contents_;
   }

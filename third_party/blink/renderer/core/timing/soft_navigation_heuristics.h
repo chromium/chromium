@@ -69,6 +69,9 @@ class SoftNavigationHeuristics
   void CommitPreviousPaints(LocalFrame*);
   void EmitSoftNavigationEntry(LocalFrame*);
 
+  // Here we need a HashSet as we could have more than 1 task reacting to a user
+  // interaction. E.g. a click event and a navigate event handler, or 3
+  // different keyboard events handlers.
   WTF::HashSet<scheduler::TaskAttributionIdType>
       potential_soft_navigation_task_ids_;
   size_t disposed_soft_navigation_tasks_ = 0;

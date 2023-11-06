@@ -22,8 +22,6 @@ class SelectorFilterParentScopeTest : public testing::Test {
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
-  static constexpr size_t max_identifier_hashes = 4;
-
  private:
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
@@ -57,12 +55,11 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
 
       for (const CSSSelector* selector = selectors->First(); selector;
            selector = CSSSelectorList::Next(*selector)) {
-        unsigned selector_hashes[max_identifier_hashes];
+        Vector<unsigned> selector_hashes;
         filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
-                                       selector_hashes, max_identifier_hashes);
-        EXPECT_NE(selector_hashes[0], 0u);
-        EXPECT_FALSE(
-            filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+                                       selector_hashes);
+        EXPECT_NE(selector_hashes.size(), 0u);
+        EXPECT_FALSE(filter.FastRejectSelector(selector_hashes));
       }
     }
   }
@@ -92,12 +89,11 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    unsigned selector_hashes[max_identifier_hashes];
+    Vector<unsigned> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
-                                   selector_hashes, max_identifier_hashes);
-    EXPECT_NE(selector_hashes[0], 0u);
-    EXPECT_FALSE(
-        filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+                                   selector_hashes);
+    EXPECT_NE(selector_hashes.size(), 0u);
+    EXPECT_FALSE(filter.FastRejectSelector(selector_hashes));
   }
 }
 
@@ -149,12 +145,11 @@ TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
 
   for (const CSSSelector* selector = selectors->First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
-    unsigned selector_hashes[max_identifier_hashes];
+    Vector<unsigned> selector_hashes;
     filter.CollectIdentifierHashes(*selector, /* style_scope */ nullptr,
-                                   selector_hashes, max_identifier_hashes);
-    EXPECT_NE(selector_hashes[0], 0u);
-    EXPECT_FALSE(
-        filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+                                   selector_hashes);
+    EXPECT_NE(selector_hashes.size(), 0u);
+    EXPECT_FALSE(filter.FastRejectSelector(selector_hashes));
   }
 }
 

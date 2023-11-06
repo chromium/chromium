@@ -14,7 +14,9 @@
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -149,7 +151,8 @@ class LacrosWindowTitleObserver
 class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
  public:
   QuickSettingsLacrosIntegrationTest() {
-    feature_list_.InitAndEnableFeature(features::kLacrosOnly);
+    feature_list_.InitAndEnableFeature(
+        ash::standalone_browser::features::kLacrosOnly);
   }
 
   // InteractiveAshTest:
@@ -162,7 +165,10 @@ class QuickSettingsLacrosIntegrationTest : public QuickSettingsIntegrationTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest, ManagedDeviceInfo) {
+// Flaky because Lacros can be older than Ash in chromeos_integration_tests,
+// causing NOTREACHED failures at the crosapi level. b/303359438
+IN_PROC_BROWSER_TEST_F(QuickSettingsLacrosIntegrationTest,
+                       DISABLED_ManagedDeviceInfo) {
   ASSERT_TRUE(crosapi::browser_util::IsLacrosEnabled());
 
   base::AddFeatureIdTagToTestResult(

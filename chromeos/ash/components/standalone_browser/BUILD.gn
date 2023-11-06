@@ -17,12 +17,15 @@ component("standalone_browser") {
     "lacros_availability.h",
     "migrator_util.cc",
     "migrator_util.h",
+    "standalone_browser_features.cc",
+    "standalone_browser_features.h",
   ]
 
   deps = [
     "//ash/constants:constants",
     "//base",
     "//components/account_id",
+    "//components/policy:generated",
     "//components/policy/core/common",
     "//components/prefs",
     "//components/user_manager:user_manager",
@@ -54,6 +57,7 @@ source_set("test_support") {
   sources = [ "feature_refs.cc" ]
 
   deps = [
+    ":standalone_browser",
     "//ash/constants",
     "//base/test:test_support",
   ]

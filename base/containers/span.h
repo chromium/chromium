@@ -19,8 +19,8 @@
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx20_to_address.h"
-#include "base/memory/raw_ptr_exclusion.h"
-#include "base/numerics/safe_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/template_util.h"
 
 namespace base {
 
@@ -82,8 +82,8 @@ using IteratorHasConvertibleReferenceType =
 
 template <typename Iter, typename T>
 using EnableIfCompatibleContiguousIterator = std::enable_if_t<
-    std::conjunction<IsContiguousIterator<Iter>,
-                     IteratorHasConvertibleReferenceType<Iter, T>>::value>;
+    std::conjunction_v<IsContiguousIterator<Iter>,
+                       IteratorHasConvertibleReferenceType<Iter, T>>>;
 
 template <typename Container, typename T>
 using ContainerHasConvertibleData = IsLegalDataConversion<
@@ -164,8 +164,8 @@ constexpr size_t must_not_be_dynamic_extent() {
 // own the underlying memory, so care must be taken to ensure that a span does
 // not outlive the backing store.
 //
-// span is somewhat analogous to StringPiece, but with arbitrary element types,
-// allowing mutation if T is non-const.
+// span is somewhat analogous to std::string_view, but with arbitrary element
+// types, allowing mutation if T is non-const.
 //
 // span is implicitly convertible from C++ arrays, as well as most [1]
 // container-like types that provide a data() and size() method (such as
@@ -285,11 +285,10 @@ class GSL_POINTER span : public internal::ExtentStorage<Extent> {
     CHECK(Extent == dynamic_extent || Extent == count);
   }
 
-  template <
-      typename It,
-      typename End,
-      typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
-      typename = std::enable_if_t<!std::is_convertible<End, size_t>::value>>
+  template <typename It,
+            typename End,
+            typename = internal::EnableIfCompatibleContiguousIterator<It, T>,
+            typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
   constexpr span(It begin, End end) noexcept
       // Subtracting two iterators gives a ptrdiff_t, but the result should be
       // non-negative: see CHECK below.
@@ -496,7 +495,7 @@ as_bytes(span<T, X> s) noexcept {
 
 template <typename T,
           size_t X,
-          typename = std::enable_if_t<!std::is_const<T>::value>>
+          typename = std::enable_if_t<!std::is_const_v<T>>>
 span<uint8_t, (X == dynamic_extent ? dynamic_extent : sizeof(T) * X)>
 as_writable_bytes(span<T, X> s) noexcept {
   return {reinterpret_cast<uint8_t*>(s.data()), s.size_bytes()};

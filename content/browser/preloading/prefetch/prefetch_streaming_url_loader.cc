@@ -154,14 +154,14 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 
   // Checks head to determine if the prefetch can be served.
   CHECK(on_prefetch_response_started_callback_);
-  PrefetchStreamingURLLoaderStatus status =
+  absl::optional<PrefetchErrorOnResponseReceived> error =
       std::move(on_prefetch_response_started_callback_).Run(head.get());
 
   // `head` and `body` are discarded if `response_reader_` is `nullptr`, because
   // it means the `PrefetchResponseReader` is deleted and thus we no longer
   // serve the prefetched result.
   if (response_reader_) {
-    response_reader_->OnReceiveResponse(status, std::move(head),
+    response_reader_->OnReceiveResponse(std::move(error), std::move(head),
                                         std::move(body));
   }
 

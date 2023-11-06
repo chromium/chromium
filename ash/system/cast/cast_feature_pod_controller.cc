@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/cast_config_controller.h"
@@ -15,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -60,49 +58,20 @@ CastFeaturePodController::CastFeaturePodController(
     : tray_controller_(tray_controller) {}
 
 CastFeaturePodController::~CastFeaturePodController() {
-  if (CastConfigController::Get() && (button_ || tile_))
+  if (CastConfigController::Get() && tile_) {
     CastConfigController::Get()->RemoveObserver(this);
+  }
 }
 
 // static
 bool CastFeaturePodController::CalculateButtonVisibility() {
-  // The button is visible if there is a primary profile (e.g. after login) and
-  // that profile has a media router (e.g. it is not disabled by policy).
-  // QsRevamp shows the button even if there are no media sinks.
+  // Shows the button even if there are no media sinks.
   auto* cast_config = CastConfigController::Get();
-  return features::IsQsRevampEnabled()
-             ? cast_config && cast_config->HasMediaRouterForPrimaryProfile()
-             : cast_config &&
-                   (cast_config->HasSinksAndRoutes() ||
-                    cast_config->AccessCodeCastingEnabled()) &&
-                   !cast_config->HasActiveRoute();
-}
-
-FeaturePodButton* CastFeaturePodController::CreateButton() {
-  DCHECK(!features::IsQsRevampEnabled());
-  button_ = new FeaturePodButton(this);
-  button_->SetVectorIcon(kUnifiedMenuCastIcon);
-  button_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_SHORT));
-  button_->SetIconAndLabelTooltips(
-      l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP));
-  button_->ShowDetailedViewArrow();
-  button_->DisableLabelButtonFocus();
-  button_->SetID(VIEW_ID_CAST_MAIN_VIEW);
-
-  if (CastConfigController::Get()) {
-    CastConfigController::Get()->AddObserver(this);
-    CastConfigController::Get()->RequestDeviceRefresh();
-  }
-  // Init the button with invisible state. The `Update` method will update the
-  // visibility based on the current condition.
-  button_->SetVisible(false);
-  Update();
-  return button_;
+  return cast_config && cast_config->HasMediaRouterForPrimaryProfile();
 }
 
 std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&CastFeaturePodController::OnIconPressed,
                           weak_factory_.GetWeakPtr()),
@@ -169,24 +138,10 @@ void CastFeaturePodController::OnLabelPressed() {
 
 void CastFeaturePodController::OnDevicesUpdated(
     const std::vector<SinkAndRoute>& devices) {
-  if (features::IsQsRevampEnabled()) {
-    UpdateFeatureTile();
-  } else {
-    Update();
-  }
-}
-
-void CastFeaturePodController::Update() {
-  DCHECK(!features::IsQsRevampEnabled());
-  const bool target_visibility = CalculateButtonVisibility();
-  if (!button_->GetVisible() && target_visibility) {
-    TrackVisibilityUMA();
-  }
-  button_->SetVisible(target_visibility);
+  UpdateFeatureTile();
 }
 
 void CastFeaturePodController::UpdateFeatureTile() {
-  DCHECK(features::IsQsRevampEnabled());
   DCHECK(tile_);
   auto* cast_config = CastConfigController::Get();
   if (!cast_config) {

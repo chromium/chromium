@@ -16,9 +16,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.url.GURL;
 import org.chromium.url.GURL.BadSerializerVersionException;
 
-/**
- * Unit tests for {@link UrlConstants}.
- */
+/** Unit tests for {@link UrlConstants}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests pre-native startup behaviour and thus can't be batched.")
 public class UrlConstantsTest {

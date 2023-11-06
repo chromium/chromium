@@ -24,6 +24,7 @@
 #include <iterator>
 #include <optional>
 
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "snapshot/snapshot_constants.h"
 #include "util/ios/ios_intermediate_dump_writer.h"

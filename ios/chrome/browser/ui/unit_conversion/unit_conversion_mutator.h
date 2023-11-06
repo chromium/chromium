@@ -15,12 +15,14 @@
 // Notifies the mutator of a source unit change.
 - (void)sourceUnitDidChange:(NSUnit*)sourceUnit
                  targetUnit:(NSUnit*)targetUnit
-                  unitValue:(double)unitValue;
+                  unitValue:(double)unitValue
+                   unitType:(ios::provider::UnitType)unitType;
 
 // Notifies the mutator of a target unit change.
 - (void)targetUnitDidChange:(NSUnit*)targetUnit
                  sourceUnit:(NSUnit*)sourceUnit
-                  unitValue:(double)unitValue;
+                  unitValue:(double)unitValue
+                   unitType:(ios::provider::UnitType)unitType;
 
 // Notifies the mutator of a source unit value change.
 - (void)sourceUnitValueFieldDidChange:(NSString*)sourceUnitValueField

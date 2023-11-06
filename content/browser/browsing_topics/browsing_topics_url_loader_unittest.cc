@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
@@ -194,6 +196,8 @@ class BrowsingTopicsURLLoaderTest : public RenderViewHostTestHarness {
 };
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
+  base::HistogramTester histograms;
+
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -226,9 +230,14 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedBeforeCommit) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", false, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
+  base::HistogramTester histograms;
+
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -272,9 +281,19 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterCommit) {
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 2u);
   EXPECT_FALSE(browser_client().last_get_topics_param());
   EXPECT_TRUE(browser_client().last_observe_param());
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", true, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
+  // The test assumes that the page gets deleted after navigation. Disable
+  // back/forward cache to ensure that pages don't get preserved in the cache.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  base::HistogramTester histograms;
+
   NavigatePage(GURL("https://google.com"));
 
   mojo::Remote<network::mojom::URLLoaderFactory> remote_url_loader_factory;
@@ -315,6 +334,9 @@ TEST_F(BrowsingTopicsURLLoaderTest, RequestArrivedAfterDocumentDestroyed) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 0u);
+
+  histograms.ExpectUniqueSample(
+      "BrowsingTopics.InterceptedTopicsFetchRequest.DocumentPresent", false, 1);
 }
 
 TEST_F(BrowsingTopicsURLLoaderTest, RequestFromSubframe) {

@@ -6,6 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Tests that pausing on uncaught exceptions thrown from C++ bindings will not crash.\n`);
   await TestRunner.showPanel('sources');

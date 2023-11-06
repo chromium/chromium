@@ -21,6 +21,7 @@
 #include "ui/message_center/message_center_types.h"
 #include "ui/message_center/notification_view_controller.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_popup_view.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view.h"
@@ -194,6 +195,22 @@ void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
   it->popup->message_view()->set_notification_id(new_single_notification_id);
 }
 
+void MessagePopupCollection::OnChildNotificationViewUpdated(
+    const std::string& parent_notification_id,
+    const std::string& child_notification_id) {
+  auto* notification =
+      MessageCenter::Get()->FindNotificationById(child_notification_id);
+  if (!notification) {
+    return;
+  }
+
+  auto* parent_popup = GetPopupViewForNotificationID(parent_notification_id);
+  if (parent_popup) {
+    parent_popup->UpdateContentsForChildNotification(child_notification_id,
+                                                     *notification);
+  }
+}
+
 void MessagePopupCollection::OnNotificationAdded(
     const std::string& notification_id) {
   // Should not call MessagePopupCollection::Update here. Because notification
@@ -203,6 +220,14 @@ void MessagePopupCollection::OnNotificationAdded(
   // MessagePopupCollection::Update will not update the popup's content. Then
   // the new notification popup fails to show. (see https://crbug.com/921402)
   OnNotificationUpdated(notification_id);
+
+  // Notify if the incoming notification is silent.
+  const Notification* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  if (notification && notification->priority() < DEFAULT_PRIORITY) {
+    NotifySilentNotification(notification->id());
+  }
 }
 
 void MessagePopupCollection::OnNotificationRemoved(

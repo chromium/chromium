@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_encoder_factory.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_decoder.h"
 #include "third_party/blink/renderer/platform/peerconnection/stats_collecting_encoder.h"
+#include "third_party/webrtc/api/transport/field_trial_based_config.h"
 #include "third_party/webrtc/api/video_codecs/video_decoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder_software_fallback_wrapper.h"
 #include "third_party/webrtc/media/base/codec.h"
@@ -114,7 +115,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
             : nullptr;
     std::unique_ptr<webrtc::VideoEncoder> encoder =
         std::make_unique<webrtc::SimulcastEncoderAdapter>(
-            primary_factory, fallback_factory, format);
+            primary_factory, fallback_factory, format, field_trials_);
 
     return std::make_unique<StatsCollectingEncoder>(format, std::move(encoder),
                                                     stats_callback_);
@@ -145,6 +146,7 @@ class EncoderAdapter : public webrtc::VideoEncoderFactory {
   }
 
  private:
+  const webrtc::FieldTrialBasedConfig field_trials_;
   webrtc::InternalEncoderFactory software_encoder_factory_;
   const std::unique_ptr<webrtc::VideoEncoderFactory> hardware_encoder_factory_;
   StatsCollector::StoreProcessingStatsCB stats_callback_;

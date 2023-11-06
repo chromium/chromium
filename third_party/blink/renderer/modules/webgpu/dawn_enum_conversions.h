@@ -11,7 +11,6 @@ class V8GPUTextureSampleType;
 class V8GPUStorageTextureAccess;
 class V8GPUCompareFunction;
 class V8GPUQueryType;
-class V8GPUPipelineStatisticName;
 class V8GPUTextureFormat;
 class V8GPUTextureDimension;
 class V8GPUTextureViewDimension;
@@ -48,8 +47,6 @@ WGPUStorageTextureAccess AsDawnEnum(
     const V8GPUStorageTextureAccess& webgpu_enum);
 WGPUCompareFunction AsDawnEnum(const V8GPUCompareFunction& webgpu_enum);
 WGPUQueryType AsDawnEnum(const V8GPUQueryType& webgpu_enum);
-WGPUPipelineStatisticName AsDawnEnum(
-    const V8GPUPipelineStatisticName& webgpu_enum);
 WGPUTextureFormat AsDawnEnum(const V8GPUTextureFormat& webgpu_enum);
 WGPUTextureDimension AsDawnEnum(const V8GPUTextureDimension& webgpu_enum);
 WGPUTextureViewDimension AsDawnEnum(

@@ -87,13 +87,15 @@ extern const char kRegexSubstitutionKey[];
 extern const char kRegexSubstitutionPath[];
 extern const char kRequestHeadersKey[];
 extern const char kResponseHeadersKey[];
-extern const char kRequestHeadersPath[];
-extern const char kResponseHeadersPath[];
+extern const char kModifyRequestHeadersPath[];
+extern const char kModifyResponseHeadersPath[];
 extern const char kHeaderNameKey[];
 extern const char kHeaderOperationKey[];
 extern const char kHeaderValueKey[];
 extern const char kTabIdsKey[];
 extern const char kExcludedTabIdsKey[];
+extern const char kMatchResponseHeadersPath[];
+extern const char kMatchExcludedResponseHeadersPath[];
 
 }  // namespace declarative_net_request
 }  // namespace extensions

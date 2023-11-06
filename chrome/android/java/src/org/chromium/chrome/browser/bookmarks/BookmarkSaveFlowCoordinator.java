@@ -94,8 +94,11 @@ public class BookmarkSaveFlowCoordinator {
             mBookmarkSaveFlowView =
                     LayoutInflater.from(mContext)
                             .inflate(R.layout.bookmark_save_flow, /* root= */ null);
-            mChangeProcessor = PropertyModelChangeProcessor.create(
-                    mPropertyModel, mBookmarkSaveFlowView, new BookmarkSaveFlowViewBinder());
+            mChangeProcessor =
+                    PropertyModelChangeProcessor.create(
+                            mPropertyModel,
+                            mBookmarkSaveFlowView,
+                            new BookmarkSaveFlowViewBinder());
         }
 
         Resources res = mContext.getResources();
@@ -112,17 +115,28 @@ public class BookmarkSaveFlowCoordinator {
                         BookmarkUtils.getFaviconDisplaySize(res),
                         SyncServiceFactory.getForProfile(profile));
 
-        mMediator = new BookmarkSaveFlowMediator(mBookmarkModel, mPropertyModel, mContext,
-                this::close, shoppingService, bookmarkImageFetcher, mProfile);
+        mMediator =
+                new BookmarkSaveFlowMediator(
+                        mBookmarkModel,
+                        mPropertyModel,
+                        mContext,
+                        this::close,
+                        shoppingService,
+                        bookmarkImageFetcher,
+                        mProfile);
     }
 
     /**
      * Shows the save flow for a normal bookmark.
+     *
      * @param bookmarkId The {@link BookmarkId} which was saved.
      */
     public void show(BookmarkId bookmarkId) {
-        show(bookmarkId, /*fromExplicitTrackUi=*/false, /*wasBookmarkMoved=*/false,
-                /*isNewBookmark=*/false);
+        show(
+                bookmarkId,
+                /* fromExplicitTrackUi= */ false,
+                /* wasBookmarkMoved= */ false,
+                /* isNewBookmark= */ false);
     }
 
     /**
@@ -141,14 +155,23 @@ public class BookmarkSaveFlowCoordinator {
             boolean fromExplicitTrackUi,
             boolean wasBookmarkMoved,
             boolean isNewBookmark) {
-        mBookmarkModel.finishLoadingBookmarkModel(() -> {
-            show(bookmarkId, fromExplicitTrackUi, wasBookmarkMoved, isNewBookmark,
-                    mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
-        });
+        mBookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    show(
+                            bookmarkId,
+                            fromExplicitTrackUi,
+                            wasBookmarkMoved,
+                            isNewBookmark,
+                            mBookmarkModel.getPowerBookmarkMeta(bookmarkId));
+                });
     }
 
-    void show(BookmarkId bookmarkId, boolean fromExplicitTrackUi, boolean wasBookmarkMoved,
-            boolean isNewBookmark, @Nullable PowerBookmarkMeta meta) {
+    void show(
+            BookmarkId bookmarkId,
+            boolean fromExplicitTrackUi,
+            boolean wasBookmarkMoved,
+            boolean isNewBookmark,
+            @Nullable PowerBookmarkMeta meta) {
         mDestroyChecker.checkNotDestroyed();
         mBottomSheetContent = new BookmarkSaveFlowBottomSheetContent(mBookmarkSaveFlowView);
         // Order matters here: Calling show on the mediator first allows the height to be fully
@@ -162,24 +185,29 @@ public class BookmarkSaveFlowCoordinator {
         }
 
         if (ShoppingFeatures.isShoppingListEligible(mProfile)) {
-            PriceTrackingUtils.isBookmarkPriceTracked(mProfile, bookmarkId.getId(), (isTracked) -> {
-                if (isTracked) return;
+            PriceTrackingUtils.isBookmarkPriceTracked(
+                    mProfile,
+                    bookmarkId.getId(),
+                    (isTracked) -> {
+                        if (isTracked) return;
 
-                if (shown) {
-                    showShoppingSaveFlowIPH();
-                } else {
-                    mBottomSheetController.addObserver(new EmptyBottomSheetObserver() {
-                        @Override
-                        public void onSheetContentChanged(BottomSheetContent newContent) {
-                            if (newContent == mBottomSheetContent) {
-                                showShoppingSaveFlowIPH();
-                            }
+                        if (shown) {
+                            showShoppingSaveFlowIPH();
+                        } else {
+                            mBottomSheetController.addObserver(
+                                    new EmptyBottomSheetObserver() {
+                                        @Override
+                                        public void onSheetContentChanged(
+                                                BottomSheetContent newContent) {
+                                            if (newContent == mBottomSheetContent) {
+                                                showShoppingSaveFlowIPH();
+                                            }
 
-                            mBottomSheetController.removeObserver(this);
+                                            mBottomSheetController.removeObserver(this);
+                                        }
+                                    });
                         }
                     });
-                }
-            });
         }
     }
 
@@ -189,9 +217,11 @@ public class BookmarkSaveFlowCoordinator {
      */
     private void showShoppingSaveFlowIPH() {
         mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(mBookmarkSaveFlowView.getResources(),
-                        FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
-                        R.string.iph_shopping_list_save_flow, R.string.iph_shopping_list_save_flow)
+                new IPHCommandBuilder(
+                                mBookmarkSaveFlowView.getResources(),
+                                FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
+                                R.string.iph_shopping_list_save_flow,
+                                R.string.iph_shopping_list_save_flow)
                         .setAnchorView(
                                 mBookmarkSaveFlowView.findViewById(R.id.bookmark_select_folder))
                         .build());

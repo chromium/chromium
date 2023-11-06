@@ -40,7 +40,6 @@
 
 namespace content {
 
-class AdAuctionPageData;
 class InterestGroupManagerImpl;
 struct BiddingAndAuctionServerKey;
 class RenderFrameHost;
@@ -149,8 +148,6 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                                      interest_group_api_operation,
                                  const url::Origin& origin) const;
 
-  AdAuctionPageData* GetAdAuctionPageData();
-
   // Deletes `auction`.
   void OnAuctionComplete(
       RunAdAuctionCallback callback,
@@ -177,6 +174,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
                         BiddingAndAuctionData data);
   void OnGotBiddingAndAuctionServerKey(
       BiddingAndAuctionDataConstructionState state,
+      scoped_refptr<network::WrapperSharedURLLoaderFactory> loader,
       base::expected<BiddingAndAuctionServerKey, std::string> maybe_key);
 
   InterestGroupManagerImpl& GetInterestGroupManager() const;

@@ -64,7 +64,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
   // other metrics.
   void RecordSelectorStateUma() const;
 
-  LocalFrame* GetFrame() { return frame_; }
+  LocalFrame* GetFrame() { return frame_.Get(); }
 
   // Returns the text value of the range this generator is attempting to
   // generate a selector for. Returns empty string if the range is invalid or

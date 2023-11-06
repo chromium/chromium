@@ -43,15 +43,14 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration test suite for partner homepage.
- */
+/** Integration test suite for partner homepage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PartnerHomepageIntegrationTest {
     @Rule
     public BasePartnerBrowserCustomizationIntegrationTestRule mActivityTestRule =
             new BasePartnerBrowserCustomizationIntegrationTestRule();
+
     @Rule
     public SettingsActivityTestRule<HomepageSettings> mHomepageSettingsTestRule =
             new SettingsActivityTestRule<>(HomepageSettings.class);
@@ -63,63 +62,75 @@ public class PartnerHomepageIntegrationTest {
         mActivityTestRule.startMainActivityFromLauncher();
     }
 
-    /**
-     * Homepage is loaded on startup.
-     */
+    /** Homepage is loaded on startup. */
     @Test
     @MediumTest
     @Feature({"Homepage"})
     public void testHomepageInitialLoading() {
-        Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab())));
-        Assert.assertEquals("<Android.PartnerBrowserCustomizationInitDuration> not recorded.", 1,
+        Assert.assertEquals(
+                Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
+                Uri.parse(
+                        ChromeTabUtils.getUrlStringOnUiThread(
+                                mActivityTestRule.getActivity().getActivityTab())));
+        Assert.assertEquals(
+                "<Android.PartnerBrowserCustomizationInitDuration> not recorded.",
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.PartnerBrowserCustomizationInitDuration"));
         Assert.assertEquals(
-                "<Android.PartnerBrowserCustomizationInitDuration.WithCallbacks> not recorded.", 1,
+                "<Android.PartnerBrowserCustomizationInitDuration.WithCallbacks> not recorded.",
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.PartnerBrowserCustomizationInitDuration.WithCallbacks"));
         Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> not recorded.", 1,
+                "<Android.PartnerCustomizationInitializedBeforeInitialTab> not recorded.",
+                1,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         "Android.PartnerCustomizationInitializedBeforeInitialTab"));
         Assert.assertEquals(
-                "<Android.PartnerCustomizationInitializedBeforeInitialTab> should record true.", 1,
+                "<Android.PartnerCustomizationInitializedBeforeInitialTab> should record true.",
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.PartnerCustomizationInitializedBeforeInitialTab", 1));
     }
 
-    /**
-     * Clicking the homepage button should load homepage in the current tab.
-     */
+    /** Clicking the homepage button should load homepage in the current tab. */
     @Test
     @MediumTest
     @Feature({"Homepage"})
     public void testHomepageButtonClick() throws InterruptedException {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         // Load non-homepage URL.
         mActivityTestRule.loadUrl(testServer.getURL(TEST_PAGE));
         UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-        Assert.assertNotSame(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab())));
+        Assert.assertNotSame(
+                Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
+                Uri.parse(
+                        ChromeTabUtils.getUrlStringOnUiThread(
+                                mActivityTestRule.getActivity().getActivityTab())));
         // Click homepage button.
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
-                TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI, new Runnable() {
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(),
+                TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI,
+                new Runnable() {
                     @Override
                     public void run() {
                         View homeButton =
                                 mActivityTestRule.getActivity().findViewById(R.id.home_button);
-                        Assert.assertEquals("Homepage button is not shown", View.VISIBLE,
+                        Assert.assertEquals(
+                                "Homepage button is not shown",
+                                View.VISIBLE,
                                 homeButton.getVisibility());
                         TouchCommon.singleClickView(homeButton);
                     }
                 });
-        Assert.assertEquals(Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
-                Uri.parse(ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab())));
+        Assert.assertEquals(
+                Uri.parse(TestPartnerBrowserCustomizationsProvider.HOMEPAGE_URI),
+                Uri.parse(
+                        ChromeTabUtils.getUrlStringOnUiThread(
+                                mActivityTestRule.getActivity().getActivityTab())));
     }
 
     /**
@@ -134,70 +145,88 @@ public class PartnerHomepageIntegrationTest {
 
         // Assert no homepage button.
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Homepage button is shown", View.GONE,
-                    mActivityTestRule.getActivity().findViewById(R.id.home_button).getVisibility());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            "Homepage button is shown",
+                            View.GONE,
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.home_button)
+                                    .getVisibility());
+                });
 
         // Enable homepage.
         toggleHomepageSwitchPreference(true);
 
         // Assert homepage button.
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Homepage button is shown", View.VISIBLE,
-                    mActivityTestRule.getActivity().findViewById(R.id.home_button).getVisibility());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals(
+                            "Homepage button is shown",
+                            View.VISIBLE,
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.home_button)
+                                    .getVisibility());
+                });
     }
 
-    /**
-     * Closing the last tab should also close Chrome on Tabbed mode.
-     */
+    /** Closing the last tab should also close Chrome on Tabbed mode. */
     @Test
     @MediumTest
     @Feature({"Homepage"})
     public void testLastTabClosed() {
-        ChromeTabUtils.closeCurrentTab(InstrumentationRegistry.getInstrumentation(),
+        ChromeTabUtils.closeCurrentTab(
+                InstrumentationRegistry.getInstrumentation(),
                 (ChromeTabbedActivity) mActivityTestRule.getActivity());
-        Assert.assertTrue("Activity was not closed.",
+        Assert.assertTrue(
+                "Activity was not closed.",
                 mActivityTestRule.getActivity().isFinishing()
                         || mActivityTestRule.getActivity().isDestroyed());
     }
 
-    /**
-     * Closing all tabs should finalize all tab closures and close Chrome on Tabbed mode.
-     */
+    /** Closing all tabs should finalize all tab closures and close Chrome on Tabbed mode. */
     @Test
     @MediumTest
     @Feature({"Homepage"})
     public void testCloseAllTabs() {
         final CallbackHelper tabClosed = new CallbackHelper();
         final TabModel tabModel = mActivityTestRule.getActivity().getCurrentTabModel();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            tabModel.addObserver(new TabModelObserver() {
-                @Override
-                public void onFinishingTabClosure(Tab tab) {
-                    if (tabModel.getCount() == 0) tabClosed.notifyCalled();
-                }
-            });
-            mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            tabModel.addObserver(
+                                    new TabModelObserver() {
+                                        @Override
+                                        public void onFinishingTabClosure(Tab tab) {
+                                            if (tabModel.getCount() == 0) tabClosed.notifyCalled();
+                                        }
+                                    });
+                            mActivityTestRule.getActivity().getTabModelSelector().closeAllTabs();
+                        });
 
         try {
             tabClosed.waitForCallback(0);
         } catch (TimeoutException e) {
             Assert.fail("Never closed all of the tabs");
         }
-        Assert.assertEquals("Expected no tabs to be present", 0,
+        Assert.assertEquals(
+                "Expected no tabs to be present",
+                0,
                 mActivityTestRule.getActivity().getCurrentTabModel().getCount());
         TabList fullModel =
                 mActivityTestRule.getActivity().getCurrentTabModel().getComprehensiveModel();
         // By the time TAB_CLOSED event is received, all tab closures should be finalized
-        Assert.assertEquals("Expected no tabs to be present in the comprehensive model", 0,
+        Assert.assertEquals(
+                "Expected no tabs to be present in the comprehensive model",
+                0,
                 fullModel.getCount());
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
-        Assert.assertTrue("Activity was not closed.",
+        Assert.assertTrue(
+                "Activity was not closed.",
                 mActivityTestRule.getActivity().isFinishing()
                         || mActivityTestRule.getActivity().isDestroyed());
     }
@@ -212,15 +241,17 @@ public class PartnerHomepageIntegrationTest {
         SettingsActivity homepagePreferenceActivity =
                 mHomepageSettingsTestRule.startSettingsActivity();
         HomepageSettings fragment = mHomepageSettingsTestRule.getFragment();
-        ChromeSwitchPreference preference = (ChromeSwitchPreference) fragment.findPreference(
-                HomepageSettings.PREF_HOMEPAGE_SWITCH);
+        ChromeSwitchPreference preference =
+                (ChromeSwitchPreference)
+                        fragment.findPreference(HomepageSettings.PREF_HOMEPAGE_SWITCH);
         Assert.assertNotNull(preference);
 
         // Click toggle and verify that checked state matches expectation.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            preference.performClick();
-            Assert.assertEquals(preference.isChecked(), expected);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    preference.performClick();
+                    Assert.assertEquals(preference.isChecked(), expected);
+                });
 
         homepagePreferenceActivity.finish();
     }

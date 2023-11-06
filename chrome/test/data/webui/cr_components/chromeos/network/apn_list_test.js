@@ -369,6 +369,21 @@ suite('ApnListTest', function() {
     getApnDetailDialog()
         .shadowRoot.querySelector('#apnDetailCancelBtn')
         .click();
+
+    // Case: Custom APN is connected.
+    apnList.managedCellularProperties = {
+      connectedApn: customApn1,
+      customApnList: [customApn1],
+    };
+    assertTrue(!!getApnDetailDialog().apnList);
+    assertEquals(1, getApnDetailDialog().apnList.length);
+    assertTrue(OncMojo.apnMatch(getApnDetailDialog().apnList[0], customApn1));
+
+    assertTrue(
+        !!getApnDetailDialog().shadowRoot.querySelector('#apnDetailCancelBtn'));
+    getApnDetailDialog()
+        .shadowRoot.querySelector('#apnDetailCancelBtn')
+        .click();
   });
 
   test('Show disable/remove/enable warning', async function() {
@@ -419,6 +434,18 @@ suite('ApnListTest', function() {
     assertFalse(apns[2].shouldDisallowDisablingRemoving);
     assertFalse(apns[3].shouldDisallowDisablingRemoving);
     assertFalse(apns[4].shouldDisallowDisablingRemoving);
+
+    apnList.managedCellularProperties = {
+      connectedApn: Object.assign({}, customApnDefaultEnabled),
+      customApnList: [
+        Object.assign({}, customApnDefaultEnabled),
+        Object.assign({}, customApnAttachEnabled),
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertTrue(apns[0].shouldDisallowDisablingRemoving);
+    assertFalse(apns[1].shouldDisallowDisablingRemoving);
   });
 
   test('Show enable warning', async function() {
@@ -451,5 +478,17 @@ suite('ApnListTest', function() {
     assertTrue(apns[0].shouldDisallowEnabling);
     assertFalse(apns[1].shouldDisallowEnabling);
     assertTrue(apns[2].shouldDisallowEnabling);
+
+    apnList.managedCellularProperties = {
+      connectedApn: customApnDefaultEnabled,
+      customApnList: [
+        customApnDefaultEnabled,
+        customApnAttachDisabled,
+      ],
+    };
+    await flushTasks();
+    apns = apnList.shadowRoot.querySelectorAll('apn-list-item');
+    assertFalse(apns[0].shouldDisallowEnabling);
+    assertFalse(apns[1].shouldDisallowEnabling);
   });
 });

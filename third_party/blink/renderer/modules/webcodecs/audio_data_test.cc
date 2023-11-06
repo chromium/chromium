@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "ui/gfx/geometry/rect.h"
@@ -275,11 +276,13 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
                    /*count=*/kFrames);
 }
 
+// Check that sample-aligned ArrayBuffers can be transferred to AudioData
 TEST_F(AudioDataTest, TransferBuffer) {
   V8TestingScope scope;
   std::string data = "audio data";
   auto* buffer = DOMArrayBuffer::Create(data.data(), data.size());
   auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+  const void* buffer_data_ptr = buffer->Data();
 
   auto* audio_data_init = AudioDataInit::Create();
   audio_data_init->setData(buffer_source);
@@ -292,19 +295,64 @@ TEST_F(AudioDataTest, TransferBuffer) {
   transfer.push_back(Member<DOMArrayBuffer>(buffer));
   audio_data_init->setTransfer(std::move(transfer));
 
-  auto* frame = MakeGarbageCollected<AudioData>(
+  auto* audio_data = MakeGarbageCollected<AudioData>(
       scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
 
-  EXPECT_EQ(frame->format(), "u8");
-  EXPECT_EQ(frame->numberOfFrames(), data.size());
-  EXPECT_EQ(frame->numberOfChannels(), 1u);
+  EXPECT_EQ(audio_data->format(), "u8");
+  EXPECT_EQ(audio_data->numberOfFrames(), data.size());
+  EXPECT_EQ(audio_data->numberOfChannels(), 1u);
 
+  EXPECT_EQ(audio_data->data()->channel_data()[0], buffer_data_ptr);
   auto* options = CreateCopyToOptions(0, 0, {});
   uint32_t allocations_size =
-      frame->allocationSize(options, scope.GetExceptionState());
+      audio_data->allocationSize(options, scope.GetExceptionState());
 
   EXPECT_TRUE(buffer->IsDetached());
   EXPECT_EQ(allocations_size, data.size());
+}
+
+// Check that not-sample-aligned ArrayBuffers are copied AudioData
+TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
+  V8TestingScope scope;
+  const uint32_t frames = 3;
+  std::vector<float> data{0.0, 1.0, 2.0, 3.0, 4.0};
+  auto* buffer =
+      DOMArrayBuffer::Create(data.data(), data.size() * sizeof(float));
+  auto* view = DOMDataView::Create(
+      buffer, 1 /* offset one byte from the float ptr, that how we are sure that
+                   the view is not aligned to sizeof(float) */
+      ,
+      frames * sizeof(float));
+  auto* buffer_source = MakeGarbageCollected<AllowSharedBufferSource>(
+      MaybeShared<DOMArrayBufferView>(view));
+
+  MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+  const void* buffer_data_ptr = buffer->Data();
+
+  auto* audio_data_init = AudioDataInit::Create();
+  audio_data_init->setData(buffer_source);
+  audio_data_init->setTimestamp(0);
+  audio_data_init->setNumberOfChannels(1);
+  audio_data_init->setNumberOfFrames(frames);
+  audio_data_init->setSampleRate(kSampleRate);
+  audio_data_init->setFormat("f32");
+  HeapVector<Member<DOMArrayBuffer>> transfer;
+  transfer.push_back(Member<DOMArrayBuffer>(buffer));
+  audio_data_init->setTransfer(std::move(transfer));
+
+  auto* audio_data = MakeGarbageCollected<AudioData>(
+      scope.GetScriptState(), audio_data_init, scope.GetExceptionState());
+
+  // Making sure that the data was copied, not just aliased.
+  EXPECT_NE(audio_data->data()->channel_data()[0], buffer_data_ptr);
+  EXPECT_EQ(audio_data->numberOfFrames(), frames);
+  auto* options = CreateCopyToOptions(0, 0, {});
+  uint32_t allocations_size =
+      audio_data->allocationSize(options, scope.GetExceptionState());
+
+  // Even though we copied the data, the buffer still needs to be aligned.
+  EXPECT_TRUE(buffer->IsDetached());
+  EXPECT_EQ(allocations_size, frames * sizeof(float));
 }
 
 TEST_F(AudioDataTest, CopyTo_Offset) {

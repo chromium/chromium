@@ -558,13 +558,15 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
   // regression blocker for https://crbug.com/318527.
   // Need to use this WeakPtr workaround as the browser test harness runs all
   // tasks until idle when tearing down.
-  struct FailsIfCalledWhileOnStack
-      : public base::SupportsWeakPtr<FailsIfCalledWhileOnStack> {
+  struct FailsIfCalledWhileOnStack {
     void Fail() { ADD_FAILURE(); }
+    base::WeakPtrFactory<FailsIfCalledWhileOnStack> weak_ptr_factory{this};
   } fails_if_called_while_on_stack;
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&FailsIfCalledWhileOnStack::Fail,
-                                fails_if_called_while_on_stack.AsWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(
+          &FailsIfCalledWhileOnStack::Fail,
+          fails_if_called_while_on_stack.weak_ptr_factory.GetWeakPtr()));
 
   // This retry loop reduces flakiness due to the fact that this ultimately
   // tests whether or not a code path hits a timed wait.

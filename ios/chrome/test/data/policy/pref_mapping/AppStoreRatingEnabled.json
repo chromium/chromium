@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "AppStoreRatingEnabled": false
+        },
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "AppStoreRatingEnabled": true
+        },
+        "prefs": {
+          "ios.app_store_rating_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -569,8 +569,7 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker,
     syncer::SyncService* syncService) {
-  // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!IsBlueDotPromoEnabled() || IsChromeLikelyDefaultBrowser() ||
+  if (IsChromeLikelyDefaultBrowser() ||
       (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService))) {
     return false;
   }
@@ -594,30 +593,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
   }
 
   return false;
-}
-
-bool AreDefaultBrowserPromosEnabled() {
-  if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
-    return kBlueDotPromoUserGroupParam.Get() ==
-           BlueDotPromoUserGroup::kAllDBPromosEnabled;
-  }
-
-  return true;
-}
-
-bool IsBlueDotPromoEnabled() {
-  if (base::FeatureList::IsEnabled(kDefaultBrowserBlueDotPromo)) {
-    return kBlueDotPromoUserGroupParam.Get() ==
-               BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled ||
-           kBlueDotPromoUserGroupParam.Get() ==
-               BlueDotPromoUserGroup::kAllDBPromosEnabled;
-  }
-
-  return false;
-}
-
-bool IsDefaultBrowserInPromoManagerEnabled() {
-  return base::FeatureList::IsEnabled(kDefaultBrowserRefactoringPromoManager);
 }
 
 bool IsDefaultBrowserVideoPromoEnabled() {

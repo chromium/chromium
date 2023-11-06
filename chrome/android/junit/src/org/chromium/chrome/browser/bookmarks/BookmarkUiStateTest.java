@@ -26,13 +26,10 @@ import org.chromium.components.bookmarks.BookmarkType;
 /** Unit tests for {@link BookmarkUiState} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BookmarkUiStateTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    public BookmarkModel mBookmarkModel;
+    @Mock public BookmarkModel mBookmarkModel;
 
     @Before
     public void before() {
@@ -46,8 +43,8 @@ public class BookmarkUiStateTest {
         BookmarkUiState loadingState = BookmarkUiState.createLoadingState();
         assertEquals(loadingState, BookmarkUiState.createLoadingState());
 
-        BookmarkUiState searchState = BookmarkUiState.createSearchState(/*queryString*/ "");
-        assertEquals(searchState, BookmarkUiState.createSearchState(/*queryString*/ ""));
+        BookmarkUiState searchState = BookmarkUiState.createSearchState(/* queryString= */ "");
+        assertEquals(searchState, BookmarkUiState.createSearchState(/* queryString= */ ""));
         assertNotEquals(searchState, loadingState);
     }
 

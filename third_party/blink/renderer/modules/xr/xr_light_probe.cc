@@ -38,7 +38,7 @@ XRSpace* XRLightProbe::probeSpace() const {
         MakeGarbageCollected<XRObjectSpace<XRLightProbe>>(session_, this);
   }
 
-  return probe_space_;
+  return probe_space_.Get();
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr XRLightProbe::NativeOrigin()

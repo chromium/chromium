@@ -12,9 +12,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/report/device_metrics/use_case/psm_client_manager.h"
 #include "chromeos/ash/components/report/device_metrics/use_case/use_case.h"
 #include "chromeos/ash/components/report/proto/fresnel_service.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/private_membership/src/private_membership_rlwe_client.h"
 
 namespace base {
 class Clock;
@@ -56,23 +58,6 @@ class ObservationImpl;
 struct ChromeDeviceMetadataParameters;
 }  // namespace device_metrics
 
-// Real implementation for creating the PSM client.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) PsmDelegateImpl
-    : public device_metrics::PsmDelegateInterface {
- public:
-  PsmDelegateImpl() = default;
-  PsmDelegateImpl(const PsmDelegateImpl&) = delete;
-  PsmDelegateImpl& operator=(const PsmDelegateImpl&) = delete;
-  ~PsmDelegateImpl() override = default;
-
-  // PsmDelegateInterface:
-  rlwe::StatusOr<
-      std::unique_ptr<private_membership::rlwe::PrivateMembershipRlweClient>>
-  CreatePsmClient(private_membership::rlwe::RlweUseCase use_case,
-                  const std::vector<private_membership::rlwe::RlwePlaintextId>&
-                      plaintext_ids) override;
-};
-
 // Observe the network in order to report metrics to Fresnel
 // using private set membership.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
@@ -99,7 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       base::Time chrome_first_run_time,
       base::RepeatingCallback<base::TimeDelta()> check_oobe_completed_callback,
-      std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate);
+      std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager);
   ReportController(const ReportController&) = delete;
   ReportController& operator=(const ReportController&) = delete;
   ~ReportController() override;
@@ -222,7 +207,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ReportController
   bool is_device_reporting_ = false;
 
   // Used to enable passing the real and fake PSM client to this class.
-  std::unique_ptr<device_metrics::PsmDelegateInterface> psm_delegate_;
+  std::unique_ptr<device_metrics::PsmClientManager> psm_client_manager_;
 
   // Store parameters used across the reporting use cases throughout reporting
   // object lifetime.

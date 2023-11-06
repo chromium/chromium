@@ -4,6 +4,8 @@
 package org.chromium.chrome.browser.readaloud.player;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.reset;
@@ -23,11 +25,16 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudPrefs;
+import org.chromium.chrome.browser.readaloud.testing.MockPrefServiceHelper;
 import org.chromium.chrome.modules.readaloud.Playback;
 import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashMap;
@@ -43,15 +50,12 @@ public class PlayerMediatorUnitTest {
     private static final long POSITION_NS = 1_000_000_000L; // one second
     private static final long DURATION_NS = 10_000_000_000L; // ten seconds
 
-    @Mock
-    private PlayerCoordinator mPlayerCoordinator;
-    @Mock
-    private Playback mPlayback;
-    @Mock
-    private Playback.Metadata mPlaybackMetadata;
+    @Mock private PlayerCoordinator mPlayerCoordinator;
+    @Mock private Playback mPlayback;
+    @Mock private Playback.Metadata mPlaybackMetadata;
+    private MockPrefServiceHelper mMockPrefServiceHelper;
 
-    @Captor
-    private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
+    @Captor private ArgumentCaptor<PlaybackListener> mPlaybackListenerCaptor;
 
     private PropertyModel mModel;
 
@@ -94,9 +98,10 @@ public class PlayerMediatorUnitTest {
             return mTotalDurationNanos;
         }
     }
+
     private TestPlaybackData mPlaybackData;
 
-    private static class TestPlayer implements Player.Delegate {
+    private class TestPlayerDelegate implements Player.Delegate {
         @Override
         public BottomSheetController getBottomSheetController() {
             return null;
@@ -140,9 +145,24 @@ public class PlayerMediatorUnitTest {
         public Activity getActivity() {
             return null;
         }
+
+        @Override
+        public PrefService getPrefService() {
+            return mMockPrefServiceHelper.getPrefService();
+        }
+
+        @Override
+        public BrowserControlsSizer getBrowserControlsSizer() {
+            return null;
+        }
+
+        @Override
+        public LayoutManager getLayoutManager() {
+            return null;
+        }
     }
 
-    private TestPlayer mPlayer;
+    private TestPlayerDelegate mDelegate;
 
     private PlayerMediator mMediator;
 
@@ -152,9 +172,11 @@ public class PlayerMediatorUnitTest {
         resetPlayback();
         doReturn(TITLE).when(mPlaybackMetadata).title();
         doReturn(PUBLISHER).when(mPlaybackMetadata).publisher();
+        mMockPrefServiceHelper = new MockPrefServiceHelper();
         mPlaybackData = new TestPlaybackData();
+        mDelegate = new TestPlayerDelegate();
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mMediator = new PlayerMediator(mPlayerCoordinator, mPlayer, mModel);
+        mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
     }
 
     @Test
@@ -215,7 +237,7 @@ public class PlayerMediatorUnitTest {
         mPlaybackData.mTotalDurationNanos = DURATION_NS;
         mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
 
-        assertEquals(0.1f, (float) mModel.get(PlayerProperties.PROGRESS), /*delta=*/1e-8f);
+        assertEquals(0.1f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
     }
 
     @Test
@@ -261,6 +283,38 @@ public class PlayerMediatorUnitTest {
     public void testCloseClicked() {
         mMediator.onCloseClick();
         verify(mPlayerCoordinator).closeClicked();
+    }
+
+    @Test
+    public void testOnMiniPlayerExpandClick() {
+        mMediator.onMiniPlayerExpandClick();
+        verify(mPlayerCoordinator).expand();
+    }
+
+    @Test
+    public void testOnVoiceSelected() {
+        mMediator.onVoiceSelected(new PlaybackVoice("language", "voice", "description"));
+
+        Map<String, String> voices = ReadAloudPrefs.getVoices(mDelegate.getPrefService());
+        assertEquals(1, voices.size());
+        assertEquals("voice", voices.get("language"));
+    }
+
+    @Test
+    public void testOnHighlightingChanged() {
+        mMediator.onHighlightingChange(false);
+
+        PrefService prefs = mDelegate.getPrefService();
+        assertFalse(ReadAloudPrefs.isHighlightingEnabled(prefs));
+
+        mMediator.onHighlightingChange(true);
+        assertTrue(ReadAloudPrefs.isHighlightingEnabled(prefs));
+    }
+
+    @Test
+    public void testOnSpeedChange() {
+        mMediator.onSpeedChange(2f);
+        assertEquals(2f, ReadAloudPrefs.getSpeed(mDelegate.getPrefService()), /* delta= */ 0f);
     }
 
     private void resetPlayback() {

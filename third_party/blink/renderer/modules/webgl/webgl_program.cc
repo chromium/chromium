@@ -88,9 +88,9 @@ void WebGLProgram::DecreaseActiveTransformFeedbackCount() {
 WebGLShader* WebGLProgram::GetAttachedShader(GLenum type) {
   switch (type) {
     case GL_VERTEX_SHADER:
-      return vertex_shader_;
+      return vertex_shader_.Get();
     case GL_FRAGMENT_SHADER:
-      return fragment_shader_;
+      return fragment_shader_.Get();
     default:
       return nullptr;
   }

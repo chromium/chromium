@@ -60,7 +60,7 @@ class CORE_EXPORT ModuleScript : public Script {
       V8ScriptRunner::RethrowErrorsOption =
           V8ScriptRunner::RethrowErrorsOption::DoNotRethrow()) override;
 
-  Modulator* SettingsObject() const { return settings_object_; }
+  Modulator* SettingsObject() const { return settings_object_.Get(); }
 
  protected:
   ModuleScript(Modulator*,

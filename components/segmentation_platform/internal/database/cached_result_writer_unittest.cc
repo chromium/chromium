@@ -36,8 +36,8 @@ class CachedResultWriterTest : public testing::Test {
                                                  std::string());
 
     clock_.SetNow(base::Time::Now());
-    cached_result_writer_ =
-        std::make_unique<CachedResultWriter>(std::move(result_prefs_), &clock_);
+    cached_result_writer_ = std::make_unique<CachedResultWriter>(
+        client_result_prefs_.get(), &clock_);
   }
 
   proto::ClientResult CreateClientResult(
@@ -73,11 +73,12 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfResultUnavailable) {
       /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
 
   // Pref will be updated with new client result.
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
-                                              PlatformOptions(false));
+  bool is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), new_client_result, PlatformOptions(false));
   absl::optional<proto::ClientResult> result_from_pref =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
+  EXPECT_TRUE(is_prefs_updated);
   EXPECT_TRUE(result_from_pref.has_value());
   EXPECT_EQ(new_client_result.SerializeAsString(),
             result_from_pref.value().SerializeAsString());
@@ -95,22 +96,24 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfForceRefreshResult) {
       /*model_scores=*/{0.4}, /*result_timestamp=*/base::Time::Now());
 
   // Pref result not updated as unexpired result.
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
-                                              PlatformOptions(false));
+  bool is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), new_client_result, PlatformOptions(false));
   absl::optional<proto::ClientResult> client_result =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
+  EXPECT_FALSE(is_prefs_updated);
   EXPECT_TRUE(client_result.has_value());
   EXPECT_EQ(unexpired_client_result.SerializeAsString(),
             client_result.value().SerializeAsString());
 
   // Unexpired pref updates with new client result as force refresh result is
   // true.
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
-                                              PlatformOptions(true));
+  is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), new_client_result, PlatformOptions(true));
   client_result =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
+  EXPECT_TRUE(is_prefs_updated);
   EXPECT_TRUE(client_result.has_value());
   EXPECT_EQ(new_client_result.SerializeAsString(),
             client_result.value().SerializeAsString());
@@ -129,11 +132,12 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfModelIsUpdated) {
       /*model_version=*/2, /*ignore_previous_model_ttl=*/true);
 
   // Pref result updated as model is updated.
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
-                                              PlatformOptions(false));
+  bool is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), new_client_result, PlatformOptions(false));
   absl::optional<proto::ClientResult> client_result =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
+  EXPECT_TRUE(is_prefs_updated);
   EXPECT_TRUE(client_result.has_value());
   EXPECT_EQ(new_client_result.SerializeAsString(),
             client_result.value().SerializeAsString());
@@ -152,11 +156,12 @@ TEST_F(CachedResultWriterTest, UpdatePrefsIfExpiredResult) {
       /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
 
   // Expired pref updates with new client result.
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), new_client_result,
-                                              PlatformOptions(false));
+  bool is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), new_client_result, PlatformOptions(false));
   absl::optional<proto::ClientResult> result_from_pref =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
+  EXPECT_TRUE(is_prefs_updated);
   EXPECT_TRUE(result_from_pref.has_value());
   EXPECT_EQ(new_client_result.SerializeAsString(),
             result_from_pref.value().SerializeAsString());
@@ -166,13 +171,14 @@ TEST_F(CachedResultWriterTest, MarkResultAsUsed) {
   std::unique_ptr<Config> config = test_utils::CreateTestConfig();
   proto::ClientResult client_result = CreateClientResult(
       /*model_scores=*/{0.8}, /*result_timestamp=*/base::Time::Now());
-  cached_result_writer_->UpdatePrefsIfExpired(config.get(), client_result,
-                                              PlatformOptions(false));
+  bool is_prefs_updated = cached_result_writer_->UpdatePrefsIfExpired(
+      config.get(), client_result, PlatformOptions(false));
 
   absl::optional<proto::ClientResult> client_result_from_pref =
       client_result_prefs_->ReadClientResultFromPrefs(config->segmentation_key);
 
   // Writing results to prefs the first time should not update used timestamp.
+  EXPECT_TRUE(is_prefs_updated);
   ASSERT_TRUE(client_result_from_pref.has_value());
   EXPECT_EQ(0, client_result_from_pref->first_used_timestamp());
 

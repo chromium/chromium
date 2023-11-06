@@ -31,6 +31,7 @@ attribution_reporting_promise_test(async t => {
         destination: host,
         source_event_id: expectedSourceEventId,
       },
+      cookie: attributionDebugCookie,
     },
     {trigger},
   ]));
@@ -45,7 +46,6 @@ attribution_reporting_promise_test(async t => {
   trigger.aggregatable_values.campaignCounts = 1;
   registerAttributionSrcByImg(createRedirectChain([
     {
-      cookie: attributionDebugCookie,
       trigger,
     },
   ]));

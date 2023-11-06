@@ -44,13 +44,13 @@ enum ResizeState {
   DONE = 'done',
 }
 
-interface SettingsCrostiniDiskResizeDialogElement {
+export interface SettingsCrostiniDiskResizeDialogElement {
   $: {
     diskResizeDialog: CrDialogElement,
   };
 }
 
-class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
+export class SettingsCrostiniDiskResizeDialogElement extends PolymerElement {
   static get is() {
     return 'settings-crostini-disk-resize-dialog';
   }

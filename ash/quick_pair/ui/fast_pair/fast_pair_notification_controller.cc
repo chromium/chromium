@@ -358,6 +358,8 @@ void FastPairNotificationController::ShowApplicationAvailableNotification(
           message_center_);
   application_available_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_TITLE, device_name));
+  application_available_notification->set_message(l10n_util::GetStringUTF16(
+      IDS_FAST_PAIR_DOWNLOAD_NOTIFICATION_APP_MESSAGE));
 
   message_center::ButtonInfo download_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_DOWNLOAD_APP_BUTTON));
@@ -385,7 +387,9 @@ void FastPairNotificationController::ShowApplicationInstalledNotification(
           message_center::SystemNotificationWarningLevel::NORMAL,
           message_center_);
   application_installed_notification->set_title(l10n_util::GetStringFUTF16(
-      IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_TITLE, app_name));
+      IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_TITLE, device_name));
+  application_installed_notification->set_message(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_SETUP_APP_NOTIFICATION_MESSAGE));
 
   message_center::ButtonInfo setup_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_SETUP_APP_BUTTON));

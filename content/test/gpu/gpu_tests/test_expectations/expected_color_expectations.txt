@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -113,8 +113,6 @@ crbug.com/1302427 [ clang-coverage fuchsia fuchsia-board-qemu-x64 ] ExpectedColo
 
 crbug.com/1469270 [ bigsur nvidia-0xfe9 angle-opengl ] ExpectedColor_MediaRecorderFromVideoElementWithOoprCanvasDisabled [ Failure ]
 
-# Flaky failure with black screenshot and no logs
-crbug.com/1488792 [ linux amd-0x7340 angle-vulkan passthrough ] ExpectedColor_maps [ Failure ]
 
 
 #######################################################################

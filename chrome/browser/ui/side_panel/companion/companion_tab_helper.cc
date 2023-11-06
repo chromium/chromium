@@ -188,12 +188,9 @@ void CompanionTabHelper::StartRegionSearch(
     bool use_fullscreen_capture,
     lens::AmbientSearchEntryPoint entry_point) {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-  // TODO(shaktisahu): Pass a UI entry point for accurate metrics.
-  Browser* browser = companion::GetBrowserForWebContents(web_contents);
-  CHECK(browser);
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
-        std::make_unique<lens::LensRegionSearchController>(browser);
+        std::make_unique<lens::LensRegionSearchController>();
   }
   lens_region_search_controller_->Start(web_contents, use_fullscreen_capture,
                                         /*is_google_default_search_provider=*/
@@ -231,17 +228,6 @@ void CompanionTabHelper::DidOpenRequestedURL(
     }
     delegate_->SetCompanionAsActiveEntry(new_contents);
   }
-}
-
-void CompanionTabHelper::CreateAndRegisterLensEntry(
-    const content::OpenURLParams& params,
-    std::u16string combobox_label,
-    const ui::ImageModel favicon) {
-  delegate_->CreateAndRegisterLensEntry(params, combobox_label, favicon);
-}
-
-void CompanionTabHelper::RemoveContextualLensView() {
-  delegate_->RemoveContextualLensView();
 }
 
 void CompanionTabHelper::OpenContextualLensView(

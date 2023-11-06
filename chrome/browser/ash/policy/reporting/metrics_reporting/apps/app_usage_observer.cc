@@ -29,7 +29,7 @@ namespace reporting {
 std::unique_ptr<AppUsageObserver> AppUsageObserver::Create(
     Profile* profile,
     const ReportingSettings* reporting_settings) {
-  DCHECK(profile);
+  CHECK(profile);
   auto app_platform_metrics_retriever =
       std::make_unique<AppPlatformMetricsRetriever>(profile->GetWeakPtr());
   return base::WrapUnique(
@@ -43,7 +43,7 @@ std::unique_ptr<AppUsageObserver> AppUsageObserver::CreateForTest(
     const ReportingSettings* reporting_settings,
     std::unique_ptr<AppPlatformMetricsRetriever>
         app_platform_metrics_retriever) {
-  DCHECK(profile);
+  CHECK(profile);
   return base::WrapUnique(
       new AppUsageObserver(profile->GetWeakPtr(), reporting_settings,
                            std::move(app_platform_metrics_retriever)));
@@ -57,7 +57,7 @@ AppUsageObserver::AppUsageObserver(
       reporting_settings_(reporting_settings),
       app_platform_metrics_retriever_(
           std::move(app_platform_metrics_retriever)) {
-  DCHECK(app_platform_metrics_retriever_);
+  CHECK(app_platform_metrics_retriever_);
   app_platform_metrics_retriever_->GetAppPlatformMetrics(base::BindOnce(
       &AppUsageObserver::InitUsageObserver, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -79,7 +79,7 @@ void AppUsageObserver::OnAppUsage(const std::string& app_id,
                                   ::apps::AppType app_type,
                                   const base::UnguessableToken& instance_id,
                                   base::TimeDelta running_time) {
-  DCHECK(reporting_settings_);
+  CHECK(reporting_settings_);
   if (!profile_ ||
       !::ash::reporting::IsAppTypeAllowed(app_type, reporting_settings_.get(),
                                           ::ash::reporting::kReportAppUsage)) {
@@ -111,7 +111,7 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
     const base::UnguessableToken& instance_id,
     const base::TimeDelta& running_time) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK(profile_);
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);
   const auto& instance_id_string = instance_id.ToString();
@@ -141,7 +141,7 @@ void AppUsageObserver::CreateOrUpdateAppUsageEntry(
 void AppUsageObserver::MaybeSetAppPublisherId(
     ::apps::AppPlatformMetrics::UsageTime& usage_time) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK(profile_);
   if (!usage_time.app_publisher_id.empty()) {
     // We are already tracking the app publisher id.
     return;

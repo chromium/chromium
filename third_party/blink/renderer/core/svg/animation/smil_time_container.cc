@@ -466,6 +466,8 @@ void SMILTimeContainer::ServiceOnNextFrame() {
 
 bool SMILTimeContainer::ServiceAnimations() {
   // If a synchronization is pending, we can flush it now.
+  FrameSchedulingState previous_frame_scheduling_state =
+      frame_scheduling_state_;
   if (frame_scheduling_state_ == kSynchronizeAnimations) {
     DCHECK(wakeup_timer_.IsActive());
     wakeup_timer_.Stop();
@@ -485,7 +487,8 @@ bool SMILTimeContainer::ServiceAnimations() {
     // |kMaxAnimationLag| and now automatically resume the animation.
     constexpr SMILTime kMaxAnimationLag = SMILTime::FromSecondsD(60);
     const SMILTime elapsed_limit = latest_update_time_ + kMaxAnimationLag;
-    if (elapsed > elapsed_limit) {
+    if (previous_frame_scheduling_state == kAnimationFrame &&
+        elapsed > elapsed_limit) {
       // We've passed the lag limit. Compute the excess lag and then
       // rewind/adjust the timeline by that amount to make it appear as if only
       // kMaxAnimationLag has passed.

@@ -6,9 +6,9 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as Common from 'devtools/core/common/common.js';
 import * as Elements from 'devtools/panels/elements/elements.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that inspect() command line api works while on breakpoint.\n`);

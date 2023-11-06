@@ -313,10 +313,12 @@ void ListedElement::FormAttributeChanged() {
 bool ListedElement::RecalcWillValidate() const {
   const HTMLElement& element = ToHTMLElement();
   if (data_list_ancestor_state_ == DataListAncestorState::kUnknown) {
-    if (Traversal<HTMLDataListElement>::FirstAncestor(element))
+    if (element.GetDocument().HasAtLeastOneDataList() &&
+        Traversal<HTMLDataListElement>::FirstAncestor(element)) {
       data_list_ancestor_state_ = DataListAncestorState::kInsideDataList;
-    else
+    } else {
       data_list_ancestor_state_ = DataListAncestorState::kNotInsideDataList;
+    }
   }
   return data_list_ancestor_state_ ==
              DataListAncestorState::kNotInsideDataList &&

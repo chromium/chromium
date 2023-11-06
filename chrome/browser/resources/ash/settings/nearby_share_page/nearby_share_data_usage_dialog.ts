@@ -18,6 +18,7 @@ import {getNearbyShareSettings} from '/shared/nearby_share_settings.js';
 import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {DataUsage} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './nearby_share_data_usage_dialog.html.js';
@@ -90,11 +91,11 @@ class NearbyShareDataUsageDialogElement extends
 
   private selectedDataUsage_(dataUsageValue: NearbySettings['dataUsage']):
       NearbyShareDataUsage {
-    if (dataUsageValue === NearbyShareDataUsage.UNKNOWN) {
+    if (dataUsageValue === DataUsage.kUnknown) {
       return NearbyShareDataUsage.WIFI_ONLY;
     }
 
-    return dataUsageValue;
+    return dataUsageValue as unknown as NearbyShareDataUsage;
   }
 }
 

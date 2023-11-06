@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
+#include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
 
@@ -91,9 +92,9 @@ void TextMetrics::Update(const Font& font,
   gfx::RectF glyph_bounds;
   String text16 = text;
   text16.Ensure16Bit();
-  NGBidiParagraph bidi;
+  BidiParagraph bidi;
   bidi.SetParagraph(text16, direction);
-  NGBidiParagraph::Runs runs;
+  BidiParagraph::Runs runs;
   bidi.GetLogicalRuns(text16, &runs);
   float xpos = 0;
   for (const auto& run : runs) {

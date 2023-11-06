@@ -75,7 +75,7 @@ void GPURenderPassEncoder::writeTimestamp(
     uint32_t queryIndex,
     ExceptionState& exception_state) {
   V8GPUFeatureName::Enum requiredFeatureEnum =
-      V8GPUFeatureName::Enum::kTimestampQueryInsidePasses;
+      V8GPUFeatureName::Enum::kChromiumExperimentalTimestampQueryInsidePasses;
 
   if (!device_->features()->has(requiredFeatureEnum)) {
     exception_state.ThrowTypeError(String::Format(

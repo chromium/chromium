@@ -13,7 +13,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -49,36 +48,9 @@ bool QuietModeFeaturePodController::CalculateButtonVisibility() {
          !session_controller->IsScreenLocked();
 }
 
-FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
-  DCHECK(!button_);
-  button_ = new FeaturePodButton(this);
-  button_->SetVectorIcon(kUnifiedMenuDoNotDisturbIcon);
-  const bool target_visibility = CalculateButtonVisibility();
-  button_->SetVisible(target_visibility);
-  if (target_visibility) {
-    TrackVisibilityUMA();
-  }
-
-  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
-      GetQuietModeStateTooltip()));
-
-  if (features::IsOsSettingsAppBadgingToggleEnabled()) {
-    button_->SetLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_DO_NOT_DISTURB));
-  } else {
-    button_->SetLabel(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_NOTIFICATIONS_LABEL));
-    button_->ShowDetailedViewArrow();
-  }
-
-  OnQuietModeChanged(MessageCenter::Get()->IsQuietMode());
-  return button_;
-}
 
 std::unique_ptr<FeatureTile> QuietModeFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&FeaturePodControllerBase::OnIconPressed,
                           weak_ptr_factory_.GetWeakPtr()),
@@ -140,72 +112,16 @@ void QuietModeFeaturePodController::OnLabelPressed() {
 }
 
 void QuietModeFeaturePodController::OnQuietModeChanged(bool in_quiet_mode) {
-  if (features::IsQsRevampEnabled()) {
-    tile_->SetToggled(in_quiet_mode);
-    tile_->SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
-        GetQuietModeStateTooltip()));
-    return;
-  }
-
-  button_->SetToggled(in_quiet_mode);
-  button_->SetIconTooltip(l10n_util::GetStringFUTF16(
+  tile_->SetToggled(in_quiet_mode);
+  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_NOTIFICATIONS_TOGGLE_TOOLTIP,
       GetQuietModeStateTooltip()));
-
-  if (in_quiet_mode) {
-    const int sublabel_string_id =
-        features::IsOsSettingsAppBadgingToggleEnabled()
-            ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_SUBLABEL
-            : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_SUBLABEL;
-    const int tooltip_string_id =
-        features::IsOsSettingsAppBadgingToggleEnabled()
-            ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOGGLE_TOOLTIP
-            : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_DO_NOT_DISTURB_TOOLTIP;
-    button_->SetSubLabel(l10n_util::GetStringUTF16(sublabel_string_id));
-    button_->SetLabelTooltip(l10n_util::GetStringUTF16(tooltip_string_id));
-    return;
-  }
-
-  if (button_->GetVisible() &&
-      !features::IsOsSettingsAppBadgingToggleEnabled()) {
-    NotifierSettingsController::Get()->GetNotifiers();
-    return;
-  }
-
-  button_->SetSubLabel(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_SUBLABEL));
-  button_->SetLabelTooltip(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE));
 }
 
 void QuietModeFeaturePodController::OnNotifiersUpdated(
     const std::vector<NotifierMetadata>& notifiers) {
-  if (MessageCenter::Get()->IsQuietMode()) {
-    return;
-  }
-
-  int disabled_count = 0;
-  for (const NotifierMetadata& notifier : notifiers) {
-    if (!notifier.enabled) {
-      ++disabled_count;
-    }
-  }
-  RecordDisabledNotifierCount(disabled_count);
-
-  if (disabled_count > 0) {
-    button_->SetSubLabel(l10n_util::GetPluralStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_OFF_FOR_APPS_SUBLABEL,
-        disabled_count));
-    button_->SetLabelTooltip(l10n_util::GetPluralStringFUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_OFF_FOR_APPS_TOOLTIP,
-        disabled_count));
-  } else {
-    button_->SetSubLabel(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_ON_SUBLABEL));
-    button_->SetLabelTooltip(l10n_util::GetStringUTF16(
-        IDS_ASH_STATUS_TRAY_NOTIFICATIONS_SETTINGS_ON_TOOLTIP));
-  }
+  // TODO(b/307974199) remove this method with the `NotifierSettingsController`
+  // clean up.
 }
 
 std::u16string QuietModeFeaturePodController::GetQuietModeStateTooltip() {

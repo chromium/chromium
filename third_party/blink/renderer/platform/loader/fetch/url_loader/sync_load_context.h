@@ -78,7 +78,8 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
   SyncLoadContext& operator=(const SyncLoadContext&) = delete;
   ~SyncLoadContext() override;
 
-  void FollowRedirect(std::vector<std::string> removed_headers);
+  void FollowRedirect(std::vector<std::string> removed_headers,
+                      net::HttpRequestHeaders modified_headers);
   void CancelRedirect();
 
  private:
@@ -103,9 +104,9 @@ class BLINK_PLATFORM_EXPORT SyncLoadContext : public ResourceRequestClient {
       FollowRedirectCallback follow_redirect_callback) override;
   void OnReceivedResponse(
       network::mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata,
       base::TimeTicks response_arrival_at_renderer) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnTransferSizeUpdated(int transfer_size_diff) override;
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;

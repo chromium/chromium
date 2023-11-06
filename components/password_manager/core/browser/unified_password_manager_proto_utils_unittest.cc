@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
+#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
 
 #include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
+#include "components/password_manager/core/browser/protos/password_info.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -73,6 +74,7 @@ sync_pb::PasswordSpecificsData CreateSpecificsData(
   password_specifics.set_sender_name("");
   password_specifics.set_date_received_windows_epoch_micros(0);
   password_specifics.set_sharing_notification_displayed(false);
+  password_specifics.set_sender_profile_image_url("");
   return password_specifics;
 }
 
@@ -141,6 +143,34 @@ TEST(UnifiedPasswordManagerProtoUtilsTest, ConvertListResultToFormVector) {
 
   EXPECT_THAT(forms, ElementsAre(PasswordFromProtoWithLocalData(password1),
                                  PasswordFromProtoWithLocalData(password2)));
+}
+
+TEST(UnifiedPasswordManagerProtoUtilsTest,
+     ConvertListPasswordsWithUiInfoResultToFormVector) {
+  ListPasswordsWithUiInfoResult list_result;
+  ListPasswordsWithUiInfoResult::PasswordWithUiInfo password1;
+  *password1.mutable_password_data()->mutable_password_specifics_data() =
+      CreateSpecificsData("http://1.origin.com/", "username_1", "username_1",
+                          "password_1", "signon_1");
+  PasswordInfo ui_info;
+  ui_info.set_display_name("Example app");
+  ui_info.set_icon_url("http://example.com/favicon.ico");
+  *password1.mutable_ui_info() = ui_info;
+  ListPasswordsWithUiInfoResult::PasswordWithUiInfo password2;
+  *password2.mutable_password_data()->mutable_password_specifics_data() =
+      CreateSpecificsData("http://2.origin.com/", "username_2", "username_2",
+                          "password_2", "signon_2");
+  *list_result.add_passwords_with_ui_info() = password1;
+  *list_result.add_passwords_with_ui_info() = password2;
+
+  std::vector<PasswordForm> forms = PasswordVectorFromListResult(list_result);
+  std::vector<PasswordForm> expected_forms = {
+      PasswordFromProtoWithLocalData(password1.password_data()),
+      PasswordFromProtoWithLocalData(password2.password_data())};
+  expected_forms[0].app_display_name = ui_info.display_name();
+  expected_forms[0].app_icon_url = GURL(ui_info.icon_url());
+
+  EXPECT_THAT(forms, testing::ElementsAreArray(expected_forms));
 }
 
 }  // namespace password_manager

@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace ash {
 namespace {
@@ -26,6 +29,34 @@ constexpr base::FilePath::CharType kDemoAndroidAppsPath[] =
 
 constexpr base::FilePath::CharType kExternalExtensionsPrefsPath[] =
     FILE_PATH_LITERAL("demo_extensions.json");
+
+PrefService* LocalState() {
+  if (!g_browser_process) {
+    return nullptr;
+  }
+
+  return g_browser_process->local_state();
+}
+
+void RecordAppVersion(const base::Version& version) {
+  auto* local_state = LocalState();
+  // In some unittests `local_state` may be null.
+  if (local_state) {
+    local_state->SetString(prefs::kDemoModeAppVersion, version.IsValid()
+                                                           ? version.GetString()
+                                                           : std::string());
+  }
+}
+
+void RecordResourcesVersion(const base::Version& version) {
+  auto* local_state = LocalState();
+  // In some unittests `local_state` may be null.
+  if (local_state) {
+    local_state->SetString(
+        prefs::kDemoModeResourcesVersion,
+        version.IsValid() ? version.GetString() : std::string());
+  }
+}
 
 }  // namespace
 
@@ -142,12 +173,19 @@ void DemoComponents::LoadResourcesComponent(base::OnceClosure load_callback) {
 void DemoComponents::OnAppVersionReady(base::OnceClosure callback,
                                        const base::Version& version) {
   app_component_version_ = version;
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RecordAppVersion, version));
+
   std::move(callback).Run();
 }
 
 void DemoComponents::OnResourcesVersionReady(const base::FilePath& path,
                                              const base::Version& version) {
   resources_component_version_ = version;
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&RecordResourcesVersion, version));
+
   OnDemoResourcesLoaded(absl::make_optional(path));
 }
 

@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">слабый сигнал</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Обновление (выполнено <ph name="PERCENTAGE_VALUE" /> %)…</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> мин.</translation>
 <translation id="1310380015393971138">Сеть <ph name="NETWORK_NAME" /> недоступна.</translation>
 <translation id="131421566576084655">Сведения о дате последнего сброса недоступны</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732">Этим аккаунтом управляет <ph name="MANAGER" />. Администратор может отслеживать действия пользователя, а также удаленно изменять настройки.</translation>
 <translation id="150962533380566081">Неверный PUK-код.</translation>
 <translation id="1510238584712386396">Панель запуска</translation>
+<translation id="1515129336378114413">Главный экран браузера</translation>
 <translation id="1526389707933164996">Анимированная заставка</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
 <translation id="1555130319947370107">Синий</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Установить как обои</translation>
 <translation id="1578784163189013834">Выбрать фон заставки</translation>
 <translation id="160633243685262989">Предварительный просмотр изображения</translation>
+<translation id="1611649489706141841">вперед</translation>
 <translation id="1615335640928990664">Передача данных с <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Запустить проверку зарядки</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
@@ -168,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2157660087437850958">окно выбора эмодзи</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Приложение "<ph name="APP_NAME_1" />" автоматически запускается каждый раз, когда вы входите в систему. Такие настройки установил администратор.}=2{Приложения "<ph name="APP_NAME_1" />" и "<ph name="APP_NAME_2" />" автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}=3{Приложения "<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и "<ph name="APP_NAME_3" />" автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}one{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложение автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}few{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложения автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}many{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложений автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}other{"<ph name="APP_NAME_1" />", "<ph name="APP_NAME_2" />" и ещё # приложения автоматически запускаются каждый раз, когда вы входите в систему. Такие настройки установил администратор.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
+<translation id="215916044711630446">Кнопка "Добавить точку доступа" недоступна</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
 <translation id="2161656808144014275">Текст</translation>
 <translation id="2163937499206714165">Включить тёмную тему</translation>
@@ -285,6 +290,7 @@
 <translation id="3226405216343213872">Поиск сканеров…</translation>
 <translation id="3226657629376379887">Меню действий, связанных с раскладкой</translation>
 <translation id="3246869037381808805">Задания печати, хранящиеся дольше 1 дня, будут удалены</translation>
+<translation id="324961752321393509">Администратор запретил закрывать это приложение</translation>
 <translation id="3268178239013324452">Сбой: крышка открыта</translation>
 <translation id="3275729367986477355">Аватар</translation>
 <translation id="3283504360622356314">{0,plural, =1{Редактировать файл}one{Редактировать файлы}few{Редактировать файлы}many{Редактировать файлы}other{Редактировать файлы}}</translation>
@@ -336,7 +342,6 @@
 <translation id="3604713164406837697">Изменить обои</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3606583719724308068">Длительная задержка у HTTPS-сайтов.</translation>
-<translation id="3607216139080387279">Показывать заставку</translation>
 <translation id="361575905210396100">Благодарим за отзыв!</translation>
 <translation id="3632579075709132555">Включение экрана конфиденциальности</translation>
 <translation id="3651050199673793219">Выбрать единицу измерения температуры</translation>
@@ -348,7 +353,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
-<translation id="3766934827878963937">в течение 1 ч.</translation>
 <translation id="3771294271822695279">Видеофайлы</translation>
 <translation id="3784455785234192852">Заблокировать</translation>
 <translation id="380097101658023925">настройки RGB</translation>
@@ -399,6 +403,7 @@
 <translation id="4117637339509843559">Тёмная тема</translation>
 <translation id="4130035430755296270">Наведите указатель, чтобы увидеть больше вариантов показа</translation>
 <translation id="4131410914670010031">Черно-белая печать</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{Приложение "<ph name="APP_NAME_1" />" открылось автоматически}one{# приложение открылось автоматически}few{# приложения открылись автоматически}many{# приложений открылись автоматически}other{# приложения открылись автоматически}}</translation>
 <translation id="4145784616224233563">Брандмауэр HTTP</translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4150201353443180367">Экран</translation>
@@ -444,6 +449,7 @@
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
+<translation id="4456812688969919973">Кнопка "Сохранить точку доступа" недоступна</translation>
 <translation id="4469288414739283461">Динамическая заставка с Землей</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
@@ -688,6 +694,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
 <translation id="628726841779494414">Чтобы изменить параметры принтеров, перейдите в настройки</translation>
+<translation id="6292095526077353682">Во время зарядки показывать заставку</translation>
 <translation id="629550705077076970">затемнение подсветки клавиатуры</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
@@ -715,6 +722,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
+<translation id="6462978824459367242">Доступна кнопка "Добавить точку доступа"</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу?}=1{Повторно сканировать страницу {PAGE_NUMBER}?}one{Повторно сканировать страницу {PAGE_NUMBER}?}few{Повторно сканировать страницу {PAGE_NUMBER}?}many{Повторно сканировать страницу {PAGE_NUMBER}?}other{Повторно сканировать страницу {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Одноразовый код</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
@@ -749,6 +757,7 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6673898378497337661">увеличить яркость клавиатуры</translation>
 <translation id="6692996468359469499">Получайте информацию об объектах на экране</translation>
+<translation id="6694534975463174713">Блокировка</translation>
 <translation id="6704062477274546131">Разрешение DNS</translation>
 <translation id="6723839937902243910">Питание</translation>
 <translation id="6723847290197874913">Подсветка клавиатуры</translation>
@@ -939,6 +948,7 @@
 <translation id="8227119283605456246">Прикрепить файл</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8246209727385807362">Неизвестный оператор</translation>
+<translation id="8262870577632766028">1 час</translation>
 <translation id="827422111966801947">Индиго</translation>
 <translation id="8286154143153872371">Чтобы посмотреть обои, подключитесь к сети и обновите страницу.</translation>
 <translation id="8291967909914612644">Страна провайдера</translation>
@@ -1003,6 +1013,7 @@
 <translation id="8747900814994928677">Подтверждение изменений</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Альбом в Google Фото</translation>
+<translation id="8775713578693478175">Имя точки доступа для модема</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Это сочетание клавиш используется для действия <ph name="CONFLICT_ACCEL_NAME" />. Нажмите его ещё раз, чтобы заменить исходное сочетание клавиш, или выберите новое.</translation>
 <translation id="879568662008399081">У этой сети может быть страница входа.</translation>
@@ -1052,6 +1063,7 @@
 <translation id="902638246363752736">Настройки клавиатуры</translation>
 <translation id="9028832514430399253">Чтобы настроить заставку, активируйте переключатель.</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Доступна кнопка "Сохранить точку доступа"</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS-преобразование происходит с высокой задержкой.</translation>
 <translation id="9065203028668620118">Изменить</translation>
@@ -1067,11 +1079,9 @@
 <translation id="9111102763498581341">Разблокировать</translation>
 <translation id="9122602430962285795">Чтобы снова подключиться к сети, перейдите в настройки.</translation>
 <translation id="9126720536733509015">Сохранить несколько страниц в один PDF-файл</translation>
-<translation id="9133104754938025929">Для экономии заряда батареи заставка работает только во время зарядки.</translation>
 <translation id="9133772297793293778">Нажмите модификаторы 1–4 и одну любую клавишу на клавиатуре. Чтобы выйти из режима редактирования, нажмите Alt + Esc.</translation>
 <translation id="9137526406337347448">Сервисы Google</translation>
 <translation id="9138630967333032450">Левая клавиша Shift</translation>
-<translation id="9143347780818904997">в течение <ph name="MINUTES" /> мин.</translation>
 <translation id="9149391708638971077">Запустить проверку памяти</translation>
 <translation id="9161276708550942948">пробел</translation>
 <translation id="9173638680043580060">Осталось меньше минуты…</translation>

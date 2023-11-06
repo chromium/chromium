@@ -239,7 +239,7 @@ class NewTabPageModulesHistoryClustersModuleTest
   NewTabPageModulesHistoryClustersModuleTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ntp_features::kNtpHistoryClustersModule},
-        /*disabled_features=*/{history_clusters::kRenameJourneys});
+        /*disabled_features=*/{});
   }
 
  private:
@@ -281,9 +281,23 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       PagehideMetricImageDisplayStateNoneV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
+          "PagehideMetricNoImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
                        PagehideMetricImageDisplayStateAll) {
   RunTest("new_tab_page/modules/history_clusters/module_test.js",
           "runMochaSuite('NewTabPageModulesHistoryClustersModuleTest "
+          "PagehideMetricAllImages')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesHistoryClustersModuleTest,
+                       PagehideMetricImageDisplayStateAllV2) {
+  RunTest("new_tab_page/modules/v2/history_clusters/module_test.js",
+          "runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest "
           "PagehideMetricAllImages')");
 }
 

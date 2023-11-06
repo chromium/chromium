@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_TOUCH_TO_FILL_PASSWORD_GENERATION_DELEGATE_H_
 
+#include <string>
+
 // The delegate, which handles the Password generation bottom sheet
 // (Touch-To-Fill) functionality. Implemented by
 // `TouchToFillPasswordGenerationController`.
@@ -14,7 +16,7 @@ class TouchToFillPasswordGenerationDelegate {
 
   // Handles the bottom sheet dismissal. It's called in every execution path no
   // matter how the bottom sheet is dismissed.
-  virtual void OnDismissed() = 0;
+  virtual void OnDismissed(bool generated_password_accepted) = 0;
 
   // Called if the user accepts the proposed generated password. Here the
   // password should be saved and filled into the form.

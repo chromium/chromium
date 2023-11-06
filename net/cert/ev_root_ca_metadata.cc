@@ -10,7 +10,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "net/der/input.h"
+#include "third_party/boringssl/src/pki/input.h"
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -68,17 +68,17 @@ std::string OIDStringToDER(base::StringPiece policy) {
 
 }  // namespace
 
-bool EVRootCAMetadata::IsEVPolicyOID(der::Input policy_oid) const {
+bool EVRootCAMetadata::IsEVPolicyOID(bssl::der::Input policy_oid) const {
   return policy_oids_.find(policy_oid.AsStringView()) != policy_oids_.end();
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                                      der::Input policy_oid) const {
+                                      bssl::der::Input policy_oid) const {
   PolicyOIDMap::const_iterator iter = ev_policy_.find(fingerprint);
   if (iter == ev_policy_.end())
     return false;
   for (const std::string& ev_oid : iter->second) {
-    if (der::Input(ev_oid) == policy_oid) {
+    if (bssl::der::Input(ev_oid) == policy_oid) {
       return true;
     }
   }
@@ -115,13 +115,13 @@ bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
 // metadata.
 //
 
-bool EVRootCAMetadata::IsEVPolicyOID(der::Input policy_oid) const {
+bool EVRootCAMetadata::IsEVPolicyOID(bssl::der::Input policy_oid) const {
   LOG(WARNING) << "Not implemented";
   return false;
 }
 
 bool EVRootCAMetadata::HasEVPolicyOID(const SHA256HashValue& fingerprint,
-                                      der::Input policy_oid) const {
+                                      bssl::der::Input policy_oid) const {
   LOG(WARNING) << "Not implemented";
   return false;
 }

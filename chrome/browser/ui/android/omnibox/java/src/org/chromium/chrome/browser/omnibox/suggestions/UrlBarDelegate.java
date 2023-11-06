@@ -11,6 +11,7 @@ public interface UrlBarDelegate {
 
     /**
      * Set the text in the omnibox.
+     *
      * @param text The text that should be displayed in the omnibox.
      */
     void setOmniboxEditingText(String text);

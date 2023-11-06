@@ -140,7 +140,7 @@ if (is_android && current_toolchain == default_toolchain) {
   android_library("url_java") {
     sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
     srcjar_deps = [ ":url_jni_headers" ]
-    deps = [ "//base:jni_java" ]
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
     if (!is_cronet_build) {
       sources += [
         "android/java/src/org/chromium/url/GURL.java",
@@ -290,7 +290,7 @@ if (is_android && !is_cronet_build) {
       deps = [
         ":url_java",
         "//base:base_java_test_support",
-        "//base:jni_java",
+        "//third_party/jni_zero:jni_zero_java",
       ]
     }
 
@@ -314,11 +314,11 @@ if (is_android && !is_cronet_build) {
         ":url_java",
         "//base:base_java",
         "//base:base_java_test_support",
-        "//base:jni_java",
         "//content/public/test/android:content_java_test_support",
         "//mojo/public/mojom/base:base_java",
         "//third_party/androidx:androidx_core_core_java",
         "//third_party/androidx:androidx_test_runner_java",
+        "//third_party/jni_zero:jni_zero_java",
         "//third_party/junit",
         "//third_party/mockito:mockito_java",
         "//url/mojom:url_mojom_gurl_java",

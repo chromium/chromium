@@ -20,7 +20,7 @@ SCRIPT_NAME = "generate_ui_string_overrider.py"
 #   #define IDS_FOO_MESSAGE 1234
 # With generate allowlist flag:
 #   #define IDS_FOO_MESSAGE (::ui::AllowlistedResource<1234>(), 1234)
-RESOURCE_EXTRACT_REGEX = re.compile('^#define (\S*).* (\d+)\)?$', re.MULTILINE)
+RESOURCE_EXTRACT_REGEX = re.compile(r'^#define (\S*).* (\d+)\)?$', re.MULTILINE)
 
 class Error(Exception):
   """Base error class for all exceptions in generated_resources_map."""

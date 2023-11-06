@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+[PASS] `text-wrap: balance` should be set
+[PASS] `text-wrap` should not be affected by previous `white-space`
+[FAIL] `white-space` should not overwrite previous `text-wrap-style: balance`
+  assert_equals: expected "balance" but got "wrap"
+[FAIL] `white-space` should overwrite previous `text-wrap-mode: nowrap`
+  assert_equals: expected "balance" but got "wrap"
+[PASS] `text-wrap` should not be affected by `white-space` on the parent
+[FAIL] `white-space` should overwrite `text-wrap-mode` on the parent
+  assert_equals: expected "balance" but got "wrap"
+Harness: the test ran to completion.
+

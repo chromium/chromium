@@ -59,7 +59,7 @@ using AsyncAbiT = typename ABI::Windows::Foundation::Internal::GetAbiType<
 // information.
 template <typename T>
 using AsyncResultsT = std::conditional_t<
-    std::is_convertible<AsyncAbiT<T>, IUnknown*>::value,
+    std::is_convertible_v<AsyncAbiT<T>, IUnknown*>,
     Microsoft::WRL::ComPtr<std::remove_pointer_t<AsyncAbiT<T>>>,
     AsyncAbiT<T>>;
 

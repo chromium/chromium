@@ -41,9 +41,14 @@ class SyncCredentialsFilter : public CredentialsFilter {
   bool ShouldSaveGaiaPasswordHash(const PasswordForm& form) const override;
   bool ShouldSaveEnterprisePasswordHash(
       const PasswordForm& form) const override;
-  void ReportFormLoginSuccess(
-      const PasswordFormManager& form_manager) const override;
   bool IsSyncAccountEmail(const std::string& username) const override;
+
+  // For unit-testing purposes only.
+  static bool IsCredentialMatchingSyncFeatureAccountForTest(
+      const GURL& url,
+      const std::u16string& username,
+      const syncer::SyncService* sync_service,
+      const signin::IdentityManager* identity_manager);
 
  private:
   const raw_ptr<PasswordManagerClient> client_;

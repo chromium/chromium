@@ -33,7 +33,7 @@ std::u16string GetWindowTitleForShortcut(Profile* profile,
   std::u16string host_app_name;
   proxy->AppRegistryCache().ForOneApp(
       shortcut->host_app_id, [&host_app_name](const apps::AppUpdate& update) {
-        host_app_name = base::UTF8ToUTF16(update.ShortName());
+        host_app_name = base::UTF8ToUTF16(update.Name());
       });
   return l10n_util::GetStringFUTF16(IDS_PROMP_SHORTCUT_REMOVAL_TITLE,
                                     shortcut_name, host_app_name);

@@ -28,11 +28,13 @@ using PriorityAndReason = execution_context_priority::PriorityAndReason;
 FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
                              PageNodeImpl* page_node,
                              FrameNodeImpl* parent_frame_node,
+                             FrameNodeImpl* outer_document_for_fenced_frame,
                              int render_frame_id,
                              const blink::LocalFrameToken& frame_token,
                              content::BrowsingInstanceId browsing_instance_id,
                              content::SiteInstanceId site_instance_id)
     : parent_frame_node_(parent_frame_node),
+      outer_document_for_fenced_frame_(outer_document_for_fenced_frame),
       page_node_(page_node),
       process_node_(process_node),
       render_frame_id_(render_frame_id),
@@ -53,6 +55,8 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
 
   DCHECK(process_node);
   DCHECK(page_node);
+  // A <fencedframe> has no parent node.
+  CHECK(!outer_document_for_fenced_frame || !parent_frame_node_);
 }
 
 FrameNodeImpl::~FrameNodeImpl() {
@@ -117,19 +121,143 @@ void FrameNodeImpl::OnFirstContentfulPaint(
     observer->OnFirstContentfulPaint(this, time_since_navigation_start);
 }
 
+void FrameNodeImpl::OnWebMemoryMeasurementRequested(
+    mojom::WebMemoryMeasurement::Mode mode,
+    OnWebMemoryMeasurementRequestedCallback callback) {
+  v8_memory::WebMeasureMemory(
+      this, mode, v8_memory::WebMeasureMemorySecurityChecker::Create(),
+      std::move(callback), mojo::GetBadMessageCallback());
+}
+
+const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return frame_token_;
+}
+
+content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return browsing_instance_id();
+}
+
+content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return site_instance_id();
+}
+
+resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return resource_attribution::FrameContext::FromFrameNode(this);
+}
+
+bool FrameNodeImpl::IsMainFrame() const {
+  return !parent_frame_node_;
+}
+
+FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return lifecycle_state();
+}
+
+bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return has_nonempty_beforeunload();
+}
+
+const GURL& FrameNodeImpl::GetURL() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return url();
+}
+
+bool FrameNodeImpl::IsCurrent() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_current();
+}
+
+bool FrameNodeImpl::GetNetworkAlmostIdle() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return network_almost_idle();
+}
+
+bool FrameNodeImpl::IsAdFrame() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_ad_frame();
+}
+
+bool FrameNodeImpl::IsHoldingWebLock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_holding_weblock();
+}
+
+bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_holding_indexeddb_lock();
+}
+
+bool FrameNodeImpl::HadFormInteraction() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_form_interaction();
+}
+
+bool FrameNodeImpl::HadUserEdits() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return had_user_edits();
+}
+
+bool FrameNodeImpl::IsAudible() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_audible();
+}
+
+bool FrameNodeImpl::IsCapturingVideoStream() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return is_capturing_video_stream();
+}
+
+absl::optional<bool> FrameNodeImpl::IntersectsViewport() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return intersects_viewport();
+}
+
+FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return visibility();
+}
+
 const RenderFrameHostProxy& FrameNodeImpl::GetRenderFrameHostProxy() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return render_frame_host_proxy();
 }
 
-bool FrameNodeImpl::IsMainFrame() const {
+uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !parent_frame_node_;
+  return resident_set_kb_estimate();
+}
+
+uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return private_footprint_kb_estimate();
 }
 
 FrameNodeImpl* FrameNodeImpl::parent_frame_node() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return parent_frame_node_;
+}
+
+FrameNodeImpl* FrameNodeImpl::parent_or_outer_document_or_embedder() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (parent_frame_node_) {
+    return parent_frame_node_;
+  }
+
+  if (outer_document_for_fenced_frame_) {
+    return outer_document_for_fenced_frame_;
+  }
+
+  if (page_node()->embedder_frame_node()) {
+    return page_node()->embedder_frame_node();
+  }
+
+  return nullptr;
 }
 
 PageNodeImpl* FrameNodeImpl::page_node() const {
@@ -147,11 +275,6 @@ int FrameNodeImpl::render_frame_id() const {
   return render_frame_id_;
 }
 
-const blink::LocalFrameToken& FrameNodeImpl::frame_token() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_token_;
-}
-
 content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browsing_instance_id_;
@@ -160,11 +283,6 @@ content::BrowsingInstanceId FrameNodeImpl::browsing_instance_id() const {
 content::SiteInstanceId FrameNodeImpl::site_instance_id() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return site_instance_id_;
-}
-
-resource_attribution::FrameContext FrameNodeImpl::resource_context() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_attribution::FrameContext::FromFrameNode(this);
 }
 
 const RenderFrameHostProxy& FrameNodeImpl::render_frame_host_proxy() const {
@@ -254,11 +372,17 @@ bool FrameNodeImpl::is_audible() const {
   return is_audible_.value();
 }
 
-const absl::optional<gfx::Rect>& FrameNodeImpl::viewport_intersection() const {
+bool FrameNodeImpl::is_capturing_video_stream() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The viewport intersection of the main frame is not tracked.
-  DCHECK(!IsMainFrame());
-  return viewport_intersection_.value();
+  return is_capturing_video_stream_.value();
+}
+
+absl::optional<bool> FrameNodeImpl::intersects_viewport() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The intersection with the viewport of the outermost main frame or embedder
+  // is not tracked.
+  DCHECK(parent_or_outer_document_or_embedder());
+  return intersects_viewport_.value();
 }
 
 FrameNode::Visibility FrameNodeImpl::visibility() const {
@@ -313,12 +437,18 @@ void FrameNodeImpl::SetIsAudible(bool is_audible) {
   is_audible_.SetAndMaybeNotify(this, is_audible);
 }
 
-void FrameNodeImpl::SetViewportIntersection(
-    const gfx::Rect& viewport_intersection) {
+void FrameNodeImpl::SetIsCapturingVideoStream(bool is_capturing_video_stream) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // The viewport intersection of the main frame is not tracked.
-  DCHECK(!IsMainFrame());
-  viewport_intersection_.SetAndMaybeNotify(this, viewport_intersection);
+  DCHECK_NE(is_capturing_video_stream, is_capturing_video_stream_.value());
+  is_capturing_video_stream_.SetAndMaybeNotify(this, is_capturing_video_stream);
+}
+
+void FrameNodeImpl::SetIntersectsViewport(bool intersects_viewport) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The intersection with the viewport of the outermost main frame or embedder
+  // is not tracked.
+  DCHECK(parent_or_outer_document_or_embedder());
+  intersects_viewport_.SetAndMaybeNotify(this, intersects_viewport);
 }
 
 void FrameNodeImpl::SetInitialVisibility(Visibility visibility) {
@@ -463,6 +593,11 @@ const FrameNode* FrameNodeImpl::GetParentFrameNode() const {
   return parent_frame_node();
 }
 
+const FrameNode* FrameNodeImpl::GetParentOrOuterDocumentOrEmbedder() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return parent_or_outer_document_or_embedder();
+}
+
 const PageNode* FrameNodeImpl::GetPageNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_node();
@@ -471,26 +606,6 @@ const PageNode* FrameNodeImpl::GetPageNode() const {
 const ProcessNode* FrameNodeImpl::GetProcessNode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return process_node();
-}
-
-const blink::LocalFrameToken& FrameNodeImpl::GetFrameToken() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return frame_token();
-}
-
-content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return browsing_instance_id();
-}
-
-content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id();
-}
-
-resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resource_context();
 }
 
 bool FrameNodeImpl::VisitChildFrameNodes(
@@ -547,46 +662,6 @@ const base::flat_set<const PageNode*> FrameNodeImpl::GetEmbeddedPageNodes()
   return UpcastNodeSet<PageNode>(embedded_page_nodes());
 }
 
-FrameNodeImpl::LifecycleState FrameNodeImpl::GetLifecycleState() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return lifecycle_state();
-}
-
-bool FrameNodeImpl::HasNonemptyBeforeUnload() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return has_nonempty_beforeunload();
-}
-
-const GURL& FrameNodeImpl::GetURL() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return url();
-}
-
-bool FrameNodeImpl::IsCurrent() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_current();
-}
-
-bool FrameNodeImpl::GetNetworkAlmostIdle() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return network_almost_idle();
-}
-
-bool FrameNodeImpl::IsAdFrame() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_ad_frame();
-}
-
-bool FrameNodeImpl::IsHoldingWebLock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_weblock();
-}
-
-bool FrameNodeImpl::IsHoldingIndexedDBLock() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_holding_indexeddb_lock();
-}
-
 const base::flat_set<const WorkerNode*> FrameNodeImpl::GetChildWorkerNodes()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -604,42 +679,6 @@ bool FrameNodeImpl::VisitChildDedicatedWorkers(
     }
   }
   return true;
-}
-
-bool FrameNodeImpl::HadFormInteraction() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_form_interaction();
-}
-
-bool FrameNodeImpl::HadUserEdits() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return had_user_edits();
-}
-
-bool FrameNodeImpl::IsAudible() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return is_audible();
-}
-
-const absl::optional<gfx::Rect>& FrameNodeImpl::GetViewportIntersection()
-    const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return viewport_intersection();
-}
-
-FrameNode::Visibility FrameNodeImpl::GetVisibility() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return visibility();
-}
-
-uint64_t FrameNodeImpl::GetResidentSetKbEstimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return resident_set_kb_estimate();
-}
-
-uint64_t FrameNodeImpl::GetPrivateFootprintKbEstimate() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return private_footprint_kb_estimate();
 }
 
 const PriorityAndReason& FrameNodeImpl::GetPriorityAndReason() const {
@@ -819,14 +858,6 @@ void FrameNodeImpl::DocumentProperties::Reset(FrameNodeImpl* frame_node,
   network_almost_idle.SetAndMaybeNotify(frame_node, false);
   had_form_interaction.SetAndMaybeNotify(frame_node, false);
   had_user_edits.SetAndMaybeNotify(frame_node, false);
-}
-
-void FrameNodeImpl::OnWebMemoryMeasurementRequested(
-    mojom::WebMemoryMeasurement::Mode mode,
-    OnWebMemoryMeasurementRequestedCallback callback) {
-  v8_memory::WebMeasureMemory(
-      this, mode, v8_memory::WebMeasureMemorySecurityChecker::Create(),
-      std::move(callback), mojo::GetBadMessageCallback());
 }
 
 }  // namespace performance_manager

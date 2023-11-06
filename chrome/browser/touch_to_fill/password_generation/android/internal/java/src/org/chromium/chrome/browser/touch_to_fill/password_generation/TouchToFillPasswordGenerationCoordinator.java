@@ -16,6 +16,7 @@ import android.view.View;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -36,8 +37,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 class TouchToFillPasswordGenerationCoordinator {
     interface Delegate {
-        /** Called when the bottom sheet is hidden (both by user and programmatically). */
-        void onDismissed();
+        /** Called when the bottom sheet is hidden (both by the user and programmatically). */
+        void onDismissed(boolean passwordAccepted);
 
         /**
          * Called, when user agrees to use the generated password.
@@ -50,21 +51,35 @@ class TouchToFillPasswordGenerationCoordinator {
         void onGeneratedPasswordRejected();
     }
 
+    /**
+     * The outcome of the interaction with the password generation bottom sheet. Used for metrics.
+     *
+     * <p>Entries should not be renumbered and numeric values should never be reused. Needs to stay
+     * in sync with PasswordManager.PasswordGenerationBottomSheet.InteractionResult in enums.xml.
+     */
     @IntDef({
         InteractionResult.USED_GENERATED_PASSWORD,
-        InteractionResult.DISMISSED_GENERATED_PASSWORD,
-        InteractionResult.DISMISSED_FROM_NATIVE
+        InteractionResult.REJECTED_GENERATED_PASSWORD,
+        InteractionResult.DISMISSED_FROM_NATIVE,
+        InteractionResult.DISMISSED_SHEET,
     })
     @Retention(RetentionPolicy.SOURCE)
-    private @interface InteractionResult {
+    @interface InteractionResult {
         int USED_GENERATED_PASSWORD = 0;
-        int DISMISSED_GENERATED_PASSWORD = 1;
+        int REJECTED_GENERATED_PASSWORD = 1;
         int DISMISSED_FROM_NATIVE = 2;
+        int DISMISSED_SHEET = 3;
+
+        int COUNT = DISMISSED_SHEET + 1;
     }
+
+    static final String INTERACTION_RESULT_HISTOGRAM =
+            "PasswordManager.PasswordGenerationBottomSheet.InteractionResult";
 
     private final WebContents mWebContents;
     private final PrefService mPrefService;
-    private final TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private TouchToFillPasswordGenerationView mTouchToFillPasswordGenerationView;
+    private View mTouchToFillPasswordGenerationContent;
     private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private final Delegate mTouchToFillPasswordGenerationDelegate;
     private final BottomSheetController mBottomSheetController;
@@ -72,30 +87,19 @@ class TouchToFillPasswordGenerationCoordinator {
             new EmptyBottomSheetObserver() {
                 @Override
                 public void onSheetClosed(@StateChangeReason int reason) {
+                    // This is only called when the user swipes or touches the area outside the
+                    // sheet to dismiss it. When the user clicks on one of the button inside the
+                    // sheet, this observer is removed before the sheet is actually dismissed.
                     onDismissed(sheetStateChangeReasonToInteractionResult(reason));
                 }
             };
 
-    public TouchToFillPasswordGenerationCoordinator(
-            BottomSheetController bottomSheetController,
-            Context context,
-            WebContents webContents,
-            PrefService prefService,
-            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            Delegate touchToFillPasswordGenerationDelegate) {
-        this(
-                webContents,
-                prefService,
-                bottomSheetController,
-                createView(context),
-                keyboardVisibilityDelegate,
-                touchToFillPasswordGenerationDelegate);
-    }
-
-    private static TouchToFillPasswordGenerationView createView(Context context) {
-        return new TouchToFillPasswordGenerationView(context,
-                LayoutInflater.from(context).inflate(
-                        R.layout.touch_to_fill_password_generation, null));
+    private TouchToFillPasswordGenerationView createView(Context context) {
+        mTouchToFillPasswordGenerationContent =
+                LayoutInflater.from(context)
+                        .inflate(R.layout.touch_to_fill_password_generation, null);
+        return new TouchToFillPasswordGenerationView(
+                context, mTouchToFillPasswordGenerationContent);
     }
 
     @VisibleForTesting
@@ -103,7 +107,6 @@ class TouchToFillPasswordGenerationCoordinator {
             WebContents webContents,
             PrefService prefService,
             BottomSheetController bottomSheetController,
-            TouchToFillPasswordGenerationView touchToFillPasswordGenerationView,
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             Delegate touchToFillPasswordGenerationDelegate) {
         mWebContents = webContents;
@@ -111,11 +114,11 @@ class TouchToFillPasswordGenerationCoordinator {
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mTouchToFillPasswordGenerationDelegate = touchToFillPasswordGenerationDelegate;
         mBottomSheetController = bottomSheetController;
-        mTouchToFillPasswordGenerationView = touchToFillPasswordGenerationView;
     }
 
     /** Displays the bottom sheet. */
-    boolean show(String generatedPassword, String account) {
+    boolean show(String generatedPassword, String account, Context context) {
+        mTouchToFillPasswordGenerationView = createView(context);
         PropertyModel model =
                 new PropertyModel.Builder(TouchToFillPasswordGenerationProperties.ALL_KEYS)
                         .with(ACCOUNT_EMAIL, account)
@@ -127,6 +130,7 @@ class TouchToFillPasswordGenerationCoordinator {
 
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (mBottomSheetController.requestShowContent(mTouchToFillPasswordGenerationView, true)) {
+            hideKeyboard();
             return true;
         }
         mBottomSheetController.removeObserver(mBottomSheetObserver);
@@ -134,15 +138,24 @@ class TouchToFillPasswordGenerationCoordinator {
     }
 
     void hideFromNative() {
-        onDismissed(InteractionResult.DISMISSED_FROM_NATIVE);
+        hideBottomSheet(InteractionResult.DISMISSED_FROM_NATIVE);
     }
 
     private void onDismissed(@InteractionResult int interactionResult) {
+        hideBottomSheet(interactionResult);
+        mTouchToFillPasswordGenerationDelegate.onDismissed(
+                interactionResult == InteractionResult.USED_GENERATED_PASSWORD);
+    }
+
+    private void hideBottomSheet(@InteractionResult int interactionResult) {
+        // It's important to remove the observer before the `mBottomSheetController.hideContent`
+        // call to avoid calling `onDismissed` twice.
         mBottomSheetController.removeObserver(mBottomSheetObserver);
         mBottomSheetController.hideContent(mTouchToFillPasswordGenerationView, true);
-        mTouchToFillPasswordGenerationDelegate.onDismissed();
 
         setPasswordGenerationBottomSheetDismissCount(interactionResult);
+        RecordHistogram.recordEnumeratedHistogram(
+                INTERACTION_RESULT_HISTOGRAM, interactionResult, InteractionResult.COUNT);
     }
 
     private void onGeneratedPasswordAccepted(String password) {
@@ -152,23 +165,21 @@ class TouchToFillPasswordGenerationCoordinator {
 
     private void onGeneratedPasswordRejected() {
         mTouchToFillPasswordGenerationDelegate.onGeneratedPasswordRejected();
-        onDismissed(InteractionResult.DISMISSED_GENERATED_PASSWORD);
-        restoreKeyboardFocus();
+        onDismissed(InteractionResult.REJECTED_GENERATED_PASSWORD);
     }
 
-    void restoreKeyboardFocus() {
+    private void hideKeyboard() {
         if (mWebContents.getViewAndroidDelegate() == null) return;
-        if (mWebContents.getViewAndroidDelegate().getContainerView() == null) return;
-
         View webContentView = mWebContents.getViewAndroidDelegate().getContainerView();
-        if (webContentView.requestFocus()) {
-            mKeyboardVisibilityDelegate.showKeyboard(webContentView);
-        }
+        if (webContentView == null) return;
+
+        mKeyboardVisibilityDelegate.hideKeyboard(webContentView);
     }
 
     private void setPasswordGenerationBottomSheetDismissCount(
             @InteractionResult int interactionResult) {
-        if (interactionResult == InteractionResult.DISMISSED_GENERATED_PASSWORD) {
+        if (interactionResult == InteractionResult.REJECTED_GENERATED_PASSWORD
+                || interactionResult == InteractionResult.DISMISSED_SHEET) {
             mPrefService.setInteger(
                     Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT,
                     mPrefService.getInteger(Pref.PASSWORD_GENERATION_BOTTOM_SHEET_DISMISS_COUNT)
@@ -186,9 +197,17 @@ class TouchToFillPasswordGenerationCoordinator {
                 || reason == StateChangeReason.BACK_PRESS
                 || reason == StateChangeReason.TAP_SCRIM
                 || reason == StateChangeReason.OMNIBOX_FOCUS) {
-            return InteractionResult.DISMISSED_GENERATED_PASSWORD;
+            return InteractionResult.DISMISSED_SHEET;
         }
-        return InteractionResult.USED_GENERATED_PASSWORD;
+        assert false
+                : "Unsupported value. Cannot convert StateChangeReason "
+                        + reason
+                        + "to InteractionResult.";
+        return InteractionResult.DISMISSED_SHEET;
+    }
+
+    View getContentViewForTesting() {
+        return mTouchToFillPasswordGenerationContent;
     }
 
     /**

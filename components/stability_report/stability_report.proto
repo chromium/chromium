@@ -13,7 +13,7 @@ option optimize_for = LITE_RUNTIME;
 package stability_report;
 
 // The state of a process.
-// Next id: 7
+// Next id: 8
 message ProcessState {
   // Fields that were removed in https://crrev.com/c/4265975.
   reserved 1, 2, 5, 6;
@@ -41,6 +41,19 @@ message ProcessState {
   }
 
   optional MemoryState memory_state = 4;
+
+  // Records the state of the file system at the time of crash.
+  // Next id: 2
+  message FileSystemState {
+    message PosixFileSystemState {
+      // The number of open file descriptors in the crashing process.
+      optional uint32 crashing_open_file_descriptors = 1;
+    }
+
+    optional PosixFileSystemState posix_file_system_state = 1;
+  }
+
+  optional FileSystemState file_system_state = 7;
 }
 
 // Records the state of system memory at the time of crash.

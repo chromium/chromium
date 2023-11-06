@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Verify SyncXHR is intercepted assert_equals: HTTP response status code for intercepted request expected 200 but got 404
+[FAIL] Verify SyncXHR is intercepted
+  assert_equals: HTTP response status code for intercepted request expected 200 but got 404
 Harness: the test ran to completion.
 

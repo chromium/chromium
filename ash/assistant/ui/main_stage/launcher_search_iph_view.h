@@ -43,9 +43,10 @@ class LauncherSearchIphView : public views::View {
     kChipStart
   };
 
-  LauncherSearchIphView(std::unique_ptr<ScopedIphSession> scoped_iph_session,
-                        Delegate* delegate,
-                        bool is_in_tablet_mode);
+  LauncherSearchIphView(
+      Delegate* delegate,
+      bool is_in_tablet_mode = false,
+      std::unique_ptr<ScopedIphSession> scoped_iph_session = nullptr);
   ~LauncherSearchIphView() override;
 
  private:
@@ -54,8 +55,8 @@ class LauncherSearchIphView : public views::View {
 
   void OpenAssistantPage();
 
-  std::unique_ptr<ScopedIphSession> scoped_iph_session_;
   raw_ptr<Delegate> delegate_;
+  std::unique_ptr<ScopedIphSession> scoped_iph_session_;
 
   base::WeakPtrFactory<LauncherSearchIphView> weak_ptr_factory_{this};
 };

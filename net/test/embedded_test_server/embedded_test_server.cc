@@ -33,7 +33,6 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
-#include "net/cert/pki/extended_key_usage.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/ssl_server_socket.h"
@@ -54,6 +53,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
 namespace net::test_server {
@@ -123,23 +123,23 @@ bool MaybeCreateOCSPResponse(CertBuilder* target,
       return false;
     case OCSPResponseType::kMalformedRequest:
       *out_response = BuildOCSPResponseError(
-          OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
+          bssl::OCSPResponse::ResponseStatus::MALFORMED_REQUEST);
       return true;
     case OCSPResponseType::kInternalError:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::INTERNAL_ERROR);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::INTERNAL_ERROR);
       return true;
     case OCSPResponseType::kTryLater:
       *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::TRY_LATER);
+          BuildOCSPResponseError(bssl::OCSPResponse::ResponseStatus::TRY_LATER);
       return true;
     case OCSPResponseType::kSigRequired:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::SIG_REQUIRED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::SIG_REQUIRED);
       return true;
     case OCSPResponseType::kUnauthorized:
-      *out_response =
-          BuildOCSPResponseError(OCSPResponse::ResponseStatus::UNAUTHORIZED);
+      *out_response = BuildOCSPResponseError(
+          bssl::OCSPResponse::ResponseStatus::UNAUTHORIZED);
       return true;
     case OCSPResponseType::kInvalidResponse:
       *out_response = "3";
@@ -318,14 +318,15 @@ EmbeddedTestServerHandle EmbeddedTestServer::StartAndReturnHandle(int port) {
   return result ? EmbeddedTestServerHandle(this) : EmbeddedTestServerHandle();
 }
 
-bool EmbeddedTestServer::Start(int port) {
-  bool success = InitializeAndListen(port);
+bool EmbeddedTestServer::Start(int port, base::StringPiece address) {
+  bool success = InitializeAndListen(port, address);
   if (success)
     StartAcceptingConnections();
   return success;
 }
 
-bool EmbeddedTestServer::InitializeAndListen(int port) {
+bool EmbeddedTestServer::InitializeAndListen(int port,
+                                             base::StringPiece address) {
   DCHECK(!Started());
 
   const int max_tries = 5;
@@ -343,7 +344,7 @@ bool EmbeddedTestServer::InitializeAndListen(int port) {
     listen_socket_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
 
     int result =
-        listen_socket_->ListenWithAddressAndPort("127.0.0.1", port, 10);
+        listen_socket_->ListenWithAddressAndPort(address.data(), port, 10);
     if (result) {
       LOG(ERROR) << "Listen failed: " << ErrorToString(result);
       listen_socket_.reset();
@@ -819,7 +820,7 @@ void EmbeddedTestServer::ServeFilesFromDirectory(
 void EmbeddedTestServer::ServeFilesFromSourceDirectory(
     base::StringPiece relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   ServeFilesFromDirectory(test_data_dir.AppendASCII(relative));
 }
 
@@ -840,7 +841,7 @@ void EmbeddedTestServer::AddDefaultHandlers() {
 base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
     const base::FilePath& relative) {
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
 }
 

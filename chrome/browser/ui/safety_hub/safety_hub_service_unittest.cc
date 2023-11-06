@@ -85,11 +85,6 @@ class MockSafetyHubService : public SafetyHubService {
     return init_result;
   }
 
-  std::unique_ptr<SafetyHubService::Result> GetResultFromDictValue(
-      const base::Value::Dict& dict) override {
-    return std::make_unique<MockSafetyHubResult>(dict);
-  }
-
  protected:
   // For testing purposes, the UpdateOnBackgroundThread function will be
   // executed every seven days.
@@ -246,7 +241,6 @@ TEST_F(SafetyHubServiceTest, ResultBaseToFromDict) {
   EXPECT_EQ(*dict.Find(kSafetyHubTimestampResultKey), base::TimeToValue(time));
   // When in the future we update from the dict again, the timestamp should be
   // set to whatever is in the dict.
-  std::unique_ptr<SafetyHubService::Result> new_result =
-      service()->GetResultFromDictValue(dict);
+  auto new_result = std::make_unique<MockSafetyHubResult>(dict);
   EXPECT_EQ(result->timestamp(), time);
 }

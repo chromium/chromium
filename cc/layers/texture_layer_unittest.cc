@@ -239,7 +239,7 @@ class RunOnCommitLayerTreeHostClient : public FakeLayerTreeHostClient {
     run_on_commit_and_draw_ = std::move(c);
   }
 
-  void DidCommitAndDrawFrame() override {
+  void DidCommitAndDrawFrame(int source_frame_number) override {
     if (run_on_commit_and_draw_)
       std::move(run_on_commit_and_draw_).Run();
   }

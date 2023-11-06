@@ -21,6 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController.Delegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -39,9 +40,7 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Unit tests for {@link TabReparentingControllerTest}.
- */
+/** Unit tests for {@link TabReparentingControllerTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabReparentingControllerTest {
@@ -68,8 +67,9 @@ public class TabReparentingControllerTest {
         }
     }
 
-    @Mock
-    ReparentingTask mTask;
+    @Mock ReparentingTask mTask;
+    @Mock Profile mProfile;
+    @Mock Profile mIncognitoProfile;
 
     MockTabModel mTabModel;
     MockTabModel mIncognitoTabModel;
@@ -83,9 +83,10 @@ public class TabReparentingControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
-        mTabModel = new MockTabModel(false, null);
-        mIncognitoTabModel = new MockTabModel(true, null);
+        mTabModel = new MockTabModel(mProfile, null);
+        mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
 
         mFakeDelegate = new FakeNightModeReparentingDelegate();
         mRealAsyncTabParamsManager = AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
@@ -248,11 +249,17 @@ public class TabReparentingControllerTest {
 
         int index;
         if (incognito) {
-            mIncognitoTabModel.addTab(tab, -1, TabLaunchType.FROM_BROWSER_ACTIONS,
+            mIncognitoTabModel.addTab(
+                    tab,
+                    -1,
+                    TabLaunchType.FROM_BROWSER_ACTIONS,
                     TabCreationState.LIVE_IN_FOREGROUND);
             index = mIncognitoTabModel.indexOf(tab);
         } else {
-            mTabModel.addTab(tab, -1, TabLaunchType.FROM_BROWSER_ACTIONS,
+            mTabModel.addTab(
+                    tab,
+                    -1,
+                    TabLaunchType.FROM_BROWSER_ACTIONS,
                     TabCreationState.LIVE_IN_FOREGROUND);
             index = mTabModel.indexOf(tab);
         }

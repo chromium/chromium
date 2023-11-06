@@ -46,6 +46,7 @@ class BuildResolver:
         'builder.builder',
         'builder.bucket',
         'status',
+        'output.properties',
         'steps.*.name',
         'steps.*.logs.*.name',
         'steps.*.logs.*.view_url',
@@ -143,7 +144,19 @@ class BuildResolver:
         # TODO(crbug.com/1123077): After the switch to wptrunner, stop checking
         # the `blink_wpt_tests` step.
         run_web_tests_pattern = re.compile(
-            r'[\w_-]*blink_(web|wpt)_tests.*\(with patch\)[^|]*')
+            r'[\w_-]*(webdriver|blink_(web|wpt))_tests.*\(with patch\)[^|]*')
+        output_props = raw_build.get('output', {}).get('properties', {})
+        # Buildbucket's `FAILURE` status encompasses both normal test failures
+        # (i.e., needs rebaseline) and unrelated compile or result merge
+        # failures that should be coerced to `INFRA_FAILURE`. To distinguish
+        # them, look at the failure reason yielded by the recipe, which is
+        # opaque to Buildbucket:
+        # https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:recipes/recipe_modules/tryserver/api.py;l=295-334;drc=c868adc3689fe6ab70be6d195041debfe8faf725;bpv=0;bpt=0
+        #
+        # TODO(crbug.com/1496938): Investigate if this information can be
+        # obtained by the absence of `full_results.json` instead.
+        if output_props.get('failure_type') not in {None, 'TEST_FAILURE'}:
+            return TryJobStatus.from_bb_status('INFRA_FAILURE')
         for step in raw_build.get('steps', []):
             if run_web_tests_pattern.fullmatch(step['name']):
                 summary = self._fetch_swarming_summary(step)

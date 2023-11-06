@@ -51,7 +51,7 @@
                completion:(void (^)(FaviconAttributes*))completion {
   _faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/true, ^(FaviconAttributes* attributes) {
+      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
         completion(attributes);
       });
 }

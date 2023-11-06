@@ -24,20 +24,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 
-/**
- * Unit tests for {@link TabModelSelectorProfileSupplierTest}.
- */
+/** Unit tests for {@link TabModelSelectorProfileSupplierTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabModelSelectorProfileSupplierTest {
-    @Mock
-    Profile mProfile;
-    @Mock
-    Profile mIncognitoProfile;
-    @Mock
-    Callback<Profile> mProfileCallback1;
-    @Mock
-    Callback<Profile> mProfileCallback2;
+    @Mock Profile mProfile;
+    @Mock Profile mIncognitoProfile;
+    @Mock Callback<Profile> mProfileCallback1;
+    @Mock Callback<Profile> mProfileCallback2;
 
     ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>();
@@ -56,30 +50,18 @@ public class TabModelSelectorProfileSupplierTest {
     }
 
     private void initTabModelSelector() {
-        mSelector = new MockTabModelSelector(0, 0, null);
-        mNormalModel = new MockTabModel(false, null) {
-            @Override
-            public Profile getProfile() {
-                return mProfile;
-            };
-        };
-        mIncognitoModel = new MockTabModel(true, null) {
-            @Override
-            public Profile getProfile() {
-                return mIncognitoProfile;
-            }
-        };
+        mSelector = new MockTabModelSelector(mProfile, mIncognitoProfile, 0, 0, null);
+        mSelector.initializeTabModels(new EmptyTabModel(), new IncognitoTabModelImpl(null));
+        mNormalModel = new MockTabModel(mProfile, null);
+        mIncognitoModel = new MockTabModel(mIncognitoProfile, null);
     }
 
     @Test
     public void testInitialTabModelHasNoProfile_initializedLater() {
         mTabModelSelectorSupplier.set(mSelector);
-        Profile profile = mProfile;
-        mProfile = null;
-        mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         Assert.assertFalse(mSupplier.hasValue());
 
-        mProfile = profile;
+        mSelector.initializeTabModels(mNormalModel, mIncognitoModel);
         mSelector.markTabStateInitialized();
         Assert.assertEquals(mProfile, mSupplier.get());
     }
@@ -167,19 +149,11 @@ public class TabModelSelectorProfileSupplierTest {
 
         Profile profile2 = mock(Profile.class);
         Profile incognitoProfile2 = mock(Profile.class);
-        MockTabModelSelector selector2 = new MockTabModelSelector(0, 0, null);
-        MockTabModel normalModel2 = new MockTabModel(false, null) {
-            @Override
-            public Profile getProfile() {
-                return profile2;
-            };
-        };
-        MockTabModel incognitoModel2 = new MockTabModel(true, null) {
-            @Override
-            public Profile getProfile() {
-                return incognitoProfile2;
-            }
-        };
+        doReturn(true).when(incognitoProfile2).isOffTheRecord();
+        MockTabModelSelector selector2 =
+                new MockTabModelSelector(profile2, incognitoProfile2, 0, 0, null);
+        MockTabModel normalModel2 = new MockTabModel(profile2, null);
+        MockTabModel incognitoModel2 = new MockTabModel(incognitoProfile2, null);
         selector2.initializeTabModels(normalModel2, incognitoModel2);
         selector2.markTabStateInitialized();
         mTabModelSelectorSupplier.set(selector2);

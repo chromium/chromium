@@ -202,6 +202,10 @@ class NET_EXPORT CanonicalCookie {
     return UniqueKey() < other.UniqueKey();
   }
 
+  bool operator==(const CanonicalCookie& other) const {
+    return IsEquivalent(other);
+  }
+
   const std::string& Name() const { return name_; }
   const std::string& Value() const { return value_; }
   // We represent the cookie's host-only-flag as the absence of a leading dot in
@@ -237,6 +241,15 @@ class NET_EXPORT CanonicalCookie {
   bool IsDomainCookie() const {
     return !domain_.empty() && domain_[0] == '.'; }
   bool IsHostCookie() const { return !IsDomainCookie(); }
+
+  // Returns whether this cookie is Partitioned and its partition key matches a
+  // a same-site context by checking if the cookies domain site is the same as
+  // the partition key's site.
+  // Returns false if the cookie has no partition key.
+  bool IsFirstPartyPartitioned() const;
+
+  // Returns whether the cookie is partitioned in a third-party context.
+  bool IsThirdPartyPartitioned() const;
 
   // Returns the cookie's domain, with the leading dot removed, if present.
   // This corresponds to the "cookie's domain" as described in RFC 6265bis.
@@ -562,12 +575,6 @@ class NET_EXPORT CanonicalCookie {
                                        bool secure,
                                        bool is_partitioned,
                                        bool partition_has_nonce);
-
-  // Returns whether this cookie is Partitioned and its partition key matches a
-  // a same-site context by checking if the cookies domain site is the same as
-  // the partition key's site.
-  // Returns false if the cookie has no partition key.
-  bool IsFirstPartyPartitioned() const;
 
   // Keep defaults here in sync with
   // services/network/public/interfaces/cookie_manager.mojom.

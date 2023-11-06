@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_bounds_cache.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
@@ -34,6 +35,25 @@ constexpr gfx::Size kMinWindowSize(240, 52);
 // The maximum window size for Document Picture-in-Picture windows. This does
 // not apply to video Picture-in-Picture windows.
 constexpr double kMaxWindowSizeRatio = 0.8;
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns true if a document picture-in-picture window should be focused upon
+// opening it.
+bool ShouldFocusPictureInPictureWindow(const NavigateParams& params) {
+  // All document picture-in-picture openings must have a source_contents.
+  CHECK(params.source_contents);
+
+  const auto* auto_picture_in_picture_tab_helper =
+      AutoPictureInPictureTabHelper::FromWebContents(params.source_contents);
+  if (!auto_picture_in_picture_tab_helper) {
+    return true;
+  }
+
+  // The picture-in-picture window should be focused unless it's opened by the
+  // AutoPictureInPictureTabHelper.
+  return !auto_picture_in_picture_tab_helper->IsInAutoPictureInPicture();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -329,6 +349,17 @@ gfx::Size PictureInPictureWindowManager::GetMaximumWindowSize(
   return gfx::ScaleToRoundedSize(display.size(), kMaxWindowSizeRatio);
 }
 
+// static
+void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Always show document picture-in-picture in a new window. When this is
+  // not opened via the AutoPictureInPictureTabHelper, focus the window.
+  params.window_action = ShouldFocusPictureInPictureWindow(params)
+                             ? NavigateParams::SHOW_WINDOW
+                             : NavigateParams::SHOW_WINDOW_INACTIVE;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
 void PictureInPictureWindowManager::CreateWindowInternal(
     content::WebContents* web_contents) {
   video_web_contents_observer_ =
@@ -401,6 +432,9 @@ PictureInPictureWindowManager::GetOverlayView(
   if (!overlay_view) {
     // Clear the setting helper, since the setting is either allowed or blocked.
     auto_pip_setting_helper_.reset();
+  } else if (auto* pip_contents = GetChildWebContents()) {
+    // For document pip, block input too.
+    auto_pip_setting_helper_->IgnoreInputEvents(pip_contents);
   }
 
   return overlay_view;

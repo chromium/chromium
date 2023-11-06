@@ -35,6 +35,7 @@ extern const char kDisableFetchingHintsAtNavigationStartForTesting[];
 extern const char kDisableCheckingUserPermissionsForTesting[];
 extern const char kDisableModelDownloadVerificationForTesting[];
 extern const char kModelOverride[];
+extern const char kOnDeviceModelExecutionOverride[];
 extern const char kDebugLoggingEnabled[];
 extern const char kModelValidate[];
 extern const char kPageContentAnnotationsLoggingEnabled[];
@@ -94,6 +95,9 @@ bool ShouldValidateModel();
 
 // Returns the model override command line switch.
 absl::optional<std::string> GetModelOverride();
+
+// Returns the on-device model execution override command line switch.
+absl::optional<std::string> GetOnDeviceModelExecutionOverride();
 
 // Returns true if debug logs are enabled for the optimization guide.
 bool IsDebugLogsEnabled();

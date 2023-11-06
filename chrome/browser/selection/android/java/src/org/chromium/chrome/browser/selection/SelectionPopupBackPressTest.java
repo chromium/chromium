@@ -38,26 +38,21 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test that verifies back press will dismiss the selection popup.
- */
+/** Test that verifies back press will dismiss the selection popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
 })
 @Batch(Batch.PER_CLASS)
 public class SelectionPopupBackPressTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private static final String TEST_PAGE = UrlUtils.encodeHtmlDataUri("<html>"
-            + "<head>"
-            + "  <meta name=viewport content='width=device-width, initial-scale=1.0'>"
-            + "</head>"
-            + "<body>"
-            + "<p id=\"selection_popup_text\">Test</p>"
-            + "</body>"
-            + "</html>");
+    private static final String TEST_PAGE =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html><head>  <meta name=viewport content='width=device-width,"
+                        + " initial-scale=1.0'></head><body><p id=\"selection_popup_text\">Test</p>"
+                        + "</body></html>");
 
     @Test
     @MediumTest
@@ -100,8 +95,9 @@ public class SelectionPopupBackPressTest {
         Assert.assertFalse("Observer should be removed.", found);
 
         Tab currentTab = activity.getActivityTab();
-        observers = TestThreadUtils.runOnUiThreadBlocking(
-                () -> TabTestUtils.getTabObservers(currentTab));
+        observers =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> TabTestUtils.getTabObservers(currentTab));
         found = find(observers, selectionPopupHandler);
         Assert.assertTrue("Tab should be observed.", found);
     }
@@ -114,8 +110,9 @@ public class SelectionPopupBackPressTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final SelectionPopupBackPressHandler selectionPopupHandler =
-                (SelectionPopupBackPressHandler) activity.getBackPressManagerForTesting()
-                        .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
+                (SelectionPopupBackPressHandler)
+                        activity.getBackPressManagerForTesting()
+                                .getHandlersForTesting()[BackPressHandler.Type.SELECTION_POPUP];
         Assert.assertNotNull(
                 "Back press handler should be initialized and registered.", selectionPopupHandler);
         Tab tab1 = activity.getActivityTab();
@@ -129,62 +126,78 @@ public class SelectionPopupBackPressTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> selectionPopupHandler.onContentChanged(tab1));
 
-        var controller = TestThreadUtils.runOnUiThreadBlocking(
-                () -> SelectionPopupController.fromWebContents(tab1.getWebContents()));
+        var controller =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> SelectionPopupController.fromWebContents(tab1.getWebContents()));
         Assert.assertEquals(controller, selectionPopupHandler.getPopupControllerForTesting());
     }
 
     private void testBackPressClearSelectionInternal() throws TimeoutException {
         mActivityTestRule.startMainActivityWithURL(TEST_PAGE);
-        DOMUtils.longPressNodeByJs(mActivityTestRule.getWebContents(),
+        DOMUtils.longPressNodeByJs(
+                mActivityTestRule.getWebContents(),
                 "document.getElementById('selection_popup_text')");
         SelectionPopupController controller =
-                TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-                    return SelectionPopupController.fromWebContents(
-                            mActivityTestRule.getWebContents());
-                });
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return SelectionPopupController.fromWebContents(
+                                    mActivityTestRule.getWebContents());
+                        });
         Assert.assertNotNull(controller);
         // Wait until popup has been displayed.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Selection popup should be triggered after long press",
-                    controller.isSelectActionBarShowing(), Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Selection popup should be triggered after long press",
+                            controller.isSelectActionBarShowing(),
+                            Matchers.is(true));
+                });
         Assert.assertTrue(
                 "Selection popup should be triggered after long press.", controller.hasSelection());
-        Assert.assertTrue("Selection popup should be triggered after long press.",
+        Assert.assertTrue(
+                "Selection popup should be triggered after long press.",
                 controller.isSelectActionBarShowingSupplier().get());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BackPressManager backPressManager =
-                    mActivityTestRule.getActivity().getBackPressManagerForTesting();
-            if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
-                mActivityTestRule.getActivity().getBackPressManagerForTesting().removeHandler(
-                        BackPressHandler.Type.TEXT_BUBBLE);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BackPressManager backPressManager =
+                            mActivityTestRule.getActivity().getBackPressManagerForTesting();
+                    if (backPressManager.has(BackPressHandler.Type.TEXT_BUBBLE)) {
+                        mActivityTestRule
+                                .getActivity()
+                                .getBackPressManagerForTesting()
+                                .removeHandler(BackPressHandler.Type.TEXT_BUBBLE);
+                    }
+                });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().getOnBackPressedDispatcher().onBackPressed();
+                });
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Selection popup should be dismissed after long press",
-                    controller.isSelectActionBarShowing(), Matchers.is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Selection popup should be dismissed after long press",
+                            controller.isSelectActionBarShowing(),
+                            Matchers.is(false));
+                });
         Assert.assertFalse(
                 "Selection popup should be dismissed on back press.", controller.hasSelection());
-        Assert.assertFalse("Selection popup should be dismissed on back press.",
+        Assert.assertFalse(
+                "Selection popup should be dismissed on back press.",
                 controller.isSelectActionBarShowingSupplier().get());
     }
 
     private boolean find(Iterator<TabObserver> observers, BackPressHandler handler) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            while (observers.hasNext()) {
-                if (observers.next() == handler) {
-                    return true;
-                }
-            }
-            return false;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    while (observers.hasNext()) {
+                        if (observers.next() == handler) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
     }
 }

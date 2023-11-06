@@ -11,7 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "content/public/test/browser_task_environment.h"
 
 using password_manager::PasswordForm;

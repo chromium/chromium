@@ -17,17 +17,12 @@ import org.chromium.mojo.MojoTestRule;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-/**
- * Testing {@link ValidationTestUtil}.
- */
+/** Testing {@link ValidationTestUtil}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ValidationTestUtilTest {
-    @Rule
-    public MojoTestRule mTestRule = new MojoTestRule();
+    @Rule public MojoTestRule mTestRule = new MojoTestRule();
 
-    /**
-     * Check that the input parser is correct on a given input.
-     */
+    /** Check that the input parser is correct on a given input. */
     public static void checkInputParser(
             String input, boolean isInputValid, ByteBuffer expectedData, int expectedHandlesCount) {
         ValidationTestUtil.Data data = ValidationTestUtil.parseData(input);
@@ -41,9 +36,7 @@ public class ValidationTestUtilTest {
         }
     }
 
-    /**
-     * Testing {@link ValidationTestUtil#parseData(String)}.
-     */
+    /** Testing {@link ValidationTestUtil#parseData(String)}. */
     @Test
     @SmallTest
     public void testCorrectMessageParsing() {
@@ -64,8 +57,9 @@ public class ValidationTestUtilTest {
             checkInputParser(input, true, expected, 0);
         }
         {
-            String input = "[u1]0x10// hello world !! \n\r  \t [u2]65535 \n"
-                    + "[u4]65536 [u8]0xFFFFFFFFFFFFFFFF 0 0Xff";
+            String input =
+                    "[u1]0x10// hello world !! \n\r  \t [u2]65535 \n"
+                            + "[u4]65536 [u8]0xFFFFFFFFFFFFFFFF 0 0Xff";
             ByteBuffer expected = ByteBuffer.allocateDirect(17);
             expected.order(ByteOrder.nativeOrder());
             expected.put((byte) 0x10);
@@ -135,10 +129,20 @@ public class ValidationTestUtilTest {
 
         // Test some failure cases.
         {
-            String error_inputs[] = {"/ hello world", "[u1]x", "[u2]-1000", "[u1]0x100",
-                    "[s2]-0x8001", "[b]1", "[b]1111111k", "[dist4]unmatched",
-                    "[anchr]hello [dist8]hello", "[dist4]a [dist4]a [anchr]a",
-                    "[dist4]a [anchr]a [dist4]a [anchr]a", "0 [handles]50"};
+            String error_inputs[] = {
+                "/ hello world",
+                "[u1]x",
+                "[u2]-1000",
+                "[u1]0x100",
+                "[s2]-0x8001",
+                "[b]1",
+                "[b]1111111k",
+                "[dist4]unmatched",
+                "[anchr]hello [dist8]hello",
+                "[dist4]a [dist4]a [anchr]a",
+                "[dist4]a [anchr]a [dist4]a [anchr]a",
+                "0 [handles]50"
+            };
 
             for (String input : error_inputs) {
                 ByteBuffer expected = ByteBuffer.allocateDirect(0);

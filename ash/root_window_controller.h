@@ -5,32 +5,28 @@
 #ifndef ASH_ROOT_WINDOW_CONTROLLER_H_
 #define ASH_ROOT_WINDOW_CONTROLLER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/style/ash_color_provider_source.h"
 #include "ash/wm/overview/overview_metrics.h"
 #include "ash/wm/overview/overview_types.h"
-#include "ash/wm/workspace/workspace_types.h"
-#include "base/gtest_prod_util.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
+#include "ash/wm/wm_metrics.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace gfx {
 class Point;
-}
+}  // namespace gfx
 
 namespace ui {
-class WindowTreeHost;
 class SimpleMenuModel;
 }  // namespace ui
 
@@ -44,13 +40,14 @@ class ScopedCaptureClient;
 }
 
 namespace ash {
+
 class AccessibilityPanelLayoutManager;
 class AlwaysOnTopController;
 class AppMenuModelAdapter;
 class AshWindowTreeHost;
 class LockScreenActionBackgroundController;
-enum class LoginStatus;
 class RootWindowLayoutManager;
+class ScreenRotationAnimator;
 class Shelf;
 class ShelfLayoutManager;
 class SplitViewController;
@@ -64,6 +61,7 @@ class TouchHudProjection;
 class WallpaperWidgetController;
 class WindowParentingController;
 class WorkAreaInsets;
+enum class LoginStatus;
 
 namespace curtain {
 class SecurityCurtainWidgetController;
@@ -200,6 +198,11 @@ class ASH_EXPORT RootWindowController {
     return color_provider_source_.get();
   }
 
+  // Returns the rotation animator associated with the root window of this
+  // controller. It creates it lazily if it had never been created, unless
+  // `Shutdown()` had been called, and in this case, it returns nullptr.
+  ScreenRotationAnimator* GetScreenRotationAnimator();
+
   // Deletes associated objects and clears the state, but doesn't delete
   // the root window yet. This is used to delete a secondary displays'
   // root window safely when the display disconnect signal is received,
@@ -261,13 +264,19 @@ class ASH_EXPORT RootWindowController {
   security_curtain_widget_controller();
 
   // Starts a split view overview session for this root window with `window`
-  // snapped on one side and overview on the other side. Overview and split view
-  // should already be active before calling this function.
-  void StartSplitViewOverviewSession(
-      aura::Window* window,
-      absl::optional<OverviewStartAction> action,
-      absl::optional<OverviewEnterExitType> type);
-  void EndSplitViewOverviewSession();
+  // snapped on one side and overview on the other side.
+  void StartSplitViewOverviewSession(aura::Window* window,
+                                     absl::optional<OverviewStartAction> action,
+                                     absl::optional<OverviewEnterExitType> type,
+                                     WindowSnapActionSource snap_action_source);
+
+  // Ends the split view overview session and reports the uma metrics if it is
+  // active.
+  void EndSplitViewOverviewSession(
+      SplitViewOverviewSessionExitPoint exit_point);
+
+  void SetScreenRotationAnimatorForTest(
+      std::unique_ptr<ScreenRotationAnimator> animator);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RootWindowControllerTest,
@@ -323,6 +332,11 @@ class ASH_EXPORT RootWindowController {
 
   std::unique_ptr<WindowParentingController> window_parenting_controller_;
 
+  // The rotation animator of the root window controlled by `this`. It's created
+  // lazily when `GetScreenRotationAnimator()` is called, unless it was called
+  // after `Shutdown()` had begun.
+  std::unique_ptr<ScreenRotationAnimator> screen_rotation_animator_;
+
   std::unique_ptr<SplitViewController> split_view_controller_;
   std::unique_ptr<SplitViewOverviewSession> split_view_overview_session_;
 
@@ -355,6 +369,9 @@ class ASH_EXPORT RootWindowController {
       security_curtain_widget_controller_;
 
   std::unique_ptr<AshColorProviderSource> color_provider_source_;
+
+  // True if we are in the process of shutting down this controller.
+  bool is_shutting_down_ = false;
 
   // Whether child windows have been closed during shutdown. Exists to avoid
   // calling related cleanup code more than once.

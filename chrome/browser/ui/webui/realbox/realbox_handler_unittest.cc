@@ -15,6 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
 class MockPage : public omnibox::mojom::Page {
  public:
   MockPage() = default;
@@ -35,6 +36,16 @@ class MockPage : public omnibox::mojom::Page {
               UpdateSelection,
               (omnibox::mojom::OmniboxPopupSelectionPtr));
 };
+
+class TestObserver : public OmniboxWebUIPopupChangeObserver {
+ public:
+  void OnPopupElementSizeChanged(gfx::Size size) override { called_ = true; }
+  bool called() const { return called_; }
+
+ private:
+  bool called_ = false;
+};
+
 }  // namespace
 
 class RealboxHandlerTest : public ::testing::Test {
@@ -149,4 +160,14 @@ TEST_F(RealboxHandlerTest, RealboxUpdatesSelection) {
   EXPECT_EQ(3, selection->line);
   EXPECT_EQ(omnibox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion,
             selection->state);
+}
+
+TEST_F(RealboxHandlerTest, RealboxObservationWorks) {
+  TestObserver observer;
+  EXPECT_FALSE(observer.called());
+  handler_->AddObserver(&observer);
+  EXPECT_TRUE(handler_->HasObserver(&observer));
+  handler_->RemoveObserver(&observer);
+  EXPECT_FALSE(handler_->HasObserver(&observer));
+  EXPECT_TRUE(observer.called());
 }

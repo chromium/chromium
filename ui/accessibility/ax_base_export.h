@@ -8,24 +8,15 @@
 // Defines AX_BASE_EXPORT so that functionality implemented by the
 // ui/accessibility:ax_base module can be exported to consumers.
 
-#if defined(COMPONENT_BUILD)
-#if defined(WIN32)
-
-#if defined(AX_BASE_IMPLEMENTATION)
+#if defined(COMPONENT_BUILD) && defined(WIN32) && \
+    defined(AX_BASE_IMPLEMENTATION)
 #define AX_BASE_EXPORT __declspec(dllexport)
-#else
+#elif defined(COMPONENT_BUILD) && defined(WIN32)
 #define AX_BASE_EXPORT __declspec(dllimport)
-#endif  // defined(AX_BASE_IMPLEMENTATION)
-
-#else  // defined(WIN32)
-#if defined(AX_BASE_IMPLEMENTATION)
+#elif defined(COMPONENT_BUILD) && !defined(WIN32) && \
+    defined(AX_BASE_IMPLEMENTATION)
 #define AX_BASE_EXPORT __attribute__((visibility("default")))
 #else
-#define AX_BASE_EXPORT
-#endif
-#endif
-
-#else  // defined(COMPONENT_BUILD)
 #define AX_BASE_EXPORT
 #endif
 

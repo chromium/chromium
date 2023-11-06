@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "lacros_secondary_profiles_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSecondaryProfilesAllowed": false
+        },
+        "prefs": {
+          "lacros_secondary_profiles_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "LacrosSecondaryProfilesAllowed": true
+        },
+        "prefs": {
+          "lacros_secondary_profiles_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

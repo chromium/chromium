@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS not negotiating BUNDLE creates two separate ice and dtls transports
-PASS bundles on the first transport and closes the second
-FAIL max-bundle with an offer without bundle only negotiates the first m-line promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: max-bundle is used but no bundle group found."
-PASS sRD(offer) works with no transport attributes in a bundle-only m-section
+[PASS] not negotiating BUNDLE creates two separate ice and dtls transports
+[PASS] bundles on the first transport and closes the second
+[FAIL] max-bundle with an offer without bundle only negotiates the first m-line
+  promise_test: Unhandled rejection with value: object "InvalidAccessError: Failed to execute 'setRemoteDescription' on 'RTCPeerConnection': Failed to set remote offer sdp: max-bundle is used but no bundle group found."
+[PASS] sRD(offer) works with no transport attributes in a bundle-only m-section
 Harness: the test ran to completion.
 

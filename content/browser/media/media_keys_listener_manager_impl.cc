@@ -145,24 +145,30 @@ void MediaKeysListenerManagerImpl::SetIsMediaPlaying(bool is_playing) {
   is_media_playing_ = is_playing;
 }
 
-void MediaKeysListenerManagerImpl::OnNext() {
+void MediaKeysListenerManagerImpl::OnNext(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_NEXT_TRACK)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnNext();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_NEXT_TRACK);
 }
 
-void MediaKeysListenerManagerImpl::OnPrevious() {
+void MediaKeysListenerManagerImpl::OnPrevious(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PREV_TRACK)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnPrevious();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_PREV_TRACK);
 }
 
-void MediaKeysListenerManagerImpl::OnPlay() {
+void MediaKeysListenerManagerImpl::OnPlay(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnPlay();
     return;
   }
@@ -170,8 +176,10 @@ void MediaKeysListenerManagerImpl::OnPlay() {
     MaybeSendKeyCode(ui::VKEY_MEDIA_PLAY_PAUSE);
 }
 
-void MediaKeysListenerManagerImpl::OnPause() {
+void MediaKeysListenerManagerImpl::OnPause(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnPause();
     return;
   }
@@ -179,31 +187,41 @@ void MediaKeysListenerManagerImpl::OnPause() {
     MaybeSendKeyCode(ui::VKEY_MEDIA_PLAY_PAUSE);
 }
 
-void MediaKeysListenerManagerImpl::OnPlayPause() {
+void MediaKeysListenerManagerImpl::OnPlayPause(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_PLAY_PAUSE)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnPlayPause();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_PLAY_PAUSE);
 }
 
-void MediaKeysListenerManagerImpl::OnStop() {
+void MediaKeysListenerManagerImpl::OnStop(
+    system_media_controls::SystemMediaControls* sender) {
   if (ShouldActiveMediaSessionControllerReceiveKey(ui::VKEY_MEDIA_STOP)) {
+    // TODO(liahiscock): Use |sender|'s media controller.
     active_media_session_controller_->OnStop();
     return;
   }
   MaybeSendKeyCode(ui::VKEY_MEDIA_STOP);
 }
 
-void MediaKeysListenerManagerImpl::OnSeek(const base::TimeDelta& time) {
+void MediaKeysListenerManagerImpl::OnSeek(
+    system_media_controls::SystemMediaControls* sender,
+    const base::TimeDelta& time) {
   if (!CanActiveMediaSessionControllerReceiveEvents())
     return;
+  // TODO(liahiscock): Use |sender|'s media controller.
   active_media_session_controller_->OnSeek(time);
 }
 
-void MediaKeysListenerManagerImpl::OnSeekTo(const base::TimeDelta& time) {
+void MediaKeysListenerManagerImpl::OnSeekTo(
+    system_media_controls::SystemMediaControls* sender,
+    const base::TimeDelta& time) {
   if (!CanActiveMediaSessionControllerReceiveEvents())
     return;
+  // TODO(liahiscock): Use |sender|'s media controller.
   active_media_session_controller_->OnSeekTo(time);
 }
 

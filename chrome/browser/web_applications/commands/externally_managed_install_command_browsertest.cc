@@ -287,7 +287,6 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedInstallCommandBrowserTest,
   provider().scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(test::TestAcceptDialogCallback),
       future_first_install.GetCallback(),
       /*use_fallback=*/false);

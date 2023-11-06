@@ -20,10 +20,7 @@
 namespace blink {
 
 template <typename NativeFrameType>
-class FrameQueueUnderlyingSource
-    : public UnderlyingSourceBase,
-      public ActiveScriptWrappable<
-          FrameQueueUnderlyingSource<NativeFrameType>> {
+class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
  public:
   using TransferFramesCB = CrossThreadFunction<void(NativeFrameType)>;
 
@@ -42,14 +39,11 @@ class FrameQueueUnderlyingSource
       delete;
 
   // UnderlyingSourceBase
-  ScriptPromise pull(ScriptState*) override;
-  ScriptPromise Start(ScriptState*) override;
+  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise Start(ScriptState*, ExceptionState&) override;
   ScriptPromise Cancel(ScriptState*,
                        ScriptValue reason,
                        ExceptionState&) override;
-
-  // ScriptWrappable interface
-  bool HasPendingActivity() const final;
 
   // ExecutionLifecycleObserver
   void ContextDestroyed() override;
@@ -125,6 +119,8 @@ class FrameQueueUnderlyingSource
   // Creates a JS frame (VideoFrame or AudioData) backed by |media_frame|.
   // Must be called on |realm_task_runner_|.
   ScriptWrappable* MakeBlinkFrame(NativeFrameType media_frame);
+
+  void EnqueueBlinkFrame(ScriptWrappable* blink_frame) const;
 
   bool is_closed_ = false;
 

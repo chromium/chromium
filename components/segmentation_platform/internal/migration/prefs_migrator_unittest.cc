@@ -57,7 +57,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForBinaryClassifier) {
   result.selection_time = base::Time::Now();
   old_result_prefs_->SaveSegmentationResultToPref(kShoppingUserSegmentationKey,
                                                   result);
-  prefs_migrator_ = std::make_unique<PrefsMigrator>(&pref_service_, configs_);
+  prefs_migrator_ = std::make_unique<PrefsMigrator>(
+      &pref_service_, new_result_prefs_.get(), configs_);
 
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
@@ -82,7 +83,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForBinaryClassifier) {
   result1.selection_time = base::Time::Now();
   old_result_prefs_->SaveSegmentationResultToPref(kShoppingUserSegmentationKey,
                                                   result1);
-  prefs_migrator_ = std::make_unique<PrefsMigrator>(&pref_service_, configs_);
+  prefs_migrator_ = std::make_unique<PrefsMigrator>(
+      &pref_service_, new_result_prefs_.get(), configs_);
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
   result_in_new_prefs = new_result_prefs_->ReadClientResultFromPrefs(
@@ -101,7 +103,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
   result.selection_time = base::Time::Now();
   old_result_prefs_->SaveSegmentationResultToPref(
       kAdaptiveToolbarSegmentationKey, result);
-  prefs_migrator_ = std::make_unique<PrefsMigrator>(&pref_service_, configs_);
+  prefs_migrator_ = std::make_unique<PrefsMigrator>(
+      &pref_service_, new_result_prefs_.get(), configs_);
 
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
@@ -125,7 +128,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForAdaptiveToolbar) {
   result1.selection_time = base::Time::Now();
   old_result_prefs_->SaveSegmentationResultToPref(
       kAdaptiveToolbarSegmentationKey, result1);
-  prefs_migrator_ = std::make_unique<PrefsMigrator>(&pref_service_, configs_);
+  prefs_migrator_ = std::make_unique<PrefsMigrator>(
+      &pref_service_, new_result_prefs_.get(), configs_);
 
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 
@@ -144,7 +148,8 @@ TEST_F(PrefsMigratorTest, PrefsMigratorForOtherConfig) {
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SEARCH_USER, 1);
   result.selection_time = base::Time::Now();
   old_result_prefs_->SaveSegmentationResultToPref(kSearchUserKey, result);
-  prefs_migrator_ = std::make_unique<PrefsMigrator>(&pref_service_, configs_);
+  prefs_migrator_ = std::make_unique<PrefsMigrator>(
+      &pref_service_, new_result_prefs_.get(), configs_);
 
   prefs_migrator_->MigrateOldPrefsToNewPrefs();
 

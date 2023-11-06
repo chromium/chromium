@@ -46,9 +46,8 @@ void TransitionInterpolation::Apply(
               environment);
 }
 
-std::unique_ptr<TypedInterpolationValue>
-TransitionInterpolation::GetInterpolatedValue() const {
-  return std::make_unique<TypedInterpolationValue>(
+TypedInterpolationValue* TransitionInterpolation::GetInterpolatedValue() const {
+  return MakeGarbageCollected<TypedInterpolationValue>(
       type_, CurrentInterpolableValue().Clone(), CurrentNonInterpolableValue());
 }
 

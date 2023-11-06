@@ -300,8 +300,11 @@ protocol::Response InspectorAnimationAgent::setPaused(
           }
         }
       }
+
       clone->pause();
-      clone->SetCurrentTimeInternal(current_time.value());
+      if (current_time) {
+        clone->SetCurrentTimeInternal(current_time.value());
+      }
     } else if (!paused && clone->Paused()) {
       clone->Unpause();
     }
@@ -314,7 +317,7 @@ blink::Animation* InspectorAnimationAgent::AnimationClone(
   const String id = String::Number(animation->SequenceNumber());
   auto it = id_to_animation_clone_.find(id);
   if (it != id_to_animation_clone_.end())
-    return it->value;
+    return it->value.Get();
 
   auto* old_effect = To<KeyframeEffect>(animation->effect());
   DCHECK(old_effect->Model()->IsKeyframeEffectModel());

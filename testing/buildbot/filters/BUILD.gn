@@ -137,8 +137,8 @@ source_set("content_browsertests_filters") {
     "//testing/buildbot/filters/accessibility-linux.content_browsertests.filter",
     "//testing/buildbot/filters/android.asan.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_12.content_browsertests.filter",
-    "//testing/buildbot/filters/android.emulator_12l_13.content_browsertests.filter",
-    "//testing/buildbot/filters/android.emulator_12.oop_network_service_content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator_12l.content_browsertests.filter",
+    "//testing/buildbot/filters/android.emulator_13.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
     "//testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
     "//testing/buildbot/filters/android.pie_arm64.content_browsertests_coverage.filter",
@@ -302,6 +302,7 @@ source_set("interactive_ui_tests_filters") {
   testonly = true
 
   data = [
+    "//testing/buildbot/filters/accessibility-linux.interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.linux.cr23_interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.mac.cr23_interactive_ui_tests.filter",
     "//testing/buildbot/filters/cr23.win.cr23_interactive_ui_tests.filter",

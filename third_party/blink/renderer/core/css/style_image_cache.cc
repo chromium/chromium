@@ -37,7 +37,7 @@ StyleFetchedImage* StyleImageCache::CacheStyleImage(
         override_image_resolution);
   }
 
-  return result.stored_value->value;
+  return result.stored_value->value.Get();
 }
 
 void StyleImageCache::Trace(Visitor* visitor) const {

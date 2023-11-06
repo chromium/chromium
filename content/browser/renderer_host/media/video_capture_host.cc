@@ -15,6 +15,7 @@
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -26,66 +27,91 @@
 
 namespace content {
 
-VideoCaptureHost::RenderProcessHostDelegate::~RenderProcessHostDelegate() =
-    default;
+namespace {
 
-// Looks up a RenderProcessHost on demand based on a given |render_process_id|
-// and invokes OnMediaStreamAdded() and OnMediaStreamRemoved(). It should be
-// called and destroyed on UI thread.
-class VideoCaptureHost::RenderProcessHostDelegateImpl
-    : public VideoCaptureHost::RenderProcessHostDelegate {
+BrowserContext* GetBrowserContext(
+    GlobalRenderFrameHostId render_frame_host_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHost* host = RenderFrameHost::FromID(render_frame_host_id);
+  if (host) {
+    return host->GetBrowserContext();
+  }
+  return nullptr;
+}
+
+}  // namespace
+
+VideoCaptureHost::RenderFrameHostDelegate::~RenderFrameHostDelegate() = default;
+
+// Looks up a RenderFrameHost on demand based on a given |render_frame_host_id|
+// and invokes OnMediaStreamAdded() and OnMediaStreamRemoved().
+class VideoCaptureHost::RenderFrameHostDelegateImpl
+    : public VideoCaptureHost::RenderFrameHostDelegate {
  public:
-  explicit RenderProcessHostDelegateImpl(uint32_t render_process_id)
-      : render_process_id_(render_process_id) {}
-
-  RenderProcessHostDelegateImpl(const RenderProcessHostDelegateImpl&) = delete;
-  RenderProcessHostDelegateImpl& operator=(
-      const RenderProcessHostDelegateImpl&) = delete;
-
-  ~RenderProcessHostDelegateImpl() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  explicit RenderFrameHostDelegateImpl(
+      GlobalRenderFrameHostId render_frame_host_id)
+      : render_frame_host_id_(render_frame_host_id) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
   }
 
-  // Helper functions that are used for notifying Browser-side RenderProcessHost
-  // if renderer is currently consuming video capture. This information is then
-  // used to determine if the renderer process should be backgrounded or not.
+  RenderFrameHostDelegateImpl(const RenderFrameHostDelegateImpl&) = delete;
+  RenderFrameHostDelegateImpl& operator=(const RenderFrameHostDelegateImpl&) =
+      delete;
+
+  ~RenderFrameHostDelegateImpl() override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  }
+
+  // Helper functions that are used for notifying Browser-side RenderFrameHost
+  // if it is currently consuming video capture. This information is then used
+  // to determine if the frame's renderer process should be backgrounded or not.
   void NotifyStreamAdded() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
-    if (host)
-      host->OnMediaStreamAdded();
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](GlobalRenderFrameHostId render_frame_host_id) {
+                         RenderFrameHostImpl* host =
+                             RenderFrameHostImpl::FromID(render_frame_host_id);
+                         if (host) {
+                           host->OnVideoStreamAdded();
+                         }
+                       },
+                       render_frame_host_id_));
   }
 
   void NotifyStreamRemoved() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
-    if (host)
-      host->OnMediaStreamRemoved();
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](GlobalRenderFrameHostId render_frame_host_id) {
+                         RenderFrameHostImpl* host =
+                             RenderFrameHostImpl::FromID(render_frame_host_id);
+                         if (host) {
+                           host->OnVideoStreamRemoved();
+                         }
+                       },
+                       render_frame_host_id_));
   }
 
-  content::BrowserContext* GetBrowserContext() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    RenderProcessHost* host = RenderProcessHost::FromID(render_process_id_);
-    if (host) {
-      return host->GetBrowserContext();
-    }
-    return nullptr;
+  GlobalRenderFrameHostId GetRenderFrameHostId() const override {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    return render_frame_host_id_;
   }
 
  private:
-  const uint32_t render_process_id_;
+  const GlobalRenderFrameHostId render_frame_host_id_;
 };
 
-VideoCaptureHost::VideoCaptureHost(uint32_t render_process_id,
+VideoCaptureHost::VideoCaptureHost(GlobalRenderFrameHostId render_frame_host_id,
                                    MediaStreamManager* media_stream_manager)
     : VideoCaptureHost(
-          std::make_unique<RenderProcessHostDelegateImpl>(render_process_id),
+          std::make_unique<RenderFrameHostDelegateImpl>(render_frame_host_id),
           media_stream_manager) {}
 
 VideoCaptureHost::VideoCaptureHost(
-    std::unique_ptr<RenderProcessHostDelegate> delegate,
+    std::unique_ptr<RenderFrameHostDelegate> delegate,
     MediaStreamManager* media_stream_manager)
-    : render_process_host_delegate_(std::move(delegate)),
+    : render_frame_host_delegate_(std::move(delegate)),
       media_stream_manager_(media_stream_manager) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -93,13 +119,13 @@ VideoCaptureHost::VideoCaptureHost(
 
 // static
 void VideoCaptureHost::Create(
-    uint32_t render_process_id,
+    GlobalRenderFrameHostId render_frame_host_id,
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<media::mojom::VideoCaptureHost> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   media_stream_manager->RegisterVideoCaptureHost(
-      std::make_unique<VideoCaptureHost>(render_process_id,
+      std::make_unique<VideoCaptureHost>(render_frame_host_id,
                                          media_stream_manager),
       std::move(receiver));
 }
@@ -123,8 +149,6 @@ VideoCaptureHost::~VideoCaptureHost() {
   }
 
   NotifyAllStreamsRemoved();
-  GetUIThreadTaskRunner({})->DeleteSoon(
-      FROM_HERE, render_process_host_delegate_.release());
 }
 
 void VideoCaptureHost::OnError(const VideoCaptureControllerID& controller_id,
@@ -277,15 +301,10 @@ void VideoCaptureHost::Start(
   }
 
   controllers_[controller_id] = base::WeakPtr<VideoCaptureController>();
-  // base::Unretained() usage is safe because `render_process_host_delegate_`
-  // is destroyed on UI thread via `DeleteSoon()` in `~VideoCaptureHost`. Since
-  // this line can't run after the destructor the UI thread
-  // `SequencedTaskRunner` guarantees that `render_process_host_delegate_` will
-  // live long enough for this task to execute.
   GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&RenderProcessHostDelegate::GetBrowserContext,
-                     base::Unretained(render_process_host_delegate_.get())),
+      base::BindOnce(&GetBrowserContext,
+                     render_frame_host_delegate_->GetRenderFrameHostId()),
       base::BindOnce(&VideoCaptureHost::ConnectClient,
                      weak_factory_.GetWeakPtr(), session_id, params,
                      controller_id,
@@ -420,8 +439,9 @@ void VideoCaptureHost::GetDeviceFormatsInUse(
   std::move(callback).Run(formats_in_use);
 }
 
-void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,
-                                        uint32_t crop_version) {
+void VideoCaptureHost::OnNewSubCaptureTargetVersion(
+    const base::UnguessableToken& device_id,
+    uint32_t sub_capture_target_version) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   const VideoCaptureControllerID controller_id(device_id);
@@ -430,7 +450,8 @@ void VideoCaptureHost::OnNewCropVersion(const base::UnguessableToken& device_id,
     return;
   }
 
-  device_id_to_observer_map_[controller_id]->OnNewCropVersion(crop_version);
+  device_id_to_observer_map_[controller_id]->OnNewSubCaptureTargetVersion(
+      sub_capture_target_version);
 }
 
 void VideoCaptureHost::OnLog(const base::UnguessableToken& device_id,
@@ -529,12 +550,7 @@ void VideoCaptureHost::DeleteVideoCaptureController(
 void VideoCaptureHost::NotifyStreamAdded() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   ++number_of_active_streams_;
-  // base::Unretained() usage is safe because |render_process_host_delegate_|
-  // is destroyed on UI thread.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RenderProcessHostDelegate::NotifyStreamAdded,
-                     base::Unretained(render_process_host_delegate_.get())));
+  render_frame_host_delegate_->NotifyStreamAdded();
 }
 
 void VideoCaptureHost::NotifyStreamRemoved() {
@@ -546,12 +562,7 @@ void VideoCaptureHost::NotifyStreamRemoved() {
   if (number_of_active_streams_ == 0)
     return;
   --number_of_active_streams_;
-  // base::Unretained() usage is safe because |render_process_host_delegate_| is
-  // destroyed on UI thread.
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RenderProcessHostDelegate::NotifyStreamRemoved,
-                     base::Unretained(render_process_host_delegate_.get())));
+  render_frame_host_delegate_->NotifyStreamRemoved();
 }
 
 void VideoCaptureHost::NotifyAllStreamsRemoved() {

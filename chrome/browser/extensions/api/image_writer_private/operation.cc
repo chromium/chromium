@@ -62,7 +62,7 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
       device_path_(device_path),
 #endif
       temp_dir_(std::make_unique<base::ScopedTempDir>()),
-      stage_(image_writer_api::STAGE_UNKNOWN),
+      stage_(image_writer_api::Stage::kUnknown),
       progress_(0),
       download_folder_(download_folder),
       task_runner_(
@@ -79,7 +79,7 @@ Operation::~Operation() {
 void Operation::Cancel() {
   DCHECK(IsRunningInCorrectSequence());
 
-  stage_ = image_writer_api::STAGE_NONE;
+  stage_ = image_writer_api::Stage::kNone;
 
   CleanUp();
 }
@@ -132,7 +132,7 @@ void Operation::Extract(base::OnceClosure continuation) {
   }
 
   if (IsArchive(image_path_)) {
-    SetStage(image_writer_api::STAGE_UNZIP);
+    SetStage(image_writer_api::Stage::kUnzip);
 
     ExtractionProperties properties;
     properties.image_path = image_path_;
@@ -208,7 +208,7 @@ void Operation::SetStage(image_writer_api::Stage stage) {
 bool Operation::IsCancelled() {
   DCHECK(IsRunningInCorrectSequence());
 
-  return stage_ == image_writer_api::STAGE_NONE;
+  return stage_ == image_writer_api::Stage::kNone;
 }
 
 void Operation::AddCleanUpFunction(base::OnceClosure callback) {

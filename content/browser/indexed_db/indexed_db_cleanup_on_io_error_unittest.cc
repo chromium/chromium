@@ -54,7 +54,6 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
                   nullptr, task_runner.get(),
                   TransactionalLevelDBDatabase::
                       kDefaultMaxOpenIteratorsPerDatabase),
-          /*filesystem_proxy=*/nullptr,
           IndexedDBBackingStore::BlobFilesCleanedCallback(),
           IndexedDBBackingStore::ReportOutstandingBlobsCallback(), task_runner);
   leveldb::Status s = backing_store->Initialize(false);
@@ -93,7 +92,6 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
                     nullptr, task_runner.get(),
                     TransactionalLevelDBDatabase::
                         kDefaultMaxOpenIteratorsPerDatabase),
-            /*filesystem_proxy=*/nullptr,
             IndexedDBBackingStore::BlobFilesCleanedCallback(),
             IndexedDBBackingStore::ReportOutstandingBlobsCallback(),
             task_runner);

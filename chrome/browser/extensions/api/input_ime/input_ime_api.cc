@@ -42,7 +42,7 @@ InputMethodEngine* GetEngineIfActive(Profile* profile,
 ui::KeyEvent ConvertKeyboardEventToUIKeyEvent(
     const input_ime::KeyboardEvent& event) {
   const ui::EventType type =
-      event.type == input_ime::KEYBOARD_EVENT_TYPE_KEYDOWN
+      event.type == input_ime::KeyboardEventType::kKeydown
           ? ui::ET_KEY_PRESSED
           : ui::ET_KEY_RELEASED;
 
@@ -141,14 +141,14 @@ ExtensionFunction::ResponseAction InputImeSetCompositionFunction::Run() {
   if (params.segments) {
     for (const auto& segments_arg : *params.segments) {
       EXTENSION_FUNCTION_VALIDATE(segments_arg.style !=
-                                  input_ime::UNDERLINE_STYLE_NONE);
+                                  input_ime::UnderlineStyle::kNone);
       InputMethodEngine::SegmentInfo segment_info;
       segment_info.start = segments_arg.start;
       segment_info.end = segments_arg.end;
-      if (segments_arg.style == input_ime::UNDERLINE_STYLE_UNDERLINE) {
+      if (segments_arg.style == input_ime::UnderlineStyle::kUnderline) {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_UNDERLINE;
       } else if (segments_arg.style ==
-                 input_ime::UNDERLINE_STYLE_DOUBLEUNDERLINE) {
+                 input_ime::UnderlineStyle::kDoubleUnderline) {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_DOUBLE_UNDERLINE;
       } else {
         segment_info.style = InputMethodEngine::SEGMENT_STYLE_NO_UNDERLINE;

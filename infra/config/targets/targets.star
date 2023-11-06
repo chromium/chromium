@@ -334,7 +334,7 @@ targets.console_test_launcher(
     label = "//chromecast/media/cma/backend:cast_audio_backend_unittests",
 )
 
-targets.junit_test(
+targets.generated_script(
     name = "cast_base_junit_tests",
     label = "//chromecast/base:cast_base_junit_tests",
 )
@@ -384,7 +384,7 @@ targets.console_test_launcher(
     label = "//chromecast:cast_shell_browsertests",
 )
 
-targets.junit_test(
+targets.generated_script(
     name = "cast_shell_junit_tests",
     label = "//chromecast/browser/android:cast_shell_junit_tests",
 )
@@ -827,11 +827,6 @@ targets.console_test_launcher(
     label = "//components/cronet/android:cronet_smoketests_platform_only_instrumentation_apk",
 )
 
-targets.generated_script(
-    name = "cronet_test",
-    label = "//components/cronet/ios/test:cronet_test",
-)
-
 targets.console_test_launcher(
     name = "cronet_test_instrumentation_apk",
     label = "//components/cronet/android:cronet_test_instrumentation_apk",
@@ -1252,8 +1247,8 @@ targets.generated_script(
 )
 
 targets.windowed_test_launcher(
-    name = "lacros_chrome_browsertests_run_in_series",
-    label = "//chrome/test:lacros_chrome_browsertests_run_in_series",
+    name = "lacros_chrome_browsertests",
+    label = "//chrome/test:lacros_chrome_browsertests",
     args = [
         "--test-launcher-jobs=1",
     ],
@@ -1800,11 +1795,6 @@ targets.console_test_launcher(
 targets.generated_script(
     name = "services_junit_tests",
     label = "//services:services_junit_tests",
-)
-
-targets.console_test_launcher(
-    name = "service_manager_unittests",
-    label = "//services/service_manager/tests:service_manager_unittests",
 )
 
 targets.windowed_test_launcher(

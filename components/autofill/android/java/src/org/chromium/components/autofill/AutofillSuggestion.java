@@ -42,41 +42,43 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final Drawable mIconDrawable;
 
     /**
-     * Constructs a Autofill suggestion container.
+     * Constructs a Autofill suggestion container. Use the {@link AutofillSuggestion.Builder}
+     * instead.
      *
      * @param label The main label of the Autofill suggestion.
      * @param sublabel The describing sublabel of the Autofill suggestion.
      * @param itemTag The tag for the autofill suggestion. For keyboard accessory, this would be
-     *         displayed as an IPH bubble. For the dropdown, this is shown below the secondary
-     *         text.For example: For credit cards with offers, the item tag is set to indicate that
-     *         the card has some cashback offer associated with it.
-     * @param iconId The resource ID for the icon associated with the suggestion, or
-     *               {@code DropdownItem.NO_ICON} for no icon.
+     *     displayed as an IPH bubble. For the dropdown, this is shown below the secondary text.For
+     *     example: For credit cards with offers, the item tag is set to indicate that the card has
+     *     some cashback offer associated with it.
+     * @param iconId The resource ID for the icon associated with the suggestion, or {@code
+     *     DropdownItem.NO_ICON} for no icon.
      * @param isIconAtStart {@code true} if {@code iconId} is displayed before {@code label}.
      * @param popupItemId The type of suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
      * @param isMultilineLabel Whether the label is displayed over multiple lines.
      * @param isBoldLabel Whether the label is displayed in {@code Typeface.BOLD}.
      * @param featureForIPH The IPH feature for the autofill suggestion. If present, it'll be
-     *         attempted to be shown in the keyboard accessory.
-     *
-     * Use the {@link AutofillSuggestion.Builder} instead.
+     *     attempted to be shown in the keyboard accessory.
+     * @param customIconUrl The {@link GURL} for the custom icon, if any.
+     * @param iconDrawable The {@link Drawable} for an icon, if any.
      */
-    @Deprecated
-    public AutofillSuggestion(String label, String sublabel, @Nullable String itemTag, int iconId,
-            boolean isIconAtStart, @PopupItemId int popupItemId, boolean isDeletable,
-            boolean isMultilineLabel, boolean isBoldLabel, @Nullable String featureForIPH) {
-        this(label, /* secondaryLabel= */ null, sublabel, /* secondarySublabel= */ null, itemTag,
-                iconId, isIconAtStart, popupItemId, isDeletable, isMultilineLabel, isBoldLabel,
-                featureForIPH, /* customIconUrl= */ null, /* iconDrawable= */ null);
-    }
-
     @VisibleForTesting
-    public AutofillSuggestion(String label, @Nullable String secondaryLabel, String sublabel,
-            @Nullable String secondarySublabel, @Nullable String itemTag, int iconId,
-            boolean isIconAtStart, @PopupItemId int popupItemId, boolean isDeletable,
-            boolean isMultilineLabel, boolean isBoldLabel, @Nullable String featureForIPH,
-            @Nullable GURL customIconUrl, @Nullable Drawable iconDrawable) {
+    public AutofillSuggestion(
+            String label,
+            @Nullable String secondaryLabel,
+            String sublabel,
+            @Nullable String secondarySublabel,
+            @Nullable String itemTag,
+            int iconId,
+            boolean isIconAtStart,
+            @PopupItemId int popupItemId,
+            boolean isDeletable,
+            boolean isMultilineLabel,
+            boolean isBoldLabel,
+            @Nullable String featureForIPH,
+            @Nullable GURL customIconUrl,
+            @Nullable Drawable iconDrawable) {
         mLabel = label;
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;

@@ -1,0 +1,6 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++ProgressBar textSize:16.00 style:0 bundle:[aria-valuemax="37", aria-valuemin="1", aria-valuenow="3", display="block", htmlTag="div", role="progressbar"]
+++ProgressBar text:"three" textSize:16.00 style:0 bundle:[aria-valuemax="96", aria-valuemin="1", aria-valuenow="3", aria-valuetext="three", display="block", htmlTag="div", role="progressbar"]
+++ProgressBar textSize:16.00 style:0 bundle:[aria-valuemax="10", aria-valuemin="0", display="block", htmlTag="div", role="progressbar"]
+++ProgressBar textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="progressbar"]
+++ProgressBar text:"Test label" textSize:16.00 style:0 bundle:[aria-label="Test label", aria-valuemax="100", aria-valuemin="0", display="block", htmlTag="div", role="progressbar"]

@@ -116,12 +116,6 @@ BASE_FEATURE(kAutofillEnableNewSaveCardBubbleUi,
              "AutofillEnableNewSaveCardBubbleUi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, a notification will be displayed on page navigation if the
-// domain has an eligible merchant promo code offer or reward.
-BASE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes,
-             "AutofillEnableOfferNotificationForPromoCodes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 BASE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory,
@@ -141,7 +135,11 @@ BASE_FEATURE(kAutofillEnablePaymentsAndroidBottomSheet,
 // authentication.
 BASE_FEATURE(kAutofillEnablePaymentsMandatoryReauth,
              "AutofillEnablePaymentsMandatoryReauth",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 // When enabled, some extra metrics logging for Autofill Downstream will start.
 BASE_FEATURE(kAutofillEnableRemadeDownstreamMetrics,
@@ -173,14 +171,6 @@ BASE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment,
 #endif
 );
 
-// When enabled, after a successful authentication to autofill a virtual card,
-// the user will be prompted to opt-in to FIDO if the user is not currently
-// opted-in, and if the user is opted-in already and the virtual card is FIDO
-// eligible the user will be prompted to register the virtual card into FIDO.
-BASE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment,
-             "AutofillEnableVirtualCardFidoEnrollment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, Chrome will show metadata along with other card information
 // when the virtual card is presented to users.
 BASE_FEATURE(kAutofillEnableVirtualCardMetadata,
@@ -211,7 +201,7 @@ BASE_FEATURE(kAutofillSuggestServerCardInsteadOfLocalCard,
 // the legacy Payments Center.
 BASE_FEATURE(kAutofillUpdateChromeSettingsLinkToGPayWeb,
              "AutofillUpdateChromeSettingsLinkToGPayWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
@@ -233,7 +223,7 @@ BASE_FEATURE(kAutofillUpstreamAllowAdditionalEmailDomains,
 // the user's email domain.
 BASE_FEATURE(kAutofillUpstreamAllowAllEmailDomains,
              "AutofillUpstreamAllowAllEmailDomains",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_IOS)
 // When enabled, use two '•' when displaying the last four digits of a credit

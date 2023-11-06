@@ -88,16 +88,6 @@
 {{forward_declaration}}
 {%- endfor %}
 
-{#--- WTF enum hashing #}
-{%- from "enum_macros.tmpl" import enum_hash_blink%}
-{%- if for_blink %}
-{%-   for enum in all_enums %}
-{%-     if not enum|is_native_only_kind %}
-{{enum_hash_blink(enum)}}
-{%-     endif %}
-{%-   endfor %}
-{%- endif %}
-
 {#--- Constants that need headers (enum types) (basic types go in forward.h) #}
 {%- for constant in module.constants %}
 {%-  if constant.kind|is_enum_kind %}

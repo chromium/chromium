@@ -17,9 +17,10 @@ source_set("export") {
   ]
   deps = [
     "//base",
-
-    # TODO(crbug.com/1479425): Remove dependency on core/browser. Instead depend on subdirectories of browser.
-    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/affiliation",
+    "//components/password_manager/core/browser/ui",
+    "//components/password_manager/core/browser:metrics_util",
+    "//components/sync/base:features",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

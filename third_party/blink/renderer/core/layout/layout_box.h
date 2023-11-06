@@ -71,8 +71,6 @@ enum ShouldIncludeScrollbarGutter {
   kIncludeScrollbarGutter
 };
 
-using SnapAreaSet = HeapHashSet<Member<LayoutBox>>;
-
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
   LayoutBoxRareData();
@@ -89,12 +87,6 @@ struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
   bool has_previous_content_box_rect_ : 1;
 
   LayoutUnit override_containing_block_content_logical_width_;
-
-  // For snap area, the owning snap container.
-  Member<LayoutBox> snap_container_;
-  // For snap container, the descendant snap areas that contribute snap
-  // points.
-  SnapAreaSet snap_areas_;
 
   // Used by BoxPaintInvalidator. Stores the previous content rect after the
   // last paint invalidation. It's valid if has_previous_content_box_rect_ is
@@ -227,23 +219,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   LayoutBox* FirstInFlowChildBox() const;
   LayoutBox* LastChildBox() const;
 
-  void SetWidth(LayoutUnit width) {
-    NOT_DESTROYED();
-    if (width == frame_size_.width) {
-      return;
-    }
-    frame_size_.width = width;
-    SizeChanged();
-  }
-  void SetHeight(LayoutUnit height) {
-    NOT_DESTROYED();
-    if (height == frame_size_.height) {
-      return;
-    }
-    frame_size_.height = height;
-    SizeChanged();
-  }
-
   LayoutUnit LogicalLeft() const;
   LayoutUnit LogicalRight() const {
     NOT_DESTROYED();
@@ -270,29 +245,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return FirstLineHeight();
   }
 
-  void SetLogicalWidth(LayoutUnit size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (StyleRef().IsHorizontalWritingMode())
-      SetWidth(size);
-    else
-      SetHeight(size);
-  }
-  void SetLogicalHeight(LayoutUnit size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (StyleRef().IsHorizontalWritingMode())
-      SetHeight(size);
-    else
-      SetWidth(size);
-  }
-
-  // Use PhysicalLocation() instead.
-  LayoutPoint DeprecatedLocation() const {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    return LocationInternal();
-  }
   virtual PhysicalSize Size() const;
 
   void SetLocation(const LayoutPoint& location) {
@@ -307,16 +259,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // The ancestor box that this object's Location and PhysicalLocation are
   // relative to.
   virtual LayoutBox* LocationContainer() const;
-
-  void SetSize(const PhysicalSize& size) {
-    NOT_DESTROYED();
-    DCHECK(!RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled());
-    if (size == frame_size_) {
-      return;
-    }
-    frame_size_ = size;
-    SizeChanged();
-  }
 
   // Note that those functions have their origin at this box's CSS border box.
   // As such their location doesn't account for 'top'/'left'. About its
@@ -661,7 +603,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return MarginBoxOutsets().right;
   }
-  void SetMargin(const PhysicalBoxStrut&);
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
@@ -867,7 +808,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearSpannerPlaceholder();
   LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const final {
     NOT_DESTROYED();
-    return rare_data_ ? rare_data_->spanner_placeholder_ : nullptr;
+    return rare_data_ ? rare_data_->spanner_placeholder_.Get() : nullptr;
   }
 
   bool MapToVisualRectInAncestorSpaceInternal(
@@ -875,7 +816,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       TransformState&,
       VisualRectFlags = kDefaultVisualRectFlags) const override;
 
-  LayoutUnit ContainingBlockLogicalHeightForGetComputedStyle() const;
+  LayoutUnit ContainingBlockLogicalHeightForRelPositioned() const;
 
   LayoutUnit ContainingBlockLogicalWidthForContent() const override;
 
@@ -1023,13 +964,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsFlexItemIncludingNG() const {
     NOT_DESTROYED();
     return !IsInline() && !IsOutOfFlowPositioned() && Parent() &&
-           Parent()->IsFlexibleBoxIncludingNG();
+           Parent()->IsFlexibleBox();
   }
 
   // TODO(1229581): Rename this function.
   bool IsGridItemIncludingNG() const {
     NOT_DESTROYED();
-    return Parent() && Parent()->IsLayoutNGGrid();
+    return Parent() && Parent()->IsLayoutGrid();
   }
 
   bool IsMathItem() const {
@@ -1153,15 +1094,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   ShapeOutsideInfo* GetShapeOutsideInfo() const;
-
-  // For snap areas, returns the snap container that owns us.
-  LayoutBox* SnapContainer() const;
-  void SetSnapContainer(LayoutBox*);
-  // For snap containers, returns all associated snap areas.
-  SnapAreaSet* SnapAreas() const;
-  void ClearSnapAreas();
-  // Moves all snap areas to the new container.
-  void ReassignSnapAreas(LayoutBox& new_container);
 
   // CustomLayoutChild only exists if this LayoutBox is a IsCustomItem (aka. a
   // child of a LayoutCustom). This is created/destroyed when this LayoutBox is
@@ -1471,8 +1403,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                                               const ComputedStyle* old_style);
   void UpdateGridPositionAfterStyleChange(const ComputedStyle*);
   void UpdateScrollSnapMappingAfterStyleChange(const ComputedStyle& old_style);
-  void ClearScrollSnapMapping();
-  void AddScrollSnapMapping();
 
   LayoutBoxRareData& EnsureRareData() {
     NOT_DESTROYED();
@@ -1491,13 +1421,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       TransformState&,
       const LayoutObject& container,
       const LayoutBoxModelObject* ancestor_to_stop_at) const;
-
-  // TODO(crbug.com/1353190): Remove this data member after enabling
-  // LayoutNGNoCopyBack flag.
-  PhysicalBoxStrut margin_box_outsets_;
-
-  void AddSnapArea(LayoutBox&);
-  void RemoveSnapArea(const LayoutBox&);
 
   PhysicalRect DebugRect() const override;
 
@@ -1582,7 +1505,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
  private:
   // The index of the first fragment item associated with this object in
-  // |NGFragmentItems::Items()|. Zero means there are no such item.
+  // |FragmentItems::Items()|. Zero means there are no such item.
   // Valid only when IsInLayoutNGInlineFormattingContext().
   wtf_size_t first_fragment_item_index_ = 0u;
 

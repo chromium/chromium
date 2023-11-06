@@ -255,6 +255,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // enabled.
   virtual bool UserCreatedNetworkConfigurationsAreEphemeral() const = 0;
 
+  // Return true if the following user prefs exist and meet the following
+  // conditions: `arc::prefs::kAlwaysOnVpnPackage` is non-empty,
+  // `arc::prefs::kAlwaysOnVpnLockdown` is true, and `prefs::kVpnConfigAllowed`
+  // is false.
+  virtual bool IsProhibitedFromConfiguringVpn() const = 0;
+
   // Returns the value for the AllowTextMessages policy.
   virtual PolicyTextMessageSuppressionState GetAllowTextMessages() const = 0;
 

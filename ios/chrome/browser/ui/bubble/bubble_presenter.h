@@ -13,6 +13,7 @@
 @class CommandDispatcher;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+class PrefService;
 @class SceneState;
 @protocol TabStripCommands;
 @protocol ToolbarCommands;
@@ -41,6 +42,7 @@ class DeviceSwitcherResultDispatcher;
                     hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
                            loadingNotifier:(UrlLoadingNotifierBrowserAgent*)
                                                urlLoadingNotifier
+                               prefService:(PrefService*)prefService
                                 sceneState:(SceneState*)sceneState
                    tabStripCommandsHandler:
                        (id<TabStripCommands>)tabStripCommandsHandler
@@ -83,6 +85,10 @@ class DeviceSwitcherResultDispatcher;
 // Presents a help bubble to inform the user that they can tap the Lens
 // button in the omnibox keyboard to search with their camera.
 - (void)presentLensKeyboardTipBubble;
+
+// Presents a help bubble to inform the user that their tracked packages will
+// appear in the Magic Stack.
+- (void)presentParcelTrackingTipBubble;
 
 @end
 

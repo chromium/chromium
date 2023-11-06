@@ -37,15 +37,18 @@ import java.util.Arrays;
 
 /**
  * This class controls the interaction of the "edit url" suggestion item with the rest of the
- * suggestions list. This class also serves as a mediator, containing logic that interacts with
- * the rest of Chrome.
+ * suggestions list. This class also serves as a mediator, containing logic that interacts with the
+ * rest of Chrome.
  */
 public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
     private final @NonNull Supplier<ShareDelegate> mShareDelegateSupplier;
     private final @NonNull Supplier<Tab> mTabSupplier;
 
-    public EditUrlSuggestionProcessor(Context context, SuggestionHost suggestionHost,
-            OmniboxImageSupplier imageSupplier, Supplier<Tab> tabSupplier,
+    public EditUrlSuggestionProcessor(
+            Context context,
+            SuggestionHost suggestionHost,
+            OmniboxImageSupplier imageSupplier,
+            Supplier<Tab> tabSupplier,
             Supplier<ShareDelegate> shareDelegateSupplier) {
         super(context, suggestionHost, imageSupplier);
 
@@ -60,7 +63,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (position != 0) return false;
 
         Tab activeTab = mTabSupplier.get();
-        if (activeTab == null || !activeTab.isInitialized() || activeTab.isNativePage()
+        if (activeTab == null
+                || !activeTab.isInitialized()
+                || activeTab.isNativePage()
                 || SadTab.isShowing(activeTab)) {
             return false;
         }
@@ -96,22 +101,29 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         }
 
         model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT, new SuggestionSpannable(title));
-        model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT,
+        model.set(
+                SuggestionViewProperties.TEXT_LINE_2_TEXT,
                 new SuggestionSpannable(suggestion.getDisplayText()));
 
-        setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.forSmallIcon(
-                                                 mContext, R.drawable.ic_share_white_24dp, true),
-                                      OmniboxResourceProvider.getString(
-                                              mContext, R.string.menu_share_page),
-                                      null, this::onShareLink),
-                        new Action(OmniboxDrawableState.forSmallIcon(
-                                           mContext, R.drawable.ic_content_copy_black, true),
+        setActionButtons(
+                model,
+                Arrays.asList(
+                        new Action(
+                                OmniboxDrawableState.forSmallIcon(
+                                        mContext, R.drawable.ic_share_white_24dp, true),
+                                OmniboxResourceProvider.getString(
+                                        mContext, R.string.menu_share_page),
+                                null,
+                                this::onShareLink),
+                        new Action(
+                                OmniboxDrawableState.forSmallIcon(
+                                        mContext, R.drawable.ic_content_copy_black, true),
                                 OmniboxResourceProvider.getString(mContext, R.string.copy_link),
                                 () -> onCopyLink(suggestion)),
                         // TODO(https://crbug.com/1090187): do not re-use bookmark_item_edit here.
-                        new Action(OmniboxDrawableState.forSmallIcon(
-                                           mContext, R.drawable.bookmark_edit_active, true),
+                        new Action(
+                                OmniboxDrawableState.forSmallIcon(
+                                        mContext, R.drawable.bookmark_edit_active, true),
                                 OmniboxResourceProvider.getString(
                                         mContext, R.string.bookmark_item_edit),
                                 () -> onEditLink(suggestion))));
@@ -136,8 +148,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         var webContents = mTabSupplier.get().getWebContents();
         if (webContents != null) {
             // TODO(ender): find out if this is still captured anywhere.
-            new UkmRecorder.Bridge().recordEventWithBooleanMetric(
-                    webContents, "Omnibox.EditUrlSuggestion.Share", "HasOccurred");
+            new UkmRecorder.Bridge()
+                    .recordEventWithBooleanMetric(
+                            webContents, "Omnibox.EditUrlSuggestion.Share", "HasOccurred");
         }
         mSuggestionHost.finishInteraction();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.

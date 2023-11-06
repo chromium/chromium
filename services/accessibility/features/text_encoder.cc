@@ -43,7 +43,7 @@ void TextEncoder::Encode(gin::Arguments* arguments) {
   CHECK(isolate);
   v8::HandleScope handle_scope(isolate);
 
-  std::vector<v8::Local<v8::Value>> args = arguments->GetAll();
+  v8::LocalVector<v8::Value> args = arguments->GetAll();
   CHECK_GT(args.size(), 0u);
   CHECK(args[0]->IsString());
   v8::Local<v8::String> v8_input = args[0].As<v8::String>();

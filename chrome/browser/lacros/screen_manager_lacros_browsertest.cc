@@ -28,8 +28,8 @@
 #include "url/gurl.h"
 
 namespace {
-const char* kLacrosPageTitleFormat = "Title Of Lacros Browser Test %lu";
-const char* kLacrosPageTitleHTMLFormat =
+constexpr char kLacrosPageTitleFormat[] = "Title Of Lacros Browser Test %lu";
+constexpr char kLacrosPageTitleHTMLFormat[] =
     "<html><head><title>%s</title></head>"
     "<body>This page has a title.</body></html>";
 

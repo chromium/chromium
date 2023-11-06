@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <memory>
 #include <set>
 #include <string>
@@ -56,6 +57,7 @@ enum class PasswordAttribute {
 // page. These are sequence containers to reflect their order in the DOM.
 using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
+using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
 struct FormData;
 struct FormDataPredictions;
@@ -115,8 +117,7 @@ class FormStructure {
       const ServerFieldTypeSet& available_field_types,
       bool form_was_autofilled,
       const base::StringPiece& login_form_signature,
-      bool observed_submission,
-      bool is_raw_metadata_uploading_enabled) const;
+      bool observed_submission) const;
 
   // Encodes the proto |query| request for the list of |forms| and their fields
   // that are valid. The queried FormSignatures and FieldSignatures are stored
@@ -479,6 +480,23 @@ class FormStructure {
         kRequiredFieldsForFormsWithOnlyPasswordFields;
   };
 
+  // Builds a map from a pair of (form_signature, field_signature) to all the
+  // server FieldSuggestion's retrieved from `response`. Also includes the
+  // manual overrides provided from the feature `AutofillOverridePredictions`.
+  static std::map<std::pair<FormSignature, FieldSignature>,
+                  std::deque<FieldSuggestion>>
+  GetSuggestionsMapFromResponse(
+      const AutofillQueryResponse& response,
+      const std::vector<FormSignature>& queried_form_signatures);
+
+  // Given `form` and `field`, returns the appropriate FieldSuggestion stored
+  // for that field in `fields_suggestions`.
+  static std::optional<FieldSuggestion> GetFieldSuggestion(
+      const FormStructure& form,
+      const AutofillField& field,
+      std::map<std::pair<FormSignature, FieldSignature>,
+               std::deque<FieldSuggestion>>& fields_suggestions);
+
   // Parses the field types from the server query response. |forms| must be the
   // same as the one passed to EncodeQueryRequest when constructing the query.
   // |form_interactions_ukm_logger| is used to provide logs to UKM and can be
@@ -507,7 +525,6 @@ class FormStructure {
   // from the given renderer form are encoded. See EncodeUploadRequest() for
   // details.
   void EncodeFormFieldsForUpload(
-      bool is_raw_metadata_uploading_enabled,
       absl::optional<FormGlobalId> filter_renderer_form_id,
       AutofillUploadContents* upload) const;
 

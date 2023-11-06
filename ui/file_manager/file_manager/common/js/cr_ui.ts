@@ -4,6 +4,13 @@
 
 import {dispatchPropertyChange} from 'chrome://resources/ash/common/cr_deprecated.js';
 
+
+export type PropertyChangeEvent<T> = Event&{
+  propertyName: string,
+  newValue?: T,
+  oldValue?: T,
+};
+
 /**
  * Setter used by the deprecated cr.ui elements.
  * It sets the value of type T in the private `${name}_`.
@@ -21,7 +28,7 @@ export function jsSetter<T>(self: any, name: string, value: T) {
 }
 
 /** Converts camelCase to DOM style casing: myName => my-name. */
-function convertToKebabCase(jsName: string): string {
+export function convertToKebabCase(jsName: string): string {
   return jsName.replace(/([A-Z])/g, '-$1').toLowerCase();
 }
 

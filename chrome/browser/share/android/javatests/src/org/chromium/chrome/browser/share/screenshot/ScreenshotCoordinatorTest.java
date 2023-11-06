@@ -39,19 +39,14 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 
-// clang-format off
-/**
- * Tests for {@link ScreenshotCoordinator}.
- */
+/** Tests for {@link ScreenshotCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScreenshotCoordinatorTest {
     @Rule
     public ActivityScenarioRule<FragmentActivity> mActivityScenarioRule =
-        new ActivityScenarioRule<>(FragmentActivity.class);
+            new ActivityScenarioRule<>(FragmentActivity.class);
 
-    // clang-format on
-    @Mock
-    private ChromeOptionShareCallback mChromeOptionShareCallback;
+    @Mock private ChromeOptionShareCallback mChromeOptionShareCallback;
 
     // FakeEditorScreenshotTask abstracts taking a screenshot; it always succeeds and
     // returns mBitmap from the test class.
@@ -75,20 +70,15 @@ public class ScreenshotCoordinatorTest {
         }
     }
 
-    @Mock
-    private ImageEditorDialogCoordinator mImageEditorDialogCoordinatorMock;
+    @Mock private ImageEditorDialogCoordinator mImageEditorDialogCoordinatorMock;
 
-    @Mock
-    private ImageEditorModuleProvider mImageEditorModuleProviderMock;
+    @Mock private ImageEditorModuleProvider mImageEditorModuleProviderMock;
 
-    @Mock
-    private ScreenshotShareSheetDialog mScreenshotShareSheetDialogMock;
+    @Mock private ScreenshotShareSheetDialog mScreenshotShareSheetDialogMock;
 
-    @Mock
-    private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BottomSheetController mBottomSheetControllerMock;
 
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private FragmentActivity mActivity;
 
@@ -109,23 +99,33 @@ public class ScreenshotCoordinatorTest {
                 .thenReturn(mImageEditorDialogCoordinatorMock);
         doNothing()
                 .when(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid,
-                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
+                .launchEditor(
+                        mActivity,
+                        mBitmap,
+                        mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                        mChromeOptionShareCallback);
 
         mBitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888);
 
         // Instantiate the object under test.
-        mScreenshotCoordinator = new ScreenshotCoordinator(mActivity, mWindowAndroid,
-                JUnitTestGURLs.EXAMPLE_URL.getSpec(), new FakeEditorScreenshotTask(),
-                mScreenshotShareSheetDialogMock, mChromeOptionShareCallback,
-                mBottomSheetControllerMock, mImageEditorModuleProviderMock);
+        mScreenshotCoordinator =
+                new ScreenshotCoordinator(
+                        mActivity,
+                        mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                        new FakeEditorScreenshotTask(),
+                        mScreenshotShareSheetDialogMock,
+                        mChromeOptionShareCallback,
+                        mBottomSheetControllerMock,
+                        mImageEditorModuleProviderMock);
     }
 
     @Test
     public void editorLaunchesWhenModuleInstalled() {
         when(mImageEditorModuleProviderMock.isModuleInstalled()).thenReturn(true);
         // Simulate a successful install.
-        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/*success=*/true)))
+        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/* success= */ true)))
                 .when(mImageEditorModuleProviderMock)
                 .maybeInstallModule(any());
 
@@ -135,15 +135,22 @@ public class ScreenshotCoordinatorTest {
 
         // Ensure the editor launches.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid,
-                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
+                .launchEditor(
+                        mActivity,
+                        mBitmap,
+                        mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                        mChromeOptionShareCallback);
     }
 
     @Test
     public void retryInstallSuccess() {
         // First request does not have the module available, and install fails.
         when(mImageEditorModuleProviderMock.isModuleInstalled()).thenReturn(false);
-        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/*success=*/false)))
+        doAnswer(
+                        answerVoid(
+                                (InstallListener listener) ->
+                                        listener.onComplete(/* success= */ false)))
                 .when(mImageEditorModuleProviderMock)
                 .maybeInstallModule(any());
 
@@ -159,22 +166,29 @@ public class ScreenshotCoordinatorTest {
 
         // A second install is attempted and succeeds.
         when(mImageEditorModuleProviderMock.isModuleInstalled()).thenReturn(true);
-        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/*success=*/true)))
+        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/* success= */ true)))
                 .when(mImageEditorModuleProviderMock)
                 .maybeInstallModule(any());
 
         mScreenshotCoordinator.captureScreenshot();
         // The editor should launch without requiring a discrete user action.
         verify(mImageEditorDialogCoordinatorMock)
-                .launchEditor(mActivity, mBitmap, mWindowAndroid,
-                        JUnitTestGURLs.EXAMPLE_URL.getSpec(), mChromeOptionShareCallback);
+                .launchEditor(
+                        mActivity,
+                        mBitmap,
+                        mWindowAndroid,
+                        JUnitTestGURLs.EXAMPLE_URL.getSpec(),
+                        mChromeOptionShareCallback);
     }
 
     @Test
     public void maxInstallTriesExceeded() {
         // Attempt several installs which persistently fail, up to the limit.
         when(mImageEditorModuleProviderMock.isModuleInstalled()).thenReturn(false);
-        doAnswer(answerVoid((InstallListener listener) -> listener.onComplete(/*success=*/false)))
+        doAnswer(
+                        answerVoid(
+                                (InstallListener listener) ->
+                                        listener.onComplete(/* success= */ false)))
                 .when(mImageEditorModuleProviderMock)
                 .maybeInstallModule(any());
         for (int attempt = 0; attempt < ScreenshotCoordinator.MAX_INSTALL_ATTEMPTS; attempt++) {
@@ -197,8 +211,9 @@ public class ScreenshotCoordinatorTest {
         verify(mImageEditorModuleProviderMock, times(ScreenshotCoordinator.MAX_INSTALL_ATTEMPTS))
                 .maybeInstallModule(any());
         // The share sheet will be loaded directly in all cases plus the failure case.
-        verify(mScreenshotShareSheetDialogMock,
-                times(ScreenshotCoordinator.MAX_INSTALL_ATTEMPTS + 1))
+        verify(
+                        mScreenshotShareSheetDialogMock,
+                        times(ScreenshotCoordinator.MAX_INSTALL_ATTEMPTS + 1))
                 .show(any(FragmentManager.class), any());
         // The editor should not attempt to be loaded.
         verify(mImageEditorDialogCoordinatorMock, never())

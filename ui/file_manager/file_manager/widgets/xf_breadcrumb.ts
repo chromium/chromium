@@ -8,7 +8,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 import {getCrActionMenuTop, mouseEnterMaybeShowTooltip} from '../common/js/dom_utils.js';
-import {str} from '../common/js/util.js';
+import {str} from '../common/js/translations.js';
 
 import {css, customElement, html, property, type PropertyValues, query, state, XfBase} from './xf_base.js';
 

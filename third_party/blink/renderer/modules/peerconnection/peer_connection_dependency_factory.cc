@@ -70,13 +70,12 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/webrtc/api/call/call_factory_interface.h"
+#include "third_party/webrtc/api/enable_media.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
 #include "third_party/webrtc/api/video_track_source_proxy_factory.h"
 #include "third_party/webrtc/media/engine/fake_video_codec_factory.h"
 #include "third_party/webrtc/media/engine/multiplex_codec_factory.h"
-#include "third_party/webrtc/media/engine/webrtc_media_engine.h"
 #include "third_party/webrtc/modules/video_coding/codecs/h264/include/h264.h"
 #include "third_party/webrtc/rtc_base/openssl_stream_adapter.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -673,20 +672,17 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
     pcf_deps.metronome =
         StaticDeps().metronome_source().CreateWebRtcMetronome();
   }
-  pcf_deps.call_factory = webrtc::CreateCallFactory();
   pcf_deps.event_log_factory = std::make_unique<webrtc::RtcEventLogFactory>(
       pcf_deps.task_queue_factory.get());
-  cricket::MediaEngineDependencies media_deps;
-  media_deps.task_queue_factory = pcf_deps.task_queue_factory.get();
-  media_deps.adm = audio_device_.get();
-  media_deps.audio_encoder_factory = blink::CreateWebrtcAudioEncoderFactory();
-  media_deps.audio_decoder_factory = blink::CreateWebrtcAudioDecoderFactory();
-  media_deps.video_encoder_factory = std::move(webrtc_encoder_factory);
-  media_deps.video_decoder_factory = std::move(webrtc_decoder_factory);
+  pcf_deps.adm = audio_device_.get();
+  pcf_deps.audio_encoder_factory = blink::CreateWebrtcAudioEncoderFactory();
+  pcf_deps.audio_decoder_factory = blink::CreateWebrtcAudioDecoderFactory();
+  pcf_deps.video_encoder_factory = std::move(webrtc_encoder_factory);
+  pcf_deps.video_decoder_factory = std::move(webrtc_decoder_factory);
   // Audio Processing Module (APM) instances are owned and handled by the Blink
   // media stream module.
-  DCHECK_EQ(media_deps.audio_processing.get(), nullptr);
-  pcf_deps.media_engine = cricket::CreateMediaEngine(std::move(media_deps));
+  DCHECK_EQ(pcf_deps.audio_processing.get(), nullptr);
+  webrtc::EnableMedia(pcf_deps);
   pc_factory_ = webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
   CHECK(pc_factory_.get());
 

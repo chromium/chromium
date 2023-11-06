@@ -27,7 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -369,13 +369,13 @@ class ChannelLinux::SharedBuffer {
     return base::WrapUnique<SharedBuffer>(new SharedBuffer(ptr, size));
   }
 
-  uint8_t* usable_region_ptr() const { return base_ptr_ + kReservedSpace; }
+  uint8_t* usable_region_ptr() { return base_ptr_ + kReservedSpace; }
   size_t usable_len() const { return len_ - kReservedSpace; }
   bool is_valid() const { return base_ptr_ != nullptr && len_ > 0; }
 
   void reset() {
     if (is_valid()) {
-      if (munmap(base_ptr_.ExtractAsDangling(), len_) < 0) {
+      if (munmap(base_ptr_, len_) < 0) {
         PLOG(ERROR) << "Unable to unmap shared buffer";
         return;
       }
@@ -581,27 +581,30 @@ class ChannelLinux::SharedBuffer {
 
   std::atomic_flag& write_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_flag;
   }
 
   std::atomic_flag& read_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_flag;
   }
 
   std::atomic_uint32_t& read_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_pos;
   }
 
   std::atomic_uint32_t& write_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_pos;
   }
 
   SharedBuffer(uint8_t* ptr, size_t len) : base_ptr_(ptr), len_(len) {}
 
-  raw_ptr<uint8_t, AllowPtrArithmetic> base_ptr_ = nullptr;
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
+  RAW_PTR_EXCLUSION uint8_t* base_ptr_ = nullptr;
   size_t len_ = 0;
 };
 

@@ -98,17 +98,13 @@ public class ContentSettingsResources {
                     return new ResourceItem(
                             0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
                 }
-                return new ResourceItem(R.drawable.web_asset,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_ads_label
-                                : R.string.ads_permission_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_allowed_sub_label
-                                : 0,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.site_settings_page_intrusive_blocked_sub_label
-                                : R.string.website_settings_category_ads_blocked);
+                return new ResourceItem(
+                        R.drawable.web_asset,
+                        R.string.site_settings_page_intrusive_ads_label,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.site_settings_page_intrusive_allowed_sub_label,
+                        R.string.site_settings_page_intrusive_blocked_sub_label);
 
             case ContentSettingsType.ANTI_ABUSE:
                 return new ResourceItem(R.drawable.ic_account_attention,
@@ -169,18 +165,13 @@ public class ContentSettingsResources {
                     return new ResourceItem(
                             0, 0, ContentSettingValues.ALLOW, ContentSettingValues.BLOCK, 0, 0);
                 }
-                return new ResourceItem(delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.drawable.gm_database_24
-                                : R.drawable.permission_cookie,
-                        delegate.isPrivacySandboxSettings4Enabled() ? R.string.site_data_page_title
-                                                                    : R.string.cookies_title,
-                        ContentSettingValues.ALLOW, ContentSettingValues.BLOCK,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_site_data_page_toggle_sub_label_allow
-                                : R.string.website_settings_category_cookie_allowed,
-                        delegate.isPrivacySandboxSettings4Enabled()
-                                ? R.string.website_settings_site_data_page_toggle_sub_label_block
-                                : 0);
+                return new ResourceItem(
+                        R.drawable.gm_database_24,
+                        R.string.site_data_page_title,
+                        ContentSettingValues.ALLOW,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_site_data_page_toggle_sub_label_allow,
+                        R.string.website_settings_site_data_page_toggle_sub_label_block);
 
             case ContentSettingsType.REQUEST_DESKTOP_SITE:
                 return new ResourceItem(R.drawable.ic_desktop_windows, R.string.desktop_site_title,
@@ -225,6 +216,15 @@ public class ContentSettingsResources {
                 return new ResourceItem(R.drawable.gm_filled_mic_24,
                         R.string.website_settings_use_mic, ContentSettingValues.ASK,
                         ContentSettingValues.BLOCK, R.string.website_settings_category_mic_ask, 0);
+
+            case ContentSettingsType.MIDI:
+                return new ResourceItem(
+                        R.drawable.gm_filled_piano_24,
+                        R.string.midi_permission_title,
+                        null,
+                        null,
+                        0,
+                        0);
 
             case ContentSettingsType.MIDI_SYSEX:
                 return new ResourceItem(R.drawable.gm_filled_piano_24,
@@ -288,9 +288,13 @@ public class ContentSettingsResources {
                         R.string.website_settings_category_sound_blocked);
 
             case ContentSettingsType.STORAGE_ACCESS:
-                return new ResourceItem(R.drawable.ic_storage_access_24,
-                        R.string.storage_access_permission_title, ContentSettingValues.ASK,
-                        ContentSettingValues.BLOCK, 0, 0);
+                return new ResourceItem(
+                        R.drawable.ic_storage_access_24,
+                        R.string.storage_access_permission_title,
+                        ContentSettingValues.ASK,
+                        ContentSettingValues.BLOCK,
+                        R.string.website_settings_category_storage_access_allowed,
+                        R.string.website_settings_category_storage_access_blocked);
 
             case ContentSettingsType.USB_CHOOSER_DATA:
                 return new ResourceItem(R.drawable.gm_filled_usb_24, 0, ContentSettingValues.ASK,
@@ -598,6 +602,13 @@ public class ContentSettingsResources {
         }
         assert false;
         return 0;
+    }
+
+    /** Returns the summary for the Tracking Protection setting to be displayed in site settings. */
+    public static int getTrackingProtectionListSummary(boolean blockAll) {
+        return blockAll
+                ? R.string.third_party_cookies_link_row_sub_label_disabled
+                : R.string.third_party_cookies_link_row_sub_label_limited;
     }
 
     /**

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
-#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -1677,7 +1676,42 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
         }
         parts.push_back(ident.Value().ToAtomicString());
       } while (!block.AtEnd());
-      selector.SetPartNames(std::make_unique<Vector<AtomicString>>(parts));
+      selector.SetIdentList(std::make_unique<Vector<AtomicString>>(parts));
+      output_.push_back(std::move(selector));
+      return true;
+    }
+    case CSSSelector::kPseudoActiveViewTransition: {
+      if (!RuntimeEnabledFeatures::ViewTransitionTypesEnabled()) {
+        return false;
+      }
+
+      Vector<AtomicString> types;
+      for (;;) {
+        const CSSParserToken& ident = block.ConsumeIncludingWhitespace();
+        // If the only ident is '*' then break out of the loop, and set empty
+        // ident list.
+        if (ident.GetType() == kDelimiterToken && ident.Delimiter() == '*') {
+          if (types.empty() && block.AtEnd()) {
+            break;
+          }
+          return false;
+        }
+
+        if (ident.GetType() != kIdentToken) {
+          return false;
+        }
+        types.push_back(ident.Value().ToAtomicString());
+
+        if (block.AtEnd()) {
+          break;
+        }
+
+        const CSSParserToken& comma = block.ConsumeIncludingWhitespace();
+        if (comma.GetType() != kCommaToken || block.AtEnd()) {
+          return false;
+        }
+      }
+      selector.SetIdentList(std::make_unique<Vector<AtomicString>>(types));
       output_.push_back(std::move(selector));
       return true;
     }
@@ -1775,43 +1809,6 @@ bool CSSSelectorParser::ConsumePseudo(CSSParserTokenRange& range) {
         return false;
       }
       selector.SetArgument(ident.Value().ToAtomicString());
-      output_.push_back(std::move(selector));
-      return true;
-    }
-    case CSSSelector::kPseudoToggle: {
-      using State = ToggleRoot::State;
-
-      const CSSParserToken& name = block.ConsumeIncludingWhitespace();
-      if (name.GetType() != kIdentToken ||
-          !css_parsing_utils::IsCustomIdent(name.Id())) {
-        return false;
-      }
-      std::unique_ptr<State> value;
-      if (!block.AtEnd()) {
-        const CSSParserToken& value_token = block.ConsumeIncludingWhitespace();
-        switch (value_token.GetType()) {
-          case kIdentToken:
-            if (!css_parsing_utils::IsCustomIdent(value_token.Id())) {
-              return false;
-            }
-            value =
-                std::make_unique<State>(value_token.Value().ToAtomicString());
-            break;
-          case kNumberToken:
-            if (value_token.GetNumericValueType() != kIntegerValueType ||
-                value_token.NumericValue() < 0) {
-              return false;
-            }
-            value = std::make_unique<State>(value_token.NumericValue());
-            break;
-          default:
-            return false;
-        }
-      }
-      if (!block.AtEnd()) {
-        return false;
-      }
-      selector.SetToggle(name.Value().ToAtomicString(), std::move(value));
       output_.push_back(std::move(selector));
       return true;
     }

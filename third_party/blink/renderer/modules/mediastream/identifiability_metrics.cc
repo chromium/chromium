@@ -226,6 +226,7 @@ void Visit(IdentifiableTokenBuilder& builder,
   Visit(builder, set.getZoomOr(nullptr));
   Visit(builder, set.getTorchOr(nullptr));
   Visit(builder, set.getBackgroundBlurOr(nullptr));
+  Visit(builder, set.getFaceFramingOr(nullptr));
 }
 
 void Visit(IdentifiableTokenBuilder& builder,

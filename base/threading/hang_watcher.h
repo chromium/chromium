@@ -499,7 +499,7 @@ class BASE_EXPORT HangWatchDeadline {
   using TimeTicksInternalRepresentation =
       std::invoke_result<decltype(&TimeTicks::ToInternalValue),
                          TimeTicks>::type;
-  static_assert(std::is_same<TimeTicksInternalRepresentation, int64_t>::value,
+  static_assert(std::is_same_v<TimeTicksInternalRepresentation, int64_t>,
                 "Bit manipulations made by HangWatchDeadline need to be"
                 "adapted if internal representation of TimeTicks changes.");
 
@@ -535,7 +535,7 @@ class BASE_EXPORT HangWatchDeadline {
   // necessary to run the proper checks to insure correctness of the conversion
   // that has to go through int_64t. (See DeadlineFromBits()).
   using BitsType = uint64_t;
-  static_assert(std::is_same<std::underlying_type<Flag>::type, BitsType>::value,
+  static_assert(std::is_same_v<std::underlying_type<Flag>::type, BitsType>,
                 "Flag should have the same underlying type as bits_ to "
                 "simplify thinking about bit operations");
 

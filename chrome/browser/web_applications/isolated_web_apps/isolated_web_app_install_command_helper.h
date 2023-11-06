@@ -39,6 +39,20 @@ class WebAppDataRetriever;
 class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
+// Copies the file being installed to the profile directory.
+// On success returns a new owned location in the callback.
+void CopyLocationToProfileDirectory(
+    const base::FilePath& profile_dir,
+    const IsolatedWebAppLocation& location,
+    base::OnceCallback<
+        void(base::expected<IsolatedWebAppLocation, std::string>)> callback);
+
+// Removes the IWA's randomly named directory in the profile directory.
+// Calls the closure on complete.
+void CleanupLocationIfOwned(const base::FilePath& profile_dir,
+                            const IsolatedWebAppLocation& location,
+                            base::OnceClosure closure);
+
 // This is a helper class that contains methods which are shared between both
 // install and update commands.
 class IsolatedWebAppInstallCommandHelper {

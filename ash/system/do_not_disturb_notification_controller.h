@@ -10,8 +10,7 @@
 
 namespace ash {
 
-// Controller class to manage the "Do not disturb" notification. This class only
-// exists when `IsQsRevampEnabled` is true.
+// Controller class to manage the "Do not disturb" notification.
 class ASH_EXPORT DoNotDisturbNotificationController
     : public message_center::MessageCenterObserver {
  public:

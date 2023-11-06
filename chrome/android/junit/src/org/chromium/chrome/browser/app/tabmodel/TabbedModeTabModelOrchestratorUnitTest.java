@@ -35,20 +35,16 @@ import java.util.List;
 /** Tests for TabbedModeTabModelOrchestrator */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedModeTabModelOrchestratorUnitTest {
-    @Mock
-    private ChromeTabbedActivity mChromeActivity;
-    @Mock
-    private TabCreatorManager mTabCreatorManager;
-    @Mock
-    private ChromeTabCreator mChromeTabCreator;
-    @Mock
-    private NextTabPolicySupplier mNextTabPolicySupplier;
+    @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private ChromeTabCreator mChromeTabCreator;
+    @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
 
     // TabbedModeTabModelOrchestrator running on Android S where tab merging into other instance
     // is not performed.
     private class TabbedModeTabModelOrchestratorApi31 extends TabbedModeTabModelOrchestrator {
         public TabbedModeTabModelOrchestratorApi31() {
-            super(/*tabMergingEnabled=*/false);
+            super(/* tabMergingEnabled= */ false);
         }
 
         @Override
@@ -86,7 +82,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
         assertFalse("Should have a tab state file to merge", tabStatesToMerge.isEmpty());
 
-        MultiWindowTestUtils.createInstance(/*instanceId=*/0, "https://url.com", 1, 57);
+        MultiWindowTestUtils.createInstance(/* instanceId= */ 0, "https://url.com", 1, 57);
         assertEquals(1, MultiWindowUtils.getInstanceCount());
 
         // Once an instance is created, no more merging is allowed.

@@ -44,8 +44,11 @@ class BookmarkManagerViewBinder {
                 PersonalizedSigninPromoView promoView =
                         view.findViewById(R.id.signin_promo_view_container);
                 MarginLayoutParams layoutParams = (MarginLayoutParams) promoView.getLayoutParams();
-                layoutParams.setMargins(layoutParams.leftMargin, topMarginPx,
-                        layoutParams.rightMargin, layoutParams.bottomMargin);
+                layoutParams.setMargins(
+                        layoutParams.leftMargin,
+                        topMarginPx,
+                        layoutParams.rightMargin,
+                        layoutParams.bottomMargin);
                 promoView.setLayoutParams(layoutParams);
             }
         }
@@ -63,8 +66,10 @@ class BookmarkManagerViewBinder {
             title.setText(resources.getText(sectionHeaderData.titleRes));
             final @DimenRes int topPaddingRes = sectionHeaderData.topPaddingRes;
             if (topPaddingRes != Resources.ID_NULL) {
-                title.setPaddingRelative(title.getPaddingStart(),
-                        resources.getDimensionPixelSize(topPaddingRes), title.getPaddingEnd(),
+                title.setPaddingRelative(
+                        title.getPaddingStart(),
+                        resources.getDimensionPixelSize(topPaddingRes),
+                        title.getPaddingEnd(),
                         title.getPaddingBottom());
             }
         }
@@ -89,7 +94,9 @@ class BookmarkManagerViewBinder {
             // BookmarkManagerProperties.IS_FROM_FILTER_VIEW.
             BookmarkRow row = ((BookmarkRow) view);
             BookmarkId id = model.get(BookmarkManagerProperties.BOOKMARK_ID);
-            row.setBookmarkId(id, model.get(BookmarkManagerProperties.LOCATION),
+            row.setBookmarkId(
+                    id,
+                    model.get(BookmarkManagerProperties.LOCATION),
                     model.get(BookmarkManagerProperties.IS_FROM_FILTER_VIEW));
         } else if (key == BookmarkManagerProperties.IS_HIGHLIGHTED) {
             // Also uses key == BookmarkManagerProperties.CLEAR_HIGHLIGHT.
@@ -112,21 +119,23 @@ class BookmarkManagerViewBinder {
         if (key == BookmarkManagerProperties.OPEN_FOLDER) {
             LinearLayout layout = (LinearLayout) view;
             layout.setClickable(true);
-            layout.setOnClickListener((v) -> {
-                model.get(BookmarkManagerProperties.OPEN_FOLDER)
-                        .onResult(BookmarkId.SHOPPING_FOLDER);
-            });
+            layout.setOnClickListener(
+                    (v) -> {
+                        model.get(BookmarkManagerProperties.OPEN_FOLDER)
+                                .onResult(BookmarkId.SHOPPING_FOLDER);
+                    });
         }
     }
 
     @SuppressWarnings("ClickableViewAccessibility")
     static void bindDraggableViewHolder(ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
         BookmarkRow row = (BookmarkRow) viewHolder.itemView;
-        row.setDragHandleOnTouchListener((v, event) -> {
-            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-                itemTouchHelper.startDrag(viewHolder);
-            }
-            return true;
-        });
+        row.setDragHandleOnTouchListener(
+                (v, event) -> {
+                    if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                        itemTouchHelper.startDrag(viewHolder);
+                    }
+                    return true;
+                });
     }
 }

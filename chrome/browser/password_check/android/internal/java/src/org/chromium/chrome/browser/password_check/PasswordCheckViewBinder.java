@@ -43,10 +43,10 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -505,12 +505,24 @@ class PasswordCheckViewBinder {
     private static ListMenu createCredentialMenu(Context context, CompromisedCredential credential,
             PasswordCheckCoordinator.CredentialEventHandler credentialHandler) {
         MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_view_button_caption, 0, 0, true));
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_edit_button_caption, 0, 0, true));
-        menuItems.add(BasicListMenu.buildMenuListItem(
-                R.string.password_check_credential_menu_item_remove_button_caption, 0, 0, true));
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_view_button_caption,
+                        0,
+                        0,
+                        true));
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_edit_button_caption,
+                        0,
+                        0,
+                        true));
+        menuItems.add(
+                BrowserUiListMenuUtils.buildMenuListItem(
+                        R.string.password_check_credential_menu_item_remove_button_caption,
+                        0,
+                        0,
+                        true));
         ListMenu.Delegate delegate = (listModel) -> {
             int textId = listModel.get(ListMenuItemProperties.TITLE_ID);
             if (textId == R.string.password_check_credential_menu_item_view_button_caption) {
@@ -524,7 +536,7 @@ class PasswordCheckViewBinder {
                 assert false : "No action defined for " + context.getString(textId);
             }
         };
-        return new BasicListMenu(context, menuItems, delegate);
+        return BrowserUiListMenuUtils.getBasicListMenu(context, menuItems, delegate);
     }
 
     private static String getString(View view, int resourceId) {

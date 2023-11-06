@@ -884,6 +884,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUSupportedLimits
 [Worker]     attribute @@toStringTag
 [Worker]     getter maxBindGroups
+[Worker]     getter maxBindGroupsPlusVertexBuffers
 [Worker]     getter maxBindingsPerBindGroup
 [Worker]     getter maxBufferSize
 [Worker]     getter maxColorAttachmentBytesPerSample
@@ -1191,6 +1192,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method hardSwish
 [Worker]     method input
 [Worker]     method leakyRelu
+[Worker]     method matmul
 [Worker]     method max
 [Worker]     method maxPool2d
 [Worker]     method min
@@ -1199,8 +1201,16 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method pad
 [Worker]     method pow
 [Worker]     method prelu
+[Worker]     method reduceL1
+[Worker]     method reduceL2
+[Worker]     method reduceLogSum
+[Worker]     method reduceLogSumExp
+[Worker]     method reduceMax
 [Worker]     method reduceMean
+[Worker]     method reduceMin
+[Worker]     method reduceProduct
 [Worker]     method reduceSum
+[Worker]     method reduceSumSquare
 [Worker]     method relu
 [Worker]     method resample2d
 [Worker]     method reshape
@@ -1749,6 +1759,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter referrer
 [Worker]     getter referrerPolicy
 [Worker]     getter signal
+[Worker]     getter targetAddressSpace
 [Worker]     getter url
 [Worker]     method arrayBuffer
 [Worker]     method blob

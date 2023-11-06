@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -34,9 +35,11 @@
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 MATCHER_P(CarryingConfig, config, "") {
   if (arg.is_null()) {
@@ -484,6 +487,125 @@ TEST_P(FirstPartySetsPolicyServicePrefTest,
       "Cookie.FirstPartySets.NumBrowserQueriesBeforeInitialization", 0, 1);
 }
 
+TEST_P(FirstPartySetsPolicyServicePrefTest,
+       ForEachEffectiveSetEntry_FPSDisabledByPref) {
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate_site(GURL("https://associate.test"));
+
+  // Create Global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate.test"}
+  SetGlobalSets(net::GlobalFirstPartySets(
+      kVersion,
+      {{associate_site,
+        {net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated,
+                                 0)}}},
+      {}));
+
+  // Simulate First-Party Sets disabled by the user pref.
+  SetRwsEnabledViaPref(false);
+
+  service()->InitForTesting();
+
+  // Verify that ForEachEffectiveSetEntry returns false when FPS is off.
+  EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        NOTREACHED_NORETURN();
+        return true;
+      }));
+}
+
+TEST_P(FirstPartySetsPolicyServicePrefTest,
+       ForEachEffectiveSetEntry_ReturnsEmptyUntilAllSetsReady) {
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate_site(GURL("https://associate.test"));
+  net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kPrimary, absl::nullopt));
+  net::FirstPartySetEntry associate_entry(
+      net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
+
+  SetRwsEnabledViaPref(true);
+  // Verify that ForEachEffectiveSetEntry returns false if FPS is not
+  // initialized.
+  EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        NOTREACHED_NORETURN();
+        return true;
+      }));
+
+  // Create the global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate.test"}
+  SetGlobalSets(net::GlobalFirstPartySets(
+      kVersion,
+      {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
+      {}));
+
+  // Verify that ForEachEffectiveSetEntry returns false if service is not ready.
+  EXPECT_FALSE(service()->ForEachEffectiveSetEntry(
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        NOTREACHED_NORETURN();
+        return true;
+      }));
+
+  // Simulate the profile set overrides are empty.
+  service()->InitForTesting();
+
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
+      set_entries;
+  EXPECT_TRUE(service()->ForEachEffectiveSetEntry(
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        set_entries.emplace_back(site, entry);
+        return true;
+      }));
+  EXPECT_THAT(set_entries,
+              UnorderedElementsAre(Pair(primary_site, primary_entry),
+                                   Pair(associate_site, associate_entry)));
+}
+
+TEST_P(FirstPartySetsPolicyServicePrefTest,
+       ForEachEffectiveSetEntry_WithNonEmptyConfig) {
+  net::SchemefulSite primary_site(GURL("https://primary.test"));
+  net::SchemefulSite associate_site(GURL("https://associate.test"));
+  net::SchemefulSite service_site(GURL("https://service.test"));
+  net::FirstPartySetEntry primary_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kPrimary, absl::nullopt));
+  net::FirstPartySetEntry associate_entry(
+      net::FirstPartySetEntry(primary_site, net::SiteType::kAssociated, 0));
+  net::FirstPartySetEntry override_entry(net::FirstPartySetEntry(
+      primary_site, net::SiteType::kService, absl::nullopt));
+
+  // Create the global First-Party Sets with the following set:
+  // { primary: "https://primary.test",
+  // associatedSites: ["https://associate.test"}
+  SetGlobalSets(net::GlobalFirstPartySets(
+      kVersion,
+      {{primary_site, {primary_entry}}, {associate_site, {associate_entry}}},
+      {}));
+  // The context config adds a service site to the above set.
+  SetContextConfig(net::FirstPartySetsContextConfig(
+      {{service_site, net::FirstPartySetEntryOverride(override_entry)}}));
+  SetRwsEnabledViaPref(true);
+  service()->InitForTesting();
+
+  std::vector<std::pair<net::SchemefulSite, net::FirstPartySetEntry>>
+      set_entries;
+  EXPECT_TRUE(service()->ForEachEffectiveSetEntry(
+      [&](const net::SchemefulSite& site,
+          const net::FirstPartySetEntry& entry) {
+        set_entries.emplace_back(site, entry);
+        return true;
+      }));
+  EXPECT_THAT(set_entries,
+              UnorderedElementsAre(Pair(primary_site, primary_entry),
+                                   Pair(associate_site, associate_entry),
+                                   Pair(service_site, override_entry)));
+}
+
 class FirstPartySetsPolicyServicePrefObserverTest
     : public FirstPartySetsPolicyServiceTest {
  public:
@@ -586,6 +708,39 @@ TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
   // NotifyReady isn't called since the config isn't ready to be sent.
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(2);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
+
+  env().RunUntilIdle();
+}
+
+TEST_F(FirstPartySetsPolicyServicePrefObserverTest,
+       OnFirstPartySetsEnabledChanged_OTRProfile) {
+  testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
+  EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
+  EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(0);
+  EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
+  mojo::Receiver<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_receiver{&mock_delegate};
+  mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
+      mock_delegate_remote;
+
+  mock_delegate_receiver.Bind(
+      mock_delegate_remote.BindNewPipeAndPassReceiver());
+
+  FirstPartySetsPolicyService* otr_service =
+      FirstPartySetsPolicyServiceFactory::GetForBrowserContext(
+          profile()->GetOffTheRecordProfile(
+              Profile::OTRProfileID::CreateUniqueForTesting(),
+              /*create_if_needed=*/true));
+  otr_service->ResetForTesting();
+
+  otr_service->InitForTesting();
+  otr_service->AddRemoteAccessDelegate(std::move(mock_delegate_remote));
+
+  ASSERT_FALSE(otr_service->is_enabled());
+  env().RunUntilIdle();
+
+  otr_service->OnFirstPartySetsEnabledChanged(true);
+  EXPECT_FALSE(otr_service->is_enabled());
 
   env().RunUntilIdle();
 }

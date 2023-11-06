@@ -1,7 +1,7 @@
 // Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Next MinVersion: 31
+// Next MinVersion: 32
 module arc.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
@@ -203,6 +203,8 @@ enum ArcNetworkError {
 enum AppKillType {
   LMKD_KILL = 0,
   OOM_KILL = 1,
+  [MinVersion=31] GMS_UPDATE_KILL = 2,
+  [MinVersion=31] GMS_START_KILL = 3,
 };
 
 // Describes an app kill from ARC instance.

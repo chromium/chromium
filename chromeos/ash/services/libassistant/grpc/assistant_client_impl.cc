@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
-#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/libassistant/callback_utils.h"
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_v1.h"
 #include "chromeos/ash/services/libassistant/grpc/external_services/action_service.h"
@@ -81,11 +80,9 @@ GetLoggingCallback(const std::string& request_name) {
 
 AssistantClientImpl::AssistantClientImpl(
     std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal,
     const std::string& libassistant_service_address,
     const std::string& assistant_service_address)
-    : AssistantClientV1(std::move(assistant_manager),
-                        assistant_manager_internal),
+    : AssistantClientV1(std::move(assistant_manager)),
       grpc_services_(libassistant_service_address, assistant_service_address),
       libassistant_client_(grpc_services_.GrpcLibassistantClient()) {}
 
@@ -433,21 +430,12 @@ void AssistantClientImpl::AddAlarmTimerEventObserver(
 
 // static
 std::unique_ptr<AssistantClient> AssistantClient::Create(
-    std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  if (assistant::features::IsLibAssistantV2Enabled()) {
-    const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
-    // Note that we should *not* depend on |assistant_manager_internal| for V2,
-    // so |assistant_manager_internal| will be nullptr after the migration has
-    // done.
-    return std::make_unique<AssistantClientImpl>(
-        std::move(assistant_manager), assistant_manager_internal,
-        chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device),
-        chromeos::assistant::GetAssistantServiceAddress(is_chromeos_device));
-  }
-
-  return std::make_unique<AssistantClientV1>(std::move(assistant_manager),
-                                             assistant_manager_internal);
+    std::unique_ptr<assistant_client::AssistantManager> assistant_manager) {
+  const bool is_chromeos_device = base::SysInfo::IsRunningOnChromeOS();
+  return std::make_unique<AssistantClientImpl>(
+      std::move(assistant_manager),
+      chromeos::assistant::GetLibassistantServiceAddress(is_chromeos_device),
+      chromeos::assistant::GetAssistantServiceAddress(is_chromeos_device));
 }
 
 }  // namespace ash::libassistant

@@ -184,7 +184,7 @@ GetNearbyShareTestEncryptedMetadataKey() {
 
 base::Time GetNearbyShareTestNotBefore() {
   static const base::Time not_before =
-      base::Time::FromJavaTime(kTestNotBeforeMillis);
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestNotBeforeMillis);
   return not_before;
 }
 
@@ -260,11 +260,13 @@ nearbyshare::proto::PublicCertificate GetNearbyShareTestPublicCertificate(
   cert.set_public_key(std::string(GetNearbyShareTestP256PublicKey().begin(),
                                   GetNearbyShareTestP256PublicKey().end()));
   cert.mutable_start_time()->set_seconds(
-      (not_before - GetNearbyShareTestValidityOffset()).ToJavaTime() / 1000);
+      (not_before - GetNearbyShareTestValidityOffset())
+          .InMillisecondsSinceUnixEpoch() /
+      1000);
   cert.mutable_end_time()->set_seconds((not_before +
                                         kNearbyShareCertificateValidityPeriod +
                                         GetNearbyShareTestValidityOffset())
-                                           .ToJavaTime() /
+                                           .InMillisecondsSinceUnixEpoch() /
                                        1000);
   cert.set_for_selected_contacts(
       visibility == nearby_share::mojom::Visibility::kSelectedContacts);

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL importScripts() supports redirects promise_test: Unhandled rejection with value: object "TypeError: Failed to register a ServiceWorker: ServiceWorker script evaluation failed"
-FAIL importScripts() supports redirects and can be updated promise_test: Unhandled rejection with value: object "TypeError: Failed to register a ServiceWorker: ServiceWorker script evaluation failed"
-Harness: the test ran to completion.
-

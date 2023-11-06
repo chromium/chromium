@@ -31,4 +31,5 @@ struct WorkletGlobalScopeCreationParams {
   array<OriginTrialFeature> origin_trial_features;
   mojo_base.mojom.UnguessableToken devtools_token;
   pending_remote<WorkletDevToolsHost> devtools_host;
+  bool wait_for_debugger;
 };

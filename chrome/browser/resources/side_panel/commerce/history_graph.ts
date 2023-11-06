@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/d3/d3.min.js';
 
 import {PricePoint} from '//shopping-insights-side-panel.top-chrome/shared/shopping_list.mojom-webui.js';
@@ -13,15 +14,11 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './history_graph.html.js';
 
 const LINE_AREA_HEIGHT_PX = 92;
-const GRAPH_DATE_TOP_MARGIN_PX = 8;
-const GRAPH_PRICE_RIGHT_MARGIN_PX = 4;
 const GRAPH_BUBBLE_BOTTOM_MARGIN_PX = 8;
 const MIN_MONTH_LABEL_WIDTH_PX = 20;
 const LABEL_FONT_WEIGHT = '400';
 const LABEL_FONT_WEIGHT_BOLD = '700';
 const CIRCLE_RADIUS_PX = 4;
-const BUBBLE_PADDING_PX = 4;
-const BUBBLE_CORNER_RADIUS_PX = 3;
 const TICK_COUNT_Y = 4;
 
 enum CssClass {
@@ -65,9 +62,21 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
   private points: Array<{date: Date, price: number}>;
   private isGraphInteracted_: boolean = false;
   private currentPricePointIndex_?: number;
+  private dateTopMarginPx_ = 8;
+  private priceRightMarginPx_ = 4;
+  private bubbleHorizontalPaddingPx_ = 4;
+  private bubbleVerticalPaddingPx_ = 4;
+  private bubbleCornerRadiusPx_ = 3;
 
   override connectedCallback() {
     super.connectedCallback();
+
+    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
+      this.dateTopMarginPx_ = 12;
+      this.priceRightMarginPx_ = 8;
+      this.bubbleHorizontalPaddingPx_ = 6;
+      this.bubbleVerticalPaddingPx_ = 2;
+    }
 
     this.points = this.data.map(
         d => ({date: this.stringToDate_(d.date), price: d.price}));
@@ -108,12 +117,12 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     const [maxLabelWidth, labelHeight] =
         this.getLabelSize_(formattedTicks[formattedTicks.length - 1]);
 
-    const graphMarginTopPx =
-        GRAPH_BUBBLE_BOTTOM_MARGIN_PX + 2 * BUBBLE_PADDING_PX + tooltipHeight;
-    const graphMarginBottomPx = GRAPH_DATE_TOP_MARGIN_PX + labelHeight;
+    const graphMarginTopPx = GRAPH_BUBBLE_BOTTOM_MARGIN_PX +
+        2 * this.bubbleVerticalPaddingPx_ + tooltipHeight;
+    const graphMarginBottomPx = this.dateTopMarginPx_ + labelHeight;
     const graphHeightPx =
         LINE_AREA_HEIGHT_PX + graphMarginTopPx + graphMarginBottomPx;
-    const graphMarginLeftPx = maxLabelWidth + GRAPH_PRICE_RIGHT_MARGIN_PX;
+    const graphMarginLeftPx = maxLabelWidth + this.priceRightMarginPx_;
     const graphMarginRightPx = CIRCLE_RADIUS_PX + 1;
 
     const svg = d3.select(this.$.historyGraph)
@@ -140,12 +149,12 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
                       .tickValues(this.getAxisTicksX_(xScale))
                       .tickFormat(d3.timeFormat('%b'))
                       .tickSize(0)
-                      .tickPadding(GRAPH_DATE_TOP_MARGIN_PX);
+                      .tickPadding(this.dateTopMarginPx_);
     const yAxis = d3.axisLeft(yScale)
                       .tickValues(ticks)
                       .tickFormat((_, i) => formattedTicks[i])
                       .tickSize(0)
-                      .tickPadding(GRAPH_PRICE_RIGHT_MARGIN_PX);
+                      .tickPadding(this.priceRightMarginPx_);
 
     // Set up the line.
     const line = d3.line<{date: Date, price: number}>()
@@ -188,30 +197,37 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
         .classed(CssClass.PATH, true);
 
     // Set up bubble and mouse listeners.
-    const verticalLine = svg.append('line')
-                             .attr('y1', 2 * BUBBLE_PADDING_PX + tooltipHeight)
-                             .attr('y2', graphHeightPx - graphMarginBottomPx)
-                             .attr('opacity', 0)
-                             .classed(CssClass.DASH_LINE, true);
+    const verticalLine =
+        svg.append('line')
+            .attr('y1', 2 * this.bubbleVerticalPaddingPx_ + tooltipHeight)
+            .attr('y2', graphHeightPx - graphMarginBottomPx)
+            .attr('opacity', 0)
+            .classed(CssClass.DASH_LINE, true);
 
     const circle = svg.append('circle')
                        .attr('r', CIRCLE_RADIUS_PX)
                        .attr('opacity', 0)
                        .classed(CssClass.CIRCLE, true);
 
-    const bubble = svg.append('rect')
-                       .attr('opacity', 0)
-                       .attr('y', 0)
-                       .attr('height', 2 * BUBBLE_PADDING_PX + tooltipHeight)
-                       .attr('rx', BUBBLE_CORNER_RADIUS_PX)
-                       .attr('ry', BUBBLE_CORNER_RADIUS_PX)
-                       .classed(CssClass.BUBBLE, true);
+    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
+      this.bubbleCornerRadiusPx_ =
+          this.bubbleVerticalPaddingPx_ + tooltipHeight / 2;
+    }
+    const bubble =
+        svg.append('rect')
+            .attr('opacity', 0)
+            .attr('y', 0)
+            .attr('height', 2 * this.bubbleVerticalPaddingPx_ + tooltipHeight)
+            .attr('rx', this.bubbleCornerRadiusPx_)
+            .attr('ry', this.bubbleCornerRadiusPx_)
+            .classed(CssClass.BUBBLE, true);
 
-    const tooltip = svg.append('text')
-                        .attr('y', BUBBLE_PADDING_PX + tooltipHeight / 2)
-                        .attr('dominant-baseline', 'middle')
-                        .attr('opacity', 0)
-                        .attr('aria-hidden', 'true');
+    const tooltip =
+        svg.append('text')
+            .attr('y', this.bubbleVerticalPaddingPx_ + tooltipHeight / 2)
+            .attr('dominant-baseline', 'middle')
+            .attr('opacity', 0)
+            .attr('aria-hidden', 'true');
 
     const initialIndex = this.points.length - 1;
     this.showTooltip_(
@@ -414,7 +430,7 @@ export class ShoppingInsightsHistoryGraphElement extends PolymerElement {
     circle.attr('cx', pointX).attr('cy', pointY).attr('opacity', 1);
 
     const tooltipWidth = tooltipNode.getBBox().width;
-    const bubbleWidth = tooltipWidth + 2 * BUBBLE_PADDING_PX;
+    const bubbleWidth = tooltipWidth + 2 * this.bubbleHorizontalPaddingPx_;
     let bubbleStart = pointX - bubbleWidth / 2;
     if (bubbleStart < 0) {
       bubbleStart = 0;

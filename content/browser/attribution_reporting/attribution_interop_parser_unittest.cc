@@ -44,8 +44,6 @@ bool operator==(const AttributionConfig::EventLevelLimit& a,
                 const AttributionConfig::EventLevelLimit& b) {
   const auto tie = [](const AttributionConfig::EventLevelLimit& config) {
     return std::make_tuple(
-        config.navigation_source_trigger_data_cardinality,
-        config.event_source_trigger_data_cardinality,
         config.randomized_response_epsilon, config.max_reports_per_destination,
         config.max_navigation_info_gain, config.max_event_info_gain);
   };
@@ -542,14 +540,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.rate_limit.origins_per_site_window = base::Days(2);
        }},
-      {R"json({"navigation_source_trigger_data_cardinality":"10"})json", false,
-       [](AttributionConfig& c) {
-         c.event_level_limit.navigation_source_trigger_data_cardinality = 10;
-       }},
-      {R"json({"event_source_trigger_data_cardinality":"10"})json", false,
-       [](AttributionConfig& c) {
-         c.event_level_limit.event_source_trigger_data_cardinality = 10;
-       }},
       {R"json({"randomized_response_epsilon":"inf"})json", false,
        [](AttributionConfig& c) {
          c.event_level_limit.randomized_response_epsilon =
@@ -591,8 +581,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "rate_limit_max_attributions":"10",
         "rate_limit_max_reporting_origins_per_source_reporting_site":"5",
         "rate_limit_origins_per_site_window_in_days":"5",
-        "navigation_source_trigger_data_cardinality":"100",
-        "event_source_trigger_data_cardinality":"10",
         "randomized_response_epsilon":"0.2",
         "max_event_level_reports_per_destination":"10",
         "max_navigation_info_gain":"5.5",
@@ -612,8 +600,6 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.rate_limit.max_reporting_origins_per_source_reporting_site = 5;
          c.rate_limit.origins_per_site_window = base::Days(5);
 
-         c.event_level_limit.navigation_source_trigger_data_cardinality = 100;
-         c.event_level_limit.event_source_trigger_data_cardinality = 10;
          c.event_level_limit.randomized_response_epsilon = 0.2;
          c.event_level_limit.max_reports_per_destination = 10;
          c.event_level_limit.max_navigation_info_gain = 5.5;
@@ -657,8 +643,6 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "rate_limit_max_attributions",
       "rate_limit_max_reporting_origins_per_source_reporting_site",
       "rate_limit_origins_per_site_window_in_days",
-      "navigation_source_trigger_data_cardinality",
-      "event_source_trigger_data_cardinality",
       "max_event_level_reports_per_destination",
       "max_aggregatable_reports_per_destination",
   };

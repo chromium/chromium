@@ -9,17 +9,21 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/prefs/ios/pref_observer_bridge.h"
+#import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service_factory.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -35,6 +39,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
@@ -67,17 +72,8 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @interface NewTabPageMediator () <ChromeAccountManagerServiceObserver,
                                   IdentityManagerObserverBridgeDelegate,
-                                  SearchEngineObserving> {
-  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
-      _accountManagerServiceObserver;
-  // Listen for default search engine changes.
-  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
-  // Observes changes in identity and updates the Identity Disc.
-  std::unique_ptr<signin::IdentityManagerObserverBridge>
-      _identityObserverBridge;
-  // Used to load URLs.
-  UrlLoadingBrowserAgent* _URLLoader;
-}
+                                  PrefObserverDelegate,
+                                  SearchEngineObserving>
 
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 // TemplateURL used to get the search engine.
@@ -93,7 +89,25 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 
 @end
 
-@implementation NewTabPageMediator
+@implementation NewTabPageMediator {
+  std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
+      _accountManagerServiceObserver;
+  // Listen for default search engine changes.
+  std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
+  // Observes changes in identity and updates the Identity Disc.
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityObserverBridge;
+  // Used to load URLs.
+  UrlLoadingBrowserAgent* _URLLoader;
+  PrefService* _prefService;
+  BOOL _isSafeMode;
+  // Pref observer to track changes to prefs.
+  std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  // Registrar for pref changes notifications.
+  std::unique_ptr<PrefChangeRegistrar> _prefChangeRegistrar;
+  // The current default search engine.
+  const TemplateURL* _defaultSearchEngine;
+}
 
 // Synthesized from NewTabPageMutator.
 @synthesize scrollPositionToSave = _scrollPositionToSave;
@@ -107,11 +121,14 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
              (ChromeAccountManagerService*)accountManagerService
       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
                    isIncognito:(BOOL)isIncognito
-           discoverFeedService:(DiscoverFeedService*)discoverFeedService {
+           discoverFeedService:(DiscoverFeedService*)discoverFeedService
+                   prefService:(PrefService*)prefService
+                    isSafeMode:(BOOL)isSafeMode {
   self = [super init];
   if (self) {
     CHECK(accountManagerService);
     _templateURLService = templateURLService;
+    _defaultSearchEngine = templateURLService->GetDefaultSearchProvider();
     _URLLoader = URLLoader;
     _authService = authService;
     _accountManagerService = accountManagerService;
@@ -126,18 +143,20 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
     _imageUpdater = imageUpdater;
     _isIncognito = isIncognito;
     _discoverFeedService = discoverFeedService;
+    _prefService = prefService;
+    _isSafeMode = isSafeMode;
   }
   return self;
 }
 
 - (void)setUp {
+  _feedHeaderVisible = [self updatedFeedHeaderVisible];
+  self.templateURLService->Load();
+  [self.headerConsumer setLogoIsShowing:[self isGoogleDefaultSearchEngine]];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
-
-  self.templateURLService->Load();
-  [self searchEngineChanged];
-
   [self updateAccountImage];
+  [self startObservingPrefs];
 }
 
 - (void)shutdown {
@@ -146,6 +165,10 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
   _accountManagerServiceObserver.reset();
   self.accountManagerService = nil;
   self.discoverFeedService = nullptr;
+  _prefChangeRegistrar.reset();
+  _prefObserverBridge.reset();
+  _prefService = nullptr;
+  self.feedControlDelegate = nil;
 }
 
 - (void)handleFeedLearnMoreTapped {
@@ -208,15 +231,15 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 #pragma mark - SearchEngineObserving
 
 - (void)searchEngineChanged {
-  BOOL showLogo = NO;
-  const TemplateURL* defaultURL =
+  const TemplateURL* updatedDefaultSearchEngine =
       self.templateURLService->GetDefaultSearchProvider();
-  if (defaultURL) {
-    showLogo = defaultURL->GetEngineType(
-                   self.templateURLService->search_terms_data()) ==
-               SEARCH_ENGINE_GOOGLE;
+  if (_defaultSearchEngine == updatedDefaultSearchEngine) {
+    return;
   }
-  [self.headerConsumer setLogoIsShowing:showLogo];
+  _defaultSearchEngine = updatedDefaultSearchEngine;
+  [self.headerConsumer setLogoIsShowing:[self isGoogleDefaultSearchEngine]];
+  [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
+  [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
@@ -230,6 +253,15 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
+  }
+}
+#pragma mark - PrefObserverDelegate
+
+- (void)onPreferenceChanged:(const std::string&)preferenceName {
+  if (preferenceName == prefs::kArticlesForYouEnabled ||
+      preferenceName == prefs::kNTPContentSuggestionsEnabled ||
+      preferenceName == prefs::kNTPContentSuggestionsForSupervisedUserEnabled) {
+    [self setFeedHeaderVisible:[self updatedFeedHeaderVisible]];
   }
 }
 
@@ -257,6 +289,57 @@ const char kFeedLearnMoreURL[] = "https://support.google.com/chrome/"
 - (void)openMenuItemWebPage:(GURL)URL {
   _URLLoader->Load(UrlLoadParams::InCurrentTab(URL));
   // TODO(crbug.com/1085419): Add metrics.
+}
+
+// Returns YES if Google is selected as the default search engine.
+- (BOOL)isGoogleDefaultSearchEngine {
+  const TemplateURL* defaultURL =
+      self.templateURLService->GetDefaultSearchProvider();
+  return defaultURL && defaultURL->GetEngineType(
+                           self.templateURLService->search_terms_data()) ==
+                           SEARCH_ENGINE_GOOGLE;
+}
+
+// Returns YES if the feed should be hidden because of the user's search
+// engine choice.
+- (BOOL)hideFeedWithSearchChoice {
+  return IsIOSHideFeedWithSearchChoiceEnabled() &&
+         ![self isGoogleDefaultSearchEngine] &&
+         (!IsIOSHideFeedWithSearchChoiceTargeted() ||
+          self.templateURLService->IsEeaChoiceCountry());
+}
+
+// Returns an updated value for feedHeaderVisible.
+- (BOOL)updatedFeedHeaderVisible {
+  return _prefService->GetBoolean(prefs::kArticlesForYouEnabled) &&
+         _prefService->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
+         !IsFeedAblationEnabled() &&
+         IsContentSuggestionsForSupervisedUserEnabled(_prefService) &&
+         !_isSafeMode && ![self hideFeedWithSearchChoice];
+}
+
+// Sets whether the feed header should be visible.
+- (void)setFeedHeaderVisible:(BOOL)feedHeaderVisible {
+  if (feedHeaderVisible == _feedHeaderVisible) {
+    return;
+  }
+
+  _feedHeaderVisible = feedHeaderVisible;
+  [self.feedControlDelegate setFeedAndHeaderVisibility:_feedHeaderVisible];
+}
+
+// Starts observing some prefs.
+- (void)startObservingPrefs {
+  _prefChangeRegistrar = std::make_unique<PrefChangeRegistrar>();
+  _prefChangeRegistrar->Init(_prefService);
+  _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kArticlesForYouEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kNTPContentSuggestionsEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      prefs::kNTPContentSuggestionsForSupervisedUserEnabled,
+      _prefChangeRegistrar.get());
 }
 
 @end

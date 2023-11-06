@@ -41,7 +41,7 @@
 // NOTE: Tests in this file modify Ash accessibility features. That is
 // potentially a lasting side effect that can affect other tests.
 // * To prevent interference with tests that are run in parallel, these tests
-// are a part of lacros_chrome_browsertests_run_in_series test suite.
+// are a part of lacros_chrome_browsertests test suite.
 // * To prevent interference with following tests, they try to clean up all the
 // side effects themselves, e.g. if a test sets a pref, it is also responsible
 // for unsetting it.
@@ -115,6 +115,27 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   EmbeddedA11yManagerLacrosTest& operator=(
       const EmbeddedA11yManagerLacrosTest&) = delete;
 
+  void SetUp() override {
+    // For the ash version that supports the browser-window APIs for closing
+    // ash browser windows (via crosapi::mojom::TestController), run the test
+    // with the shared ash (by default), because CloseAllAshBrowserWindows()
+    // will be called from TearDownOnMainThread() to guarantee closing all ash
+    // browser windows opened by this test. However, for the older ash version
+    // that does not support the browser-window APIs, there is no guarantee the
+    // ash browser window won't be leaked into the tests running after this
+    // test. Therefore, the test has to run with an unique ash instance so that
+    // it won't fail the subsequent tests which expect no existing ash browser
+    // windows to begin with.
+    if (!IsCloseAndWaitAshBrowserWindowApisSupported()) {
+      StartUniqueAshChrome(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{}, /*additional_cmdline_switches=*/{},
+          "crbug/1473375 Switch to shared ash CloseAllAshBrowserWindows is "
+          "supported by stable ash.");
+    }
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
@@ -133,6 +154,13 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
                                  kSetAssistiveTechnologyEnabledMinVersion)) {
       GTEST_SKIP() << "Ash version doesn't have required test API";
     }
+  }
+
+  void TearDownOnMainThread() override {
+    if (IsCloseAndWaitAshBrowserWindowApisSupported()) {
+      CloseAllAshBrowserWindows();
+    }
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetFeatureEnabled(AssistiveTechnologyType at_type, bool enabled) {

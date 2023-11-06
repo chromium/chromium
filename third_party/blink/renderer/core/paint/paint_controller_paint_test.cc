@@ -6,8 +6,8 @@
 
 #include "third_party/blink/renderer/core/editing/frame_caret.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
@@ -30,7 +30,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
   auto& div_block =
       *To<LayoutBlock>(GetDocument().body()->firstChild()->GetLayoutObject());
   auto& text = *To<LayoutText>(div_block.FirstChild());
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   cursor.MoveTo(text);
   const DisplayItemClient* first_text_box =
       cursor.Current().GetDisplayItemClient();
@@ -45,7 +45,7 @@ TEST_P(PaintControllerPaintTest, InlineRelayout) {
                    AtomicString("width: 10px; height: 200px"));
   UpdateAllLifecyclePhasesForTest();
 
-  cursor = NGInlineCursor();
+  cursor = InlineCursor();
   cursor.MoveTo(text);
   const DisplayItemClient* new_first_text_box =
       cursor.Current().GetDisplayItemClient();

@@ -21,8 +21,8 @@ struct FeatureFlags {
   bool qs_revamp;
   // chrome://flags#jelly-colors
   bool jelly_colors;
-  // chrome://flags#arc-trackpad-scroll-touchscreen-emulation
-  [MinVersion=2] bool trackpad_scroll_touchscreen_emulation = true;
+  // DEPRECATED: chrome://flags#arc-trackpad-scroll-touchscreen-emulation
+  [MinVersion=2] bool deprecated_trackpad_scroll_touchscreen_emulation = false;
   // chrome://flags#arc-touchscreen-emulation
   [MinVersion=2] bool touchscreen_emulation = true;
   // chrome://flags#arc-rounded-window-compat

@@ -44,8 +44,7 @@ std::vector<ppapi::DeviceRefData> TestEnumerationData() {
   return data;
 }
 
-class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
-                     public base::SupportsWeakPtr<TestDelegate> {
+class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate {
  public:
   TestDelegate() : last_used_id_(0u) {}
 
@@ -91,9 +90,14 @@ class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
 
   size_t last_used_id() const { return last_used_id_; }
 
+  base::WeakPtr<TestDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::map<size_t, DevicesCallback> monitoring_callbacks_;
   size_t last_used_id_;
+  base::WeakPtrFactory<TestDelegate> weak_ptr_factory_{this};
 };
 
 class PepperDeviceEnumerationHostHelperTest : public testing::Test {

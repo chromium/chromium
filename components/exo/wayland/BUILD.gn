@@ -227,6 +227,7 @@ static_library("ui_controls_protocol") {
   deps = [
     ":wayland",
     "//ash",
+    "//ash:test_support",
     "//base",
     "//base/test:test_support",
     "//components/exo",
@@ -234,6 +235,7 @@ static_library("ui_controls_protocol") {
     "//third_party/wayland-protocols:ui_controls_protocol",
     "//ui/aura",
     "//ui/base:test_support",
+    "//ui/base/wayland:wayland_display_util",
     "//ui/events",
   ]
 }

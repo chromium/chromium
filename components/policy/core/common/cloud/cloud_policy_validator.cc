@@ -113,7 +113,7 @@ void CloudPolicyValidatorBase::ValidateTimestamp(
     base::Time not_before,
     ValidateTimestampOption timestamp_option) {
   validation_flags_ |= VALIDATE_TIMESTAMP;
-  timestamp_not_before_ = not_before.ToJavaTime();
+  timestamp_not_before_ = not_before.InMillisecondsSinceUnixEpoch();
   timestamp_option_ = timestamp_option;
 }
 
@@ -222,7 +222,8 @@ void CloudPolicyValidatorBase::ValidateAgainstCurrentPolicy(
   std::string expected_dm_token;
   std::string expected_device_id;
   if (policy_data) {
-    last_policy_timestamp = base::Time::FromJavaTime(policy_data->timestamp());
+    last_policy_timestamp =
+        base::Time::FromMillisecondsSinceUnixEpoch(policy_data->timestamp());
     expected_dm_token = policy_data->request_token();
     expected_device_id = policy_data->device_id();
   }

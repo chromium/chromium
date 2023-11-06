@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CSP_CONTEXT_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_CONTENT_SECURITY_POLICY_CSP_CONTEXT_H_
 
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
 class GURL;
@@ -39,10 +40,15 @@ class COMPONENT_EXPORT(NETWORK_CPP) CSPContext {
   // - displaying a console message.
   // - triggering the "SecurityPolicyViolation" javascript event.
   // - sending a JSON report to any uri defined with the "report-uri" directive.
-  // Returns true when the request can proceed, false otherwise.
+  // Return a CSPCheckResult that allows when the request can proceed, false
+  // otherwise.
+  // The field |allowed_if_wildcard_does_not_match_ws| is true assuming '*'
+  // doesn't match ws or wss, and |allowed_if_wildcard_does_not_match_ftp|
+  // assumes
+  // '*' doesn't match ftp. These two are only for logging purposes.
   // Note that when |is_opaque_fenced_frame| is true only https scheme source
   // will be matched and |url| might be disregarded.
-  bool IsAllowedByCsp(
+  CSPCheckResult IsAllowedByCsp(
       const std::vector<mojom::ContentSecurityPolicyPtr>& policies,
       mojom::CSPDirectiveName directive_name,
       const GURL& url,

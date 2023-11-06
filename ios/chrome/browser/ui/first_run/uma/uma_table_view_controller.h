@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FIRST_RUN_UMA_UMA_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_FIRST_RUN_UMA_UMA_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @class UMATableViewController;
 @protocol UMATableViewControllerModelDelegate;
@@ -21,7 +21,7 @@
 @end
 
 // View controller for the UMA dialog.
-@interface UMATableViewController : ChromeTableViewController
+@interface UMATableViewController : LegacyChromeTableViewController
 
 @property(nonatomic, weak) id<UMATableViewControllerPresentationDelegate>
     presentationDelegate;

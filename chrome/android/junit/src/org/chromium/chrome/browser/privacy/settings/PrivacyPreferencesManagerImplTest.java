@@ -51,18 +51,42 @@ public class PrivacyPreferencesManagerImplTest {
     @Test
     public void testUsageAndCrashReportingAccessors() {
         // TODO(yolandyan): Use Junit4 parameters to clean up this test structure.
-        runTest(CONNECTED, UNMETERED, METRICS_REPORTING_ENABLED, METRICS_UPLOAD_PERMITTED,
+        runTest(
+                CONNECTED,
+                UNMETERED,
+                METRICS_REPORTING_ENABLED,
+                METRICS_UPLOAD_PERMITTED,
                 CRASH_NETWORK_AVAILABLE);
-        runTest(CONNECTED, METERED, METRICS_REPORTING_ENABLED, METRICS_UPLOAD_PERMITTED,
+        runTest(
+                CONNECTED,
+                METERED,
+                METRICS_REPORTING_ENABLED,
+                METRICS_UPLOAD_PERMITTED,
                 CRASH_NETWORK_UNAVAILABLE);
-        runTest(DISCONNECTED, UNMETERED, METRICS_REPORTING_ENABLED, METRICS_UPLOAD_NOT_PERMITTED,
+        runTest(
+                DISCONNECTED,
+                UNMETERED,
+                METRICS_REPORTING_ENABLED,
+                METRICS_UPLOAD_NOT_PERMITTED,
                 CRASH_NETWORK_UNAVAILABLE);
 
-        runTest(CONNECTED, UNMETERED, METRICS_REPORTING_DISABLED, METRICS_UPLOAD_NOT_PERMITTED,
+        runTest(
+                CONNECTED,
+                UNMETERED,
+                METRICS_REPORTING_DISABLED,
+                METRICS_UPLOAD_NOT_PERMITTED,
                 CRASH_NETWORK_AVAILABLE);
-        runTest(CONNECTED, METERED, METRICS_REPORTING_DISABLED, METRICS_UPLOAD_NOT_PERMITTED,
+        runTest(
+                CONNECTED,
+                METERED,
+                METRICS_REPORTING_DISABLED,
+                METRICS_UPLOAD_NOT_PERMITTED,
                 CRASH_NETWORK_UNAVAILABLE);
-        runTest(DISCONNECTED, UNMETERED, METRICS_REPORTING_DISABLED, METRICS_UPLOAD_NOT_PERMITTED,
+        runTest(
+                DISCONNECTED,
+                UNMETERED,
+                METRICS_REPORTING_DISABLED,
+                METRICS_UPLOAD_NOT_PERMITTED,
                 CRASH_NETWORK_UNAVAILABLE);
     }
 
@@ -141,7 +165,10 @@ public class PrivacyPreferencesManagerImplTest {
         assertFalse(preferenceManager.isUsageAndCrashReportingPermittedByPolicy());
     }
 
-    private void runTest(boolean isConnected, boolean isMetered, boolean isMetricsReportingEnabled,
+    private void runTest(
+            boolean isConnected,
+            boolean isMetered,
+            boolean isMetricsReportingEnabled,
             boolean expectedMetricsUploadPermitted,
             boolean expectedNetworkAvailableForCrashUploads) {
         // Mock out the network info accessors.
@@ -162,16 +189,24 @@ public class PrivacyPreferencesManagerImplTest {
         preferenceManager.setUsageAndCrashReporting(isMetricsReportingEnabled);
 
         // Test the usage and crash reporting permission accessors!
-        String state = String.format("[connected = %b, metered = %b, reporting = %b]", isConnected,
-                isMetered, isMetricsReportingEnabled);
-        String msg = String.format(
-                "Metrics reporting should be %1$b for %2$s", expectedMetricsUploadPermitted, state);
+        String state =
+                String.format(
+                        "[connected = %b, metered = %b, reporting = %b]",
+                        isConnected, isMetered, isMetricsReportingEnabled);
+        String msg =
+                String.format(
+                        "Metrics reporting should be %1$b for %2$s",
+                        expectedMetricsUploadPermitted, state);
         assertEquals(
                 msg, expectedMetricsUploadPermitted, preferenceManager.isMetricsUploadPermitted());
 
-        msg = String.format("Crash reporting should be %1$b for metered state %2$s",
-                expectedNetworkAvailableForCrashUploads, isMetered);
-        assertEquals(msg, expectedNetworkAvailableForCrashUploads,
+        msg =
+                String.format(
+                        "Crash reporting should be %1$b for metered state %2$s",
+                        expectedNetworkAvailableForCrashUploads, isMetered);
+        assertEquals(
+                msg,
+                expectedNetworkAvailableForCrashUploads,
                 preferenceManager.isNetworkAvailableForCrashUploads());
     }
 

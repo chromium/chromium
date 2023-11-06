@@ -39,10 +39,10 @@ import {AuthFactor, ConfigureResult, FactorObserverReceiver, ManagementType} fro
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl} from './fingerprint_browser_proxy.js';
@@ -287,7 +287,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
     if (!this.cryptohomeRecoveryEnabled_ || this.recovery_) {
       return '';
     }
-    return this.i18n('recoveryNotSupportedMessage');
+    return this.i18n('recoveryLearnMoreUrl');
   }
 
   private recoveryToggleDisabled_(): boolean {

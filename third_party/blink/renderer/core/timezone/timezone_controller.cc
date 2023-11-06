@@ -18,8 +18,9 @@
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/icu/source/common/unicode/char16ptr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "v8/include/v8.h"
@@ -84,7 +85,11 @@ bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
 
   icu::TimeZone::adoptDefault(timezone.release());
 
-  NotifyTimezoneChangeToV8(V8PerIsolateData::MainThreadIsolate());
+  Thread::MainThread()
+      ->Scheduler()
+      ->ToMainThreadScheduler()
+      ->ForEachMainThreadIsolate(WTF::BindRepeating(
+          [](v8::Isolate* isolate) { NotifyTimezoneChangeToV8(isolate); }));
   WorkerThread::CallOnAllWorkerThreads(&NotifyTimezoneChangeOnWorkerThread,
                                        TaskType::kInternalDefault);
   DispatchTimeZoneChangeEventToFrames();

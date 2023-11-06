@@ -33,7 +33,7 @@ TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
       To<HTMLObjectElement>(GetDocument().getElementById(AtomicString("obj")));
   ASSERT_TRUE(object);
 
-  Node* slot = object->GetShadowRoot()->firstChild();
+  Element* slot = object->GetShadowRoot()->firstElementChild();
   ASSERT_TRUE(slot);
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();

@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/js/jstemplate_compiled.js';
+
+import {mobileNav} from 'chrome://interstitials/common/resources/interstitial_mobile_nav.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+
+import {HIDDEN_CLASS} from './constants.js';
+import {Runner} from './offline.js';
+
 /**
  * @typedef {{
  *   downloadButtonClick: function(),
@@ -20,8 +28,6 @@
  */
 // eslint-disable-next-line no-var
 var errorPageController;
-
-const HIDDEN_CLASS = 'hidden';
 
 // Decodes a UTF16 string that is encoded as base64.
 function decodeUTF16Base64ToString(encoded_text) {
@@ -58,13 +64,13 @@ function toggleHelpBox() {
 
 function diagnoseErrors() {
   if (window.errorPageController) {
-    errorPageController.diagnoseErrorsButtonClick();
+    window.errorPageController.diagnoseErrorsButtonClick();
   }
 }
 
 function portalSignin() {
   if (window.errorPageController) {
-    errorPageController.portalSigninButtonClick();
+    window.errorPageController.portalSigninButtonClick();
   }
 }
 
@@ -82,7 +88,7 @@ if (window.top.location !== window.location || window.portalHost) {
 // Used by NetErrorTabHelper to update DNS error pages with probe results.
 function updateForDnsProbe(strings) {
   const context = new JsEvalContext(strings);
-  jstProcess(context, document.getElementById('t'));
+  jstProcess(context, document.body);
   onDocumentLoadOrUpdate();
 }
 
@@ -103,11 +109,11 @@ function updateIconClass(newClass) {
 function reloadButtonClick(url) {
   if (window.errorPageController) {
     // <if expr="is_ios">
-    errorPageController.reloadButtonClick(url);
+    window.errorPageController.reloadButtonClick(url);
     // </if>
 
     // <if expr="not is_ios">
-    errorPageController.reloadButtonClick();
+    window.errorPageController.reloadButtonClick();
     // </if>
   } else {
     window.location = url;
@@ -116,7 +122,7 @@ function reloadButtonClick(url) {
 
 function downloadButtonClick() {
   if (window.errorPageController) {
-    errorPageController.downloadButtonClick();
+    window.errorPageController.downloadButtonClick();
     const downloadButton = document.getElementById('download-button');
     downloadButton.disabled = true;
     /** @suppress {missingProperties} */
@@ -131,7 +137,7 @@ function downloadButtonClick() {
 
 function detailsButtonClick() {
   if (window.errorPageController) {
-    errorPageController.detailsButtonClick();
+    window.errorPageController.detailsButtonClick();
   }
 }
 
@@ -150,13 +156,13 @@ function setAutoFetchState(scheduled, can_schedule) {
 }
 
 function savePageLaterClick() {
-  errorPageController.savePageForLater();
+  window.errorPageController.savePageForLater();
   // savePageForLater will eventually trigger a call to setAutoFetchState() when
   // it completes.
 }
 
 function cancelSavePageClick() {
-  errorPageController.cancelSavePage();
+  window.errorPageController.cancelSavePage();
   // setAutoFetchState is not called in response to cancelSavePage(), so do it
   // now.
   setAutoFetchState(false, true);
@@ -168,11 +174,11 @@ function toggleErrorInformationPopup() {
 }
 
 function launchOfflineItem(itemID, name_space) {
-  errorPageController.launchOfflineItem(itemID, name_space);
+  window.errorPageController.launchOfflineItem(itemID, name_space);
 }
 
 function launchDownloadsPage() {
-  errorPageController.launchDownloadsPage();
+  window.errorPageController.launchDownloadsPage();
 }
 
 function getIconForSuggestedItem(item) {
@@ -314,7 +320,7 @@ function toggleOfflineContentListVisibility(updatePref) {
   const isVisible = !contentListElement.classList.toggle('list-hidden');
 
   if (updatePref && window.errorPageController) {
-    errorPageController.listVisibilityChanged(isVisible);
+    window.errorPageController.listVisibilityChanged(isVisible);
   }
 }
 
@@ -371,6 +377,10 @@ function onDocumentLoadOrUpdate() {
 }
 
 function onDocumentLoad() {
+  // `loadTimeDataRaw` is injected to the `window` scope from C++.
+  loadTimeData.data = window.loadTimeDataRaw;
+  jstProcess(new JsEvalContext(window.loadTimeDataRaw), document.body);
+
   // Sets up the proper button layout for the current platform.
   const buttonsDiv = document.getElementById('buttons');
   if (primaryControlOnLeft) {
@@ -381,5 +391,25 @@ function onDocumentLoad() {
 
   onDocumentLoadOrUpdate();
 }
+
+// Expose methods that are triggered either
+//  - By `onclick=...` handlers in the HTML code, OR
+//  - By `href="javascript:..."` in localized links.
+//  - By inected JS code coming from C++
+//
+//  since those need to be available on the 'window' object.
+Object.assign(window, {
+  cancelSavePageClick,
+  detailsButtonClick,
+  diagnoseErrors,
+  downloadButtonClick,
+  launchDownloadsPage,
+  reloadButtonClick,
+  savePageLaterClick,
+  toggleErrorInformationPopup,
+  toggleHelpBox,
+  toggleOfflineContentListVisibility,
+  updateForDnsProbe,
+});
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);

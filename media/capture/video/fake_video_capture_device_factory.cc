@@ -27,7 +27,7 @@ static const int kFakeCaptureMinDeviceCount = 0;
 static const int kFakeCaptureMaxDeviceCount = 10;
 static const int kDefaultDeviceCount = 1;
 
-static const char* kDefaultDeviceIdMask = "/dev/video%d";
+constexpr char kDefaultDeviceIdMask[] = "/dev/video%d";
 static const media::FakeVideoCaptureDevice::DeliveryMode kDefaultDeliveryMode =
     media::FakeVideoCaptureDevice::DeliveryMode::USE_DEVICE_INTERNAL_BUFFERS;
 static constexpr std::array<gfx::Size, 6> kDefaultResolutions{

@@ -13,6 +13,10 @@
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace safe_browsing {
 
 PasswordReuseControllerAndroid::PasswordReuseControllerAndroid(
@@ -73,8 +77,16 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
   if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
       password_type_.is_account_syncing()) {
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON);
-  } else if (password_type_.account_type() ==
-             ReusedPasswordAccountType::SAVED_PASSWORD) {
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // The modal can be shown on automotive, but should not lead users to the
+  // GMSCore Password Check UI, as that is not optimized for automotive.
+  else if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return l10n_util::GetStringUTF16(IDS_CLOSE);
+  }
+#endif
+  else if (password_type_.account_type() ==
+           ReusedPasswordAccountType::SAVED_PASSWORD) {
     return l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON);
   }
 
@@ -82,10 +94,20 @@ std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
 }
 
 std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
-  if ((password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
-       password_type_.is_account_syncing()) ||
-      (password_type_.account_type() ==
-       ReusedPasswordAccountType::SAVED_PASSWORD)) {
+  if (password_type_.account_type() == ReusedPasswordAccountType::GMAIL &&
+      password_type_.is_account_syncing()) {
+    return l10n_util::GetStringUTF16(
+        IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  // The modal can be shown on automotive, but without any call to action as
+  // those are not optimized for automotive.
+  else if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+    return std::u16string();
+  }
+#endif
+  else if (password_type_.account_type() ==
+           ReusedPasswordAccountType::SAVED_PASSWORD) {
     return l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON);
   }

@@ -418,8 +418,9 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerFileUploadTest, MAYBE_Subresource) {
 
 // Tests a subresource request where the filename is non-ascii. Regression test
 // for https://crbug.com/1017184.
-// Flaky on Android; see https://crbug.com/1320972.
-#if BUILDFLAG(IS_ANDROID)
+// Flaky on Android; see https://crbug.com/1335344.
+// Fail on Mac; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_Subresource_NonAsciiFilename DISABLED_Subresource_NonAsciiFilename
 #else
 #define MAYBE_Subresource_NonAsciiFilename Subresource_NonAsciiFilename

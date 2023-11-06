@@ -67,6 +67,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
@@ -478,6 +479,12 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
       model_provider->search_model()->search_box();
   search_box_model_observer_.Observe(search_box_model);
 
+  // The assistant view delegate could be nullptr in test.
+  if (view_delegate_->GetAssistantViewDelegate()) {
+    assistant_view_delegate_observer_.Observe(
+        view_delegate_->GetAssistantViewDelegate());
+  }
+
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
     // in case registration causes a help bubble to be created synchronously.
@@ -500,7 +507,8 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     filter_button->SetFlipCanvasOnPaintForRTLUI(false);
     std::u16string filter_button_label(
         l10n_util::GetStringUTF16(IDS_ASH_SEARCH_BOX_FILTER_BUTTON_TOOLTIP));
-    filter_button->SetAccessibleName(filter_button_label);
+    filter_button->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_SEARCH_CATEGORY_FILTER_MENU_TITLE));
     filter_button->SetTooltipText(filter_button_label);
   }
 
@@ -808,6 +816,10 @@ void SearchBoxView::RunLauncherSearchQuery(const std::u16string& query) {
 
 void SearchBoxView::OpenAssistantPage() {
   delegate_->AssistantButtonPressed();
+}
+
+void SearchBoxView::OnLauncherSearchChipPressed(const std::u16string& query) {
+  UpdateQuery(query);
 }
 
 void SearchBoxView::ShowFilterMenu() {
@@ -1653,8 +1665,8 @@ void SearchBoxView::UpdateIphViewVisibility() {
     }
 
     SetIphView(std::make_unique<LauncherSearchIphView>(
-        std::move(scoped_iph_session), /*delegate=*/this,
-        /*is_in_tablet_mode=*/!is_app_list_bubble_));
+        /*delegate=*/this, /*is_in_tablet_mode=*/!is_app_list_bubble_,
+        std::move(scoped_iph_session)));
 
     assistant_button()->SetBackground(views::CreateThemedRoundedRectBackground(
         kColorAshControlBackgroundColorInactive,

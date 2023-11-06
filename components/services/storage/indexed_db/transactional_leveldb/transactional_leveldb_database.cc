@@ -46,21 +46,10 @@ namespace content {
 
 namespace {
 
-// Forcing flushes to disk at the end of a transaction guarantees that the
-// data hit disk, but drastically impacts throughput when the filesystem is
-// busy with background compactions. Not syncing trades off reliability for
-// performance. Note that background compactions which move data from the
-// log to SSTs are always done with reliable writes.
-//
-// Sync writes are necessary on Windows for quota calculations; POSIX
-// calculates file sizes correctly even when not synced to disk.
-#if BUILDFLAG(IS_WIN)
+// As `TransactionLevelDBDatabase` is only used for internal transactions such
+// as DB initialization and via `LevelDBDirectTransaction`, this constant
+// doesn't apply to web API IndexedDB "readwrite" transactions.
 const bool kSyncWrites = true;
-#else
-// TODO(dgrogan): Either remove the #if block or change this back to false.
-// See http://crbug.com/338385.
-const bool kSyncWrites = true;
-#endif
 
 }  // namespace
 

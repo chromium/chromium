@@ -11,7 +11,7 @@
  * browser_tests --gtest_filter=ScanningAppActionToolbar.All
  */
 
-GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+GEN_INCLUDE(['//chrome/test/data/webui/chromeos/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
@@ -27,7 +27,8 @@ const tests = [
   ['MultiPageScan', 'multi_page_scan_test.js'],
   ['PageSizeSelect', 'page_size_select_test.js'],
   ['ResolutionSelect', 'resolution_select_test.js'],
-  ['ScanApp', 'scanning_app_test.js'],
+  // TODO(https://crbug.com/1499761): Re-enable after fixing flaky test.
+  ['ScanApp', 'scanning_app_test.js', 'DISABLED_All'],
   ['ScanDoneSection', 'scan_done_section_test.js'],
   ['ScannerSelect', 'scanner_select_test.js'],
   ['ScanPreview', 'scan_preview_test.js'],
@@ -50,7 +51,7 @@ function registerTest(testName, module, caseName) {
     /** @override */
     get browsePreload() {
       return `chrome://scanning/test_loader.html` +
-          `?module=chromeos/scanning/${module}&host=test`;
+          `?module=chromeos/scanning/${module}`;
     }
   };
   TEST_F(className, caseName || 'All', () => mocha.run());

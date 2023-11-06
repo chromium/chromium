@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/shell.h"
 #include "ash/style/rounded_container.h"
@@ -16,7 +15,6 @@
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -25,9 +23,7 @@ namespace {
 
 class LocaleDetailedViewTest : public AshTestBase {
  public:
-  LocaleDetailedViewTest() {
-    feature_list_.InitAndEnableFeature(features::kQsRevamp);
-  }
+  LocaleDetailedViewTest() = default;
 
   void CreateDetailedView() {
     widget_ = CreateFramelessTestWidget();
@@ -43,7 +39,6 @@ class LocaleDetailedViewTest : public AshTestBase {
     delegate_.reset();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<DetailedViewDelegate> delegate_;
   raw_ptr<LocaleDetailedView, DanglingUntriaged | ExperimentalAsh>

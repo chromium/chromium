@@ -1,6 +1,7 @@
 This is a testharness.js-based test.
-FAIL e.style['resize'] = "auto" should not set the property value assert_equals: expected "" but got "auto"
-PASS e.style['resize'] = "horizontal vertical" should not set the property value
-PASS e.style['resize'] = "both 0" should not set the property value
+[FAIL] e.style['resize'] = "auto" should not set the property value
+  assert_equals: expected "" but got "auto"
+[PASS] e.style['resize'] = "horizontal vertical" should not set the property value
+[PASS] e.style['resize'] = "both 0" should not set the property value
 Harness: the test ran to completion.
 

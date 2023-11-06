@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   void StopSession(login_manager::SessionStopReason reason) override;
   void LoadShillProfile(
       const cryptohome::AccountIdentifier& cryptohome_id) override;
-  void StartDeviceWipe() override;
+  void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override;
   void StartRemoteDeviceWipe(
       const enterprise_management::SignedData& signed_command) override;
   void ClearForcedReEnrollmentVpd(
@@ -191,6 +191,9 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
   // |SetFlagsForUser|.
   bool GetFlagsForUser(const cryptohome::AccountIdentifier& cryptohome_id,
                        std::vector<std::string>* out_flags_for_user) const;
+
+  // Notify observers about the session stopping.
+  void NotifySessionStopping() const;
 
   // Sets whether FakeSessionManagerClient should advertise (through
   // |SupportsBrowserRestart|) that it supports restarting Chrome. For example,

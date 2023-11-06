@@ -159,18 +159,34 @@ void UpdateOpenerIndex(CRWSessionUserData* user_data,
   }
 }
 
-// Filters out session items that would be empty after restoration.
-SessionWindowIOS* FilterEmptyTabs(SessionWindowIOS* session_window) {
+// Filters out session items that are considered invalid: either because they
+// are empty (no navigation), or duplicates.
+SessionWindowIOS* FilterInvalidTabs(SessionWindowIOS* session_window) {
   DCHECK_LE(session_window.sessions.count, static_cast<NSUInteger>(INT_MAX));
   const int sessions_count = static_cast<int>(session_window.sessions.count);
 
   std::vector<int> items_to_drop;
+  std::set<web::WebStateID> seen_identifiers;
+  // Count the number of dropped tabs because they are duplicates, for
+  // reporting.
+  int duplicate_count = 0;
   for (int index = 0; index < sessions_count; ++index) {
     CRWSessionStorage* session = session_window.sessions[index];
     if (session.itemStorages.count == 0) {
+      // Filter out session items that would be empty after restoration.
       items_to_drop.push_back(index);
+    } else {
+      // Filter out session items that are duplicate (after something went bad
+      // somewhere).
+      if (seen_identifiers.contains(session.uniqueIdentifier)) {
+        items_to_drop.push_back(index);
+        duplicate_count++;
+      }
+      seen_identifiers.insert(session.uniqueIdentifier);
     }
   }
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionRestore",
+                              duplicate_count);
 
   // Nothing to do.
   if (items_to_drop.empty()) {
@@ -258,10 +274,10 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
     observer.WillStartSessionRestoration(browser_);
   }
 
-  // Restore the tabs (except those that would be empty).
+  // Restore the tabs (except the invalid ones).
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
-          browser_->GetWebStateList(), FilterEmptyTabs(window), scope,
+          browser_->GetWebStateList(), FilterInvalidTabs(window), scope,
           enable_pinned_web_states_,
           base::BindRepeating(
               &web::WebState::CreateWithStorageSession,

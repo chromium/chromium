@@ -49,6 +49,9 @@ class MESSAGE_CENTER_PUBLIC_EXPORT NotificationObserver {
 class MESSAGE_CENTER_PUBLIC_EXPORT NotificationDelegate
     : public NotificationObserver,
       public base::RefCountedThreadSafe<NotificationDelegate> {
+ public:
+  virtual NotificationDelegate* GetDelegateForParentCopy();
+
  protected:
   virtual ~NotificationDelegate() = default;
 
@@ -77,6 +80,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT ThunkNotificationDelegate
   void DisableNotification() override;
   void ExpandStateChanged(bool expanded) override;
   void SnoozeButtonClicked() override;
+  NotificationDelegate* GetDelegateForParentCopy() override;
 
  protected:
   ~ThunkNotificationDelegate() override;

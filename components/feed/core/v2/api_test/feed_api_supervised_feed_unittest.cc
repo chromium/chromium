@@ -23,10 +23,7 @@ namespace {
 class FeedApiSupervisedUserTest : public FeedApiTest {
  public:
   void SetUp() override {
-    supervised_user::SupervisedUserService::RegisterProfilePrefs(
-        profile_prefs_.registry());
-    supervised_user::ChildAccountService::RegisterProfilePrefs(
-        profile_prefs_.registry());
+    supervised_user::RegisterProfilePrefs(profile_prefs_.registry());
     supervised_user::EnableParentalControls(profile_prefs_);
 
     feature_list_.InitAndEnableFeature(

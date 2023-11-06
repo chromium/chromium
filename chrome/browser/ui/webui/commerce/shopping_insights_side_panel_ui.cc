@@ -28,8 +28,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
-#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui) {
@@ -75,6 +75,8 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean("shouldShowFeedback",
                      commerce::kPriceInsightsShowFeedback.Get());
 
+  webui::SetupChromeRefresh2023(source);
+
   webui::SetupWebUIDataSource(source,
                               base::make_span(kSidePanelCommerceResources,
                                               kSidePanelCommerceResourcesSize),
@@ -84,6 +86,13 @@ ShoppingInsightsSidePanelUI::ShoppingInsightsSidePanelUI(content::WebUI* web_ui)
 }
 
 ShoppingInsightsSidePanelUI::~ShoppingInsightsSidePanelUI() = default;
+
+void ShoppingInsightsSidePanelUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+        pending_receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
+}
 
 void ShoppingInsightsSidePanelUI::BindInterface(
     mojo::PendingReceiver<shopping_list::mojom::ShoppingListHandlerFactory>

@@ -118,14 +118,11 @@ public class CustomTabNightModeStateController implements DestroyObserver, Night
     }
 
     private boolean shouldBeInNightMode() {
-        switch (mRequestedColorScheme) {
-            case CustomTabsIntent.COLOR_SCHEME_LIGHT:
-                return false;
-            case CustomTabsIntent.COLOR_SCHEME_DARK:
-                return true;
-            default:
-                return mSystemNightModeMonitor.isSystemNightModeOn() ||
-                        mPowerSavingModeMonitor.powerSavingIsOn();
-        }
+        return switch (mRequestedColorScheme) {
+            case CustomTabsIntent.COLOR_SCHEME_LIGHT -> false;
+            case CustomTabsIntent.COLOR_SCHEME_DARK -> true;
+            default -> mSystemNightModeMonitor.isSystemNightModeOn()
+                    || mPowerSavingModeMonitor.powerSavingIsOn();
+        };
     }
 }

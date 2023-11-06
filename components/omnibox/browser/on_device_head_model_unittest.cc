@@ -51,7 +51,7 @@ namespace {
 
 base::FilePath GetTestModelPath() {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   file_path = file_path.AppendASCII(
       "components/test/data/omnibox/on_device_head_test_model_index.bin");
   return file_path;

@@ -40,7 +40,7 @@ const mojom::ButtonRemapping button_remapping2(
     mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
     /*remapping_action=*/
     mojom::RemappingAction::NewKeyEvent(
-        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3)));
+        mojom::KeyEvent::New(::ui::KeyboardCode::VKEY_0, 1, 2, 3, "0")));
 }  // namespace
 
 class GraphicsTabletPrefHandlerTest : public AshTestBase {

@@ -1,0 +1,194 @@
+# Copyright 2023 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//android_webview/variables.gni")
+import("//build/config/android/rules.gni")
+
+# Upstream and Downstream WebView both have instrumentation tests.
+# These templates enables a shared basis for these test, ensuring that they use
+# the same instrumentation.
+
+# These templates are for test only
+testonly = true
+
+# Build the webview_instrumentation_apk with extra dependencies.
+# Args:
+#   deps: extra dependencies to add - platform-specific libraries.
+#   apk_name: Desired apk name.
+template("base_webview_instrumentation_apk") {
+  android_apk(target_name) {
+    # TODO(crbug.com/1099536): Fix tests that break when this is increased.
+    # In particular, this means test that use mocks.
+    target_sdk_version = 24
+    apk_name = invoker.apk_name
+    deps = [
+             "//android_webview:android_webview_java",
+             "//android_webview:android_webview_product_config_java",
+             "//android_webview:common_java",
+             "//android_webview:locale_pak_assets",
+             "//android_webview/test:draw_fn_impl_java",
+             "//android_webview/test:webview_instrumentation_apk_assets",
+             "//android_webview/test:webview_instrumentation_apk_resources",
+             "//android_webview/test:webview_instrumentation_test_mock_services_java",
+             "//android_webview/test:webview_instrumentation_test_utils_java",
+             "//base:base_java",
+             "//base:base_java_test_support",
+             "//components/android_autofill/browser/test_support:java",
+             "//components/content_capture/android/test_support:java",
+             "//components/embedder_support/android:util_java",
+             "//components/heap_profiling/multi_process:heap_profiling_java_test_support",
+             "//components/policy/android:policy_java_test_support",
+             "//content/public/android:content_java",
+             "//third_party/androidx:androidx_annotation_annotation_java",
+             "//third_party/androidx_javascriptengine:javascriptengine_java",
+             "//third_party/jni_zero:jni_zero_java",
+             "//third_party/junit",
+             "//ui/android:ui_java",
+             "//url:gurl_java",
+           ] + invoker.deps
+
+    android_manifest = "//android_webview/test/shell/AndroidManifest.xml"
+    sources = [
+      "//android_webview/test/shell/src/org/chromium/android_webview/shell/AwShellActivity.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/shell/AwShellApplication.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/shell/AwShellResourceProvider.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/shell/AwShellSwitches.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunner.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/AwJUnit4ClassRunnerWithParameters.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/AwSettingsMutation.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/AwTestContainerView.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/AwTestRunnerActivity.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/NullContentsClient.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/OnlyRunIn.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/SecondBrowserProcess.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/SkipMutations.java",
+      "//android_webview/test/shell/src/org/chromium/android_webview/test/TestContentProvider.java",
+    ]
+    product_config_java_packages = [ webview_product_config_java_package ]
+
+    shared_libraries =
+        [ "//android_webview/test:libstandalonelibwebviewchromium" ]
+    srcjar_deps = [ "//android_webview/test:libstandalonelibwebviewchromium__jni_registration" ]
+
+    command_line_flags_file = "android-webview-command-line"
+  }
+}
+
+# Builds the WebView instrumentation test APK
+# This template provides the base shared test instrumentation.
+# Targets should contain sources and dependencies that are tests, while this
+# template should contain sources and dependencies that support multiple tests.
+# Args:
+#   apk_name: Test APK name
+#   apk_under_test: Target APK for tests.
+#   sources: Test sources
+#   deps: Additional deps for test sources
+template("base_webview_instrumentation_test_apk") {
+  instrumentation_test_apk(target_name) {
+    apk_name = invoker.apk_name
+    apk_under_test = invoker.apk_under_test
+    android_manifest = "//android_webview/javatests/AndroidManifest.xml"
+
+    deps = [
+      "//android_webview:android_webview_java",
+      "//android_webview:common_aidl_java",
+      "//android_webview:common_origin_trials_java",
+      "//android_webview:common_platform_services_java",
+      "//android_webview:common_variations_java",
+      "//android_webview:crash_client_java",
+      "//android_webview/nonembedded:crash_java",
+      "//android_webview/nonembedded:devui_java",
+      "//android_webview/nonembedded:services_java",
+      "//android_webview/nonembedded:util_java",
+      "//android_webview/proto:aw_variations_seed_proto_java",
+      "//android_webview/proto:metrics_bridge_records_proto_java",
+      "//android_webview/test:crash_test_utils_java",
+      "//android_webview/test:webview_instrumentation_test_mock_services_java",
+      "//android_webview/test:webview_instrumentation_test_utils_java",
+      "//android_webview/test/embedded_test_server:aw_net_java_test_support",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//base:base_java_test_support_uncommon",
+      "//components/content_capture/android:java",
+      "//components/content_capture/android/test_support:java",
+      "//components/crash/android:java",
+      "//components/embedder_support/android:util_java",
+      "//components/embedder_support/android:web_contents_delegate_java",
+      "//components/embedder_support/android/metrics:java",
+      "//components/metrics:metrics_java",
+      "//components/variations:variations_java",
+      "//components/variations/android:variations_java",
+      "//components/variations/proto:proto_java",
+      "//components/version_info/android:version_constants_java",
+      "//components/viz:viz_java",
+      "//content/public/android:content_java",
+      "//content/public/common:common_java",
+      "//content/public/test/android:content_java_test_support",
+      "//mojo/public/java:bindings_java",
+      "//net/android:net_java",
+      "//net/android:net_java_test_support",
+      "//services/network/public:features_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/android_deps:espresso_java",
+      "//third_party/android_deps:guava_android_java",
+      "//third_party/android_deps:protobuf_lite_runtime_java",
+      "//third_party/androidx:androidx_activity_activity_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
+      "//third_party/androidx:androidx_test_core_java",
+      "//third_party/androidx:androidx_test_monitor_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/blink/public/common:common_java",
+      "//third_party/blink/public/mojom:mojom_platform_java",
+      "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/metrics_proto:metrics_proto_java",
+      "//third_party/mockito:mockito_java",
+      "//ui/android:ui_java",
+      "//ui/android:ui_java_test_support",
+      "//url:gurl_java",
+    ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    sources = [
+      "//android_webview/javatests/src/org/chromium/android_webview/test/AwActivityTestRule.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/DisableHardwareAcceleration.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/TestAwContentsClient.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/AwQuotaManagerBridgeTestUtil.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/AwTestTouchUtils.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/CommonResources.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/CookieUtils.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/GraphicsTestUtils.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/ImagePageGenerator.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/JSUtils.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/JavascriptEventObserver.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/VideoSurfaceViewUtils.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/VideoTestUtil.java",
+      "//android_webview/javatests/src/org/chromium/android_webview/test/util/VideoTestWebServer.java",
+    ]
+    if (defined(invoker.sources)) {
+      sources += invoker.sources
+    }
+
+    if (defined(invoker.data)) {
+      data = invoker.data
+    }
+
+    if (defined(invoker.data_deps)) {
+      data_deps = invoker.data_deps
+    }
+
+    additional_apks = [
+      "//android_webview/test/embedded_test_server:aw_net_test_support_apk",
+      "//net/android:net_test_support_apk",
+    ]
+    srcjar_deps = [ "//android_webview/test:webview_instrumentation_test_jni" ]
+  }
+}

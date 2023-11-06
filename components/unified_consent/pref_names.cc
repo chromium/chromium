@@ -15,5 +15,7 @@ const char kUrlKeyedAnonymizedDataCollectionEnabled[] =
 
 const char kPageContentCollectionEnabled[] = "page_content_collection.enabled";
 
+const char kAutofillAssistanceEnabled[] = "autofill_assistance.enabled";
+
 }  // namespace prefs
 }  // namespace unified_consent

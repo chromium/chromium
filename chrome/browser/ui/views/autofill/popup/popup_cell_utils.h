@@ -132,12 +132,6 @@ std::unique_ptr<views::Label> CreateDescriptionLabel(
     base::WeakPtr<AutofillPopupController> controller,
     int line_number);
 
-// Adds the callbacks for the content area to `content_view`.
-void AddCallbacksToContentView(
-    base::WeakPtr<AutofillPopupController> controller,
-    int line_number,
-    PopupCellView& content_view);
-
 void AddSuggestionStrategyContentCellChildren(
     PopupCellView* view,
     base::WeakPtr<AutofillPopupController> controller,

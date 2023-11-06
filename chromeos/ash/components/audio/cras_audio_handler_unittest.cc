@@ -240,6 +240,12 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
     return nonchrome_output_stopped_change_count_;
   }
 
+  int survey_triggerd_count() const { return survey_triggerd_count_; }
+
+  const CrasAudioHandler::AudioSurvey& survey_triggerd_recv() const {
+    return survey_triggerd_recv_;
+  }
+
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
@@ -300,6 +306,16 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
 
   void OnForceRespectUiGainsStateChanged() override {}
 
+  void OnSurveyTriggered(const CrasAudioHandler::AudioSurvey& survey) override {
+    ++survey_triggerd_count_;
+    survey_triggerd_recv_.set_type(survey.type());
+    survey_triggerd_recv_.clear_data();
+
+    for (const auto& it : survey.data()) {
+      survey_triggerd_recv_.AddData(it.first, it.second);
+    }
+  }
+
  private:
   int active_output_node_changed_count_ = 0;
   int active_input_node_changed_count_ = 0;
@@ -315,6 +331,8 @@ class TestObserver : public CrasAudioHandler::AudioObserver {
   int output_stopped_change_count_ = 0;
   int nonchrome_output_stopped_change_count_ = 0;
   int nonchrome_output_started_change_count_ = 0;
+  int survey_triggerd_count_ = 0;
+  CrasAudioHandler::AudioSurvey survey_triggerd_recv_;
 };
 
 class SystemMonitorObserver
@@ -5435,6 +5453,42 @@ TEST_P(CrasAudioHandlerTest, SpeakOnMuteDetectionSwitchTest) {
   // speak-on-mute detection in the client.
   cras_audio_handler_->SetSpeakOnMuteDetection(/*som_on=*/false);
   EXPECT_FALSE(fake_cras_audio_client()->speak_on_mute_detection_enabled());
+}
+
+TEST_P(CrasAudioHandlerTest, AudioSurveyDefault) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {"key", "value"}};
+
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate an audio survey gets triggered.
+  fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
+
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
+            CrasAudioHandler::SurveyType::kGeneral);
+  EXPECT_THAT(test_observer_->survey_triggerd_recv().data(),
+              testing::ElementsAre(std::make_pair("key", "value")));
+}
+
+TEST_P(CrasAudioHandlerTest, AudioSurveyBluetooth) {
+  AudioNodeList audio_nodes = GenerateAudioNodeList(
+      {kInternalSpeaker, kHeadphone, kInternalMic, kUSBMic1});
+  base::flat_map<std::string, std::string> survey_specific_data = {
+      {CrasAudioHandler::kSurveyNameKey,
+       CrasAudioHandler::kSurveyNameBluetooth}};
+
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Simulate an audio survey gets triggered.
+  fake_cras_audio_client()->NotifySurveyTriggered(survey_specific_data);
+
+  EXPECT_EQ(test_observer_->survey_triggerd_count(), 1);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().type(),
+            CrasAudioHandler::SurveyType::kBluetooth);
+  EXPECT_EQ(test_observer_->survey_triggerd_recv().data().size(), 0u);
 }
 
 }  // namespace ash

@@ -15,14 +15,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "net/disk_cache/disk_cache.h"
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace base {
-namespace android {
-class ApplicationStatusListener;
-}  // namespace android
 class FilePath;
 }  //  namespace base
 
@@ -55,7 +53,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
       uint64_t cache_max_size,
       uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-      base::android::ApplicationStatusListener* app_status_listener,
+      disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       scoped_refptr<disk_cache::BackendFileOperationsFactory>
           file_operations_factory);

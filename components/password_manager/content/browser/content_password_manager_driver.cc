@@ -15,6 +15,7 @@
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver_factory.h"
 #include "components/password_manager/content/browser/form_meta_data.h"
+#include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
@@ -219,8 +220,9 @@ void ContentPasswordManagerDriver::ClearPreviewedForm() {
 
 void ContentPasswordManagerDriver::SetSuggestionAvailability(
     autofill::FieldRendererId element_id,
-    const autofill::mojom::AutofillState state) {
-  GetAutofillAgent()->SetSuggestionAvailability(element_id, state);
+    autofill::mojom::AutofillSuggestionAvailability suggestion_availability) {
+  GetAutofillAgent()->SetSuggestionAvailability(element_id,
+                                                suggestion_availability);
 }
 
 PasswordGenerationFrameHelper*
@@ -280,9 +282,16 @@ void ContentPasswordManagerDriver::PasswordFormsParsed(
   if (!HasValidURL(render_frame_host_))
     return;
 
+  auto logger =
+      std::make_unique<password_manager::BrowserSavePasswordProgressLogger>(
+          client_->GetLogManager());
   std::vector<autofill::FormData> forms = raw_forms;
-  for (auto& form : forms)
+  for (auto& form : forms) {
     SetFrameAndFormMetaData(render_frame_host_, form);
+    logger->LogFormData(password_manager::BrowserSavePasswordProgressLogger::
+                            STRING_FORM_IS_PASSWORD,
+                        form);
+  }
 
   GetPasswordManager()->OnPasswordFormsParsed(this, forms);
 }
@@ -444,17 +453,17 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           features::kPasswordSuggestionBottomSheetV2)) {
-    // TODO (crbug.com/1448579): Fix the autosubmission and remove the parameter
-    // autofill::mojom::SubmissionReadinessState::kNoInformation.
-    // TODO (crbug.com/1448579): Make ShowTouchToFill to return bool (whether it
-    // was shown or not) and do not call the OnShowPasswordSuggestions on the
-    // password autofill manager if TTF was shown.
-    client_->ShowKeyboardReplacingSurface(
-        this,
-        SubmissionReadinessParams(
-            form, username_field_index, password_field_index,
-            autofill::mojom::SubmissionReadinessState::kNoInformation),
-        options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS);
+    // TODO(crbug.com/1448579): Remove the parameter
+    // autofill::mojom::SubmissionReadinessState::kNoInformation when the
+    // feature is launched.
+    if (client_->ShowKeyboardReplacingSurface(
+            this,
+            SubmissionReadinessParams(
+                form, username_field_index, password_field_index,
+                autofill::mojom::SubmissionReadinessState::kNoInformation),
+            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)) {
+      return;
+    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 

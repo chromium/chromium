@@ -5,7 +5,8 @@
 source_set("keyboard_assist") {
   sources = [
     "omnibox_assistive_keyboard_delegate.h",
-    "omnibox_assistive_keyboard_delegate.mm",
+    "omnibox_assistive_keyboard_mediator.h",
+    "omnibox_assistive_keyboard_mediator.mm",
     "omnibox_assistive_keyboard_views.h",
     "omnibox_assistive_keyboard_views.mm",
     "omnibox_assistive_keyboard_views_utils.h",
@@ -25,8 +26,8 @@ source_set("keyboard_assist") {
     "//base:i18n",
     "//components/search_engines",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/search_engines:search_engines_util",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",

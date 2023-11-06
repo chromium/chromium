@@ -20,8 +20,8 @@ namespace arc {
 
 class ArcTracingModel;
 
-// Timestamps in tick counts accumulated over the course of a trace. Backed by a
-// deque to give O(1) non-amortized insertion time.
+// Timestamps in tick counts (ms) accumulated over the course of a trace. Backed
+// by deques to give O(1) non-amortized insertion time.
 struct TraceTimestamps {
   TraceTimestamps();
   ~TraceTimestamps();
@@ -30,9 +30,10 @@ struct TraceTimestamps {
   TraceTimestamps(const TraceTimestamps&) = delete;
   TraceTimestamps& operator=(const TraceTimestamps&) = delete;
 
-  void Add(base::TimeTicks timestamp);
+  void AddCommit(base::TimeTicks commit_ts);
+  void AddPresent(base::TimeTicks present_ts);
 
-  std::deque<int64_t> ticks_ms;
+  std::deque<int64_t> commits, presents;
 };
 
 // Graphic buffers events model. It is build from the generic |ArcTracingModel|
@@ -60,7 +61,7 @@ class ArcTracingGraphicsModel {
   // When adding or editing lines, prefer an actual "= ###" rather than rely
   // on implicit incrementing, and do not change constant values once added.
   // clang-format off
-  enum class BufferEventType {
+  enum class EventType {
     kNone,  // 0
 
     // Surface flinger events.
@@ -98,7 +99,7 @@ class ArcTracingGraphicsModel {
     kChromeOSDraw             = 500,  // Obsolete
     kChromeOSSwap             = 501,  // Obsolete
     kChromeOSWaitForAck       = 502,  // Obsolete
-    kChromeOSPresentationDone = 503,  // Obsolete
+    kChromeOSPresentationDone = 503,
     kChromeOSSwapDone         = 504,
     kChromeOSJank             = 505,  // Obsolete
 
@@ -114,14 +115,12 @@ class ArcTracingGraphicsModel {
   // clang-format on
 
   struct BufferEvent {
-    BufferEvent(BufferEventType type, int64_t timestamp);
-    BufferEvent(BufferEventType type,
-                int64_t timestamp,
-                const std::string& content);
+    BufferEvent(EventType type, int64_t timestamp);
+    BufferEvent(EventType type, int64_t timestamp, const std::string& content);
 
     bool operator==(const BufferEvent& other) const;
 
-    BufferEventType type;
+    EventType type;
     uint64_t timestamp;
     std::string content;
   };
@@ -240,8 +239,7 @@ class ArcTracingGraphicsModel {
   bool skip_structure_validation_ = false;
 };
 
-std::ostream& operator<<(std::ostream& os,
-                         ArcTracingGraphicsModel::BufferEventType);
+std::ostream& operator<<(std::ostream& os, ArcTracingGraphicsModel::EventType);
 
 }  // namespace arc
 

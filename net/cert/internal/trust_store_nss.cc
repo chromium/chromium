@@ -25,12 +25,29 @@
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_features.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/trust_store.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
+
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+// TODO(crbug.com/1482000): We can remove these weak attributes in M123 or
+// later. Until then, these need to be declared with the weak attribute
+// since older platforms may not provide these symbols.
+extern "C" CERTCertList* CERT_CreateSubjectCertListForChromium(
+    CERTCertList* certList,
+    CERTCertDBHandle* handle,
+    const SECItem* name,
+    PRTime sorttime,
+    PRBool validOnly,
+    PRBool ignoreChaps) __attribute__((weak));
+extern "C" CERTCertificate* CERT_FindCertByDERCertForChromium(
+    CERTCertDBHandle* handle,
+    SECItem* derCert,
+    PRBool ignoreChaps) __attribute__((weak));
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace net {
 
@@ -109,7 +126,7 @@ bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
 }  // namespace
 
 TrustStoreNSS::ListCertsResult::ListCertsResult(ScopedCERTCertificate cert,
-                                                CertificateTrust trust)
+                                                bssl::CertificateTrust trust)
     : cert(std::move(cert)), trust(trust) {}
 TrustStoreNSS::ListCertsResult::~ListCertsResult() = default;
 
@@ -119,12 +136,21 @@ TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
     ListCertsResult&& other) = default;
 
 TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
-    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {}
+    : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+  if (!CERT_CreateSubjectCertListForChromium) {
+    LOG(WARNING) << "CERT_CreateSubjectCertListForChromium is not available";
+  }
+  if (!CERT_FindCertByDERCertForChromium) {
+    LOG(WARNING) << "CERT_FindCertByDERCertForChromium is not available";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
+}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
-void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
-                                     ParsedCertificateList* issuers) {
+void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                                     bssl::ParsedCertificateList* issuers) {
   crypto::EnsureNSSInit();
 
   SECItem name;
@@ -133,21 +159,38 @@ void TrustStoreNSS::SyncGetIssuersOf(const ParsedCertificate* cert,
   // version may not match the unnormalized version.
   name.len = cert->tbs().issuer_tlv.Length();
   name.data = const_cast<uint8_t*>(cert->tbs().issuer_tlv.UnsafeData());
+
   // |validOnly| in CERT_CreateSubjectCertList controls whether to return only
   // certs that are valid at |sorttime|. Expiration isn't meaningful for trust
   // anchors, so request all the matches.
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   crypto::ScopedCERTCertList found_certs(CERT_CreateSubjectCertList(
       nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
       PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
+#else
+  crypto::ScopedCERTCertList found_certs;
+  if (CERT_CreateSubjectCertListForChromium) {
+    found_certs =
+        crypto::ScopedCERTCertList(CERT_CreateSubjectCertListForChromium(
+            nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
+            PR_Now() /* sorttime */, PR_FALSE /* validOnly */,
+            PR_TRUE /* ignoreChaps */));
+  } else {
+    found_certs = crypto::ScopedCERTCertList(CERT_CreateSubjectCertList(
+        nullptr /* certList */, CERT_GetDefaultCertDB(), &name,
+        PR_Now() /* sorttime */, PR_FALSE /* validOnly */));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
   if (!found_certs) {
     return;
   }
 
   for (CERTCertListNode* node = CERT_LIST_HEAD(found_certs);
        !CERT_LIST_END(node, found_certs); node = CERT_LIST_NEXT(node)) {
-    CertErrors parse_errors;
-    std::shared_ptr<const ParsedCertificate> cur_cert =
-        ParsedCertificate::Create(
+    bssl::CertErrors parse_errors;
+    std::shared_ptr<const bssl::ParsedCertificate> cur_cert =
+        bssl::ParsedCertificate::Create(
             x509_util::CreateCryptoBuffer(base::make_span(
                 node->cert->derCert.data, node->cert->derCert.len)),
             {}, &parse_errors);
@@ -211,7 +254,8 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
 // matching trust object. Do we need to do that too? (this pk11_isID0 thing:
 // https://searchfox.org/nss/source/lib/pk11wrap/pk11cert.c#357)
 
-CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
+bssl::CertificateTrust TrustStoreNSS::GetTrust(
+    const bssl::ParsedCertificate* cert) {
   crypto::EnsureNSSInit();
   // If trust settings are only being used from a specified slot, and that slot
   // is nullptr, there's nothing to do. This corresponds to the case where we
@@ -230,7 +274,7 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
   if (absl::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_) &&
       absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) == nullptr) {
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
   SECItem der_cert;
@@ -245,24 +289,36 @@ CertificateTrust TrustStoreNSS::GetTrust(const ParsedCertificate* cert) {
   // CERT_FindCertByDERCert to avoid having to have NSS parse the certificate
   // and create a structure for it if the cert doesn't already exist in any of
   // the loaded NSS databases.
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ScopedCERTCertificate nss_cert(
       CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
+#else
+  ScopedCERTCertificate nss_cert;
+  if (CERT_FindCertByDERCertForChromium) {
+    nss_cert = ScopedCERTCertificate(CERT_FindCertByDERCertForChromium(
+        CERT_GetDefaultCertDB(), &der_cert, /*ignoreChaps=*/PR_TRUE));
+  } else {
+    nss_cert = ScopedCERTCertificate(
+        CERT_FindCertByDERCert(CERT_GetDefaultCertDB(), &der_cert));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(IS_CHROMEOS_DEVICE)
+
   if (!nss_cert) {
     DVLOG(1) << "skipped cert that has no CERTCertificate already";
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
   return GetTrustIgnoringSystemTrust(nss_cert.get());
 }
 
-CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
+bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     CERTCertificate* nss_cert) const {
   // See if NSS has any trust settings for the certificate at all. If not,
   // there is no point in doing further work.
   CERTCertTrust nss_cert_trust;
   if (CERT_GetCertTrust(nss_cert, &nss_cert_trust) != SECSuccess) {
     DVLOG(1) << "skipped cert that has no trust settings";
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
   // If there were trust settings, we may not be able to use the NSS calculated
@@ -285,7 +341,7 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // cert in user slots? I don't know how that can actually happen though.)
   if (slots_and_handles_for_cert.empty()) {
     DVLOG(1) << "skipped cert that has no slots";
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
   // List of trustOrder, slot pairs.
@@ -318,7 +374,7 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   }
   if (slots_to_check.empty()) {
     DVLOG(1) << "cert is only in disallowed slots, skipping";
-    return CertificateTrust::ForUnspecified();
+    return bssl::CertificateTrust::ForUnspecified();
   }
 
   DVLOG(1) << "cert is in both allowed and disallowed slots, doing manual "
@@ -410,16 +466,16 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
           if (base::FeatureList::IsEnabled(
                   features::kTrustStoreTrustedLeafSupport)) {
             DVLOG(1) << "CKT_NSS_TRUSTED -> trusted leaf";
-            return CertificateTrust::ForTrustedLeaf();
+            return bssl::CertificateTrust::ForTrustedLeaf();
           } else {
             DVLOG(1) << "CKT_NSS_TRUSTED -> unspecified";
-            return CertificateTrust::ForUnspecified();
+            return bssl::CertificateTrust::ForUnspecified();
           }
         case CKT_NSS_TRUSTED_DELEGATOR: {
           DVLOG(1) << "CKT_NSS_TRUSTED_DELEGATOR -> trust anchor";
           const bool enforce_anchor_constraints =
               IsLocalAnchorConstraintsEnforcementEnabled();
-          return CertificateTrust::ForTrustAnchor()
+          return bssl::CertificateTrust::ForTrustAnchor()
               .WithEnforceAnchorConstraints(enforce_anchor_constraints)
               .WithEnforceAnchorExpiry(enforce_anchor_constraints);
         }
@@ -427,10 +483,10 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         case CKT_NSS_VALID_DELEGATOR:
           DVLOG(1) << "CKT_NSS_MUST_VERIFY_TRUST or CKT_NSS_VALID_DELEGATOR -> "
                       "unspecified";
-          return CertificateTrust::ForUnspecified();
+          return bssl::CertificateTrust::ForUnspecified();
         case CKT_NSS_NOT_TRUSTED:
           DVLOG(1) << "CKT_NSS_NOT_TRUSTED -> distrusted";
-          return CertificateTrust::ForDistrusted();
+          return bssl::CertificateTrust::ForDistrusted();
         case CKT_NSS_TRUST_UNKNOWN:
           DVLOG(1) << "CKT_NSS_TRUST_UNKNOWN trust value - skip";
           break;
@@ -442,17 +498,17 @@ CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   }
 
   DVLOG(1) << "no suitable NSS trust record found";
-  return CertificateTrust::ForUnspecified();
+  return bssl::CertificateTrust::ForUnspecified();
 }
 
-CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
+bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
     const CERTCertTrust& trust) const {
   unsigned int trust_flags = SEC_GET_TRUST_FLAGS(&trust, trustSSL);
 
   // Determine if the certificate is distrusted.
   if ((trust_flags & (CERTDB_TERMINAL_RECORD | CERTDB_TRUSTED_CA |
                       CERTDB_TRUSTED)) == CERTDB_TERMINAL_RECORD) {
-    return CertificateTrust::ForDistrusted();
+    return bssl::CertificateTrust::ForDistrusted();
   }
 
   bool is_trusted_ca = false;
@@ -474,18 +530,18 @@ CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
   }
 
   if (is_trusted_ca && is_trusted_leaf) {
-    return CertificateTrust::ForTrustAnchorOrLeaf()
+    return bssl::CertificateTrust::ForTrustAnchorOrLeaf()
         .WithEnforceAnchorConstraints(enforce_anchor_constraints)
         .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_ca) {
-    return CertificateTrust::ForTrustAnchor()
+    return bssl::CertificateTrust::ForTrustAnchor()
         .WithEnforceAnchorConstraints(enforce_anchor_constraints)
         .WithEnforceAnchorExpiry(enforce_anchor_constraints);
   } else if (is_trusted_leaf) {
-    return CertificateTrust::ForTrustedLeaf();
+    return bssl::CertificateTrust::ForTrustedLeaf();
   }
 
-  return CertificateTrust::ForUnspecified();
+  return bssl::CertificateTrust::ForUnspecified();
 }
 
 }  // namespace net

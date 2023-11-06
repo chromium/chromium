@@ -5,10 +5,10 @@
 #ifndef ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 #define ASH_SYSTEM_UNIFIED_TASKS_BUBBLE_VIEW_H_
 
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/ash_export.h"
 #include "ash/glanceables/glanceables_metrics.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -70,23 +70,22 @@ class TasksComboboxModel;
 // |'list_footer_view_'                                           |
 // +--------------------------------------------------------------+
 
-class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
+class ASH_EXPORT TasksBubbleView : public GlanceablesTasksViewBase,
                                    public views::ViewObserver {
  public:
   METADATA_HEADER(TasksBubbleView);
 
   TasksBubbleView(DetailedViewDelegate* delegate,
-                  ui::ListModel<GlanceablesTaskList>* task_list);
+                  const ui::ListModel<api::TaskList>* task_lists);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;
 
+  // GlanceablesTasksViewBase:
+  void CancelUpdates() override;
+
   // views::ViewObserver:
   void OnViewFocused(views::View* view) override;
-
-  // Invalidates any pending tasks, or tasks lists requests. Called when the
-  // glanceables bubble widget starts closing to avoid unnecessary UI updates.
-  void CancelUpdates();
 
  private:
   // Handles press behavior for the "See all" button in `list_footer_view_` and
@@ -99,7 +98,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
   void UpdateTasksList(const std::string& task_list_id,
                        const std::string& task_list_title,
                        bool initial_update,
-                       ui::ListModel<GlanceablesTask>* tasks);
+                       const ui::ListModel<api::Task>* tasks);
 
   // Announces text describing the task list state through a screen
   // reader, using `task_list_combo_box_view_` view accessibility helper.
@@ -109,12 +108,6 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble,
   void MarkTaskAsCompleted(const std::string& task_list_id,
                            const std::string& task_id,
                            bool completed);
-
-  // Updates the specified task.
-  void UpdateTask(const std::string& task_list_id,
-                  const std::string& task_id,
-                  const std::string& title,
-                  GlanceablesTasksClient::UpdateTaskCallback callback);
 
   // Model for the combobox used to change the active task list.
   std::unique_ptr<TasksComboboxModel> tasks_combobox_model_;

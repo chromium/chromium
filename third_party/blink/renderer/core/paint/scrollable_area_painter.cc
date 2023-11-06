@@ -152,7 +152,12 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
 
 bool ScrollableAreaPainter::PaintOverflowControls(
     const PaintInfo& paint_info,
-    const gfx::Vector2d& paint_offset) {
+    const gfx::Vector2d& paint_offset,
+    const FragmentData* fragment) {
+  if (!fragment) {
+    return false;
+  }
+
   // Don't do anything if we have no overflow.
   const auto& box = *GetScrollableArea().GetLayoutBox();
   if (!box.IsScrollContainer() ||
@@ -179,9 +184,6 @@ bool ScrollableAreaPainter::PaintOverflowControls(
   }
 
   GraphicsContext& context = paint_info.context;
-  const auto* fragment = paint_info.FragmentToPaint(box);
-  if (!fragment)
-    return false;
 
   const ClipPaintPropertyNode* clip = nullptr;
   const auto* properties = fragment->PaintProperties();

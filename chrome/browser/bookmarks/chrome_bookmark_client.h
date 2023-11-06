@@ -48,7 +48,9 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
   ChromeBookmarkClient(
       Profile* profile,
       bookmarks::ManagedBookmarkService* managed_bookmark_service,
-      sync_bookmarks::BookmarkSyncService* bookmark_sync_service,
+      sync_bookmarks::BookmarkSyncService*
+          local_or_syncable_bookmark_sync_service,
+      sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
       BookmarkUndoService* bookmark_undo_service);
 
   ChromeBookmarkClient(const ChromeBookmarkClient&) = delete;
@@ -64,8 +66,6 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
       base::CancelableTaskTracker* tracker) override;
   bool SupportsTypedCountForUrls() override;
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
-  bool IsPermanentNodeVisibleWhenEmpty(
-      bookmarks::BookmarkNode::Type type) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(
@@ -89,9 +89,12 @@ class ChromeBookmarkClient : public power_bookmarks::BookmarkClientBase {
   // be null during testing.
   const raw_ptr<bookmarks::ManagedBookmarkService> managed_bookmark_service_;
 
-  // Pointer to the BookmarkSyncService responsible for encoding and decoding
-  // sync metadata persisted together with the bookmarks model.
-  const raw_ptr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
+  // Pointers to the two BookmarkSyncService instances responsible for encoding
+  // and decoding sync metadata persisted together with the bookmarks model.
+  const raw_ptr<sync_bookmarks::BookmarkSyncService>
+      local_or_syncable_bookmark_sync_service_;
+  const raw_ptr<sync_bookmarks::BookmarkSyncService>
+      account_bookmark_sync_service_;
 
   // Pointer to BookmarkUndoService, responsible for making operations undoable.
   const raw_ptr<BookmarkUndoService> bookmark_undo_service_;

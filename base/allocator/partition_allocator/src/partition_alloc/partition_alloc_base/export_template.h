@@ -7,42 +7,45 @@
 
 // Synopsis
 //
-// This header provides macros for using PA_COMPONENT_EXPORT(PARTITION_ALLOC)
-// macros with explicit template instantiation declarations and definitions.
-// Generally, the PA_COMPONENT_EXPORT(PARTITION_ALLOC) macros are used at
-// declarations, and GCC requires them to be used at explicit instantiation
-// declarations, but MSVC requires __declspec(dllexport) to be used at the
-// explicit instantiation definitions instead.
+// This header provides macros for using
+// PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) macros with explicit template
+// instantiation declarations and definitions. Generally, the
+// PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) macros are used at declarations,
+// and GCC requires them to be used at explicit instantiation declarations, but
+// MSVC requires __declspec(dllexport) to be used at the explicit instantiation
+// definitions instead.
 
 // Usage
 //
 // In a header file, write:
 //
 //   extern template class
-//   PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC)) foo<bar>;
+//   PA_EXPORT_TEMPLATE_DECLARE(PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE))
+//   foo<bar>;
 //
 // In a source file, write:
 //
 //   template class
-//   PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC)) foo<bar>;
+//   PA_EXPORT_TEMPLATE_DEFINE(PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE))
+//   foo<bar>;
 
 // Implementation notes
 //
-// On Windows, when building when PA_COMPONENT_EXPORT(PARTITION_ALLOC) expands
-// to __declspec(dllexport)), we want the two lines to expand to:
+// On Windows, when building when PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+// expands to __declspec(dllexport)), we want the two lines to expand to:
 //
 //     extern template class foo<bar>;
-//     template class PA_COMPONENT_EXPORT(PARTITION_ALLOC) foo<bar>;
+//     template class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) foo<bar>;
 //
 // In all other cases (non-Windows, and Windows when
-// PA_COMPONENT_EXPORT(PARTITION_ALLOC) expands to
+// PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) expands to
 // __declspec(dllimport)), we want:
 //
-//     extern template class PA_COMPONENT_EXPORT(PARTITION_ALLOC) foo<bar>;
+//     extern template class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) foo<bar>;
 //     template class foo<bar>;
 //
 // The implementation of this header uses some subtle macro semantics to
-// detect what the provided PA_COMPONENT_EXPORT(PARTITION_ALLOC) value was
+// detect what the provided PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) value was
 // defined as and then to dispatch to appropriate macro definitions.
 // Unfortunately, MSVC's C preprocessor is rather non-compliant and requires
 // special care to make it work.
@@ -85,33 +88,34 @@
 //     PA_EXPORT_TEMPLATE_INVOKE(DECLARE, DEFAULT, PA_EXPORT)
 // will export to call
 //     PA_EXPORT_TEMPLATE_DECLARE_DEFAULT(PA_EXPORT, )
-// (but with PA_COMPONENT_EXPORT(PARTITION_ALLOC) expanded too).
+// (but with PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) expanded too).
 #define PA_EXPORT_TEMPLATE_INVOKE(which, style, export) \
   PA_EXPORT_TEMPLATE_INVOKE_2(which, style, export)
 #define PA_EXPORT_TEMPLATE_INVOKE_2(which, style, export) \
   PA_EXPORT_TEMPLATE_##which##_##style(export, )
 
-// Default style is to apply the PA_COMPONENT_EXPORT(PARTITION_ALLOC) macro at
-// declaration sites.
+// Default style is to apply the PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) macro
+// at declaration sites.
 #define PA_EXPORT_TEMPLATE_DECLARE_DEFAULT(export, _) export
 #define PA_EXPORT_TEMPLATE_DEFINE_DEFAULT(export, _)
 
-// The "MSVC hack" style is used when PA_COMPONENT_EXPORT(PARTITION_ALLOC) is
-// defined as __declspec(dllexport), which MSVC requires to be used at
+// The "MSVC hack" style is used when PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+// is defined as __declspec(dllexport), which MSVC requires to be used at
 // definition sites instead.
 #define PA_EXPORT_TEMPLATE_DECLARE_EXPORT_DLLEXPORT(export, _)
 #define PA_EXPORT_TEMPLATE_DEFINE_EXPORT_DLLEXPORT(export, _) export
 
 // PA_EXPORT_TEMPLATE_STYLE is an internal helper macro that identifies which
 // export style needs to be used for the provided
-// PA_COMPONENT_EXPORT(PARTITION_ALLOC) macro definition.
+// PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) macro definition.
 // "", "__attribute__(...)", and "__declspec(dllimport)" are mapped
 // to "DEFAULT"; while "__declspec(dllexport)" is mapped to "MSVC_HACK".
 //
 // It's implemented with token pasting to transform the __attribute__ and
 // __declspec annotations into macro invocations.  E.g., if
-// PA_COMPONENT_EXPORT(PARTITION_ALLOC) is defined as "__declspec(dllimport)",
-// it undergoes the following sequence of macro substitutions:
+// PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) is defined as
+// "__declspec(dllimport)", it undergoes the following sequence of macro
+// substitutions:
 //     PA_EXPORT_TEMPLATE_STYLE(PA_EXPORT,)
 //     PA_EXPORT_TEMPLATE_STYLE_2(__declspec(dllimport),)
 //     PA_EXPORT_TEMPLATE_STYLE_3(

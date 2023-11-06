@@ -200,7 +200,7 @@ void ThreadControllerWithMessagePumpImpl::SetNextDelayedDoWork(
   }
   TimeTicks run_time =
       wake_up.has_value()
-          ? pump_->AjdustDelayedRunTime(wake_up->earliest_time(), wake_up->time,
+          ? pump_->AdjustDelayedRunTime(wake_up->earliest_time(), wake_up->time,
                                         wake_up->latest_time())
           : TimeTicks::Max();
   DCHECK_LT(lazy_now->Now(), run_time);
@@ -358,7 +358,7 @@ ThreadControllerWithMessagePumpImpl::DoWork() {
 
   // The MessagePump will schedule the wake up on our behalf, so we need to
   // update |next_work_info.delayed_run_time|.
-  TimeTicks next_delayed_do_work = pump_->AjdustDelayedRunTime(
+  TimeTicks next_delayed_do_work = pump_->AdjustDelayedRunTime(
       next_wake_up->earliest_time(), next_wake_up->time,
       next_wake_up->latest_time());
 

@@ -50,35 +50,26 @@ import org.chromium.components.media_router.TestMediaRouterClient;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Robolectric tests for BaseSessionController.
- */
+/** Robolectric tests for BaseSessionController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowMediaRouter.class, ShadowCastContext.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowMediaRouter.class, ShadowCastContext.class})
 public class BaseSessionControllerTest {
     private static final String PRESENTATION_ID = "presentation-id";
     private static final String ORIGIN = "https://example.com/";
     private static final int TAB_ID = 1;
     private static final String APP_ID = "12345678";
 
-    @Mock
-    private CastDevice mCastDevice;
-    @Mock
-    private CafBaseMediaRouteProvider mProvider;
-    @Mock
-    private BaseNotificationController mNotificationController;
-    @Mock
-    private MediaSource mSource;
-    @Mock
-    private MediaSink mSink;
-    @Mock
-    private CastContext mCastContext;
-    @Mock
-    private CastSession mCastSession;
-    @Mock
-    private SessionManager mSessionManager;
-    @Mock
-    private RemoteMediaClient mRemoteMediaClient;
+    @Mock private CastDevice mCastDevice;
+    @Mock private CafBaseMediaRouteProvider mProvider;
+    @Mock private BaseNotificationController mNotificationController;
+    @Mock private MediaSource mSource;
+    @Mock private MediaSink mSink;
+    @Mock private CastContext mCastContext;
+    @Mock private CastSession mCastSession;
+    @Mock private SessionManager mSessionManager;
+    @Mock private RemoteMediaClient mRemoteMediaClient;
     private BaseSessionController mController;
     private CreateRouteRequestInfo mRequestInfo;
     private MediaRouterTestHelper mMediaRouterHelper;
@@ -98,8 +89,16 @@ public class BaseSessionControllerTest {
                         .build();
         mController = new TestSessionController(mProvider, mNotificationController);
         mController.addCallback(mNotificationController);
-        mRequestInfo = new CreateRouteRequestInfo(mSource, mSink, PRESENTATION_ID, ORIGIN, TAB_ID,
-                false, 1, mMediaRouterHelper.getCastRoute());
+        mRequestInfo =
+                new CreateRouteRequestInfo(
+                        mSource,
+                        mSink,
+                        PRESENTATION_ID,
+                        ORIGIN,
+                        TAB_ID,
+                        false,
+                        1,
+                        mMediaRouterHelper.getCastRoute());
 
         doReturn(mSessionManager).when(mCastContext).getSessionManager();
         doReturn(mRemoteMediaClient).when(mCastSession).getRemoteMediaClient();
@@ -237,7 +236,8 @@ public class BaseSessionControllerTest {
     private static class TestSessionController extends BaseSessionController {
         public BaseNotificationController mNotificationController;
 
-        public TestSessionController(CafBaseMediaRouteProvider provider,
+        public TestSessionController(
+                CafBaseMediaRouteProvider provider,
                 BaseNotificationController notificationController) {
             super(provider);
             mNotificationController = notificationController;

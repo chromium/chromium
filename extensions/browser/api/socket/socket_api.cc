@@ -587,8 +587,8 @@ ExtensionFunction::ResponseAction SocketWriteFunction::Work() {
   int socket_id = socket_id_value.GetInt();
   size_t io_buffer_size = data_value.GetBlob().size();
 
-  scoped_refptr<net::IOBuffer> io_buffer =
-      base::MakeRefCounted<net::IOBuffer>(data_value.GetBlob().size());
+  auto io_buffer =
+      base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
   base::ranges::copy(data_value.GetBlob(), io_buffer->data());
 
   Socket* socket = GetSocket(socket_id);
@@ -676,7 +676,8 @@ ExtensionFunction::ResponseAction SocketSendToFunction::Work() {
 
   io_buffer_size_ = data_value.GetBlob().size();
 
-  io_buffer_ = base::MakeRefCounted<net::IOBuffer>(data_value.GetBlob().size());
+  io_buffer_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(data_value.GetBlob().size());
   base::ranges::copy(data_value.GetBlob(), io_buffer_->data());
 
   Socket* socket = GetSocket(socket_id_);

@@ -429,23 +429,38 @@ class BASE_EXPORT GSL_OWNER Value {
     //                                 .Append(true));
     //
     // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as (and less mistake-prone than) stand-alone calls to `Set`.
+    // as stand-alone calls to `Set`, while also making it harder to
+    // accidentally insert items in the wrong dictionary.
     //
     // The equivalent code without using these builder-style methods:
     //
-    // Value::Dict bad_example;
-    // bad_example.Set("key-1", "first value")
-    // bad_example.Set("key-2", 2)
-    // bad_example.Set("key-3", true)
+    // Value::Dict no_builder_example;
+    // no_builder_example.Set("key-1", "first value")
+    // no_builder_example.Set("key-2", 2)
+    // no_builder_example.Set("key-3", true)
     // Value::Dict nested_dictionary;
     // nested_dictionary.Set("nested-key-1", "value");
     // nested_dictionary.Set("nested-key-2", true);
-    // bad_example.Set("nested_dictionary", std::move(nested_dictionary));
+    // no_builder_example.Set("nested_dictionary",
+    //                        std::move(nested_dictionary));
     // Value::List nested_list;
     // nested_list.Append("nested-list-value");
     // nested_list.Append(5);
     // nested_list.Append(true);
-    // bad_example.Set("nested-list", std::move(nested_list));
+    // no_builder_example.Set("nested-list", std::move(nested_list));
+    //
+    // Sometimes `git cl format` does a less than perfect job formatting these
+    // chained `Set` calls. In these cases you can use a trailing empty comment
+    // to influence the code formatting:
+    //
+    // Value::Dict result = Value::Dict().Set(
+    //     "nested",
+    //     base::Value::Dict().Set("key", "value").Set("other key", "other"));
+    //
+    // Value::Dict result = Value::Dict().Set("nested",
+    //                                        base::Value::Dict() //
+    //                                           .Set("key", "value")
+    //                                           .Set("other key", "value"));
     //
     Dict&& Set(StringPiece key, Value&& value) &&;
     Dict&& Set(StringPiece key, bool value) &&;
@@ -719,20 +734,19 @@ class BASE_EXPORT GSL_OWNER Value {
     // Rvalue overrides of the `Append` methods, which allow you to construct
     // a `Value::List` builder-style:
     //
-    // Value::List result = Value::List()
-    //     .Append("first value")
-    //     .Append(2)
-    //     .Append(true);
+    // Value::List result =
+    //   Value::List().Append("first value").Append(2).Append(true);
     //
     // Each method returns a rvalue reference to `this`, so this is as efficient
-    // as (and less mistake-prone than) stand-alone calls to `Append`.
+    // as stand-alone calls to `Append`, while at the same time making it harder
+    // to accidentally append to the wrong list.
     //
     // The equivalent code without using these builder-style methods:
     //
-    // Value::List bad_example;
-    // bad_example.Append("first value");
-    // bad_example.Append(2);
-    // bad_example.Append(true);
+    // Value::List no_builder_example;
+    // no_builder_example.Append("first value");
+    // no_builder_example.Append(2);
+    // no_builder_example.Append(true);
     //
     List&& Append(Value&& value) &&;
     List&& Append(bool value) &&;

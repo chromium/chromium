@@ -34,7 +34,15 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
   requester_ = requester;
 
   unmask_request_details_->card = card_;
-
+  if (card_.record_type() == CreditCard::RecordType::kVirtualCard) {
+    unmask_request_details_->last_committed_primary_main_frame_origin =
+        autofill_client_->GetLastCommittedPrimaryMainFrameURL()
+            .DeprecatedGetOriginAsURL();
+    if (!autofill_client_->IsOffTheRecord()) {
+      unmask_request_details_->merchant_domain_for_footprints =
+          autofill_client_->GetLastCommittedPrimaryMainFrameOrigin();
+    }
+  }
   if (ShouldShowCardMetadata(unmask_request_details_->card)) {
     unmask_request_details_->client_behavior_signals.push_back(
         ClientBehaviorConstants::kShowingCardArtImageAndCardProductName);
@@ -62,6 +70,18 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     AutofillClient::PaymentsRpcResult result,
     payments::PaymentsClient::UnmaskResponseDetails& response_details) {
+  if (!requester_) {
+    Reset();
+    return;
+  }
+  if (unmask_request_details_->card.record_type() ==
+      CreditCard::RecordType::kVirtualCard) {
+    requester_->OnVirtualCardRiskBasedAuthenticationResponseReceived(
+        result, response_details);
+    Reset();
+    return;
+  }
+
   RiskBasedAuthenticationResponse response;
   if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
     response.did_succeed = true;
@@ -92,6 +112,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
 
     // TODO(crbug.com/1470933): Log the error metrics.
   }
+
   if (requester_) {
     requester_->OnRiskBasedAuthenticationResponseReceived(response);
   }

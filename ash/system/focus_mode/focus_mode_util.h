@@ -67,6 +67,10 @@ ASH_EXPORT std::u16string GetNotificationTitleForFocusSession(
 ASH_EXPORT int GetTimerTextfieldInputInMinutes(
     SystemTextfield* timer_textfield);
 
+// Returns a string of `end_time` formatted for the "Until" end time label. For
+// example: "Until 1:00 PM".
+ASH_EXPORT std::u16string GetFormattedEndTimeString(const base::Time end_time);
+
 }  // namespace focus_mode_util
 
 }  // namespace ash

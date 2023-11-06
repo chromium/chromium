@@ -89,10 +89,10 @@ void AddTestCreditCard(Profile* base_profile, const CreditCard& card) {
 
 void AddTestServerCreditCard(Profile* base_profile, const CreditCard& card) {
   PdmChangeWaiter observer(base_profile);
-  GetPersonalDataManager(base_profile)->AddFullServerCreditCard(card);
+  GetPersonalDataManager(base_profile)->AddFullServerCreditCardForTesting(card);
 
-  // AddCreditCard is asynchronous. Wait for it to finish before continuing the
-  // tests.
+  // AddFullServerCreditCardForTesting is asynchronous. Wait for it to finish
+  // before continuing the tests.
   observer.Wait();
 }
 

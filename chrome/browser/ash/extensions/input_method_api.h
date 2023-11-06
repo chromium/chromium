@@ -17,6 +17,7 @@ namespace chromeos {
 class ExtensionDictionaryEventRouter;
 class ExtensionInputMethodEventRouter;
 class ExtensionImeMenuEventRouter;
+class LanguagePackEventRouter;
 }
 
 namespace extensions {
@@ -316,23 +317,6 @@ class InputMethodPrivateSetCompositionRangeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class InputMethodPrivateGetTextFieldBoundsFunction : public ExtensionFunction {
- public:
-  InputMethodPrivateGetTextFieldBoundsFunction(
-      const InputMethodPrivateGetTextFieldBoundsFunction&) = delete;
-  InputMethodPrivateGetTextFieldBoundsFunction& operator=(
-      const InputMethodPrivateGetTextFieldBoundsFunction&) = delete;
-  InputMethodPrivateGetTextFieldBoundsFunction() = default;
-
- protected:
-  ~InputMethodPrivateGetTextFieldBoundsFunction() override = default;
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("inputMethodPrivate.getTextFieldBounds",
-                             INPUTMETHODPRIVATE_GETTEXTFIELDBOUNDS)
-};
 class InputMethodPrivateResetFunction : public ExtensionFunction {
  public:
   InputMethodPrivateResetFunction() = default;
@@ -457,6 +441,8 @@ class InputMethodAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<chromeos::ExtensionDictionaryEventRouter>
       dictionary_event_router_;
   std::unique_ptr<chromeos::ExtensionImeMenuEventRouter> ime_menu_event_router_;
+  std::unique_ptr<chromeos::LanguagePackEventRouter>
+      language_pack_event_router_;
 };
 
 }  // namespace extensions

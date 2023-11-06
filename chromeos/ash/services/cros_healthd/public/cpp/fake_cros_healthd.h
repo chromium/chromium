@@ -295,15 +295,16 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
       mojo::PendingRemote<mojom::DEPRECATED_LedLitUpRoutineReplier> replier,
       DEPRECATED_RunLedLitUpRoutineCallback callback) override;
   void RunEmmcLifetimeRoutine(RunEmmcLifetimeRoutineCallback callback) override;
-  void RunAudioSetVolumeRoutine(
+  void DEPRECATED_RunAudioSetVolumeRoutine(
       uint64_t node_id,
       uint8_t volume,
       bool mute_on,
-      RunAudioSetVolumeRoutineCallback callback) override;
-  void RunAudioSetGainRoutine(uint64_t node_id,
-                              uint8_t gain,
-                              bool mute_on,
-                              RunAudioSetGainRoutineCallback callback) override;
+      DEPRECATED_RunAudioSetVolumeRoutineCallback callback) override;
+  void DEPRECATED_RunAudioSetGainRoutine(
+      uint64_t node_id,
+      uint8_t gain,
+      bool mute_on,
+      DEPRECATED_RunAudioSetGainRoutineCallback callback) override;
   void RunBluetoothPowerRoutine(
       RunBluetoothPowerRoutineCallback callback) override;
   void RunBluetoothDiscoveryRoutine(
@@ -318,6 +319,7 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
                              RunPowerButtonRoutineCallback callback) override;
   void RunAudioDriverRoutine(RunAudioDriverRoutineCallback callback) override;
   void RunUfsLifetimeRoutine(RunUfsLifetimeRoutineCallback callback) override;
+  void RunFanRoutine(RunFanRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void DEPRECATED_AddBluetoothObserver(

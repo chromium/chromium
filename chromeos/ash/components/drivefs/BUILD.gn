@@ -24,8 +24,6 @@ component("drivefs") {
     "drivefs_session.cc",
     "drivefs_session.h",
     "drivefs_util.h",
-    "sync_status_tracker.cc",
-    "sync_status_tracker.h",
   ]
   if (!use_real_dbus_clients) {
     sources += [
@@ -88,7 +86,6 @@ source_set("unit_tests") {
     "drivefs_pinning_manager_unittest.cc",
     "drivefs_search_unittest.cc",
     "drivefs_session_unittest.cc",
-    "sync_status_tracker_unittest.cc",
   ]
 
   deps = [

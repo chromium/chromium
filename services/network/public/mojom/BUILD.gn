@@ -23,7 +23,14 @@ mojom("mojom_ip_address") {
     "ip_endpoint.mojom",
   ]
 
-  webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
+  # WebUI bindings are only needed on ChromeOS Ash.
+  if (is_chromeos_ash) {
+    webui_module_path = "chrome://resources/mojo/services/network/public/mojom"
+
+    # Used by ash/webui/resources/common/network_health, which is still using
+    # Closure Compiler, so generate WebUI bindings in JavaScript.
+    use_typescript_sources = false
+  }
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 
@@ -924,6 +931,10 @@ mojom("mojom_network_param") {
         {
           mojom = "network.mojom.HttpVersion"
           cpp = "::net::HttpVersion"
+        },
+        {
+          mojom = "network.mojom.ProxyChain"
+          cpp = "::net::ProxyChain"
         },
         {
           mojom = "network.mojom.ProxyServer"

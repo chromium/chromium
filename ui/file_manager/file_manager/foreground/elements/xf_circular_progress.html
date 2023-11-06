@@ -16,36 +16,20 @@
     width: 28px;
   }
 
-  :host-context([theme='legacy']) .bottom {
-    fill: none;
-    stroke: var(--cros-highlight-color);
-  }
-  :host-context([theme='refresh23']) .bottom {
+  .bottom {
     fill: none;
     stroke: var(--cros-sys-highlight_shape);
   }
-  :host-context([theme='legacy']) .top {
-    fill: none;
-    stroke: var(--cros-icon-color-prominent);
-    stroke-linecap: round;
-  }
-  :host-context([theme='refresh23']) .top {
+  .top {
     fill: none;
     stroke: var(--cros-sys-primary);
     stroke-linecap: round;
   }
-  :host-context([theme='legacy']) text {
-    fill: var(--cros-text-color-prominent);
-    font: bold 14px Roboto;
-  }
-  :host-context([theme='refresh23']) text {
+  text {
     fill: var(--cros-sys-primary);
     font: var(--cros-button-1-font);
   }
-  :host-context([theme='legacy']) .errormark {
-    fill: rgb(217, 48, 37);
-  }
-  :host-context([theme='refresh23']) .errormark {
+  .errormark {
     fill: var(--cros-sys-error);
   }
 </style>

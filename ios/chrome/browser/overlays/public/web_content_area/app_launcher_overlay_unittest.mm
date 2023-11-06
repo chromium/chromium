@@ -28,7 +28,7 @@ using AppLauncherOverlayTest = PlatformTest;
 TEST_F(AppLauncherOverlayTest, FirstRequestAlertSetup) {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-          /*is_repeated_request=*/false);
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
@@ -43,12 +43,12 @@ TEST_F(AppLauncherOverlayTest, FirstRequestAlertSetup) {
   const ButtonConfig& cancel_button_config = config->button_configs()[1][0];
 
   EXPECT_EQ(UIAlertActionStyleDefault, ok_button_config.style);
-  EXPECT_NSEQ(
-      l10n_util::GetNSString(IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL),
-      ok_button_config.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW),
+              ok_button_config.title);
 
   EXPECT_EQ(UIAlertActionStyleCancel, cancel_button_config.style);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL), cancel_button_config.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
+              cancel_button_config.title);
 }
 
 // Tests that the alert overlay request is set correctly for a repeated app
@@ -56,7 +56,8 @@ TEST_F(AppLauncherOverlayTest, FirstRequestAlertSetup) {
 TEST_F(AppLauncherOverlayTest, RepeatedRequestAlertSetup) {
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-          /*is_repeated_request=*/true);
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::
+              kRepeatedRequest);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   ASSERT_TRUE(config);
 
@@ -71,11 +72,66 @@ TEST_F(AppLauncherOverlayTest, RepeatedRequestAlertSetup) {
   const ButtonConfig& cancel_button_config = config->button_configs()[1][0];
 
   EXPECT_EQ(UIAlertActionStyleDefault, ok_button_config.style);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_ALLOW),
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW),
               ok_button_config.title);
 
   EXPECT_EQ(UIAlertActionStyleCancel, cancel_button_config.style);
-  EXPECT_NSEQ(l10n_util::GetNSString(IDS_CANCEL), cancel_button_config.title);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
+              cancel_button_config.title);
+}
+
+// Tests that the alert overlay request is set correctly for a launch request in
+// incognito.
+TEST_F(AppLauncherOverlayTest, IncognitoRequestAlertSetup) {
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::
+              kOpenFromIncognito);
+  AlertRequest* config = request->GetConfig<AlertRequest>();
+  ASSERT_TRUE(config);
+
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FROM_INCOGNITO),
+              config->message());
+
+  // There is an OK button and a Cancel button in app launch alerts.
+  ASSERT_EQ(2U, config->button_configs().size());
+  const ButtonConfig& ok_button_config = config->button_configs()[0][0];
+  const ButtonConfig& cancel_button_config = config->button_configs()[1][0];
+
+  EXPECT_EQ(UIAlertActionStyleDefault, ok_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW),
+              ok_button_config.title);
+
+  EXPECT_EQ(UIAlertActionStyleCancel, cancel_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
+              cancel_button_config.title);
+}
+
+// Tests that the alert overlay request is set correctly for a launch request
+// not user initiated.
+TEST_F(AppLauncherOverlayTest, NotUserInitiatedRequestAlertSetup) {
+  std::unique_ptr<OverlayRequest> request =
+      OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::
+              kNoUserInteraction);
+  AlertRequest* config = request->GetConfig<AlertRequest>();
+  ASSERT_TRUE(config);
+
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_IN_ANOTHER_APP),
+              config->message());
+
+  // There is an OK button and a Cancel button in app launch alerts.
+  ASSERT_EQ(2U, config->button_configs().size());
+  const ButtonConfig& ok_button_config = config->button_configs()[0][0];
+  const ButtonConfig& cancel_button_config = config->button_configs()[1][0];
+
+  EXPECT_EQ(UIAlertActionStyleDefault, ok_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW),
+              ok_button_config.title);
+
+  EXPECT_EQ(UIAlertActionStyleCancel, cancel_button_config.style);
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK),
+              cancel_button_config.title);
 }
 
 // Tests that an alert response after tapping the OK button successfully creates
@@ -84,7 +140,7 @@ TEST_F(AppLauncherOverlayTest, ResponseConversionOk) {
   // Simulate a response where the OK button is tapped.
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-          /*is_repeated_request=*/false);
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(
@@ -104,7 +160,7 @@ TEST_F(AppLauncherOverlayTest, ResponseConversionCancel) {
   // Simulate a response where the Cancel button is tapped.
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<AppLaunchConfirmationRequest>(
-          /*is_repeated_request=*/false);
+          app_launcher_overlays::AppLaunchConfirmationRequestCause::kOther);
   AlertRequest* config = request->GetConfig<AlertRequest>();
   std::unique_ptr<OverlayResponse> alert_response =
       OverlayResponse::CreateWithInfo<AlertResponse>(

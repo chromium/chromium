@@ -281,11 +281,6 @@ class SessionRestorePolicy {
   // may happen asynchronously.
   size_t tabs_scored_ = 0;
 
-  // Counts the total number of tabs that were observed to make use of
-  // background communication mechanisms. This is used to drive some UMA stats.
-  size_t tabs_used_in_bg_ = 0;
-  size_t tabs_used_in_bg_restored_ = 0;
-
   // Used to track the state of the "all tabs scored" notification.
   enum class NotificationState : uint16_t {
     kNotSent = 0,

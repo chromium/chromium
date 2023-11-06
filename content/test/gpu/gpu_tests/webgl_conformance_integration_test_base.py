@@ -20,6 +20,7 @@ from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_test_util
 from gpu_tests.util import websocket_server as wss
+from gpu_tests.util import websocket_utils
 
 import gpu_path_util
 
@@ -148,8 +149,13 @@ class WebGLConformanceIntegrationTestBase(
     if not cls._conformance_harness_script:
       with open(
           os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
-                       'webgl_conformance_harness_script.js')) as f:
+                       'websocket_heartbeat.js')) as f:
         cls._conformance_harness_script = f.read()
+      cls._conformance_harness_script += '\n'
+      with open(
+          os.path.join(gpu_path_util.GPU_TEST_HARNESS_JAVASCRIPT_DIR,
+                       'webgl_conformance_harness_script.js')) as f:
+        cls._conformance_harness_script += f.read()
     if not cls._extension_harness_additional_script:
       with open(
           os.path.join(
@@ -355,24 +361,10 @@ class WebGLConformanceIntegrationTestBase(
           break
         raise RuntimeError('Received unknown message type %s' % response_type)
     except wss.WebsocketReceiveMessageTimeoutError:
-      logging.error(
-          'Timed out waiting for websocket message (%.3f seconds since test '
-          'start), checking for hung renderer',
-          time.time() - start_time)
-      # Telemetry has some code to automatically crash the renderer and GPU
-      # processes if it thinks that the renderer is hung. So, execute some
-      # trivial JavaScript now to hit that code if we got the timeout because of
-      # a hung renderer. If we do detect a hung renderer, this will raise
-      # another exception and prevent the following line about the renderer not
-      # being hung from running.
-      self.tab.action_runner.EvaluateJavaScript('let somevar = undefined;',
-                                                timeout=5)
-      logging.error('Timeout does *not* appear to be due to a hung renderer')
+      websocket_utils.HandleWebsocketReceiveTimeoutError(self.tab, start_time)
       raise
     except wss.ClientClosedConnectionError as e:
-      raise RuntimeError(
-          'Detected closed websocket (%.3f seconds since test start) - likely '
-          'caused by a renderer crash' % (time.time() - start_time)) from e
+      websocket_utils.HandlePrematureSocketClose(e, start_time)
 
   def _GetHeartbeatTimeout(self) -> int:
     return int(self._GetNonSlowHeartbeatTimeout() * self._GetSlowMultiplier())

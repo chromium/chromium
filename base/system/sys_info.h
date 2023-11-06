@@ -297,18 +297,19 @@ class BASE_EXPORT SysInfo {
   static bool IsLowEndDeviceOrPartialLowEndModeEnabled(
       const FeatureParam<bool>& param_for_exclusion);
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // Returns true for Android devices whose memory is X GB, considering
   // carveouts. The carveouts is memory reserved by the system, e.g.
   // for drivers, MTE, etc. It's very common for querying app to see
   // hundreds MBs less than actual physical memory installed on the system.
-  static bool IsAndroid3GbDevice();
-  static bool IsAndroid4GbDevice();
-  static bool IsAndroid6GbDevice();
+  // Addendum: This logic should also work for ChromeOS.
+  static bool Is3GbDevice();
+  static bool Is4GbDevice();
+  static bool Is6GbDevice();
   // Returns true for Android devices whose memory is 4GB or 6GB, considering
   // carveouts.
-  static bool IsAndroid4GbOr6GbDevice();
-#endif  // BUILDFLAG(IS_ANDROID)
+  static bool Is4GbOr6GbDevice();
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
   // Indicates that CPU security mitigations are enabled for the current

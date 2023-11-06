@@ -135,6 +135,9 @@
 // Signals that the feed has completed its updates (i.e. loading cards).
 - (void)feedLayoutDidEndUpdates;
 
+// Clears state and delegates.
+- (void)invalidate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_VIEW_CONTROLLER_H_

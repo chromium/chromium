@@ -99,7 +99,6 @@ test("ios_testing_unittests") {
   deps = [
     ":block_swizzler",
     ":ocmock_support",
-    ":protocol_fake",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",

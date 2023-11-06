@@ -35,6 +35,34 @@ suite('WallpaperCollectionsElementTest', function() {
         .tiles_.map(({id, type}: Tile) => ({id, type}));
   }
 
+  async function loadWallpapers(isTimeOfDayWallpaperEnabled: boolean) {
+    personalizationStore.data.wallpaper.backdrop.collections =
+        wallpaperProvider.collections;
+    if (!isTimeOfDayWallpaperEnabled) {
+      personalizationStore.data.wallpaper.backdrop.collections =
+          personalizationStore.data.wallpaper.backdrop.collections!.filter(
+              collection => collection.id !==
+                  loadTimeData.getString('timeOfDayWallpaperCollectionId'));
+    }
+    personalizationStore.data.wallpaper.backdrop.images =
+        personalizationStore.data.wallpaper.backdrop.collections!.reduce(
+            (result, next) => {
+              result[next.id] = wallpaperProvider.images;
+              return result;
+            },
+            {} as Record<string, WallpaperImage[]|null>);
+    personalizationStore.data.wallpaper.loading.collections = false;
+    personalizationStore.data.wallpaper.loading.images =
+        personalizationStore.data.wallpaper.backdrop.collections!.reduce(
+            (result, next) => {
+              result[next.id] = false;
+              return result;
+            },
+            {} as Record<string, boolean>);
+    personalizationStore.notifyObservers();
+    await waitAfterNextRender(wallpaperCollectionsElement!);
+  }
+
   setup(function() {
     loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled: true});
     const mocks = baseSetup();
@@ -353,33 +381,7 @@ suite('WallpaperCollectionsElementTest', function() {
           expectedTiles, tiles,
           'first special tiles should match and all loading after that');
 
-      personalizationStore.data.wallpaper.backdrop.collections =
-          wallpaperProvider.collections;
-
-      if (!isTimeOfDayWallpaperEnabled) {
-        personalizationStore.data.wallpaper.backdrop.collections =
-            personalizationStore.data.wallpaper.backdrop.collections!.filter(
-                collection => collection.id !==
-                    loadTimeData.getString('timeOfDayWallpaperCollectionId'));
-      }
-
-      personalizationStore.data.wallpaper.backdrop.images =
-          personalizationStore.data.wallpaper.backdrop.collections!.reduce(
-              (result, next) => {
-                result[next.id] = wallpaperProvider.images;
-                return result;
-              },
-              {} as Record<string, WallpaperImage[]|null>);
-      personalizationStore.data.wallpaper.loading.collections = false;
-      personalizationStore.data.wallpaper.loading.images =
-          personalizationStore.data.wallpaper.backdrop.collections!.reduce(
-              (result, next) => {
-                result[next.id] = false;
-                return result;
-              },
-              {} as Record<string, boolean>);
-      personalizationStore.notifyObservers();
-      await waitAfterNextRender(wallpaperCollectionsElement);
+      await loadWallpapers(isTimeOfDayWallpaperEnabled);
 
       tiles = getTiles();
       expectedTiles = [];
@@ -510,5 +512,68 @@ suite('WallpaperCollectionsElementTest', function() {
                            .querySelector<WallpaperGridItemElement>(
                                `${WallpaperGridItemElement.is}[data-sea-pen]`);
     assertTrue(!!seaPenTile, 'SeaPen tile is present');
+  });
+
+  test('shows promoted tiles section with SeaPen', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: true});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const loadingTiles =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+    assertEquals(2, loadingTiles.length, 'two tiles are loading');
+
+    await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ true);
+
+    const promotedTiles =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(
+                `${WallpaperGridItemElement.is}[data-is-promoted-tile]`);
+    assertEquals(2, promotedTiles.length, 'two tiles are promoted');
+    assertTrue(
+        promotedTiles[0]!.hasAttribute('data-sea-pen'),
+        'sea pen is in promoted tiles');
+    assertTrue(
+        promotedTiles[1]!.hasAttribute('data-is-time-of-day-collection'),
+        'time of day is in promoted tiles');
+  });
+
+  test('shows time of day tile once', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: true, isTimeOfDayWallpaperEnabled: true});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ true);
+
+    const timeOfDayTile =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelectorAll<WallpaperGridItemElement>(`${
+                WallpaperGridItemElement.is}[data-is-time-of-day-collection]`);
+
+    assertEquals(1, timeOfDayTile.length, 'time of day only appears once');
+  });
+
+  test('no promoted tiles section when SeaPen is disabled', async () => {
+    loadTimeData.overrideValues(
+        {isSeaPenEnabled: false, isTimeOfDayWallpaperEnabled: true});
+    wallpaperCollectionsElement = initElement(WallpaperCollectionsElement);
+    await waitAfterNextRender(wallpaperCollectionsElement);
+
+    const promotedTiles =
+        wallpaperCollectionsElement.shadowRoot!.querySelector<HTMLElement>(
+            `#promoted`);
+    assertFalse(!!promotedTiles, 'promoted tiles are hidden');
+
+    await loadWallpapers(/* isTimeOfDayWallpaperEnabled= */ true);
+
+    const timeOfDayTile =
+        wallpaperCollectionsElement.shadowRoot!
+            .querySelector<WallpaperGridItemElement>(`${
+                WallpaperGridItemElement.is}[data-is-time-of-day-collection]`);
+    assertTrue(!!timeOfDayTile, 'time of day tile is shown');
   });
 });

@@ -1,43 +1,44 @@
 This is a testharness.js-based test.
-PASS history.length should update when loading pages in an iframe
-PASS history.length should update when setting location.hash
-PASS history.pushState must exist
-PASS history.pushState must exist within iframes
-PASS initial history.state should be null
-PASS history.length should update when pushing a state
-PASS history.state should update after a state is pushed
-PASS history.length should not decrease after going back
-PASS traversing history must traverse pushed states
-PASS traversing history must also traverse hash changes
-PASS pushState must not be allowed to create invalid URLs
-PASS pushState must not be allowed to create cross-origin URLs
-PASS pushState must not be allowed to create cross-origin URLs (about:blank)
-PASS pushState must not be allowed to create cross-origin URLs (data:URI)
-PASS security errors are expected to be thrown in the context of the document that owns the history object
-PASS location.hash must be allowed to change (part 1)
-PASS location.hash must be allowed to change (part 2)
-PASS pushState must not alter location.hash when no URL is provided
-PASS pushState must remove all history after the current state
-PASS pushState must be able to set location.hash
-FAIL pushState must remove any tasks queued by the history traversal task source assert_equals: expected "test4" but got "test"
-PASS pushState must not fire hashchange events
-PASS pushState must be able to set location.pathname
-PASS pushState must be able to set absolute URLs to the same host
-PASS pushState must not be able to use a function as data
-PASS pushState must not be able to use a DOM node as data
-PASS pushState must be able to use an error object as data
-PASS security errors are expected to be thrown in the context of the document that owns the history object (2)
-PASS pushState must be able to make structured clones of complex objects
-PASS history.state should also reference a clone of the original object
-PASS history.state should be a clone of the original object, not a reference to it
-PASS popstate event should fire when navigation occurs
-PASS popstate event should pass the state data
-PASS state data should cope with circular object references
-PASS state data should be a clone of the original object, not a reference to it
-PASS history.state should also reference a clone of the original object (2)
-PASS history.state should be a clone of the original object, not a reference to it (2)
-PASS history.state should be identical to the object passed to the event handler unless history.state is updated
-PASS pushState should not actually load the new URL
-PASS reloading a pushed state should actually load the new URL
+[PASS] history.length should update when loading pages in an iframe
+[PASS] history.length should update when setting location.hash
+[PASS] history.pushState must exist
+[PASS] history.pushState must exist within iframes
+[PASS] initial history.state should be null
+[PASS] history.length should update when pushing a state
+[PASS] history.state should update after a state is pushed
+[PASS] history.length should not decrease after going back
+[PASS] traversing history must traverse pushed states
+[PASS] traversing history must also traverse hash changes
+[PASS] pushState must not be allowed to create invalid URLs
+[PASS] pushState must not be allowed to create cross-origin URLs
+[PASS] pushState must not be allowed to create cross-origin URLs (about:blank)
+[PASS] pushState must not be allowed to create cross-origin URLs (data:URI)
+[PASS] security errors are expected to be thrown in the context of the document that owns the history object
+[PASS] location.hash must be allowed to change (part 1)
+[PASS] location.hash must be allowed to change (part 2)
+[PASS] pushState must not alter location.hash when no URL is provided
+[PASS] pushState must remove all history after the current state
+[PASS] pushState must be able to set location.hash
+[FAIL] pushState must remove any tasks queued by the history traversal task source
+  assert_equals: expected "test4" but got "test"
+[PASS] pushState must not fire hashchange events
+[PASS] pushState must be able to set location.pathname
+[PASS] pushState must be able to set absolute URLs to the same host
+[PASS] pushState must not be able to use a function as data
+[PASS] pushState must not be able to use a DOM node as data
+[PASS] pushState must be able to use an error object as data
+[PASS] security errors are expected to be thrown in the context of the document that owns the history object (2)
+[PASS] pushState must be able to make structured clones of complex objects
+[PASS] history.state should also reference a clone of the original object
+[PASS] history.state should be a clone of the original object, not a reference to it
+[PASS] popstate event should fire when navigation occurs
+[PASS] popstate event should pass the state data
+[PASS] state data should cope with circular object references
+[PASS] state data should be a clone of the original object, not a reference to it
+[PASS] history.state should also reference a clone of the original object (2)
+[PASS] history.state should be a clone of the original object, not a reference to it (2)
+[PASS] history.state should be identical to the object passed to the event handler unless history.state is updated
+[PASS] pushState should not actually load the new URL
+[PASS] reloading a pushed state should actually load the new URL
 Harness: the test ran to completion.
 

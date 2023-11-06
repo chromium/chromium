@@ -10,7 +10,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 class KeyEvent;
 
 // Supported hook types.

@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,12 +42,16 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   using CacheBlobCallback = webgpu::DawnCachingInterface::CacheBlobCallback;
   static std::unique_ptr<DawnContextProvider> Create(
       const GpuPreferences& gpu_preferences = GpuPreferences(),
+      const GpuDriverBugWorkarounds& gpu_driver_workarounds =
+          GpuDriverBugWorkarounds(),
       webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
       CacheBlobCallback callback = {});
   static std::unique_ptr<DawnContextProvider> CreateWithBackend(
       wgpu::BackendType backend_type,
       bool force_fallback_adapter = false,
       const GpuPreferences& gpu_preferences = GpuPreferences(),
+      const GpuDriverBugWorkarounds& gpu_driver_workarounds =
+          GpuDriverBugWorkarounds(),
       webgpu::DawnCachingInterfaceFactory* caching_interface_factory = nullptr,
       CacheBlobCallback callback = {});
 
@@ -80,6 +85,8 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;
 #endif
 
+  bool SupportsFeature(wgpu::FeatureName feature);
+
   absl::optional<error::ContextLostReason> GetResetStatus() const;
 
   void OnError(WGPUErrorType error_type, const char* message);
@@ -91,6 +98,7 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   bool Initialize(wgpu::BackendType backend_type,
                   bool force_fallback_adapter,
                   const GpuPreferences& gpu_preferences,
+                  const GpuDriverBugWorkarounds& gpu_driver_workarounds,
                   CacheBlobCallback callback);
 
   raw_ptr<webgpu::DawnCachingInterfaceFactory> caching_interface_factory_;

@@ -44,7 +44,6 @@ group("features") {
     "//ios/showcase/omnibox_popup",
     "//ios/showcase/recent_tabs",
     "//ios/showcase/settings",
-    "//ios/showcase/tab_grid",
     "//ios/showcase/text_badge_view",
     "//ios/showcase/uikit_table_view_cell",
     "//ios/showcase/user_policy_prompt",

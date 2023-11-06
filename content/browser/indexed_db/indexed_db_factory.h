@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
@@ -14,16 +15,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -37,6 +35,7 @@
 #include "content/browser/indexed_db/indexed_db_pending_connection.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
@@ -57,8 +56,7 @@ class CONTENT_EXPORT IndexedDBFactory
     : public blink::mojom::IDBFactory,
       public base::trace_event::MemoryDumpProvider {
  public:
-  IndexedDBFactory(IndexedDBContextImpl* context,
-                   base::Clock* clock);
+  explicit IndexedDBFactory(IndexedDBContextImpl* context);
 
   IndexedDBFactory(const IndexedDBFactory&) = delete;
   IndexedDBFactory& operator=(const IndexedDBFactory&) = delete;
@@ -95,13 +93,13 @@ class CONTENT_EXPORT IndexedDBFactory
       const storage::BucketLocator& bucket_locator) const;
 
   // Close all connections to all databases within the bucket. If
-  // `delete_in_memory_store` is true, references to in-memory databases will be
+  // `will_be_deleted` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
   //
   // TODO(dmurph): This eventually needs to be async, to support scopes
   // multithreading.
-  void ForceClose(storage::BucketId bucket_id, bool delete_in_memory_store);
+  void ForceClose(storage::BucketId bucket_id, bool will_be_deleted);
 
   void ForceSchemaDowngrade(const storage::BucketLocator& bucket_locator);
   V2SchemaCorruptionStatus HasV2SchemaCorruption(
@@ -152,7 +150,6 @@ class CONTENT_EXPORT IndexedDBFactory
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
@@ -206,16 +203,9 @@ class CONTENT_EXPORT IndexedDBFactory
       base::FilePath data_directory,
       base::FilePath database_path,
       base::FilePath blob_path,
-      LevelDBScopesOptions scopes_options,
-      LevelDBScopesFactory* scopes_factory,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
+      PartitionedLockManager* lock_manager,
       bool is_first_attempt,
       bool create_if_missing);
-
-  void NotifyIndexedDBContentChanged(
-      const storage::BucketLocator& bucket_locator,
-      const std::u16string& database_name,
-      const std::u16string& object_store_name);
 
   void ForEachBucketContext(IndexedDBBucketContext::InstanceClosure callback);
 
@@ -233,14 +223,13 @@ class CONTENT_EXPORT IndexedDBFactory
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  // Raw pointer is safe because IndexedDBContextImpl owns this object.
+  // This will be set to null after `ContextDestroyed` is called.
   raw_ptr<IndexedDBContextImpl> context_;
-  const raw_ptr<base::Clock> clock_;
 
   IndexedDBBucketContext::InstanceClosure for_each_bucket_context_;
 
   // TODO(crbug.com/1474996): these bucket contexts need to be `SequenceBound`.
-  base::flat_map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
+  std::map<storage::BucketId, std::unique_ptr<IndexedDBBucketContext>>
       bucket_contexts_;
 
   std::set<storage::BucketLocator> backends_opened_since_startup_;

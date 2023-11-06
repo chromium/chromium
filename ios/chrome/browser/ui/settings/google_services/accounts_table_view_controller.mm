@@ -56,7 +56,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
@@ -670,9 +670,12 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (void)showAccountDetails:(id<SystemIdentity>)identity
                   itemView:(UIView*)itemView {
-  // TODO(crbug.com/1464966): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.removeOrMyGoogleChooserAlertCoordinator);
+  if (self.removeOrMyGoogleChooserAlertCoordinator) {
+    // It is possible for the user to tap twice on the cell. If the action
+    // sheet coordinator already exists, we need to ignore the second tap.
+    // Related to crbug.com/1497100.
+    return;
+  }
   self.removeOrMyGoogleChooserAlertCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self
                          browser:_browser
@@ -977,11 +980,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   // Verify that the accounts table is displayed from a navigation controller.
   DCHECK(self.navigationController);
 
-  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
-  // clean up.
-  controllerToPush.dispatcher = static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>>(
-      _browser->GetCommandDispatcher());
+  [self configureHandlersForRootViewController:controllerToPush];
   [self.navigationController pushViewController:controllerToPush animated:YES];
 }
 

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/tabs/tab_helper_util.h"
+#import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_mediator.h"
 #import "ios/chrome/browser/ui/context_menu/link_preview/link_preview_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"

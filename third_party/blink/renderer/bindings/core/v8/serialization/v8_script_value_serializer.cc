@@ -895,8 +895,9 @@ bool V8ScriptValueSerializer::WriteFile(File* file,
     WriteUint64(file->size());
     absl::optional<base::Time> last_modified =
         file->LastModifiedTimeForSerialization();
-    WriteDouble(last_modified ? last_modified->ToJsTimeIgnoringNull()
-                              : std::numeric_limits<double>::quiet_NaN());
+    WriteDouble(last_modified
+                    ? last_modified->InMillisecondsFSinceUnixEpochIgnoringNull()
+                    : std::numeric_limits<double>::quiet_NaN());
     WriteUint32(file->GetUserVisibility() == File::kIsUserVisible ? 1 : 0);
   }
   return true;

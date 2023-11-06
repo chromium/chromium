@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy.ppapi_shared_images_for_video_decoder_allowed": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "PPAPISharedImagesForVideoDecoderAllowed": true
+        },
+        "prefs": {
+          "policy.ppapi_shared_images_for_video_decoder_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PPAPISharedImagesForVideoDecoderAllowed": false
+        },
+        "prefs": {
+          "policy.ppapi_shared_images_for_video_decoder_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -20,17 +20,11 @@ struct RuleCounts {
 
   RuleCounts& operator+=(const RuleCounts& that);
 
-  // This CHECKs that counts in `that` are smaller than or equal to the one in
-  // `this`.
-  // TODO(crbug.com/1485747): Only regex rules will share a counter between the
-  // dynamic and session rulesets, so this can be removed.
-  RuleCounts& operator-=(const RuleCounts& that);
-
   // Tracks the total rule count of a ruleset.
   size_t rule_count = 0;
-  // Tracks the "unsafe" rule count of a ruleset (see `ComputeUnsafeRuleCount`
-  // inside ruleset_matcher.cc for what constitutes an "unsafe" rule). This is
-  // only counted for dynamic or session rulesets and is null for static
+  // Tracks the "unsafe" rule count of a ruleset (see `IsRuleSafe` inside
+  // utils.cc in the same directory for what constitutes an "unsafe" rule). This
+  // is only counted for dynamic or session rulesets and is null for static
   // rulesets.
   absl::optional<size_t> unsafe_rule_count = absl::nullopt;
   // Tracks the total regex rule count of a ruleset.
@@ -38,12 +32,6 @@ struct RuleCounts {
 };
 
 RuleCounts operator+(const RuleCounts& lhs, const RuleCounts& rhs);
-
-// This CHECKs that counts in `rhs` are smaller than or equal to the one in
-// `lhs`.
-// TODO(crbug.com/1485747): Only regex rules will share a counter between the
-// dynamic and session rulesets, so this can be removed.
-RuleCounts operator-(const RuleCounts& lhs, const RuleCounts& rhs);
 
 bool operator==(const RuleCounts& lhs, const RuleCounts& rhs);
 

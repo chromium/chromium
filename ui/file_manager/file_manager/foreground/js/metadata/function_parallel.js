@@ -12,8 +12,9 @@ export class FunctionParallel {
    * @param {string} name Name of the function.
    * @param {Array<Function>} steps Array of functions to invoke in parallel.
    * @param {MetadataParser} logger Logger object.
-   * @param {function()} callback Callback to invoke on success.
-   * @param {function(string)} failureCallback Callback to invoke on failure.
+   * @param {function():void} callback Callback to invoke on success.
+   * @param {function(string):void} failureCallback Callback to invoke on
+   *     failure.
    */
   constructor(name, steps, logger, callback, failureCallback) {
     // Private variables hidden in closure
@@ -61,8 +62,10 @@ export class FunctionParallel {
   /**
    * This function should be called only once on start, so start all the
    * children at once
-   * @param {...} var_args Arguments to be passed to all the steps.
+   * @param {...*} var_args Arguments to be passed to all the steps.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   start(var_args) {
     this.logger.vlog(
         'Starting [' + this.steps_.length + '] parallel tasks ' +
@@ -74,10 +77,13 @@ export class FunctionParallel {
     }
     for (let i = 0; i < this.steps_.length; i++) {
       this.logger.vlog(
-          'Attempting to start step [' + this.steps_[i].name + ']');
+          'Attempting to start step [' + this.steps_[i]?.name + ']');
       try {
+        // @ts-ignore: error TS2684: The 'this' context of type 'Function |
+        // undefined' is not assignable to method's 'this' of type 'Function'.
         this.steps_[i].apply(this, arguments);
       } catch (e) {
+        // @ts-ignore: error TS18046: 'e' is of type 'unknown'.
         this.onError(e.toString());
       }
     }

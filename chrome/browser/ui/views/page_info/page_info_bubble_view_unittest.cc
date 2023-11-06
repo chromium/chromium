@@ -40,6 +40,8 @@
 #include "components/browsing_data/core/features.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_info/core/features.h"
@@ -956,6 +958,7 @@ TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
   cookies.blocked_third_party_sites_count = 32;
   cookies.status = CookieControlsStatus::kDisabled;
   cookies.enforcement = CookieControlsEnforcement::kNoEnforcement;
+  cookies.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
 
   // Update the cookies info.
   api_->SetCookieInfo(cookies);
@@ -1133,7 +1136,8 @@ class PageInfoBubbleViewCookiesSubpageTest : public PageInfoBubbleViewTest {
  public:
   PageInfoBubbleViewCookiesSubpageTest() {
     feature_list.InitWithFeatures(
-        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
+        {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
+        {content_settings::features::kUserBypassUI});
   }
 
   void SetUp() override {
@@ -1172,6 +1176,7 @@ TEST_F(PageInfoBubbleViewCookiesSubpageTest, TextsOnButtonsAreCorrect) {
   cookie_info.allowed_sites_count = 3;
   cookie_info.status = CookieControlsStatus::kEnabled;
   cookie_info.enforcement = CookieControlsEnforcement::kNoEnforcement;
+  cookie_info.blocking_status = CookieBlocking3pcdStatus::kNotIn3pcd;
   size_t kExpectedChildren = 3;
   const std::u16string owner_name = u"example_owner";
   cookie_info.fps_info = {PageInfoMainView::CookiesFpsInfo(owner_name)};

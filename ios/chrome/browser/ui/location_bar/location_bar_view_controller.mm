@@ -26,6 +26,8 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
+#import "ios/chrome/browser/ui/omnibox/text_field_view_containing.h"
 #import "ios/chrome/browser/ui/orchestrator/location_bar_offset_provider.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_type.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -59,7 +61,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 @interface LocationBarViewController () <UIContextMenuInteractionDelegate,
                                          UIIndirectScribbleInteractionDelegate>
 // The injected edit view.
-@property(nonatomic, strong) UIView* editView;
+@property(nonatomic, strong) UIView<TextFieldViewContaining>* editView;
+
+// The injected text field.
+@property(nonatomic, weak) UIView* textField;
 
 // The injected badge view.
 @property(nonatomic, strong) UIView* badgeView;
@@ -85,7 +90,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 @end
 
-@implementation LocationBarViewController
+@implementation LocationBarViewController {
+  BOOL _isNTP;
+}
 
 #pragma mark - public
 
@@ -97,9 +104,10 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   return self;
 }
 
-- (void)setEditView:(UIView*)editView {
+- (void)setEditView:(UIView<TextFieldViewContaining>*)editView {
   DCHECK(!self.editView);
   _editView = editView;
+  _textField = editView.textFieldView;
 }
 
 - (void)setBadgeView:(UIView*)badgeView {
@@ -257,6 +265,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // the location bar is visible after scrolling the fakebox off the page. On
 // iPhone, the location bar is not shown on the NTP at all.
 - (void)updateForNTP:(BOOL)isNTP {
+  _isNTP = isNTP;
   if (isNTP) {
     // Display a fake "placeholder".
     NSString* placeholderString =
@@ -274,31 +283,37 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   _shareButtonEnabled = enabled;
   if (self.trailingButtonState == kShareButton) {
     [self.locationBarSteadyView enableTrailingButton:enabled];
+
+    if (_shareButtonEnabled) {
+      [self.layoutGuideCenter
+          referenceView:self.locationBarSteadyView.trailingButton
+              underName:kShareButtonGuide];
+    }
   }
 }
 
 #pragma mark - LocationBarAnimatee
 
-- (void)offsetEditViewToMatchSteadyView {
+- (void)offsetTextFieldToMatchSteadyView {
   CGAffineTransform offsetTransform =
       CGAffineTransformMakeTranslation([self targetOffset], 0);
-  self.editView.transform = offsetTransform;
+  self.textField.transform = offsetTransform;
 }
 
-- (void)resetEditViewOffsetAndOffsetSteadyViewToMatch {
+- (void)resetTextFieldOffsetAndOffsetSteadyViewToMatch {
   self.locationBarSteadyView.transform =
-      CGAffineTransformMakeTranslation(-self.editView.transform.tx, 0);
-  self.editView.transform = CGAffineTransformIdentity;
+      CGAffineTransformMakeTranslation(-self.textField.transform.tx, 0);
+  self.textField.transform = CGAffineTransformIdentity;
 }
 
-- (void)offsetSteadyViewToMatchEditView {
+- (void)offsetSteadyViewToMatchTextField {
   CGAffineTransform offsetTransform =
       CGAffineTransformMakeTranslation(-[self targetOffset], 0);
   self.locationBarSteadyView.transform = offsetTransform;
 }
 
-- (void)resetSteadyViewOffsetAndOffsetEditViewToMatch {
-  self.editView.transform = CGAffineTransformMakeTranslation(
+- (void)resetSteadyViewOffsetAndOffsetTextFieldToMatch {
+  self.textField.transform = CGAffineTransformMakeTranslation(
       -self.locationBarSteadyView.transform.tx, 0);
   self.locationBarSteadyView.transform = CGAffineTransformIdentity;
 }
@@ -329,9 +344,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)resetTransforms {
   // Focus/defocus animations only affect translations and not scale. So reset
   // translation and keep the scale.
-  self.editView.transform = CGAffineTransformMake(
-      self.editView.transform.a, self.editView.transform.b,
-      self.editView.transform.c, self.editView.transform.d, 0, 0);
+  self.textField.transform = CGAffineTransformMake(
+      self.textField.transform.a, self.textField.transform.b,
+      self.textField.transform.c, self.textField.transform.d, 0, 0);
   self.locationBarSteadyView.transform =
       CGAffineTransformMake(self.locationBarSteadyView.transform.a,
                             self.locationBarSteadyView.transform.b,
@@ -345,8 +360,11 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 // Computes the target offset for the focus/defocus animation that allows to
 // visually match the position of edit and steady views.
 - (CGFloat)targetOffset {
-  CGFloat offset = [self.offsetProvider
-      xOffsetForString:self.locationBarSteadyView.locationLabel.text];
+  CGFloat offset =
+      _isNTP
+          ? kOmniboxEditOffset
+          : [self.offsetProvider
+                xOffsetForString:self.locationBarSteadyView.locationLabel.text];
 
   CGRect labelRect = [self.view
       convertRect:self.locationBarSteadyView.locationLabel.frame
@@ -455,6 +473,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
       self.locationBarSteadyView.trailingButton.accessibilityIdentifier =
           kOmniboxShareButtonIdentifier;
       [self.locationBarSteadyView enableTrailingButton:self.shareButtonEnabled];
+
+      if (self.shareButtonEnabled) {
+        [self.layoutGuideCenter
+            referenceView:self.locationBarSteadyView.trailingButton
+                underName:kShareButtonGuide];
+      }
       break;
     };
     case kVoiceSearchButton: {
@@ -598,12 +622,12 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Show Top or Bottom Address Bar action.
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService &&
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService &&
       IsSplitToolbarMode(self)) {
     NSString* title = nil;
     UIImage* image = nil;
     ToolbarType targetToolbarType;
-    if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+    if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
       title = l10n_util::GetNSString(IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX);
       if (@available(iOS 15.1, *)) {
         image = DefaultSymbolWithPointSize(kMovePlatterToTopPhoneSymbol,
@@ -641,9 +665,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   }
 
   // Reverse the array manually when preferredMenuElementOrder is not available.
-  if (IsBottomOmniboxSteadyStateEnabled() && _prefService) {
+  if (IsBottomOmniboxSteadyStateEnabled() && _originalPrefService) {
     if (!base::ios::IsRunningOnIOS16OrLater()) {
-      if (_prefService->GetBoolean(prefs::kBottomOmnibox)) {
+      if (_originalPrefService->GetBoolean(prefs::kBottomOmnibox)) {
         menuElements =
             [[[menuElements reverseObjectEnumerator] allObjects] mutableCopy];
       }
@@ -747,9 +771,9 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 /// Set the preferred omnibox position to `toolbarType`.
 - (void)moveOmniboxToToolbarType:(ToolbarType)toolbarType {
-  if (_prefService) {
-    _prefService->SetBoolean(prefs::kBottomOmnibox,
-                             toolbarType == ToolbarType::kSecondary);
+  if (_originalPrefService) {
+    _originalPrefService->SetBoolean(prefs::kBottomOmnibox,
+                                     toolbarType == ToolbarType::kSecondary);
 
     if (toolbarType == ToolbarType::kPrimary) {
       RecordAction(

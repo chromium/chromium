@@ -74,15 +74,19 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   // internal.
   if (child->GetNode()->IsMediaControls()) {
     // LayoutObject::IsInline() doesn't work at this timing.
-    DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
-    return child->IsFlexibleBoxIncludingNG();
+    DCHECK(!To<Element>(child->GetNode())
+                ->GetComputedStyle()
+                ->IsDisplayInlineType());
+    return child->IsFlexibleBox();
   }
 
   if (child->GetNode()->IsTextTrackContainer() ||
       child->GetNode()->IsMediaRemotingInterstitial() ||
       child->GetNode()->IsPictureInPictureInterstitial()) {
     // LayoutObject::IsInline() doesn't work at this timing.
-    DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
+    DCHECK(!To<Element>(child->GetNode())
+                ->GetComputedStyle()
+                ->IsDisplayInlineType());
     return true;
   }
 

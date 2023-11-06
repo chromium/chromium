@@ -32,9 +32,7 @@ import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
 import org.chromium.chrome.test.smoke.utilities.FirstRunNavigator;
 import org.chromium.net.test.EmbeddedTestServerRule;
 
-/**
- * Basic Test for Chrome Android to switch Tabs.
- */
+/** Basic Test for Chrome Android to switch Tabs. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ChromeTabSwitcherTest {
@@ -57,16 +55,18 @@ public class ChromeTabSwitcherTest {
     private String mPackageName;
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
-    @Rule
-    public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
+    @Rule public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
 
     @ClassRule
     public static EmbeddedTestServerRule sEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Before
     public void setUp() throws Exception {
-        mPackageName = InstrumentationRegistry.getArguments().getString(
-                ChromeUiApplicationTestRule.PACKAGE_NAME_ARG, "org.chromium.chrome");
+        mPackageName =
+                InstrumentationRegistry.getArguments()
+                        .getString(
+                                ChromeUiApplicationTestRule.PACKAGE_NAME_ARG,
+                                "org.chromium.chrome");
     }
 
     @Test

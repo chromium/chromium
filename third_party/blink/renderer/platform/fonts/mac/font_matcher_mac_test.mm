@@ -4,10 +4,13 @@
 
 #import "third_party/blink/renderer/platform/fonts/mac/font_matcher_mac.h"
 
-#include <AppKit/AppKit.h>
+#import <AppKit/AppKit.h>
+#import <CoreText/CoreText.h>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
+
+using base::apple::ScopedCFTypeRef;
 
 namespace blink {
 
@@ -19,7 +22,7 @@ void TestSystemFontContainsString(FontSelectionValue desired_weight,
 }
 
 TEST(FontMatcherMacTest, NoUniqueFontMatchOnUnavailableFont) {
-  NSFont* font = MatchUniqueFont(
+  ScopedCFTypeRef<CTFontRef> font = MatchUniqueFont(
       AtomicString(
           "ThisFontNameDoesNotExist07F444B9-4DDF-4A41-8F30-C80D4ED4CCA2"),
       12);
@@ -42,7 +45,8 @@ TEST(FontMatcherMacTest, MatchFullFontName) {
 
   for (const char* font_name : font_names) {
     @autoreleasepool {
-      NSFont* font = MatchUniqueFont(AtomicString(font_name), 12);
+      ScopedCFTypeRef<CTFontRef> font =
+          MatchUniqueFont(AtomicString(font_name), 12);
       EXPECT_TRUE(font);
     }
   }
@@ -66,7 +70,8 @@ TEST(FontMatcherMacTest, MatchPostscriptName) {
 
   for (const char* font_name : font_names) {
     @autoreleasepool {
-      NSFont* font = MatchUniqueFont(AtomicString(font_name), 12);
+      ScopedCFTypeRef<CTFontRef> font =
+          MatchUniqueFont(AtomicString(font_name), 12);
       EXPECT_TRUE(font);
     }
   }

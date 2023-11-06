@@ -789,6 +789,28 @@ TEST_F(InputDeviceSettingsControllerTest, BlockMouseKeyEventRewrite) {
             controller_->GetConnectedMice()[0]->customization_restriction);
 }
 
+TEST_F(InputDeviceSettingsControllerTest,
+       BlockMouseKeyEventRewriteRestartObserving) {
+  fake_device_manager_->AddFakeMouse(kSampleCustomizableMouse);
+  EXPECT_EQ(mojom::CustomizationRestriction::kAllowCustomizations,
+            controller_->GetConnectedMice()[0]->customization_restriction);
+
+  controller_->StartObservingButtons(kSampleCustomizableMouse.id);
+  auto* rewriter = Shell::Get()
+                       ->event_rewriter_controller()
+                       ->peripheral_customization_event_rewriter();
+  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_EQ(1u, rewriter->mice_to_observe_key_events().size());
+
+  fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal2,
+                                        kKbdTopRowLayout1Tag);
+  EXPECT_EQ(mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            controller_->GetConnectedMice()[0]->customization_restriction);
+
+  EXPECT_EQ(1u, rewriter->mice_to_observe().size());
+  EXPECT_EQ(0u, rewriter->mice_to_observe_key_events().size());
+}
+
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsAreValid) {
   fake_device_manager_->AddFakeKeyboard(kSampleKeyboardInternal,
                                         kKbdTopRowLayout1Tag);
@@ -866,18 +888,30 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletSettingsAreValid) {
                                          mojom::GraphicsTabletSettings::New());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
-  // Invalid settings with a button remapping name more than 64 characters.
+  // Invalid settings with a button remapping name more than 32 characters.
   settings->pen_button_remappings[0]->name =
-      "This is a really long name which is used to test the name max length";
+      "This is a really long name to test the name max length";
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 2u);
 
-  // Valid settings with a button remapping name fewer than 64 characters.
+  // Valid settings with a button remapping name fewer than 32 characters.
   settings->pen_button_remappings[0]->name = "Short valid name";
   controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
                                          settings.Clone());
   EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 3u);
+
+  // Valid settings with a button remapping name with exactly 32 characters.
+  settings->pen_button_remappings[0]->name = std::string(32, 'a');
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);
+
+  // Valid settings with a button remapping name with exactly 33 characters.
+  settings->pen_button_remappings[0]->name = std::string(33, 'a');
+  controller_->SetGraphicsTabletSettings(kSampleGraphicsTablet.id,
+                                         settings.Clone());
+  EXPECT_EQ(observer_->num_graphics_tablets_settings_updated(), 4u);
 }
 
 TEST_F(InputDeviceSettingsControllerTest,
@@ -1189,18 +1223,44 @@ TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
 TEST_F(InputDeviceSettingsControllerTest, MouseButtonPressed) {
   ui::DeviceDataManagerTestApi().SetMouseDevices({kSampleMouseUsb});
 
-  mojom::ButtonPtr button =
-      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle);
-  controller_->OnMouseButtonPressed(kSampleMouseUsb.id, *button);
+  controller_->OnMouseButtonPressed(kSampleMouseUsb.id,
+                                    *mojom::Button::NewCustomizableButton(
+                                        mojom::CustomizableButton::kMiddle));
   EXPECT_EQ(1u, observer_->num_mouse_settings_updated());
   EXPECT_EQ(1u, observer_->num_mouse_buttons_pressed());
 
+  controller_->OnMouseButtonPressed(
+      kSampleMouseUsb.id,
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide));
+  EXPECT_EQ(2u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(2u, observer_->num_mouse_buttons_pressed());
+
+  controller_->OnMouseButtonPressed(
+      kSampleMouseUsb.id,
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra));
+  EXPECT_EQ(3u, observer_->num_mouse_settings_updated());
+  EXPECT_EQ(3u, observer_->num_mouse_buttons_pressed());
+
   auto* settings = controller_->GetMouseSettings(kSampleMouseUsb.id);
   ASSERT_TRUE(settings);
-  ASSERT_EQ(1u, settings->button_remappings.size());
-  EXPECT_EQ(*button, *settings->button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->button_remappings[0]->name);
+  ASSERT_EQ(3u, settings->button_remappings.size());
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      *settings->button_remappings[0]->button);
+  EXPECT_EQ("Middle Button", settings->button_remappings[0]->name);
   EXPECT_EQ(nullptr, settings->button_remappings[0]->remapping_action.get());
+
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      *settings->button_remappings[1]->button);
+  EXPECT_EQ("Other Button 1", settings->button_remappings[1]->name);
+  EXPECT_EQ(nullptr, settings->button_remappings[1]->remapping_action.get());
+
+  EXPECT_EQ(
+      *mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kExtra),
+      *settings->button_remappings[2]->button);
+  EXPECT_EQ("Other Button 2", settings->button_remappings[2]->name);
+  EXPECT_EQ(nullptr, settings->button_remappings[2]->remapping_action.get());
 }
 
 TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
@@ -1223,13 +1283,13 @@ TEST_F(InputDeviceSettingsControllerTest, GraphicsTabletButtonPressed) {
   ASSERT_TRUE(settings);
   ASSERT_EQ(1u, settings->pen_button_remappings.size());
   EXPECT_EQ(*pen_button, *settings->pen_button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->pen_button_remappings[0]->name);
+  EXPECT_EQ("Other Button 1", settings->pen_button_remappings[0]->name);
   EXPECT_EQ(nullptr,
             settings->pen_button_remappings[0]->remapping_action.get());
 
   ASSERT_EQ(1u, settings->tablet_button_remappings.size());
   EXPECT_EQ(*tablet_button, *settings->tablet_button_remappings[0]->button);
-  EXPECT_EQ("Button 1", settings->tablet_button_remappings[0]->name);
+  EXPECT_EQ("Other Button 1", settings->tablet_button_remappings[0]->name);
   EXPECT_EQ(nullptr,
             settings->tablet_button_remappings[0]->remapping_action.get());
 }

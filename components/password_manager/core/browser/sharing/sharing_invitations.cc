@@ -29,7 +29,8 @@ bool operator==(const IncomingSharingInvitation& lhs,
       lhs.password_value == rhs.password_value &&
       lhs.date_created == rhs.date_created &&
       lhs.sender_email == rhs.sender_email &&
-      lhs.sender_display_name == rhs.sender_display_name;
+      lhs.sender_display_name == rhs.sender_display_name &&
+      lhs.sender_profile_image_url == rhs.sender_profile_image_url;
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -49,6 +50,8 @@ std::ostream& operator<<(std::ostream& os,
             << "\ndate_created: " << invitation.date_created
             << "\nsender_email: " << invitation.sender_email
             << "\nsender_display_name: " << invitation.sender_display_name
+            << "\nsender_profile_image_url: "
+            << invitation.sender_profile_image_url.possibly_invalid_spec()
             << "\n)\n";
 }
 
@@ -67,6 +70,7 @@ PasswordForm IncomingSharingInvitationToPasswordForm(
   form.type = PasswordForm::Type::kReceivedViaSharing;
   form.sender_email = invitation.sender_email;
   form.sender_name = invitation.sender_display_name;
+  form.sender_profile_image_url = invitation.sender_profile_image_url;
   form.date_received = base::Time::Now();
   form.sharing_notification_displayed = false;
   return form;

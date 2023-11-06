@@ -41,7 +41,6 @@
 #include "base/win/pe_image.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
-#include "base/win/windows_version.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -553,16 +552,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
   }
 
   // Record Processor Metrics. This is very low priority, hence posting as
-  // BEST_EFFORT to start after Chrome startup has completed. This metric is
-  // only available starting Windows 10.
-  if (base::win::OSInfo::GetInstance()->version() >=
-      base::win::Version::WIN10) {
-    scoped_refptr<base::SequencedTaskRunner> task_runner =
-        base::ThreadPool::CreateSequencedTaskRunner(
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    task_runner->PostTask(FROM_HERE,
-                          base::BindOnce(&DelayedRecordProcessorMetrics));
-  }
+  // BEST_EFFORT to start after Chrome startup has completed.
+  scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&DelayedRecordProcessorMetrics));
 
   // Write current executable path to the User Data directory to inform
   // Progressive Web App launchers, which run from within the User Data

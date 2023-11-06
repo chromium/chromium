@@ -1,0 +1,41 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.test.mojom;
+
+import "services/device/public/mojom/sensor.mojom";
+import "services/device/public/mojom/sensor_provider.mojom";
+
+// Provides a way to control virtual sensors as described in
+// https://w3c.github.io/sensors/#automation.
+//
+// This interface exists solely for the content_shell and InternalsSensor
+// implementation, as the ChromeDriver-based code path uses CDP to achieve the
+// same results.
+//
+// The method calls are supposed to duplicate the corresponding ones in the
+// device.mojom.SensorProvider interface.
+interface WebSensorProviderAutomation {
+  // Creates a new virtual sensor of a given |type|, or fails if one already
+  // exists.
+  CreateVirtualSensor(device.mojom.SensorType type,
+                      device.mojom.VirtualSensorMetadata metadata) =>
+      (device.mojom.CreateVirtualSensorResult result);
+
+  // Updates readings for a virtual sensor of given |type|, or fails if one has
+  // not been created.
+  UpdateVirtualSensor(device.mojom.SensorType type,
+                      device.mojom.SensorReadingRaw reading) =>
+      (device.mojom.UpdateVirtualSensorResult result);
+
+  // Removes a virtual sensor of given |type|, or does nothing if one has not
+  // been created.
+  RemoveVirtualSensor(device.mojom.SensorType type) => ();
+
+  // Retrieves information about a virtual sensor of given |type|. It fails if
+  // one has not been created. If the sensor is not active, all information
+  // will be null or zeroed out.
+  GetVirtualSensorInformation(device.mojom.SensorType type) =>
+      (device.mojom.GetVirtualSensorInformationResult result);
+};

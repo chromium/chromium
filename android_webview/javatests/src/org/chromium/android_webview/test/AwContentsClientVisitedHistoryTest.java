@@ -10,6 +10,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.DoUpdateVisitedHistoryHelper;
@@ -22,10 +24,11 @@ import org.chromium.net.test.util.TestWebServer;
 /**
  * Tests for AwContentsClient.getVisitedHistory and AwContents.doUpdateVisitedHistory callbacks.
  */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientVisitedHistoryTest {
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
 
     private static class GetVisitedHistoryHelper extends CallbackHelper {
         private Callback<String[]> mCallback;
@@ -64,11 +67,14 @@ public class AwContentsClientVisitedHistoryTest {
         public void getVisitedHistory(Callback<String[]> callback) {
             getGetVisitedHistoryHelper().notifyCalled(callback);
         }
-
     }
 
     private VisitedHistoryTestAwContentsClient mContentsClient =
             new VisitedHistoryTestAwContentsClient();
+
+    public AwContentsClientVisitedHistoryTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Test
     @Feature({"AndroidWebView"})
@@ -147,8 +153,7 @@ public class AwContentsClientVisitedHistoryTest {
     @Feature({"AndroidWebView"})
     @SmallTest
     public void testGetVisitedHistoryCallbackAfterDestroy() throws Throwable {
-        GetVisitedHistoryHelper visitedHistoryHelper =
-                mContentsClient.getGetVisitedHistoryHelper();
+        GetVisitedHistoryHelper visitedHistoryHelper = mContentsClient.getGetVisitedHistoryHelper();
         visitedHistoryHelper.setSaveCallback(true);
         final int callCount = visitedHistoryHelper.getCallCount();
         AwTestContainerView testView =

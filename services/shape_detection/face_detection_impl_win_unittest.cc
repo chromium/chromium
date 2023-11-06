@@ -62,7 +62,8 @@ class FaceDetectionImplWinTest : public testing::Test {
   std::unique_ptr<SkBitmap> LoadTestImage() {
     // Load image data from test directory.
     base::FilePath image_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
     image_path = image_path.Append(FILE_PATH_LITERAL("services"))
                      .Append(FILE_PATH_LITERAL("test"))
                      .Append(FILE_PATH_LITERAL("data"))

@@ -45,6 +45,7 @@ class AddressAccessoryControllerImpl
 
   // AddressAccessoryController:
   void RefreshSuggestions() override;
+  base::WeakPtr<AddressAccessoryController> AsWeakPtr() override;
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
@@ -81,6 +82,8 @@ class AddressAccessoryControllerImpl
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<AddressAccessoryControllerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

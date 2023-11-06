@@ -22,14 +22,11 @@ import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BrowsingHistoryBridgeTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    BrowsingHistoryBridge.Natives mNativeMocks;
+    @Mock BrowsingHistoryBridge.Natives mNativeMocks;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     BrowsingHistoryBridge mBrowsingHistoryBridge;
 
@@ -42,8 +39,10 @@ public class BrowsingHistoryBridgeTest {
 
     @Test
     public void testWhenDeletingBrowsingHistoryItems_MetricsEmitted() {
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.HISTORY_PAGE_ENTRIES);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.HISTORY_PAGE_ENTRIES);
         mBrowsingHistoryBridge.removeItems();
 
         // Verify DeleteBrowsingDataAction metric is recorded.

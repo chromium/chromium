@@ -40,4 +40,63 @@ const Documents = {
   textInput:
       `<input type="text" aria-label="textInput" id="textInput"></input>`,
   tree: `<div role="tree" id="tree">tree</div>`,
+
+  // From w3 WAI ARIA examples:
+  customTabList: `<div role="tablist" id="customTabList">
+         <button id="tab1" role="tab" aria-selected="true"
+                 aria-controls="panel1">
+           tab1
+         </button>
+         <button id="tab2" role="tab" aria-selected="false"
+                 aria-controls="panel2" tabindex=-1>
+           tab2
+         </button>
+       </div>
+       <div id="panel1" role="tabpanel" aria-labelledby="tab1">
+         panel1
+       </div>
+       <div id="panel2" role="tabpanel" aria-labelledby="tab2" hidden>
+         panel2
+       </div>
+       <script>
+         const $ = id => document.getElementById(id);
+         const tablistNode = $('tablist');
+         const tabs = ['tab1', 'tab2'].map($);
+         const tabPanels = ['panel1', 'panel2'].map($);
+         let focused = 0;
+
+         const select = tab => {
+           for (let i = 0; i < tabs.length; i++) {
+             if (tab === tabs[i]) {
+               tab.setAttribute('aria-selected', 'true');
+               tab.removeAttribute('tabindex');
+               tabPanels[i].removeAttribute('hidden');
+               focused = i;
+             } else {
+               tabs[i].setAttribute('aria-selected', 'false');
+               tabs[i].tabIndex = -1;
+               tabPanels[i].setAttribute('hidden', 'true');
+             }
+           }
+         };
+
+         const keydown = event => {
+           switch(event.key) {
+             case 'ArrowLeft':
+               tabs[focused === 1 ? 0 : 1].focus();
+               break;
+             case 'ArrowRight':
+               tabs[focused === 1 ? 0 : 1].focus();
+               break;
+           }
+           if (['ArrowLeft', 'ArrowRight'].some(k => event.key === k)) {
+             event.stopPropagation();
+             event.preventDefault();
+           }
+         };
+         tabs.map(tab => tab.addEventListener('keydown', keydown));
+
+         const click = event => select(event.currentTarget);
+         tabs.map(tab => tab.addEventListener('click', click));
+       </script>`,
 };

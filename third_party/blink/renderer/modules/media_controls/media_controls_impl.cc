@@ -2153,8 +2153,13 @@ void MediaControlsImpl::CloseVolumeSliderIfNecessary() {
 }
 
 bool MediaControlsImpl::ShouldOpenVolumeSlider() const {
-  if (!volume_slider_)
+  if (!volume_slider_) {
     return false;
+  }
+
+  if (!MediaElement().HasAudio()) {
+    return false;
+  }
 
   return !PreferHiddenVolumeControls(GetDocument());
 }

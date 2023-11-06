@@ -10,8 +10,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "components/guest_view/common/guest_view.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-persistent-handle.h"
+
+namespace content {
+class RenderFrame;
+}
 
 namespace guest_view {
 
@@ -27,7 +33,7 @@ class GuestViewContainer;
 class GuestViewAttachRequest {
  public:
   GuestViewAttachRequest(GuestViewContainer* container,
-                         int render_frame_routing_id,
+                         content::RenderFrame* render_frame,
                          int guest_instance_id,
                          base::Value::Dict params,
                          v8::Local<v8::Function> callback,
@@ -54,9 +60,9 @@ class GuestViewAttachRequest {
   const raw_ptr<GuestViewContainer, ExperimentalRenderer> container_;
   v8::Global<v8::Function> callback_;
   const raw_ptr<v8::Isolate, ExperimentalRenderer> isolate_;
-  const int render_frame_routing_id_;
   const int guest_instance_id_;
   const base::Value::Dict params_;
+  mojo::AssociatedRemote<mojom::GuestViewHost> remote_;
 
   base::WeakPtrFactory<GuestViewAttachRequest> weak_ptr_factory_{this};
 };

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://whatpr.org/fetch/1647/9ca4bda...7bff4de.html#fetch-later-method
+// https://whatpr.org/fetch/1647/9ca4bda...9994c1d.html#dom-global-fetch-later
 
 [
     ImplementedAs=FetchLaterResult,
     RuntimeEnabled=FetchLaterAPI,
+    Exposed=Window,
     SecureContext
 ]
 interface FetchLaterResult {

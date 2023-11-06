@@ -10,8 +10,6 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +19,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -46,20 +43,15 @@ public class TabViewAndroidDelegateTest {
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);
 
-    @Rule
-    public TestRule mFeatureProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeatureProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private TabImpl mTab;
+    @Mock private TabImpl mTab;
 
-    @Mock
-    private WebContents mWebContents;
+    @Mock private WebContents mWebContents;
 
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private WindowAndroid mWindowAndroid;
 
-    @Mock
-    private ContentView mContentView;
+    @Mock private ContentView mContentView;
 
     private ApplicationViewportInsetSupplier mApplicationInsetSupplier;
     private ObservableSupplierImpl<Integer> mVisualViewportInsetSupplier;
@@ -89,7 +81,9 @@ public class TabViewAndroidDelegateTest {
     @Test
     public void testInset() {
         mVisualViewportInsetSupplier.set(10);
-        assertEquals("The bottom inset for the tab should be non-zero.", 10,
+        assertEquals(
+                "The bottom inset for the tab should be non-zero.",
+                10,
                 mViewAndroidDelegate.getViewportInsetBottom());
     }
 
@@ -100,7 +94,9 @@ public class TabViewAndroidDelegateTest {
         when(mTab.isHidden()).thenReturn(true);
 
         mTabObserverCaptor.getValue().onHidden(mTab, 0);
-        assertEquals("The bottom inset for the tab should be zero.", 0,
+        assertEquals(
+                "The bottom inset for the tab should be zero.",
+                0,
                 mViewAndroidDelegate.getViewportInsetBottom());
     }
 
@@ -108,33 +104,34 @@ public class TabViewAndroidDelegateTest {
     public void testInset_afterDetachAndAttach() {
         mVisualViewportInsetSupplier.set(10);
 
-        assertEquals("The bottom inset for the tab should be non-zero.", 10,
+        assertEquals(
+                "The bottom inset for the tab should be non-zero.",
+                10,
                 mViewAndroidDelegate.getViewportInsetBottom());
 
         mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab, null);
 
-        assertEquals("The bottom inset for the tab should be zero.", 0,
+        assertEquals(
+                "The bottom inset for the tab should be zero.",
+                0,
                 mViewAndroidDelegate.getViewportInsetBottom());
 
         WindowAndroid window = Mockito.mock(WindowAndroid.class);
         mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab, window);
-        assertEquals("The bottom inset for the tab should be non-zero.", 10,
+        assertEquals(
+                "The bottom inset for the tab should be non-zero.",
+                10,
                 mViewAndroidDelegate.getViewportInsetBottom());
     }
 
     @Test
     public void testCreateDragAndDropBrowserDelegate() {
-        assertNotNull("DragAndDropBrowserDelegate should not null when feature enabled.",
+        assertNotNull(
+                "DragAndDropBrowserDelegate should not null when feature enabled.",
                 mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
         mViewAndroidDelegate.destroy();
-        assertNull("DragAndDropBrowserDelegate should be removed once destroyed.",
-                mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N)
-    public void testCreateDragAndDropBrowserDelegate_N() {
-        assertNull("DragAndDropBrowserDelegate be null on N.",
+        assertNull(
+                "DragAndDropBrowserDelegate should be removed once destroyed.",
                 mViewAndroidDelegate.getDragAndDropBrowserDelegateForTesting());
     }
 }

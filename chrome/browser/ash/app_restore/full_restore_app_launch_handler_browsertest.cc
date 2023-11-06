@@ -687,6 +687,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 // restore finishes.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreAndLaunchBrowserWithClickRestore) {
+  base::HistogramTester histogram_tester;
   size_t count = BrowserList::GetInstance()->size();
 
   // Add the chrome browser launch info.
@@ -742,12 +743,16 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
 
   // Verify there is a new browser launched again.
   EXPECT_EQ(count + 2, BrowserList::GetInstance()->size());
+  histogram_tester.ExpectBucketCount(
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.NoDelay", 0,
+      /*expected_bucket_count=*/1);
 }
 
 // Verify the restore notification is shown with post reboot notification title
 // when |kShowPostRebootNotification| pref is set.
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
                        RestoreWithPostRebootTitle) {
+  base::HistogramTester histogram_tester;
   // Add the chrome browser launch info.
   ::full_restore::SaveAppLaunchInfo(
       profile()->GetPath(), std::make_unique<::app_restore::AppLaunchInfo>(
@@ -782,6 +787,10 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   EXPECT_TRUE(HasNotificationFor(kRestoreNotificationId));
   VerifyPostRebootNotificationTitle(kRestoreNotificationId);
   EXPECT_FALSE(HasNotificationFor(kPostRebootNotificationId));
+
+  histogram_tester.ExpectBucketCount(
+      "Ash.PostLoginGlanceables.HypotheticalFetchEvent.NoDelay", 0,
+      /*expected_bucket_count=*/1);
 }
 
 IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
@@ -1119,7 +1128,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   ToggleOverview();
   WaitForOverviewExitAnimation();
 
-  ASSERT_FALSE(Shell::Get()->overview_controller()->overview_session());
+  ASSERT_FALSE(OverviewController::Get()->overview_session());
 
   // Move the browser a bit and then close it. This is to make sure that when we
   // create a new browser, its bounds are actually coming from the template.
@@ -1134,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerBrowserTest,
   WaitForOverviewEnterAnimation();
 
   // Enter the saved desk library.
-  ClickButton(GetExpandedStateLibraryButton());
+  ClickButton(GetLibraryButton());
   // Launch the first entry.
   ClickTemplateItem(/*index=*/0);
 
@@ -2302,7 +2311,7 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
   // Launch the template.
   ToggleOverview();
   WaitForOverviewEnterAnimation();
-  ClickButton(GetExpandedStateLibraryButton());
+  ClickButton(GetLibraryButton());
   ClickTemplateItem(/*index=*/0);
   ToggleOverview();
   WaitForOverviewExitAnimation();
@@ -2335,8 +2344,8 @@ class ArcAppQueueRestoreHandlerArcAppBrowserTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  false /* should_notify_initialized */);
   }
 
   void RemoveApp(const std::string& app_id) {
@@ -2346,8 +2355,8 @@ class ArcAppQueueRestoreHandlerArcAppBrowserTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kArc,
-                                     false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kArc,
+                  false /* should_notify_initialized */);
   }
 
   bool HasRestoreData() {
@@ -2841,14 +2850,13 @@ class FullRestoreAppLaunchHandlerSystemWebAppsBrowserTest
     }
 
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     apps::AppPtr app = std::make_unique<apps::App>(
         app_type, *GetManager().GetAppIdForSystemApp(SystemWebAppType::HELP));
     app->readiness = readiness;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    cache.OnApps(std::move(deltas), app_type,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), app_type,
+                  false /* should_notify_initialized */);
   }
 
   void SetShouldRestore(FullRestoreAppLaunchHandler* app_launch_handler) {

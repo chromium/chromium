@@ -37,7 +37,7 @@ class ReadCBHandler {
 // chars so just return the string from the base::FilePath.
 base::FilePath TestFileURL() {
   base::FilePath data_dir;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir));
+  EXPECT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir));
   data_dir = data_dir.Append(FILE_PATH_LITERAL("media"))
                      .Append(FILE_PATH_LITERAL("test"))
                      .Append(FILE_PATH_LITERAL("data"))

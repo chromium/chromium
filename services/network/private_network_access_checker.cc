@@ -276,4 +276,15 @@ void PrivateNetworkAccessChecker::SetRequestUrl(const GURL& url) {
       request_initiator_.value().IsSameOriginWith(url);
 }
 
+bool PrivateNetworkAccessChecker::NeedPermission(
+    const GURL& url,
+    bool is_web_secure_context,
+    mojom::IPAddressSpace target_address_space) {
+  return base::FeatureList::IsEnabled(
+             network::features::kPrivateNetworkAccessPermissionPrompt) &&
+         is_web_secure_context && !network::IsUrlPotentiallyTrustworthy(url) &&
+         (target_address_space == mojom::IPAddressSpace::kLocal ||
+          target_address_space == mojom::IPAddressSpace::kPrivate);
+}
+
 }  // namespace network

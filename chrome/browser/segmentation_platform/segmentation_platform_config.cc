@@ -13,6 +13,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/search/ntp_features.h"
 #include "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
+#include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/frequent_feature_user_model.h"
@@ -42,6 +43,7 @@
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/device_tier_segment.h"
 #include "components/segmentation_platform/embedder/default_model/intentional_user_model.h"
+#include "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
 #include "components/segmentation_platform/embedder/default_model/power_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #include "components/segmentation_platform/embedder/default_model/tablet_productivity_user_model.h"
@@ -162,8 +164,8 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(FrequentFeatureUserModel::GetConfig());
   configs.emplace_back(DeviceTierSegment::GetConfig());
   configs.emplace_back(TabletProductivityUserModel::GetConfig());
+  configs.emplace_back(MostVisitedTilesUser::GetConfig());
 #endif
-
   configs.emplace_back(LowUserEngagementModel::GetConfig());
   configs.emplace_back(SearchUserModel::GetConfig());
   configs.emplace_back(FeedUserSegment::GetConfig());
@@ -173,6 +175,7 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
   configs.emplace_back(DeviceSwitcherModel::GetConfig());
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
+  configs.emplace_back(DatabaseApiClients::GetConfig());
 
   // Model used for testing.
   configs.emplace_back(OptimizationTargetSegmentationDummy::GetConfig());
@@ -249,10 +252,6 @@ void FieldTrialRegisterImpl::RegisterSubsegmentFieldTrialIfNeeded(
   // TODO(ssid): Make GetSubsegmentName as a ModelProvider API so that clients
   // can simply implement it instead of adding conditions here, once the
   // subsegment process is more stable.
-  if (segment_id == SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER) {
-    group_name = FeedUserSegment::GetSubsegmentName(subsegment_rank);
-  }
-
   if (!group_name) {
     return;
   }

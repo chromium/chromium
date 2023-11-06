@@ -37,15 +37,28 @@ public class TabUiFeatureUtilities {
     // Field trial parameter for disabling new tab button anchor for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM = "disable_ntb_anchor";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM, false);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_DISABLE_NTB_ANCHOR_PARAM,
+                    true);
 
     // Field trial parameter for disabling button style for tab strip redesign. This includes
     // disabling NTB anchor and button bg style.
     private static final String TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM = "disable_btn_style";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE =
-            new BooleanCachedFieldTrialParameter(ChromeFeatureList.TAB_STRIP_REDESIGN,
-                    TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM, false);
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.TAB_STRIP_REDESIGN,
+                    TAB_STRIP_REDESIGN_DISABLE_BUTTON_STYLE_PARAM,
+                    true);
+
+    // Field trial parameter for animation start timeout for new Android based shrink and expand
+    // animations in TabSwitcherLayout.
+    private static final String ANIMATION_START_TIMEOUT_MS_PARAM = "animation_start_timeout_ms";
+    public static final IntCachedFieldTrialParameter ANIMATION_START_TIMEOUT_MS =
+            new IntCachedFieldTrialParameter(
+                    ChromeFeatureList.GRID_TAB_SWITCHER_ANDROID_ANIMATIONS,
+                    ANIMATION_START_TIMEOUT_MS_PARAM,
+                    300);
 
     public static final MutableFlagWithSafeDefault sThumbnailPlaceholder =
             new MutableFlagWithSafeDefault(ChromeFeatureList.THUMBNAIL_PLACEHOLDER, false);

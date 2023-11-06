@@ -219,7 +219,7 @@ TrackerImpl::TriggerDetails TrackerImpl::ShouldTriggerHelpUIWithSnooze(
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, group_configs, *event_model_,
       *availability_model_, *display_lock_controller_, configuration_.get(),
-      time_provider_->GetCurrentDay());
+      *time_provider_);
   if (result.NoErrors()) {
     condition_validator_->NotifyIsShowing(
         feature, feature_config, configuration_->GetRegisteredFeatures());
@@ -277,7 +277,7 @@ bool TrackerImpl::WouldTriggerHelpUI(const base::Feature& feature) const {
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, feature_config, group_configs, *event_model_,
       *availability_model_, *display_lock_controller_, configuration_.get(),
-      time_provider_->GetCurrentDay());
+      *time_provider_);
   DVLOG(2) << "Would trigger result for " << feature.name
            << ": trigger=" << result.NoErrors()
            << " tracking_only=" << feature_config.tracking_only << " "
@@ -316,7 +316,7 @@ Tracker::TriggerState TrackerImpl::GetTriggerState(
   ConditionValidator::Result result = condition_validator_->MeetsConditions(
       feature, configuration_->GetFeatureConfig(feature), group_configs,
       *event_model_, *availability_model_, *display_lock_controller_,
-      configuration_.get(), time_provider_->GetCurrentDay());
+      configuration_.get(), *time_provider_);
 
   if (result.trigger_ok) {
     DVLOG(2) << "TriggerState for " << feature.name << ": "
@@ -351,9 +351,9 @@ void TrackerImpl::DismissedWithSnooze(
   } else if (snooze_action == SnoozeAction::DISMISSED) {
     event_model_->DismissSnooze(feature_config.trigger.name);
   }
+  Dismissed(feature);
   if (snooze_action.has_value())
     stats::RecordUserSnoozeAction(snooze_action.value());
-  RecordShownTime(feature);
 }
 
 std::unique_ptr<DisplayLockHandle> TrackerImpl::AcquireDisplayLock() {

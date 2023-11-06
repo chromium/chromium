@@ -80,23 +80,6 @@ void UpdateMetadataForUsage(PasswordForm* credential) {
   credential->all_alternative_usernames.clear();
 }
 
-void TrimUsernameOnlyCredentials(
-    std::vector<std::unique_ptr<PasswordForm>>* android_credentials) {
-  // Remove username-only credentials which are not federated.
-  base::EraseIf(*android_credentials,
-                [](const std::unique_ptr<PasswordForm>& form) {
-                  return form->scheme == PasswordForm::Scheme::kUsernameOnly &&
-                         form->federation_origin.opaque();
-                });
-
-  // Set "skip_zero_click" on federated credentials.
-  base::ranges::for_each(
-      *android_credentials, [](const std::unique_ptr<PasswordForm>& form) {
-        if (form->scheme == PasswordForm::Scheme::kUsernameOnly)
-          form->skip_zero_click = true;
-      });
-}
-
 bool IsLoggingActive(password_manager::PasswordManagerClient* client) {
   autofill::LogManager* log_manager = client->GetLogManager();
   return log_manager && log_manager->IsLoggingActive();
@@ -405,12 +388,6 @@ GURL ConstructGURLWithScheme(const std::string& url) {
   return gurl;
 }
 
-bool IsValidPasswordURL(const GURL& url) {
-  return url.is_valid() &&
-         (url.SchemeIsHTTPOrHTTPS() ||
-          password_manager::IsValidAndroidFacetURI(url.spec()));
-}
-
 std::string GetSignonRealm(const GURL& url) {
   GURL::Replacements rep;
   rep.ClearUsername();
@@ -459,5 +436,16 @@ bool IsSingleUsernameType(autofill::ServerFieldType type) {
           base::FeatureList::IsEnabled(
               password_manager::features::kForgotPasswordFormSupport));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool UsesUPMForLocalM2(PrefService* prefs) {
+  bool is_upm_local_enabled = base::FeatureList::IsEnabled(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
+  // TODO(crbug.com/1495626): Check the readiness pref.
+  // TODO(crbug.com/1491089): Check the GMSCore version.
+  return is_upm_local_enabled;
+}
+#endif
 
 }  // namespace password_manager_util

@@ -271,9 +271,8 @@ class MediaAppIntegrationPhotosIntegrationTest
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
     std::vector<apps::AppPtr> registry_deltas;
     registry_deltas.push_back(MakePhotosApp(photos_version));
-    proxy->AppRegistryCache().OnApps(std::move(registry_deltas),
-                                     apps::AppType::kUnknown,
-                                     /*should_notify_initialized=*/false);
+    proxy->OnApps(std::move(registry_deltas), apps::AppType::kUnknown,
+                  /*should_notify_initialized=*/false);
   }
 
   static bool GetFlagInApp(content::WebContents* web_ui, const char* flag) {
@@ -637,33 +636,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppHandlesIntents) {
           << " at " << accept.mime_type;
     }
   }
-}
-
-// Regression test for b/172881869.
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsPdf) {
-  LaunchWithNoFiles();
-  content::WebContents* app = PrepareActiveBrowserForTest();
-  // TODO(crbug/1148090): To fully load PDFs, "frame-src" needs to be set, this
-  // test doesn't provide coverage for that.
-  // Note: If "object-src" is not set in the CSP, the `<embed>` element fails to
-  // load and times out.
-  constexpr char kLoadPdf[] = R"(
-      (function loadPdf() {
-        const embedBlob =  document.createElement('embed');
-        embedBlob.type ='application/pdf';
-        embedBlob.height = '100%';
-        embedBlob.width = '100%';
-        const loadPromise = new Promise((resolve, reject) => {
-          embedBlob.addEventListener('load', () => resolve(true));
-          embedBlob.addEventListener('error', () => reject(false));
-        });
-        document.body.appendChild(embedBlob);
-        embedBlob.src = 'blob:chrome-untrusted://media-app/fake-pdf-blob-hash';
-        return loadPromise;
-      })();
-  )";
-
-  EXPECT_EQ(true, MediaAppUiBrowserTest::EvalJsInAppFrame(app, kLoadPdf));
 }
 
 namespace {

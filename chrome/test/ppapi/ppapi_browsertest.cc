@@ -74,6 +74,11 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/printing/browser_printing_context_factory_for_test.h"
+#include "printing/backend/test_print_backend.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
@@ -2066,7 +2071,17 @@ TEST_PPAPI_NACL(MAYBE_VideoDecoder)
 TEST_PPAPI_NACL(MAYBE_VideoEncoder)
 
 // Printing doesn't work in content_browsertests.
-TEST_PPAPI_OUT_OF_PROCESS(Printing)
+IN_PROC_BROWSER_TEST_F(OutOfProcessPPAPITest, Printing) {
+#if BUILDFLAG(IS_CHROMEOS)
+  printing::BrowserPrintingContextFactoryForTest test_printing_context_factory;
+  auto test_backend = base::MakeRefCounted<printing::TestPrintBackend>();
+  printing::PrintingContext::SetPrintingContextFactoryForTest(
+      &test_printing_context_factory);
+  printing::PrintBackend::SetPrintBackendForTesting(test_backend.get());
+#endif
+
+  RunTest("Printing");
+}
 
 // https://crbug.com/1038957.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

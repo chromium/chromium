@@ -126,6 +126,32 @@ TabStripControlButton::TabStripControlButton(
   }
 }
 
+void TabStripControlButton::SetForegroundFrameActiveColorId(
+    ui::ColorId new_color_id) {
+  foreground_frame_active_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetForegroundFrameInactiveColorId(
+    ui::ColorId new_color_id) {
+  foreground_frame_inactive_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetBackgroundFrameActiveColorId(
+    ui::ColorId new_color_id) {
+  background_frame_active_color_id_ = new_color_id;
+  UpdateColors();
+}
+void TabStripControlButton::SetBackgroundFrameInactiveColorId(
+    ui::ColorId new_color_id) {
+  background_frame_inactive_color_id_ = new_color_id;
+  UpdateColors();
+}
+
+void TabStripControlButton::SetVectorIcon(const gfx::VectorIcon& icon) {
+  icon_ = icon;
+  UpdateIcon();
+}
+
 ui::ColorId TabStripControlButton::GetBackgroundColor() {
   return (GetWidget() && GetWidget()->ShouldPaintAsActive())
              ? background_frame_active_color_id_
@@ -217,7 +243,7 @@ void TabStripControlButton::UpdateBackground() {
 }
 
 int TabStripControlButton::GetCornerRadius() const {
-  return width() / 2;
+  return TabStripControlButton::kButtonSize.width() / 2;
 }
 
 int TabStripControlButton::GetFlatCornerRadius() const {

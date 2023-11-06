@@ -80,6 +80,12 @@ absl::optional<uint8_t> RTCEncodedAudioFrameDelegate::PayloadType() const {
                        : absl::nullopt;
 }
 
+absl::optional<std::string> RTCEncodedAudioFrameDelegate::MimeType() const {
+  base::AutoLock lock(lock_);
+  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetMimeType())
+                       : absl::nullopt;
+}
+
 absl::optional<uint16_t> RTCEncodedAudioFrameDelegate::SequenceNumber() const {
   base::AutoLock lock(lock_);
   return sequence_number_;

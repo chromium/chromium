@@ -17,6 +17,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
+import dagger.Lazy;
+
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
@@ -64,8 +66,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-
-import dagger.Lazy;
 
 /**
  * A {@link TabDelegateFactory} class to be used in all {@link Tab} owned
@@ -201,11 +201,10 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         protected boolean isInstalledWebappDelegateGeolocation() {
-            if ((mActivity instanceof CustomTabActivity)
-                    && ((CustomTabActivity) mActivity).isInTwaMode()) {
+            if ((mActivity instanceof CustomTabActivity cctActivity) && cctActivity.isInTwaMode()) {
                 // Whether the corresponding TWA client app enrolled in location delegation.
                 return InstalledWebappPermissionManager.hasAndroidLocationPermission(
-                               ((CustomTabActivity) mActivity).getTwaPackage())
+                                cctActivity.getTwaPackage())
                         != null;
             }
             return false;

@@ -32,11 +32,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.ShadowUrlUtilities;
 
-/**
- * Tests for {@link InstalledWebappDataRecorder}.
- */
+/** Tests for {@link InstalledWebappDataRecorder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowUrlUtilities.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowUrlUtilities.class})
 public class InstalledWebappDataRecorderTest {
     private static final int APP_UID = 123;
     private static final String APP_NAME = "Example App";
@@ -45,10 +45,8 @@ public class InstalledWebappDataRecorderTest {
     private static final Origin ORIGIN = Origin.create("https://www.example.com/");
     private static final Origin OTHER_ORIGIN = Origin.create("https://www.other.com/");
 
-    @Mock
-    private InstalledWebappDataRegister mRegister;
-    @Mock
-    private PackageManager mPackageManager;
+    @Mock private InstalledWebappDataRegister mRegister;
+    @Mock private PackageManager mPackageManager;
 
     private InstalledWebappDataRecorder mRecorder;
 
@@ -76,12 +74,14 @@ public class InstalledWebappDataRecorderTest {
         Context context = mock(Context.class);
         when(context.getPackageManager()).thenReturn(mPackageManager);
 
-        ShadowUrlUtilities.setTestImpl(new ShadowUrlUtilities.TestImpl() {
-            @Override
-            public String getDomainAndRegistry(String uri, boolean includePrivateRegistries) {
-                return transform(uri);
-            }
-        });
+        ShadowUrlUtilities.setTestImpl(
+                new ShadowUrlUtilities.TestImpl() {
+                    @Override
+                    public String getDomainAndRegistry(
+                            String uri, boolean includePrivateRegistries) {
+                        return transform(uri);
+                    }
+                });
 
         mRecorder = new InstalledWebappDataRecorder(context, mRegister);
     }
@@ -125,7 +125,8 @@ public class InstalledWebappDataRecorderTest {
     }
 
     private void verifyRegistration(Origin origin) {
-        verify(mRegister).registerPackageForOrigin(
-                APP_UID, APP_NAME, APP_PACKAGE, transform(origin.toString()), origin);
+        verify(mRegister)
+                .registerPackageForOrigin(
+                        APP_UID, APP_NAME, APP_PACKAGE, transform(origin.toString()), origin);
     }
 }

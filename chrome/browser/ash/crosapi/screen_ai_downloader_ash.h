@@ -29,6 +29,7 @@ class ScreenAIDownloaderAsh : public mojom::ScreenAIDownloader,
 
  private:
   friend class ScreenAIDownloaderAshTest;
+  friend class ScreenAIDownloaderAshReplyTest;
 
   // crosapi::mojom::ScreenAIDownloader:
   void DownloadComponentDeprecated(
@@ -40,15 +41,21 @@ class ScreenAIDownloaderAsh : public mojom::ScreenAIDownloader,
   // screen_ai::ScreenAIInstallState::Observer:
   void StateChanged(screen_ai::ScreenAIInstallState::State state) override;
 
+  // Called when a connection is lost.
+  void OnDisconnected();
+
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           screen_ai::ScreenAIInstallState::Observer>
       install_state_observer_{this};
 
+  // This map keeps a callback function for a receiver. In `OnDisconnected()`,
+  // this map is used to clear out a pending callback related to the destroyed
+  // receiver.
+  std::map<mojo::ReceiverId, GetComponentFolderCallback>
+      pending_download_callback_map_;
+
   // This set maintains a list of all receivers.
   mojo::ReceiverSet<mojom::ScreenAIDownloader> receivers_;
-
-  // Callback functions waiting for the result of component download.
-  std::vector<GetComponentFolderCallback> pending_download_callbacks_;
 
   base::WeakPtrFactory<ScreenAIDownloaderAsh> weak_factory_{this};
 };

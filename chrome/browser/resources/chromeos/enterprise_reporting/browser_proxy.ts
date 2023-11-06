@@ -8,23 +8,27 @@ export class EnterpriseReportingBrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler: PageHandlerInterface;
 
-  constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-
-    this.handler = new PageHandlerRemote();
-
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
-  }
-
   static getInstance(): EnterpriseReportingBrowserProxy {
-    return instance || (instance = new EnterpriseReportingBrowserProxy());
+    if (!instance) {
+      const handler = new PageHandlerRemote();
+      const callbackRouter = new PageCallbackRouter();
+      PageHandlerFactory.getRemote().createPageHandler(
+          callbackRouter.$.bindNewPipeAndPassRemote(),
+          handler.$.bindNewPipeAndPassReceiver());
+      instance = new EnterpriseReportingBrowserProxy(handler, callbackRouter);
+    }
+    return instance;
   }
 
-  static setInstance(obj: EnterpriseReportingBrowserProxy) {
-    instance = obj;
+  static createInstanceForTest(
+      handler: PageHandlerInterface, callbackRouter: PageCallbackRouter) {
+    instance = new EnterpriseReportingBrowserProxy(handler, callbackRouter);
+  }
+
+  private constructor(
+      handler: PageHandlerInterface, callbackRouter: PageCallbackRouter) {
+    this.handler = handler;
+    this.callbackRouter = callbackRouter;
   }
 }
 

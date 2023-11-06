@@ -112,7 +112,8 @@ void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
   base::Value::Dict context;
   switch (request_details_.virtual_card_enrollment_source) {
     case VirtualCardEnrollmentSource::kUpstream:
-      context.Set("billable_service", kUploadCardBillableServiceNumber);
+      context.Set("billable_service",
+                  kUploadPaymentMethodBillableServiceNumber);
       request_dict->Set("channel_type", "CHROME_UPSTREAM");
       break;
     case VirtualCardEnrollmentSource::kDownstream:
@@ -120,7 +121,8 @@ void UpdateVirtualCardEnrollmentRequest::BuildEnrollRequestDictionary(
       // chrome client should already have a card synced from the server.
       // Fall-through.
     case VirtualCardEnrollmentSource::kSettingsPage:
-      context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+      context.Set("billable_service",
+                  kUnmaskPaymentMethodBillableServiceNumber);
       request_dict->Set("channel_type", "CHROME_DOWNSTREAM");
       break;
     case VirtualCardEnrollmentSource::kNone:
@@ -172,7 +174,7 @@ void UpdateVirtualCardEnrollmentRequest::BuildUnenrollRequestDictionary(
                 BuildCustomerContextDictionary(
                     request_details_.billing_customer_number));
   }
-  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   request_dict->Set("context", std::move(context));
 
   // Sets the instrument_id field in this unenroll request which is used by

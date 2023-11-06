@@ -311,6 +311,8 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
 #else
   adapter_options.backendType = WGPUBackendType_Vulkan;
 #endif
+
+  bool supports_shader_f16 = false;
   for (dawn::native::Adapter& adapter :
        instance->EnumerateAdapters(&adapter_options)) {
     adapter.SetUseTieredLimits(false);
@@ -334,6 +336,9 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       max_limits = limits.limits;
       adapter_type = props.adapterType;
     }
+
+    supports_shader_f16 |=
+        wgpu::Adapter(adapter.Get()).HasFeature(wgpu::FeatureName::ShaderF16);
   }
 
   bool has_gpu_adapter = adapter_type != wgpu::AdapterType::Unknown;
@@ -348,13 +353,16 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
     base::UmaHistogramCounts100000(
         "GPU.WebGPU.MaxTextureDimension2D." + adapter_string,
         max_limits.maxTextureDimension2D);
+
+    base::UmaHistogramBoolean("GPU.WebGPU.Support.ShaderF16",
+                              supports_shader_f16);
   }
 }
 
 void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   static BASE_FEATURE(kCollectWebGPUSupportMetrics,
                       "CollectWebGPUSupportMetrics",
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
                       base::FEATURE_DISABLED_BY_DEFAULT);
 #else
                       base::FEATURE_ENABLED_BY_DEFAULT);

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
-#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -46,8 +45,6 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   void SetToggleVisibility(bool visible);
 
  protected:
-  virtual void AddExtraButtons();
-
   // Called when `toggle_` is clicked and toggled. Subclasses should override to
   // enabled/disable their respective technology.
   virtual void OnToggleToggled(bool is_on);
@@ -56,12 +53,10 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
 
   TrayNetworkStateModel* model() { return model_; }
 
-  Switch* qs_toggle() { return qs_toggle_; }
+  Switch* toggle() { return toggle_; }
 
   // Used for testing.
-  static constexpr int kToggleButtonId =
-      NetworkListHeaderView::kTitleLabelViewId + 1;
-  static constexpr int kQsToggleButtonId = kToggleButtonId + 1;
+  static constexpr int kToggleButtonId = 1;
 
  private:
   friend class NetworkListNetworkHeaderViewTest;
@@ -77,11 +72,8 @@ class ASH_EXPORT NetworkListNetworkHeaderView : public NetworkListHeaderView {
   raw_ptr<TrayNetworkStateModel, ExperimentalAsh> model_;
   int const enabled_label_id_;
 
-  // `ToggleButton` to toggle section on or off.
-  raw_ptr<views::ToggleButton, DanglingUntriaged | ExperimentalAsh> toggle_ =
-      nullptr;
   // `KnobSwitch` to toggle section on or off.
-  raw_ptr<Switch, ExperimentalAsh> qs_toggle_ = nullptr;
+  raw_ptr<Switch, ExperimentalAsh> toggle_ = nullptr;
 
   raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
 

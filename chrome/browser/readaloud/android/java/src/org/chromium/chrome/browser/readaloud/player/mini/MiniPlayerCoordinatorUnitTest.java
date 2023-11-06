@@ -5,16 +5,20 @@
 package org.chromium.chrome.browser.readaloud.player.mini;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewStub;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -22,7 +26,13 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayerJni;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,11 +44,18 @@ public class MiniPlayerCoordinatorUnitTest {
     private static final String TITLE = "Title";
     private static final String PUBLISHER = "Publisher";
 
-    @Mock
-    private ViewStub mViewStub;
-    @Mock
-    private MiniPlayerLayout mLayout;
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Mock ReadAloudMiniPlayerSceneLayer.Natives mSceneLayerNativeMock;
+
+    @Mock private Activity mActivity;
+    @Mock private Context mContextForInflation;
+    @Mock private LayoutInflater mLayoutInflater;
+    @Mock private ViewStub mViewStub;
+    @Mock private BrowserControlsSizer mBrowserControlsSizer;
+    @Mock private LayoutManager mLayoutManager;
+    @Mock private MiniPlayerLayout mLayout;
     @Mock private MiniPlayerMediator mMediator;
+    @Mock private ReadAloudMiniPlayerSceneLayer mSceneLayer;
     private PropertyModel mModel;
 
     private MiniPlayerCoordinator mCoordinator;
@@ -47,8 +64,15 @@ public class MiniPlayerCoordinatorUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         doReturn(mLayout).when(mViewStub).inflate();
+        doReturn(mViewStub).when(mActivity).findViewById(eq(R.id.readaloud_mini_player_stub));
+        doReturn(mLayoutInflater)
+                .when(mContextForInflation)
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mModel = new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build();
-        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel, mMediator);
+        mJniMocker.mock(ReadAloudMiniPlayerSceneLayerJni.TEST_HOOKS, mSceneLayerNativeMock);
+        doReturn(123456789L).when(mSceneLayerNativeMock).init(any());
+        mCoordinator =
+                new MiniPlayerCoordinator(mModel, mMediator, mLayout, mSceneLayer, mLayoutManager);
     }
 
     @Test
@@ -56,20 +80,25 @@ public class MiniPlayerCoordinatorUnitTest {
         // Test the real constructor
         reset(mViewStub);
         doReturn(mLayout).when(mViewStub).inflate();
-        mCoordinator = new MiniPlayerCoordinator(mViewStub, mModel);
+        mCoordinator =
+                new MiniPlayerCoordinator(
+                        mActivity,
+                        mContextForInflation,
+                        mModel,
+                        mBrowserControlsSizer,
+                        mLayoutManager);
         verify(mViewStub).inflate();
+        verify(mLayoutManager).addSceneOverlay(eq(mSceneLayer));
     }
 
     @Test
     public void testShow() {
-        mCoordinator.show(/*animate=*/false);
-        verify(mViewStub).inflate();
+        mCoordinator.show(/* animate= */ false);
         verify(mMediator).show(eq(false));
 
         // Second show() shouldn't inflate the stub again.
         reset(mViewStub);
-        mCoordinator.show(/*animate=*/false);
-        verify(mViewStub, never()).inflate();
+        mCoordinator.show(/* animate= */ false);
         verify(mMediator, times(2)).show(eq(false));
     }
 
@@ -82,34 +111,34 @@ public class MiniPlayerCoordinatorUnitTest {
 
     @Test
     public void testDismiss() {
-        mCoordinator.dismiss(/*animate=*/false);
+        mCoordinator.dismiss(/* animate= */ false);
         verify(mMediator).dismiss(eq(false));
     }
 
     @Test
     public void testBindPlaybackState() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PLAYBACK_STATE, PlaybackListener.State.PLAYING);
         verify(mLayout).onPlaybackStateChanged(eq(PlaybackListener.State.PLAYING));
     }
 
     @Test
     public void testBindTitle() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.TITLE, TITLE);
         verify(mLayout).setTitle(eq(TITLE));
     }
 
     @Test
     public void testBindPublisher() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PUBLISHER, PUBLISHER);
         verify(mLayout).setPublisher(eq(PUBLISHER));
     }
 
     @Test
     public void testBindProgress() {
-        mCoordinator.show(/*animate=*/true);
+        mCoordinator.show(/* animate= */ true);
         mModel.set(PlayerProperties.PROGRESS, 0.5f);
         verify(mLayout).setProgress(eq(0.5f));
     }

@@ -66,8 +66,7 @@ void EditLabels::OnActionInputBindingUpdated() {
 }
 
 void EditLabels::UpdateNameTagTitle() {
-  name_tag_->SetTitle(GetActionNameAtIndex(controller_->action_name_list(),
-                                           action_->name_label_index()));
+  NOTIMPLEMENTED();
 }
 
 void EditLabels::SetNameTagState(bool is_error,

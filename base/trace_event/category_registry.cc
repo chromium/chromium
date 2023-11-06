@@ -20,7 +20,7 @@ namespace trace_event {
 namespace {
 
 // |categories_| might end up causing creating dynamic initializers if not POD.
-static_assert(std::is_pod<TraceCategory>::value, "TraceCategory must be POD");
+static_assert(std::is_pod_v<TraceCategory>, "TraceCategory must be POD");
 
 }  // namespace
 

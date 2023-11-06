@@ -1,0 +1,57 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "linux",
+      "win",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "If only the deprecated ForceYouTubeSafetyMode policy is set, but not ForceYouTubeRestrict, set to Moderate (1).",
+        "policies": {
+          "ForceYouTubeSafetyMode": true
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "note": "ForceYouTubeRestrict overrides deprecated ForceYouTubeSafetyMode when it is less strict.",
+        "policies": {
+          "ForceYouTubeRestrict": 0,
+          "ForceYouTubeSafetyMode": true
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "ForceYouTubeRestrict overrides deprecated ForceYouTubeSafetyMode when it is more strict.",
+        "policies": {
+          "ForceYouTubeRestrict": 2,
+          "ForceYouTubeSafetyMode": true
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  }
+]

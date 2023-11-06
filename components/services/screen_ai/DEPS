@@ -10,6 +10,7 @@ include_rules = [
   "+ui/accessibility/ax_enums.mojom.h",
   "+ui/accessibility/ax_node.h",
   "+ui/accessibility/ax_node_data.h",
+  "+ui/accessibility/ax_node_id_forward.h",
   "+ui/accessibility/ax_role_properties.h",
   "+ui/accessibility/ax_serializable_tree.h",
   "+ui/accessibility/ax_tree.h",

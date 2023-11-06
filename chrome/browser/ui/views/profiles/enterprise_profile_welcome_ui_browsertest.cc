@@ -141,8 +141,8 @@ class EnterpriseWelcomeUIWindowPixelTest
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     DCHECK(browser());
 
-    auto account_info =
-        SignInWithPrimaryAccount(AccountManagementStatus::kManaged);
+    AccountInfo account_info =
+        SignInWithAccount(AccountManagementStatus::kManaged);
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -207,8 +207,8 @@ class EnterpriseWelcomeUIDialogPixelTest
   void ShowUi(const std::string& name) override {
     DCHECK(browser());
 
-    auto account_info =
-        SignInWithPrimaryAccount(AccountManagementStatus::kManaged);
+    AccountInfo account_info =
+        SignInWithAccount(AccountManagementStatus::kManaged);
     auto url = GURL(chrome::kChromeUIEnterpriseProfileWelcomeURL);
 
     // Wait for the web content to load to be able to properly render the

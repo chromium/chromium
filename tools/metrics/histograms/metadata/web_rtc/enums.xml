@@ -1,0 +1,565 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AddIceCandidateResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="No remote description"/>
+  <int value="3" label="Null candidate"/>
+  <int value="4" label="Candidate not valid"/>
+  <int value="5" label="PeerConnection not ready"/>
+  <int value="6" label="Failed in addition"/>
+  <int value="7" label="Failed - not usable"/>
+</enum>
+
+<enum name="ClockdriftLevel">
+  <int value="0" label="None"/>
+  <int value="1" label="Probable"/>
+  <int value="2" label="Verified"/>
+</enum>
+
+<enum name="DataChannelAggregateType">
+  <int value="0" label="Unreliable Unordered."/>
+  <int value="1" label="Unreliable Ordered"/>
+  <int value="2" label="Reliable Unordered."/>
+  <int value="3" label="Reliable Ordered"/>
+</enum>
+
+<enum name="DataChannelCounters">
+  <int value="0" label="Channel created."/>
+  <int value="1" label="Channel reached Open state."/>
+  <int value="2" label="Channel is reliable."/>
+  <int value="3" label="Channel is ordered."/>
+  <int value="4" label="Channel is negotiated."/>
+</enum>
+
+<enum name="DataChannelSctpErrorCode">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="InvalidStreamIdentifier"/>
+  <int value="2" label="MissingMandatoryParameter"/>
+  <int value="3" label="StaleCookieError"/>
+  <int value="4" label="OutOfResource"/>
+  <int value="5" label="UnresolvableAddress"/>
+  <int value="6" label="UnspkUnrecognizedChunkTypeecified"/>
+  <int value="7" label="InvalidMandatoryParameter"/>
+  <int value="8" label="UnrecognizedParameters"/>
+  <int value="9" label="NoUserData"/>
+  <int value="10" label="CookieReceivedWhileShuttingDown"/>
+  <int value="11" label="RestartWithNewAddresses"/>
+  <int value="12" label="UserInitiatedAbort"/>
+  <int value="13" label="ProtocolViolation"/>
+  <int value="14" label="Other"/>
+</enum>
+
+<enum name="DesktopCaptureCounters">
+  <int value="0" label="Screen capturer created."/>
+  <int value="1" label="Window capturer created."/>
+  <int value="2" label="First screen capture call succeeded."/>
+  <int value="3" label="First screen capture call failed."/>
+  <int value="4" label="First window capture call succeeded."/>
+  <int value="5" label="First window capture call failed."/>
+  <int value="6" label="Tab video capturer created."/>
+  <int value="7" label="Tab audio capturer created."/>
+  <int value="8" label="System loopback audio capturer created."/>
+  <int value="9" label="Screen capturer created together with audio capturer."/>
+  <int value="10" label="Screen capturer created without audio capturer."/>
+  <int value="11" label="Tab capturer created together with audio capturer."/>
+  <int value="12" label="Tab capturer created without audio capturer."/>
+  <int value="13" label="Screen capturer permanent error."/>
+  <int value="14" label="Window capturer permanent error."/>
+  <int value="15" label="Desktop capture stopped via screen lock."/>
+  <int value="16" label="Desktop capture stopped via notification bar."/>
+  <int value="17" label="Desktop capture changed source via notification bar."/>
+</enum>
+
+<enum name="DtlsHandshakeError">
+  <int value="0" label="Incompatible cipher suite"/>
+  <int value="1" label="Unknown error"/>
+</enum>
+
+<enum name="IceCandidatePairTypes">
+  <int value="0" label="host_host"/>
+  <int value="1" label="host_srflx"/>
+  <int value="2" label="host_relay"/>
+  <int value="3" label="host_prflx"/>
+  <int value="4" label="srflx_host"/>
+  <int value="5" label="srflx_srflx"/>
+  <int value="6" label="srflx_relay"/>
+  <int value="7" label="srflx_prflx"/>
+  <int value="8" label="relay_host"/>
+  <int value="9" label="relay_srflx"/>
+  <int value="10" label="relay_relay"/>
+  <int value="11" label="relay_prflx"/>
+  <int value="12" label="prflx_host"/>
+  <int value="13" label="prflx_srflx"/>
+  <int value="14" label="prflx_relay"/>
+  <int value="15" label="host(private)_host(private)"/>
+  <int value="16" label="host(private)_host(public)"/>
+  <int value="17" label="host(public)_host(private)"/>
+  <int value="18" label="host(public)_host(public)"/>
+  <int value="19" label="host(named)_host(named)"/>
+  <int value="20" label="host(named)_host(private)"/>
+  <int value="21" label="host(named)_host(public)"/>
+  <int value="22" label="host(private)_host(named)"/>
+  <int value="23" label="host(public)_host(named)"/>
+</enum>
+
+<enum name="IceConnectionStates">
+  <int value="0" label="IceConnectionNew"/>
+  <int value="1" label="IceConnectionChecking"/>
+  <int value="2" label="IceConnectionConnected"/>
+  <int value="3" label="IceconnectionCompleted"/>
+  <int value="4" label="IceconnectionFailed"/>
+  <int value="5" label="IceconnectionDisconnected"/>
+  <int value="6" label="IceconnectionClosed"/>
+</enum>
+
+<enum name="IceRegatheringReason">
+  <int value="0" label="NetworkChange"/>
+  <int value="1" label="NetworkFailure"/>
+</enum>
+
+<enum name="IceRestartState">
+  <int value="0" label="Connecting"/>
+  <int value="1" label="Connected"/>
+  <int value="2" label="Disconnected"/>
+</enum>
+
+<enum name="MediaStreamRequestState">
+  <int value="0" label="Explicitly Cancelled"/>
+  <int value="1" label="Stream Not Generated"/>
+  <int value="2" label="Pending Media Tracks"/>
+</enum>
+
+<enum name="PeerConnectionBundlePolicy">
+  <int value="0" label="balanced"/>
+  <int value="1" label="max-bundle"/>
+  <int value="2" label="max-compat"/>
+</enum>
+
+<enum name="PeerConnectionBundleUsage">
+  <int value="0" label="There are no m-lines"/>
+  <int value="1" label="No BUNDLE, datachannel-only"/>
+  <int value="2" label="No BUNDLE, at most one audio/video m-line"/>
+  <int value="3" label="No BUNDLE, more than one audio/video m-line"/>
+  <int value="4" label="Using BUNDLE, datachannel-only"/>
+  <int value="5" label="Using BUNDLE, at most one audio/video m-line"/>
+  <int value="6" label="Using BUNDLE, more than one audio/video m-line"/>
+  <int value="7" label="No BUNDLE, legacy plan-b"/>
+  <int value="8" label="Using BUNDLE, legacy plan-b"/>
+</enum>
+
+<enum name="PeerConnectionCounters">
+  <int value="0" label="PeerConnection enabled with IPv4."/>
+  <int value="1" label="PeerConnection enabled with Ipv6."/>
+  <int value="2" label="IPv4 BestConnection."/>
+  <int value="3" label="IPv6 BestConnection."/>
+</enum>
+
+<enum name="PeerConnectionKeyProtocol">
+  <int value="0" label="DTLS"/>
+  <int value="1" label="SDES"/>
+</enum>
+
+<enum name="PeerConnectionProvisionalAnswer">
+  <int value="0" label="Not used"/>
+  <int value="1" label="Local"/>
+  <int value="2" label="Remote"/>
+</enum>
+
+<enum name="PeerConnectionRtcpMux">
+  <int value="0" label="Disabled"/>
+  <int value="1" label="Enabled"/>
+  <int value="2" label="No media"/>
+</enum>
+
+<enum name="PeerConnectionSdpFormatReceived">
+  <int value="0" label="No tracks"/>
+  <int value="1" label="Simple"/>
+  <int value="2" label="Complex (Plan B)"/>
+  <int value="3" label="Complex (Unified Plan)"/>
+</enum>
+
+<enum name="PeerConnectionSdpSemanticNegotiated">
+  <int value="0" label="None"/>
+  <int value="1" label="Plan B"/>
+  <int value="2" label="Unified Plan"/>
+  <int value="3" label="Mixed"/>
+</enum>
+
+<enum name="PeerConnectionSdpUsageCategory">
+  <int value="0" label="Safe"/>
+  <int value="1" label="Unsafe"/>
+  <int value="2" label="Unknown"/>
+</enum>
+
+<enum name="RTCAPIName">
+  <int value="0" label="GetUserMedia"/>
+  <int value="1" label="PeerConnection00"/>
+  <int value="2" label="DeprecatedPeerConnection"/>
+  <int value="3" label="RTCPeerConnection"/>
+  <int value="4" label="GetMediaDevices"/>
+  <int value="5" label="MediaStreamRecorder"/>
+  <int value="6" label="CanvasCaptureStream"/>
+  <int value="7" label="VideoCaptureStream"/>
+  <int value="8" label="GetDisplayMedia"/>
+  <int value="9" label="OBSOLETE_GetCurrentBrowsingContextMedia"/>
+  <int value="10" label="OBSOLETE_GetDisplayMediaSet"/>
+  <int value="11" label="GetAllScreensMedia"/>
+</enum>
+
+<enum name="SocketErrorCode">
+  <int value="0" label="ERR_MSG_TOO_BIG"/>
+  <int value="1" label="ERR_ADDRESS_UNREACHABLE"/>
+  <int value="2" label="ERR_ADDRESS_INVALID"/>
+  <int value="3" label="ERR_INTERNET_DISCONNECTED"/>
+  <int value="4" label="ERR_TIMED_OUT"/>
+  <int value="5" label="ERR_INSUFFICIENT_RESOURCES"/>
+  <int value="6" label="ERR_OUT_OF_MEMORY"/>
+  <int value="7" label="ERR_OTHER"/>
+</enum>
+
+<enum name="SrtpErrorCode">
+  <summary>
+    Error codes reported by libsrtp (defined in
+    third_party/libsrtp/include/srtp.h).
+  </summary>
+  <int value="0" label="Nothing to report"/>
+  <int value="1" label="Unspecified failure"/>
+  <int value="2" label="Unsupported parameter"/>
+  <int value="3" label="Couldn't allocate memory"/>
+  <int value="4" label="Couldn't deallocate properly"/>
+  <int value="5" label="Couldn't initialize"/>
+  <int value="6" label="Can't process as much data as requested"/>
+  <int value="7" label="Authentication failure"/>
+  <int value="8" label="Cipher failure"/>
+  <int value="9" label="Replay check failed (bad index)"/>
+  <int value="10" label="Replay check failed (index too old)"/>
+  <int value="11" label="Algorithm failed test routine"/>
+  <int value="12" label="Unsupported operation"/>
+  <int value="13" label="No appropriate context found"/>
+  <int value="14" label="Unable to perform desired validation"/>
+  <int value="15" label="Can't use key any more"/>
+  <int value="16" label="Error in use of socket"/>
+  <int value="17" label="Error in use POSIX signals"/>
+  <int value="18" label="Nonce check failed"/>
+  <int value="19" label="Couldn't read data"/>
+  <int value="20" label="Couldn't write data"/>
+  <int value="21" label="Error parsing data"/>
+  <int value="22" label="Error encoding data"/>
+  <int value="23" label="Error while using semaphores"/>
+  <int value="24" label="Error while using pfkey"/>
+  <int value="25" label="Error MKI present in packet is invalid"/>
+  <int value="26" label="Packet index is too old to consider"/>
+  <int value="27" label="Packet index advanced, reset needed"/>
+</enum>
+
+<enum name="ThermalState">
+  <int value="0" label="0-Nominal"/>
+  <int value="1" label="1-Fair"/>
+  <int value="2" label="2-Serious"/>
+  <int value="3" label="3-Critical"/>
+</enum>
+
+<enum name="WebRTCAecDelayEstimateReliability">
+  <int value="0" label="None."/>
+  <int value="1" label="Poor."/>
+  <int value="2" label="Medium."/>
+  <int value="3" label="Good."/>
+  <int value="4" label="Excellent."/>
+</enum>
+
+<enum name="WebRtcAudioCodecs">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Opus"/>
+  <int value="2" label="iSAC"/>
+  <int value="3" label="pcmA"/>
+  <int value="4" label="pcmU"/>
+  <int value="5" label="g722"/>
+  <int value="6" label="iLBC"/>
+</enum>
+
+<enum name="WebRtcBweType">
+  <int value="0" label="Receiver, no extension"/>
+  <int value="1" label="Receiver, transmission offset"/>
+  <int value="2" label="Receiver, absolute send time"/>
+  <int value="3" label="Sender, transport sequence number"/>
+</enum>
+
+<enum name="WebRtcDesktopCapturerImpl">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="WgcCapturerWin"/>
+  <int value="2" label="ScreenCapturerWinMagnifier"/>
+  <int value="3" label="WindowCapturerWinGdi"/>
+  <int value="4" label="ScreenCapturerWinGdi"/>
+  <int value="5" label="ScreenCapturerWinDirectx"/>
+</enum>
+
+<enum name="WebRtcDirectXCapturerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="UnsupportedSession"/>
+  <int value="2" label="FramePrepareFailed"/>
+  <int value="3" label="InitializationFailed"/>
+  <int value="4" label="DuplicationFailed"/>
+  <int value="5" label="InvalidMonitorId"/>
+</enum>
+
+<enum name="WebRTCEventFrequency">
+  <int value="0" label="None."/>
+  <int value="1" label="Few."/>
+  <int value="2" label="Several."/>
+  <int value="3" label="Many."/>
+  <int value="4" label="Constant."/>
+</enum>
+
+<enum name="WebRtcEventLoggingApiEnum">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kDeadRph"/>
+  <int value="2" label="kFeatureDisabled"/>
+  <int value="3" label="kIncognito"/>
+  <int value="4" label="kInvalidArguments"/>
+  <int value="5" label="kIllegalSessionId"/>
+  <int value="6" label="kDisabledBrowserContext"/>
+  <int value="7" label="kUnknownOrInvalidPeerConnection"/>
+  <int value="8" label="kAlreadyLogging"/>
+  <int value="9" label="kNoAdditionalLogsAllowed"/>
+  <int value="10" label="kLogPathNotAvailable"/>
+  <int value="11" label="kHistoryPathNotAvailable"/>
+  <int value="12" label="kFileCreationError"/>
+</enum>
+
+<enum name="WebRtcEventLoggingUploadEnum">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kLogFileWriteError"/>
+  <int value="2" label="kActiveLogCancelledDueToCacheClear"/>
+  <int value="3" label="kPendingLogDeletedDueToCacheClear"/>
+  <int value="4" label="kHistoryFileCreationError"/>
+  <int value="5" label="kHistoryFileWriteError"/>
+  <int value="6" label="kLogFileReadError"/>
+  <int value="7" label="kLogFileNameError"/>
+  <int value="8" label="kUploadCancelled"/>
+  <int value="9" label="kUploadFailure"/>
+  <int value="10" label="kIncompletePastUpload"/>
+  <int value="11" label="kExpiredLogFileAtChromeStart"/>
+  <int value="12" label="kExpiredLogFileDuringSession"/>
+</enum>
+
+<enum name="WebRtcH264DecoderImplEvent">
+  <int value="0" label="Init"/>
+  <int value="1" label="Error"/>
+</enum>
+
+<enum name="WebRtcH264EncoderImplEvent">
+  <int value="0" label="Init"/>
+  <int value="1" label="Error"/>
+</enum>
+
+<enum name="WebRtcLoggingUploadFailureReason">
+  <summary>
+    Failure reason can be either a response code (except 200 OK) for the upload
+    HTTP request, or another reason prior to uploading (values less than 100).
+    HTTP response codes copied from enum &quot;HttpResponseCode&quot;.
+  </summary>
+  <int value="0" label="Invalid state"/>
+  <int value="1" label="Stored log not found"/>
+  <int value="2" label="Network error"/>
+  <int value="100" label="100: Continue"/>
+  <int value="101" label="101: Switching Protocols"/>
+  <int value="102" label="102: Processing"/>
+  <int value="103" label="103: Early Hints"/>
+  <int value="201" label="201: Created"/>
+  <int value="202" label="202: Accepted"/>
+  <int value="203" label="203: Non-Authoritative Information"/>
+  <int value="204" label="204: No Content"/>
+  <int value="205" label="205: Reset Content"/>
+  <int value="206" label="206: Partial Content"/>
+  <int value="300" label="300: Multiple Choices"/>
+  <int value="301" label="301: Moved Permanently"/>
+  <int value="302" label="302: Found"/>
+  <int value="303" label="303: See Other"/>
+  <int value="304" label="304: Not Modified"/>
+  <int value="305" label="305: Use Proxy"/>
+  <int value="306" label="306: (Unused)"/>
+  <int value="307" label="307: Temporary Redirect"/>
+  <int value="400" label="400: Bad Request"/>
+  <int value="401" label="401: Unauthorized"/>
+  <int value="402" label="402: Payment Required"/>
+  <int value="403" label="403: Forbidden"/>
+  <int value="404" label="404: Not Found"/>
+  <int value="405" label="405: Method Not Allowed"/>
+  <int value="406" label="406: Not Acceptable"/>
+  <int value="407" label="407: Proxy Authentication Required"/>
+  <int value="408" label="408: Request Timeout"/>
+  <int value="409" label="409: Conflict"/>
+  <int value="410" label="410: Gone"/>
+  <int value="411" label="411: Length Required"/>
+  <int value="412" label="412: Precondition Failed"/>
+  <int value="413" label="413: Request Entity Too Large"/>
+  <int value="414" label="414: Request-URI Too Long"/>
+  <int value="415" label="415: Unsupported Media Type"/>
+  <int value="416" label="416: Requested Range Not Satisfiable"/>
+  <int value="417" label="417: Expectation Failed"/>
+  <int value="500" label="500: Internal Server Error"/>
+  <int value="501" label="501: Not Implemented"/>
+  <int value="502" label="502: Bad Gateway"/>
+  <int value="503" label="503: Service Unavailable"/>
+  <int value="504" label="504: Gateway Timeout"/>
+  <int value="505" label="505: HTTP Version Not Supported"/>
+</enum>
+
+<enum name="WebRtcLoggingWebAppIdHash">
+  <int value="-100222544" label="Hangouts"/>
+  <int value="0" label="Undefined"/>
+  <int value="2102772693" label="Duo"/>
+</enum>
+
+<enum name="WebRtcPeerConnectionUsagePattern">
+  <summary>
+    These values are integers representing a set of flags indicating how the
+    PeerConnection is used. For flag values, see header file
+    webrtc/pc/peerconnection.h, enum class UsageEvent. Only interesting values
+    (exceeding 1% usage at last probe) are called out with labels.
+  </summary>
+  <int value="0" label="Unused and unclosed"/>
+  <int value="1090" label="No media, Stun, SRD, priv IPv4 local"/>
+  <int value="2212" label="Data, remote priv IPv4"/>
+  <int value="3236" label="Data, priv IPv4"/>
+  <int value="3238" label="Data, Stun, priv IPv4"/>
+  <int value="9380" label="Data, priv IPv4, remote MDNS"/>
+  <int value="9382" label="Data, Stun, IPv4, remote MDNS"/>
+  <int value="36004" label="Data, remote MDNS, local IPv6"/>
+  <int value="36006" label="Data, Stun, priv IPv4 local, IPv6 remote"/>
+  <int value="156898" label="No media, Stun, SLD/SRD, local IPv6, remote MDNS"/>
+  <int value="157154" label="Connected, Data, Stun, local IPv6, remote MDNS"/>
+  <int value="157158"
+      label="Connected, Data, Stun, local IPv6, remote MDNS (duplicate)"/>
+  <int value="157414" label="Data, Stun, SLD/SRD, local IPv6, remote MDNS"/>
+  <int value="157670"
+      label="Connected, Data, Stun, local IPv6, remote MDNS (triplicate)"/>
+</enum>
+
+<enum name="WebRtcScalabilityMode">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="L1T1"/>
+  <int value="2" label="L1T2"/>
+  <int value="3" label="L1T3"/>
+  <int value="4" label="L2T1"/>
+  <int value="5" label="L2T1h"/>
+  <int value="6" label="L2T1_KEY"/>
+  <int value="7" label="L2T2"/>
+  <int value="8" label="L2T2h"/>
+  <int value="9" label="L2T2_KEY"/>
+  <int value="10" label="L2T2_KEY_SHIFT"/>
+  <int value="11" label="L2T3"/>
+  <int value="12" label="L2T3h"/>
+  <int value="13" label="L2T3_KEY"/>
+  <int value="14" label="L3T1"/>
+  <int value="15" label="L3T1h"/>
+  <int value="16" label="L3T1_KEY"/>
+  <int value="17" label="L3T2"/>
+  <int value="18" label="L3T2h"/>
+  <int value="19" label="L3T2_KEY"/>
+  <int value="20" label="L3T3"/>
+  <int value="21" label="L3T3h"/>
+  <int value="22" label="L3T3_KEY"/>
+  <int value="23" label="S2T1"/>
+  <int value="24" label="S2T1h"/>
+  <int value="25" label="S2T2"/>
+  <int value="26" label="S2T2h"/>
+  <int value="27" label="S2T3"/>
+  <int value="28" label="S2T3h"/>
+  <int value="29" label="S3T1"/>
+  <int value="30" label="S3T1h"/>
+  <int value="31" label="S3T2"/>
+  <int value="32" label="S3T2h"/>
+  <int value="33" label="S3T3"/>
+  <int value="34" label="S3T3h"/>
+</enum>
+
+<enum name="WebRtcStunIntegrityOutcome">
+  <summary>
+    Records the outcome of a STUN integrity check - succeeds, fails, or &quot;no
+    integrity attribute present&quot;.
+  </summary>
+  <int value="1" label="No integrity attribute"/>
+  <int value="2" label="OK"/>
+  <int value="3" label="Bad"/>
+</enum>
+
+<enum name="WebRtcVideoCodecs">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="VP8"/>
+  <int value="2" label="VP9"/>
+  <int value="3" label="H264"/>
+</enum>
+
+<enum name="WebRtcWgcCapturerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="NoDirect3dDevice"/>
+  <int value="2" label="NoSourceSelected"/>
+  <int value="3" label="ItemCreationFailure"/>
+  <int value="4" label="SessionStartFailure"/>
+  <int value="5" label="GetFrameFailure"/>
+  <int value="6" label="FrameDropped"/>
+  <int value="7" label="CreateDispatcherQueueFailure"/>
+</enum>
+
+<enum name="WebRtcWgcCaptureSessionGetFrameResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="ItemClosed"/>
+  <int value="2" label="TryGetNextFrameFailed"/>
+  <int value="3" label="FrameDropped"/>
+  <int value="4" label="GetSurfaceFailed"/>
+  <int value="5" label="DxgiInterfaceAccessFailed"/>
+  <int value="6" label="Texture2dCastFailed"/>
+  <int value="7" label="CreateMappedTextureFailed"/>
+  <int value="8" label="MapFrameFailed"/>
+  <int value="9" label="GetContentSizeFailed"/>
+  <int value="10" label="ResizeMappedTextureFailed"/>
+  <int value="11" label="RecreateFramePoolFailed"/>
+  <int value="12" label="FramePoolEmpty"/>
+</enum>
+
+<enum name="WebRtcWgcCaptureSessionStartResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="SourceClosed"/>
+  <int value="2" label="AddClosedFailed"/>
+  <int value="3" label="DxgiDeviceCastFailed"/>
+  <int value="4" label="D3dDelayLoadFailed"/>
+  <int value="5" label="D3dDeviceCreationFailed"/>
+  <int value="6" label="FramePoolActivationFailed"/>
+  <int value="7" label="FramePoolCastFailed"/>
+  <int value="8" label="GetItemSizeFailed"/>
+  <int value="9" label="CreateFreeThreadedFailed"/>
+  <int value="10" label="CreateCaptureSessionFailed"/>
+  <int value="11" label="StartCaptureFailed"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -49,8 +49,7 @@ class IsolatedWebAppUpdateApplyTask {
   base::Value AsDebugValue() const;
 
  private:
-  void OnUpdateApplied(
-      base::expected<void, IsolatedWebAppApplyUpdateCommandError> result);
+  void OnUpdateApplied(CompletionStatus result);
 
   IsolatedWebAppUrlInfo url_info_;
   std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;

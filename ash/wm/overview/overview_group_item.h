@@ -10,6 +10,7 @@
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 
 namespace aura {
 class Window;
@@ -40,6 +41,7 @@ class OverviewGroupItem : public OverviewItemBase,
   // OverviewItemBase:
   aura::Window* GetWindow() override;
   std::vector<aura::Window*> GetWindows() override;
+  bool HasVisibleOnAllDesksWindow() override;
   bool Contains(const aura::Window* target) const override;
   OverviewItem* GetLeafItemForWindow(aura::Window* window) override;
   void RestoreWindow(bool reset_transform, bool animate) override;
@@ -47,7 +49,7 @@ class OverviewGroupItem : public OverviewItemBase,
                  OverviewAnimationType animation_type) override;
   gfx::Transform ComputeTargetTransform(
       const gfx::RectF& target_bounds) override;
-  gfx::RectF GetTargetBoundsInScreen() const override;
+  gfx::RectF GetWindowsUnionScreenBounds() const override;
   gfx::RectF GetTargetBoundsWithInsets() const override;
   gfx::RectF GetTransformedBounds() const override;
   float GetItemScale(int height) override;
@@ -97,6 +99,8 @@ class OverviewGroupItem : public OverviewItemBase,
 
   // The contents view of the `item_widget_`.
   raw_ptr<OverviewGroupContainerView> overview_group_container_view_ = nullptr;
+
+  base::WeakPtrFactory<OverviewGroupItem> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

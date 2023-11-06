@@ -117,6 +117,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [stackSubviews addObject:self.imageContainerView];
   }
 
+  if (self.aboveTitleView) {
+    [stackSubviews addObject:self.aboveTitleView];
+  }
+
   if (self.titleString.length) {
     UILabel* title = [self createTitleLabel];
     [stackSubviews addObject:title];
@@ -577,6 +581,10 @@ const CGFloat kFaviconBadgeSideLength = 24;
 - (UIImageView*)createImageView {
   UIImageView* imageView = [[UIImageView alloc] initWithImage:self.image];
   imageView.contentMode = UIViewContentModeScaleAspectFit;
+  if (self.imageViewAccessibilityLabel) {
+    imageView.isAccessibilityElement = YES;
+    imageView.accessibilityLabel = self.imageViewAccessibilityLabel;
+  }
 
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
   return imageView;

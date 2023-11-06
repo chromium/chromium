@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -16,9 +17,11 @@
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/accessibility/features/bindings_isolate_holder.h"
 #include "services/accessibility/public/mojom/accessibility_service.mojom-forward.h"
 #include "services/accessibility/public/mojom/automation.mojom-forward.h"
+#include "services/accessibility/public/mojom/file_loader.mojom-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
@@ -129,9 +132,16 @@ class V8Manager {
   void ConfigureAutomation(
       mojo::PendingAssociatedReceiver<mojom::Automation> automation,
       mojo::PendingRemote<mojom::AutomationClient> automation_client);
+  void ConfigureAutoclick(mojom::AccessibilityServiceClient* ax_service_client);
+  void ConfigureSpeechRecognition(
+      mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureTts(mojom::AccessibilityServiceClient* ax_service_client);
   void ConfigureUserInterface(
       mojom::AccessibilityServiceClient* ax_service_client);
+
+  // |file_loader_remote| must outlive this object.
+  void ConfigureFileLoader(
+      mojo::Remote<mojom::AccessibilityFileLoader>* file_loader_remote);
 
   void FinishContextSetUp();
 
@@ -155,6 +165,9 @@ class V8Manager {
   // The Mojo interfaces that are exposed to JS. When JS wants to bind a Mojo
   // interface, the first matching InterfaceBinder will be used.
   std::vector<std::unique_ptr<InterfaceBinder>> interface_binders_;
+
+  // Interface used to load files.
+  raw_ptr<mojo::Remote<mojom::AccessibilityFileLoader>> file_loader_remote_;
 
   base::WeakPtrFactory<V8Manager> weak_factory_{this};
 };

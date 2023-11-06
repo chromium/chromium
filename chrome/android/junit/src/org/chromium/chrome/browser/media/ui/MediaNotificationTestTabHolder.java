@@ -27,17 +27,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Utility class for holding a Tab and relevant objects for media notification tests.
- */
+/** Utility class for holding a Tab and relevant objects for media notification tests. */
 @SuppressWarnings("DoNotMock") // Mocks GURL
 public class MediaNotificationTestTabHolder {
-    @Mock
-    WebContents mWebContents;
-    @Mock
-    MediaSession mMediaSession;
-    @Mock
-    Tab mTab;
+    @Mock WebContents mWebContents;
+    @Mock MediaSession mMediaSession;
+    @Mock Tab mTab;
 
     String mTitle;
     String mUrl;
@@ -106,17 +101,30 @@ public class MediaNotificationTestTabHolder {
         when(gurl.getOrigin()).thenAnswer(invocation -> gurlOrigin);
         when(gurlOrigin.getSpec()).thenAnswer(invocation -> url);
 
-        NavigationHandle navigation = NavigationHandle.createForTesting(gurl,
-                true /* isInPrimaryMainFrame */, isSameDocument, false /* isRendererInitiated */,
-                0 /* pageTransition */, false /* hasUserGesture */, false /* isReload */);
+        NavigationHandle navigation =
+                NavigationHandle.createForTesting(
+                        gurl,
+                        /* isInPrimaryMainFrame= */ true,
+                        isSameDocument,
+                        /* isRendererInitiated= */ false,
+                        /* pageTransition= */ 0,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false);
 
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didStartNavigationInPrimaryMainFrame(navigation);
 
-        navigation.didFinish(gurl, false /* isErrorPage */, true /* hasCommitted */,
-                false /* isFragmentNavigation */, false /* isDownload */,
-                false /* isValidSearchFormUrl */, 0 /* pageTransition */, 0 /* errorCode */,
-                200 /* httpStatusCode */, false /* isExternalProtocol */);
+        navigation.didFinish(
+                gurl,
+                /* isErrorPage= */ false,
+                /* hasCommitted= */ true,
+                /* isFragmentNavigation= */ false,
+                /* isDownload= */ false,
+                /* isValidSearchFormUrl= */ false,
+                /* pageTransition= */ 0,
+                /* errorCode= */ 0,
+                /* httpStatusCode= */ 200,
+                /* isExternalProtocol= */ false);
         mMediaSessionTabHelper.mMediaSessionHelper.mWebContentsObserver
                 .didFinishNavigationInPrimaryMainFrame(navigation);
     }

@@ -215,9 +215,10 @@ class SVGElementResourceClient::FilterData final
   FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
       : last_effect_(last_effect), node_map_(node_map) {}
 
-  bool HasEffects() const { return last_effect_; }
+  bool HasEffects() const { return last_effect_ != nullptr; }
   sk_sp<PaintFilter> BuildPaintFilter() {
-    return paint_filter_builder::Build(last_effect_, kInterpolationSpaceSRGB);
+    return paint_filter_builder::Build(last_effect_.Get(),
+                                       kInterpolationSpaceSRGB);
   }
 
   // Perform a finegrained invalidation of the filter chain for the
@@ -432,7 +433,7 @@ void SVGResourceInvalidator::InvalidateEffects() {
     if (SVGElementResourceClient* client = SVGResources::GetClient(object_))
       client->InvalidateFilterData();
   }
-  if (style.HasClipPath() || style.MaskerResource()) {
+  if (style.HasClipPath() || style.HasMaskForSVG()) {
     object_.SetShouldDoFullPaintInvalidation();
     object_.SetNeedsPaintPropertyUpdate();
   }

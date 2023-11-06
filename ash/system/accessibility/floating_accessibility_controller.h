@@ -14,6 +14,7 @@
 #include "ash/system/accessibility/floating_accessibility_view.h"
 #include "ash/system/locale/locale_update_controller_impl.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/display/display_observer.h"
 
 namespace ash {
 
@@ -26,7 +27,8 @@ class ASH_EXPORT FloatingAccessibilityController
       public FloatingAccessibilityDetailedController::Delegate,
       public TrayBubbleView::Delegate,
       public LocaleChangeObserver,
-      public AccessibilityObserver {
+      public AccessibilityObserver,
+      public display::DisplayObserver {
  public:
   explicit FloatingAccessibilityController(
       AccessibilityControllerImpl* accessibility_controller);
@@ -42,6 +44,10 @@ class ASH_EXPORT FloatingAccessibilityController
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
+
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
 
   // Focuses on the first element in the floating menu.
   void FocusOnMenu();
@@ -79,6 +85,8 @@ class ASH_EXPORT FloatingAccessibilityController
 
   // Used in tests to notify on the menu layout change events.
   base::RepeatingClosure on_layout_change_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 
   const raw_ptr<AccessibilityControllerImpl, ExperimentalAsh>
       accessibility_controller_;  // Owns us.

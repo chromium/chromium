@@ -284,6 +284,7 @@ void ArcFlossBridge::StartLEScanImpl() {
   if (ble_scan_session_) {
     LOG(ERROR) << "LE scan already running.";
     StartLEScanOffTimer();
+    scanned_devices_.clear();
     discovery_queue_.Pop();
     return;
   }
@@ -296,6 +297,10 @@ void ArcFlossBridge::ResetLEScanSession() {
   if (ble_scan_session_) {
     ble_scan_session_.reset();
   }
+}
+
+bool ArcFlossBridge::IsDiscoveringOrScanning() {
+  return discovery_session_ || ble_scan_session_;
 }
 
 void ArcFlossBridge::CreateBluetoothListenSocket(

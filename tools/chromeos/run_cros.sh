@@ -103,7 +103,8 @@ function build_args {
     --enable-features=${FEATURES} \
     ${TOUCH_DEVICE_OPTION} \
     --enable-ash-debug-browser \
-    --lacros-chrome-path=${LACROS_BUILD_DIR}" \
+    --lacros-chrome-path=${LACROS_BUILD_DIR}/chrome \
+    ${EXTRA_ARGS}"
 
   # To enable internal display.
   ARGS="${ARGS} --use-first-display-as-internal"
@@ -162,6 +163,11 @@ function start_lacros_chrome {
     --enable-ui-devtools --gpu-sandbox-start-early
 }
 
+# Start wayland client binary on ash-chrome
+function start_wayland_client {
+  exec $*
+}
+
 function lacros_log {
   exec tail -f ${LACROS_LOG_FILE}
 }
@@ -174,12 +180,15 @@ command
   lacros                 start lacros chrome. You must have ash-chrome running.
   lacros-log             tail lacros chrome log.
   show-xinput-device-id  shows the device id that can be used to emulate touch.
+  wayland-client         start wayland-client on ash-chrome. This command passes
+                         all options to the client.
   help                   print this message.
 
 [options]
   --enable-lacros        enables lacros.
   --ash-chrome-build-dir specifies the build directory for ash-chrome.
   --lacros-build-dir     specifies the build directory for lacros.
+  --user-data-dir        specifies the user data dir
   --touch-device-id=<id> [ash-chrome only] Specify the input device to emulate
                          touch. Use id from 'show-xinput-device-id'.
   --wayland-debug        [ash-chrome,lacros] Enable WAYLAND_DEBUG=1
@@ -187,11 +196,18 @@ command
                          wxga(1280x800), fwxga(1355x768), hdp(1600,900),
                          fhd(1920x1080), wuxga(1920,1200), qhd(2560,1440),
                          qhdp(3200,1800), f4k(3840,2160)
+  --<chrome commandline flags>
+                         Pass extra command line flags to ash-chrome.
+                         The script will reject if the string does not exist in
+                         chrome binary.
 EOF
 }
 
 # Retrieve command.
-if [ ${#} -eq 0 -o "${1:0:2}" == "--" ]; then
+if [ "${1}" == "wayland-client" ]; then
+  shift
+  start_wayland_client $*
+elif [ ${#} -eq 0 -o "${1:0:2}" == "--" ]; then
   command=ash-chrome
 else
   command=$1
@@ -212,6 +228,9 @@ do
       LACROS_ENABLED=true
       LACROS_BUILD_DIR=${1:19}
       ;;
+    --user-data-dir=*)
+      USER_DATA_DIR=${1:16}
+      ;;
     --wayland-debug)
       export WAYLAND_DEBUG=1
       ;;
@@ -226,6 +245,19 @@ do
         echo "Unknown display panel: $panel"
         help
       fi
+      ;;
+    --*)
+      if [ -f ${ASH_CHROME_BUILD_DIR}/chrome ]; then
+        flag_name=${1:2}
+        set +e
+        result=$(strings ${ASH_CHROME_BUILD_DIR}/chrome | grep "$flag_name")
+        set -e
+        if $result ; then
+          echo "Can't find '${1}' in ash-chrome"
+          help
+        fi
+      fi
+      EXTRA_ARGS="${EXTRA_ARGS} $1"
       ;;
     *) echo "Unknown option $1"; help ;;
   esac

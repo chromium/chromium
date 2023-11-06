@@ -26,9 +26,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- *  Simple tests of html5 video.
- */
+/** Simple tests of html5 video. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class VideoTest {
@@ -39,8 +37,9 @@ public class VideoTest {
     @Feature({"Media", "Media-Video", "Main"})
     @LargeTest
     public void testLoadMediaUrl() throws TimeoutException {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, "ready_to_play");
         mActivityTestRule.loadUrl(

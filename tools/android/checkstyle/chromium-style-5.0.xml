@@ -226,6 +226,12 @@
       <property name="format" value="PreferenceFragment.*\ extends\ (PreferenceFragment|ChromeBaseSettingsFragment)"/>
       <property name="message" value="Top level settings fragment should be named with suffix 'SettingsFragment' or 'Settings'. See //components/browser_ui/settings/README."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="ParamComments"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="/\*\*? ?\w+ ?\*/,|, /\*\*? ?\w+ ?\*/"/>
+      <property name="message" value="Parameter comments should use the ErrorProne-aware syntax: /* paramName= */."/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>

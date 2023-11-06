@@ -9,8 +9,6 @@ include_rules = [
     # net/ includes should be allowed only in a limited set of directories,
     # so we have separate DEPS from platform's one.
     "+net/base",
-    "+services/network/public/cpp/cors/origin_access_entry.h",
-    "+services/network/public/cpp/cors/origin_access_list.h",
     "+third_party/blink/renderer/platform/blob/blob_url.h",
     "+third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h",
     "+third_party/blink/renderer/platform/platform_export.h",

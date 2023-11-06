@@ -18,12 +18,14 @@ import android.speech.RecognitionService;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.SpeechRecognitionErrorCode;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.SpeechRecognition;
@@ -201,7 +203,8 @@ public class SpeechRecognitionImpl {
 
     /** Returns null if there is no Google LLC provided RecognitionService available on device. */
     private static ComponentName createRecognitionProvider() {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                || BuildInfo.getInstance().isAutomotive) {
             return getComponent(SSBG_PACKAGE_NAME, -1);
         } else {
             return getComponent(AGSA_PACKAGE_NAME, AGSA_MIN_VERSION);

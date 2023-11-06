@@ -59,8 +59,8 @@
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h"
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
-#include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
 #include "components/signin/public/base/signin_switches.h"
 #endif
 
@@ -158,14 +158,14 @@ chrome::mojom::DynamicParamsPtr ChromeRenderThreadObserver::GetDynamicParams()
 // Returns null if `bound_session_request_throttled_in_renderer_manager_` is
 // null. This can happen on profiles where `RendererUpdater` and
 // `BoundSessionCookieRefreshService` keyed services are not created.
-std::unique_ptr<BoundSessionRequestThrottledListener>
-ChromeRenderThreadObserver::CreateBoundSessionRequestThrottledListener() const {
+std::unique_ptr<BoundSessionRequestThrottledHandler>
+ChromeRenderThreadObserver::CreateBoundSessionRequestThrottledHandler() const {
   if (!bound_session_request_throttled_in_renderer_manager_) {
     return nullptr;
   }
 
   CHECK(switches::IsBoundSessionCredentialsEnabled());
-  return std::make_unique<BoundSessionRequestThrottledListenerRendererImpl>(
+  return std::make_unique<BoundSessionRequestThrottledHandlerRendererImpl>(
       bound_session_request_throttled_in_renderer_manager_, io_task_runner_);
 }
 #endif
@@ -190,8 +190,8 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
         chromeos_listener_receiver,
     mojo::PendingRemote<content_settings::mojom::ContentSettingsManager>
         content_settings_manager,
-    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledListener>
-        bound_session_request_throttled_listener) {
+    mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
+        bound_session_request_throttled_handler) {
   if (content_settings_manager)
     content_settings_manager_.Bind(std::move(content_settings_manager));
   is_incognito_process_ = is_incognito_process;
@@ -203,11 +203,11 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (bound_session_request_throttled_listener) {
+  if (bound_session_request_throttled_handler) {
     CHECK(switches::IsBoundSessionCredentialsEnabled());
     bound_session_request_throttled_in_renderer_manager_ =
         BoundSessionRequestThrottledInRendererManager::Create(
-            std::move(bound_session_request_throttled_listener));
+            std::move(bound_session_request_throttled_handler));
     io_task_runner_ = content::ChildThread::Get()->GetIOTaskRunner();
   }
 #endif

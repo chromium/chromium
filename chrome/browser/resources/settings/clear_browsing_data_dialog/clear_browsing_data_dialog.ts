@@ -64,6 +64,30 @@ export interface SettingsClearBrowsingDataDialogElement {
   };
 }
 
+enum TimePeriod {
+  LAST_HOUR = 0,
+  LAST_DAY = 1,
+  LAST_WEEK = 2,
+  FOUR_WEEKS = 3,
+  ALL_TIME = 4,
+  OLDER_THAN_30_DAYS = 5,
+  LAST_15_MINUTES = 6,
+  TIME_PERIOD_LAST = LAST_15_MINUTES
+}
+
+// TODO(crbug.com/1487530): Remove this after CbdTimeframeRequired finishes.
+export enum TimePeriodExperiment {
+  NOT_SELECTED = -1,
+  LAST_HOUR = 0,
+  LAST_DAY = 1,
+  LAST_WEEK = 2,
+  FOUR_WEEKS = 3,
+  ALL_TIME = 4,
+  OLDER_THAN_30_DAYS = 5,
+  LAST_15_MINUTES = 6,
+  TIME_PERIOD_LAST = LAST_15_MINUTES
+}
+
 const SettingsClearBrowsingDataDialogElementBase =
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)));
 
@@ -112,11 +136,26 @@ export class SettingsClearBrowsingDataDialogElement extends
         readOnly: true,
         type: Array,
         value: [
-          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
-          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
-          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
-          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
-          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+          {
+            value: TimePeriod.LAST_HOUR,
+            name: loadTimeData.getString('clearPeriodHour'),
+          },
+          {
+            value: TimePeriod.LAST_DAY,
+            name: loadTimeData.getString('clearPeriod24Hours'),
+          },
+          {
+            value: TimePeriod.LAST_WEEK,
+            name: loadTimeData.getString('clearPeriod7Days'),
+          },
+          {
+            value: TimePeriod.FOUR_WEEKS,
+            name: loadTimeData.getString('clearPeriod4Weeks'),
+          },
+          {
+            value: TimePeriod.ALL_TIME,
+            name: loadTimeData.getString('clearPeriodEverything'),
+          },
         ],
       },
 
@@ -130,21 +169,51 @@ export class SettingsClearBrowsingDataDialogElement extends
       /**
        * When CBDTimeframeRequired feature/flag is on, this will be the list
        * of options for the dropdown menu. V2 additionally contains the "Last 15
-       * minutes" option.
+       * minutes" and the "Select a time range" options with "Select a time
+       * range" being always hidden in the menuOptions list in which users can
+       * chose the time range.
        */
       clearFromOptionsV2_: {
         readOnly: true,
         type: Array,
         value: [
+          // The pref is initialized to TimePeriodExperiment.NOT_SELECTED, which
+          // is shown in the dropdown as the selected option until the user
+          // selects a different value. The menuList of options should not
+          // contain the option for TimePeriodExperiment.NOT_SELECTED, as it
+          // doesn't make sense for users to choose it.
+          {
+            value: TimePeriodExperiment.NOT_SELECTED,
+            name: loadTimeData.getString('clearPeriodNotSelected'),
+            hidden: true,
+          },
           // The value of 15min is 6 to match the value written in the backend,
           // Also, it comes first in the list to keep the list in ascending
           // order.
-          {value: 6, name: loadTimeData.getString('clearPeriod15Minutes')},
-          {value: 0, name: loadTimeData.getString('clearPeriodHour')},
-          {value: 1, name: loadTimeData.getString('clearPeriod24Hours')},
-          {value: 2, name: loadTimeData.getString('clearPeriod7Days')},
-          {value: 3, name: loadTimeData.getString('clearPeriod4Weeks')},
-          {value: 4, name: loadTimeData.getString('clearPeriodEverything')},
+          {
+            value: TimePeriodExperiment.LAST_15_MINUTES,
+            name: loadTimeData.getString('clearPeriod15Minutes'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_HOUR,
+            name: loadTimeData.getString('clearPeriodHour'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_DAY,
+            name: loadTimeData.getString('clearPeriod24Hours'),
+          },
+          {
+            value: TimePeriodExperiment.LAST_WEEK,
+            name: loadTimeData.getString('clearPeriod7Days'),
+          },
+          {
+            value: TimePeriodExperiment.FOUR_WEEKS,
+            name: loadTimeData.getString('clearPeriod4Weeks'),
+          },
+          {
+            value: TimePeriodExperiment.ALL_TIME,
+            name: loadTimeData.getString('clearPeriodEverything'),
+          },
         ],
       },
 

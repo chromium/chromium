@@ -17,7 +17,6 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -35,6 +34,7 @@
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
 #include "components/sync_bookmarks/bookmark_model_merger.h"
 #include "components/sync_bookmarks/bookmark_model_observer_impl.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/parent_guid_preprocessing.h"
@@ -52,7 +52,7 @@ class ScopedRemoteUpdateBookmarks {
  public:
   // `bookmark_model`, `bookmark_undo_service` and `observer` must not be null
   // and must outlive this object.
-  ScopedRemoteUpdateBookmarks(bookmarks::BookmarkModel* bookmark_model,
+  ScopedRemoteUpdateBookmarks(BookmarkModelView* bookmark_model,
                               BookmarkUndoService* bookmark_undo_service,
                               bookmarks::BookmarkModelObserver* observer)
       : bookmark_model_(bookmark_model),
@@ -82,7 +82,7 @@ class ScopedRemoteUpdateBookmarks {
   }
 
  private:
-  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<BookmarkModelView> bookmark_model_;
 
   // Changes made to the bookmark model due to sync should not be undoable.
   ScopedSuspendBookmarkUndo suspend_undo_;
@@ -92,7 +92,7 @@ class ScopedRemoteUpdateBookmarks {
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
     const bookmarks::BookmarkNode* node,
-    bookmarks::BookmarkModel* model) {
+    BookmarkModelView* model) {
   if (node == model->bookmark_bar_node()) {
     return "bookmark_bar";
   }
@@ -105,14 +105,14 @@ std::string ComputeServerDefinedUniqueTagForDebugging(
   return "";
 }
 
-size_t CountSyncableBookmarksFromModel(bookmarks::BookmarkModel* model) {
+size_t CountSyncableBookmarksFromModel(BookmarkModelView* model) {
   size_t count = 0;
   ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
       model->root_node());
   // Does not count the root node.
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* node = iterator.Next();
-    if (!model->client()->IsNodeManaged(node)) {
+    if (model->IsNodeSyncable(node)) {
       ++count;
     }
   }
@@ -320,7 +320,7 @@ std::string BookmarkModelTypeProcessor::EncodeSyncMetadata() const {
 void BookmarkModelTypeProcessor::ModelReadyToSync(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure,
-    bookmarks::BookmarkModel* model) {
+    BookmarkModelView* model) {
   DCHECK(model);
   DCHECK(model->loaded());
   DCHECK(!bookmark_model_);
@@ -583,7 +583,12 @@ void BookmarkModelTypeProcessor::NudgeForCommitIfNeeded() {
 void BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted() {
   DCHECK(bookmark_model_);
   DCHECK(bookmark_model_observer_);
-  StopTrackingMetadata();
+
+  bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
+  bookmark_model_ = nullptr;
+  bookmark_model_observer_.reset();
+
+  DisconnectSync();
 }
 
 void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
@@ -632,8 +637,8 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->other_node()) ||
       !bookmark_tracker_->GetEntityForBookmarkNode(
           bookmark_model_->mobile_node())) {
-    StopTrackingMetadata();
-    bookmark_tracker_.reset();
+    DisconnectSync();
+    StopTrackingMetadataAndResetTracker();
     error_handler_.Run(
         syncer::ModelError(FROM_HERE, "Permanent bookmark entities missing"));
     return;
@@ -650,22 +655,13 @@ void BookmarkModelTypeProcessor::StartTrackingMetadata() {
   DCHECK(!bookmark_model_observer_);
 
   bookmark_model_observer_ = std::make_unique<BookmarkModelObserverImpl>(
+      bookmark_model_,
       base::BindRepeating(&BookmarkModelTypeProcessor::NudgeForCommitIfNeeded,
                           base::Unretained(this)),
       base::BindOnce(&BookmarkModelTypeProcessor::OnBookmarkModelBeingDeleted,
                      base::Unretained(this)),
       bookmark_tracker_.get());
   bookmark_model_->AddObserver(bookmark_model_observer_.get());
-}
-
-void BookmarkModelTypeProcessor::StopTrackingMetadata() {
-  DCHECK(bookmark_model_observer_);
-
-  bookmark_model_->RemoveObserver(bookmark_model_observer_.get());
-  bookmark_model_ = nullptr;
-  bookmark_model_observer_.reset();
-
-  DisconnectSync();
 }
 
 void BookmarkModelTypeProcessor::GetAllNodesForDebugging(

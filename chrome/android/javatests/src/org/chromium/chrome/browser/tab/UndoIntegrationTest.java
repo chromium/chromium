@@ -40,9 +40,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests undo and it's interactions with the UI.
- */
+/** Tests undo and it's interactions with the UI. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -55,22 +53,20 @@ public class UndoIntegrationTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    // clang-format off
-    private static final String WINDOW_OPEN_BUTTON_URL = UrlUtils.encodeHtmlDataUri(
-            "<html>"
-            + "  <head>"
-            + "  <script>"
-            + "    function openWindow() {"
-            + "      window.open('about:blank');"
-            + "    }"
-            + "  </script>"
-            + "  </head>"
-            + "  <body>"
-            + "    <a id=\"link\" onclick=\"setTimeout(openWindow, 500);\">Open</a>"
-            + "  </body>"
-            + "</html>"
-    );
-    // clang-format on
+    private static final String WINDOW_OPEN_BUTTON_URL =
+            UrlUtils.encodeHtmlDataUri(
+                    "<html>"
+                            + "  <head>"
+                            + "  <script>"
+                            + "    function openWindow() {"
+                            + "      window.open('about:blank');"
+                            + "    }"
+                            + "  </script>"
+                            + "  </head>"
+                            + "  <body>"
+                            + "    <a id=\"link\" onclick=\"setTimeout(openWindow, 500);\">Open</a>"
+                            + "  </body>"
+                            + "</html>");
 
     @Before
     public void setUp() throws InterruptedException {
@@ -79,6 +75,7 @@ public class UndoIntegrationTest {
 
     /**
      * Test that a tab that is closing can't open other windows.
+     *
      * @throws TimeoutException
      */
     @Test
@@ -97,26 +94,33 @@ public class UndoIntegrationTest {
         DOMUtils.clickNode(tab.getWebContents(), "link");
 
         // Attempt to close the tab, which will delay closing until the undo timeout goes away.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertEquals("Model should have two tabs", 2, model.getCount());
-            TabModelUtils.closeTabById(model, tab.getId(), true);
-            Assert.assertTrue("Tab was not marked as closing", tab.isClosing());
-            Assert.assertTrue("Tab is not actually closing", model.isClosurePending(tab.getId()));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertEquals("Model should have two tabs", 2, model.getCount());
+                    TabModelUtils.closeTabById(model, tab.getId(), true);
+                    Assert.assertTrue("Tab was not marked as closing", tab.isClosing());
+                    Assert.assertTrue(
+                            "Tab is not actually closing", model.isClosurePending(tab.getId()));
+                });
 
         // Give the model a chance to process the pending closure.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(model.isClosurePending(tab.getId()), Matchers.is(false));
-            Criteria.checkThat(model.getCount(), Matchers.is(1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(model.isClosurePending(tab.getId()), Matchers.is(false));
+                    Criteria.checkThat(model.getCount(), Matchers.is(1));
+                });
 
         // Validate that the model doesn't contain the original tab or any newly opened tabs.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(
-                    "Model is still waiting to close the tab", model.isClosurePending(tab.getId()));
-            Assert.assertEquals(
-                    "Model has more than the expected about:blank tab", 1, model.getCount());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            "Model is still waiting to close the tab",
+                            model.isClosurePending(tab.getId()));
+                    Assert.assertEquals(
+                            "Model has more than the expected about:blank tab",
+                            1,
+                            model.getCount());
+                });
     }
 
     // Regression test for crbug/1465745.
@@ -129,18 +133,19 @@ public class UndoIntegrationTest {
         TabStripUtils.settleDownCompositor(
                 TabStripUtils.getStripLayoutHelperManager(cta).getStripLayoutHelper(false));
 
-        TabModel model = cta.getTabModelSelector().getModel(/*isIncognito=*/false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            closeTabViaButton(cta, model.getTabAt(1).getId());
-            closeTabViaButton(cta, model.getTabAt(0).getId());
+        TabModel model = cta.getTabModelSelector().getModel(/* isIncognito= */ false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabViaButton(cta, model.getTabAt(1).getId());
+                    closeTabViaButton(cta, model.getTabAt(0).getId());
 
-            model.commitAllTabClosures();
-        });
+                    model.commitAllTabClosures();
+                });
     }
 
     private void closeTabViaButton(ChromeTabbedActivity cta, int tabId) {
         final StripLayoutTab tab =
-                TabStripUtils.findStripLayoutTab(cta, /*isIncognito=*/false, tabId);
+                TabStripUtils.findStripLayoutTab(cta, /* isIncognito= */ false, tabId);
         tab.getCloseButton().handleClick(SystemClock.uptimeMillis());
     }
 }

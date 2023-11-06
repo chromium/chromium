@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
+
 interface NetworkApnListElement extends LegacyElementMixin, HTMLElement {
+  disabled: boolean;
   getApnSelect(): HTMLSelectElement|null;
 }
 

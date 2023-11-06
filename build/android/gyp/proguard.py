@@ -334,14 +334,6 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
 
     if options.disable_checks:
       cmd += ['--map-diagnostics:CheckDiscardDiagnostic', 'error', 'none']
-    # chromium has junit lib in third_party/junit and third_party/android_sdk
-    # which causes r8 to print "info" level diagnostic for duplicates.
-    # So turn it off explicitly.
-    # TODO(crbug.com/1476663): Fix the duplicates and remove this setting.
-    cmd += [
-        '--map-diagnostics:DuplicateTypeInProgramAndLibraryDiagnostic', 'info',
-        'none'
-    ]
     cmd += ['--map-diagnostics', 'info', 'warning']
     # An "error" level diagnostic causes r8 to return an error exit code. Doing
     # this allows our filter to decide what should/shouldn't break our build.
@@ -515,13 +507,6 @@ Tip: Build with:
        third_party/android_sdk/public/build-tools/*/dexdump -d \
 out/Release/apks/YourApk.apk > dex.txt
 """ + stderr
-
-        if 'FragmentActivity' in stderr:
-          stderr += """
-You may need to update build configs to run FragmentActivityReplacer for
-additional targets. See
-https://chromium.googlesource.com/chromium/src.git/+/main/docs/ui/android/bytecode_rewriting.md.
-"""
       elif had_unfiltered_items:
         # Left only with empty headings. All indented items filtered out.
         stderr = ''

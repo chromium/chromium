@@ -28,7 +28,7 @@ BluetoothAttributeInstanceMap::GetOrCreateRemoteGATTService(
         std::move(remote_gatt_service), is_primary, device_instance_id,
         device_);
   }
-  return service;
+  return service.Get();
 }
 
 bool BluetoothAttributeInstanceMap::ContainsService(
@@ -50,7 +50,7 @@ BluetoothAttributeInstanceMap::GetOrCreateRemoteGATTCharacteristic(
     characteristic = MakeGarbageCollected<BluetoothRemoteGATTCharacteristic>(
         context, std::move(remote_gatt_characteristic), service, device_);
   }
-  return characteristic;
+  return characteristic.Get();
 }
 
 bool BluetoothAttributeInstanceMap::ContainsCharacteristic(
@@ -69,7 +69,7 @@ BluetoothAttributeInstanceMap::GetOrCreateBluetoothRemoteGATTDescriptor(
     descriptor = MakeGarbageCollected<BluetoothRemoteGATTDescriptor>(
         std::move(remote_gatt_descriptor), characteristic);
   }
-  return descriptor;
+  return descriptor.Get();
 }
 
 bool BluetoothAttributeInstanceMap::ContainsDescriptor(

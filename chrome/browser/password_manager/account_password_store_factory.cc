@@ -26,10 +26,10 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/affiliations_prefetcher.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
-#include "components/password_manager/core/browser/password_store_built_in_backend.h"
+#include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #include "components/password_manager/core/browser/password_store_factory_util.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
@@ -103,46 +103,8 @@ UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-}  // namespace
-
-// static
-scoped_refptr<PasswordStoreInterface>
-AccountPasswordStoreFactory::GetForProfile(Profile* profile,
-                                           ServiceAccessType access_type) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kEnablePasswordsAccountStorage)) {
-    return nullptr;
-  }
-  // |profile| gets always redirected to a non-Incognito profile below, so
-  // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
-  // result in traces in the normal profile without the user knowing it.
-  if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
-      profile->IsOffTheRecord()) {
-    return nullptr;
-  }
-  return base::WrapRefCounted(
-      static_cast<password_manager::PasswordStoreInterface*>(
-          GetInstance()->GetServiceForBrowserContext(profile, true).get()));
-}
-
-// static
-AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
-  static base::NoDestructor<AccountPasswordStoreFactory> instance;
-  return instance.get();
-}
-
-AccountPasswordStoreFactory::AccountPasswordStoreFactory()
-    : RefcountedBrowserContextKeyedServiceFactory(
-          "AccountPasswordStore",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
-}
-
-AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
-
-scoped_refptr<RefcountedKeyedService>
-AccountPasswordStoreFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
+    content::BrowserContext* context) {
   DCHECK(base::FeatureList::IsEnabled(
       password_manager::features::kEnablePasswordsAccountStorage));
 
@@ -203,6 +165,54 @@ AccountPasswordStoreFactory::BuildServiceInstanceFor(
       ps.get());
 
   return ps;
+}
+
+}  // namespace
+
+// static
+scoped_refptr<PasswordStoreInterface>
+AccountPasswordStoreFactory::GetForProfile(Profile* profile,
+                                           ServiceAccessType access_type) {
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::kEnablePasswordsAccountStorage)) {
+    return nullptr;
+  }
+  // |profile| gets always redirected to a non-Incognito profile below, so
+  // Incognito & IMPLICIT_ACCESS means that incognito browsing session would
+  // result in traces in the normal profile without the user knowing it.
+  if (access_type == ServiceAccessType::IMPLICIT_ACCESS &&
+      profile->IsOffTheRecord()) {
+    return nullptr;
+  }
+  return base::WrapRefCounted(
+      static_cast<password_manager::PasswordStoreInterface*>(
+          GetInstance()->GetServiceForBrowserContext(profile, true).get()));
+}
+
+// static
+AccountPasswordStoreFactory* AccountPasswordStoreFactory::GetInstance() {
+  static base::NoDestructor<AccountPasswordStoreFactory> instance;
+  return instance.get();
+}
+
+AccountPasswordStoreFactory::AccountPasswordStoreFactory()
+    : RefcountedBrowserContextKeyedServiceFactory(
+          "AccountPasswordStore",
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(CredentialsCleanerRunnerFactory::GetInstance());
+}
+
+AccountPasswordStoreFactory::~AccountPasswordStoreFactory() = default;
+
+AccountPasswordStoreFactory::TestingFactory
+AccountPasswordStoreFactory::GetDefaultFactoryForTesting() {
+  return base::BindRepeating(&BuildPasswordStore);
+}
+
+scoped_refptr<RefcountedKeyedService>
+AccountPasswordStoreFactory::BuildServiceInstanceFor(
+    content::BrowserContext* context) const {
+  return BuildPasswordStore(context);
 }
 
 content::BrowserContext* AccountPasswordStoreFactory::GetBrowserContextToUse(

@@ -43,9 +43,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Tests {@link FollowManagementMediator}.
- */
+/** Tests {@link FollowManagementMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FollowManagementMediatorTest {
     private Activity mActivity;
@@ -59,22 +57,16 @@ public class FollowManagementMediatorTest {
     static final GURL URL2 = JUnitTestGURLs.URL_2;
     static final GURL FAVICON2 = JUnitTestGURLs.RED_2;
 
-    @Captor
-    ArgumentCaptor<Callback<WebFeedBridge.UnfollowResults>> mUnfollowCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<WebFeedBridge.UnfollowResults>> mUnfollowCallbackCaptor;
 
-    @Captor
-    ArgumentCaptor<Callback<WebFeedBridge.FollowResults>> mFollowCallbackCaptor;
+    @Captor ArgumentCaptor<Callback<WebFeedBridge.FollowResults>> mFollowCallbackCaptor;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    WebFeedBridge.Natives mWebFeedBridgeJni;
+    @Mock WebFeedBridge.Natives mWebFeedBridgeJni;
 
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
-    @Mock
-    private FollowManagementMediator.Observer mObserver;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private FollowManagementMediator.Observer mObserver;
 
     TestWebFeedFaviconFetcher mFaviconFetcher = new TestWebFeedFaviconFetcher();
 
@@ -109,52 +101,93 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testWebFeedList() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1),
-                new WebFeedMetadata(ID2, "Title2", URL2, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
-                        WebFeedAvailabilityStatus.INACTIVE, false, FAVICON2)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1),
+                            new WebFeedMetadata(
+                                    ID2,
+                                    "Title2",
+                                    URL2,
+                                    WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.INACTIVE,
+                                    false,
+                                    FAVICON2)
+                        }));
 
-        // clang-format off
         assertEquals(
-          "ID1 title=Title1 url=https://www.one.com/ subscribed\n"
-        + "ID2 title=Title2 url=https://www.two.com/ status=Updates Unavailable not-subscribed",
+                "ID1 title=Title1 url=https://www.one.com/ subscribed\n"
+                        + "ID2 title=Title2 url=https://www.two.com/ status=Updates Unavailable"
+                        + " not-subscribed",
                 modelListToString());
-        // clang-format on
     }
 
     @Test
     public void testUnsubscribeInProgressAfterClick() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1),
-                new WebFeedMetadata(ID2, "Title2", URL2, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON2)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1),
+                            new WebFeedMetadata(
+                                    ID2,
+                                    "Title2",
+                                    URL2,
+                                    WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON2)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        // clang-format off
         assertEquals(
-          "ID1 title=Title1 url=https://www.one.com/ not-subscribed disabled\n"
-        + "ID2 title=Title2 url=https://www.two.com/ not-subscribed",
+                "ID1 title=Title1 url=https://www.one.com/ not-subscribed disabled\n"
+                        + "ID2 title=Title2 url=https://www.two.com/ not-subscribed",
                 modelListToString());
-        // clang-format on
     }
 
     @Test
     public void testUnsubscribeFailure() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(eq(ID1), /*isDurable=*/eq(false),
+                .unfollowWebFeed(
+                        eq(ID1),
+                        /* isDurable= */ eq(false),
                         eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
                         mUnfollowCallbackCaptor.capture());
-        mUnfollowCallbackCaptor.getValue().onResult(
-                new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
+        mUnfollowCallbackCaptor
+                .getValue()
+                .onResult(
+                        new WebFeedBridge.UnfollowResults(
+                                WebFeedSubscriptionRequestStatus.FAILED_OFFLINE));
 
         assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed", modelListToString());
         verify(mObserver, times(1)).networkConnectionError();
@@ -162,18 +195,32 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testUnsubscribeSuccess() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .unfollowWebFeed(eq(ID1), /*isDurable=*/eq(false),
+                .unfollowWebFeed(
+                        eq(ID1),
+                        /* isDurable= */ eq(false),
                         eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
                         mUnfollowCallbackCaptor.capture());
-        mUnfollowCallbackCaptor.getValue().onResult(
-                new WebFeedBridge.UnfollowResults(WebFeedSubscriptionRequestStatus.SUCCESS));
+        mUnfollowCallbackCaptor
+                .getValue()
+                .onResult(
+                        new WebFeedBridge.UnfollowResults(
+                                WebFeedSubscriptionRequestStatus.SUCCESS));
 
         assertEquals(
                 "ID1 title=Title1 url=https://www.one.com/ not-subscribed", modelListToString());
@@ -181,30 +228,54 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testSubscribeInProgress() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
-        assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed disabled",
+        assertEquals(
+                "ID1 title=Title1 url=https://www.one.com/ subscribed disabled",
                 modelListToString());
     }
 
     @Test
     public void testSubscribeFailure() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .followWebFeedById(eq(ID1), /*isDurable=*/eq(false),
+                .followWebFeedById(
+                        eq(ID1),
+                        /* isDurable= */ eq(false),
                         eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
                         mFollowCallbackCaptor.capture());
-        mFollowCallbackCaptor.getValue().onResult(new WebFeedBridge.FollowResults(
-                WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR, null));
+        mFollowCallbackCaptor
+                .getValue()
+                .onResult(
+                        new WebFeedBridge.FollowResults(
+                                WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR, null));
 
         assertEquals(
                 "ID1 title=Title1 url=https://www.one.com/ not-subscribed", modelListToString());
@@ -213,18 +284,32 @@ public class FollowManagementMediatorTest {
 
     @Test
     public void testSubscribeSuccess() {
-        mFollowManagementMediator.fillRecyclerView(Arrays.asList(new WebFeedMetadata[] {
-                new WebFeedMetadata(ID1, "Title1", URL1, WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
-                        WebFeedAvailabilityStatus.ACTIVE, false, FAVICON1)}));
+        mFollowManagementMediator.fillRecyclerView(
+                Arrays.asList(
+                        new WebFeedMetadata[] {
+                            new WebFeedMetadata(
+                                    ID1,
+                                    "Title1",
+                                    URL1,
+                                    WebFeedSubscriptionStatus.NOT_SUBSCRIBED,
+                                    WebFeedAvailabilityStatus.ACTIVE,
+                                    false,
+                                    FAVICON1)
+                        }));
 
         mFollowManagementMediator.clickHandler(mModelList.get(0).model);
 
         verify(mWebFeedBridgeJni)
-                .followWebFeedById(eq(ID1), /*isDurable=*/eq(false),
+                .followWebFeedById(
+                        eq(ID1),
+                        /* isDurable= */ eq(false),
                         eq(WebFeedBridge.CHANGE_REASON_MANAGEMENT),
                         mFollowCallbackCaptor.capture());
-        mFollowCallbackCaptor.getValue().onResult(
-                new WebFeedBridge.FollowResults(WebFeedSubscriptionRequestStatus.SUCCESS, null));
+        mFollowCallbackCaptor
+                .getValue()
+                .onResult(
+                        new WebFeedBridge.FollowResults(
+                                WebFeedSubscriptionRequestStatus.SUCCESS, null));
 
         assertEquals("ID1 title=Title1 url=https://www.one.com/ subscribed", modelListToString());
     }

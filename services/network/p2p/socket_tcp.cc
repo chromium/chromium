@@ -455,7 +455,8 @@ void P2PSocketTcp::DoSend(const net::IPEndPoint& to,
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
+          base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
+          buffer_size));
   *reinterpret_cast<uint16_t*>(send_buffer.buffer->data()) =
       base::HostToNet16(data.size());
   memcpy(send_buffer.buffer->data() + kPacketHeaderSize, data.data(),
@@ -534,7 +535,8 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
   SendBuffer send_buffer(
       options.packet_id,
       base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(buffer_size), buffer_size));
+          base::MakeRefCounted<net::IOBufferWithSize>(buffer_size),
+          buffer_size));
   memcpy(send_buffer.buffer->data(), data.data(), data.size());
 
   cricket::ApplyPacketOptions(send_buffer.buffer->bytes(), data.size(),

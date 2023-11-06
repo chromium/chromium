@@ -28,7 +28,11 @@ class CompositorAnimationDelegate;
 // A compositor representation for Animation.
 class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
  public:
-  static std::unique_ptr<CompositorAnimation> Create();
+  // If this CompositorAnimation is being created to replace an
+  // existing cc::Animation, the existing Animation's id should be
+  // passed in to ensure the same id is used.
+  static std::unique_ptr<CompositorAnimation> Create(
+      absl::optional<int> replaced_cc_animation_id = absl::nullopt);
   static std::unique_ptr<CompositorAnimation> CreateWorkletAnimation(
       cc::WorkletAnimationId,
       const String& name,
@@ -42,6 +46,7 @@ class PLATFORM_EXPORT CompositorAnimation : public cc::AnimationDelegate {
   ~CompositorAnimation() override;
 
   cc::Animation* CcAnimation() const;
+  int CcAnimationId() const;
 
   // An animation delegate is notified when animations are started and stopped.
   // The CompositorAnimation does not take ownership of the delegate, and

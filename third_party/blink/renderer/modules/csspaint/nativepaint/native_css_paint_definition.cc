@@ -32,7 +32,7 @@ bool NativeCssPaintDefinition::CanGetValueFromKeyframe(
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
     InterpolableValue* value =
-        keyframe->GetValue()->Value().interpolable_value.get();
+        keyframe->GetValue()->Value().interpolable_value.Get();
     return filter(element, nullptr, value);
   }
 }

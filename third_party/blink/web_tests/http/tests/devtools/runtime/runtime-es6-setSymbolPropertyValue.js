@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
 import * as Console from 'devtools/panels/console/console.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   // This await is necessary for evaluateInPagePromise to produce accurate line numbers.
@@ -38,7 +39,7 @@ import * as Console from 'devtools/panels/console/console.js';
         var result = await TestRunner.RuntimeAgent.evaluate('object1');
         obj1 = TestRunner.runtimeModel.createRemoteObject(result);
         result = await TestRunner.RuntimeAgent.evaluate('symbol1');
-        name = SDK.RemoteObject.toCallArgument(TestRunner.runtimeModel.createRemoteObject(result));
+        name = SDK.RemoteObject.RemoteObject.toCallArgument(TestRunner.runtimeModel.createRemoteObject(result));
         await dumpAndClearConsoleMessages();
         next();
       }

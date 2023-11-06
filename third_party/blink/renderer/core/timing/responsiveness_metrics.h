@@ -48,7 +48,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     }
     ~KeyboardEntryAndTimestamps() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEntry() const { return entry_; }
+    PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     EventTimestamps GetTimeStamps() { return timestamps_; }
 
    private:
@@ -75,7 +75,7 @@ class ResponsivenessMetrics : public GarbageCollected<ResponsivenessMetrics> {
     }
     ~PointerEntryAndInfo() = default;
     void Trace(Visitor*) const;
-    PerformanceEventTiming* GetEntry() const { return entry_; }
+    PerformanceEventTiming* GetEntry() const { return entry_.Get(); }
     Vector<EventTimestamps>& GetTimeStamps() { return timestamps_; }
     void SetIsDrag() { is_drag_ = true; }
     bool IsDrag() const { return is_drag_; }

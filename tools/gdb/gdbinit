@@ -29,9 +29,8 @@ def add_debug_file_directory(dir):
 
 
 def load_libcxx_pretty_printers(src_dir):
-  libcxx_pretty_printers = os.path.join(src_dir, 'buildtools', 'third_party',
-                                        'libc++', 'trunk', 'utils', 'gdb',
-                                        'libcxx')
+  libcxx_pretty_printers = os.path.join(src_dir, 'third_party', 'libc++', 'src',
+                                        'utils', 'gdb', 'libcxx')
   if not os.path.isdir(libcxx_pretty_printers):
     return
   sys.path.insert(1, libcxx_pretty_printers)

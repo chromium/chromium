@@ -27,6 +27,7 @@
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
@@ -75,10 +76,17 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), common_info.source_origin(),
       source.destination_sites(), common_info.reporting_origin(),
-      source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
-      source.aggregatable_report_window_time().ToJsTime(),
-      common_info.source_type(), source.priority(), source.debug_key(),
-      source.dedup_keys(), source.filter_data().filter_values(),
+      source.source_time().InMillisecondsFSinceUnixEpoch(),
+      source.expiry_time().InMillisecondsFSinceUnixEpoch(),
+      SerializeAttributionJson(
+          attribution_reporting::TriggerSpecs::Default(
+              common_info.source_type(), source.event_report_windows())
+              .ToJson(),
+          /*pretty_print=*/true),
+      source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
+      source.max_event_level_reports(), common_info.source_type(),
+      source.priority(), source.debug_key(), source.dedup_keys(),
+      source.filter_data(),
       base::MakeFlatMap<std::string, std::string>(
           source.aggregation_keys().keys(), {},
           [](const auto& key) {
@@ -87,7 +95,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
                 attribution_reporting::HexEncodeAggregationKey(key.second));
           }),
       source.aggregatable_budget_consumed(), source.aggregatable_dedup_keys(),
-      attributability);
+      source.trigger_config(), source.debug_cookie_set(), attributability);
 }
 
 void ForwardSourcesToWebUI(
@@ -196,8 +204,8 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
 
   return attribution_internals::mojom::WebUIReport::New(
       report.id(), report.ReportURL(is_debug_report),
-      /*trigger_time=*/attribution_info.time.ToJsTime(),
-      /*report_time=*/report.report_time().ToJsTime(),
+      /*trigger_time=*/attribution_info.time.InMillisecondsFSinceUnixEpoch(),
+      /*report_time=*/report.report_time().InMillisecondsFSinceUnixEpoch(),
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true),
       std::move(status), std::move(data));
 }
@@ -256,7 +264,7 @@ void AttributionInternalsHandlerImpl::IsAttributionReportingEnabled(
       switches::kAttributionReportingDebugMode);
 
   std::move(callback).Run(attribution_reporting_enabled, debug_mode,
-                          AttributionManager::GetSupport());
+                          AttributionManager::GetAttributionSupport(contents));
 }
 
 void AttributionInternalsHandlerImpl::GetActiveSources(
@@ -326,7 +334,7 @@ attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
     std::string registration_json,
     absl::optional<uint64_t> cleared_debug_key) {
   auto reg = attribution_internals::mojom::WebUIRegistration::New();
-  reg->time = time.ToJsTime();
+  reg->time = time.InMillisecondsFSinceUnixEpoch();
   reg->context_origin = context_origin;
   reg->reporting_origin = reporting_origin;
   reg->registration_json = std::move(registration_json);
@@ -387,7 +395,7 @@ void AttributionInternalsHandlerImpl::OnDebugReportSent(
     base::Time time) {
   auto web_report = WebUIDebugReport::New();
   web_report->url = report.ReportUrl();
-  web_report->time = time.ToJsTime();
+  web_report->time = time.InMillisecondsFSinceUnixEpoch();
   web_report->body =
       SerializeAttributionJson(report.ReportBody(), /*pretty_print=*/true);
 
@@ -408,7 +416,8 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
     attribution_reporting::mojom::OsRegistrationResult result) {
   auto web_ui_os_registration =
       attribution_internals::mojom::WebUIOsRegistration::New();
-  web_ui_os_registration->time = time.ToJsTimeIgnoringNull();
+  web_ui_os_registration->time =
+      time.InMillisecondsFSinceUnixEpochIgnoringNull();
   web_ui_os_registration->registration_url = registration.registration_url;
   web_ui_os_registration->top_level_origin = registration.top_level_origin;
   web_ui_os_registration->is_debug_key_allowed = is_debug_key_allowed;

@@ -69,7 +69,8 @@ class NewBadgeLabel : public views::Label {
 
   // Label:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
   int GetHeightForWidth(int w) const override;
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,

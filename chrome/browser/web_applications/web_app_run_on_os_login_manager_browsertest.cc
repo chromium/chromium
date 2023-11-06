@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -10,6 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/startup/first_run_service.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_run_on_os_login_notification.h"
@@ -161,9 +163,12 @@ IN_PROC_BROWSER_TEST_F(WebAppRunOnOsLoginManagerBrowserTest,
   // Should have 2 browsers: normal and app.
   ASSERT_EQ(2u, chrome::GetBrowserCount(browser()->profile()));
 
+  bool notification_shown = base::test::RunUntil([&]() {
+    return notification_tester_->GetNotification(kRunOnOsLoginNotificationId)
+        .has_value();
+  });
   // Should have notification
-  ASSERT_TRUE(notification_tester_->GetNotification(kRunOnOsLoginNotificationId)
-                  .has_value());
+  ASSERT_TRUE(notification_shown);
 
   notification_tester_->SimulateClick(NotificationHandler::Type::TRANSIENT,
                                       kRunOnOsLoginNotificationId,

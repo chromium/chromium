@@ -133,6 +133,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -502,6 +503,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   // fullscreen here because tab fullscreen is non-immersive even on ChromeOS).
   EnterFullscreenModeForTabAndWait(browser(), web_contents);
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_FALSE(test_api.GetShouldPaint());
 
   // The client view abuts top of the window.
@@ -510,6 +512,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
   ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(test_api.GetShouldPaint());
 }
 
@@ -524,6 +528,7 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   EnterFullscreenModeForTabAndWait(browser(), web_contents);
+  EXPECT_TRUE(browser_view->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   // Caption buttons are hidden.
   EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
@@ -531,6 +536,8 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTestNoWebUiTabStrip,
   // The frame should be painted again when fullscreen is exited and the caption
   // buttons should be visible.
   ToggleFullscreenModeAndWait(browser());
+  EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
+  EXPECT_FALSE(browser_view->IsFullscreen());
   // Caption button container visible again.
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }
@@ -703,6 +710,41 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
+class ViewVisibilityWaiter : public views::ViewObserver {
+ public:
+  ViewVisibilityWaiter(views::View* observed_view, bool expected_visible)
+      : view_(observed_view), expected_visible_(expected_visible) {
+    observation_.Observe(view_.get());
+  }
+  ViewVisibilityWaiter(const ViewVisibilityWaiter&) = delete;
+  ViewVisibilityWaiter& operator=(const ViewVisibilityWaiter&) = delete;
+  ~ViewVisibilityWaiter() override = default;
+
+  // Wait for changes to occur, or return immediately if view already has
+  // expected visibility.
+  bool Wait() {
+    if (expected_visible_ == view_->GetVisible()) {
+      return true;
+    }
+    return future_.Wait();
+  }
+
+ private:
+  // views::ViewObserver:
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view) override {
+    bool visible = observed_view->GetVisible();
+    if (visible == expected_visible_) {
+      future_.SetValue();
+    }
+  }
+
+  raw_ptr<views::View> view_;
+  const bool expected_visible_;
+  base::test::TestFuture<void> future_;
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+};
+
 class WebAppNonClientFrameViewAshTest
     : public TopChromeMdParamTest<InProcessBrowserTest> {
  public:
@@ -754,7 +796,7 @@ class WebAppNonClientFrameViewAshTest
   void SetUpOnMainThread() override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpOnMainThread();
 
-    WebAppToolbarButtonContainer::DisableAnimationForTesting();
+    WebAppToolbarButtonContainer::DisableAnimationForTesting(true);
 
     // Start secure local server.
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -940,9 +982,9 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
       ->OnPasswordAutofilled({&password_form},
                              url::Origin::Create(password_form.url), nullptr);
   chrome::ManagePasswordsForPage(app_browser_);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(manage_passwords_icon->GetVisible());
+  // Wait for manage_passwords_icon to become visible.
+  ViewVisibilityWaiter waiter(manage_passwords_icon, true);
+  ASSERT_TRUE(waiter.Wait());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ShowZoomIcon) {
@@ -958,9 +1000,9 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, ShowZoomIcon) {
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
   zoom_controller->SetZoomLevel(blink::PageZoomFactorToZoomLevel(1.5));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(zoom_icon->GetVisible());
+  // Wait for zoom_icon to become visible.
+  ViewVisibilityWaiter waiter(zoom_icon, true);
+  ASSERT_TRUE(waiter.Wait());
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 }
 
@@ -1384,6 +1426,26 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
   EXPECT_FALSE(browser_view->IsFullscreen());
 }
 
+IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest,
+                       ToggleImmersiveModeWhileTabletModeEnabled) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view->immersive_mode_controller();
+  ASSERT_FALSE(immersive_mode_controller->IsEnabled());
+  ASSERT_FALSE(browser_view->IsFullscreen());
+
+  // Enter tablet mode.
+  ASSERT_NO_FATAL_FAILURE(
+      ash::ShellTestApi().SetTabletModeEnabledForTest(true));
+
+  // Enter immersive mode.
+  ToggleFullscreenModeAndWait(browser());
+  // Should be able to enter immersive mode even when the tablet mode is
+  // enabled.
+  ASSERT_TRUE(immersive_mode_controller->IsEnabled());
+  ASSERT_TRUE(browser_view->IsFullscreen());
+}
+
 // TODO(b/270175923): Consider using WebUiTabStripOverrideTest, since it
 // makes sense for it to always be enabled.
 using FloatBrowserNonClientFrameViewChromeOSTest =
@@ -1628,11 +1690,16 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   BrowserNonClientFrameViewChromeOS* frame_view =
       GetFrameViewChromeOS(browser_view);
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  ImmersiveModeController* immersive_mode_controller =
+      browser_view->immersive_mode_controller();
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 
   // Tablet mode doesn't affect app's caption button's visibility.
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(true));
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_TRUE(immersive_mode_controller->IsEnabled());
 
   // However, overview mode does.
   StartOverview();
@@ -1643,6 +1710,8 @@ IN_PROC_BROWSER_TEST_P(HomeLauncherBrowserNonClientFrameViewChromeOSTest,
   ASSERT_NO_FATAL_FAILURE(
       ash::ShellTestApi().SetTabletModeEnabledForTest(false));
   EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+  EXPECT_FALSE(browser_view->IsFullscreen());
+  EXPECT_FALSE(immersive_mode_controller->IsEnabled());
 }
 
 namespace {

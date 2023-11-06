@@ -1,0 +1,58 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("inactive_tabs") {
+  sources = [
+    "metrics.h",
+    "metrics.mm",
+    "utils.h",
+    "utils.mm",
+  ]
+  deps = [
+    ":features",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "utils_unittest.mm" ]
+  deps = [
+    ":features",
+    ":inactive_tabs",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ntp",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/session",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//third_party/ocmock",
+  ]
+}

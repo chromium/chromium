@@ -3370,7 +3370,8 @@ class MainThreadSchedulerImplWithInitalVirtualTimeTest
                     .SetPrioritySettings(CreatePrioritySettings())
                     .Build()));
     main_thread_scheduler->EnableVirtualTime(
-        /* initial_time= */ base::Time::FromJsTime(1000000.0));
+        /* initial_time= */ base::Time::FromMillisecondsSinceUnixEpoch(
+            1000000.0));
     main_thread_scheduler->SetVirtualTimePolicy(
         VirtualTimeController::VirtualTimePolicy::kPause);
     Initialize(std::move(main_thread_scheduler));
@@ -3381,7 +3382,8 @@ TEST_F(MainThreadSchedulerImplWithInitalVirtualTimeTest, VirtualTimeOverride) {
   EXPECT_TRUE(scheduler_->IsVirtualTimeEnabled());
   EXPECT_EQ(VirtualTimeController::VirtualTimePolicy::kPause,
             scheduler_->GetVirtualTimePolicyForTest());
-  EXPECT_EQ(base::Time::Now(), base::Time::FromJsTime(1000000.0));
+  EXPECT_EQ(base::Time::Now(),
+            base::Time::FromMillisecondsSinceUnixEpoch(1000000.0));
 }
 
 TEST_F(MainThreadSchedulerImplTest, CompositingAfterInput) {

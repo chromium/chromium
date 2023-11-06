@@ -27,7 +27,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/icu/source/i18n/astro.h"
-#include "ui/aura/env.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -107,7 +106,6 @@ ScheduledFeature::ScheduledFeature(
       clock_(&default_clock_),
       refresh_failure_backoff_(&kRefreshFailureBackoffPolicy) {
   Shell::Get()->session_controller()->AddObserver(this);
-  aura::Env::GetInstance()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   // Check that both start or end times are supplied or both are absent.
   DCHECK_EQ(prefs_path_custom_start_time_.empty(),
@@ -115,8 +113,8 @@ ScheduledFeature::ScheduledFeature(
 }
 
 ScheduledFeature::~ScheduledFeature() {
+  geolocation_controller_->RemoveObserver(this);
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  aura::Env::GetInstance()->RemoveObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -155,10 +153,7 @@ TimeOfDay ScheduledFeature::GetCustomEndTime() const {
 }
 
 void ScheduledFeature::SetEnabled(bool enabled) {
-  DVLOG(1) << "Setting " << GetFeatureName() << " enabled to " << enabled
-           << " at " << Now();
-  if (active_user_pref_service_)
-    active_user_pref_service_->SetBoolean(prefs_path_enabled_, enabled);
+  SetEnabledInternal(enabled, RefreshReason::kExternal);
 }
 
 void ScheduledFeature::SetScheduleType(ScheduleType type) {
@@ -219,13 +214,13 @@ void ScheduledFeature::OnGeopositionChanged(bool possible_change_in_timezone) {
   const bool keep_manual_toggles_during_schedules =
       !possible_change_in_timezone;
 
-  Refresh(/*did_schedule_change=*/true, keep_manual_toggles_during_schedules);
+  Refresh(RefreshReason::kReset, keep_manual_toggles_during_schedules);
 }
 
 void ScheduledFeature::SuspendDone(base::TimeDelta sleep_duration) {
   // Time changes while the device is suspended. We need to refresh the schedule
   // upon device resume to know what the status should be now.
-  Refresh(/*did_schedule_change=*/true,
+  Refresh(RefreshReason::kReset,
           /*keep_manual_toggles_during_schedules=*/true);
 }
 
@@ -309,37 +304,47 @@ void ScheduledFeature::InitFromUserPrefs() {
   is_first_user_init_ = false;
 }
 
+void ScheduledFeature::SetEnabledInternal(bool enabled, RefreshReason reason) {
+  DVLOG(1) << "Setting " << GetFeatureName() << " enabled to " << enabled
+           << " at " << Now();
+  set_enabled_refresh_reason_ = reason;
+  if (active_user_pref_service_)
+    active_user_pref_service_->SetBoolean(prefs_path_enabled_, enabled);
+}
+
 void ScheduledFeature::OnEnabledPrefChanged() {
   const bool enabled = GetEnabled();
   VLOG(1) << "Enable state changed. New state: " << enabled << ".";
   DCHECK(active_user_pref_service_);
-  Refresh(/*did_schedule_change=*/false,
+  const RefreshReason current_reason = set_enabled_refresh_reason_;
+  // Reset the reason to `kExternal` in case an external caller directly
+  // modifies the pref afterwards.
+  set_enabled_refresh_reason_ = RefreshReason::kExternal;
+  Refresh(current_reason,
           /*keep_manual_toggles_during_schedules=*/false);
 }
 
 void ScheduledFeature::OnScheduleTypePrefChanged(
     bool keep_manual_toggles_during_schedules) {
   const ScheduleType schedule_type = GetScheduleType();
-  // To prevent adding (or removing) an observer twice in a row when switching
-  // between different users, we need to check `is_observing_geolocation_`.
-  if (schedule_type == ScheduleType::kNone && is_observing_geolocation_) {
+  // To prevent adding an observer twice in a row when switching between
+  // different users, we need to check `HasObserver()`.
+  if (schedule_type == ScheduleType::kNone) {
     geolocation_controller_->RemoveObserver(this);
-    is_observing_geolocation_ = false;
-  } else if (schedule_type != ScheduleType::kNone &&
-             !is_observing_geolocation_) {
+  } else if (!geolocation_controller_->HasObserver(this)) {
     geolocation_controller_->AddObserver(this);
-    is_observing_geolocation_ = true;
   }
-  Refresh(/*did_schedule_change=*/true, keep_manual_toggles_during_schedules);
+  Refresh(RefreshReason::kSettingsChanged,
+          keep_manual_toggles_during_schedules);
 }
 
 void ScheduledFeature::OnCustomSchedulePrefsChanged() {
   DCHECK(active_user_pref_service_);
-  Refresh(/*did_schedule_change=*/true,
+  Refresh(RefreshReason::kSettingsChanged,
           /*keep_manual_toggles_during_schedules=*/false);
 }
 
-void ScheduledFeature::Refresh(bool did_schedule_change,
+void ScheduledFeature::Refresh(RefreshReason reason,
                                bool keep_manual_toggles_during_schedules) {
   absl::optional<base::Time> start_time;
   absl::optional<base::Time> end_time;
@@ -347,7 +352,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
   switch (schedule_type) {
     case ScheduleType::kNone:
       timer_->Stop();
-      RefreshFeatureState();
+      RefreshFeatureState(reason);
       SetCurrentCheckpoint(
           GetCheckpointForEnabledState(GetEnabled(), ScheduleType::kNone));
       return;
@@ -390,7 +395,7 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
     return;
   }
 
-  RefreshScheduleTimer(*start_time, *end_time, did_schedule_change,
+  RefreshScheduleTimer(*start_time, *end_time, reason,
                        keep_manual_toggles_during_schedules);
 }
 
@@ -401,13 +406,13 @@ void ScheduledFeature::Refresh(bool did_schedule_change,
 void ScheduledFeature::RefreshScheduleTimer(
     base::Time start_time,
     base::Time end_time,
-    bool did_schedule_change,
+    RefreshReason reason,
     bool keep_manual_toggles_during_schedules) {
   const ScheduleType schedule_type = GetScheduleType();
   DCHECK(schedule_type != ScheduleType::kNone);
 
   if (keep_manual_toggles_during_schedules && MaybeRestoreSchedule()) {
-    RefreshFeatureState();
+    RefreshFeatureState(reason);
     return;
   }
 
@@ -428,15 +433,16 @@ void ScheduledFeature::RefreshScheduleTimer(
         IsEnabledAtCheckpoint(schedule_position.next_checkpoint);
     time_until_next_refresh = schedule_position.time_until_next_checkpoint;
     new_checkpoint = schedule_position.current_checkpoint;
-  } else if (did_schedule_change) {  // && enable_now != current_enabled
-    // If the change in the schedule introduces a change in the status, then
-    // calling SetEnabled() is all we need, since it will trigger a change in
-    // the user prefs to which we will respond by calling Refresh(). This will
-    // end up in this function again and enter the case above, adjusting all
-    // the needed schedules.
-    SetEnabled(enable_now);
+  } else if (reason == RefreshReason::kSettingsChanged ||
+             reason == RefreshReason::kReset) {
+    // If the change in the schedule or environment introduces a change in the
+    // status, then calling `SetEnabledInternal()` is all we need, since it will
+    // trigger a change in the user prefs to which we will respond by calling
+    // Refresh(). This will end up in this function again and enter the case
+    // above, adjusting all the needed schedules.
+    SetEnabledInternal(enable_now, reason);
     return;
-  } else {  // enable_now != current_enabled && !did_schedule_change
+  } else {
     // Either of these is true:
     // 1) The user manually toggled the feature status to the opposite of what
     //    the schedule says.
@@ -463,7 +469,7 @@ void ScheduledFeature::RefreshScheduleTimer(
   ScheduleNextRefresh(
       {now + time_until_next_refresh, next_feature_status, new_checkpoint},
       now);
-  RefreshFeatureState();
+  RefreshFeatureState(reason);
   // Should be called after `ScheduleNextRefresh` and `RefreshFeatureState()`
   // so that all of the feature's internal bookkeeping has been updated before
   // broadcasting to users that a new feature state has been reached. This
@@ -483,14 +489,13 @@ void ScheduledFeature::ScheduleNextRefresh(
   per_user_schedule_snapshot_[active_user_pref_service_] = current_snapshot;
   base::OnceClosure timer_cb;
   if (current_snapshot.target_status == GetEnabled()) {
-    timer_cb =
-        base::BindOnce(&ScheduledFeature::Refresh, base::Unretained(this),
-                       /*did_schedule_change=*/false,
-                       /*keep_manual_toggles_during_schedules=*/false);
+    timer_cb = base::BindOnce(&ScheduledFeature::Refresh,
+                              base::Unretained(this), RefreshReason::kScheduled,
+                              /*keep_manual_toggles_during_schedules=*/false);
   } else {
-    timer_cb =
-        base::BindOnce(&ScheduledFeature::SetEnabled, base::Unretained(this),
-                       current_snapshot.target_status);
+    timer_cb = base::BindOnce(
+        &ScheduledFeature::SetEnabledInternal, base::Unretained(this),
+        current_snapshot.target_status, RefreshReason::kScheduled);
   }
   VLOG(1) << "Setting " << GetFeatureName() << " to refresh to "
           << (current_snapshot.target_status ? "enabled" : "disabled") << " at "
@@ -506,13 +511,12 @@ void ScheduledFeature::ScheduleNextRefreshRetry(
   LOG(ERROR) << "Refresh() failed. Scheduling retry in " << retry_delay;
   // The refresh failure puts the schedule in an inaccurate state (the
   // feature can be the opposite of what the schedule says it should be).
-  // Setting `did_schedule_change` is appropriate and necessary to return it
+  // 'RefreshReason::kReset` is appropriate and necessary to return it
   // to the correct state the next time `Refresh()` can succeed.
-  timer_->Start(
-      FROM_HERE, retry_delay,
-      base::BindOnce(&ScheduledFeature::Refresh, base::Unretained(this),
-                     /*did_schedule_change=*/true,
-                     keep_manual_toggles_during_schedules));
+  timer_->Start(FROM_HERE, retry_delay,
+                base::BindOnce(&ScheduledFeature::Refresh,
+                               base::Unretained(this), RefreshReason::kReset,
+                               keep_manual_toggles_during_schedules));
 }
 
 void ScheduledFeature::SetCurrentCheckpoint(ScheduleCheckpoint new_checkpoint) {

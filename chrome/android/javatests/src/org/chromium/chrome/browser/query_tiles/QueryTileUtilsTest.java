@@ -26,9 +26,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Tests for the query tiles section on new tab page.
- */
+/** Tests for the query tiles section on new tab page. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class QueryTileUtilsTest {
@@ -41,8 +39,8 @@ public class QueryTileUtilsTest {
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
     }
 
     @Test
@@ -55,13 +53,15 @@ public class QueryTileUtilsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION})
-    public void
-    testShouldUseSegmentationModel() {
+    @EnableFeatures({
+        ChromeFeatureList.QUERY_TILES,
+        ChromeFeatureList.QUERY_TILES_IN_NTP,
+        ChromeFeatureList.QUERY_TILES_SEGMENTATION
+    })
+    public void testShouldUseSegmentationModel() {
         // Set segmentation model to show query tiles.
-        ChromeSharedPreferences.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
         QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
 
         // Verify that query tiles is shown via segmentation model when no previous history.
@@ -73,53 +73,58 @@ public class QueryTileUtilsTest {
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
 
         // Verify that segmentation is not used when previous decision time did not expire.
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
-                System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                        System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
         Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
     }
 
     /**
      * Check that the next decision time is within |numOfDays| from now.
+     *
      * @param numOfDays Number of days to check.
      */
     private void nextDecisionTimeStampInDays(int numOfDays) {
         long approximateTime =
                 System.currentTimeMillis() + numOfDays * QueryTileUtils.MILLISECONDS_PER_DAY;
-        long nextDecisionTime = ChromeSharedPreferences.getInstance().readLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS, 0);
+        long nextDecisionTime =
+                ChromeSharedPreferences.getInstance()
+                        .readLong(
+                                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS, 0);
 
-        assertThat("new decision time lower bound", approximateTime - MILLISECONDS_PER_MINUTE,
+        assertThat(
+                "new decision time lower bound",
+                approximateTime - MILLISECONDS_PER_MINUTE,
                 lessThanOrEqualTo(nextDecisionTime));
 
-        assertThat("new decision time upper bound", approximateTime + MILLISECONDS_PER_MINUTE,
+        assertThat(
+                "new decision time upper bound",
+                approximateTime + MILLISECONDS_PER_MINUTE,
                 greaterThanOrEqualTo(nextDecisionTime));
     }
 
-    /**
-     * Helper method to simulate that the next decision time has reached.
-     */
+    /** Helper method to simulate that the next decision time has reached. */
     void nextDecisionTimeReached() {
-        ChromeSharedPreferences.getInstance().writeLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
-                System.currentTimeMillis() - MILLISECONDS_PER_MINUTE);
+        ChromeSharedPreferences.getInstance()
+                .writeLong(
+                        ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                        System.currentTimeMillis() - MILLISECONDS_PER_MINUTE);
     }
 
-    /**
-     * Helper method to check that query tiles will be shown from now on for a period of time.
-     */
+    /** Helper method to check that query tiles will be shown from now on for a period of time. */
     void queryTilesWillBeShownFromNowOn() {
         nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES);
-        Assert.assertTrue(ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
+        Assert.assertTrue(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
     }
 
-    /**
-     * Helper method to check that query tiles will be hidden from now on for a period of time.
-     */
+    /** Helper method to check that query tiles will be hidden from now on for a period of time. */
     void queryTilesWillBeHiddenFromNowOn() {
         nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD);
-        Assert.assertFalse(ChromeSharedPreferences.getInstance().readBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
+        Assert.assertFalse(
+                ChromeSharedPreferences.getInstance()
+                        .readBoolean(ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false));
     }
 }

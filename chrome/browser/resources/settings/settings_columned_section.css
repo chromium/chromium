@@ -23,7 +23,16 @@ settings-collapse-radio-button .settings-columned-section {
 
 .settings-columned-section .description-header {
   color: var(--google-blue-600);
+}
+
+.settings-columned-section h2.description-header,
+.settings-columned-section h3.description-header {
+  /* description-header elements should have the same style no matter their
+     programmatic heading role. */
+  font-size: inherit;
   font-weight: 400;
+  margin: 0;
+  padding: 0;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -1,0 +1,44 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default",
+        "policies": {},
+        "prefs": {
+          "policy.force_permission_policy_unload_default_enabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForcePermissionPolicyUnloadDefaultEnabled": false
+        },
+        "prefs": {
+          "policy.force_permission_policy_unload_default_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForcePermissionPolicyUnloadDefaultEnabled": true
+        },
+        "prefs": {
+          "policy.force_permission_policy_unload_default_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

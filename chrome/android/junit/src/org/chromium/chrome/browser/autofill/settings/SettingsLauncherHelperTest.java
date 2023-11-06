@@ -27,17 +27,13 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
-/**
- * Test for {@link SettingsLauncherHelper}.
- */
+/** Test for {@link SettingsLauncherHelper}. */
 @RunWith(RobolectricTestRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Uses static launcher.")
 public class SettingsLauncherHelperTest {
-    @Mock
-    private SettingsLauncher mMockLauncher;
-    @Mock
-    private Context mMockContext;
+    @Mock private SettingsLauncher mMockLauncher;
+    @Mock private Context mMockContext;
 
     private UserActionTester mActionTester = new UserActionTester();
 

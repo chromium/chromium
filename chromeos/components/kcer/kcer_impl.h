@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(KCER) KcerImpl : public Kcer {
   base::CallbackListSubscription AddObserver(
       base::RepeatingClosure callback) override;
   void GenerateRsaKey(Token token,
-                      uint32_t modulus_length_bits,
+                      RsaModulusLength modulus_length_bits,
                       bool hardware_backed,
                       GenerateKeyCallback callback) override;
   void GenerateEcKey(Token token,

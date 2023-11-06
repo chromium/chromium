@@ -81,7 +81,7 @@ void WriteFromUrlOperation::Download(base::OnceClosure continuation) {
 
   download_continuation_ = std::move(continuation);
 
-  SetStage(image_writer_api::STAGE_DOWNLOAD);
+  SetStage(image_writer_api::Stage::kDownload);
 
   // Create traffic annotation tag.
   net::NetworkTrafficAnnotationTag traffic_annotation =
@@ -178,7 +178,7 @@ void WriteFromUrlOperation::VerifyDownload(base::OnceClosure continuation) {
     return;
   }
 
-  SetStage(image_writer_api::STAGE_VERIFYDOWNLOAD);
+  SetStage(image_writer_api::Stage::kVerifyDownload);
 
   GetMD5SumOfFile(image_path_, 0, 0, kProgressComplete,
                   base::BindOnce(&WriteFromUrlOperation::VerifyDownloadCompare,

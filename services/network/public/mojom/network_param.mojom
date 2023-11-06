@@ -63,6 +63,12 @@ struct ProxyServer {
   HostPortPair? host_and_port;
 };
 
+// Mirror of net::ProxyChain.
+struct ProxyChain {
+  // The sequence of servers in this chain, or if nullopt, an invalid chain.
+  array<ProxyServer>? proxy_servers;
+};
+
 // Host resolution error info.
 struct ResolveErrorInfo {
   // Underlying network error code. See net/base/net_error_list.h for error

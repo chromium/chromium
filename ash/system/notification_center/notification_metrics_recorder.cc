@@ -4,7 +4,6 @@
 
 #include "ash/system/notification_center/notification_metrics_recorder.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/metrics_utils.h"
@@ -25,7 +24,6 @@ NotificationMetricsRecorder::NotificationMetricsRecorder(
     NotificationCenterTray* tray)
     : tray_(tray) {
   CHECK(tray_);
-  DCHECK(features::IsQsRevampEnabled());
   message_center::MessageCenter::Get()->AddObserver(this);
   Shell::Get()->session_controller()->AddObserver(this);
 }

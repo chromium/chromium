@@ -22,6 +22,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
@@ -63,6 +65,8 @@ const int kControlCommandModifier = ui::EF_CONTROL_DOWN;
 const int kMinTextDimension = 4;
 
 class TestLabel : public Label {
+  METADATA_HEADER(TestLabel, Label)
+
  public:
   TestLabel() : Label(u"TestLabel") { SizeToPreferredSize(); }
 
@@ -89,6 +93,9 @@ class TestLabel : public Label {
  private:
   int schedule_paint_count_ = 0;
 };
+
+BEGIN_METADATA(TestLabel)
+END_METADATA
 
 // A test utility function to set the application default text direction.
 void SetRTL(bool rtl) {
@@ -541,6 +548,50 @@ TEST_F(LabelTest, MultilinePreferredSizeTest) {
   gfx::Size new_size = label()->GetPreferredSize();
   EXPECT_GT(multi_line_size.width(), new_size.width());
   EXPECT_LT(multi_line_size.height(), new_size.height());
+}
+
+TEST_F(LabelTest, SetUseLegacyPreferredSizeTest) {
+  label()->SetText(u"This is an example.");
+
+  const gfx::Size single_line_size = label()->GetPreferredSize();
+
+  // Test the preferred size when the label is not yet laid out.
+  label()->SetMultiLine(true);
+  const gfx::Size multi_line_size = label()->GetPreferredSize();
+  EXPECT_EQ(single_line_size, multi_line_size);
+
+  // Test the preferred size after the label is laid out.
+  const int layout_width = multi_line_size.width() / 2;
+  label()->SetBounds(0, 0, layout_width,
+                     label()->GetHeightForWidth(layout_width));
+
+  const gfx::Size multi_line_size_bounded =
+      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
+  const gfx::Size multi_line_size_bounded2 = label()->GetPreferredSize(
+      {single_line_size.width() / 2, {/* Unbounded */}});
+
+  EXPECT_EQ(multi_line_size_bounded.width(), single_line_size.width());
+  EXPECT_GT(multi_line_size_bounded.width(), multi_line_size_bounded2.width());
+  EXPECT_LT(multi_line_size_bounded.height(),
+            multi_line_size_bounded2.height());
+
+  // After SetUseLegacyPreferredSize(true). GetPreferredSize is affected by
+  // Bounds
+  label()->SetUseLegacyPreferredSize(true);
+
+  // Explicitly specified unbounded layout should follow unbounded layout,
+  // it does not follow the constraints of SetAllowBoundedPreferredSize
+  const gfx::Size multi_line_size_unbounded =
+      label()->GetPreferredSize({/* Unbounded */});
+  EXPECT_EQ(multi_line_size, multi_line_size_unbounded);
+
+  // Explicitly specifying SetAllowBoundedPreferredSize(false),
+  // GetPreferredSize(SizeBounds) should ignore the specified width.
+  const gfx::Size multi_line_size_bounded3 =
+      label()->GetPreferredSize({single_line_size.width(), {/* Unbounded */}});
+  const gfx::Size multi_line_size_bounded4 = label()->GetPreferredSize(
+      {single_line_size.width() / 2, {/* Unbounded */}});
+  EXPECT_EQ(multi_line_size_bounded3, multi_line_size_bounded4);
 }
 
 TEST_F(LabelTest, MultilinePreferredSizeWithConstraintTest) {

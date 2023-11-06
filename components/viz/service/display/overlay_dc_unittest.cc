@@ -38,7 +38,9 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/video_types.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/latency/latency_info.h"
@@ -51,6 +53,10 @@ namespace {
 
 const gfx::Rect kOverlayRect(0, 0, 256, 256);
 const gfx::Rect kOverlayBottomRightRect(128, 128, 128, 128);
+
+// An arbitrary render pass ID that can be treated as the implicit root pass ID
+// by the test suites and helper functions.
+const AggregatedRenderPassId kDefaultRootPassId{1};
 
 class MockDCLayerOutputSurface : public FakeSkiaOutputSurface {
  public:
@@ -82,7 +88,7 @@ class DCTestOverlayProcessor : public OverlayProcessorWin {
 };
 
 std::unique_ptr<AggregatedRenderPass> CreateRenderPass(
-    AggregatedRenderPassId render_pass_id = AggregatedRenderPassId{1}) {
+    AggregatedRenderPassId render_pass_id = kDefaultRootPassId) {
   gfx::Rect output_rect(0, 0, 256, 256);
 
   auto pass = std::make_unique<AggregatedRenderPass>();
@@ -231,7 +237,7 @@ class DCLayerOverlayTest : public testing::Test,
   void InitializeOverlayProcessor(int allowed_yuv_overlay_count = 1) {
     overlay_processor_ = std::make_unique<DCTestOverlayProcessor>(
         output_surface_.get(), allowed_yuv_overlay_count);
-    overlay_processor_->set_using_dc_layers_for_testing(true);
+    overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, true);
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
     overlay_processor_
         ->set_frames_since_last_qualified_multi_overlays_for_testing(5);
@@ -357,10 +363,6 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
 TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
   InitializeOverlayProcessor();
 
-  // Start in the DComp surface mode, e.g. from a previous frame that had a
-  // video overlay.
-  overlay_processor_->set_using_dc_layers_for_testing(true);
-
   // Frame with no overlays, but we expect to still be in DComp surface mode,
   // due to one-sided hysteresis intended to prevent allocation churn.
   {
@@ -370,8 +372,7 @@ TEST_P(DCLayerOverlayTest, ForceSwapChainForCapture) {
     damage_rect_ = pass_list.back()->output_rect;
 
     if (!IsUsingDCompPresenter()) {
-      // We expect no change, so no call.
-      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
+      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(true)).Times(1);
     }
 
     OverlayCandidateList dc_layer_list;
@@ -620,6 +621,7 @@ TEST_P(DCLayerOverlayTest, DamageRectWithoutVideoDamage) {
 TEST_P(DCLayerOverlayTest, DamageRect) {
   InitializeOverlayProcessor();
   for (int i = 0; i < 2; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame %d", i));
     auto pass = CreateRenderPass();
     SharedQuadState* shared_quad_state = pass->shared_quad_state_list.back();
     shared_quad_state->overlay_damage_index = 0;
@@ -1016,12 +1018,15 @@ TEST_P(DCLayerOverlayTest, MultipleYUVOverlays) {
 
 TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
   InitializeOverlayProcessor();
-  // Start without DC layers.
-  overlay_processor_->set_using_dc_layers_for_testing(false);
-
+  overlay_processor_->SetUsingDCLayersForTesting(kDefaultRootPassId, false);
   // Draw 60 frames with overlay video quads.
   for (int i = 0; i < 60; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame with overlay %d", i));
     auto pass = CreateRenderPass();
+    // Use an opaque pass to check that the overlay processor makes it
+    // transparent in the case of overlays.
+    pass->has_transparent_background = false;
+
     CreateFullscreenCandidateYUVVideoQuad(
         resource_provider_.get(), child_resource_provider_.get(),
         child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
@@ -1043,11 +1048,7 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
     if (IsUsingDCompPresenter()) {
       EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
     } else {
-      if (i == 0) {
-        EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(true)).Times(1);
-      } else {
-        EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-      }
+      EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(true)).Times(1);
     }
 
     overlay_processor_->ProcessForOverlays(
@@ -1056,7 +1057,7 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter() && i == 0) {
+    if (IsUsingDCompPresenter()) {
       EXPECT_TRUE(pass_list.back()->needs_synchronous_dcomp_commit);
       EXPECT_TRUE(pass_list.back()->has_transparent_background);
       ASSERT_TRUE(output_surface_plane_.has_value());
@@ -1072,7 +1073,9 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
 
   // Draw 65 frames without overlays.
   for (int i = 0; i < 65; i++) {
+    SCOPED_TRACE(base::StringPrintf("Frame without overlay %d", i));
     auto pass = CreateRenderPass();
+    pass->has_transparent_background = false;
 
     damage_rect_ = gfx::Rect(1, 1, 10, 10);
     auto* quad = pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -1096,14 +1099,14 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
                                           ? pass_list.back()->output_rect
                                           : damage_rect_;
 
+    const bool in_dc_layer_hysteresis = i + 1 < 60;
+
     if (IsUsingDCompPresenter()) {
       EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
     } else {
-      if (i + 1 == 60) {
-        EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(false)).Times(1);
-      } else {
-        EXPECT_CALL(*output_surface_.get(), SetEnableDCLayers(_)).Times(0);
-      }
+      EXPECT_CALL(*output_surface_.get(),
+                  SetEnableDCLayers(in_dc_layer_hysteresis))
+          .Times(1);
     }
 
     overlay_processor_->ProcessForOverlays(
@@ -1112,11 +1115,13 @@ TEST_P(DCLayerOverlayTest, SetEnableDCLayers) {
         std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
         &dc_layer_list, &damage_rect_, &content_bounds_);
 
-    if (IsUsingDCompPresenter() && i + 1 == 60) {
-      EXPECT_FALSE(pass_list.back()->needs_synchronous_dcomp_commit);
-      EXPECT_FALSE(pass_list.back()->has_transparent_background);
+    if (IsUsingDCompPresenter()) {
+      EXPECT_EQ(pass_list.back()->needs_synchronous_dcomp_commit,
+                in_dc_layer_hysteresis);
+      EXPECT_EQ(pass_list.back()->has_transparent_background,
+                in_dc_layer_hysteresis);
       ASSERT_TRUE(output_surface_plane_.has_value());
-      EXPECT_FALSE(output_surface_plane_->enable_blending);
+      EXPECT_EQ(output_surface_plane_->enable_blending, in_dc_layer_hysteresis);
     }
 
     EXPECT_EQ(0u, dc_layer_list.size());
@@ -1749,6 +1754,329 @@ TEST_P(DCLayerOverlayTest, MultipleYUVOverlaysIntersected) {
     }
 
     EXPECT_EQ(1, overlay_cnt);
+  }
+}
+
+TEST_P(DCLayerOverlayTest, HDR10VideoOverlay) {
+  InitializeOverlayProcessor();
+  // Prepare a valid hdr metadata.
+  gfx::HDRMetadata valid_hdr_metadata;
+  valid_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(1000, 400);
+  valid_hdr_metadata.smpte_st_2086 =
+      gfx::HdrMetadataSmpteSt2086(SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+
+  // Device has RGB10A2 overlay support.
+  gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+
+  // Device enabled system HDR feature.
+  overlay_processor_->set_system_hdr_enabled_for_testing(true);
+
+  // Device has video processor support.
+  overlay_processor_->set_has_p010_video_processor_support_for_testing(true);
+
+  // Video playback in fullscreen mode.
+  overlay_processor_->SetIsPageFullscreen(true);
+
+  // Frame 1 should promote overlay as all conditions satisfied.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should promote overlays.
+    EXPECT_EQ(1U, dc_layer_list.size());
+  }
+
+  // Frame 2 should skip overlay as bit depth not satisfied.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 8bit NV12 content (not satisfied).
+    video_quad->bits_per_channel = 8;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+  }
+
+  // Frame 3 should skip overlay as hdr metadata is invalid.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has invalid HDR metadata (not satisfied).
+    gfx::HDRMetadata invalid_hdr_metadata;
+    invalid_hdr_metadata.cta_861_3 = gfx::HdrMetadataCta861_3(0, 400);
+    video_quad->hdr_metadata = invalid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+  }
+
+  // Frame 4 should skip overlay as color space not satisfied.
+  {
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has invalid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR colorspace but not in PQ transfer (not satisfied).
+    video_quad->video_color_space = gfx::ColorSpace::CreateHLG();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+  }
+
+  // Frame 5 should skip overlay as not in fullscreen mode.
+  {
+    overlay_processor_->SetIsPageFullscreen(false);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+
+    // Recover config.
+    overlay_processor_->SetIsPageFullscreen(true);
+  }
+
+  // Frame 6 should skip overlay as no P010 video processor support.
+  {
+    overlay_processor_->set_has_p010_video_processor_support_for_testing(false);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+
+    // Recover config.
+    overlay_processor_->set_has_p010_video_processor_support_for_testing(true);
+  }
+
+  // Frame 7 should skip overlay as system HDR is not enabled.
+  {
+    overlay_processor_->set_system_hdr_enabled_for_testing(false);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+
+    // Recover config.
+    overlay_processor_->set_system_hdr_enabled_for_testing(true);
+  }
+
+  // Frame 8 should skip overlay as no rgb10a2 overlay support.
+  {
+    gl::SetDirectCompositionScaledOverlaysSupportedForTesting(false);
+
+    auto pass = CreateRenderPass();
+    pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+    YUVVideoDrawQuad* video_quad = CreateFullscreenCandidateYUVVideoQuad(
+        resource_provider_.get(), child_resource_provider_.get(),
+        child_provider_.get(), pass->shared_quad_state_list.back(), pass.get());
+
+    // Content is 10bit P010 content.
+    video_quad->bits_per_channel = 10;
+
+    // Content has valid HDR metadata.
+    video_quad->hdr_metadata = valid_hdr_metadata;
+
+    // Content has HDR10 colorspace.
+    video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+
+    OverlayCandidateList dc_layer_list;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
+    OverlayProcessorInterface::FilterOperationsMap render_pass_backdrop_filters;
+    damage_rect_ = gfx::Rect(0, 0, 220, 220);
+    AggregatedRenderPassList pass_list;
+    pass_list.push_back(std::move(pass));
+    SurfaceDamageRectList surface_damage_rect_list;
+
+    overlay_processor_->ProcessForOverlays(
+        resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
+        render_pass_filters, render_pass_backdrop_filters,
+        std::move(surface_damage_rect_list), GetOutputSurfacePlane(),
+        &dc_layer_list, &damage_rect_, &content_bounds_);
+
+    // Should skip overlays.
+    EXPECT_EQ(0U, dc_layer_list.size());
+
+    // Recover config.
+    gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
   }
 }
 

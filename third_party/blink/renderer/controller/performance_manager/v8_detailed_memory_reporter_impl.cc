@@ -51,16 +51,14 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
     return true;
   }
 
-  void MeasurementComplete(
-      const std::vector<std::pair<v8::Local<v8::Context>, size_t>>&
-          context_sizes_in_bytes,
-      size_t unattributed_size_in_bytes) override {
+  void MeasurementComplete(v8::MeasureMemoryDelegate::Result result) override {
     DCHECK(IsMainThread());
     mojom::blink::PerIsolateV8MemoryUsagePtr isolate_memory_usage =
         mojom::blink::PerIsolateV8MemoryUsage::New();
-    for (const auto& context_and_size : context_sizes_in_bytes) {
-      const v8::Local<v8::Context>& context = context_and_size.first;
-      const size_t size = context_and_size.second;
+    DCHECK_EQ(result.contexts.size(), result.sizes_in_bytes.size());
+    for (size_t i = 0; i < result.contexts.size(); ++i) {
+      const v8::Local<v8::Context>& context = result.contexts[i];
+      const size_t size = result.sizes_in_bytes[i];
 
       LocalFrame* frame = ToLocalFrameIfNotDetached(context);
 
@@ -90,7 +88,7 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));
     }
-    isolate_memory_usage->shared_bytes_used = unattributed_size_in_bytes;
+    isolate_memory_usage->shared_bytes_used = result.unattributed_size_in_bytes;
     std::move(callback_).Run(std::move(isolate_memory_usage));
   }
 

@@ -11,8 +11,13 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/android/hats/test/test_survey_utils_bridge.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/window_android.h"
 
@@ -71,14 +76,23 @@ class SurveyClientAndroidTest : public testing::Test {
   SurveyClientAndroidTest& operator=(const SurveyClientAndroidTest&) = delete;
 
  protected:
-  base::test::SingleThreadTaskEnvironment task_environment_{
+  content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   SurveyClientAndroidTest() = default;
 
-  void SetUp() override { TestSurveyUtilsBridge::SetUpJavaTestSurveyFactory(); }
+  void SetUp() override {
+    testing::Test::SetUp();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile("test_profile");
+    TestSurveyUtilsBridge::SetUpJavaTestSurveyFactory();
+  }
 
   std::unique_ptr<SurveyClientAndroid> survey_client_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 TEST_F(SurveyClientAndroidTest, CreateSurveyClient) {
@@ -87,9 +101,8 @@ TEST_F(SurveyClientAndroidTest, CreateSurveyClient) {
   JNIEnv* env = base::android::AttachCurrentThread();
   std::unique_ptr<TestSurveyUiDelegate> delegate =
       std::make_unique<TestSurveyUiDelegate>(env);
-
-  survey_client_ =
-      std::make_unique<SurveyClientAndroid>(kTestSurveyTrigger, delegate.get());
+  survey_client_ = std::make_unique<SurveyClientAndroid>(
+      kTestSurveyTrigger, delegate.get(), profile_);
 
   survey_client_->LaunchSurvey(window->get(),
                                kTestSurveyProductSpecificBitsData,

@@ -488,11 +488,10 @@ class AdbParser : public SimpleHttpServer::Parser,
         buffer = std::string();
     }
 
-    int size = response.size();
-    if (size > 0) {
-      static const char kHexChars[] = "0123456789ABCDEF";
-      for (int i = 3; i >= 0; i--)
-        buffer += kHexChars[ (size >> 4*i) & 0x0f ];
+    if (size_t size = response.size(); size > 0) {
+      CHECK_LE(size, 0xffffu);
+      base::AppendHexEncodedByte(static_cast<uint8_t>(size >> 8), buffer);
+      base::AppendHexEncodedByte(static_cast<uint8_t>(size), buffer);
       if (flush_mode_ == FlushWithSize) {
           callback_.Run(buffer);
           buffer = std::string();

@@ -484,6 +484,18 @@ std::string MetricsService::GetClientId() const {
   return state_manager_->client_id();
 }
 
+int MetricsService::GetLowEntropySource() {
+  return state_manager_->GetLowEntropySource();
+}
+
+int MetricsService::GetOldLowEntropySource() {
+  return state_manager_->GetOldLowEntropySource();
+}
+
+int MetricsService::GetPseudoLowEntropySource() {
+  return state_manager_->GetPseudoLowEntropySource();
+}
+
 void MetricsService::SetExternalClientId(const std::string& id) {
   state_manager_->SetExternalClientId(id);
 }

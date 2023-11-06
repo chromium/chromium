@@ -206,7 +206,7 @@ class AlarmManager : public BrowserContextKeyedAPI,
   // Syncs our alarm data for the given extension to/from the state storage.
   void WriteToStorage(const std::string& extension_id);
   void ReadFromStorage(const std::string& extension_id,
-                       bool is_unpacked,
+                       base::TimeDelta min_delay,
                        absl::optional<base::Value> value);
 
   // Set the timer to go off at the specified |time|, and set |next_poll_time|

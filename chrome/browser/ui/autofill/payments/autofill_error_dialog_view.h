@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_ERROR_DIALOG_VIEW_H_
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace autofill {
 
 class AutofillErrorDialogController;
@@ -21,7 +25,8 @@ class AutofillErrorDialogView {
 
   // Factory function for creating and showing the view.
   static AutofillErrorDialogView* CreateAndShow(
-      AutofillErrorDialogController* controller);
+      AutofillErrorDialogController* controller,
+      content::WebContents* web_contents);
 };
 
 }  // namespace autofill

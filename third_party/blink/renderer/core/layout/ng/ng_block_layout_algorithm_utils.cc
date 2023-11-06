@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm_utils.h"
 
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 
 namespace blink {
@@ -12,12 +12,12 @@ namespace blink {
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
     const BfcOffset& origin_bfc_offset,
-    const NGExclusionSpace& exclusion_space,
+    const ExclusionSpace& exclusion_space,
     LayoutUnit child_available_inline_size) {
   const TextDirection direction = container_style.Direction();
 
   // Find a layout opportunity, where we would have placed a zero-sized line.
-  NGLayoutOpportunity opportunity = exclusion_space.FindLayoutOpportunity(
+  LayoutOpportunity opportunity = exclusion_space.FindLayoutOpportunity(
       origin_bfc_offset, child_available_inline_size);
 
   LayoutUnit child_line_offset = IsLtr(direction)

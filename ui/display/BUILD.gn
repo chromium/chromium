@@ -13,6 +13,7 @@ component("display_features") {
     "display_features.h",
   ]
   defines = [ "IS_DISPLAY_FEATURES_IMPL" ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -101,6 +102,8 @@ component("display") {
   }
 
   defines = [ "DISPLAY_IMPLEMENTATION" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     ":display_features",

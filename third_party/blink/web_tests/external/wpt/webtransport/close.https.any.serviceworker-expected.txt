@@ -1,14 +1,16 @@
 This is a testharness.js-based test.
-PASS close
-PASS close without waiting for ready
-PASS close with code and reason
-PASS close with code and long reason
-PASS server initiated closure without code and reason
-PASS server initiated closure with code and reason
-PASS server initiated connection closure
-FAIL opening unidirectional stream before ready promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
-FAIL opening bidirectional stream before ready promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
-PASS server initiated closure while opening unidirectional stream before ready
-PASS server initiated closure while opening bidirectional stream before ready
+[PASS] close
+[PASS] close without waiting for ready
+[PASS] close with code and reason
+[PASS] close with code and long reason
+[PASS] server initiated closure without code and reason
+[PASS] server initiated closure with code and reason
+[PASS] server initiated connection closure
+[FAIL] opening unidirectional stream before ready
+  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
+[FAIL] opening bidirectional stream before ready
+  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
+[PASS] server initiated closure while opening unidirectional stream before ready
+[PASS] server initiated closure while opening bidirectional stream before ready
 Harness: the test ran to completion.
 

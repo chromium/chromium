@@ -89,19 +89,21 @@ FileSystemAccessChangeSource::AsWeakPtr() {
 
 void FileSystemAccessChangeSource::NotifyOfChange(
     const storage::FileSystemURL& changed_url,
-    bool error) {
+    bool error,
+    const ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(scope().Contains(changed_url));
   CHECK(changed_url.is_valid());
 
   for (RawChangeObserver& observer : observers_) {
-    observer.OnRawChange(changed_url, error);
+    observer.OnRawChange(changed_url, error, change_info);
   }
 }
 
 void FileSystemAccessChangeSource::NotifyOfChange(
     const base::FilePath& relative_path,
-    bool error) {
+    bool error,
+    const ChangeInfo& change_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!relative_path.IsAbsolute());
   CHECK(!relative_path.ReferencesParent());
@@ -111,7 +113,8 @@ void FileSystemAccessChangeSource::NotifyOfChange(
 
   for (RawChangeObserver& observer : observers_) {
     observer.OnRawChange(
-        ToFileSystemURL(*file_system_context_, root_url, relative_path), error);
+        ToFileSystemURL(*file_system_context_, root_url, relative_path), error,
+        change_info);
   }
 }
 

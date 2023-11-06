@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -92,7 +91,7 @@ public class MediaSessionTabHelper implements MediaSessionHelper.Delegate {
 
     @Override
     public BrowserContextHandle getBrowserContextHandle() {
-        return Profile.fromWebContents(mTab.getWebContents());
+        return mTab.getProfile();
     }
 
     @Override

@@ -112,7 +112,7 @@ MediaHistoryPlaybackTable::GetPlaybackRows() {
     playback->has_video = statement.ColumnBool(3);
     playback->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
                                       base::Seconds(statement.ColumnInt64(4)))
-                                      .ToJsTime();
+                                      .InMillisecondsFSinceUnixEpoch();
 
     playbacks.push_back(std::move(playback));
   }

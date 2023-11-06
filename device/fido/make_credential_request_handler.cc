@@ -871,8 +871,7 @@ void MakeCredentialRequestHandler::HandleResponse(
 
   if (status != CtapDeviceResponseCode::kSuccess) {
     FIDO_LOG(ERROR) << "Failing make credential request due to status "
-                    << static_cast<int>(status) << " from "
-                    << authenticator->GetDisplayName();
+                    << status << " from " << authenticator->GetDisplayName();
     std::move(completion_callback_)
         .Run(*maybe_result, absl::nullopt, authenticator);
     return;

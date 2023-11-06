@@ -11,6 +11,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/version.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
@@ -95,7 +96,7 @@ class RulesetInfo {
 
 // Helper to pass information related to the ruleset being loaded.
 struct LoadRequestData {
-  explicit LoadRequestData(ExtensionId extension_id);
+  LoadRequestData(ExtensionId extension_id, base::Version extension_version);
   LoadRequestData(const LoadRequestData&) = delete;
   LoadRequestData(LoadRequestData&&);
 
@@ -104,7 +105,13 @@ struct LoadRequestData {
 
   ~LoadRequestData();
 
+  // The ID of the extension that `rulesets` belongs to.
   ExtensionId extension_id;
+
+  // The version of the extension that is trying to load `rulesets`.
+  base::Version extension_version;
+
+  // The rulesets that are being loaded.
   std::vector<RulesetInfo> rulesets;
 };
 

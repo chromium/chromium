@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 #include "components/autofill/core/common/html_field_types.h"
 
+#include <string_view>
+
 #include "base/notreached.h"
-#include "base/strings/string_piece.h"
 
 namespace autofill {
 
-base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
+std::string_view FieldTypeToStringView(HtmlFieldType type) {
   switch (type) {
     case HtmlFieldType::kUnspecified:
       return "HTML_TYPE_UNSPECIFIED";
@@ -116,7 +117,11 @@ base::StringPiece FieldTypeToStringPiece(HtmlFieldType type) {
   return "";
 }
 
-base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode) {
+std::string FieldTypeToString(HtmlFieldType type) {
+  return std::string(FieldTypeToStringView(type));
+}
+
+std::string_view HtmlFieldModeToStringView(HtmlFieldMode mode) {
   switch (mode) {
     case HtmlFieldMode::kNone:
       return "";
@@ -127,6 +132,10 @@ base::StringPiece HtmlFieldModeToStringPiece(HtmlFieldMode mode) {
   }
   NOTREACHED();
   return "";
+}
+
+std::string HtmlFieldModeToString(HtmlFieldMode mode) {
+  return std::string(HtmlFieldModeToStringView(mode));
 }
 
 }  // namespace autofill

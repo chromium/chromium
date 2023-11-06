@@ -52,6 +52,24 @@ BASE_FEATURE(kDismissPromos,
              "DismissNtpPromos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, all NTP "realbox" Chrome Refresh features will be enabled
+BASE_FEATURE(kRealboxCr23All,
+             "NtpRealboxCr23All",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, NTP "realbox" expanded state icon CR23 updates will appear.
+// Includes CR23 icons as well as backgrounds for AiS and pedal suggestions and
+// updated entity corner radii.
+BASE_FEATURE(kRealboxCr23ExpandedStateIcons,
+             "NtpRealboxCr23ExpandedStateIcons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, NTP "realbox" expanded state layout CR23 updates will
+// appear.
+BASE_FEATURE(kRealboxCr23ExpandedStateLayout,
+             "NtpRealboxCr23ExpandedStateLayout",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the NTP "realbox" will have same border/drop shadow in hover
 // state as searchbox.
 BASE_FEATURE(kRealboxMatchSearchboxTheme,
@@ -135,7 +153,7 @@ BASE_FEATURE(kNtpLogo, "NtpLogo", base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, logo will fill up less vertical space.
 BASE_FEATURE(kNtpReducedLogoSpace,
              "NtpReducedLogoSpace",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, middle slot promo will be shown.
 BASE_FEATURE(kNtpMiddleSlotPromo,
@@ -156,7 +174,7 @@ BASE_FEATURE(kNtpModulesLoadTimeoutMilliseconds,
 // If true, extends width of modules if space allows.
 BASE_FEATURE(kNtpWideModules,
              "NtpWideModules",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set param "NtpModulesOrderParam".
 BASE_FEATURE(kNtpModulesOrder,
@@ -255,7 +273,7 @@ BASE_FEATURE(kNtpLensDirectUpload,
 // If enabled, recipe tasks module will be shown.
 BASE_FEATURE(kNtpRecipeTasksModule,
              "NtpRecipeTasksModule",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
@@ -268,12 +286,12 @@ BASE_FEATURE(kNtpShortcuts, "NtpShortcuts", base::FEATURE_ENABLED_BY_DEFAULT);
 // If enabled, shortcuts will be shown in a wide single row.
 BASE_FEATURE(kNtpSingleRowShortcuts,
              "NtpSingleRowShortcuts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the History clusters module will be shown.
 BASE_FEATURE(kNtpHistoryClustersModule,
              "NtpHistoryClustersModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Dummy feature to set kNtpHistoryClustersModuleBeginTimeDurationHoursParam.
 BASE_FEATURE(kNtpHistoryClustersModuleBeginTimeDuration,
@@ -310,7 +328,7 @@ BASE_FEATURE(kNtpHistoryClustersModuleMaxClusters,
 // If enabled, module headers will display an associated icon.
 BASE_FEATURE(kNtpModulesHeaderIcon,
              "NtpModulesHeaderIcon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled a suggestion chip will show in the header for Quests V2.
 BASE_FEATURE(kNtpHistoryClustersModuleSuggestionChipHeader,
@@ -327,11 +345,11 @@ BASE_FEATURE(kNtpHistoryClustersModuleDiscounts,
 // available.
 BASE_FEATURE(kNtpChromeCartInHistoryClusterModule,
              "NtpChromeCartInHistoryClusterModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpHistoryClustersModuleUseModelRanking,
              "NtpHistoryClustersModuleUseModelRanking",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNtpHistoryClustersModuleTextOnly,
              "NtpHistoryClustersModuleTextOnly",

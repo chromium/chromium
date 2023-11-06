@@ -104,26 +104,26 @@ base::apple::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
 
   base::apple::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
       [MTLTextureDescriptor new]);
-  [mtl_tex_desc setTextureType:MTLTextureType2D];
-  [mtl_tex_desc
+  [mtl_tex_desc.get() setTextureType:MTLTextureType2D];
+  [mtl_tex_desc.get()
       setUsage:MTLTextureUsageShaderRead | MTLTextureUsageRenderTarget];
-  [mtl_tex_desc setPixelFormat:mtl_pixel_format];
-  [mtl_tex_desc setWidth:size.width()];
-  [mtl_tex_desc setHeight:size.height()];
-  [mtl_tex_desc setDepth:1];
-  [mtl_tex_desc setMipmapLevelCount:1];
-  [mtl_tex_desc setArrayLength:1];
-  [mtl_tex_desc setSampleCount:1];
+  [mtl_tex_desc.get() setPixelFormat:mtl_pixel_format];
+  [mtl_tex_desc.get() setWidth:size.width()];
+  [mtl_tex_desc.get() setHeight:size.height()];
+  [mtl_tex_desc.get() setDepth:1];
+  [mtl_tex_desc.get() setMipmapLevelCount:1];
+  [mtl_tex_desc.get() setArrayLength:1];
+  [mtl_tex_desc.get() setSampleCount:1];
   // TODO(https://crbug.com/952063): For zero-copy resources that are populated
   // on the CPU (e.g, video frames), it may be that MTLStorageModeManaged will
   // be more appropriate.
 #if BUILDFLAG(IS_IOS)
   // On iOS we are using IOSurfaces which must use MTLStorageModeShared.
-  [mtl_tex_desc setStorageMode:MTLStorageModeShared];
+  [mtl_tex_desc.get() setStorageMode:MTLStorageModeShared];
 #else
-  [mtl_tex_desc setStorageMode:MTLStorageModeManaged];
+  [mtl_tex_desc.get() setStorageMode:MTLStorageModeManaged];
 #endif
-  mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc
+  mtl_texture.reset([mtl_device newTextureWithDescriptor:mtl_tex_desc.get()
                                                iosurface:io_surface
                                                    plane:plane_index]);
   DCHECK(mtl_texture);
@@ -541,7 +541,7 @@ bool OverlayIOSurfaceRepresentation::IsInUseByWindowServer() const {
   if (backing()->usage() & SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX)
     return false;
 
-  return IOSurfaceIsInUse(io_surface_);
+  return IOSurfaceIsInUse(io_surface_.get());
 }
 
 #if BUILDFLAG(USE_DAWN)
@@ -734,10 +734,10 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
                          std::move(buffer_usage)),
       io_surface_(std::move(io_surface)),
       io_surface_plane_(io_surface_plane),
-      io_surface_size_(IOSurfaceGetWidth(io_surface_),
-                       IOSurfaceGetHeight(io_surface_)),
-      io_surface_format_(IOSurfaceGetPixelFormat(io_surface_)),
-      io_surface_num_planes_(IOSurfaceGetPlaneCount(io_surface_)),
+      io_surface_size_(IOSurfaceGetWidth(io_surface_.get()),
+                       IOSurfaceGetHeight(io_surface_.get())),
+      io_surface_format_(IOSurfaceGetPixelFormat(io_surface_.get())),
+      io_surface_num_planes_(IOSurfaceGetPlaneCount(io_surface_.get())),
       io_surface_id_(io_surface_id),
       gl_target_(gl_target),
       framebuffer_attachment_angle_(framebuffer_attachment_angle),
@@ -771,24 +771,24 @@ bool IOSurfaceImageBacking::ReadbackToMemory(
     const std::vector<SkPixmap>& pixmaps) {
   CHECK_LE(pixmaps.size(), 3u);
 
-  ScopedIOSurfaceLock io_surface_lock(io_surface_, /*options=*/0);
+  ScopedIOSurfaceLock io_surface_lock(io_surface_.get(), /*options=*/0);
 
   for (int plane_index = 0; plane_index < static_cast<int>(pixmaps.size());
        ++plane_index) {
     const gfx::Size plane_size = format().GetPlaneSize(plane_index, size());
 
     const void* io_surface_base_address =
-        IOSurfaceGetBaseAddressOfPlane(io_surface_, plane_index);
+        IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), plane_index);
     DCHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
-                                      io_surface_, plane_index)));
+                                      io_surface_.get(), plane_index)));
     DCHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
-                                       io_surface_, plane_index)));
+                                       io_surface_.get(), plane_index)));
 
     int io_surface_row_bytes = 0;
     int dst_bytes_per_row = 0;
 
     base::CheckedNumeric<int> checked_io_surface_row_bytes =
-        IOSurfaceGetBytesPerRowOfPlane(io_surface_, plane_index);
+        IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), plane_index);
     base::CheckedNumeric<int> checked_dst_bytes_per_row =
         pixmaps[plane_index].rowBytes();
 
@@ -818,24 +818,24 @@ bool IOSurfaceImageBacking::UploadFromMemory(
     const std::vector<SkPixmap>& pixmaps) {
   CHECK_LE(pixmaps.size(), 3u);
 
-  ScopedIOSurfaceLock io_surface_lock(io_surface_, /*options=*/0);
+  ScopedIOSurfaceLock io_surface_lock(io_surface_.get(), /*options=*/0);
 
   for (int plane_index = 0; plane_index < static_cast<int>(pixmaps.size());
        ++plane_index) {
     const gfx::Size plane_size = format().GetPlaneSize(plane_index, size());
 
     void* io_surface_base_address =
-        IOSurfaceGetBaseAddressOfPlane(io_surface_, plane_index);
+        IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), plane_index);
     DCHECK_EQ(plane_size.width(), static_cast<int>(IOSurfaceGetWidthOfPlane(
-                                      io_surface_, plane_index)));
+                                      io_surface_.get(), plane_index)));
     DCHECK_EQ(plane_size.height(), static_cast<int>(IOSurfaceGetHeightOfPlane(
-                                       io_surface_, plane_index)));
+                                       io_surface_.get(), plane_index)));
 
     int io_surface_row_bytes = 0;
     int src_bytes_per_row = 0;
 
     base::CheckedNumeric<int> checked_io_surface_row_bytes =
-        IOSurfaceGetBytesPerRowOfPlane(io_surface_, plane_index);
+        IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), plane_index);
     base::CheckedNumeric<int> checked_src_bytes_per_row =
         pixmaps[plane_index].rowBytes();
 
@@ -942,12 +942,12 @@ base::trace_event::MemoryAllocatorDump* IOSurfaceImageBacking::OnMemoryDump(
   size_t size_bytes = 0u;
   if (format().is_single_plane()) {
     size_bytes =
-        IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_) *
-        IOSurfaceGetHeightOfPlane(io_surface_, io_surface_plane_);
+        IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), io_surface_plane_) *
+        IOSurfaceGetHeightOfPlane(io_surface_.get(), io_surface_plane_);
   } else {
     for (int plane = 0; plane < format().NumberOfPlanes(); plane++) {
-      size_bytes += IOSurfaceGetBytesPerRowOfPlane(io_surface_, plane) *
-                    IOSurfaceGetHeightOfPlane(io_surface_, plane);
+      size_bytes += IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), plane) *
+                    IOSurfaceGetHeightOfPlane(io_surface_.get(), plane);
     }
   }
 
@@ -1168,7 +1168,7 @@ void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {
   }
 
   uint32_t old_state;
-  IOSurfaceSetPurgeable(io_surface_, purgeable, &old_state);
+  IOSurfaceSetPurgeable(io_surface_.get(), purgeable, &old_state);
 }
 
 bool IOSurfaceImageBacking::IsPurgeable() const {
@@ -1312,8 +1312,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
       }
 
       auto egl_surface = gl::ScopedEGLSurfaceIOSurface::Create(
-          egl_state->egl_display_, egl_state->GetGLTarget(), io_surface_, plane,
-          buffer_format);
+          egl_state->egl_display_, egl_state->GetGLTarget(), io_surface_.get(),
+          plane, buffer_format);
       if (!egl_surface) {
         LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
         return false;
@@ -1464,12 +1464,13 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeingDestroyed(
 
 bool IOSurfaceImageBacking::InitializePixels(
     base::span<const uint8_t> pixel_data) {
-  ScopedIOSurfaceLock io_surface_lock(io_surface_, kIOSurfaceLockAvoidSync);
+  ScopedIOSurfaceLock io_surface_lock(io_surface_.get(),
+                                      kIOSurfaceLockAvoidSync);
 
   uint8_t* dst_data = reinterpret_cast<uint8_t*>(
-      IOSurfaceGetBaseAddressOfPlane(io_surface_, io_surface_plane_));
+      IOSurfaceGetBaseAddressOfPlane(io_surface_.get(), io_surface_plane_));
   size_t dst_stride =
-      IOSurfaceGetBytesPerRowOfPlane(io_surface_, io_surface_plane_);
+      IOSurfaceGetBytesPerRowOfPlane(io_surface_.get(), io_surface_plane_);
 
   const uint8_t* src_data = pixel_data.data();
   const size_t src_stride = (format().BitsPerPixel() / 8) * size().width();

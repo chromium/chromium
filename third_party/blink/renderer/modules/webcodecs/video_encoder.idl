@@ -7,7 +7,6 @@
 [
     Exposed=(Window,DedicatedWorker),
     SecureContext,
-    RuntimeEnabled=WebCodecs,
     ActiveScriptWrappable
 ] interface VideoEncoder : EventTarget {
     [CallWith=ScriptState, RaisesException, MeasureAs=WebCodecsVideoEncoder]
@@ -19,7 +18,6 @@
 
     // Fires to signal a decrease in encodeQueueSize. Will fire at most once
     // for a given turn of the event loop.
-    [RuntimeEnabled=WebCodecsDequeueEvent]
     attribute EventHandler ondequeue;
 
     // Enqueues a control message to configure the video encoder for encoding

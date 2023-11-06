@@ -212,8 +212,10 @@ class QuotaManagerImplTest : public testing::Test {
 
   // Creates buckets in QuotaDatabase if they don't exist yet, and sets usage
   // to the `client`.
-  void RegisterClientBucketData(MockQuotaClient* client,
-                                base::span<const ClientBucketData> mock_data) {
+  void RegisterClientBucketData(
+      MockQuotaClient* client,
+      base::span<const ClientBucketData> mock_data,
+      std::map<BucketLocator, int64_t>* buckets_data_out = nullptr) {
     std::map<BucketLocator, int64_t> buckets_data;
     for (const ClientBucketData& data : mock_data) {
       base::test::TestFuture<QuotaErrorOr<BucketInfo>> future;
@@ -224,6 +226,9 @@ class QuotaManagerImplTest : public testing::Test {
       ASSERT_OK_AND_ASSIGN(auto bucket, future.Take());
       buckets_data.insert(std::pair<BucketLocator, int64_t>(
           bucket.ToBucketLocator(), data.usage));
+    }
+    if (buckets_data_out) {
+      *buckets_data_out = buckets_data;
     }
     client->AddBucketsData(buckets_data);
   }
@@ -666,7 +671,7 @@ class QuotaManagerImplTest : public testing::Test {
 
   base::Time IncrementMockTime() {
     ++mock_time_counter_;
-    return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
+    return base::Time::FromSecondsSinceUnixEpoch(mock_time_counter_ * 10.0);
   }
 
   scoped_refptr<MockSpecialStoragePolicy> mock_special_storage_policy_;
@@ -815,6 +820,71 @@ TEST_F(QuotaManagerImplTest, GetUsageInfo) {
                            UsageInfo("foo.com", kTemp, 10 + 15 + 30 + 35),
                            UsageInfo("bar.com", kTemp, 20),
                            UsageInfo("bar.com", kSync, 50)));
+}
+
+TEST_F(QuotaManagerImplTest, UpdateUsageInfo) {
+  static const ClientBucketData kData1[] = {
+      {"http://foo.com/", kDefaultBucketName, kTemp, 10},
+      {"http://bar.com/", kDefaultBucketName, kTemp, 50},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp});
+  std::map<BucketLocator, int64_t> buckets_data;
+  RegisterClientBucketData(fs_client, kData1, &buckets_data);
+  ASSERT_EQ(buckets_data.size(), 2u);
+  BucketLocator first_bucket_locator = buckets_data.begin()->first;
+
+  {
+    base::test::TestFuture<UsageInfoEntries> future;
+    quota_manager_impl()->GetUsageInfo(future.GetCallback());
+    auto entries = future.Get();
+
+    EXPECT_THAT(entries,
+                testing::UnorderedElementsAre(UsageInfo("foo.com", kTemp, 10),
+                                              UsageInfo("bar.com", kTemp, 50)));
+
+    // The quota client was queried once for each bucket.
+    EXPECT_EQ(2U, fs_client->get_bucket_usage_call_count());
+  }
+
+  // Notify of a change with a provided byte delta.
+  quota_manager_impl()->NotifyBucketModified(
+      QuotaClientType::kFileSystem, first_bucket_locator, /*delta=*/7,
+      base::Time::Now(), base::DoNothing());
+
+  {
+    base::test::TestFuture<UsageInfoEntries> future;
+    quota_manager_impl()->GetUsageInfo(future.GetCallback());
+    auto entries = future.Get();
+
+    EXPECT_THAT(entries,
+                testing::UnorderedElementsAre(UsageInfo("foo.com", kTemp, 17),
+                                              UsageInfo("bar.com", kTemp, 50)));
+
+    // The quota client was not queried any more times since the values were
+    // cached and then updated.
+    EXPECT_EQ(2U, fs_client->get_bucket_usage_call_count());
+  }
+
+  // Dirty the cache by passing a null delta.
+  quota_manager_impl()->NotifyBucketModified(
+      QuotaClientType::kFileSystem, first_bucket_locator,
+      /*delta=*/absl::nullopt, base::Time::Now(), base::DoNothing());
+
+  {
+    base::test::TestFuture<UsageInfoEntries> future;
+    quota_manager_impl()->GetUsageInfo(future.GetCallback());
+    auto entries = future.Get();
+
+    // Since the cache was tossed out, the mock quota client is consulted again
+    // for its usage.
+    EXPECT_THAT(entries,
+                testing::UnorderedElementsAre(UsageInfo("foo.com", kTemp, 10),
+                                              UsageInfo("bar.com", kTemp, 50)));
+
+    // The quota client was queried one more time.
+    EXPECT_EQ(3U, fs_client->get_bucket_usage_call_count());
+  }
 }
 
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {

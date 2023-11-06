@@ -41,6 +41,10 @@ bool RendererMainPlatformDelegate::EnableSandbox() {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   sandbox::BaselinePolicyAndroid::RuntimeOptions options(
       starter.GetDefaultBaselineOptions());
+  if (base::FeatureList::IsEnabled(
+          sandbox::policy::features::kRestrictRendererPoliciesInBaseline)) {
+    options.should_restrict_renderer_syscalls = true;
+  }
   if (sandbox::policy::SandboxTypeFromCommandLine(
           *base::CommandLine::ForCurrentProcess()) ==
           sandbox::mojom::Sandbox::kRenderer &&

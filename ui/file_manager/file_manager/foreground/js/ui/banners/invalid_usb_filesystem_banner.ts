@@ -8,7 +8,7 @@
  * @suppress {checkTypes}
  */
 
-import {str} from '../../../../common/js/util.js';
+import {str} from '../../../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
 
 import {getTemplate} from './invalid_usb_filesystem_banner.html.js';

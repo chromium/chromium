@@ -43,7 +43,7 @@ constexpr base::TimeDelta kPresentationFlushTimerStopThreshold =
 constexpr char kBoundsRectNanOrInf[] =
     "Overlay bounds_rect is invalid (NaN or infinity).";
 
-bool potential_compositor_buffer_lock = true;
+bool potential_compositor_buffer_lock = false;
 
 bool ValidateRect(const gfx::RectF& rect) {
   return !std::isnan(rect.x()) && !std::isnan(rect.y()) &&
@@ -113,14 +113,7 @@ WaylandFrame::~WaylandFrame() = default;
 
 WaylandFrameManager::WaylandFrameManager(WaylandWindow* window,
                                          WaylandConnection* connection)
-    : window_(window), connection_(connection), weak_factory_(this) {
-  if (!connection->zaura_shell() ||
-      connection->zaura_shell()->HasBugFix(1358908)) {
-    // TODO(msisov): if this gets removed at some point, the
-    // WaylandSurfaceFactoryTest can also stop sending this bug fix.
-    potential_compositor_buffer_lock = false;
-  }
-}
+    : window_(window), connection_(connection), weak_factory_(this) {}
 
 WaylandFrameManager::~WaylandFrameManager() {
   ClearStates();

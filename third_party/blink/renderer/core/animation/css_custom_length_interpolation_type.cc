@@ -19,11 +19,11 @@ InterpolationValue CSSCustomLengthInterpolationType::MaybeConvertValue(
     const CSSValue& value,
     const StyleResolverState*,
     ConversionCheckers&) const {
-  std::unique_ptr<InterpolableLength> maybe_length =
+  InterpolableLength* maybe_length =
       InterpolableLength::MaybeConvertCSSValue(value);
   if (!maybe_length || maybe_length->HasPercentage())
     return nullptr;
-  return InterpolationValue(std::move(maybe_length));
+  return InterpolationValue(maybe_length);
 }
 
 const CSSValue* CSSCustomLengthInterpolationType::CreateCSSValue(

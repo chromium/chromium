@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
@@ -125,12 +126,24 @@ class FakeWebContentsManager : public WebContentsManager {
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);
 
+  using LoadUrlTracker = base::RepeatingCallback<void(
+      content::NavigationController::LoadURLParams& load_url_params,
+      content::WebContents* web_contents,
+      WebAppUrlLoader::UrlComparison url_comparison)>;
+
+  // Specify a `base::RepeatingCallback` that is invoked with the arguments
+  // passed to `WebAppUrlLoader::LoadUrl` whenever it is called on one of the
+  // `WebAppUrlLoader`s created by this class.
+  void TrackLoadUrlCalls(LoadUrlTracker load_url_tracker);
+
   base::WeakPtr<FakeWebContentsManager> GetWeakPtr();
 
  private:
   class FakeUrlLoader;
   class FakeWebAppIconDownloader;
   class FakeWebAppDataRetriever;
+
+  LoadUrlTracker load_url_tracker_ = base::DoNothing();
 
   std::map<GURL, FakeIconState> icon_state_;
   std::map<GURL, FakePageState> page_state_;

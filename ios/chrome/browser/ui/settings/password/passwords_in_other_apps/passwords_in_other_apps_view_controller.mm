@@ -432,41 +432,22 @@ CGFloat const kContentOptimalWidth = 327;
   if (!_actionButton) {
     _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
-          kButtonHorizontalMargin);
-      buttonConfiguration.background.backgroundColor =
-          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-      buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalInsets, kButtonHorizontalMargin, kButtonVerticalInsets,
+        kButtonHorizontalMargin);
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+    buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
 
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      NSAttributedString* attributedTitle = [[NSAttributedString alloc]
-          initWithString:self.actionString
-              attributes:@{NSFontAttributeName : font}];
-      buttonConfiguration.attributedTitle = attributedTitle;
-      buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-      _actionButton.configuration = buttonConfiguration;
-    } else {
-      UIEdgeInsets contentEdgeInsets =
-          UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-      UIEdgeInsets titleEdgeInsets = UIEdgeInsetsMake(
-          0, kButtonHorizontalMargin, 0, kButtonHorizontalMargin);
-      SetContentEdgeInsets(_actionButton, contentEdgeInsets);
-      SetTitleEdgeInsets(_actionButton, titleEdgeInsets);
-      [_actionButton
-          setBackgroundColor:[UIColor
-                                 colorNamed:kGroupedSecondaryBackgroundColor]];
-      UIColor* titleColor = [UIColor colorNamed:kBlueColor];
-      [_actionButton setTitleColor:titleColor forState:UIControlStateNormal];
-      _actionButton.titleLabel.font =
-          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-      [_actionButton setTitle:self.actionString forState:UIControlStateNormal];
-      _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-      _actionButton.titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    }
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:self.actionString
+            attributes:@{NSFontAttributeName : font}];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
+    _actionButton.configuration = buttonConfiguration;
 
     _actionButton.layer.cornerRadius = kPrimaryButtonCornerRadius;
     _actionButton.translatesAutoresizingMaskIntoConstraints = NO;

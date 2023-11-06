@@ -180,15 +180,15 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
   for (const api_pk::ClientCertificateType& cert_type :
        params->details.request.certificate_types) {
     switch (cert_type) {
-      case api_pk::CLIENT_CERTIFICATE_TYPE_ECDSASIGN:
+      case api_pk::ClientCertificateType::kEcdsaSign:
         request.certificate_key_types.push_back(
             net::X509Certificate::kPublicKeyTypeECDSA);
         break;
-      case api_pk::CLIENT_CERTIFICATE_TYPE_RSASIGN:
+      case api_pk::ClientCertificateType::kRsaSign:
         request.certificate_key_types.push_back(
             net::X509Certificate::kPublicKeyTypeRSA);
         break;
-      case api_pk::CLIENT_CERTIFICATE_TYPE_NONE:
+      case api_pk::ClientCertificateType::kNone:
         NOTREACHED();
     }
   }

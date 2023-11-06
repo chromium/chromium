@@ -5,6 +5,7 @@
 #include "base/strings/utf_ostream_operators.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/supports_ostream_operator.h"
 
 std::ostream& std::operator<<(std::ostream& out, const wchar_t* wstr) {
   return out << (wstr ? std::wstring_view(wstr) : std::wstring_view());

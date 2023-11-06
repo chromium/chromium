@@ -125,9 +125,6 @@ const char kArcUseDevCaches[] = "arc-use-dev-caches";
 // Flag that indicates ARC images are formatted with EROFS (go/arcvm-erofs).
 const char kArcErofs[] = "arc-erofs";
 
-// If set, forces ARC apk cache to be enabled for testing.
-const char kArcForceEnableApkCache[] = "arc-force-enable-apk-cache";
-
 // If set, forces post boot dexopt to run immediately without device idle
 // requirement.
 const char kArcForcePostBootDexOpt[] = "arc-force-post-boot-dex-opt";
@@ -220,9 +217,6 @@ const char kAshDeveloperShortcuts[] = "ash-dev-shortcuts";
 // set.
 const char kAshDisableTouchExplorationMode[] =
     "ash-disable-touch-exploration-mode";
-
-// Enable cursor motion blur.
-const char kAshEnableCursorMotionBlur[] = "ash-enable-cursor-motion-blur";
 
 // Enables key bindings to scroll magnified screen.
 const char kAshEnableMagnifierKeyScroller[] =
@@ -833,6 +827,9 @@ const char kBrowserDataMigrationForUser[] = "browser-data-migration-for-user";
 const char kBrowserDataBackwardMigrationForUser[] =
     "browser-data-backward-migration-for-user";
 
+// Supply secret key for Coral feature.
+const char kCoralFeatureKey[] = "coral-feature-key";
+
 // Tells Chrome to forcefully trigger backward data migration.
 extern const char kForceBrowserDataBackwardMigration[] =
     "force-browser-data-backward-migration";
@@ -900,9 +897,6 @@ const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 // Trigger sync engine initialization timeout in OOBE for testing.
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
-
-// Supply secret key for Orca feature
-const char kOrcaKey[] = "orca-key";
 
 // Controls how often the HiddenNetworkHandler class checks for wrongly hidden
 // networks. The interval should be provided in seconds, should follow the
@@ -1101,6 +1095,10 @@ const char kPreventKioskAutolaunchForTesting[] =
 // to download data from the server (which many tests can't achieve).
 const char kAllowDefaultShelfPinLayoutIgnoringSync[] =
     "ash-allow-default-shelf-pin-layout-ignoring-sync";
+
+// On devices that support refresh rate throttling, force the throttling
+// behavior to be active regardless of system state.
+const char kForceRefreshRateThrottle[] = "force-refresh-rate-throttle";
 
 bool IsAuthSessionCryptohomeEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(

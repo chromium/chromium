@@ -10,7 +10,7 @@
 namespace blink {
 
 class ComputedStyle;
-class NGExclusionSpace;
+class ExclusionSpace;
 struct BfcOffset;
 
 // OOF-positioned nodes which were initially inline-level, however are in a
@@ -24,7 +24,7 @@ struct BfcOffset;
 LayoutUnit CalculateOutOfFlowStaticInlineLevelOffset(
     const ComputedStyle& container_style,
     const BfcOffset& origin_bfc_offset,
-    const NGExclusionSpace&,
+    const ExclusionSpace&,
     LayoutUnit child_available_inline_size);
 
 }  // namespace blink

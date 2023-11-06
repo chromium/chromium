@@ -56,7 +56,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
     return;
   }
 
-  base::FilePathWatcher::Callback on_change_callback =
+  base::FilePathWatcher::CallbackWithChangeInfo on_change_callback =
       base::BindRepeating(&FileSystemAccessLocalPathWatcher::OnFilePathChanged,
                           weak_factory_.GetWeakPtr());
 
@@ -74,7 +74,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   };
 
-  watcher_.AsyncCall(&base::FilePathWatcher::WatchWithOptions)
+  watcher_.AsyncCall(&base::FilePathWatcher::WatchWithChangeInfo)
       .WithArgs(
           scope().root_url().path(), std::move(watch_options),
           base::BindPostTaskToCurrentDefault(std::move(on_change_callback)))
@@ -92,6 +92,7 @@ void FileSystemAccessLocalPathWatcher::Initialize(
 }
 
 void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
+    const base::FilePathWatcher::ChangeInfo& change_info,
     const base::FilePath& changed_path,
     bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -108,7 +109,7 @@ void FileSystemAccessLocalPathWatcher::OnFilePathChanged(
     CHECK_EQ(root_path, changed_path);
   }
 
-  NotifyOfChange(relative_path, error);
+  NotifyOfChange(relative_path, error, change_info);
 }
 
 }  // namespace content

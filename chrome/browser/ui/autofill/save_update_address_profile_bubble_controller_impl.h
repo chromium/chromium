@@ -92,7 +92,7 @@ class SaveUpdateAddressProfileBubbleControllerImpl
 
   // Contains the details of the address profile that will be saved if the user
   // accepts.
-  AutofillProfile address_profile_;
+  absl::optional<AutofillProfile> address_profile_;
 
   // Contains the details of the address profile that will be updated if the
   // user accepts the prompt.

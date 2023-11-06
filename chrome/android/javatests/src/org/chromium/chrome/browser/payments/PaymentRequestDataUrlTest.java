@@ -17,22 +17,20 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.util.concurrent.TimeoutException;
 
-/** Web payments test for data URL.  */
+/** Web payments test for data URL. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestDataUrlTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
-            new PaymentRequestTestRule("data:text/html,<html><head>"
-                    + "<meta name=\"viewport\" content=\"width=device-width, initial-scale=0.5, "
-                    + "maximum-scale=0.5, minimum-scale=0.5\"></head><body><button id=\"buy\""
-                    + "onclick=\"try { "
-                    + "(new PaymentRequest([{supportedMethods: 'basic-card'}], "
-                    + "{total: {label: 'Total', "
-                    + " amount: {currency: 'USD', value: '1.00'}}})).show(); "
-                    + "} catch(e) { "
-                    + "document.getElementById('result').innerHTML = e; "
-                    + "}\">Data URL Test</button><div id='result'></div></body></html>");
+            new PaymentRequestTestRule(
+                    "data:text/html,<html><head><meta name=\"viewport\""
+                        + " content=\"width=device-width, initial-scale=0.5, maximum-scale=0.5,"
+                        + " minimum-scale=0.5\"></head><body><button id=\"buy\"onclick=\"try { (new"
+                        + " PaymentRequest([{supportedMethods: 'basic-card'}], {total: {label:"
+                        + " 'Total',  amount: {currency: 'USD', value: '1.00'}}})).show(); }"
+                        + " catch(e) { document.getElementById('result').innerHTML = e; }\">Data"
+                        + " URL Test</button><div id='result'></div></body></html>");
 
     @Test
     @MediumTest

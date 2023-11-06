@@ -67,9 +67,6 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
           .disable_post_sub_buffers_for_onscreen_surfaces) {
     capabilities_.supports_post_sub_buffer = false;
   }
-  if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
-    capabilities_.supports_two_yuv_hardware_overlays = true;
-  }
   capabilities_.pending_swap_params.max_pending_swaps =
       gl_surface_->GetBufferCount() - 1;
   capabilities_.supports_gpu_vsync = gl_surface_->SupportsGpuVSync();

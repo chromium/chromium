@@ -39,7 +39,7 @@ class SharedDictionaryDiskCacheTest : public testing::Test {
     auto disk_cache = std::make_unique<SharedDictionaryDiskCache>();
     disk_cache->Initialize(directory_path_,
 #if BUILDFLAG(IS_ANDROID)
-                           /*app_status_listener=*/nullptr,
+                           disk_cache::ApplicationStatusListenerGetter(),
 #endif  // BUILDFLAG(IS_ANDROID)
                            /*file_operations_factory=*/nullptr);
     return disk_cache;

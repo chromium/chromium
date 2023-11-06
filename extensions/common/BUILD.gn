@@ -179,6 +179,27 @@ mojom("mojom") {
       traits_sources =
           [ "//extensions/common/mojom/stack_frame_mojom_traits.cc" ]
     },
+    {
+      types = [
+        {
+          mojom = "extensions.mojom.Message"
+          cpp = "::extensions::Message"
+          move_only = true
+        },
+        {
+          mojom = "extensions.mojom.PortId"
+          cpp = "::extensions::PortId"
+        },
+        {
+          mojom = "extensions.mojom.MessagingEndpoint"
+          cpp = "::extensions::MessagingEndpoint"
+        },
+      ]
+      traits_headers =
+          [ "//extensions/common/mojom/message_port_mojom_traits.h" ]
+      traits_sources =
+          [ "//extensions/common/mojom/message_port_mojom_traits.cc" ]
+    },
   ]
   overridden_deps = [ "//content/public/common:interfaces" ]
 
@@ -245,8 +266,6 @@ static_library("common") {
     "csp_validator.cc",
     "csp_validator.h",
     "dom_action_types.h",
-    "draggable_region.cc",
-    "draggable_region.h",
     "error_utils.cc",
     "error_utils.h",
     "event_filter.cc",
@@ -322,7 +341,6 @@ static_library("common") {
     "install_warning.h",
     "manifest.cc",
     "manifest.h",
-    "manifest_constants.cc",
     "manifest_constants.h",
     "manifest_handler.cc",
     "manifest_handler.h",
@@ -594,7 +612,6 @@ source_set("unit_tests") {
     "manifest_handlers/default_locale_manifest_unittest.cc",
     "manifest_handlers/extension_action_handler_unittest.cc",
     "manifest_handlers/externally_connectable_unittest.cc",
-    "manifest_handlers/file_handler_manifest_unittest.cc",
     "manifest_handlers/icons_handler_unittest.cc",
     "manifest_handlers/incognito_manifest_unittest.cc",
     "manifest_handlers/kiosk_mode_info_unittest.cc",
@@ -605,6 +622,7 @@ source_set("unit_tests") {
     "manifest_handlers/shared_module_manifest_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
     "mojom/url_pattern_set_mojom_traits_unittest.cc",
     "permissions/api_permission_set_unittest.cc",
@@ -648,6 +666,10 @@ source_set("unit_tests") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (is_chromeos) {
+    sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
+  }
 
   if (is_chromeos_ash) {
     sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]

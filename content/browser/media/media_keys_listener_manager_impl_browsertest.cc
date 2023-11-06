@@ -132,6 +132,12 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
   }
 
+  void TearDownOnMainThread() override {
+    media_keys_listener_manager_ = nullptr;
+    media_keys_listener_ = nullptr;
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
   void SetMediaSessionInfo(MediaSessionInfoPtr session_info) {
     media_keys_listener_manager_->active_media_session_controller_for_testing()
         ->MediaSessionInfoChanged(std::move(session_info));
@@ -154,9 +160,8 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MediaKeysListenerManagerImpl, DanglingUntriaged>
-      media_keys_listener_manager_;
-  raw_ptr<MockMediaKeysListener, DanglingUntriaged> media_keys_listener_;
+  raw_ptr<MediaKeysListenerManagerImpl> media_keys_listener_manager_;
+  raw_ptr<MockMediaKeysListener> media_keys_listener_;
   std::unique_ptr<TestMediaController> media_controller_;
 };
 

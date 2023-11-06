@@ -1,30 +1,32 @@
 This is a testharness.js-based test.
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim" should set the property value
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim initial" should not set the property value
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim 2000" should not set the property value
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim scroll()" should not set the property value
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim view()" should not set the property value
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim timeline" should not set the property value
-PASS Property animation value '1s linear 1s 2 reverse forwards paused anim'
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-delay
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-direction
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-duration
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-fill-mode
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-iteration-count
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-name
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-play-state
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-range-end
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-range-start
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-timeline
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-timing-function
-PASS e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should not set unrelated longhands
-PASS Animation shorthand can not represent non-initial timelines (specified)
-PASS Animation shorthand can not represent non-initial timelines (computed)
-FAIL Animation shorthand can not represent non-initial animation-delay-end (specified) assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
-FAIL Animation shorthand can not represent non-initial animation-delay-end (computed) assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
-PASS Animation shorthand can not represent non-initial animation-range-start (specified)
-PASS Animation shorthand can not represent non-initial animation-range-start (computed)
-PASS Animation shorthand can not represent non-initial animation-range-end (specified)
-PASS Animation shorthand can not represent non-initial animation-range-end (computed)
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim" should set the property value
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim initial" should not set the property value
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim 2000" should not set the property value
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim scroll()" should not set the property value
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim view()" should not set the property value
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim timeline" should not set the property value
+[PASS] Property animation value '1s linear 1s 2 reverse forwards paused anim'
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-delay
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-direction
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-duration
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-fill-mode
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-iteration-count
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-name
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-play-state
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-range-end
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-range-start
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-timeline
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should set animation-timing-function
+[PASS] e.style['animation'] = "1s linear 1s 2 reverse forwards paused anim1,\n   1s linear 1s 2 reverse forwards paused anim2,\n   1s linear 1s 2 reverse forwards paused anim3" should not set unrelated longhands
+[PASS] Animation shorthand can not represent non-initial timelines (specified)
+[PASS] Animation shorthand can not represent non-initial timelines (computed)
+[FAIL] Animation shorthand can not represent non-initial animation-delay-end (specified)
+  assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
+[FAIL] Animation shorthand can not represent non-initial animation-delay-end (computed)
+  assert_equals: expected "" but got "1s ease 0s 1 normal none running anim"
+[PASS] Animation shorthand can not represent non-initial animation-range-start (specified)
+[PASS] Animation shorthand can not represent non-initial animation-range-start (computed)
+[PASS] Animation shorthand can not represent non-initial animation-range-end (specified)
+[PASS] Animation shorthand can not represent non-initial animation-range-end (computed)
 Harness: the test ran to completion.
 

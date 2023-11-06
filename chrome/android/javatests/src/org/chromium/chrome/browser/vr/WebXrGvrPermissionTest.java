@@ -33,24 +33,27 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for various scenarios around when the permission prompt is expected.
- */
+/** End-to-end tests for various scenarios around when the permission prompt is expected. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
 // failures has been fixed.
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=WebXR,LogJsConsoleMessages",
-        "allow-pre-commit-input", "force-webxr-runtime=gvr"})
-@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=WebXR,LogJsConsoleMessages",
+    "allow-pre-commit-input",
+    "force-webxr-runtime=gvr"
+})
+@DisableIf.Build(
+        sdk_is_greater_than = VERSION_CODES.P,
+        sdk_is_less_than = VERSION_CODES.R,
         message = "Flaky on android-10-arm64-rel, crbug.com/1455244")
 public class WebXrGvrPermissionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrPermissionTestFramework mWebXrVrPermissionTestFramework;
@@ -65,9 +68,7 @@ public class WebXrGvrPermissionTest {
         mWebXrVrPermissionTestFramework = new WebXrVrPermissionTestFramework(mTestRule);
     }
 
-    /**
-     * Tests that denying permission blocks the session from being created.
-     */
+    /** Tests that denying permission blocks the session from being created. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
@@ -125,9 +126,7 @@ public class WebXrGvrPermissionTest {
                 POLL_TIMEOUT_LONG_MS);
     }
 
-    /**
-     * Tests that granted permissions persist after a page reload.
-     */
+    /** Tests that granted permissions persist after a page reload. */
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})

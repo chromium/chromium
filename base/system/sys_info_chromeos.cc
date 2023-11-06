@@ -58,7 +58,7 @@ class ChromeOSVersionInfo {
     if (parsed_from_env) {
       double us = 0;
       if (StringToDouble(lsb_release_time_str, &us))
-        lsb_release_time_ = Time::FromDoubleT(us);
+        lsb_release_time_ = Time::FromSecondsSinceUnixEpoch(us);
     } else {
       // If the LSB_RELEASE and LSB_RELEASE_TIME environment variables are not
       // set, fall back to a blocking read of the lsb_release file. This should

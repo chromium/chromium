@@ -80,9 +80,17 @@ SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
     Callback callback)
     : web_contents_(contents),
       profile_(profile),
-      last_email_(last_email),
-      new_email_(new_email),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)) {
+  set_can_close(true);
+  set_dialog_modal_type(ui::MODAL_TYPE_WINDOW);
+  set_dialog_content_url(GURL(chrome::kChromeUISigninEmailConfirmationURL));
+  // This dialog chooses its height automatically based on its contents.
+  set_dialog_size(gfx::Size(kSigninEmailConfirmationDialogWidth, 0));
+  set_dialog_args(*base::WriteJson(base::Value::Dict()
+                                       .Set("newEmail", new_email)
+                                       .Set("lastEmail", last_email)));
+  set_show_dialog_title(false);
+}
 
 SigninEmailConfirmationDialog::~SigninEmailConfirmationDialog() {}
 
@@ -148,40 +156,6 @@ content::WebContents* SigninEmailConfirmationDialog::GetDialogWebContents()
 
 // ui::WebDialogDelegate implementation
 
-ui::ModalType SigninEmailConfirmationDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-std::u16string SigninEmailConfirmationDialog::GetDialogTitle() const {
-  return std::u16string();
-}
-
-GURL SigninEmailConfirmationDialog::GetDialogContentURL() const {
-  return GURL(chrome::kChromeUISigninEmailConfirmationURL);
-}
-
-void SigninEmailConfirmationDialog::GetWebUIMessageHandlers(
-    std::vector<content::WebUIMessageHandler*>* handlers) const {}
-
-void SigninEmailConfirmationDialog::GetDialogSize(gfx::Size* size) const {
-  DCHECK(size);
-
-  // Set the dialog width if it's not set, so that the dialog is center-aligned
-  // horizontally when it appears. Avoid setting a dialog height in here as
-  // this dialog auto-resizes.
-  if (size->IsEmpty())
-    size->set_width(kSigninEmailConfirmationDialogWidth);
-}
-
-std::string SigninEmailConfirmationDialog::GetDialogArgs() const {
-  std::string data;
-  base::Value::Dict dialog_args;
-  dialog_args.Set("lastEmail", last_email_);
-  dialog_args.Set("newEmail", new_email_);
-  base::JSONWriter::Write(base::Value(std::move(dialog_args)), &data);
-  return data;
-}
-
 void SigninEmailConfirmationDialog::OnDialogClosed(
     const std::string& json_retval) {
   Action action = CLOSE;
@@ -213,16 +187,6 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
 
   if (callback_)
     std::move(callback_).Run(action);
-}
-
-void SigninEmailConfirmationDialog::OnCloseContents(
-    content::WebContents* source,
-    bool* out_close_dialog) {
-  *out_close_dialog = true;
-}
-
-bool SigninEmailConfirmationDialog::ShouldShowDialogTitle() const {
-  return false;
 }
 
 void SigninEmailConfirmationDialog::CloseModalSignin() {

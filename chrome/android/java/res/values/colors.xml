@@ -70,6 +70,9 @@ found in the LICENSE file.
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@color/default_icon_color_inverse_dark</color>
 
+    <!-- Tab strip button hover background color -->
+    <color name="tab_strip_button_hover_bg_color">@color/baseline_neutral_90</color>
+
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>
     <color name="image_viewer_bg">#0E0E0E</color>

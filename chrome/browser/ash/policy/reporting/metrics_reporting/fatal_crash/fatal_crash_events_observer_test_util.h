@@ -11,11 +11,16 @@
 #include "base/files/file_path.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
 
 namespace reporting {
 
 class FatalCrashEventsObserver::TestEnvironment {
  public:
+  using ShouldReportResult =
+      FatalCrashEventsObserver::ReportedLocalIdManager::ShouldReportResult;
+
   static constexpr size_t kMaxNumOfLocalIds{
       ReportedLocalIdManager::kMaxNumOfLocalIds};
   static constexpr size_t kMaxSizeOfLocalIdEntryQueue{
@@ -53,6 +58,9 @@ class FatalCrashEventsObserver::TestEnvironment {
   // queue size to the test for the sole purpose of examining whether the memory
   // usage is correctly limited.
   static size_t GetLocalIdEntryQueueSize(FatalCrashEventsObserver& observer);
+
+  // Flushes all IO tasks.
+  static void FlushIoTasks(FatalCrashEventsObserver& observer);
 
  private:
   base::FilePath temp_dir_{base::CreateUniqueTempDirectoryScopedToTest()};

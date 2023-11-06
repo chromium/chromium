@@ -449,22 +449,24 @@ RenderFrameHost* RenderViewContextMenuBase::GetRenderFrameHost() const {
 
 void RenderViewContextMenuBase::OpenURL(const GURL& url,
                                         const GURL& referring_url,
+                                        const url::Origin& initiator,
                                         WindowOpenDisposition disposition,
                                         ui::PageTransition transition) {
-  OpenURLWithExtraHeaders(url, referring_url, disposition, transition,
-                          "" /* extra_headers */,
+  OpenURLWithExtraHeaders(url, referring_url, initiator, disposition,
+                          transition, "" /* extra_headers */,
                           true /* started_from_context_menu */);
 }
 
 void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
     const GURL& url,
     const GURL& referring_url,
+    const url::Origin& initiator,
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     const std::string& extra_headers,
     bool started_from_context_menu) {
   content::OpenURLParams open_url_params = GetOpenURLParamsWithExtraHeaders(
-      url, referring_url, disposition, transition, extra_headers,
+      url, referring_url, initiator, disposition, transition, extra_headers,
       started_from_context_menu);
 
   source_web_contents_->OpenURL(open_url_params);
@@ -474,6 +476,7 @@ content::OpenURLParams
 RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders(
     const GURL& url,
     const GURL& referring_url,
+    const url::Origin& initiator,
     WindowOpenDisposition disposition,
     ui::PageTransition transition,
     const std::string& extra_headers,
@@ -503,7 +506,7 @@ RenderViewContextMenuBase::GetOpenURLParamsWithExtraHeaders(
 
   open_url_params.initiator_frame_token = render_frame_token_;
   open_url_params.initiator_process_id = render_process_id_;
-  open_url_params.initiator_origin = url::Origin::Create(referring_url);
+  open_url_params.initiator_origin = initiator;
 
   open_url_params.source_site_instance = site_instance_;
 

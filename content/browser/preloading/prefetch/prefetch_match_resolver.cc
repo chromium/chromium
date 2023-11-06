@@ -101,11 +101,8 @@ void PrefetchMatchResolver::
         PrefetchContainer& prefetch_container) {
   // The prefetch_container has already received its head.
   CHECK(!IsWaitingForPrefetch(prefetch_container));
-  prefetch_container.SetPrefetchStatus(
-      PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-  prefetch_container.UpdateServingPageMetrics();
+  prefetch_container.OnCookiesChanged();
   prefetch_container.OnReturnPrefetchToServe(/*served=*/false);
-  prefetch_container.CancelStreamingURLLoaderIfNotServing();
   DVLOG(1) << *this
            << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"
            << prefetch_container << " not served because Cookies changed.";
@@ -116,11 +113,8 @@ void PrefetchMatchResolver::
     if (!weak_prefetch_container) {
       continue;
     }
-    weak_prefetch_container->SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotUsedCookiesChanged);
-    weak_prefetch_container->UpdateServingPageMetrics();
+    weak_prefetch_container->OnCookiesChanged();
     weak_prefetch_container->OnReturnPrefetchToServe(/*served=*/false);
-    weak_prefetch_container->CancelStreamingURLLoaderIfNotServing();
     DVLOG(1)
         << *this
         << "::FallbackToRegularNavigationWhenMatchedPrefetchCookiesChanged:"

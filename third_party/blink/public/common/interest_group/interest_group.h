@@ -166,6 +166,7 @@ support the new field.
 
 // A unique identifier for interest groups.
 struct InterestGroupKey {
+  InterestGroupKey() = default;
   InterestGroupKey(url::Origin o, std::string n)
       : owner(std::move(o)), name(std::move(n)) {}
   inline bool operator<(const InterestGroupKey& other) const {

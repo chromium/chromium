@@ -8,7 +8,7 @@ import("//chrome/android/features/android_library_factory_tmpl.gni")
 android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParams.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabCreator.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabLauncher.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManager.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/EmptyTabModel.java",
@@ -81,6 +81,7 @@ robolectric_library("junit") {
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/browser/commerce/price_tracking/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",

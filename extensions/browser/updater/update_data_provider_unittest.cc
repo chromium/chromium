@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "components/update_client/update_client.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -154,9 +155,14 @@ TEST_F(UpdateDataProviderTest, GetData_NoDataAdded) {
   scoped_refptr<UpdateDataProvider> data_provider =
       base::MakeRefCounted<UpdateDataProvider>(nullptr);
 
-  const auto data = data_provider->GetData(
-      false /*install_immediately*/, ExtensionUpdateDataMap(), {kExtensionId1});
-  EXPECT_EQ(0UL, data.size());
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, ExtensionUpdateDataMap(), {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
+  ASSERT_EQ(1UL, data.size());
+  EXPECT_EQ(data[0], absl::nullopt);
 }
 
 TEST_F(UpdateDataProviderTest, GetData_Fingerprint) {
@@ -176,9 +182,13 @@ TEST_F(UpdateDataProviderTest, GetData_Fingerprint) {
   update_data[kExtensionId1] = {};
   update_data[kExtensionId2] = {};
 
-  const auto data =
-      data_provider->GetData(false /*install_immediately*/, update_data,
-                             {kExtensionId1, kExtensionId2});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data,
+      {kExtensionId1, kExtensionId2},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(2UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -199,8 +209,12 @@ TEST_F(UpdateDataProviderTest, GetData_EnabledExtension) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data = data_provider->GetData(false /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -223,8 +237,12 @@ TEST_F(UpdateDataProviderTest, GetData_EnabledExtensionWithData) {
   info.is_corrupt_reinstall = true;
   info.install_source = "webstore";
 
-  const auto data = data_provider->GetData(true /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ("0.0.0.0", data[0]->version.GetString());
@@ -246,8 +264,12 @@ TEST_F(UpdateDataProviderTest, GetData_DisabledExtension_WithNoReason) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data = data_provider->GetData(false /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -270,8 +292,12 @@ TEST_F(UpdateDataProviderTest, GetData_DisabledExtension_UnknownReason) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data = data_provider->GetData(true /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -295,8 +321,12 @@ TEST_F(UpdateDataProviderTest, GetData_DisabledExtension_WithReasons) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data = data_provider->GetData(false /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -324,8 +354,12 @@ TEST_F(UpdateDataProviderTest,
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data = data_provider->GetData(true /*install_immediately*/,
-                                           update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(1UL, data.size());
   EXPECT_EQ(version, data[0]->version.GetString());
@@ -358,9 +392,13 @@ TEST_F(UpdateDataProviderTest, GetData_MultipleExtensions) {
   update_data[kExtensionId1] = {};
   update_data[kExtensionId2] = {};
 
-  const auto data =
-      data_provider->GetData(false /*install_immediately*/, update_data,
-                             {kExtensionId1, kExtensionId2});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data,
+      {kExtensionId1, kExtensionId2},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(2UL, data.size());
   EXPECT_EQ(version1, data[0]->version.GetString());
@@ -391,9 +429,12 @@ TEST_F(UpdateDataProviderTest, GetData_MultipleExtensions_DisabledExtension) {
   update_data[kExtensionId1] = {};
   update_data[kExtensionId2] = {};
 
-  const auto data =
-      data_provider->GetData(true /*install_immediately*/, update_data,
-                             {kExtensionId1, kExtensionId2});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1, kExtensionId2},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(2UL, data.size());
   EXPECT_EQ(version1, data[0]->version.GetString());
@@ -424,9 +465,13 @@ TEST_F(UpdateDataProviderTest,
   update_data[kExtensionId1] = {};
   update_data[kExtensionId2] = {};
 
-  const auto data =
-      data_provider->GetData(false /*install_immediately*/, update_data,
-                             {kExtensionId1, kExtensionId2});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data,
+      {kExtensionId1, kExtensionId2},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(2UL, data.size());
   ASSERT_NE(absl::nullopt, data[0]);
@@ -462,9 +507,12 @@ TEST_F(UpdateDataProviderTest, GetData_MultipleExtensions_CorruptExtension) {
   info2.is_corrupt_reinstall = true;
   info2.install_source = "sideload";
 
-  const auto data =
-      data_provider->GetData(true /*install_immediately*/, update_data,
-                             {kExtensionId1, kExtensionId2});
+  std::vector<absl::optional<update_client::CrxComponent>> data;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1, kExtensionId2},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data = output; }));
 
   ASSERT_EQ(2UL, data.size());
   EXPECT_EQ(version1, data[0]->version.GetString());
@@ -492,16 +540,24 @@ TEST_F(UpdateDataProviderTest, GetData_InstallImmediately) {
   ExtensionUpdateDataMap update_data;
   update_data[kExtensionId1] = {};
 
-  const auto data1 = data_provider->GetData(false /*install_immediately*/,
-                                            update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data1;
+  data_provider->GetData(
+      false /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data1 = output; }));
   ASSERT_EQ(1UL, data1.size());
   ASSERT_NE(nullptr, data1[0]->installer.get());
   const ExtensionInstaller* installer1 =
       static_cast<ExtensionInstaller*>(data1[0]->installer.get());
   EXPECT_FALSE(installer1->install_immediately());
 
-  const auto data2 = data_provider->GetData(true /*install_immediately*/,
-                                            update_data, {kExtensionId1});
+  std::vector<absl::optional<update_client::CrxComponent>> data2;
+  data_provider->GetData(
+      true /*install_immediately*/, update_data, {kExtensionId1},
+      base::BindLambdaForTesting(
+          [&](const std::vector<absl::optional<update_client::CrxComponent>>&
+                  output) { data2 = output; }));
   ASSERT_EQ(1UL, data2.size());
   ASSERT_NE(nullptr, data2[0]->installer.get());
   const ExtensionInstaller* installer2 =

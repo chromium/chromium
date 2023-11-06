@@ -158,8 +158,9 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
         double flag_value;
         if (base::StringToDouble(flag, &flag_value)) {
-          return callback.Run(base::Time::FromJsTime(flag_value),
-                              std::move(args)...);
+          return callback.Run(
+              base::Time::FromMillisecondsSinceUnixEpoch(flag_value),
+              std::move(args)...);
         }
         return false;
       }));
@@ -412,6 +413,10 @@ void AppTestHelper::FirstTaskRun() {
 #if BUILDFLAG(IS_WIN)
     {"run_fake_legacy_updater", WithSystemScope(Wrap(&RunFakeLegacyUpdater))},
 #endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
+    {"privileged_helper_install",
+     WithSystemScope(Wrap(&PrivilegedHelperInstall))},
+#endif  // BUILDFLAG(IS_MAC)
     {"expect_legacy_updater_migrated",
      WithSystemScope(Wrap(&ExpectLegacyUpdaterMigrated))},
     {"run_recovery_component",

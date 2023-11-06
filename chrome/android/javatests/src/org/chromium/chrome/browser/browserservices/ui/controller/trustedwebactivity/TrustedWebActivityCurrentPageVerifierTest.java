@@ -34,9 +34,7 @@ import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests the {@link CurrentPageVerifier} integration with Trusted Web Activity Mode.
- */
+/** Tests the {@link CurrentPageVerifier} integration with Trusted Web Activity Mode. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(PER_CLASS)
@@ -47,9 +45,8 @@ public final class TrustedWebActivityCurrentPageVerifierTest {
             new MockCertVerifierRuleAndroid(0 /* net::OK */);
 
     @Rule
-    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
-                                          .around(mActivityTestRule)
-                                          .around(mCertVerifierRule);
+    public RuleChain mRuleChain =
+            RuleChain.emptyRuleChain().around(mActivityTestRule).around(mCertVerifierRule);
 
     @Before
     public void setUp() {
@@ -57,8 +54,9 @@ public final class TrustedWebActivityCurrentPageVerifierTest {
         mActivityTestRule.getEmbeddedTestServerRule().setServerUsesHttps(true);
         Uri mapToUri =
                 Uri.parse(mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/"));
-        CommandLine.getInstance().appendSwitchWithValue(
-                ContentSwitches.HOST_RESOLVER_RULES, "MAP * " + mapToUri.getAuthority());
+        CommandLine.getInstance()
+                .appendSwitchWithValue(
+                        ContentSwitches.HOST_RESOLVER_RULES, "MAP * " + mapToUri.getAuthority());
     }
 
     private void launchTwa(String url) throws TimeoutException {
@@ -96,7 +94,7 @@ public final class TrustedWebActivityCurrentPageVerifierTest {
         String pageDifferentOrigin = "https://bar.com/chrome/test/data/android/simple.html";
         launchTwa(page);
 
-        mActivityTestRule.loadUrl(pageDifferentOrigin, 10 /* secondsToWait */);
+        mActivityTestRule.loadUrl(pageDifferentOrigin, /* secondsToWait= */ 10);
 
         TrustedWebActivityTestUtil.waitForCurrentPageVerifierToFinish(
                 mActivityTestRule.getActivity());

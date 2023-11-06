@@ -300,7 +300,11 @@ void EnrollmentScreen::UpdateFlowType() {
     view_->SetFlowType(EnrollmentScreenView::FlowType::kCFM);
     view_->SetGaiaButtonsType(EnrollmentScreenView::GaiaButtonsType::kDefault);
   } else {
-    view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    if (features::IsOobeSoftwareUpdateEnabled()) {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kDeviceEnrollment);
+    } else {
+      view_->SetFlowType(EnrollmentScreenView::FlowType::kEnterprise);
+    }
     if (!features::IsKioskEnrollmentInOobeEnabled()) {
       view_->SetGaiaButtonsType(
           EnrollmentScreenView::GaiaButtonsType::kDefault);
@@ -585,11 +589,12 @@ void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
 }
 
 void EnrollmentScreen::OnEnrollmentError(policy::EnrollmentStatus status) {
-  LOG(ERROR) << "Enrollment error: " << status.status();
+  LOG(ERROR) << "Enrollment error: " << status.enrollment_code();
   RecordEnrollmentErrorMetrics();
   // If the DM server does not have a device pre-provisioned for attestation-
   // based enrollment and we have a fallback authentication, show it.
-  if (status.status() == policy::EnrollmentStatus::REGISTRATION_FAILED &&
+  if (status.enrollment_code() ==
+          policy::EnrollmentStatus::Code::kRegistrationFailed &&
       status.client_status() == policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND &&
       current_auth_ == AUTH_ATTESTATION) {
     UMA(policy::kMetricEnrollmentDeviceNotPreProvisioned);
@@ -640,7 +645,7 @@ void EnrollmentScreen::OnIdentifierEntered(const std::string& email) {
   status_checker_.reset();
   status_checker_ = std::make_unique<AccountStatusCheckFetcher>(email);
   status_checker_->Fetch(std::move(callback),
-                         /*fetch_entollment_nudge_policy=*/false);
+                         /*fetch_enrollment_nudge_policy=*/false);
 }
 
 void EnrollmentScreen::OnFirstShow() {
@@ -703,12 +708,12 @@ void EnrollmentScreen::OnDeviceAttributeUploadCompleted(bool success) {
     connector->GetDeviceCloudPolicyManager()->core()->RefreshSoon(
         policy::PolicyFetchReason::kDeviceEnrollment);
     if (view_) {
-      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-          policy::EnrollmentStatus::SUCCESS));
+      view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+          policy::EnrollmentStatus::Code::kSuccess));
     }
   } else if (view_) {
-    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForStatus(
-        policy::EnrollmentStatus::ATTRIBUTE_UPDATE_FAILED));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kAttributeUpdateFailed));
   }
 }
 
@@ -771,8 +776,8 @@ void EnrollmentScreen::ShowEnrollmentStatusOnSuccess() {
       WizardController::skip_enrollment_prompts_for_testing()) {
     OnConfirmationClosed();
   } else if (view_) {
-    view_->ShowEnrollmentStatus(
-        policy::EnrollmentStatus::ForStatus(policy::EnrollmentStatus::SUCCESS));
+    view_->ShowEnrollmentStatus(policy::EnrollmentStatus::ForEnrollmentCode(
+        policy::EnrollmentStatus::Code::kSuccess));
   }
 }
 
@@ -897,7 +902,9 @@ void EnrollmentScreen::SetupAndShowOfflineMessage(
     error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
                                  network_name);
   } else if (is_frame_error) {
-    error_screen_->SetErrorState(NetworkError::ERROR_STATE_AUTH_EXT_TIMEOUT,
+    // TODO(b/249996052): Clean up dead code, this method is never called with
+    // `NetworkError::ERROR_REASON_FRAME_ERROR`.
+    error_screen_->SetErrorState(NetworkError::ERROR_STATE_LOADING_TIMEOUT,
                                  std::string());
   } else {
     error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,

@@ -21,6 +21,7 @@ constexpr char kScreenAIDlcName[] = "screen-ai";
 constexpr int kBaseRetryDelayInSeconds = 3;
 constexpr int kMaxRetryDelayInSeconds = 180;
 constexpr int kMaxInstallRetries = 5;
+constexpr int kUninstallDelayInSeconds = 300;
 
 struct InstallMetadata {
   bool dlc_available_from_before_this_session = false;
@@ -91,11 +92,6 @@ void OnInstallProgress(double progress) {
   screen_ai::ScreenAIInstallState::GetInstance()->SetDownloadProgress(progress);
 }
 
-void Uninstall() {
-  ash::DlcserviceClient::Get()->Uninstall(
-      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
-}
-
 // This function can be called only on a thread that can be blocked.
 bool CheckIfDlcExistsOnNonUIThread() {
   return !screen_ai::GetLatestComponentBinaryPath().empty();
@@ -107,6 +103,31 @@ void InstallInternal(InstallMetadata metadata) {
   ash::DlcserviceClient::Get()->Install(
       install_request, base::BindOnce(&OnInstallCompleted, metadata),
       base::BindRepeating(&OnInstallProgress));
+}
+
+void UninstallIfNotUsedAndAvailableOnDisk() {
+  // If ScreenAIInstallState is not `kNotDownloaded`, it means that a client has
+  // asked for this DLC and it should not be uninstalled.
+  // Note that "Not downloaded" does not necessarily mean that the DLC is not
+  // on disk, but just states that from ScreenAI point of view, no client
+  // requested downloading it.
+  if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() !=
+      screen_ai::ScreenAIInstallState::State::kNotDownloaded) {
+    return;
+  }
+
+  // Checking if DLC exists on disk should be done on a non-UI thread, but
+  // actual uninstall should be done on the same thread that called this
+  // function.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&CheckIfDlcExistsOnNonUIThread),
+      base::BindOnce([](bool dlc_exists) {
+        if (dlc_exists) {
+          screen_ai::dlc_installer::Uninstall();
+        }
+      }));
 }
 
 }  // namespace
@@ -129,21 +150,25 @@ void Install() {
       }));
 }
 
+void Uninstall() {
+  ash::DlcserviceClient::Get()->Uninstall(
+      kScreenAIDlcName, base::BindOnce(&OnUninstallCompleted));
+}
+
 void ManageInstallation(PrefService* local_state) {
   if (screen_ai::ScreenAIInstallState::ShouldInstall(local_state)) {
     Install();
     return;
   }
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&CheckIfDlcExistsOnNonUIThread),
-      base::BindOnce([](bool dlc_exists) {
-        if (dlc_exists) {
-          Uninstall();
-        }
-      }));
+  // This function is run on browser startup. The DLC uninstallation will be
+  // called after a delay, so that if a feature relies on it and has not yet
+  // triggered it, it would have time to do it. This is specifically helpful for
+  // tests. Note that uninstall should happen on the same thread that runs this
+  // function.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(&UninstallIfNotUsedAndAvailableOnDisk),
+      base::Seconds(kUninstallDelayInSeconds));
 }
 
 int CalculateNextDelayInSecondsForTesting(int delay_in_seconds) {

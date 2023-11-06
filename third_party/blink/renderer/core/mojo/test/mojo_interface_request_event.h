@@ -33,7 +33,7 @@ class MojoInterfaceRequestEvent final : public Event {
   MojoInterfaceRequestEvent(const AtomicString& type,
                             const MojoInterfaceRequestEventInit*);
 
-  MojoHandle* handle() const { return handle_; }
+  MojoHandle* handle() const { return handle_.Get(); }
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kMojoInterfaceRequestEvent;

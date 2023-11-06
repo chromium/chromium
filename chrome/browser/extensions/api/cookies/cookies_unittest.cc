@@ -114,9 +114,9 @@ TEST_F(ExtensionCookiesTest, ExtensionTypeCreation) {
   std::unique_ptr<net::CanonicalCookie> canonical_cookie2 =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           "ABC", "DEF", ".example.com", "/", base::Time(),
-          base::Time::FromDoubleT(10000), base::Time(), base::Time(), false,
-          false, net::CookieSameSite::STRICT_MODE, net::COOKIE_PRIORITY_DEFAULT,
-          false);
+          base::Time::FromSecondsSinceUnixEpoch(10000), base::Time(),
+          base::Time(), false, false, net::CookieSameSite::STRICT_MODE,
+          net::COOKIE_PRIORITY_DEFAULT, false);
   ASSERT_NE(nullptr, canonical_cookie2.get());
   Cookie cookie2 =
       cookies_helpers::CreateCookie(*canonical_cookie2, "some cookie store");

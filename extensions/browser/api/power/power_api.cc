@@ -21,13 +21,13 @@ const char kWakeLockDescription[] = "extension";
 
 device::mojom::WakeLockType LevelToWakeLockType(api::power::Level level) {
   switch (level) {
-    case api::power::LEVEL_SYSTEM:
+    case api::power::Level::kSystem:
       return device::mojom::WakeLockType::kPreventAppSuspension;
-    case api::power::LEVEL_DISPLAY:  // fallthrough
-    case api::power::LEVEL_NONE:
+    case api::power::Level::kDisplay:  // fallthrough
+    case api::power::Level::kNone:
       return device::mojom::WakeLockType::kPreventDisplaySleep;
   }
-  NOTREACHED() << "Unhandled power level: " << level;
+  NOTREACHED() << "Unhandled power level: " << api::power::ToString(level);
   return device::mojom::WakeLockType::kPreventDisplaySleep;
 }
 
@@ -111,7 +111,7 @@ PowerAPI::PowerAPI(content::BrowserContext* context)
       cancel_wake_lock_function_(base::BindRepeating(&PowerAPI::CancelWakeLock,
                                                      base::Unretained(this))),
       is_wake_lock_active_(false),
-      current_level_(api::power::LEVEL_SYSTEM) {
+      current_level_(api::power::Level::kSystem) {
   ExtensionRegistry::Get(browser_context_)->AddObserver(this);
 }
 
@@ -123,11 +123,12 @@ void PowerAPI::UpdateWakeLock() {
     return;
   }
 
-  api::power::Level new_level = api::power::LEVEL_SYSTEM;
+  api::power::Level new_level = api::power::Level::kSystem;
   for (ExtensionLevelMap::const_iterator it = extension_levels_.begin();
        it != extension_levels_.end(); ++it) {
-    if (it->second == api::power::LEVEL_DISPLAY)
+    if (it->second == api::power::Level::kDisplay) {
       new_level = it->second;
+    }
   }
 
   if (!is_wake_lock_active_ || new_level != current_level_) {

@@ -44,10 +44,6 @@ void V4L2DecodeSurface::SetDecoded() {
   // We can now drop references to all reference surfaces for this surface
   // as we are done with decoding.
   reference_surfaces_.clear();
-
-  // And finally execute and drop the decode done callback, if set.
-  if (done_cb_)
-    std::move(done_cb_).Run();
 }
 
 void V4L2DecodeSurface::SetVisibleRect(const gfx::Rect& visible_rect) {
@@ -73,13 +69,6 @@ void V4L2DecodeSurface::SetReferenceSurfaces(
 #endif
 
   reference_surfaces_ = std::move(ref_surfaces);
-}
-
-void V4L2DecodeSurface::SetDecodeDoneCallback(base::OnceClosure done_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!done_cb_);
-
-  done_cb_ = std::move(done_cb);
 }
 
 void V4L2DecodeSurface::SetReleaseCallback(base::OnceClosure release_cb) {

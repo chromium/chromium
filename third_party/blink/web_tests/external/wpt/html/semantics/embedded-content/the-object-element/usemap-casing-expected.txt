@@ -1,11 +1,15 @@
 This is a testharness.js-based test.
-PASS Object with usemap of #sanityCheck should not match any of the areas (it does not support usemap)
-PASS Object with usemap of #sImPlE should not match any of the areas (it does not support usemap)
-PASS Object with usemap of #paSSfield-killroyß should not match any of the areas (it does not support usemap)
-PASS Object with usemap of #глупый should not match any of the areas (it does not support usemap)
-FAIL Object with usemap of #åωk should not match any of the areas (it does not support usemap) Cannot read properties of null (reading 'parentElement')
-FAIL Object with usemap of #blah1 should not match any of the areas (it does not support usemap) Cannot read properties of null (reading 'parentElement')
-FAIL Object with usemap of #tÉdz5アパートFi should not match any of the areas (it does not support usemap) Cannot read properties of null (reading 'parentElement')
-FAIL Object with usemap of #ΣΣ should not match any of the areas (it does not support usemap) Cannot read properties of null (reading 'parentElement')
+[PASS] Object with usemap of #sanityCheck should not match any of the areas (it does not support usemap)
+[PASS] Object with usemap of #sImPlE should not match any of the areas (it does not support usemap)
+[PASS] Object with usemap of #paSSfield-killroyß should not match any of the areas (it does not support usemap)
+[PASS] Object with usemap of #глупый should not match any of the areas (it does not support usemap)
+[FAIL] Object with usemap of #åωk should not match any of the areas (it does not support usemap)
+  Cannot read properties of null (reading 'parentElement')
+[FAIL] Object with usemap of #blah1 should not match any of the areas (it does not support usemap)
+  Cannot read properties of null (reading 'parentElement')
+[FAIL] Object with usemap of #tÉdz5アパートFi should not match any of the areas (it does not support usemap)
+  Cannot read properties of null (reading 'parentElement')
+[FAIL] Object with usemap of #ΣΣ should not match any of the areas (it does not support usemap)
+  Cannot read properties of null (reading 'parentElement')
 Harness: the test ran to completion.
 

@@ -109,158 +109,6 @@ QuickStartDecoder::QuickStartDecoder(
 
 QuickStartDecoder::~QuickStartDecoder() = default;
 
-void QuickStartDecoder::DecodeBootstrapConfigurations(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeBootstrapConfigurationsCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_bootstrap_configurations()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_bootstrap_configurations().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeWifiCredentialsResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeWifiCredentialsResponseCallback callback) {
-  if (!data.has_value()) {
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-            WifiTransferResultFailureReason::kEmptyResponseBytes);
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    if (result.error() == mojom::QuickStartDecoderError::kUnableToReadAsJSON) {
-      quick_start_metrics::RecordWifiTransferResult(
-          /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-              WifiTransferResultFailureReason::kUnableToReadAsJSON);
-    }
-    if (result.error() == mojom::QuickStartDecoderError::kUnknownPayload) {
-      quick_start_metrics::RecordWifiTransferResult(
-          /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-              WifiTransferResultFailureReason::kWifiNetworkInformationNotFound);
-    }
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_wifi_credentials()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(result.value()->get_wifi_credentials().Clone(),
-                          absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeUserVerificationRequested(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationRequestedCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_user_verification_requested()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_user_verification_requested().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeUserVerificationResult(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationResultCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_user_verification_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_user_verification_response().Clone(), absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeGetAssertionResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeGetAssertionResponseCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_fido_assertion_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(result.value()->get_fido_assertion_response().Clone(),
-                          absl::nullopt);
-}
-
-void QuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeNotifySourceOfUpdateResponseCallback callback) {
-  if (!data.has_value()) {
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-  auto result = DoDecodeQuickStartMessage(data.value());
-  if (!result.has_value()) {
-    std::move(callback).Run(nullptr, result.error());
-    return;
-  }
-  if (!result.value()->is_notify_source_of_update_response()) {
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kUnexpectedMessageType);
-    return;
-  }
-
-  std::move(callback).Run(
-      result.value()->get_notify_source_of_update_response().Clone(),
-      absl::nullopt);
-}
-
 void QuickStartDecoder::DecodeQuickStartMessage(
     const absl::optional<std::vector<uint8_t>>& data,
     DecodeQuickStartMessageCallback callback) {
@@ -451,6 +299,17 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
         mojom::UserVerificationRequested::New(
             is_awaiting_user_verification.value()));
   }
+
+  // user verification method
+  absl::optional<int> user_verification_method;
+  if ((user_verification_method =
+           payload.FindInt(kUserVerificationMethodKey))) {
+    return mojom::QuickStartMessage::NewUserVerificationMethod(
+        mojom::UserVerificationMethod::New(
+            /*use_source_lock_screen_prompt=*/user_verification_method
+                .value() == kUserVerificationMethodSourceLockScreenPrompt));
+  }
+
   // user verification response
   absl::optional<int> user_verification_result_code;
   if ((user_verification_result_code =
@@ -497,42 +356,6 @@ QuickStartDecoder::DecodeQuickStartPayload(const base::Value::Dict& payload) {
   return base::unexpected(mojom::QuickStartDecoderError::kUnknownPayload);
 }
 
-void QuickStartDecoder::DecodeUserVerificationMethod(
-    const absl::optional<std::vector<uint8_t>>& data,
-    DecodeUserVerificationMethodCallback callback) {
-  if (!data.has_value()) {
-    LOG(ERROR) << "No response bytes received.";
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kEmptyMessage);
-    return;
-  }
-
-  QuickStartMessage::ReadResult read_result = QuickStartMessage::ReadMessage(
-      data.value(), QuickStartMessageType::kQuickStartPayload);
-  if (!read_result.has_value()) {
-    LOG(ERROR) << "Failed to read UserVerificationMethod as QuickStartMessage";
-    std::move(callback).Run(nullptr,
-                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
-    return;
-  }
-
-  absl::optional<int> user_verification_method =
-      read_result.value()->GetPayload()->FindInt(kUserVerificationMethodKey);
-  if (!user_verification_method.has_value()) {
-    LOG(ERROR) << "UserVerificationMethod message does not include "
-                  "user_verification_method";
-    std::move(callback).Run(
-        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
-    return;
-  }
-
-  std::move(callback).Run(
-      mojom::UserVerificationMethod::New(
-          /*use_source_lock_screen_prompt=*/user_verification_method.value() ==
-          kUserVerificationMethodSourceLockScreenPrompt),
-      absl::nullopt);
-}
-
 base::expected<mojom::QuickStartMessagePtr, mojom::QuickStartDecoderError>
 QuickStartDecoder::DecodeWifiCredentials(
     const base::Value::Dict& wifi_network_information) {
@@ -540,8 +363,8 @@ QuickStartDecoder::DecodeWifiCredentials(
       wifi_network_information.FindString(kWifiNetworkSsidKey);
   if (!ssid) {
     LOG(ERROR) << "SSID cannot be found within WifiCredentialsResponse.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kSsidNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -549,8 +372,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (ssid->length() == 0) {
     LOG(ERROR) << "SSID has a length of 0.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kEmptySsid);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -561,8 +384,8 @@ QuickStartDecoder::DecodeWifiCredentials(
   if (!security_type_string) {
     LOG(ERROR)
         << "Security Type cannot be found within WifiCredentialsResponse";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kSecurityTypeNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -573,8 +396,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (!maybe_security_type.has_value()) {
     LOG(ERROR) << "Security type was not a valid value.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kInvalidSecurityType);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -589,8 +412,8 @@ QuickStartDecoder::DecodeWifiCredentials(
 
   if (password_ptr && security_type == mojom::WifiSecurityType::kOpen) {
     LOG(ERROR) << "Password is found but network security type is open.";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kPasswordFoundAndOpenNetwork);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
@@ -600,10 +423,10 @@ QuickStartDecoder::DecodeWifiCredentials(
     LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse but "
                   "network is not open. wifi_security_type: "
                << security_type;
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
-            WifiTransferResultFailureReason::
-                kPasswordNotFoundAndNotOpenNetwork);
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false,
+        /*failure_reason=*/QuickStartMetrics::WifiTransferResultFailureReason::
+            kPasswordNotFoundAndNotOpenNetwork);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   }
@@ -617,8 +440,8 @@ QuickStartDecoder::DecodeWifiCredentials(
   if (!is_hidden.has_value()) {
     LOG(ERROR)
         << "Wifi Hide Status cannot be found within WifiCredentialsResponse";
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kWifiHideStatusNotFound);
     return base::unexpected(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);

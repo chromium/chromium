@@ -95,8 +95,8 @@ class ManagePasswordsUIController
       const url::Origin& origin) override;
   void OnPromptEnableAutoSignin() override;
   void OnAutomaticPasswordSave(
-      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager)
-      override;
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
+      bool is_update_confirmation) override;
   void OnPasswordAutofilled(
       const std::vector<const password_manager::PasswordForm*>& password_forms,
       const url::Origin& origin,

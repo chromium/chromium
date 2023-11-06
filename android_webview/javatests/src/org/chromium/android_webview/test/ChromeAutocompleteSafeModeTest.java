@@ -17,9 +17,12 @@ import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.autofill.ChromeAutocompleteSafeModeAction;
 import org.chromium.android_webview.common.SafeModeAction;
+import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.Feature;
@@ -34,13 +37,18 @@ import java.util.Set;
  * In >= O Android Autofill system is used. See AndroidAutofillSafeModeTest
  * for tests of the corresponding SafeMode action.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MaxAndroidSdkLevel(Build.VERSION_CODES.N_MR1)
-public class ChromeAutocompleteSafeModeTest {
+public class ChromeAutocompleteSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "AndroidAutofillTest";
 
     @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    public AwActivityTestRule mRule;
+
+    public ChromeAutocompleteSafeModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @After
     public void tearDown() {
@@ -50,14 +58,18 @@ public class ChromeAutocompleteSafeModeTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(reason = "This test depends on AwSettings.setSaveFormData(true)")
     public void testSafeModeDisabled() throws Throwable {
-        AwTestContainerView mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                new TestAwContentsClient(), false, new TestDependencyFactory());
+        AwTestContainerView mTestContainerView =
+                mRule.createAwTestContainerViewOnMainSync(
+                        new TestAwContentsClient(), false, new TestDependencyFactory());
 
-        assertTrue("SaveFormData should be enabled when safe mode is disabled",
+        assertTrue(
+                "SaveFormData should be enabled when safe mode is disabled",
                 mRule.getAwSettingsOnUiThread(mTestContainerView.getAwContents())
                         .getSaveFormData());
-        assertNotNull("AutofillClient shouldn't be null when safe mode is disabled",
+        assertNotNull(
+                "AutofillClient shouldn't be null when safe mode is disabled",
                 mTestContainerView.getAwContents().getAutofillClient());
     }
 
@@ -68,36 +80,41 @@ public class ChromeAutocompleteSafeModeTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new ChromeAutocompleteSafeModeAction()});
-        safeModeController.executeActions(Set.of(ChromeAutocompleteSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE));
 
-        AwTestContainerView mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                new TestAwContentsClient(), false, new TestDependencyFactory());
+        AwTestContainerView mTestContainerView =
+                mRule.createAwTestContainerViewOnMainSync(
+                        new TestAwContentsClient(), false, new TestDependencyFactory());
 
-        assertFalse("SaveFormData should be disabled when safe mode is enabled",
+        assertFalse(
+                "SaveFormData should be disabled when safe mode is enabled",
                 mRule.getAwSettingsOnUiThread(mTestContainerView.getAwContents())
                         .getSaveFormData());
-        assertNull("AutofillClient should be null when safe mode is enabled",
+        assertNull(
+                "AutofillClient should be null when safe mode is enabled",
                 mTestContainerView.getAwContents().getAutofillClient());
     }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    public void
-    testSafeModeEnabledAfterSetSaveFormDataEnabledCalled() throws Throwable {
+    public void testSafeModeEnabledAfterSetSaveFormDataEnabledCalled() throws Throwable {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new ChromeAutocompleteSafeModeAction()});
-        safeModeController.executeActions(Set.of(ChromeAutocompleteSafeModeAction.ID));
+        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_CHROME_AUTOCOMPLETE));
 
-        AwTestContainerView mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                new TestAwContentsClient(), false, new TestDependencyFactory());
+        AwTestContainerView mTestContainerView =
+                mRule.createAwTestContainerViewOnMainSync(
+                        new TestAwContentsClient(), false, new TestDependencyFactory());
         mRule.getAwSettingsOnUiThread(mTestContainerView.getAwContents()).setSaveFormData(true);
 
-        assertFalse("SaveFormData should be disabled when safe mode is enabled",
+        assertFalse(
+                "SaveFormData should be disabled when safe mode is enabled",
                 mRule.getAwSettingsOnUiThread(mTestContainerView.getAwContents())
                         .getSaveFormData());
-        assertNull("AutofillClient should be null when safe mode is enabled",
+        assertNull(
+                "AutofillClient should be null when safe mode is enabled",
                 mTestContainerView.getAwContents().getAutofillClient());
     }
 }

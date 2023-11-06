@@ -568,4 +568,11 @@ public class MultiInstanceManager
     public void setTabModelObserverForTesting(TabModelSelectorTabModelObserver tabModelObserver) {
         mTabModelObserver = tabModelObserver;
     }
+
+    /**
+     * @return InstanceId for current instance.
+     */
+    public int getCurrentInstanceId() {
+        return MultiWindowUtils.INVALID_INSTANCE_ID;
+    }
 }

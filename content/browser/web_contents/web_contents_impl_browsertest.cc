@@ -3434,10 +3434,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, TitleUpdateOnRestore) {
               ui::PAGE_TRANSITION_RELOAD, false, std::string(),
               controller.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */));
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
+  NavigationEntryRestoreContextImpl context;
   restored_entry->SetPageState(
-      controller.GetLastCommittedEntry()->GetPageState(), context.get());
+      controller.GetLastCommittedEntry()->GetPageState(), &context);
   restored_entry->SetTitle(controller.GetLastCommittedEntry()->GetTitle());
 
   // Create a new tab.
@@ -3695,7 +3694,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // This test verifies a suppressed pop up that requires navigation from
   // browser side works with a delegate that delays navigations of pop ups.
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   base::FilePath simple_links_path =
       test_data_dir.Append(GetTestDataFilePath())
           .Append(FILE_PATH_LITERAL("simple_links.html"));
@@ -3735,7 +3734,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   // Create a file: scheme non-suppressed pop up from a file: scheme page will
   // be blocked and wait for the renderer to signal.
   base::FilePath test_data_dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   base::FilePath simple_links_path =
       test_data_dir.Append(GetTestDataFilePath())
           .Append(FILE_PATH_LITERAL("simple_links.html"));
@@ -5963,7 +5962,7 @@ class MediaWatchTimeChangedDelegate : public WebContentsDelegate {
 IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
                        MediaWatchTimeCallback) {
   using UkmEntry = ukm::builders::Media_WebMediaPlayerState;
-  ukm::TestAutoSetUkmRecorder test_recorder_;
+  ukm::TestAutoSetUkmRecorder test_recorder;
 
   MediaWatchTimeChangedDelegate delegate(web_contents());
   net::test_server::EmbeddedTestServerHandle test_server_handle;
@@ -5995,18 +5994,20 @@ IN_PROC_BROWSER_TEST_F(WebContentsFencedFrameBrowserTest,
   // Check if the URL is from the top level frame.
   DCHECK_EQ(top_url, delegate.watch_time().url);
 
+  base::RunLoop run_loop;
+  test_recorder.SetOnAddEntryCallback(UkmEntry::kEntryName,
+                                      run_loop.QuitClosure());
   // Leave the current page to check the UKM records.
-  RenderFrameDeletedObserver delete_observer(fenced_frame);
   fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
       fenced_frame,
       embedded_test_server()->GetURL("a.com", "/fenced_frames/title1.html"));
   ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  delete_observer.WaitUntilDeleted();
+  run_loop.Run();
 
-  const auto& entries = test_recorder_.GetEntriesByName(UkmEntry::kEntryName);
+  const auto& entries = test_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
   for (const auto* entry : entries)
-    test_recorder_.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
+    test_recorder.ExpectEntryMetric(entry, UkmEntry::kIsTopFrameName, false);
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_STARSCAN)

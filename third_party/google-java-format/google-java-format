@@ -1,9 +1,18 @@
 #!/bin/bash
 
-# Exports list taken from google-java-format.jar/META-INF/MANIFEST.MG
 THIS_DIR=$(dirname "$0")
-JAVA_HOME=${JAVA_HOME-"$THIS_DIR/../jdk/current"}
-exec "$JAVA_HOME/bin/java" \
+
+if [[ -n "$JAVA_HOME" ]]; then
+  JAVA="$JAVA_HOME/bin/java"
+elif [[ $(uname) = Linux ]]; then
+  # Chromium bundles Java prebuilts only for Linux.
+  JAVA="$THIS_DIR/../jdk/current/bin/java"
+else
+  JAVA=java
+fi
+
+# Exports list taken from google-java-format.jar/META-INF/MANIFEST.MG
+exec "$JAVA" \
     -Xms512M \
     -cp "$THIS_DIR/chromium-overrides.jar:$THIS_DIR/google-java-format.jar" \
     --add-exports jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \

@@ -4,9 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/list/unpositioned_list_marker.h"
 
+#include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -58,7 +58,7 @@ absl::optional<LayoutUnit> UnpositionedListMarker::ContentAlignmentBaseline(
     const NGPhysicalFragment& content) const {
   // Compute the baseline of the child content.
   if (content.IsLineBox()) {
-    const auto& line_box = To<NGPhysicalLineBoxFragment>(content);
+    const auto& line_box = To<PhysicalLineBoxFragment>(content);
 
     // If this child is an empty line-box, the list marker should be aligned
     // with the next non-empty line box produced. (This can occur with floats
@@ -114,8 +114,7 @@ void UnpositionedListMarker::AddToBox(
       marker_offset.block_offset);
 
   DCHECK(container_builder);
-  if (NGFragmentItemsBuilder* items_builder =
-          container_builder->ItemsBuilder()) {
+  if (FragmentItemsBuilder* items_builder = container_builder->ItemsBuilder()) {
     items_builder->AddListMarker(marker_physical_fragment, marker_offset);
     return;
   }
@@ -177,9 +176,9 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
       *container_builder->BfcBlockOffset() + marker_block_offset};
   const LayoutUnit available_size =
       container_builder->ChildAvailableSize().inline_size;
-  NGLayoutOpportunity opportunity =
-      space.ExclusionSpace().FindLayoutOpportunity(origin_offset,
-                                                   available_size);
+  LayoutOpportunity opportunity =
+      space.GetExclusionSpace().FindLayoutOpportunity(origin_offset,
+                                                      available_size);
   DCHECK(marker_layout_object_);
   const TextDirection direction = marker_layout_object_->StyleRef().Direction();
   if (direction == TextDirection::kLtr) {
@@ -203,7 +202,7 @@ LayoutUnit UnpositionedListMarker::ComputeIntrudedFloatOffset(
 // marker's margin-top.
 void UnpositionedListMarker::CheckMargin() const {
   DCHECK(marker_layout_object_);
-  DCHECK(marker_layout_object_->StyleRef().MarginBefore().IsZero());
+  DCHECK(marker_layout_object_->StyleRef().MarginBlockStart().IsZero());
 }
 #endif
 

@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/overloaded.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -22,17 +23,23 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/page.h"
@@ -96,6 +103,8 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
       content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
       dips_service_(dips_service),
+      cookie_settings_(CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))),
       detector_(this,
                 base::DefaultTickClock::GetInstance(),
                 base::DefaultClock::GetInstance()) {
@@ -223,6 +232,83 @@ DIPSRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
   return absl::nullopt;
 }
 
+bool DIPSRedirectContext::SiteHadUserActivation(const std::string& site) const {
+  if (initial_url_had_user_activation_ &&
+      site == GetSiteForDIPS(initial_url_)) {
+    return true;
+  }
+
+  for (const auto& redirect : redirects_) {
+    if (redirect->has_sticky_activation &&
+        GetSiteForDIPS(redirect->url) == site) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivation() const {
+  std::set<std::string> sites;
+
+  if (initial_url_had_user_activation_) {
+    sites.insert(GetSiteForDIPS(initial_url_));
+  }
+
+  for (const auto& redirect : redirects_) {
+    if (redirect->has_sticky_activation) {
+      sites.insert(GetSiteForDIPS(redirect->url));
+    }
+  }
+
+  return sites;
+}
+
+std::map<std::string, std::pair<GURL, bool>>
+DIPSRedirectContext::GetRedirectHeuristicURLs(
+    const GURL& first_party_url,
+    absl::optional<std::set<std::string>> allowed_sites) const {
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction;
+
+  std::set<std::string> sites_with_user_activation =
+      AllSitesWithUserActivation();
+
+  const std::string& first_party_site = GetSiteForDIPS(first_party_url);
+  for (const auto& redirect : redirects_) {
+    const GURL& url = redirect->url;
+    const std::string site = GetSiteForDIPS(url);
+
+    // The redirect heuristic does not apply for first-party cookie access.
+    if (site == first_party_site) {
+      continue;
+    }
+
+    // Check the list of allowed sites, if provided.
+    if (allowed_sites.has_value() && !allowed_sites->contains(site)) {
+      continue;
+    }
+
+    // Check for a current interaction, if the flag requires it.
+    if (tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteraction
+            .Get() &&
+        !sites_with_user_activation.contains(site)) {
+      continue;
+    }
+
+    // Add the url to the map, but do not override a previous current
+    // interaction.
+    auto& [prev_url, had_current_interaction] =
+        sites_to_url_and_current_interaction[site];
+    if (prev_url.is_empty() || !had_current_interaction) {
+      prev_url = url;
+      had_current_interaction = sites_with_user_activation.contains(site);
+    }
+  }
+
+  return sites_to_url_and_current_interaction;
+}
+
 void DIPSRedirectContext::HandleUncommitted(
     DIPSNavigationStart navigation_start,
     std::vector<DIPSRedirectInfoPtr> server_redirects,
@@ -241,7 +327,8 @@ void DIPSRedirectContext::HandleUncommitted(
             temp_context.AppendClientRedirect(std::move(client_redirect));
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url);
-            temp_context.EndChain(std::move(final_url));
+            temp_context.EndChain(std::move(final_url),
+                                  /*current_page_has_sticky_activation=*/false);
           },
           [&](GURL previous_nav_last_committed_url) {
             // The uncommitted navigation began *without* a client redirect, so
@@ -253,7 +340,8 @@ void DIPSRedirectContext::HandleUncommitted(
                                              /*redirect_prefix_count=*/0);
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url);
-            temp_context.EndChain(std::move(final_url));
+            temp_context.EndChain(std::move(final_url),
+                                  /*current_page_has_sticky_activation=*/false);
           },
       },
       std::move(navigation_start));
@@ -262,7 +350,8 @@ void DIPSRedirectContext::HandleUncommitted(
 void DIPSRedirectContext::AppendCommitted(
     DIPSNavigationStart navigation_start,
     std::vector<DIPSRedirectInfoPtr> server_redirects,
-    const GURL& final_url) {
+    const GURL& final_url,
+    bool current_page_has_sticky_activation) {
   // If there was a client-side redirect before
   // `DIPSBounceDetector::client_bounce_detection_timer_` timedout, grow the
   // chain. Otherwise, end it.
@@ -273,10 +362,12 @@ void DIPSRedirectContext::AppendCommitted(
             // the in-progress redirect chain.
             AppendClientRedirect(std::move(client_redirect));
           },
-          [this](GURL previous_nav_last_committed_url) {
+          [this, current_page_has_sticky_activation](
+              GURL previous_nav_last_committed_url) {
             // The committed navigation began *without* a client redirect, so
             // end the in-progress redirect chain and start a new one.
-            EndChain(previous_nav_last_committed_url);
+            EndChain(previous_nav_last_committed_url,
+                     current_page_has_sticky_activation);
           },
       },
       std::move(navigation_start));
@@ -307,7 +398,8 @@ void DIPSRedirectContext::TrimAndHandleRedirects(size_t trim_count) {
   handler_.Run(std::move(redirect_subchain), std::move(chain));
 }
 
-void DIPSRedirectContext::EndChain(GURL final_url) {
+void DIPSRedirectContext::EndChain(GURL final_url,
+                                   bool current_page_has_sticky_activation) {
   if (!initial_url_.is_empty()) {
     auto chain = std::make_unique<DIPSRedirectChainInfo>(
         initial_url_, final_url, GetRedirectChainLength(),
@@ -315,6 +407,7 @@ void DIPSRedirectContext::EndChain(GURL final_url) {
     handler_.Run(std::move(redirects_), std::move(chain));
   }
 
+  initial_url_had_user_activation_ = current_page_has_sticky_activation;
   initial_url_ = std::move(final_url);
   redirects_.clear();
   update_offset_ = 0;
@@ -556,30 +649,6 @@ void DIPSWebContentsObserver::OnSiteDataAccessed(
 
 void DIPSWebContentsObserver::OnStatefulBounceDetected() {}
 
-void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
-                                                  CookieOperation op) {
-  auto now = clock_->Now();
-
-  if (client_detection_state_ &&
-      GetSiteForDIPS(url) == client_detection_state_->current_site) {
-    client_detection_state_->site_data_access_type =
-        client_detection_state_->site_data_access_type |
-        ToSiteDataAccessType(op);
-
-    // To decrease the number of writes made to the database, after a site
-    // storage event (cookie write) on the page, new storage events will not
-    // be recorded for the next |kTimestampUpdateInterval|.
-    if (op == CookieOperation::kChange &&
-        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
-                              now)) {
-      client_detection_state_->last_storage_time = now;
-      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-    }
-  } else if (op == CookieOperation::kChange) {
-    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-  }
-}
-
 bool HasCHIPS(const net::CookieList& cookie_list) {
   for (const auto& cookie : cookie_list) {
     if (cookie.IsPartitioned()) {
@@ -607,17 +676,31 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
     return;
   }
 
+  // We might be called for "late" server cookie accesses, not just client
+  // cookies. Before completing other checks, attempt to attribute the cookie
+  // access to the current redirect chain to handle that case.
+  //
+  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
+  // uncommitted navigations?
+  if (detector_.CommittedRedirectContext().AddLateCookieAccess(details.url,
+                                                               details.type)) {
+    detector_.OnServerCookiesAccessed(/*navigation_handle=*/nullptr,
+                                      details.url, details.type);
+    return;
+  }
+
+  // Otherwise, attribute the client cookie access to the first party site of
+  // the RFH.
   const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
   if (!fpu.has_value()) {
     return;
   }
-
   if (!HasCHIPS(details.cookie_list) &&
       !IsSameSiteForDIPS(fpu.value(), details.url)) {
     return;
   }
 
-  detector_.OnClientCookiesAccessed(fpu.value(), details.type);
+  detector_.OnClientSiteDataAccessed(fpu.value(), details.type);
 }
 
 void DIPSWebContentsObserver::OnCookiesAccessed(
@@ -655,24 +738,28 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
   detector_.OnServerCookiesAccessed(&dips_handle, details.url, details.type);
 }
 
-void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
-                                                 CookieOperation op) {
-  base::Time now = clock_->Now();
+void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
+                                                  CookieOperation op) {
+  auto now = clock_->Now();
 
-  // We might be called for "late" server cookie accesses, not just client
-  // cookies. Before completing other checks, attempt to attribute the cookie
-  // access to the current redirect chain to handle that case.
-  //
-  // TODO(rtarpine): Is it possible for cookie accesses to be reported late for
-  // uncommitted navigations?
-  if (committed_redirect_context_.AddLateCookieAccess(url, op)) {
-    if (op == CookieOperation::kChange) {
+  if (client_detection_state_ &&
+      GetSiteForDIPS(url) == client_detection_state_->current_site) {
+    client_detection_state_->site_data_access_type =
+        client_detection_state_->site_data_access_type |
+        ToSiteDataAccessType(op);
+
+    // To decrease the number of writes made to the database, after a site
+    // storage event (cookie write) on the page, new storage events will not
+    // be recorded for the next |kTimestampUpdateInterval|.
+    if (op == CookieOperation::kChange &&
+        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
+                              now)) {
+      client_detection_state_->last_storage_time = now;
       delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
     }
-    return;
+  } else if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
   }
-
-  OnClientSiteDataAccessed(url, op);
 }
 
 void DIPSBounceDetector::OnServerCookiesAccessed(
@@ -682,9 +769,11 @@ void DIPSBounceDetector::OnServerCookiesAccessed(
   if (op == CookieOperation::kChange) {
     delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, clock_->Now());
   }
-  ServerBounceDetectionState* state = navigation_handle->GetServerState();
-  if (state) {
-    state->filter.AddAccess(url, op);
+  if (navigation_handle) {
+    ServerBounceDetectionState* state = navigation_handle->GetServerState();
+    if (state) {
+      state->filter.AddAccess(url, op);
+    }
   }
 }
 
@@ -709,6 +798,9 @@ void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
   size_t third_party_site_index = third_party_site_info->first;
   ukm::SourceId third_party_source_id =
       third_party_site_info->second->source_id;
+  bool is_current_interaction =
+      detector_.CommittedRedirectContext().SiteHadUserActivation(
+          third_party_site);
 
   auto first_party_site_info =
       detector_.CommittedRedirectContext().GetRedirectInfoFromChain(
@@ -731,7 +823,8 @@ void DIPSWebContentsObserver::MaybeRecordRedirectHeuristic(
       .WithArgs(details.url)
       .Then(base::BindOnce(&DIPSWebContentsObserver::RecordRedirectHeuristic,
                            weak_factory_.GetWeakPtr(), first_party_source_id,
-                           third_party_source_id, details, sites_passed_count));
+                           third_party_source_id, details, sites_passed_count,
+                           is_current_interaction));
 }
 
 void DIPSWebContentsObserver::RecordRedirectHeuristic(
@@ -739,6 +832,7 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
     const ukm::SourceId& third_party_source_id,
     const content::CookieAccessDetails& details,
     const size_t sites_passed_count,
+    bool is_current_interaction,
     absl::optional<base::Time> last_user_interaction_time) {
   // This function can only be reached if the redirect heuristic is satisfied
   // for the previous recorded redirect.
@@ -760,8 +854,8 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
       HasSameSiteIframe(WebContentsObserver::web_contents(), details.url));
 
   const bool first_party_precedes_third_party =
-      DoesFirstPartyPrecedeThirdParty(WebContentsObserver::web_contents(),
-                                      details.first_party_url, details.url);
+      AllSitesFollowingFirstParty(details.first_party_url)
+          .contains(GetSiteForDIPS(details.url));
 
   int32_t access_id = base::RandUint64();
 
@@ -773,11 +867,77 @@ void DIPSWebContentsObserver::RecordRedirectHeuristic(
       .SetOpenerHasSameSiteIframe(static_cast<int64_t>(has_same_site_iframe))
       .SetSitesPassedCount(sites_passed_count)
       .SetDoesFirstPartyPrecedeThirdParty(first_party_precedes_third_party)
+      .SetIsCurrentInteraction(is_current_interaction)
       .Record(ukm::UkmRecorder::Get());
 
   ukm::builders::RedirectHeuristic_CookieAccessThirdParty(third_party_source_id)
       .SetAccessId(access_id)
       .Record(ukm::UkmRecorder::Get());
+}
+
+void DIPSWebContentsObserver::CreateAllRedirectHeuristicGrants(
+    const GURL& first_party_url) {
+  base::TimeDelta grant_duration =
+      tpcd::experiment::kTpcdWriteRedirectHeuristicGrants.Get();
+  if (!grant_duration.is_positive()) {
+    return;
+  }
+
+  absl::optional<std::set<std::string>> sites_with_aba_flow = absl::nullopt;
+  if (tpcd::experiment::kTpcdRedirectHeuristicRequireABAFlow.Get()) {
+    sites_with_aba_flow = AllSitesFollowingFirstParty(first_party_url);
+  }
+
+  std::map<std::string, std::pair<GURL, bool>>
+      sites_to_url_and_current_interaction =
+          detector_.CommittedRedirectContext().GetRedirectHeuristicURLs(
+              first_party_url, sites_with_aba_flow);
+
+  for (const auto& kv : sites_to_url_and_current_interaction) {
+    auto [url, is_current_interaction] = kv.second;
+    // If there was a current interaction, there is no need to call DIPSStorage
+    // to check the db for a past interaction.
+    if (is_current_interaction) {
+      CreateRedirectHeuristicGrant(url, first_party_url, grant_duration,
+                                   /*has_interaction=*/true);
+    } else {
+      // If `kTpcdRedirectHeuristicRequireCurrentInteraction` is true, then
+      // `GetRedirectHeuristicURLs` should not return any entries without a
+      // current interaction.
+      DCHECK(!tpcd::experiment::kTpcdRedirectHeuristicRequireCurrentInteraction
+                  .Get());
+      base::OnceCallback<void(absl::optional<base::Time>)> create_grant =
+          base::BindOnce(
+              [](absl::optional<base::Time> last_user_interaction_time) {
+                return last_user_interaction_time.has_value();
+              })
+              .Then(base::BindOnce(
+                  &DIPSWebContentsObserver::CreateRedirectHeuristicGrant,
+                  weak_factory_.GetWeakPtr(), url, first_party_url,
+                  grant_duration));
+
+      dips_service_->storage()
+          ->AsyncCall(&DIPSStorage::LastInteractionTime)
+          .WithArgs(url)
+          .Then(std::move(create_grant));
+    }
+  }
+}
+
+void DIPSWebContentsObserver::CreateRedirectHeuristicGrant(
+    const GURL& url,
+    const GURL& first_party_url,
+    base::TimeDelta grant_duration,
+    bool has_interaction) {
+  if (has_interaction) {
+    // TODO(crbug.com/1484324): Make these grants lossy to avoid spamming
+    // profile prefs with blocking requests.
+    // TODO(crbug.com/1484324): Add bounds to these grants to avoid overflow.
+    // TODO(crbug.com/1484324): Consider applying these grants only to rSA
+    // calls.
+    cookie_settings_->SetTemporaryCookieGrantForHeuristic(url, first_party_url,
+                                                          grant_duration);
+  }
 }
 
 void DIPSWebContentsObserver::OnServiceWorkerAccessed(
@@ -865,20 +1025,30 @@ void DIPSWebContentsObserver::DidFinishNavigation(
 
   DIPSNavigationHandleImpl dips_handle(navigation_handle);
   detector_.DidFinishNavigation(&dips_handle);
+
+  if (navigation_handle->HasCommitted()) {
+    // Use the redirects just added to the DIPSRedirectContext in order to
+    // create new storage access grants when the Redirect heuristic applies.
+    CreateAllRedirectHeuristicGrants(navigation_handle->GetURL());
+  }
 }
 
 void DIPSBounceDetector::DidFinishNavigation(
     DIPSNavigationHandle* navigation_handle) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  // Starts the timer.
+  bool current_page_has_sticky_activation =
+      client_detection_state_ &&
+      client_detection_state_->last_activation_time.has_value();
+
+  // Starts the timer to detect further client redirects.
   client_bounce_detection_timer_.Reset();
 
-  // Iff the primary page changed, reset the client detection state while
-  // storing the page load time and previous_url. A primary page change is
-  // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and
-  // HasCommitted. HasCommitted is the only one not previously checked here.
   if (navigation_handle->HasCommitted()) {
+    // Iff the primary page changed, reset the client detection state while
+    // storing the page load time and previous_url. A primary page change is
+    // verified by checking IsInPrimaryMainFrame, !IsSameDocument, and
+    // HasCommitted. HasCommitted is the only one not previously checked here.
     client_detection_state_ = ClientBounceDetectionState(
         navigation_handle->GetPreviousPrimaryMainFrameURL(),
         GetSiteForDIPS(navigation_handle->GetURL()), now);
@@ -908,7 +1078,7 @@ void DIPSBounceDetector::DidFinishNavigation(
   if (navigation_handle->HasCommitted()) {
     committed_redirect_context_.AppendCommitted(
         std::move(server_state->navigation_start), std::move(redirects),
-        navigation_handle->GetURL());
+        navigation_handle->GetURL(), current_page_has_sticky_activation);
   } else {
     committed_redirect_context_.HandleUncommitted(
         std::move(server_state->navigation_start), std::move(redirects),
@@ -994,6 +1164,34 @@ bool DIPSBounceDetector::ShouldUpdateTimestamp(
           (now - last_time.value()) >= kTimestampUpdateInterval);
 }
 
+std::set<std::string> DIPSWebContentsObserver::AllSitesFollowingFirstParty(
+    const GURL& first_party_url) {
+  std::set<std::string> sites;
+
+  content::NavigationController& nav_controller =
+      WebContentsObserver::web_contents()->GetController();
+  const std::string first_party_site = GetSiteForDIPS(first_party_url);
+
+  int min_index = std::max(0, nav_controller.GetCurrentEntryIndex() -
+                                  kAllSitesFollowingFirstPartyLookbackLength);
+  absl::optional<std::string> prev_site = absl::nullopt;
+  for (int ind = nav_controller.GetCurrentEntryIndex(); ind >= min_index;
+       ind--) {
+    std::string cur_site =
+        GetSiteForDIPS(nav_controller.GetEntryAtIndex(ind)->GetURL());
+
+    if (cur_site == first_party_site) {
+      if (prev_site.has_value() && *prev_site != first_party_site) {
+        sites.insert(*prev_site);
+      }
+    }
+
+    prev_site = cur_site;
+  }
+
+  return sites;
+}
+
 void DIPSWebContentsObserver::WebContentsDestroyed() {
   if (last_committed_site_.has_value()) {
     dips_service_->RemoveOpenSite(last_committed_site_.value());
@@ -1003,11 +1201,17 @@ void DIPSWebContentsObserver::WebContentsDestroyed() {
 }
 
 void DIPSBounceDetector::BeforeDestruction() {
-  committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL());
+  committed_redirect_context_.EndChain(
+      delegate_->GetLastCommittedURL(),
+      /*current_page_has_sticky_activation=*/false);
 }
 
 void DIPSBounceDetector::OnClientBounceDetectionTimeout() {
-  committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL());
+  bool current_page_has_sticky_activation =
+      client_detection_state_ &&
+      client_detection_state_->last_activation_time.has_value();
+  committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL(),
+                                       current_page_has_sticky_activation);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DIPSWebContentsObserver);

@@ -11,5 +11,4 @@ namespace content {
 BASE_FEATURE(kPrivateAggregationApiBundledEnhancements,
              "PrivateAggregationApiBundledEnhancements",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace content

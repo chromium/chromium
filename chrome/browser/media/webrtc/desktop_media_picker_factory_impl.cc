@@ -12,11 +12,14 @@
 #include "chrome/browser/media/webrtc/desktop_capturer_wrapper.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/media/webrtc/thumbnail_capturer_mac.h"
 #include "content/public/browser/desktop_capture.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/media/webrtc/thumbnail_capturer_mac.h"
 #endif
 
 namespace {

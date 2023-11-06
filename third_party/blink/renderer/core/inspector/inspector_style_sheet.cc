@@ -202,6 +202,7 @@ class StyleSheetHandler final : public CSSParserObserver {
 
   TextPosition GetTextPosition(unsigned start_offset);
   void AddNewRuleToSourceTree(CSSRuleSourceData*);
+  void RemoveLastRuleFromSourceTree();
   CSSRuleSourceData* PopRuleData();
   template <typename CharacterType>
   inline void SetRuleHeaderEnd(const CharacterType*, unsigned);
@@ -339,10 +340,19 @@ void StyleSheetHandler::AddNewRuleToSourceTree(CSSRuleSourceData* rule) {
     return;
   }
 
-  if (current_rule_data_stack_.empty())
+  if (current_rule_data_stack_.empty()) {
     result_->push_back(rule);
-  else
+  } else {
     current_rule_data_stack_.back()->child_rules.push_back(rule);
+  }
+}
+
+void StyleSheetHandler::RemoveLastRuleFromSourceTree() {
+  if (current_rule_data_stack_.empty()) {
+    result_->pop_back();
+  } else {
+    current_rule_data_stack_.back()->child_rules.pop_back();
+  }
 }
 
 CSSRuleSourceData* StyleSheetHandler::PopRuleData() {
@@ -493,15 +503,20 @@ void StyleSheetHandler::ObserveErroneousAtRule(
     }
     case CSSAtRuleID::kCSSAtRuleProperty: {
       if (invalid_properties.empty()) {
+        // Invoked from the prelude handling, which means the name is invalid.
         TextPosition start = GetTextPosition(start_offset);
         AuditsIssue::ReportPropertyRuleIssue(
             document_, issueReportingContext_->DocumentURL, start.line_,
             start.column_,
             protocol::Audits::PropertyRuleIssueReasonEnum::InvalidName, {});
-        break;
-      }
-      for (CSSPropertyID invalid_property : invalid_properties) {
-        ReportPropertyRuleFailure(start_offset, invalid_property);
+      } else {
+        // The rule is being dropped because it lacks required descriptors, or
+        // some descriptors have invalid values. The rule has already been
+        // committed and must be removed.
+        for (CSSPropertyID invalid_property : invalid_properties) {
+          ReportPropertyRuleFailure(start_offset, invalid_property);
+        }
+        RemoveLastRuleFromSourceTree();
       }
       break;
     }
@@ -1349,6 +1364,10 @@ bool InspectorStyleSheet::SetText(const String& text,
   return true;
 }
 
+void InspectorStyleSheet::CSSOMStyleSheetTextReplaced(const String& text) {
+  InnerSetText(text, false);
+}
+
 CSSStyleRule* InspectorStyleSheet::SetRuleSelector(
     const SourceRange& range,
     const String& text,
@@ -2034,6 +2053,7 @@ String InspectorStyleSheet::MergeCSSOMRulesWithText(const String& text) {
 
 void InspectorStyleSheet::InnerSetText(const String& text,
                                        bool mark_as_locally_modified) {
+  marked_for_sync_ = false;
   ParseText(text);
 
   text_ = text;
@@ -2103,7 +2123,7 @@ InspectorStyleSheet::BuildObjectForStyleSheetInfo() {
   // proper URL of the source of the stylesheet.
   const String& source_url =
       (style_sheet->IsConstructed() && !style_sheet->IsForCSSModuleScript())
-          ? String()
+          ? SourceURL()
           : Url();
 
   std::unique_ptr<protocol::CSS::CSSStyleSheetHeader> result =
@@ -2754,7 +2774,7 @@ InspectorStyle* InspectorStyleSheetForInlineStyle::GetInspectorStyle(
         element_->style(), RuleSourceData(), this);
   }
 
-  return inspector_style_;
+  return inspector_style_.Get();
 }
 
 CSSRuleSourceData* InspectorStyleSheetForInlineStyle::RuleSourceData() {

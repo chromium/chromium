@@ -17,6 +17,7 @@
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -68,11 +69,10 @@ class SupervisedUserNavigationObserver
                                const OnInterstitialResultCallback& callback);
 
   void UpdateMainFrameFilteringStatus(
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
+      supervised_user::FilteringBehavior behavior,
       supervised_user::FilteringBehaviorReason reason);
 
-  supervised_user::SupervisedUserURLFilter::FilteringBehavior
-  main_frame_filtering_behavior() const {
+  supervised_user::FilteringBehavior main_frame_filtering_behavior() const {
     return main_frame_filtering_behavior_;
   }
 
@@ -116,13 +116,12 @@ class SupervisedUserNavigationObserver
                                 int frame_id,
                                 const OnInterstitialResultCallback& callback);
 
-  void URLFilterCheckCallback(
-      const GURL& url,
-      int render_frame_process_id,
-      int render_frame_routing_id,
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user::FilteringBehaviorReason reason,
-      bool uncertain);
+  void URLFilterCheckCallback(const GURL& url,
+                              int render_frame_process_id,
+                              int render_frame_routing_id,
+                              supervised_user::FilteringBehavior behavior,
+                              supervised_user::FilteringBehaviorReason reason,
+                              bool uncertain);
 
   void MaybeShowInterstitial(const GURL& url,
                              supervised_user::FilteringBehaviorReason reason,
@@ -164,9 +163,8 @@ class SupervisedUserNavigationObserver
 
   std::set<std::string> requested_hosts_;
 
-  supervised_user::SupervisedUserURLFilter::FilteringBehavior
-      main_frame_filtering_behavior_ =
-          supervised_user::SupervisedUserURLFilter::FilteringBehavior::ALLOW;
+  supervised_user::FilteringBehavior main_frame_filtering_behavior_ =
+      supervised_user::FilteringBehavior::kAllow;
   supervised_user::FilteringBehaviorReason
       main_frame_filtering_behavior_reason_ =
           supervised_user::FilteringBehaviorReason::DEFAULT;

@@ -11,10 +11,9 @@ import org.chromium.chrome.browser.vr.rules.VrModuleNotInstalled;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Class for accessing VrShellDelegate internals for testing purposes.
- * This does two things:
- * - Prevents us from needing @VisibleForTesting annotations everywhere in production code.
- * - Allows us to have test-specific behavior if necessary without changing production code.
+ * Class for accessing VrShellDelegate internals for testing purposes. This does two things: -
+ * Prevents us from needing @VisibleForTesting annotations everywhere in production code. - Allows
+ * us to have test-specific behavior if necessary without changing production code.
  */
 public class TestVrShellDelegate extends VrShellDelegate {
     private Runnable mOnVSyncPausedCallback;
@@ -29,7 +28,9 @@ public class TestVrShellDelegate extends VrShellDelegate {
         if (sTestDescription.getAnnotation(VrModuleNotInstalled.class) != null) return;
         if (sInstance != null) return;
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { sInstance = new TestVrShellDelegate(activity); });
+                () -> {
+                    sInstance = new TestVrShellDelegate(activity);
+                });
     }
 
     // TODO(bsheedy): Maybe remove this and switch to setting a VrShellDelegateFactory instead.
@@ -68,8 +69,8 @@ public class TestVrShellDelegate extends VrShellDelegate {
 
     /**
      * The same as the production onResume, except that we set a boolean to avoid cancelling VR
-     * entry when we think we're in the DON flow. This is caused by crbug.com/762724.
-     * TODO(bsheedy): Remove this when the root cause is fixed.
+     * entry when we think we're in the DON flow. This is caused by crbug.com/762724. TODO(bsheedy):
+     * Remove this when the root cause is fixed.
      */
     @Override
     protected void onResume() {
@@ -81,9 +82,9 @@ public class TestVrShellDelegate extends VrShellDelegate {
     }
 
     /**
-     * If we need to know when the normal VSync gets paused, we have a small window between when
-     * the VrShell is created and we actually enter VR to set the callback. So, do it immediately
-     * after creation here.
+     * If we need to know when the normal VSync gets paused, we have a small window between when the
+     * VrShell is created and we actually enter VR to set the callback. So, do it immediately after
+     * creation here.
      */
     @Override
     protected boolean createVrShell() {

@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -39,7 +38,7 @@ content::ContextMenuParams CreateContextMenuParams(
   content::ContextMenuParams rv;
   rv.is_editable = true;
   rv.page_url = GURL("http://test.page/");
-  rv.input_field_type = blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  rv.form_control_type = blink::mojom::FormControlType::kInputText;
   if (form_renderer_id) {
     rv.form_renderer_id = form_renderer_id->value();
   }
@@ -66,11 +65,7 @@ class TestAutofillManager : public BrowserAutofillManager {
 class AutofillContextMenuManagerFeedbackUIBrowserTest
     : public InProcessBrowserTest {
  public:
-  AutofillContextMenuManagerFeedbackUIBrowserTest() {
-    feature_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillFeedback},
-        /*disabled_features=*/{});
-  }
+  AutofillContextMenuManagerFeedbackUIBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
@@ -78,7 +73,7 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
     render_view_context_menu_->Init();
     autofill_context_menu_manager_ =
         std::make_unique<AutofillContextMenuManager>(
-            nullptr, render_view_context_menu_.get(), nullptr, nullptr);
+            nullptr, render_view_context_menu_.get(), nullptr);
 
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed,
                                                  true);
@@ -103,7 +98,6 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<TestRenderViewContextMenu> render_view_context_menu_;
   std::unique_ptr<AutofillContextMenuManager> autofill_context_menu_manager_;
-  base::test::ScopedFeatureList feature_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
 };
 
@@ -169,6 +163,22 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Close the feedback dialog.
   feedback_dialog->GetWidget()->Close();
+}
+
+// Regression test for crbug.com/1493774.
+IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
+                       TabMoveToOtherBrowserDoesNotCrash) {
+  // Create another browser.
+  Browser* other_browser = CreateBrowser(browser()->profile());
+
+  // Move the tab to the other browser.
+  other_browser->tab_strip_model()->InsertWebContentsAt(
+      0, browser()->tab_strip_model()->DetachWebContentsAtForInsertion(0),
+      AddTabTypes::ADD_ACTIVE);
+  ASSERT_EQ(other_browser->tab_strip_model()->count(), 2);
+
+  // Close the first browser.
+  CloseBrowserSynchronously(browser());
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,

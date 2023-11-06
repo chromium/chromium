@@ -165,6 +165,11 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
 
 // Tests the requirements for object-src specifications.
 TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
+  enum class ManifestVersion {
+    kMV2,
+    kMV3,
+  };
+
   static constexpr char kManifestV3Template[] =
       R"({
            "name": "Test Extension",
@@ -183,103 +188,103 @@ TEST_F(CSPInfoUnitTest, ObjectSrcRequirements) {
            "content_security_policy": "%s"
          })";
 
-  auto get_manifest = [](const char* manifest_template, const char* input) {
+  auto get_manifest = [](ManifestVersion version, const char* input) {
     return base::test::ParseJsonDict(
-        base::StringPrintf(manifest_template, input));
+        version == ManifestVersion::kMV2
+            ? base::StringPrintf(kManifestV2Template, input)
+            : base::StringPrintf(kManifestV3Template, input));
   };
 
-  struct {
-    const char* manifest_template;
+  static constexpr struct {
+    ManifestVersion version;
     const char* csp;
-  } passing_testcases[] = {
+  } kPassingTestcases[] = {
       // object-src doesn't need to be explicitly specified in manifest V3.
-      {kManifestV3Template, "script-src 'self'"},
-      {kManifestV3Template, "default-src 'self'"},
+      {ManifestVersion::kMV3, "script-src 'self'"},
+      {ManifestVersion::kMV3, "default-src 'self'"},
       // Secure object-src specifications are allowed.
-      {kManifestV3Template, "script-src 'self'; object-src 'self'"},
-      {kManifestV3Template, "script-src 'self'; object-src 'none'"},
-      {kManifestV3Template,
-       ("script-src 'self'; object-src 'self'; frame-src 'self'; "
-        "default-src https://google.com")},
+      {ManifestVersion::kMV3, "script-src 'self'; object-src 'self'"},
+      {ManifestVersion::kMV3, "script-src 'self'; object-src 'none'"},
+      {ManifestVersion::kMV3,
+       ("script-src 'self'; object-src 'self'; frame-src 'self'; default-src "
+        "https://google.com")},
       // Even though the object-src in the example below is effectively
       // https://google.com (because it falls back to the default-src), we
       // still allow it so that developers don't need to explicitly specify an
       // object-src just because they specified a default-src. The minimum CSP
       // (which includes `object-src 'self'`) still kicks in and prevents any
       // insecure use.
-      {kManifestV3Template,
+      {ManifestVersion::kMV3,
        "script-src 'self'; default-src https://google.com"},
 
       // In Manifest V2, object-src must be specified (if it's omitted, we add
-      // it; see `warning_testcases` below).
+      // it; see `kWarningTestcases` below).
       // Note: in MV2, our parsing will implicitly also add a trailing semicolon
       // if one isn't provided, so we always add one here so that the final CSP
       // matches.
-      {kManifestV2Template, "script-src 'self'; object-src 'self';"},
-      {kManifestV2Template, "script-src 'self'; object-src 'none';"},
-      {kManifestV2Template,
-       ("script-src 'self'; object-src 'self'; frame-src 'self'; "
-        "default-src https://google.com;")},
+      {ManifestVersion::kMV2, "script-src 'self'; object-src 'self';"},
+      {ManifestVersion::kMV2, "script-src 'self'; object-src 'none';"},
+      {ManifestVersion::kMV2,
+       ("script-src 'self'; object-src 'self'; frame-src 'self'; default-src "
+        "https://google.com;")},
       // Manifest V2 allows (secure) remote object-src specifications.
-      {kManifestV2Template,
+      {ManifestVersion::kMV2,
        "script-src 'self'; object-src https://google.com;"},
-      {kManifestV2Template,
+      {ManifestVersion::kMV2,
        "script-src 'self'; default-src https://google.com;"},
   };
 
-  for (const auto& testcase : passing_testcases) {
+  for (const auto& testcase : kPassingTestcases) {
     SCOPED_TRACE(testcase.csp);
-    ManifestData manifest_data(
-        get_manifest(testcase.manifest_template, testcase.csp));
+    ManifestData manifest_data(get_manifest(testcase.version, testcase.csp));
     scoped_refptr<const Extension> extension =
         LoadAndExpectSuccess(manifest_data);
     ASSERT_TRUE(extension);
     EXPECT_EQ(testcase.csp, CSPInfo::GetExtensionPagesCSP(extension.get()));
   }
 
-  struct {
-    const char* manifest_template;
+  static constexpr struct {
+    ManifestVersion version;
     const char* csp;
     const char* expected_error;
-  } failing_testcases[] = {
+  } kFailingTestcases[] = {
       // If an object-src *is* specified, it must be secure and must not allow
       // remotely-hosted code (in MV3).
-      {kManifestV3Template, "script-src 'self'; object-src https://google.com",
+      {ManifestVersion::kMV3,
+       "script-src 'self'; object-src https://google.com",
        "*Insecure CSP value \"https://google.com\" in directive 'object-src'."},
   };
 
-  for (const auto& testcase : failing_testcases) {
+  for (const auto& testcase : kFailingTestcases) {
     SCOPED_TRACE(testcase.csp);
-    ManifestData manifest_data(
-        get_manifest(testcase.manifest_template, testcase.csp));
+    ManifestData manifest_data(get_manifest(testcase.version, testcase.csp));
     LoadAndExpectError(manifest_data, testcase.expected_error);
   }
 
-  struct {
-    const char* manifest_template;
+  static constexpr struct {
+    ManifestVersion version;
     const char* csp;
     const char* expected_warning;
     const char* effective_csp;
-  } warning_testcases[] = {
+  } kWarningTestcases[] = {
       // In MV2, if an object-src is not provided, we will warn and synthesize
       // one.
-      {kManifestV2Template, "script-src 'self'",
+      {ManifestVersion::kMV2, "script-src 'self'",
        ("'content_security_policy': CSP directive 'object-src' must be "
         "specified (either explicitly, or implicitly via 'default-src') "
         "and must allowlist only secure resources."),
        "script-src 'self'; object-src 'self';"},
       // Similarly, if an insecure (e.g. http) object-src is provided, we simply
       // ignore it.
-      {kManifestV2Template, "script-src 'self'; object-src http://google.com",
+      {ManifestVersion::kMV2, "script-src 'self'; object-src http://google.com",
        ("'content_security_policy': Ignored insecure CSP value "
         "\"http://google.com\" in directive 'object-src'."),
        "script-src 'self'; object-src;"}};
 
-  for (const auto& testcase : warning_testcases) {
+  for (const auto& testcase : kWarningTestcases) {
     // Special case: In MV2, if the developer doesn't provide an object-src, we
     // insert one ('self') and emit a warning.
-    ManifestData manifest_data(
-        get_manifest(testcase.manifest_template, testcase.csp));
+    ManifestData manifest_data(get_manifest(testcase.version, testcase.csp));
     scoped_refptr<const Extension> extension =
         LoadAndExpectWarning(manifest_data, testcase.expected_warning);
     ASSERT_TRUE(extension);

@@ -147,11 +147,20 @@ public class TasksSurfaceCoordinator implements TasksSurface {
                     incognitoReauthControllerSupplier, /*BackPressManager*/ null,
                     /* layoutStateProviderSupplier */ null);
         } else if (tabSwitcherType == TabSwitcherType.SINGLE) {
-            mTabSwitcher = new SingleTabSwitcherCoordinator(activity,
-                    mView.getCarouselTabSwitcherContainer(), null, tabModelSelector,
-                    /* isTablet= */ false, /* isScrollableMvtEnabled */ true,
-                    /* mostRecentTab= */ null, /* singleTabCardClickedCallback */ null,
-                    /* snapshotParentViewRunnable */ null, mTabContentManager, null);
+            mTabSwitcher =
+                    new SingleTabSwitcherCoordinator(
+                            activity,
+                            mView.getCarouselTabSwitcherContainer(),
+                            null,
+                            tabModelSelector,
+                            /* isShownOnNtp */ false,
+                            /* isTablet */ false,
+                            /* isScrollableMvtEnabled */ true,
+                            /* mostRecentTab= */ null,
+                            /* singleTabCardClickedCallback */ null,
+                            /* snapshotParentViewRunnable */ null,
+                            mTabContentManager,
+                            null);
         } else if (tabSwitcherType == TabSwitcherType.NONE) {
             mTabSwitcher = null;
         } else {
@@ -314,13 +323,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void removeHeaderOffsetChangeListener(
             AppBarLayout.OnOffsetChangedListener onOffsetChangedListener) {
         mView.removeHeaderOffsetChangeListener(onOffsetChangedListener);
-    }
-
-    @Override
-    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float translationX,
-            int buttonSize, int lensButtonLeftMargin) {
-        mView.updateFakeSearchBox(height, topMargin, endPadding, translationX, buttonSize,
-                lensButtonLeftMargin, height + topMargin);
     }
 
     @Override

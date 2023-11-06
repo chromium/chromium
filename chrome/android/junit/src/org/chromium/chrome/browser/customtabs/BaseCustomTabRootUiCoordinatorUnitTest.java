@@ -20,28 +20,16 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.sync.SyncService;
 
 /** JUnit tests for BaseCustomTabRootUiCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
 public final class BaseCustomTabRootUiCoordinatorUnitTest {
-    @Rule
-    public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
-
-    private void enablePageInsights(CustomTabsConnection connection, SyncService syncService) {
-        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
-        when(syncService.isSyncingUnencryptedUrls()).thenReturn(true);
-    }
-
-    private boolean isPageInsightsEnabledSync() {
-        return BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabledSync(null, () -> null);
-    }
+    @Rule public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
 
     @Test
     @MediumTest
@@ -50,21 +38,17 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
 
-        SyncService syncService = Mockito.mock(SyncService.class);
-        SyncServiceFactory.setInstanceForTesting(syncService);
-
-        enablePageInsights(connection, syncService);
-        assertTrue("PageInsightsHub should be enabled", isPageInsightsEnabledSync());
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
+        assertTrue(
+                "PageInsightsHub should be enabled",
+                BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled(null));
 
         // The method should return false if any one of the conditions is not met .
 
-        enablePageInsights(connection, syncService);
         when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(false);
-        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
-
-        enablePageInsights(connection, syncService);
-        when(syncService.isSyncingUnencryptedUrls()).thenReturn(false);
-        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
+        assertFalse(
+                "PageInsightsHub should be disabled",
+                BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled(null));
     }
 
     @Test
@@ -73,13 +57,12 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     public void testPageInsightsEnabledSync_cctPageInsightsHubFalse() throws Exception {
         CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
         CustomTabsConnection.setInstanceForTesting(connection);
-
-        SyncService syncService = Mockito.mock(SyncService.class);
-        SyncServiceFactory.setInstanceForTesting(syncService);
+        when(connection.shouldEnablePageInsightsForIntent(any())).thenReturn(true);
 
         // The method returns false if the flag is set to false
 
-        enablePageInsights(connection, syncService);
-        assertFalse("PageInsightsHub should be disabled", isPageInsightsEnabledSync());
+        assertFalse(
+                "PageInsightsHub should be disabled",
+                BaseCustomTabRootUiCoordinator.isPageInsightsHubEnabled(null));
     }
 }

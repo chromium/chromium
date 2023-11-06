@@ -62,6 +62,7 @@ constexpr char kKeyCustomMessagesMessage[] = "message";
 constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyEnterpriseId[] = "enterprise_id";
+constexpr char kKeyDefaultAction[] = "default_action";
 constexpr char kKeyDomain[] = "domain";
 constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
 constexpr char kKeyOptInEventName[] = "name";

@@ -7,7 +7,6 @@
 #include <string>
 
 #include "ash/ash_element_identifiers.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
@@ -15,7 +14,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_state_cache.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
@@ -38,13 +36,9 @@ using bluetooth_config::mojom::BluetoothSystemState;
 using bluetooth_config::mojom::DeviceConnectionState;
 
 BluetoothSystemState GetInitialSystemState() {
-  if (features::IsQsRevampEnabled()) {
-    // Synchronously query the initial state so the feature tile doesn't flash
-    // with the wrong state. See b/266996235
-    return Shell::Get()->bluetooth_state_cache()->system_state();
-  } else {
-    return BluetoothSystemState::kUnavailable;
-  }
+  // Synchronously query the initial state so the feature tile doesn't flash
+  // with the wrong state. See b/266996235
+  return Shell::Get()->bluetooth_state_cache()->system_state();
 }
 
 }  // namespace
@@ -61,20 +55,8 @@ BluetoothFeaturePodController::BluetoothFeaturePodController(
 
 BluetoothFeaturePodController::~BluetoothFeaturePodController() = default;
 
-FeaturePodButton* BluetoothFeaturePodController::CreateButton() {
-  DCHECK(!button_);
-  button_ = new FeaturePodButton(this);
-  button_->ShowDetailedViewArrow();
-  // Init the button with invisible state. The `UpdateButtonStateIfExists`
-  // method will update the visibility based on the current condition.
-  button_->SetVisible(false);
-  UpdateButtonStateIfExists();
-  return button_;
-}
-
 std::unique_ptr<FeatureTile> BluetoothFeaturePodController::CreateTile(
     bool compact) {
-  DCHECK(features::IsQsRevampEnabled());
   auto tile = std::make_unique<FeatureTile>(
       base::BindRepeating(&BluetoothFeaturePodController::OnLabelPressed,
                           weak_factory_.GetWeakPtr()));
@@ -236,51 +218,13 @@ std::u16string BluetoothFeaturePodController::ComputeTooltip() const {
 }
 
 bool BluetoothFeaturePodController::IsButtonEnabled() const {
-  return features::IsQsRevampEnabled() ? tile_->GetEnabled()
-                                       : button_->GetEnabled();
+  return tile_->GetEnabled();
 }
 
 bool BluetoothFeaturePodController::IsButtonToggled() const {
-  return features::IsQsRevampEnabled() ? tile_->IsToggled()
-                                       : button_->IsToggled();
+  return tile_->IsToggled();
 }
 
-void BluetoothFeaturePodController::UpdateButtonStateIfExists() {
-  // Check |button_| here so that calling functions don't need to.
-  if (!button_)
-    return;
-  if (system_state_ == BluetoothSystemState::kUnavailable) {
-    button_->SetVisible(false);
-    button_->SetEnabled(false);
-    return;
-  }
-
-  // If the button's visibility changes from invisible to visible, log its
-  // visibility.
-  if (!button_->GetVisible())
-    TrackVisibilityUMA();
-
-  button_->SetEnabled(modification_state_ ==
-                      BluetoothModificationState::kCanModifyBluetooth);
-  button_->SetToggled(
-      bluetooth_config::IsBluetoothEnabledOrEnabling(system_state_));
-  button_->SetVisible(true);
-  button_->SetVectorIcon(ComputeButtonIcon());
-  button_->SetLabel(ComputeButtonLabel());
-  button_->SetSubLabel(ComputeButtonSubLabel());
-
-  if (!button_->IsToggled()) {
-    button_->SetIconAndLabelTooltips(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP,
-        l10n_util::GetStringUTF16(
-            IDS_ASH_STATUS_TRAY_BLUETOOTH_DISABLED_TOOLTIP)));
-  } else {
-    button_->SetIconTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_TOGGLE_TOOLTIP, ComputeTooltip()));
-    button_->SetLabelTooltip(l10n_util::GetStringFUTF16(
-        IDS_ASH_STATUS_TRAY_BLUETOOTH_SETTINGS_TOOLTIP, ComputeTooltip()));
-  }
-}
 
 void BluetoothFeaturePodController::UpdateTileStateIfExists() {
   if (!tile_) {
@@ -343,7 +287,6 @@ void BluetoothFeaturePodController::OnPropertiesUpdated(
   }
   modification_state_ = properties->modification_state;
   system_state_ = properties->system_state;
-  UpdateButtonStateIfExists();
   UpdateTileStateIfExists();
 }
 

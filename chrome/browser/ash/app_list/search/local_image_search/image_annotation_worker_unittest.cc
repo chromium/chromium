@@ -58,7 +58,8 @@ class ImageAnnotationWorkerTest : public testing::Test {
     std::vector<base::FilePath> excluded_paths = {
         test_directory_.AppendASCII("TrashBin")};
     annotation_worker_ = std::make_unique<ImageAnnotationWorker>(
-        test_directory_, std::move(excluded_paths), /*use_ocr=*/false,
+        test_directory_, std::move(excluded_paths), /*use_file_watchers=*/false,
+        /*use_ocr=*/false,
         /*use_ica=*/false);
     bar_image_path_ = test_directory_.AppendASCII("bar.jpg");
     const base::FilePath test_db = test_directory_.AppendASCII("test.db");
@@ -229,6 +230,87 @@ TEST_F(ImageAnnotationWorkerTest, MustRemoveOnFileDeleteTest) {
   EXPECT_TRUE(storage_->GetAllAnnotations().empty());
 
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(ImageAnnotationWorkerTest, GetAllFilesTest) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
+
+  base::WriteFile(bar_image_path_, kJpeg_image);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_THAT(storage_->GetAllFiles(),
+              testing::ElementsAreArray({bar_image_path_}));
+
+  base::DeleteFile(bar_image_path_);
+  annotation_worker_->TriggerOnFileChangeForTests(bar_image_path_,
+                                                  /*error=*/false);
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(storage_->GetAllFiles().empty());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ImageAnnotationWorkerTest, ProcessDirectoryTest) {
+  storage_->Initialize();
+  annotation_worker_->Initialize(storage_.get());
+  task_environment_.RunUntilIdle();
+
+  auto test_images = test_directory_.AppendASCII("Test Images");
+  auto test_images1 = test_directory_.AppendASCII("Test1Images");
+  auto new_folder = test_images.AppendASCII("New Folder");
+  auto new_folder1 = test_images1.AppendASCII("New Folder");
+  base::CreateDirectory(test_images);
+  base::CreateDirectory(new_folder);
+
+  auto jpg_path = test_directory_.AppendASCII("bar.jpg");
+  base::WriteFile(jpg_path, kJpeg_image);
+  auto jpeg_path = test_images.AppendASCII("bar1.jpeg");
+  auto jpeg_path1 = test_images1.AppendASCII("bar1.jpeg");
+  base::WriteFile(jpeg_path, kJpeg_image);
+  auto png_path = new_folder.AppendASCII("bar2.png");
+  auto png_path1 = new_folder1.AppendASCII("bar2.png");
+  base::WriteFile(png_path, kPng_image);
+
+  auto image_time = base::Time::Now();
+  for (const auto& path : {jpg_path, jpeg_path, png_path}) {
+    base::TouchFile(path, image_time, image_time);
+    annotation_worker_->TriggerOnFileChangeForTests(path,
+                                                    /*error=*/false);
+  }
+
+  ImageInfo jpg_image({"bar"}, jpg_path, image_time, /*file_size=*/16);
+  ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, 16);
+  ImageInfo jpeg_image1({"bar1"}, jpeg_path1, image_time, 16);
+  ImageInfo png_image({"bar2"}, png_path, image_time, 16);
+  ImageInfo png_image1({"bar2"}, png_path1, image_time, 16);
+
+  EXPECT_THAT(
+      storage_->GetAllAnnotations(),
+      testing::UnorderedElementsAreArray({jpg_image, jpeg_image, png_image}));
+
+  task_environment_.RunUntilIdle();
+
+  base::Move(test_images, test_images1);
+  annotation_worker_->TriggerOnFileChangeForTests(test_images,
+                                                  /*error=*/false);
+  annotation_worker_->TriggerOnFileChangeForTests(test_images1,
+                                                  /*error=*/false);
+
+  EXPECT_THAT(
+      storage_->GetAllAnnotations(),
+      testing::UnorderedElementsAreArray({jpg_image, jpeg_image1, png_image1}));
+
+  base::DeletePathRecursively(test_images1);
+  annotation_worker_->TriggerOnFileChangeForTests(test_images1,
+                                                  /*error=*/false);
+
+  EXPECT_THAT(storage_->GetAllAnnotations(),
+              testing::UnorderedElementsAreArray({jpg_image}));
 }
 
 }  // namespace

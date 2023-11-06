@@ -59,8 +59,7 @@ public class TouchInputStrategyTest {
         mRenderData = new RenderData();
         mInputInjector = new MockInputStub();
 
-        mInputStrategy =
-                new TouchInputStrategy(mRenderData, new InputEventSender(mInputInjector));
+        mInputStrategy = new TouchInputStrategy(mRenderData, new InputEventSender(mInputInjector));
         mEventGenerator = new TouchEventGenerator();
         mRenderData.screenWidth = SCREEN_SIZE_PX;
         mRenderData.screenHeight = SCREEN_SIZE_PX;
@@ -231,7 +230,9 @@ public class TouchInputStrategyTest {
         }
 
         injectUpEvent(0);
-        mInputInjector.assertTouchEventInjected(TouchEventData.EventType.END, TRANSLATE_OFFSET_PX,
+        mInputInjector.assertTouchEventInjected(
+                TouchEventData.EventType.END,
+                TRANSLATE_OFFSET_PX,
                 TRANSLATE_OFFSET_PX + panEventCount);
         mInputInjector.assertEmpty();
     }
@@ -287,10 +288,12 @@ public class TouchInputStrategyTest {
         mInputStrategy.onScroll(0.0f, 0.0f);
         mInputInjector.assertTouchMoveEventInjected(
                 new PointF[] {
-                        new PointF(fingerOnePosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
-                        new PointF(fingerTwoPosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
+                    new PointF(fingerOnePosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
+                    new PointF(fingerTwoPosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
                 },
-                0, 1, eventNum);
+                0,
+                1,
+                eventNum);
 
         // Verify events are sent in realtime now.
         for (int i = eventNum; i < eventNum + 5; i++) {
@@ -328,10 +331,12 @@ public class TouchInputStrategyTest {
         mInputStrategy.onScroll(0.0f, 0.0f);
         mInputInjector.assertTouchMoveEventInjected(
                 new PointF[] {
-                        new PointF(TRANSLATE_OFFSET_PX, fingerOnePosY + TRANSLATE_OFFSET_PX),
-                        new PointF(TRANSLATE_OFFSET_PX, fingerTwoPosY + TRANSLATE_OFFSET_PX),
+                    new PointF(TRANSLATE_OFFSET_PX, fingerOnePosY + TRANSLATE_OFFSET_PX),
+                    new PointF(TRANSLATE_OFFSET_PX, fingerTwoPosY + TRANSLATE_OFFSET_PX),
                 },
-                1, 0, eventNum);
+                1,
+                0,
+                eventNum);
 
         // Verify events are sent in realtime now.
         for (int i = eventNum; i < eventNum + 5; i++) {
@@ -369,10 +374,12 @@ public class TouchInputStrategyTest {
         mInputStrategy.onScroll(0.0f, 0.0f);
         mInputInjector.assertTouchMoveEventInjected(
                 new PointF[] {
-                        new PointF(fingerOnePosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
-                        new PointF(fingerTwoPosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
+                    new PointF(fingerOnePosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
+                    new PointF(fingerTwoPosX + TRANSLATE_OFFSET_PX, TRANSLATE_OFFSET_PX),
                 },
-                0, 1, eventNum);
+                0,
+                1,
+                eventNum);
 
         // Verify events are sent in realtime now.
         for (int i = eventNum; i < eventNum + 5; i++) {

@@ -1,42 +1,47 @@
 This is a testharness.js-based test.
-PASS Generated Blob URLs are unique
-PASS Blob URL starts with "blob:"
-PASS Blob URL starts with "blob:" for Files
-PASS Origin of Blob URL matches our origin
-PASS Blob URL parses correctly
-PASS Origin of Blob URL matches our origin for Files
-PASS Blob URLs can be used in <script> tags
-FAIL Blob URLs can be used in iframes, and are treated same origin Failed to read a named property 'test_result' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
-FAIL Blob URL fragment is implemented. Failed to set a named property 'onscroll' on 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
-PASS Blob URLs can be used in XHR
-PASS XHR with a fragment should succeed
-PASS XHR of a revoked URL should fail
-PASS Only exact matches should revoke URLs, using XHR
-PASS Appending a query string should cause XHR to fail
-PASS Appending a path should cause XHR to fail
-PASS XHR with method "HEAD" should fail
-PASS XHR with method "POST" should fail
-PASS XHR with method "DELETE" should fail
-PASS XHR with method "OPTIONS" should fail
-PASS XHR with method "PUT" should fail
-PASS XHR with method "CUSTOM" should fail
-PASS XHR should return Content-Type from Blob
-FAIL Revoke blob URL after open(), will fetch assert_unreached: Got unexpected error event Reached unreachable code
-PASS Blob URLs can be used in fetch
-PASS fetch with a fragment should succeed
-PASS fetch of a revoked URL should fail
-PASS Only exact matches should revoke URLs, using fetch
-PASS Appending a query string should cause fetch to fail
-PASS Appending a path should cause fetch to fail
-PASS fetch with method "HEAD" should fail
-PASS fetch with method "POST" should fail
-PASS fetch with method "DELETE" should fail
-PASS fetch with method "OPTIONS" should fail
-PASS fetch with method "PUT" should fail
-PASS fetch with method "CUSTOM" should fail
-PASS fetch should return Content-Type from Blob
-FAIL Revoke blob URL after creating Request, will fetch promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
-FAIL Revoke blob URL after creating Request, then clone Request, will fetch promise_test: Unhandled rejection with value: object "ReferenceError: garbageCollect is not defined"
-PASS Revoke blob URL after calling fetch, fetch should succeed
+[PASS] Generated Blob URLs are unique
+[PASS] Blob URL starts with "blob:"
+[PASS] Blob URL starts with "blob:" for Files
+[PASS] Origin of Blob URL matches our origin
+[PASS] Blob URL parses correctly
+[PASS] Origin of Blob URL matches our origin for Files
+[PASS] Blob URLs can be used in <script> tags
+[FAIL] Blob URLs can be used in iframes, and are treated same origin
+  Failed to read a named property 'test_result' from 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
+[FAIL] Blob URL fragment is implemented.
+  Failed to set a named property 'onscroll' on 'Window': Blocked a frame with origin "null" from accessing a cross-origin frame.
+[PASS] Blob URLs can be used in XHR
+[PASS] XHR with a fragment should succeed
+[PASS] XHR of a revoked URL should fail
+[PASS] Only exact matches should revoke URLs, using XHR
+[PASS] Appending a query string should cause XHR to fail
+[PASS] Appending a path should cause XHR to fail
+[PASS] XHR with method "HEAD" should fail
+[PASS] XHR with method "POST" should fail
+[PASS] XHR with method "DELETE" should fail
+[PASS] XHR with method "OPTIONS" should fail
+[PASS] XHR with method "PUT" should fail
+[PASS] XHR with method "CUSTOM" should fail
+[PASS] XHR should return Content-Type from Blob
+[FAIL] Revoke blob URL after open(), will fetch
+  assert_unreached: Got unexpected error event Reached unreachable code
+[PASS] Blob URLs can be used in fetch
+[PASS] fetch with a fragment should succeed
+[PASS] fetch of a revoked URL should fail
+[PASS] Only exact matches should revoke URLs, using fetch
+[PASS] Appending a query string should cause fetch to fail
+[PASS] Appending a path should cause fetch to fail
+[PASS] fetch with method "HEAD" should fail
+[PASS] fetch with method "POST" should fail
+[PASS] fetch with method "DELETE" should fail
+[PASS] fetch with method "OPTIONS" should fail
+[PASS] fetch with method "PUT" should fail
+[PASS] fetch with method "CUSTOM" should fail
+[PASS] fetch should return Content-Type from Blob
+[FAIL] Revoke blob URL after creating Request, will fetch
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+[FAIL] Revoke blob URL after creating Request, then clone Request, will fetch
+  promise_test: Unhandled rejection with value: object "ReferenceError: garbageCollect is not defined"
+[PASS] Revoke blob URL after calling fetch, fetch should succeed
 Harness: the test ran to completion.
 

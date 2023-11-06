@@ -20,7 +20,7 @@ static_library("test_support") {
     "//components/supervised_user/core/common",
   ]
   if (is_android) {
-    sources += [ "android/supervised_user_settings_service_bridge.cc" ]
+    sources += [ "android/supervised_user_settings_test_bridge.cc" ]
     deps += [
       ":test_support_jni_headers",
       "//components/signin/public/identity_manager:test_support",
@@ -122,13 +122,13 @@ if (is_android) {
 
   generate_jni("test_support_jni_headers") {
     testonly = true
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsBridge.java" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java" ]
   }
 
   android_library("test_support_java") {
     testonly = true
     srcjar_deps = [ ":test_support_jni_headers" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsBridge.java" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestBridge.java" ]
     deps = [
       ":test_support_jni_headers",
       "//build/android:build_java",

@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "ash.touchpad_scroll_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowTouchpadScrollScreenEnabled": false
+        },
+        "prefs": {
+          "ash.touchpad_scroll_screen_oobe_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ShowTouchpadScrollScreenEnabled": true
+        },
+        "prefs": {
+          "ash.touchpad_scroll_screen_oobe_enabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

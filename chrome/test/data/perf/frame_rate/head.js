@@ -172,7 +172,7 @@ var __gesture_library = {
 // Stretch the duration of a gesture by a given factor
 function __gesture_stretch(gesture, stretch_factor) {
   // clone the gesture
-  var new_gesture = JSON.parse(JSON.stringify(gesture));
+  var new_gesture = structuredClone(gesture);
   for (var i = 0; i < new_gesture.length; ++i) {
     new_gesture[i].time_ms *= stretch_factor;
   }

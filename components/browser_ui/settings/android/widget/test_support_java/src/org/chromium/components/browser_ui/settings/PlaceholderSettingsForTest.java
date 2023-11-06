@@ -10,9 +10,7 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-/**
- * A placeholder {@link PreferenceFragmentCompat} for use in tests.
- */
+/** A placeholder {@link PreferenceFragmentCompat} for use in tests. */
 public class PlaceholderSettingsForTest extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {

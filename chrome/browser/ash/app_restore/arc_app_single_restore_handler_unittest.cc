@@ -45,15 +45,14 @@ class FakeArcGhostWindwoHandler : public full_restore::ArcGhostWindowHandler {
 class ArcAppSingleRestoreHandlerTest : public testing::Test {
  public:
   ArcAppSingleRestoreHandlerTest()
-      : profile_manager_(CreateTestingProfileManager()),
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        profile_manager_(CreateTestingProfileManager()),
         profile_(profile_manager_->CreateTestingProfile(kTestProfileName)),
-        user_manager_(new FakeChromeUserManager),
-        user_manager_owner_(base::WrapUnique(user_manager_.get())),
         wm_helper_(std::make_unique<exo::WMHelper>()) {
     const user_manager::User* user =
-        user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
-    user_manager_->LoginUser(user->GetAccountId());
-    user_manager_->SwitchActiveUser(user->GetAccountId());
+        fake_user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
   }
   ArcAppSingleRestoreHandlerTest(const ArcAppSingleRestoreHandlerTest&) =
       delete;
@@ -73,11 +72,10 @@ class ArcAppSingleRestoreHandlerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;  // Not own.
-  user_manager::ScopedUserManager user_manager_owner_;
 
   // Initialize WMHelper to create ARC ghost window handler.
   std::unique_ptr<exo::WMHelper> wm_helper_;

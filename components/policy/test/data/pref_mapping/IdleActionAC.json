@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "IdleActionAC": 0
+        },
+        "prefs": {
+          "power.ac_idle_action": {}
+        }
+      }
+    ]
+  }
+]

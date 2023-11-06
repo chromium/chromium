@@ -4,9 +4,7 @@
 
 #include "ash/system/time/calendar_metrics.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
-#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -43,8 +41,6 @@ constexpr char kCalendarEventListItemJoinButtonPressed[] =
 constexpr char kCalendarUpNextJoinButtonPressed[] =
     "Ash.Calendar.UpNextView.JoinMeetingButton.Pressed";
 constexpr char kCalendarEventListEventDisplayedCount[] =
-    "Ash.Calendar.EventListView.EventDisplayedCount";
-constexpr char kCalendarEventListJellyEventDisplayedCount[] =
     "Ash.Calendar.EventListViewJelly.EventDisplayedCount";
 constexpr char kCalendarEventsDisplayedToUser[] =
     "Ash.Calendar.EventsDisplayedToUser";
@@ -149,12 +145,6 @@ void RecordJoinButtonPressedFromUpNextView(const ui::Event& event) {
 }
 
 void RecordEventListEventCount(const int event_count) {
-  if (features::IsCalendarJellyEnabled()) {
-    base::UmaHistogramCounts100(kCalendarEventListJellyEventDisplayedCount,
-                                event_count);
-    return;
-  }
-
   base::UmaHistogramCounts100(kCalendarEventListEventDisplayedCount,
                               event_count);
 }

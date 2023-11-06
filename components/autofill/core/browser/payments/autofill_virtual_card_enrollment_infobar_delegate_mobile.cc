@@ -40,43 +40,41 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::FromInfobarDelegate(
 
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetDescriptionText() const {
-  return virtual_card_enroll_bubble_controller_->GetExplanatoryMessage();
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .explanatory_message;
 }
 
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetLearnMoreLinkText()
     const {
-  return virtual_card_enroll_bubble_controller_->GetLearnMoreLinkText();
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .learn_more_link_text;
 }
 
 const gfx::ImageSkia*
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
-  return virtual_card_enroll_bubble_controller_
-      ->GetVirtualCardEnrollmentFields()
-      .card_art_image;
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .enrollment_fields.card_art_image;
 }
 
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetCardLabel() const {
-  return virtual_card_enroll_bubble_controller_
-      ->GetVirtualCardEnrollmentFields()
-      .credit_card.CardNameAndLastFourDigits();
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .enrollment_fields.credit_card.CardNameAndLastFourDigits();
 }
 
 LegalMessageLines
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetGoogleLegalMessage()
     const {
-  return virtual_card_enroll_bubble_controller_
-      ->GetVirtualCardEnrollmentFields()
-      .google_legal_message;
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .enrollment_fields.google_legal_message;
 }
 
 LegalMessageLines
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerLegalMessage()
     const {
-  return virtual_card_enroll_bubble_controller_
-      ->GetVirtualCardEnrollmentFields()
-      .issuer_legal_message;
+  return virtual_card_enroll_bubble_controller_->GetUiModel()
+      .enrollment_fields.issuer_legal_message;
 }
 
 void AutofillVirtualCardEnrollmentInfoBarDelegateMobile::OnInfobarLinkClicked(
@@ -103,7 +101,7 @@ int AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIconId() const {
 
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetMessageText() const {
-  return virtual_card_enroll_bubble_controller_->GetWindowTitle();
+  return virtual_card_enroll_bubble_controller_->GetUiModel().window_title;
 }
 
 int AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtons() const {
@@ -114,10 +112,12 @@ std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetButtonLabel(
     InfoBarButton button) const {
   if (button == BUTTON_OK) {
-    return virtual_card_enroll_bubble_controller_->GetAcceptButtonText();
+    return virtual_card_enroll_bubble_controller_->GetUiModel()
+        .accept_action_text;
   }
   if (button == BUTTON_CANCEL) {
-    return virtual_card_enroll_bubble_controller_->GetDeclineButtonText();
+    return virtual_card_enroll_bubble_controller_->GetUiModel()
+        .cancel_action_text;
   }
   NOTREACHED() << "Unsupported button label requested.";
   return std::u16string();

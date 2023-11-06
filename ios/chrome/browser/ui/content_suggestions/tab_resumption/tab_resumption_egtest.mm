@@ -4,6 +4,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/sync/base/features.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/ntp/home/features.h"
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
@@ -90,7 +91,7 @@ NSString* HostnameFromGURL(GURL URL) {
   config.additional_args.push_back(
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
-      kMagicStack.name);
+      kMagicStack.name + "," + syncer::kSyncSessionOnVisibilityChanged.name);
   return config;
 }
 
@@ -125,6 +126,8 @@ NSString* HostnameFromGURL(GURL URL) {
   [ChromeEarlGrey clearSyncServerData];
   [ChromeEarlGrey resetDataForLocalStatePref:tab_resumption_prefs::
                                                  kTabResumptioDisabledPref];
+  [ChromeEarlGrey resetDataForLocalStatePref:
+                      tab_resumption_prefs::kTabResumptionLastOpenedTabURLPref];
   [super tearDown];
 }
 
@@ -170,6 +173,13 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the tab resumption tile is correctly displayed for a local tab.
 - (void)testTabResumptionTileDisplayedForLocalTab {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+#if TARGET_IPHONE_SIMULATOR
+    // TODO(crbug.com/1494006): Test is flaky on iPad device. Re-enable the
+    // test.
+    EARL_GREY_TEST_DISABLED(@"Test is flaky on iPad device.");
+#endif
+  }
   // Check that the tile is not displayed when there is no local tab.
   WaitUntilTabResumptionTileVisibleOrTimeout(false);
 
@@ -227,7 +237,7 @@ NSString* HostnameFromGURL(GURL URL) {
     [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                   error:nil];
     [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-        performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+        performAction:grey_scrollInDirection(kGREYDirectionDown, 180)];
   }
   [[[EarlGrey selectElementWithMatcher:
                   grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(

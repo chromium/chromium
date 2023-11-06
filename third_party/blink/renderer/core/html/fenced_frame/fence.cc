@@ -11,7 +11,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fence_event.h"
@@ -46,6 +45,23 @@ blink::FencedFrame::ReportingDestination ToPublicDestination(
     case V8FenceReportingDestination::Enum::kSharedStorageSelectUrl:
       return blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl;
   }
+}
+
+absl::optional<mojom::blink::AutomaticBeaconType> GetAutomaticBeaconType(
+    const WTF::String& input) {
+  if (input == blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
+    return mojom::blink::AutomaticBeaconType::kDeprecatedTopNavigation;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM120FeaturesPart2)) {
+    if (input == blink::kFencedFrameTopNavigationStartBeaconType) {
+      return mojom::blink::AutomaticBeaconType::kTopNavigationStart;
+    }
+    if (input == blink::kFencedFrameTopNavigationCommitBeaconType) {
+      return mojom::blink::AutomaticBeaconType::kTopNavigationCommit;
+    }
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -224,7 +240,9 @@ void Fence::setReportEventDataForAutomaticBeacons(
     exception_state.ThrowTypeError("Missing required 'eventType' property.");
     return;
   }
-  if (event->eventType() != blink::kFencedFrameTopNavigationBeaconType) {
+  absl::optional<mojom::blink::AutomaticBeaconType> beacon_type =
+      GetAutomaticBeaconType(event->eventType());
+  if (!beacon_type.has_value()) {
     AddConsoleMessage(event->eventType() +
                       " is not a valid automatic beacon event type.");
     return;
@@ -235,6 +253,14 @@ void Fence::setReportEventDataForAutomaticBeacons(
         "The data provided to setReportEventDataForAutomaticBeacons() exceeds "
         "the maximum length, which is 64KB.");
     return;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFencedFramesM120FeaturesPart2) &&
+      event->eventType() ==
+          blink::kDeprecatedFencedFrameTopNavigationBeaconType) {
+    AddConsoleMessage(event->eventType() + " is deprecated in favor of " +
+                          kFencedFrameTopNavigationCommitBeaconType + ".",
+                      mojom::blink::ConsoleMessageLevel::kWarning);
   }
   LocalFrame* frame = DomWindow()->GetFrame();
   DCHECK(frame->GetDocument());
@@ -267,7 +293,7 @@ void Fence::setReportEventDataForAutomaticBeacons(
         attribution_src_loader->GetRuntimeFeatures();
   }
   frame->GetLocalFrameHostRemote().SetFencedFrameAutomaticBeaconReportEventData(
-      event->getEventDataOr(String{""}), destinations,
+      beacon_type.value(), event->getEventDataOr(String{""}), destinations,
       attribution_reporting_runtime_features, event->once());
 }
 
@@ -336,11 +362,11 @@ void Fence::reportPrivateAggregationEvent(ScriptState* script_state,
       .SendPrivateAggregationRequestsForFencedFrameEvent(event);
 }
 
-void Fence::AddConsoleMessage(const String& message) {
+void Fence::AddConsoleMessage(const String& message,
+                              mojom::blink::ConsoleMessageLevel level) {
   DCHECK(DomWindow());
   DomWindow()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kError, message));
+      mojom::blink::ConsoleMessageSource::kJavaScript, level, message));
 }
 
 }  // namespace blink

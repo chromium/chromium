@@ -428,12 +428,8 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
-  BOOL hasTappedRecently =
-      self.userInteractionState->HasUserTappedRecently(webView);
-  BOOL userInteractedWithRequestMainFrame =
-      hasTappedRecently &&
-      net::GURLWithNSURL(action.request.mainDocumentURL) ==
-          self.userInteractionState->LastUserInteraction()->main_document_url;
+  BOOL isUserInitiated = [self.delegate isUserInitiatedAction:action];
+
   BOOL isCrossOriginTargetFrame = NO;
   if (action.sourceFrame && action.targetFrame &&
       action.sourceFrame.webView == action.targetFrame.webView &&
@@ -447,14 +443,14 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   if (base::FeatureList::IsEnabled(
           web::features::kPreventNavigationWithoutUserInteraction) &&
       isMainFrameNavigationAction && isCrossOriginTargetFrame &&
-      !hasTappedRecently) {
+      !isUserInitiated) {
     decisionHandler(WKNavigationActionPolicyCancel);
     return;
   }
 
   const web::WebStatePolicyDecider::RequestInfo requestInfo(
       transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
-      userInteractedWithRequestMainFrame);
+      isUserInitiated);
 
   self.webStateImpl->ShouldAllowRequest(action.request, requestInfo,
                                         std::move(callback));
@@ -1707,7 +1703,7 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           SecTrustCopyCertificateChain(trust));
       SecCertificateRef secCertificate =
           base::apple::CFCastStrict<SecCertificateRef>(
-              CFArrayGetValueAtIndex(certificateChain, 0));
+              CFArrayGetValueAtIndex(certificateChain.get(), 0));
       leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
           base::apple::ScopedCFTypeRef<SecCertificateRef>(
               secCertificate, base::scoped_policy::RETAIN),

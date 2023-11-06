@@ -100,12 +100,31 @@ struct ChromeConfig {
   TracingClientPriority client_priority;
 };
 
+enum ConsoleOutput {
+  kOutputUnspecified,
+  kOutputStdOut,
+  kOutputStdErr,
+};
+
+struct ConsoleConfig {
+  ConsoleOutput output;
+  bool enable_colors;
+};
+
+struct InterceptorConfig {
+  string name;
+  // `console_config` is optionally present only if `name` == "console".
+  // If not present, the default config is used.
+  ConsoleConfig? console_config;
+};
+
 struct DataSourceConfig {
   string name;
   uint32 target_buffer;
   uint32 trace_duration_ms;
   uint64 tracing_session_id;
   ChromeConfig chrome_config;
+  InterceptorConfig? interceptor_config;
   string legacy_config;
   string track_event_config_raw;
 };

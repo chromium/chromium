@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/base/features.h"
 #include "components/attribution_reporting/features.h"
+#include "components/permissions/features.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -222,12 +223,12 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableDocumentPolicyNegotiation,
      raw_ref(features::kDocumentPolicyNegotiation)},
     {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
-    {wf::EnableFedCmIdentityCredentialAutoSelectedFlag,
-     raw_ref(features::kFedCmIdentityCredentialAutoSelectedFlag),
+    {wf::EnableFedCmAutoSelectedFlag, raw_ref(features::kFedCmAutoSelectedFlag),
      kSetOnlyIfOverridden},
     {wf::EnableFedCmAuthz, raw_ref(features::kFedCmAuthz), kDefault},
-    {wf::EnableFedCmError, raw_ref(features::kFedCmError), kDefault},
-    {wf::EnableFedCmHostedDomain, raw_ref(features::kFedCmHostedDomain),
+    {wf::EnableFedCmError, raw_ref(features::kFedCmError),
+     kSetOnlyIfOverridden},
+    {wf::EnableFedCmDomainHint, raw_ref(features::kFedCmDomainHint),
      kSetOnlyIfOverridden},
     {wf::EnableFedCmIdPRegistration, raw_ref(features::kFedCmIdPRegistration),
      kDefault},
@@ -244,6 +245,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(blink::features::kSharedStorageAPIM118), kSetOnlyIfOverridden},
     {wf::EnableFedCmMultipleIdentityProviders,
      raw_ref(features::kFedCmMultipleIdentityProviders), kDefault},
+    {wf::EnableFedCmRevoke, raw_ref(features::kFedCmRevoke),
+     kSetOnlyIfOverridden},
     {wf::EnableFedCmSelectiveDisclosure,
      raw_ref(features::kFedCmSelectiveDisclosure), kDefault},
     {wf::EnableFencedFrames, raw_ref(features::kPrivacySandboxAdsAPIsOverride),
@@ -264,6 +267,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableLazyInitializeMediaControls,
      raw_ref(features::kLazyInitializeMediaControls)},
     {wf::EnableLazyFrameLoading, raw_ref(features::kLazyFrameLoading)},
+    {wf::EnableMachineLearningModelLoader,
+     raw_ref(features::kEnableMachineLearningModelLoaderWebPlatformApi),
+     kSetOnlyIfOverridden},
     {wf::EnableMediaCastOverlayButton, raw_ref(media::kMediaCastOverlayButton)},
     {wf::EnableMediaEngagementBypassAutoplayPolicies,
      raw_ref(media::kMediaEngagementBypassAutoplayPolicies)},
@@ -308,8 +314,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
 #if BUILDFLAG(IS_ANDROID)
     {wf::EnableWebNFC, raw_ref(features::kWebNfc), kSetOnlyIfOverridden},
 #endif
-    {wf::EnableWebIdentityMDocs, raw_ref(features::kWebIdentityMDocs),
-     kDefault},
+    {wf::EnableWebIdentityDigitalCredentials,
+     raw_ref(features::kWebIdentityDigitalCredentials), kDefault},
     {wf::EnableWebOTP, raw_ref(features::kWebOTP), kSetOnlyIfOverridden},
     {wf::EnableWebOTPAssertionFeaturePolicy,
      raw_ref(features::kWebOTPAssertionFeaturePolicy), kSetOnlyIfOverridden},
@@ -399,7 +405,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      raw_ref(features::kEnableBluetoothSerialPortProfileInSerialApi)},
     {"MediaStreamTrackTransfer", raw_ref(features::kMediaStreamTrackTransfer)},
     {"PrivateNetworkAccessPermissionPrompt",
-     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt)} };
+     raw_ref(network::features::kPrivateNetworkAccessPermissionPrompt),
+     kSetOnlyIfOverridden},
+    {"PermissionElement", raw_ref(permissions::features::kPermissionElement)} };
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
@@ -557,6 +565,8 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
   // They're moved here to distinguish them from actual base checks
   WebRuntimeFeatures::EnableOverlayScrollbars(ui::IsOverlayScrollbarEnabled());
   WebRuntimeFeatures::EnableFluentScrollbars(ui::IsFluentScrollbarEnabled());
+  WebRuntimeFeatures::EnableFluentOverlayScrollbars(
+      ui::IsFluentOverlayScrollbarEnabled());
 
   // TODO(rodneyding): This is a rare case for a stable feature
   // Need to investigate more to determine whether to refactor it.

@@ -106,6 +106,10 @@ source_set("helpers") {
     "//third_party/libyuv",
   ]
   public_deps = [ "//testing/gtest" ]
+
+  if (use_v4l2_codec || use_vaapi) {
+    deps += [ "//media/gpu/chromeos:common" ]
+  }
 }
 
 source_set("frame_validator") {
@@ -120,6 +124,10 @@ source_set("frame_validator") {
     "//build:chromeos_buildflags",
     "//media/gpu",
   ]
+
+  if (use_v4l2_codec || use_vaapi) {
+    deps += [ "//media/gpu/chromeos:common" ]
+  }
 }
 
 source_set("frame_file_writer") {
@@ -134,6 +142,10 @@ source_set("frame_file_writer") {
     "//media/gpu",
     "//ui/gfx/codec:codec",
   ]
+
+  if (use_v4l2_codec || use_vaapi) {
+    deps += [ "//media/gpu/chromeos:common" ]
+  }
 }
 
 source_set("test_helpers") {
@@ -199,6 +211,10 @@ static_library("video_test_environment") {
   ]
   if (use_ozone) {
     public_deps += [ "//ui/ozone" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
   }
 }
 

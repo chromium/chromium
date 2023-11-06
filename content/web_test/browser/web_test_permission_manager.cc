@@ -29,8 +29,6 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-using content_settings::URLToSchemefulSitePattern;
-
 namespace content {
 
 namespace {
@@ -433,8 +431,10 @@ void WebTestPermissionManager::OnPermissionChanged(
           ->SetContentSettings(
               ContentSettingsType::STORAGE_ACCESS,
               GetContentSettings(
-                  URLToSchemefulSitePattern(permission.origin),
-                  URLToSchemefulSitePattern(permission.embedding_origin),
+                  ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                      permission.origin),
+                  ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                      permission.embedding_origin),
                   status),
               base::BindOnce(std::move(permission_callback), /*success=*/true));
       break;

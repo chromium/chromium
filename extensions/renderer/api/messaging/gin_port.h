@@ -115,7 +115,7 @@ class GinPort final : public gin::Wrappable<GinPort> {
 
   // Helper method to dispatch an event.
   void DispatchEvent(v8::Local<v8::Context> context,
-                     std::vector<v8::Local<v8::Value>>* args,
+                     v8::LocalVector<v8::Value>* args,
                      base::StringPiece event_name);
 
   // Invalidates the port (due to the context being removed). Any further calls

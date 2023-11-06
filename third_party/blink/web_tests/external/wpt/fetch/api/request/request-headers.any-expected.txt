@@ -1,65 +1,66 @@
 This is a testharness.js-based test.
 Found 61 tests; 60 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Adding valid request header "Content-Type: OK"
-PASS Adding valid request header "Potato: OK"
-PASS Adding valid request header "proxy: OK"
-PASS Adding valid request header "proxya: OK"
-PASS Adding valid request header "sec: OK"
-PASS Adding valid request header "secb: OK"
-PASS Adding valid request header "Set-Cookie2: OK"
-FAIL Adding valid request header "User-Agent: OK" assert_equals: expected (string) "OK" but got (object) null
-PASS Adding invalid request header "Accept-Charset: KO"
-PASS Adding invalid request header "accept-charset: KO"
-PASS Adding invalid request header "ACCEPT-ENCODING: KO"
-PASS Adding invalid request header "Accept-Encoding: KO"
-PASS Adding invalid request header "Access-Control-Request-Headers: KO"
-PASS Adding invalid request header "Access-Control-Request-Method: KO"
-PASS Adding invalid request header "Connection: KO"
-PASS Adding invalid request header "Content-Length: KO"
-PASS Adding invalid request header "Cookie: KO"
-PASS Adding invalid request header "Cookie2: KO"
-PASS Adding invalid request header "Date: KO"
-PASS Adding invalid request header "DNT: KO"
-PASS Adding invalid request header "Expect: KO"
-PASS Adding invalid request header "Host: KO"
-PASS Adding invalid request header "Keep-Alive: KO"
-PASS Adding invalid request header "Origin: KO"
-PASS Adding invalid request header "Referer: KO"
-PASS Adding invalid request header "Set-Cookie: KO"
-PASS Adding invalid request header "TE: KO"
-PASS Adding invalid request header "Trailer: KO"
-PASS Adding invalid request header "Transfer-Encoding: KO"
-PASS Adding invalid request header "Upgrade: KO"
-PASS Adding invalid request header "Via: KO"
-PASS Adding invalid request header "Proxy-: KO"
-PASS Adding invalid request header "proxy-a: KO"
-PASS Adding invalid request header "Sec-: KO"
-PASS Adding invalid request header "sec-b: KO"
-PASS Adding valid no-cors request header "Accept: OK"
-PASS Adding valid no-cors request header "Accept-Language: OK"
-PASS Adding valid no-cors request header "content-language: OK"
-PASS Adding valid no-cors request header "content-type: application/x-www-form-urlencoded"
-PASS Adding valid no-cors request header "content-type: application/x-www-form-urlencoded;charset=UTF-8"
-PASS Adding valid no-cors request header "content-type: multipart/form-data"
-PASS Adding valid no-cors request header "content-type: multipart/form-data;charset=UTF-8"
-PASS Adding valid no-cors request header "content-TYPE: text/plain"
-PASS Adding valid no-cors request header "CONTENT-type: text/plain;charset=UTF-8"
-PASS Adding invalid no-cors request header "Content-Type: KO"
-PASS Adding invalid no-cors request header "Potato: KO"
-PASS Adding invalid no-cors request header "proxy: KO"
-PASS Adding invalid no-cors request header "proxya: KO"
-PASS Adding invalid no-cors request header "sec: KO"
-PASS Adding invalid no-cors request header "secb: KO"
-PASS Adding invalid no-cors request header "Empty-Value: "
-PASS Check that request constructor is filtering headers provided as init parameter
-PASS Check that no-cors request constructor is filtering headers provided as init parameter
-PASS Check that no-cors request constructor is filtering headers provided as part of request parameter
-PASS Request should get its content-type from the init request
-PASS Request should not get its content-type from the init request if init headers are provided
-PASS Request should get its content-type from the body if none is provided
-PASS Request should get its content-type from init headers if one is provided
-PASS Testing request header creations with various objects
-PASS Testing empty Request Content-Type header
-PASS Test that Request.headers has the [SameObject] extended attribute
+[PASS] Adding valid request header "Content-Type: OK"
+[PASS] Adding valid request header "Potato: OK"
+[PASS] Adding valid request header "proxy: OK"
+[PASS] Adding valid request header "proxya: OK"
+[PASS] Adding valid request header "sec: OK"
+[PASS] Adding valid request header "secb: OK"
+[PASS] Adding valid request header "Set-Cookie2: OK"
+[FAIL] Adding valid request header "User-Agent: OK"
+  assert_equals: expected (string) "OK" but got (object) null
+[PASS] Adding invalid request header "Accept-Charset: KO"
+[PASS] Adding invalid request header "accept-charset: KO"
+[PASS] Adding invalid request header "ACCEPT-ENCODING: KO"
+[PASS] Adding invalid request header "Accept-Encoding: KO"
+[PASS] Adding invalid request header "Access-Control-Request-Headers: KO"
+[PASS] Adding invalid request header "Access-Control-Request-Method: KO"
+[PASS] Adding invalid request header "Connection: KO"
+[PASS] Adding invalid request header "Content-Length: KO"
+[PASS] Adding invalid request header "Cookie: KO"
+[PASS] Adding invalid request header "Cookie2: KO"
+[PASS] Adding invalid request header "Date: KO"
+[PASS] Adding invalid request header "DNT: KO"
+[PASS] Adding invalid request header "Expect: KO"
+[PASS] Adding invalid request header "Host: KO"
+[PASS] Adding invalid request header "Keep-Alive: KO"
+[PASS] Adding invalid request header "Origin: KO"
+[PASS] Adding invalid request header "Referer: KO"
+[PASS] Adding invalid request header "Set-Cookie: KO"
+[PASS] Adding invalid request header "TE: KO"
+[PASS] Adding invalid request header "Trailer: KO"
+[PASS] Adding invalid request header "Transfer-Encoding: KO"
+[PASS] Adding invalid request header "Upgrade: KO"
+[PASS] Adding invalid request header "Via: KO"
+[PASS] Adding invalid request header "Proxy-: KO"
+[PASS] Adding invalid request header "proxy-a: KO"
+[PASS] Adding invalid request header "Sec-: KO"
+[PASS] Adding invalid request header "sec-b: KO"
+[PASS] Adding valid no-cors request header "Accept: OK"
+[PASS] Adding valid no-cors request header "Accept-Language: OK"
+[PASS] Adding valid no-cors request header "content-language: OK"
+[PASS] Adding valid no-cors request header "content-type: application/x-www-form-urlencoded"
+[PASS] Adding valid no-cors request header "content-type: application/x-www-form-urlencoded;charset=UTF-8"
+[PASS] Adding valid no-cors request header "content-type: multipart/form-data"
+[PASS] Adding valid no-cors request header "content-type: multipart/form-data;charset=UTF-8"
+[PASS] Adding valid no-cors request header "content-TYPE: text/plain"
+[PASS] Adding valid no-cors request header "CONTENT-type: text/plain;charset=UTF-8"
+[PASS] Adding invalid no-cors request header "Content-Type: KO"
+[PASS] Adding invalid no-cors request header "Potato: KO"
+[PASS] Adding invalid no-cors request header "proxy: KO"
+[PASS] Adding invalid no-cors request header "proxya: KO"
+[PASS] Adding invalid no-cors request header "sec: KO"
+[PASS] Adding invalid no-cors request header "secb: KO"
+[PASS] Adding invalid no-cors request header "Empty-Value: "
+[PASS] Check that request constructor is filtering headers provided as init parameter
+[PASS] Check that no-cors request constructor is filtering headers provided as init parameter
+[PASS] Check that no-cors request constructor is filtering headers provided as part of request parameter
+[PASS] Request should get its content-type from the init request
+[PASS] Request should not get its content-type from the init request if init headers are provided
+[PASS] Request should get its content-type from the body if none is provided
+[PASS] Request should get its content-type from init headers if one is provided
+[PASS] Testing request header creations with various objects
+[PASS] Testing empty Request Content-Type header
+[PASS] Test that Request.headers has the [SameObject] extended attribute
 Harness: the test ran to completion.
 

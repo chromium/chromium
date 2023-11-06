@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/mediastream/crop_target.h"
 #include "third_party/blink/renderer/modules/mediastream/media_device_info.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -206,14 +208,23 @@ class MockMediaDevicesDispatcherHost final
 #if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const String& label) override {}
 
-  void ProduceCropId(ProduceCropIdCallback callback) override {
-    String next_crop_id = "";  // Empty, not null.
-    std::swap(next_crop_id_, next_crop_id);
-    std::move(callback).Run(std::move(next_crop_id));
+  void ProduceSubCaptureTargetId(
+      SubCaptureTarget::Type type,
+      ProduceSubCaptureTargetIdCallback callback) override {
+    auto it = next_ids_.find(type);
+    if (it == next_ids_.end()) {
+      GTEST_FAIL();
+    }
+    std::vector<String>& queue = it->second;
+    CHECK(!queue.empty());
+    String next_id = queue.front();
+    queue.erase(queue.begin());
+    std::move(callback).Run(std::move(next_id));
   }
 
-  void SetNextCropId(String next_crop_id) {
-    next_crop_id_ = std::move(next_crop_id);
+  void SetNextId(SubCaptureTarget::Type type, String next_id) {
+    std::vector<String>& queue = next_ids_[type];
+    queue.push_back(std::move(next_id));
   }
 #endif
 
@@ -274,9 +285,7 @@ class MockMediaDevicesDispatcherHost final
   mojo::Remote<mojom::blink::MediaDevicesListener> listener_;
   mojo::Receiver<mojom::blink::MediaDevicesDispatcherHost> receiver_{this};
   mojom::blink::CaptureHandleConfigPtr expected_capture_handle_config_;
-#if !BUILDFLAG(IS_ANDROID)
-  String next_crop_id_ = "";  // Empty, not null.
-#endif
+  std::map<SubCaptureTarget::Type, std::vector<String>> next_ids_;
 
   Vector<Vector<WebMediaDeviceInfo>> enumeration_{static_cast<size_t>(
       blink::mojom::blink::MediaDeviceType::kNumMediaDeviceTypes)};
@@ -312,6 +321,22 @@ void VerifyDeviceInfo(const MediaDeviceInfo* device,
   EXPECT_EQ(device->label(), String(expected.label));
   EXPECT_EQ(device->kind(), ToString(type));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
+  if (CropTarget* crop_target =
+          V8CropTarget::ToWrappable(value.GetIsolate(), value.V8Value())) {
+    return crop_target;
+  }
+
+  if (RestrictionTarget* restriction_target = V8RestrictionTarget::ToWrappable(
+          value.GetIsolate(), value.V8Value())) {
+    return restriction_target;
+  }
+
+  NOTREACHED_NORETURN();
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -729,12 +754,95 @@ TEST_F(MediaDevicesTest,
             ToExceptionCode(DOMExceptionCode::kNotSupportedError));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// This test logically belongs to the ProduceSubCaptureTargetTest suite,
+// but does not require parameterization.
+TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
+  ScopedElementCaptureForTest scoped_element_capture(true);
+  V8TestingScope scope;
+  MediaDevices* const media_devices =
+      GetMediaDevices(*GetDocument().domWindow());
+  ASSERT_TRUE(media_devices);
+
+  dispatcher_host().SetNextId(SubCaptureTarget::Type::kCropTarget,
+                              String("983bf2ff-7410-416c-808a-78421cbd8fdc"));
+  dispatcher_host().SetNextId(SubCaptureTarget::Type::kRestrictionTarget,
+                              String("70db842e-5326-42c1-86b2-e3b2f74e97d2"));
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* const div = document.getElementById(AtomicString("test-div"));
+  const ScriptPromise first_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTarget::Type::kCropTarget);
+  ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
+  first_tester.WaitUntilSettled();
+  EXPECT_TRUE(first_tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  // The second call to |produceSubCaptureTargetId|, given the different type,
+  // should return a different ID.
+  const ScriptPromise second_promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(),
+      SubCaptureTarget::Type::kRestrictionTarget);
+  ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
+  second_tester.WaitUntilSettled();
+  EXPECT_TRUE(second_tester.IsFulfilled());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+  const WTF::String first_result =
+      ToSubCaptureTarget(first_tester.Value())->GetId();
+  ASSERT_FALSE(first_result.empty());
+
+  const WTF::String second_result =
+      ToSubCaptureTarget(second_tester.Value())->GetId();
+  ASSERT_FALSE(second_result.empty());
+
+  EXPECT_NE(first_result, second_result);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+class ProduceSubCaptureTargetTest
+    : public MediaDevicesTest,
+      public testing::WithParamInterface<
+          std::pair<SubCaptureTarget::Type, bool>> {
+ public:
+  ProduceSubCaptureTargetTest()
+      : type_(std::get<0>(GetParam())),
+        scoped_element_capture_(std::get<1>(GetParam())) {}
+  ~ProduceSubCaptureTargetTest() override = default;
+
+  const SubCaptureTarget::Type type_;
+  ScopedElementCaptureForTest scoped_element_capture_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    _,
+    ProduceSubCaptureTargetTest,
+    ::testing::Values(std::make_pair(SubCaptureTarget::Type::kCropTarget,
+                                     /* Element Capture enabled: */ false),
+                      std::make_pair(SubCaptureTarget::Type::kCropTarget,
+                                     /* Element Capture enabled: */ true),
+                      std::make_pair(SubCaptureTarget::Type::kRestrictionTarget,
+                                     /* Element Capture enabled: */ true)));
+
 // Note: This test runs on non-Android too in order to prove that the test
 // itself is sane. (Rather than, for example, an exception always being thrown.)
-TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
+TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Note that the test will NOT produce false-positive on failure to call this.
+  // Rather, GTEST_FAIL would be called by ProduceSubCaptureTarget if it
+  // ends up being called.
+  dispatcher_host().SetNextId(
+      type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+#endif
 
   SetBodyContent(R"HTML(
     <div id='test-div'></div>
@@ -744,8 +852,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise div_promise = media_devices->ProduceSubCaptureTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState(),
-      SubCaptureTargetType::kCropTarget);
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -756,7 +863,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdUnsupportedOnAndroid) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
+TEST_P(ProduceSubCaptureTargetTest, IdWithValidElement) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
@@ -787,11 +894,10 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
 
   for (const char* id : kElementIds) {
     Element* const element = document.getElementById(AtomicString(id));
-    dispatcher_host().SetNextCropId(
-        String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+    dispatcher_host().SetNextId(
+        type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
     const ScriptPromise promise = media_devices->ProduceSubCaptureTarget(
-        scope.GetScriptState(), element, scope.GetExceptionState(),
-        SubCaptureTargetType::kCropTarget);
+        scope.GetScriptState(), element, scope.GetExceptionState(), type_);
 
     ScriptPromiseTester script_promise_tester(scope.GetScriptState(), promise);
     script_promise_tester.WaitUntilSettled();
@@ -801,7 +907,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdWithValidElement) {
   }
 }
 
-TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
+TEST_P(ProduceSubCaptureTargetTest, IdRejectedIfDifferentWindow) {
   V8TestingScope scope;
   // Intentionally sets up a MediaDevices object in a different window.
   auto* media_devices = GetMediaDevices(scope.GetWindow());
@@ -815,8 +921,7 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise element_promise = media_devices->ProduceSubCaptureTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState(),
-      SubCaptureTargetType::kCropTarget);
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   platform()->RunUntilIdle();
   EXPECT_TRUE(element_promise.IsEmpty());
   EXPECT_TRUE(scope.GetExceptionState().HadException());
@@ -827,12 +932,18 @@ TEST_F(MediaDevicesTest, ProduceCropIdRejectedIfDifferentWindow) {
       String("The Element and the MediaDevices object must be same-window."));
 }
 
-TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
+TEST_P(ProduceSubCaptureTargetTest, DuplicateId) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
-  dispatcher_host().SetNextCropId(
-      String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+
+  // This ID should be used for the single ID produced.
+  dispatcher_host().SetNextId(type_,
+                              String("983bf2ff-7410-416c-808a-78421cbd8fdc"));
+
+  // This ID should never be encountered.
+  dispatcher_host().SetNextId(type_,
+                              String("70db842e-5326-42c1-86b2-e3b2f74e97d2"));
 
   SetBodyContent(R"HTML(
     <div id='test-div'></div>
@@ -841,29 +952,32 @@ TEST_F(MediaDevicesTest, ProduceCropIdDuplicate) {
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
   const ScriptPromise first_promise = media_devices->ProduceSubCaptureTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState(),
-      SubCaptureTargetType::kCropTarget);
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
   EXPECT_TRUE(first_tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  // The second call to |produceCropId| should return the same ID.
+  // The second call to |produceSubCaptureTargetId| should return the same ID.
   const ScriptPromise second_promise = media_devices->ProduceSubCaptureTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState(),
-      SubCaptureTargetType::kCropTarget);
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
   EXPECT_TRUE(second_tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  WTF::String first_result, second_result;
-  first_tester.Value().ToString(first_result);
-  second_tester.Value().ToString(second_result);
+  const WTF::String first_result =
+      ToSubCaptureTarget(first_tester.Value())->GetId();
+  ASSERT_FALSE(first_result.empty());
+
+  const WTF::String second_result =
+      ToSubCaptureTarget(second_tester.Value())->GetId();
+  ASSERT_FALSE(second_result.empty());
+
   EXPECT_EQ(first_result, second_result);
 }
 
-TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
+TEST_P(ProduceSubCaptureTargetTest, CorrectTokenClassInstantiated) {
   V8TestingScope scope;
   auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
   ASSERT_TRUE(media_devices);
@@ -874,22 +988,54 @@ TEST_F(MediaDevicesTest, ProduceCropIdStringFormat) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  dispatcher_host().SetNextCropId(
-      String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  dispatcher_host().SetNextId(
+      type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+
   const ScriptPromise promise = media_devices->ProduceSubCaptureTarget(
-      scope.GetScriptState(), div, scope.GetExceptionState(),
-      SubCaptureTargetType::kCropTarget);
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
+
+  ScriptPromiseTester tester(scope.GetScriptState(), promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+  ASSERT_FALSE(scope.GetExceptionState().HadException());
+
+  // Type instantiated if and only if it's the expected type.
+  const blink::ScriptValue value = tester.Value();
+  EXPECT_EQ(!!V8CropTarget::ToWrappable(value.GetIsolate(), value.V8Value()),
+            type_ == SubCaptureTarget::Type::kCropTarget);
+  EXPECT_EQ(
+      !!V8RestrictionTarget::ToWrappable(value.GetIsolate(), value.V8Value()),
+      type_ == SubCaptureTarget::Type::kRestrictionTarget);
+}
+
+TEST_P(ProduceSubCaptureTargetTest, IdStringFormat) {
+  V8TestingScope scope;
+  auto* media_devices = GetMediaDevices(*GetDocument().domWindow());
+  ASSERT_TRUE(media_devices);
+
+  SetBodyContent(R"HTML(
+    <div id='test-div'></div>
+  )HTML");
+
+  Document& document = GetDocument();
+  Element* const div = document.getElementById(AtomicString("test-div"));
+  dispatcher_host().SetNextId(
+      type_, String(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  const ScriptPromise promise = media_devices->ProduceSubCaptureTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState(), type_);
   ScriptPromiseTester tester(scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  const CropTarget* const crop_target =
-      V8CropTarget::ToWrappable(scope.GetIsolate(), tester.Value().V8Value());
-  const WTF::String& crop_id = crop_target->GetId();
-  EXPECT_TRUE(crop_id.ContainsOnlyASCIIOrEmpty());
-  EXPECT_TRUE(base::Uuid::ParseLowercase(crop_id.Ascii()).is_valid());
+  const SubCaptureTarget* const target = ToSubCaptureTarget(tester.Value());
+  const WTF::String& id = target->GetId();
+  EXPECT_TRUE(id.ContainsOnlyASCIIOrEmpty());
+  EXPECT_TRUE(base::Uuid::ParseLowercase(id.Ascii()).is_valid());
 }
 #endif
+
+// TODO(crbug.com/1418194): Add tests after MediaDevicesDispatcherHost
+// has been updated.
 
 }  // namespace blink

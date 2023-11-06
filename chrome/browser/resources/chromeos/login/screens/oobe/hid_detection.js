@@ -26,8 +26,7 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OobeTextButton} from '../../components/buttons/oobe_text_button.js';
 
 
-(function() {
-/** @const {number} */ var PINCODE_LENGTH = 6;
+/** @const {number} */ const PINCODE_LENGTH = 6;
 
 // Enumeration of possible connection states of a device.
 const CONNECTION = {
@@ -416,4 +415,3 @@ class HidDetectionScreen extends HidDetectionScreenBase {
 }
 
 customElements.define(HidDetectionScreen.is, HidDetectionScreen);
-})();

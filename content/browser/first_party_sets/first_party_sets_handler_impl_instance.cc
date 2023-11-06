@@ -125,7 +125,7 @@ void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
     const base::Value::Dict* policy,
     base::OnceCallback<void(net::FirstPartySetsContextConfig)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!policy || !enabled_) {
+  if (!policy) {
     std::move(callback).Run(net::FirstPartySetsContextConfig());
     return;
   }
@@ -148,14 +148,23 @@ void FirstPartySetsHandlerImplInstance::GetContextConfigForPolicy(
 FirstPartySetsHandlerImplInstance::FirstPartySetsHandlerImplInstance(
     bool enabled,
     bool embedder_will_provide_public_sets)
-    : enabled_(enabled),
-      embedder_will_provide_public_sets_(enabled &&
-                                         embedder_will_provide_public_sets),
-      sets_loader_(std::make_unique<FirstPartySetsLoader>(
-          base::BindOnce(&FirstPartySetsHandlerImplInstance::SetCompleteSets,
-                         // base::Unretained(this) is safe here because
-                         // this is a static singleton.
-                         base::Unretained(this)))) {}
+    : enabled_(enabled) {
+  if (enabled) {
+    on_sets_ready_callbacks_ =
+        std::make_unique<base::circular_deque<base::OnceClosure>>();
+    sets_loader_ = std::make_unique<FirstPartySetsLoader>(
+        base::BindOnce(&FirstPartySetsHandlerImplInstance::SetCompleteSets,
+                       // base::Unretained(this) is safe here because
+                       // this is a static singleton.
+                       base::Unretained(this)));
+    if (!embedder_will_provide_public_sets) {
+      sets_loader_->SetComponentSets(base::Version(), base::File());
+    }
+  } else {
+    SetCompleteSets(net::GlobalFirstPartySets());
+    CHECK(global_sets_.has_value());
+  }
+}
 
 FirstPartySetsHandlerImplInstance::~FirstPartySetsHandlerImplInstance() =
     default;
@@ -164,10 +173,6 @@ absl::optional<net::GlobalFirstPartySets>
 FirstPartySetsHandlerImplInstance::GetSets(
     base::OnceCallback<void(net::GlobalFirstPartySets)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsEnabled()) {
-    return net::GlobalFirstPartySets();
-  }
-  CHECK(IsEnabled());
   if (global_sets_.has_value()) {
     return global_sets_->Clone();
   }
@@ -190,18 +195,12 @@ void FirstPartySetsHandlerImplInstance::Init(
   if (initialized_) {
     return;
   }
-  CHECK(sets_loader_);
 
   initialized_ = true;
   SetDatabase(user_data_dir);
 
-  if (IsEnabled()) {
+  if (sets_loader_) {
     sets_loader_->SetManuallySpecifiedSet(local_set);
-    if (!embedder_will_provide_public_sets_) {
-      sets_loader_->SetComponentSets(base::Version(), base::File());
-    }
-  } else {
-    SetCompleteSets(net::GlobalFirstPartySets());
   }
 }
 
@@ -214,7 +213,8 @@ void FirstPartySetsHandlerImplInstance::SetPublicFirstPartySets(
     const base::Version& version,
     base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_ || !embedder_will_provide_public_sets_ || !sets_loader_) {
+  if (!sets_loader_) {
+    FirstPartySetsLoader::DisposeFile(std::move(sets_file));
     return;
   }
 
@@ -261,7 +261,6 @@ void FirstPartySetsHandlerImplInstance::SetCompleteSets(
     net::GlobalFirstPartySets sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!global_sets_.has_value());
-  CHECK(sets_loader_);
   global_sets_ = std::move(sets);
   sets_loader_.reset();
 
@@ -287,19 +286,22 @@ void FirstPartySetsHandlerImplInstance::EnqueuePendingTask(
     base::OnceClosure run_task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!global_sets_.has_value());
+  CHECK(on_sets_ready_callbacks_);
 
   if (!first_async_task_timer_.has_value()) {
     first_async_task_timer_ = base::ElapsedTimer();
   }
 
-  on_sets_ready_callbacks_.push_back(std::move(run_task));
+  on_sets_ready_callbacks_->push_back(std::move(run_task));
 }
 
 void FirstPartySetsHandlerImplInstance::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::circular_deque<base::OnceClosure> queue;
-  queue.swap(on_sets_ready_callbacks_);
+  if (on_sets_ready_callbacks_) {
+    queue.swap(*on_sets_ready_callbacks_);
+  }
 
   base::UmaHistogramCounts10000(
       "Cookie.FirstPartySets.Browser.DelayedQueriesCount", queue.size());
@@ -313,6 +315,7 @@ void FirstPartySetsHandlerImplInstance::InvokePendingQueries() {
     queue.pop_front();
     std::move(callback).Run();
   }
+  on_sets_ready_callbacks_.reset();
 }
 
 absl::optional<net::FirstPartySetEntry>
@@ -519,6 +522,10 @@ FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
         timer->Elapsed());
   }
 
+  if (!enabled_) {
+    return net::FirstPartySetsContextConfig();
+  }
+
   auto [parsed, warnings] =
       FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy);
 
@@ -528,6 +535,17 @@ FirstPartySetsHandlerImplInstance::GetContextConfigForPolicyInternal(
                    /*addition_sets=*/
                    parsed.value().additions)
              : net::FirstPartySetsContextConfig();
+}
+
+bool FirstPartySetsHandlerImplInstance::ForEachEffectiveSetEntry(
+    const net::FirstPartySetsContextConfig& config,
+    base::FunctionRef<bool(const net::SchemefulSite&,
+                           const net::FirstPartySetEntry&)> f) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!global_sets_.has_value()) {
+    return false;
+  }
+  return global_sets_->ForEachEffectiveSetEntry(config, f);
 }
 
 }  // namespace content

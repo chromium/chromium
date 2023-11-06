@@ -55,7 +55,7 @@ class WebAppInstallInfoFetcher {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     callback_ = std::move(callback);
 
-    if (absl::holds_alternative<DevModeProxy>(location_.get())) {
+    if (absl::holds_alternative<DevModeProxy>(location_)) {
       FailWithError("No Signed Web Bundle Metadata for dev-mode proxy.");
       return;
     }
@@ -89,7 +89,7 @@ class WebAppInstallInfoFetcher {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(helper_);
     helper_->CheckTrustAndSignatures(
-        location_.get(), profile_,
+        location_, profile_,
         base::BindOnce(&WebAppInstallInfoFetcher::RunNextStepOnSuccess<void>,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
@@ -100,7 +100,7 @@ class WebAppInstallInfoFetcher {
     CHECK(web_contents_);
     CHECK(url_loader_);
     helper_->LoadInstallUrl(
-        location_.get(), *web_contents_.get(), *url_loader_.get(),
+        location_, *web_contents_.get(), *url_loader_.get(),
         base::BindOnce(&WebAppInstallInfoFetcher::RunNextStepOnSuccess<void>,
                        weak_factory_.GetWeakPtr(),
                        std::move(next_step_callback)));
@@ -171,7 +171,7 @@ class WebAppInstallInfoFetcher {
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<Profile> profile_;
-  raw_ref<const IsolatedWebAppLocation> location_;
+  IsolatedWebAppLocation location_;
   WebAppInstalInfoCallback callback_;
 
   std::unique_ptr<IsolatedWebAppInstallCommandHelper> helper_ = nullptr;

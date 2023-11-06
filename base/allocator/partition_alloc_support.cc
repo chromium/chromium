@@ -1101,6 +1101,10 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       break;
   }
 
+  const size_t scheduler_loop_quarantine_capacity_in_bytes =
+      static_cast<size_t>(
+          base::features::kPartitionAllocSchedulerLoopQuarantineCapacity.Get());
+
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
@@ -1174,7 +1178,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
                                          enable_memory_tagging),
       allocator_shim::UseDedicatedAlignedPartition(
           brp_config.use_dedicated_aligned_partition),
-      brp_config.ref_count_size, bucket_distribution);
+      brp_config.ref_count_size, bucket_distribution,
+      scheduler_loop_quarantine_capacity_in_bytes);
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to
@@ -1287,7 +1292,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::features::GetThreadCacheMinPurgeInterval(),
       base::features::GetThreadCacheMaxPurgeInterval(),
       base::features::GetThreadCacheDefaultPurgeInterval(),
-      size_t(base::features::kThreadCacheMinCachedMemoryForPurgingBytes.Get()));
+      size_t(base::features::GetThreadCacheMinCachedMemoryForPurgingBytes()));
 
   base::allocator::StartThreadCachePeriodicPurge();
 
@@ -1297,13 +1302,13 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     // multiplier value with the corresponding feature param.
 #if BUILDFLAG(IS_ANDROID)
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        base::features::kThreadCacheMultiplierForAndroid.Get());
+        base::features::GetThreadCacheMultiplierForAndroid());
 #else   // BUILDFLAG(IS_ANDROID)
     ::partition_alloc::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
-        base::features::kThreadCacheMultiplier.Get());
+        base::features::GetThreadCacheMultiplier());
 #endif  // BUILDFLAG(IS_ANDROID)
   } else {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
     // If kEnableConfigurableThreadCacheMultiplier is not enabled, lower
     // thread cache limits on Android low end device to avoid stranding too much
     // memory in the caches.
@@ -1313,7 +1318,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
           .SetThreadCacheMultiplier(
               ::partition_alloc::ThreadCache::kDefaultMultiplier / 2.);
     }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   }
 
   // Renderer processes are more performance-sensitive, increase thread cache
@@ -1322,7 +1327,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
     largest_cached_size_ =
-        size_t(base::features::kPartitionAllocLargeThreadCacheSizeValue.Get());
+        size_t(base::features::GetPartitionAllocLargeThreadCacheSizeValue());
 
 #if BUILDFLAG(IS_ANDROID)
     // Use appropriately lower amount for Android devices with 3GB or less.
@@ -1332,7 +1337,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
     if (base::SysInfo::AmountOfPhysicalMemoryMB() < 3.2 * 1024) {
       largest_cached_size_ = size_t(
           base::features::
-              kPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid.Get());
+              GetPartitionAllocLargeThreadCacheSizeValueForLowRAMAndroid());
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 

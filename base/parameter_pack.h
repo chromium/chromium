@@ -42,25 +42,23 @@ template <typename... Ts>
 struct ParameterPack {
   // Checks if |Type| occurs in the parameter pack.
   template <typename Type>
-  using HasType =
-      std::bool_constant<any_of({std::is_same<Type, Ts>::value...})>;
+  using HasType = std::bool_constant<any_of({std::is_same_v<Type, Ts>...})>;
 
   // Checks if the parameter pack only contains |Type|.
   template <typename Type>
-  using OnlyHasType =
-      std::bool_constant<all_of({std::is_same<Type, Ts>::value...})>;
+  using OnlyHasType = std::bool_constant<all_of({std::is_same_v<Type, Ts>...})>;
 
   // Checks if |Type| occurs only once in the parameter pack.
   template <typename Type>
   using IsUniqueInPack =
-      std::bool_constant<count({std::is_same<Type, Ts>::value...}, true) == 1>;
+      std::bool_constant<count({std::is_same_v<Type, Ts>...}, true) == 1>;
 
   // Returns the zero-based index of |Type| within |Pack...| or |pack_npos| if
   // it's not within the pack.
   template <typename Type>
   static constexpr size_t IndexInPack() {
     size_t index = 0;
-    for (bool value : {std::is_same<Type, Ts>::value...}) {
+    for (bool value : {std::is_same_v<Type, Ts>...}) {
       if (value)
         return index;
       index++;
@@ -74,7 +72,7 @@ struct ParameterPack {
 
   // Checks if every type in the parameter pack is the same.
   using IsAllSameType =
-      std::bool_constant<all_of({std::is_same<NthType<0>, Ts>::value...})>;
+      std::bool_constant<all_of({std::is_same_v<NthType<0>, Ts>...})>;
 };
 
 }  // namespace base

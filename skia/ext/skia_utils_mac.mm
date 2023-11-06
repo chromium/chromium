@@ -55,7 +55,7 @@ SkBitmap NSImageOrNSImageRepToSkBitmapWithColorSpace(
   [NSGraphicsContext saveGraphicsState];
 
   NSGraphicsContext* context_cocoa =
-      [NSGraphicsContext graphicsContextWithCGContext:context flipped:NO];
+      [NSGraphicsContext graphicsContextWithCGContext:context.get() flipped:NO];
   [NSGraphicsContext setCurrentContext:context_cocoa];
 
   NSRect drawRect = NSMakeRect(0, 0, size.width, size.height);
@@ -155,7 +155,7 @@ SkColor CGColorRefToSkColor(CGColorRef color) {
                                               kCGRenderingIntentDefault, color,
                                               nullptr));
   DCHECK(CGColorGetNumberOfComponents(color) == 4);
-  const CGFloat* components = CGColorGetComponents(cg_color);
+  const CGFloat* components = CGColorGetComponents(cg_color.get());
   return SkColor4f{components[0], components[1], components[2], components[3]}
       .toSkColor();
 }
@@ -234,7 +234,7 @@ NSBitmapImageRep* SkBitmapToNSBitmapImageRepWithColorSpace(
     return nil;
 
   // Now convert to NSBitmapImageRep.
-  return [[NSBitmapImageRep alloc] initWithCGImage:cgimage];
+  return [[NSBitmapImageRep alloc] initWithCGImage:cgimage.get()];
 }
 
 NSImage* SkBitmapToNSImageWithColorSpace(const SkBitmap& skiaBitmap,

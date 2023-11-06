@@ -129,6 +129,10 @@ VideoEncoderConfig* MakeVideoEncoderConfig(
     config->setLatencyMode(ToLatencyMode(proto.latency_mode()));
   }
 
+  if (proto.has_content_hint()) {
+    config->setContentHint(ToContentHint(proto.content_hint()));
+  }
+
   // Bitrate is truly optional, so don't just take the proto default value.
   if (proto.has_bitrate())
     config->setBitrate(proto.bitrate());
@@ -197,6 +201,19 @@ String ToLatencyMode(wc_fuzzer::ConfigureVideoEncoder_LatencyMode mode) {
       return "quality";
     case wc_fuzzer::ConfigureVideoEncoder_LatencyMode_REALTIME:
       return "realtime";
+  }
+}
+
+String ToContentHint(wc_fuzzer::ConfigureVideoEncoder_ContentHint hint) {
+  switch (hint) {
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_NONE:
+      return "";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_TEXT:
+      return "text";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_MOTION:
+      return "motion";
+    case wc_fuzzer::ConfigureVideoEncoder_ContentHint_DETAIL:
+      return "detail";
   }
 }
 

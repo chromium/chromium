@@ -1,7 +1,6 @@
 include_rules = [
     "+base/atomic_sequence_num.h",
     "+base/containers/queue.h",
-    "+base/strings/string_piece.h",
     "+base/threading/sequenced_task_runner_handle.h",
     "+net/base/registry_controlled_domains/registry_controlled_domain.h",
     "+net/base/request_priority.h",
@@ -16,8 +15,6 @@ include_rules = [
     "+net/test/cert_test_util.h",
     "+net/traffic_annotation/network_traffic_annotation.h",
     "+net/url_request/referrer_policy.h",
-    "+services/network/public/mojom/url_loader.mojom.h",
-    "+services/network/public/mojom/url_response_head.mojom.h",
 ]
 
 specific_include_rules = {

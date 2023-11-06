@@ -57,6 +57,9 @@ suite('<customize-buttons-subsection>', () => {
     customizeButtonsSubsection.set(
         'selectedButton_',
         fakeGraphicsTablets[0]!.settings!.penButtonRemappings[0]);
+    customizeButtonsSubsection.set(
+        'buttonRemappingList',
+        fakeGraphicsTablets[0]!.settings!.penButtonRemappings);
     await flushTasks();
     assertTrue(!!customizeButtonsSubsection.shadowRoot!.querySelector(
         '#renamingDialog'));
@@ -66,12 +69,42 @@ suite('<customize-buttons-subsection>', () => {
     const buttonLabelInput: CrInputElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector(
             '#renamingDialogInput');
-    assertTrue(!!buttonLabelInput);
-    assertEquals(buttonRemappingChangedEventCount, 0);
-    buttonLabelInput.value = 'New Button Name';
     const saveButton: CrButtonElement|null =
         customizeButtonsSubsection.shadowRoot!.querySelector('#saveButton');
+    assertTrue(!!buttonLabelInput);
+    assertEquals(buttonRemappingChangedEventCount, 0);
     assertTrue(!!saveButton);
+    await flushTasks();
+
+    // Verify that if the input name is empty, the save button is disabled.
+    buttonLabelInput.value = '';
+    await flushTasks();
+    assertTrue(saveButton.disabled);
+
+    // Verify that if the new button is too long, it will cause invalid and be
+    // truncated.
+    buttonLabelInput.value =
+        'Button name which exceeds 32 character is invalid.';
+    await flushTasks();
+
+    assertFalse(saveButton.disabled);
+    assertTrue(customizeButtonsSubsection.get('buttonNameInvalid_'));
+    assertEquals(buttonLabelInput.value.length, 32);
+    const inputCountText: HTMLDivElement|null =
+        customizeButtonsSubsection.shadowRoot!.querySelector('#inputCount');
+    assertEquals(inputCountText!.textContent!.trim(), '32/32');
+
+    // Verify that if the button name is duplicate with other buttons, the
+    // save button is blocked.
+    buttonLabelInput.value = 'Redo';
+    saveButton.click();
+    await flushTasks();
+    assertTrue(buttonLabelInput.invalid);
+    assertEquals(buttonRemappingChangedEventCount, 0);
+
+    buttonLabelInput.value = 'New Button Name';
+    assertEquals(inputCountText!.textContent!.trim(), '15/32');
+    assertFalse(customizeButtonsSubsection.get('buttonNameInvalid_'));
     saveButton.click();
     await flushTasks();
     assertEquals(buttonRemappingChangedEventCount, 1);

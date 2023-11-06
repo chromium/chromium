@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/views/task_manager_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -26,7 +27,6 @@ using policy::DeveloperToolsPolicyHandler::Availability::kAllowed;
 using policy::DeveloperToolsPolicyHandler::Availability::kDisallowed;
 
 namespace ash {
-namespace {
 
 // Test kiosk troubleshooting tools on web kiosk.
 class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
@@ -78,6 +78,14 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
     return BrowserList::GetInstance()->GetLastActive();
   }
 
+  void EmulateOpenTaskManagerShortcutPressed() const {
+    // Esc + Search
+    ui::test::EmulateFullKeyPressReleaseSequence(
+        event_generator_.get(), ui::VKEY_ESCAPE, /*control=*/false,
+        /*shift=*/false,
+        /*alt=*/false, /*command=*/true);
+  }
+
   void EmulateSwitchWindowsForwardShortcutPressed() const {
     // Alt+Tab
     ui::test::EmulateFullKeyPressReleaseSequence(
@@ -122,6 +130,10 @@ class KioskTroubleshootingToolsTest : public WebKioskBaseTest {
 
   KioskSystemSession* kiosk_system_session() const {
     return WebKioskAppManager::Get()->kiosk_system_session();
+  }
+
+  task_manager::TaskManagerView* GetTaskManagerView() const {
+    return task_manager::TaskManagerView::GetInstanceForTests();
   }
 
  protected:
@@ -362,5 +374,33 @@ IN_PROC_BROWSER_TEST_F(KioskTroubleshootingToolsTest, SwitchWindowsDisallowed) {
   EXPECT_FALSE(main_browser->window()->IsActive());
 }
 
-}  // namespace
+class KioskTroubleshootingToolsParamTest
+    : public KioskTroubleshootingToolsTest,
+      public testing::WithParamInterface<
+          /*troubleshooting_policy_enabled=*/bool> {
+ public:
+  bool IsTroubleshootingPolicyEnabledTest() const { return GetParam(); }
+};
+
+IN_PROC_BROWSER_TEST_P(KioskTroubleshootingToolsParamTest,
+                       TaskManagerShortcutShow) {
+  InitializeRegularOnlineKiosk();
+  if (IsTroubleshootingPolicyEnabledTest()) {
+    UpdateTroubleshootingToolsPolicy(/*enable=*/true);
+  }
+
+  EmulateOpenTaskManagerShortcutPressed();
+  base::RunLoop().RunUntilIdle();
+
+  if (IsTroubleshootingPolicyEnabledTest()) {
+    EXPECT_NE(nullptr, GetTaskManagerView());
+  } else {
+    EXPECT_EQ(nullptr, GetTaskManagerView());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         KioskTroubleshootingToolsParamTest,
+                         testing::Bool());
+
 }  // namespace ash

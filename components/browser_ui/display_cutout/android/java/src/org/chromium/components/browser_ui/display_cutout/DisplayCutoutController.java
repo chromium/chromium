@@ -16,12 +16,13 @@ import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.blink.mojom.ViewportFit;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -34,7 +35,9 @@ import org.chromium.ui.base.WindowAndroid;
  * Delegate#getAttachedActivity()} returns a non-null value. The cutout mode is set on the
  * Activity's window only in P+, and only when the associated WebContents is fullscreen.
  */
-public class DisplayCutoutController implements InsetObserverView.WindowInsetObserver, UserData {
+public class DisplayCutoutController implements InsetObserver.WindowInsetObserver, UserData {
+    private static final String TAG = "E2E_DCController";
+
     private static final Class<DisplayCutoutController> USER_DATA_KEY =
             DisplayCutoutController.class;
 
@@ -45,10 +48,10 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
     private @WebContentsObserver.ViewportFitType int mViewportFit = ViewportFit.AUTO;
 
     /**
-     * The current {@link InsetObserverView} that we are attached to. This can be null if we
-     * have not attached to an activity.
+     * The current {@link InsetObserver} that we are attached to. This can be null if we have not
+     * attached to an activity.
      */
-    private @Nullable InsetObserverView mInsetObserverView;
+    private @Nullable InsetObserver mInsetObserver;
 
     /**
      * Provides the activity-specific (vs tab-specific) cutout mode. The activity-specific
@@ -110,7 +113,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
 
         /** Returns the view this controller uses for safe area updates, if there is one. */
         @Nullable
-        InsetObserverView getInsetObserverView();
+        InsetObserver getInsetObserverView();
 
         /** Returns whether the user can interact with the associated WebContents/UI element. */
         boolean isInteractable();
@@ -166,7 +169,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
     }
 
     /**
-     * Add observers to {@link InsetObserverView} and the browser display cutout mode supplier if we
+     * Add observers to {@link InsetObserver} and the browser display cutout mode supplier if we
      * have not added them.
      */
     void maybeAddObservers() {
@@ -185,15 +188,15 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
         mWindow = null;
     }
 
-    private void updateInsetObserver(InsetObserverView observer) {
-        if (mInsetObserverView == observer) return;
+    private void updateInsetObserver(InsetObserver observer) {
+        if (mInsetObserver == observer) return;
 
-        if (mInsetObserverView != null) {
-            mInsetObserverView.removeObserver(this);
+        if (mInsetObserver != null) {
+            mInsetObserver.removeObserver(this);
         }
-        mInsetObserverView = observer;
-        if (mInsetObserverView != null) {
-            mInsetObserverView.addObserver(this);
+        mInsetObserver = observer;
+        if (mInsetObserver != null) {
+            mInsetObserver.addObserver(this);
         }
     }
 
@@ -223,6 +226,7 @@ public class DisplayCutoutController implements InsetObserverView.WindowInsetObs
      * @param value The new viewport fit value.
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
+        Log.i(TAG, "setViewportFit: %s", value);
         mSafeAreaInsetsTracker.setIsViewportFitCover(
                 value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT);
 

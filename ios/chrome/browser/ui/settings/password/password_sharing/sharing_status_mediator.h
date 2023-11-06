@@ -7,20 +7,29 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+#import "third_party/abseil-cpp/absl/types/optional.h"
+
 @class RecipientInfoForIOSDisplay;
 @protocol SharingStatusConsumer;
 
 class AuthenticationService;
 class ChromeAccountManagerService;
+class FaviconLoader;
+class GURL;
 
 // This mediator passes display information about sender and recipients of the
 // user to its consumer.
-@interface SharingStatusMediator : NSObject
+@interface SharingStatusMediator : NSObject <TableViewFaviconDataSource>
 
 - (instancetype)
       initWithAuthService:(AuthenticationService*)authService
     accountManagerService:(ChromeAccountManagerService*)accountManagerService
+            faviconLoader:(FaviconLoader*)faviconLoader
                recipients:(NSArray<RecipientInfoForIOSDisplay*>*)recipients
+                  website:(NSString*)website
+                      URL:(const GURL&)URL
+        changePasswordURL:(const absl::optional<GURL>&)changePasswordURL
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

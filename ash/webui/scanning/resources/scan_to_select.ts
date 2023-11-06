@@ -20,7 +20,7 @@ import {ScanningBrowserProxyImpl, SelectedPath} from './scanning_browser_proxy.j
 const ScanToSelectElementBase =
     I18nMixin(PolymerElement) as {new (): PolymerElement & I18nMixinInterface};
 
-class ScanToSelectElement extends ScanToSelectElementBase {
+export class ScanToSelectElement extends ScanToSelectElementBase {
   static get is() {
     return 'scan-to-select' as const;
   }

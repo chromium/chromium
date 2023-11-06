@@ -11,6 +11,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry.h"
@@ -112,15 +113,18 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
  protected:
   void AddExtension(const std::string& name, mojom::ManifestLocation location) {
     const std::string kId = crx_file::id_util::GenerateId(name);
-    scoped_refptr<const Extension> extension =
-        ExtensionBuilder()
-            .SetManifest(base::Value::Dict()
-                             .Set("name", name)
-                             .Set("description", "an extension")
-                             .Set("manifest_version", 3)
-                             .Set("version", "1.0.0")
-                             .Set("permissions", base::Value::List().Append(
-                                                     kAllHostsPermission)))
+    scoped_refptr<const Extension> extension = CreateExtension(name, location);
+    extensions::ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
+  }
+
+  scoped_refptr<const extensions::Extension> CreateExtension(
+      const std::string& name,
+      mojom::ManifestLocation location) {
+    const std::string kId = crx_file::id_util::GenerateId(name);
+    scoped_refptr<const extensions::Extension> extension =
+        ExtensionBuilder(name)
+            .SetManifestKey("host_permissions",
+                            base::Value::List().Append(kAllHostsPermission))
             .SetLocation(location)
             .SetID(kId)
             .Build();
@@ -128,9 +132,22 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
         ->OnExtensionInstalled(extension.get(),
                                extensions::Extension::State::ENABLED,
                                syncer::StringOrdinal(), "");
-    extensions::ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
+    return extension;
   }
 
+  void RemoveExtension(const Extension* extension) {
+    extensions::ExtensionRegistry::Get(profile_.get())
+        ->TriggerOnUninstalled(extension,
+                               extensions::UNINSTALL_REASON_FOR_TESTING);
+  }
+
+  void AcknowledgeSafetyCheck(const std::string& name) {
+    extensions::ExtensionPrefs::Get(profile_.get())
+        ->UpdateExtensionPref(name, "ack_safety_check_warning",
+                              base::Value(true));
+  }
+
+  content::TestWebUI web_ui_;
   content::BrowserTaskEnvironment browser_task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   testing::NiceMock<MockCWSInfoService> mock_cws_info_service_;
@@ -140,6 +157,11 @@ class SafetyCheckExtensionsHandlerTest : public testing::Test {
 void SafetyCheckExtensionsHandlerTest::SetUp() {
   TestingProfile::Builder builder;
   profile_ = builder.Build();
+  safety_check_handler_ =
+      std::make_unique<settings::SafetyCheckExtensionsHandler>(profile_.get());
+  safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
+  safety_check_handler_.get()->set_web_ui(&web_ui_);
+  safety_check_handler_.get()->AllowJavascript();
 }
 
 TEST_F(SafetyCheckExtensionsHandlerTest,
@@ -154,9 +176,6 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   // Extensions installed by policies will be ignored by the safety
   // check. So extension 7 will not trigger the handler.
   AddExtension("TestExtension7", ManifestLocation::kExternalPolicyDownload);
-  safety_check_handler_ =
-      std::make_unique<settings::SafetyCheckExtensionsHandler>(profile_.get());
-  safety_check_handler_->SetCWSInfoServiceForTest(&mock_cws_info_service_);
   // Ensure that the mock CWSInfo service returns the needed information.
   EXPECT_CALL(mock_cws_info_service_, GetCWSInfo)
       .Times(6)
@@ -171,4 +190,33 @@ TEST_F(SafetyCheckExtensionsHandlerTest,
   EXPECT_EQ(4, GetNumberOfExtensionsThatNeedReview());
 }
 
+TEST_F(SafetyCheckExtensionsHandlerTest, OnExtensionPrefsDeletedTest) {
+  // Create fake extensions for our pref service to load and test that
+  // the `web_ui_` has recorded no events
+  AddExtension("BadTestExtension1", ManifestLocation::kInternal);
+  auto bad_test_extension2 =
+      CreateExtension("BadTestExtension2", ManifestLocation::kInternal);
+  AddExtension("GoodTestExtension1", ManifestLocation::kInternal);
+  auto good_test_extension2 =
+      CreateExtension("GoodTestExtension2", ManifestLocation::kInternal);
+  safety_check_handler_.get()->SetTriggeringExtensionsForTest(
+      crx_file::id_util::GenerateId("BadTestExtension1"));
+  safety_check_handler_.get()->SetTriggeringExtensionsForTest(
+      crx_file::id_util::GenerateId("BadTestExtension2"));
+  EXPECT_EQ(0u, web_ui_.call_data().size());
+  // After `AcknowledgeSafetyCheck` one event should have been fired.
+  AcknowledgeSafetyCheck(crx_file::id_util::GenerateId("BadTestExtension1"));
+  EXPECT_EQ(1u, web_ui_.call_data().size());
+  // After `RemoveExtension` one additional event should have been fired
+  // making two total events.
+  RemoveExtension(bad_test_extension2.get());
+  EXPECT_EQ(2u, web_ui_.call_data().size());
+
+  // When the same actions are preformed on good extensions, no more
+  // events are fired.
+  AcknowledgeSafetyCheck(crx_file::id_util::GenerateId("GoodTestExtension1"));
+  EXPECT_EQ(2u, web_ui_.call_data().size());
+  RemoveExtension(good_test_extension2.get());
+  EXPECT_EQ(2u, web_ui_.call_data().size());
+}
 }  // namespace extensions

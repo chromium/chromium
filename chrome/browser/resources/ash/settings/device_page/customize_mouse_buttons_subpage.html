@@ -8,10 +8,11 @@
     label="$i18n{mouseSwapButtonsLabel}"
     pref="{{primaryRightPref_}}">
 </settings-toggle-button>
-<div id="description" class="subpage-description">
-  [[getDescription_(selectedMouse.*)]]
-</div>
 <customize-buttons-subsection
     button-remapping-list="{{selectedMouse.settings.buttonRemappings}}"
     action-list$="[[buttonActionList_]]">
 </customize-buttons-subsection>
+<div id="description" class="subpage-description">
+  <iron-icon icon="os-settings:info-outline"></iron-icon>
+  <span>[[getDescription_(selectedMouse.*)]]</span>
+</div>

@@ -162,9 +162,15 @@ TypeConverter<media::mojom::AudioBufferPtr, media::AudioBuffer>::Convert(
   buffer->timestamp = input.timestamp();
 
   if (input.data_) {
+    // `input.data_->span()` refers to the whole memory buffer given to the
+    // `media::AudioBuffer`.
+    // `data_size()` refers to the amount of memory really used by the audio
+    // data. The rest is padding, which we don't need to copy.
     DCHECK_GT(input.data_size(), 0u);
-    buffer->data.assign(input.data_.get(),
-                        input.data_.get() + input.data_size_);
+    DCHECK_GE(input.data_size(), input.data_->span().size());
+    auto buffer_start = input.data_->span().begin();
+    auto buffer_end = buffer_start + input.data_size();
+    buffer->data.assign(buffer_start, buffer_end);
   }
 
   return buffer;

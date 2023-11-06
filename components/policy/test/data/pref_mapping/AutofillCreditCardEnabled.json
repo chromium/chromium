@@ -1,0 +1,35 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AutofillCreditCardEnabled": false
+        },
+        "prefs": {
+          "autofill.credit_card_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

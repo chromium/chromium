@@ -64,9 +64,10 @@ double MonthInputType::ValueAsDate() const {
 String MonthInputType::SerializeWithDate(
     const absl::optional<base::Time>& value) const {
   DateComponents date;
-  if (!value ||
-      !date.SetMillisecondsSinceEpochForMonth(value->ToJsTimeIgnoringNull()))
+  if (!value || !date.SetMillisecondsSinceEpochForMonth(
+                    value->InMillisecondsFSinceUnixEpochIgnoringNull())) {
     return String();
+  }
   return SerializeWithComponents(date);
 }
 

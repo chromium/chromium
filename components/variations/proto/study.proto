@@ -250,6 +250,8 @@ message Study {
     TV = 5;
     // Chrome running on Android Auto.
     AUTOMOTIVE = 6;
+    // Chrome running on Android Foldable.
+    FOLDABLE = 7;
   }
 
   // Possible CPU architectures Chrome is running on. Only supported on M90+.

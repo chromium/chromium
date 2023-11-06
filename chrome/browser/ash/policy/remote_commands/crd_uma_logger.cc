@@ -44,8 +44,8 @@ void CrdUmaLogger::LogSessionDuration(base::TimeDelta duration) {
 }
 
 std::string CrdUmaLogger::GetUmaHistogramName(const char* name_template) const {
-  return base::StringPrintf(name_template, FormatCrdSessionType(),
-                            FormatUserSessionType());
+  return base::StringPrintfNonConstexpr(name_template, FormatCrdSessionType(),
+                                        FormatUserSessionType());
 }
 
 // Created a separate method to have fixed values for UMA logs.

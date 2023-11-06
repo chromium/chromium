@@ -162,4 +162,39 @@ static jlong JNI_GURL_CreateNative(JNIEnv* env,
       FromJavaGURL(env, j_spec, is_valid, parsed_ptr).release());
 }
 
+static void JNI_GURL_ReplaceComponents(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_spec,
+    jboolean is_valid,
+    jlong parsed_ptr,
+    const JavaParamRef<jstring>& j_username_replacement,
+    jboolean clear_username,
+    const JavaParamRef<jstring>& j_password_replacement,
+    jboolean clear_password,
+    const JavaParamRef<jobject>& j_result) {
+  GURL::Replacements replacements;
+
+  // Replacement strings must remain in scope for ReplaceComponents().
+  std::string username;
+  std::string password;
+
+  if (clear_username) {
+    replacements.ClearUsername();
+  } else if (j_username_replacement) {
+    username = ConvertJavaStringToUTF8(env, j_username_replacement);
+    replacements.SetUsernameStr(username);
+  }
+
+  if (clear_password) {
+    replacements.ClearPassword();
+  } else if (j_password_replacement) {
+    password = ConvertJavaStringToUTF8(env, j_password_replacement);
+    replacements.SetPasswordStr(password);
+  }
+
+  std::unique_ptr<GURL> original =
+      FromJavaGURL(env, j_spec, is_valid, parsed_ptr);
+  InitFromGURL(env, original->ReplaceComponents(replacements), j_result);
+}
+
 }  // namespace url

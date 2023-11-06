@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceI18nShortcutsEnabled": true
+        },
+        "prefs": {
+          "ash.device_i18n_shortcuts_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceI18nShortcutsEnabled": false
+        },
+        "prefs": {
+          "ash.device_i18n_shortcuts_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.device_i18n_shortcuts_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

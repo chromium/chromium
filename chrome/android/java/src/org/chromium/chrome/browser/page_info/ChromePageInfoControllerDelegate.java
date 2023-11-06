@@ -58,6 +58,7 @@ import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
 import org.chromium.components.page_info.PageInfoView;
+import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
@@ -210,12 +211,18 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return mContext.getString(R.string.page_info_connection_paint_preview);
     }
 
+    /** {@inheritDoc} */
     @Override
     public void showCookieSettings() {
-        SiteSettingsHelper.showCategorySettings(mContext, mProfile,
-                getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                        ? SiteSettingsCategory.Type.THIRD_PARTY_COOKIES
-                        : SiteSettingsCategory.Type.COOKIES);
+        SiteSettingsHelper.showCategorySettings(
+                mContext, mProfile, SiteSettingsCategory.Type.THIRD_PARTY_COOKIES);
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void showTrackingProtectionSettings() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(mContext, TrackingProtectionSettings.class);
     }
 
     @Override
@@ -342,5 +349,10 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     public boolean showTrackingProtectionUI() {
         return (UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD));
+    }
+
+    @Override
+    public boolean allThirdPartyCookiesBlockedTrackingProtection() {
+        return UserPrefs.get(mProfile).getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED);
     }
 }

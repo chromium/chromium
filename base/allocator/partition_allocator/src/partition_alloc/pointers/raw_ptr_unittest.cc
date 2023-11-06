@@ -67,11 +67,11 @@ static_assert(sizeof(raw_ptr<std::string>) == sizeof(std::string*),
     !BUILDFLAG(RAW_PTR_ZERO_ON_MOVE) && !BUILDFLAG(RAW_PTR_ZERO_ON_DESTRUCT)
 // |is_trivially_copyable| assertion means that arrays/vectors of raw_ptr can
 // be copied by memcpy.
-static_assert(std::is_trivially_copyable<raw_ptr<void>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<void>>,
               "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<int>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<int>>,
               "raw_ptr should be trivially copyable");
-static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
+static_assert(std::is_trivially_copyable_v<raw_ptr<std::string>>,
               "raw_ptr should be trivially copyable");
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
@@ -95,13 +95,12 @@ static_assert(std::is_trivially_copyable<raw_ptr<std::string>>::value,
 //     constructor of 'TraceValue' is implicitly deleted because variant field
 //     'as_pointer' has a non-trivial default constructor
 //       raw_ptr<const void> as_pointer;
-static_assert(std::is_trivially_default_constructible<raw_ptr<void>>::value,
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<void>>,
               "raw_ptr should be trivially default constructible");
-static_assert(std::is_trivially_default_constructible<raw_ptr<int>>::value,
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<int>>,
               "raw_ptr should be trivially default constructible");
-static_assert(
-    std::is_trivially_default_constructible<raw_ptr<std::string>>::value,
-    "raw_ptr should be trivially default constructible");
+static_assert(std::is_trivially_default_constructible_v<raw_ptr<std::string>>,
+              "raw_ptr should be trivially default constructible");
 #endif  // !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !BUILDFLAG(USE_ASAN_UNOWNED_PTR) &&
         // !BUILDFLAG(USE_HOOKABLE_RAW_PTR) &&
@@ -846,14 +845,12 @@ TEST_F(RawPtrTest, UpcastNotConvertible) {
   class Base {};
   class Derived : private Base {};
   class Unrelated {};
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Derived>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<Base>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<Unrelated>, raw_ptr<void>>::value));
-  EXPECT_FALSE((std::is_convertible<raw_ptr<void>, raw_ptr<Unrelated>>::value));
-  EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int64_t>, raw_ptr<int32_t>>::value));
-  EXPECT_FALSE(
-      (std::is_convertible<raw_ptr<int16_t>, raw_ptr<int32_t>>::value));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Derived>, raw_ptr<Base>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Unrelated>, raw_ptr<Base>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<Unrelated>, raw_ptr<void>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<void>, raw_ptr<Unrelated>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<int64_t>, raw_ptr<int32_t>>));
+  EXPECT_FALSE((std::is_convertible_v<raw_ptr<int16_t>, raw_ptr<int32_t>>));
 }
 
 TEST_F(RawPtrTest, UpcastPerformance) {
@@ -2088,13 +2085,15 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   ASSERT_EQ(
       requested_size,
       allocator_.root()->AllocationCapacityFromRequestedSize(requested_size));
-  size_t requested_elements = requested_size / sizeof(int);
+  size_t requested_elements = requested_size / sizeof(uint32_t);
 
-  int* ptr = reinterpret_cast<int*>(allocator_.root()->Alloc(requested_size));
-  int* ptr_end = ptr + requested_elements;
+  uint32_t* ptr =
+      reinterpret_cast<uint32_t*>(allocator_.root()->Alloc(requested_size));
+  uint32_t* ptr_end = ptr + requested_elements;
 
-  CountingRawPtr<int> protected_ptr = ptr;
-  CountingRawPtr<int> protected_ptr_end = protected_ptr + requested_elements;
+  CountingRawPtr<uint32_t> protected_ptr = ptr;
+  CountingRawPtr<uint32_t> protected_ptr_end =
+      protected_ptr + requested_elements;
 
 #if BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
   EXPECT_DEATH_IF_SUPPORTED(*protected_ptr_end = 1, "");
@@ -2102,7 +2101,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  int gen_val = 1;
+  uint32_t gen_val = 1;
   std::generate(protected_ptr, protected_ptr_end, [&gen_val]() {
     gen_val ^= gen_val + 1;
     return gen_val;
@@ -2117,7 +2116,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
        protected_ptr_i < protected_ptr_end; protected_ptr_i++) {
     *protected_ptr_i ^= *protected_ptr_i + 1;
   }
@@ -2131,7 +2130,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (CountingRawPtr<int> protected_ptr_i = protected_ptr;
+  for (CountingRawPtr<uint32_t> protected_ptr_i = protected_ptr;
        protected_ptr_i < ptr_end; protected_ptr_i++) {
     *protected_ptr_i ^= *protected_ptr_i + 1;
   }
@@ -2145,7 +2144,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
 
   RawPtrCountingImpl::ClearCounters();
 
-  for (int* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
+  for (uint32_t* ptr_i = ptr; ptr_i < protected_ptr_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
   }
 
@@ -2159,7 +2158,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   RawPtrCountingImpl::ClearCounters();
 
   size_t iter_cnt = 0;
-  for (int *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
+  for (uint32_t *ptr_i = protected_ptr, *ptr_i_end = protected_ptr_end;
        ptr_i < ptr_i_end; ptr_i++) {
     *ptr_i ^= *ptr_i + 1;
     iter_cnt++;

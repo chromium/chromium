@@ -1128,14 +1128,7 @@ ExtensionFunction::ResponseAction WebViewInternalClearDataFunction::Run() {
 
   // If |ms_since_epoch| isn't set, default it to 0.
   double ms_since_epoch = options.GetDict().FindDouble(kSinceKey).value_or(0);
-
-  // base::Time takes a double that represents seconds since epoch. JavaScript
-  // gives developers milliseconds, so do a quick conversion before populating
-  // the object. Also, Time::FromDoubleT converts double time 0 to empty Time
-  // object. So we need to do special handling here.
-  remove_since_ = (ms_since_epoch == 0)
-                      ? base::Time::UnixEpoch()
-                      : base::Time::FromDoubleT(ms_since_epoch / 1000.0);
+  remove_since_ = base::Time::FromMillisecondsSinceUnixEpoch(ms_since_epoch);
 
   remove_mask_ = GetRemovalMask();
   if (bad_message_)

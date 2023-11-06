@@ -228,10 +228,10 @@ class MediaControlsImplTest : public PageTestBase,
 
   MediaControlsImpl& MediaControls() { return *media_controls_; }
   MediaControlVolumeSliderElement* VolumeSliderElement() const {
-    return media_controls_->volume_slider_;
+    return media_controls_->volume_slider_.Get();
   }
   MediaControlTimelineElement* TimelineElement() const {
-    return media_controls_->timeline_;
+    return media_controls_->timeline_.Get();
   }
   Element* TimelineTrackElement() const {
     if (!TimelineElement())
@@ -239,35 +239,35 @@ class MediaControlsImplTest : public PageTestBase,
     return &TimelineElement()->GetTrackElement();
   }
   MediaControlCurrentTimeDisplayElement* GetCurrentTimeDisplayElement() const {
-    return media_controls_->current_time_display_;
+    return media_controls_->current_time_display_.Get();
   }
   MediaControlRemainingTimeDisplayElement* GetRemainingTimeDisplayElement()
       const {
-    return media_controls_->duration_display_;
+    return media_controls_->duration_display_.Get();
   }
   MediaControlMuteButtonElement* MuteButtonElement() const {
-    return media_controls_->mute_button_;
+    return media_controls_->mute_button_.Get();
   }
   MediaControlCastButtonElement* CastButtonElement() const {
-    return media_controls_->cast_button_;
+    return media_controls_->cast_button_.Get();
   }
   MediaControlDownloadButtonElement* DownloadButtonElement() const {
-    return media_controls_->download_button_;
+    return media_controls_->download_button_.Get();
   }
   MediaControlFullscreenButtonElement* FullscreenButtonElement() const {
-    return media_controls_->fullscreen_button_;
+    return media_controls_->fullscreen_button_.Get();
   }
   MediaControlPlaybackSpeedButtonElement* PlaybackSpeedButtonElement() const {
-    return media_controls_->playback_speed_button_;
+    return media_controls_->playback_speed_button_.Get();
   }
   MediaControlPlayButtonElement* PlayButtonElement() const {
-    return media_controls_->play_button_;
+    return media_controls_->play_button_.Get();
   }
   MediaControlOverflowMenuButtonElement* OverflowMenuButtonElement() const {
-    return media_controls_->overflow_menu_;
+    return media_controls_->overflow_menu_.Get();
   }
   MediaControlOverflowMenuListElement* OverflowMenuListElement() const {
-    return media_controls_->overflow_list_;
+    return media_controls_->overflow_list_.Get();
   }
 
   MockWebMediaPlayerForImpl* WebMediaPlayer() {
@@ -1255,6 +1255,30 @@ TEST_F(MediaControlsImplTestWithMockScheduler,
   // Unhover slider while focused should not close slider.
   volume_slider->DispatchEvent(*Event::Create(event_type_names::kMouseout));
   EXPECT_FALSE(volume_slider->classList().contains(AtomicString("closed")));
+}
+
+TEST_F(MediaControlsImplTestWithMockScheduler,
+       VolumeSliderDoesNotOpenWithoutAudio) {
+  MediaControls().MediaElement().SetSrc(
+      AtomicString("https://example.com/foo.mp4"));
+  platform()->RunForPeriodSeconds(1);
+  SetHasAudio(false);
+
+  ScopedWebTestMode web_test_mode(false);
+
+  Element* volume_slider = VolumeSliderElement();
+  Element* mute_button = MuteButtonElement();
+
+  ASSERT_NE(nullptr, volume_slider);
+
+  // Volume slider starts out hidden.
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
+
+  // Tab focus on the mute button should not open the volume slider since there
+  // is no audio to control.
+  mute_button->SetFocused(true, mojom::blink::FocusType::kNone);
+  mute_button->DispatchEvent(*Event::Create(event_type_names::kFocus));
+  EXPECT_TRUE(volume_slider->classList().contains(AtomicString("closed")));
 }
 
 TEST_F(MediaControlsImplTest, CastOverlayDefaultHidesOnTimer) {

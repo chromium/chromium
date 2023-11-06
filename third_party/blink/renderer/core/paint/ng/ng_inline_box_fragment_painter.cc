@@ -6,8 +6,8 @@
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/layout/background_bleed_avoidance.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/paint/background_image_geometry.h"
 #include "third_party/blink/renderer/core/paint/nine_piece_image_painter.h"
@@ -35,10 +35,10 @@ bool HasMultipleItems(const Items items) {
   return iter != items.end() && ++iter != items.end();
 }
 
-inline bool MayHaveMultipleFragmentItems(const NGFragmentItem& item,
+inline bool MayHaveMultipleFragmentItems(const FragmentItem& item,
                                          const LayoutObject& layout_object) {
   return !item.IsFirstForNode() || !item.IsLastForNode() ||
-         // TODO(crbug.com/1061423): NGInlineCursor is currently unable to deal
+         // TODO(crbug.com/1061423): InlineCursor is currently unable to deal
          // with objects split into multiple fragmentainers (e.g. columns). Just
          // return true if it's possible that this object participates in a
          // fragmentation context. This will give false positives, but that
@@ -201,8 +201,8 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
   DCHECK_EQ(paint_info.phase, PaintPhase::kForeground);
   DCHECK_EQ(inline_box_fragment_.Type(), NGPhysicalFragment::kFragmentLineBox);
   DCHECK(NeedsPaint(inline_box_fragment_));
-  // |NGFragmentItem| uses the fragment id when painting the background of
-  // line boxes. Please see |NGFragmentItem::kInitialLineFragmentId|.
+  // |FragmentItem| uses the fragment id when painting the background of
+  // line boxes. Please see |FragmentItem::kInitialLineFragmentId|.
   DCHECK_NE(paint_info.context.GetPaintController().CurrentFragment(), 0u);
 
   if (line_style_ == style_ ||
@@ -220,7 +220,7 @@ void NGLineBoxFragmentPainter::PaintBackgroundBorderShadow(
   // the height of inline box does not. The box "behaves similar to that of an
   // inline-level element".
   // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-  const NGPhysicalLineBoxFragment& line_box = PhysicalFragment();
+  const PhysicalLineBoxFragment& line_box = PhysicalFragment();
   const FontHeight line_metrics = line_box.Metrics();
   const FontHeight text_metrics = line_style_.GetFontHeight();
   const WritingMode writing_mode = line_style_.GetWritingMode();
@@ -254,7 +254,7 @@ void NGInlineBoxFragmentPainterBase::ComputeFragmentOffsetOnLine(
     LayoutUnit* total_width) const {
   WritingDirectionMode writing_direction =
       inline_box_fragment_.Style().GetWritingDirection();
-  NGInlineCursor cursor;
+  InlineCursor cursor;
   DCHECK(inline_box_fragment_.GetLayoutObject());
   cursor.MoveTo(*inline_box_fragment_.GetLayoutObject());
 
@@ -485,6 +485,8 @@ void NGInlineBoxFragmentPainterBase::PaintFillLayer(
 // self-painting |LayoutInline|.
 void NGInlineBoxFragmentPainter::PaintAllFragments(
     const LayoutInline& layout_inline,
+    const FragmentData& fragment_data,
+    wtf_size_t fragment_data_idx,
     const PaintInfo& paint_info) {
   // TODO(kojii): If the block flow is dirty, children of these fragments
   // maybe already deleted. crbug.com/963103
@@ -492,7 +494,7 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   if (UNLIKELY(block_flow->NeedsLayout()))
     return;
 
-  ScopedPaintState paint_state(layout_inline, paint_info);
+  ScopedPaintState paint_state(layout_inline, paint_info, &fragment_data);
   PhysicalOffset paint_offset = paint_state.PaintOffset();
   const PaintInfo& local_paint_info = paint_state.GetPaintInfo();
 
@@ -520,22 +522,20 @@ void NGInlineBoxFragmentPainter::PaintAllFragments(
   }
 
   NGInlinePaintContext inline_context;
-  NGInlineCursor cursor(*block_flow);
+  InlineCursor first_container_cursor(*block_flow);
+  first_container_cursor.MoveTo(layout_inline);
+
+  wtf_size_t container_fragment_idx =
+      first_container_cursor.ContainerFragmentIndex() + fragment_data_idx;
+  const NGPhysicalBoxFragment* container_fragment =
+      block_flow->GetPhysicalFragment(container_fragment_idx);
+
+  InlineCursor cursor(*container_fragment);
   cursor.MoveTo(layout_inline);
-  if (!cursor)
-    return;
-  // Convert from inline fragment index to container fragment index, as the
-  // inline may not start in the first fragment generated for the inline
-  // formatting context.
-  wtf_size_t target_fragment_idx =
-      cursor.ContainerFragmentIndex() +
-      paint_info.context.GetPaintController().CurrentFragment();
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    if (target_fragment_idx != cursor.ContainerFragmentIndex())
-      continue;
     NGInlinePaintContext::ScopedInlineBoxAncestors scoped_items(
         cursor, &inline_context);
-    const NGFragmentItem* item = cursor.CurrentItem();
+    const FragmentItem* item = cursor.CurrentItem();
     DCHECK(item);
     const NGPhysicalBoxFragment* box_fragment = item->BoxFragment();
     DCHECK(box_fragment);

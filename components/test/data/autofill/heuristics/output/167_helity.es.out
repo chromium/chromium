@@ -3,7 +3,7 @@ NAME_LAST_FIRST | SignupForm[surname] | Primer apellido |  | SignupForm[name]_1
 NAME_LAST_SECOND | SignupForm[second_surname] | Segundo apellido |  | SignupForm[name]_1
 UNKNOWN_TYPE | SignupForm[card_type] | Documento | 1 | SignupForm[name]_1
 UNKNOWN_TYPE | SignupForm[card_number] | Número de documento |  | SignupForm[name]_1
-PHONE_HOME_WHOLE_NUMBER | SignupForm[phone] | Teléfono |  | SignupForm[name]_1
+PHONE_HOME_CITY_AND_NUMBER | SignupForm[phone] | Teléfono |  | SignupForm[name]_1
 EMAIL_ADDRESS | SignupForm[email] | Correo |  | SignupForm[name]_1
 UNKNOWN_TYPE | SignupForm[passenger_type_id] | Tipo de Pasajero | 1 | SignupForm[name]_1
 UNKNOWN_TYPE | SignupForm[password_hash] | Contraseña |  | SignupForm[name]_1

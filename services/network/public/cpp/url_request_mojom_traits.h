@@ -276,8 +276,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool ad_auction_headers(const network::ResourceRequest& request) {
     return request.ad_auction_headers;
   }
-  static bool shared_storage_writable(const network::ResourceRequest& request) {
-    return request.shared_storage_writable;
+  static bool shared_storage_writable_eligible(
+      const network::ResourceRequest& request) {
+    return request.shared_storage_writable_eligible;
   }
   static bool has_user_gesture(const network::ResourceRequest& request) {
     return request.has_user_gesture;
@@ -395,9 +396,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   attribution_reporting_src_token(const network::ResourceRequest& request) {
     return request.attribution_reporting_src_token;
   }
+  static bool is_ad_tagged(const network::ResourceRequest& request) {
+    return request.is_ad_tagged;
+  }
   static bool shared_dictionary_writer_enabled(
       const network::ResourceRequest& request) {
     return request.shared_dictionary_writer_enabled;
+  }
+  static network::mojom::IPAddressSpace required_ip_address_space(
+      const network::ResourceRequest& request) {
+    return request.target_address_space;
   }
 
 #if BUILDFLAG(IS_ANDROID)

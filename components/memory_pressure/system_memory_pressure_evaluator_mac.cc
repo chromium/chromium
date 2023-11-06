@@ -59,7 +59,7 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
 
   // Attach an event handler to the memory pressure event source.
   if (memory_level_event_source_.get()) {
-    dispatch_source_set_event_handler(memory_level_event_source_, ^{
+    dispatch_source_set_event_handler(memory_level_event_source_.get(), ^{
       task_runner->PostTask(
           FROM_HERE,
           base::BindRepeating(
@@ -68,14 +68,14 @@ SystemMemoryPressureEvaluator::SystemMemoryPressureEvaluator(
     });
 
     // Start monitoring the event source.
-    dispatch_resume(memory_level_event_source_);
+    dispatch_resume(memory_level_event_source_.get());
   }
 }
 
 SystemMemoryPressureEvaluator::~SystemMemoryPressureEvaluator() {
   // Remove the memory pressure event source.
   if (memory_level_event_source_.get()) {
-    dispatch_source_cancel(memory_level_event_source_);
+    dispatch_source_cancel(memory_level_event_source_.get());
   }
 }
 

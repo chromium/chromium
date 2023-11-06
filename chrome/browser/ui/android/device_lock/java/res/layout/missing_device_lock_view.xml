@@ -69,6 +69,7 @@ found in the LICENSE file.
                 android:layout_marginStart="36dp"
                 android:layout_marginEnd="48dp"
                 android:layout_marginTop="24dp"
+                android:layout_marginBottom="40dp"
                 android:paddingStart="4dp"
                 android:text="@string/missing_device_lock_remove_local_data"
                 android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>

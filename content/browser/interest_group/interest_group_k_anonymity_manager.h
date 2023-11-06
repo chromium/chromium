@@ -15,6 +15,9 @@
 namespace content {
 class InterestGroupManagerImpl;
 
+// Maximum number of IDs to send in a single query call. Public for testing.
+constexpr size_t kQueryBatchSizeLimit = 1000;
+
 // Returns true if the k-anonymity data indicates that the k-anonymity key
 // `data.key` should be considered k-anonymous at time `now`. To be k-anonymous
 // `data.is_k_anonymous` must be true and `data.last_updated` must be less than

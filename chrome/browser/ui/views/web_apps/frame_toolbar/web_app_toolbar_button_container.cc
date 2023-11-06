@@ -149,6 +149,8 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     extensions_container_ =
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));
+    extensions_container_->GetExtensionsButton()
+        ->SetAppearDisabledInInactiveWidget(true);
     extensions_container_->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(
@@ -163,6 +165,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     download_button_ = AddChildView(
         std::make_unique<DownloadToolbarButtonView>(browser_view_));
     views::SetHitTestComponent(download_button_, static_cast<int>(HTCLIENT));
+    ConfigureWebAppToolbarButton(download_button_, toolbar_button_provider_);
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -236,8 +239,8 @@ views::FlexRule WebAppToolbarButtonContainer::GetFlexRule() const {
       base::Unretained(toolbar_button_provider_), layout->GetDefaultFlexRule());
 }
 
-void WebAppToolbarButtonContainer::DisableAnimationForTesting() {
-  g_animation_disabled_for_testing = true;
+void WebAppToolbarButtonContainer::DisableAnimationForTesting(bool disable) {
+  g_animation_disabled_for_testing = disable;
 }
 
 void WebAppToolbarButtonContainer::AddPageActionIcon(
@@ -273,10 +276,13 @@ void WebAppToolbarButtonContainer::StartTitlebarAnimation() {
   if (!GetAnimate())
     return;
 
-  if (web_app_origin_text_)
+  if (web_app_origin_text_) {
+    web_app_origin_text_->SetAllowedToAnimate(true);
     web_app_origin_text_->StartFadeAnimation();
-  if (web_app_menu_button_)
+  }
+  if (web_app_menu_button_) {
     web_app_menu_button_->StartHighlightAnimation();
+  }
   icon_fade_in_delay_.Start(
       FROM_HERE, OriginTotalDuration(), this,
       &WebAppToolbarButtonContainer::FadeInContentSettingIcons);

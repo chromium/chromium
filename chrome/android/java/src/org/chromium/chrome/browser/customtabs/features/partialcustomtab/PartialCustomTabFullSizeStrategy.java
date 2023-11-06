@@ -20,6 +20,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -30,12 +31,13 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
  */
 public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrategy {
     public PartialCustomTabFullSizeStrategy(Activity activity,
+            BrowserServicesIntentDataProvider intentData,
             CustomTabHeightStrategy.OnResizedCallback onResizedCallback,
             CustomTabHeightStrategy.OnActivityLayoutCallback onActivityLayoutCallback,
-            FullscreenManager fullscreenManager, boolean isTablet, boolean interactWithBackground,
+            FullscreenManager fullscreenManager, boolean isTablet,
             PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
-        super(activity, onResizedCallback, onActivityLayoutCallback, fullscreenManager, isTablet,
-                interactWithBackground, handleStrategyFactory);
+        super(activity, intentData, onResizedCallback, onActivityLayoutCallback, fullscreenManager,
+                isTablet, handleStrategyFactory);
 
         mPositionUpdater = this::updatePosition;
 
@@ -130,6 +132,11 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
         mlp.setMargins(0, 0, 0, 0);
+    }
+
+    @Override
+    protected int getCustomTabsElevation() {
+        return 0;
     }
 
     @Override

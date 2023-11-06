@@ -7,6 +7,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
+
 namespace partition_alloc::internal::base::apple {
 
 // CFCast<>() and CFCastStrict<>() cast a basic CFTypeRef to a more
@@ -33,9 +35,11 @@ T CFCastStrict(const CFTypeRef& cf_val);
 
 #define PA_CF_CAST_DECL(TypeCF)                             \
   template <>                                               \
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)                 \
   TypeCF##Ref CFCast<TypeCF##Ref>(const CFTypeRef& cf_val); \
                                                             \
   template <>                                               \
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)                 \
   TypeCF##Ref CFCastStrict<TypeCF##Ref>(const CFTypeRef& cf_val)
 
 PA_CF_CAST_DECL(CFArray);

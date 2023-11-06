@@ -71,6 +71,29 @@ DOMException* CreateUnsupportedImageTypeException(String type) {
                      type.Ascii().c_str()));
 }
 
+// Helper class for ensuring memory safe usage of ArrayBufferContents by the
+// ImageDecoderCore on the decoding thread.
+class ArrayBufferContentsSegmentReader : public SegmentReader {
+ public:
+  explicit ArrayBufferContentsSegmentReader(ArrayBufferContents contents)
+      : contents_(std::move(contents)),
+        segment_reader_(SegmentReader::CreateFromSkData(
+            SkData::MakeWithoutCopy(contents_.Data(),
+                                    contents_.DataLength()))) {}
+
+  size_t size() const override { return segment_reader_->size(); }
+  size_t GetSomeData(const char*& data, size_t position) const override {
+    return segment_reader_->GetSomeData(data, position);
+  }
+  sk_sp<SkData> GetAsSkData() const override {
+    return segment_reader_->GetAsSkData();
+  }
+
+ private:
+  ArrayBufferContents contents_;  // Must outlive `segment_reader_`.
+  scoped_refptr<SegmentReader> segment_reader_;
+};
+
 }  // namespace
 
 // static
@@ -189,12 +212,12 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
     return;
   }
 
-  base::span<const uint8_t> buffer;
+  base::span<const uint8_t> array_span;
   switch (init->data()->GetContentType()) {
     case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
       if (auto* data_ptr = init->data()->GetAsArrayBufferAllowShared()) {
         if (!data_ptr->IsDetached()) {
-          buffer = base::span<const uint8_t>(
+          array_span = base::span<const uint8_t>(
               reinterpret_cast<const uint8_t*>(data_ptr->DataMaybeShared()),
               data_ptr->ByteLength());
         }
@@ -204,7 +227,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       if (auto* data_ptr =
               init->data()->GetAsArrayBufferViewAllowShared().Get()) {
         if (!data_ptr->IsDetached()) {
-          buffer =
+          array_span =
               base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
                                             data_ptr->BaseAddressMaybeShared()),
                                         data_ptr->byteLength());
@@ -216,18 +239,27 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       break;
   }
 
-  if (!buffer.data()) {
-    exception_state.ThrowTypeError("Provided image data was detached");
+  auto buffer_contents =
+      TransferArrayBufferForSpan(init->transfer(), array_span, exception_state,
+                                 script_state_->GetIsolate());
+  if (exception_state.HadException()) {
     return;
   }
 
-  if (!buffer.size()) {
+  if (array_span.empty()) {
     exception_state.ThrowTypeError("No image data provided");
     return;
   }
 
-  auto segment_reader = SegmentReader::CreateFromSkData(
-      SkData::MakeWithCopy(buffer.data(), buffer.size()));
+  scoped_refptr<SegmentReader> segment_reader;
+  if (buffer_contents.IsValid()) {
+    segment_reader = base::MakeRefCounted<ArrayBufferContentsSegmentReader>(
+        std::move(buffer_contents));
+  } else {
+    segment_reader = SegmentReader::CreateFromSkData(
+        SkData::MakeWithCopy(array_span.data(), array_span.size()));
+  }
+
   if (!segment_reader) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to read image data");
@@ -375,7 +407,6 @@ void ImageDecoderExternal::CloseInternal(DOMException* exception) {
   reset(exception);
   if (consumer_)
     consumer_->Cancel();
-
   weak_factory_.InvalidateWeakPtrs();
   pending_metadata_requests_ = 0;
   consumer_ = nullptr;

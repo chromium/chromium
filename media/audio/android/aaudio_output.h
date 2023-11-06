@@ -13,6 +13,7 @@
 #include "base/thread_annotations.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -52,6 +53,8 @@ class AAudioOutputStream : public MuteableAudioOutputStream,
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
+
+  AmplitudePeakDetector peak_detector_;
 
   std::unique_ptr<AudioBus> audio_bus_;
 

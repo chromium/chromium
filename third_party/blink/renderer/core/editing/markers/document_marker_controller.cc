@@ -509,7 +509,7 @@ DocumentMarkerList* DocumentMarkerController::FindMarkers(
   auto it = marker_map->find(key);
   if (it != marker_map->end()) {
     DCHECK(it->value);
-    return it->value;
+    return it->value.Get();
   }
   return nullptr;
 }
@@ -648,7 +648,7 @@ DocumentMarkerGroup* DocumentMarkerController::GetMarkerGroupForMarker(
   if (marker) {
     auto it = marker_groups_.find(marker);
     if (it != marker_groups_.end()) {
-      return it->value;
+      return it->value.Get();
     }
   }
   return nullptr;
@@ -817,7 +817,7 @@ DocumentMarkerVector DocumentMarkerController::Markers() const {
 }
 
 void DocumentMarkerController::ApplyToMarkersOfType(
-    base::FunctionRef<void(WeakMember<Text>, DocumentMarker*)> func,
+    base::FunctionRef<void(const Text&, DocumentMarker*)> func,
     DocumentMarker::MarkerType type) {
   if (!PossiblyHasMarkers(type)) {
     return;
@@ -828,58 +828,68 @@ void DocumentMarkerController::ApplyToMarkersOfType(
     DocumentMarkerList* list = node_markers.value;
     const HeapVector<Member<DocumentMarker>>& markers = list->GetMarkers();
     for (auto& marker : markers) {
-      func(node_markers.key, marker);
+      func(*node_markers.key, marker);
     }
   }
 }
 
-DocumentMarkerVector
-DocumentMarkerController::CustomHighlightMarkersNotOverlapping(
-    const Text& text) const {
-  // Fix overlapping CustomHighlightMarkers that share the same highlight name
-  // so their intersections are not painted twice. Note:
-  // DocumentMarkerController::MarkersFor() returns markers sorted by start
-  // offset.
-  DocumentMarkerVector custom_highlight_markers = MarkersFor(
-      text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
-  DocumentMarkerVector result{};
-  using NameToCustomHighlightMarkerMap =
-      HeapHashMap<String, Member<CustomHighlightMarker>>;
-  NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
+void DocumentMarkerController::ProcessCustomHighlightMarkersForOverlap() {
+  MarkerMap* marker_map =
+      markers_[MarkerTypeToMarkerIndex(DocumentMarker::kCustomHighlight)];
+  if (!marker_map) {
+    return;
+  }
+  for (auto& node_markers : *marker_map) {
+    DCHECK(node_markers.value);
 
-  for (const auto& current_marker : custom_highlight_markers) {
-    CustomHighlightMarker* current_custom_highlight_marker =
-        To<CustomHighlightMarker>(current_marker.Get());
+    // DocumentMarkerController::MarkersFor() returns markers sorted by start
+    // offset. So use it instead of result->GetMarkers().
+    // TODO(schenney) Keep marker lists sorted and iterate on the list directly,
+    // rather than sorting into a vector copy.
+    DocumentMarkerVector custom_highlight_markers = MarkersFor(
+        *node_markers.key,
+        DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
 
-    NameToCustomHighlightMarkerMap::AddResult insert_result =
-        name_to_last_custom_highlight_marker_seen.insert(
-            current_custom_highlight_marker->GetHighlightName(),
-            current_custom_highlight_marker);
+    // CLear and repopulate the existing list.
+    node_markers.value->Clear();
 
-    if (!insert_result.is_new_entry) {
-      CustomHighlightMarker* stored_custom_highlight_marker =
-          insert_result.stored_value->value;
-      if (current_custom_highlight_marker->StartOffset() >=
-          stored_custom_highlight_marker->EndOffset()) {
-        // Markers don't intersect, so the stored one is fine to be painted.
-        result.push_back(stored_custom_highlight_marker);
-        insert_result.stored_value->value = current_custom_highlight_marker;
-      } else {
-        // Markers overlap, so expand the stored marker to cover both and
-        // discard the current one.
-        stored_custom_highlight_marker->SetEndOffset(
-            std::max(stored_custom_highlight_marker->EndOffset(),
-                     current_custom_highlight_marker->EndOffset()));
+    using NameToCustomHighlightMarkerMap =
+        HeapHashMap<String, Member<CustomHighlightMarker>>;
+    NameToCustomHighlightMarkerMap name_to_last_custom_highlight_marker_seen;
+
+    for (const auto& current_marker : custom_highlight_markers) {
+      CustomHighlightMarker* current_custom_highlight_marker =
+          To<CustomHighlightMarker>(current_marker.Get());
+
+      NameToCustomHighlightMarkerMap::AddResult insert_result =
+          name_to_last_custom_highlight_marker_seen.insert(
+              current_custom_highlight_marker->GetHighlightName(),
+              current_custom_highlight_marker);
+
+      if (!insert_result.is_new_entry) {
+        CustomHighlightMarker* stored_custom_highlight_marker =
+            insert_result.stored_value->value;
+        if (current_custom_highlight_marker->StartOffset() >=
+            stored_custom_highlight_marker->EndOffset()) {
+          // Markers don't intersect, so the stored one is fine to be painted.
+          node_markers.value->Add(stored_custom_highlight_marker);
+          insert_result.stored_value->value = current_custom_highlight_marker;
+        } else {
+          // Markers overlap, so expand the stored marker to cover both and
+          // discard the current one.
+          stored_custom_highlight_marker->SetEndOffset(
+              std::max(stored_custom_highlight_marker->EndOffset(),
+                       current_custom_highlight_marker->EndOffset()));
+        }
       }
     }
-  }
 
-  for (const auto& name_to_custom_highlight_marker_iterator :
-       name_to_last_custom_highlight_marker_seen) {
-    result.push_back(name_to_custom_highlight_marker_iterator.value.Get());
+    for (const auto& name_to_custom_highlight_marker_iterator :
+         name_to_last_custom_highlight_marker_seen) {
+      node_markers.value->Add(
+          name_to_custom_highlight_marker_iterator.value.Get());
+    }
   }
-
-  return result;
 }
 
 DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
@@ -894,8 +904,8 @@ DocumentMarkerVector DocumentMarkerController::ComputeMarkersToPaint(
   DocumentMarkerVector markers_to_paint{};
 
   if (!RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled()) {
-    DocumentMarkerVector custom_highlight_markers =
-        CustomHighlightMarkersNotOverlapping(text);
+    DocumentMarkerVector custom_highlight_markers = MarkersFor(
+        text, DocumentMarker::MarkerTypes(DocumentMarker::kCustomHighlight));
     std::sort(custom_highlight_markers.begin(), custom_highlight_markers.end(),
               [highlight_registry](const Member<DocumentMarker>& marker1,
                                    const Member<DocumentMarker>& marker2) {

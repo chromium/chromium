@@ -7,6 +7,8 @@
 
 #include "chromeos/ash/services/orca/public/mojom/orca_service.mojom.h"
 #include "content/public/browser/webui_config.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_bubble_web_ui_controller.h"
 
 namespace ash {
@@ -33,7 +35,14 @@ class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
   void BindInterface(
       mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
+ private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 };
 
 }  // namespace ash

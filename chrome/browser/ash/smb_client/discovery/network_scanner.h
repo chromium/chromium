@@ -38,7 +38,7 @@ struct RequestInfo {
 // used to register HostLocators that are responsible for finding hosts.
 // FindHostsInNetwork is called to get a list of discoverable hosts in the
 // network. ResolveHost is used to get the IP address of a given host.
-class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
+class NetworkScanner {
  public:
   NetworkScanner();
 
@@ -102,6 +102,8 @@ class NetworkScanner : public base::SupportsWeakPtr<NetworkScanner> {
   // FindHostsInNetwork() from concurrently executing. Used only for DCHECKing
   // if FindHostsInNetwork() is already running.
   bool running_ = false;
+
+  base::WeakPtrFactory<NetworkScanner> weak_ptr_factory_{this};
 };
 
 }  // namespace smb_client

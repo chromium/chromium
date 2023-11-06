@@ -138,6 +138,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 #if defined(AX_FAIL_FAST_BUILD)
@@ -258,16 +260,11 @@ bool IsValidRole(ax::mojom::blink::Role role) {
 }
 #endif
 
-using RoleHashTraits =
-    EnumHashTraits<ax::mojom::blink::Role, ax::mojom::blink::Role::kUnknown>;
-
 constexpr wtf_size_t kNumRoles =
     static_cast<wtf_size_t>(ax::mojom::blink::Role::kMaxValue) + 1;
 
-using ARIARoleMap = HashMap<String,
-                            ax::mojom::blink::Role,
-                            CaseFoldingHashTraits<String>,
-                            RoleHashTraits>;
+using ARIARoleMap =
+    HashMap<String, ax::mojom::blink::Role, CaseFoldingHashTraits<String>>;
 
 struct RoleEntry {
   const char* role_name;
@@ -617,12 +614,12 @@ void AXObject::SetHasDirtyDescendants(bool dirty) const {
 void AXObject::SetAncestorsHaveDirtyDescendants() const {
   CHECK(!IsDetached());
   CHECK(!AXObjectCache().HasBeenDisposed());
-  CHECK(!AXObjectCache().IsFrozen());
-  CHECK(!AXObjectCache().UpdatingTree());
-
-  if (!RuntimeEnabledFeatures::AccessibilityEagerAXTreeUpdateEnabled()) {
+  if (AXObjectCache().IsFrozen()) {
+    // TODO(accessibility): Restore as CHECK(), remove early return.
+    DCHECK(false) << "Attempt to update frozen tree: " << ToString(true, true);
     return;
   }
+  CHECK(!AXObjectCache().UpdatingTree());
 
   // Set the dirty bit for the root AX object when created. For all other
   // objects, this is set by a descendant needing to be updated, and
@@ -636,6 +633,18 @@ void AXObject::SetAncestorsHaveDirtyDescendants() const {
     // Need at least the root object to be flagged in order for
     // UpdateTreeIfNeeded() to do anything.
     SetHasDirtyDescendants(true);
+    return;
+  }
+
+  if (AXObjectCache().EntireDocumentIsDirty()) {
+    // No need to walk parent chain when marking the entire document dirty,
+    // as every node will have the bit set. In addition, attempting to repair
+    // the parent chain while marking everything dirty is actually against
+    // the point, because all child-parent relationships will be rebuilt
+    // from the top down.
+    if (LastKnownIsIncludedInTreeValue()) {
+      SetHasDirtyDescendants(true);
+    }
     return;
   }
 
@@ -905,9 +914,7 @@ bool AXObject::IsMissingParent() const {
     // Do not attempt to repair the ParentObject() of a validation message
     // object, because hidden ones are purposely kept around without being in
     // the tree, and without a parent, for potential later reuse.
-    // TODO(accessibility) This is ugly. Consider destroying validation message
-    // objects between uses instead. See GetOrCreateValidationMessageObject().
-    bool is_missing = !IsRoot() && !IsValidationMessage();
+    bool is_missing = !IsRoot();
     CHECK(!is_missing || !AXObjectCache().IsFrozen())
         << "Should not have missing parent in frozen tree: "
         << ToString(true, true);
@@ -967,20 +974,19 @@ AXObject* AXObject::ComputeParent() const {
 // Same as ComputeParent, but without the extra check for valid parent in the
 // end. This is for use in RestoreParentOrPrune.
 AXObject* AXObject::ComputeParentOrNull() const {
-#if defined(AX_FAIL_FAST_BUILD)
-  SANITIZER_CHECK(!IsDetached());
+  CHECK(!IsDetached());
 
-  SANITIZER_CHECK(!IsMockObject())
-      << "A mock object must have a parent, and cannot exist without one. "
-         "The parent is set when the object is constructed.";
+  if (IsMockObject()) {
+    const AXMenuListPopup* popup = To<AXMenuListPopup>(this);
+    return popup->owner();
+  }
 
-  SANITIZER_CHECK(GetNode() || GetLayoutObject() || IsVirtualObject())
+  CHECK(GetNode() || GetLayoutObject() || IsVirtualObject())
       << "Can't compute parent on AXObjects without a backing Node "
          "LayoutObject, "
          " or AccessibleNode. Objects without those must set the "
          "parent in Init(), |this| = "
       << RoleValue();
-#endif
 
   AXObject* ax_parent = nullptr;
   if (IsAXInlineTextBox()) {
@@ -1142,7 +1148,8 @@ bool AXObject::CanHaveChildren(Element& element) {
 
   if (auto* input = DynamicTo<HTMLInputElement>(&element)) {
     // False for checkbox, radio and range.
-    return !input->IsCheckable() && input->type() != input_type_names::kRange;
+    return !input->IsCheckable() &&
+           input->FormControlType() != FormControlType::kInputRange;
   }
 
   if (IsA<HTMLOptionElement>(element)) {
@@ -2921,7 +2928,8 @@ AXObject* AXObject::GetTextFieldAncestor() {
 
 bool AXObject::IsPasswordField() const {
   auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
-  return input_element && input_element->type() == input_type_names::kPassword;
+  return input_element &&
+         input_element->FormControlType() == FormControlType::kInputPassword;
 }
 
 bool AXObject::IsPasswordFieldAndShouldHideValue() const {
@@ -3107,16 +3115,6 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     return;
   }
 
-  // Mock objects are created by, owned and dependent on their parents.
-  // If the mock object's values change, recompute the parent's as well.
-  // Note: The only remaining use of mock objects is AXMenuListPopup.
-  // TODO(accessibility) Remove this when we remove AXMenuList* and create the
-  // AX hierarchy for <select> from the shadow dom instead.
-  if (IsMockObject()) {
-    DCHECK(parent_);
-    parent_->UpdateCachedAttributeValuesIfNeeded();
-  }
-
   if (!cached_values_need_update_) {
     return;
   }
@@ -3155,7 +3153,7 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
   // TODO(accessibility) Can this be fixed by instead invalidating the parent
   // when invalidating the child?
   if (IsMockObject()) {
-    DCHECK(parent_);
+    CHECK(parent_) << "Mock object missing parent: " << ToString(true, true);
     parent_->UpdateCachedAttributeValuesIfNeeded();
   }
 
@@ -3859,10 +3857,10 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     // platform accessibility code will instead incorrectly emit a caret moved
     // event for the AXPosition which follows the input.
     if (IsA<HTMLInputElement>(owner) &&
-        (DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kSearch ||
-         DynamicTo<HTMLInputElement>(owner)->type() ==
-             input_type_names::kNumber)) {
+        (DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
+             FormControlType::kInputSearch ||
+         DynamicTo<HTMLInputElement>(owner)->FormControlType() ==
+             FormControlType::kInputNumber)) {
       return false;
     }
   }
@@ -4037,12 +4035,12 @@ const AXObject* AXObject::DatetimeAncestor() const {
   if (!input) {
     return nullptr;
   }
-  if (input->type() != input_type_names::kDatetimeLocal &&
-      input->type() != input_type_names::kDatetime &&
-      input->type() != input_type_names::kDate &&
-      input->type() != input_type_names::kTime &&
-      input->type() != input_type_names::kMonth &&
-      input->type() != input_type_names::kWeek) {
+  FormControlType type = input->FormControlType();
+  if (type != FormControlType::kInputDatetimeLocal &&
+      type != FormControlType::kInputDate &&
+      type != FormControlType::kInputTime &&
+      type != FormControlType::kInputMonth &&
+      type != FormControlType::kInputWeek) {
     return nullptr;
   }
   return AXObjectCache().GetOrCreate(input);
@@ -4205,12 +4203,29 @@ bool AXObject::ComputeCanSetFocusAttribute() const {
     return false;
   }
 
+  // We should not need style updates at this point.
+  CHECK(!elem->NeedsStyleRecalc())
+      << "\n* Element: " << elem << "\n* Object: " << ToString(true, true)
+      << "\n* LayoutObject: " << GetLayoutObject();
+
   // Focusable: element supports focus.
   return elem->SupportsFocus();
 }
 
 bool AXObject::IsKeyboardFocusable() const {
-  return CanSetFocusAttribute() && GetElement()->IsKeyboardFocusable();
+  if (!CanSetFocusAttribute()) {
+    return false;
+  }
+
+  Element& element = *GetElement();
+  CHECK(!element.NeedsStyleRecalc())
+      << "\n* Element: " << element << "\n* Object: " << ToString(true, true)
+      << "\n* LayoutObject: " << GetLayoutObject();
+  if (!element.IsFocusable(
+          /*disallow_layout_updates_for_accessibility_only*/ true)) {
+    return false;
+  }
+  return element.IsKeyboardFocusable();
 }
 
 bool AXObject::CanSetSelectedAttribute() const {
@@ -5238,7 +5253,7 @@ AXObject* AXObject::LiveRegionRoot() const {
   CHECK(CanAccessCachedValues());
 
   UpdateCachedAttributeValuesIfNeeded();
-  return cached_live_region_root_;
+  return cached_live_region_root_.Get();
 }
 
 bool AXObject::LiveRegionAtomic() const {
@@ -5319,7 +5334,7 @@ AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
   DCHECK_LE(index, ChildCountIncludingIgnored());
   if (index >= ChildCountIncludingIgnored())
     return nullptr;
-  return ChildrenIncludingIgnored()[index];
+  return ChildrenIncludingIgnored()[index].Get();
 }
 
 const AXObject::AXObjectVector& AXObject::ChildrenIncludingIgnored() const {
@@ -5543,7 +5558,7 @@ AXObject* AXObject::UnignoredChildAt(int index) const {
   const AXObjectVector unignored_children = UnignoredChildren();
   if (index < 0 || index >= static_cast<int>(unignored_children.size()))
     return nullptr;
-  return unignored_children[index];
+  return unignored_children[index].Get();
 }
 
 AXObject* AXObject::UnignoredNextSibling() const {
@@ -5668,7 +5683,7 @@ AXObject* AXObject::ParentObject() const {
     }
   }
 
-  return parent_;
+  return parent_.Get();
 }
 
 AXObject* AXObject::ParentObjectUnignored() const {
@@ -6302,7 +6317,7 @@ AXObject* AXObject::CellForColumnAndRow(unsigned target_column_index,
   if (!IsTableLikeRole())
     return nullptr;
 
-  // Note that this code is only triggered if this is not a LayoutNGTable,
+  // Note that this code is only triggered if this is not a LayoutTable,
   // i.e. it's an ARIA grid/table.
   //
   // TODO(dmazzoni): delete this code or rename it "for testing only"
@@ -6312,7 +6327,7 @@ AXObject* AXObject::CellForColumnAndRow(unsigned target_column_index,
     unsigned column_index = 0;
     for (const auto& cell : row->TableCellChildren()) {
       if (target_column_index == column_index && target_row_index == row_index)
-        return cell;
+        return cell.Get();
       column_index++;
     }
     row_index++;
@@ -7593,15 +7608,17 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
   return common_ancestor;
 }
 
+// Extra checks that only occur during serialization.
 void AXObject::PreSerializationConsistencyCheck() {
-#if defined(AX_FAIL_FAST_BUILD)
   CHECK(!IsDetached()) << "Do not serialize detached nodes: "
                        << ToString(true, true);
-  CHECK(CanAccessCachedValues());
-  CHECK(AccessibilityIsIncludedInTree())
+  // TODO(https://crbug.com/1480627): convert to CHECKs.
+  DCHECK(AXObjectCache().IsFrozen());
+  DCHECK(!NeedsToUpdateCachedValues());
+  DCHECK(AccessibilityIsIncludedInTree())
       << "Do not serialize unincluded nodes: " << ToString(true, true);
-  CHECK(!IsDetached());
-  // Extra checks that only occur during serialization.
+#if defined(AX_FAIL_FAST_BUILD)
+  // A bit more expensive, so only check in builds used for testing.
   CHECK_EQ(IsAriaHidden(), !!FindAncestorWithAriaHidden(this))
       << "IsAriaHidden() doesn't match existence of an aria-hidden ancestor: "
       << ToString(true);

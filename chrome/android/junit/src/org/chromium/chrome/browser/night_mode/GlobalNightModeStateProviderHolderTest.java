@@ -16,9 +16,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Unit tests for {@link GlobalNightModeStateProviderHolder}.
- */
+/** Unit tests for {@link GlobalNightModeStateProviderHolder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GlobalNightModeStateProviderHolderTest {
@@ -38,7 +36,8 @@ public class GlobalNightModeStateProviderHolderTest {
     public void testNightModeAvailable() {
         // Verify that the instance is a GlobalNightModeStateController. Other tests are covered
         // in GlobalNightModeStateControllerTest.java.
-        assertTrue(GlobalNightModeStateProviderHolder.getInstance()
-                           instanceof GlobalNightModeStateController);
+        assertTrue(
+                GlobalNightModeStateProviderHolder.getInstance()
+                        instanceof GlobalNightModeStateController);
     }
 }

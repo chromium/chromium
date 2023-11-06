@@ -55,8 +55,7 @@
   customize-chrome-categories,
   customize-chrome-themes,
   customize-chrome-chrome-colors,
-  customize-chrome-wallpaper-search,
-  customize-chrome-wallpaper-search-simple {
+  customize-chrome-wallpaper-search {
     display: block;
     max-width: 320px;
     width: 100%;
@@ -100,16 +99,6 @@
     class="sp-scroller sp-scroller-top-of-page sp-scroller-bottom-of-page"
     selected="[[page_]]" attr-for-selected="page-name">
   <div page-name="overview" id="overviewPage">
-    <template is="dom-if" if="[[wallpaperSearchEnabled_]]" restamp>
-      <div id="wallpaper" class="section sp-card">
-        <sp-heading hide-back-button>
-          <h2 slot="heading">Wallpaper Search</h2>
-        </sp-heading>
-        <customize-chrome-wallpaper-search-simple>
-        </customize-chrome-wallpaper-search-simple>
-      </div>
-      <hr class="sp-cards-separator">
-    </template>
     <div id="appearance" class="section sp-card">
       <sp-heading hide-back-button>
         <h2 slot="heading">$i18n{appearanceHeader}</h2>
@@ -173,7 +162,9 @@
   <customize-chrome-chrome-colors on-back-click="onBackClick_"
       page-name="chrome-colors" id="chromeColorsPage">
   </customize-chrome-chrome-colors>
-  <customize-chrome-wallpaper-search on-back-click="onBackClick_"
-      page-name="wallpaper-search" id="wallpaperSearchPage">
-  </customize-chrome-wallpaper-search>
+  <template is="dom-if" if="[[wallpaperSearchEnabled_]]">
+    <customize-chrome-wallpaper-search on-back-click="onBackClick_"
+        page-name="wallpaper-search" id="wallpaperSearchPage">
+    </customize-chrome-wallpaper-search>
+  </template>
 </iron-pages>

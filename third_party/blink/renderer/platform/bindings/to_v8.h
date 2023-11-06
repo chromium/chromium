@@ -248,6 +248,13 @@ inline v8::Local<v8::Array> ToV8(base::span<T, Extent> value,
   return ToV8SequenceInternal(value, creation_context, isolate);
 }
 
+template <typename T>
+inline v8::Local<v8::Array> ToV8(v8::LocalVector<T> value,
+                                 v8::Local<v8::Object> creation_context,
+                                 v8::Isolate* isolate) {
+  return ToV8SequenceInternal(value, creation_context, isolate);
+}
+
 template <typename T, wtf_size_t inlineCapacity>
 inline v8::Local<v8::Array> ToV8(const Vector<T, inlineCapacity>& value,
                                  v8::Local<v8::Object> creation_context,
@@ -326,8 +333,8 @@ inline v8::Local<v8::Array> ToV8SequenceInternal(
   RUNTIME_CALL_TIMER_SCOPE(isolate,
                            RuntimeCallStats::CounterId::kToV8SequenceInternal);
 
-  Vector<v8::Local<v8::Value>> converted_sequence(
-      base::checked_cast<wtf_size_t>(sequence.size()));
+  v8::LocalVector<v8::Value> converted_sequence(
+      isolate, base::checked_cast<wtf_size_t>(sequence.size()));
   base::ranges::transform(
       sequence, converted_sequence.begin(), [&](const auto& item) {
         v8::Local<v8::Value> value = ToV8(item, creation_context, isolate);
@@ -363,7 +370,8 @@ inline v8::Local<v8::Value> ToV8(T&& value, ScriptState* script_state) {
 
 // Date
 inline v8::Local<v8::Value> ToV8(base::Time date, ScriptState* script_state) {
-  return v8::Date::New(script_state->GetContext(), date.ToJsTimeIgnoringNull())
+  return v8::Date::New(script_state->GetContext(),
+                       date.InMillisecondsFSinceUnixEpochIgnoringNull())
       .ToLocalChecked();
 }
 

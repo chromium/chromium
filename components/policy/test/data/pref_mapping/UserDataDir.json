@@ -1,0 +1,5 @@
+[
+  {
+    "reason_for_missing_test": "TODO(joaodasilva): To test that this policy works correctly, it would need to be set before the browser is launched. PolicyPrefsTest should be refactored to support this and a test for this policy added."
+  }
+]

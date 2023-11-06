@@ -80,7 +80,6 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
-#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "storage/common/database/database_identifier.h"
@@ -182,7 +181,8 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
                             : nullptr),
       sudden_termination_disables_(0),
       is_locked_to_site_(false),
-      main_thread_scheduler_(main_thread_scheduler) {
+      main_thread_scheduler_(main_thread_scheduler),
+      next_frame_sink_id_(uint32_t{std::numeric_limits<int32_t>::max()} + 1) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   sk_sp<font_service::FontLoader> font_loader;
 #endif
@@ -359,8 +359,9 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
 //------------------------------------------------------------------------------
 
 viz::FrameSinkId RendererBlinkPlatformImpl::GenerateFrameSinkId() {
-  return viz::FrameSinkId(RenderThread::Get()->GetClientId(),
-                          RenderThread::Get()->GenerateRoutingID());
+  uint32_t frame_sink_id = next_frame_sink_id_++;
+  CHECK_LT(frame_sink_id, next_frame_sink_id_);
+  return viz::FrameSinkId(RenderThread::Get()->GetClientId(), frame_sink_id);
 }
 
 bool RendererBlinkPlatformImpl::IsLockedToSite() const {
@@ -631,6 +632,7 @@ void RendererBlinkPlatformImpl::Collect3DContextInformation(
   gl_info->optimus = gpu_info.optimus;
   gl_info->using_gpu_compositing = !IsGpuCompositingDisabled();
   gl_info->using_passthrough_command_decoder = gpu_info.passthrough_cmd_decoder;
+  gl_info->angle_implementation = gpu_info.gl_implementation_parts.angle;
 }
 
 std::unique_ptr<blink::WebGraphicsContext3DProvider>
@@ -971,15 +973,6 @@ base::PlatformThreadId RendererBlinkPlatformImpl::GetIOThreadId() const {
     io_thread_id_ready_event_.Wait();
   }
   return io_thread_id_;
-}
-
-network::mojom::AttributionSupport
-RendererBlinkPlatformImpl::GetAttributionReportingSupport() {
-  auto* render_thread = RenderThreadImpl::current();
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return network::mojom::AttributionSupport::kWeb;
-  return render_thread->GetAttributionReportingSupport();
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

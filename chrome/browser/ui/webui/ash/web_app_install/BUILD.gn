@@ -10,7 +10,9 @@ assert(is_chromeos_ash, "The install dialog is ash-chrome only")
 mojom("mojo_bindings") {
   sources = [ "web_app_install.mojom" ]
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }

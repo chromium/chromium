@@ -4,8 +4,8 @@ ADDRESS_HOME_LINE2 | shipTos[0].address.addrLine2 | Address Line 2 |  | shipTos[
 ADDRESS_HOME_CITY | shipTos[0].address.city | City* |  | shipTos[0].address.fullName_1
 ADDRESS_HOME_STATE | shipTos[0].address.state | State* |  | shipTos[0].address.fullName_1
 ADDRESS_HOME_ZIP | shipTos[0].address.zip | Zip* |  | shipTos[0].address.fullName_1
-PHONE_HOME_WHOLE_NUMBER | shipTos[0].address.dayPhone | Daytime Phone* |  | shipTos[0].address.fullName_1
-PHONE_HOME_WHOLE_NUMBER | shipTos[0].address.eveningPhone | Alternate Phone |  | shipTos[0].address.fullName_1
+PHONE_HOME_CITY_AND_NUMBER | shipTos[0].address.dayPhone | Daytime Phone* |  | shipTos[0].address.fullName_1
+PHONE_HOME_CITY_AND_NUMBER | shipTos[0].address.eveningPhone | Alternate Phone |  | shipTos[0].address.fullName_1
 UNKNOWN_TYPE | shipTos[0].billingAddressUpdate | Yes, use this shipping address for my billing address. | on | shipTos[0].address.fullName_1
 EMAIL_ADDRESS | shipTos[0].address.emailAddr | Email* |  | shipTos[0].address.fullName_1
 EMAIL_ADDRESS | shipTos[0].confirmEmailAddr | Confirm Email* |  | shipTos[0].address.fullName_1

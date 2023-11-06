@@ -99,7 +99,8 @@ class MultiDeviceSetupHostVerifierImplTest
     HostVerifierImpl::RegisterPrefs(test_pref_service_->registry());
 
     test_clock_ = std::make_unique<base::SimpleTestClock>();
-    test_clock_->SetNow(base::Time::FromJavaTime(kTestTimeMs));
+    test_clock_->SetNow(
+        base::Time::FromMillisecondsSinceUnixEpoch(kTestTimeMs));
   }
 
   void TearDown() override {

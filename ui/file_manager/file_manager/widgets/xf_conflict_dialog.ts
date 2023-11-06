@@ -7,7 +7,7 @@ import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_c
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {AsyncQueue} from '../common/js/async_util.js';
-import {str, strf} from '../common/js/util.js';
+import {str, strf} from '../common/js/translations.js';
 
 import {getTemplate} from './xf_conflict_dialog.html.js';
 

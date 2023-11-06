@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/apps/app_service/package_id_util.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
@@ -34,9 +35,9 @@
 #include "chrome/browser/ui/extensions/app_launch_params.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
@@ -84,6 +85,32 @@ std::u16string ShelfControllerHelper::GetLabelForPromiseStatus(
   }
 }
 
+std::u16string ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+    absl::optional<std::string> name,
+    apps::PromiseStatus status) {
+  switch (status) {
+    case apps::PromiseStatus::kUnknown:
+    case apps::PromiseStatus::kPending:
+      if (!name.has_value()) {
+        return l10n_util::GetStringUTF16(
+            IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_WAITING);
+      }
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMISE_APP_ACCESSIBLE_LABEL_WAITING,
+          {base::UTF8ToUTF16(name.value())});
+    case apps::PromiseStatus::kInstalling:
+    case apps::PromiseStatus::kSuccess:
+    case apps::PromiseStatus::kCancelled:
+      if (!name.has_value()) {
+        return l10n_util::GetStringUTF16(
+            IDS_PROMISE_APP_PLACEHOLDER_ACCESSIBLE_LABEL_INSTALLING);
+      }
+      return l10n_util::GetStringFUTF16(
+          IDS_PROMISE_APP_ACCESSIBLE_LABEL_INSTALLING,
+          {base::UTF8ToUTF16(name.value())});
+  }
+}
+
 // static
 std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
                                                   const std::string& app_id) {
@@ -105,10 +132,13 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
   apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&name](const apps::AppUpdate& update) {
-        name = update.Name();
+        if (apps_util::IsInstalled(update.Readiness())) {
+          name = update.Name();
+        }
       });
-  if (!name.empty())
+  if (!name.empty()) {
     return base::UTF8ToUTF16(name);
+  }
 
   if (ash::features::ArePromiseIconsEnabled()) {
     const std::u16string promise_app_title =
@@ -147,6 +177,55 @@ std::u16string ShelfControllerHelper::GetAppTitle(Profile* profile,
     return base::UTF8ToUTF16(extension->name());
 
   return std::u16string();
+}
+
+std::u16string ShelfControllerHelper::GetPromiseAppAccessibleName(
+    Profile* profile,
+    const std::string& package_id) {
+  if (!ash::features::ArePromiseIconsEnabled()) {
+    return std::u16string();
+  }
+  const apps::PromiseApp* promise_app =
+      apps::AppServiceProxyFactory::GetForProfile(profile)
+          ->PromiseAppRegistryCache()
+          ->GetPromiseAppForStringPackageId(package_id);
+  if (!promise_app) {
+    return std::u16string();
+  }
+  return GetAccessibleLabelForPromiseStatus(promise_app->name,
+                                            promise_app->status);
+}
+
+// static
+std::string ShelfControllerHelper::GetAppPackageId(Profile* profile,
+                                                   const std::string& app_id) {
+  if (app_id.empty()) {
+    return std::string();
+  }
+
+  if (ash::features::ArePromiseIconsEnabled()) {
+    const apps::PromiseApp* promise_app =
+        apps::AppServiceProxyFactory::GetForProfile(profile)
+            ->PromiseAppRegistryCache()
+            ->GetPromiseAppForStringPackageId(app_id);
+    if (promise_app) {
+      return promise_app->package_id.ToString();
+    }
+  }
+
+  absl::optional<apps::PackageId> package_id;
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&package_id, profile](const apps::AppUpdate& update) {
+        if (apps_util::IsInstalled(update.Readiness())) {
+          package_id = apps_util::GetPackageIdForApp(profile, update);
+        }
+      });
+  if (package_id) {
+    return package_id->ToString();
+  }
+
+  return std::string();
 }
 
 // static
@@ -253,7 +332,7 @@ ash::AppStatus ShelfControllerHelper::ConvertPromiseStatusToAppStatus(
 // static
 bool ShelfControllerHelper::IsAppServiceShortcut(Profile* profile,
                                                  const std::string& id) {
-  return base::FeatureList::IsEnabled(features::kCrosWebAppShortcutUiUpdate) &&
+  return chromeos::features::IsCrosWebAppShortcutUiUpdateEnabled() &&
          apps::AppServiceProxyFactory::GetForProfile(profile)
              ->ShortcutRegistryCache()
              ->HasShortcut(apps::ShortcutId(id));

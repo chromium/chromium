@@ -45,6 +45,13 @@ class PasswordStoreAndroidBackendDispatcherBridge {
   // `syncing_account` is absl::nullopt local storage will be used.
   virtual void GetAllLogins(JobId job_id, Account account) = 0;
 
+  // Triggers an asynchronous request to retrieve all stored passwords with
+  // branding info (App display name and icon). The registered `Consumer` is
+  // notified with `OnCompleteWithBrandedLogins` via the receiver bridge when
+  // the job with the given JobId succeeds. `account` is used to decide which
+  // storage to use. If `account` is absl::nullopt local storage will be used.
+  virtual void GetAllLoginsWithBrandingInfo(JobId job_id, Account account) = 0;
+
   // Triggers an asynchronous request to retrieve all autofillable
   // (non-blocklisted) passwords. The registered `Consumer` is notified with
   // `OnCompleteWithLogins` via the receiver bridge when the job with the
@@ -112,8 +119,11 @@ class PasswordStoreAndroidBackendDispatcherBridge {
   // would return false.
   static bool CanCreateBackend();
 
-  // Returns true if GMS Core supports new GetAffiliatedPasswordsAPI API.
+  // Returns true if GMS Core supports new GetAffiliatedPasswords API.
   static bool CanUseGetAffiliatedPasswordsAPI();
+
+  // Returns true if GMS Core supports new GetAllLoginsWithBrandingInfo API.
+  static bool CanUseGetAllLoginsWithBrandingInfoAPI();
 };
 
 }  // namespace password_manager

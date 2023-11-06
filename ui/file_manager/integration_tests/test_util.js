@@ -219,6 +219,10 @@ export async function getBrowserWindows(expectedInitialCount = 0) {
 
 /**
  * Adds the given entries to the target volume(s).
+ *
+ * Note: passing 'local' as volume name will add entries to the "My
+ * Files/Downloads", instead of "My files".
+ *
  * @param {Array<string>} volumeNames Names of target volumes.
  * @param {Array<TestEntryInfo>} entries List of entries to be added.
  * @param {function(boolean)=} opt_callback Callback function to be passed the
@@ -535,7 +539,7 @@ export const ENTRIES = {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'world.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
   }),
 

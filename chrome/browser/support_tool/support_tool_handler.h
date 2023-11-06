@@ -106,6 +106,10 @@ class SupportToolHandler {
       base::FilePath target_path,
       SupportToolDataExportedCallback on_data_exported_callback);
 
+  // Returns reference to `data_collectors_` for testing.
+  const std::vector<std::unique_ptr<DataCollector>>&
+  GetDataCollectorsForTesting();
+
  private:
   // OnDataCollected is called when a single DataCollector finished collecting
   // data. Runs `barrier_closure` to make the handler wait until all

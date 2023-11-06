@@ -35,15 +35,12 @@ import org.chromium.url.GURL;
 
 import java.util.function.Function;
 
-/**
- * Instrumentation tests for {@link ExternalNavigationHandler}.
- */
+/** Instrumentation tests for {@link ExternalNavigationHandler}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExternalNavigationDelegateImplTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     class ExternalNavigationDelegateImplForTesting extends ExternalNavigationDelegateImpl {
         private Function<Intent, Boolean> mCanExternalAppHandleIntent;
@@ -57,8 +54,11 @@ public class ExternalNavigationDelegateImplTest {
         }
     }
 
-    public void maybeSetAndGetRequestMetadata(ExternalNavigationDelegateImpl delegate,
-            Intent intent, boolean hasUserGesture, boolean isRendererInitiated) {
+    public void maybeSetAndGetRequestMetadata(
+            ExternalNavigationDelegateImpl delegate,
+            Intent intent,
+            boolean hasUserGesture,
+            boolean isRendererInitiated) {
         delegate.maybeSetRequestMetadata(intent, hasUserGesture, isRendererInitiated);
         IntentWithRequestMetadataHandler.RequestMetadata metadata =
                 IntentWithRequestMetadataHandler.getInstance().getRequestMetadataAndClear(intent);
@@ -69,18 +69,17 @@ public class ExternalNavigationDelegateImplTest {
     private ExternalNavigationDelegateImpl mExternalNavigationDelegateImpl;
     private ExternalNavigationDelegateImplForTesting mExternalNavigationDelegateImplForTesting;
 
-    @Mock
-    Tab mMockTab;
-    @Mock
-    WindowAndroid mMockWindowAndroid;
+    @Mock Tab mMockTab;
+    @Mock WindowAndroid mMockWindowAndroid;
 
     @Before
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         doReturn(mMockWindowAndroid).when(mMockTab).getWindowAndroid();
-        mExternalNavigationDelegateImpl = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new ExternalNavigationDelegateImpl(mMockTab));
+        mExternalNavigationDelegateImpl =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> new ExternalNavigationDelegateImpl(mMockTab));
         mExternalNavigationDelegateImplForTesting =
                 TestThreadUtils.runOnUiThreadBlockingNoException(
                         () -> new ExternalNavigationDelegateImplForTesting(mMockTab));

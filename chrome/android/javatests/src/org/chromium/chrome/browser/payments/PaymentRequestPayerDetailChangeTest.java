@@ -27,8 +27,10 @@ import java.util.concurrent.TimeoutException;
  * A payment integration test for a merchant that retries payment request with payment validation.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    PaymentRequestTestRule.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES
+})
 public class PaymentRequestPayerDetailChangeTest {
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
@@ -38,23 +40,23 @@ public class PaymentRequestPayerDetailChangeTest {
     public void setUp() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
-        String billing_address_id = helper.setProfile(AutofillProfile.builder()
-                                                              .setFullName("Jon Doe")
-                                                              .setCompanyName("Google")
-                                                              .setStreetAddress("340 Main St")
-                                                              .setRegion("CA")
-                                                              .setLocality("Los Angeles")
-                                                              .setPostalCode("90291")
-                                                              .setCountryCode("US")
-                                                              .setPhoneNumber("333-333-3333")
-                                                              .setEmailAddress("jon.doe@gmail.com")
-                                                              .setLanguageCode("en-US")
-                                                              .build());
+        String billing_address_id =
+                helper.setProfile(
+                        AutofillProfile.builder()
+                                .setFullName("Jon Doe")
+                                .setCompanyName("Google")
+                                .setStreetAddress("340 Main St")
+                                .setRegion("CA")
+                                .setLocality("Los Angeles")
+                                .setPostalCode("90291")
+                                .setCountryCode("US")
+                                .setPhoneNumber("333-333-3333")
+                                .setEmailAddress("jon.doe@gmail.com")
+                                .setLanguageCode("en-US")
+                                .build());
     }
 
-    /**
-     * Test for onpayerdetailchange event.
-     */
+    /** Test for onpayerdetailchange event. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -64,8 +66,7 @@ public class PaymentRequestPayerDetailChangeTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
-                "buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
 
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());

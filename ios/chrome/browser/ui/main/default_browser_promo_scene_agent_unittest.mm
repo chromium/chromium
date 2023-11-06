@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -87,11 +86,6 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
     local_state_.reset();
   }
 
-  void EnableDefaultBrowserPromoRefactoringFlag() {
-    scoped_feature_list_.InitWithFeatures(
-        {kDefaultBrowserRefactoringPromoManager}, {});
-  }
-
   void SignIn() {
     FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
@@ -123,7 +117,6 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
 // condition is met for a tailored promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationLikelyInterestedTailored) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   SignIn();
@@ -139,7 +132,6 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 // condition is met for a default promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestPromoRegistrationLikelyInterestedDefault) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   SignIn();
@@ -152,11 +144,9 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 }
 
 // Tests that DefaultBrowser was registered to the promo manager when the
-// conditions (ShouldRegisterPromoWithPromoManager) are met when
-// kDefaultBrowserRefactoringPromoManager is enabled.
+// conditions (ShouldRegisterPromoWithPromoManager).
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TesChromeLikelyDefaultBrowserNoPromoRegistration) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   LogOpenHTTPURLFromExternalURL();
   EXPECT_CALL(
@@ -168,11 +158,9 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 }
 
 // Tests that DefaultBrowser was not registered to the promo manager due to the
-// last shutbown not being clean when kDefaultBrowserRefactoringPromoManager is
-// enabled.
+// last shutbown not being clean.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestLastShutdownNotCleanNoPromoRegistration) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   SignIn();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(false);
   EXPECT_CALL(
@@ -184,11 +172,9 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 }
 
 // Tests that DefaultBrowser was not registered to the promo manager because the
-// user previously interacted with a default browser tailored fullscreen promo
-// when kDefaultBrowserRefactoringPromoManager is enabled.
+// user previously interacted with a default browser tailored fullscreen promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestInteractedTailoredPromoNoPromoRegistration) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   SignIn();
   LogUserInteractionWithTailoredFullscreenPromo();
@@ -201,11 +187,9 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
 }
 
 // Tests that DefaultBrowser was not registered to the promo manager because the
-// user previously interacted with a default browser fullscreen promo when
-// kDefaultBrowserRefactoringPromoManager is enabled.
+// user previously interacted with a default browser fullscreen promo.
 TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestInteractedDefaultPromoNoPromoRegistration) {
-  EnableDefaultBrowserPromoRefactoringFlag();
   TestingApplicationContext::GetGlobal()->SetLastShutdownClean(true);
   SignIn();
   LogUserInteractionWithFullscreenPromo();
@@ -260,97 +244,4 @@ TEST_F(DefaultBrowserPromoSceneAgentTest, TestPromoRegistrationPostRestore) {
       .Times(1);
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-}
-
-// Tests that the DefaultPromoTypeMadeForIOS tailored promo is shown when it was
-// detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeMadeForIOSShown) {
-  scoped_feature_list_.InitAndDisableFeature(
-      kDefaultBrowserRefactoringPromoManager);
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
-      .Times(0);
-
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher_ startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                            forProtocol:@protocol(DefaultPromoCommands)];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
-  app_state_.shouldShowDefaultBrowserPromo = true;
-  app_state_.defaultBrowserPromoTypeToShow = DefaultPromoTypeMadeForIOS;
-
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoMadeForIOS]);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
-}
-
-// Tests that the DefaultPromoTypeStaySafe tailored promo is shown when it was
-// detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeStaySafeShown) {
-  scoped_feature_list_.InitAndDisableFeature(
-      kDefaultBrowserRefactoringPromoManager);
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
-      .Times(0);
-
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher_ startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                            forProtocol:@protocol(DefaultPromoCommands)];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
-  app_state_.shouldShowDefaultBrowserPromo = true;
-  app_state_.defaultBrowserPromoTypeToShow = DefaultPromoTypeStaySafe;
-
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoStaySafe]);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
-}
-
-// Tests that the DefaultPromoTypeAllTabs tailored promo is shown when it was
-// detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeAllTabsShown) {
-  scoped_feature_list_.InitAndDisableFeature(
-      kDefaultBrowserRefactoringPromoManager);
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
-      .Times(0);
-
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher_ startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                            forProtocol:@protocol(DefaultPromoCommands)];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
-  app_state_.shouldShowDefaultBrowserPromo = true;
-  app_state_.defaultBrowserPromoTypeToShow = DefaultPromoTypeAllTabs;
-
-  OCMExpect([mockDefaultPromoCommandsHandler showTailoredPromoAllTabs]);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
-}
-
-// Tests that the DefaultPromoTypeGeneral tailored promo is shown when it was
-// detected that the user is likely interested in the promo.
-TEST_F(DefaultBrowserPromoSceneAgentTest, TestDefaultPromoTypeGeneralShown) {
-  scoped_feature_list_.InitAndDisableFeature(
-      kDefaultBrowserRefactoringPromoManager);
-  EXPECT_CALL(
-      *promos_manager_.get(),
-      RegisterPromoForSingleDisplay(promos_manager::Promo::DefaultBrowser))
-      .Times(0);
-
-  id mockDefaultPromoCommandsHandler =
-      OCMProtocolMock(@protocol(DefaultPromoCommands));
-  [dispatcher_ startDispatchingToTarget:mockDefaultPromoCommandsHandler
-                            forProtocol:@protocol(DefaultPromoCommands)];
-  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
-  app_state_.shouldShowDefaultBrowserPromo = true;
-  app_state_.defaultBrowserPromoTypeToShow = DefaultPromoTypeGeneral;
-
-  OCMExpect(
-      [mockDefaultPromoCommandsHandler showDefaultBrowserFullscreenPromo]);
-  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-  EXPECT_OCMOCK_VERIFY(mockDefaultPromoCommandsHandler);
 }

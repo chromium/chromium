@@ -41,7 +41,7 @@ void StubPasswordManagerDriver::ClearPreviewedForm() {
 
 void StubPasswordManagerDriver::SetSuggestionAvailability(
     autofill::FieldRendererId generation_element_id,
-    const autofill::mojom::AutofillState state) {}
+    autofill::mojom::AutofillSuggestionAvailability suggestion_availability) {}
 
 PasswordGenerationFrameHelper*
 StubPasswordManagerDriver::GetPasswordGenerationHelper() {

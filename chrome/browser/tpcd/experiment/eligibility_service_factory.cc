@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/eligibility_service.h"
 #include "chrome/browser/tpcd/experiment/experiment_manager_impl.h"
+#include "components/privacy_sandbox/tracking_protection_onboarding.h"
 #include "content/public/common/content_features.h"
 
 namespace tpcd::experiment {
@@ -47,6 +48,17 @@ EligibilityServiceFactory::BuildServiceInstanceForBrowserContext(
   if (auto* experiment_manager =
           ExperimentManagerImpl::GetForProfile(profile)) {
     return std::make_unique<EligibilityService>(profile, experiment_manager);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return nullptr;
+  }
+
+  auto* onboarding_service =
+      TrackingProtectionOnboardingFactory::GetForProfile(profile);
+  if (onboarding_service) {
+    onboarding_service->MaybeResetOnboardingPrefs();
   }
   return nullptr;
 }

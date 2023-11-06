@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_css_style_sheet_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_medialist_string.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -69,7 +71,7 @@ class StyleSheetCSSRuleList final : public CSSRuleList {
     return style_sheet_->item(index);
   }
 
-  CSSStyleSheet* GetStyleSheet() const override { return style_sheet_; }
+  CSSStyleSheet* GetStyleSheet() const override { return style_sheet_.Get(); }
 
   Member<CSSStyleSheet> style_sheet_;
 };
@@ -192,6 +194,8 @@ CSSStyleSheet::CSSStyleSheet(StyleSheetContents* contents,
                              const TextPosition& start_position)
     : contents_(contents),
       owner_node_(&owner_node),
+      owner_parent_or_shadow_host_element_(
+          owner_node.ParentOrShadowHostElement()),
       start_position_(start_position),
       is_inline_stylesheet_(is_inline_stylesheet) {
 #if DCHECK_IS_ON()
@@ -387,6 +391,7 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
             ").");
     return 0;
   }
+
   const auto* context =
       MakeGarbageCollected<CSSParserContext>(contents_->ParserContext(), this);
 
@@ -450,6 +455,7 @@ void CSSStyleSheet::deleteRule(unsigned index,
     }
     return;
   }
+
   RuleMutationScope mutation_scope(this);
 
   bool success = contents_->WrapperDeleteRule(index);
@@ -501,6 +507,7 @@ ScriptPromise CSSStyleSheet::replace(ScriptState* script_state,
     return ScriptPromise();
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
+  probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);
   // We currently parse synchronously, and since @import support was removed,
   // nothing else happens asynchronously. This API is left as-is, so that future
   // async parsing can still be supported here.
@@ -515,6 +522,7 @@ void CSSStyleSheet::replaceSync(const String& text,
         "Can't call replaceSync on non-constructed CSSStyleSheets.");
   }
   SetText(text, CSSImportRules::kIgnoreWithWarning);
+  probe::DidReplaceStyleSheetText(OwnerDocument(), this, text);
 }
 
 CSSRuleList* CSSStyleSheet::cssRules(ExceptionState& exception_state) {
@@ -657,6 +665,7 @@ void CSSStyleSheet::Trace(Visitor* visitor) const {
   visitor->Trace(contents_);
   visitor->Trace(media_queries_);
   visitor->Trace(owner_node_);
+  visitor->Trace(owner_parent_or_shadow_host_element_);
   visitor->Trace(owner_rule_);
   visitor->Trace(media_cssom_wrapper_);
   visitor->Trace(child_rule_cssom_wrappers_);

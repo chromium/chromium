@@ -585,10 +585,8 @@ void GpuHostImpl::MaybeShutdownGpuProcess() {
   delegate_->MaybeShutdownGpuProcess();
 }
 
-void GpuHostImpl::DidLoseContext(bool offscreen,
-                                 gpu::error::ContextLostReason reason,
+void GpuHostImpl::DidLoseContext(gpu::error::ContextLostReason reason,
                                  const GURL& active_url) {
-  // TODO(kbr): would be nice to see the "offscreen" flag too.
   TRACE_EVENT2("gpu", "GpuHostImpl::DidLoseContext", "reason", reason, "url",
                active_url.possibly_invalid_spec());
 

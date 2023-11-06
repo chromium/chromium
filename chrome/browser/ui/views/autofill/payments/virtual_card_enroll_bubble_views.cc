@@ -39,8 +39,10 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       controller_(controller) {
   DCHECK(controller);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller->GetAcceptButtonText());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL, controller->GetDeclineButtonText());
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 controller->GetUiModel().accept_action_text);
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 controller->GetUiModel().cancel_action_text);
   SetCancelCallback(base::BindOnce(
       &VirtualCardEnrollBubbleViews::OnDialogDeclined, base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(
@@ -103,7 +105,8 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
-  return controller_ ? controller_->GetWindowTitle() : std::u16string();
+  return controller_ ? controller_->GetUiModel().window_title
+                     : std::u16string();
 }
 
 void VirtualCardEnrollBubbleViews::WindowClosing() {
@@ -130,7 +133,7 @@ void VirtualCardEnrollBubbleViews::Init() {
 
   // If applicable, add the explanation label.  Appears above the card
   // info.
-  std::u16string explanation = controller_->GetExplanatoryMessage();
+  std::u16string explanation = controller_->GetUiModel().explanatory_message;
   if (!explanation.empty()) {
     auto* const explanation_label =
         AddChildView(std::make_unique<views::StyledLabel>());
@@ -144,11 +147,12 @@ void VirtualCardEnrollBubbleViews::Init() {
             &VirtualCardEnrollBubbleViews::LearnMoreLinkClicked,
             weak_ptr_factory_.GetWeakPtr()));
 
-    uint32_t offset =
-        explanation.length() - controller_->GetLearnMoreLinkText().length();
+    uint32_t offset = explanation.length() -
+                      controller_->GetUiModel().learn_more_link_text.length();
     explanation_label->AddStyleRange(
-        gfx::Range(offset,
-                   offset + controller_->GetLearnMoreLinkText().length()),
+        gfx::Range(
+            offset,
+            offset + controller_->GetUiModel().learn_more_link_text.length()),
         style_info);
   }
 
@@ -161,7 +165,7 @@ void VirtualCardEnrollBubbleViews::Init() {
       views::BoxLayout::MainAxisAlignment::kStart);
 
   const VirtualCardEnrollmentFields virtual_card_enrollment_fields =
-      controller_->GetVirtualCardEnrollmentFields();
+      controller_->GetUiModel().enrollment_fields;
 
   CreditCard card = virtual_card_enrollment_fields.credit_card;
 
@@ -214,22 +218,22 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
           DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
 
   const LegalMessageLines google_legal_message =
-      controller_->GetVirtualCardEnrollmentFields().google_legal_message;
+      controller_->GetUiModel().enrollment_fields.google_legal_message;
   const LegalMessageLines issuser_legal_message =
-      controller_->GetVirtualCardEnrollmentFields().issuer_legal_message;
+      controller_->GetUiModel().enrollment_fields.issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-      google_legal_message, /*user_email=*/absl::nullopt,
-      /*user_avatar=*/absl::nullopt,
+      google_legal_message, /*user_email=*/std::u16string(),
+      /*user_avatar=*/ui::ImageModel(),
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
   if (!issuser_legal_message.empty()) {
     legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message, /*user_email=*/absl::nullopt,
-        /*user_avatar=*/absl::nullopt,
+        issuser_legal_message, /*user_email=*/std::u16string(),
+        /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,
             base::Unretained(this))));

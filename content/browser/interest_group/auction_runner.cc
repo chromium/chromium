@@ -19,6 +19,7 @@
 #include "content/browser/interest_group/auction_nonce_manager.h"
 #include "content/browser/interest_group/interest_group_auction_reporter.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
@@ -37,6 +38,11 @@ namespace content {
 namespace {
 
 auction_worklet::mojom::KAnonymityBidMode DetermineKAnonMode() {
+  // K-anonymity enforcement is always disabled for the testing population.
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return auction_worklet::mojom::KAnonymityBidMode::kNone;
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeConsiderKAnonymity)) {
     if (base::FeatureList::IsEnabled(
@@ -72,6 +78,7 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
+    AdAuctionPageData* ad_auction_page_data,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     const blink::AuctionConfig& auction_config,
@@ -81,20 +88,19 @@ std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-    GetAdAuctionPageDataCallback get_page_data_callback,
     AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback) {
   std::unique_ptr<AuctionRunner> instance(new AuctionRunner(
       auction_worklet_manager, auction_nonce_manager, interest_group_manager,
-      browser_context, private_aggregation_manager,
+      browser_context, private_aggregation_manager, ad_auction_page_data,
       std::move(log_private_aggregation_requests_callback),
       DetermineKAnonMode(), std::move(auction_config), main_frame_origin,
       frame_origin, ukm_source_id, std::move(client_security_state),
       std::move(url_loader_factory),
       std::move(is_interest_group_api_allowed_callback),
-      std::move(get_page_data_callback), std::move(attestation_callback),
-      std::move(abort_receiver), std::move(callback)));
+      std::move(attestation_callback), std::move(abort_receiver),
+      std::move(callback)));
   instance->StartAuction();
   return instance;
 }
@@ -297,7 +303,7 @@ void AuctionRunner::ResolvedDirectFromSellerSignalsHeaderAdSlotPromise(
     return;
   }
 
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (!page_data) {
     // There's no page data attached so we can't find matching responses.
     // There's no way the auction can proceed.
@@ -346,7 +352,7 @@ void AuctionRunner::ResolvedAuctionAdResponsePromise(
     return;
   }
   config->server_response->got_response = true;
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (!page_data) {
     // There's no page data attached so we can't decode the response. There's
     // no way the auction can proceed.
@@ -388,7 +394,7 @@ void AuctionRunner::ResolvedAdditionalBids(
 
   config->expects_additional_bids = false;
 
-  AdAuctionPageData* page_data = get_page_data_callback_.Run();
+  AdAuctionPageData* page_data = ad_auction_page_data_.get();
   if (auction_id->is_main_auction()) {
     auction_.NotifyAdditionalBidsConfig(page_data);
   } else {
@@ -427,7 +433,8 @@ void AuctionRunner::FailAuction(
         auction_.GetKAnonKeysToJoin());
     interest_group_manager_->EnqueueReports(
         InterestGroupManagerImpl::ReportType::kDebugLoss,
-        std::move(debug_loss_report_urls), frame_origin_,
+        std::move(debug_loss_report_urls),
+        FrameTreeNode::kFrameTreeNodeInvalidId, frame_origin_,
         *client_security_state_, url_loader_factory_);
 
     InterestGroupAuctionReporter::OnFledgePrivateAggregationRequests(
@@ -456,6 +463,7 @@ AuctionRunner::AuctionRunner(
     InterestGroupManagerImpl* interest_group_manager,
     BrowserContext* browser_context,
     PrivateAggregationManager* private_aggregation_manager,
+    AdAuctionPageData* ad_auction_page_data,
     InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
         log_private_aggregation_requests_callback,
     auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -466,7 +474,6 @@ AuctionRunner::AuctionRunner(
     network::mojom::ClientSecurityStatePtr client_security_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-    GetAdAuctionPageDataCallback get_page_data_callback,
     AreReportingOriginsAttestedCallback attestation_callback,
     mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
     RunAuctionCallback callback)
@@ -479,7 +486,7 @@ AuctionRunner::AuctionRunner(
       url_loader_factory_(std::move(url_loader_factory)),
       is_interest_group_api_allowed_callback_(
           std::move(is_interest_group_api_allowed_callback)),
-      get_page_data_callback_(get_page_data_callback),
+      ad_auction_page_data_(ad_auction_page_data),
       attestation_callback_(attestation_callback),
       abort_receiver_(this, std::move(abort_receiver)),
       kanon_mode_(kanon_mode),
@@ -495,6 +502,7 @@ AuctionRunner::AuctionRunner(
                auction_nonce_manager,
                interest_group_manager,
                &auction_metrics_recorder_,
+               ad_auction_page_data,
                /*auction_start_time=*/base::Time::Now(),
                is_interest_group_api_allowed_callback_,
                std::move(log_private_aggregation_requests_callback)) {}
@@ -505,9 +513,8 @@ void AuctionRunner::StartAuction() {
     // Wait for promise with server response to resolve.
     return;
   }
-  auction_.StartLoadInterestGroupsPhase(
-      base::BindOnce(&AuctionRunner::OnLoadInterestGroupsComplete,
-                     base::Unretained(this)));
+  auction_.StartLoadInterestGroupsPhase(base::BindOnce(
+      &AuctionRunner::OnLoadInterestGroupsComplete, base::Unretained(this)));
 }
 
 void AuctionRunner::OnLoadInterestGroupsComplete(bool success) {

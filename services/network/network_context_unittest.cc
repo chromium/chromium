@@ -501,7 +501,7 @@ class NetworkContextTest : public testing::Test {
         ->GetSession()
         ->GetSocketPool(
             net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
-            net::ProxyServer::Direct())
+            net::ProxyChain::Direct())
         ->GetInfoAsValue("", "")
         .GetDict()
         .FindInt(name)
@@ -516,7 +516,7 @@ class NetworkContextTest : public testing::Test {
             ->GetSession()
             ->GetSocketPool(
                 net::HttpNetworkSession::SocketPoolType::NORMAL_SOCKET_POOL,
-                net::ProxyServer::Direct())
+                net::ProxyChain::Direct())
             ->GetInfoAsValue("", "")
             .TakeDict();
 
@@ -2211,8 +2211,8 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
     base::RunLoop run_loop;
     base::Time test_time;
     ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
-    network_context->ClearHttpAuthCache(base::Time(), test_time,
-                                        run_loop.QuitClosure());
+    network_context->ClearHttpAuthCache(
+        base::Time(), test_time, /*filter=*/nullptr, run_loop.QuitClosure());
     run_loop.Run();
 
     EXPECT_EQ(1u, cache->GetEntriesSizeForTesting());
@@ -2230,6 +2230,7 @@ TEST_F(NetworkContextTest, ClearHttpAuthCache) {
     base::Time test_time;
     ASSERT_TRUE(base::Time::FromString("30 May 2018 12:30:00", &test_time));
     network_context->ClearHttpAuthCache(test_time, base::Time::Max(),
+                                        /*filter=*/nullptr,
                                         run_loop.QuitClosure());
     run_loop.Run();
 
@@ -2281,6 +2282,7 @@ TEST_F(NetworkContextTest, ClearAllHttpAuthCache) {
 
   base::RunLoop run_loop;
   network_context->ClearHttpAuthCache(base::Time(), base::Time::Max(),
+                                      /*filter=*/nullptr,
                                       run_loop.QuitClosure());
   run_loop.Run();
 
@@ -2305,7 +2307,7 @@ TEST_F(NetworkContextTest, ClearEmptyHttpAuthCache) {
 
   base::RunLoop run_loop;
   network_context->ClearHttpAuthCache(base::Time::UnixEpoch(),
-                                      base::Time::Max(),
+                                      base::Time::Max(), /*filter=*/nullptr,
                                       base::BindOnce(run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -4580,12 +4582,14 @@ TEST_F(NetworkContextTest, CanSetCookieFalseIfCookiesBlocked) {
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
           *request, *cookie, /* options */ nullptr,
+          net::FirstPartySetMetadata(),
           /* inclusion_status */ nullptr));
   SetDefaultContentSetting(CONTENT_SETTING_BLOCK, network_context.get());
   net::CookieInclusionStatus status;
   EXPECT_FALSE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr, &status));
+          *request, *cookie, /* options */ nullptr,
+          net::FirstPartySetMetadata(), &status));
   EXPECT_FALSE(status.HasWarningReason(
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
 }
@@ -4607,7 +4611,8 @@ TEST_F(NetworkContextTest, CanSetCookieTrueIfCookiesAllowed) {
   net::CookieInclusionStatus status;
   EXPECT_TRUE(
       network_context->url_request_context()->network_delegate()->CanSetCookie(
-          *request, *cookie, /* options */ nullptr, &status));
+          *request, *cookie, /* options */ nullptr,
+          net::FirstPartySetMetadata(), &status));
 
   EXPECT_TRUE(status.HasWarningReason(
       net::CookieInclusionStatus::WARN_THIRD_PARTY_PHASEOUT));
@@ -5361,7 +5366,7 @@ TEST_F(NetworkContextTest, GetHSTSState) {
 
   absl::optional<double> dynamic_sts_expiry =
       state.FindDouble("dynamic_sts_expiry");
-  EXPECT_EQ(expiry.ToDoubleT(), dynamic_sts_expiry);
+  EXPECT_EQ(expiry.InSecondsFSinceUnixEpoch(), dynamic_sts_expiry);
 }
 
 TEST_F(NetworkContextTest, ForceReloadProxyConfig) {
@@ -5433,9 +5438,9 @@ TEST_F(NetworkContextTest, ClearBadProxiesCache) {
   net::ProxyInfo proxy_info;
   proxy_info.UseNamedProxy("http://foo1.com");
   proxy_resolution_service->ReportSuccess(proxy_info);
-  std::vector<net::ProxyServer> proxies;
-  proxies.push_back(net::ProxyUriToProxyServer("http://foo1.com",
-                                               net::ProxyServer::SCHEME_HTTP));
+  std::vector<net::ProxyChain> proxies;
+  proxies.push_back(net::ProxyUriToProxyChain("http://foo1.com",
+                                              net::ProxyServer::SCHEME_HTTP));
   proxy_resolution_service->MarkProxiesAsBadUntil(
       proxy_info, base::Days(1), proxies, net::NetLogWithSource());
   base::RunLoop().RunUntilIdle();

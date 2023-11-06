@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "ScreenLockDelayAC": 600000
+        },
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "location": "user_profile",
+            "value": 600000
+          }
+        }
+      }
+    ]
+  }
+]

@@ -4,12 +4,29 @@
 
 #include "components/sync_preferences/preferences_merge_helper.h"
 
+#include <unordered_map>
+
 #include "base/json/json_reader.h"
+#include "components/sync_preferences/pref_model_associator_client.h"
+#include "components/sync_preferences/test_syncable_prefs_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_preferences {
 namespace {
+
+const char kMergeableDictPref[] = "mergeable.dict.pref";
+const char kMergeableListPref[] = "mergeable.list.pref";
+
+const std::unordered_map<std::string, SyncablePrefMetadata>
+    kSyncablePrefsDatabase = {
+        {kMergeableListPref,
+         {/*syncable_pref_id=*/1, syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableListWithRewriteOnUpdate}},
+        {kMergeableDictPref,
+         {/*syncable_pref_id=*/2, syncer::PREFERENCES, PrefSensitivity::kNone,
+          MergeBehavior::kMergeableDict}},
+};
 
 TEST(PreferencesMergeHelperTest, MergeListValues) {
   auto local_value =
@@ -540,6 +557,117 @@ TEST(PreferencesMergeHelperTest,
 
   EXPECT_EQ(new_local_value, expected_local_value->GetDict());
   EXPECT_EQ(new_account_value, expected_account_value->GetDict());
+}
+
+class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
+ public:
+  TestPrefModelAssociatorClient()
+      : syncable_prefs_database_(kSyncablePrefsDatabase) {}
+
+  TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
+  TestPrefModelAssociatorClient& operator=(
+      const TestPrefModelAssociatorClient&) = delete;
+
+  // PrefModelAssociatorClient implementation.
+  base::Value MaybeMergePreferenceValues(
+      const std::string& pref_name,
+      const base::Value& local_value,
+      const base::Value& server_value) const override {
+    return base::Value();
+  }
+  const SyncablePrefsDatabase& GetSyncablePrefsDatabase() const override {
+    return syncable_prefs_database_;
+  }
+
+ private:
+  ~TestPrefModelAssociatorClient() override = default;
+
+  TestSyncablePrefsDatabase syncable_prefs_database_;
+};
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptLocalValueForMergeableDictPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value corrupt_local_value("corrupt value");
+  base::Value account_value(
+      base::Value::Dict().Set("account_key", "account value"));
+
+  base::Value merged_value = helper::MergePreference(
+      client.get(), kMergeableDictPref, corrupt_local_value, account_value);
+  // Since local value is corrupt and account value is not, account value wins.
+  EXPECT_EQ(merged_value, account_value);
+}
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptServerValueForMergeableDictPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value local_value(base::Value::Dict().Set("local_key", "local value"));
+  base::Value corrupt_account_value("corrupt value");
+
+  base::Value merged_value = helper::MergePreference(
+      client.get(), kMergeableDictPref, local_value, corrupt_account_value);
+  // Since account value is corrupt but local value is not, local value wins.
+  EXPECT_EQ(merged_value, local_value);
+}
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptValuesForMergeableDictPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value corrupt_local_value("corrupt value");
+  base::Value corrupt_account_value(
+      base::Value::List().Append("account value"));
+
+  base::Value merged_value =
+      helper::MergePreference(client.get(), kMergeableDictPref,
+                              corrupt_local_value, corrupt_account_value);
+  // Since both values are corrupt, local value wins to avoid updating pref at
+  // all.
+  EXPECT_EQ(merged_value, corrupt_local_value);
+}
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptLocalValueForMergeableListPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value corrupt_local_value("corrupt value");
+  base::Value account_value(base::Value::List().Append("account value"));
+
+  base::Value merged_value = helper::MergePreference(
+      client.get(), kMergeableListPref, corrupt_local_value, account_value);
+  // Since local value is corrupt and account value is not, account value wins.
+  EXPECT_EQ(merged_value, account_value);
+}
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptServerValueForMergeableListPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value local_value(base::Value::List().Append("local value"));
+  base::Value corrupt_account_value("corrupt value");
+
+  base::Value merged_value = helper::MergePreference(
+      client.get(), kMergeableListPref, local_value, corrupt_account_value);
+  // Since account value is corrupt but local value is not, local value wins.
+  EXPECT_EQ(merged_value, local_value);
+}
+
+TEST(PreferencesMergeHelperTest,
+     ShouldHandleCorruptValuesForMergeableListPref) {
+  auto client = base::MakeRefCounted<TestPrefModelAssociatorClient>();
+
+  base::Value corrupt_local_value("corrupt value");
+  base::Value corrupt_account_value(
+      base::Value::Dict().Set("account_key", "account value"));
+
+  base::Value merged_value =
+      helper::MergePreference(client.get(), kMergeableListPref,
+                              corrupt_local_value, corrupt_account_value);
+  // Since both values are corrupt, local value wins to avoid updating pref at
+  // all.
+  EXPECT_EQ(merged_value, corrupt_local_value);
 }
 
 // Tests for MergePreference() exists in pref_model_associator_unittest.cc.

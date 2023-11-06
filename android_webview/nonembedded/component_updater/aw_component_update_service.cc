@@ -5,6 +5,8 @@
 #include "android_webview/nonembedded/component_updater/aw_component_update_service.h"
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
@@ -195,9 +197,11 @@ AwComponentUpdateService::GetComponent(const std::string& id) const {
   return component_updater::GetComponent(components_, id);
 }
 
-std::vector<absl::optional<update_client::CrxComponent>>
-AwComponentUpdateService::GetCrxComponents(
-    const std::vector<std::string>& ids) {
+void AwComponentUpdateService::GetCrxComponents(
+    const std::vector<std::string>& ids,
+    base::OnceCallback<
+        void(const std::vector<absl::optional<update_client::CrxComponent>>&)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<absl::optional<update_client::CrxComponent>> crxs;
   for (absl::optional<component_updater::ComponentRegistration> item :
@@ -207,7 +211,7 @@ AwComponentUpdateService::GetCrxComponents(
             ? absl::optional<update_client::CrxComponent>{ToCrxComponent(*item)}
             : absl::nullopt);
   }
-  return crxs;
+  std::move(callback).Run(crxs);
 }
 
 void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(

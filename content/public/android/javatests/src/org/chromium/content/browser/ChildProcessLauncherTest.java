@@ -33,9 +33,7 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Instrumentation tests for ChildProcessLauncher.
- */
+/** Instrumentation tests for ChildProcessLauncher. */
 @RunWith(ContentJUnit4ClassRunner.class)
 public class ChildProcessLauncherTest {
     private static final long CONDITION_WAIT_TIMEOUT_MS = 5000;
@@ -91,7 +89,8 @@ public class ChildProcessLauncherTest {
         public final ChildProcessConnection connection;
         public final ServiceCallbackForwarder serviceCallbackForwarder;
 
-        public AlreadyBoundConnection(ChildProcessConnection connection,
+        public AlreadyBoundConnection(
+                ChildProcessConnection connection,
                 ServiceCallbackForwarder serviceCallbackForwarder) {
             this.connection = connection;
             this.serviceCallbackForwarder = serviceCallbackForwarder;
@@ -102,17 +101,24 @@ public class ChildProcessLauncherTest {
 
     @Before
     public void setUp() {
-        mConnectionAllocator = ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
-                new Callable<ChildConnectionAllocator>() {
-                    @Override
-                    public ChildConnectionAllocator call() {
-                        Context context = InstrumentationRegistry.getTargetContext();
-                        return ChildConnectionAllocator.create(context, LauncherThread.getHandler(),
-                                null, SERVICE_PACKAGE_NAME, SERVICE_NAME,
-                                SERVICE_COUNT_META_DATA_KEY, false /* bindToCaller */,
-                                false /* bindAsExternalService */, false /* useStrongBinding */);
-                    }
-                });
+        mConnectionAllocator =
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        new Callable<ChildConnectionAllocator>() {
+                            @Override
+                            public ChildConnectionAllocator call() {
+                                Context context = InstrumentationRegistry.getTargetContext();
+                                return ChildConnectionAllocator.create(
+                                        context,
+                                        LauncherThread.getHandler(),
+                                        null,
+                                        SERVICE_PACKAGE_NAME,
+                                        SERVICE_NAME,
+                                        SERVICE_COUNT_META_DATA_KEY,
+                                        /* bindToCaller= */ false,
+                                        /* bindAsExternalService= */ false,
+                                        /* useStrongBinding= */ false);
+                            }
+                        });
     }
 
     private static class IChildProcessBinder extends IChildProcessTest.Stub {
@@ -164,21 +170,22 @@ public class ChildProcessLauncherTest {
         }
 
         public void waitForOnConnectionSetupCalled() throws TimeoutException {
-            mOnConnectionSetupHelper.waitForCallback(0 /* currentCallCount */);
+            mOnConnectionSetupHelper.waitForCallback(/* currentCallCount= */ 0);
         }
 
         public void waitForOnNativeLibraryCalled() throws TimeoutException {
-            mOnLoadNativeHelper.waitForCallback(0 /* currentCallCount */);
+            mOnLoadNativeHelper.waitForCallback(/* currentCallCount= */ 0);
         }
 
         public void waitOnBeforeMainCalled() throws TimeoutException {
-            mOnBeforeMainHelper.waitForCallback(0 /* currentCallCount */);
+            mOnBeforeMainHelper.waitForCallback(/* currentCallCount= */ 0);
         }
 
         public void waitOnRunMainCalled() throws TimeoutException {
-            mOnRunMainHelper.waitForCallback(0 /* currentCallCount */);
+            mOnRunMainHelper.waitForCallback(/* currentCallCount= */ 0);
         }
-    };
+    }
+    ;
 
     /**
      * Creates a ChildProcessLauncher, using {@param boundConnectionToUse} if non null, and tests
@@ -194,46 +201,50 @@ public class ChildProcessLauncherTest {
         final CallbackHelper onConnectionEstablishedHelper = new CallbackHelper();
         final CallbackHelper onConnectionLostHelper = new CallbackHelper();
 
-        final ChildProcessLauncher.Delegate delegate = new ChildProcessLauncher.Delegate() {
-            @Override
-            public ChildProcessConnection getBoundConnection(
-                    ChildConnectionAllocator connectionAllocator,
-                    ChildProcessConnection.ServiceCallback serviceCallback) {
-                if (boundConnectionToUse == null) {
-                    return null;
-                }
-                boundConnectionToUse.serviceCallbackForwarder.setServiceCallback(serviceCallback);
-                return boundConnectionToUse.connection;
-            }
+        final ChildProcessLauncher.Delegate delegate =
+                new ChildProcessLauncher.Delegate() {
+                    @Override
+                    public ChildProcessConnection getBoundConnection(
+                            ChildConnectionAllocator connectionAllocator,
+                            ChildProcessConnection.ServiceCallback serviceCallback) {
+                        if (boundConnectionToUse == null) {
+                            return null;
+                        }
+                        boundConnectionToUse.serviceCallbackForwarder.setServiceCallback(
+                                serviceCallback);
+                        return boundConnectionToUse.connection;
+                    }
 
-            @Override
-            public void onBeforeConnectionAllocated(Bundle serviceBundle) {
-                // Should only be called when the ChildProcessLauncher creates the connection.
-                Assert.assertNull(boundConnectionToUse);
-                Assert.assertEquals(0, onBeforeConnectionAllocatedHelper.getCallCount());
-                serviceBundle.putString(EXTRA_SERVICE_PARAM, EXTRA_SERVICE_PARAM_VALUE);
-                onBeforeConnectionAllocatedHelper.notifyCalled();
-            }
+                    @Override
+                    public void onBeforeConnectionAllocated(Bundle serviceBundle) {
+                        // Should only be called when the ChildProcessLauncher creates the
+                        // connection.
+                        Assert.assertNull(boundConnectionToUse);
+                        Assert.assertEquals(0, onBeforeConnectionAllocatedHelper.getCallCount());
+                        serviceBundle.putString(EXTRA_SERVICE_PARAM, EXTRA_SERVICE_PARAM_VALUE);
+                        onBeforeConnectionAllocatedHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onBeforeConnectionSetup(Bundle connectionBundle) {
-                connectionBundle.putString(EXTRA_CONNECTION_PARAM, EXTRA_CONNECTION_PARAM_VALUE);
-                Assert.assertEquals(0, onBeforeConnectionSetupHelper.getCallCount());
-                onBeforeConnectionSetupHelper.notifyCalled();
-            }
+                    @Override
+                    public void onBeforeConnectionSetup(Bundle connectionBundle) {
+                        connectionBundle.putString(
+                                EXTRA_CONNECTION_PARAM, EXTRA_CONNECTION_PARAM_VALUE);
+                        Assert.assertEquals(0, onBeforeConnectionSetupHelper.getCallCount());
+                        onBeforeConnectionSetupHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onConnectionEstablished(ChildProcessConnection connection) {
-                Assert.assertEquals(0, onConnectionEstablishedHelper.getCallCount());
-                onConnectionEstablishedHelper.notifyCalled();
-            }
+                    @Override
+                    public void onConnectionEstablished(ChildProcessConnection connection) {
+                        Assert.assertEquals(0, onConnectionEstablishedHelper.getCallCount());
+                        onConnectionEstablishedHelper.notifyCalled();
+                    }
 
-            @Override
-            public void onConnectionLost(ChildProcessConnection connection) {
-                Assert.assertEquals(0, onConnectionLostHelper.getCallCount());
-                onConnectionLostHelper.notifyCalled();
-            }
-        };
+                    @Override
+                    public void onConnectionLost(ChildProcessConnection connection) {
+                        Assert.assertEquals(0, onConnectionLostHelper.getCallCount());
+                        onConnectionLostHelper.notifyCalled();
+                    }
+                };
 
         final String[] commandLine = new String[] {"--test-param1", "--test-param2"};
         final FileDescriptorInfo[] filesToBeMapped = new FileDescriptorInfo[0];
@@ -245,12 +256,17 @@ public class ChildProcessLauncherTest {
                         new Callable<ChildProcessLauncher>() {
                             @Override
                             public ChildProcessLauncher call() {
-                                ChildProcessLauncher processLauncher = new ChildProcessLauncher(
-                                        LauncherThread.getHandler(), delegate, commandLine,
-                                        filesToBeMapped, mConnectionAllocator,
-                                        Arrays.asList(childProcessBinder));
-                                processLauncher.start(true /* setupConnection */,
-                                        false /*queueIfNoFreeConnection */);
+                                ChildProcessLauncher processLauncher =
+                                        new ChildProcessLauncher(
+                                                LauncherThread.getHandler(),
+                                                delegate,
+                                                commandLine,
+                                                filesToBeMapped,
+                                                mConnectionAllocator,
+                                                Arrays.asList(childProcessBinder));
+                                processLauncher.start(
+                                        /* setupConnection= */ true,
+                                        /* queueIfNoFreeConnection= */ false);
                                 return processLauncher;
                             }
                         });
@@ -259,10 +275,10 @@ public class ChildProcessLauncherTest {
 
         boolean allocatedConnection = boundConnectionToUse == null;
         if (allocatedConnection) {
-            onBeforeConnectionAllocatedHelper.waitForCallback(0 /* currentCallback */);
+            onBeforeConnectionAllocatedHelper.waitForCallback(/* currentCallback= */ 0);
         }
 
-        onBeforeConnectionSetupHelper.waitForCallback(0 /* currentCallback */);
+        onBeforeConnectionSetupHelper.waitForCallback(/* currentCallback= */ 0);
 
         // Wait for the service to notify its onConnectionSetup was called.
         childProcessBinder.waitForOnConnectionSetupCalled();
@@ -270,14 +286,16 @@ public class ChildProcessLauncherTest {
         Assert.assertNotNull(childProcessBinder.mServiceBundle);
         Assert.assertNotNull(childProcessBinder.mConnectionBundle);
         if (allocatedConnection) {
-            Assert.assertEquals(EXTRA_SERVICE_PARAM_VALUE,
+            Assert.assertEquals(
+                    EXTRA_SERVICE_PARAM_VALUE,
                     childProcessBinder.mServiceBundle.getString(EXTRA_SERVICE_PARAM));
         }
-        Assert.assertEquals(EXTRA_CONNECTION_PARAM_VALUE,
+        Assert.assertEquals(
+                EXTRA_CONNECTION_PARAM_VALUE,
                 childProcessBinder.mConnectionBundle.getString(EXTRA_CONNECTION_PARAM));
 
         // Wait for the client onConnectionEstablished call.
-        onConnectionEstablishedHelper.waitForCallback(0 /* currentCallback */);
+        onConnectionEstablishedHelper.waitForCallback(/* currentCallback= */ 0);
 
         // Wait for the service to notify its library got loaded.
         childProcessBinder.waitForOnNativeLibraryCalled();
@@ -291,25 +309,26 @@ public class ChildProcessLauncherTest {
         childProcessBinder.waitOnRunMainCalled();
 
         // Stop the launcher.
-        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                processLauncher.stop();
-            }
-        });
+        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        processLauncher.stop();
+                    }
+                });
 
         // Note we don't wait for service to notify its onDestroy, as it may not
         // always be called.
 
         // The client should also get a notification that the connection was lost.
-        onConnectionLostHelper.waitForCallback(0 /* currentCallback */);
+        onConnectionLostHelper.waitForCallback(/* currentCallback= */ 0);
     }
 
     @Test
     @LargeTest
     @Feature({"ProcessManagement"})
     public void testLaunchServiceThatUsesConnectionAllocator() throws Exception {
-        testProcessLauncher(null /* boundConnectionToUse */);
+        testProcessLauncher(/* boundConnectionToUse= */ null);
     }
 
     @Test
@@ -320,15 +339,18 @@ public class ChildProcessLauncherTest {
         // ChildProcessConnection can forward to them appropriately.
         final ServiceCallbackForwarder serviceCallbackForwarder = new ServiceCallbackForwarder();
         final ChildProcessConnection boundConnection =
-                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(new Callable<
-                        ChildProcessConnection>() {
-                    @Override
-                    public ChildProcessConnection call() {
-                        Context context = InstrumentationRegistry.getTargetContext();
-                        return mConnectionAllocator.allocate(context,
-                                new Bundle() /* serviceBundle */, serviceCallbackForwarder);
-                    }
-                });
+                ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                        new Callable<ChildProcessConnection>() {
+                            @Override
+                            public ChildProcessConnection call() {
+                                Context context = InstrumentationRegistry.getTargetContext();
+                                return mConnectionAllocator.allocate(
+                                        context,
+                                        new Bundle()
+                                        /* serviceBundle= */ ,
+                                        serviceCallbackForwarder);
+                            }
+                        });
         Assert.assertNotNull(boundConnection);
 
         CriteriaHelper.pollInstrumentationThread(
@@ -336,9 +358,7 @@ public class ChildProcessLauncherTest {
         testProcessLauncher(new AlreadyBoundConnection(boundConnection, serviceCallbackForwarder));
     }
 
-    /**
-     *  Tests cleanup for a connection that fails to connect in the first place.
-     */
+    /** Tests cleanup for a connection that fails to connect in the first place. */
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
@@ -348,11 +368,14 @@ public class ChildProcessLauncherTest {
                         new Callable<ChildConnectionAllocator>() {
                             @Override
                             public ChildConnectionAllocator call() {
-                                return ChildConnectionAllocator.createFixedForTesting(null,
-                                        "org.chromium.wrong_package", "WrongService",
-                                        2 /* serviceCount */, false /* bindToCaller */,
-                                        false /* bindAsExternalService */,
-                                        false /* useStrongBinding */);
+                                return ChildConnectionAllocator.createFixedForTesting(
+                                        null,
+                                        "org.chromium.wrong_package",
+                                        "WrongService",
+                                        /* serviceCount= */ 2,
+                                        /* bindToCaller= */ false,
+                                        /* bindAsExternalService= */ false,
+                                        /* useStrongBinding= */ false);
                             }
                         });
         Assert.assertFalse(badConnectionAllocator.anyConnectionAllocated());
@@ -360,19 +383,20 @@ public class ChildProcessLauncherTest {
         // Try to allocate a connection to service class in incorrect package. We can do that by
         // using the instrumentation context (getContext()) instead of the app context
         // (getTargetContext()).
-        ChildProcessLauncher processLauncher = createChildProcessLauncher(badConnectionAllocator,
-                true /* setupConnection */, false /* queueIfNoFreeConnection */);
+        ChildProcessLauncher processLauncher =
+                createChildProcessLauncher(
+                        badConnectionAllocator,
+                        /* setupConnection= */ true,
+                        /* queueIfNoFreeConnection= */ false);
 
         Assert.assertNotNull(processLauncher);
 
         // Verify that the connection is not considered as allocated (or only briefly, as the
         // freeing is delayed).
-        waitForConnectionAllocatorState(badConnectionAllocator, true /* isEmpty */);
+        waitForConnectionAllocatorState(badConnectionAllocator, /* emptyState= */ true);
     }
 
-    /**
-     * Tests cleanup for a connection that terminates before setup.
-     */
+    /** Tests cleanup for a connection that terminates before setup. */
     @Test
     @MediumTest
     @Feature({"ProcessManagement"})
@@ -380,8 +404,11 @@ public class ChildProcessLauncherTest {
         Assert.assertFalse(mConnectionAllocator.anyConnectionAllocated());
 
         // Start and connect to a new service.
-        ChildProcessLauncher processLauncher = createChildProcessLauncher(mConnectionAllocator,
-                false /* setupConnection */, false /* queueIfNoFreeConnection */);
+        ChildProcessLauncher processLauncher =
+                createChildProcessLauncher(
+                        mConnectionAllocator,
+                        /* setupConnection= */ false,
+                        /* queueIfNoFreeConnection= */ false);
 
         // Verify that the service is bound but not yet set up.
         Assert.assertTrue(mConnectionAllocator.anyConnectionAllocated());
@@ -394,7 +421,7 @@ public class ChildProcessLauncherTest {
         connection.crashServiceForTesting();
 
         // Verify that the connection gets cleaned-up.
-        waitForConnectionAllocatorState(mConnectionAllocator, true /* isEmpty */);
+        waitForConnectionAllocatorState(mConnectionAllocator, /* emptyState= */ true);
     }
 
     @Test
@@ -404,8 +431,11 @@ public class ChildProcessLauncherTest {
         Assert.assertFalse(mConnectionAllocator.anyConnectionAllocated());
 
         // Start and connect to a new service.
-        ChildProcessLauncher processLauncher = createChildProcessLauncher(mConnectionAllocator,
-                true /* setupConnection */, false /* queueIfNoFreeConnection */);
+        ChildProcessLauncher processLauncher =
+                createChildProcessLauncher(
+                        mConnectionAllocator,
+                        /* setupConnection= */ true,
+                        /* queueIfNoFreeConnection= */ false);
 
         Assert.assertTrue(mConnectionAllocator.anyConnectionAllocated());
         ChildProcessConnection connection = processLauncher.getConnection();
@@ -418,7 +448,7 @@ public class ChildProcessLauncherTest {
         connection.crashServiceForTesting();
 
         // Verify that the connection gets cleaned-up.
-        waitForConnectionAllocatorState(mConnectionAllocator, true /* isEmpty */);
+        waitForConnectionAllocatorState(mConnectionAllocator, /* emptyState= */ true);
 
         // Verify that the connection pid remains set after termination.
         Assert.assertNotEquals(0, getConnectionPid(connection));
@@ -434,8 +464,11 @@ public class ChildProcessLauncherTest {
         ChildProcessLauncher[] launchers = new ChildProcessLauncher[4];
         ChildProcessConnection[] connections = new ChildProcessConnection[4];
         for (int i = 0; i < 4; i++) {
-            launchers[i] = createChildProcessLauncher(mConnectionAllocator,
-                    true /* setupConnection */, true /* queueIfNoFreeConnection */);
+            launchers[i] =
+                    createChildProcessLauncher(
+                            mConnectionAllocator,
+                            /* setupConnection= */ true,
+                            /* queueIfNoFreeConnection= */ true);
             Assert.assertNotNull(launchers[i]);
             connections[i] = launchers[i].getConnection();
         }
@@ -445,8 +478,11 @@ public class ChildProcessLauncherTest {
         Assert.assertNull(connections[3]);
 
         // Test creating a launcher with queueIfNoFreeConnection false with no connection available.
-        Assert.assertNull(createChildProcessLauncher(mConnectionAllocator,
-                true /* setupConnection */, false /* queueIfNoFreeConnection */));
+        Assert.assertNull(
+                createChildProcessLauncher(
+                        mConnectionAllocator,
+                        /* setupConnection= */ true,
+                        /* queueIfNoFreeConnection= */ false));
 
         waitForConnectionState(connections[0], CONNECTION_BLOCK_UNTIL_SETUP);
         waitForConnectionState(connections[1], CONNECTION_BLOCK_UNTIL_SETUP);
@@ -466,16 +502,21 @@ public class ChildProcessLauncherTest {
     }
 
     private static ChildProcessLauncher createChildProcessLauncher(
-            final ChildConnectionAllocator connectionAllocator, final boolean setupConnection,
+            final ChildConnectionAllocator connectionAllocator,
+            final boolean setupConnection,
             final boolean queueIfNoFreeConnection) {
         return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                 new Callable<ChildProcessLauncher>() {
                     @Override
                     public ChildProcessLauncher call() {
-                        ChildProcessLauncher processLauncher = new ChildProcessLauncher(
-                                LauncherThread.getHandler(), new ChildProcessLauncher.Delegate() {},
-                                new String[0], new FileDescriptorInfo[0], connectionAllocator,
-                                null /* binderCallback */);
+                        ChildProcessLauncher processLauncher =
+                                new ChildProcessLauncher(
+                                        LauncherThread.getHandler(),
+                                        new ChildProcessLauncher.Delegate() {},
+                                        new String[0],
+                                        new FileDescriptorInfo[0],
+                                        connectionAllocator,
+                                        /* binderCallback= */ null);
                         if (!processLauncher.start(setupConnection, queueIfNoFreeConnection)) {
                             return null;
                         }
@@ -486,50 +527,60 @@ public class ChildProcessLauncherTest {
 
     private static void waitForConnectionAllocatorState(
             final ChildConnectionAllocator connectionAllocator, final boolean emptyState) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat(
-                    connectionAllocator.anyConnectionAllocated(), Matchers.not(emptyState));
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            connectionAllocator.anyConnectionAllocated(), Matchers.not(emptyState));
+                });
     }
 
     private static void waitForConnectionState(
             final ChildProcessConnection connection, final int connectionState) {
-        Assert.assertThat(connectionState,
-                Matchers.anyOf(Matchers.equalTo(CONNECTION_BLOCK_UNTIL_CONNECTED),
+        Assert.assertThat(
+                connectionState,
+                Matchers.anyOf(
+                        Matchers.equalTo(CONNECTION_BLOCK_UNTIL_CONNECTED),
                         Matchers.equalTo(CONNECTION_BLOCK_UNTIL_SETUP)));
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            if (connectionState == CONNECTION_BLOCK_UNTIL_CONNECTED) {
-                Criteria.checkThat(connection.isConnected(), Matchers.is(true));
-            } else {
-                Criteria.checkThat(connectionState, Matchers.is(CONNECTION_BLOCK_UNTIL_SETUP));
-                Criteria.checkThat(getConnectionPid(connection), Matchers.not(0));
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    if (connectionState == CONNECTION_BLOCK_UNTIL_CONNECTED) {
+                        Criteria.checkThat(connection.isConnected(), Matchers.is(true));
+                    } else {
+                        Criteria.checkThat(
+                                connectionState, Matchers.is(CONNECTION_BLOCK_UNTIL_SETUP));
+                        Criteria.checkThat(getConnectionPid(connection), Matchers.not(0));
+                    }
+                });
     }
 
     private static void waitUntilLauncherSetup(final ChildProcessLauncher launcher) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat("Failed wait for launcher to connect.", launcher.getConnection(),
-                    Matchers.notNullValue());
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Failed wait for launcher to connect.",
+                            launcher.getConnection(),
+                            Matchers.notNullValue());
+                });
         waitForConnectionState(launcher.getConnection(), CONNECTION_BLOCK_UNTIL_SETUP);
     }
 
     private static int getConnectionPid(final ChildProcessConnection connection) {
-        return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return connection.getPid();
-            }
-        });
+        return ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
+                new Callable<Integer>() {
+                    @Override
+                    public Integer call() {
+                        return connection.getPid();
+                    }
+                });
     }
 
     private static void stopLauncher(final ChildProcessLauncher launcher) {
-        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                launcher.stop();
-            }
-        });
+        ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        launcher.stop();
+                    }
+                });
     }
 }

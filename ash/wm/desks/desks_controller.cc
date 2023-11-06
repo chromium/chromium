@@ -22,7 +22,6 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_animation_base.h"
 #include "ash/wm/desks/desk_animation_impl.h"
@@ -54,7 +53,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
-#include "base/containers/unique_ptr_adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -66,9 +64,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "components/app_restore/app_launch_info.h"
+#include "chromeos/utils/haptics_util.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/app_restore/window_info.h"
 #include "components/app_restore/window_properties.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
@@ -867,7 +864,7 @@ bool DesksController::ActivateAdjacentDesk(bool going_left,
   } else {
     // Fire a haptic event if necessary.
     if (source == DesksSwitchSource::kDeskSwitchTouchpad) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kKnock,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
@@ -936,9 +933,8 @@ bool DesksController::MoveWindowFromActiveDeskTo(
   // handles minimized windows differently.
   if (in_overview) {
     auto* overview_session = overview_controller->overview_session();
-    auto* item = overview_session->GetOverviewItemForWindow(window);
     // `item` can be null when we are switching users.
-    if (item) {
+    if (auto* item = overview_session->GetOverviewItemForWindow(window)) {
       item->OnMovingItemToAnotherDesk();
       // The item no longer needs to be in the overview grid.
       overview_session->RemoveItem(item);
@@ -1019,9 +1015,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   }
 
   if (features::IsPerDeskZOrderEnabled()) {
-    for (auto& desk : desks_) {
-      desk->TrackAllDeskWindow(window);
-    }
+    TrackWindowOnAllDesks(window);
   }
 
   if (do_window_bound_animation) {
@@ -1038,10 +1032,7 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
   if (visible_on_all_desks_windows_.erase(window)) {
     if (features::IsPerDeskZOrderEnabled()) {
-      for (auto& desk : desks_) {
-        desk->UntrackAllDeskWindow(window,
-                                   /*recent_root=*/window->GetRootWindow());
-      }
+      UntrackWindowFromAllDesks(window);
     }
 
     wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
@@ -1232,7 +1223,8 @@ void DesksController::CaptureActiveDeskAsSavedDesk(
 
   restore_data_collector_.CaptureActiveDeskAsSavedDesk(
       std::move(callback), template_type,
-      base::UTF16ToUTF8(active_desk_->name()), root_window_to_show);
+      base::UTF16ToUTF8(active_desk_->name()), root_window_to_show,
+      current_account_id_);
 }
 
 const Desk* DesksController::CreateNewDeskForSavedDesk(
@@ -1509,7 +1501,7 @@ void DesksController::MaybeDismissPersistentDeskRemovalToast() {
 
 bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
   if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
     return false;
   }
 
@@ -1520,7 +1512,7 @@ bool DesksController::MaybeToggleA11yHighlightOnUndoDeskRemovalToast() {
 
 bool DesksController::MaybeActivateDeskRemovalUndoButtonOnHighlightedToast() {
   if (!temporary_removed_desk_ ||
-      !ToastManager::Get()->IsRunning(temporary_removed_desk_->toast_id())) {
+      !ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id())) {
     return false;
   }
 
@@ -1750,9 +1742,10 @@ void DesksController::ActivateDeskInternal(const Desk* desk,
 
   // If in the middle of a window cycle gesture, reset the window cycle list
   // contents so it contains the new active desk's windows.
-  auto* window_cycle_controller = shell->window_cycle_controller();
-  if (window_cycle_controller->IsAltTabPerActiveDesk())
+  if (auto* window_cycle_controller = shell->window_cycle_controller();
+      window_cycle_controller->IsAltTabPerActiveDesk()) {
     window_cycle_controller->MaybeResetCycleList();
+  }
 
   for (auto& observer : observers_)
     observer.OnDeskActivationChanged(active_desk_, old_active);
@@ -2196,9 +2189,28 @@ void DesksController::MaybeCommitPendingDeskRemoval(
   }
 }
 
+bool DesksController::IsUndoToastShown() const {
+  return temporary_removed_desk_ &&
+         ToastManager::Get()->IsToastShown(temporary_removed_desk_->toast_id());
+}
+
 bool DesksController::IsUndoToastHighlighted() const {
-  return temporary_removed_desk_ && ToastManager::Get()->IsHighlighted(
-                                        temporary_removed_desk_->toast_id());
+  return temporary_removed_desk_ &&
+         ToastManager::Get()->IsToastDismissButtonHighlighted(
+             temporary_removed_desk_->toast_id());
+}
+
+void DesksController::TrackWindowOnAllDesks(aura::Window* window) {
+  for (auto& desk : desks_) {
+    desk->TrackAllDeskWindow(window);
+  }
+}
+
+void DesksController::UntrackWindowFromAllDesks(aura::Window* window) {
+  for (auto& desk : desks_) {
+    desk->UntrackAllDeskWindow(window,
+                               /*recent_root=*/window->GetRootWindow());
+  }
 }
 
 void DesksController::CleanUpClosedAppWindowsTask(
@@ -2282,6 +2294,12 @@ void DesksController::RestackVisibleOnAllDesksWindowsOnActiveDesk() {
   auto mru_windows =
       Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   for (auto* visible_on_all_desks_window : visible_on_all_desks_windows_) {
+    // If the window is floated, it will always be on top, so there is no need
+    // to restack it.
+    if (WindowState::Get(visible_on_all_desks_window)->IsFloated()) {
+      continue;
+    }
+
     auto visible_on_all_desks_window_iter =
         base::ranges::find(mru_windows, visible_on_all_desks_window);
     if (visible_on_all_desks_window_iter == mru_windows.end())

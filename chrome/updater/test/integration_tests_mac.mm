@@ -31,12 +31,14 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
+#include "chrome/updater/mac/privileged_helper/service.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #import "chrome/updater/util/mac_util.h"
+#include "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/unit_test_util.h"
 #include "chrome/updater/util/util.h"
 #include "components/crx_file/crx_verifier.h"
@@ -97,20 +99,28 @@ void Clean(UpdaterScope scope) {
 
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
-  if (path)
+  if (path) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+  }
   EXPECT_TRUE(base::DeleteFile(*GetWakeTaskPlistPath(scope)));
 
   path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
-  if (path)
+  if (path) {
     EXPECT_TRUE(base::DeletePathRecursively(*path));
+  }
 
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
-  if (keystone_path)
+  if (keystone_path) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
+  }
 
+  absl::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
+  EXPECT_TRUE(cache_path);
+  if (cache_path) {
+    EXPECT_TRUE(base::DeletePathRecursively(*cache_path));
+  }
   EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
@@ -137,6 +147,14 @@ void ExpectClean(UpdaterScope scope) {
   // Files must not exist on the file system.
   EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 
+  // Caches must have been removed. On Mac, this is separate from other
+  // updater directories, so we can reliably remove it completely.
+  absl::optional<base::FilePath> cache_path = GetCacheBaseDirectory(scope);
+  EXPECT_TRUE(cache_path);
+  if (cache_path) {
+    EXPECT_FALSE(base::PathExists(*cache_path));
+  }
+
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path && base::PathExists(*path)) {
@@ -162,9 +180,10 @@ void ExpectClean(UpdaterScope scope) {
   // Keystone must not exist on the file system.
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   EXPECT_TRUE(keystone_path);
-  if (keystone_path)
+  if (keystone_path) {
     EXPECT_FALSE(
         base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
+  }
 }
 
 void ExpectInstalled(UpdaterScope scope) {
@@ -383,13 +402,65 @@ void SetPlatformPolicies(const base::Value::Dict& values) {
       }
     }
     all_policies[base::SysUTF8ToNSString(app_id)] = app_policies;
-  }
 
-  CFPreferencesSetValue(CFSTR("updatePolicies"),
-                        base::apple::NSToCFPtrCast(all_policies), domain,
-                        kCFPreferencesAnyUser, kCFPreferencesCurrentHost);
+    NSURL* const managed_preferences_url = base::apple::FilePathToNSURL(
+        GetLibraryFolderPath(UpdaterScope::kSystem)
+            ->AppendASCII("Managed Preferences")
+            .AppendASCII("com.google.Keystone.plist"));
+    ASSERT_TRUE([[NSDictionary dictionaryWithObject:all_policies
+                                             forKey:@"updatePolicies"]
+        writeToURL:managed_preferences_url
+        atomically:YES])
+        << "Failed to write " << managed_preferences_url;
+  }
   ASSERT_TRUE(CFPreferencesSynchronize(domain, kCFPreferencesAnyUser,
                                        kCFPreferencesCurrentHost));
+
+  // Force flushing preferences cache by killing the defaults server.
+  base::Process process = base::LaunchProcess({"killall", "cfprefsd"}, {});
+  if (!process.IsValid()) {
+    VLOG(2) << "Failed to launch the process to refresh preferences.";
+  }
+  int exit_code = -1;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(0, exit_code);
+}
+
+void PrivilegedHelperInstall(UpdaterScope scope) {
+  ASSERT_EQ(scope, UpdaterScope::kSystem)
+      << "The privileged helper only works at system scope.";
+  base::FilePath src_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir));
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath helpers_dir = temp_dir.GetPath().Append(
+      "Contents/Frameworks/" BROWSER_PRODUCT_NAME_STRING
+      " Framework.framework/Helpers/");
+  ASSERT_TRUE(base::CreateDirectory(helpers_dir));
+  ASSERT_TRUE(CopyDir(src_dir.Append("third_party")
+                          .Append("updater")
+                          .Append("chrome_mac_universal_prod")
+                          .Append(PRODUCT_FULLNAME_STRING ".app"),
+                      helpers_dir, false));
+  ASSERT_TRUE(
+      base::WriteFile(temp_dir.GetPath().Append("Contents/Info.plist"),
+                      R"(<?xml version="1.0" encoding="UTF-8"?>)"
+                      R"(<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN")"
+                      R"(    "http://www.apple.com/DTDs/PropertyList-1.0.dtd">)"
+                      R"(<plist version="1.0">)"
+                      R"(<dict>)"
+                      R"(<key>KSProductID</key>)"
+                      R"(<string>test1</string>)"
+                      R"(<key>KSChannelID</key>)"
+                      R"(<string>tag</string>)"
+                      R"(<key>KSVersion</key>)"
+                      R"(<string>1.2.3.4</string>)"
+                      R"(</dict>)"
+                      R"(</plist>)"));
+  ASSERT_TRUE(VerifyUpdaterSignature(
+      helpers_dir.Append(PRODUCT_FULLNAME_STRING ".app")));
+  ASSERT_EQ(InstallUpdater(temp_dir.GetPath()), 0);
 }
 
 }  // namespace updater::test

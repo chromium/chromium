@@ -1,0 +1,24 @@
+Tests setSensorOverrideReadings delivers updates
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+[
+    [0] : 1
+    [1] : 30
+    [2] : 4
+]
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+[
+    [0] : -5
+    [1] : 42
+    [2] : 34
+]
+

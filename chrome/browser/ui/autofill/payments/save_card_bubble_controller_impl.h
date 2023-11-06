@@ -126,7 +126,7 @@ class SaveCardBubbleControllerImpl
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
-  const AccountInfo& GetAccountInfo() override;
+  AccountInfo GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
   bool ShouldRequestNameFromUser() const override;
@@ -170,8 +170,6 @@ class SaveCardBubbleControllerImpl
   friend class content::WebContentsUserData<SaveCardBubbleControllerImpl>;
   friend class SaveCardBubbleControllerImplTest;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
-
-  void FetchAccountInfo();
 
   // Displays both the offer-to-save bubble and is associated omnibox icon.
   void ShowBubble();
@@ -236,9 +234,6 @@ class SaveCardBubbleControllerImpl
   // and the users are informed that the CVC will also be stored. If the type is
   // `CardSaveType::kCvcSaveOnly`, the offer-to-save CVC bubble is shown.
   AutofillClient::SaveCreditCardOptions options_;
-
-  // The account info of the signed-in user.
-  AccountInfo account_info_;
 
   // Contains the details of the card that will be saved if the user accepts.
   CreditCard card_;

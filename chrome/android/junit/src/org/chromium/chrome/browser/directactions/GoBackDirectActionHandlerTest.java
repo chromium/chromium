@@ -31,14 +31,11 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GoBackDirectActionHandlerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private Runnable mAction;
+    @Mock private Runnable mAction;
 
-    @Mock
-    private DirectActionReporter mReporter;
+    @Mock private DirectActionReporter mReporter;
 
     @Test
     @SmallTest
@@ -49,8 +46,9 @@ public class GoBackDirectActionHandlerTest {
         Mockito.verify(mReporter).addDirectAction("go_back");
 
         List<Bundle> responses = new ArrayList<>();
-        assertTrue(handler.performDirectAction(
-                "go_back", Bundle.EMPTY, (response) -> responses.add(response)));
+        assertTrue(
+                handler.performDirectAction(
+                        "go_back", Bundle.EMPTY, (response) -> responses.add(response)));
 
         assertThat(responses, Matchers.hasSize(1));
         Mockito.verify(mAction).run();

@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.base.supplier.ObservableSupplier;
+
 /**
  * Root coordinator of the Hub.
  *
@@ -24,8 +26,9 @@ public class HubCoordinator {
      * Creates the {@link HubCoordinator}.
      *
      * @param containerView The view to attach the Hub to.
+     * @param paneSupplier Used to observe the current pane.
      */
-    public HubCoordinator(FrameLayout containerView) {
+    public HubCoordinator(FrameLayout containerView, ObservableSupplier<Pane> paneSupplier) {
         Context context = containerView.getContext();
         mContainerView = containerView;
         mMainHubParent = LayoutInflater.from(context).inflate(R.layout.hub_layout, null);
@@ -35,7 +38,7 @@ public class HubCoordinator {
         mHubToolbarCoordinator = new HubToolbarCoordinator(hubToolbarView);
 
         HubPaneHostView hubPaneHostView = mContainerView.findViewById(R.id.hub_pane_host);
-        mHubPaneHostCoordinator = new HubPaneHostCoordinator(hubPaneHostView);
+        mHubPaneHostCoordinator = new HubPaneHostCoordinator(hubPaneHostView, paneSupplier);
     }
 
     /** Removes the hub from the layout tree and cleans up resources. */

@@ -57,9 +57,7 @@ class DualMediaSinkService;
 class WiredDisplayMediaRouteProvider;
 
 // MediaRouter implementation that uses the desktop MediaRouteProviders.
-class MediaRouterDesktop : public MediaRouterBase,
-                           public mojom::MediaRouter,
-                           public base::SupportsWeakPtr<MediaRouterDesktop> {
+class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
  public:
   explicit MediaRouterDesktop(content::BrowserContext* context);
   MediaRouterDesktop(const MediaRouterDesktop&) = delete;

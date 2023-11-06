@@ -697,11 +697,23 @@ void ChromeAutofillClient::ShowLocalCardMigrationResults(
 void ChromeAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,
     bool should_show_prompt,
-    LocalSaveIbanPromptCallback callback) {
+    SaveIbanPromptCallback callback) {
   // Do lazy initialization of IbanBubbleControllerImpl.
   IbanBubbleControllerImpl::CreateForWebContents(web_contents());
   IbanBubbleControllerImpl::FromWebContents(web_contents())
       ->OfferLocalSave(iban, should_show_prompt, std::move(callback));
+}
+
+void ChromeAutofillClient::ConfirmUploadIbanToCloud(
+    const Iban& iban,
+    const LegalMessageLines& legal_message_lines,
+    bool should_show_prompt,
+    SaveIbanPromptCallback callback) {
+  // Do lazy initialization of IbanBubbleControllerImpl.
+  IbanBubbleControllerImpl::CreateForWebContents(web_contents());
+  IbanBubbleControllerImpl::FromWebContents(web_contents())
+      ->OfferUploadSave(iban, legal_message_lines, should_show_prompt,
+                        std::move(callback));
 }
 
 void ChromeAutofillClient::ShowWebauthnOfferDialog(
@@ -776,17 +788,21 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     LocalSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
-  if (options.card_save_type ==
-      ChromeAutofillClient::CardSaveType::kCvcSaveOnly) {
-    // TODO (crbug.com/1485194): Create a Message UI for saving CVC to an
-    // existing local card.
-    NOTIMPLEMENTED();
-    return;
-  }
   AutofillSaveCardUiInfo ui_info =
       AutofillSaveCardUiInfo::CreateForLocalSave(options, card);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
       std::move(callback), options, web_contents());
+
+  // If a CVC is detected for an existing local card in the checkout form, the
+  // CVC save prompt is shown in a message.
+  if (options.card_save_type ==
+      ChromeAutofillClient::CardSaveType::kCvcSaveOnly) {
+    autofill_cvc_save_message_delegate_ =
+        std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
+    autofill_cvc_save_message_delegate_->ShowMessage(
+        ui_info, std::move(save_card_delegate));
+    return;
+  }
 
   // Saving a new local card (may include CVC) via a bottom sheet.
   if (base::FeatureList::IsEnabled(
@@ -819,6 +835,12 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(options.show_prompt);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(GetProfile());
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
+      options, card, legal_message_lines, account_info);
   auto save_card_delegate = std::make_unique<AutofillSaveCardDelegateAndroid>(
       std::move(callback), options, web_contents());
 
@@ -828,18 +850,12 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
       autofill_cvc_save_message_delegate_ =
           std::make_unique<AutofillCvcSaveMessageDelegate>(web_contents());
       autofill_cvc_save_message_delegate_->ShowMessage(
-          std::move(save_card_delegate));
+          ui_info, std::move(save_card_delegate));
       return;
   }
 
   // For new cards, the save card prompt is shown either in a bottom sheet or in
   // an infobar.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile());
-  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForUploadSave(
-      options, card, legal_message_lines, account_info);
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnablePaymentsAndroidBottomSheet)) {
     if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
@@ -1028,10 +1044,9 @@ void ChromeAutofillClient::ShowAutofillPopup(
 }
 
 void ChromeAutofillClient::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const SelectOption> options) {
   if (popup_controller_.get())
-    popup_controller_->UpdateDataListValues(values, labels);
+    popup_controller_->UpdateDataListValues(options);
 }
 
 std::vector<Suggestion> ChromeAutofillClient::GetPopupSuggestions() const {
@@ -1205,11 +1220,11 @@ bool ChromeAutofillClient::IsPasswordManagerEnabled() {
 }
 
 void ChromeAutofillClient::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {
 #if BUILDFLAG(IS_ANDROID)
-  if (action_persistence == mojom::AutofillActionPersistence::kFill &&
+  if (action_persistence == mojom::ActionPersistence::kFill &&
       trigger_source == AutofillTriggerSource::kTouchToFillCreditCard &&
       !is_refill) {
     // TODO(crbug.com/1428492): Test that the message was announced.

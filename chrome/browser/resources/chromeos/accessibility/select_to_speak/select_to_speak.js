@@ -27,7 +27,7 @@ const SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
 // Matches one of the known GSuite apps which need the clipboard to find and
 // read selected text. Includes sandbox and non-sandbox versions.
 const GSUITE_APP_REGEXP =
-    /^https:\/\/docs\.(?:sandbox\.)?google\.com\/(?:(?:presentation)|(?:document)|(?:spreadsheets)|(?:drawings)){1}\//;
+    /^https:\/\/docs\.(?:sandbox\.)?google\.com\/(?:(?:presentation)|(?:document)|(?:spreadsheets)|(?:drawings)|(?:scenes)){1}\//;
 
 /**
  * Determines if a node is in one of the known Google GSuite apps that needs

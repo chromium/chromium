@@ -2691,6 +2691,27 @@ TEST_F(VisualViewportSimTest, UsedColorSchemeFromRootElement) {
             visual_viewport.UsedColorSchemeScrollbars());
 }
 
+TEST_F(VisualViewportSimTest, ScrollbarThumbColorFromRootElement) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(400, 600));
+
+  const VisualViewport& visual_viewport =
+      WebView().GetPage()->GetVisualViewport();
+
+  EXPECT_EQ(absl::nullopt, visual_viewport.CSSScrollbarThumbColor());
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+          <!DOCTYPE html>
+          <style>
+            html { scrollbar-color: rgb(255 0 0) transparent }
+          </style>
+      )HTML");
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(blink::Color(255, 0, 0), visual_viewport.CSSScrollbarThumbColor());
+}
+
 TEST_P(VisualViewportTest, SetLocationBeforePrePaint) {
   InitializeWithAndroidSettings();
   WebView()->MainFrameViewWidget()->Resize(gfx::Size(100, 100));

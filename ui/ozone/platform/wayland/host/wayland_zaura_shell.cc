@@ -10,8 +10,10 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
@@ -24,7 +26,7 @@ namespace ui {
 namespace {
 
 constexpr uint32_t kMinVersion = 1;
-constexpr uint32_t kMaxVersion = 60;
+constexpr uint32_t kMaxVersion = 61;
 
 }  // namespace
 
@@ -78,7 +80,8 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
       .set_overview_mode = &OnSetOverviewMode,
       .unset_overview_mode = &OnUnsetOverviewMode,
       .compositor_version = &OnCompositorVersion,
-      .all_bug_fixes_sent = &OnAllBugFixesSent};
+      .all_bug_fixes_sent = &OnAllBugFixesSent,
+      .window_corners_radii = &OnSetWindowCornersRadii};
   zaura_shell_add_listener(obj_.get(), &kZAuraShellListener, this);
 
   if (IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() &&
@@ -89,11 +92,6 @@ WaylandZAuraShell::WaylandZAuraShell(zaura_shell* aura_shell,
 }
 
 WaylandZAuraShell::~WaylandZAuraShell() = default;
-
-bool WaylandZAuraShell::HasBugFix(uint32_t id) {
-  return std::find(bug_fix_ids_.begin(), bug_fix_ids_.end(), id) !=
-         bug_fix_ids_.end();
-}
 
 std::string WaylandZAuraShell::GetDeskName(int index) const {
   if (static_cast<size_t>(index) >= desks_.size())
@@ -109,23 +107,8 @@ int WaylandZAuraShell::GetActiveDeskIndex() const {
   return active_desk_index_;
 }
 
-bool WaylandZAuraShell::SupportsAllBugFixesSent() const {
-  return zaura_shell_get_version(wl_object()) >=
-         ZAURA_SHELL_ALL_BUG_FIXES_SENT_SINCE_VERSION;
-}
-
-void WaylandZAuraShell::ResetBugFixesStatusForTesting() {
-  all_bug_fixes_sent_ = false;
-  bug_fix_ids_.clear();
-}
-
-absl::optional<std::vector<uint32_t>> WaylandZAuraShell::MaybeGetBugFixIds()
-    const {
-  if (!all_bug_fixes_sent_) {
-    return absl::nullopt;
-  }
-
-  return absl::make_optional(bug_fix_ids_);
+gfx::RoundedCornersF WaylandZAuraShell::GetWindowCornersRadii() const {
+  return window_corners_radii_;
 }
 
 // static
@@ -161,9 +144,7 @@ void WaylandZAuraShell::OnLayoutMode(void* data,
 void WaylandZAuraShell::OnBugFix(void* data,
                                  struct zaura_shell* zaura_shell,
                                  uint32_t id) {
-  auto* self = static_cast<WaylandZAuraShell*>(data);
-  CHECK(!self->all_bug_fixes_sent_);
-  self->bug_fix_ids_.push_back(id);
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 // static
@@ -225,33 +206,35 @@ void WaylandZAuraShell::OnCompositorVersion(void* data,
                                             struct zaura_shell* zaura_shell,
                                             const char* version_label) {
   auto* self = static_cast<WaylandZAuraShell*>(data);
-  base::Version compositor_version(version_label);
-  if (!compositor_version.IsValid()) {
+
+  self->server_version_.emplace(version_label);
+
+  if (!self->server_version_->IsValid()) {
     LOG(WARNING) << "Invalid compositor version string received.";
-    self->compositor_version_ = {};
     return;
   }
 
-  DCHECK_EQ(compositor_version.components().size(), 4u);
-  DVLOG(1) << "Wayland compositor version: " << compositor_version;
-  self->compositor_version_ = compositor_version;
+  DCHECK_EQ(self->server_version_->components().size(), 4u);
+  DVLOG(1) << "Wayland compositor version: " << self->server_version_.value();
 }
 
 // static
 void WaylandZAuraShell::OnAllBugFixesSent(void* data,
                                           struct zaura_shell* zaura_shell) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandZAuraShell::OnSetWindowCornersRadii(void* data,
+                                                struct zaura_shell* zaura_shell,
+                                                uint32_t upper_left_radius,
+                                                uint32_t upper_right_radius,
+                                                uint32_t lower_right_radius,
+                                                uint32_t lower_left_radius) {
   auto* self = static_cast<WaylandZAuraShell*>(data);
-  CHECK(!self->all_bug_fixes_sent_);
-  self->all_bug_fixes_sent_ = true;
-
-  if (!self->connection_->buffer_manager_host()) {
-    // This message may be called before WaylandConnection initialization. Bug
-    // fix ids will be sent on requested in such case.
-    return;
-  }
-
-  self->connection_->buffer_manager_host()->OnAllBugFixesSent(
-      self->bug_fix_ids_);
+  self->window_corners_radii_ =
+      gfx::RoundedCornersF(upper_left_radius, upper_right_radius,
+                           lower_right_radius, lower_left_radius);
 }
 
 }  // namespace ui

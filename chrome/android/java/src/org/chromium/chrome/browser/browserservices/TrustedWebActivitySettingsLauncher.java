@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
-import org.chromium.components.browser_ui.site_settings.SettingsNavigationSource;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
@@ -94,8 +93,7 @@ public class TrustedWebActivitySettingsLauncher {
     }
 
     private static void openSingleWebsitePrefs(Context context, String origin) {
-        context.startActivity(createIntentForSingleWebsitePreferences(
-                context, origin, SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG));
+        context.startActivity(createIntentForSingleWebsitePreferences(context, origin));
     }
 
     private static void openFilteredAllSiteSettings(Context context, Collection<String> domains) {
@@ -105,20 +103,14 @@ public class TrustedWebActivitySettingsLauncher {
         extras.putString(AllSiteSettings.EXTRA_TITLE,
                 context.getString(R.string.twa_clear_data_site_selection_title));
         extras.putStringArrayList(AllSiteSettings.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
-        extras.putInt(SettingsNavigationSource.EXTRA_KEY,
-                SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG);
 
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         settingsLauncher.launchSettingsActivity(context, AllSiteSettings.class, extras);
     }
 
-    /**
-     * Creates an intent to launch single website preferences for the specified {@param url}.
-     */
-    private static Intent createIntentForSingleWebsitePreferences(
-            Context context, String url, @SettingsNavigationSource int navigationSource) {
+    /** Creates an intent to launch single website preferences for the specified {@param url}. */
+    private static Intent createIntentForSingleWebsitePreferences(Context context, String url) {
         Bundle args = SingleWebsiteSettings.createFragmentArgsForSite(url);
-        args.putInt(SettingsNavigationSource.EXTRA_KEY, navigationSource);
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         return settingsLauncher.createSettingsActivityIntent(
                 context, SingleWebsiteSettings.class.getName(), args);

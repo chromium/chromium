@@ -23,7 +23,6 @@ class Layer;
 }
 
 namespace gpu {
-struct ContextCreationAttribs;
 struct SharedMemoryLimits;
 }  // namespace gpu
 
@@ -54,7 +53,6 @@ class CONTENT_EXPORT Compositor {
       base::OnceCallback<void(scoped_refptr<viz::ContextProvider>)>;
   static void CreateContextProvider(
       gpu::SurfaceHandle handle,
-      gpu::ContextCreationAttribs attributes,
       gpu::SharedMemoryLimits shared_memory_limits,
       ContextProviderCallback callback);
 

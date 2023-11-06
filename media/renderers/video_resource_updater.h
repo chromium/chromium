@@ -92,7 +92,6 @@ class MEDIA_EXPORT VideoResourceUpdater
                        viz::ClientResourceProvider* resource_provider,
                        bool use_stream_video_draw_quad,
                        bool use_gpu_memory_buffer_resources,
-                       bool use_r16_texture,
                        int max_resource_size);
 
   VideoResourceUpdater(const VideoResourceUpdater&) = delete;
@@ -173,7 +172,6 @@ class MEDIA_EXPORT VideoResourceUpdater
   // and the source video frame texture can't be used on the output GL context.
   // https://crbug.com/582170
   void CopyHardwarePlane(VideoFrame* video_frame,
-                         const gfx::ColorSpace& resource_color_space,
                          const gpu::MailboxHolder& mailbox_holder,
                          VideoFrameExternalResources* external_resources);
 
@@ -211,8 +209,6 @@ class MEDIA_EXPORT VideoResourceUpdater
       resource_provider_;
   const bool use_stream_video_draw_quad_;
   const bool use_gpu_memory_buffer_resources_;
-  // TODO(crbug.com/759456): Remove after r16 is used without the flag.
-  const bool use_r16_texture_;
   const int max_resource_size_;
   const int tracing_id_;
   std::unique_ptr<PaintCanvasVideoRenderer> video_renderer_;

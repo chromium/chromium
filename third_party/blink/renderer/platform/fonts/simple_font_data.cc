@@ -38,6 +38,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
+#include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_baseline_metrics.h"
@@ -49,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/freetype_buildflags.h"
+#include "third_party/skia/include/core/SkFont.h"
 #include "third_party/skia/include/core/SkFontMetrics.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -79,7 +81,8 @@ SimpleFontData::SimpleFontData(const FontPlatformData& platform_data,
                                bool subpixel_ascent_descent,
                                const FontMetricsOverride& metrics_override)
     : platform_data_(platform_data),
-      font_(platform_data_.size() ? platform_data.CreateSkFont() : SkFont()),
+      font_(platform_data_.size() ? platform_data.CreateSkFont()
+                                  : skia::DefaultFont()),
       custom_font_data_(std::move(custom_data)) {
   // Every time new SimpleFontData instance is created, Skia will ask
   // FreeType to get the metrics for glyphs by invoking

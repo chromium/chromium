@@ -5,7 +5,7 @@
 import 'chrome://resources/js/jstemplate_compiled.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';

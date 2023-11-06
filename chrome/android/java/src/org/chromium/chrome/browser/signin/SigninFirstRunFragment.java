@@ -34,11 +34,12 @@ import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -197,8 +198,8 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     }
 
     @Override
-    public OneshotSupplier<Profile> getProfileSupplier() {
-        return getPageDelegate().getProfileSupplier();
+    public OneshotSupplier<ProfileProvider> getProfileSupplier() {
+        return getPageDelegate().getProfileProviderSupplier();
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
@@ -283,6 +284,11 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void onDeviceLockRefused() {
         mSigninFirstRunCoordinator.cancelSignInAndDismiss();
+    }
+
+    @Override
+    public @DeviceLockActivityLauncher.Source String getSource() {
+        return DeviceLockActivityLauncher.Source.FIRST_RUN;
     }
 
     private void restoreMainView() {

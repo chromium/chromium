@@ -121,11 +121,6 @@ BASE_FEATURE(kPrivacySandboxProactiveTopicsBlocking,
              "PrivacySandboxProactiveTopicsBlocking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Show the Tracking Protection onboarding flow if not already onboarded.
-BASE_FEATURE(kTrackingProtectionOnboardingForceEligibility,
-             "TrackingProtectionOnboardingForceEligibility",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice,
              "TrackingProtectionSettingsPageRollbackNotice",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -135,5 +130,10 @@ BASE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck,
              "TrackingProtectionOnboardingSkipSecurePageCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Show the Tracking Protection rollback flow if previously onboarded.
+BASE_FEATURE(kTrackingProtectionOnboardingRollback,
+             "TrackingProtectionOnboardingRollback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace privacy_sandbox

@@ -7,7 +7,6 @@ import("//ios/web/public/js_messaging/optimize_ts.gni")
 source_set("font_size") {
   sources = [ "font_size_java_script_feature.h" ]
   deps = [
-    ":font_size_js",
     "//base",
     "//components/google/core/common",
     "//components/pref_registry",

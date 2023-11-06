@@ -142,7 +142,8 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
           actions::ActionItem::Builder(
               base::BindRepeating(
                   [](scoped_refptr<const Extension> extension, Browser* browser,
-                     actions::ActionItem* item) {
+                     actions::ActionItem* item,
+                     actions::ActionInvocationContext context) {
                     SidePanelUI::GetSidePanelUIForBrowser(browser)->Show(
                         SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
                                             extension->id()));
@@ -158,7 +159,7 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
 actions::ActionId ExtensionSidePanelManager::GetOrCreateActionIdForExtension(
     const Extension* extension) {
   CHECK(base::FeatureList::IsEnabled(features::kSidePanelPinning));
-  return actions::ActionManager::CreateActionId(
+  return actions::ActionIdMap::CreateActionId(
              SidePanelEntry::Key(SidePanelEntry::Id::kExtension,
                                  extension->id())
                  .ToString())
@@ -172,7 +173,7 @@ void ExtensionSidePanelManager::MaybeRemoveActionItemForExtension(
           mojom::APIPermissionID::kSidePanel)) {
     BrowserActions* browser_actions = BrowserActions::FromBrowser(browser_);
     absl::optional<actions::ActionId> extension_action_id =
-        actions::ActionManager::StringToActionId(
+        actions::ActionIdMap::StringToActionId(
             SidePanelEntry::Key(SidePanelEntry::Id::kExtension, extension->id())
                 .ToString());
     CHECK(extension_action_id.has_value());

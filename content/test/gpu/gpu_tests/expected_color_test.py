@@ -13,7 +13,7 @@ import gpu_path_util
 from gpu_tests import common_typing as ct
 from gpu_tests import expected_color_test_cases
 from gpu_tests import gpu_integration_test
-from gpu_tests import skia_gold_integration_test_base
+from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
 
 from py_utils import cloud_storage
 from telemetry.util import image_util
@@ -30,8 +30,7 @@ _OFF_WHITE_TOP_ROW_DEVICES = {
 }
 
 
-class ExpectedColorTest(
-    skia_gold_integration_test_base.SkiaGoldIntegrationTestBase):
+class ExpectedColorTest(sghitb.SkiaGoldHeartbeatIntegrationTestBase):
   """Variant of a regular pixel test that only uses Gold to surface images.
 
   Instead of normal pixel comparison, correctness is verified by looking for
@@ -72,27 +71,29 @@ class ExpectedColorTest(
     ]
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
+    super().RunActualGpuTest(test_path, args)
     test_case = args[0]
     # Some pixel tests require non-standard browser arguments. Need to
     # check before running each page that it can run in the current
     # browser instance.
     self.RestartBrowserIfNecessaryWithArgs(test_case.extra_browser_args)
-    url = self.UrlOfStaticFilePath(test_path)
-    tab = self.tab
-    tab.Navigate(
-        url,
-        script_to_evaluate_on_commit=self._dom_automation_controller_script)
+    tab_data = sghitb.TabData(self.tab,
+                              self.__class__.websocket_server,
+                              is_default_tab=True)
+    self.NavigateTo(test_path, tab_data)
 
-    test_case.pre_capture_action(tab)
+    loop_state = sghitb.LoopState()
+    for action in test_case.test_actions:
+      action.Run(test_case, tab_data, loop_state, self)
 
     if test_case.ShouldCaptureFullScreenshot(self.browser):
-      screenshot = tab.FullScreenshot(5)
+      screenshot = self.tab.FullScreenshot(5)
     else:
-      screenshot = tab.Screenshot(5)
+      screenshot = self.tab.Screenshot(5)
     if screenshot is None:
       self.fail('Could not capture screenshot')
 
-    dpr = tab.EvaluateJavaScript('window.devicePixelRatio')
+    dpr = self.tab.EvaluateJavaScript('window.devicePixelRatio')
     logging.info('devicePixelRatio is %s', dpr)
 
     # The bottom corners of Mac screenshots have black triangles due to the
@@ -108,14 +109,16 @@ class ExpectedColorTest(
     # For some reason, the top row of the screenshot is very slightly off-white
     # instead of pure white on some devices, which messes with the crop
     # boundaries. So, chop off the top row now.
-    if tab.browser.platform.GetDeviceTypeName() in _OFF_WHITE_TOP_ROW_DEVICES:
+    if (self.tab.browser.platform.GetDeviceTypeName()
+        in _OFF_WHITE_TOP_ROW_DEVICES):
       screenshot = image_util.Crop(screenshot, 0, 1,
                                    image_util.Width(screenshot),
                                    image_util.Height(screenshot) - 1)
     x1, y1, x2, y2 = _GetCropBoundaries(screenshot)
     screenshot = image_util.Crop(screenshot, x1, y1, x2 - x1, y2 - y1)
 
-    self._ValidateScreenshotSamplesWithSkiaGold(tab, test_case, screenshot, dpr)
+    self._ValidateScreenshotSamplesWithSkiaGold(self.tab, test_case, screenshot,
+                                                dpr)
 
   def GetGoldOptionalKeys(self) -> Dict[str, str]:
     keys = super().GetGoldOptionalKeys()

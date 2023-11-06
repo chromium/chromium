@@ -21,8 +21,8 @@ import "url/mojom/url.mojom";
 // ash-chrome. It is intended to be the minimal subset of apps::mojom::App
 // required for this purpose, and exists to allow apps::mojom::App to not have
 // to be versioned.
-// See components/services/app_service/public/mojom/types.mojom for details
-// for the structs in this file.
+// See components/services/app_service/public/cpp/app_types.h for details for
+// the structs in this file.
 [Stable]
 struct App {
   AppType app_type@0;
@@ -95,7 +95,7 @@ struct App {
   [MinVersion=18, RenamedFrom="shortcuts"]
   // DEPRECATED, will be replaced by specific interfaces to update shortcuts.
   // This struct is not used in production yet, so it's safe to deprecate.
-  array<Shortcut>? deprecated_shortcuts@27;
+  array<REMOVED_01>? deprecated_shortcuts@27;
 
   [MinVersion=19]
   OptionalBool is_platform_app@28;
@@ -104,6 +104,14 @@ struct App {
   // IDs used for policy to identify the app.
   // For web apps, it contains the install URL(s).
   array<string>? policy_ids@29;
+
+  // The amount of storage (in bytes) used by the app.
+  [MinVersion=21]
+  uint64? app_size_in_bytes@30;
+
+  // The amount of storage (in bytes) used by the app's data.
+  [MinVersion=21]
+  uint64? data_size_in_bytes@31;
 };
 
 // The types of apps available in the registry.
@@ -161,11 +169,41 @@ enum OptionalBool {
   kTrue,
 };
 
+// `IconUpdateVersion` should hold a bool to specify whether the icon image is
+// updated by the app when the publisher publishes the app. `IconUpdateVersion`
+// should never hold a int32_t when calling OnApps to publish apps.
+//
+// AppRegistryCache generates an int32_t for `IconUpdateVersion` to notify
+// AppService clients whether reload the icon, when merging `deltas`.
+// `IconUpdateVersion` should never hold a bool in AppRegistryCache's `states_`.
+//
+// When the icon has a valid `resource_id`, IconUpdateVersion is
+// `kInitVersion`, and never changes.
+//
+// When an app is added, if the icon doesn't have a valid `resource_id`,
+// IconUpdateVersion is set as `kInitVersion`.
+//
+// If the app updates the icon image, IconUpdateVersion is set as true by a
+// Publisher, and AppService increases the saved IconUpdateVersion to notify
+// AppService clients to reload icons.
+//
+// When IconUpdateVersion is an int32_t, the exact value of the number isn't
+// important, only that newer IconKey's (those that were created more recently)
+// have a larger IconUpdateVersion than older IconKey's.
+//
+// IconUpdateVersion isn't changed if `icon_effects` is changed.
+// IconUpdateVersion is increased only when the app updates, or upgrades, and
+// publish a new icon image.
+//
+// See components/services/app_service/public/cpp/icon_types.h for details
+[Stable]
+union IconUpdateVersion {
+  bool raw_icon_updated;
+  int32 timeline;
+};
+
 [Stable]
 struct IconKey {
-  // A timeline value for icons that do not change.
-  const uint64 kDoesNotChangeOverTime = 0;
-
   // A monotonically increasing number so that, after an icon update, a new
   // IconKey, one that is different in terms of field-by-field equality, can be
   // broadcast by a Publisher.
@@ -178,10 +216,9 @@ struct IconKey {
   // "version", to avoid any possible confusion that it encodes *the* app's
   // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
   //
-  // For example, if an app is disabled for some reason (so that its icon is
-  // grayed out), this would result in a different timeline even though the
-  // app's version is unchanged.
-  uint64 timeline;
+  // DEPRECATED, replaced with `update_version` below.
+  [RenamedFrom="timeline"]
+  uint64 deprecated_timeline;
 
   // A bitmask of icon post-processing effects, such as desaturation to gray
   // and rounding the corners.
@@ -193,7 +230,22 @@ struct IconKey {
   // True when the raw icon is updated. After an icon update, a new IconKey can
   // be broadcast by a Publisher. Then the AppService icon directory should be
   // removed to fetch the new raw icon from the app.
-  [MinVersion=22] bool raw_icon_updated;
+  //
+  // DEPRECATED, replaced with `update_version` below.
+  [MinVersion=22, RenamedFrom="raw_icon_updated"]
+  bool deprecated_raw_icon_updated;
+
+  // The icon updated info to notify AppService clients to reload the icon.
+  //
+  // If the app updates the icon image, `update_version` is set as true by a
+  // Publisher, and AppService increases the saved `update_version` to notify
+  // AppService clients to reload icons.
+  //
+  // `update_version` isn't changed if `icon_effects` is changed.
+  // `update_version` is increased only when the app updates, or upgrades, and
+  // publish a new icon image.
+  [MinVersion=23]
+  IconUpdateVersion? update_version;
 };
 
 // The intent filter matching condition types.
@@ -507,17 +559,41 @@ struct PreferredApp {
   string app_id;
 };
 
-// Represents an app shortcut.
+// Information about an app shortcut.
+
+// This struct is used to transport App Shortcut data between lacros-chrome and
+// ash-chrome. It is intended to be the minimal subset of apps::Shortcut
+// required for this purpose.
+//
+// See components/services/app_service/public/cpp/shortcut/shortcut.h for
+// details for the structs in this file.
 [Stable]
-struct Shortcut {
-  // Represents a particular shortcut in an app. Needs to be unique within an
-  // app as calls will be made using both app_id and shortcut_id.
-  string shortcut_id@0;
+struct AppShortcut {
+  // 'host_app_id' and 'local_id' should not be changeable after creation.
+  // The host app of the shortcut.
+  string host_app_id@0;
+
+  // The locally unique identifier for the shortcut within an app. This id would
+  // be used to launch the shortcut or load shortcut icon from the app.
+  string local_id@1;
 
   // Name of the shortcut.
+  string? name@2;
+
+  // Represents what icon should be loaded for this shortcut, icon key will
+  // change if the icon has been updated from the publisher.
+  IconKey? icon_key@3;
+};
+
+// DEPRECATED
+[Stable, RenamedFrom="crosapi.mojom.Shortcut"]
+struct REMOVED_01 {
+  // DEPRECATED
+  string shortcut_id@0;
+
+  // DEPRECATED
   string name@1;
 
-  // "Position" of a shortcut, which is a non-negative, sequential
-  // value. If position is 0, no position was specified.
+  // DEPRECATED
   uint8 position@2;
 };

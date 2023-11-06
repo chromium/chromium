@@ -292,16 +292,10 @@ void DeviceCommandStartCrdSessionJob::RunImpl(
   CRD_LOG(INFO) << "Running start CRD session command";
 
   if (delegate_->HasActiveSession()) {
-    CHECK(!terminate_session_attempted_);
-    terminate_session_attempted_ = true;
-
     CRD_DVLOG(1) << "Terminating active session";
-    delegate_->TerminateSession(
-        base::BindOnce(&DeviceCommandStartCrdSessionJob::RunImpl,
-                       weak_factory_.GetWeakPtr(), std::move(result_callback)));
-    return;
+    delegate_->TerminateSession();
+    CHECK(!delegate_->HasActiveSession());
   }
-  terminate_session_attempted_ = false;
 
   result_callback_ = std::move(result_callback);
 
@@ -570,7 +564,7 @@ ErrorCallback DeviceCommandStartCrdSessionJob::GetErrorCallback() {
 void DeviceCommandStartCrdSessionJob::TerminateImpl() {
   result_callback_.Reset();
   weak_factory_.InvalidateWeakPtrs();
-  delegate_->TerminateSession(base::OnceClosure());
+  delegate_->TerminateSession();
 }
 
 }  // namespace policy

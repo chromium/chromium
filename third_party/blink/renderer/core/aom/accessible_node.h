@@ -120,13 +120,13 @@ class CORE_EXPORT AccessibleNode : public EventTarget,
   static AccessibleNode* Create(Document&);
 
   // Gets the associated element, if any.
-  Element* element() const { return element_; }
+  Element* element() const { return element_.Get(); }
 
   // Gets the associated document.
   Document* GetDocument() const;
 
   // Returns the parent of this node.
-  AccessibleNode* GetParent() { return parent_; }
+  AccessibleNode* GetParent() { return parent_.Get(); }
 
   // Children. These are only virtual AccessibleNodes that were added
   // explicitly, never AccessibleNodes from DOM Elements.

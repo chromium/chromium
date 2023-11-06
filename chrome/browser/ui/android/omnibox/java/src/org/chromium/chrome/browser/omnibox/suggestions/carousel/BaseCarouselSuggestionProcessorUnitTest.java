@@ -18,25 +18,26 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link BaseCarouselSuggestionProcessor}.
- */
+/** Tests for {@link BaseCarouselSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BaseCarouselSuggestionProcessorUnitTest {
+    private static final int ITEM_VIEW_WIDTH = 12345;
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
 
     // Stores PropertyModel for the suggestion.
     private PropertyModel mModel;
     private BaseCarouselSuggestionProcessorTestClass mProcessor;
 
-    /**
-     * Test class to instantiate BaseCarouselSuggestionProcessor class
-     */
+    /** Test class to instantiate BaseCarouselSuggestionProcessor class */
     public class BaseCarouselSuggestionProcessorTestClass extends BaseCarouselSuggestionProcessor {
         /**
          * Constructs a new BaseCarouselSuggestionProcessor.
@@ -63,8 +64,13 @@ public class BaseCarouselSuggestionProcessorUnitTest {
         }
 
         @Override
-        public int getMinimumCarouselItemViewHeight() {
+        public int getCarouselItemViewHeight() {
             return 0;
+        }
+
+        @Override
+        public int getCarouselItemViewWidth() {
+            return ITEM_VIEW_WIDTH;
         }
     }
 
@@ -84,9 +90,29 @@ public class BaseCarouselSuggestionProcessorUnitTest {
 
     @Test
     @Config(qualifiers = "w600dp-h820dp")
-    public void testPopulateModelTest_isTablet() {
+    @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void testPopulateModelTest_isTabletWithoutRevamp() {
         mProcessor.onNativeInitialized();
         mProcessor.populateModel(null, mModel, 0);
         Assert.assertTrue(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
+    }
+
+    @Test
+    @Config(qualifiers = "w600dp-h820dp")
+    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
+    public void testPopulateModelTest_isTabletWithRevamp() {
+        // Revamp turns off horizontal fading edge.
+        OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
+        mProcessor.onNativeInitialized();
+        mProcessor.populateModel(null, mModel, 0);
+        Assert.assertFalse(mModel.get(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE));
+    }
+
+    @Test
+    public void testPopulateItemViewWidth() {
+        mProcessor.onNativeInitialized();
+        mProcessor.populateModel(null, mModel, 0);
+        Assert.assertEquals(
+                ITEM_VIEW_WIDTH, mModel.get(BaseCarouselSuggestionViewProperties.ITEM_WIDTH));
     }
 }

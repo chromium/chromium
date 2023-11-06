@@ -56,7 +56,7 @@ class KioskAppManagerBase : public KioskAppDataDelegate {
 
   // Depends on the app internal representation for the particular type of
   // kiosk.
-  virtual void GetApps(AppList* apps) const = 0;
+  virtual AppList GetApps() const = 0;
 
   void AddObserver(KioskAppManagerObserver* observer);
   void RemoveObserver(KioskAppManagerObserver* observer);

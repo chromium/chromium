@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/renderer.mojom.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -73,6 +74,19 @@ content::StoragePartition* GetStoragePartitionForExtensionId(
 
 // Returns the ServiceWorkerContext associated with the given `extension_id`.
 content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
+    const ExtensionId& extension_id,
+    content::BrowserContext* browser_context);
+
+// Sets the `extension` user script world configuration for `browser_context`
+// in the state store and notifies the renderer.
+void SetUserScriptWorldInfo(const Extension& extension,
+                            content::BrowserContext* browser_context,
+                            absl::optional<std::string> csp,
+                            bool messaging);
+
+// Returns the `extension_id` user script world configuration for
+// `browser_context`.
+mojom::UserScriptWorldInfoPtr GetUserScriptWorldInfo(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 

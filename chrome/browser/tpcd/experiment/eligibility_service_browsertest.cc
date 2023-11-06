@@ -107,6 +107,9 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
           &https_server_, "/b_c");
   ASSERT_TRUE(https_server_.Start());
 
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("a.test", "/title1.html")));
+
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
   auto privacy_sandbox_delegate = std::make_unique<
@@ -126,9 +129,6 @@ IN_PROC_BROWSER_TEST_P(EligibilityServiceBrowserTest,
 
   // Ensures the cookie deprecation label is updated in the network context.
   FlushNetworkInterface();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("a.test", "/title1.html")));
 
   AddImageToDocument(https_server_.GetURL("b.test", "/b_a"));
 

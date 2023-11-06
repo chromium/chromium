@@ -50,12 +50,24 @@ GetBindHostReceiverInterceptor() {
 
 void BrowserChildProcessHostImpl::BindHostReceiver(
     mojo::GenericPendingReceiver receiver) {
+  // TODO(crbug.com/1492057): this function should run on the IO thread and
+  // calls functions documented as running on the IO thread.
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   const auto& interceptor = GetBindHostReceiverInterceptor();
   if (interceptor) {
     interceptor.Run(this, &receiver);
-    if (!receiver)
+    if (!receiver) {
       return;
+    }
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  if (auto r = receiver.As<mojom::ThreadTypeSwitcher>()) {
+    child_thread_type_switcher_.Bind(std::move(r));
+    return;
+  }
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
   if (auto r =
           receiver.As<memory_instrumentation::mojom::CoordinatorConnector>()) {

@@ -114,6 +114,9 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // Sets the name of |item| and notifies observers.
   void SetItemName(AppListItem* item, const std::string& name);
 
+  // Sets the accessible name of |item| and notifies observers.
+  void SetItemAccessibleName(AppListItem* item, const std::string& name);
+
   // Deletes the item matching |id| from |top_level_item_list_| or from the
   // appropriate folder.
   void DeleteItem(const std::string& id);

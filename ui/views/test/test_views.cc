@@ -4,6 +4,7 @@
 
 #include "ui/views/test/test_views.h"
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -30,6 +31,9 @@ gfx::Size StaticSizedView::GetMaximumSize() const {
   return maximum_size_;
 }
 
+BEGIN_METADATA(StaticSizedView)
+END_METADATA
+
 ProportionallySizedView::ProportionallySizedView(int factor)
     : factor_(factor) {}
 
@@ -50,6 +54,9 @@ gfx::Size ProportionallySizedView::CalculatePreferredSize() const {
   return View::CalculatePreferredSize();
 }
 
+BEGIN_METADATA(ProportionallySizedView)
+END_METADATA
+
 CloseWidgetView::CloseWidgetView(ui::EventType event_type)
     : event_type_(event_type) {}
 
@@ -66,6 +73,9 @@ void CloseWidgetView::OnEvent(ui::Event* event) {
       event->SetHandled();
   }
 }
+
+BEGIN_METADATA(CloseWidgetView)
+END_METADATA
 
 EventCountView::EventCountView() = default;
 
@@ -108,6 +118,9 @@ void EventCountView::RecordEvent(ui::Event* event) {
     event->SetHandled();
 }
 
+BEGIN_METADATA(EventCountView)
+END_METADATA
+
 ResizeAwareParentView::ResizeAwareParentView() {
   SetLayoutManager(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kHorizontal));
@@ -116,5 +129,8 @@ ResizeAwareParentView::ResizeAwareParentView() {
 void ResizeAwareParentView::ChildPreferredSizeChanged(View* child) {
   Layout();
 }
+
+BEGIN_METADATA(ResizeAwareParentView)
+END_METADATA
 
 }  // namespace views

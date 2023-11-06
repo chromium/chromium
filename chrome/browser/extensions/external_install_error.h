@@ -45,14 +45,6 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
     MENU_ALERT
   };
 
-  // The possible dialog button configurations to use in the error bubble.
-  enum DefaultDialogButtonSetting {
-    NOT_SPECIFIED,
-    DIALOG_BUTTON_OK,
-    DIALOG_BUTTON_CANCEL,
-    NO_DEFAULT_DIALOG_BUTTON
-  };
-
   ExternalInstallError(content::BrowserContext* browser_context,
                        const std::string& extension_id,
                        AlertType error_type,
@@ -77,19 +69,6 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
 
   const ExtensionId& extension_id() const { return extension_id_; }
   AlertType alert_type() const { return alert_type_; }
-
-  // Returns the setting specified by the following optional sources, by order
-  // of priority:
-  // 1. The webstore response's |kExternalInstallDefaultButtonKey| parameter.
-  // 2. The |kExternalExtensionDefaultButtonControl| field trial parameter's
-  //    |kExternalInstallDefaultButtonKey| value.
-  // If not specified by either optional source, returns |NOT_SPECIFIED|.
-  static DefaultDialogButtonSetting GetDefaultDialogButton(
-      const base::Value::Dict& webstore_response);
-
-  DefaultDialogButtonSetting default_dialog_button_setting() const {
-    return default_dialog_button_setting_;
-  }
 
  private:
   // WebstoreDataFetcherDelegate implementation.
@@ -121,9 +100,6 @@ class ExternalInstallError : public WebstoreDataFetcherDelegate {
 
   // The type of alert to show the user.
   AlertType alert_type_;
-
-  // The dialog button configuration to use in the error bubble.
-  DefaultDialogButtonSetting default_dialog_button_setting_ = NOT_SPECIFIED;
 
   // The owning ExternalInstallManager.
   raw_ptr<ExternalInstallManager> manager_;

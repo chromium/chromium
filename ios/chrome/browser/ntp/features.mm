@@ -94,6 +94,10 @@ BASE_FEATURE(kIOSLargeFakebox,
              "IOSLargeFakebox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSHideFeedWithSearchChoice,
+             "IOSHideFeedWithSearchChoice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Key for NSUserDefaults containing a bool indicating whether the next run
 // should enable feed background refresh capability. This is used because
 // registering for background refreshes must happen early in app initialization
@@ -133,6 +137,8 @@ const char kFeedUnseenRefreshThresholdInSeconds[] =
     "FeedUnseenRefreshThresholdInSeconds";
 const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
     "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
+const char kIOSHideFeedWithSearchChoiceTargeted[] =
+    "IOSHideFeedWithSearchChoiceTargeted";
 
 bool IsWebChannelsEnabled() {
   std::string launched_countries[6] = {"AU", "CA", "GB", "NZ", "US", "ZA"};
@@ -345,6 +351,12 @@ bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled() {
       /*default=*/false);
 }
 
+bool IsIOSHideFeedWithSearchChoiceTargeted() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kIOSHideFeedWithSearchChoice, kIOSHideFeedWithSearchChoiceTargeted,
+      /*default=*/false);
+}
+
 bool IsFeedCardMenuSignInPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedCardMenuSignInPromo);
 }
@@ -375,4 +387,8 @@ bool IsContentPushNotificationsEnabled() {
 
 bool IsIOSLargeFakeboxEnabled() {
   return base::FeatureList::IsEnabled(kIOSLargeFakebox);
+}
+
+bool IsIOSHideFeedWithSearchChoiceEnabled() {
+  return base::FeatureList::IsEnabled(kIOSHideFeedWithSearchChoice);
 }

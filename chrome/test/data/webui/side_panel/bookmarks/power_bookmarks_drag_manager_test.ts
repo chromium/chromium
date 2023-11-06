@@ -62,7 +62,7 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     const bookmarksApi = new TestBookmarksApiProxy();
-    bookmarksApi.setFolders(JSON.parse(JSON.stringify(folders)));
+    bookmarksApi.setFolders(structuredClone(folders));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     loadTimeData.overrideValues({

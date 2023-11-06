@@ -90,7 +90,6 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8MediaCapabilities_DecodingInfo_Method,
           WebFeature::kOpenerNavigationDownloadCrossOrigin,
           WebFeature::kLinkRelPrerender,
-          WebFeature::kAdClickNavigation,
           WebFeature::kV8HTMLVideoElement_RequestPictureInPicture_Method,
           WebFeature::kMediaCapabilitiesDecodingInfoWithKeySystemConfig,
           WebFeature::kTextFragmentAnchor,
@@ -234,6 +233,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kPrivateNetworkAccessIgnoredCrossOriginPreflightError,
           WebFeature::kPrivateNetworkAccessIgnoredCrossSitePreflightError,
           WebFeature::kPrivateNetworkAccessPreflightWarning,
+          WebFeature::kPrivateNetworkAccessPermissionPrompt,
           WebFeature::kWebBluetoothGetAvailability,
           WebFeature::kCookieHasNotBeenRefreshedIn201To300Days,
           WebFeature::kCookieHasNotBeenRefreshedIn301To350Days,
@@ -286,7 +286,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kMediaStreamOnInactive,
           WebFeature::kPrivacySandboxAdsAPIs,
           WebFeature::kV8Navigator_RunAdAuction_Method,
-          WebFeature::kConversionAPIAll,
+          WebFeature::kAttributionReportingAPIAll,
           WebFeature::kSharedStorageAPI_SharedStorage_DOMReference,
           WebFeature::kSharedStorageAPI_Run_Method,
           WebFeature::kSharedStorageAPI_SelectURL_Method,
@@ -313,6 +313,39 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kV8Window_GetScreenDetails_Method,
           WebFeature::kV8Window_ShowSaveFilePicker_Method,
           WebFeature::kFullscreenAllowedByWindowOpen,
+          WebFeature::kChromeCSIUnknown,
+          WebFeature::kChromeCSIOnloadT,
+          WebFeature::kChromeCSIPageT,
+          WebFeature::kChromeCSIStartE,
+          WebFeature::kChromeCSITran,
+          WebFeature::kThirdPartyCookieAccessBlockByExperiment,
+          WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies,
+          WebFeature::kStorageAccessAPI_requestStorageAccess_BeyondCookies_all,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_sessionStorage_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_localStorage_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_indexedDB_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_locks_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_caches_Use,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory,
+          WebFeature::
+              kStorageAccessAPI_requestStorageAccess_BeyondCookies_getDirectory_Use,
+          WebFeature::kAdClickMainFrameNavigation,
       }));
   return *opt_in_features;
 }

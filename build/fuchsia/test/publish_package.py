@@ -66,7 +66,7 @@ def main():
         package_paths = args.packages
     if args.purge_repo:
         make_clean_directory(args.repo)
-    publish_packages(package_paths, args.repo)
+    publish_packages(package_paths, args.repo, args.purge_repo)
 
 
 if __name__ == '__main__':

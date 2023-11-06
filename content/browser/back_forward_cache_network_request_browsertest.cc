@@ -64,8 +64,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
 
 // Eviction is triggered when a normal fetch request gets redirected while the
 // page is in back-forward cache.
+// TODO(https://crbug.com/1494692): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       FetchRedirectedWhileStoring) {
+                       DISABLED_FetchRedirectedWhileStoring) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   net::test_server::ControllableHttpResponse fetch2_response(
@@ -171,8 +172,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests the case when the header was received before the page is frozen,
 // but parts of the response body is received when the page is frozen.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
+// TODO(https://crbug.com/1494692): Disabled due to flakiness.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTest,
+    DISABLED_PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted) {
   net::test_server::ControllableHttpResponse fetch_response(
       embedded_test_server(), "/fetch");
   ASSERT_TRUE(embedded_test_server()->Start());

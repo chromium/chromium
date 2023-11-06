@@ -80,6 +80,10 @@ const char kChromeUIDevUiLoaderURL[] = "chrome://dev-ui-loader/";
 const char kChromeUIDiceWebSigninInterceptHost[] = "signin-dice-web-intercept";
 const char kChromeUIDiceWebSigninInterceptURL[] =
     "chrome://signin-dice-web-intercept/";
+const char kChromeUIDiceWebSigninInterceptChromeSigninURL[] =
+    "chrome://signin-dice-web-intercept/chrome-signin";
+const char kChromeUIDiceWebSigninInterceptChromeSigninSubPage[] =
+    "chrome-signin";
 const char kChromeUIDownloadInternalsHost[] = "download-internals";
 const char kChromeUIDownloadsHost[] = "downloads";
 const char kChromeUIDownloadsURL[] = "chrome://downloads/";
@@ -440,6 +444,7 @@ bool IsSystemWebUIHost(base::StringPiece host) {
     kChromeUIAssistantOptInHost,
     kChromeUIBluetoothPairingHost,
     kChromeUIBorealisCreditsHost,
+    kChromeUIBorealisInstallerHost,
     kChromeUICertificateManagerHost,
     kChromeUICloudUploadHost,
     kChromeUICrostiniCreditsHost,
@@ -493,7 +498,6 @@ const char kChromeUIOSSettingsHost[] = "os-settings";
 const char kChromeUIOsUrlAppURL[] = "chrome://internal/";
 const char kChromeUIOSSettingsURL[] = "chrome://os-settings/";
 const char kChromeUISystemURL[] = "chrome://system";
-const char kOsUIAboutURL[] = "os://about";
 const char kOsUIComponentsURL[] = "os://components";
 const char kOsUIConnectivityDiagnosticsAppURL[] =
     "os://connectivity-diagnostics";
@@ -601,6 +605,7 @@ const char kAutofillSubPage[] = "autofill";
 const char kClearBrowserDataSubPage[] = "clearBrowserData";
 const char kContentSettingsSubPage[] = "content";
 const char kAllSitesSettingsSubpage[] = "content/all";
+const char kOnDeviceSiteDataSubpage[] = "content/siteData";
 const char kCookieSettingsSubPage[] = "cookies";
 const char kDownloadsSubPage[] = "downloads";
 const char kHandlerSettingsSubPage[] = "handlers";
@@ -620,7 +625,7 @@ const char kResetSubPage[] = "reset";
 const char kResetProfileSettingsSubPage[] = "resetProfileSettings";
 const char kSafeBrowsingEnhancedProtectionSubPage[] = "security?q=enhanced";
 const char kSafetyCheckSubPage[] = "safetyCheck";
-const char kSafetyHubSubPage[] = "safetyHub";
+const char kSafetyHubSubPage[] = "safetyCheck";
 const char kSearchSubPage[] = "search";
 const char kSearchEnginesSubPage[] = "searchEngines";
 const char kSignOutSubPage[] = "signOut";
@@ -661,12 +666,6 @@ const char kChromeUICastFeedbackHost[] = "cast-feedback";
 #if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
 const char kChromeUISearchEngineChoiceHost[] = "search-engine-choice";
 const char kChromeUISearchEngineChoiceURL[] = "chrome://search-engine-choice";
-#endif
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-const char kChromeUILensURL[] = "chrome://lens/";
-const char kChromeUILensUntrustedURL[] = "chrome-untrusted://lens/";
-const char kChromeUILensHost[] = "lens";
 #endif
 
 // Extension sub pages.

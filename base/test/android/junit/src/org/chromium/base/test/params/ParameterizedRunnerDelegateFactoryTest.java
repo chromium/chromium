@@ -21,23 +21,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Test for org.chromium.base.test.params.ParameterizedRunnerDelegateFactory
- */
+/** Test for org.chromium.base.test.params.ParameterizedRunnerDelegateFactory */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ParameterizedRunnerDelegateFactoryTest {
     /**
-     * This RunnerDelegate calls `super.collectInitializationErrors()` and would
-     * cause BlockJUnit4ClassRunner to validate test classes.
+     * This RunnerDelegate calls `super.collectInitializationErrors()` and would cause
+     * BlockJUnit4ClassRunner to validate test classes.
      */
-    public static class BadExampleRunnerDelegate
-            extends BlockJUnit4ClassRunner implements ParameterizedRunnerDelegate {
+    public static class BadExampleRunnerDelegate extends BlockJUnit4ClassRunner
+            implements ParameterizedRunnerDelegate {
         public static class LalaTestClass {}
 
         private final List<FrameworkMethod> mParameterizedFrameworkMethodList;
 
-        BadExampleRunnerDelegate(Class<?> klass,
-                List<FrameworkMethod> parameterizedFrameworkMethods) throws InitializationError {
+        BadExampleRunnerDelegate(
+                Class<?> klass, List<FrameworkMethod> parameterizedFrameworkMethods)
+                throws InitializationError {
             super(klass);
             mParameterizedFrameworkMethodList = parameterizedFrameworkMethods;
         }
@@ -64,8 +63,7 @@ public class ParameterizedRunnerDelegateFactoryTest {
             public Iterable<ParameterSet> getParameters() {
                 return Arrays.asList(
                         new ParameterSet().value("a").name("testWithValue_a"),
-                        new ParameterSet().value("b").name("testWithValue_b")
-                );
+                        new ParameterSet().value("b").name("testWithValue_b"));
             }
         }
 
@@ -80,8 +78,7 @@ public class ParameterizedRunnerDelegateFactoryTest {
                 return Arrays.asList(
                         new ParameterSet().value(1).name("testWithValue_1"),
                         new ParameterSet().value(2).name("testWithValue_2"),
-                        new ParameterSet().value(3).name("testWithValue_3")
-                );
+                        new ParameterSet().value(3).name("testWithValue_3"));
             }
         }
 

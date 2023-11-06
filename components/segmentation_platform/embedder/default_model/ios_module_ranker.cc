@@ -335,10 +335,10 @@ void IosModuleRanker::ExecuteModelWithInput(
       tab_resumption_weights[2] * tab_resumption_freshness;
 
   // Parcel Tracking score calculation.
-  float parcel_tracking_weights[3] = {6.0, -6.0, 6.0};
+  float parcel_tracking_weights[3] = {6.0, -7.0, 7.0};
   float parcel_tracking_engagement = inputs[28];
   float parcel_tracking_impression = inputs[29];
-  float parcel_tracking_freshness = TransformFreshness(inputs[34], 3.0);
+  float parcel_tracking_freshness = TransformFreshness(inputs[34], 1.0);
   float parcel_tracking_score =
       parcel_tracking_weights[0] * parcel_tracking_engagement +
       parcel_tracking_weights[1] * parcel_tracking_impression +

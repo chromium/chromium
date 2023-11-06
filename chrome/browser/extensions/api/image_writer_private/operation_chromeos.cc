@@ -37,7 +37,7 @@ void ClearImageBurner() {
 
 void Operation::Write(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
-  SetStage(image_writer_api::STAGE_WRITE);
+  SetStage(image_writer_api::Stage::kWrite);
 
   // Note this has to be run on the FILE thread to avoid concurrent access.
   AddCleanUpFunction(base::BindOnce(&ClearImageBurner));

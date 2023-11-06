@@ -24,16 +24,11 @@ public final class ScrollingStripStackerUnitTest {
     private static final float CACHED_TAB_WIDTH = 30;
 
     private ScrollingStripStacker mTarget = new ScrollingStripStacker();
-    @Mock
-    private StripLayoutTab mTab1;
-    @Mock
-    private StripLayoutTab mTab2;
-    @Mock
-    private StripLayoutTab mTab3;
-    @Mock
-    private StripLayoutTab mTab4;
-    @Mock
-    private StripLayoutTab mTab5;
+    @Mock private StripLayoutTab mTab1;
+    @Mock private StripLayoutTab mTab2;
+    @Mock private StripLayoutTab mTab3;
+    @Mock private StripLayoutTab mTab4;
+    @Mock private StripLayoutTab mTab5;
     private StripLayoutTab[] mInput;
 
     @Before

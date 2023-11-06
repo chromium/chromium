@@ -53,11 +53,9 @@ static_library("report_queue") {
   deps = [
     ":report_queue_configuration",
     "//base",
-    "//components/reporting/encryption:encryption_module",
     "//components/reporting/proto:metric_data_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
     "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/util:rate_limiter_interface",
@@ -65,6 +63,9 @@ static_library("report_queue") {
     "//components/reporting/util:status_macros",
     "//components/reporting/util:wrapped_rate_limiter",
   ]
+  if (!is_chromeos) {
+    deps += [ "//components/reporting/storage:storage_module" ]
+  }
 }
 
 static_library("report_queue_provider") {
@@ -81,12 +82,13 @@ static_library("report_queue_provider") {
     "//base",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
-    "//components/reporting/storage:storage_module",
     "//components/reporting/storage:storage_module_interface",
-    "//components/reporting/storage_selector",
     "//components/reporting/util:status",
     "//components/reporting/util:status_macros",
   ]
+  if (!is_chromeos) {
+    deps += [ "//components/reporting/storage:storage_module" ]
+  }
 }
 
 static_library("test_support") {

@@ -110,6 +110,10 @@ class WaylandConnection {
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
 
+  // Returns the dotted number version of the Wayland server. For Lacros, this
+  // is the Ash Chrome version.
+  base::Version GetServerVersion() const;
+
   // A correct display must be chosen when creating objects or calling
   // roundrips.  That is, all the methods that deal with polling, pulling event
   // queues, etc, must use original display. All the other methods that create
@@ -279,7 +283,7 @@ class WaylandConnection {
   // available.
   bool SupportsSetWindowGeometry() const;
 
-  // Returns true when dragging is entered or started.
+  // Returns true when there an active outgoing drag-and-drop session.
   bool IsDragInProgress() const;
 
   // Creates a new wl_surface.
@@ -387,6 +391,13 @@ class WaylandConnection {
 
   void RegisterGlobalObjectFactory(const char* interface_name,
                                    wl::GlobalObjectFactory factory);
+
+  // Returns true if the required wl_globals are announced by the server.
+  bool WlGlobalsReady() const;
+
+  // Based on the bound globals, returns true if required information are
+  // announced by the server. E.g. server version from zaura-shell.
+  bool WlObjectsReady() const;
 
   // Updates InputDevice structures in Chrome. Currently, Wayland doesn't
   // support such, so the devices are derived from the connected interfaces.

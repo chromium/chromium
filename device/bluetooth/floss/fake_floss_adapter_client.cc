@@ -122,10 +122,12 @@ const char FakeFlossAdapterClient::kPinCode[] = "012345";
 void FakeFlossAdapterClient::Init(dbus::Bus* bus,
                                   const std::string& service_name,
                                   const int adapter_index,
+                                  base::Version version,
                                   base::OnceClosure on_ready) {
   bus_ = bus;
   adapter_path_ = GenerateAdapterPath(adapter_index);
   service_name_ = service_name;
+  version_ = version;
   std::move(on_ready).Run();
 }
 

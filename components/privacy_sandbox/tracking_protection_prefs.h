@@ -10,6 +10,8 @@ class PrefRegistrySimple;
 namespace prefs {
 // Tracking protection Onboarding Prefs
 
+// Onboarding
+
 // Unsynced pref that indicates what status the profile is at with regards to
 // tracking protections (3PCD Onboarding Notice).
 inline constexpr char kTrackingProtectionOnboardingStatus[] =
@@ -29,6 +31,10 @@ inline constexpr char kTrackingProtectionOnboardedSince[] =
 inline constexpr char kTrackingProtectionNoticeLastShown[] =
     "tracking_protection.tracking_protection_notice_last_shown";
 
+// Unsynced pref that indicates when the profile acknowledged the onboarding.
+inline constexpr char kTrackingProtectionOnboardingAckedSince[] =
+    "tracking_protection.tracking_protection_onboarding_acked_since";
+
 // Unsynced boolean that indicates whether or not the user has acknowledged the
 // onboarding message. This is kept separate from the onboardingStatus
 // intentionally.
@@ -39,6 +45,22 @@ inline constexpr char kTrackingProtectionOnboardingAcked[] =
 // Notice.
 inline constexpr char kTrackingProtectionOnboardingAckAction[] =
     "tracking_protection.tracking_protection_onboarding_ack_action";
+
+// Offboarding
+
+// Unsynced boolean that indicates whether or not the user has been offboarded
+// (After being onboarded previously).
+inline constexpr char kTrackingProtectionOffboarded[] =
+    "tracking_protection.tracking_protection_offboarded";
+
+// Unsynced pref that indicates when the profile was offboarded.
+inline constexpr char kTrackingProtectionOffboardedSince[] =
+    "tracking_protection.tracking_protection_offboarded_since";
+
+// Unsynced pref that indicates the action taken to acknowledge the Offboarding
+// Notice.
+inline constexpr char kTrackingProtectionOffboardingAckAction[] =
+    "tracking_protection.tracking_protection_offboarding_ack_action";
 
 // Tracking Protection Settings Prefs.
 
@@ -59,6 +81,20 @@ inline constexpr char kTrackingProtection3pcdEnabled[] =
 
 // Whether to send the DNT header.
 inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
+
+// Sentiment Survey Prefs
+
+// Indicates which group the profile belongs to.
+inline constexpr char kTrackingProtectionSentimentSurveyGroup[] =
+    "tracking_protection.tracking_protection_sentiment_survey_group";
+
+// Indicates the time the profile becomes eligible for surveying.
+inline constexpr char kTrackingProtectionSentimentSurveyStartTime[] =
+    "tracking_protection.tracking_protection_sentiment_survey_start_time";
+
+// Indicates the time the profile is no longer eligible for surveying.
+inline constexpr char kTrackingProtectionSentimentSurveyEndTime[] =
+    "tracking_protection.tracking_protection_sentiment_survey_end_time";
 
 }  // namespace prefs
 
@@ -96,6 +132,26 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
+};
+
+// Different tracking protection sentiment survey groups stored in the pref
+// above.
+enum class TrackingProtectionSentimentSurveyGroup {
+  // No Group Set.
+  kNotSet = 0,
+  // Profile is to be surveyed shortly after being added to the Mode B Control
+  // Group.
+  kControlImmediate = 1,
+  // Profile is to be surveyed shortly after being added to the Mode B Treatment
+  // Group.
+  kTreatmentImmediate = 2,
+  // Profile is to be surveyed after a delay after being added to the Mode B
+  // Control Group.
+  kControlDelayed = 3,
+  // Profile is to be surveyed after a delay after being added to the Mode B
+  // Treatment Group.
+  kTreatmentDelayed = 4,
+  kMaxValue = kTreatmentDelayed,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

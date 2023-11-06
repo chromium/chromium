@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "components/paint_preview/common/glyph_usage.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -19,7 +20,7 @@
 namespace paint_preview {
 
 TEST(PaintPreviewSubsetFontTest, TestBasicSubset) {
-  auto typeface = SkTypeface::MakeDefault();
+  auto typeface = skia::DefaultTypeface();
   ASSERT_NE(typeface, nullptr);
   SparseGlyphUsage sparse(typeface->countGlyphs());
   sparse.Set(0);
@@ -64,7 +65,7 @@ TEST(PaintPreviewSubsetFontTest, TestVariantSubset) {
   // This is a variant font. Loading it from a file isn't entirely
   // straightforward in a platform generic way.
   base::FilePath base_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
   auto final_path = base_path.AppendASCII(
       "components/test/data/paint_preview/Roboto-Regular.ttf");
   std::string data_str;

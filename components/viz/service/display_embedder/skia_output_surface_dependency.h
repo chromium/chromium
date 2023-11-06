@@ -81,8 +81,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   virtual bool IsOffscreen() = 0;
   virtual gpu::SurfaceHandle GetSurfaceHandle() = 0;
   virtual scoped_refptr<gl::Presenter> CreatePresenter(
-      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-      gl::GLSurfaceFormat format) = 0;
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) = 0;
   virtual scoped_refptr<gl::GLSurface> CreateGLSurface(
       base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) = 0;

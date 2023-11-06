@@ -1,9 +1,10 @@
 This is a testharness.js-based test.
-PASS import.meta.url in a root external script
-PASS import.meta.url in a dependent external script
-FAIL import.meta.url when importing the module with different fragments assert_equals: expected "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/import-meta/import-meta-root.js#1" but got "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/import-meta/import-meta-root.js"
-PASS import.meta.url in a root inline script
-PASS import.meta.url at top-level module DedicatedWorker
-PASS import.meta.url at top-level module SharedWorker
+[PASS] import.meta.url in a root external script
+[PASS] import.meta.url in a dependent external script
+[FAIL] import.meta.url when importing the module with different fragments
+  assert_equals: expected "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/import-meta/import-meta-root.js#1" but got "http://web-platform.test:8001/html/semantics/scripting-1/the-script-element/module/import-meta/import-meta-root.js"
+[PASS] import.meta.url in a root inline script
+[PASS] import.meta.url at top-level module DedicatedWorker
+[PASS] import.meta.url at top-level module SharedWorker
 Harness: the test ran to completion.
 

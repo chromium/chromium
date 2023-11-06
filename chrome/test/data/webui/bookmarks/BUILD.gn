@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "bookmarks"
-
   files = [
     "actions_test.ts",
     "app_test.ts",

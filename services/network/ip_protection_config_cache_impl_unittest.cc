@@ -86,18 +86,38 @@ class IpProtectionConfigCacheImplTest : public testing::Test {
   std::unique_ptr<IpProtectionConfigCacheImpl> ipp_config_cache_;
 };
 
-// Token cache manager returns available token.
-TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManager) {
+// Token cache manager returns available token for proxyA.
+TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyA) {
   auto exp_token = mojom::BlindSignedAuthToken::New();
   exp_token->token = "a-token";
   auto ipp_token_cache_manager_ =
       std::make_unique<MockIpProtectionTokenCacheManager>();
   ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
   ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer::kProxyA,
       std::move(ipp_token_cache_manager_));
 
-  ASSERT_TRUE(ipp_config_cache_->IsAuthTokenAvailable());
-  ASSERT_TRUE(ipp_config_cache_->GetAuthToken());
+  ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
+  ASSERT_FALSE(
+      ipp_config_cache_->GetAuthToken(1).has_value());  // ProxyB has no tokens.
+  ASSERT_TRUE(ipp_config_cache_->GetAuthToken(0));
+}
+
+// Token cache manager returns available token for proxyB.
+TEST_F(IpProtectionConfigCacheImplTest, GetAuthTokenFromManagerForProxyB) {
+  auto exp_token = mojom::BlindSignedAuthToken::New();
+  exp_token->token = "b-token";
+  auto ipp_token_cache_manager_ =
+      std::make_unique<MockIpProtectionTokenCacheManager>();
+  ipp_token_cache_manager_->SetAuthToken(std::move(exp_token));
+  ipp_config_cache_->SetIpProtectionTokenCacheManagerForTesting(
+      network::mojom::IpProtectionProxyLayer::kProxyB,
+      std::move(ipp_token_cache_manager_));
+
+  ASSERT_TRUE(ipp_config_cache_->AreAuthTokensAvailable());
+  ASSERT_FALSE(
+      ipp_config_cache_->GetAuthToken(0).has_value());  // ProxyA has no tokens.
+  ASSERT_TRUE(ipp_config_cache_->GetAuthToken(1));
 }
 
 // Proxy list manager returns currently cached proxy hostnames.

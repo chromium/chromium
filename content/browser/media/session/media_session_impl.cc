@@ -1074,8 +1074,9 @@ MediaSessionImpl::GetMediaSessionInfoSync() {
 
   // Disable Remote Playback by passing empty RemotePlaybackMetadata when there
   // are multiple media players.
-  if (normal_players_.size() == 1u) {
-    info->remote_playback_metadata = remote_playback_metadata_.Clone();
+  info->remote_playback_metadata = remote_playback_metadata_.Clone();
+  if (normal_players_.size() > 1u && info->remote_playback_metadata) {
+    info->remote_playback_metadata->remote_playback_disabled = true;
   }
 
   MediaSessionClient* media_session_client = MediaSessionClient::Get();
@@ -1687,6 +1688,8 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     actions.insert(
         media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
+    actions.insert(
+        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
   }
 
   if (base::FeatureList::IsEnabled(

@@ -90,8 +90,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoDefault) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_TRUE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_FALSE(entity.client_tag_hash().empty());
   EXPECT_EQ(kTag.value(), entity.specifics().preference().name());
@@ -142,7 +142,7 @@ TEST(CommitContributionImplTest, PopulateCommitProtoTombstone) {
   // set (`has_preference()` is true), but this test doesn't execute that code.
   EXPECT_EQ(0u, entity.specifics().ByteSizeLong());
   // For deletions, mtime should still be set, but ctime shouldn't.
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
   EXPECT_FALSE(entity.has_ctime());
   // The entity name is still passed on, if it was set in the input EntityData
   // (which it is in this test, even though in practice it isn't).
@@ -182,8 +182,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmark) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_FALSE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_TRUE(entity.client_tag_hash().empty());
   EXPECT_EQ(kURL, entity.specifics().bookmark().url());
@@ -227,8 +227,8 @@ TEST(CommitContributionImplTest, PopulateCommitProtoBookmarkFolder) {
   // Exhaustively verify the populated SyncEntity.
   EXPECT_FALSE(entity.id_string().empty());
   EXPECT_EQ(7, entity.version());
-  EXPECT_EQ(modification_time.ToJsTime(), entity.mtime());
-  EXPECT_EQ(creation_time.ToJsTime(), entity.ctime());
+  EXPECT_EQ(modification_time.InMillisecondsFSinceUnixEpoch(), entity.mtime());
+  EXPECT_EQ(creation_time.InMillisecondsFSinceUnixEpoch(), entity.ctime());
   EXPECT_FALSE(entity.name().empty());
   EXPECT_TRUE(entity.client_tag_hash().empty());
   EXPECT_FALSE(entity.specifics().bookmark().has_url());

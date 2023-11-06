@@ -132,7 +132,7 @@ class CORE_EXPORT CSSParserContext final
   void Count(WebFeature) const;
   void Count(CSSParserMode, CSSPropertyID) const;
   void CountDeprecation(WebFeature) const;
-  bool IsUseCounterRecordingEnabled() const { return document_; }
+  bool IsUseCounterRecordingEnabled() const { return document_ != nullptr; }
   bool IsDocumentHandleEqual(const Document* other) const;
   const Document* GetDocument() const;
   const ExecutionContext* GetExecutionContext() const;

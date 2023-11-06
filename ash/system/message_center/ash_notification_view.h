@@ -141,6 +141,8 @@ class ASH_EXPORT AshNotificationView
   void ToggleInlineSettings(const ui::Event& event) override;
   void ToggleSnoozeSettings(const ui::Event& event) override;
   void OnInlineReplyUpdated() override;
+  views::View* FindGroupNotificationView(
+      const std::string& notification_id) override;
 
   void set_is_animating(bool is_animating) { is_animating_ = is_animating; }
   bool is_animating() { return is_animating_; }
@@ -153,6 +155,8 @@ class ASH_EXPORT AshNotificationView
   control_buttons_view_for_test() {
     return control_buttons_view_;
   }
+
+  views::Label* GetTitleRowLabelForTest();
 
   // View containing all grouped notifications, propagates size changes
   // to the parent notification view.
@@ -229,10 +233,6 @@ class ASH_EXPORT AshNotificationView
     base::OneShotTimer timestamp_update_timer_;
     absl::optional<base::Time> timestamp_;
   };
-
-  // message_center::MessageView:
-  views::View* FindGroupNotificationView(
-      const std::string& notification_id) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationRemoved(const std::string& notification_id,
@@ -352,8 +352,8 @@ class ASH_EXPORT AshNotificationView
   // shown in a collapsed grouped notification.
   int total_grouped_notifications_ = 0;
 
-  // Cached background color to avoid unnecessary update.
-  SkColor background_color_ = SK_ColorTRANSPARENT;
+  // Cached background color id to avoid unnecessary update.
+  ui::ColorId background_color_id_ = 0;
 
   // Used to prevent setting bounds in `AshNotificationView` while running
   // animations to resize this view.

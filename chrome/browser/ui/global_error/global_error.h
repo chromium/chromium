@@ -75,7 +75,6 @@ class GlobalErrorWithStandardBubble
   virtual bool ShouldShowCloseButton() const;
   virtual bool ShouldAddElevationIconToAcceptButton();
   virtual std::u16string GetBubbleViewCancelButtonLabel() = 0;
-  virtual int GetDefaultDialogButton() const;
   virtual bool ShouldCloseOnDeactivate() const;
   virtual std::u16string GetBubbleViewDetailsButtonLabel();
 

@@ -297,8 +297,8 @@ def blink_type_info(idl_type):
                         has_null_value=True,
                         is_traceable=True)
 
-    if real_type.is_void:
-        assert False, "Blink does not support/accept IDL void type."
+    if real_type.is_undefined:
+        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
@@ -461,8 +461,8 @@ def _native_value_tag_impl(idl_type):
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
-    if real_type.is_void:
-        assert False, "Blink does not support/accept IDL void type."
+    if real_type.is_undefined:
+        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)

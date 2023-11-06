@@ -59,7 +59,8 @@ TEST(FileInputTypeTest, createFileList) {
   // Non-native file.
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
   files.push_back(CreateFileChooserFileInfoFileSystem(
-      url, base::Time::FromJsTime(1.0 * kMsPerDay + 3), 64));
+      url, base::Time::FromMillisecondsSinceUnixEpoch(1.0 * kMsPerDay + 3),
+      64));
 
   ScopedNullExecutionContext execution_context;
   FileList* list = FileInputType::CreateFileList(

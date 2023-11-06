@@ -91,8 +91,6 @@ bool ObjectPermissionContextBase::CanRequestObjectPermission(
   ContentSetting content_setting =
       host_content_settings_map_->GetContentSetting(
           origin.GetURL(), GURL(), *guard_content_settings_type_);
-  DCHECK(content_setting == CONTENT_SETTING_ASK ||
-         content_setting == CONTENT_SETTING_BLOCK);
   return content_setting == CONTENT_SETTING_ASK;
 }
 

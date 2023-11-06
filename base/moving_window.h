@@ -555,8 +555,7 @@ class MovingWindow {
   // Calculates min in the window. Template to disable when feature isn't
   // requested.
   template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_min<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_min<U>::value, int> = 0>
   T Min() const {
     return min_impl_.Value();
   }
@@ -564,8 +563,7 @@ class MovingWindow {
   // Calculates max in the window. Template to disable when feature isn't
   // requested.
   template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_max<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_max<U>::value, int> = 0>
   T Max() const {
     return max_impl_.Value();
   }
@@ -574,8 +572,7 @@ class MovingWindow {
   // requested.
   template <typename ReturnType = T,
             typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_mean<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_mean<U>::value, int> = 0>
   ReturnType Mean() const {
     return mean_impl_.template Mean<ReturnType>(
         std::min(total_added_, window_impl_.Size()));
@@ -583,10 +580,10 @@ class MovingWindow {
 
   // Calculates deviation in the window. Template to disable when feature isn't
   // requested.
-  template <typename ReturnType = T,
-            typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_memeber_deviation<U>::value,
-                                    int>::type = 0>
+  template <
+      typename ReturnType = T,
+      typename U = EnabledFeatures,
+      std::enable_if_t<internal::has_memeber_deviation<U>::value, int> = 0>
   ReturnType Deviation() const {
     const size_t count = std::min(total_added_, window_impl_.Size());
     return deviation_impl_.template Deviation<ReturnType>(count,
@@ -643,8 +640,7 @@ class MovingWindow {
 
   // Begin iterator. Template to enable only if iteration feature is requested.
   template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_iteration<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_iteration<U>::value, int> = 0>
   iterator begin() const {
     if (total_added_ == 0) {
       return end();
@@ -658,8 +654,7 @@ class MovingWindow {
 
   // End iterator. Template to enable only if iteration feature is requested.
   template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_iteration<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_iteration<U>::value, int> = 0>
   iterator end() const {
     return iterator(window_impl_, iterator::kInvalidIndex);
   }
@@ -667,8 +662,7 @@ class MovingWindow {
   // Size of the collection. Template to enable only if iteration feature is
   // requested.
   template <typename U = EnabledFeatures,
-            typename std::enable_if<internal::has_member_iteration<U>::value,
-                                    int>::type = 0>
+            std::enable_if_t<internal::has_member_iteration<U>::value, int> = 0>
   size_t size() const {
     return std::min(total_added_, window_impl_.Size());
   }
@@ -699,9 +693,8 @@ class MovingWindow {
   typename std::conditional<
       internal::has_member_mean<EnabledFeatures>::value ||
           internal::has_memeber_deviation<EnabledFeatures>::value,
-      internal::MovingMeanBase<T,
-                               MeanSumType,
-                               std::is_floating_point<MeanSumType>::value>,
+      internal::
+          MovingMeanBase<T, MeanSumType, std::is_floating_point_v<MeanSumType>>,
       internal::NullMeanImpl<T>>::type mean_impl_;
 
   // Member for calculating deviation.
@@ -711,8 +704,8 @@ class MovingWindow {
       internal::MovingDeviationBase<
           T,
           typename internal::get_type_deviation<EnabledFeatures>::type,
-          std::is_floating_point<typename internal::get_type_deviation<
-              EnabledFeatures>::type>::value>,
+          std::is_floating_point_v<
+              typename internal::get_type_deviation<EnabledFeatures>::type>>,
       internal::NullDeviationImpl<T>>::type deviation_impl_;
 
   // Member for storing the moving window.

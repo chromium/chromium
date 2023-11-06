@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::ElementsAre;
 using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;

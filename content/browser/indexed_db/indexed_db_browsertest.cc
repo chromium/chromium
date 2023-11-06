@@ -227,8 +227,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
     return result;
   }
 
-  int64_t RequestUsage(const blink::StorageKey& storage_key,
-                       Shell* browser = nullptr) {
+  int64_t RequestUsage(Shell* browser = nullptr) {
     base::RunLoop loop;
     int64_t size = 0;
     auto& control = GetControl(browser);
@@ -614,11 +613,11 @@ class IndexedDBBrowserTestWithVersion3Schema
   std::vector<BlobModificationTime> CustomModificationTimes() override {
     return {
         {base::FilePath(FILE_PATH_LITERAL("1/00/3")),
-         base::Time::FromJsTime(1579809038000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579809038000)},
         {base::FilePath(FILE_PATH_LITERAL("1/00/4")),
-         base::Time::FromJsTime(1579808985000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579808985000)},
         {base::FilePath(FILE_PATH_LITERAL("1/00/5")),
-         base::Time::FromJsTime(1579199256000)},
+         base::Time::FromMillisecondsSinceUnixEpoch(1579199256000)},
     };
   }
 };
@@ -644,10 +643,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion123456Schema,
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
+  int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
+  int64_t new_size = RequestUsage();
   EXPECT_GT(new_size, 0);
   EXPECT_NE(original_size, new_size);
 }
@@ -662,10 +661,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion987654SSVData,
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
+  int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
+  int64_t new_size = RequestUsage();
   EXPECT_GT(new_size, 0);
   EXPECT_NE(original_size, new_size);
 }
@@ -680,10 +679,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCorruptLevelDB,
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_bad_db.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
+  int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
+  int64_t new_size = RequestUsage();
   EXPECT_GT(new_size, 0);
   EXPECT_NE(original_size, new_size);
 }
@@ -698,10 +697,10 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithMissingSSTFile,
   const GURL kTestUrl = GetTestUrl("indexeddb", "open_missing_table.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
+  int64_t original_size = RequestUsage();
   EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
+  int64_t new_size = RequestUsage();
   EXPECT_GT(new_size, 0);
   EXPECT_NE(original_size, new_size);
 }
@@ -720,12 +719,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
-  EXPECT_GT(original_size, 0);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
-  EXPECT_GT(new_size, 0);
-  EXPECT_NE(original_size, new_size);
 }
 
 class IndexedDBBrowserTestWithCrbug899446Noai
@@ -737,11 +731,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446Noai, StableTest) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "crbug899446_noai.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
-  int64_t original_size = RequestUsage(kTestStorageKey);
   SimpleTest(kTestUrl);
-  int64_t new_size = RequestUsage(kTestStorageKey);
-  EXPECT_GT(new_size, 0);
-  EXPECT_NE(original_size, new_size);
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
@@ -808,11 +798,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyDeletesBlobs) {
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(kTestUrl);
-  int64_t size = RequestUsage(kTestStorageKey);
+  int64_t size = RequestUsage();
   // This assertion assumes that we do not compress blobs.
   EXPECT_GT(size, 4 << 20 /* 4 MB */);
   DeleteForStorageKey(kTestStorageKey);
-  EXPECT_EQ(0, RequestUsage(kTestStorageKey));
+  EXPECT_EQ(0, RequestUsage());
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
@@ -823,11 +813,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteForStorageKeyIncognito) {
   Shell* browser = CreateOffTheRecordBrowser();
   NavigateToURLBlockUntilNavigationsComplete(browser, test_url, 2);
 
-  EXPECT_GT(RequestUsage(kTestStorageKey, browser), 5 * 1024);
+  EXPECT_GT(RequestUsage(browser), 5 * 1024);
 
   DeleteForStorageKey(kTestStorageKey, browser);
 
-  EXPECT_EQ(0, RequestUsage(kTestStorageKey, browser));
+  EXPECT_EQ(0, RequestUsage(browser));
 }
 
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DiskFullOnCommit) {
@@ -1107,11 +1097,11 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
   SimpleTest(GURL(kTestUrl.spec() + "#fill"));
 
-  int64_t after_filling = RequestUsage(kTestStorageKey);
+  int64_t after_filling = RequestUsage();
   EXPECT_GT(after_filling, 0);
 
   SimpleTest(GURL(kTestUrl.spec() + "#purge"));
-  int64_t after_deleting = RequestUsage(kTestStorageKey);
+  int64_t after_deleting = RequestUsage();
   EXPECT_LT(after_deleting, after_filling);
 
   // The above tests verify basic assertions - that filling writes data and

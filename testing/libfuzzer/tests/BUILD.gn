@@ -4,8 +4,21 @@
 #
 # Fuzzing Infrastructure Tests
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
+
+# Basic smoke tests for fuzzing
+group("tests") {
+  testonly = true
+  deps = []
+  if (fuzztest_supported) {
+    deps += [ ":fuzztest_tests" ]
+  }
+  if (use_fuzzing_engine && !is_win) {
+    deps += [ ":libfuzzer_tests" ]
+  }
+}
 
 # TODO(crbug.com/906751): Get the tests working on Windows. Disable them for now
 # because they cause the Windows clang ToT builder to fail.
@@ -94,4 +107,20 @@ copy("check_fuzzer_config") {
 copy("check_seed_corpus_archive") {
   sources = [ "check_seed_corpus_archive.py" ]
   outputs = [ "$root_build_dir/check_seed_corpus_archive.py" ]
+}
+
+# The most basic smoketest for FUZZ_TEST macros.
+# The main purpose is to ensure that this builds in all configurations:
+# * on regular builders, this will produce a unit test executable
+# * on ASAN builders, this will produce a unit test executable which
+#   additionally has sancov instrumentation to support --fuzz=
+#   arguments
+# * on libfuzzer and centipede builders this will enable different
+#   options again.
+if (fuzztest_supported) {
+  test("fuzztest_tests") {
+    enable_fuzztest = true
+    deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+    sources = [ "fuzztest_smoketest.cc" ]
+  }
 }

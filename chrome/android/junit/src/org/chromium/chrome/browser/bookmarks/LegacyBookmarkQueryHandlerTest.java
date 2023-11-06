@@ -58,26 +58,17 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class LegacyBookmarkQueryHandlerTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private SyncService mSyncService;
+    @Mock private Tracker mTracker;
+    @Mock private Profile mProfile;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
 
-    @Captor
-    private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
-    @Captor
-    private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
+    @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
+    @Captor private ArgumentCaptor<SyncStateChangedListener> mSyncStateChangedListenerCaptor;
 
     private LegacyBookmarkQueryHandler mHandler;
 

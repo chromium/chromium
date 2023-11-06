@@ -111,13 +111,12 @@ template("chrome_extra_paks") {
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/flags_ui_resources.pak",
       "$root_gen_dir/components/version_ui_resources.pak",
-      "$root_gen_dir/content/aggregation_service_internals_resources.pak",
       "$root_gen_dir/content/attribution_internals_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
       "$root_gen_dir/content/histograms_resources.pak",
       "$root_gen_dir/content/indexed_db_resources.pak",
+      "$root_gen_dir/content/private_aggregation_internals_resources.pak",
       "$root_gen_dir/content/quota_internals_resources.pak",
-      "$root_gen_dir/content/traces_internals_resources.pak",
       "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
       "$root_gen_dir/net/net_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
@@ -193,6 +192,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/whats_new_resources.pak",
         "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
         "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+        "$root_gen_dir/content/traces_internals_resources.pak",
       ]
       deps += [
         "//chrome/browser/resources:component_extension_resources",
@@ -202,15 +202,13 @@ template("chrome_extra_paks") {
       ]
       if (is_chrome_branded) {
         sources += [
-          "$root_gen_dir/chrome/lens_resources.pak",
-          "$root_gen_dir/chrome/lens_untrusted_resources.pak",
+          "$root_gen_dir/chrome/browser/nearby_sharing/internal/icons/nearby_share_internal_icons.pak",
           "$root_gen_dir/chrome/media_router_feedback_resources.pak",
           "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak",
         ]
         deps += [
+          "//chrome/browser/nearby_sharing/internal/icons",
           "//chrome/browser/resources:preinstalled_web_apps_resources",
-          "//chrome/browser/resources/lens:resources",
-          "//chrome/browser/resources/lens:untrusted_resources",
           "//chrome/browser/resources/media_router/cast_feedback:resources",
         ]
       }
@@ -264,6 +262,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/cloud_upload_resources.pak",
         "$root_gen_dir/chrome/cros_styles_resources.pak",
         "$root_gen_dir/chrome/desk_api_resources.pak",
+        "$root_gen_dir/chrome/edu_coexistence_resources.pak",
         "$root_gen_dir/chrome/emoji_picker_resources.pak",
         "$root_gen_dir/chrome/enterprise_reporting_resources.pak",
         "$root_gen_dir/chrome/gaia_action_buttons_resources.pak",
@@ -409,6 +408,11 @@ template("chrome_extra_paks") {
     if (is_win || is_mac || is_linux || is_chromeos_ash) {
       sources += [ "$root_gen_dir/chrome/connectors_internals_resources.pak" ]
       deps += [ "//chrome/browser/resources/connectors_internals:resources" ]
+    }
+
+    if (is_chromeos) {
+      sources += [ "$root_gen_dir/chrome/dlp_internals_resources.pak" ]
+      deps += [ "//chrome/browser/resources/dlp_internals:resources" ]
     }
 
     if (is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia) {

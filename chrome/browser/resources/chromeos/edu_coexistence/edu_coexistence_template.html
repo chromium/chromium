@@ -1,5 +1,5 @@
-<style include="edu-coexistence-css">
-  :host {
+<style include="common">  
+ :host {
     overflow-y: hidden;
     --background-gradient-0: linear-gradient(0deg,
         rgba(var(--google-grey-100-rgb), 1) 0,
@@ -15,7 +15,7 @@
       <slot name="main"></slot>
     </div>
   </div>
-  <div class="footer" hidden$="[[!showButtonFooter_]]">
+  <div class="footer" hidden$="[[!showButtonFooter]]">
     <slot name="buttons"></slot>
   </div>
 </div>

@@ -710,8 +710,15 @@ IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest, SessionNewTabCrossOrigin) {
   ExpectScores(http_server_origin2().base_url(), 1, 1);
 }
 
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1498676) Flaky on Mac.
+#define MAYBE_SessionMultipleTabsClosingParent \
+  DISABLED_SessionMultipleTabsClosingParent
+#else
+#define MAYBE_SessionMultipleTabsClosingParent SessionMultipleTabsClosingParent
+#endif
 IN_PROC_BROWSER_TEST_F(MediaEngagementBrowserTest,
-                       SessionMultipleTabsClosingParent) {
+                       MAYBE_SessionMultipleTabsClosingParent) {
   const GURL& url = http_server().GetURL("/engagement_test.html");
   const GURL& other_url = http_server().GetURL("/engagement_test_audio.html");
 

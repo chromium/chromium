@@ -76,6 +76,11 @@ bool IsMicrophoneMuteSwitchOn() {
 
 }  // namespace
 
+// TODO(b/277300962): Clean up the default value and handle the unset case.
+CrasAudioHandler::AudioSurvey::AudioSurvey() : type_(SurveyType::kGeneral) {}
+
+CrasAudioHandler::AudioSurvey::~AudioSurvey() = default;
+
 CrasAudioHandler::AudioObserver::AudioObserver() = default;
 
 CrasAudioHandler::AudioObserver::~AudioObserver() = default;
@@ -132,7 +137,7 @@ void CrasAudioHandler::AudioObserver::OnNonChromeOutputStarted() {}
 void CrasAudioHandler::AudioObserver::OnNonChromeOutputStopped() {}
 
 void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
-    const AudioSurveyData& /*survey_specific_data */) {}
+    const AudioSurvey& /*survey*/) {}
 
 void CrasAudioHandler::AudioObserver::OnSpeakOnMuteDetected() {}
 
@@ -1332,10 +1337,31 @@ void CrasAudioHandler::NumberOfInputStreamsWithPermissionChanged(
     observer.OnNumberOfInputStreamsWithPermissionChanged();
 }
 
+// static
+std::unique_ptr<CrasAudioHandler::AudioSurvey>
+CrasAudioHandler::AbstractAudioSurvey(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {
+  auto survey = std::make_unique<CrasAudioHandler::AudioSurvey>();
+  for (const auto& it : survey_specific_data) {
+    if (it.first == CrasAudioHandler::kSurveyNameKey) {
+      if (it.second == CrasAudioHandler::kSurveyNameGeneral) {
+        survey->set_type(SurveyType::kGeneral);
+      } else if (it.second == CrasAudioHandler::kSurveyNameBluetooth) {
+        survey->set_type(SurveyType::kBluetooth);
+      }
+    } else {
+      survey->AddData(it.first, it.second);
+    }
+  }
+  return survey;
+}
+
 void CrasAudioHandler::SurveyTriggered(
     const base::flat_map<std::string, std::string>& survey_specific_data) {
+  auto survey = CrasAudioHandler::AbstractAudioSurvey(survey_specific_data);
+
   for (auto& observer : observers_)
-    observer.OnSurveyTriggered(survey_specific_data);
+    observer.OnSurveyTriggered(*survey);
 }
 
 void CrasAudioHandler::SpeakOnMuteDetected() {

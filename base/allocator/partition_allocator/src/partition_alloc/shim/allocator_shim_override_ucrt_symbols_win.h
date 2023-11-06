@@ -36,8 +36,6 @@ SHIM_ALWAYS_EXPORT void* operator new[](size_t size,
 
 extern "C" {
 
-void* (*malloc_unchecked)(size_t) = &allocator_shim::UncheckedAlloc;
-
 namespace {
 
 int win_new_mode = 0;

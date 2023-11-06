@@ -54,39 +54,27 @@ import org.chromium.url.JUnitTestGURLs;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Unit tests for {@link TabAttributeCache}.
- */
+/** Unit tests for {@link TabAttributeCache}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabAttributeCacheUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
     private static final int TAB1_ID = 456;
     private static final int TAB2_ID = 789;
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
 
-    @Mock
-    TabModelSelectorImpl mTabModelSelector;
-    @Mock
-    TabModelFilterProvider mTabModelFilterProvider;
-    @Mock
-    TabModelFilter mTabModelFilter;
-    @Mock
-    TabModel mTabModel;
-    @Captor
-    ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
-    @Captor
-    ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
-    @Mock
-    Profile.Natives mProfileJniMock;
+    @Mock TabModelSelectorImpl mTabModelSelector;
+    @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Mock TabModelFilter mTabModelFilter;
+    @Mock TabModel mTabModel;
+    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
+    @Captor ArgumentCaptor<TabModelSelectorTabObserver> mTabObserverCaptor;
+    @Mock Profile.Natives mProfileJniMock;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -243,20 +231,23 @@ public class TabAttributeCacheUnitTest {
         WebContents webContents = mock(WebContents.class);
         doReturn(webContents).when(mTab1).getWebContents();
 
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertEquals(searchTerm, TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         // Empty strings should propagate.
         doReturn("").when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertEquals("", TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         // Null should also propagate.
         doReturn(null).when(lastSearchTermProvider).getLastSearchTerm(mTab1);
-        mTabObserverCaptor.getValue().onDidFinishNavigationInPrimaryMainFrame(
-                mTab1, navigationHandle);
+        mTabObserverCaptor
+                .getValue()
+                .onDidFinishNavigationInPrimaryMainFrame(mTab1, navigationHandle);
         Assert.assertNull(TabAttributeCache.getLastSearchTerm(TAB1_ID));
 
         mTabModelSelectorObserverCaptor.getValue().onTabStateInitialized();
@@ -406,5 +397,4 @@ public class TabAttributeCacheUnitTest {
         Assert.assertEquals(title2, TabAttributeCache.getTitle(TAB2_ID));
         Assert.assertEquals(rootId2, TabAttributeCache.getRootId(TAB2_ID));
     }
-
 }

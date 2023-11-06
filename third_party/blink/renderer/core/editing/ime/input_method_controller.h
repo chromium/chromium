@@ -137,7 +137,9 @@ class CORE_EXPORT InputMethodController final
   void WillChangeFocus();
 
   // Returns the |EditContext| that is currently active
-  EditContext* GetActiveEditContext() const { return active_edit_context_; }
+  EditContext* GetActiveEditContext() const {
+    return active_edit_context_.Get();
+  }
   void SetActiveEditContext(EditContext* edit_context) {
     active_edit_context_ = edit_context;
   }

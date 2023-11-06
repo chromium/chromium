@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
+#include "third_party/blink/renderer/platform/restriction_target_id.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -78,7 +79,6 @@ class ContainerQueryEvaluator;
 class CSSPropertyName;
 class CSSPropertyValueSet;
 class CSSStyleDeclaration;
-class CSSToggleMap;
 class CustomElementDefinition;
 class CustomElementRegistry;
 class DOMRect;
@@ -120,6 +120,8 @@ class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleRequest;
+class StyleScopeData;
+class TextVisitor;
 class V8UnionBooleanOrScrollIntoViewOptions;
 class ComputedStyleBuilder;
 class StyleAdjuster;
@@ -398,8 +400,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   gfx::RectF GetBoundingClientRectNoLifecycleUpdate() const;
   DOMRect* getBoundingClientRect();
 
+  // Call the NoLifecycleUpdate variants if you are sure that the lifcycle is
+  // already updated to at least pre-paint clean.
   const AtomicString& computedRole();
+  const AtomicString& ComputedRoleNoLifecycleUpdate();
   String computedName();
+  String ComputedNameNoLifecycleUpdate();
 
   AccessibleNode* ExistingAccessibleNode() const;
   AccessibleNode* accessibleNode();
@@ -570,8 +576,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // attributes in a start tag were added to the element.
   virtual void ParseAttribute(const AttributeModificationParams&);
 
-  void DefaultEventHandler(Event&) override;
-
   virtual bool HasLegalLinkAttribute(const QualifiedName&) const;
 
   // Only called by the parser immediately after element construction.
@@ -597,9 +601,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // NOTE: This shadows Node::GetComputedStyle().
   // The definition is in node_computed_style.h.
   inline const ComputedStyle* GetComputedStyle() const;
+  inline const ComputedStyle& ComputedStyleRef() const;
 
+  using Node::DetachLayoutTree;
   void AttachLayoutTree(AttachContext&) override;
-  void DetachLayoutTree(bool performing_reattach = false) override;
+  void DetachLayoutTree(bool performing_reattach) override;
 
   virtual LayoutObject* CreateLayoutObject(const ComputedStyle&);
   virtual bool LayoutObjectIsNeeded(const DisplayStyle&) const;
@@ -660,17 +666,25 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SetNeedsCompositingUpdate();
 
-  // Assigns a crop-ID to the element. It's an error to try to call this
-  // if the element already has a crop-ID attached (even if attempting to
-  // set the same crop-ID again).
-  //
-  // Not all element types have a region capture crop-ID, however using it here
-  // allows access to the element rare data struct. Currently, once an element
-  // is marked for region capture it cannot be unmarked.
-  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id);
+  // Associates the element with a RegionCaptureCropId, which is the object
+  // internally backing a CropTarget.
+  // This method may be called at most once. The ID must be non-null.
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> id);
 
-  // Returns a pointer to the crop-ID if one was set; nullptr otherwise.
+  // If SetRegionCaptureCropId(id) was previously called on `this`,
+  // returns the non-empty `id` which it previously provided.
+  // Otherwise, returns a nullptr.
   const RegionCaptureCropId* GetRegionCaptureCropId() const;
+
+  // Associates the element with a RestrictionTargetId, which is the object
+  // internally backing a RestrictionTarget.
+  // This method may be called at most once. The ID must be non-null.
+  void SetRestrictionTargetId(std::unique_ptr<RestrictionTargetId> id);
+
+  // If SetRestrictionTargetId(id) was previously called on `this`,
+  // returns the non-empty `id` which it previously provided.
+  // Otherwise, returns a nullptr.
+  const RestrictionTargetId* GetRestrictionTargetId() const;
 
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
@@ -760,7 +774,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   virtual bool IsLiveLink() const { return false; }
   KURL HrefURL() const;
 
-  KURL GetURLAttribute(const QualifiedName&) const;
+  String GetURLAttribute(const QualifiedName&) const;
+  KURL GetURLAttributeAsKURL(const QualifiedName&) const;
 
   KURL GetNonEmptyURLAttribute(const QualifiedName&) const;
 
@@ -787,6 +802,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void Focus();
   void Focus(const FocusOptions*);
 
+  virtual void SetFocused(bool received, mojom::blink::FocusType);
+  void SetHasFocusWithinUpToAncestor(bool, Element* ancestor);
+  void FocusStateChanged();
+  void FocusVisibleStateChanged();
+  void FocusWithinStateChanged();
+  void ActiveViewTransitionStateChanged();
+  void SetDragged(bool) override;
+
   void UpdateSelectionOnFocus(SelectionBehaviorOnFocus);
   // This function is called after SetFocused(true) before dispatching 'focus'
   // event, or is called just after a layout after changing <input> type.
@@ -798,7 +821,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // focusable (using the mouse). This method can be called when layout is not
   // clean, but the method might trigger a lifecycle update in that case. This
   // method will not trigger a lifecycle update if layout is already clean.
-  virtual bool IsFocusable() const;
+  // If the |disallow_layout_updates_for_accessibility_only| argument is true,
+  // which should only be used by a11y code, layout updates will never be
+  // performed.
+  virtual bool IsFocusable(
+      bool disallow_layout_updates_for_accessibility_only = false) const;
 
   // IsKeyboardFocusable is true for the subset of mouse focusable elements (for
   // which IsFocusable() is true) that are in the tab cycle. This method
@@ -837,8 +864,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
-  String GetInnerTextWithoutUpdate();  // Avoids layout update.
-  String innerText();
+  // Avoids layout update.
+  String GetInnerTextWithoutUpdate(TextVisitor* visitor = nullptr);
+  // `visitor` is called as each node is considered. Note that this is not
+  // called for nodes that are not considered in generating the text. For
+  // example, all descendants of hidden nodes are not considered.
+  String innerText(TextVisitor* visitor = nullptr);
   String outerText();
 
   Element* insertAdjacentElement(const String& where,
@@ -857,6 +888,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void setInnerHTMLWithDeclarativeShadowDOMForTesting(const String& html);
   String getInnerHTML(const GetInnerHTMLOptions* options) const;
   void setOuterHTML(const String&, ExceptionState& = ASSERT_NO_EXCEPTION);
+  // https://github.com/whatwg/html/pull/9538
+  void setHTMLUnsafe(const String& html, ExceptionState&);
 
   void setPointerCapture(PointerId poinetr_id, ExceptionState&);
   void releasePointerCapture(PointerId pointer_id, ExceptionState&);
@@ -1121,6 +1154,9 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ContainerQueryEvaluator& EnsureContainerQueryEvaluator();
   bool SkippedContainerStyleRecalc() const;
 
+  StyleScopeData& EnsureStyleScopeData();
+  StyleScopeData* GetStyleScopeData() const;
+
   // See PostStyleUpdateScope::PseudoData::AddPendingBackdrop
   void ApplyPendingBackdropPseudoElementUpdate();
 
@@ -1169,6 +1205,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SetAffectedByLogicalCombinationsInHas();
   bool AffectedByMultipleHas() const;
   void SetAffectedByMultipleHas();
+  bool AncestorsOrSiblingsAffectedByActiveViewTransitionInHas() const;
+  void SetAncestorsOrSiblingsAffectedByActiveViewTransitionInHas();
 
   // This is meant to be used by document's resize observer to notify that the
   // size has changed.
@@ -1204,11 +1242,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool IsReplacedElementRespectingCSSOverflow() const;
 
-  CSSToggleMap* toggles() { return &EnsureToggleMap(); }
-
-  CSSToggleMap* GetToggleMap();
-  CSSToggleMap& EnsureToggleMap();
-
   void RemovePopoverData();
   PopoverData* EnsurePopoverData();
   PopoverData* GetPopoverData() const;
@@ -1235,6 +1268,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     ExcludeSelf,  // ancestors, but not self
   };
   void UpdateAncestorWithDirAuto(UpdateAncestorTraversal traversal);
+  void AdjustDirectionalityIfNeededAfterChildrenChanged(
+      const ChildrenChange& change);
 
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
@@ -1303,6 +1338,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Similar to IsFocusableStyle, except that it will ensure that any deferred
   // work to create layout objects is completed (e.g. in display-locked trees).
   bool IsFocusableStyleAfterUpdate() const;
+  // This method should only be used by a11y code. It performs roughly the same
+  // focusability check as IsFocusableStyle(), but will never trigger a layout
+  // update. In some cases (e.g. in the presence of display locked trees),
+  // stale layout information may be used.
+  bool IsFocusableStyleNeverLayoutForAccessibilityOnly() const;
 
   // Is the node descendant of this in something clickable/activatable, such
   // that we shouldn't handle events targeting it?
@@ -1341,8 +1381,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void LangAttributeChanged();
 
   TextDirection ParentDirectionality() const;
-  void AdjustDirectionalityIfNeededAfterChildrenChanged(
-      const ChildrenChange& change);
   bool RecalcSelfOrAncestorHasDirAuto();
   template <typename Traversal>
   absl::optional<TextDirection> ResolveAutoDirectionality(
@@ -1497,6 +1535,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   }
 
   void RecomputeDirectionFromParent();
+
+  // Returns true if the directionality needs to be updated for insert.
+  bool ShouldAdjustDirectionalityForInsert(const ChildrenChange& change) const;
+
+  // Returns true if node is a text node and the direction is not set, or
+  // matches this. Generally only useful from
+  // ShouldAdjustDirectionalityForInsert().
+  bool DoesChildTextNodesDirectionMatchThis(const Node& node) const;
 
   ShadowRoot& CreateAndAttachShadowRoot(ShadowRootType);
 

@@ -27,10 +27,12 @@ class GamepadTouch : public ScriptWrappable {
   uint8_t surfaceId() const { return surface_id_; }
   void SetSurfaceId(uint8_t id) { surface_id_ = id; }
 
-  DOMFloat32Array* position() const { return position_; }
+  DOMFloat32Array* position() const { return position_.Get(); }
   void SetPosition(float x, float y);
 
-  DOMUint32Array* surfaceDimensions() const { return surface_dimensions_; }
+  DOMUint32Array* surfaceDimensions() const {
+    return surface_dimensions_.Get();
+  }
   bool HasSurfaceDimensions() { return has_surface_dimensions_; }
   void SetSurfaceDimensions(uint32_t x, uint32_t y);
 

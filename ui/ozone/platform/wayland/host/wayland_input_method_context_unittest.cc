@@ -306,15 +306,8 @@ INSTANTIATE_TEST_SUITE_P(
         wl::ServerConfig{
             .text_input_extension_version =
                 wl::TestZcrTextInputExtensionV1::Version::kV8,
-            .use_ime_keep_selection_fix = true,
         },
-        wl::ServerConfig{
-            .text_input_extension_version =
-                wl::TestZcrTextInputExtensionV1::Version::kV8,
-            .use_ime_keep_selection_fix = false,
-        },
-        wl::ServerConfig{.use_ime_keep_selection_fix = true},
-        wl::ServerConfig{.use_ime_keep_selection_fix = false}));
+        wl::ServerConfig{}));
 
 INSTANTIATE_TEST_SUITE_P(
     TextInputExtensionV7,
@@ -1268,9 +1261,7 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    const auto sent_range = GetParam().use_ime_keep_selection_fix
-                                ? gfx::Range(10, 7)
-                                : gfx::Range(7, 10);
+    const gfx::Range sent_range(10, 7);
     zwp_text_input_v1_send_cursor_position(
         text_input->resource(), sent_range.start(), sent_range.end());
     zwp_text_input_v1_send_commit_string(text_input->resource(), 0,
@@ -1417,11 +1408,8 @@ TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionTextForLongRange) {
     auto* text_input = server->text_input_manager_v1()->text_input();
     Mock::VerifyAndClearExpectations(text_input);
 
-    gfx::Range range = expected_sent_range;
-    if (GetParam().use_ime_keep_selection_fix) {
-      range =
-          gfx::Range(expected_sent_range.end(), expected_sent_range.start());
-    }
+    gfx::Range range =
+        gfx::Range(expected_sent_range.end(), expected_sent_range.start());
 
     zwp_text_input_v1_send_cursor_position(text_input->resource(),
                                            range.start(), range.end());

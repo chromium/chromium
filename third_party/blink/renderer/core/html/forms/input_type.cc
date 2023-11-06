@@ -78,6 +78,56 @@
 
 namespace blink {
 
+const AtomicString& InputType::TypeToString(Type type) {
+  switch (type) {
+    case Type::kButton:
+      return input_type_names::kButton;
+    case Type::kCheckbox:
+      return input_type_names::kCheckbox;
+    case Type::kColor:
+      return input_type_names::kColor;
+    case Type::kDate:
+      return input_type_names::kDate;
+    case Type::kDateTimeLocal:
+      return input_type_names::kDatetimeLocal;
+    case Type::kEmail:
+      return input_type_names::kEmail;
+    case Type::kFile:
+      return input_type_names::kFile;
+    case Type::kHidden:
+      return input_type_names::kHidden;
+    case Type::kImage:
+      return input_type_names::kImage;
+    case Type::kMonth:
+      return input_type_names::kMonth;
+    case Type::kNumber:
+      return input_type_names::kNumber;
+    case Type::kPassword:
+      return input_type_names::kPassword;
+    case Type::kRadio:
+      return input_type_names::kRadio;
+    case Type::kRange:
+      return input_type_names::kRange;
+    case Type::kReset:
+      return input_type_names::kReset;
+    case Type::kSearch:
+      return input_type_names::kSearch;
+    case Type::kSubmit:
+      return input_type_names::kSubmit;
+    case Type::kTelephone:
+      return input_type_names::kTel;
+    case Type::kText:
+      return input_type_names::kText;
+    case Type::kTime:
+      return input_type_names::kTime;
+    case Type::kURL:
+      return input_type_names::kUrl;
+    case Type::kWeek:
+      return input_type_names::kWeek;
+  }
+  NOTREACHED_NORETURN();
+}
+
 // Listed once to avoid any discrepancy between InputType::Create and
 // InputType::NormalizeTypeName.
 //
@@ -142,59 +192,14 @@ void InputType::Trace(Visitor* visitor) const {
 }
 
 const AtomicString& InputType::FormControlTypeAsString() const {
-  switch (type_) {
-    case Type::kButton:
-      return input_type_names::kButton;
-    case Type::kCheckbox:
-      return input_type_names::kCheckbox;
-    case Type::kColor:
-      return input_type_names::kColor;
-    case Type::kDate:
-      return input_type_names::kDate;
-    case Type::kDateTimeLocal:
-      return input_type_names::kDatetimeLocal;
-    case Type::kEmail:
-      return input_type_names::kEmail;
-    case Type::kFile:
-      return input_type_names::kFile;
-    case Type::kHidden:
-      return input_type_names::kHidden;
-    case Type::kImage:
-      return input_type_names::kImage;
-    case Type::kMonth:
-      return input_type_names::kMonth;
-    case Type::kNumber:
-      return input_type_names::kNumber;
-    case Type::kPassword:
-      return input_type_names::kPassword;
-    case Type::kRadio:
-      return input_type_names::kRadio;
-    case Type::kRange:
-      return input_type_names::kRange;
-    case Type::kReset:
-      return input_type_names::kReset;
-    case Type::kSearch:
-      return input_type_names::kSearch;
-    case Type::kSubmit:
-      return input_type_names::kSubmit;
-    case Type::kTelephone:
-      return input_type_names::kTel;
-    case Type::kText:
-      return input_type_names::kText;
-    case Type::kTime:
-      return input_type_names::kTime;
-    case Type::kURL:
-      return input_type_names::kUrl;
-    case Type::kWeek:
-      return input_type_names::kWeek;
-  }
+  return TypeToString(type_);
 }
 
 bool InputType::IsTextField() const {
   return false;
 }
 
-bool InputType::ShouldAutoDirUseValue() const {
+bool InputType::IsAutoDirectionalityFormAssociated() const {
   return false;
 }
 
@@ -272,7 +277,17 @@ bool InputType::IsFormDataAppendable() const {
 }
 
 void InputType::AppendToFormData(FormData& form_data) const {
-  form_data.AppendFromElement(GetElement().GetName(), GetElement().Value());
+  if (!IsSubmitInputType()) {
+    form_data.AppendFromElement(GetElement().GetName(), GetElement().Value());
+  }
+  if (IsAutoDirectionalityFormAssociated()) {
+    const AtomicString& dirname_attr_value =
+        GetElement().FastGetAttribute(html_names::kDirnameAttr);
+    if (!dirname_attr_value.IsNull()) {
+      form_data.AppendFromElement(dirname_attr_value,
+                                  GetElement().DirectionForFormData());
+    }
+  }
 }
 
 String InputType::ResultForDialogSubmit() const {

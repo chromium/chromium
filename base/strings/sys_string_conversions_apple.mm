@@ -91,7 +91,8 @@ OutStringType StringToStringWithEncodingsT(const InStringType& in,
     return OutStringType();
   }
 
-  return CFStringToStringWithEncodingT<OutStringType>(cfstring, out_encoding);
+  return CFStringToStringWithEncodingT<OutStringType>(cfstring.get(),
+                                                      out_encoding);
 }
 
 // Given a StringPiece `in` with an encoding specified by `in_encoding`, returns

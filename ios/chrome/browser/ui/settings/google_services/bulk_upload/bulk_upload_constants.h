@@ -14,6 +14,19 @@ enum class BulkUploadType : NSInteger {
   kReadinglist = 2,
 };
 
+// Accessibility identifier for the bulk upload table view.
+extern NSString* const kBulkUploadTableViewAccessibilityIdentifier;
+
+// Accessibility identifiers for the per-datatype row items in the bulk upload
+// table view.
+extern NSString* const kBulkUploadTableViewPasswordsItemAccessibilityIdentifer;
+extern NSString* const kBulkUploadTableViewBookmarksItemAccessibilityIdentifer;
+extern NSString* const
+    kBulkUploadTableViewReadingListItemAccessibilityIdentifer;
+
+// Accessibility identifiers for the save button in the bulk upload page.
+extern NSString* const kBulkUploadSaveButtonAccessibilityIdentifer;
+
 // Item to exchange between the mediator and the view controller.
 @interface BulkUploadViewItem : NSObject
 
@@ -25,6 +38,8 @@ enum class BulkUploadType : NSInteger {
 @property(nonatomic, copy) NSString* subtitle;
 // YES if the cell switch is selected.
 @property(nonatomic, assign) BOOL selected;
+// Accessibility identifier for the cell.
+@property(nonatomic, copy) NSString* accessibilityIdentifier;
 
 @end
 

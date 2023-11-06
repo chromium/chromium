@@ -1,0 +1,17 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+module blink.mojom;
+
+
+// A RuntimeFeature represents a Blink runtime feature whose enablement state
+// are tracked in both the browser and the renderer.
+//
+// These enum values should not be persisted nor logged to histograms.
+enum RuntimeFeature {
+  {% for feature in overridable_features %}
+  k{{feature.name}},
+  {% endfor %}
+};

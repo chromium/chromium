@@ -33,22 +33,23 @@ import org.chromium.components.webxr.CardboardUtils;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for various scenarios around when the permission prompt is expected.
- */
+/** End-to-end tests for various scenarios around when the permission prompt is expected. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // TODO(crbug.com/1192004): Remove --allow-pre-commit-input once the root cause of the
 // failures has been fixed.
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=WebXR,LogJsConsoleMessages",
-        "allow-pre-commit-input", "force-webxr-runtime=cardboard"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=WebXR,LogJsConsoleMessages",
+    "allow-pre-commit-input",
+    "force-webxr-runtime=cardboard"
+})
 public class WebXrVrCardboardPermissionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrPermissionTestFramework mWebXrVrPermissionTestFramework;
@@ -65,9 +66,7 @@ public class WebXrVrCardboardPermissionTest {
         CardboardUtils.useCardboardV1DeviceParamsForTesting();
     }
 
-    /**
-     * Tests that denying permission blocks the session from being created.
-     */
+    /** Tests that denying permission blocks the session from being created. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})
@@ -128,9 +127,7 @@ public class WebXrVrCardboardPermissionTest {
                 POLL_TIMEOUT_LONG_MS);
     }
 
-    /**
-     * Tests that granted permissions persist after a page reload.
-     */
+    /** Tests that granted permissions persist after a page reload. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})

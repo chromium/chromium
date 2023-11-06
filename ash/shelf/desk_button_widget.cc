@@ -115,6 +115,13 @@ DeskButtonWidget::DeskButtonWidget(Shelf* shelf)
 
 DeskButtonWidget::~DeskButtonWidget() = default;
 
+void DeskButtonWidget::SetDefaultChildToFocus(
+    views::View* default_child_to_focus) {
+  CHECK(!default_child_to_focus ||
+        IsChildFocusableView(default_child_to_focus));
+  default_child_to_focus_ = default_child_to_focus;
+}
+
 int DeskButtonWidget::GetPreferredLength() const {
   return is_expanded_ && is_horizontal_shelf_ ? GetPreferredExpandedWidth()
                                               : kDeskButtonHeight;
@@ -169,14 +176,15 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
 
   const int count = std::size(views);
   int focused = base::ranges::find(views, focused_view) - std::begin(views);
-  // This method is only called if the desk button widget already has focus.
-  CHECK(focused != count);
 
   int next = focused + (reverse ? -1 : 1);
   // Only the previous and next desk buttons can be disabled. If they are next,
   // the current focus is on the desk button and focus should leave the desk
-  // button widget.
-  if (next < 0 || next >= count || !views[next]->GetEnabled()) {
+  // button widget. In addition, `focused_view` might be null when the previous
+  // and next desk buttons change visibility as the desk button shrinks to zero
+  // state. In such case, just focus out the desk button widget.
+  if (focused == count || next < 0 || next >= count ||
+      !views[next]->GetEnabled()) {
     FocusOut(reverse);
     return;
   }
@@ -191,7 +199,7 @@ bool DeskButtonWidget::ShouldBeVisible() const {
       shell->session_controller()->GetLastActiveUserPrefService();
 
   return layout_manager->is_active_session_state() &&
-         !overview_controller->InOverviewSession() &&
+         !overview_controller->InOverviewSession() && prefs &&
          !shell->IsInTabletMode() && GetDeskButtonVisibility(prefs);
 }
 
@@ -336,6 +344,44 @@ DeskButton* DeskButtonWidget::GetDeskButton() const {
   return delegate_view_->desk_button();
 }
 
+views::View* DeskButtonWidget::GetFirstFocusableView() const {
+  auto* desk_button = GetDeskButton();
+  if (base::i18n::IsRTL() && desk_button->next_desk_button()->GetEnabled()) {
+    return desk_button->next_desk_button();
+  }
+  if (!base::i18n::IsRTL() && desk_button->prev_desk_button()->GetEnabled()) {
+    return desk_button->prev_desk_button();
+  }
+  return desk_button;
+}
+
+views::View* DeskButtonWidget::GetLastFocusableView() const {
+  auto* desk_button = GetDeskButton();
+  if (base::i18n::IsRTL() && desk_button->prev_desk_button()->GetEnabled()) {
+    return desk_button->prev_desk_button();
+  } else if (!base::i18n::IsRTL() &&
+             desk_button->next_desk_button()->GetEnabled()) {
+    return desk_button->next_desk_button();
+  }
+  return desk_button;
+}
+
+void DeskButtonWidget::StoreDeskButtonFocus() {
+  stored_focused_view_ = ShouldBeVisible() && IsActive()
+                             ? GetFocusManager()->GetFocusedView()
+                             : nullptr;
+  CHECK(!stored_focused_view_ || IsChildFocusableView(stored_focused_view_));
+}
+
+void DeskButtonWidget::RestoreDeskButtonFocus() {
+  if (ShouldBeVisible() && stored_focused_view_) {
+    default_child_to_focus_ = stored_focused_view_;
+    stored_focused_view_ = nullptr;
+    GetDeskButton()->SetFocused(true);
+    Shell::Get()->focus_cycler()->FocusWidget(this);
+  }
+}
+
 gfx::Point DeskButtonWidget::GetCenteredOrigin() const {
   const gfx::Rect navigation_bounds =
       shelf_->navigation_widget()->GetTargetBounds();
@@ -367,29 +413,23 @@ void DeskButtonWidget::FocusOut(bool reverse) {
   shelf_->shelf_focus_cycler()->FocusOut(reverse, SourceView::kDeskButton);
 }
 
+bool DeskButtonWidget::IsChildFocusableView(views::View* view) {
+  DeskButton* desk_button = GetDeskButton();
+  return view &&
+         (view == desk_button || view == desk_button->prev_desk_button() ||
+          view == desk_button->next_desk_button());
+}
+
 bool DeskButtonWidget::OnNativeWidgetActivationChanged(bool active) {
   if (!Widget::OnNativeWidgetActivationChanged(active)) {
     return false;
   }
 
-  // The next desk button will always be on the right, even in RTL, so it should
-  // default focus if `default_last_focusable_child_` is true (meaning we are
-  // reverse tab cycling) or we are in RTL. If both are true or neither are true
-  // then the previous desk button should default focus.
-  const bool default_focus_right =
-      default_last_focusable_child_ != base::i18n::IsRTL();
-
-  if (active) {
-    if (default_focus_right &&
-        GetDeskButton()->next_desk_button()->GetEnabled()) {
-      GetDeskButton()->next_desk_button()->RequestFocus();
-    } else if (!default_focus_right &&
-               GetDeskButton()->prev_desk_button()->GetEnabled()) {
-      GetDeskButton()->prev_desk_button()->RequestFocus();
-    } else {
-      GetDeskButton()->RequestFocus();
-    }
+  if (active && default_child_to_focus_) {
+    default_child_to_focus_->RequestFocus();
+    default_child_to_focus_ = nullptr;
   }
+
   return true;
 }
 

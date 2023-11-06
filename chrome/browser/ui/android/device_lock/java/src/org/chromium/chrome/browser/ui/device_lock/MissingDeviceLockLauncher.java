@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,6 +65,12 @@ public class MissingDeviceLockLauncher {
             if (mMissingDeviceLockCoordinator != null) {
                 mMissingDeviceLockCoordinator.hideDialog(
                         DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
+                RecordHistogram.recordEnumeratedHistogram(
+                        "Android.Automotive.DeviceLockRemovalDialogEvent",
+                        MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                .DEVICE_LOCK_RESTORED,
+                        MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent.COUNT);
+                mMissingDeviceLockCoordinator = null;
             }
             ChromeSharedPreferences.getInstance().writeBoolean(
                     ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, true);
@@ -71,8 +78,10 @@ public class MissingDeviceLockLauncher {
         }
 
         // If the device lock has been removed, prompt the user with the missing device lock UI.
-        if (ChromeSharedPreferences.getInstance().readBoolean(
-                    ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
+        if (mMissingDeviceLockCoordinator == null
+                && ChromeSharedPreferences.getInstance()
+                        .readBoolean(
+                                ChromePreferenceKeys.DEVICE_LOCK_SHOW_ALERT_IF_REMOVED, false)) {
             Callback<Boolean> onContinueWithoutDeviceLock = (wipeAllData)
                     -> ensureSignOutAndDeleteSensitiveData(
                             ()

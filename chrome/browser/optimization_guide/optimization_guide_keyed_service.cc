@@ -19,6 +19,7 @@
 #include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
+#include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -29,7 +30,10 @@
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -43,6 +47,7 @@
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_prefs/user_prefs.h"
 #include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -268,6 +273,8 @@ void OptimizationGuideKeyedService::Initialize() {
     model_execution_manager_ =
         std::make_unique<optimization_guide::ModelExecutionManager>(
             url_loader_factory, IdentityManagerFactory::GetForProfile(profile),
+            std::make_unique<
+                optimization_guide::ChromeOnDeviceModelServiceController>(),
             optimization_guide_logger_.get());
   }
 
@@ -291,6 +298,14 @@ void OptimizationGuideKeyedService::Initialize() {
   optimization_guide::LogFeatureFlagsInfo(optimization_guide_logger_.get(),
                                           profile->IsOffTheRecord(),
                                           profile->GetPrefs());
+
+  if (browser_context_ && !browser_context_->IsOffTheRecord() &&
+      !profile->IsGuestSession()) {
+    model_execution_features_controller_ =
+        std::make_unique<optimization_guide::internal::
+                             OptimizationGuideModelExecutionFeaturesController>(
+            profile->GetPrefs());
+  }
 }
 
 optimization_guide::ChromeHintsManager*
@@ -396,11 +411,25 @@ void OptimizationGuideKeyedService::ExecuteModel(
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_manager_) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(
+        base::unexpected(
+            optimization_guide::OptimizationGuideModelExecutionError::
+                FromModelExecutionError(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        ModelExecutionError::kGenericFailure)),
+        nullptr);
     return;
   }
   model_execution_manager_->ExecuteModel(feature, request_metadata,
                                          std::move(callback));
+}
+
+void OptimizationGuideKeyedService::UploadModelQualityLogs(
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // TODO(b/301301447): Uploads logs by passing the log entry's ownership to the
+  // server.
 }
 
 void OptimizationGuideKeyedService::OnProfileInitializationComplete(
@@ -440,4 +469,22 @@ void OptimizationGuideKeyedService::OverrideTargetModelForTesting(
     std::unique_ptr<optimization_guide::ModelInfo> model_info) {
   prediction_manager_->OverrideTargetModelForTesting(  // IN-TEST
       optimization_target, std::move(model_info));
+}
+
+bool OptimizationGuideKeyedService::IsSettingVisible(
+    optimization_guide::proto::ModelExecutionFeature feature) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return false;
+  }
+  return model_execution_features_controller_->IsSettingVisible(feature);
+}
+
+bool OptimizationGuideKeyedService::IsSettingEnabled(
+    optimization_guide::proto::ModelExecutionFeature feature) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!model_execution_features_controller_) {
+    return false;
+  }
+  return model_execution_features_controller_->IsSettingEnabled(feature);
 }

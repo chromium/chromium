@@ -101,14 +101,18 @@ class CONTENT_EXPORT PrivateAggregationHost
   // `timeout` is set, the report will be sent as if the pipe closed after the
   // timeout, regardless of when the disconnection actually happens. `timeout`
   // must be positive if set. If `timeout` is set, `context_id` must be set too.
-  // The return value indicates whether the receiver was accepted. Virtual for
-  // testing.
+  // If `aggregation_coordinator_origin` is set, the origin must be on the
+  // allowlist. But if the `kPrivateAggregationApiMultipleCloudProviders`
+  // feature is disabled, this function will act as if
+  // `aggregation_coordinator_origin` was not set. The return value indicates
+  // whether the receiver was accepted. Virtual for testing.
   [[nodiscard]] virtual bool BindNewReceiver(
       url::Origin worklet_origin,
       url::Origin top_frame_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       absl::optional<std::string> context_id,
       absl::optional<base::TimeDelta> timeout,
+      absl::optional<url::Origin> aggregation_coordinator_origin,
       mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>
           pending_receiver);
 
@@ -135,6 +139,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       const url::Origin& reporting_origin,
       PrivateAggregationBudgetKey::Api api_for_budgeting,
       absl::optional<std::string> context_id,
+      absl::optional<url::Origin> aggregation_coordinator_origin,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>
           contributions);
 

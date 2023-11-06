@@ -1,0 +1,20 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ApplicationLocaleValue": "fr"
+        },
+        "prefs": {
+          "intl.app_locale": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

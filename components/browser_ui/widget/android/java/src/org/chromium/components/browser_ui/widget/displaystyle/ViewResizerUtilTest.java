@@ -34,7 +34,7 @@ public final class ViewResizerUtilTest {
         int expectedPadding = 20;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, /*minWidePaddingPixels*/ expectedPadding);
+                        mContext, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 
@@ -44,7 +44,8 @@ public final class ViewResizerUtilTest {
         //  (screen_width - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP)/2 = (700 - 600)/2
         int expectedPadding = 50;
         int res =
-                ViewResizerUtil.computePaddingForWideDisplay(mContext, /*minWidePaddingPixels*/ 20);
+                ViewResizerUtil.computePaddingForWideDisplay(
+                        mContext, /* minWidePaddingPixels= */ 20);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 
@@ -56,7 +57,7 @@ public final class ViewResizerUtilTest {
         int expectedPadding = 60;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, /*minWidePaddingPixels*/ expectedPadding);
+                        mContext, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 }

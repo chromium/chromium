@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] Disconnected <input type=checkbox switch>
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Connected <input type=checkbox switch>
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Connected <input type=checkbox switch>: adding switch attribute
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Connected <input type=checkbox switch>: removing switch attribute
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Connected <input type=checkbox switch>: removing type attribute
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+[FAIL] Connected <input type=checkbox switch>: adding type attribute
+  promise_test: Unhandled rejection with value: object "TypeError: window.test_driver_internal.get_computed_role is not a function"
+Harness: the test ran to completion.
+

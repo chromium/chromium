@@ -122,14 +122,6 @@ void SecureDnsHandler::OnJavascriptDisallowed() {
 
 base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
   base::Value::List resolvers;
-
-  // Add a custom option to the front of the list
-  base::Value::Dict custom;
-  custom.Set("name", l10n_util::GetStringUTF8(IDS_SETTINGS_CUSTOM));
-  custom.Set("value", std::string());  // Empty value means custom.
-  custom.Set("policy", std::string());
-  resolvers.Append(std::move(custom));
-
   for (const auto* entry : providers_) {
     net::DnsOverHttpsConfig doh_config({entry->doh_server_config});
     base::Value::Dict dict;
@@ -139,9 +131,7 @@ base::Value::List SecureDnsHandler::GetSecureDnsResolverList() {
     resolvers.Append(std::move(dict));
   }
 
-  // Randomize the order of the resolvers, but keep custom in first place.
-  base::RandomShuffle(std::next(resolvers.begin()), resolvers.end());
-
+  base::RandomShuffle(resolvers.begin(), resolvers.end());
   return resolvers;
 }
 

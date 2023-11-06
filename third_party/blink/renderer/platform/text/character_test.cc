@@ -238,6 +238,30 @@ TEST(CharacterTest, TestIsCJKIdeographOrSymbol) {
   TestSpecificUChar32RangeIdeographSymbol(0x1F1E6, 0x1F6FF);
 }
 
+TEST(CharacterTest, HanKerning) {
+  struct Data {
+    UChar32 ch;
+    HanKerningCharType type;
+  } data_list[] = {
+      {kLeftDoubleQuotationMarkCharacter, HanKerningCharType::kOpenQuote},
+      {kRightDoubleQuotationMarkCharacter, HanKerningCharType::kCloseQuote},
+      {kMiddleDotCharacter, HanKerningCharType::kMiddle},
+      {kIdeographicSpaceCharacter, HanKerningCharType::kMiddle},
+      {kFullwidthComma, HanKerningCharType::kDot},
+      {0x3008, HanKerningCharType::kOpen},
+      {0xFF5F, HanKerningCharType::kOpen},
+      {0x3009, HanKerningCharType::kClose},
+      {0xFF60, HanKerningCharType::kClose},
+      {0x0028, HanKerningCharType::kOpenNarrow},
+      {0xFF62, HanKerningCharType::kOpenNarrow},
+      {0x0029, HanKerningCharType::kCloseNarrow},
+      {0xFF63, HanKerningCharType::kCloseNarrow},
+  };
+  for (const Data& data : data_list) {
+    EXPECT_EQ(Character::GetHanKerningCharType(data.ch), data.type);
+  }
+}
+
 TEST(CharacterTest, CanTextDecorationSkipInk) {
   // ASCII
   EXPECT_TRUE(Character::CanTextDecorationSkipInk('a'));

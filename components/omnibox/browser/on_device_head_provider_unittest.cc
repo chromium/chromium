@@ -56,7 +56,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
 
   void SetupTestOnDeviceHeadModel() {
     base::FilePath file_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
     // The same test model also used in ./on_device_head_model_unittest.cc.
     file_path = file_path.AppendASCII("components/test/data/omnibox");
     ASSERT_TRUE(base::PathExists(file_path));
@@ -69,7 +69,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void SetupTestOnDeviceTailModel() {
     base::FilePath dir_path, tail_model_path, vocab_path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir_path);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir_path);
     dir_path = dir_path.AppendASCII("components/test/data/omnibox");
     // The same test model also used in
     // ./on_device_tail_model_executor_unittest.cc.

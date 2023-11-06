@@ -307,25 +307,28 @@ class SafeBrowsingServiceTestWithAntiPhishingTelemetryEnabled
       new_map.insert_or_assign(
           ClientSafeBrowsingReportRequest::PhishySiteInteraction::
               PHISHY_CLICK_EVENT,
-          PhishyPageInteractionDetails(expected_click_occurrences,
-                                       base::Time::Now().ToJavaTime(),
-                                       base::Time::Now().ToJavaTime()));
+          PhishyPageInteractionDetails(
+              expected_click_occurrences,
+              base::Time::Now().InMillisecondsSinceUnixEpoch(),
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
     if (expected_key_occurrences > 0) {
       new_map.insert_or_assign(
           ClientSafeBrowsingReportRequest::PhishySiteInteraction::
               PHISHY_KEY_EVENT,
-          PhishyPageInteractionDetails(expected_key_occurrences,
-                                       base::Time::Now().ToJavaTime(),
-                                       base::Time::Now().ToJavaTime()));
+          PhishyPageInteractionDetails(
+              expected_key_occurrences,
+              base::Time::Now().InMillisecondsSinceUnixEpoch(),
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
     if (expected_paste_occurrences > 0) {
       new_map.insert_or_assign(
           ClientSafeBrowsingReportRequest::PhishySiteInteraction::
               PHISHY_PASTE_EVENT,
-          PhishyPageInteractionDetails(expected_paste_occurrences,
-                                       base::Time::Now().ToJavaTime(),
-                                       base::Time::Now().ToJavaTime()));
+          PhishyPageInteractionDetails(
+              expected_paste_occurrences,
+              base::Time::Now().InMillisecondsSinceUnixEpoch(),
+              base::Time::Now().InMillisecondsSinceUnixEpoch()));
     }
     return new_map;
   }

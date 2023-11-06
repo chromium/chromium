@@ -14,6 +14,10 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+class SearchEngineChoiceService;
+#endif
+
 class ProfilePickerSignedInFlowController;
 class ProfilePickerWebContentsHost;
 
@@ -58,6 +62,14 @@ class ProfileManagementStepController {
   CreateForPostSignInFlow(
       ProfilePickerWebContentsHost* host,
       std::unique_ptr<ProfilePickerSignedInFlowController> signed_in_flow);
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  static std::unique_ptr<ProfileManagementStepController>
+  CreateForSearchEngineChoice(
+      ProfilePickerWebContentsHost* host,
+      SearchEngineChoiceService* search_engine_choice_service,
+      base::OnceClosure callback);
+#endif
 
   explicit ProfileManagementStepController(ProfilePickerWebContentsHost* host);
   virtual ~ProfileManagementStepController();

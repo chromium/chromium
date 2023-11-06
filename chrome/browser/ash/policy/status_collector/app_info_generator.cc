@@ -164,7 +164,8 @@ void AppInfoGenerator::OnReportedSuccessfully(const base::Time report_time) {
     return;
   }
   provider_->activity_storage.TrimActivityPeriods(
-      report_time.ToJavaTime(), base::Time::Max().ToJavaTime());
+      report_time.InMillisecondsSinceUnixEpoch(),
+      base::Time::Max().InMillisecondsSinceUnixEpoch());
 }
 
 void AppInfoGenerator::OnWillReport() {

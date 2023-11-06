@@ -199,7 +199,7 @@ class CrOSComponentInstaller : public CrOSComponentManager {
                   base::OnceCallback<void(const base::Version&)>
                       version_callback) const override;
   void RegisterCompatiblePath(const std::string& name,
-                              const base::FilePath& path) override;
+                              CompatibleComponentInfo info) override;
   void RegisterInstalled() override;
 
   void UnregisterCompatiblePath(const std::string& name) override;
@@ -303,8 +303,8 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   // Repeatedly calls DispatchLoadCallback with failure parameters.
   void DispatchFailedLoads(std::vector<LoadCallback> callbacks);
 
-  // Maps from a compatible component name to its installed path.
-  base::flat_map<std::string, base::FilePath> compatible_components_;
+  // Maps from a compatible component name to its info.
+  base::flat_map<std::string, CompatibleComponentInfo> compatible_components_;
 
   // A weak pointer to a Delegate for emitting D-Bus signal.
   raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;

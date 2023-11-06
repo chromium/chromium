@@ -47,17 +47,19 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             Supplier<ResourceManager> resourceManagerSupplier,
             TopUiThemeColorProvider topUiThemeColorProvider, int layoutsToShowOn,
             boolean isVisibilityManuallyControlled) {
-        mModel = new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
-                         .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
-                         .with(TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
-                                 R.drawable.modern_location_bar)
-                         .with(TopToolbarOverlayProperties.VISIBLE, true)
-                         .with(TopToolbarOverlayProperties.X_OFFSET, 0)
-                         .with(TopToolbarOverlayProperties.Y_OFFSET,
-                                 browserControlsStateProvider.getTopControlOffset()
-                                         + browserControlsStateProvider.getTopControlsMinHeight())
-                         .with(TopToolbarOverlayProperties.ANONYMIZE, false)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(TopToolbarOverlayProperties.ALL_KEYS)
+                        .with(TopToolbarOverlayProperties.RESOURCE_ID, R.id.control_container)
+                        .with(
+                                TopToolbarOverlayProperties.URL_BAR_RESOURCE_ID,
+                                R.drawable.modern_location_bar)
+                        .with(TopToolbarOverlayProperties.VISIBLE, true)
+                        .with(TopToolbarOverlayProperties.X_OFFSET, 0)
+                        .with(
+                                TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                browserControlsStateProvider.getContentOffset())
+                        .with(TopToolbarOverlayProperties.ANONYMIZE, false)
+                        .build();
         mSceneLayer = new TopToolbarSceneLayer(resourceManagerSupplier);
         mChangeProcessor =
                 layoutManager.createCompositorMCP(mModel, mSceneLayer, TopToolbarSceneLayer::bind);

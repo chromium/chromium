@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AutoOpenAllowedForURLs": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "download.allowed_urls_for_open_by_policy": {
+            "value": [
+              "google.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

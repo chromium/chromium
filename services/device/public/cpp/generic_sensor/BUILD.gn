@@ -12,6 +12,8 @@ source_set("generic_sensor") {
     "sensor_traits.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   public_deps = [
     ":sensor_configuration",
     ":sensor_reading",
@@ -30,6 +32,8 @@ source_set("sensor_configuration") {
     "platform_sensor_configuration.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [ "//base" ]
 }
 
@@ -38,4 +42,6 @@ source_set("sensor_reading") {
     "sensor_reading.cc",
     "sensor_reading.h",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

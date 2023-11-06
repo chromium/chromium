@@ -1,0 +1,25 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SyncTypesListDisabled": [
+            "preferences",
+            "bookmarks"
+          ]
+        },
+        "prefs": {
+          "sync.bookmarks": {
+            "value": false
+          },
+          "sync.preferences": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

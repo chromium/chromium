@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="1178581264944972037">Pauzēt</translation>
+<translation id="2558806128245168542">Pāriet atpakaļ</translation>
 <translation id="3523426587027570423">Pieskarieties, lai aizvērtu atskaņotāju “Klausīties šo lapu”.</translation>
+<translation id="4431240646217225907">Teksta atzīmēšana un automātiskā ritināšana</translation>
 <translation id="4654641641922242357">Atskaņotājs “Klausīties šo lapu”.</translation>
 <translation id="4731877163452936634">Atskaņošanas ātrums: <ph name="PLAYBACK_SPEED" />. Noklikšķiniet, lai to mainītu.</translation>
 <translation id="5234971936051226002">Atskaņotājs “Klausīties šo lapu” ir minimizēts.</translation>
 <translation id="5596627076506792578">Citas opcijas</translation>
+<translation id="6315170314923504164">Balss</translation>
+<translation id="6550675742724504774">Opcijas</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
+<translation id="6831043979455480757">Tulkot</translation>
 <translation id="6846298663435243399">Notiek ielāde…</translation>
 <translation id="7587250070160020374">Pārlūkā Chrome notiek atskaņošana:</translation>
 <translation id="7945822420239537236">Patīt uz priekšu par <ph name="NUMBER_OF_SECONDS" /> sekundēm</translation>

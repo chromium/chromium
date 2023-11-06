@@ -76,9 +76,6 @@ class ErrorScreen : public BaseScreen,
   // Sets callback that is called on hide.
   void SetHideCallback(base::OnceClosure on_hide);
 
-  // Shows captive portal dialog.
-  void ShowCaptivePortal();
-
   // Toggles the connection pending indicator.
   void ShowConnectingIndicator(bool show);
 
@@ -113,6 +110,9 @@ class ErrorScreen : public BaseScreen,
       std::unique_ptr<UserContext> user_context) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
+
+  // Handle user action to open captive portal page.
+  void ShowCaptivePortal();
 
   // NetworkConnectionObserver overrides:
   void ConnectToNetworkRequested(const std::string& service_path) override;

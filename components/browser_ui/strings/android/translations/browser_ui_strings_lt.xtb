@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Padėkite mums tobulinti „Chrome“ nurodydami, kodėl leidote trečiųjų šalių slapukus. <ph name="BEGIN_LINK" />Išsiųskite atsiliepimą<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Pristabdyti</translation>
 <translation id="1181037720776840403">Pašalinti</translation>
+<translation id="1192844206376121885">Bus ištrinti visi domeno <ph name="ORIGIN" /> saugomi duomenys ir slapukai.</translation>
 <translation id="1201402288615127009">Kitas</translation>
 <translation id="1242008676835033345">Įterpta <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Sustabdyti</translation>
@@ -21,10 +22,10 @@
 <translation id="1384959399684842514">Atsisiuntimas pristabdytas</translation>
 <translation id="1415402041810619267">URL sutrumpintas</translation>
 <translation id="1426410128494586442">Taip</translation>
-<translation id="1446450296470737166">Leisti visiškai valdyti MIDI įr.</translation>
 <translation id="1448064542941920355">Sumažinti mastelį</translation>
 <translation id="1510341833810331442">Svetainėms neleidžiama išsaugoti duomenų įrenginyje</translation>
 <translation id="1547123415014299762">Trečiųjų šalių slapukai leidžiami</translation>
+<translation id="1568470248891039841">Svetainėse, kuriose lankotės, gali būti įterpta turinio iš kitų svetainių, pvz., vaizdų, skelbimų ir teksto. Šios kitos svetainės gali prašyti leidimo naudoti savo išsaugotą informaciją apie jus, kai naršote svetainę. <ph name="BEGIN_LINK" />Sužinokite daugiau apie įterptą turinį<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nauji veiksmai pasiekiami netoli ekrano viršaus</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Susijusios svetainės</translation>
@@ -41,7 +42,6 @@
 <translation id="187227595286001730">Susijusios svetainės gali matyti jūsų veiklą grupėje</translation>
 <translation id="1887786770086287077">Vietos prieiga išjungta šiame įrenginyje. Įjunkite ją skiltyje <ph name="BEGIN_LINK" />„Android“ nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Baigti</translation>
-<translation id="1919345977826869612">Skelbimai</translation>
 <translation id="1919950603503897840">Kontaktų pasirinkimas</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Padidinkite arba sumažinkite tekstą ir vaizdus visose svetainėse, kuriose lankotės</translation>
@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Netgi žaliais akiniais apsaugoję akis Dorotė ir jos draugai iš pradžių buvo apstulbinti</translation>
 <translation id="2176704795966505152">Rodyti mastelio keitimo parinktį pagrindiniame meniu</translation>
 <translation id="2182457891543959921">Klausti, ar svetainėms leidžiama kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį (rekomenduojama)</translation>
+<translation id="2185965788978862351">Bus ištrinta <ph name="DATASIZE" /> duomenų ir slapukų, kuriuos svetainės ar programos saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="2194856509914051091">Į ką reikėtų atsižvelgti</translation>
 <translation id="2212565012507486665">Leisti slapukus</translation>
 <translation id="2228071138934252756">Norėdami leisti „<ph name="APP_NAME" />“ pasiekti jūsų kamerą, taip pat įjunkite ją <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
@@ -71,7 +72,6 @@
 <translation id="2289270750774289114">Paklausti, kai svetainė nori atrasti netoliese esančius „Bluetooth“ įrenginius (rekomenduojama)</translation>
 <translation id="2315043854645842844">Kliento pasirinkto sertifikato nepalaiko operacinė sistema.</translation>
 <translation id="2321958826496381788">Vilkite šliaužiklį, kol bus patogu skaityti šį tekstą. Du kartus palietus pastraipą, tekstas turėtų būti mažiausiai tokio dydžio.</translation>
-<translation id="2329473609445770916">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2379925928934107488">Kai galima, taikyti tamsiąją temą svetainėse, kai „Chrome“ naudoja tamsiąją temą</translation>
 <translation id="2387895666653383613">Teksto mastelio keitimas</translation>
@@ -82,6 +82,7 @@
 <translation id="2434158240863470628">Atsisiųsta: <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">Kai kurių svetainių funkcijos gali neveikti inkognito režimu</translation>
 <translation id="2442870161001914531">Visada galite pateikti užklausą dėl svetainės staliniams kompiuteriams</translation>
+<translation id="2469312991797799607">Atlikus šį veiksmą bus ištrinti visi domeno <ph name="ORIGIN" /> ir visų jo svetainių duomenys bei slapukai</translation>
 <translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2482878487686419369">Pranešimai</translation>
 <translation id="2485422356828889247">Pašalinti</translation>
@@ -111,10 +112,11 @@
 <translation id="2891975107962658722">Neleiskite svetainei išsaugoti duomenų įrenginyje</translation>
 <translation id="2903493209154104877">Adresai</translation>
 <translation id="2910701580606108292">Paklausti prieš leidžiant svetainėms leisti saugomą turinį</translation>
-<translation id="2913331724188855103">Leisti svetainėms išsaugoti ir nuskaityti slapukų duomenis (rekomenduojama)</translation>
 <translation id="2932883381142163287">Pranešti apie piktnaudžiavimą</translation>
 <translation id="2968755619301702150">Sertifikato peržiūros priemonė</translation>
+<translation id="2979365474350987274">Trečiųjų šalių slapukai ribojami</translation>
 <translation id="3008272652534848354">Iš naujo nustatyti leidimus</translation>
+<translation id="3013291976881901233">MIDI įrenginiai</translation>
 <translation id="301521992641321250">Automatiškai užblokuota</translation>
 <translation id="3069226013421428034">Leisti trečiajai šaliai prisijungti prie konkrečios svetainės.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
@@ -129,7 +131,6 @@
 <translation id="3198916472715691905">Išsaugota duomenų: <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="321187648315454507">Norėdami leisti „<ph name="APP_NAME" />“ siųsti pranešimus, taip pat įjunkite juos <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofonas</translation>
-<translation id="3248611290851046188">Šioje svetainėje apibrėžiami pomėgiai, kuriais kitos svetainės gali pasinaudoti rodydamos jums skelbimus. Ši svetainė taip pat gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="3277252321222022663">Leidžiama svetainėms pasiekti jutiklius (rekomenduojama)</translation>
 <translation id="3285500645985761267">Leisti susijusioms svetainėms peržiūrėti jūsų veiklą grupėje</translation>
 <translation id="3295019059349372795">11 skyrius. Nuostabusis Smaragdo miestas</translation>
@@ -156,7 +157,6 @@
 <translation id="3721953990244350188">Atsisakyti ir rodyti kitą galimą veiksmą</translation>
 <translation id="3744111561329211289">Fono sinchronizavimas</translation>
 <translation id="3763247130972274048">Dukart palieskite vaizdo įrašą, kad praleistumėte 10 sek.</translation>
-<translation id="3794286421982011626">Svetainė, kurioje lankotės, gali išsaugoti informaciją apie jūsų atliktus veiksmus, kad ji galėtų veikti taip, kaip tikitės, pvz., kad liktumėte prisijungę prie svetainės arba galėtumėte išsaugoti prekes pirkinių krepšelyje. Dažnai svetainės laikinai išsaugo šią informaciją įrenginyje.</translation>
 <translation id="3797520601150691162">Netaikyti tamsiosios temos konkrečiai svetainei</translation>
 <translation id="3803367742635802571">Svetainės, kuriose lankotės, gali neveikti taip, kaip numatyta</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -171,6 +171,7 @@
 <translation id="3918378745482005425">Gali neveikti kai kurios funkcijos. Susijusios svetainės vis tiek gali naudoti trečiųjų šalių slapukus.</translation>
 <translation id="3955193568934677022">Leisti svetainėms paleisti apsaugotą turinį (rekomenduojama)</translation>
 <translation id="3967822245660637423">Atsisiuntimas baigtas</translation>
+<translation id="3974105241379491420">Svetainės gali prašyti naudoti savo išsaugotą informaciją apie jus</translation>
 <translation id="3987993985790029246">Kop. nuor.</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> iš ?</translation>
 <translation id="3992684624889376114">Apie šį puslapį</translation>
@@ -193,7 +194,6 @@
 <translation id="4338831206024587507">Visos svetainės su domenu <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Neleisti svetainėms žinoti, kada aktyviai naudojate šį įrenginį</translation>
 <translation id="4412992751769744546">Leisti trečiųjų šalių slapukus</translation>
-<translation id="4428065317363009941">Skelbimų suasmeninimas</translation>
 <translation id="4434045419905280838">Iššok. langai ir peradresavimai</translation>
 <translation id="443552056913301231">Atlikus šį veiksmą bus ištrinti visi vietiniai duomenys, įskaitant slapukus, iš naujo nustatyti visi<ph name="ORIGIN" /> leidimai</translation>
 <translation id="4468959413250150279">Konkrečios svetainės garso išjungimas.</translation>
@@ -229,6 +229,7 @@
 <translation id="5063480226653192405">Naudojimas</translation>
 <translation id="5091013926750941408">Svetainė mobiliesiems</translation>
 <translation id="509133520954049755">Pateikti užklausą dėl rodinio versijos staliniams kompiuteriams</translation>
+<translation id="5099358668261120049">Bus ištrinti visi duomenys ir slapukai, kuriuos domenas <ph name="ORIGIN" /> arba jo programa saugo jūsų pagrindiniame ekrane.</translation>
 <translation id="5100237604440890931">Sutraukta – spustelėkite, kad išskleistumėte</translation>
 <translation id="5123685120097942451">Inkognito skirtukas</translation>
 <translation id="5186036860380548585">Parinktis pasiekiama netoli ekrano viršaus</translation>
@@ -245,12 +246,11 @@
 <translation id="5335288049665977812">Leisti svetainėms paleisti „JavaScript“ (rekomenduojama)</translation>
 <translation id="534295439873310000">ALR įrenginiai</translation>
 <translation id="5344522958567249764">Tvarkyti su skelbimais susijusį privatumą</translation>
+<translation id="5389626883706033615">Svetainės blokuojamos, kad neprašytų naudoti savo išsaugotos informacijos apie jus</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(ir dar 1)}one{(ir dar #)}few{(ir dar #)}many{(ir dar #)}other{(ir dar #)}}</translation>
 <translation id="5403592356182871684">Pavadinimai</translation>
-<translation id="5412236728747081950">Ši svetainė gauna informaciją apie jūsų pomėgius iš „Chrome“, kad galėtų rodyti jums aktualesnius skelbimus</translation>
 <translation id="5438097262470833822">Bus iš naujo nustatyti svetainės <ph name="WEBSITE" /> leidimai</translation>
 <translation id="5489227211564503167">Praėjęs laikas: <ph name="ELAPSED_TIME" /> iš <ph name="TOTAL_TIME" />.</translation>
-<translation id="5494752089476963479">Blokuoti skelbimus svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="5502860503640766021">Leidžiama: <ph name="PERMISSION_1" />, užblokuota: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Svetainės negali prašyti siųsti pranešimus</translation>
 <translation id="5516455585884385570">Atidaryti pranešimų nustatymus</translation>
@@ -277,6 +277,7 @@
 <translation id="5916664084637901428">Įjungta</translation>
 <translation id="5922853908706496913">Bendrinamas ekranas</translation>
 <translation id="5922967540311291836">Blokuoti trečiųjų šalių slapukus:</translation>
+<translation id="5923512600150154850">Bus ištrinta <ph name="DATASIZE" /> svetainių saugomų duomenų ir slapukų.</translation>
 <translation id="5939518447894949180">Nustatyti iš naujo</translation>
 <translation id="5964247741333118902">Įterptas turinys</translation>
 <translation id="5968921426641056619">Įveskite žiniatinklio adresą</translation>
@@ -292,6 +293,7 @@
 <translation id="6177128806592000436">Ryšys su šia svetaine nėra saugus</translation>
 <translation id="6181444274883918285">Pridėti svetainės išimtį</translation>
 <translation id="6192792657125177640">Išimtys</translation>
+<translation id="6195163219142236913">Trečiųjų šalių slapukai apriboti</translation>
 <translation id="6196640612572343990">Blokuoti trečiosios šalies slapukus</translation>
 <translation id="6205314730813004066">Su skelbimais susijęs privatumas</translation>
 <translation id="6207207788774442484">Ištrinti duomenis ir iš naujo nustatyti leidimus</translation>
@@ -302,6 +304,7 @@
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
 <translation id="6320088164292336938">Vibruoti</translation>
+<translation id="6344622098450209924">Apsauga nuo stebėjimo</translation>
 <translation id="6367753977865761591">Blokuoti trečiosios šalies prisijungimą prie konkrečios svetainės.</translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="640163077447496506">Galiojimo laikas baigsis šiandien</translation>
@@ -332,6 +335,7 @@
 <translation id="6864395892908308021">Šis įrenginys negali nuskaityti ALR</translation>
 <translation id="6912998170423641340">Neleisti svetainėms skaityti teksto ir vaizdų iš iškarpinės</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
+<translation id="6950072572526089586">Svetainė, kurioje lankotės, gali išsaugoti informaciją apie jūsų atliktus veiksmus, kad galėtų veikti taip, kaip numatyta, pvz., kad liktumėte prisijungę prie svetainės arba galėtumėte išsaugoti prekes pirkinių krepšelyje. Dažnai svetainės laikinai išsaugo šią informaciją įrenginyje.</translation>
 <translation id="6965382102122355670">Gerai</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
 <translation id="6992289844737586249">Pirmiausia klausti prieš leidžiant svetainėms naudoti mikrofoną (rekomenduojama)</translation>
@@ -345,12 +349,14 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
+<translation id="7201549776650881587">Atlikus šį veiksmą bus ištrinti visi duomenys ir slapukai, kuriuos visos domeno <ph name="ORIGIN" /> svetainės arba jo programa saugo jūsų pagrindiniame ekrane</translation>
 <translation id="7203150201908454328">Išskleista</translation>
 <translation id="7219254577985949841">Ištrinti svetainės duomenis?</translation>
 <translation id="723171743924126238">Pasirinkti vaizdus</translation>
 <translation id="7243308994586599757">Parinktys pasiekiamos netoli ekrano apačios</translation>
 <translation id="7250468141469952378">Pasirinkta: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Leidžiama: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Užblokavote svetaines, kad nebūtų naudojami trečiųjų šalių slapukai, siekiant jus stebėti, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="7302486331832100261">Įprastai blokuojate pranešimus. Norėdami leisti, palieskite „Išsami informacija“.</translation>
 <translation id="7366415735885268578">Svetainės pridėjimas</translation>
 <translation id="7368695150573390554">Visi duomenys ne iš interneto bus ištrinti</translation>
@@ -363,7 +369,6 @@
 <translation id="7554752735887601236">Svetainėje naudojamas jūsų mikrofonas</translation>
 <translation id="7561196759112975576">Visada</translation>
 <translation id="757524316907819857">Užblokuoti svetaines, kad neleistų apsaugoto turinio</translation>
-<translation id="7577900504646297215">Tvarkyti pomėgius</translation>
 <translation id="7594634374516752650">Prijungta prie „Bluetooth“ įrenginio</translation>
 <translation id="7641339528570811325">Valyti naršymo duomenis...</translation>
 <translation id="7649070708921625228">Pagalba</translation>
@@ -430,6 +435,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}one{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėje}few{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainėse}many{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainės}other{Slapukai leidžiami <ph name="FPS_MEMBERS_COUNT" /> <ph name="FPS_OWNER" /> svetainių}}</translation>
 <translation id="857943718398505171">Leidžiama (rekomenduojama)</translation>
 <translation id="8609465669617005112">Perkelti į viršų</translation>
+<translation id="8649036394979866943">„Chrome“ daugelyje svetainių riboja trečiųjų šalių slapukų naudojimą, siekiant stebėti jus, kai naršote. Apsilankykite nustatymuose, kad galėtumėte <ph name="BEGIN_LINK" />tvarkyti stebėjimo apsaugas<ph name="END_LINK" />.</translation>
 <translation id="8676374126336081632">Išvalyti įvestą tekstą</translation>
 <translation id="8681886425883659911">Skelbimai blokuojami svetainėse, kuriose rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="868929229000858085">Ieškokite savo kontaktuose</translation>
@@ -452,6 +458,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ALR išjungtas šiame įrenginyje. Įjunkite ALR <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Blokuoti svetaines neleidžiant peržiūrėti ir keisti informacijos NFC įrenginiuose</translation>
+<translation id="8944485226638699751">Apribota</translation>
 <translation id="8958424370300090006">Blokuoti konkrečios svetainės slapukus.</translation>
 <translation id="8959122750345127698">Naršymas nepasiekiamas: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Pamiršti</translation>

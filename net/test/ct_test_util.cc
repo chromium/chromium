@@ -169,7 +169,8 @@ void GetX509CertSignedEntry(SignedEntryData* entry) {
 }
 
 void GetX509CertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
-  tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
+  tree_leaf->timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
   GetX509CertSignedEntry(&tree_leaf->signed_entry);
   tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }
@@ -186,7 +187,8 @@ void GetPrecertSignedEntry(SignedEntryData* entry) {
 }
 
 void GetPrecertTreeLeaf(MerkleTreeLeaf* tree_leaf) {
-  tree_leaf->timestamp = base::Time::FromJsTime(kTestTimestamp);
+  tree_leaf->timestamp =
+      base::Time::FromMillisecondsSinceUnixEpoch(kTestTimestamp);
   GetPrecertSignedEntry(&tree_leaf->signed_entry);
   tree_leaf->extensions = HexDecode(kDefaultExtensions);
 }

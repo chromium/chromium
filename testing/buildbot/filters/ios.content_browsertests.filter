@@ -30,7 +30,6 @@
 -All/SitePerProcessBrowserTest.TextAutosizerPageInfo/1
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/0
 -All/SitePerProcessBrowserTest.TwoSubframesCreatePopupMenuWidgetsSimultaneously/1
--All/SyntheticInputTest.SmoothScrollWheel/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/0
 -All/TouchpadPinchBrowserTest.TouchpadPinchChangesPageScale/1
 -All/TouchpadPinchBrowserTest.WheelListenerAllowingPinch/0
@@ -48,8 +47,6 @@
 -BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenarioDefaultName
 -BackgroundTracingManagerBrowserTest.PerfettoSystemBackgroundScenarioRuleId
 -BrowserGpuChannelHostFactoryTest.GrContextKeepsGpuChannelAlive
--BrowserSideFlingBrowserTest.EarlyTouchpadFlingCancelationOnInertialGSUAckNotConsumed
--BrowserSideFlingBrowserTest.EarlyTouchscreenFlingCancelationOnInertialGSUAckNotConsumed
 -CaptureScreenshotTest.CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
 -CaptureScreenshotTest.TransparentScreenshotsFull
 -ContentBrowserTest.RendererCrashCallStack
@@ -65,7 +62,6 @@
 -DohHttpsProtocolUpgradeBrowserTest.HttpsProtocolUpgrade
 -DohHttpsProtocolUpgradeBrowserTest.NoProtocolUpgrade
 -FakeSystemTracingDevToolsProtocolTest.TracingWithFakeSystemBackend
--FontPreferencesBrowserTest.GenericFamilies
 -FontUniqueNameBrowserTest.ContentLocalFontsMatching
 -InputEventBrowserTest.MouseDownEventTimeStamp
 -KeyboardLockBrowserTest.CancelInFullscreen
@@ -89,9 +85,7 @@
 -MojoSandboxTest.IsProcessSandboxed
 -NetworkResponseProtocolECHTest.SecurityDetailsECH
 -NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackAfterHiddenNavigationFails
--NoCompositingRenderWidgetHostViewBrowserTest.NoFallbackIfSwapFailedBeforeNavigation
 -NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterHiddenNavigation
--NoCompositingRenderWidgetHostViewBrowserTest.ValidLocalSurfaceIdAfterInitialNavigation
 -NoGPUCaptureScreenshotTest.LargeScreenshot
 -PointerLockBrowserTest.PointerLockRequestUnadjustedMovement
 -PointerLockBrowserTest.PointerLockWheelEventRouting
@@ -117,10 +111,6 @@
 -SitePerProcessHitTestBrowserTest.PopupMenuTest
 -SitePerProcessHitTestBrowserTest.ScrolledNestedPopupMenuTest
 -SitePerProcessHitTestBrowserTest.TouchpadDoubleTapZoomOverOOPIF
--TouchInputBrowserTest.MultiPointTouchPress
--TouchInputBrowserTest.TouchNoHandler
--TouchInputBrowserTest.TouchStartConsume
--TouchInputBrowserTest.TouchStartNoConsume
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.CrashForBug1201589
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.HasSharedArrayBuffer
 -UnrestrictedSharedArrayBufferOriginTrialBrowserTest.HasSharedArrayBufferReuseContext
@@ -182,7 +172,7 @@
 
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
--BackForwardCacheBrowserTest.CCNSAndWebSocketBothRecorded
+-BackForwardCacheBrowserTestNoTestingConfig.CCNSAndWebSocketBothRecorded
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromHTMLFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.BlockAndUnblockFromJavaScriptFile
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromHTMLFile
@@ -228,6 +218,8 @@
 -Default/MediaTest.AudioBearOpusWebm/1
 -Default/MediaTest.Navigate/0
 -Default/MediaTest.Navigate/1
+-Default/MediaTest.VideoBear3gpAacH264/0
+-Default/MediaTest.VideoBear3gpAacH264/1
 -Default/MediaTest.VideoBearHighBitDepthMp4/0
 -Default/MediaTest.VideoBearHighBitDepthMp4/1
 -Default/MediaTest.VideoBearMovPcmS16be/0
@@ -284,6 +276,9 @@
 
 # TODO(crbug.com/1492573): reports the wrong width/height.
 -RenderWidgetHostFoldableCSSTest.ViewportSegmentsWorksInUAFullscreenCSS
+
+# TODO(crbug.com/1495761): Text area handle has shrunk.
+-FormControlsBrowserTest.Textarea
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled

@@ -49,6 +49,7 @@ class CORE_EXPORT PaintLayerPainter {
                             PaintFlags);
   void PaintFragmentWithPhase(PaintPhase,
                               const FragmentData&,
+                              wtf_size_t fragment_data_idx,
                               const NGPhysicalBoxFragment*,
                               GraphicsContext&,
                               PaintFlags);

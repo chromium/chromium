@@ -13,7 +13,28 @@
 <os-settings-animated-pages id="pages" section="[[section_]]">
   <div route-path="default">
     <settings-card header-text="$i18n{privacyPageTitle}">
+      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
+        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+          <cr-link-row id="privacyHubSubpageTrigger"
+              on-click="onPrivacyHubClick_"
+              label="$i18n{privacyHubTitle}"
+              sub-label="$i18n{privacyHubSubtext}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <div class="hr"></div>
+        </template>
+      </template>
       <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+        <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+          <cr-link-row id="syncSetupRow"
+              start-icon="cr:sync"
+              label="$i18n{syncAndNonPersonalizedServices}"
+              sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
+              on-click="onSyncClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <div class="hr"></div>
+        </template>
         <cr-link-row id="lockScreenRow"
             on-click="onConfigureLockClick_"
             label="[[selectLockScreenTitleString_(hasPinLogin)]]"
@@ -75,13 +96,15 @@
           deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
       <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-        <div class="hr"></div>
-        <cr-link-row id="privacyHubSubpageTrigger"
-            on-click="onPrivacyHubClick_"
-            label="$i18n{privacyHubTitle}"
-            sub-label="$i18n{privacyHubSubtext}"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
+        <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
+          <cr-link-row id="privacyHubSubpageTrigger"
+              class="hr"
+              on-click="onPrivacyHubClick_"
+              label="$i18n{privacyHubTitle}"
+              sub-label="$i18n{privacyHubSubtext}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
       </template>
       <template is="dom-if" if="[[isThunderboltSupported_]]">
         <div class="hr"></div>
@@ -133,6 +156,24 @@
   </div>
 
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
+      <template is="dom-if" route-path="/osSyncSetup">
+        <os-settings-subpage
+            page-title="$i18n{syncPageTitle}"
+            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+          <os-settings-sync-subpage
+              sync-status="[[syncStatus]]" prefs="{{prefs}}">
+          </os-settings-sync-subpage>
+        </os-settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/osSync">
+        <os-settings-subpage page-title="[[getSyncAdvancedTitle_()]]"
+            learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}">
+          <os-sync-controls-subpage>
+          </os-sync-controls-subpage>
+        </os-settings-subpage>
+      </template>
+    </template>
     <template is="dom-if" route-path="/osPrivacy/lockScreen">
       <os-settings-subpage page-title="[[selectLockScreenTitleString_(hasPinLogin)]]">
         <settings-lock-screen-subpage id="lockScreen"
@@ -172,6 +213,12 @@
       <os-settings-subpage page-title="$i18n{microphoneToggleTitle}">
         <settings-privacy-hub-microphone-subpage prefs="{{prefs}}">
         </settings-privacy-hub-microphone-subpage>
+      </os-settings-subpage>
+    </template>
+    <template is="dom-if" route-path="/osPrivacy/privacyHub/geolocation">
+      <os-settings-subpage page-title="$i18n{geolocationAreaTitle}">
+        <settings-privacy-hub-geolocation-subpage prefs="{{prefs}}">
+        </settings-privacy-hub-geolocation-subpage>
       </os-settings-subpage>
     </template>
   </template>

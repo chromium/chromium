@@ -266,7 +266,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   for (const GURL& content_url : content_urls) {
     if (!content_url.is_valid()) {
       std::move(done).Run(
-          extensions::api::file_manager_private::TASK_RESULT_FAILED,
+          extensions::api::file_manager_private::TaskResult::kFailed,
           "Invalid url: " + content_url.possibly_invalid_spec());
       return;
     }
@@ -275,7 +275,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   // File manager in secondary profile cannot access ARC.
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        extensions::api::file_manager_private::TaskResult::kFailed,
         "Not primary profile");
     return;
   }
@@ -284,7 +284,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   if (!arc_service_manager) {
     LOG(ERROR) << "Failed to get ArcServiceManager";
     std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        extensions::api::file_manager_private::TaskResult::kFailed,
         "No ArcServiceManager");
     return;
   }
@@ -294,7 +294,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
       DEPRECATED_OpenUrlsWithPermission);
   if (!arc_file_system) {
     std::move(done).Run(
-        extensions::api::file_manager_private::TASK_RESULT_FAILED,
+        extensions::api::file_manager_private::TaskResult::kFailed,
         "OpenUrlsWithPermission is not supported");
     return;
   }
@@ -313,7 +313,7 @@ void ExecuteArcTaskAfterContentUrlsResolved(
   // TODO(benwells): return the correct code here, depending on how the app
   // will be opened in multiprofile.
   std::move(done).Run(
-      extensions::api::file_manager_private::TASK_RESULT_MESSAGE_SENT, "");
+      extensions::api::file_manager_private::TaskResult::kMessageSent, "");
 
   arc::ArcMetricsService::RecordArcUserInteraction(
       profile, arc::UserInteractionType::APP_STARTED_FROM_FILE_MANAGER);

@@ -904,6 +904,7 @@ For `type == 14` events:
  *   `downloader`: A string identifying the download algorithm / stack. Known
      values:
      *   "" (empty string): Unknown downloader.
+     *   "nsurlsession_background": MacOS background NSURLSession.
      *   "bits": Microsoft BITS.
      *   "direct": The Chromium network stack.
  *   `expected_bytes`: The number of bytes expected to be downloaded. Default:

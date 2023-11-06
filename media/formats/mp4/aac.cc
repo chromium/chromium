@@ -6,34 +6,35 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-
-#include "base/logging.h"
+#include "base/containers/span.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
 
-namespace media {
-namespace mp4 {
+namespace media::mp4 {
 
 constexpr uint8_t kXHeAAcType = 42;
 
 AAC::AAC()
-    : profile_(0), frequency_index_(0), channel_config_(0), frequency_(0),
-      extension_frequency_(0), channel_layout_(CHANNEL_LAYOUT_UNSUPPORTED) {
-}
+    : profile_(0),
+      frequency_index_(0),
+      channel_config_(0),
+      frequency_(0),
+      extension_frequency_(0),
+      channel_layout_(CHANNEL_LAYOUT_UNSUPPORTED) {}
 
 AAC::AAC(const AAC& other) = default;
 
 AAC::~AAC() = default;
 
-bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
-  codec_specific_data_ = data;
+bool AAC::Parse(base::span<const uint8_t> data, MediaLog* media_log) {
+  codec_specific_data_.assign(data.begin(), data.end());
 
-  if (data.empty())
+  if (data.empty()) {
     return false;
+  }
 
-  BitReader reader(&data[0], data.size());
+  BitReader reader(data.data(), data.size());
   uint8_t extension_type = 0;
   bool ps_present = false;
   uint8_t extension_frequency_index = 0xff;
@@ -55,8 +56,9 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   }
 
   RCHECK(reader.ReadBits(4, &frequency_index_));
-  if (frequency_index_ == 0xf)
+  if (frequency_index_ == 0xf) {
     RCHECK(reader.ReadBits(24, &frequency_));
+  }
   RCHECK(reader.ReadBits(4, &channel_config_));
 
   // Read extension configuration for explicitly signaled HE-AAC profiles
@@ -65,8 +67,9 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
     ps_present = (profile_ == 29);
     extension_type = 5;
     RCHECK(reader.ReadBits(4, &extension_frequency_index));
-    if (extension_frequency_index == 0xf)
+    if (extension_frequency_index == 0xf) {
       RCHECK(reader.ReadBits(24, &extension_frequency_));
+    }
     // With HE extensions now known, determine underlying profile.
     RCHECK(reader.ReadBits(5, &profile_));
   }
@@ -100,8 +103,9 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
         if (sbr_present_flag) {
           RCHECK(reader.ReadBits(4, &extension_frequency_index));
 
-          if (extension_frequency_index == 0xf)
+          if (extension_frequency_index == 0xf) {
             RCHECK(reader.ReadBits(24, &extension_frequency_));
+          }
 
           // Note: The check for 12 available bits comes from the AAC spec.
           if (reader.bits_available() >= 12) {
@@ -159,11 +163,13 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 }
 
 int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
-  if (extension_frequency_ > 0)
+  if (extension_frequency_ > 0) {
     return extension_frequency_;
+  }
 
-  if (!sbr_in_mimetype)
+  if (!sbr_in_mimetype) {
     return frequency_;
+  }
 
   // The following code is written according to ISO 14496-3:2009 Table 1.11 and
   // Table 1.25. (Table 1.11 refers to the capping to 48000, Table 1.25 refers
@@ -177,10 +183,56 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO 14496-3:2009 Section 1.6.5.3 for details about this special casing.
-  if (sbr_in_mimetype && channel_config_ == 1)
+  if (sbr_in_mimetype && channel_config_ == 1) {
     return CHANNEL_LAYOUT_STEREO;
+  }
 
   return channel_layout_;
+}
+
+std::unique_ptr<uint8_t[]> AAC::CreateAdtsFromEsds(
+    base::span<const uint8_t> buffer,
+    int* adts_header_size) {
+  if (profile_ == kXHeAAcType) {
+    return nullptr;
+  }
+
+  const size_t total_size = buffer.size() + kADTSHeaderMinSize;
+
+  // `total_size` might be too big; ADTS represents packet size in 13 bits.
+  if (total_size >= (1 << 13)) {
+    return nullptr;
+  }
+
+  auto adts = std::make_unique<uint8_t[]>(total_size);
+
+  auto adts_span = base::make_span(adts.get(), total_size);
+  auto adts_header = adts_span.subspan(0, kADTSHeaderMinSize);
+  auto adts_data = adts_span.subspan(kADTSHeaderMinSize);
+
+  SetAdtsHeader(adts_header, total_size);
+
+  CHECK_EQ(adts_data.size_bytes(), buffer.size_bytes());
+  memcpy(adts_data.data(), buffer.data(), adts_data.size_bytes());
+
+  *adts_header_size = kADTSHeaderMinSize;
+
+  return adts;
+}
+
+void AAC::SetAdtsHeader(base::span<uint8_t> adts, size_t total_size) const {
+  CHECK_NE(profile_, kXHeAAcType);
+  CHECK_EQ(adts.size(), kADTSHeaderMinSize);
+
+  adts[0] = 0xff;
+  adts[1] = 0xf1;
+  adts[2] =
+      ((profile_ - 1) << 6) + (frequency_index_ << 2) + (channel_config_ >> 2);
+  adts[3] =
+      static_cast<uint8_t>(((channel_config_ & 0x3) << 6) + (total_size >> 11));
+  adts[4] = static_cast<uint8_t>((total_size & 0x7ff) >> 3);
+  adts[5] = ((total_size & 7) << 5) + 0x1f;
+  adts[6] = 0xfc;
 }
 
 bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
@@ -198,20 +250,15 @@ bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer,
          channel_config_ <= 7);
 
   // ADTS header uses 13 bits for packet size.
-  if (size >= (1 << 13))
+  if (size >= (1 << 13)) {
     return false;
+  }
 
   std::vector<uint8_t>& adts = *buffer;
 
   adts.insert(buffer->begin(), kADTSHeaderMinSize, 0);
-  adts[0] = 0xff;
-  adts[1] = 0xf1;
-  adts[2] =
-      ((profile_ - 1) << 6) + (frequency_index_ << 2) + (channel_config_ >> 2);
-  adts[3] = static_cast<uint8_t>(((channel_config_ & 0x3) << 6) + (size >> 11));
-  adts[4] = static_cast<uint8_t>((size & 0x7ff) >> 3);
-  adts[5] = ((size & 7) << 5) + 0x1f;
-  adts[6] = 0xfc;
+
+  SetAdtsHeader(base::make_span(adts).subspan(0, kADTSHeaderMinSize), size);
 
   *adts_header_size = kADTSHeaderMinSize;
   return true;
@@ -256,18 +303,20 @@ bool AAC::SkipGASpecificConfig(BitReader* bit_reader) const {
 
   RCHECK(bit_reader->ReadBits(1, &dummy));  // frameLengthFlag
   RCHECK(bit_reader->ReadBits(1, &depends_on_core_coder));
-  if (depends_on_core_coder == 1)
+  if (depends_on_core_coder == 1) {
     RCHECK(bit_reader->ReadBits(14, &dummy));  // coreCoderDelay
+  }
 
   RCHECK(bit_reader->ReadBits(1, &extension_flag));
   RCHECK(channel_config_ != 0);
 
-  if (profile_ == 6 || profile_ == 20)
+  if (profile_ == 6 || profile_ == 20) {
     RCHECK(bit_reader->ReadBits(3, &dummy));  // layerNr
+  }
 
   if (extension_flag) {
     if (profile_ == 22) {
-      RCHECK(bit_reader->ReadBits(5, &dummy));  // numOfSubFrame
+      RCHECK(bit_reader->ReadBits(5, &dummy));   // numOfSubFrame
       RCHECK(bit_reader->ReadBits(11, &dummy));  // layer_length
     }
 
@@ -281,6 +330,4 @@ bool AAC::SkipGASpecificConfig(BitReader* bit_reader) const {
   return true;
 }
 
-}  // namespace mp4
-
-}  // namespace media
+}  // namespace media::mp4

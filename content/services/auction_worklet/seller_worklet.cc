@@ -301,7 +301,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
                          const absl::optional<uint16_t> experiment_group_id,
                          const blink::AuctionConfig::NonSharedParams&
                              auction_ad_config_non_shared_params,
-                         std::vector<v8::Local<v8::Value>>* args) {
+                         v8::LocalVector<v8::Value>* args) {
   v8::Isolate* isolate = v8_helper->isolate();
   v8::Local<v8::Object> auction_config_value = v8::Object::New(isolate);
   gin::Dictionary auction_config_dict(isolate, auction_config_value);
@@ -316,7 +316,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   }
 
   if (auction_ad_config_non_shared_params.interest_group_buyers) {
-    std::vector<v8::Local<v8::Value>> interest_group_buyers;
+    v8::LocalVector<v8::Value> interest_group_buyers(isolate);
     for (const url::Origin& buyer :
          *auction_ad_config_non_shared_params.interest_group_buyers) {
       v8::Local<v8::String> v8_buyer;
@@ -437,7 +437,7 @@ bool AppendAuctionConfig(AuctionV8Helper* v8_helper,
   const auto& component_auctions =
       auction_ad_config_non_shared_params.component_auctions;
   if (!component_auctions.empty()) {
-    std::vector<v8::Local<v8::Value>> component_auction_vector;
+    v8::LocalVector<v8::Value> component_auction_vector(isolate);
     for (const auto& component_auction : component_auctions) {
       if (!AppendAuctionConfig(
               v8_helper, context, *component_auction.decision_logic_url,
@@ -937,7 +937,7 @@ void SellerWorklet::V8State::ScoreAd(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   if (!v8_helper_->AppendJsonValue(context, ad_metadata_json, &args)) {
     PostScoreAdCallbackToUserThreadOnError(
         std::move(callback),
@@ -1262,22 +1262,6 @@ void SellerWorklet::V8State::ScoreAd(
     }
   }
 
-  // Fail if `allow_component_auction` is false and this is a component seller
-  // or a top-level seller scoring a bid from a component auction -
-  // `browser_signals_other_seller` is non-null in only those two cases.
-  if (browser_signals_other_seller && !allow_component_auction) {
-    errors_out.push_back(base::StrCat(
-        {decision_logic_url_.spec(),
-         " scoreAd() return value does not have allowComponentAuction set to "
-         "true. Ad dropped from component auction."}));
-    PostScoreAdCallbackToUserThreadOnError(
-        std::move(callback),
-        /*scoring_latency=*/elapsed, std::move(errors_out),
-        context_recycler.private_aggregation_bindings()
-            ->TakePrivateAggregationRequests());
-    return;
-  }
-
   // Fail if the score is invalid.
   if (std::isnan(score) || !std::isfinite(score)) {
     errors_out.push_back(base::StrCat(
@@ -1302,6 +1286,24 @@ void SellerWorklet::V8State::ScoreAd(
         context_recycler.private_aggregation_bindings()
             ->TakePrivateAggregationRequests(),
         /*scoring_latency=*/elapsed, std::move(errors_out));
+    return;
+  }
+
+  // Fail if `allow_component_auction` is false and this is a component seller
+  // or a top-level seller scoring a bid from a component auction -
+  // `browser_signals_other_seller` is non-null in only those two cases.
+  // This is after the score check so that returning a negative score with
+  // nothing else is not treated as an error in a component auction.
+  if (browser_signals_other_seller && !allow_component_auction) {
+    errors_out.push_back(base::StrCat(
+        {decision_logic_url_.spec(),
+         " scoreAd() return value does not have allowComponentAuction set to "
+         "true. Ad dropped from component auction."}));
+    PostScoreAdCallbackToUserThreadOnError(
+        std::move(callback),
+        /*scoring_latency=*/elapsed, std::move(errors_out),
+        context_recycler.private_aggregation_bindings()
+            ->TakePrivateAggregationRequests());
     return;
   }
 
@@ -1393,7 +1395,7 @@ void SellerWorklet::V8State::ReportResult(
   ContextRecyclerScope context_recycler_scope(context_recycler);
   v8::Local<v8::Context> context = context_recycler_scope.GetContext();
 
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(isolate);
   if (!AppendAuctionConfig(v8_helper_.get(), context, decision_logic_url_,
                            trusted_scoring_signals_url_, experiment_group_id_,
                            auction_ad_config_non_shared_params, &args)) {

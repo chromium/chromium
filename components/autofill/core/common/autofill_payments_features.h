@@ -28,7 +28,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnDesktop);
 BASE_DECLARE_FEATURE(kAutofillEnableMovingGPayLogoToTheRightOnClank);
 BASE_DECLARE_FEATURE(kAutofillEnableNewCardArtAndNetworkImages);
 BASE_DECLARE_FEATURE(kAutofillEnableNewSaveCardBubbleUi);
-BASE_DECLARE_FEATURE(kAutofillEnableOfferNotificationForPromoCodes);
 BASE_DECLARE_FEATURE(kAutofillEnableOffersInClankKeyboardAccessory);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -40,7 +39,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableRemadeDownstreamMetrics);
 BASE_DECLARE_FEATURE(kAutofillEnableServerIban);
 BASE_DECLARE_FEATURE(kAutofillEnableStickyManualFallbackForCards);
 BASE_DECLARE_FEATURE(kAutofillEnableUpdateVirtualCardEnrollment);
-BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardFidoEnrollment);
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
 BASE_DECLARE_FEATURE(kAutofillMoveLegalTermsAndIconForNewCardEnrollment);
 BASE_DECLARE_FEATURE(kAutofillParseVcnCardOnFileStandaloneCvcFields);

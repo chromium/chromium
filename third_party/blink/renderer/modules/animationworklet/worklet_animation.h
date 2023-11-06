@@ -76,7 +76,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
 
   String animatorName() { return animator_name_; }
   AnimationEffect* effect() { return GetEffect(); }
-  AnimationTimeline* timeline() { return timeline_; }
+  AnimationTimeline* timeline() { return timeline_.Get(); }
   String playState();
   absl::optional<double> currentTime();
   absl::optional<double> startTime();
@@ -128,7 +128,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
       absl::optional<base::TimeDelta> local_time) override;
 
   Document* GetDocument() const override { return document_.Get(); }
-  AnimationTimeline* GetTimeline() const override { return timeline_; }
+  AnimationTimeline* GetTimeline() const override { return timeline_.Get(); }
   const String& Name() { return animator_name_; }
 
   KeyframeEffect* GetEffect() const override;

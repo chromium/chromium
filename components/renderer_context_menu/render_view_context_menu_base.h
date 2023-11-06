@@ -171,12 +171,14 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   // Opens the specified URL.
   void OpenURL(const GURL& url,
                const GURL& referrer,
+               const url::Origin& initiator,
                WindowOpenDisposition disposition,
                ui::PageTransition transition);
 
   // Opens the specified URL with extra headers.
   virtual void OpenURLWithExtraHeaders(const GURL& url,
                                        const GURL& referrer,
+                                       const url::Origin& initiator,
                                        WindowOpenDisposition disposition,
                                        ui::PageTransition transition,
                                        const std::string& extra_headers,
@@ -187,6 +189,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   content::OpenURLParams GetOpenURLParamsWithExtraHeaders(
       const GURL& url,
       const GURL& referring_url,
+      const url::Origin& initiator,
       WindowOpenDisposition disposition,
       ui::PageTransition transition,
       const std::string& extra_headers,

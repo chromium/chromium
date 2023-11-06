@@ -12,6 +12,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,11 +24,11 @@ class SupervisedUserMetricsServiceTest : public testing::Test {
         pref_service_.registry());
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kDefaultSupervisedUserFilteringBehavior,
-        supervised_user::SupervisedUserURLFilter::ALLOW);
+        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSupervisedUserSafeSites, true);
     filter_.SetDefaultFilteringBehavior(
-        supervised_user::SupervisedUserURLFilter::ALLOW);
+        supervised_user::FilteringBehavior::kAllow);
     filter_.SetFilterInitialized(true);
 
     supervised_user_metrics_service_ =

@@ -65,7 +65,7 @@ JNI_SendTabToSelfAndroidBridge_GetAllTargetDeviceInfos(
         env, ConvertUTF8ToJavaString(env, info.device_name),
         ConvertUTF8ToJavaString(env, info.cache_guid),
         static_cast<int>(info.form_factor),
-        info.last_updated_timestamp.ToJavaTime()));
+        info.last_updated_timestamp.InMillisecondsSinceUnixEpoch()));
   }
 
   return base::android::ToTypedJavaArrayOfObjects(env, infos, type);

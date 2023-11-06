@@ -64,7 +64,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer since FileSystemAccessManagerImpl owns `this`.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   const FileSystemAccessManagerImpl::PathType path_type_;
   const base::FilePath file_path_;
   const int renderer_process_id_;

@@ -33,4 +33,43 @@ TEST_F(MigratorUtilTest, ManipulateMigrationAttemptCount) {
   EXPECT_EQ(GetMigrationAttemptCountForUser(&pref_service_, user_id_hash), 0);
 }
 
+TEST_F(MigratorUtilTest, IsProfileMigrationCompletedForUser) {
+  const std::string user_id_hash = "abcd";
+  // `IsProfileMigrationCompletedForUser()` should return
+  // false by default.
+  EXPECT_FALSE(
+      IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+
+  // Calling `SetProfileMigrationCompletedForUser()` with kCopy sets profile
+  // migration as completed.
+  SetProfileMigrationCompletedForUser(&pref_service_, user_id_hash,
+                                      MigrationMode::kCopy);
+  EXPECT_EQ(GetCompletedMigrationMode(&pref_service_, user_id_hash),
+            MigrationMode::kCopy);
+  EXPECT_TRUE(IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+  ClearProfileMigrationCompletedForUser(&pref_service_, user_id_hash);
+  EXPECT_FALSE(
+      IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+
+  // Calling `SetProfileMigrationCompletedForUser()` with kMove sets profile
+  // migration as completed.
+  SetProfileMigrationCompletedForUser(&pref_service_, user_id_hash,
+                                      MigrationMode::kMove);
+  EXPECT_EQ(GetCompletedMigrationMode(&pref_service_, user_id_hash),
+            MigrationMode::kMove);
+  EXPECT_TRUE(IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+  ClearProfileMigrationCompletedForUser(&pref_service_, user_id_hash);
+
+  // Calling `SetProfileMigrationCompletedForUser()` with kSkipForNewUser sets
+  // profile migration as completed.
+  SetProfileMigrationCompletedForUser(&pref_service_, user_id_hash,
+                                      MigrationMode::kSkipForNewUser);
+  EXPECT_EQ(GetCompletedMigrationMode(&pref_service_, user_id_hash),
+            MigrationMode::kSkipForNewUser);
+  EXPECT_TRUE(IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+  ClearProfileMigrationCompletedForUser(&pref_service_, user_id_hash);
+  EXPECT_FALSE(
+      IsProfileMigrationCompletedForUser(&pref_service_, user_id_hash));
+}
+
 }  // namespace ash::standalone_browser::migrator_util

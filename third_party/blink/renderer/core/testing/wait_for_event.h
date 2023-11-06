@@ -29,7 +29,7 @@ class WaitForEvent : public NativeEventListener {
 
   void AddEventListener(EventTarget*, const AtomicString& name);
   void AddCompletionClosure(base::OnceClosure);
-  Event* GetLastEvent() const { return event_; }
+  Event* GetLastEvent() const { return event_.Get(); }
 
   void Invoke(ExecutionContext*, Event*) final;
   void Trace(Visitor*) const final;

@@ -331,13 +331,13 @@ void ProfileWriter::AddKeywords(
   }
 }
 
-void ProfileWriter::AddAutofillFormDataEntries(
-    const std::vector<autofill::AutofillEntry>& autofill_entries) {
+void ProfileWriter::AddAutocompleteFormDataEntries(
+    const std::vector<autofill::AutocompleteEntry>& autocomplete_entries) {
   scoped_refptr<autofill::AutofillWebDataService> web_data_service =
       WebDataServiceFactory::GetAutofillWebDataForProfile(
           profile_, ServiceAccessType::EXPLICIT_ACCESS);
   if (web_data_service.get())
-    web_data_service->UpdateAutofillEntries(autofill_entries);
+    web_data_service->UpdateAutocompleteEntries(autocomplete_entries);
 }
 
 ProfileWriter::~ProfileWriter() {}

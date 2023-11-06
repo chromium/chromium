@@ -1,0 +1,26 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "UnsafelyTreatInsecureOriginAsSecure": [
+            "http://example.com/",
+            "*.example.com"
+          ]
+        },
+        "prefs": {
+          "unsafely_treat_insecure_origin_as_secure": {
+            "location": "local_state",
+            "value": "http://example.com/,*.example.com"
+          }
+        }
+      }
+    ]
+  }
+]

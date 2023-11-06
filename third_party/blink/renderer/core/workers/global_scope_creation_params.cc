@@ -50,7 +50,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     InterfaceRegistry* interface_registry,
     scoped_refptr<base::SingleThreadTaskRunner>
         agent_group_scheduler_compositor_task_runner,
-    const SecurityOrigin* top_level_frame_security_origin)
+    const SecurityOrigin* top_level_frame_security_origin,
+    bool parent_has_storage_access)
     : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name),
@@ -98,7 +99,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       top_level_frame_security_origin(
           top_level_frame_security_origin
               ? top_level_frame_security_origin->IsolatedCopy()
-              : nullptr) {
+              : nullptr),
+      parent_has_storage_access(parent_has_storage_access) {
   this->inherited_trial_features =
       std::make_unique<Vector<mojom::blink::OriginTrialFeature>>();
   if (inherited_trial_features) {

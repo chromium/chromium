@@ -8,8 +8,8 @@
 #include <cmath>
 #include <memory>
 
+#include "base/big_endian.h"
 #include "base/rand_util.h"
-#include "base/sys_byteorder.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
 
 namespace spdy {
@@ -116,8 +116,8 @@ bool HpackFuzzUtil::NextHeaderBlock(Input* input, std::string_view* out) {
     return false;
   }
 
-  size_t length =
-      base::NetToHost32(*reinterpret_cast<const uint32_t*>(input->ptr()));
+  uint32_t length;
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(input->ptr()), &length);
   input->offset += sizeof(uint32_t);
 
   if (input->remaining() < length) {
@@ -130,8 +130,9 @@ bool HpackFuzzUtil::NextHeaderBlock(Input* input, std::string_view* out) {
 
 // static
 std::string HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
-  uint32_t length = base::HostToNet32(static_cast<uint32_t>(block_size));
-  return std::string(reinterpret_cast<char*>(&length), sizeof(uint32_t));
+  char buf[4];
+  base::WriteBigEndian(buf, static_cast<uint32_t>(block_size));
+  return std::string(buf, sizeof(buf));
 }
 
 // static

@@ -64,9 +64,7 @@ import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReaut
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests verifying that the credential edit mediator modifies the model correctly.
- */
+/** Tests verifying that the credential edit mediator modifies the model correctly. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CredentialEditControllerTest {
@@ -76,17 +74,13 @@ public class CredentialEditControllerTest {
     private static final String TEST_PASSWORD = "TestPassword";
     private static final String NEW_TEST_PASSWORD = "TestNewPassword";
 
-    @Mock
-    private PasswordAccessReauthenticationHelper mReauthenticationHelper;
+    @Mock private PasswordAccessReauthenticationHelper mReauthenticationHelper;
 
-    @Mock
-    private ConfirmationDialogHelper mDeleteDialogHelper;
+    @Mock private ConfirmationDialogHelper mDeleteDialogHelper;
 
-    @Mock
-    private CredentialActionDelegate mCredentialActionDelegate;
+    @Mock private CredentialActionDelegate mCredentialActionDelegate;
 
-    @Mock
-    private Runnable mHelpLauncher;
+    @Mock private Runnable mHelpLauncher;
 
     CredentialEditMediator mMediator;
     PropertyModel mModel;
@@ -101,13 +95,19 @@ public class CredentialEditControllerTest {
         MockitoAnnotations.initMocks(this);
         UmaRecorderHolder.resetForTesting();
         Clipboard.resetForTesting();
-        mMediator = new CredentialEditMediator(mReauthenticationHelper, mDeleteDialogHelper,
-                mCredentialActionDelegate, mHelpLauncher, false);
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(UI_ACTION_HANDLER, mMediator)
-                         .with(URL_OR_APP, TEST_URL)
-                         .with(FEDERATION_ORIGIN, "")
-                         .build();
+        mMediator =
+                new CredentialEditMediator(
+                        mReauthenticationHelper,
+                        mDeleteDialogHelper,
+                        mCredentialActionDelegate,
+                        mHelpLauncher,
+                        false);
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(UI_ACTION_HANDLER, mMediator)
+                        .with(URL_OR_APP, TEST_URL)
+                        .with(FEDERATION_ORIGIN, "")
+                        .build();
         mMediator.initialize(mModel);
     }
 
@@ -155,11 +155,12 @@ public class CredentialEditControllerTest {
     public void testCannotUnmaskIfReauthFailed() {
         when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
         mModel.set(PASSWORD_VISIBLE, false);
-        doAnswer((invocation) -> {
-            Callback callback = (Callback) invocation.getArguments()[1];
-            callback.onResult(false);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Callback callback = (Callback) invocation.getArguments()[1];
+                            callback.onResult(false);
+                            return null;
+                        })
                 .when(mReauthenticationHelper)
                 .reauthenticate(eq(ReauthReason.VIEW_PASSWORD), any(Callback.class));
         mMediator.onMaskOrUnmaskPassword();
@@ -180,11 +181,12 @@ public class CredentialEditControllerTest {
     public void testCantCopyPasswordIfReauthFails() {
         mModel.set(PASSWORD, TEST_PASSWORD);
         when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        doAnswer((invocation) -> {
-            Callback callback = (Callback) invocation.getArguments()[1];
-            callback.onResult(false);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Callback callback = (Callback) invocation.getArguments()[1];
+                            callback.onResult(false);
+                            return null;
+                        })
                 .when(mReauthenticationHelper)
                 .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
 
@@ -202,11 +204,12 @@ public class CredentialEditControllerTest {
     public void testCanCopyPasswordIfReauthSucceeds() {
         mModel.set(PASSWORD, TEST_PASSWORD);
         when(mReauthenticationHelper.canReauthenticate()).thenReturn(true);
-        doAnswer((invocation) -> {
-            Callback callback = (Callback) invocation.getArguments()[1];
-            callback.onResult(true);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Callback callback = (Callback) invocation.getArguments()[1];
+                            callback.onResult(true);
+                            return null;
+                        })
                 .when(mReauthenticationHelper)
                 .reauthenticate(eq(ReauthReason.COPY_PASSWORD), any(Callback.class));
         Context context = ApplicationProvider.getApplicationContext();
@@ -249,8 +252,9 @@ public class CredentialEditControllerTest {
         mMediator.setCredential(TEST_USERNAME, TEST_PASSWORD, false);
         mMediator.onPasswordTextChanged("");
         assertTrue(mModel.get(EMPTY_PASSWORD_ERROR));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           EDIT_ERROR_HISTOGRAM, EMPTY_PASSWORD),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        EDIT_ERROR_HISTOGRAM, EMPTY_PASSWORD),
                 is(1));
 
         mMediator.onPasswordTextChanged(TEST_PASSWORD);
@@ -264,8 +268,9 @@ public class CredentialEditControllerTest {
 
         mMediator.onUsernameTextChanged(NEW_TEST_USERNAME);
         assertTrue(mModel.get(DUPLICATE_USERNAME_ERROR));
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           EDIT_ERROR_HISTOGRAM, DUPLICATE_USERNAME),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        EDIT_ERROR_HISTOGRAM, DUPLICATE_USERNAME),
                 is(1));
 
         mMediator.onUsernameTextChanged(TEST_USERNAME);
@@ -283,11 +288,12 @@ public class CredentialEditControllerTest {
         String message =
                 resources.getString(R.string.password_entry_edit_deletion_dialog_body, TEST_URL);
         int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
-        doAnswer((invocation) -> {
-            Runnable callback = (Runnable) invocation.getArguments()[3];
-            callback.run();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Runnable callback = (Runnable) invocation.getArguments()[3];
+                            callback.run();
+                            return null;
+                        })
                 .when(mDeleteDialogHelper)
                 .showConfirmation(
                         eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
@@ -299,8 +305,9 @@ public class CredentialEditControllerTest {
                         eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           SAVED_PASSWORD_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        SAVED_PASSWORD_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
                 is(1));
     }
 
@@ -312,8 +319,9 @@ public class CredentialEditControllerTest {
 
         String title =
                 resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
-        String message = resources.getString(
-                R.string.password_check_delete_credential_dialog_body, TEST_URL);
+        String message =
+                resources.getString(
+                        R.string.password_check_delete_credential_dialog_body, TEST_URL);
         int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
 
         mMediator.onDelete();
@@ -335,11 +343,12 @@ public class CredentialEditControllerTest {
                 resources.getString(R.string.password_entry_edit_deletion_dialog_body, TEST_URL);
         int confirmButtonTextId = R.string.password_entry_edit_delete_credential_dialog_confirm;
 
-        doAnswer((invocation) -> {
-            Runnable callback = (Runnable) invocation.getArguments()[3];
-            callback.run();
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            Runnable callback = (Runnable) invocation.getArguments()[3];
+                            callback.run();
+                            return null;
+                        })
                 .when(mDeleteDialogHelper)
                 .showConfirmation(
                         eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
@@ -351,20 +360,27 @@ public class CredentialEditControllerTest {
                         eq(title), eq(message), eq(confirmButtonTextId), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           FEDERATED_CREDENTIAL_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        FEDERATED_CREDENTIAL_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
                 is(1));
     }
 
     @Test
     public void testDeletingBlockedCredentialDoesntPromptDialog() {
-        mMediator = new CredentialEditMediator(mReauthenticationHelper, mDeleteDialogHelper,
-                mCredentialActionDelegate, mHelpLauncher, true);
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(UI_ACTION_HANDLER, mMediator)
-                         .with(URL_OR_APP, TEST_URL)
-                         .with(FEDERATION_ORIGIN, "")
-                         .build();
+        mMediator =
+                new CredentialEditMediator(
+                        mReauthenticationHelper,
+                        mDeleteDialogHelper,
+                        mCredentialActionDelegate,
+                        mHelpLauncher,
+                        true);
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(UI_ACTION_HANDLER, mMediator)
+                        .with(URL_OR_APP, TEST_URL)
+                        .with(FEDERATION_ORIGIN, "")
+                        .build();
         mMediator.initialize(mModel);
 
         mMediator.onDelete();
@@ -375,17 +391,19 @@ public class CredentialEditControllerTest {
                         any(String.class), any(String.class), anyInt(), any(Runnable.class));
         verify(mCredentialActionDelegate).deleteCredential();
 
-        assertThat(RecordHistogram.getHistogramValueCountForTesting(
-                           BLOCKED_CREDENTIAL_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
+        assertThat(
+                RecordHistogram.getHistogramValueCountForTesting(
+                        BLOCKED_CREDENTIAL_ACTION_HISTOGRAM, CredentialEntryAction.DELETED),
                 is(1));
     }
 
     private void initMediatorWithFederatedCredential() {
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(UI_ACTION_HANDLER, mMediator)
-                         .with(URL_OR_APP, TEST_URL)
-                         .with(FEDERATION_ORIGIN, "accounts.example.com")
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(UI_ACTION_HANDLER, mMediator)
+                        .with(URL_OR_APP, TEST_URL)
+                        .with(FEDERATION_ORIGIN, "accounts.example.com")
+                        .build();
         mMediator.initialize(mModel);
     }
 

@@ -686,12 +686,6 @@ base::WeakPtr<SafetyHubService> UnusedSitePermissionsService::GetAsWeakRef() {
   return weak_factory_.GetWeakPtr();
 }
 
-std::unique_ptr<SafetyHubService::Result>
-UnusedSitePermissionsService::GetResultFromDictValue(
-    const base::Value::Dict& dict) {
-  return std::make_unique<UnusedSitePermissionsResult>(dict);
-}
-
 bool UnusedSitePermissionsService::IsAutoRevocationEnabled() {
   // If kSafetyHub is disabled, then the auto-revocation directly depends on
   // kSafetyCheckUnusedSitePermissions.

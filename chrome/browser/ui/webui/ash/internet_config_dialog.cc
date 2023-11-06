@@ -15,7 +15,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/internet_config_dialog_resources.h"
 #include "chrome/grit/internet_config_dialog_resources_map.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -148,12 +147,6 @@ std::string InternetConfigDialog::GetDialogArgs() const {
   base::Value::Dict args;
   args.Set("type", network_type_);
   args.Set("guid", network_id_);
-
-  // Provide the UI with information on whether a user is currently logged in.
-  // This information is used to avoid an edge case when configuring a network.
-  // For more information see b/253247084.
-  args.Set("loggedIn", base::Value(LoginState::IsInitialized() &&
-                                   LoginState::Get()->IsUserLoggedIn()));
   std::string json;
   base::JSONWriter::Write(args, &json);
   return json;

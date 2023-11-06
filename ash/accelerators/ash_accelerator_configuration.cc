@@ -22,6 +22,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -207,9 +208,19 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
   // Store a copy of the pref overrides.
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
-  // Reset to default first.
-  ResetAllAccelerators();
-  ApplyPrefOverrides();
+
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsLoadedOnStartup",
+      GetTotalNumberOfModifications());
+
+  if (features::IsResetShortcutCustomizationsEnabled()) {
+    VLOG(1) << "ResetShortcutCustomizations flag enabled, "
+            << "resetting all shortcuts.";
+    RestoreAllDefaults();
+  } else {
+    ResetAllAccelerators();
+    ApplyPrefOverrides();
+  }
 }
 
 const std::vector<ui::Accelerator>&
@@ -360,6 +371,10 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
 }
 
 AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
+  base::UmaHistogramCounts1000(
+      "Ash.ShortcutCustomization.CustomizationsBeforeResetAll",
+      GetTotalNumberOfModifications());
+
   ResetAllAccelerators();
 
   // Clear the prefs to be back to default.
@@ -646,17 +661,39 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
 
   for (auto entry : accelerator_overrides_) {
     int action_id;
-    base::StringToInt(entry.first, &action_id);
+    if (!base::StringToInt(entry.first, &action_id)) {
+      LOG(ERROR) << "Failed to convert entry from accelerator overrides "
+                 << "to an action ID. Skipping applying customization "
+                 << "for this action.";
+      continue;
+    }
     if (!IsValid(action_id)) {
+      VLOG(1) << "Invalid action ID: " << action_id
+              << " found, queuing the ID to be removed.";
       actions_to_be_removed.push_back(action_id);
       continue;
     }
 
+    if (!entry.second.is_list()) {
+      LOG(ERROR) << "Entry for action ID: " << action_id << " does not contain "
+                 << "a list. Skipping applying customization for this action.";
+      continue;
+    }
     base::Value::List& override_list = entry.second.GetList();
-    CHECK(!override_list.empty());
+    if (override_list.empty()) {
+      VLOG(1) << "Override list is unexpectedly empty for action ID: "
+              << action_id << ". Skipping applying customization for "
+              << "this action.";
+      continue;
+    }
 
     auto override_list_iter = override_list.begin();
     while (override_list_iter != override_list.end()) {
+      if (!override_list_iter->is_dict()) {
+        LOG(ERROR) << "Override list does not contain a dict, skipping "
+                   << "applying customization for action ID: " << action_id;
+        continue;
+      }
       base::Value::Dict& override_dict = override_list_iter->GetDict();
       AcceleratorModificationData override_data =
           ValueToAcceleratorModificationData(override_dict);
@@ -701,6 +738,8 @@ void AshAcceleratorConfiguration::ApplyPrefOverrides() {
   // Check if the overridden accelerators are valid, if not then restore all
   // defaults.
   if (!AreAcceleratorsValid()) {
+    LOG(ERROR) << "Detected an error while applying shortcut customization "
+               << "prefs. Restoring to default.";
     RestoreAllDefaults();
   }
 
@@ -724,12 +763,27 @@ void AshAcceleratorConfiguration::UpdateOverrides(
     return;
   }
 
+  if (!action_entry->is_list()) {
+    LOG(ERROR) << "Attempting to update overrides failed, action_entry is not "
+               << "a list. Cannot apply updates for action ID: " << action_id;
+    return;
+  }
   base::Value::List& override_list = action_entry->GetList();
-  CHECK(!override_list.empty());
+  if (action_entry->GetList().empty()) {
+    VLOG(1) << "No entries inside action ID: " << action_id
+            << ". Cannot apply updates.";
+    return;
+  }
+
   // Iterate through the override list, check if the accelerator already exist
   // for `action_id`.
   for (auto override_iter = override_list.begin();
        override_iter != override_list.end(); ++override_iter) {
+    if (!override_iter->is_dict()) {
+      LOG(ERROR) << "Override list does not contain a dict, cannot apply "
+                 << "update for action ID: " << action_id;
+      return;
+    }
     const AcceleratorModificationData accelerator_data =
         ValueToAcceleratorModificationData(override_iter->GetDict());
     if (accelerator == accelerator_data.accelerator) {
@@ -812,6 +866,14 @@ void AshAcceleratorConfiguration::ResetAllAccelerators() {
 
   deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
   actions_with_deprecations_ = default_actions_with_deprecations_cache_;
+}
+
+int AshAcceleratorConfiguration::GetTotalNumberOfModifications() {
+  int num_entries = 0;
+  for (const auto entry : accelerator_overrides_) {
+    num_entries += entry.second.GetList().size();
+  }
+  return num_entries;
 }
 
 }  // namespace ash

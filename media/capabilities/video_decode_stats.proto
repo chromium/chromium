@@ -21,10 +21,10 @@ message DecodeStatsProto {
   // Required. Count of power efficiently decoded frames.
   optional uint64 frames_power_efficient = 3;
 
-  // Required. Time of last data write from base::Time::ToJsTime(). Data will be
-  // discarded when the date indicates its very old. This avoids a circumstance
-  // where a few bad outlier playbacks permanently define a machines
-  // capabilities.
+  // Required. Time of last data write from
+  // base::Time::InMillisecondsFSinceUnixEpoch(). Data will be discarded when
+  // the date indicates it's very old. This avoids a circumstance where a few
+  // bad outlier playbacks permanently define a machine's capabilities.
   optional double last_write_date = 7;
 
   // Required (for those in the "unweighted" experiment). An unweighted average

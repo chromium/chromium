@@ -17,20 +17,7 @@
 namespace blink {
 
 static const WebThemeEngine::ScrollbarStyle& ScrollbarStyle() {
-  static bool initialized = false;
-  DEFINE_STATIC_LOCAL(WebThemeEngine::ScrollbarStyle, style,
-                      (WebThemeEngine::ScrollbarStyle{3, 4, 3, 4, 0x80808080}));
-  if (!initialized) {
-    // During device emulation, the chrome WebThemeEngine implementation may not
-    // be the mobile theme which can provide the overlay scrollbar styles.
-    // In the case the following call will do nothing and we'll use the default
-    // styles specified above.
-    WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
-        &style);
-    DCHECK(style.thumb_thickness);
-    initialized = true;
-  }
-  return style;
+  return WebThemeEngineHelper::AndroidScrollbarStyle();
 }
 
 ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
@@ -42,24 +29,17 @@ ScrollbarThemeOverlayMobile& ScrollbarThemeOverlayMobile::GetInstance() {
 
   DEFINE_STATIC_LOCAL(
       ScrollbarThemeOverlayMobile, theme,
-      (ScrollbarStyle().thumb_thickness, ScrollbarStyle().scrollbar_margin,
-       ScrollbarStyle().thumb_thickness_thin,
-       ScrollbarStyle().scrollbar_margin_thin,
-       Color::FromSkColor(ScrollbarStyle().color)));
+      (ScrollbarStyle().thumb_thickness, ScrollbarStyle().scrollbar_margin));
   return theme;
 }
 
-ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(
-    int thumb_thickness_default,
-    int scrollbar_margin_default,
-    int thumb_thickness_thin,
-    int scrollbar_margin_thin,
-    Color color)
-    : ScrollbarThemeOverlay(thumb_thickness_default,
-                            scrollbar_margin_default,
-                            thumb_thickness_thin,
-                            scrollbar_margin_thin),
-      color_(color) {}
+ScrollbarThemeOverlayMobile::ScrollbarThemeOverlayMobile(int thumb_thickness,
+                                                         int scrollbar_margin)
+    : ScrollbarThemeOverlay(thumb_thickness,
+                            scrollbar_margin,
+                            thumb_thickness,
+                            scrollbar_margin),
+      default_color_(Color::FromSkColor4f(ScrollbarStyle().color)) {}
 
 void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                                              const Scrollbar& scrollbar,
@@ -75,9 +55,15 @@ void ScrollbarThemeOverlayMobile::PaintThumb(GraphicsContext& context,
                            rect);
 
   const auto* box = scrollbar.GetScrollableArea()->GetLayoutBox();
+  Color color = scrollbar.ScrollbarThumbColor().value_or(default_color_);
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       box->StyleRef(), DarkModeFilter::ElementRole::kBackground));
-  context.FillRect(rect, color_, auto_dark_mode);
+  context.FillRect(rect, color, auto_dark_mode);
+}
+
+SkColor4f ScrollbarThemeOverlayMobile::GetSolidColor(
+    const absl::optional<Color>& thumb_color) const {
+  return thumb_color.value_or(default_color_).toSkColor4f();
 }
 
 }  // namespace blink

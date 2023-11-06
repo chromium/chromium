@@ -27,9 +27,10 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
 /**
- * Main toolbar of bookmark UI. It is responsible for displaying title and buttons
- * associated with the current context.
+ * Main toolbar of bookmark UI. It is responsible for displaying title and buttons associated with
+ * the current context.
  */
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
@@ -95,7 +96,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
             if (mBookmarkUiMode == BookmarkUiMode.SEARCHING) {
                 showSearchView(mSoftKeyboardVisible);
             } else {
-                hideSearchView(/*notify=*/false);
+                hideSearchView(/* notify= */ false);
             }
         }
     }

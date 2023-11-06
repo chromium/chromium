@@ -34,7 +34,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list/model",
-    "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -53,8 +53,8 @@ source_set("tab_grid") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/synced_sessions/model",
-    "//ios/chrome/browser/tabs:features",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/ui/bookmarks:utils",
@@ -69,10 +69,12 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/snackbar",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator_delegate",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
@@ -86,6 +88,14 @@ source_set("tab_grid") {
   ]
 
   frameworks = [ "UniformTypeIdentifiers.framework" ]
+}
+
+source_set("tab_grid_activity_observer") {
+  sources = [ "tab_grid_activity_observer.h" ]
+  deps = [
+    ":tab_grid_paging",
+    "//base",
+  ]
 }
 
 source_set("tab_grid_metrics") {
@@ -114,8 +124,8 @@ source_set("tab_grid_ui_constants") {
   ]
 
   deps = [
-    "resources:grid_background_color",
     "//base",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/resources:grid_background_color",
   ]
 }
 
@@ -126,11 +136,7 @@ source_set("tab_grid_paging") {
 
 source_set("tab_grid_ui") {
   sources = [
-    "disabled_tab_view_controller.h",
-    "disabled_tab_view_controller.mm",
     "tab_grid_consumer.h",
-    "tab_grid_empty_state_view.h",
-    "tab_grid_empty_state_view.mm",
     "tab_grid_mutator.h",
     "tab_grid_view_controller.h",
     "tab_grid_view_controller.mm",
@@ -138,41 +144,39 @@ source_set("tab_grid_ui") {
 
   deps = [
     ":tab_collection_commands",
+    ":tab_grid_activity_observer",
     ":tab_grid_metrics",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",
-    "grid:grid_ui",
-    "grid:grid_ui_constants",
-    "resources:tab_grid_incognito_tabs_empty",
-    "resources:tab_grid_regular_tabs_empty",
     "//base",
-    "//components/supervised_user/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/crash_report/model",
-    "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
-    "//ios/chrome/browser/tabs:features",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tabs/model:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito:incognito_ui",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs:pinned_tabs_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
-    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/web/public",
+    "//ios/web/public/thread",
     "//ui/base",
   ]
 }
@@ -203,10 +207,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/popup_menu",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars:toolbars_ui",
+    "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/test:block_cleanup_test",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
@@ -233,7 +240,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin:fake_system_identity",
-    "//ios/chrome/browser/tabs/inactive_tabs:features",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/browser/ui/bookmarks:eg_test_support+eg2",

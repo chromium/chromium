@@ -22,6 +22,7 @@ AutofillCvcSaveMessageDelegate::~AutofillCvcSaveMessageDelegate() {
 }
 
 void AutofillCvcSaveMessageDelegate::ShowMessage(
+    const AutofillSaveCardUiInfo& ui_info,
     std::unique_ptr<AutofillSaveCardDelegateAndroid> delegate) {
   CHECK(delegate);
   save_card_delegate_ = std::move(delegate);
@@ -36,14 +37,11 @@ void AutofillCvcSaveMessageDelegate::ShowMessage(
                      base::Unretained(this)),
       base::BindOnce(&AutofillCvcSaveMessageDelegate::OnMessageDismissed,
                      base::Unretained(this)));
-  message_->SetTitle(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD));
-  message_->SetDescription(l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD));
-  message_->SetPrimaryButtonText(
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT));
+  message_->SetTitle(ui_info.title_text);
+  message_->SetDescription(ui_info.description_text);
+  message_->SetPrimaryButtonText(ui_info.confirm_text);
   message_->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_PRIMARY));
+      ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id));
   message_->DisableIconTint();
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       &message_.value(), web_contents_,

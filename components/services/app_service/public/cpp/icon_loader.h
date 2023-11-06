@@ -95,7 +95,7 @@ class IconLoader {
     // id.
     std::string id_;
     // IconKey fields.
-    uint64_t timeline_;
+    int32_t timeline_;
     int32_t resource_id_;
     uint32_t icon_effects_;
     // Other fields.

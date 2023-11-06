@@ -158,7 +158,7 @@ const verifyAggregationServicePayloads = (aggregation_service_payloads, expected
  * undefined. The `expected_cleartext_payload` should be the expected value of
  * debug_cleartext_payload if debug mode is enabled; otherwise, undefined.
  */
-const verifyReport = (report, api, is_debug_enabled, debug_key, expected_cleartext_payload, context_id = undefined) => {
+const verifyReport = (report, api, is_debug_enabled, debug_key, expected_cleartext_payload, context_id = undefined, aggregation_coordinator_origin = get_host_info().HTTPS_ORIGIN) => {
   if (debug_key || expected_cleartext_payload) {
     // A debug key cannot be set without debug mode being enabled and the
     // `expected_cleartext_payload` should be undefined if debug mode is not
@@ -179,7 +179,8 @@ const verifyReport = (report, api, is_debug_enabled, debug_key, expected_clearte
   assert_own_property(report, 'aggregation_service_payloads');
   verifyAggregationServicePayloads(report.aggregation_service_payloads, expected_cleartext_payload);
 
-  assert_own_property(report, "aggregation_coordinator_origin");
+  assert_own_property(report, 'aggregation_coordinator_origin');
+  assert_equals(report.aggregation_coordinator_origin, aggregation_coordinator_origin);
 
   if (context_id) {
     assert_own_property(report, 'context_id');

@@ -527,20 +527,13 @@ public class MainActivity extends Activity implements View.OnClickListener {
         params.putBoolean("ignoreFragments", true);
         params.putBoolean("prerender", true);
 
-        int speculationModeValue;
-        switch (speculationMode) {
-            case "disabled":
-                speculationModeValue = NO_SPECULATION;
-                break;
-            case "prerender":
-                speculationModeValue = PRERENDER;
-                break;
-            case "hidden_tab":
-                speculationModeValue = HIDDEN_TAB;
-                break;
-            default:
-                throw new RuntimeException("Invalid speculation mode");
-        }
+        int speculationModeValue =
+                switch (speculationMode) {
+                    case "disabled" -> NO_SPECULATION;
+                    case "prerender" -> PRERENDER;
+                    case "hidden_tab" -> HIDDEN_TAB;
+                    default -> throw new RuntimeException("Invalid speculation mode");
+                };
         params.putInt("speculationMode", speculationModeValue);
 
         boolean ok = client.extraCommand(SET_PRERENDER_ON_CELLULAR, params) != null;

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Queue storing asynchronous results received from the Service Worker. Results
-// are sent to the test when requested.
+// Queue storing asynchronous results. Results are available via `pop` when
+// requested.
 function ResultQueue() {
   // Invariant: this.queue.length == 0 || this.pendingGets.length == 0
   this.queue = [];
   this.pendingGets = [];
 }
 
-// Adds a data item to the queue. Will be sent to the test if there are
-// pendingGets.
+// Adds a data item to the queue or sends it to the earliest pending `pop`
+// operation.
 ResultQueue.prototype.push = function(data) {
   if (this.pendingGets.length > 0) {
     const resolve = this.pendingGets.pop();
@@ -21,8 +21,7 @@ ResultQueue.prototype.push = function(data) {
   }
 };
 
-// Called by native. Sends the next data item to the test if it is available.
-// Otherwise increments pendingGets so it will be delivered when received.
+// Returns a promise that resolves with the next data item, when available.
 ResultQueue.prototype.pop = function() {
   return new Promise((resolve) => {
     if (this.queue.length) {
@@ -33,12 +32,8 @@ ResultQueue.prototype.pop = function() {
   });
 };
 
-// Called by native. Immediately sends the next data item to the test if it is
-// available, otherwise sends null.
+// Immediately returns the next data item if it is available, otherwise returns
+// null.
 ResultQueue.prototype.popImmediately = function() {
   return this.queue.length ? this.queue.pop() : null;
 };
-
-function formatError(error) {
-  return error.name + ' - ' + error.message;
-}

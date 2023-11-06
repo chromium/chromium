@@ -15,6 +15,11 @@ namespace {
 using BluetoothHidType = BluetoothHidDetector::BluetoothHidType;
 using InputState = HidDetectionManager::InputState;
 
+// In floss, a virtual device is created when a HID is bonded or paired.
+// We do not want to include this virtual device to our list of added devices.
+// (b/299955128)
+const char* kBlockedDeviceNames[] = {"VIRTUAL_SUSPEND_UHID"};
+
 HidDetectionManagerImpl::InputDeviceManagerBinder&
 GetInputDeviceManagerBinderOverride() {
   // InputDeviceManagerBinder instance that can be overridden in tests.
@@ -88,6 +93,12 @@ HidDetectionManagerImpl::ComputeHidDetectionStatus() const {
 
 void HidDetectionManagerImpl::InputDeviceAdded(
     device::mojom::InputDeviceInfoPtr info) {
+  // Special case where the added device is a blocked device.
+  if (std::find(std::begin(kBlockedDeviceNames), std::end(kBlockedDeviceNames),
+                info->name) != std::end(kBlockedDeviceNames)) {
+    return;
+  }
+
   HID_LOG(EVENT) << "Input device added, id: " << info->id
                  << ", name: " << info->name;
   const std::string& device_id = info->id;

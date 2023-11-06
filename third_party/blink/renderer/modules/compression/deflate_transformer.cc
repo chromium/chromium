@@ -74,7 +74,7 @@ ScriptPromise DeflateTransformer::Transform(
   Deflate(array_piece.Bytes(),
           static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
           controller, exception_state);
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 ScriptPromise DeflateTransformer::Flush(
@@ -85,7 +85,7 @@ ScriptPromise DeflateTransformer::Flush(
   deflateEnd(&stream_);
   out_buffer_.clear();
 
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 void DeflateTransformer::Deflate(const uint8_t* start,

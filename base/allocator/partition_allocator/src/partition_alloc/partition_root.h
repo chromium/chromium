@@ -40,6 +40,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/allocation_guard.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/chromecast_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/freeslot_bitmap.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/lightweight_quarantine.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/page_allocator.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_address_space.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc-inl.h"
@@ -49,6 +50,7 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/export_template.h"
+#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/notreached.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
@@ -168,6 +170,8 @@ struct PartitionOptions {
   AllowToggle use_configurable_pool = kDisallowed;
 
   size_t ref_count_size = 0;
+
+  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
 
   struct {
     EnableToggle enabled = kDisabled;
@@ -356,6 +360,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   std::atomic<int> thread_caches_being_constructed_{0};
 
   bool quarantine_always_for_testing = false;
+
+  // NoDestructor because we don't need to dequarantine objects as the root
+  // associated with it is dying anyway.
+  internal::base::NoDestructor<internal::SchedulerLoopQuarantine>
+      scheduler_loop_quarantine;
 
   PartitionRoot();
   explicit PartitionRoot(PartitionOptions opts);
@@ -824,6 +833,12 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return straighten_larger_slot_span_free_lists_;
   }
 
+  internal::SchedulerLoopQuarantine& GetSchedulerLoopQuarantineForTesting() {
+    // TODO(crbug.com/1462223): Implement thread-local version and return it
+    // here.
+    return *scheduler_loop_quarantine;
+  }
+
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
       straighten_larger_slot_span_free_lists_ =
@@ -940,6 +955,9 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // May return an invalid thread cache.
   PA_ALWAYS_INLINE ThreadCache* GetOrCreateThreadCache();
   PA_ALWAYS_INLINE ThreadCache* GetThreadCache();
+
+  PA_ALWAYS_INLINE internal::SchedulerLoopQuarantine&
+  GetSchedulerLoopQuarantine();
 
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,
@@ -1340,6 +1358,16 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   }
 
   if (PA_UNLIKELY(!object)) {
+    return;
+  }
+
+  // TODO(https://crbug.com/1497380): Collecting objects for
+  // `kSchedulerLoopQuarantine` here means it "delays" other checks (BRP
+  // refcount, cookie, etc.)
+  // For better debuggability, we should do these checks before quarantining.
+  if constexpr (ContainsFlags(flags, FreeFlags::kSchedulerLoopQuarantine)) {
+    GetSchedulerLoopQuarantine().Quarantine(
+        internal::LightweightQuarantineEntry(object));
     return;
   }
 
@@ -2394,6 +2422,12 @@ ThreadCache* PartitionRoot::GetOrCreateThreadCache() {
 
 ThreadCache* PartitionRoot::GetThreadCache() {
   return PA_LIKELY(settings.with_thread_cache) ? ThreadCache::Get() : nullptr;
+}
+
+// private.
+internal::SchedulerLoopQuarantine& PartitionRoot::GetSchedulerLoopQuarantine() {
+  // TODO(crbug.com/1462223): Implement thread-local version and return it here.
+  return *scheduler_loop_quarantine;
 }
 
 // Explicitly declare common template instantiations to reduce compile time.

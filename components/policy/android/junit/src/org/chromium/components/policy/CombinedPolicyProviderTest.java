@@ -29,22 +29,16 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
-/**
- * Robolectric tests for CombinedPolicyProvider
- */
+/** Robolectric tests for CombinedPolicyProvider */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CombinedPolicyProviderTest {
     private static final int NATIVE_POINTER = 1234;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    private PolicyConverter mPolicyConverter;
-    @Mock
-    private CombinedPolicyProvider.Natives mCombinedPolicyConverterJniMock;
-    @Mock
-    private PolicyMap mPolicyMap;
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock private PolicyConverter mPolicyConverter;
+    @Mock private CombinedPolicyProvider.Natives mCombinedPolicyConverterJniMock;
+    @Mock private PolicyMap mPolicyMap;
 
     @Before
     public void setup() {
@@ -76,7 +70,8 @@ public class CombinedPolicyProviderTest {
         // This, at least, demonstrates that it has been called.
         verify(provider).startListeningForPolicyChanges();
         verify(provider, never()).refresh();
-        assertEquals(CombinedPolicyProvider.get(),
+        assertEquals(
+                CombinedPolicyProvider.get(),
                 CombinedPolicyProvider.linkNative(NATIVE_POINTER, mPolicyConverter));
         verify(provider).refresh();
         PolicyProvider provider2 = spy(new DummyPolicyProvider());

@@ -36,11 +36,16 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableScreenshot'),
       },
+      allSelected_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private dataCollectors_: DataCollectorItem[];
   private enableScreenshot_: boolean;
+  private allSelected_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -49,6 +54,8 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
     this.browserProxy_.getDataCollectors().then(
         (dataCollectors: DataCollectorItem[]) => {
           this.dataCollectors_ = dataCollectors;
+          this.allSelected_ =
+              this.dataCollectors_.every((element) => element.isIncluded);
         });
   }
 
@@ -68,6 +75,24 @@ export class DataCollectorsElement extends DataCollectorsElementBase {
     return this.enableScreenshot_ ?
         this.$$<ScreenshotElement>('#screenshot')!.getEditedScreenshotBase64() :
         '';
+  }
+
+  private getSelectAllButtonLabel_(selectAllClicked: boolean): string {
+    if (selectAllClicked) {
+      return this.i18n('selectNone');
+    } else {
+      return this.i18n('selectAll');
+    }
+  }
+
+  private onSelectAllClick_() {
+    this.allSelected_ = !this.allSelected_;
+    // Update this.dataCollectors_ to reflect the selection choice.
+    for (let index = 0; index < this.dataCollectors_.length; index++) {
+      // Mutate the array observably. See:
+      // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#make-observable-changes
+      this.set(`dataCollectors_.${index}.isIncluded`, this.allSelected_);
+    }
   }
 }
 

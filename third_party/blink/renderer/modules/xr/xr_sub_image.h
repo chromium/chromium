@@ -22,7 +22,7 @@ class XRSubImage : public ScriptWrappable {
                                                    viewport.width(),
                                                    viewport.height())) {}
 
-  XRViewport* viewport() const { return viewport_; }
+  XRViewport* viewport() const { return viewport_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(viewport_);

@@ -2,15 +2,13 @@
   :host {
     /* The tap target extends slightly above each visible menu item. */
     --tap-target-padding: 3px;
-    /* Width of the keyboard focus border. */
-    --focus-border-width: 2px;
 
     align-items: center;
     background: transparent;
     /* Always apply border so item doesn't shift when focused. */
     border-color: transparent;
     border-style: solid;
-    border-width: var(--focus-border-width);
+    border-width: var(--settings-menu-item-border-width);
     color: var(--cros-text-color-primary);
     display: flex;
     flex-direction: row;
@@ -32,8 +30,8 @@
     box-sizing: border-box;
     height: 60px;
     /* Consider border width for padding */
-    padding-inline-start: calc(12px - var(--focus-border-width));
-    padding-inline-end: calc(12px - var(--focus-border-width));
+    padding-inline-start: calc(12px - var(--settings-menu-item-border-width));
+    padding-inline-end: calc(12px - var(--settings-menu-item-border-width));
   }
 
   /* Font */
@@ -95,6 +93,15 @@
   #labelWrapper {
     /* Expand to fill remaining space */
     flex-grow: 1;
+    max-width: 200px;
+  }
+
+  #label,
+  #sublabel {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   #sublabel {
@@ -109,6 +116,6 @@
 
 <iron-icon icon="[[icon]]" hidden="[[!icon]]"></iron-icon>
 <div id="labelWrapper">
-  <slot></slot>
+  <slot id="label"></slot>
   <div id="sublabel">[[sublabel]]</div>
 </div>

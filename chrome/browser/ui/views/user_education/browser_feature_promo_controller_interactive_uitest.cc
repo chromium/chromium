@@ -23,6 +23,8 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/feature_engagement/test/mock_tracker.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_specification.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -40,10 +42,10 @@ using ::testing::NiceMock;
 using ::testing::Ref;
 using ::testing::Return;
 
-using user_education::FeaturePromoCloseReason;
+using user_education::EndFeaturePromoReason;
+using user_education::FeaturePromoClosedReason;
 using user_education::FeaturePromoRegistry;
 using user_education::FeaturePromoSpecification;
-using CloseReason = user_education::FeaturePromoStorageService::CloseReason;
 
 namespace {
 BASE_FEATURE(kToastTestFeature,
@@ -183,7 +185,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
       EXPECT_TRUE(promo_controller_->IsPromoActive(iph_feature));
       promo_controller_->EndPromo(iph_feature,
-                                  FeaturePromoCloseReason::kFeatureEngaged);
+                                  EndFeaturePromoReason::kFeatureEngaged);
 
       EXPECT_FALSE(promo_controller_->IsPromoActive(iph_feature));
     })));
@@ -193,7 +195,7 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
     return Steps(Do(base::BindLambdaForTesting([this, &iph_feature]() {
       EXPECT_TRUE(promo_controller_->IsPromoActive(iph_feature));
       promo_controller_->EndPromo(iph_feature,
-                                  FeaturePromoCloseReason::kAbortPromo);
+                                  EndFeaturePromoReason::kAbortPromo);
 
       EXPECT_FALSE(promo_controller_->IsPromoActive(iph_feature));
     })));
@@ -236,19 +238,21 @@ class BrowserFeaturePromoControllerUiTest : public InteractiveBrowserTest {
           action_name.append(iph_feature.name);
 
           histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(CloseReason::kDismiss),
+              action_name, static_cast<int>(FeaturePromoClosedReason::kDismiss),
               dismiss_count);
           histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(CloseReason::kSnooze),
+              action_name, static_cast<int>(FeaturePromoClosedReason::kSnooze),
               snooze_count);
           histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(CloseReason::kAbortPromo),
+              action_name,
+              static_cast<int>(FeaturePromoClosedReason::kAbortPromo),
               abort_count);
           histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(CloseReason::kFeatureEngaged),
+              action_name,
+              static_cast<int>(FeaturePromoClosedReason::kFeatureEngaged),
               feature_engaged_count);
           histogram_tester_.ExpectBucketCount(
-              action_name, static_cast<int>(CloseReason::kAction),
+              action_name, static_cast<int>(FeaturePromoClosedReason::kAction),
               custom_action_count);
 
           return !testing::Test::HasNonfatalFailure();
@@ -394,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterCancel) {
   bool called = false;
-  CloseReason close_reason = CloseReason::kAbortPromo;
+  FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
   RunTestSequence(
       AttemptIPH(kCustomActionTestFeature,
@@ -406,13 +410,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                  })),
       CancelIPH(), Check([&called]() { return called; }),
       CheckResult([&close_reason]() { return close_reason; },
-                  CloseReason::kCancel));
+                  FeaturePromoClosedReason::kCancel));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterConfirm) {
   bool called = false;
-  CloseReason close_reason = CloseReason::kAbortPromo;
+  FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
   RunTestSequence(
       AttemptIPH(kCustomActionTestFeature,
@@ -424,13 +428,13 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                  })),
       DismissIPH(), Check([&called]() { return called; }),
       CheckResult([&close_reason]() { return close_reason; },
-                  CloseReason::kDismiss));
+                  FeaturePromoClosedReason::kDismiss));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
                        CallbackHappensAfterCustomAction) {
   bool called = false;
-  CloseReason close_reason = CloseReason::kAbortPromo;
+  FeaturePromoClosedReason close_reason = FeaturePromoClosedReason::kAbortPromo;
 
   RunTestSequence(
       AttemptIPH(
@@ -445,5 +449,5 @@ IN_PROC_BROWSER_TEST_F(BrowserFeaturePromoControllerUiTest,
           })),
       TriggerNonDefaultButton(), Check([&called]() { return called; }),
       CheckResult([&close_reason]() { return close_reason; },
-                  CloseReason::kAction));
+                  FeaturePromoClosedReason::kAction));
 }

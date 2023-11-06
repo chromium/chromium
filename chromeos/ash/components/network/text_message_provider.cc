@@ -86,7 +86,7 @@ bool TextMessageProvider::IsAllowTextMessagesPolicySet() {
 }
 
 bool TextMessageProvider::IsMessageSuppressedByUser(const std::string& guid) {
-  return network_metadata_store_ &&
+  return !guid.empty() && network_metadata_store_ &&
          network_metadata_store_->GetUserTextMessageSuppressionState(guid) ==
              UserTextMessageSuppressionState::kSuppress;
 }

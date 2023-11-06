@@ -22,6 +22,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_layout.h"
 #include "media/base/video_types.h"
+#include "media/gpu/chromeos/chromeos_compressed_gpu_memory_buffer_video_frame_utils.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_backend.h"
@@ -204,10 +205,18 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
     return nullptr;
   }
 
+  // The MM21 path only makes sense for V4L2, so we should never get an Intel
+  // media compressed buffer here.
+  CHECK(!IsIntelMediaCompressedModifier(ret->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, type,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!frame_mapper) {
+    LOG(ERROR) << "Unable to create a VideoFrameMapper";
+    return nullptr;
+  }
   scoped_refptr<VideoFrame> mapped_ret =
       frame_mapper->Map(ret, PROT_READ | PROT_WRITE);
   if (!mapped_ret) {
@@ -242,14 +251,27 @@ bool CompareNV12VideoFrames(scoped_refptr<VideoFrame> test_frame,
     return false;
   }
 
+  // We run this test for the V4L2 path only, so we should never get Intel media
+  // compressed frames here.
+  CHECK(!IsIntelMediaCompressedModifier(test_frame->layout().modifier()));
+  CHECK(!IsIntelMediaCompressedModifier(golden_frame->layout().modifier()));
+
   std::unique_ptr<VideoFrameMapper> test_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, test_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!test_frame_mapper) {
+    return false;
+  }
   std::unique_ptr<VideoFrameMapper> golden_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12, golden_frame->storage_type(),
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
+  if (!golden_frame_mapper) {
+    return false;
+  }
   scoped_refptr<VideoFrame> mapped_test_frame =
       test_frame_mapper->Map(test_frame, PROT_READ | PROT_WRITE);
   if (!mapped_test_frame) {
@@ -658,11 +680,16 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   gfx::Rect visible_rect = input_image.VisibleRect();
   scoped_refptr<VideoFrame> mm21_frame = CreateNV12Frame(
       input_image.Size(), VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  // The MM21 path only makes sense for V4L2, so we should never get an Intel
+  // media compressed buffer here.
+  ASSERT_FALSE(IsIntelMediaCompressedModifier(mm21_frame->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_NV12,
           VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
   scoped_refptr<VideoFrame> mapped_mm21_frame =
       frame_mapper->Map(mm21_frame, PROT_READ | PROT_WRITE);
   ASSERT_TRUE(mapped_mm21_frame);
@@ -782,11 +809,17 @@ TEST(ImageProcessorBackendTest, VulkanDetileScaleTest) {
   uint8_t* vulkan_output_v =
       (uint8_t*)mmap(nullptr, i420_scaled_u_v_size, PROT_READ | PROT_WRITE,
                      MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+
+  // The MM21 de-tiling path only makes sense for V4L2, so we should never get
+  // an Intel media compressed buffer here.
+  ASSERT_FALSE(
+      IsIntelMediaCompressedModifier(vulkan_output_frame->layout().modifier()));
   std::unique_ptr<VideoFrameMapper> output_frame_mapper =
       VideoFrameMapperFactory::CreateMapper(
           VideoPixelFormat::PIXEL_FORMAT_ARGB,
           VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-          /*force_linear_buffer_mapper=*/true);
+          /*force_linear_buffer_mapper=*/true,
+          /*must_support_intel_media_compressed_buffers=*/false);
   scoped_refptr<VideoFrame> mapped_output_frame =
       output_frame_mapper->Map(vulkan_output_frame, PROT_READ | PROT_WRITE);
   const uint8_t* argb_plane =

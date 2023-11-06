@@ -185,7 +185,6 @@ class GLManager : private GpuControl {
   scoped_refptr<gl::GLShareGroup> share_group_;
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<gles2::GLES2Decoder> decoder_;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLContext> context_;
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;

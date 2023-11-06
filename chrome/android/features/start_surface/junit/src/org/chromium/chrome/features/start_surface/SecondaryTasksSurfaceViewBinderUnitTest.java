@@ -45,6 +45,7 @@ public class SecondaryTasksSurfaceViewBinderUnitTest {
     private ViewGroup mParentView;
     private View mTasksSurfaceView;
     private PropertyModel mPropertyModel;
+
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
@@ -60,10 +61,12 @@ public class SecondaryTasksSurfaceViewBinderUnitTest {
         mActivity.setContentView(mParentView);
 
         mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new StartSurfaceWithParentViewBinder.ViewHolder(
-                        mParentView, mTasksSurfaceView, null),
-                SecondaryTasksSurfaceViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mPropertyModel,
+                        new StartSurfaceWithParentViewBinder.ViewHolder(
+                                mParentView, mTasksSurfaceView, null),
+                        SecondaryTasksSurfaceViewBinder::bind);
     }
 
     @Test

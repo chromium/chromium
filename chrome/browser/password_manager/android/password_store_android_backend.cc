@@ -25,7 +25,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_bridge_helper.h"
 #include "chrome/browser/password_manager/android/password_store_operation_target.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
@@ -33,18 +35,15 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_eviction_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
-#include "components/password_manager/core/browser/password_store_backend.h"
-#include "components/password_manager/core/browser/password_store_backend_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/android_backend_error.h"
+#include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
+#include "components/password_manager/core/browser/password_store/password_store_backend_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/password_store_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
-#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
@@ -331,6 +330,7 @@ bool IsRetriableOperation(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
     case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
       return false;
   }
   NOTREACHED() << "Operation code not handled";
@@ -363,6 +363,8 @@ std::string GetOperationName(PasswordStoreOperation operation) {
       return "DisableAutoSignInForOriginsAsync";
     case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
       return "GetGroupedMatchingLoginsAsync";
+    case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
+      return "GetAllLoginsWithBrandingInfoAsync";
   }
   NOTREACHED() << "Operation code not handled";
   return "";
@@ -613,8 +615,15 @@ void PasswordStoreAndroidBackend::GetAllLoginsAsync(
 
 void PasswordStoreAndroidBackend::GetAllLoginsWithAffiliationAndBrandingAsync(
     LoginsOrErrorReply callback) {
-  // TODO(crbug.com/1480412): Invoke new API to get all passwords with branding
-  // info instead of calling affiliation service.
+  if (bridge_helper_->CanUseGetAllLoginsWithBrandingInfoAPI()) {
+    JobId job_id = bridge_helper_->GetAllLoginsWithBrandingInfo(
+        GetAccount(GetSyncingAccount(sync_service_)));
+    QueueNewJob(job_id, std::move(callback),
+                MetricInfix("GetAllLoginsWithBrandingInfoAsync"),
+                PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync,
+                /*delay=*/base::Seconds(0));
+    return;
+  }
   auto affiliation_injection = base::BindOnce(
       &PasswordStoreAndroidBackend::InjectAffiliationAndBrandingInformation,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback));
@@ -994,6 +1003,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         case PasswordStoreOperation::kRemoveLoginsCreatedBetweenAsync:
         case PasswordStoreOperation::kDisableAutoSignInForOriginsAsync:
         case PasswordStoreOperation::kGetGroupedMatchingLoginsAsync:
+        case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
           NOTREACHED();
           return;
       }

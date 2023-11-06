@@ -12,6 +12,7 @@
 namespace blink {
 
 class DOMArrayBufferView;
+class ExceptionState;
 class ScriptState;
 
 // Implementation of the "read-into request" struct from the standard.
@@ -25,7 +26,9 @@ class ReadIntoRequest : public GarbageCollected<ReadIntoRequest> {
   ReadIntoRequest& operator=(const ReadIntoRequest&) = delete;
   virtual ~ReadIntoRequest() = default;
 
-  virtual void ChunkSteps(ScriptState*, DOMArrayBufferView* chunk) const = 0;
+  virtual void ChunkSteps(ScriptState*,
+                          DOMArrayBufferView* chunk,
+                          ExceptionState&) const = 0;
   virtual void CloseSteps(ScriptState*, DOMArrayBufferView* chunk) const = 0;
   virtual void ErrorSteps(ScriptState*, v8::Local<v8::Value> e) const = 0;
 

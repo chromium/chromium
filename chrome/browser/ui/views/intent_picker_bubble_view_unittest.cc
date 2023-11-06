@@ -14,8 +14,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/apps/link_capturing/intent_picker_info.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
@@ -61,7 +61,8 @@ using content::Referrer;
 class IntentPickerBubbleViewTest : public TestWithBrowserView {
  public:
   IntentPickerBubbleViewTest() {
-    feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
+    feature_list_.InitWithFeatures(
+        {}, apps::test::GetFeaturesToDisableLinkCapturingUX());
   }
 
   IntentPickerBubbleViewTest(const IntentPickerBubbleViewTest&) = delete;
@@ -140,7 +141,7 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
   }
 
   views::LabelButton* GetLabelButtonAtIndex(size_t index) {
-    CHECK(!apps::features::LinkCapturingUiUpdateEnabled());
+    CHECK(!apps::features::ShouldShowLinkCapturingUX());
     return static_cast<views::LabelButton*>(GetButtonAtIndex(index));
   }
 
@@ -351,11 +352,11 @@ class IntentPickerBubbleViewLayoutTest
  public:
   IntentPickerBubbleViewLayoutTest() {
     if (GetParam() == BubbleInterfaceType::kGridView) {
-      feature_list_.InitAndEnableFeature(
-          apps::features::kLinkCapturingUiUpdate);
+      feature_list_.InitWithFeaturesAndParameters(
+          apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
     } else {
-      feature_list_.InitAndDisableFeature(
-          apps::features::kLinkCapturingUiUpdate);
+      feature_list_.InitWithFeatures(
+          {}, apps::test::GetFeaturesToDisableLinkCapturingUX());
     }
   }
 
@@ -379,9 +380,10 @@ TEST_P(IntentPickerBubbleViewLayoutTest, RememberCheckbox) {
   ClickApp(0);
   ASSERT_FALSE(checkbox->GetEnabled());
 
-  // kWeb entries should allow persistence when PWA persistence is enabled.
+  // kWeb entries should allow persistence on CrOS. The checkbox does not pop up
+  // on non-ChromeOS platforms, and persistence results in a no-op behavior.
   ClickApp(1);
-  ASSERT_EQ(checkbox->GetEnabled(), apps::IntentPickerPwaPersistenceEnabled());
+  ASSERT_TRUE(checkbox->GetEnabled());
 
   // Other app types can be persisted.
   ClickApp(2);
@@ -504,9 +506,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          BubbleInterfaceType::kGridView));
 
 class IntentPickerBubbleViewGridLayoutTest : public IntentPickerBubbleViewTest {
+ public:
+  IntentPickerBubbleViewGridLayoutTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      apps::features::kLinkCapturingUiUpdate};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(IntentPickerBubbleViewGridLayoutTest, DefaultSelectionOneApp) {

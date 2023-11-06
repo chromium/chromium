@@ -39,27 +39,22 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
-/**
- * Unit tests for {@link SurveyUiDelegateBridge} on Java
- */
+/** Unit tests for {@link SurveyUiDelegateBridge} on Java */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SurveyUiDelegateBridgeUnitTest {
     private static final long TEST_NATIVE_POINTER = 123541L;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mSurveyTestRule =
             new TestSurveyUtils.TestSurveyComponentRule();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private SurveyUiDelegateBridge.Natives mMockSurveyUiDelegateBridge;
-    @Mock
-    private ManagedMessageDispatcher mMockMessageDispatcher;
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private SurveyUiDelegateBridge.Natives mMockSurveyUiDelegateBridge;
+    @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
+    @Mock private TabModelSelector mTabModelSelector;
 
     private Activity mActivity;
     private WindowAndroid mWindow;
@@ -69,8 +64,9 @@ public class SurveyUiDelegateBridgeUnitTest {
         mJniMocker.mock(SurveyUiDelegateBridgeJni.TEST_HOOKS, mMockSurveyUiDelegateBridge);
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
-        mWindow = new ActivityWindowAndroid(
-                mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+        mWindow =
+                new ActivityWindowAndroid(
+                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
         MessagesFactory.attachMessageDispatcher(mWindow, mMockMessageDispatcher);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
     }
@@ -150,7 +146,9 @@ public class SurveyUiDelegateBridgeUnitTest {
         }
 
         @Implementation
-        protected void showSurveyInvitation(Runnable onSurveyAccepted, Runnable onSurveyDeclined,
+        protected void showSurveyInvitation(
+                Runnable onSurveyAccepted,
+                Runnable onSurveyDeclined,
                 Runnable onSurveyPresentationFailed) {
             mMockDelegate.showSurveyInvitation(
                     onSurveyAccepted, onSurveyDeclined, onSurveyPresentationFailed);

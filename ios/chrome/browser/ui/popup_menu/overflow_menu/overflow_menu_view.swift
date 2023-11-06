@@ -25,14 +25,12 @@ struct OverflowMenuView: View {
       ) {
         OverflowMenuDestinationList(
           destinations: $model.destinations,
+          width: geometry.size.width,
           extraTopMargin: OverflowMenuListStyle.destinationListGrabberHeight,
           metricsHandler: metricsHandler,
           uiConfiguration: uiConfiguration, namespace: namespace
         )
         .matchedGeometryEffect(id: MenuCustomizationAnimationID.destinations, in: namespace)
-        .frame(
-          height: OverflowMenuListStyle.destinationListHeight
-            + OverflowMenuListStyle.destinationListGrabberHeight)
         Divider()
         OverflowMenuActionList(
           actionGroups: model.actionGroups, metricsHandler: metricsHandler, namespace: namespace)

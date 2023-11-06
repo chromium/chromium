@@ -69,4 +69,7 @@ specific_include_rules = {
     ".*socket.cc": [
         "+base/functional/identity.h",
     ],
+    "web_printing_manager.cc": [
+      "+printing/buildflags/buildflags.h",
+    ]
 }

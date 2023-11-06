@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_VIEW_H_
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece_forward.h"
 #include "base/types/strong_alias.h"
 #include "url/gurl.h"
 
@@ -51,7 +50,7 @@ class TouchToFillView {
   // `flags` is a combination of bits that affect the behaviors listed in the
   // `ShowFlags` enum. After user interaction either OnCredentialSelected() or
   // OnDismiss() gets invoked.
-  virtual void Show(
+  virtual bool Show(
       const GURL& url,
       IsOriginSecure is_origin_secure,
       base::span<const password_manager::UiCredential> credentials,

@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/html/html_ruby_element.h"
 
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_rt_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby.h"
 #include "third_party/blink/renderer/core/layout/layout_ruby_as_block.h"
 
@@ -19,6 +22,19 @@ LayoutObject* HTMLRubyElement::CreateLayoutObject(const ComputedStyle& style) {
     return MakeGarbageCollected<LayoutRubyAsInline>(this);
   if (style.Display() == EDisplay::kBlock) {
     UseCounter::Count(GetDocument(), WebFeature::kRubyElementWithDisplayBlock);
+    if (Traversal<HTMLRTElement>::FirstChild(*this)) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kRubyElementWithDisplayBlockAndRt);
+    }
+    if (RuntimeEnabledFeatures::BlockRubyConsoleMessageEnabled()) {
+      GetDocument().AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              ConsoleMessage::Source::kRendering, ConsoleMessage::Level::kInfo,
+              "A <ruby> with `display: block` won't render its ruby annotation "
+              "correctly with future versions of the browser. A workaround is "
+              "to specify `display: block; display: block ruby;`."),
+          /* discard_duplicates */ true);
+    }
     return MakeGarbageCollected<LayoutRubyAsBlock>(this);
   }
   return LayoutObject::CreateObject(this, style);

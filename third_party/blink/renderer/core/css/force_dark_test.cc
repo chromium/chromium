@@ -51,7 +51,7 @@ TEST_F(ForceDarkTest, ForcedColorScheme) {
     EXPECT_EQ(test_case.expected_forced, style->ColorSchemeForced())
         << "Element #" << test_case.id;
 
-    const auto* child_style = element->firstChild()->GetComputedStyle();
+    const auto* child_style = element->firstElementChild()->GetComputedStyle();
     ASSERT_TRUE(child_style);
     EXPECT_EQ(test_case.expected_dark, child_style->DarkColorScheme())
         << "Element #" << test_case.id << " > span";

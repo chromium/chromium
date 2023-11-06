@@ -15,15 +15,19 @@
 #include "base/test/task_environment.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_model_type_change_processor.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
+#include "components/undo/bookmark_undo_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace browser_sync {
 namespace {
 
 password_manager::PasswordForm CreateTestPassword(
@@ -56,7 +60,13 @@ syncer::LocalDataDescription CreateLocalDataDescription(
 
 class LocalDataQueryHelperTest : public testing::Test {
  public:
-  LocalDataQueryHelperTest() {
+  LocalDataQueryHelperTest()
+      : local_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever),
+        account_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever) {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
     account_password_store_->Init(/*prefs=*/nullptr,
@@ -68,6 +78,20 @@ class LocalDataQueryHelperTest : public testing::Test {
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
+
+    // Make sure BookmarkSyncService is aware of bookmarks having been loaded.
+    local_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            local_bookmark_model_.get()));
+    account_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            account_bookmark_model_.get()));
 
     // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
@@ -99,14 +123,19 @@ class LocalDataQueryHelperTest : public testing::Test {
         std::make_unique<browser_sync::LocalDataQueryHelper>(
             /*profile_password_store=*/local_password_store_.get(),
             /*account_password_store=*/account_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*account_bookmark_model=*/account_bookmark_model_.get(),
+            /*local_bookmark_sync_service=*/&local_bookmark_sync_service_,
+            /*account_bookmark_sync_service=*/&account_bookmark_sync_service_,
             /*dual_reading_list_model=*/dual_reading_list_model_.get());
+
+    // Make sure PasswordStore is fully initialized.
+    RunAllPendingTasks();
   }
+
   ~LocalDataQueryHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
     account_password_store_->ShutdownOnUIThread();
   }
+
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -124,12 +153,16 @@ class LocalDataQueryHelperTest : public testing::Test {
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
 
+  BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
+  sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
+  sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
+
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
   raw_ptr<ReadingListModel> local_reading_list_model_;
   raw_ptr<ReadingListModel> account_reading_list_model_;
 
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
+  std::unique_ptr<LocalDataQueryHelper> local_data_query_helper_;
 };
 
 TEST_F(LocalDataQueryHelperTest, ShouldHandleZeroTypes) {
@@ -140,6 +173,30 @@ TEST_F(LocalDataQueryHelperTest, ShouldHandleZeroTypes) {
   EXPECT_CALL(callback, Run(::testing::IsEmpty()));
 
   local_data_query_helper_->Run(syncer::ModelTypeSet(), callback.Get());
+}
+
+TEST_F(LocalDataQueryHelperTest, ShouldHandleUnusableTypes) {
+  base::HistogramTester histogram_tester;
+
+  base::MockOnceCallback<void(
+      std::map<syncer::ModelType, syncer::LocalDataDescription>)>
+      callback;
+
+  EXPECT_CALL(callback, Run(::testing::IsEmpty()));
+
+  ASSERT_TRUE(task_environment_.MainThreadIsIdle());
+
+  LocalDataQueryHelper helper(
+      /*profile_password_store=*/nullptr,
+      /*account_password_store=*/nullptr,
+      /*local_bookmark_sync_service=*/nullptr,
+      /*account_bookmark_sync_service=*/nullptr,
+      /*dual_reading_list_model=*/nullptr);
+  helper.Run(syncer::ModelTypeSet(
+                 {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}),
+             callback.Get());
+
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 TEST_F(LocalDataQueryHelperTest, ShouldReturnLocalPasswordsViaCallback) {
@@ -437,7 +494,13 @@ TEST_F(LocalDataQueryHelperTest, ShouldWorkForUrlsWithNoTLD) {
 
 class LocalDataMigrationHelperTest : public testing::Test {
  public:
-  LocalDataMigrationHelperTest() {
+  LocalDataMigrationHelperTest()
+      : local_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever),
+        account_bookmark_sync_service_(
+            &bookmark_undo_service_,
+            syncer::WipeModelUponSyncDisabledBehavior::kNever) {
     local_password_store_->Init(/*prefs=*/nullptr,
                                 /*affiliated_match_helper=*/nullptr);
     account_password_store_->Init(/*prefs=*/nullptr,
@@ -449,6 +512,20 @@ class LocalDataMigrationHelperTest : public testing::Test {
     local_bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(
             std::move(local_bookmark_client));
+
+    // Make sure BookmarkSyncService is aware of bookmarks having been loaded.
+    local_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            local_bookmark_model_.get()));
+    account_bookmark_sync_service_.DecodeBookmarkSyncMetadata(
+        /*metadata_str=*/"",
+        /*schedule_save_closure=*/base::DoNothing(),
+        std::make_unique<
+            sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(
+            account_bookmark_model_.get()));
 
     // TODO(crbug.com/1451508): Simplify by wrapping into a helper.
     auto local_reading_list_storage =
@@ -480,14 +557,19 @@ class LocalDataMigrationHelperTest : public testing::Test {
         std::make_unique<browser_sync::LocalDataMigrationHelper>(
             /*profile_password_store=*/local_password_store_.get(),
             /*account_password_store=*/account_password_store_.get(),
-            /*local_bookmark_model=*/local_bookmark_model_.get(),
-            /*account_bookmark_model=*/account_bookmark_model_.get(),
+            /*local_bookmark_sync_service=*/&local_bookmark_sync_service_,
+            /*account_bookmark_sync_service=*/&account_bookmark_sync_service_,
             /*dual_reading_list_model=*/dual_reading_list_model_.get());
+
+    // Make sure PasswordStore is fully initialized.
+    RunAllPendingTasks();
   }
+
   ~LocalDataMigrationHelperTest() override {
     local_password_store_->ShutdownOnUIThread();
     account_password_store_->ShutdownOnUIThread();
   }
+
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
  protected:
@@ -505,13 +587,16 @@ class LocalDataMigrationHelperTest : public testing::Test {
   std::unique_ptr<bookmarks::BookmarkModel> account_bookmark_model_ =
       bookmarks::TestBookmarkClient::CreateModel();
 
+  BookmarkUndoService bookmark_undo_service_;  // Needed by BookmarkSyncService.
+  sync_bookmarks::BookmarkSyncService local_bookmark_sync_service_;
+  sync_bookmarks::BookmarkSyncService account_bookmark_sync_service_;
+
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
   std::unique_ptr<reading_list::DualReadingListModel> dual_reading_list_model_;
   raw_ptr<ReadingListModel> local_reading_list_model_;
   raw_ptr<ReadingListModel> account_reading_list_model_;
 
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
+  std::unique_ptr<LocalDataMigrationHelper> local_data_migration_helper_;
 };
 
 TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
@@ -533,6 +618,11 @@ TEST_F(LocalDataMigrationHelperTest, ShouldLogRequestsToHistogram) {
   }
   {
     base::HistogramTester histogram_tester;
+
+    // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+    ON_CALL(processor_, IsTrackingMetadata)
+        .WillByDefault(::testing::Return(true));
+
     local_data_migration_helper_->Run(syncer::ModelTypeSet(
         {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
 
@@ -564,6 +654,23 @@ TEST_F(LocalDataMigrationHelperTest,
 TEST_F(LocalDataMigrationHelperTest, ShouldHandleZeroTypes) {
   // Just checks that there's no crash.
   local_data_migration_helper_->Run(syncer::ModelTypeSet());
+}
+
+TEST_F(LocalDataMigrationHelperTest, ShouldHandleUnusableTypes) {
+  base::HistogramTester histogram_tester;
+
+  ASSERT_TRUE(task_environment_.MainThreadIsIdle());
+
+  LocalDataMigrationHelper helper(
+      /*profile_password_store=*/nullptr,
+      /*account_password_store=*/nullptr,
+      /*local_bookmark_model=*/nullptr,
+      /*account_bookmark_model=*/nullptr,
+      /*dual_reading_list_model=*/nullptr);
+  helper.Run(syncer::ModelTypeSet(
+      {syncer::PASSWORDS, syncer::BOOKMARKS, syncer::READING_LIST}));
+
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMovePasswordsToAccountStore) {
@@ -929,6 +1036,34 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveBookmarksToAccountStore) {
   EXPECT_FALSE(local_bookmark_model_->HasBookmarks());
 }
 
+TEST_F(LocalDataMigrationHelperTest, ShouldClearBookmarksFromLocalStore) {
+  // -------- The local model --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  local_bookmark_model_->AddURL(
+      local_bookmark_model_->bookmark_bar_node(), /*index=*/0,
+      base::UTF8ToUTF16(std::string("url1")), GURL("https://www.google.com"));
+
+  // -------- The account model --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  account_bookmark_model_->AddURL(
+      account_bookmark_model_->bookmark_bar_node(), /*index=*/0,
+      base::UTF8ToUTF16(std::string("url1")), GURL("https://www.google.com"));
+
+  local_data_migration_helper_->Run(syncer::ModelTypeSet({syncer::BOOKMARKS}));
+
+  // No actual move happens since the data already exists in the account store.
+  // -------- The expected merge outcome --------
+  // bookmark_bar
+  //    |- url1(https://www.google.com)
+  EXPECT_EQ(1u,
+            account_bookmark_model_->bookmark_bar_node()->children().size());
+
+  // The data is still cleared from the local store.
+  EXPECT_FALSE(local_bookmark_model_->HasBookmarks());
+}
+
 TEST_F(LocalDataMigrationHelperTest, ShouldIgnoreManagedBookmarks) {
   // -------- The local model --------
   // bookmark_bar
@@ -1043,6 +1178,10 @@ TEST_F(LocalDataMigrationHelperTest, ShouldHandleMultipleRequestsForPasswords) {
 }
 
 TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
+  // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+  ON_CALL(processor_, IsTrackingMetadata)
+      .WillByDefault(::testing::Return(true));
+
   // Add test data.
   local_reading_list_model_->AddOrReplaceEntry(
       GURL("https://www.amazon.de"), "url1",
@@ -1053,10 +1192,6 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
       reading_list::ADDED_VIA_CURRENT_APP,
       /*estimated_read_time=*/base::TimeDelta());
 
-  // To allow moving local reading list to account model.
-  ON_CALL(processor_, IsTrackingMetadata)
-      .WillByDefault(::testing::Return(true));
-
   local_data_migration_helper_->Run(
       syncer::ModelTypeSet({syncer::READING_LIST}));
 
@@ -1066,4 +1201,37 @@ TEST_F(LocalDataMigrationHelperTest, ShouldMoveReadingListToAccountStore) {
   EXPECT_EQ(0u, local_reading_list_model_->size());
 }
 
+TEST_F(LocalDataMigrationHelperTest, ShouldClearReadingListFromLocalStore) {
+  // Required by MarkAllForUploadToSyncServerIfNeeded() to work.
+  ON_CALL(processor_, IsTrackingMetadata)
+      .WillByDefault(::testing::Return(true));
+
+  const GURL kCommonUrl("http://common_url.com/");
+
+  // Add test data.
+  local_reading_list_model_->AddOrReplaceEntry(
+      kCommonUrl, "url1", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+  // Same data exists in the account store.
+  account_reading_list_model_->AddOrReplaceEntry(
+      kCommonUrl, "url1", reading_list::ADDED_VIA_CURRENT_APP,
+      /*estimated_read_time=*/base::TimeDelta());
+
+  ASSERT_EQ(
+      dual_reading_list_model_->GetStorageStateForURLForTesting(kCommonUrl),
+      reading_list::DualReadingListModel::StorageStateForTesting::
+          kExistsInBothModels);
+
+  local_data_migration_helper_->Run(
+      syncer::ModelTypeSet({syncer::READING_LIST}));
+
+  RunAllPendingTasks();
+
+  // No new data in the account reading list since it already existed.
+  EXPECT_EQ(1u, account_reading_list_model_->size());
+  // Local store is still cleared.
+  EXPECT_EQ(0u, local_reading_list_model_->size());
+}
+
 }  // namespace
+}  // namespace browser_sync

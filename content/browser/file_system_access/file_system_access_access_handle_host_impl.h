@@ -69,7 +69,7 @@ class FileSystemAccessAccessHandleHostImpl
   void OnDisconnect();
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
 
   mojo::Receiver<blink::mojom::FileSystemAccessAccessHandleHost> receiver_;
 

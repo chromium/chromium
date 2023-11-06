@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -49,7 +50,7 @@ using blink::WebInputEvent;
 
 namespace {
 
-const char kTouchActionDataURL[] =
+constexpr char kTouchActionDataURL[] =
     "data:text/html;charset=utf-8,"
     "<!DOCTYPE html>"
     "<meta name='viewport' content='width=device-width'/>"
@@ -85,7 +86,7 @@ const char kTouchActionDataURL[] =
     "  document.title='ready';"
     "</script>";
 
-const char kTouchActionURLWithOverlapArea[] =
+constexpr char kTouchActionURLWithOverlapArea[] =
     "data:text/html;charset=utf-8,"
     "<!DOCTYPE html>"
     "<meta name='viewport' content='width=device-width'/>"
@@ -168,8 +169,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   }
 
  protected:
-  void LoadURL(const char* touch_action_url) {
-    const GURL data_url(touch_action_url);
+  void LoadURL(std::string_view touch_action_url) {
+    const GURL data_url(std::move(touch_action_url));
     EXPECT_TRUE(NavigateToURL(shell(), data_url));
 
     RenderWidgetHostImpl* host = GetWidgetHost();
@@ -724,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, BlockDoubleTapDragZoom) {
 
 namespace {
 
-const std::string kContentEditableDataURL = R"HTML(
+constexpr char kContentEditableDataURL[] = R"HTML(
     data:text/html,<!DOCTYPE html>
     <meta name='viewport' content='width=device-width'/>
     <style>
@@ -744,7 +745,7 @@ const std::string kContentEditableDataURL = R"HTML(
       document.title='ready';
     </script>)HTML";
 
-const std::string kContentEditableHorizontalScrollableDataURL = R"HTML(
+constexpr char kContentEditableHorizontalScrollableDataURL[] = R"HTML(
     data:text/html,<!DOCTYPE html>
     <meta name='viewport' content='width=device-width'/>
     <style>
@@ -777,7 +778,7 @@ const std::string kContentEditableHorizontalScrollableDataURL = R"HTML(
       document.title='ready';
     </script>)HTML";
 
-const std::string kContentEditableNonPassiveHandlerDataURL = R"HTML(
+constexpr char kContentEditableNonPassiveHandlerDataURL[] = R"HTML(
     data:text/html,<!DOCTYPE html>
     <meta name='viewport' content='width=device-width'/>
     <style>
@@ -800,7 +801,7 @@ const std::string kContentEditableNonPassiveHandlerDataURL = R"HTML(
       document.title='ready';
     </script>)HTML";
 
-const std::string kInputTagCursorControl = R"HTML(
+constexpr char kInputTagCursorControl[] = R"HTML(
     data:text/html,<!DOCTYPE html>
     <meta name='viewport' content='width=device-width'/>
     <style>
@@ -844,7 +845,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        BasicCursorControl) {
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
-  LoadURL(kContentEditableDataURL.c_str());
+  LoadURL(kContentEditableDataURL);
 
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
@@ -869,7 +870,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlForHorizontalScrollable) {
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
-  LoadURL(kContentEditableHorizontalScrollableDataURL.c_str());
+  LoadURL(kContentEditableHorizontalScrollableDataURL);
 
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
@@ -895,7 +896,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
                        NoCursorControlForNonPassiveLisenter) {
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
-  LoadURL(kContentEditableNonPassiveHandlerDataURL.c_str());
+  LoadURL(kContentEditableNonPassiveHandlerDataURL);
 
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().anchorOffset"));
   EXPECT_EQ(32, EvalJs(shell(), "window.getSelection().focusOffset"));
@@ -920,7 +921,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
   if (!::features::IsSwipeToMoveCursorEnabled())
     return;
   // input size larger than the text size, not horizontally scrollable.
-  LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 40).c_str());
+  LoadURL(base::StringPrintf(kInputTagCursorControl, 40).c_str());
 
   EXPECT_EQ(32, EvalJs(shell(), "container.selectionStart"));
   EXPECT_EQ(32, EvalJs(shell(), "container.selectionEnd"));
@@ -944,7 +945,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTestEnableCursorControl,
     return;
   // Make the input size smaller than the text size, so it horizontally
   // scrollable.
-  LoadURL(base::StringPrintf(kInputTagCursorControl.c_str(), 20).c_str());
+  LoadURL(base::StringPrintf(kInputTagCursorControl, 20).c_str());
 
   EXPECT_EQ(32, EvalJs(shell(), "container.selectionStart"));
   EXPECT_EQ(32, EvalJs(shell(), "container.selectionEnd"));

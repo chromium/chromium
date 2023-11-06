@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS Animating a custom property of type <length-percentage>
-PASS Animating a custom property of type <length-percentage> with a single keyframe
-PASS Animating a custom property of type <length-percentage> with additivity
-PASS Animating a custom property of type <length-percentage> with a single keyframe and additivity
-FAIL Animating a custom property of type <length-percentage> with iterationComposite assert_equals: expected "calc(250% + 25px)" but got "calc(50% + 25px)"
+[PASS] Animating a custom property of type <length-percentage>
+[PASS] Animating a custom property of type <length-percentage> with a single keyframe
+[PASS] Animating a custom property of type <length-percentage> with additivity
+[PASS] Animating a custom property of type <length-percentage> with a single keyframe and additivity
+[FAIL] Animating a custom property of type <length-percentage> with iterationComposite
+  assert_equals: expected "calc(250% + 25px)" but got "calc(50% + 25px)"
 Harness: the test ran to completion.
 

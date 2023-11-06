@@ -4,12 +4,16 @@
 
 #include "ash/test/ash_test_util.h"
 
+#include <string>
+#include <vector>
+
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "base/auto_reset.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,7 +25,10 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/view_utils.h"
@@ -192,6 +199,20 @@ gfx::ImageSkia CreateSolidColorTestImage(const gfx::Size& image_size,
   bitmap.eraseColor(color);
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   return image;
+}
+
+std::string CreateEncodedImageForTesting(const gfx::Size& size,
+                                         gfx::ImageSkia* image_out) {
+  gfx::ImageSkia test_image = CreateSolidColorTestImage(size, SK_ColorGREEN);
+  CHECK(!test_image.isNull());
+  if (image_out) {
+    *image_out = test_image;
+  }
+  std::vector<unsigned char> encoded_image;
+  CHECK(gfx::JPEG1xEncodedDataFromImage(gfx::Image(test_image), 100,
+                                        &encoded_image));
+  return std::string(reinterpret_cast<const char*>(encoded_image.data()),
+                     encoded_image.size());
 }
 
 void DecorateWindow(aura::Window* window,

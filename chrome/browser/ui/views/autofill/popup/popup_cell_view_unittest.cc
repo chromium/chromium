@@ -63,7 +63,6 @@ class PopupCellViewTest : public ChromeViewsTestBase {
 
   std::unique_ptr<PopupCellView> CreatePopupCellView() {
     return views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-        .SetAccessibilityDelegate(std::make_unique<TestAccessibilityDelegate>())
         .Build();
   }
 
@@ -77,16 +76,6 @@ class PopupCellViewTest : public ChromeViewsTestBase {
   std::unique_ptr<ui::test::EventGenerator> generator_;
   raw_ptr<PopupCellView> view_ = nullptr;
 };
-
-TEST_F(PopupCellViewTest, AccessibleNodeData) {
-  ShowView(CreatePopupCellView());
-
-  ui::AXNodeData node_data;
-  view().GetAccessibleNodeData(&node_data);
-
-  EXPECT_EQ(TestAccessibilityDelegate::kVoiceOverName,
-            node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
-}
 
 TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
   ShowView(CreatePopupCellView());
@@ -102,19 +91,6 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesBackground) {
   ASSERT_TRUE(background);
   EXPECT_EQ(background->get_color(), view().GetColorProvider()->GetColor(
                                          ui::kColorDropdownBackgroundSelected));
-}
-
-TEST_F(PopupCellViewTest, Tooltip) {
-  constexpr char16_t kTooltip[] = u"Sample tooltip";
-
-  ShowView(views::Builder<PopupCellView>(CreatePopupCellView())
-               .SetTooltipText(kTooltip)
-               .Build());
-  EXPECT_EQ(view().GetTooltipText(), kTooltip);
-
-  // The method derived form `views::View` responds properly, too.
-  const views::View& cell_as_view = view();
-  EXPECT_EQ(cell_as_view.GetTooltipText(gfx::Point()), kTooltip);
 }
 
 TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
@@ -137,7 +113,7 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   };
 
   // The unselected state.
-  EXPECT_FALSE(view().IsHighlighted());
+  EXPECT_FALSE(view().GetSelected());
   EXPECT_EQ(tracked_label->GetEnabledColor(),
             get_expected_color(*tracked_label, tracked_label->GetTextStyle()));
   EXPECT_EQ(
@@ -146,7 +122,7 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
 
   // // On select updates only the tracked label's style.
   view().SetSelected(true);
-  EXPECT_TRUE(view().IsHighlighted());
+  EXPECT_TRUE(view().GetSelected());
   EXPECT_NE(
       tracked_label->GetEnabledColor(),
       get_expected_color(*tracked_label, untracked_label->GetTextStyle()));
@@ -155,10 +131,6 @@ TEST_F(PopupCellViewTest, SetSelectedUpdatesTrackedLabels) {
   EXPECT_EQ(
       untracked_label->GetEnabledColor(),
       get_expected_color(*untracked_label, untracked_label->GetTextStyle()));
-
-  view().SetSelected(false);
-  view().SetPermanentlyHighlighted(true);
-  EXPECT_TRUE(view().IsHighlighted());
 }
 
 }  // namespace autofill

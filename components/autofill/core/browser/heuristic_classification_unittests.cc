@@ -210,8 +210,8 @@ void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
     }
 
     // Determine the type assigned to the field by the heuristic classification.
-    std::string heuristic_type = std::string(FieldTypeToStringPiece(
-        form_structure.field(i)->Type().GetStorableType()));
+    std::string heuristic_type =
+        FieldTypeToString(form_structure.field(i)->Type().GetStorableType());
 
     // Record metrics on the divergence between tester and heuristics.
     if (fields_in_scope_.contains(tester_type)) {
@@ -280,7 +280,7 @@ base::Value ResultAnalyzer::GetResult() {
 const base::FilePath& GetInputDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data")

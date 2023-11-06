@@ -171,8 +171,7 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
     scoped_refptr<VP9Picture> pic,
     const Vp9SegmentationParams& segm_params,
     const Vp9LoopFilterParams& lf_params,
-    const Vp9ReferenceFrameVector& ref_frames,
-    base::OnceClosure done_cb) {
+    const Vp9ReferenceFrameVector& ref_frames) {
   const Vp9FrameHeader* frame_hdr = pic->frame_hdr.get();
   DCHECK(frame_hdr);
   struct v4l2_ctrl_vp9_frame v4l2_frame_params;
@@ -311,8 +310,6 @@ DecodeStatus V4L2VideoDecoderDelegateVP9::SubmitDecode(
   }
   dec_surface->SetReferenceSurfaces(std::move(ref_surfaces));
 
-  dec_surface->SetDecodeDoneCallback(std::move(done_cb));
-
   // Copy the frame data into the V4L2 buffer.
   if (!surface_handler_->SubmitSlice(dec_surface.get(), frame_hdr->data,
                                      frame_hdr->frame_size)) {
@@ -342,10 +339,6 @@ bool V4L2VideoDecoderDelegateVP9::GetFrameContext(scoped_refptr<VP9Picture> pic,
 
 bool V4L2VideoDecoderDelegateVP9::NeedsCompressedHeaderParsed() const {
   return supports_compressed_header_;
-}
-
-bool V4L2VideoDecoderDelegateVP9::SupportsContextProbabilityReadback() const {
-  return false;
 }
 
 }  // namespace media

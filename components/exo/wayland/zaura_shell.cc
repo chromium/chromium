@@ -1240,14 +1240,17 @@ class WaylandAuraShell : public ash::DesksController::Observer,
       wl_client_flush(wl_resource_get_client(aura_shell_resource_));
     }
 
-    if (chromeos::features::IsRoundedWindowsEnabled() &&
-        wl_resource_get_version(aura_shell_resource_) >=
-            ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION) {
+    if (wl_resource_get_version(aura_shell_resource_) >=
+        ZAURA_SHELL_WINDOW_CORNERS_RADII_SINCE_VERSION) {
       const int window_corner_radius =
           chromeos::features::RoundedWindowsRadius();
+
       zaura_shell_send_window_corners_radii(
           aura_shell_resource_, window_corner_radius, window_corner_radius,
-          window_corner_radius, window_corner_radius);
+          chromeos::features::IsRoundedWindowsEnabled() ? window_corner_radius
+                                                        : 0,
+          chromeos::features::IsRoundedWindowsEnabled() ? window_corner_radius
+                                                        : 0);
     }
 
     display->seat()->AddObserver(this, kAuraShellSeatObserverPriority);

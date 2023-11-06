@@ -480,15 +480,17 @@ bool LayerTreeHost::IsUsingLayerLists() const {
   return settings_.use_layer_lists;
 }
 
-void LayerTreeHost::CommitComplete(const CommitTimestamps& commit_timestamps) {
+void LayerTreeHost::CommitComplete(int source_frame_number,
+                                   const CommitTimestamps& commit_timestamps) {
   DCHECK(IsMainThread());
   // At this point, commit_completion_event_ could be for the *next* commit, and
   // may not yet have been signaled.
   if (commit_completion_event_ && commit_completion_event_->IsSignaled())
     WaitForCommitCompletion(/* for_protected_sequence */ false);
-  client_->DidCommit(commit_timestamps.start, commit_timestamps.finish);
+  client_->DidCommit(source_frame_number, commit_timestamps.start,
+                     commit_timestamps.finish);
   if (did_complete_scale_animation_) {
-    client_->DidCompletePageScaleAnimation();
+    client_->DidCompletePageScaleAnimation(source_frame_number);
     did_complete_scale_animation_ = false;
   }
   if (compositor_mode_ == CompositorMode::THREADED) {
@@ -893,10 +895,11 @@ bool LayerTreeHost::CaptureContent(std::vector<NodeInfo>* content) const {
 }
 
 void LayerTreeHost::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
   DCHECK(IsMainThread());
-  client_->DidObserveFirstScrollDelay(first_scroll_delay,
+  client_->DidObserveFirstScrollDelay(source_frame_number, first_scroll_delay,
                                       first_scroll_timestamp);
 }
 

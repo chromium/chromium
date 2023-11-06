@@ -120,4 +120,10 @@ int GetTimerTextfieldInputInMinutes(SystemTextfield* timer_textfield) {
   return duration_minutes;
 }
 
+std::u16string GetFormattedEndTimeString(const base::Time end_time) {
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_TIME_SUBLABEL,
+      focus_mode_util::GetFormattedClockString(end_time));
+}
+
 }  // namespace ash::focus_mode_util

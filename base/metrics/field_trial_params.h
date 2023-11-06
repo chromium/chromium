@@ -133,12 +133,12 @@ BASE_EXPORT base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
 //
 // Getting a param value from a FeatureParam<T> will have the same semantics as
 // GetFieldTrialParamValueByFeature(), see that function's comments for details.
-template <typename T, bool IsEnum = std::is_enum<T>::value>
+template <typename T, bool IsEnum = std::is_enum_v<T>>
 struct FeatureParam {
   // Prevent use of FeatureParam<> with unsupported types (e.g. void*). Uses T
   // in its definition so that evaluation is deferred until the template is
   // instantiated.
-  static_assert(!std::is_same<T, T>::value, "unsupported FeatureParam<> type");
+  static_assert(!std::is_same_v<T, T>, "unsupported FeatureParam<> type");
 };
 
 // Declares a string-valued parameter. Example:

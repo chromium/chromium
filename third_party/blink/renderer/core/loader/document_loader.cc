@@ -51,6 +51,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/public/common/metrics/accept_language_and_content_language_usage.h"
 #include "third_party/blink/public/common/page/browsing_context_group_info.h"
@@ -102,6 +103,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/inspector/main_thread_debugger.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/alternate_signed_exchange_resource_info.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/frame_fetch_context.h"
@@ -121,6 +123,9 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/speculation_rules/auto_speculation_rules_config.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
@@ -324,8 +329,9 @@ struct SameSizeAsDocumentLoader
   bool has_storage_access;
   mojom::blink::ParentResourceTimingAccess parent_resource_timing_access;
   const absl::optional<BrowsingContextGroupInfo> browsing_context_group_info;
-  const base::flat_map<mojom::blink::RuntimeFeatureState, bool>
+  const base::flat_map<mojom::blink::RuntimeFeature, bool>
       modified_runtime_features;
+  AtomicString cookie_deprecation_label;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -527,8 +533,8 @@ DocumentLoader::DocumentLoader(
       view_transition_state_(std::move(params_->view_transition_state)),
       load_with_storage_access_(params_->load_with_storage_access),
       browsing_context_group_info_(params_->browsing_context_group_info),
-      modified_runtime_features_(
-          std::move(params_->modified_runtime_features)) {
+      modified_runtime_features_(std::move(params_->modified_runtime_features)),
+      cookie_deprecation_label_(params_->cookie_deprecation_label) {
   DCHECK(frame_);
   DCHECK(params_);
 
@@ -678,6 +684,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->navigation_delivery_type = navigation_delivery_type_;
   params->load_with_storage_access = load_with_storage_access_;
   params->modified_runtime_features = modified_runtime_features_;
+  params->cookie_deprecation_label = cookie_deprecation_label_;
   return params;
 }
 
@@ -754,15 +761,36 @@ void DocumentLoader::DispatchLinkHeaderPreloads(
       nullptr /* recursive_prefetch_token */);
 }
 
+void DocumentLoader::DispatchLcppFontPreloads(
+    const ViewportDescription* viewport,
+    PreloadHelper::LoadLinksFromHeaderMode mode) {
+  DCHECK_GE(state_, kCommitted);
+  StringBuilder fonts_link;
+  LCPCriticalPathPredictor* lcpp = frame_->GetLCPP();
+  if (!lcpp) {
+    return;
+  }
+  // Generate link header for fonts.
+  for (const auto& font : lcpp->fetched_fonts()) {
+    if (!fonts_link.empty()) {
+      fonts_link.Append(",");
+    }
+    fonts_link.Append("<");
+    fonts_link.Append(font.GetString());
+    fonts_link.Append(">; rel=\"preload\"; as=\"font\"");
+  }
+  PreloadHelper::LoadLinksFromHeader(fonts_link.ToString(),
+                                     GetResponse().CurrentRequestUrl(), *frame_,
+                                     frame_->GetDocument(), mode, viewport,
+                                     nullptr /* alternate_resource_info */,
+                                     nullptr /* recursive_prefetch_token */);
+  base::UmaHistogramCounts1000("Blink.LCPP.PreloadedFontCount",
+                               lcpp->fetched_fonts().size());
+}
+
 void DocumentLoader::DidChangePerformanceTiming() {
   if (frame_ && state_ >= kCommitted) {
     GetLocalFrameClient().DidChangePerformanceTiming();
-  }
-}
-
-void DocumentLoader::DidObserveInputDelay(base::TimeDelta input_delay) {
-  if (frame_ && state_ >= kCommitted) {
-    GetLocalFrameClient().DidObserveInputDelay(input_delay);
   }
 }
 
@@ -778,6 +806,37 @@ void DocumentLoader::DidObserveJavaScriptFrameworks(
   if (frame_) {
     DCHECK_GE(state_, kCommitted);
     GetLocalFrameClient().DidObserveJavaScriptFrameworks(result);
+    InjectAutoSpeculationRules(result);
+  }
+}
+
+void DocumentLoader::InjectAutoSpeculationRules(
+    const JavaScriptFrameworkDetectionResult& result) {
+  if (!base::FeatureList::IsEnabled(features::kAutoSpeculationRules)) {
+    return;
+  }
+
+  const auto& config = AutoSpeculationRulesConfig::GetInstance();
+
+  for (const auto& detected_version : result.detected_versions) {
+    if (String speculation_rules =
+            config.ForFramework(detected_version.first)) {
+      auto* source = SpeculationRuleSet::Source::FromBrowserInjected(
+          speculation_rules, this->Url());
+      auto* rule_set = SpeculationRuleSet::Parse(source, frame_->DomWindow());
+      CHECK(rule_set);
+
+      // The JSON string in speculation_rules comes from a potentially-fallible
+      // remote config, so this should not be a CHECK failure.
+      if (rule_set->HasError()) {
+        LOG(ERROR) << "Failed to parse speculation rules for "
+                   << detected_version.first << ": " << speculation_rules;
+        continue;
+      }
+
+      DocumentSpeculationRules::From(*frame_->GetDocument())
+          .AddRuleSet(rule_set);
+    }
   }
 }
 
@@ -3160,7 +3219,7 @@ void DocumentLoader::InitializePrefetchedSignedExchangeManager() {
 
 PrefetchedSignedExchangeManager*
 DocumentLoader::GetPrefetchedSignedExchangeManager() const {
-  return prefetched_signed_exchange_manager_;
+  return prefetched_signed_exchange_manager_.Get();
 }
 
 base::TimeDelta DocumentLoader::RemainingTimeToLCPLimit() const {
@@ -3239,8 +3298,10 @@ void DocumentLoader::NotifyPrerenderingDocumentActivated(
 
   GetTiming().SetActivationStart(params.activation_start);
 
-  DCHECK(!view_transition_state_);
-  view_transition_state_ = std::move(params.view_transition_state);
+  if (params.view_transition_state) {
+    CHECK(!view_transition_state_);
+    view_transition_state_ = std::move(params.view_transition_state);
+  }
   StartViewTransitionIfNeeded(*frame_->GetDocument());
 }
 

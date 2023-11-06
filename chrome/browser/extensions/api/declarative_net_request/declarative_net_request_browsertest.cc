@@ -635,7 +635,9 @@ class DeclarativeNetRequestBrowserTest
     )";
 
     double timestamp_in_js =
-        timestamp.has_value() ? timestamp->ToJsTimeIgnoringNull() : 0;
+        timestamp.has_value()
+            ? timestamp->InMillisecondsFSinceUnixEpochIgnoringNull()
+            : 0;
 
     std::string param_string =
         tab_id.has_value()
@@ -4622,7 +4624,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   ASSERT_TRUE(base::StringToDouble(timestamp_string, &matched_rule_timestamp));
 
   // Verify that the rule was matched at |start_time|.
-  EXPECT_DOUBLE_EQ(start_time.ToJsTimeIgnoringNull(), matched_rule_timestamp);
+  EXPECT_DOUBLE_EQ(start_time.InMillisecondsFSinceUnixEpochIgnoringNull(),
+                   matched_rule_timestamp);
 
   // Advance the clock to capture a timestamp after when the first request was
   // made.
@@ -6777,8 +6780,7 @@ class DeclarativeNetRequestBackForwardCacheBrowserTest
   DeclarativeNetRequestBackForwardCacheBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
         content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(
-            {{features::kBackForwardCache,
-              {{"all_extensions_allowed", "true"}}}}),
+            {{features::kBackForwardCache, {}}}),
         content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
   }
 

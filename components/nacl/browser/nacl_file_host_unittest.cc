@@ -112,14 +112,8 @@ TEST_F(NaClFileHostTest, TestFilenamesWithPnaclPath) {
   EXPECT_FALSE(PnaclCanOpenFile(std::string(), &out_path));
   EXPECT_FALSE(PnaclCanOpenFile(".", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("..", &out_path));
-#if BUILDFLAG(IS_WIN)
-  EXPECT_FALSE(PnaclCanOpenFile("..\\llc", &out_path));
-  EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%", &out_path));
-  EXPECT_FALSE(PnaclCanOpenFile("%SystemRoot%\\explorer.exe", &out_path));
-#else
   EXPECT_FALSE(PnaclCanOpenFile("../llc", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("/bin/sh", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("$HOME", &out_path));
   EXPECT_FALSE(PnaclCanOpenFile("$HOME/.bashrc", &out_path));
-#endif
 }

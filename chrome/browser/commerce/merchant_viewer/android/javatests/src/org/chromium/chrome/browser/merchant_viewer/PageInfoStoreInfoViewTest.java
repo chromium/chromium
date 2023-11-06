@@ -63,12 +63,12 @@ import org.chromium.url.GURL;
 
 import java.io.IOException;
 
-/**
- * Tests for PageInfoStoreInfo view.
- */
+/** Tests for PageInfoStoreInfo view. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@EnableFeatures(
-        {PageInfoFeatures.PAGE_INFO_STORE_INFO_NAME, ChromeFeatureList.COMMERCE_MERCHANT_VIEWER})
+@EnableFeatures({
+    PageInfoFeatures.PAGE_INFO_STORE_INFO_NAME,
+    ChromeFeatureList.COMMERCE_MERCHANT_VIEWER
+})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 @Batch(Batch.PER_CLASS)
@@ -81,8 +81,7 @@ public class PageInfoStoreInfoViewTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Rule
-    public JniMocker mMocker = new JniMocker();
+    @Rule public JniMocker mMocker = new JniMocker();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -90,10 +89,8 @@ public class PageInfoStoreInfoViewTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_SHOPPING)
                     .build();
 
-    @Mock
-    private StoreInfoActionHandler mMockStoreInfoActionHandler;
-    @Mock
-    private ShoppingService mMockShoppingService;
+    @Mock private StoreInfoActionHandler mMockStoreInfoActionHandler;
+    @Mock private ShoppingService mMockShoppingService;
 
     private final MerchantInfo mFakeMerchantTrustSignals =
             new MerchantInfo(4.5f, 100, new GURL("http://dummy/url"), false, 0f, false, false);
@@ -108,12 +105,17 @@ public class PageInfoStoreInfoViewTest {
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon) {
         ChromeActivity activity = sActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    PageInfoController.OpenedFromSource.TOOLBAR,
-                    () -> mMockStoreInfoActionHandler, null, null)
-                    .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new ChromePageInfo(
+                                    activity.getModalDialogManagerSupplier(),
+                                    null,
+                                    PageInfoController.OpenedFromSource.TOOLBAR,
+                                    () -> mMockStoreInfoActionHandler,
+                                    null,
+                                    null)
+                            .show(tab, ChromePageInfoHighlight.forStoreInfo(fromStoreIcon));
+                });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }
 
@@ -187,12 +189,15 @@ public class PageInfoStoreInfoViewTest {
     }
 
     private void mockShoppingServiceResponse(MerchantInfo merchantInfo) {
-        doAnswer((Answer<Void>) invocation -> {
-            GURL url = (GURL) invocation.getArguments()[0];
-            MerchantInfoCallback callback = (MerchantInfoCallback) invocation.getArguments()[1];
-            callback.onResult(url, merchantInfo);
-            return null;
-        })
+        doAnswer(
+                        (Answer<Void>)
+                                invocation -> {
+                                    GURL url = (GURL) invocation.getArguments()[0];
+                                    MerchantInfoCallback callback =
+                                            (MerchantInfoCallback) invocation.getArguments()[1];
+                                    callback.onResult(url, merchantInfo);
+                                    return null;
+                                })
                 .when(mMockShoppingService)
                 .getMerchantInfoForUrl(any(GURL.class), any(MerchantInfoCallback.class));
     }
@@ -204,14 +209,16 @@ public class PageInfoStoreInfoViewTest {
 
     private void renderTestForStoreInfoRow(String renderId) {
         onView(withId(PageInfoStoreInfoController.STORE_INFO_ROW_ID))
-                .check((v, noMatchException) -> {
-                    if (noMatchException != null) throw noMatchException;
-                    // Allow disk writes and slow calls to render from UI thread.
-                    try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-                        mRenderTestRule.render(v, renderId);
-                    } catch (IOException e) {
-                        assert false : "Render test failed due to " + e;
-                    }
-                });
+                .check(
+                        (v, noMatchException) -> {
+                            if (noMatchException != null) throw noMatchException;
+                            // Allow disk writes and slow calls to render from UI thread.
+                            try (StrictModeContext ignored =
+                                    StrictModeContext.allowAllThreadPolicies()) {
+                                mRenderTestRule.render(v, renderId);
+                            } catch (IOException e) {
+                                assert false : "Render test failed due to " + e;
+                            }
+                        });
     }
 }

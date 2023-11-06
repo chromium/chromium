@@ -16,6 +16,7 @@
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
@@ -236,6 +237,11 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
       const SkColor foreground_color,
       const absl::optional<SkColor> badge_color = absl::nullopt) const;
 
+  // Creates a new image that should be shown for the battery's current state.
+  static ui::ImageModel GetBatteryImageModel(const BatteryImageInfo& info,
+                                             int height);
+
+  // DEPRECATED: Use `GetBatteryImageModel()` instead.
   // Creates a new image that should be shown for the battery's current state.
   static gfx::ImageSkia GetBatteryImage(
       const BatteryImageInfo& info,

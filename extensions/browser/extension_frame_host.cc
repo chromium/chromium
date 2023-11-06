@@ -6,9 +6,21 @@
 
 #include <string>
 
+#include "base/trace_event/typed_macros.h"
 #include "content/public/browser/render_process_host.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/message_service_api.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/common/api/messaging/port_context.h"
+#include "extensions/common/mojom/message_port.mojom.h"
+#include "extensions/common/trace_util.h"
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -65,5 +77,158 @@ void ExtensionFrameHost::ContentScriptsExecuting(
     const base::flat_map<std::string, std::vector<std::string>>&
         extension_id_to_scripts,
     const GURL& frame_url) {}
+
+void ExtensionFrameHost::IncrementLazyKeepaliveCount() {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process_manager =
+      ProcessManager::Get(render_frame_host->GetBrowserContext());
+  const Extension* extension = GetExtension(process_manager, render_frame_host);
+  if (!extension) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::EFH_NO_BACKGROUND_HOST_FOR_FRAME);
+    return;
+  }
+  process_manager->IncrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC);
+}
+
+void ExtensionFrameHost::DecrementLazyKeepaliveCount() {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process_manager =
+      ProcessManager::Get(render_frame_host->GetBrowserContext());
+  const Extension* extension = GetExtension(process_manager, render_frame_host);
+  if (!extension) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::EFH_NO_BACKGROUND_HOST_FOR_FRAME);
+    return;
+  }
+  process_manager->DecrementLazyKeepaliveCount(
+      extension, Activity::LIFECYCLE_MANAGEMENT, Activity::kIPC);
+}
+
+const Extension* ExtensionFrameHost::GetExtension(
+    ProcessManager* process_manager,
+    content::RenderFrameHost* frame) {
+  ExtensionHost* extension_host =
+      process_manager->GetBackgroundHostForRenderFrameHost(frame);
+  if (!extension_host) {
+    return nullptr;
+  }
+  return extension_host->extension();
+}
+
+void ExtensionFrameHost::UpdateDraggableRegions(
+    std::vector<mojom::DraggableRegionPtr> regions) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+
+  // TODO(dtapuska): We should restrict sending the draggable region
+  // only to AppWindows.
+  AppWindowRegistry* registry =
+      AppWindowRegistry::Get(render_frame_host->GetBrowserContext());
+  if (!registry) {
+    return;
+  }
+  AppWindow* app_window = registry->GetAppWindowForWebContents(web_contents_);
+  if (!app_window) {
+    return;
+  }
+
+  // This message should come from a primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        render_frame_host->GetProcess(),
+        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
+    return;
+  }
+  app_window->UpdateDraggableRegions(std::move(regions));
+}
+
+void ExtensionFrameHost::AppWindowReady() {
+  AppWindowRegistry* registry =
+      AppWindowRegistry::Get(web_contents_->GetBrowserContext());
+  if (!registry) {
+    return;
+  }
+  AppWindow* app_window = registry->GetAppWindowForWebContents(web_contents_);
+  if (!app_window) {
+    return;
+  }
+  app_window->AppWindowReady();
+}
+
+void ExtensionFrameHost::OpenChannelToExtension(
+    extensions::mojom::ExternalConnectionInfoPtr info,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process = render_frame_host->GetProcess();
+  TRACE_EVENT("extensions", "ExtensionFrameHost::OpenChannelToExtension",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToExtension(
+      render_frame_host->GetBrowserContext(), render_frame_host, port_id, *info,
+      channel_type, channel_name, std::move(port), std::move(port_host));
+#endif
+}
+
+void ExtensionFrameHost::OpenChannelToNativeApp(
+    const std::string& native_app_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process = render_frame_host->GetProcess();
+  TRACE_EVENT("extensions", "ExtensionFrameHost::OnOpenChannelToNativeApp",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToNativeApp(
+      render_frame_host->GetBrowserContext(), render_frame_host, port_id,
+      native_app_name, std::move(port), std::move(port_host));
+#endif
+}
+
+void ExtensionFrameHost::OpenChannelToTab(
+    int32_t tab_id,
+    int32_t frame_id,
+    const absl::optional<std::string>& document_id,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    const PortId& port_id,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePortHost>
+        port_host) {
+  content::RenderFrameHost* render_frame_host =
+      receivers_.GetCurrentTargetFrame();
+  auto* process = render_frame_host->GetProcess();
+  TRACE_EVENT("extensions", "ExtensionFrameHost::OpenChannelToTab",
+              ChromeTrackEvent::kRenderProcessHost, *process);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+  bad_message::ReceivedBadMessage(process, bad_message::LEGACY_IPC_MISMATCH);
+#else
+  MessageServiceApi::GetMessageService()->OpenChannelToTab(
+      render_frame_host->GetBrowserContext(), render_frame_host, port_id,
+      tab_id, frame_id, document_id ? *document_id : std::string(),
+      channel_type, channel_name, std::move(port), std::move(port_host));
+#endif
+}
 
 }  // namespace extensions

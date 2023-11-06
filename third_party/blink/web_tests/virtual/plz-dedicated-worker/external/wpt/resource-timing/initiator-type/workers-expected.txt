@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL The initiator type for classic worker must be 'other' promise_test: Unhandled rejection with value: object "Error: observe_entry: timeout"
-FAIL The initiator type for module worker must be 'other' promise_test: Unhandled rejection with value: object "Error: observe_entry: timeout"
-Harness: the test ran to completion.
-

@@ -37,8 +37,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 
 /**
- * This class tests the sign-in checks done at Chrome start-up or when accounts
- * change on device.
+ * This class tests the sign-in checks done at Chrome start-up or when accounts change on device.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -49,18 +48,15 @@ public class SigninCheckerTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private ExternalAuthUtils mExternalAuthUtilsMock;
+    @Mock private ExternalAuthUtils mExternalAuthUtilsMock;
 
-    @Mock
-    private AccountRenameChecker.Delegate mAccountRenameCheckerDelegateMock;
+    @Mock private AccountRenameChecker.Delegate mAccountRenameCheckerDelegateMock;
 
     @Before
     public void setUp() {
@@ -81,10 +77,11 @@ public class SigninCheckerTest {
 
         mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
-        CriteriaHelper.pollUiThread(() -> {
-            return expectedPrimaryAccount.equals(
-                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return expectedPrimaryAccount.equals(
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                });
     }
 
     @Test
@@ -100,11 +97,12 @@ public class SigninCheckerTest {
 
         mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
-        CriteriaHelper.pollUiThread(() -> {
-            return !IdentityServicesProvider.get()
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
-        });
+                });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
@@ -118,11 +116,12 @@ public class SigninCheckerTest {
 
         mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
-        CriteriaHelper.pollUiThread(() -> {
-            return !IdentityServicesProvider.get()
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SYNC);
-        });
+                });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
     }
 
@@ -136,11 +135,12 @@ public class SigninCheckerTest {
 
         mSigninTestRule.removeAccountAndWaitForSeeding(oldAccount.getEmail());
 
-        CriteriaHelper.pollUiThread(() -> {
-            return !IdentityServicesProvider.get()
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !IdentityServicesProvider.get()
                             .getIdentityManager(Profile.getLastUsedRegularProfile())
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
-        });
+                });
     }
 
     @Test
@@ -152,10 +152,11 @@ public class SigninCheckerTest {
         final CoreAccountInfo expectedPrimaryAccount =
                 mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
 
-        CriteriaHelper.pollUiThread(() -> {
-            return expectedPrimaryAccount.equals(
-                    mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return expectedPrimaryAccount.equals(
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+                });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertEquals(
                 3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
@@ -176,9 +177,11 @@ public class SigninCheckerTest {
 
         // The check should be done twice, once at activity start-up, the other when account
         // is added.
-        CriteriaHelper.pollUiThread(() -> {
-            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 2;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests()
+                            == 2;
+                });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
@@ -198,9 +201,11 @@ public class SigninCheckerTest {
         UserActionTester actionTester = new UserActionTester();
 
         // The check should be done once at activity start-up
-        CriteriaHelper.pollUiThread(() -> {
-            return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests() == 1;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests()
+                            == 1;
+                });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
         Assert.assertFalse(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
@@ -216,9 +221,11 @@ public class SigninCheckerTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
-        CriteriaHelper.pollUiThread(() -> {
-            return childAccount.equals(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return childAccount.equals(
+                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
+                });
 
         // The check should be done once at account addition and once at activity start-up.
         Assert.assertEquals(

@@ -77,7 +77,9 @@ class IntersectionObserverDelegateImpl final
     callback_.Run(entries);
   }
 
-  ExecutionContext* GetExecutionContext() const override { return context_; }
+  ExecutionContext* GetExecutionContext() const override {
+    return context_.Get();
+  }
 
   void Trace(Visitor* visitor) const override {
     IntersectionObserverDelegate::Trace(visitor);
@@ -439,6 +441,7 @@ void IntersectionObserver::observe(Element* target,
     }
   } else if (delegate_->NeedsInitialObservationWithDetachedTarget()) {
     absl::optional<base::TimeTicks> monotonic_time;
+    absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
     observation->ComputeIntersection(
         IntersectionObservation::kImplicitRootObserversNeedUpdate |
             IntersectionObservation::kExplicitRootObserversNeedUpdate |
@@ -446,7 +449,7 @@ void IntersectionObserver::observe(Element* target,
             (use_overflow_clip_edge_
                  ? IntersectionObservation::kUseOverflowClipEdge
                  : 0),
-        monotonic_time);
+        monotonic_time, root_geometry);
   }
 }
 
@@ -543,15 +546,14 @@ int64_t IntersectionObserver::ComputeIntersections(
   if (use_overflow_clip_edge_)
     flags |= IntersectionObservation::kUseOverflowClipEdge;
 
-  IntersectionGeometry::RootGeometry root_geometry(
-      IntersectionGeometry::GetExplicitRootLayoutObject(*root()), RootMargin());
+  absl::optional<IntersectionGeometry::RootGeometry> root_geometry;
   // TODO(szager): Is this copy necessary?
   HeapVector<Member<IntersectionObservation>> observations_to_process(
       observations_);
   int64_t result = 0;
   for (auto& observation : observations_to_process) {
     result +=
-        observation->ComputeIntersection(root_geometry, flags, monotonic_time);
+        observation->ComputeIntersection(flags, monotonic_time, root_geometry);
   }
   return result;
 }

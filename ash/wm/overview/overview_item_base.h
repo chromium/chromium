@@ -13,12 +13,9 @@
 #include "ash/wm/overview/overview_types.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
-
-namespace aura {
-class Window;
-}  // namespace aura
 
 namespace gfx {
 class RectF;
@@ -145,6 +142,10 @@ class ASH_EXPORT OverviewItemBase {
   // a list of windows.
   virtual std::vector<aura::Window*> GetWindows() = 0;
 
+  // Returns true if all the windows represented by `this` are visible on all
+  // workspaces.
+  virtual bool HasVisibleOnAllDesksWindow() = 0;
+
   // Returns true if the given `target` is contained within `this`.
   virtual bool Contains(const aura::Window* target) const = 0;
 
@@ -176,11 +177,11 @@ class ASH_EXPORT OverviewItemBase {
       const gfx::RectF& target_bounds) = 0;
 
   // Returns the union of the original target bounds of all transformed windows
-  // managed by `this`, i.e. all regular (normal or panel transient descendants
-  // of the window returned by `GetWindows()`).
-  virtual gfx::RectF GetTargetBoundsInScreen() const = 0;
+  // represented by `this`, i.e. all regular (normal or transient descendants of
+  // the windows returned by `GetWindows()`).
+  virtual gfx::RectF GetWindowsUnionScreenBounds() const = 0;
 
-  // Returns the `target_bounds_` of the `this` with insets.
+  // Returns the `target_bounds_` of the `this` with insets of the header.
   virtual gfx::RectF GetTargetBoundsWithInsets() const = 0;
 
   // Returns the transformed bound of `this`.
@@ -315,11 +316,19 @@ class ASH_EXPORT OverviewItemBase {
   // Returns the widget init params needed to create the `item_widget_`.
   views::Widget::InitParams CreateOverviewItemWidgetParams(
       aura::Window* parent_window,
-      const std::string& widget_name) const;
+      const std::string& widget_name,
+      bool accept_events) const;
 
   // Creates the `shadow_` and stacks the shadow layer to be at the bottom after
   // `item_widget_` has been created.
   void ConfigureTheShadow();
+
+  // Sets the opacity of `windows` based on `visible`, animating them if
+  // necessary. Used to "hide" overview when dragging a window from the shelf in
+  // tablet mode.
+  void SetVisibleDuringItemDragging(const aura::Window::Windows& windows,
+                                    bool visible,
+                                    bool animate);
 
   // The root window `this` is being displayed on.
   raw_ptr<aura::Window> root_window_;

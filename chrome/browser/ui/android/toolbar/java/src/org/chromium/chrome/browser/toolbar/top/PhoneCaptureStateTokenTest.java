@@ -58,7 +58,8 @@ public class PhoneCaptureStateTokenTest {
     public void testSameSnapshots() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -66,7 +67,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentTint() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setTint(Color.RED).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.TINT,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.TINT,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -74,7 +76,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentTabCount() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setTabCount(2).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.TAB_COUNT,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.TAB_COUNT,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -86,7 +89,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setOptionalButtonData(otherButtonData)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -94,7 +98,8 @@ public class PhoneCaptureStateTokenTest {
     public void testNullOptionalButtonData() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setOptionalButtonData(null).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -113,7 +118,8 @@ public class PhoneCaptureStateTokenTest {
                         .setOptionalButtonData(buttonData)
                         .build();
 
-        Assert.assertEquals(ToolbarSnapshotDifference.OPTIONAL_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.OPTIONAL_BUTTON,
                 initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
     }
 
@@ -123,7 +129,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setVisualState(VisualState.INCOGNITO)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.VISUAL_STATE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.VISUAL_STATE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -133,7 +140,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setUrlText("https://www.other.com/")
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.URL_TEXT,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.URL_TEXT,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -148,7 +156,8 @@ public class PhoneCaptureStateTokenTest {
                         .setUrlText(DEFAULT_URL_TEXT + "additional/paths/")
                         .setVisibleTextPrefixHint(DEFAULT_URL_TEXT)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
     }
 
@@ -162,7 +171,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setVisibleTextPrefixHint(DEFAULT_URL_TEXT.substring(0, 3))
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
     }
 
@@ -172,7 +182,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder().setVisibleTextPrefixHint(null).build();
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setVisibleTextPrefixHint(null).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
     }
 
@@ -184,9 +195,11 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setVisibleTextPrefixHint(DEFAULT_URL_TEXT)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 initialPhoneCaptureStateToken.getAnyDifference(otherPhoneCaptureStateToken));
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 otherPhoneCaptureStateToken.getAnyDifference(initialPhoneCaptureStateToken));
     }
 
@@ -194,7 +207,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentSecurityIcon() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setSecurityIcon(-1).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.SECURITY_ICON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.SECURITY_ICON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -204,7 +218,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setHomeButtonColorStateList(ColorStateList.valueOf(Color.RED))
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.HOME_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -212,7 +227,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentHomeButtonIsVisible() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setHomeButtonIsVisible(false).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.HOME_BUTTON,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.HOME_BUTTON,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -228,7 +244,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setHomeButtonColorStateList(colorStateList)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -238,7 +255,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setIsShowingUpdateBadgeDuringLastCapture(true)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.SHOWING_UPDATE_BADGE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -246,7 +264,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentIsPaintPreview() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setIsPaintPreview(true).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.PAINT_PREVIEW,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.PAINT_PREVIEW,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -254,7 +273,8 @@ public class PhoneCaptureStateTokenTest {
     public void testDifferentProgress() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setProgress(0.2f).build();
-        Assert.assertEquals(ToolbarSnapshotDifference.NONE,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.NONE,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -264,7 +284,8 @@ public class PhoneCaptureStateTokenTest {
                 new PhoneCustomTabCaptureStateTokenBuilder()
                         .setUnfocusedLocationBarLayoutWidth(100)
                         .build();
-        Assert.assertEquals(ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
+        Assert.assertEquals(
+                ToolbarSnapshotDifference.LOCATION_BAR_WIDTH,
                 otherPhoneCaptureStateToken.getAnyDifference(mDefaultPhoneCaptureStateToken));
     }
 
@@ -358,9 +379,18 @@ public class PhoneCaptureStateTokenTest {
 
         public PhoneCaptureStateToken build() {
             VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
-            return new PhoneCaptureStateToken(mTint, mTabCount, mOptionalButtonData, mVisualState,
-                    visibleUrlText, mSecurityIcon, mHomeButtonColorStateList, mHomeButtonIsVisible,
-                    mIsShowingUpdateBadgeDuringLastCapture, mIsPaintPreview, mProgress,
+            return new PhoneCaptureStateToken(
+                    mTint,
+                    mTabCount,
+                    mOptionalButtonData,
+                    mVisualState,
+                    visibleUrlText,
+                    mSecurityIcon,
+                    mHomeButtonColorStateList,
+                    mHomeButtonIsVisible,
+                    mIsShowingUpdateBadgeDuringLastCapture,
+                    mIsPaintPreview,
+                    mProgress,
                     mUnfocusedLocationBarLayoutWidth);
         }
     }

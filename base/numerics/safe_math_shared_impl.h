@@ -115,8 +115,8 @@ struct ClampedNegFastOp {
 // However, there is no corresponding implementation of e.g. SafeUnsignedAbs,
 // so the float versions will not compile.
 template <typename Numeric,
-          bool IsInteger = std::is_integral<Numeric>::value,
-          bool IsFloat = std::is_floating_point<Numeric>::value>
+          bool IsInteger = std::is_integral_v<Numeric>,
+          bool IsFloat = std::is_floating_point_v<Numeric>>
 struct UnsignedOrFloatForSize;
 
 template <typename Numeric>
@@ -134,36 +134,29 @@ struct UnsignedOrFloatForSize<Numeric, false, true> {
 // exhibit well-defined overflow semantics and rely on the caller to detect
 // if an overflow occurred.
 
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 constexpr T NegateWrapper(T value) {
   using UnsignedT = typename std::make_unsigned<T>::type;
   // This will compile to a NEG on Intel, and is normal negation on ARM.
   return static_cast<T>(UnsignedT(0) - static_cast<UnsignedT>(value));
 }
 
-template <
-    typename T,
-    typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
 constexpr T NegateWrapper(T value) {
   return -value;
 }
 
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 constexpr typename std::make_unsigned<T>::type InvertWrapper(T value) {
   return ~value;
 }
 
-template <typename T,
-          typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_integral_v<T>>* = nullptr>
 constexpr T AbsWrapper(T value) {
   return static_cast<T>(SafeUnsignedAbs(value));
 }
 
-template <
-    typename T,
-    typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
+template <typename T, std::enable_if_t<std::is_floating_point_v<T>>* = nullptr>
 constexpr T AbsWrapper(T value) {
   return value < 0 ? -value : value;
 }
@@ -192,8 +185,7 @@ struct MathWrapper {
 #define BASE_NUMERIC_ARITHMETIC_OPERATORS(CLASS, CL_ABBR, OP_NAME, OP, CMP_OP) \
   /* Binary arithmetic operator for all CLASS##Numeric operations. */          \
   template <typename L, typename R,                                            \
-            typename std::enable_if<Is##CLASS##Op<L, R>::value>::type* =       \
-                nullptr>                                                       \
+            std::enable_if_t<Is##CLASS##Op<L, R>::value>* = nullptr>           \
   constexpr CLASS##Numeric<                                                    \
       typename MathWrapper<CLASS##OP_NAME##Op, L, R>::type>                    \
   operator OP(const L lhs, const R rhs) {                                      \

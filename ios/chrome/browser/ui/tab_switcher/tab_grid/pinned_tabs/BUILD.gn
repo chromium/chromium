@@ -21,7 +21,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/snapshots/model",
-    "//ios/chrome/browser/tabs:features",
+    "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_collection_commands",
@@ -44,6 +44,8 @@ source_set("pinned_tabs_ui") {
   sources = [
     "pinned_cell.h",
     "pinned_cell.mm",
+    "pinned_item.h",
+    "pinned_item.mm",
     "pinned_tabs_layout.h",
     "pinned_tabs_layout.mm",
     "pinned_tabs_view_controller.h",

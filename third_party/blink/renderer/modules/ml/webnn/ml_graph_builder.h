@@ -172,6 +172,10 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   MLActivation* leakyRelu(const MLLeakyReluOptions* options,
                           ExceptionState& exception_state);
 
+  MLOperand* matmul(const MLOperand* a,
+                    const MLOperand* b,
+                    ExceptionState& exception_state);
+
   MLOperand* pad(const MLOperand* input,
                  const Vector<uint32_t>& beginningPadding,
                  const Vector<uint32_t>& endingPadding,
@@ -191,12 +195,36 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
 
   // Reduction operations
+  MLOperand* reduceL1(const MLOperand* input,
+                      const MLReduceOptions* options,
+                      ExceptionState& exception_state);
+  MLOperand* reduceL2(const MLOperand* input,
+                      const MLReduceOptions* options,
+                      ExceptionState& exception_state);
+  MLOperand* reduceLogSum(const MLOperand* input,
+                          const MLReduceOptions* options,
+                          ExceptionState& exception_state);
+  MLOperand* reduceLogSumExp(const MLOperand* input,
+                             const MLReduceOptions* options,
+                             ExceptionState& exception_state);
+  MLOperand* reduceMax(const MLOperand* input,
+                       const MLReduceOptions* options,
+                       ExceptionState& exception_state);
   MLOperand* reduceMean(const MLOperand* input,
                         const MLReduceOptions* options,
                         ExceptionState& exception_state);
+  MLOperand* reduceMin(const MLOperand* input,
+                       const MLReduceOptions* options,
+                       ExceptionState& exception_state);
+  MLOperand* reduceProduct(const MLOperand* input,
+                           const MLReduceOptions* options,
+                           ExceptionState& exception_state);
   MLOperand* reduceSum(const MLOperand* input,
                        const MLReduceOptions* options,
                        ExceptionState& exception_state);
+  MLOperand* reduceSumSquare(const MLOperand* input,
+                             const MLReduceOptions* options,
+                             ExceptionState& exception_state);
 
   MLOperand* relu(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* relu(ExceptionState& exception_state);
@@ -218,6 +246,7 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                    ExceptionState& exception_state);
 
   MLOperand* softmax(const MLOperand* input, ExceptionState& exception_state);
+  MLActivation* softmax(ExceptionState& exception_state);
 
   HeapVector<Member<const MLOperand>> split(const MLOperand* input,
                                             const uint32_t splits,

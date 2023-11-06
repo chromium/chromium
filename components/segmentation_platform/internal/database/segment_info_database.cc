@@ -263,7 +263,7 @@ void SegmentInfoDatabase::OnLoadAllEntries(
     std::unique_ptr<std::vector<proto::SegmentInfo>> all_infos) {
   if (success) {
     // Add all the entries to the cache on startup.
-    for (auto info : *all_infos.get()) {
+    for (auto& info : *all_infos.get()) {
       ModelSource model_source = GetModelSource(info.model_source());
       proto::SegmentId segment_id = info.segment_id();
       cache_->UpdateSegmentInfo(segment_id, model_source, std::move(info));

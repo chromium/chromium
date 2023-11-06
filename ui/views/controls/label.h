@@ -267,6 +267,14 @@ class VIEWS_EXPORT Label : public View,
   int GetMaximumWidth() const;
   void SetMaximumWidth(int max_width);
 
+  // Defaults to false, meaning that `CalculatePreferredSize` is independent of
+  // the current size.
+  // Set this to true and file a bug if you encounter layout issue, in which
+  // case `CalculatePreferredSize(available_size)` will depend on `width()` and
+  // might ignore `available_size`.
+  // TODO(crbug.com/1346889): remove this.
+  void SetUseLegacyPreferredSize(bool use_legacy);
+
   // Gets/Sets whether the preferred size is empty when the label is not
   // visible.
   bool GetCollapseWhenHidden() const;
@@ -318,7 +326,7 @@ class VIEWS_EXPORT Label : public View,
 
   // View:
   int GetBaseline() const override;
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize() const final;
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
   gfx::Size GetMinimumSize() const override;
@@ -495,6 +503,8 @@ class VIEWS_EXPORT Label : public View,
   bool auto_color_readability_enabled_ = true;
   // TODO(mukai): remove |multi_line_| when all RenderText can render multiline.
   bool multi_line_ = false;
+  // TODO(crbug.com/1346889): Remove this.
+  bool use_legacy_preferred_size_;
   size_t max_lines_ = 0;
   std::u16string tooltip_text_;
   bool handles_tooltips_ = true;

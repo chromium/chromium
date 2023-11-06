@@ -64,7 +64,8 @@ interface RestrictedCookieManager {
   // in service workers. |top_frame_origin| is the actual origin of the top
   // level frame or the script url for service workers. |site_for_cookies| is
   // used to determine if a cookie is accessed in a third-party context.
-  // |top_frame_origin| is used to check for content settings.
+  // |top_frame_origin| is used to check for content settings. |is_ad_tagged|
+  // indicates whether this cookie access is being used for advertising.
   // |has_storage_access| is used to opt-in to using Storage Access API
   // permission grants. (Note: it does *not* grant access on its own, but rather
   // allows an existing permission grant to be used, if one exists.)
@@ -77,7 +78,8 @@ interface RestrictedCookieManager {
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
       bool has_storage_access,
-      CookieManagerGetOptions options) => (
+      CookieManagerGetOptions options,
+      bool is_ad_tagged) => (
       array<CookieWithAccessResult> cookies);
 
   // Sets a canonical cookie. |status| must be an inclusion status as defined
@@ -106,16 +108,11 @@ interface RestrictedCookieManager {
   //
   // The implementation may block, e.g. while cookies are still being loaded, or
   // to serialize with other operations.
-  //
-  // The booleans that are returned indicate if the site for cookies and top
-  // frame origin provided to this method from the renderer match the browser's
-  // own site for cookies and top-frame origin.
   [Sync]
   SetCookieFromString(url.mojom.Url url, SiteForCookies site_for_cookies,
                       url.mojom.Origin top_frame_origin,
                       bool has_storage_access,
-                      string cookie) => (
-                      bool site_for_cookies_ok, bool top_frame_origin_ok);
+                      string cookie) => ();
 
   // Used to get cookies for the given URL. Cookies that are blocked by user
   // preferences will be skipped, down to potentially returning an empty string.
@@ -140,7 +137,8 @@ interface RestrictedCookieManager {
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
                    url.mojom.Origin top_frame_origin,
-                   bool has_storage_access, bool get_version_shared_memory) => (
+                   bool has_storage_access, bool get_version_shared_memory,
+                   bool is_ad_tagged) => (
                    uint64 version,
                    mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
                    string cookies);

@@ -24,6 +24,8 @@
 
 namespace IPC {
 
+class UrgentMessageObserver;
+
 // Incoming legacy IPCs have always been dispatched to one of two threads: the
 // IO thread (when an installed MessageFilter handles the message), or the
 // thread which owns the corresponding ChannelProxy receiving the message. There
@@ -127,6 +129,8 @@ class COMPONENT_EXPORT(IPC) MojoBootstrap {
   virtual void Flush() = 0;
 
   virtual mojo::AssociatedGroup* GetAssociatedGroup() = 0;
+
+  virtual void SetUrgentMessageObserver(UrgentMessageObserver* observer) = 0;
 };
 
 }  // namespace IPC

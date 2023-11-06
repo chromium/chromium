@@ -52,7 +52,6 @@ DragOperation DndActionToDragOperation(DndAction dnd_action) {
 
 DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
     : delegate_(delegate), seat_(seat), drop_succeeded_(false) {
-  WMHelper::GetInstance()->AddDragDropObserver(this);
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 
   seat_->AddObserver(this, kDataDeviceSeatObserverPriority);
@@ -64,7 +63,6 @@ DataDevice::DataDevice(DataDeviceDelegate* delegate, Seat* seat)
 DataDevice::~DataDevice() {
   delegate_->OnDataDeviceDestroying(this);
 
-  WMHelper::GetInstance()->RemoveDragDropObserver(this);
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
 
   seat_->RemoveObserver(this);
@@ -140,7 +138,8 @@ void DataDevice::OnDragExited() {
   data_offer_.reset();
 }
 
-WMHelper::DragDropObserver::DropCallback DataDevice::GetDropCallback() {
+aura::client::DragDropDelegate::DropCallback DataDevice::GetDropCallback(
+    const ui::DropTargetEvent& event) {
   base::ScopedClosureRunner drag_exit(
       base::BindOnce(&DataDevice::OnDragExited, weak_factory_.GetWeakPtr()));
   return base::BindOnce(&DataDevice::PerformDropOrExitDrag,
@@ -161,14 +160,28 @@ void DataDevice::OnSurfaceFocused(Surface* gained_surface,
           ? gained_surface
           : nullptr;
   // Check if focused surface is not changed.
-  if (focused_surface_ && focused_surface_->get() == next_focused_surface)
+  if ((focused_surface_ && focused_surface_->get() == next_focused_surface) ||
+      (!focused_surface_ && !next_focused_surface)) {
     return;
+  }
+
+  // Technically speaking, we don't have to reset the delegate on previously
+  // focused window because a surface will not be moved to another application,
+  // which will have its own data device.  This is just for the safety reason.
+  if (focused_surface_ && focused_surface_->get()) {
+    aura::client::SetDragDropDelegate(focused_surface_->get()->window(),
+                                      nullptr);
+  }
 
   std::unique_ptr<ScopedSurface> last_focused_surface =
       std::move(focused_surface_);
+
   focused_surface_ = next_focused_surface ? std::make_unique<ScopedSurface>(
                                                 next_focused_surface, this)
                                           : nullptr;
+  if (focused_surface_) {
+    aura::client::SetDragDropDelegate(focused_surface_->get()->window(), this);
+  }
 
   // Check if the client newly obtained focus.
   if (focused_surface_ && !last_focused_surface)
@@ -214,7 +227,9 @@ void DataDevice::SetSelectionToCurrentClipboardData() {
 
 void DataDevice::PerformDropOrExitDrag(
     base::ScopedClosureRunner exit_drag,
-    ui::mojom::DragOperation& output_drag_op) {
+    std::unique_ptr<ui::OSExchangeData> data,
+    ui::mojom::DragOperation& output_drag_op,
+    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
   exit_drag.ReplaceClosure(base::DoNothing());
 
   if (!data_offer_) {

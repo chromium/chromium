@@ -21,6 +21,7 @@
 namespace companion {
 
 bool IsCompanionFeatureEnabled() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!base::FeatureList::IsEnabled(lens::features::kLensStandalone)) {
     return false;
   }
@@ -30,6 +31,9 @@ bool IsCompanionFeatureEnabled() {
              features::internal::kSidePanelCompanion2) ||
          base::FeatureList::IsEnabled(
              features::internal::kCompanionEnabledByObservingExpsNavigations);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
@@ -141,6 +145,18 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
   pref_service->SetDefaultPrefValue(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));
+}
+
+bool ShouldUseContextualLensPanelForImageSearch(const Browser* browser) {
+  if (!browser) {
+    return false;
+  }
+  // Contextual Lens panel should only be enabled when image search is disabled
+  // for the companion AND the feature param for contextual Lens panel is
+  // enabled.
+  return IsSearchInCompanionSidePanelSupported(browser) &&
+         !IsSearchImageInCompanionSidePanelSupported(browser) &&
+         ShouldOpenContextualLensPanel();
 }
 
 }  // namespace companion

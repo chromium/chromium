@@ -819,8 +819,8 @@ void D3DImageBacking::EndAccessDawn(const wgpu::Device& device,
         // Try to reuse the last signaled fence if it's the same fence.
         if (!cached_fence ||
             !cached_fence->IsSameFenceAsHandle(descriptor.fenceHandle)) {
-          cached_fence =
-              gfx::D3DSharedFence::CreateFromHandle(descriptor.fenceHandle);
+          cached_fence = gfx::D3DSharedFence::CreateFromUnownedHandle(
+              descriptor.fenceHandle);
           DCHECK(cached_fence);
         }
         cached_fence->Update(descriptor.fenceValue);

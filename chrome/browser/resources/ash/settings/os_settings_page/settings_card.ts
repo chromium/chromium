@@ -30,10 +30,6 @@ export class SettingsCardElement extends PolymerElement {
 
   static get properties() {
     return {
-      /**
-       * Header text for the card. Initialize so we can use the
-       * getHeaderTextAriaHidden_ method for accessibility.
-       */
       headerText: {
         type: String,
         value: '',
@@ -42,19 +38,6 @@ export class SettingsCardElement extends PolymerElement {
   }
 
   headerText: string;
-
-  /**
-   * Get the aria-hidden value for the header text.
-   * @return A return value of false will not add the aria-hidden attribute,
-   *    while a value of 'true' will add aria-hidden="true" per the ARIA specs.
-   */
-  private getHeaderTextAriaHidden_(): string|boolean {
-    return this.headerText ? false : 'true';
-  }
-
-  override focus(): void {
-    this.shadowRoot!.getElementById('headerText')!.focus();
-  }
 }
 
 declare global {

@@ -104,17 +104,18 @@ void MediaStreamVideoCapturerSource::OnCapturingLinkSecured(bool is_secure) {
 void MediaStreamVideoCapturerSource::StartSourceImpl(
     VideoCaptureDeliverFrameCB frame_callback,
     EncodedVideoFrameCB encoded_frame_callback,
-    VideoCaptureCropVersionCB crop_version_callback,
+    VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
     VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   state_ = kStarting;
   frame_callback_ = std::move(frame_callback);
-  crop_version_callback_ = std::move(crop_version_callback);
+  sub_capture_target_version_callback_ =
+      std::move(sub_capture_target_version_callback);
   frame_dropped_callback_ = std::move(frame_dropped_callback);
 
   source_->StartCapture(
-      capture_params_, frame_callback_, crop_version_callback_,
+      capture_params_, frame_callback_, sub_capture_target_version_callback_,
       frame_dropped_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          weak_factory_.GetWeakPtr(), capture_params_));
@@ -152,7 +153,7 @@ void MediaStreamVideoCapturerSource::RestartSourceImpl(
   new_capture_params.requested_format = new_format;
   state_ = kRestarting;
   source_->StartCapture(
-      new_capture_params, frame_callback_, crop_version_callback_,
+      new_capture_params, frame_callback_, sub_capture_target_version_callback_,
       frame_dropped_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          weak_factory_.GetWeakPtr(), new_capture_params));
@@ -189,38 +190,43 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   SetDevice(new_device);
   source_ = device_capturer_factory_callback_.Run(new_device.session_id());
   source_->StartCapture(
-      capture_params_, frame_callback_, crop_version_callback_,
+      capture_params_, frame_callback_, sub_capture_target_version_callback_,
       frame_dropped_callback_,
       WTF::BindRepeating(&MediaStreamVideoCapturerSource::OnRunStateChanged,
                          weak_factory_.GetWeakPtr(), capture_params_));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-void MediaStreamVideoCapturerSource::Crop(
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+void MediaStreamVideoCapturerSource::ApplySubCaptureTarget(
+    media::mojom::blink::SubCaptureTargetType type,
+    const base::Token& sub_capture_target,
+    uint32_t sub_capture_target_version,
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   const absl::optional<base::UnguessableToken>& session_id =
       device().serializable_session_id();
   if (!session_id.has_value()) {
-    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
     return;
   }
-  GetMediaStreamDispatcherHost()->Crop(session_id.value(), crop_id,
-                                       crop_version, std::move(callback));
+  GetMediaStreamDispatcherHost()->ApplySubCaptureTarget(
+      session_id.value(), type, sub_capture_target, sub_capture_target_version,
+      std::move(callback));
 }
 
-absl::optional<uint32_t> MediaStreamVideoCapturerSource::GetNextCropVersion() {
+absl::optional<uint32_t>
+MediaStreamVideoCapturerSource::GetNextSubCaptureTargetVersion() {
   if (NumTracks() != 1) {
     return absl::nullopt;
   }
-  return ++current_crop_version_;
+  return ++current_sub_capture_target_version_;
 }
 #endif
 
-uint32_t MediaStreamVideoCapturerSource::GetCropVersion() const {
-  return current_crop_version_;
+uint32_t MediaStreamVideoCapturerSource::GetSubCaptureTargetVersion() const {
+  return current_sub_capture_target_version_;
 }
 
 base::WeakPtr<MediaStreamVideoSource>

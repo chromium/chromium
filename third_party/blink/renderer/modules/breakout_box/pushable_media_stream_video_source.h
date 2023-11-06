@@ -101,7 +101,7 @@ class MODULES_EXPORT PushableMediaStreamVideoSource
   void StartSourceImpl(
       VideoCaptureDeliverFrameCB frame_callback,
       EncodedVideoFrameCB encoded_frame_callback,
-      VideoCaptureCropVersionCB crop_version_callback,
+      VideoCaptureSubCaptureTargetVersionCB sub_capture_target_version_callback,
       VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) override;
   void StopSourceImpl() override;
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() override;

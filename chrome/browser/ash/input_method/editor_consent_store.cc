@@ -6,11 +6,14 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "chrome/browser/ash/input_method/editor_metrics_enums.h"
+#include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 
 namespace ash::input_method {
 
-EditorConsentStore::EditorConsentStore(PrefService* pref_service)
-    : pref_service_(pref_service) {
+EditorConsentStore::EditorConsentStore(PrefService* pref_service,
+                                       Delegate* delegate)
+    : pref_service_(pref_service), delegate_(delegate) {
   InitializePrefChangeRegistrar(pref_service);
 }
 
@@ -38,12 +41,14 @@ void EditorConsentStore::ProcessConsentAction(ConsentAction consent_action) {
       current_consent_status == ConsentStatus::kUnset) {
     if (consent_action == ConsentAction::kApproved) {
       SetConsentStatus(ConsentStatus::kApproved);
+      LogEditorState(EditorStates::kApproveConsent, delegate_->GetEditorMode());
       return;
     }
 
     if (consent_action == ConsentAction::kDeclined) {
       SetConsentStatus(ConsentStatus::kDeclined);
       OverrideUserPref(/*new_pref_value=*/false);
+      LogEditorState(EditorStates::kDeclineConsent, delegate_->GetEditorMode());
     }
   }
 }

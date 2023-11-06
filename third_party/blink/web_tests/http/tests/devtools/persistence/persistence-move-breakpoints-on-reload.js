@@ -7,6 +7,7 @@ import {SourcesTestRunner} from 'sources_test_runner';
 import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as Root from 'devtools/core/root/root.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   // This test is testing the old breakpoint sidebar pane. Make sure to
@@ -38,7 +39,7 @@ import * as Root from 'devtools/core/root/root.js';
     },
 
     function setBreakpointInFileSystemUISourceCode(next) {
-      TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem)
+      TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.FileSystem)
           .then(sourceCode => SourcesTestRunner.showUISourceCodePromise(sourceCode))
           .then(onSourceFrame);
 

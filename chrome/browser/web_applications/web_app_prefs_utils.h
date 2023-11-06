@@ -21,7 +21,6 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 extern const char kIphIgnoreCount[];
-
 extern const char kIphLastIgnoreTime[];
 
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
@@ -71,10 +70,21 @@ void RecordInstallIphInstalled(PrefService* pref_service,
 // previous interactions with this promo.
 bool ShouldShowIph(PrefService* pref_service, const webapps::AppId& app_id);
 
+// -------------------------ML Promotion Guardrails-------------------------
+// Pref entries
 extern const char kLastTimeMlInstallIgnored[];
 extern const char kLastTimeMlInstallDismissed[];
 extern const char kConsecutiveMlInstallNotAcceptedCount[];
+extern const char kAllMLPromosBlockedTime[];
 extern const char kMLPromotionGuardrailBlockReason[];
+
+// Values of all constants required to compute guardrail logic.
+extern const int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount;
+extern const int kMuteMlInstallAfterIgnoreForDays;
+extern const int kMuteMlInstallAfterDismissForDays;
+extern const int kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount;
+extern const int kMuteMlInstallAfterAnyIgnoreForDays;
+extern const int kMuteMlInstallAfterAnyDismissForDays;
 
 // The user has ignored the installation dialog and it went away due to
 // another interaction (e.g. the tab was changed, page navigated, etc).
@@ -89,8 +99,17 @@ void RecordMlInstallAccepted(PrefService* pref_service,
                              const webapps::AppId& app_id,
                              base::Time time);
 
+// Returns true or false based on whether ML promotion has been blocked by
+// history guardrails. Since this is triggered whenever Segmentation returns a
+// value to show the install prompt, this is a good place to perform
+// VerifyAndClearMlGuardrailsIfNeeded.
 bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
                                             const webapps::AppId& app_id);
+
+// Resets kAllMLPromosBlockedDate and kConsecutiveMlInstallNotAcceptedCount on
+// the app specific and app agnostic levels.
+void ResetAllMLPromosBlockedDateAndGuardrails(PrefService* pref_service,
+                                              const webapps::AppId& app_id);
 
 }  // namespace web_app
 

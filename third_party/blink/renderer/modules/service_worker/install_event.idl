@@ -10,5 +10,8 @@
     constructor(DOMString type, optional ExtendableEventInit eventInitDict = {});
     // Experimental
     // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+    // addRoutes() is going to be the final API surface. registerRouter() is
+    // eventually removed.
+    [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, RaisesException, MeasureAs=ServiceWorkerStaticRouter_AddRoutes] Promise<undefined> addRoutes((RouterRule or sequence<RouterRule>) rules);
     [RuntimeEnabled=ServiceWorkerStaticRouter, CallWith=ScriptState, RaisesException, MeasureAs=ServiceWorkerStaticRouter_RegisterRouter] Promise<undefined> registerRouter((RouterRule or sequence<RouterRule>) rules);
 };

@@ -55,6 +55,8 @@ enum class PreloadingType {
 
   // Link-Preview loads a page with prerendering infrastructures in a dedicated
   // mini tab so that users can take a look at the content before visiting it.
+  // TODO(b:291867362): This is not used by the current implementation,
+  // but might be reused in the future.
   kLinkPreview = 6,
 };
 
@@ -211,6 +213,23 @@ enum class PreloadingEligibility {
   // `kPreloadingEligibilityContentEnd` (exclusive) are reserved for enums
   // defined under `//content`, namely `PrefetchStatus`.
   kPreloadingEligibilityCommonEnd = 50,
+
+  // Values corresponding to `PrefetchStatus`.
+  // The values here are equal to the corresponding `PrefetchStatus`'s values +
+  // `kPreloadingEligibilityCommonEnd`.
+  kUserHasCookies = 55,
+  kUserHasServiceWorker = 56,
+  // This is similar to `kHttpsOnly`, but separately defined here to keep
+  // existing metrics values, for cases corresponding to
+  // `PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps`.
+  kSchemeIsNotHttps = 57,
+  kNonDefaultStoragePartition = 59,
+  kRetryAfter = 77,
+  kPrefetchProxyNotAvailable = 78,
+  kHostIsNonUnique = 86,
+  kExistingProxy = 88,
+  kBrowserContextOffTheRecord = 89,
+  kSameSiteCrossOriginPrefetchRequiredProxy = 96,
 
   // TODO(crbug.com/1309934): Add more specific ineligibility reasons subject to
   // each preloading operation

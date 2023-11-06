@@ -90,6 +90,7 @@ NO_PULL_LIBS=
 PACKAGE_NAME=
 PID=
 PORT=
+PROCESS_NAME=
 PROGRAM_NAME="activity"
 PULL_LIBS=
 PULL_LIBS_DIR=
@@ -114,6 +115,7 @@ for opt; do
     --package-name=*) PACKAGE_NAME=$optarg ;;
     --pid=*) PID=$optarg ;;
     --port=*) PORT=$optarg ;;
+    --process-name=*) PROCESS_NAME=$optarg ;;
     --program-name=*) PROGRAM_NAME=$optarg ;;
     --pull-libs) PULL_LIBS=true ;;
     --pull-libs-dir=*) PULL_LIBS_DIR=$optarg ;;
@@ -220,6 +222,8 @@ Valid options:
   --output-directory=<path> Specify the output directory (e.g. "out/Debug").
   --package-name=<name> Specify package name (alternative to 1st argument).
   --program-name=<name> Specify program name (cosmetic only).
+  --process-name=<name> Specify process name to attach to (uses package-name
+                        if not passsed).
   --pid=<pid>           Specify application process pid.
   --attach-delay=<num>  Seconds to wait for lldb-server to attach to the
                         remote process before starting lldb. Default 1.
@@ -382,9 +386,10 @@ get_gn_target_arch () {
   # ls prints a broken pipe error when there are a lot of libs.
   local RANDOM_LIB=$(ls "$SYMBOL_DIR"/lib*.so 2>/dev/null| head -n1)
   local SO_DESC=$(file $RANDOM_LIB)
-  case $ARCH in
+  case $SO_DESC in
     *32-bit*ARM,*) echo "arm";;
     *64-bit*ARM,*) echo "arm64";;
+    *64-bit*aarch64,*) echo "arm64";;
     *32-bit*Intel,*) echo "x86";;
     *x86-64,*) echo "x86_64";;
     *32-bit*MIPS,*) echo "mips";;
@@ -397,6 +402,7 @@ if [ -z "$TARGET_ARCH" ]; then
   if [ -z "$TARGET_ARCH" ]; then
     TARGET_ARCH=arm
   fi
+  log "Auto-config: --arch=$TARGET_ARCH"
 else
   # Nit: accept Chromium's 'ia32' as a valid target architecture. This
   # script prefers the NDK 'x86' name instead because it uses it to find
@@ -509,7 +515,12 @@ get_file_timestamp () {
 
 # Allow several concurrent debugging sessions
 APP_DATA_DIR=$(adb_shell run-as $PACKAGE_NAME /system/bin/sh -c pwd)
-fail_panic "Failed to run-as $PACKAGE_NAME, is the app debuggable?"
+if [ $? != 0 ]; then
+  echo "Failed to run-as $PACKAGE_NAME, is the app debuggable?"
+  APP_DATA_DIR=$(adb_shell dumpsys package $PACKAGE_NAME | \
+    sed -ne 's/^ \+dataDir=//p' | head -n1)
+fi
+log "App data dir: $APP_DATA_DIR"
 TARGET_LLDB_SERVER="$APP_DATA_DIR/lldb-server-adb-lldb-$TMP_ID"
 TMP_TARGET_LLDB_SERVER=/data/local/tmp/lldb-server-adb-lldb-$TMP_ID
 
@@ -561,12 +572,14 @@ else
 fi
 
 # Get the PID from the first argument or else find the PID of the
-# browser process.
+# browser process (or the process named by $PROCESS_NAME).
 if [ -z "$PID" ]; then
-  PROCESSNAME=$PACKAGE_NAME
+  if [ -z "$PROCESS_NAME" ]; then
+    PROCESS_NAME=$PACKAGE_NAME
+  fi
   if [ -z "$PID" ]; then
     PID=$(adb_shell ps | \
-          awk '$9 == "'$PROCESSNAME'" { print $2; }' | head -1)
+          awk '$9 == "'$PROCESS_NAME'" { print $2; }' | head -1)
   fi
   if [ -z "$PID" ]; then
     panic "Can't find application process PID."
@@ -643,10 +656,9 @@ log "Pulling $LLDBEXEC from device"
 fail_panic "Could not retrieve $LLDBEXEC from the device!"
 
 # Find all the sub-directories of $PULL_LIBS_DIR, up to depth 4
-# so we can add them to solib-search-path later.
+# so we can add them to target.exec-search-paths later.
 SOLIB_DIRS=$(find $PULL_LIBS_DIR -mindepth 1 -maxdepth 4 -type d | \
-             grep -v "^$" | tr '\n' ':')
-SOLIB_DIRS=${SOLIB_DIRS%:}  # Strip trailing :
+             grep -v "^$" | tr '\n' ' ')
 
 # Applications with minSdkVersion >= 24 will have their data directories
 # created with rwx------ permissions, preventing adbd from forwarding to

@@ -23,7 +23,8 @@ bool MenuRunnerImplAdapter::IsRunning() const {
 }
 
 void MenuRunnerImplAdapter::Release() {
-  impl_->Release();
+  // Release will cause `impl_` to delete itself.
+  impl_.ExtractAsDangling()->Release();
   delete this;
 }
 

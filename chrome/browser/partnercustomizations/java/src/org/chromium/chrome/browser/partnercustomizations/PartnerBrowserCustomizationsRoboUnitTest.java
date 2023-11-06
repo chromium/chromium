@@ -39,28 +39,27 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Unit tests for {@link PartnerBrowserCustomizations}.
- */
+/** Unit tests for {@link PartnerBrowserCustomizations}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class, ShadowCustomizationProviderDelegate.class})
 @EnableFeatures(ChromeFeatureList.PARTNER_CUSTOMIZATIONS_UMA)
 public class PartnerBrowserCustomizationsRoboUnitTest {
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcherMock;
 
     @Before
     public void setup() {
         ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.EXAMPLE_URL.getSpec();
-        ShadowPostTask.setTestImpl(new ShadowPostTask.TestImpl() {
-            final Handler mHandler = new Handler(Looper.getMainLooper());
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                mHandler.postDelayed(task, delay);
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new ShadowPostTask.TestImpl() {
+                    final Handler mHandler = new Handler(Looper.getMainLooper());
+
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        mHandler.postDelayed(task, delay);
+                    }
+                });
 
         MockitoAnnotations.openMocks(this);
     }
@@ -73,44 +72,49 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
 
     @Test
     public void initializeAsyncOneAtATime() {
-        PartnerBrowserCustomizations.getInstance().initializeAsync(
-                ContextUtils.getApplicationContext());
+        PartnerBrowserCustomizations.getInstance()
+                .initializeAsync(ContextUtils.getApplicationContext());
         // Run one task, so AsyncTask#doInBackground is run, but not #onFinalized.
         ShadowLooper.runMainLooperOneTask();
-        assertFalse("The homepage refreshed, but result is not yet posted on UI thread.",
+        assertFalse(
+                "The homepage refreshed, but result is not yet posted on UI thread.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
 
         // Assuming homepage is changed during 1st #initializeAsync, and another #initializeAsync is
         // triggered. The 2nd #initializeAsync is ignored since there's one already in the process.
         ShadowCustomizationProviderDelegate.sHomepage = JUnitTestGURLs.GOOGLE_URL.getSpec();
-        PartnerBrowserCustomizations.getInstance().initializeAsync(
-                ContextUtils.getApplicationContext());
-        assertFalse("#initializeAsync should be in progress.",
+        PartnerBrowserCustomizations.getInstance()
+                .initializeAsync(ContextUtils.getApplicationContext());
+        assertFalse(
+                "#initializeAsync should be in progress.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
 
         ShadowLooper.idleMainLooper();
-        assertTrue("#initializeAsync should be done.",
+        assertTrue(
+                "#initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
-        assertEquals("Homepage should be set via 1st initializeAsync.",
+        assertEquals(
+                "Homepage should be set via 1st initializeAsync.",
                 JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec());
 
-        PartnerBrowserCustomizations.getInstance().initializeAsync(
-                ContextUtils.getApplicationContext());
-        assertFalse("3rd #initializeAsync should be in progress.",
+        PartnerBrowserCustomizations.getInstance()
+                .initializeAsync(ContextUtils.getApplicationContext());
+        assertFalse(
+                "3rd #initializeAsync should be in progress.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
 
         ShadowLooper.idleMainLooper();
-        assertTrue("3rd #initializeAsync should be done.",
+        assertTrue(
+                "3rd #initializeAsync should be done.",
                 PartnerBrowserCustomizations.getInstance().isInitialized());
-        assertEquals("Homepage should refreshed by 3rd #initializeAsync.",
+        assertEquals(
+                "Homepage should refreshed by 3rd #initializeAsync.",
                 JUnitTestGURLs.GOOGLE_URL.getSpec(),
                 PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec());
     }
 
-    /**
-     * Convenient shadow class to set homepage provided by partner during robo tests.
-     */
+    /** Convenient shadow class to set homepage provided by partner during robo tests. */
     @Implements(CustomizationProviderDelegateUpstreamImpl.class)
     public static class ShadowCustomizationProviderDelegate {
         static String sHomepage;
@@ -123,11 +127,13 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
         protected String getHomepage() {
             return sHomepage;
         }
+
         @Implementation
         /** Returns whether incognito mode is disabled. */
         protected boolean isIncognitoModeDisabled() {
             return false;
         }
+
         @Implementation
         /** Returns whether bookmark editing is disabled. */
         protected boolean isBookmarksEditingDisabled() {
@@ -147,21 +153,26 @@ public class PartnerBrowserCustomizationsRoboUnitTest {
     @Test
     public void initializeAsyncWithPartnerCustomizationsUma() {
         ShadowCustomizationProviderDelegate.sHomepage = null;
-        HistogramWatcher histograms = HistogramWatcher.newSingleRecordWatcher(
-                "Android.PartnerCustomization.HomepageCustomizationOutcome",
-                PartnerCustomizationsHomepageEnum.NTP_CORRECTLY);
+        HistogramWatcher histograms =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.PartnerCustomization.HomepageCustomizationOutcome",
+                        PartnerCustomizationsHomepageEnum.NTP_CORRECTLY);
 
         // Setup the Async task and get it running.
-        PartnerBrowserCustomizations.getInstance().initializeAsync(
-                ContextUtils.getApplicationContext());
+        PartnerBrowserCustomizations.getInstance()
+                .initializeAsync(ContextUtils.getApplicationContext());
         // Run one task, so AsyncTask#doInBackground is run, but not #onFinalized.
         ShadowLooper.runMainLooperOneTask();
 
         // Simulate CTA#createInitialTab: Create an NTP when the delegate says Partner Homepage.
         // TODO(donnd): call this as an async callback through setOnInitializeAsyncFinished.
-        PartnerBrowserCustomizations.getInstance().onCreateInitialTab(
-                JUnitTestGURLs.NTP_NATIVE_URL.getSpec(), 50, true /* OverviewOrStart */,
-                mActivityLifecycleDispatcherMock, HomepageCharacterizationHelperStub::ntpHelper);
+        PartnerBrowserCustomizations.getInstance()
+                .onCreateInitialTab(
+                        JUnitTestGURLs.NTP_NATIVE_URL.getSpec(),
+                        50,
+                        /* overviewOrStart= */ true,
+                        mActivityLifecycleDispatcherMock,
+                        HomepageCharacterizationHelperStub::ntpHelper);
 
         // Trigger Async completion.
         ShadowLooper.idleMainLooper();

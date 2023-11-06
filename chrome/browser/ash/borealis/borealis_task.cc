@@ -116,7 +116,35 @@ void MountDlc::OnMountDlc(
   if (!install_result.has_value()) {
     std::stringstream ss;
     ss << "Mounting the DLC for Borealis failed: " << install_result.error();
-    Complete(BorealisStartupResult::kMountFailed, ss.str());
+    switch (install_result.error()) {
+      case guest_os::GuestOsDlcInstallation::Error::Cancelled:
+        Complete(BorealisStartupResult::kDlcCancelled, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Offline:
+        Complete(BorealisStartupResult::kDlcOffline, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::NeedUpdate:
+        Complete(BorealisStartupResult::kDlcNeedUpdateError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::NeedReboot:
+        Complete(BorealisStartupResult::kDlcNeedRebootError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::DiskFull:
+        Complete(BorealisStartupResult::kDlcNeedSpaceError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Busy:
+        Complete(BorealisStartupResult::kDlcBusyError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Internal:
+        Complete(BorealisStartupResult::kDlcInternalError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::Invalid:
+        Complete(BorealisStartupResult::kDlcUnsupportedError, ss.str());
+        return;
+      case guest_os::GuestOsDlcInstallation::Error::UnknownFailure:
+        Complete(BorealisStartupResult::kDlcUnknownError, ss.str());
+        return;
+    }
   } else {
     Complete(BorealisStartupResult::kSuccess, "");
   }
@@ -135,7 +163,7 @@ void CreateDiskImage::OnConciergeAvailable(BorealisContext* context,
                                            bool is_available) {
   if (!is_available) {
     context->set_disk_path({});
-    Complete(BorealisStartupResult::kDiskImageFailed,
+    Complete(BorealisStartupResult::kConciergeUnavailable,
              "Concierge service is not available");
     return;
   }
@@ -147,10 +175,8 @@ void CreateDiskImage::OnConciergeAvailable(BorealisContext* context,
   request.set_image_type(vm_tools::concierge::DISK_IMAGE_AUTO);
   request.set_storage_location(vm_tools::concierge::STORAGE_CRYPTOHOME_ROOT);
   request.set_disk_size(0);
-  if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning)) {
-    request.set_filesystem_type(vm_tools::concierge::EXT4);
-    request.set_storage_ballooning(true);
-  }
+  request.set_filesystem_type(vm_tools::concierge::EXT4);
+  request.set_storage_ballooning(true);
 
   ash::ConciergeClient::Get()->CreateDiskImage(
       std::move(request), base::BindOnce(&CreateDiskImage::OnCreateDiskImage,
@@ -162,7 +188,7 @@ void CreateDiskImage::OnCreateDiskImage(
     absl::optional<vm_tools::concierge::CreateDiskImageResponse> response) {
   if (!response) {
     context->set_disk_path(base::FilePath());
-    Complete(BorealisStartupResult::kDiskImageFailed,
+    Complete(BorealisStartupResult::kEmptyDiskResponse,
              "Failed to create disk image for Borealis: Empty response.");
     return;
   }
@@ -225,9 +251,7 @@ void StartBorealisVm::StartBorealisWithExternalDisk(
     request.set_enable_big_gl(true);
   }
   request.set_name(context->vm_name());
-  if (base::FeatureList::IsEnabled(ash::features::kBorealisStorageBallooning)) {
-    request.set_storage_ballooning(true);
-  }
+  request.set_storage_ballooning(true);
   if (base::FeatureList::IsEnabled(ash::features::kBorealisDGPU)) {
     request.set_enable_dgpu_passthrough(true);
   }
@@ -256,7 +280,7 @@ void StartBorealisVm::OnStartBorealisVm(
     BorealisContext* context,
     absl::optional<vm_tools::concierge::StartVmResponse> response) {
   if (!response) {
-    Complete(BorealisStartupResult::kStartVmFailed,
+    Complete(BorealisStartupResult::kStartVmEmptyResponse,
              "Failed to start Borealis VM: Empty response.");
     return;
   }
@@ -329,6 +353,7 @@ std::string SendFlagsToVm(const std::string& owner_id,
   PushFlag(ash::features::kBorealisLinuxMode, command);
   PushFlag(ash::features::kBorealisForceBetaClient, command);
   PushFlag(ash::features::kBorealisForceDoubleScale, command);
+  PushFlag(ash::features::kBorealisScaleClientByDPI, command);
 
   std::string output;
   if (!base::GetAppOutput(command, &output)) {

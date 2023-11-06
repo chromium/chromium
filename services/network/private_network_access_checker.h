@@ -116,6 +116,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PrivateNetworkAccessChecker {
   // Returns `kUnknown` if `client_security_state()` is nullptr.
   mojom::IPAddressSpace ClientAddressSpace() const;
 
+  static bool NeedPermission(const GURL& url,
+                             bool is_web_secure_context,
+                             mojom::IPAddressSpace target_address_space);
+
  private:
   // Returns whether this instance has a client security state containing a
   // policy set to `kPreflightWarn`.

@@ -21,15 +21,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 
-/**
- * IME (input method editor) and text input tests for password fields.
- */
+/** IME (input method editor) and text input tests for password fields. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"expose-internals-for-testing"})
 @Batch(ImeTest.IME_BATCH)
 public class ImePasswordTest {
-    @Rule
-    public ImeActivityTestRule mRule = new ImeActivityTestRule();
+    @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -46,13 +43,15 @@ public class ImePasswordTest {
     @Feature({"TextInput", "Main"})
     public void testKeyboardOnPasswordFieldChangingType() throws Throwable {
         mRule.focusElement("input_text");
-        Assert.assertNotEquals(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+        Assert.assertNotEquals(
+                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
         // <input type="password"> should be considered a password field.
         mRule.focusElement("input_password");
-        Assert.assertEquals(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+        Assert.assertEquals(
+                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
@@ -62,23 +61,27 @@ public class ImePasswordTest {
 
         // <input type="password"> that was changed to type="text" should still
         // be considered a password field.
-        Assert.assertEquals(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+        Assert.assertEquals(
+                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
         // Temporarily focus input_text and verify that it is not a password input.
         mRule.focusElement("input_text");
-        Assert.assertNotEquals(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+        Assert.assertNotEquals(
+                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
 
         // Return to input_password and verify that it is still considered a
         // password input despite having input="text" now.
         mRule.focusElement("input_password");
-        Assert.assertEquals(InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
+        Assert.assertEquals(
+                InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD,
                 mRule.getConnectionFactory().getOutAttrs().inputType
                         & InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD);
-        Assert.assertEquals("\"text\"",
+        Assert.assertEquals(
+                "\"text\"",
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         mRule.getWebContents(), "document.activeElement.type"));
     }

@@ -320,7 +320,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
   void MaybeReleaseDatabase();
 
   std::unique_ptr<IndexedDBConnection> CreateConnection(
-      scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
+      std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
       scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
 
   // Ack that one of the connections notified with a "versionchange" event did

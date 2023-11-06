@@ -110,8 +110,17 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Set false in the constructor to disable `ash::features::kScalableIphDebug`.
   bool enable_scalable_iph_debug_ = true;
 
+  // Set false in the constructor not to use a mock tracker, i.e. Use a real
+  // tracker.
+  bool enable_mock_tracker_ = true;
+
+  // Set false in the constructor to not enforce scalable IPH set-up.
+  // If `enable_scalable_iph_` is set to false, this should also be false.
+  bool setup_scalable_iph_ = true;
+
  private:
-  static void SetTestingFactories(content::BrowserContext* browser_context);
+  static void SetTestingFactories(bool enable_mock_tracker,
+                                  content::BrowserContext* browser_context);
   static std::unique_ptr<KeyedService> CreateMockTracker(
       content::BrowserContext* browser_context);
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(

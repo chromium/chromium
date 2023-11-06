@@ -12,22 +12,28 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_strategy.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/test_popup_row_strategy.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
 #include "content/public/common/input/native_web_keyboard_event.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
@@ -46,21 +52,6 @@ using CellIndex = PopupRowView::SelectionDelegate::CellIndex;
 
 constexpr gfx::Point kOutOfBounds{1000, 1000};
 
-class MockAccessibilitySelectionDelegate
-    : public PopupRowView::AccessibilitySelectionDelegate {
- public:
-  MOCK_METHOD(void, NotifyAXSelection, (views::View&), (override));
-};
-
-class MockSelectionDelegate : public PopupRowView::SelectionDelegate {
- public:
-  MOCK_METHOD(absl::optional<CellIndex>, GetSelectedCell, (), (const override));
-  MOCK_METHOD(void,
-              SetSelectedCell,
-              (absl::optional<CellIndex>, PopupCellSelectionSource),
-              (override));
-};
-
 class MockPopupCellView : public PopupCellView {
  public:
   MOCK_METHOD(bool,
@@ -71,18 +62,14 @@ class MockPopupCellView : public PopupCellView {
 
 class MockingTestPopupRowStrategy : public TestPopupRowStrategy {
  public:
-  MockingTestPopupRowStrategy(int line_number, bool has_control)
-      : TestPopupRowStrategy(line_number, has_control) {}
+  explicit MockingTestPopupRowStrategy(int line_number)
+      : TestPopupRowStrategy(line_number) {}
   ~MockingTestPopupRowStrategy() override = default;
 
   std::unique_ptr<PopupCellView> CreateContent() override {
     auto content_cell = std::make_unique<NiceMock<MockPopupCellView>>();
     last_created_mock_content_cell_ = content_cell.get();
     return content_cell;
-  }
-
-  std::unique_ptr<PopupCellView> CreateControl() override {
-    return std::make_unique<NiceMock<MockPopupCellView>>();
   }
 
   MockPopupCellView* last_created_content_cell() {
@@ -106,13 +93,30 @@ class PopupRowViewTest : public ChromeViewsTestBase {
   }
 
   void ShowView(int line_number, bool has_control) {
-    ShowView(std::make_unique<TestPopupRowStrategy>(line_number, has_control));
+    std::vector<Suggestion> suggestions(line_number + 1);
+    suggestions[line_number].popup_item_id = PopupItemId::kAddressEntry;
+    suggestions[line_number].main_text = Suggestion::Text(u"Suggestion");
+    if (has_control) {
+      suggestions[line_number].children = {Suggestion()};
+    }
+    ShowView(line_number, std::move(suggestions));
+  }
+
+  void ShowView(int line_number, std::vector<Suggestion> suggestions) {
+    mock_controller_.set_suggestions(suggestions);
+    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
+  }
+
+  void ShowView(int line_number, std::vector<PopupItemId> suggestions) {
+    mock_controller_.set_suggestions(suggestions);
+    ShowView(std::make_unique<TestPopupRowStrategy>(line_number));
   }
 
   void ShowView(std::unique_ptr<TestPopupRowStrategy> strategy) {
     row_view_ = widget_->SetContentsView(std::make_unique<PopupRowView>(
         mock_a11y_selection_delegate_, mock_selection_delegate_,
-        mock_controller_.GetWeakPtr(), std::move(strategy)));
+        mock_controller_.GetWeakPtr(), strategy->GetLineNumber(),
+        strategy->CreateContent()));
     ON_CALL(mock_selection_delegate_, SetSelectedCell)
         .WillByDefault([this](absl::optional<CellIndex> cell,
                               PopupCellSelectionSource) {
@@ -170,7 +174,7 @@ class PopupRowViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
-  ShowView(2, /*has_control=*/true);
+  ShowView(/*line_number=*/2, /*has_control=*/true);
 
   // Move the mouse of out bounds and force paint to satisfy the check that the
   // mouse has been outside the element before enter/exit events are passed on.
@@ -193,9 +197,11 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
       selection_delegate(),
       SetSelectedCell(absl::make_optional<CellIndex>(2u, CellType::kControl),
                       PopupCellSelectionSource::kMouse));
-  ASSERT_TRUE(row_view().GetControlView());
-  generator().MoveMouseTo(
-      row_view().GetControlView()->GetBoundsInScreen().CenterPoint());
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
+  generator().MoveMouseTo(row_view()
+                              .GetExpandChildSuggestionsView()
+                              ->GetBoundsInScreen()
+                              .CenterPoint());
 
   EXPECT_CALL(selection_delegate(),
               SetSelectedCell(absl::optional<CellIndex>(),
@@ -208,7 +214,7 @@ TEST_F(PopupRowViewTest, MouseEnterExitInformsSelectionDelegate) {
 TEST_F(PopupRowViewTest, GestureEvents) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(
       selection_delegate(),
@@ -222,7 +228,7 @@ TEST_F(PopupRowViewTest, GestureEvents) {
 TEST_F(PopupRowViewTest, NoCrashOnGestureAcceptingWithInvalidatedController) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(controller(), AcceptSuggestion).Times(0);
   controller().InvalidateWeakPtrs();
@@ -232,8 +238,8 @@ TEST_F(PopupRowViewTest, NoCrashOnGestureAcceptingWithInvalidatedController) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
-  ShowView(0, /*has_control=*/false);
-  EXPECT_FALSE(row_view().GetControlView());
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+  EXPECT_FALSE(row_view().GetExpandChildSuggestionsView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
 
   // Selecting the content cell notifies the accessibility system that the
@@ -258,36 +264,72 @@ TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsNoControl) {
 }
 
 TEST_F(PopupRowViewTest, SetSelectedCellVerifiesArgumentsWithControl) {
-  ShowView(0, /*has_control=*/true);
-  ASSERT_TRUE(row_view().GetControlView());
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
   EXPECT_FALSE(row_view().GetSelectedCell().has_value());
+
+  base::MockRepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
+                                   const ax::mojom::Event)>
+      a11y_callback;
+
+  row_view()
+      .GetExpandChildSuggestionsView()
+      ->GetViewAccessibility()
+      .set_accessibility_events_callback(a11y_callback.Get());
 
   // Selecting the control cell notifies the accessibility system that the
   // respective view has been selected.
-  EXPECT_CALL(a11y_selection_delegate(),
-              NotifyAXSelection(Ref(*row_view().GetControlView())));
+  EXPECT_CALL(a11y_callback, Run(_, ax::mojom::Event::kFocus));
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
             absl::make_optional<CellType>(CellType::kControl));
 
   // Selecting it again leads to no notification.
-  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
+  EXPECT_CALL(a11y_callback, Run).Times(0);
   row_view().SetSelectedCell(CellType::kControl);
   EXPECT_EQ(row_view().GetSelectedCell(),
             absl::make_optional<CellType>(CellType::kControl));
 }
 
-TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
-  ShowView(0, /*has_control=*/true);
-  ASSERT_TRUE(row_view().GetControlView());
+TEST_F(PopupRowViewTest, SetSelectedCellTriggersController) {
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
+  ASSERT_FALSE(row_view().GetSelectedCell().has_value());
+
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
   row_view().SetSelectedCell(CellType::kContent);
 
-  EXPECT_CALL(a11y_selection_delegate(),
-              NotifyAXSelection(Ref(*row_view().GetControlView())));
+  // No selection triggering if trying to set already selected content.
+  EXPECT_CALL(controller(), SelectSuggestion).Times(0);
+  row_view().SetSelectedCell(CellType::kContent);
+
+  // Deselection of selected content.
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>()));
+  row_view().SetSelectedCell(CellType::kControl);
+
+  EXPECT_CALL(controller(), SelectSuggestion(absl::optional<size_t>(0)));
+  row_view().SetSelectedCell(CellType::kContent);
+}
+
+TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
+  row_view().SetSelectedCell(CellType::kContent);
+
+  base::MockRepeatingCallback<void(const ui::AXPlatformNodeDelegate*,
+                                   const ax::mojom::Event)>
+      a11y_callback;
+
+  row_view()
+      .GetExpandChildSuggestionsView()
+      ->GetViewAccessibility()
+      .set_accessibility_events_callback(a11y_callback.Get());
+
+  EXPECT_CALL(a11y_callback, Run(_, ax::mojom::Event::kFocus));
   row_view().SetSelectedCell(CellType::kControl);
 
   // Hitting right again does not do anything.
-  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection).Times(0);
+  EXPECT_CALL(a11y_callback, Run).Times(0);
   row_view().SetSelectedCell(CellType::kControl);
 
   EXPECT_CALL(a11y_selection_delegate(),
@@ -299,8 +341,8 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
 }
 
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
-  ShowView(0, /*has_control=*/true);
-  ASSERT_TRUE(row_view().GetControlView());
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
 
   row_view().SetSelectedCell(CellType::kContent);
   EXPECT_CALL(controller(), AcceptSuggestion);
@@ -315,26 +357,9 @@ TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   EXPECT_FALSE(SimulateKeyPress(ui::VKEY_RETURN));
 }
 
-TEST_F(PopupRowViewTest, KeyboardEventsArePassedToControlCell) {
-  auto strategy = std::make_unique<MockingTestPopupRowStrategy>(0, true);
-  MockingTestPopupRowStrategy* strategy_ref = strategy.get();
-  ShowView(std::move(strategy));
-  row_view().SetSelectedCell(CellType::kContent);
-
-  ASSERT_TRUE(strategy_ref->last_created_content_cell());
-
-  EXPECT_CALL(*strategy_ref->last_created_content_cell(), HandleKeyPressEvent)
-      .WillOnce(Return(true));
-  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
-
-  EXPECT_CALL(*strategy_ref->last_created_content_cell(), HandleKeyPressEvent)
-      .WillOnce(Return(false));
-  EXPECT_FALSE(SimulateKeyPress(ui::VKEY_LEFT));
-}
-
 TEST_F(PopupRowViewTest,
        ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsFalse_IgnoreClick) {
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -355,7 +380,7 @@ TEST_F(PopupRowViewTest,
        ShouldIgnoreMouseObservedOutsideItemBoundsCheckIsTrue_DoNotIgnoreClick) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -367,7 +392,7 @@ TEST_F(PopupRowViewTest,
 TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
   EXPECT_CALL(controller(), ShouldIgnoreMouseObservedOutsideItemBoundsCheck())
       .WillOnce(Return(true));
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   generator().MoveMouseTo(
       row_view().GetContentView().GetBoundsInScreen().CenterPoint());
@@ -377,7 +402,7 @@ TEST_F(PopupRowViewTest, NoCrashOnMouseAcceptingWithInvalidatedController) {
 }
 
 TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
-  ShowView(0, /*has_control=*/false);
+  ShowView(/*line_number=*/0, /*has_control=*/false);
 
   EXPECT_CALL(
       selection_delegate(),
@@ -386,4 +411,110 @@ TEST_F(PopupRowViewTest, SelectSuggestionOnFocusedContent) {
 
   row_view().GetContentView().RequestFocus();
 }
+
+TEST_F(PopupRowViewTest, ContentViewA11yAttributes) {
+  ShowView(/*line_number=*/0, {Suggestion("dummy_value", "dummy_label", "",
+                                          PopupItemId::kAddressEntry)});
+
+  views::ViewAccessibility& accessibility =
+      row_view().GetContentView().GetViewAccessibility();
+
+  ui::AXNodeData node_data;
+  accessibility.GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.role, ax::mojom::Role::kListBoxOption);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kName),
+            "dummy_value dummy_label");
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet), 1);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize), 1);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
+struct PosInSetTestdata {
+  // The popup item ids of the suggestions to be shown.
+  std::vector<PopupItemId> popup_item_ids;
+  // The index of the suggestion to be tested.
+  int line_number;
+  // The number of (non-separator) entries and the 1-indexed position of the
+  // entry with `line_number` inside them.
+  int set_size;
+  int set_index;
+};
+
+const PosInSetTestdata kPosInSetTestcases[] = {
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
+        .line_number = 1,
+        .set_size = 3,
+        .set_index = 2,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kPasswordEntry,
+                           PopupItemId::kAccountStoragePasswordEntry,
+                           PopupItemId::kSeparator,
+                           PopupItemId::kAllSavedPasswordsEntry},
+        .line_number = 0,
+        .set_size = 3,
+        .set_index = 1,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAddressEntry,
+                           PopupItemId::kAddressEntry, PopupItemId::kSeparator,
+                           PopupItemId::kAutofillOptions},
+        .line_number = 3,
+        .set_size = 3,
+        .set_index = 3,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry,
+                           PopupItemId::kAutocompleteEntry},
+        .line_number = 1,
+        .set_size = 3,
+        .set_index = 2,
+    },
+    PosInSetTestdata{
+        .popup_item_ids = {PopupItemId::kCompose},
+        .line_number = 0,
+        .set_size = 1,
+        .set_index = 1,
+    }};
+
+class PopupRowPosInSetViewTest
+    : public PopupRowViewTest,
+      public ::testing::WithParamInterface<PosInSetTestdata> {};
+
+TEST_P(PopupRowPosInSetViewTest, All) {
+  const PosInSetTestdata kTestdata = GetParam();
+
+  ShowView(kTestdata.line_number, kTestdata.popup_item_ids);
+
+  ui::AXNodeData node_data;
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
+            kTestdata.set_size);
+  EXPECT_EQ(node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
+            kTestdata.set_index);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PopupRowPosInSetViewTest,
+                         ::testing::ValuesIn(kPosInSetTestcases));
+
+TEST_F(PopupRowViewTest, ChildSuggestionsExpandingControlA11yCheckedState) {
+  ShowView(/*line_number=*/0, /*has_control=*/true);
+  ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());
+
+  ui::AXNodeData node_data;
+  row_view().GetExpandChildSuggestionsView()->GetAccessibleNodeData(&node_data);
+  ASSERT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+
+  row_view().SetChildSuggestionsDisplayed(true);
+  row_view().GetExpandChildSuggestionsView()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+}
+
 }  // namespace autofill

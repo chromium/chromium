@@ -15,6 +15,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/template_url_service.h"
@@ -26,10 +28,7 @@ using ::testing::NiceMock;
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
   SearchEngineChoiceUtilsTest()
-      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {}
-  ~SearchEngineChoiceUtilsTest() override = default;
-
-  void SetUp() override {
+      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     country_codes::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.registry()->RegisterInt64Pref(
@@ -43,6 +42,8 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
     InitMockPolicyService();
     CheckPoliciesInitialState();
   }
+
+  ~SearchEngineChoiceUtilsTest() override = default;
 
   void VerifyWillShowChoiceScreen(
       const policy::PolicyService& policy_service,
@@ -222,9 +223,9 @@ TEST_F(SearchEngineChoiceUtilsTest,
       search_engines::kSearchEngineChoiceScreenProfileInitConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::kEligible, 1);
 
-  pref_service()->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
   VerifyEligibleButWillNotShowChoiceScreen(
       policy_service(),
       /*profile_properties=*/
@@ -255,9 +256,9 @@ TEST_F(SearchEngineChoiceUtilsTest, DoNotShowChoiceScreenIfCountryOutOfScope) {
 TEST_F(SearchEngineChoiceUtilsTest, ShowChoiceScreenWithForceCommandLineFlag) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kForceSearchEngineChoiceScreen);
-  pref_service()->SetInt64(
-      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
 
   VerifyWillShowChoiceScreen(
       policy_service(), /*profile_properties=*/
@@ -360,4 +361,78 @@ TEST_F(SearchEngineChoiceUtilsTest,
       search_engines::SearchEngineChoiceScreenConditions::
           kHasCustomSearchEngine,
       1);
+}
+
+TEST_F(SearchEngineChoiceUtilsTest, RecordChoiceMade) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kSearchEngineChoiceCountry);
+
+  // Test that the choice is not recorded for countries outside the EEA region.
+  const int kUnitedStatesCountryId =
+      country_codes::CountryCharsToCountryID('U', 'S');
+  pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                             kUnitedStatesCountryId);
+
+  const TemplateURL* default_search_engine =
+      template_url_service().GetDefaultSearchProvider();
+  EXPECT_EQ(default_search_engine->prepopulate_id(),
+            TemplateURLPrepopulateData::google.id);
+
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 0);
+  EXPECT_FALSE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp));
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 1);
+
+  // Revert to an EEA region country.
+  const int kBelgiumCountryId =
+      country_codes::CountryCharsToCountryID('B', 'E');
+  pref_service()->SetInteger(country_codes::kCountryIDAtInstall,
+                             kBelgiumCountryId);
+
+  // Test that the choice is recorded if it wasn't previously done.
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
+
+  EXPECT_NEAR(pref_service()->GetInt64(
+                  prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+              base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds(),
+              /*abs_error=*/2);
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 2);
+
+  // Set the pref to 5 so that we can know if it gets modified.
+  const int kModifiedTimestamp = 5;
+  pref_service()->SetInt64(
+      prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp,
+      kModifiedTimestamp);
+
+  // Test that the choice is not recorded if it was previously done.
+  search_engines::RecordChoiceMade(
+      pref_service(), search_engines::ChoiceMadeLocation::kChoiceScreen,
+      &template_url_service());
+  EXPECT_EQ(pref_service()->GetInt64(
+                prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
+            kModifiedTimestamp);
+
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kDefaultSearchEngineChoiceLocationHistogram,
+      search_engines::ChoiceMadeLocation::kChoiceScreen, 3);
+  histogram_tester_.ExpectUniqueSample(
+      search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
+      SearchEngineType::SEARCH_ENGINE_GOOGLE, 1);
 }

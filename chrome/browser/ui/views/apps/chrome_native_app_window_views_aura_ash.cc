@@ -9,35 +9,33 @@
 #include "apps/ui/views/app_window_frame_view.h"
 #include "ash/constants/app_types.h"
 #include "ash/frame/non_client_frame_view_ash.h"
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_context_menu.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
+#include "chromeos/ui/frame/frame_utils.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/session_manager/core/session_manager.h"
 #include "extensions/browser/app_window/app_delegate.h"
-#include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
@@ -45,16 +43,94 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
-#include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 using extensions::AppWindow;
+namespace {
+
+class ChromeAppNonClientFrameView : public ash::NonClientFrameViewAsh {
+ public:
+  ChromeAppNonClientFrameView(views::Widget* frame,
+                              ChromeNativeAppWindowViewsAuraAsh* app_window)
+      : ash::NonClientFrameViewAsh(frame), app_window_(app_window) {}
+
+  ChromeAppNonClientFrameView(const ChromeAppNonClientFrameView&) = delete;
+  ChromeAppNonClientFrameView& operator=(const ChromeAppNonClientFrameView&) =
+      delete;
+
+  ~ChromeAppNonClientFrameView() override { app_window_ = nullptr; }
+
+  // views::NonClientFrameView
+  void UpdateWindowRoundedCorners() override {
+    if (!GetWidget() || !chromeos::features::IsRoundedWindowsEnabled()) {
+      return;
+    }
+
+    const int corner_radius =
+        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+    header_view_->SetHeaderCornerRadius(corner_radius);
+
+    app_window_->web_view()->holder()->SetCornerRadii(
+        gfx::RoundedCornersF(0, 0, corner_radius, corner_radius));
+  }
+
+ private:
+  raw_ptr<ChromeNativeAppWindowViewsAuraAsh, DisableDanglingPtrDetection>
+      app_window_;
+};
+
+class AppWindowFrameViewAsh : public apps::AppWindowFrameView {
+ public:
+  AppWindowFrameViewAsh(views::Widget* widget,
+                        ChromeNativeAppWindowViewsAuraAsh* app_window,
+                        bool draw_frame,
+                        const SkColor& active_frame_color,
+                        const SkColor& inactive_frame_color)
+      : apps::AppWindowFrameView(widget,
+                                 app_window,
+                                 draw_frame,
+                                 active_frame_color,
+                                 inactive_frame_color),
+        app_window_(app_window) {}
+
+  AppWindowFrameViewAsh(const AppWindowFrameViewAsh&) = delete;
+  AppWindowFrameViewAsh& operator=(const AppWindowFrameViewAsh&) = delete;
+
+  ~AppWindowFrameViewAsh() override { app_window_ = nullptr; }
+
+  // views::NonClientFrameView
+  void UpdateWindowRoundedCorners() override {
+    if (!GetWidget() || !chromeos::features::IsRoundedWindowsEnabled()) {
+      return;
+    }
+
+    const int corner_radius =
+        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+
+    // If the frame is not drawn, then round all four corners of web contents to
+    // achieve a rounded window. Otherwise, round the two corners of the frame
+    // and the bottom two corners of the web content.
+    if (draw_frame()) {
+      SetFrameCornerRadius(corner_radius);
+    }
+
+    app_window_->web_view()->holder()->SetCornerRadii(gfx::RoundedCornersF(
+        draw_frame() ? 0 : corner_radius, draw_frame() ? 0 : corner_radius,
+        corner_radius, corner_radius));
+  }
+
+ private:
+  raw_ptr<ChromeNativeAppWindowViewsAuraAsh, DisableDanglingPtrDetection>
+      app_window_;
+};
+
+}  // namespace
 
 ChromeNativeAppWindowViewsAuraAsh::ChromeNativeAppWindowViewsAuraAsh()
     : exclusive_access_manager_(
@@ -129,12 +205,16 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   init_params->init_properties_container.SetProperty(
       aura::client::kAppType, static_cast<int>(ash::AppType::CHROME_APP));
 
+  if (chromeos::features::IsRoundedWindowsEnabled()) {
+    init_params->corner_radius = chromeos::features::RoundedWindowsRadius();
+  }
+
   app_restore::ModifyWidgetParams(restore_window_id, init_params);
 }
 
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
-  auto frame = std::make_unique<apps::AppWindowFrameView>(
+  auto frame = std::make_unique<AppWindowFrameViewAsh>(
       widget(), this, HasFrameColor(), ActiveFrameColor(),
       InactiveFrameColor());
   frame->Init();
@@ -259,7 +339,8 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
 
   window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
 
-  auto custom_frame_view = std::make_unique<ash::NonClientFrameViewAsh>(widget);
+  auto custom_frame_view =
+      std::make_unique<ChromeAppNonClientFrameView>(widget, this);
 
   custom_frame_view->GetHeaderView()->set_context_menu_controller(this);
 
@@ -283,7 +364,7 @@ void ChromeNativeAppWindowViewsAuraAsh::SetFullscreen(int fullscreen_types) {
 
   // In a managed guest session, display a toast with instructions on exiting
   // fullscreen.
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     UpdateExclusiveAccessExitBubbleContent(
         GURL(),
         fullscreen_types & (AppWindow::FULLSCREEN_TYPE_HTML_API |
@@ -511,6 +592,13 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowDestroying(
   window_state_observation_.Reset();
   DCHECK(window_observation_.IsObservingSource(window));
   window_observation_.Reset();
+}
+
+void ChromeNativeAppWindowViewsAuraAsh::AddedToWidget() {
+  // Wait till app window is fully initialized to apply rounded
+  // corners on the window. This ensure that NativeViewHosts hosting the
+  // web contents is initialized.
+  GetWidget()->non_client_view()->frame_view()->UpdateWindowRoundedCorners();
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnTabletModeToggled(bool enabled) {

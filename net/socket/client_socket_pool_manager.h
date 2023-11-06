@@ -24,11 +24,11 @@ class ClientSocketHandle;
 class NetLogWithSource;
 class NetworkAnonymizationKey;
 class ProxyInfo;
-class ProxyServer;
+class ProxyChain;
 
 struct SSLConfig;
 
-constexpr int kDefaultMaxSocketsPerProxyServer = 32;
+constexpr int kDefaultMaxSocketsPerProxyChain = 32;
 
 class NET_EXPORT_PRIVATE ClientSocketPoolManager {
  public:
@@ -49,9 +49,9 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
-  static int max_sockets_per_proxy_server(
+  static int max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type);
-  static void set_max_sockets_per_proxy_server(
+  static void set_max_sockets_per_proxy_chain(
       HttpNetworkSession::SocketPoolType pool_type,
       int socket_count);
 
@@ -64,9 +64,9 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
                                          const char* net_log_reason_utf8) = 0;
   virtual void CloseIdleSockets(const char* net_log_reason_utf8) = 0;
 
-  // Returns the socket pool for the specified ProxyServer (Which may be
-  // ProxyServer::Direct()).
-  virtual ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) = 0;
+  // Returns the socket pool for the specified ProxyChain (Which may be
+  // ProxyChain::Direct()).
+  virtual ClientSocketPool* GetSocketPool(const ProxyChain& proxy_chain) = 0;
 
   // Creates a Value summary of the state of the socket pools.
   virtual base::Value SocketPoolInfoToValue() const = 0;
@@ -74,11 +74,11 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManager {
 
 // A helper method that uses the passed in proxy information to initialize a
 // ClientSocketHandle with the relevant socket pool. Use this method for
-// HTTP/HTTPS requests. |ssl_config_for_origin| is only used if the request
-// uses SSL and |ssl_config_for_proxy| is used if the proxy server is HTTPS.
-// |resolution_callback| will be invoked after the the hostname is
-// resolved.  If |resolution_callback| does not return OK, then the
-// connection will be aborted with that value.
+// HTTP/HTTPS requests. `ssl_config_for_origin` is only used if the request
+// uses SSL and `base_ssl_config_for_proxies` is used if the proxy server(s)
+// are HTTPS. `resolution_callback` will be invoked after the the hostname is
+// resolved. If `resolution_callback` does not return OK, then the connection
+// will be aborted with that value.
 int InitSocketHandleForHttpRequest(
     url::SchemeHostPort endpoint,
     int request_load_flags,
@@ -86,7 +86,7 @@ int InitSocketHandleForHttpRequest(
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
     const SSLConfig& ssl_config_for_origin,
-    const SSLConfig& ssl_config_for_proxy,
+    const SSLConfig& base_ssl_config_for_proxies,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
@@ -99,12 +99,11 @@ int InitSocketHandleForHttpRequest(
 // A helper method that uses the passed in proxy information to initialize a
 // ClientSocketHandle with the relevant socket pool. Use this method for
 // HTTP/HTTPS requests for WebSocket handshake.
-// |ssl_config_for_origin| is only used if the request
-// uses SSL and |ssl_config_for_proxy| is used if the proxy server is HTTPS.
-// |resolution_callback| will be invoked after the the hostname is
-// resolved.  If |resolution_callback| does not return OK, then the
-// connection will be aborted with that value.
-// This function uses WEBSOCKET_SOCKET_POOL socket pools.
+// `ssl_config_for_origin` is only used if the request uses SSL and
+// `base_ssl_config_for_proxies` is used if the proxy server(s) are HTTPS.
+// `resolution_callback` will be invoked after the the hostname is resolved. If
+// `resolution_callback` does not return OK, then the connection will be aborted
+// with that value. This function uses WEBSOCKET_SOCKET_POOL socket pools.
 int InitSocketHandleForWebSocketRequest(
     url::SchemeHostPort endpoint,
     int request_load_flags,
@@ -112,7 +111,7 @@ int InitSocketHandleForWebSocketRequest(
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
     const SSLConfig& ssl_config_for_origin,
-    const SSLConfig& ssl_config_for_proxy,
+    const SSLConfig& base_ssl_config_for_proxies,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     const NetLogWithSource& net_log,
@@ -129,7 +128,7 @@ int PreconnectSocketsForHttpRequest(
     HttpNetworkSession* session,
     const ProxyInfo& proxy_info,
     const SSLConfig& ssl_config_for_origin,
-    const SSLConfig& ssl_config_for_proxy,
+    const SSLConfig& base_ssl_config_for_proxies,
     PrivacyMode privacy_mode,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,

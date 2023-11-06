@@ -10,12 +10,12 @@
 #include "base/time/time.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_reader.h"
 #include "components/media_router/common/providers/cast/certificate/cast_cert_test_helpers.h"
-#include "net/cert/pki/cert_errors.h"
-#include "net/cert/pki/parsed_certificate.h"
-#include "net/cert/pki/signature_algorithm.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/x509_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/cert_errors.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
+#include "third_party/boringssl/src/pki/signature_algorithm.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 namespace cast_certificate {
 
@@ -70,7 +70,7 @@ void RunTest(CastCertError expected_result,
   auto certs = ReadCertificateChainFromFile(
       testing::GetCastCertificatesSubDirectory().AppendASCII(certs_file_name));
 
-  std::unique_ptr<net::TrustStoreInMemory> trust_store;
+  std::unique_ptr<bssl::TrustStoreInMemory> trust_store;
 
   switch (trust_store_dependency) {
     case TRUST_STORE_BUILTIN:
@@ -82,9 +82,9 @@ void RunTest(CastCertError expected_result,
       ASSERT_FALSE(certs.empty());
 
       // Parse the root certificate of the chain.
-      net::CertErrors errors;
-      std::shared_ptr<const net::ParsedCertificate> root =
-          net::ParsedCertificate::Create(
+      bssl::CertErrors errors;
+      std::shared_ptr<const bssl::ParsedCertificate> root =
+          bssl::ParsedCertificate::Create(
               net::x509_util::CreateCryptoBuffer(certs.back()), {}, &errors);
       ASSERT_TRUE(root) << errors.ToDebugString();
 
@@ -92,7 +92,7 @@ void RunTest(CastCertError expected_result,
       certs.pop_back();
 
       // Add it to the trust store as a trust anchor
-      trust_store = std::make_unique<net::TrustStoreInMemory>();
+      trust_store = std::make_unique<bssl::TrustStoreInMemory>();
 
       if (trust_store_dependency == TRUST_STORE_FROM_TEST_FILE_UNCONSTRAINED) {
         // This is a test-only mode where anchor constraints are not enforced.

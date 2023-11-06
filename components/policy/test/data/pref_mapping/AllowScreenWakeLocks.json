@@ -1,0 +1,28 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "power.allow_screen_wake_locks": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AllowScreenWakeLocks": false
+        },
+        "prefs": {
+          "power.allow_screen_wake_locks": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -304,7 +304,7 @@ void SmartCardContext::OnListReadersDone(
       return;
     }
 
-    SmartCardError::Reject(resolver, mojom_error);
+    SmartCardError::MaybeReject(resolver, mojom_error);
     return;
   }
 
@@ -328,7 +328,7 @@ void SmartCardContext::OnGetStatusChangeDone(
             device::mojom::blink::SmartCardError::kCancelled) {
       RejectWithAbortionReason(resolver, signal);
     } else {
-      SmartCardError::Reject(resolver, result->get_error());
+      SmartCardError::MaybeReject(resolver, result->get_error());
     }
     return;
   }
@@ -349,7 +349,7 @@ void SmartCardContext::OnConnectDone(
   ClearOperationInProgress(resolver);
 
   if (result->is_error()) {
-    SmartCardError::Reject(resolver, result->get_error());
+    SmartCardError::MaybeReject(resolver, result->get_error());
     return;
   }
 

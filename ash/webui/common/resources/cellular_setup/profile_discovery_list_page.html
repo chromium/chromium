@@ -1,6 +1,6 @@
 <style include="cr-shared-style iron-flex">
     [slot='page-body'] {
-      height: 300px;
+      height: 282px;
       margin-top: -20px;
     }
 
@@ -26,8 +26,8 @@
       <div id="container" class="layout vertical flex" scrollable>
         <iron-list id="profileList" items="[[pendingProfileProperties]]"
             scroll-target="container"
-            selection-enabled="[[!showBusy]]"
             preserve-focus
+            selection-enabled
             selected-item="{{selectedProfileProperties}}"
             role="listbox">
           <template>
@@ -35,8 +35,7 @@
                 selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
                 tabindex="0"
                 role="option"
-                aria-selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]"
-                show-loading-indicator="[[showBusy]]">
+                aria-selected="[[isProfilePropertiesSelected_(item, selectedProfileProperties)]]">
             </profile-discovery-list-item>
           </template>
         </iron-list>

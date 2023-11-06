@@ -1,0 +1,44 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "policies": {},
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "default_value": true,
+            "location": "signin_profile"
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
+        "policies": {
+          "DeviceLoginScreenAccessibilityShortcutsEnabled": true
+        },
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "DeviceLoginScreenAccessibilityShortcutsEnabled": false
+        },
+        "prefs": {
+          "settings.a11y.shortcuts_enabled": {
+            "location": "signin_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

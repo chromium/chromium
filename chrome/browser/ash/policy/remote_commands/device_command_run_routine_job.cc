@@ -615,11 +615,13 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
           weak_ptr_factory_.GetWeakPtr(), std::move(result_callback)));
       break;
     }
-    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioSetVolume: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        DEPRECATED_kAudioSetVolume: {
       NOTIMPLEMENTED();
       break;
     }
-    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kAudioSetGain: {
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::
+        DEPRECATED_kAudioSetGain: {
       NOTIMPLEMENTED();
       break;
     }
@@ -648,6 +650,10 @@ void DeviceCommandRunRoutineJob::RunImpl(CallbackWithResult result_callback) {
       break;
     }
     case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kUfsLifetime: {
+      NOTIMPLEMENTED();
+      break;
+    }
+    case ash::cros_healthd::mojom::DiagnosticRoutineEnum::kFan: {
       NOTIMPLEMENTED();
       break;
     }

@@ -24,7 +24,7 @@ namespace blink {
 
 // See https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
 
-SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(NGInlineNode node,
+SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(InlineNode node,
                                                WritingMode writing_mode)
     : inline_node_(node),
       // 1.5. Let "horizontal" be a flag, true if the writing mode of ‘text’
@@ -35,7 +35,7 @@ SvgTextLayoutAlgorithm::SvgTextLayoutAlgorithm(NGInlineNode node,
 
 PhysicalSize SvgTextLayoutAlgorithm::Layout(
     const String& ifc_text_content,
-    NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    FragmentItemsBuilder::ItemWithOffsetList& items) {
   TRACE_EVENT0("blink", "SvgTextLayoutAlgorithm::Layout");
   // https://svgwg.org/svg2-draft/text.html#TextLayoutAlgorithm
   //
@@ -113,13 +113,13 @@ bool SvgTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
 // This function updates |result_|.
 void SvgTextLayoutAlgorithm::SetFlags(
     const String& ifc_text_content,
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   // This function collects information per an "addressable" character in DOM
-  // order. So we need to access NGFragmentItems in the logical order.
+  // order. So we need to access FragmentItems in the logical order.
   Vector<wtf_size_t> sorted_item_indexes;
   sorted_item_indexes.reserve(items.size());
   for (wtf_size_t i = 0; i < items.size(); ++i) {
-    if (items[i]->Type() == NGFragmentItem::kText) {
+    if (items[i]->Type() == FragmentItem::kText) {
       sorted_item_indexes.push_back(i);
     }
   }
@@ -134,8 +134,7 @@ void SvgTextLayoutAlgorithm::SetFlags(
   bool found_first_character = false;
   for (wtf_size_t i : sorted_item_indexes) {
     // Zero-length item is not addressable.
-    if (RuntimeEnabledFeatures::SvgTextSkipZeroLengthItemsEnabled() &&
-        items[i]->TextLength() == 0) {
+    if (items[i]->TextLength() == 0) {
       continue;
     }
     SvgPerCharacterInfo info;
@@ -150,7 +149,7 @@ void SvgTextLayoutAlgorithm::SetFlags(
     // 2.4. If addressable is true and middle is false then set
     // CSS_positions[i] to the position of the corresponding typographic
     // character as determined by the CSS renderer.
-    const NGFragmentItem& item = *items[info.item_index];
+    const FragmentItem& item = *items[info.item_index];
     const LogicalOffset logical_offset = items[info.item_index].offset;
     LayoutUnit ascent;
     if (const auto* font_data = item.ScaledFont().PrimaryFont()) {
@@ -185,7 +184,7 @@ void SvgTextLayoutAlgorithm::SetFlags(
 }
 
 void SvgTextLayoutAlgorithm::AdjustPositionsDxDy(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   // 1. Let shift be the cumulative x and y shifts due to ‘x’ and ‘y’
   // attributes, initialized to (0,0).
   // TODO(crbug.com/1179585): Report a specification bug on "'x' and 'y'
@@ -230,7 +229,7 @@ void SvgTextLayoutAlgorithm::AdjustPositionsDxDy(
 }
 
 void SvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   // Start indexes of the highest textLength elements which were already
   // handled by ResolveTextLength().
   Vector<wtf_size_t> resolved_descendant_node_starts;
@@ -252,7 +251,7 @@ void SvgTextLayoutAlgorithm::ApplyTextLengthAttribute(
 //    2. Called for the second <tspan>.
 //    3. Called for the <text>.
 void SvgTextLayoutAlgorithm::ResolveTextLength(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    const FragmentItemsBuilder::ItemWithOffsetList& items,
     const SvgTextContentRange& range,
     Vector<wtf_size_t>& resolved_descendant_node_starts) {
   const unsigned i = range.start_index;
@@ -408,7 +407,7 @@ void SvgTextLayoutAlgorithm::ResolveTextLength(
 }
 
 void SvgTextLayoutAlgorithm::AdjustPositionsXY(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   // This function moves characters to
   //   <position specified by x/y attributes>
   //   + <shift specified by dx/dy attributes>
@@ -482,7 +481,7 @@ void SvgTextLayoutAlgorithm::AdjustPositionsXY(
 }
 
 void SvgTextLayoutAlgorithm::ApplyAnchoring(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   DCHECK_GT(result_.size(), 0u);
   DCHECK(result_[0].anchored_chunk);
   // 1. For each slice result[i..j] (inclusive of both i and j), where:
@@ -580,7 +579,7 @@ void SvgTextLayoutAlgorithm::ApplyAnchoring(
 }
 
 void SvgTextLayoutAlgorithm::PositionOnPath(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    const FragmentItemsBuilder::ItemWithOffsetList& items) {
   const auto& ranges = inline_node_.SvgTextPathRangeList();
   if (ranges.empty()) {
     return;
@@ -694,7 +693,7 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
               // Unlike the specification, we just set result[index].x/y to the
               // point along the path. The character is moved by an
               // AffineTransform produced from baseline_shift and inline_size/2.
-              // See |NGFragmentItem::BuildSVGTransformForTextPath()|.
+              // See |FragmentItem::BuildSVGTransformForTextPath()|.
               info.baseline_shift = horizontal_ ? *info.y : *info.x;
               info.x = point_tangent.point.x() * scaling_factor;
               info.y = point_tangent.point.y() * scaling_factor;
@@ -784,13 +783,13 @@ void SvgTextLayoutAlgorithm::PositionOnPath(
 }
 
 PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
-    NGFragmentItemsBuilder::ItemWithOffsetList& items) {
+    FragmentItemsBuilder::ItemWithOffsetList& items) {
   gfx::RectF unscaled_visual_rect;
   for (const SvgPerCharacterInfo& info : result_) {
     if (info.middle) {
       continue;
     }
-    NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
+    FragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
     const auto* layout_object =
         To<LayoutSVGInlineText>(item->GetLayoutObject());
     LayoutUnit ascent;
@@ -820,7 +819,7 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     const float scaling_factor = layout_object->ScalingFactor();
     DCHECK_NE(scaling_factor, 0.0f);
     gfx::RectF unscaled_rect = gfx::ScaleRect(scaled_rect, 1 / scaling_factor);
-    auto data = std::make_unique<NGSvgFragmentData>();
+    auto data = std::make_unique<SvgFragmentData>();
     data->shape_result = item->TextShapeResult();
     data->text_offset = item->TextOffset();
     data->rect = scaled_rect;
@@ -840,20 +839,20 @@ PhysicalSize SvgTextLayoutAlgorithm::WriteBackToFragmentItems(
     transformd_rect.Scale(1 / scaling_factor);
     unscaled_visual_rect.Union(transformd_rect);
   }
-  if (items[0]->Type() == NGFragmentItem::kLine) {
+  if (items[0]->Type() == FragmentItem::kLine) {
     items[0].item.SetSvgLineLocalRect(
         PhysicalRect(gfx::ToEnclosingRect(unscaled_visual_rect)));
   }
   // |items| should not have kLine items other than the first one.
   DCHECK_EQ(base::ranges::find(items.begin() + 1, items.end(),
-                               NGFragmentItem::kLine, &NGFragmentItem::Type),
+                               FragmentItem::kLine, &FragmentItem::Type),
             items.end());
   return {LayoutUnit(unscaled_visual_rect.right()),
           LayoutUnit(unscaled_visual_rect.bottom())};
 }
 
 float SvgTextLayoutAlgorithm::ScalingFactorAt(
-    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    const FragmentItemsBuilder::ItemWithOffsetList& items,
     wtf_size_t addressable_index) const {
   return items[result_[addressable_index].item_index]->SvgScalingFactor();
 }

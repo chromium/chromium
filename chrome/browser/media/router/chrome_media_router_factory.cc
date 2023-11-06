@@ -62,12 +62,11 @@ ChromeMediaRouterFactory::~ChromeMediaRouterFactory() = default;
 
 content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/1483551): Figure out what to do with system profiles.
   ProfileSelections profile_selections =
       ProfileSelections::Builder()
           .WithRegular(ProfileSelection::kOwnInstance)
           .WithGuest(ProfileSelection::kOwnInstance)
-          .WithSystem(ProfileSelection::kOwnInstance)
+          .WithSystem(ProfileSelection::kNone)
           .Build();
   return profile_selections.ApplyProfileSelection(
       Profile::FromBrowserContext(context));

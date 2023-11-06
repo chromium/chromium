@@ -14,6 +14,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.impl.UrlResponseInfoImpl;
 
 import java.util.AbstractMap;
@@ -22,14 +23,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tests for {@link UrlResponseInfo}.
- */
+/** Tests for {@link UrlResponseInfo}. */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
 public class UrlResponseInfoTest {
-    /**
-     * Test for public API of {@link UrlResponseInfo}.
-     */
+    /** Test for public API of {@link UrlResponseInfo}. */
     @Test
     @SmallTest
     public void testPublicAPI() {
@@ -47,8 +45,15 @@ public class UrlResponseInfoTest {
         final long receivedByteCount = 42;
 
         final UrlResponseInfo info =
-                new UrlResponseInfoImpl(urlChain, httpStatusCode, httpStatusText, allHeadersList,
-                        wasCached, negotiatedProtocol, proxyServer, receivedByteCount);
+                new UrlResponseInfoImpl(
+                        urlChain,
+                        httpStatusCode,
+                        httpStatusText,
+                        allHeadersList,
+                        wasCached,
+                        negotiatedProtocol,
+                        proxyServer,
+                        receivedByteCount);
 
         assertThat(info).hasUrlChainThat().isEqualTo(urlChain);
         assertThat(info).hasUrlThat().isEqualTo(urlChain.get(urlChain.size() - 1));
@@ -57,12 +62,14 @@ public class UrlResponseInfoTest {
         assertThat(info).hasHttpStatusCodeThat().isEqualTo(httpStatusCode);
         assertThat(info).hasHttpStatusTextThat().isEqualTo(httpStatusText);
         assertThat(info).hasHeadersListThat().isEqualTo(allHeadersList);
-        assertThrows(UnsupportedOperationException.class,
-                ()
-                        -> info.getAllHeadersAsList().add(
-                                new AbstractMap.SimpleImmutableEntry<>("X", "Y")));
-        assertThat(info).hasHeadersThat().containsExactly(
-                header.getKey(), Arrays.asList(header.getValue()));
+        assertThrows(
+                UnsupportedOperationException.class,
+                () ->
+                        info.getAllHeadersAsList()
+                                .add(new AbstractMap.SimpleImmutableEntry<>("X", "Y")));
+        assertThat(info)
+                .hasHeadersThat()
+                .containsExactly(header.getKey(), Arrays.asList(header.getValue()));
         assertThat(info).wasCached();
         assertThat(info).hasNegotiatedProtocolThat().isEqualTo(negotiatedProtocol);
         assertThat(info).hasProxyServerThat().isEqualTo(proxyServer);

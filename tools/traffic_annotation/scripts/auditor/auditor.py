@@ -14,6 +14,7 @@ import platform
 import re
 import subprocess
 import sys
+import textwrap
 import traceback
 import xml.etree.ElementTree as ElementTree
 
@@ -36,6 +37,10 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 
 # Absolute path to chrome/src.
 SRC_DIR = SCRIPT_DIR.parents[3]
+
+# Relative path to traffic_annotation.proto within source.
+TRAFFIC_ANNOTATION_PROTO_RELATIVE_PATH = Path(
+    "chrome/browser/privacy/traffic_annotation.proto")
 
 logger = logging.getLogger(__name__)
 
@@ -1723,7 +1728,8 @@ class AuditorUI:
                error_limit: int = 0,
                annotations_file: Optional[Path] = None,
                errors_file: Optional[Path] = None,
-               skip_compdb: bool = False):
+               skip_compdb: bool = False,
+               skip_stale_build_check: bool = False):
     self.build_path = build_path
     # Convert backslashes to slashes on Windows.
     self.path_filters = [Path(f).as_posix() for f in path_filters]
@@ -1733,6 +1739,7 @@ class AuditorUI:
     self.annotations_file = annotations_file
     self.errors_file = errors_file
     self.skip_compdb = skip_compdb
+    self.skip_stale_build_check = skip_stale_build_check
 
     # Exposed for testing.
     global traffic_annotation_pb2
@@ -1744,6 +1751,17 @@ class AuditorUI:
                            self.no_filtering)
 
   def main(self) -> int:
+    if not self.skip_stale_build_check and self.is_stale_build(self.build_path):
+      logger.error(
+          textwrap.dedent("""
+                   {} is newer than the build dir {}.
+                   Please rebuild the traffic_annotation_proto target, or pass
+                   --skip-stale-build-check.
+                   \tautoninja -C out/Default traffic_annotation_proto
+                                   """).format(
+              TRAFFIC_ANNOTATION_PROTO_RELATIVE_PATH, build_path))
+      return 1
+
     if self.no_filtering and self.path_filters:
       logger.warning("The path_filters input is being ignored.")
       self.path_filters = []
@@ -1796,6 +1814,18 @@ class AuditorUI:
     sys.stdout.write("Traffic annotations are all OK.\n")
     return 0
 
+  def is_stale_build(self, path: Path) -> bool:
+    """Returns true if the traffic_annotation.proto has been modified more
+    recently than the Python proto generated from it in the supplied build
+    directory.
+    """
+    src_proto_mtime = os.path.getmtime(
+        SRC_DIR.joinpath(TRAFFIC_ANNOTATION_PROTO_RELATIVE_PATH))
+    build_proto_mtime = os.path.getmtime(
+        path.joinpath(
+            'pyproto/chrome/browser/privacy/traffic_annotation_pb2.py'))
+    return src_proto_mtime > build_proto_mtime
+
 
 if __name__ == "__main__":
   args_parser = argparse.ArgumentParser(
@@ -1844,6 +1874,12 @@ if __name__ == "__main__":
       " up-to-date. This speeds up the auditor.",
       action="store_true")
   args_parser.add_argument(
+      "--skip-stale-build-check",
+      help="Run the auditor even when the generated proto files in the"
+      " --build-path supplied are older than the traffic_annotation.proto."
+      "This is useful if you're actively working on the protobuf.",
+      action="store_true")
+  args_parser.add_argument(
       "path_filters",
       nargs="*",
       help="Optional paths to filter which files the"
@@ -1860,7 +1896,8 @@ if __name__ == "__main__":
         "TrafficAnnotations' component and CC nicolaso@chromium.org.")
   auditor_ui = AuditorUI(build_path, args.path_filters, args.no_filtering,
                          args.test_only, args.limit, args.annotations_file,
-                         args.errors_file, args.skip_compdb)
+                         args.errors_file, args.skip_compdb,
+                         args.skip_stale_build_check)
 
   try:
     sys.exit(auditor_ui.main())

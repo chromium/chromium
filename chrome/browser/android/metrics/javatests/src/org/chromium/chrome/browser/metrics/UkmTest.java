@@ -30,13 +30,13 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.metrics.MetricsSwitches;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Android UKM tests.
- */
+/** Android UKM tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    MetricsSwitches.FORCE_ENABLE_METRICS_REPORTING
+})
 public class UkmTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -57,46 +57,58 @@ public class UkmTest {
         ChromeTabUtils.closeAllTabs(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile profile = Profile.getLastUsedRegularProfile();
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(profile, true);
-            Assert.assertTrue(UkmUtilsForTest.isEnabled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile profile = Profile.getLastUsedRegularProfile();
+                    UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
+                            profile, true);
+                    Assert.assertTrue(UkmUtilsForTest.isEnabled());
+                });
 
         long originalClientId =
-                TestThreadUtils
-                        .runOnUiThreadBlocking(() -> { return UkmUtilsForTest.getClientId(); })
+                TestThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    return UkmUtilsForTest.getClientId();
+                                })
                         .longValue();
         Assert.assertFalse("Non-zero client id: " + originalClientId, originalClientId == 0);
 
         // Record some dummy UKM data (adding a Source).
         final long sourceId = 0x54321;
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Write data under a dummy sourceId and verify it is there.
-            UkmUtilsForTest.recordSourceWithId(sourceId);
-            Assert.assertTrue(UkmUtilsForTest.hasSourceWithId(sourceId));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Write data under a dummy sourceId and verify it is there.
+                    UkmUtilsForTest.recordSourceWithId(sourceId);
+                    Assert.assertTrue(UkmUtilsForTest.hasSourceWithId(sourceId));
+                });
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Clear all browsing history.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(new OnClearBrowsingDataListener() {
-                @Override
-                public void onBrowsingDataCleared() {
-                    callbackHelper.notifyCalled();
-                }
-            }, new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    new OnClearBrowsingDataListener() {
+                                        @Override
+                                        public void onBrowsingDataCleared() {
+                                            callbackHelper.notifyCalled();
+                                        }
+                                    },
+                                    new int[] {BrowsingDataType.HISTORY},
+                                    TimePeriod.ALL_TIME);
+                });
         callbackHelper.waitForCallback(0);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Verify that UKM is still running.
-            Assert.assertTrue(UkmUtilsForTest.isEnabled());
-            // The source under sourceId should be removed.
-            Assert.assertFalse(UkmUtilsForTest.hasSourceWithId(sourceId));
-            // Client ID should not have been reset.
-            Assert.assertEquals("Client id:", originalClientId, UkmUtilsForTest.getClientId());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Verify that UKM is still running.
+                    Assert.assertTrue(UkmUtilsForTest.isEnabled());
+                    // The source under sourceId should be removed.
+                    Assert.assertFalse(UkmUtilsForTest.hasSourceWithId(sourceId));
+                    // Client ID should not have been reset.
+                    Assert.assertEquals(
+                            "Client id:", originalClientId, UkmUtilsForTest.getClientId());
+                });
     }
 }

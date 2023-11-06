@@ -6,12 +6,13 @@ package org.chromium.android_webview.permission;
 
 import android.net.Uri;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.CleanupReference;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class wraps permission request in Chromium side, and can only be created

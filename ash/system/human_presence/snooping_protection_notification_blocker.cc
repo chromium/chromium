@@ -20,8 +20,8 @@
 #include "ash/system/human_presence/snooping_protection_notification_blocker_internal.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/sms_observer.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -219,7 +219,7 @@ void SnoopingProtectionNotificationBlocker::Click(
       Shell::Get()
           ->GetPrimaryRootWindowController()
           ->GetStatusAreaWidget()
-          ->unified_system_tray()
+          ->notification_center_tray()
           ->ShowBubble();
       break;
     // Show privacy settings button

@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
@@ -230,14 +230,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
 #endif
 
 void WebApps::UpdateAppSize(const std::string& app_id) {
-  const auto* web_app = GetWebApp(app_id);
-  if (!web_app) {
-    return;
-  }
-
-  provider_->scheduler().ComputeAppSize(
-      app_id, base::BindOnce(&WebApps::OnGetAppSize,
-                             weak_ptr_factory_.GetWeakPtr(), app_id));
+  publisher_helper().UpdateAppSize(app_id);
 }
 
 void WebApps::SetWindowMode(const std::string& app_id,
@@ -353,16 +346,6 @@ void WebApps::InitWebApps() {
                               /*should_notify_initialized=*/true);
 }
 
-void WebApps::OnGetAppSize(webapps::AppId app_id,
-                           absl::optional<ComputeAppSizeCommand::Size> size) {
-  auto app = std::make_unique<apps::App>(app_type(), app_id);
-  if (!size.has_value()) {
-    return;
-  }
-  app->app_size_in_bytes = size->app_size_in_bytes;
-  app->data_size_in_bytes = size->data_size_in_bytes;
-  PublishWebApp(std::move(app));
-}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApps::PauseApp(const std::string& app_id) {

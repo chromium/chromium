@@ -24,16 +24,15 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
-#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/credential_provider_promo/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
-#import "ios/chrome/browser/download/download_directory_util.h"
-#import "ios/chrome/browser/download/external_app_util.h"
-#import "ios/chrome/browser/download/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/download/model/download_directory_util.h"
+#import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
@@ -100,7 +99,6 @@
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
@@ -115,7 +113,7 @@
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/sync/model/sync_error_browser_agent.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/tabs/tab_title_util.h"
+#import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/translate/model/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/app_store_rating/features.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
@@ -222,7 +220,7 @@
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/fullscreen/fullscreen_api.h"
@@ -253,6 +251,7 @@ enum class ToolbarKind {
 }  // anonymous namespace
 
 @interface BrowserCoordinator () <
+    AppLauncherTabHelperBrowserPresentationProvider,
     AutofillAddCreditCardCoordinatorDelegate,
     BrowserCoordinatorCommands,
     BubblePresenterDelegate,
@@ -751,21 +750,6 @@ enum class ToolbarKind {
   self.activityOverlayCoordinator = nil;
 }
 
-// Shows a default promo with the passed type or nothing if a tailored promo is
-// already present.
-- (void)showTailoredPromoWithType:(DefaultPromoType)type {
-  if (self.tailoredPromoCoordinator) {
-    // Another promo is being shown, return early.
-    return;
-  }
-  self.tailoredPromoCoordinator = [[TailoredPromoCoordinator alloc]
-      initWithBaseViewController:self.viewController
-                         browser:self.browser
-                            type:type];
-  self.tailoredPromoCoordinator.handler = self;
-  [self.tailoredPromoCoordinator start];
-}
-
 // Instantiates a BrowserViewController.
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
@@ -818,7 +802,6 @@ enum class ToolbarKind {
     @protocol(ActivityServiceCommands),
     @protocol(AutofillBottomSheetCommands),
     @protocol(BrowserCoordinatorCommands),
-    @protocol(DefaultPromoCommands),
     @protocol(DefaultBrowserPromoNonModalCommands),
     @protocol(FeedCommands),
     @protocol(PromosManagerCommands),
@@ -906,6 +889,7 @@ enum class ToolbarKind {
       initWithDeviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
                       hostContentSettingsMap:settingsMap
                              loadingNotifier:_urlLoadingNotifierBrowserAgent
+                                 prefService:browserState->GetPrefs()
                                   sceneState:SceneStateBrowserAgent::
                                                  FromBrowser(self.browser)
                                                      ->GetSceneState()
@@ -919,7 +903,6 @@ enum class ToolbarKind {
 
   _toolbarCoordinator =
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
-  _toolbarCoordinator.bubblePresenter = _bubblePresenter;
 
   _toolbarAccessoryPresenter = [[ToolbarAccessoryPresenter alloc]
       initWithIsIncognito:browserState->IsOffTheRecord()];
@@ -1457,6 +1440,7 @@ enum class ToolbarKind {
       TabInsertionBrowserAgent::FromBrowser(browser);
   tabLifecycleMediator.snapshotGeneratorDelegate = self;
   tabLifecycleMediator.overscrollActionsDelegate = self;
+  tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -1490,8 +1474,6 @@ enum class ToolbarKind {
                       originView:positioner.sourceView
                       originRect:positioner.sourceRect
                           anchor:anchor];
-  self.sharingCoordinator.activityHandler =
-      HandlerForProtocol(self.dispatcher, ActivityServiceCommands);
   [self.sharingCoordinator start];
 }
 
@@ -1794,31 +1776,6 @@ enum class ToolbarKind {
   self.paymentsSuggestionBottomSheetCoordinator = nil;
 }
 
-#pragma mark - DefaultPromoCommands
-
-- (void)showTailoredPromoStaySafe {
-  [self showTailoredPromoWithType:DefaultPromoTypeStaySafe];
-}
-
-- (void)showTailoredPromoMadeForIOS {
-  [self showTailoredPromoWithType:DefaultPromoTypeMadeForIOS];
-}
-
-- (void)showTailoredPromoAllTabs {
-  [self showTailoredPromoWithType:DefaultPromoTypeAllTabs];
-}
-
-- (void)showDefaultBrowserFullscreenPromo {
-  if (!self.defaultBrowserPromoCoordinator) {
-    self.defaultBrowserPromoCoordinator =
-        [[DefaultBrowserPromoCoordinator alloc]
-            initWithBaseViewController:self.viewController
-                               browser:self.browser];
-    self.defaultBrowserPromoCoordinator.handler = self;
-  }
-  [self.defaultBrowserPromoCoordinator start];
-}
-
 - (void)showChoice {
   if (!ios::provider::IsChoiceEnabled()) {
     return;
@@ -1844,10 +1801,8 @@ enum class ToolbarKind {
   self.defaultBrowserPromoCoordinator = nil;
   [self.tailoredPromoCoordinator stop];
   self.tailoredPromoCoordinator = nil;
-  if (IsDefaultBrowserInPromoManagerEnabled()) {
-    [self.defaultBrowserPromoManager stop];
-    self.defaultBrowserPromoManager = nil;
-  }
+  [self.defaultBrowserPromoManager stop];
+  self.defaultBrowserPromoManager = nil;
 }
 
 #pragma mark - FeedCommands
@@ -2060,10 +2015,6 @@ enum class ToolbarKind {
 }
 
 - (void)maybeDisplayDefaultBrowserPromo {
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    return;
-  }
-
   if (self.defaultBrowserPromoManager) {
     // The default browser promo manager is already being displayed. Early
     // return as this is expected if a default browser promo was open and the
@@ -2080,8 +2031,6 @@ enum class ToolbarKind {
 }
 
 - (void)displayDefaultBrowserPromoAfterRemindMeLater {
-  CHECK(IsDefaultBrowserInPromoManagerEnabled());
-
   self.defaultBrowserPromoManager = [[DefaultBrowserPromoManager alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
@@ -2398,10 +2347,15 @@ enum class ToolbarKind {
                                      forStep:(ParcelTrackingStep)step {
   web::WebState* activeWebState = self.activeWebState;
   CHECK(activeWebState);
-  if (!commerce::ShoppingServiceFactory::GetForBrowserState(
-           self.browser->GetBrowserState())
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  if (!commerce::ShoppingServiceFactory::GetForBrowserState(browserState)
            ->IsParcelTrackingEligible()) {
     return;
+  }
+  if (step == ParcelTrackingStep::kNewPackageTracked) {
+    feature_engagement::Tracker* engagementTracker =
+        feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+    engagementTracker->NotifyEvent(feature_engagement::events::kParcelTracked);
   }
   std::unique_ptr<ParcelTrackingInfobarDelegate> delegate =
       std::make_unique<ParcelTrackingInfobarDelegate>(
@@ -2415,6 +2369,10 @@ enum class ToolbarKind {
       InfobarType::kInfobarTypeParcelTracking, std::move(delegate));
   infobar_manager->AddInfoBar(std::move(infobar),
                               /*replace_existing=*/true);
+}
+
+- (void)showParcelTrackingIPH {
+  [_bubblePresenter presentParcelTrackingTipBubble];
 }
 
 #pragma mark - ParcelTrackingOptInCommands helpers
@@ -3204,6 +3162,12 @@ enum class ToolbarKind {
     (AutofillAddCreditCardCoordinator*)coordinator {
   CHECK_EQ(coordinator, self.addCreditCardCoordinator);
   [self stopAutofillAddCreditCardCoordinator];
+}
+
+#pragma mark - AppLauncherTabHelperBrowserPresentationProvider
+
+- (BOOL)isBrowserPresentingUI {
+  return self.viewController.presentedViewController != nil;
 }
 
 @end

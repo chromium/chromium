@@ -9,7 +9,7 @@ import {CrInputElement, CrSearchableDropDownElement, CrToastElement, Router, rou
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {NetworkStateProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
@@ -645,6 +645,73 @@ suite('CupsSavedPrintersTests', () => {
     await removeAllPrinters(cupsPrintersBrowserProxy, savedPrintersElement);
     assertFalse(printerStatusReasonCache.has('id1'));
     assertFalse(printerStatusReasonCache.has('id2'));
+  });
+
+  // Verify the printer statuses received from the 'local-printers-updated'
+  // event are added to the printer status cache.
+  test('LocalPrintersUpdatedPrinterStatusCache', async () => {
+    loadTimeData.overrideValues({
+      isLocalPrinterObservingEnabled: true,
+    });
+    createCupsPrinterPage([]);
+    await flushTasks();
+    const element =
+        page.shadowRoot!.querySelector('settings-cups-saved-printers');
+    assertTrue(!!element);
+    savedPrintersElement = element;
+
+    const id1 = 'id1';
+    const printer1 = createCupsPrinterInfo('test1', '1', id1);
+    printer1.printerStatus = {
+      printerId: id1,
+      statusReasons: [
+        {
+          reason: PrinterStatusReason.PRINTER_UNREACHABLE,
+          severity: PrinterStatusSeverity.ERROR,
+        },
+      ],
+      timestamp: 0,
+    };
+    const id2 = 'id2';
+    const printer2 = createCupsPrinterInfo('test2', '2', id2);
+    printer2.printerStatus = {
+      printerId: id2,
+      statusReasons: [
+        {
+          reason: PrinterStatusReason.LOW_ON_INK,
+          severity: PrinterStatusSeverity.ERROR,
+        },
+      ],
+      timestamp: 0,
+    };
+    // Printer3 has an undefined printer status so it shouldn't be added to the
+    // cache.
+    const id3 = 'id3';
+    const printer3 = createCupsPrinterInfo('test3', '3', id3);
+    printer3.printerStatus = {
+      printerId: '',
+      statusReasons: [],
+      timestamp: 0,
+    };
+
+    // The printer status cache should initialize empty.
+    const printerStatusReasonCache =
+        savedPrintersElement.getPrinterStatusReasonCacheForTesting();
+    assertFalse(printerStatusReasonCache.has(id1));
+    assertFalse(printerStatusReasonCache.has(id2));
+    assertFalse(printerStatusReasonCache.has(id3));
+
+    // Trigger the observer and expect the printer statuses to be extracted then
+    // added to the cache.
+    webUIListenerCallback('local-printers-updated', [printer1, printer2]);
+    await flushTasks();
+    assertTrue(printerStatusReasonCache.has(id1));
+    assertTrue(printerStatusReasonCache.has(id2));
+    assertFalse(printerStatusReasonCache.has(id3));
+
+    // This verifies that no printer status query timers are scheduled when the
+    // "local-printer-observing" flag is enabled.
+    assertEquals(0, savedPrintersElement.getTimeoutIdsForTesting().length);
   });
 
   test('ShowMoreButtonIsInitiallyHiddenAndANewPrinterIsAdded', async () => {

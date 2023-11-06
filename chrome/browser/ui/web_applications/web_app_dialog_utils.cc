@@ -41,6 +41,11 @@
 #include "components/metrics/structured/structured_events.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ui/webui/ash/web_app_install/web_app_install_dialog.h"
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace web_app {
 
 namespace {
@@ -71,6 +76,15 @@ void OnWebAppInstallShowInstallDialog(
         cros_events::AppDiscovery_Browser_ClickInstallAppFromMenu()
             .SetAppId(app_id)
             .Record();
+      }
+#endif
+// TODO(b/307145346): Eventually, this should also be primary install for LACROS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (base::FeatureList::IsEnabled(
+              chromeos::features::kCrosWebAppInstallDialog)) {
+        ash::web_app_install::WebAppInstallDialog::Show(
+            initiator_web_contents->GetNativeView());
+        return;
       }
 #endif
       if (webapps::AppBannerManager::FromWebContents(initiator_web_contents)
@@ -185,7 +199,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 
   provider->scheduler().FetchManifestAndInstall(
       install_source, web_contents->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(OnWebAppInstallShowInstallDialog, flow, install_source,
                      PwaInProductHelpState::kNotShown,
                      std::move(install_tracker)),
@@ -194,7 +207,6 @@ void CreateWebAppFromCurrentWebContents(Browser* browser,
 }
 
 bool CreateWebAppFromManifest(content::WebContents* web_contents,
-                              bool bypass_service_worker_check,
                               webapps::WebappInstallSource install_source,
                               WebAppInstalledCallback installed_callback,
                               PwaInProductHelpState iph_state) {
@@ -220,7 +232,7 @@ bool CreateWebAppFromManifest(content::WebContents* web_contents,
   bool use_fallback =
       install_source == webapps::WebappInstallSource::ML_PROMOTION;
   provider->scheduler().FetchManifestAndInstall(
-      install_source, web_contents->GetWeakPtr(), bypass_service_worker_check,
+      install_source, web_contents->GetWeakPtr(),
       base::BindOnce(OnWebAppInstallShowInstallDialog,
                      WebAppInstallFlow::kInstallSite, install_source, iph_state,
                      std::move(install_tracker)),

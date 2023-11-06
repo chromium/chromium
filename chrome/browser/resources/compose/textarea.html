@@ -1,34 +1,81 @@
 <style include="cr-hidden-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #inputContainer,
+  #readonlyContainer {
+    flex: 1;
+  }
+
   textarea {
     appearance: none;
     background: transparent;
-    border: solid 1px var(--color-compose-dialog-textarea-outline);
+    border: solid 1px var(--google-grey-300);
     border-radius: 8px;
-    color: var(--color-compose-dialog-textarea);
+    color: var(--cr-primary-text-color);
     font: inherit;
     font-size: 12px;
-    line-height: 16px;
+    line-height: 20px;
     resize: none;
     outline: none;
     width: 100%;
+    height: 100%;
     box-sizing: border-box;
     padding: 10px;
   }
 
+  @media (prefers-color-scheme: dark) {
+    textarea {
+      border-color: var(--google-grey-500);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) textarea {
+    border-color: var(--color-compose-dialog-textarea-outline);
+    color: var(--color-compose-dialog-textarea);
+    line-height: 16px;
+  }
+
   textarea::placeholder {
+    color: var(--cr-secondary-text-color);
+  }
+
+  :host-context([chrome-refresh-2023]) textarea::placeholder {
     color: var(--color-compose-dialog-textarea-placeholder);
   }
 
   :host([too-long_]) textarea {
-    outline: solid 2px var(--color-compose-dialog-error);
+    outline: solid 2px var(--google-red-600);
     outline-offset: -2px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host([too-long_]) textarea {
+      outline-color: var(--google-red-300);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]):host([too-long_]) #textarea {
+    outline-color: var(--color-compose-dialog-error);
   }
 
   #error {
     margin: 4px 10px 0;
-    color: var(--color-compose-dialog-error);
+    color: var(--google-red-600);
     font-size: 11px;
     line-height: 16px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #error {
+      color: var(--google-red-300);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #error {
+    color: var(--color-compose-dialog-error);
   }
 
   textarea:focus {
@@ -40,16 +87,34 @@
     display: flex;
     align-items: center;
     padding: 16px;
+    background: var(--google-grey-100);
+    color: var(--cr-primary-text-color);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #readonlyContainer {
+      background: rgba(0, 0, 0, .3);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) #readonlyContainer {
     background: var(--color-compose-dialog-textarea-readonly-background);
-    color: var(--color-compose-dialog-textarea-readonly-foreground)
+    color: var(--color-compose-dialog-textarea-readonly-foreground);
   }
 
   #readonlyText {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
     overflow: hidden;
-    line-height: 16px;
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 100%;
+  }
+
+  :host-context([chrome-refresh-2023]) #readonlyText {
+    font-size: 12px;
+    line-height: 16px;
   }
 
   #editButtonContainer {
@@ -69,20 +134,23 @@
 
 <div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      placeholder="Some placeholder text"
+      placeholder="$i18n{inputPlaceholder}"
       value="{{value::input}}"
       rows="4"
-      required>
+      required
+      autofocus>
   </textarea>
   <div id="error" hidden$="[[!tooLong_]]">
-    This is too long. Shorten and try again.
+    $i18n{errorTooLong}
   </div>
 </div>
 
 <div id="readonlyContainer" hidden$="[[!readonly]]">
   <div id="readonlyText">[[value]]</div>
   <div id="editButtonContainer"
-      hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode)]]">
-    <cr-icon-button iron-icon="cr:create" title="Edit"></cr-icon-button>
+      hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode, readonly)]]">
+    <cr-icon-button iron-icon="compose:edit" title="$i18n{editButton}"
+        on-click="onEditClick_">
+    </cr-icon-button>
   </div>
 </div>

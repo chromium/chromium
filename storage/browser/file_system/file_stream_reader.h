@@ -53,27 +53,6 @@ class FileStreamReader {
       file_access::ScopedFileAccessDelegate::RequestFilesAccessIOCallback
           file_access = base::NullCallback());
 
-  // Creates a new FileReader for a local file |file_path|, which is a
-  // relative path into |filesystem_proxy|.  This function's behavior
-  // is otherwise identical to CreateForLocalFile other than all file operations
-  // going through |filesystem_proxy|.
-  COMPONENT_EXPORT(STORAGE_BROWSER)
-  static std::unique_ptr<FileStreamReader> CreateForFilesystemProxy(
-      scoped_refptr<base::TaskRunner> task_runner,
-      const base::FilePath& file_path,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
-      int64_t initial_offset,
-      const base::Time& expected_modification_time);
-
-  // The same as CreateForFilesystemProxy, but will emit diagnostic metrics.
-  COMPONENT_EXPORT(STORAGE_BROWSER)
-  static std::unique_ptr<FileStreamReader> CreateForIndexedDBDataItemReader(
-      scoped_refptr<base::TaskRunner> task_runner,
-      const base::FilePath& file_path,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
-      int64_t initial_offset,
-      const base::Time& expected_modification_time);
-
   // Verify if the underlying file has not been modified.
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static bool VerifySnapshotTime(const base::Time& expected_modification_time,

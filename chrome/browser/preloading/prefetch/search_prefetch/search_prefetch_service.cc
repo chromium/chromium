@@ -450,22 +450,9 @@ void SearchPrefetchService::OnURLOpenedFromOmnibox(OmniboxLog* log) {
   prefetch.MarkPrefetchAsClicked();
 }
 
-void SearchPrefetchService::AddCacheEntryForPrerender(
-    const GURL& updated_prerendered_url,
-    const GURL& prerendering_url) {
-  DCHECK(prerender_utils::IsSearchSuggestionPrerenderEnabled());
-
-  // We do not need this method while running the search prefetch/prerender
-  // unification experiment.
-  DCHECK(!prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-  AddCacheEntry(updated_prerendered_url, prerendering_url);
-}
-
 void SearchPrefetchService::OnPrerenderedRequestUsed(
     const GURL& canonical_search_url,
     const GURL& navigation_url) {
-  DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-
   auto request_it = prefetches_.find(canonical_search_url);
   DCHECK(request_it != prefetches_.end());
   if (request_it == prefetches_.end()) {
@@ -739,8 +726,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
       continue;
     }
 
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
       CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
                                       canonical_search_url);
       continue;
@@ -751,14 +737,6 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
           GetPreloadURLFromMatch(*match.search_terms_args, template_url_service,
                                  kSuggestPrefetchParam.Get()),
           web_contents);
-    }
-    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
-        BaseSearchProvider::ShouldPrerender(match)) {
-      PrerenderManager::CreateForWebContents(web_contents);
-      auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-      DCHECK(prerender_manager);
-      prerender_manager->StartPrerenderSearchSuggestion(match,
-                                                        canonical_search_url);
     }
   }
 }

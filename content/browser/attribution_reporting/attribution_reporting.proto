@@ -36,6 +36,15 @@ message AttributionReadOnlySourceData {
   repeated int64 event_level_report_window_end_times = 3;
   // Value can only be between 0 and 1.
   optional double randomized_response_rate = 4;
+
+  enum TriggerDataMatching {
+    MODULUS = 0;
+    EXACT = 1;
+  };
+
+  optional TriggerDataMatching trigger_data_matching = 5;
+
+  optional bool debug_cookie_set = 6;
 }
 
 message AttributionEventLevelMetadata {

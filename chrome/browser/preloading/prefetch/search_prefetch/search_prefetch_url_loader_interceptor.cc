@@ -116,8 +116,7 @@ SearchPrefetchURLLoaderInterceptor::MaybeCreateLoaderForRequest(
   }
 
   if (is_prerender_main_frame_navigation) {
-    if (!prerender_utils::IsSearchSuggestionPrerenderEnabled() ||
-        !prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
+    if (!prerender_utils::IsSearchSuggestionPrerenderEnabled()) {
       return {};
     }
     // Note, if SearchPreloadShareableCacheIsEnabled() is true, prerender

@@ -62,6 +62,10 @@ BASE_DECLARE_FEATURE(kContentPushNotifications);
 // Feature flag to enable the Large Fakebox design changes.
 BASE_DECLARE_FEATURE(kIOSLargeFakebox);
 
+// Feature flag to enable hiding the feed and feed header depending on Search
+// Engine choice.
+BASE_DECLARE_FEATURE(kIOSHideFeedWithSearchChoice);
+
 // Feature param under `kEnableFeedBackgroundRefresh` to also enable background
 // refresh for the Following feed.
 extern const char kEnableFollowingFeedBackgroundRefresh[];
@@ -127,6 +131,11 @@ extern const char kFeedUnseenRefreshThresholdInSeconds[];
 // and no sooner than 5 minutes from the last refresh.
 extern const char
     kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[];
+
+// Feature param under `kIOSHideFeedWithSearchChoice` to only target the
+// feature at certain countries (i.e. only hide the feed when the device is
+// from those countries when the search engine is changed).
+extern const char kIOSHideFeedWithSearchChoiceTargeted[];
 
 // Whether the Following Feed is enabled on NTP.
 bool IsWebChannelsEnabled();
@@ -222,6 +231,10 @@ double GetFeedSeenRefreshThresholdInSeconds();
 // Returns the refresh threshold (aka feed expiration) for an unseen feed.
 double GetFeedUnseenRefreshThresholdInSeconds();
 
+// Returns whether the feed hide with search choice feature should be targeted
+// only at devices from certain countries.
+bool IsIOSHideFeedWithSearchChoiceTargeted();
+
 // YES if user engagement is used as a signal to invalidate the cache when the
 // app is foregrounded. This can result in a visible refresh when the NTP is
 // visible during foregrounding, or invisible refresh when a non-NTP is shown
@@ -252,5 +265,8 @@ bool IsContentPushNotificationsEnabled();
 
 // Returns true when the IOSLargeFakebox feature is enabled.
 bool IsIOSLargeFakeboxEnabled();
+
+// Returns true when the IOSHideFeedWithSearchChoice feature is enabled.
+bool IsIOSHideFeedWithSearchChoiceEnabled();
 
 #endif  // IOS_CHROME_BROWSER_NTP_FEATURES_H_

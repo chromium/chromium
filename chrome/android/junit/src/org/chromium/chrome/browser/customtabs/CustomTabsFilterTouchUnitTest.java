@@ -34,10 +34,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
-/**
- * Tests {@link CustomTabActivity} filters touch events from overlay activity.
- */
-// clang-format off
+/** Tests {@link CustomTabActivity} filters touch events from overlay activity. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @EnableFeatures(ChromeFeatureList.CCT_PREVENT_TOUCHES)
@@ -45,16 +42,14 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// clang-format on
 public class CustomTabsFilterTouchUnitTest {
     @Rule
     public ActivityScenarioRule<CustomTabActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(CustomTabActivity.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private MotionEvent mMotionEvent;
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock private MotionEvent mMotionEvent;
 
     private CustomTabActivity mActivity;
 
@@ -82,7 +77,7 @@ public class CustomTabsFilterTouchUnitTest {
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.RESUMED);
-        mActivity.onWindowFocusChanged(/*hasFocus=*/true);
+        mActivity.onWindowFocusChanged(/* hasFocus= */ true);
         verify(mMotionEvent, atLeast(1)).setAction(eq(MotionEvent.ACTION_DOWN));
     }
 }

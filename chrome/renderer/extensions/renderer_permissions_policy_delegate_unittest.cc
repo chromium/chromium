@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/test/task_environment.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -41,6 +42,7 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
   }
 
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment;
   std::unique_ptr<content::MockRenderThread> render_thread_;
   std::unique_ptr<ExtensionsRendererClient> renderer_client_;
   std::unique_ptr<Dispatcher> extension_dispatcher_;

@@ -42,9 +42,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Collections;
 
-/**
- * Tests for {@link TwaVerifier}.
- */
+/** Tests for {@link TwaVerifier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.TRUSTED_WEB_ACTIVITY_POST_MESSAGE)
@@ -53,23 +51,15 @@ public class TwaVerifierTest {
     private static final String ADDITIONAL_ORIGIN = "https://www.otherverifiedorigin.com";
     private static final String OTHER_URL = "https://www.notverifiedurl.com/page2.html";
 
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    CustomTabIntentDataProvider mIntentDataProvider;
-    @Mock
-    ChromeOriginVerifierFactory mOriginVerifierFactory;
-    @Mock
-    ChromeOriginVerifier mOriginVerifier;
-    @Mock
-    CustomTabActivityTabProvider mActivityTabProvider;
-    @Mock
-    ClientPackageNameProvider mClientPackageNameProvider;
-    @Mock
-    ExternalAuthUtils mExternalAuthUtils;
+    @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock CustomTabIntentDataProvider mIntentDataProvider;
+    @Mock ChromeOriginVerifierFactory mOriginVerifierFactory;
+    @Mock ChromeOriginVerifier mOriginVerifier;
+    @Mock CustomTabActivityTabProvider mActivityTabProvider;
+    @Mock ClientPackageNameProvider mClientPackageNameProvider;
+    @Mock ExternalAuthUtils mExternalAuthUtils;
 
     private TwaVerifier mDelegate;
 
@@ -87,17 +77,24 @@ public class TwaVerifierTest {
         when(mClientPackageNameProvider.get()).thenReturn("some.package.name");
 
         mDelegate =
-                new TwaVerifier(mLifecycleDispatcher, mIntentDataProvider, mOriginVerifierFactory,
-                        mActivityTabProvider, mClientPackageNameProvider, mExternalAuthUtils);
+                new TwaVerifier(
+                        mLifecycleDispatcher,
+                        mIntentDataProvider,
+                        mOriginVerifierFactory,
+                        mActivityTabProvider,
+                        mClientPackageNameProvider,
+                        mExternalAuthUtils);
     }
 
     @Test
     public void verifiedScopeIsOrigin() {
         assertEquals(
                 "https://www.example.com", mDelegate.getVerifiedScope("https://www.example.com"));
-        assertEquals("https://www.example.com",
+        assertEquals(
+                "https://www.example.com",
                 mDelegate.getVerifiedScope("https://www.example.com/page1.html"));
-        assertEquals("https://www.example.com",
+        assertEquals(
+                "https://www.example.com",
                 mDelegate.getVerifiedScope("https://www.example.com/dir/page2.html"));
     }
 

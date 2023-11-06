@@ -27,6 +27,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FocusConfig} from '../focus_config.js';
+import {HatsBrowserProxyImpl, SecurityPageInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, PrivacyElementInteractions, SafeBrowsingInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -266,6 +267,7 @@ export class SettingsSecurityPageElement extends
     if (prefValue !== selected) {
       this.recordInteractionHistogramOnRadioChange_(selected);
       this.recordActionOnRadioChange_(selected);
+      this.interactedWithPage_(selected);
     }
     if (selected === SafeBrowsingSetting.DISABLED) {
       this.showDisableSafebrowsingDialog_ = true;
@@ -273,6 +275,13 @@ export class SettingsSecurityPageElement extends
       this.updateCollapsedButtons_();
       this.$.safeBrowsingRadioGroup.sendPrefChange();
     }
+  }
+
+  private interactedWithPage_(securityPageInteraction:
+                                  SecurityPageInteraction) {
+    const safeBrowsingValue = this.getPref('generated.safe_browsing').value;
+    HatsBrowserProxyImpl.getInstance().securityPageInteractionOccurred(
+        securityPageInteraction, safeBrowsingValue);
   }
 
   private getDisabledExtendedSafeBrowsing_(): boolean {
@@ -416,12 +425,16 @@ export class SettingsSecurityPageElement extends
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.ENHANCED);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.ENHANCED);
+    this.interactedWithPage_(
+        SecurityPageInteraction.EXPAND_BUTTON_ENHANCED_CLICK);
   }
 
   private onStandardProtectionExpandButtonClicked_() {
     this.recordInteractionHistogramOnExpandButtonClicked_(
         SafeBrowsingSetting.STANDARD);
     this.recordActionOnExpandButtonClicked_(SafeBrowsingSetting.STANDARD);
+    this.interactedWithPage_(
+        SecurityPageInteraction.EXPAND_BUTTON_STANDARD_CLICK);
   }
 
   // <if expr="is_chromeos">

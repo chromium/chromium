@@ -136,13 +136,6 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   // user logs in.
   virtual void HandleLocaleChange() = 0;
 
-  // Updates this bubble about visibility change of *ANY* tray bubble
-  // including itself.
-  // `bubble_widget` is the bubble with visibility change. Please note that it
-  // can be the current bubble as well.
-  virtual void OnAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                            bool visible);
-
   // Hides the bubble associated with |bubble_view|. Called when the widget
   // is closed.
   virtual void HideBubbleWithView(const TrayBubbleView* bubble_view) = 0;

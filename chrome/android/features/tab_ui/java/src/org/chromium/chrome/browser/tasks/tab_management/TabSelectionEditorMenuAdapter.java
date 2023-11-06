@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -97,6 +98,9 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
                     actionModel.get(TabSelectionEditorActionProperties.ICON));
         } else if (key == TabSelectionEditorActionProperties.ENABLED) {
             menuItem.setEnabled(actionModel.get(TabSelectionEditorActionProperties.ENABLED));
+        } else if (key == TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID) {
+            menuItem.setTextAppearance(
+                    actionModel.get(TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID));
         } else if (key == TabSelectionEditorActionProperties.TEXT_TINT) {
             menuItem.setTextTint(actionModel.get(TabSelectionEditorActionProperties.TEXT_TINT));
         } else if (key == TabSelectionEditorActionProperties.ICON_TINT) {
@@ -156,6 +160,9 @@ public class TabSelectionEditorMenuAdapter implements ListModelChangeProcessor.V
             } else {
                 textView.setContentDescription(null);
             }
+        } else if (propertyKey == TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID) {
+            ApiCompatibilityUtils.setTextAppearance(
+                    textView, model.get(TabSelectionEditorActionProperties.TEXT_APPEARANCE_ID));
         } else if (propertyKey == TabSelectionEditorActionProperties.ICON_TINT) {
             ColorStateList colorStateList = model.get(TabSelectionEditorActionProperties.ICON_TINT);
             if (colorStateList != null) {

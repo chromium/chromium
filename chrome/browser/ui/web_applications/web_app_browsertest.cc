@@ -1217,7 +1217,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
   ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
   ASSERT_TRUE(chrome::ExecuteCommand(browser(), IDC_INSTALL_PWA));
 
-  EXPECT_EQ(1u, provider().command_manager().GetCommandCountForTesting());
+  EXPECT_EQ(1u, provider()
+                    .command_manager()
+                    .GetCommandsInstallingForWebContentsForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowsOffsetForMultiWindowPWA) {
@@ -1674,7 +1676,6 @@ IN_PROC_BROWSER_TEST_P(WebAppBrowserTestUpdateShortcutResult, UpdateShortcut) {
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       browser()->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/false,
       base::BindOnce(test::TestAcceptDialogCallback),
       install_future.GetCallback(),
       /*use_fallback=*/false);

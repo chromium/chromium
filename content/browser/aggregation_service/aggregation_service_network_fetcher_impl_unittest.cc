@@ -40,7 +40,7 @@ const char kExampleUrl[] =
     "https://helper.test/.well-known/aggregation-service/keys.json";
 
 const aggregation_service::TestHpkeKey kExampleHpkeKey =
-    aggregation_service::GenerateKey("abcd");
+    aggregation_service::TestHpkeKey("abcd");
 const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
     R"({
           "version": "",
@@ -51,9 +51,10 @@ const std::string kExampleValidJson = base::ReplaceStringPlaceholders(
               }
           ]
        })",
-    {kExampleHpkeKey.base64_encoded_public_key},
+    {kExampleHpkeKey.GetPublicKeyBase64()},
     /*offsets=*/nullptr);
-const std::vector<PublicKey> kExamplePublicKeys = {kExampleHpkeKey.public_key};
+const std::vector<PublicKey> kExamplePublicKeys = {
+    kExampleHpkeKey.GetPublicKey()};
 
 constexpr char kKeyFetcherStatusHistogramName[] =
     "PrivacySandbox.AggregationService.KeyFetcher.Status2";

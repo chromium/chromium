@@ -4,7 +4,7 @@
 
 #include <string>
 
-#include "chrome/browser/apps/intent_helper/mac_intent_picker_helpers.h"
+#include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"

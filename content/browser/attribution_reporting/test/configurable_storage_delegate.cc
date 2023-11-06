@@ -11,12 +11,12 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
@@ -42,10 +42,6 @@ ConfigurableStorageDelegate::ConfigurableStorageDelegate()
         c.rate_limit.max_reporting_origins_per_source_reporting_site =
             std::numeric_limits<int>::max();
 
-        c.event_level_limit.navigation_source_trigger_data_cardinality =
-            std::numeric_limits<uint64_t>::max();
-        c.event_level_limit.event_source_trigger_data_cardinality =
-            std::numeric_limits<uint64_t>::max();
         c.event_level_limit.randomized_response_epsilon =
             std::numeric_limits<double>::infinity();
         c.event_level_limit.max_reports_per_destination =
@@ -122,7 +118,7 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports) const {
+    attribution_reporting::MaxEventLevelReports) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
 }
@@ -131,13 +127,14 @@ AttributionStorageDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::EventReportWindows&,
-    int max_event_level_reports,
+    attribution_reporting::MaxEventLevelReports,
     base::Time source_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {
     return base::unexpected(ExceedsChannelCapacityLimit());
   }
-  return RandomizedResponseData(randomized_response_rate_,
+  double channel_capacity = 0;  // Not used by downstream code.
+  return RandomizedResponseData(randomized_response_rate_, channel_capacity,
                                 randomized_response_);
 }
 
@@ -240,18 +237,6 @@ void ConfigurableStorageDelegate::set_exceeds_channel_capacity_limit(
     bool exceeds) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   exceeds_channel_capacity_limit_ = exceeds;
-}
-
-void ConfigurableStorageDelegate::set_trigger_data_cardinality(
-    uint64_t navigation,
-    uint64_t event) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_GT(navigation, 0u);
-  DCHECK_GT(event, 0u);
-
-  config_.event_level_limit.navigation_source_trigger_data_cardinality =
-      navigation;
-  config_.event_level_limit.event_source_trigger_data_cardinality = event;
 }
 
 void ConfigurableStorageDelegate::set_null_aggregatable_reports(

@@ -6,17 +6,21 @@
 
 #include <memory>
 #include <string>
+
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/manual_filling_controller.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_controller.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 
+using autofill::password_generation::PasswordGenerationType;
+using password_manager::metrics_util::GenerationDialogChoice;
 using ShouldShowAction = ManualFillingController::ShouldShowAction;
 
 TouchToFillPasswordGenerationController::
@@ -51,7 +55,10 @@ TouchToFillPasswordGenerationController::
 
 bool TouchToFillPasswordGenerationController::ShowTouchToFill(
     std::string account_display_name,
+    PasswordGenerationType type,
     PrefService* pref_service) {
+  password_generation_type_ = type;
+
   std::u16string generated_password =
       frame_driver_->GetPasswordGenerationHelper()->GeneratePassword(
           web_contents_->GetLastCommittedURL().DeprecatedGetOriginAsURL(),
@@ -72,7 +79,14 @@ void TouchToFillPasswordGenerationController::HideTouchToFill() {
   bridge_->Hide();
 }
 
-void TouchToFillPasswordGenerationController::OnDismissed() {
+void TouchToFillPasswordGenerationController::OnDismissed(
+    bool generated_password_accepted) {
+  GenerationDialogChoice choice = generated_password_accepted
+                                      ? GenerationDialogChoice::kAccepted
+                                      : GenerationDialogChoice::kRejected;
+  password_manager::metrics_util::LogGenerationDialogChoice(
+      choice, password_generation_type_);
+
   if (on_dismissed_callback_) {
     std::exchange(on_dismissed_callback_, base::NullCallback()).Run();
   }
@@ -86,9 +100,7 @@ void TouchToFillPasswordGenerationController::OnGeneratedPasswordAccepted(
 }
 
 void TouchToFillPasswordGenerationController::OnGeneratedPasswordRejected() {
-  manual_filling_controller_->OnAccessoryActionAvailabilityChanged(
-      ShouldShowAction(true),
-      autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC);
+  // TODO (crbug.com/1495639) Trigger Keyboard Accessory here.
 }
 
 void TouchToFillPasswordGenerationController::AddSuppressShowingImeCallback() {

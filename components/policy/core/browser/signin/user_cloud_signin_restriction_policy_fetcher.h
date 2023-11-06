@@ -51,7 +51,8 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
   void GetManagedAccountsSigninRestriction(
       signin::IdentityManager* identity_manager,
       const CoreAccountId& account_id,
-      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback);
+      base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+      const std::string& response_for_testing = std::string());
 
   void SetURLLoaderFactoryForTesting(
       network::mojom::URLLoaderFactory* factory) {

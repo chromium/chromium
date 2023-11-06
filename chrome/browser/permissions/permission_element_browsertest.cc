@@ -11,7 +11,6 @@
 #include "components/permissions/features.h"
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -61,11 +60,6 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
 
   ~PermissionElementBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PermissionElement");
-  }
-
   void SetUpOnMainThread() override {
     ASSERT_TRUE(embedded_test_server()->Start());
     ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
@@ -83,26 +77,35 @@ class PermissionElementBrowserTest : public InProcessBrowserTest {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
 
-  void WaitForResolvedEvent(const std::string& id) {
+  void WaitForResolveEvent(const std::string& id) {
     EXPECT_EQ(true, content::EvalJs(
                         web_contents(),
-                        content::JsReplace("waitForResolvedEvent($1)", id)));
+                        content::JsReplace("waitForResolveEvent($1)", id)));
   }
 
-  void WaitForDismissedEvent(const std::string& id) {
+  void WaitForDismissEvent(const std::string& id) {
     EXPECT_EQ(true, content::EvalJs(
                         web_contents(),
-                        content::JsReplace("waitForDismissedEvent($1)", id)));
+                        content::JsReplace("waitForDismissEvent($1)", id)));
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RequestInvalidPermissionType DISABLED_RequestInvalidPermissionType
+#else
+#define MAYBE_RequestInvalidPermissionType RequestInvalidPermissionType
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestInvalidPermissionType) {
+                       MAYBE_RequestInvalidPermissionType) {
   content::WebContentsConsoleObserver console_observer(web_contents());
-  ClickElementWithId(web_contents(), "invalid");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(),
+      embedded_test_server()->GetURL("/permissions/permission_element.html"),
+      1));
   ASSERT_TRUE(console_observer.Wait());
   ASSERT_EQ(1u, console_observer.messages().size());
   EXPECT_EQ(
@@ -113,8 +116,16 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
             console_observer.messages()[0].log_level);
 }
 
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  DISABLED_RequestPermissionDispatchResolveEvent
+#else
+#define MAYBE_RequestPermissionDispatchResolveEvent \
+  RequestPermissionDispatchResolveEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       RequestPermissionDispatchResolvedEvent) {
+                       MAYBE_RequestPermissionDispatchResolveEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
@@ -126,20 +137,20 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
     observer.Wait();
-    WaitForResolvedEvent(id);
+    WaitForResolveEvent(id);
   }
 }
 
-// Disabled on LInux MSAN due to flakes (crbug.com/1487954).
+// Disabled on Linux MSAN due to flakes (crbug.com/1487954).
 #if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
-#define MAYBE_RequestPermissionDispatchDismissedEvent \
-  DISABLED_RequestPermissionDispatchDismissedEvent
+#define MAYBE_RequestPermissionDispatchDismissEvent \
+  DISABLED_RequestPermissionDispatchDismissEvent
 #else
-#define MAYBE_RequestPermissionDispatchDismissedEvent \
-  RequestPermissionDispatchDismissedEvent
+#define MAYBE_RequestPermissionDispatchDismissEvent \
+  RequestPermissionDispatchDismissEvent
 #endif
 IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
-                       MAYBE_RequestPermissionDispatchDismissedEvent) {
+                       MAYBE_RequestPermissionDispatchDismissEvent) {
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
@@ -151,6 +162,6 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
     observer.Wait();
-    WaitForDismissedEvent(id);
+    WaitForDismissEvent(id);
   }
 }

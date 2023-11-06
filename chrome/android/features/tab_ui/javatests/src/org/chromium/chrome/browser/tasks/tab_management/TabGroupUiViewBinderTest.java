@@ -37,9 +37,7 @@ import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests for {@link TabGroupUiViewBinder}.
- */
+/** Tests for {@link TabGroupUiViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     private ImageView mLeftButton;
@@ -54,26 +52,38 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ViewGroup parentView = new FrameLayout(getActivity());
-            TabGroupUiToolbarView toolbarView =
-                    (TabGroupUiToolbarView) LayoutInflater.from(getActivity())
-                            .inflate(R.layout.bottom_tab_strip_toolbar, parentView, false);
-            mLeftButton = toolbarView.findViewById(R.id.toolbar_left_button);
-            mRightButton = toolbarView.findViewById(R.id.toolbar_right_button);
-            mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
-            mMainContent = toolbarView.findViewById(R.id.main_content);
-            RecyclerView recyclerView =
-                    (TabListRecyclerView) LayoutInflater.from(getActivity())
-                            .inflate(R.layout.tab_list_recycler_view_layout, parentView, false);
-            recyclerView.setLayoutManager(
-                    new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ViewGroup parentView = new FrameLayout(getActivity());
+                    TabGroupUiToolbarView toolbarView =
+                            (TabGroupUiToolbarView)
+                                    LayoutInflater.from(getActivity())
+                                            .inflate(
+                                                    R.layout.bottom_tab_strip_toolbar,
+                                                    parentView,
+                                                    false);
+                    mLeftButton = toolbarView.findViewById(R.id.toolbar_left_button);
+                    mRightButton = toolbarView.findViewById(R.id.toolbar_right_button);
+                    mContainerView = toolbarView.findViewById(R.id.toolbar_container_view);
+                    mMainContent = toolbarView.findViewById(R.id.main_content);
+                    RecyclerView recyclerView =
+                            (TabListRecyclerView)
+                                    LayoutInflater.from(getActivity())
+                                            .inflate(
+                                                    R.layout.tab_list_recycler_view_layout,
+                                                    parentView,
+                                                    false);
+                    recyclerView.setLayoutManager(
+                            new LinearLayoutManager(
+                                    getActivity(), LinearLayoutManager.HORIZONTAL, false));
 
-            mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
-            mMCP = PropertyModelChangeProcessor.create(mModel,
-                    new TabGroupUiViewBinder.ViewHolder(toolbarView, recyclerView),
-                    TabGroupUiViewBinder::bind);
-        });
+                    mModel = new PropertyModel(TabGroupUiProperties.ALL_KEYS);
+                    mMCP =
+                            PropertyModelChangeProcessor.create(
+                                    mModel,
+                                    new TabGroupUiViewBinder.ViewHolder(toolbarView, recyclerView),
+                                    TabGroupUiViewBinder::bind);
+                });
     }
 
     @Override
@@ -91,7 +101,8 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
         mLeftButton.performClick();
         assertFalse(leftButtonClicked.get());
 
-        mModel.set(TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER,
+        mModel.set(
+                TabGroupUiProperties.LEFT_BUTTON_ON_CLICK_LISTENER,
                 (View view) -> leftButtonClicked.set(true));
 
         mLeftButton.performClick();
@@ -107,7 +118,8 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
         mRightButton.performClick();
         assertFalse(rightButtonClicked.get());
 
-        mModel.set(TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER,
+        mModel.set(
+                TabGroupUiProperties.RIGHT_BUTTON_ON_CLICK_LISTENER,
                 (View view) -> rightButtonClicked.set(true));
 
         mRightButton.performClick();
@@ -149,8 +161,7 @@ public class TabGroupUiViewBinderTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testSetIncognito() {
         mModel.set(TabGroupUiProperties.IS_INCOGNITO, false);
-        @ColorInt
-        int lightColor = ((ColorDrawable) mMainContent.getBackground()).getColor();
+        @ColorInt int lightColor = ((ColorDrawable) mMainContent.getBackground()).getColor();
         ColorStateList lightRightImageTint = mRightButton.getImageTintList();
         ColorStateList lightLeftImageTint = mLeftButton.getImageTintList();
 

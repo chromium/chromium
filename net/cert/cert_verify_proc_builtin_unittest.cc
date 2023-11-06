@@ -12,18 +12,18 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_proc.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/ev_root_ca_metadata.h"
 #include "net/cert/internal/system_trust_store.h"
-#include "net/cert/pki/trust_store.h"
-#include "net/cert/pki/trust_store_collection.h"
-#include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/time_conversions.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
+#include "net/http/transport_security_state.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/test/cert_builder.h"
@@ -38,6 +38,9 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store_collection.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -113,15 +116,15 @@ int VerifyOnWorkerThread(const scoped_refptr<CertVerifyProc>& verify_proc,
 
 class MockSystemTrustStore : public SystemTrustStore {
  public:
-  TrustStore* GetTrustStore() override { return &trust_store_; }
+  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
 
-  bool UsesSystemTrustStore() const override { return false; }
-
-  bool IsKnownRoot(const ParsedCertificate* trust_anchor) const override {
+  bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
     return mock_is_known_root_;
   }
 
-  void AddTrustStore(TrustStore* store) { trust_store_.AddTrustStore(store); }
+  void AddTrustStore(bssl::TrustStore* store) {
+    trust_store_.AddTrustStore(store);
+  }
 
   void SetMockIsKnownRoot(bool is_known_root) {
     mock_is_known_root_ = is_known_root;
@@ -132,18 +135,19 @@ class MockSystemTrustStore : public SystemTrustStore {
 #endif
 
  private:
-  TrustStoreCollection trust_store_;
+  bssl::TrustStoreCollection trust_store_;
   bool mock_is_known_root_ = false;
 };
 
-class BlockingTrustStore : public TrustStore {
+class BlockingTrustStore : public bssl::TrustStore {
  public:
-  CertificateTrust GetTrust(const ParsedCertificate* cert) override {
+  bssl::CertificateTrust GetTrust(
+      const bssl::ParsedCertificate* cert) override {
     return backing_trust_store_.GetTrust(cert);
   }
 
-  void SyncGetIssuersOf(const ParsedCertificate* cert,
-                        ParsedCertificateList* issuers) override {
+  void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
+                        bssl::ParsedCertificateList* issuers) override {
     sync_get_issuer_started_event_.Signal();
     sync_get_issuer_ok_to_finish_event_.Wait();
 
@@ -152,15 +156,13 @@ class BlockingTrustStore : public TrustStore {
 
   base::WaitableEvent sync_get_issuer_started_event_;
   base::WaitableEvent sync_get_issuer_ok_to_finish_event_;
-  TrustStoreInMemory backing_trust_store_;
+  bssl::TrustStoreInMemory backing_trust_store_;
 };
 
 }  // namespace
 
 class CertVerifyProcBuiltinTest : public ::testing::Test {
  public:
-  // CertVerifyProcBuiltinTest() {}
-
   void SetUp() override {
     cert_net_fetcher_ = base::MakeRefCounted<CertNetFetcherURLRequest>();
     auto mock_system_trust_store = std::make_unique<MockSystemTrustStore>();
@@ -197,11 +199,11 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   // Creates a CRL issued and signed by |crl_issuer|, marking |revoked_serials|
   // as revoked, and registers it to be served by the test server.
   // Returns the full URL to retrieve the CRL from the test server.
-  GURL CreateAndServeCrl(
-      EmbeddedTestServer* test_server,
-      CertBuilder* crl_issuer,
-      const std::vector<uint64_t>& revoked_serials,
-      absl::optional<SignatureAlgorithm> signature_algorithm = absl::nullopt) {
+  GURL CreateAndServeCrl(EmbeddedTestServer* test_server,
+                         CertBuilder* crl_issuer,
+                         const std::vector<uint64_t>& revoked_serials,
+                         absl::optional<bssl::SignatureAlgorithm>
+                             signature_algorithm = absl::nullopt) {
     std::string crl = BuildCrl(crl_issuer->GetSubject(), crl_issuer->GetKey(),
                                revoked_serials, signature_algorithm);
     std::string crl_path = MakeRandomPath(".crl");
@@ -212,13 +214,15 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
     return test_server->GetURL(crl_path);
   }
 
-  void AddTrustStore(TrustStore* store) {
+  void AddTrustStore(bssl::TrustStore* store) {
     mock_system_trust_store_->AddTrustStore(store);
   }
 
   void SetMockIsKnownRoot(bool is_known_root) {
     mock_system_trust_store_->SetMockIsKnownRoot(is_known_root);
   }
+
+  net::URLRequestContext* context() { return context_.get(); }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -235,6 +239,42 @@ class CertVerifyProcBuiltinTest : public ::testing::Test {
   raw_ptr<MockSystemTrustStore> mock_system_trust_store_ = nullptr;
   scoped_refptr<CertNetFetcherURLRequest> cert_net_fetcher_;
 };
+
+TEST_F(CertVerifyProcBuiltinTest, ShouldBypassHSTS) {
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(test_server.InitializeAndListen());
+
+  // CRL that marks leaf as revoked.
+  leaf->SetCrlDistributionPointUrl(
+      CreateAndServeCrl(&test_server, root.get(), {leaf->GetSerialNumber()}));
+
+  test_server.StartAcceptingConnections();
+
+  {
+    scoped_refptr<X509Certificate> chain = leaf->GetX509CertificateChain();
+    ASSERT_TRUE(chain.get());
+
+    NetLogSource verify_net_log_source;
+    CertVerifyResult verify_result;
+    TestCompletionCallback verify_callback;
+    // Ensure HSTS upgrades for the domain which hosts the CRLs.
+    context()->transport_security_state()->AddHSTS(
+        test_server.base_url().host(), base::Time::Now() + base::Seconds(30),
+        /*include_subdomains=*/true);
+    ASSERT_TRUE(context()->transport_security_state()->ShouldUpgradeToSSL(
+        test_server.base_url().host()));
+    Verify(chain.get(), "www.example.com",
+           CertVerifyProc::VERIFY_REV_CHECKING_ENABLED,
+           /*additional_trust_anchors=*/{root->GetX509Certificate()},
+           &verify_result, &verify_net_log_source, verify_callback.callback());
+
+    int error = verify_callback.WaitForResult();
+    EXPECT_THAT(error, IsError(ERR_CERT_REVOKED));
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_REV_CHECKING_ENABLED);
+  }
+}
 
 TEST_F(CertVerifyProcBuiltinTest, SimpleSuccess) {
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
@@ -538,8 +578,8 @@ TEST_F(CertVerifyProcBuiltinTest, DeadlineExceededDuringSyncGetIssuers) {
   BlockingTrustStore trust_store;
   AddTrustStore(&trust_store);
 
-  auto intermediate_parsed_cert =
-      ParsedCertificate::Create(intermediate->DupCertBuffer(), {}, nullptr);
+  auto intermediate_parsed_cert = bssl::ParsedCertificate::Create(
+      intermediate->DupCertBuffer(), {}, nullptr);
   ASSERT_TRUE(intermediate_parsed_cert);
   trust_store.backing_trust_store_.AddCertificateWithUnspecifiedTrust(
       intermediate_parsed_cert);
@@ -596,8 +636,8 @@ std::string UnknownSignatureAlgorithmTLV() {
 }
 
 // Returns a TLV to use as an invalid signature algorithm when building a cert.
-// This is a SEQUENCE so that it will pass the ParseCertificate code
-// and fail inside ParseSignatureAlgorithm.
+// This is a SEQUENCE so that it will pass the bssl::ParseCertificate code
+// and fail inside bssl::ParseSignatureAlgorithm.
 // SEQUENCE {
 //   INTEGER { 42 }
 // }
@@ -757,5 +797,103 @@ TEST_F(CertVerifyProcBuiltinTest,
   // verification.
   EXPECT_THAT(error, IsOk());
 }
+
+class CertVerifyProcBuiltinIterationTest
+    : public CertVerifyProcBuiltinTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  CertVerifyProcBuiltinIterationTest() {
+    if (new_iteration_limit()) {
+      feature_list_.InitAndEnableFeature(
+          features::kNewCertPathBuilderIterationLimit);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kNewCertPathBuilderIterationLimit);
+    }
+  }
+
+  bool new_iteration_limit() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(CertVerifyProcBuiltinIterationTest, IterationLimit) {
+  // Create a chain which will require many iterations in the path builder.
+  std::vector<std::unique_ptr<CertBuilder>> builders =
+      CertBuilder::CreateSimpleChain(6);
+
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  base::Time not_after = base::Time::Now() + base::Days(1);
+  for (auto& builder : builders) {
+    builder->SetValidity(not_before, not_after);
+  }
+
+  // Generate certificates, making two versions of each intermediate.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  for (size_t i = 1; i < builders.size(); i++) {
+    intermediates.push_back(builders[i]->DupCertBuffer());
+    builders[i]->SetValidity(not_before, not_after + base::Seconds(1));
+    intermediates.push_back(builders[i]->DupCertBuffer());
+  }
+
+  // The above alone is enough to make the path builder explore many paths, but
+  // it will always return the best path it has found, so the error will be the
+  // same. Instead, arrange for all those paths to be invalid (untrusted root),
+  // and add a separate chain that is valid.
+  CertBuilder root_ok(/*orig_cert=*/builders[2]->GetCertBuffer(),
+                      /*issuer=*/nullptr);
+  CertBuilder intermediate_ok(/*orig_cert=*/builders[1]->GetCertBuffer(),
+                              /*issuer=*/&root_ok);
+  // Using the old intermediate as a template does not preserve the subject,
+  // SKID, or key.
+  intermediate_ok.SetSubjectTLV(
+      base::as_bytes(base::make_span(builders[1]->GetSubject())));
+  intermediate_ok.SetKey(bssl::UpRef(builders[1]->GetKey()));
+  intermediate_ok.SetSubjectKeyIdentifier(
+      builders[1]->GetSubjectKeyIdentifier());
+  // Make the valid intermediate older than the invalid ones, so that it is
+  // explored last.
+  intermediate_ok.SetValidity(not_before - base::Seconds(10),
+                              not_after - base::Seconds(10));
+  intermediates.push_back(intermediate_ok.DupCertBuffer());
+
+  // Verify the chain.
+  ScopedTestRoot scoped_root(root_ok.GetX509Certificate().get());
+  scoped_refptr<X509Certificate> chain = X509Certificate::CreateFromBuffer(
+      builders[0]->DupCertBuffer(), std::move(intermediates));
+  ASSERT_TRUE(chain.get());
+
+  RecordingNetLogObserver net_log_observer(NetLogCaptureMode::kDefault);
+  int flags = 0;
+  CertVerifyResult verify_result;
+  NetLogSource verify_net_log_source;
+  TestCompletionCallback callback;
+  Verify(chain.get(), "www.example.com", flags, CertificateList(),
+         &verify_result, &verify_net_log_source, callback.callback());
+  int error = callback.WaitForResult();
+
+  auto events = net_log_observer.GetEntriesForSource(verify_net_log_source);
+  auto event = base::ranges::find_if(events, [](const NetLogEntry& e) {
+    return e.type == NetLogEventType::CERT_VERIFY_PROC_PATH_BUILD_ATTEMPT &&
+           e.phase == NetLogEventPhase::END;
+  });
+  ASSERT_NE(event, events.end());
+
+  if (new_iteration_limit()) {
+    // The path builder gives up before it finishes all the invalid paths.
+    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_AUTHORITY_INVALID);
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
+    EXPECT_EQ(true, event->params.FindBool("exceeded_iteration_limit"));
+  } else {
+    // After exploring many dead ends, the path builder finds the valid path.
+    EXPECT_THAT(error, IsOk());
+    EXPECT_FALSE(event->params.Find("exceeded_iteration_limit"));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(NewLimit,
+                         CertVerifyProcBuiltinIterationTest,
+                         testing::Bool());
 
 }  // namespace net

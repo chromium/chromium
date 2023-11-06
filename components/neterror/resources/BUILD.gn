@@ -1,0 +1,51 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/bundle_js.gni")
+
+preprocess_if_expr("preprocess") {
+  out_folder = "${target_gen_dir}/preprocessed"
+  in_files = [
+    "constants.js",
+    "neterror.js",
+    "offline.js",
+    "offline-sprite-definitions.js",
+  ]
+
+  if (is_ios) {
+    in_files += [ "error_page_controller_ios.js" ]
+  }
+}
+
+# Generate a JS bundle regradless of the `optimize_webui` GN arg, as this UI
+# can't load any JS modules at runtime, since it is not a proper WebUI page
+# and therefore is not backed up by any WebUIDataSource.
+
+bundle_js("bundle_js") {
+  # Using a dummy value for`host` which is ignored anyway since the code being
+  # bundled below is not served from any host.
+  host = "_ignored_"
+  input = rebase_path("${target_gen_dir}/preprocessed", root_build_dir)
+  out_folder = "${target_gen_dir}/bundled"
+  js_module_in_files = [ "neterror.js" ]
+
+  shared_interstitials_path =
+      rebase_path("${root_gen_dir}/components/security_interstitials/core/",
+                  root_build_dir)
+
+  jstemplate_compiled_path =
+      rebase_path("//third_party/jstemplate/jstemplate_compiled.js",
+                  root_build_dir)
+
+  external_paths = [
+    "chrome://interstitials/|$shared_interstitials_path",
+    "chrome://resources/js/jstemplate_compiled.js|$jstemplate_compiled_path",
+  ]
+  deps = [
+    ":preprocess",
+    "../../security_interstitials/core/common/resources:preprocess",
+    "//ui/webui/resources/js:build_ts",
+  ]
+}

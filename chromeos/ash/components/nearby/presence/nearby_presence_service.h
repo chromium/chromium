@@ -75,31 +75,32 @@ class NearbyPresenceService {
   // inherit from the upcoming Nearby Connections Device class.
   class PresenceDevice {
    public:
-    PresenceDevice(::nearby::internal::DeviceType device_type,
+    PresenceDevice(::nearby::internal::Metadata metadata,
                    absl::optional<std::string> stable_device_id,
                    std::string endpoint_id,
-                   std::string device_name,
                    std::vector<Action> actions,
                    int rssi);
+
     PresenceDevice(const PresenceDevice&) = delete;
     PresenceDevice& operator=(const PresenceDevice&) = delete;
     ~PresenceDevice();
 
-    ::nearby::internal::DeviceType GetType() const { return device_type_; }
+    ::nearby::internal::DeviceType GetType() const {
+      return metadata_.device_type();
+    }
 
     const absl::optional<std::string> GetStableId() const {
       return stable_device_id_;
     }
     const std::string& GetEndpointId() const { return endpoint_id_; }
-    const std::string& GetName() const { return device_name_; }
+    const std::string& GetName() const { return metadata_.device_name(); }
     const std::vector<Action> GetActions() const { return actions_; }
     int GetRssi() const { return rssi_; }
 
    private:
-    ::nearby::internal::DeviceType device_type_;
+    ::nearby::internal::Metadata metadata_;
     absl::optional<std::string> stable_device_id_;
     std::string endpoint_id_;
-    std::string device_name_;
     std::vector<Action> actions_;
     int rssi_;
   };

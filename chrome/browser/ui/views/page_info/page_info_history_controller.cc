@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 
+#include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

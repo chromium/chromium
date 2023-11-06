@@ -1,136 +1,148 @@
 This is a testharness.js-based test.
 Found 132 tests; 120 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <A></A>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <INPUT type=checkbox></INPUT> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <A></A>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <INPUT type=radio></INPUT> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <A></A>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <A></A>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <A></A>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <A></A>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <A></A>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <A></A> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <A></A> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <A></A> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <A></A> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <A></A> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <A></A> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <A></A> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <A></A> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <A></A> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <A></A> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <A></A> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <A></A>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <AREA></AREA> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=radio></INPUT>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <A></A>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
-PASS When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated.
-FAIL When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated. assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
-FAIL When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
-FAIL When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test114"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test114"...])
-FAIL When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated. assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
-FAIL When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated. assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test116"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test116"...])
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <A></A>, only child should be activated.
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <AREA></AREA>, only child should be activated.
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
-PASS When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
-PASS When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated.
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test125"...] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test127"...] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <A></A>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test128_link"] length 1
-FAIL When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <AREA></AREA>, only child should be activated. assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test129_link"] length 1
-PASS When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
-PASS When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <INPUT type=checkbox></INPUT> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <INPUT type=radio></INPUT> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=submit></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=image></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><INPUT type=reset></INPUT></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=submit></BUTTON></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <FORM><BUTTON type=reset></BUTTON></FORM> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <A></A> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <AREA></AREA> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
+[PASS] When clicking child <DETAILS><SUMMARY></SUMMARY></DETAILS> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test114"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test114"...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onsubmit="activated(this); return false" class="act... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onsubmit="activated(this); return false" class="act...])
+[FAIL] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: expected property 0 to be Element node <input type="checkbox" onclick="this.checked ? activated(... but got Element node <form onreset="activated(this)" class="activates test116"... (expected array [Element node <input type="checkbox" onclick="this.checked ? activated(...] got [Element node <form onreset="activated(this)" class="activates test116"...])
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <A></A>, only child should be activated.
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <AREA></AREA>, only child should be activated.
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL> of parent <LABEL><BUTTON type=button></BUTTON></LABEL>, only child should be activated.
+[PASS] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=checkbox></INPUT>, only child should be activated.
+[PASS] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <INPUT type=radio></INPUT>, only child should be activated.
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=submit></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=image></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><INPUT type=reset></INPUT></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test125"...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=submit></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onsubmit="activated(this); return false" class="act...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <FORM><BUTTON type=reset></BUTTON></FORM>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got [Element node <form onreset="activated(this)" class="activates test127"...] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <A></A>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test128_link"] length 1
+[FAIL] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <AREA></AREA>, only child should be activated.
+  assert_array_equals: lengths differ, expected array [] length 0, got ["http://web-platform.test:8001/dom/events/Event-dispatch-single-activation-behavior.html#test129_link"] length 1
+[PASS] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <DETAILS><SUMMARY></SUMMARY></DETAILS>, only child should be activated.
+[PASS] When clicking child <LABEL><BUTTON type=button></BUTTON></LABEL> of parent <LABEL><INPUT type=checkbox></INPUT><SPAN></SPAN></LABEL>, only child should be activated.
 Harness: the test ran to completion.
 

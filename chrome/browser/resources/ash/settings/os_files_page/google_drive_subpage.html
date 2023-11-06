@@ -33,7 +33,9 @@
 <div class="hr"></div>
 
 <template is="dom-if" if="[[!driveDisabled_]]" restamp>
-  <template is="dom-if" if="[[isDriveFsBulkPinningEnabled_]]" restamp>
+  <template is="dom-if"
+      if="[[and_(bulkPinningVisible_, isDriveFsBulkPinningEnabled_)]]"
+      restamp>
     <settings-toggle-button
         id="driveBulkPinning"
         pref="{{prefs.drivefs.bulk_pinning_enabled}}"

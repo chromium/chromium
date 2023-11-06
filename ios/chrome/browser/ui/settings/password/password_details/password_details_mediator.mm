@@ -16,9 +16,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -559,9 +561,12 @@ bool ShouldDisplayCredentialAsMuted(
 // Returns YES if all of the following conditions are met:
 // * User is syncing or signed in and opted in to account storage.
 // * Password sending feature is enabled.
+// * Password sharing pref is enabled.
 - (BOOL)isUserEligibleForSendingPasswords {
   return password_manager::sync_util::GetAccountForSaving(_prefService,
                                                           _syncService) &&
+         _prefService->GetBoolean(
+             password_manager::prefs::kPasswordSharingEnabled) &&
          base::FeatureList::IsEnabled(
              password_manager::features::kSendPasswords);
 }

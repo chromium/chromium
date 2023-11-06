@@ -24,6 +24,8 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/text_link_colors.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_font_cache.h"
@@ -36,6 +38,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/v8_canvas_style.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
@@ -576,6 +579,23 @@ ColorParseResult BaseRenderingContext2D::ParseColorOrCurrentColor(
   if (parse_result == ColorParseResult::kCurrentColor) {
     color = GetCurrentColor();
   }
+
+  if (parse_result == ColorParseResult::kColorMix) {
+    const CSSValue* color_mix_value = CSSParser::ParseSingleValue(
+        CSSPropertyID::kColor, color_string,
+        StrictCSSParserContext(SecureContextMode::kInsecureContext));
+
+    if (auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext())) {
+      color = window->document()->GetTextLinkColors().ColorFromCSSValue(
+          *color_mix_value, GetCurrentColor(), color_scheme_);
+    } else {
+      TextLinkColors text_link_colors = TextLinkColors();
+      color = text_link_colors.ColorFromCSSValue(
+          *color_mix_value, GetCurrentColor(), color_scheme_);
+    }
+
+    return ColorParseResult::kColor;
+  }
   return parse_result;
 }
 
@@ -609,8 +629,9 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
       GetState().SetFillPattern(v8_style.pattern);
       break;
     case V8CanvasStyleType::kString: {
-      if (v8_style.string == GetState().UnparsedFillColor())
+      if (v8_style.string == GetState().UnparsedFillColor()) {
         return;
+      }
       Color parsed_color = Color::kTransparent;
       if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
         return;
@@ -2215,6 +2236,13 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
   if (data->IsBufferBaseDetached()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The source data has been detached.");
+    return;
+  }
+
+  if (layer_count_ != 0) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "`putImageData()` cannot be called while layers are opened.");
     return;
   }
 

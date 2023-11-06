@@ -152,9 +152,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillHasSeenIban, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterIntegerPref(
-      prefs::kAutofillLastVersionDisusedAddressesDeleted, 0,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
@@ -169,8 +166,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
 #endif
-  registry->RegisterIntegerPref(
-      prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
   registry->RegisterIntegerPref(prefs::kAutocompleteLastVersionRetentionPolicy,
                                 0);
   registry->RegisterStringPref(prefs::kAutofillUploadEncodingSeed, "");
@@ -204,6 +199,10 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kAutofillEnabledDeprecated, true);
   registry->RegisterBooleanPref(prefs::kAutofillOrphanRowsRemoved, false);
   registry->RegisterBooleanPref(prefs::kAutofillIbanEnabled, true);
+  registry->RegisterIntegerPref(
+      prefs::kAutofillLastVersionDisusedAddressesDeleted, 0);
+  registry->RegisterIntegerPref(
+      prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
@@ -218,6 +217,9 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kAutofillOrphanRowsRemoved);
   // Added 09/2023.
   pref_service->ClearPref(prefs::kAutofillIbanEnabled);
+  // Added 10/2024
+  pref_service->ClearPref(prefs::kAutofillLastVersionDisusedAddressesDeleted);
+  pref_service->ClearPref(prefs::kAutofillLastVersionDisusedCreditCardsDeleted);
 }
 
 bool IsAutocompleteEnabled(const PrefService* prefs) {

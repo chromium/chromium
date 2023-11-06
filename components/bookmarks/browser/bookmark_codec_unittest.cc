@@ -43,7 +43,7 @@ const char16_t kFolder2Title[] = u"folder2";
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data");
@@ -170,8 +170,6 @@ class BookmarkCodecTest : public testing::Test {
                                 sync_metadata_str);
     model->set_next_node_id(max_id);
     AsMutable(model->root_node())->SetMetaInfoMap(codec->model_meta_info_map());
-    AsMutable(model->root_node())
-        ->SetUnsyncedMetaInfoMap(codec->model_unsynced_meta_info_map());
 
     return result;
   }
@@ -419,34 +417,6 @@ TEST_F(BookmarkCodecTest, EncodeAndDecodeMetaInfo) {
   EXPECT_TRUE(child->GetMetaInfo("node_info", &meta_value));
   EXPECT_EQ("value2", meta_value);
   EXPECT_FALSE(child->GetMetaInfo("other_key", &meta_value));
-}
-
-TEST_F(BookmarkCodecTest, EncodeAndDecodeUnsyncedMetaInfo) {
-  // Add meta info and encode.
-  std::unique_ptr<BookmarkModel> model(CreateTestModel1());
-  model->SetNodeUnsyncedMetaInfo(model->root_node(), "model_info", "value1");
-  model->SetNodeUnsyncedMetaInfo(
-      model->bookmark_bar_node()->children().front().get(), "node_info",
-      "value2");
-  std::string checksum;
-  base::Value::Dict value =
-      EncodeHelper(model.get(), /*sync_metadata_str=*/std::string(), &checksum);
-
-  // Decode and check for meta info.
-  model = DecodeHelper(value, checksum, &checksum, false,
-                       /*sync_metadata_str=*/nullptr);
-  std::string meta_value;
-  EXPECT_TRUE(
-      model->root_node()->GetUnsyncedMetaInfo("model_info", &meta_value));
-  EXPECT_EQ("value1", meta_value);
-  EXPECT_FALSE(
-      model->root_node()->GetUnsyncedMetaInfo("other_key", &meta_value));
-  const BookmarkNode* bbn = model->bookmark_bar_node();
-  ASSERT_EQ(1u, bbn->children().size());
-  const BookmarkNode* child = bbn->children().front().get();
-  EXPECT_TRUE(child->GetUnsyncedMetaInfo("node_info", &meta_value));
-  EXPECT_EQ("value2", meta_value);
-  EXPECT_FALSE(child->GetUnsyncedMetaInfo("other_key", &meta_value));
 }
 
 // Verifies that we can still decode the old codec format after changing the

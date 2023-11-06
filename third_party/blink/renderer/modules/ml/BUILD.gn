@@ -61,6 +61,8 @@ blink_modules_sources("ml") {
     sources += [
       "webnn/ml_graph_cros.cc",
       "webnn/ml_graph_cros.h",
+      "webnn/ml_graph_tflite_converter.cc",
+      "webnn/ml_graph_tflite_converter.h",
     ]
 
     deps += [
@@ -71,10 +73,14 @@ blink_modules_sources("ml") {
 
   if (!is_chromeos) {
     sources += [
-      # MLGraphMojo is platform independent which packages the model information
-      # into a neutral struct type, it will be built and executed with hardware
+      # Platform independent sources which packages the model information
+      # into a neutral struct types, it will be built and executed with hardware
       # accelerated OS machine learning API in WebNN Service which run out of
       # renderer process.
+      "webnn/ml_context_mojo.cc",
+      "webnn/ml_context_mojo.h",
+      "webnn/ml_error_mojo.cc",
+      "webnn/ml_error_mojo.h",
       "webnn/ml_graph_mojo.cc",
       "webnn/ml_graph_mojo.h",
       "webnn/ml_graph_type_converter.cc",
@@ -98,6 +104,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":buildflags",
     "//components/ml/mojom:mojom_blink",
     "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
@@ -120,7 +127,11 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos && current_cpu == "x64") {
-    sources += [ "webnn/ml_graph_test_cros.cc" ]
+    sources += [
+      "webnn/ml_graph_test.cc",
+      "webnn/ml_graph_test_cros.cc",
+      "webnn/ml_graph_test_cros.h",
+    ]
     deps += [ "//third_party/tflite" ]
   }
 

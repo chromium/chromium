@@ -29,6 +29,7 @@
 <translation id="109942774857561566">مجھے بوریت ہو رہی ہے</translation>
 <translation id="1104084341931202936">ایکسیسبیلٹی کی ترتیبات دکھائیں</translation>
 <translation id="1104621072296271835">آپ کے آلات مل کر اور بہتر کام کرتے ہیں</translation>
+<translation id="1106446201446919638">‏1 آلہ منسلک ہو گیا۔ ہاٹ اسپاٹ استعمال کرتے وقت، Wi-Fi آف رہے گا۔</translation>
 <translation id="1111021433905331574">آپ ترتیبات میں اپنے کی بورڈ کی بیک لائٹ کا رنگ تبدیل کر سکتے ہیں &gt; <ph name="APP_TITLE" /></translation>
 <translation id="1117719261843403176">موبائل ڈیٹا کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
 <translation id="112308213915226829">شیلف کو از خود چھپائیں</translation>
@@ -115,12 +116,14 @@
 <translation id="1391102559483454063">آن</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
+<translation id="141170878022560212">بیچ کا بٹن</translation>
 <translation id="1414271762428216854"><ph name="APP_NAME" />، انسٹال کردہ ایپ</translation>
 <translation id="1414919006379339073">حالیہ ونڈو کو بند کریں</translation>
 <translation id="1415846719612499304">نیٹ ورک کی فہرست دکھائیں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="1419738280318246476">اطلاع کی کارروائی کرنے کیلئے آلے کو غیر مقفل کریں</translation>
 <translation id="1420408895951708260">نائٹ لائٹ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1426410128494586442">ہاں</translation>
+<translation id="1435537621343861112">ڈکٹیشن شروع نہیں کر سکتے۔ آپ کا مائیک آف ہے۔</translation>
 <translation id="1455242230282523554">زبان کی ترتیبات دکھائیں</translation>
 <translation id="1460620680449458626">والیوم خاموش کیا ہوا ہے۔</translation>
 <translation id="14648076227129703">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP1_NAME" />، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
@@ -191,6 +194,7 @@
 <translation id="1737078180382804488">اپنے فون کی اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
 <translation id="174102739345480129">مارکر آف ہے۔</translation>
 <translation id="1743570585616704562">تسلیم شدہ نہیں ہے</translation>
+<translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> اطلاع کو سُکیڑیں</translation>
 <translation id="1746730358044914197">ان پٹ کے طریقے آپ کے منتظم کے ذریعے کنفیگر کئے جاتے ہیں۔</translation>
 <translation id="1747336645387973286">آخری تاریخ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">آن اسکرین کی بورڈ فعال ہے</translation>
@@ -201,16 +205,13 @@
 <translation id="1757857692711134412">غروب آفتاب تک آف کریں</translation>
 <translation id="1768366657309696705">‏Period + <ph name="LAUNCHER_KEY_NAME" /> کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ انسرٹ کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + شفٹ + بیک اسپیس کو دبائیں۔</translation>
 <translation id="1770726142253415363">قطار <ph name="ROW_NUMBER" /> کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
-<translation id="1771458705381257690">اپنا آلہ سیٹ اپ کرنے اور اسے حسب ضرورت بنانے کے لیے <ph name="NAME" /> کھولیں</translation>
 <translation id="1771761307086386028">دائیں اسکرول کریں</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="1775598828170459419"><ph name="NUM_TOTAL_ITEMS" /> میں سے <ph name="NUM_SHOWN_ITEMS" /> دکھائے جا رہے ہیں</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
-<translation id="1797271123677381264">پاس ورڈ بھول گئے</translation>
 <translation id="181103072419391116">سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />، آپ کے منتظم کے زیر انتظام ہے</translation>
-<translation id="1815245884418711390">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آف ہے۔</translation>
 <translation id="1816896987747843206">اس سے کیمرے کی اجازت کے ساتھ تمام ایپس اور ویب سائٹس کے لیے کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="1823280932251546115">صورتحال کی ٹرے، وقت <ph name="TIME" />،
         <ph name="BATTERY" />
@@ -281,6 +282,7 @@
 <translation id="2086334242442703436">ایموجی منتخب کنندہ کھولیں</translation>
 <translation id="2088116547584365419">گیمز</translation>
 <translation id="209965399369889474">نیٹ ورک سے منسلک نہیں ہے</translation>
+<translation id="2107581415810719320">دوسرا بٹن <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">‏آپ کی USB-C کیبل Thunderbolt کو سپورٹ نہیں کرتی ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="2108303511227308752">‏Alt + Backspace کی بورڈ شارٹ کٹ تبدیل ہو گیا ہے۔ Delete کلید کا استعمال کرنے کیلئے <ph name="LAUNCHER_KEY_NAME" /> کلید + بیک اسپیس کو دبائیں۔</translation>
 <translation id="2126242104232412123">نیا ڈیسک</translation>
@@ -307,11 +309,9 @@
 <translation id="2258734398699965611">تجویز کردہ فائلز</translation>
 <translation id="2268130516524549846">بلوٹوتھ غیر فعال کر دیا گیا</translation>
 <translation id="2268813581635650749">سب سے سائن آؤٹ کریں</translation>
-<translation id="2269016722240250274">ایک ایپلیکیشن آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="2276987123919776440">15 منٹ</translation>
 <translation id="2277103315734023688">آگے کریں</translation>
 <translation id="2282073721614284166">ٹیب میں لنک کھولیں</translation>
-<translation id="2284237890386182187">آن، کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="2292698582925480719">ڈسپلے اسکیل</translation>
 <translation id="229397294990920565">موبائل ڈیٹا بند ہو رہا ہے...</translation>
 <translation id="2295777434187870477">مائیک آن ہے، ٹوگل کرنے سے ان پٹ خاموش ہو جائے گا۔</translation>
@@ -361,6 +361,7 @@
 <translation id="2465145153332031561">بیٹری کی صحت <ph name="BATTERY_HEALTH_PERCENTAGE" />فیصد، سائیکل کی تعداد <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">ریزولیوشن کی تصدیق کریں</translation>
 <translation id="2475982808118771221">ایک خرابی پیش آگئی</translation>
+<translation id="2478076885740497414">ایپ انسٹال کریں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2484513351006226581">کی بورڈ کا لے آؤٹ سوئچ کرنے کے لیے <ph name="KEYBOARD_SHORTCUT" /> دبائیں۔</translation>
 <translation id="2487915095798731898">شامل ہوں</translation>
@@ -504,6 +505,7 @@
 <translation id="3105917916468784889">اسکرین شاٹ لیں</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوٹوتھ)</translation>
 <translation id="3113492864356515707">گزشتہ آئٹم کو شیلف پر نمایاں کریں</translation>
+<translation id="311799651966070385">یاد دہانی بند کریں</translation>
 <translation id="3120421559657122717">آلہ بند کریں؟</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">کلاس ورک کی قسم</translation>
@@ -519,6 +521,7 @@
 <translation id="3160929076476941240">2 گھنٹے</translation>
 <translation id="3161500364292033097">ڈیسک اور ونڈوز بند کریں</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
+<translation id="3170769098533255179">‏کوئی آلات منسلک نہیں ہیں۔ ہاٹ اسپاٹ استعمال کرتے وقت، Wi-Fi آف رہے گا۔</translation>
 <translation id="3171170659304083361">اندراج کے طریقوں کی ترتیبات</translation>
 <translation id="3176221688814061633">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے بلوٹوتھ سپر ریزولوشن کو آن کریں یا اندرونی مائیکروفون استعمال کریں۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
@@ -532,6 +535,7 @@
 <translation id="3217205077783620295">والیوم آن ہے۔ ٹوگل کرنے سے آڈیو خاموش ہو جائے گی۔</translation>
 <translation id="3226991577105957773">‏‎<ph name="COUNT" />+‎ مزید</translation>
 <translation id="3227137524299004712">مائیکروفون</translation>
+<translation id="3233611303007751344">بیٹری سیور کو آف کر دیا گیا</translation>
 <translation id="324366796737464147">شور کو کم کرنا</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> ونڈو کو <ph name="ACTIVE_DESK" /> ڈیسک سے <ph name="TARGET_DESK" /> ڈیسک میں منتقل کر دیا گیا ہے</translation>
 <translation id="3253743281242075461">کلاس ورک کی قسم: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -552,12 +556,15 @@
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ سے <ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
 <translation id="3307642347673023554">لیپ ٹاپ وضح میں سوئچ کیا</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> اب بھی بعد میں سائن ان کر سکتا ہے۔</translation>
+<translation id="3317779231018057649">‏<ph name="DEVICECOUNT" /> آلات منسلک ہیں۔ ہاٹ اسپاٹ استعمال کرتے وقت، Wi-Fi آف رہے گا۔</translation>
 <translation id="3321628682574733415">والدین کا غلط کوڈ</translation>
 <translation id="332827762492701193">اطلاعات پوشیدہ ہیں</translation>
+<translation id="3333674550998107387"><ph name="NOTIFICATION_TITLE" /> اطلاع کو پھیلائيں</translation>
 <translation id="3339826665088060472">اسکرین کیپچر، اسکرین شاٹس لینے کے لیے ٹولز اور اسکرین ریکارڈنگز</translation>
 <translation id="3340978935015468852">ترتیبات</translation>
 <translation id="3341303451326249809">اسکرین شاٹ کیپچر ہو گیا</translation>
 <translation id="334252345105450327">ایک اسکرین شاٹ لیں</translation>
+<translation id="3346728094401457853"><ph name="EMAIL" /> کیلئے آلہ کا پاس ورڈ درج کریں</translation>
 <translation id="334927402682780278">کرسر سے لائن کے آخر تک ٹیکسٹ منتخب کریں</translation>
 <translation id="3349345708646875009">ٹاسک مینیجر کھولیں</translation>
 <translation id="3364721542077212959">اسٹائلس ٹولز</translation>
@@ -571,7 +578,6 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3389599499324569679">ڈکٹیشن آن کریں؟</translation>
 <translation id="3394432020929931914">، کو پھیلایا گیا</translation>
-<translation id="3400357268283240774">اضافی ترتیبات</translation>
 <translation id="3405101454990027959">مائیکروفون تک رسائی آن کریں</translation>
 <translation id="3408735331120433841">فی الحال آپ اپنی اسکرین کو کاسٹ کر رہے ہیں۔</translation>
 <translation id="3409584356742878290">ڈویلپر ٹولز انسپکٹر دکھائیں یا چھپائیں</translation>
@@ -590,6 +596,7 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
 <translation id="3445925074670675829">‏USB-C آلہ</translation>
+<translation id="3454555520521576458">سائز تبدیل کرنے لائق</translation>
 <translation id="3455468639467374593">تمثیل، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3456931972722214204"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ سے 1 آلہ منسلک ہے</translation>
 <translation id="346243998268439747">زوم کی سطح کو دوبارہ ترتیب دیں</translation>
@@ -619,7 +626,6 @@
 <translation id="3563775809269155755">ہاٹ اسپاٹ فعال کریں</translation>
 <translation id="3566240529365775567">ابھی کھولا گیا</translation>
 <translation id="3571734092741541777">ترتیب دیں</translation>
-<translation id="3572988532398145777">پینل کے کھلے ہونے کی صورت میں آپ اطلاع کو نہیں پھیلا سکتے۔ پہلے نیچے موجود پینل کو بند کریں۔</translation>
 <translation id="3573179567135747900">واپس "<ph name="FROM_LOCALE" />" میں تبدیل کریں (ری اسٹارٹ مطلوب ہے)</translation>
 <translation id="3576141592585647168">ٹائم زون تبدیل کریں</translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
@@ -632,8 +638,6 @@
 <translation id="3600061223661453002">آف کریں</translation>
 <translation id="3604801046548457007"><ph name="DESK_TITILE" /> ڈیسک تخلیق کر دی گئی ہے</translation>
 <translation id="3606978283550408104">بریل ڈسپلے منسلک ہو گیا۔</translation>
-<translation id="3609301425104788351"><ph name="MIC" />،
-        <ph name="CAMERA" /></translation>
 <translation id="3615926715408477684">موبائل ڈیٹا فعال کرنے سے بلوٹوتھ فعال ہو جائے گا</translation>
 <translation id="3616113530831147358">آڈیو</translation>
 <translation id="3616883743181209306">مینیو کو اسکرین کے اوپر دائیں کونے میں منتقل کر دیا گیا۔</translation>
@@ -683,9 +687,7 @@
 <translation id="3781910048497807059">فوکس کو گزشتہ پین پر منتقل کریں</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">مقفل کریں</translation>
-<translation id="3789841737615482174">انسٹال کریں</translation>
 <translation id="3796215473395753611">‏alt + اوپر تیر کا نشان</translation>
-<translation id="3796746699333205839">ایک ایپلیکیشن آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="3798670284305777884">اسپیکر (داخلی)</translation>
 <translation id="3799080171973636491">آپ نے پوری اسکرین کے مکبّر کیلئے کی بورڈ شارٹ کٹ دبایا ہے۔ کیا آپ اسے آن کرنا چاہتے ہیں؟</translation>
 <translation id="380165613292957338">آداب، میں کیسے مدد کر سکتا ہوں؟</translation>
@@ -702,7 +704,6 @@
 <translation id="385300504083504382">شروعات</translation>
 <translation id="3859364108019690">ایپس کی سلسلہ بندی نہیں کی جا سکتی</translation>
 <translation id="3861651314799684201">فُل اسکرین ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
-<translation id="3865912916886104060">‏کوئی آلات منسلک نہیں ہیں۔ ہاٹ اسپاٹ کا استعمال شروع کرنے کے لیے WiFi کو بند کر دیا جائے گا۔</translation>
 <translation id="3886872229787704059">آج کھولا گیا</translation>
 <translation id="3891340733213178823">‏سائن آؤٹ کرنے کیلئے Ctrl+Shift+Q کو دو بار دبائیں۔</translation>
 <translation id="3893630138897523026">‏ChromeVox (صوتی تاثرات)</translation>
@@ -711,6 +712,7 @@
 <translation id="3899995891769452915">صوتی ان پٹ</translation>
 <translation id="3900355044994618856">آپ کا سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> سے منسلک کیا جا رہا ہے</translation>
+<translation id="3906954721959377182">ٹیبلیٹ</translation>
 <translation id="3922427723338465344">{0,plural, =1{1 منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}other{# منٹ کے اندر آلہ کو گزشتہ ورژن میں تبدیل کریں}}</translation>
 <translation id="3923494859158167397">کوئی موبائل نیٹ ورک سیٹ اپ نہیں کیا گیا</translation>
 <translation id="3925540965556789199"><ph name="DATE" />، ایونٹس لوڈ ہو رہے ہیں۔</translation>
@@ -771,6 +773,8 @@
 <translation id="4146671046252289537">اگلے لفظ کے آخر میں جائیں</translation>
 <translation id="4146833061457621061">موسیقی چلائیں</translation>
 <translation id="4150201353443180367">ڈسپلے</translation>
+<translation id="4156293514828496577">‏<ph name="PERCENTAGE" />فیصد بیٹری باقی ہے left (تقریباََ <ph name="TIME_LEFT" />)۔
+کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="4165275524535002941">ہو سکتا ہے کہ کیبل ڈسپلیز کو سپورٹ نہ کرے</translation>
 <translation id="4177415338862979658">تفصیلات کے لیے کلک کریں</translation>
 <translation id="4177913004758410636">{0,plural, =1{ایک دن کے اندر آلہ کو اپ ڈیٹ کریں}other{# دن کے اندر آلہ کو اپ ڈیٹ کریں}}</translation>
@@ -787,7 +791,6 @@
 <translation id="4197790712631116042">آف</translation>
 <translation id="4201033867194214117"><ph name="FEATURE_NAME" /> دستیاب نہیں ہے۔</translation>
 <translation id="4201051445878709314">پچھلا مہینہ دکھائیں</translation>
-<translation id="4202362334312791952">‏1 آلہ منسلک ہو گیا۔ ہاٹ اسپاٹ کا استعمال شروع کرنے کے لیے WiFi کو بند کر دیا جائے گا۔</translation>
 <translation id="4209973997261364186">‏Wi-Fi آن ہے</translation>
 <translation id="4212472694152630271">‏PIN پر سوئچ کریں</translation>
 <translation id="4215497585250573029">‏VPN کی ترتیبات</translation>
@@ -815,6 +818,7 @@
 <translation id="428715201724021596">پروفائل سے منسلک کیا جا رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="4294319844246081198">صبح بخیر <ph name="GIVEN_NAME" />،</translation>
 <translation id="4296136865091727875">تمام <ph name="COUNT" /> اطلاعات صاف کریں</translation>
+<translation id="4300272766492248925">ایپ کھولیں</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> کو فولڈر<ph name="FOLDER_NAME" /> میں منتقل کر دیا گیا۔</translation>
 <translation id="4302592941791324970">دستیاب نہیں ہے</translation>
 <translation id="4303223480529385476">اسٹیٹس ایریا کو پھیلائیں</translation>
@@ -831,6 +835,7 @@
 <translation id="4364101114148522660"><ph name="DURATION" />  ریکارڈ کیا جا رہا ہے</translation>
 <translation id="4371348193907997655">کاسٹ کی ترتیبات</translation>
 <translation id="4375482231364171368">ایڈریس بار میں تلاش کریں</translation>
+<translation id="4378154925671717803">فون</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /> فیصد</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4379531060876907730">یہ آپ کے اسٹائلس ٹولز ہیں</translation>
@@ -880,6 +885,7 @@
 <translation id="4566144812051858745">کسی بھی تجویز میں دلچسپی نہیں</translation>
 <translation id="4569753163207712681">اپنے فون کی حالیہ تصاویر، میڈیا اور ایپس دیکھیں</translation>
 <translation id="4573176682887762361">"[لفظ / فقرہ] ٹائپ کریں"</translation>
+<translation id="4577188182049003486">‏ہاٹ اسپاٹ آن ہونے کے ساتھ، Wi-Fi آف ہے</translation>
 <translation id="4577274620589681794">وقت ختم ہو گیا · <ph name="LABEL" /></translation>
 <translation id="4577990005084629481">پیش مناظر دکھائیں</translation>
 <translation id="4578906031062871102">ترتیبات کا مینیو کھولا گیا</translation>
@@ -887,6 +893,7 @@
 <translation id="4585337515783392668">کسی نامعلوم موصول کنندہ پر کاسٹ کرنا بند کریں</translation>
 <translation id="4596144739579517758">گہری تھیم آف ہے</translation>
 <translation id="4611292653554630842">لاگ ان کریں</translation>
+<translation id="462160925400706389"><ph name="NAME" /> منسلک ہے</translation>
 <translation id="4623167406982293031">اکاؤنٹ کی توثیق کریں</translation>
 <translation id="4628757576491864469">آلات</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />، ستارہ کی درجہ بندی <ph name="RATING_SCORE" /></translation>
@@ -901,6 +908,7 @@
 <translation id="4659419629803378708">‏ChromeVox فعال ہے</translation>
 <translation id="4666911709726371538">مزید ایپس</translation>
 <translation id="4667099493359681081"><ph name="FILENAME" /> ڈاؤن لوڈ ہو رہی ہے</translation>
+<translation id="4672539464599646374">بیٹری سیور کو آن کیا گیا</translation>
 <translation id="468293128311738995">آپ کے فون سے ایپس</translation>
 <translation id="4690510401873698237">شیلف نچلے حصے میں ہے</translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
@@ -969,7 +977,6 @@
 <translation id="4936329710968938986">ہر کوئی، آف</translation>
 <translation id="4937170330762390348">ڈکٹیشن کے ساتھ، آپ اپنی آواز کا استعمال کرتے ہوئے ٹائپ کر سکتے ہیں۔ جب آپ ٹیکسٹ فیلڈ پر ہوں تو ڈکٹیشن کلید دبائیں یا اسکرین کے نیچے مائیکروفون آئیکن کو منتخب کریں۔ آپ کی ڈکٹیشن زبان <ph name="LANGUAGE" /> پر سیٹ ہے۔ اسپیچ فائلز ڈاؤن لوڈ کی جائیں گی تاکہ آپ ڈکٹیشن آف لائن استعمال کر سکیں۔ آپ ترتیبات &gt; ایکسیسبیلٹی میں کسی بھی وقت ڈکٹیشن کی زبان تبدیل کر سکتے ہیں۔</translation>
 <translation id="4938176435186993759">سبھی تجاویز چھپائیں</translation>
-<translation id="4943007472417128747">‏WiFi استعمال کرنے کے لیے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ ہاٹ اسپاٹ استعمال کرنے کے لیے، WiFi آف کریں۔</translation>
 <translation id="4945196315133970626">اطلاعات آف کریں</translation>
 <translation id="4946376291507881335">کیپچر کریں</translation>
 <translation id="495046168593986294">اوپر اسکرول کریں</translation>
@@ -990,7 +997,6 @@
 <translation id="5009463889040999939">پروفائل کا نام تبدیل ہو رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="5016558321564993266">مارکر ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">تلاش کے زمرے</translation>
-<translation id="5029356738310729434">آلے کے مائیکروفون تک رسائی آن ہے</translation>
 <translation id="5030659775136592441">بُک مارک مینیجر دکھائیں</translation>
 <translation id="5030687792513154421">وقت ختم ہو گیا</translation>
 <translation id="5033299697334913360">فُل اسکرین کیپچر کرنے کیلئے کہیں بھی کلک کریں</translation>
@@ -1061,6 +1067,8 @@
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5303319262469238330"><ph name="PERCENTAGE" /> فیصد بیٹری باقی ہے۔
+کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5313326810920013265">بلوٹوتھ کی ترتیبات</translation>
 <translation id="5314219114274263156">اسکرین ریکارڈنگ کی گئی</translation>
@@ -1094,7 +1102,6 @@
 <translation id="5426063383988017631">ترتیبات کا مینیو بند کیا گیا</translation>
 <translation id="5428899915242071344">منتخب کرنا شروع کریں</translation>
 <translation id="5429993543155113935">پوشیدگی ونڈوز فی الحال تعاون یافتہ نہیں ہیں</translation>
-<translation id="5430931332414098647">فوری ٹیدرنگ</translation>
 <translation id="5431318178759467895">رنگ</translation>
 <translation id="5433020815079095860">آڈیو ان پٹ</translation>
 <translation id="544691375626129091">سبھی دستیاب صارفین کو پہلے ہی اس سیشن میں شامل کر دیا گیا ہے۔</translation>
@@ -1123,6 +1130,7 @@
 <translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
 <translation id="5551456515017410630">کیلنڈر کھولیں/بند کریں</translation>
 <translation id="5551974246223970793">صفحہ تلاش کرتے وقت، تلاش کے لیے اگلی مماثلت پر جائیں</translation>
+<translation id="5555639311269196631">ہاٹ اسپاٹ آف کریں</translation>
 <translation id="5558091555391176027">قریبی آلات کے ساتھ اشتراک کی اعلی مرئیت کو ٹوگل کریں</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5570122939431135380">نئی پوشیدگی ونڈو میں نیا ٹیب کھولیں</translation>
@@ -1168,7 +1176,6 @@
 <translation id="5707775774148071965">آپ کا آلہ آپ کی کیبل سے زیادہ ڈیٹا کی شرح کو سپورٹ کرتا ہے۔ آلے کی کارکردگی محدود ہو سکتی ہے۔</translation>
 <translation id="5710450975648804523">'ڈسٹرب نہ کریں' آن ہے</translation>
 <translation id="571295407079589142">موبائل ڈیٹا آف ہے</translation>
-<translation id="5716891621595980681">‏<ph name="DEVICECOUNT" /> آلات منسلک ہیں۔ ہاٹ اسپاٹ کا استعمال شروع کرنے کے لیے WiFi کو بند کر دیا جائے گا۔</translation>
 <translation id="5727460725221669831">‏اگر آپ اپنا پاس ورڈ بھول گئے ہیں یا حال ہی میں اپنے Google اکاؤنٹ کا پاس ورڈ تبدیل کر دیا ہے تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
 <translation id="573413375004481890">یہ آلہ آپ کے تمام ڈسپلیز کو سپورٹ نہیں کر سکتا، لہذا ایک کو غیر منسلک کر دیا گیا ہے</translation>
 <translation id="5740328398383587084">قریبی آلات کے ساتھ اشتراک</translation>
@@ -1186,6 +1193,7 @@
 <translation id="5774295353725270860">فائلز ایپ کھولیں</translation>
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5779721926447984944">فائلز کو پن کیا گیا</translation>
+<translation id="5785221443435874078">یہ تجویز ہٹائیں</translation>
 <translation id="5788127256798019331">‏Play فائلز</translation>
 <translation id="5788535737706478207">آخری بند کردہ ٹیب یا ونڈو پھر سے کھولیں</translation>
 <translation id="5790085346892983794">کامیاب</translation>
@@ -1206,8 +1214,6 @@
 <translation id="5876535466645959772">منتخب کردہ فہرست خالی ہے، نیا ٹاسک شامل کرنے کے لیے نیچے نیویگیٹ کریں۔</translation>
 <translation id="5876666360658629066">والد/والدہ کا کوڈ درج کریں</translation>
 <translation id="5881540930187678962">بعد میں فون ہب سیٹ اپ کریں</translation>
-<translation id="5881663018261910378">آف ہے</translation>
-<translation id="5883017113634523865">‏تمام دستیاب خصوصیات دیکھنے کے لیے Google Play سے <ph name="NAME" /> ایپ انسٹال کریں</translation>
 <translation id="5887954372087850114">ونڈو <ph name="WINDOW_TITLE" /> کو <ph name="DESK_TITLE" /> کو تفویض کیا گیا اور دیگر تمام ڈیسک سے غیر تفویض کیا گیا</translation>
 <translation id="588817334757907802">‏Chrome براؤزر میں فائل کھولیں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
@@ -1218,7 +1224,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">آن</translation>
 <translation id="5920710855273935292">مائیک خاموش کیا ہوا ہے۔</translation>
-<translation id="5924855612669061715">ہاٹ اسپاٹ آن ہے</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> آن ہے۔</translation>
 <translation id="5947494881799873997">واپس لوٹیں</translation>
 <translation id="595202126637698455">کارکردگی کی ٹریسنگ فعال کر دی گئی</translation>
@@ -1234,6 +1239,7 @@
 <translation id="598407983968395253">تمثیل استعمال کریں</translation>
 <translation id="598882571027504733">‏اپ ڈیٹ حاصل کرنے کیلئے، منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
 <translation id="6000279412553873020">کلیدیں، بٹنز، اور مزید بہت کچھ</translation>
+<translation id="6002122790816966947">آپ کے آلات</translation>
 <translation id="6012623610530968780">صفحہ <ph name="TOTAL_PAGE_NUM" /> کا <ph name="SELECTED_PAGE" /></translation>
 <translation id="601304062528754300">اگلے آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="6015573907265691211">بطور مکمل نشان زد کریں</translation>
@@ -1266,7 +1272,6 @@
 <translation id="6095008505822982596">اسپیچ کی شرح</translation>
 <translation id="6095425951508823973"><ph name="PROVIDER" /> کے ساتھ کنکشن شامل کریں</translation>
 <translation id="6099678161144790572">گزشتہ مہینے میں ترمیم کی</translation>
-<translation id="6099793635444444289">ڈکٹیشن شروع نہیں کیا جا سکتا کیونکہ مائیکروفون خاموش ہے</translation>
 <translation id="6103838137565245112">سسٹم</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ ہو گئی</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />۔ <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -1302,6 +1307,7 @@
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="62380141479352646">بیٹری کم ہے۔ بیٹری سیور کو آن کیا گیا۔</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
 <translation id="6254629735336163724">افقی پر مقفل ہے</translation>
 <translation id="6259254695169772643">منتخب کرنے کے لئے اپنا اسٹائلس استعمال کریں</translation>
@@ -1311,6 +1317,7 @@
 <translation id="6284232397434400372">ریزولیوشن تبدیل ہو گئی</translation>
 <translation id="6288235558961782912">والد/والدہ کی اجازت سے <ph name="USER_EMAIL_ADDRESS" /> بعد میں دوبارہ شامل کیا جا سکتا ہے۔</translation>
 <translation id="6291221004442998378">چارج نہیں ہو رہا ہے</translation>
+<translation id="6298183524022479114">ایپ میں اس آلہ کو حسب ضرورت بنائیں</translation>
 <translation id="6309219492973062892">شیلف آئیکنز ‏1-8 پر کلک کریں یا تھپتھپائیں</translation>
 <translation id="6315170314923504164">آواز</translation>
 <translation id="6324916366299863871">شارٹ کٹ میں ترمیم کریں</translation>
@@ -1334,7 +1341,6 @@
 <translation id="643147933154517414">سب ہو گیا</translation>
 <translation id="6431865393913628856">اسکرین ریکارڈر</translation>
 <translation id="643593192654616063">کل <ph name="STORAGE_TOTAL_SIZE" /> میں سے <ph name="STORAGE_IN_USE_SIZE" /> اسٹوریج زیر استعمال ہے</translation>
-<translation id="6442259747294754014">آلے کے مائیکروفون تک رسائی آف ہے</translation>
 <translation id="6445835306623867477"><ph name="RECEIVER_NAME" /> پر <ph name="ROUTE_TITLE" /></translation>
 <translation id="6445915701151710649">CPU</translation>
 <translation id="6446225358675593408">مواد کے لحاظ سے اپنی تصاویر تلاش کریں</translation>
@@ -1415,6 +1421,7 @@
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">کیمرہ اور مائیکروفون استعمال میں ہیں</translation>
 <translation id="6739144137573853180">ترتیبات پر جائیں</translation>
+<translation id="6747985245839783873">بیٹری <ph name="PERCENTAGE" /> فیصد ہے۔ بیٹری سیور آن ہے۔</translation>
 <translation id="6751052314767925245">آپ کے منتظم کے ذریعے نافذ کیا گیا</translation>
 <translation id="6751826523481687655">کارکردگی کا پتا لگانا آن ہے</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ڈیسک ہٹا دیے گئے اور <ph name="RECEIVE_DESK" /> ڈیسک کے ساتھ ضم ہو گئے</translation>
@@ -1431,7 +1438,6 @@
 <translation id="679368458793552943">میگنیفائر کے آن ہونے پر زوم ان کریں</translation>
 <translation id="6794287755901682422">اس آئٹم میں درج ذیل ہے: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />۔</translation>
 <translation id="6801878137098616817">حال ہی میں ترمیم کیا گیا</translation>
-<translation id="6802196538183166658">وقت منتخب کر کے فوری ترتیبات کھولیں</translation>
 <translation id="6802687695197837794">اس سے کیمرے اور مائیکروفون کی اجازتوں کے ساتھ <ph name="APP1_NAME" />، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="6803622936009808957">ڈسپلیز کی عکاسی نہیں کر سکا کیونکہ کوئی تعاون یافتہ ریزولیوشنز نہیں ملے۔اس کی بجائے توسیع کردہ ڈیسک ٹاپ داخل کیا گیا۔</translation>
 <translation id="6809556495807506746">کنٹرولز دستیاب نہیں ہیں</translation>
@@ -1459,7 +1465,6 @@
 <translation id="6912841030378044227">ایڈریس بار پر فوکس کریں</translation>
 <translation id="6912901278692845878">مختصر ٹؤر</translation>
 <translation id="6919251195245069855">آپ کے اسمارٹ کارڈ کی شناخت نہیں کی جا سکی۔ پھر آزمائيں۔</translation>
-<translation id="6920245099716267363">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ منسلک ہے، 1 آلہ منسلک ہے۔</translation>
 <translation id="692135145298539227">حذف کریں</translation>
 <translation id="6929081673585394903">کنٹرولز دکھائیں</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
@@ -1514,6 +1519,7 @@
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144942256906679589">بیٹری کا اسٹیٹس</translation>
+<translation id="7145639536026937076">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔ بیٹری سیور آن ہے۔</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
         <ph name="NETWORK" /></translation>
@@ -1522,17 +1528,15 @@
 <translation id="7188494361780961876">مینیو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
+<translation id="7219573373513695352">کوئی آلات منسلک نہیں</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> میموری | کل <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7244725679040769470"><ph name="PERCENTAGE" />% بیٹری باقی ہے۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="7246071203293827765">‏<ph name="UPDATE_TEXT" />۔ اپ ڈیٹ کو لاگو کرنے کے لیے Chromebook کو ری سٹارٹ کرنے کی ضرورت ہے۔ اس میں 1 منٹ تک لگ سکتا ہے۔</translation>
 <translation id="7256634071279256947">پیچھے کا مائیکروفون</translation>
 <translation id="7258828758145722155">کل ترمیم کیا گیا</translation>
 <translation id="726276584504105859">اسپلٹ اسکرین استعمال کرنے کیلئے یہاں گھسیٹیں</translation>
 <translation id="7262906531272962081">یاد دہانی تخلیق کریں</translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
-<translation id="7297440678881127227">‏<ph name="START_TIME" /> سے
-        <ph name="END_TIME" />،
-        <ph name="TIME_ZONE" />،
-        <ph name="EVENT_SUMMARY" />۔ Google کیلنڈر میں مزید تفصیلات کے لیے منتخب کریں۔</translation>
 <translation id="7302889331339392448">لائیو کیپشن آف ہے۔</translation>
 <translation id="7303365578352795231">ایک دوسرے آلہ پر جواب دیا جا رہا ہے۔</translation>
 <translation id="7305884605064981971">EDGE</translation>
@@ -1556,7 +1560,6 @@
 <translation id="7378203170292176219">ریکارڈ کرنے کے لئے کسی علاقے کو منتخب کرنے کیلئے گھسیٹیں</translation>
 <translation id="7378594059915113390">میڈیا کنٹرولز</translation>
 <translation id="7378889811480108604">بیٹری سیور وضع آف ہے</translation>
-<translation id="7382640522316003298">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، <ph name="DEVICECOUNT" /> آلات منسلک ہیں۔</translation>
 <translation id="7382680553121047388">آن کریں</translation>
 <translation id="7384028040782072252">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی دائیں طرف کلک کریں</translation>
 <translation id="7386767620098596324">نیٹ ورک کنکشن ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
@@ -1571,7 +1574,6 @@
 <translation id="742594950370306541">کیمرا زیر استعمال ہے۔</translation>
 <translation id="742608627846767349">صبح بخیر،</translation>
 <translation id="743058460480092004">کیمرا اور مائیکروفون زیر استعمال ہیں۔</translation>
-<translation id="7452560014878697800">ایک ایپلیکیشن آپ کا کیمرا استعمال کر رہی ہے</translation>
 <translation id="7453330308669753048">تلاش کی سرگزشت کا نتیجہ ہٹا دیا گیا</translation>
 <translation id="7459485586006128091">داخلی خرابی کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔ چند منٹوں میں دوبارہ منسلک ہونے کی کوشش کریں۔</translation>
 <translation id="7461924472993315131">پن کریں</translation>
@@ -1581,6 +1583,7 @@
 <translation id="7489261257412536105">فُل اسکرین میں داخل ہوں یا اس سے باہر نکلیں</translation>
 <translation id="7490360161041035804">‏آپ اہم فائز کو پن کر سکتے ہیں، بشمول Google Drive فائلز۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
+<translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
 <translation id="7508690557411636492">پچھلے مہینے میں کھولا گیا</translation>
 <translation id="7509246181739783082">اپنی شناخت کی توثیق کریں</translation>
 <translation id="7512509370370076552">‏دائیں کلک کے شارٹ کٹ کو <ph name="LAUNCHER_KEY_NAME" /> کلید + کلک سے alt + کلک پر اپ ڈیٹ کیا جاتا ہے</translation>
@@ -1727,7 +1730,6 @@
 <translation id="8036504271468642248">پچھلا جملہ</translation>
 <translation id="8042893070933512245">ایکسیسبیلٹی ترتیبات کا مینیو کھولیں</translation>
 <translation id="8044457332620420407">کی بورڈ عقبی لائٹ آف ہے</translation>
-<translation id="8048077032188362328">آپ کے منتظم نے ہاٹ اسپاٹ کو آف کر دیا ہے۔</translation>
 <translation id="8048123526339889627">بلوٹوتھ کی ترتیبات</translation>
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> کے نام والی تمثیل پہلے سے موجود ہے</translation>
 <translation id="8052898407431791827">کلپ بورڈ پر کاپی ہو گیا</translation>
@@ -1748,7 +1750,6 @@
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8131994907636310308">ترتیب دینے والے ٹوسٹ کو بند کریں</translation>
 <translation id="8132793192354020517"><ph name="NAME" /> سے منسلک ہو گیا</translation>
-<translation id="8135163608236671037">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے۔</translation>
 <translation id="8138705869659070104">آلہ سیٹ اپ کرنے کے بعد فعال کریں</translation>
 <translation id="813913629614996137">آغاز کیا جا رہا ہے…</translation>
 <translation id="8142441511840089262">دو بار کلک کریں</translation>
@@ -1916,6 +1917,7 @@
 <translation id="8878886163241303700">اسکرین کو پھیلایا جا رہا ہے</translation>
 <translation id="888982883502837004">آپ کے آلے کے لیے فرم ویئر اپ ڈیٹس دستیاب ہیں۔ جائزہ لینے اور اپ ڈیٹ کرنے کے لیے کلک کریں۔</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> کو مستقل طور پر حذف کر دیا جائے گا</translation>
+<translation id="889790758758811533"><ph name="PERCENTAGE" />% بیٹری باقی ہے (تقریباََ <ph name="TIME_LEFT" />)۔ اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="88986195241502842">صفحہ نیچے</translation>
 <translation id="8905919797434099235">(کوئی عنوان نہیں)</translation>
 <translation id="890616557918890486">ماخذ تبدیل کریں</translation>

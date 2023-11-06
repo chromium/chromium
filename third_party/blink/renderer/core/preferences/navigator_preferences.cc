@@ -25,7 +25,7 @@ PreferenceManager* NavigatorPreferences::preferences(Navigator& navigator) {
 }
 
 PreferenceManager* NavigatorPreferences::preferences() {
-  return preference_manager_;
+  return preference_manager_.Get();
 }
 
 void NavigatorPreferences::Trace(Visitor* visitor) const {

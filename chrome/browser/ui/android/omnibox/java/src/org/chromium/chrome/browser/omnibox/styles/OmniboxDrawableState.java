@@ -19,10 +19,13 @@ import androidx.annotation.VisibleForTesting;
 public class OmniboxDrawableState {
     /** Embedded drawable object. */
     public final Drawable drawable;
+
     /** Whether supplied drawable can be tinted */
     public final boolean allowTint;
+
     /** Whether drawable should be rounded. */
     public final boolean useRoundedCorners;
+
     /** Whether drawable should be displayed as large. */
     public final boolean isLarge;
 
@@ -33,8 +36,11 @@ public class OmniboxDrawableState {
      * @return newly created OmniboxDrawableState
      */
     public static OmniboxDrawableState forColor(@ColorInt int color) {
-        return new OmniboxDrawableState(new ColorDrawable(color), /*useRoundedCorners=*/true,
-                /*isLarge=*/true, /*allowTint=*/false);
+        return new OmniboxDrawableState(
+                new ColorDrawable(color),
+                /* useRoundedCorners= */ true,
+                /* isLarge= */ true,
+                /* allowTint= */ false);
     }
 
     /**
@@ -47,8 +53,11 @@ public class OmniboxDrawableState {
      */
     public static OmniboxDrawableState forSmallIcon(
             @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
-        return new OmniboxDrawableState(OmniboxResourceProvider.getDrawable(context, resourceId),
-                /*useRoundedCorners=*/false, /*isLarge=*/false, allowTint);
+        return new OmniboxDrawableState(
+                OmniboxResourceProvider.getDrawable(context, resourceId),
+                /* useRoundedCorners= */ false,
+                /* isLarge= */ false,
+                allowTint);
     }
 
     /**
@@ -61,8 +70,11 @@ public class OmniboxDrawableState {
      */
     public static OmniboxDrawableState forLargeIcon(
             @NonNull Context context, @DrawableRes int resourceId, boolean allowTint) {
-        return new OmniboxDrawableState(OmniboxResourceProvider.getDrawable(context, resourceId),
-                /*useRoundedCorners=*/false, /*isLarge=*/true, allowTint);
+        return new OmniboxDrawableState(
+                OmniboxResourceProvider.getDrawable(context, resourceId),
+                /* useRoundedCorners= */ false,
+                /* isLarge= */ true,
+                allowTint);
     }
 
     /**
@@ -74,8 +86,11 @@ public class OmniboxDrawableState {
      */
     public static OmniboxDrawableState forFavIcon(
             @NonNull Context context, @NonNull Bitmap bitmap) {
-        return new OmniboxDrawableState(new BitmapDrawable(context.getResources(), bitmap),
-                /*useRoundedCorners=*/true, /*isLarge=*/false, /*allowTint=*/false);
+        return new OmniboxDrawableState(
+                new BitmapDrawable(context.getResources(), bitmap),
+                /* useRoundedCorners= */ true,
+                /* isLarge= */ false,
+                /* allowTint= */ false);
     }
 
     /**
@@ -86,8 +101,11 @@ public class OmniboxDrawableState {
      * @return newly created OmniboxDrawableState
      */
     public static OmniboxDrawableState forImage(@NonNull Context context, @NonNull Bitmap bitmap) {
-        return new OmniboxDrawableState(new BitmapDrawable(context.getResources(), bitmap),
-                /*useRoundedCorners=*/true, /*isLarge=*/true, /*allowTint=*/false);
+        return new OmniboxDrawableState(
+                new BitmapDrawable(context.getResources(), bitmap),
+                /* useRoundedCorners= */ true,
+                /* isLarge= */ true,
+                /* allowTint= */ false);
     }
 
     /**
@@ -106,4 +124,4 @@ public class OmniboxDrawableState {
         this.isLarge = isLarge;
         this.allowTint = allowTint;
     }
-};
+}

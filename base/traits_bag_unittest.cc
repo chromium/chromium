@@ -180,28 +180,25 @@ TEST(TraitsBagTest, ValidTraitInheritance) {
 
 TEST(TraitsBagTest, Filtering) {
   using Predicate = Exclude<ExampleTrait, EnumTraitA>;
-  static_assert(
-      std::is_same<ExampleTrait2,
-                   decltype(Predicate::Filter(ExampleTrait2{}))>::value,
-      "ExampleTrait2 should not be filtered");
+  static_assert(std::is_same_v<ExampleTrait2,
+                               decltype(Predicate::Filter(ExampleTrait2{}))>,
+                "ExampleTrait2 should not be filtered");
 
   static_assert(
-      std::is_same<EmptyTrait,
-                   decltype(Predicate::Filter(ExampleTrait{}))>::value,
+      std::is_same_v<EmptyTrait, decltype(Predicate::Filter(ExampleTrait{}))>,
       "ExampleTrait should be filtered");
 
-  static_assert(std::is_same<EmptyTrait,
-                             decltype(Predicate::Filter(EnumTraitA::A))>::value,
-                "EnumTraitA should be filtered");
+  static_assert(
+      std::is_same_v<EmptyTrait, decltype(Predicate::Filter(EnumTraitA::A))>,
+      "EnumTraitA should be filtered");
 
   static_assert(
-      std::is_same<EnumTraitB,
-                   decltype(Predicate::Filter(EnumTraitB::TWO))>::value,
+      std::is_same_v<EnumTraitB, decltype(Predicate::Filter(EnumTraitB::TWO))>,
       "EnumTraitB should not be filtered");
 
-  static_assert(std::is_same<EmptyTrait,
-                             decltype(Predicate::Filter(EmptyTrait{}))>::value,
-                "EmptyTrait should not be filtered");
+  static_assert(
+      std::is_same_v<EmptyTrait, decltype(Predicate::Filter(EmptyTrait{}))>,
+      "EmptyTrait should not be filtered");
 }
 
 TEST(TraitsBagTest, FilteredTestTraits) {

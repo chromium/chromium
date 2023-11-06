@@ -214,16 +214,23 @@ bool {{proxy_name}}::{{method.name}}(
   const bool kIsSync = true;
   const bool kAllowInterrupt =
       {% if method.allow_interrupt %}true{% else %}false{% endif %};
+{%-   if method.supports_urgent %}
+  const bool is_urgent = mojo::UrgentMessageScope::IsInUrgentScope();
+{%    else %}
+  const bool is_urgent = false;
+  DCHECK(!mojo::UrgentMessageScope::IsInUrgentScope());
+{%-   endif %}
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();
   auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt
+      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
 {%-     for param in method.parameters -%}
       , std::move(param_{{param.name}})
 {%-     endfor %});
 {%-   else %}  {#- if method|method_supports_lazy_serialization #}
   {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                         "kExpectsResponse", "kFlags")}}
+                                          "is_urgent", "kExpectsResponse",
+                                          "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "param_%s", params_struct, params_description,
       "kFlags", "message")}}
@@ -271,16 +278,23 @@ void {{proxy_name}}::{{method.name}}(
 {%- endif %}
   const bool kIsSync = false;
   const bool kAllowInterrupt = true;
+{%-   if method.supports_urgent %}
+  const bool is_urgent = mojo::UrgentMessageScope::IsInUrgentScope();
+{%    else %}
+  const bool is_urgent = false;
+  DCHECK(!mojo::UrgentMessageScope::IsInUrgentScope());
+{%-   endif %}
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = receiver_->PrefersSerializedMessages();
   auto message = {{message_typename}}::Build(
-      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt
+      kSerialize, kExpectsResponse, kIsSync, kAllowInterrupt, is_urgent
 {%-     for param in method.parameters -%}
       , std::move(in_{{param.name}})
 {%-     endfor %});
 {%-   else %}
   {{interface_macros.build_message_flags(False, "kIsSync", "kAllowInterrupt",
-                                         "kExpectsResponse", "kFlags")}}
+                                         "is_urgent", "kExpectsResponse",
+                                         "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "in_%s", params_struct, params_description,
       "kFlags", "message")}}
@@ -405,7 +419,7 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
     {{interface_macros.declare_params("in_", method.response_parameters)}}) {
 #if BUILDFLAG(MOJO_TRACE_ENABLED)
 {%-     set event_name = "Send reply %s::%s::%s"
-		% (namespace_as_string, class_name, method.name) %}
+               % (namespace_as_string, class_name, method.name) %}
   {{interface_macros.trace_event(prefix="in_",
                                  method_parameters=method.response_parameters,
                                  method_name=event_name,
@@ -415,13 +429,13 @@ void {{class_name}}_{{method.name}}_ProxyToResponder::Run(
 {%-   if method|method_supports_lazy_serialization %}
   const bool kSerialize = responder_->PrefersSerializedMessages();
   auto message = {{response_message_typename}}::Build(kSerialize, is_sync_,
-      true
+      true, false
 {%-     for param in method.response_parameters -%}
       , std::move(in_{{param.name}})
 {%-     endfor %});
 {%-   else %}
   {{interface_macros.build_message_flags(True, "is_sync_", "true", "false",
-                                         "kFlags")}}
+                                         "false", "kFlags")}}
   {{interface_macros.build_serialized_message(
       message_name, method, "in_%s", response_params_struct,
       response_params_description, "kFlags", "message")}}

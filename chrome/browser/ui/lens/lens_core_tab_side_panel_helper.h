@@ -33,10 +33,6 @@ gfx::Size GetSidePanelInitialContentSizeUpperBound(
 // search engine.
 bool IsSidePanelEnabledForLens(content::WebContents* web_contents);
 
-// Returns if the v2 unified side panel is enabled when Google is the default
-// search engine for lens region search.
-bool IsSidePanelEnabledForLensRegionSearch(content::WebContents* web_contents);
-
 // Returns if the v2 unified side panel is enabled when Google is NOT the
 // default search engine. The third party search engines needs to opt-in to the
 // side panel experience so this checks those flags.

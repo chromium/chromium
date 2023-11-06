@@ -137,7 +137,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
 
         mPriceTrackingAnnotations =
                 (ChromeSwitchPreference) findPreference(PREF_PRICE_TRACKING_ANNOTATIONS);
-        if (!PriceTrackingFeatures.allowUsersToDisablePriceAnnotations()) {
+        if (!PriceTrackingFeatures.allowUsersToDisablePriceAnnotations(getProfile())) {
             removePreference(getPreferenceScreen(), mPriceTrackingAnnotations);
             mPriceTrackingAnnotations = null;
         } else {
@@ -251,7 +251,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         }
         if (mPriceTrackingAnnotations != null) {
             mPriceTrackingAnnotations.setChecked(
-                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled(getProfile()));
         }
         if (mUsageStatsReporting != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q

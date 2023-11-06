@@ -6,8 +6,8 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"

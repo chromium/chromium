@@ -28,6 +28,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -225,10 +226,12 @@ Buffer::Texture::Texture(
                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                          gpu::SHARED_IMAGE_USAGE_GLES2;
 
-  mailbox_ = sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888, size,
-                                    color_space, kTopLeft_GrSurfaceOrigin,
-                                    kPremul_SkAlphaType, usage, "ExoTexture",
-                                    gpu::kNullSurfaceHandle);
+  auto client_shared_image = sii->CreateSharedImage(
+      viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
+      gpu::kNullSurfaceHandle);
+  CHECK(client_shared_image);
+  mailbox_ = client_shared_image->mailbox();
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   sync_token_out = sii->GenUnverifiedSyncToken();
@@ -266,10 +269,12 @@ Buffer::Texture::Texture(
 
   if (media::IsMultiPlaneFormatForHardwareVideoEnabled()) {
     auto si_format = GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
-    mailbox_ = sii->CreateSharedImage(si_format, gpu_memory_buffer_->GetSize(),
-                                      color_space, kTopLeft_GrSurfaceOrigin,
-                                      kPremul_SkAlphaType, usage, "ExoTexture",
-                                      gpu_memory_buffer_->CloneHandle());
+    auto client_shared_image = sii->CreateSharedImage(
+        si_format, gpu_memory_buffer_->GetSize(), color_space,
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "ExoTexture",
+        gpu_memory_buffer_->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox_ = client_shared_image->mailbox();
   } else {
     mailbox_ = sii->CreateSharedImage(
         gpu_memory_buffer_, gpu_memory_buffer_manager,

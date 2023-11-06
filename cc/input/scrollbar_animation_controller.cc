@@ -32,10 +32,11 @@ ScrollbarAnimationController::CreateScrollbarAnimationControllerAuraOverlay(
     base::TimeDelta fade_delay,
     base::TimeDelta fade_duration,
     base::TimeDelta thinning_duration,
-    float initial_opacity) {
+    float initial_opacity,
+    float idle_thickness_scale) {
   return base::WrapUnique(new ScrollbarAnimationController(
       scroll_element_id, client, fade_delay, fade_duration, thinning_duration,
-      initial_opacity));
+      initial_opacity, idle_thickness_scale));
 }
 
 ScrollbarAnimationController::ScrollbarAnimationController(
@@ -63,7 +64,8 @@ ScrollbarAnimationController::ScrollbarAnimationController(
     base::TimeDelta fade_delay,
     base::TimeDelta fade_duration,
     base::TimeDelta thinning_duration,
-    float initial_opacity)
+    float initial_opacity,
+    float idle_thickness_scale)
     : client_(client),
       fade_delay_(fade_delay),
       fade_duration_(fade_duration),
@@ -78,10 +80,10 @@ ScrollbarAnimationController::ScrollbarAnimationController(
       tickmarks_showing_(false) {
   vertical_controller_ = SingleScrollbarAnimationControllerThinning::Create(
       scroll_element_id, ScrollbarOrientation::kVertical, client,
-      thinning_duration);
+      thinning_duration, idle_thickness_scale);
   horizontal_controller_ = SingleScrollbarAnimationControllerThinning::Create(
       scroll_element_id, ScrollbarOrientation::kHorizontal, client,
-      thinning_duration);
+      thinning_duration, idle_thickness_scale);
 }
 
 ScrollbarAnimationController::~ScrollbarAnimationController() = default;
@@ -119,6 +121,12 @@ void ScrollbarAnimationController::StopAnimation() {
 
 void ScrollbarAnimationController::PostDelayedAnimation(
     AnimationChange animation_change) {
+  // If fade duration is zero we are in a test environment and should not
+  // animate.
+  if (fade_duration_.is_zero()) {
+    return;
+  }
+
   animation_change_ = animation_change;
   delayed_scrollbar_animation_.Cancel();
   delayed_scrollbar_animation_.Reset(
@@ -202,20 +210,24 @@ void ScrollbarAnimationController::UpdateScrollbarState() {
   } else {
     PostDelayedAnimation(AnimationChange::kFadeOut);
   }
-
-  if (need_thinning_animation_) {
-    vertical_controller_->UpdateThumbThicknessScale();
-    horizontal_controller_->UpdateThumbThicknessScale();
-  }
 }
 
 void ScrollbarAnimationController::WillUpdateScroll() {
-  if (show_scrollbars_on_scroll_gesture_)
+  if (show_scrollbars_on_scroll_gesture_) {
     UpdateScrollbarState();
+    if (need_thinning_animation_) {
+      vertical_controller_->DidRequestShow();
+      horizontal_controller_->DidRequestShow();
+    }
+  }
 }
 
 void ScrollbarAnimationController::DidRequestShow() {
   UpdateScrollbarState();
+  if (need_thinning_animation_) {
+    vertical_controller_->DidRequestShow();
+    horizontal_controller_->DidRequestShow();
+  }
 }
 
 void ScrollbarAnimationController::UpdateTickmarksVisibility(bool show) {

@@ -117,13 +117,13 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   virtual bool HasActiveScreenReader() const;
 
   // Indicates on focus changed if autofill/autocomplete is available or
-  // unavailable, so state can be announced by screen readers.
-  virtual void OnAutofillAvailabilityEvent(const mojom::AutofillState state);
+  // unavailable, so `suggestion_availability` can be announced by screen
+  // readers.
+  virtual void OnAutofillAvailabilityEvent(
+      mojom::AutofillSuggestionAvailability suggestion_availability);
 
   // Set the data list value associated with the current field.
-  void SetCurrentDataListValues(
-      const std::vector<std::u16string>& data_list_values,
-      const std::vector<std::u16string>& data_list_labels);
+  void SetCurrentDataListValues(std::vector<SelectOption> datalist);
 
   // Inform the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
@@ -140,7 +140,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
-                           FillCreditCardFormImpl);
+                           FillCreditCardForm);
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
@@ -166,11 +166,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   // Returns the last Autofill triggering field. Derived from the `form` and
   // `field` parameters of `OnQuery(). Returns nullptr if called before
   // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
-  AutofillField* GetQueriedAutofillField() const;
-
-  // Fills the form field with the given plus address.
-  // Called when a plus address is created.
-  void OnPlusAddressCreated(const std::string& plus_address);
+  const AutofillField* GetQueriedAutofillField() const;
 
   // Fills the form with the Autofill data corresponding to `backend_id`.
   // If `is_preview` is true then this is just a preview to show the user what
@@ -229,8 +225,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
   bool should_show_cards_from_account_option_ = false;
 
   // The current data list values.
-  std::vector<std::u16string> data_list_values_;
-  std::vector<std::u16string> data_list_labels_;
+  std::vector<SelectOption> datalist_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

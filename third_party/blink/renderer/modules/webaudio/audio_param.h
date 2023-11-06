@@ -79,7 +79,7 @@ class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
   // `Handler()` always returns a valid object.
   AudioParamHandler& Handler() const { return *handler_; }
   // `Context()` always returns a valid object.
-  BaseAudioContext* Context() const { return context_; }
+  BaseAudioContext* Context() const { return context_.Get(); }
 
   AudioParamHandler::AudioParamType GetParamType() const {
     return Handler().GetParamType();

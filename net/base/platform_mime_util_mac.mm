@@ -57,18 +57,18 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     }
     base::apple::ScopedCFTypeRef<CFStringRef> uti(
         UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension,
-                                              ext_ref,
+                                              ext_ref.get(),
                                               /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
     base::apple::ScopedCFTypeRef<CFStringRef> mime_ref(
-        UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType));
+        UTTypeCopyPreferredTagWithClass(uti.get(), kUTTagClassMIMEType));
     if (!mime_ref) {
       return false;
     }
 
-    *result = base::SysCFStringRefToUTF8(mime_ref);
+    *result = base::SysCFStringRefToUTF8(mime_ref.get());
     return true;
   }
 #else
@@ -103,18 +103,20 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
       return false;
     }
     base::apple::ScopedCFTypeRef<CFStringRef> uti(
-        UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType, mime_ref,
+        UTTypeCreatePreferredIdentifierForTag(kUTTagClassMIMEType,
+                                              mime_ref.get(),
                                               /*inConformingToUTI=*/nullptr));
     if (!uti) {
       return false;
     }
     base::apple::ScopedCFTypeRef<CFStringRef> ext_ref(
-        UTTypeCopyPreferredTagWithClass(uti, kUTTagClassFilenameExtension));
+        UTTypeCopyPreferredTagWithClass(uti.get(),
+                                        kUTTagClassFilenameExtension));
     if (!ext_ref) {
       return false;
     }
 
-    *ext = base::SysCFStringRefToUTF8(ext_ref);
+    *ext = base::SysCFStringRefToUTF8(ext_ref.get());
     return true;
   }
 
@@ -171,20 +173,21 @@ void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
     if (mime_ref) {
       bool extensions_found = false;
       base::apple::ScopedCFTypeRef<CFArrayRef> types(
-          UTTypeCreateAllIdentifiersForTag(kUTTagClassMIMEType, mime_ref,
+          UTTypeCreateAllIdentifiersForTag(kUTTagClassMIMEType, mime_ref.get(),
                                            nullptr));
       if (types) {
-        for (CFIndex i = 0; i < CFArrayGetCount(types); i++) {
+        for (CFIndex i = 0; i < CFArrayGetCount(types.get()); i++) {
           base::apple::ScopedCFTypeRef<CFArrayRef> extensions_list(
-              UTTypeCopyAllTagsWithClass(base::apple::CFCast<CFStringRef>(
-                                             CFArrayGetValueAtIndex(types, i)),
-                                         kUTTagClassFilenameExtension));
+              UTTypeCopyAllTagsWithClass(
+                  base::apple::CFCast<CFStringRef>(
+                      CFArrayGetValueAtIndex(types.get(), i)),
+                  kUTTagClassFilenameExtension));
           if (!extensions_list) {
             continue;
           }
           extensions_found = true;
           for (NSString* extension in base::apple::CFToNSPtrCast(
-                   extensions_list)) {
+                   extensions_list.get())) {
             extensions->insert(base::SysNSStringToUTF8(extension));
           }
         }

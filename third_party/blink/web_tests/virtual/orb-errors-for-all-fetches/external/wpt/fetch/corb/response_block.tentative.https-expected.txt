@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS ORB: Expect error response from <script> fetch.
-PASS ORB: Expect error response from fetch().
-Harness: the test ran to completion.
-

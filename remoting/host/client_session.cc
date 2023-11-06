@@ -90,9 +90,9 @@ ClientSession::ClientSession(
     : event_handler_(event_handler),
       desktop_environment_factory_(desktop_environment_factory),
       desktop_environment_options_(desktop_environment_options),
-      input_tracker_(&host_input_filter_),
       remote_input_filter_(&input_tracker_),
-      mouse_clamping_filter_(&remote_input_filter_),
+      fractional_input_filter_(&remote_input_filter_),
+      mouse_clamping_filter_(&fractional_input_filter_),
       observing_input_filter_(&mouse_clamping_filter_),
       desktop_and_cursor_composer_notifier_(&observing_input_filter_, this),
       disable_input_filter_(&desktop_and_cursor_composer_notifier_),
@@ -556,7 +556,7 @@ void ClientSession::OnConnectionAuthenticated() {
 
   // Connect the host input stubs.
   connection_->set_input_stub(&disable_input_filter_);
-  host_input_filter_.set_input_stub(input_injector_.get());
+  input_tracker_.set_input_stub(input_injector_.get());
 
   if (desktop_environment_options_.clipboard_size().has_value()) {
     int max_size = desktop_environment_options_.clipboard_size().value();
@@ -719,8 +719,16 @@ void ClientSession::OnConnectionClosed(protocol::ErrorCode error) {
     event_handler_->OnSessionAuthenticationFailed(this);
   }
 
-  // Ensure that any pressed keys or buttons are released.
-  input_tracker_.ReleaseAll();
+  // ReleaseAll() requires an InputInjector, which might not be present if a
+  // connection wasn't established.
+  if (input_injector_) {
+    // Ensure that any pressed keys or buttons are released.
+    input_tracker_.ReleaseAll();
+
+    // Avoid dangling raw_ptr in `input_tracker_` after deleting
+    // `input_injector_` below.
+    input_tracker_.set_input_stub(nullptr);
+  }
 
   // Stop components access the client, audio or video stubs, which are no
   // longer valid once ConnectionToClient calls OnConnectionClosed().
@@ -1164,6 +1172,7 @@ void ClientSession::OnDesktopDisplayChanged(
   }
 
   // We need to update the input filters whenever the displays change.
+  fractional_input_filter_.set_video_layout(*displays);
   DisplaySize display_size =
       DisplaySize::FromPixels(size.width(), size.height(), default_x_dpi_);
   SetMouseClampingFilter(display_size);

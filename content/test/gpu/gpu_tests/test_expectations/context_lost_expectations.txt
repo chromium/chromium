@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -197,8 +197,6 @@ crbug.com/1418987 [ linux amd-0x7340 angle-vulkan ] GpuNormalTermination_Origina
 
 crbug.com/1419583 [ linux amd-0x7340 angle-vulkan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
 
-# Flaky fails with entire window being black
-crbug.com/1490570 [ linux amd-0x7340 angle-vulkan passthrough ] ContextLost_WebGLContextLostFromSelectElement [ Failure ]
 
 crbug.com/1419558 [ angle-swiftshader clang-coverage fuchsia fuchsia-board-qemu-x64 google-0xc0de ] ContextLost_WebGLContextLostFromQuantity [ Failure ]
 

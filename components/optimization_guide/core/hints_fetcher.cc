@@ -64,6 +64,8 @@ std::string GetStringNameForRequestContext(
       return "NewTabPage";
     case proto::RequestContext::CONTEXT_PAGE_INSIGHTS_HUB:
       return "PageInsightsHub";
+    case proto::RequestContext::CONTEXT_NON_PERSONALIZED_PAGE_INSIGHTS_HUB:
+      return "NonPersonalizedPageInsightsHub";
   }
   NOTREACHED();
   return std::string();
@@ -85,10 +87,12 @@ HintsFetcher::HintsFetcher(
     const GURL& optimization_guide_service_url,
     PrefService* pref_service,
     OptimizationGuideLogger* optimization_guide_logger)
-    : optimization_guide_service_url_(net::AppendOrReplaceQueryParameter(
-          optimization_guide_service_url,
-          "key",
-          features::GetOptimizationGuideServiceAPIKey())),
+    : optimization_guide_service_url_(
+          net::AppendOrReplaceQueryParameter(optimization_guide_service_url,
+                                             "key",
+                                             absl::nullopt)),
+      optimization_guide_service_api_key_(
+          features::GetOptimizationGuideServiceAPIKey()),
       pref_service_(pref_service),
       time_clock_(base::DefaultClock::GetInstance()),
       optimization_guide_logger_(optimization_guide_logger) {
@@ -279,18 +283,23 @@ bool HintsFetcher::FetchOptimizationGuideServiceHints(
         })");
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  if (!access_token.empty()) {
-    PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
-  }
-
   resource_request->url = optimization_guide_service_url_;
   resource_request->method = "POST";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  // Fill in the appropriate authentication header based on presence of the auth
+  // token.
+  if (access_token.empty()) {
+    PopulateApiKeyRequestHeader(resource_request.get(),
+                                optimization_guide_service_api_key_);
+  } else {
+    PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
+  }
 
   active_url_loader_ = variations::CreateSimpleURLLoaderWithVariationsHeader(
       std::move(resource_request),
-      // This is always InIncognito::kNo as the OptimizationGuideKeyedService is
-      // not enabled on incognito sessions and is rechecked before each fetch.
+      // This is always InIncognito::kNo as the OptimizationGuideKeyedService
+      // is not enabled on incognito sessions and is rechecked before each
+      // fetch.
       variations::InIncognito::kNo, variations::SignedIn::kNo,
       traffic_annotation);
 

@@ -189,7 +189,8 @@ bool NativeProcessLauncher::LaunchNativeProcess(
     const base::CommandLine& command_line,
     base::Process* process,
     base::File* read_file,
-    base::File* write_file) {
+    base::File* write_file,
+    bool native_hosts_executables_launch_directly) {
   // Timeout for the IO pipes.
   const DWORD kTimeoutMs = 5000;
 
@@ -238,9 +239,8 @@ bool NativeProcessLauncher::LaunchNativeProcess(
   options.start_hidden = true;
 
   bool use_direct_launch =
-      base::FeatureList::IsEnabled(
-          extensions_features::kLaunchWindowsNativeHostsDirectly) &&
-      command_line.GetProgram().MatchesFinalExtension(L".exe");
+      command_line.GetProgram().MatchesFinalExtension(L".exe") &&
+      native_hosts_executables_launch_directly;
 
   base::Process launched_process;
   if (use_direct_launch) {

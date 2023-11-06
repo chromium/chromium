@@ -30,6 +30,7 @@
 #include "content/public/common/referrer.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/origin.h"
@@ -369,7 +370,7 @@ bool PrerenderHost::StartPrerendering() {
     // We may eventually return false for this code path to make things simple.
     // TODO(https://crbug.com/1394486): Monitor reports and decide if we
     // continue to have the `is_ready_for_activation_` check in
-    // AreInitialPrerenderNavigationParamsCompatibleWithNavigation().
+    // CheckInitialPrerenderNavigationParamsCompatibleWithNavigation().
     net::Error net_error = created_navigation_handle->GetNetErrorCode();
     base::debug::Alias(&net_error);
     base::debug::DumpWithoutCrashing();
@@ -495,12 +496,11 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   std::unique_ptr<StoredPage> page =
       frame_tree_->root()->render_manager()->TakePrerenderedPage();
 
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
+  NavigationEntryRestoreContextImpl context;
   std::unique_ptr<NavigationEntryImpl> nav_entry =
       GetNavigationController()
           .GetEntryWithUniqueID(page->render_frame_host()->nav_entry_id())
-          ->CloneWithoutSharing(context.get());
+          ->CloneWithoutSharing(&context);
 
   navigation_request.SetPrerenderActivationNavigationState(
       std::move(nav_entry), prior_replication_state);
@@ -512,39 +512,7 @@ std::unique_ptr<StoredPage> PrerenderHost::Activate(
   // RenderFrameHost.
   CHECK(!page->render_frame_host()->GetParentOrOuterDocumentOrEmbedder());
 
-  // TODO(crbug.com/1470312): Remove the following block (retaining the call to
-  // SetFrameTreeNode) once the issue is resolved.
-  {
-    UrlInfo url_info = navigation_request.GetUrlInfo();
-    std::string url_info_str =
-        "urlOrigin=[" +
-        url_info.url.DeprecatedGetOriginAsURL().possibly_invalid_spec() + "]";
-    if (url_info.is_sandboxed) {
-      url_info_str += " sandboxed";
-    }
-    if (url_info.is_coop_isolation_requested) {
-      url_info_str += " coop";
-    }
-    if (url_info.origin_isolation_request !=
-        UrlInfo::OriginIsolationRequest::kDefault) {
-      url_info_str += " oir=[" +
-                      base::NumberToString(url_info.origin_isolation_request) +
-                      "]";
-    }
-    if (url_info.origin) {
-      url_info_str += " origin=[" +
-                      url_info.origin.value().GetURL().possibly_invalid_spec() +
-                      "]";
-    }
-    SCOPED_CRASH_KEY_STRING256("Bug1470312", "url_info", url_info_str);
-    SCOPED_CRASH_KEY_BOOL(
-        "Bug1470312", "page_has_opener",
-        page->render_frame_host()->frame_tree_node()->opener() != nullptr);
-    SCOPED_CRASH_KEY_BOOL("Bug1470312", "target_has_opener",
-                          target_frame_tree.root()->opener() != nullptr);
-    page->render_frame_host()->SetFrameTreeNode(*(target_frame_tree.root()));
-  }
-
+  page->render_frame_host()->SetFrameTreeNode(*(target_frame_tree.root()));
   page->render_frame_host()->SetRenderFrameHostOwner(target_frame_tree.root());
 
   // Copy frame name into the replication state of the primary main frame to
@@ -651,7 +619,8 @@ bool PrerenderHost::IsFramePolicyCompatibleWithPrimaryFrameTree() {
   return true;
 }
 
-bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
+std::unique_ptr<PrerenderMismatchedHeaders>
+PrerenderHost::CheckInitialPrerenderNavigationParamsCompatibleWithNavigation(
     NavigationRequest& navigation_request) {
   // TODO(crbug.com/1181763): compare the rest of the navigation parameters. We
   // should introduce compile-time parameter checks as well, to ensure how new
@@ -670,11 +639,37 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   // defence-in-depth measure.
   CHECK(navigation_request.IsInPrimaryMainFrame());
 
+  // TODO(miinak): Remove this dummy data in the next cl.
+  // (https://chromium-review.googlesource.com/c/chromium/src/+/4908890)
+  std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers =
+      std::make_unique<PrerenderMismatchedHeaders>("invalid", "invalid",
+                                                   "invalid");
+
   // Check `common_params_` and `begin_params_` here as these can be nullptr
   // if LoadURLWithParams failed without running PrerenderNavigationThrottle.
   if (!common_params_ || !begin_params_) {
-    return false;
+    return mismatched_headers;
   }
+
+  net::HttpRequestHeaders prerender_headers;
+  net::HttpRequestHeaders potential_activation_headers;
+
+  prerender_headers.AddHeadersFromString(begin_params_->headers);
+  potential_activation_headers.AddHeadersFromString(
+      navigation_request.begin_params().headers);
+
+  net::HttpRequestHeaders::Iterator prerender_iterator(prerender_headers);
+
+  absl::optional<std::string> maybe_activation_value = absl::nullopt;
+  std::string activation_value;
+  if (potential_activation_headers.GetHeader(prerender_iterator.name(),
+                                             &activation_value)) {
+    maybe_activation_value = activation_value;
+  }
+
+  mismatched_headers = std::make_unique<PrerenderMismatchedHeaders>(
+      prerender_iterator.name(), prerender_iterator.value(),
+      maybe_activation_value);
 
   // Compare BeginNavigationParams.
   ActivationNavigationParamsMatch result =
@@ -683,7 +678,7 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
                                                    embedder_histogram_suffix());
-    return false;
+    return mismatched_headers;
   }
 
   // Compare CommonNavigationParams.
@@ -692,13 +687,13 @@ bool PrerenderHost::AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
   if (result != ActivationNavigationParamsMatch::kOk) {
     RecordPrerenderActivationNavigationParamsMatch(result, trigger_type(),
                                                    embedder_histogram_suffix());
-    return false;
+    return mismatched_headers;
   }
 
   RecordPrerenderActivationNavigationParamsMatch(
       ActivationNavigationParamsMatch::kOk, trigger_type(),
       embedder_histogram_suffix());
-  return true;
+  return nullptr;
 }
 
 PrerenderHost::ActivationNavigationParamsMatch

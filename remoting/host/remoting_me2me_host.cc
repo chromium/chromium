@@ -50,6 +50,7 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/cpu_utils.h"
 #include "remoting/base/host_settings.h"
+#include "remoting/base/is_google_email.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
@@ -219,10 +220,6 @@ const char kHostOfflineReasonPolicyReadError[] = "POLICY_READ_ERROR";
 const char kHostOfflineReasonPolicyChangeRequiresRestart[] =
     "POLICY_CHANGE_REQUIRES_RESTART";
 const char kHostOfflineReasonZombieStateDetected[] = "ZOMBIE_STATE_DETECTED";
-
-// The default email domain for Googlers. Used to determine whether the host's
-// email address is Google-internal or not.
-constexpr char kGooglerEmailDomain[] = "@google.com";
 
 // File to write webrtc trace events to. If not specified, webrtc trace events
 // will not be enabled.
@@ -1159,20 +1156,6 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
     return false;
   }
 
-  const std::string* host_secret_hash =
-      config.FindString(kHostSecretHashConfigPath);
-  if (!host_secret_hash) {
-    LOG(ERROR) << "Host config is missing a required path: `"
-               << kHostSecretHashConfigPath << "`";
-    return false;
-  }
-
-  if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
-    LOG(ERROR) << "Host config has an invalid value for path: `"
-               << kHostSecretHashConfigPath << "`";
-    return false;
-  }
-
   // Retrieve the service account used for signaling and backend requests.
   const std::string* service_account_email =
       config.FindString(kServiceAccountConfigPath);
@@ -1203,8 +1186,24 @@ bool HostProcess::ApplyConfig(const base::Value::Dict& config) {
   host_owner_ = *host_owner;
 
   // Check if the host owner's email is Google-internal.
-  is_googler_ = base::EndsWith(host_owner_, kGooglerEmailDomain,
-                               base::CompareCase::INSENSITIVE_ASCII);
+  is_googler_ = IsGoogleEmail(host_owner_);
+
+  const std::string* host_secret_hash =
+      config.FindString(kHostSecretHashConfigPath);
+  if (host_secret_hash) {
+    if (!ParsePinHashFromConfig(*host_secret_hash, host_id_, &pin_hash_)) {
+      LOG(ERROR) << "Host config has an invalid value for path: `"
+                 << kHostSecretHashConfigPath << "`";
+      return false;
+    }
+  } else if (is_googler_) {
+    HOST_LOG << "No value store for: " << kHostSecretHashConfigPath << ". PIN "
+             << "authentication is disabled.";
+  } else {
+    LOG(ERROR) << "Host config is missing a required path: `"
+               << kHostSecretHashConfigPath << "`";
+    return false;
+  }
 
   return true;
 }

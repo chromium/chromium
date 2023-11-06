@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 #define CHROME_BROWSER_ASH_GUEST_OS_VM_SK_FORWARDING_NATIVE_MESSAGE_HOST_H_
 
+// This file has been duplicated for lacros in
+// //chrome/browser/lacros/guest_os/vm_sk_forwarding_native_message_host.h and
+// should eventually be removed.
+
 #include <memory>
 #include <string>
 

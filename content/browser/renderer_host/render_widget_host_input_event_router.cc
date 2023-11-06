@@ -1435,9 +1435,13 @@ bool RenderWidgetHostInputEventRouter::IsViewInMap(
     const RenderWidgetHostViewBase* view) const {
   if (!view)
     return false;
-  DCHECK(!is_registered(view->GetFrameSinkId()) ||
-         owner_map_.find(view->GetFrameSinkId())->second.get() == view);
-  return is_registered(view->GetFrameSinkId());
+
+  auto it = owner_map_.find(view->GetFrameSinkId());
+  if (it == owner_map_.end()) {
+    return false;
+  }
+
+  return it->second.get() == view;
 }
 
 bool RenderWidgetHostInputEventRouter::ViewMapIsEmpty() const {

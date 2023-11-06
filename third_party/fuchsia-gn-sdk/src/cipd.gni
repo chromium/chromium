@@ -126,7 +126,8 @@ template("fuchsia_cipd_package") {
   }
 
   action(target_name) {
-    script = "${fuchsia_sdk}/build/prepare_cipd_package_definition.py"
+    script =
+        "//third_party/fuchsia-gn-sdk/src/prepare_cipd_package_definition.py"
     depfile = "$target_gen_dir/$target_name.d"
     _definition_path = "${_package_definition_dir}/${_package_definition_name}"
     outputs = [ _definition_path ]

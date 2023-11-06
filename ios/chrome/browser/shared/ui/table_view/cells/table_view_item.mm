@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 #import "base/check.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 
 @implementation TableViewItem
 

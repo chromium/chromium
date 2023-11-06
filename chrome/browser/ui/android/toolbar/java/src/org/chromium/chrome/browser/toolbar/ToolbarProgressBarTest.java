@@ -37,13 +37,10 @@ import org.chromium.ui.base.TestActivity;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests related to the ToolbarProgressBar.
- */
+/** Tests related to the ToolbarProgressBar. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ToolbarProgressBarTest {
-    @Mock
-    ProgressBarObserver mMockProgressBarObserver;
+    @Mock ProgressBarObserver mMockProgressBarObserver;
     private ToolbarProgressBar mProgressBar;
     private ShadowLooper mShadowLooper;
     private ActivityScenario<TestActivity> mActivityScenario;
@@ -54,32 +51,46 @@ public class ToolbarProgressBarTest {
 
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
-        mActivityScenario = ActivityScenario.launch(TestActivity.class).onActivity(activity -> {
-            activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivityScenario =
+                ActivityScenario.launch(TestActivity.class)
+                        .onActivity(
+                                activity -> {
+                                    activity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-            ViewGroup view = new FrameLayout(activity);
-            view.setVisibility(View.VISIBLE);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            activity.setContentView(view, params);
+                                    ViewGroup view = new FrameLayout(activity);
+                                    view.setVisibility(View.VISIBLE);
+                                    FrameLayout.LayoutParams params =
+                                            new FrameLayout.LayoutParams(
+                                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                                    ViewGroup.LayoutParams.MATCH_PARENT);
+                                    activity.setContentView(view, params);
 
-            Resources res = activity.getResources();
-            int heightPx = res.getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
+                                    Resources res = activity.getResources();
+                                    int heightPx =
+                                            res.getDimensionPixelSize(
+                                                    R.dimen.toolbar_progress_bar_height);
 
-            View anchor = new View(activity);
-            view.addView(anchor,
-                    new FrameLayout.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, heightPx * 2));
+                                    View anchor = new View(activity);
+                                    view.addView(
+                                            anchor,
+                                            new FrameLayout.LayoutParams(
+                                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                                    heightPx * 2));
 
-            mProgressBar = new ToolbarProgressBar(activity, heightPx, anchor, false);
-            final @ColorInt int toolbarColor =
-                    SemanticColorUtils.getToolbarBackgroundPrimary(activity);
-            mProgressBar.setThemeColor(toolbarColor, false);
-            mProgressBar.setProgressBarObserver(mMockProgressBarObserver);
+                                    mProgressBar =
+                                            new ToolbarProgressBar(
+                                                    activity, heightPx, anchor, false);
+                                    final @ColorInt int toolbarColor =
+                                            SemanticColorUtils.getToolbarBackgroundPrimary(
+                                                    activity);
+                                    mProgressBar.setThemeColor(toolbarColor, false);
+                                    mProgressBar.setProgressBarObserver(mMockProgressBarObserver);
 
-            view.addView(mProgressBar,
-                    new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx));
-        });
+                                    view.addView(
+                                            mProgressBar,
+                                            new FrameLayout.LayoutParams(
+                                                    ViewGroup.LayoutParams.MATCH_PARENT, heightPx));
+                                });
     }
 
     @After
@@ -89,6 +100,7 @@ public class ToolbarProgressBarTest {
 
     /**
      * Get the current progress from the UI thread.
+     *
      * @return The current progress displayed by the progress bar.
      */
     private float getProgress() {
@@ -97,15 +109,14 @@ public class ToolbarProgressBarTest {
 
     /**
      * Get the current progress bar visibility from the UI thread.
+     *
      * @return The current progress displayed by the progress bar.
      */
     private boolean isProgressBarVisible() {
         return mProgressBar.getVisibility() == View.VISIBLE;
     }
 
-    /**
-     * Test that the progress bar indeterminate animation completely traverses the screen.
-     */
+    /** Test that the progress bar indeterminate animation completely traverses the screen. */
     @Test
     @Feature({"Android-Progress-Bar"})
     @SmallTest
@@ -149,9 +160,7 @@ public class ToolbarProgressBarTest {
         assertFalse("Progress bar should not be visible.", isProgressBarVisible());
     }
 
-    /**
-     * Test that the progress bar completely traverses the screen without animation.
-     */
+    /** Test that the progress bar completely traverses the screen without animation. */
     @Test
     @Feature({"Android-Progress-Bar"})
     @SmallTest
@@ -186,9 +195,7 @@ public class ToolbarProgressBarTest {
         verify(mMockProgressBarObserver, times(2)).onVisibilityChanged();
     }
 
-    /**
-     * Test that the progress bar ends immediately if #finish(...) is called with delay = false.
-     */
+    /** Test that the progress bar ends immediately if #finish(...) is called with delay = false. */
     @Test
     @Feature({"Android-Progress-Bar"})
     @SmallTest

@@ -14,6 +14,7 @@ import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
+import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/quick_start_entry_point.js';
 
 import {assert} from '//resources/ash/common/assert.js';
@@ -21,19 +22,37 @@ import {NetworkList} from '//resources/ash/common/network/network_list_types.js'
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeDialogHostBehavior} from '../../components/behaviors/oobe_dialog_host_behavior.js';
 import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.js';
 import {NetworkSelectLogin} from '../../components/network_select_login.js';
 
 
 /**
+ * UI mode for the screen.
+ * @enum {string}
+ */
+export const NetworkScreenStates = {
+  DEFAULT: 'default',
+  // This state is only used for quick start flow, but might be extended to
+  // the regular OOBE flow as well.
+  QUICK_START_CONNECTING: 'quick-start-connecting',
+};
+
+/**
  * @constructor
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
  */
 const NetworkScreenBase = mixinBehaviors(
-    [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior],
+    [
+      OobeI18nBehavior,
+      OobeDialogHostBehavior,
+      LoginScreenBehavior,
+      MultiStepBehavior,
+    ],
     PolymerElement);
 /**
  * @typedef {{
@@ -43,6 +62,15 @@ const NetworkScreenBase = mixinBehaviors(
  * }}
  */
 NetworkScreenBase.$;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   ssid: (string|undefined),
+ *   useQuickStartSubtitle: (boolean|undefined),
+ * }}
+ */
+let NetworkScreenData;
 
 /**
  * @polymer
@@ -100,6 +128,19 @@ class NetworkScreen extends NetworkScreenBase {
         type: Boolean,
         value: false,
       },
+
+      // SSID (WiFi Network Name) used during the QuickStart step.
+      ssid: {
+        type: String,
+        value: '',
+      },
+
+      // Whether the QuickStart subtitle should be shown while showing the
+      // network list
+      useQuickStartSubtitle_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -111,8 +152,31 @@ class NetworkScreen extends NetworkScreenBase {
     return ['setError', 'setQuickStartEnabled'];
   }
 
-  /** Called when dialog is shown. */
+  constructor() {
+    super();
+    this.UI_STEPS = NetworkScreenStates;
+  }
+
+  defaultUIStep() {
+    return NetworkScreenStates.DEFAULT;
+  }
+
+  /**
+   * Called when dialog is shown.
+   * @param {NetworkScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
+    // Right now `ssid` is only set during quick start flow.
+    this.ssid = data && 'ssid' in data && data['ssid'];
+    if (this.ssid) {
+      this.setUIStep(NetworkScreenStates.QUICK_START_CONNECTING);
+      return;
+    }
+
+    this.useQuickStartSubtitle_ = data && 'useQuickStartSubtitle' in data &&
+      data['useQuickStartSubtitle'];
+
+    this.setUIStep(NetworkScreenStates.DEFAULT);
     this.enableWifiScans_ = true;
     this.errorMessage_ = '';
     this.$.networkSelectLogin.onBeforeShow();
@@ -157,6 +221,11 @@ class NetworkScreen extends NetworkScreenBase {
     if (errorMessage) {
       return errorMessage;
     }
+
+    if (this.useQuickStartSubtitle_) {
+      return this.i18n('quickStartNetworkNeededSubtitle');
+    }
+
     return this.i18n('networkSectionSubtitle');
   }
 
@@ -228,6 +297,14 @@ class NetworkScreen extends NetworkScreenBase {
    */
   onBackClicked_() {
     this.userActed('back');
+  }
+
+  /**
+   * Cancels ongoing connection.
+   * @private
+   */
+  onCancelClicked_() {
+    this.userActed('cancel');
   }
 
   /**

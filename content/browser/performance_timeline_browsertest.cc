@@ -52,7 +52,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceTimelineBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   base::FilePath file_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
 
   file_path = file_path.Append(GetTestDataFilePath())
                   .AppendASCII(

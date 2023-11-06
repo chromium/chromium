@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/html_to_js.gni")
 
@@ -145,6 +145,7 @@ js_library("quick_start") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/quick_start.js" ]
   deps = [
     "../../components:oobe_types",
+    "../../components:qr_code_canvas",
     "../../components/behaviors:login_screen_behavior",
     "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_i18n_behavior",

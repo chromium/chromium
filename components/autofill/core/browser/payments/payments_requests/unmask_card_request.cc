@@ -212,7 +212,7 @@ std::string UnmaskCardRequest::GetRequestContent() {
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
   base::Value::Dict context;
-  context.Set("billable_service", kUnmaskCardBillableServiceNumber);
+  context.Set("billable_service", kUnmaskPaymentMethodBillableServiceNumber);
   if (request_details_.billing_customer_number != 0) {
     context.Set("customer_context",
                 BuildCustomerContextDictionary(

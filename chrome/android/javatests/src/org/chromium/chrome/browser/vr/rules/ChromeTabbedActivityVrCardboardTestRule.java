@@ -12,21 +12,27 @@ import org.chromium.chrome.browser.vr.util.VrCardboardTestRuleUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
- * Cardboard extension of ChromeTabbedActivityTestRule. Applies ChromeTabbedActivityTestRule
- * then opens up a ChromeTabbedActivity to a blank page while performing some additional setup.
+ * Cardboard extension of ChromeTabbedActivityTestRule. Applies ChromeTabbedActivityTestRule then
+ * opens up a ChromeTabbedActivity to a blank page while performing some additional setup.
  */
-public class ChromeTabbedActivityVrCardboardTestRule
-        extends ChromeTabbedActivityTestRule implements VrTestRule {
+public class ChromeTabbedActivityVrCardboardTestRule extends ChromeTabbedActivityTestRule
+        implements VrTestRule {
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        return super.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                VrCardboardTestRuleUtils.evaluateVrTestRuleImpl(base, desc,
-                        ChromeTabbedActivityVrCardboardTestRule.this,
-                        () -> { startMainActivityOnBlankPage(); });
-            }
-        }, desc);
+        return super.apply(
+                new Statement() {
+                    @Override
+                    public void evaluate() throws Throwable {
+                        VrCardboardTestRuleUtils.evaluateVrTestRuleImpl(
+                                base,
+                                desc,
+                                ChromeTabbedActivityVrCardboardTestRule.this,
+                                () -> {
+                                    startMainActivityOnBlankPage();
+                                });
+                    }
+                },
+                desc);
     }
 
     @Override

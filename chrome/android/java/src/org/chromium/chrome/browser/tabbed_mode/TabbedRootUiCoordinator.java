@@ -109,12 +109,13 @@ import org.chromium.chrome.browser.ui.signin.FullScreenSyncPromoUtil;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.webapps.AddToHomescreenIPHController;
 import org.chromium.chrome.browser.webapps.AddToHomescreenMostVisitedTileClickObserver;
+import org.chromium.chrome.browser.webapps.PwaRestorePromoUtils;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
-import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserver;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
@@ -161,7 +162,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private CommerceSubscriptionsService mCommerceSubscriptionsService;
     private UndoGroupSnackbarController mUndoGroupSnackbarController;
     private final int mControlContainerHeightResource;
-    private final Supplier<InsetObserverView> mInsetObserverViewSupplier;
+    private final Supplier<InsetObserver> mInsetObserverViewSupplier;
     private final Function<Tab, Boolean> mBackButtonShouldCloseTabFn;
     private LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
     private final ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
@@ -211,13 +212,13 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     /**
      * Construct a new TabbedRootUiCoordinator.
+     *
      * @param activity The activity whose UI the coordinator is responsible for.
-     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus
-     *         changes.
+     * @param onOmniboxFocusChangedListener callback to invoke when Omnibox focus changes.
      * @param shareDelegateSupplier Supplies the {@link ShareDelegate}.
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
-     * @param bookmarkModelSupplier Supplier of the bookmark  bridge for the current profile.
+     * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
@@ -248,15 +249,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param ephemeralTabCoordinatorSupplier Supplies the {@link EphemeralTabCoordinator}.
      * @param intentRequestTracker Tracks intent requests.
      * @param controlContainerHeightResource The resource for the control container.
-     * @param insetObserverViewSupplier Supplier for the {@link InsetObserverView}.
+     * @param insetObserverViewSupplier Supplier for the {@link InsetObserver}.
      * @param backButtonShouldCloseTabFn Function which supplies whether or not the back button
-     *         should close the tab.
+     *     should close the tab.
      * @param tabReparentingControllerSupplier Supplier for the {@link TabReparentingController}.
      * @param initializeUiWithIncognitoColors Whether to initialize the UI with incognito colors.
      * @param backPressManager The {@link BackPressManager} handling back press.
      * @param savedInstanceState The saved bundle for the last recorded state.
      */
-    public TabbedRootUiCoordinator(@NonNull AppCompatActivity activity,
+    public TabbedRootUiCoordinator(
+            @NonNull AppCompatActivity activity,
             @Nullable Callback<Boolean> onOmniboxFocusChangedListener,
             @NonNull ObservableSupplier<ShareDelegate> shareDelegateSupplier,
             @NonNull ActivityTabProvider tabProvider,
@@ -285,17 +287,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
             @NonNull Supplier<TabContentManager> tabContentManagerSupplier,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
-            @ActivityType int activityType, @NonNull Supplier<Boolean> isInOverviewModeSupplier,
+            @ActivityType int activityType,
+            @NonNull Supplier<Boolean> isInOverviewModeSupplier,
             @NonNull Supplier<Boolean> isWarmOnResumeSupplier,
             @NonNull AppMenuDelegate appMenuDelegate,
             @NonNull StatusBarColorProvider statusBarColorProvider,
-            @NonNull ObservableSupplierImpl<EphemeralTabCoordinator>
-                    ephemeralTabCoordinatorSupplier,
-            @NonNull IntentRequestTracker intentRequestTracker, int controlContainerHeightResource,
-            @NonNull Supplier<InsetObserverView> insetObserverViewSupplier,
+            @NonNull
+                    ObservableSupplierImpl<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @NonNull IntentRequestTracker intentRequestTracker,
+            int controlContainerHeightResource,
+            @NonNull Supplier<InsetObserver> insetObserverViewSupplier,
             @NonNull Function<Tab, Boolean> backButtonShouldCloseTabFn,
             OneshotSupplier<TabReparentingController> tabReparentingControllerSupplier,
-            boolean initializeUiWithIncognitoColors, @NonNull BackPressManager backPressManager,
+            boolean initializeUiWithIncognitoColors,
+            @NonNull BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState) {
         super(activity, onOmniboxFocusChangedListener, shareDelegateSupplier, tabProvider,
                 profileSupplier, bookmarkModelSupplier, tabBookmarkerSupplier,
@@ -434,7 +439,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mActivity == null) return;
         Tab tab = mActivityTabProvider.get();
         if (tab == null || tab.getWebContents() == null || !tab.isUserInteractable()) return;
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        Profile profile = tab.getProfile();
         mNavigationSheet = NavigationSheet.create(
                 mActivity.getWindow().getDecorView().findViewById(android.R.id.content), mActivity,
                 this::getBottomSheetController, profile);
@@ -466,7 +471,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivityLifecycleDispatcher, mCompositorViewHolderSupplier.get(),
                 mCallbackController.makeCancelable(
                         () -> mLayoutManager.getActiveLayout().requestUpdate()),
-                mActivityTabProvider, mInsetObserverViewSupplier.get(),
+                mActivityTabProvider, mInsetObserverViewSupplier.get(), mStartSurfaceSupplier,
                 new BackActionDelegate() {
                     @Override
                     public @ActionType int getBackActionType(Tab tab) {
@@ -493,8 +498,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         return isShowingStartSurfaceHomepage();
                     }
                 },
-                mCompositorViewHolderSupplier.get()::addTouchEventObserver,
-                mCompositorViewHolderSupplier.get()::removeTouchEventObserver, mLayoutManager);
+                () -> mCompositorViewHolderSupplier.get(),
+                mLayoutManager);
         mRootUiTabObserver.swapToTab(mActivityTabProvider.get());
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
@@ -667,10 +672,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
 
         if (!shouldSuppressPSDialog) {
-            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, new SettingsLauncherImpl(),
-                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                    getBottomSheetController());
+            didTriggerPromo =
+                    PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                            mActivity,
+                            new SettingsLauncherImpl(),
+                            mTabModelSelectorSupplier.get().isIncognitoSelected());
         }
         RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
 
@@ -741,8 +747,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         getToolbarManager().getMenuButtonView(),
                         mAppMenuCoordinator.getAppMenuHandler(), R.id.manage_all_windows_menu_id);
             }
-            DesktopSiteSettingsIPHController.create(mActivity, mWindowAndroid, mActivityTabProvider,
-                    Profile.getLastUsedRegularProfile(), getToolbarManager().getMenuButtonView(),
+            DesktopSiteSettingsIPHController.create(
+                    mActivity,
+                    mWindowAndroid,
+                    mActivityTabProvider,
+                    Profile.getLastUsedRegularProfile(),
+                    getToolbarManager().getMenuButtonView(),
                     mAppMenuCoordinator.getAppMenuHandler());
         }
         mPromoShownOneshotSupplier.set(didTriggerPromo);
@@ -948,7 +958,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private boolean maybeShowPromo() {
-        // Only one promo can be shown in one run to avoid nagging users too much.
+        // NOTE: Only one promo can be shown in one run to avoid nagging users too much.
+
+        // The PWA Restore promotion runs when we've detected that a user has switched to a new
+        // device but is leaving behind web apps on the old device. It promotes the idea that the
+        // user can restore their web apps from their old device (if they have any), and as such it
+        // is most effective when shown shortly after the first-run experience. It is therefore
+        // at the front of the list of promotions.
+        if (PwaRestorePromoUtils.launchPromoIfNeeded(
+                mActivity, mWindowAndroid, R.drawable.ic_arrow_back_24dp)) {
+            return true;
+        }
         if (FullScreenSyncPromoUtil.launchPromoIfNeeded(mActivity,
                     SyncConsentActivityLauncherImpl.get(), VersionInfo.getProductMajorVersion())) {
             return true;

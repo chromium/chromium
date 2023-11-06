@@ -214,25 +214,6 @@ void WebViewAutofillClientIOS::OnUnmaskVerificationResult(
   [bridge_ didReceiveUnmaskVerificationResult:result];
 }
 
-void WebViewAutofillClientIOS::ConfirmAccountNameFixFlow(
-    base::OnceCallback<void(const std::u16string&)> callback) {
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ConfirmExpirationDateFixFlow(
-    const CreditCard& card,
-    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-        callback) {
-  NOTREACHED();
-}
-
-void WebViewAutofillClientIOS::ConfirmSaveCreditCardLocally(
-    const CreditCard& card,
-    SaveCreditCardOptions options,
-    LocalSaveCardPromptCallback callback) {
-  // No op. ios/web_view does not support local saves of autofill data.
-}
-
 void WebViewAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
@@ -310,8 +291,7 @@ void WebViewAutofillClientIOS::ShowAutofillPopup(
 }
 
 void WebViewAutofillClientIOS::UpdateAutofillPopupDataListValues(
-    const std::vector<std::u16string>& values,
-    const std::vector<std::u16string>& labels) {
+    base::span<const autofill::SelectOption> datalist) {
   // No op. ios/web_view does not support display datalist.
 }
 
@@ -351,7 +331,7 @@ bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
 }
 
 void WebViewAutofillClientIOS::DidFillOrPreviewForm(
-    mojom::AutofillActionPersistence action_persistence,
+    mojom::ActionPersistence action_persistence,
     AutofillTriggerSource trigger_source,
     bool is_refill) {}
 

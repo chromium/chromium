@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -19,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -29,7 +25,6 @@ import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties.FormFactor;
-import org.chromium.chrome.browser.omnibox.suggestions.base.SpacingRecyclerViewItemDecoration;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -42,9 +37,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for {@link BaseCarouselSuggestionViewBinder}.
- */
+/** Tests for {@link BaseCarouselSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class BaseCarouselSuggestionViewBinderUnitTest {
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
@@ -60,9 +53,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     public void setUp() {
         mContext = ContextUtils.getApplicationContext();
         mResources = mContext.getResources();
-    }
 
-    private void createMVCForTest() {
         mTiles = new ModelList();
         mAdapter = new SimpleRecyclerViewAdapter(mTiles);
         mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
@@ -72,7 +63,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Test
     public void modelList_setItems() {
-        createMVCForTest();
         final List<ListItem> tiles = new ArrayList<>();
         tiles.add(new ListItem(0, null));
         tiles.add(new ListItem(0, null));
@@ -88,7 +78,6 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
 
     @Test
     public void modelList_clearItems() {
-        createMVCForTest();
         final List<ListItem> tiles = new ArrayList<>();
         tiles.add(new ListItem(0, null));
         tiles.add(new ListItem(0, null));
@@ -106,97 +95,29 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     public void padding_smallestMargins() {
         OmniboxFeatures.ENABLE_MODERNIZE_VISUAL_UPDATE_ON_TABLET.setForTesting(true);
         OmniboxFeatures.MODERNIZE_VISUAL_UPDATE_SMALLEST_MARGINS.setForTesting(true);
-        createMVCForTest();
-        Assert.assertEquals(mResources.getDimensionPixelSize(
-                                    R.dimen.omnibox_carousel_suggestion_padding_smaller),
+        Assert.assertEquals(
+                mResources.getDimensionPixelSize(
+                        R.dimen.omnibox_carousel_suggestion_padding_smaller),
                 mView.getPaddingTop());
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.omnibox_carousel_suggestion_padding),
                 mView.getPaddingBottom());
     }
 
-    /**
-     * We expect value to be computed as the tile margin value computed is larger than
-     * tile_view_padding
-     */
-    @Test
-    @Config(qualifiers = "sw480dp-port")
-    public void formFactor_itemSpacingPhone_computedPortrait() {
-        int displayWidth = mResources.getDisplayMetrics().widthPixels;
-        int tileViewWidth = mResources.getDimensionPixelSize(R.dimen.tile_view_width);
-        int tileViewPaddingEdgePortrait =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-        int tileViewPaddingMax = mResources.getDimensionPixelSize(R.dimen.tile_view_padding);
-
-        final int expectedSpacingPx = Integer.max(-tileViewPaddingMax,
-                (int) ((displayWidth - tileViewPaddingEdgePortrait - tileViewWidth * 4.5) / 4));
-        Assert.assertEquals(expectedSpacingPx,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-port")
-    public void formFactor_itemSpacingTabletPortrait() {
-        Assert.assertEquals(
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-port")
-    public void formFactor_itemSpacingEndToEnd() {
-        createMVCForTest();
-
-        final int spacingPx =
-                mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait);
-        Assert.assertEquals(spacingPx,
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
-
-        mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
-        Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
-        Assert.assertEquals(spacingPx / 2, decoration.elementSpace);
-    }
-
     @Test
     public void formFactor_itemDecorationsDoNotAggregate() {
-        createMVCForTest();
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
-        clearInvocations(mView);
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.PHONE);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
-        clearInvocations(mView);
 
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        verify(mView, times(1)).addItemDecoration(any());
         Assert.assertEquals(1, mView.getItemDecorationCount());
-    }
-
-    @Test
-    @Config(qualifiers = "land")
-    public void formFactor_itemSpacingPhone_landscape() {
-        Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.PHONE, mResources));
-    }
-
-    @Test
-    @Config(qualifiers = "sw600dp-land")
-    public void formFactor_itemSpacingTablet_landscape() {
-        Assert.assertEquals(mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                BaseCarouselSuggestionViewBinder.getItemSpacingPx(FormFactor.TABLET, mResources));
     }
 
     @Test
     public void mView_setHorizontalFadingEdgeEnabled() {
-        createMVCForTest();
         mModel.set(BaseCarouselSuggestionViewProperties.HORIZONTAL_FADE, true);
         Assert.assertTrue(mView.isHorizontalFadingEdgeEnabled());
 
@@ -207,14 +128,10 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     @Test
     @Config(qualifiers = "sw600dp-land")
     public void customVisualAlignment_classicUi() {
-        createMVCForTest();
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
+        var decoration = mView.getItemDecoration();
         Assert.assertEquals(
-                OmniboxResourceProvider.getSideSpacing(mContext), decoration.leadInSpace);
+                OmniboxResourceProvider.getSideSpacing(mContext), decoration.getLeadInSpace());
     }
 
     @Test
@@ -238,21 +155,46 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
     }
 
     void runCustomVisualAlignmentTest() {
-        createMVCForTest();
         mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, FormFactor.TABLET);
-        ArgumentCaptor<SpacingRecyclerViewItemDecoration> captor =
-                ArgumentCaptor.forClass(SpacingRecyclerViewItemDecoration.class);
-        verify(mView, times(1)).addItemDecoration(captor.capture());
-        var decoration = captor.getValue();
-        Assert.assertEquals(OmniboxResourceProvider.getHeaderStartPadding(mContext)
+        var decoration = mView.getItemDecoration();
+        Assert.assertEquals(
+                OmniboxResourceProvider.getHeaderStartPadding(mContext)
                         - mContext.getResources().getDimensionPixelSize(R.dimen.tile_view_padding),
-                decoration.leadInSpace);
+                decoration.getLeadInSpace());
     }
 
     @Test
-    public void invalidDeviceFormFactorThrowsException() {
-        createMVCForTest();
-        Assert.assertThrows(AssertionError.class,
-                () -> mModel.set(SuggestionCommonProperties.DEVICE_FORM_FACTOR, 9));
+    public void itemDecoration_setItemWidth() {
+        mModel.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, 10);
+        Assert.assertEquals(10, mView.getItemDecoration().getItemWidthForTesting());
+
+        mModel.set(BaseCarouselSuggestionViewProperties.ITEM_WIDTH, 30);
+        Assert.assertEquals(30, mView.getItemDecoration().getItemWidthForTesting());
+    }
+
+    @Test
+    public void bindContentDescription_nullDescription() {
+        mModel =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION, null)
+                        .build();
+        mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(mView).setContentDescription(null);
+    }
+
+    @Test
+    public void bindContentDescription_nonNullDescription() {
+        mModel =
+                new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
+                        .with(
+                                BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
+                                "description")
+                        .build();
+        mView = spy(new BaseCarouselSuggestionView(mContext, mAdapter));
+        PropertyModelChangeProcessor.create(mModel, mView, BaseCarouselSuggestionViewBinder::bind);
+
+        verify(mView).setContentDescription("description");
     }
 }

@@ -8,6 +8,16 @@
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/features.h"
 
+namespace {
+
+size_t GetLCPPFontURLPredictorMaxUrlLength() {
+  static size_t max_length = base::checked_cast<size_t>(
+      blink::features::kLCPPFontURLPredictorMaxUrlLength.Get());
+  return max_length;
+}
+
+}  // namespace
+
 namespace predictors {
 
 LCPCriticalPathPredictorHost::LCPCriticalPathPredictorHost(
@@ -67,6 +77,11 @@ void LCPCriticalPathPredictorHost::NotifyFetchedFont(const GURL& font_url) {
   }
   if (!font_url.SchemeIsHTTPOrHTTPS()) {
     ReportBadMessageAndDeleteThis("url format must be checked in the caller.");
+    return;
+  }
+  if (font_url.spec().length() > GetLCPPFontURLPredictorMaxUrlLength()) {
+    // The size can be different between KURL and GURL, not reporting
+    // bad message.
     return;
   }
   auto* page_data =

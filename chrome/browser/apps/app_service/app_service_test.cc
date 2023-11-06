@@ -37,9 +37,8 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
         app->readiness = Readiness::kUninstalledByUser;
         apps.push_back(std::move(app));
       });
-  app_service_proxy->AppRegistryCache().OnApps(
-      std::move(apps), AppType::kUnknown,
-      false /* should_notify_initialized */);
+  app_service_proxy->OnApps(std::move(apps), AppType::kUnknown,
+                            false /* should_notify_initialized */);
 }
 
 std::string AppServiceTest::GetAppName(const std::string& app_id) const {

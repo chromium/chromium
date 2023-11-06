@@ -33,19 +33,19 @@ class Octane(press._PressBenchmark): # pylint: disable=protected-access
 
 @benchmark.Info(emails=['omerkatz@chromium.org'],
                 component='Blink>JavaScript>GarbageCollection')
-class OctaneMinorMC(press._PressBenchmark):  # pylint: disable=protected-access
-  """Google's Octane JavaScript benchmark with the MinorMC flag.
+class OctaneNoMinorMS(press._PressBenchmark):  # pylint: disable=protected-access
+  """Google's Octane JavaScript benchmark without the MinorMS flag.
 
-  Shows the performance of upcoming MinorMC young generation GC in V8.
+  Shows the performance of Scavenger young generation GC in V8.
 
   http://chromium.github.io/octane/index.html?auto=1
   """
   @classmethod
   def Name(cls):
-    return 'octane-minormc'
+    return 'octane-nominorms'
 
   def CreateStorySet(self, options):
     return page_sets.OctaneStorySet()
 
   def SetExtraBrowserOptions(self, options):
-    options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
+    options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')

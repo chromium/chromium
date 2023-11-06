@@ -44,9 +44,9 @@ class XRWebGLLayer final : public XRLayer {
                               const XRWebGLLayerInit*,
                               ExceptionState&);
 
-  WebGLRenderingContextBase* context() const { return webgl_context_; }
+  WebGLRenderingContextBase* context() const { return webgl_context_.Get(); }
 
-  WebGLFramebuffer* framebuffer() const { return framebuffer_; }
+  WebGLFramebuffer* framebuffer() const { return framebuffer_.Get(); }
   uint32_t framebufferWidth() const;
   uint32_t framebufferHeight() const;
 

@@ -19,7 +19,7 @@
 #import "net/base/net_errors.h"
 #import "ui/base/resource/resource_bundle.h"
 #import "ui/base/resource/resource_scale_factor.h"
-#import "ui/base/webui/jstemplate_builder.h"
+#import "ui/base/webui/web_ui_util.h"
 #import "url/gurl.h"
 
 NSString* GetErrorPage(const GURL& url,
@@ -67,6 +67,6 @@ NSString* GetErrorPage(const GURL& url,
 
   if (template_html.empty())
     NOTREACHED() << "unable to load template. ID: " << IDR_NET_ERROR_HTML;
-  return base::SysUTF8ToNSString(webui::GetTemplatesHtml(
-      template_html, page_state.strings, /*template_id=*/"t"));
+  return base::SysUTF8ToNSString(
+      webui::GetLocalizedHtml(template_html, page_state.strings));
 }

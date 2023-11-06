@@ -139,7 +139,23 @@ void Animation::UnregisterAnimation() {
 }
 
 void Animation::PushPropertiesTo(Animation* animation_impl) {
-  keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect());
+  absl::optional<base::TimeTicks> impl_start_time;
+  if (use_start_time_from_impl_ && !GetStartTime()) {
+    // If this animation is replacing an existing one before having received a
+    // start time, try to get the start from the animation being replaced.
+    // This is done to prevent a race where the client may cancel and restart
+    // the Animation before having received a start time but after the
+    // Animation has started playing on the compositor thread.
+    impl_start_time = animation_impl->GetStartTime();
+
+    // This should always happen only on the first commit which must need
+    // pushing (and hence, the below call won't no-op).
+    CHECK(keyframe_effect()->needs_push_properties());
+  }
+  use_start_time_from_impl_ = false;
+
+  keyframe_effect()->PushPropertiesTo(animation_impl->keyframe_effect(),
+                                      impl_start_time);
 }
 
 bool Animation::Tick(base::TimeTicks tick_time) {
@@ -228,6 +244,24 @@ bool Animation::AffectsNativeProperty() const {
 void Animation::SetNeedsCommit() {
   DCHECK(animation_host());
   animation_host()->SetNeedsCommit();
+}
+
+absl::optional<base::TimeTicks> Animation::GetStartTime() const {
+  CHECK(keyframe_effect());
+
+  if (!keyframe_effect()->keyframe_models().size()) {
+    return absl::nullopt;
+  }
+
+  // KeyframeModels should all share the same start time so just use the first
+  // one's.
+  gfx::KeyframeModel& km = *keyframe_effect()->keyframe_models().front();
+
+  if (!km.has_set_start_time()) {
+    return absl::nullopt;
+  }
+
+  return km.start_time();
 }
 
 void Animation::SetNeedsPushProperties() {

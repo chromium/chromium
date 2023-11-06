@@ -5,13 +5,12 @@
 #include "ash/wm/default_state.h"
 
 #include "ash/public/cpp/metrics_util.h"
-#include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/cpp/window_animation_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/float/float_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/window_positioning_utils.h"
@@ -34,6 +33,7 @@
 #include "ui/display/display_observer.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -281,30 +281,10 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
 
   switch (event->type()) {
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
-      if (window_state->IsFullscreen()) {
-        const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
-        window_state->OnWMEvent(&wm_event);
-      } else if (window_state->IsMaximized()) {
-        window_state->Restore();
-      } else if (window_state->IsNormalOrSnapped() ||
-                 window_state->IsFloated()) {
-        if (window_state->CanMaximize())
-          window_state->Maximize();
-      }
+      ToggleMaximizeCaption(window_state);
       return;
     case WM_EVENT_TOGGLE_MAXIMIZE:
-      if (window_state->IsFullscreen()) {
-        const WMEvent wm_event(WM_EVENT_TOGGLE_FULLSCREEN);
-        window_state->OnWMEvent(&wm_event);
-      } else if (window_state->IsMaximized()) {
-        window_state->Restore();
-      } else if (window_state->CanMaximize()) {
-        window_state->Maximize();
-      } else {
-        // If `window` cannot be maximized, then do a window bounce animation.
-        wm::AnimateWindow(window_state->window(),
-                          wm::WINDOW_ANIMATION_TYPE_BOUNCE);
-      }
+      ToggleMaximize(window_state);
       return;
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE: {
       gfx::Rect work_area =
@@ -409,7 +389,8 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY) {
-    HandleWindowSnapping(window_state, type);
+    HandleWindowSnapping(window_state, type,
+                         event->AsSnapEvent()->snap_action_source());
   }
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
@@ -434,7 +415,7 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
     } else {
       CHECK(event->IsSnapEvent());
       window_state->RecordWindowSnapActionSource(
-          static_cast<const WindowSnapWMEvent*>(event)->snap_action_source());
+          event->AsSnapEvent()->snap_action_source());
     }
   }
 
@@ -744,8 +725,11 @@ void DefaultState::UpdateBoundsForDisplayOrWorkAreaBoundsChange(
   gfx::Rect bounds = window_state->window()->GetTargetBounds();
   if (ensure_full_window_visibility)
     bounds.AdjustToFit(work_area_in_parent);
-  else if (!::wm::GetTransientParent(window_state->window()))
+  else if (!wm::GetTransientParent(window_state->window()) &&
+           !(window_state->IsPip() &&
+             Shell::Get()->pip_controller()->is_tucked())) {
     AdjustBoundsToEnsureMinimumWindowVisibility(work_area_in_parent, &bounds);
+  }
   window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
 
   if (window_state->window()->GetTargetBounds() == bounds)

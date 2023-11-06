@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/session_context.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "fake_connection.h"
 
 namespace ash::quick_start {
 
@@ -56,6 +57,10 @@ void FakeConnection::WaitForUserVerification(
   await_user_verification_callback_ = std::move(callback);
 }
 
+void FakeConnection::RequestAccountInfo(base::OnceClosure callback) {
+  request_account_info_callback_ = std::move(callback);
+}
+
 void FakeConnection::RequestAccountTransferAssertion(
     const Base64UrlString& challenge,
     RequestAccountTransferAssertionCallback callback) {
@@ -73,6 +78,10 @@ void FakeConnection::VerifyUser(
     absl::optional<mojom::UserVerificationResponse> response) {
   CHECK(await_user_verification_callback_);
   std::move(await_user_verification_callback_).Run(response);
+}
+
+void FakeConnection::SendAccountInfo() {
+  std::move(request_account_info_callback_).Run();
 }
 
 void FakeConnection::SendAccountTransferAssertionInfo(

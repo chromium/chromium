@@ -129,7 +129,7 @@ TEST_F(SystemComponentsTest,
       u"button 1",
       /*is_toggleable=*/false, /*has_border=*/false);
   auto* icon_button_ptr = icon_button.get();
-  icon_button->SetBackgroundColorId(cros_tokens::kCrosSysSystemOnBase);
+  icon_button->SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
   auto widget = CreateWidgetWithComponent(std::move(icon_button));
 
   // Schedule a paint for the button.

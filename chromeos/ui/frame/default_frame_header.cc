@@ -6,7 +6,6 @@
 
 #include "ash/constants/app_types.h"
 #include "base/check.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
@@ -98,6 +97,13 @@ void DefaultFrameHeader::SetWidthInPixels(int width_in_pixels) {
 
 void DefaultFrameHeader::UpdateFrameColors() {
   aura::Window* target_window = GetTargetWindow();
+  if (!target_window) {
+    // b/302708285: This codepath is run during Widget teardown. In that
+    // situation, `target_window` might be null and we won't display the
+    // updated colors anyway.
+    return;
+  }
+
   const SkColor active_frame_color =
       target_window->GetProperty(kFrameActiveColorKey);
   const SkColor inactive_frame_color =
@@ -137,8 +143,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 void DefaultFrameHeader::DoPaintHeader(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
 
-  if (features::IsJellyrollEnabled() &&
-      ShouldApplyDynamicColor(GetTargetWindow())) {
+  if (ShouldApplyDynamicColor(GetTargetWindow())) {
     flags.setColor(target_widget()->GetColorProvider()->GetColor(
         GetColorIdForCurrentMode()));
   } else {

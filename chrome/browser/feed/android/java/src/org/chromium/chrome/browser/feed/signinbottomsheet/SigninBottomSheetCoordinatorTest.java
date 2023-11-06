@@ -41,29 +41,24 @@ import org.chromium.ui.base.WindowAndroid;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class SigninBottomSheetCoordinatorTest {
     private static final String TEST_EMAIL = "test.account@gmail.com";
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    private BottomSheetController mBottomSheetControllerMock;
+    @Mock private BottomSheetController mBottomSheetControllerMock;
 
-    @Mock
-    private WindowAndroid mWindowAndroidMock;
+    @Mock private WindowAndroid mWindowAndroidMock;
 
-    @Mock
-    private SigninManager mSigninManagerMock;
+    @Mock private SigninManager mSigninManagerMock;
 
-    @Mock
-    private Profile mProfileMock;
+    @Mock private Profile mProfileMock;
 
-    @Mock
-    private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinatorMock;
+    @Mock private AccountPickerBottomSheetCoordinator mAccountPickerBottomSheetCoordinatorMock;
 
-    @Mock
-    private Runnable mOnSigninSuccessCallbackMock;
+    @Mock private Runnable mOnSigninSuccessCallbackMock;
 
     private SigninBottomSheetCoordinator mSigninCoordinator;
 
@@ -74,26 +69,37 @@ public class SigninBottomSheetCoordinatorTest {
                 .thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
         mAccountManagerTestRule.addAccount(TEST_EMAIL);
-        mSigninCoordinator = new SigninBottomSheetCoordinator(mWindowAndroidMock, null,
-                mBottomSheetControllerMock, mProfileMock, null, null,
-                SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
+        mSigninCoordinator =
+                new SigninBottomSheetCoordinator(
+                        mWindowAndroidMock,
+                        null,
+                        mBottomSheetControllerMock,
+                        mProfileMock,
+                        null,
+                        null,
+                        SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
     }
 
     @Test
     public void testSigninCompleted_callsSigninManagerAndUpdatesHistogram() {
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
-        doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(2);
-            callback.onSignInComplete();
-            return null;
-        })
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", true);
+        doAnswer(
+                        invocation -> {
+                            SigninManager.SignInCallback callback = invocation.getArgument(2);
+                            callback.onSignInComplete();
+                            return null;
+                        })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO), any());
+                .signin(
+                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
+                        any());
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
         verify(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                .signin(
+                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
                         eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
                         any(SigninManager.SignInCallback.class));
         histogramWatcher.assertExpected();
@@ -101,16 +107,20 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Test
     public void testSigninAborted_doesNotUpdateHistogram() {
-        var histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
-        doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(2);
-            callback.onSignInAborted();
-            return null;
-        })
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "ContentSuggestions.Feed.SignInFromFeedAction.SignInSuccessful", false);
+        doAnswer(
+                        invocation -> {
+                            SigninManager.SignInCallback callback = invocation.getArgument(2);
+                            callback.onSignInAborted();
+                            return null;
+                        })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO), any());
+                .signin(
+                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
+                        any());
         mSigninCoordinator.setAccountPickerBottomSheetCoordinator(
                 mAccountPickerBottomSheetCoordinatorMock);
         mSigninCoordinator.signIn(TEST_EMAIL, error -> {});
@@ -120,7 +130,8 @@ public class SigninBottomSheetCoordinatorTest {
     @Test
     public void testSignInNotAllowed() {
         HistogramWatcher watchSigninDisabledToastShownHistogram =
-                HistogramWatcher.newSingleRecordWatcher("Signin.SigninDisabledNotificationShown",
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SigninDisabledNotificationShown",
                         SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         mSigninCoordinator.setToastOverrideForTesting();
@@ -132,34 +143,52 @@ public class SigninBottomSheetCoordinatorTest {
 
     @Test
     public void testSigninCompleted_callSigninSuccessCallback() {
-        SigninBottomSheetCoordinator coordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroidMock, null, mBottomSheetControllerMock, mProfileMock, null,
-                mOnSigninSuccessCallbackMock, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
-        doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(2);
-            callback.onSignInComplete();
-            return null;
-        })
+        SigninBottomSheetCoordinator coordinator =
+                new SigninBottomSheetCoordinator(
+                        mWindowAndroidMock,
+                        null,
+                        mBottomSheetControllerMock,
+                        mProfileMock,
+                        null,
+                        mOnSigninSuccessCallbackMock,
+                        SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+        doAnswer(
+                        invocation -> {
+                            SigninManager.SignInCallback callback = invocation.getArgument(2);
+                            callback.onSignInComplete();
+                            return null;
+                        })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
+                .signin(
+                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO),
+                        any());
         coordinator.signIn(TEST_EMAIL, error -> {});
         verify(mOnSigninSuccessCallbackMock, times(1)).run();
     }
 
     @Test
     public void testSigninAborted_doesNotCallSigninSuccessCallback() {
-        SigninBottomSheetCoordinator coordinator = new SigninBottomSheetCoordinator(
-                mWindowAndroidMock, null, mBottomSheetControllerMock, mProfileMock, null,
-                mOnSigninSuccessCallbackMock, SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
-        doAnswer(invocation -> {
-            SigninManager.SignInCallback callback = invocation.getArgument(2);
-            callback.onSignInAborted();
-            return null;
-        })
+        SigninBottomSheetCoordinator coordinator =
+                new SigninBottomSheetCoordinator(
+                        mWindowAndroidMock,
+                        null,
+                        mBottomSheetControllerMock,
+                        mProfileMock,
+                        null,
+                        mOnSigninSuccessCallbackMock,
+                        SigninAccessPoint.NTP_FEED_BOTTOM_PROMO);
+        doAnswer(
+                        invocation -> {
+                            SigninManager.SignInCallback callback = invocation.getArgument(2);
+                            callback.onSignInAborted();
+                            return null;
+                        })
                 .when(mSigninManagerMock)
-                .signin(eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO), any());
+                .signin(
+                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
+                        eq(SigninAccessPoint.NTP_FEED_BOTTOM_PROMO),
+                        any());
         coordinator.setAccountPickerBottomSheetCoordinator(
                 mAccountPickerBottomSheetCoordinatorMock);
         coordinator.signIn(TEST_EMAIL, error -> {});

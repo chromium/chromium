@@ -254,7 +254,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   top_level_contents_ =
       constrained_window::GetTopLevelWebContents(web_contents_)->GetWeakPtr();
   top_level_contents_->StoreFocus();
-  top_level_contents_->SetIgnoreInputEvents(true);
+  scoped_ignore_input_events_ = top_level_contents_->IgnoreInputEvents();
 
   if (ShowDialogDelay().is_zero() || !is_pending()) {
     DVLOG(1) << __func__ << ": Showing in ctor";
@@ -328,7 +328,7 @@ void ContentAnalysisDialog::SuccessCallback() {
     // dialog closes. This results in the behaviour detailed in
     // crbug.com/1139050. The fix is to preemptively take back focus when this
     // dialog closes on its own.
-    web_contents_->SetIgnoreInputEvents(false);
+    scoped_ignore_input_events_.reset();
     web_contents_->Focus();
   }
 #endif
@@ -473,7 +473,7 @@ ContentAnalysisDialog::~ContentAnalysisDialog() {
   DVLOG(1) << __func__;
 
   if (top_level_contents_) {
-    top_level_contents_->SetIgnoreInputEvents(false);
+    scoped_ignore_input_events_.reset();
     top_level_contents_->RestoreFocus();
   }
   if (download_item_)

@@ -57,10 +57,6 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
   void OnCompanionSidePanelClosed() override;
   bool IsCompanionShowing() override;
   void SetCompanionAsActiveEntry(content::WebContents* contents) override;
-  void CreateAndRegisterLensEntry(const content::OpenURLParams& params,
-                                  std::u16string combobox_label,
-                                  const ui::ImageModel favicon) override;
-  void RemoveContextualLensView() override;
   void OpenContextualLensView(const content::OpenURLParams& params) override;
   content::WebContents* GetLensViewWebContentsForTesting() override;
   bool OpenLensResultsInNewTabForTesting() override;
@@ -112,8 +108,15 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   base::WeakPtr<lens::LensUnifiedSidePanelView> lens_side_panel_view_;
 #endif
+  // Container view so we can easily swap views under the same entry when Lens
+  // is contextual.
+  raw_ptr<views::View> panel_container_view_;
+  // Pointer to future content we want to render on the companion panel the next
+  // time it opens.
+  std::unique_ptr<views::View> future_content_view_;
   const raw_ptr<content::WebContents> web_contents_;
-  bool has_companion_loaded = false;
+  bool has_companion_loaded_ = false;
+  bool is_lens_view_showing_ = false;
 
   base::WeakPtrFactory<CompanionSidePanelController> weak_ptr_factory_{this};
 };

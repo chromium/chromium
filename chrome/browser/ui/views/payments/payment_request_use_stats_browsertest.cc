@@ -23,8 +23,9 @@ namespace payments {
 
 namespace {
 
-const base::Time kSomeDate = base::Time::FromDoubleT(1484505871);
-const base::Time kSomeLaterDate = base::Time::FromDoubleT(1497552271);
+const base::Time kSomeDate = base::Time::FromSecondsSinceUnixEpoch(1484505871);
+const base::Time kSomeLaterDate =
+    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 }  // namespace
 

@@ -121,7 +121,7 @@ class PLATFORM_EXPORT ResourceLoader final
     return is_cache_aware_loading_activated_;
   }
 
-  ResourceFetcher* Fetcher() { return fetcher_; }
+  ResourceFetcher* Fetcher() { return fetcher_.Get(); }
   bool ShouldBeKeptAliveWhenDetached() const;
 
   void AbortResponseBodyLoading();
@@ -132,8 +132,7 @@ class PLATFORM_EXPORT ResourceLoader final
   // 0+  WillFollowRedirect()
   // 0+  DidSendData()
   // 1   DidReceiveResponse()
-  // 0-1 DidReceiveCachedMetadata()
-  // 0+  DidReceiveData() or DidDownloadData(), but never both
+  // 0+  DidReceiveTransferSizeUpdate()
   // 1   DidFinishLoading()
   // A failed load is indicated by 1 DidFail(), which can occur at any time
   // before DidFinishLoading(), including synchronous inside one of the other
@@ -146,15 +145,16 @@ class PLATFORM_EXPORT ResourceLoader final
                           const WebURLResponse& passed_redirect_response,
                           bool& has_devtools_request_id,
                           std::vector<std::string>* removed_headers,
+                          net::HttpRequestHeaders& modified_headers,
                           bool insecure_scheme_was_upgraded) override;
   void DidSendData(uint64_t bytes_sent,
                    uint64_t total_bytes_to_be_sent) override;
-  void DidReceiveResponse(const WebURLResponse&) override;
-  void DidReceiveCachedMetadata(mojo_base::BigBuffer data) override;
+  void DidReceiveResponse(
+      const WebURLResponse&,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void DidReceiveData(const char*, size_t) override;
   void DidReceiveTransferSizeUpdate(int transfer_size_diff) override;
-  void DidStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void DidFinishLoading(base::TimeTicks response_end_time,
                         int64_t encoded_data_length,
                         uint64_t encoded_body_length,
@@ -166,9 +166,6 @@ class PLATFORM_EXPORT ResourceLoader final
                uint64_t encoded_body_length,
                int64_t decoded_body_length) override;
   void CountFeature(blink::mojom::WebFeature) override;
-
-  mojom::blink::CodeCacheType GetCodeCacheType() const;
-  void SendCachedCodeToResource(mojo_base::BigBuffer data);
 
   void HandleError(const ResourceError&);
 
@@ -183,9 +180,6 @@ class PLATFORM_EXPORT ResourceLoader final
   friend class SubresourceIntegrityTest;
   friend class ResourceLoaderIsolatedCodeCacheTest;
   friend class ResourceLoaderSubresourceFilterCnameAliasTest;
-  class CodeCacheRequest;
-
-  void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
   // ResourceLoadSchedulerClient.
   void Run() override;
@@ -222,7 +216,11 @@ class PLATFORM_EXPORT ResourceLoader final
   void RequestAsynchronously(const ResourceRequestHead&);
   void Dispose();
 
-  void DidReceiveResponseInternal(const ResourceResponse&);
+  void DidReceiveResponseInternal(
+      const ResourceResponse&,
+      absl::optional<mojo_base::BigBuffer> cached_metadata);
+
+  void DidStartLoadingResponseBodyInternal(BytesConsumer& bytes_consumer);
 
   void CancelTimerFired(TimerBase*);
 
@@ -263,9 +261,6 @@ class PLATFORM_EXPORT ResourceLoader final
   Member<ResponseBodyLoader> response_body_loader_;
   Member<DataPipeBytesConsumer::CompletionNotifier>
       data_pipe_completion_notifier_;
-  // code_cache_request_ is created only if required. It is required to check
-  // if it is valid before using it.
-  std::unique_ptr<CodeCacheRequest> code_cache_request_;
 
   // https://fetch.spec.whatwg.org/#concept-request-response-tainting
   network::mojom::FetchResponseType response_tainting_ =
@@ -273,7 +268,6 @@ class PLATFORM_EXPORT ResourceLoader final
   uint32_t inflight_keepalive_bytes_;
   bool is_cache_aware_loading_activated_;
 
-  bool should_use_isolated_code_cache_ = false;
   bool is_downloading_to_blob_ = false;
   blink::HeapMojoAssociatedReceiver<mojom::blink::ProgressClient,
                                     blink::ResourceLoader>

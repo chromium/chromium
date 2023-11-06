@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.prefs.PrefService;
@@ -99,14 +100,18 @@ import java.util.Set;
 /**
  * This class holds a {@link CompositorView}. This level of indirection is needed to benefit from
  * the {@link android.view.ViewGroup#onInterceptTouchEvent(android.view.MotionEvent)} capability on
- * available on {@link android.view.ViewGroup}s.
- * This class also holds the {@link LayoutManagerImpl} responsible to describe the items to be
- * drawn by the UI compositor on the native side.
+ * available on {@link android.view.ViewGroup}s. This class also holds the {@link LayoutManagerImpl}
+ * responsible to describe the items to be drawn by the UI compositor on the native side.
  */
 public class CompositorViewHolder extends FrameLayout
-        implements LayoutManagerHost, LayoutRenderHost, Invalidator.Host,
-                   BrowserControlsStateProvider.Observer, ChromeAccessibilityUtil.Observer,
-                   TabObscuringHandler.Observer, ViewGroup.OnHierarchyChangeListener {
+        implements LayoutManagerHost,
+                LayoutRenderHost,
+                Invalidator.Host,
+                TouchEventProvider,
+                BrowserControlsStateProvider.Observer,
+                ChromeAccessibilityUtil.Observer,
+                TabObscuringHandler.Observer,
+                ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
     private static final MutableFlagWithSafeDefault sDeferKeepScreenOnFlag =
             new MutableFlagWithSafeDefault(
@@ -575,13 +580,8 @@ public class CompositorViewHolder extends FrameLayout
     // state changes while fullscreened and is used to simulate a view resize. This is only needed
     // if the page has opted in to keyboard resizes.
     private void handleWindowInsetChanged() {
-        // TODO(bokan): Call tryUpdateControlsAndWebContentsSizing in OVERLAYS_CONTENT only to
-        // ensure dispatch of the keyboard geometrychange event. The WebContents doesn't actually
-        // change size in OVERLAYS_CONTENT so we should factor the event dispatch code out of
-        // updateWebContentsSize and then replace this call.
-        if (mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
-                || mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT) {
-            // Notify the WebContents that its size may have changed.
+        if (mApplicationBottomInsetSupplier != null
+                && mApplicationBottomInsetSupplier.insetsAffectWebContentsSize()) {
             tryUpdateControlsAndWebContentsSizing();
         }
 
@@ -655,18 +655,14 @@ public class CompositorViewHolder extends FrameLayout
         return mInvalidator;
     }
 
-    /**
-     * Add observer that needs to listen and process touch events.
-     * @param o {@link TouchEventObserver} object.
-     */
+    // TouchEventProvider implementation.
+
+    @Override
     public void addTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.addObserver(o);
     }
 
-    /**
-     * Remove observer that needs to listen and process touch events.
-     * @param o {@link TouchEventObserver} object.
-     */
+    @Override
     public void removeTouchEventObserver(TouchEventObserver o) {
         mTouchEventObservers.removeObserver(o);
     }
@@ -675,7 +671,7 @@ public class CompositorViewHolder extends FrameLayout
     public boolean onInterceptTouchEvent(MotionEvent e) {
         super.onInterceptTouchEvent(e);
         for (TouchEventObserver o : mTouchEventObservers) {
-            if (o.shouldInterceptTouchEvent(e)) return true;
+            if (o.onInterceptTouchEvent(e)) return true;
         }
 
         if (mLayoutManager == null) return false;
@@ -687,6 +683,9 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         super.onTouchEvent(e);
+        for (TouchEventObserver o : mTouchEventObservers) {
+            if (o.onTouchEvent(e)) return true;
+        }
 
         boolean consumed = mLayoutManager != null && mLayoutManager.onTouchEvent(e);
         mEventOffsetHandler.onTouchEvent(e);
@@ -765,7 +764,9 @@ public class CompositorViewHolder extends FrameLayout
         assert e != null : "The motion event dispatched shouldn't be null!";
         updateLastActiveTouchEvent(e);
         updateIsInGesture(e);
-        for (TouchEventObserver o : mTouchEventObservers) o.handleTouchEvent(e);
+        for (TouchEventObserver o : mTouchEventObservers) {
+            if (o.dispatchTouchEvent(e)) return true;
+        }
 
         // This is where input events go from android through native to the web content. This
         // process is latency sensitive. Ideally observers that might be expensive, such as
@@ -1766,7 +1767,7 @@ public class CompositorViewHolder extends FrameLayout
         protected int getVirtualViewAt(float x, float y) {
             if (mVirtualViews == null) return INVALID_ID;
             for (int i = 0; i < mVirtualViews.size(); i++) {
-                if (mVirtualViews.get(i).checkClicked(x / mDpToPx, y / mDpToPx)) {
+                if (mVirtualViews.get(i).checkClickedOrHovered(x / mDpToPx, y / mDpToPx)) {
                     return i;
                 }
             }

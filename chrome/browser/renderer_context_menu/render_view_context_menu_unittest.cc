@@ -72,6 +72,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_prefs.h"
@@ -119,6 +120,7 @@ static content::ContextMenuParams CreateParams(int contexts) {
   rv.media_type = blink::mojom::ContextMenuDataMediaType::kNone;
   rv.page_url = GURL("http://test.page/");
   rv.frame_url = GURL("http://test.page/");
+  rv.frame_origin = url::Origin::Create(rv.frame_url);
 
   static constexpr char16_t selected_text[] = u"sel";
   if (contexts & MenuItem::SELECTION) {
@@ -557,6 +559,7 @@ class RenderViewContextMenuPrefsTest
       const RenderViewContextMenuPrefsTest&) = delete;
 
   void SetUp() override {
+    SetRenderProcessHostFactory(&mock_rph_factory_);
     ChromeRenderViewHostTestHarness::SetUp();
     registry_ = std::make_unique<custom_handlers::ProtocolHandlerRegistry>(
         profile()->GetPrefs(), nullptr);
@@ -603,11 +606,20 @@ class RenderViewContextMenuPrefsTest
       const net::NetworkAnonymizationKey& network_anonymization_key,
       bool success) override {
     last_preresolved_url_ = url;
+    if (!preresolved_finished_closure_.is_null()) {
+      std::move(preresolved_finished_closure_).Run();
+    }
   }
 
   void TearDown() override {
     browser_.reset();
     registry_.reset();
+
+    // Cleanup any spare render processes.
+    DeleteContents();
+    mock_rph_factory_.GetProcesses()->clear();
+    content::RenderProcessHost::SetMaxRendererProcessCount(0);
+
     ChromeRenderViewHostTestHarness::TearDown();
     testing_local_state_.reset();
   }
@@ -678,6 +690,13 @@ class RenderViewContextMenuPrefsTest
   }
 
   const GURL& last_preresolved_url() const { return last_preresolved_url_; }
+  content::MockRenderProcessHostFactory& mock_rph_factory() {
+    return mock_rph_factory_;
+  }
+
+  base::OnceClosure& preresolved_finished_closure() {
+    return preresolved_finished_closure_;
+  }
 
  private:
   std::unique_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
@@ -685,6 +704,9 @@ class RenderViewContextMenuPrefsTest
   raw_ptr<TemplateURLService, DanglingUntriaged> template_url_service_;
   std::unique_ptr<Browser> browser_;
   GURL last_preresolved_url_;
+  base::OnceClosure preresolved_finished_closure_;
+
+  content::MockRenderProcessHostFactory mock_rph_factory_;
 };
 
 // Verifies when Incognito Mode is not available (disabled by policy),
@@ -723,8 +745,8 @@ class RenderViewContextMenuDlpPrefsTest
     policy::dlp_test_util::DlpRule rule("Rule #1", "Block", "testid1");
     rule.AddSrcUrl(PAGE_URL)
         .AddDstUrl(RESTRICTED_URL)
-        .AddRestriction(policy::dlp::kClipboardRestriction,
-                        policy::dlp::kBlockLevel);
+        .AddRestriction(data_controls::kRestrictionClipboard,
+                        data_controls::kLevelBlock);
 
     base::Value::List rules;
     rules.Append(rule.Create());
@@ -1043,8 +1065,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
 
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
   menu->Init();
@@ -1068,8 +1089,7 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   content::WebContentsTester::For(incognito_web_contents.get())
       ->NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+  params.form_control_type = blink::mojom::FormControlType::kInputPassword;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *incognito_web_contents->GetPrimaryMainFrame(), params);
   menu->Init();
@@ -1200,8 +1220,7 @@ class RenderViewContextMenuHideAutofillPopupTest
 TEST_F(RenderViewContextMenuHideAutofillPopupTest, HideAutofillPopup) {
   NavigateAndCommit(GURL("http://www.foo.com/"));
   content::ContextMenuParams params = CreateParams(MenuItem::EDITABLE);
-  params.input_field_type =
-      blink::mojom::ContextMenuDataInputFieldType::kPlainText;
+  params.form_control_type = blink::mojom::FormControlType::kInputText;
   auto menu = std::make_unique<TestRenderViewContextMenu>(
       *web_contents()->GetPrimaryMainFrame(), params);
 
@@ -1683,16 +1702,8 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchChromeUIScheme) {
 
 // Verify that the adding the companion image search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect \
-  DISABLED_CompanionImageSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect \
-  CompanionImageSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_CompanionImageSearchIssuesGoogleLensPreconnect) {
+       CompanionImageSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1714,22 +1725,16 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
 // Verify that the adding the companion region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect \
-  DISABLED_CompanionRegionSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect \
-  CompanionRegionSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_CompanionRegionSearchIssuesGoogleLensPreconnect) {
+       CompanionRegionSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
@@ -1752,22 +1757,16 @@ TEST_F(RenderViewContextMenuPrefsTest,
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
 // Verify that the adding the Lens image search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1492349): Test is flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
-  DISABLED_LensImageSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_LensImageSearchIssuesGoogleLensPreconnect \
-  LensImageSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_LensImageSearchIssuesGoogleLensPreconnect) {
+       LensImageSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
@@ -1786,22 +1785,16 @@ TEST_F(RenderViewContextMenuPrefsTest,
   ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
       IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
 }
 
 // Verify that the adding the Lens region search option to the menu
 // issues a preconnection request to lens.google.com.
-// TODO(crbug.com/1486497): Test is flaky on ChromeOS and Linux.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_LensRegionSearchIssuesGoogleLensPreconnect \
-  DISABLED_LensRegionSearchIssuesGoogleLensPreconnect
-#else
-#define MAYBE_LensRegionSearchIssuesGoogleLensPreconnect \
-  LensRegionSearchIssuesGoogleLensPreconnect
-#endif
 TEST_F(RenderViewContextMenuPrefsTest,
-       MAYBE_LensRegionSearchIssuesGoogleLensPreconnect) {
+       LensRegionSearchIssuesGoogleLensPreconnect) {
   BeginPreresolveListening();
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(lens::features::kLensStandalone);
@@ -1821,8 +1814,191 @@ TEST_F(RenderViewContextMenuPrefsTest,
       IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 
-  base::RunLoop().RunUntilIdle();
+  base::RunLoop run_loop;
+  preresolved_finished_closure() = run_loop.QuitClosure();
+  run_loop.Run();
   ASSERT_EQ(last_preresolved_url().spec(), "https://lens.google.com/");
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       CompanionImageSearchIssuesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{companion::features::internal::kSidePanelCompanion,
+        {{"open-companion-for-image-search", "true"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  ASSERT_EQ(initial_num_processes + 1,
+            mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       CompanionRegionSearchIssuesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{companion::features::internal::kSidePanelCompanion,
+        {{"open-companion-for-image-search", "true"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+
+  ASSERT_EQ(initial_num_processes + 1,
+            mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchIssuesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  ASSERT_EQ(initial_num_processes + 1,
+            mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensRegionSearchIssuesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(lens::features::kLensStandalone);
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH, &model, &index));
+
+  ASSERT_EQ(initial_num_processes + 1,
+            mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       WithoutLensOrCompanionDoesNotIssueProcessPrewarming) {
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       CompanionPrewarmingFlagDisablesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{companion::features::internal::kSidePanelCompanion,
+        {{"open-companion-for-image-search", "true"},
+         {"companion-issue-process-prewarming", "false"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       LensPrewarmingFlagDisablesProcessPrewarming) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{lens::features::kLensStandalone,
+        {{"lens-issue-process-prewarming", "false"}}}},
+      {});
+  SetUserSelectedDefaultSearchProvider("https://www.google.com",
+                                       /*supports_image_search=*/true);
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+
+  unsigned int initial_num_processes =
+      mock_rph_factory().GetProcesses()->size();
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  size_t index = 0;
+  ui::MenuModel* model = nullptr;
+  ASSERT_TRUE(menu.GetMenuModelAndItemIndex(
+      IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE, &model, &index));
+
+  ASSERT_EQ(initial_num_processes, mock_rph_factory().GetProcesses()->size());
 }
 
 // Verify that the new badge is added to region search context menu items if

@@ -280,100 +280,61 @@ def generate_icon_resource_code():
     grdp_file.write('</grit-part>\n')
 
 
-def delete_previously_generated_code():
-  """Deletes the previously generated code.
-
-  Deletes the previously generated code in `search_engine_choice_ui.cc`.
-  """
-  print('Deleting previously generated code from search_engine_choice_ui.cc...')
-  with open(
-      '../../chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.cc',
-      'r',
-      encoding='utf-8') as desktop_webui_file:
-    # Search for the string that delimit the start and end of the
-    # generated code.
-    lines = desktop_webui_file.readlines()
-
-  with open(
-      '../../chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.cc',
-      'w',
-      encoding='utf-8',
-      newline='') as desktop_webui_file:
-    inside_generated_code = False
-
-    for line in lines:
-      if line.find('// Start of generated code.') != -1:
-        inside_generated_code = True
-
-      if not inside_generated_code:
-        desktop_webui_file.write(line)
-
-      if line.find('// End of generated code.') != -1:
-        inside_generated_code = False
-
-
 def create_adding_icons_to_source_function():
-  """Generates the `AddGeneratedIconResources` in `search_engine_choice_ui.cc`.
+  """Generates the `AddGeneratedIconResources` in
+  `search_engine_choice/generated_icon_utils.cc`.
 
   Generates the function that will be used to populate the `WebUIDataSource`
   with the generated icons.
   """
   print('Creating `AddGeneratedIconResources` function...')
-  with open(
-      '../../chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.cc',
-      'r',
-      encoding='utf-8') as desktop_webui_file:
-    lines = desktop_webui_file.readlines()
 
   with open(
-      '../../chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.cc',
+      '../../chrome/browser/ui/webui/search_engine_choice/generated_icon_utils.cc',
       'w',
       encoding='utf-8',
-      newline='') as desktop_webui_file:
-    for line in lines:
-      if line.find('namespace {') != -1:
-        desktop_webui_file.write('namespace {\n')
-        # Create the function name
-        desktop_webui_file.write('// Start of generated code.\n')
-        desktop_webui_file.write(
-            '// This code is generated using `generate_search_engine_icons.py`.'
-            " Don't modify\n")
-        desktop_webui_file.write('// it manually.\n')
-        desktop_webui_file.write(
-            'void AddGeneratedIconResources(content::WebUIDataSource*'
-            ' source) {\n')
-        desktop_webui_file.write('\tCHECK(source);\n')
+      newline='') as utils_file:
 
-        # Add google to the source
-        desktop_webui_file.write('\t#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
-        desktop_webui_file.write(
-            '\tsource->AddResourcePath("images/google_com.png",'
-            ' IDR_GOOGLE_COM_PNG);\n')
-        desktop_webui_file.write('\t#endif\n')
+    # Add the copyright notice.
+    utils_file.write('// Copyright 2023 The Chromium Authors\n')
+    utils_file.write('// Use of this source code is governed by a BSD-style'
+                     ' license that can be\n')
+    utils_file.write('// found in the LICENSE file.\n\n')
 
-        for engine_keyword in engine_keyword_to_icon_name:
-          engine_name = keyword_to_identifer(engine_keyword)
-          local_image_path = 'images/' + engine_name + '.png'
-          image_resource_id = 'IDR_' + engine_name.upper() + '_PNG'
-          desktop_webui_file.write('\tsource->AddResourcePath("' +
-                                   local_image_path + '", ' +
-                                   image_resource_id + ');\n')
+    # Include the required header files.
+    utils_file.write(
+        '#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"\n\n'
+    )
+    utils_file.write('#include "base/check_op.h"\n')
+    utils_file.write('#include "build/branding_buildflags.h"\n')
+    utils_file.write(
+        '#include "components/grit/components_scaled_resources.h"\n')
+    utils_file.write(
+        '#include "content/public/browser/web_ui_data_source.h"\n\n')
 
-        desktop_webui_file.write('}\n')
-        desktop_webui_file.write('// End of generated code.\n')
-      else:
-        desktop_webui_file.write(line)
+    # Create the function name.
+    utils_file.write(
+        '// This code is generated using `generate_search_engine_icons.py`.'
+        " Don't modify it manually.\n")
+    utils_file.write('void AddGeneratedIconResources(content::WebUIDataSource*'
+                     ' source, const std::string& directory) {\n')
+    utils_file.write('\tCHECK(source);\n')
+    utils_file.write("\tCHECK_EQ(directory.back(), '/');\n")
 
+    # Add google to the source
+    utils_file.write('\t#if BUILDFLAG(GOOGLE_CHROME_BRANDING)\n')
+    utils_file.write('\tsource->AddResourcePath(directory + "google_com.png",'
+                     ' IDR_GOOGLE_COM_PNG);\n')
+    utils_file.write('\t#endif\n')
 
-def add_icon_resources_to_desktop_webui_data_source():
-  """Handles code generation in `search_engine_choice_ui.cc`.
+    for engine_keyword in engine_keyword_to_icon_name:
+      engine_name = keyword_to_identifer(engine_keyword)
+      local_image_path = engine_name + '.png'
+      image_resource_id = 'IDR_' + engine_name.upper() + '_PNG'
+      utils_file.write('\tsource->AddResourcePath(directory + "' +
+                       local_image_path + '", ' + image_resource_id + ');\n')
 
-  Handles the deletion of the previously generated code in the generation of the
-  new code in `search_engine_choice_ui.cc`.
-  """
-  print('Adding icon resources to desktop webUI data source...')
-  delete_previously_generated_code()
-  create_adding_icons_to_source_function()
+    utils_file.write('}\n')
 
 
 if sys.platform != 'linux':
@@ -396,7 +357,7 @@ engine_keyword_to_icon_name = {}
 populate_used_engines()
 create_icons_from_json_file()
 generate_icon_resource_code()
-add_icon_resources_to_desktop_webui_data_source()
+create_adding_icons_to_source_function()
 # Format the generated code
 os.system('git cl format')
 print('Icon and code generation completed.')

@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser.input;
 
-import org.chromium.base.annotations.CalledByNative;
+import org.jni_zero.CalledByNative;
 
 /**
  * Represents an entry in a text suggestion popup menu. Contains the information

@@ -15,9 +15,9 @@ get to decide.
 
 [TOC]
 
-## Java 10 Language Features
+## Java Language Features
 
-### Type Deduction using `var`
+### Type Deduction using "var" {#var}
 
 A variable declaration can use the `var` keyword in place of the type (similar
 to the `auto` keyword in C++). In line with the [guidance for
@@ -37,33 +37,8 @@ try (var ignored = StrictModeContext.allowDiskWrites()) {
 }
 ```
 
-## Java 8 Language Features
-
-[D8] is used to rewrite some Java 7 & 8 language constructs in a way that is
-compatible with Java 6 (and thus all Android versions). Use of [these features]
-is encouraged.
-
-[D8]: https://developer.android.com/studio/command-line/d8
-[these features]: https://developer.android.com/studio/write/java8-support
-
-## Java Library APIs
-
-Android provides the ability to bundle copies of `java.` APIs alongside
-application code, known as [Java Library Desugaring]. However, since this
-bundling comes with a performance cost, Chrome does not use it. Treat `java.`
-APIs the same as you would `android.` ones and guard them with
-`Build.VERSION.SDK_INT` checks [when necessary]. The one exception is if the
-method is [directly backported by D8] (these are okay to use, since they are
-lightweight). Android Lint will fail if you try to use an API without a
-corresponding `Build.VERSION.SDK_INT` guard or `@RequiresApi` annotation.
-
-[Java Library Desugaring]: https://developer.android.com/studio/write/java8-support-table
-[when necessary]: https://developer.android.com/reference/packages
-[directly backported by D8]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/r8/backported_methods.txt
-
-## Other Language Features & APIs
-
 ### Exceptions
+
 We discourage overly broad catches via `Throwable`, `Exception`, or
 `RuntimeException`, except when dealing with `RemoteException` or similar
 system APIs.
@@ -86,20 +61,6 @@ try {
   // Good - adds useful information.
   throw new RuntimeException(String.format("Failed to parse %s", fileName), e);
 }
-```
-
-### Logging
-
-* Use `org.chromium.base.Log` instead of `android.util.Log`.
-  * It provides `%s` support, and ensures log stripping works correctly.
-* Minimize the use of `Log.w()` and `Log.e()`.
-  * Debug and Info log levels are stripped by ProGuard in release builds, and
-    so have no performance impact for shipping builds. However, Warning and
-    Error log levels are not stripped.
-* Function calls in log parameters are *not* stripped by ProGuard.
-
-```java
-Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
 ```
 
 ### Asserts
@@ -143,7 +104,7 @@ if (BuildConfig.ENABLE_ASSERTS) {
 
 [`BuildConfig.ENABLE_ASSERTS`]: https://source.chromium.org/search?q=symbol:BuildConfig%5C.ENABLE_ASSERTS
 
-#### DCHECKS vs Java Asserts
+#### DCHECKS vs Java Asserts  {#asserts}
 
 `DCHECK` and `assert` are similar, but our guidance for them differs:
  * CHECKs are preferred in C++, whereas asserts are preferred in Java.
@@ -151,22 +112,65 @@ if (BuildConfig.ENABLE_ASSERTS) {
 This is because as a memory-safe language, logic bugs in Java are much less
 likely to be exploitable.
 
-### Streams
+### toString()  {#toString}
 
-Most uses of [Java 8 streams] are discouraged. If you can write your code as an
-explicit loop, then do so. The primary reason for this guidance is because the
-lambdas (and method references) needed for streams almost always result in
-larger binary size ([example](https://chromium-review.googlesource.com/c/chromium/src/+/4329952).
+Use explicit serialization methods (e.g. `toDebugString()` or `getDescription()`)
+instead of `toString()` when dynamic dispatch is not required.
 
-The `parallel()` and `parallelStream()` APIs are simpler than their loop
-equivalents, but are are currently banned due to a lack of a compelling use case
-in Chrome. If you find one, please discuss on `java@chromium.org`.
+1. R8 cannot detect when `toString()` is unused, so overrides will not be stripped
+   when unused.
+2. R8 cannot optimize / inline these calls as well as non-overriding methods.
 
-[Java 8 streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+### Records & AutoValue {#records}
+
+```java
+// Banned.
+record Rectangle(float length, float width) {}
+```
+
+**Rationale:**
+ * To avoid dead code:
+   * Records and `@AutoValue` generate `equals()`, `hashCode()`, and `toString()`,
+     which `R8` is unable to remove when unused.
+   * When these methods are required, implement them explicitly so that the
+     intention is clear.
+ * Also - supporting `record` requires build system work ([crbug/1493366]).
+
+Example with `equals()` and `hashCode()`:
+
+```java
+public class ValueClass {
+    private final SomeClass mObjMember;
+    private final int mIntMember;
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof ValueClass vc
+                && Objects.equals(mObjMember, vc.mObjMember)
+                && mIntMember == vc.mIntMember;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mObjMember, mIntMember);
+    }
+}
+```
+
+[crbug/1493366]: https://crbug.com/1493366
+
+### Enums
+
+Banned. Use [`@IntDef`](#intdefs) instead.
+
+**Rationale:**
+
+Java enums generate a lot of bytecode. Use constants where possible. When a
+custom type hierarchy is required, use explicit classes with inheritance.
 
 ### Finalizers
 
-In line with [Google's Java style guide](https://google.github.io/styleguide/javaguide.html#s6.4-finalizers),
+In line with [Google's Java style guide] and [Android's Java style guide],
 never override `Object.finalize()`.
 
 Custom finalizers:
@@ -178,23 +182,64 @@ Classes that need destructor logic should provide an explicit `destroy()`
 method. Use [LifetimeAssert](https://chromium.googlesource.com/chromium/src/+/main/base/android/java/src/org/chromium/base/LifetimeAssert.java)
 to ensure in debug builds and tests that `destroy()` is called.
 
-### AndroidX Annotations
+[Google's Java style guide]: https://google.github.io/styleguide/javaguide.html#s6.4-finalizers
+[Android's Java style guide]: https://source.android.com/docs/setup/contribute/code-style#dont-use-finalizers
 
-* Use them! They are [documented here](https://developer.android.com/studio/write/annotations).
+## Java Library APIs
+
+Android provides the ability to bundle copies of `java.*` APIs alongside
+application code, known as [Java Library Desugaring]. However, since this
+bundling comes with a performance cost, Chrome does not use it. Treat `java.*`
+APIs the same as you would `android.*` ones and guard them with
+`Build.VERSION.SDK_INT` checks [when necessary]. The one exception is if the
+method is [directly backported by D8] (these are okay to use, since they are
+lightweight). Android Lint will fail if you try to use an API without a
+corresponding `Build.VERSION.SDK_INT` guard or `@RequiresApi` annotation.
+
+[Java Library Desugaring]: https://developer.android.com/studio/write/java8-support-table
+[when necessary]: https://developer.android.com/reference/packages
+[directly backported by D8]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/r8/backported_methods.txt
+
+### Logging
+
+* Use `org.chromium.base.Log` instead of `android.util.Log`.
+  * It provides `%s` support, and ensures log stripping works correctly.
+* Minimize the use of `Log.w()` and `Log.e()`.
+  * Debug and Info log levels are stripped by ProGuard in release builds, and
+    so have no performance impact for shipping builds. However, Warning and
+    Error log levels are not stripped.
+* Function calls in log parameters are *not* stripped by ProGuard.
+
+```java
+Log.d(TAG, "There are %d cats", countCats());  // countCats() not stripped.
+```
+
+### Streams
+
+Most uses of [Java streams] are discouraged. If you can write your code as an
+explicit loop, then do so. The primary reason for this guidance is because the
+lambdas (and method references) needed for streams almost always result in
+larger binary size ([example](https://chromium-review.googlesource.com/c/chromium/src/+/4329952).
+
+The `parallel()` and `parallelStream()` APIs are simpler than their loop
+equivalents, but are are currently banned due to a lack of a compelling use case
+in Chrome. If you find one, please discuss on `java@chromium.org`.
+
+[Java streams]: https://docs.oracle.com/javase/8/docs/api/java/util/stream/package-summary.html
+
+### AndroidX Annotations {#annotations}
+
+* Use them liberally. They are [documented here](https://developer.android.com/studio/write/annotations).
   * They generally improve readability.
-  * Some make lint more useful.
+  * Many make lint more useful.
 * `javax.annotation.Nullable` vs `androidx.annotation.Nullable`
   * Always prefer `androidx.annotation.Nullable`.
   * It uses `@Retention(SOURCE)` rather than `@Retention(RUNTIME)`.
 
-### IntDef Instead of Enum
+#### IntDefs {#intdefs}
 
-Java enums generate far more bytecode than integer constants. When integers are
-sufficient, prefer using an [@IntDef annotation], which will have usage checked
-by [Android lint].
-
-Values can be declared outside or inside the `@interface`. We recommend the
-latter, with constants nested within it as follows:
+Values can be declared outside or inside the `@interface`. Chromium style is
+to declare inside.
 
 ```java
 @IntDef({ContactsPickerAction.CANCEL, ContactsPickerAction.CONTACTS_SELECTED,
@@ -217,7 +262,8 @@ Values of `Integer` type are also supported, which allows using a sentinel
 [@IntDef annotation]: https://developer.android.com/studio/write/annotations#enum-annotations
 [Android lint]: https://chromium.googlesource.com/chromium/src/+/HEAD/build/android/docs/lint.md
 
-## Style / Formatting
+
+## Style / Formatting {#style}
 
 ### File Headers
 * Use the same format as in the [C++ style guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#File-headers).
@@ -228,7 +274,19 @@ Values of `Integer` type are also supported, which allows using a sentinel
   * `TODO(username): Some sentence here.`
   * `TODO(crbug.com/123456): Even better to use a bug for context.`
 
-### Code Formatting
+### Parameter Comments
+
+Use [parameter comments] when they aid in the readability of a function call.
+
+E.g.:
+
+```java
+someMethod(/* enabled= */ true, /* target= */ null, defaultValue);
+```
+
+[parameter comments]: https://errorprone.info/bugpattern/ParameterName
+
+### Default Field Initializers
 
 * Fields should not be explicitly initialized to default values (see
   [here](https://groups.google.com/a/chromium.org/d/topic/chromium-dev/ylbLOvLs0bs/discussion)).
@@ -358,32 +416,14 @@ much like
 
 ## Tools
 
-### Automatically Formatting Edited Files
-
-A checkout should give you clang-format to automatically format Java code.
-It is suggested that Clang's formatting of code should be accepted in code
-reviews.
+`google-java-format` is used to auto-format Java files. Formatting of its code
+should be accepted in code reviews.
 
 You can run `git cl format` to apply the automatic formatting.
 
-### IDE Setup
+Chromium also makes use of several [static analysis] tools.
 
-For automatically using the correct style, follow the guide to set up your
-favorite IDE:
-
-* [Android Studio](https://chromium.googlesource.com/chromium/src/+/main/docs/android_studio.md)
-* [Eclipse](https://chromium.googlesource.com/chromium/src/+/main/docs/eclipse.md)
-
-### Checkstyle
-
-Checkstyle is automatically run by the build bots, and to ensure you do not have
-any surprises, you can also set up checkstyle locally using [this
-guide](https://sites.google.com/a/chromium.org/dev/developers/checkstyle).
-
-### Lint
-
-Lint is run as part of the build. For more information, see
-[here](https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md).
+[static analysis]: /build/android/docs/static_analysis.md
 
 ## Miscellany
 

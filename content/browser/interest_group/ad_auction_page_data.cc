@@ -110,6 +110,15 @@ AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
   return &it->second;
 }
 
+data_decoder::DataDecoder* AdAuctionPageData::GetDecoderFor(
+    const url::Origin& origin) {
+  std::unique_ptr<data_decoder::DataDecoder>& decoder = decoder_map_[origin];
+  if (!decoder) {
+    decoder = std::make_unique<data_decoder::DataDecoder>();
+  }
+  return decoder.get();
+}
+
 AdAuctionRequestContext::AdAuctionRequestContext(
     url::Origin seller,
     base::flat_map<url::Origin, std::vector<std::string>> group_names,
@@ -118,10 +127,7 @@ AdAuctionRequestContext::AdAuctionRequestContext(
     : seller(std::move(seller)),
       group_names(std::move(group_names)),
       context(std::move(context)),
-      start_time(start_time),
-      decoder(std::make_unique<data_decoder::DataDecoder>()) {
-  decoder->GetService();  // pre-warm decoder.
-}
+      start_time(start_time) {}
 AdAuctionRequestContext::AdAuctionRequestContext(
     AdAuctionRequestContext&& other) = default;
 AdAuctionRequestContext::~AdAuctionRequestContext() = default;

@@ -41,6 +41,6 @@ startWebGLContext = function(opt_attrs) {
   }
 
   if (window.domAutomationController) {
-    domAutomationController.send("FINISHED");
+    domAutomationController.send("SUCCESS");
   }
 }

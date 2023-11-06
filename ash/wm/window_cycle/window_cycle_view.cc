@@ -27,7 +27,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -62,12 +61,7 @@ namespace {
 constexpr int kBackgroundCornerRadius = 16;
 
 // Shield horizontal inset.
-constexpr int kBackgroundHorizontalInsetDp = 8;
-
-// Shield horizontal inset when Jellyroll is enabled.
-// TODO(b/282753971): Rename this to `kBackgroundHorizontalInsetDp` and remove
-// `kBackgroundHorizontalInsetDp` above.
-constexpr int kBackgroundHorizontalInsetDpCrOSNext = 40;
+constexpr int kBackgroundHorizontalInsetDp = 40;
 
 // Vertical padding between the alt-tab bandshield and the window previews.
 constexpr int kInsideBorderVerticalPaddingDp = 60;
@@ -76,13 +70,7 @@ constexpr int kInsideBorderVerticalPaddingDp = 60;
 constexpr int kMirrorContainerVerticalPaddingDp = 24;
 
 // Padding between the window previews within the alt-tab bandshield.
-constexpr int kBetweenChildPaddingDp = 10;
-
-// Padding between the window previews within the alt-tab bandshield when
-// feature flag Jellyroll is enabled.
-// TODO(http://b/291622042): Rename this to `kBetweenChildPaddingDp`, and
-// remove `kBetweenChildPaddingDp` above.
-constexpr int kBetweenChildPaddingDpCrOSNext = 12;
+constexpr int kBetweenChildPaddingDp = 12;
 
 // Padding between the tab slider button and the tab slider container.
 constexpr int kTabSliderContainerVerticalPaddingDp = 32;
@@ -172,16 +160,11 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
   SetBackground(views::CreateThemedRoundedRectBackground(
-      is_jellyroll_enabled ? cros_tokens::kCrosSysScrim2
-                           : static_cast<ui::ColorId>(kColorAshShieldAndBase80),
-      kBackgroundCornerRadius));
+      cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
-      is_jellyroll_enabled
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   // `mirror_container_` may be larger than `this`. In this case, it will be
   // shifted along the x-axis when the user tabs through. It is a container
@@ -198,8 +181,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp,
                             kInsideBorderVerticalPaddingDp,
                             WindowCycleView::kInsideBorderHorizontalPaddingDp),
-          is_jellyroll_enabled ? kBetweenChildPaddingDpCrOSNext
-                               : kBetweenChildPaddingDp));
+          kBetweenChildPaddingDp));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -227,9 +209,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
     views::FocusRing::Install(tab_slider_selector_view);
     auto* focus_ring = views::FocusRing::Get(tab_slider_selector_view);
     focus_ring->SetOutsetFocusRingDisabled(true);
-    focus_ring->SetColorId(is_jellyroll_enabled ? cros_tokens::kCrosSysFocusRing
-                                                : static_cast<ui::ColorId>(
-                                                      ui::kColorAshFocusRing));
+    focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
     const float halo_inset = focus_ring->GetHaloThickness() / 2.f + 2;
     focus_ring->SetHaloInset(-halo_inset);
     // Set a pill shaped (fully rounded rect) highlight path to focus ring.
@@ -399,7 +379,7 @@ void WindowCycleView::FadeInLayer() {
   settings.CacheRenderSurface();
   ui::AnimationThroughputReporter reporter(
       settings.GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+      metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kShowAnimationSmoothness, smoothness);
       })));
 
@@ -563,9 +543,7 @@ bool WindowCycleView::IsEventInTabSliderContainer(
 
 int WindowCycleView::CalculateMaxWidth() const {
   return root_window_->GetBoundsInScreen().size().width() -
-         2 * (chromeos::features::IsJellyrollEnabled()
-                  ? kBackgroundHorizontalInsetDpCrOSNext
-                  : kBackgroundHorizontalInsetDp);
+         2 * kBackgroundHorizontalInsetDp;
 }
 
 gfx::Size WindowCycleView::CalculatePreferredSize() const {
@@ -694,7 +672,7 @@ void WindowCycleView::Layout() {
     settings->SetTransitionDuration(kContainerSlideDuration);
     reporter.emplace(
         settings->GetAnimator(),
-        metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
           // Reports animation metrics when the mirror container, which holds
           // all the preview views slides along the x-axis. This can happen
           // while tabbing through windows, if the window cycle ui spans the

@@ -20,7 +20,7 @@
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -81,7 +81,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
                        CHROME_VERSION_MAJOR);
 
     // Set time to some arbitrary date.
-    test_clock.SetNow(base::Time::FromDoubleT(1546889367));
+    test_clock.SetNow(base::Time::FromSecondsSinceUnixEpoch(1546889367));
     web_data_service_ = base::MakeRefCounted<MockAutofillWebDataService>();
     autocomplete_manager_ = std::make_unique<AutocompleteHistoryManager>();
     autocomplete_manager_->Init(web_data_service_, prefs_.get(), false);
@@ -116,18 +116,18 @@ class AutocompleteHistoryManagerTest : public testing::Test {
   }
 
   std::unique_ptr<WDTypedResult> GetMockedDbResults(
-      std::vector<AutofillEntry> values) {
-    return std::make_unique<WDResult<std::vector<AutofillEntry>>>(
+      std::vector<AutocompleteEntry> values) {
+    return std::make_unique<WDResult<std::vector<AutocompleteEntry>>>(
         AUTOFILL_VALUE_RESULT, values);
   }
 
-  AutofillEntry GetAutofillEntry(
+  AutocompleteEntry GetAutocompleteEntry(
       const std::u16string& name,
       const std::u16string& value,
       const base::Time& date_created = AutofillClock::Now(),
       const base::Time& date_last_used = AutofillClock::Now()) {
-    return AutofillEntry(AutofillKey(name, value), date_created,
-                         date_last_used);
+    return AutocompleteEntry(AutocompleteKey(name, value), date_created,
+                             date_last_used);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -476,7 +476,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values;
+  std::vector<AutocompleteEntry> expected_values;
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -574,7 +574,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   test_field_ = CreateTestFormField(/*label=*/"", "foOTPace", /*value=*/"",
                                     FormControlType::kInputText);
 
-  std::vector<AutofillEntry> expected_values;
+  std::vector<AutocompleteEntry> expected_values;
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -610,7 +610,7 @@ TEST_F(AutocompleteHistoryManagerTest,
   test_field_ = CreateTestFormField(/*label=*/"", "addressline_1", /*value=*/"",
                                     FormControlType::kInputText);
 
-  std::vector<AutofillEntry> expected_values;
+  std::vector<AutocompleteEntry> expected_values;
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -644,8 +644,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -684,8 +684,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -724,8 +724,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_field_.name, test_field_.value)};
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(test_field_.name, test_field_.value)};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -761,8 +761,8 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_field_.name, u"someprefix")};
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(test_field_.name, u"someprefix")};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -804,13 +804,14 @@ TEST_F(AutocompleteHistoryManagerTest,
   std::u16string other_test_value = u"SomePrefixOne";
   int days_since_last_use = 10;
 
-  std::vector<AutofillEntry> expected_values = {
-      GetAutofillEntry(test_field_.name, test_value,
-                       AutofillClock::Now() - base::Days(30),
-                       AutofillClock::Now() - base::Days(days_since_last_use)),
-      GetAutofillEntry(test_field_.name, other_test_value,
-                       AutofillClock::Now() - base::Days(30),
-                       AutofillClock::Now() - base::Days(days_since_last_use))};
+  std::vector<AutocompleteEntry> expected_values = {
+      GetAutocompleteEntry(
+          test_field_.name, test_value, AutofillClock::Now() - base::Days(30),
+          AutofillClock::Now() - base::Days(days_since_last_use)),
+      GetAutocompleteEntry(
+          test_field_.name, other_test_value,
+          AutofillClock::Now() - base::Days(30),
+          AutofillClock::Now() - base::Days(days_since_last_use))};
 
   std::unique_ptr<WDTypedResult> mocked_results =
       GetMockedDbResults(expected_values);
@@ -850,11 +851,11 @@ TEST_F(AutocompleteHistoryManagerTest,
 
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
+  std::vector<AutocompleteEntry> expected_values_first = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
 
-  std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
+  std::vector<AutocompleteEntry> expected_values_second = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -919,11 +920,11 @@ TEST_F(AutocompleteHistoryManagerTest,
   auto suggestions_handler_first = std::make_unique<MockSuggestionsHandler>();
   auto suggestions_handler_second = std::make_unique<MockSuggestionsHandler>();
 
-  std::vector<AutofillEntry> expected_values_first = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
+  std::vector<AutocompleteEntry> expected_values_first = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
 
-  std::vector<AutofillEntry> expected_values_second = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
+  std::vector<AutocompleteEntry> expected_values_second = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixTwo")};
 
   std::unique_ptr<WDTypedResult> mocked_results_first =
       GetMockedDbResults(expected_values_first);
@@ -984,16 +985,16 @@ TEST_F(AutocompleteHistoryManagerTest,
   // cancelled.
   auto suggestions_handler_one = std::make_unique<MockSuggestionsHandler>();
   int mocked_db_query_id_one = 100;
-  std::vector<AutofillEntry> expected_values_one = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixOne")};
+  std::vector<AutocompleteEntry> expected_values_one = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixOne")};
   std::unique_ptr<WDTypedResult> mocked_results_one =
       GetMockedDbResults(expected_values_one);
 
   // Initialize variables for the second handler, which will be fulfilled.
   auto suggestions_handler_two = std::make_unique<MockSuggestionsHandler>();
   int mocked_db_query_id_two = 101;
-  std::vector<AutofillEntry> expected_values_two = {
-      GetAutofillEntry(test_field_.name, u"SomePrefixTwo")};
+  std::vector<AutocompleteEntry> expected_values_two = {
+      GetAutocompleteEntry(test_field_.name, u"SomePrefixTwo")};
   std::unique_ptr<WDTypedResult> mocked_results_two =
       GetMockedDbResults(expected_values_two);
 

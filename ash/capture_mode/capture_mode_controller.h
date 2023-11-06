@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
@@ -22,7 +23,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
@@ -119,6 +119,10 @@ class ASH_EXPORT CaptureModeController
             !video_recording_watcher_->is_shutting_down());
   }
   bool enable_demo_tools() const { return enable_demo_tools_; }
+
+  CaptureModeEducationController* education_controller() {
+    return education_controller_.get();
+  }
 
   // Returns true if a capture mode session is currently active. If you only
   // need to call this method, but don't need the rest of the controller, use
@@ -715,6 +719,8 @@ class ASH_EXPORT CaptureModeController
       behaviors_map_;
 
   base::ObserverList<CaptureModeObserver> observers_;
+
+  std::unique_ptr<CaptureModeEducationController> education_controller_;
 
   base::WeakPtrFactory<CaptureModeController> weak_ptr_factory_{this};
 };

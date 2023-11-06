@@ -121,8 +121,12 @@ std::string AXEventRecorderAuraLinux::AtkObjectToString(AtkObject* obj,
       base::StringPrintf("role=ROLE_%s", base::ToUpperASCII(role).c_str());
   // Getting the name breaks firing of name-change events. Allow disabling of
   // logging the name in those situations.
-  if (include_name)
-    str += base::StringPrintf(" name='%s'", atk_object_get_name(obj));
+  if (include_name) {
+    // Supplying null to the corresponding argument of a "%s" specifier is UB.
+    // Explicitly avoid this.
+    const gchar* name = atk_object_get_name(obj);
+    str += base::StringPrintf(" name='%s'", name ? name : "(null)");
+  }
   return str;
 }
 

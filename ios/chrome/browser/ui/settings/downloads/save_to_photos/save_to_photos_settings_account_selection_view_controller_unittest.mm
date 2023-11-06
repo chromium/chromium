@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_selection/account_picker_selection_screen_identity_item_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h"
 #import "ios/chrome/browser/ui/settings/downloads/save_to_photos/fake_save_to_photos_settings_mutator.h"
@@ -76,10 +76,10 @@ AccountPickerSelectionScreenIdentityItemConfigurator* CreateConfigurator(
 @end
 
 class SaveToPhotosSettingsAccountSelectionViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() final {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     mutator_ = [[FakeSaveToPhotosSettingsMutator alloc] init];
     presentation_delegate_ =
@@ -92,9 +92,9 @@ class SaveToPhotosSettingsAccountSelectionViewControllerTest
     CreateController();
   }
 
-  void TearDown() final { ChromeTableViewControllerTest::TearDown(); }
+  void TearDown() final { LegacyChromeTableViewControllerTest::TearDown(); }
 
-  ChromeTableViewController* InstantiateController() final {
+  LegacyChromeTableViewController* InstantiateController() final {
     SaveToPhotosSettingsAccountSelectionViewController* controller =
         [[SaveToPhotosSettingsAccountSelectionViewController alloc] init];
     controller.mutator = mutator_;

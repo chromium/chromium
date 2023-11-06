@@ -168,7 +168,7 @@ class CORE_EXPORT MessageEvent final : public Event {
   EventTarget* source() const { return source_.Get(); }
   MessagePortArray ports();
   bool isPortsDirty() const { return is_ports_dirty_; }
-  UserActivation* userActivation() const { return user_activation_; }
+  UserActivation* userActivation() const { return user_activation_.Get(); }
   mojom::blink::DelegatedCapability delegatedCapability() const {
     return delegated_capability_;
   }

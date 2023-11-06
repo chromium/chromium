@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 
+#include "base/time/default_tick_clock.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
@@ -22,21 +24,6 @@ float MVPScoringFunction(const TabStripModel* const model) {
 }
 
 constexpr int kMinTabCount = 7;
-
-// Trigger only first time a trigger moment occurs.
-class GreedyTriggerPolicy final : public TriggerPolicy {
- public:
-  bool ShouldTrigger(float score) override {
-    if (has_triggered_) {
-      return false;
-    }
-    has_triggered_ = true;
-    return true;
-  }
-
- private:
-  bool has_triggered_ = false;
-};
 }  // namespace
 
 TabOrganizationTrigger::TabOrganizationTrigger(
@@ -59,8 +46,22 @@ bool TabOrganizationTrigger::ShouldTrigger(
   return policy_->ShouldTrigger(score);
 }
 
+TriggerScoringFunction GetDefaultTriggerScoringFunction() {
+  return base::BindRepeating(&MVPScoringFunction);
+}
+
+float GetDefaultTriggerScoreThreshold() {
+  return kMinTabCount;
+}
+
+std::unique_ptr<TriggerPolicy> GetDefaultTriggerPolicy() {
+  return std::make_unique<TargetFrequencyTriggerPolicy>(
+      std::make_unique<UsageTickClock>(base::DefaultTickClock::GetInstance()),
+      base::Hours(6));
+}
+
 std::unique_ptr<TabOrganizationTrigger> MakeMVPTrigger() {
   return std::make_unique<TabOrganizationTrigger>(
-      base::BindRepeating(&MVPScoringFunction), kMinTabCount,
-      std::make_unique<GreedyTriggerPolicy>());
+      GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
+      GetDefaultTriggerPolicy());
 }

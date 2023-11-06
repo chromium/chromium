@@ -101,16 +101,17 @@ void PowerTrayView::UpdateLabelOrImageViewColor(bool active) {
   }
   TrayItemView::UpdateLabelOrImageViewColor(active);
 
-  const SkColor icon_fg_color = GetColorProvider()->GetColor(
-      active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-             : cros_tokens::kCrosSysOnSurface);
-  absl::optional<SkColor> badge_color =
-      features::IsBatterySaverAvailable()
-          ? absl::make_optional<SkColor>(icon_fg_color)
-          : absl::nullopt;
+  cros_tokens::CrosSysColorIds icon_fg_token = cros_tokens::kCrosSysOnSurface;
+  if (active) {
+    icon_fg_token = cros_tokens::kCrosSysSystemOnPrimaryContainer;
+  } else if (features::IsBatterySaverAvailable() &&
+             PowerStatus::Get()->IsBatterySaverActive()) {
+    icon_fg_token = cros_tokens::kCrosSysSystemWarningInverse;
+  }
+  const SkColor icon_fg_color = GetColorProvider()->GetColor(icon_fg_token);
 
   PowerStatus::BatteryImageInfo info =
-      PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color, badge_color);
+      PowerStatus::Get()->GenerateBatteryImageInfo(icon_fg_color);
 
   image_view()->SetImage(PowerStatus::GetBatteryImage(
       info, kUnifiedTrayBatteryIconSize, GetColorProvider()));

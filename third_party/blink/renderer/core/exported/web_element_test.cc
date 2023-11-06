@@ -15,7 +15,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
@@ -94,6 +96,52 @@ TEST_F(WebElementTest, IsAutonomousCustomElement) {
   auto* v1autonomous = v1builtin->previousSibling();
   EXPECT_TRUE(
       WebElement(To<Element>(v1autonomous)).IsAutonomousCustomElement());
+}
+
+TEST_F(WebElementTest, PasteTextIntoContentEditable) {
+  InsertHTML(
+      "<div id=testElement contenteditable>Some <b>rich text</b> here.</div>"
+      "<textarea>Some plain text here.</textarea>");
+  auto* element = GetDocument().getElementById(AtomicString("testElement"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  Selection().SelectSubString(*element->firstElementChild(), 0, 9);
+  ASSERT_EQ(Selection().SelectedText(), String("rich text"));
+  // Paste and append.
+  TestElement().PasteText("fancy text", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Some <b>fancy text</b>&nbsp;here.");
+  // Paste and replace all.
+  TestElement().PasteText("Hello", /*replace_all=*/true);
+  EXPECT_EQ(element->innerHTML(), "Hello");
+  // Paste into an unfocused element.
+  element->nextElementSibling()->Focus();
+  TestElement().PasteText("world", /*replace_all=*/false);
+  EXPECT_EQ(element->innerHTML(), "Hello&nbsp;world");
+}
+
+TEST_F(WebElementTest, PasteTextIntoTextArea) {
+  InsertHTML(
+      "<div contenteditable>Some <b>rich text</b> here.</div>"
+      "<textarea id=testElement>Some plain text here.</textarea>");
+  auto* element = blink::To<HTMLTextAreaElement>(
+      GetDocument().getElementById(AtomicString("testElement")));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  element->Focus();
+  element->setSelectionStart(5);
+  element->setSelectionEnd(15);
+  ASSERT_EQ(element->Value().Substring(
+                element->selectionStart(),
+                element->selectionEnd() - element->selectionStart()),
+            String("plain text"));
+  // Paste and append.
+  TestElement().PasteText("boring text", /*replace_all=*/false);
+  EXPECT_EQ(element->Value(), "Some boring text here.");
+  // Paste and replace all.
+  TestElement().PasteText("Hello", /*replace_all=*/true);
+  EXPECT_EQ(element->Value(), "Hello");
+  // Paste into an unfocused element.
+  element->previousElementSibling()->Focus();
+  TestElement().PasteText("world", /*replace_all=*/false);
+  EXPECT_EQ(element->Value(), "Hello world");
 }
 
 TEST_F(WebElementTest, ShadowRoot) {

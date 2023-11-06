@@ -24,28 +24,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Unit test for MessageWrapper.
- */
+/** Unit test for MessageWrapper. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class MessageWrapperTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private MessageWrapper.Natives mNativeMock;
+    @Mock private MessageWrapper.Natives mNativeMock;
 
     @Before
     public void setUp() {
         mJniMocker.mock(MessageWrapperJni.TEST_HOOKS, mNativeMock);
     }
 
-    /**
-     * Tests that message properties are correctly propagated to PropertyModel.
-     */
+    /** Tests that message properties are correctly propagated to PropertyModel. */
     @Test
     @SmallTest
     public void testMessageProperties() {
@@ -53,43 +46,57 @@ public class MessageWrapperTest {
         PropertyModel messageProperties = message.getMessageProperties();
 
         message.setTitle("Title");
-        Assert.assertEquals("Title doesn't match provided value", "Title",
+        Assert.assertEquals(
+                "Title doesn't match provided value",
+                "Title",
                 messageProperties.get(MessageBannerProperties.TITLE));
 
         message.setDescription("Description");
-        Assert.assertEquals("Description doesn't match provided value", "Description",
+        Assert.assertEquals(
+                "Description doesn't match provided value",
+                "Description",
                 messageProperties.get(MessageBannerProperties.DESCRIPTION));
 
         message.setDescriptionMaxLines(2);
-        Assert.assertEquals("Description max lines doesn't match provided value", 2,
+        Assert.assertEquals(
+                "Description max lines doesn't match provided value",
+                2,
                 messageProperties.get(MessageBannerProperties.DESCRIPTION_MAX_LINES));
 
         message.setPrimaryButtonText("Primary button");
-        Assert.assertEquals("Button text doesn't match provided value", "Primary button",
+        Assert.assertEquals(
+                "Button text doesn't match provided value",
+                "Primary button",
                 messageProperties.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
 
         message.setSecondaryButtonMenuText("Secondary button");
-        Assert.assertEquals("Button text doesn't match provided value", "Secondary button",
+        Assert.assertEquals(
+                "Button text doesn't match provided value",
+                "Secondary button",
                 messageProperties.get(MessageBannerProperties.SECONDARY_BUTTON_MENU_TEXT));
 
         message.setIconResourceId(1);
-        Assert.assertEquals("Icon resource id doesn't match provided value", 1,
+        Assert.assertEquals(
+                "Icon resource id doesn't match provided value",
+                1,
                 messageProperties.get(MessageBannerProperties.ICON_RESOURCE_ID));
 
         message.setSecondaryIconResourceId(2);
-        Assert.assertEquals("Icon resource id doesn't match provided value", 2,
+        Assert.assertEquals(
+                "Icon resource id doesn't match provided value",
+                2,
                 messageProperties.get(MessageBannerProperties.SECONDARY_ICON_RESOURCE_ID));
 
-        Assert.assertNull("Initially icon should not be set",
+        Assert.assertNull(
+                "Initially icon should not be set",
                 messageProperties.get(MessageBannerProperties.ICON));
         message.setIcon(Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888));
-        Assert.assertNotNull("Call to setIcon() didn't update ICON property",
+        Assert.assertNotNull(
+                "Call to setIcon() didn't update ICON property",
                 messageProperties.get(MessageBannerProperties.ICON));
     }
 
-    /**
-     * Tests that native functions are called in response to callbacks invocation.
-     */
+    /** Tests that native functions are called in response to callbacks invocation. */
     @Test
     @SmallTest
     public void testCallbacks() {
@@ -100,14 +107,13 @@ public class MessageWrapperTest {
         Mockito.verify(mNativeMock).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock).handleSecondaryActionClick(nativePtr);
-        messageProperties.get(MessageBannerProperties.ON_DISMISSED)
+        messageProperties
+                .get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.PRIMARY_ACTION);
         Mockito.verify(mNativeMock).handleDismissCallback(nativePtr, DismissReason.PRIMARY_ACTION);
     }
 
-    /**
-     * Tests that native callbacks are not delivered if the MessageWrapper was destroyed.
-     */
+    /** Tests that native callbacks are not delivered if the MessageWrapper was destroyed. */
     @Test
     @SmallTest
     public void testDestroyedMessageWrapperCallbacks() {
@@ -120,7 +126,8 @@ public class MessageWrapperTest {
         Mockito.verify(mNativeMock, never()).handleActionClick(nativePtr);
         messageProperties.get(MessageBannerProperties.ON_SECONDARY_ACTION).run();
         Mockito.verify(mNativeMock, never()).handleSecondaryActionClick(nativePtr);
-        messageProperties.get(MessageBannerProperties.ON_DISMISSED)
+        messageProperties
+                .get(MessageBannerProperties.ON_DISMISSED)
                 .onResult(DismissReason.PRIMARY_ACTION);
         Mockito.verify(mNativeMock, never())
                 .handleDismissCallback(Mockito.anyLong(), Mockito.anyInt());
@@ -145,7 +152,9 @@ public class MessageWrapperTest {
         PropertyModel item2 = message.addSecondaryMenuItem(2, 0, "Item 2");
         MessageSecondaryMenuItems messageSecondaryMenuItems =
                 message.getMessageSecondaryMenuItemsForTesting();
-        Assert.assertEquals("Size of secondary menu does not match.", 3,
+        Assert.assertEquals(
+                "Size of secondary menu does not match.",
+                3,
                 messageSecondaryMenuItems.mMenuItems.size());
 
         // Select a secondary menu item.

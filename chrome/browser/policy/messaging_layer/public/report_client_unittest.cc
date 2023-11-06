@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
-#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 
 #include <memory>
 #include <string>
@@ -14,30 +13,29 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/policy/messaging_layer/upload/file_upload_job.h"
+#include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_job_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/dm_token_retriever_provider.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
 #include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
 #include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/policy/core/common/cloud/encrypted_reporting_job_configuration.h"
-#include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/client/dm_token_retriever.h"
 #include "components/reporting/client/mock_dm_token_retriever.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/encryption/decryption.h"
-#include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/storage/test_storage_module.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -53,9 +51,6 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::WithArgs;
 
-using ::policy::CloudPolicyClient;
-using ::policy::MockCloudPolicyClient;
-
 namespace reporting {
 namespace {
 
@@ -64,35 +59,34 @@ constexpr char kDMToken[] = "TOKEN";
 class ReportClientTest : public ::testing::TestWithParam<bool> {
  protected:
   void SetUp() override {
-    ASSERT_TRUE(location_.CreateUniqueTempDir());
-
     // Encryption is enabled by default.
-    ASSERT_TRUE(EncryptionModuleInterface::is_enabled());
     if (is_encryption_enabled()) {
       // Generate signing key pair.
       test::GenerateSigningKeyPair(signing_private_key_,
                                    signature_verification_public_key_);
       // Create decryption module.
       auto decryptor_result = test::Decryptor::Create();
-      ASSERT_OK(decryptor_result.status()) << decryptor_result.status();
-      decryptor_ = std::move(decryptor_result.ValueOrDie());
+      ASSERT_TRUE(decryptor_result.has_value()) << decryptor_result.error();
+      decryptor_ = std::move(decryptor_result.value());
       // Prepare the key.
       signed_encryption_key_ = GenerateAndSignKey();
-      // Disable connection to daemon.
-      scoped_feature_list_.InitFromCommandLine("ProvideUploader",
-                                               "ConnectMissiveDaemon");
     } else {
-      // Disable connection to daemon and encryption.
-      scoped_feature_list_.InitFromCommandLine(
-          "ProvideUploader", "ConnectMissiveDaemon,EncryptedReporting");
+      // Disable encryption.
+      scoped_feature_list_.InitFromCommandLine("", "EncryptedReporting");
     }
 
     // Provide client test environment with local storage.
+#if BUILDFLAG(IS_CHROMEOS)
+    test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
+        base::MakeRefCounted<test::TestStorageModule>());
+#else
+    ASSERT_TRUE(location_.CreateUniqueTempDir());
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithLocalStorage(
-        base::FilePath(location_.GetPath()),
+        location_.GetPath(),
         std::string_view(
             reinterpret_cast<const char*>(signature_verification_public_key_),
             kKeySize));
+#endif
 
     // Use MockDMTokenRetriever and configure it to always return the test DM
     // token by default
@@ -117,8 +111,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
         std::string(reinterpret_cast<const char*>(public_value), kKeySize),
         prepare_key_pair.cb());
     auto prepare_key_result = prepare_key_pair.result();
-    CHECK_OK(prepare_key_result) << prepare_key_result.status();
-    public_key_id = prepare_key_result.ValueOrDie();
+    CHECK(prepare_key_result.has_value()) << prepare_key_result.error();
+    public_key_id = prepare_key_result.value();
     // Prepare public key to be delivered to Storage.
     SignedEncryptionInfo signed_encryption_key;
     signed_encryption_key.set_public_asymmetric_key(
@@ -152,8 +146,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.ok()) << config_result.status();
-    return CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
+    EXPECT_TRUE(config_result.has_value()) << config_result.error();
+    return CreateQueueWithConfig(std::move(config_result.value()));
   }
 
   StatusOr<std::unique_ptr<ReportQueue>> CreateQueueWithConfig(
@@ -169,7 +163,7 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     // Let everything ongoing to finish.
     task_environment_.RunUntilIdle();
 
-    return std::move(report_queue_result);
+    return report_queue_result;
   }
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
@@ -179,10 +173,9 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
             {.event_type = EventType::kUser, .destination = destination_})
             .SetPolicyCheckCallback(policy_checker_callback_)
             .Build();
-    EXPECT_TRUE(config_result.ok()) << config_result.status();
+    EXPECT_TRUE(config_result.has_value()) << config_result.error();
 
-    return CreateSpeculativeQueueWithConfig(
-        std::move(config_result.ValueOrDie()));
+    return CreateSpeculativeQueueWithConfig(std::move(config_result.value()));
   }
 
   std::unique_ptr<ReportQueue, base::OnTaskRunnerDeleter>
@@ -193,9 +186,9 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
     report_queue_config_ = report_queue_config.get();
     auto speculative_queue_result = ReportQueueProvider::CreateSpeculativeQueue(
         std::move(report_queue_config));
-    EXPECT_TRUE(speculative_queue_result.ok())
-        << speculative_queue_result.status();
-    return std::move(speculative_queue_result.ValueOrDie());
+    EXPECT_TRUE(speculative_queue_result.has_value())
+        << speculative_queue_result.error();
+    return std::move(speculative_queue_result.value());
   }
 
   bool is_encryption_enabled() const { return GetParam(); }
@@ -266,6 +259,8 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   // tasks.
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  ReportingServerConnector::TestEnvironment test_env_;
   FileUploadJob::TestEnvironment manager_test_env_;
   std::unique_ptr<ReportingClient::TestEnvironment> test_reporting_;
 
@@ -276,7 +271,6 @@ class ReportClientTest : public ::testing::TestWithParam<bool> {
   scoped_refptr<test::Decryptor> decryptor_;
   SignedEncryptionInfo signed_encryption_key_;
 
-  ReportingServerConnector::TestEnvironment test_env_;
   raw_ptr<ReportQueueConfiguration, DanglingUntriaged> report_queue_config_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
@@ -301,11 +295,11 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
           .SetDMToken(random_dm_token)
           .SetPolicyCheckCallback(policy_checker_callback_)
           .Build();
-  EXPECT_OK(config_result);
+  EXPECT_TRUE(config_result.has_value());
   auto report_queue_result =
-      CreateQueueWithConfig(std::move(config_result.ValueOrDie()));
-  ASSERT_OK(report_queue_result);
-  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+      CreateQueueWithConfig(std::move(config_result.value()));
+  ASSERT_TRUE(report_queue_result.has_value());
+  ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(random_dm_token));
 }
 
@@ -313,48 +307,52 @@ TEST_P(ReportClientTest, CreatesReportQueueWithDMToken) {
 // event type.
 TEST_P(ReportClientTest, CreatesReportQueueGivenEventType) {
   auto report_queue_result = CreateQueue();
-  ASSERT_OK(report_queue_result);
-  ASSERT_THAT(std::move(report_queue_result.ValueOrDie()).get(), Ne(nullptr));
+  ASSERT_TRUE(report_queue_result.has_value());
+  ASSERT_THAT(std::move(report_queue_result.value()).get(), Ne(nullptr));
   EXPECT_THAT(report_queue_config_->dm_token(), StrEq(kDMToken));
 }
 
 // Tests that a ReportQueue cannot be created when there is DM token retrieval
 // failure
 TEST_P(ReportClientTest, CreateReportQueueWhenDMTokenRetrievalFailure) {
-  MockDMTokenRetrieverWithResult(
-      Status(error::INTERNAL, "Simulated DM token retrieval failure"));
+  MockDMTokenRetrieverWithResult(base::unexpected(
+      Status(error::INTERNAL, "Simulated DM token retrieval failure")));
   auto report_queue_result = CreateQueue();
-  EXPECT_FALSE(report_queue_result.ok());
-  EXPECT_EQ(report_queue_result.status().error_code(), error::INTERNAL);
+  ASSERT_FALSE(report_queue_result.has_value());
+  EXPECT_EQ(report_queue_result.error().error_code(), error::INTERNAL);
 }
 
 // Ensures that created ReportQueues are actually different.
 TEST_P(ReportClientTest, CreatesTwoDifferentReportQueues) {
   // Create first queue.
   auto report_queue_result_1 = CreateQueue();
-  ASSERT_OK(report_queue_result_1);
+  ASSERT_TRUE(report_queue_result_1.has_value());
 
   // Create second queue. It will reuse the same ReportClient, so even if
   // encryption is enabled, there will be no roundtrip to server to get the key.
   auto report_queue_result_2 = CreateQueue();
-  ASSERT_OK(report_queue_result_2);
+  ASSERT_TRUE(report_queue_result_2.has_value());
 
-  auto report_queue_1 = std::move(report_queue_result_1.ValueOrDie());
-  auto report_queue_2 = std::move(report_queue_result_2.ValueOrDie());
+  auto report_queue_1 = std::move(report_queue_result_1.value());
+  auto report_queue_2 = std::move(report_queue_result_2.value());
   ASSERT_THAT(report_queue_1.get(), Ne(nullptr));
   ASSERT_THAT(report_queue_2.get(), Ne(nullptr));
 
   EXPECT_NE(report_queue_1.get(), report_queue_2.get());
 }
 
+// Remaining tests are only available with local storage option that does not
+// exist on ChromeOS configuration.
+
+#if !BUILDFLAG(IS_CHROMEOS)
 // Creates queue, enqueues message and verifies it is uploaded.
 TEST_P(ReportClientTest, EnqueueMessageAndUpload) {
   // Create queue.
   auto report_queue_result = CreateQueue();
-  ASSERT_OK(report_queue_result);
+  ASSERT_TRUE(report_queue_result.has_value());
 
   test::TestEvent<Status> enqueue_record_event;
-  std::move(report_queue_result.ValueOrDie())
+  std::move(report_queue_result.value())
       ->Enqueue("Record", FAST_BATCH, enqueue_record_event.cb());
 
   if (is_encryption_enabled()) {
@@ -410,6 +408,7 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   VerifyDataUpload(std::move(request_body));
   test_env_.SimulateResponseForRequest(0);
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(ReportClientTestSuite,
                          ReportClientTest,

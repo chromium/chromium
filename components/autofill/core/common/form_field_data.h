@@ -183,8 +183,7 @@ struct FormFieldData {
   // - FormFieldData::options,
   // - FormFieldData::label_source,
   // - FormFieldData::bounds,
-  // - FormFieldData::datalist_values,
-  // - FormFieldData::datalist_labels.
+  // - FormFieldData::datalist_options.
   static bool DeepEqual(const FormFieldData& a, const FormFieldData& b);
 
   FormFieldData();
@@ -366,13 +365,10 @@ struct FormFieldData {
   // server side or be used for field comparison and isn't in serialize methods.
   gfx::RectF bounds;
 
-  // The datalist is associated with this field, if any. The following two
-  // vectors valid if not empty, will not be synced to the server side or be
-  // used for field comparison and aren't in serialize methods.
-  // The datalist option is intentionally separated from |options| because they
-  // are handled very differently in Autofill.
-  std::vector<std::u16string> datalist_values;
-  std::vector<std::u16string> datalist_labels;
+  // The datalist is associated with this field, if any. Will not be synced to
+  // the server side or be used for field comparison and aren't in serialize
+  // methods.
+  std::vector<SelectOption> datalist_options;
 
   // When sent from browser to renderer, this bit indicates whether a field
   // should be filled even though it is already considered autofilled OR

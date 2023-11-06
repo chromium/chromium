@@ -4,6 +4,8 @@
 
 #include "chrome/installer/util/install_service_work_item.h"
 
+#include <shlobj.h>
+
 #include <memory>
 #include <vector>
 
@@ -15,6 +17,7 @@
 #include "chrome/install_static/install_util.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #include "chrome/installer/util/install_service_work_item_impl.h"
+#include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/work_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -122,19 +125,33 @@ class InstallServiceWorkItemTest : public ::testing::Test {
     }
 
     // Check IID registration.
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_LOCAL_MACHINE, kIidPSRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-    EXPECT_EQ(L"{00020424-0000-0000-C000-000000000046}", value);
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(L"Interface {0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}", value);
 
-    EXPECT_EQ(ERROR_SUCCESS,
-              key.Open(HKEY_LOCAL_MACHINE, kIidTLBRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
-    EXPECT_EQ(base::win::WStringFromGUID(kIid), value);
-    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"Version", &value));
-    EXPECT_EQ(L"1.0", value);
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, kIidPSRegPath,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(L"{00020424-0000-0000-C000-000000000046}", value);
+
+      EXPECT_EQ(ERROR_SUCCESS, key.Open(HKEY_LOCAL_MACHINE, kIidTLBRegPath,
+                                        KEY_READ | key_flag));
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+      EXPECT_EQ(base::win::WStringFromGUID(kIid), value);
+      EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"Version", &value));
+      EXPECT_EQ(L"1.0", value);
+    }
 
     // Check TypeLib registration.
+    EXPECT_EQ(
+        ERROR_SUCCESS,
+        key.Open(HKEY_LOCAL_MACHINE, TYPELIB_REGISTRY_PATH L"\\1.0", KEY_READ));
+    EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
+    EXPECT_EQ(L"TypeLib for Interface {0F9A0C1C-A94A-4C0A-93C7-81330526AC7B}",
+              value);
+
     EXPECT_EQ(ERROR_SUCCESS,
               key.Open(HKEY_LOCAL_MACHINE, kTypeLibWin32RegPath, KEY_READ));
     EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(L"", &value));
@@ -154,8 +171,11 @@ class InstallServiceWorkItemTest : public ::testing::Test {
               key.Open(HKEY_LOCAL_MACHINE, kClsidRegPath, KEY_READ));
     EXPECT_EQ(ERROR_FILE_NOT_FOUND,
               key.Open(HKEY_LOCAL_MACHINE, kAppidRegPath, KEY_READ));
-    EXPECT_EQ(ERROR_FILE_NOT_FOUND,
-              key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH, KEY_READ));
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      EXPECT_EQ(
+          ERROR_FILE_NOT_FOUND,
+          key.Open(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH, KEY_READ | key_flag));
+    }
     EXPECT_EQ(ERROR_FILE_NOT_FOUND,
               key.Open(HKEY_LOCAL_MACHINE, TYPELIB_REGISTRY_PATH, KEY_READ));
   }
@@ -167,7 +187,10 @@ class InstallServiceWorkItemTest : public ::testing::Test {
     base::win::RegKey key(HKEY_LOCAL_MACHINE, L"", KEY_READ);
     key.DeleteKey(kClsidRegPath);
     key.DeleteKey(kAppidRegPath);
-    key.DeleteKey(IID_REGISTRY_PATH);
+    for (const auto& key_flag : {KEY_WOW64_32KEY, KEY_WOW64_64KEY}) {
+      installer::DeleteRegistryKey(HKEY_LOCAL_MACHINE, IID_REGISTRY_PATH,
+                                   key_flag);
+    }
     key.DeleteKey(TYPELIB_REGISTRY_PATH);
   }
 
@@ -198,6 +221,10 @@ TEST_F(InstallServiceWorkItemTest, Do_MultiSzToVector) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -220,6 +247,10 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstall) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
@@ -238,6 +269,10 @@ TEST_F(InstallServiceWorkItemTest, Do_FreshInstallThenDeleteService) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::FilePath(kServiceProgramPath)),
@@ -277,6 +312,10 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeNoChanges) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
+  if (!::IsUserAnAdmin()) {
+    // Calling ::OpenSCManager requires admin access.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   base::CommandLine com_service_cmd_line_args(base::CommandLine::NO_PROGRAM);
   com_service_cmd_line_args.AppendArgNative(kComServiceCmdLineArgs);
 
@@ -325,6 +364,10 @@ TEST_F(InstallServiceWorkItemTest, Do_UpgradeChangedCmdLineStartTypeCOMArgs) {
 }
 
 TEST_F(InstallServiceWorkItemTest, Do_ServiceName) {
+  if (!::IsUserAnAdmin()) {
+    // Writing to HKLM requires an admin user.
+    GTEST_SKIP() << "This test must be run by an admin user";
+  }
   auto item = std::make_unique<InstallServiceWorkItem>(
       kServiceName, kServiceDisplayName, kServiceStartType,
       base::CommandLine(base::CommandLine::NO_PROGRAM),

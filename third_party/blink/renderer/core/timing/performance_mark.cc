@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace blink {
 
 PerformanceMark::PerformanceMark(
@@ -46,7 +48,7 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
 
   DOMHighResTimeStamp start = 0.0;
   base::TimeTicks unsafe_start_for_traces;
-  ScriptValue detail = ScriptValue::CreateNull(script_state->GetIsolate());
+  absl::optional<ScriptValue> detail;
   if (mark_options) {
     if (mark_options->hasStartTime()) {
       start = mark_options->startTime();
@@ -83,12 +85,17 @@ PerformanceMark* PerformanceMark::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  scoped_refptr<SerializedScriptValue> serialized_detail =
-      SerializedScriptValue::Serialize(
-          script_state->GetIsolate(), detail.V8Value(),
-          SerializedScriptValue::SerializeOptions(), exception_state);
-  if (exception_state.HadException())
-    return nullptr;
+  scoped_refptr<SerializedScriptValue> serialized_detail;
+  if (!detail) {
+    serialized_detail = nullptr;
+  } else {
+    serialized_detail = SerializedScriptValue::Serialize(
+        script_state->GetIsolate(), (*detail).V8Value(),
+        SerializedScriptValue::SerializeOptions(), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+  }
 
   return MakeGarbageCollected<PerformanceMark>(
       mark_name, start, unsafe_start_for_traces, std::move(serialized_detail),
@@ -107,7 +114,10 @@ mojom::blink::PerformanceMarkOrMeasurePtr
 PerformanceMark::ToMojoPerformanceMarkOrMeasure() {
   auto mojo_performance_mark_or_measure =
       PerformanceEntry::ToMojoPerformanceMarkOrMeasure();
-  mojo_performance_mark_or_measure->detail = serialized_detail_->GetWireData();
+  if (serialized_detail_) {
+    mojo_performance_mark_or_measure->detail =
+        serialized_detail_->GetWireData();
+  }
   return mojo_performance_mark_or_measure;
 }
 

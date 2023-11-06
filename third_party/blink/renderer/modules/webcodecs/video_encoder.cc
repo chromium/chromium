@@ -250,6 +250,14 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
           ? media::VideoEncoder::LatencyMode::Quality
           : media::VideoEncoder::LatencyMode::Realtime;
 
+  if (config->hasContentHint()) {
+    if (config->contentHint() == "detail" || config->contentHint() == "text") {
+      result->options.content_hint = media::VideoEncoder::ContentHint::Screen;
+    } else if (config->contentHint() == "motion") {
+      result->options.content_hint = media::VideoEncoder::ContentHint::Camera;
+    }
+  }
+
   if (config->hasBitrateMode() && config->bitrateMode() == "quantizer") {
     result->options.bitrate = media::Bitrate::ExternalRateControl();
   } else if (config->hasBitrate()) {
@@ -497,6 +505,10 @@ VideoEncoderConfig* CopyConfig(
 
   if (config.hasLatencyMode())
     result->setLatencyMode(config.latencyMode());
+
+  if (config.hasContentHint()) {
+    result->setContentHint(config.contentHint());
+  }
 
   if (config.hasAvc() && config.avc()->hasFormat()) {
     auto* avc = AvcEncoderConfig::Create();

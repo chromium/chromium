@@ -18,9 +18,7 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
-/**
- * A row view that shows bookmark info in the bookmarks UI.
- */
+/** A row view that shows bookmark info in the bookmarks UI. */
 // TODO (crbug.com/1424431): Make this class more extensible.
 public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     private GURL mUrl;
@@ -33,6 +31,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
 
     /**
      * Factory constructor for building the view programmatically.
+     *
      * @param context The calling context, usually the parent view.
      * @param isVisualRefreshEnabled Whether to show the visual or compact bookmark row.
      */
@@ -62,8 +61,7 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
             case BookmarkUiMode.SEARCHING:
                 break;
             case BookmarkUiMode.LOADING:
-                assert false :
-                        "The main content shouldn't be inflated if it's still loading";
+                assert false : "The main content shouldn't be inflated if it's still loading";
                 break;
             default:
                 assert false : "State not valid";
@@ -93,11 +91,20 @@ public class BookmarkItemRow extends BookmarkRow implements LargeIconCallback {
     // LargeIconCallback implementation.
 
     @Override
-    public void onLargeIconAvailable(Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,
+    public void onLargeIconAvailable(
+            Bitmap icon,
+            int fallbackColor,
+            boolean isFallbackColorDefault,
             @IconType int iconType) {
         if (mFaviconCancelled) return;
-        Drawable iconDrawable = FaviconUtils.getIconDrawableWithoutFilter(
-                icon, mUrl, fallbackColor, mIconGenerator, getResources(), mDisplayFaviconSize);
+        Drawable iconDrawable =
+                FaviconUtils.getIconDrawableWithoutFilter(
+                        icon,
+                        mUrl,
+                        fallbackColor,
+                        mIconGenerator,
+                        getResources(),
+                        mDisplayFaviconSize);
         setIconDrawable(iconDrawable);
     }
 

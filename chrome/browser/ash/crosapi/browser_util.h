@@ -108,14 +108,6 @@ struct ComponentInfo {
   const char* const crx_id;
 };
 
-// Specifies the mode of migration. Used to distinguish what migration mode the
-// user used to migrate to Lacros.
-enum class MigrationMode {
-  kCopy = 0,  // Migrate using `CopyMigrator`. CopyMigrator is deprecated.
-  kMove = 1,  // Migrate using `MoveMigrator`.
-  kSkipForNewUser = 2,  // Skip migration for new users.
-};
-
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
@@ -132,26 +124,10 @@ enum class MigrationStatus {
   kMaxValue = kMaxAttemptReached,
 };
 
-// Specifies the mode Lacros is currently running.
-// This enum is different from LacrosAvailability in the way that
-// it describes the mode Lacros is running at a given point in time
-// which can be influenced by multiple factors such as flags,
-// while LacrosAvailability describes the policy that dictates how
-// Lacros is supposed to be launched.
-// Values 1 and 2 were removed and should not be reused.
-enum class LacrosMode {
-  // Indicates that Lacros is disabled. Ash is the only browser.
-  kDisabled = 0,
-  // Indicates that Lacros is the only available browser.
-  kOnly = 3,
-};
-
 extern const ComponentInfo kLacrosDogfoodCanaryInfo;
 extern const ComponentInfo kLacrosDogfoodDevInfo;
 extern const ComponentInfo kLacrosDogfoodBetaInfo;
 extern const ComponentInfo kLacrosDogfoodStableInfo;
-
-BASE_DECLARE_FEATURE(kLacrosForSupervisedUsers);
 
 // The default update channel to leverage for Lacros when the channel is
 // unknown.
@@ -170,13 +146,6 @@ extern const char kLacrosStabilityChannelStable[];
 extern const char kLacrosSelectionSwitch[];
 extern const char kLacrosSelectionRootfs[];
 extern const char kLacrosSelectionStateful[];
-
-// A command-line switch that is converted and set via the feature flag.
-extern const char kLacrosAvailabilityPolicyInternalName[];
-extern const char kLacrosAvailabilityPolicySwitch[];
-extern const char kLacrosAvailabilityPolicyUserChoice[];
-extern const char kLacrosAvailabilityPolicyLacrosDisabled[];
-extern const char kLacrosAvailabilityPolicyLacrosOnly[];
 
 // The internal name in about_flags.cc for the `LacrosDataBackwardMigrationMode`
 // policy.
@@ -249,17 +218,14 @@ bool IsAshWebBrowserEnabled();
 bool IsAshWebBrowserEnabledForMigration(const user_manager::User* user,
                                         PolicyInitState policy_init_state);
 
-// Returns the current mode Lacros is running.
-// See LacrosMode definition for a full list of modes.
-LacrosMode GetLacrosMode();
-
 // Returns true if Lacros can be used as the only browser
 // for the current session.
 // Note that IsLacrosEnabled may return false, even if this returns
 // true, specifically, if the feature is disabled by user/policy.
 bool IsLacrosOnlyBrowserAllowed();
 
-// Returns true if `ash::features::kLacrosOnly` flag is allowed.
+// Returns true if `ash::standalone_browser::features::kLacrosOnly` flag is
+// allowed to be configured on about:flags page.
 bool IsLacrosOnlyFlagAllowed();
 
 // Returns true if Lacros is allowed to launch and show a window. This can
@@ -373,19 +339,6 @@ bool IsProfileMigrationEnabledWithUserAndPolicyInitState(
 // Returns true if the profile migration is enabled, but not yet completed.
 bool IsProfileMigrationAvailable();
 
-// Checks if profile migration has been completed for the user. If `print_mode`
-// is true, it prints the mode the migration was completed with.
-bool IsProfileMigrationCompletedForUser(PrefService* local_state,
-                                        const std::string& user_id_hash,
-                                        bool print_mode = false);
-
-// Returns the migration mode that was used to mark profile migration as
-// completed. If migration is not completed, the `optional` will not have a
-// value.
-absl::optional<MigrationMode> GetCompletedMigrationMode(
-    PrefService* local_state,
-    const std::string& user_id_hash);
-
 // Records `kLacrosMigrationStatus`. It should be called after primary user is
 // set. If it is called prior to that, it does not send any UMA.
 void RecordMigrationStatus();
@@ -393,19 +346,6 @@ void RecordMigrationStatus();
 // Get the migration status for the user.
 MigrationStatus GetMigrationStatus(PrefService* local_state,
                                    const user_manager::User* user);
-
-// Sets the value of `kProfileMigrationCompletedForUserPref` or
-// `kProfileMoveMigrationCompletedForUserPref` to be true for the user
-// identified by `user_id_hash`, depending on `mode`.
-void SetProfileMigrationCompletedForUser(PrefService* local_state,
-                                         const std::string& user_id_hash,
-                                         MigrationMode mode);
-
-// Clears the values of `kProfileMigrationCompletedForUserPref` and
-// `kProfileMoveMigrationCompletedForUserPref` prefs for user identified by
-// `user_id_hash`:
-void ClearProfileMigrationCompletedForUser(PrefService* local_state,
-                                           const std::string& user_id_hash);
 
 // Sets the value of `kProfileMigrationCompletionTimeForUserPref` for the user
 // identified by `user_id_hash` to the current time.
@@ -435,12 +375,6 @@ void SetProfileDataBackwardMigrationCompletedForUser(
 void ClearProfileDataBackwardMigrationCompletedForUser(
     PrefService* local_state,
     const std::string& user_id_hash);
-
-// Makes `IsProfileMigrationCompletedForUser()` return true without actually
-// updating Local State. It allows tests to avoid marking profile migration as
-// completed by getting user_id_hash of the logged in user and updating
-// g_browser_process->local_state() etc.
-void SetProfileMigrationCompletedForTest(bool is_completed);
 
 // Indicate whether sync on Ash should be enabled for browser data. Sync should
 // stop syncing browser items from Ash if Lacros is enabled and once browser

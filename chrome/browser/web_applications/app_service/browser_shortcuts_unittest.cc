@@ -9,7 +9,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_effects.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
@@ -22,9 +21,10 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut.h"
 #include "components/services/app_service/public/cpp/shortcut/shortcut_registry_cache.h"
 #include "content/public/test/browser_task_environment.h"
@@ -43,7 +43,7 @@ class BrowserShortcutsTest : public testing::Test,
   // testing::Test implementation.
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
-        features::kCrosWebAppShortcutUiUpdate);
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
     profile_ = std::make_unique<TestingProfile>();
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
@@ -58,7 +58,8 @@ class BrowserShortcutsTest : public testing::Test,
     web_app_info->start_url = kAppUrl;
 
     std::string app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
+        test::InstallWebApp(profile(), std::move(web_app_info),
+                            /*overwrite_existing_manifest_fields=*/true);
     CHECK(
         WebAppProvider::GetForTest(profile())->registrar_unsafe().IsShortcutApp(
             app_id));
@@ -76,7 +77,8 @@ class BrowserShortcutsTest : public testing::Test,
     web_app_info->scope = kAppUrl;
 
     std::string app_id =
-        test::InstallWebApp(profile(), std::move(web_app_info));
+        test::InstallWebApp(profile(), std::move(web_app_info),
+                            /*overwrite_existing_manifest_fields=*/true);
     CHECK(!WebAppProvider::GetForTest(profile())
                ->registrar_unsafe()
                .IsShortcutApp(app_id));
@@ -224,8 +226,8 @@ TEST_F(BrowserShortcutsTest, LaunchShortcut) {
       apps::AppType::kChromeApp, app_constants::kChromeAppId,
       apps::Readiness::kReady, "Chrome", apps::InstallReason::kUser,
       apps::InstallSource::kSystem));
-  proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kChromeApp,
-                                   /* should_notify_initialized */ true);
+  proxy->OnApps(std::move(deltas), apps::AppType::kChromeApp,
+                /* should_notify_initialized */ true);
 
   base::test::TestFuture<apps::AppLaunchParams, LaunchWebAppWindowSetting>
       future;
@@ -288,8 +290,8 @@ TEST_F(BrowserShortcutsTest, RemoveShortcut) {
       apps::AppType::kChromeApp, app_constants::kChromeAppId,
       apps::Readiness::kReady, "Chrome", apps::InstallReason::kUser,
       apps::InstallSource::kSystem));
-  proxy->AppRegistryCache().OnApps(std::move(deltas), apps::AppType::kChromeApp,
-                                   /* should_notify_initialized */ true);
+  proxy->OnApps(std::move(deltas), apps::AppType::kChromeApp,
+                /* should_notify_initialized */ true);
 
   base::test::TestFuture<apps::ShortcutId> future;
 
@@ -344,6 +346,31 @@ TEST_F(BrowserShortcutsTest, GetCompressedShortcutIcon) {
       result.GetCallback());
   apps::IconValuePtr icon = result.Take();
   ASSERT_EQ(expected_icon->compressed, icon->compressed);
+}
+
+TEST_F(BrowserShortcutsTest, ReplaceBetweenShortcutAndWebApp) {
+  InitializeBrowserShortcutPublisher();
+  apps::ShortcutRegistryCache* shortcut_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->ShortcutRegistryCache();
+  apps::AppRegistryCache& app_cache =
+      apps::AppServiceProxyFactory::GetForProfile(profile())
+          ->AppRegistryCache();
+  ASSERT_EQ(shortcut_cache->GetAllShortcuts().size(), 0u);
+
+  auto web_app_id = CreateShortcut("Shortcut");
+  EXPECT_TRUE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_FALSE(app_cache.IsAppInstalled(web_app_id));
+
+  // Install a web app with same url should replace the shortcut.
+  CreateWebApp("App");
+  EXPECT_FALSE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_TRUE(app_cache.IsAppInstalled(web_app_id));
+
+  // Create a shortcut with same url should replace the web app.
+  CreateShortcut("Shortcut");
+  EXPECT_TRUE(shortcut_cache->HasShortcut(apps::ShortcutId(web_app_id)));
+  EXPECT_FALSE(app_cache.IsAppInstalled(web_app_id));
 }
 
 }  // namespace web_app

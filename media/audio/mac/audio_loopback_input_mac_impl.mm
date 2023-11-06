@@ -477,7 +477,7 @@ void SCKAudioInputStream::OnStreamSample(
     base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample_buffer,
     const double volume) {
   const CMBlockBufferRef block_buffer =
-      CMSampleBufferGetDataBuffer(sample_buffer);
+      CMSampleBufferGetDataBuffer(sample_buffer.get());
   if (!block_buffer) {
     VLOG(1) << "Sample buffer is empty.";
     return;
@@ -491,9 +491,9 @@ void SCKAudioInputStream::OnStreamSample(
   }
 
   const CMTime time_stamp =
-      CMSampleBufferGetPresentationTimeStamp(sample_buffer);
+      CMSampleBufferGetPresentationTimeStamp(sample_buffer.get());
   const CMFormatDescriptionRef format_description =
-      CMSampleBufferGetFormatDescription(sample_buffer);
+      CMSampleBufferGetFormatDescription(sample_buffer.get());
   const AudioStreamBasicDescription* audio_description =
       CMAudioFormatDescriptionGetStreamBasicDescription(format_description);
 
@@ -503,7 +503,8 @@ void SCKAudioInputStream::OnStreamSample(
   CHECK_EQ(audio_description->mBytesPerFrame, sizeof(float))
       << "Expected non-interleaved data.";
 
-  const size_t total_frame_count = CMSampleBufferGetNumSamples(sample_buffer);
+  const size_t total_frame_count =
+      CMSampleBufferGetNumSamples(sample_buffer.get());
 
   base::TimeTicks capture_time;
   capture_time += base::Seconds(CMTimeGetSeconds(time_stamp));

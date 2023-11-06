@@ -76,9 +76,10 @@ OpenXrPlatformHelperWindows::GetGraphicsBinding(
 
 void OpenXrPlatformHelperWindows::GetPlatformCreateInfo(
     const device::OpenXrCreateInfo& create_info,
-    PlatformCreateInfoReadyCallback callback) {
+    PlatformCreateInfoReadyCallback result_callback,
+    PlatormInitiatedShutdownCallback shutdown_callback) {
   // We have nothing we need to add to the "next" chain.
-  std::move(callback).Run(nullptr);
+  std::move(result_callback).Run(nullptr);
 }
 
 device::mojom::XRDeviceData OpenXrPlatformHelperWindows::GetXRDeviceData() {

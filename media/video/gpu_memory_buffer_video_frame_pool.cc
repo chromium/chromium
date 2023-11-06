@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/config/gpu_switches.h"
@@ -121,6 +122,9 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     gfx::Size size;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
     gpu::Mailbox mailbox;
+    // Tracks whether the SharedImage is created with GpuMemoryBuffer containing
+    // multiplanar format and prefers external sampler.
+    bool is_multiplanar_buffer = false;
   };
 
   // All the resources needed to compose a frame.
@@ -749,6 +753,19 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
   DCHECK(gfx::Rect(video_frame->coded_size()).Contains(gfx::Rect(output)));
   return output;
 }
+
+bool SetPrefersExternalSampler(viz::SharedImageFormat& format) {
+  if (format.is_multi_plane()) {
+    // Set prefers external sampler only for multiplanar formats on ozone based
+    // platforms.
+#if BUILDFLAG(IS_OZONE)
+    format.SetPrefersExternalSampler();
+    return true;
+#endif
+  }
+  return false;
+}
+
 }  // unnamed namespace
 
 // Creates a VideoFrame backed by native textures starting from a software
@@ -1253,12 +1270,17 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
 
       constexpr char kDebugLabel[] = "MediaGmbVideoFramePool";
       if (base::FeatureList::IsEnabled(kUseMultiPlaneFormatForSoftwareVideo)) {
-        viz::SharedImageFormat multi_planar_format =
+        viz::SharedImageFormat si_format =
             OutputFormatToSharedImageFormat(output_format_, plane);
-        plane_resource.mailbox = sii->CreateSharedImage(
-            multi_planar_format, gpu_memory_buffer->GetSize(), color_space,
+        if (SetPrefersExternalSampler(si_format)) {
+          plane_resource.is_multiplanar_buffer = true;
+        }
+        auto client_shared_image = sii->CreateSharedImage(
+            si_format, gpu_memory_buffer->GetSize(), color_space,
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, kDebugLabel,
             gpu_memory_buffer->CloneHandle());
+        CHECK(client_shared_image);
+        plane_resource.mailbox = client_shared_image->mailbox();
       } else {
         plane_resource.mailbox = sii->CreateSharedImage(
             gpu_memory_buffer, gpu_factories_->GpuMemoryBufferManager(),
@@ -1309,6 +1331,11 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
     // multiplanar path.
     frame->set_shared_image_format_type(
         SharedImageFormatType::kSharedImageFormat);
+    PlaneResource& resource = frame_resources->plane_resources[0];
+    if (resource.is_multiplanar_buffer) {
+      frame->set_shared_image_format_type(
+          SharedImageFormatType::kSharedImageFormatExternalSampler);
+    }
   }
 
   bool allow_overlay = false;

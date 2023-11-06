@@ -159,6 +159,20 @@ ABSL_DLL const char kToUpper[256] = {
 };
 // clang-format on
 
+// Returns whether `c` is in the a-z/A-Z range (w.r.t. `ToUpper`).
+// Implemented by:
+//  1. Pushing the a-z/A-Z range to [SCHAR_MIN, SCHAR_MIN + 26).
+//  2. Comparing to SCHAR_MIN + 26.
+template <bool ToUpper>
+constexpr bool AsciiInAZRange(unsigned char c) {
+  constexpr unsigned char sub = (ToUpper ? 'a' : 'A') - SCHAR_MIN;
+  constexpr signed char threshold = SCHAR_MIN + 26;  // 26 = alphabet size.
+  // Using unsigned arithmetic as overflows/underflows are well defined.
+  unsigned char u = c - sub;
+  // Using signed cmp, as SIMD unsigned cmp isn't available in many platforms.
+  return static_cast<signed char>(u) < threshold;
+}
+
 template <bool ToUpper>
 constexpr void AsciiStrCaseFold(char* p, char* end) {
   // The upper- and lowercase versions of ASCII characters differ by only 1 bit.
@@ -168,15 +182,9 @@ constexpr void AsciiStrCaseFold(char* p, char* end) {
   // have the same single bit difference.
   constexpr unsigned char kAsciiCaseBitFlip = 'a' ^ 'A';
 
-  constexpr char ch_a = ToUpper ? 'a' : 'A';
-  constexpr char ch_z = ToUpper ? 'z' : 'Z';
   for (; p < end; ++p) {
     unsigned char v = static_cast<unsigned char>(*p);
-    // We use & instead of && to ensure this always stays branchless
-    // We use static_cast<int> to suppress -Wbitwise-instead-of-logical
-    bool is_in_range = static_cast<bool>(static_cast<int>(ch_a <= v) &
-                                         static_cast<int>(v <= ch_z));
-    v ^= is_in_range ? kAsciiCaseBitFlip : 0;
+    v ^= AsciiInAZRange<ToUpper>(v) ? kAsciiCaseBitFlip : 0;
     *p = static_cast<char>(v);
   }
 }

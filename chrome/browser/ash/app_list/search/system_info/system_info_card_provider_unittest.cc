@@ -396,6 +396,33 @@ TEST_F(SystemInfoCardProviderTest, Version) {
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 
+TEST_F(SystemInfoCardProviderTest, PreventTriggeringOfTooShortQueries) {
+  auto timer = std::make_unique<base::MockRepeatingTimer>();
+  provider_->SetCpuUsageTimerForTesting(std::move(timer));
+
+  int temp_1 = 40;
+  int temp_2 = 50;
+  int temp_3 = 15;
+  uint32_t core_1_speed = 4000000;
+  uint32_t core_2_speed = 2000000;
+  CpuUsageData core_1(1000, 1000, 1000);
+  CpuUsageData core_2(2000, 2000, 2000);
+
+  SetCrosHealthdCpuResponse({core_1, core_2}, {temp_1, temp_2, temp_3},
+                            {core_1_speed, core_2_speed});
+  StartSearch(u"cp");
+  Wait();
+  ASSERT_TRUE(results().empty());
+
+  StartSearch(u"c");
+  Wait();
+  ASSERT_TRUE(results().empty());
+
+  StartSearch(u"cpu");
+  Wait();
+  ASSERT_FALSE(results().empty());
+}
+
 TEST_F(SystemInfoCardProviderTest, Cpu) {
   // Setup Timer
   auto timer = std::make_unique<base::MockRepeatingTimer>();
@@ -816,14 +843,14 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
 
   const int kMountPathBytes = 8092;
   const int kAndroidPathBytes = 15271;
-  const int kDownloadsPathBytes = 59943;
+  const int kDownloadsPathBytes = 56758;
 
   // Add files in My files and android files.
   AddFile("random.bin", kMountPathBytes, mount_path);          // ~7.9 KB
   AddFile("tall.pdf", kAndroidPathBytes, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with
   // [android files]/Download.
-  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~58.6 KB
+  AddFile("video.ogv", kDownloadsPathBytes, downloads_path);  // ~55.4 KB
 
   int64_t total_bytes = base::SysInfo::AmountOfTotalDiskSpace(mount_path);
   int64_t available_bytes = base::SysInfo::AmountOfFreeDiskSpace(mount_path);

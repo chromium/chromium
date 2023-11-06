@@ -23,9 +23,7 @@ import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Tests for {@link TailSuggestionProcessor}.
- */
+/** Tests for {@link TailSuggestionProcessor}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TailSuggestionProcessorUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -42,10 +40,11 @@ public class TailSuggestionProcessorUnitTest {
 
     /** Create search suggestion for test. */
     private void createSearchSuggestion(int type, String title) {
-        mSuggestion = AutocompleteMatchBuilder.searchWithType(type)
-                              .setDisplayText(title)
-                              .setFillIntoEdit("fill into edit: " + title)
-                              .build();
+        mSuggestion =
+                AutocompleteMatchBuilder.searchWithType(type)
+                        .setDisplayText(title)
+                        .setFillIntoEdit("fill into edit: " + title)
+                        .build();
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mSuggestion, mModel, 0);
     }

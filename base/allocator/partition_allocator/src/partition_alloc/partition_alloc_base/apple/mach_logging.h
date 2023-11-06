@@ -28,7 +28,7 @@
 
 namespace partition_alloc::internal::logging {
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MachLogMessage
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) MachLogMessage
     : public partition_alloc::internal::logging::LogMessage {
  public:
   MachLogMessage(const char* file_path,

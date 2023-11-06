@@ -17,7 +17,6 @@
 #include "ash/scoped_animation_disabler.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
-#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"
@@ -38,6 +37,8 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 #include "ash/wm/overview/scoped_float_container_stacker.h"
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
+#include "ash/wm/splitview/auto_snap_controller.h"
+#include "ash/wm/splitview/split_view_overview_session.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
@@ -50,6 +51,8 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
@@ -71,7 +74,7 @@ constexpr int kKeyboardHoldScrollingDp = 15;
 // Tries to end overview. Returns true if overview is successfully ended, or
 // just was not active in the first place.
 bool EndOverview(OverviewEndAction action) {
-  return Shell::Get()->overview_controller()->EndOverview(action);
+  return OverviewController::Get()->EndOverview(action);
 }
 
 // Returns the window to be activated when the given `overview_item` is
@@ -531,7 +534,7 @@ void OverviewSession::UpdateDropTargetsBackgroundVisibilities(
     OverviewItemBase* dragged_item,
     const gfx::PointF& location_in_screen) {
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    if (grid->GetDropTarget()) {
+    if (grid->drop_target()) {
       grid->UpdateDropTargetBackgroundVisibility(dragged_item,
                                                  location_in_screen);
     }
@@ -620,15 +623,16 @@ void OverviewSession::RemoveItem(OverviewItemBase* overview_item,
 
 void OverviewSession::RemoveDropTargets() {
   for (std::unique_ptr<OverviewGrid>& grid : grid_list_) {
-    if (grid->GetDropTarget())
+    if (grid->drop_target()) {
       grid->RemoveDropTarget();
+    }
   }
 }
 
 void OverviewSession::InitiateDrag(OverviewItemBase* item,
                                    const gfx::PointF& location_in_screen,
                                    bool is_touch_dragging) {
-  if (Shell::Get()->overview_controller()->IsInStartAnimation() ||
+  if (OverviewController::Get()->IsInStartAnimation() ||
       SplitViewController::Get(Shell::GetPrimaryRootWindow())
           ->IsDividerAnimating()) {
     return;
@@ -646,7 +650,7 @@ void OverviewSession::InitiateDrag(OverviewItemBase* item,
 
   // Fire a haptic event if necessary.
   if (!is_touch_dragging) {
-    haptics_util::PlayHapticTouchpadEffect(
+    chromeos::haptics_util::PlayHapticTouchpadEffect(
         ui::HapticTouchpadEffect::kTick,
         ui::HapticTouchpadEffectStrength::kMedium);
   }
@@ -841,7 +845,7 @@ void OverviewSession::OnStartingAnimationComplete(bool canceled,
   }
 
   UpdateAccessibilityFocus();
-  Shell::Get()->overview_controller()->DelayedUpdateRoundedCornersAndShadow();
+  OverviewController::Get()->DelayedUpdateRoundedCornersAndShadow();
 
   // The stacker object may be already created if a drag has started prior to
   // this.
@@ -887,7 +891,7 @@ void OverviewSession::OnWindowActivating(
     // Cancel overview session and do not restore activation when active window
     // is set to nullptr. This happens when removing a display.
     RestoreWindowActivation(false);
-    EndOverview(OverviewEndAction::kWindowActivating);
+    EndOverview(OverviewEndAction::kWindowDeactivating);
     return;
   }
 
@@ -898,6 +902,13 @@ void OverviewSession::OnWindowActivating(
       !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
     RestoreWindowActivation(false);
     EndOverview(OverviewEndAction::kAppListActivatedInClamshell);
+    return;
+  }
+
+  if (RootWindowController::ForWindow(gained_active)
+          ->split_view_overview_session()) {
+    // Let `SplitViewOverviewSession` handle the window activation change.
+    RestoreWindowActivation(false);
     return;
   }
 
@@ -922,8 +933,9 @@ void OverviewSession::OnWindowActivating(
   // dragged as evidenced by the presence of a drop target. (Dragging to close
   // does not count; canceling overview mode is okay then.)
   for (std::unique_ptr<OverviewGrid>& overview_grid : grid_list_) {
-    if (overview_grid->GetDropTarget())
+    if (overview_grid->drop_target()) {
       return;
+    }
   }
 
   auto* grid = GetGridWithRootWindow(gained_active->GetRootWindow());
@@ -1063,7 +1075,7 @@ bool OverviewSession::IsWindowActiveWindowBeforeOverview(
 }
 
 bool OverviewSession::HandleContinuousScrollIntoOverview(float y_offset) {
-  if (Shell::Get()->overview_controller()->is_continuous_scroll_in_progress()) {
+  if (OverviewController::Get()->is_continuous_scroll_in_progress()) {
     CHECK_EQ(enter_exit_overview_type_,
              OverviewEnterExitType::kContinuousAnimationEnterOnScrollUpdate);
 
@@ -1432,8 +1444,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       // finished for performance reasons. During the animation, the focused
       // window prior to entering overview still has focus so stop events from
       // reaching it. See https://crbug.com/951324 for more details.
-      if (shell->overview_controller()->IsInStartAnimation())
+      if (OverviewController::Get()->IsInStartAnimation()) {
         break;
+      }
       return;
     }
   }
@@ -1503,8 +1516,9 @@ void OverviewSession::OnSplitViewStateChanged(
     SplitViewController::State previous_state,
     SplitViewController::State state) {
   // Do nothing if overview is being shutdown.
-  if (!Shell::Get()->overview_controller()->InOverviewSession())
+  if (!OverviewController::Get()->InOverviewSession()) {
     return;
+  }
 
   RefreshNoWindowsWidgetBoundsOnEachGrid(/*animate=*/false);
 }
@@ -1607,12 +1621,6 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   UpdateNoWindowsWidgetOnEachGrid(/*animate=*/true,
                                   /*is_continuous_enter=*/false);
 
-  OverviewGrid* grid = GetGridWithRootWindow(window->GetRootWindow());
-  // The drop target window is non-activatable, so no need to transfer focus.
-  if (grid && grid->IsDropTargetItem(grid->GetOverviewItemContaining(window))) {
-    return;
-  }
-
   // Transfer focus from `window` to `overview_focus_widget_` to match the
   // behavior of entering overview mode in the beginning.
   DCHECK(overview_focus_widget_);
@@ -1640,7 +1648,9 @@ void OverviewSession::UpdateFrameThrottling() {
       }
 
       for (auto& item : grid->window_list()) {
-        windows_to_throttle.push_back(item->GetWindow());
+        for (auto* window : item->GetWindows()) {
+          windows_to_throttle.push_back(window);
+        }
       }
     }
   }

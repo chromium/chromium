@@ -405,14 +405,23 @@ TEST_F(PictureInPictureControllerTestWithWidget,
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kEnterpictureinpicture);
 
+  EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .PictureInPictureElement());
+  EXPECT_NE(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
+
   PictureInPictureControllerImpl::From(GetDocument())
       .ExitPictureInPicture(Video(), nullptr);
 
   MakeGarbageCollected<WaitForEvent>(Video(),
                                      event_type_names::kLeavepictureinpicture);
 
+  // Make sure the state has been cleaned up.
+  // https://crbug.com/1496926
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .PictureInPictureElement());
+  EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
+                         .pictureInPictureWindow());
 }
 
 TEST_F(PictureInPictureControllerTestWithWidget, StartObserving) {

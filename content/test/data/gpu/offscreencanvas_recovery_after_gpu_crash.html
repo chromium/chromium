@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Recover OffscreenCanvas context after GPU crash</title>
+    <script id="worker" type="text/worker">
+      let restored = false;
+      let canvas, ctx;
+
+      function draw() {
+        ctx.reset();
+        if (restored) {
+          ctx.fillStyle = 'aqua';
+        } else {
+          ctx.fillStyle = 'fuchsia';
+        }
+        ctx.fillRect(0,0,300,300);
+      }
+
+      self.onmessage = msg => {
+        if (msg.data.operation === 'init') {
+          canvas = msg.data.canvas;
+          ctx = canvas.getContext('2d');
+
+          canvas.addEventListener('contextlost', evt => {
+            self.postMessage("context lost");
+          });
+          canvas.addEventListener('contextrestored', evt => {
+            restored = true;
+            self.postMessage('context restored');
+          });
+          draw();
+          self.postMessage('setup complete');
+        } else if(msg.data.operation === 'draw') {
+          draw();
+        } else {
+          self.postMessage("unexpected message");
+        }
+      }
+    </script>
+    <script>
+      // Test the recovery of an Offscreen Canvas from a GPU crash.
+      // Test will timeout if the context is not recovered.
+
+      function TestFailed(msg) {
+        console.log(msg);
+        window.domAutomationController.send('FAILED');
+      }
+
+      window.onload = () => {
+        const worker_blob = new Blob([document.getElementById('worker').textContent]);
+        const worker = new Worker(URL.createObjectURL(worker_blob));
+        let lost = false;
+
+        function drawInWorker(){
+          worker.postMessage({
+            operation: 'draw',
+          });
+        }
+
+        worker.onmessage = evt => {
+          if (evt.data == 'setup complete') {
+            // Send message repeatedly to worker to make simple draw calls.
+            var interval = window.setInterval(drawInWorker, 10);
+            // Send message that test is ready for GPU process crash.
+            window.domAutomationController.send('LOADED');
+          } else if (evt.data == 'context lost') {
+            lost = true;
+          } else if (evt.data == 'context restored') {
+            clearInterval(interval);
+            if (lost) {
+              window.domAutomationController.send('SUCCESS');
+            } else {
+              TestFailed('contextrestored event fired without contextlost.');
+            }
+          } else {
+            TestFailed('Unexpected message.');
+          }
+        }
+
+        let offscreen = document.getElementById("c").transferControlToOffscreen();
+        worker.postMessage({
+          operation: 'init',
+          canvas: offscreen,
+        }, [offscreen]);
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="c" width="300" height="300"></canvas>
+  </body>
+</html>
+

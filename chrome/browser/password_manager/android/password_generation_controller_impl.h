@@ -144,6 +144,9 @@ class PasswordGenerationControllerImpl
 
   bool TryToShowGenerationTouchToFill(bool has_saved_credentials);
 
+  bool ShowBottomSheet(
+      autofill::password_generation::PasswordGenerationType type);
+
   void OnTouchToFillForGenerationDismissed();
 
   // Resets the current active frame driver, as well as the dialog if shown

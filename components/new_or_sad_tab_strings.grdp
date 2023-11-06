@@ -201,13 +201,36 @@
       </message>
 
       <!-- 3P Cookie Depreciation  -->
+      <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE" desc="Text informing users that 3rd-party cookies are blocked." formatter_data="android_java">
+        Third-party cookies are blocked
+      </message>
       <if expr="not is_android">
-        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE" desc="Text informing users that 3rd-party cookies are blocked." formatter_data="android_java" translateable="false">
-          Third-party cookies are blocked
-        </message>
-        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java" translateable="false">
-          Chrome blocks sites from using third-party cookies to track you as you browse.
-          If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+        <if expr="_google_chrome">
+          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
+            Chrome blocks sites from using third-party cookies to track you as you browse.
+            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+          </message>
+        </if>
+        <if expr="not _google_chrome">
+          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites." formatter_data="android_java">
+            Chromium blocks sites from using third-party cookies to track you as you browse.
+            <ph name="NEW_LINE">&lt;br/&gt;</ph>If site features aren’t working <ph name="START_LINK">&lt;a target="_blank" href="$1"&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/a&gt;</ph>.
+          </message>
+        </if>
+      </if>
+      <if expr="is_android">
+        <if expr="_google_chrome">
+          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_ONE" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 1/2." formatter_data="android_java">
+            Chrome blocks sites from using third-party cookies to track you as you browse.
+          </message>
+        </if>
+        <if expr="not _google_chrome">
+          <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_ONE" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 1/2." formatter_data="android_java">
+            Chromium blocks sites from using third-party cookies to track you as you browse.
+          </message>
+        </if>
+        <message name="IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_PART_TWO" desc="Sub-text explaining 3rd-party cookie blocking with a help center link to re-enabling 3rd-party cookies for specific sites. Part 2/2." formatter_data="android_java">
+          If site features aren’t working <ph name="BEGIN_LINK">&lt;link&gt;</ph>try temporarily allowing third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
         </message>
       </if>
 

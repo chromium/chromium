@@ -84,6 +84,12 @@ absl::optional<uint8_t> RTCEncodedVideoFrameDelegate::PayloadType() const {
                        : absl::nullopt;
 }
 
+absl::optional<std::string> RTCEncodedVideoFrameDelegate::MimeType() const {
+  base::AutoLock lock(lock_);
+  return webrtc_frame_ ? absl::make_optional(webrtc_frame_->GetMimeType())
+                       : absl::nullopt;
+}
+
 absl::optional<webrtc::VideoFrameMetadata>
 RTCEncodedVideoFrameDelegate::GetMetadata() const {
   base::AutoLock lock(lock_);

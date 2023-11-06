@@ -22,6 +22,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -30,6 +31,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_client.h"
+#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_demuxer_host.h"
@@ -361,7 +363,8 @@ class FFmpegDemuxerTest : public testing::Test {
     CHECK(!data_source_);
 
     base::FilePath file_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
 
     file_path = file_path.Append(FILE_PATH_LITERAL("media"))
                     .Append(FILE_PATH_LITERAL("test"))
@@ -587,7 +590,7 @@ TEST_F(FFmpegDemuxerTest, Seeking_PreferredStreamSelection) {
   // Test the start time is the first timestamp of the video and audio stream.
   CreateDemuxer("nonzero-start-time.webm");
   InitializeDemuxerWithTimelineOffset(
-      base::Time::FromJsTime(kTimelineOffsetMs));
+      base::Time::FromMillisecondsSinceUnixEpoch(kTimelineOffsetMs));
 
   FFmpegDemuxerStream* video =
       static_cast<FFmpegDemuxerStream*>(GetStream(DemuxerStream::VIDEO));
@@ -633,7 +636,7 @@ TEST_F(FFmpegDemuxerTest, Read_VideoPositiveStartTime) {
   // Test the start time is the first timestamp of the video and audio stream.
   CreateDemuxer("nonzero-start-time.webm");
   InitializeDemuxerWithTimelineOffset(
-      base::Time::FromJsTime(kTimelineOffsetMs));
+      base::Time::FromMillisecondsSinceUnixEpoch(kTimelineOffsetMs));
 
   // Attempt a read from the video stream and run the message loop until done.
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
@@ -652,7 +655,8 @@ TEST_F(FFmpegDemuxerTest, Read_VideoPositiveStartTime) {
     EXPECT_EQ(audio_start_time, demuxer_->start_time());
 
     // Verify that the timeline offset has not been adjusted by the start time.
-    EXPECT_EQ(kTimelineOffsetMs, demuxer_->GetTimelineOffset().ToJavaTime());
+    EXPECT_EQ(kTimelineOffsetMs,
+              demuxer_->GetTimelineOffset().InMillisecondsSinceUnixEpoch());
 
     // Seek back to the beginning and repeat the test.
     WaitableMessageLoopEvent event;
@@ -796,8 +800,10 @@ TEST_F(FFmpegDemuxerTest, Read_AudioNegativeStartTimeAndOpusDiscard_Sync) {
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(FFmpegDemuxerTest, TestAudioNegativeTimestamps) {
+  base::test::ScopedFeatureList scoped_enable(kCrOSLegacyMediaFormats);
+
   // Note: This test will _crash_ the browser if negative timestamp
   // values are skipped, since this file is heavily truncated to avoid
   // copyright issue. If the negative timestamp packets are dropped, the
@@ -812,7 +818,7 @@ TEST_F(FFmpegDemuxerTest, TestAudioNegativeTimestamps) {
   Read(audio, FROM_HERE, 104, 77619, true);
   Read(audio, FROM_HERE, 104, 103492, true);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Similar to the test above, but using an opus clip plus h264 b-frames to
 // ensure we don't apply chained ogg workarounds to other content.

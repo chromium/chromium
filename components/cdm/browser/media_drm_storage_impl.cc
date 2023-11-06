@@ -122,7 +122,8 @@ bool GetCreationTimeFromDict(const base::Value::Dict& dict, base::Time* time) {
   if (!time_value)
     return false;
 
-  base::Time time_maybe_null = base::Time::FromDoubleT(*time_value);
+  base::Time time_maybe_null =
+      base::Time::FromSecondsSinceUnixEpoch(*time_value);
   if (time_maybe_null.is_null())
     return false;
 
@@ -146,7 +147,8 @@ class OriginData {
     base::Value::Dict dict;
 
     dict.Set(kOriginId, base::UnguessableTokenToValue(origin_id_));
-    dict.Set(kCreationTime, base::Value(provision_time_.ToDoubleT()));
+    dict.Set(kCreationTime,
+             base::Value(provision_time_.InSecondsFSinceUnixEpoch()));
 
     return dict;
   }
@@ -198,7 +200,8 @@ class SessionData {
                             key_set_id_.size())));
     dict.Set(kMimeType, base::Value(mime_type_));
     dict.Set(kKeyType, base::Value(static_cast<int>(key_type_)));
-    dict.Set(kCreationTime, base::Value(creation_time_.ToDoubleT()));
+    dict.Set(kCreationTime,
+             base::Value(creation_time_.InSecondsFSinceUnixEpoch()));
 
     return dict;
   }

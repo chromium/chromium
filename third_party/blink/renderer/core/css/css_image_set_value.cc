@@ -27,8 +27,10 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -76,14 +78,12 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
       options_.push_back(nullptr);
     } else {
       std::stable_sort(options_.begin(), options_.end(),
-                       [](const CSSImageSetOptionValue* left,
-                          const CSSImageSetOptionValue* right) {
+                       [](auto& left, auto& right) {
                          return left->ComputedResolution() <
                                 right->ComputedResolution();
                        });
       auto* last = std::unique(options_.begin(), options_.end(),
-                               [](const CSSImageSetOptionValue* left,
-                                  const CSSImageSetOptionValue* right) {
+                               [](auto& left, auto& right) {
                                  return left->ComputedResolution() ==
                                         right->ComputedResolution();
                                });
@@ -93,11 +93,11 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
 
   for (const auto& option : options_) {
     if (option && option->ComputedResolution() >= device_scale_factor) {
-      return option;
+      return option.Get();
     }
   }
 
-  return options_.back();
+  return options_.back().Get();
 }
 
 bool CSSImageSetValue::IsCachePending(const float device_scale_factor) const {
@@ -111,26 +111,10 @@ StyleImage* CSSImageSetValue::CachedImage(
   return cached_image_.Get();
 }
 
-StyleImage* CSSImageSetValue::CacheImage(
-    const Document& document,
-    const float device_scale_factor,
-    const FetchParameters::ImageRequestBehavior image_request_behavior,
-    const CrossOriginAttributeValue cross_origin,
-    const CSSToLengthConversionData::ContainerSizes& container_sizes) {
-  if (IsCachePending(device_scale_factor)) {
-    const CSSImageSetOptionValue* best_option =
-        GetBestOption(device_scale_factor);
-
-    StyleImage* style_image =
-        best_option ? best_option->CacheImage(document, image_request_behavior,
-                                              cross_origin, container_sizes)
-                    : nullptr;
-
-    cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
-
-    cached_device_scale_factor_ = device_scale_factor;
-  }
-
+StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
+                                         const float device_scale_factor) {
+  cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
+  cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }
 
@@ -172,19 +156,6 @@ void CSSImageSetValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(cached_image_);
   visitor->Trace(options_);
   CSSValueList::TraceAfterDispatch(visitor);
-}
-
-CSSImageSetValue* CSSImageSetValue::ComputedCSSValue(
-    const ComputedStyle& style,
-    const bool allow_visited_style) const {
-  auto* value = MakeGarbageCollected<CSSImageSetValue>();
-
-  for (const auto& i : *this) {
-    value->Append(*To<CSSImageSetOptionValue>(i.Get())->ComputedCSSValue(
-        style, allow_visited_style));
-  }
-
-  return value;
 }
 
 }  // namespace blink

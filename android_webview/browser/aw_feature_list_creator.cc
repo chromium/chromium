@@ -103,6 +103,14 @@ const char* const kPersistentPrefsAllowlist[] = {
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
 
+    // A dictionary that caches 'AppPackageNameLoggingRule' object which decides
+    // whether the app package name should be recorded in UMA or not.
+    prefs::kMetricsAppPackageNameLoggingRule,
+
+    // The last time the apps package name allowlist was queried from the
+    // component update service, regardless if it was successful or not.
+    prefs::kAppPackageNameLoggingRuleLastUpdateTime,
+
     // The state of the previous background tracing session.
     tracing::kBackgroundTracingSessionState,
 
@@ -219,7 +227,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
     // than base::Time::Now() because we want to compute seed freshness based on
     // the initial download time, which happened in the service at some earlier
     // point.
-    seed_date = base::Time::FromJavaTime(seed_proto->date());
+    seed_date = base::Time::FromMillisecondsSinceUnixEpoch(seed_proto->date());
 
     seed = std::make_unique<variations::SeedResponse>();
     seed->data = seed_proto->seed_data();

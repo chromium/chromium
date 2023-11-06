@@ -39,14 +39,6 @@ BASE_FEATURE(kEnableNTPViewHierarchyRepair,
              "NTPViewHierarchyRepair",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableCheckVisibilityOnAttentionLogStart,
-             "EnableCheckVisibilityOnAttentionLogStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableRefineDataSourceReloadReporting,
-             "EnableRefineDataSourceReloadReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedHeaderSettings,
              "FeedHeaderSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -146,10 +138,12 @@ SigninPromoViewStyle GetTopOfFeedPromoStyle() {
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
-  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableDiscoverFeedTopSyncPromo,
-      kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  if (IsDiscoverFeedTopSyncPromoEnabled()) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableDiscoverFeedTopSyncPromo,
+        kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
+  }
+  return true;
 }
 
 int FeedSyncPromoAutodismissCount() {
@@ -162,15 +156,6 @@ int FeedSyncPromoAutodismissCount() {
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service) {
   return pref_service->GetBoolean(
       prefs::kNTPContentSuggestionsForSupervisedUserEnabled);
-}
-
-bool IsCheckVisibilityOnAttentionLogStartEnabled() {
-  return base::FeatureList::IsEnabled(
-      kEnableCheckVisibilityOnAttentionLogStart);
-}
-
-bool IsRefineDataSourceReloadReportingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableRefineDataSourceReloadReporting);
 }
 
 bool IsStickyHeaderDisabledForFollowingFeed() {

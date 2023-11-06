@@ -13,17 +13,18 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_org_jni_1zero_samples_SampleUniqueAnnotations[];
 const char kClassPath_org_jni_1zero_samples_SampleUniqueAnnotations[] =
     "org/jni_zero/samples/SampleUniqueAnnotations";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass>
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
     g_org_jni_1zero_samples_SampleUniqueAnnotations_clazz(nullptr);
 #ifndef org_jni_1zero_samples_SampleUniqueAnnotations_clazz_defined
 #define org_jni_1zero_samples_SampleUniqueAnnotations_clazz_defined
@@ -41,7 +42,7 @@ inline jclass org_jni_1zero_samples_SampleUniqueAnnotations_clazz(JNIEnv* env) {
 static jint JNI_SampleUniqueAnnotations_Bar(JNIEnv* env, jint x,
     jint y);
 
-JNI_GENERATOR_EXPORT jint
+JNI_BOUNDARY_EXPORT jint
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleUniqueAnnotations_1bar(
     JNIEnv* env,
     jclass jcaller,
@@ -50,7 +51,7 @@ JNI_GENERATOR_EXPORT jint
   return JNI_SampleUniqueAnnotations_Bar(env, x, y);
 }
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1samples_1SampleUniqueAnnotations_1foo(
     JNIEnv* env,
     jclass jcaller,
@@ -60,7 +61,7 @@ JNI_GENERATOR_EXPORT void
   return native->Foo(env);
 }
 
-JNI_GENERATOR_EXPORT void
+JNI_BOUNDARY_EXPORT void
     Java_org_jni_1zero_samples_SampleUniqueAnnotations_nativeCallWithQualifiedObject(
     JNIEnv* env,
     jobject jcaller,

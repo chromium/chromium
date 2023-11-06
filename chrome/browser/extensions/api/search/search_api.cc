@@ -46,7 +46,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   if (text.empty()) {
     return RespondNow(Error("Empty text parameter."));
   }
-  if (tab_id && disposition != Disposition::DISPOSITION_NONE) {
+  if (tab_id && disposition != Disposition::kNone) {
     return RespondNow(Error("Cannot set both 'disposition' and 'tabId'."));
   }
 
@@ -65,7 +65,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
           Error(base::StringPrintf("No tab with id: %d.", *tab_id)));
     }
     // If tab_id was specified, disposition couldn't have been (checked above).
-    DCHECK_EQ(Disposition::DISPOSITION_NONE, disposition);
+    DCHECK_EQ(Disposition::kNone, disposition);
   }
 
   // If the extension didn't specify a tab, we need to find a browser to use.
@@ -90,8 +90,7 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
     }
   }
 
-  DCHECK(browser ||
-         (web_contents && disposition == Disposition::DISPOSITION_NONE));
+  DCHECK(browser || (web_contents && disposition == Disposition::kNone));
 
   // GURL for default search provider.
   TemplateURLService* url_service =
@@ -104,18 +103,18 @@ ExtensionFunction::ResponseAction SearchQueryFunction::Run() {
   }
 
   switch (disposition) {
-    case Disposition::DISPOSITION_CURRENT_TAB:
-    case Disposition::DISPOSITION_NONE:
+    case Disposition::kCurrentTab:
+    case Disposition::kNone:
       DCHECK(url.is_valid());
       web_contents->GetController().LoadURL(
           url, content::Referrer(),
           ui::PageTransition::PAGE_TRANSITION_FROM_API,
           /*extra_headers=*/std::string());
       break;
-    case Disposition::DISPOSITION_NEW_TAB:
+    case Disposition::kNewTab:
       NavigateToURL(WindowOpenDisposition::NEW_FOREGROUND_TAB, browser, url);
       break;
-    case Disposition::DISPOSITION_NEW_WINDOW:
+    case Disposition::kNewWindow:
       NavigateToURL(WindowOpenDisposition::NEW_WINDOW, browser, url);
       break;
   }

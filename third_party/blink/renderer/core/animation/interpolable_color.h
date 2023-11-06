@@ -20,7 +20,11 @@ namespace blink {
 // verified and adjusted in CSSColorInterpolationType::MaybeMergeSingles.
 class CORE_EXPORT InterpolableColor : public InterpolableValue {
  public:
-  InterpolableColor();
+  InterpolableColor() {
+    // All colors are zero-initialized (transparent black).
+    static_assert(std::is_trivially_destructible_v<InterpolableColor>,
+                  "Require trivial destruction for faster sweeping");
+  }
 
   // Certain color keywords cannot be eagerly evaluated at specified value time.
   // For these keywords we store a separate entry in a list here, interpolate
@@ -32,14 +36,11 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
     kWebkitActivelink,
     kWebkitLink,
     kQuirkInherit,
-    kCount,
   };
-  constexpr static unsigned kColorKeywordCount =
-      static_cast<int>(ColorKeyword::kCount);
 
-  static std::unique_ptr<InterpolableColor> Create(Color color);
-  static std::unique_ptr<InterpolableColor> Create(ColorKeyword color_keyword);
-  static std::unique_ptr<InterpolableColor> Create(CSSValueID keyword);
+  static InterpolableColor* Create(Color color);
+  static InterpolableColor* Create(ColorKeyword color_keyword);
+  static InterpolableColor* Create(CSSValueID keyword);
 
   Color GetColor() const;
   bool IsColor() const final { return true; }
@@ -70,43 +71,62 @@ class CORE_EXPORT InterpolableColor : public InterpolableValue {
   Color::ColorSpace ColorSpace() const { return color_space_; }
 
   double GetColorFraction(ColorKeyword keyword) const {
-    int keyword_index = static_cast<int>(keyword);
-    return color_keyword_fractions_.Get(keyword_index).Value();
+    switch (keyword) {
+      case ColorKeyword::kCurrentcolor:
+        return current_color_.Value();
+      case ColorKeyword::kWebkitActivelink:
+        return webkit_active_link_.Value();
+      case ColorKeyword::kWebkitLink:
+        return webkit_link_.Value();
+      case ColorKeyword::kQuirkInherit:
+        return quirk_inherit_.Value();
+    }
   }
 
-  std::unique_ptr<InterpolableColor> Clone() const {
-    return std::unique_ptr<InterpolableColor>(RawClone());
-  }
+  InterpolableColor* Clone() const { return RawClone(); }
 
-  std::unique_ptr<InterpolableColor> CloneAndZero() const {
-    return std::unique_ptr<InterpolableColor>(RawCloneAndZero());
-  }
+  InterpolableColor* CloneAndZero() const { return RawCloneAndZero(); }
 
   void Composite(const InterpolableColor& other, double fraction);
 
- private:
-  using InterpolableNumberList =
-      StaticInterpolableList<InterpolableNumber, kColorKeywordCount>;
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(param0_);
+    v->Trace(param1_);
+    v->Trace(param2_);
+    v->Trace(alpha_);
+    v->Trace(current_color_);
+    v->Trace(webkit_active_link_);
+    v->Trace(webkit_link_);
+    v->Trace(quirk_inherit_);
+  }
 
-  InterpolableColor(InterpolableNumber param0,
-                    InterpolableNumber param1,
-                    InterpolableNumber param2,
-                    InterpolableNumber alpha,
-                    InterpolableNumberList color_keyword_fractions,
+  InterpolableColor(InlinedInterpolableNumber param0,
+                    InlinedInterpolableNumber param1,
+                    InlinedInterpolableNumber param2,
+                    InlinedInterpolableNumber alpha,
+                    InlinedInterpolableNumber current_color,
+                    InlinedInterpolableNumber webkit_active_link,
+                    InlinedInterpolableNumber webkit_link,
+                    InlinedInterpolableNumber quirk_inherit,
                     Color::ColorSpace color_space);
 
+ private:
   void ConvertToColorSpace(Color::ColorSpace color_space);
   InterpolableColor* RawClone() const final;
   InterpolableColor* RawCloneAndZero() const final;
 
   // All color params are stored premultiplied by alpha.
   // https://csswg.sesse.net/css-color-4/#interpolation-space
-  InterpolableNumber param0_;
-  InterpolableNumber param1_;
-  InterpolableNumber param2_;
-  InterpolableNumber alpha_;
+  InlinedInterpolableNumber param0_;
+  InlinedInterpolableNumber param1_;
+  InlinedInterpolableNumber param2_;
+  InlinedInterpolableNumber alpha_;
 
-  InterpolableNumberList color_keyword_fractions_;
+  InlinedInterpolableNumber current_color_;
+  InlinedInterpolableNumber webkit_active_link_;
+  InlinedInterpolableNumber webkit_link_;
+  InlinedInterpolableNumber quirk_inherit_;
 
   Color::ColorSpace color_space_ = Color::ColorSpace::kNone;
 };

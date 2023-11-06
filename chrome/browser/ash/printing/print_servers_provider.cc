@@ -188,6 +188,10 @@ class PrintServersProviderImpl : public PrintServersProvider {
     return IsCompleted() ? absl::make_optional(result_servers_) : absl::nullopt;
   }
 
+  base::WeakPtr<PrintServersProvider> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   void AddObserver(PrintServersProvider::Observer* observer) override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     observers_.AddObserver(observer);

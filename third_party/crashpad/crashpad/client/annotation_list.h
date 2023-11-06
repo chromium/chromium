@@ -80,11 +80,37 @@ class AnnotationList {
     // Copy and assign are required.
   };
 
+  //! \brief An InputIterator for iterating a const AnnotationList.
+  class ConstIterator {
+   public:
+    ~ConstIterator();
+
+    const Annotation* operator*() const;
+    ConstIterator& operator++();
+    bool operator==(const ConstIterator& other) const;
+    bool operator!=(const ConstIterator& other) const {
+      return !(*this == other);
+    }
+
+   private:
+    friend class AnnotationList;
+    ConstIterator(const Annotation* head, const Annotation* tail);
+
+    const Annotation* curr_;
+    const Annotation* const tail_;
+
+    // Copy and assign are required.
+  };
+
   //! \brief Returns an iterator to the first element of the annotation list.
   Iterator begin();
+  ConstIterator begin() const { return cbegin(); }
+  ConstIterator cbegin() const;
 
   //! \brief Returns an iterator past the last element of the annotation list.
   Iterator end();
+  ConstIterator end() const { return cend(); }
+  ConstIterator cend() const;
 
  protected:
 #if BUILDFLAG(IS_IOS)

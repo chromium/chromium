@@ -23,7 +23,11 @@ def _CheckAwJUnitTestRunner(input_api, output_api):
 
   run_with_pattern = input_api.re.compile(
       r'^@RunWith\((.*)\)$')
-  correct_runner = 'AwJUnit4ClassRunner.class'
+  aw_runner = 'AwJUnit4ClassRunner.class'
+  parameterized_runner = 'Parameterized.class'
+  runners_factory_pattern = input_api.re.compile(
+      r'^@UseParametersRunnerFactory\((.*)\)$')
+  correct_factory = 'AwJUnit4ClassRunnerWithParameters.Factory.class'
 
   errors = []
 
@@ -35,12 +39,39 @@ def _CheckAwJUnitTestRunner(input_api, output_api):
 
   for f in input_api.AffectedSourceFiles(_FilterFile):
     run_with_matches = []
+    prev_line_standard_runner = False
+    prev_line_parameterized_runner = False
     for line in f.NewContents():
-      match = run_with_pattern.search(line)
-      if match:
-        run_with_matches.append(line)
-        if match.group(1) != correct_runner:
-          errors.append("%s - %s" % (f.LocalPath(), line))
+      if prev_line_parameterized_runner:
+        prev_line_parameterized_runner = False
+        match = runners_factory_pattern.search(line)
+        if match:
+          if match.group(1) != correct_factory:
+            errors.append("%s - %s" % (f.LocalPath(), line))
+        else:
+          # Note: we require specific order and adjacent lines here
+          # to simplify the check. This is not required by Java.
+          errors.append("%s - %s" % (
+            f.LocalPath(),
+            "Missing @UseParametersRunnerFactory annotation"))
+      elif prev_line_standard_runner:
+        prev_line_standard_runner = False
+        match = runners_factory_pattern.search(line)
+        if match:
+          errors.append("%s - %s" % (
+            f.LocalPath(),
+            "@UseParametersRunnerFactory annotation present but runner is not"
+            " Parameterized"))
+      else:
+        match = run_with_pattern.search(line)
+        if match:
+          run_with_matches.append(line)
+          if match.group(1) == parameterized_runner:
+            prev_line_parameterized_runner = True
+          elif match.group(1) == aw_runner:
+            prev_line_standard_runner = True
+          else:
+            errors.append("%s - %s" % (f.LocalPath(), line))
     if not run_with_matches:
       errors.append("%s - %s" % (f.LocalPath(), "Missing @RunWith annotation"))
 
@@ -48,10 +79,14 @@ def _CheckAwJUnitTestRunner(input_api, output_api):
 
   if errors:
     results.append(output_api.PresubmitPromptWarning("""
-android_webview/javatests/ should use @RunWith(AwJUnit4ClassRunner.class), not
-any other test runner (e.g., BaseJUnit4ClassRunner). We assume this is supposed
-to be a test class because the filename ends with 'Test.java' (if this is
-actually a helper/utility class, please rename).
+android_webview/javatests/ should use either
+@RunWith(AwJUnit4ClassRunner.class),
+or @RunWith(Parameterized.class) together with
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+- in that order and on adjacent lines (this is to simplify the check) -
+not any other test runner (e.g., BaseJUnit4ClassRunner). We assume this is
+supposed to be a test class because the filename ends with 'Test.java' (if this
+is actually a helper/utility class, please rename).
 """, errors))
 
   return results

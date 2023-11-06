@@ -13,6 +13,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwContents;
@@ -23,30 +25,35 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.io.File;
 
-/**
- * Test suite for files WebView creates on disk. This includes HTTP cache and the cookies file.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class OnDiskFileTest {
+/** Test suite for files WebView creates on disk. This includes HTTP cache and the cookies file. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class OnDiskFileTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            // We need to control when the browser process starts, so that we can delete the
-            // file-under-test before the test starts up.
-            return false;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule;
+
+    public OnDiskFileTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                // We need to control when the browser process starts, so that we can delete the
+                // file-under-test before the test starts up.
+                return false;
+            }
+        };
+    }
 
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testHttpCacheIsInsideCacheDir() throws Exception {
-        File webViewCacheDir = new File(InstrumentationRegistry.getInstrumentation()
-                                                .getTargetContext()
-                                                .getCacheDir()
-                                                .getPath(),
-                "WebView/Default/HTTP Cache");
+        File webViewCacheDir =
+                new File(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getCacheDir()
+                                .getPath(),
+                        "WebView/Default/HTTP Cache");
         FileUtils.recursivelyDeleteFile(webViewCacheDir, FileUtils.DELETE_ALL);
 
         mActivityTestRule.startBrowserProcess();
@@ -78,11 +85,13 @@ public class OnDiskFileTest {
     @SmallTest
     @Feature({"AndroidWebView"})
     public void testCookiePathIsInsideDataDir() {
-        File webViewCookiePath = new File(InstrumentationRegistry.getInstrumentation()
-                                                  .getTargetContext()
-                                                  .getDir("webview", Context.MODE_PRIVATE)
-                                                  .getPath(),
-                "Default/Cookies");
+        File webViewCookiePath =
+                new File(
+                        InstrumentationRegistry.getInstrumentation()
+                                .getTargetContext()
+                                .getDir("webview", Context.MODE_PRIVATE)
+                                .getPath(),
+                        "Default/Cookies");
         webViewCookiePath.delete();
 
         // Set a cookie and flush it to disk. This should guarantee the cookie file is created.
@@ -101,10 +110,11 @@ public class OnDiskFileTest {
         mActivityTestRule.startBrowserProcess();
 
         // Check Default uses its own constant directory.
-        mActivityTestRule.runOnUiThread(() -> {
-            Assert.assertEquals(
-                    "Default", AwBrowserContext.getNamedContextPathForTesting("Default"));
-        });
+        mActivityTestRule.runOnUiThread(
+                () -> {
+                    Assert.assertEquals(
+                            "Default", AwBrowserContext.getNamedContextPathForTesting("Default"));
+                });
 
         // Check NonDefaults use "Profile 1", "Profile 2", ...
         final int numProfiles = 2;
@@ -112,21 +122,25 @@ public class OnDiskFileTest {
             final String contextName = "MyAwesomeProfile" + profile;
             final String relativePath = "Profile " + profile;
 
-            final File contextPath = new File(InstrumentationRegistry.getInstrumentation()
-                                                      .getTargetContext()
-                                                      .getDir("webview", Context.MODE_PRIVATE)
-                                                      .getPath(),
-                    relativePath);
+            final File contextPath =
+                    new File(
+                            InstrumentationRegistry.getInstrumentation()
+                                    .getTargetContext()
+                                    .getDir("webview", Context.MODE_PRIVATE)
+                                    .getPath(),
+                            relativePath);
 
-            mActivityTestRule.runOnUiThread(() -> {
-                contextPath.delete();
+            mActivityTestRule.runOnUiThread(
+                    () -> {
+                        contextPath.delete();
 
-                AwBrowserContext.getNamedContext(contextName, /*create_if_needed=*/true);
+                        AwBrowserContext.getNamedContext(contextName, /* createIfNeeded= */ true);
 
-                Assert.assertEquals(
-                        relativePath, AwBrowserContext.getNamedContextPathForTesting(contextName));
-                Assert.assertTrue(contextPath.isDirectory());
-            });
+                        Assert.assertEquals(
+                                relativePath,
+                                AwBrowserContext.getNamedContextPathForTesting(contextName));
+                        Assert.assertTrue(contextPath.isDirectory());
+                    });
         }
     }
 }

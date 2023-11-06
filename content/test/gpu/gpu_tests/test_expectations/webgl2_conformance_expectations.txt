@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -223,11 +223,6 @@ crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExt
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_polygon_mode [ Skip ]
 crbug.com/1473838 [ chromeos chromeos-board-amd64-generic angle-opengles passthrough ] WebglExtension_WEBGL_render_shared_exponent [ Skip ]
 
-# Unsupported on this config.
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_EXT_disjoint_timer_query_webgl2 [ Skip ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin passthrough ] WebglExtension_WEBGL_clip_cull_distance [ Skip ]
-crbug.com/1429756 [ chromeos chromeos-board-kevin ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
-
 # Extensions not available on jacuzzi ChromeOS devices.
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_blend_func_extended [ Skip ]
 crbug.com/1486664 [ chromeos cros-chrome chromeos-board-jacuzzi passthrough ] WebglExtension_EXT_clip_control [ Skip ]
@@ -390,8 +385,6 @@ crbug.com/1473838 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
-crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
-
 ###################
 # Failures/Flakes #
 ###################
@@ -474,6 +467,7 @@ crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fbomultis
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_01.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/fborender/shared_colorbuffer_02.html [ Failure ]
 crbug.com/1152606 [ win amd-0x7340 angle-d3d11 ] deqp/functional/gles3/framebufferblit/depth_stencil.html [ Failure ]
+crbug.com/1499404 [ win amd-0x7340 angle-d3d11 ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
 
 # New extensions failing on Win/AMD
 crbug.com/1473838 [ win amd-0x7340 angle-d3d11 ] conformance/extensions/ext-clip-control.html [ Failure ]
@@ -492,7 +486,6 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
-crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
 
 ## Metal AMD ##
@@ -656,12 +649,10 @@ crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transfor
 crbug.com/1422032 [ mac amd-0x67ef angle-opengl ] deqp/functional/gles3/transformfeedback/random_interleaved_triangles.html [ Failure ]
 
 
-crbug.com/1450355 [ amd angle-opengl mac ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 
 ## Mac Intel ##
 
 crbug.com/679692 [ angle-metal intel mac no-asan ] conformance2/textures/misc/angle-stuck-depth-textures.html [ Failure ]
-crbug.com/641209 [ angle-metal intel mac no-asan ] deqp/functional/gles3/fbomultisample* [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/cube_combinations_01.html [ Failure ]
 crbug.com/606074 [ angle-opengl intel mac ] deqp/functional/gles3/texturefiltering/2d_array_combinations_01.html [ Failure ]
@@ -784,6 +775,7 @@ crbug.com/1473838 [ android android-pixel-2 passthrough ] conformance/extensions
 # Failing test when experiment DrDc is enabled via fieldtrial_testing_config.json.
 crbug.com/1289303 [ android-pixel-4 android-r ] conformance/textures/misc/texture-video-transparent.html [ Failure ] # finder:disable-narrowing
 
+
 crbug.com/1175232 [ android android-pixel-4 angle-opengles passthrough ] conformance2/reading/read-pixels-from-fbo-test.html [ Failure ]
 
 crbug.com/angleproject/3684 [ android angle-opengles ] conformance2/renderbuffers/multisample-with-full-sample-counts.html [ Failure ]
@@ -828,7 +820,8 @@ crbug.com/1221362 [ chromeos chromeos-board-amd64-generic ] conformance2/renderi
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_03.html [ Failure ]
 crbug.com/1223542 [ chromeos chromeos-board-amd64-generic ] deqp/functional/gles3/framebufferblit/rect_04.html [ Failure ]
 
-
+# Suspected i915 image uprev
+crbug.com/1498990 [ chromeos chromeos-board-octopus ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
@@ -865,6 +858,20 @@ crbug.com/1492256 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/g
 crbug.com/1492257 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
 crbug.com/1492258 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/glsl3/uninitialized-local-global-variables.html [ Failure ]
 crbug.com/1492270 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/reading/read-pixels-pack-parameters.html [ Failure ]
+crbug.com/1499514 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/textures/canvas_sub_rectangle/tex-2d-srgb8-rgb-unsigned_byte.html [ Failure ]
+crbug.com/1499516 [ chromeos cros-chrome chromeos-board-jacuzzi ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
+crbug.com/1499523 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/data/gles3/shaders/arrays.html [ Failure ]
+crbug.com/1499527 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/shadermatrix/inverse.html [ Failure ]
+crbug.com/1499532 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/shadertexturefunction/texturelodoffset.html [ Failure ]
+crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/basic_types* [ Failure ]
+crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/interpolation* [ Failure ]
+crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
+crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/position.html [ Failure ]
+crbug.com/1499534 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/transformfeedback/random* [ Failure ]
+crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/instance_array_basic_type.html [ Failure ]
+crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
+crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_array.html [ Failure ]
+crbug.com/1499536 [ chromeos cros-chrome chromeos-board-jacuzzi ] deqp/functional/gles3/uniformbuffers/single_basic_type.html [ Failure ]
 
 #####################
 # Lacros failures #

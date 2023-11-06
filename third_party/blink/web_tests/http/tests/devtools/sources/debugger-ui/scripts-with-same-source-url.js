@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
+import * as Workspace from 'devtools/models/workspace/workspace.js';
+
 (async function() {
   TestRunner.addResult(`Tests that script is replaced with the newer version when the names match.\n`);
   await TestRunner.showPanel('sources');
@@ -18,8 +20,8 @@ import {SourcesTestRunner} from 'sources_test_runner';
   TestRunner.evaluateInPage('injectScript(1);');
   TestRunner.evaluateInPage('injectScript(2);');
 
-  Workspace.workspace.addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, reportAdded);
-  Workspace.workspace.addEventListener(Workspace.Workspace.Events.UISourceCodeRemoved, reportRemoved);
+  Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, reportAdded);
+  Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.UISourceCodeRemoved, reportRemoved);
 
   var iteration = 0;
 

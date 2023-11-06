@@ -64,7 +64,7 @@ class MHTMLArchiveTest : public testing::Test {
  public:
   MHTMLArchiveTest() {
     file_path_ = test::CoreTestDataPath("frameserializer/css/");
-    mhtml_date_ = base::Time::FromJsTime(1520551829000);
+    mhtml_date_ = base::Time::FromMillisecondsSinceUnixEpoch(1520551829000);
   }
 
  protected:

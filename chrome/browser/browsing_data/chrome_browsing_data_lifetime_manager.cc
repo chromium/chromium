@@ -423,10 +423,8 @@ bool ChromeBrowsingDataLifetimeManager::
     IsConditionSatisfiedForBrowsingDataRemoval(
         const syncer::UserSelectableTypeSet sync_types) {
   bool sync_disabled = !SyncServiceFactory::IsSyncAllowed(profile_);
-  // Return the state of sync if
-  // `features::kDataRetentionPoliciesDisableSyncTypesNeeded` is disabled or if
-  // sync is already disabled.
-  if (!browsing_data::IsPolicyDependencyEnabled() || sync_disabled) {
+  // Condition is satisfied if sync is fully disabled by policy.
+  if (sync_disabled) {
     return sync_disabled;
   }
 

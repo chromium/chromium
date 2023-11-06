@@ -12,6 +12,7 @@ import pytest
 
 from chrome.test.variations import test_utils
 from chrome.test.variations.drivers import DriverFactory
+from chrome.test.variations.fixtures.test_options import TestOptions
 
 
 _PLATFORM_TO_RELEASE_OS = {
@@ -20,30 +21,9 @@ _PLATFORM_TO_RELEASE_OS = {
   'win': 'win64',
   'android': 'android',
   'webview': 'webview',
-  'lacros': 'linux',
-  'cros': 'linux',
 }
 
 def pytest_addoption(parser):
-  # By default, running on the hosted platform.
-  parser.addoption('--target-platform',
-                   default=test_utils.get_hosted_platform(),
-                   dest='target_platform',
-                   choices=['linux', 'win', 'mac', 'android', 'webview',
-                            'cros', 'lacros'],
-                   help='If present, run for the target platform, '
-                   'defaults to the host platform.')
-
-  parser.addoption('--channel',
-                   default='dev',
-                   choices=['dev', 'canary', 'beta', 'stable', 'extended'],
-                   help='The channel of Chrome to download.')
-
-  parser.addoption('--chrome-version',
-                   dest='chrome_version',
-                   help='The version of Chrome to download. '
-                   'If this is set, --channel will be ignored.')
-
   parser.addoption('--chromedriver',
                    help='The path to the existing chromedriver. '
                    'This will ignore --channel and skip downloading.')
@@ -76,12 +56,16 @@ def _version_to_download(
       'using --chrome-version to download chrome (ignoring --channel)')
     return test_utils.parse_version(chrome_version)
 
-  release_os = _PLATFORM_TO_RELEASE_OS.get(platform)
-  return test_utils.find_version(release_os, channel)
+  release_os = _PLATFORM_TO_RELEASE_OS.get(platform, None)
+  if release_os is None:
+    logging.info('No Chrome version to download for ' + platform)
+    return None
+  else:
+    return test_utils.find_version(release_os, channel)
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
-def chromedriver_path(pytestconfig) -> Optional[str]:
+def chromedriver_path(pytestconfig, test_options: TestOptions) -> Optional[str]:
   """Finds the path to the chromedriver.
 
   The fixture downloads the chromedriver from GCS bucket from a given
@@ -104,9 +88,9 @@ def chromedriver_path(pytestconfig) -> Optional[str]:
       f'Given chromedriver doesn\'t exist. ({cd_path})')
     return cd_path
 
-  platform = pytestconfig.getoption('target_platform')
-  channel = pytestconfig.getoption('channel')
-  chrome_version = pytestconfig.getoption('chrome_version')
+  platform = test_options.platform
+  channel = test_options.channel
+  chrome_version = test_options.chrome_version
 
   version = str(_version_to_download(chrome_version, platform, channel))
 

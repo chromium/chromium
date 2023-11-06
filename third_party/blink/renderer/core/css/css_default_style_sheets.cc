@@ -200,6 +200,9 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
 
+  CHECK(default_html_style_->ViewTransitionsRules().empty())
+      << "@view-transitions is not implemented for the UA stylesheet.";
+
   VerifyUniversalRuleCount();
 }
 
@@ -211,7 +214,7 @@ RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
         UncompressResourceAsASCIIString(IDR_UASTYLE_VIEW_SOURCE_CSS));
     default_view_source_style_->AddRulesFromSheet(stylesheet, ScreenEval());
   }
-  return default_view_source_style_;
+  return default_view_source_style_.Get();
 }
 
 static void AddTextTrackCSSProperties(StringBuilder* builder,

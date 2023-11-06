@@ -142,7 +142,7 @@ export class AncestryOutputRule extends OutputRule {
 
   /** @param {!OutputNavigationType|undefined} navigationType */
   populateNavigation(navigationType) {
-    if (navigationType &&
+    if (navigationType && OutputRule.RULES[this.event_][this.role_] &&
         OutputRule.RULES[this.event_][this.role_][navigationType]) {
       this.navigation_ = navigationType;
     }
@@ -150,6 +150,11 @@ export class AncestryOutputRule extends OutputRule {
 
   /** @param {boolean} tryBraille */
   populateOutput(tryBraille) {
+    if (!OutputRule.RULES[this.event_][this.role_]) {
+      // Invalid rule case.
+      return;
+    }
+
     const rule = OutputRule.RULES[this.event_][this.role_][this.navigation_];
     if (rule && rule.speak) {
       this.output_ = OutputFormatType.SPEAK;
@@ -161,7 +166,9 @@ export class AncestryOutputRule extends OutputRule {
 
   /** @return {boolean} */
   get defined() {
-    return Boolean(OutputRule.RULES[this.event_][this.role_][this.navigation_]);
+    return Boolean(
+        OutputRule.RULES[this.event_][this.role_] &&
+        OutputRule.RULES[this.event_][this.role_][this.navigation_]);
   }
 
   /** @return {string} */
@@ -466,6 +473,12 @@ OutputRule.RULES = {
     [RoleType.WINDOW]: {
       enter: `@describe_window($name) $description`,
       speak: `@describe_window($name) $description $earcon(OBJECT_OPEN)`,
+    },
+  },
+  [EventType.CONTROLS_CHANGED]: {
+    [RoleType.TAB]: {
+      speak: `@describe_tab($name) @describe_index($posInSet, $setSize)
+          @aria_selected_true`,
     },
   },
   [EventType.MENU_START]: {

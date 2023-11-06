@@ -13,6 +13,7 @@
 #include <numeric>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "base/barrier_callback.h"
@@ -43,6 +44,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
+#include "components/omnibox/browser/autocomplete_scoring_model_service.h"
 #include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/bookmark_scoring_signals_annotator.h"
@@ -57,6 +59,7 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/local_history_zero_suggest_provider.h"
 #include "components/omnibox/browser/most_visited_sites_provider.h"
+#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/open_tab_provider.h"
@@ -184,6 +187,24 @@ bool ShouldPreserveLastDefaultMatch(bool sync_pass_done,
     return true;
 }
 
+// Helper function to retrieve domains that will be used to find a match between
+// historical suggestions and a company entity suggestion. Matches of
+// AutocompleteMatchType::HISTORY_URL type will return the domain of
+// |destination_url| and those of AutocompleteMatchType::SEARCH_SUGGEST_ENTITY
+// will return the domain of |website_uri|. For any other match types,
+// GetDomain() should not be called.
+std::u16string GetDomain(const AutocompleteMatch& match) {
+  DCHECK(match.type == AutocompleteMatchType::HISTORY_URL ||
+         match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+  GURL url = match.type == AutocompleteMatchType::HISTORY_URL
+                 ? match.destination_url
+                 : GURL(match.website_uri);
+  std::u16string url_host;
+  std::u16string url_domain;
+  url_formatter::SplitHost(url, &url_host, &url_domain, nullptr);
+  return url_domain;
+}
+
 }  // namespace
 
 // static
@@ -210,6 +231,11 @@ void AutocompleteController::ExtendMatchSubtypes(
       } else if (match.type == AutocompleteMatchType::TILE_REPEATABLE_QUERY) {
         subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES);
       }
+    } else if (match.provider->type() ==
+               AutocompleteProvider::TYPE_QUERY_TILE) {
+      DCHECK(is_android);
+      // QueryTiles are now shown in zero-prefix context on Android.
+      subtypes->emplace(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE);
     } else if (match.provider->type() ==
                AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
       // This subtype indicates a match from an on-device head provider.
@@ -288,7 +314,8 @@ void AutocompleteController::ExtendMatchSubtypes(
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
     int provider_types,
-    bool is_cros_launcher)
+    bool is_cros_launcher,
+    bool disable_ml)
     : provider_client_(std::move(provider_client)),
       bookmark_provider_(nullptr),
       document_provider_(nullptr),
@@ -301,6 +328,7 @@ AutocompleteController::AutocompleteController(
       notify_changed_debouncer_(false, 200),
       is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
+      disable_ml_(disable_ml),
       template_url_service_(provider_client_->GetTemplateURLService()),
       triggered_feature_service_(
           provider_client_->GetOmniboxTriggeredFeatureService()),
@@ -500,7 +528,7 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // signals to the controller so it doesn't realize that anything was
   // cleared or changed.  Even if the default match hasn't changed, we
   // need the edit model to update the display.
-  UpdateResult(false, true);
+  UpdateResult(false, true, true);
 
   sync_pass_done_ = true;
 
@@ -568,10 +596,8 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
     match.provider->DeleteMatch(match);
   }
 
-  OnProviderUpdate(true, nullptr);
-
-  // If we're not done, we might attempt to redisplay the deleted match. Make
-  // sure we aren't displaying it by removing any old entries.
+  // Removes deleted match. Does not re-score URLs so that we don't wait on the
+  // posted task, therefore notifying listeners as soon as possible.
   ExpireCopiedEntries();
 }
 
@@ -591,7 +617,7 @@ void AutocompleteController::ExpireCopiedEntries() {
   // The first true makes UpdateResult() clear out the results and
   // regenerate them, thus ensuring that no results from the previous
   // result set remain.
-  UpdateResult(true, false);
+  UpdateResult(true, false, false);
 }
 
 void AutocompleteController::OnProviderUpdate(
@@ -618,7 +644,15 @@ void AutocompleteController::OnProviderUpdate(
   CheckIfDone();
 
   if (updated_matches || done_)
-    UpdateResult(false, false);
+    UpdateResult(false, false, true);
+
+  if (done_) {
+    size_t calculator_count =
+        base::ranges::count_if(published_result_, [](const auto& match) {
+          return match.type == AutocompleteMatchType::CALCULATOR;
+        });
+    UMA_HISTOGRAM_COUNTS_100("Omnibox.NumCalculatorMatches", calculator_count);
+  }
 }
 
 void AutocompleteController::AddProviderAndTriggeringLogs(
@@ -797,7 +831,8 @@ void AutocompleteController::InitializeAsyncProviders(int provider_types) {
   }
   if (provider_types & AutocompleteProvider::TYPE_CALCULATOR &&
       search_provider_ != nullptr) {
-    providers_.push_back(new CalculatorProvider(this, search_provider_));
+    providers_.push_back(
+        new CalculatorProvider(provider_client_.get(), this, search_provider_));
   }
 }
 
@@ -876,7 +911,8 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
 
 void AutocompleteController::UpdateResult(
     bool regenerate_result,
-    bool force_notify_default_match_changed) {
+    bool force_notify_default_match_changed,
+    bool score_urls) {
   // Cancel the scoring model when updating `internal_result_`.
   CancelUrlScoringModel();
 
@@ -915,6 +951,9 @@ void AutocompleteController::UpdateResult(
           match->type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
         match->swap_contents_and_description = true;
       }
+
+      if (omnibox_feature_configs::ForceAllowedToBeDefault::Get().enabled)
+        match->allowed_to_be_default_match = true;
     }
 
     internal_result_.MergeSuggestionGroupsMap(
@@ -999,7 +1038,8 @@ void AutocompleteController::UpdateResult(
 
   // When sync ML scoring is enabled, run ML scoring in the sync pass and other
   // async update passes. Otherwise, only run ML scoring after all async passes.
-  if ((OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled() ||
+  if (!disable_ml_ && score_urls &&
+      (OmniboxFieldTrial::IsMlSyncBatchUrlScoringEnabled() ||
        (done_ && sync_pass_done_ &&
         OmniboxFieldTrial::IsMlUrlScoringEnabled())) &&
       provider_client_->GetAutocompleteScoringModelService()) {
@@ -1068,6 +1108,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   UpdateAssociatedKeywords(&internal_result_);
   UpdateAssistedQueryStats(&internal_result_);
   UpdateTailSuggestPrefix(&internal_result_);
+  MaybeRemoveCompanyEntityImages(&internal_result_);
 
   if (search_provider_)
     search_provider_->RegisterDisplayedAnswers(internal_result_);
@@ -1300,7 +1341,8 @@ void AutocompleteController::UpdateAssistedQueryStats(
         subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS) ||
         subtypes.contains(
             omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_QUERIES) ||
-        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX)) {
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX) ||
+        subtypes.contains(omnibox::SUBTYPE_ZERO_PREFIX_QUERY_TILE)) {
       num_zero_prefix_suggestions_shown++;
     }
 
@@ -1784,12 +1826,15 @@ void AutocompleteController::OnUrlScoringModelDone(
       match_itr->RecordAdditionalInfo("ml legacy relevance",
                                       match_itr->relevance);
       match_itr->RecordAdditionalInfo(
-          "ml model output", (prediction_and_match_itr_heap.top().first * 100));
+          "ml model output", prediction_and_match_itr_heap.top().first);
       match_itr->relevance = relevance_heap.top();
     }
     relevance_heap.pop();
     prediction_and_match_itr_heap.pop();
   }
+
+  for (Observer& obs : observers_)
+    obs.OnMlScored(this, internal_result_);
 
   std::move(completion_callback).Run();
 }
@@ -1800,4 +1845,55 @@ void AutocompleteController::CancelUrlScoringModel() {
   // WeakPtr to prevent its callbacks from being called.
   scoring_model_task_tracker_.TryCancelAll();
   weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
+void AutocompleteController::MaybeRemoveCompanyEntityImages(
+    AutocompleteResult* result) {
+  if (result->size() == 0 ||
+      !base::FeatureList::IsEnabled(omnibox::kCompanyEntityIconAdjustment)) {
+    return;
+  }
+  // Least aggressive and moderate group will only have one iteration as the
+  // first match must be of history type.
+  size_t max_iterations =
+      OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
+              omnibox::CompanyEntityIconAdjustmentGroup::kMostAggressive
+          ? result->size()
+          : 1;
+
+  std::unordered_set<std::u16string> history_domains;
+  // Find all history type matches.
+  for (size_t i = 0; i < max_iterations; i++) {
+    if (result->match_at(i)->type == AutocompleteMatchType::HISTORY_URL) {
+      history_domains.insert(GetDomain(*result->match_at(i)));
+    }
+  }
+  if (history_domains.size() == 0) {
+    return;
+  }
+  for (size_t i = 0; i < result->size(); i++) {
+    // Do not attempt to change image to search loupe if not an entity
+    // suggestion.
+    if (result->match_at(i)->type !=
+        AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
+      continue;
+    }
+    if (OmniboxFieldTrial::kCompanyEntityIconAdjustmentGroup.Get() ==
+            omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive &&
+        i > 1) {
+      break;
+    }
+    // Check that entity domain has a matching history domain.
+    if (history_domains.contains(GetDomain(*result->match_at(i))) &&
+        (!result->match_at(i)->image_url.is_empty() ||
+         !result->match_at(i)->image_dominant_color.empty())) {
+      provider_client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
+          metrics::OmniboxEventProto_Feature_COMPANY_ENTITY_ADJUSTMENT);
+      if (!OmniboxFieldTrial::kCompanyEntityIconAdjustmentCounterfactual
+               .Get()) {
+        result->match_at(i)->image_url = GURL();
+        result->match_at(i)->image_dominant_color.clear();
+      }
+    }
+  }
 }

@@ -84,9 +84,8 @@ class ScreensaverImageDownloaderTest : public testing::Test {
               screensaver_image_downloader_->downloading_queue_.size());
   }
 
-  void QueueNewImageDownload(const std::string& url) {
-    auto job = std::make_unique<ScreensaverImageDownloader::Job>(url);
-    screensaver_image_downloader_->QueueDownloadJob(std::move(job));
+  void QueueNewImageDownload(const std::string& image_url) {
+    screensaver_image_downloader_->QueueImageDownload(image_url);
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
@@ -235,16 +234,16 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
 }
 
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
-  // Push two jobs and check the internal downloading queue
+  // Push two downloads and check the internal downloading queue
   QueueNewImageDownload(kImageUrl1);
   QueueNewImageDownload(kImageUrl2);
 
-  // First job should be executing and expecting the URL response, verify that
-  // the second job is in the queue
+  // First download should be executing and expecting the URL response, verify
+  // that the second download is in the queue
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
-  // Resolve the first job
+  // Resolve the first download
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
 
   std::vector<std::pair<base::FilePath, std::string>> expected_images;
@@ -252,18 +251,18 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
                                std::string(kFileContents));
   VerifySucessfulImageRequest(expected_images);
 
-  // First job has been resolved, second job should be executing and expecting
-  // the URL response.
+  // First download has been resolved, second download should be executing and
+  // expecting the URL response.
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
-  // Queue a third job while the second job is still waiting
+  // Queue a third download while the second download is still waiting
   QueueNewImageDownload(kImageUrl3);
 
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
 
-  // Resolve the second job
+  // Resolve the second download
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl2),
@@ -273,7 +272,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   task_environment()->RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
-  // Resolve the third job
+  // Resolve the third download
   url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
 
   expected_images.emplace_back(GetExpectedFilePath(kImageUrl3),

@@ -28,7 +28,7 @@ const size_t kSmallBufferSize = 128;
 // Get the path of data directory.
 base::FilePath GetTestDataDir() {
   base::FilePath data_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &data_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir);
   data_dir = data_dir.AppendASCII("net");
   data_dir = data_dir.AppendASCII("data");
   data_dir = data_dir.AppendASCII("filter_unittests");

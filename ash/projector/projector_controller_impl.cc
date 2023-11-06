@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_metrics.h"
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
-#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -27,14 +27,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_multi_source_observation.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -148,6 +145,12 @@ NewScreencastPrecondition ServerBasedRecognitionAvailabilityToPrecondition(
       result.reasons = {NewScreencastPreconditionReason::kOthers};
       return result;
   }
+}
+
+const base::FilePath::StringPieceType getMetadataFileExtension() {
+  return ash::features::IsProjectorV2Enabled()
+             ? ash::kProjectorV2MetadataFileExtension
+             : ash::kProjectorMetadataFileExtension;
 }
 
 }  // namespace
@@ -690,7 +693,9 @@ std::vector<base::FilePath> ProjectorControllerImpl::GetScreencastFilePaths()
   DCHECK(container_folder);
   const base::FilePath path_with_no_extension =
       projector_session_->GetScreencastFilePathNoExtension();
-  return {path_with_no_extension.AddExtension(kProjectorMetadataFileExtension),
+  const base::FilePath::StringPieceType metadata_file_extension =
+      getMetadataFileExtension();
+  return {path_with_no_extension.AddExtension(metadata_file_extension),
           path_with_no_extension.AddExtension(kProjectorMediaFileExtension),
           container_folder->Append(kScreencastDefaultThumbnailFileName)};
 }

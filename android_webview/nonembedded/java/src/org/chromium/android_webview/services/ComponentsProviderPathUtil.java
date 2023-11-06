@@ -4,9 +4,10 @@
 
 package org.chromium.android_webview.services;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.PathUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 
 import java.io.File;
 import java.util.Arrays;

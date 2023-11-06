@@ -30,6 +30,7 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -66,7 +67,7 @@ cc::PaintRecord AddLink(const std::string& link, const SkRect& rect) {
 }  // namespace
 
 TEST(PaintPreviewRecorderUtilsTest, TestParseGlyphs) {
-  auto typeface = SkTypeface::MakeDefault();
+  sk_sp<SkTypeface> typeface = skia::DefaultTypeface();
   SkFont font(typeface);
   std::string unichars_1 = "abc";
   std::string unichars_2 = "efg";

@@ -8,8 +8,11 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/structured/key_data_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace metrics::structured {
 
@@ -20,7 +23,7 @@ namespace metrics::structured {
 //
 // InitializeProfileKey should only be called once for the primary user. All
 // subsequent calls will no-op.
-class KeyDataProviderAsh : public KeyDataProvider {
+class KeyDataProviderAsh : public KeyDataProvider, KeyDataProvider::Observer {
  public:
   KeyDataProviderAsh();
   KeyDataProviderAsh(const base::FilePath& device_key_path,
@@ -28,21 +31,27 @@ class KeyDataProviderAsh : public KeyDataProvider {
   ~KeyDataProviderAsh() override;
 
   // KeyDataProvider:
-  void InitializeDeviceKey(base::OnceClosure callback) override;
-  void InitializeProfileKey(const base::FilePath& profile_path,
-                            base::OnceClosure callback) override;
-  KeyData* GetDeviceKeyData() override;
-  KeyData* GetProfileKeyData() override;
+  bool IsReady() override;
+  void OnProfileAdded(const base::FilePath& profile_path) override;
+  absl::optional<uint64_t> GetId(const std::string& project_name) override;
+  absl::optional<uint64_t> GetSecondaryId(
+      const std::string& project_name) override;
+  KeyData* GetKeyData(const std::string& project_name) override;
   void Purge() override;
-  bool HasProfileKey() override;
-  bool HasDeviceKey() override;
+
+  // KeyDataProvider::Observer:
+  void OnKeyReady() override;
 
  private:
+  KeyDataProvider* GetKeyDataProvider(const std::string& project_name);
+
   const base::FilePath device_key_path_;
   const base::TimeDelta write_delay_;
 
-  std::unique_ptr<KeyData> device_key_;
-  std::unique_ptr<KeyData> profile_key_;
+  std::unique_ptr<KeyDataProvider> device_key_;
+  std::unique_ptr<KeyDataProvider> profile_key_;
+
+  base::WeakPtrFactory<KeyDataProviderAsh> weak_ptr_factory_{this};
 };
 }  // namespace metrics::structured
 

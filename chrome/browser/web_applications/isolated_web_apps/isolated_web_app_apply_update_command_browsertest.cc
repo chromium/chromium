@@ -54,7 +54,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
 
     installed_bundle_path_ = scoped_temp_dir_.GetPath().Append(
         base::FilePath::FromASCII("installed-bundle.swbn"));
-    installed_location_ =
+    source_location_ =
         is_dev_mode_ ? IsolatedWebAppLocation(
                            DevModeBundle{.path = installed_bundle_path_})
                      : IsolatedWebAppLocation(
@@ -86,18 +86,18 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
   void Install() {
     base::test::TestFuture<InstallResult> future;
     provider()->scheduler().InstallIsolatedWebApp(
-        url_info_, installed_location_,
+        url_info_, source_location_,
         /*expected_version=*/installed_version_,
         /*optional_keep_alive=*/nullptr,
         /*optional_profile_keep_alive=*/nullptr, future.GetCallback());
-    EXPECT_THAT(future.Take(), HasValue());
+    ASSERT_OK_AND_ASSIGN(const InstallResult result, future.Take());
 
     const WebApp* web_app =
         provider()->registrar_unsafe().GetAppById(url_info_.app_id());
     ASSERT_THAT(web_app,
                 test::IwaIs(Eq("installed app"),
                             test::IsolationDataIs(
-                                Eq(installed_location_), Eq(installed_version_),
+                                result->location, Eq(installed_version_),
                                 /*controlled_frame_partitions=*/_,
                                 /*pending_update_info=*/Eq(absl::nullopt))));
   }
@@ -139,7 +139,7 @@ class IsolatedWebAppApplyUpdateCommandBrowserTest
               key_pair_.public_key));
 
   base::FilePath installed_bundle_path_;
-  IsolatedWebAppLocation installed_location_;
+  IsolatedWebAppLocation source_location_;
   base::Version installed_version_ = base::Version("1.0.0");
 
   base::FilePath update_bundle_path_;
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppApplyUpdateCommandBrowserTest, Succeeds) {
       web_app,
       test::IwaIs(Eq("updated app"),
                   test::IsolationDataIs(
-                      Eq(update_location_), Eq(update_version_),
+                      prepare_update_result->location, Eq(update_version_),
                       /*controlled_frame_partitions=*/_, Eq(absl::nullopt))));
 }
 

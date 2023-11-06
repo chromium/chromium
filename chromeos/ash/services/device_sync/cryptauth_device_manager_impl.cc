@@ -600,7 +600,7 @@ void CryptAuthDeviceManagerImpl::ForceSyncNow(
 }
 
 base::Time CryptAuthDeviceManagerImpl::GetLastSyncTime() const {
-  return base::Time::FromDoubleT(
+  return base::Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kCryptAuthDeviceSyncLastSyncTimeSeconds));
 }
 
@@ -714,7 +714,7 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
   pref_service_->SetBoolean(prefs::kCryptAuthDeviceSyncIsRecoveringFromFailure,
                             false);
   pref_service_->SetDouble(prefs::kCryptAuthDeviceSyncLastSyncTimeSeconds,
-                           clock_->Now().ToDoubleT());
+                           clock_->Now().InSecondsFSinceUnixEpoch());
   pref_service_->SetInteger(prefs::kCryptAuthDeviceSyncReason,
                             cryptauth::INVOCATION_REASON_UNKNOWN);
 

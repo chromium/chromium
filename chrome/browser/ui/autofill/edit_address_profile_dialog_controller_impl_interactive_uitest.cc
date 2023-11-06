@@ -24,18 +24,19 @@ constexpr char kSuppressedScreenshotError[] =
 class EditAddressProfileDialogControllerImplTest
     : public InteractiveBrowserTest {
  protected:
-  EditAddressProfileDialogControllerImplTest()
-      : local_profile_(AutofillProfile::Source::kLocalOrSyncable) {
-    local_profile_.SetRawInfoWithVerificationStatus(
+  EditAddressProfileDialogControllerImplTest() {
+    local_profile_ = std::make_unique<AutofillProfile>(
+        AutofillProfile::Source::kLocalOrSyncable, AddressCountryCode("US"));
+    local_profile_->SetRawInfoWithVerificationStatus(
         NAME_FULL, u"Mona J. Liza", VerificationStatus::kUserVerified);
-    test::SetProfileInfo(&local_profile_, "", "", "", "email@example.com",
+    test::SetProfileInfo(local_profile_.get(), "", "", "", "email@example.com",
                          "Company Inc.", "33 Narrow Street", "Apt 42",
                          "Playa Vista", "LA", "12345", "US", "13105551234",
                          /*finalize=*/true, VerificationStatus::kUserVerified);
-    local_profile_.set_language_code("en");
+    local_profile_->set_language_code("en");
   }
 
-  AutofillProfile local_profile() { return local_profile_; }
+  AutofillProfile local_profile() { return *local_profile_; }
 
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -94,7 +95,7 @@ class EditAddressProfileDialogControllerImplTest
   // the editor, it is set in the AddressProfileSavePromptCallback passed to the
   // prompt.
   AutofillClient::SaveAddressProfileOfferUserDecision user_decision_;
-  AutofillProfile local_profile_;
+  std::unique_ptr<AutofillProfile> local_profile_;
   std::optional<AutofillProfile> edited_profile_;
 };
 

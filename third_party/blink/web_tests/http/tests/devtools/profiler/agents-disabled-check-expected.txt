@@ -1,6 +1,6 @@
 Test that if a profiler is working all the agents are disabled.
 
---> SDK.targetManager.suspendAllTargets();
+--> SDK.TargetManager.TargetManager.instance().suspendAllTargets();
 frontend: {"id":<number>,"method":"DOM.disable","params":{}}
 frontend: {"id":<number>,"method":"CSS.disable","params":{}}
 frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"maxDepth":0}}
@@ -13,7 +13,7 @@ frontend: {"id":<number>,"method":"Overlay.setShowContainerQueryOverlays","param
 frontend: {"id":<number>,"method":"Overlay.setShowIsolatedElements","params":{"isolatedElementHighlightConfigs":[]}}
 frontend: {"id":<number>,"method":"Debugger.disable","params":{}}
 
---> SDK.targetManager.resumeAllTargets();
+--> SDK.TargetManager.TargetManager.instance().resumeAllTargets();
 frontend: {"id":<number>,"method":"DOM.enable","params":{}}
 frontend: {"id":<number>,"method":"CSS.enable","params":{}}
 frontend: {"id":<number>,"method":"Debugger.enable","params":{"maxScriptsCacheSize":100000000}}

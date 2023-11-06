@@ -457,7 +457,9 @@
 ../../third_party/logdog/logdog/streamname.py
 ../../third_party/logdog/logdog/varint.py
 ../json_comment_eater/json_comment_eater.py
+../json_to_struct/class_generator.py
 ../json_to_struct/element_generator.py
+../json_to_struct/java_element_generator.py
 ../json_to_struct/json_to_struct.py
 ../json_to_struct/struct_generator.py
 ../variations/fieldtrial_to_struct.py

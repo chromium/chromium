@@ -6,8 +6,9 @@ package org.chromium.content.browser;
 
 import android.app.Activity;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.device.nfc.NfcDelegate;
 
 /**

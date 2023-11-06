@@ -46,10 +46,15 @@ class BaseGenerator(object):  # pylint: disable=useless-object-inheritance
 
 
 class GPUTelemetryTestGenerator(BaseGenerator):
-  def __init__(self, bb_gen, is_android_webview=False, is_cast_streaming=False):
+  def __init__(self,
+               bb_gen,
+               is_android_webview=False,
+               is_cast_streaming=False,
+               is_skylab=False):
     super(GPUTelemetryTestGenerator, self).__init__(bb_gen)
     self._is_android_webview = is_android_webview
     self._is_cast_streaming = is_cast_streaming
+    self._is_skylab = is_skylab
 
   def generate(self, waterfall, tester_name, tester_config, input_tests):
     isolated_scripts = []
@@ -60,11 +65,9 @@ class GPUTelemetryTestGenerator(BaseGenerator):
         test_config = [test_config]
 
       for config in test_config:
-        test = self.bb_gen.generate_gpu_telemetry_test(waterfall, tester_name,
-                                                       tester_config, test_name,
-                                                       config,
-                                                       self._is_android_webview,
-                                                       self._is_cast_streaming)
+        test = self.bb_gen.generate_gpu_telemetry_test(
+            waterfall, tester_name, tester_config, test_name, config,
+            self._is_android_webview, self._is_cast_streaming, self._is_skylab)
         if test:
           isolated_scripts.append(test)
 
@@ -72,6 +75,10 @@ class GPUTelemetryTestGenerator(BaseGenerator):
 
 
 class SkylabGPUTelemetryTestGenerator(GPUTelemetryTestGenerator):
+  def __init__(self, bb_gen):
+    super(SkylabGPUTelemetryTestGenerator, self).__init__(bb_gen,
+                                                          is_skylab=True)
+
   def generate(self, *args, **kwargs):
     # This should be identical to a regular GPU Telemetry test, but with any
     # swarming arguments removed.
@@ -878,7 +885,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
 
   def generate_gpu_telemetry_test(self, waterfall, tester_name, tester_config,
                                   test_name, test_config, is_android_webview,
-                                  is_cast_streaming):
+                                  is_cast_streaming, is_skylab):
     # These are all just specializations of isolated script tests with
     # a bunch of boilerplate command line arguments added.
 
@@ -939,6 +946,11 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     # reproduce GC-related bugs in the V8 bindings.
     extra_browser_args.append('--js-flags=--expose-gc')
 
+    # Skylab supports sharding, so reuse swarming's shard config.
+    if is_skylab and 'shards' not in result and test_config.get(
+        'swarming', {}).get('shards'):
+      result['shards'] = test_config['swarming']['shards']
+
     args = [
         test_to_run,
         '--show-stdout',
@@ -950,6 +962,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         '-v',
         '--stable-jobs',
         '--extra-browser-args=%s' % ' '.join(extra_browser_args),
+        '--enforce-browser-version',
     ] + args
     result['args'] = self.maybe_fixup_args_array(
         self.substitute_gpu_args(tester_config, result, args))
@@ -1145,12 +1158,26 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
         # is mainly used in generate_gpu_telemetry_test().
         new_test['variant_id'] = identifier
 
-        # cros_chrome_version is the ash chrome version in the cros img in the
-        # variant of cros_board. We don't want to include it in the final json
-        # files; so remove it.
         for k, v in variant_skylab.items():
+          # cros_chrome_version is the ash chrome version in the cros img in the
+          # variant of cros_board. We don't want to include it in the final json
+          # files; so remove it.
           if k != 'cros_chrome_version':
             new_test[k] = v
+
+        # For skylab, we need to pop the correct `autotest_name`. This field
+        # defines what wrapper we use in OS infra. e.g. for gtest it's
+        # https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/server/site_tests/chromium/chromium.py
+        if variant_skylab and 'autotest_name' not in new_test:
+          if 'tast_expr' in test_config:
+            if 'lacros' in test_config['name']:
+              new_test['autotest_name'] = 'tast.lacros-from-gcs'
+            else:
+              new_test['autotest_name'] = 'tast.chrome-from-gcs'
+          elif 'benchmark' in test_config:
+            new_test['autotest_name'] = 'chromium_Telemetry'
+          else:
+            new_test['autotest_name'] = 'chromium'
 
         test_suite.setdefault(test_name, []).append(new_test)
 
@@ -2025,7 +2052,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'swarming' in step_data:
       dimensions = step_data['swarming'].get('dimensions')
       if not dimensions:
-        raise BBGenErr('%s: %s / %s : os must be specified for all '
+        raise BBGenErr('%s: %s / %s : dimensions must be specified for all '
                        'swarmed tests' % (filename, builder, step_name))
       if not dimensions.get('os'):
         raise BBGenErr('%s: %s / %s : os must be specified for all '

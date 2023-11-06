@@ -205,7 +205,13 @@ inline constexpr char16_t kBetweenStreetsOrLandmarkRe[] =
 
 inline constexpr char16_t kBetweenStreetsRe[] =
     u"(cross|between).*street"
-    u"|entre.*calle";  // es
+    u"|entre.*calles";  // es
+
+inline constexpr char16_t kBetweenStreetsLine1Re[] =
+    u"entre.*calle(.*1)?";  // es-MX
+
+inline constexpr char16_t kBetweenStreetsLine2Re[] =
+    u"entre.*calle(.*2)?|y.*calle";  // es-MX
 
 inline constexpr char16_t kAdminLevel2Re[] =
     u"município"                  // pt

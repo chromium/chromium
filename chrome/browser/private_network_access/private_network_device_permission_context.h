@@ -17,6 +17,35 @@
 
 class Profile;
 
+const char kPrivateNetworkDeviceValidityHistogramName[] =
+    "Security.PrivateNetworkAccess.PermissionDeviceValidity";
+const char kUserAcceptedPrivateNetworkDeviceHistogramName[] =
+    "Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType";
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "PrivateNetworkDeviceValidity" in
+// src/tools/metrics/histograms/metadata/security/enums.xml.
+enum class PrivateNetworkDeviceValidity {
+  kExistingDevice = 0,
+  kNewValidDevice = 1,
+  kDeviceIDMissing = 2,
+  kDeviceIDInvalid = 3,
+  kDeviceNameMissing = 4,
+  kDeviceNameInvalid = 5,
+  kMaxValue = kDeviceNameInvalid,
+};
+
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with
+// "NewAcceptedDeviceType" in
+// src/tools/metrics/histograms/metadata/security/enums.xml.
+enum class NewAcceptedDeviceType {
+  kValidDevice = 0,
+  kEphemeralDevice = 1,
+  kMaxValue = kEphemeralDevice,
+};
+
 // Manages the permissions for Private Network device objects. A Private Network
 // device permission object consists of its id, name and IP address.
 // The id is provided by the device in `Private-Network-Access-ID` preflight
@@ -41,11 +70,13 @@ class PrivateNetworkDevicePermissionContext
 
   // Grants `origin` access to the device.
   void GrantDevicePermission(const url::Origin& origin,
-                             const blink::mojom::PrivateNetworkDevice& device);
+                             const blink::mojom::PrivateNetworkDevice& device,
+                             bool is_device_valid);
 
   // Checks if `origin` has access to `device`.
   bool HasDevicePermission(const url::Origin& origin,
-                           const blink::mojom::PrivateNetworkDevice& device);
+                           const blink::mojom::PrivateNetworkDevice& device,
+                           bool is_device_valid);
 
   // Tracks the set of devices to which an origin has temporary access to.
   std::map<url::Origin, std::set<net::IPAddress>> ephemeral_devices_;

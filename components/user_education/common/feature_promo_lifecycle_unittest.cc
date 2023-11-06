@@ -53,7 +53,7 @@ std::string ParamToString(
 
 using PromoType = FeaturePromoSpecification::PromoType;
 using PromoSubtype = FeaturePromoSpecification::PromoSubtype;
-using CloseReason = FeaturePromoLifecycle::CloseReason;
+using CloseReason = FeaturePromoClosedReason;
 
 class FeaturePromoLifecycleTest : public testing::Test {
  public:

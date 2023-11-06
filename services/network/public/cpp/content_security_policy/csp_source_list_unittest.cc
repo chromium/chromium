@@ -22,7 +22,7 @@ static const network::mojom::CSPSource no_self;
 
 // Allow() is an abbreviation of CheckCSPSourceList. Useful for writing
 // test expectations on one line.
-bool Allow(
+CSPCheckResult Allow(
     const mojom::CSPSourceListPtr& source_list,
     const GURL& url,
     const mojom::CSPSource& self,
@@ -101,14 +101,21 @@ TEST(CSPSourceList, AllowStar) {
                                              false, false);
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_star = true;
-  EXPECT_TRUE(Allow(source_list, GURL("http://not-example.com"), *self));
-  EXPECT_TRUE(Allow(source_list, GURL("https://not-example.com"), *self));
-  EXPECT_TRUE(Allow(source_list, GURL("ws://not-example.com"), *self));
-  EXPECT_TRUE(Allow(source_list, GURL("wss://not-example.com"), *self));
-  EXPECT_TRUE(Allow(source_list, GURL("ftp://not-example.com"), *self));
+  EXPECT_EQ(Allow(source_list, GURL("http://not-example.com"), *self),
+            network::CSPCheckResult::Allowed());
+  EXPECT_EQ(Allow(source_list, GURL("https://not-example.com"), *self),
+            network::CSPCheckResult::Allowed());
+  EXPECT_EQ(Allow(source_list, GURL("ws://not-example.com"), *self),
+            network::CSPCheckResult::AllowedOnlyIfWildcardMatchesWs());
+  EXPECT_EQ(Allow(source_list, GURL("wss://not-example.com"), *self),
+            network::CSPCheckResult::AllowedOnlyIfWildcardMatchesWs());
+  EXPECT_EQ(Allow(source_list, GURL("ftp://not-example.com"), *self),
+            network::CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp());
 
-  EXPECT_FALSE(Allow(source_list, GURL("file://not-example.com"), *self));
-  EXPECT_FALSE(Allow(source_list, GURL("applewebdata://a.test"), *self));
+  EXPECT_EQ(Allow(source_list, GURL("file://not-example.com"), *self),
+            network::CSPCheckResult::Blocked());
+  EXPECT_EQ(Allow(source_list, GURL("applewebdata://a.test"), *self),
+            network::CSPCheckResult::Blocked());
 
   {
     // With a protocol of 'file', '*' allow 'file:'
@@ -135,8 +142,8 @@ TEST(CSPSourceList, AllowStarAndSelf) {
       network::mojom::CSPSource::New("https", "a.com", 443, "", false, false);
   auto source_list = mojom::CSPSourceList::New();
 
-  // If the request is allowed by {*} and not by {'self'} then it should be
-  // allowed by the union {*,'self'}.
+  // If the request is by {*} and not by {'self'} then it should be
+  // by the union {*,'self'}.
   source_list->allow_self = true;
   source_list->allow_star = false;
   EXPECT_FALSE(Allow(source_list, GURL("http://b.com"), *self));
@@ -1120,10 +1127,11 @@ TEST(CSPSourceList, OpaqueURLMatchingAllowSelf) {
 
   auto source_list = mojom::CSPSourceList::New();
   source_list->allow_self = true;
-  EXPECT_FALSE(Allow(
-      source_list, GURL("https://example.com"), *self, /*is_redirect=*/false,
-      /*is_response_check=*/false, mojom::CSPDirectiveName::FencedFrameSrc,
-      /*is_opaque_fenced_frame=*/true));
+  EXPECT_FALSE(Allow(source_list, GURL("https://example.com"), *self,
+                     /*is_redirect=*/false,
+                     /*is_response_check=*/false,
+                     mojom::CSPDirectiveName::FencedFrameSrc,
+                     /*is_opaque_fenced_frame=*/true));
 }
 
 }  // namespace network

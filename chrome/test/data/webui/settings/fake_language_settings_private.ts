@@ -202,7 +202,7 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
    * Gets languages available for translate, spell checking, input and locale.
    */
   getLanguageList() {
-    return Promise.resolve(JSON.parse(JSON.stringify(this.languages)));
+    return Promise.resolve(structuredClone(this.languages));
   }
 
   /**

@@ -11,14 +11,15 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockActivityLauncher.java",
     "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockActivityLauncherSupplier.java",
     "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockBridge.java",
+    "java/src/org/chromium/components/browser_ui/device_lock/DeviceLockDialogMetrics.java",
   ]
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/widget/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 }

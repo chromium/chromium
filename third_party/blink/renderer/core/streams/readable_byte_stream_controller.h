@@ -158,7 +158,8 @@ class CORE_EXPORT ReadableByteStreamController
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
   static void ProcessReadRequestsUsingQueue(ScriptState*,
-                                            ReadableByteStreamController*);
+                                            ReadableByteStreamController*,
+                                            ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-call-pull-if-needed
   static void CallPullIfNeeded(ScriptState*, ReadableByteStreamController*);
@@ -222,7 +223,8 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerfillreadrequestfromqueue
   static void FillReadRequestFromQueue(ScriptState*,
                                        ReadableByteStreamController*,
-                                       ReadRequest* read_request);
+                                       ReadRequest* read_request,
+                                       ExceptionState&);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-pull-into
   static void PullInto(ScriptState*,
@@ -281,7 +283,7 @@ class CORE_EXPORT ReadableByteStreamController
                                      v8::Local<v8::Value> reason) override;
 
   // https://streams.spec.whatwg.org/#rbs-controller-private-pull
-  void PullSteps(ScriptState*, ReadRequest*) override;
+  void PullSteps(ScriptState*, ReadRequest*, ExceptionState&) override;
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontroller-releasesteps
   void ReleaseSteps() override;

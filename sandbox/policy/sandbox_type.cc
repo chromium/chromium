@@ -44,6 +44,8 @@ bool IsUnsandboxedSandboxType(Sandbox sandbox_type) {
 #endif
     case Sandbox::kNetwork:
       return false;
+    case Sandbox::kOnDeviceModelExecution:
+      return false;
     case Sandbox::kRenderer:
     case Sandbox::kService:
     case Sandbox::kServiceWithJit:
@@ -121,6 +123,7 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
     case Sandbox::kServiceWithJit:
     case Sandbox::kUtility:
     case Sandbox::kNetwork:
+    case Sandbox::kOnDeviceModelExecution:
     case Sandbox::kCdm:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case Sandbox::kPrintBackend:
@@ -213,9 +216,6 @@ sandbox::mojom::Sandbox SandboxTypeFromCommandLine(
 #endif
   }
 
-  if (process_type == switches::kNaClBrokerProcess)
-    return Sandbox::kNoSandbox;
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Intermediate process gains a sandbox later.
   if (process_type == switches::kZygoteProcessType)
@@ -244,6 +244,8 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #endif  // BUILDFLAG(IS_WIN)
     case Sandbox::kNetwork:
       return switches::kNetworkSandbox;
+    case Sandbox::kOnDeviceModelExecution:
+      return switches::kOnDeviceModelExecutionSandbox;
 #if BUILDFLAG(ENABLE_PPAPI)
     case Sandbox::kPpapi:
       return switches::kPpapiSandbox;
@@ -344,8 +346,12 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
     return Sandbox::kNoSandbox;
 #endif
   }
-  if (sandbox_string == switches::kNetworkSandbox)
+  if (sandbox_string == switches::kNetworkSandbox) {
     return Sandbox::kNetwork;
+  }
+  if (sandbox_string == switches::kOnDeviceModelExecutionSandbox) {
+    return Sandbox::kOnDeviceModelExecution;
+  }
 #if BUILDFLAG(ENABLE_PPAPI)
   if (sandbox_string == switches::kPpapiSandbox)
     return Sandbox::kPpapi;

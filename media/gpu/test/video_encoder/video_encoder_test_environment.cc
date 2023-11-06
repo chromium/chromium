@@ -293,8 +293,6 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_VAAPI)
-  // TODO(crbug.com/1186051): remove once enabled by default.
-  combined_enabled_features.push_back(media::kVaapiVp9kSVCHWEncoding);
   // TODO(b/292462186): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiVp9SModeHWEncoding);
   // TODO(b/202926617): remove once enabled by default.

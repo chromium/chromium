@@ -22,14 +22,14 @@ namespace reporting {
 // static
 BASE_FEATURE(kEnableNetworkBandwidthReporting,
              "EnableNetworkBandwidthReporting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NetworkBandwidthSampler::NetworkBandwidthSampler(
     ::network::NetworkQualityTracker* network_quality_tracker,
     base::WeakPtr<Profile> profile)
     : network_quality_tracker_(network_quality_tracker), profile_(profile) {
-  DCHECK(network_quality_tracker_);
-  DCHECK(profile_);
+  CHECK(network_quality_tracker_);
+  CHECK(profile_);
 }
 
 NetworkBandwidthSampler::~NetworkBandwidthSampler() = default;

@@ -28,14 +28,14 @@ std::string ToString(SwitchAccessCommand command) {
   switch (command) {
     case SwitchAccessCommand::kSelect:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::SWITCH_ACCESS_COMMAND_SELECT);
+          extensions::api::accessibility_private::SwitchAccessCommand::kSelect);
     case SwitchAccessCommand::kNext:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::SWITCH_ACCESS_COMMAND_NEXT);
+          extensions::api::accessibility_private::SwitchAccessCommand::kNext);
     case SwitchAccessCommand::kPrevious:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::
-              SWITCH_ACCESS_COMMAND_PREVIOUS);
+          extensions::api::accessibility_private::SwitchAccessCommand::
+              kPrevious);
     case SwitchAccessCommand::kNone:
       NOTREACHED();
       return "";
@@ -46,19 +46,19 @@ std::string ToString(MagnifierCommand command) {
   switch (command) {
     case MagnifierCommand::kMoveStop:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVESTOP);
+          extensions::api::accessibility_private::MagnifierCommand::kMoveStop);
     case MagnifierCommand::kMoveUp:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEUP);
+          extensions::api::accessibility_private::MagnifierCommand::kMoveUp);
     case MagnifierCommand::kMoveDown:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVEDOWN);
+          extensions::api::accessibility_private::MagnifierCommand::kMoveDown);
     case MagnifierCommand::kMoveLeft:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVELEFT);
+          extensions::api::accessibility_private::MagnifierCommand::kMoveLeft);
     case MagnifierCommand::kMoveRight:
       return extensions::api::accessibility_private::ToString(
-          extensions::api::accessibility_private::MAGNIFIER_COMMAND_MOVERIGHT);
+          extensions::api::accessibility_private::MagnifierCommand::kMoveRight);
   }
 
   return "";

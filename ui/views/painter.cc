@@ -85,7 +85,7 @@ void SolidRoundRectPainter::Paint(gfx::Canvas* canvas, const gfx::Size& size) {
 
   gfx::Rect inset_rect(size);
   inset_rect.Inset(insets_);
-  gfx::RectF fill_rect(gfx::ScaleToEnclosingRect(inset_rect, scale));
+  gfx::RectF fill_rect(gfx::ScaleToEnclosedRect(inset_rect, scale));
   gfx::RectF stroke_rect = fill_rect;
 
   cc::PaintFlags flags;

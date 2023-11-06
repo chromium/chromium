@@ -32,6 +32,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.ActivityLayoutState;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -131,15 +132,15 @@ public abstract class PartialCustomTabBaseStrategy
         int COUNT = 4;
     }
 
-    public PartialCustomTabBaseStrategy(Activity activity, OnResizedCallback onResizedCallback,
+    public PartialCustomTabBaseStrategy(Activity activity,
+            BrowserServicesIntentDataProvider intentData, OnResizedCallback onResizedCallback,
             OnActivityLayoutCallback onActivityLayoutCallback, FullscreenManager fullscreenManager,
-            boolean isTablet, boolean interactWithBackground,
-            PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
+            boolean isTablet, PartialCustomTabHandleStrategyFactory handleStrategyFactory) {
         mActivity = activity;
         mOnResizedCallback = onResizedCallback;
         mOnActivityLayoutCallback = onActivityLayoutCallback;
         mIsTablet = isTablet;
-        mInteractWithBackground = interactWithBackground;
+        mInteractWithBackground = intentData.canInteractWithBackground();
 
         mVersionCompat = PartialCustomTabVersionCompat.create(mActivity, this::updatePosition);
         mDisplayHeight = mVersionCompat.getDisplayHeight();
@@ -166,9 +167,8 @@ public abstract class PartialCustomTabBaseStrategy
     public void onPostInflationStartup() {
         // Elevate the main web contents area as high as the handle bar to have the shadow
         // effect look right.
-        int ev = mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
         View coordinatorLayout = getCoordinatorLayout();
-        coordinatorLayout.setElevation(ev);
+        coordinatorLayout.setElevation(getCustomTabsElevation());
 
         mPositionUpdater.run();
 
@@ -418,11 +418,9 @@ public abstract class PartialCustomTabBaseStrategy
             handleViewStub.inflate();
         }
 
-        getCoordinatorLayout().setElevation(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        getCoordinatorLayout().setElevation(getCustomTabsElevation());
         View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
-        handleView.setElevation(
-                mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation));
+        handleView.setElevation(getCustomTabsElevation());
         updateShadowOffset();
         GradientDrawable cctBackground = (GradientDrawable) handleView.getBackground();
         adjustCornerRadius(cctBackground, toolbarCornerRadius);
@@ -470,8 +468,7 @@ public abstract class PartialCustomTabBaseStrategy
         View dragBar = mActivity.findViewById(R.id.drag_bar);
         // Check if the current dragBar background is the InsetDrawable used in conjunction with
         // the divider line
-        if (dragBar.getBackground() instanceof InsetDrawable) {
-            InsetDrawable insetDrawable = (InsetDrawable) dragBar.getBackground();
+        if (dragBar.getBackground() instanceof InsetDrawable insetDrawable) {
             return (GradientDrawable) insetDrawable.getDrawable();
         } else {
             return (GradientDrawable) dragBar.getBackground();
@@ -570,6 +567,10 @@ public abstract class PartialCustomTabBaseStrategy
 
         mFinishRunnable.run();
         mFinishRunnable = null;
+    }
+
+    protected int getCustomTabsElevation() {
+        return mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_elevation);
     }
 
     private void onToolbarContainerVisibilityChange(int visibility) {

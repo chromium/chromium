@@ -11,16 +11,6 @@ import {FakeTask} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
- * Expected autocomplete results for 'hello'.
- * @type {Array<string>}
- * @const
- */
-const EXPECTED_AUTOCOMPLETE_LIST = [
-  '\'hello\' - search Drive',
-  'hello.txt',
-];
-
-/**
  * Expected files shown in the search results for 'hello'
  *
  * @type {!Array<!TestEntryInfo>}
@@ -39,9 +29,6 @@ const SEARCH_RESULTS_ENTRY_SET = [
 const ENABLE_DOCS_OFFLINE_MESSAGE =
     'Enable Google Docs Offline to make Docs, Sheets and Slides ' +
     'available offline.';
-
-/** The query selector for the search box input field. */
-const searchBox = '#search-box cr-input';
 
 /** The id attribute of the dismiss button in the educational banner. */
 async function getDismissButtonId(appId) {
@@ -113,7 +100,7 @@ testcase.driveOpenSidebarOffline = async () => {
 
   // Click the icon of the Offline volume.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_offline');
+  await directoryTree.selectItemByLabel('Offline');
 
   // Check: the file list should display the offline file set.
   await remoteCall.waitForFiles(
@@ -136,7 +123,7 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   // Click the icon of the Shared With Me volume.
   // Use the icon for a click target.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_shared_with_me');
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');
@@ -698,11 +685,8 @@ testcase.driveLinkToDirectory = async () => {
   await remoteCall.waitUntilSelected(appId, 'G');
   await remoteCall.waitForElement(appId, '.table-row[selected]');
 
-  if ((await sendTestMessage({name: 'isDriveShortcutsEnabled'})) === 'true') {
-    // Ensure the "G" directory has the shortcut class applied.
-    await remoteCall.waitForElement(
-        appId, '#file-list [file-name="G"].shortcut');
-  }
+  // Ensure the "G" directory has the shortcut class applied.
+  await remoteCall.waitForElement(appId, '#file-list [file-name="G"].shortcut');
 
   // Open the link
   chrome.test.assertTrue(
@@ -879,160 +863,6 @@ testcase.driveEncryptionBadge = async () => {
 };
 
 /**
- * Tests that the inline file sync "in progress" icon is displayed in Drive as
- * the file starts syncing then disappears as it finishes syncing.
- */
-testcase.driveInlineSyncStatusSingleFile = async () => {
-  const toBeUploaded = new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'video.ogv',
-    thumbnailFileName: 'image.png',
-    targetPath: 'toBeUploaded.ogv',
-    mimeType: 'video/ogg',
-    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
-    nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
-    typeText: 'OGG video',
-    availableOffline: true,
-  });
-
-  // Open Files app on Drive and copy over entry to be uploaded.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], [toBeUploaded]);
-
-  // Fake the file starting to sync.
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toBeUploaded.targetPath}`,
-    syncStatus: 'in_progress',
-  });
-
-  const pieProgressQuery = 'xf-inline-status[sync-status=in_progress]';
-
-  // Verify this data reaches the UI as a progress value of 50%.
-  const inlineStatus = await remoteCall.waitForElement(appId, pieProgressQuery);
-
-  chrome.test.assertEq(Number(inlineStatus.attributes['progress']), 0.5);
-
-  // Hover cursor over the pie progress icon.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseOver', appId, [pieProgressQuery]));
-
-  // Verify the correct tooltip is displayed.
-  const tooltip = await remoteCall.waitForElement(
-      appId, ['files-tooltip[visible=true]', '#label']);
-  chrome.test.assertEq('Syncing - 50%', tooltip.text);
-
-  // Fake the file finishing syncing.
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toBeUploaded.targetPath}`,
-    syncStatus: 'completed',
-  });
-
-  // Verify the "sync in progress" icon is no longer displayed.
-  await remoteCall.waitForElementLost(
-      appId, 'xf-inline-status[sync-status=in_progress]');
-};
-
-/**
- * Tests that the inline file sync icons are displayed in Drive on parent
- * folders containing entries and that child entries' statuses are aggregated
- * respecting the order of precedence (failed > in progress > completed).
- */
-testcase.driveInlineSyncStatusParentFolder = async () => {
-  const parentDir = new TestEntryInfo({
-    type: EntryType.DIRECTORY,
-    targetPath: 'some_folder',
-    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
-    nameText: 'some_folder',
-    sizeText: '--',
-    typeText: 'Folder',
-  });
-
-  const toBeUploaded = new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'video.ogv',
-    thumbnailFileName: 'image.png',
-    targetPath: 'some_folder/toBeUploaded.ogv',
-    mimeType: 'video/ogg',
-    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
-    nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
-    typeText: 'OGG video',
-    availableOffline: true,
-  });
-
-  const toFailUploading = new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'video.ogv',
-    thumbnailFileName: 'image.png',
-    targetPath: 'some_folder/toFailUploading.ogv',
-    mimeType: 'video/ogg',
-    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
-    nameText: 'toFailUploading.ogv',
-    sizeText: '59 KB',
-    typeText: 'OGG video',
-    availableOffline: true,
-  });
-
-  // Open Files app on Drive and copy over entry to be uploaded.
-  const appId = await setupAndWaitUntilReady(
-      RootPath.DRIVE, [], [parentDir, toBeUploaded, toFailUploading]);
-
-  // Fake syncing both files to Drive.
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toBeUploaded.targetPath}`,
-    syncStatus: 'in_progress',
-  });
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toFailUploading.targetPath}`,
-    syncStatus: 'in_progress',
-  });
-  // States:
-  // toBeUploaded - syncing in progress
-  // toFailUploading - syncing in progress
-
-  const syncInProgressQuery = 'xf-inline-status[sync-status=in_progress]';
-  const syncFailedQuery = 'xf-inline-status[sync-status=error]';
-
-  // Verify the "sync in progress" icon is displayed in the parent folder.
-  await remoteCall.waitForElement(appId, syncInProgressQuery);
-
-  // Fake toFailUploading.ogv failing to sync to Drive.
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toFailUploading.targetPath}`,
-    syncStatus: 'error',
-  });
-  // States:
-  // some_folder - syncing in progress
-  // some_folder/toBeUploaded - syncing in progress
-  // some_folder/toFailUploading - syncing failed (when file fail to sync, their
-  // status changes back to "queued")
-
-  // Verify the "sync failed" icon is displayed in the parent folder.
-  // (failed > in progress)
-  await remoteCall.waitForElement(appId, syncFailedQuery);
-
-  // Fake some/path/world.ogv finishing syncing.
-  await sendTestMessage({
-    name: 'setDriveFileSyncStatus',
-    path: `/root/${toBeUploaded.targetPath}`,
-    syncStatus: 'completed',
-  });
-  // States:
-  // toBeUploaded - syncing completed
-  // toFailUploading - syncing failed
-
-  // Verify the "sync failed" icon is still displayed in the parent folder.
-  // (failed > completed)
-  await remoteCall.waitForElement(appId, syncFailedQuery);
-};
-
-/**
  * Tests that the inline sync status "in progress" icon is displayed in "My
  * Drive" as the file starts syncing then disappears as it finishes syncing
  * (i.e., the file reaches 100% progress).
@@ -1046,7 +876,7 @@ testcase.driveInlineSyncStatusSingleFileProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1103,7 +933,7 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toBeUploaded.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1116,7 +946,7 @@ testcase.driveInlineSyncStatusParentFolderProgressEvents = async () => {
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
     nameText: 'toFailUploading.ogv',
-    sizeText: '59 KB',
+    sizeText: '56 KB',
     typeText: 'OGG video',
     availableOffline: true,
   });
@@ -1551,7 +1381,7 @@ testcase.drivePinToggleIsEnabledInSharedWithMeWhenBulkPinningEnabled =
   // Click the Shared with me volume, it has no children so navigating using the
   // directory tree doesn't work.
   const directoryTree = await DirectoryTreePageObject.create(appId, remoteCall);
-  await directoryTree.selectItemByType('drive_shared_with_me');
+  await directoryTree.selectItemByLabel('Shared with me');
 
   // Wait until the breadcrumb path is updated.
   await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/Shared with me');

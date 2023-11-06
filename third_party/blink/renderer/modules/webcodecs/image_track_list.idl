@@ -5,8 +5,7 @@
 // https://github.com/WICG/web-codecs
 
 [
-    Exposed=(Window,DedicatedWorker),
-    RuntimeEnabled=WebCodecs
+    Exposed=(Window,DedicatedWorker)
 ] interface ImageTrackList {
   getter ImageTrack([EnforceRange] unsigned long index);
   readonly attribute unsigned long length;

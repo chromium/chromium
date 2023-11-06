@@ -128,6 +128,100 @@ TEST_F(AnnotationList, DuplicateKeys) {
   EXPECT_EQ(1u, annotations.size());
 }
 
+TEST_F(AnnotationList, IteratorSingleAnnotation) {
+  ASSERT_EQ(annotations_.begin(), annotations_.end());
+  ASSERT_EQ(annotations_.cbegin(), annotations_.cend());
+
+  one_.Set("1");
+
+  auto iterator = annotations_.begin();
+  auto const_iterator = annotations_.cbegin();
+
+  ASSERT_NE(iterator, annotations_.end());
+  ASSERT_NE(const_iterator, annotations_.cend());
+
+  EXPECT_EQ(*iterator, &one_);
+  EXPECT_EQ(*const_iterator, &one_);
+
+  ++iterator;
+  ++const_iterator;
+
+  EXPECT_EQ(iterator, annotations_.end());
+  EXPECT_EQ(const_iterator, annotations_.cend());
+}
+
+TEST_F(AnnotationList, IteratorMultipleAnnotationsInserted) {
+  ASSERT_EQ(annotations_.begin(), annotations_.end());
+  ASSERT_EQ(annotations_.cbegin(), annotations_.cend());
+
+  one_.Set("1");
+  two_.Set("2");
+
+  // New annotations are inserted to the beginning of the list. Hence, |two_|
+  // must be the first annotation, followed by |one_|.
+  {
+    auto iterator = annotations_.begin();
+    auto const_iterator = annotations_.cbegin();
+
+    ASSERT_NE(iterator, annotations_.end());
+    ASSERT_NE(const_iterator, annotations_.cend());
+
+    EXPECT_EQ(*iterator, &two_);
+    EXPECT_EQ(*const_iterator, &two_);
+
+    ++iterator;
+    ++const_iterator;
+
+    ASSERT_NE(iterator, annotations_.end());
+    ASSERT_NE(const_iterator, annotations_.cend());
+
+    EXPECT_EQ(*iterator, &one_);
+    EXPECT_EQ(*const_iterator, &one_);
+
+    ++iterator;
+    ++const_iterator;
+
+    EXPECT_EQ(iterator, annotations_.end());
+    EXPECT_EQ(const_iterator, annotations_.cend());
+  }
+}
+
+TEST_F(AnnotationList, IteratorMultipleAnnotationsInsertedAndRemoved) {
+  ASSERT_EQ(annotations_.begin(), annotations_.end());
+  ASSERT_EQ(annotations_.cbegin(), annotations_.cend());
+
+  one_.Set("1");
+  two_.Set("2");
+  one_.Clear();
+  two_.Clear();
+
+  // Even after clearing, Annotations are still inserted in the list and
+  // reachable via the iterators.
+  auto iterator = annotations_.begin();
+  auto const_iterator = annotations_.cbegin();
+
+  ASSERT_NE(iterator, annotations_.end());
+  ASSERT_NE(const_iterator, annotations_.cend());
+
+  EXPECT_EQ(*iterator, &two_);
+  EXPECT_EQ(*const_iterator, &two_);
+
+  ++iterator;
+  ++const_iterator;
+
+  ASSERT_NE(iterator, annotations_.end());
+  ASSERT_NE(const_iterator, annotations_.cend());
+
+  EXPECT_EQ(*iterator, &one_);
+  EXPECT_EQ(*const_iterator, &one_);
+
+  ++iterator;
+  ++const_iterator;
+
+  EXPECT_EQ(iterator, annotations_.end());
+  EXPECT_EQ(const_iterator, annotations_.cend());
+}
+
 class RaceThread : public Thread {
  public:
   explicit RaceThread(test::AnnotationList* test) : Thread(), test_(test) {}

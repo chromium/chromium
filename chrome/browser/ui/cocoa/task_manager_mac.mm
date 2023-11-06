@@ -734,8 +734,9 @@ bool TaskManagerMac::IsColumnVisible(int column_id) const {
   return [window_controller_ visibilityOfColumnWithId:column_id];
 }
 
-void TaskManagerMac::SetColumnVisibility(int column_id, bool new_visibility) {
+bool TaskManagerMac::SetColumnVisibility(int column_id, bool new_visibility) {
   [window_controller_ setVisibility:new_visibility ofColumnWithId:column_id];
+  return true;
 }
 
 bool TaskManagerMac::IsTableSorted() const {

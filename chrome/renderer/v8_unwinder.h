@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 
+#include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/unwinder.h"
 #include "v8/include/v8-unwinder.h"

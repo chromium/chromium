@@ -111,6 +111,7 @@ class FakeSyncEngine : public SyncEngine,
                           base::OnceClosure callback) override;
   bool IsNextPollTimeInThePast() const override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
+  void RecordNigoriMemoryUsageAndCountsHistograms() override;
 
  private:
   const bool allow_init_completion_;

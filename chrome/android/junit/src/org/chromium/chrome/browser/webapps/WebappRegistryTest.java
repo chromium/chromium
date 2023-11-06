@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.text.TextUtils;
 
 import org.junit.Before;
@@ -29,13 +30,21 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browsing_data.UrlFilters;
+import org.chromium.chrome.browser.webapps.WebappRegistry.GetWebApkSpecificsImplSetWebappInfoForTesting;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
+import org.chromium.components.sync.protocol.WebApkSpecifics;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,7 +53,9 @@ import java.util.Set;
  * SharedPreferences as expected.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {BackgroundShadowAsyncTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {BackgroundShadowAsyncTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class WebappRegistryTest {
     // These were copied from WebappRegistry for backward compatibility checking.
@@ -84,8 +95,9 @@ public class WebappRegistryTest {
     @Before
     public void setUp() {
         WebappRegistry.refreshSharedPrefsForTesting();
-        mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
-                REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
+        mSharedPreferences =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(REGISTRY_FILE_NAME, Context.MODE_PRIVATE);
         mSharedPreferences.edit().putLong(KEY_LAST_CLEANUP, INITIAL_TIME).commit();
 
         mCallbackCalled = false;
@@ -96,8 +108,9 @@ public class WebappRegistryTest {
         registerWebappWithId(intentDataProvider.getWebappExtras().id, intentDataProvider);
     }
 
-    private void registerWebappWithId(String webappId,
-            BrowserServicesIntentDataProvider intentDataProvider) throws Exception {
+    private void registerWebappWithId(
+            String webappId, BrowserServicesIntentDataProvider intentDataProvider)
+            throws Exception {
         FetchStorageCallback callback = new FetchStorageCallback(intentDataProvider);
         WebappRegistry.getInstance().register(webappId, callback);
 
@@ -131,10 +144,14 @@ public class WebappRegistryTest {
         registerWebappWithId("test", null);
 
         long after = System.currentTimeMillis();
-        SharedPreferences webAppPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "test", Context.MODE_PRIVATE);
-        long actual = webAppPrefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        SharedPreferences webAppPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "test",
+                                Context.MODE_PRIVATE);
+        long actual =
+                webAppPrefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertTrue("Timestamp is out of range", actual <= after);
     }
 
@@ -176,12 +193,13 @@ public class WebappRegistryTest {
         WebappRegistry.refreshSharedPrefsForTesting();
 
         // Does not crash.
-        assertEquals(null,
+        assertEquals(
+                null,
                 WebappRegistry.getInstance().getWebappDataStorageForUrl("https://www.google.ca/"));
 
         long currentTime = System.currentTimeMillis();
-        WebappRegistry.getInstance().unregisterOldWebapps(
-                currentTime + WebappRegistry.FULL_CLEANUP_DURATION);
+        WebappRegistry.getInstance()
+                .unregisterOldWebapps(currentTime + WebappRegistry.FULL_CLEANUP_DURATION);
         assertTrue(WebappRegistry.getRegisteredWebappIdsForTesting().isEmpty());
     }
 
@@ -198,14 +216,15 @@ public class WebappRegistryTest {
         }
 
         // Partial deletion.
-        WebappRegistry.getInstance().unregisterWebappsForUrlsImpl(
-                new UrlFilters.OneUrl("http://example.com/index.html"));
+        WebappRegistry.getInstance()
+                .unregisterWebappsForUrlsImpl(
+                        new UrlFilters.OneUrl("http://example.com/index.html"));
 
         Set<String> registeredWebapps = getRegisteredWebapps();
         assertEquals(2, registeredWebapps.size());
         for (String appName : apps.keySet()) {
-            assertEquals(!TextUtils.equals(appName, "webapp1"),
-                         registeredWebapps.contains(appName));
+            assertEquals(
+                    !TextUtils.equals(appName, "webapp1"), registeredWebapps.contains(appName));
         }
 
         // Full deletion.
@@ -227,21 +246,24 @@ public class WebappRegistryTest {
 
         for (String appName : apps.keySet()) {
             SharedPreferences webAppPrefs =
-                    ContextUtils.getApplicationContext().getSharedPreferences(
-                            WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
-                            Context.MODE_PRIVATE);
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(
+                                    WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
+                                    Context.MODE_PRIVATE);
             webAppPrefs.edit().putLong(WebappDataStorage.KEY_LAST_USED, 100L).apply();
         }
 
         // Partial deletion.
-        WebappRegistry.getInstance().unregisterWebappsForUrlsImpl(
-                new UrlFilters.OneUrl("http://example.com/index.html"));
+        WebappRegistry.getInstance()
+                .unregisterWebappsForUrlsImpl(
+                        new UrlFilters.OneUrl("http://example.com/index.html"));
 
         for (String appName : apps.keySet()) {
             SharedPreferences webAppPrefs =
-                    ContextUtils.getApplicationContext().getSharedPreferences(
-                            WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
-                            Context.MODE_PRIVATE);
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(
+                                    WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
+                                    Context.MODE_PRIVATE);
             assertEquals(TextUtils.equals(appName, "webapp1"), webAppPrefs.getAll().isEmpty());
         }
 
@@ -249,9 +271,10 @@ public class WebappRegistryTest {
         WebappRegistry.getInstance().unregisterWebappsForUrlsImpl(new UrlFilters.AllUrls());
         for (String appName : apps.keySet()) {
             SharedPreferences webAppPrefs =
-                    ContextUtils.getApplicationContext().getSharedPreferences(
-                            WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
-                            Context.MODE_PRIVATE);
+                    ContextUtils.getApplicationContext()
+                            .getSharedPreferences(
+                                    WebappDataStorage.SHARED_PREFS_FILE_PREFIX + appName,
+                                    Context.MODE_PRIVATE);
             assertTrue(webAppPrefs.getAll().isEmpty());
         }
     }
@@ -263,8 +286,11 @@ public class WebappRegistryTest {
         long currentTime = INITIAL_TIME + WebappRegistry.FULL_CLEANUP_DURATION - 1;
 
         addWebappsToRegistry("oldWebapp");
-        SharedPreferences webAppPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "oldWebapp", Context.MODE_PRIVATE);
+        SharedPreferences webAppPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "oldWebapp",
+                                Context.MODE_PRIVATE);
         webAppPrefs.edit().putLong(WebappDataStorage.KEY_LAST_USED, Long.MIN_VALUE).apply();
 
         // Force a re-read of the preferences from disk.
@@ -274,8 +300,9 @@ public class WebappRegistryTest {
         Set<String> actual = getRegisteredWebapps();
         assertEquals(new HashSet<>(Arrays.asList("oldWebapp")), actual);
 
-        long actualLastUsed = webAppPrefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long actualLastUsed =
+                webAppPrefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(Long.MIN_VALUE, actualLastUsed);
 
         // The last cleanup time was set to 0 in setUp() so check that this hasn't changed.
@@ -291,8 +318,11 @@ public class WebappRegistryTest {
 
         // Put the last used time just inside the no-cleanup window.
         addWebappsToRegistry("recentWebapp");
-        SharedPreferences webAppPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "recentWebapp", Context.MODE_PRIVATE);
+        SharedPreferences webAppPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "recentWebapp",
+                                Context.MODE_PRIVATE);
         long lastUsed = currentTime - WebappRegistry.WEBAPP_UNOPENED_CLEANUP_DURATION + 1;
         webAppPrefs.edit().putLong(WebappDataStorage.KEY_LAST_USED, lastUsed).apply();
 
@@ -307,8 +337,9 @@ public class WebappRegistryTest {
         Set<String> actual = getRegisteredWebapps();
         assertEquals(new HashSet<>(Arrays.asList("recentWebapp")), actual);
 
-        long actualLastUsed = webAppPrefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long actualLastUsed =
+                webAppPrefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(lastUsed, actualLastUsed);
 
         long lastCleanup = mSharedPreferences.getLong(WebappRegistry.KEY_LAST_CLEANUP, -1);
@@ -323,8 +354,11 @@ public class WebappRegistryTest {
 
         // Put the last used time just outside the no-cleanup window.
         addWebappsToRegistry("oldWebapp");
-        SharedPreferences webAppPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "oldWebapp", Context.MODE_PRIVATE);
+        SharedPreferences webAppPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "oldWebapp",
+                                Context.MODE_PRIVATE);
         long lastUsed = currentTime - WebappRegistry.WEBAPP_UNOPENED_CLEANUP_DURATION;
         webAppPrefs.edit().putLong(WebappDataStorage.KEY_LAST_USED, lastUsed).apply();
 
@@ -338,8 +372,9 @@ public class WebappRegistryTest {
         Set<String> actual = getRegisteredWebapps();
         assertTrue(actual.isEmpty());
 
-        long actualLastUsed = webAppPrefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long actualLastUsed =
+                webAppPrefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(WebappDataStorage.TIMESTAMP_INVALID, actualLastUsed);
 
         long lastCleanup = mSharedPreferences.getLong(WebappRegistry.KEY_LAST_CLEANUP, -1);
@@ -374,8 +409,7 @@ public class WebappRegistryTest {
 
         assertTrue(getRegisteredWebapps().isEmpty());
 
-        long lastCleanup = mSharedPreferences.getLong(
-                WebappRegistry.KEY_LAST_CLEANUP, -1);
+        long lastCleanup = mSharedPreferences.getLong(WebappRegistry.KEY_LAST_CLEANUP, -1);
         assertEquals(currentTime, lastCleanup);
     }
 
@@ -411,8 +445,7 @@ public class WebappRegistryTest {
         assertEquals(1, getRegisteredWebapps().size());
         assertTrue(isRegisteredWebapp(webApkIntentDataProvider));
 
-        long lastCleanup = mSharedPreferences.getLong(
-                WebappRegistry.KEY_LAST_CLEANUP, -1);
+        long lastCleanup = mSharedPreferences.getLong(WebappRegistry.KEY_LAST_CLEANUP, -1);
         assertEquals(currentTime, lastCleanup);
     }
 
@@ -423,8 +456,9 @@ public class WebappRegistryTest {
         String webApkPackage = "installedWebApk";
         BrowserServicesIntentDataProvider webApkIntentDataProvider =
                 new WebApkIntentDataProviderBuilder(webApkPackage, START_URL).build();
-        String deprecatedWebApkId = deprecatedWebApkIdPrefix
-                + webApkIntentDataProvider.getWebApkExtras().webApkPackageName;
+        String deprecatedWebApkId =
+                deprecatedWebApkIdPrefix
+                        + webApkIntentDataProvider.getWebApkExtras().webApkPackageName;
 
         registerWebappWithId(deprecatedWebApkId, webApkIntentDataProvider);
         registerWebapp(webApkIntentDataProvider);
@@ -466,21 +500,29 @@ public class WebappRegistryTest {
         registerWebappWithId("webapp1", webappIntentDataProvider1);
         registerWebappWithId("webapp2", webappIntentDataProvider2);
 
-        SharedPreferences webapp1Prefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp1", Context.MODE_PRIVATE);
-        SharedPreferences webapp2Prefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp2", Context.MODE_PRIVATE);
+        SharedPreferences webapp1Prefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp1",
+                                Context.MODE_PRIVATE);
+        SharedPreferences webapp2Prefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp2",
+                                Context.MODE_PRIVATE);
 
-        long webapp1OriginalLastUsed = webapp2Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
-        long webapp2OriginalLastUsed = webapp2Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long webapp1OriginalLastUsed =
+                webapp2Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long webapp2OriginalLastUsed =
+                webapp2Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertTrue(webapp1OriginalLastUsed != WebappDataStorage.TIMESTAMP_INVALID);
         assertTrue(webapp2OriginalLastUsed != WebappDataStorage.TIMESTAMP_INVALID);
 
         // Clear data for |webapp1Url|.
-        WebappRegistry.getInstance().clearWebappHistoryForUrlsImpl(
-                new UrlFilters.OneUrl(webapp1Url));
+        WebappRegistry.getInstance()
+                .clearWebappHistoryForUrlsImpl(new UrlFilters.OneUrl(webapp1Url));
 
         Set<String> actual = getRegisteredWebapps();
         assertEquals(2, actual.size());
@@ -489,51 +531,55 @@ public class WebappRegistryTest {
 
         // Verify that the last used time for the first web app is
         // WebappDataStorage.TIMESTAMP_INVALID, while for the second one it's unchanged.
-        long actualLastUsed = webapp1Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long actualLastUsed =
+                webapp1Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(WebappDataStorage.TIMESTAMP_INVALID, actualLastUsed);
-        actualLastUsed = webapp2Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        actualLastUsed =
+                webapp2Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(webapp2OriginalLastUsed, actualLastUsed);
 
         // Verify that the URL and scope for the first web app is WebappDataStorage.URL_INVALID,
         // while for the second one it's unchanged.
-        String actualScope = webapp1Prefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        String actualScope =
+                webapp1Prefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualScope);
-        String actualUrl = webapp1Prefs.getString(
-                WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
+        String actualUrl =
+                webapp1Prefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualUrl);
-        actualScope = webapp2Prefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        actualScope =
+                webapp2Prefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(webapp2Url + "/", actualScope);
-        actualUrl = webapp2Prefs.getString(
-                WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
+        actualUrl =
+                webapp2Prefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(webapp2Url, actualUrl);
 
         // Clear data for all urls.
         WebappRegistry.getInstance().clearWebappHistoryForUrlsImpl(new UrlFilters.AllUrls());
 
         // Verify that the last used time for both web apps is WebappDataStorage.TIMESTAMP_INVALID.
-        actualLastUsed = webapp1Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        actualLastUsed =
+                webapp1Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(WebappDataStorage.TIMESTAMP_INVALID, actualLastUsed);
-        actualLastUsed = webapp2Prefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        actualLastUsed =
+                webapp2Prefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertEquals(WebappDataStorage.TIMESTAMP_INVALID, actualLastUsed);
 
         // Verify that the URL and scope for both web apps is WebappDataStorage.URL_INVALID.
-        actualScope = webapp1Prefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        actualScope =
+                webapp1Prefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualScope);
-        actualUrl = webapp1Prefs.getString(
-                WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
+        actualUrl =
+                webapp1Prefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualUrl);
-        actualScope = webapp2Prefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        actualScope =
+                webapp2Prefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualScope);
-        actualUrl = webapp2Prefs.getString(
-                WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
+        actualUrl =
+                webapp2Prefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(WebappDataStorage.URL_INVALID, actualUrl);
     }
 
@@ -542,16 +588,20 @@ public class WebappRegistryTest {
     public void testGetAfterClearWebappHistory() throws Exception {
         registerWebappWithId("webapp", null);
 
-        SharedPreferences webappPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp", Context.MODE_PRIVATE);
+        SharedPreferences webappPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp",
+                                Context.MODE_PRIVATE);
         WebappRegistry.getInstance().clearWebappHistoryForUrlsImpl(new UrlFilters.AllUrls());
 
         // Open the webapp up and set the last used time.
         WebappRegistry.getInstance().getWebappDataStorage("webapp").updateLastUsedTime();
 
         // Verify that the last used time is valid.
-        long actualLastUsed = webappPrefs.getLong(
-                WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
+        long actualLastUsed =
+                webappPrefs.getLong(
+                        WebappDataStorage.KEY_LAST_USED, WebappDataStorage.TIMESTAMP_INVALID);
         assertTrue(WebappDataStorage.TIMESTAMP_INVALID != actualLastUsed);
     }
 
@@ -564,15 +614,18 @@ public class WebappRegistryTest {
                 createShortcutIntentDataProvider(webappUrl);
         registerWebappWithId("webapp", webappIntentDataProvider);
 
-        SharedPreferences webappPrefs = ContextUtils.getApplicationContext().getSharedPreferences(
-                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp", Context.MODE_PRIVATE);
+        SharedPreferences webappPrefs =
+                ContextUtils.getApplicationContext()
+                        .getSharedPreferences(
+                                WebappDataStorage.SHARED_PREFS_FILE_PREFIX + "webapp",
+                                Context.MODE_PRIVATE);
 
         // Verify that the URL and scope match the original in the intent.
-        String actualUrl = webappPrefs.getString(
-                WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
+        String actualUrl =
+                webappPrefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(webappUrl, actualUrl);
-        String actualScope = webappPrefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        String actualScope =
+                webappPrefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(webappScope, actualScope);
 
         WebappRegistry.getInstance().clearWebappHistoryForUrlsImpl(new UrlFilters.AllUrls());
@@ -584,8 +637,8 @@ public class WebappRegistryTest {
         // Verify that the URL and scope match the original in the intent.
         actualUrl = webappPrefs.getString(WebappDataStorage.KEY_URL, WebappDataStorage.URL_INVALID);
         assertEquals(webappUrl, actualUrl);
-        actualScope = webappPrefs.getString(
-                WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
+        actualScope =
+                webappPrefs.getString(WebappDataStorage.KEY_SCOPE, WebappDataStorage.URL_INVALID);
         assertEquals(webappScope, actualScope);
     }
 
@@ -739,12 +792,153 @@ public class WebappRegistryTest {
         webApkIntentDataProviderBuilder.setWebApkManifestId(testManifestId);
         registerWebapp(webApkIntentDataProviderBuilder.build());
 
-        assertEquals(WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
+        assertEquals(
+                WebappRegistry.getInstance().findWebApkWithManifestId(testManifestId),
                 testPackageName);
 
         final String anotherManifestId = START_URL + "/test_page.html";
         assertNull(
                 WebappRegistry.getInstance().getWebappDataStorageForManifestId(anotherManifestId));
+    }
+
+    @Test
+    @Feature({"WebApk"})
+    public void testGetWebApkSyncDatas() throws Exception {
+        final String testStartUrl1 = START_URL;
+        final String testManifestId1 = testStartUrl1 + "/id";
+        final String testPackageName1 = "org.chromium.webapk";
+        final String testName1 = "My App";
+        final String testShortName1 = "app";
+        final long testToolbarColor1 = Color.WHITE;
+        final String testScope1 = testStartUrl1;
+
+        final String testStartUrl2 = START_URL + "/2";
+        final String testManifestId2 = testStartUrl2 + "/id";
+        final String testPackageName2 = "org.chromium.webapk2";
+        final String testName2 = null;
+        final String testShortName2 = "app2";
+        final long testToolbarColor2 = Color.BLACK;
+        final String testScope2 = testStartUrl2;
+
+        final String testStartUrl3 = START_URL + "/3";
+        final String testManifestId3 = null;
+        final String testPackageName3 = "org.chromium.webapk3";
+        final String testName3 = "My App3";
+        final String testShortName3 = "";
+        final long testToolbarColor3 = ColorUtils.INVALID_COLOR;
+        final String testScope3 = testStartUrl3;
+
+        final String testStartUrl4 = START_URL + "/4";
+        final String testManifestId4 = testStartUrl4 + "/id";
+        final String testPackageName4 = "org.chromium.webapk4";
+        final String testName4 = "My App4";
+        final String testShortName4 = "app4";
+        final long testToolbarColor4 = ColorUtils.INVALID_COLOR;
+        final String testScope4 = null;
+
+        WebappRegistry webApkRegistry = WebappRegistry.getInstance();
+        Map<String, BrowserServicesIntentDataProvider> expectedIntentDataProviders =
+                new HashMap<String, BrowserServicesIntentDataProvider>();
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder1 =
+                new WebApkIntentDataProviderBuilder(testPackageName1, testStartUrl1);
+        webApkIntentDataProviderBuilder1.setWebApkManifestId(testManifestId1);
+        webApkIntentDataProviderBuilder1.setName(testName1);
+        webApkIntentDataProviderBuilder1.setShortName(testShortName1);
+        webApkIntentDataProviderBuilder1.setToolbarColor(testToolbarColor1);
+        webApkIntentDataProviderBuilder1.setScope(testScope1);
+
+        BrowserServicesIntentDataProvider intentDataProvider1 =
+                webApkIntentDataProviderBuilder1.build();
+        expectedIntentDataProviders.put(testScope1, intentDataProvider1);
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder2 =
+                new WebApkIntentDataProviderBuilder(testPackageName2, testStartUrl2);
+        webApkIntentDataProviderBuilder2.setWebApkManifestId(testManifestId2);
+        webApkIntentDataProviderBuilder2.setName(testName2);
+        webApkIntentDataProviderBuilder2.setShortName(testShortName2);
+        webApkIntentDataProviderBuilder2.setToolbarColor(testToolbarColor2);
+        webApkIntentDataProviderBuilder2.setScope(testScope2);
+
+        BrowserServicesIntentDataProvider intentDataProvider2 =
+                webApkIntentDataProviderBuilder2.build();
+        expectedIntentDataProviders.put(testScope2, intentDataProvider2);
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder3 =
+                new WebApkIntentDataProviderBuilder(testPackageName3, testStartUrl3);
+        webApkIntentDataProviderBuilder3.setWebApkManifestId(testManifestId3);
+        webApkIntentDataProviderBuilder3.setName(testName3);
+        webApkIntentDataProviderBuilder3.setShortName(testShortName3);
+        webApkIntentDataProviderBuilder3.setToolbarColor(testToolbarColor3);
+        webApkIntentDataProviderBuilder3.setScope(testScope3);
+
+        BrowserServicesIntentDataProvider intentDataProvider3 =
+                webApkIntentDataProviderBuilder3.build();
+        expectedIntentDataProviders.put(testScope3, intentDataProvider3);
+
+        WebApkIntentDataProviderBuilder webApkIntentDataProviderBuilder4 =
+                new WebApkIntentDataProviderBuilder(testPackageName4, testStartUrl4);
+        webApkIntentDataProviderBuilder4.setWebApkManifestId(testManifestId4);
+        webApkIntentDataProviderBuilder4.setName(testName4);
+        webApkIntentDataProviderBuilder4.setShortName(testShortName4);
+        webApkIntentDataProviderBuilder4.setToolbarColor(testToolbarColor4);
+        webApkIntentDataProviderBuilder4.setScope(testScope4);
+
+        // This one will not be returned because it has no scope.
+        BrowserServicesIntentDataProvider intentDataProvider4 =
+                webApkIntentDataProviderBuilder4.build();
+
+        GetWebApkSpecificsImplSetWebappInfoForTesting setWebappInfoForTesting =
+                (scope) -> {
+                    WebApkDataProvider.setWebappInfoForTesting(
+                            WebappInfo.create(expectedIntentDataProviders.get(scope)));
+                };
+
+        assertEquals(0, webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting).size());
+
+        registerWebapp(intentDataProvider1);
+        registerWebapp(intentDataProvider2);
+        registerWebapp(intentDataProvider3);
+        registerWebapp(intentDataProvider4);
+
+        List<WebApkSpecifics> webApkSpecificsList =
+                webApkRegistry.getWebApkSpecificsImpl(setWebappInfoForTesting);
+        assertEquals(3, webApkSpecificsList.size());
+
+        Set<String> visitedScopes = new HashSet<String>();
+        for (WebApkSpecifics webApkSpecifics : webApkSpecificsList) {
+            BrowserServicesIntentDataProvider intentDataProvider =
+                    expectedIntentDataProviders.get(webApkSpecifics.getScope());
+            WebApkExtras webApkExtras = intentDataProvider.getWebApkExtras();
+            WebappExtras webappExtras = intentDataProvider.getWebappExtras();
+            ColorProvider colorProvider = intentDataProvider.getColorProvider();
+
+            assertEquals(webApkExtras.manifestId, webApkSpecifics.getManifestId());
+            assertEquals(webApkExtras.manifestStartUrl, webApkSpecifics.getStartUrl());
+
+            if (webappExtras.name != null && !webappExtras.name.equals("")) {
+                assertTrue(webApkSpecifics.hasName());
+                assertEquals(webappExtras.name, webApkSpecifics.getName());
+            } else if (webappExtras.shortName != null) {
+                assertTrue(webApkSpecifics.hasName());
+                assertEquals(webappExtras.shortName, webApkSpecifics.getName());
+            } else {
+                assertFalse(webApkSpecifics.hasName());
+            }
+
+            if (colorProvider.hasCustomToolbarColor()) {
+                assertTrue(webApkSpecifics.hasThemeColor());
+                assertEquals(colorProvider.getToolbarColor(), webApkSpecifics.getThemeColor());
+            } else {
+                assertFalse(webApkSpecifics.hasThemeColor());
+            }
+
+            assertEquals(webappExtras.scopeUrl, webApkSpecifics.getScope());
+
+            visitedScopes.add(webApkSpecifics.getScope());
+        }
+
+        assertEquals(3, visitedScopes.size());
     }
 
     private Set<String> addWebappsToRegistry(String... webapps) {

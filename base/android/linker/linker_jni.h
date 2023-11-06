@@ -22,6 +22,7 @@
 #include <stdlib.h>
 
 #include "build/build_config.h"
+#include "third_party/jni_zero/jni_export.h"
 
 // Set this to 1 to enable debug traces to the Android log.
 // Note that LOG() from "base/logging.h" cannot be used, since it is
@@ -42,16 +43,6 @@
                       ##__VA_ARGS__)
 #define PLOG_ERROR(FORMAT, ...) \
   LOG_ERROR(FORMAT ": %s", ##__VA_ARGS__, strerror(errno))
-
-#if defined(ARCH_CPU_X86)
-// Dalvik JIT generated code doesn't guarantee 16-byte stack alignment on
-// x86 - use force_align_arg_pointer to realign the stack at the JNI
-// boundary. https://crbug.com/655248
-#define JNI_GENERATOR_EXPORT \
-  extern "C" __attribute__((visibility("default"), force_align_arg_pointer))
-#else
-#define JNI_GENERATOR_EXPORT extern "C" __attribute__((visibility("default")))
-#endif
 
 #if defined(__arm__) && defined(__ARM_ARCH_7A__)
 #define CURRENT_ABI "armeabi-v7a"

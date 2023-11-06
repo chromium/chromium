@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "base/check_op.h"
 #import "base/memory/raw_ref.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_internal_util.h"
@@ -178,6 +179,10 @@ SessionStorage LoadSessionStorage(const base::FilePath& directory) {
   SessionStorage::WebStateMetadataStorageMap web_state_storage_map;
 
   const int items_size = session_metadata.items_size();
+  std::set<web::WebStateID> seen_identifiers;
+  // Count the number of dropped tabs because they are duplicates, for
+  // reporting.
+  int duplicate_count = 0;
   for (int index = 0; index < items_size; ++index) {
     // If the item identifier is invalid, then the session has been corrupted;
     // return an empty session.
@@ -217,9 +222,19 @@ SessionStorage LoadSessionStorage(const base::FilePath& directory) {
       continue;
     }
 
+    // If the item is a duplicate, drop it before restoration.
+    if (seen_identifiers.contains(web_state_id)) {
+      items_to_drop.push_back(index);
+      duplicate_count++;
+      continue;
+    }
+    seen_identifiers.insert(web_state_id);
+
     web_state_storage_map.insert(
         std::make_pair(web_state_id, std::move(metadata)));
   }
+  base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionRestore",
+                              duplicate_count);
 
   session_metadata = FilterItems(std::move(session_metadata),
                                  RemovingIndexes(std::move(items_to_drop)));

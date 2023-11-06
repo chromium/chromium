@@ -1047,6 +1047,10 @@ void HotseatWidget::UpdateLayout(bool animate) {
   if (layout_inputs_ == new_layout_inputs)
     return;
 
+  // The cached `layout_inputs_` should always be up-to-date, thus it is updated
+  // here before all other potential shelf layout invocations.
+  layout_inputs_ = new_layout_inputs;
+
   // Never show this widget outside of an active session.
   if (!new_layout_inputs.is_active_session_state)
     Hide();
@@ -1095,7 +1099,6 @@ void HotseatWidget::UpdateLayout(bool animate) {
     SetBounds(target_bounds);
   }
 
-  layout_inputs_ = new_layout_inputs;
   delegate_view_->UpdateTranslucentBackground();
 
   // Setting visibility during an animation causes the visibility property to

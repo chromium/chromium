@@ -12,7 +12,6 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller_delegate.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

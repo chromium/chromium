@@ -8,8 +8,8 @@
     padding-top: 8px;
   }
 
-  #microphoneSubpageLinkWrapper:hover {
-    background-color: var(--cr-hover-background-color);
+  .separator {
+    margin: 0;
   }
 </style>
 
@@ -91,29 +91,13 @@
     </div>
   </template>
   <template is="dom-if" if="[[showAppPermissions_]]">
-    <div class="settings-box no-padding">
-      <div id ="microphoneSubpageLinkWrapper"
-          class="link-wrapper" actionable on-click="onMicrophoneWrapperClick_">
-        <iron-icon
-            id="microphoneIcon"
-            icon="app-management:microphone">
-        </iron-icon>
-        <div
-            id="microphoneSectionTitle"
-            class="middle settings-box-text"
-            aria-hidden="true">
-          $i18n{microphoneToggleTitle}
-          <div class="secondary" id="microphoneSectionSubtext">
-            $i18n{microphoneToggleSubtext}
-          </div>
-        </div>
-        <cr-icon-button
-            id="microphoneSubpageArrow"
-            class="subpage-arrow"
-            aria-label="$i18n{microphoneToggleTitle}"
-            on-click="onMicrophoneSubpageArrowClick_">
-        </cr-icon-button>
-      </div>
+    <div id="microphoneRow" class="settings-box no-padding">
+      <cr-link-row id="microphoneSubpageLink"
+          start-icon="app-management:microphone"
+          label="$i18n{microphoneToggleTitle}"
+          sub-label="$i18n{microphoneToggleSubtext}"
+          on-click="onMicrophoneSubpageLinkClick_">
+      </cr-link-row>
       <div class="separator"></div>
       <div id="microphoneToggleWrapper">
         <cr-toggle
@@ -148,15 +132,20 @@
 </template>
 
 <template is="dom-if" if="[[showPrivacyHubLocationControl_]]" restamp>
-  <settings-toggle-button
+  <cr-link-row
+      id="geolocationAreaLinkRow"
       class="hr"
-      pref="{{prefs.ash.user.geolocation_allowed}}"
-      id="geolocationToggle"
-      label="$i18n{geolocationToggleTitle}"
-      sub-label="$i18n{geolocationToggleDesc}"
+      on-click="onGeolocationAreaClick_"
       deep-link-focus-id$="[[Setting.kGeolocationOnOff]]"
-      learn-more-url="$i18n{geolocationToggleLearnMoreURL}">
-  </settings-toggle-button>
+      using-slotted-label>
+    <div slot="label">$i18n{geolocationAreaTitle}</div>
+    <div slot="sub-label">
+      <localized-link
+          localized-string="$i18n{geolocationAreaDescription}"
+          link-url="$i18n{geolocationAreaLearnMoreURL}">
+      </localized-link>
+    </div>
+  </cr-link-row>
 </template>
 
 <if expr="_google_chrome">

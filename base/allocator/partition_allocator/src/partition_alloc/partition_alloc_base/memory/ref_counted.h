@@ -16,7 +16,7 @@
 namespace partition_alloc::internal::base {
 namespace subtle {
 
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) RefCountedThreadSafeBase {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) RefCountedThreadSafeBase {
  public:
   RefCountedThreadSafeBase(const RefCountedThreadSafeBase&) = delete;
   RefCountedThreadSafeBase& operator=(const RefCountedThreadSafeBase&) = delete;

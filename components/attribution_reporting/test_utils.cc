@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
@@ -15,6 +16,7 @@
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/destination_set.h"
+#include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -22,6 +24,7 @@
 #include "components/attribution_reporting/source_type.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -97,10 +100,11 @@ std::ostream& operator<<(std::ostream& out,
 
 bool operator==(const SourceRegistration& a, const SourceRegistration& b) {
   auto tie = [](const SourceRegistration& s) {
-    return std::make_tuple(
-        s.source_event_id, s.destination_set, s.expiry, s.event_report_windows,
-        s.aggregatable_report_window, s.priority, s.filter_data, s.debug_key,
-        s.aggregation_keys, s.debug_reporting, s.max_event_level_reports);
+    return std::make_tuple(s.source_event_id, s.destination_set, s.expiry,
+                           s.event_report_windows, s.aggregatable_report_window,
+                           s.priority, s.filter_data, s.debug_key,
+                           s.aggregation_keys, s.debug_reporting,
+                           s.max_event_level_reports, s.trigger_config);
   };
   return tie(a) == tie(b);
 }
@@ -187,6 +191,32 @@ bool operator==(const OsRegistrationItem& a, const OsRegistrationItem& b) {
 std::ostream& operator<<(std::ostream& out, const OsRegistrationItem& item) {
   return out << "{url=" << item.url
              << ", debug_reporting=" << item.debug_reporting << "}";
+}
+
+bool operator==(const TriggerConfig& a, const TriggerConfig& b) {
+  return a.trigger_data_matching() == b.trigger_data_matching();
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerConfig& config) {
+  base::Value::Dict dict;
+  config.SerializeForTesting(dict);
+  return out << dict;
+}
+
+bool operator==(const TriggerSpec& a, const TriggerSpec& b) {
+  return a.event_report_windows() == b.event_report_windows();
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerSpec& spec) {
+  return out << spec.ToJson();
+}
+
+bool operator==(const TriggerSpecs& a, const TriggerSpecs& b) {
+  return base::ranges::equal(a, b);
+}
+
+std::ostream& operator<<(std::ostream& out, const TriggerSpecs& specs) {
+  return out << specs.ToJson();
 }
 
 }  // namespace attribution_reporting

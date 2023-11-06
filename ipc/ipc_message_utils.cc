@@ -1206,9 +1206,9 @@ void ParamTraits<base::File::Info>::Write(base::Pickle* m,
                                           const param_type& p) {
   WriteParam(m, p.size);
   WriteParam(m, p.is_directory);
-  WriteParam(m, p.last_modified.ToDoubleT());
-  WriteParam(m, p.last_accessed.ToDoubleT());
-  WriteParam(m, p.creation_time.ToDoubleT());
+  WriteParam(m, p.last_modified.InSecondsFSinceUnixEpoch());
+  WriteParam(m, p.last_accessed.InSecondsFSinceUnixEpoch());
+  WriteParam(m, p.creation_time.InSecondsFSinceUnixEpoch());
 }
 
 bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
@@ -1221,9 +1221,9 @@ bool ParamTraits<base::File::Info>::Read(const base::Pickle* m,
       !ReadParam(m, iter, &last_accessed) ||
       !ReadParam(m, iter, &creation_time))
     return false;
-  p->last_modified = base::Time::FromDoubleT(last_modified);
-  p->last_accessed = base::Time::FromDoubleT(last_accessed);
-  p->creation_time = base::Time::FromDoubleT(creation_time);
+  p->last_modified = base::Time::FromSecondsSinceUnixEpoch(last_modified);
+  p->last_accessed = base::Time::FromSecondsSinceUnixEpoch(last_accessed);
+  p->creation_time = base::Time::FromSecondsSinceUnixEpoch(creation_time);
   return true;
 }
 
@@ -1234,11 +1234,11 @@ void ParamTraits<base::File::Info>::Log(const param_type& p,
   l->append(",");
   LogParam(p.is_directory, l);
   l->append(",");
-  LogParam(p.last_modified.ToDoubleT(), l);
+  LogParam(p.last_modified.InSecondsFSinceUnixEpoch(), l);
   l->append(",");
-  LogParam(p.last_accessed.ToDoubleT(), l);
+  LogParam(p.last_accessed.InSecondsFSinceUnixEpoch(), l);
   l->append(",");
-  LogParam(p.creation_time.ToDoubleT(), l);
+  LogParam(p.creation_time.InSecondsFSinceUnixEpoch(), l);
   l->append(")");
 }
 

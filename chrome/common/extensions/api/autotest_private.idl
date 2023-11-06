@@ -71,6 +71,16 @@ namespace autotestPrivate {
     UninstalledByMigration
   };
 
+  // A mapping of arc::mojom::WakefulnessMode
+  enum WakefulnessMode {
+    Unknown,
+    Asleep,
+    Awake,
+    Dreaming,
+    Dozing
+  };
+  callback WakefulnessModeCallback = void (WakefulnessMode mode);
+
   // A subset of Window State types in ash::WindowStateType. We may add more
   // into the set in the future.
   enum WindowStateType {
@@ -301,7 +311,11 @@ namespace autotestPrivate {
     DOMString lacrosPath;
     // Specifies the mode Lacros is currently running.
     // For a full list of supported mode, see LacrosMode enum definition.
+    // DEPRECATED: please use isEnabled.
+    // TODO(crbug.com/1494005): Remove this field after tests are fixed.
     LacrosMode mode;
+    // True iff Lacros is enabled for the current user session's primary user.
+    boolean isEnabled;
   };
 
   callback GetLacrosInfoCallback = void (LacrosInfo info);
@@ -818,6 +832,9 @@ namespace autotestPrivate {
   // Response callback for current input method keyboard layout.
   callback GetCurrentInputMethodDescriptorCallback = void
       (GetCurrentInputMethodDescriptorData data);
+
+  // Response callback to report if a field trial exists and has been activated.
+  callback IsFieldTrialActiveCallback = void(boolean active);
 
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
@@ -1581,6 +1598,14 @@ namespace autotestPrivate {
     // |callback|: Called when the operation sent to ARC by mojo.
     [supportsPromises] static void setArcInteractiveState(
       boolean enabled, VoidCallback callback);
+
+    // Returns whether a field trial exists and has been activated.
+    [supportsPromises] static void isFieldTrialActive(DOMString feature_name,
+        IsFieldTrialActiveCallback callback);
+
+    // ARC get wakefulness mode.
+    [supportsPromises] static void getArcWakefulnessMode(
+      WakefulnessModeCallback callback);
   };
 
   interface Events {

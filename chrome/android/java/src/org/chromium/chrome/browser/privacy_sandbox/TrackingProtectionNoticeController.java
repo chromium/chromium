@@ -23,12 +23,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.ListMenuItemType;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu.Delegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -37,6 +32,11 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.privacy_sandbox.TrackingProtectionSettings;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenu.Delegate;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -55,6 +55,7 @@ public class TrackingProtectionNoticeController {
     // Setting an indefinite message auto dismiss duration is not possible,
     // hence we provide a value high enough to maintain the message visible.
     private static final int AUTODISMISS_DURATION_ONE_DAY = 24 * 60 * 60 * 1000;
+    private static final int AUTODISMISS_DURATION_8_SECONDS = 8 * 1000;
     private PropertyModel mMessage;
 
     // These values are persisted to logs. Entries should not be renumbered and
@@ -69,7 +70,7 @@ public class TrackingProtectionNoticeController {
         NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN,
         NoticeControllerEvent.NOTICE_REQUESTED_BUT_NOT_SHOWN
     })
-    private @interface NoticeControllerEvent {
+    public @interface NoticeControllerEvent {
         int CONTROLLER_CREATED = 0;
         int ACTIVE_TAB_CHANGED = 1;
         int NAVIGATION_FINISHED = 2;
@@ -82,11 +83,12 @@ public class TrackingProtectionNoticeController {
         int COUNT = 8;
     }
 
+    public static final String NOTICE_CONTROLLER_EVENT_HISTOGRAM =
+            "PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent";
+
     private static void logNoticeControllerEvent(@NoticeControllerEvent int action) {
         RecordHistogram.recordEnumeratedHistogram(
-                "PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent",
-                action,
-                NoticeControllerEvent.COUNT);
+                NOTICE_CONTROLLER_EVENT_HISTOGRAM, action, NoticeControllerEvent.COUNT);
     }
 
     /**
@@ -95,7 +97,7 @@ public class TrackingProtectionNoticeController {
      * @return boolean value indicating if the Notice should be shown.
      */
     public static boolean shouldShowNotice() {
-        return TrackingProtectionBridge.shouldShowOnboardingNotice();
+        return TrackingProtectionBridge.getRequiredNotice() != NoticeType.NONE;
     }
 
     /**
@@ -146,16 +148,27 @@ public class TrackingProtectionNoticeController {
                         .with(
                                 MessageBannerProperties.TITLE,
                                 resources.getString(
-                                        R.string.tracking_protection_onboarding_notice_title))
+                                        getNoticeType() == NoticeType.ONBOARDING
+                                                ? R.string
+                                                        .tracking_protection_onboarding_notice_title
+                                                : R.string
+                                                        .tracking_protection_offboarding_notice_title))
                         .with(
                                 MessageBannerProperties.DESCRIPTION,
                                 resources.getString(
-                                        R.string.tracking_protection_onboarding_notice_body))
+                                        getNoticeType() == NoticeType.ONBOARDING
+                                                ? R.string
+                                                        .tracking_protection_onboarding_notice_body
+                                                : R.string
+                                                        .tracking_protection_offboarding_notice_body))
                         .with(
                                 MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                                 resources.getString(
-                                        R.string
-                                                .tracking_protection_onboarding_notice_ack_button_label))
+                                        getNoticeType() == NoticeType.ONBOARDING
+                                                ? R.string
+                                                        .tracking_protection_onboarding_notice_ack_button_label
+                                                : R.string
+                                                        .tracking_protection_offboarding_notice_ack_button_label))
                         .with(
                                 MessageBannerProperties.SECONDARY_MENU_BUTTON_DELEGATE,
                                 new SecondaryMenuButtonDelegate())
@@ -165,39 +178,47 @@ public class TrackingProtectionNoticeController {
                                 R.drawable.ic_settings_gear_24dp)
                         .with(
                                 MessageBannerProperties.DISMISSAL_DURATION,
-                                AUTODISMISS_DURATION_ONE_DAY)
+                                getNoticeType() == NoticeType.ONBOARDING
+                                        ? AUTODISMISS_DURATION_ONE_DAY
+                                        : AUTODISMISS_DURATION_8_SECONDS)
                         .with(
                                 MessageBannerProperties.ON_PRIMARY_ACTION,
                                 () -> {
-                                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.GOT_IT);
+                                    TrackingProtectionBridge.noticeActionTaken(
+                                            getNoticeType(), NoticeAction.GOT_IT);
                                     return PrimaryActionClickBehavior.DISMISS_IMMEDIATELY;
                                 })
                         .with(MessageBannerProperties.ON_DISMISSED, onNoticeDismissed())
+                        .with(MessageBannerProperties.ON_FULLY_VISIBLE, onNoticeShown())
                         .build();
         mMessageDispatcher.enqueueWindowScopedMessage(mMessage, /* highPriority= */ true);
 
-        // TODO(b/295927778): Move to the proper ON_SHOWN callback when implemented
-        //  in crbug.com/1491318.
-        logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
-
         destroy();
+    }
+
+    private static Callback<Boolean> onNoticeShown() {
+        return (shown) -> {
+            if (shown) {
+                TrackingProtectionBridge.noticeShown(getNoticeType());
+                logNoticeControllerEvent(NoticeControllerEvent.NOTICE_REQUESTED_AND_SHOWN);
+            }
+        };
     }
 
     private static Callback<Integer> onNoticeDismissed() {
         return (dismissReason) -> {
             switch (dismissReason) {
                 case DismissReason.GESTURE:
-                    TrackingProtectionBridge.noticeShown();
-                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.CLOSED);
+                    TrackingProtectionBridge.noticeActionTaken(
+                            getNoticeType(), NoticeAction.CLOSED);
                     break;
                 case DismissReason.PRIMARY_ACTION:
                 case DismissReason.SECONDARY_ACTION:
-                    // TODO(b/295927778): Move Shown action recording to the proper callback when
-                    // implemented in crbug.com/1491318.
-                    TrackingProtectionBridge.noticeShown();
+                    // No need to report these actions: they are already recorded in their
+                    // respective handlers.
                     break;
                 default:
-                    TrackingProtectionBridge.noticeActionTaken(NoticeAction.OTHER);
+                    TrackingProtectionBridge.noticeActionTaken(getNoticeType(), NoticeAction.OTHER);
             }
         };
     }
@@ -218,12 +239,14 @@ public class TrackingProtectionNoticeController {
                     }
 
                     private void maybeShowNotice(Tab tab) {
-                        if (tab == null) return;
+                        if (tab == null || tab.isIncognito()) return;
 
                         int securityLevel =
                                 SecurityStateModel.getSecurityLevelForWebContents(
                                         tab.getWebContents());
 
+                        // TODO(b/304202327): Offboarding notice should skip the non secure pages
+                        // check.
                         if (shouldShowNotice()
                                 && (ChromeFeatureList.isEnabled(
                                                 ChromeFeatureList
@@ -255,32 +278,33 @@ public class TrackingProtectionNoticeController {
                     getMenuItem(
                             SETTINGS_ITEM_ID,
                             res.getString(
-                                    R.string
-                                            .tracking_protection_onboarding_notice_settings_button_label));
+                                    getNoticeType() == NoticeType.ONBOARDING
+                                            ? R.string
+                                                    .tracking_protection_onboarding_notice_settings_button_label
+                                            : R.string
+                                                    .tracking_protection_offboarding_notice_settings_button_label));
             ListItem learnMoreItem =
                     getMenuItem(
                             LEARN_MORE_ITEM_ID,
                             res.getString(
-                                    R.string
-                                            .tracking_protection_onboarding_notice_learn_more_button_label));
+                                    getNoticeType() == NoticeType.ONBOARDING
+                                            ? R.string
+                                                    .tracking_protection_onboarding_notice_learn_more_button_label
+                                            : R.string
+                                                    .tracking_protection_offboarding_notice_learn_more_button_label));
 
             MVCListAdapter.ModelList menuItems = new MVCListAdapter.ModelList();
             menuItems.add(settingsItem);
             menuItems.add(learnMoreItem);
 
-            BasicListMenu listMenu = new BasicListMenu(mContext, menuItems, onClickDelegate());
+            BasicListMenu listMenu =
+                    BrowserUiListMenuUtils.getBasicListMenu(mContext, menuItems, onClickDelegate());
 
             return listMenu;
         }
 
         private ListItem getMenuItem(int itemID, String title) {
-            PropertyModel.Builder settingsModel =
-                    new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                            .with(ListMenuItemProperties.ENABLED, true)
-                            .with(ListMenuItemProperties.MENU_ITEM_ID, itemID)
-                            .with(ListMenuItemProperties.TITLE, title);
-            ListItem settingsItem = new ListItem(ListMenuItemType.MENU_ITEM, settingsModel.build());
-            return settingsItem;
+            return BrowserUiListMenuUtils.buildMenuListItem(title, itemID, 0, true);
         }
 
         private Delegate onClickDelegate() {
@@ -291,10 +315,12 @@ public class TrackingProtectionNoticeController {
                     mSettingsLauncher.launchSettingsActivity(
                             mContext, TrackingProtectionSettings.class);
                     TrackingProtectionBridge.noticeActionTaken(
+                            getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.SETTINGS);
                 } else if (clickedItemID == LEARN_MORE_ITEM_ID) {
                     openUrlInCct(TRACKING_PROTECTION_HELP_CENTER);
                     TrackingProtectionBridge.noticeActionTaken(
+                            getNoticeType(),
                             org.chromium.chrome.browser.privacy_sandbox.NoticeAction.LEARN_MORE);
                 }
 
@@ -314,6 +340,10 @@ public class TrackingProtectionNoticeController {
         intent.putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
         IntentUtils.safeStartActivity(mContext, intent);
+    }
+
+    private static @NoticeType int getNoticeType() {
+        return TrackingProtectionBridge.getRequiredNotice();
     }
 
     public void destroy() {

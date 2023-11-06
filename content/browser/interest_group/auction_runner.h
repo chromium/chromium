@@ -91,9 +91,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   using IsInterestGroupApiAllowedCallback =
       InterestGroupAuction::IsInterestGroupApiAllowedCallback;
 
-  using GetAdAuctionPageDataCallback =
-      base::RepeatingCallback<AdAuctionPageData*()>;
-
   using AreReportingOriginsAttestedCallback =
       base::RepeatingCallback<bool(const std::vector<url::Origin>&)>;
 
@@ -139,6 +136,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
+      AdAuctionPageData* ad_auction_page_data,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       const blink::AuctionConfig& auction_config,
@@ -148,7 +146,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-      GetAdAuctionPageDataCallback get_page_data_callback,
       AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
@@ -214,6 +211,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       InterestGroupManagerImpl* interest_group_manager,
       BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
+      AdAuctionPageData* ad_auction_page_data,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
@@ -224,7 +222,6 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
-      GetAdAuctionPageDataCallback get_page_data_callback,
       AreReportingOriginsAttestedCallback attestation_callback,
       mojo::PendingReceiver<AbortableAdAuction> abort_receiver,
       RunAuctionCallback callback);
@@ -291,7 +288,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   // etc. are allowed or not.
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
-  GetAdAuctionPageDataCallback get_page_data_callback_;
+  // Owned by the Page.
+  raw_ptr<AdAuctionPageData> ad_auction_page_data_;
 
   AreReportingOriginsAttestedCallback attestation_callback_;
 

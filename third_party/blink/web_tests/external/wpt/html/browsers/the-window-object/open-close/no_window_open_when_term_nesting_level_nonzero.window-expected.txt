@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-PASS no popups with frame removal
-PASS no popups with frame navigation
-PASS no popups from synchronously reachable window
-FAIL no popups from another synchronously reachable window assert_equals: expected no popup during beforeunload expected null but got object "[object Window]"
+[PASS] no popups with frame removal
+[PASS] no popups with frame navigation
+[PASS] no popups from synchronously reachable window
+[FAIL] no popups from another synchronously reachable window
+  assert_equals: expected no popup during beforeunload expected null but got object "[object Window]"
 Harness: the test ran to completion.
 

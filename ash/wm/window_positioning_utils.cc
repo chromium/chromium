@@ -20,7 +20,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/notreached.h"
 #include "base/numerics/ranges.h"
-#include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"

@@ -45,8 +45,8 @@
 #if BUILDFLAG(OZONE_PLATFORM_X11)
 #include "ui/base/x/selection_utils.h"
 #include "ui/base/x/x11_os_exchange_data_provider.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/x11_atom_cache.h"
-#include "ui/gfx/x/xproto_util.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif  // BUILDFLAG(OZONE_PLATFORM_X11)
 #endif  // BUILDFLAG(IS_LINUX)
@@ -468,9 +468,10 @@ TEST_F(WebContentsViewAuraTest, MAYBE_DragDropImageFromRenderer) {
   // created in this unittest, we will set this property manually to allow
   // XOSExchangeDataProvider::GetFileContents() to succeed.
   if (ui::OzonePlatform::GetPlatformNameForTest() == "x11") {
-    x11::Window xwindow = x11::CreateDummyWindow("Test Window");
-    x11::SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
-                           x11::GetAtom("text/plain"), "image.jpg");
+    auto* connection = x11::Connection::Get();
+    x11::Window xwindow = connection->CreateDummyWindow("Test Window");
+    connection->SetStringProperty(xwindow, x11::GetAtom("XdndDirectSave0"),
+                                  x11::GetAtom("text/plain"), "image.jpg");
     data = std::make_unique<ui::OSExchangeData>(
         std::make_unique<ui::XOSExchangeDataProvider>(
             xwindow, xwindow, ui::SelectionFormatMap()));

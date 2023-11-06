@@ -49,8 +49,10 @@ class NotificationManager : public NotificationManagerInterface,
   void HideUnresponsiveNotification(int id) override;
 
   // AppIconLoaderDelegate overrides:
-  void OnAppImageUpdated(const std::string& id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& id,
+      const gfx::ImageSkia& image,
+      const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   // message_center::NotificationObserver overrides:
   void Click(const absl::optional<int>& button_index,

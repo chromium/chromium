@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -37,6 +38,7 @@
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/bookmarks/browser/url_and_title.h"
+#include "components/bookmarks/common/bookmark_features.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/common/storage_type.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -1388,7 +1390,7 @@ TEST_F(BookmarkModelTest, Copy) {
 
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   ASSERT_EQ(model_->mobile_node(), GetParentForNewNodes(model_.get()));
 #else
   ASSERT_EQ(model_->bookmark_bar_node(), GetParentForNewNodes(model_.get()));
@@ -1629,10 +1631,15 @@ TEST_F(BookmarkModelTest, Reorder) {
 }
 
 TEST_F(BookmarkModelTest, NodeVisibility) {
-  // Mobile node invisible by default
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
+  EXPECT_FALSE(model_->other_node()->IsVisible());
+  EXPECT_TRUE(model_->mobile_node()->IsVisible());
+#else
   EXPECT_TRUE(model_->bookmark_bar_node()->IsVisible());
   EXPECT_TRUE(model_->other_node()->IsVisible());
   EXPECT_FALSE(model_->mobile_node()->IsVisible());
+#endif
 
   // Arbitrary node should be visible
   TestNode bbn;
@@ -1640,9 +1647,44 @@ TEST_F(BookmarkModelTest, NodeVisibility) {
   const BookmarkNode* parent = model_->mobile_node();
   PopulateBookmarkNode(&bbn, model_.get(), parent);
   EXPECT_TRUE(parent->children().front()->IsVisible());
+  parent = model_->other_node();
+  PopulateBookmarkNode(&bbn, model_.get(), parent);
+  EXPECT_TRUE(parent->children().front()->IsVisible());
 
   // Mobile folder should be visible now that it has a child.
   EXPECT_TRUE(model_->mobile_node()->IsVisible());
+  EXPECT_TRUE(model_->other_node()->IsVisible());
+}
+
+TEST_F(BookmarkModelTest, NodeVisibility_AllBookmarksPhase0) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      bookmarks::kAllBookmarksBaselineFolderVisibility);
+  model_->RemoveObserver(this);
+  model_ = TestBookmarkClient::CreateModelWithClient(
+      std::make_unique<TestBookmarkClientWithUndo>());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(model_->bookmark_bar_node()->IsVisible());
+#else
+  EXPECT_TRUE(model_->bookmark_bar_node()->IsVisible());
+#endif
+
+  EXPECT_TRUE(model_->other_node()->IsVisible());
+  // EXPECT_FALSE(model_->mobile_node()->IsVisible());
+
+  // Arbitrary node should be visible
+  TestNode bbn;
+  PopulateNodeFromString("B", &bbn);
+  const BookmarkNode* parent = model_->mobile_node();
+  PopulateBookmarkNode(&bbn, model_.get(), parent);
+  EXPECT_TRUE(parent->children().front()->IsVisible());
+  parent = model_->other_node();
+  PopulateBookmarkNode(&bbn, model_.get(), parent);
+  EXPECT_TRUE(parent->children().front()->IsVisible());
+
+  // Mobile folder should be visible now that it has a child.
+  EXPECT_TRUE(model_->mobile_node()->IsVisible());
+  EXPECT_TRUE(model_->other_node()->IsVisible());
 }
 
 TEST_F(BookmarkModelTest, MobileNodeVisibleWithChildren) {

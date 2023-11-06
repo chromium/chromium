@@ -27,9 +27,7 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Robolectric tests for {@link TabListContainerViewBinder}.
- */
+/** Robolectric tests for {@link TabListContainerViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -42,12 +40,9 @@ public class TabListContainerViewBinderUnitTest {
         }
     }
 
-    @Mock
-    private PropertyModel mPropertyModelMock;
-    @Mock
-    private TabListRecyclerView mTabListRecyclerViewMock;
-    @Mock
-    private View mViewMock;
+    @Mock private PropertyModel mPropertyModelMock;
+    @Mock private TabListRecyclerView mTabListRecyclerViewMock;
+    @Mock private View mViewMock;
 
     private MockViewHolder mMockViewHolder;
 
@@ -67,7 +62,9 @@ public class TabListContainerViewBinderUnitTest {
         doReturn(TAB_MODEL_FILTER_INDEX)
                 .when(mPropertyModelMock)
                 .get(TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
-        TabListContainerViewBinder.bind(mPropertyModelMock, mTabListRecyclerViewMock,
+        TabListContainerViewBinder.bind(
+                mPropertyModelMock,
+                mTabListRecyclerViewMock,
                 TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY);
         verify(mViewMock).requestFocus();
         verify(mViewMock).sendAccessibilityEvent(eq(AccessibilityEvent.TYPE_VIEW_FOCUSED));

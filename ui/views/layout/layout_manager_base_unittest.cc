@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_layout_manager.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
@@ -341,6 +342,10 @@ class LayoutManagerBaseManagerTest : public testing::Test {
     return host_view_->AddChildView(std::move(child));
   }
 
+  // Directly calls the layout manager's `Layout()` method, as if from within
+  // `View::Layout()` or an overridden version of the function.
+  void DoLayoutManagerLayout() { layout_manager_->Layout(host_view_.get()); }
+
   View* host_view() { return host_view_.get(); }
   MockLayoutManagerBase* layout_manager() { return layout_manager_; }
   View* child(int index) { return host_view_->children().at(index); }
@@ -599,8 +604,9 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   EXPECT_TRUE(child(2)->GetVisible());
   EXPECT_EQ(child(2)->GetPreferredSize(), child(2)->size());
 
-  host_view()->RemoveChildView(child_view);
-  child_view->SetSize(kLargeSize);
+  std::unique_ptr<View> owned_child_view =
+      host_view()->RemoveChildViewT(child_view);
+  owned_child_view->SetSize(kLargeSize);
   test::RunScheduledLayout(host_view());
 
   EXPECT_TRUE(child(0)->GetVisible());
@@ -608,11 +614,8 @@ TEST_F(LayoutManagerBaseManagerTest, ViewRemoved) {
   EXPECT_TRUE(child(1)->GetVisible());
   EXPECT_EQ(child(1)->GetPreferredSize(), child(1)->size());
 
-  EXPECT_TRUE(child_view->GetVisible());
-  EXPECT_EQ(kLargeSize, child_view->size());
-
-  // Required since we removed it from the parent view.
-  delete child_view;
+  EXPECT_TRUE(owned_child_view->GetVisible());
+  EXPECT_EQ(kLargeSize, owned_child_view->size());
 }
 
 TEST(LayoutManagerBase_ProposedLayoutTest, Equality) {
@@ -820,6 +823,60 @@ TEST_F(LayoutManagerBaseAvailableSizeTest,
   EXPECT_EQ(num_grandchild_layouts + 1, grandchild_layout->layout_count());
   EXPECT_EQ(num_great_grandchild_layouts + 1,
             great_grandchild_layout->layout_count());
+}
+
+using ManualLayoutUtilTest = LayoutManagerBaseManagerTest;
+
+TEST_F(ManualLayoutUtilTest, SetCanBeVisibleForManualLayout) {
+  ManualLayoutUtil manual_layout_util(layout_manager());
+
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  AddChildView(kPreferredSize);
+  host_view()->SizeToPreferredSize();
+  test::RunScheduledLayout(host_view());
+
+  const int old_invalidations = layout_manager()->num_invalidations();
+  const int old_layouts = layout_manager()->num_layouts_generated();
+
+  EXPECT_TRUE(child(0)->GetVisible());
+  const gfx::Rect old_child1_bounds = child(0)->bounds();
+  const gfx::Rect old_child2_bounds = child(1)->bounds();
+
+  // Hide the view and remove from the layout.
+  manual_layout_util.SetViewHidden(child(0), true);
+  EXPECT_FALSE(child(0)->GetVisible());
+  DoLayoutManagerLayout();
+  EXPECT_FALSE(child(0)->GetVisible());
+  // The second child should now have moved over into the space of the first.
+  EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+
+  // These lines should have no effect as it is already set to hidden.
+  manual_layout_util.SetViewHidden(child(0), true);
+  DoLayoutManagerLayout();
+  EXPECT_FALSE(child(0)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(1)->bounds());
+
+  // Enable the view in the layout again. This won't immediately cause the view
+  // to reappear; it may be made visible during the next layout pass.
+  manual_layout_util.SetViewHidden(child(0), false);
+  EXPECT_FALSE(child(0)->GetVisible());
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  // The first child should be in its original bounds.
+  EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+  // The second child should move back to its original bounds.
+  EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+
+  // Again, this should have no effect as the view is already enabled.
+  manual_layout_util.SetViewHidden(child(0), false);
+  DoLayoutManagerLayout();
+  EXPECT_TRUE(child(0)->GetVisible());
+  EXPECT_EQ(old_child1_bounds, child(0)->bounds());
+  EXPECT_EQ(old_child2_bounds, child(1)->bounds());
+
+  EXPECT_EQ(old_layouts + 2, layout_manager()->num_layouts_generated());
+  EXPECT_EQ(old_invalidations + 2, layout_manager()->num_invalidations());
 }
 
 }  // namespace views

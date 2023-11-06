@@ -35,6 +35,10 @@ enum class InstallResultCode;
 enum class UninstallResultCode;
 }  // namespace webapps
 
+namespace apps {
+class PromiseAppServiceTest;
+}
+
 namespace ash {
 
 // Service which manages integration of ARC packages containing web apps.
@@ -108,6 +112,11 @@ class ApkWebAppService : public KeyedService,
   absl::optional<std::string> GetCertificateSha256Fingerprint(
       const webapps::AppId& app_id);
 
+  // Save a mapping of the web app ID to the package name for a web-only TWA
+  // that is currently installing.
+  void AddInstallingWebApkPackageName(const std::string& app_id,
+                                      const std::string& package_name);
+
   using WebAppCallbackForTesting =
       base::OnceCallback<void(const std::string& package_name,
                               const webapps::AppId& web_app_id)>;
@@ -116,17 +125,8 @@ class ApkWebAppService : public KeyedService,
   void SetWebAppUninstalledCallbackForTesting(
       WebAppCallbackForTesting web_app_uninstalled_callback);
 
-  // Save a mapping of the web app ID to the package name for a web-only TWA
-  // that is currently installing.
-  void AddInstallingWebApkPackageName(const std::string& app_id,
-                                      const std::string& package_name);
-
-  // Remove the app ID from the map of currently installing APKs.
-  void RemoveInstallingWebApkPackageName(const std::string& app_id);
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(ApkWebAppInstallerDelayedArcStartBrowserTest,
-                           DelayedUninstall);
+  friend class apps::PromiseAppServiceTest;
 
   Delegate& GetDelegate() {
     return test_delegate_ ? *test_delegate_ : *real_delegate_;
@@ -188,6 +188,9 @@ class ApkWebAppService : public KeyedService,
   void SyncArcAndWebApps();
 
   void RemoveObsoletePrefValues(const webapps::AppId& web_app_id);
+
+  // Remove the app ID from the map of currently installing APKs.
+  void RemoveInstallingWebApkPackageName(const std::string& app_id);
 
   WebAppCallbackForTesting web_app_installed_callback_;
   WebAppCallbackForTesting web_app_uninstalled_callback_;

@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "account_manager.secondary_google_account_usage": {
+            "default_value": "all"
+          }
+        }
+      },
+      {
+        "policies": {
+          "SecondaryGoogleAccountUsage": "primary_account_signin"
+        },
+        "prefs": {
+          "account_manager.secondary_google_account_usage": {
+            "value": "primary_account_signin"
+          }
+        }
+      },
+      {
+        "policies": {
+          "SecondaryGoogleAccountUsage": "all"
+        },
+        "prefs": {
+          "account_manager.secondary_google_account_usage": {
+            "value": "all"
+          }
+        }
+      }
+    ]
+  }
+]

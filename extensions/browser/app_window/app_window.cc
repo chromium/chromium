@@ -44,7 +44,6 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/browser/view_type_utils.h"
-#include "extensions/common/draggable_region.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
@@ -447,16 +446,6 @@ bool AppWindow::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool AppWindow::OnMessageReceived(const IPC::Message& message,
-                                  content::RenderFrameHost* render_frame_host) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(AppWindow, message)
-    IPC_MESSAGE_HANDLER(ExtensionHostMsg_AppWindowReady, OnAppWindowReady)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
-}
-
 void AppWindow::RenderFrameCreated(content::RenderFrameHost* frame_host) {
   app_delegate_->RenderFrameCreated(frame_host);
 }
@@ -596,7 +585,7 @@ void AppWindow::UpdateShape(std::unique_ptr<ShapeRects> rects) {
 }
 
 void AppWindow::UpdateDraggableRegions(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   native_app_window_->UpdateDraggableRegions(regions);
 }
 
@@ -912,7 +901,7 @@ void AppWindow::ExitFullscreenModeForTab(content::WebContents* source) {
   ToggleFullscreenModeForTab(source, false);
 }
 
-void AppWindow::OnAppWindowReady() {
+void AppWindow::AppWindowReady() {
   window_ready_ = true;
 
   if (app_icon_url_.is_valid())
@@ -1065,14 +1054,13 @@ AppWindow::CreateParams AppWindow::LoadDefaults(CreateParams params) const {
 
 // static
 SkRegion* AppWindow::RawDraggableRegionsToSkRegion(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   SkRegion* sk_region = new SkRegion;
-  for (auto iter = regions.cbegin(); iter != regions.cend(); ++iter) {
-    const DraggableRegion& region = *iter;
+  for (const auto& region : regions) {
     sk_region->op(
-        SkIRect::MakeLTRB(region.bounds.x(), region.bounds.y(),
-                          region.bounds.right(), region.bounds.bottom()),
-        region.draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
+        SkIRect::MakeLTRB(region->bounds.x(), region->bounds.y(),
+                          region->bounds.right(), region->bounds.bottom()),
+        region->draggable ? SkRegion::kUnion_Op : SkRegion::kDifference_Op);
   }
   return sk_region;
 }

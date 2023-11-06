@@ -71,7 +71,7 @@ class CORE_EXPORT DevToolsHost final : public ScriptWrappable {
 
   bool isHostedMode();
 
-  LocalFrame* FrontendFrame() { return frontend_frame_; }
+  LocalFrame* FrontendFrame() { return frontend_frame_.Get(); }
 
   void ClearMenuProvider() { menu_provider_ = nullptr; }
 

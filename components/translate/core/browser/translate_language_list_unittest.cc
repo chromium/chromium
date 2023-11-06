@@ -103,6 +103,17 @@ TEST_F(TranslateLanguageListTest, IsSupportedLanguage) {
   EXPECT_FALSE(language_list.IsSupportedLanguage("xx"));
 }
 
+// Test that IsSupportedPartialTranslateLanguage() is true for languages that
+// should be supported, and false for invalid languages.
+TEST_F(TranslateLanguageListTest, IsSupportedPartialTranslateLanguage) {
+  TranslateLanguageList language_list;
+  EXPECT_TRUE(language_list.IsSupportedPartialTranslateLanguage("en"));
+  EXPECT_TRUE(language_list.IsSupportedPartialTranslateLanguage("zh-CN"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("xx"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("ilo"));
+  EXPECT_FALSE(language_list.IsSupportedPartialTranslateLanguage("mni-Mtei"));
+}
+
 // Sanity test for the default set of supported languages. The default set of
 // languages should be large (> 100) and must contain very common languages.
 // If either of these tests are not true, the default language configuration is
@@ -120,6 +131,34 @@ TEST_F(TranslateLanguageListTest, GetSupportedLanguages) {
   EXPECT_TRUE(base::Contains(languages, "ru"));
   EXPECT_TRUE(base::Contains(languages, "zh-CN"));
   EXPECT_TRUE(base::Contains(languages, "zh-TW"));
+}
+
+// Sanity test for the default set of partial translate supported languages. The
+// default set of languages should be large (> 100) and must contain very common
+// languages. If either of these tests are not true, the default language
+// configuration is likely to be incorrect.
+TEST_F(TranslateLanguageListTest, GetSupportedPartialTranslateLanguages) {
+  TranslateLanguageList language_list;
+  std::vector<std::string> languages;
+  language_list.GetSupportedPartialTranslateLanguages(&languages);
+  // Check there are a lot of default languages.
+  EXPECT_GE(languages.size(), 100ul);
+  // Check that some very common languages are there.
+  EXPECT_TRUE(base::Contains(languages, "en"));
+  EXPECT_TRUE(base::Contains(languages, "es"));
+  EXPECT_TRUE(base::Contains(languages, "fr"));
+  EXPECT_TRUE(base::Contains(languages, "ru"));
+  EXPECT_TRUE(base::Contains(languages, "zh-CN"));
+  EXPECT_TRUE(base::Contains(languages, "zh-TW"));
+
+  // Check that unsupported languages are not there
+  EXPECT_FALSE(base::Contains(languages, "ilo"));
+  EXPECT_FALSE(base::Contains(languages, "lus"));
+  EXPECT_FALSE(base::Contains(languages, "mni-Mtei"));
+  EXPECT_FALSE(base::Contains(languages, "gom"));
+  EXPECT_FALSE(base::Contains(languages, "doi"));
+  EXPECT_FALSE(base::Contains(languages, "bm"));
+  EXPECT_FALSE(base::Contains(languages, "ckb"));
 }
 
 // Check that we contact the translate server to update the supported language

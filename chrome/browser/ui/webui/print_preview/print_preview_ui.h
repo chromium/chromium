@@ -23,6 +23,8 @@
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "components/printing/common/print.mojom.h"
 #include "components/services/print_compositor/public/mojom/print_compositor.mojom.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom-forward.h"
@@ -35,14 +37,33 @@
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #endif
 
+class GURL;
+
 namespace base {
 class FilePath;
 class RefCountedMemory;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace printing {
 
 class PrintPreviewHandler;
+
+class PrintPreviewUIConfig : public content::WebUIConfig {
+ public:
+  PrintPreviewUIConfig();
+  ~PrintPreviewUIConfig() override;
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+  bool ShouldHandleURL(const GURL& url) override;
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+};
 
 // PrintPreviewUI lives on the UI thread.
 class PrintPreviewUI : public ConstrainedWebDialogUI,

@@ -83,7 +83,7 @@ class PrefetchPageLoadMetricsObserverTest
  private:
   void ResetTest() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
-    timing_.navigation_start = base::Time::FromDoubleT(2);
+    timing_.navigation_start = base::Time::FromSecondsSinceUnixEpoch(2);
     timing_.response_start = base::Seconds(3);
     timing_.parse_timing->parse_start = base::Seconds(4);
     timing_.paint_timing->first_contentful_paint = base::Seconds(5);

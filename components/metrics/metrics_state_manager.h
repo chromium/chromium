@@ -105,8 +105,10 @@ class MetricsStateManager final {
   // not opted in to metrics reporting.
   const std::string& client_id() const { return client_id_; }
 
-  // Returns the low entropy source for this client.
+  // Returns the low entropy sources for this client.
   int GetLowEntropySource();
+  int GetOldLowEntropySource();
+  int GetPseudoLowEntropySource();
 
   // The CleanExitBeacon, used to determine whether the previous Chrome browser
   // session terminated gracefully.
@@ -296,9 +298,6 @@ class MetricsStateManager final {
   // each install. UMA must be enabled (and |client_id_| must be set) or
   // |kMetricsProvisionalClientID| must be set before calling this.
   std::string GetHighEntropySource();
-
-  // Returns the old low entropy source for this client.
-  int GetOldLowEntropySource();
 
   // Updates |entropy_source_returned_| with |type| iff the current value is
   // ENTROPY_SOURCE_NONE and logs the new value in a histogram.

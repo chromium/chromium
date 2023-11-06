@@ -90,10 +90,11 @@ SkColor RetrieveColor(cros_styles::ColorName name) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-class Button : public views::LabelButton {
+class BubbleButton : public views::LabelButton {
+  METADATA_HEADER(BubbleButton, views::LabelButton)
+
  public:
-  METADATA_HEADER(Button);
-  explicit Button(const std::u16string& button_label) {
+  explicit BubbleButton(const std::u16string& button_label) {
     SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
     SetText(button_label);
@@ -118,9 +119,9 @@ class Button : public views::LabelButton {
              kButtonHeight});
   }
 
-  Button(const Button&) = delete;
-  Button& operator=(const Button&) = delete;
-  ~Button() override = default;
+  BubbleButton(const BubbleButton&) = delete;
+  BubbleButton& operator=(const BubbleButton&) = delete;
+  ~BubbleButton() override = default;
 
   int GetLabelWidth() const { return label()->bounds().width(); }
 
@@ -151,7 +152,7 @@ void OnLearnMoreLinkClicked() {
 
 }  // namespace
 
-BEGIN_METADATA(Button, views::LabelButton)
+BEGIN_METADATA(BubbleButton)
 ADD_READONLY_PROPERTY_METADATA(int, LabelWidth)
 END_METADATA
 
@@ -273,7 +274,7 @@ ClipboardBlockBubble::ClipboardBlockBubble(const std::u16string& text)
   // Add "Got it" button.
   std::u16string button_label =
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_BLOCK_DISMISS_BUTTON);
-  button_ = AddChildView(std::make_unique<Button>(button_label));
+  button_ = AddChildView(std::make_unique<BubbleButton>(button_label));
   button_->SetPaintToLayer();
   button_->layer()->SetFillsBoundsOpaquely(false);
   button_->SetPosition(
@@ -306,7 +307,7 @@ ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
   // Add paste button.
   std::u16string paste_label =
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_CLIPBOARD_WARN_PROCEED_BUTTON);
-  paste_button_ = AddChildView(std::make_unique<Button>(paste_label));
+  paste_button_ = AddChildView(std::make_unique<BubbleButton>(paste_label));
   paste_button_->SetPaintToLayer();
   paste_button_->layer()->SetFillsBoundsOpaquely(false);
   paste_button_->SetPosition(
@@ -316,7 +317,7 @@ ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
   // Add cancel button.
   std::u16string cancel_label =
       l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON);
-  cancel_button_ = AddChildView(std::make_unique<Button>(cancel_label));
+  cancel_button_ = AddChildView(std::make_unique<BubbleButton>(cancel_label));
   cancel_button_->SetPaintToLayer();
   cancel_button_->layer()->SetFillsBoundsOpaquely(false);
   cancel_button_->SetPosition(
@@ -328,8 +329,9 @@ ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
 }
 
 ClipboardWarnBubble::~ClipboardWarnBubble() {
-  if (paste_cb_)
+  if (paste_cb_) {
     std::move(paste_cb_).Run(false);
+  }
 }
 
 gfx::Size ClipboardWarnBubble::GetBubbleSize() const {

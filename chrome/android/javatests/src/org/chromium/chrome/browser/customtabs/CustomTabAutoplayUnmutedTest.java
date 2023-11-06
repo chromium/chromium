@@ -27,37 +27,37 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests which activity types enable unmuted autoplay.
- */
+/** Tests which activity types enable unmuted autoplay. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class CustomTabAutoplayUnmutedTest {
     @ClassParameter
-    public static List<ParameterSet> sClassParams = Arrays.asList(
-            new ParameterSet().value(ActivityType.WEBAPP).name("Webapp"),
-            new ParameterSet().value(ActivityType.WEB_APK).name("WebApk"),
-            new ParameterSet().value(ActivityType.TRUSTED_WEB_ACTIVITY).name("TrustedWebActivity"));
+    public static List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(ActivityType.WEBAPP).name("Webapp"),
+                    new ParameterSet().value(ActivityType.WEB_APK).name("WebApk"),
+                    new ParameterSet()
+                            .value(ActivityType.TRUSTED_WEB_ACTIVITY)
+                            .name("TrustedWebActivity"));
 
     private @ActivityType int mActivityType;
 
-    @Rule
-    public final ChromeActivityTestRule<?> mActivityTestRule;
+    @Rule public final ChromeActivityTestRule<?> mActivityTestRule;
 
     public CustomTabAutoplayUnmutedTest(@ActivityType int activityType) {
         mActivityType = activityType;
         mActivityTestRule = CustomTabActivityTypeTestUtils.createActivityTestRule(activityType);
     }
 
-    /**
-     * Test that unmuted autoplay is only enabled for WebAPKs.
-     */
+    /** Test that unmuted autoplay is only enabled for WebAPKs. */
     @Test
     @LargeTest
     public void testAutoplayUnmuted() throws Exception {
-        String testPageUrl = mActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/media/video-autoplay.html");
+        String testPageUrl =
+                mActivityTestRule
+                        .getTestServer()
+                        .getURL("/chrome/test/data/android/media/video-autoplay.html");
         CustomTabActivityTypeTestUtils.launchActivity(
                 mActivityType, mActivityTestRule, testPageUrl);
         WebContents webContents = mActivityTestRule.getActivity().getActivityTab().getWebContents();

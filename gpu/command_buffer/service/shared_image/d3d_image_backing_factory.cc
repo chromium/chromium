@@ -147,9 +147,13 @@ bool D3DImageBackingFactory::IsD3DSharedImageSupported(
 }
 
 // static
-bool D3DImageBackingFactory::IsSwapChainSupported() {
+bool D3DImageBackingFactory::IsSwapChainSupported(
+    const GpuPreferences& gpu_preferences) {
+  // TODO(crbug.com/1492685): enable swapchain support when d3d11 is shared with
+  // ANGLE.
   return gl::DirectCompositionSupported() &&
-         gl::DXGISwapChainTearingSupported();
+         gl::DXGISwapChainTearingSupported() &&
+         gpu_preferences.gr_context_type == GrContextType::kGL;
 }
 
 // static
@@ -175,9 +179,6 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                         GrSurfaceOrigin surface_origin,
                                         SkAlphaType alpha_type,
                                         uint32_t usage) {
-  if (!D3DImageBackingFactory::IsSwapChainSupported())
-    return {nullptr, nullptr};
-
   DXGI_FORMAT swap_chain_format;
   if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
       (format == viz::SinglePlaneFormat::kRGBX_8888) ||

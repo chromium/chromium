@@ -44,8 +44,7 @@ class CONTENT_EXPORT CdmStorageDatabase {
                   const media::CdmType& cdm_type,
                   const std::string& file_name);
 
-  bool DeleteDataForStorageKey(const blink::StorageKey& storage_key,
-                               const media::CdmType& cdm_type);
+  bool DeleteDataForStorageKey(const blink::StorageKey& storage_key);
 
   bool ClearDatabase();
 

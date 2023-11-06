@@ -141,8 +141,9 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                 "https://bobpay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
-    private void setUpAutofillProfiles(AutofillProfile[] profiles, int[] counts,
-            int[] daysSinceLastUsed) throws TimeoutException {
+    private void setUpAutofillProfiles(
+            AutofillProfile[] profiles, int[] counts, int[] daysSinceLastUsed)
+            throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
 
         // Add the profiles.
@@ -168,8 +169,12 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
     public void testShippingAddressSuggestionOrdering() throws TimeoutException {
         // Create two complete and two incomplete profiles. Values are set so that complete profiles
         // are ordered by frecency, incomplete profiles are sorted by their completeness score.
-        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE, COMPLETE_PROFILE,
-                COMPLETE_PROFILE_NON_US_COUNTRY, INCOMPLETE_PROFILE_NO_CITY_NAME};
+        AutofillProfile[] profiles = {
+            INCOMPLETE_PROFILE_NO_PHONE,
+            COMPLETE_PROFILE,
+            COMPLETE_PROFILE_NON_US_COUNTRY,
+            INCOMPLETE_PROFILE_NO_CITY_NAME
+        };
         int[] counts = new int[] {20, 15, 10, 25};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 5};
 
@@ -182,21 +187,27 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
         int i = 0;
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Lisa Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Maggie Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Bart Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Lisa Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Maggie Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Bart Simpson"));
         // Even though Profile[4] (missing address) has higher frecency than Profile[0] (missing
         // phone number), it ranks lower than Profile[0] since its completeness score is lower.
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Marge Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Marge Simpson"));
     }
 
-    /**
-     * Make sure that equally incomplete profiles are ordered by their frecency.
-     */
+    /** Make sure that equally incomplete profiles are ordered by their frecency. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -216,23 +227,29 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
         int i = 0;
         // Incomplete profile with higher frecency comes first.
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "John Smith"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Bart Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("John Smith"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Bart Simpson"));
     }
 
-    /**
-     * Make sure that a maximum of four profiles are shown to the user.
-     */
+    /** Make sure that a maximum of four profiles are shown to the user. */
     @Test
     @MediumTest
     @Feature({"Payments"})
     public void testShippingAddressSuggestionLimit() throws TimeoutException {
         // Create five profiles that can be suggested to the user.
-        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE, COMPLETE_PROFILE,
-                COMPLETE_PROFILE_NON_US_COUNTRY, INCOMPLETE_PROFILE_NO_CITY_NAME,
-                INCOMPLETE_PROFILE_NO_NAME};
+        AutofillProfile[] profiles = {
+            INCOMPLETE_PROFILE_NO_PHONE,
+            COMPLETE_PROFILE,
+            COMPLETE_PROFILE_NON_US_COUNTRY,
+            INCOMPLETE_PROFILE_NO_CITY_NAME,
+            INCOMPLETE_PROFILE_NO_NAME
+        };
         int[] counts = new int[] {20, 15, 10, 5, 2, 1};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 10, 15};
 
@@ -246,23 +263,31 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         // Only four profiles should be suggested to the user.
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
         int i = 0;
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Lisa Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Maggie Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Bart Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Lisa Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Maggie Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Bart Simpson"));
         // Profiles[5] is suggested as the last option since it is missing recipient name and ranks
         // above Profile[4] with missing address.
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i).contains(
-                "Los Angeles"));
-        Assert.assertFalse(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i).contains(
-                "Marge Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i)
+                        .contains("Los Angeles"));
+        Assert.assertFalse(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i)
+                        .contains("Marge Simpson"));
     }
 
-    /**
-     * Make sure that only profiles with a street address are suggested to the user.
-     */
+    /** Make sure that only profiles with a street address are suggested to the user. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -270,9 +295,12 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
             throws TimeoutException {
         // Create two complete profiles and two incomplete profiles, one of which has no street
         // address.
-        AutofillProfile[] profiles = {INCOMPLETE_PROFILE_NO_PHONE,
-                INCOMPLETE_PROFILE_NO_STREET_ADDRESS, COMPLETE_PROFILE,
-                COMPLETE_PROFILE_NON_US_COUNTRY};
+        AutofillProfile[] profiles = {
+            INCOMPLETE_PROFILE_NO_PHONE,
+            INCOMPLETE_PROFILE_NO_STREET_ADDRESS,
+            COMPLETE_PROFILE,
+            COMPLETE_PROFILE_NON_US_COUNTRY
+        };
         int[] counts = new int[] {15, 10, 5, 1};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 10};
 
@@ -287,12 +315,18 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         // has a street address.
         Assert.assertEquals(3, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
         int i = 0;
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Lisa Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Maggie Simpson"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Bart Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Lisa Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Maggie Simpson"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Bart Simpson"));
     }
 
     /**
@@ -316,8 +350,10 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(0).contains(
-                COMPLETE_PROFILE_NON_US_COUNTRY.getFullName()));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(0)
+                        .contains(COMPLETE_PROFILE_NON_US_COUNTRY.getFullName()));
         mPaymentRequestTestRule.clickOnShippingAddressSuggestionOptionAndWait(
                 0, mPaymentRequestTestRule.getSelectionChecked());
 
@@ -338,10 +374,10 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         // Create four incomplete profiles with different missing information. Profiles will be
         // sorted based on their missing fields.
         AutofillProfile[] profiles = {
-                INCOMPLETE_PROFILE_NO_PHONE,
-                INCOMPLETE_PROFILE_NO_CITY_NAME,
-                INCOMPLETE_PROFILE_NO_NAME,
-                INCOMPLETE_PROFILE_NO_NAME_OR_LOCALITY,
+            INCOMPLETE_PROFILE_NO_PHONE,
+            INCOMPLETE_PROFILE_NO_CITY_NAME,
+            INCOMPLETE_PROFILE_NO_NAME,
+            INCOMPLETE_PROFILE_NO_NAME_OR_LOCALITY,
         };
         int[] counts = new int[] {15, 10, 5, 25};
         int[] daysSinceLastUsed = new int[] {5, 5, 5, 5};
@@ -357,13 +393,21 @@ public class PaymentRequestDynamicShippingMultipleAddressesTest {
         // Incomplete addresses are sorted by completeness score.
         Assert.assertEquals(4, mPaymentRequestTestRule.getNumberOfShippingAddressSuggestions());
         int i = 0;
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Phone number required"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Name required"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "Enter a valid address"));
-        Assert.assertTrue(mPaymentRequestTestRule.getShippingAddressSuggestionLabel(i++).contains(
-                "More information required"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Phone number required"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Name required"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("Enter a valid address"));
+        Assert.assertTrue(
+                mPaymentRequestTestRule
+                        .getShippingAddressSuggestionLabel(i++)
+                        .contains("More information required"));
     }
 }

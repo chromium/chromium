@@ -7,7 +7,7 @@
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
-#include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_context_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -25,11 +25,11 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // this concrete object if the graph builds successfully out of renderer
   // process. Launch WebNN service and bind `WebNNContext` mojo interface
   // to create `WebNNGraph` message pipe if needed.
-  static void ValidateAndBuildAsync(MLContext* context,
+  static void ValidateAndBuildAsync(MLContextMojo* context,
                                     const MLNamedOperands& named_outputs,
                                     ScriptPromiseResolver* resolver);
 
-  MLGraphMojo(ScriptState* script_state, MLContext* context);
+  MLGraphMojo(ScriptState* script_state, MLContextMojo* context);
   ~MLGraphMojo() override;
 
   void Trace(Visitor* visitor) const override;
@@ -68,6 +68,8 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
   // if the graph was successfully created and an `Error` otherwise.
   void OnCreateWebNNGraph(ScriptPromiseResolver* resolver,
                           webnn::mojom::blink::CreateGraphResultPtr result);
+
+  Member<MLContextMojo> ml_context_mojo_;
 
   // The `WebNNGraph` is compiled graph that can be executed by the hardware
   // accelerated OS machine learning API.

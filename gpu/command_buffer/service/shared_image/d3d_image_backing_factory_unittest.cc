@@ -171,7 +171,7 @@ class D3DImageBackingFactoryTestSwapChain
     : public D3DImageBackingFactoryTestBase {
  public:
   void SetUp() override {
-    if (!D3DImageBackingFactory::IsSwapChainSupported()) {
+    if (!D3DImageBackingFactory::IsSwapChainSupported(GpuPreferences())) {
       GTEST_SKIP();
     }
     D3DImageBackingFactoryTestBase::SetUp();

@@ -72,12 +72,12 @@ DlpWarnDialog::DlpWarnDialogOptions::operator=(
 
 DlpWarnDialog::DlpWarnDialogOptions::~DlpWarnDialogOptions() = default;
 
-DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
+DlpWarnDialog::DlpWarnDialog(WarningCallback callback,
                              DlpWarnDialogOptions options)
     : restriction_(options.restriction),
       application_title_(options.application_title),
       contents_(std::move(options.confidential_contents)) {
-  SetOnDlpRestrictionCheckedCallback(std::move(callback));
+  SetWarningCallback(std::move(callback));
 
   set_margins(gfx::Insets::TLBR(20, 0, 20, 0));
 
@@ -91,6 +91,12 @@ DlpWarnDialog::DlpWarnDialog(OnDlpRestrictionCheckedCallback callback,
 }
 
 DlpWarnDialog::~DlpWarnDialog() = default;
+
+void DlpWarnDialog::SetWarningCallback(WarningCallback callback) {
+  auto split = base::SplitOnceCallback(std::move(callback));
+  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
+  SetCancelCallback(base::BindOnce(std::move(split.second), false));
+}
 
 views::Label* DlpWarnDialog::AddTitle(const std::u16string& title) {
   // Call the parent class to setup the element. Do not remove.

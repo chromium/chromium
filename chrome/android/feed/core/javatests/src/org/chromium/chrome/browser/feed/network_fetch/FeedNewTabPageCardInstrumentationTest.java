@@ -57,10 +57,10 @@ public final class FeedNewTabPageCardInstrumentationTest {
     @DisabledTest(message = "https://crbug.com/1166575")
     @MediumTest
     @Feature({"FeedNewTabPage", "WPRRecordReplayTest", "RenderTest"})
-    @WPRArchiveDirectory("chrome/android/feed/core/javatests/src/org/chromium/chrome/"
-            + "browser/feed/wpr_tests")
-    public void
-    launchNTP_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
+    @WPRArchiveDirectory(
+            "chrome/android/feed/core/javatests/src/org/chromium/chrome/"
+                    + "browser/feed/wpr_tests")
+    public void launchNTP_withMultipleFeedCardsRendered() throws IOException, InterruptedException {
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
 

@@ -4,6 +4,7 @@
 <translation id="1046370274005147998">在 Chromium 中使用語音搜尋。</translation>
 <translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1091252999271033193">這代表 Chromium 每次都會對行動版網站發出要求。</translation>
+<translation id="1115463765356382667">完成下列建議動作，充分運用 Chromium 的各項功能。</translation>
 <translation id="1171824629317156389">在 iOS 設定中開啟 Chromium，然後依序輕觸「預設瀏覽器 App」和「Chromium」。</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕觸 [設定] 並允許 Chromium 新增相片</translation>
@@ -51,6 +52,7 @@
 <translation id="2730884209570016437">另一個應用程式正在使用你的相機，因此 Chromium 無法使用</translation>
 <translation id="2784449251446768092">管理 Chromium 設定</translation>
 <translation id="2798503587425057129">開啟 Chromium 閱讀清單。</translation>
+<translation id="2843571538056574338">使用 Chromium 的自動填入功能</translation>
 <translation id="2915596697727466327">Chromium 會使用 Face ID 來確保只有經過授權的使用者才能存取你的密碼。</translation>
 <translation id="2918709798697875261">貴機構要求你在 Chromium 保持登出狀態。</translation>
 <translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
@@ -94,6 +96,7 @@
 <translation id="4654936625574199632">為協助改善應用程式，Chromium 會將使用情形和當機報告傳送給 Google。<ph name="BEGIN_LINK" />管理設定<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
 <translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
+<translation id="4773487571745795781">你已關閉 Chromium 登入功能。</translation>
 <translation id="4790638144988730920">請繼續使用 Google 帳戶中的 Chromium 資料。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
@@ -140,10 +143,12 @@
 1. 開啟「設定」
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
+<translation id="6154098560469640583">隨時可以使用 Chromium 開啟訊息、文件和其他應用程式中的連結。</translation>
 <translation id="6197255575340902638">如果隱藏「<ph name="MODULE_NAME" />」，Chromium 將不會再自動追蹤之後的包裹，而且會刪除先前的所有包裹追蹤資料。</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
 <translation id="6324041800010509197">開啟 Chromium 的分頁方格</translation>
+<translation id="6325378625795868881">隨時可以使用 Chromium 開啟訊息和其他應用程式中的連結。</translation>
 <translation id="632825460376924298">允許登入 Chromium</translation>
 <translation id="6337530241089703714">選擇是否要清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="6407399265324739055">系統將不會加密付款方式和地址，也不會同步 Chromium 中的瀏覽記錄。
@@ -156,9 +161,11 @@
 <translation id="6752854822223394465">貴機構正在設定 Chromium...</translation>
 <translation id="6794054469102824109">開啟 Chromium 恐龍遊戲。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼，請明天再試。</translation>
+<translation id="6852799557929001644">在這部裝置的其他應用程式中使用你的 Chromium 密碼和其他資訊。</translation>
 <translation id="6911341667534646387">請繼續使用 Google 帳戶中的 Chromium 資料</translation>
 <translation id="7006920032187763988">你可以在 iPad 上的其他應用程式中，使用密碼管理員所儲存的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
+<translation id="7025471822960602362">在 Chromium 上追蹤偵測到的包裹</translation>
 <translation id="7045244423563602563">使用你專屬的 Chromium</translation>
 <translation id="7055269218854630176">貴機構 (<ph name="DOMAIN" />) 會管理你登入的帳戶和 Chromium 的使用方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="7099326575020694068">Chromium 無法在分割模式中使用你的相機</translation>
@@ -169,6 +176,7 @@
 <translation id="7208566199746267865">Chromium 會將你的所有帳戶同步到網路上，為你節省時間。你可以在「設定」中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 可確保安全性，例如防範資料侵害事件或封鎖不安全的網站等等。</translation>
 <translation id="7269362888766543920">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式。</translation>
+<translation id="7285031092584344905">在其他應用程式中使用你的 Chromium 密碼和其他資訊。</translation>
 <translation id="7313655110045230863">如要將 Chromium 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 [Chromium]。</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">系統已將你所選取的資料從 Chromium 和其他同步的裝置中移除。你的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
@@ -183,14 +191,18 @@
 <translation id="786327964234957808">你設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。你現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將你的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">開始使用 Chromium 掃描器</translation>
 <translation id="7905064834449738336">如果你使用的密碼已被他人公布在網路上，Chromium 就會發出警告。在進行這項檢查時，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>
+<translation id="7917424453593305610">在其他應用程式中使用 Chromium。</translation>
 <translation id="7928628054454574139">只要輕觸其他應用程式中的連結，即可透過 Chromium 開啟</translation>
 <translation id="7931842119211730154">關閉 Chromium 時鎖定無痕分頁</translation>
 <translation id="7934404985878918282">查看 Chromium 閱讀清單</translation>
 <translation id="7980860476903281594">Chromium 會與你允許的網站分享位置資訊。</translation>
+<translation id="7995166854192397899">系統會根據你在其他裝置的瀏覽活動提供建議。如要取得建議，請在所有裝置上登入 Chromium。</translation>
+<translation id="800195749539500647">充分運用 Chromium 的各項功能</translation>
 <translation id="8013573822802650211">在你所有的裝置上登入帳戶後，不論從何處使用 Chromium 都能查看你的分頁</translation>
 <translation id="8071041515667087705">前往 Chromium 設定。</translation>
 <translation id="8073677936375100957">要清除這個裝置上的 Chromium 資料嗎？</translation>
 <translation id="8115308261377517697">將 Chromium 設為預設瀏覽器</translation>
+<translation id="8197822717502700527">你現在可以在裝置上充分運用 Chromium 的各項功能。</translation>
 <translation id="8235427517854598594">要將 Chromium 設為預設瀏覽器嗎？</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
 <translation id="8303579360494576778">在 Chromium 中管理付款方式</translation>
@@ -217,6 +229,7 @@
 <translation id="894437814105052438">登出帳戶後，Chromium 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="8963279154877372067">允許 Chromium 顯示通知才能接收降價快訊</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
+<translation id="9050790730841755540">隨時可以使用 Chromium 開啟其他應用程式中的連結。</translation>
 <translation id="9059693977935746710">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的密碼管理員中</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9110075932708282655">預設為使用 Chromium</translation>

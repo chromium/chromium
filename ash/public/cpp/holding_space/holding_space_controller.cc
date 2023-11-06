@@ -75,6 +75,14 @@ void HoldingSpaceController::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void HoldingSpaceController::OnHoldingSpaceTrayBubbleVisibilityChanged(
+    const HoldingSpaceTray* tray,
+    bool visible) {
+  for (auto& observer : observers_) {
+    observer.OnHoldingSpaceTrayBubbleVisibilityChanged(tray, visible);
+  }
+}
+
 void HoldingSpaceController::RegisterClientAndModelForUser(
     const AccountId& account_id,
     HoldingSpaceClient* client,

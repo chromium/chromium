@@ -9,6 +9,7 @@ import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/display_media_information.mojom";
 import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/mediastream/media_devices.mojom";
 
 // Types of media streams. When updating this list, make sure to update the
 // predicates declared in content/public/browser/media_stream_request.h,
@@ -245,25 +246,29 @@ interface MediaStreamDispatcherHost {
   // Tells the browser process that the stream has been started successfully.
   OnStreamStarted(string label);
 
-  // Start/stop cropping the video track.
+  // Start/stop cropping or restricting the video track.
   //
-  // Non-empty |crop_id| sets (or changes) the crop-target.
-  // Empty |crop_id| reverts the capture to its original, uncropped state.
+  // Non-empty |sub_capture_target_id| sets (or changes) the target.
+  // Empty |sub_capture_target_id| reverts the capture to its original state.
   //
-  // |crop_version| is plumbed down to Viz, which associates that value with
-  // all subsequent frames.
-  // For a given device, new calls to Crop() must be with a |crop_version| that
-  // is greater than the value from the previous call, but not necessarily by
-  // exactly one. (If a call to cropTo is rejected earlier in the pipeline,
-  // the crop-version can increase in Blink, and later calls to cropTo()
-  // can appear over this mojom pipe with a higher version.)
+  // |sub_capture_target_version| is plumbed down to Viz, which associates that
+  // value with all subsequent frames.
+  //
+  // For a given device, new calls to ApplySubCaptureTarget() must be with a
+  // |sub_capture_target_version| that is greater than the value from the
+  // previous call, but not necessarily by exactly one.
+  // (If a call to cropTo or restrictTo is rejected earlier in the pipeline,
+  // the sub-capture-target-version can increase in Blink, and later calls to
+  // cropTo() or restrictTo() can appear over this mojom pipe with
+  // a higher version.)
   //
   // The callback reports success/failure.
   [EnableIfNot=is_android]
-  Crop(mojo_base.mojom.UnguessableToken device_id,
-       mojo_base.mojom.Token crop_id,
-       uint32 crop_version)
-    => (media.mojom.CropRequestResult crop_result);
+  ApplySubCaptureTarget(mojo_base.mojom.UnguessableToken device_id,
+       media.mojom.SubCaptureTargetType type,
+       mojo_base.mojom.Token sub_capture_target,
+       uint32 sub_capture_target_version)
+    => (media.mojom.ApplySubCaptureTargetResult result);
 
   // Get a MediaStreamDevice metadata object which refers to the same flow of
   // media backing an existing MediaStreamDevice.

@@ -49,6 +49,16 @@ class LorgnetteScannerManager : public KeyedService {
   using CancelScanCallback = base::OnceCallback<void(
       const absl::optional<lorgnette::CancelScanResponse>& response)>;
 
+  enum class LocalScannerFilter {
+    kLocalScannersOnly = 0,
+    kIncludeNetworkScanners
+  };
+
+  enum class SecureScannerFilter {
+    kSecureScannersOnly = 0,
+    kIncludeUnsecureScanners
+  };
+
   ~LorgnetteScannerManager() override = default;
 
   static std::unique_ptr<LorgnetteScannerManager> Create(
@@ -58,8 +68,10 @@ class LorgnetteScannerManager : public KeyedService {
   virtual void GetScannerNames(GetScannerNamesCallback callback) = 0;
 
   // Returns ScannerInfo objects for all of the available lorgnette scanners and
-  // zeroconf scanners.
-  virtual void GetScannerInfoList(GetScannerInfoListCallback callback) = 0;
+  // zeroconf scanners, filtered by |local_only| and |secure_only|.
+  virtual void GetScannerInfoList(LocalScannerFilter local_only,
+                                  SecureScannerFilter secure_only,
+                                  GetScannerInfoListCallback callback) = 0;
 
   // Returns the capabilities of the scanner specified by |scanner_name|. If
   // |scanner_name| does not correspond to a known scanner, absl::nullopt is

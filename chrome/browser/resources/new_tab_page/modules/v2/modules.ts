@@ -6,12 +6,14 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
+import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement, TemplateInstanceBase, templatize} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+import {IphFeature} from '../../new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {WindowProxy} from '../../window_proxy.js';
 import {Module} from '../module_descriptor.js';
@@ -62,8 +64,14 @@ export interface ModulesV2Element {
   };
 }
 
+export const MODULE_CUSTOMIZE_ELEMENT_ID =
+    'NewTabPageUI::kModulesCustomizeIPHAnchorElement';
+
+const AppElementBase = HelpBubbleMixin(PolymerElement) as
+    {new (): PolymerElement & HelpBubbleMixinInterface};
+
 /** Container for the NTP modules. */
-export class ModulesV2Element extends PolymerElement {
+export class ModulesV2Element extends AppElementBase {
   static get is() {
     return 'ntp-modules-v2';
   }
@@ -191,6 +199,13 @@ export class ModulesV2Element extends PolymerElement {
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
     this.loadModules_();
+
+    const onModuleUse = (e: Event) => {
+      e.stopPropagation();
+      NewTabPageProxy.getInstance().handler.onModulesUsed();
+    };
+    this.addEventListener('usage', onModuleUse, {once: true});
+    this.addEventListener('menu-button-click', onModuleUse, {once: true});
   }
 
   private moduleDisabled_(
@@ -266,6 +281,24 @@ export class ModulesV2Element extends PolymerElement {
           'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
       this.recordModuleLoadedWithModules_(modules);
       this.dispatchEvent(new Event('modules-loaded'));
+
+      if (this.templateInstances_.length > 0) {
+        this.registerHelpBubble(
+            MODULE_CUSTOMIZE_ELEMENT_ID,
+            [
+              '#container',
+              'ntp-module-wrapper',
+              '#moduleElement',
+            ],
+            {fixed: true});
+        // TODO(crbug.com/1494416): Currently, a period of time must elapse
+        // between the registration of the anchor element and the promo
+        // invocation, else the anchor element will not be ready for use.
+        setTimeout(() => {
+          NewTabPageProxy.getInstance().handler.maybeShowFeaturePromo(
+              IphFeature.kCustomizeModules);
+        }, 1000);
+      }
     }
   }
 

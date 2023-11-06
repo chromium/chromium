@@ -203,7 +203,8 @@ bool StructTraits<
   out->keepalive = data.keepalive();
   out->browsing_topics = data.browsing_topics();
   out->ad_auction_headers = data.ad_auction_headers();
-  out->shared_storage_writable = data.shared_storage_writable();
+  out->shared_storage_writable_eligible =
+      data.shared_storage_writable_eligible();
   out->has_user_gesture = data.has_user_gesture();
   out->enable_load_timing = data.enable_load_timing();
   out->enable_upload_progress = data.enable_upload_progress();
@@ -222,8 +223,10 @@ bool StructTraits<
   out->attribution_reporting_support = data.attribution_reporting_support();
   out->attribution_reporting_eligibility =
       data.attribution_reporting_eligibility();
+  out->is_ad_tagged = data.is_ad_tagged();
   out->shared_dictionary_writer_enabled =
       data.shared_dictionary_writer_enabled();
+  out->target_address_space = data.required_ip_address_space();
 #if BUILDFLAG(IS_ANDROID)
   if (!data.ReadCreatedLocation(&out->created_location)) {
     return false;

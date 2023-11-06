@@ -28,11 +28,16 @@ BASE_FEATURE(kSchedUtilHints,
 BASE_FEATURE(kSetThreadBgForBgProcess,
              "SetThreadBgForBgProcess",
              FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSetRtForDisplayThreads,
+             "SetRtForDisplayThreads",
+             FEATURE_DISABLED_BY_DEFAULT);
 namespace {
 
 std::atomic<bool> g_use_sched_util(true);
 std::atomic<bool> g_scheduler_hints_adjusted(false);
 std::atomic<bool> g_threads_bg_enabled(false);
+std::atomic<bool> g_display_threads_rt(false);
 
 // When a device doesn't specify uclamp values via chrome switches,
 // default boosting for urgent tasks is hardcoded here as 20%.
@@ -244,23 +249,53 @@ void SetThreadTypeOtherAttrs(ProcessId process_id,
   SetThreadLatencySensitivity(process_id, thread_id, thread_type);
 }
 
+// Set or reset the RT priority of a thread based on its type
+// and whether the process it is in is backgrounded.
+// Setting an RT task to CFS retains the task's nice value.
+void SetThreadRTPrioFromType(ProcessId process_id,
+                             PlatformThreadId thread_id,
+                             ThreadType thread_type,
+                             bool proc_bg) {
+  struct sched_param prio;
+  int policy;
+
+  switch (thread_type) {
+    case ThreadType::kRealtimeAudio:
+      prio = PlatformThreadChromeOS::kRealTimeAudioPrio;
+      policy = SCHED_RR;
+      break;
+    case ThreadType::kCompositing:
+      [[fallthrough]];
+    case ThreadType::kDisplayCritical:
+      if (!PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled()) {
+        return;
+      }
+      if (proc_bg) {
+        // Per manpage, must be 0. Otherwise could have passed nice value here.
+        // Note that even though the prio.sched_priority passed to the
+        // sched_setscheduler() syscall is 0, the old nice value (which holds the
+        // ThreadType of the thread) is retained.
+        prio.sched_priority = 0;
+        policy = SCHED_OTHER;
+      } else {
+        prio = PlatformThreadChromeOS::kRealTimeDisplayPrio;
+        policy = SCHED_RR;
+      }
+      break;
+    default:
+      return;
+  }
+
+  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
+  if (sched_setscheduler(syscall_tid, policy, &prio) != 0) {
+    DPLOG(ERROR) << "Failed to set policy/priority for thread " << thread_id;
+  }
+}
+
 void SetThreadNiceFromType(ProcessId process_id,
                            PlatformThreadId thread_id,
                            ThreadType thread_type) {
-  PlatformThreadId syscall_tid = thread_id;
-  if (thread_id == PlatformThread::CurrentId()) {
-    syscall_tid = 0;
-  }
-
-  if (thread_type == ThreadType::kRealtimeAudio) {
-    if (sched_setscheduler(syscall_tid, SCHED_RR,
-                           &PlatformThreadChromeOS::kRealTimePrio) != 0) {
-      DPLOG(ERROR) << "Failed to set realtime priority for thread "
-                   << thread_id;
-    }
-    // Continue to set the nice value for the RT thread.
-  }
-
+  PlatformThreadId syscall_tid = thread_id == PlatformThread::CurrentId() ? 0 : thread_id;
   const int nice_setting = internal::ThreadTypeToNiceValue(thread_type);
   if (setpriority(PRIO_PROCESS, static_cast<id_t>(syscall_tid), nice_setting)) {
     DPLOG(ERROR) << "Failed to set nice value of thread " << thread_id << " to "
@@ -271,6 +306,7 @@ void SetThreadNiceFromType(ProcessId process_id,
 void PlatformThreadChromeOS::InitFeaturesPostFieldTrial() {
   DCHECK(FeatureList::GetInstance());
   g_threads_bg_enabled.store(FeatureList::IsEnabled(kSetThreadBgForBgProcess));
+  g_display_threads_rt.store(FeatureList::IsEnabled(kSetRtForDisplayThreads));
   if (!FeatureList::IsEnabled(kSchedUtilHints)) {
     g_use_sched_util.store(false);
     return;
@@ -308,6 +344,10 @@ bool PlatformThreadChromeOS::IsThreadsBgFeatureEnabled() {
   return g_threads_bg_enabled.load();
 }
 
+bool PlatformThreadChromeOS::IsDisplayThreadsRtFeatureEnabled() {
+  return g_display_threads_rt.load();
+}
+
 // static
 absl::optional<ThreadType> PlatformThreadChromeOS::GetThreadTypeFromThreadId(
     ProcessId process_id,
@@ -334,13 +374,17 @@ void PlatformThreadChromeOS::SetThreadType(ProcessId process_id,
   }
 
   auto proc = Process::Open(process_id);
+  bool backgrounded = false;
   if (IsThreadsBgFeatureEnabled() &&
       thread_type != ThreadType::kRealtimeAudio && proc.IsValid() &&
       proc.GetPriority() == base::Process::Priority::kBestEffort) {
-    SetThreadTypeOtherAttrs(process_id, thread_id, ThreadType::kBackground);
-  } else {
-    SetThreadTypeOtherAttrs(process_id, thread_id, thread_type);
+    backgrounded = true;
   }
+
+  SetThreadTypeOtherAttrs(process_id, thread_id,
+                          backgrounded ? ThreadType::kBackground : thread_type);
+
+  SetThreadRTPrioFromType(process_id, thread_id, thread_type, backgrounded);
   SetThreadNiceFromType(process_id, thread_id, thread_type);
 }
 
@@ -365,11 +409,10 @@ void PlatformThreadChromeOS::SetThreadBackgrounded(ProcessId process_id,
     return;
   }
 
-  if (backgrounded) {
-    SetThreadTypeOtherAttrs(process_id, thread_id, ThreadType::kBackground);
-  } else {
-    SetThreadTypeOtherAttrs(process_id, thread_id, type.value());
-  }
+  SetThreadTypeOtherAttrs(
+      process_id, thread_id,
+      backgrounded ? ThreadType::kBackground : type.value());
+  SetThreadRTPrioFromType(process_id, thread_id, type.value(), backgrounded);
 }
 
 SequenceCheckerImpl&

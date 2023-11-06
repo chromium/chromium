@@ -54,6 +54,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1887,6 +1889,8 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
   }
 
   class TestViewForMenuExit : public views::View {
+    METADATA_HEADER(TestViewForMenuExit, views::View)
+
    public:
     TestViewForMenuExit() = default;
 
@@ -1902,6 +1906,9 @@ class BookmarkBarViewTest20 : public BookmarkBarViewEventTestBase {
 
   raw_ptr<TestViewForMenuExit, DanglingUntriaged> test_view_ = nullptr;
 };
+
+BEGIN_METADATA(BookmarkBarViewTest20, TestViewForMenuExit, views::View)
+END_METADATA
 
 VIEW_TEST(BookmarkBarViewTest20, ContextMenuExitTest)
 

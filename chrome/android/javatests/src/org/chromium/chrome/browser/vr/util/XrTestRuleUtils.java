@@ -24,46 +24,52 @@ import java.util.concurrent.Callable;
  * the XrTestRule interface.
  */
 public class XrTestRuleUtils {
-    /**
-     * Essentially a Runnable that can throw exceptions.
-     */
-    public interface ChromeLaunchMethod { public void launch() throws Throwable; }
+    /** Essentially a Runnable that can throw exceptions. */
+    public interface ChromeLaunchMethod {
+        public void launch() throws Throwable;
+    }
 
     /**
      * Creates the list of XrTestRules that are currently supported for use in test
      * parameterization.
      *
      * @return An ArrayList of ParameterSets, with each ParameterSet containing a callable to create
-     *         an XrTestRule for a supported ChromeActivity.
+     *     an XrTestRule for a supported ChromeActivity.
      */
     public static ArrayList<ParameterSet> generateDefaultTestRuleParameters() {
         ArrayList<ParameterSet> parameters = new ArrayList<ParameterSet>();
-        parameters.add(new ParameterSet()
-                               .value(new Callable<ChromeTabbedActivityXrTestRule>() {
-                                   @Override
-                                   public ChromeTabbedActivityXrTestRule call() {
-                                       return new ChromeTabbedActivityXrTestRule();
-                                   }
-                               })
-                               .name("ChromeTabbedActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<ChromeTabbedActivityXrTestRule>() {
+                                    @Override
+                                    public ChromeTabbedActivityXrTestRule call() {
+                                        return new ChromeTabbedActivityXrTestRule();
+                                    }
+                                })
+                        .name("ChromeTabbedActivity"));
 
-        parameters.add(new ParameterSet()
-                               .value(new Callable<CustomTabActivityXrTestRule>() {
-                                   @Override
-                                   public CustomTabActivityXrTestRule call() {
-                                       return new CustomTabActivityXrTestRule();
-                                   }
-                               })
-                               .name("CustomTabActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<CustomTabActivityXrTestRule>() {
+                                    @Override
+                                    public CustomTabActivityXrTestRule call() {
+                                        return new CustomTabActivityXrTestRule();
+                                    }
+                                })
+                        .name("CustomTabActivity"));
 
-        parameters.add(new ParameterSet()
-                               .value(new Callable<WebappActivityXrTestRule>() {
-                                   @Override
-                                   public WebappActivityXrTestRule call() {
-                                       return new WebappActivityXrTestRule();
-                                   }
-                               })
-                               .name("WebappActivity"));
+        parameters.add(
+                new ParameterSet()
+                        .value(
+                                new Callable<WebappActivityXrTestRule>() {
+                                    @Override
+                                    public WebappActivityXrTestRule call() {
+                                        return new WebappActivityXrTestRule();
+                                    }
+                                })
+                        .name("WebappActivity"));
 
         return parameters;
     }
@@ -73,12 +79,12 @@ public class XrTestRuleUtils {
      *
      * @param rule The TestRule to wrap in an XrActivityRestrictionRule.
      * @return A RuleChain that ensures an XrActivityRestrictionRule is applied before the provided
-     *         TestRule.
+     *     TestRule.
      */
     public static RuleChain wrapRuleInActivityRestrictionRule(TestRule rule) {
         Assert.assertTrue("Given rule is not an XrTestRule", rule instanceof XrTestRule);
-        return RuleChain
-                .outerRule(new XrActivityRestrictionRule(((XrTestRule) rule).getRestriction()))
+        return RuleChain.outerRule(
+                        new XrActivityRestrictionRule(((XrTestRule) rule).getRestriction()))
                 .around(rule);
     }
 

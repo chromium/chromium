@@ -4,9 +4,10 @@
 
 package org.chromium.device;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.FeatureMap;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 /**
  * Java accessor for base::Features listed in {@link DeviceFeatureList}

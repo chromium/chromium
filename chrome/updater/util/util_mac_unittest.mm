@@ -7,7 +7,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "chrome/updater/test_scope.h"
+#include "chrome/updater/updater_branding.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 
@@ -30,6 +33,18 @@ TEST(UtilTest, ConfirmFilePermissionsTest) {
 
   EXPECT_TRUE(
       updater::ConfirmFilePermissions(temp_dir_.GetPath(), kPermissionsMask));
+}
+
+TEST(UtilTest, GetCacheBaseDirectoryTest) {
+  absl::optional<base::FilePath> path(GetCacheBaseDirectory(GetTestScope()));
+  ASSERT_TRUE(path);
+
+  EXPECT_EQ(path->BaseName().value(),
+            FILE_PATH_LITERAL(MAC_BUNDLE_IDENTIFIER_STRING));
+  base::FilePath remaining_path(path->DirName());
+  EXPECT_EQ(remaining_path.BaseName().value(), FILE_PATH_LITERAL("Caches"));
+  remaining_path = remaining_path.DirName();
+  EXPECT_EQ(remaining_path.BaseName().value(), FILE_PATH_LITERAL("Library"));
 }
 
 }  // namespace updater

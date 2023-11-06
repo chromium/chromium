@@ -10,6 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
@@ -27,6 +28,8 @@ class TabGroupId;
 
 // A limited subset of TabDragContext for use by non-TabDragController clients.
 class TabDragContextBase : public views::View {
+  METADATA_HEADER(TabDragContextBase, views::View)
+
  public:
   ~TabDragContextBase() override = default;
 
@@ -52,6 +55,8 @@ class TabDragContextBase : public views::View {
 // Provides tabstrip functionality specifically for TabDragController, much of
 // which should not otherwise be in TabStrip's public interface.
 class TabDragContext : public TabDragContextBase {
+  METADATA_HEADER(TabDragContext, TabDragContextBase)
+
  public:
   ~TabDragContext() override = default;
 

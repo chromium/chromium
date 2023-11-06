@@ -149,12 +149,14 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
       CreateSharedImage(format, size, color_space, surface_origin, alpha_type,
                         usage, std::move(debug_label), buffer_handle.Clone());
 
-  GpuMemoryBufferHandleInfo handle_info(std::move(buffer_handle), format, size,
-                                        buffer_usage);
-  // Cache the handle info in the map.
+  auto gpu_memory_buffer =
+      SharedImageInterface::CreateGpuMemoryBufferForUseByScopedMapping(
+          GpuMemoryBufferHandleInfo(std::move(buffer_handle), format, size,
+                                    buffer_usage));
+  // Cache the buffer in the map.
   {
     base::AutoLock lock(lock_);
-    mailbox_infos_[mailbox].handle_info = handle_info;
+    mailbox_infos_[mailbox].gpu_memory_buffer = std::move(gpu_memory_buffer);
   }
   return mailbox;
 }
@@ -626,17 +628,16 @@ void SharedImageInterfaceProxy::NotifyMailboxAdded(const Mailbox& mailbox,
   AddMailbox(mailbox, usage);
 }
 
-GpuMemoryBufferHandleInfo
-SharedImageInterfaceProxy::GetGpuMemoryBufferHandleInfo(
+gfx::GpuMemoryBuffer* SharedImageInterfaceProxy::GetGpuMemoryBuffer(
     const Mailbox& mailbox) {
   base::AutoLock lock(lock_);
   auto it = mailbox_infos_.find(mailbox);
 
-  // Mailbox for which query is made must be present. Handle info must also be
+  // Mailbox for which query is made must be present. GMB must also be
   // present as it should be populated while creating the mailbox.
   CHECK(it != mailbox_infos_.end());
-  CHECK(it->second.handle_info);
-  return it->second.handle_info.value();
+  CHECK(it->second.gpu_memory_buffer);
+  return it->second.gpu_memory_buffer.get();
 }
 
 SharedImageInterfaceProxy::SharedImageInfo::SharedImageInfo() = default;

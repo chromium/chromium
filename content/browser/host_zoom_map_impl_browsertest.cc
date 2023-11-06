@@ -35,6 +35,7 @@ class HostZoomMapImplBrowserTest : public ContentBrowserTest {
     host_zoom_map_impl_ = static_cast<HostZoomMapImpl*>(
         HostZoomMap::GetForWebContents(shell()->web_contents()));
   }
+  void TearDownOnMainThread() override { host_zoom_map_impl_ = nullptr; }
 
   void RunTestForURL(double host_zoom_level, double temp_zoom_level) {
     WebContents* web_contents = shell()->web_contents();
@@ -62,7 +63,7 @@ class HostZoomMapImplBrowserTest : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 
   // Instance of HostZoomMapImpl for convenience in tests.
-  raw_ptr<HostZoomMapImpl, DanglingUntriaged> host_zoom_map_impl_;
+  raw_ptr<HostZoomMapImpl> host_zoom_map_impl_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -82,6 +83,12 @@ class HostZoomMapImplBrowserTestWithRDS : public HostZoomMapImplBrowserTest {
     base::FieldTrialParams params{{"desktop_site_zoom_scale", "1.3"}};
     feature_list_.InitAndEnableFeatureWithParameters(
         features::kRequestDesktopSiteZoom, params);
+  }
+
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HostZoomMapImplBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
   }
 };
 

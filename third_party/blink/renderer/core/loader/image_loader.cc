@@ -522,7 +522,7 @@ void ImageLoader::DoUpdateFromElement(
           RuntimeEnabledFeatures::SharedStorageAPIM118Enabled(
               GetElement()->GetExecutionContext()) &&
           GetElement()->GetExecutionContext()->IsSecureContext();
-      resource_request.SetSharedStorageWritable(shared_storage_writable);
+      resource_request.SetSharedStorageWritableOptedIn(shared_storage_writable);
     }
 
     bool page_is_being_dismissed =

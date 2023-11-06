@@ -89,9 +89,6 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   std::unique_ptr<content_settings::PageSpecificContentSettings::Delegate>
   GetPageSpecificContentSettingsDelegate() override;
 
-  bool IsTrackingProtection3pcdEnabled() override;
-  bool AreAllThirdPartyCookiesBlocked() override;
-
 #if BUILDFLAG(IS_ANDROID)
   const std::u16string GetClientApplicationName() override;
 #endif

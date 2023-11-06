@@ -14,6 +14,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/desktop_resizer.h"
 #include "remoting/host/linux/x11_util.h"
+#include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/randr.h"
 
 namespace remoting {

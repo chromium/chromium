@@ -42,7 +42,7 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
 
   LayoutBox* LayoutObjectInFlowThread() const {
     NOT_DESTROYED();
-    return layout_object_in_flow_thread_;
+    return layout_object_in_flow_thread_.Get();
   }
   void MarkForLayoutIfObjectInFlowThreadNeedsLayout() {
     NOT_DESTROYED();

@@ -1,0 +1,48 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "safebrowsing.advanced_protection_allowed": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: true",
+        "policies": {
+          "AdvancedProtectionAllowed": true
+        },
+        "prefs": {
+          "safebrowsing.advanced_protection_allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "Check the policy value: false",
+        "policies": {
+          "AdvancedProtectionAllowed": false
+        },
+        "prefs": {
+          "safebrowsing.advanced_protection_allowed": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

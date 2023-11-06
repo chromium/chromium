@@ -2,7 +2,7 @@ include_rules = [
   "+ios/chrome/browser/history",
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/sessions",
-  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/sync/model",
 ]

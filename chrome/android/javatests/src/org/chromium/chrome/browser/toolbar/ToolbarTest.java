@@ -62,9 +62,7 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.UiRestriction;
 
-/**
- * Tests for toolbar manager behavior.
- */
+/** Tests for toolbar manager behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -80,31 +78,37 @@ public class ToolbarTest {
     }
 
     private void findInPageFromMenu() {
-        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), R.id.find_in_page_id);
+        MenuUtils.invokeCustomMenuActionSync(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                R.id.find_in_page_id);
 
         waitForFindInPageVisibility(true);
     }
 
     private void waitForFindInPageVisibility(final boolean visible) {
-        CriteriaHelper.pollUiThread(() -> {
-            FindToolbar findToolbar =
-                    (FindToolbar) mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
-            if (visible) {
-                Criteria.checkThat(findToolbar, Matchers.notNullValue());
-                Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
-            } else {
-                if (findToolbar == null) return;
-                Criteria.checkThat(findToolbar.isShown(), Matchers.is(false));
-            }
-            Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    FindToolbar findToolbar =
+                            (FindToolbar)
+                                    mActivityTestRule.getActivity().findViewById(R.id.find_toolbar);
+                    if (visible) {
+                        Criteria.checkThat(findToolbar, Matchers.notNullValue());
+                        Criteria.checkThat(findToolbar.isShown(), Matchers.is(true));
+                    } else {
+                        if (findToolbar == null) return;
+                        Criteria.checkThat(findToolbar.isShown(), Matchers.is(false));
+                    }
+                    Criteria.checkThat(findToolbar.isAnimating(), Matchers.is(false));
+                });
     }
 
     private boolean isErrorPage(final Tab tab) {
         final boolean[] isShowingError = new boolean[1];
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { isShowingError[0] = tab.isShowingErrorPage(); });
+                () -> {
+                    isShowingError[0] = tab.isShowingErrorPage();
+                });
         return isShowingError[0];
     }
 
@@ -118,19 +122,22 @@ public class ToolbarTest {
         scrimCoordinator.disableAnimationForTesting(true);
 
         assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
-        assertFalse("All tabs should not currently be obscured.",
+        assertFalse(
+                "All tabs should not currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(true, 0));
 
         assertNotNull("The scrim should not be null.", scrimCoordinator.getViewForTesting());
-        assertTrue("All tabs should currently be obscured.",
+        assertTrue(
+                "All tabs should currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());
 
         ThreadUtils.runOnUiThreadBlocking(() -> toolbarManager.setUrlBarFocus(false, 0));
 
         assertNull("The scrim should be null.", scrimCoordinator.getViewForTesting());
-        assertFalse("All tabs should not currently be obscured.",
+        assertFalse(
+                "All tabs should not currently be obscured.",
                 activity.getTabObscuringHandler().isTabContentObscured());
     }
 
@@ -138,8 +145,9 @@ public class ToolbarTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1230091")
     public void testNTPNavigatesToErrorPageOnDisconnectedNetwork() {
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         String testUrl = testServer.getURL(TEST_PAGE);
 
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -183,24 +191,28 @@ public class ToolbarTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), activity, false, true);
         // Verify that the omnibox is focused when the NTP is loaded.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activity.getToolbarManager()
-                                       .getLocationBarForTesting()
-                                       .getOmniboxStub()
-                                       .isUrlBarFocused(),
-                    Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getToolbarManager()
+                                    .getLocationBarForTesting()
+                                    .getOmniboxStub()
+                                    .isUrlBarFocused(),
+                            Matchers.is(true));
+                });
 
         // Navigate away from the NTP.
         mActivityTestRule.loadUrl(UrlConstants.GOOGLE_URL);
         // Verify that the omnibox is unfocused on exit from the NTP.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activity.getToolbarManager()
-                                       .getLocationBarForTesting()
-                                       .getOmniboxStub()
-                                       .isUrlBarFocused(),
-                    Matchers.is(false));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getToolbarManager()
+                                    .getLocationBarForTesting()
+                                    .getOmniboxStub()
+                                    .isUrlBarFocused(),
+                            Matchers.is(false));
+                });
     }
 
     @Test
@@ -221,12 +233,14 @@ public class ToolbarTest {
         LayoutTestUtils.waitForLayout(activity.getLayoutManager(), LayoutType.BROWSING);
 
         // Verify that the omnibox is focused when the NTP is loaded.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activity.getToolbarManager()
-                                       .getLocationBarForTesting()
-                                       .getOmniboxStub()
-                                       .isUrlBarFocused(),
-                    Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            activity.getToolbarManager()
+                                    .getLocationBarForTesting()
+                                    .getOmniboxStub()
+                                    .isUrlBarFocused(),
+                            Matchers.is(true));
+                });
     }
 }

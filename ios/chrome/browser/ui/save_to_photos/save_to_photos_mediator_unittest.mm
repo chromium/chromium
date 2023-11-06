@@ -14,8 +14,8 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/photos/photos_metrics.h"
-#import "ios/chrome/browser/photos/photos_service_factory.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -39,8 +39,6 @@
 
 namespace {
 
-NSString* const kGooglePhotosAppProductIdentifier = @"962194608";
-
 // Fake image URL.
 const char kFakeImageUrl[] = "http://example.com/image.png";
 
@@ -62,13 +60,6 @@ NSString* GetFakeImageSize() {
 NSString* GetFakeImageName() {
   return base::SysUTF8ToNSString(GURL(kFakeImageUrl).ExtractFileName());
 }
-
-// URL to open the Google Photos app.
-NSString* const kGooglePhotosRecentlyAddedURLString =
-    @"https://photos.google.com/search/_tra_?obfsgid=";
-
-// URL Scheme to test whether the Google Photos app is installed.
-NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
 // Returns the URL to test whether the Google Photos app is installed.
 NSURL* GetGooglePhotosAppURL() {
@@ -223,8 +214,9 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
-  browser_state_->GetPrefs()->SetString(prefs::kIosSaveToPhotosDefaultGaiaId,
-                                        "");
+  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  browser_state_->GetPrefs()->ClearPref(
+      prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -256,7 +248,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
         EXPECT_NSEQ(expected_ask_every_time_switch_label_text,
                     configuration.askEveryTimeSwitchLabelText);
         return YES;
-      }]]);
+      }]
+                        selectedIdentity:nil]);
 
   // Start the mediator and run until the image has been fetched and
   // processed by the mediator.
@@ -276,10 +269,13 @@ TEST_F(SaveToPhotosMediatorTest,
   // The feature requires the user being signed-in.
   SignIn();
 
-  // This test assumes there is no default account memorized for Save to Photos.
+  // This test assumes there is a default account memorized for Save to Photos
+  // and that the user opted-in skipping the account picker.
   browser_state_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_.gaiaID).c_str());
+  browser_state_->GetPrefs()->SetBoolean(
+      prefs::kIosSaveToPhotosSkipAccountPicker, true);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -538,7 +534,8 @@ TEST_F(SaveToPhotosMediatorTest,
   // Expect that the mediator tries to show StoreKit with the expected product
   // identifier.
   OCMExpect([mock_save_to_photos_mediator_delegate
-      showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier]);
+      showStoreKitWithProductIdentifier:kGooglePhotosAppProductIdentifier
+                          campaignToken:kGooglePhotosStoreKitCampaignToken]);
 
   // Simulate the user tapped the "Open" button.
   savedMessageAction();

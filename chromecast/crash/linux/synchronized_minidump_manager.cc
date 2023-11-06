@@ -85,7 +85,8 @@ base::Time GetRatelimitPeriodStart(
 
   // Return value of 0 indicates "not initialized", so we need to explicitly
   // check for it and return time_t = 0 equivalent.
-  return *seconds ? base::Time::FromDoubleT(*seconds) : base::Time::UnixEpoch();
+  return *seconds ? base::Time::FromSecondsSinceUnixEpoch(*seconds)
+                  : base::Time::UnixEpoch();
 }
 
 // Sets the time of the current ratelimit period's start in |metadata| to
@@ -98,7 +99,7 @@ bool SetRatelimitPeriodStart(absl::optional<base::Value::Dict>& metadata,
   RCHECK(ratelimit_params, false);
 
   ratelimit_params->Set(kLockfileRatelimitPeriodStartKey,
-                        period_start.ToDoubleT());
+                        period_start.InSecondsFSinceUnixEpoch());
   return true;
 }
 
@@ -446,7 +447,7 @@ bool SynchronizedMinidumpManager::CanUploadDump() {
   // close to 0.
   if (period_dumps_count < 0 ||
       (cur_time < period_start &&
-       cur_time.ToDoubleT() > kRatelimitPeriodSeconds) ||
+       cur_time.InSecondsFSinceUnixEpoch() > kRatelimitPeriodSeconds) ||
       (cur_time - period_start).InSeconds() >= kRatelimitPeriodSeconds) {
     ResetRateLimitPeriod();
     return true;

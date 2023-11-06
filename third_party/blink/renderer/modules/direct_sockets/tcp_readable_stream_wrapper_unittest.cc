@@ -52,7 +52,7 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
         script_state,
         WTF::BindOnce(&StreamCreator::Close, WrapWeakPersistent(this)),
         std::move(data_pipe_consumer));
-    return stream_wrapper_;
+    return stream_wrapper_.Get();
   }
 
   void ResetPipe() { data_pipe_producer_.reset(); }

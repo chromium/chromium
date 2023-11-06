@@ -12,9 +12,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Tests logic in the {@link DisplayUtil} class.
- */
+/** Tests logic in the {@link DisplayUtil} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class DisplayUtilTest {
     @Test
@@ -27,26 +25,41 @@ public class DisplayUtilTest {
         displayMetrics.widthPixels = 100;
         displayMetrics.heightPixels = 100;
 
-        int scaledUpDensity = (int) (DisplayMetrics.DENSITY_DEFAULT
-                * DisplayUtil.getUiScalingFactorForAutomotive());
+        int scaledUpDensity =
+                (int)
+                        (DisplayMetrics.DENSITY_DEFAULT
+                                * DisplayUtil.getUiScalingFactorForAutomotive());
         DisplayUtil.scaleUpDisplayMetricsForAutomotive(displayMetrics);
-        assertEquals("The DisplayMetrics density should be scaled up by the "
+        assertEquals(
+                "The DisplayMetrics density should be scaled up by the "
                         + "automotive scale-up factor.",
-                DisplayUtil.getUiScalingFactorForAutomotive(), displayMetrics.density, 0.1f);
-        assertEquals("The DisplayMetrics densityDpi should be scaled up by the "
+                DisplayUtil.getUiScalingFactorForAutomotive(),
+                displayMetrics.density,
+                0.1f);
+        assertEquals(
+                "The DisplayMetrics densityDpi should be scaled up by the "
                         + "automotive scale-up factor.",
-                scaledUpDensity, displayMetrics.densityDpi);
-        assertEquals("The DisplayMetrics xdpi should be scaled up by the "
+                scaledUpDensity,
+                displayMetrics.densityDpi);
+        assertEquals(
+                "The DisplayMetrics xdpi should be scaled up by the "
                         + "automotive scale-up factor.",
-                scaledUpDensity, (int) displayMetrics.xdpi);
-        assertEquals("The DisplayMetrics ydpi should be scaled up by the "
+                scaledUpDensity,
+                (int) displayMetrics.xdpi);
+        assertEquals(
+                "The DisplayMetrics ydpi should be scaled up by the "
                         + "automotive scale-up factor.",
-                scaledUpDensity, (int) displayMetrics.ydpi);
-        assertEquals("The DisplayMetrics widthPixels should not be affected by the "
+                scaledUpDensity,
+                (int) displayMetrics.ydpi);
+        assertEquals(
+                "The DisplayMetrics widthPixels should not be affected by the "
                         + "automotive scale-up factor.",
-                100, displayMetrics.widthPixels);
-        assertEquals("The DisplayMetrics heightPixels should not be affected by the "
+                100,
+                displayMetrics.widthPixels);
+        assertEquals(
+                "The DisplayMetrics heightPixels should not be affected by the "
                         + "automotive scale-up factor.",
-                100, displayMetrics.heightPixels);
+                100,
+                displayMetrics.heightPixels);
     }
 }

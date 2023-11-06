@@ -391,6 +391,98 @@ void FedCmMetrics::RecordNumRequestsPerDocument(const int num_requests) {
                               num_requests);
 }
 
+void FedCmMetrics::RecordRevokeStatus(FedCmRevokeStatus status) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetStatus_Revoke2(static_cast<int>(status));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Status.Revoke2", status);
+}
+
+void FedCmMetrics::RecordErrorDialogResult(FedCmErrorDialogResult result) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetError_ErrorDialogResult(static_cast<int>(result));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogResult", result);
+}
+
+void FedCmMetrics::RecordErrorDialogType(
+    IdpNetworkRequestManager::FedCmErrorDialogType type) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetError_ErrorDialogType(static_cast<int>(type));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorDialogType", type);
+}
+
+void FedCmMetrics::RecordTokenResponseTypeMetrics(
+    IdpNetworkRequestManager::FedCmTokenResponseType type) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetError_TokenResponseType(static_cast<int>(type));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  RecordUkm(fedcm_builder);
+
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.TokenResponseType", type);
+}
+
+void FedCmMetrics::RecordErrorUrlTypeMetrics(
+    IdpNetworkRequestManager::FedCmErrorUrlType type) {
+  if (is_disabled_) {
+    return;
+  }
+  auto RecordUkm = [&](auto& ukm_builder) {
+    ukm_builder.SetError_ErrorUrlType(static_cast<int>(type));
+    ukm_builder.SetFedCmSessionID(session_id_);
+    ukm_builder.Record(ukm::UkmRecorder::Get());
+  };
+  // We do not record the RP-keyed equivalent because the error URL is passed by
+  // the IDP.
+  ukm::builders::Blink_FedCmIdp fedcm_idp_builder(provider_source_id_);
+  RecordUkm(fedcm_idp_builder);
+
+  base::UmaHistogramEnumeration("Blink.FedCm.Error.ErrorUrlType", type);
+}
+
 void RecordPreventSilentAccess(RenderFrameHost& rfh,
                                PreventSilentAccessFrameType frame_type) {
   base::UmaHistogramEnumeration("Blink.FedCm.PreventSilentAccessFrameType",
@@ -434,6 +526,11 @@ void RecordAccountsResponseInvalidReason(
     IdpNetworkRequestManager::AccountsResponseInvalidReason reason) {
   base::UmaHistogramEnumeration(
       "Blink.FedCm.Status.AccountsResponseInvalidReason", reason);
+}
+
+void RecordSetLoginStatusIgnoredReason(
+    FedCmSetLoginStatusIgnoredReason reason) {
+  base::UmaHistogramEnumeration("Blink.FedCm.SetLoginStatusIgnored", reason);
 }
 
 }  // namespace content

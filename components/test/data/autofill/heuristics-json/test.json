@@ -186,6 +186,50 @@
          } ],
          "form_signature": "15986057706235728642"
       }, {
+         "__comment__": "Regression test for b/299184378; two consecutive name on card fields can be recognized",
+         "fields": [ {
+            "field_position": 0,
+            "field_signature": "3606557171",
+            "id": "26181089576506062333_3606557171_0",
+            "label_attr": "Name on card",
+            "last_classification": "CREDIT_CARD_NAME_FULL",
+            "last_correctness": "correct",
+            "name_attr": "creditCardName",
+            "tester_type": [ "CREDIT_CARD_NAME_FULL" ],
+            "type_attr": "text"
+         }, {
+            "field_position": 1,
+            "field_signature": "3606557171",
+            "id": "26181089576506062333_3606557171_1",
+            "label_attr": "Name on card",
+            "last_classification": "CREDIT_CARD_NAME_FULL",
+            "last_correctness": "correct",
+            "name_attr": "creditCardName",
+            "tester_type": [ "CREDIT_CARD_NAME_FULL" ],
+            "type_attr": "text"
+         }, {
+            "field_position": 2,
+            "field_signature": "1266406126",
+            "id": "26181089576506062333_1266406126_0",
+            "label_attr": "Credit card number",
+            "last_classification": "CREDIT_CARD_NUMBER",
+            "last_correctness": "correct",
+            "name_attr": "cardNumber",
+            "tester_type": [ "CREDIT_CARD_NUMBER" ],
+            "type_attr": "tel"
+         }, {
+            "field_position": 3,
+            "field_signature": "562574980",
+            "id": "26181089576506062333_562574980_0",
+            "label_attr": "CVV",
+            "last_classification": "CREDIT_CARD_VERIFICATION_CODE",
+            "last_correctness": "correct",
+            "name_attr": "cvvControl",
+            "tester_type": [ "CREDIT_CARD_VERIFICATION_CODE" ],
+            "type_attr": "tel"
+         } ],
+         "form_signature": "26181089576506062333"
+      }, {
          "fields": [ {
             "field_position": 0,
             "field_signature": "1266406126",
@@ -247,8 +291,8 @@
    } ],
    "stats": {
       "high_level_stats": {
-         "fraction_machtes": 0.9473684210526315,
-         "matches": 18,
+         "fraction_machtes": 0.9565217391304348,
+         "matches": 22,
          "mismatches": 1
       },
       "ignored_types_stats": {
@@ -288,17 +332,17 @@
          },
          "CREDIT_CARD_NAME_FULL": {
             "fraction_machtes": 1.0,
-            "matches": 1,
+            "matches": 3,
             "mismatches": 0
          },
          "CREDIT_CARD_NUMBER": {
             "fraction_machtes": 1.0,
-            "matches": 1,
+            "matches": 2,
             "mismatches": 0
          },
          "CREDIT_CARD_VERIFICATION_CODE": {
             "fraction_machtes": 1.0,
-            "matches": 1,
+            "matches": 2,
             "mismatches": 0
          },
          "NAME_FIRST": {

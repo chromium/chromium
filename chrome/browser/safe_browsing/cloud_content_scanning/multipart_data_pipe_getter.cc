@@ -85,7 +85,7 @@ void MultipartDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
                                                 base::BlockingType::MAY_BLOCK);
 
   if (data_) {
-    munmap(data_.ExtractAsDangling(), length_);
+    munmap(data_, length_);
   }
   data_ = nullptr;
   length_ = 0;

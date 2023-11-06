@@ -62,7 +62,7 @@ class CONTENT_EXPORT IndexedDBConnectionCoordinator {
   // pending connection.
   void OnVersionChangeIgnored();
 
-  void CreateAndBindUpgradeTransaction();
+  void BindVersionChangeTransactionReceiver();
 
   void OnUpgradeTransactionStarted(int64_t old_version);
 

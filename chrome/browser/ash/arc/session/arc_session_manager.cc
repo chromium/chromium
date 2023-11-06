@@ -999,10 +999,8 @@ bool ArcSessionManager::IsPlaystoreLaunchRequestedForTesting() const {
 
 void ArcSessionManager::OnVmStarted(
     const vm_tools::concierge::VmStartedSignal& vm_signal) {
-  // When an ARCVM starts, store the vm info.
+  // When ARCVM starts, register GuestOsMountProvider for Play files.
   if (vm_signal.name() == kArcVmName) {
-    vm_info_ = vm_signal.vm_info();
-
     if (arcvm_mount_provider_id_.has_value()) {
       // An old instance of ArcMountProvider can remain registered if the
       // previous ARC session did not finish normally and OnVmStopped() was not
@@ -1018,16 +1016,14 @@ void ArcSessionManager::OnVmStarted(
             guest_os::GuestOsService::GetForProfile(profile())
                 ->MountProviderRegistry()
                 ->Register(std::make_unique<ArcMountProvider>(
-                    profile(), vm_info_->cid())));
+                    profile(), vm_signal.vm_info().cid())));
   }
 }
 
 void ArcSessionManager::OnVmStopped(
     const vm_tools::concierge::VmStoppedSignal& vm_signal) {
-  // When an ARCVM stops, clear the stored vm info.
+  // When ARCVM stops, unregister GuestOsMountProvider for Play files.
   if (vm_signal.name() == kArcVmName) {
-    vm_info_ = absl::nullopt;
-
     if (arcvm_mount_provider_id_.has_value()) {
       guest_os::GuestOsService::GetForProfile(profile())
           ->MountProviderRegistry()
@@ -1035,11 +1031,6 @@ void ArcSessionManager::OnVmStopped(
       arcvm_mount_provider_id_.reset();
     }
   }
-}
-
-const absl::optional<vm_tools::concierge::VmInfo>&
-ArcSessionManager::GetVmInfo() const {
-  return vm_info_;
 }
 
 bool ArcSessionManager::RequestEnableImpl() {

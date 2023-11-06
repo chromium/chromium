@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL User allows access, check that success callback is called or error callback is called with correct code. assert_equals: [code: PERMISSION_DENIED (1), message: User denied Geolocation] expected 2 but got 1
-Harness: the test ran to completion.
-

@@ -6,14 +6,16 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Bindings should only generate locations for an inline script (style) if the location is inside of the inline script (style).\n`);
   await TestRunner.showPanel('sources');
 
   await TestRunner.navigatePromise('../bindings/resources/inline-style.html');
-  const source = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.projectTypes.Network);
+  const source = await TestRunner.waitForUISourceCode('inline-style.html', Workspace.Workspace.projectTypes.Network);
   const { content } = await source.requestContent();
   TestRunner.addResult(`Content:\n${content}`);
   const sourceText = new TextUtils.Text.Text(content);
@@ -33,9 +35,9 @@ import * as TextUtils from 'devtools/models/text_utils/text_utils.js';
     }
     async function getLocations(line) {
       if (type === "css")
-        return Bindings.cssWorkspaceBinding.uiLocationToRawLocations(source.uiLocation(line, 0));
+        return Bindings.CSSWorkspaceBinding.CSSWorkspaceBinding.instance().uiLocationToRawLocations(source.uiLocation(line, 0));
       if (type === "script")
-        return await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(source, line, 0);
+        return await Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().uiLocationToRawLocations(source, line, 0);
       return null;
     }
     async function checkValidity(location) {

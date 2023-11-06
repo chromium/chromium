@@ -733,7 +733,7 @@ String FontDescription::ToString() const {
       "family_list=[%s], feature_settings=[%s], variation_settings=[%s], "
       "locale=%s, "
       "specified_size=%f, computed_size=%f, adjusted_size=%f, "
-      "size_adjust=%f, letter_spacing=%f, word_spacing=%f, "
+      "size_adjust=%s, letter_spacing=%f, word_spacing=%f, "
       "font_selection_request=[%s], "
       "typesetting_features=[%s], "
       "orientation=%s, width_variant=%s, variant_caps=%s, "
@@ -753,8 +753,9 @@ String FontDescription::ToString() const {
       // hyphenation and script. Consider adding a more detailed
       // string method.
       (locale_ ? locale_->LocaleString().Ascii().c_str() : ""), specified_size_,
-      computed_size_, adjusted_size_, size_adjust_.Value(), letter_spacing_,
-      word_spacing_, font_selection_request_.ToString().Ascii().c_str(),
+      computed_size_, adjusted_size_, size_adjust_.ToString().Ascii().c_str(),
+      letter_spacing_, word_spacing_,
+      font_selection_request_.ToString().Ascii().c_str(),
       blink::ToString(
           static_cast<TypesettingFeatures>(fields_.typesetting_features_))
           .Ascii()

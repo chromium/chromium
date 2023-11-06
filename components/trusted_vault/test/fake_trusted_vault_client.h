@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 
@@ -64,7 +65,10 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
         gaia_id_to_recovery_methods_;
   };
 
-  FakeTrustedVaultClient();
+  // If `auto_complete_requests` set to true, CompleteAllPendingRequests will be
+  // invoked automatically (in a dedicated task) upon FetchKeys() and
+  // GetIsRecoverabilityDegraded() calls.
+  explicit FakeTrustedVaultClient(bool auto_complete_requests = false);
   ~FakeTrustedVaultClient() override;
 
   FakeServer* server() { return &server_; }
@@ -94,7 +98,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   // requests.
   bool CompleteAllPendingRequests();
 
-  void SetIsRecoverabilityDegraded(bool is_recoverability_degraded);
+  // When set to true, implementation will start to report that recoverability
+  // is degraded if no recovery method present in the `server_`.
+  void SetIsRecoveryMethodRequired(bool is_recovery_method_required);
 
   // TrustedVaultClient implementation.
   void AddObserver(Observer* observer) override;
@@ -126,6 +132,10 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
     std::vector<std::vector<uint8_t>> keys;
   };
 
+  void PostCompleteAllPendingRequests();
+
+  const bool auto_complete_requests_;
+
   FakeServer server_;
 
   std::map<std::string, CachedKeysPerUser> gaia_id_to_cached_keys_;
@@ -135,7 +145,9 @@ class FakeTrustedVaultClient : public TrustedVaultClient {
   int get_is_recoverablity_degraded_call_count_ = 0;
   int server_request_count_ = 0;
   std::vector<base::OnceClosure> pending_responses_;
-  bool is_recoverability_degraded_ = false;
+  bool is_recovery_method_required_ = false;
+
+  base::WeakPtrFactory<FakeTrustedVaultClient> weak_ptr_factory_{this};
 };
 
 }  // namespace trusted_vault

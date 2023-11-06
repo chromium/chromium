@@ -35,10 +35,10 @@ namespace {
 
 using SliderType = UnifiedSliderBubbleController::SliderType;
 
-// The padding of QsRevamp toast.
+// The padding of slider toast.
 constexpr auto kQsSliderToastPadding = gfx::Insets::TLBR(8, 8, 8, 12);
 constexpr auto kQsToggleToastPadding = gfx::Insets(12);
-// The rounded corner radius of the QsRevamp `bubble_view_`.
+// The rounded corner radius of the `bubble_view_`.
 constexpr int kQsToastCornerRadius = 28;
 
 // Return true if a system tray bubble is shown in any display.
@@ -53,23 +53,19 @@ bool IsAnyMainBubbleShown() {
 
 void ConfigureSliderViewStyle(UnifiedSliderView* slider_view,
                               SliderType slider_type) {
-  if (features::IsQsRevampEnabled()) {
-    // Toggle toast has only a button and label. Slider toast has a slider, a
-    // button on the slider body, and possible trailing buttons.
-    const bool is_toggle_toast =
-        slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON ||
-        slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF;
-    auto* layout =
-        slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal,
-            is_toggle_toast ? kQsToggleToastPadding : kQsSliderToastPadding,
-            kSliderChildrenViewSpacing));
-    layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-    return;
-  }
-  slider_view->SetBorder(views::CreateEmptyBorder(kUnifiedSliderBubblePadding));
+  // Toggle toast has only a button and label. Slider toast has a slider, a
+  // button on the slider body, and possible trailing buttons.
+  const bool is_toggle_toast =
+      slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_ON ||
+      slider_type == SliderType::SLIDER_TYPE_KEYBOARD_BACKLIGHT_TOGGLE_OFF;
+  auto* layout =
+      slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          is_toggle_toast ? kQsToggleToastPadding : kQsSliderToastPadding,
+          kSliderChildrenViewSpacing));
+  layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 }
 
 // Returns whether the `VideoConferenceTray` should be shown.
@@ -235,16 +231,15 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   }
 
   bool is_audio_slider = slider_type == SLIDER_TYPE_MIC;
-  // For QsRevamp: both the volume slider and mic gain slider will be shown in
+  // both the volume slider and mic gain slider will be shown in
   // `AudioDetailedView`.
-  if (features::IsQsRevampEnabled()) {
-    is_audio_slider = is_audio_slider || slider_type == SLIDER_TYPE_VOLUME;
-  }
+  is_audio_slider = is_audio_slider || slider_type == SLIDER_TYPE_VOLUME;
+
   // When tray bubble is already shown, the microphone slider will get shown in
   // audio detailed view. Bail out if the audio details are already showing to
   // avoid resetting the bubble state.
-  // For QsRevamp: If already in the `AudioDetailedView`, bail out if it's
-  // either `SLIDER_TYPE_MIC` or `SLIDER_TYPE_VOLUME`.
+  // If already in the `AudioDetailedView`, bail out if it's either
+  // `SLIDER_TYPE_MIC` or `SLIDER_TYPE_VOLUME`.
   if (is_audio_slider && tray_->bubble() &&
       tray_->bubble()->ShowingAudioDetailedView()) {
     return;
@@ -312,12 +307,10 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // Use this controller as the delegate rather than the tray.
   init_params.delegate = GetWeakPtr();
 
-  if (features::IsQsRevampEnabled()) {
-    init_params.corner_radius = kQsToastCornerRadius;
-    // `bubble_view_` is fully rounded, so sets it to be true and paints the
-    // shadow on texture layer.
-    init_params.has_large_corner_radius = true;
-  }
+  init_params.corner_radius = kQsToastCornerRadius;
+  // `bubble_view_` is fully rounded, so sets it to be true and paints the
+  // shadow on texture layer.
+  init_params.has_large_corner_radius = true;
 
   bubble_view_ = new TrayBubbleView(init_params);
   bubble_view_->SetCanActivate(false);

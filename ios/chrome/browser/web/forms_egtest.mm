@@ -37,16 +37,16 @@ using testing::ElementToDismissAlert;
 namespace {
 
 // Response shown on the page of `GetDestinationUrl`.
-const char kDestinationText[] = "bar!";
+constexpr char kDestinationText[] = "bar!";
 
 // Response shown on the page of `GetGenericUrl`.
-const char kGenericText[] = "A generic page";
+constexpr char kGenericText[] = "A generic page";
 
 // Label for the button in the form.
 NSString* kSubmitButtonLabel = @"submit";
 
 // Html form template with a submission button named "submit".
-const char* kFormHtmlTemplate =
+constexpr char kFormHtmlTemplate[] =
     "<form method='post' action='%s'> submit: "
     "<input value='textfield' id='textfield' type='text'></label>"
     "<input type='submit' value='submit' id='submit'>"

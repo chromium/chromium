@@ -35,15 +35,11 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillVcnEnrollBottomSheetMediatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private AutofillVcnEnrollBottomSheetContent mContent;
-    @Mock
-    private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
-    @Mock
-    private ManagedBottomSheetController mBottomSheetController;
+    @Mock private AutofillVcnEnrollBottomSheetContent mContent;
+    @Mock private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
 
     private WindowAndroid mWindow;
     private View mContentView;
@@ -75,7 +71,7 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.requestShowContent(mWindow);
 
         verify(mBottomSheetController)
-                .requestShowContent(/*content=*/eq(mContent), /*animate=*/eq(true));
+                .requestShowContent(/* content= */ eq(mContent), /* animate= */ eq(true));
     }
 
     @Test
@@ -93,7 +89,9 @@ public final class AutofillVcnEnrollBottomSheetMediatorTest {
         mMediator.hide();
 
         verify(mBottomSheetController)
-                .hideContent(/*content=*/eq(mContent), /*animate=*/eq(true),
+                .hideContent(
+                        /* content= */ eq(mContent),
+                        /* animate= */ eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 

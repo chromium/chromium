@@ -21,7 +21,7 @@ import java.util.Set;
  * TODO(crbug.com/1451811): Update to no reference UI thread.
  * TODO(crbug.com/1158816): Document the remaining methods.
  */
-public abstract class SyncService {
+public interface SyncService {
     /**
      * Listener for the underlying sync status.
      */
@@ -39,14 +39,14 @@ public abstract class SyncService {
      *
      * @return true if the sync engine is initialized.
      */
-    public abstract boolean isEngineInitialized();
+    public boolean isEngineInitialized();
 
     /**
      * Checks whether sync machinery is active.
      *
      * @return true if the transport state is active.
      */
-    public abstract boolean isTransportStateActive();
+    public boolean isTransportStateActive();
 
     /**
      * Checks whether Sync-the-feature can (attempt to) start. This means that there is a primary
@@ -55,7 +55,7 @@ public abstract class SyncService {
      *
      * @return true if Sync can start, false otherwise.
      */
-    public abstract boolean canSyncFeatureStart();
+    public boolean canSyncFeatureStart();
 
     /**
      * Returns whether all conditions are satisfied for Sync-the-feature to start.
@@ -67,7 +67,7 @@ public abstract class SyncService {
      *
      * @return true if the sync feature is enabled.
      */
-    public abstract boolean isSyncFeatureEnabled();
+    public boolean isSyncFeatureEnabled();
 
     /**
      * Checks whether Sync-the-feature is currently active. Note that Sync-the-transport may be
@@ -75,9 +75,9 @@ public abstract class SyncService {
      *
      * @return true if Sync is active, false otherwise.
      */
-    public abstract boolean isSyncFeatureActive();
+    public boolean isSyncFeatureActive();
 
-    public abstract @GoogleServiceAuthError.State int getAuthError();
+    public @GoogleServiceAuthError.State int getAuthError();
 
     /**
      * Checks whether Sync is disabled by enterprise policy (through prefs) or account policy
@@ -85,13 +85,13 @@ public abstract class SyncService {
      *
      * @return true if Sync is disabled, false otherwise.
      */
-    public abstract boolean isSyncDisabledByEnterprisePolicy();
+    public boolean isSyncDisabledByEnterprisePolicy();
 
-    public abstract boolean hasUnrecoverableError();
+    public boolean hasUnrecoverableError();
 
-    public abstract boolean requiresClientUpgrade();
+    public boolean requiresClientUpgrade();
 
-    public abstract @Nullable CoreAccountInfo getAccountInfo();
+    public @Nullable CoreAccountInfo getAccountInfo();
 
     /**
      * Checks whether the primary account is consented to run Sync (the feature). Note that even if
@@ -99,7 +99,7 @@ public abstract class SyncService {
      *
      * @return true if the primary account is consented to Sync (the feature), false otherwise.
      */
-    public abstract boolean hasSyncConsent();
+    public boolean hasSyncConsent();
 
     /**
      * Gets the set of data types that are currently syncing.
@@ -108,7 +108,7 @@ public abstract class SyncService {
      *
      * @return ModelType set of active data types.
      */
-    public abstract Set<Integer> getActiveDataTypes();
+    public Set<Integer> getActiveDataTypes();
 
     /**
      * Gets the set of types that the user has selected.
@@ -118,13 +118,13 @@ public abstract class SyncService {
      *
      * @return UserSelectableType set of selected types.
      */
-    public abstract Set<Integer> getSelectedTypes();
+    public Set<Integer> getSelectedTypes();
 
-    public abstract boolean hasKeepEverythingSynced();
+    public boolean hasKeepEverythingSynced();
 
-    public abstract boolean isTypeManagedByPolicy(@UserSelectableType int type);
+    public boolean isTypeManagedByPolicy(@UserSelectableType int type);
 
-    public abstract boolean isTypeManagedByCustodian(@UserSelectableType int type);
+    public boolean isTypeManagedByCustodian(@UserSelectableType int type);
 
     /**
      * Enables syncing for the passed types.
@@ -134,13 +134,13 @@ public abstract class SyncService {
      * @param enabledTypes   The set of types to enable. Ignored (can be null) if
      *                       syncEverything is true.
      */
-    public abstract void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
+    public void setSelectedTypes(boolean syncEverything, Set<Integer> enabledTypes);
 
-    public abstract void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
+    public void setInitialSyncFeatureSetupComplete(int syncFirstSetupCompleteSource);
 
-    public abstract boolean isInitialSyncFeatureSetupComplete();
+    public boolean isInitialSyncFeatureSetupComplete();
 
-    public abstract void setSyncRequested();
+    public void setSyncRequested();
 
     /**
      * Instances of this class keep sync paused until {@link #close} is called. Use
@@ -160,11 +160,11 @@ public abstract class SyncService {
      * the equivalent C++ object, as Java instances don't commit sync settings as soon as any
      * instance of SyncSetupInProgressHandle is closed.
      */
-    public abstract SyncSetupInProgressHandle getSetupInProgressHandle();
+    public SyncSetupInProgressHandle getSetupInProgressHandle();
 
-    public abstract void addSyncStateChangedListener(SyncStateChangedListener listener);
+    public void addSyncStateChangedListener(SyncStateChangedListener listener);
 
-    public abstract void removeSyncStateChangedListener(SyncStateChangedListener listener);
+    public void removeSyncStateChangedListener(SyncStateChangedListener listener);
 
     /**
      * Returns the actual passphrase type being used for encryption. The sync engine must be
@@ -173,13 +173,13 @@ public abstract class SyncService {
      * This method should only be used if you want to know the raw value. For checking whether
      * we should ask the user for a passphrase, use isPassphraseRequiredForPreferredDataTypes().
      */
-    public abstract @PassphraseType int getPassphraseType();
+    public @PassphraseType int getPassphraseType();
 
     /**
      * Returns the time the current explicit passphrase was set (if any). Null if no explicit
      * passphrase is in use, or no time is available.
      */
-    public abstract @Nullable Date getExplicitPassphraseTime();
+    public @Nullable Date getExplicitPassphraseTime();
 
     /**
      * Checks if sync is currently set to use a custom passphrase (or the similar -and legacy-
@@ -188,7 +188,7 @@ public abstract class SyncService {
      *
      * @return true if sync is using a custom passphrase.
      */
-    public abstract boolean isUsingExplicitPassphrase();
+    public boolean isUsingExplicitPassphrase();
 
     /**
      * Checks if we need a passphrase to decrypt a currently-enabled data type. This returns false
@@ -196,7 +196,7 @@ public abstract class SyncService {
      *
      * @return true if we need a passphrase.
      */
-    public abstract boolean isPassphraseRequiredForPreferredDataTypes();
+    public boolean isPassphraseRequiredForPreferredDataTypes();
 
     /**
      * Checks if trusted vault encryption keys are needed, independently of the currently-enabled
@@ -204,14 +204,14 @@ public abstract class SyncService {
      *
      * @return true if we need an encryption key.
      */
-    public abstract boolean isTrustedVaultKeyRequired();
+    public boolean isTrustedVaultKeyRequired();
 
     /**
      * Checks if trusted vault encryption keys are needed to decrypt a currently-enabled data type.
      *
      * @return true if we need an encryption key for a type that is currently enabled.
      */
-    public abstract boolean isTrustedVaultKeyRequiredForPreferredDataTypes();
+    public boolean isTrustedVaultKeyRequiredForPreferredDataTypes();
 
     /**
      * Checks if recoverability of the trusted vault keys is degraded and user action is required,
@@ -219,12 +219,12 @@ public abstract class SyncService {
      *
      * @return true if recoverability is degraded.
      */
-    public abstract boolean isTrustedVaultRecoverabilityDegraded();
+    public boolean isTrustedVaultRecoverabilityDegraded();
 
     /**
      * @return Whether setting a custom passphrase is allowed.
      */
-    public abstract boolean isCustomPassphraseAllowed();
+    public boolean isCustomPassphraseAllowed();
 
     /**
      * Checks if the user has chosen to encrypt all data types. Note that some data types (e.g.
@@ -232,11 +232,11 @@ public abstract class SyncService {
      *
      * @return true if all data types are encrypted, false if only passwords are encrypted.
      */
-    public abstract boolean isEncryptEverythingEnabled();
+    public boolean isEncryptEverythingEnabled();
 
-    public abstract void setEncryptionPassphrase(String passphrase);
+    public void setEncryptionPassphrase(String passphrase);
 
-    public abstract boolean setDecryptionPassphrase(String passphrase);
+    public boolean setDecryptionPassphrase(String passphrase);
 
     /**
      * Returns whether this client has previously prompted the user for a
@@ -252,7 +252,7 @@ public abstract class SyncService {
      * @return Whether client has prompted for a passphrase error previously for
      * the current product major version.
      */
-    public abstract boolean isPassphrasePromptMutedForCurrentProductVersion();
+    public boolean isPassphrasePromptMutedForCurrentProductVersion();
 
     /**
      * Mutes passphrase error via the android system notifications until the
@@ -260,15 +260,15 @@ public abstract class SyncService {
      *
      * Can be called whether or not sync is initialized.
      */
-    public abstract void markPassphrasePromptMutedForCurrentProductVersion();
+    public void markPassphrasePromptMutedForCurrentProductVersion();
 
     /** @return Whether the user should be offered to opt in to trusted vault encryption. */
-    public abstract boolean shouldOfferTrustedVaultOptIn();
+    public boolean shouldOfferTrustedVaultOptIn();
 
     /**
      * @return Whether sync is enabled to sync urls with a non custom passphrase.
      */
-    public abstract boolean isSyncingUnencryptedUrls();
+    public boolean isSyncingUnencryptedUrls();
 
     /**
      * Returns the time when the last sync cycle was completed.
@@ -277,15 +277,15 @@ public abstract class SyncService {
      * and 1 January 1970 00:00:00 UTC.
      */
     @VisibleForTesting
-    public abstract long getLastSyncedTimeForDebugging();
+    public long getLastSyncedTimeForDebugging();
 
     @VisibleForTesting
-    public abstract void triggerRefresh();
+    public void triggerRefresh();
 
     /**
      * Retrieves a JSON version of local Sync data via the native GetAllNodes method.
      * This method is asynchronous; the result will be sent to the callback.
      */
     @VisibleForTesting
-    public abstract void getAllNodes(Callback<JSONArray> callback);
+    public void getAllNodes(Callback<JSONArray> callback);
 }

@@ -14,7 +14,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ESimOperationResult, ProfileInstallResult} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 
 import {assertEquals, assertTrue} from '../../../chromeos/chai_assert.js';
 
@@ -158,36 +158,25 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   }
 
   /**
-   * Simulates navigating forward to trigger a profile install.
-   * Asserts that the button_bar and page state is enabled and not busy before
-   * navigating forward. Asserts that the button_bar and page state is
-   * disabled and busy during the install.
+   * Simulates navigating forward to trigger a profile install. Asserts that the
+   * button_bar and page state is enabled before navigating forward. Asserts
+   * that the button_bar and page state is disabled during the install.
    * @param {HTMLElement} page
-   * @param {ButtonState} previousBackButtonState
    */
-  async function navigateForwardForInstall(page, previousBackButtonState) {
-    const checkShowBusyState =
-        (page !== profileDiscoveryPage && page !== finalPage);
+  async function navigateForwardForInstall(page) {
     assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
-    assertEquals(eSimPage.buttonState.backward, previousBackButtonState);
-    if (checkShowBusyState) {
-      assertFalse(page.showBusy);
-    }
+    assertEquals(eSimPage.buttonState.backward, ButtonState.HIDDEN);
 
-    // If back button is hidden before installation began, the new back button
-    // state should also be hidden, if it was enabled new back button state
-    // should be disabled while installation is taking place.
-    let newBackButtonState = ButtonState.HIDDEN;
-    if (previousBackButtonState === ButtonState.ENABLED) {
-      newBackButtonState = ButtonState.DISABLED;
-    }
     eSimPage.navigateForward();
 
     assertEquals(eSimPage.buttonState.forward, ButtonState.DISABLED);
+    assertEquals(eSimPage.buttonState.backward, ButtonState.HIDDEN);
     assertEquals(eSimPage.buttonState.cancel, ButtonState.DISABLED);
-    assertEquals(eSimPage.buttonState.backward, newBackButtonState);
-    if (checkShowBusyState) {
-      assertTrue(page.showBusy);
+
+    if (page !== profileLoadingPage && page !== profileDiscoveryConsentPage &&
+        page !== finalPage) {
+      assertEquals(
+          ESimPageName.PROFILE_INSTALLING, eSimPage.selectedESimPageName_);
     }
 
     await flushAsync();
@@ -229,9 +218,9 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
    * @param {boolean} forwardButtonShouldBeEnabled
    * @param {ButtonState} backButtonState
    */
-  function assertButtonState(forwardButtonShouldBeEnabled, backButtonState) {
+  function assertButtonState(forwardButtonShouldBeEnabled) {
     const buttonState = eSimPage.buttonState;
-    assertEquals(buttonState.backward, backButtonState);
+    assertEquals(buttonState.backward, ButtonState.HIDDEN);
     assertEquals(buttonState.cancel, ButtonState.ENABLED);
     assertEquals(
         buttonState.forward,
@@ -261,8 +250,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
     assertSelectedPage(
         ESimPageName.PROFILE_DISCOVERY_CONSENT, profileDiscoveryConsentPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled=*/ true,
-        /*backButtonState=*/ ButtonState.HIDDEN);
+        /*forwardButtonShouldBeEnabled=*/ true);
 
     // When the user clicks the "manually" link, they opt out of profile
     // discovery.
@@ -275,8 +263,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   async function assertProfileLoadingPageAndContinue() {
     assertSelectedPage(ESimPageName.PROFILE_LOADING, profileLoadingPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled=*/ false,
-        /*backButtonState=*/ ButtonState.HIDDEN);
+        /*forwardButtonShouldBeEnabled=*/ false);
     assertEquals(eSimPage.header, eSimPage.i18n('profileLoadingPageTitle'));
     assertEquals(
         profileLoadingPage.loadingMessage,
@@ -287,8 +274,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
   function assertProfileDiscoveryPage() {
     assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
     assertButtonState(
-        /*forwardButtonShouldBeEnabled*/ true,
-        /*backButtonState*/ ButtonState.HIDDEN);
+        /*forwardButtonShouldBeEnabled*/ true);
     assertEquals(eSimPage.header, eSimPage.i18n('profileDiscoveryPageTitle'));
   }
 
@@ -299,7 +285,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       assertEquals(activationCodePage.$$('#activationCode').value, '');
     }
     assertSelectedPage(ESimPageName.ACTIVATION_CODE, activationCodePage);
-    assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
+    assertButtonState(forwardButtonShouldBeEnabled);
   }
 
   function assertConfirmationCodePage(
@@ -309,7 +295,7 @@ suite(`CrComponentsEsimFlowUiTest${suiteSuffix}`, function() {
       assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
     }
     assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
-    assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
+    assertButtonState(forwardButtonShouldBeEnabled);
     assertEquals(eSimPage.header, eSimPage.i18n('confimationCodePageTitle'));
   }
 

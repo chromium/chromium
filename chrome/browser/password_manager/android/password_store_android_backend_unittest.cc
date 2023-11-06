@@ -20,16 +20,16 @@
 #include "chrome/browser/password_manager/android/fake_password_manager_lifecycle_helper.h"
 #include "chrome/browser/password_manager/android/mock_password_sync_controller_delegate_bridge.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper.h"
+#include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_dispatcher_bridge.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_receiver_bridge.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
-#include "components/password_manager/core/browser/android_backend_error.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/password_store_android_backend_api_error_codes.h"
+#include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -173,8 +173,10 @@ class MockPasswordStoreAndroidBackendBridgeHelper
     : public PasswordStoreAndroidBackendBridgeHelper {
  public:
   MOCK_METHOD(bool, CanUseGetAffiliatedPasswordsAPI, (), (override));
+  MOCK_METHOD(bool, CanUseGetAllLoginsWithBrandingInfoAPI, (), (override));
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(JobId, GetAllLogins, (Account), (override));
+  MOCK_METHOD(JobId, GetAllLoginsWithBrandingInfo, (Account), (override));
   MOCK_METHOD(JobId, GetAutofillableLogins, (Account), (override));
   MOCK_METHOD(JobId,
               GetLoginsForSignonRealm,
@@ -1508,6 +1510,8 @@ TEST_F(PasswordStoreAndroidBackendTest,
   EXPECT_CALL(*bridge_helper(), GetAllLogins).WillOnce(Return(kJobId));
 
   base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
+      .WillOnce(Return(false));
   backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
   RunUntilIdle();
 
@@ -1517,6 +1521,43 @@ TEST_F(PasswordStoreAndroidBackendTest,
   consumer().OnCompleteWithLogins(kJobId,
                                   UnwrapForms(std::move(returned_forms)));
 
+  EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       CallsBridgeForGetAllLoginsWithAffiliationAndBrandingInformation) {
+  backend().InitBackend(/*affiliated_match_helper=*/nullptr,
+                        PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  std::string TestURL1("https://example.com/");
+  PasswordFormDigest form_digest(PasswordForm::Scheme::kHtml, TestURL1,
+                                 GURL(TestURL1));
+
+  EXPECT_CALL(*bridge_helper(), CanUseGetAllLoginsWithBrandingInfoAPI)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*bridge_helper(), GetAllLoginsWithBrandingInfo(_))
+      .WillOnce(Return(kJobId));
+  backend().GetAllLoginsWithAffiliationAndBrandingAsync(mock_reply.Get());
+
+  PasswordForm android_form = CreateTestLogin(
+      kTestUsername, kTestPassword, kTestAndroidRealm, kTestDateCreated);
+  android_form.app_display_name = kTestAndroidName;
+  android_form.app_icon_url = GURL(kTestAndroidIconURL);
+  PasswordForm form =
+      CreateTestLogin(kTestUsername, kTestPassword, kTestUrl, kTestDateCreated);
+
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  expected_results.push_back(std::make_unique<PasswordForm>(android_form));
+  expected_results.push_back(std::make_unique<PasswordForm>(form));
+
+  std::vector<std::unique_ptr<PasswordForm>> returned_forms;
+  returned_forms.push_back(std::make_unique<PasswordForm>(android_form));
+  returned_forms.push_back(std::make_unique<PasswordForm>(form));
+
+  consumer().OnCompleteWithLogins(kJobId,
+                                  UnwrapForms(std::move(returned_forms)));
   EXPECT_CALL(mock_reply, Run(LoginsResultsOrErrorAre(&expected_results)));
   RunUntilIdle();
 }

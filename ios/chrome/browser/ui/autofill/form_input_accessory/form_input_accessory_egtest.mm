@@ -7,6 +7,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
@@ -36,6 +37,12 @@ constexpr char kFormCardNumber[] = "CCNo";
 constexpr char kFormCardExpirationMonth[] = "CCExpiresMonth";
 constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
 
+constexpr char kFormName[] = "form_name";
+constexpr char kFormAddress[] = "form_address";
+constexpr char kFormCity[] = "form_city";
+constexpr char kFormState[] = "form_state";
+constexpr char kFormZip[] = "form_zip";
+
 @interface FormInputAccessoryEGTest : WebHttpServerChromeTestCase
 @end
 
@@ -59,10 +66,14 @@ constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
   // Make sure a credit card suggestion is available.
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface saveLocalCreditCard];
+  // Make sure an address suggestion is available.
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface saveExampleProfile];
 }
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
+  [AutofillAppInterface clearProfilesStore];
   [PasswordManagerAppInterface clearCredentials];
   [super tearDown];
 }
@@ -77,6 +88,14 @@ constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
   }
   if ([self isRunningTest:@selector(testFillCreditCardFieldsOnForm)]) {
     config.features_disabled.push_back(kIOSPaymentsBottomSheet);
+  }
+  if ([self isRunningTest:@selector(testFillFieldOnFormWithSingleUsername)] ||
+      [self isRunningTest:@selector(testFillFieldOnFormWithSinglePassword)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordSignInUff);
+  } else {
+    config.features_disabled.push_back(
+        password_manager::features::kIOSPasswordSignInUff);
   }
   return config;
 }
@@ -107,6 +126,12 @@ constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
   // overridden for the tests to work. This will allow us to fill the textfields
   // on the web page.
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
+}
+
+// Loads simple address page on localhost.
+- (void)loadAddressPage {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/autofill_smoke_test.html")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Profile Autofill"];
 }
 
 // Verifies that field with the html `id` has been filled with `value`.
@@ -149,6 +174,35 @@ constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
   NSString* expYear = base::SysUTF16ToNSString(
       card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
   [self verifyFieldWithIdHasBeenFilled:kFormCardExpirationYear value:expYear];
+}
+
+// Verify address infos are filled.
+- (void)verifyAddressInfosHaveBeenFilled:(autofill::AutofillProfile)profile {
+  std::string locale = l10n_util::GetLocaleOverride();
+  // Address name.
+  NSString* name =
+      base::SysUTF16ToNSString(profile.GetInfo(autofill::NAME_FULL, locale));
+  [self verifyFieldWithIdHasBeenFilled:kFormName value:name];
+
+  // Street address.
+  NSString* address = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_LINE1, locale));
+  [self verifyFieldWithIdHasBeenFilled:kFormAddress value:address];
+
+  // Address City.
+  NSString* city = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_CITY, locale));
+  [self verifyFieldWithIdHasBeenFilled:kFormCity value:city];
+
+  // Address State.
+  NSString* state = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_STATE, locale));
+  [self verifyFieldWithIdHasBeenFilled:kFormState value:state];
+
+  // Address Zip
+  NSString* zip = base::SysUTF16ToNSString(
+      profile.GetInfo(autofill::ADDRESS_HOME_ZIP, locale));
+  [self verifyFieldWithIdHasBeenFilled:kFormZip value:zip];
 }
 
 #pragma mark - Tests
@@ -263,6 +317,28 @@ constexpr char kFormCardExpirationYear[] = "CCExpiresYear";
 
   // Verify that the page is filled properly.
   [self verifyCreditCardInfosHaveBeenFilled:card];
+}
+
+// Tests that tapping on an address related field opens the keyboard
+// accessory with the proper suggestion visible and that tapping on that
+// suggestion properly fills the related fields on the form.
+- (void)testFillAddressFieldsOnForm {
+  [self loadAddressPage];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
+
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
+
+  id<GREYMatcher> address_chip = grey_text(
+      base::SysUTF16ToNSString(profile.GetRawInfo(autofill::ADDRESS_HOME_ZIP)));
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:address_chip];
+
+  [[EarlGrey selectElementWithMatcher:address_chip] performAction:grey_tap()];
+
+  // Verify that the page is filled properly.
+  [self verifyAddressInfosHaveBeenFilled:profile];
 }
 
 @end

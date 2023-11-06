@@ -6,7 +6,6 @@
 #define SANDBOX_WIN_SRC_PROCESS_MITIGATIONS_WIN32K_POLICY_H_
 
 #include "sandbox/win/src/policy_low_level.h"
-#include "sandbox/win/src/sandbox_policy.h"
 
 namespace sandbox {
 
@@ -16,12 +15,9 @@ class ProcessMitigationsWin32KLockdownPolicy {
  public:
   // Creates the required low-level policy rules to evaluate a high-level
   // policy rule for the Win32K process mitigation policy.
-  // name is the object name, semantics is the desired semantics for the
-  // open or create and policy is the policy generator to which the rules are
+  // `policy` is the policy generator to which the rules are
   // going to be added.
-  static bool GenerateRules(const wchar_t* name,
-                            Semantics semantics,
-                            LowLevelPolicy* policy);
+  static bool GenerateRules(LowLevelPolicy* policy);
 };
 
 }  // namespace sandbox

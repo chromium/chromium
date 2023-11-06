@@ -225,6 +225,10 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
     web_app_install_info->manifest_url = app.GetWebAppOriginalManifestUrl();
     web_app_install_info->expected_app_id = GetAppId(app);
     web_app_install_info->manifest = std::move(*response);
+    web_app_install_info->install_source =
+        app.IsDefaultApp()
+            ? crosapi::mojom::PreloadWebAppInstallSource::kDefaultPreload
+            : crosapi::mojom::PreloadWebAppInstallSource::kOemPreload;
 
     web_app_provider_bridge->InstallPreloadWebApp(
         std::move(web_app_install_info),

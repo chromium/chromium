@@ -59,7 +59,7 @@ inline uint8_t ByteSwapIfLittleEndian(uint8_t val) {
 // This would cause SIGBUS on ARMv5 or earlier and ARMv6-M.
 template <typename T>
 inline void ReadBigEndian(const uint8_t buf[], T* out) {
-  static_assert(std::is_integral<T>::value, "T has to be an integral type.");
+  static_assert(std::is_integral_v<T>, "T has to be an integral type.");
   // Make an unsigned version of the output type to make shift possible
   // without UB.
   typename std::make_unsigned<T>::type raw;
@@ -71,7 +71,7 @@ inline void ReadBigEndian(const uint8_t buf[], T* out) {
 // Note: this loop is unrolled with -O1 and above.
 template<typename T>
 inline void WriteBigEndian(char buf[], T val) {
-  static_assert(std::is_integral<T>::value, "T has to be an integral type.");
+  static_assert(std::is_integral_v<T>, "T has to be an integral type.");
   const auto unsigned_val =
       static_cast<typename std::make_unsigned<T>::type>(val);
   const auto raw = internal::ByteSwapIfLittleEndian(unsigned_val);

@@ -781,6 +781,8 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
                                            views::style::STYLE_BODY_3_EMPHASIS)
           : std::make_unique<views::Label>(description));
   label->SetMultiLine(true);
+  // TODO(crbug.com/1495581): Remove this.
+  label->SetUseLegacyPreferredSize(true);
   label->SetHandlesTooltips(false);
   label->SetProperty(
       views::kFlexBehaviorKey,

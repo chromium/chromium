@@ -8,10 +8,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(is_chromeos_ash)
 
 mojom("mojom") {
-  sources = [ "personalization_app.mojom" ]
+  sources = [
+    "personalization_app.mojom",
+    "sea_pen.mojom",
+  ]
 
   webui_module_path = "/"
-  use_typescript_sources = true
 
   public_deps = [
     "//ash/style/mojom:color_scheme",

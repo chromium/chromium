@@ -197,7 +197,7 @@ ContentSecurityPolicy::ContentSecurityPolicy()
           mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone) {}
 
 bool ContentSecurityPolicy::IsBound() {
-  return delegate_;
+  return delegate_ != nullptr;
 }
 
 void ContentSecurityPolicy::BindToDelegate(
@@ -665,9 +665,10 @@ bool AllowResourceHintRequestForPolicy(
   // Check default-src with the given reporting disposition, to allow reporting
   // if needed.
   return CSPDirectiveListAllowFromSource(
-      csp, policy, CSPDirectiveName::DefaultSrc, url, url_before_redirects,
-      redirect_status, reporting_disposition, nonce, integrity_metadata,
-      parser_disposition);
+             csp, policy, CSPDirectiveName::DefaultSrc, url,
+             url_before_redirects, redirect_status, reporting_disposition,
+             nonce, integrity_metadata, parser_disposition)
+      .IsAllowed();
 }
 }  // namespace
 
@@ -760,18 +761,25 @@ bool ContentSecurityPolicy::AllowFromSource(
     }
   }
 
-  bool is_allowed = true;
+  CSPCheckResult result = CSPCheckResult::Allowed();
   for (const auto& policy : policies_) {
     if (!CheckHeaderTypeMatches(check_header_type, reporting_disposition,
                                 policy->header->type)) {
       continue;
     }
-    is_allowed &= CSPDirectiveListAllowFromSource(
+    result &= CSPDirectiveListAllowFromSource(
         *policy, this, type, url, url_before_redirects, redirect_status,
         reporting_disposition, nonce, hashes, parser_disposition);
   }
 
-  return is_allowed;
+  if (result.WouldBlockIfWildcardDoesNotMatchWs()) {
+    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchWs);
+  }
+  if (result.WouldBlockIfWildcardDoesNotMatchFtp()) {
+    Count(WebFeature::kCspWouldBlockIfWildcardDoesNotMatchFtp);
+  }
+
+  return result.IsAllowed();
 }
 
 bool ContentSecurityPolicy::AllowBaseURI(const KURL& url) {

@@ -219,7 +219,7 @@ AudioDestinationNode* BaseAudioContext::destination() const {
   // Cannot be called from the audio thread because this method touches objects
   // managed by Oilpan, and the audio thread is not managed by Oilpan.
   DCHECK(!IsAudioThread());
-  return destination_node_;
+  return destination_node_.Get();
 }
 
 void BaseAudioContext::WarnIfContextClosed(const AudioHandler* handler) const {
@@ -625,25 +625,25 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
       if (!periodic_wave_sine_) {
         periodic_wave_sine_ = PeriodicWave::CreateSine(sampleRate());
       }
-      return periodic_wave_sine_;
+      return periodic_wave_sine_.Get();
     case OscillatorHandler::SQUARE:
       // Initialize the table if necessary
       if (!periodic_wave_square_) {
         periodic_wave_square_ = PeriodicWave::CreateSquare(sampleRate());
       }
-      return periodic_wave_square_;
+      return periodic_wave_square_.Get();
     case OscillatorHandler::SAWTOOTH:
       // Initialize the table if necessary
       if (!periodic_wave_sawtooth_) {
         periodic_wave_sawtooth_ = PeriodicWave::CreateSawtooth(sampleRate());
       }
-      return periodic_wave_sawtooth_;
+      return periodic_wave_sawtooth_.Get();
     case OscillatorHandler::TRIANGLE:
       // Initialize the table if necessary
       if (!periodic_wave_triangle_) {
         periodic_wave_triangle_ = PeriodicWave::CreateTriangle(sampleRate());
       }
-      return periodic_wave_triangle_;
+      return periodic_wave_triangle_.Get();
     default:
       NOTREACHED();
       return nullptr;

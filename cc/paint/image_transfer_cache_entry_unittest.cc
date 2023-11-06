@@ -93,15 +93,16 @@ class ImageTransferCacheEntryTest
  public:
   void SetUp() override {
     // Initialize a GL GrContext for Skia.
-    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
-                                                  gfx::Size());
-    ASSERT_TRUE(surface_);
+    auto surface = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                      gfx::Size());
+    ASSERT_TRUE(surface);
     share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
     gl_context_ = base::MakeRefCounted<gl::GLContextEGL>(share_group_.get());
     ASSERT_TRUE(gl_context_);
-    ASSERT_TRUE(
-        gl_context_->Initialize(surface_.get(), gl::GLContextAttribs()));
-    ASSERT_TRUE(gl_context_->MakeCurrent(surface_.get()));
+    ASSERT_TRUE(gl_context_->Initialize(surface.get(), gl::GLContextAttribs()));
+    //  The surface will be stored by the gl::GLContext.
+    ASSERT_TRUE(gl_context_->default_surface());
+    ASSERT_TRUE(gl_context_->MakeCurrentDefault());
     sk_sp<GrGLInterface> gl_interface(gl::init::CreateGrGLInterface(
         *gl_context_->GetVersionInfo(), false /* use_version_es2 */));
     gr_context_ = GrDirectContexts::MakeGL(std::move(gl_interface));
@@ -162,7 +163,6 @@ class ImageTransferCacheEntryTest
   void TearDown() override {
     DeletePendingTextures();
     gr_context_.reset();
-    surface_.reset();
     gl_context_.reset();
     share_group_.reset();
   }
@@ -204,7 +204,6 @@ class ImageTransferCacheEntryTest
   }
 
   std::vector<GrBackendTexture> textures_to_free_;
-  scoped_refptr<gl::GLSurface> surface_;
   scoped_refptr<gl::GLShareGroup> share_group_;
   scoped_refptr<gl::GLContext> gl_context_;
   sk_sp<GrDirectContext> gr_context_;

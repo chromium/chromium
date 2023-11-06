@@ -5,12 +5,27 @@
 #ifndef MEDIA_FILTERS_HLS_TEST_HELPERS_H_
 #define MEDIA_FILTERS_HLS_TEST_HELPERS_H_
 
+#include "media/filters/hls_codec_detector.h"
 #include "media/filters/hls_data_source_provider.h"
 #include "media/filters/hls_rendition.h"
 #include "media/filters/manifest_demuxer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
+
+class MockCodecDetector : public HlsCodecDetector {
+ public:
+  ~MockCodecDetector() override;
+  MockCodecDetector();
+  MOCK_METHOD(void,
+              DetermineContainerAndCodec,
+              (std::unique_ptr<HlsDataSourceStream>, CodecCallback),
+              (override));
+  MOCK_METHOD(void,
+              DetermineContainerOnly,
+              (std::unique_ptr<HlsDataSourceStream> stream, CodecCallback cb),
+              (override));
+};
 
 class MockHlsDataSourceProvider : public HlsDataSourceProvider {
  public:
@@ -90,6 +105,8 @@ class MockManifestDemuxerEngineHost : public ManifestDemuxerEngineHost {
               SetGroupStartTimestamp,
               (base::StringPiece role, base::TimeDelta time),
               (override));
+  MOCK_METHOD(void, SetEndOfStream, (), (override));
+  MOCK_METHOD(void, UnsetEndOfStream, (), (override));
 };
 
 class MockHlsRenditionHost : public HlsRenditionHost {

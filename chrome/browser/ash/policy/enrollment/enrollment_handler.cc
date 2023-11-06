@@ -170,7 +170,7 @@ absl::optional<int64_t> GetPsmDeterminationTimestamp(
   // we already checked the existence of the pref with non-default value.
   DCHECK(!psm_determination_timestamp.is_null());
 
-  return psm_determination_timestamp.ToJavaTime();
+  return psm_determination_timestamp.InMillisecondsSinceUnixEpoch();
 }
 
 }  // namespace
@@ -254,14 +254,14 @@ void EnrollmentHandler::StartEnrollment() {
 
   if (client_->machine_id().empty()) {
     LOG(ERROR) << "Machine id empty.";
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::NO_MACHINE_IDENTIFICATION));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kNoMachineIdentification));
     return;
   }
   if (client_->machine_model().empty()) {
     LOG(ERROR) << "Machine model empty.";
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::NO_MACHINE_IDENTIFICATION));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kNoMachineIdentification));
     return;
   }
 
@@ -337,8 +337,8 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
       break;
     default:
       LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
-      ReportResult(
-          EnrollmentStatus::ForStatus(EnrollmentStatus::REGISTRATION_BAD_MODE));
+      ReportResult(EnrollmentStatus::ForEnrollmentCode(
+          EnrollmentStatus::Code::kRegistrationBadMode));
       return;
   }
   // Only use DMToken from now on.
@@ -373,7 +373,8 @@ void EnrollmentHandler::OnStoreLoaded(CloudPolicyStore* store) {
     // again after the store finishes loading.
     StartRegistration();
   } else if (enrollment_step_ == STEP_STORE_POLICY) {
-    ReportResult(EnrollmentStatus::ForStatus(EnrollmentStatus::SUCCESS));
+    ReportResult(
+        EnrollmentStatus::ForEnrollmentCode(EnrollmentStatus::Code::kSuccess));
   }
 }
 
@@ -408,8 +409,8 @@ void EnrollmentHandler::HandleStateKeysResult(
         state_keys_broker_->current_state_key();
     if (state_keys.empty() || register_params_->current_state_key.empty()) {
       LOG(ERROR) << "State keys empty.";
-      ReportResult(
-          EnrollmentStatus::ForStatus(EnrollmentStatus::NO_STATE_KEYS));
+      ReportResult(EnrollmentStatus::ForEnrollmentCode(
+          EnrollmentStatus::Code::kNoStateKeys));
       return;
     }
   }
@@ -497,8 +498,7 @@ void EnrollmentHandler::HandleRegistrationCertificateResult(
     ash::attestation::AttestationStatus status,
     const std::string& pem_certificate_chain) {
   if (status != ash::attestation::ATTESTATION_SUCCESS) {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::REGISTRATION_CERT_FETCH_FAILED));
+    ReportResult(EnrollmentStatus::ForAttestationError(status));
     return;
   }
 
@@ -539,8 +539,8 @@ void EnrollmentHandler::HandlePolicyValidationResult(
 
   if (GetDeviceBlockDevModePolicyValue(*policy_) &&
       !IsDeviceBlockDevModePolicyAllowed()) {
-    ReportResult(
-        EnrollmentStatus::ForStatus(EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kMayNotBlockDevMode));
     return;
   }
 
@@ -564,15 +564,15 @@ void EnrollmentHandler::OnDeviceAccountTokenFetchError(
   if (dm_status.has_value()) {
     ReportResult(EnrollmentStatus::ForRobotAuthFetchError(dm_status.value()));
   } else {
-    ReportResult(EnrollmentStatus::ForStatus(
-        EnrollmentStatus::ROBOT_REFRESH_FETCH_FAILED));
+    ReportResult(EnrollmentStatus::ForEnrollmentCode(
+        EnrollmentStatus::Code::kRobotRefreshFetchFailed));
   }
 }
 
 void EnrollmentHandler::OnDeviceAccountTokenStoreError() {
   CHECK_EQ(enrollment_step_, STEP_STORE_ROBOT_AUTH);
-  ReportResult(EnrollmentStatus::ForStatus(
-      EnrollmentStatus::ROBOT_REFRESH_STORE_FAILED));
+  ReportResult(EnrollmentStatus::ForEnrollmentCode(
+      EnrollmentStatus::Code::kRobotRefreshStoreFailed));
 }
 
 void EnrollmentHandler::OnDeviceAccountClientError(
@@ -716,8 +716,8 @@ void EnrollmentHandler::ReportResult(EnrollmentStatus status) {
   EnrollmentCallback callback = std::move(completion_callback_);
   Stop();
 
-  if (status.status() != EnrollmentStatus::SUCCESS) {
-    LOG(WARNING) << "Enrollment failed: " << status.status()
+  if (status.enrollment_code() != EnrollmentStatus::Code::kSuccess) {
+    LOG(WARNING) << "Enrollment failed: " << status.enrollment_code()
                  << ", client: " << status.client_status()
                  << ", validation: " << status.validation_status()
                  << ", store: " << status.store_status()

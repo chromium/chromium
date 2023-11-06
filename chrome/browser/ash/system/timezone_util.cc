@@ -121,8 +121,8 @@ std::u16string GetTimezoneName(const icu::TimeZone& timezone) {
   int min_remainder = minute_offset % 60;
   // Some timezones have a non-integral hour offset. So, we need to use hh:mm
   // form.
-  std::string  offset_str = base::StringPrintf(offset >= 0 ?
-      "UTC+%d:%02d" : "UTC-%d:%02d", hour_offset, min_remainder);
+  std::string offset_str = base::StringPrintf(
+      "UTC%c%d:%02d", offset >= 0 ? '+' : '-', hour_offset, min_remainder);
 
   // TODO(jungshik): When coming up with a better list of timezones, we also
   // have to come up with better 'display' names. One possibility is to list

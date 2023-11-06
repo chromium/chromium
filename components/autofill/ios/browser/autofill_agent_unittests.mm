@@ -6,6 +6,7 @@
 
 #include "base/apple/bundle_locations.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
@@ -112,13 +114,16 @@ class AutofillAgentTests : public web::WebTest {
     return frame;
   }
 
+  // The prefs_ must outlive the fake_web_state_ and the autofill_agent_,
+  // the latter of which can be de-allocated as part of de-allocating the
+  // fake_web_state_.
+  std::unique_ptr<PrefService> prefs_;
   // The client_ needs to outlive the fake_web_state_, which owns the
   // frames.
   autofill::TestAutofillClient client_;
   web::FakeWebState fake_web_state_;
   web::FakeWebFrame* fake_main_frame_ = nullptr;
   web::FakeWebFramesManager* fake_web_frames_manager_ = nullptr;
-  std::unique_ptr<PrefService> prefs_;
   AutofillAgent* autofill_agent_;
 };
 
@@ -179,6 +184,94 @@ TEST_F(AutofillAgentTests,
             u"default\",\"value\":\"name_value\"}},\"formName\":\"CC "
             u"form\",\"formRendererID\":1}, 0);",
             fake_main_frame_->GetLastJavaScriptCall());
+}
+
+// Tests that `fillSpecificFormField` in `autofill_agent_` dispatches the
+// correct javascript call to the autofill controller.
+TEST_F(AutofillAgentTests, FillSpecificFormField) {
+  std::string locale("en");
+  autofill::AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_,
+                                                        &client_, nil, locale);
+
+  autofill::FormFieldData field;
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.label = u"Card number";
+  field.name = u"number";
+  field.name_attribute = field.name;
+  field.id_attribute = u"number";
+  field.value = u"number_value";
+  field.is_autofilled = true;
+  field.unique_renderer_id = FieldRendererId(2);
+
+  [autofill_agent_
+      fillSpecificFormField:field.unique_renderer_id
+                  withValue:u"mattwashere"
+                    inFrame:fake_web_frames_manager_->GetMainWebFrame()];
+  fake_web_state_.WasShown();
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+            u"2,\"value\":\"mattwashere\"});",
+            fake_main_frame_->GetLastJavaScriptCall());
+}
+
+// Tests that `ApplyFieldAction` in `AutofillDriverIOS` dispatches the
+// correct javascript call to the autofill controller.
+TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
+  std::string locale("en");
+  autofill::AutofillDriverIOSFactory::CreateForWebState(
+      &fake_web_state_, &client_, autofill_agent_, locale);
+
+  autofill::FormFieldData field;
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.label = u"Card number";
+  field.name = u"number";
+  field.name_attribute = field.name;
+  field.id_attribute = u"number";
+  field.value = u"number_value";
+  field.is_autofilled = true;
+  field.unique_renderer_id = FieldRendererId(2);
+
+  autofill::AutofillDriverIOS* main_frame_driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+          &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
+  main_frame_driver->ApplyFieldAction(
+      autofill::mojom::ActionPersistence::kFill,
+      autofill::mojom::TextReplacement::kReplaceAll, field.global_id(),
+      u"mattwashere");
+
+  fake_web_state_.WasShown();
+  EXPECT_EQ(u"__gCrWeb.autofill.fillSpecificFormField({\"unique_renderer_id\":"
+            u"2,\"value\":\"mattwashere\"});",
+            fake_main_frame_->GetLastJavaScriptCall());
+}
+
+// Tests that `ApplyFieldAction` with `ActionPersistence::kPreview`in
+// `AutofillDriverIOS` does not dispatch a JS call.
+TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
+  std::string locale("en");
+  autofill::AutofillDriverIOSFactory::CreateForWebState(
+      &fake_web_state_, &client_, autofill_agent_, locale);
+
+  autofill::FormFieldData field;
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.label = u"Card number";
+  field.name = u"number";
+  field.name_attribute = field.name;
+  field.id_attribute = u"number";
+  field.value = u"number_value";
+  field.is_autofilled = true;
+  field.unique_renderer_id = FieldRendererId(2);
+
+  autofill::AutofillDriverIOS* main_frame_driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
+          &fake_web_state_, fake_web_frames_manager_->GetMainWebFrame());
+  // Preview is not currently supported; no JS should be run.
+  main_frame_driver->ApplyFieldAction(
+      autofill::mojom::ActionPersistence::kPreview,
+      autofill::mojom::TextReplacement::kReplaceAll, field.global_id(),
+      u"mattwashere");
+
+  fake_web_state_.WasShown();
+  EXPECT_EQ(u"", fake_main_frame_->GetLastJavaScriptCall());
 }
 
 // Tests that when a non user initiated form activity is registered the
@@ -343,6 +436,55 @@ TEST_F(AutofillAgentTests, showAutofillPopup_EmptyIconInCreditCardSuggestion) {
                                      webState:&fake_web_state_
                             completionHandler:completionHandler];
   EXPECT_EQ(nil, completion_handler_icon);
+}
+
+// Verify that plus address suggestions are handled appropriately in
+// `showAutofillPopup`.
+TEST_F(AutofillAgentTests, showAutofillPopup_PlusAddresses) {
+  __block NSArray<FormSuggestion*>* completion_handler_suggestions = nil;
+  __block BOOL completion_handler_called = NO;
+  testing::NiceMock<autofill::MockAutofillPopupDelegate> mock_delegate;
+
+  const std::string createSuggestionText = "create";
+  const std::string fillExistingSuggestionText = "existing";
+  std::vector<autofill::Suggestion> autofillSuggestions = {
+      autofill::Suggestion(createSuggestionText, "", "",
+                           autofill::PopupItemId::kCreateNewPlusAddress),
+      autofill::Suggestion(fillExistingSuggestionText, "", "",
+                           autofill::PopupItemId::kFillExistingPlusAddress)};
+
+  // Completion handler to retrieve suggestions.
+  auto completionHandler = ^(NSArray<FormSuggestion*>* suggestions,
+                             id<FormSuggestionProvider> delegate) {
+    completion_handler_suggestions = [suggestions copy];
+    completion_handler_called = YES;
+  };
+
+  // Make plus address suggestions and note the conversion to `FormSuggestion`
+  // objects.
+  [autofill_agent_ showAutofillPopup:autofillSuggestions
+                       popupDelegate:mock_delegate.GetWeakPtr()];
+  [autofill_agent_ retrieveSuggestionsForForm:nil
+                                     webState:&fake_web_state_
+                            completionHandler:completionHandler];
+
+  // Wait until the expected handler is called.
+  ASSERT_TRUE(
+      WaitUntilConditionOrTimeout(TestTimeouts::action_timeout(), ^bool() {
+        return completion_handler_called;
+      }));
+
+  // The plus address suggestions should be handled by the conversion to
+  // `FormSuggestion` objects.
+  EXPECT_EQ(2U, completion_handler_suggestions.count);
+  EXPECT_EQ(PopupItemId::kCreateNewPlusAddress,
+            completion_handler_suggestions[0].popupItemId);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(createSuggestionText),
+              completion_handler_suggestions[0].value);
+  EXPECT_EQ(autofill::PopupItemId::kFillExistingPlusAddress,
+            completion_handler_suggestions[1].popupItemId);
+  EXPECT_NSEQ(base::SysUTF8ToNSString(fillExistingSuggestionText),
+              completion_handler_suggestions[1].value);
 }
 
 // Tests that for credit cards, a custom icon is preferred over the default

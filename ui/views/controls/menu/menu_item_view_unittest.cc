@@ -13,6 +13,8 @@
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/gfx/canvas.h"
@@ -53,6 +55,8 @@ namespace {
 
 // A simple View class that will match its height to the available width.
 class SquareView : public views::View {
+  METADATA_HEADER(SquareView, views::View)
+
  public:
   SquareView() = default;
   ~SquareView() override = default;
@@ -61,6 +65,9 @@ class SquareView : public views::View {
   gfx::Size CalculatePreferredSize() const override { return gfx::Size(1, 1); }
   int GetHeightForWidth(int width) const override { return width; }
 };
+
+BEGIN_METADATA(SquareView)
+END_METADATA
 
 }  // namespace
 
@@ -294,6 +301,8 @@ namespace {
 // A fake View to check if GetHeightForWidth() is called with the appropriate
 // width value.
 class FakeView : public View {
+  METADATA_HEADER(FakeView, View)
+
  public:
   explicit FakeView(int expected_width) : expected_width_(expected_width) {}
   ~FakeView() override = default;
@@ -308,6 +317,9 @@ class FakeView : public View {
  private:
   const int expected_width_;
 };
+
+BEGIN_METADATA(FakeView)
+END_METADATA
 
 }  // namespace
 
@@ -363,6 +375,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
   }
 
   void TearDown() override {
+    menu_item_view_ = nullptr;
     widget_->CloseNow();
     ViewsTestBase::TearDown();
   }
@@ -374,7 +387,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  raw_ptr<MenuItemView, DanglingUntriaged> menu_item_view_;
+  raw_ptr<MenuItemView> menu_item_view_ = nullptr;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;

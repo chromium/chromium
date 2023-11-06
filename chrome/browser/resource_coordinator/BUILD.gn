@@ -12,10 +12,6 @@ mojom("mojo_bindings") {
   use_typescript_sources = true
 }
 
-proto_library("intervention_policy_database_proto") {
-  sources = [ "intervention_policy_database.proto" ]
-}
-
 source_set("tab_manager_features") {
   public = [ "tab_manager_features.h" ]
 

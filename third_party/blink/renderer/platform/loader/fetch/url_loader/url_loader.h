@@ -60,6 +60,7 @@ namespace blink {
 
 class BackForwardCacheLoaderHelper;
 class BlobDataHandle;
+class CodeCacheHost;
 class ResourceLoadInfoNotifierWrapper;
 class ResourceRequestSender;
 class SecurityOrigin;
@@ -91,13 +92,12 @@ class BLINK_PLATFORM_EXPORT URLLoader {
   // Load the request synchronously, returning results directly to the
   // caller upon completion.  There is no mechanism to interrupt a
   // synchronous load!!
-  // If the request's PassResponsePipeToClient flag is set to true, the response
-  // will instead be redirected to a blob, which is passed out in
-  // |downloaded_blob|.
+  // If `download_to_blob` is true, the response will instead be
+  // redirected to a blob, which is passed out in `downloaded_blob`.
   virtual void LoadSynchronously(
       std::unique_ptr<network::ResourceRequest> request,
       scoped_refptr<const SecurityOrigin> top_frame_origin,
-      bool pass_response_pipe_to_client,
+      bool download_to_blob,
       bool no_mime_sniffing,
       base::TimeDelta timeout_interval,
       URLLoaderClient* client,
@@ -119,6 +119,7 @@ class BLINK_PLATFORM_EXPORT URLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client);
 
   // Freezes the loader. See blink/renderer/platform/loader/README.md for the

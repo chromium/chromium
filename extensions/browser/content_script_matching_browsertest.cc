@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
-#include "extensions/browser/content_script_tracker.h"
+#include "extensions/browser/script_injection_tracker.h"
 
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/shell/browser/shell_extension_loader.h"
 #include "extensions/shell/test/shell_apitest.h"
@@ -26,11 +25,13 @@
 namespace extensions {
 
 // Test suite covering
-// `extensions::ContentScriptTracker::DoContentScriptsMatchForTesting` from
-// //extensions/browser/content_script_tracker.h.
+// `extensions::ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting`
+// from //extensions/browser/script_injection_tracker.h.
 //
-// See also ContentScriptTrackerBrowserTest in
-// //chrome/browser/extensions/content_script_tracker_browsertest.cc.
+// See also ScriptInjectionTrackerBrowserTest in
+// //chrome/browser/extensions/script_injection_tracker_browsertest.cc.
+// TODO(crbug.com/1385165): Add test coverage for dynamic content and user
+// scripts matching.
 class ContentScriptMatchingBrowserTest : public ShellApiTest,
                                          public content::WebContentsDelegate {
  public:
@@ -78,7 +79,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
     return extension_;
   }
 
-  // Returns whether the class-under-test (ContentScriptTracker) thinks that
+  // Returns whether the class-under-test (ScriptInjectionTracker) thinks that
   // the test extension (installed by individual test cases via
   // InstallContentScriptsExtension) may inject content scripts into the
   // foo_frame frame in tab1 (see SetUpFrameTree for a list of available test
@@ -191,7 +192,7 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
 
   bool DoContentScriptsMatch(content::RenderFrameHost* navigating_frame,
                              const GURL& navigation_target) {
-    return ContentScriptTracker::DoContentScriptsMatchForTesting(
+    return ScriptInjectionTracker::DoStaticContentScriptsMatchForTesting(
         *extension_, navigating_frame, navigation_target);
   }
 
@@ -350,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchingBrowserTest,
 
   // Based on the `all_frames` from the manifest the subframe should not be
   // matched (even though the patterns in the manifest do match bar.com).  OTOH,
-  // the URL Pattern matching in ContentScriptTracker ignroes `all_frames` and
+  // the URL Pattern matching in ScriptInjectionTracker ignroes `all_frames` and
   // accepts additional false positives to solve extra corner cases.
   EXPECT_TRUE(DoContentScriptsMatch_Tab1_BarFrame());
 }

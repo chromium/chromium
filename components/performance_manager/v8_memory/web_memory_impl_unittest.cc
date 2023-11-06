@@ -64,7 +64,8 @@ void WebMemoryImplTest::MeasureAndVerify(
     base::flat_map<std::string, Bytes> expected) {
   bool measurement_done = false;
   WebMemoryMeasurer web_memory(
-      frame->frame_token(), V8DetailedMemoryRequest::MeasurementMode::kDefault,
+      frame->GetFrameToken(),
+      V8DetailedMemoryRequest::MeasurementMode::kDefault,
       base::BindLambdaForTesting([&measurement_done, &expected](
                                      mojom::WebMemoryMeasurementPtr result) {
         base::flat_map<std::string, Bytes> actual;

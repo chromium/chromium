@@ -14,6 +14,9 @@ public class ContentFeatureList {
     // Features files, then remove the constants below.
 
     // Alphabetical:
+    public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
+            "AccessibilityIncludeLongClickAction";
+
     public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
     // Field trial param associated with the Page Zoom feature.
     public static final String ACCESSIBILITY_PAGE_ZOOM_PARAM = "AdjustForOSLevel";
@@ -48,5 +51,5 @@ public class ContentFeatureList {
 
     public static final String WEB_NFC = "WebNFC";
 
-    public static final String WEB_IDENTITY_MDOCS = "WebIdentityMDocs";
+    public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
 }

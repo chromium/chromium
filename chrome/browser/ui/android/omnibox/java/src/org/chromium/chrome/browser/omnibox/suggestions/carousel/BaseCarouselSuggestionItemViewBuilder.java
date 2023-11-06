@@ -15,6 +15,8 @@ import androidx.annotation.IntDef;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileView;
+import org.chromium.chrome.browser.omnibox.suggestions.querytiles.QueryTileViewBinder;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
@@ -25,14 +27,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * ViewBuilder for the Carousel suggestion.
- * Its sole responsibility is to inflate appropriate view layouts for supplied view type.
+ * ViewBuilder for the Carousel suggestion. Its sole responsibility is to inflate appropriate view
+ * layouts for supplied view type.
  */
 public class BaseCarouselSuggestionItemViewBuilder {
     /**
-     * ViewType defines a list of Views that are understood by the Carousel.
-     * Views below can be used by any instance of the carousel, guaranteeing that each instance
-     * will look like every other.
+     * ViewType defines a list of Views that are understood by the Carousel. Views below can be used
+     * by any instance of the carousel, guaranteeing that each instance will look like every other.
      */
     @IntDef({ViewType.TILE_VIEW})
     @Retention(RetentionPolicy.SOURCE)
@@ -52,12 +53,14 @@ public class BaseCarouselSuggestionItemViewBuilder {
      */
     public static BaseCarouselSuggestionView createView(ViewGroup parent) {
         SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(new ModelList());
-        adapter.registerType(ViewType.TILE_VIEW,
-                BaseCarouselSuggestionItemViewBuilder::createTileView, TileViewBinder::bind);
+        adapter.registerType(
+                ViewType.TILE_VIEW,
+                BaseCarouselSuggestionItemViewBuilder::createTileView,
+                TileViewBinder::bind);
         adapter.registerType(
                 ViewType.QUERY_TILE,
                 BaseCarouselSuggestionItemViewBuilder::createQueryTile,
-                (m, v, p) -> {});
+                QueryTileViewBinder::bind);
         return new BaseCarouselSuggestionView(parent.getContext(), adapter);
     }
 
@@ -69,18 +72,18 @@ public class BaseCarouselSuggestionItemViewBuilder {
      */
     private static TileView createTileView(ViewGroup parent) {
         Context context = parent.getContext();
-        TileView tile = (TileView) LayoutInflater.from(context).inflate(
-                R.layout.suggestions_tile_view, parent, false);
+        TileView tile =
+                (TileView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.suggestions_tile_view, parent, false);
         tile.setClickable(true);
-
-        Drawable background = OmniboxResourceProvider.resolveAttributeToDrawable(
-                context, BrandedColorScheme.APP_DEFAULT, R.attr.selectableItemBackground);
-        tile.setBackground(background);
+        applyViewBackground(tile);
 
         // Update the background color of the solid circle around the icon (typically a favicon).
         if (OmniboxFeatures.shouldShowModernizeVisualUpdate(context)) {
-            Drawable modernizedBackground = OmniboxResourceProvider.getDrawable(
-                    context, R.drawable.tile_view_icon_background_modern_updated);
+            Drawable modernizedBackground =
+                    OmniboxResourceProvider.getDrawable(
+                            context, R.drawable.tile_view_icon_background_modern_updated);
             View iconBackground = tile.findViewById(R.id.tile_view_icon_background);
             iconBackground.setBackground(modernizedBackground);
         }
@@ -93,10 +96,19 @@ public class BaseCarouselSuggestionItemViewBuilder {
      * @param parent ViewGroup that will host the QueryTile.
      * @return A View element hosting QueryTile.
      */
-    private static View createQueryTile(ViewGroup parent) {
-        Context context = parent.getContext();
-        View tile = LayoutInflater.from(context).inflate(R.layout.query_tile_view, parent, false);
-        tile.setClickable(true);
+    private static QueryTileView createQueryTile(ViewGroup parent) {
+        var tile = new QueryTileView(parent.getContext());
+        applyViewBackground(tile);
         return tile;
+    }
+
+    private static void applyViewBackground(View view) {
+        view.setFocusable(true);
+        Drawable background =
+                OmniboxResourceProvider.resolveAttributeToDrawable(
+                        view.getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        R.attr.selectableItemBackground);
+        view.setBackground(background);
     }
 }

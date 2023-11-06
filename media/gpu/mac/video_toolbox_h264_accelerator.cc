@@ -156,7 +156,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferAssureBlockMemory()";
@@ -169,8 +169,8 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     // Write length header.
     uint32_t header =
         base::HostToNet32(static_cast<uint32_t>(nalu_data.size()));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
@@ -179,7 +179,7 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
     offset += kNALUHeaderLength;
 
     // Write NALU data.
-    status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data.get(), offset,
                                            nalu_data.size());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
@@ -192,16 +192,16 @@ VideoToolboxH264Accelerator::Status VideoToolboxH264Accelerator::SubmitDecode(
   // Wrap in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,            // data_buffer
-                                true,            // data_ready
-                                nullptr,         // make_data_ready_callback
-                                nullptr,         // make_data_ready_refcon
-                                active_format_,  // format_description
-                                1,               // num_samples
-                                0,               // num_sample_timing_entries
-                                nullptr,         // sample_timing_array
-                                1,               // num_sample_size_entries
-                                &data_size,      // sample_size_array
+                                data.get(),  // data_buffer
+                                true,        // data_ready
+                                nullptr,     // make_data_ready_callback
+                                nullptr,     // make_data_ready_refcon
+                                active_format_.get(),  // format_description
+                                1,                     // num_samples
+                                0,           // num_sample_timing_entries
+                                nullptr,     // sample_timing_array
+                                1,           // num_sample_size_entries
+                                &data_size,  // sample_size_array
                                 sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())

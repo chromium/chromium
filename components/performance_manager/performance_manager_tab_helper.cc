@@ -102,6 +102,10 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   if (web_contents->IsCurrentlyAudible()) {
     initial_property_flags.Put(PagePropertyFlag::kIsAudible);
   }
+  if (web_contents->HasPictureInPictureVideo() ||
+      web_contents->HasPictureInPictureDocument()) {
+    initial_property_flags.Put(PagePropertyFlag::kHasPictureInPicture);
+  }
 
   // Create the page node.
   std::unique_ptr<PageData> page = std::make_unique<PageData>();
@@ -195,6 +199,16 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
     parent_frame_node = frames_[parent].get();
   }
 
+  // Get the outer document for a <fencedframe>.
+  FrameNodeImpl* outer_document_for_fenced_frame = nullptr;
+  if (render_frame_host->IsFencedFrameRoot()) {
+    CHECK(!parent_frame_node);
+    content::RenderFrameHost* outer_document =
+        render_frame_host->GetParentOrOuterDocument();
+    CHECK(outer_document);
+    outer_document_for_fenced_frame = GetExistingFrameNode(outer_document);
+  }
+
   // Ideally, creation would not be required here, but it is possible in tests
   // for the RenderProcessUserData to not have attached at this point.
   PerformanceManagerRegistryImpl::GetInstance()
@@ -213,7 +227,7 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
   std::unique_ptr<FrameNodeImpl> frame =
       PerformanceManagerImpl::CreateFrameNode(
           process_node, primary_page_node(), parent_frame_node,
-          render_frame_host->GetRoutingID(),
+          outer_document_for_fenced_frame, render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
           site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
           base::BindOnce(
@@ -328,19 +342,32 @@ void PerformanceManagerTabHelper::OnFrameAudioStateChanged(
     content::RenderFrameHost* render_frame_host,
     bool is_audible) {
   auto frame_it = frames_.find(render_frame_host);
-  // Ideally this would be a DCHECK, but RenderFrameHost sends out one last
-  // notification in its destructor; at this point we've already torn down the
-  // FrameNode in response to the RenderFrameDeleted which comes *before* the
-  // destructor is run.
-  if (frame_it == frames_.end()) {
-    // We should only ever see this for a frame transitioning to *not* audible.
-    DCHECK(!is_audible);
-    return;
-  }
+  CHECK(frame_it != frames_.end());
   auto* frame_node = frame_it->second.get();
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&FrameNodeImpl::SetIsAudible,
                                 base::Unretained(frame_node), is_audible));
+}
+
+void PerformanceManagerTabHelper::OnFrameVisibilityChanged(
+    content::RenderFrameHost* render_frame_host,
+    blink::mojom::FrameVisibility visibility) {
+  auto frame_it = frames_.find(render_frame_host);
+  // This can be invoked for a crashed RenderFrameHost, as its view still
+  // occupies space on the page. Just ignore it as clearly its content is not
+  // visible.
+  if (frame_it == frames_.end()) {
+    CHECK(!render_frame_host->IsRenderFrameLive());
+    return;
+  }
+  CHECK(render_frame_host->IsRenderFrameLive());
+
+  auto* frame_node = frame_it->second.get();
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE,
+      base::BindOnce(
+          &FrameNodeImpl::SetIntersectsViewport, base::Unretained(frame_node),
+          visibility == blink::mojom::FrameVisibility::kRenderedInViewport));
 }
 
 void PerformanceManagerTabHelper::DidFinishNavigation(
@@ -486,6 +513,14 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
                                 base::Unretained(primary_page_node())));
 }
 
+void PerformanceManagerTabHelper::MediaPictureInPictureChanged(
+    bool is_picture_in_picture) {
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&PageNodeImpl::SetHasPictureInPicture,
+                                base::Unretained(primary_page_node()),
+                                is_picture_in_picture));
+}
+
 void PerformanceManagerTabHelper::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   PerformanceManagerImpl::CallOnGraphImpl(
@@ -571,6 +606,13 @@ void PerformanceManagerTabHelper::OnMainFrameNavigation(int64_t navigation_id,
 
   primary_page_->first_time_title_set = false;
   primary_page_->first_time_favicon_set = false;
+}
+
+FrameNodeImpl* PerformanceManagerTabHelper::GetExistingFrameNode(
+    content::RenderFrameHost* render_frame_host) const {
+  auto it = frames_.find(render_frame_host);
+  CHECK(it != frames_.end());
+  return it->second.get();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceManagerTabHelper);

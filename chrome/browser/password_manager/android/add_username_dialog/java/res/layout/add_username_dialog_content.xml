@@ -11,62 +11,70 @@ found in the LICENSE file. -->
     android:layout_height="wrap_content"
     android:orientation="vertical"
     style="@style/AlertDialogContent">
-
-  <TextView
-      android:id="@+id/description"
+  <org.chromium.components.browser_ui.widget.FadingEdgeScrollView
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="4dp"
-      android:layout_marginBottom="16dp"
-      android:text="@string/add_username_dialog_text"
-      android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
-
-  <!-- Username -->
-  <com.google.android.material.textfield.TextInputLayout
-      android:id="@+id/username_text_input_layout"
-      android:labelFor="@+id/username"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:hint="@string/password_manager_username_label"
-      app:hintTextAppearance="@style/TextAppearance.TextMedium.Primary"
-      app:errorTextAppearance="@style/TextAppearance.ErrorCaption"
-      app:errorEnabled="true">
-
-    <com.google.android.material.textfield.TextInputEditText
-        tools:ignore="LabelFor"
-        android:id="@+id/username"
+      android:layout_height="0dp"
+      android:layout_weight="1">
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:textAlignment="viewStart"
-        android:imeOptions="actionDone"
-        android:importantForAutofill="noExcludeDescendants"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
-  </com.google.android.material.textfield.TextInputLayout>
+        android:layout_height="wrap_content">
+      <TextView
+          android:id="@+id/description"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="4dp"
+          android:layout_marginBottom="16dp"
+          android:text="@string/add_username_dialog_text"
+          android:textAppearance="@style/TextAppearance.TextSmall.Secondary"/>
 
-  <!-- Password -->
-  <com.google.android.material.textfield.TextInputLayout
-      android:id="@+id/password_text_input_layout"
-      android:labelFor="@+id/password"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:hint="@string/password_manager_password_label"
-      app:hintTextAppearance="@style/TextAppearance.TextMedium.Primary"
-      app:endIconMode="password_toggle"
-      app:endIconTint="@color/default_icon_color_tint_list">
+      <!-- Username -->
+      <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/username_text_input_layout"
+          android:labelFor="@+id/username"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/password_manager_username_label"
+          app:hintTextAppearance="@style/TextAppearance.TextMedium.Primary"
+          app:errorTextAppearance="@style/TextAppearance.ErrorCaption"
+          app:errorEnabled="true">
 
-    <com.google.android.material.textfield.TextInputEditText
-        tools:ignore="LabelFor"
-        android:id="@+id/password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:textAlignment="viewStart"
-        android:imeOptions="actionDone"
-        android:importantForAutofill="noExcludeDescendants"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:inputType="textPassword"
-        android:enabled="false"/>
-  </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputEditText
+            tools:ignore="LabelFor"
+            android:id="@+id/username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="noExcludeDescendants"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+      </com.google.android.material.textfield.TextInputLayout>
 
+      <!-- Password -->
+      <com.google.android.material.textfield.TextInputLayout
+          android:id="@+id/password_text_input_layout"
+          android:labelFor="@+id/password"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="@string/password_manager_password_label"
+          app:hintTextAppearance="@style/TextAppearance.TextMedium.Primary"
+          app:endIconMode="password_toggle"
+          app:endIconTint="@color/default_icon_color_tint_list">
+
+        <com.google.android.material.textfield.TextInputEditText
+            tools:ignore="LabelFor"
+            android:id="@+id/password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:textAlignment="viewStart"
+            android:imeOptions="actionDone"
+            android:importantForAutofill="noExcludeDescendants"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:inputType="textPassword"
+            android:enabled="false"/>
+      </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+  </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 </org.chromium.chrome.browser.add_username_dialog.AddUsernameDialogContentView>

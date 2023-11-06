@@ -23,8 +23,8 @@
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
+#include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "mojo/public/cpp/base/int128_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -168,6 +168,54 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
 }
 
 // static
+bool StructTraits<attribution_reporting::mojom::TriggerSpecDataView,
+                  attribution_reporting::TriggerSpec>::
+    Read(attribution_reporting::mojom::TriggerSpecDataView data,
+         attribution_reporting::TriggerSpec* out) {
+  attribution_reporting::EventReportWindows event_report_windows;
+  if (!data.ReadEventReportWindows(&event_report_windows)) {
+    return false;
+  }
+
+  *out = attribution_reporting::TriggerSpec(std::move(event_report_windows));
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
+                  attribution_reporting::TriggerSpecs>::
+    Read(attribution_reporting::mojom::TriggerSpecsDataView data,
+         attribution_reporting::TriggerSpecs* out) {
+  std::vector<attribution_reporting::TriggerSpec> specs;
+  if (!data.ReadSpecs(&specs)) {
+    return false;
+  }
+
+  attribution_reporting::TriggerSpecs::TriggerDataIndices trigger_data_indices;
+  if (!data.ReadTriggerDataIndices(&trigger_data_indices)) {
+    return false;
+  }
+
+  auto result = attribution_reporting::TriggerSpecs::Create(
+      std::move(trigger_data_indices), std::move(specs));
+  if (!result.has_value()) {
+    return false;
+  }
+
+  *out = std::move(*result);
+  return true;
+}
+
+// static
+bool StructTraits<attribution_reporting::mojom::TriggerConfigDataView,
+                  attribution_reporting::TriggerConfig>::
+    Read(attribution_reporting::mojom::TriggerConfigDataView data,
+         attribution_reporting::TriggerConfig* out) {
+  *out = attribution_reporting::TriggerConfig(data.trigger_data_matching());
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
@@ -188,10 +236,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadDebugKey(&out->debug_key)) {
-    return false;
-  }
-
   if (!data.ReadFilterData(&out->filter_data)) {
     return false;
   }
@@ -200,9 +244,18 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
+  if (!data.ReadTriggerConfig(&out->trigger_config)) {
+    return false;
+  }
+
+  if (!out->max_event_level_reports.SetIfValid(
+          data.max_event_level_reports())) {
+    return false;
+  }
+
   out->source_event_id = data.source_event_id();
-  out->max_event_level_reports = data.max_event_level_reports();
   out->priority = data.priority();
+  out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   return out->IsValid();
 }
@@ -220,14 +273,11 @@ bool StructTraits<attribution_reporting::mojom::EventTriggerDataDataView,
                   attribution_reporting::EventTriggerData>::
     Read(attribution_reporting::mojom::EventTriggerDataDataView data,
          attribution_reporting::EventTriggerData* out) {
-  if (!data.ReadDedupKey(&out->dedup_key)) {
-    return false;
-  }
-
   if (!data.ReadFilters(&out->filters)) {
     return false;
   }
 
+  out->dedup_key = data.dedup_key();
   out->data = data.data();
   out->priority = data.priority();
   return true;
@@ -269,14 +319,11 @@ bool StructTraits<attribution_reporting::mojom::AggregatableDedupKeyDataView,
                   attribution_reporting::AggregatableDedupKey>::
     Read(attribution_reporting::mojom::AggregatableDedupKeyDataView data,
          attribution_reporting::AggregatableDedupKey* out) {
-  if (!data.ReadDedupKey(&out->dedup_key)) {
-    return false;
-  }
-
   if (!data.ReadFilters(&out->filters)) {
     return false;
   }
 
+  out->dedup_key = data.dedup_key();
   return true;
 }
 
@@ -314,15 +361,12 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadDebugKey(&out->debug_key)) {
-    return false;
-  }
-
   if (!data.ReadAggregationCoordinatorOrigin(
           &out->aggregation_coordinator_origin)) {
     return false;
   }
 
+  out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   out->source_registration_time_config = data.source_registration_time_config();
   return true;

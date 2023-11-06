@@ -100,6 +100,23 @@
       </table>
     </div>
   </div>
+  <div id="bound-session-info" jsdisplay="boundSessionInfo">
+    <h2>Bound sessions</h2>
+    <div>
+      <table class="signin-details">
+        <tr class="header">
+          <td>Domain</td>
+          <td>Path</td>
+          <td>Expiration time</td>
+        </tr>
+        <tr jsselect="boundSessionInfo">
+          <td jscontent="domain"></td>
+          <td jscontent="path"></td>
+          <td jscontent="expirationTime"></td>
+        </tr>
+      </table>
+    </div>
+  </div>
 
   <script type="module" src="signin_internals.js"></script>
 </body>

@@ -58,17 +58,6 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
     paint_rect.Inset(gfx::Insets::VH(0, 1));
   }
 
-#if BUILDFLAG(IS_WIN)
-  // Hack to get the separator to display correctly on Windows where we may
-  // have fractional scales. We move the separator 1 pixel down to ensure that
-  // it falls within the clipping rect which is scaled up.
-  float device_scale = display::win::GetDPIScale();
-  bool is_fractional_scale =
-      (device_scale - static_cast<int>(device_scale) != 0);
-  if (is_fractional_scale && paint_rect.y() == 0)
-    paint_rect.set_y(1);
-#endif
-
   ui::NativeTheme::MenuSeparatorExtraParams menu_separator;
   menu_separator.paint_rect = &paint_rect;
   menu_separator.type = type_;

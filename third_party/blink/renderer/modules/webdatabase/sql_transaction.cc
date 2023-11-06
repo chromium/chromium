@@ -117,15 +117,15 @@ void SQLTransaction::Trace(Visitor* visitor) const {
 }
 
 bool SQLTransaction::HasCallback() const {
-  return callback_;
+  return callback_ != nullptr;
 }
 
 bool SQLTransaction::HasSuccessCallback() const {
-  return success_callback_;
+  return success_callback_ != nullptr;
 }
 
 bool SQLTransaction::HasErrorCallback() const {
-  return error_callback_;
+  return error_callback_ != nullptr;
 }
 
 void SQLTransaction::SetBackend(SQLTransactionBackend* backend) {

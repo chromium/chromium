@@ -122,6 +122,10 @@ bool ChromeAppListItem::IsBadged() const {
   return false;
 }
 
+std::string ChromeAppListItem::GetPromisedItemId() const {
+  return std::string();
+}
+
 app_list::AppContextMenu* ChromeAppListItem::GetAppContextMenu() {
   return nullptr;
 }
@@ -180,6 +184,7 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
       is_place_holder_icon
           ? ash::IconColor()
           : app_list::reorder::GetSortableIconColorForApp(id(), icon);
+  metadata_->is_placeholder_icon = is_place_holder_icon;
 
   AppListModelUpdater* updater = model_updater();
   if (updater) {
@@ -189,8 +194,16 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon,
     const SkColor badge_color_copy = metadata_->badge_color;
 
     updater->SetItemIconAndColor(id_copy, metadata_->icon,
-                                 metadata_->icon_color);
+                                 metadata_->icon_color, is_place_holder_icon);
     updater->SetNotificationBadgeColor(id_copy, badge_color_copy);
+  }
+}
+
+void ChromeAppListItem::SetAccessibleName(const std::string& label) {
+  metadata_->accessible_name = label;
+  AppListModelUpdater* updater = model_updater();
+  if (updater) {
+    updater->SetAccessibleName(id(), label);
   }
 }
 

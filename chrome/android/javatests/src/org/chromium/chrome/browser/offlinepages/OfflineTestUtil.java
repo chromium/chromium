@@ -40,12 +40,15 @@ public class OfflineTestUtil {
     public static SavePageRequest[] getRequestsInQueue() throws TimeoutException {
         final AtomicReference<SavePageRequest[]> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineTestUtilJni.get().getRequestsInQueue((SavePageRequest[] requests) -> {
-                result.set(requests);
-                callbackHelper.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineTestUtilJni.get()
+                            .getRequestsInQueue(
+                                    (SavePageRequest[] requests) -> {
+                                        result.set(requests);
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
         callbackHelper.waitForCallback(0);
         return result.get();
     }
@@ -55,13 +58,16 @@ public class OfflineTestUtil {
         final AtomicReference<List<OfflinePageItem>> result =
                 new AtomicReference<List<OfflinePageItem>>();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineTestUtilJni.get().getAllPages(
-                    new ArrayList<OfflinePageItem>(), (List<OfflinePageItem> items) -> {
-                        result.set(items);
-                        callbackHelper.notifyCalled();
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineTestUtilJni.get()
+                            .getAllPages(
+                                    new ArrayList<OfflinePageItem>(),
+                                    (List<OfflinePageItem> items) -> {
+                                        result.set(items);
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
         callbackHelper.waitForCallback(0);
         return result.get();
     }
@@ -71,12 +77,15 @@ public class OfflineTestUtil {
     public static String dumpRequestCoordinatorState() throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
         final AtomicReference<String> result = new AtomicReference<String>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineTestUtilJni.get().dumpRequestCoordinatorState((String dump) -> {
-                result.set(dump);
-                callbackHelper.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineTestUtilJni.get()
+                            .dumpRequestCoordinatorState(
+                                    (String dump) -> {
+                                        result.set(dump);
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
         callbackHelper.waitForCallback(0);
         return result.get();
     }
@@ -97,12 +106,15 @@ public class OfflineTestUtil {
         CallbackHelper finished = new CallbackHelper();
         final AtomicReference<ArrayList<OfflineItem>> result =
                 new AtomicReference<ArrayList<OfflineItem>>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineContentAggregatorFactory.get().getAllItems(items -> {
-                result.set(items);
-                finished.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineContentAggregatorFactory.get()
+                            .getAllItems(
+                                    items -> {
+                                        result.set(items);
+                                        finished.notifyCalled();
+                                    });
+                });
         finished.waitForCallback(0);
         return result.get();
     }
@@ -110,12 +122,16 @@ public class OfflineTestUtil {
     public static byte[] getRawThumbnail(long offlineId) throws TimeoutException {
         final AtomicReference<byte[]> result = new AtomicReference<>();
         final CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineTestUtilJni.get().getRawThumbnail(offlineId, (byte[] rawThumbnail) -> {
-                result.set(rawThumbnail);
-                callbackHelper.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineTestUtilJni.get()
+                            .getRawThumbnail(
+                                    offlineId,
+                                    (byte[] rawThumbnail) -> {
+                                        result.set(rawThumbnail);
+                                        callbackHelper.notifyCalled();
+                                    });
+                });
         callbackHelper.waitForCallback(0);
         return result.get();
     }
@@ -124,23 +140,26 @@ public class OfflineTestUtil {
     public static OfflinePageBridge getOfflinePageBridge() throws TimeoutException {
         final CallbackHelper ready = new CallbackHelper();
         final AtomicReference<OfflinePageBridge> result = new AtomicReference<OfflinePageBridge>();
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> {
-            OfflinePageBridge bridge =
-                    OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
-            if (bridge == null || bridge.isOfflinePageModelLoaded()) {
-                result.set(bridge);
-                ready.notifyCalled();
-                return;
-            }
-            bridge.addObserver(new OfflinePageModelObserver() {
-                @Override
-                public void offlinePageModelLoaded() {
-                    result.set(bridge);
-                    ready.notifyCalled();
-                    bridge.removeObserver(this);
-                }
-            });
-        });
+        PostTask.runOrPostTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    OfflinePageBridge bridge =
+                            OfflinePageBridge.getForProfile(Profile.getLastUsedRegularProfile());
+                    if (bridge == null || bridge.isOfflinePageModelLoaded()) {
+                        result.set(bridge);
+                        ready.notifyCalled();
+                        return;
+                    }
+                    bridge.addObserver(
+                            new OfflinePageModelObserver() {
+                                @Override
+                                public void offlinePageModelLoaded() {
+                                    result.set(bridge);
+                                    ready.notifyCalled();
+                                    bridge.removeObserver(this);
+                                }
+                            });
+                });
         ready.waitForCallback(0);
         Assert.assertTrue(result.get() != null);
         return result.get();
@@ -149,10 +168,11 @@ public class OfflineTestUtil {
     // Intercepts future HTTP requests for |url| with an offline net error.
     public static void interceptWithOfflineError(String url) throws TimeoutException {
         final CallbackHelper callbackHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OfflineTestUtilJni.get().interceptWithOfflineError(
-                    url, () -> callbackHelper.notifyCalled());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    OfflineTestUtilJni.get()
+                            .interceptWithOfflineError(url, () -> callbackHelper.notifyCalled());
+                });
         callbackHelper.waitForCallback(0);
     }
 
@@ -165,22 +185,29 @@ public class OfflineTestUtil {
     public static void waitForConnectivityState(boolean connected) {
         AtomicBoolean done = new AtomicBoolean();
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> OfflineTestUtilJni.get().waitForConnectivityState(
-                                connected, () -> done.set(true)));
+                () ->
+                        OfflineTestUtilJni.get()
+                                .waitForConnectivityState(connected, () -> done.set(true)));
         CriteriaHelper.pollInstrumentationThread(() -> done.get());
     }
 
     @NativeMethods
     interface Natives {
         void getRequestsInQueue(Callback<SavePageRequest[]> callback);
+
         void getAllPages(
                 List<OfflinePageItem> offlinePages, final Callback<List<OfflinePageItem>> callback);
+
         void getRawThumbnail(long offlineId, Callback<byte[]> callback);
+
         void startRequestCoordinatorProcessing();
+
         void interceptWithOfflineError(String url, Runnable readyRunnable);
+
         void clearIntercepts();
+
         void dumpRequestCoordinatorState(Callback<String> callback);
+
         void waitForConnectivityState(boolean connected, Runnable callback);
     }
 }

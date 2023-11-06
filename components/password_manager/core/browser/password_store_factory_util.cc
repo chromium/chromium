@@ -15,21 +15,23 @@
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
+#include "components/password_manager/core/browser/password_store/login_database.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForProfileStorage(
-    const base::FilePath& profile_path) {
+    const base::FilePath& db_directory) {
   base::FilePath login_db_file_path =
-      profile_path.Append(kLoginDataForProfileFileName);
+      db_directory.Append(kLoginDataForProfileFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
                                          IsAccountStore(false));
 }
 
 std::unique_ptr<LoginDatabase> CreateLoginDatabaseForAccountStorage(
-    const base::FilePath& profile_path) {
+    const base::FilePath& db_directory) {
   base::FilePath login_db_file_path =
-      profile_path.Append(kLoginDataForAccountFileName);
+      db_directory.Append(kLoginDataForAccountFileName);
   return std::make_unique<LoginDatabase>(login_db_file_path,
                                          IsAccountStore(true));
 }

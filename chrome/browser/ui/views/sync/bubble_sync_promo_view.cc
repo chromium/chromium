@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -37,8 +38,11 @@ BubbleSyncPromoView::BubbleSyncPromoView(
   DCHECK(!profile->IsGuestSession());
   AccountInfo account;
   // Signin promos can be shown in incognito, they use an empty account list.
-  if (!profile->IsOffTheRecord())
-    account = signin_ui_util::GetSingleAccountForPromos(profile);
+  if (!profile->IsOffTheRecord()) {
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
+    account = signin_ui_util::GetSingleAccountForPromos(identity_manager);
+  }
 
   const views::LayoutOrientation orientation =
       account.IsEmpty() ? views::LayoutOrientation::kHorizontal

@@ -115,39 +115,39 @@ void VerifyCert(const scoped_refptr<net::X509Certificate>& certificate,
       std::move(wrapped_callback));
 }
 
-std::string OCSPErrorToString(const net::OCSPVerifyResult& ocsp_result) {
+std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {
   switch (ocsp_result.response_status) {
-    case net::OCSPVerifyResult::PROVIDED:
+    case bssl::OCSPVerifyResult::PROVIDED:
       break;
-    case net::OCSPVerifyResult::NOT_CHECKED:
+    case bssl::OCSPVerifyResult::NOT_CHECKED:
       // This happens only in tests.
       return "OCSP verification was not performed.";
-    case net::OCSPVerifyResult::MISSING:
+    case bssl::OCSPVerifyResult::MISSING:
       return "No OCSP Response was stapled.";
-    case net::OCSPVerifyResult::ERROR_RESPONSE:
+    case bssl::OCSPVerifyResult::ERROR_RESPONSE:
       return "OCSP response did not have a SUCCESSFUL status.";
-    case net::OCSPVerifyResult::BAD_PRODUCED_AT:
+    case bssl::OCSPVerifyResult::BAD_PRODUCED_AT:
       return "OCSP Response was produced at outside the certificate "
              "validity period.";
-    case net::OCSPVerifyResult::NO_MATCHING_RESPONSE:
+    case bssl::OCSPVerifyResult::NO_MATCHING_RESPONSE:
       return "OCSP Response did not match the certificate.";
-    case net::OCSPVerifyResult::INVALID_DATE:
+    case bssl::OCSPVerifyResult::INVALID_DATE:
       return "OCSP Response was expired or not yet valid.";
-    case net::OCSPVerifyResult::PARSE_RESPONSE_ERROR:
+    case bssl::OCSPVerifyResult::PARSE_RESPONSE_ERROR:
       return "OCSPResponse structure could not be parsed.";
-    case net::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR:
+    case bssl::OCSPVerifyResult::PARSE_RESPONSE_DATA_ERROR:
       return "OCSP ResponseData structure could not be parsed.";
-    case net::OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION:
+    case bssl::OCSPVerifyResult::UNHANDLED_CRITICAL_EXTENSION:
       return "OCSP Response contained unhandled critical extension.";
   }
 
   switch (ocsp_result.revocation_status) {
-    case net::OCSPRevocationStatus::GOOD:
+    case bssl::OCSPRevocationStatus::GOOD:
       NOTREACHED();
       break;
-    case net::OCSPRevocationStatus::REVOKED:
+    case bssl::OCSPRevocationStatus::REVOKED:
       return "OCSP response indicates that the certificate is revoked.";
-    case net::OCSPRevocationStatus::UNKNOWN:
+    case bssl::OCSPRevocationStatus::UNKNOWN:
       return "OCSP responder doesn't know about the certificate.";
   }
   NOTREACHED();
@@ -254,7 +254,7 @@ const GURL& SignedExchangeHandler::GetFallbackUrl() const {
 }
 
 void SignedExchangeHandler::SetupBuffers(size_t size) {
-  header_buf_ = base::MakeRefCounted<net::IOBuffer>(size);
+  header_buf_ = base::MakeRefCounted<net::IOBufferWithSize>(size);
   header_read_buf_ =
       base::MakeRefCounted<net::DrainableIOBuffer>(header_buf_.get(), size);
 }
@@ -577,7 +577,7 @@ SignedExchangeLoadResult SignedExchangeHandler::CheckCertRequirements(
 }
 
 bool SignedExchangeHandler::CheckOCSPStatus(
-    const net::OCSPVerifyResult& ocsp_result) {
+    const bssl::OCSPVerifyResult& ocsp_result) {
   // https://wicg.github.io/webpackage/draft-yasskin-http-origin-signed-responses.html#cross-origin-trust
   // Step 6.3 Validate that main-certificate has an ocsp property (Section 3.3)
   // with a valid OCSP response whose lifetime (nextUpdate - thisUpdate) is less
@@ -588,16 +588,17 @@ bool SignedExchangeHandler::CheckOCSPStatus(
   UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPResponseStatus,
                             ocsp_result.response_status,
                             static_cast<base::HistogramBase::Sample>(
-                                net::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
+                                bssl::OCSPVerifyResult::RESPONSE_STATUS_MAX) +
                                 1);
-  if (ocsp_result.response_status == net::OCSPVerifyResult::PROVIDED) {
+  if (ocsp_result.response_status == bssl::OCSPVerifyResult::PROVIDED) {
     UMA_HISTOGRAM_ENUMERATION(kHistogramOCSPRevocationStatus,
                               ocsp_result.revocation_status,
                               static_cast<base::HistogramBase::Sample>(
-                                  net::OCSPRevocationStatus::MAX_VALUE) +
+                                  bssl::OCSPRevocationStatus::MAX_VALUE) +
                                   1);
-    if (ocsp_result.revocation_status == net::OCSPRevocationStatus::GOOD)
+    if (ocsp_result.revocation_status == bssl::OCSPRevocationStatus::GOOD) {
       return true;
+    }
   }
   return false;
 }
@@ -744,7 +745,7 @@ void SignedExchangeHandler::CheckAbsenceOfCookies(base::OnceClosure callback) {
   cookie_manager_->GetAllForUrl(
       envelope_->request_url().url, isolation_info.site_for_cookies(),
       *isolation_info.top_frame_origin(), /*has_storage_access=*/true,
-      std::move(match_options),
+      std::move(match_options), /*is_ad_tagged=*/false,
       base::BindOnce(&SignedExchangeHandler::OnGetCookies,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }

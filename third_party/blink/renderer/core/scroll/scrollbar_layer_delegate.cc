@@ -66,8 +66,23 @@ bool ScrollbarLayerDelegate::IsSolidColor() const {
   return scrollbar_->GetTheme().IsSolidColor();
 }
 
+SkColor4f ScrollbarLayerDelegate::GetSolidColor() const {
+  return scrollbar_->GetTheme().GetSolidColor(
+      scrollbar_->ScrollbarThumbColor());
+}
+
 bool ScrollbarLayerDelegate::IsOverlay() const {
   return scrollbar_->IsOverlayScrollbar();
+}
+
+bool ScrollbarLayerDelegate::IsFluentOverlayScrollbarMinimalMode() const {
+  return scrollbar_->IsFluentOverlayScrollbarMinimalMode();
+}
+
+gfx::Rect ScrollbarLayerDelegate::ShrinkMainThreadedMinimalModeThumbRect(
+    gfx::Rect& rect) const {
+  return scrollbar_->GetTheme().ShrinkMainThreadedMinimalModeThumbRect(
+      *scrollbar_, rect);
 }
 
 gfx::Rect ScrollbarLayerDelegate::ThumbRect() const {
@@ -88,6 +103,10 @@ bool ScrollbarLayerDelegate::SupportsDragSnapBack() const {
 
 bool ScrollbarLayerDelegate::JumpOnTrackClick() const {
   return scrollbar_->GetTheme().JumpOnTrackClick();
+}
+
+bool ScrollbarLayerDelegate::IsOpaque() const {
+  return scrollbar_->IsOpaque();
 }
 
 gfx::Rect ScrollbarLayerDelegate::BackButtonRect() const {

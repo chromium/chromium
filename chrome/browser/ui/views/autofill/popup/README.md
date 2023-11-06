@@ -21,6 +21,7 @@ The main classes for the popup have the following hierarchy:
 │ PopupViewViews        │
 └──┬────────────────────┘
    │owns N
+   | TODO(1491373): This is not relevant anymore, update the doc.
 ┌──▼────────────────────┐ owns 1 ┌────────────────────┐
 │ PopupRowView          ├────────► PopupRowStrategy   │
 └──┬────────────────────┘        └────┬───────────────┘

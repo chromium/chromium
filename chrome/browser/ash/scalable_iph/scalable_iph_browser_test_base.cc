@@ -74,7 +74,8 @@ void ScalableIphBrowserTestBase::SetUp() {
   subscription_ =
       BrowserContextDependencyManager::GetInstance()
           ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-              &ScalableIphBrowserTestBase::SetTestingFactories));
+              &ScalableIphBrowserTestBase::SetTestingFactories,
+              enable_mock_tracker_));
 
   CustomizableTestEnvBrowserTestBase::SetUp();
 }
@@ -96,11 +97,16 @@ void ScalableIphBrowserTestBase::SetUpOnMainThread() {
     return;
   }
 
-  // If ScalableIph feature is off, do not set up mock as ScalableIph is not
-  // available.
-  if (!enable_scalable_iph_) {
+  // If we don't intend to enforce ScalableIph setup (i.e. the user profile
+  // doesn't qualify for ScalableIph), do not set up mocks as ScalableIph
+  // should not be available for the profile.
+  if (!setup_scalable_iph_) {
     return;
   }
+
+  CHECK(enable_scalable_iph_)
+      << "ScalableIph feature flag must be intended to be enabled to set up "
+         "fakes and mocks of ScalableIph";
 
   SetUpMocks();
 }
@@ -129,19 +135,21 @@ void ScalableIphBrowserTestBase::SetUpMocks() {
          "at a login time. We check the behavior by confirming creation of a "
          "delegate.";
 
-  mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
-      feature_engagement::TrackerFactory::GetForBrowserContext(profile));
-  CHECK(mock_tracker_)
-      << "mock_tracker_ must be non-nullptr. GetForBrowserContext should "
-         "create one via CreateMockTracker if it does not exist.";
+  if (enable_mock_tracker_) {
+    mock_tracker_ = static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile));
+    CHECK(mock_tracker_)
+        << "mock_tracker_ must be non-nullptr. GetForBrowserContext should "
+           "create one via CreateMockTracker if it does not exist.";
 
-  ON_CALL(*mock_tracker_, AddOnInitializedCallback)
-      .WillByDefault(
-          [](feature_engagement::Tracker::OnInitializedCallback callback) {
-            std::move(callback).Run(true);
-          });
+    ON_CALL(*mock_tracker_, AddOnInitializedCallback)
+        .WillByDefault(
+            [](feature_engagement::Tracker::OnInitializedCallback callback) {
+              std::move(callback).Run(true);
+            });
 
-  ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
+    ON_CALL(*mock_tracker_, IsInitialized).WillByDefault(testing::Return(true));
+  }
 
   // The static cast is necessary to access the delegate functions declared in
   // the `ScalableIphFactoryImpl` class.
@@ -357,10 +365,13 @@ void ScalableIphBrowserTestBase::AddOnlineNetwork() {
 
 // static
 void ScalableIphBrowserTestBase::SetTestingFactories(
+    bool enable_mock_tracker,
     content::BrowserContext* browser_context) {
-  feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
-      browser_context,
-      base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker));
+  if (enable_mock_tracker) {
+    feature_engagement::TrackerFactory::GetInstance()->SetTestingFactory(
+        browser_context,
+        base::BindRepeating(&ScalableIphBrowserTestBase::CreateMockTracker));
+  }
 
   // The static cast is necessary to access the delegate functions declared in
   // the `ScalableIphFactoryImpl` class.

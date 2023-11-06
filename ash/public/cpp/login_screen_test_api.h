@@ -59,6 +59,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void ClickChallengeResponseButton(const AccountId& account_id);
   static int64_t GetUiUpdateCount();
   static bool LaunchApp(const std::string& app_id);
+  static bool LaunchApp(const AccountId& account_id);
   static bool ClickAppsButton();
   static bool ClickAddUserButton();
   static bool ClickCancelButton();

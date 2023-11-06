@@ -47,25 +47,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Unit tests for {@link AutofillSaveCardBottomSheetContent}
- */
+/** Unit tests for {@link AutofillSaveCardBottomSheetContent} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillSaveCardBottomSheetContentTest {
-    @DrawableRes
-    private static final int EXAMPLE_DRAWABLE_RES = R.drawable.arrow_up;
+    @DrawableRes private static final int EXAMPLE_DRAWABLE_RES = R.drawable.arrow_up;
 
     private static final String HTTPS_EXAMPLE_COM = "https://example.com";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private Context mContext;
 
     private AutofillSaveCardBottomSheetContent mContent;
 
-    @Mock
-    private Delegate mDelegate;
+    @Mock private Delegate mDelegate;
 
     @Before
     public void setUp() {
@@ -96,17 +91,21 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     @Test
     public void testSetUiInfo_setsAllViews() {
-        AutofillSaveCardUiInfo uiInfo = new AutofillSaveCardUiInfo.Builder()
-                                                .withIsForUpload(true)
-                                                .withLogoIcon(0)
-                                                .withTitleText("Title Text")
-                                                .withDescriptionText("Description Text")
-                                                .withCardDetail(new CardDetail(EXAMPLE_DRAWABLE_RES,
-                                                        "CardLabel Text", "CardSubLabel Text"))
-                                                .withCardDescription("Card Description")
-                                                .withConfirmText("Confirm Text")
-                                                .withCancelText("Cancel Text")
-                                                .build();
+        AutofillSaveCardUiInfo uiInfo =
+                new AutofillSaveCardUiInfo.Builder()
+                        .withIsForUpload(true)
+                        .withLogoIcon(0)
+                        .withTitleText("Title Text")
+                        .withDescriptionText("Description Text")
+                        .withCardDetail(
+                                new CardDetail(
+                                        EXAMPLE_DRAWABLE_RES,
+                                        "CardLabel Text",
+                                        "CardSubLabel Text"))
+                        .withCardDescription("Card Description")
+                        .withConfirmText("Confirm Text")
+                        .withCancelText("Cancel Text")
+                        .build();
 
         mContent.setUiInfo(uiInfo);
         View contentView = mContent.getContentView();
@@ -121,7 +120,8 @@ public class AutofillSaveCardBottomSheetContentTest {
         assertEquals("CardLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_label));
         assertEquals(
                 "CardSubLabel Text", getTextViewText(R.id.autofill_save_card_credit_card_sublabel));
-        assertEquals("Card Description",
+        assertEquals(
+                "Card Description",
                 contentView.findViewById(R.id.autofill_credit_card_chip).getContentDescription());
         Button confirmButton = contentView.findViewById(R.id.autofill_save_card_confirm_button);
         assertEquals("Confirm Text", confirmButton.getText());
@@ -133,15 +133,17 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testSetUiInfo_setsViewsToGone_whenEmptyText() {
         // Set visibility to gone on description and legal message to remove the visually extra
         // margins caused by empty views.
-        AutofillSaveCardUiInfo uiInfo = defaultUiInfoBuilder()
-                                                .withDescriptionText("")
-                                                .withLegalMessageLines(ImmutableList.of())
-                                                .build();
+        AutofillSaveCardUiInfo uiInfo =
+                defaultUiInfoBuilder()
+                        .withDescriptionText("")
+                        .withLegalMessageLines(ImmutableList.of())
+                        .build();
 
         mContent.setUiInfo(uiInfo);
 
         View contentView = mContent.getContentView();
-        assertEquals(View.GONE,
+        assertEquals(
+                View.GONE,
                 contentView.findViewById(R.id.autofill_save_card_description_text).getVisibility());
         assertEquals(View.GONE, contentView.findViewById(R.id.legal_message).getVisibility());
     }
@@ -152,10 +154,11 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     @Test
     public void testSetLogoIconId_visiblySetsTheImage() {
-        AutofillSaveCardUiInfo uiInfo = defaultUiInfoBuilder()
-                                                .withIsForUpload(true)
-                                                .withLogoIcon(EXAMPLE_DRAWABLE_RES)
-                                                .build();
+        AutofillSaveCardUiInfo uiInfo =
+                defaultUiInfoBuilder()
+                        .withIsForUpload(true)
+                        .withLogoIcon(EXAMPLE_DRAWABLE_RES)
+                        .build();
 
         mContent.setUiInfo(uiInfo);
 
@@ -168,8 +171,11 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testSetLegalMessage_setsUpSpannableText() {
         AutofillSaveCardUiInfo uiInfo =
                 defaultUiInfoBuilder()
-                        .withLegalMessageLines(ImmutableList.of(new LegalMessageLine(
-                                "abc", Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
+                        .withLegalMessageLines(
+                                ImmutableList.of(
+                                        new LegalMessageLine(
+                                                "abc",
+                                                Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
                         .build();
 
         mContent.setUiInfo(uiInfo);
@@ -184,8 +190,11 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testSetLegalMessage_setsUpDelegateCallback() {
         mContent.setUiInfo(
                 defaultUiInfoBuilder()
-                        .withLegalMessageLines(ImmutableList.of(new LegalMessageLine(
-                                "abc", Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
+                        .withLegalMessageLines(
+                                ImmutableList.of(
+                                        new LegalMessageLine(
+                                                "abc",
+                                                Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
                         .build());
         TextView view = mContent.getContentView().findViewById(R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
@@ -199,10 +208,14 @@ public class AutofillSaveCardBottomSheetContentTest {
     public void testSetDelegateAfterSetUiInfo_callsLegalMessageDelegate() {
         AutofillSaveCardBottomSheetContent content =
                 new AutofillSaveCardBottomSheetContent(mContext);
-        content.setUiInfo(defaultUiInfoBuilder()
-                                  .withLegalMessageLines(ImmutableList.of(new LegalMessageLine(
-                                          "abc", Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
-                                  .build());
+        content.setUiInfo(
+                defaultUiInfoBuilder()
+                        .withLegalMessageLines(
+                                ImmutableList.of(
+                                        new LegalMessageLine(
+                                                "abc",
+                                                Arrays.asList(new Link(0, 2, HTTPS_EXAMPLE_COM)))))
+                        .build());
         content.setDelegate(mDelegate);
         TextView view = content.getContentView().findViewById(R.id.legal_message);
         List<ClickableSpan> spans = getClickableSpans((Spannable) view.getText());
@@ -270,19 +283,22 @@ public class AutofillSaveCardBottomSheetContentTest {
 
     @Test
     public void testGetSheetContentDescriptionStringId() {
-        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_content_description,
+        assertEquals(
+                R.string.autofill_save_card_prompt_bottom_sheet_content_description,
                 mContent.getSheetContentDescriptionStringId());
     }
 
     @Test
     public void testGetSheetFullHeightAccessibilityStringId() {
-        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_full_height,
+        assertEquals(
+                R.string.autofill_save_card_prompt_bottom_sheet_full_height,
                 mContent.getSheetFullHeightAccessibilityStringId());
     }
 
     @Test
     public void testGetSheetClosedAccessibilityStringId() {
-        assertEquals(R.string.autofill_save_card_prompt_bottom_sheet_closed,
+        assertEquals(
+                R.string.autofill_save_card_prompt_bottom_sheet_closed,
                 mContent.getSheetClosedAccessibilityStringId());
     }
 
@@ -293,7 +309,8 @@ public class AutofillSaveCardBottomSheetContentTest {
     private static AutofillSaveCardUiInfo.Builder defaultUiInfoBuilder() {
         return new AutofillSaveCardUiInfo.Builder()
                 .withIsForUpload(true)
-                .withCardDetail(new CardDetail(/*iconId=*/0, /*label=*/"", /*subLabel=*/""))
+                .withCardDetail(
+                        new CardDetail(/* iconId= */ 0, /* label= */ "", /* subLabel= */ ""))
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withTitleText("")
                 .withConfirmText("")

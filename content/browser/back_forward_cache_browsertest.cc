@@ -136,6 +136,31 @@ EvalJsResult GetLocalStorage(RenderFrameHostImpl* rfh, std::string key) {
   return EvalJs(rfh, JsReplace("localStorage.getItem($1)", key));
 }
 
+[[nodiscard]] bool WaitForLocalStorage(RenderFrameHostImpl* rfh,
+                                       std::string key,
+                                       std::string expected_value) {
+  auto value = EvalJs(rfh, JsReplace(R"(
+    new Promise((resolve) => {
+      let key = $1;
+      let expected_value = $2;
+      if (localStorage.getItem(key) == expected_value) {
+        resolve(localStorage.getItem(key));
+        return;
+      }
+      let listener = window.addEventListener("storage", e => {
+        if (e.storageArea == localStorage && e.key == key
+                && e.newValue == expected_value) {
+          resolve(localStorage.getItem(key));
+          removeEventListener("storage", listener);
+          return;
+        }
+      });
+    });
+    )",
+                                     key, expected_value));
+  return value == expected_value;
+}
+
 BackForwardCacheBrowserTest::BackForwardCacheBrowserTest() = default;
 
 BackForwardCacheBrowserTest::~BackForwardCacheBrowserTest() {
@@ -1798,10 +1823,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // Check that the value for 'pagehide_storage' and 'visibilitychange_storage'
   // are set correctly.
-  EXPECT_EQ("dispatched_once",
-            GetLocalStorage(main_frame_3, "pagehide_storage"));
-  EXPECT_EQ("not_dispatched",
-            GetLocalStorage(main_frame_3, "visibilitychange_storage"));
+  EXPECT_TRUE(
+      WaitForLocalStorage(main_frame_3, "pagehide_storage", "dispatched_once"));
+  EXPECT_TRUE(WaitForLocalStorage(main_frame_3, "visibilitychange_storage",
+                                  "not_dispatched"));
 }
 
 // Tests that we're getting the correct TextInputState and focus updates when a
@@ -2184,6 +2209,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AboutBlankWillNotBeCached) {
   // 1) Navigate to about:blank.
   GURL blank_url(url::kAboutBlankURL);
   EXPECT_TRUE(NavigateToURL(shell(), blank_url));
+  RenderFrameHostImplWrapper rfh_blank(current_frame_host());
 
   // 2) Navigate to a.com.
   GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
@@ -2194,12 +2220,30 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, AboutBlankWillNotBeCached) {
 
   // This about:blank document does not have a SiteInstance and then loading a
   // page on it doesn't swap the browsing instance.
-  ExpectNotRestored(
-      {
-          BackForwardCacheMetrics::NotRestoredReason::
-              kBrowsingInstanceNotSwapped,
-      },
-      {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, {}, FROM_HERE);
+
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(rfh_blank.WaitUntilRenderFrameDeleted());
+    ExpectNotRestored(
+        {
+            BackForwardCacheMetrics::NotRestoredReason::kHTTPStatusNotOK,
+            BackForwardCacheMetrics::NotRestoredReason::kSchemeNotHTTPOrHTTPS,
+            BackForwardCacheMetrics::NotRestoredReason::
+                kBrowsingInstanceNotSwapped,
+            BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead,
+        },
+        {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, {},
+        FROM_HERE);
+
+  } else {
+    EXPECT_FALSE(rfh_blank->IsInBackForwardCache());
+    ExpectNotRestored(
+        {
+            BackForwardCacheMetrics::NotRestoredReason::
+                kBrowsingInstanceNotSwapped,
+        },
+        {}, {ShouldSwapBrowsingInstance::kNo_DoesNotHaveSite}, {}, {},
+        FROM_HERE);
+  }
 }
 
 // Check that browsing instances are not swapped when a navigation redirects
@@ -2211,7 +2255,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, RedirectToSelf) {
   // 1) Navigate to a.com/empty.html.
   GURL url_a(embedded_test_server()->GetURL("a.com", "/empty.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_EQ(1, controller.GetEntryCount());
   EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
 
@@ -2219,12 +2263,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, RedirectToSelf) {
   GURL url_a2(embedded_test_server()->GetURL(
       "a.com", "/server-redirect-301?" + url_a.spec()));
   EXPECT_TRUE(NavigateToURL(shell(), url_a2, url_a));
-  RenderFrameHostImpl* rfh_b = current_frame_host();
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
   EXPECT_EQ(2, controller.GetEntryCount());
 
-  EXPECT_FALSE(rfh_a->IsInBackForwardCache());
-  EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
-      rfh_b->GetSiteInstance()));
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_FALSE(rfh_a->IsInBackForwardCache());
+    EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
+        rfh_b->GetSiteInstance()));
+  }
+
   EXPECT_EQ(url_a, controller.GetLastCommittedEntry()->GetURL());
 
   // 3) Navigate back to the previous page.
@@ -2234,7 +2283,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, RedirectToSelf) {
 
   // TODO(crbug.com/1198030): Investigate whether these navigation results are
   // expected.
-
   ExpectNotRestored(
       {
           BackForwardCacheMetrics::NotRestoredReason::
@@ -2980,19 +3028,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // 3) Navigate to B again, renderer initiated.
   ASSERT_TRUE(NavigateToURLFromRenderer(rfh_b.get(), url_b));
-  // This is treated as replacement, and RenderFrameHost does not change.
-  EXPECT_EQ(rfh_b.get(), current_frame_host());
+  RenderFrameHostImplWrapper rfh_b2(current_frame_host());
+
+  // This is treated as replacement, and the previous B page did not get into
+  // back/forward cache.
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+  } else {
+    EXPECT_FALSE(rfh_b->IsInBackForwardCache());
+    EXPECT_EQ(rfh_b.get(), rfh_b2.get());
+  }
 
   // 4) Go back. Make sure we go back to A instead of B and restore from
   // bfcache.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
   EXPECT_EQ(current_frame_host(), rfh_a.get());
-  EXPECT_TRUE(rfh_b.get()->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b2.get()->IsInBackForwardCache());
   ExpectRestored(FROM_HERE);
 
   // 5) Go forward and restore from bfcache.
   ASSERT_TRUE(HistoryGoForward(shell()->web_contents()));
-  EXPECT_EQ(current_frame_host(), rfh_b.get());
+  EXPECT_EQ(current_frame_host(), rfh_b2.get());
   ExpectRestored(FROM_HERE);
 }
 

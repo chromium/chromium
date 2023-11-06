@@ -67,7 +67,7 @@ WebSocket::WebSocket(const GURL& url,
       listener_(listener),
       state_(INITIALIZED),
       write_buffer_(base::MakeRefCounted<net::DrainableIOBuffer>(
-          base::MakeRefCounted<net::IOBuffer>(0),
+          base::MakeRefCounted<net::IOBuffer>(),
           0)),
       read_buffer_(
           base::MakeRefCounted<net::IOBufferWithSize>(read_buffer_size)) {}
@@ -208,9 +208,10 @@ void WebSocket::ContinueWritingIfNecessary() {
   if (!write_buffer_->BytesRemaining()) {
     if (pending_write_.empty())
       return;
+    const size_t pending_write_length = pending_write_.length();
     write_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
-        base::MakeRefCounted<net::StringIOBuffer>(pending_write_),
-        pending_write_.length());
+        base::MakeRefCounted<net::StringIOBuffer>(std::move(pending_write_)),
+        pending_write_length);
     pending_write_.clear();
   }
   int code = socket_->Write(

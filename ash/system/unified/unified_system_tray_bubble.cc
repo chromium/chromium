@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/tray_background_view.h"
@@ -28,8 +27,6 @@
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
-#include "ui/wm/core/window_util.h"
-#include "ui/wm/public/activation_client.h"
 
 namespace ash {
 namespace {
@@ -107,7 +104,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
     unified_system_tray_->NotifyLeavingCalendarView();
   }
 
-  Shell::Get()->activation_client()->RemoveObserver(this);
   if (Shell::Get()->tablet_mode_controller()) {
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
@@ -136,7 +132,6 @@ UnifiedSystemTrayBubble::~UnifiedSystemTrayBubble() {
 void UnifiedSystemTrayBubble::InitializeObservers() {
   unified_system_tray_->shelf()->AddObserver(this);
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
-  Shell::Get()->activation_client()->AddObserver(this);
 
   CHECK(bubble_widget_);
   CHECK(bubble_view_);
@@ -325,68 +320,6 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   unified_system_tray_->CloseBubble();
 }
 
-void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
-                                                aura::Window* gained_active,
-                                                aura::Window* lost_active) {
-  // This function is needed when QsRevamp is disabled since the message center
-  // bubble is on top of this bubble, which we need to customize the window
-  // activation handling like below. When QsRevamp is enabled, we don't need
-  // this anymore since everything is handled in
-  // `TrayEventFilter::OnWindowActivated()`
-  if (features::IsQsRevampEnabled()) {
-    return;
-  }
-
-  if (!gained_active || !bubble_widget_) {
-    return;
-  }
-
-  // Check for the `CloseBubble()` lock.
-  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated()) {
-    return;
-  }
-
-  auto* gained_active_widget =
-      views::Widget::GetWidgetForNativeView(gained_active);
-
-  // Don't close the bubble if a transient child is gaining or losing
-  // activation.
-  if (bubble_widget_ == gained_active_widget ||
-      ::wm::HasTransientAncestor(gained_active,
-                                 bubble_widget_->GetNativeWindow()) ||
-      (lost_active && ::wm::HasTransientAncestor(
-                          lost_active, bubble_widget_->GetNativeWindow()))) {
-    return;
-  }
-
-  // Don't close the bubble if the message center is gaining activation.
-  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
-    views::Widget* message_center_widget =
-        unified_system_tray_->message_center_bubble()->GetBubbleWidget();
-    if (message_center_widget == gained_active_widget) {
-      return;
-    }
-
-    // If the message center is not visible, ignore activation changes.
-    // Otherwise, this may cause a crash when closing the dialog via
-    // accelerator. See crbug.com/1041174.
-    if (!message_center_widget->IsVisible()) {
-      return;
-    }
-  }
-
-  // If the activated window is a popup notification, interacting with it should
-  // not close the bubble.
-  if (features::IsNotifierCollisionEnabled() &&
-      unified_system_tray_->GetMessagePopupCollection()
-          ->IsWidgetAPopupNotification(gained_active_widget)) {
-    return;
-  }
-
-  // Deletes this.
-  unified_system_tray_->CloseBubble();
-}
-
 void UnifiedSystemTrayBubble::RecordTimeToClick() {
   if (!time_opened_) {
     return;
@@ -470,12 +403,6 @@ void UnifiedSystemTrayBubble::UpdateBubbleBounds() {
       unified_system_tray_->shelf()->alignment());
   bubble_view_->ChangeAnchorRect(
       unified_system_tray_->shelf()->GetSystemTrayAnchorRect());
-  if (is_qs_revamp_enabled_) {
-    return;
-  }
-  if (unified_system_tray_->IsMessageCenterBubbleShown()) {
-    unified_system_tray_->message_center_bubble()->UpdatePosition();
-  }
 }
 
 void UnifiedSystemTrayBubble::NotifyAccessibilityEvent(ax::mojom::Event event,

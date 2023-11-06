@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -296,7 +296,7 @@ gfx::RectF LayoutSVGText::ObjectBoundingBox() const {
         continue;
       }
       for (const auto& item : fragment.Items()->Items()) {
-        if (item.Type() != NGFragmentItem::kSvgText) {
+        if (item.Type() != FragmentItem::kSvgText) {
           continue;
         }
         // Do not use item.RectInContainerFragment() in order to avoid

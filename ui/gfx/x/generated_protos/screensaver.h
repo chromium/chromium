@@ -82,7 +82,7 @@ class COMPONENT_EXPORT(X11) ScreenSaver {
   };
 
   struct NotifyEvent {
-    static constexpr int type_id = 5;
+    static constexpr uint8_t type_id = 5;
     static constexpr uint8_t opcode = 0;
     State state{};
     uint16_t sequence{};

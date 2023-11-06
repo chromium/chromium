@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator_behavior.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -58,7 +58,7 @@ class TextIteratorTextNodeHandler {
   unsigned end_offset_ = 0;
 
   // UnitVector for text_node_. This is available only if uses_layout_ng_.
-  NGOffsetMapping::UnitVector mapping_units_;
+  OffsetMapping::UnitVector mapping_units_;
   wtf_size_t mapping_units_index_ = 0;
 
   const TextIteratorBehavior behavior_;

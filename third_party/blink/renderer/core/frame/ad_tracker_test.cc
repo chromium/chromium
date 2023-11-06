@@ -137,7 +137,7 @@ class TestAdTracker : public AdTracker {
     if (!execution_context_)
       return AdTracker::GetCurrentExecutionContext();
 
-    return execution_context_;
+    return execution_context_.Get();
   }
 
   bool CalculateIfAdSubresource(ExecutionContext* execution_context,

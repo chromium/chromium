@@ -82,15 +82,10 @@ std::unique_ptr<RecipientsFetcher> CreateRecipientsFetcher(
   return self;
 }
 
-- (void)sendSelectedPasswordsToSelectedRecipients {
-  std::vector<password_manager::PasswordForm> passwords;
-  for (const password_manager::CredentialUIEntry& credential :
-       self.selectedCredentials) {
-    std::vector<password_manager::PasswordForm> credential_forms =
-        _savedPasswordsPresenter->GetCorrespondingPasswordForms(credential);
-    passwords.insert(passwords.end(), credential_forms.begin(),
-                     credential_forms.end());
-  }
+- (void)sendSelectedCredentialToSelectedRecipients {
+  std::vector<password_manager::PasswordForm> passwords =
+      _savedPasswordsPresenter->GetCorrespondingPasswordForms(
+          self.selectedCredential);
   for (RecipientInfoForIOSDisplay* recipient in self.selectedRecipients) {
     _passwordSenderService->SendPasswords(
         passwords, {.user_id = base::SysNSStringToUTF8(recipient.userID),

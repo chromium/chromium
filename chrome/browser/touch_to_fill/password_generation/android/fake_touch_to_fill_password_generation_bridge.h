@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_GENERATION_ANDROID_FAKE_TOUCH_TO_FILL_PASSWORD_GENERATION_BRIDGE_H_
 
 #include <jni.h>
+
 #include "chrome/browser/touch_to_fill/password_generation/android/touch_to_fill_password_generation_bridge.h"
 #include "content/public/browser/web_contents.h"
 
@@ -21,7 +22,7 @@ class FakeTouchToFillPasswordGenerationBridge
             std::u16string password,
             std::string account) override;
   void Hide() override;
-  void OnDismissed(JNIEnv* env) override;
+  void OnDismissed(JNIEnv* env, bool generated_password_accepted) override;
   void OnGeneratedPasswordAccepted(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& password) override;

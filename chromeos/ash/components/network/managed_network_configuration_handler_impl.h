@@ -23,6 +23,9 @@
 #include "chromeos/ash/components/network/policy_applicator.h"
 #include "chromeos/ash/components/network/profile_policies.h"
 #include "chromeos/ash/components/network/text_message_suppression_state.h"
+#include "components/prefs/pref_service.h"
+
+class PrefService;
 
 namespace base {
 class Value;
@@ -155,6 +158,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   bool AllowOnlyPolicyWiFiToConnect() const override;
   bool AllowOnlyPolicyWiFiToConnectIfAvailable() const override;
   bool AllowOnlyPolicyNetworksToAutoconnect() const override;
+  bool IsProhibitedFromConfiguringVpn() const override;
+
   bool RecommendedValuesAreEphemeral() const override;
   bool UserCreatedNetworkConfigurationsAreEphemeral() const override;
   std::vector<std::string> GetBlockedHexSSIDs() const override;
@@ -336,6 +341,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void set_ui_proxy_config_service(
       UIProxyConfigService* ui_proxy_config_service);
 
+  void set_user_prefs(PrefService* user_prefs);
+
   // Returns the device policy GlobalNetworkConfiguration boolean value under
   // `key` or `absl::nullopt` if such a value doesn't exist or is not of type
   // BOOLEAN.
@@ -369,6 +376,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       ui_proxy_config_service_ = nullptr;
   raw_ptr<HotspotController, DanglingUntriaged | ExperimentalAsh>
       hotspot_controller_ = nullptr;
+
+  // Initialized to null and set once SetUserPrefs() is called.
+  raw_ptr<PrefService, ExperimentalAsh> user_prefs_ = nullptr;
 
   UserToPolicyApplicationInfo policy_application_info_map_;
 

@@ -18,6 +18,8 @@ extern NSString* const kTabPickupSettingsTableViewId;
 
 // The accessibility identifier of the tab pickup switch item.
 extern NSString* const kTabPickupSettingsSwitchItemId;
+// The accessibility identifier of the tab pickup managed item.
+extern NSString* const kTabPickupSettingsManagedItemId;
 // The accessibility identifier of the tab pickup privacy footer.
 extern NSString* const kTabPickupSettingsPrivacyFooterId;
 

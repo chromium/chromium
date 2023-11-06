@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/types/expected.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -70,11 +71,11 @@ void StorageModule::Create(
              base::OnceCallback<void(StatusOr<scoped_refptr<StorageModule>>)>
                  callback,
              StatusOr<scoped_refptr<Storage>> storage) {
-            if (!storage.ok()) {
-              std::move(callback).Run(storage.status());
+            if (!storage.has_value()) {
+              std::move(callback).Run(base::unexpected(storage.error()));
               return;
             }
-            instance->storage_ = std::move(storage.ValueOrDie());
+            instance->storage_ = std::move(storage.value());
             std::move(callback).Run(std::move(instance));
           },
           std::move(instance), std::move(callback)));

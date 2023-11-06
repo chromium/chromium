@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "net/cookies/cookie_util.h"
 #endif
@@ -54,8 +54,8 @@ GoogleURLLoaderThrottle::GoogleURLLoaderThrottle(
     const std::string& client_data_header,
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-    std::unique_ptr<BoundSessionRequestThrottledListener>
-        bound_session_request_throttled_listener,
+    std::unique_ptr<BoundSessionRequestThrottledHandler>
+        bound_session_request_throttled_handler,
 #endif
     chrome::mojom::DynamicParamsPtr dynamic_params)
     :
@@ -63,8 +63,8 @@ GoogleURLLoaderThrottle::GoogleURLLoaderThrottle(
       client_data_header_(client_data_header),
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-      bound_session_request_throttled_listener_(
-          std::move(bound_session_request_throttled_listener)),
+      bound_session_request_throttled_handler_(
+          std::move(bound_session_request_throttled_handler)),
 #endif
       dynamic_params_(std::move(dynamic_params)) {
 }
@@ -113,11 +113,11 @@ void GoogleURLLoaderThrottle::WillStartRequest(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (switches::IsBoundSessionCredentialsEnabled() && request->SendsCookies() &&
       ShouldDeferRequestForBoundSession(request->url)) {
-    CHECK(bound_session_request_throttled_listener_);
+    CHECK(bound_session_request_throttled_handler_);
     *defer = true;
     CHECK(!bound_session_request_throttled_start_time_.has_value());
     bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
-    bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
+    bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
         base::BindOnce(
             &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
             weak_factory_.GetWeakPtr()));
@@ -166,11 +166,11 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (switches::IsBoundSessionCredentialsEnabled() &&
       ShouldDeferRequestForBoundSession(redirect_info->new_url)) {
-    CHECK(bound_session_request_throttled_listener_);
+    CHECK(bound_session_request_throttled_handler_);
     *defer = true;
     CHECK(!bound_session_request_throttled_start_time_.has_value());
     bound_session_request_throttled_start_time_ = base::TimeTicks::Now();
-    bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
+    bound_session_request_throttled_handler_->HandleRequestBlockedOnCookie(
         base::BindOnce(
             &GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted,
             weak_factory_.GetWeakPtr()));
@@ -240,10 +240,10 @@ bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
 }
 
 void GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted(
-    BoundSessionRequestThrottledListener::UnblockAction unblock_action) {
+    BoundSessionRequestThrottledHandler::UnblockAction unblock_action) {
   // Use `PostTask` to avoid resuming the request before it has been deferred
   // then the request will hang. This can happen if
-  // `BoundSessionRequestThrottledListener::OnRequestBlockedOnCookie()` calls
+  // `BoundSessionRequestThrottledHandler::HandleRequestBlockedOnCookie()` calls
   // the callback synchronously.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&GoogleURLLoaderThrottle::ResumeOrCancelRequest,
@@ -251,7 +251,7 @@ void GoogleURLLoaderThrottle::OnDeferRequestForBoundSessionCompleted(
 }
 
 void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
-    BoundSessionRequestThrottledListener::UnblockAction unblock_action) {
+    BoundSessionRequestThrottledHandler::UnblockAction unblock_action) {
   CHECK(bound_session_request_throttled_start_time_.has_value());
   base::TimeDelta duration =
       base::TimeTicks::Now() - *bound_session_request_throttled_start_time_;
@@ -260,10 +260,10 @@ void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
   bound_session_request_throttled_start_time_ = absl::nullopt;
 
   switch (unblock_action) {
-    case BoundSessionRequestThrottledListener::UnblockAction::kResume:
+    case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
       delegate_->Resume();
       break;
-    case BoundSessionRequestThrottledListener::UnblockAction::kCancel:
+    case BoundSessionRequestThrottledHandler::UnblockAction::kCancel:
       delegate_->CancelWithError(net::ERR_ABORTED);
       break;
   }

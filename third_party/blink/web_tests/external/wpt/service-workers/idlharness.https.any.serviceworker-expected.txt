@@ -1,299 +1,331 @@
 This is a testharness.js-based test.
 Found 295 tests; 263 PASS, 32 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Navigator: original interface defined
-PASS Partial interface Navigator: member names are unique
-PASS Partial interface WorkerNavigator: original interface defined
-PASS Partial interface WorkerNavigator: member names are unique
-PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
-PASS Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
-PASS Partial interface Navigator[2]: member names are unique
-PASS Partial interface mixin NavigatorID: member names are unique
-PASS Partial interface Window: member names are unique
-PASS ServiceWorker includes AbstractWorker: member names are unique
-PASS Window includes GlobalEventHandlers: member names are unique
-PASS Window includes WindowEventHandlers: member names are unique
-PASS Window includes WindowOrWorkerGlobalScope: member names are unique
-PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
-PASS Navigator includes NavigatorID: member names are unique
-PASS Navigator includes NavigatorLanguage: member names are unique
-PASS Navigator includes NavigatorOnLine: member names are unique
-PASS Navigator includes NavigatorContentUtils: member names are unique
-PASS Navigator includes NavigatorCookies: member names are unique
-PASS Navigator includes NavigatorPlugins: member names are unique
-PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-PASS Window includes AnimationFrameProvider: member names are unique
-PASS WorkerNavigator includes NavigatorID: member names are unique
-PASS WorkerNavigator includes NavigatorLanguage: member names are unique
-PASS WorkerNavigator includes NavigatorOnLine: member names are unique
-PASS WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
-PASS Window includes WindowSessionStorage: member names are unique
-PASS Window includes WindowLocalStorage: member names are unique
-PASS ServiceWorker interface: existence and properties of interface object
-PASS ServiceWorker interface object length
-PASS ServiceWorker interface object name
-PASS ServiceWorker interface: existence and properties of interface prototype object
-PASS ServiceWorker interface: existence and properties of interface prototype object's "constructor" property
-PASS ServiceWorker interface: existence and properties of interface prototype object's @@unscopables property
-PASS ServiceWorker interface: attribute scriptURL
-PASS ServiceWorker interface: attribute state
-PASS ServiceWorker interface: operation postMessage(any, sequence<object>)
-PASS ServiceWorker interface: operation postMessage(any, optional StructuredSerializeOptions)
-PASS ServiceWorker interface: attribute onstatechange
-PASS ServiceWorker must be primary interface of serviceWorker
-PASS Stringification of serviceWorker
-PASS ServiceWorker interface: serviceWorker must inherit property "scriptURL" with the proper type
-PASS ServiceWorker interface: serviceWorker must inherit property "state" with the proper type
-PASS ServiceWorker interface: serviceWorker must inherit property "postMessage(any, sequence<object>)" with the proper type
-PASS ServiceWorker interface: calling postMessage(any, sequence<object>) on serviceWorker with too few arguments must throw TypeError
-PASS ServiceWorker interface: serviceWorker must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type
-PASS ServiceWorker interface: calling postMessage(any, optional StructuredSerializeOptions) on serviceWorker with too few arguments must throw TypeError
-PASS ServiceWorker interface: serviceWorker must inherit property "onstatechange" with the proper type
-PASS ServiceWorkerRegistration interface: existence and properties of interface object
-PASS ServiceWorkerRegistration interface object length
-PASS ServiceWorkerRegistration interface object name
-PASS ServiceWorkerRegistration interface: existence and properties of interface prototype object
-PASS ServiceWorkerRegistration interface: existence and properties of interface prototype object's "constructor" property
-PASS ServiceWorkerRegistration interface: existence and properties of interface prototype object's @@unscopables property
-PASS ServiceWorkerRegistration interface: attribute installing
-PASS ServiceWorkerRegistration interface: attribute waiting
-PASS ServiceWorkerRegistration interface: attribute active
-PASS ServiceWorkerRegistration interface: attribute navigationPreload
-PASS ServiceWorkerRegistration interface: attribute scope
-PASS ServiceWorkerRegistration interface: attribute updateViaCache
-PASS ServiceWorkerRegistration interface: operation update()
-PASS ServiceWorkerRegistration interface: operation unregister()
-PASS ServiceWorkerRegistration interface: attribute onupdatefound
-PASS ServiceWorkerRegistration must be primary interface of registration
-PASS Stringification of registration
-PASS ServiceWorkerRegistration interface: registration must inherit property "installing" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "waiting" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "active" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "navigationPreload" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "scope" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "updateViaCache" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "update()" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "unregister()" with the proper type
-PASS ServiceWorkerRegistration interface: registration must inherit property "onupdatefound" with the proper type
-FAIL ServiceWorkerContainer interface: existence and properties of interface object assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface object length assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface object name assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: existence and properties of interface prototype object assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: attribute controller assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: attribute ready assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: operation register(USVString, optional RegistrationOptions) assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: operation getRegistration(optional USVString) assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: operation getRegistrations() assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: operation startMessages() assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: attribute oncontrollerchange assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: attribute onmessage assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer interface: attribute onmessageerror assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
-FAIL ServiceWorkerContainer must be primary interface of navigator.serviceWorker assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL Stringification of navigator.serviceWorker assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "controller" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "ready" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "register(USVString, optional RegistrationOptions)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: calling register(USVString, optional RegistrationOptions) on navigator.serviceWorker with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "getRegistration(optional USVString)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: calling getRegistration(optional USVString) on navigator.serviceWorker with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "getRegistrations()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "startMessages()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "oncontrollerchange" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "onmessage" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-FAIL ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "onmessageerror" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
-PASS NavigationPreloadManager interface: existence and properties of interface object
-PASS NavigationPreloadManager interface object length
-PASS NavigationPreloadManager interface object name
-PASS NavigationPreloadManager interface: existence and properties of interface prototype object
-PASS NavigationPreloadManager interface: existence and properties of interface prototype object's "constructor" property
-PASS NavigationPreloadManager interface: existence and properties of interface prototype object's @@unscopables property
-PASS NavigationPreloadManager interface: operation enable()
-PASS NavigationPreloadManager interface: operation disable()
-PASS NavigationPreloadManager interface: operation setHeaderValue(ByteString)
-PASS NavigationPreloadManager interface: operation getState()
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface object
-PASS ServiceWorkerGlobalScope interface object length
-PASS ServiceWorkerGlobalScope interface object name
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface prototype object
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Object.setPrototypeOf should throw a TypeError
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via __proto__ should throw a TypeError
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Reflect.setPrototypeOf should return false
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via Object.setPrototypeOf should not throw
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via __proto__ should not throw
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via Reflect.setPrototypeOf should return true
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface prototype object's "constructor" property
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface prototype object's @@unscopables property
-PASS ServiceWorkerGlobalScope interface: attribute clients
-PASS ServiceWorkerGlobalScope interface: attribute registration
-PASS ServiceWorkerGlobalScope interface: attribute serviceWorker
-PASS ServiceWorkerGlobalScope interface: operation skipWaiting()
-PASS ServiceWorkerGlobalScope interface: attribute oninstall
-PASS ServiceWorkerGlobalScope interface: attribute onactivate
-PASS ServiceWorkerGlobalScope interface: attribute onfetch
-PASS ServiceWorkerGlobalScope interface: attribute onmessage
-PASS ServiceWorkerGlobalScope interface: attribute onmessageerror
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Object.setPrototypeOf should throw a TypeError
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via __proto__ should throw a TypeError
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Reflect.setPrototypeOf should return false
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via Object.setPrototypeOf should not throw
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via __proto__ should not throw
-PASS ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via Reflect.setPrototypeOf should return true
-PASS ServiceWorkerGlobalScope must be primary interface of self
-PASS Stringification of self
-PASS ServiceWorkerGlobalScope interface: self must inherit property "clients" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "registration" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "serviceWorker" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "skipWaiting()" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "oninstall" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "onactivate" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "onfetch" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "onmessage" with the proper type
-PASS ServiceWorkerGlobalScope interface: self must inherit property "onmessageerror" with the proper type
-PASS WorkerGlobalScope interface: self must inherit property "caches" with the proper type
-PASS Client interface: existence and properties of interface object
-PASS Client interface object length
-PASS Client interface object name
-PASS Client interface: existence and properties of interface prototype object
-PASS Client interface: existence and properties of interface prototype object's "constructor" property
-PASS Client interface: existence and properties of interface prototype object's @@unscopables property
-PASS Client interface: attribute url
-PASS Client interface: attribute frameType
-PASS Client interface: attribute id
-PASS Client interface: attribute type
-PASS Client interface: operation postMessage(any, sequence<object>)
-PASS Client interface: operation postMessage(any, optional StructuredSerializeOptions)
-PASS WindowClient interface: existence and properties of interface object
-PASS WindowClient interface object length
-PASS WindowClient interface object name
-PASS WindowClient interface: existence and properties of interface prototype object
-PASS WindowClient interface: existence and properties of interface prototype object's "constructor" property
-PASS WindowClient interface: existence and properties of interface prototype object's @@unscopables property
-PASS WindowClient interface: attribute visibilityState
-PASS WindowClient interface: attribute focused
-FAIL WindowClient interface: attribute ancestorOrigins assert_true: The prototype object must have a property "ancestorOrigins" expected true got false
-PASS WindowClient interface: operation focus()
-PASS WindowClient interface: operation navigate(USVString)
-PASS Clients interface: existence and properties of interface object
-PASS Clients interface object length
-PASS Clients interface object name
-PASS Clients interface: existence and properties of interface prototype object
-PASS Clients interface: existence and properties of interface prototype object's "constructor" property
-PASS Clients interface: existence and properties of interface prototype object's @@unscopables property
-PASS Clients interface: operation get(DOMString)
-PASS Clients interface: operation matchAll(optional ClientQueryOptions)
-PASS Clients interface: operation openWindow(USVString)
-PASS Clients interface: operation claim()
-PASS Clients must be primary interface of clients
-PASS Stringification of clients
-PASS Clients interface: clients must inherit property "get(DOMString)" with the proper type
-PASS Clients interface: calling get(DOMString) on clients with too few arguments must throw TypeError
-PASS Clients interface: clients must inherit property "matchAll(optional ClientQueryOptions)" with the proper type
-PASS Clients interface: calling matchAll(optional ClientQueryOptions) on clients with too few arguments must throw TypeError
-PASS Clients interface: clients must inherit property "openWindow(USVString)" with the proper type
-PASS Clients interface: calling openWindow(USVString) on clients with too few arguments must throw TypeError
-PASS Clients interface: clients must inherit property "claim()" with the proper type
-PASS ExtendableEvent interface: existence and properties of interface object
-PASS ExtendableEvent interface object length
-PASS ExtendableEvent interface object name
-PASS ExtendableEvent interface: existence and properties of interface prototype object
-PASS ExtendableEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS ExtendableEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS ExtendableEvent interface: operation waitUntil(Promise<any>)
-PASS ExtendableEvent must be primary interface of new ExtendableEvent("type")
-PASS Stringification of new ExtendableEvent("type")
-PASS ExtendableEvent interface: new ExtendableEvent("type") must inherit property "waitUntil(Promise<any>)" with the proper type
-PASS ExtendableEvent interface: calling waitUntil(Promise<any>) on new ExtendableEvent("type") with too few arguments must throw TypeError
-PASS FetchEvent interface: existence and properties of interface object
-PASS FetchEvent interface object length
-PASS FetchEvent interface object name
-PASS FetchEvent interface: existence and properties of interface prototype object
-PASS FetchEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS FetchEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS FetchEvent interface: attribute request
-PASS FetchEvent interface: attribute preloadResponse
-PASS FetchEvent interface: attribute clientId
-PASS FetchEvent interface: attribute resultingClientId
-FAIL FetchEvent interface: attribute replacesClientId assert_true: The prototype object must have a property "replacesClientId" expected true got false
-PASS FetchEvent interface: attribute handled
-PASS FetchEvent interface: operation respondWith(Promise<Response>)
-PASS FetchEvent must be primary interface of new FetchEvent("type", { request: new Request("") })
-PASS Stringification of new FetchEvent("type", { request: new Request("") })
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "request" with the proper type
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "preloadResponse" with the proper type
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "clientId" with the proper type
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "resultingClientId" with the proper type
-FAIL FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "replacesClientId" with the proper type assert_inherits: property "replacesClientId" not found in prototype chain
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "handled" with the proper type
-PASS FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "respondWith(Promise<Response>)" with the proper type
-PASS FetchEvent interface: calling respondWith(Promise<Response>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
-PASS ExtendableEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "waitUntil(Promise<any>)" with the proper type
-PASS ExtendableEvent interface: calling waitUntil(Promise<any>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
-PASS ExtendableMessageEvent interface: existence and properties of interface object
-PASS ExtendableMessageEvent interface object length
-PASS ExtendableMessageEvent interface object name
-PASS ExtendableMessageEvent interface: existence and properties of interface prototype object
-PASS ExtendableMessageEvent interface: existence and properties of interface prototype object's "constructor" property
-PASS ExtendableMessageEvent interface: existence and properties of interface prototype object's @@unscopables property
-PASS ExtendableMessageEvent interface: attribute data
-PASS ExtendableMessageEvent interface: attribute origin
-PASS ExtendableMessageEvent interface: attribute lastEventId
-PASS ExtendableMessageEvent interface: attribute source
-PASS ExtendableMessageEvent interface: attribute ports
-PASS Cache interface: existence and properties of interface object
-PASS Cache interface object length
-PASS Cache interface object name
-PASS Cache interface: existence and properties of interface prototype object
-PASS Cache interface: existence and properties of interface prototype object's "constructor" property
-PASS Cache interface: existence and properties of interface prototype object's @@unscopables property
-PASS Cache interface: operation match(RequestInfo, optional CacheQueryOptions)
-PASS Cache interface: operation matchAll(optional RequestInfo, optional CacheQueryOptions)
-PASS Cache interface: operation add(RequestInfo)
-PASS Cache interface: operation addAll(sequence<RequestInfo>)
-PASS Cache interface: operation put(RequestInfo, Response)
-PASS Cache interface: operation delete(RequestInfo, optional CacheQueryOptions)
-PASS Cache interface: operation keys(optional RequestInfo, optional CacheQueryOptions)
-PASS Cache must be primary interface of self.cacheInstance
-PASS Stringification of self.cacheInstance
-PASS Cache interface: self.cacheInstance must inherit property "match(RequestInfo, optional CacheQueryOptions)" with the proper type
-PASS Cache interface: calling match(RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "matchAll(optional RequestInfo, optional CacheQueryOptions)" with the proper type
-PASS Cache interface: calling matchAll(optional RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "add(RequestInfo)" with the proper type
-PASS Cache interface: calling add(RequestInfo) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "addAll(sequence<RequestInfo>)" with the proper type
-PASS Cache interface: calling addAll(sequence<RequestInfo>) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "put(RequestInfo, Response)" with the proper type
-PASS Cache interface: calling put(RequestInfo, Response) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "delete(RequestInfo, optional CacheQueryOptions)" with the proper type
-PASS Cache interface: calling delete(RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
-PASS Cache interface: self.cacheInstance must inherit property "keys(optional RequestInfo, optional CacheQueryOptions)" with the proper type
-PASS Cache interface: calling keys(optional RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
-PASS CacheStorage interface: existence and properties of interface object
-PASS CacheStorage interface object length
-PASS CacheStorage interface object name
-PASS CacheStorage interface: existence and properties of interface prototype object
-PASS CacheStorage interface: existence and properties of interface prototype object's "constructor" property
-PASS CacheStorage interface: existence and properties of interface prototype object's @@unscopables property
-PASS CacheStorage interface: operation match(RequestInfo, optional MultiCacheQueryOptions)
-PASS CacheStorage interface: operation has(DOMString)
-PASS CacheStorage interface: operation open(DOMString)
-PASS CacheStorage interface: operation delete(DOMString)
-PASS CacheStorage interface: operation keys()
-PASS CacheStorage must be primary interface of caches
-PASS Stringification of caches
-PASS CacheStorage interface: caches must inherit property "match(RequestInfo, optional MultiCacheQueryOptions)" with the proper type
-PASS CacheStorage interface: calling match(RequestInfo, optional MultiCacheQueryOptions) on caches with too few arguments must throw TypeError
-PASS CacheStorage interface: caches must inherit property "has(DOMString)" with the proper type
-PASS CacheStorage interface: calling has(DOMString) on caches with too few arguments must throw TypeError
-PASS CacheStorage interface: caches must inherit property "open(DOMString)" with the proper type
-PASS CacheStorage interface: calling open(DOMString) on caches with too few arguments must throw TypeError
-PASS CacheStorage interface: caches must inherit property "delete(DOMString)" with the proper type
-PASS CacheStorage interface: calling delete(DOMString) on caches with too few arguments must throw TypeError
-PASS CacheStorage interface: caches must inherit property "keys()" with the proper type
-PASS WorkerGlobalScope interface: attribute caches
-FAIL WorkerNavigator interface: attribute serviceWorker assert_true: The prototype object must have a property "serviceWorker" expected true got false
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Navigator: original interface defined
+[PASS] Partial interface Navigator: member names are unique
+[PASS] Partial interface WorkerNavigator: original interface defined
+[PASS] Partial interface WorkerNavigator: member names are unique
+[PASS] Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
+[PASS] Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
+[PASS] Partial interface Navigator[2]: member names are unique
+[PASS] Partial interface mixin NavigatorID: member names are unique
+[PASS] Partial interface Window: member names are unique
+[PASS] ServiceWorker includes AbstractWorker: member names are unique
+[PASS] Window includes GlobalEventHandlers: member names are unique
+[PASS] Window includes WindowEventHandlers: member names are unique
+[PASS] Window includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+[PASS] Navigator includes NavigatorID: member names are unique
+[PASS] Navigator includes NavigatorLanguage: member names are unique
+[PASS] Navigator includes NavigatorOnLine: member names are unique
+[PASS] Navigator includes NavigatorContentUtils: member names are unique
+[PASS] Navigator includes NavigatorCookies: member names are unique
+[PASS] Navigator includes NavigatorPlugins: member names are unique
+[PASS] Navigator includes NavigatorConcurrentHardware: member names are unique
+[PASS] Window includes AnimationFrameProvider: member names are unique
+[PASS] WorkerNavigator includes NavigatorID: member names are unique
+[PASS] WorkerNavigator includes NavigatorLanguage: member names are unique
+[PASS] WorkerNavigator includes NavigatorOnLine: member names are unique
+[PASS] WorkerNavigator includes NavigatorConcurrentHardware: member names are unique
+[PASS] Window includes WindowSessionStorage: member names are unique
+[PASS] Window includes WindowLocalStorage: member names are unique
+[PASS] ServiceWorker interface: existence and properties of interface object
+[PASS] ServiceWorker interface object length
+[PASS] ServiceWorker interface object name
+[PASS] ServiceWorker interface: existence and properties of interface prototype object
+[PASS] ServiceWorker interface: existence and properties of interface prototype object's "constructor" property
+[PASS] ServiceWorker interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] ServiceWorker interface: attribute scriptURL
+[PASS] ServiceWorker interface: attribute state
+[PASS] ServiceWorker interface: operation postMessage(any, sequence<object>)
+[PASS] ServiceWorker interface: operation postMessage(any, optional StructuredSerializeOptions)
+[PASS] ServiceWorker interface: attribute onstatechange
+[PASS] ServiceWorker must be primary interface of serviceWorker
+[PASS] Stringification of serviceWorker
+[PASS] ServiceWorker interface: serviceWorker must inherit property "scriptURL" with the proper type
+[PASS] ServiceWorker interface: serviceWorker must inherit property "state" with the proper type
+[PASS] ServiceWorker interface: serviceWorker must inherit property "postMessage(any, sequence<object>)" with the proper type
+[PASS] ServiceWorker interface: calling postMessage(any, sequence<object>) on serviceWorker with too few arguments must throw TypeError
+[PASS] ServiceWorker interface: serviceWorker must inherit property "postMessage(any, optional StructuredSerializeOptions)" with the proper type
+[PASS] ServiceWorker interface: calling postMessage(any, optional StructuredSerializeOptions) on serviceWorker with too few arguments must throw TypeError
+[PASS] ServiceWorker interface: serviceWorker must inherit property "onstatechange" with the proper type
+[PASS] ServiceWorkerRegistration interface: existence and properties of interface object
+[PASS] ServiceWorkerRegistration interface object length
+[PASS] ServiceWorkerRegistration interface object name
+[PASS] ServiceWorkerRegistration interface: existence and properties of interface prototype object
+[PASS] ServiceWorkerRegistration interface: existence and properties of interface prototype object's "constructor" property
+[PASS] ServiceWorkerRegistration interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] ServiceWorkerRegistration interface: attribute installing
+[PASS] ServiceWorkerRegistration interface: attribute waiting
+[PASS] ServiceWorkerRegistration interface: attribute active
+[PASS] ServiceWorkerRegistration interface: attribute navigationPreload
+[PASS] ServiceWorkerRegistration interface: attribute scope
+[PASS] ServiceWorkerRegistration interface: attribute updateViaCache
+[PASS] ServiceWorkerRegistration interface: operation update()
+[PASS] ServiceWorkerRegistration interface: operation unregister()
+[PASS] ServiceWorkerRegistration interface: attribute onupdatefound
+[PASS] ServiceWorkerRegistration must be primary interface of registration
+[PASS] Stringification of registration
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "installing" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "waiting" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "active" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "navigationPreload" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "scope" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "updateViaCache" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "update()" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "unregister()" with the proper type
+[PASS] ServiceWorkerRegistration interface: registration must inherit property "onupdatefound" with the proper type
+[FAIL] ServiceWorkerContainer interface: existence and properties of interface object
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface object length
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface object name
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: attribute controller
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: attribute ready
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: operation register(USVString, optional RegistrationOptions)
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: operation getRegistration(optional USVString)
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: operation getRegistrations()
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: operation startMessages()
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: attribute oncontrollerchange
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: attribute onmessage
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer interface: attribute onmessageerror
+  assert_own_property: self does not have own property "ServiceWorkerContainer" expected property "ServiceWorkerContainer" missing
+[FAIL] ServiceWorkerContainer must be primary interface of navigator.serviceWorker
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] Stringification of navigator.serviceWorker
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "controller" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "ready" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "register(USVString, optional RegistrationOptions)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: calling register(USVString, optional RegistrationOptions) on navigator.serviceWorker with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "getRegistration(optional USVString)" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: calling getRegistration(optional USVString) on navigator.serviceWorker with too few arguments must throw TypeError
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "getRegistrations()" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "startMessages()" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "oncontrollerchange" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "onmessage" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[FAIL] ServiceWorkerContainer interface: navigator.serviceWorker must inherit property "onmessageerror" with the proper type
+  assert_equals: wrong typeof object expected "object" but got "undefined"
+[PASS] NavigationPreloadManager interface: existence and properties of interface object
+[PASS] NavigationPreloadManager interface object length
+[PASS] NavigationPreloadManager interface object name
+[PASS] NavigationPreloadManager interface: existence and properties of interface prototype object
+[PASS] NavigationPreloadManager interface: existence and properties of interface prototype object's "constructor" property
+[PASS] NavigationPreloadManager interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] NavigationPreloadManager interface: operation enable()
+[PASS] NavigationPreloadManager interface: operation disable()
+[PASS] NavigationPreloadManager interface: operation setHeaderValue(ByteString)
+[PASS] NavigationPreloadManager interface: operation getState()
+[PASS] ServiceWorkerGlobalScope interface: existence and properties of interface object
+[PASS] ServiceWorkerGlobalScope interface object length
+[PASS] ServiceWorkerGlobalScope interface object name
+[PASS] ServiceWorkerGlobalScope interface: existence and properties of interface prototype object
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Object.setPrototypeOf should throw a TypeError
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via __proto__ should throw a TypeError
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to a new value via Reflect.setPrototypeOf should return false
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via Object.setPrototypeOf should not throw
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via __proto__ should not throw
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of interface prototype object - setting to its original value via Reflect.setPrototypeOf should return true
+[PASS] ServiceWorkerGlobalScope interface: existence and properties of interface prototype object's "constructor" property
+[PASS] ServiceWorkerGlobalScope interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] ServiceWorkerGlobalScope interface: attribute clients
+[PASS] ServiceWorkerGlobalScope interface: attribute registration
+[PASS] ServiceWorkerGlobalScope interface: attribute serviceWorker
+[PASS] ServiceWorkerGlobalScope interface: operation skipWaiting()
+[PASS] ServiceWorkerGlobalScope interface: attribute oninstall
+[PASS] ServiceWorkerGlobalScope interface: attribute onactivate
+[PASS] ServiceWorkerGlobalScope interface: attribute onfetch
+[PASS] ServiceWorkerGlobalScope interface: attribute onmessage
+[PASS] ServiceWorkerGlobalScope interface: attribute onmessageerror
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Object.setPrototypeOf should throw a TypeError
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via __proto__ should throw a TypeError
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to a new value via Reflect.setPrototypeOf should return false
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via Object.setPrototypeOf should not throw
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via __proto__ should not throw
+[PASS] ServiceWorkerGlobalScope interface: internal [[SetPrototypeOf]] method of global platform object - setting to its original value via Reflect.setPrototypeOf should return true
+[PASS] ServiceWorkerGlobalScope must be primary interface of self
+[PASS] Stringification of self
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "clients" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "registration" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "serviceWorker" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "skipWaiting()" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "oninstall" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "onactivate" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "onfetch" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "onmessage" with the proper type
+[PASS] ServiceWorkerGlobalScope interface: self must inherit property "onmessageerror" with the proper type
+[PASS] WorkerGlobalScope interface: self must inherit property "caches" with the proper type
+[PASS] Client interface: existence and properties of interface object
+[PASS] Client interface object length
+[PASS] Client interface object name
+[PASS] Client interface: existence and properties of interface prototype object
+[PASS] Client interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Client interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Client interface: attribute url
+[PASS] Client interface: attribute frameType
+[PASS] Client interface: attribute id
+[PASS] Client interface: attribute type
+[PASS] Client interface: operation postMessage(any, sequence<object>)
+[PASS] Client interface: operation postMessage(any, optional StructuredSerializeOptions)
+[PASS] WindowClient interface: existence and properties of interface object
+[PASS] WindowClient interface object length
+[PASS] WindowClient interface object name
+[PASS] WindowClient interface: existence and properties of interface prototype object
+[PASS] WindowClient interface: existence and properties of interface prototype object's "constructor" property
+[PASS] WindowClient interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] WindowClient interface: attribute visibilityState
+[PASS] WindowClient interface: attribute focused
+[FAIL] WindowClient interface: attribute ancestorOrigins
+  assert_true: The prototype object must have a property "ancestorOrigins" expected true got false
+[PASS] WindowClient interface: operation focus()
+[PASS] WindowClient interface: operation navigate(USVString)
+[PASS] Clients interface: existence and properties of interface object
+[PASS] Clients interface object length
+[PASS] Clients interface object name
+[PASS] Clients interface: existence and properties of interface prototype object
+[PASS] Clients interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Clients interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Clients interface: operation get(DOMString)
+[PASS] Clients interface: operation matchAll(optional ClientQueryOptions)
+[PASS] Clients interface: operation openWindow(USVString)
+[PASS] Clients interface: operation claim()
+[PASS] Clients must be primary interface of clients
+[PASS] Stringification of clients
+[PASS] Clients interface: clients must inherit property "get(DOMString)" with the proper type
+[PASS] Clients interface: calling get(DOMString) on clients with too few arguments must throw TypeError
+[PASS] Clients interface: clients must inherit property "matchAll(optional ClientQueryOptions)" with the proper type
+[PASS] Clients interface: calling matchAll(optional ClientQueryOptions) on clients with too few arguments must throw TypeError
+[PASS] Clients interface: clients must inherit property "openWindow(USVString)" with the proper type
+[PASS] Clients interface: calling openWindow(USVString) on clients with too few arguments must throw TypeError
+[PASS] Clients interface: clients must inherit property "claim()" with the proper type
+[PASS] ExtendableEvent interface: existence and properties of interface object
+[PASS] ExtendableEvent interface object length
+[PASS] ExtendableEvent interface object name
+[PASS] ExtendableEvent interface: existence and properties of interface prototype object
+[PASS] ExtendableEvent interface: existence and properties of interface prototype object's "constructor" property
+[PASS] ExtendableEvent interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] ExtendableEvent interface: operation waitUntil(Promise<any>)
+[PASS] ExtendableEvent must be primary interface of new ExtendableEvent("type")
+[PASS] Stringification of new ExtendableEvent("type")
+[PASS] ExtendableEvent interface: new ExtendableEvent("type") must inherit property "waitUntil(Promise<any>)" with the proper type
+[PASS] ExtendableEvent interface: calling waitUntil(Promise<any>) on new ExtendableEvent("type") with too few arguments must throw TypeError
+[PASS] FetchEvent interface: existence and properties of interface object
+[PASS] FetchEvent interface object length
+[PASS] FetchEvent interface object name
+[PASS] FetchEvent interface: existence and properties of interface prototype object
+[PASS] FetchEvent interface: existence and properties of interface prototype object's "constructor" property
+[PASS] FetchEvent interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] FetchEvent interface: attribute request
+[PASS] FetchEvent interface: attribute preloadResponse
+[PASS] FetchEvent interface: attribute clientId
+[PASS] FetchEvent interface: attribute resultingClientId
+[FAIL] FetchEvent interface: attribute replacesClientId
+  assert_true: The prototype object must have a property "replacesClientId" expected true got false
+[PASS] FetchEvent interface: attribute handled
+[PASS] FetchEvent interface: operation respondWith(Promise<Response>)
+[PASS] FetchEvent must be primary interface of new FetchEvent("type", { request: new Request("") })
+[PASS] Stringification of new FetchEvent("type", { request: new Request("") })
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "request" with the proper type
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "preloadResponse" with the proper type
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "clientId" with the proper type
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "resultingClientId" with the proper type
+[FAIL] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "replacesClientId" with the proper type
+  assert_inherits: property "replacesClientId" not found in prototype chain
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "handled" with the proper type
+[PASS] FetchEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "respondWith(Promise<Response>)" with the proper type
+[PASS] FetchEvent interface: calling respondWith(Promise<Response>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
+[PASS] ExtendableEvent interface: new FetchEvent("type", { request: new Request("") }) must inherit property "waitUntil(Promise<any>)" with the proper type
+[PASS] ExtendableEvent interface: calling waitUntil(Promise<any>) on new FetchEvent("type", { request: new Request("") }) with too few arguments must throw TypeError
+[PASS] ExtendableMessageEvent interface: existence and properties of interface object
+[PASS] ExtendableMessageEvent interface object length
+[PASS] ExtendableMessageEvent interface object name
+[PASS] ExtendableMessageEvent interface: existence and properties of interface prototype object
+[PASS] ExtendableMessageEvent interface: existence and properties of interface prototype object's "constructor" property
+[PASS] ExtendableMessageEvent interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] ExtendableMessageEvent interface: attribute data
+[PASS] ExtendableMessageEvent interface: attribute origin
+[PASS] ExtendableMessageEvent interface: attribute lastEventId
+[PASS] ExtendableMessageEvent interface: attribute source
+[PASS] ExtendableMessageEvent interface: attribute ports
+[PASS] Cache interface: existence and properties of interface object
+[PASS] Cache interface object length
+[PASS] Cache interface object name
+[PASS] Cache interface: existence and properties of interface prototype object
+[PASS] Cache interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Cache interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Cache interface: operation match(RequestInfo, optional CacheQueryOptions)
+[PASS] Cache interface: operation matchAll(optional RequestInfo, optional CacheQueryOptions)
+[PASS] Cache interface: operation add(RequestInfo)
+[PASS] Cache interface: operation addAll(sequence<RequestInfo>)
+[PASS] Cache interface: operation put(RequestInfo, Response)
+[PASS] Cache interface: operation delete(RequestInfo, optional CacheQueryOptions)
+[PASS] Cache interface: operation keys(optional RequestInfo, optional CacheQueryOptions)
+[PASS] Cache must be primary interface of self.cacheInstance
+[PASS] Stringification of self.cacheInstance
+[PASS] Cache interface: self.cacheInstance must inherit property "match(RequestInfo, optional CacheQueryOptions)" with the proper type
+[PASS] Cache interface: calling match(RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "matchAll(optional RequestInfo, optional CacheQueryOptions)" with the proper type
+[PASS] Cache interface: calling matchAll(optional RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "add(RequestInfo)" with the proper type
+[PASS] Cache interface: calling add(RequestInfo) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "addAll(sequence<RequestInfo>)" with the proper type
+[PASS] Cache interface: calling addAll(sequence<RequestInfo>) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "put(RequestInfo, Response)" with the proper type
+[PASS] Cache interface: calling put(RequestInfo, Response) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "delete(RequestInfo, optional CacheQueryOptions)" with the proper type
+[PASS] Cache interface: calling delete(RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] Cache interface: self.cacheInstance must inherit property "keys(optional RequestInfo, optional CacheQueryOptions)" with the proper type
+[PASS] Cache interface: calling keys(optional RequestInfo, optional CacheQueryOptions) on self.cacheInstance with too few arguments must throw TypeError
+[PASS] CacheStorage interface: existence and properties of interface object
+[PASS] CacheStorage interface object length
+[PASS] CacheStorage interface object name
+[PASS] CacheStorage interface: existence and properties of interface prototype object
+[PASS] CacheStorage interface: existence and properties of interface prototype object's "constructor" property
+[PASS] CacheStorage interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] CacheStorage interface: operation match(RequestInfo, optional MultiCacheQueryOptions)
+[PASS] CacheStorage interface: operation has(DOMString)
+[PASS] CacheStorage interface: operation open(DOMString)
+[PASS] CacheStorage interface: operation delete(DOMString)
+[PASS] CacheStorage interface: operation keys()
+[PASS] CacheStorage must be primary interface of caches
+[PASS] Stringification of caches
+[PASS] CacheStorage interface: caches must inherit property "match(RequestInfo, optional MultiCacheQueryOptions)" with the proper type
+[PASS] CacheStorage interface: calling match(RequestInfo, optional MultiCacheQueryOptions) on caches with too few arguments must throw TypeError
+[PASS] CacheStorage interface: caches must inherit property "has(DOMString)" with the proper type
+[PASS] CacheStorage interface: calling has(DOMString) on caches with too few arguments must throw TypeError
+[PASS] CacheStorage interface: caches must inherit property "open(DOMString)" with the proper type
+[PASS] CacheStorage interface: calling open(DOMString) on caches with too few arguments must throw TypeError
+[PASS] CacheStorage interface: caches must inherit property "delete(DOMString)" with the proper type
+[PASS] CacheStorage interface: calling delete(DOMString) on caches with too few arguments must throw TypeError
+[PASS] CacheStorage interface: caches must inherit property "keys()" with the proper type
+[PASS] WorkerGlobalScope interface: attribute caches
+[FAIL] WorkerNavigator interface: attribute serviceWorker
+  assert_true: The prototype object must have a property "serviceWorker" expected true got false
 Harness: the test ran to completion.
 

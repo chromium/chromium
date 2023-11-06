@@ -38,12 +38,12 @@ import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for checking whether the media are paused when unplugging the headset
- */
+/** Tests for checking whether the media are paused when unplugging the headset */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
-        ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@CommandLineFlags.Add({
+    MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE
+})
 public class MediaSessionTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -74,8 +74,8 @@ public class MediaSessionTest {
     /**
      * Regression test for crbug.com/1108038.
      *
-     * Makes sure the notification info is updated after a navigation from a native page to a site
-     * with media.
+     * <p>Makes sure the notification info is updated after a navigation from a native page to a
+     * site with media.
      */
     @Test
     @LargeTest
@@ -95,31 +95,41 @@ public class MediaSessionTest {
         DOMUtils.waitForMediaPlay(tab.getWebContents(), VIDEO_ID);
         waitForNotificationReady();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            MediaNotificationController controller =
-                    MediaNotificationManager.getController(R.id.media_playback_notification);
-            Assert.assertEquals(UrlFormatter.formatUrlForSecurityDisplay(
-                                        videoPageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
-                    controller.mMediaNotificationInfo.origin);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MediaNotificationController controller =
+                            MediaNotificationManager.getController(
+                                    R.id.media_playback_notification);
+                    Assert.assertEquals(
+                            UrlFormatter.formatUrlForSecurityDisplay(
+                                    videoPageUrl, SchemeDisplay.OMIT_HTTP_AND_HTTPS),
+                            controller.mMediaNotificationInfo.origin);
+                });
     }
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     private void waitForNotificationReady() {
         // Extended timeout to avoid flakiness https://crbug.com/1315419
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            return MediaNotificationManager.getController(R.id.media_playback_notification) != null;
-        }, LONG_TIMEOUT, DEFAULT_POLL_INTERVAL);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return MediaNotificationManager.getController(R.id.media_playback_notification)
+                            != null;
+                },
+                LONG_TIMEOUT,
+                DEFAULT_POLL_INTERVAL);
     }
 
     private void simulateHeadsetUnplug() {
-        Intent i = new Intent(ApplicationProvider.getApplicationContext(),
-                ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
+        Intent i =
+                new Intent(
+                        ApplicationProvider.getApplicationContext(),
+                        ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
         i.setAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
 
         ApplicationProvider.getApplicationContext().startService(i);

@@ -50,14 +50,17 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
-bool IsMultipleFieldsTemporalInput(const AtomicString& type) {
+bool IsMultipleFieldsTemporalInput(FormControlType type) {
 #if !BUILDFLAG(IS_ANDROID)
-  return type == input_type_names::kDate ||
-         type == input_type_names::kDatetimeLocal ||
-         type == input_type_names::kMonth || type == input_type_names::kTime ||
-         type == input_type_names::kWeek;
+  return type == FormControlType::kInputDate ||
+         type == FormControlType::kInputDatetimeLocal ||
+         type == FormControlType::kInputMonth ||
+         type == FormControlType::kInputTime ||
+         type == FormControlType::kInputWeek;
 #else
   return false;
 #endif
@@ -72,8 +75,8 @@ ThemePainter::ThemePainter() = default;
 
 void CountAppearanceTextFieldPart(const Element& element) {
   if (auto* input = DynamicTo<HTMLInputElement>(element)) {
-    const AtomicString& type = input->type();
-    if (type == input_type_names::kSearch) {
+    FormControlType type = input->FormControlType();
+    if (type == FormControlType::kInputSearch) {
       UseCounter::Count(element.GetDocument(),
                         WebFeature::kCSSValueAppearanceTextFieldForSearch);
     } else if (input->IsTextField()) {
@@ -288,9 +291,10 @@ void ThemePainter::PaintSliderTicks(const LayoutObject& o,
   if (!input)
     return;
 
-  if (input->type() != input_type_names::kRange ||
-      !input->UserAgentShadowRoot()->HasChildren())
+  if (input->FormControlType() != FormControlType::kInputRange ||
+      !input->UserAgentShadowRoot()->HasChildren()) {
     return;
+  }
 
   HTMLDataListElement* data_list = input->DataList();
   if (!data_list)

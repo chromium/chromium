@@ -42,15 +42,7 @@ class TestPrefetchService : public PrefetchService {
     prefetches_.push_back(prefetch_container);
   }
 
-  void PrepareToServe(const GURL& url,
-                      PrefetchContainer& prefetch_container) override {
-    prefetches_prepared_to_serve_.emplace_back(url,
-                                               prefetch_container.GetWeakPtr());
-  }
-
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
-  std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
-      prefetches_prepared_to_serve_;
 };
 
 class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
@@ -109,11 +101,6 @@ class PrefetchDocumentManagerTest : public RenderViewHostTestHarness {
 
   const std::vector<base::WeakPtr<PrefetchContainer>>& GetPrefetches() {
     return prefetch_service_->prefetches_;
-  }
-
-  const std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>&
-  GetPrefetchesPreparedToServe() {
-    return prefetch_service_->prefetches_prepared_to_serve_;
   }
 
   // Used to make sure that No-Vary-Search parsing error/warning message is sent
@@ -237,143 +224,6 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
     ASSERT_TRUE(prefetch);
     EXPECT_FALSE(prefetch->GetNoVarySearchHint().has_value());
   }
-}
-
-TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      network::features::kPrefetchNoVarySearch);
-  // Used to create responses.
-  const net::IsolationInfo info;
-  // Process the candidates with the |PrefetchDocumentManager| for the current
-  // document.
-  auto* prefetch_document_manager =
-      PrefetchDocumentManager::GetOrCreateForCurrentDocument(
-          &GetPrimaryMainFrame());
-  prefetch_document_manager->EnableNoVarySearchSupport();
-  {
-    // Create list of SpeculationCandidatePtrs.
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-    // Create candidate for private cross-origin prefetch. This candidate should
-    // be prefetched by |PrefetchDocumentManager|.
-    auto candidate1 = blink::mojom::SpeculationCandidate::New();
-    const auto test_url = GetCrossOriginUrl("/candidate1.html?a=2&b=3");
-    candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
-    candidate1->requires_anonymous_client_ip_when_cross_origin = false;
-    candidate1->url = test_url;
-    candidate1->referrer = blink::mojom::Referrer::New();
-
-    candidates.push_back(std::move(candidate1));
-
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
-
-    // Now call TakePrefetchedResponse
-    network::mojom::URLResponseHeadPtr head =
-        network::mojom::URLResponseHead::New();
-    head->parsed_headers = network::mojom::ParsedHeaders::New();
-    head->parsed_headers->no_vary_search_with_parse_error =
-        network::mojom::NoVarySearchWithParseError::NewNoVarySearch(
-            network::mojom::NoVarySearch::New());
-    head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
-        ->vary_on_key_order = true;
-    head->parsed_headers->no_vary_search_with_parse_error->get_no_vary_search()
-        ->search_variance =
-        network::mojom::SearchParamsVariance::NewVaryParams({"a"});
-
-    MakeServableStreamingURLLoaderForTest(GetPrefetches()[0].get(),
-                                          std::move(head), "empty");
-
-    const auto urls_with_no_vary_search =
-        prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
-            test_url);
-    ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
-    EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
-    const absl::optional<net::HttpNoVarySearchData>& nvs =
-        urls_with_no_vary_search.at(0).second->GetNoVarySearchData();
-    ASSERT_TRUE(nvs);
-    EXPECT_THAT(nvs->vary_params(), UnorderedElementsAreArray({"a"}));
-    EXPECT_THAT(nvs->no_vary_params(), IsEmpty());
-    EXPECT_FALSE(nvs->vary_by_default());
-    EXPECT_TRUE(nvs->vary_on_key_order());
-    EXPECT_TRUE(prefetch_document_manager->MatchUrl(
-        GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5")));
-    EXPECT_TRUE(prefetch_document_manager->MatchUrl(
-        GetCrossOriginUrl("/candidate1.html?a=2")));
-    EXPECT_FALSE(prefetch_document_manager->MatchUrl(
-        GetCrossOriginUrl("/candidate1.html")));
-    EXPECT_FALSE(prefetch_document_manager->MatchUrl(
-        GetCrossOriginUrl("/candidate1.html?b=4")));
-  }
-  {
-    const auto test_url = GetCrossOriginUrl("/candidate2.html?a=2&b=3");
-    auto candidate1 = blink::mojom::SpeculationCandidate::New();
-    candidate1->action = blink::mojom::SpeculationAction::kPrefetch;
-    candidate1->requires_anonymous_client_ip_when_cross_origin = false;
-    candidate1->url = test_url;
-    candidate1->referrer = blink::mojom::Referrer::New();
-
-    // Create list of SpeculationCandidatePtrs.
-    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-    candidates.emplace_back(std::move(candidate1));
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
-
-    network::mojom::URLResponseHeadPtr head =
-        network::mojom::URLResponseHead::New();
-    head->parsed_headers = network::mojom::ParsedHeaders::New();
-
-    MakeServableStreamingURLLoaderForTest(GetPrefetches().back().get(),
-                                          std::move(head), "empty");
-
-    const auto urls_with_no_vary_search =
-        prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
-            test_url);
-    ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
-    ASSERT_EQ(urls_with_no_vary_search.at(0).first, test_url);
-  }
-
-  NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe()[0].first,
-            GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-  EXPECT_EQ(GetCrossOriginUrl("/candidate2.html?a=2&b=3"),
-            GetPrefetchesPreparedToServe()[0].second->GetURL());
-
-  NavigateMainframeRendererTo(
-      GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe()[1].first,
-            GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe()[1].second->GetURL(),
-            GetCrossOriginUrl("/candidate1.html?a=2&b=3"));
-
-  NavigateMainframeRendererTo(
-      GetCrossOriginUrl("/not_prefetched.html?b=4&a=2&c=5"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 2u);
-
-  // Cover the case where we want to navigate again to the same prefetched
-  // Url.
-  // Simulate that we've already navigated to prefetched URL.
-  GetPrefetchesPreparedToServe()[0].second->OnReturnPrefetchToServe(
-      /*served=*/true);
-  // Try to navigate again to the same URL.
-  NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 3u);
-  // PrepareToServe("/candidate2.html?a=2&b=3") is anyway called, but in
-  // non-test environment this will be merged or ignored later in
-  // PrefetchService.
-  EXPECT_EQ(GetPrefetchesPreparedToServe()[2].first,
-            GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe()[2].second->GetURL(),
-            GetCrossOriginUrl("/candidate2.html?a=2&b=3"));
-
-  // Cover the case where we want to navigate to a URL with No-Vary-Search for
-  // which the PrefetchContainer WeakPtr is not valid anymore.
-  prefetch_document_manager->ReleasePrefetchContainer(
-      GetPrefetchesPreparedToServe()[1].second->GetURL());
-  CHECK(!GetPrefetchesPreparedToServe()[1].second);
-  NavigateMainframeRendererTo(
-      GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5"));
-  EXPECT_EQ(GetPrefetchesPreparedToServe().size(), 3u);
 }
 
 TEST_F(PrefetchDocumentManagerTest,
@@ -597,7 +447,7 @@ TEST_F(PrefetchDocumentManagerTest, ProcessSpeculationCandidates) {
   EXPECT_FALSE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
   prefetch_urls[0]->SetPrefetchStatus(
-      PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps);
+      PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps);
   EXPECT_TRUE(prefetch_document_manager->IsPrefetchAttemptFailedOrDiscarded(
       GetCrossOriginUrl("/candidate1.html")));
   prefetch_urls[0]->SetPrefetchStatus(PrefetchStatus::kPrefetchFailedNetError);

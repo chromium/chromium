@@ -90,7 +90,7 @@ launch issues be sure to run this step.
 
 Run ash-chrome-on-linux with lacros-chrome as the only browser:
 ```shell
-% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/ --lacros-chrome-additional-args=--gpu-sandbox-start-early
+% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/chrome --lacros-chrome-additional-args=--gpu-sandbox-start-early
 ```
 
 You will be prompted to log in. Once you log in, Lacros will be the primary
@@ -104,11 +104,11 @@ ${user_data_dir}/lacros/lacros.log, where ${user_data_dir} is set via
 If due to linux driver environment, lacros gpu process is not able to start, use
 --no-sandbox:
 ```shell
-% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/ --lacros-chrome-additional-args=--no-sandbox
+% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/chrome --lacros-chrome-additional-args=--no-sandbox
 ```
 or --disable-gpu:
 ```shell
-% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/ --lacros-chrome-additional-args=--disable-gpu####--no-sandbox
+% XDG_RUNTIME_DIR=/tmp/ash_chrome_xdg_runtime ./out_linux_ash/Release/chrome --user-data-dir=/tmp/ash-chrome --enable-wayland-server --no-startup-window --login-manager --login-profile=user --enable-features=LacrosOnly --lacros-chrome-path=${PWD}/out_linux_lacros/Release/chrome --lacros-chrome-additional-args=--disable-gpu####--no-sandbox
 ```
 
 More configuration options

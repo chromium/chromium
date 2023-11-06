@@ -47,7 +47,7 @@ class TestSingleModuleClient final : public SingleModuleClient {
   }
 
   bool WasNotifyFinished() const { return was_notify_finished_; }
-  ModuleScript* GetModuleScript() { return module_script_; }
+  ModuleScript* GetModuleScript() { return module_script_.Get(); }
 
  private:
   bool was_notify_finished_ = false;
@@ -106,7 +106,7 @@ class ModuleMapTestModulator final : public DummyModulator {
   ModuleRecordResolver* GetModuleRecordResolver() override {
     return resolver_.Get();
   }
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   class TestModuleScriptFetcher final
       : public GarbageCollected<TestModuleScriptFetcher>,

@@ -318,8 +318,7 @@
   },
   "debugger": {
     "dependencies": ["permission:debugger"],
-    "contexts": ["blessed_extension"],
-    "developer_mode_only": true
+    "contexts": ["blessed_extension"]
   },
   "declarativeContent": {
     "dependencies": ["permission:declarativeContent"],
@@ -396,6 +395,10 @@
   },
   "enterprise.deviceAttributes": {
     "dependencies": ["permission:enterprise.deviceAttributes"],
+    "contexts": ["blessed_extension"]
+  },
+  "enterprise.kioskInput": {
+    "dependencies": ["permission:enterprise.kioskInput"],
     "contexts": ["blessed_extension"]
   },
   "enterprise.networkingAttributes": {
@@ -719,11 +722,13 @@
   },
   "printing": {
     "dependencies": ["permission:printing"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "printingMetrics": {
     "dependencies": ["permission:printingMetrics"],
-    "contexts": ["blessed_extension"]
+    "contexts": ["blessed_extension"],
+    "required_buildflags": ["use_cups"]
   },
   "privacy": {
     "dependencies": ["permission:privacy"],

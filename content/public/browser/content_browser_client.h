@@ -38,7 +38,6 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
-#include "content/public/browser/page.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
@@ -233,6 +232,7 @@ class NavigationUIData;
 class PrefetchServiceDelegate;
 class PrerenderWebContentsDelegate;
 class PresentationObserver;
+class PrivacySandboxAttestationsObserver;
 class PrivateNetworkDeviceDelegate;
 class ReceiverPresentationServiceDelegate;
 class RenderFrameHost;
@@ -766,13 +766,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& script_url,
       BrowserContext* context);
 
-  // Sends the resizable boolean set via `window.setResizable(bool)` API to
-  // `BrowserView`. Passing std::nullopt will reset the resizable state to the
-  // default.
-  virtual void SetCanResizeFromWebAPI(content::Page* page,
-                                      absl::optional<bool> can_resize);
-  virtual bool GetCanResize(content::Page* page);
-
   // Returns true if the service worker associated with the given `scope` may be
   // deleted. This can return false if the service worker is tied to another
   // service that fundamentally should not be allowed to be removed (today, this
@@ -916,14 +909,39 @@ class CONTENT_EXPORT ContentBrowserClient {
 
   // Returns whether |destination_origin| can receive beacons sent through
   // window.fence.reportEvent() or automatic beacons.
+  // Before M120: The reporting destination is required to be attested for its
+  // invoking API only.
+  // M120 and afterwards: If this is a post-impression reporting beacon invoked
+  // by Protected Audience API, the destination is required to be attested for
+  // either Protected Audience or Attribution Reporting, instead of Protected
+  // Audience only. This is because there are use cases that an adtech may need
+  // to measure Protected Audience ads, but not using any of the ads
+  // personalization or targeting features of Protected Audience. The adtech
+  // should be allowed to receive post-impression beacons if it is attested for
+  // Attribution Reporting.
   virtual bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api);
+      content::PrivacySandboxInvokingAPI invoking_api,
+      bool post_impression_reporting);
 
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,
       InterestGroupManager::InterestGroupDataKey data_key);
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class AttributionReportingOsApiState {
+    kDisabled = 0,
+    kEnabled = 1,
+    kMaxValue = kEnabled,
+  };
+
+  // Allows the embedder to control the type of attribution reporting allowed.
+  // Web, Os, both or none
+  virtual network::mojom::AttributionSupport GetAttributionSupport(
+      AttributionReportingOsApiState state,
+      content::WebContents* web_contents);
 
   enum class AttributionReportingOperation {
     kSource,
@@ -935,15 +953,21 @@ class CONTENT_EXPORT ContentBrowserClient {
     kOsTrigger,
     kOsSourceVerboseDebugReport,
     kOsTriggerVerboseDebugReport,
+    kSourceTransitionalDebugReporting,
+    kTriggerTransitionalDebugReporting,
+    kOsSourceTransitionalDebugReporting,
+    kOsTriggerTransitionalDebugReporting,
     kAny,
   };
 
   // Allows the embedder to control if Attribution Reporting API operations can
   // happen in a given context. Origins must be provided for a given operation
   // as follows:
-  //   - `kSource` and `kOsSource` must provide a non-null `source_origin` and
-  //   `reporting_origin`
-  //   - `kTrigger` and `kOsTrigger` must provide a non-null
+  //   - `kSource`, `kOsSource`, `kSourceTransitionalDebugReporting` and
+  //   `kOsSourceTransitionalDebugReporting` must provide a non-null
+  //   `source_origin` and `reporting_origin`
+  //   - `kTrigger`, `kOsTrigger`, `kTriggerTransitionalDebugReporting` and
+  //   `kOsTriggerTransitionalDebugReporting` must provide a non-null
   //   `destination_origin` and `reporting_origin`
   //   - `kReport` must provide all non-null origins
   //   - `kAny` may provide all null origins. It checks whether conversion
@@ -957,19 +981,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
 
-  // Allows the embedder to control if web attribution reporting is allowed.
-  // This method must be idempotent.
-  virtual bool IsWebAttributionReportingAllowed();
-
   // Allows the embedder to control if an OS source event should register as
   // a Web OS or OS (App) source.
-  // This method must be idempotent.
   virtual bool ShouldUseOsWebSourceAttributionReporting(
       content::RenderFrameHost* rfh);
 
   // Allows the embedder to control if an OS trigger event should register as
   // a Web OS or OS (App) trigger.
-  // This method must be idempotent.
   virtual bool ShouldUseOsWebTriggerAttributionReporting(
       content::RenderFrameHost* rfh);
 
@@ -1331,11 +1349,16 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::BinderMapWithContext<RenderFrameHost*>* map) {}
 
   // Allows the embedder to control when Mojo interface binders are run for a
-  // frame that is being prerendered.
+  // frame that is in a managed mode, such as prerendering and preview mode.
   //
   // Prerender2 limits inactivated pages' capabilities by controlling when to
   // bind Mojo interfaces. See content/browser/preloading/prerender/README.md
   // for more about capability control.
+  //
+  // Preview mode follows the same limits that Prerender2 defines, and the page
+  // behaves as a prerendered page in Blink. But as the preview page is visible
+  // to users, we relax the restriction a little to permit rendering related
+  // operations.
   //
   // The embedder can add entries to `policy_map` for interfaces that it
   // registers in `RegisterBrowserInterfaceBindersForFrame()` and
@@ -1346,6 +1369,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // created for prerendering a page that is same-origin to the page that
   // triggered the prerender.
   virtual void RegisterMojoBinderPoliciesForSameOriginPrerendering(
+      MojoBinderPolicyMap& policy_map) {}
+  virtual void RegisterMojoBinderPoliciesForPreview(
       MojoBinderPolicyMap& policy_map) {}
 
   // Allows to register browser interfaces which are exposed to a service worker
@@ -1415,6 +1440,14 @@ class CONTENT_EXPORT ContentBrowserClient {
                                        WebContents* web_contents);
   virtual void RemovePresentationObserver(PresentationObserver* observer,
                                           WebContents* web_contents);
+
+  // Add or remove an observer for privacy sandbox attestations. Returns true if
+  // privacy sandbox attestations have ever been loaded, or if attestations are
+  // not enforced.
+  virtual bool AddPrivacySandboxAttestationsObserver(
+      PrivacySandboxAttestationsObserver* observer);
+  virtual void RemovePrivacySandboxAttestationsObserver(
+      PrivacySandboxAttestationsObserver* observer);
 
   // Allows programmatic opening of a new tab/window without going through
   // another WebContents. For example, from a Worker. |site_instance|
@@ -2068,12 +2101,19 @@ class CONTENT_EXPORT ContentBrowserClient {
   // BrowserMainLoop, BrowserMainLoop itself is responsible for that.
   virtual bool CreateThreadPool(base::StringPiece name);
 
+  // Returns true if the tab security level is acceptable to allow WebAuthn
+  // requests, false otherwise. This is not attached to
+  // WebAuthenticationDelegate so it can be available on Android as well.
+  virtual bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh,
+      const url::Origin& caller_origin);
+
+#if !BUILDFLAG(IS_ANDROID)
   // Returns an embedder-provided subclass of WebAuthenticationDelegate. This
   // allows the embedder to customize the implementation of the Web
   // Authentication API.
   virtual WebAuthenticationDelegate* GetWebAuthenticationDelegate();
 
-#if !BUILDFLAG(IS_ANDROID)
   // Returns an AuthenticatorRequestClientDelegate subclass instance to provide
   // embedder-specific configuration for a single Web Authentication API request
   // being serviced in a given RenderFrame. The instance is guaranteed to be
@@ -2611,6 +2651,24 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsThirdPartyStoragePartitioningAllowed(
       content::BrowserContext* browser_context,
       const url::Origin& top_level_origin);
+
+  // Checks whether credentials should be included in fenced frame automatic
+  // beacon requests, based on user cookie settings. Any cookies sent in an
+  // automatic beacon response header will be honored and stored.
+  //
+  // `destination_url` is the URL that the automatic beacon is being sent to,
+  // and the URL whose origin's cookies will be accessed.
+  //
+  // `top_frame_origin` is the main frame of the page that ran the auction that
+  // resulted in the creation of the FencedFrameReporter that called this
+  // function.
+  //
+  // TODO(crbug.com/1496395): After 3PCD, this will be dead code and should be
+  // removed.
+  virtual bool AreDeprecatedAutomaticBeaconCredentialsAllowed(
+      content::BrowserContext* browser_context,
+      const GURL& destination_url,
+      const url::Origin& top_frame_origin);
 
   // Checks if file or directory pickers from the file system access web API
   // require a user gesture (transient activation). They usually do, but this

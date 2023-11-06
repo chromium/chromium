@@ -83,7 +83,7 @@ message TetherAvailabilityResponse {
 // Next id: 1
 message ConnectTetheringRequest {}
 
-// Next id: 8
+// Next id: 10
 message ConnectTetheringResponse {
   enum ResponseCode {
     UNKNOWN_ERROR = 0;
@@ -94,6 +94,9 @@ message ConnectTetheringResponse {
     NO_CELL_DATA = 5;
     ENABLING_HOTSPOT_FAILED = 6;
     ENABLING_HOTSPOT_TIMEOUT = 7;
+    INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG = 8;
+    INVALID_NEW_SOFT_AP_CONFIG = 9;
+    INVALID_WIFI_AP_CONFIG = 10;
   }
 
   optional ResponseCode response_code = 1;

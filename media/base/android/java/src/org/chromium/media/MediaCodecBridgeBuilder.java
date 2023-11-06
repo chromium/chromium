@@ -9,9 +9,10 @@ import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.view.Surface;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.media.MediaCodecUtil.CodecCreationInfo;
 import org.chromium.media.MediaCodecUtil.MimeTypes;
 

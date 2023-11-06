@@ -6,7 +6,7 @@ import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsManageUsersSubpageElement, SettingsUserListElement} from 'chrome://os-settings/lazy_load.js';
 import {CrIconButtonElement, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';

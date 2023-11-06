@@ -855,6 +855,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker] interface GPUSupportedLimits
 [Worker]     attribute @@toStringTag
 [Worker]     getter maxBindGroups
+[Worker]     getter maxBindGroupsPlusVertexBuffers
 [Worker]     getter maxBindingsPerBindGroup
 [Worker]     getter maxBufferSize
 [Worker]     getter maxColorAttachmentBytesPerSample
@@ -1826,6 +1827,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method isScript
 [Worker]     method isScriptURL
 [Worker] interface URL
+[Worker]     static method canParse
 [Worker]     static method createObjectURL
 [Worker]     static method revokeObjectURL
 [Worker]     attribute @@toStringTag

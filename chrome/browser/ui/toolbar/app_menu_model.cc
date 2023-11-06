@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
@@ -140,6 +141,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kIncognitoMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel,
                                       kPasswordAndAutofillMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kPasswordManagerMenuItem);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(AppMenuModel, kShowSearchCompanion);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kPerformanceMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kChromeLabsMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ToolsMenuModel, kReadingModeMenuItem);
@@ -809,6 +811,11 @@ AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
 
 AppMenuModel::~AppMenuModel() = default;
 
+void AppMenuModel::SetHighlightedIdentifier(
+    ui::ElementIdentifier highlighted_menu_identifier) {
+  highlighted_menu_identifier_ = highlighted_menu_identifier;
+}
+
 void AppMenuModel::Init() {
   Build();
 
@@ -1359,6 +1366,13 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_ADDRESSES);
       break;
+    case IDC_PERFORMANCE:
+      if (!uma_action_recorded_) {
+        UMA_HISTOGRAM_MEDIUM_TIMES(
+            "WrenchMenu.TimeToAction.ShowPerformanceSettings", delta);
+      }
+      LogMenuAction(MENU_ACTION_SHOW_PERFORMANCE_SETTINGS);
+      break;
     default: {
       if (IsOtherProfileCommand(command_id)) {
         if (!uma_action_recorded_) {
@@ -1406,21 +1420,16 @@ bool AppMenuModel::IsCommandIdEnabled(int command_id) const {
 }
 
 bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
-  if ((command_id == IDC_RECENT_TABS_MENU) ||
-      (command_id == AppMenuModel::kMinRecentTabsCommandId)) {
-    return alert_item_ == AlertMenuItem::kReopenTabs;
-  }
-
-  if (command_id == IDC_PERFORMANCE) {
-    return alert_item_ == AlertMenuItem::kPerformance;
-  }
-
   if (command_id == IDC_VIEW_PASSWORDS ||
       command_id == IDC_SHOW_PASSWORD_MANAGER) {
     return alert_item_ == AlertMenuItem::kPasswordManager;
   }
 
   return false;
+}
+
+bool AppMenuModel::IsElementIdAlerted(ui::ElementIdentifier element_id) const {
+  return highlighted_menu_identifier_ == element_id;
 }
 
 bool AppMenuModel::GetAcceleratorForCommandId(
@@ -1468,6 +1477,23 @@ void AppMenuModel::Build() {
                     GetLacrosDataMigrationMenuItemName(), update_icon);
     need_separator = true;
 #endif
+  }
+
+  if (base::FeatureList::IsEnabled(features::kSafetyHub) &&
+      !browser_->profile()->IsGuestSession() &&
+      !browser_->profile()->IsIncognitoProfile()) {
+    auto* safety_hub_menu_notification_service =
+        SafetyHubMenuNotificationServiceFactory::GetForProfile(
+            browser_->profile());
+    absl::optional<MenuNotificationEntry> notification =
+        safety_hub_menu_notification_service->GetNotificationToShow();
+    if (notification.has_value()) {
+      const auto safety_hub_icon = ui::ImageModel::FromVectorIcon(
+          kSecurityIcon, ui::kColorMenuIcon, kDefaultIconSize);
+      AddItemWithIcon(notification->command, notification->label,
+                      safety_hub_icon);
+      need_separator = true;
+    }
   }
 
   if (AddGlobalErrorMenuItems() || need_separator)
@@ -1586,8 +1612,16 @@ void AppMenuModel::Build() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     if (companion::IsCompanionFeatureEnabled()) {
       AddItemWithStringId(IDC_SHOW_SEARCH_COMPANION, IDS_SHOW_SEARCH_COMPANION);
+      SetElementIdentifierAt(
+          GetIndexOfCommandId(IDC_SHOW_SEARCH_COMPANION).value(),
+          kShowSearchCompanion);
     }
 #endif
+    if (features::IsTabOrganization()) {
+      AddItemWithStringId(IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU);
+      SetIsNewFeatureAt(GetIndexOfCommandId(IDC_ORGANIZE_TABS).value(), true);
+    }
+
     AddItemWithStringId(IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE);
 
     CreateFindAndEditSubMenu();
@@ -1732,6 +1766,7 @@ void AppMenuModel::Build() {
     SetCommandIcon(this, IDC_VIEW_PASSWORDS, kKeyOpenChromeRefreshIcon);
     SetCommandIcon(this, IDC_ZOOM_MENU, kZoomInIcon);
     SetCommandIcon(this, IDC_PRINT, kPrintMenuIcon);
+    SetCommandIcon(this, IDC_ORGANIZE_TABS, kPaintbrushIcon);
     SetCommandIcon(this, IDC_SHOW_TRANSLATE, kTranslateIcon);
     SetCommandIcon(this, IDC_FIND_AND_EDIT_MENU, kSearchMenuIcon);
     SetCommandIcon(this, IDC_SAVE_AND_SHARE_MENU, kFileSaveChromeRefreshIcon);

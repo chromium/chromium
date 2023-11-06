@@ -203,7 +203,7 @@ TextTrackCueList* TextTrack::activeCues() {
   }
 
   cues_->CollectActiveCues(*active_cues_);
-  return active_cues_;
+  return active_cues_.Get();
 }
 
 void TextTrack::addCue(TextTrackCue* cue) {

@@ -12,13 +12,34 @@ namespace blink {
 
 namespace {
 
-const PixelsAndPercent ten_px(10, 0);
-const PixelsAndPercent twenty_px(20, 0);
-const PixelsAndPercent thirty_px(30, 0);
-const PixelsAndPercent ten_percent(0, 10);
-const PixelsAndPercent twenty_percent(0, 20);
-const PixelsAndPercent thirty_percent(0, 30);
-const PixelsAndPercent twenty_px_ten_percent(20, 10);
+const PixelsAndPercent ten_px(10,
+                              0,
+                              /*has_explicit_pixels=*/true,
+                              /*has_explicit_percent=*/true);
+const PixelsAndPercent twenty_px(20,
+                                 0,
+                                 /*has_explicit_pixels=*/true,
+                                 /*has_explicit_percent=*/true);
+const PixelsAndPercent thirty_px(30,
+                                 0,
+                                 /*has_explicit_pixels=*/true,
+                                 /*has_explicit_percent=*/true);
+const PixelsAndPercent ten_percent(0,
+                                   10,
+                                   /*has_explicit_pixels=*/true,
+                                   /*has_explicit_percent=*/true);
+const PixelsAndPercent twenty_percent(0,
+                                      20,
+                                      /*has_explicit_pixels=*/true,
+                                      /*has_explicit_percent=*/true);
+const PixelsAndPercent thirty_percent(0,
+                                      30,
+                                      /*has_explicit_pixels=*/true,
+                                      /*has_explicit_percent=*/true);
+const PixelsAndPercent twenty_px_ten_percent(20,
+                                             10,
+                                             /*has_explicit_pixels=*/true,
+                                             /*has_explicit_percent=*/true);
 
 }  // namespace
 

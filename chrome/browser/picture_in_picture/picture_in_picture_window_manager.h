@@ -37,6 +37,8 @@ class View;
 }  // namespace views
 #endif
 
+struct NavigateParams;
+
 // PictureInPictureWindowManager is a singleton that handles the lifetime of the
 // current Picture-in-Picture window and its PictureInPictureWindowController.
 // The class also guarantees that only one window will be present per Chrome
@@ -160,6 +162,9 @@ class PictureInPictureWindowManager {
 
   // Used for Document picture-in-picture windows only.
   static gfx::Size GetMaximumWindowSize(const display::Display& display);
+
+  // Properly sets the `window_action` on `params`.
+  static void SetWindowParams(NavigateParams& params);
 
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
   void RemoveObserver(Observer* observer) {

@@ -1,0 +1,75 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RestoreOnStartup": 1
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 2
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 3
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 3
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 4
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 4
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 5
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 5
+          }
+        }
+      },
+      {
+        "policies": {
+          "RestoreOnStartup": 6
+        },
+        "prefs": {
+          "session.restore_on_startup": {
+            "value": 6
+          }
+        }
+      }
+    ]
+  }
+]

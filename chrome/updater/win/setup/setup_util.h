@@ -11,6 +11,7 @@
 
 #include <ios>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -47,16 +48,19 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side with other instances of the updater.
-std::vector<IID> GetSideBySideInterfaces(UpdaterScope scope);
+std::vector<std::pair<IID, std::wstring>> GetSideBySideInterfaces(
+    UpdaterScope scope);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can only be installed for the active instance of the updater.
-std::vector<IID> GetActiveInterfaces(UpdaterScope scope);
+std::vector<std::pair<IID, std::wstring>> GetActiveInterfaces(
+    UpdaterScope scope);
 
 // Returns the interfaces ids of all interfaces declared in IDL of the updater
 // that can be installed side-by-side (if `is_internal` is `true`) or for the
 // active instance (if `is_internal` is `false`) .
-std::vector<IID> GetInterfaces(bool is_internal, UpdaterScope scope);
+std::vector<std::pair<IID, std::wstring>> GetInterfaces(bool is_internal,
+                                                        UpdaterScope scope);
 
 // Returns the CLSIDs of servers that can be installed side-by-side with other
 // instances of the updater.
@@ -94,6 +98,7 @@ bool AreComInterfacesPresent(UpdaterScope scope, bool is_internal);
 void AddInstallComInterfaceWorkItems(HKEY root,
                                      const base::FilePath& typelib_path,
                                      GUID iid,
+                                     const std::wstring& interface_name,
                                      WorkItemList* list);
 
 // Adds work items to register the per-user COM server.

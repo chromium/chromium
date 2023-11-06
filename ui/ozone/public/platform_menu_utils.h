@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PUBLIC_PLATFORM_MENU_UTILS_H_
 #define UI_OZONE_PUBLIC_PLATFORM_MENU_UTILS_H_
 
+#include <stdint.h>
+
 #include <string>
 
 #include "base/component_export.h"
@@ -12,7 +14,7 @@
 
 namespace ui {
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Platform-specific functions related to menus.
 class COMPONENT_EXPORT(OZONE_BASE) PlatformMenuUtils {

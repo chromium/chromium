@@ -67,7 +67,7 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
 
     UChar32 start = token.UnicodeRangeStart();
     UChar32 end = token.UnicodeRangeEnd();
-    if (start > end) {
+    if (start > end || end > 0x10FFFF) {
       return nullptr;
     }
     values->Append(
@@ -112,16 +112,13 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
 
 CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
-  String url =
-      css_parsing_utils::ConsumeUrlAsStringView(range, context).ToString();
-  if (url.IsNull()) {
+  cssvalue::CSSURIValue* src_value =
+      css_parsing_utils::ConsumeUrl(range, context);
+  if (!src_value) {
     return nullptr;
   }
-  CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
-      url, context.CompleteNonEmptyURL(url), context.GetReferrer(),
-      context.JavascriptWorld(),
-      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-      context.IsAdRelated()));
+  auto* uri_value =
+      CSSFontFaceSrcValue::Create(src_value, context.JavascriptWorld());
 
   // After the url() it's either the end of the src: line, or a comma
   // for the next url() or format().
@@ -209,10 +206,7 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
     if (!args.AtEnd()) {
       return nullptr;
     }
-    return CSSFontFaceSrcValue::CreateLocal(
-        arg.Value().ToString(), context.JavascriptWorld(),
-        context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-        context.IsAdRelated());
+    return CSSFontFaceSrcValue::CreateLocal(arg.Value().ToString());
   }
   if (args.Peek().GetType() == kIdentToken) {
     String family_name = css_parsing_utils::ConcatenateFamilyName(args);
@@ -222,10 +216,7 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
     if (family_name.empty()) {
       return nullptr;
     }
-    return CSSFontFaceSrcValue::CreateLocal(
-        family_name, context.JavascriptWorld(),
-        context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse,
-        context.IsAdRelated());
+    return CSSFontFaceSrcValue::CreateLocal(family_name);
   }
   return nullptr;
 }

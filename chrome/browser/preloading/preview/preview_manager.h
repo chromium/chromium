@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 class GURL;
@@ -15,20 +17,29 @@ class PreviewTab;
 
 // Handles requests of preview and manages ongoing previews.
 class PreviewManager final
-    : public content::WebContentsUserData<PreviewManager> {
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<PreviewManager> {
  public:
   PreviewManager(const PreviewManager&) = delete;
   PreviewManager& operator=(const PreviewManager&) = delete;
 
   ~PreviewManager() override;
 
+  // content::WebContentsObserver implementation:
+  void PrimaryPageChanged(content::Page& page) override;
+
   void InitiatePreview(const GURL& url);
+  void PromoteToNewTab();
+
+  base::WeakPtr<content::WebContents> GetWebContentsForPreviewTab();
+
+  // This method closes a preview page, and used for testing until the primary
+  // page navigation closes existing preview pages.
+  void CloseForTesting();
 
  private:
   explicit PreviewManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PreviewManager>;
-
-  void Show(PreviewTab* tab);
 
   std::unique_ptr<PreviewTab> tab_;
 

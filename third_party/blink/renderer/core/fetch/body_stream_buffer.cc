@@ -195,7 +195,8 @@ BodyStreamBuffer::BodyStreamBuffer(
 }
 
 scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
-    BytesConsumer::BlobSizePolicy policy) {
+    BytesConsumer::BlobSizePolicy policy,
+    ExceptionState& exception_state) {
   DCHECK(!IsStreamLocked());
   DCHECK(!IsStreamDisturbed());
   if (IsStreamClosed() || IsStreamErrored() || stream_broken_)
@@ -207,13 +208,14 @@ scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
   scoped_refptr<BlobDataHandle> blob_data_handle =
       consumer_->DrainAsBlobDataHandle(policy);
   if (blob_data_handle) {
-    CloseAndLockAndDisturb();
+    CloseAndLockAndDisturb(exception_state);
     return blob_data_handle;
   }
   return nullptr;
 }
 
-scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData() {
+scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData(
+    ExceptionState& exception_state) {
   DCHECK(!IsStreamLocked());
   DCHECK(!IsStreamDisturbed());
   if (IsStreamClosed() || IsStreamErrored() || stream_broken_)
@@ -224,7 +226,7 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData() {
 
   scoped_refptr<EncodedFormData> form_data = consumer_->DrainAsFormData();
   if (form_data) {
-    CloseAndLockAndDisturb();
+    CloseAndLockAndDisturb(exception_state);
     return form_data;
   }
   return nullptr;
@@ -249,7 +251,14 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
   DCHECK(!keep_alive_);
-  DCHECK(script_state_->ContextIsValid());
+
+  if (!script_state_->ContextIsValid()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot load body from a frame or worker than has been detached");
+    return;
+  }
+
   if (signal_) {
     if (signal_->aborted()) {
       client->Abort();
@@ -359,18 +368,20 @@ void BodyStreamBuffer::OnStateChange() {
       GetExecutionContext()->IsContextDestroyed()) {
     return;
   }
+  ExceptionState exception_state(script_state_->GetIsolate(),
+                                 ExceptionContextType::kUnknown, "", "");
 
   switch (consumer_->GetPublicState()) {
     case BytesConsumer::PublicState::kReadableOrWaiting:
       break;
     case BytesConsumer::PublicState::kClosed:
-      Close();
+      Close(exception_state);
       return;
     case BytesConsumer::PublicState::kErrored:
       GetError();
       return;
   }
-  ProcessData();
+  ProcessData(exception_state);
 }
 
 void BodyStreamBuffer::ContextDestroyed() {
@@ -398,7 +409,7 @@ bool BodyStreamBuffer::IsStreamDisturbed() const {
   return stream_->IsDisturbed();
 }
 
-void BodyStreamBuffer::CloseAndLockAndDisturb() {
+void BodyStreamBuffer::CloseAndLockAndDisturb(ExceptionState& exception_state) {
   DCHECK(!stream_broken_);
 
   cached_metadata_handler_ = nullptr;
@@ -406,7 +417,7 @@ void BodyStreamBuffer::CloseAndLockAndDisturb() {
   if (IsStreamReadable()) {
     // Note that the stream cannot be "draining", because it doesn't have
     // the internal buffer.
-    Close();
+    Close(exception_state);
   }
 
   stream_->LockAndDisturb(script_state_);
@@ -459,12 +470,10 @@ void BodyStreamBuffer::Abort() {
   CancelConsumer();
 }
 
-void BodyStreamBuffer::Close() {
+void BodyStreamBuffer::Close(ExceptionState& exception_state) {
   // Close() can be called during construction, in which case Controller()
   // will not be set yet.
   if (underlying_byte_source_) {
-    ExceptionState exception_state(script_state_->GetIsolate(),
-                                   ExceptionContextType::kUnknown, "", "");
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
       stream_->CloseStream(script_state_, exception_state);
@@ -531,7 +540,7 @@ void BodyStreamBuffer::CancelConsumer() {
   }
 }
 
-void BodyStreamBuffer::ProcessData() {
+void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
   DCHECK(consumer_);
   DCHECK(!in_process_data_);
 
@@ -580,9 +589,6 @@ void BodyStreamBuffer::ProcessData() {
             ScriptState::Scope scope(script_state_);
             auto* byte_controller =
                 To<ReadableByteStreamController>(stream_->GetController());
-            ExceptionState exception_state(script_state_->GetIsolate(),
-                                           ExceptionContextType::kUnknown, "",
-                                           "");
             if (byob_view) {
               ReadableByteStreamController::Respond(
                   script_state_, byte_controller, available, exception_state);
@@ -603,7 +609,7 @@ void BodyStreamBuffer::ProcessData() {
           }
         }
         if (result == BytesConsumer::Result::kDone) {
-          Close();
+          Close(exception_state);
           return;
         }
         // If |stream_needs_more_| is true, it means that pull is called and
@@ -669,7 +675,7 @@ BytesConsumer* BodyStreamBuffer::ReleaseHandle(
     // Avoid crashing if ContextDestroyed() has been called.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "Cannot release body in a window or worker than has been detached");
+        "Cannot release body in a window or worker that has been detached");
     return nullptr;
   }
 
@@ -689,7 +695,7 @@ BytesConsumer* BodyStreamBuffer::ReleaseHandle(
 
   BytesConsumer* consumer = consumer_.Release();
 
-  CloseAndLockAndDisturb();
+  CloseAndLockAndDisturb(exception_state);
 
   if (is_closed) {
     // Note that the stream cannot be "draining", because it doesn't have

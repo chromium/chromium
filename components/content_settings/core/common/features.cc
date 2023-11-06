@@ -59,7 +59,7 @@ const base::FeatureParam<base::TimeDelta>
         &kSafetyCheckUnusedSitePermissions,
         "unused-site-permissions-revocation-cleanup-threshold", base::Days(30)};
 
-BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kUserBypassUI, "UserBypassUI", base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kUserBypassUIExceptionExpiration{
     &kUserBypassUI, "expiration", base::Days(90)};
@@ -84,6 +84,15 @@ BASE_FEATURE(kImprovedSemanticsActivityIndicators,
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kTpcdReadHeuristicsGrantsName[] = "TpcdReadHeuristicsGrants";
+
+BASE_FEATURE(kTpcdHeuristicsGrants,
+             "TpcdHeuristicsGrants",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<bool> kTpcdReadHeuristicsGrants{
+    &kTpcdHeuristicsGrants, kTpcdReadHeuristicsGrantsName, false};
 
 }  // namespace features
 }  // namespace content_settings

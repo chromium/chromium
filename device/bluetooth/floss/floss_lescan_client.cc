@@ -66,10 +66,12 @@ FlossLEScanClient::~FlossLEScanClient() {
 void FlossLEScanClient::Init(dbus::Bus* bus,
                              const std::string& service_name,
                              const int adapter_index,
+                             base::Version version,
                              base::OnceClosure on_ready) {
   bus_ = bus;
   object_path_ = FlossDBusClient::GenerateGattPath(adapter_index);
   service_name_ = service_name;
+  version_ = version;
 
   exported_scanner_callback_manager_.Init(bus);
 
@@ -161,12 +163,18 @@ void FlossLEScanClient::UnregisterScanner(ResponseCallback<bool> callback,
                      scanner_id);
 }
 
-void FlossLEScanClient::StartScan(ResponseCallback<BtifStatus> callback,
-                                  uint8_t scanner_id,
-                                  const ScanSettings& scan_settings,
-                                  const absl::optional<ScanFilter>& filter) {
-  CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
-                     scan_settings, filter);
+void FlossLEScanClient::StartScan(
+    ResponseCallback<BtifStatus> callback,
+    uint8_t scanner_id,
+    const absl::optional<ScanSettings>& scan_settings,
+    const absl::optional<ScanFilter>& filter) {
+  if (version_ >= base::Version("0.3")) {
+    CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
+                       scan_settings, filter);
+  } else {
+    CallLEScanMethod<>(std::move(callback), adapter::kStartScan, scanner_id,
+                       ScanSettings{}, filter);
+  }
 }
 
 void FlossLEScanClient::StopScan(ResponseCallback<BtifStatus> callback,

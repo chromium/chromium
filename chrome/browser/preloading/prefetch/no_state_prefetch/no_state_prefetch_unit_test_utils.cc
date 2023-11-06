@@ -41,7 +41,7 @@ void FakeNoStatePrefetchContents::StartPrerendering(
     content::SessionStorageNamespace* session_storage_namespace,
     base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
   load_start_time_ = test_no_state_prefetch_manager_->GetCurrentTimeTicks();
-  prerendering_has_started_ = true;
+  prefetching_has_started_ = true;
   test_no_state_prefetch_manager_->FakeNoStatePrefetchContentsStarted(
       -1, route_id_, this);
   NotifyPrefetchStart();
@@ -185,7 +185,7 @@ UnitTestNoStatePrefetchManager::CreateNoStatePrefetchContents(
     const absl::optional<url::Origin>& initiator_origin,
     Origin origin) {
   CHECK(next_no_state_prefetch_contents_);
-  EXPECT_EQ(url, next_no_state_prefetch_contents_->prerender_url());
+  EXPECT_EQ(url, next_no_state_prefetch_contents_->prefetch_url());
   EXPECT_EQ(origin, next_no_state_prefetch_contents_->origin());
   return std::move(next_no_state_prefetch_contents_);
 }

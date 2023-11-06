@@ -55,8 +55,7 @@ public class DigitalCredentialProviderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    public MockIdentityCredentialsDelegate mDelegate;
+    @Mock public MockIdentityCredentialsDelegate mDelegate;
 
     @Before
     public void setUp() throws Exception {
@@ -68,7 +67,7 @@ public class DigitalCredentialProviderTest {
 
     @Test
     @LargeTest
-    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_MDOCS)
+    @EnableFeatures(ContentFeatureList.WEB_IDENTITY_DIGITAL_CREDENTIALS)
     public void testRequestMDoc() throws TimeoutException {
         when(mDelegate.get(any(), any(), any()))
                 .thenAnswer(input -> Promise.fulfilled(EXPECTED_MDOC.getBytes()));

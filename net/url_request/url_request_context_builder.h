@@ -46,10 +46,6 @@
 #include "net/url_request/url_request_job_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace base::android {
-class ApplicationStatusListener;
-}  // namespace base::android
-
 namespace net {
 
 class CertVerifier;
@@ -130,8 +126,7 @@ class NET_EXPORT URLRequestContextBuilder {
 #if BUILDFLAG(IS_ANDROID)
     // If this is set, will override the default ApplicationStatusListener. This
     // is useful if the cache will not be in the main process.
-    raw_ptr<base::android::ApplicationStatusListener> app_status_listener =
-        nullptr;
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter;
 #endif
   };
 

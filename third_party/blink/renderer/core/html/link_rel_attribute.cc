@@ -49,7 +49,9 @@ LinkRelAttribute::LinkRelAttribute()
       is_service_worker_(false),
       is_canonical_(false),
       is_monetization_(false),
-      is_dictionary_(false) {}
+      is_dictionary_(false),
+      is_privacy_policy_(false),
+      is_terms_of_service_(false) {}
 
 LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
   if (rel.empty())
@@ -96,10 +98,16 @@ LinkRelAttribute::LinkRelAttribute(const String& rel) : LinkRelAttribute() {
       is_monetization_ = true;
     } else if (EqualIgnoringASCIICase(link_type, "dictionary")) {
       is_dictionary_ = true;
+    } else if (EqualIgnoringASCIICase(link_type, "privacy-policy")) {
+      is_privacy_policy_ = true;
+    } else if (EqualIgnoringASCIICase(link_type, "terms-of-service")) {
+      is_terms_of_service_ = true;
     }
 
-    // Adding or removing a value here requires you to update
-    // RelList::supportedTokens()
+    // Adding or removing a value here whose processing model is web-visible
+    // (e.g. if the value is listed as a "supported token" for `<link>`'s `rel`
+    // attribute in HTML) also requires you to update the list of tokens in
+    // RelList::SupportedTokensLink().
   }
 }
 

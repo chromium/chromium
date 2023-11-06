@@ -9,7 +9,8 @@
   },
   "kiosk_enabled": true,
   "permissions": [
-    "identity"
+    "identity",
+    "enterprise.kioskInput"
   ],
   "oauth2": {
     "client_id": "fake-client-id",

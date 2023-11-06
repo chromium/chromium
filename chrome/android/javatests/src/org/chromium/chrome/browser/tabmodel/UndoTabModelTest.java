@@ -68,8 +68,11 @@ public class UndoTabModelTest {
     private static final String TEST_URL_1 = UrlUtils.encodeHtmlDataUri("<html>test_url_1.</html>");
 
     private void checkState(
-            final TabModel model, final Tab[] tabsList, final Tab selectedTab,
-            final Tab[] closingTabs, final Tab[] fullTabsList,
+            final TabModel model,
+            final Tab[] tabsList,
+            final Tab selectedTab,
+            final Tab[] closingTabs,
+            final Tab[] fullTabsList,
             final Tab fullSelectedTab) {
         // Keeping these checks on the test thread so the stacks are useful for identifying
         // failures.
@@ -105,10 +108,11 @@ public class UndoTabModelTest {
     }
 
     private void createTabOnUiThread(final ChromeTabCreator tabCreator) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            tabCreator.createNewTab(
-                    new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    tabCreator.createNewTab(
+                            new LoadUrlParams("about:blank"), TabLaunchType.FROM_CHROME_UI, null);
+                });
     }
 
     private void closeTabOnUiThread(final TabModel model, final Tab tab, final boolean undoable)
@@ -120,17 +124,19 @@ public class UndoTabModelTest {
         Assert.assertNotNull(TabModelUtils.getTabById(model, tab.getId()));
 
         final CallbackHelper didReceivePendingClosureHelper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            model.addObserver(new TabModelObserver() {
-                @Override
-                public void tabPendingClosure(Tab tab) {
-                    didReceivePendingClosureHelper.notifyCalled();
-                }
-            });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    model.addObserver(
+                            new TabModelObserver() {
+                                @Override
+                                public void tabPendingClosure(Tab tab) {
+                                    didReceivePendingClosureHelper.notifyCalled();
+                                }
+                            });
 
-            // Take action.
-            model.closeTab(tab, true, false, undoable);
-        });
+                    // Take action.
+                    model.closeTab(tab, true, false, undoable);
+                });
 
         boolean didMakePending = undoable && model.supportsPendingClosures();
 
@@ -145,7 +151,10 @@ public class UndoTabModelTest {
     }
 
     private void saveStateOnUiThread(final TabModelOrchestrator orchestrator) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { orchestrator.saveState(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    orchestrator.saveState();
+                });
 
         TabModelSelector selector = orchestrator.getTabModelSelector();
         for (int i = 0; i < selector.getModels().size(); i++) {
@@ -159,7 +168,9 @@ public class UndoTabModelTest {
 
     private void openMostRecentlyClosedTabOnUiThread(final TabModelSelector selector) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { selector.getCurrentModel().openMostRecentlyClosedEntry(); });
+                () -> {
+                    selector.getCurrentModel().openMostRecentlyClosedEntry();
+                });
     }
 
     // Helper class that notifies after the tab is closed, and a tab restore service entry has been
@@ -178,47 +189,49 @@ public class UndoTabModelTest {
     }
 
     /**
-     * Test calling {@link TabModelOrchestrator#saveState()} commits all pending closures:
-     *     Action                     Model List         Close List        Comprehensive List
-     * 1.  Initial State              [ 0 1s ]           -                 [ 0 1s ]
-     * 2.  CloseTab(0, allow undo)    [ 1s ]             [ 0 ]             [ 0 1s ]
-     * 3.  SaveState                  [ 1s ]             -                 [ 1s ]
+     * Test calling {@link TabModelOrchestrator#saveState()} commits all pending closures: Action
+     * Model List Close List Comprehensive List 1. Initial State [ 0 1s ] - [ 0 1s ] 2. CloseTab(0,
+     * allow undo) [ 1s ] [ 0 ] [ 0 1s ] 3. SaveState [ 1s ] - [ 1s ]
      */
     @Test
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
     public void testSaveStateCommitsUndos() throws TimeoutException, ExecutionException {
-        TabModelOrchestrator orchestrator = TestThreadUtils.runOnUiThreadBlocking(
-                () -> sActivityTestRule.getActivity().getTabModelOrchestratorSupplier().get());
+        TabModelOrchestrator orchestrator =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                sActivityTestRule
+                                        .getActivity()
+                                        .getTabModelOrchestratorSupplier()
+                                        .get());
         TabModelSelector selector = orchestrator.getTabModelSelector();
         TabModel model = selector.getModel(false);
-        ChromeTabCreator tabCreator = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> sActivityTestRule.getActivity().getTabCreator(false));
+        ChromeTabCreator tabCreator =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> sActivityTestRule.getActivity().getTabCreator(false));
         createTabOnUiThread(tabCreator);
 
         Tab tab0 = model.getTabAt(0);
         Tab tab1 = model.getTabAt(1);
 
-        Tab[] fullList = new Tab[] { tab0, tab1 };
+        Tab[] fullList = new Tab[] {tab0, tab1};
 
         // 1.
-        checkState(model, new Tab[] { tab0, tab1 }, tab1, EMPTY, fullList, tab1);
+        checkState(model, new Tab[] {tab0, tab1}, tab1, EMPTY, fullList, tab1);
 
         // 2.
         closeTabOnUiThread(model, tab0, true);
-        checkState(model, new Tab[] { tab1 }, tab1, EMPTY, fullList, tab1);
+        checkState(model, new Tab[] {tab1}, tab1, EMPTY, fullList, tab1);
 
         // 3.
         saveStateOnUiThread(orchestrator);
-        fullList = new Tab[] { tab1 };
+        fullList = new Tab[] {tab1};
         checkState(model, new Tab[] {tab1}, tab1, EMPTY, fullList, tab1);
         Assert.assertTrue(tab0.isClosing());
         Assert.assertFalse(tab0.isInitialized());
     }
 
-    /**
-     * Test opening recently closed tab using native tab restore service.
-     */
+    /** Test opening recently closed tab using native tab restore service. */
     @Test
     @MediumTest
     public void testOpenRecentlyClosedTabNative() throws TimeoutException {
@@ -228,15 +241,18 @@ public class UndoTabModelTest {
         // Create new tab and wait until it's loaded.
         // Native can only successfully recover the tab after a page load has finished and
         // it has navigation history.
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), TEST_URL_0, false);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                TEST_URL_0,
+                false);
 
         // Close the tab, and commit pending closure.
         Assert.assertEquals(model.getCount(), 2);
         closeTabOnUiThread(model, model.getTabAt(1), false);
         Assert.assertEquals(1, model.getCount());
         Tab tab0 = model.getTabAt(0);
-        Tab[] tabs = new Tab[]{tab0};
+        Tab[] tabs = new Tab[] {tab0};
         checkState(model, tabs, tab0, EMPTY, tabs, tab0);
 
         // Recover the page.
@@ -245,21 +261,16 @@ public class UndoTabModelTest {
         Assert.assertEquals(2, model.getCount());
         tab0 = model.getTabAt(0);
         Tab tab1 = model.getTabAt(1);
-        tabs = new Tab[]{tab0, tab1};
+        tabs = new Tab[] {tab0, tab1};
         Assert.assertEquals(TEST_URL_0, ChromeTabUtils.getUrlStringOnUiThread(tab1));
         checkState(model, tabs, tab0, EMPTY, tabs, tab0);
     }
 
     /**
-     * Test opening recently closed tab when we have multiple windows.
-     * |  Action                    |   Result
-     * 1. Create second window.     |
-     * 2. Open tab in window 1.     |
-     * 3. Open tab in window 2.     |
-     * 4. Close tab in window 1.    |
-     * 5. Close tab in window 2.    |
-     * 6. Restore tab.              | Tab restored in window 2.
-     * 7. Restore tab.              | Tab restored in window 1.
+     * Test opening recently closed tab when we have multiple windows. | Action | Result 1. Create
+     * second window. | 2. Open tab in window 1. | 3. Open tab in window 2. | 4. Close tab in window
+     * 1. | 5. Close tab in window 2. | 6. Restore tab. | Tab restored in window 2. 7. Restore tab.
+     * | Tab restored in window 1.
      */
     @Test
     @MediumTest
@@ -282,8 +293,11 @@ public class UndoTabModelTest {
         final TabModel secondModel = secondSelector.getModel(false);
 
         // Create tabs.
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(),
-                sActivityTestRule.getActivity(), TEST_URL_0, false);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                sActivityTestRule.getActivity(),
+                TEST_URL_0,
+                false);
         ChromeTabUtils.fullyLoadUrlInNewTab(
                 InstrumentationRegistry.getInstrumentation(), secondActivity, TEST_URL_1, false);
 
@@ -315,11 +329,16 @@ public class UndoTabModelTest {
         // Check final states of both windows.
         Tab firstModelTab = firstModel.getTabAt(0);
         Tab secondModelTab = secondModel.getTabAt(0);
-        Tab[] firstWindowTabs = new Tab[]{firstModelTab, firstModel.getTabAt(1)};
-        Tab[] secondWindowTabs = new Tab[]{secondModelTab, secondModel.getTabAt(1)};
-        checkState(firstModel, firstWindowTabs, firstModelTab, EMPTY, firstWindowTabs,
-                firstModelTab);
-        checkState(secondModel, secondWindowTabs, secondModelTab, EMPTY, secondWindowTabs,
+        Tab[] firstWindowTabs = new Tab[] {firstModelTab, firstModel.getTabAt(1)};
+        Tab[] secondWindowTabs = new Tab[] {secondModelTab, secondModel.getTabAt(1)};
+        checkState(
+                firstModel, firstWindowTabs, firstModelTab, EMPTY, firstWindowTabs, firstModelTab);
+        checkState(
+                secondModel,
+                secondWindowTabs,
+                secondModelTab,
+                EMPTY,
+                secondWindowTabs,
                 secondModelTab);
         Assert.assertEquals(TEST_URL_0, ChromeTabUtils.getUrlStringOnUiThread(firstWindowTabs[1]));
         Assert.assertEquals(TEST_URL_1, ChromeTabUtils.getUrlStringOnUiThread(secondWindowTabs[1]));
@@ -328,13 +347,9 @@ public class UndoTabModelTest {
     }
 
     /**
-     * Test restoring closed tab from a closed window.
-     * |  Action                    |   Result
-     * 1. Create second window.     |
-     * 2. Open tab in window 2.     |
-     * 3. Close tab in window 2.    |
-     * 4. Close second window.      |
-     * 5. Restore tab.              | Tab restored in first window.
+     * Test restoring closed tab from a closed window. | Action | Result 1. Create second window. |
+     * 2. Open tab in window 2. | 3. Close tab in window 2. | 4. Close second window. | 5. Restore
+     * tab. | Tab restored in first window.
      */
     @Test
     @MediumTest
@@ -373,19 +388,23 @@ public class UndoTabModelTest {
         // Closed the second window. Must wait until it's totally closed.
         int numExpectedActivities = ApplicationStatus.getRunningActivities().size() - 1;
         secondActivity.finishAndRemoveTask();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(ApplicationStatus.getRunningActivities().size(),
-                    Matchers.is(numExpectedActivities));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            ApplicationStatus.getRunningActivities().size(),
+                            Matchers.is(numExpectedActivities));
+                });
         Assert.assertEquals("Window 1 should have 1 tab.", 1, firstModel.getCount());
 
         // Restore closed tab from second window. It should be created in first window.
         openMostRecentlyClosedTabOnUiThread(firstSelector);
-        Assert.assertEquals("Closed tab in second window should be restored in the first window.",
-                2, firstModel.getCount());
+        Assert.assertEquals(
+                "Closed tab in second window should be restored in the first window.",
+                2,
+                firstModel.getCount());
         Tab tab0 = firstModel.getTabAt(0);
         Tab tab1 = firstModel.getTabAt(1);
-        Tab[] firstWindowTabs = new Tab[]{tab0, tab1};
+        Tab[] firstWindowTabs = new Tab[] {tab0, tab1};
         checkState(firstModel, firstWindowTabs, tab0, EMPTY, firstWindowTabs, tab0);
         Assert.assertEquals(TEST_URL_1, ChromeTabUtils.getUrlStringOnUiThread(tab1));
     }

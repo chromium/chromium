@@ -64,6 +64,20 @@ class VirtualCardEnrollBubbleControllerImplBottomSheetTest
   base::test::ScopedFeatureList features_;
 };
 
+TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest,
+       ShowBubbleSetsUiModel) {
+  ControllerTestSupport test_support(web_contents());
+
+  test_support.controller()->ShowBubble(
+      test_support.virtual_card_enrollment_fields(),
+      /*accept_virtual_card_callback=*/base::DoNothing(),
+      /*decline_virtual_card_callback=*/base::DoNothing());
+
+  auto expected_model = VirtualCardEnrollUiModel::Create(
+      test_support.virtual_card_enrollment_fields());
+  EXPECT_EQ(test_support.controller()->GetUiModel(), expected_model);
+}
+
 TEST_F(VirtualCardEnrollBubbleControllerImplBottomSheetTest, ShowBubble) {
   ControllerTestSupport test_support(web_contents());
 

@@ -30,7 +30,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/app_service/package_id.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app.h"
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -77,6 +76,7 @@
 #include "components/app_constants/constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -443,14 +443,12 @@ class AppListClientImplBrowserPromiseAppTest
     extensions::PlatformAppBrowserTest::TearDownOnMainThread();
   }
 
-  apps::PromiseAppRegistryCache* cache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile())
-        ->PromiseAppRegistryCache();
+  apps::AppServiceProxy* app_service_proxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile());
   }
 
-  apps::AppRegistryCache* app_cache() {
-    return &apps::AppServiceProxyFactory::GetForProfile(profile())
-                ->AppRegistryCache();
+  apps::PromiseAppRegistryCache* cache() {
+    return app_service_proxy()->PromiseAppRegistryCache();
   }
 
   // AppListModelUpdaterObserver:
@@ -471,6 +469,7 @@ class AppListClientImplBrowserPromiseAppTest
 // launcher.
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
                        PromiseAppsInLauncher) {
+  std::string app_name = "Long App Name";
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   EXPECT_TRUE(client);
 
@@ -478,6 +477,7 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   apps::PromiseAppPtr promise_app =
       std::make_unique<apps::PromiseApp>(kTestPackageId);
   promise_app->status = apps::PromiseStatus::kPending;
+  promise_app->name = app_name;
   promise_app->should_show = true;
   cache()->OnPromiseApp(std::move(promise_app));
 
@@ -493,6 +493,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   ASSERT_EQ(item->name(),
             base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
                 apps::PromiseStatus::kPending)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kPending)));
 
   // Update the promise app in the promise app registry cache.
   apps::PromiseAppPtr update =
@@ -507,6 +511,10 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
   EXPECT_EQ(item->name(),
             base::UTF16ToUTF8(ShelfControllerHelper::GetLabelForPromiseStatus(
                 apps::PromiseStatus::kInstalling)));
+  ASSERT_EQ(item->accessible_name(),
+            base::UTF16ToUTF8(
+                ShelfControllerHelper::GetAccessibleLabelForPromiseStatus(
+                    app_name, apps::PromiseStatus::kInstalling)));
   GetAndResetUpdateCount();
 
   // Register (i.e. "install") an app with a matching package ID. This should
@@ -518,10 +526,11 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserPromiseAppTest,
 
   std::vector<apps::AppPtr> apps;
   apps.push_back(std::move(app));
-  app_cache()->OnApps(std::move(apps), apps::AppType::kArc,
-                      /*should_notify_initialized=*/false);
+  app_service_proxy()->OnApps(std::move(apps), apps::AppType::kArc,
+                              /*should_notify_initialized=*/false);
 
-  EXPECT_EQ(1, GetAndResetUpdateCount());
+  // Expect 2 updates: one for the name, one for the accessible name.
+  EXPECT_EQ(2, GetAndResetUpdateCount());
   EXPECT_FALSE(model_updater->FindItem(kTestPackageId.ToString()));
 }
 

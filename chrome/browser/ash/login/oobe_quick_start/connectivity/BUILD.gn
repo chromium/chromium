@@ -17,6 +17,7 @@ source_set("connectivity") {
     "//chromeos/ash/components/quick_start",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
+    "//chromeos/constants:constants",
     "//components/cbor",
     "//components/prefs",
     "//components/qr_code_generator:qr_code_generator",

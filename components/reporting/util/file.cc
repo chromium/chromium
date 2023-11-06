@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/types/expected.h"
 
 namespace reporting {
 
@@ -65,16 +66,16 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
                                     int64_t offset) {
   base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
-    return Status(error::NOT_FOUND,
-                  base::StrCat({"Could not open health data file ",
-                                file_path.MaybeAsASCII()}));
+    return base::unexpected(Status(
+        error::NOT_FOUND, base::StrCat({"Could not open health data file ",
+                                        file_path.MaybeAsASCII()})));
   }
 
   base::File::Info file_info;
   if (!file.GetInfo(&file_info) || file_info.size - offset < 0) {
-    return Status(error::DATA_LOSS,
-                  base::StrCat({"Failed to read data file info ",
-                                file_path.MaybeAsASCII()}));
+    return base::unexpected(
+        Status(error::DATA_LOSS, base::StrCat({"Failed to read data file info ",
+                                               file_path.MaybeAsASCII()})));
   }
 
   std::string result;
@@ -82,8 +83,9 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
   const int read_result =
       file.Read(offset, result.data(), file_info.size - offset);
   if (read_result != file_info.size - offset) {
-    return Status(error::DATA_LOSS, base::StrCat({"Failed to read data file ",
-                                                  file_path.MaybeAsASCII()}));
+    return base::unexpected(Status(
+        error::DATA_LOSS,
+        base::StrCat({"Failed to read data file ", file_path.MaybeAsASCII()})));
   }
 
   return result;
@@ -113,10 +115,10 @@ Status AppendLine(const base::FilePath& file_path,
 StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
                                          uint32_t pos) {
   StatusOr<std::string> status_or = MaybeReadFile(file_path, pos);
-  if (!status_or.ok()) {
-    return status_or.status();
+  if (!status_or.has_value()) {
+    return base::unexpected(status_or.error());
   }
-  std::string content = status_or.ValueOrDie();
+  std::string content = status_or.value();
   uint32_t offset = 0;
   // Search for next new line after pos.
   while (offset < content.length()) {
@@ -134,7 +136,7 @@ StatusOr<uint32_t> RemoveAndTruncateLine(const base::FilePath& file_path,
 
   Status status = MaybeWriteFile(file_path, content);
   if (!status.ok()) {
-    return status;
+    return base::unexpected(status);
   }
   return pos + offset;
 }

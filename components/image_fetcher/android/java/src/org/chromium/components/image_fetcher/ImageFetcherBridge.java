@@ -8,13 +8,14 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
 
+import jp.tomorrowkey.android.gifplayer.BaseGifImage;
+
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.embedder_support.simple_factory_key.SimpleFactoryKeyHandle;
-
-import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 /**
  * Provides access to native implementations of ImageFetcher for the given browser context.

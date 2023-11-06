@@ -58,6 +58,8 @@ struct OverflowMenuDestinationList: View {
     /// The top margin between the destinations and the edge of the list.
     static let defaultTopMargin: CGFloat = 15
 
+    static let defaultBottomMargin: CGFloat = 8
+
     /// The name for the coordinate space of the scroll view, so children can
     /// find their positioning in the scroll view.
     static let coordinateSpaceName = "destinations"
@@ -95,6 +97,9 @@ struct OverflowMenuDestinationList: View {
   /// The destinations for this view.
   @Binding var destinations: [OverflowMenuDestination]
 
+  // The allotted width of this view.
+  var width: CGFloat
+
   var extraTopMargin: CGFloat
 
   weak var metricsHandler: PopupMenuMetricsHandler?
@@ -114,13 +119,16 @@ struct OverflowMenuDestinationList: View {
   @State var listOffset: CGFloat? = nil
 
   init(
-    destinations: Binding<[OverflowMenuDestination]>, extraTopMargin: CGFloat = 0,
+    destinations: Binding<[OverflowMenuDestination]>,
+    width: CGFloat,
+    extraTopMargin: CGFloat = 0,
     metricsHandler: PopupMenuMetricsHandler? = nil,
     uiConfiguration: OverflowMenuUIConfiguration,
     dragHandler: DestinationDragHandler? = nil,
     namespace: Namespace.ID
   ) {
     self._destinations = destinations
+    self.width = width
     self.extraTopMargin = extraTopMargin
     self.metricsHandler = metricsHandler
     self.uiConfiguration = uiConfiguration
@@ -129,121 +137,116 @@ struct OverflowMenuDestinationList: View {
   }
 
   var body: some View {
-    GeometryReader { geometry in
-      scrollView(in: geometry)
-        .coordinateSpace(name: Constants.coordinateSpaceName)
-        .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
-    }
-    .background(
-      Color("destination_highlight_color").opacity(uiConfiguration.highlightDestinationsRow ? 1 : 0)
-    )
-    .animation(
-      .linear(duration: kMaterialDuration3), value: uiConfiguration.highlightDestinationsRow
-    )
-    .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
-      // Only alert the handler if scroll tracking has started.
-      if let listOffset = listOffset,
-        newOffset != listOffset
-      {
-        metricsHandler?.popupMenuScrolledHorizontally()
+    scrollView
+      .coordinateSpace(name: Constants.coordinateSpaceName)
+      .accessibilityIdentifier(kPopupMenuToolsMenuTableViewId)
+      .background(
+        Color("destination_highlight_color").opacity(
+          uiConfiguration.highlightDestinationsRow ? 1 : 0)
+      )
+      .animation(
+        .linear(duration: kMaterialDuration3), value: uiConfiguration.highlightDestinationsRow
+      )
+      .onPreferenceChange(ScrollViewLeadingOffset.self) { newOffset in
+        // Only alert the handler if scroll tracking has started.
+        if let listOffset = listOffset,
+          newOffset != listOffset
+        {
+          metricsHandler?.popupMenuScrolledHorizontally()
+        }
+        // Only update the offset if scroll tracking has started or the newOffset
+        // is approximately 0 (this starts scroll tracking). In RTL mode, the
+        // offset is not exactly 0, so a strict comparison won't work.
+        if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
+          listOffset = newOffset
+        }
       }
-      // Only update the offset if scroll tracking has started or the newOffset
-      // is approximately 0 (this starts scroll tracking). In RTL mode, the
-      // offset is not exactly 0, so a strict comparison won't work.
-      if listOffset != nil || (listOffset == nil && abs(newOffset) < 1e-9) {
-        listOffset = newOffset
-      }
-    }
   }
 
   @ViewBuilder
-  private func scrollView(in geometry: GeometryProxy) -> some View {
+  private var scrollView: some View {
     ScrollViewReader { proxy in
       ScrollView(.horizontal, showsIndicators: false) {
         let spacing = OverflowMenuDestinationList.destinationSpacing(
-          forScreenWidth: geometry.size.width)
+          forScreenWidth: width)
         let layoutParameters = OverflowMenuDestinationList.layoutParameters(
-          forScreenWidth: geometry.size.width, forSizeCategory: sizeCategory)
+          forScreenWidth: width, forSizeCategory: sizeCategory)
         let alignment: VerticalAlignment = sizeCategory >= .accessibilityMedium ? .center : .icon
-
-        // Use a ZStack with a huge spacer inside to allow positioning the
-        // HStack easier. These views are all inside a geometry reader, which
-        // expands to take all of the possible space, but also positions its
-        // children at the top left corner. The ZStack allows for controlling
-        // the position of the children, and the huge spacer makes sure the
-        // ZStack also takes up as much space as possible, so it fills the
-        // entire parent (GeometryReader).
-        ZStack(alignment: .top) {
-          Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
-          HStack(alignment: alignment, spacing: 0) {
-            // Make sure the space to the first icon is constant, so add extra
-            // spacing before the first item.
-            Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
-            ForEach(destinations) { destination in
-              let destinationView = OverflowMenuDestinationView(
-                destination: destination, layoutParameters: layoutParameters,
-                highlighted: uiConfiguration.highlightDestination == destination.destination,
-                metricsHandler: metricsHandler
-              )
-              let destinationBeingDragged =
-                dragHandlerContainer.dragHandler?.dragOnDestinations ?? false
-                && dragHandlerContainer.dragHandler?.currentDrag?.item == destination
-              destinationView
-                .id(destination.destination)
-                .ifLet(dragHandlerContainer.dragHandler) { view, dragHandler in
-                  view
-                    .opacity(destinationBeingDragged ? 0.01 : 1)
-                    .onDrag {
-                      dragHandler.startDrag(from: destination)
-                      return dragHandler.newItemProvider(forDestination: destination)
-                    }
-                    .onDrop(
-                      of: [.text],
-                      delegate: dragHandler.newDropDelegate(
-                        forDestination: destination))
-                }
-                .overlay(alignment: .editButton) {
-                  if !destinationBeingDragged && editMode?.wrappedValue.isEditing == true
-                    && destination.canBeHidden
-                  {
-                    DestinationEditButton(destination: destination)
-                      .alignmentGuide(HorizontalAlignment.editButton) {
-                        $0[HorizontalAlignment.center]
-                      }
-                      .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
+        HStack(alignment: alignment, spacing: 0) {
+          // Make sure the space to the first icon is constant, so add extra
+          // spacing before the first item.
+          Spacer().frame(width: Constants.iconInitialSpace - spacing.iconSpacing)
+          ForEach(destinations) { destination in
+            let destinationView = OverflowMenuDestinationView(
+              destination: destination, layoutParameters: layoutParameters,
+              highlighted: uiConfiguration.highlightDestination == destination.destination,
+              metricsHandler: metricsHandler
+            )
+            let destinationBeingDragged =
+              dragHandlerContainer.dragHandler?.dragOnDestinations ?? false
+              && dragHandlerContainer.dragHandler?.currentDrag?.item == destination
+            destinationView
+              .id(destination.destination)
+              .ifLet(dragHandlerContainer.dragHandler) { view, dragHandler in
+                view
+                  .opacity(destinationBeingDragged ? 0.01 : 1)
+                  .onDrag {
+                    dragHandler.startDrag(from: destination)
+                    return dragHandler.newItemProvider(forDestination: destination)
                   }
+                  .onDrop(
+                    of: [.text],
+                    delegate: dragHandler.newDropDelegate(
+                      forDestination: destination))
+              }
+              .overlay(alignment: .editButton) {
+                if !destinationBeingDragged && editMode?.wrappedValue.isEditing == true
+                  && destination.canBeHidden
+                {
+                  DestinationEditButton(destination: destination)
+                    .alignmentGuide(HorizontalAlignment.editButton) {
+                      $0[HorizontalAlignment.center]
+                    }
+                    .alignmentGuide(VerticalAlignment.editButton) { $0[VerticalAlignment.center] }
                 }
-                .matchedGeometryEffect(
-                  id: MenuCustomizationAnimationID.from(destination), in: namespace
-                )
-                .accessibilityElement(children: .combine)
-                .accessibilityHint(editButtonAccessibilityHint(for: destination))
-            }
+              }
+              .matchedGeometryEffect(
+                id: MenuCustomizationAnimationID.from(destination), in: namespace
+              )
+              .accessibilityElement(children: .combine)
+              .accessibilityHint(editButtonAccessibilityHint(for: destination))
           }
-          .alignmentGuide(.top) { $0[.top] - (Constants.defaultTopMargin + extraTopMargin) }
-          .overlay {
-            GeometryReader { innerGeometry in
-              let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
-              let parentWidth = geometry.size.width
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding([.top], Constants.defaultTopMargin + extraTopMargin)
+        .padding([.bottom], Constants.defaultBottomMargin)
+        .overlay {
+          GeometryReader { innerGeometry in
+            let frame = innerGeometry.frame(in: .named(Constants.coordinateSpaceName))
 
-              // When the view is RTL, the offset should be calculated from the
-              // right edge.
-              let offset = layoutDirection == .leftToRight ? frame.minX : parentWidth - frame.maxX
+            // When the view is RTL, the offset should be calculated from the
+            // right edge.
+            let offset = layoutDirection == .leftToRight ? frame.minX : width - frame.maxX
 
-              Color.clear
-                .preference(key: ScrollViewLeadingOffset.self, value: offset)
-            }
+            Color.clear
+              .preference(key: ScrollViewLeadingOffset.self, value: offset)
           }
         }
       }
       .scrollClipDisabledCompat()
+      .background {
+        GeometryReader { geometry in
+          Color.clear.onAppear {
+            uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
+          }
+        }
+      }
       .onAppear {
         if destinations.map(\.destination).contains(uiConfiguration.highlightDestination) {
           proxy.scrollTo(uiConfiguration.highlightDestination)
         } else if layoutDirection == .rightToLeft {
           proxy.scrollTo(destinations.first?.destination)
         }
-        uiConfiguration.destinationListScreenFrame = geometry.frame(in: .global)
       }
     }
   }

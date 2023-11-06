@@ -60,16 +60,11 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
     RenderWidgetHost* widget_host,
     const display::ScreenInfos& parent_screen_infos)
     : RenderWidgetHostViewBase(widget_host),
-      frame_sink_id_(
-          base::checked_cast<uint32_t>(widget_host->GetProcess()->GetID()),
-          base::checked_cast<uint32_t>(widget_host->GetRoutingID())),
+      frame_sink_id_(widget_host->GetFrameSinkId()),
       frame_connector_(nullptr) {
   // TODO(enne): this appears to have a null current() in some tests.
   screen_infos_ = parent_screen_infos;
-  GetHostFrameSinkManager()->RegisterFrameSinkId(
-      frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
-  GetHostFrameSinkManager()->SetFrameSinkDebugLabel(
-      frame_sink_id_, "RenderWidgetHostViewChildFrame");
+
   host()->render_frame_metadata_provider()->AddObserver(this);
 }
 
@@ -80,8 +75,9 @@ RenderWidgetHostViewChildFrame::~RenderWidgetHostViewChildFrame() {
   if (frame_connector_)
     DetachFromTouchSelectionClientManagerIfNecessary();
 
-  if (GetHostFrameSinkManager())
+  if (is_frame_sink_id_owner() && GetHostFrameSinkManager()) {
     GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_, this);
+  }
 }
 
 void RenderWidgetHostViewChildFrame::Init() {
@@ -231,6 +227,7 @@ void RenderWidgetHostViewChildFrame::ShowWithVisibility(
 void RenderWidgetHostViewChildFrame::Hide() {
   if (host()->is_hidden())
     return;
+
   host()->WasHidden();
 
   if (frame_connector_)
@@ -305,6 +302,16 @@ gfx::NativeViewAccessible
 RenderWidgetHostViewChildFrame::GetNativeViewAccessible() {
   NOTREACHED();
   return nullptr;
+}
+
+void RenderWidgetHostViewChildFrame::UpdateFrameSinkIdRegistration() {
+  RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration();
+  if (is_frame_sink_id_owner()) {
+    GetHostFrameSinkManager()->RegisterFrameSinkId(
+        frame_sink_id_, this, viz::ReportFirstSurfaceActivation::kNo);
+    GetHostFrameSinkManager()->SetFrameSinkDebugLabel(
+        frame_sink_id_, "RenderWidgetHostViewChildFrame");
+  }
 }
 
 void RenderWidgetHostViewChildFrame::UpdateBackgroundColor() {
@@ -474,23 +481,13 @@ RenderWidgetHostViewBase* RenderWidgetHostViewChildFrame::GetParentView() {
 }
 
 void RenderWidgetHostViewChildFrame::RegisterFrameSinkId() {
-  // If Destroy() has been called before we get here, host_ may be null.
-  if (host() && host()->delegate() &&
-      host()->delegate()->GetInputEventRouter()) {
-    RenderWidgetHostInputEventRouter* router =
-        host()->delegate()->GetInputEventRouter();
-    if (!router->is_registered(frame_sink_id_))
-      router->AddFrameSinkIdOwner(frame_sink_id_, this);
-  }
+  UpdateFrameSinkIdRegistration();
 }
 
 void RenderWidgetHostViewChildFrame::UnregisterFrameSinkId() {
   DCHECK(host());
-  if (host()->delegate() && host()->delegate()->GetInputEventRouter()) {
-    host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
-        frame_sink_id_);
-    DetachFromTouchSelectionClientManagerIfNecessary();
-  }
+  UpdateFrameSinkIdRegistration();
+  DetachFromTouchSelectionClientManagerIfNecessary();
 }
 
 void RenderWidgetHostViewChildFrame::UpdateViewportIntersection(
@@ -718,6 +715,10 @@ void RenderWidgetHostViewChildFrame::NotifyHitTestRegionUpdated(
     screen_rect_stable_since_for_iov2_ = base::TimeTicks::Now();
     return;
   }
+
+  // Convert to DIP
+  screen_rect->Scale(1. / screen_infos_.current().device_scale_factor);
+
   if ((ToRoundedSize(screen_rect->size()) !=
        ToRoundedSize(last_stable_screen_rect_.size())) ||
       (std::abs(last_stable_screen_rect_.x() - screen_rect->x()) +

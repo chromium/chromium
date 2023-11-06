@@ -109,7 +109,7 @@ absl::optional<std::string> GetUsbDriverName(
     return absl::nullopt;
 
   base::mac::ScopedIOObject<io_service_t> ancestor;
-  while (ancestor.reset(IOIteratorNext(iterator)), ancestor) {
+  while (ancestor.reset(IOIteratorNext(iterator.get())), ancestor) {
     absl::optional<std::string> provider_class =
         GetStringProperty(ancestor.get(), CFSTR(kIOProviderClassKey));
     if (provider_class && (*provider_class == "IOUSBInterface" ||
@@ -162,7 +162,7 @@ SerialDeviceEnumeratorMac::~SerialDeviceEnumeratorMac() = default;
 void SerialDeviceEnumeratorMac::FirstMatchCallback(void* context,
                                                    io_iterator_t iterator) {
   auto* enumerator = static_cast<SerialDeviceEnumeratorMac*>(context);
-  DCHECK_EQ(enumerator->devices_added_iterator_, iterator);
+  DCHECK_EQ(enumerator->devices_added_iterator_.get(), iterator);
   enumerator->AddDevices();
 }
 
@@ -170,7 +170,7 @@ void SerialDeviceEnumeratorMac::FirstMatchCallback(void* context,
 void SerialDeviceEnumeratorMac::TerminatedCallback(void* context,
                                                    io_iterator_t iterator) {
   auto* enumerator = static_cast<SerialDeviceEnumeratorMac*>(context);
-  DCHECK_EQ(enumerator->devices_removed_iterator_, iterator);
+  DCHECK_EQ(enumerator->devices_removed_iterator_.get(), iterator);
   enumerator->RemoveDevices();
 }
 
@@ -178,9 +178,10 @@ void SerialDeviceEnumeratorMac::AddDevices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::mac::ScopedIOObject<io_service_t> device;
-  while (device.reset(IOIteratorNext(devices_added_iterator_)), device) {
+  while (device.reset(IOIteratorNext(devices_added_iterator_.get())), device) {
     uint64_t entry_id;
-    IOReturn result = IORegistryEntryGetRegistryEntryID(device, &entry_id);
+    IOReturn result =
+        IORegistryEntryGetRegistryEntryID(device.get(), &entry_id);
     if (result != kIOReturnSuccess)
       continue;
 
@@ -250,9 +251,11 @@ void SerialDeviceEnumeratorMac::RemoveDevices() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   base::mac::ScopedIOObject<io_service_t> device;
-  while (device.reset(IOIteratorNext(devices_removed_iterator_)), device) {
+  while (device.reset(IOIteratorNext(devices_removed_iterator_.get())),
+         device) {
     uint64_t entry_id;
-    IOReturn result = IORegistryEntryGetRegistryEntryID(device, &entry_id);
+    IOReturn result =
+        IORegistryEntryGetRegistryEntryID(device.get(), &entry_id);
     if (result != kIOReturnSuccess)
       continue;
 

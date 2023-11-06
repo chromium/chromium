@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -23,10 +23,10 @@
 namespace {
 
 class SyncEncryptionTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     browser_state_ = TestChromeBrowserState::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(browser_state_.get());
@@ -41,10 +41,10 @@ class SyncEncryptionTableViewControllerTest
     if ([controller_ respondsToSelector:@selector(settingsWillBeDismissed)]) {
       [controller_ performSelector:@selector(settingsWillBeDismissed)];
     }
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[SyncEncryptionTableViewController alloc]
         initWithBrowser:browser_.get()];
   }

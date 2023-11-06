@@ -7,7 +7,7 @@ include_rules = [
   "+ios/chrome/browser/variations/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/voice/model",
-  "+ios/chrome/browser/tabs",
+  "+ios/chrome/browser/tabs/model",
   "+ios/chrome/browser/translate/model",
   "+ios/chrome/browser/signin",
 ]

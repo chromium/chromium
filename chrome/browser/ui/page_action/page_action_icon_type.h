@@ -37,7 +37,8 @@ enum class PageActionIconType {
   kSaveIban,
   kMandatoryReauth,
   kPriceInsights,
-  kMaxValue = kPriceInsights,
+  kReadAnything,
+  kMaxValue = kReadAnything,
 };
 
 static_assert(static_cast<int>(PageActionIconType::kBookmarkStar) == 0);
@@ -69,4 +70,5 @@ static_assert(static_cast<int>(PageActionIconType::kZoom) == 23);
 static_assert(static_cast<int>(PageActionIconType::kSaveIban) == 24);
 static_assert(static_cast<int>(PageActionIconType::kMandatoryReauth) == 25);
 static_assert(static_cast<int>(PageActionIconType::kPriceInsights) == 26);
+static_assert(static_cast<int>(PageActionIconType::kReadAnything) == 27);
 #endif  // CHROME_BROWSER_UI_PAGE_ACTION_PAGE_ACTION_ICON_TYPE_H_

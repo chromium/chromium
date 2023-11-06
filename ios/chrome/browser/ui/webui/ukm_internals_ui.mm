@@ -6,13 +6,14 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/ref_counted_memory.h"
+#import "components/grit/ukm_resources.h"
+#import "components/grit/ukm_resources_map.h"
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/ukm/debug/ukm_debug_data_extractor.h"
 #import "components/ukm/ukm_service.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/grit/ios_resources.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -24,8 +25,8 @@ web::WebUIIOSDataSource* CreateUkmInternalsUIHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUIURLKeyedMetricsHost);
 
-  source->AddResourcePath("ukm_internals.js", IDR_IOS_UKM_INTERNALS_JS);
-  source->SetDefaultResource(IDR_IOS_UKM_INTERNALS_HTML);
+  source->AddResourcePaths(base::make_span(kUkmResources, kUkmResourcesSize));
+  source->SetDefaultResource(IDR_UKM_UKM_INTERNALS_HTML);
   return source;
 }
 

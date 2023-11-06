@@ -17,7 +17,7 @@ namespace internal {
 
 template <typename T>
 class ClampedNumeric {
-  static_assert(std::is_arithmetic<T>::value,
+  static_assert(std::is_arithmetic_v<T>,
                 "ClampedNumeric<T>: T must be a numeric type.");
 
  public:

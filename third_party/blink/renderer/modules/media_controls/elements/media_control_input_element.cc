@@ -111,7 +111,7 @@ HTMLElement* MediaControlInputElement::CreateOverflowElement(
                                                   CSSValueID::kNone);
   SetOverflowElementIsWanted(false);
 
-  return overflow_label_element_;
+  return overflow_label_element_.Get();
 }
 
 void MediaControlInputElement::UpdateOverflowSubtitleElement(String text) {

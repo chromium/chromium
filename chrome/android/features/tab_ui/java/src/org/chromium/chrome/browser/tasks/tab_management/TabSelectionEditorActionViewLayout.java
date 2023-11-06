@@ -15,8 +15,8 @@ import androidx.collection.ArraySet;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.NumberRollView;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 
 import java.util.ArrayList;
 import java.util.Set;

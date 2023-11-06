@@ -21,8 +21,8 @@ namespace internal {
 
 template <typename Iter>
 constexpr bool IsRandomAccessIter =
-    std::is_same<typename std::iterator_traits<Iter>::iterator_category,
-                 std::random_access_iterator_tag>::value;
+    std::is_same_v<typename std::iterator_traits<Iter>::iterator_category,
+                   std::random_access_iterator_tag>;
 
 }  // namespace internal
 

@@ -123,7 +123,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     TagCollectionNSCache::AddResult result =
         tag_collection_ns_caches_.insert(name, nullptr);
     if (!result.is_new_entry)
-      return result.stored_value->value;
+      return result.stored_value->value.Get();
 
     auto* list = MakeGarbageCollected<TagCollectionNS>(
         node, kTagCollectionNSType, namespace_uri, local_name);
@@ -152,7 +152,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     for (NodeListAtomicNameCacheMap::const_iterator it =
              atomic_name_caches_.begin();
          it != atomic_name_cache_end; ++it) {
-      LiveNodeListBase* list = it->value;
+      LiveNodeListBase* list = it->value.Get();
       list->DidMoveToDocument(old_document, new_document);
     }
 
@@ -161,7 +161,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     for (TagCollectionNSCache::const_iterator it =
              tag_collection_ns_caches_.begin();
          it != tag_end; ++it) {
-      LiveNodeListBase* list = it->value;
+      LiveNodeListBase* list = it->value.Get();
       DCHECK(!list->IsRootedAtTreeScope());
       list->DidMoveToDocument(old_document, new_document);
     }

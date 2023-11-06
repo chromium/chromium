@@ -20,9 +20,9 @@ InterpolableFontPalette::InterpolableFontPalette(
 }
 
 // static
-std::unique_ptr<InterpolableFontPalette> InterpolableFontPalette::Create(
+InterpolableFontPalette* InterpolableFontPalette::Create(
     scoped_refptr<FontPalette> font_palette) {
-  return std::make_unique<InterpolableFontPalette>(font_palette);
+  return MakeGarbageCollected<InterpolableFontPalette>(font_palette);
 }
 
 scoped_refptr<FontPalette> InterpolableFontPalette::GetFontPalette() const {
@@ -30,11 +30,11 @@ scoped_refptr<FontPalette> InterpolableFontPalette::GetFontPalette() const {
 }
 
 InterpolableFontPalette* InterpolableFontPalette::RawClone() const {
-  return new InterpolableFontPalette(font_palette_);
+  return MakeGarbageCollected<InterpolableFontPalette>(font_palette_);
 }
 
 InterpolableFontPalette* InterpolableFontPalette::RawCloneAndZero() const {
-  return new InterpolableFontPalette(FontPalette::Create());
+  return MakeGarbageCollected<InterpolableFontPalette>(FontPalette::Create());
 }
 
 bool InterpolableFontPalette::Equals(const InterpolableValue& other) const {

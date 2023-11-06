@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_IBAN_BUBBLE_CONTROLLER_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_iban_ui.h"
@@ -44,18 +45,30 @@ class IbanBubbleControllerImpl
   void OfferLocalSave(
       const Iban& iban,
       bool should_show_prompt,
-      AutofillClient::LocalSaveIbanPromptCallback save_iban_prompt_callback);
+      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
+
+  // Sets up the controller and offers to save the `iban` to the GPay server.
+  // `save_iban_prompt_callback` will be invoked once the user makes a decision
+  // with respect to the offer-to-upload save prompt.
+  void OfferUploadSave(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback);
 
   // No-op if the bubble is already shown, otherwise, shows the bubble.
   void ReshowBubble();
 
   // IbanBubbleController:
   std::u16string GetWindowTitle() const override;
+  std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
+  AccountInfo GetAccountInfo() override;
   const Iban& GetIban() const override;
 
   void OnAcceptButton(const std::u16string& nickname) override;
+  void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageSavedIbanExtraButtonClicked() override;
   void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   IbanBubbleType GetBubbleType() const override;
@@ -86,8 +99,15 @@ class IbanBubbleControllerImpl
  private:
   friend class content::WebContentsUserData<IbanBubbleControllerImpl>;
 
+  Profile* GetProfile();
+
   // Displays omnibox icon only.
   void ShowIconOnly();
+
+  // Returns true iff the bubble for upload save is showing or has been shown.
+  bool IsUploadSave() const override;
+  // Returns empty vector if no legal message should be shown.
+  const LegalMessageLines& GetLegalMessageLines() const override;
 
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
@@ -105,14 +125,20 @@ class IbanBubbleControllerImpl
   IbanBubbleType current_bubble_type_ = IbanBubbleType::kInactive;
 
   // Callback to run once the user makes a decision with respect to the local
-  // IBAN offer-to-save prompt.
-  AutofillClient::LocalSaveIbanPromptCallback local_save_iban_prompt_callback_;
+  // or GPay server IBAN offer-to-save prompt.
+  AutofillClient::SaveIbanPromptCallback save_iban_prompt_callback_;
 
   // Whether the bubble is shown after user interacted with the omnibox icon.
   bool is_reshow_ = false;
 
   // Contains the details of the IBAN that will be saved if the user accepts.
   Iban iban_;
+
+  // Governs whether the upload or local save version of the UI should be shown.
+  bool is_upload_save_ = false;
+
+  // If no legal message should be shown, then this variable is an empty vector.
+  LegalMessageLines legal_message_lines_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

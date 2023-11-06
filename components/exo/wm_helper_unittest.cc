@@ -29,36 +29,8 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace exo {
-namespace {
 
 using ::ui::mojom::DragOperation;
-
-class MockDragDropObserver : public WMHelper::DragDropObserver {
- public:
-  MockDragDropObserver(DragOperation drop_result) : drop_result_(drop_result) {}
-  ~MockDragDropObserver() override = default;
-
-  // WMHelper::DragDropObserver:
-  void OnDragEntered(const ui::DropTargetEvent& event) override {}
-  aura::client::DragUpdateInfo OnDragUpdated(
-      const ui::DropTargetEvent& event) override {
-    return aura::client::DragUpdateInfo();
-  }
-  void OnDragExited() override {}
-  WMHelper::DragDropObserver::DropCallback GetDropCallback() override {
-    return base::BindOnce(
-        [](DragOperation drop_result, DragOperation& output_drag_op) {
-          output_drag_op = drop_result;
-        },
-        drop_result_);
-  }
-
- private:
-  DragOperation drop_result_;
-};
-
-}  // namespace
-
 using WMHelperTest = test::ExoTestBase;
 
 TEST_F(WMHelperTest, FrameThrottling) {
@@ -102,31 +74,6 @@ TEST_F(WMHelperTest, FrameThrottling) {
 
   vsync_timing_manager.RemoveObserver(&observer);
   wm_helper_chromeos->RemoveFrameThrottlingObserver();
-}
-
-TEST_F(WMHelperTest, MultipleDragDropObservers) {
-  WMHelper* wm_helper_chromeos = static_cast<WMHelper*>(wm_helper());
-  MockDragDropObserver observer_no_drop(DragOperation::kNone);
-  MockDragDropObserver observer_copy_drop(DragOperation::kCopy);
-
-  wm_helper_chromeos->AddDragDropObserver(&observer_no_drop);
-
-  ui::DropTargetEvent target_event(ui::OSExchangeData(), gfx::PointF(),
-                                   gfx::PointF(), ui::DragDropTypes::DRAG_NONE);
-  auto drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
-  DragOperation output_drop_op = DragOperation::kNone;
-  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(), output_drop_op,
-                         /*drag_image_layer_owner=*/nullptr);
-  EXPECT_EQ(output_drop_op, DragOperation::kNone);
-
-  wm_helper_chromeos->AddDragDropObserver(&observer_copy_drop);
-  drop_cb = wm_helper_chromeos->GetDropCallback(target_event);
-  std::move(drop_cb).Run(std::make_unique<ui::OSExchangeData>(), output_drop_op,
-                         /*drag_image_layer_owner=*/nullptr);
-  EXPECT_NE(output_drop_op, DragOperation::kNone);
-
-  wm_helper_chromeos->RemoveDragDropObserver(&observer_no_drop);
-  wm_helper_chromeos->RemoveDragDropObserver(&observer_copy_drop);
 }
 
 TEST_F(WMHelperTest, DockedModeShouldUseInternalAsDefault) {

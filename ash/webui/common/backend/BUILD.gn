@@ -12,6 +12,8 @@ static_library("backend") {
     "accessibility_features.h",
     "plural_string_handler.cc",
     "plural_string_handler.h",
+    "shortcut_input_provider.cc",
+    "shortcut_input_provider.h",
   ]
 
   deps = [
@@ -31,6 +33,7 @@ source_set("unit_tests") {
   sources = [
     "accessibility_features_unittest.cc",
     "plural_string_handler_unittest.cc",
+    "shortcut_input_provider_unittest.cc",
   ]
 
   deps = [

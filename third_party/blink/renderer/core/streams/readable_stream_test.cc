@@ -129,7 +129,7 @@ class TestTransferringOptimizer final
     explicit Source(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
 
-    ScriptPromise Start(ScriptState* script_state) override {
+    ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
       Controller()->Enqueue("foo");
       Controller()->Enqueue(", bar");
       Controller()->Close();
@@ -149,17 +149,13 @@ TEST_F(ReadableStreamTest, CreateWithoutArguments) {
 
 TEST_F(ReadableStreamTest, CreateWithUnderlyingSourceOnly) {
   V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
   auto* underlying_source =
-      MakeGarbageCollected<TestUnderlyingSource>(scope.GetScriptState());
-  ScriptValue js_underlying_source = ScriptValue(
-      scope.GetIsolate(), ToV8Traits<TestUnderlyingSource>::ToV8(
-                              scope.GetScriptState(), underlying_source)
-                              .ToLocalChecked());
-
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
   EXPECT_FALSE(underlying_source->IsStartCalled());
 
-  ReadableStream* stream = ReadableStream::Create(
-      scope.GetScriptState(), js_underlying_source, scope.GetExceptionState());
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
 
   ASSERT_TRUE(stream);
   ASSERT_FALSE(scope.GetExceptionState().HadException());
@@ -168,17 +164,13 @@ TEST_F(ReadableStreamTest, CreateWithUnderlyingSourceOnly) {
 
 TEST_F(ReadableStreamTest, CreateWithFullArguments) {
   V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
   auto* underlying_source =
-      MakeGarbageCollected<TestUnderlyingSource>(scope.GetScriptState());
-  ScriptValue js_underlying_source = ScriptValue(
-      scope.GetIsolate(), ToV8Traits<TestUnderlyingSource>::ToV8(
-                              scope.GetScriptState(), underlying_source)
-                              .ToLocalChecked());
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
   ScriptValue js_empty_strategy = EvalWithPrintingError(&scope, "{}");
   ASSERT_FALSE(js_empty_strategy.IsEmpty());
-  ReadableStream* stream =
-      ReadableStream::Create(scope.GetScriptState(), js_underlying_source,
-                             js_empty_strategy, scope.GetExceptionState());
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
   ASSERT_TRUE(stream);
   ASSERT_FALSE(scope.GetExceptionState().HadException());
   EXPECT_TRUE(underlying_source->IsStartCalled());
@@ -186,38 +178,27 @@ TEST_F(ReadableStreamTest, CreateWithFullArguments) {
 
 TEST_F(ReadableStreamTest, CreateWithPathologicalStrategy) {
   V8TestingScope scope;
-  auto* underlying_source =
-      MakeGarbageCollected<TestUnderlyingSource>(scope.GetScriptState());
-  ScriptValue js_underlying_source = ScriptValue(
-      scope.GetIsolate(), ToV8Traits<TestUnderlyingSource>::ToV8(
-                              scope.GetScriptState(), underlying_source)
-                              .ToLocalChecked());
+  v8::Isolate* isolate = scope.GetIsolate();
   ScriptValue js_pathological_strategy =
       EvalWithPrintingError(&scope, "({get size() { throw Error('e'); }})");
   ASSERT_FALSE(js_pathological_strategy.IsEmpty());
 
   ReadableStream* stream = ReadableStream::Create(
-      scope.GetScriptState(), js_underlying_source, js_pathological_strategy,
-      scope.GetExceptionState());
+      scope.GetScriptState(), ScriptValue(isolate, v8::Undefined(isolate)),
+      js_pathological_strategy, scope.GetExceptionState());
   ASSERT_FALSE(stream);
   ASSERT_TRUE(scope.GetExceptionState().HadException());
-  EXPECT_FALSE(underlying_source->IsStartCalled());
 }
 
 // Testing getReader, locked, IsLocked and IsDisturbed.
 TEST_F(ReadableStreamTest, GetReader) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  v8::Isolate* isolate = scope.GetIsolate();
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
-  ScriptValue js_underlying_source =
-      ScriptValue(isolate, ToV8Traits<TestUnderlyingSource>::ToV8(
-                               scope.GetScriptState(), underlying_source)
-                               .ToLocalChecked());
-  ReadableStream* stream = ReadableStream::Create(
-      script_state, js_underlying_source, ASSERT_NO_EXCEPTION);
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
   ASSERT_TRUE(stream);
 
   EXPECT_FALSE(stream->locked());
@@ -284,16 +265,11 @@ TEST_F(ReadableStreamTest, GetBYOBReader) {
 TEST_F(ReadableStreamTest, Cancel) {
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
-  v8::Isolate* isolate = scope.GetIsolate();
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
-  ScriptValue js_underlying_source =
-      ScriptValue(isolate, ToV8Traits<TestUnderlyingSource>::ToV8(
-                               scope.GetScriptState(), underlying_source)
-                               .ToLocalChecked());
-  ReadableStream* stream = ReadableStream::Create(
-      script_state, js_underlying_source, ASSERT_NO_EXCEPTION);
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
   ASSERT_TRUE(stream);
 
   EXPECT_FALSE(underlying_source->IsCancelled());
@@ -314,12 +290,8 @@ TEST_F(ReadableStreamTest, CancelWithNull) {
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
-  ScriptValue js_underlying_source =
-      ScriptValue(isolate, ToV8Traits<TestUnderlyingSource>::ToV8(
-                               scope.GetScriptState(), underlying_source)
-                               .ToLocalChecked());
-  ReadableStream* stream = ReadableStream::Create(
-      script_state, js_underlying_source, ASSERT_NO_EXCEPTION);
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
   ASSERT_TRUE(stream);
 
   EXPECT_FALSE(underlying_source->IsCancelled());
@@ -343,12 +315,8 @@ TEST_F(ReadableStreamTest, Tee) {
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
-  ScriptValue js_underlying_source =
-      ScriptValue(isolate, ToV8Traits<TestUnderlyingSource>::ToV8(
-                               scope.GetScriptState(), underlying_source)
-                               .ToLocalChecked());
-  ReadableStream* stream = ReadableStream::Create(
-      script_state, js_underlying_source, ASSERT_NO_EXCEPTION);
+  ReadableStream* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
   ASSERT_TRUE(stream);
 
   underlying_source->Enqueue(ScriptValue(isolate, V8String(isolate, "hello")));
@@ -654,7 +622,7 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
   ScriptPromise Pull(ReadableByteStreamController* controller,
                      ExceptionState& exception_state) override {
     PullVoid(controller, exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   virtual void CancelVoid(v8::Local<v8::Value>, ExceptionState&) {}
@@ -666,10 +634,10 @@ class TestUnderlyingByteSource : public UnderlyingByteSourceBase {
   ScriptPromise Cancel(v8::Local<v8::Value> reason,
                        ExceptionState& exception_state) override {
     CancelVoid(reason, exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);
@@ -691,7 +659,7 @@ class MockUnderlyingByteSource : public UnderlyingByteSourceBase {
   MOCK_METHOD2(Cancel,
                ScriptPromise(v8::Local<v8::Value> reason, ExceptionState&));
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

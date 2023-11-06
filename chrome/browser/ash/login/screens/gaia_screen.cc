@@ -126,9 +126,10 @@ void GaiaScreen::LoadOnlineGaia() {
     return;
   }
 
-  switch (context()->gaia_config.gaia_path) {
+  auto* context = LoginDisplayHost::default_host()->GetWizardContext();
+  switch (context->gaia_config.gaia_path) {
     case WizardContext::GaiaPath::kDefault:
-      LoadDefaultOnlineGaia(context()->gaia_config.prefilled_account);
+      LoadDefaultOnlineGaia(context->gaia_config.prefilled_account);
       break;
     case WizardContext::GaiaPath::kReauth:
       LoadDefaultOnlineGaia(EmptyAccountId());
@@ -152,7 +153,9 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceCryptohomeRecoveryForTesting)) {
     DCHECK(features::IsCryptohomeRecoveryEnabled());
-    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
     FetchGaiaReauthToken(account);
     return;
   }
@@ -172,8 +175,10 @@ void GaiaScreen::LoadDefaultOnlineGaia(const AccountId& account) {
 void GaiaScreen::Reset() {
   if (!view_)
     return;
-  context()->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
-  context()->gaia_config.prefilled_account = EmptyAccountId();
+
+  auto* context = LoginDisplayHost::default_host()->GetWizardContext();
+  context->gaia_config.gaia_path = WizardContext::GaiaPath::kDefault;
+  context->gaia_config.prefilled_account = EmptyAccountId();
   view_->SetIsGaiaPasswordRequired(false);
   view_->Reset();
 }
@@ -292,7 +297,7 @@ void GaiaScreen::HandleIdentifierEntered(const std::string& user_email) {
     account_status_fetcher_->Fetch(
         base::BindOnce(&GaiaScreen::OnAccountStatusFetched,
                        base::Unretained(this), user_email),
-        /*fetch_entollment_nudge_policy=*/true);
+        /*fetch_enrollment_nudge_policy=*/true);
     // Note: we don't check if user is allowlisted since
     // `ShouldFetchEnrollmentNudgePolicy` would return true only for unowned
     // devices in which case there are no device policies yet.
@@ -330,7 +335,9 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
 
   const AccountId& account_id = user_context->GetAccountId();
   if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
-    context()->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->gaia_config.gaia_path = WizardContext::GaiaPath::kReauth;
   }
 
   if (ShouldPrepareForRecovery(account_id) && is_recovery_configured) {

@@ -115,7 +115,7 @@ void FetchInstallabilityForChromeManagement::OnUrlLoadedCheckInstallability(
   }
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_.get(), /*bypass_service_worker_check=*/true,
+      web_contents_.get(),
       base::BindOnce(&FetchInstallabilityForChromeManagement::
                          OnWebAppInstallabilityChecked,
                      weak_factory_.GetWeakPtr()));

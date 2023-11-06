@@ -1,0 +1,58 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.features.proto";
+
+option java_outer_classname = "TabOrganizationProto";
+
+package optimization_guide.proto;
+
+message TabOrganization {
+  // The label that describes this tab organization.
+  string label = 1;
+
+  // The tabs that belong in this organization.
+  repeated Tab tabs = 2;
+}
+
+message Tab {
+  // A unique identifier for the tab.
+  int64 tab_id = 1;
+
+  // The title of the tab.
+  string title = 2;
+
+  // The URL of the tab.
+  string url = 3;
+}
+
+message TabOrganizationRequest {
+  // The tabs that are requested to be organized.
+  repeated Tab tabs = 1;
+}
+
+message TabOrganizationResponse {
+  // The organizations that were deemed suitable for the requested tabs.
+  //
+  // These organizations will be in the order of suitability and it is expected
+  // for them to be shown in the order present in the list.
+  //
+  // Note that not all requested tabs are guaranteed to be present in at least
+  // one organization.
+  repeated TabOrganization tab_organizations = 1;
+}
+
+// TODO(b/307689471): Add model quality data for tab organization feature.
+message TabOrganizationQuality {}
+
+// TabOrganizationLoggingData consists of model execution Request,
+// Response and Quality data.
+message TabOrganizationLoggingData {
+  TabOrganizationRequest request_data = 1;
+  TabOrganizationResponse response_data = 2;
+  TabOrganizationQuality quality_data = 3;
+}

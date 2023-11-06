@@ -21,9 +21,7 @@ import org.chromium.components.webapps.ShortcutSource;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Tests the WebappInfo class's ability to parse various URLs.
- */
+/** Tests the WebappInfo class's ability to parse various URLs. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class WebappInfoTest {
@@ -348,8 +346,8 @@ public class WebappInfoTest {
     }
 
     /**
-     * Test that {@link WebappInfo#shouldForceNavigation()} defaults to false when the
-     * {@link WebappConstants#EXTRA_FORCE_NAVIGATION} intent extra is not specified.
+     * Test that {@link WebappInfo#shouldForceNavigation()} defaults to false when the {@link
+     * WebappConstants#EXTRA_FORCE_NAVIGATION} intent extra is not specified.
      */
     @Test
     public void testForceNavigationNotSpecified() {
@@ -358,8 +356,7 @@ public class WebappInfoTest {
     }
 
     /**
-     * Creates intent with url and id. If the url or id are not set createWebappInfo() returns
-     * null.
+     * Creates intent with url and id. If the url or id are not set createWebappInfo() returns null.
      */
     private Intent createIntentWithUrlAndId() {
         Intent intent = new Intent();

@@ -12,6 +12,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #import "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
@@ -240,13 +241,8 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   DCHECK(web::features::UseSessionSerializationOptimizations());
   return web::WebState::CreateWithStorage(
       browserState, self.webStateID, _storage.metadata(),
-      base::BindOnce(^(web::proto::WebStateStorage& storage) {
-        // Capturing `self` is fine since the WebState will either be
-        // deleted before the current object (since they have the same
-        // owner), or the block will be destroyed after invocation.
-        storage = std::move(self->_storage);
-      }),
-      base::BindOnce([]() -> NSData* { return nil; }));
+      base::ReturnValueOnce(std::move(_storage)),
+      base::ReturnValueOnce<NSData*>(nil));
 }
 
 - (const web::proto::WebStateStorage&)storage {

@@ -153,7 +153,7 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Returns the WebFrame that this widget is attached to. It will be a local
   // root since only local roots have a widget attached.
-  WebLocalFrameImpl* LocalRootImpl() const { return local_root_; }
+  WebLocalFrameImpl* LocalRootImpl() const { return local_root_.Get(); }
 
   // Returns the bounding box of the block type node touched by the WebPoint.
   gfx::Rect ComputeBlockBound(const gfx::Point& point_in_root_frame,
@@ -686,6 +686,11 @@ class CORE_EXPORT WebFrameWidgetImpl
   // coordinate space.
   Vector<gfx::Rect> CalculateVisibleLineBoundsOnScreen();
 
+  // Returns true if this widget corresponds to a frame which is being replaced.
+  // The compositor for the widget has been detached and passed to the new
+  // widget.
+  bool WillBeDestroyed() const;
+
  protected:
   // WidgetBaseClient overrides:
   void WillBeginMainFrame() override;
@@ -693,6 +698,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void DidBeginMainFrame() override;
   std::unique_ptr<cc::LayerTreeFrameSink> AllocateNewLayerTreeFrameSink()
       override;
+  void WasShown(bool was_evicted) override;
 
   // Whether compositing to LCD text should be auto determined. This can be
   // overridden by tests to disable this.
@@ -761,7 +767,6 @@ class CORE_EXPORT WebFrameWidgetImpl
   absl::optional<display::mojom::blink::ScreenOrientation>
   ScreenOrientationOverride() override;
   void WasHidden() override;
-  void WasShown(bool was_evicted) override;
   void RunPaintBenchmark(int repeat_count,
                          cc::PaintBenchmarkResult& result) override;
   KURL GetURLForDebugTrace() override;

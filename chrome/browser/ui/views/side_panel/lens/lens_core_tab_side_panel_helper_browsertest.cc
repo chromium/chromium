@@ -180,13 +180,6 @@ IN_PROC_BROWSER_TEST_F(LensCoreTabSidePanelHelperLensStandaloneDisabled,
 }
 
 IN_PROC_BROWSER_TEST_F(LensCoreTabSidePanelHelperLensStandaloneDisabled,
-                       IsSidePanelEnabledForLensRegionSearchReturnsFalse) {
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(LensCoreTabSidePanelHelperLensStandaloneDisabled,
                        IsSidePanelEnabledForLensReturnsFalseForPwa) {
   auto* web_contents = GetPwaWebContents();
 
@@ -219,64 +212,6 @@ class LensCoreTabSidePanelHelperRegionSearchBrowserTest
     return GURL(kLensRegionSearchURL);
   }
 };
-
-#if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsFalseForAndroid) {
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsFalseIfGoogleBrandedFeaturesAreDisabled) {
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-#endif  // !BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-
-#if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
-// IsSidePanelEnabledForLensRegionSearch
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsTrueIfEnabled) {
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_TRUE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsFalseForPwa) {
-  auto* web_contents = GetPwaWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsFalseIfOptedOutInTemplateUrl) {
-  SetGoogleToOptOutOfSidePanel();
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    LensCoreTabSidePanelHelperRegionSearchBrowserTest,
-    IsSidePanelEnabledForLensRegionSearchReturnsFalseFor3PDse) {
-  Setup3PImageSearchEngine(/*support_side_panel*/ true);
-  auto* web_contents = GetBrowserWebContents();
-
-  EXPECT_FALSE(lens::IsSidePanelEnabledForLensRegionSearch(web_contents));
-}
-
-#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 class LensCoreTabSidePanelHelper3PDseEnabled
     : public LensCoreTabSidePanelHelperBrowserTest {

@@ -7,8 +7,22 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "omnibox"
 
+  web_component_files = [
+    "ml/ml_calculator.ts",
+    "ml/ml_chart.ts",
+    "ml/ml_table.ts",
+    "ml/ml_ui.ts",
+  ]
+  html_to_wrapper_template = "native"
+
   static_files = [
     "icon_tabs.svg",
+    "ml/ml.css",
+    "ml/ml.html",
+    "ml/ml_calculator.css",
+    "ml/ml_chart.css",
+    "ml/ml_table.css",
+    "ml/ml_ui.css",
     "omnibox.css",
     "omnibox.html",
     "omnibox_input.css",
@@ -20,10 +34,12 @@ build_webui("build") {
   # they don't use dedicated HTML files for each web component and therefore for
   # the purposes of build_webui() are passed as non_web_component_files.
   non_web_component_files = [
+    "ml/ml_browser_proxy.ts",
+    "omnibox.ts",
     "omnibox_element.ts",
     "omnibox_input.ts",
-    "omnibox.ts",
     "omnibox_output.ts",
+    "omnibox_util.ts",
   ]
 
   mojo_files_deps =

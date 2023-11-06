@@ -23,7 +23,7 @@ found in the LICENSE file.
     db = event.target.result;
     shouldBe("db.objectStoreNames.length", "1");
     trans = db.transaction(db.objectStoreNames, "readwrite");
-    trans.objectStore(db.objectStoreNames[0]).put("dogs", "cats");
+    trans.objectStore(db.objectStoreNames[0]).put("dogs", generateRandomString(1));
     trans.oncomplete = unexpectedCompleteCallback;
     trans.onabort = function() {
       shouldBeEqualToString("trans.error.name", "QuotaExceededError");

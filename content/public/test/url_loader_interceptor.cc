@@ -45,7 +45,7 @@ namespace {
 
 base::FilePath GetDataFilePath(const std::string& relative_path) {
   base::FilePath root_path;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path));
   return root_path.AppendASCII(relative_path);
 }
 

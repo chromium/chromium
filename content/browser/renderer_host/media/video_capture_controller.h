@@ -116,7 +116,8 @@ class CONTENT_EXPORT VideoCaptureController
   void OnBufferRetired(int buffer_id) override;
   void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnNewSubCaptureTargetVersion(
+      uint32_t sub_capture_target_version) override;
   void OnFrameWithEmptyRegionCapture() override;
   void OnLog(const std::string& message) override;
   void OnStarted() override;
@@ -147,9 +148,12 @@ class CONTENT_EXPORT VideoCaptureController
   void TakePhoto(media::VideoCaptureDevice::TakePhotoCallback callback);
   void MaybeSuspend();
   void Resume();
-  void Crop(const base::Token& crop_id,
-            uint32_t crop_version,
-            base::OnceCallback<void(media::mojom::CropRequestResult)> callback);
+  void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback);
   void RequestRefreshFrame();
   void SetDesktopCaptureWindowIdAsync(gfx::NativeViewId window_id,
                                       base::OnceClosure done_cb);
@@ -283,8 +287,9 @@ class CONTENT_EXPORT VideoCaptureController
   // As a work-around to technical limitations, we don't allow multiple
   // captures of the same tab, by the same capturer, if the first capturer
   // invoked cropping. (Any capturer but the first one would have been
-  // blocked earlier in the pipeline.) That is because the `crop_version`
-  // would otherwise not line up between the various ControllerClients.
+  // blocked earlier in the pipeline.) That is because the
+  // `sub_capture_target_version` would otherwise not line up between the
+  // various ControllerClients.
   bool was_crop_ever_called_ = false;
 
   base::WeakPtrFactory<VideoCaptureController> weak_ptr_factory_{this};

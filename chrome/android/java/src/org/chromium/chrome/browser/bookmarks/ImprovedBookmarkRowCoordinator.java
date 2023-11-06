@@ -5,7 +5,11 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.Pair;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.LazyOneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
@@ -31,9 +35,12 @@ public class ImprovedBookmarkRowCoordinator {
      * @param bookmarkUiPrefs Tracks the user's preferences about the bookmark manager.
      * @param shoppingService The bookmark model used to query bookmark properties.
      */
-    public ImprovedBookmarkRowCoordinator(Context context,
-            BookmarkImageFetcher bookmarkImageFetcher, BookmarkModel bookmarkModel,
-            BookmarkUiPrefs bookmarkUiPrefs, ShoppingService shoppingService) {
+    public ImprovedBookmarkRowCoordinator(
+            Context context,
+            BookmarkImageFetcher bookmarkImageFetcher,
+            BookmarkModel bookmarkModel,
+            BookmarkUiPrefs bookmarkUiPrefs,
+            ShoppingService shoppingService) {
         mContext = context;
         mBookmarkImageFetcher = bookmarkImageFetcher;
         mBookmarkModel = bookmarkModel;
@@ -53,8 +60,10 @@ public class ImprovedBookmarkRowCoordinator {
 
         // Title
         if (displayPref == BookmarkRowDisplayPref.COMPACT && bookmarkItem.isFolder()) {
-            propertyModel.set(ImprovedBookmarkRowProperties.TITLE,
-                    String.format(bookmarkItem.getTitle() + " (%s)",
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.TITLE,
+                    String.format(
+                            bookmarkItem.getTitle() + " (%s)",
                             BookmarkUtils.getChildCountForDisplay(bookmarkId, mBookmarkModel)));
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.TITLE, bookmarkItem.getTitle());
@@ -64,8 +73,11 @@ public class ImprovedBookmarkRowCoordinator {
         boolean isFolder = bookmarkItem.isFolder();
         propertyModel.set(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE, !isFolder);
         if (isFolder) {
-            propertyModel.set(ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION,
-                    String.format("%s %s", bookmarkItem.getTitle(),
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.CONTENT_DESCRIPTION,
+                    String.format(
+                            "%s %s",
+                            bookmarkItem.getTitle(),
                             BookmarkUtils.getFolderDescriptionText(
                                     bookmarkId, mBookmarkModel, mContext.getResources())));
         } else {
@@ -84,9 +96,11 @@ public class ImprovedBookmarkRowCoordinator {
             ShoppingAccessoryCoordinator shoppingAccessoryCoordinator =
                     new ShoppingAccessoryCoordinator(
                             mContext, meta.getShoppingSpecifics(), mShoppingService);
-            propertyModel.set(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR,
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR,
                     shoppingAccessoryCoordinator);
-            propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.ACCESSORY_VIEW,
                     shoppingAccessoryCoordinator.getView());
         } else {
             propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
@@ -102,39 +116,80 @@ public class ImprovedBookmarkRowCoordinator {
         final @BookmarkRowDisplayPref int displayPref =
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         boolean useImages = displayPref == BookmarkRowDisplayPref.VISUAL;
-        propertyModel.set(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
-                item.isFolder() && useImages ? ImageVisibility.FOLDER_DRAWABLE
-                                             : ImageVisibility.DRAWABLE);
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY,
+                item.isFolder() && useImages
+                        ? ImageVisibility.FOLDER_DRAWABLE
+                        : ImageVisibility.DRAWABLE);
 
-        if (item.isFolder()) {
-            if (displayPref == BookmarkRowDisplayPref.VISUAL) {
-                propertyModel.set(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR,
-                        new ImprovedBookmarkFolderViewCoordinator(
-                                mContext, mBookmarkImageFetcher, mBookmarkModel));
-                propertyModel.get(ImprovedBookmarkRowProperties.FOLDER_COORDINATOR)
-                        .setBookmarkItem(item);
-            }
-            propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+        if (item.isFolder() && useImages) {
+            populateVisualFolderProperties(propertyModel, item);
+        } else if (item.isFolder()) {
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     BookmarkUtils.getIconBackground(mContext, mBookmarkModel, item));
-            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT,
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.START_ICON_TINT,
                     BookmarkUtils.getIconTint(mContext, mBookmarkModel, item));
-            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE,
-                    BookmarkUtils.getFolderIcon(
-                            mContext, item.getId(), mBookmarkModel, displayPref));
         } else {
-            propertyModel.set(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
+            propertyModel.set(
+                    ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
                     ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
-            propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, null);
-            if (useImages) {
-                mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, image -> {
-                    propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            } else {
-                mBookmarkImageFetcher.fetchFaviconForBookmark(item, image -> {
-                    propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, image);
-                });
-            }
         }
+
+        LazyOneshotSupplier<Drawable> drawableSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        if (item.isFolder()) {
+                            set(
+                                    BookmarkUtils.getFolderIcon(
+                                            mContext, item.getId(), mBookmarkModel, displayPref));
+                        } else if (useImages) {
+                            mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                                    item, this::set);
+                        } else {
+                            mBookmarkImageFetcher.fetchFaviconForBookmark(item, this::set);
+                        }
+                    }
+                };
+        propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE, drawableSupplier);
+    }
+
+    private void populateVisualFolderProperties(
+            PropertyModel propertyModel, BookmarkItem bookmarkItem) {
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT,
+                BookmarkUtils.getChildCountForDisplay(bookmarkItem.getId(), mBookmarkModel));
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
+                BookmarkUtils.getIconBackground(mContext, mBookmarkModel, bookmarkItem));
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
+                BookmarkUtils.getIconTint(mContext, mBookmarkModel, bookmarkItem));
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_START_ICON_DRAWABLE,
+                BookmarkUtils.getFolderIcon(
+                        mContext,
+                        bookmarkItem.getId(),
+                        mBookmarkModel,
+                        BookmarkRowDisplayPref.VISUAL));
+        LazyOneshotSupplierImpl<Pair<Drawable, Drawable>> drawablesSupplier =
+                new LazyOneshotSupplierImpl<>() {
+                    @Override
+                    public void doSet() {
+                        if (BookmarkUtils.shouldShowImagesForFolder(
+                                mBookmarkModel, bookmarkItem.getId())) {
+                            mBookmarkImageFetcher.fetchFirstTwoImagesForFolder(
+                                    bookmarkItem, this::set);
+                        } else {
+                            set(new Pair<>(null, null));
+                        }
+                    }
+                };
+        propertyModel.set(
+                ImprovedBookmarkRowProperties.FOLDER_START_IMAGE_FOLDER_DRAWABLES,
+                drawablesSupplier);
     }
 }

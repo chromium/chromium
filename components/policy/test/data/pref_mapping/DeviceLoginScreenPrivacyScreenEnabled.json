@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrivacyScreenEnabled": true
+        },
+        "prefs": {
+          "settings.display.privacy_screen_enabled": {
+            "location": "signin_profile",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

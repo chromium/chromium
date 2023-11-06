@@ -47,11 +47,11 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.net.ConnectionType;
 
-/**
- * Unit tests for OfflineBackgroundTask.
- */
+/** Unit tests for OfflineBackgroundTask. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowDeviceConditions.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowDeviceConditions.class})
 @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
 public class OfflineBackgroundTaskTest {
     private static final boolean REQUIRE_POWER = true;
@@ -66,22 +66,22 @@ public class OfflineBackgroundTaskTest {
     private long mTestTime;
     private TriggerConditions mTriggerConditions =
             new TriggerConditions(!REQUIRE_POWER, MINIMUM_BATTERY_LEVEL, REQUIRE_UNMETERED);
-    private DeviceConditions mDeviceConditions = new DeviceConditions(!POWER_CONNECTED,
-            MINIMUM_BATTERY_LEVEL + 5, ConnectionType.CONNECTION_3G, !POWER_SAVE_MODE_ON, !METERED,
-            SCREEN_ON_AND_UNLOCKED);
+    private DeviceConditions mDeviceConditions =
+            new DeviceConditions(
+                    !POWER_CONNECTED,
+                    MINIMUM_BATTERY_LEVEL + 5,
+                    ConnectionType.CONNECTION_3G,
+                    !POWER_SAVE_MODE_ON,
+                    !METERED,
+                    SCREEN_ON_AND_UNLOCKED);
     private Activity mTestActivity;
 
-    @Mock
-    private BackgroundSchedulerProcessor mBackgroundSchedulerProcessor;
+    @Mock private BackgroundSchedulerProcessor mBackgroundSchedulerProcessor;
 
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Mock
-    private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
-    @Mock
-    private Callback<Boolean> mInternalBooleanCallback;
-    @Captor
-    private ArgumentCaptor<TaskInfo> mTaskInfo;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
+    @Mock private Callback<Boolean> mInternalBooleanCallback;
+    @Captor private ArgumentCaptor<TaskInfo> mTaskInfo;
 
     @Before
     public void setUp() {
@@ -118,22 +118,33 @@ public class OfflineBackgroundTaskTest {
     @Feature({"OfflinePages"})
     public void testCheckConditions_BatteryConditions_LowBattery_NoPower() {
         // Setup low battery conditions with no power connected.
-        DeviceConditions deviceConditionsLowBattery = new DeviceConditions(!POWER_CONNECTED,
-                MINIMUM_BATTERY_LEVEL - 1, ConnectionType.CONNECTION_WIFI, !POWER_SAVE_MODE_ON,
-                !METERED, SCREEN_ON_AND_UNLOCKED);
+        DeviceConditions deviceConditionsLowBattery =
+                new DeviceConditions(
+                        !POWER_CONNECTED,
+                        MINIMUM_BATTERY_LEVEL - 1,
+                        ConnectionType.CONNECTION_WIFI,
+                        !POWER_SAVE_MODE_ON,
+                        !METERED,
+                        SCREEN_ON_AND_UNLOCKED);
         ShadowDeviceConditions.setCurrentConditions(deviceConditionsLowBattery);
 
         // Verify that conditions for processing are not met.
-        assertFalse(OfflineBackgroundTask.checkConditions(
-                ContextUtils.getApplicationContext(), mTaskExtras));
+        assertFalse(
+                OfflineBackgroundTask.checkConditions(
+                        ContextUtils.getApplicationContext(), mTaskExtras));
 
         // Check impact on starting before native loaded.
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        int result = new OfflineBackgroundTask().onStartTaskBeforeNativeLoaded(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        int result =
+                new OfflineBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                ContextUtils.getApplicationContext(),
+                                params,
+                                mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.RESCHEDULE, result);
         // Task finished can only gets called from the native part, when async processing starts.
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -143,22 +154,33 @@ public class OfflineBackgroundTaskTest {
     @Feature({"OfflinePages"})
     public void testCheckConditions_BatteryConditions_LowBattery_WithPower() {
         // Set battery percentage below minimum level, but connect power.
-        DeviceConditions deviceConditionsPowerConnected = new DeviceConditions(POWER_CONNECTED,
-                MINIMUM_BATTERY_LEVEL - 1, ConnectionType.CONNECTION_WIFI, !POWER_SAVE_MODE_ON,
-                !METERED, SCREEN_ON_AND_UNLOCKED);
+        DeviceConditions deviceConditionsPowerConnected =
+                new DeviceConditions(
+                        POWER_CONNECTED,
+                        MINIMUM_BATTERY_LEVEL - 1,
+                        ConnectionType.CONNECTION_WIFI,
+                        !POWER_SAVE_MODE_ON,
+                        !METERED,
+                        SCREEN_ON_AND_UNLOCKED);
         ShadowDeviceConditions.setCurrentConditions(deviceConditionsPowerConnected);
 
         // Now verify that same battery level, with power connected, will pass the conditions.
-        assertTrue(OfflineBackgroundTask.checkConditions(
-                ContextUtils.getApplicationContext(), mTaskExtras));
+        assertTrue(
+                OfflineBackgroundTask.checkConditions(
+                        ContextUtils.getApplicationContext(), mTaskExtras));
 
         // Check impact on starting before native loaded.
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        int result = new OfflineBackgroundTask().onStartTaskBeforeNativeLoaded(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        int result =
+                new OfflineBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                ContextUtils.getApplicationContext(),
+                                params,
+                                mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
         // Task finished can only gets called from the native part, when async processing starts.
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -171,16 +193,22 @@ public class OfflineBackgroundTaskTest {
         ApplicationStatus.onStateChangeForTesting(mTestActivity, ActivityState.STARTED);
 
         // Verify that conditions for processing are not met.
-        assertFalse(OfflineBackgroundTask.checkConditions(
-                ContextUtils.getApplicationContext(), mTaskExtras));
+        assertFalse(
+                OfflineBackgroundTask.checkConditions(
+                        ContextUtils.getApplicationContext(), mTaskExtras));
 
         // Check impact on starting before native loaded.
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        int result = new OfflineBackgroundTask().onStartTaskBeforeNativeLoaded(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        int result =
+                new OfflineBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                ContextUtils.getApplicationContext(),
+                                params,
+                                mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.RESCHEDULE, result);
         // Task finished can only gets called from the native part, when async processing starts.
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -193,16 +221,22 @@ public class OfflineBackgroundTaskTest {
         ApplicationStatus.onStateChangeForTesting(mTestActivity, ActivityState.STOPPED);
 
         // Now verify that condition check passes when Activity is stopped.
-        assertTrue(OfflineBackgroundTask.checkConditions(
-                ContextUtils.getApplicationContext(), mTaskExtras));
+        assertTrue(
+                OfflineBackgroundTask.checkConditions(
+                        ContextUtils.getApplicationContext(), mTaskExtras));
 
         // Check impact on starting before native loaded.
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        int result = new OfflineBackgroundTask().onStartTaskBeforeNativeLoaded(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        int result =
+                new OfflineBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                ContextUtils.getApplicationContext(),
+                                params,
+                                mTaskFinishedCallback);
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
         // Task finished can only gets called from the native part, when async processing starts.
         verify(mTaskFinishedCallback, times(0)).taskFinished(anyBoolean());
@@ -213,12 +247,14 @@ public class OfflineBackgroundTaskTest {
     public void testOnStartTaskWithNative_BackupScheduleIfExecutingTask() {
         setupScheduledProcessingWithResult(true);
 
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        new OfflineBackgroundTask().onStartTaskWithNative(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        new OfflineBackgroundTask()
+                .onStartTaskWithNative(
+                        ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
 
         verify(mTaskScheduler, times(1))
                 .schedule(eq(ContextUtils.getApplicationContext()), any(TaskInfo.class));
@@ -231,12 +267,14 @@ public class OfflineBackgroundTaskTest {
     public void testOnStartTaskWithNative_RescheduleThroughCallbackWhenRunning() {
         setupScheduledProcessingWithResult(false);
 
-        TaskParameters params = TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
-                                        .addExtras(mTaskExtras)
-                                        .build();
+        TaskParameters params =
+                TaskParameters.create(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID)
+                        .addExtras(mTaskExtras)
+                        .build();
 
-        new OfflineBackgroundTask().onStartTaskWithNative(
-                ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
+        new OfflineBackgroundTask()
+                .onStartTaskWithNative(
+                        ContextUtils.getApplicationContext(), params, mTaskFinishedCallback);
 
         verify(mTaskScheduler, times(0)).schedule(any(Context.class), any(TaskInfo.class));
         // Task started async processing after native load, but processing refused to progress,
@@ -249,8 +287,12 @@ public class OfflineBackgroundTaskTest {
     public void testStartBackgroundRequests() {
         setupScheduledProcessingWithResult(true);
 
-        assertTrue(OfflineBackgroundTask.startScheduledProcessing(mBackgroundSchedulerProcessor,
-                ContextUtils.getApplicationContext(), mTaskExtras, mInternalBooleanCallback));
+        assertTrue(
+                OfflineBackgroundTask.startScheduledProcessing(
+                        mBackgroundSchedulerProcessor,
+                        ContextUtils.getApplicationContext(),
+                        mTaskExtras,
+                        mInternalBooleanCallback));
 
         // Check with BackgroundSchedulerProcessor that processing started.
         verify(mBackgroundSchedulerProcessor, times(1))
@@ -263,8 +305,12 @@ public class OfflineBackgroundTaskTest {
         // Processing will not be started here.
         setupScheduledProcessingWithResult(false);
 
-        assertFalse(OfflineBackgroundTask.startScheduledProcessing(mBackgroundSchedulerProcessor,
-                ContextUtils.getApplicationContext(), mTaskExtras, mInternalBooleanCallback));
+        assertFalse(
+                OfflineBackgroundTask.startScheduledProcessing(
+                        mBackgroundSchedulerProcessor,
+                        ContextUtils.getApplicationContext(),
+                        mTaskExtras,
+                        mInternalBooleanCallback));
 
         // Check with BackgroundSchedulerProcessor that it did not start.
         verify(mBackgroundSchedulerProcessor, times(1))

@@ -121,6 +121,10 @@ void SignalDatabaseImpl::WriteSample(proto::SignalType signal_type,
   sample->set_time_sec_delta(midnight_delta.InSeconds());
 
   recently_added_signals_[key] = signal_data;
+  all_signals_.emplace_back(DbEntry{.type = signal_type,
+                                    .name_hash = name_hash,
+                                    .time = timestamp,
+                                    .value = (value ? *value : 0)});
 
   // Write as a new db entry.
   auto entries_to_save = std::make_unique<
@@ -209,26 +213,19 @@ void SignalDatabaseImpl::OnGetSamples(
   std::move(callback).Run(out);
 }
 
-void SignalDatabaseImpl::GetAllSamples(base::Time start_time,
-                                       base::Time end_time,
-                                       EntriesCallback callback) {
+const std::vector<SignalDatabase::DbEntry>*
+SignalDatabaseImpl::GetAllSamples() {
   TRACE_EVENT("segmentation_platform", "SignalDatabaseImpl::GetAllSamples");
   DCHECK(initialized_);
-  DCHECK_LE(start_time, end_time);
-  database_->LoadKeysAndEntries(base::BindOnce(
-      &SignalDatabaseImpl::OnGetAllSamples, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), start_time, end_time));
+  return &all_signals_;
 }
 
 void SignalDatabaseImpl::OnGetAllSamples(
-    EntriesCallback callback,
-    base::Time start_time,
-    base::Time end_time,
+    SuccessCallback callback,
     bool success,
     std::unique_ptr<std::map<std::string, proto::SignalData>> entries) {
-  std::vector<DbEntry> out;
   IterateOverAllSamples(
-      start_time, end_time, success, std::move(entries),
+      base::Time::Min(), base::Time::Max(), success, std::move(entries),
       base::BindRepeating(
           [](std::vector<DbEntry>* out, const SignalKey& key,
              base::Time timestamp, const proto::Sample& sample) {
@@ -238,8 +235,8 @@ void SignalDatabaseImpl::OnGetAllSamples(
                 .time = timestamp,
                 .value = sample.value()});
           },
-          base::Unretained(&out)));
-  std::move(callback).Run(out);
+          base::Unretained(&all_signals_)));
+  std::move(callback).Run(success);
 }
 
 void SignalDatabaseImpl::DeleteSamples(proto::SignalType signal_type,
@@ -248,6 +245,10 @@ void SignalDatabaseImpl::DeleteSamples(proto::SignalType signal_type,
                                        SuccessCallback callback) {
   TRACE_EVENT("segmentation_platform", "SignalDatabaseImpl::DeleteSamples");
   DCHECK(initialized_);
+  // TODO(ssid): Delete samples from `all_samples_` cache as well. It is not
+  // wrong to keep samples for longer since the UMA processor will filter only
+  // the samples that are needed. So, this would be memory saving optimization
+  // only.
   SignalKey dummy_key(metadata_utils::SignalTypeToSignalKind(signal_type),
                       name_hash, base::Time(), base::Time());
   std::string key_prefix = dummy_key.GetPrefixInBinary();
@@ -348,7 +349,13 @@ void SignalDatabaseImpl::OnDatabaseInitialized(
     SuccessCallback callback,
     leveldb_proto::Enums::InitStatus status) {
   initialized_ = status == leveldb_proto::Enums::InitStatus::kOK;
-  std::move(callback).Run(status == leveldb_proto::Enums::InitStatus::kOK);
+  if (initialized_) {
+    database_->LoadKeysAndEntries(
+        base::BindOnce(&SignalDatabaseImpl::OnGetAllSamples,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    std::move(callback).Run(false);
+  }
 }
 
 void SignalDatabaseImpl::CleanupStaleCachedEntries(

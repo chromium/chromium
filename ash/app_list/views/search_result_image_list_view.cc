@@ -24,9 +24,9 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
-#include "ui/views/layout/table_layout_view.h"
 
 namespace ash {
 
@@ -46,6 +46,7 @@ constexpr int kSpaceBetweenImages = 8;
 // Layout constants for `image_info_container_`.
 constexpr auto kInfoContainerMargins = gfx::Insets::TLBR(0, 8, 0, 0);
 constexpr int kSpaceBetweenInfoTitleAndContent = 16;
+constexpr auto kSpaceBetweenLabels = gfx::Insets::VH(12, 0);
 
 // The title string ids used as the title of `image_info_container_`.
 constexpr std::array<int, 4> kTitleStringIds = {
@@ -73,7 +74,6 @@ std::u16string GetFormattedTime(base::Time time) {
 }  // namespace
 
 using views::LayoutAlignment;
-using views::TableLayout;
 
 SearchResultImageListView::SearchResultImageListView(
     AppListViewDelegate* view_delegate)
@@ -124,49 +124,66 @@ SearchResultImageListView::SearchResultImageListView(
     image_views_.push_back(image_view);
   }
 
-  auto append_image_info = [&](int idx) {
+  image_info_container_ = image_view_container_->AddChildView(
+      std::make_unique<views::BoxLayoutView>());
+  image_info_container_->SetBorder(
+      views::CreateEmptyBorder(kInfoContainerMargins));
+  image_info_container_->SetBetweenChildSpacing(
+      kSpaceBetweenInfoTitleAndContent);
+
+  // Initialize the vertical container in `image_info_container_`.
+  auto create_vertical_container = [this]() {
+    auto* container = image_info_container_->AddChildView(
+        std::make_unique<views::FlexLayoutView>());
+    container->SetOrientation(views::LayoutOrientation::kVertical);
+    container->SetCollapseMargins(true);
+    container->SetMainAxisAlignment(LayoutAlignment::kCenter);
+    container->SetCrossAxisAlignment(LayoutAlignment::kStart);
+    return container;
+  };
+  image_info_title_container_ = create_vertical_container();
+  image_info_content_container_ = create_vertical_container();
+
+  // Set the flex to restrict the sizes of the child labels.
+  image_info_container_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum)
+          .WithWeight(1));
+  image_info_content_container_->SetDefault(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kScaleToMaximum)
+          .WithWeight(1));
+
+  // Initialize the labels in the info container.
+  for (size_t i = 0; i < kTitleStringIds.size(); ++i) {
     auto title_label = std::make_unique<views::Label>(
-        l10n_util::GetStringUTF16(kTitleStringIds[idx]));
+        l10n_util::GetStringUTF16(kTitleStringIds[i]));
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *title_label);
+    title_label->SetEnabledColorId(cros_tokens::kColorPrimary);
+    title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
     auto content_label = std::make_unique<views::Label>();
-    if (chromeos::features::IsJellyEnabled()) {
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
-                                            *title_label);
-      title_label->SetEnabledColorId(cros_tokens::kColorPrimary);
-      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
-                                            *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
-    } else {
-      title_label->SetFontList(
-          views::Label::GetDefaultFontList().DeriveWithWeight(
-              gfx::Font::Weight::MEDIUM));
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *content_label);
+    content_label->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+    content_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+
+    // Only set the margins between children but not the container edge.
+    if (i != 0 && i != kTitleStringIds.size() - 1) {
+      title_label->SetProperty(views::kMarginsKey, kSpaceBetweenLabels);
+      content_label->SetProperty(views::kMarginsKey, kSpaceBetweenLabels);
     }
 
     // Elide the file path if needed.
-    if (kTitleStringIds[idx] == IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION) {
+    if (kTitleStringIds[i] == IDS_ASH_SEARCH_RESULT_IMAGE_FILE_LOCATION) {
       content_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
     }
 
     metadata_content_labels_.push_back(content_label.get());
-    image_info_container_->AddChildView(std::move(title_label));
-    image_info_container_->AddChildView(std::move(content_label));
-  };
-
-  image_info_container_ = image_view_container_->AddChildView(
-      std::make_unique<views::TableLayoutView>());
-  image_info_container_->SetVisible(false);
-  image_info_container_->SetBorder(
-      views::CreateEmptyBorder(kInfoContainerMargins));
-  image_info_container_->AddColumn(
-      LayoutAlignment::kStart, LayoutAlignment::kStretch,
-      TableLayout::kFixedSize, TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  image_info_container_->AddPaddingColumn(TableLayout::kFixedSize,
-                                          kSpaceBetweenInfoTitleAndContent);
-  image_info_container_->AddColumn(
-      LayoutAlignment::kStart, LayoutAlignment::kStretch, 1.0f,
-      TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  image_info_container_->AddRows(kTitleStringIds.size(), 1.0f);
-  for (size_t i = 0; i < kTitleStringIds.size(); ++i) {
-    append_image_info(i);
+    image_info_title_container_->AddChildView(std::move(title_label));
+    image_info_content_container_->AddChildView(std::move(content_label));
   }
 }
 

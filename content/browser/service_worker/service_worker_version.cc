@@ -1900,10 +1900,18 @@ void ServiceWorkerVersion::RegisterRouter(
         "Unexpected router registration call during the feature is disabled.");
     return;
   }
-  if (router_evaluator()) {
-    // The renderer should have denied calling this twice.
-    receiver_.ReportBadMessage("The ServiceWorker router rules are set twice.");
-    return;
+  switch (router_registration_method_) {
+    case RouterRegistrationMethod::Uninitialized:
+      break;
+    case RouterRegistrationMethod::RegisterRouter:
+      // The renderer should have denied calling this twice.
+    case RouterRegistrationMethod::AddRoutes:
+      // The renderer should have denied calling both RegisterRouter() and
+      // AddRoutes().
+      CHECK(router_evaluator());
+      receiver_.ReportBadMessage(
+          "The ServiceWorker router rules are set twice.");
+      return;
   }
   if (!SetupRouterEvaluator(rules)) {
     // The renderer should have denied calling this method while the setup
@@ -1913,6 +1921,40 @@ void ServiceWorkerVersion::RegisterRouter(
         "Failed to configure a router. Possibly a syntax error");
     return;
   }
+  router_registration_method_ = RouterRegistrationMethod::RegisterRouter;
+  std::move(callback).Run();
+}
+
+void ServiceWorkerVersion::AddRoutes(
+    const blink::ServiceWorkerRouterRules& rules,
+    RegisterRouterCallback callback) {
+  if (!IsStaticRouterEnabled()) {
+    // This renderer should have called this only when the feature is enabled.
+    receiver_.ReportBadMessage(
+        "Unexpected router registration call during the feature is disabled.");
+    return;
+  }
+  switch (router_registration_method_) {
+    case RouterRegistrationMethod::Uninitialized:
+    case RouterRegistrationMethod::AddRoutes:
+      break;
+    case RouterRegistrationMethod::RegisterRouter:
+      // The renderer should have denied calling both RegisterRouter() and
+      // AddRoutes().
+      CHECK(router_evaluator());
+      receiver_.ReportBadMessage(
+          "The ServiceWorker router rules are set twice.");
+      return;
+  }
+  if (!SetupRouterEvaluator(rules)) {
+    // The renderer should have denied calling this method while the setup
+    // fails.
+    // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
+    receiver_.ReportBadMessage(
+        "Failed to configure a router. Possibly a syntax error");
+    return;
+  }
+  router_registration_method_ = RouterRegistrationMethod::AddRoutes;
   std::move(callback).Run();
 }
 
@@ -2992,8 +3034,19 @@ void ServiceWorkerVersion::SetResources(
 bool ServiceWorkerVersion::SetupRouterEvaluator(
     const blink::ServiceWorkerRouterRules& rules) {
   CHECK(IsStaticRouterEnabled());
-  CHECK(!router_evaluator_);
-  router_evaluator_ = std::make_unique<ServiceWorkerRouterEvaluator>(rules);
+  blink::ServiceWorkerRouterRules new_rules;
+  // If there are existing router rules, set them first.
+  // TODO(crbug.com/1468184) Consider having a method to merge rules instead of
+  // replacing each time.
+  if (router_evaluator()) {
+    for (const auto& e : router_evaluator()->rules().rules) {
+      new_rules.rules.push_back(e);
+    }
+  }
+  for (const auto& e : rules.rules) {
+    new_rules.rules.push_back(e);
+  }
+  router_evaluator_ = std::make_unique<ServiceWorkerRouterEvaluator>(new_rules);
   if (!router_evaluator_->IsValid()) {
     router_evaluator_.reset();
     return false;

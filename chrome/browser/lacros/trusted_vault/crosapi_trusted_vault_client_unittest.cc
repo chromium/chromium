@@ -36,7 +36,8 @@ class CrosapiTrustedVaultClientTest : public testing::Test {
     primary_account_info_.gaia = "user";
     crosapi_backend_ =
         std::make_unique<trusted_vault::FakeCrosapiTrustedVaultBackend>(
-            primary_account_info_, &trusted_vault_client_ash_);
+            &trusted_vault_client_ash_);
+    crosapi_backend_->SetPrimaryAccountInfo(primary_account_info_);
 
     crosapi_backend_->BindReceiver(
         backend_remote_.BindNewPipeAndPassReceiver());
@@ -112,7 +113,7 @@ TEST_F(CrosapiTrustedVaultClientTest, ShouldMarkLocalKeysAsStale) {
 }
 
 TEST_F(CrosapiTrustedVaultClientTest, ShouldGetIsRecoverabilityDegraded) {
-  trusted_vault_client_ash().SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_ash().SetIsRecoveryMethodRequired(true);
 
   base::MockCallback<base::OnceCallback<void(bool)>>
       on_get_is_recoverability_degraded;
@@ -175,7 +176,7 @@ TEST_F(CrosapiTrustedVaultClientTest, ShouldNotifyObservers) {
   EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(&observer));
 
   EXPECT_CALL(observer, OnTrustedVaultRecoverabilityChanged);
-  trusted_vault_client_ash().SetIsRecoverabilityDegraded(true);
+  trusted_vault_client_ash().SetIsRecoveryMethodRequired(true);
   crosapi_backend().FlushMojo();
 
   trusted_vault_client_lacros().RemoveObserver(&observer);

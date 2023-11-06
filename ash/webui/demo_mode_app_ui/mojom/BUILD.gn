@@ -11,4 +11,7 @@ mojom("mojom") {
   sources = [ "demo_mode_app_untrusted_ui.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/ash/webui/demo_mode_app_ui/mojom/"
+
+  # This page still uses JS + Closure compiler.
+  use_typescript_sources = false
 }

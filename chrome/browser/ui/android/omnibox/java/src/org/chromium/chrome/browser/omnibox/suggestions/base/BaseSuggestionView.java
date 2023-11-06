@@ -55,7 +55,8 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout {
         decorationIcon = new ImageView(getContext());
         decorationIcon.setOutlineProvider(decorationIconOutline);
         decorationIcon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        addView(decorationIcon,
+        addView(
+                decorationIcon,
                 LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
 
         actionChipsView = new ActionChipsView(getContext());

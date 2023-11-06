@@ -427,6 +427,7 @@ test("gl_tests") {
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
+    sources += [ "command_buffer/service/shared_image/ozone_image_backing_factory_unittest.cc" ]
   }
 
   if (enable_vulkan) {
@@ -482,6 +483,10 @@ test("gl_tests") {
 
   if (is_android && enable_chrome_android_internal) {
     data_deps += [ "//clank/build/bot/filters:gl_tests_filters" ]
+  }
+
+  if (is_chromeos) {
+    deps += [ "//ui/gfx/linux:gbm" ]
   }
 }
 

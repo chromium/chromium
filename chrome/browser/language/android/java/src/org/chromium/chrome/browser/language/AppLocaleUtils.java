@@ -223,7 +223,7 @@ public class AppLocaleUtils {
      */
     @ChecksSdkIntAtLeast(api = 33)
     public static boolean shouldUseSystemManagedLocale() {
-        return BuildInfo.isAtLeastT();
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU;
     }
 
     /**

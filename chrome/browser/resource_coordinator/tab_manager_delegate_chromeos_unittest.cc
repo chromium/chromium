@@ -476,6 +476,7 @@ TEST_F(TabManagerDelegateTest, ReportProcesses) {
   // tab3    pid: 13
   // tab4    pid: 14
   // tab5    pid: 15, protected
+  // tab6    pid: 16, protected, focused
   TestLifecycleUnit tab1(base::TimeTicks(), 11);
   tab_manager_delegate.AddLifecycleUnit(&tab1);
   TestLifecycleUnit tab2(base::TimeTicks(), 12);
@@ -486,6 +487,10 @@ TEST_F(TabManagerDelegateTest, ReportProcesses) {
   tab_manager_delegate.AddLifecycleUnit(&tab4);
   TestLifecycleUnit tab5(base::TimeTicks(), 15, false);
   tab_manager_delegate.AddLifecycleUnit(&tab5);
+  TestLifecycleUnit tab6(base::TimeTicks(), 16, false);
+  tab6.SetDiscardFailureReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
+  tab6.SetLastFocusedTime(base::TimeTicks::Max());
+  tab_manager_delegate.AddLifecycleUnit(&tab6);
 
   tab_manager_delegate.ListProcesses();
 
@@ -505,6 +510,10 @@ TEST_F(TabManagerDelegateTest, ReportProcesses) {
   EXPECT_EQ(processes[4].pid, 15);
   EXPECT_EQ(processes[4].is_protected, true);
   EXPECT_EQ(processes[4].is_visible, false);
+  EXPECT_EQ(processes[5].pid, 16);
+  EXPECT_EQ(processes[5].is_protected, true);
+  EXPECT_EQ(processes[5].is_visible, true);
+  EXPECT_EQ(processes[5].is_focused, true);
 }
 
 }  // namespace resource_coordinator

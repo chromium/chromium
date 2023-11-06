@@ -324,6 +324,20 @@ bool ModulePathMatchesSinkhole(const char* path, const char* sinkhole) {
 #endif
 }
 
+//! \brief Helper to release memory from calls to __cxa_allocate_exception.
+class ScopedException {
+ public:
+  explicit ScopedException(objc_exception* exception) : exception_(exception) {}
+
+  ScopedException(const ScopedException&) = delete;
+  ScopedException& operator=(const ScopedException&) = delete;
+
+  ~ScopedException() { __cxxabiv1::__cxa_free_exception(exception_); }
+
+ private:
+  objc_exception* exception_;  // weak
+};
+
 id ObjcExceptionPreprocessor(id exception) {
   // Some sinkholes don't use objc_exception_rethrow when they should, which
   // would otherwise prevent the exception_preprocessor from getting called
@@ -384,6 +398,7 @@ id ObjcExceptionPreprocessor(id exception) {
   // From 10.15.0 objc4-779.1/runtime/objc-exception.mm objc_exception_throw.
   objc_exception* exception_objc = reinterpret_cast<objc_exception*>(
       __cxxabiv1::__cxa_allocate_exception(sizeof(objc_exception)));
+  ScopedException exception_objc_owner(exception_objc);
   exception_objc->obj = exception;
   exception_objc->tinfo.vtable = objc_ehtype_vtable + 2;
   exception_objc->tinfo.name = object_getClassName(exception);

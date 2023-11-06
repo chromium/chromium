@@ -11,6 +11,11 @@ namespace extensions_features {
 // API Features
 ///////////////////////////////////////////////////////////////////////////////
 
+// Controls the availability of the enterprise.kioskInput API.
+BASE_FEATURE(kApiEnterpriseKioskInput,
+             "ApiEnterpriseKioskInput",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the availability of the ReadingList API.
 BASE_FEATURE(kApiReadingList,
              "ApiReadingList",
@@ -29,7 +34,7 @@ BASE_FEATURE(kApiSidePanelOpen,
 // Controls the availability of the userScripts API.
 BASE_FEATURE(kApiUserScripts,
              "ApiUserScripts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls the availability of navigation to file URLs.
 BASE_FEATURE(kRestrictFileURLNavigation,
@@ -95,7 +100,7 @@ BASE_FEATURE(kExtensionSourceUrlEnforcement,
 // File Handlers.
 BASE_FEATURE(kExtensionWebFileHandlers,
              "ExtensionWebFileHandlers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, only manifest v3 extensions is allowed while v2 will be disabled.
 // Note that this feature is now only checked by `ExtensionManagement` which
@@ -149,7 +154,7 @@ BASE_FEATURE(kReportKeepaliveUkm,
 // user is in the developer mode.
 BASE_FEATURE(kRestrictDeveloperModeAPIs,
              "RestrictDeveloperModeAPIs",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 // Automatically disable extensions not included in the Safe Browsing CRX
@@ -182,6 +187,13 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              "TelemetryExtensionPendingApprovalApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, calling WebRequestEventRouter::Get will return an instance of the
+// per-BrowserContext WebRequestEventRouter instead of the global singleton
+// ExtensionWebRequestEventRouter.
+BASE_FEATURE(kUsePerBrowserContextWebRequestEventRouter,
+             "kUsePerBrowserContextWebRequestEventRouter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls the <webview> tag behaviour changes proposed as part of the guest
 // view MPArch migration. See
 // https://docs.google.com/document/d/1RVbtvklXUg9QCNvMT0r-1qDwJNeQFGoTCOD1Ur9mDa4/edit?usp=sharing
@@ -209,6 +221,20 @@ BASE_FEATURE(kExtensionsServiceWorkerOptimizedEventDispatch,
 // the user to the new chrome webstore URL.
 BASE_FEATURE(kNewWebstoreURL,
              "NewWebstoreURL",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables a relaxed rule count for "safe" dynqmic or session scoped rules above
+// the current limit. If disabled, all dynamic and session scoped rules are
+// treated as "safe" but the rule limit's value will be the stricter "unsafe"
+// limit.
+BASE_FEATURE(kDeclarativeNetRequestSafeRuleLimits,
+             "DeclarativeNetRequestSafeDynamicRules",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables declarative net request rules to specify response headers as a
+// matching condition.
+BASE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching,
+             "DeclarativeNetRequestResponseHeaderMatching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_child_iterator.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
@@ -38,7 +38,7 @@ NGBlockChildIterator::NGBlockChildIterator(NGLayoutInputNode first_child,
 }
 
 NGBlockChildIterator::Entry NGBlockChildIterator::NextChild(
-    const NGInlineBreakToken* previous_inline_break_token) {
+    const InlineBreakToken* previous_inline_break_token) {
   if (previous_inline_break_token) {
     DCHECK(!child_idx_);
     return Entry(previous_inline_break_token->InputNode(),

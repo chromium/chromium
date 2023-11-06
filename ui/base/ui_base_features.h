@@ -95,7 +95,10 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsSystemCursorSizeSupported();
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUseCommonSelectPopup);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsUseCommonSelectPopupEnabled();
 
-// Used to enable keyboard accessible tooltips.
+// Used to enable keyboard accessible tooltips in in-page content
+// (i.e., inside Blink). See
+// ::views::features::kKeyboardAccessibleTooltipInViews for
+// keyboard-accessible tooltips in Views UI.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kKeyboardAccessibleTooltip);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsKeyboardAccessibleTooltipEnabled();
@@ -114,6 +117,12 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsDeprecateAltClickEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kNotificationsIgnoreRequireInteraction);
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsNotificationsIgnoreRequireInteractionEnabled();
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kShortcutCustomizationApp);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -127,9 +136,6 @@ bool IsShortcutCustomizationEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kLacrosResourcesFileSharing);
-
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kAlwaysConfirmComposition);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSupportF11AndF12KeyShortcuts);
@@ -196,19 +202,21 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsRawDrawUsingMSAA();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kStylusSpecificTapSlop);
 
+// This feature indicates that this device is approved for utilizing variable
+// refresh rates. This flag is added by cros-config and not exposed in the
+// chrome://flags UI.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kVariableRefreshRateAvailable);
+// Enables the variable refresh rate feature for Borealis gaming only. If this
+// flag is set by Finch, it requires the availability flag to also be true. If
+// this flag is overridden by the user, then the availability flag is ignored.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kEnableVariableRefreshRate);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsVariableRefreshRateEnabled();
+// Enables the variable refresh rate feature at all times.
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kEnableVariableRefreshRateAlwaysOn);
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsVariableRefreshRateAlwaysOn();
-
-// Fixes b/265853952.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kWaylandKeepSelectionFix);
-// Fixes b/267944900.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kWaylandCancelComposition);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kLacrosColorManagement);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
@@ -237,6 +245,23 @@ bool CustomizeChromeSupportsChromeRefresh2023();
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kChromeRefreshSecondary2023);
+
+enum class ChromeRefresh2023NTBVariation {
+  kGM2Full = 0,
+  kGM3OldIconNoBackground = 1,
+  kGM3OldIconWithBackground = 2,
+  kGM3NewIconNoBackground = 3,
+  kGM3NewIconWithBackground = 4,
+  kNoChoice = 5,
+};
+COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kChromeRefresh2023NTB);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+extern const char kChromeRefresh2023NTBVariationKey[];
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+ChromeRefresh2023NTBVariation GetChromeRefresh2023NTB();
+
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kChromeRefresh2023TopChromeFont);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsChromeRefresh2023();
 

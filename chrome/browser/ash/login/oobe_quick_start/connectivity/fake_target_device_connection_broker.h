@@ -70,7 +70,8 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
   void StopAdvertising(base::OnceClosure on_stop_advertising_callback) override;
 
   void InitiateConnection(const std::string& source_device_id);
-  void AuthenticateConnection(const std::string& source_device_id);
+  void AuthenticateConnection(const std::string& source_device_id,
+                              Connection::AuthenticationMethod auth_method);
   void RejectConnection();
   void CloseConnection(ConnectionClosedReason reason);
 

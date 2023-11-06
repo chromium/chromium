@@ -129,8 +129,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
       l10n_util::GetStringUTF8(IDS_BOREALIS_INSTALLER_APP_NAME),
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
   SetAppVisibility(*installer_app, shown);
-  installer_app->icon_key = apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                                          IDR_LOGO_BOREALIS_STEAM_PENDING_192,
+  installer_app->icon_key = apps::IconKey(IDR_LOGO_BOREALIS_STEAM_PENDING_192,
                                           apps::IconEffects::kNone);
   installer_app->show_in_launcher = false;
   installer_app->show_in_management = false;
@@ -151,8 +150,7 @@ void BorealisApps::SetUpSpecialApps(bool allowed) {
       apps::InstallReason::kDefault, apps::InstallSource::kSystem);
   SetAppVisibility(*initial_steam_app, shown);
   initial_steam_app->icon_key =
-      apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
-                    IDR_LOGO_BOREALIS_STEAM_192, apps::IconEffects::kNone);
+      apps::IconKey(IDR_LOGO_BOREALIS_STEAM_192, apps::IconEffects::kNone);
   initial_steam_app->show_in_launcher = false;
   initial_steam_app->show_in_management = false;
   initial_steam_app->allow_uninstall = false;
@@ -294,8 +292,7 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
       InstallReason::kUser, InstallSource::kUnknown);
   SetAppVisibility(*app, /*visible=*/false);
 
-  app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
-                          IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);
+  app->icon_key = IconKey(IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);
 
   AppPublisher::Publish(std::move(app));
 }

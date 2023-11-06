@@ -42,11 +42,11 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
-#include "third_party/skia/include/core/SkColorPriv.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -173,10 +173,13 @@ TransferableResource CreateTestTexture(
   gpu::SharedImageInterface* sii =
       child_context_provider->SharedImageInterface();
   DCHECK(sii);
-  gpu::Mailbox mailbox = sii->CreateSharedImage(
-      SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel", MakePixelSpan(pixels));
+  gpu::Mailbox mailbox =
+      sii->CreateSharedImage(SinglePlaneFormat::kRGBA_8888, size,
+                             gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+                             kPremul_SkAlphaType,
+                             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
+                             MakePixelSpan(pixels))
+          ->mailbox();
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   TransferableResource gl_resource = TransferableResource::MakeGpu(
@@ -262,7 +265,7 @@ class RendererPerfTest : public VizPerfTest {
 
     child_context_provider_ =
         base::MakeRefCounted<TestInProcessContextProvider>(
-            TestContextType::kGLES2WithRaster, /*support_locking=*/false);
+            TestContextType::kSoftwareRaster, /*support_locking=*/false);
     child_context_provider_->BindToCurrentSequence();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 

@@ -1,399 +1,422 @@
 This is a testharness.js-based test.
 Found 395 tests; 372 PASS, 23 FAIL, 0 TIMEOUT, 0 NOTRUN.
-FAIL [["unlink",""]] "foo[]bar": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "foo[]bar" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo[]bar" compare innerHTML
-PASS [["unlink",""]] "foo[]bar" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[]bar" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[]bar" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[]bar" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[]bar" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[]bar" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" compare innerHTML
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" compare innerHTML
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<b>foo[]bar</b>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<b>foo[]bar</b>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<b>foo[]bar</b>" compare innerHTML
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<b>foo[]bar</b>" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<i>foo[]bar</i>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<i>foo[]bar</i>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<i>foo[]bar</i>" compare innerHTML
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<i>foo[]bar</i>" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<span>foo</span>{}<span>bar</span>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" compare innerHTML
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<span>foo[</span><span>]bar</span>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" compare innerHTML
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[bar]baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[bar]baz" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo[bar]baz" compare innerHTML
-PASS [["unlink",""]] "foo[bar]baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[bar]baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[bar]baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[bar]baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[bar]baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[bar]baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" compare innerHTML
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" compare innerHTML
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" checks for modifications to non-editable content
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" compare innerHTML
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandState("unlink") before
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandValue("unlink") before
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandState("unlink") after
-PASS [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "<a href=\"http://www.google.com/\">foo</a>bar<a href=\"http://www.google.com/\">baz</a>"
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "<a href=\"http://www.google.com/\">foo</a>barbaz"
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandValue("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foobar<a href=\"http://www.google.com/\">baz</a>"
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" checks for modifications to non-editable content
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" compare innerHTML
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandState("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandValue("unlink") before
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandState("unlink") after
-PASS [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" compare innerHTML
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" checks for modifications to non-editable content
-FAIL [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foo<a href=\"http://www.google.com/\">bar</a>baz"
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" compare innerHTML
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" compare innerHTML
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" checks for modifications to non-editable content
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" compare innerHTML
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandValue("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" checks for modifications to non-editable content
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" compare innerHTML
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" checks for modifications to non-editable content
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" compare innerHTML
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") after
-PASS [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "<a id=\"foo\" href=\"http://www.google.com/\">foobarbaz</a>"
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "<a id=\"foo\" href=\"http://www.google.com/\">foo</a>bar<a href=\"http://www.google.com/\">baz</a>"
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "foobarbaz"
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" checks for modifications to non-editable content
-FAIL [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" checks for modifications to non-editable content
-FAIL [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" checks for modifications to non-editable content
-FAIL [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") before
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") after
-PASS [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") after
-FAIL [["unlink",""]] "<a name=foo>foobar[]baz</a>": execCommand("unlink", false, "") return value assert_equals: expected true but got false
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" checks for modifications to non-editable content
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" compare innerHTML
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a name=foo>foo[bar]baz</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a name=\"foo\">foobarbaz</a>" but got "<a name=\"foo\">foo</a>bar<a name=\"foo\">baz</a>"
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" checks for modifications to non-editable content
-FAIL [["unlink",""]] "<a name=foo>[foobarbaz]</a>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a name=\"foo\">foobarbaz</a>" but got "foobarbaz"
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandState("unlink") before
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandValue("unlink") before
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandState("unlink") after
-PASS [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" checks for modifications to non-editable content
-FAIL [["unlink",""]] "foo<a name=foo>[bar]</a>baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" checks for modifications to non-editable content
-FAIL [["unlink",""]] "foo[<a name=foo>bar</a>]baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandState("unlink") before
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandValue("unlink") before
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandState("unlink") after
-PASS [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandValue("unlink") after
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" checks for modifications to non-editable content
-FAIL [["unlink",""]] "[foo<a name=foo>bar</a>baz]" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandState("unlink") before
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandState("unlink") after
-PASS [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
-PASS [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "foo[]bar": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "foo[]bar" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo[]bar" compare innerHTML
+[PASS] [["unlink",""]] "foo[]bar" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[]bar" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[]bar" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[]bar" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[]bar" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[]bar" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" compare innerHTML
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p> <p>bar]</p>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" compare innerHTML
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<span>[foo</span> <span>bar]</span>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" compare innerHTML
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<p>[foo</p><p> <span>bar</span> </p><p>baz]</p>" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<b>foo[]bar</b>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" compare innerHTML
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<b>foo[]bar</b>" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<i>foo[]bar</i>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" compare innerHTML
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<i>foo[]bar</i>" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<span>foo</span>{}<span>bar</span>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" compare innerHTML
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<span>foo</span>{}<span>bar</span>" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<span>foo[</span><span>]bar</span>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" compare innerHTML
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<span>foo[</span><span>]bar</span>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[bar]baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[bar]baz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo[bar]baz" compare innerHTML
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[bar]baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" compare innerHTML
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[bar<b>baz]qoz</b>quz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" compare innerHTML
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[bar<i>baz]qoz</i>quz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" compare innerHTML
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "{<p><p> <p>foo</p>}" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "<a href=\"http://www.google.com/\">foo</a>bar<a href=\"http://www.google.com/\">baz</a>"
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "<a href=\"http://www.google.com/\">foo</a>barbaz"
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>foo[barbaz</a>}" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foobar<a href=\"http://www.google.com/\">baz</a>"
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobar]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" compare innerHTML
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "{<a href=http://www.google.com/>foobarbaz</a>}" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" compare innerHTML
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobarbaz" but got "foo<a href=\"http://www.google.com/\">bar</a>baz"
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>b[]ar</a>baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" compare innerHTML
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" compare innerHTML
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[<a href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" compare innerHTML
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo<a href=http://www.google.com/>[bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" compare innerHTML
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" compare innerHTML
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "[foo<a href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "<a id=\"foo\" href=\"http://www.google.com/\">foobarbaz</a>"
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foobar[]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "<a id=\"foo\" href=\"http://www.google.com/\">foo</a>bar<a href=\"http://www.google.com/\">baz</a>"
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>foo[bar]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a id=\"foo\">foobarbaz</a>" but got "foobarbaz"
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a id=foo href=http://www.google.com/>[foobarbaz]</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo<a id=foo href=http://www.google.com/>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[<a id=foo href=http://www.google.com/>bar</a>]baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a id=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "[foo<a id=foo href=http://www.google.com/>bar</a>baz]" queryCommandValue("unlink") after
+[FAIL] [["unlink",""]] "<a name=foo>foobar[]baz</a>": execCommand("unlink", false, "") return value
+  assert_equals: expected true but got false
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" checks for modifications to non-editable content
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" compare innerHTML
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>foobar[]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a name=\"foo\">foobarbaz</a>" but got "<a name=\"foo\">foo</a>bar<a name=\"foo\">baz</a>"
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>foo[bar]baz</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a name=\"foo\">foobarbaz</a>" but got "foobarbaz"
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "<a name=foo>[foobarbaz]</a>" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo<a name=foo>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "foo[<a name=foo>bar</a>]baz" queryCommandValue("unlink") after
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" checks for modifications to non-editable content
+[FAIL] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<a name=\"foo\">bar</a>baz" but got "foobarbaz"
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["unlink",""]] "[foo<a name=foo>bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" compare innerHTML
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com class=bold>bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com class=bold>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "false") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["stylewithcss","false"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" compare innerHTML
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandState("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "[foo<a href=https://example.com style=font-weight:bold>bar</a>baz]" queryCommandValue("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("stylewithcss", false, "true") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz": execCommand("unlink", false, "") return value
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" checks for modifications to non-editable content
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" compare innerHTML
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") before
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandIndeterm("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandState("unlink") after
+[PASS] [["stylewithcss","true"],["unlink",""]] "foo<a href=https://example.com style=font-weight:bold>[bar]</a>baz" queryCommandValue("unlink") after
 Harness: the test ran to completion.
 

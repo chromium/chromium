@@ -13,17 +13,18 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
 
-JNI_REGISTRATION_EXPORT extern const char
+JNI_ZERO_COMPONENT_BUILD_EXPORT extern const char
     kClassPath_org_jni_1zero_samples_SampleBidirectionalNonProxy[];
 const char kClassPath_org_jni_1zero_samples_SampleBidirectionalNonProxy[] =
     "org/jni_zero/samples/SampleBidirectionalNonProxy";
 // Leaking this jclass as we cannot use LazyInstance from some threads.
-JNI_REGISTRATION_EXPORT std::atomic<jclass>
+JNI_ZERO_COMPONENT_BUILD_EXPORT std::atomic<jclass>
     g_org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(nullptr);
 #ifndef org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz_defined
 #define org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz_defined
@@ -42,7 +43,7 @@ inline jclass org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(JNIEnv* en
 static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& jcaller);
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeInit(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
@@ -52,14 +53,14 @@ JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy
 static jint JNI_SampleBidirectionalNonProxy_Init(JNIEnv* env, const
     base::android::JavaParamRef<jobject>& jcaller);
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeInit(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   return JNI_SampleBidirectionalNonProxy_Init(env, base::android::JavaParamRef<jobject>(env,
       jcaller));
 }
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeMethod(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeTest,
@@ -69,7 +70,7 @@ JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy
   return native->Method(env, base::android::JavaParamRef<jobject>(env, jcaller), arg1);
 }
 
-JNI_GENERATOR_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeStaticMethod(
+JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_samples_SampleBidirectionalNonProxy_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeTest,
@@ -194,7 +195,7 @@ static base::android::ScopedJavaLocalRef<jstring>
     base::android::JavaRef<jobject>& obj, JniIntWrapper iParam) {
   jclass clazz = org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
-      org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env), NULL);
+      org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<
@@ -217,7 +218,7 @@ static base::android::ScopedJavaLocalRef<jstring>
     Java_SampleBidirectionalNonProxy_testStaticMethodWithNoParam(JNIEnv* env) {
   jclass clazz = org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env);
   CHECK_CLAZZ(env, clazz,
-      org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env), NULL);
+      org_jni_1zero_samples_SampleBidirectionalNonProxy_clazz(env), nullptr);
 
   jni_generator::JniJavaCallContextChecked call_context;
   call_context.Init<

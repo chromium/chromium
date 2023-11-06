@@ -327,12 +327,12 @@ TEST_F(AutofillOfferManagerTest,
        GetShoppingServiceOfferForUrl_ReturnNonMerchantWideOffer) {
   const GURL url(kTestUrl);
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   const AutofillOfferData expected_autofill_non_merchant_wide_offer_data =
       AutofillOfferData::FreeListingCouponOffer(
-          kDiscountId, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
-          DisplayStrings{kDetail}, kDiscountCode, false);
+          kDiscountId, base::Time::FromSecondsSinceUnixEpoch(expiry_time_sec),
+          {url}, url, DisplayStrings{kDetail}, kDiscountCode, false);
 
   ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
       .WillByDefault([&](const std::vector<GURL>& urls,
@@ -363,12 +363,12 @@ TEST_F(AutofillOfferManagerTest,
        GetShoppingServiceOfferForUrl_ReturnMerchantWideOffer) {
   const GURL url(kTestUrl);
   const double expiry_time_sec =
-      (AutofillClock::Now() + base::Days(2)).ToDoubleT();
+      (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
 
   const AutofillOfferData expected_autofill_merchant_wide_offer_data =
       AutofillOfferData::FreeListingCouponOffer(
-          kDiscountId, base::Time::FromDoubleT(expiry_time_sec), {url}, url,
-          DisplayStrings{kDetail}, kDiscountCode, true);
+          kDiscountId, base::Time::FromSecondsSinceUnixEpoch(expiry_time_sec),
+          {url}, url, DisplayStrings{kDetail}, kDiscountCode, true);
 
   ON_CALL(*mock_shopping_service_delegate_, GetDiscountInfoForUrls)
       .WillByDefault([&](const std::vector<GURL>& urls,

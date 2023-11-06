@@ -7,6 +7,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/cancelable_task_tracker.h"
+#include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_contents_observer.h"
 
 using base::android::JavaParamRef;
@@ -33,12 +35,19 @@ class PermissionDialogJavaDelegate {
 
   virtual void CreateJavaDelegate(content::WebContents* web_contents,
                                   PermissionDialogDelegate* owner);
-  virtual void CreateDialog();
+  virtual void CreateDialog(content::WebContents* web_contents);
+  void GetAndUpdateRequestingOriginFavicon(content::WebContents* web_contents);
+  void OnRequestingOriginFaviconLoaded(
+      const favicon_base::FaviconRawBitmapResult& favicon_result);
+
   virtual void DismissDialog();
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_delegate_;
   raw_ptr<PermissionPromptAndroid, DanglingUntriaged> permission_prompt_;
+
+  // The task tracker for loading favicons.
+  base::CancelableTaskTracker favicon_tracker_;
 };
 
 // Delegate class for displaying a permission prompt as a modal dialog. Used as

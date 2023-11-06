@@ -41,6 +41,24 @@
       ],
     },
   },
+  '12-google-atd-x64-emulator': {
+    'args': [
+      '--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb',
+    ],
+    'swarming': {
+      'optional_dimensions': {
+        '60': {
+          'caches': 'android_31_google_atd_x64',
+        },
+      },
+      'named_caches': [
+        {
+          'name': 'android_31_google_atd_x64',
+          'path': '.android_emulator/android_31_google_atd_x64',
+        },
+      ],
+    },
+  },
   '12-x64-emulator': {
     'args': [
       '--avd-config=../../tools/android/avd/proto/generic_android31.textpb',
@@ -55,6 +73,24 @@
         {
           'name': 'generic_android31',
           'path': '.android_emulator/generic_android31',
+        },
+      ],
+    },
+  },
+  '12l-google-atd-x64-emulator': {
+    'args': [
+      '--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb',
+    ],
+    'swarming': {
+      'optional_dimensions': {
+        '60': {
+          'caches': 'android_32_google_atd_x64_foldable',
+        },
+      },
+      'named_caches': [
+        {
+          'name': 'android_32_google_atd_x64_foldable',
+          'path': '.android_emulator/android_32_google_atd_x64_foldable',
         },
       ],
     },
@@ -77,20 +113,20 @@
       ],
     },
   },
-  '12l-x64-emulator-experimental': {
+  '13-google-atd-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android32_foldable_experimental.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android32_foldable_experimental',
+          'caches': 'android_33_google_atd_x64',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android32_foldable_experimental',
-          'path': '.android_emulator/generic_android32_foldable_experimental',
+          'name': 'android_33_google_atd_x64',
+          'path': '.android_emulator/android_33_google_atd_x64',
         },
       ],
     },
@@ -113,20 +149,20 @@
       ],
     },
   },
-  '13-x64-emulator-experimental': {
+  '14-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android33_experimental',
+          'caches': 'android_34_google_apis_x64',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android33_experimental',
-          'path': '.android_emulator/generic_android33_experimental',
+          'name': 'android_34_google_apis_x64',
+          'path': '.android_emulator/android_34_google_apis_x64',
         },
       ],
     },
@@ -495,6 +531,16 @@
       ],
     },
   },
+  'ios_runtime_cache_17_2': {
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'runtime_ios_17_2',
+          'path': 'Runtime-ios-17.2',
+        },
+      ],
+    },
+  },
   'ioswpt-chromium-swarming-pool': {
     'swarming': {
       'dimensions': {
@@ -505,7 +551,7 @@
   'isolate_profile_data': {
     'isolate_profile_data': True,
   },
-  'junit-swarming': {
+  'junit-swarming-emulator': {
     'swarming': {
       'dimensions': {
         'cores': '8',
@@ -602,6 +648,11 @@
         'pool': 'chromium.tests.gpu',
       },
     },
+  },
+  'linux_vulkan': {
+    'linux_args': [
+      '--extra-browser-args=--enable-features=Vulkan',
+    ],
   },
   'lollipop-x86-emulator': {
     'args': [
@@ -844,7 +895,7 @@
         {
           'cipd_package': 'infra/tools/mac_toolchain/${platform}',
           'location': '.',
-          'revision': 'git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb',
+          'revision': 'git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce',
         },
       ],
     },
@@ -1124,9 +1175,17 @@
       '--use-webgpu-power-preference=default-high-performance',
       '$$MAGIC_SUBSTITUTION_GPUParallelJobs',
     ],
-    'linux_args': [
-      '--extra-browser-args=--enable-features=Vulkan',
-    ],
+  },
+  'webview_cts_archive': {
+    'swarming': {
+      'cipd_packages': [
+        {
+          'cipd_package': 'chromium/android_webview/tools/cts_archive',
+          'location': 'android_webview/tools/cts_archive',
+          'revision': 'akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC',
+        },
+      ],
+    },
   },
   'win10': {
     'swarming': {
@@ -1230,12 +1289,12 @@
   'xcode_15_beta': {
     'args': [
       '--xcode-build-version',
-      '15c5028h',
+      '15c5042i',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_15c5028h',
+          'name': 'xcode_ios_15c5042i',
           'path': 'Xcode.app',
         },
       ],

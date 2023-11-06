@@ -27,7 +27,7 @@ import {loadTimeData} from './i18n_setup.js';
 import {IframeElement} from './iframe.js';
 import {LogoElement} from './logo.js';
 import {recordDuration, recordLoadDuration} from './metrics_utils.js';
-import {CustomizeChromeSection, NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
+import {CustomizeChromeSection, IphFeature, NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote, Theme} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {$$} from './utils.js';
 import {Action as VoiceAction, recordVoiceAction} from './voice_search_overlay.js';
@@ -412,16 +412,15 @@ export class AppElement extends AppElementBase {
               this.showCustomize_ = visible;
             });
     this.showWebstoreToastListenerId_ =
-        NewTabPageProxy.getInstance()
-            .callbackRouter.showWebstoreToast.addListener(() => {
-              if (this.showCustomize_) {
-                const toast = $$<CrToastElement>(this, '#webstoreToast');
-                if (toast) {
-                  toast!.hidden = false;
-                  toast!.show();
-                }
-              }
-            });
+        this.callbackRouter_.showWebstoreToast.addListener(() => {
+          if (this.showCustomize_) {
+            const toast = $$<CrToastElement>(this, '#webstoreToast');
+            if (toast) {
+              toast!.hidden = false;
+              toast!.show();
+            }
+          }
+        });
 
     // Open Customize Chrome if there are Customize Chrome URL params.
     if (this.showCustomize_) {
@@ -472,6 +471,7 @@ export class AppElement extends AppElementBase {
     this.callbackRouter_.removeListener(this.setThemeListenerId_!);
     this.callbackRouter_.removeListener(
         this.setCustomizeChromeSidePanelVisibilityListener_!);
+    this.callbackRouter_.removeListener(this.showWebstoreToastListenerId_!);
     this.eventTracker_.removeAll();
   }
 
@@ -536,7 +536,7 @@ export class AppElement extends AppElementBase {
     document.documentElement.setAttribute('lazy-loaded', String(true));
     this.registerHelpBubble(
         CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, '#customizeButton', {fixed: true});
-    this.pageHandler_.maybeShowCustomizeChromeFeaturePromo();
+    this.pageHandler_.maybeShowFeaturePromo(IphFeature.kCustomizeChrome);
   }
 
   private onOpenVoiceSearch_() {

@@ -400,8 +400,8 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
   AddFile("tall.pdf", 15271, android_files_path);  // ~14.9 KB
   // Add file in Downloads and simulate bind mount with
   // [android files]/Download.
-  AddFile("video.ogv", 59943, downloads_path);  // ~58.6 KB
-  AddFile("video.ogv", 59943, android_files_download_path);
+  AddFile("video.ogv", 56758, downloads_path);  // ~55.4 KB
+  AddFile("video.ogv", 56758, android_files_download_path);
 
   // Calculate My files size.
   my_files_size_test_api_->StartCalculation();
@@ -412,7 +412,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
   ASSERT_TRUE(callback) << "No 'storage-my-files-size-changed' callback";
 
   // Check return value.
-  EXPECT_EQ("81.4 KB", callback->GetString());
+  EXPECT_EQ("78.2 KB", callback->GetString());
 }
 
 TEST_F(StorageHandlerTest, AppsExtensionsSize) {

@@ -112,7 +112,8 @@ NSDate* TicksToDate(const net::LoadTimingInfo& reference,
     return nil;
   base::Time ticks_since_1970 =
       (reference.request_start_time + (ticks - reference.request_start));
-  return [NSDate dateWithTimeIntervalSince1970:ticks_since_1970.ToDoubleT()];
+  return [NSDate dateWithTimeIntervalSince1970:ticks_since_1970
+                                                   .InSecondsFSinceUnixEpoch()];
 }
 
 // Converts Metrics metrics data into CronetTransactionMetrics (which
@@ -131,7 +132,7 @@ CronetTransactionMetrics* NativeToIOSMetrics(Metrics& metrics)
 
   transaction_metrics.fetchStartDate =
       [NSDate dateWithTimeIntervalSince1970:load_timing_info.request_start_time
-                                                .ToDoubleT()];
+                                                .InSecondsFSinceUnixEpoch()];
 
   transaction_metrics.domainLookupStartDate = TicksToDate(
       load_timing_info, load_timing_info.connect_timing.domain_lookup_start);
@@ -153,13 +154,14 @@ CronetTransactionMetrics* NativeToIOSMetrics(Metrics& metrics)
       TicksToDate(load_timing_info, load_timing_info.send_end);
   transaction_metrics.responseStartDate =
       TicksToDate(load_timing_info, load_timing_info.receive_headers_end);
-  transaction_metrics.responseEndDate = [NSDate
-      dateWithTimeIntervalSince1970:metrics.response_end_time.ToDoubleT()];
+  transaction_metrics.responseEndDate =
+      [NSDate dateWithTimeIntervalSince1970:metrics.response_end_time
+                                                .InSecondsFSinceUnixEpoch()];
 
   transaction_metrics.networkProtocolName =
       base::SysUTF8ToNSString(net::HttpResponseInfo::ConnectionInfoToString(
           response_info.connection_info));
-  transaction_metrics.proxyConnection = !response_info.proxy_server.is_direct();
+  transaction_metrics.proxyConnection = !response_info.proxy_chain.is_direct();
 
   // If the connect timing information is null, then there was no connection
   // establish - i.e., one was reused.

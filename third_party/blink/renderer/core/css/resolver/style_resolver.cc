@@ -1626,12 +1626,18 @@ void StyleResolver::ApplyBaseStyle(
     return;
   }
 
-  if (!style_recalc_context.parent_forces_recalc &&
+  if (style_recalc_context.can_use_incremental_style &&
       CanApplyInlineStyleIncrementally(element, state, style_request)) {
     // We are in a situation where we can reuse the old style
     // and just apply the element's inline style on top of it
     // (see the function comment).
     state.SetStyle(*element->GetComputedStyle());
+
+    // This is always false when creating a new style, but is not reset
+    // when copying the style, so it needs to happen here. After us,
+    // Element::StyleForLayoutObject() will call AdjustElementStyle(),
+    // which sets it to true if applicable.
+    state.StyleBuilder().ResetSkipsContents();
 
     const CSSPropertyValueSet* inline_style = element->InlineStyle();
     if (inline_style) {
@@ -1728,20 +1734,21 @@ CompositorKeyframeValue* StyleResolver::CreateCompositorKeyframeValueSnapshot(
 const ComputedStyle* StyleResolver::StyleForPage(
     uint32_t page_index,
     const AtomicString& page_name) {
-  const ComputedStyle* initial_style = InitialStyleForElement();
-  if (!GetDocument().documentElement()) {
-    return initial_style;
+  // The page context inherits from the root element.
+  Element* root_element = GetDocument().documentElement();
+  if (!root_element) {
+    return InitialStyleForElement();
   }
-
-  const ComputedStyle* document_style = GetDocument().GetComputedStyle();
-  StyleResolverState state(GetDocument(), *GetDocument().documentElement(),
+  DCHECK(!GetDocument().NeedsLayoutTreeUpdateForNode(*root_element));
+  const ComputedStyle* parent_style = root_element->EnsureComputedStyle();
+  StyleResolverState state(GetDocument(), *root_element,
                            nullptr /* StyleRecalcContext */,
-                           StyleRequest(initial_style));
-  state.CreateNewStyle(*initial_style, *document_style);
+                           StyleRequest(parent_style));
+  state.CreateNewStyle(*parent_style, *parent_style);
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  PageRuleCollector collector(document_style, page_index, page_name,
+  PageRuleCollector collector(parent_style, page_index, page_name,
                               cascade.MutableMatchResult());
 
   collector.MatchPageRules(
@@ -1819,8 +1826,8 @@ ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {
 
 const ComputedStyle* StyleResolver::StyleForText(Text* text_node) {
   DCHECK(text_node);
-  if (Node* parent_node = LayoutTreeBuilderTraversal::Parent(*text_node)) {
-    const ComputedStyle* style = parent_node->GetComputedStyle();
+  if (Element* parent = LayoutTreeBuilderTraversal::ParentElement(*text_node)) {
+    const ComputedStyle* style = parent->GetComputedStyle();
     if (style && !style->IsEnsuredInDisplayNone()) {
       return style;
     }
@@ -2619,11 +2626,6 @@ bool PropagateScrollSnapStyleToViewport(
                  SetScrollPaddingBottom, Length());
   PROPAGATE_FROM(document_element_style, ScrollPaddingLeft,
                  SetScrollPaddingLeft, Length());
-
-  if (changed && !RuntimeEnabledFeatures::LayoutNewSnapLogicEnabled()) {
-    document.GetSnapCoordinator().SnapContainerDidChange(
-        *document.GetLayoutView());
-  }
 
   return changed;
 }

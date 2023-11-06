@@ -680,13 +680,6 @@ bool ParseAVCCodecId(base::StringPiece codec_id,
 }
 
 #if BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
-static const char kHexString[] = "0123456789ABCDEF";
-static char IntToHex(int i) {
-  DCHECK_GE(i, 0) << i << " not a hex value";
-  DCHECK_LE(i, 15) << i << " not a hex value";
-  return kHexString[i];
-}
-
 std::string TranslateLegacyAvc1CodecIds(base::StringPiece codec_id) {
   // Special handling for old, pre-RFC 6381 format avc1 strings, which are still
   // being used by some HLS apps to preserve backward compatibility with older
@@ -718,8 +711,7 @@ std::string TranslateLegacyAvc1CodecIds(base::StringPiece codec_id) {
       base::StringToUint(codec_id.substr(level_start), &level) && level < 256) {
     // This is a valid legacy avc1 codec id - return the codec id translated
     // into RFC 6381 format.
-    result.push_back(IntToHex(level >> 4));
-    result.push_back(IntToHex(level & 0xf));
+    base::AppendHexEncodedByte(static_cast<uint8_t>(level), result);
     return result;
   }
 

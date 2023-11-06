@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/screen_lock_manager.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/account_id/account_id.h"
@@ -1131,9 +1132,10 @@ TEST_F(MultideviceHandlerTest, LacrosTabSyncStatusTest) {
   // Set up the environment to reflect a "Lacros Only" scenario and recreate the
   // handler under that setting.
   ScopedLacrosOnlyHandle lacros_only_handle;
-  InitWithFeatures(/*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
-                                         ash::features::kLacrosOnly},
-                   /*disabled_features=*/{});
+  InitWithFeatures(
+      /*enabled_features=*/{syncer::kChromeOSSyncedSessionSharing,
+                            ash::standalone_browser::features::kLacrosOnly},
+      /*disabled_features=*/{});
   CreateHandler();
 
   // Invokes a status change and verifies the expected enabled/disabled value.

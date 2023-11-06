@@ -1,0 +1,11 @@
+CONSOLE WARNING: The keyword 'inner-spin-button' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'push-button' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'square-button' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'slider-horizontal' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'searchfield-cancel-button' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'media-slider' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'media-sliderthumb' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'media-volume-slider' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'media-volume-sliderthumb' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'sliderthumb-horizontal' specified to an 'appearance' property is not standardized. It will be removed in the future.
+CONSOLE WARNING: The keyword 'sliderthumb-vertical' specified to an 'appearance' property is not standardized. It will be removed in the future.

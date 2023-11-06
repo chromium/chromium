@@ -818,6 +818,13 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
          encode_output->size());
 
   client_->BitstreamBufferReady(buffer_ref->id, encode_output->metadata);
+  if (encoder_output_queue_.empty() && state_ == kPostFlushing) {
+    // We were waiting for all the outputs to be consumed by the client.
+    // Now once it's happened, we can signal the Flush() has finished
+    // and continue encoding.
+    SetState(kEncoding);
+    std::move(flush_callback_).Run(true);
+  }
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -1860,6 +1867,12 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
     return;
   }
 
+  // If `bitstream_buffer_queue_` is not empty,
+  // meaning we have output buffers to spare, `encoder_output_queue_` must
+  // be empty, otherwise outputs should've already been returned using those
+  // buffers.
+  DCHECK(encoder_output_queue_.empty());
+
   // Immediately return encoded buffer with BitstreamBuffer to client.
   auto buffer_ref = std::move(bitstream_buffer_queue_.back());
   bitstream_buffer_queue_.pop_back();
@@ -1919,7 +1932,6 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
     }
     case METransformDrainComplete: {
       DCHECK(pending_input_queue_.empty());
-      DCHECK(encoder_output_queue_.empty());
       DCHECK(sample_metadata_queue_.empty());
       DCHECK_EQ(state_, kFlushing);
       auto hr = encoder_->ProcessMessage(MFT_MESSAGE_NOTIFY_START_OF_STREAM, 0);
@@ -1928,8 +1940,17 @@ void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
         std::move(flush_callback_).Run(false);
         return;
       }
-      SetState(kEncoding);
-      std::move(flush_callback_).Run(true);
+      if (encoder_output_queue_.empty()) {
+        // No pending outputs, let's signal that the Flush() is done and
+        // continue encoding.
+        SetState(kEncoding);
+        std::move(flush_callback_).Run(true);
+      } else {
+        // There are pending outputs that are not returned yet,
+        // let's wait for client to consume them, before signaling that
+        // the Flush() has finished.
+        SetState(kPostFlushing);
+      }
       break;
     }
     default:

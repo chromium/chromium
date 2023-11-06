@@ -199,6 +199,9 @@ enum OptimizationType {
   // This optimization helps determine if this page is a good candidate for
   // compose.
   COMPOSE = 35;
+  // This optimization provides information about whether a merchant can be
+  // triggered with PIX bottom sheet.
+  PIX_PAYMENT_MERCHANT_ALLOWLIST = 36;
 }
 
 // Presents semantics for how page load URLs should be matched.

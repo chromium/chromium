@@ -117,7 +117,7 @@ class MediaEngagementScoreTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(details->visits, score.visits());
     EXPECT_EQ(details->media_playbacks, score.media_playbacks());
     EXPECT_EQ(details->last_media_playback_time,
-              score.last_media_playback_time().ToJsTime());
+              score.last_media_playback_time().InMillisecondsFSinceUnixEpoch());
   }
 };
 

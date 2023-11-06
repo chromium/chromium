@@ -107,7 +107,7 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   // while keeping the inner frame size unchanged.
   HTMLIFrameElement* InnerIFrameElement() const;
 
-  FencedFrameConfig* config() const { return config_; }
+  FencedFrameConfig* config() const { return config_.Get(); }
 
   // Sets the FencedFrameConfig that this FencedFrame uses, and navigates the
   // frame to the config's URL. If `config` is null, navigates to about:blank.

@@ -124,9 +124,12 @@ class SBNavigationObserverTest : public content::RenderViewHostTestHarness {
   void CreateNonUserGestureReferrerChain() {
     user_gesture_map()->clear();
     base::Time now = base::Time::Now();
-    base::Time half_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 0.5);
-    base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
-    base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
+    base::Time half_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+        now.InSecondsFSinceUnixEpoch() - 0.5);
+    base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+        now.InSecondsFSinceUnixEpoch() - 1.0);
+    base::Time two_seconds_ago = base::Time::FromSecondsSinceUnixEpoch(
+        now.InSecondsFSinceUnixEpoch() - 2.0);
 
     // Add 13 navigations and one starting page. The first is BROWSER_INITIATED
     // to A. Then from A to B, then 10 redirects to C, then back to A.
@@ -215,8 +218,8 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
 
   // Add 2 events to the list.
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);
+  base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);
   events.RecordNavigationEvent(
       CreateNavigationEventUniquePtr(GURL("http://foo1.com"), one_hour_ago));
   events.RecordNavigationEvent(
@@ -255,9 +258,12 @@ TEST_F(SBNavigationObserverTest, TestNavigationEventList) {
 TEST_F(SBNavigationObserverTest, TestInfiniteLoop) {
   user_gesture_map()->clear();
   base::Time now = base::Time::Now();
-  base::Time half_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 0.5);
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
-  base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
+  base::Time half_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 0.5);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
+  base::Time two_seconds_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 2.0);
 
   // Add 5 navigations and one starting page. The first is BROWSER_INITIATED
   // to A. Then from A to B, then 2 redirects back and forth between B and C,
@@ -473,10 +479,10 @@ TEST_F(SBNavigationObserverTest,
 TEST_F(SBNavigationObserverTest,
        TestCleanUpStableNotificationNavigationEvents) {
   base::Time now = base::Time::Now();  // Fresh
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);  // Stale
-  base::Time one_minute_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0);  // Fresh
+  base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
+  base::Time one_minute_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0);  // Fresh
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
   GURL url_2("http://foo/2");
@@ -543,12 +549,12 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleNavigationEvents) {
   // invalid
   // navigation events.
   base::Time now = base::Time::Now();  // Fresh
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);  // Stale
-  base::Time one_minute_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0);  // Fresh
-  base::Time in_an_hour =
-      base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
+  base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
+  base::Time one_minute_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0);  // Fresh
+  base::Time in_an_hour = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() + 60.0 * 60.0);  // Invalid
   GURL url_0("http://foo/0");
   GURL url_1("http://foo/1");
   content::MockNavigationHandle handle_0(url_0,
@@ -592,10 +598,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleUserGestures) {
   // Sets up user_gesture_map() such that it includes fresh, stale and invalid
   // user gestures.
   base::Time now = base::Time::Now();  // Fresh
-  base::Time three_minutes_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 3);  // Stale
-  base::Time in_an_hour =
-      base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
+  base::Time three_minutes_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 3);  // Stale
+  base::Time in_an_hour = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() + 60.0 * 60.0);  // Invalid
   content::WebContents* content0 = web_contents();
   auto content1 = CreateTestWebContents();
   content::WebContentsTester::For(content1.get())
@@ -621,10 +627,10 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
   // Sets up host_to_ip_map() such that it includes fresh, stale and invalid
   // user gestures.
   base::Time now = base::Time::Now();  // Fresh
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);  // Stale
-  base::Time in_an_hour =
-      base::Time::FromDoubleT(now.ToDoubleT() + 60.0 * 60.0);  // Invalid
+  base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
+  base::Time in_an_hour = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() + 60.0 * 60.0);  // Invalid
   std::string host_0 = GURL("http://foo/0").host();
   std::string host_1 = GURL("http://bar/1").host();
   host_to_ip_map()->insert(
@@ -651,8 +657,8 @@ TEST_F(SBNavigationObserverTest, TestCleanUpStaleIPAddresses) {
 TEST_F(SBNavigationObserverTest, TestRecordHostToIpMapping) {
   // Setup host_to_ip_map().
   base::Time now = base::Time::Now();  // Fresh
-  base::Time one_hour_ago =
-      base::Time::FromDoubleT(now.ToDoubleT() - 60.0 * 60.0);  // Stale
+  base::Time one_hour_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0 * 60.0);  // Stale
   std::string host_0 = GURL("http://foo/0").host();
   host_to_ip_map()->insert(
       std::make_pair(host_0, std::vector<ResolvedIPAddress>()));
@@ -714,8 +720,10 @@ TEST_F(SBNavigationObserverTest, TestContentSettingChange) {
 
 TEST_F(SBNavigationObserverTest, TimestampIsDecreasing) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
-  base::Time two_seconds_ago = base::Time::FromDoubleT(now.ToDoubleT() - 2.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
+  base::Time two_seconds_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 2.0);
 
   // Add three navigations. The first is BROWSER_INITIATED to A. Then from A to
   // B, and then from B back to A.
@@ -799,8 +807,8 @@ TEST_F(SBNavigationObserverTest,
 TEST_F(SBNavigationObserverTest,
        RemoveNonUserGestureEntriesWithExcessiveUserGestureEvents) {
   GURL url = GURL("http://A.com");
-  base::Time half_second_ago =
-      base::Time::FromDoubleT(base::Time::Now().ToDoubleT() - 0.5);
+  base::Time half_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      base::Time::Now().InSecondsFSinceUnixEpoch() - 0.5);
   // Append 10 navigation events with user gesture.
   for (int i = 0; i < 10; i++) {
     std::unique_ptr<NavigationEvent> navigation_event =
@@ -857,7 +865,8 @@ TEST_F(SBNavigationObserverTest, RemoveMiddleReferrerChains) {
 
 TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   SessionID source_tab = SessionID::NewUnique();
   SessionID target_tab = SessionID::NewUnique();
@@ -899,7 +908,8 @@ TEST_F(SBNavigationObserverTest, ChainWorksThroughNewTab) {
 
 TEST_F(SBNavigationObserverTest, ChainContinuesThroughBrowserInitiated) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   std::unique_ptr<NavigationEvent> first_navigation =
       std::make_unique<NavigationEvent>();
@@ -929,7 +939,8 @@ TEST_F(SBNavigationObserverTest, ChainContinuesThroughBrowserInitiated) {
 TEST_F(SBNavigationObserverTest,
        CanceledRetargetingNavigationHasCorrectEventUrl) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   SessionID source_tab = SessionID::NewUnique();
   SessionID target_tab = SessionID::NewUnique();
@@ -974,7 +985,8 @@ TEST_F(SBNavigationObserverTest,
 TEST_F(SBNavigationObserverTest,
        CanceledRetargetingNavigationHasCorrectRedirects) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   SessionID source_tab = SessionID::NewUnique();
   SessionID target_tab = SessionID::NewUnique();
@@ -1032,8 +1044,10 @@ TEST_F(SBNavigationObserverTest,
 
 TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   base::Time now = base::Time::Now();
-  base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);
-  base::Time two_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 120.0);
+  base::Time one_minute_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 60.0);
+  base::Time two_minute_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 120.0);
   GURL url("http://foo/0");
   content::MockNavigationHandle handle_0(url,
                                          web_contents()->GetPrimaryMainFrame());
@@ -1059,7 +1073,8 @@ TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
 
 TEST_F(SBNavigationObserverTest, SanitizesDataUrls) {
   base::Time now = base::Time::Now();
-  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+  base::Time one_second_ago = base::Time::FromSecondsSinceUnixEpoch(
+      now.InSecondsFSinceUnixEpoch() - 1.0);
 
   SessionID tab_id = SessionID::NewUnique();
 

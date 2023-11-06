@@ -220,11 +220,12 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     const net::URLRequest& request,
     const net::CanonicalCookie& cookie,
     net::CookieOptions* options,
+    const net::FirstPartySetMetadata& first_party_set_metadata,
     net::CookieInclusionStatus* inclusion_status) {
   bool allowed =
       network_context_->cookie_manager()->cookie_settings().IsCookieAccessible(
           cookie, request.url(), request.site_for_cookies(),
-          request.isolation_info().top_frame_origin(),
+          request.isolation_info().top_frame_origin(), first_party_set_metadata,
           request.cookie_setting_overrides(), inclusion_status);
   if (!allowed)
     return false;

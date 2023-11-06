@@ -1,96 +1,109 @@
 This is a testharness.js-based test.
 Found 92 tests; 79 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Sanitizer.sanitizeFor() should throw.
-PASS Sanitizer.sanitizeFor() with one argument should throw.
-PASS Sanitizer.sanitizeFor("script", ...) should fail.
-PASS Sanitizer.sanitizeFor("iframe", ...) should fail.
-PASS Sanitizer.sanitizeFor("object", ...) should fail.
-PASS Sanitizer.sanitizeFor("div", ...) should pass.
-PASS Sanitizer.sanitizeFor function shouldn't load the image.
-PASS Sanitizer.sanitizeFor(element, ..)
-PASS Sanitizer.sanitizeFor("div", "<em>Hello</em>") obeys parse context.
-PASS Sanitizer.sanitizeFor("div", "<td>data</td>") obeys parse context.
-PASS Sanitizer.sanitizeFor("template", "<em>Hello</em>") obeys parse context.
-PASS Sanitizer.sanitizeFor("template", "<td>data</td>") obeys parse context.
-PASS Sanitizer.sanitizeFor("table", "<em>Hello</em>") obeys parse context.
-PASS Sanitizer.sanitizeFor("table", "<td>data</td>") obeys parse context.
-PASS Sanitizer.sanitizeFor with config: string
-PASS Sanitizer.sanitizeFor with config: html fragment
-PASS Sanitizer.sanitizeFor with config: broken html
-PASS Sanitizer.sanitizeFor with config: empty object
-PASS Sanitizer.sanitizeFor with config: number
-PASS Sanitizer.sanitizeFor with config: zeros
-PASS Sanitizer.sanitizeFor with config: arithmetic
-PASS Sanitizer.sanitizeFor with config: empty string
-PASS Sanitizer.sanitizeFor with config: undefined
-PASS Sanitizer.sanitizeFor with config: document
-PASS Sanitizer.sanitizeFor with config: html without close tag
-PASS Sanitizer.sanitizeFor with config: scripts for default configs
-PASS Sanitizer.sanitizeFor with config: script not as root
-PASS Sanitizer.sanitizeFor with config: script deeper in the tree
-PASS Sanitizer.sanitizeFor with config: onclick scripts
-PASS Sanitizer.sanitizeFor with config: plaintext
-PASS Sanitizer.sanitizeFor with config: xmp
-PASS Sanitizer.sanitizeFor with config: invalid config_input
-PASS Sanitizer.sanitizeFor with config: empty dropElements list
-PASS Sanitizer.sanitizeFor with config: test html without close tag with dropElements list ['div']
-PASS Sanitizer.sanitizeFor with config: default behavior for custom elements
-PASS Sanitizer.sanitizeFor with config: allow custom elements
-PASS Sanitizer.sanitizeFor with config: allow custom elements with allow elements
-PASS Sanitizer.sanitizeFor with config: disallow custom elements
-PASS Sanitizer.sanitizeFor with config: allow custom elements with drop list contains ["custom-element"]
-PASS Sanitizer.sanitizeFor with config: test script with ["script"] as dropElements list
-PASS Sanitizer.sanitizeFor with config: dropElements list ["test-element", "i"]}
-PASS Sanitizer.sanitizeFor with config: dropElements list ["dl", "p"]}
-PASS Sanitizer.sanitizeFor with config: allowElements list ["p"]
-PASS Sanitizer.sanitizeFor with config: allowElements list has no influence to dropElements
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"style": ["p"]} with style attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer.sanitizeFor with config: empty dropAttributes list with id attribute
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"id": ["*"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: allowAttributes list {"id": ["div"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: allowAttributes list has no influence to dropAttributes Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer.sanitizeFor with config: Template element
-PASS Sanitizer.sanitizeFor with config: HTMLAnchorElement with javascript protocal
-PASS Sanitizer.sanitizeFor with config: HTMLAnchorElement with javascript protocal start with space
-PASS Sanitizer.sanitizeFor with config: HTMLAnchorElement
-PASS Sanitizer.sanitizeFor with config: HTMLAreaElement with javascript protocal
-PASS Sanitizer.sanitizeFor with config: HTMLAreaElement with javascript protocal start with space
-PASS Sanitizer.sanitizeFor with config: HTMLAreaElement
-PASS Sanitizer.sanitizeFor with config: HTMLFormElement with javascript action
-PASS Sanitizer.sanitizeFor with config: HTMLFormElement with javascript action start with space
-PASS Sanitizer.sanitizeFor with config: HTMLFormElement
-PASS Sanitizer.sanitizeFor with config: HTMLInputElement with javascript formaction
-PASS Sanitizer.sanitizeFor with config: HTMLInputElement with javascript formaction start with space
-PASS Sanitizer.sanitizeFor with config: HTMLInputElement
-PASS Sanitizer.sanitizeFor with config: HTMLButtonElement with javascript formaction
-PASS Sanitizer.sanitizeFor with config: HTMLButtonElement with javascript formaction start with space
-PASS Sanitizer.sanitizeFor with config: HTMLButtonElement
-PASS Sanitizer.sanitizeFor with config: malformed HTML
-PASS Sanitizer.sanitizeFor with config: HTML with comments; comments not allowed
-PASS Sanitizer.sanitizeFor with config: HTML with comments; allowComments
-PASS Sanitizer.sanitizeFor with config: HTML with comments; !allowComments
-PASS Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree
-PASS Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree, allowComments
-PASS Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree, !allowComments
-PASS Sanitizer.sanitizeFor with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces.
-PASS Sanitizer.sanitizeFor with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested.
-PASS Sanitizer.sanitizeFor with config: dropElements list ["I", "DL"]}
-PASS Sanitizer.sanitizeFor with config: dropElements list ["i", "dl"]}
-PASS Sanitizer.sanitizeFor with config: dropElements list ["i", "dl"]} with uppercase HTML
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"ID": ["*"]} with id attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"ID": ["*"]} with ID attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: dropAttributes list {"id": ["*"]} with ID attribute Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-PASS Sanitizer.sanitizeFor with config: dropElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer.sanitizeFor with config: blockElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer.sanitizeFor with config: allowElements with unknown elements and without allowUnknownMarkup
-PASS Sanitizer.sanitizeFor with config: dropElements with unknown elements and with allowUnknownMarkup
-PASS Sanitizer.sanitizeFor with config: blockElements with unknown elements and with allowUnknownMarkup
-PASS Sanitizer.sanitizeFor with config: allowElements with unknown elements and with allowUnknownMarkup
-FAIL Sanitizer.sanitizeFor with config: allowAttributes unknown attributes and without allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: allowAttributes unknown attributes and with allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: dropAttributes unknown attributes and without allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
-FAIL Sanitizer.sanitizeFor with config: dropAttributes unknown attributes and with allowUnknownMarkup Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer.sanitizeFor() should throw.
+[PASS] Sanitizer.sanitizeFor() with one argument should throw.
+[PASS] Sanitizer.sanitizeFor("script", ...) should fail.
+[PASS] Sanitizer.sanitizeFor("iframe", ...) should fail.
+[PASS] Sanitizer.sanitizeFor("object", ...) should fail.
+[PASS] Sanitizer.sanitizeFor("div", ...) should pass.
+[PASS] Sanitizer.sanitizeFor function shouldn't load the image.
+[PASS] Sanitizer.sanitizeFor(element, ..)
+[PASS] Sanitizer.sanitizeFor("div", "<em>Hello</em>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor("div", "<td>data</td>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor("template", "<em>Hello</em>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor("template", "<td>data</td>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor("table", "<em>Hello</em>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor("table", "<td>data</td>") obeys parse context.
+[PASS] Sanitizer.sanitizeFor with config: string
+[PASS] Sanitizer.sanitizeFor with config: html fragment
+[PASS] Sanitizer.sanitizeFor with config: broken html
+[PASS] Sanitizer.sanitizeFor with config: empty object
+[PASS] Sanitizer.sanitizeFor with config: number
+[PASS] Sanitizer.sanitizeFor with config: zeros
+[PASS] Sanitizer.sanitizeFor with config: arithmetic
+[PASS] Sanitizer.sanitizeFor with config: empty string
+[PASS] Sanitizer.sanitizeFor with config: undefined
+[PASS] Sanitizer.sanitizeFor with config: document
+[PASS] Sanitizer.sanitizeFor with config: html without close tag
+[PASS] Sanitizer.sanitizeFor with config: scripts for default configs
+[PASS] Sanitizer.sanitizeFor with config: script not as root
+[PASS] Sanitizer.sanitizeFor with config: script deeper in the tree
+[PASS] Sanitizer.sanitizeFor with config: onclick scripts
+[PASS] Sanitizer.sanitizeFor with config: plaintext
+[PASS] Sanitizer.sanitizeFor with config: xmp
+[PASS] Sanitizer.sanitizeFor with config: invalid config_input
+[PASS] Sanitizer.sanitizeFor with config: empty dropElements list
+[PASS] Sanitizer.sanitizeFor with config: test html without close tag with dropElements list ['div']
+[PASS] Sanitizer.sanitizeFor with config: default behavior for custom elements
+[PASS] Sanitizer.sanitizeFor with config: allow custom elements
+[PASS] Sanitizer.sanitizeFor with config: allow custom elements with allow elements
+[PASS] Sanitizer.sanitizeFor with config: disallow custom elements
+[PASS] Sanitizer.sanitizeFor with config: allow custom elements with drop list contains ["custom-element"]
+[PASS] Sanitizer.sanitizeFor with config: test script with ["script"] as dropElements list
+[PASS] Sanitizer.sanitizeFor with config: dropElements list ["test-element", "i"]}
+[PASS] Sanitizer.sanitizeFor with config: dropElements list ["dl", "p"]}
+[PASS] Sanitizer.sanitizeFor with config: allowElements list ["p"]
+[PASS] Sanitizer.sanitizeFor with config: allowElements list has no influence to dropElements
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"style": ["p"]} with style attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer.sanitizeFor with config: empty dropAttributes list with id attribute
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"id": ["*"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"data-attribute-with-dashes": ["*"]} with dom dataset js access
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: allowAttributes list {"id": ["div"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: allowAttributes list {"id": ["*"]} with id attribute and onclick scripts
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: allowAttributes list has no influence to dropAttributes
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer.sanitizeFor with config: Template element
+[PASS] Sanitizer.sanitizeFor with config: HTMLAnchorElement with javascript protocal
+[PASS] Sanitizer.sanitizeFor with config: HTMLAnchorElement with javascript protocal start with space
+[PASS] Sanitizer.sanitizeFor with config: HTMLAnchorElement
+[PASS] Sanitizer.sanitizeFor with config: HTMLAreaElement with javascript protocal
+[PASS] Sanitizer.sanitizeFor with config: HTMLAreaElement with javascript protocal start with space
+[PASS] Sanitizer.sanitizeFor with config: HTMLAreaElement
+[PASS] Sanitizer.sanitizeFor with config: HTMLFormElement with javascript action
+[PASS] Sanitizer.sanitizeFor with config: HTMLFormElement with javascript action start with space
+[PASS] Sanitizer.sanitizeFor with config: HTMLFormElement
+[PASS] Sanitizer.sanitizeFor with config: HTMLInputElement with javascript formaction
+[PASS] Sanitizer.sanitizeFor with config: HTMLInputElement with javascript formaction start with space
+[PASS] Sanitizer.sanitizeFor with config: HTMLInputElement
+[PASS] Sanitizer.sanitizeFor with config: HTMLButtonElement with javascript formaction
+[PASS] Sanitizer.sanitizeFor with config: HTMLButtonElement with javascript formaction start with space
+[PASS] Sanitizer.sanitizeFor with config: HTMLButtonElement
+[PASS] Sanitizer.sanitizeFor with config: malformed HTML
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments; comments not allowed
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments; allowComments
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments; !allowComments
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree, allowComments
+[PASS] Sanitizer.sanitizeFor with config: HTML with comments deeper in the tree, !allowComments
+[PASS] Sanitizer.sanitizeFor with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces.
+[PASS] Sanitizer.sanitizeFor with config: Unknown HTML names (HTMLUnknownElement instances) should not match elements parsed as non-HTML namespaces when nested.
+[PASS] Sanitizer.sanitizeFor with config: dropElements list ["I", "DL"]}
+[PASS] Sanitizer.sanitizeFor with config: dropElements list ["i", "dl"]}
+[PASS] Sanitizer.sanitizeFor with config: dropElements list ["i", "dl"]} with uppercase HTML
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"ID": ["*"]} with id attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"ID": ["*"]} with ID attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes list {"id": ["*"]} with ID attribute
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[PASS] Sanitizer.sanitizeFor with config: dropElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer.sanitizeFor with config: blockElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer.sanitizeFor with config: allowElements with unknown elements and without allowUnknownMarkup
+[PASS] Sanitizer.sanitizeFor with config: dropElements with unknown elements and with allowUnknownMarkup
+[PASS] Sanitizer.sanitizeFor with config: blockElements with unknown elements and with allowUnknownMarkup
+[PASS] Sanitizer.sanitizeFor with config: allowElements with unknown elements and with allowUnknownMarkup
+[FAIL] Sanitizer.sanitizeFor with config: allowAttributes unknown attributes and without allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: allowAttributes unknown attributes and with allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'allowAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes unknown attributes and without allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
+[FAIL] Sanitizer.sanitizeFor with config: dropAttributes unknown attributes and with allowUnknownMarkup
+  Failed to construct 'Sanitizer': Failed to read the 'dropAttributes' property from 'SanitizerConfig': The object must have a callable @@iterator property.
 Harness: the test ran to completion.
 

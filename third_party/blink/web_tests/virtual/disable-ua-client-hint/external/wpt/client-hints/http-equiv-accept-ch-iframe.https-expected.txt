@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
-FAIL Client hints loaded on same-origin iframe should include hints with a default permissions policy ofself and *, but the http-equiv meta tag has a bug and it doesn't impact iframes. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
-FAIL Client hints loaded on cross-origin iframe only include hints with a default permissions policy of *. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
+[FAIL] Client hints loaded on same-origin iframe should include hints with a default permissions policy ofself and *, but the http-equiv meta tag has a bug and it doesn't impact iframes.
+  promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
+[FAIL] Client hints loaded on cross-origin iframe only include hints with a default permissions policy of *.
+  promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
 Harness: the test ran to completion.
 

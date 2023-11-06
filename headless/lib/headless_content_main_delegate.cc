@@ -48,6 +48,10 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/resource_exhaustion.h"
+#endif  // BUILDFLAG(IS_WIN)
+
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
 #include "headless/embedded_resource_pack_data.h"     // nogncheck
 #include "headless/embedded_resource_pack_strings.h"  // nogncheck
@@ -89,6 +93,20 @@ base::LazyInstance<HeadlessCrashReporterClient>::Leaky g_headless_crash_client =
 
 const char kLogFileName[] = "CHROME_LOG_FILE";
 const char kHeadlessCrashKey[] = "headless";
+
+#if BUILDFLAG(IS_WIN)
+void OnResourceExhausted() {
+  // RegisterClassEx will fail if the session's pool of ATOMs is exhausted. This
+  // appears to happen most often when the browser is being driven by automation
+  // tools, though the underlying reason for this remains a mystery
+  // (https://crbug.com/1470483). There is nothing that Chrome can do to
+  // meaningfully run until the user restarts their session by signing out of
+  // Windows or restarting their computer.
+  LOG(ERROR) << "Your computer has run out of resources. "
+                "Sign out of Windows or restart your computer and try again.";
+  base::Process::TerminateCurrentProcessImmediately(EXIT_FAILURE);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void InitializeResourceBundle(const base::CommandLine& command_line) {
 #if defined(HEADLESS_USE_EMBEDDED_RESOURCES)
@@ -452,6 +470,11 @@ absl::optional<int> HeadlessContentMainDelegate::PreBrowserMain() {
     return EXIT_FAILURE;
   }
   browser_->SetOptions(builder.Build());
+
+#if BUILDFLAG(IS_WIN)
+  // Register callback to handle resource exhaustion.
+  base::win::SetOnResourceExhaustedFunction(&OnResourceExhausted);
+#endif
 
 #if BUILDFLAG(IS_MAC)
   PlatformPreBrowserMain();

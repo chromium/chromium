@@ -38,9 +38,6 @@ enum class ActionType {
   kShowBubble,  // Not an IdleTimeoutAction value. Added as a side-effect.
 };
 
-// Checks if the action type does not require sync types to be disabled.
-bool AllowsSyncEnabled(const std::string& name);
-
 // Returns the idle timeout action type for an action string.
 absl::optional<ActionType> NameToActionType(const std::string& name);
 

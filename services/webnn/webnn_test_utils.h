@@ -39,12 +39,6 @@ class GraphInfoBuilder final {
                        const std::vector<uint32_t>& dimensions,
                        mojom::Operand::DataType type);
 
-  void BuildOperator(
-      mojom::Operator::Kind kind,
-      const std::vector<uint64_t>& inputs,
-      const std::vector<uint64_t>& outputs,
-      mojom::OperatorAttributesPtr operator_attributes = nullptr);
-
   void BuildClamp(uint64_t input_operand_id,
                   uint64_t output_operand_id,
                   float min_value,
@@ -62,8 +56,10 @@ class GraphInfoBuilder final {
   //   uint32_t groups;
   //   mojom::InputOperandLayout input_layout;
   //   absl::optional<uint64_t> bias_operand_id,
-  //   absl::optional<mojom::Operation::Tag> activation;
+  //   absl::optional<mojom::Activation::Tag> activation;
   //   absl::optional<ClampAttributes> clamp_attributes;
+  //   absl::optional<float> elu_alpha;
+  //   absl::optional<float> leaky_relu_alpha;
   // };
   template <typename Conv2dAttributes>
   void BuildConv2d(uint64_t input_operand_id,
@@ -79,10 +75,10 @@ class GraphInfoBuilder final {
     // Configure the attributes of conv2d.
     CHECK_EQ(attributes.padding.size(), 4u);
     conv2d->padding = mojom::Padding2d::New(
-        /* beginning padding*/ mojom::Size2d::New(attributes.padding[0],
-                                                  attributes.padding[2]),
-        /* ending padding*/ mojom::Size2d::New(attributes.padding[1],
-                                               attributes.padding[3]));
+        /*beginning padding*/ mojom::Size2d::New(attributes.padding[0],
+                                                 attributes.padding[2]),
+        /*ending padding*/ mojom::Size2d::New(attributes.padding[1],
+                                              attributes.padding[3]));
     CHECK_EQ(attributes.strides.size(), 2u);
     conv2d->strides =
         mojom::Size2d::New(attributes.strides[0], attributes.strides[1]);
@@ -95,26 +91,106 @@ class GraphInfoBuilder final {
 
     if (attributes.activation.has_value()) {
       switch (attributes.activation.value()) {
-        case mojom::Operation::Tag::kRelu:
-          conv2d->activation = mojom::Operation::NewRelu(mojom::Relu::New());
-          break;
-        case mojom::Operation::Tag::kClamp: {
+        case mojom::Activation::Tag::kClamp: {
           auto clamp_attributes = attributes.clamp_attributes;
-          CHECK_EQ(clamp_attributes.has_value(), true);
+          CHECK(clamp_attributes.has_value());
           auto clamp = mojom::Clamp::New();
           clamp->min_value = clamp_attributes->min_value;
           clamp->max_value = clamp_attributes->max_value;
-          conv2d->activation = mojom::Operation::NewClamp(std::move(clamp));
+          conv2d->activation = mojom::Activation::NewClamp(std::move(clamp));
           break;
         }
-        default:
-          NOTREACHED();
+        case mojom::Activation::Tag::kElu: {
+          auto elu = mojom::Elu::New();
+          CHECK(attributes.elu_alpha.has_value());
+          elu->alpha = attributes.elu_alpha.value();
+          conv2d->activation = mojom::Activation::NewElu(std::move(elu));
+          break;
+        }
+        case mojom::Activation::Tag::kLeakyRelu: {
+          auto leaky_relu = mojom::LeakyRelu::New();
+          CHECK(attributes.leaky_relu_alpha.has_value());
+          leaky_relu->alpha = attributes.leaky_relu_alpha.value();
+          conv2d->activation =
+              mojom::Activation::NewLeakyRelu(std::move(leaky_relu));
+          break;
+        }
+        case mojom::Activation::Tag::kRelu:
+          conv2d->activation = mojom::Activation::NewRelu(mojom::Relu::New());
+          break;
+        case mojom::Activation::Tag::kSigmoid:
+          conv2d->activation =
+              mojom::Activation::NewSigmoid(mojom::Sigmoid::New());
+          break;
+        case mojom::Activation::Tag::kSoftmax:
+          conv2d->activation =
+              mojom::Activation::NewSoftmax(mojom::Softmax::New());
+          break;
+        case mojom::Activation::Tag::kTanh:
+          conv2d->activation = mojom::Activation::NewTanh(mojom::Tanh::New());
+          break;
       }
     }
 
     graph_info_->operations.push_back(
         mojom::Operation::NewConv2d(std::move(conv2d)));
   }
+
+  void BuildElementWiseBinary(mojom::ElementWiseBinary::Kind kind,
+                              uint64_t lhs_operand,
+                              uint64_t rhs_operand,
+                              uint64_t output_operand);
+
+  void BuildElu(uint64_t input_operand_id,
+                uint64_t output_operand_id,
+                float alpha);
+
+  void BuildElementWiseUnary(mojom::ElementWiseUnary::Kind kind,
+                             uint64_t input_operand,
+                             uint64_t output_operand);
+
+  // A `GemmAttributes` type should have the following members:
+  // struct GemmAttributes {
+  //   absl::optional<uint64_t> c_operand_id,
+  //   float alpha = 1.0;
+  //   float beta = 1.0;
+  //   bool a_transpose = false;
+  //   bool b_transpose = false;
+  // };
+  template <typename GemmAttributes>
+  void BuildGemm(uint64_t a_operand_id,
+                 uint64_t b_operand_id,
+                 uint64_t output_operand_id,
+                 const GemmAttributes& attributes) {
+    mojom::GemmPtr gemm = mojom::Gemm::New();
+    gemm->a_operand_id = a_operand_id;
+    gemm->b_operand_id = b_operand_id;
+    gemm->output_operand_id = output_operand_id;
+
+    gemm->c_operand_id = attributes.c_operand_id;
+    gemm->alpha = attributes.alpha;
+    gemm->beta = attributes.beta;
+    gemm->a_transpose = attributes.a_transpose;
+    gemm->b_transpose = attributes.b_transpose;
+
+    graph_info_->operations.push_back(
+        mojom::Operation::NewGemm(std::move(gemm)));
+  }
+
+  void BuildLeakyRelu(uint64_t input_operand_id,
+                      uint64_t output_operand_id,
+                      float alpha);
+
+  void BuildMatmul(uint64_t a_operand_id,
+                   uint64_t b_operand_id,
+                   uint64_t output_operand_id);
+
+  void BuildPad(uint64_t input_operand_id,
+                uint64_t output_operand_id,
+                const std::vector<uint32_t>& beginning_padding,
+                const std::vector<uint32_t>& ending_padding,
+                mojom::PaddingMode::Tag mode,
+                float value);
 
   // A `Pool2dAttributes` type should have the following members:
   // struct Pool2dAttributes {
@@ -156,19 +232,44 @@ class GraphInfoBuilder final {
         mojom::Operation::NewPool2d(std::move(pool2d)));
   }
 
+  void BuildPrelu(uint64_t input_operand_id,
+                  uint64_t slope_operand_id,
+                  uint64_t output_operand_id);
+
+  void BuildReduce(mojom::Reduce::Kind kind,
+                   uint64_t input_operand_id,
+                   uint64_t output_operand_id,
+                   std::vector<uint32_t> axes,
+                   bool keep_dimensions);
+
   void BuildRelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
+  // A `Resample2dAttributes` type should have the following members:
+  // struct Resample2dAttributes {
+  //   mojom::Resample2d::InterpolationMode mode =
+  //       mojom::Resample2d::InterpolationMode::kNearestNeighbor;
+  //   absl::optional<std::vector<float>> scales;
+  //   std::vector<uint32_t> axes = {2, 3};};
+  template <typename Resample2dAttributes>
   void BuildResample2d(uint64_t input_operand_id,
                        uint64_t output_operand_id,
-                       mojom::Resample2d::InterpolationMode mode) {
+                       const Resample2dAttributes& attributes) {
     mojom::Resample2dPtr resample2d = mojom::Resample2d::New();
     resample2d->input_operand_id = input_operand_id;
     resample2d->output_operand_id = output_operand_id;
-    resample2d->mode = mode;
+    resample2d->mode = attributes.mode;
+    if (attributes.scales) {
+      resample2d->scales = attributes.scales;
+    }
+    resample2d->axes = attributes.axes;
 
     graph_info_->operations.push_back(
         mojom::Operation::NewResample2d(std::move(resample2d)));
   }
+
+  void BuildReshape(uint64_t input_operand_id, uint64_t output_operand_id);
+
+  void BuildSigmoid(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSoftmax(uint64_t input_operand_id, uint64_t output_operand_id);
 
@@ -176,9 +277,16 @@ class GraphInfoBuilder final {
                   const std::vector<uint64_t>& output_operand_ids,
                   uint32_t axis);
 
+  void BuildTanh(uint64_t input_operand_id, uint64_t output_operand_id);
+
   void BuildTranspose(uint64_t input_operand_id,
                       uint64_t output_operand_id,
                       std::vector<uint32_t> permutation);
+
+  void BuildSlice(uint64_t input_operand_id,
+                  uint64_t output_operand_id,
+                  std::vector<uint32_t> starts,
+                  std::vector<uint32_t> sizes);
 
   const mojom::GraphInfoPtr& GetGraphInfo() const { return graph_info_; }
 

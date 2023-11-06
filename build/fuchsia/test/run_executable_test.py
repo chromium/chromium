@@ -19,7 +19,6 @@ from common import get_component_uri, get_host_arch, \
 from compatible_utils import map_filter_file_to_package_file
 from ffx_integration import FfxTestRunner, run_symbolizer
 from test_runner import TestRunner
-from test_server import setup_test_server
 
 DEFAULT_TEST_SERVER_CONCURRENCY = 4
 
@@ -71,14 +70,12 @@ class ExecutableTestRunner(TestRunner):
     """Test runner for running standalone test executables."""
 
     def __init__(  # pylint: disable=too-many-arguments
-            self,
-            out_dir: str,
-            test_args: List[str],
-            test_name: str,
-            target_id: Optional[str],
-            code_coverage_dir: str,
-            logs_dir: Optional[str] = None) -> None:
-        super().__init__(out_dir, test_args, [test_name], target_id)
+            self, out_dir: str, test_args: List[str], test_name: str,
+            target_id: Optional[str], code_coverage_dir: str,
+            logs_dir: Optional[str], package_deps: List[str],
+            test_realm: Optional[str]) -> None:
+        super().__init__(out_dir, test_args, [test_name], target_id,
+                         package_deps)
         if not self._test_args:
             self._test_args = []
         self._test_name = test_name
@@ -89,6 +86,7 @@ class ExecutableTestRunner(TestRunner):
         self._logs_dir = logs_dir
         self._test_launcher_summary_output = None
         self._test_server = None
+        self._test_realm = test_realm
 
     def _get_args(self) -> List[str]:
         parser = argparse.ArgumentParser()
@@ -165,6 +163,13 @@ class ExecutableTestRunner(TestRunner):
         else:
             test_concurrency = DEFAULT_TEST_SERVER_CONCURRENCY
         if args.enable_test_server:
+            # Repos other than chromium may not have chrome_test_server_spawner,
+            # and they may not run server at all, so only import the test_server
+            # when it's really necessary.
+
+            # pylint: disable=import-outside-toplevel
+            from test_server import setup_test_server
+            # pylint: enable=import-outside-toplevel
             self._test_server, spawner_url_base = setup_test_server(
                 self._target_id, test_concurrency)
             child_args.append('--remote-test-server-spawner-url-base=%s' %
@@ -198,10 +203,11 @@ class ExecutableTestRunner(TestRunner):
         test_args = self._get_args()
         with FfxTestRunner(self._logs_dir) as test_runner:
             test_proc = test_runner.run_test(
-                get_component_uri(self._test_name), test_args, self._target_id)
+                get_component_uri(self._test_name), test_args, self._target_id,
+                self._test_realm)
 
             symbol_paths = []
-            for pkg_path in self._package_deps.values():
+            for pkg_path in self.package_deps.values():
                 symbol_paths.append(
                     os.path.join(os.path.dirname(pkg_path), 'ids.txt'))
             # Symbolize output from test process and print to terminal.
@@ -227,7 +233,8 @@ def create_executable_test_runner(runner_args: argparse.Namespace,
     return ExecutableTestRunner(runner_args.out_dir, test_args,
                                 runner_args.test_type, runner_args.target_id,
                                 runner_args.code_coverage_dir,
-                                runner_args.logs_dir)
+                                runner_args.logs_dir, runner_args.package_deps,
+                                runner_args.test_realm)
 
 
 def register_executable_test_args(parser: argparse.ArgumentParser) -> None:
@@ -244,6 +251,17 @@ def register_executable_test_args(parser: argparse.ArgumentParser) -> None:
                            dest='test_type',
                            help='Name of the test package (e.g. '
                            'unit_tests).')
+    test_args.add_argument(
+        '--test-realm',
+        default=None,
+        help='The realm to run the test in. This field is optional and takes '
+        'the form: /path/to/realm:test_collection. See '
+        'https://fuchsia.dev/go/components/non-hermetic-tests')
+    test_args.add_argument('--package-deps',
+                           action='append',
+                           help='A list of the full path of the dependencies '
+                           'to retrieve the symbol ids. Keeping it empty to '
+                           'automatically generates from package_metadata.')
 
 
 def main():

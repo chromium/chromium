@@ -25,8 +25,10 @@
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
+#include "components/sync_bookmarks/test_bookmark_model_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -37,7 +39,6 @@ namespace sync_bookmarks {
 
 namespace {
 
-using bookmarks::TestBookmarkClient;
 using testing::_;
 using testing::Eq;
 using testing::Ge;
@@ -86,22 +87,22 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateSpecificsFromBookmarkNode) {
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       kUrl);
   ASSERT_THAT(node, NotNull());
-  model->SetDateAdded(node, kTime);
-  model->UpdateLastUsedTime(node, kTime, /*just_opened=*/false);
-  model->SetNodeMetaInfo(node, kKey1, kValue1);
-  model->SetNodeMetaInfo(node, kKey2, kValue2);
+  model.underlying_model()->SetDateAdded(node, kTime);
+  model.underlying_model()->UpdateLastUsedTime(node, kTime,
+                                               /*just_opened=*/false);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey1, kValue1);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey2, kValue2);
 
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), kUniquePosition.ToProto(),
-      /*force_favicon_load=*/false);
+  sync_pb::EntitySpecifics specifics =
+      CreateSpecificsFromBookmarkNode(node, &model, kUniquePosition.ToProto(),
+                                      /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->uuid().AsLowercaseString()));
   EXPECT_THAT(bm_specifics.parent_guid(), Eq(bookmarks::kBookmarkBarNodeUuid));
@@ -131,17 +132,16 @@ TEST(BookmarkSpecificsConversionsTest,
       syncer::UniquePosition::InitialPosition(
           syncer::UniquePosition::RandomSuffix());
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       kUrl);
 
-  sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), kUniquePosition.ToProto(),
-      /*force_favicon_load=*/false);
+  sync_pb::EntitySpecifics specifics =
+      CreateSpecificsFromBookmarkNode(node, &model, kUniquePosition.ToProto(),
+                                      /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_THAT(bm_specifics.guid(), Eq(node->uuid().AsLowercaseString()));
   EXPECT_THAT(bm_specifics.parent_guid(), Eq(bookmarks::kBookmarkBarNodeUuid));
@@ -150,20 +150,19 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldCreateSpecificsFromBookmarkNodeWithIllegalTitle) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
   const std::vector<std::string> illegal_titles = {"", ".", ".."};
   size_t index = 0;
   for (const std::string& illegal_title : illegal_titles) {
-    const bookmarks::BookmarkNode* node = model->AddURL(
+    const bookmarks::BookmarkNode* node = model.AddURL(
         /*parent=*/bookmark_bar_node, index++, base::UTF8ToUTF16(illegal_title),
         GURL("http://www.url.com"));
     ASSERT_THAT(node, NotNull());
-    sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-        node, model.get(), RandomUniquePosition(),
-        /*force_favicon_load=*/false);
+    sync_pb::EntitySpecifics specifics =
+        CreateSpecificsFromBookmarkNode(node, &model, RandomUniquePosition(),
+                                        /*force_favicon_load=*/false);
     // Legacy clients append a space to illegal titles.
     EXPECT_THAT(specifics.bookmark().legacy_canonicalized_title(),
                 Eq(illegal_title + " "));
@@ -172,15 +171,14 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldCreateSpecificsWithoutUrlFromFolderNode) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddFolder(
+  TestBookmarkModelView model;
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddFolder(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Title");
   ASSERT_THAT(node, NotNull());
 
   sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, model.get(), RandomUniquePosition(),
+      CreateSpecificsFromBookmarkNode(node, &model, RandomUniquePosition(),
                                       /*force_favicon_load=*/false);
   const sync_pb::BookmarkSpecifics& bm_specifics = specifics.bookmark();
   EXPECT_FALSE(bm_specifics.has_url());
@@ -190,21 +188,18 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldLoadFaviconWhenCreatingSpecificsFromBookmarkNode) {
-  auto client = std::make_unique<TestBookmarkClient>();
-  TestBookmarkClient* client_ptr = client.get();
+  TestBookmarkModelView model;
+  bookmarks::TestBookmarkClient* client_ptr = model.underlying_client();
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClient::CreateModelWithClient(std::move(client));
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_FALSE(client_ptr->HasFaviconLoadTasks());
   sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, model.get(), RandomUniquePosition(),
+      CreateSpecificsFromBookmarkNode(node, &model, RandomUniquePosition(),
                                       /*force_favicon_load=*/true);
   EXPECT_TRUE(client_ptr->HasFaviconLoadTasks());
   EXPECT_FALSE(specifics.bookmark().has_favicon());
@@ -213,21 +208,18 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldNotLoadFaviconWhenCreatingSpecificsFromBookmarkNode) {
-  auto client = std::make_unique<TestBookmarkClient>();
-  TestBookmarkClient* client_ptr = client.get();
+  TestBookmarkModelView model;
+  bookmarks::TestBookmarkClient* client_ptr = model.underlying_client();
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClient::CreateModelWithClient(std::move(client));
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Title",
       GURL("http://www.url.com"));
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
   ASSERT_FALSE(client_ptr->HasFaviconLoadTasks());
   sync_pb::EntitySpecifics specifics = CreateSpecificsFromBookmarkNode(
-      node, model.get(), RandomUniquePosition(), /*force_favicon_load=*/false);
+      node, &model, RandomUniquePosition(), /*force_favicon_load=*/false);
   EXPECT_FALSE(client_ptr->HasFaviconLoadTasks());
   EXPECT_FALSE(specifics.bookmark().has_favicon());
   EXPECT_FALSE(specifics.bookmark().has_icon_url());
@@ -239,27 +231,24 @@ TEST(BookmarkSpecificsConversionsTest,
   const GURL kIconUrl("http://www.icon-url.com");
   const SkColor kColor = SK_ColorRED;
 
-  auto client = std::make_unique<TestBookmarkClient>();
-  TestBookmarkClient* client_ptr = client.get();
+  TestBookmarkModelView model;
+  bookmarks::TestBookmarkClient* client_ptr = model.underlying_client();
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClient::CreateModelWithClient(std::move(client));
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Title", kBookmarkUrl);
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
 
   // Complete the loading of the favicon as part of the test setup.
-  model->GetFavicon(node);
+  model.GetFavicon(node);
   ASSERT_TRUE(client_ptr->HasFaviconLoadTasks());
   client_ptr->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl,
                                     CreateTestImage(kColor));
   ASSERT_TRUE(node->is_favicon_loaded());
 
   sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, model.get(), RandomUniquePosition(),
+      CreateSpecificsFromBookmarkNode(node, &model, RandomUniquePosition(),
                                       /*force_favicon_load=*/false);
   EXPECT_THAT(specifics.bookmark().favicon(), Not(IsEmpty()));
   EXPECT_THAT(specifics.bookmark().icon_url(), Eq(kIconUrl));
@@ -286,27 +275,24 @@ TEST(BookmarkSpecificsConversionsTest,
   ASSERT_TRUE(kIconUrl.is_valid());
   ASSERT_THAT(kIconUrl.spec().size(), Ge(5000u));
 
-  auto client = std::make_unique<TestBookmarkClient>();
-  TestBookmarkClient* client_ptr = client.get();
+  TestBookmarkModelView model;
+  bookmarks::TestBookmarkClient* client_ptr = model.underlying_client();
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      TestBookmarkClient::CreateModelWithClient(std::move(client));
-
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, u"Title", kBookmarkUrl);
   ASSERT_THAT(node, NotNull());
   ASSERT_FALSE(node->is_favicon_loaded());
 
   // Complete the loading of the favicon as part of the test setup.
-  model->GetFavicon(node);
+  model.GetFavicon(node);
   ASSERT_TRUE(client_ptr->HasFaviconLoadTasks());
   client_ptr->SimulateFaviconLoaded(kBookmarkUrl, kIconUrl,
                                     CreateTestImage(kColor));
   ASSERT_TRUE(node->is_favicon_loaded());
 
   sync_pb::EntitySpecifics specifics =
-      CreateSpecificsFromBookmarkNode(node, model.get(), RandomUniquePosition(),
+      CreateSpecificsFromBookmarkNode(node, &model, RandomUniquePosition(),
                                       /*force_favicon_load=*/false);
 
   // The icon URL should be omitted (populated with the empty string).
@@ -354,17 +340,16 @@ TEST(BookmarkSpecificsConversionsTest,
   meta_info2->set_key(kKey2);
   meta_info2->set_value(kValue2);
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   EXPECT_CALL(favicon_service,
               AddPageNoVisitForBookmark(kUrl, base::UTF8ToUTF16(kTitle)));
   EXPECT_CALL(favicon_service, MergeFavicon(kUrl, kIconUrl, _, _, _));
   base::HistogramTester histogram_tester;
-  const bookmarks::BookmarkNode* node = CreateBookmarkNodeFromSpecifics(
-      bm_specifics,
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0, model.get(),
-      &favicon_service);
+  const bookmarks::BookmarkNode* node =
+      CreateBookmarkNodeFromSpecifics(bm_specifics,
+                                      /*parent=*/model.bookmark_bar_node(),
+                                      /*index=*/0, &model, &favicon_service);
   ASSERT_THAT(node, NotNull());
   EXPECT_THAT(node->uuid(), Eq(kGuid));
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kTitle)));
@@ -414,17 +399,16 @@ TEST(BookmarkSpecificsConversionsTest, ShouldCreateFolderFromSpecifics) {
   meta_info2->set_key(kKey2);
   meta_info2->set_value(kValue2);
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   EXPECT_CALL(favicon_service, AddPageNoVisitForBookmark).Times(0);
   EXPECT_CALL(favicon_service, MergeFavicon).Times(0);
   EXPECT_CALL(favicon_service, DeleteFaviconMappings).Times(0);
   base::HistogramTester histogram_tester;
-  const bookmarks::BookmarkNode* node = CreateBookmarkNodeFromSpecifics(
-      bm_specifics,
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0, model.get(),
-      &favicon_service);
+  const bookmarks::BookmarkNode* node =
+      CreateBookmarkNodeFromSpecifics(bm_specifics,
+                                      /*parent=*/model.bookmark_bar_node(),
+                                      /*index=*/0, &model, &favicon_service);
   ASSERT_THAT(node, NotNull());
   EXPECT_THAT(node->uuid(), Eq(kGuid));
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kTitle)));
@@ -481,16 +465,15 @@ TEST(BookmarkSpecificsConversionsTest,
   meta_info2->set_key(kKey2);
   meta_info2->set_value(kValue2);
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   EXPECT_CALL(favicon_service,
               AddPageNoVisitForBookmark(kUrl, base::UTF8ToUTF16(kFullTitle)));
   EXPECT_CALL(favicon_service, MergeFavicon(kUrl, kIconUrl, _, _, _));
-  const bookmarks::BookmarkNode* node = CreateBookmarkNodeFromSpecifics(
-      bm_specifics,
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0, model.get(),
-      &favicon_service);
+  const bookmarks::BookmarkNode* node =
+      CreateBookmarkNodeFromSpecifics(bm_specifics,
+                                      /*parent=*/model.bookmark_bar_node(),
+                                      /*index=*/0, &model, &favicon_service);
   ASSERT_THAT(node, NotNull());
   EXPECT_THAT(node->uuid(), Eq(kGuid));
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kFullTitle)));
@@ -506,8 +489,7 @@ TEST(BookmarkSpecificsConversionsTest,
 
 TEST(BookmarkSpecificsConversionsTest,
      ShouldCreateBookmarkNodeFromSpecificsWithIllegalTitle) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
 
   const std::vector<std::string> illegal_titles = {"", ".", ".."};
@@ -528,8 +510,8 @@ TEST(BookmarkSpecificsConversionsTest,
 
     const bookmarks::BookmarkNode* node =
         CreateBookmarkNodeFromSpecifics(bm_specifics,
-                                        /*parent=*/model->bookmark_bar_node(),
-                                        index++, model.get(), &favicon_service);
+                                        /*parent=*/model.bookmark_bar_node(),
+                                        index++, &model, &favicon_service);
     ASSERT_THAT(node, NotNull());
     // The node should be created without the extra space.
     EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(illegal_title)));
@@ -555,16 +537,15 @@ TEST(BookmarkSpecificsConversionsTest,
   bm_specifics.set_parent_guid(bookmarks::kBookmarkBarNodeUuid);
   *bm_specifics.mutable_unique_position() = RandomUniquePosition();
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
   testing::NiceMock<favicon::MockFaviconService> favicon_service;
   // The favicon service should be called with page url since the icon url is
   // missing.
   EXPECT_CALL(favicon_service, MergeFavicon(kUrl, kUrl, _, _, _));
-  const bookmarks::BookmarkNode* node = CreateBookmarkNodeFromSpecifics(
-      bm_specifics,
-      /*parent=*/model->bookmark_bar_node(), /*index=*/0, model.get(),
-      &favicon_service);
+  const bookmarks::BookmarkNode* node =
+      CreateBookmarkNodeFromSpecifics(bm_specifics,
+                                      /*parent=*/model.bookmark_bar_node(),
+                                      /*index=*/0, &model, &favicon_service);
   EXPECT_THAT(node, NotNull());
 }
 
@@ -577,16 +558,15 @@ TEST(BookmarkSpecificsConversionsTest, ShouldUpdateBookmarkNodeFromSpecifics) {
   const std::string kKey2 = "key2";
   const std::string kValue2 = "value2";
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       GURL(kUrl));
   ASSERT_THAT(node, NotNull());
-  model->SetNodeMetaInfo(node, kKey1, kValue1);
-  model->SetNodeMetaInfo(node, kKey2, kValue2);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey1, kValue1);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey2, kValue2);
 
   const GURL kNewUrl("http://www.new-url.com");
   const std::string kNewTitle = "NewTitle";
@@ -616,8 +596,7 @@ TEST(BookmarkSpecificsConversionsTest, ShouldUpdateBookmarkNodeFromSpecifics) {
   EXPECT_CALL(favicon_service,
               AddPageNoVisitForBookmark(kNewUrl, base::UTF8ToUTF16(kNewTitle)));
   EXPECT_CALL(favicon_service, MergeFavicon(kNewUrl, kNewIconUrl, _, _, _));
-  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, model.get(),
-                                  &favicon_service);
+  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, &model, &favicon_service);
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kNewTitle)));
   EXPECT_THAT(node->url(), Eq(kNewUrl));
   std::string value1;
@@ -638,16 +617,15 @@ TEST(BookmarkSpecificsConversionsTest,
   const std::string kKey2 = "key2";
   const std::string kValue2 = "value2";
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       GURL(kUrl));
   ASSERT_THAT(node, NotNull());
-  model->SetNodeMetaInfo(node, kKey1, kValue1);
-  model->SetNodeMetaInfo(node, kKey2, kValue2);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey1, kValue1);
+  model.underlying_model()->SetNodeMetaInfo(node, kKey2, kValue2);
 
   const GURL kNewUrl("http://www.new-url.com");
   const std::string kNewTitle = "NewTitle";
@@ -677,8 +655,7 @@ TEST(BookmarkSpecificsConversionsTest,
   EXPECT_CALL(favicon_service, AddPageNoVisitForBookmark(
                                    kNewUrl, base::UTF8ToUTF16(kNewFullTitle)));
   EXPECT_CALL(favicon_service, MergeFavicon(kNewUrl, kNewIconUrl, _, _, _));
-  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, model.get(),
-                                  &favicon_service);
+  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, &model, &favicon_service);
   EXPECT_THAT(node->GetTitle(), Eq(base::UTF8ToUTF16(kNewFullTitle)));
   EXPECT_THAT(node->url(), Eq(kNewUrl));
   std::string value1;
@@ -694,11 +671,10 @@ TEST(BookmarkSpecificsConversionsTest,
   const GURL kUrl("http://www.url.com");
   const std::string kTitle = "Title";
 
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
+  TestBookmarkModelView model;
 
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
-  const bookmarks::BookmarkNode* node = model->AddURL(
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
+  const bookmarks::BookmarkNode* node = model.AddURL(
       /*parent=*/bookmark_bar_node, /*index=*/0, base::UTF8ToUTF16(kTitle),
       GURL(kUrl));
   ASSERT_THAT(node, NotNull());
@@ -714,8 +690,7 @@ TEST(BookmarkSpecificsConversionsTest,
   // The favicon service should be called with page url since the icon url is
   // missing.
   EXPECT_CALL(favicon_service, MergeFavicon(kNewUrl, kNewUrl, _, _, _));
-  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, model.get(),
-                                  &favicon_service);
+  UpdateBookmarkNodeFromSpecifics(bm_specifics, node, &model, &favicon_service);
 }
 
 TEST(BookmarkSpecificsConversionsTest, ShouldBeValidBookmarkSpecifics) {
@@ -942,9 +917,8 @@ TEST(BookmarkSpecificsConversionsTest, ShouldBeInvalidBookmarkSpecifics) {
 }
 
 TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedUuid) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  TestBookmarkModelView model;
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const std::u16string kTitle = u"bar";
   const GURL kUrl = GURL("http://foo.com");
@@ -956,12 +930,12 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedUuid) {
   (*meta_info_map)[kKey] = kValue;
 
   // Add a bookmark URL.
-  const bookmarks::BookmarkNode* original_url = model->AddURL(
+  const bookmarks::BookmarkNode* original_url = model.AddURL(
       bookmark_bar_node, 0, kTitle, kUrl, meta_info_map.get(), kCreationTime);
 
   // Replace url1.
   const bookmarks::BookmarkNode* new_url =
-      ReplaceBookmarkNodeUuid(original_url, kGuid, model.get());
+      ReplaceBookmarkNodeUuid(original_url, kGuid, &model);
 
   // All data except for the UUID should be the same.
   EXPECT_EQ(kGuid, new_url->uuid());
@@ -976,9 +950,8 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceUrlNodeWithUpdatedUuid) {
 }
 
 TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedUuid) {
-  std::unique_ptr<bookmarks::BookmarkModel> model =
-      bookmarks::TestBookmarkClient::CreateModel();
-  const bookmarks::BookmarkNode* bookmark_bar_node = model->bookmark_bar_node();
+  TestBookmarkModelView model;
+  const bookmarks::BookmarkNode* bookmark_bar_node = model.bookmark_bar_node();
   const base::Uuid kGuid = base::Uuid::GenerateRandomV4();
   const std::u16string kTitle = u"foobar";
 
@@ -989,15 +962,15 @@ TEST(BookmarkSpecificsConversionsTest, ReplaceFolderNodeWithUpdatedUuid) {
 
   // Add a folder with child URLs.
   const bookmarks::BookmarkNode* original_folder =
-      model->AddFolder(bookmark_bar_node, 0, kTitle, meta_info_map.get());
+      model.AddFolder(bookmark_bar_node, 0, kTitle, meta_info_map.get());
   const bookmarks::BookmarkNode* url1 =
-      model->AddURL(original_folder, 0, u"bar", GURL("http://bar.com"));
+      model.AddURL(original_folder, 0, u"bar", GURL("http://bar.com"));
   const bookmarks::BookmarkNode* url2 =
-      model->AddURL(original_folder, 1, u"foo", GURL("http://foo.com"));
+      model.AddURL(original_folder, 1, u"foo", GURL("http://foo.com"));
 
   // Replace folder1.
   const bookmarks::BookmarkNode* new_folder =
-      ReplaceBookmarkNodeUuid(original_folder, kGuid, model.get());
+      ReplaceBookmarkNodeUuid(original_folder, kGuid, &model);
 
   // All data except for the UUID should be the same.
   EXPECT_EQ(kGuid, new_folder->uuid());

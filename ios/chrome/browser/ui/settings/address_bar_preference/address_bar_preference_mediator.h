@@ -17,7 +17,7 @@ class PrefService;
 @interface AddressBarPreferenceMediator
     : NSObject <AddressBarPreferenceServiceDelegate>
 
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithOriginalPrefService:(PrefService*)originalPrefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

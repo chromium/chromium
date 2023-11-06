@@ -489,8 +489,10 @@ IN_PROC_BROWSER_TEST_F(DlpFileSystemAccessMoveTest,
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
       browser()->profile(),
       base::BindLambdaForTesting(
-          [this](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-            auto rules_manager = std::make_unique<MockDlpRulesManager>();
+          [this](content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto rules_manager = std::make_unique<MockDlpRulesManager>(
+                Profile::FromBrowserContext(context));
             files_controller =
                 std::make_unique<MockDlpFilesController>(*rules_manager);
             ON_CALL(*rules_manager, IsFilesPolicyEnabled)

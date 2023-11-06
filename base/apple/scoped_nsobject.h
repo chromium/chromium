@@ -86,7 +86,7 @@ class scoped_nsobject : public scoped_nsprotocol<NST*> {
  public:
   using scoped_nsprotocol<NST*>::scoped_nsprotocol;
 
-  static_assert(std::is_same<NST, NSAutoreleasePool>::value == false,
+  static_assert(std::is_same_v<NST, NSAutoreleasePool> == false,
                 "Use @autoreleasepool instead");
 };
 

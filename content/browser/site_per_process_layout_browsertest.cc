@@ -2413,7 +2413,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Create touch move sequence with discrete touch moves. Include a brief
   // pause at the end to avoid the scroll flinging.
-  std::string actions_template = R"HTML(
+  static constexpr char kActionsTemplate[] = R"HTML(
       [{
         "source" : "touch",
         "actions" : [
@@ -2425,7 +2425,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       }]
   )HTML";
   std::string touch_move_sequence_json = base::StringPrintf(
-      actions_template.c_str(), scroll_start_location_in_screen.x(),
+      kActionsTemplate, scroll_start_location_in_screen.x(),
       scroll_start_location_in_screen.y(), scroll_end_location_in_screen.x(),
       scroll_end_location_in_screen.y());
   ASSERT_OK_AND_ASSIGN(

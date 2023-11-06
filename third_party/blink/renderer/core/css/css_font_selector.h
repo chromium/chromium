@@ -63,14 +63,14 @@ class CORE_EXPORT CSSFontSelector : public CSSFontSelectorBase {
   ExecutionContext* GetExecutionContext() const override {
     return tree_scope_ ? GetDocument().GetExecutionContext() : nullptr;
   }
-  FontFaceCache* GetFontFaceCache() override { return font_face_cache_; }
+  FontFaceCache* GetFontFaceCache() override { return font_face_cache_.Get(); }
 
   const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
     return generic_font_family_settings_;
   }
   void UpdateGenericFontFamilySettings(Document&);
 
-  const TreeScope* GetTreeScope() const { return tree_scope_; }
+  const TreeScope* GetTreeScope() const { return tree_scope_.Get(); }
   Document& GetDocument() const {
     DCHECK(tree_scope_);
     return tree_scope_->GetDocument();

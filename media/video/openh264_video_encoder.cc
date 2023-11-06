@@ -21,7 +21,7 @@ namespace media {
 
 namespace {
 
-EProfileIdc ToOpenH264Profile(media::VideoCodecProfile profile) {
+EProfileIdc ToOpenH264Profile(VideoCodecProfile profile) {
   switch (profile) {
     case media::H264PROFILE_BASELINE:
       return PRO_BASELINE;
@@ -34,7 +34,7 @@ EProfileIdc ToOpenH264Profile(media::VideoCodecProfile profile) {
   }
 }
 
-void SetUpOpenH264Params(media::VideoCodecProfile profile,
+void SetUpOpenH264Params(VideoCodecProfile profile,
                          const VideoEncoder::Options& options,
                          const VideoColorSpace& itu_cs,
                          SEncParamExt* params) {
@@ -42,7 +42,9 @@ void SetUpOpenH264Params(media::VideoCodecProfile profile,
   params->bEnableFrameSkip = false;
   params->iPaddingFlag = 0;
   params->iComplexityMode = MEDIUM_COMPLEXITY;
-  params->iUsageType = CAMERA_VIDEO_REAL_TIME;
+  params->iUsageType = options.content_hint == VideoEncoder::ContentHint::Screen
+                           ? SCREEN_CONTENT_REAL_TIME
+                           : CAMERA_VIDEO_REAL_TIME;
   params->bEnableDenoise = false;
   params->eSpsPpsIdStrategy = SPS_LISTING;
   params->iMultipleThreadIdc = threads;
@@ -85,6 +87,17 @@ void SetUpOpenH264Params(media::VideoCodecProfile profile,
                      << GetScalabilityModeName(
                             options.scalability_mode.value());
     }
+  }
+
+  if (options.content_hint == VideoEncoder::ContentHint::Screen &&
+      num_temporal_layers > 2) {
+    // Currently, OpenH264 only supports up to 2 temporal layers for screen
+    // content. Otherwise,
+    // https://github.com/cisco/openh264/blob/6a6cb82eef8e83bc52bafab21e996f5d3e211eb4/codec/encoder/core/src/ref_list_mgr_svc.cpp#L650
+    // triggers an assert.
+    // See https://bugs.webrtc.org/15582 for more details.
+    LOG(ERROR) << "Screen content only supports up to 2 temporal layers.";
+    params->iUsageType = CAMERA_VIDEO_REAL_TIME;
   }
 
   params->iTemporalLayerNum = num_temporal_layers;

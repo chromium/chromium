@@ -32,6 +32,20 @@ reviewer.
   <variant name="Server" summary="server-side"/>
 </variants>
 
+<histogram name="Privacy.3pcd.Experiment3pcBlockStatusHistogram"
+    enum="Experiment3pcBlockStatus" expires_after="2024-07-01">
+  <owner>trishalfonso@google.com</owner>
+  <owner>src/chrome/browser/tpcd/OWNERS</owner>
+  <summary>
+    Records the state of 3P cookie enablement in relation to the requested 3P
+    cookie usage for the 3P cookie deprecation experiment when the 3P cookie
+    deprecation experiment is enabled.
+
+    Recorded for each main-frame navigation when that navigation commits. Only
+    counts HTTP or HTTPS URLs and ignores downloads.
+  </summary>
+</histogram>
+
 <histogram name="Privacy.3pcd.ProfileEligibilityMismatch"
     enum="ProfileEligibilityMismatch" expires_after="2024-07-01">
   <owner>trishalfonso@google.com</owner>
@@ -249,7 +263,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -274,7 +288,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -288,7 +302,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -297,7 +311,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -312,7 +326,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -322,7 +336,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.DatabaseSize" units="KB"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>wanderview@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -351,7 +365,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.DIPS.Deletion{DIPSCookieMode}"
-    enum="DIPSDeletionAction" expires_after="2024-02-20">
+    enum="DIPSDeletionAction" expires_after="2024-04-28">
   <owner>njeunje@chromium.org</owner>
   <owner>src/chrome/browser/dips/OWNERS</owner>
   <summary>
@@ -428,7 +442,7 @@ reviewer.
 </histogram>
 
 <histogram name="Privacy.QuickDelete" enum="QuickDeleteAction"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>roagarwal@chromium.org</owner>
   <owner>eokoyomon@chromium.org</owner>
   <owner>fsenra@google.com</owner>
@@ -511,7 +525,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.KeyFetcher.Status2"
     enum="PrivacySandboxAggregationServiceKeyFetcherStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -521,7 +535,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.ReportAssembler.Status"
     enum="PrivacySandboxAggregationServiceReportAssemblerStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -533,7 +547,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.AggregationService.ReportSender.HttpResponseOrNetErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-11">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -545,7 +559,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.ReportSender.Status"
     enum="PrivacySandboxAggregationServiceReportSenderStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -616,7 +630,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.CreationTime2"
-    units="ms" expires_after="2024-02-11">
+    units="ms" expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -629,7 +643,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.AggregationService.Storage.Sql.InitStatus"
     enum="PrivacySandboxAggregationServiceStorageSqlInitStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -663,7 +677,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.Attestations.EstimateMemoryUsage.AttestationsMap"
-    units="KB" expires_after="M122">
+    units="KB" expires_after="2024-04-28">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -711,7 +725,7 @@ reviewer.
 </histogram>
 
 <histogram name="PrivacySandbox.Attestations.InitializationDuration.Parsing"
-    units="ms" expires_after="M122">
+    units="ms" expires_after="2024-04-28">
   <owner>shivanisha@chromium.org</owner>
   <owner>xiaochenzh@chromium.org</owner>
   <summary>
@@ -724,17 +738,44 @@ reviewer.
 </histogram>
 
 <histogram
-    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ProfileEligibility"
+    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForComputedEligibilityForProfile"
     enum="CookieDeprecationFacilitatedTestingProfileEligibility"
     expires_after="2024-10-25">
   <owner>anthonygarant@chromium.org</owner>
   <owner>linan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
-    Records the profile eligibility to cookie deprecation facilitated testing.
+    Records a profile computed eligibility to cookie deprecation facilitated
+    testing.
 
-    The metric is only recorded when the client eligibility has not been
-    determined and then the profile eligibility is computed.
+    Recorded each time a profile is first loaded in a browser session.
+
+    We define the computed eligibility as the actual eligibility of the profile
+    regardless of the profile's used/effective eligibility.
+
+    There might be a mismatches between the computed and used/effective
+    eligibility of a profile as all profiles on a client share a single
+    eligibility value.
+
+    For data on mismatches, see: Privacy.3pcd.ProfileEligibilityMismatch.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.CookieDeprecationFacilitatedTesting.ReasonForEligibilityStoredInPrefs"
+    enum="CookieDeprecationFacilitatedTestingProfileEligibility"
+    expires_after="2024-10-25">
+  <owner>anthonygarant@chromium.org</owner>
+  <owner>linan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the profile's computed eligibility which was used to set the
+    client's eligibility to cookie deprecation facilitated testing.
+
+    Once set, the eligibility is stored in the pref service local state.
+
+    For a given client, the metric will not be recorded again so long as the set
+    eligibility is available from the pref service local state.
   </summary>
 </histogram>
 
@@ -757,7 +798,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.Budgeter.NumReportingOriginsStoredPerSite"
-    units="counts" expires_after="2024-02-20">
+    units="counts" expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -784,7 +825,7 @@ reviewer.
 
 <histogram
     name="PrivacySandbox.PrivateAggregation.BudgetStorage.BeginInitializationCount"
-    units="units" expires_after="2024-02-20">
+    units="units" expires_after="2024-04-28">
   <owner>anthonygarant@chromium.org</owner>
   <owner>alexmt@chromium.org</owner>
   <summary>
@@ -803,7 +844,7 @@ reviewer.
 
 <histogram name="PrivacySandbox.PrivateAggregation.BudgetStorage.InitStatus"
     enum="PrivacySandboxPrivateAggregationBudgetStorageInitStatus"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>alexmt@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
   <summary>
@@ -897,6 +938,105 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.TrackingProtection.NoticeService.IsObservingTabStripModel"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the tab strip model is being observed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Offboarding.NoticeServiceEvent"
+    enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records different events, such as tab changes, navigation finishing, and
+    browser type being non normal, that occur in the notice service during
+    offboarding for 3PCD.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeActionAckowledge"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the NoticeActionTaken function marked
+    the user to have acknowledged the onboarding notice.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.DidNoticeShownOnboard"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the NoticeShown function changed the
+    user from eligible to onboarded.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.EligibleToOnboardedDuration"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes while being eligible up till onboarding to
+    3PCD. This occurs once during the process of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.LastShownToAckedDuration"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes to acknowledge the notice from the last time
+    it was shown. This occurs once during the process of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MarkedEligibleDueToForcedFlag"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not status was marked eligible due to the
+    forced eligibility flag.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkEligible"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the MaybeMarkEligible function changed
+    the user to eligible.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.MaybeMarkIneligible"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records a boolean for whether or not the MaybeMarkIneligible function
+    changed the user to ineligible.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.TrackingProtection.Onboarding.NoticeControllerEvent"
     enum="TrackingProtectionNoticeControllerEvent" expires_after="2024-09-01">
   <owner>tommasin@chromium.org</owner>
@@ -910,8 +1050,102 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.NoticeServiceEvent"
+    enum="TrackingProtectionMetricsNoticeEvent" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records different events, such as tab changes, navigation finishing, and
+    browser type being non normal, that occur in the notice service during
+    onboarding for 3PCD.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.Onboarding.OnboardedToAckedDuration"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time it takes to acknowledge the notice for 3PCD after being
+    onboarded. This occurs once during the process of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.EligibleToOnboardedDuration"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the duration it takes while being eligible up till onboarding to
+    3PCD. This occurs once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.TrackingProtection.OnboardingStartup.State"
+    enum="OnboardingStartupState" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the state on startup of being onboarded to 3PCD. This occurs once
+    per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToAckSince"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time it takes to acknowledge the notice for 3PCD after being
+    onboarded. This occurs once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.WaitingToOnboardSince"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time it takes while waiting to be onboarded to 3PCD. This occurs
+    once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.SentimentSurvey.HatsGroupRegisteredAndEligible"
+    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the group that the profile is part of in RunHatsLogic function
+    before the ProbabilityCheck.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.Registered"
+    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the group that the profile is registered to for the sentiment
+    survey. This occurs once per profile.
+  </summary>
+</histogram>
+
+<histogram name="PrivacySandbox.TrackingProtection.SentimentSurvey.WasSurveyed"
+    enum="Boolean" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>Records whether that the profile responded to the survey.</summary>
+</histogram>
+
 <histogram name="PrivacySandbox.{ApiType}" enum="PrivacySandboxApiAllowed"
-    expires_after="M122">
+    expires_after="2024-04-28">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>sauski@chromium.org</owner>

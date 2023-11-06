@@ -14,7 +14,6 @@
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/debug/debugging_buildflags.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/gtest_prod_util.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
@@ -240,6 +239,16 @@ class ReentrancyGuard {
 // thread.
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
  public:
+  struct Bucket {
+    internal::EncodedNextFreelistEntry* freelist_head = nullptr;
+    // Want to keep sizeof(Bucket) small, using small types.
+    uint8_t count = 0;
+    std::atomic<uint8_t> limit{};  // Can be changed from another thread.
+    uint16_t slot_size = 0;
+
+    Bucket();
+  };
+
   // Initializes the thread cache for |root|. May allocate, so should be called
   // with the thread cache disabled on the partition side, and without the
   // partition lock held.
@@ -367,6 +376,12 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
       ThreadCacheLimits::kDefaultSizeThreshold;
   static constexpr size_t kLargeSizeThreshold =
       ThreadCacheLimits::kLargeSizeThreshold;
+  static constexpr uint16_t kBucketCount =
+      internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
+      1;
+  static_assert(
+      kBucketCount < internal::kNumBuckets,
+      "Cannot have more cached buckets than what the allocator supports");
 
   const ThreadCache* prev_for_testing() const
       PA_EXCLUSIVE_LOCKS_REQUIRED(ThreadCacheRegistry::GetLock()) {
@@ -377,19 +392,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     return next_;
   }
 
+  ThreadCacheStats& stats_for_testing() { return stats_; }
+
+  Bucket& bucket_for_testing(size_t index) { return buckets_[index]; }
+  void ClearBucketForTesting(Bucket& bucket, size_t limit) {
+    ClearBucket(bucket, limit);
+  }
+
  private:
   friend class tools::HeapDumper;
   friend class tools::ThreadCacheInspector;
 
-  struct Bucket {
-    internal::EncodedNextFreelistEntry* freelist_head = nullptr;
-    // Want to keep sizeof(Bucket) small, using small types.
-    uint8_t count = 0;
-    std::atomic<uint8_t> limit{};  // Can be changed from another thread.
-    uint16_t slot_size = 0;
-
-    Bucket();
-  };
   static_assert(sizeof(Bucket) <= 2 * sizeof(void*), "Keep Bucket small.");
 
   explicit ThreadCache(PartitionRoot* root);
@@ -411,13 +424,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   template <bool crash_on_corruption>
   void FreeAfter(internal::EncodedNextFreelistEntry* head, size_t slot_size);
   static void SetGlobalLimits(PartitionRoot* root, float multiplier);
-
-  static constexpr uint16_t kBucketCount =
-      internal::BucketIndexLookup::GetIndex(ThreadCache::kLargeSizeThreshold) +
-      1;
-  static_assert(
-      kBucketCount < internal::kNumBuckets,
-      "Cannot have more cached buckets than what the allocator supports");
 
   // On some architectures, ThreadCache::Get() can be called and return
   // something after the thread cache has been destroyed. In this case, we set
@@ -465,29 +471,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;
   friend class tools::ThreadCacheInspector;
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, Simple);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              MultipleObjectsCachedPerBucket);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              LargeAllocationsAreNotCached);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              MultipleThreadCaches);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, RecordStats);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              ThreadCacheRegistry);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              MultipleThreadCachesAccounting);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              DynamicCountPerBucket);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              DynamicCountPerBucketClamping);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              DynamicCountPerBucketMultipleThreads);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              DynamicSizeThreshold);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest,
-                              DynamicSizeThresholdPurge);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
 PA_ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,

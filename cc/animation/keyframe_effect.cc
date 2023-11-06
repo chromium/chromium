@@ -251,10 +251,20 @@ void KeyframeEffect::AddKeyframeModel(
       keyframe_models(), [&](const auto& existing_keyframe_model) {
         auto* cc_existing_keyframe_model =
             KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
-        return keyframe_model->TargetProperty() ==
-                   existing_keyframe_model->TargetProperty() &&
-               cc_keyframe_model->group() ==
-                   cc_existing_keyframe_model->group();
+        bool same_group_and_target =
+            keyframe_model->TargetProperty() ==
+                existing_keyframe_model->TargetProperty() &&
+            cc_keyframe_model->group() == cc_existing_keyframe_model->group();
+        // Keyframe models in the same group might target the same property
+        // if one or both is an outgoing animation (i.e. about to be
+        // removed).
+        bool both_active =
+            cc_keyframe_model->affects_active_elements() &&
+            cc_existing_keyframe_model->affects_active_elements();
+        bool both_pending =
+            cc_keyframe_model->affects_pending_elements() &&
+            cc_existing_keyframe_model->affects_pending_elements();
+        return same_group_and_target && (both_active || both_pending);
       }));
 
   if (keyframe_model->TargetProperty() == TargetProperty::SCROLL_OFFSET) {
@@ -389,6 +399,13 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
   bool dispatched = false;
   switch (event.type) {
     case AnimationEvent::Type::kStarted:
+      if (!keyframe_model) {
+        KeyframeModel* replacement = KeyframeModel::ToCcKeyframeModel(
+            GetKeyframeModel(event.target_property));
+        if (replacement && replacement->group() == event.group_id) {
+          keyframe_model = replacement;
+        }
+      }
       if (keyframe_model && keyframe_model->needs_synchronized_start_time()) {
         keyframe_model->set_needs_synchronized_start_time(false);
         if (!keyframe_model->has_set_start_time())
@@ -700,7 +717,9 @@ void KeyframeEffect::RemoveKeyframeModelsCompletedOnMainThread(
     element_animations_->SetNeedsPushProperties();
 }
 
-void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
+void KeyframeEffect::PushPropertiesTo(
+    KeyframeEffect* keyframe_effect_impl,
+    absl::optional<base::TimeTicks> replaced_start_time) {
   if (!needs_push_properties_)
     return;
   needs_push_properties_ = false;
@@ -729,6 +748,12 @@ void KeyframeEffect::PushPropertiesTo(KeyframeEffect* keyframe_effect_impl) {
   if (!has_any_keyframe_model() &&
       !keyframe_effect_impl->has_any_keyframe_model())
     return;
+
+  if (replaced_start_time) {
+    for (auto& km : keyframe_models()) {
+      km->set_start_time(*replaced_start_time);
+    }
+  }
 
   // Synchronize the main-thread and impl-side keyframe model lists, removing
   // aborted KeyframeModels and pushing any new animations.

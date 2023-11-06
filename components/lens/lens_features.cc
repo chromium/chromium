@@ -38,10 +38,6 @@ BASE_FEATURE(kEnableImageSearchSidePanelFor3PDse,
              "EnableImageSearchSidePanelFor3PDse",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensRegionSearchStaticPage,
-             "LensRegionSearchStaticPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensImageFormatOptimizations,
              "LensImageFormatOptimizations",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -84,6 +80,9 @@ constexpr base::FeatureParam<bool> kShouldIssuePreconnectForLens{
 constexpr base::FeatureParam<std::string> kPreconnectKeyForLens{
     &kLensStandalone, "lens-preconnect-key", "https://google.com"};
 
+constexpr base::FeatureParam<bool> kShouldIssueProcessPrewarmingForLens{
+    &kLensStandalone, "lens-issue-process-prewarming", true};
+
 constexpr base::FeatureParam<bool> kDismissLoadingStateOnDidFinishLoad{
     &kLensStandalone, "dismiss-loading-state-on-did-finish-load", false};
 
@@ -101,9 +100,6 @@ constexpr base::FeatureParam<int> kMaxPixelsForImageSearch{
 
 const base::FeatureParam<bool> kEnableLensFullscreenSearch{
     &kLensSearchOptimizations, "enable-lens-fullscreen-search", false};
-
-const base::FeatureParam<bool> kLensContextMenuUseAlternateText{
-    &kLensSearchOptimizations, "use-lens-context-menu-alternate-text", false};
 
 const base::FeatureParam<int> kEncodingQualityJpeg{
     &kLensImageFormatOptimizations, "encoding-quality-jpeg", 40};
@@ -187,20 +183,6 @@ bool IsLensSidePanelEnabled() {
   return base::FeatureList::IsEnabled(kLensStandalone);
 }
 
-bool IsLensSidePanelEnabledForRegionSearch() {
-  return IsLensSidePanelEnabled() && !IsLensFullscreenSearchEnabled();
-}
-
-bool IsLensRegionSearchStaticPageEnabled() {
-  return base::FeatureList::IsEnabled(kLensRegionSearchStaticPage);
-}
-
-bool UseLensContextMenuItemAlternateText() {
-  return base::FeatureList::IsEnabled(kLensStandalone) &&
-         base::FeatureList::IsEnabled(kLensSearchOptimizations) &&
-         kLensContextMenuUseAlternateText.Get();
-}
-
 int GetEncodingQualityJpeg() {
   return kEncodingQualityJpeg.Get();
 }
@@ -241,6 +223,10 @@ bool GetShouldIssuePreconnectForLens() {
 
 std::string GetPreconnectKeyForLens() {
   return kPreconnectKeyForLens.Get();
+}
+
+bool GetShouldIssueProcessPrewarmingForLens() {
+  return kShouldIssueProcessPrewarmingForLens.Get();
 }
 
 }  // namespace features

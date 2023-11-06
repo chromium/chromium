@@ -42,56 +42,56 @@ constexpr base::FeatureParam<std::string> kPreloadingConfigParam{
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
+  "preloading_predictor": "SpeculationRules",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "NoStatePrefetch",
+  "preloading_predictor": "OmniboxDirectURLInput",
+  "sampling_likelihood": 1.000000
+}, {
+  "preloading_type": "Prerender",
   "preloading_predictor": "PointerDownOnBookmarkBar",
   "sampling_likelihood": 1.000000
 }, {
   "preloading_type": "Prerender",
-  "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "NoStatePrefetch",
-  "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 1.000000
-}, {
-  "preloading_type": "Prerender",
   "preloading_predictor": "MouseHoverOnBookmarkBar",
-  "sampling_likelihood": 0.928087
-}, {
-  "preloading_type": "Prerender",
-  "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.762589
+  "sampling_likelihood": 0.501609
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackGestureNavigation",
-  "sampling_likelihood": 0.334136
+  "sampling_likelihood": 0.444169
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "MouseBackButton",
-  "sampling_likelihood": 0.111881
+  "sampling_likelihood": 0.147112
+}, {
+  "preloading_type": "Prerender",
+  "preloading_predictor": "DefaultSearchEngine",
+  "sampling_likelihood": 0.134034
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "DefaultSearchEngine",
-  "sampling_likelihood": 0.023220
+  "sampling_likelihood": 0.030895
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "OmniboxDirectURLInput",
-  "sampling_likelihood": 0.013281
+  "sampling_likelihood": 0.015387
 }, {
   "preloading_type": "Prerender",
   "preloading_predictor": "BackButtonHover",
-  "sampling_likelihood": 0.010158
+  "sampling_likelihood": 0.013294
 }, {
   "preloading_type": "NoStatePrefetch",
   "preloading_predictor": "LinkRel",
-  "sampling_likelihood": 0.008495
+  "sampling_likelihood": 0.010198
 }, {
   "preloading_type": "Prefetch",
   "preloading_predictor": "SpeculationRules",
-  "sampling_likelihood": 0.004013
+  "sampling_likelihood": 0.005237
 }, {
   "preloading_type": "Preconnect",
   "preloading_predictor": "PointerDownOnAnchor",
-  "sampling_likelihood": 0.000190
+  "sampling_likelihood": 0.000240
 }]
 )"};
 

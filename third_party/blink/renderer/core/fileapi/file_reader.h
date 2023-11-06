@@ -74,7 +74,7 @@ class CORE_EXPORT FileReader final : public EventTarget,
   void abort();
 
   ReadyState getReadyState() const { return state_; }
-  DOMException* error() { return error_; }
+  DOMException* error() { return error_.Get(); }
   V8UnionArrayBufferOrString* result() const;
   probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
 

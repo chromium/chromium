@@ -38,8 +38,8 @@ std::unique_ptr<SyncItem> MakeSyncItem(
     const std::string& id,
     const syncer::StringOrdinal& pin_ordinal,
     absl::optional<bool> is_user_pinned = absl::nullopt) {
-  auto item =
-      std::make_unique<SyncItem>(id, sync_pb::AppListSpecifics::TYPE_APP);
+  auto item = std::make_unique<SyncItem>(
+      id, sync_pb::AppListSpecifics::TYPE_APP, /*is_new=*/false);
   item->item_pin_ordinal = pin_ordinal;
   item->is_user_pinned = is_user_pinned;
   return item;

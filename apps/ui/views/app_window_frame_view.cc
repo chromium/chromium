@@ -7,13 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "chrome/grit/theme_resources.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/common/draggable_region.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
@@ -22,6 +20,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
 #include "ui/views/controls/button/image_button.h"
@@ -30,7 +29,11 @@
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS)
+const int kCaptionHeight = 30;
+#else
 const int kCaptionHeight = 25;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -121,6 +124,15 @@ void AppWindowFrameView::SetResizeSizes(int resize_inside_bounds_size,
   resize_inside_bounds_size_ = resize_inside_bounds_size;
   resize_outside_bounds_size_ = resize_outside_bounds_size;
   resize_area_corner_size_ = resize_area_corner_size;
+}
+
+void AppWindowFrameView::SetFrameCornerRadius(int radius) {
+  if (radius == frame_corner_radius_) {
+    return;
+  }
+
+  frame_corner_radius_ = radius;
+  SchedulePaint();
 }
 
 // views::NonClientFrameView implementation.
@@ -242,11 +254,17 @@ void AppWindowFrameView::Layout() {
   if (!draw_frame_)
     return;
 
-  gfx::Size close_size = close_button_->GetPreferredSize();
+#if BUILDFLAG(IS_CHROMEOS)
+  const int kButtonOffsetY = 4;
+  const int kButtonSpacing = 1;
+  const int kRightMargin = 12;
+#else
   const int kButtonOffsetY = 0;
   const int kButtonSpacing = 1;
   const int kRightMargin = 3;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
+  gfx::Size close_size = close_button_->GetPreferredSize();
   close_button_->SetBounds(width() - kRightMargin - close_size.width(),
                            kButtonOffsetY,
                            close_size.width(),
@@ -300,16 +318,28 @@ void AppWindowFrameView::OnPaint(gfx::Canvas* canvas) {
   }
 
   SetButtonImagesForFrame();
+
   // TODO(benwells): different look for inactive by default.
   cc::PaintFlags flags;
-  flags.setAntiAlias(false);
+  flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(CurrentFrameColor());
+
   SkPath path;
-  path.moveTo(0, 0);
-  path.lineTo(width(), 0);
-  path.lineTo(width(), kCaptionHeight);
-  path.lineTo(0, kCaptionHeight);
+
+  const SkScalar sk_corner_radius = SkIntToScalar(frame_corner_radius_);
+  const SkScalar radii[8] = {sk_corner_radius,
+                             sk_corner_radius,  // top-left
+                             sk_corner_radius,
+                             sk_corner_radius,  // top-right
+                             0,
+                             0,  // bottom-right
+                             0,
+                             0};  // bottom-left
+
+  gfx::Rect frame_bounds(0, 0, width(), kCaptionHeight);
+  path.addRoundRect(gfx::RectToSkRect(frame_bounds), radii,
+                    SkPathDirection::kCW);
   path.close();
   canvas->DrawPath(path, flags);
 }

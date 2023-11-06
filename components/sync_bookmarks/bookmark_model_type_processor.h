@@ -21,10 +21,6 @@
 
 class BookmarkUndoService;
 
-namespace bookmarks {
-class BookmarkModel;
-}
-
 namespace favicon {
 class FaviconService;
 }
@@ -32,6 +28,7 @@ class FaviconService;
 namespace sync_bookmarks {
 
 class BookmarkModelObserverImpl;
+class BookmarkModelView;
 
 class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
                                    public syncer::ModelTypeControllerDelegate {
@@ -88,7 +85,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // metadata.
   void ModelReadyToSync(const std::string& metadata_str,
                         const base::RepeatingClosure& schedule_save_closure,
-                        bookmarks::BookmarkModel* model);
+                        BookmarkModelView* model);
 
   // Sets the favicon service used when processing remote updates. It must be
   // called before the processor is ready to receive remote updates, and hence
@@ -132,7 +129,6 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // of metadata fields managed by the processor but only those tracked by the
   // bookmark tracker.
   void StartTrackingMetadata();
-  void StopTrackingMetadata();
 
   // Resets bookmark tracker in addition to stopping metadata tracking. Note
   // that unlike StopTrackingMetadata(), this does not disconnect sync and
@@ -159,8 +155,8 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // The bookmark model we are processing local changes from and forwarding
   // remote changes to. It is set during ModelReadyToSync(), which is called
   // during startup, as part of the bookmark-loading process.
-  raw_ptr<bookmarks::BookmarkModel, AcrossTasksDanglingUntriaged>
-      bookmark_model_ = nullptr;
+  raw_ptr<BookmarkModelView, AcrossTasksDanglingUntriaged> bookmark_model_ =
+      nullptr;
 
   // Used to when processing remote updates to apply favicon information. It's
   // not set at start up because it's only avialable after the bookmark model

@@ -28,7 +28,6 @@
 
 using password_manager::PasswordFormManagerForUI;
 using password_manager::PasswordManagerMetricsRecorder;
-using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
 using password_manager::SyncState;
 
@@ -158,7 +157,8 @@ void WebViewPasswordManagerClient::FocusedInputChanged(
 }
 
 void WebViewPasswordManagerClient::AutomaticPasswordSave(
-    std::unique_ptr<PasswordFormManagerForUI> saved_form_manager) {
+    std::unique_ptr<PasswordFormManagerForUI> saved_form_manager,
+    bool is_update_confirmation) {
   NOTIMPLEMENTED();
 }
 

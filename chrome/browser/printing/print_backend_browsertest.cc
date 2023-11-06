@@ -142,6 +142,10 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     InProcessBrowserTest::TearDown();
     PrintingContext::SetPrintingContextFactoryForTest(/*factory=*/nullptr);
     PrintBackend::SetPrintBackendForTesting(/*print_backend=*/nullptr);
+  }
+
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
     PrintBackendServiceManager::ResetForTesting();
   }
 

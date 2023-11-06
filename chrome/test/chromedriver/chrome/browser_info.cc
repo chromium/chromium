@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/json/json_reader.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -118,8 +119,7 @@ Status BrowserInfo::ParseBrowserString(bool has_android_package,
 
     if (build_no != 0) {
       if (headless_shell) {
-        browser_info->browser_name =
-            base::StringPrintf("headless %s", kBrowserCapabilityName);
+        browser_info->browser_name = kHeadlessShellCapabilityName;
         browser_info->is_headless_shell = true;
       } else {
         browser_info->browser_name = kBrowserCapabilityName;
@@ -188,9 +188,9 @@ Status BrowserInfo::ParseBlinkVersionString(const std::string& blink_version,
 }
 
 bool BrowserInfo::IsGitHash(const std::string& revision) {
-  const int kShortGitHashLength = 7;
-  const int kFullGitHashLength = 40;
-  return kShortGitHashLength <= revision.size()
-      && revision.size() <= kFullGitHashLength
-      && base::ContainsOnlyChars(revision, "0123456789abcdefABCDEF");
+  constexpr int kShortGitHashLength = 7;
+  constexpr int kFullGitHashLength = 40;
+  return kShortGitHashLength <= revision.size() &&
+         revision.size() <= kFullGitHashLength &&
+         base::ranges::all_of(revision, base::IsHexDigit<char>);
 }

@@ -47,6 +47,9 @@ class CrxCache : public base::RefCountedThreadSafe<CrxCache> {
     base::FilePath crx_cache_path;
   };
 
+  // Returns true if the specified CRX is already cached.
+  bool Contains(const std::string& id, const std::string& fp);
+
   // Requests a lookup of the previous CRX for the requested component given
   // `id` and `fp`.
   void Get(const std::string& id,

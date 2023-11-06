@@ -21,7 +21,7 @@ found in the LICENSE file.
         android:layout_gravity="center"
         android:visibility="gone"
         android:importantForAccessibility="no" />
-    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    <org.chromium.ui.listmenu.ListMenuButton
         android:layout_width="match_parent"
         android:scaleType="fitStart"
         android:id="@+id/optional_toolbar_button"

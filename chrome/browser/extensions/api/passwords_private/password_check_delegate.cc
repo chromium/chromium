@@ -39,7 +39,6 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/content/browser/password_change_success_tracker_factory.h"
 #include "components/password_manager/core/browser/affiliation/affiliation_utils.h"
-#include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
@@ -148,25 +147,25 @@ api::passwords_private::PasswordCheckState ConvertPasswordCheckState(
     State state) {
   switch (state) {
     case State::kIdle:
-      return api::passwords_private::PASSWORD_CHECK_STATE_IDLE;
+      return api::passwords_private::PasswordCheckState::kIdle;
     case State::kRunning:
-      return api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
+      return api::passwords_private::PasswordCheckState::kRunning;
     case State::kCanceled:
-      return api::passwords_private::PASSWORD_CHECK_STATE_CANCELED;
+      return api::passwords_private::PasswordCheckState::kCanceled;
     case State::kSignedOut:
-      return api::passwords_private::PASSWORD_CHECK_STATE_SIGNED_OUT;
+      return api::passwords_private::PasswordCheckState::kSignedOut;
     case State::kNetworkError:
-      return api::passwords_private::PASSWORD_CHECK_STATE_OFFLINE;
+      return api::passwords_private::PasswordCheckState::kOffline;
     case State::kQuotaLimit:
-      return api::passwords_private::PASSWORD_CHECK_STATE_QUOTA_LIMIT;
+      return api::passwords_private::PasswordCheckState::kQuotaLimit;
     case State::kTokenRequestFailure:
     case State::kHashingFailure:
     case State::kServiceError:
-      return api::passwords_private::PASSWORD_CHECK_STATE_OTHER_ERROR;
+      return api::passwords_private::PasswordCheckState::kOtherError;
   }
 
   NOTREACHED();
-  return api::passwords_private::PASSWORD_CHECK_STATE_NONE;
+  return api::passwords_private::PasswordCheckState::kNone;
 }
 
 std::string FormatElapsedTime(base::Time time) {
@@ -184,16 +183,16 @@ std::vector<api::passwords_private::CompromiseType> GetCompromiseType(
   for (const auto& issue : entry.password_issues) {
     switch (issue.first) {
       case InsecureType::kLeaked:
-        types.push_back(api::passwords_private::COMPROMISE_TYPE_LEAKED);
+        types.push_back(api::passwords_private::CompromiseType::kLeaked);
         break;
       case InsecureType::kPhished:
-        types.push_back(api::passwords_private::COMPROMISE_TYPE_PHISHED);
+        types.push_back(api::passwords_private::CompromiseType::kPhished);
         break;
       case InsecureType::kReused:
-        types.push_back(api::passwords_private::COMPROMISE_TYPE_REUSED);
+        types.push_back(api::passwords_private::CompromiseType::kReused);
         break;
       case InsecureType::kWeak:
-        types.push_back(api::passwords_private::COMPROMISE_TYPE_WEAK);
+        types.push_back(api::passwords_private::CompromiseType::kWeak);
         break;
     }
   }
@@ -207,7 +206,8 @@ api::passwords_private::CompromisedInfo CreateCompromiseInfo(
   // Weak credentials don't have compromise time, they also can't be muted.
   if (IsCompromised(credential)) {
     compromise_info.compromise_time =
-        credential.GetLastLeakedOrPhishedTime().ToJsTimeIgnoringNull();
+        credential.GetLastLeakedOrPhishedTime()
+            .InMillisecondsFSinceUnixEpochIgnoringNull();
     compromise_info.elapsed_time_since_compromise =
         FormatElapsedTime(credential.GetLastLeakedOrPhishedTime());
     compromise_info.is_muted = credential.IsMuted();
@@ -373,7 +373,7 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
 
   // Handle the currently running case first, only then consider errors.
   if (state == State::kRunning) {
-    result.state = api::passwords_private::PASSWORD_CHECK_STATE_RUNNING;
+    result.state = api::passwords_private::PasswordCheckState::kRunning;
 
     if (password_check_progress_) {
       result.already_processed = password_check_progress_->already_processed();
@@ -388,7 +388,7 @@ PasswordCheckDelegate::GetPasswordCheckStatus() const {
   }
 
   if (result.total_number_of_passwords == 0) {
-    result.state = api::passwords_private::PASSWORD_CHECK_STATE_NO_PASSWORDS;
+    result.state = api::passwords_private::PasswordCheckState::kNoPasswords;
     return result;
   }
 
@@ -460,7 +460,7 @@ void PasswordCheckDelegate::
     RecordAndNotifyAboutCompletedCompromisedPasswordCheck() {
   profile_->GetPrefs()->SetDouble(
       password_manager::prefs::kLastTimePasswordCheckCompleted,
-      base::Time::Now().ToDoubleT());
+      base::Time::Now().InSecondsFSinceUnixEpoch());
   profile_->GetPrefs()->SetTime(
       password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
       base::Time::Now());

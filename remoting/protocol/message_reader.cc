@@ -48,7 +48,7 @@ void MessageReader::DoRead() {
   // Don't try to read again if there is another read pending or we
   // have messages that we haven't finished processing yet.
   while (!closed_ && !read_pending_) {
-    read_buffer_ = base::MakeRefCounted<net::IOBuffer>(kReadBufferSize);
+    read_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kReadBufferSize);
     int result = socket_->Read(
         read_buffer_.get(), kReadBufferSize,
         base::BindOnce(&MessageReader::OnRead, weak_factory_.GetWeakPtr()));

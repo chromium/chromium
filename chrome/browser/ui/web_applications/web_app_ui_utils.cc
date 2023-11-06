@@ -50,15 +50,15 @@ absl::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShowAppManagementPage(const webapps::AppId& app_id) {
+bool ShowAppManagementPageInAsh(const webapps::AppId& app_id) {
   auto* service = chromeos::LacrosService::Get();
   if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
     LOG(ERROR) << "AppServiceProxy not available.";
-    return;
+    return false;
   }
-
   service->GetRemote<crosapi::mojom::AppServiceProxy>()->ShowAppManagementPage(
       app_id);
+  return true;
 }
 #endif
 
@@ -91,12 +91,25 @@ bool HandleAppManagementLinkClickedInPageInfo(
       ash::settings::AppManagementEntryPoint::kPageInfoView);
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowAppManagementPage(*app_id);
-  return true;
+  return ShowAppManagementPageInAsh(*app_id);
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithTab(web_contents), *app_id,
                              AppSettingsPageEntryPoint::kPageInfoView);
   return true;
+#endif
+}
+
+void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
+                                 Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowAppManagementPageInAsh(parent_app_id);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  chrome::ShowAppManagementPage(
+      profile, parent_app_id,
+      ash::settings::AppManagementEntryPoint::kSubAppsInstallPrompt);
+#else
+  chrome::ShowWebAppSettings(profile, parent_app_id,
+                             AppSettingsPageEntryPoint::kSubAppsInstallPrompt);
 #endif
 }
 

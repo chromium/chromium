@@ -5,7 +5,7 @@
 source_set("chromium_photos") {
   sources = [ "chromium_photos.mm" ]
   deps = [
-    "//ios/chrome/browser/photos",
+    "//ios/chrome/browser/photos/model",
     "//ios/public/provider/chrome/browser/photos:photos_api",
   ]
 }

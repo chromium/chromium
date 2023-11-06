@@ -6,7 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/settings/tabs/tabs_settings_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_constants.h"
@@ -129,8 +129,8 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
       @"Inactive tabs preference is not set to default value.");
 
   // Mark the User Education screen as already-seen by default.
-  [ChromeEarlGrey setUserDefaultObject:@YES
-                                forKey:kInactiveTabsUserEducationShownOnceKey];
+  [ChromeEarlGrey setUserDefaultsObject:@YES
+                                 forKey:kInactiveTabsUserEducationShownOnceKey];
 }
 
 // Sets up the EmbeddedTestServer as needed for tests.
@@ -693,6 +693,16 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   // Check that Inactive Tabs Settings are open.
   [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsSettings()]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Dismiss the settings screen.
+  [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
+      performAction:grey_tap()];
+
+  // The Inactive Tabs grid should be visible again.
+  [[EarlGrey selectElementWithMatcher:GetMatcherForInactiveTabsGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Checks that changing settings when presented from the Inactive Tabs grid
@@ -784,7 +794,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
 
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
@@ -820,7 +830,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
   }
   // Reset the User-Education marker.
   [ChromeEarlGrey
-      removeUserDefaultObjectForKey:kInactiveTabsUserEducationShownOnceKey];
+      removeUserDefaultsObjectForKey:kInactiveTabsUserEducationShownOnceKey];
   // Set up one inactive tab.
   CreateRegularTabs(1, self.testServer);
   [self relaunchAppWithInactiveTabsEnabled];

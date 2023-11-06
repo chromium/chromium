@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/supervised_user/core/browser/supervised_user_service.h"
+#include <memory>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
@@ -28,6 +28,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,24 +39,7 @@ namespace supervised_user {
 
 SupervisedUserService::~SupervisedUserService() {
   DCHECK(!did_init_ || did_shutdown_);
-  url_filter_.RemoveObserver(this);
-}
-
-// static
-void SupervisedUserService::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterStringPref(prefs::kSupervisedUserId, std::string());
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualHosts);
-  registry->RegisterDictionaryPref(prefs::kSupervisedUserManualURLs);
-  registry->RegisterIntegerPref(prefs::kDefaultSupervisedUserFilteringBehavior,
-                                SupervisedUserURLFilter::ALLOW);
-  registry->RegisterBooleanPref(prefs::kSupervisedUserSafeSites, true);
-  for (const char* pref : kCustodianInfoPrefs) {
-    registry->RegisterStringPref(pref, std::string());
-  }
-  registry->RegisterIntegerPref(
-      prefs::kFirstTimeInterstitialBannerState,
-      static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
+  url_filter_->RemoveObserver(this);
 }
 
 void SupervisedUserService::Init() {
@@ -91,7 +75,12 @@ void SupervisedUserService::SetDelegate(Delegate* delegate) {
 }
 
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() {
-  return &url_filter_;
+  return url_filter_.get();
+}
+
+void SupervisedUserService::SetURLFilterForTesting(
+    std::unique_ptr<SupervisedUserURLFilter> test_filter) {
+  url_filter_ = std::move(test_filter);
 }
 
 // static
@@ -186,20 +175,11 @@ SupervisedUserService::SupervisedUserService(
       identity_manager_(identity_manager),
       kids_chrome_management_client_(kids_chrome_management_client),
       delegate_(nullptr),
-      url_filter_(std::move(check_webstore_url_callback),
-                  std::move(url_filter_delegate)),
       can_show_first_time_interstitial_banner_(
           can_show_first_time_interstitial_banner) {
-  url_filter_.AddObserver(this);
-}
-
-void SupervisedUserService::ReportNonDefaultWebFilterValue() const {
-  if (AreWebFilterPrefsDefault(*user_prefs_)) {
-    return;
-  }
-
-  url_filter_.ReportManagedSiteListMetrics();
-  url_filter_.ReportWebFilterTypeMetrics();
+  url_filter_ = std::make_unique<SupervisedUserURLFilter>(
+      std::move(check_webstore_url_callback), std::move(url_filter_delegate));
+  url_filter_->AddObserver(this);
 }
 
 FirstTimeInterstitialBannerState SupervisedUserService::GetUpdatedBannerState(
@@ -276,7 +256,7 @@ void SupervisedUserService::SetActive(bool active) {
     UpdateManualURLs();
 
     GetURLFilter()->SetFilterInitialized(true);
-    current_web_filter_type_ = url_filter_.GetWebFilterType();
+    current_web_filter_type_ = url_filter_->GetWebFilterType();
   } else {
     remote_web_approvals_manager_.ClearApprovalRequestsCreators();
 
@@ -289,7 +269,7 @@ void SupervisedUserService::SetActive(bool active) {
       pref_change_registrar_.Remove(pref);
     }
 
-    url_filter_.Clear();
+    url_filter_->Clear();
     for (SupervisedUserServiceObserver& observer : observer_list_) {
       observer.OnURLFilterChanged();
     }
@@ -313,9 +293,9 @@ void SupervisedUserService::OnSupervisedUserIdChanged() {
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
+  supervised_user::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
-  url_filter_.SetDefaultFilteringBehavior(behavior);
+  url_filter_->SetDefaultFilteringBehavior(behavior);
   UpdateAsyncUrlChecker();
 
   for (SupervisedUserServiceObserver& observer : observer_list_) {
@@ -323,10 +303,10 @@ void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   }
 
   SupervisedUserURLFilter::WebFilterType filter_type =
-      url_filter_.GetWebFilterType();
+      url_filter_->GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
-    url_filter_.ReportWebFilterTypeMetrics();
+    url_filter_->ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
 }
@@ -340,10 +320,10 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
   UpdateAsyncUrlChecker();
 
   SupervisedUserURLFilter::WebFilterType filter_type =
-      url_filter_.GetWebFilterType();
+      url_filter_->GetWebFilterType();
   if (!AreWebFilterPrefsDefault(*user_prefs_) &&
       current_web_filter_type_ != filter_type) {
-    url_filter_.ReportWebFilterTypeMetrics();
+    url_filter_->ReportWebFilterTypeMetrics();
     current_web_filter_type_ = filter_type;
   }
 }
@@ -351,18 +331,18 @@ void SupervisedUserService::OnSafeSitesSettingChanged() {
 void SupervisedUserService::UpdateAsyncUrlChecker() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  SupervisedUserURLFilter::FilteringBehavior behavior =
+  supervised_user::FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
 
   bool use_online_check =
       IsSafeSitesEnabled() ||
-      behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK;
+      behavior == supervised_user::FilteringBehavior::kBlock;
 
-  if (use_online_check != url_filter_.HasAsyncURLChecker()) {
+  if (use_online_check != url_filter_->HasAsyncURLChecker()) {
     if (use_online_check) {
-      url_filter_.InitAsyncURLChecker(kids_chrome_management_client_);
+      url_filter_->InitAsyncURLChecker(kids_chrome_management_client_);
     } else {
-      url_filter_.ClearAsyncURLChecker();
+      url_filter_->ClearAsyncURLChecker();
     }
   }
 }
@@ -375,14 +355,14 @@ void SupervisedUserService::UpdateManualHosts() {
     DCHECK(it.second.is_bool());
     host_map[it.first] = it.second.GetIfBool().value_or(false);
   }
-  url_filter_.SetManualHosts(std::move(host_map));
+  url_filter_->SetManualHosts(std::move(host_map));
 
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }
 
   if (!AreWebFilterPrefsDefault(*user_prefs_)) {
-    url_filter_.ReportManagedSiteListMetrics();
+    url_filter_->ReportManagedSiteListMetrics();
   }
 }
 
@@ -394,14 +374,14 @@ void SupervisedUserService::UpdateManualURLs() {
     DCHECK(it.second.is_bool());
     url_map[GURL(it.first)] = it.second.GetIfBool().value_or(false);
   }
-  url_filter_.SetManualURLs(std::move(url_map));
+  url_filter_->SetManualURLs(std::move(url_map));
 
   for (SupervisedUserServiceObserver& observer : observer_list_) {
     observer.OnURLFilterChanged();
   }
 
   if (!AreWebFilterPrefsDefault(*user_prefs_)) {
-    url_filter_.ReportManagedSiteListMetrics();
+    url_filter_->ReportManagedSiteListMetrics();
   }
 }
 

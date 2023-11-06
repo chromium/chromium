@@ -43,7 +43,7 @@ class XMLHttpRequestUpload final : public XMLHttpRequestEventTarget {
  public:
   explicit XMLHttpRequestUpload(XMLHttpRequest*);
 
-  XMLHttpRequest* XmlHttpRequest() const { return xml_http_request_; }
+  XMLHttpRequest* XmlHttpRequest() const { return xml_http_request_.Get(); }
 
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;

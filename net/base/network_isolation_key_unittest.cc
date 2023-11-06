@@ -467,8 +467,9 @@ TEST_P(NetworkIsolationKeyTest, CreateWithNewFrameSite) {
   }
 }
 
-TEST_P(NetworkIsolationKeyTest, CreateTransient) {
-  NetworkIsolationKey transient_key = NetworkIsolationKey::CreateTransient();
+TEST_P(NetworkIsolationKeyTest, CreateTransientForTesting) {
+  NetworkIsolationKey transient_key =
+      NetworkIsolationKey::CreateTransientForTesting();
   EXPECT_TRUE(transient_key.IsFullyPopulated());
   EXPECT_TRUE(transient_key.IsTransient());
   EXPECT_FALSE(transient_key.IsEmpty());
@@ -476,7 +477,7 @@ TEST_P(NetworkIsolationKeyTest, CreateTransient) {
 
   // Make sure that subsequent calls don't return the same NIK.
   for (int i = 0; i < 1000; ++i) {
-    EXPECT_NE(transient_key, NetworkIsolationKey::CreateTransient());
+    EXPECT_NE(transient_key, NetworkIsolationKey::CreateTransientForTesting());
   }
 }
 

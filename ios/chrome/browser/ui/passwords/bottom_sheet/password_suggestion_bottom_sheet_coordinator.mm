@@ -52,8 +52,12 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _passwordControllerDelegate = delegate;
+
+    WebStateList* webStateList = browser->GetWebStateList();
+    const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
     self.viewController = [[PasswordSuggestionBottomSheetViewController alloc]
-        initWithHandler:self];
+        initWithHandler:self
+                    URL:URL];
 
     ChromeBrowserState* browserState =
         browser->GetBrowserState()->GetOriginalChromeBrowserState();
@@ -64,9 +68,6 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
     auto accountPasswordStore =
         IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
             browserState, ServiceAccessType::EXPLICIT_ACCESS);
-
-    WebStateList* webStateList = browser->GetWebStateList();
-    const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
     self.reauthModule =
         ScopedPasswordSuggestionBottomSheetReauthModuleOverride::instance

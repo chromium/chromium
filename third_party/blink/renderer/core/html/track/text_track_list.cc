@@ -96,11 +96,11 @@ TextTrack* TextTrackList::AnonymousIndexedGetter(unsigned index) {
   // format specification.
 
   if (index < element_tracks_.size())
-    return element_tracks_[index];
+    return element_tracks_[index].Get();
 
   index -= element_tracks_.size();
   if (index < add_track_tracks_.size())
-    return add_track_tracks_[index];
+    return add_track_tracks_[index].Get();
 
   return nullptr;
 }
@@ -256,7 +256,7 @@ bool TextTrackList::HasShowingTracks() {
 }
 
 HTMLMediaElement* TextTrackList::Owner() const {
-  return owner_;
+  return owner_.Get();
 }
 
 void TextTrackList::Trace(Visitor* visitor) const {

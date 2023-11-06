@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "base/time/default_clock.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_util.h"
@@ -56,7 +57,8 @@ AuthSessionAuthenticator::AuthSessionAuthenticator(
       auth_factor_editor_(
           std::make_unique<AuthFactorEditor>(UserDataAuthClient::Get())),
       auth_performer_(
-          std::make_unique<AuthPerformer>(UserDataAuthClient::Get())),
+          std::make_unique<AuthPerformer>(UserDataAuthClient::Get(),
+                                          base::DefaultClock::GetInstance())),
       mount_performer_(std::make_unique<MountPerformer>()),
       local_state_(local_state) {
   DCHECK(safe_mode_delegate_);

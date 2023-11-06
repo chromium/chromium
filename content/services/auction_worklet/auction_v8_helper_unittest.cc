@@ -1463,7 +1463,7 @@ TEST_F(AuctionV8HelperTest, CloneWasmModule) {
   EXPECT_FALSE(error_msg.has_value());
 
   // Run the script a couple of times passing in the same module.
-  std::vector<v8::Local<v8::Value>> args;
+  v8::LocalVector<v8::Value> args(helper_->isolate());
   args.push_back(wasm_module);
   v8::Local<v8::Value> result;
   std::vector<std::string> error_msgs;

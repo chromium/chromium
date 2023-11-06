@@ -23,7 +23,11 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/all_web_state_list_observation_registrar.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
@@ -33,6 +37,8 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_consumer.h"
 #import "ios/chrome/browser/ui/recent_tabs/sessions_sync_user_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_action_wrangler.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_buttons_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_configuration.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "url/gurl.h"
@@ -88,8 +94,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 
 }  // namespace
 
-@interface RecentTabsMediator () <SyncedSessionsObserver,
-                                  IdentityManagerObserverBridgeDelegate,
+@interface RecentTabsMediator () <IdentityManagerObserverBridgeDelegate,
+                                  SyncedSessionsObserver,
+                                  TabGridToolbarsButtonsDelegate,
                                   WebStateListObserving> {
   std::unique_ptr<AllWebStateListObservationRegistrar> _registrar;
   std::unique_ptr<synced_sessions::SyncedSessionsObserverBridge>
@@ -101,6 +108,12 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
   // The list of web state list currently processing batch operations (e.g.
   // Closing All, or Undoing a Close All).
   std::set<WebStateList*> _webStateListsWithBatchOperations;
+  // Current scene state.
+  SceneState* _sceneState;
+  // YES if remote grid is disabled by policy.
+  BOOL _isDisabled;
+  // Last active page.
+  TabGridPage _lastActivePage;
 }
 
 // Return the user's current sign-in and chrome-sync state.
@@ -126,7 +139,9 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
                 restoreService:(sessions::TabRestoreService*)restoreService
                  faviconLoader:(FaviconLoader*)faviconLoader
                    syncService:(syncer::SyncService*)syncService
-                   browserList:(BrowserList*)browserList {
+                   browserList:(BrowserList*)browserList
+                    sceneState:(SceneState*)sceneState
+              disabledByPolicy:(BOOL)disabled {
   self = [super init];
   if (self) {
     _sessionSyncService = sessionSyncService;
@@ -135,6 +150,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _faviconLoader = faviconLoader;
     _syncService = syncService;
     _browserList = browserList;
+    _sceneState = sceneState;
+    _isDisabled = disabled;
   }
   return self;
 }
@@ -183,6 +200,8 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     _faviconLoader = nullptr;
     _syncService = nullptr;
   }
+
+  _sceneState = nil;
 }
 
 - (void)configureConsumer {
@@ -313,9 +332,34 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
 // Creates and send a tab grid toolbar configuration with button that should be
 // displayed when recent grid is selected.
 - (void)configureToolbarsButtons {
+  // Start to configure the delegate, so configured buttons will depend on the
+  // correct delegate.
+  [self.toolbarsMutator setToolbarsButtonsDelegate:self];
+  if (_isDisabled) {
+    [self.toolbarsMutator setToolbarConfiguration:[TabGridToolbarsConfiguration
+                                                      disabledConfiguration]];
+    return;
+  }
+
+  // Done button is enabled if there is at least one tab in the last active
+  // page.
+  BOOL tabsInOtherGrid = NO;
+  if (_lastActivePage == TabGridPageRegularTabs) {
+    Browser* regularBrowser =
+        _sceneState.browserProviderInterface.mainBrowserProvider.browser;
+    tabsInOtherGrid =
+        regularBrowser && !regularBrowser->GetWebStateList()->empty();
+  } else if (_lastActivePage == TabGridPageIncognitoTabs &&
+             _sceneState.browserProviderInterface.hasIncognitoBrowserProvider) {
+    Browser* incognitoBrowser =
+        _sceneState.browserProviderInterface.incognitoBrowserProvider.browser;
+    tabsInOtherGrid =
+        incognitoBrowser && !incognitoBrowser->GetWebStateList()->empty();
+  }
+
   TabGridToolbarsConfiguration* toolbarsConfiguration =
       [[TabGridToolbarsConfiguration alloc] init];
-  toolbarsConfiguration.doneButton = YES;
+  toolbarsConfiguration.doneButton = tabsInOtherGrid;
   toolbarsConfiguration.searchButton = YES;
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }
@@ -343,6 +387,50 @@ bool UserActionIsRequiredToHaveTabSyncWork(syncer::SyncService* sync_service) {
     [self configureToolbarsButtons];
   }
   // TODO(crbug.com/1457146): Implement.
+}
+
+#pragma mark - TabGridToolbarsButtonsDelegate
+
+- (void)closeAllButtonTapped:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+- (void)doneButtonTapped:(id)sender {
+  [self.toolbarActionWrangler doneButtonTapped:sender];
+}
+
+- (void)newTabButtonTapped:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+- (void)selectAllButtonTapped:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+- (void)searchButtonTapped:(id)sender {
+  [self.toolbarActionWrangler searchButtonTapped:sender];
+}
+
+- (void)cancelSearchButtonTapped:(id)sender {
+  [self.toolbarActionWrangler cancelSearchButtonTapped:sender];
+}
+
+- (void)closeSelectedTabs:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+- (void)shareSelectedTabs:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+- (void)selectTabsButtonTapped:(id)sender {
+  NOTREACHED_NORETURN() << "Should not be called in remote tabs.";
+}
+
+#pragma mark - TabGridActivityObserver
+
+- (void)updateLastActiveTabPage:(TabGridPage)page {
+  _lastActivePage = page;
 }
 
 @end

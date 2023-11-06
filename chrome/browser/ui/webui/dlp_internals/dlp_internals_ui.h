@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_DLP_INTERNALS_DLP_INTERNALS_UI_H_
 
+#include "chrome/browser/ui/webui/dlp_internals/dlp_internals_page_handler.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace policy {
@@ -19,7 +20,14 @@ class DlpInternalsUI : public ui::MojoWebUIController {
 
   ~DlpInternalsUI() override;
 
+  // Instantiates the implementor of the mojom::PageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<dlp_internals::mojom::PageHandler> receiver);
+
  private:
+  std::unique_ptr<DlpInternalsPageHandler> page_handler_;
+
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 

@@ -18,7 +18,10 @@ def CheckChange(input_api, output_api):
         sys.path.append(input_api.change.RepositoryRoot())
         from build.ios import presubmit_support
         results += presubmit_support.CheckBundleData(
-            input_api, output_api, 'test/data/unit_tests_bundle_data')
+            input_api, output_api, 'test/data/codec/unit_tests_bundle_data')
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api,
+            'test/data/compositor/unit_tests_bundle_data')
     finally:
         sys.path = old_sys_path
     return results

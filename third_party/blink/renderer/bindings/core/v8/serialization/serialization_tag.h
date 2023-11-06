@@ -116,7 +116,8 @@ enum SerializationTag {
   kEncodedAudioChunkTag = 'y',  // uint32_t -> transferred chunk
   kEncodedVideoChunkTag = 'z',  // uint32_t -> transferred chunk
 
-  kCropTargetTag = 'c',  // crop_id:WebCoreString
+  kCropTargetTag = 'c',         // crop_id:WebCoreString
+  kRestrictionTargetTag = 'D',  // restriction_id:WebCoreString
 
   kMediaSourceHandleTag = 'S',  // uint32_t -> transferred MediaSourceHandle
 

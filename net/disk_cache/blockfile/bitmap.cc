@@ -56,8 +56,8 @@ void Bitmap::Resize(int num_bits, bool clear_bits) {
     auto new_map = std::make_unique<uint32_t[]>(array_size_);
     // Always clear the unused bits in the last word.
     new_map[array_size_ - 1] = 0;
-    memcpy(new_map.get(), map_,
-           sizeof(*map_) * std::min(array_size_, old_array_size));
+    std::copy(map_, map_ + std::min(array_size_, old_array_size),
+              new_map.get());
     map_ = new_map.get();
     allocated_map_ = std::move(new_map);
   }
@@ -108,7 +108,7 @@ uint32_t Bitmap::GetMapElement(int array_index) const {
 }
 
 void Bitmap::SetMap(const uint32_t* map, int size) {
-  memcpy(map_, map, std::min(size, array_size_) * sizeof(*map_));
+  std::copy(map, map + std::min(size, array_size_), map_);
 }
 
 void Bitmap::SetRange(int begin, int end, bool value) {

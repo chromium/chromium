@@ -5,6 +5,7 @@ include_rules = [
   "+chrome/services/file_util/public",
   "+chromeos/crosapi",
   "+chromeos/lacros/lacros_paths.h",
+  "+chromeos/startup/startup.h",
   "+components/autofill/content/common",
   "+components/autofill/core/common",
   "+components/bookmarks/common",

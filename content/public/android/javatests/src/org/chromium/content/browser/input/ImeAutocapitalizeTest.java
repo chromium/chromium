@@ -19,16 +19,13 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 
-/**
- * IME (input method editor) and text input tests.
- */
+/** IME (input method editor) and text input tests. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @Batch(ImeTest.IME_BATCH)
 public class ImeAutocapitalizeTest {
     static final String AUTOCAPITALIZE_HTML = "content/test/data/android/input/autocapitalize.html";
 
-    @Rule
-    public ImeActivityTestRule mRule = new ImeActivityTestRule();
+    @Rule public ImeActivityTestRule mRule = new ImeActivityTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -44,13 +41,16 @@ public class ImeAutocapitalizeTest {
     @SmallTest
     @Feature({"TextInput"})
     public void testAutocapitalizeAttribute() throws Throwable {
-        final int autocapitalizeFlagMask = EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS
-                | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS;
+        final int autocapitalizeFlagMask =
+                EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS
+                        | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES
+                        | EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS;
 
         // <input> element without autocapitalize attribute set. Should enable sentences
         // autocapitalization as the default behavior.
         mRule.focusElement("input_text");
-        Assert.assertEquals(EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES,
+        Assert.assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES,
                 mRule.getConnectionFactory().getOutAttrs().inputType & autocapitalizeFlagMask);
 
         // <input> element that has autocapitalize="none" set.
@@ -60,17 +60,20 @@ public class ImeAutocapitalizeTest {
 
         // <input> element that has autocapitalize="characters" set.
         mRule.focusElement("input_autocapitalize_characters");
-        Assert.assertEquals(EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS,
+        Assert.assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS,
                 mRule.getConnectionFactory().getOutAttrs().inputType & autocapitalizeFlagMask);
 
         // <input> element that has autocapitalize="words" set.
         mRule.focusElement("input_autocapitalize_words");
-        Assert.assertEquals(EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS,
+        Assert.assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_WORDS,
                 mRule.getConnectionFactory().getOutAttrs().inputType & autocapitalizeFlagMask);
 
         // <input> element that has autocapitalize="sentences" set.
         mRule.focusElement("input_autocapitalize_sentences");
-        Assert.assertEquals(EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES,
+        Assert.assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES,
                 mRule.getConnectionFactory().getOutAttrs().inputType & autocapitalizeFlagMask);
 
         // <input> element that inherits autocapitalize="none" from its parent <form> element.
@@ -80,7 +83,8 @@ public class ImeAutocapitalizeTest {
 
         // contenteditable <div> element with autocapitalize="characters".
         mRule.focusElement("div_autocapitalize_characters");
-        Assert.assertEquals(EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS,
+        Assert.assertEquals(
+                EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS,
                 mRule.getConnectionFactory().getOutAttrs().inputType & autocapitalizeFlagMask);
     }
 }

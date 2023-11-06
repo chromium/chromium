@@ -6,10 +6,11 @@ package org.chromium.content.browser;
 
 import android.util.Pair;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.UserData;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.build.annotations.DoNotInline;
 import org.chromium.content.browser.remoteobjects.RemoteObjectInjector;
 import org.chromium.content.browser.webcontents.WebContentsImpl;

@@ -28,7 +28,6 @@
 #include "base/timer/timer.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
-#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/indexed_db/indexed_db.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_external_object_storage.h"
@@ -174,6 +173,9 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
     base::WeakPtr<Transaction> AsWeakPtr();
 
+    blink::mojom::IDBTransactionDurability durability() const {
+      return durability_;
+    }
     blink::mojom::IDBTransactionMode mode() const { return mode_; }
 
     IndexedDBBackingStore* backing_store() {
@@ -216,7 +218,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
         external_object_change_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-        incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+        in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
     int64_t database_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
 
     // List of blob files being newly written as part of this transaction.
@@ -385,7 +387,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       const storage::BucketLocator& bucket_locator,
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
-      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner);
@@ -637,7 +638,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   // an otherwise healthy backing store.
   leveldb::Status RevertSchemaToV2();
 
-  bool is_incognito() const { return backing_store_mode_ == Mode::kInMemory; }
+  bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
 
   virtual std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
@@ -733,9 +734,6 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   const storage::BucketLocator bucket_locator_;
   const base::FilePath blob_path_;
 
-  // Filesystem proxy to use for file operations.  nullptr if in memory.
-  const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;
-
   // The origin identifier is a key prefix, unique to the storage key's origin,
   // used in the leveldb backing store to partition data by origin. It is a
   // normalized version of the origin URL with a versioning suffix appended,
@@ -745,7 +743,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   std::map<std::string, std::unique_ptr<IndexedDBExternalObjectChangeRecord>>
-      incognito_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+      in_memory_external_object_map_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool execute_journal_cleaning_on_no_txns_
       GUARDED_BY_CONTEXT(sequence_checker_) = false;

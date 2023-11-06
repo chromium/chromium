@@ -3742,15 +3742,12 @@ TEST_F(BackfaceVisibilityInteropTest, BackfaceInvisibleTransform) {
 
   UpdateActiveTreeDrawProperties();
 
-  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisible(
-      back_facing, back_facing->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
-  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisible(
-      back_facing, back_facing_double_sided->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
-  EXPECT_FALSE(draw_property_utils::IsLayerBackFaceVisible(
-      front_facing, front_facing->transform_tree_index(),
-      host_impl()->active_tree()->property_trees()));
+  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      back_facing, host_impl()->active_tree()->property_trees()));
+  EXPECT_TRUE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      back_facing_double_sided, host_impl()->active_tree()->property_trees()));
+  EXPECT_FALSE(draw_property_utils::IsLayerBackFaceVisibleForTesting(
+      front_facing, host_impl()->active_tree()->property_trees()));
 
   EXPECT_TRUE(back_facing->raster_even_if_not_drawn());
   EXPECT_TRUE(

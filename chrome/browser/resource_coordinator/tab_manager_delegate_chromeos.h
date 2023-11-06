@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
@@ -30,6 +31,8 @@
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
 namespace resource_coordinator {
@@ -59,6 +62,8 @@ enum class ProcessType {
 // renderers' scores up to date in /proc/<pid>/oom_score_adj.
 class TabManagerDelegate : public wm::ActivationChangeObserver,
                            public content::NotificationObserver,
+                           public content::RenderProcessHostCreationObserver,
+                           public content::RenderProcessHostObserver,
                            public BrowserListObserver {
  public:
   class MemoryStat;
@@ -136,6 +141,15 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const Candidate& candidate);
+
+  // content::RenderProcessHostCreationObserver implementation.
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  // RenderProcessHostObserver implementation.
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -232,6 +246,10 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Registrar to receive renderer notifications.
   content::NotificationRegistrar registrar_;
+
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   // Timer to periodically make OOM score adjustments.
   base::RepeatingTimer adjust_oom_priorities_timer_;

@@ -225,7 +225,8 @@ export function invokePolymerMethod(element, name, ...args) {
       const newStep = $(nextStepId);
       const innerContainer = $('inner-container');
       const oobeContainer = $('oobe');
-      const isOobeSimonEnabled = loadTimeData.getBoolean('isOobeSimonEnabled');
+      const isBootAnimationEnabled =
+          loadTimeData.getBoolean('isBootAnimationEnabled');
 
       invokePolymerMethod(oldStep, 'onBeforeHide');
 
@@ -270,7 +271,7 @@ export function invokePolymerMethod(element, name, ...args) {
       } else {
         // First screen on OOBE launch.
         if (this.isOobeUI() && innerContainer.classList.contains('down')) {
-          if (isOobeSimonEnabled &&
+          if (isBootAnimationEnabled &&
               oobeContainer.classList.contains('connect')) {
             setTimeout(this.triggerDown.bind(this), TRIGGERDOWN_FALLBACK_DELAY);
           } else {
@@ -295,7 +296,7 @@ export function invokePolymerMethod(element, name, ...args) {
       // Post a task to finish initial animation once a frame is rendered.
       // Posting the task makes sure it will be executed after all other
       // pending calls happening in JS that might delay the paint event.
-      if (isOobeSimonEnabled && innerContainer.classList.contains('down')) {
+      if (isBootAnimationEnabled && innerContainer.classList.contains('down')) {
         afterNextRender(this, () => this.sendBackdropLoaded());
       }
     }
@@ -373,7 +374,7 @@ export function invokePolymerMethod(element, name, ...args) {
         }
       }
       const dynamicElements = document.getElementsByClassName('i18n-dynamic');
-      for (var child of dynamicElements) {
+      for (const child of dynamicElements) {
         if (typeof (child.i18nUpdateLocale) === 'function') {
           child.i18nUpdateLocale();
         }

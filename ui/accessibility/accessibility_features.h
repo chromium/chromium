@@ -237,6 +237,11 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 // If enabled, show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingOmniboxIcon);
+
+// If enabled, show a reading mode icon in the omnibox.
+AX_BASE_EXPORT bool IsReadAnythingOmniboxIconEnabled();
+
 // Enables a feature whereby inaccessible (i.e. untagged) PDFs are made
 // accessible using an optical character recognition service. Due to the size of
 // the OCR component, this feature targets desktop versions of Chrome for now.
@@ -263,6 +268,22 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityService);
 AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_MAC)
+// Enables the NSAccessibilityRemoteUIElement's RemoteUIApp. We need to set
+// NSAccessibilityRemoteUIElement's RemoteUIApp to YES, which is to fix some
+// a11y bugs in PWA Mac.
+// It is a temporary feature flag, and will be removed once browser with this
+// feature enabled can run stably. The reason we're so careful is because a
+// previous CL that enabling NSAccessibilityRemoteUIElement's RemoteUIApp caused
+// chromium to hang. With the feature flag, once chromium encounters a bug due
+// to this we can urgently disable it. See https://crbug.com/1491329
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityRemoteUIApp);
+
+// Returns true if the NSAccessibilityRemoteUIElement's RemoteUIApp is enabled.
+AX_BASE_EXPORT bool IsAccessibilityRemoteUIAppEnabled();
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace features
 

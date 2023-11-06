@@ -1,9 +1,8 @@
 include_rules = [
   "+components/omnibox/resources",
-  "+ios/chrome/browser/search_engines",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/history",
-  "+ios/chrome/browser/search_engines",
+  "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin",
   "+ios/chrome/browser/sync/model",
 ]

@@ -36,6 +36,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -570,8 +571,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
                                                  VAProfileVP9Profile0);
 #if BUILDFLAG(IS_CHROMEOS)
-  if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
-      VaapiWrapper::GetDefaultVaEntryPoint(
+  if (VaapiWrapper::GetDefaultVaEntryPoint(
           VaapiWrapper::kEncodeConstantQuantizationParameter,
           VAProfileVP9Profile0) == VAEntrypointEncSliceLP) {
     EXPECT_EQ(scalability_modes_vp9_profile0, kSupportedTemporalAndKeySVC);

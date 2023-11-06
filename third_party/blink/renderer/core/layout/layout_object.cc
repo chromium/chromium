@@ -43,8 +43,6 @@
 #include "third_party/blink/renderer/core/css/style_containment_scope_tree.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_inference.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -63,8 +61,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
-#include "third_party/blink/renderer/core/html/html_li_element.h"
-#include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/html_table_element.h"
@@ -73,6 +69,8 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
+#include "third_party/blink/renderer/core/layout/custom/layout_custom.h"
+#include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -95,21 +93,19 @@
 #include "third_party/blink/renderer/core/layout/list/layout_inside_list_marker.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/layout_outside_list_marker.h"
-#include "third_party/blink/renderer/core/layout/ng/custom/layout_ng_custom.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
+#include "third_party/blink/renderer/core/layout/mathml/layout_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
-#include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_unpositioned_float.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_caption.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_column.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_caption.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_column.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/fragment_data_iterator.h"
@@ -267,83 +263,6 @@ StyleDifference AdjustForCompositableAnimationPaint(
   return diff;
 }
 
-bool ElementGeneratesListItemCounter(const Node* node) {
-  return IsA<HTMLOListElement>(node) || IsA<HTMLUListElement>(node) ||
-         IsA<HTMLLIElement>(node);
-}
-
-bool RemoveStaleCounters(LayoutObject* object,
-                         const ComputedStyle* old_style,
-                         const ComputedStyle* new_style,
-                         StyleContainmentScopeTree& tree) {
-  bool removed_list_item = false;
-  if (old_style->GetCounterDirectives()) {
-    for (const auto& [identifier, directives] :
-         *old_style->GetCounterDirectives()) {
-      CounterDirectives new_style_directives =
-          new_style->GetCounterDirectives(identifier);
-      if (!new_style_directives.IsDefined() ||
-          new_style_directives != directives) {
-        tree.RemoveCounterForLayoutObject(*object, identifier);
-        if (identifier == "list-item") {
-          removed_list_item = true;
-        }
-      }
-    }
-  }
-  return removed_list_item;
-}
-
-bool RemoveListItemCounterOnCustomStyle(LayoutObject* object,
-                                        const ComputedStyle* old_style,
-                                        const ComputedStyle* new_style,
-                                        StyleContainmentScopeTree& tree) {
-  const AtomicString list_item("list-item");
-  if (ElementGeneratesListItemCounter(object->GetNode()) &&
-      !old_style->GetCounterDirectives(list_item).IsDefined() &&
-      new_style->GetCounterDirectives(list_item).IsDefined()) {
-    tree.RemoveListItemCounterForLayoutObject(*object);
-    return true;
-  }
-  return false;
-}
-
-bool CreateNewCounters(LayoutObject* object,
-                       const ComputedStyle* old_style,
-                       const ComputedStyle* new_style,
-                       StyleContainmentScope* scope) {
-  bool created_list_item = false;
-  if (new_style->GetCounterDirectives()) {
-    for (const auto& [identifier, directives] :
-         *new_style->GetCounterDirectives()) {
-      CounterDirectives old_style_directives =
-          old_style->GetCounterDirectives(identifier);
-      if (!old_style_directives.IsDefined() ||
-          old_style_directives != directives) {
-        scope->CreateCounterNodeForLayoutObject(*object, identifier);
-        if (identifier == "list-item") {
-          created_list_item = true;
-        }
-      }
-    }
-  }
-  return created_list_item;
-}
-
-bool CreateListItemCounterOnCustomStyle(LayoutObject* object,
-                                        const ComputedStyle* old_style,
-                                        const ComputedStyle* new_style,
-                                        StyleContainmentScope* scope) {
-  const AtomicString list_item("list-item");
-  if (ElementGeneratesListItemCounter(object->GetNode()) &&
-      old_style->GetCounterDirectives(list_item).IsDefined() &&
-      !new_style->GetCounterDirectives(list_item).IsDefined()) {
-    scope->CreateListItemCounterNodeForLayoutObject(*object);
-    return true;
-  }
-  return false;
-}
-
 }  // namespace
 
 static int g_allow_destroying_layout_object_in_finalizer = 0;
@@ -439,7 +358,7 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
     image->SetStyleInternal(nullptr);
     return image;
   } else if (element->GetPseudoId() == kPseudoIdMarker) {
-    const Node* parent = element->parentNode();
+    const Element* parent = element->parentElement();
     if (parent->GetComputedStyle()->MarkerShouldBeInside(*parent)) {
       return MakeGarbageCollected<LayoutInsideListMarker>(element);
     }
@@ -464,20 +383,20 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       return CreateBlockFlowOrListItem(element, style);
     case EDisplay::kTable:
     case EDisplay::kInlineTable:
-      return MakeGarbageCollected<LayoutNGTable>(element);
+      return MakeGarbageCollected<LayoutTable>(element);
     case EDisplay::kTableRowGroup:
     case EDisplay::kTableHeaderGroup:
     case EDisplay::kTableFooterGroup:
-      return MakeGarbageCollected<LayoutNGTableSection>(element);
+      return MakeGarbageCollected<LayoutTableSection>(element);
     case EDisplay::kTableRow:
-      return MakeGarbageCollected<LayoutNGTableRow>(element);
+      return MakeGarbageCollected<LayoutTableRow>(element);
     case EDisplay::kTableColumnGroup:
     case EDisplay::kTableColumn:
-      return MakeGarbageCollected<LayoutNGTableColumn>(element);
+      return MakeGarbageCollected<LayoutTableColumn>(element);
     case EDisplay::kTableCell:
-      return MakeGarbageCollected<LayoutNGTableCell>(element);
+      return MakeGarbageCollected<LayoutTableCell>(element);
     case EDisplay::kTableCaption:
-      return MakeGarbageCollected<LayoutNGTableCaption>(element);
+      return MakeGarbageCollected<LayoutTableCaption>(element);
     case EDisplay::kWebkitBox:
     case EDisplay::kWebkitInlineBox:
       if (style.IsDeprecatedWebkitBoxWithVerticalLineClamp()) {
@@ -485,21 +404,28 @@ LayoutObject* LayoutObject::CreateObject(Element* element,
       }
       UseCounter::Count(element->GetDocument(),
                         WebFeature::kWebkitBoxWithoutWebkitLineClamp);
-      return MakeGarbageCollected<LayoutNGFlexibleBox>(element);
+      return MakeGarbageCollected<LayoutFlexibleBox>(element);
     case EDisplay::kFlex:
     case EDisplay::kInlineFlex:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSFlexibleBox);
-      return MakeGarbageCollected<LayoutNGFlexibleBox>(element);
+      return MakeGarbageCollected<LayoutFlexibleBox>(element);
     case EDisplay::kGrid:
     case EDisplay::kInlineGrid:
       UseCounter::Count(element->GetDocument(), WebFeature::kCSSGridLayout);
-      return MakeGarbageCollected<LayoutNGGrid>(element);
+      return MakeGarbageCollected<LayoutGrid>(element);
     case EDisplay::kMath:
     case EDisplay::kBlockMath:
-      return MakeGarbageCollected<LayoutNGMathMLBlock>(element);
+      return MakeGarbageCollected<LayoutMathMLBlock>(element);
+    case EDisplay::kRuby:
+    case EDisplay::kBlockRuby:
+    case EDisplay::kRubyBase:
+    case EDisplay::kRubyText:
+      // TODO(crbug.com/880802): Returns a LayoutRuby* instance.
+      NOTREACHED();
+      return CreateBlockFlowOrListItem(element, style);
     case EDisplay::kLayoutCustom:
     case EDisplay::kInlineLayoutCustom:
-      return MakeGarbageCollected<LayoutNGCustom>(element);
+      return MakeGarbageCollected<LayoutCustom>(element);
   }
 
   NOTREACHED();
@@ -543,7 +469,7 @@ LayoutObject::LayoutObject(Node* node)
       parent_(nullptr),
       previous_(nullptr),
       next_(nullptr),
-      fragment_(MakeGarbageCollected<FragmentData>()) {
+      fragment_(MakeGarbageCollected<FragmentDataList>()) {
 #if DCHECK_IS_ON()
   fragment_->SetIsFirst();
 #endif
@@ -702,10 +628,7 @@ void LayoutObject::AssertClearedPaintInvalidationFlags() const {
   if (IsLayoutView() && !EverHadLayout() && !SlowFirstChild())
     return;
 
-  wtf_size_t fragment_count = 0;
-  for (const FragmentData* walker = &FirstFragment(); walker;
-       walker = walker->NextFragment())
-    fragment_count++;
+  wtf_size_t fragment_count = FragmentList().size();
   if (fragment_count != To<LayoutBox>(this)->PhysicalFragmentCount()) {
     ShowLayoutTreeForThis();
     DCHECK_EQ(fragment_count, To<LayoutBox>(this)->PhysicalFragmentCount());
@@ -737,7 +660,7 @@ void LayoutObject::AddChild(LayoutObject* new_child,
         !after_child->IsBeforeContent()) {
       table = after_child;
     } else {
-      table = LayoutNGTable::CreateAnonymousWithParent(*this);
+      table = LayoutTable::CreateAnonymousWithParent(*this);
       children->InsertChildNode(this, table, before_child);
     }
     table->AddChild(new_child);
@@ -1355,7 +1278,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
     // its container. This also applies to out of flow items of the grid, as we
     // need the cached information of the grid to recompute the out of flow
     // item's containing block rect.
-    if (layout_box->ContainingBlock()->IsLayoutNGGrid()) {
+    if (layout_box->ContainingBlock()->IsLayoutGrid()) {
       return false;
     }
 
@@ -1455,7 +1378,7 @@ static inline bool ObjectIsRelayoutBoundary(const LayoutObject* object) {
 
 // Mark this object needing to re-run |CollectInlines()|.
 //
-// The flag is propagated to its container so that NGInlineNode that contains
+// The flag is propagated to its container so that InlineNode that contains
 // |this| is marked too. When |this| is a container, the propagation stops at
 // |this|. When invalidating on inline blocks, floats, or OOF, caller need to
 // pay attention whether it should mark its inner context or outer.
@@ -1697,7 +1620,7 @@ static inline bool ShouldInvalidateBeyond(LayoutObject* o) {
 
   // Invalidate past any subgrids. NOTE: we do this in both axes as we don't
   // know what writing-mode the root grid is in.
-  if (o->IsLayoutNGGrid()) {
+  if (o->IsLayoutGrid()) {
     const auto& style = o->StyleRef();
     if (style.GridTemplateColumns().IsSubgriddedAxis() ||
         style.GridTemplateRows().IsSubgriddedAxis()) {
@@ -1718,7 +1641,7 @@ inline void LayoutObject::InvalidateContainerIntrinsicLogicalWidths() {
     // rather than from their parents (sections or rows). Skip these when
     // invalidating.
     if (current->IsTableCell()) {
-      return To<LayoutNGTableCell>(current)->Table();
+      return To<LayoutTableCell>(current)->Table();
     }
     return current->Container();
   };
@@ -1932,7 +1855,7 @@ bool LayoutObject::ComputeIsAbsoluteContainer(
 }
 
 const LayoutBoxModelObject* LayoutObject::FindFirstStickyContainer(
-    LayoutBox* below) const {
+    const LayoutBox* below) const {
   const LayoutObject* maybe_sticky_ancestor = this;
   while (maybe_sticky_ancestor && maybe_sticky_ancestor != below) {
     if (maybe_sticky_ancestor->StyleRef().HasStickyConstrainedPosition()) {
@@ -2268,9 +2191,7 @@ bool LayoutObject::MapToVisualRectInAncestorSpaceInternalFastPath(
     FloatClipRect clip_rect((gfx::RectF(rect)));
     intersects = GeometryMapper::LocalToAncestorVisualRect(
         container_properties, ancestor->FirstFragment().ContentsProperties(),
-        clip_rect, kIgnoreOverlayScrollbarSize,
-        (visual_rect_flags & kEdgeInclusive) ? kInclusiveIntersect
-                                             : kNonInclusiveIntersect);
+        clip_rect, kIgnoreOverlayScrollbarSize, visual_rect_flags);
     rect = PhysicalRect::EnclosingRect(clip_rect.Rect());
   }
   rect.offset -= ancestor->FirstFragment().PaintOffset();
@@ -3202,26 +3123,6 @@ void LayoutObject::StyleDidChange(StyleDifference diff,
     ClearAncestorScrollAnchors(this);
   }
 
-  // Note: It's possible this will be moved to a particular later point within
-  // the "update the rendering" steps, and thus not belong here.
-  const auto* toggle_root = StyleRef().ToggleRoot();
-  if (toggle_root && (!old_style || !old_style->ToggleRoot() ||
-                      *toggle_root != *(old_style->ToggleRoot()))) {
-    // This element has toggle specifiers; these specifiers require that we
-    // create toggles.
-    Element* element = DynamicTo<Element>(GetNode());
-    DCHECK(element);
-    if (element) {
-      element->EnsureToggleMap().CreateToggles(toggle_root);
-    }
-  }
-
-  if (old_style &&
-      (old_style->ToggleTrigger() != StyleRef().ToggleTrigger() ||
-       old_style->ToggleVisibility() != StyleRef().ToggleVisibility())) {
-    GetDocument().EnsureCSSToggleInference().MarkNeedsRebuild();
-  }
-
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled() && old_style &&
       old_style->UsedPointerEvents() != StyleRef().UsedPointerEvents()) {
     // UsedPointerEvents affects hit test opacity.
@@ -3362,73 +3263,17 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
                                        const ComputedStyle* new_style) {
   NOT_DESTROYED();
   DCHECK(new_style);
-  if (!IsA<Element>(GetNode())) {
-    return;
-  }
-  if ((!old_style && new_style->GetCounterDirectives()) ||
-      (old_style && !new_style->CounterDirectivesEqual(*old_style))) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    StyleContainmentScope* scope =
-        tree.FindOrCreateEnclosingScopeForElement(To<Element>(*GetNode()));
-    const AtomicString list_item("list-item");
-    ListItemOrdinal* ordinal = ListItemOrdinal::Get(*GetNode());
-    if (old_style) {
-      // Remove old counters that got changed or removed,
-      // update the list item bit, if list-item counter has been removed.
-      if (RemoveStaleCounters(this, old_style, new_style, tree)) {
-        bitfields_.SetHasCounterNodeMap(false);
-      }
-      // When <li> -> <li style="counter-increment: list-item 3">
-      // remove the list-item counter as it will be replaced by the
-      // custom counter-* style.
-      if (RemoveListItemCounterOnCustomStyle(this, old_style, new_style,
-                                             tree)) {
-        bitfields_.SetHasCounterNodeMap(false);
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-      // Add new counters that got changed or added.
-      // update the list item bit, if list-item counter has been created.
-      if (CreateNewCounters(this, old_style, new_style, scope)) {
-        bitfields_.SetHasCounterNodeMap(true);
-      }
-      // When <li style="counter-increment: list-item 3"> -> <li>
-      // create the list-item counter if it's custom style is removed.
-      if (CreateListItemCounterOnCustomStyle(this, old_style, new_style,
-                                             scope)) {
-        bitfields_.SetHasCounterNodeMap(true);
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-    } else {
-      if (ElementGeneratesListItemCounter(GetNode())) {
-        if (new_style->GetCounterDirectives(list_item).IsDefined()) {
-          tree.RemoveListItemCounterForLayoutObject(*this);
-        } else {
-          scope->CreateListItemCounterNodeForLayoutObject(*this);
-        }
-        bitfields_.SetHasCounterNodeMap(true);
-        if (ordinal) {
-          ListItemOrdinal::ItemCounterStyleUpdated(*this);
-        }
-      }
-      scope->CreateCounterNodesForLayoutObject(*this);
+  if (old_style) {
+    if (old_style->CounterDirectivesEqual(*new_style)) {
+      return;
     }
-    tree.UpdateOutermostCountersDirtyScope(scope);
-  } else if (!bitfields_.HasCounterNodeMap() &&
-             ElementGeneratesListItemCounter(GetNode())) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    StyleContainmentScope* scope =
-        tree.FindOrCreateEnclosingScopeForElement(To<Element>(*GetNode()));
-    scope->CreateListItemCounterNodeForLayoutObject(*this);
-    bitfields_.SetHasCounterNodeMap(true);
-    tree.UpdateOutermostCountersDirtyScope(scope->Parent() ? scope->Parent()
-                                                           : scope);
+  } else {
+    if (!new_style->GetCounterDirectives()) {
+      return;
+    }
   }
+  LayoutCounter::LayoutObjectStyleChanged(*this, old_style, *new_style);
+  View()->SetNeedsMarkerOrCounterUpdate();
 }
 
 PhysicalRect LayoutObject::ViewRect() const {
@@ -3831,32 +3676,19 @@ void LayoutObject::WillBeDestroyed() {
       frame->GetPage()->GetAutoscrollController().StopAutoscrollIfNeeded(this);
   }
 
-  // The counters a created only for element with counter directives.
-  // LayoutCounters delete their counters in its own WillBeDestroyed.
-  if (auto* element = DynamicTo<Element>(GetNode());
-      element && !IsCounter() && Style() && StyleRef().GetCounterDirectives()) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    tree.RemoveCountersForLayoutObject(*this, StyleRef());
-    if (!StyleRef()
-             .GetCounterDirectives(AtomicString("list-item"))
-             .IsDefined() &&
-        ElementGeneratesListItemCounter(GetNode())) {
-      tree.RemoveListItemCounterForLayoutObject(*this);
-      bitfields_.SetHasCounterNodeMap(false);
-    }
-  } else if (bitfields_.HasCounterNodeMap() &&
-             ElementGeneratesListItemCounter(GetNode())) {
-    StyleContainmentScopeTree& tree =
-        GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-    tree.RemoveListItemCounterForLayoutObject(*this);
-    bitfields_.SetHasCounterNodeMap(false);
-  }
-
   Remove();
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->Remove(this);
+
+  // If this layoutObject had a parent, remove should have destroyed any
+  // counters attached to this layoutObject and marked the affected other
+  // counters for reevaluation. This apparently redundant check is here for the
+  // case when this layoutObject had no parent at the time remove() was called.
+
+  if (HasCounterNodeMap()) {
+    LayoutCounter::DestroyCounterNodes(*this);
+  }
 
   // Remove the handler if node had touch-action set. Handlers are not added
   // for text nodes so don't try removing for one too. Need to check if
@@ -5107,7 +4939,7 @@ Vector<PhysicalRect> LayoutObject::CollectOutlineRectsAndAdvance(
   if (iterator.Cursor()) {
     wtf_size_t fragment_index = iterator.Cursor()->ContainerFragmentIndex();
     do {
-      const NGFragmentItem* item = iterator.Cursor()->Current().Item();
+      const FragmentItem* item = iterator.Cursor()->Current().Item();
       if (!item)
         continue;
       if (const NGPhysicalBoxFragment* box_fragment = item->BoxFragment()) {

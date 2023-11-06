@@ -24,7 +24,6 @@
 #import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/resource/resource_bundle.h"
-#import "ui/base/webui/jstemplate_builder.h"
 #import "ui/base/webui/web_ui_util.h"
 
 using security_interstitials::BaseSafeBrowsingErrorUI;
@@ -117,7 +116,7 @@ std::string SafeBrowsingBlockingPage::GetHtmlContents() const {
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           error_ui_->GetHTMLTemplateId());
   webui::AppendWebUiCssTextDefaults(&html);
-  return webui::GetI18nTemplateHtml(html, load_time_data);
+  return webui::GetLocalizedHtml(html, load_time_data);
 }
 
 void SafeBrowsingBlockingPage::HandleCommand(

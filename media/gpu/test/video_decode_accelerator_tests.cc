@@ -429,14 +429,14 @@ TEST_F(VideoDecoderTest, Decode) {
                                 /*times=*/kNumDecodeBuffers));
 }
 
-// This test case sends all the frames and expects them to be fully decoded
-// (as in, VideoDecoder::OutputCB should be called). Most of them should be
-// decoded as well, but since this test doesn't exercise an End-of-Stream
-// (a.k.a. "a flush"), some will likely be held onto by the VideoDecoder/driver
-// as part of its decoding pipeline. We don't know how many (it depends also on
-// the ImageProcessor, if any), so it's not a good idea to set expectations on
-// the number of kFrameDecoded events.
-TEST_F(VideoDecoderTest, DecodeAndOutputAllFrames) {
+// This test case sends all the frames and expects them to be accepted for
+// decoding (as in, VideoDecoder::OutputCB should be called). Most of them
+// should be decoded as well, but since this test doesn't exercise an
+// End-of-Stream (a.k.a. "a flush"), some will likely be held onto by the
+// VideoDecoder/driver as part of its decoding pipeline. We don't know how
+// many (it depends also on the ImageProcessor, if any), so it's not a good
+// idea to set expectations on the number of kFrameDecoded events.
+TEST_F(VideoDecoderTest, AllDecoderBuffersAcceptedForDecoding) {
   auto tvp = CreateDecoderListener(g_env->Video());
 
   tvp->Play();

@@ -95,7 +95,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
 
     case CSSPropertyID::kFillOpacity:
     case CSSPropertyID::kOpacity:
-      return ClampTo<float>(value, 0, nextafterf(1, 0));
+      return ClampTo<float>(value, 0, 1);
 
     case CSSPropertyID::kFlexGrow:
     case CSSPropertyID::kFlexShrink:

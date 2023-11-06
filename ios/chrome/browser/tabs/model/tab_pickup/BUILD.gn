@@ -1,0 +1,67 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  sources = [
+    "tab_pickup_browser_agent.h",
+    "tab_pickup_browser_agent.mm",
+  ]
+  deps = [
+    ":features",
+    ":infobar_delegate",
+    "//base",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/ntp:util",
+    "//ios/chrome/browser/ntp/home:features",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/browser/tabs/model:tab_sync_util",
+  ]
+}
+
+source_set("infobar_delegate") {
+  sources = [
+    "tab_pickup_infobar_delegate.h",
+    "tab_pickup_infobar_delegate.mm",
+  ]
+  deps = [
+    ":features",
+    "//components/infobars/core",
+    "//components/sync_sessions",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/sessions:serialisation",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/snapshots/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/synced_sessions/model",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/web/public",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ui/base",
+  ]
+}

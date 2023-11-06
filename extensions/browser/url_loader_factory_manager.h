@@ -23,7 +23,7 @@ class Origin;
 
 namespace extensions {
 
-class ContentScriptTracker;
+class ScriptInjectionTracker;
 
 // This class manages URLLoaderFactory objects that handle network requests that
 // require extension-specific permissions (related to relaxed CORB and CORS).
@@ -42,7 +42,7 @@ class URLLoaderFactoryManager {
   // declarations in the extension manifest approach:
   // https://developer.chrome.com/docs/extensions/mv2/content_scripts/#declaratively
   static void WillInjectContentScriptsWhenNavigationCommits(
-      base::PassKey<ContentScriptTracker> pass_key,
+      base::PassKey<ScriptInjectionTracker> pass_key,
       content::NavigationHandle* navigation,
       const std::vector<const Extension*>& extensions);
 
@@ -55,7 +55,7 @@ class URLLoaderFactoryManager {
   // and
   // https://developer.chrome.com/docs/extensions/reference/declarativeContent/#type-RequestContentScript
   static void WillProgrammaticallyInjectContentScript(
-      base::PassKey<ContentScriptTracker> pass_key,
+      base::PassKey<ScriptInjectionTracker> pass_key,
       content::RenderFrameHost* frame,
       const Extension& extension);
 

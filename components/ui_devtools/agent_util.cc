@@ -32,7 +32,7 @@ const char kChromiumCodeSearchSrcURL[] =
 
 bool GetSourceCode(std::string path, std::string* source_code) {
   base::FilePath src_dir;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &src_dir);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_dir);
   src_dir = src_dir.AppendASCII(path);
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);

@@ -52,9 +52,9 @@
 #include "third_party/blink/renderer/core/css/properties/shorthands.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/layout_ng_grid.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_intrinsic_length.h"
@@ -325,6 +325,7 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
   CSSValueList* position_list = CSSValueList::CreateSpaceSeparated();
   if (layer.IsBackgroundXOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
+           property.IDEquals(CSSPropertyID::kMaskPosition) ||
            property.IDEquals(CSSPropertyID::kWebkitMaskPosition));
     position_list->Append(
         *CSSIdentifierValue::Create(layer.BackgroundXOrigin()));
@@ -333,6 +334,7 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
       *ZoomAdjustedPixelValueForLength(layer.PositionX(), style));
   if (layer.IsBackgroundYOriginSet()) {
     DCHECK(property.IDEquals(CSSPropertyID::kBackgroundPosition) ||
+           property.IDEquals(CSSPropertyID::kMaskPosition) ||
            property.IDEquals(CSSPropertyID::kWebkitMaskPosition));
     position_list->Append(
         *CSSIdentifierValue::Create(layer.BackgroundYOrigin()));
@@ -342,26 +344,30 @@ const CSSValueList* ComputedStyleUtils::CreatePositionListForLayer(
   return position_list;
 }
 
-const CSSValue* ComputedStyleUtils::ValueForFillRepeat(EFillRepeat x_repeat,
-                                                       EFillRepeat y_repeat) {
-  // For backwards compatibility, if both values are equal, just return one of
-  // them. And if the two values are equivalent to repeat-x or repeat-y, just
-  // return the shorthand.
-  if (x_repeat == y_repeat) {
-    return CSSIdentifierValue::Create(x_repeat);
-  }
-  if (x_repeat == EFillRepeat::kRepeatFill &&
-      y_repeat == EFillRepeat::kNoRepeatFill) {
-    return CSSIdentifierValue::Create(CSSValueID::kRepeatX);
-  }
-  if (x_repeat == EFillRepeat::kNoRepeatFill &&
-      y_repeat == EFillRepeat::kRepeatFill) {
-    return CSSIdentifierValue::Create(CSSValueID::kRepeatY);
+const CSSValue* ComputedStyleUtils::ValueForFillRepeat(
+    const FillLayer* curr_layer) {
+  const auto& fill_repeat = curr_layer->Repeat();
+
+  return MakeGarbageCollected<CSSRepeatStyleValue>(
+      CSSIdentifierValue::Create(fill_repeat.x),
+      CSSIdentifierValue::Create(fill_repeat.y));
+}
+
+const CSSValue* ComputedStyleUtils::RepeatStyle(const FillLayer* curr_layer) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*ValueForFillRepeat(curr_layer));
   }
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  list->Append(*CSSIdentifierValue::Create(x_repeat));
-  list->Append(*CSSIdentifierValue::Create(y_repeat));
+  return list;
+}
+
+const CSSValue* ComputedStyleUtils::MaskMode(const FillLayer* curr_layer) {
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (; curr_layer; curr_layer = curr_layer->Next()) {
+    list->Append(*CSSIdentifierValue::Create(curr_layer->MaskMode()));
+  }
   return list;
 }
 
@@ -385,8 +391,7 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
                              ? *curr_layer->GetImage()->ComputedCSSValue(
                                    style, allow_visited_style)
                              : *CSSIdentifierValue::Create(CSSValueID::kNone));
-    before_slash->Append(
-        *ValueForFillRepeat(curr_layer->RepeatX(), curr_layer->RepeatY()));
+    before_slash->Append(*ValueForFillRepeat(curr_layer));
     before_slash->Append(*CSSIdentifierValue::Create(curr_layer->Attachment()));
     before_slash->Append(*CreatePositionListForLayer(
         GetCSSPropertyBackgroundPosition(), *curr_layer, style));
@@ -401,14 +406,108 @@ const CSSValueList* ComputedStyleUtils::ValuesForBackgroundShorthand(
   return result;
 }
 
-const CSSValue* ComputedStyleUtils::BackgroundRepeatOrWebkitMaskRepeat(
-    const FillLayer* curr_layer) {
-  CSSValueList* list = CSSValueList::CreateCommaSeparated();
-  for (; curr_layer; curr_layer = curr_layer->Next()) {
-    list->Append(
-        *ValueForFillRepeat(curr_layer->RepeatX(), curr_layer->RepeatY()));
+namespace {
+
+// Append clip and origin vals (https://drafts.fxtf.org/css-masking/#the-mask):
+// * If one <geometry-box> value and the no-clip keyword are present then
+//   <geometry-box> sets mask-origin and no-clip sets mask-clip to that value.
+// * If one <geometry-box> value and no no-clip keyword are present then
+//   <geometry-box> sets both mask-origin and mask-clip to that value.
+// * If two <geometry-box> values are present, then the first sets mask-origin
+//   and the second mask-clip.
+// Additionally, simplifies when possible.
+void AppendValuesForMaskClipAndOrigin(CSSValueList* result_list,
+                                      EFillBox origin,
+                                      EFillBox clip) {
+  if (origin == clip) {
+    // If both values are border-box, omit everything as it is the default.
+    if (origin == EFillBox::kBorder) {
+      return;
+    }
+    // If the values are the same, only emit one value. Note that mask-origin
+    // does not support no-clip, so there is no need to consider no-clip
+    // special cases.
+    result_list->Append(*CSSIdentifierValue::Create(origin));
+  } else if (origin == EFillBox::kBorder && clip == EFillBox::kNoClip) {
+    // Mask-origin does not support no-clip, so mask-origin can be omitted if it
+    // is the default.
+    result_list->Append(*CSSIdentifierValue::Create(clip));
+  } else {
+    result_list->Append(*CSSIdentifierValue::Create(origin));
+    result_list->Append(*CSSIdentifierValue::Create(clip));
   }
-  return list;
+}
+
+}  // namespace
+
+const CSSValueList* ComputedStyleUtils::ValuesForMaskShorthand(
+    const StylePropertyShorthand&,
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) {
+  CHECK(RuntimeEnabledFeatures::CSSMaskingInteropEnabled());
+  // Canonical order (https://drafts.fxtf.org/css-masking/#typedef-mask-layer):
+  //   <mask-reference>              ||
+  //   <position> [ / <bg-size> ]?   ||
+  //   <repeat-style>                ||
+  //   <geometry-box>                ||
+  //   [ <geometry-box> | no-clip ]  ||
+  //   <compositing-operator>        ||
+  //   <masking-mode>
+  // The logic below omits initial values due to the following spec:
+  // https://drafts.csswg.org/cssom/#serialize-a-css-value
+  // "If component values can be omitted or replaced with a shorter
+  // representation without changing the meaning of the value, omit/replace
+  // them".
+  CSSValueList* result = CSSValueList::CreateCommaSeparated();
+  const FillLayer* layer = &style.MaskLayers();
+  for (; layer; layer = layer->Next()) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    // <mask-reference>
+    if (layer->GetImage()) {
+      list->Append(
+          *layer->GetImage()->ComputedCSSValue(style, allow_visited_style));
+    }
+    // <position> [ / <bg-size> ]?
+    if (layer->PositionX() !=
+            FillLayer::InitialFillPositionX(EFillLayerType::kMask) ||
+        layer->PositionY() !=
+            FillLayer::InitialFillPositionY(EFillLayerType::kMask) ||
+        layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
+      CSSValueList* position_size_list = CSSValueList::CreateSlashSeparated();
+      position_size_list->Append(*CreatePositionListForLayer(
+          GetCSSPropertyWebkitMaskPosition(), *layer, style));
+      if (layer->Size() != FillLayer::InitialFillSize(EFillLayerType::kMask)) {
+        position_size_list->Append(*ValueForFillSize(layer->Size(), style));
+      }
+      list->Append(*position_size_list);
+    }
+    // <repeat-style>
+    if (layer->Repeat() !=
+        FillLayer::InitialFillRepeat(EFillLayerType::kMask)) {
+      list->Append(*ValueForFillRepeat(layer));
+    }
+    // <geometry-box>
+    // [ <geometry-box> | no-clip ]
+    AppendValuesForMaskClipAndOrigin(list, layer->Origin(), layer->Clip());
+    // <compositing-operator>
+    if (layer->CompositingOperator() !=
+        FillLayer::InitialFillCompositingOperator(EFillLayerType::kMask)) {
+      list->Append(*CSSIdentifierValue::Create(layer->CompositingOperator()));
+    }
+    // <masking-mode>
+    if (layer->MaskMode() !=
+        FillLayer::InitialFillMaskMode(EFillLayerType::kMask)) {
+      list->Append(*CSSIdentifierValue::Create(layer->MaskMode()));
+    }
+
+    if (list->length()) {
+      result->Append(*list);
+    } else {
+      result->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+    }
+  }
+  return result;
 }
 
 const CSSValue* ComputedStyleUtils::BackgroundPositionOrWebkitMaskPosition(
@@ -702,8 +801,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValueForLength(offset, style);
   }
 
-  if (RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled() &&
-      box && box->IsOutOfFlowPositioned()) {
+  if (box && box->IsOutOfFlowPositioned()) {
     // LayoutBox::OutOfFlowInsetsForGetComputedStyle() are relative to the
     // container's writing direction. Convert it to physical.
     const PhysicalBoxStrut& insets =
@@ -729,9 +827,9 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
     return ZoomAdjustedPixelValue(inset, style);
   }
 
-  if (offset.IsPercentOrCalc() && box && layout_object->IsPositioned()) {
+  if (offset.IsPercentOrCalc() && box && box->IsPositioned()) {
     LayoutUnit containing_block_size;
-    if (layout_object->IsStickyPositioned()) {
+    if (box->IsStickyPositioned()) {
       const LayoutBox* scroll_container = box->ContainingScrollContainer();
       DCHECK(scroll_container);
       bool use_inline_size =
@@ -739,96 +837,50 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       containing_block_size = use_inline_size
                                   ? scroll_container->ContentLogicalWidth()
                                   : scroll_container->ContentLogicalHeight();
-      UseCounter::Count(layout_object->GetDocument(),
+      UseCounter::Count(box->GetDocument(),
                         WebFeature::kPercentOrCalcStickyUsedOffset);
     } else {
+      DCHECK(box->IsRelPositioned());
       containing_block_size =
           is_horizontal_property ==
-                  layout_object->ContainingBlock()->IsHorizontalWritingMode()
+                  box->ContainingBlock()->IsHorizontalWritingMode()
               ? box->ContainingBlockLogicalWidthForContent()
-              : box->ContainingBlockLogicalHeightForGetComputedStyle();
-      if (layout_object->IsRelPositioned()) {
-        UseCounter::Count(layout_object->GetDocument(),
-                          WebFeature::kPercentOrCalcRelativeUsedOffset);
-      }
+              : box->ContainingBlockLogicalHeightForRelPositioned();
+      UseCounter::Count(box->GetDocument(),
+                        WebFeature::kPercentOrCalcRelativeUsedOffset);
     }
 
     return ZoomAdjustedPixelValue(ValueForLength(offset, containing_block_size),
                                   style);
   }
 
-  if (offset.IsAuto() && layout_object) {
-    // If the property applies to a positioned element and the resolved value of
-    // the display property is not none, the resolved value is the used value.
-    // Position offsets have special meaning for position sticky so we return
-    // auto when offset.isAuto() on a sticky position object:
-    // https://crbug.com/703816.
-    if (layout_object->IsRelPositioned()) {
-      UseCounter::Count(layout_object->GetDocument(),
-                        WebFeature::kAutoRelativeUsedOffset);
-      // If e.g. left is auto and right is not auto, then left's computed value
-      // is negative right. So we get the opposite length unit and see if it is
-      // auto.
-      if (opposite.IsAuto()) {
-        return CSSNumericLiteralValue::Create(
-            0, CSSPrimitiveValue::UnitType::kPixels);
-      }
-
-      if (opposite.IsPercentOrCalc()) {
-        if (box) {
-          LayoutUnit containing_block_size =
-              is_horizontal_property == layout_object->ContainingBlock()
-                                            ->IsHorizontalWritingMode()
-                  ? box->ContainingBlockLogicalWidthForContent()
-                  : box->ContainingBlockLogicalHeightForGetComputedStyle();
-          return ZoomAdjustedPixelValue(
-              -FloatValueForLength(opposite, containing_block_size), style);
-        }
-        // FIXME:  fall back to auto for position:relative, display:inline
-        return CSSIdentifierValue::Create(CSSValueID::kAuto);
-      }
-
-      Length negated_opposite = Negate(opposite);
-      return ZoomAdjustedPixelValueForLength(negated_opposite, style);
+  if (offset.IsAuto() && layout_object && layout_object->IsRelPositioned()) {
+    UseCounter::Count(layout_object->GetDocument(),
+                      WebFeature::kAutoRelativeUsedOffset);
+    // If e.g. left is auto and right is not auto, then left's computed value
+    // is negative right. So we get the opposite length unit and see if it is
+    // auto.
+    if (opposite.IsAuto()) {
+      return CSSNumericLiteralValue::Create(
+          0, CSSPrimitiveValue::UnitType::kPixels);
     }
 
-    if (layout_object->IsOutOfFlowPositioned() && layout_object->IsBox()) {
-      CHECK(
-          !RuntimeEnabledFeatures::GetComputedStyleOutOfFlowInsetsFixEnabled());
-      // For fixed and absolute positioned elements, the top, left, bottom, and
-      // right are defined relative to the corresponding sides of the containing
-      // block.
-      LayoutBlock* container = layout_object->ContainingBlock();
-
-      // client_offset is the distance from this object's border edge to the
-      // container's padding edge. Thus it includes margins which we subtract
-      // below.
-      const PhysicalOffset client_offset =
-          box->PhysicalLocation() -
-          PhysicalOffset(container->ClientLeft(), container->ClientTop());
-
-      LayoutUnit position;
-
-      switch (property.PropertyID()) {
-        case CSSPropertyID::kLeft:
-          position = client_offset.left - box->MarginLeft();
-          break;
-        case CSSPropertyID::kTop:
-          position = client_offset.top - box->MarginTop();
-          break;
-        case CSSPropertyID::kRight:
-          position = container->ClientWidth() - box->MarginRight() -
-                     (box->OffsetWidth() + client_offset.left);
-          break;
-        case CSSPropertyID::kBottom:
-          position = container->ClientHeight() - box->MarginBottom() -
-                     (box->OffsetHeight() + client_offset.top);
-          break;
-        default:
-          NOTREACHED();
+    if (opposite.IsPercentOrCalc()) {
+      if (box) {
+        LayoutUnit containing_block_size =
+            is_horizontal_property ==
+                    layout_object->ContainingBlock()->IsHorizontalWritingMode()
+                ? box->ContainingBlockLogicalWidthForContent()
+                : box->ContainingBlockLogicalHeightForRelPositioned();
+        return ZoomAdjustedPixelValue(
+            -FloatValueForLength(opposite, containing_block_size), style);
       }
-      return ZoomAdjustedPixelValue(position, style);
+      // FIXME:  fall back to auto for position:relative, display:inline
+      return CSSIdentifierValue::Create(CSSValueID::kAuto);
     }
+
+    Length negated_opposite = Negate(opposite);
+    return ZoomAdjustedPixelValueForLength(negated_opposite, style);
   }
 
   if (offset.IsAuto()) {
@@ -1008,24 +1060,16 @@ CSSValue* ComputedStyleUtils::ValueForFontSizeAdjust(
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
 
+  // A resolved value is to be returned. Compare CSS WG discussion.
+  // https://github.com/w3c/csswg-drafts/issues/9050
   FontSizeAdjust font_size_adjust = style.FontSizeAdjust();
   if (font_size_adjust.GetMetric() == FontSizeAdjust::Metric::kExHeight) {
-    if (font_size_adjust.IsFromFont()) {
-      return CSSIdentifierValue::Create(CSSValueID::kFromFont);
-    }
     return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                           CSSPrimitiveValue::UnitType::kNumber);
   }
 
-  CSSIdentifierValue* metric =
-      CSSIdentifierValue::Create(font_size_adjust.GetMetric());
-  if (font_size_adjust.IsFromFont()) {
-    return MakeGarbageCollected<CSSValuePair>(
-        metric, CSSIdentifierValue::Create(CSSValueID::kFromFont),
-        CSSValuePair::kKeepIdenticalValues);
-  }
   return MakeGarbageCollected<CSSValuePair>(
-      metric,
+      CSSIdentifierValue::Create(font_size_adjust.GetMetric()),
       CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                      CSSPrimitiveValue::UnitType::kNumber),
       CSSValuePair::kKeepIdenticalValues);
@@ -2026,7 +2070,7 @@ CSSValue* ComputedStyleUtils::ValueForGridTrackList(
   const bool is_for_columns = direction == kForColumns;
   const ComputedGridTrackList& computed_grid_track_list =
       is_for_columns ? style.GridTemplateColumns() : style.GridTemplateRows();
-  const auto* grid = DynamicTo<LayoutNGGrid>(layout_object);
+  const auto* grid = DynamicTo<LayoutGrid>(layout_object);
 
   // Handle the 'none' case.
   bool is_track_list_empty =
@@ -2948,6 +2992,13 @@ CSSValue* ComputedStyleUtils::ValueForTransformList(
   return components;
 }
 
+CSSValue* ComputedStyleUtils::ValueForTransformFunction(
+    const TransformOperations& transform_list) {
+  CHECK_EQ(transform_list.Operations().size(), 1u);
+  return ValueForTransformOperation(*transform_list.Operations()[0], 1,
+                                    gfx::SizeF());
+}
+
 gfx::RectF ComputedStyleUtils::ReferenceBoxForTransform(
     const LayoutObject& layout_object,
     UsePixelSnappedBox pixel_snap_box) {
@@ -3297,8 +3348,8 @@ CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
     case SVGPaintType::kUriNone:
     case SVGPaintType::kUriColor: {
       CSSValueList* values = CSSValueList::CreateSpaceSeparated();
-      values->Append(
-          *MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl()));
+      values->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(
+          CSSUrlData(paint.GetUrl())));
       values->Append(
           paint.type == SVGPaintType::kUriNone
               ? *CSSIdentifierValue::Create(CSSValueID::kNone)
@@ -3307,14 +3358,16 @@ CSSValue* ComputedStyleUtils::ValueForSVGPaint(const SVGPaint& paint,
       return values;
     }
     case SVGPaintType::kUri:
-      return MakeGarbageCollected<cssvalue::CSSURIValue>(paint.GetUrl());
+      return MakeGarbageCollected<cssvalue::CSSURIValue>(
+          CSSUrlData(paint.GetUrl()));
   }
 }
 
 CSSValue* ComputedStyleUtils::ValueForSVGResource(
     const StyleSVGResource* resource) {
   if (resource) {
-    return MakeGarbageCollected<cssvalue::CSSURIValue>(resource->Url());
+    return MakeGarbageCollected<cssvalue::CSSURIValue>(
+        CSSUrlData(resource->Url()));
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
@@ -3370,8 +3423,9 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
     FilterOperation* filter_operation = operation.Get();
     switch (filter_operation->GetType()) {
       case FilterOperation::OperationType::kReference:
-        list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(AtomicString(
-            To<ReferenceFilterOperation>(filter_operation)->Url())));
+        list->Append(*MakeGarbageCollected<cssvalue::CSSURIValue>(
+            CSSUrlData(AtomicString(
+                To<ReferenceFilterOperation>(filter_operation)->Url()))));
         continue;
       case FilterOperation::OperationType::kGrayscale:
         filter_value =

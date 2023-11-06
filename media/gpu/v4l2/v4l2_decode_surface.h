@@ -48,10 +48,6 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   // target surface is decoded.
   void SetReferenceSurfaces(
       std::vector<scoped_refptr<V4L2DecodeSurface>> ref_surfaces);
-  // If provided via this method, |done_cb| callback will be executed after
-  // decoding into this surface is finished. The callback is reset afterwards,
-  // so it needs to be set again before each decode operation.
-  void SetDecodeDoneCallback(base::OnceClosure done_cb);
   // Set the callback that will be called when the surface is released. This
   // method must be called one time at most.
   void SetReleaseCallback(base::OnceClosure release_cb);
@@ -101,8 +97,6 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   bool decoded_;
   // Callback function which is called when the instance is destroyed.
   base::OnceClosure release_cb_;
-  // Callback function which is called after the surface has been decoded.
-  base::OnceClosure done_cb_;
 
   // The decoded surfaces of the reference frames, which is kept until the
   // surface has been decoded.

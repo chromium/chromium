@@ -53,8 +53,10 @@ class ExamplePreferredSizeLabel : public Label {
   ~ExamplePreferredSizeLabel() override = default;
 
   // Label:
-  gfx::Size CalculatePreferredSize() const override {
-    return gfx::Size(50, Label::CalculatePreferredSize().height());
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override {
+    return gfx::Size(50,
+                     Label::CalculatePreferredSize(available_size).height());
   }
 
   static const char* kElideBehaviors[];

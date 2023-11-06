@@ -1,11 +1,15 @@
 This is a testharness.js-based test.
-PASS Magnetometer: sensor is suspended and resumed when focus traverses from to cross-origin frame
-PASS Magnetometer: sensor is not suspended when focus traverses from to same-origin frame
-PASS Magnetometer: losing a document's frame with an active sensor does not crash
-PASS Magnetometer: calling start() in a non-fully active document does not crash
-FAIL UncalibratedMagnetometer: sensor is suspended and resumed when focus traverses from to cross-origin frame assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: sensor is not suspended when focus traverses from to same-origin frame assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: losing a document's frame with an active sensor does not crash assert_implements: UncalibratedMagnetometer is not supported. undefined
-FAIL UncalibratedMagnetometer: calling start() in a non-fully active document does not crash assert_implements: UncalibratedMagnetometer is not supported. undefined
+[PASS] Magnetometer: unfocused sensors in cross-origin frames are not updated
+[PASS] Magnetometer: sensors in same-origin frames are updated if one of the frames is focused
+[PASS] Magnetometer: losing a document's frame with an active sensor does not crash
+[PASS] Magnetometer: calling start() in a non-fully active document does not crash
+[FAIL] UncalibratedMagnetometer: unfocused sensors in cross-origin frames are not updated
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: sensors in same-origin frames are updated if one of the frames is focused
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: losing a document's frame with an active sensor does not crash
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
+[FAIL] UncalibratedMagnetometer: calling start() in a non-fully active document does not crash
+  assert_implements: UncalibratedMagnetometer is not supported. undefined
 Harness: the test ran to completion.
 

@@ -28,14 +28,28 @@ template("in_process_fuzzer") {
 
       # As these are full browser tests, we have crashpad running,
       # and we can't intercept signals that crashpad needs.
-      asan_options = [
+      sanitizer_options = [
         "allow_user_segv_handler=1",
         "handle_sigtrap=1",
+        "handle_abort=1",
+        "handle_segv=1",
+        "handle_sigbus=1",
+        "handle_sigfpe=1",
+        "handle_sigill=1",
+        "handle_sigtrap=1",
+      ]
 
+      asan_options = [
         # Browser tests store arbitrary data in globals; leak
         # detection will come up with lots of false positives.
         "detect_leaks=0",
       ]
+
+      asan_options += sanitizer_options
+
+      ubsan_options = sanitizer_options
+
+      msan_options = sanitizer_options
 
       # Again, these are full browser tests, so it needs a fairly high memory
       # limit so that it runs correctly.
@@ -49,7 +63,7 @@ template("in_process_fuzzer") {
       centipede_options = [
         # Provide plenty of capacity for test cases to flow between centipede
         # and the fuzz target.
-        "shmem_size=4096",
+        "shmem_size_mb=4096",
 
         # Browser tests are big
         "address_space_limit_mb=0",

@@ -11,6 +11,7 @@
 #include "remoting/base/protobuf_http_request_base.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/url_loader_network_service_observer.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -112,6 +113,16 @@ void ProtobufHttpClient::DoExecuteRequest(
   if (!request->config().api_key.empty()) {
     resource_request->headers.AddHeaderFromString(base::StringPrintf(
         kApiKeyHeaderFormat, request->config().api_key.c_str()));
+  }
+
+  if (request->config().provide_certificate) {
+    if (!resource_request->trusted_params.has_value()) {
+      resource_request->trusted_params.emplace();
+    }
+
+    service_observer_.emplace();
+    resource_request->trusted_params->url_loader_network_observer =
+        service_observer_->Bind();
   }
 
   std::unique_ptr<network::SimpleURLLoader> send_url_loader =

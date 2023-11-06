@@ -119,7 +119,7 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct SelectionNotifyEvent {
-    static constexpr int type_id = 10;
+    static constexpr uint8_t type_id = 10;
     static constexpr uint8_t opcode = 0;
     SelectionEvent subtype{};
     uint16_t sequence{};
@@ -131,7 +131,7 @@ class COMPONENT_EXPORT(X11) XFixes {
   };
 
   struct CursorNotifyEvent {
-    static constexpr int type_id = 11;
+    static constexpr uint8_t type_id = 11;
     static constexpr uint8_t opcode = 1;
     CursorNotify subtype{};
     uint16_t sequence{};

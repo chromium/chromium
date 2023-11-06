@@ -367,10 +367,8 @@ bool CrackIsolatedFileSystemName(const std::string& filesystem_name,
 
 bool ValidateIsolatedFileSystemId(const std::string& filesystem_id) {
   const size_t kExpectedFileSystemIdSize = 32;
-  if (filesystem_id.size() != kExpectedFileSystemIdSize)
-    return false;
-  const std::string kExpectedChars("ABCDEF0123456789");
-  return base::ContainsOnlyChars(filesystem_id, kExpectedChars);
+  return (filesystem_id.size() == kExpectedFileSystemIdSize) &&
+         base::ContainsOnlyChars(filesystem_id, "ABCDEF0123456789");
 }
 
 std::string GetIsolatedFileSystemRootURIString(

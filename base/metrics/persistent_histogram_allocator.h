@@ -155,8 +155,7 @@ class BASE_EXPORT PersistentSampleMapRecords {
   friend PersistentSparseHistogramDataManager;
 
   // Weak-pointer to the parent data-manager object.
-  raw_ptr<PersistentSparseHistogramDataManager, LeakedDanglingUntriaged>
-      data_manager_;
+  raw_ptr<PersistentSparseHistogramDataManager> data_manager_;
 
   // ID of PersistentSampleMap to which these records apply.
   const uint64_t sample_map_id_;
@@ -168,8 +167,7 @@ class BASE_EXPORT PersistentSampleMapRecords {
   // the parent manager. When GetNextRecords() is called, this is looked up to
   // find new references. Access to this vector should only be done while
   // holding the parent manager's lock.
-  raw_ptr<std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>,
-          LeakedDanglingUntriaged>
+  raw_ptr<std::vector<PersistentSparseHistogramDataManager::ReferenceAndSample>>
       records_;
 };
 
@@ -453,8 +451,9 @@ class BASE_EXPORT GlobalHistogramAllocator
   // ever one allocator for all such histograms created by a single process.
   // This takes ownership of the object and should be called as soon as
   // possible during startup to capture as many histograms as possible and
-  // while operating single-threaded so there are no race-conditions.
-  static void Set(std::unique_ptr<GlobalHistogramAllocator> allocator);
+  // while operating single-threaded so there are no race-conditions. Note that
+  // the `allocator` will never be destroyed including tests.
+  static void Set(GlobalHistogramAllocator* allocator);
 
   // Gets a pointer to the global histogram allocator. Returns null if none
   // exists.
@@ -463,8 +462,9 @@ class BASE_EXPORT GlobalHistogramAllocator
   // This access to the persistent allocator is only for testing; it extracts
   // the current allocator completely. This allows easy creation of histograms
   // within persistent memory segments which can then be extracted and used in
-  // other ways.
-  static std::unique_ptr<GlobalHistogramAllocator> ReleaseForTesting();
+  // other ways. Do not destroy the returned allocator since already created
+  // histograms may still keep pointers to allocated memory.
+  static GlobalHistogramAllocator* ReleaseForTesting();
 
   // Stores a pathname to which the contents of this allocator should be saved
   // in order to persist the data for a later use.

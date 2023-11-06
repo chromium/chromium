@@ -11,13 +11,19 @@
 @protocol SharingStatusViewControllerPresentationDelegate <NSObject>
 
 // Called when the user clicks done button.
-// TODO(crbug.com/1463882): Handle dismissing by swiping.
 - (void)sharingStatusWasDismissed:(SharingStatusViewController*)controller;
 
 // Called when the sharing progress animation finishes (is not cancelled by the
 // user). The actual sharing should kick off at this point in the main password
 // sharing coordinator.
 - (void)startPasswordSharing;
+
+// Handles taps on the link to learn more about the password sharing feature.
+- (void)learnMoreLinkWasTapped;
+
+// Handles taps on the link to the site where the user can change the password
+// that was shared.
+- (void)changePasswordLinkWasTapped;
 
 @end
 

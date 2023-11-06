@@ -62,7 +62,7 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
       // No reporting usage tracked by the `AppUsageObserver` since it was last
       // enabled, so we skip. The `AppPlatformMetrics` component will
       // subsequently delete this entry once it reports its UKM snapshot.
-      DCHECK(usage_time.reporting_usage_time.is_zero());
+      CHECK(usage_time.reporting_usage_time.is_zero());
       continue;
     }
 
@@ -98,12 +98,12 @@ void AppUsageTelemetrySampler::MaybeCollect(OptionalMetricCallback callback) {
 void AppUsageTelemetrySampler::ResetAppUsageDataInPrefStore(
     const AppUsageData* app_usage_data) {
   DCHECK_CURRENTLY_ON(::content::BrowserThread::UI);
-  DCHECK(profile_);
+  CHECK(profile_);
   ScopedDictPrefUpdate usage_dict_pref(profile_->GetPrefs(),
                                        ::apps::kAppUsageTime);
   for (const auto& usage_info : app_usage_data->app_usage()) {
     const std::string& instance_id = usage_info.app_instance_id();
-    DCHECK(usage_dict_pref->contains(instance_id))
+    CHECK(usage_dict_pref->contains(instance_id))
         << "Missing app usage data for instance: " << instance_id;
 
     // Reduce usage time tracked in the pref store based on the data that was

@@ -163,8 +163,10 @@ bool IsSupported(const base::FilePath& file_path) {
       }};
 
   // First attempt to match based on `mime_type`.
+  std::string ext = file_path.Extension();
   std::string mime_type;
-  if (net::GetMimeTypeFromFile(file_path, &mime_type)) {
+  if (!ext.empty() &&
+      net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type)) {
     for (const auto& file_match_pattern : kFileMatchPatterns) {
       if (file_match_pattern.second &&
           re2::RE2::FullMatch(mime_type, file_match_pattern.second)) {

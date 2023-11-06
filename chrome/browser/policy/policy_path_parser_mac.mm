@@ -79,10 +79,10 @@ base::FilePath::StringType ExpandPathVariables(
     base::apple::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
         kCFAllocatorDefault, CFSTR("policy_subsystem"), nullptr, &context));
     base::apple::ScopedCFTypeRef<CFStringRef> machine_name(
-        SCDynamicStoreCopyLocalHostName(store));
+        SCDynamicStoreCopyLocalHostName(store.get()));
     if (machine_name) {
       result.replace(position, strlen(kMachineNamePolicyVarName),
-                     base::SysCFStringRefToUTF8(machine_name));
+                     base::SysCFStringRefToUTF8(machine_name.get()));
     } else {
       int error = SCError();
       LOG(ERROR) << "Machine name variable can not be resolved. Error: "
@@ -103,18 +103,20 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
   // policies.
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
 #else
-  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id(
-      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID()));
+  base::apple::ScopedCFTypeRef<CFStringRef> bundle_id_scoper =
+      base::SysUTF8ToCFStringRef(base::apple::BaseBundleID());
+  CFStringRef bundle_id = bundle_id_scoper.get();
 #endif
 
-  base::apple::ScopedCFTypeRef<CFStringRef> key(
-      base::SysUTF8ToCFStringRef(policy::key::kUserDataDir));
+  base::apple::ScopedCFTypeRef<CFStringRef> key =
+      base::SysUTF8ToCFStringRef(policy::key::kUserDataDir);
   base::apple::ScopedCFTypeRef<CFPropertyListRef> value(
-      CFPreferencesCopyAppValue(key, bundle_id));
+      CFPreferencesCopyAppValue(key.get(), bundle_id));
 
-  if (!value || !CFPreferencesAppValueIsForced(key, bundle_id))
+  if (!value || !CFPreferencesAppValueIsForced(key.get(), bundle_id)) {
     return;
-  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value);
+  }
+  CFStringRef value_string = base::apple::CFCast<CFStringRef>(value.get());
   if (!value_string)
     return;
 

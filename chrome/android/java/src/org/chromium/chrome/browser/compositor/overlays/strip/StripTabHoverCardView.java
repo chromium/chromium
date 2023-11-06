@@ -8,7 +8,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Size;
-import android.widget.LinearLayout;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -16,6 +17,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -31,12 +33,13 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.base.LocalizationUtils;
 
-public class StripTabHoverCardView extends LinearLayout {
+public class StripTabHoverCardView extends FrameLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
     static final int INVALID_TAB_ID = -1;
     private static final String PARAM_SHOW_THUMBNAIL = "show_thumbnail";
 
+    private ViewGroup mContentView;
     private TextView mTitleView;
     private TextView mUrlView;
     private TabThumbnailView mThumbnailView;
@@ -54,9 +57,11 @@ public class StripTabHoverCardView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        mTitleView = findViewById(R.id.title);
-        mUrlView = findViewById(R.id.url);
-        mThumbnailView = findViewById(R.id.thumbnail);
+        mContentView = findViewById(R.id.content_view);
+        mTitleView = mContentView.findViewById(R.id.title);
+        mUrlView = mContentView.findViewById(R.id.url);
+        mThumbnailView = mContentView.findViewById(R.id.thumbnail);
+        maybeUpdateBackgroundOnLowEndDevice();
     }
 
     /**
@@ -174,16 +179,14 @@ public class StripTabHoverCardView extends LinearLayout {
 
         // 2. Determine the hover card width, making adjustments relative to the window width if
         // applicable.
-        float hoverCardWidthPx = getContext().getResources().getDimension(
-                org.chromium.chrome.R.dimen.tab_hover_card_width);
+        float hoverCardWidthPx =
+                getContext().getResources().getDimension(R.dimen.tab_hover_card_width);
         // Hover card width should be a maximum of 90% of the window width.
         hoverCardWidthPx = Math.min(hoverCardWidthPx, HOVER_CARD_MAX_WIDTH_PERCENT * windowWidthPx);
         float hoverCardWidthDp = hoverCardWidthPx / displayDensity;
-        // Update the card LayoutParams if an adjustment on the original width is required.
-        if (hoverCardWidthPx
-                != getContext().getResources().getDimension(
-                        org.chromium.chrome.R.dimen.tab_hover_card_width)) {
-            var layoutParams = getLayoutParams();
+        // Update the card LayoutParams if an adjustment on the current width is required.
+        var layoutParams = getLayoutParams();
+        if (hoverCardWidthPx != layoutParams.width) {
             setLayoutParams(new CoordinatorLayout.LayoutParams(
                     Math.round(hoverCardWidthPx), layoutParams.height));
         }
@@ -194,17 +197,29 @@ public class StripTabHoverCardView extends LinearLayout {
         // Adjust the TSR detached and inactive folio tab hover card to align with the tab container
         // edge.
         if (isDetachedEnabled || (isFolioEnabled && !isSelectedTab)) {
-            hoverCardXDp += MathUtils.flipSignIf(
-                    getContext().getResources().getDimension(
-                            org.chromium.chrome.R.dimen.tsr_no_feet_tab_hover_card_x_offset)
-                            / displayDensity,
-                    LocalizationUtils.isLayoutRtl());
+            hoverCardXDp +=
+                    MathUtils.flipSignIf(
+                            getContext()
+                                            .getResources()
+                                            .getDimension(
+                                                    R.dimen.tsr_no_feet_tab_hover_card_x_offset)
+                                    / displayDensity,
+                            LocalizationUtils.isLayoutRtl());
+        }
+
+        // On a low-end device adjust the card to account for the shadow length of the background
+        // drawable.
+        if (SysUtils.isLowEndDevice()) {
+            hoverCardXDp -=
+                    getContext().getResources().getDimension(R.dimen.tab_hover_card_elevation)
+                            / displayDensity;
         }
 
         float windowHorizontalMarginDp =
-                getContext().getResources().getDimension(
-                        org.chromium.chrome.R.dimen.tab_hover_card_window_horizontal_margin)
-                / displayDensity;
+                getContext()
+                                .getResources()
+                                .getDimension(R.dimen.tab_hover_card_window_horizontal_margin)
+                        / displayDensity;
         // Align the hover card at a minimum horizontal margin of 8dp from the window left edge.
         if (hoverCardXDp < windowHorizontalMarginDp) {
             hoverCardXDp = windowHorizontalMarginDp;
@@ -221,7 +236,21 @@ public class StripTabHoverCardView extends LinearLayout {
             hoverCardYDp += StripLayoutHelper.FOLIO_DETACHED_BOTTOM_MARGIN_DP;
         }
 
+        // On a low-end device adjust the card to account for the shadow length of the background
+        // drawable.
+        if (SysUtils.isLowEndDevice()) {
+            hoverCardYDp -=
+                    getContext().getResources().getDimension(R.dimen.tab_hover_card_elevation)
+                            / displayDensity;
+        }
+
         return new float[] {hoverCardXDp * displayDensity, hoverCardYDp * displayDensity};
+    }
+
+    void maybeUpdateBackgroundOnLowEndDevice() {
+        if (!SysUtils.isLowEndDevice()) return;
+        mContentView.setBackgroundResource(R.drawable.popup_bg_8dp);
+        setBackground(null);
     }
 
     private void updateThumbnail(Tab hoveredTab) {

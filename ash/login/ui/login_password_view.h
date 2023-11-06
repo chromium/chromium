@@ -54,12 +54,10 @@ class LoginArrowNavigationDelegate;
 //
 //  1 2 3 4 5 6    (o)  (=>)
 //  ------------------
-class ASH_EXPORT LoginPasswordView
-    : public views::View,
-      public views::TextfieldController,
-      public ImeControllerImpl::Observer,
-      public ui::ImplicitAnimationObserver,
-      public base::SupportsWeakPtr<LoginPasswordView> {
+class ASH_EXPORT LoginPasswordView : public views::View,
+                                     public views::TextfieldController,
+                                     public ImeControllerImpl::Observer,
+                                     public ui::ImplicitAnimationObserver {
  public:
   METADATA_HEADER(LoginPasswordView);
   // TestApi is used for tests to get internal implementation details.
@@ -165,6 +163,10 @@ class ASH_EXPORT LoginPasswordView
   // Sets the delegate of the arrow keys navigation.
   void SetLoginArrowNavigationDelegate(LoginArrowNavigationDelegate* delegate);
 
+  base::WeakPtr<LoginPasswordView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   class DisplayPasswordButton;
   class LoginPasswordRow;
@@ -211,6 +213,8 @@ class ASH_EXPORT LoginPasswordView
   raw_ptr<views::ImageView, ExperimentalAsh> capslock_icon_ = nullptr;
 
   bool is_capslock_higlight_ = false;
+
+  base::WeakPtrFactory<LoginPasswordView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

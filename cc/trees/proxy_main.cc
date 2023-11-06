@@ -96,12 +96,7 @@ void ProxyMain::BeginMainFrameNotExpectedUntil(base::TimeTicks time) {
 
 void ProxyMain::DidCommitAndDrawFrame(int source_frame_number) {
   DCHECK(IsMainThread());
-  layer_tree_host_->DidCommitAndDrawFrame();
-  if (synchronous_composite_for_test_callback_ &&
-      source_frame_number == synchronous_composite_source_frame_number_) {
-    synchronous_composite_source_frame_number_ = -1;
-    std::move(synchronous_composite_for_test_callback_).Run();
-  }
+  layer_tree_host_->DidCommitAndDrawFrame(source_frame_number);
 }
 
 void ProxyMain::DidLoseLayerTreeFrameSink() {
@@ -416,6 +411,7 @@ void ProxyMain::BeginMainFrame(
     // detected to be a no-op.  From the perspective of an embedder, this commit
     // went through, and input should no longer be throttled, etc.
     layer_tree_host_->CommitComplete(
+        layer_tree_host_->SourceFrameNumber(),
         {base::TimeTicks(), base::TimeTicks::Now()});
     layer_tree_host_->RecordEndOfFrameMetrics(
         begin_main_frame_start_time,
@@ -424,10 +420,12 @@ void ProxyMain::BeginMainFrame(
     return;
   }
 
-  if (synchronous_composite_for_test_callback_ &&
-      synchronous_composite_source_frame_number_ == -1) {
-    synchronous_composite_source_frame_number_ =
-        commit_state->source_frame_number;
+  if (synchronous_composite_for_test_callback_) {
+    commit_state->pending_presentation_callbacks.push_back(base::BindOnce(
+        [](base::OnceClosure callback, const gfx::PresentationFeedback&) {
+          std::move(callback).Run();
+        },
+        std::move(synchronous_composite_for_test_callback_)));
   }
 
   current_pipeline_stage_ = NO_PIPELINE_STAGE;
@@ -436,6 +434,7 @@ void ProxyMain::BeginMainFrame(
   // begin the commit process, which is blocking from the main thread's
   // point of view, but asynchronously performed on the impl thread,
   // coordinated by the Scheduler.
+  int source_frame_number = commit_state->source_frame_number;
   CommitTimestamps commit_timestamps;
   {
     TRACE_EVENT_WITH_FLOW0("viz,benchmark",
@@ -471,7 +470,7 @@ void ProxyMain::BeginMainFrame(
   // blink::LocalFrameView::RunPostLifecycleSteps.
   layer_tree_host_->DidBeginMainFrame();
   if (blocking)
-    layer_tree_host_->CommitComplete(commit_timestamps);
+    layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
   layer_tree_host_->RecordEndOfFrameMetrics(
       begin_main_frame_start_time,
       begin_main_frame_state->active_sequence_trackers);
@@ -479,11 +478,12 @@ void ProxyMain::BeginMainFrame(
     commit_trace_.reset();
 }
 
-void ProxyMain::DidCompleteCommit(CommitTimestamps commit_timestamps) {
+void ProxyMain::DidCompleteCommit(int source_frame_number,
+                                  CommitTimestamps commit_timestamps) {
   if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit))
     return;
   if (layer_tree_host_)
-    layer_tree_host_->CommitComplete(commit_timestamps);
+    layer_tree_host_->CommitComplete(source_frame_number, commit_timestamps);
   commit_trace_.reset();
 }
 
@@ -504,10 +504,11 @@ void ProxyMain::NotifyThroughputTrackerResults(CustomTrackerResults results) {
 }
 
 void ProxyMain::DidObserveFirstScrollDelay(
+    int source_frame_number,
     base::TimeDelta first_scroll_delay,
     base::TimeTicks first_scroll_timestamp) {
-  layer_tree_host_->DidObserveFirstScrollDelay(first_scroll_delay,
-                                               first_scroll_timestamp);
+  layer_tree_host_->DidObserveFirstScrollDelay(
+      source_frame_number, first_scroll_delay, first_scroll_timestamp);
 }
 
 void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {

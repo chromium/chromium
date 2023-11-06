@@ -60,6 +60,7 @@
     case OmniboxSuggestionIconType::kDefaultFavicon:
     case OmniboxSuggestionIconType::kSearch:
     case OmniboxSuggestionIconType::kSearchHistory:
+    case OmniboxSuggestionIconType::kSearchTrend:
       return NO;
     case OmniboxSuggestionIconType::kCalculator:
     case OmniboxSuggestionIconType::kConversion:

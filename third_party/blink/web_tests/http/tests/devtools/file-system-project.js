@@ -9,6 +9,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as Host from 'devtools/core/host/host.js';
 import * as Persistence from 'devtools/models/persistence/persistence.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests file system project.\n`);
@@ -16,7 +17,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
   function fileSystemUISourceCodes() {
     var uiSourceCodes = [];
-    var fileSystemProjects = Workspace.workspace.projectsForType(Workspace.projectTypes.FileSystem);
+    var fileSystemProjects = Workspace.Workspace.WorkspaceImpl.instance().projectsForType(Workspace.Workspace.projectTypes.FileSystem);
     for (var project of fileSystemProjects) {
       for (const uiSourceCode of project.uiSourceCodes()) {
         uiSourceCodes.push(uiSourceCode);
@@ -31,7 +32,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
         uiSourceCode.contentType() === Common.ResourceType.resourceTypes.Document)
       TestRunner.addResult(
           'UISourceCode is content script: ' +
-          (uiSourceCode.project().type() === Workspace.projectTypes.ContentScripts));
+          (uiSourceCode.project().type() === Workspace.Workspace.projectTypes.ContentScripts));
     uiSourceCode.requestContent().then(didRequestContent);
 
     function didRequestContent(content, contentEncoded) {
@@ -98,13 +99,13 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
       fs1.reportCreated(function() {});
       fs2.reportCreated(function() {});
 
-      Workspace.workspace.addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
+      Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
 
       var count = 3;
       function onUISourceCode() {
         if (--count)
           return;
-        Workspace.workspace.removeEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
+        Workspace.Workspace.WorkspaceImpl.instance().removeEventListener(Workspace.Workspace.Events.UISourceCodeAdded, onUISourceCode);
         onUISourceCodesLoaded();
       }
 
@@ -117,7 +118,7 @@ import * as Persistence from 'devtools/models/persistence/persistence.js';
 
       function uiSourceCodesDumped() {
         dumpUISourceCodeLocations(uiSourceCodes, 5);
-        Workspace.workspace.addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, contentCommitted, this);
+        Workspace.Workspace.WorkspaceImpl.instance().addEventListener(Workspace.Workspace.Events.WorkingCopyCommitted, contentCommitted, this);
         uiSourceCodes[0].addRevision('<Modified UISourceCode content>');
       }
 

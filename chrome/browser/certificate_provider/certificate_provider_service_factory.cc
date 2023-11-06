@@ -112,25 +112,25 @@ std::unique_ptr<extensions::Event> BuildOnSignatureRequestedEvent(
   request.sign_request_id = request_id;
   switch (algorithm) {
     case SSL_SIGN_RSA_PKCS1_SHA1:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA1;
+      request.algorithm = api_cp::Algorithm::kRsassaPkcs1V1_5Sha1;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA256:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA256;
+      request.algorithm = api_cp::Algorithm::kRsassaPkcs1V1_5Sha256;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA384:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA384;
+      request.algorithm = api_cp::Algorithm::kRsassaPkcs1V1_5Sha384;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA512:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PKCS1_V1_5_SHA512;
+      request.algorithm = api_cp::Algorithm::kRsassaPkcs1V1_5Sha512;
       break;
     case SSL_SIGN_RSA_PSS_RSAE_SHA256:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA256;
+      request.algorithm = api_cp::Algorithm::kRsassaPssSha256;
       break;
     case SSL_SIGN_RSA_PSS_RSAE_SHA384:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA384;
+      request.algorithm = api_cp::Algorithm::kRsassaPssSha384;
       break;
     case SSL_SIGN_RSA_PSS_RSAE_SHA512:
-      request.algorithm = api_cp::ALGORITHM_RSASSA_PSS_SHA512;
+      request.algorithm = api_cp::Algorithm::kRsassaPssSha512;
       break;
     default:
       LOG(ERROR) << "Unknown signature algorithm";
@@ -160,16 +160,16 @@ std::unique_ptr<extensions::Event> BuildOnSignDigestRequestedEvent(
   request.sign_request_id = request_id;
   switch (algorithm) {
     case SSL_SIGN_RSA_PKCS1_SHA1:
-      request.hash = api_cp::HASH_SHA1;
+      request.hash = api_cp::Hash::kSha1;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA256:
-      request.hash = api_cp::HASH_SHA256;
+      request.hash = api_cp::Hash::kSha256;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA384:
-      request.hash = api_cp::HASH_SHA384;
+      request.hash = api_cp::Hash::kSha384;
       break;
     case SSL_SIGN_RSA_PKCS1_SHA512:
-      request.hash = api_cp::HASH_SHA512;
+      request.hash = api_cp::Hash::kSha512;
       break;
     default:
       LOG(ERROR) << "Unknown signature algorithm";

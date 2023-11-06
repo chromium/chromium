@@ -13,39 +13,68 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
-/**
- * An abstraction of the text model to show, keep track of, and update autocomplete.
- */
+/** An abstraction of the text model to show, keep track of, and update autocomplete. */
 public interface AutocompleteEditTextModelBase {
-    /**
-     * An embedder should implement this.
-     */
+    /** An embedder should implement this. */
     public interface Delegate {
-        /** @see TextView#getText() */
+        /**
+         * @see TextView#getText()
+         */
         Editable getText();
-        /** @see TextView#getEditableText() */
+
+        /**
+         * @see TextView#getEditableText()
+         */
         Editable getEditableText();
-        /** @see TextView#append(CharSequence) */
+
+        /**
+         * @see TextView#append(CharSequence)
+         */
         void append(CharSequence subSequence);
-        /** @see TextView#getSelectionStart() */
+
+        /**
+         * @see TextView#getSelectionStart()
+         */
         int getSelectionStart();
-        /** @see TextView#getSelectionEnd() */
+
+        /**
+         * @see TextView#getSelectionEnd()
+         */
         int getSelectionEnd();
-        /** @see EditText#setSelection(int, int) */
+
+        /**
+         * @see EditText#setSelection(int, int)
+         */
         void setSelection(int autocompleteIndex, int length);
-        /** @see TextView#announceForAccessibility(CharSequence) */
+
+        /**
+         * @see TextView#announceForAccessibility(CharSequence)
+         */
         void announceForAccessibility(CharSequence inlineAutocompleteText);
-        /** @see TextView#getHighlightColor() */
+
+        /**
+         * @see TextView#getHighlightColor()
+         */
         int getHighlightColor();
-        /** @see TextView#setCursorVisible(boolean) */
+
+        /**
+         * @see TextView#setCursorVisible(boolean)
+         */
         void setCursorVisible(boolean visible);
-        /** @see TextView#isFocused() */
+
+        /**
+         * @see TextView#isFocused()
+         */
         boolean isFocused();
-        /** @see TextView#sendAccessibilityEventUnchecked(AccessibilityEvent) */
+
+        /**
+         * @see TextView#sendAccessibilityEventUnchecked(AccessibilityEvent)
+         */
         void sendAccessibilityEventUnchecked(AccessibilityEvent event);
 
         /**
          * Call super.dispatchKeyEvent(KeyEvent).
+         *
          * @param event Key event.
          * @return The return value of super.dispatchKeyEvent(KeyEvent).
          */
@@ -53,12 +82,14 @@ public interface AutocompleteEditTextModelBase {
 
         /**
          * This is called when autocomplete replaces the whole text.
+         *
          * @param text The text.
          */
         void replaceAllTextFromAutocomplete(String text);
 
         /**
          * This is called when autocomplete text state changes.
+         *
          * @param updateDisplay True if string is changed.
          */
         void onAutocompleteTextStateChanged(boolean updateDisplay);
@@ -72,12 +103,15 @@ public interface AutocompleteEditTextModelBase {
          */
         void onUpdateSelectionForTesting(int selStart, int selEnd);
 
-        /** @return The package name of the current keyboard app. */
+        /**
+         * @return The package name of the current keyboard app.
+         */
         String getKeyboardPackageName();
     }
 
     /**
      * Called when creating an input connection.
+     *
      * @param inputConnection An {@link InputConnection} created by EditText.
      * @return A wrapper @{link InputConnection} created by the model.
      */
@@ -85,6 +119,7 @@ public interface AutocompleteEditTextModelBase {
 
     /**
      * Called when View#dispatchKeyEvent(KeyEvent event) is called.
+     *
      * @param event The key event.
      * @return True if key event has been handled, false otherwise.
      */
@@ -92,12 +127,14 @@ public interface AutocompleteEditTextModelBase {
 
     /**
      * Called when TextView#setText(CharSequence, BufferType) is called.
+     *
      * @param text The new text.
      */
     void onSetText(CharSequence text);
 
     /**
      * Called when TextView#onSelectionChanged(int, int) is called.
+     *
      * @param selStart The selection start.
      * @param selEnd The selection end.
      */
@@ -105,12 +142,14 @@ public interface AutocompleteEditTextModelBase {
 
     /**
      * Called when View#onFocusChanged(boolean, int, Rect) is called.
+     *
      * @param focused True if the View has focus; false otherwise.
      */
     void onFocusChanged(boolean focused);
 
     /**
      * Called when TextView#onTextChanged(CharSequence, int, int, int) is called.
+     *
      * @param text The text the TextView is displaying.
      * @param start The offset of the start of the range of the text that was modified.
      * @param beforeLength The length of the former text that has been replaced.
@@ -132,13 +171,14 @@ public interface AutocompleteEditTextModelBase {
     String getTextWithoutAutocomplete();
 
     /**
-     * Returns the length of the autocomplete text currently displayed, zero if none is
-     * currently displayed.
+     * Returns the length of the autocomplete text currently displayed, zero if none is currently
+     * displayed.
      */
     String getAutocompleteText();
 
     /**
      * Sets whether text changes should trigger autocomplete.
+     *
      * @param ignore Whether text changes should be ignored and no auto complete.
      */
     void setIgnoreTextChangeFromAutocomplete(boolean ignore);
@@ -146,6 +186,7 @@ public interface AutocompleteEditTextModelBase {
     /**
      * Autocompletes the text and selects the text that was not entered by the user. Using append()
      * instead of setText() to preserve the soft-keyboard layout.
+     *
      * @param userText user The text entered by the user.
      * @param inlineAutocompleteText The suggested autocompletion for the user's text.
      */
@@ -153,17 +194,22 @@ public interface AutocompleteEditTextModelBase {
 
     /**
      * Whether we want to be showing inline autocomplete results. We don't want to show them as the
-     * user deletes input. Also if there is a composition (e.g. while using the Japanese IME),
-     * we must not autocomplete or we'll destroy the composition.
+     * user deletes input. Also if there is a composition (e.g. while using the Japanese IME), we
+     * must not autocomplete or we'll destroy the composition.
+     *
      * @return Whether we want to be showing inline autocomplete results.
      */
     boolean shouldAutocomplete();
 
-    /** @return Whether any autocomplete information is specified on the current text. */
+    /**
+     * @return Whether any autocomplete information is specified on the current text.
+     */
     @VisibleForTesting
     boolean hasAutocomplete();
 
-    /** @return The current {@link InputConnection} object. */
+    /**
+     * @return The current {@link InputConnection} object.
+     */
     @VisibleForTesting
     InputConnection getInputConnection();
 
@@ -172,8 +218,6 @@ public interface AutocompleteEditTextModelBase {
      */
     boolean shouldIgnoreAccessibilityEvent();
 
-    /**
-     * Set whether layout (and text) direction is Left-To-Right.
-     */
+    /** Set whether layout (and text) direction is Left-To-Right. */
     void setLayoutDirectionIsLtr(boolean isLtr);
 }

@@ -17,6 +17,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_duplicate_id_finder.h"
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
 #include "ash/system/input_device_settings/input_device_notifier.h"
@@ -35,6 +36,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
@@ -45,6 +47,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
@@ -55,7 +58,7 @@ namespace ash {
 
 namespace {
 
-const int kMaxButtonNameLength = 64;
+const int kMaxButtonNameLength = 32;
 
 mojom::MetaKey GetMetaKeyForKeyboard(const ui::KeyboardDevice& keyboard) {
   const auto device_type =
@@ -229,11 +232,34 @@ bool IsGraphicsTabletPenButton(const mojom::Button& button) {
 void AddButtonToButtonRemappingList(
     const mojom::Button& button,
     std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
-  // TODO(b/286930911): Translate "Button" string to other languages.
+  std::string button_name;
+  // If its a middle click, give it the default middle button name.
+  if (button.is_customizable_button() &&
+      button.get_customizable_button() == mojom::CustomizableButton::kMiddle) {
+    button_name = l10n_util::GetStringUTF8(
+        IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME);
+  } else {
+    // Otherwise, give it the default button name indexed at the number of
+    // non-middle click buttons in `button_remappings` + 1.
+    auto iter =
+        base::ranges::find(button_remappings,
+                           *mojom::Button::NewCustomizableButton(
+                               mojom::CustomizableButton::kMiddle),
+                           [](const mojom::ButtonRemappingPtr& remapping) {
+                             return *remapping->button;
+                           });
+
+    int button_number = button_remappings.size() + 1;
+    if (iter != button_remappings.end()) {
+      --button_number;
+    }
+    button_name = l10n_util::GetStringFUTF8(
+        IDS_SETTINGS_CUSTOMIZATION_OTHER_BUTTON_DEFAULT_NAME,
+        base::NumberToString16(button_number));
+  }
+
   button_remappings.push_back(mojom::ButtonRemapping::New(
-      /*name=*/base::StrCat(
-          {"Button ", base::ToString(button_remappings.size() + 1)}),
-      button.Clone(), /*remapping_action=*/nullptr));
+      std::move(button_name), button.Clone(), /*remapping_action=*/nullptr));
 }
 
 // suppress_meta_fkey_rewrites must never be non-default for internal
@@ -288,7 +314,7 @@ bool TouchpadSettingsAreValid(const mojom::Touchpad& touchpad,
 
 // ValidateButtonRemappingList verifies if the new button remapping list has
 // the same buttons as these in the original button remapping list and all the
-// button remapping names should be fewer than 64 characters.
+// button remapping names should be fewer than 32 characters.
 bool ValidateButtonRemappingList(
     const std::vector<mojom::ButtonRemappingPtr>& original_remapping_list,
     const std::vector<mojom::ButtonRemappingPtr>& new_remapping_list) {
@@ -304,7 +330,7 @@ bool ValidateButtonRemappingList(
         break;
       }
     }
-    if (!found || new_remapping->name.size() >= kMaxButtonNameLength) {
+    if (!found || new_remapping->name.size() > kMaxButtonNameLength) {
       return false;
     }
   }
@@ -314,7 +340,7 @@ bool ValidateButtonRemappingList(
 
 // Valid graphics tablet settings should have the same tablet and pen buttons
 // as these in the graphics tablet and all the button remapping names should be
-// fewer than 64 characters.
+// fewer than 32 characters.
 bool GraphicsTabletSettingsAreValid(
     const mojom::GraphicsTablet& graphics_tablet,
     const mojom::GraphicsTabletSettings& settings) {
@@ -328,7 +354,7 @@ bool GraphicsTabletSettingsAreValid(
 
 // Valid mouse settings should have the same buttons as those
 // in the mouse and all the button remapping names should be
-// fewer than 64 characters.
+// fewer than 32 characters.
 bool MouseSettingsAreValid(const mojom::Mouse& mouse,
                            const mojom::MouseSettings& settings) {
   if (!features::IsPeripheralCustomizationEnabled()) {
@@ -1040,7 +1066,7 @@ InputDeviceSettingsControllerImpl::GetConnectedGraphicsTablets() {
   return graphics_tablet_vector;
 }
 
-void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
+bool InputDeviceSettingsControllerImpl::SetKeyboardSettings(
     DeviceId id,
     mojom::KeyboardSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1049,14 +1075,14 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
   auto found_keyboard_iter = keyboards_.find(id);
   if (found_keyboard_iter == keyboards_.end()) {
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   auto& found_keyboard = *found_keyboard_iter->second;
 
   if (!KeyboardSettingsAreValid(found_keyboard, *settings,
                                 policy_handler_->keyboard_policies())) {
     RecordSetKeyboardSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetKeyboardSettingsValidMetric(/*is_valid=*/true);
 
@@ -1074,9 +1100,10 @@ void InputDeviceSettingsControllerImpl::SetKeyboardSettings(
           &InputDeviceSettingsControllerImpl::DispatchKeyboardSettingsChanged,
           base::Unretained(this)));
   RefreshCachedKeyboardSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
+bool InputDeviceSettingsControllerImpl::SetTouchpadSettings(
     DeviceId id,
     mojom::TouchpadSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1085,13 +1112,13 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
   auto found_touchpad_iter = touchpads_.find(id);
   if (found_touchpad_iter == touchpads_.end()) {
     RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
 
   auto& found_touchpad = *found_touchpad_iter->second;
   if (!TouchpadSettingsAreValid(found_touchpad, *settings)) {
     RecordSetTouchpadSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetTouchpadSettingsValidMetric(/*is_valid=*/true);
 
@@ -1108,9 +1135,10 @@ void InputDeviceSettingsControllerImpl::SetTouchpadSettings(
           &InputDeviceSettingsControllerImpl::DispatchTouchpadSettingsChanged,
           base::Unretained(this)));
   RefreshCachedTouchpadSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetMouseSettings(
+bool InputDeviceSettingsControllerImpl::SetMouseSettings(
     DeviceId id,
     mojom::MouseSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1119,13 +1147,13 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
   auto found_mouse_iter = mice_.find(id);
   if (found_mouse_iter == mice_.end()) {
     RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
 
   auto& found_mouse = *found_mouse_iter->second;
   if (!MouseSettingsAreValid(found_mouse, *settings)) {
     RecordSetMouseSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetMouseSettingsValidMetric(/*is_valid=*/true);
 
@@ -1142,9 +1170,10 @@ void InputDeviceSettingsControllerImpl::SetMouseSettings(
           &InputDeviceSettingsControllerImpl::DispatchMouseSettingsChanged,
           base::Unretained(this)));
   RefreshCachedMouseSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
+bool InputDeviceSettingsControllerImpl::SetPointingStickSettings(
     DeviceId id,
     mojom::PointingStickSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1153,7 +1182,7 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   auto found_pointing_stick_iter = pointing_sticks_.find(id);
   if (found_pointing_stick_iter == pointing_sticks_.end()) {
     RecordSetPointingStickSettingsValidMetric(/*is_valid=*/false);
-    return;
+    return false;
   }
   RecordSetPointingStickSettingsValidMetric(/*is_valid=*/true);
 
@@ -1176,9 +1205,10 @@ void InputDeviceSettingsControllerImpl::SetPointingStickSettings(
   }
 
   RefreshStoredLoginScreenPointingStickSettings();
+  return true;
 }
 
-void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
+bool InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
     DeviceId id,
     mojom::GraphicsTabletSettingsPtr settings) {
   DCHECK(active_pref_service_);
@@ -1186,12 +1216,12 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
   // If a device with the given id does not exist, do nothing.
   auto found_graphics_tablet_iter = graphics_tablets_.find(id);
   if (found_graphics_tablet_iter == graphics_tablets_.end()) {
-    return;
+    return false;
   }
 
   auto& found_graphics_tablet = *found_graphics_tablet_iter->second;
   if (!GraphicsTabletSettingsAreValid(found_graphics_tablet, *settings)) {
-    return;
+    return false;
   }
 
   const auto old_settings = std::move(found_graphics_tablet.settings);
@@ -1208,6 +1238,7 @@ void InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
                               DispatchGraphicsTabletSettingsChanged,
                           base::Unretained(this)));
   RefreshStoredLoginScreenGraphicsTabletSettings();
+  return true;
 }
 
 void InputDeviceSettingsControllerImpl::AddObserver(Observer* observer) {
@@ -1413,19 +1444,41 @@ void InputDeviceSettingsControllerImpl::
     return;
   }
 
+  bool changed_restriction = false;
   auto* duplicate_ids =
       duplicate_id_finder_->GetDuplicateDeviceIds(keyboard_id);
   CHECK(duplicate_ids);
   for (const auto& duplicate_id : *duplicate_ids) {
     auto iter = mice_.find(duplicate_id);
     if (iter == mice_.end()) {
-      return;
+      continue;
     }
     auto& mouse = *iter->second;
+
+    if (mouse.customization_restriction ==
+        mojom::CustomizationRestriction::kDisableKeyEventRewrites) {
+      continue;
+    }
+
     mouse.customization_restriction =
         mojom::CustomizationRestriction::kDisableKeyEventRewrites;
+    changed_restriction = true;
     InitializeMouseSettings(&mouse);
     DispatchMouseSettingsChanged(mouse.id);
+  }
+
+  // If the restriction changed for any mouse, refresh the observing to match
+  // the new restriction.
+  if (changed_restriction) {
+    PeripheralCustomizationEventRewriter* rewriter =
+        Shell::Get()
+            ->event_rewriter_controller()
+            ->peripheral_customization_event_rewriter();
+    DeviceId id = *duplicate_ids->begin();
+    if (rewriter->mice_to_observe().contains(id)) {
+      rewriter->StopObserving();
+      StartObservingButtons(id);
+    }
   }
 }
 
@@ -1686,14 +1739,17 @@ void InputDeviceSettingsControllerImpl::StartObservingButtons(DeviceId id) {
           ->peripheral_customization_event_rewriter();
   CHECK(rewriter);
   auto* mouse = FindMouse(id);
-  if (mouse && mouse->customization_restriction ==
-                   ash::mojom::CustomizationRestriction::kAllowCustomizations) {
+  if (mouse &&
+      mouse->customization_restriction !=
+          ash::mojom::CustomizationRestriction::kDisallowCustomizations) {
     const auto* duplicate_ids =
         duplicate_id_finder_->GetDuplicateDeviceIds(mouse->id);
     CHECK(duplicate_ids);
     for (const auto& duplicate_id : *duplicate_ids) {
-      rewriter->StartObservingMouse(duplicate_id,
-                                    /*can_rewrite_key_event=*/true);
+      rewriter->StartObservingMouse(
+          duplicate_id,
+          /*can_rewrite_key_event=*/mouse->customization_restriction ==
+              ash::mojom::CustomizationRestriction::kAllowCustomizations);
     }
     return;
   }

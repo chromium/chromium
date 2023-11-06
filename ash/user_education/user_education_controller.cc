@@ -7,9 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/user_education/capture_mode_tour/capture_mode_tour_controller.h"
-#include "ash/user_education/holding_space_tour/holding_space_tour_controller.h"
-#include "ash/user_education/holding_space_tour/holding_space_tour_prefs.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_controller.h"
+#include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
 #include "ash/user_education/user_education_delegate.h"
 #include "ash/user_education/user_education_feature_controller.h"
 #include "ash/user_education/user_education_util.h"
@@ -34,13 +33,9 @@ UserEducationController::UserEducationController(
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
-  if (features::IsCaptureModeTourEnabled()) {
-    feature_controllers_.emplace(std::make_unique<CaptureModeTourController>());
-  }
-
-  if (features::IsHoldingSpaceTourEnabled()) {
+  if (features::IsHoldingSpaceWallpaperNudgeEnabled()) {
     feature_controllers_.emplace(
-        std::make_unique<HoldingSpaceTourController>());
+        std::make_unique<HoldingSpaceWallpaperNudgeController>());
   }
 
   if (features::IsWelcomeTourEnabled()) {
@@ -61,7 +56,7 @@ UserEducationController* UserEducationController::Get() {
 // static
 void UserEducationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  holding_space_tour_prefs::RegisterProfilePrefs(registry);
+  holding_space_wallpaper_nudge_prefs::RegisterProfilePrefs(registry);
   welcome_tour_prefs::RegisterProfilePrefs(registry);
 }
 

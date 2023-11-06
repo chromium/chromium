@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
@@ -13,12 +14,16 @@
 namespace blink {
 
 MLGraphBuilder* CreateMLGraphBuilder(ExecutionContext* execution_context,
+                                     ScriptState* script_state,
+                                     ExceptionState& exception_state,
                                      MLContextOptions* options) {
   auto* ml = MakeGarbageCollected<ML>(execution_context);
-  auto* context = MakeGarbageCollected<MLContext>(
-      options->devicePreference(), options->powerPreference(),
-      options->modelFormat(), options->numThreads(), ml);
-  return MLGraphBuilder::Create(context);
+  MLContext* ml_context =
+      ml->createContextSync(script_state, options, exception_state);
+  // createContextSync fails to create due to validation or invalid script
+  // state.
+  CHECK(ml_context);
+  return MLGraphBuilder::Create(ml_context);
 }
 
 MLOperand* BuildInput(MLGraphBuilder* builder,

@@ -31,10 +31,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        SettingsUtils.addPreferencesFromResource(this,
-                getSiteSettingsDelegate().isPrivacySandboxSettings4Enabled()
-                        ? R.xml.site_settings_preferences_with_categories
-                        : R.xml.site_settings_preferences);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.site_settings_preferences);
         getActivity().setTitle(getContext().getString(R.string.prefs_site_settings));
 
         configurePreferences();
@@ -51,6 +48,11 @@ public class SiteSettings extends BaseSiteSettingsFragment
     }
 
     private void configurePreferences() {
+        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUI()) {
+            findPreference(Type.THIRD_PARTY_COOKIES).setVisible(false);
+            findPreference(Type.TRACKING_PROTECTION).setVisible(true);
+        }
+
         // Remove unsupported settings categories.
         for (@SiteSettingsCategory.Type int type = 0; type < SiteSettingsCategory.Type.NUM_ENTRIES;
                 type++) {
@@ -153,6 +155,16 @@ public class SiteSettings extends BaseSiteSettingsFragment
         if (p != null) p.setOnPreferenceClickListener(this);
         p = findPreference(Type.ZOOM);
         if (p != null) p.setOnPreferenceClickListener(this);
+        // Handle Tracking Protection separately.
+        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUI()) {
+            p = findPreference(Type.TRACKING_PROTECTION);
+            if (p != null) {
+                p.setSummary(
+                        ContentSettingsResources.getTrackingProtectionListSummary(
+                                getSiteSettingsDelegate()
+                                        .isBlockAll3PCDEnabledInTrackingProtection()));
+            }
+        }
     }
 
     @Override

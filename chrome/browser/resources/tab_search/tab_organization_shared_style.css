@@ -16,6 +16,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  width: 100%;
 }
 
 .tab-organization-header {
@@ -28,4 +29,66 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+@keyframes displayOut {
+  0% {
+    display: block;
+  }
+
+  50%,
+  100% {
+    display: none;
+  }
+}
+
+@keyframes displayIn {
+  0%,
+  50% {
+    display: none;
+  }
+
+  100% {
+    display: block;
+  }
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes marginOut {
+  0% {
+    margin-top: 0px;
+  }
+
+  100% {
+    margin-top: -16px;
+  }
+}
+
+@keyframes paddingIn {
+  0% {
+    padding-top: 16px;
+  }
+
+  100% {
+    padding-top: 0px;
+  }
 }

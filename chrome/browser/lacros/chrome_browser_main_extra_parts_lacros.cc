@@ -24,6 +24,7 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/lacros/clipboard_history_lacros.h"
+#include "chrome/browser/lacros/desk_profiles_lacros.h"
 #include "chrome/browser/lacros/desk_template_client_lacros.h"
 #include "chrome/browser/lacros/download_controller_client_lacros.h"
 #include "chrome/browser/lacros/drivefs_cache.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 #include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
+#include "chrome/browser/lacros/guest_os/vm_sk_forwarding_service.h"
 #include "chrome/browser/lacros/lacros_apps_publisher.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
@@ -42,7 +44,6 @@
 #include "chrome/browser/lacros/multitask_menu_nudge_delegate_lacros.h"
 #include "chrome/browser/lacros/net/network_change_manager_bridge.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
-#include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
 #include "chrome/browser/lacros/ui_metric_recorder_lacros.h"
@@ -90,6 +91,20 @@ CreateClipboardHistoryLacros() {
                   kRegisterClientMinVersion}) {
     return std::make_unique<crosapi::ClipboardHistoryLacros>(
         service->GetRemote<crosapi::mojom::ClipboardHistory>().get());
+  }
+
+  return nullptr;
+}
+
+std::unique_ptr<crosapi::DeskProfilesLacros> CreateDeskProfilesLacros() {
+  CHECK(chromeos::features::IsDeskProfilesEnabled());
+
+  if (chromeos::LacrosService* const service = chromeos::LacrosService::Get();
+      service->IsAvailable<crosapi::mojom::DeskProfileObserver>() &&
+      g_browser_process) {
+    return std::make_unique<crosapi::DeskProfilesLacros>(
+        g_browser_process->profile_manager(),
+        service->GetRemote<crosapi::mojom::DeskProfileObserver>().get());
   }
 
   return nullptr;
@@ -165,6 +180,9 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   automation_manager_ = std::make_unique<AutomationManagerLacros>();
   browser_service_ = std::make_unique<BrowserServiceLacros>();
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
+  if (chromeos::features::IsDeskProfilesEnabled()) {
+    desk_profiles_lacros_ = CreateDeskProfilesLacros();
+  }
   drivefs_native_message_host_bridge_ =
       std::make_unique<drive::DriveFsNativeMessageHostBridge>();
   download_controller_client_ =
@@ -184,6 +202,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     clipboard_history_lacros_ = CreateClipboardHistoryLacros();
   }
+  vm_sk_forwarding_service_ =
+      std::make_unique<guest_os::VmSkForwardingService>();
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
       static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
@@ -210,31 +230,10 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     extensions_controller_->Initialize(extensions_publisher_->publisher());
   }
 
-  if (chromeos::BrowserParamsProxy::Get()->WebAppsEnabled()) {
-    web_app_provider_bridge_ =
-        std::make_unique<crosapi::WebAppProviderBridgeLacros>();
-  }
+  web_app_provider_bridge_ =
+      std::make_unique<crosapi::WebAppProviderBridgeLacros>();
 
   EmbeddedA11yManagerLacros::GetInstance()->Init();
-
-#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
-  // The test controller is only created in test builds AND when Ash's test
-  // controller service is available.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service->IsAvailable<crosapi::mojom::TestController>()) {
-    int remote_version =
-        lacros_service->GetInterfaceVersion<crosapi::mojom::TestController>();
-    if (static_cast<uint32_t>(remote_version) >=
-        crosapi::mojom::TestController::
-            kRegisterStandaloneBrowserTestControllerMinVersion) {
-      auto& ash_test_controller =
-          lacros_service->GetRemote<crosapi::mojom::TestController>();
-      standalone_browser_test_controller_ =
-          std::make_unique<StandaloneBrowserTestController>(
-              ash_test_controller);
-    }
-  }
-#endif
 
   // Construct ArcIconCache and set it to provider.
   arc_icon_cache_ = std::make_unique<ArcIconCache>();
@@ -280,10 +279,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   smart_reader_client_ =
       std::make_unique<smart_reader::SmartReaderClientImpl>();
 
-  if (chromeos::BrowserParamsProxy::Get()->IsWindowLayoutMenuEnabled()) {
-    multitask_menu_nudge_delegate_ =
-        std::make_unique<MultitaskMenuNudgeDelegateLacros>();
-  }
+  multitask_menu_nudge_delegate_ =
+      std::make_unique<MultitaskMenuNudgeDelegateLacros>();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

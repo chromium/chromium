@@ -5,9 +5,9 @@
 #include "ash/wm/overview/overview_window_drag_controller.h"
 
 #include <algorithm>
-#include <utility>
 
 #include "ash/display/mouse_cursor_event_filter.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/cros_next_desk_icon_button.h"
@@ -89,7 +89,7 @@ constexpr char kOverviewWindowDragMaxLatencyHistogram[] =
     "Ash.Overview.WindowDrag.PresentationTime.MaxLatency.TabletMode";
 
 void UnpauseOcclusionTracker() {
-  Shell::Get()->overview_controller()->UnpauseOcclusionTracker(
+  OverviewController::Get()->UnpauseOcclusionTracker(
       kOcclusionPauseDurationForDrag);
 }
 
@@ -194,8 +194,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   OverviewItemMoveHelper(const OverviewItemMoveHelper&) = delete;
   OverviewItemMoveHelper& operator=(const OverviewItemMoveHelper&) = delete;
   ~OverviewItemMoveHelper() override {
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
+    OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       overview_controller->overview_session()->PositionWindows(
           /*animate=*/true);
@@ -210,8 +209,7 @@ class OverviewItemMoveHelper : public aura::WindowObserver {
   void OnWindowAddedToRootWindow(aura::Window* window) override {
     DCHECK_EQ(window_, window);
     window->RemoveObserver(this);
-    OverviewController* overview_controller =
-        Shell::Get()->overview_controller();
+    OverviewController* overview_controller = OverviewController::Get();
     if (overview_controller->InOverviewSession()) {
       // OverviewSession::AddItemInMruOrder() will add |window| to the grid
       // associated with |window|'s root. Do not reposition or restack as we
@@ -246,7 +244,7 @@ OverviewWindowDragController::OverviewWindowDragController(
       is_touch_dragging_(is_touch_dragging),
       is_eligible_for_drag_to_snap_(IsEligibleForDragToSnap(item)),
       virtual_desks_bar_enabled_(GetVirtualDesksBarEnabled(item)) {
-  CHECK(!Shell::Get()->overview_controller()->IsInStartAnimation());
+  CHECK(!OverviewController::Get()->IsInStartAnimation());
   CHECK(!SplitViewController::Get(item_->root_window())->IsDividerAnimating());
 }
 
@@ -264,7 +262,7 @@ void OverviewWindowDragController::InitiateDrag(
   initial_centerpoint_ = item_->target_bounds().CenterPoint();
   original_opacity_ = item_->GetOpacity();
   current_drag_behavior_ = DragBehavior::kUndefined;
-  Shell::Get()->overview_controller()->PauseOcclusionTracker();
+  OverviewController::Get()->PauseOcclusionTracker();
   DCHECK(!presentation_time_recorder_);
 
   presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
@@ -487,7 +485,7 @@ void OverviewWindowDragController::ActivateDraggedWindow() {
 
 void OverviewWindowDragController::ResetGesture() {
   if (current_drag_behavior_ == DragBehavior::kNormalDrag) {
-    DCHECK(item_->overview_grid()->drop_target_widget());
+    CHECK(item_->overview_grid()->drop_target());
 
     Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
     item_->DestroyMirrorsForDragging();
@@ -679,7 +677,7 @@ void OverviewWindowDragController::ContinueNormalDrag(
     overview_grid->MaybeUpdateDesksWidgetBounds();
   }
 
-  if (!overview_grid->GetDropTarget() &&
+  if (!overview_grid->drop_target() &&
       (!is_eligible_for_drag_to_snap_ ||
        SplitViewDragIndicators::GetSnapPosition(
            overview_grid->split_view_drag_indicators()
@@ -738,7 +736,7 @@ OverviewWindowDragController::CompleteNormalDrag(
     const gfx::PointF& location_in_screen) {
   DCHECK_EQ(current_drag_behavior_, DragBehavior::kNormalDrag);
   auto* item_overview_grid = item_->overview_grid();
-  DCHECK(item_overview_grid->drop_target_widget());
+  CHECK(item_overview_grid->drop_target());
   Shell::Get()->mouse_cursor_filter()->HideSharedEdgeIndicator();
   item_->DestroyMirrorsForDragging();
   overview_session_->RemoveDropTargets();
@@ -771,7 +769,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   // current |location_in_screen|.
   base::ScopedClosureRunner at_exit_runner(base::BindOnce([]() {
     // Overview might have exited if we snapped windows on both sides.
-    auto* overview_controller = Shell::Get()->overview_controller();
+    auto* overview_controller = OverviewController::Get();
     if (!overview_controller->InOverviewSession())
       return;
 
@@ -890,17 +888,42 @@ void OverviewWindowDragController::UpdateDragIndicatorsAndOverviewGrid(
   SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "display_count_", display_count_);
   SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "current_display_count",
                           Shell::GetAllRootWindows().size());
-  SCOPED_CRASH_KEY_BOOL(
-      "OWDC_UDIAOG", "display_valid",
-      Shell::Get()->cursor_manager()->GetDisplay().is_valid());
 
-  if (item_) {
-    if (auto* window_state = WindowState::Get(item_->GetWindow())) {
-      std::stringstream ss;
-      ss << WindowState::Get(item_->GetWindow())->GetStateType();
-      SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "item_state_type", ss.str());
-    }
+  const display::Display& cursor_manager_display =
+      Shell::Get()->cursor_manager()->GetDisplay();
+  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "display_valid",
+                        cursor_manager_display.is_valid());
+  aura::Window* root_window_for_display =
+      cursor_manager_display.is_valid()
+          ? Shell::GetRootWindowForDisplayId(cursor_manager_display.id())
+          : nullptr;
+  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "root_window_for_display",
+                        !!root_window_for_display);
+
+  aura::Window* window = item_ ? item_->GetWindow() : nullptr;
+  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "item_->GetWindow()", !!window);
+  SCOPED_CRASH_KEY_NUMBER("OWDC_UDIAOG", "window_type",
+                          window ? static_cast<int>(window->GetType()) : -1);
+  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "window->parent()",
+                        window ? !!window->parent() : false);
+  SCOPED_CRASH_KEY_BOOL(
+      "OWDC_UDIAOG", "activatable_parent",
+      window && window->parent()
+          ? IsActivatableShellWindowId(window->parent()->GetId())
+          : false);
+
+  auto* window_state = window ? WindowState::Get(window) : nullptr;
+  std::stringstream ss;
+  if (window_state) {
+    ss << WindowState::Get(window)->GetStateType();
+  } else {
+    ss << "No Window State";
   }
+  SCOPED_CRASH_KEY_STRING32("OWDC_UDIAOG", "item_state_type", ss.str());
+
+  aura::Window* root_window_being_dragged_in = GetRootWindowBeingDraggedIn();
+  SCOPED_CRASH_KEY_BOOL("OWDC_UDIAOG", "root_window_dragged_in()",
+                        !!root_window_being_dragged_in);
 
   CHECK(is_eligible_for_drag_to_snap_);
   snap_position_ = GetSnapPosition(location_in_screen);

@@ -27,6 +27,7 @@
 #include <memory>
 
 #include "base/atomicops.h"
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/scoped_generic.h"
 #include "base/strings/stringprintf.h"
@@ -190,6 +191,7 @@ LONG WINAPI UnhandledExceptionHandler(EXCEPTION_POINTERS* exception_pointers) {
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
+#if !defined(ADDRESS_SANITIZER)
 LONG WINAPI HandleHeapCorruption(EXCEPTION_POINTERS* exception_pointers) {
   if (exception_pointers->ExceptionRecord->ExceptionCode ==
       STATUS_HEAP_CORRUPTION) {
@@ -198,6 +200,7 @@ LONG WINAPI HandleHeapCorruption(EXCEPTION_POINTERS* exception_pointers) {
 
   return EXCEPTION_CONTINUE_SEARCH;
 }
+#endif
 
 void HandleAbortSignal(int signum) {
   DCHECK_EQ(signum, SIGABRT);
@@ -670,15 +673,14 @@ void CrashpadClient::RegisterHandlers() {
   SetUnhandledExceptionFilter(&UnhandledExceptionHandler);
 
   // Windows swallows heap corruption failures but we can intercept them with
-  // a vectored exception handler.
-#if defined(ADDRESS_SANITIZER)
-  // Let ASAN have first go.
-  bool go_first = false;
-#else
-  bool go_first = true;
-#endif
-  PVOID handler = AddVectoredExceptionHandler(go_first, HandleHeapCorruption);
+  // a vectored exception handler. Note that a vectored exception handler is
+  // not compatible with or generally helpful in ASAN builds (ASAN inserts a
+  // bad dereference at the beginning of the handler, leading to recursive
+  // invocation of the handler).
+#if !defined(ADDRESS_SANITIZER)
+  PVOID handler = AddVectoredExceptionHandler(true, HandleHeapCorruption);
   vectored_handler_.reset(handler);
+#endif
 
   // The Windows CRT's signal.h lists:
   // - SIGINT

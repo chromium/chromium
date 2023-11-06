@@ -53,6 +53,7 @@ void PrintingMetricsForProfileAsh::OnShutdown() {
   // service since we don't declare any factory dependencies here. Therefore
   // it's safer to reset the observer at this point.
   print_job_history_service_observation_.Reset();
+  profile_ = nullptr;
 }
 
 void PrintingMetricsForProfileAsh::OnPrintJobsRetrieved(

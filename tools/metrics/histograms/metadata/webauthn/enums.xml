@@ -1,0 +1,256 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="CredManCreateRequestEnum">
+  <int value="0" label="A createCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a createCredential request to the platform."/>
+  <int value="2" label="Passkey creation is successful."/>
+  <int value="3" label="createCredential request failed."/>
+  <int value="4" label="createCredential request cancelled by the user."/>
+</enum>
+
+<enum name="CredManGetRequestEnum">
+  <int value="0" label="A getCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a getCredential request to the platform."/>
+  <int value="2" label="A passkey is received from the getCredential request."/>
+  <int value="3"
+      label="A password is received from the getCredential request."/>
+  <int value="4" label="getCredential request failed."/>
+  <int value="5" label="getCredential request cancelled by the user."/>
+</enum>
+
+<enum name="CredManPrepareRequestEnum">
+  <int value="0"
+      label="A prepareGetCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a prepareGetCredential request to the platform."/>
+  <int value="2"
+      label="prepareGetCredential request succeeded and there are results."/>
+  <int value="3"
+      label="prepareGetCredential request succeeded but there are no results."/>
+  <int value="4" label="prepareGetCredential request failed."/>
+</enum>
+
+<enum name="WebAuthenticationAOADiscoveryEvent">
+  <int value="0" label="Started"/>
+  <int value="1" label="An AOA USB device appeared during a WebAuthn request"/>
+  <int value="2"
+      label="A non-AOA USB device was plugged in during a WebAuthn request"/>
+  <int value="3"
+      label="A non-AOA device did not have an AOA configuration interface"/>
+  <int value="4" label="Failed to open an AOA device"/>
+  <int value="5"
+      label="Failed to set the active configuration of an AOA device"/>
+  <int value="6" label="Failed to claim the interface of an AOA device"/>
+  <int value="7" label="Failed to write a sync message to an AOA device"/>
+  <int value="8" label="Failed to read a sync reply from an AOA device"/>
+  <int value="9" label="AOA device successfully discovered"/>
+  <int value="10" label="Failed to open a non-AOA device"/>
+  <int value="11"
+      label="Failed to get version information from non-AOA device"/>
+  <int value="12" label="AOA version one not supported"/>
+  <int value="13" label="Failed to set AOA configuration strings"/>
+  <int value="14" label="Device requested to switch to AOA mode"/>
+  <int value="15"
+      label="One or more previously discovered devices are still connected"/>
+</enum>
+
+<enum name="WebAuthenticationCableV2DiscoveryEvent">
+  <int value="0" label="Discovery started"/>
+  <int value="1" label="Pairing information was provided to this discovery"/>
+  <int value="2" label="QR keys were provided to this discovery"/>
+  <int value="3"
+      label="Keys from an extension were provided to this discovery"/>
+  <int value="4" label="An EID matched a pending tunnel"/>
+  <int value="5" label="An EID matched a QR code"/>
+  <int value="6" label="An EID matched an extension"/>
+  <int value="7" label="An EID was ignored because it didn't match anything"/>
+</enum>
+
+<enum name="WebAuthenticationCableV2MobileEvent">
+  <int value="0" label="QR read"/>
+  <int value="1" label="Server-linked connection started"/>
+  <int value="2" label="Cloud message received"/>
+  <int value="3" label="USB connection"/>
+  <int value="4" label="Authenticator setup"/>
+  <int value="5" label="Connected to tunnel server"/>
+  <int value="6" label="Handshake completed"/>
+  <int value="7" label="Request received"/>
+  <int value="8" label="CTAP response with non-zero status"/>
+  <int value="9" label="Unlinked all devices"/>
+  <int value="10" label="Showed notification"/>
+  <int value="11" label="Notification pressed"/>
+  <int value="12" label="User unselected linking checkbox during QR scan"/>
+  <int value="13" label="USB transaction was successful"/>
+  <int value="14"
+      label="Activity stopped while awaiting tunnel server connection"/>
+  <int value="15" label="Activity stopped while awaiting handshake"/>
+  <int value="16" label="Activity stopped while awaiting request"/>
+  <int value="17" label="Activity stopped in GMS Core request"/>
+  <int value="18" label="An unexpected GetAssertion response was received"/>
+  <int value="19" label="A GetAssertion request was started"/>
+  <int value="20" label="A GetAssertion response was received"/>
+  <int value="21" label="The first transaction on a connection was completed"/>
+  <int value="22"
+      label="The contact ID was not ready in time for a QR transaction"/>
+  <int value="23" label="Permission to send a BLE advert was requested"/>
+  <int value="24" label="Permission to send a BLE advert was granted"/>
+  <int value="25" label="Permission to send a BLE advert was rejected"/>
+</enum>
+
+<enum name="WebAuthenticationCableV2MobileResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unexpected EOF"/>
+  <int value="2" label="Failed to connect to tunnel server"/>
+  <int value="3" label="Handshake failure"/>
+  <int value="4" label="Decryption failure"/>
+  <int value="5" label="Invalid CBOR received"/>
+  <int value="6" label="Invalid CTAP received"/>
+  <int value="7" label="Unknown command"/>
+  <int value="8" label="Internal error"/>
+  <int value="9" label="Invalid QR"/>
+  <int value="10" label="Invalid server link data"/>
+  <int value="11" label="EOF while processing a request"/>
+  <int value="12" label="Discoverable credentials request rejected"/>
+</enum>
+
+<enum name="WebAuthenticationCableV2TunnelEvent">
+  <int value="0"
+      label="Tunnel attempt started for QR- or extension-based connection"/>
+  <int value="1" label="Tunnel attempt started for linked connected"/>
+  <int value="2" label="Tunnel connected"/>
+  <int value="3" label="Contact ID was invalid"/>
+  <int value="4" label="Tunnel failed with unexpected HTTP 410 status"/>
+  <int value="5" label="Tunnel failed"/>
+  <int value="6" label="Handshake failed"/>
+  <int value="7" label="Error processing post-handshake message"/>
+  <int value="8" label="Tunnel established"/>
+  <int value="9" label="Failed to decrypt main-flow message"/>
+</enum>
+
+<enum name="WebAuthenticationChromeOSGetAssertionResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Verification failed"/>
+  <int value="3" label="Verification timeout"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Internal error"/>
+  <int value="6" label="No credential id matched"/>
+  <int value="7" label="Another request pending"/>
+  <int value="8" label="Canceled"/>
+</enum>
+
+<enum name="WebAuthenticationChromeOSMakeCredentialResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Verification failed"/>
+  <int value="3" label="Verification timeout"/>
+  <int value="4" label="Invalid request"/>
+  <int value="5" label="Internal error"/>
+  <int value="6" label="Excluded credential id matched"/>
+  <int value="7" label="Another request pending"/>
+  <int value="8" label="Canceled"/>
+</enum>
+
+<enum name="WebAuthenticationFidoTransport">
+  <int value="0" label="USB HID"/>
+  <int value="1" label="Near Field Communication"/>
+  <int value="2" label="Bluetooth Low Energy"/>
+  <int value="3" label="Cloud-assisted BLE"/>
+  <int value="4" label="Internal"/>
+  <int value="5" label="Android Accessory"/>
+</enum>
+
+<enum name="WebAuthenticationGetAssertionResult">
+  <int value="0" label="Timeout"/>
+  <int value="1" label="User cancelled"/>
+  <int value="2" label="Native Windows API success"/>
+  <int value="3" label="Native Windows API error"/>
+  <int value="4" label="Chrome TouchID authenticator success"/>
+  <int value="5" label="Chrome TouchID authenticator failure"/>
+  <int value="6" label="ChromeOS platform authenticator success"/>
+  <int value="7" label="ChromeOS platform authenticator failure"/>
+  <int value="8" label="Phone success"/>
+  <int value="9" label="Phone failure"/>
+  <int value="10" label="iCloud keychain success"/>
+  <int value="11" label="iCloud keychain failure"/>
+  <int value="12" label="Enclave success"/>
+  <int value="13" label="Enclave failure"/>
+  <int value="14" label="Other device success"/>
+  <int value="15" label="Other device error"/>
+</enum>
+
+<enum name="WebAuthenticationMacOSPasskeysPermission">
+  <int value="0" label="Requested permission during a create() call"/>
+  <int value="1" label="Permission approved during a create() call"/>
+  <int value="2" label="Permission denied during a create() call"/>
+  <int value="3" label="Requested permission during a get() call"/>
+  <int value="4" label="Permission approved during a get() call"/>
+  <int value="5" label="Permission denied during a get() call"/>
+</enum>
+
+<enum name="WebAuthenticationMacOSPlatformAuthenticatorAction">
+  <int value="0"
+      label="Started create() for profile authenticator with iCloud Drive
+             enabled"/>
+  <int value="1"
+      label="Started create() for profile authenticator with iCloud Drive
+             disabled"/>
+  <int value="2"
+      label="Started create() for iCloud Keychain with iCloud Drive enabled"/>
+  <int value="3"
+      label="Started create() for iCloud Keychain with iCloud Drive disabled"/>
+  <int value="4"
+      label="Successful create() for profile authenticator with iCloud Drive
+             enabled"/>
+  <int value="5"
+      label="Successful create() for profile authenticator with iCloud Drive
+             disabled"/>
+  <int value="6"
+      label="Successful create() for iCloud Keychain with iCloud Drive
+             enabled"/>
+  <int value="7"
+      label="Successful create() for iCloud Keychain with iCloud Drive
+             disabled"/>
+  <int value="8"
+      label="Started get() where the profile authenticator recognised a
+             credential"/>
+  <int value="9"
+      label="Started get() where iCloud Keychain recognised a credential"/>
+  <int value="10"
+      label="Started get() where both the profile authenticator and iCloud
+             Keychain recognised a credential"/>
+  <int value="11" label="Successful get() from the profile authenticator"/>
+  <int value="12" label="Successful get() from iCloud Keychain"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

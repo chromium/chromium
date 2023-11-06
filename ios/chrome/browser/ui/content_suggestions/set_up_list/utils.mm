@@ -12,8 +12,9 @@
 
 namespace set_up_list_utils {
 
-bool IsSetUpListActive(PrefService* local_state) {
-  if (set_up_list_prefs::IsSetUpListDisabled(local_state)) {
+bool IsSetUpListActive(PrefService* local_state, bool include_disable_pref) {
+  if (include_disable_pref &&
+      set_up_list_prefs::IsSetUpListDisabled(local_state)) {
     return false;
   }
   if (FirstRun::IsChromeFirstRun()) {

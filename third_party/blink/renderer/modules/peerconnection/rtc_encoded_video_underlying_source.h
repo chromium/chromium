@@ -26,7 +26,7 @@ class MODULES_EXPORT RTCEncodedVideoUnderlyingSource
       WTF::CrossThreadOnceClosure disconnect_callback);
 
   // UnderlyingSourceBase
-  ScriptPromise pull(ScriptState*) override;
+  ScriptPromise Pull(ScriptState*, ExceptionState&) override;
   ScriptPromise Cancel(ScriptState*,
                        ScriptValue reason,
                        ExceptionState&) override;

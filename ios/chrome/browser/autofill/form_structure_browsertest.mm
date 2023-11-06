@@ -73,7 +73,7 @@ base::FilePath GetTestDataDir() {
 
 base::FilePath GetIOSInputDirectory() {
   base::FilePath dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir));
 
   return dir.AppendASCII("components")
       .AppendASCII("test")
@@ -85,7 +85,7 @@ base::FilePath GetIOSInputDirectory() {
 
 base::FilePath GetIOSOutputDirectory() {
   base::FilePath dir;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &dir));
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir));
 
   return dir.AppendASCII("components")
       .AppendASCII("test")
@@ -198,30 +198,40 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   web_state_ = web::WebState::Create(params);
   feature_list_.InitWithFeatures(
       // Enabled
-      {// TODO(crbug.com/1076175) Remove once launched.
-       autofill::features::kAutofillUseNewSectioningMethod,
-       // TODO(crbug.com/1157405) Remove once launched.
-       features::kAutofillEnableDependentLocalityParsing,
-       // TODO(crbug.com/1165780): Remove once shared labels are launched.
-       features::kAutofillEnableSupportForParsingWithSharedLabels,
-       // TODO(crbug.com/1150895) Remove once launched.
-       features::kAutofillParsingPatternProvider,
-       features::kAutofillPageLanguageDetection,
-       // TODO(crbug.com/1311937): Remove once launched.
-       features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
-       features::kAutofillInferCountryCallingCode,
-       // TODO(crbug.com/1355264): Remove once launched.
-       features::kAutofillLabelAffixRemoval,
-       // TODO(crbug.com/1441057): Remove once launched.
-       features::kAutofillEnableExpirationDateImprovements},
+      {
+          // TODO(crbug.com/1076175) Remove once launched.
+          autofill::features::kAutofillUseNewSectioningMethod,
+          // TODO(crbug.com/1157405) Remove once launched.
+          features::kAutofillEnableDependentLocalityParsing,
+          // TODO(crbug.com/1165780): Remove once shared labels are launched.
+          features::kAutofillEnableSupportForParsingWithSharedLabels,
+          // TODO(crbug.com/1150895) Remove once launched.
+          features::kAutofillParsingPatternProvider,
+          features::kAutofillPageLanguageDetection,
+          // TODO(crbug.com/1311937): Remove once launched.
+          features::kAutofillEnableSupportForPhoneNumberTrunkTypes,
+          features::kAutofillInferCountryCallingCode,
+          // TODO(crbug.com/1355264): Remove once launched.
+          features::kAutofillLabelAffixRemoval,
+          // TODO(crbug.com/1441057): Remove once launched.
+          features::kAutofillEnableExpirationDateImprovements,
+          // TODO(crbug.com/1474308): Clean up when launched.
+          features::kAutofillDefaultToCityAndNumber,
+      },
       // Disabled
-      {// TODO(crbug.com/1311937): Remove once launched.
-       // This feature is part of the AutofillRefinedPhoneNumberTypes rollout.
-       // As it is not supported on iOS yet, it is disabled.
-       features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
-       // TODO(crbug.com/1317961): Remove once launched. This feature is
-       // disabled since it is not supported on iOS.
-       features::kAutofillAlwaysParsePlaceholders});
+      {
+          // TODO(crbug.com/1311937): Remove once launched.
+          // This feature is part of the AutofillRefinedPhoneNumberTypes
+          // rollout. As it is not supported on iOS yet, it is disabled.
+          features::kAutofillConsiderPhoneNumberSeparatorsValidLabels,
+          // TODO(crbug.com/1317961): Remove once launched. This feature is
+          // disabled since it is not supported on iOS.
+          features::kAutofillAlwaysParsePlaceholders,
+          // TODO(crbug.com/1493145): Remove when/if launched. This feature
+          // changes default parsing behavior, so must be disabled to avoid
+          // fieldtrial_testing_config interference.
+          features::kAutofillEnableEmailHeuristicOnlyAddressForms,
+      });
 }
 
 void FormStructureBrowserTest::SetUp() {

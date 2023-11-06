@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
+#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"

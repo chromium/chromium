@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.language.settings;
 
-import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
+import static org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils.buildMenuListItem;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,10 +27,10 @@ import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.Collection;
@@ -85,7 +85,9 @@ public abstract class LanguageItemListFragment
             };
             ((LanguageRowViewHolder) holder)
                     .setMenuButtonDelegate(
-                            () -> new BasicListMenu(getContext(), menuItems, delegate));
+                            () ->
+                                    BrowserUiListMenuUtils.getBasicListMenu(
+                                            getContext(), menuItems, delegate));
         }
 
         public void onDataUpdated() {

@@ -22,4 +22,8 @@ interface PageHandler {
   // Triggered by the `handleSearchEngineChoiceSelected()` call in
   // `chrome/browser/resources/search_engine_choice/app.ts`
   HandleSearchEngineChoiceSelected(int32 prepopulate_id);
+
+  // Notifies the `SearchEngineChoiceService` that the learn more link was
+  // clicked.
+  HandleLearnMoreLinkClicked();
 };

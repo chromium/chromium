@@ -12,8 +12,8 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {mockUtilVisitURL} from '../../../../common/js/mock_util.js';
-import {util} from '../../../../common/js/util.js';
+import {isCrosComponentsEnabled} from '../../../../common/js/flags.js';
+import {getLastVisitedURL} from '../../../../common/js/util.js';
 
 import {EducationalBanner} from './educational_banner.js';
 import {Banner, BannerEvent} from './types.js';
@@ -76,8 +76,8 @@ export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
       BannerEvent.BANNER_DISMISSED_FOREVER, handler);
   educationalBanner.shadowRoot!
       .querySelector<HTMLElement>(
-          util.isCrosComponentsEnabled() ? '#dismiss-button' :
-                                           '#dismiss-button-old')!.click();
+          isCrosComponentsEnabled() ? '#dismiss-button' :
+                                      '#dismiss-button-old')!.click();
 }
 
 /**
@@ -85,11 +85,9 @@ export async function testDefaultDismissButtonEmitsEvent(done: () => void) {
  * button is clicked.
  */
 export async function testAdditionalButtonCanBeClicked() {
-  const mockVisitURL = mockUtilVisitURL();
   educationalBanner.querySelector<CrButtonElement>(
                        '[slot="extra-button"]')!.click();
-  assertEquals(mockVisitURL.getURL(), 'http://test.com');
-  mockVisitURL.restoreVisitURL();
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }
 
 /**
@@ -164,9 +162,7 @@ export async function testDismissWhenClickedAttributeWorksComponents(
   };
   banner.addEventListener(BannerEvent.BANNER_DISMISSED_FOREVER, handler);
 
-  const mockVisitURL = mockUtilVisitURL();
   banner.shadowRoot!.querySelector<CrButtonElement>(
                         '[slot="extra-button"]')!.click();
-  assertEquals(mockVisitURL.getURL(), 'http://test.com');
-  mockVisitURL.restoreVisitURL();
+  assertEquals(getLastVisitedURL(), 'http://test.com');
 }

@@ -78,8 +78,6 @@ bool IsEdgeFavoritesLegacyMode() {
 
 bool EdgeImporterCanImport() {
   base::File::Info file_info;
-  if (base::win::GetVersion() < base::win::Version::WIN10)
-    return false;
   return base::GetFileInfo(GetEdgeDataFilePath(), &file_info) &&
          file_info.is_directory;
 }

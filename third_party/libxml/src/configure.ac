@@ -519,7 +519,7 @@ else
     fi
 
     # warnings we'd like to see
-    AM_CFLAGS="${AM_CFLAGS} -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return -Wstrict-prototypes -Wmissing-prototypes"
+    AM_CFLAGS="${AM_CFLAGS} -pedantic -Wall -Wextra -Wshadow -Wpointer-arith -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes"
     # warnings we'd like to suppress
     AM_CFLAGS="${AM_CFLAGS} -Wno-long-long -Wno-format-extra-args"
     case "${host}" in

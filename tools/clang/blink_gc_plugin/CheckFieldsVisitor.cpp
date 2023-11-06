@@ -60,18 +60,27 @@ void CheckFieldsVisitor::AtIterator(Iterator* edge) {
 }
 
 void CheckFieldsVisitor::AtValue(Value* edge) {
-  // TODO: what should we do to check unions?
-  if (edge->value()->record()->isUnion())
-    return;
+  RecordInfo* record = edge->value();
 
-  if (!stack_allocated_host_ && edge->value()->IsStackAllocated()) {
+  // TODO: what should we do to check unions?
+  if (record->record()->isUnion()) {
+    return;
+  }
+
+  // Don't allow unmanaged classes to contain traceable part-objects.
+  const bool child_is_part_object = record->IsNewDisallowed() && !Parent();
+  if (!managed_host_ && child_is_part_object && record->RequiresTraceMethod()) {
+    invalid_fields_.push_back(
+        std::make_pair(current_, kTraceablePartObjectInUnmanaged));
+    return;
+  }
+
+  if (!stack_allocated_host_ && record->IsStackAllocated()) {
     invalid_fields_.push_back(std::make_pair(current_, kPtrFromHeapToStack));
     return;
   }
 
-  if (!Parent() &&
-      edge->value()->IsGCDerived() &&
-      !edge->value()->IsGCMixin()) {
+  if (!Parent() && record->IsGCDerived() && !record->IsGCMixin()) {
     invalid_fields_.push_back(std::make_pair(current_, kGCDerivedPartObject));
     return;
   }

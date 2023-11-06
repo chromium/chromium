@@ -44,7 +44,8 @@ class InitializingFrameNodeObserver {
   virtual void OnHadFormInteractionChanged(const FrameNode* frame_node) {}
   virtual void OnHadUserEditsChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
-  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) {}
+  virtual void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) {}
+  virtual void OnIntersectsViewportChanged(const FrameNode* frame_node) {}
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
   virtual void OnNonPersistentNotificationCreated(const FrameNode* frame_node) {
@@ -89,7 +90,8 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnHadFormInteractionChanged(const FrameNode* frame_node) override;
   void OnHadUserEditsChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
+  void OnIsCapturingVideoStreamChanged(const FrameNode* frame_node) override;
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
   void OnNonPersistentNotificationCreated(const FrameNode* frame_node) override;

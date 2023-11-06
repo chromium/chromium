@@ -14,13 +14,13 @@
 
 namespace blink {
 
+class FragmentItems;
+class InlineNode;
 class LayoutBox;
 class NGBlockBreakToken;
 class NGColumnSpannerPath;
 class NGConstraintSpace;
 class NGEarlyBreak;
-class NGFragmentItems;
-class NGInlineNode;
 class NGLayoutResult;
 class NGPhysicalBoxFragment;
 class NGPhysicalFragment;
@@ -130,18 +130,18 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   NGBlockNode GetRenderedLegend() const;
   NGBlockNode GetFieldsetContent() const;
 
-  bool IsNGTableCell() const { return box_->IsTableCell(); }
+  bool IsTableCell() const { return box_->IsTableCell(); }
 
   bool IsFrameSet() const { return box_->IsFrameSet(); }
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
-  bool IsParentNGGrid() const { return box_->Parent()->IsLayoutNGGrid(); }
+  bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
 
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes
   // or nodes consisting purely of block-level, floats, and/or out-of-flow
   // positioned children will return false.
   bool IsInlineFormattingContextRoot(
-      NGInlineNode* first_child_out = nullptr) const;
+      InlineNode* first_child_out = nullptr) const;
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;
@@ -238,6 +238,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // legacy flow thread to encompass those extra columns.
   void MakeRoomForExtraColumns(LayoutUnit block_size) const;
 
+  bool operator==(const NGBlockNode& other) const { return box_ == other.box_; }
+  bool operator==(const NGLayoutInputNode& other) const {
+    return other.Type() == kBlock && GetLayoutBox() == other.GetLayoutBox();
+  }
+
   String ToString() const;
 
  private:
@@ -267,7 +272,7 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGBlockBreakToken* previous_break_token) const;
   void CopyFragmentItemsToLayoutBox(
       const NGPhysicalBoxFragment& container,
-      const NGFragmentItems& items,
+      const FragmentItems& items,
       const NGBlockBreakToken* previous_break_token) const;
   void PlaceChildrenInLayoutBox(const NGPhysicalBoxFragment&,
                                 const NGBlockBreakToken* previous_break_token,

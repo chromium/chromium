@@ -19,12 +19,11 @@ namespace blink {
 // fit-content( <length-percentage> )
 class CORE_EXPORT InterpolableGridTrackSize final : public InterpolableValue {
  public:
-  InterpolableGridTrackSize(std::unique_ptr<InterpolableValue> min_value,
-                            std::unique_ptr<InterpolableValue> max_value,
+  InterpolableGridTrackSize(InterpolableValue* min_value,
+                            InterpolableValue* max_value,
                             const GridTrackSizeType type);
-  static std::unique_ptr<InterpolableGridTrackSize> Create(
-      const GridTrackSize& grid_track_size,
-      float zoom);
+  static InterpolableGridTrackSize* Create(const GridTrackSize& grid_track_size,
+                                           float zoom);
 
   GridTrackSize CreateTrackSize(
       const CSSToLengthConversionData& conversion_data) const;
@@ -39,14 +38,20 @@ class CORE_EXPORT InterpolableGridTrackSize final : public InterpolableValue {
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  void Trace(Visitor* v) const override {
+    InterpolableValue::Trace(v);
+    v->Trace(min_value_);
+    v->Trace(max_value_);
+  }
+
  private:
   InterpolableGridTrackSize* RawClone() const final;
   InterpolableGridTrackSize* RawCloneAndZero() const final;
 
   // We have a min and max representation as a generalization of the three
   // different <track-size> types.
-  std::unique_ptr<InterpolableValue> min_value_;
-  std::unique_ptr<InterpolableValue> max_value_;
+  Member<InterpolableValue> min_value_;
+  Member<InterpolableValue> max_value_;
   GridTrackSizeType type_;
 };
 

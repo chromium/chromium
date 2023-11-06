@@ -14,7 +14,7 @@
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/search_engines/template_url.h"
@@ -155,20 +155,19 @@ void InProcessImporterBridge::SetPasswordForm(
 
 void InProcessImporterBridge::SetAutofillFormData(
     const std::vector<ImporterAutofillFormDataEntry>& entries) {
-  std::vector<autofill::AutofillEntry> autofill_entries;
-  for (size_t i = 0; i < entries.size(); ++i) {
+  std::vector<autofill::AutocompleteEntry> autocomplete_entries;
+  for (const ImporterAutofillFormDataEntry& entry : entries) {
     // Using method c_str() in order to avoid data which contains null
     // terminating symbols.
-    const std::u16string name = entries[i].name.c_str();
-    const std::u16string value = entries[i].value.c_str();
+    const std::u16string name = entry.name.c_str();
+    const std::u16string value = entry.value.c_str();
     if (name.empty() || value.empty())
       continue;
-    autofill_entries.push_back(
-        autofill::AutofillEntry(autofill::AutofillKey(name, value),
-                                entries[i].first_used, entries[i].last_used));
+    autocomplete_entries.emplace_back(autofill::AutocompleteKey(name, value),
+                                      entry.first_used, entry.last_used);
   }
 
-  writer_->AddAutofillFormDataEntries(autofill_entries);
+  writer_->AddAutocompleteFormDataEntries(autocomplete_entries);
 }
 
 void InProcessImporterBridge::NotifyStarted() {

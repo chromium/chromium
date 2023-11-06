@@ -249,7 +249,17 @@ interface NetworkServiceTest {
   ResolveOwnHostnameWithSystemDns()
       => (network.mojom.AddressList addr_list, int32 os_error, int32 net_error);
 
+  // Sets the last IPv6 probe result.
+  SetIPv6ProbeResult(bool success) => ();
+
+  // Get the network service's cached AddressMap, which contains a list of
+  // network interfaces on the user's machine.
   [Sync, EnableIf=use_network_interface_change_listener]
   GetAddressMapCacheLinux()
       => (network.mojom.AddressMap addr_map, network.mojom.OnlineLinks links);
+
+  // Returns true if the network service is allowed to load a GSSAPI library.
+  // Only relevant on ChromeOS and Linux.
+  [Sync]
+  AllowsGSSAPILibraryLoad() => (bool allow_gssapi_library_load);
 };

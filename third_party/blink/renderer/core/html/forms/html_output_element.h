@@ -62,7 +62,7 @@ class CORE_EXPORT HTMLOutputElement final : public HTMLFormControlElement {
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
   bool IsDisabledFormControl() const override;
   bool MatchesEnabledPseudoClass() const override;

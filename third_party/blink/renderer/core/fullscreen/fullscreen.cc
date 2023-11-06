@@ -164,7 +164,7 @@ class MetaParams : public GarbageCollected<MetaParams> {
   virtual void Trace(Visitor* visitor) const { visitor->Trace(options_); }
 
   FullscreenRequestType request_type() const { return request_type_; }
-  const FullscreenOptions* options() const { return options_; }
+  const FullscreenOptions* options() const { return options_.Get(); }
   const base::TimeTicks& fullscreen_enter_time() const {
     return fullscreen_enter_time_;
   }
@@ -205,7 +205,7 @@ FullscreenRequestType GetRequestType(const Element& element) {
 }
 
 const MetaParams* GetParams(Element& element) {
-  return FullscreenParamsMap().find(&element)->value;
+  return FullscreenParamsMap().find(&element)->value.Get();
 }
 
 // https://fullscreen.spec.whatwg.org/#fullscreen-an-element
@@ -659,7 +659,7 @@ Element* Fullscreen::FullscreenElementFrom(Document& document) {
   const auto& elements = document.TopLayerElements();
   for (const auto& element : base::Reversed(elements)) {
     if (HasFullscreenFlag(*element))
-      return element;
+      return element.Get();
   }
 
   return nullptr;

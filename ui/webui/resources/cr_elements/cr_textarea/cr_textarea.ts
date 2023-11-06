@@ -100,6 +100,14 @@ export class CrTextareaElement extends PolymerElement {
         notify: true,
       },
 
+      /**
+       * Placeholder text that is shown when no value is present.
+       */
+      placeholder: {
+        type: String,
+        value: '',
+      },
+
       /** Whether the textarea can auto-grow vertically or not. */
       autogrow: {
         type: Boolean,
@@ -151,6 +159,7 @@ export class CrTextareaElement extends PolymerElement {
   rows: number;
   label: string;
   value: string;
+  placeholder: string;
   autogrow: boolean;
   hasMaxHeight: boolean;
   invalid: boolean;

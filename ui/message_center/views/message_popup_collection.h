@@ -70,6 +70,9 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+  void OnChildNotificationViewUpdated(
+      const std::string& parent_notification_id,
+      const std::string& child_notification_id) override;
 
   // MessageCenterObserver:
   void OnNotificationAdded(const std::string& notification_id) override;
@@ -163,6 +166,10 @@ class MESSAGE_CENTER_EXPORT MessagePopupCollection
   virtual void NotifyPopupAdded(MessagePopupView* popup) {}
   // Called with |notification_id| when a popup is marked to be removed.
   virtual void NotifyPopupRemoved(const std::string& notification_id) {}
+  // Called when an incoming notification is sent directly to the notification
+  // center (e.g. its priority is too low for a popup to be generated for it).
+  // `notification_id` is the ID of the notification.
+  virtual void NotifySilentNotification(const std::string& notification_id) {}
 
   // Called when the entire popup collection change its height.
   virtual void NotifyPopupCollectionHeightChanged() {}

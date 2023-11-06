@@ -40,7 +40,7 @@ class MockDelegate : public DisconnectableClient::Delegate {
   void Respond(Status status) override {
     CHECK(completion_cb_);
     if (!status.ok()) {
-      std::move(completion_cb_).Run(status);
+      std::move(completion_cb_).Run(base::unexpected(status));
       return;
     }
     std::move(completion_cb_).Run(input_ * 2);
@@ -69,10 +69,11 @@ class FailDelegate : public DisconnectableClient::Delegate {
   void Respond(Status status) override {
     CHECK(completion_cb_);
     if (!status.ok()) {
-      std::move(completion_cb_).Run(status);
+      std::move(completion_cb_).Run(base::unexpected(status));
       return;
     }
-    std::move(completion_cb_).Run(Status(error::CANCELLED, "Failed in test"));
+    std::move(completion_cb_)
+        .Run(base::unexpected(Status(error::CANCELLED, "Failed in test")));
   }
 
  private:
@@ -99,11 +100,11 @@ TEST_F(DisconnectableClientTest, NormalConnection) {
       std::make_unique<MockDelegate>(222, base::TimeDelta(), res2.cb()));
 
   auto result = res1.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(222));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
   result = res2.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(444));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(444));
 }
 
 TEST_F(DisconnectableClientTest, NoConnection) {
@@ -112,9 +113,9 @@ TEST_F(DisconnectableClientTest, NoConnection) {
       std::make_unique<MockDelegate>(111, base::TimeDelta(), res.cb()));
 
   auto result = res.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::UNAVAILABLE))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
 }
 
 TEST_F(DisconnectableClientTest, FailedCallOnNormalConnection) {
@@ -133,21 +134,21 @@ TEST_F(DisconnectableClientTest, FailedCallOnNormalConnection) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   auto result = res1.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(222));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   result = res2.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::CANCELLED))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::CANCELLED))
+      << result.error();
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   result = res3.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(444));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(444));
 }
 
 TEST_F(DisconnectableClientTest, DroppedConnection) {
@@ -163,15 +164,15 @@ TEST_F(DisconnectableClientTest, DroppedConnection) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   auto result = res1.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(222));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
   result = res2.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::UNAVAILABLE))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
 }
 
 TEST_F(DisconnectableClientTest, FailedCallOnDroppedConnection) {
@@ -190,22 +191,22 @@ TEST_F(DisconnectableClientTest, FailedCallOnDroppedConnection) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   auto result = res1.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(222));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   result = res2.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::UNAVAILABLE))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
 
   result = res3.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::UNAVAILABLE))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
 }
 
 TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
@@ -222,17 +223,17 @@ TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   auto result = res1.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(222));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(222));
 
   client_.SetAvailability(/*is_available=*/false);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
   result = res2.result();
-  ASSERT_FALSE(result.ok());
-  ASSERT_THAT(result.status().error_code(), Eq(error::UNAVAILABLE))
-      << result.status();
+  ASSERT_FALSE(result.has_value());
+  ASSERT_THAT(result.error().error_code(), Eq(error::UNAVAILABLE))
+      << result.error();
 
   client_.SetAvailability(/*is_available=*/true);
 
@@ -242,8 +243,8 @@ TEST_F(DisconnectableClientTest, ConnectionDroppedThenRestored) {
   task_environment_.FastForwardBy(base::Seconds(1));
 
   result = res3.result();
-  ASSERT_OK(result) << result.status();
-  EXPECT_THAT(result.ValueOrDie(), Eq(666));
+  ASSERT_TRUE(result.has_value()) << result.error();
+  EXPECT_THAT(result.value(), Eq(666));
 }
 
 }  // namespace reporting

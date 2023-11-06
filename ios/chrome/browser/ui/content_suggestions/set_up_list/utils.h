@@ -11,8 +11,10 @@ namespace set_up_list_utils {
 
 // Returns `true` if the SetUpList should be active based on how long it has
 // been since the user finished the FRE, and whether it has been disabled via
-// a local state pref.
-bool IsSetUpListActive(PrefService* local_state);
+// a local state pref. The check excludes the disabled pref if
+// `include_disable_pref` is false.
+bool IsSetUpListActive(PrefService* local_state,
+                       bool include_disable_pref = true);
 
 // true if the Set Up List should be shown in a compacted layout in the Magic
 // Stack.

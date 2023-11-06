@@ -61,7 +61,7 @@ bool HTMLBaseElement::IsURLAttribute(const Attribute& attribute) const {
          HTMLElement::IsURLAttribute(attribute);
 }
 
-KURL HTMLBaseElement::href() const {
+String HTMLBaseElement::href() const {
   // This does not use the GetURLAttribute function because that will resolve
   // relative to the document's base URL; base elements like this one can be
   // used to set that base URL. Thus we need to resolve relative to the
@@ -72,15 +72,20 @@ KURL HTMLBaseElement::href() const {
   if (attribute_value.IsNull())
     return GetDocument().Url();
 
-  KURL url = GetDocument().Encoding().IsValid()
-                 ? KURL(GetDocument().FallbackBaseURL(),
-                        StripLeadingAndTrailingHTMLSpaces(attribute_value))
-                 : KURL(GetDocument().FallbackBaseURL(),
-                        StripLeadingAndTrailingHTMLSpaces(attribute_value),
-                        GetDocument().Encoding());
+  auto stripped_attribute_value =
+      StripLeadingAndTrailingHTMLSpaces(attribute_value);
 
-  if (!url.IsValid())
-    return KURL();
+  KURL url =
+      GetDocument().Encoding().IsValid()
+          ? KURL(GetDocument().FallbackBaseURL(), stripped_attribute_value)
+          : KURL(GetDocument().FallbackBaseURL(), stripped_attribute_value,
+                 GetDocument().Encoding());
+
+  if (!url.IsValid()) {
+    return RuntimeEnabledFeatures::DocumentBaseURIFixEnabled()
+               ? stripped_attribute_value
+               : KURL();
+  }
 
   return url;
 }

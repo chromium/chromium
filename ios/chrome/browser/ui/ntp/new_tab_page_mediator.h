@@ -27,6 +27,7 @@ class GURL;
 @protocol NewTabPageContentDelegate;
 @protocol NewTabPageHeaderConsumer;
 @class NewTabPageState;
+class PrefService;
 class TemplateURLService;
 class UrlLoadingBrowserAgent;
 @protocol UserAccountImageUpdateDelegate;
@@ -46,7 +47,8 @@ class UrlLoadingBrowserAgent;
       identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
                    isIncognito:(BOOL)isIncognito
            discoverFeedService:(DiscoverFeedService*)discoverFeedService
-    NS_DESIGNATED_INITIALIZER;
+                   prefService:(PrefService*)prefService
+                    isSafeMode:(BOOL)isSafeMode NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -60,6 +62,9 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, weak) id<FeedControlDelegate> feedControlDelegate;
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
+// Indicates whether the feed header should be visible.
+@property(nonatomic, readonly, getter=isFeedHeaderVisible)
+    BOOL feedHeaderVisible;
 
 // Inits the mediator.
 - (void)setUp;

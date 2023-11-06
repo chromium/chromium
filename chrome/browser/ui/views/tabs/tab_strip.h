@@ -439,6 +439,23 @@ class TabStrip : public views::View,
   // Used for seek time metrics from the time the mouse enters the tabstrip.
   absl::optional<base::TimeTicks> mouse_entered_tabstrip_time_;
 
+  // Used to track if the time from mouse entered to tab switch has been
+  // reported.
+  bool has_reported_time_mouse_entered_to_switch_ = false;
+
+  // Used to track if the tab dragging metrics have been reported.
+  bool has_reported_tab_drag_metrics_ = false;
+
+  // Used to track the time of last tab dragging.
+  absl::optional<base::TimeTicks> last_tab_drag_time_;
+
+  // Used to count the number of tab dragging in the last 30 minutes and 5
+  // minutes.
+  int tab_drag_count_30min_ = 0;
+  int tab_drag_count_5min_ = 0;
+  std::unique_ptr<base::RepeatingTimer> tab_drag_count_timer_30min_;
+  std::unique_ptr<base::RepeatingTimer> tab_drag_count_timer_5min_;
+
   const raw_ptr<const TabStyle> style_;
 
   // Number of mouse moves.

@@ -608,7 +608,10 @@ class SafeBrowsingBlockingPageBrowserTest
         {kTagAndAttributeParamName, "div,foo,div,baz"}};
     base::test::FeatureRefAndParams tag_and_attribute(
         safe_browsing::kThreatDomDetailsTagAndAttributeFeature, parameters);
-    scoped_feature_list_.InitWithFeaturesAndParameters({tag_and_attribute}, {});
+    base::test::FeatureRefAndParams add_warning_shown_timestamp_csbrrs(
+        safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {tag_and_attribute, add_warning_shown_timestamp_csbrrs}, {});
   }
 
   SafeBrowsingBlockingPageBrowserTest(
@@ -1164,6 +1167,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, Proceed_RTL) {
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeDontProceed) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   SetupThreatIframeWarningAndNavigate();
 
   EXPECT_EQ(VISIBLE, GetVisibility("primary-button"));
@@ -1186,6 +1196,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeDontProceed) {
 }
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeProceed) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   GURL url = SetupThreatIframeWarningAndNavigate();
 
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
@@ -1206,6 +1223,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, IframeProceed) {
 #endif
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        MAYBE_IframeOptInAndReportThreatDetails) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
   // The extended reporting opt-in is presented in the interstitial for malware,
   // phishing, and UwS threats.
@@ -1720,6 +1744,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageBrowserTest,
     MAYBE_Histograms_MultipleDangerousIframesInterstitial_DontProceed) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   SBThreatType threat_type = GetThreatType();
 
@@ -1757,6 +1788,13 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SafeBrowsingBlockingPageBrowserTest,
     Histograms_MultipleDangerousIframesInterstitial_Proceed) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   SBThreatType threat_type = GetThreatType();
 
@@ -1809,6 +1847,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest, AllowlistRevisit) {
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        AllowlistIframeRevisit) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   GURL url = SetupThreatIframeWarningAndNavigate();
 
   EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
@@ -1939,6 +1984,13 @@ class SecurityStyleTestObserver : public content::WebContentsObserver {
 // https://crbug.com/659713.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        SecurityStateDowngradedForSubresourceInterstitial) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   WebContents* error_tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(error_tab);
   SecurityStyleTestObserver observer(error_tab);
@@ -2009,6 +2061,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 // subresource. Regression test for https://crbug.com/659709.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        SecurityStateGoBackOnSubresourceInterstitial) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   // Navigate to a page so that there is somewhere to go back to.
   GURL start_url = embedded_test_server()->GetURL(kEmptyPage);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
@@ -2168,6 +2227,13 @@ INSTANTIATE_TEST_SUITE_P(
 // test for crbug.com/1021334
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        IframeProceedAfterMainFrameInterstitial) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   // Navigate to a site that triggers an interstitial due to a bad main frame
   // URL.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2224,6 +2290,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 // Regression test for https://crbug.com/1333623.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        EmbedElementMalwareLandingInterstitial) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   GURL url = embedded_test_server()->GetURL(kCrossSiteMaliciousEmbedPage);
   GURL embed_url = embedded_test_server()->GetURL(kMaliciousIframe);
   SetURLThreatType(embed_url, SB_THREAT_TYPE_URL_MALWARE);
@@ -2241,6 +2314,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
                        JsElementInterstitial) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   SBThreatType threat_type = GetThreatType();
   GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
   GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
@@ -2262,6 +2342,54 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   } else {
     EXPECT_TRUE(IsShowingInterstitial(contents));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       TimestampInCSBRRClickedThroughBlockingPage) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Proceed to unsafe site, sending CSBRR.
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+  observer.WaitForNavigationFinished();
+
+  // The "proceed" command should go back instead, if proceeding is disabled.
+  AssertNoInterstitial(true);
+
+  base::RunLoop threat_report_sent_loop;
+  SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+
+  threat_report_sent_loop.Run();
+  std::string serialized = GetReportSent();
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(serialized));
+  // The timstamp of the warning shown should be in CSBRRs.
+  EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       TimestampInFallbackCSBRRSent) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  base::RunLoop threat_report_sent_loop;
+  SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+  SetupWarningAndNavigate(browser());
+  ASSERT_TRUE(IsShowingInterstitial(
+      browser()->tab_strip_model()->GetActiveWebContents()));
+
+  // Send CSBRR without interactions.
+  chrome::CloseTab(browser());
+  observer.WaitForNavigationFinished();
+  threat_report_sent_loop.Run();
+
+  std::string serialized = GetReportSent();
+  ClientSafeBrowsingReportRequest report;
+  ASSERT_TRUE(report.ParseFromString(serialized));
+  // The timstamp of the warning shown should be in CSBRRs.
+  EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4041,6 +4169,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest, UnsafePrerender) {
 // prerendered page has a subresource that's unsafe.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
                        UnsafeSubresourcePrerender) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -4065,6 +4200,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
 // prerendered page has a subframe that's unsafe.
 IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
                        UnsafeSubframePrerender) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -4097,6 +4239,13 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
                        UnsafeSubresourceOfSubframePrerender) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources
+  // is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -4134,6 +4283,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SafeBrowsingPrerenderBrowserTest,
                        UnsafeCrossOriginSubframePrerender) {
+  // TODO(crbug.com/1487858): Remove this test once
+  // kSafeBrowsingSkipSubresources is fully rolled out.
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources)) {
+    return;
+  }
+
   base::HistogramTester histograms;
   const GURL initial_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
@@ -4285,9 +4440,16 @@ IN_PROC_BROWSER_TEST_P(
   prerender_helper().NavigatePrimaryPage(prerender_url);
 }
 
+// TODO(crbug.com/1487858): Remove this test once kSafeBrowsingSkipSubresources
+// is fully rolled out.
 class SafeBrowsingFencedFrameBrowserTest
     : public SafeBrowsingBlockingPageBrowserTest {
  public:
+  SafeBrowsingFencedFrameBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kSafeBrowsingSkipSubresources);
+  }
+
   ~SafeBrowsingFencedFrameBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -4332,6 +4494,7 @@ class SafeBrowsingFencedFrameBrowserTest
  private:
   content::test::FencedFrameTestHelper fenced_frame_helper_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -4450,6 +4613,76 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingFencedFrameBrowserTest,
       }
     }
   }
+}
+
+class WarningShownTimestampCSBRRDisabledBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {
+ public:
+  WarningShownTimestampCSBRRDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        safe_browsing::kAddWarningShownTSToClientSafeBrowsingReport);
+  }
+  ~WarningShownTimestampCSBRRDisabledBrowserTest() override = default;
+
+  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  void RunThreatReportSentLoop() {
+    base::RunLoop threat_report_sent_loop;
+    SetReportSentCallback(threat_report_sent_loop.QuitClosure());
+    threat_report_sent_loop.Run();
+  }
+
+  void CheckCSBRRForTimestamp() {
+    std::string serialized = GetReportSent();
+    ClientSafeBrowsingReportRequest report;
+    ASSERT_TRUE(report.ParseFromString(serialized));
+    // The timestamp of the warning shown should not be in the report.
+    EXPECT_FALSE(report.has_warning_shown_timestamp_msec());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    WarningShownTimestampCSBRRDisabledBrowserTestWithThreatTypeAndIsolationSetting,
+    WarningShownTimestampCSBRRDisabledBrowserTest,
+    testing::Combine(
+        testing::Values(SB_THREAT_TYPE_URL_PHISHING,  // Threat types
+                        SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING),
+        testing::Bool()));  // If isolate all sites for testing.
+
+IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
+                       TimestampNotInCSBRRClickedThroughBlockingPage) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Proceed to unsafe site, sending CSBRR.
+  EXPECT_TRUE(ClickAndWaitForDetach("proceed-link"));
+
+  observer.WaitForNavigationFinished();
+  RunThreatReportSentLoop();
+  CheckCSBRRForTimestamp();
+}
+IN_PROC_BROWSER_TEST_P(WarningShownTimestampCSBRRDisabledBrowserTest,
+                       TimestampNotInFallbackCSBRRSent) {
+  SetExtendedReportingPrefForTests(browser()->profile()->GetPrefs(), true);
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  SetupWarningAndNavigate(browser());
+
+  // Send CSBRR without interactions.
+  chrome::CloseTab(browser());
+
+  observer.WaitForNavigationFinished();
+  RunThreatReportSentLoop();
+  CheckCSBRRForTimestamp();
 }
 
 }  // namespace safe_browsing

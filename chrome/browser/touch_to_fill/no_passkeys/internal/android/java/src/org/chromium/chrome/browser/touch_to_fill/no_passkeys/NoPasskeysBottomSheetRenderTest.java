@@ -63,24 +63,26 @@ public class NoPasskeysBottomSheetRenderTest {
 
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
-            Arrays.asList(new ParameterSet().value(false, false).name("Default"),
+            Arrays.asList(
+                    new ParameterSet().value(false, false).name("Default"),
                     new ParameterSet().value(false, true).name("RTL"),
                     new ParameterSet().value(true, false).name("NightMode"));
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(0)
                     .setBugComponent(Component.UI_BROWSER_PASSWORDS)
                     .build();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
+    @Mock NoPasskeysBottomSheetCoordinator.NativeDelegate mNativeDelegate;
 
     private BottomSheetController mBottomSheetController;
     private NoPasskeysBottomSheetCoordinator mCoordinator;
@@ -136,19 +138,22 @@ public class NoPasskeysBottomSheetRenderTest {
     private BottomSheetController createBottomSheetController() {
         ViewGroup activityContentView = getActivity().findViewById(android.R.id.content);
         ScrimCoordinator scrimCoordinator =
-                new ScrimCoordinator(getActivity(), new ScrimCoordinator.SystemUiScrimDelegate() {
-                    @Override
-                    public void setStatusBarScrimFraction(float scrimFraction) {}
+                new ScrimCoordinator(
+                        getActivity(),
+                        new ScrimCoordinator.SystemUiScrimDelegate() {
+                            @Override
+                            public void setStatusBarScrimFraction(float scrimFraction) {}
 
-                    @Override
-                    public void setNavigationBarScrimFraction(float scrimFraction) {}
-                }, activityContentView, Color.WHITE);
+                            @Override
+                            public void setNavigationBarScrimFraction(float scrimFraction) {}
+                        },
+                        activityContentView,
+                        Color.WHITE);
         return BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                ()
-                        -> scrimCoordinator,
-                (unused)
-                        -> {},
-                getActivity().getWindow(), KeyboardVisibilityDelegate.getInstance(),
+                () -> scrimCoordinator,
+                (unused) -> {},
+                getActivity().getWindow(),
+                KeyboardVisibilityDelegate.getInstance(),
                 () -> activityContentView);
     }
 }

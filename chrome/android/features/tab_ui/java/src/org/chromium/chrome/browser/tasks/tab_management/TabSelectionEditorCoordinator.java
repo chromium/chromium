@@ -188,8 +188,9 @@ class TabSelectionEditorCoordinator {
                 mMultiThumbnailCardProvider.initWithNative();
             }
 
-            mTabListCoordinator.registerItemType(TabProperties.UiType.DIVIDER,
-                    new LayoutViewBuilder(R.layout.divider_preference),
+            mTabListCoordinator.registerItemType(
+                    TabProperties.UiType.DIVIDER,
+                    new LayoutViewBuilder(R.layout.horizontal_divider),
                     (model, view, propertyKey) -> {});
             RecyclerView.LayoutManager layoutManager =
                     mTabListCoordinator.getContainerView().getLayoutManager();

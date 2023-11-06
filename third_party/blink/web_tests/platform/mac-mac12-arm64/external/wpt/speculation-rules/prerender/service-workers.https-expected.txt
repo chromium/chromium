@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL A prerendered page should be able to access an existing Service Worker assert_equals: expected "pong" but got "{\"error\": {\"code\": 404, \"message\": \"404\"}}"
-PASS Registering a new service worker from a prerendered page should be delayed
-PASS Unregistering an exsiting service worker from a prerendered page should be delayed
-PASS Updating an exsiting service worker from a prerendered page should be delayed
-PASS A prerendered page should be accessible as a hidden & unfocused SW client
-Harness: the test ran to completion.
-

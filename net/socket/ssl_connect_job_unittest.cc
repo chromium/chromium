@@ -17,9 +17,13 @@
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/proxy_server.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/mock_host_resolver.h"
@@ -91,6 +95,15 @@ void CheckConnectTimesExceptDnsSet(
   EXPECT_EQ(base::TimeTicks::Now(), connect_timing.connect_end);
 }
 
+const url::SchemeHostPort kHostHttps{url::kHttpsScheme, "host", 443};
+const HostPortPair kHostHttp{"host", 80};
+const ProxyServer kSocksProxyServer{ProxyServer::SCHEME_SOCKS5,
+                                    HostPortPair("sockshost", 443)};
+const ProxyServer kHttpProxyServer{ProxyServer::SCHEME_HTTP,
+                                   HostPortPair("proxy", 443)};
+
+const ProxyChain kHttpProxyChain{kHttpProxyServer};
+
 class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
  public:
   SSLConnectJobTest()
@@ -100,56 +113,71 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
         ssl_config_service_(std::make_unique<SSLConfigServiceDefaults>()),
         http_auth_handler_factory_(HttpAuthHandlerFactory::CreateDefault()),
         session_(CreateNetworkSession()),
-        direct_transport_socket_params_(
-            base::MakeRefCounted<TransportSocketParams>(
-                url::SchemeHostPort(url::kHttpsScheme, "host", 443),
-                NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                OnHostResolutionCallback(),
-                /*supported_alpns=*/
-                base::flat_set<std::string>({"h2", "http/1.1"}))),
-        proxy_transport_socket_params_(
-            base::MakeRefCounted<TransportSocketParams>(
-                HostPortPair("proxy", 443),
-                NetworkAnonymizationKey(),
-                SecureDnsPolicy::kAllow,
-                OnHostResolutionCallback(),
-                /*supported_alpns=*/base::flat_set<std::string>({}))),
-        socks_socket_params_(base::MakeRefCounted<SOCKSSocketParams>(
-            proxy_transport_socket_params_,
-            true,
-            HostPortPair("sockshost", 443),
-            NetworkAnonymizationKey(),
-            TRAFFIC_ANNOTATION_FOR_TESTS)),
-        http_proxy_socket_params_(base::MakeRefCounted<HttpProxySocketParams>(
-            proxy_transport_socket_params_,
-            nullptr /* ssl_params */,
-            false /* is_quic */,
-            HostPortPair("host", 80),
-            /*tunnel=*/true,
-            TRAFFIC_ANNOTATION_FOR_TESTS,
-            NetworkAnonymizationKey())),
         common_connect_job_params_(session_->CreateCommonConnectJobParams()) {}
 
   ~SSLConnectJobTest() override = default;
 
+  scoped_refptr<TransportSocketParams> CreateDirectTransportSocketParams(
+      SecureDnsPolicy secure_dns_policy) const {
+    return base::MakeRefCounted<TransportSocketParams>(
+        kHostHttps, NetworkAnonymizationKey(), secure_dns_policy,
+        OnHostResolutionCallback(),
+        /*supported_alpns=*/base::flat_set<std::string>({"h2", "http/1.1"}));
+  }
+
+  scoped_refptr<TransportSocketParams> CreateProxyTransportSocketParams(
+      SecureDnsPolicy secure_dns_policy) const {
+    return base::MakeRefCounted<TransportSocketParams>(
+        kHttpProxyServer.host_port_pair(), NetworkAnonymizationKey(),
+        secure_dns_policy, OnHostResolutionCallback(),
+        /*supported_alpns=*/base::flat_set<std::string>({}));
+  }
+
+  scoped_refptr<SOCKSSocketParams> CreateSOCKSSocketParams(
+      SecureDnsPolicy secure_dns_policy) {
+    return base::MakeRefCounted<SOCKSSocketParams>(
+        CreateProxyTransportSocketParams(secure_dns_policy),
+        kSocksProxyServer.scheme() == ProxyServer::SCHEME_SOCKS5,
+        kSocksProxyServer.host_port_pair(), NetworkAnonymizationKey(),
+        TRAFFIC_ANNOTATION_FOR_TESTS);
+  }
+
+  scoped_refptr<HttpProxySocketParams> CreateHttpProxySocketParams(
+      SecureDnsPolicy secure_dns_policy) {
+    return base::MakeRefCounted<HttpProxySocketParams>(
+        CreateProxyTransportSocketParams(secure_dns_policy),
+        /*ssl_params=*/nullptr, kHostHttp, kHttpProxyChain,
+        /*proxy_server_index=*/0,
+        /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS,
+        NetworkAnonymizationKey(), secure_dns_policy);
+  }
+
   std::unique_ptr<ConnectJob> CreateConnectJob(
       TestConnectJobDelegate* test_delegate,
       ProxyServer::Scheme proxy_scheme = ProxyServer::SCHEME_DIRECT,
-      RequestPriority priority = DEFAULT_PRIORITY) {
+      RequestPriority priority = DEFAULT_PRIORITY,
+      SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
     return std::make_unique<SSLConnectJob>(
         priority, SocketTag(), &common_connect_job_params_,
-        SSLParams(proxy_scheme), test_delegate, nullptr /* net_log */);
+        CreateSSLSocketParams(proxy_scheme, secure_dns_policy), test_delegate,
+        /*net_log=*/nullptr);
   }
 
-  scoped_refptr<SSLSocketParams> SSLParams(ProxyServer::Scheme proxy) {
+  scoped_refptr<SSLSocketParams> CreateSSLSocketParams(
+      ProxyServer::Scheme proxy_scheme,
+      SecureDnsPolicy secure_dns_policy) {
     return base::MakeRefCounted<SSLSocketParams>(
-        proxy == ProxyServer::SCHEME_DIRECT ? direct_transport_socket_params_
-                                            : nullptr,
-        proxy == ProxyServer::SCHEME_SOCKS5 ? socks_socket_params_ : nullptr,
-        proxy == ProxyServer::SCHEME_HTTP ? http_proxy_socket_params_ : nullptr,
-        HostPortPair("host", 443), SSLConfig(), PRIVACY_MODE_DISABLED,
-        NetworkAnonymizationKey());
+        proxy_scheme == ProxyServer::SCHEME_DIRECT
+            ? CreateDirectTransportSocketParams(secure_dns_policy)
+            : nullptr,
+        proxy_scheme == ProxyServer::SCHEME_SOCKS5
+            ? CreateSOCKSSocketParams(secure_dns_policy)
+            : nullptr,
+        proxy_scheme == ProxyServer::SCHEME_HTTP
+            ? CreateHttpProxySocketParams(secure_dns_policy)
+            : nullptr,
+        HostPortPair::FromSchemeHostPort(kHostHttps), SSLConfig(),
+        PRIVACY_MODE_DISABLED, NetworkAnonymizationKey());
   }
 
   void AddAuthToCache() {
@@ -191,12 +219,6 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
   HttpServerProperties http_server_properties_;
   QuicContext quic_context_;
   const std::unique_ptr<HttpNetworkSession> session_;
-
-  scoped_refptr<TransportSocketParams> direct_transport_socket_params_;
-
-  scoped_refptr<TransportSocketParams> proxy_transport_socket_params_;
-  scoped_refptr<SOCKSSocketParams> socks_socket_params_;
-  scoped_refptr<HttpProxySocketParams> http_proxy_socket_params_;
 
   const CommonConnectJobParams common_connect_job_params_;
 };
@@ -444,18 +466,9 @@ TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
   for (auto secure_dns_policy :
        {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
-    direct_transport_socket_params_ =
-        base::MakeRefCounted<TransportSocketParams>(
-            url::SchemeHostPort(url::kHttpsScheme, "host", 443),
-            NetworkAnonymizationKey(), secure_dns_policy,
-            OnHostResolutionCallback(),
-            /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
-    auto common_connect_job_params = session_->CreateCommonConnectJobParams();
     std::unique_ptr<ConnectJob> ssl_connect_job =
-        std::make_unique<SSLConnectJob>(DEFAULT_PRIORITY, SocketTag(),
-                                        &common_connect_job_params,
-                                        SSLParams(ProxyServer::SCHEME_DIRECT),
-                                        &test_delegate, nullptr /* net_log */);
+        CreateConnectJob(&test_delegate, ProxyServer::SCHEME_DIRECT,
+                         DEFAULT_PRIORITY, secure_dns_policy);
 
     EXPECT_THAT(ssl_connect_job->Connect(), test::IsError(ERR_IO_PENDING));
     EXPECT_EQ(secure_dns_policy, host_resolver_.last_secure_dns_policy());

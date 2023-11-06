@@ -40,6 +40,7 @@ build_webui("build") {
     "tab_data.ts",
     "tab_group_color_helper.ts",
     "tab_search_api_proxy.ts",
+    "tab_search_sync_browser_proxy.ts",
     "tab_search.ts",
     "tab_search_utils.ts",
     "title_item.ts",

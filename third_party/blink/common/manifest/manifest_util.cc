@@ -149,11 +149,4 @@ absl::optional<mojom::ManifestLaunchHandler::ClientMode> ClientModeFromString(
   return absl::nullopt;
 }
 
-GURL GetIdFromManifest(const mojom::Manifest& manifest) {
-  if (manifest.id.is_valid()) {
-    return manifest.id;
-  }
-  return manifest.start_url;
-}
-
 }  // namespace blink

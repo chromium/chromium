@@ -6,9 +6,10 @@ package org.chromium.components.content_settings;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -36,8 +37,10 @@ public class CookieControlsBridge {
 
     public void updateWebContents(
             WebContents webContents, @Nullable BrowserContextHandle originalBrowserContext) {
-        CookieControlsBridgeJni.get().updateWebContents(
-                mNativeCookieControlsBridge, webContents, originalBrowserContext);
+        if (mNativeCookieControlsBridge != 0) {
+            CookieControlsBridgeJni.get().updateWebContents(
+                    mNativeCookieControlsBridge, webContents, originalBrowserContext);
+        }
     }
 
     public void setThirdPartyCookieBlockingEnabledForSite(boolean blockCookies) {
@@ -102,9 +105,12 @@ public class CookieControlsBridge {
     }
 
     @CalledByNative
-    private void onStatusChanged(@CookieControlsStatus int status,
-            @CookieControlsEnforcement int enforcement, long expiration) {
-        mObserver.onStatusChanged(status, enforcement, expiration);
+    private void onStatusChanged(
+            @CookieControlsStatus int status,
+            @CookieControlsEnforcement int enforcement,
+            @CookieBlocking3pcdStatus int blockingStatus,
+            long expiration) {
+        mObserver.onStatusChanged(status, enforcement, blockingStatus, expiration);
     }
 
     @CalledByNative

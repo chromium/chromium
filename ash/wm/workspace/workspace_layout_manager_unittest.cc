@@ -36,6 +36,7 @@
 #include "ash/shell_observer.h"
 #include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
@@ -1051,7 +1052,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // PiP window has moved due to the popup notification window.
@@ -1061,7 +1062,7 @@ TEST_F(WorkspaceLayoutManagerTest,
   message_center::MessageCenter::Get()->RemoveNotification(notification_id,
                                                            /*by_user=*/true);
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 
   // Now, the PiP window has returned to its original position.
@@ -2270,14 +2271,13 @@ TEST_F(WorkspaceLayoutManagerBackdropTest, BackdropForSplitViewTest) {
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
 
-  EXPECT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_TRUE(OverviewController::Get()->InOverviewSession());
   // One of the windows in the default container is the overview
   // no_windows_widget window. Exclude it.
   aura::Window::Windows children = default_container()->children();
   children.erase(std::remove_if(children.begin(), children.end(),
                                 [](aura::Window* window) {
-                                  return window == Shell::Get()
-                                                       ->overview_controller()
+                                  return window == OverviewController::Get()
                                                        ->overview_session()
                                                        ->grid_list()[0]
                                                        ->no_windows_widget()

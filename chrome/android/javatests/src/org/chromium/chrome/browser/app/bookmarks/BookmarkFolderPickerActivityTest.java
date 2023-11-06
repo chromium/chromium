@@ -56,8 +56,8 @@ public class BookmarkFolderPickerActivityTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    @ClassRule
-    public static TestRule sFeaturesProcessorRule = new Features.JUnitProcessor();
+
+    @ClassRule public static TestRule sFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static BookmarkModel sBookmarkModel;
     private static BookmarkId sMobileFolderId;
@@ -68,21 +68,27 @@ public class BookmarkFolderPickerActivityTest {
     public static void setUpBeforeClass() throws TimeoutException {
         sActivityTestRule.startMainActivityOnBlankPage();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sBookmarkModel = BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-            sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkModel =
+                            BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+                    sBookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
+                });
 
         BookmarkTestUtil.waitForBookmarkModelLoaded();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sMobileFolderId = sBookmarkModel.getMobileFolderId();
-            sOtherFolderId = sBookmarkModel.getOtherFolderId();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sMobileFolderId = sBookmarkModel.getMobileFolderId();
+                    sOtherFolderId = sBookmarkModel.getOtherFolderId();
+                });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { sBookmarkModel.removeAllUserBookmarks(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    sBookmarkModel.removeAllUserBookmarks();
+                });
     }
 
     @Test
@@ -140,18 +146,15 @@ public class BookmarkFolderPickerActivityTest {
     private void startFolderPickerActivity(BookmarkId... ids) {
         // TODO(crbug.com/): Move this code to a shared ActivityTestUtils location.
         BookmarkUtils.startFolderPickerActivity(sActivityTestRule.getActivity(), ids);
-        // clang-format off
-        CriteriaHelper.pollUiThread(()->
-                ApplicationStatus.getLastTrackedFocusedActivity()
-                    instanceof BookmarkFolderPickerActivity,
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ApplicationStatus.getLastTrackedFocusedActivity()
+                                instanceof BookmarkFolderPickerActivity,
                 "Timed out waiting for BookmarkFolderPickerActivity");
-        // clang-format on
         mActivity =
                 (BookmarkFolderPickerActivity) ApplicationStatus.getLastTrackedFocusedActivity();
-        // clang-format off
-        CriteriaHelper.pollUiThread(() ->
-                ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
+        CriteriaHelper.pollUiThread(
+                () -> ApplicationStatus.getStateForActivity(mActivity) == ActivityState.RESUMED,
                 "Timed out waiting for activity to enter the RESUMED state.");
-        // clang-format on
     }
 }

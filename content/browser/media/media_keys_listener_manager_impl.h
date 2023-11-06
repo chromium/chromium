@@ -54,14 +54,16 @@ class MediaKeysListenerManagerImpl
 
   // system_media_controls::SystemMediaControlsObserver:
   void OnServiceReady() override {}
-  void OnNext() override;
-  void OnPrevious() override;
-  void OnPlay() override;
-  void OnPause() override;
-  void OnPlayPause() override;
-  void OnStop() override;
-  void OnSeek(const base::TimeDelta& time) override;
-  void OnSeekTo(const base::TimeDelta& time) override;
+  void OnNext(system_media_controls::SystemMediaControls* sender) override;
+  void OnPrevious(system_media_controls::SystemMediaControls* sender) override;
+  void OnPlay(system_media_controls::SystemMediaControls* sender) override;
+  void OnPause(system_media_controls::SystemMediaControls* sender) override;
+  void OnPlayPause(system_media_controls::SystemMediaControls* sender) override;
+  void OnStop(system_media_controls::SystemMediaControls* sender) override;
+  void OnSeek(system_media_controls::SystemMediaControls* sender,
+              const base::TimeDelta& time) override;
+  void OnSeekTo(system_media_controls::SystemMediaControls* sender,
+                const base::TimeDelta& time) override;
 
   // Informs the MediaKeysListener whether or not media is playing.
   void SetIsMediaPlaying(bool is_playing);

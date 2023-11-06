@@ -7,13 +7,13 @@ package org.chromium.components.sync;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 
@@ -31,7 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * UI thread. See components/sync/service/sync_service_impl.h for more details.
  * TODO(crbug.com/1451811): Update to no reference UI thread.
  */
-public class SyncServiceImpl extends SyncService {
+public class SyncServiceImpl implements SyncService {
     private final long mSyncServiceAndroidBridge;
 
     private int mSetupInProgressCounter;

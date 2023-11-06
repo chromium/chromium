@@ -89,10 +89,10 @@ class ReportQueueConfiguration {
   //               /*max_level=*/1024,
   //               /*filling_time=*/base::Minutes(10)))
   //           .Build();
-  //   if (!config_result.ok()) {
-  //     return config_result.status();
+  //   if (!config_result.has_value()) {
+  //     return config_result.error();
   //   }
-  //   auto config = config_result.ValueOrDie();
+  //   auto config = config_result.value();
   static Builder Create(const Settings& settings);
 
   // Deprecated and should not be used. Use `Create({settings})` instead.

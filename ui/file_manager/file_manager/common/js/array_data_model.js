@@ -23,7 +23,7 @@ export class ArrayDataModel extends EventTarget {
     this.indexes_ = [];
     this.compareFunctions_ = {};
 
-    /** @type {?Object} */
+    /** @type {null|{field: string|null, direction: string|null}} */
     this.sortStatus_;
 
     for (let i = 0; i < array.length; i++) {
@@ -48,6 +48,8 @@ export class ArrayDataModel extends EventTarget {
    */
   item(index) {
     if (index >= 0 && index < this.length) {
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       return this.array_[this.indexes_[index]];
     }
     return undefined;
@@ -59,6 +61,8 @@ export class ArrayDataModel extends EventTarget {
    * @return {function(*, *): number} Compare function set for given field.
    */
   compareFunction(field) {
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     return this.compareFunctions_[field];
   }
 
@@ -72,6 +76,8 @@ export class ArrayDataModel extends EventTarget {
     if (!this.compareFunctions_) {
       this.compareFunctions_ = {};
     }
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     this.compareFunctions_[field] = compareFunction;
   }
 
@@ -86,7 +92,7 @@ export class ArrayDataModel extends EventTarget {
 
   /**
    * Returns current sort status.
-   * @return {!Object} Current sort status.
+   * @return {{field: string|null, direction: string|null}} Current sort status.
    */
   get sortStatus() {
     if (this.sortStatus_) {
@@ -136,6 +142,8 @@ export class ArrayDataModel extends EventTarget {
    * @param {...*} var_args The items to add.
    * @return {!Array<*>} An array with the removed items.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   splice(index, deleteCount, ...var_args) {
     const addCount = arguments.length - 2;
     const newIndexes = [];
@@ -149,11 +157,15 @@ export class ArrayDataModel extends EventTarget {
     for (i = 0; i < index; i++) {
       newIndexes.push(newArray.length);
       deletePermutation.push(i);
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       newArray.push(this.array_[this.indexes_[i]]);
     }
     // Delete items.
     for (; i < index + deleteCount; i++) {
       deletePermutation.push(-1);
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       deletedItems.push(this.array_[this.indexes_[i]]);
     }
     // Insert new items instead deleted ones.
@@ -165,6 +177,8 @@ export class ArrayDataModel extends EventTarget {
     for (; i < this.indexes_.length; i++) {
       newIndexes.push(newArray.length);
       deletePermutation.push(i - deleteCount + addCount);
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       newArray.push(this.array_[this.indexes_[i]]);
     }
 
@@ -174,21 +188,31 @@ export class ArrayDataModel extends EventTarget {
 
     // TODO(arv): Maybe unify splice and change events?
     const spliceEvent = new Event('splice');
+    // @ts-ignore: error TS2339: Property 'removed' does not exist on type
+    // 'Event'.
     spliceEvent.removed = deletedItems;
+    // @ts-ignore: error TS2339: Property 'added' does not exist on type
+    // 'Event'.
     spliceEvent.added = Array.prototype.slice.call(arguments, 2);
 
     const status = this.sortStatus;
     // if sortStatus.field is null, this restores original order.
     const sortPermutation =
+        // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+        // 'Object'.
         this.doSort_(this.sortStatus.field, this.sortStatus.direction);
     if (sortPermutation) {
       const splicePermutation = deletePermutation.map(function(element) {
         return element !== -1 ? sortPermutation[element] : -1;
       });
       this.dispatchPermutedEvent_(splicePermutation);
+      // @ts-ignore: error TS2339: Property 'index' does not exist on type
+      // 'Event'.
       spliceEvent.index = sortPermutation[index];
     } else {
       this.dispatchPermutedEvent_(deletePermutation);
+      // @ts-ignore: error TS2339: Property 'index' does not exist on type
+      // 'Event'.
       spliceEvent.index = index;
     }
 
@@ -198,7 +222,11 @@ export class ArrayDataModel extends EventTarget {
     // change), and then sort again.
     // Still need to finish the sorting above (including events), so
     // list will not go to inconsistent state.
+    // @ts-ignore: error TS2339: Property 'field' does not exist on type
+    // 'Object'.
     if (status.field) {
+      // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+      // 'Object'.
       this.delayedSort_(status.field, status.direction);
     }
 
@@ -213,9 +241,14 @@ export class ArrayDataModel extends EventTarget {
    * @param {...*} var_args The items to append.
    * @return {number} The new length of the model.
    */
+  // @ts-ignore: error TS6133: 'var_args' is declared but its value is never
+  // read.
   push(...var_args) {
     const args = Array.prototype.slice.call(arguments);
     args.unshift(this.length, 0);
+    // @ts-ignore: error TS2345: Argument of type 'any[]' is not assignable to
+    // parameter of type '[index: number, deleteCount: number, ...var_args:
+    // any[]]'.
     this.splice.apply(this, args);
     return this.length;
   }
@@ -235,6 +268,8 @@ export class ArrayDataModel extends EventTarget {
     if (index < 0) {
       return;
     }
+    // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+    // type.
     this.array_[this.indexes_[index]] = newItem;
     this.updateIndex(index);
   }
@@ -259,18 +294,26 @@ export class ArrayDataModel extends EventTarget {
    */
   updateIndexes(indexes) {
     indexes.forEach(function(index) {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       assert(index >= 0 && index < this.length, 'Invalid index');
     }, this);
 
     for (let i = 0; i < indexes.length; i++) {
       const e = new Event('change');
+      // @ts-ignore: error TS2339: Property 'index' does not exist on type
+      // 'Event'.
       e.index = indexes[i];
       this.dispatchEvent(e);
     }
 
+    // @ts-ignore: error TS2339: Property 'field' does not exist on type
+    // 'Object'.
     if (this.sortStatus.field) {
       const status = this.sortStatus;
       const sortPermutation =
+          // @ts-ignore: error TS2339: Property 'direction' does not exist on
+          // type 'Object'.
           this.doSort_(this.sortStatus.field, this.sortStatus.direction);
       if (sortPermutation) {
         this.dispatchPermutedEvent_(sortPermutation);
@@ -278,6 +321,8 @@ export class ArrayDataModel extends EventTarget {
       // We should first call prepareSort (data may change), and then sort.
       // Still need to finish the sorting above (including events), so
       // list will not go to inconsistent state.
+      // @ts-ignore: error TS2339: Property 'direction' does not exist on type
+      // 'Object'.
       this.delayedSort_(status.field, status.direction);
     }
   }
@@ -286,7 +331,7 @@ export class ArrayDataModel extends EventTarget {
    * Creates sort status with given field and direction.
    * @param {?string} field Sort field.
    * @param {?string} direction Sort direction.
-   * @return {!Object} Created sort status.
+   * @return {{field: string|null, direction: string|null}} Created sort status.
    */
   createSortStatus(field, direction) {
     return {field: field, direction: direction};
@@ -297,9 +342,10 @@ export class ArrayDataModel extends EventTarget {
    * required for the sort.
    *
    * @param {string} field Sort field.
-   * @param {function()} callback The function to invoke when preparation
+   * @param {function():void} callback The function to invoke when preparation
    *     is complete.
    */
+  // @ts-ignore: error TS6133: 'field' is declared but its value is never read.
   prepareSort(field, callback) {
     callback();
   }
@@ -316,7 +362,11 @@ export class ArrayDataModel extends EventTarget {
     setTimeout(function() {
       // If the sort status has been changed, sorting has already done
       // on the change event.
+      // @ts-ignore: error TS2339: Property 'field' does not exist on type
+      // 'Object'.
       if (field === self.sortStatus.field &&
+          // @ts-ignore: error TS2339: Property 'direction' does not exist on
+          // type 'Object'.
           direction === self.sortStatus.direction) {
         self.sort(field, direction);
       }
@@ -349,8 +399,12 @@ export class ArrayDataModel extends EventTarget {
    */
   doSort_(field, direction) {
     const compareFunction = this.sortFunction_(field, direction);
+    // @ts-ignore: error TS7034: Variable 'positions' implicitly has type
+    // 'any[]' in some locations where its type cannot be determined.
     const positions = [];
     for (let i = 0; i < this.length; i++) {
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       positions[this.indexes_[i]] = i;
     }
     const sorted = this.indexes_.every(function(element, index, array) {
@@ -363,9 +417,13 @@ export class ArrayDataModel extends EventTarget {
     const sortPermutation = [];
     let changed = false;
     for (let i = 0; i < this.length; i++) {
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       if (positions[this.indexes_[i]] !== i) {
         changed = true;
       }
+      // @ts-ignore: error TS2538: Type 'undefined' cannot be used as an index
+      // type.
       sortPermutation[positions[this.indexes_[i]]] = i;
     }
     if (changed) {
@@ -379,9 +437,15 @@ export class ArrayDataModel extends EventTarget {
     this.dispatchEvent(e);
   }
 
+  // @ts-ignore: error TS7006: Parameter 'permutation' implicitly has an 'any'
+  // type.
   dispatchPermutedEvent_(permutation) {
     const e = new Event('permuted');
+    // @ts-ignore: error TS2339: Property 'permutation' does not exist on type
+    // 'Event'.
     e.permutation = permutation;
+    // @ts-ignore: error TS2339: Property 'newLength' does not exist on type
+    // 'Event'.
     e.newLength = this.length;
     this.dispatchEvent(e);
   }
@@ -396,6 +460,8 @@ export class ArrayDataModel extends EventTarget {
    */
   createCompareFunction_(field) {
     const compareFunction =
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type '{}'.
         this.compareFunctions_ ? this.compareFunctions_[field] : null;
     const defaultValuesCompareFunction = this.defaultValuesCompareFunction;
     if (compareFunction) {
@@ -414,23 +480,37 @@ export class ArrayDataModel extends EventTarget {
    * @private
    */
   sortFunction_(field, direction) {
+    // @ts-ignore: error TS7034: Variable 'compareFunction' implicitly has type
+    // 'any' in some locations where its type cannot be determined.
     let compareFunction = null;
     if (field !== null) {
       compareFunction = this.createCompareFunction_(field);
     }
     const dirMultiplier = direction === 'desc' ? -1 : 1;
 
+    // @ts-ignore: error TS7006: Parameter 'index2' implicitly has an 'any'
+    // type.
     return function(index1, index2) {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const item1 = this.array_[index1];
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       const item2 = this.array_[index2];
 
       let compareResult = 0;
+      // @ts-ignore: error TS7005: Variable 'compareFunction' implicitly has an
+      // 'any' type.
       if (typeof (compareFunction) === 'function') {
+        // @ts-ignore: error TS7005: Variable 'compareFunction' implicitly has
+        // an 'any' type.
         compareResult = compareFunction.call(null, item1, item2);
       }
       if (compareResult !== 0) {
         return dirMultiplier * compareResult;
       }
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       return dirMultiplier * this.defaultValuesCompareFunction(index1, index2);
     }.bind(this);
   }
@@ -438,6 +518,7 @@ export class ArrayDataModel extends EventTarget {
   /**
    * Default compare function.
    */
+  // @ts-ignore: error TS7006: Parameter 'b' implicitly has an 'any' type.
   defaultValuesCompareFunction(a, b) {
     // We could insert i18n comparisons here.
     if (a < b) {

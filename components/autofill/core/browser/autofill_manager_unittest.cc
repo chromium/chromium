@@ -21,6 +21,7 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_tick_clock.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -55,7 +56,6 @@ class MockAutofillDownloadManager : public AutofillDownloadManager {
   explicit MockAutofillDownloadManager(AutofillClient* client)
       : AutofillDownloadManager(client,
                                 /*api_key=*/"",
-                                /*is_raw_metadata_uploading_enabled=*/false,
                                 /*log_manager=*/nullptr) {}
 
   MockAutofillDownloadManager(const MockAutofillDownloadManager&) = delete;
@@ -102,24 +102,18 @@ class MockAutofillManager : public AutofillManager {
   }
 
   MOCK_METHOD(bool, ShouldClearPreviewedForm, (), (override));
+  MOCK_METHOD(void,
+              FillOrPreviewField,
+              (mojom::ActionPersistence action_persistence,
+               mojom::TextReplacement text_replacement,
+               const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& value,
+               PopupItemId popup_item_id),
+              (override));
   MOCK_METHOD(CreditCardAccessManager*,
               GetCreditCardAccessManager,
               (),
-              (override));
-  MOCK_METHOD(void,
-              FillCreditCardFormImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const CreditCard& credit_card,
-               const std::u16string& cvc,
-               const AutofillTriggerDetails& trigger_details),
-              (override));
-  MOCK_METHOD(void,
-              FillProfileFormImpl,
-              (const FormData& form,
-               const FormFieldData& field,
-               const AutofillProfile& profile,
-               const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
               OnFocusNoLongerOnFormImpl,
@@ -476,7 +470,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.
   EXPECT_CALL(observer, OnBeforeTextFieldDidChange(m, f, ff));
   manager_->OnTextFieldDidChange(form, field, {}, {});
-  EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff));
+  EXPECT_CALL(observer, OnAfterTextFieldDidChange(m, f, ff, std::u16string()));
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, f, heuristics));
   task_environment_.RunUntilIdle();
 
@@ -488,7 +482,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnAfterDidFillAutofillFormData(m, f));
   manager_->OnDidFillAutofillFormData(form, {});
 
-  EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff));
+  EXPECT_CALL(observer, OnBeforeAskForValuesToFill(m, f, ff, Ref(form)));
   EXPECT_CALL(observer, OnAfterAskForValuesToFill(m, f, ff));
   manager_->OnAskForValuesToFill(form, field, {}, {});
 

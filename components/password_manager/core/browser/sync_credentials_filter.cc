@@ -7,10 +7,8 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -22,6 +20,39 @@
 #include "password_sync_util.h"
 
 namespace password_manager {
+
+namespace {
+
+// Returns true if `url` is google.com domain and `username` corresponds to the
+// account specified by GetAccountEmailIfSyncFeatureEnabledIncludingPasswords.
+// Returns false if GetAccountEmailIfSyncFeatureEnabledIncludingPasswords does
+// not specify any account.
+// TODO(crbug.com/1462552): Remove this function once IsSyncFeatureEnabled()/
+// IsSyncFeatureActive() is fully deprecated, see ConsentLevel::kSync
+// documentation for details.
+bool IsCredentialMatchingSyncFeatureAccount(
+    const GURL& url,
+    const std::u16string& username,
+    const syncer::SyncService* sync_service,
+    const signin::IdentityManager* identity_manager) {
+  if (!url.DomainIs("google.com")) {
+    return false;
+  }
+
+  // The empty username can mean that Chrome did not detect it correctly. For
+  // reasons described in http://crbug.com/636292#c1, the username is suspected
+  // to be the sync username unless proven otherwise.
+  if (username.empty()) {
+    return true;
+  }
+
+  return gaia::AreEmailsSame(
+      base::UTF16ToUTF8(username),
+      sync_util::GetAccountEmailIfSyncFeatureEnabledIncludingPasswords(
+          sync_service, identity_manager));
+}
+
+}  // namespace
 
 SyncCredentialsFilter::SyncCredentialsFilter(
     PasswordManagerClient* client,
@@ -48,8 +79,8 @@ bool SyncCredentialsFilter::ShouldSave(const PasswordForm& form) const {
     // Legacy code path, subject to clean-up.
     // If kEnablePasswordsAccountStorage is NOT enabled, then don't allow saving
     // the password for the sync account specifically.
-    return !sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                               sync_service, identity_manager);
+    return !IsCredentialMatchingSyncFeatureAccount(
+        form.url, form.username_value, sync_service, identity_manager);
   }
 
   if (!sync_util::IsGaiaCredentialPage(form.signon_realm)) {
@@ -109,16 +140,14 @@ bool SyncCredentialsFilter::IsSyncAccountEmail(
                                        signin::ConsentLevel::kSync);
 }
 
-void SyncCredentialsFilter::ReportFormLoginSuccess(
-    const PasswordFormManager& form_manager) const {
-  const PasswordForm& form = form_manager.GetPendingCredentials();
-  if (!form_manager.IsNewLogin() &&
-      sync_util::IsSyncAccountCredential(form.url, form.username_value,
-                                         sync_service_factory_function_.Run(),
-                                         client_->GetIdentityManager())) {
-    base::RecordAction(base::UserMetricsAction(
-        "PasswordManager_SyncCredentialFilledAndLoginSuccessfull"));
-  }
+// static
+bool SyncCredentialsFilter::IsCredentialMatchingSyncFeatureAccountForTest(
+    const GURL& url,
+    const std::u16string& username,
+    const syncer::SyncService* sync_service,
+    const signin::IdentityManager* identity_manager) {
+  return IsCredentialMatchingSyncFeatureAccount(url, username, sync_service,
+                                                identity_manager);
 }
 
 }  // namespace password_manager

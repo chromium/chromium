@@ -42,7 +42,7 @@ class CORE_EXPORT CSSContainerValues : public MediaValuesDynamic {
   float RcapFontSize(float zoom) const override;
   // Note that ContainerWidth/ContainerHeight are used to resolve
   // container *units*. See `container_sizes_`.
-  Element* ContainerElement() const override { return element_; }
+  Element* ContainerElement() const override { return element_.Get(); }
   double ContainerWidth() const override;
   double ContainerHeight() const override;
   WritingMode GetWritingMode() const override {

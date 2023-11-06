@@ -971,11 +971,15 @@ scoped_refptr<ShapeResult> ShapeResult::ApplySpacingToCopy(
   return result;
 }
 
-bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
-  if (character_position_ && offset > StartIndex() && offset <= EndIndex()) {
-    return CharacterData(offset - 1).has_auto_spacing_after;
+bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
+  if (character_position_ && offset >= StartIndex() && offset < EndIndex()) {
+    return CharacterData(offset).has_auto_spacing_after;
   }
   return false;
+}
+
+bool ShapeResult::HasAutoSpacingBefore(unsigned offset) const {
+  return HasAutoSpacingAfter(offset - 1);
 }
 
 void ShapeResult::ApplyTextAutoSpacing(
@@ -989,7 +993,7 @@ void ShapeResult::ApplyTextAutoSpacing(
       [](const OffsetWithSpacing& lhs, const OffsetWithSpacing& rhs) {
         return lhs.offset <= rhs.offset;
       }));
-  DCHECK_GT(offsets_with_spacing.front().offset, StartIndex());
+  DCHECK_GE(offsets_with_spacing.front().offset, StartIndex());
   DCHECK_LE(offsets_with_spacing.back().offset, EndIndex());
 #endif
 
@@ -1008,9 +1012,46 @@ template <TextDirection direction, class Iterator>
 void ShapeResult::ApplyTextAutoSpacingCore(Iterator offset_begin,
                                            Iterator offset_end) {
   DCHECK(offset_begin != offset_end);
-
-  float total_space = 0.0;
   Iterator current_offset = offset_begin;
+  float total_space = 0.0;
+  if (UNLIKELY(current_offset->offset == StartIndex())) {
+    // Enter this branch if the previous item's direction is RTL and current
+    // item's direction is LTR. In this case, spacing cannot be added to the
+    // advance of the previous run, otherwise it might be a wrong position after
+    // line break. Instead, the spacing is added to the offset of the first run.
+    if (Direction() == TextDirection::kRtl) {
+      // TODO(https://crbug.com/1463890): Here should be item's direction !=
+      // base direction .
+      current_offset++;
+    } else {
+      for (auto& run : runs_) {
+        if (UNLIKELY(!run)) {
+          continue;
+        }
+        DCHECK_EQ(run->start_index_, current_offset->offset);
+        wtf_size_t last_glyph_of_first_char = 0;
+        float uni_dim_offset = current_offset->spacing;
+        // It is unfortunate to set glyph_data_'s offsets, but it should be
+        // super rare to reach there, so it would not hurt memory usage.
+        GlyphOffset glyph_offset = run->IsHorizontal()
+                                       ? GlyphOffset(uni_dim_offset, 0)
+                                       : GlyphOffset(0, uni_dim_offset);
+        for (wtf_size_t i = 0; i < run->NumGlyphs(); i++) {
+          if (run->glyph_data_[i].character_index != 0) {
+            break;
+          }
+          run->glyph_data_.SetOffsetAt(i, glyph_offset);
+          last_glyph_of_first_char = i;
+        }
+        run->glyph_data_[last_glyph_of_first_char].advance += uni_dim_offset;
+        has_vertical_offsets_ |= (glyph_offset.y() != 0);
+        run->width_ += uni_dim_offset;
+        current_offset++;
+        break;
+      }
+    }
+  }
+
   for (auto& run : runs_) {
     if (UNLIKELY(!run)) {
       continue;
@@ -1103,6 +1144,46 @@ scoped_refptr<ShapeResult> ShapeResult::UnapplyAutoSpacing(
   last_run.width_ -= width;
   sub_range->width_ -= width;
   return sub_range;
+}
+
+unsigned ShapeResult::AdjustOffsetForAutoSpacing(unsigned offset,
+                                                 float position) const {
+  DCHECK(character_position_);
+  DCHECK(HasAutoSpacingAfter(offset));
+  DCHECK(PrimaryFont());
+  const float autospace_width = TextAutoSpace::GetSpacingWidth(*PrimaryFont());
+  DCHECK_GE(offset, StartIndex());
+  offset -= StartIndex();
+  DCHECK_LT(offset, NumCharacters());
+  // If the next character fits in `position + autospace_width`, then advance
+  // the break offset. The auto-spacing at line edges will be removed by
+  // `UnapplyAutoSpacing`.
+  if (IsLtr()) {
+    position += autospace_width;
+    if (offset + 1 < NumCharacters()) {
+      const ShapeResultCharacterData& data = (*character_position_)[offset + 1];
+      if (data.x_position <= position) {
+        ++offset;
+      }
+    } else {
+      if (Width() <= position) {
+        offset = NumCharacters();
+      }
+    }
+  } else {
+    position -= autospace_width;
+    if (offset + 1 < NumCharacters()) {
+      const ShapeResultCharacterData& data = (*character_position_)[offset + 1];
+      if (data.x_position >= position) {
+        ++offset;
+      }
+    } else {
+      if (Width() <= -position) {
+        offset = NumCharacters();
+      }
+    }
+  }
+  return offset + StartIndex();
 }
 
 namespace {

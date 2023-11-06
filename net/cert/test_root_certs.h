@@ -12,8 +12,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-#include "net/cert/pki/trust_store.h"
-#include "net/cert/pki/trust_store_in_memory.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store_in_memory.h"
 
 #if BUILDFLAG(IS_IOS)
 #include <CoreFoundation/CFArray.h>
@@ -54,7 +54,7 @@ class NET_EXPORT TestRootCerts {
   bool IsKnownRoot(base::span<const uint8_t> der_cert) const;
 
 #if BUILDFLAG(IS_IOS)
-  CFArrayRef temporary_roots() const { return temporary_roots_; }
+  CFArrayRef temporary_roots() const { return temporary_roots_.get(); }
 
   // Modifies the root certificates of |trust_ref| to include the
   // certificates stored in |temporary_roots_|. If IsEmpty() is true, this
@@ -62,7 +62,7 @@ class NET_EXPORT TestRootCerts {
   OSStatus FixupSecTrustRef(SecTrustRef trust_ref) const;
 #endif
 
-  TrustStore* test_trust_store() { return &test_trust_store_; }
+  bssl::TrustStore* test_trust_store() { return &test_trust_store_; }
 
  private:
   friend struct base::LazyInstanceTraitsBase<TestRootCerts>;
@@ -75,7 +75,7 @@ class NET_EXPORT TestRootCerts {
   // Marks |certificate| as trusted in the effective trust store
   // used by CertVerifier::Verify(). Returns false if the
   // certificate could not be marked trusted.
-  bool Add(X509Certificate* certificate, CertificateTrust trust);
+  bool Add(X509Certificate* certificate, bssl::CertificateTrust trust);
 
   // Marks |der_cert| as a known root. Does not change trust.
   void AddKnownRoot(base::span<const uint8_t> der_cert);
@@ -89,7 +89,7 @@ class NET_EXPORT TestRootCerts {
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
 #endif
 
-  TrustStoreInMemory test_trust_store_;
+  bssl::TrustStoreInMemory test_trust_store_;
 
   std::set<std::string, std::less<>> test_known_roots_;
 };
@@ -110,13 +110,13 @@ class NET_EXPORT ScopedTestRoot {
   // interpreted (applies only to CertVerifyProcBuiltin).
   explicit ScopedTestRoot(
       scoped_refptr<X509Certificate> cert,
-      CertificateTrust trust = CertificateTrust::ForTrustAnchor());
+      bssl::CertificateTrust trust = bssl::CertificateTrust::ForTrustAnchor());
   // Creates a ScopedTestRoot that adds |certs| to the TestRootCerts store.
   // |trust| may be specified to change the details of how the trust is
   // interpreted (applies only to CertVerifyProcBuiltin).
   explicit ScopedTestRoot(
       CertificateList certs,
-      CertificateTrust trust = CertificateTrust::ForTrustAnchor());
+      bssl::CertificateTrust trust = bssl::CertificateTrust::ForTrustAnchor());
 
   ScopedTestRoot(const ScopedTestRoot&) = delete;
   ScopedTestRoot& operator=(const ScopedTestRoot&) = delete;
@@ -131,8 +131,9 @@ class NET_EXPORT ScopedTestRoot {
   // If |certs_| contains certificates (due to a prior call to Reset or due to
   // certs being passed at construction), the existing TestRootCerts store is
   // cleared.
-  void Reset(CertificateList certs,
-             CertificateTrust trust = CertificateTrust::ForTrustAnchor());
+  void Reset(
+      CertificateList certs,
+      bssl::CertificateTrust trust = bssl::CertificateTrust::ForTrustAnchor());
 
   // Returns true if this ScopedTestRoot has no certs assigned.
   bool IsEmpty() const { return certs_.empty(); }

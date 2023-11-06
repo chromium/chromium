@@ -88,9 +88,6 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
   } chrome_layer_override_info[] = {
       // Overrides for --enable-download-warning-improvements.
       {switches::kEnableDownloadWarningImprovements,
-       std::cref(safe_browsing::kDeepScanningUpdatedUX),
-       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
-      {switches::kEnableDownloadWarningImprovements,
        std::cref(safe_browsing::kDeepScanningEncryptedArchives),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableDownloadWarningImprovements,
@@ -107,6 +104,9 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
       {switches::kEnableDownloadWarningImprovements,
        std::cref(safe_browsing::kImprovedDownloadPageWarnings),
+       base::FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {switches::kEnableDownloadWarningImprovements,
+       std::cref(safe_browsing::kEncryptedArchivesMetadata),
        base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
       // Override for --privacy-sandbox-ads-apis.

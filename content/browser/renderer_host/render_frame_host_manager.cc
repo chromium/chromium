@@ -1911,7 +1911,8 @@ void RenderFrameHostManager::CreateWebUIForNavigationIfNeeded(
       // type if it will be reused.
       CHECK_EQ(render_frame_host_->web_ui_type(),
                WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
-                   browser_context, request->common_params().url));
+                   browser_context, request->common_params().url))
+          << "WebUI type mismatch for " << request->common_params().url;
       render_frame_host_->web_ui()->RenderFrameReused(render_frame_host_.get());
     } else if (!render_frame_host_->web_ui()) {
       // It is possible to reuse a RenderFrameHost when going to a WebUI URL
@@ -2317,11 +2318,21 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
     // Web UI URL. Exclude the case where the navigation starts from an initial
     // RenderFrameHost in an unassigned SiteInstance and unused process, since
     // in that case the WebUI navigation can safely reuse them.
+    //
+    // Subtle: using both !has_committed_any_navigation() and
+    // is_initial_empty_document() to check for an initial RFH is intentional.
+    // has_committed_any_navigation() becomes true when the first navigation
+    // sends a CommitNavigation IPC, which avoids races where a WebUI navigation
+    // incorrectly tries to reuse an initial RFH while another navigation in it
+    // is pending commit. is_initial_empty_document() is additionally used to
+    // avoid reusing an initial RFH after crashes and after document.open().
+    // See https://crbug.com/1492076 and https://crbug.com/1485586.
     if (WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
             browser_context, destination_effective_url)) {
       bool starts_from_initial_rfh =
           render_frame_host_->GetProcess()->IsUnused() &&
           !current_instance->HasSite() &&
+          !render_frame_host_->has_committed_any_navigation() &&
           render_frame_host_->is_initial_empty_document();
       if (!starts_from_initial_rfh ||
           !base::FeatureList::IsEnabled(

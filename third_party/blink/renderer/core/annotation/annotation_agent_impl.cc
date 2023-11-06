@@ -178,7 +178,7 @@ bool AnnotationAgentImpl::IsAttached() const {
 bool AnnotationAgentImpl::IsAttachmentPending() const {
   // This can be an invalid range but still returns true because the attachment
   // is still in progress until the DomMutation task runs in the next rAF.
-  return pending_range_;
+  return pending_range_ != nullptr;
 }
 
 bool AnnotationAgentImpl::IsBoundForTesting() const {

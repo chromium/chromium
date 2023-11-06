@@ -102,7 +102,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        // clang-format off
         if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
             List<InstanceInfo> info = getInstanceInfo();
             InstanceSwitcherCoordinator.showDialog(mActivity, mModalDialogManagerSupplier.get(),
@@ -117,7 +116,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             tracker.notifyEvent(EventConstants.INSTANCE_SWITCHER_IPH_USED);
             return true;
         }
-        // clang-format on
         return super.handleMenuOrKeyboardAction(id, fromMenu);
     }
 
@@ -226,6 +224,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         assert currentItemPos != -1;
         if (currentItemPos != 0 && result.size() > 1) result.add(0, result.remove(currentItemPos));
         return result;
+    }
+
+    @Override
+    public int getCurrentInstanceId() {
+        List<InstanceInfo> allInstances = getInstanceInfo();
+        if (allInstances == null || allInstances.isEmpty()) return INVALID_INSTANCE_ID;
+        // Current instance is at top of list.
+        return allInstances.get(0).instanceId;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

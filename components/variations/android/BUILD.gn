@@ -15,13 +15,13 @@ generate_jni("variations_jni") {
 android_library("variations_java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/variations:variations_java",
     "//components/variations/proto:proto_java",
     "//net/android:net_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":variations_jni" ]
@@ -55,8 +55,8 @@ android_library("test_support_java") {
   srcjar_deps = [ ":test_support_jni_headers" ]
   sources = [ "javatests/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProviderTestUtilsBridge.java" ]
   deps = [
-    "//base:jni_java",
     "//build/android:build_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 

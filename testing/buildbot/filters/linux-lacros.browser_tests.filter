@@ -14,6 +14,7 @@
 # happen, like presentation callback invocations, input event notifications, etc. But these bahaviors
 # may not happen on Lacros somehow, hence the timeout.
 # We disable these test as they come up in reports.
+-All/MouseoverLCPTestWithHeuristicFlag.LargestContentfulPaint_MouseoverOverLCPImageThenBody*
 -AdsPageLoadMetricsObserverBrowserTest.FirstContentfulPaintRecorded
 -AdsPageLoadMetricsObserverBrowserTest.PageAdDensityIgnoreDisplayNoneFrame
 -AmpPageLoadMetricsBrowserTest.AmpSubframe*

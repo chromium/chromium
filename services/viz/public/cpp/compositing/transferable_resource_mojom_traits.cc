@@ -62,7 +62,6 @@ bool StructTraits<viz::mojom::TransferableResourceDataView,
   if (!data.ReadSize(&out->size) || !data.ReadFormat(&out->format) ||
       !data.ReadMailboxHolder(&out->mailbox_holder) ||
       !data.ReadColorSpace(&out->color_space) ||
-      !data.ReadColorSpaceWhenSampled(&out->color_space_when_sampled) ||
       !data.ReadHdrMetadata(&out->hdr_metadata) ||
       !data.ReadYcbcrInfo(&out->ycbcr_info) || !data.ReadId(&id) ||
       !data.ReadSynchronizationType(&out->synchronization_type)) {

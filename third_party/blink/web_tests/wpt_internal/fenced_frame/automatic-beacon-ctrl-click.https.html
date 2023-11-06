@@ -29,7 +29,7 @@ promise_test(async(t) => {
     // before the navigation happens.
     a.onclick = () => {
       let beacon_event = {
-        eventType: "reserved.top_navigation",
+        eventType: "reserved.top_navigation_commit",
         eventData: beacon_data,
         destination: ["buyer"],
       }
@@ -47,7 +47,7 @@ promise_test(async(t) => {
     eventSender.mouseUp(0, [isMac ? 'metaKey' : 'ctrlKey']);
   }, [new_url, beacon_data]);
 
-  const received_beacon_data = await nextAutomaticBeacon();
+  const received_beacon_data = await nextAutomaticBeacon(beacon_data);
   assert_equals(received_beacon_data, beacon_data);
 
   // Also test automatic beacons with middle clicks
@@ -55,7 +55,8 @@ promise_test(async(t) => {
     eventSender.mouseDown(1);
     eventSender.mouseUp(1);
   }, []);
-  const middle_click_nav_received_beacon_data = await nextAutomaticBeacon();
+  const middle_click_nav_received_beacon_data = await
+      nextAutomaticBeacon(beacon_data);
   assert_equals(middle_click_nav_received_beacon_data, beacon_data);
 }, 'Trigger an automatic beacon from ctrl+clicking a link.');
 

@@ -568,7 +568,8 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(chrome::kAutoUpdatePolicyURL, active_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(chrome::kAutoUpdatePolicyURL),
+            active_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowRecentEolNotification) {
@@ -767,7 +768,8 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest,
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(chrome::kEolNotificationURL, active_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(chrome::kEolNotificationURL),
+            active_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
@@ -799,7 +801,8 @@ IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNonRecentEolNotification) {
   content::WebContents* active_contents =
       chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(active_contents);
-  EXPECT_EQ(chrome::kEolNotificationURL, active_contents->GetVisibleURL());
+  EXPECT_EQ(GURL(chrome::kEolNotificationURL),
+            active_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest, PRE_ShowTrayNoticeLongAfterEol) {

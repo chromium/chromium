@@ -8,6 +8,7 @@ import {BindingsTestRunner} from 'bindings_test_runner';
 
 import * as QuickOpen from 'devtools/ui/legacy/components/quick_open/quick_open.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Verify that GoTo source dialog filters out mapped uiSourceCodes.\n`);
@@ -22,8 +23,8 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
     function waitForUISourceCodes(next) {
       Promise
           .all([
-            TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.Network),
-            TestRunner.waitForUISourceCode('foo.js', Workspace.projectTypes.FileSystem)
+            TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.Network),
+            TestRunner.waitForUISourceCode('foo.js', Workspace.Workspace.projectTypes.FileSystem)
           ])
           .then(next);
     },

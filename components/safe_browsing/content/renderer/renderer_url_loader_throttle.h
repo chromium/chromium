@@ -155,6 +155,7 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
   // Tracks if the request originated from an extension, used during redirects
   // to send web request data to the telemetry service.
   std::string origin_extension_id_;
+  bool initiated_from_content_script_ = false;
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::WeakPtrFactory<RendererURLLoaderThrottle> weak_factory_{this};

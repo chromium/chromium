@@ -25,7 +25,7 @@ public final class AutofillProfileTest {
     @Test
     @SmallTest
     public void verifyAutofillProfile_testCompleteBuilds() throws Throwable {
-        //(crbug/1473318) Add utilities to create these JSONs and CapturedSitesInstructionsTests.
+        // (crbug/1473318) Add utilities to create these JSONs and CapturedSitesInstructionsTests.
         JSONObject test = new JSONObject();
         JSONArray profile = new JSONArray();
         JSONObject obj;

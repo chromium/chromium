@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.BrandingCheckDuration" units="ms"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.BrandingDecision"
-    enum="CustomTabsBrandingDecision" expires_after="2024-02-25">
+    enum="CustomTabsBrandingDecision" expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -127,7 +127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Branding.NumberOfClients" units="count"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ClientAppId" enum="ClientAppId"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>yusufo@chromium.org</owner>
   <summary>
     Android: AppId declared by the launching application in EXTRA_APPLICATION_ID
@@ -172,7 +172,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.CloseCause" enum="CustomTabsCloseCause"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -184,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.GSA"
-    enum="CustomTabsConnection" expires_after="2024-02-04">
+    enum="CustomTabsConnection" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -198,7 +198,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ConnectionStatusOnReturn.NonGSA"
-    enum="CustomTabsConnection" expires_after="2024-02-04">
+    enum="CustomTabsConnection" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>jinsukkim@chromium.org</owner>
   <owner>cct-team@google.com</owner>
@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.Form" enum="Boolean"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -299,7 +299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.HadInteractionOnClose.Navigation" enum="Boolean"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>katzz@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -308,6 +308,18 @@ chromium-metrics-reviews@google.com.
     forward and false if there have not been web contents interactions or the
     tab cannot go back / forward at the time of closing the CCT. If the tab is
     restored the previous form interactions will be reset.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.HasNonSpoofablePackageName" enum="Boolean"
+    expires_after="2024-05-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Boolean histogram denoting whether the package name can be
+    retrieved in a non-spoofable way for Custom Tabs. When the histogram returns
+    true, it means we can confirm the package name was passed by the defined
+    host app. Emitted when the Custom Tab is launched.
   </summary>
 </histogram>
 
@@ -351,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IntentToFirstCommitNavigationTime3" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the first navigation
@@ -361,7 +373,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.IntentToFirstNavigationStartTime" units="ms"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Time between the intent arrival to a Custom Tab and the navigation start.
@@ -391,6 +403,18 @@ chromium-metrics-reviews@google.com.
 
     Before M118, unlike CustomTabs.WarmupStateOnLaunch, this metric was only
     recorded with a valid session.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.MinimizedEvents" enum="CustomTabsMinimizedEvents"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Enum histogram to track the different events related to
+    Minimized Custom Tabs. This includes: minimizing(enter PiP), maximizing
+    (restore from PiP), destroy (PiP closed + CT session ends). Emitted on each
+    event.
   </summary>
 </histogram>
 
@@ -430,7 +454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PartialCustomTabType"
-    enum="CustomTabsPartialCustomTabType" expires_after="2024-02-04">
+    enum="CustomTabsPartialCustomTabType" expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -491,24 +515,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.PredictionStatus" enum="PredictionStatus"
-    expires_after="2020-03-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    For Custom Tabs, records whether mayLaunchUrl() has been called, and if so,
-    whether the call was later matched by a URL launch.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.PredictionToLaunch" units="ms"
-    expires_after="2020-03-01">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    When a URL prediction succeeds, time in ms between the prediction and the
-    actual launch.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.ResizeType" enum="CustomTabsResizeType"
     expires_after="2023-05-14">
   <obsolete>
@@ -523,7 +529,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.ResizeType2" enum="CustomTabsResizeType2"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>kgrosu@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -534,7 +540,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CustomTabs.RetainableSessionsV2.TimeBetweenLaunch{IdentifierType}"
-    units="seconds" expires_after="2024-02-20">
+    units="seconds" expires_after="2024-04-28">
   <owner>wenyufu@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>
@@ -629,32 +635,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CustomTabs.SpeculationStatusOnStart"
-    enum="CustomTabsSpeculationStatusOnStart" expires_after="2021-02-14">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Recorded only for Android. How a speculation was started or why it was
-    disallowed. This is recorded when a speculation of any kind is requested,
-    with either a &quot;Speculation allowed&quot; value, or a reason why it was
-    not allowed. If the speculation is allowed and is attempted to be started,
-    the status on start will be counted in addition: one of
-    &quot;Prefetch&quot;, &quot;Prerender&quot;, &quot;Background Tab&quot; or
-    &quot;Prerender not started&quot;. The last case is when a prerender is
-    abandoned during start. Starting with M84 this is is also recorded for
-    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-  </summary>
-</histogram>
-
-<histogram name="CustomTabs.SpeculationStatusOnSwap"
-    enum="CustomTabsSpeculationStatusOnSwap" expires_after="2020-07-26">
-  <owner>lizeb@chromium.org</owner>
-  <summary>
-    Recorded only for Android. Recorded when a speculation is requesting to swap
-    into a visible tab. Starting with M84 this is is also recorded for
-    webapps/WebAPKs. Filter the platform for just CCT/TWA data.
-  </summary>
-</histogram>
-
 <histogram name="CustomTabs.Startup.TimeToFirstCommitNavigation2.{suffix}"
     units="ms" expires_after="2024-08-25">
   <owner>mthiesse@chromium.org</owner>
@@ -739,6 +719,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.TimeElapsedSinceMinimized.Destroyed" units="s"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Starts tracking system time when minimization begins and
+    records the difference if the PiP window is removed through any event EXCEPT
+    maximizing (un-PiP). This means the Custom Tab activity would also be
+    destroyed. Emitted when CCT PiP windows are destroyed.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.TimeElapsedSinceMinimized.Maximized" units="s"
+    expires_after="2024-04-01">
+  <owner>katzz@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Android only. Starts tracking system time when minimization begins and
+    records the difference if the PiP window is maximized (the tab goes back to
+    its original state). Emitted when tab is maximized.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.TimeScrollUpdateReceivedAfterScrollEnd" units="ms"
     expires_after="2024-03-24">
   <owner>sinansahin@google.com</owner>
@@ -770,7 +773,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.WarmupStateOnLaunch" enum="WarmupStateOnLaunch"
-    expires_after="2024-02-05">
+    expires_after="2024-04-28">
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded only on Android. Reports whether warmup() has been called when a

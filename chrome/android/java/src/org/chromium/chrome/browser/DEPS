@@ -70,7 +70,7 @@ specific_include_rules = {
   "ChromeTabCreator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "TabDelegate\.java": [
+  "ChromeAsyncTabLauncher\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ReturnToChromeUtil\.java": [
@@ -124,7 +124,7 @@ specific_include_rules = {
   "TabModelImpl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabDelegate\.java": [
+  "ChromeAsyncTabLauncher\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
 }

@@ -175,11 +175,6 @@ guestMessagePipe.registerHandler(
       const response = await indexRemote.find(
           toString16(dataFromApp.query), dataFromApp.maxResults || 50);
 
-      // Record the search status in the trusted frame.
-      chrome.metricsPrivate.recordEnumerationValue(
-          'Discover.Search.SearchStatus', response.status,
-          ResponseStatus.MAX_VALUE);
-
       if (response.status !== ResponseStatus.kSuccess || !response.results) {
         return {results: null};
       }

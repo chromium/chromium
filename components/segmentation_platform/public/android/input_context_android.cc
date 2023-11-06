@@ -66,7 +66,8 @@ static void JavaLongArrayToBaseTimeVector(
   std::vector<int64_t> time_values;
   base::android::JavaLongArrayToInt64Vector(env, java_values, &time_values);
   for (int64_t time_value : time_values) {
-    out_times->emplace_back(base::Time::FromJavaTime(time_value));
+    out_times->emplace_back(
+        base::Time::FromMillisecondsSinceUnixEpoch(time_value));
   }
 }
 

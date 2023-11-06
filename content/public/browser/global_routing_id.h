@@ -11,7 +11,9 @@
 #include "base/hash/hash.h"
 #include "base/i18n/number_formatting.h"
 #include "content/common/content_export.h"
+#include "content/public/common/content_constants.h"
 #include "ipc/ipc_message.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace perfetto::protos::pbzero {
@@ -33,20 +35,25 @@ struct CONTENT_EXPORT GlobalRoutingID {
 
   // The unique ID of the child process (this is different from OS's PID / this
   // should come from RenderProcessHost::GetID()).
-  int child_id = -1;
+  int child_id = kInvalidChildProcessUniqueId;
 
   // The route ID.
   int route_id = -1;
 
-  bool operator<(const GlobalRoutingID& other) const {
-    return std::tie(child_id, route_id) <
-           std::tie(other.child_id, other.route_id);
+  friend bool operator<(const GlobalRoutingID& lhs,
+                        const GlobalRoutingID& rhs) {
+    return std::tie(lhs.child_id, lhs.route_id) <
+           std::tie(rhs.child_id, rhs.route_id);
   }
-  bool operator==(const GlobalRoutingID& other) const {
-    return child_id == other.child_id && route_id == other.route_id;
+
+  friend bool operator==(const GlobalRoutingID& lhs,
+                         const GlobalRoutingID& rhs) {
+    return lhs.child_id == rhs.child_id && lhs.route_id == rhs.route_id;
   }
-  bool operator!=(const GlobalRoutingID& other) const {
-    return !(*this == other);
+
+  friend bool operator!=(const GlobalRoutingID& lhs,
+                         const GlobalRoutingID& rhs) {
+    return !(lhs == rhs);
   }
 };
 
@@ -79,16 +86,21 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   // RenderFrameHost::GetRoutingID().
   int frame_routing_id = MSG_ROUTING_NONE;
 
-  bool operator<(const GlobalRenderFrameHostId& other) const {
-    return std::tie(child_id, frame_routing_id) <
-           std::tie(other.child_id, other.frame_routing_id);
+  friend bool operator<(const GlobalRenderFrameHostId& lhs,
+                        const GlobalRenderFrameHostId& rhs) {
+    return std::tie(lhs.child_id, lhs.frame_routing_id) <
+           std::tie(rhs.child_id, rhs.frame_routing_id);
   }
-  bool operator==(const GlobalRenderFrameHostId& other) const {
-    return child_id == other.child_id &&
-           frame_routing_id == other.frame_routing_id;
+
+  friend bool operator==(const GlobalRenderFrameHostId& lhs,
+                         const GlobalRenderFrameHostId& rhs) {
+    return lhs.child_id == rhs.child_id &&
+           lhs.frame_routing_id == rhs.frame_routing_id;
   }
-  bool operator!=(const GlobalRenderFrameHostId& other) const {
-    return !(*this == other);
+
+  friend bool operator!=(const GlobalRenderFrameHostId& lhs,
+                         const GlobalRenderFrameHostId& rhs) {
+    return !(lhs == rhs);
   }
   explicit operator bool() const {
     return frame_routing_id != MSG_ROUTING_NONE;
@@ -97,6 +109,48 @@ struct CONTENT_EXPORT GlobalRenderFrameHostId {
   using TraceProto = perfetto::protos::pbzero::GlobalRenderFrameHostId;
   // Write a representation of this object into proto.
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
+};
+
+// Similar to GlobalRenderFrameHostId except that it uses FrameTokens instead
+// of routing ids.
+//
+// These tokens can be considered to be unique for the lifetime of the browser
+// process.
+struct GlobalRenderFrameHostToken {
+  GlobalRenderFrameHostToken() = default;
+
+  // GlobalRenderFrameHostToken is copyable.
+  GlobalRenderFrameHostToken(const GlobalRenderFrameHostToken&) = default;
+  GlobalRenderFrameHostToken& operator=(const GlobalRenderFrameHostToken&) =
+      default;
+
+  GlobalRenderFrameHostToken(int child_id,
+                             const blink::LocalFrameToken& frame_token)
+      : child_id(child_id), frame_token(frame_token) {}
+
+  // The unique ID of the child process (this is different from OS's PID / this
+  // should come from RenderProcessHost::GetID()).
+  int child_id = kInvalidChildProcessUniqueId;
+
+  // The `LocalFrameToken` of blink::WebLocalFrame - should come from
+  // RenderFrameHost::GetFrameToken().
+  blink::LocalFrameToken frame_token;
+
+  friend bool operator<(const GlobalRenderFrameHostToken& lhs,
+                        const GlobalRenderFrameHostToken& rhs) {
+    return std::tie(lhs.child_id, lhs.frame_token) <
+           std::tie(rhs.child_id, rhs.frame_token);
+  }
+
+  friend bool operator==(const GlobalRenderFrameHostToken& lhs,
+                         const GlobalRenderFrameHostToken& rhs) {
+    return lhs.child_id == rhs.child_id && lhs.frame_token == rhs.frame_token;
+  }
+
+  friend bool operator!=(const GlobalRenderFrameHostToken& lhs,
+                         const GlobalRenderFrameHostToken& rhs) {
+    return !(lhs == rhs);
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& os,

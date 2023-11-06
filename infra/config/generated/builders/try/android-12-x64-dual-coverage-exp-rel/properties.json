@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "android-12-x64-dual-coverage-exp-rel-compilator",
+    "compilator_watcher_git_revision": "e6d08be3fd589d4f222dae5d18dbc972e6117b23"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "builder_db": {
@@ -56,12 +60,6 @@
     "check_for_flakiness": true,
     "check_for_flakiness_with_resultdb": true
   },
-  "$build/reclient": {
-    "instance": "rbe-chromium-untrusted",
-    "jobs": 500,
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
-  },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
     "grouping_keys": [
@@ -71,5 +69,5 @@
   },
   "builder_group": "tryserver.chromium.android",
   "cq": "required",
-  "recipe": "chromium_trybot"
+  "recipe": "chromium/orchestrator"
 }

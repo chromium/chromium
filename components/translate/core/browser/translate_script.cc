@@ -54,7 +54,7 @@ TranslateScript::TranslateScript()
 TranslateScript::~TranslateScript() {}
 
 void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
-  script_fetch_start_time_ = base::Time::Now().ToJsTime();
+  script_fetch_start_time_ = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   DCHECK(data_.empty()) << "Do not fetch the script if it is already fetched";
   callback_list_.AddUnsafe(std::move(callback));
@@ -131,7 +131,8 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     std::map<std::string, std::string> params;
     base::StringAppendF(
         &data_, "var gtTimeInfo = {'fetchStart': %0.f, 'fetchEnd': %0.f};\n",
-        script_fetch_start_time_, base::Time::Now().ToJsTime());
+        script_fetch_start_time_,
+        base::Time::Now().InMillisecondsFSinceUnixEpoch());
     base::StringAppendF(&data_, "var serverParams = '%s';\n",
                         server_params.c_str());
 
@@ -153,13 +154,13 @@ void TranslateScript::OnScriptFetchComplete(bool success,
 #endif  // BUILDFLAG(IS_IOS)
 
     // Wrap |data| in try/catch block to handle unexpected script errors.
-    const char* format =
+    static constexpr char kFormat[] =
         "try {"
         "  %s;"
         "} catch (error) {"
         "  cr.googleTranslate.onTranslateElementError(error);"
         "};";
-    base::StringAppendF(&data_, format, data.c_str());
+    base::StringAppendF(&data_, kFormat, data.c_str());
 
     // We'll expire the cached script after some time, to make sure long
     // running browsers still get fixes that might get pushed with newer

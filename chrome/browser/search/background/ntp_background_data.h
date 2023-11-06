@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/token.h"
 #include "chrome/browser/search/background/ntp_background.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -132,6 +133,10 @@ struct CustomBackground {
 
   // Whether the image is a local resource.
   bool is_uploaded_image;
+
+  // Id for local custom background. This can be empty if it is an uploaded
+  // local background, rather than from wallpaper search.
+  absl::optional<base::Token> local_background_id;
 
   // First attribution string for custom background.
   std::string custom_background_attribution_line_1;

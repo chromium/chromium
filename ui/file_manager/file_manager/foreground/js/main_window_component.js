@@ -6,9 +6,11 @@ import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
+import {isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
+import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {recordEnum} from '../../common/js/metrics.js';
+import {getEntryLabel, str} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import {str, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
@@ -22,10 +24,10 @@ import {FileSelectionHandler} from './file_selection.js';
 import {NamingController} from './naming_controller.js';
 import {TaskController} from './task_controller.js';
 import {Command} from './ui/command.js';
-import {DirectoryTree} from './ui/directory_tree.js';
 import {FileManagerUI} from './ui/file_manager_ui.js';
 import {FileTapHandler} from './ui/file_tap_handler.js';
 import {ListContainer} from './ui/list_container.js';
+import {ListSelectionModel} from './ui/list_selection_model.js';
 
 /**
  * Component for the main window.
@@ -126,6 +128,7 @@ export class MainWindowComponent {
     // Register events.
     ui.listContainer.element.addEventListener(
         'keydown', this.onListKeyDown_.bind(this));
+    // @ts-ignore: error TS18047: 'ui.directoryTree' is possibly 'null'.
     ui.directoryTree.addEventListener(
         'keydown', this.onDirectoryTreeKeyDown_.bind(this));
     ui.listContainer.element.addEventListener(
@@ -186,10 +189,16 @@ export class MainWindowComponent {
     // We only need to know that a tap happens somewhere in the list.
     // Also the 2nd parameter of handleTouchEvents is just passed back to the
     // callback. Therefore we can pass a dummy value -1.
+    // @ts-ignore: error TS6133: 'index' is declared but its value is never
+    // read.
     this.tapHandler_.handleTouchEvents(event, -1, (e, index, eventType) => {
       if (eventType == FileTapHandler.TapEvent.TAP) {
         // Taps on the checkmark should only toggle select the item.
+        // @ts-ignore: error TS2339: Property 'classList' does not exist on type
+        // 'EventTarget'.
         if (event.target.classList.contains('detail-checkmark') ||
+            // @ts-ignore: error TS2339: Property 'classList' does not exist on
+            // type 'EventTarget'.
             event.target.classList.contains('detail-icon')) {
           return false;
         }
@@ -251,13 +260,15 @@ export class MainWindowComponent {
     // It is expected that the target item should have already been selected
     // by previous touch or mouse event processing.
     const listItem = this.ui_.listContainer.findListItemForNode(
+        // @ts-ignore: error TS2339: Property 'touchedElement' does not exist on
+        // type 'Event'.
         event.touchedElement || event.srcElement);
     const selection = this.selectionHandler_.selection;
     if (!listItem || !listItem.selected || selection.totalCount !== 1) {
       return false;
     }
     const trashEntries = /** @type {!Array<!TrashEntry>} */ (
-        selection.entries.filter(util.isTrashEntry));
+        selection.entries.filter(isTrashEntry));
     if (trashEntries.length > 0) {
       this.showFailedToOpenTrashItemDialog_(trashEntries);
       return false;
@@ -268,6 +279,7 @@ export class MainWindowComponent {
       return false;
     }
     const entry = selection.entries[0];
+    // @ts-ignore: error TS18048: 'entry' is possibly 'undefined'.
     if (entry.isDirectory) {
       this.directoryModel_.changeDirectoryEntry(
           /** @type {!DirectoryEntry} */ (entry));
@@ -293,7 +305,7 @@ export class MainWindowComponent {
           return true;
         }
         const trashEntries = /** @type {!Array<!TrashEntry>} */ (
-            selection.entries.filter(util.isTrashEntry));
+            selection.entries.filter(isTrashEntry));
         this.showFailedToOpenTrashItemDialog_(trashEntries);
         return true;
       }
@@ -385,6 +397,8 @@ export class MainWindowComponent {
    * @private
    */
   onKeyDown_(event) {
+    // @ts-ignore: error TS2339: Property 'keyCode' does not exist on type
+    // 'Event'.
     if (event.keyCode === 9) {  // Tab
       this.pressingTab_ = true;
     }
@@ -394,6 +408,7 @@ export class MainWindowComponent {
       return;
     }
 
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     switch (getKeyModifiers(event) + event.key) {
       case 'Escape':  // Escape => Cancel dialog.
       case 'Ctrl-w':  // Ctrl+W => Cancel dialog.
@@ -412,6 +427,8 @@ export class MainWindowComponent {
    * @private
    */
   onKeyUp_(event) {
+    // @ts-ignore: error TS2339: Property 'keyCode' does not exist on type
+    // 'Event'.
     if (event.keyCode === 9) {  // Tab
       this.pressingTab_ = false;
     }
@@ -424,15 +441,24 @@ export class MainWindowComponent {
    */
   onDirectoryTreeKeyDown_(event) {
     // Enter => Change directory or perform default action.
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     if (getKeyModifiers(event) + event.key === 'Enter') {
       const focusedItem = getFocusedTreeItem(this.ui_.directoryTree);
       if (!focusedItem) {
         return;
       }
-      focusedItem.activate();
+      if (isNewDirectoryTreeEnabled()) {
+        focusedItem.selected = true;
+      } else {
+        // @ts-ignore: error TS2339: Property 'activate' does not exist on type
+        // 'XfTreeItem | DirectoryItem'.
+        focusedItem.activate();
+      }
       if (this.dialogType_ !== DialogType.FULL_PAGE &&
           !focusedItem.hasAttribute('renaming') &&
-          util.isSameEntry(
+          isSameEntry(
+              // @ts-ignore: error TS2339: Property 'entry' does not exist on
+              // type 'XfTreeItem | DirectoryItem'.
               this.directoryModel_.getCurrentDirEntry(), focusedItem.entry) &&
           !this.ui_.dialogFooter.okButton.disabled) {
         this.ui_.dialogFooter.okButton.click();
@@ -446,6 +472,7 @@ export class MainWindowComponent {
    * @private
    */
   onListKeyDown_(event) {
+    // @ts-ignore: error TS2339: Property 'key' does not exist on type 'Event'.
     switch (getKeyModifiers(event) + event.key) {
       case 'Backspace':  // Backspace => Up one directory.
         event.preventDefault();
@@ -456,6 +483,7 @@ export class MainWindowComponent {
           break;
         }
         const parent = components[components.length - 2];
+        // @ts-ignore: error TS18048: 'parent' is possibly 'undefined'.
         store.dispatch(changeDirectory({toKey: parent.key}));
         break;
 
@@ -467,10 +495,13 @@ export class MainWindowComponent {
           break;
         }
         const selection = this.selectionHandler_.selection;
+        // @ts-ignore: error TS2532: Object is possibly 'undefined'.
         if (selection.totalCount === 1 && selection.entries[0].isDirectory &&
             !isFolderDialogType(this.dialogType_) &&
-            !selection.entries.some(util.isTrashEntry)) {
+            !selection.entries.some(isTrashEntry)) {
           const item = this.ui_.listContainer.currentList.getListItemByIndex(
+              // @ts-ignore: error TS2345: Argument of type 'number | undefined'
+              // is not assignable to parameter of type 'number'.
               selection.indexes[0]);
           // If the item is in renaming process we don't allow to change
           // directory.
@@ -499,8 +530,9 @@ export class MainWindowComponent {
     for (let index = 0; index < dm.length; ++index) {
       const name = dm.item(index).name;
       if (name.substring(0, text.length).toLowerCase() == text) {
-        this.ui_.listContainer.currentList.selectionModel.selectedIndexes =
-            [index];
+        const selectionModel = /** @type {ListSelectionModel} */ (
+            this.ui_.listContainer.currentList.selectionModel);
+        selectionModel.selectedIndexes = [index];
         return;
       }
     }
@@ -517,7 +549,11 @@ export class MainWindowComponent {
   onDirectoryChanged_(event) {
     event = /** @type {DirectoryChangeEvent} */ (event);
 
+    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
+    // 'Event'.
     const newVolumeInfo = event.newDirEntry ?
+        // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on
+        // type 'Event'.
         this.volumeManager_.getVolumeInfo(event.newDirEntry) :
         null;
 
@@ -525,12 +561,18 @@ export class MainWindowComponent {
     const unformatted = !!(newVolumeInfo && newVolumeInfo.error);
     this.ui_.element.toggleAttribute('unformatted', /*force=*/ unformatted);
 
+    // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on type
+    // 'Event'.
     if (event.newDirEntry) {
       // Updates UI.
       if (this.dialogType_ === DialogType.FULL_PAGE) {
         const locationInfo =
+            // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist
+            // on type 'Event'.
             this.volumeManager_.getLocationInfo(event.newDirEntry);
-        const label = util.getEntryLabel(locationInfo, event.newDirEntry);
+        // @ts-ignore: error TS2339: Property 'newDirEntry' does not exist on
+        // type 'Event'.
+        const label = getEntryLabel(locationInfo, event.newDirEntry);
         document.title = `${str('FILEMANAGER_APP_NAME')} - ${label}`;
       }
     }
@@ -550,7 +592,7 @@ export class MainWindowComponent {
   onWindowFocus_() {
     // When the window have got a focus while the current directory is Recent
     // root, refresh the contents.
-    if (util.isRecentRootType(this.directoryModel_.getCurrentRootType())) {
+    if (isRecentRootType(this.directoryModel_.getCurrentRootType())) {
       this.directoryModel_.rescan(true /* refresh */);
       // Do not start the spinner here to silently refresh the contents.
     }
@@ -572,6 +614,8 @@ const addIsFocusedMethod = () => {
   /**
    * @return {boolean} True if focused.
    */
+  // @ts-ignore: error TS2339: Property 'isFocused' does not exist on type
+  // 'Window & typeof globalThis'.
   window.isFocused = () => {
     return focused;
   };

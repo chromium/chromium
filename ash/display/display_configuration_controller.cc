@@ -16,6 +16,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -255,8 +256,12 @@ void DisplayConfigurationController::SetUnifiedDesktopLayoutMatrixImpl(
 ScreenRotationAnimator*
 DisplayConfigurationController::GetScreenRotationAnimatorForDisplay(
     int64_t display_id) {
-  aura::Window* root_window = Shell::GetRootWindowForDisplayId(display_id);
-  return ScreenRotationAnimator::GetForRootWindow(root_window);
+  auto* root_controller =
+      Shell::GetRootWindowControllerWithDisplayId(display_id);
+  CHECK(root_controller);
+  auto* animator = root_controller->GetScreenRotationAnimator();
+  CHECK(animator);
+  return animator;
 }
 
 }  // namespace ash

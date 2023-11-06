@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.keep_last_tab": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BrowserSwitcherKeepLastChromeTab": false
+        },
+        "prefs": {
+          "browser_switcher.keep_last_tab": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

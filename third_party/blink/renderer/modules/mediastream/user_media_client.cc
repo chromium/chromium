@@ -270,7 +270,7 @@ UserMediaClient::Request::~Request() = default;
 UserMediaRequest* UserMediaClient::Request::MoveUserMediaRequest() {
   auto user_media_request = user_media_request_;
   user_media_request_ = nullptr;
-  return user_media_request;
+  return user_media_request.Get();
 }
 
 UserMediaClient::UserMediaClient(
@@ -282,10 +282,11 @@ UserMediaClient::UserMediaClient(
       ExecutionContextLifecycleObserver(frame->DomWindow()),
       frame_(frame),
       media_devices_dispatcher_(frame->DomWindow()),
-      pending_requests_(MakeGarbageCollected<RequestQueue>(frame,
-                                                           user_media_processor,
-                                                           this,
-                                                           task_runner)),
+      pending_device_requests_(
+          MakeGarbageCollected<RequestQueue>(frame,
+                                             user_media_processor,
+                                             this,
+                                             task_runner)),
       pending_display_requests_(
           display_user_media_processor
               ? MakeGarbageCollected<RequestQueue>(frame,
@@ -317,20 +318,18 @@ UserMediaClient::UserMediaClient(
                   },
                   WrapWeakPersistent(this)),
               frame->GetTaskRunner(blink::TaskType::kInternalMedia)),
-          base::FeatureList::IsEnabled(features::kSplitUserMediaQueues)
-              ? MakeGarbageCollected<UserMediaProcessor>(
-                    frame,
-                    WTF::BindRepeating(
-                        [](UserMediaClient* client)
-                            -> mojom::blink::MediaDevicesDispatcherHost* {
-                          // |client| is guaranteed to be not null because
-                          // |client| transitively owns this UserMediaProcessor.
-                          DCHECK(client);
-                          return client->GetMediaDevicesDispatcher();
-                        },
-                        WrapWeakPersistent(this)),
-                    frame->GetTaskRunner(blink::TaskType::kInternalMedia))
-              : nullptr,
+          MakeGarbageCollected<UserMediaProcessor>(
+              frame,
+              WTF::BindRepeating(
+                  [](UserMediaClient* client)
+                      -> mojom::blink::MediaDevicesDispatcherHost* {
+                    // |client| is guaranteed to be not null because
+                    // |client| transitively owns this UserMediaProcessor.
+                    DCHECK(client);
+                    return client->GetMediaDevicesDispatcher();
+                  },
+                  WrapWeakPersistent(this)),
+              frame->GetTaskRunner(blink::TaskType::kInternalMedia)),
           std::move(task_runner)) {}
 
 void UserMediaClient::RequestUserMedia(UserMediaRequest* user_media_request) {
@@ -415,7 +414,7 @@ void UserMediaClient::StopTrack(MediaStreamComponent* track) {
 }
 
 bool UserMediaClient::IsCapturing() {
-  return pending_requests_->IsCapturing() ||
+  return pending_device_requests_->IsCapturing() ||
          (pending_display_requests_ &&
           pending_display_requests_->IsCapturing());
 }
@@ -424,15 +423,15 @@ bool UserMediaClient::IsCapturing() {
 void UserMediaClient::FocusCapturedSurface(const String& label, bool focus) {
   // Get queue with display capture requests.  Only display capturer can be
   // focused.
-  RequestQueue* queue =
-      pending_display_requests_ ? pending_display_requests_ : pending_requests_;
+  RequestQueue* queue = pending_display_requests_ ? pending_display_requests_
+                                                  : pending_device_requests_;
   queue->FocusCapturedSurface(label, focus);
 }
 #endif
 
 void UserMediaClient::CancelUserMediaRequest(
     UserMediaRequest* user_media_request) {
-  pending_requests_->CancelUserMediaRequest(user_media_request);
+  pending_device_requests_->CancelUserMediaRequest(user_media_request);
   if (pending_display_requests_)
     pending_display_requests_->CancelUserMediaRequest(user_media_request);
 }
@@ -441,7 +440,7 @@ void UserMediaClient::DeleteAllUserMediaRequests() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (frame_)
     frame_->SetIsCapturingMediaCallback(LocalFrame::IsCapturingMediaCallback());
-  pending_requests_->DeleteAllUserMediaRequests();
+  pending_device_requests_->DeleteAllUserMediaRequests();
   if (pending_display_requests_)
     pending_display_requests_->DeleteAllUserMediaRequests();
 }
@@ -457,7 +456,7 @@ void UserMediaClient::Trace(Visitor* visitor) const {
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(frame_);
   visitor->Trace(media_devices_dispatcher_);
-  visitor->Trace(pending_requests_);
+  visitor->Trace(pending_device_requests_);
   visitor->Trace(pending_display_requests_);
 }
 
@@ -504,8 +503,9 @@ void UserMediaClient::KeepDeviceAliveForTransfer(
     UserMediaProcessor::KeepDeviceAliveForTransferCallback keep_alive_cb) {
   // Get queue with display capture requests.  Only display capture requests are
   // supported for transfer.
-  UserMediaClient::RequestQueue* queue =
-      pending_display_requests_ ? pending_display_requests_ : pending_requests_;
+  UserMediaClient::RequestQueue* queue = pending_display_requests_
+                                             ? pending_display_requests_
+                                             : pending_device_requests_;
   queue->KeepDeviceAliveForTransfer(session_id, transfer_id,
                                     std::move(keep_alive_cb));
 }
@@ -516,9 +516,9 @@ UserMediaClient::RequestQueue* UserMediaClient::GetRequestQueue(
       (IsScreenCaptureMediaType(media_stream_type) ||
        media_stream_type ==
            mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE)) {
-    return pending_display_requests_;
+    return pending_display_requests_.Get();
   } else {
-    return pending_requests_;
+    return pending_device_requests_.Get();
   }
 }
 

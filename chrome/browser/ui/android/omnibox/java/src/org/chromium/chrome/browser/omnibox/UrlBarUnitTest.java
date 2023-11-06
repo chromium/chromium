@@ -48,9 +48,7 @@ import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 
 import java.util.Collections;
 
-/**
- * Unit tests for the URL bar UI component.
- */
+/** Unit tests for the URL bar UI component. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(qualifiers = "w100dp-h50dp")
 public class UrlBarUnitTest {
@@ -64,9 +62,10 @@ public class UrlBarUnitTest {
     private final String mLongPath =
             "/" + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION, "a"));
     private final String mShortDomain = "www.a.com";
-    private final String mLongDomain = "www."
-            + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION, "a"))
-            + ".com";
+    private final String mLongDomain =
+            "www."
+                    + TextUtils.join("", Collections.nCopies(UrlBar.MIN_LENGTH_FOR_TRUNCATION, "a"))
+                    + ".com";
 
     // Screen width is set to 100px, with a default density of 1px per dp, and we estimate 5dp per
     // char, so there will be 20 visible characters.
@@ -90,8 +89,14 @@ public class UrlBarUnitTest {
     @Implements(Paint.class)
     public static class MyShadowPaint extends ShadowPaint {
         @Implementation
-        public int getOffsetForAdvance(CharSequence text, int start, int end, int contextStart,
-                int contextEnd, boolean isRtl, float advance) {
+        public int getOffsetForAdvance(
+                CharSequence text,
+                int start,
+                int end,
+                int contextStart,
+                int contextEnd,
+                boolean isRtl,
+                float advance) {
             return (int) advance / 5;
         }
     }
@@ -122,7 +127,8 @@ public class UrlBarUnitTest {
     public void onCreateInputConnection_ensureNoAutocorrect() {
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
-        assertEquals(EditorInfo.TYPE_TEXT_VARIATION_URI,
+        assertEquals(
+                EditorInfo.TYPE_TEXT_VARIATION_URI,
                 info.inputType & EditorInfo.TYPE_TEXT_VARIATION_URI);
         assertEquals(0, info.inputType & EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT);
     }
@@ -142,7 +148,8 @@ public class UrlBarUnitTest {
 
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
-        assertEquals(EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING,
+        assertEquals(
+                EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING,
                 info.imeOptions & EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING);
     }
 
@@ -153,9 +160,11 @@ public class UrlBarUnitTest {
         var info = new EditorInfo();
         mUrlBar.onCreateInputConnection(info);
 
-        assertEquals(EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING,
+        assertEquals(
+                EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING,
                 info.imeOptions & EditorInfoCompat.IME_FLAG_NO_PERSONALIZED_LEARNING);
-        assertEquals(EditorInfo.TYPE_TEXT_VARIATION_URI,
+        assertEquals(
+                EditorInfo.TYPE_TEXT_VARIATION_URI,
                 info.inputType & EditorInfo.TYPE_TEXT_VARIATION_URI);
         assertEquals(0, info.inputType & EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT);
     }
@@ -245,10 +254,13 @@ public class UrlBarUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_NO_VISIBLE_HINT_FOR_TABLETS)
-    @Config(qualifiers = "w600dp-h820dp", shadows = {ShadowLayout.class, MyShadowPaint.class})
+    @Config(
+            qualifiers = "w600dp-h820dp",
+            shadows = {ShadowLayout.class, MyShadowPaint.class})
     public void testNoVisibleHintCalculationForTablets_noHistogramRecords() {
         // Ensure that Views and Layouts aren't null.
-        mUrlBar.measure(MeasureSpec.makeMeasureSpec(820, MeasureSpec.EXACTLY),
+        mUrlBar.measure(
+                MeasureSpec.makeMeasureSpec(820, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(20, MeasureSpec.EXACTLY));
         mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
 
@@ -271,7 +283,8 @@ public class UrlBarUnitTest {
     @Config(shadows = {ShadowLayout.class, MyShadowPaint.class})
     public void testVisibleHintCalculationHistograms() {
         // Ensure that Views and Layouts aren't null.
-        mUrlBar.measure(MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
+        mUrlBar.measure(
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(10, MeasureSpec.EXACTLY));
         mUrlBar.layout(0, 0, mUrlBar.getMeasuredWidth(), mUrlBar.getMeasuredHeight());
 
@@ -307,8 +320,9 @@ public class UrlBarUnitTest {
     public void testSetLengtHistogram_withTruncation() {
         String url = mShortDomain + mLongPath;
 
-        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
-                "Omnibox.SetText.TextLength", mNumberOfVisibleCharacters);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Omnibox.SetText.TextLength", mNumberOfVisibleCharacters);
         mUrlBar.setTextWithTruncation(url, UrlBar.ScrollType.SCROLL_TO_TLD, mShortDomain.length());
         histogramWatcher.assertExpected();
     }

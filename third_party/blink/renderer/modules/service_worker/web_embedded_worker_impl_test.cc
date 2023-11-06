@@ -58,7 +58,7 @@ class FakeURLLoader final : public URLLoader {
 
   void LoadSynchronously(std::unique_ptr<network::ResourceRequest> request,
                          scoped_refptr<const SecurityOrigin> top_frame_origin,
-                         bool pass_response_pipe_to_client,
+                         bool download_to_blob,
                          bool no_mime_sniffing,
                          base::TimeDelta timeout_interval,
                          URLLoaderClient*,
@@ -79,12 +79,15 @@ class FakeURLLoader final : public URLLoader {
       bool no_mime_sniffing,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper,
+      CodeCacheHost* code_cache_host,
       URLLoaderClient* client) override {
     if (request->url.spec() == kNotFoundScriptURL) {
       WebURLResponse response;
       response.SetMimeType("text/javascript");
       response.SetHttpStatusCode(404);
-      client->DidReceiveResponse(response);
+      client->DidReceiveResponse(response,
+                                 /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+                                 /*cached_metadata=*/absl::nullopt);
       client->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
       return;
     }

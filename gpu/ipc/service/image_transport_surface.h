@@ -32,8 +32,7 @@ class GPU_IPC_SERVICE_EXPORT ImageTransportSurface {
   static scoped_refptr<gl::Presenter> CreatePresenter(
       gl::GLDisplay* display,
       base::WeakPtr<ImageTransportSurfaceDelegate> stub,
-      SurfaceHandle surface_handle,
-      gl::GLSurfaceFormat format);
+      SurfaceHandle surface_handle);
 
   // Creates the appropriate native surface depending on the GL implementation.
   // This will be implemented separately by each platform. On failure, a null

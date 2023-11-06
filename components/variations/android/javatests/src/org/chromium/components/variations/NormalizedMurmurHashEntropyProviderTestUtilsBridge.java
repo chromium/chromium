@@ -4,7 +4,7 @@
 
 package org.chromium.components.variations;
 
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.NativeMethods;
 
 /**
  * Bridge used by {@link NormalizedMurmurHashEntropyProviderTest}. Provides access to the native

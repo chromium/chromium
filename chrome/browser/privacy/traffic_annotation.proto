@@ -198,6 +198,9 @@ message NetworkTrafficAnnotation {
         // Data originating from the content of the current webpage.
         WEB_CONTENT = 28;
 
+        // Hardware or OS information like Manufacturer, Model, etc.
+        HW_OS_INFO = 29;
+
         // If none of the below apply, use this and provide
         // more info in the data field.
         OTHER = 999;

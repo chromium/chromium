@@ -11,7 +11,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/token.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/reporting/resources/resource_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::AllOf;
@@ -114,7 +114,7 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
 
   bool need_encryption_key() const { return GetParam(); }
 
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<ResourceManager> memory_resource_;
 
   // Set up device as a managed device by default. To set the device as
@@ -125,6 +125,55 @@ class RecordUploadRequestBuilderTest : public ::testing::TestWithParam<bool> {
           policy::ManagementServiceFactory::GetForPlatform(),
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 };
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(RecordUploadRequestBuilderTest,
+       GenerationGuidNotRequiredForManagedBrowsersOnNonChromeOSDevices) {
+  // Set up as CBCM enrolled browser on non-ChromeOS device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  ASSERT_THAT(
+      policy::ManagementServiceFactory::GetForPlatform()->IsBrowserManaged(),
+      Eq(true));
+
+  SequenceInformation sequence_info;
+  sequence_info.set_generation_id(12345678);
+  sequence_info.set_priority(IMMEDIATE);
+  sequence_info.set_sequencing_id(0);
+  EXPECT_THAT(
+      SequenceInformationDictionaryBuilder(sequence_info).Build().has_value(),
+      Eq(true));
+}
+#endif  // BUILDFLAG(!IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(RecordUploadRequestBuilderTest,
+       GenerationGuidRequiredForUnmanagedChromeOSDevices) {
+  // Set up as an unmanaged ChromeOS device.
+  policy::ScopedManagementServiceOverrideForTesting scoped_management_service =
+      policy::ScopedManagementServiceOverrideForTesting(
+          policy::ManagementServiceFactory::GetForPlatform(),
+          policy::EnterpriseManagementAuthority::NONE);
+
+  ASSERT_THAT(
+      policy::ManagementServiceFactory::GetForPlatform()->IsBrowserManaged(),
+      Eq(false));
+
+  EXPECT_THAT(SequenceInformationDictionaryBuilder::GenerationGuidIsRequired(),
+              Eq(true));
+
+  SequenceInformation sequence_info;
+  sequence_info.set_generation_id(12345678);
+  sequence_info.set_priority(IMMEDIATE);
+  sequence_info.set_sequencing_id(0);
+
+  EXPECT_THAT(SequenceInformationDictionaryBuilder(sequence_info).Build(),
+              Eq(absl::nullopt));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_P(RecordUploadRequestBuilderTest, AcceptEncryptedRecordsList) {
   static constexpr size_t kNumRecords = 10;

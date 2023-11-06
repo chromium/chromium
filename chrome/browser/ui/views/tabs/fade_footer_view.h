@@ -28,6 +28,9 @@ struct PerformanceRowData {
 
 template <typename T>
 class FooterRow : public FadeWrapper<views::View, T> {
+  using FadeWrapper_View_T = FadeWrapper<views::View, T>;
+  METADATA_TEMPLATE_HEADER(FooterRow, FadeWrapper_View_T)
+
  public:
   explicit FooterRow(bool is_fade_out_view);
   ~FooterRow() override = default;
@@ -61,7 +64,24 @@ class FooterRow : public FadeWrapper<views::View, T> {
   raw_ptr<views::ImageView> icon_ = nullptr;
 };
 
+using FadeWrapper_View_AlertFooterRowData =
+    FadeWrapper<views::View, AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_AlertFooterRowData, FadeWrapper);
+
+using FadeWrapper_View_PerformanceRowData =
+    FadeWrapper<views::View, PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FadeWrapper_View_PerformanceRowData, FadeWrapper);
+
+using FooterRow_AlertFooterRowData = FooterRow<AlertFooterRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_AlertFooterRowData, FooterRow);
+
+using FooterRow_PerformanceRowData = FooterRow<PerformanceRowData>;
+DECLARE_TEMPLATE_METADATA(FooterRow_PerformanceRowData, FooterRow);
+
 class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
+  using FooterRowAlertFooterRowData = FooterRow<AlertFooterRowData>;
+  METADATA_HEADER(FadeAlertFooterRow, FooterRowAlertFooterRowData)
+
  public:
   explicit FadeAlertFooterRow(bool is_fade_out_view)
       : FooterRow<AlertFooterRowData>(is_fade_out_view) {}
@@ -72,6 +92,9 @@ class FadeAlertFooterRow : public FooterRow<AlertFooterRowData> {
 };
 
 class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
+  using FooterRowPerformanceRowData = FooterRow<PerformanceRowData>;
+  METADATA_HEADER(FadePerformanceFooterRow, FooterRowPerformanceRowData)
+
  public:
   explicit FadePerformanceFooterRow(bool is_fade_out_view)
       : FooterRow<PerformanceRowData>(is_fade_out_view) {}

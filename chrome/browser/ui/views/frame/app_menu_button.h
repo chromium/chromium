@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
+#include "components/user_education/common/feature_promo_handle.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class AppMenu;
@@ -60,10 +61,6 @@ class AppMenuButton : public ToolbarButton {
                Browser* browser,
                int run_flags);
 
-  // Provided for subclasses to handle menu close, before observers are
-  // notified. Default implementation does nothing.
-  virtual void HandleMenuClosed();
-
  private:
   // App model and menu.
   // Note that the menu should be destroyed before the model it uses, so the
@@ -76,6 +73,7 @@ class AppMenuButton : public ToolbarButton {
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
 
   raw_ptr<views::MenuButtonController> menu_button_controller_;
+  user_education::FeaturePromoHandle promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_APP_MENU_BUTTON_H_

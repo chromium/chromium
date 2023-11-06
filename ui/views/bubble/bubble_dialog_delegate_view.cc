@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/bubble_histograms_variant.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
@@ -891,14 +892,11 @@ void BubbleDialogDelegate::BubbleUmaLogger::LogMetric(
     return;
   }
 
-  const std::unordered_set<std::string> kAllowedClassNames{
-      "ProfileMenuViewBase", "ExtensionsMenuView", "PageInfoBubbleViewBase",
-      "PermissionPromptBaseView", "DownloadBubbleContentsView"};
-
   const auto& allowed_class_names =
       allowed_class_names_for_testing_.has_value()
           ? allowed_class_names_for_testing_.value()
-          : kAllowedClassNames;
+          : base::make_span(views_metrics::kBubbleNameVariantAllowList,
+                            views_metrics::kBubbleNameVariantAllowListSize);
 
   if (!base::Contains(allowed_class_names, bubble_name.value())) {
     return;

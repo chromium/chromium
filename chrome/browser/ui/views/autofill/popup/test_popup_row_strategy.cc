@@ -14,41 +14,17 @@
 
 namespace autofill {
 
-void TestAccessibilityDelegate::GetAccessibleNodeData(
-    bool is_selected,
-    bool is_permanently_highlighted,
-    ui::AXNodeData* node_data) const {
-  node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->SetNameChecked(kVoiceOverName);
-}
-
-TestPopupRowStrategy::TestPopupRowStrategy(int line_number, bool has_control)
-    : line_number_(line_number), has_control_(has_control) {}
+TestPopupRowStrategy::TestPopupRowStrategy(int line_number)
+    : line_number_(line_number) {}
 
 TestPopupRowStrategy::~TestPopupRowStrategy() = default;
 
 std::unique_ptr<PopupCellView> TestPopupRowStrategy::CreateContent() {
   std::unique_ptr<PopupCellView> cell =
       views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<TestAccessibilityDelegate>())
           .SetUseDefaultFillLayout(true)
           .Build();
   cell->AddChildView(std::make_unique<views::Label>(u"Test content"));
-  return cell;
-}
-
-std::unique_ptr<PopupCellView> TestPopupRowStrategy::CreateControl() {
-  if (!has_control_) {
-    return nullptr;
-  }
-  std::unique_ptr<PopupCellView> cell =
-      views::Builder<PopupCellView>(std::make_unique<PopupCellView>())
-          .SetAccessibilityDelegate(
-              std::make_unique<TestAccessibilityDelegate>())
-          .SetUseDefaultFillLayout(true)
-          .Build();
-  cell->AddChildView(std::make_unique<views::Label>(u"Test control"));
   return cell;
 }
 

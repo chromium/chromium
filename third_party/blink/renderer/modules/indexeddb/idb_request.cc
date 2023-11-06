@@ -287,13 +287,13 @@ DOMException* IDBRequest::error(ExceptionState& exception_state) const {
         IDBDatabase::kRequestNotFinishedErrorMessage);
     return nullptr;
   }
-  return error_;
+  return error_.Get();
 }
 
 const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
   if (!GetExecutionContext())
     return nullptr;
-  return source_;
+  return source_.Get();
 }
 
 const String& IDBRequest::readyState() const {

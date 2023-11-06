@@ -62,8 +62,7 @@ void SharesheetAsh::ShowBubble(const std::string& window_id,
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   sharesheet_service->ShowBubble(
-      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_),
-      /*contains_hosted_document=*/false, source,
+      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_), source,
       base::BindOnce(&GetNativeWindowFromId, window_id), std::move(callback));
 }
 
@@ -79,8 +78,7 @@ void SharesheetAsh::ShowBubbleWithOnClosed(
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   sharesheet_service->ShowBubble(
-      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_),
-      /*contains_hosted_document=*/false, source,
+      apps_util::CreateAppServiceIntentFromCrosapi(intent, profile_), source,
       base::BindOnce(&GetNativeWindowFromId, window_id), base::NullCallback(),
       base::BindOnce(&OnClosedCallbackWrapper, std::move(callback)));
 }

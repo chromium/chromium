@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_util.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -128,13 +129,13 @@ TEST_F(PrefetchProxyConfiguratorTest, ExperimentOverrides) {
 TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
   base::HistogramTester histogram_tester;
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
-  configurator()->OnFallback(proxy, net::ERR_FAILED);
+  configurator()->OnFallback(proxy_chain, net::ERR_FAILED);
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
                                       std::abs(net::ERR_FAILED), 1);
@@ -147,13 +148,13 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DoesRandomBackoff_ErrFailed) {
 TEST_F(PrefetchProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
   base::HistogramTester histogram_tester;
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
-  configurator()->OnFallback(proxy, net::OK);
+  configurator()->OnFallback(proxy_chain, net::OK);
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.Fallback.NetError",
                                       net::OK, 1);
@@ -169,13 +170,13 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
   scoped_feature_list.InitAndEnableFeature(
       features::kPrefetchUseContentRefactor);
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
-  configurator()->OnFallback(proxy, net::OK);
+  configurator()->OnFallback(proxy_chain, net::OK);
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectTotalCount("PrefetchProxy.Proxy.Fallback.NetError", 0);
 }
@@ -186,14 +187,15 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
   scoped_feature_list.InitAndEnableFeature(
       features::kPrefetchUseContentRefactor);
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
   configurator()->OnTunnelHeadersReceived(
-      proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
+      proxy_chain, 0,
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 200, 1);
 }
@@ -201,14 +203,15 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
   base::HistogramTester histogram_tester;
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(GURL("http://foo.com")));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
   configurator()->OnTunnelHeadersReceived(
-      proxy, base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
+      proxy_chain, 0,
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK"));
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectTotalCount("PrefetchProxy.Proxy.RespCode", 0);
 }
@@ -216,15 +219,16 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_DifferentProxy) {
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
   base::HistogramTester histogram_tester;
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
   configurator()->OnTunnelHeadersReceived(
-      proxy, base::MakeRefCounted<net::HttpResponseHeaders>(
-                 "HTTP/1.1 500 Internal Server Error"));
+      proxy_chain, 0,
+      base::MakeRefCounted<net::HttpResponseHeaders>(
+          "HTTP/1.1 500 Internal Server Error"));
   EXPECT_FALSE(configurator()->IsPrefetchProxyAvailable());
   histogram_tester.ExpectUniqueSample("PrefetchProxy.Proxy.RespCode", 500, 1);
 
@@ -235,14 +239,14 @@ TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500NoRetryAfter) {
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_500WithRetryAfter) {
   base::HistogramTester histogram_tester;
 
-  net::ProxyServer proxy(
+  net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
       net::HostPortPair::FromURL(prefetch_proxy_url()));
 
   EXPECT_TRUE(configurator()->IsPrefetchProxyAvailable());
 
   configurator()->OnTunnelHeadersReceived(
-      proxy,
+      proxy_chain, 0,
       base::MakeRefCounted<
           net::HttpResponseHeaders>(net::HttpUtil::AssembleRawHeaders(
           "HTTP/1.1 500 Internal Server Error\r\nRetry-After: 120\r\n\r\n")));

@@ -129,7 +129,7 @@
   .choice-icon {
     --choice-icon-height: 24px;
     background-size: var(--choice-icon-height);
-    border-radius: calc(var(--choice-icon-height) / 2);
+    border-radius: 4px;
     height: var(--choice-icon-height);
     width: var(--choice-icon-height);
   }
@@ -176,7 +176,7 @@
     width: 100px;
   }
 
-  .info-link {
+  #infoLink {
     color: var(--google-blue-600);
   }
 
@@ -283,7 +283,7 @@
       content: url(images/right_illustration_dark.svg);
     }
 
-    .info-link {
+    #infoLink {
       color: var(--google-blue-300);
     }
 
@@ -348,7 +348,7 @@
     }
   }
 
-  @media screen and (max-height: 767px) {
+  @media screen and (max-height: 757px) {
     #dummyOmnibox,
     #searchEngineOmnibox {
       display: none;
@@ -397,7 +397,7 @@
   </div>
   <p class="subtitle">
     $i18n{subtitle}
-    <a class="info-link" href="" on-click="onLinkClicked_"
+    <a id="infoLink" href="" on-click="onLinkClicked_"
         aria-label="$i18n{subtitleInfoLinkA11yLabel}">
       $i18n{subtitleInfoLink}
     </a>

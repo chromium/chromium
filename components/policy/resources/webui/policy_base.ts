@@ -14,7 +14,7 @@ import './policy_table.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {Policy} from './policy_row.js';
 import {PolicyTableElement, PolicyTableModel} from './policy_table.js';

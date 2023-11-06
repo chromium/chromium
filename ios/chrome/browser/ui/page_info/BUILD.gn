@@ -84,7 +84,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/fullscreen:coordinators",
     "//ios/chrome/browser/ui/page_info/requirements",
     "//ios/chrome/browser/ui/permissions",

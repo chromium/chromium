@@ -16,7 +16,8 @@ from collections import defaultdict, namedtuple
 from typing import List, Optional, Set
 
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.git_cl import GitCL
+from blinkpy.common.net.git_cl import BuildStatuses, GitCL
+from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web_test_results import (
     WebTestResult,
     WebTestResults,
@@ -24,6 +25,10 @@ from blinkpy.common.net.web_test_results import (
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_utils import configure_logging
+from blinkpy.tool.commands.build_resolver import (
+    BuildResolver,
+    UnresolvedBuildException,
+)
 from blinkpy.web_tests.models.test_expectations import (
     ExpectationsChange,
     ParseError,
@@ -162,36 +167,18 @@ class WPTExpectationsUpdater:
         # here. See https://crbug.com/1154650 .
         self.port.wpt_manifest.cache_clear()
 
-        build_to_status = self.git_cl.latest_try_jobs(
-            builder_names=self._get_try_bots(), patchset=self.patchset)
-        _log.debug('Latest try jobs: %r', build_to_status)
-        if not build_to_status:
-            raise ScriptError('No try job information was collected.')
+        resolver = BuildResolver(self.host.web,
+                                 self.git_cl,
+                                 can_trigger_jobs=False)
+        builds = [Build(builder) for builder in self._get_try_bots()]
+        try:
+            build_to_status = resolver.resolve_builds(builds, self.patchset)
+            _log.debug('Latest try jobs: %r', build_to_status)
+        except UnresolvedBuildException as error:
+            raise ScriptError(
+                'No try job information was collected.') from error
 
-        fetcher = self.host.results_fetcher
-        results = []
-        for build, job_status in build_to_status.items():
-            if (job_status.result == 'SUCCESS' and
-                    not self.options.include_unexpected_pass):
-                continue
-            try:
-                wpt_tests_suite = self.suite_for_builder(
-                    build.builder_name, flag_specific)
-            except ValueError:
-                _log.debug(
-                    'Builder %s does not run flag-specific suite %s, skipping',
-                    build.builder_name, flag_specific or '(generic)')
-                continue
-            suite_results = self.host.results_fetcher.gather_results(
-                build,
-                wpt_tests_suite,
-                # `exclude_exonerations=(not include_unexpected_pass)` will leave
-                # out unexpected passes as well as other kinds of exonerations
-                # (e.g., experimental build). This is good enough in practice.
-                not self.options.include_unexpected_pass)
-            results.append(suite_results)
-
-        results = self._make_results_for_update(results)
+        results = self._make_results_for_update(build_to_status, flag_specific)
         test_expectations = {}
         for suite_results in results:
             test_expectations = self.merge_dicts(
@@ -227,16 +214,37 @@ class WPTExpectationsUpdater:
         return tests_to_rebaseline, exp_lines_dict
 
     def _make_results_for_update(
-        self,
-        results: List[WebTestResults],
-    ) -> List[WebTestResults]:
+            self,
+            build_to_status: BuildStatuses,
+            flag_specific: Optional[str] = None) -> List[WebTestResults]:
+        fetcher = self.host.results_fetcher
         completed_results, missing_results = [], []
-        for suite_results in results:
-            if len(suite_results) == 0:
+        incomplete_builds = GitCL.filter_incomplete(build_to_status)
+        for build, job_status in build_to_status.items():
+            if (job_status.result == 'SUCCESS'
+                    and not self.options.include_unexpected_pass):
+                continue
+            try:
+                wpt_tests_suite = self.suite_for_builder(
+                    build.builder_name, flag_specific)
+            except ValueError:
+                _log.debug(
+                    'Builder %s does not run flag-specific suite %s, skipping',
+                    build.builder_name, flag_specific or '(generic)')
+                continue
+            suite_results = self.host.results_fetcher.gather_results(
+                build,
+                wpt_tests_suite,
+                # `exclude_exonerations=(not include_unexpected_pass)` will leave
+                # out unexpected passes as well as other kinds of exonerations
+                # (e.g., experimental build). This is good enough in practice.
+                not self.options.include_unexpected_pass)
+            if build in incomplete_builds:
                 missing_results.append(suite_results)
             else:
                 completed_results.append(
                     self.filter_results_for_update(suite_results))
+
         filled_results = [
             self.fill_missing_results(results, completed_results)
             for results in missing_results
@@ -265,6 +273,9 @@ class WPTExpectationsUpdater:
         _log.warning('No results for %s on %s, inheriting from other builds',
                      missing_results.step_name(), missing_results.builder_name)
         for test_name in self._tests(completed_results):
+            if self.host.builders.version_specifier_for_port_name(
+                    missing_port) in self.skipped_specifiers(test_name):
+                continue
             # The union of all other actual statuses is used when there is
             # no similar OS to inherit from (eg: no results on Linux, and
             # inheriting from Mac and Win).
@@ -815,15 +826,6 @@ class WPTExpectationsUpdater:
         args += tests_to_rebaseline
         self._run_blink_tool('rebaseline-cl', args)
 
-    def update_metadata(self):
-        """Update WPT metadata for all tests with unexpected results."""
-        args = ['--no-trigger-jobs']
-        if self.options.verbose:
-            args.append('--verbose')
-        if self.patchset:
-            args.append('--patchset=%d', self.patchset)
-        self._run_blink_tool('update-metadata', args)
-
     def _run_blink_tool(self, subcommand: str, args: List[str]):
         output = self.host.executive.run_command([
             self.host.executable,
@@ -907,7 +909,10 @@ class WPTExpectationsUpdater:
 
     @memoized
     def _get_try_bots(self, flag_specific: Optional[str] = None):
-        return self.host.builders.filter_builders(
+        builders = self.host.builders.filter_builders(
             is_try=True,
             exclude_specifiers={'android'},
             flag_specific=flag_specific)
+        # Exclude CQ builders like `win-rel`.
+        return sorted(
+            set(builders) & self.host.builders.builders_for_rebaselining())

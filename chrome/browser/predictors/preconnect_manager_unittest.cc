@@ -52,9 +52,7 @@ net::ProxyInfo GetDirectProxyInfo() {
   return proxy_info;
 }
 
-class MockPreconnectManagerDelegate
-    : public PreconnectManager::Delegate,
-      public base::SupportsWeakPtr<MockPreconnectManagerDelegate> {
+class MockPreconnectManagerDelegate : public PreconnectManager::Delegate {
  public:
   // Gmock doesn't support mocking methods with move-only argument types.
   void PreconnectFinished(std::unique_ptr<PreconnectStats> stats) override {
@@ -64,6 +62,13 @@ class MockPreconnectManagerDelegate
   MOCK_METHOD1(PreconnectFinishedProxy, void(const GURL& url));
   MOCK_METHOD2(PreconnectInitiated,
                void(const GURL& url, const GURL& preconnect_url));
+
+  base::WeakPtr<MockPreconnectManagerDelegate> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPreconnectManagerDelegate> weak_ptr_factory_{this};
 };
 
 class MockNetworkContext : public network::TestNetworkContext {

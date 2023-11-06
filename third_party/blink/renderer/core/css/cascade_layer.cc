@@ -15,7 +15,7 @@ CascadeLayer* CascadeLayer::FindDirectSubLayer(const AtomicString& name) const {
   }
   for (const auto& sub_layer : direct_sub_layers_) {
     if (sub_layer->GetName() == name) {
-      return sub_layer;
+      return sub_layer.Get();
     }
   }
   return nullptr;

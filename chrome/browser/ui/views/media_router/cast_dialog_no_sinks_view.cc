@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/color/color_id.h"
@@ -42,6 +43,8 @@
 namespace {
 
 class HoverButtonHandCursor : public HoverButton {
+  METADATA_HEADER(HoverButtonHandCursor, HoverButton)
+
  public:
   HoverButtonHandCursor(PressedCallback callback, const ui::ImageModel& icon)
       : HoverButton(std::move(callback), icon, std::u16string()) {}
@@ -55,6 +58,9 @@ class HoverButtonHandCursor : public HoverButton {
     return ui::mojom::CursorType::kHand;
   }
 };
+
+BEGIN_METADATA(HoverButtonHandCursor)
+END_METADATA
 
 }  // namespace
 

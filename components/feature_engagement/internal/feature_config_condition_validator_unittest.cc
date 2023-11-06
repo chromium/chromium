@@ -17,6 +17,7 @@
 #include "components/feature_engagement/internal/noop_display_lock_controller.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
+#include "components/feature_engagement/internal/test/test_time_provider.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -300,44 +301,34 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
       const FeatureConfigConditionValidatorTest&) = delete;
 
  protected:
-  ConditionValidator::Result GetResultForDayAndEventWindow(
-      Comparator comparator,
-      uint32_t window,
-      uint32_t current_day) {
+  ConditionValidator::Result GetResultForEventWindow(Comparator comparator,
+                                                     uint32_t window) {
     FeatureConfig config = GetAcceptingFeatureConfig();
     config.event_configs.insert(EventConfig("event1", comparator, window, 0));
     return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   }
 
-  ConditionValidator::Result GetResultForDay(const FeatureConfig& config,
-                                             uint32_t current_day) {
-    return validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
-                                      event_model_, availability_model_,
-                                      display_lock_controller_, &configuration_,
-                                      current_day);
+  ConditionValidator::Result GetResult(const FeatureConfig& config) {
+    return GetResultWithGroups(config, {});
   }
 
-  ConditionValidator::Result GetResultForDayZero(const FeatureConfig& config) {
-    return GetResultForDayZeroWithGroups(config, {});
-  }
-
-  ConditionValidator::Result GetResultForDayZeroForFeature(
-      const base::Feature& feature,
-      const FeatureConfig& config) {
+  ConditionValidator::Result GetResultForFeature(const base::Feature& feature,
+                                                 const FeatureConfig& config) {
     return validator_.MeetsConditions(
         feature, config, {}, event_model_, availability_model_,
-        display_lock_controller_, &configuration_, 0);
+        display_lock_controller_, &configuration_, time_provider_);
   }
 
-  ConditionValidator::Result GetResultForDayZeroWithGroups(
+  ConditionValidator::Result GetResultWithGroups(
       const FeatureConfig& config,
       std::vector<GroupConfig> group_configs) {
     return validator_.MeetsConditions(
         kFeatureConfigTestFeatureFoo, config, group_configs, event_model_,
-        availability_model_, display_lock_controller_, &configuration_, 0);
+        availability_model_, display_lock_controller_, &configuration_,
+        time_provider_);
   }
 
   TestEventModel event_model_;
@@ -345,7 +336,7 @@ class FeatureConfigConditionValidatorTest : public ::testing::Test {
   TestDisplayLockController display_lock_controller_;
   FeatureConfigConditionValidator validator_;
   TestConfiguration configuration_;
-  uint32_t current_day_;
+  TestTimeProvider time_provider_;
 };
 
 }  // namespace
@@ -356,8 +347,7 @@ TEST_F(FeatureConfigConditionValidatorTest, ModelNotReadyShouldFail) {
 
   event_model_.SetIsReady(false);
 
-  ConditionValidator::Result result =
-      GetResultForDayZero(GetValidFeatureConfig());
+  ConditionValidator::Result result = GetResult(GetValidFeatureConfig());
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.event_model_ready_ok);
 }
@@ -366,7 +356,7 @@ TEST_F(FeatureConfigConditionValidatorTest, ConfigInvalidShouldFail) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
-  ConditionValidator::Result result = GetResultForDayZero(FeatureConfig());
+  ConditionValidator::Result result = GetResult(FeatureConfig());
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.config_ok);
 }
@@ -377,7 +367,7 @@ TEST_F(FeatureConfigConditionValidatorTest, MultipleErrorsShouldBeSet) {
 
   event_model_.SetIsReady(false);
 
-  ConditionValidator::Result result = GetResultForDayZero(FeatureConfig());
+  ConditionValidator::Result result = GetResult(FeatureConfig());
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.event_model_ready_ok);
   EXPECT_FALSE(result.config_ok);
@@ -387,14 +377,14 @@ TEST_F(FeatureConfigConditionValidatorTest, ReadyModelEmptyConfig) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
-  EXPECT_TRUE(GetResultForDayZero(GetValidFeatureConfig()).NoErrors());
+  EXPECT_TRUE(GetResult(GetValidFeatureConfig()).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, ReadyModelAcceptingConfig) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
-  EXPECT_TRUE(GetResultForDayZero(GetAcceptingFeatureConfig()).NoErrors());
+  EXPECT_TRUE(GetResult(GetAcceptingFeatureConfig()).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, Used) {
@@ -404,7 +394,7 @@ TEST_F(FeatureConfigConditionValidatorTest, Used) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   config.used = EventConfig("used", Comparator(LESS_THAN, 0), 0, 0);
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.used_ok);
 }
@@ -416,7 +406,7 @@ TEST_F(FeatureConfigConditionValidatorTest, Trigger) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0), 0, 0);
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.trigger_ok);
 }
@@ -428,7 +418,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SingleOKPrecondition) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZero(config).NoErrors());
+  EXPECT_TRUE(GetResult(config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, MultipleOKPreconditions) {
@@ -439,7 +429,7 @@ TEST_F(FeatureConfigConditionValidatorTest, MultipleOKPreconditions) {
   config.event_configs.insert(EventConfig("event1", Comparator(ANY, 0), 0, 0));
   config.event_configs.insert(EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZero(config).NoErrors());
+  EXPECT_TRUE(GetResult(config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, OneOKThenOneFailingPrecondition) {
@@ -451,7 +441,7 @@ TEST_F(FeatureConfigConditionValidatorTest, OneOKThenOneFailingPrecondition) {
   config.event_configs.insert(
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 }
@@ -465,7 +455,7 @@ TEST_F(FeatureConfigConditionValidatorTest, OneFailingThenOneOKPrecondition) {
   config.event_configs.insert(
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 }
@@ -480,7 +470,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TwoFailingPreconditions) {
   config.event_configs.insert(
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 }
@@ -496,37 +486,30 @@ TEST_F(FeatureConfigConditionValidatorTest, PriorityNotification) {
   FeatureConfig bar_config = GetAcceptingFeatureConfig();
 
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.SetPriorityNotification(kFeatureConfigTestFeatureFoo.name);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   ConditionValidator::Result result =
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config);
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.priority_notification_ok);
 
   validator_.SetPriorityNotification(absl::nullopt);
   validator_.SetPriorityNotification(kFeatureConfigTestFeatureBar.name);
   EXPECT_FALSE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.SetPriorityNotification(absl::nullopt);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SessionRate) {
@@ -540,24 +523,24 @@ TEST_F(FeatureConfigConditionValidatorTest, SessionRate) {
   foo_config.session_rate = Comparator(LESS_THAN, 2u);
   FeatureConfig bar_config = GetAcceptingFeatureConfig();
 
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  ConditionValidator::Result result = GetResultForDayZero(foo_config);
+  ConditionValidator::Result result = GetResult(foo_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  result = GetResultForDayZero(foo_config);
+  result = GetResult(foo_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
 }
@@ -575,22 +558,22 @@ TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsNone) {
   affects_none_config.session_rate_impact = SessionRateImpact();
   affects_none_config.session_rate_impact.type = SessionRateImpact::Type::NONE;
 
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, affects_none_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, affects_none_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, affects_none_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(GetResultForDayZero(foo_config).NoErrors());
+  EXPECT_TRUE(GetResult(foo_config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsExplicit) {
@@ -613,32 +596,27 @@ TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsExplicit) {
       CreateSessionRateImpactTypeExplicit({kFeatureConfigTestFeatureFoo.name});
 
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureQux,
                              affects_only_foo_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureQux);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureQux,
                              affects_only_foo_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureQux);
   ConditionValidator::Result result =
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config);
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsSelf) {
@@ -660,32 +638,27 @@ TEST_F(FeatureConfigConditionValidatorTest, SessionRateImpactAffectsSelf) {
       CreateSessionRateImpactTypeExplicit({kFeatureConfigTestFeatureFoo.name});
 
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureFoo,
                              affects_only_foo_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureFoo);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureFoo,
                              affects_only_foo_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureFoo);
   ConditionValidator::Result result =
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config);
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest,
@@ -712,42 +685,35 @@ TEST_F(FeatureConfigConditionValidatorTest,
                                            kFeatureConfigTestFeatureBar.name});
 
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureXyz, xyz_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureXyz, xyz_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureQux,
                              affects_foo_and_bar_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureQux);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureBar, bar_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureBar, bar_config).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureXyz, xyz_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureXyz, xyz_config).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureQux,
                              affects_foo_and_bar_config, all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureQux);
   ConditionValidator::Result foo_result =
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, foo_config);
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, foo_config);
   EXPECT_FALSE(foo_result.NoErrors());
   EXPECT_FALSE(foo_result.session_rate_ok);
   ConditionValidator::Result bar_result =
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureFoo, bar_config);
+      GetResultForFeature(kFeatureConfigTestFeatureFoo, bar_config);
   EXPECT_FALSE(bar_result.NoErrors());
   EXPECT_FALSE(bar_result.session_rate_ok);
   EXPECT_TRUE(
-      GetResultForDayZeroForFeature(kFeatureConfigTestFeatureXyz, xyz_config)
-          .NoErrors());
+      GetResultForFeature(kFeatureConfigTestFeatureXyz, xyz_config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, Availability) {
@@ -756,15 +722,18 @@ TEST_F(FeatureConfigConditionValidatorTest, Availability) {
       {kFeatureConfigTestFeatureFoo, kFeatureConfigTestFeatureBar}, {});
 
   FeatureConfig config = GetAcceptingFeatureConfig();
-  EXPECT_TRUE(GetResultForDayZero(config).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 100u).NoErrors());
+  EXPECT_TRUE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(100u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // When the AvailabilityModel is not ready, it should fail.
   availability_model_.SetIsReady(false);
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  time_provider_.SetCurrentDay(0u);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_model_ready_ok);
-  result = GetResultForDay(config, 100u);
+  time_provider_.SetCurrentDay(100u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_model_ready_ok);
 
@@ -775,27 +744,35 @@ TEST_F(FeatureConfigConditionValidatorTest, Availability) {
   // available for at least 1 day, it should start being accepted on day 3.
   availability_model_.SetAvailability(&kFeatureConfigTestFeatureFoo, 2u);
   config.availability = Comparator(GREATER_THAN_OR_EQUAL, 1u);
-  result = GetResultForDay(config, 1u);
+  time_provider_.SetCurrentDay(1u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_ok);
-  result = GetResultForDay(config, 2u);
+  time_provider_.SetCurrentDay(2u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_ok);
-  EXPECT_TRUE(GetResultForDay(config, 3u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 4u).NoErrors());
+  time_provider_.SetCurrentDay(3u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(4u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // For a feature that became available on day 10 that has to have been
   // available for at least 3 days, it should start being accepted on day 13.
   availability_model_.SetAvailability(&kFeatureConfigTestFeatureFoo, 10u);
   config.availability = Comparator(GREATER_THAN_OR_EQUAL, 3u);
-  result = GetResultForDay(config, 11u);
+  time_provider_.SetCurrentDay(11u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_ok);
-  result = GetResultForDay(config, 12u);
+  time_provider_.SetCurrentDay(12u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.availability_ok);
-  EXPECT_TRUE(GetResultForDay(config, 13u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 14u).NoErrors());
+  time_provider_.SetCurrentDay(13u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(14u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
@@ -811,7 +788,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
   config.snooze_params = snooze_params;
   config.trigger.window = 5;
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.snooze_expiration_ok);
   EXPECT_TRUE(result.should_show_snooze);
@@ -829,7 +806,8 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
                                baseline - base::Days(4));
 
   // Verify that snooze conditions are met at day 3.
-  result = GetResultForDay(config, 3u);
+  time_provider_.SetCurrentDay(3u);
+  result = GetResult(config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.snooze_expiration_ok);
   EXPECT_TRUE(result.should_show_snooze);
@@ -837,7 +815,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
   // When last snooze timestamp is too recent.
   event_model_.IncrementSnooze(config.trigger.name, 1u,
                                baseline - base::Days(2));
-  result = GetResultForDay(config, 3u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.snooze_expiration_ok);
   EXPECT_FALSE(result.should_show_snooze);
@@ -845,14 +823,14 @@ TEST_F(FeatureConfigConditionValidatorTest, SnoozeExpiration) {
   // Reset the last snooze timestamp.
   event_model_.IncrementSnooze(config.trigger.name, 1u,
                                baseline - base::Days(4));
-  result = GetResultForDay(config, 3u);
+  result = GetResult(config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.snooze_expiration_ok);
   EXPECT_TRUE(result.should_show_snooze);
 
   // When snooze is dismissed.
   event_model_.DismissSnooze(config.trigger.name);
-  result = GetResultForDay(config, 3u);
+  result = GetResult(config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.snooze_expiration_ok);
   EXPECT_FALSE(result.should_show_snooze);
@@ -870,7 +848,7 @@ TEST_F(FeatureConfigConditionValidatorTest, ShouldShowSnooze) {
   config.snooze_params = snooze_params;
   config.trigger.window = 5;
 
-  ConditionValidator::Result result = GetResultForDayZero(config);
+  ConditionValidator::Result result = GetResult(config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.should_show_snooze);
 
@@ -881,7 +859,8 @@ TEST_F(FeatureConfigConditionValidatorTest, ShouldShowSnooze) {
   event_model_.SetEvent(event);
 
   // When snooze count exceeds the maximum limit.
-  result = GetResultForDay(config, 5u);
+  time_provider_.SetCurrentDay(5u);
+  result = GetResult(config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_FALSE(result.should_show_snooze);
 }
@@ -890,7 +869,7 @@ TEST_F(FeatureConfigConditionValidatorTest, SingleEventChangingComparator) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeatureConfigTestFeatureFoo}, {});
 
-  uint32_t current_day = 102u;
+  time_provider_.SetCurrentDay(102u);
   uint32_t window = 10u;
 
   // Create event with 10 events per day for three days.
@@ -901,15 +880,12 @@ TEST_F(FeatureConfigConditionValidatorTest, SingleEventChangingComparator) {
   test::SetEventCountForDay(&event1, 102u, 10u);
   event_model_.SetEvent(event1);
 
-  EXPECT_TRUE(GetResultForDayAndEventWindow(Comparator(LESS_THAN, 50u), window,
-                                            current_day)
-                  .NoErrors());
   EXPECT_TRUE(
-      GetResultForDayAndEventWindow(Comparator(EQUAL, 30u), window, current_day)
-          .NoErrors());
-  EXPECT_FALSE(GetResultForDayAndEventWindow(Comparator(LESS_THAN, 30u), window,
-                                             current_day)
-                   .NoErrors());
+      GetResultForEventWindow(Comparator(LESS_THAN, 50u), window).NoErrors());
+  EXPECT_TRUE(
+      GetResultForEventWindow(Comparator(EQUAL, 30u), window).NoErrors());
+  EXPECT_FALSE(
+      GetResultForEventWindow(Comparator(LESS_THAN, 30u), window).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, SingleEventChangingWindow) {
@@ -925,26 +901,20 @@ TEST_F(FeatureConfigConditionValidatorTest, SingleEventChangingWindow) {
   test::SetEventCountForDay(&event1, 104u, 10u);
   event_model_.SetEvent(event1);
 
-  uint32_t current_day = 104u;
+  time_provider_.SetCurrentDay(104u);
 
-  EXPECT_FALSE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 0,
-                                             current_day)
-                   .NoErrors());
-  EXPECT_FALSE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 1u,
-                                             current_day)
-                   .NoErrors());
-  EXPECT_FALSE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 2u,
-                                             current_day)
-                   .NoErrors());
-  EXPECT_FALSE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 3u,
-                                             current_day)
-                   .NoErrors());
-  EXPECT_TRUE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 4u,
-                                            current_day)
-                  .NoErrors());
-  EXPECT_TRUE(GetResultForDayAndEventWindow(Comparator(GREATER_THAN, 30u), 5u,
-                                            current_day)
-                  .NoErrors());
+  EXPECT_FALSE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 0).NoErrors());
+  EXPECT_FALSE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 1u).NoErrors());
+  EXPECT_FALSE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 2u).NoErrors());
+  EXPECT_FALSE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 3u).NoErrors());
+  EXPECT_TRUE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 4u).NoErrors());
+  EXPECT_TRUE(
+      GetResultForEventWindow(Comparator(GREATER_THAN, 30u), 5u).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, CapEarliestAcceptedDayAtEpoch) {
@@ -958,20 +928,13 @@ TEST_F(FeatureConfigConditionValidatorTest, CapEarliestAcceptedDayAtEpoch) {
   test::SetEventCountForDay(&event1, 2u, 10u);
   event_model_.SetEvent(event1);
 
-  uint32_t current_day = 100u;
+  time_provider_.SetCurrentDay(100u);
 
+  EXPECT_TRUE(GetResultForEventWindow(Comparator(EQUAL, 10u), 99u).NoErrors());
+  EXPECT_TRUE(GetResultForEventWindow(Comparator(EQUAL, 20u), 100u).NoErrors());
+  EXPECT_TRUE(GetResultForEventWindow(Comparator(EQUAL, 30u), 101u).NoErrors());
   EXPECT_TRUE(
-      GetResultForDayAndEventWindow(Comparator(EQUAL, 10u), 99u, current_day)
-          .NoErrors());
-  EXPECT_TRUE(
-      GetResultForDayAndEventWindow(Comparator(EQUAL, 20u), 100u, current_day)
-          .NoErrors());
-  EXPECT_TRUE(
-      GetResultForDayAndEventWindow(Comparator(EQUAL, 30u), 101u, current_day)
-          .NoErrors());
-  EXPECT_TRUE(
-      GetResultForDayAndEventWindow(Comparator(EQUAL, 30u), 1000u, current_day)
-          .NoErrors());
+      GetResultForEventWindow(Comparator(EQUAL, 30u), 1000u).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
@@ -992,7 +955,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   test::SetEventCountForDay(&event2, 2u, 5u);
   event_model_.SetEvent(event2);
 
-  uint32_t current_day = 100u;
+  time_provider_.SetCurrentDay(100u);
 
   // Verify validator counts correctly for two events last 99 days.
   FeatureConfig config = GetAcceptingFeatureConfig();
@@ -1003,7 +966,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   ConditionValidator::Result result = validator_.MeetsConditions(
       kFeatureConfigTestFeatureFoo, config, {}, event_model_,
       availability_model_, display_lock_controller_, &configuration_,
-      current_day);
+      time_provider_);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 100 days.
@@ -1015,7 +978,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 101 days.
@@ -1027,7 +990,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   EXPECT_TRUE(result.NoErrors());
 
   // Verify validator counts correctly for two events last 101 days, and returns
@@ -1040,7 +1003,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 
@@ -1054,7 +1017,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 
@@ -1068,7 +1031,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEvents) {
   result = validator_.MeetsConditions(kFeatureConfigTestFeatureFoo, config, {},
                                       event_model_, availability_model_,
                                       display_lock_controller_, &configuration_,
-                                      current_day);
+                                      time_provider_);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
 }
@@ -1088,29 +1051,38 @@ TEST_F(FeatureConfigConditionValidatorTest, TestStaggeredTriggering) {
       EventConfig("trigger", Comparator(LESS_THAN, 1u), 2u, 100u));
 
   // Should be OK to trigger initially on day 0.
-  EXPECT_TRUE(GetResultForDay(config, 0u).NoErrors());
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // Set that we triggered on day 0. We should then only trigger on day 2+.
   Event trigger_event;
   trigger_event.set_name("trigger");
   test::SetEventCountForDay(&trigger_event, 0u, 1u);
   event_model_.SetEvent(trigger_event);
-  EXPECT_FALSE(GetResultForDay(config, 0u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 1u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 2u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 3u).NoErrors());
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(1u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(2u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(3u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // Set that we triggered again on day 2. We should then not trigger again
   // until max storage time has passed (100 days), which would expire the
   // trigger from day 0.
   test::SetEventCountForDay(&trigger_event, 2u, 1u);
   event_model_.SetEvent(trigger_event);
-  EXPECT_FALSE(GetResultForDay(config, 2u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 3u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 4u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 5u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 99u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 100u).NoErrors());
+  time_provider_.SetCurrentDay(2u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(3u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(4u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(5u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(99u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(100u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEventsWithSameName) {
@@ -1125,29 +1097,38 @@ TEST_F(FeatureConfigConditionValidatorTest, TestMultipleEventsWithSameName) {
       EventConfig("event1", Comparator(LESS_THAN, 2u), 100u, 100u));
 
   // Should be OK to trigger initially on day 0.
-  EXPECT_TRUE(GetResultForDay(config, 0u).NoErrors());
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // Set that we had event1 on day 0. We should then only trigger on day 2+.
   Event event1;
   event1.set_name("event1");
   test::SetEventCountForDay(&event1, 0u, 1u);
   event_model_.SetEvent(event1);
-  EXPECT_FALSE(GetResultForDay(config, 0u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 1u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 2u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 3u).NoErrors());
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(1u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(2u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(3u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 
   // Set that we had event1 again on day 2. We should then not trigger again
   // until max storage time has passed (100 days), which would expire the
   // trigger from day 0.
   test::SetEventCountForDay(&event1, 2u, 1u);
   event_model_.SetEvent(event1);
-  EXPECT_FALSE(GetResultForDay(config, 2u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 3u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 4u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 5u).NoErrors());
-  EXPECT_FALSE(GetResultForDay(config, 99u).NoErrors());
-  EXPECT_TRUE(GetResultForDay(config, 100u).NoErrors());
+  time_provider_.SetCurrentDay(2u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(3u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(4u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(5u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(99u);
+  EXPECT_FALSE(GetResult(config).NoErrors());
+  time_provider_.SetCurrentDay(100u);
+  EXPECT_TRUE(GetResult(config).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, DisplayLockedStatus) {
@@ -1157,15 +1138,14 @@ TEST_F(FeatureConfigConditionValidatorTest, DisplayLockedStatus) {
   // When the display is locked, the result should be negative.
   display_lock_controller_.SetNextIsDisplayLockedResult(true);
 
-  ConditionValidator::Result result =
-      GetResultForDayZero(GetAcceptingFeatureConfig());
+  ConditionValidator::Result result = GetResult(GetAcceptingFeatureConfig());
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.display_lock_ok);
 
   // Setting the display to unlocked should make the result positive.
   display_lock_controller_.SetNextIsDisplayLockedResult(false);
 
-  EXPECT_TRUE(GetResultForDayZero(GetAcceptingFeatureConfig()).NoErrors());
+  EXPECT_TRUE(GetResult(GetAcceptingFeatureConfig()).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingAll) {
@@ -1175,8 +1155,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingAll) {
   validator_.NotifyIsShowing(
       kFeatureConfigTestFeatureBar, FeatureConfig(),
       {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
-  ConditionValidator::Result result =
-      GetResultForDayZero(GetValidFeatureConfig());
+  ConditionValidator::Result result = GetResult(GetValidFeatureConfig());
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
 }
@@ -1190,7 +1169,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TestConcurrentPromosBlockingNone) {
   validator_.NotifyIsShowing(
       kFeatureConfigTestFeatureBar, FeatureConfig(),
       {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
-  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  ConditionValidator::Result result = GetResult(non_blocking_config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.currently_showing_ok);
 }
@@ -1208,7 +1187,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
   validator_.NotifyIsShowing(
       kFeatureConfigTestFeatureBar, FeatureConfig(),
       {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name});
-  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  ConditionValidator::Result result = GetResult(non_blocking_config);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.currently_showing_ok);
 }
@@ -1229,7 +1208,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
       kFeatureConfigTestFeatureQux, FeatureConfig(),
       {kFeatureConfigTestFeatureFoo.name, kFeatureConfigTestFeatureBar.name,
        kFeatureConfigTestFeatureQux.name});
-  ConditionValidator::Result result = GetResultForDayZero(non_blocking_config);
+  ConditionValidator::Result result = GetResult(non_blocking_config);
   EXPECT_TRUE(result.NoErrors());
   EXPECT_TRUE(result.currently_showing_ok);
 }
@@ -1242,7 +1221,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupConfigInvalidShouldFail) {
   GroupConfig group_config = GroupConfig();
 
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(config, {group_config});
+      GetResultWithGroups(config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.config_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1255,7 +1234,7 @@ TEST_F(FeatureConfigConditionValidatorTest, ReadyModelEmptyGroupConfig) {
   FeatureConfig config = GetValidFeatureConfig();
   GroupConfig group_config = GetValidGroupConfig();
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, ReadyModelAcceptingGroupConfig) {
@@ -1265,7 +1244,7 @@ TEST_F(FeatureConfigConditionValidatorTest, ReadyModelAcceptingGroupConfig) {
   FeatureConfig config = GetAcceptingFeatureConfig();
   GroupConfig group_config = GetAcceptingGroupConfig();
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, GroupTrigger) {
@@ -1277,7 +1256,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupTrigger) {
   group_config.trigger = EventConfig("trigger", Comparator(LESS_THAN, 0), 0, 0);
 
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(config, {group_config});
+      GetResultWithGroups(config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.trigger_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1292,7 +1271,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupSingleOKPrecondition) {
   group_config.event_configs.insert(
       EventConfig("event1", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest, GroupMultipleOKPreconditions) {
@@ -1306,7 +1285,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupMultipleOKPreconditions) {
   group_config.event_configs.insert(
       EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest,
@@ -1322,7 +1301,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(config, {group_config});
+      GetResultWithGroups(config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1340,8 +1319,7 @@ TEST_F(FeatureConfigConditionValidatorTest, MultipleGroupOKPreconditions) {
   group_two_config.event_configs.insert(
       EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(
-                  config, {group_one_config, group_two_config})
+  EXPECT_TRUE(GetResultWithGroups(config, {group_one_config, group_two_config})
                   .NoErrors());
 }
 
@@ -1358,8 +1336,8 @@ TEST_F(FeatureConfigConditionValidatorTest,
   group_two_config.event_configs.insert(
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
-  ConditionValidator::Result result = GetResultForDayZeroWithGroups(
-      config, {group_one_config, group_two_config});
+  ConditionValidator::Result result =
+      GetResultWithGroups(config, {group_one_config, group_two_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1378,8 +1356,8 @@ TEST_F(FeatureConfigConditionValidatorTest,
   group_two_config.event_configs.insert(
       EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
-  ConditionValidator::Result result = GetResultForDayZeroWithGroups(
-      config, {group_one_config, group_two_config});
+  ConditionValidator::Result result =
+      GetResultWithGroups(config, {group_one_config, group_two_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1396,7 +1374,7 @@ TEST_F(FeatureConfigConditionValidatorTest, FeatureAndGroupOKPreconditions) {
   group_config.event_configs.insert(
       EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
-  EXPECT_TRUE(GetResultForDayZeroWithGroups(config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(config, {group_config}).NoErrors());
 }
 
 TEST_F(FeatureConfigConditionValidatorTest,
@@ -1412,7 +1390,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
       EventConfig("event2", Comparator(LESS_THAN, 0), 0, 0));
 
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(config, {group_config});
+      GetResultWithGroups(config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1432,7 +1410,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
       EventConfig("event2", Comparator(ANY, 0), 0, 0));
 
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(config, {group_one_config});
+      GetResultWithGroups(config, {group_one_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.preconditions_ok);
   EXPECT_TRUE(result.groups_ok);
@@ -1451,20 +1429,18 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupSessionRate) {
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.session_rate = Comparator(LESS_THAN, 2u);
 
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(foo_config, {group_config});
+      GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1472,7 +1448,7 @@ TEST_F(FeatureConfigConditionValidatorTest, GroupSessionRate) {
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  result = GetResultForDayZeroWithGroups(foo_config, {group_config});
+  result = GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1493,20 +1469,18 @@ TEST_F(FeatureConfigConditionValidatorTest,
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.session_rate = Comparator(LESS_THAN, 2u);
 
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(foo_config, {group_config});
+      GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1514,7 +1488,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  result = GetResultForDayZeroWithGroups(foo_config, {group_config});
+  result = GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1535,20 +1509,18 @@ TEST_F(FeatureConfigConditionValidatorTest,
   GroupConfig group_config = GetAcceptingGroupConfig();
   group_config.session_rate = Comparator(LESS_THAN, 3u);
 
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, {group_config}).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, {group_config}).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(foo_config, {group_config});
+      GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_TRUE(result.groups_ok);
@@ -1556,7 +1528,7 @@ TEST_F(FeatureConfigConditionValidatorTest,
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  result = GetResultForDayZeroWithGroups(foo_config, {group_config});
+  result = GetResultWithGroups(foo_config, {group_config});
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1579,20 +1551,18 @@ TEST_F(FeatureConfigConditionValidatorTest, TwoGroupsSessionRate) {
 
   std::vector<GroupConfig> group_configs = {group_one_config, group_two_config};
 
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, group_configs).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, group_configs).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  EXPECT_TRUE(
-      GetResultForDayZeroWithGroups(foo_config, group_configs).NoErrors());
+  EXPECT_TRUE(GetResultWithGroups(foo_config, group_configs).NoErrors());
 
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
   ConditionValidator::Result result =
-      GetResultForDayZeroWithGroups(foo_config, group_configs);
+      GetResultWithGroups(foo_config, group_configs);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);
@@ -1600,7 +1570,7 @@ TEST_F(FeatureConfigConditionValidatorTest, TwoGroupsSessionRate) {
   validator_.NotifyIsShowing(kFeatureConfigTestFeatureBar, bar_config,
                              all_feature_names);
   validator_.NotifyDismissed(kFeatureConfigTestFeatureBar);
-  result = GetResultForDayZeroWithGroups(foo_config, group_configs);
+  result = GetResultWithGroups(foo_config, group_configs);
   EXPECT_FALSE(result.NoErrors());
   EXPECT_FALSE(result.session_rate_ok);
   EXPECT_FALSE(result.groups_ok);

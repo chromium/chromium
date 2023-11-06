@@ -56,10 +56,10 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_TRUE(base::Contains(app_ids, "appid1"));
   EXPECT_FALSE(base::Contains(app_ids, "appid2-nopv"));  // No valid pv.
 
-  const base::Time time1 = base::Time::FromJsTime(10000);
+  const base::Time time1 = base::Time::FromSecondsSinceUnixEpoch(10);
   metadata->SetLastChecked(time1);
   EXPECT_EQ(metadata->GetLastChecked(), time1);
-  const base::Time time2 = base::Time::FromJsTime(20000);
+  const base::Time time2 = base::Time::FromSecondsSinceUnixEpoch(20);
   metadata->SetLastStarted(time2);
   EXPECT_EQ(metadata->GetLastStarted(), time2);
 }

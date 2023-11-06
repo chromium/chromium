@@ -1,0 +1,10 @@
+Tests setSensorOverrideReadings fails if sensor is not overridden
+{
+    error : {
+        code : -32602
+        message : This sensor type is not being overridden with a virtual sensor
+    }
+    id : <number>
+    sessionId : <string>
+}
+

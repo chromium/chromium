@@ -456,7 +456,7 @@ def ExpandFileArgs(args):
   """
   new_args = list(args)
   file_jsons = dict()
-  r = re.compile('@FileArg\((.*?)\)')
+  r = re.compile(r'@FileArg\((.*?)\)')
   for i, arg in enumerate(args):
     match = r.search(arg)
     if not match:

@@ -40,17 +40,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * Integration test suite for the MediaLauncherActivity.
- */
+/** Integration test suite for the MediaLauncherActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MediaLauncherActivityTest {
-    @Rule
-    public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
+    @Rule public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private Context mContext;
 
@@ -96,12 +92,15 @@ public class MediaLauncherActivityTest {
     @Test
     @SmallTest
     public void testFilterURI() {
-        List<Pair<String, String>> testCases = Arrays.asList(
-                new Pair<>("file:///test.jpg", "file:///test.jpg"),
-                new Pair<>("file:///test.jp!g", "file:///test.jp!g"),
-                new Pair<>("file:///test!$'.jpg", "file:///test.jpg"),
-                new Pair<>("file:///test!$'.jpg?x=y", "file:///test.jpg?x=y"),
-                new Pair<>("file:///test!$'.jpg?x=y#fragment!", "file:///test.jpg?x=y#fragment!"));
+        List<Pair<String, String>> testCases =
+                Arrays.asList(
+                        new Pair<>("file:///test.jpg", "file:///test.jpg"),
+                        new Pair<>("file:///test.jp!g", "file:///test.jp!g"),
+                        new Pair<>("file:///test!$'.jpg", "file:///test.jpg"),
+                        new Pair<>("file:///test!$'.jpg?x=y", "file:///test.jpg?x=y"),
+                        new Pair<>(
+                                "file:///test!$'.jpg?x=y#fragment!",
+                                "file:///test.jpg?x=y#fragment!"));
 
         for (Pair<String, String> testCase : testCases) {
             String testInput = testCase.first;
@@ -117,24 +116,30 @@ public class MediaLauncherActivityTest {
         intent.setDataAndType(uri, mimeType);
         intent.setComponent(componentName);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        waitForCustomTabActivityToStart(new Callable<Void>() {
-            @Override
-            public Void call() {
-                mContext.startActivity(intent);
-                return null;
-            }
-        }, url);
+        waitForCustomTabActivityToStart(
+                new Callable<Void>() {
+                    @Override
+                    public Void call() {
+                        mContext.startActivity(intent);
+                        return null;
+                    }
+                },
+                url);
     }
 
     private void waitForCustomTabActivityToStart(Callable<Void> trigger, String expectedUrl)
             throws Exception {
-        CustomTabActivity cta = ActivityTestUtils.waitForActivity(
-                InstrumentationRegistry.getInstrumentation(), CustomTabActivity.class, trigger);
+        CustomTabActivity cta =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        CustomTabActivity.class,
+                        trigger);
 
-        CriteriaHelper.pollUiThread(() -> {
-            Tab tab = cta.getActivityTab();
-            Criteria.checkThat(tab, Matchers.notNullValue());
-            Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab tab = cta.getActivityTab();
+                    Criteria.checkThat(tab, Matchers.notNullValue());
+                    Criteria.checkThat(tab.getUrl().getSpec(), Matchers.is(expectedUrl));
+                });
     }
 }

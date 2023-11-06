@@ -419,8 +419,11 @@ DisplayScheduler::DesiredBeginFrameDeadlineMode() const {
     return BeginFrameDeadlineMode::kImmediate;
   }
 
-  if (pending_swaps_ >= MaxPendingSwaps()) {
-    TRACE_EVENT_INSTANT0("viz", "Swap throttled", TRACE_EVENT_SCOPE_THREAD);
+  const int max_pending_swaps = MaxPendingSwaps();
+  if (pending_swaps_ >= max_pending_swaps) {
+    TRACE_EVENT_INSTANT2("viz", "Swap throttled", TRACE_EVENT_SCOPE_THREAD,
+                         "pending_swaps", pending_swaps_, "max_pending_swaps",
+                         max_pending_swaps);
     return BeginFrameDeadlineMode::kLate;
   }
 

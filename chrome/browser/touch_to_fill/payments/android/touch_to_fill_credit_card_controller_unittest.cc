@@ -11,18 +11,13 @@
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_delegate_android_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/content/browser/test_content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
-#include "components/autofill/core/common/form_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -66,7 +61,7 @@ class MockTouchToFillDelegateAndroidImpl
   MOCK_METHOD(bool, IsShowingTouchToFill, (), (override));
   MOCK_METHOD(bool,
               IntendsToShowTouchToFill,
-              (FormGlobalId, FieldGlobalId),
+              (FormGlobalId, FieldGlobalId, const FormData&),
               (override));
   MOCK_METHOD(TestBrowserAutofillManager*, GetManager, (), (override));
   MOCK_METHOD(bool, ShouldShowScanCreditCard, (), (override));
@@ -147,8 +142,8 @@ class TouchToFillCreditCardControllerTest
         .WillOnce(Return(true));
     credit_card_controller()
         .keyboard_suppressor_for_test()
-        .OnBeforeAskForValuesToFill(autofill_manager(), some_form_,
-                                    some_field_);
+        .OnBeforeAskForValuesToFill(autofill_manager(), some_form_, some_field_,
+                                    some_form_data_);
     EXPECT_TRUE(credit_card_controller()
                     .keyboard_suppressor_for_test()
                     .is_suppressing());
@@ -174,7 +169,10 @@ class TouchToFillCreditCardControllerTest
       autofill_client_injector_;
   TestAutofillManagerInjector<TestBrowserAutofillManager>
       autofill_manager_injector_;
-  FormGlobalId some_form_ = test::MakeFormGlobalId();
+  FormData some_form_data_ =
+      autofill::test::CreateTestCreditCardFormData(/*is_https=*/true,
+                                                   /*use_month_type=*/false);
+  FormGlobalId some_form_ = some_form_data_.global_id();
   FieldGlobalId some_field_ = test::MakeFieldGlobalId();
 };
 

@@ -24,24 +24,18 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 
-/**
- * Tests for {@link MerchantTrustMessageContext}.
- */
+/** Tests for {@link MerchantTrustMessageContext}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @SuppressWarnings("DoNotMock") // Mocking GURL
 public class MerchantTrustMessageContextTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private GURL mMockGurl;
+    @Mock private GURL mMockGurl;
 
-    @Mock
-    private WebContents mMockWebContents;
+    @Mock private WebContents mMockWebContents;
 
-    @Mock
-    private NavigationHandle mMockNavigationHandle;
+    @Mock private NavigationHandle mMockNavigationHandle;
 
     @Before
     public void setUp() {
@@ -94,7 +88,8 @@ public class MerchantTrustMessageContextTest {
     @Test
     public void testGetHostName() {
         assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getHostName());
-        assertEquals("fake_host",
+        assertEquals(
+                "fake_host",
                 (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
                         .getHostName());
     }
@@ -102,14 +97,16 @@ public class MerchantTrustMessageContextTest {
     @Test
     public void testGetUrl() {
         assertEquals(null, (new MerchantTrustMessageContext(null, mMockWebContents)).getUrl());
-        assertEquals("fake_spec",
+        assertEquals(
+                "fake_spec",
                 (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
                         .getUrl());
     }
 
     @Test
     public void testGetWebContents() {
-        assertEquals(mMockWebContents,
+        assertEquals(
+                mMockWebContents,
                 (new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
                         .getWebContents());
     }

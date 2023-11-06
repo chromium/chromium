@@ -43,22 +43,17 @@ import org.chromium.components.stylus_handwriting.test_support.ShadowDirectWriti
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
 
-/**
- * Unit tests for {@link DirectWritingTrigger}.
- */
+/** Unit tests for {@link DirectWritingTrigger}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowDirectWritingSettingsHelper.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowDirectWritingSettingsHelper.class})
 public class DirectWritingTriggerTest {
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private DirectWritingServiceBinder mDwServiceBinder;
-    @Mock
-    private StylusWritingImeCallback mStylusWritingImeCallback;
-    @Mock
-    private ViewGroup mContainerView;
-    @Mock
-    private DirectWritingServiceCallback mDwServiceCallback;
+    @Mock private WebContents mWebContents;
+    @Mock private DirectWritingServiceBinder mDwServiceBinder;
+    @Mock private StylusWritingImeCallback mStylusWritingImeCallback;
+    @Mock private ViewGroup mContainerView;
+    @Mock private DirectWritingServiceCallback mDwServiceCallback;
 
     private Context mContext;
     private DirectWritingTrigger mDwTrigger;
@@ -93,8 +88,21 @@ public class DirectWritingTriggerTest {
         pc.x = 0;
         pc.y = 0;
         pointerCoords[0] = pc;
-        return MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 1,
-                action, 1, pointerProperties, pointerCoords, 0, 0, 1.0f, 1.0f, 0, 0, 0, 0);
+        return MotionEvent.obtain(
+                SystemClock.uptimeMillis(),
+                SystemClock.uptimeMillis() + 1,
+                action,
+                1,
+                pointerProperties,
+                pointerCoords,
+                0,
+                0,
+                1.0f,
+                1.0f,
+                0,
+                0,
+                0,
+                0);
     }
 
     @Test
@@ -297,8 +305,12 @@ public class DirectWritingTriggerTest {
         Rect editableBounds = new Rect(0, 0, 20, 20);
         ArgumentCaptor<MotionEvent> eventReceived = ArgumentCaptor.forClass(MotionEvent.class);
         mDwTrigger.onFocusedNodeChanged(editableBounds, true, mContainerView, 2, 5);
-        Rect scaledBounds = new Rect(editableBounds.left * 2, editableBounds.top * 2 + 5,
-                editableBounds.right * 2, editableBounds.bottom * 2 + 5);
+        Rect scaledBounds =
+                new Rect(
+                        editableBounds.left * 2,
+                        editableBounds.top * 2 + 5,
+                        editableBounds.right * 2,
+                        editableBounds.bottom * 2 + 5);
         verify(mDwServiceCallback).updateEditableBounds(eq(scaledBounds), any());
         verify(mDwServiceBinder).updateEditableBounds(scaledBounds, mContainerView);
         verify(mDwServiceBinder)

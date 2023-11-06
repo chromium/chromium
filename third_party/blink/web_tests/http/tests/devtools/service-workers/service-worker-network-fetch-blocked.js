@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests blocking fetch in Service Workers.\n`);
@@ -18,8 +19,8 @@ import {NetworkTestRunner} from 'network_test_runner';
   let scope = 'http://127.0.0.1:8000/devtools/service-workers/resources/network-fetch-worker-blocked-scope';
 
   NetworkTestRunner.recordNetwork();
-  SDK.multitargetNetworkManager.setBlockingEnabled(true);
-  SDK.multitargetNetworkManager.setBlockedPatterns([{url: 'resources/resource.php', enabled: true}]);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockingEnabled(true);
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setBlockedPatterns([{url: 'resources/resource.php', enabled: true}]);
 
   ApplicationTestRunner.makeFetchInServiceWorker(scope, '../../network/resources/resource.php', {}, fetchCallback);
 

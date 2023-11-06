@@ -20,9 +20,7 @@ class DlpCopyOrMoveHookDelegateTest;
 
 // Providing hooks called from //storage on IO threads. Calls are redirected on
 // the UI thread to use DlpFilesController.
-class DlpCopyOrMoveHookDelegate
-    : public storage::CopyOrMoveHookDelegate,
-      public base::SupportsWeakPtr<DlpCopyOrMoveHookDelegate> {
+class DlpCopyOrMoveHookDelegate : public storage::CopyOrMoveHookDelegate {
  public:
   explicit DlpCopyOrMoveHookDelegate(bool isComposite = false);
 
@@ -44,7 +42,8 @@ class DlpCopyOrMoveHookDelegate
                  const storage::FileSystemURL& destination_url) override;
   void OnError(const storage::FileSystemURL& source_url,
                const storage::FileSystemURL& destination_url,
-               base::File::Error error) override;
+               base::File::Error error,
+               ErrorCallback callback) override;
 
  private:
   void OnEnd(const storage::FileSystemURL& source_url,
@@ -57,6 +56,8 @@ class DlpCopyOrMoveHookDelegate
   absl::flat_hash_map<std::pair<base::FilePath, base::FilePath>,
                       std::unique_ptr<file_access::ScopedFileAccess>>
       current_access_map_;
+
+  base::WeakPtrFactory<DlpCopyOrMoveHookDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace policy

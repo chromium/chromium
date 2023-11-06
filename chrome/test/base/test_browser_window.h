@@ -108,6 +108,9 @@ class TestBrowserWindow : public BrowserWindow {
   void Maximize() override {}
   void Minimize() override {}
   void Restore() override {}
+  void SetCanResizeFromWebAPI(absl::optional<bool> can_resize) override {}
+  bool GetCanResize() override;
+  ui::WindowShowState GetWindowShowState() const override;
   bool ShouldHideUIForFullscreen() const override;
   bool IsFullscreen() const override;
   bool IsFullscreenBubbleVisible() const override;
@@ -248,7 +251,7 @@ class TestBrowserWindow : public BrowserWindow {
       user_education::FeaturePromoParams params) override;
   bool CloseFeaturePromo(
       const base::Feature& iph_feature,
-      user_education::FeaturePromoCloseReason close_reason) override;
+      user_education::EndFeaturePromoReason close_reason) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
   void NotifyFeatureEngagementEvent(const char* event_name) override;

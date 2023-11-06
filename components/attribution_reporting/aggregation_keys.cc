@@ -115,7 +115,7 @@ AggregationKeys& AggregationKeys::operator=(AggregationKeys&&) = default;
 
 base::Value::Dict AggregationKeys::ToJson() const {
   base::Value::Dict dict;
-  for (auto [key, value] : keys_) {
+  for (const auto& [key, value] : keys_) {
     dict.Set(key, HexEncodeAggregationKey(value));
   }
   return dict;

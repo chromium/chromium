@@ -25,7 +25,8 @@ class PlusAddressCreationViewAndroid {
       content::WebContents* web_contents);
   ~PlusAddressCreationViewAndroid();
 
-  void Show(const std::string& primary_email_address);
+  void Show(const std::string& primary_email_address,
+            const std::string& plus_address);
   void OnConfirmed(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj);
   void OnCanceled(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);

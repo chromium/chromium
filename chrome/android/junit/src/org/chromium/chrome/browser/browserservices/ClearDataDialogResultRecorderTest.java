@@ -30,9 +30,7 @@ import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUma
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
-/**
- * Tests for {@link ClearDataDialogResultRecorder}.
- */
+/** Tests for {@link ClearDataDialogResultRecorder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ClearDataDialogResultRecorderTest {
@@ -107,8 +105,9 @@ public class ClearDataDialogResultRecorderTest {
         doNothing()
                 .when(mBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(mTaskOnNativeInitCaptor.capture());
-        mRecorder = new ClearDataDialogResultRecorder(() -> mPrefsManager, mBrowserInitializer,
-                mUmaRecorder);
+        mRecorder =
+                new ClearDataDialogResultRecorder(
+                        () -> mPrefsManager, mBrowserInitializer, mUmaRecorder);
     }
 
     private void finishNativeInit() {
@@ -120,5 +119,4 @@ public class ClearDataDialogResultRecorderTest {
                 .when(mBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(any());
     }
-
 }

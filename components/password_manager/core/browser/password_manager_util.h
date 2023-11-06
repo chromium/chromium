@@ -46,12 +46,6 @@ enum class GetLoginMatchType {
 // Update |credential| to reflect usage.
 void UpdateMetadataForUsage(password_manager::PasswordForm* credential);
 
-// Removes Android username-only credentials from |android_credentials|.
-// Transforms federated credentials into non zero-click ones.
-void TrimUsernameOnlyCredentials(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>>*
-        android_credentials);
-
 // A convenience function for testing that |client| has a non-null LogManager
 // and that that LogManager returns true for IsLoggingActive. This function can
 // be removed once PasswordManagerClient::GetLogManager is implemented on iOS
@@ -152,9 +146,6 @@ GURL StripAuthAndParams(const GURL& gurl);
 // by default. For ip-addresses, scheme "http://" is used.
 GURL ConstructGURLWithScheme(const std::string& url);
 
-// Returns whether |url| has valid format and either an HTTP or HTTPS scheme.
-bool IsValidPasswordURL(const GURL& url);
-
 // TODO(crbug.com/1261752): Deduplicate GetSignonRealm implementations.
 // Returns the value of PasswordForm::signon_realm for an HTML form with the
 // origin |url|.
@@ -190,6 +181,11 @@ bool IsSpecialSymbol(char16_t c);
 
 // Returns true if 'type' is a username in a password-less form.
 bool IsSingleUsernameType(autofill::ServerFieldType type);
+
+#if BUILDFLAG(IS_ANDROID)
+// Checks that the feature is enabled.
+bool UsesUPMForLocalM2(PrefService* prefs);
+#endif
 
 }  // namespace password_manager_util
 

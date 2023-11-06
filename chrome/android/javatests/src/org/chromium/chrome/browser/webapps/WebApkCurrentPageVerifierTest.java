@@ -23,14 +23,11 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.net.test.EmbeddedTestServer;
 
-/**
- * Tests the {@link CurrentPageVerifier} integration with WebAPK Activity.
- */
+/** Tests the {@link CurrentPageVerifier} integration with WebAPK Activity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class WebApkCurrentPageVerifierTest {
-    @Rule
-    public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
+    @Rule public final WebApkActivityTestRule mActivityTestRule = new WebApkActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -51,8 +48,8 @@ public final class WebApkCurrentPageVerifierTest {
     }
 
     /**
-     * Tests that {@link CurrentPageVerifier} verification succeeds if the page is within the
-     * WebAPK scope.
+     * Tests that {@link CurrentPageVerifier} verification succeeds if the page is within the WebAPK
+     * scope.
      */
     @Test
     @LargeTest

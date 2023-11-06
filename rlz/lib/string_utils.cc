@@ -6,6 +6,7 @@
 
 #include "rlz/lib/string_utils.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "rlz/lib/assert.h"
 
 namespace rlz_lib {
@@ -76,16 +77,7 @@ bool BytesToString(const unsigned char* data,
   if (data_len < 1 || !data)
     return false;
 
-  static const char kHex[] = "0123456789ABCDEF";
-
-  // Fix the buffer size to begin with to avoid repeated re-allocation.
-  string->resize(data_len * 2);
-  int index = data_len;
-  while (index--) {
-    string->at(2 * index) = kHex[data[index] >> 4];  // high digit
-    string->at(2 * index + 1) = kHex[data[index] & 0x0F];  // low digit
-  }
-
+  *string = base::HexEncode(data, static_cast<size_t>(data_len));
   return true;
 }
 

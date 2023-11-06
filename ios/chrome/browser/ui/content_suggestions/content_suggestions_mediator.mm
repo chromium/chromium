@@ -38,6 +38,8 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/user_selectable_type.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
@@ -104,6 +106,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_metrics.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
@@ -127,8 +130,6 @@ constexpr base::TimeDelta kSafetyCheckRunThreshold = base::Hours(24);
 
 // Maximum number of most visited tiles fetched.
 const NSInteger kMaxNumMostVisitedTiles = 4;
-
-const NSTimeInterval kTwoDays = 2 * 24 * 60 * 60;
 
 // Checks the last action the user took on the Credential Provider Promo to
 // determine if it was dismissed.
@@ -236,7 +237,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
-  // Used by SetUpList to observe changes to signed-in status.
+  // Observes changes to signed-in status.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
   // Observer for sync service status changes.
@@ -306,16 +307,21 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     _authenticationService = authenticationService;
     _syncService = syncService;
     _shoppingService = shoppingService;
-    if (IsIOSSetUpListEnabled() &&
-        set_up_list_utils::IsSetUpListActive(_localState)) {
-      _authServiceObserverBridge =
-          std::make_unique<AuthenticationServiceObserverBridge>(
-              _authenticationService, self);
+
+    BOOL isSetupListEnabled = IsIOSSetUpListEnabled() &&
+                              set_up_list_utils::IsSetUpListActive(_localState);
+    if (IsTabResumptionEnabled() || isSetupListEnabled) {
       _syncObserverBridge =
           std::make_unique<SyncObserverBridge>(self, _syncService);
       _identityObserverBridge =
           std::make_unique<signin::IdentityManagerObserverBridge>(
               identityManager, self);
+    }
+
+    if (isSetupListEnabled) {
+      _authServiceObserverBridge =
+          std::make_unique<AuthenticationServiceObserverBridge>(
+              _authenticationService, self);
       _prefObserverBridge = std::make_unique<PrefObserverBridge>(self);
       _prefChangeRegistrar.Init(_localState);
       _prefObserverBridge->ObserveChangesForPreference(
@@ -346,8 +352,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
                 self, sessionSyncService);
       }
 
-      _tabResumptionHelper =
-          std::make_unique<TabResumptionHelper>(TabResumptionHelper(browser));
+      _tabResumptionHelper = std::make_unique<TabResumptionHelper>(browser);
     }
 
     SceneState* sceneState =
@@ -555,6 +560,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
           }));
 }
 
+- (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
+  [self.contentSuggestionsMetricsRecorder
+      recordMagicStackModuleEngagementForType:type
+                                      atIndex:
+                                          [self indexForMagicStackModule:type]];
+}
+
 #pragma mark - AppStateObserver
 
 // Conditionally starts the Safety Check if the upcoming init stage is
@@ -596,7 +608,13 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
             base::Seconds(0.5));
       }
       break;
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      if (IsTabResumptionEnabled()) {
+        // If the user is signed out, remove the tab resumption tile.
+        [self hideTabResumption];
+      }
+      break;
+    }
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
@@ -635,6 +653,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       return;
     }
     [self.NTPMetricsDelegate shortcutTileOpened];
+    if (IsMagicStackEnabled()) {
+      [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                               kShortcuts];
+    }
     [self.contentSuggestionsMetricsRecorder
         recordShortcutTileTapped:mostVisitedItem.collectionShortcutType];
     switch (mostVisitedItem.collectionShortcutType) {
@@ -674,7 +696,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 - (void)openMostRecentTab {
   [self.NTPMetricsDelegate recentTabTileOpened];
-  [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
+  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
   [IntentDonationHelper donateIntent:IntentType::kOpenLatestTab];
   [self hideRecentTabTile];
   WebStateList* web_state_list = self.browser->GetWebStateList();
@@ -689,32 +711,37 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 }
 
 - (void)openTabResumptionItem {
+  [self.contentSuggestionsMetricsRecorder recordTabResumptionTabOpened];
+  tab_resumption_prefs::SetTabResumptionLastOpenedTabURL(
+      _tabResumptionItem.tabURL, _localState);
+  [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                           kTabResumption];
+
   switch (_tabResumptionItem.itemType) {
     case TabResumptionItemType::kLastSyncedTab:
-      // TODO(crbug.com/1478156): Add metrics.
-      // TODO(crbug.com/1478156): Derank or hide the tile.
+      [self.NTPMetricsDelegate distantTabResumptionOpened];
+      _tabResumptionHelper->OpenDistantTab();
       break;
     case TabResumptionItemType::kMostRecentTab: {
       [self.NTPMetricsDelegate recentTabTileOpened];
-      [self.contentSuggestionsMetricsRecorder recordMostRecentTabOpened];
+      web::NavigationManager::WebLoadParams webLoadParams =
+          web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
+      UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
+      params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+      UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
       break;
     }
   }
-
-  web::NavigationManager::WebLoadParams webLoadParams =
-      web::NavigationManager::WebLoadParams(_tabResumptionItem.tabURL);
-  UrlLoadParams params = UrlLoadParams::SwitchToTab(webLoadParams);
-  params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
-
   [self hideTabResumption];
 }
 
 - (void)loadParcelTrackingPage:(GURL)parcelTrackingURL {
   [self.NTPMetricsDelegate parcelTrackingOpened];
-  [self.contentSuggestionsMetricsRecorder
-      recordMagicStackModuleEngagementForType:ContentSuggestionsModuleType::
-                                                  kParcelTracking];
+  ContentSuggestionsModuleType type =
+      [_parcelTrackingItems count] > 2
+          ? ContentSuggestionsModuleType::kParcelTrackingSeeMore
+          : ContentSuggestionsModuleType::kParcelTracking;
+  [self logMagicStackEngagementForType:type];
   UrlLoadingBrowserAgent::FromBrowser(self.browser)
       ->Load(UrlLoadParams::InCurrentTab(parcelTrackingURL));
 }
@@ -1116,6 +1143,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPMetricsDelegate mostVisitedTileOpened];
+  if (ShouldPutMostVisitedSitesInMagicStack()) {
+    [self logMagicStackEngagementForType:ContentSuggestionsModuleType::
+                                             kMostVisited];
+  }
   [self.contentSuggestionsMetricsRecorder
       recordMostVisitedTileOpened:item
                           atIndex:mostVisitedIndex
@@ -1491,7 +1522,6 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     return;
   }
 
-  // TODO(crbug.com/1478156): Add restrictions.
   if (_tabResumptionItem) {
     [self.consumer showTabResumptionWithItem:_tabResumptionItem];
     return;
@@ -1509,6 +1539,10 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 
 // Shows the tab resumption tile with the given `item` configuration.
 - (void)showTabResumptionWithItem:(TabResumptionItem*)item {
+  if (tab_resumption_prefs::IsLastOpenedURL(item.tabURL, _localState)) {
+    return;
+  }
+
   _tabResumptionItem = item;
   _latestMagicStackOrder =
       base::FeatureList::IsEnabled(
@@ -1557,10 +1591,7 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
     item.status = (ParcelState)iter->state;
     [parcelItems addObject:item];
 
-    NSDate* estimatedDeliveryTime = iter->estimated_delivery_time.ToNSDate();
-    if ([estimatedDeliveryTime
-            compare:[NSDate dateWithTimeIntervalSinceNow:-kTwoDays]] ==
-        NSOrderedAscending) {
+    if (iter->estimated_delivery_time < base::Time::Now() - base::Days(2)) {
       // Parcel was delivered more than two days ago, make this the last time it
       // is shown by stopping tracking.
       _shoppingService->StopTrackingParcel(iter->tracking_id,
@@ -1570,6 +1601,8 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
   }
 
   if ([parcelItems count] > 0) {
+    _parcelTrackingItems = parcelItems;
+    [self logParcelTrackingFreshnessSignalIfApplicable];
     _latestMagicStackOrder =
         base::FeatureList::IsEnabled(segmentation_platform::features::
                                          kSegmentationPlatformIosModuleRanker)
@@ -1588,6 +1621,20 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
       }
     }
     [self.consumer showParcelTrackingItems:parcelItems];
+  }
+}
+
+// Logs a freshness signal for the Parcel Tracking module if there is at least
+// one parcel with an estimated delivery date within the next two days.
+- (void)logParcelTrackingFreshnessSignalIfApplicable {
+  for (ParcelTrackingItem* item in _parcelTrackingItems) {
+    base::Time now = base::Time::Now();
+    if (item.estimatedDeliveryTime > now &&
+        item.estimatedDeliveryTime < now + base::Days(2)) {
+      RecordModuleFreshnessSignal(
+          ContentSuggestionsModuleType::kParcelTracking);
+      return;
+    }
   }
 }
 
@@ -1792,16 +1839,22 @@ bool CredentialProviderPromoDismissed(PrefService* local_state) {
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (!_setUpList) {
-    return;
+  if (_setUpList) {
+    if (_syncService->HasDisableReason(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
+        HasManagedSyncDataType(_syncService)) {
+      // Sync is now disabled, so mark the SetUpList item complete so that it
+      // cannot be used again.
+      set_up_list_prefs::MarkItemComplete(_localState,
+                                          SetUpListItemType::kSignInSync);
+    }
   }
-  if (_syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
-      HasManagedSyncDataType(_syncService)) {
-    // Sync is now disabled, so mark the SetUpList item complete so that it
-    // cannot be used again.
-    set_up_list_prefs::MarkItemComplete(_localState,
-                                        SetUpListItemType::kSignInSync);
+  if (IsTabResumptionEnabled()) {
+    // If tabs are not synced, hide the tab resumption tile.
+    if (!_syncService->GetUserSettings()->GetSelectedTypes().Has(
+            syncer::UserSelectableType::kTabs)) {
+      [self hideTabResumption];
+    }
   }
 }
 

@@ -27,7 +27,7 @@ bool CSPDirectiveListIsReportOnly(
     const network::mojom::blink::ContentSecurityPolicy& csp);
 
 CORE_EXPORT
-bool CSPDirectiveListAllowFromSource(
+CSPCheckResult CSPDirectiveListAllowFromSource(
     const network::mojom::blink::ContentSecurityPolicy& csp,
     ContentSecurityPolicy* policy,
     CSPDirectiveName type,

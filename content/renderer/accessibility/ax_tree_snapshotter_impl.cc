@@ -10,6 +10,7 @@
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame.h"
+#include "ui/accessibility/ax_error_types.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_tree_update.h"
 
@@ -29,7 +30,10 @@ enum class AXTreeSnapshotErrorReason {
   kNoWebFrame = 1,
   kNoActiveDocument = 2,
   kNoExistingAXObjectCache = 3,
-  kMaxValue = kNoExistingAXObjectCache,
+  kSerializeMaxNodesReached = 4,
+  kSerializeTimeoutReached = 5,
+  kSerializeMaxNodesAndTimeoutReached = 6,
+  kMaxValue = kSerializeMaxNodesAndTimeoutReached,
 };
 
 AXTreeSnapshotterImpl::AXTreeSnapshotterImpl(RenderFrameImpl* render_frame,
@@ -72,9 +76,28 @@ void AXTreeSnapshotterImpl::Snapshot(size_t max_node_count,
     NOTREACHED_NORETURN();
   }
 
-  context_->UpdateAXForAllDocuments();
+  std::set<ui::AXSerializationErrorFlag> out_error;
+  if (context_->SerializeEntireTree(max_node_count, timeout, response,
+                                    &out_error)) {
+    std::set<ui::AXSerializationErrorFlag>::iterator max_nodes_iter =
+        out_error.find(ui::AXSerializationErrorFlag::kMaxNodesReached);
+    std::set<ui::AXSerializationErrorFlag>::iterator timeout_iter =
+        out_error.find(ui::AXSerializationErrorFlag::kTimeoutReached);
 
-  if (context_->SerializeEntireTree(max_node_count, timeout, response)) {
+    if (max_nodes_iter != out_error.end() && timeout_iter != out_error.end()) {
+      base::UmaHistogramEnumeration(
+          kAXTreeSnapshotterErrorHistogramName,
+          AXTreeSnapshotErrorReason::kSerializeMaxNodesAndTimeoutReached);
+    } else if (max_nodes_iter != out_error.end()) {
+      base::UmaHistogramEnumeration(
+          kAXTreeSnapshotterErrorHistogramName,
+          AXTreeSnapshotErrorReason::kSerializeMaxNodesReached);
+    } else if (timeout_iter != out_error.end()) {
+      base::UmaHistogramEnumeration(
+          kAXTreeSnapshotterErrorHistogramName,
+          AXTreeSnapshotErrorReason::kSerializeTimeoutReached);
+    }
+
     return;
   }
 

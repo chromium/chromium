@@ -44,6 +44,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_controller.h"
 #include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -912,8 +913,7 @@ bool TestRecipeReplayer::OverrideAutofillClock(
     VLOG(1) << kClockNotSetMessage << "No DeterministicTimeSeedMs found";
     return false;
   }
-  // wpr archive stores time seed in ms, clock is set in seconds.
-  test_clock_.SetNow(base::Time::FromDoubleT(*time_value / 1000));
+  test_clock_.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(*time_value));
   return true;
 }
 
@@ -939,6 +939,10 @@ void TestRecipeReplayer::SetUpCommandLine(base::CommandLine* command_line) {
       network::switches::kIgnoreCertificateErrorsSPKIList,
       kWebPageReplayCertSPKI);
   command_line->AppendSwitch(switches::kStartMaximized);
+  // Since we are adding via ScopedFeatureList for test features required, we
+  // need to explicitly also enable field trials.
+  command_line->AppendSwitch(
+      variations::switches::kEnableFieldTrialTestingConfig);
 }
 
 TestRecipeReplayChromeFeatureActionExecutor*
@@ -1111,7 +1115,7 @@ bool TestRecipeReplayer::ReplayRecordedActions(
         while (!thread_finished) {
           base::RunLoop run_loop;
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-              FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1000));
+              FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
           run_loop.Run();
         }
       }

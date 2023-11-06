@@ -10,9 +10,12 @@ source_set("test_support") {
   sources = [
     "event_util.cc",
     "event_util.h",
+    "test_time_provider.cc",
+    "test_time_provider.h",
   ]
 
   deps = [
+    "//components/feature_engagement/internal",
     "//components/feature_engagement/internal/proto",
     "//testing/gtest",
   ]

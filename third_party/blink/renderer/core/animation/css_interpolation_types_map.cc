@@ -17,6 +17,8 @@
 #include "third_party/blink/renderer/core/animation/css_content_visibility_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_length_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_custom_list_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_custom_transform_function_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_custom_transform_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_default_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_display_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_filter_list_interpolation_type.h"
@@ -47,6 +49,7 @@
 #include "third_party/blink/renderer/core/animation/css_resolution_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_rotate_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_scale_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_scrollbar_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_shadow_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_size_list_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_text_indent_interpolation_type.h"
@@ -448,6 +451,11 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
         applicable_types->push_back(
             std::make_unique<CSSOverlayInterpolationType>(used_property));
         break;
+      case CSSPropertyID::kScrollbarColor:
+        applicable_types->push_back(
+            std::make_unique<CSSScrollbarColorInterpolationType>(
+                used_property));
+        break;
       default:
         DCHECK(!css_property.IsInterpolable());
         break;
@@ -467,10 +475,10 @@ size_t CSSInterpolationTypesMap::Version() const {
 }
 
 static std::unique_ptr<CSSInterpolationType>
-CreateInterpolationTypeForCSSSyntax(CSSSyntaxType syntax,
+CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
                                     PropertyHandle property,
                                     const PropertyRegistration& registration) {
-  switch (syntax) {
+  switch (syntax.GetType()) {
     case CSSSyntaxType::kAngle:
       return std::make_unique<CSSAngleInterpolationType>(property,
                                                          &registration);
@@ -502,9 +510,18 @@ CreateInterpolationTypeForCSSSyntax(CSSSyntaxType syntax,
       return std::make_unique<CSSNumberInterpolationType>(property,
                                                           &registration, true);
     case CSSSyntaxType::kTransformFunction:
+      if (!syntax.IsRepeatable() ||
+          syntax.GetRepeat() == CSSSyntaxRepeat::kCommaSeparated) {
+        // <transform-function> needs an interpolation type different from
+        // <transform-function>+ and <transform-list> as it can only use a
+        // single function representation for interpolation and composition.
+        return std::make_unique<CSSCustomTransformFunctionInterpolationType>(
+            property, &registration);
+      }
+      [[fallthrough]];
     case CSSSyntaxType::kTransformList:
-      // TODO(alancutter): Support smooth interpolation of these types.
-      return nullptr;
+      return std::make_unique<CSSCustomTransformInterpolationType>(
+          property, &registration);
     case CSSSyntaxType::kCustomIdent:
     case CSSSyntaxType::kIdent:
     case CSSSyntaxType::kTokenStream:
@@ -531,13 +548,14 @@ CSSInterpolationTypesMap::CreateInterpolationTypesForCSSSyntax(
 
   for (const CSSSyntaxComponent& component : definition.Components()) {
     std::unique_ptr<CSSInterpolationType> interpolation_type =
-        CreateInterpolationTypeForCSSSyntax(component.GetType(), property,
-                                            registration);
+        CreateInterpolationTypeForCSSSyntax(component, property, registration);
 
     if (!interpolation_type)
       continue;
 
-    if (component.IsRepeatable()) {
+    if (component.IsRepeatable() &&
+        (component.GetType() != CSSSyntaxType::kTransformFunction ||
+         component.GetRepeat() != CSSSyntaxRepeat::kSpaceSeparated)) {
       interpolation_type = std::make_unique<CSSCustomListInterpolationType>(
           property, &registration, std::move(interpolation_type),
           component.GetType(), component.GetRepeat());

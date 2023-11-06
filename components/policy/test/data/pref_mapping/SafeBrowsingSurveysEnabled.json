@@ -1,0 +1,41 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.surveys_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingSurveysEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.surveys_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingSurveysEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.surveys_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

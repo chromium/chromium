@@ -67,4 +67,5 @@
     <string name="decoration_type_divider_text">Divider</string>
     <string name="decoration_type_none_text">None</string>
     <string name="side_sheet_rounded_corner_text">Rounded Corner(SideSheet)</string>
+    <string name="content_scroll_text">Content-scroll may resize Tab(BottomSheet)</string>
 </resources>

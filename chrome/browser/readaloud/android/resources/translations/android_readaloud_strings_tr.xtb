@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="1178581264944972037">Duraklat</translation>
+<translation id="2558806128245168542">Geri dön</translation>
 <translation id="3523426587027570423">"Bu sayfayı dinle" oynatıcısını kapatmak için dokunun.</translation>
+<translation id="4431240646217225907">Metni vurgula ve otomatik kaydır</translation>
 <translation id="4654641641922242357">"Bu sayfayı dinle" oynatıcısı.</translation>
 <translation id="4731877163452936634">Çalma hızı: <ph name="PLAYBACK_SPEED" /> Değiştirmek için tıklayın.</translation>
 <translation id="5234971936051226002">"Bu sayfayı dinle" oynatıcısı küçültüldü.</translation>
 <translation id="5596627076506792578">Diğer seçenekler</translation>
+<translation id="6315170314923504164">Ses</translation>
+<translation id="6550675742724504774">Seçenekler</translation>
 <translation id="6790428901817661496">Oynat</translation>
+<translation id="6831043979455480757">Çevir</translation>
 <translation id="6846298663435243399">Yükleniyor...</translation>
 <translation id="7587250070160020374">Chrome şu anda oynatıyor</translation>
 <translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" /> saniye ileri git</translation>

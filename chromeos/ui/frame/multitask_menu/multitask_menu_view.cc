@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -185,9 +184,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
       close_callback_(std::move(close_callback)) {
   DCHECK(window);
   DCHECK(close_callback_);
-  if (features::IsJellyEnabled()) {
-    SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
-  }
+  SetBackground(views::CreateThemedSolidBackground(ui::kColorSysSurface3));
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);

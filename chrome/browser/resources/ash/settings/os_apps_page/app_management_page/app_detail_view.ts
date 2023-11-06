@@ -17,13 +17,13 @@ import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../../assert_extras.js';
-import {RouteObserverMixin} from '../../route_observer_mixin.js';
+import {updateSelectedAppId} from '../../common/app_management/actions.js';
+import {AppMap} from '../../common/app_management/store.js';
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
 import {Route, Router, routes} from '../../router.js';
 
-import {updateSelectedAppId} from './actions.js';
 import {getTemplate} from './app_detail_view.html.js';
-import {AppMap} from './store.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 import {openMainPage} from './util.js';
 
 const AppManagementAppDetailViewElementBase =

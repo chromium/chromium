@@ -143,6 +143,28 @@ suite('SettingsDropdownMenu', function() {
     });
   });
 
+  test('with hidden options', async function() {
+    dropdown.pref = {
+      key: 'test.string',
+      type: chrome.settingsPrivate.PrefType.STRING,
+      value: 'f',
+    };
+    dropdown.menuOptions = [
+      {value: 'a', name: 'AAA', hidden: true},
+      {value: 'b', name: 'BBB', hidden: false},
+      {value: 'c', name: 'CCC'},
+      {value: 'd', name: 'DDD'},
+    ];
+    await waitUntilDropdownUpdated();
+
+    // `options` contains the options above plus 'Custom'.
+    assertEquals(5, selectElement.options.length);
+    assertTrue(selectElement.options[0]!.hidden);
+    assertFalse(selectElement.options[1]!.hidden);
+    assertFalse(selectElement.options[2]!.hidden);
+    assertFalse(selectElement.options[3]!.hidden);
+  });
+
   function waitForTimeout(timeMs: number): Promise<void> {
     return new Promise<void>(function(resolve) {
       setTimeout(resolve, timeMs);

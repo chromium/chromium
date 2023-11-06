@@ -33,6 +33,38 @@ const char kProvisioningUrl[] =
     "https://afwprovisioning-pa.googleapis.com"
     "/v1/get_device_provisioning_record";
 
+// Traffic annotation for configuration request
+const net::NetworkTrafficAnnotationTag traffic_annotation =
+    net::DefineNetworkTrafficAnnotation(
+        "carrier_lock_manager_fetch_configuration",
+        R"(
+        semantics {
+          sender: "Carrier Lock manager"
+          description:
+            "Request Carrier Lock configuration to setup modem locks."
+          trigger: "Carrier Lock manager makes this network request every time "
+                   "lock configuration needs to be updated on modem."
+          data: "FCM token, manufacturer, model, serial number, IMEI, device id"
+                "and API key."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "cros-cellular-core@google.com"
+            }
+          }
+          user_data {
+            type: DEVICE_ID
+            type: HW_OS_INFO
+            type: SESSION_ID
+          }
+          last_reviewed: "2023-10-24"
+        }
+        policy {
+          cookies_allowed: NO
+          setting: "This feature cannot be disabled in settings."
+          policy_exception_justification: "Carrier Lock is always enforced."
+        })");
+
 }  // namespace
 
 ProvisioningConfigFetcherImpl::ProvisioningConfigFetcherImpl(
@@ -84,7 +116,7 @@ void ProvisioningConfigFetcherImpl::RequestConfig(
 
   // Send message using URLLoader
   simple_url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), NO_TRAFFIC_ANNOTATION_YET);
+      std::move(resource_request), traffic_annotation);
   if (!simple_url_loader_ || !url_loader_factory_) {
     LOG(ERROR) << "Failed to create URL loader";
     ReturnError(Result::kInitializationFailed);

@@ -12,8 +12,6 @@
       <include name="IDR_IOS_INSPECT_JS" file="inspect/inspect.js" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_HTML" file="omaha/omaha.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
       <include name="IDR_IOS_OMAHA_JS" file="omaha/omaha.js" type="BINDATA" />
-      <include name="IDR_IOS_UKM_INTERNALS_HTML" file="../../../../components/ukm/debug/ukm_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_IOS_UKM_INTERNALS_JS" file="${root_gen_dir}/components/ukm/debug/tsc/ukm_internals.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_IOS_TRANSLATE_INTERNALS_CSS" file="../../../../components/translate/translate_internals/translate_internals.css" type="BINDATA" />
       <include name="IDR_IOS_TRANSLATE_INTERNALS_HTML" file="../../../../components/translate/translate_internals/translate_internals.html" type="BINDATA" />
       <include name="IDR_IOS_TRANSLATE_INTERNALS_JS" file="../../../../components/translate/translate_internals/translate_internals.js" preprocess="true" type="BINDATA" />

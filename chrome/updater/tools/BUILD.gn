@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/branding.gni")
 import("//testing/test.gni")
 
 group("tools") {
+  deps = [ ":${updater_product_full_name}Util" ]
   if (is_win) {
-    deps = [ ":tag" ]
+    deps += [ ":tag" ]
   }
 }
 
 executable("tag_exe") {
-  sources = [ "main.cc" ]
+  sources = [ "tag_main.cc" ]
   deps = [
     "//base",
     "//chrome/updater:tagging",
@@ -45,6 +47,16 @@ if (is_mac) {
 
     frameworks = [ "Foundation.framework" ]
   }
+}
+
+executable("${updater_product_full_name}Util") {
+  sources = [ "updater_util.cc" ]
+  deps = [
+    "//base",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:external_constants",
+  ]
 }
 
 executable("dm_policy_dump") {

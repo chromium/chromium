@@ -55,6 +55,9 @@ export class HoldingSpaceUtil {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_;
       storage.local.get(key, values => {
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type
+        // 'Object'.
         resolve(values[key]);
       });
     });
@@ -71,6 +74,9 @@ export class HoldingSpaceUtil {
     return new Promise(resolve => {
       const key = HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_;
       storage.local.get(key, values => {
+        // @ts-ignore: error TS7053: Element implicitly has an 'any' type
+        // because expression of type 'string' can't be used to index type
+        // 'Object'.
         resolve(values[key]);
       });
     });
@@ -90,6 +96,8 @@ export class HoldingSpaceUtil {
 
     // Store time of first pin.
     const values = {};
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     values[HoldingSpaceUtil.TIME_OF_FIRST_PIN_KEY_] = now;
     storage.local.set(values);
 
@@ -132,6 +140,8 @@ export class HoldingSpaceUtil {
 
     // Store time of first show.
     const values = {};
+    // @ts-ignore: error TS7053: Element implicitly has an 'any' type because
+    // expression of type 'string' can't be used to index type '{}'.
     values[HoldingSpaceUtil.TIME_OF_FIRST_WELCOME_BANNER_SHOW_KEY_] = now;
     storage.local.set(values);
   }

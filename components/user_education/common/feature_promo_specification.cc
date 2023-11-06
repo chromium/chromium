@@ -23,7 +23,9 @@ namespace {
 bool IsAllowedLegalNotice(const base::Feature& promo_feature) {
   // Add the text names of allowlisted critical promos here:
   static const char* const kAllowedPromoNames[] = {
-      "IPH_TrackingProtectionOnboarding"};
+      "IPH_TrackingProtectionOnboarding",
+      "IPH_TrackingProtectionOffboarding",
+  };
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {
       return true;
@@ -281,6 +283,12 @@ FeaturePromoSpecification::SetCustomActionDismissText(
     int custom_action_dismiss_string_id) {
   DCHECK(promo_type_ == PromoType::kCustomAction);
   custom_action_dismiss_string_id_ = custom_action_dismiss_string_id;
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::SetHighlightedMenuItem(
+    const ui::ElementIdentifier highlighted_menu_identifier) {
+  highlighted_menu_identifier_ = highlighted_menu_identifier;
   return *this;
 }
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POWER_BOOKMARKS_CORE_SUGGESTED_SAVE_LOCATION_PROVIDER_H_
 #define COMPONENTS_POWER_BOOKMARKS_CORE_SUGGESTED_SAVE_LOCATION_PROVIDER_H_
 
+#include <string>
+
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -21,7 +23,16 @@ class SuggestedSaveLocationProvider {
   // Gets the amount of time that a suggestion should back off for if it was
   // rejected by the user (usually this means observing a move event for the
   // saved node immediately following creation).
-  virtual const base::TimeDelta GetBackoffTime() = 0;
+  virtual base::TimeDelta GetBackoffTime() = 0;
+
+  // Get the name of the feature providing the suggestion for user actions and
+  // histograms.
+  virtual std::string GetFeatureNameForMetrics() = 0;
+
+  // A notification that the suggested folder was rejected by the user. This
+  // means a user moved the bookmark out of the folder it was created in if
+  // it was the last bookmark to be created.
+  virtual void OnSuggestionRejected() = 0;
 };
 
 }  // namespace power_bookmarks

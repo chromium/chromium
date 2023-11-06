@@ -431,8 +431,7 @@ Installer::Result MakeInstallerResult(
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.original_error =
-          outcome.installer_error ? *outcome.installer_error : exit_code;
+      result.original_error = outcome.installer_error.value_or(exit_code);
       if (!result.original_error) {
         result.original_error = kErrorApplicationInstallerFailed;
       }
@@ -446,10 +445,7 @@ Installer::Result MakeInstallerResult(
                   result.original_error == ERROR_SUCCESS_RESTART_REQUIRED
               ? 0
               : kErrorApplicationInstallerFailed;
-      result.installer_text =
-          outcome.installer_text
-              ? *outcome.installer_text
-              : base::WideToUTF8(GetTextForSystemError(result.original_error));
+      result.installer_text = outcome.installer_text.value_or("");
       CHECK_NE(result.original_error, 0);
       break;
   }
@@ -477,13 +473,14 @@ AppInstallerResult RunApplicationInstaller(
     InstallProgressCallback progress_callback) {
   if (!base::PathExists(app_installer)) {
     LOG(ERROR) << "application installer does not exist: " << app_installer;
-    return AppInstallerResult(kErrorMissingRunableFile);
+    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                              kErrorMissingRunableFile);
   }
 
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
-    return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED, -1);
+    return AppInstallerResult(GOOPDATEINSTALL_E_FILENAME_INVALID,
+                              kErrorInvalidFileExtension);
   }
 
   DeleteInstallerOutput(app_info.scope, app_info.app_id);
@@ -507,9 +504,8 @@ AppInstallerResult RunApplicationInstaller(
 
   base::Process process = base::LaunchProcess(cmdline, options);
   if (!process.IsValid()) {
-    return AppInstallerResult(
-        update_client::InstallError::LAUNCH_PROCESS_FAILED,
-        HRESULTFromLastError());
+    return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
+                              HRESULTFromLastError());
   }
 
   int exit_code = -1;
@@ -522,12 +518,24 @@ AppInstallerResult RunApplicationInstaller(
     progress_callback.Run(progress);
     if (wait_result) {
       VLOG(1) << "Installer exit code " << exit_code;
-      break;
+      return MakeInstallerResult(
+          GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
     }
   } while (timer.Elapsed() < timeout);
 
-  return MakeInstallerResult(
-      GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
+  return AppInstallerResult(GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT);
+}
+
+std::string LookupString(const base::FilePath& path,
+                         const std::string& keyname,
+                         const std::string& default_value) {
+  return default_value;
+}
+
+base::Version LookupVersion(const base::FilePath& path,
+                            const std::string& keyname,
+                            const base::Version& default_value) {
+  return default_value;
 }
 
 }  // namespace updater

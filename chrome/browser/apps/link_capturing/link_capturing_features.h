@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_APPS_LINK_CAPTURING_LINK_CAPTURING_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace apps::features {
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enables user link capturing on CrOS.
 BASE_DECLARE_FEATURE(kLinkCapturingUiUpdate);
-BASE_DECLARE_FEATURE(kLinkCapturingInfoBar);
-
-// Enables user link capturing on desktop platforms, i.e. Windows, Mac
-// Linux amd Fuchsia.
-BASE_DECLARE_FEATURE(kDesktopPWAsLinkCapturing);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Enables link capturing into apps when links are clicked from another app
@@ -26,13 +25,10 @@ BASE_DECLARE_FEATURE(kAppToAppLinkCapturing);
 BASE_DECLARE_FEATURE(kAppToAppLinkCapturingWorkspaceApps);
 #endif
 
-// Returns true if the overall link capturing UI update feature is enabled.
-bool LinkCapturingUiUpdateEnabled();
-
-// Returns true if the Link Capturing Info Bar should be shown when launching an
-// app through the Intent Picker. Only returns true if
-// LinkCapturingUiUpdateEnabled() returns true.
-bool LinkCapturingInfoBarEnabled();
+// Returns true if the updated UX for link capturing needs to be shown. Only set
+// to true if kDesktopPWAsLinkCapturing is enabled on desktop platforms, and
+// kLinkCapturingUiUpdate on CrOS platforms.
+bool ShouldShowLinkCapturingUX();
 
 }  // namespace apps::features
 

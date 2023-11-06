@@ -126,6 +126,7 @@ class RenderFrameHostOwner {
   // Reporting API related runtime features are enabled and is needed for
   // integration with Attribution Reporting API.
   virtual void SetFencedFrameAutomaticBeaconReportEventData(
+      blink::mojom::AutomaticBeaconType event_type,
       const std::string& event_data,
       const std::vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures

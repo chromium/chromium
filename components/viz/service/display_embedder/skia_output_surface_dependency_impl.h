@@ -50,8 +50,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
       base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
       gl::GLSurfaceFormat format) override;
   scoped_refptr<gl::Presenter> CreatePresenter(
-      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub,
-      gl::GLSurfaceFormat format) override;
+      base::WeakPtr<gpu::ImageTransportSurfaceDelegate> stub) override;
   base::ScopedClosureRunner CachePresenter(gl::Presenter* presenter) override;
   base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) override;
   scoped_refptr<base::TaskRunner> GetClientTaskRunner() override;

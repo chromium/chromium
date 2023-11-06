@@ -7,15 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace web {
 class WebState;
 }
-
-class ChromeBrowserState;
-class WebStateList;
 
 namespace TabInsertion {
 
@@ -88,8 +86,7 @@ class TabInsertionBrowserAgent
 
   explicit TabInsertionBrowserAgent(Browser* browser);
 
-  ChromeBrowserState* browser_state_;
-  WebStateList* web_state_list_;
+  raw_ptr<Browser> browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_INSERTION_MODEL_TAB_INSERTION_BROWSER_AGENT_H_

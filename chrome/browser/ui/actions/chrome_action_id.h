@@ -498,8 +498,10 @@
   E(kActionContentContextAutofillFeedback, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK) \
   /* Autofill context menu commands */ \
-  E(kActionContentContextAutofillFallbackAutocompleteUnrecognized, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_AUTOCOMPLETE_UNRECOGNIZED) \
+  E(kActionContentContextAutofillFallbackAddress, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
+  E(kActionContentContextAutofillFallbackPayments, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \

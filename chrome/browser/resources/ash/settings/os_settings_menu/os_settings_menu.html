@@ -1,12 +1,10 @@
 <style include="settings-shared">
   :host {
-    /* Width of the keyboard focus border. */
-    --focus-border-width: 2px;
-
     box-sizing: border-box;
     display: block;
     padding-bottom: 2px;
     padding-top: 8px;
+    width: var(--settings-menu-width);
   }
 
   :host-context(body.revamp-wayfinding-enabled):host {
@@ -54,7 +52,8 @@
 
   :host-context(.focus-outline-visible) #advancedButton:focus {
     border-radius: 0 20px 20px 0;
-    outline: var(--focus-border-width) solid var(--cros-focus-ring-color);
+    outline: var(--settings-menu-item-border-width) solid
+        var(--cros-focus-ring-color);
   }
 
   :host-context([dir=rtl]):host-context(.focus-outline-visible)
@@ -96,8 +95,8 @@
   #topMenu > os-settings-menu-item:last-of-type {
     /* Reserve space so the last menu item isn't too close to the window
       * bottom edge, 48px under the text baseline. */
-    margin-bottom: calc(
-        48px - calc(var(--tap-target-padding) + var(--focus-border-width)));
+    margin-bottom: calc(48px - calc(
+        var(--tap-target-padding) + var(--settings-menu-item-border-width)));
   }
 </style>
 <iron-selector id="topMenu"

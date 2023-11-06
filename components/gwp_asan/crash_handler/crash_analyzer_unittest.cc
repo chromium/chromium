@@ -11,13 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/client/guarded_page_allocator.h"
-#include "components/gwp_asan/client/lightweight_detector.h"
+#include "components/gwp_asan/client/lightweight_detector/poison_metadata_recorder.h"
 #include "components/gwp_asan/common/allocator_state.h"
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/lightweight_detector_state.h"
@@ -94,13 +95,14 @@ constexpr const char* kPartitionAllocHistogramName =
 class BaseCrashAnalyzerTest : public testing::Test {
  protected:
   BaseCrashAnalyzerTest(bool is_partition_alloc,
-                        LightweightDetectorMode lightweight_detector_mode) {
-    is_partition_alloc_ = is_partition_alloc;
+                        LightweightDetectorMode lightweight_detector_mode)
+      : is_partition_alloc_(is_partition_alloc),
+        lightweight_detector_enabled_(lightweight_detector_mode !=
+                                      LightweightDetectorMode::kOff) {
     gpa_.Init(1, 1, 1, base::DoNothing(), is_partition_alloc);
-
-    if (lightweight_detector_mode != LightweightDetectorMode::kOff) {
-      lightweight_detector_ =
-          std::make_unique<LightweightDetector>(lightweight_detector_mode, 1);
+    if (lightweight_detector_enabled_) {
+      PoisonMetadataRecorder::ResetForTesting();
+      PoisonMetadataRecorder::Init(lightweight_detector_mode, 1);
     }
   }
 
@@ -118,9 +120,9 @@ class BaseCrashAnalyzerTest : public testing::Test {
     append_annotation(
         is_partition_alloc_ ? kPartitionAllocCrashKey : kMallocCrashKey,
         gpa_.GetCrashKey());
-    if (lightweight_detector_) {
+    if (lightweight_detector_enabled_) {
       append_annotation(kLightweightDetectorCrashKey,
-                        lightweight_detector_->GetCrashKey());
+                        PoisonMetadataRecorder::Get()->GetCrashKey());
     }
 
     auto module = std::make_unique<crashpad::test::TestModuleSnapshot>();
@@ -157,9 +159,8 @@ class BaseCrashAnalyzerTest : public testing::Test {
   crashpad::test::FakePtraceConnection connection_;
 #endif
 
-  bool is_partition_alloc_ = false;
-
-  std::unique_ptr<LightweightDetector> lightweight_detector_;
+  bool is_partition_alloc_;
+  bool lightweight_detector_enabled_;
 };
 
 class CrashAnalyzerTest : public BaseCrashAnalyzerTest {
@@ -198,33 +199,32 @@ TEST_F(CrashAnalyzerTest, StackTraceCollection) {
   ASSERT_TRUE(proto.has_deallocation());
 
   base::debug::StackTrace st;
-  size_t trace_len;
-  const void* const* trace = st.Addresses(&trace_len);
-  ASSERT_NE(trace, nullptr);
-  ASSERT_GT(trace_len, 0U);
+  base::span<const void* const> trace = st.addresses();
+  ASSERT_FALSE(trace.empty());
 
   // Adjust the stack trace to point to the entry above the current frame.
-  while (trace_len > 0) {
+  while (!trace.empty()) {
     if (trace[0] == __builtin_return_address(0))
       break;
 
-    trace++;
-    trace_len--;
+    trace = trace.subspan(1);
   }
 
-  ASSERT_GT(proto.allocation().stack_trace_size(), (int)trace_len);
-  ASSERT_GT(proto.deallocation().stack_trace_size(), (int)trace_len);
+  ASSERT_GT(proto.allocation().stack_trace_size(),
+            static_cast<int>(trace.size()));
+  ASSERT_GT(proto.deallocation().stack_trace_size(),
+            static_cast<int>(trace.size()));
 
   // Ensure that the allocation and deallocation stack traces match the stack
   // frames that we collected above the current frame.
-  for (size_t i = 1; i <= trace_len; i++) {
+  for (size_t i = 1; i <= trace.size(); i++) {
     SCOPED_TRACE(i);
     ASSERT_EQ(proto.allocation().stack_trace(
                   proto.allocation().stack_trace_size() - i),
-              reinterpret_cast<uintptr_t>(trace[trace_len - i]));
+              reinterpret_cast<uintptr_t>(trace[trace.size() - i]));
     ASSERT_EQ(proto.deallocation().stack_trace(
                   proto.deallocation().stack_trace_size() - i),
-              reinterpret_cast<uintptr_t>(trace[trace_len - i]));
+              reinterpret_cast<uintptr_t>(trace[trace.size() - i]));
   }
 }
 #endif
@@ -266,8 +266,8 @@ class LightweightDetectorAnalyzerTest : public BaseCrashAnalyzerTest {
 
 TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
   uint64_t alloc;
-  ASSERT_TRUE(lightweight_detector_);
-  lightweight_detector_->RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  ASSERT_TRUE(PoisonMetadataRecorder::Get());
+  PoisonMetadataRecorder::Get()->RecordDeallocation(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   base::HistogramTester histogram_tester;
@@ -291,12 +291,11 @@ TEST_F(LightweightDetectorAnalyzerTest, UseAfterFree) {
 
 TEST_F(LightweightDetectorAnalyzerTest, InternalError) {
   uint64_t alloc;
-  ASSERT_TRUE(lightweight_detector_);
-  lightweight_detector_->RecordLightweightDeallocation(&alloc, sizeof(alloc));
+  PoisonMetadataRecorder::Get()->RecordDeallocation(&alloc, sizeof(alloc));
   InitializeSnapshot(alloc);
 
   // Corrupt the metadata ID.
-  ++lightweight_detector_->metadata_[0].id;
+  ++PoisonMetadataRecorder::Get()->metadata_[0].id;
 
   base::HistogramTester histogram_tester;
   gwp_asan::Crash proto;

@@ -66,10 +66,9 @@ class AssistantOptin extends AssistantOptinBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {Object} data Screen init payload
    * @suppress {missingProperties}
    */
-  onBeforeShow(data) {
+  onBeforeShow() {
     this.$.card.onShow();
   }
 

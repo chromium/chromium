@@ -35,7 +35,8 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
                              AutofillSuggestionTriggerSource trigger_source,
                              bool is_all_server_suggestions) override;
   bool HasActiveScreenReader() const override;
-  void OnAutofillAvailabilityEvent(const mojom::AutofillState state) override;
+  void OnAutofillAvailabilityEvent(
+      mojom::AutofillSuggestionAvailability suggestion_availability) override;
 
   // Functions unique to TestAutofillExternalDelegate.
 

@@ -64,7 +64,7 @@ USBAlternateInterface* USBInterface::alternate() const {
   // and how UsbInterfaceInfo is constructed by BuildUsbInterfaceInfoPtr() and
   // AggregateInterfacesForConfig() in services/device/usb/usb_descriptors.cc.
   DCHECK_LT(index, alternates_.size());
-  return alternates_[index];
+  return alternates_[index].Get();
 }
 
 HeapVector<Member<USBAlternateInterface>> USBInterface::alternates() const {

@@ -21,7 +21,6 @@ class Window;
 namespace ash {
 
 class GameDashboardButton;
-class GameDashboardButtonInputMonitor;
 class GameDashboardMainMenuView;
 class GameDashboardToolbarView;
 class GameDashboardWidget;
@@ -67,8 +66,8 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Called by `GameDashboardController` when the game window bounds change.
   void OnWindowBoundsChanged();
 
-  // Sets whether the Game Dashboard button is enabled/clickable.
-  void SetGameDashboardButtonEnabled(bool enable);
+  // Updates for Game Controls flags.
+  void UpdateForGameControlsFlags();
 
   // Toggles the creation/deletion of the main menu within the game window.
   void ToggleMainMenu();
@@ -148,10 +147,6 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
   // Owned by the views hierarchy.
   raw_ptr<GameDashboardButton, ExperimentalAsh> game_dashboard_button_ =
       nullptr;
-
-  // Monitors mouse and touch input for `game_dashboard_button_widget_`.
-  std::unique_ptr<GameDashboardButtonInputMonitor>
-      game_dashboard_button_input_monitor_;
 
   // The `GameDashboardMainMenuView` when the user presses the Game Dashboard
   // button.

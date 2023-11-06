@@ -27,6 +27,10 @@ const char kEnterpriseMDMManagementMac[] =
 const char kScreenTimeEnabled[] = "policy.screen_time";
 #endif
 
+// Enterprise policy controlled value representing whether the user may be shown
+// HaTS surveys.
+const char kFeedbackSurveysEnabled[] = "policy.feedback_surveys_enabled";
+
 // 64-bit serialization of the time last policy usage statistics were collected
 // by UMA_HISTOGRAM_ENUMERATION.
 const char kLastPolicyStatisticsUpdate[] = "policy.last_statistics_update";

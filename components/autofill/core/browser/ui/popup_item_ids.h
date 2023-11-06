@@ -34,6 +34,9 @@ enum class PopupItemId : int {
   // When triggered from a phone number field this suggestion will fill every
   // phone number field.
   kFillFullPhoneNumber,
+  // Same as above, when triggered from an email address field this suggestion
+  // will fill every email field.
+  kFillFullEmail,
   kTitle,
   kEditAddressProfile,
   kDeleteAddressProfile,
@@ -83,7 +86,14 @@ enum class PopupItemId : int {
   kClearForm,
   kMixedFormMessage,
 
-  kMaxValue = kMixedFormMessage
+  // Top level suggestion rendered when test addresses are available. Shown only
+  // when DevTools is open.
+  kDevtoolsTestAddresses,
+  // Test address option that specifies a full address for a country
+  // so that users can test their form with it.
+  kDevtoolsTestAddressEntry,
+
+  kMaxValue = kDevtoolsTestAddressEntry
 };
 
 // Set of `PopupItemId`s that trigger filling a value into an input element

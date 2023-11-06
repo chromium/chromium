@@ -6,6 +6,7 @@
 #define ASH_COMPONENTS_ARC_TEST_FAKE_COMPATIBILITY_MODE_INSTANCE_H_
 
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "base/containers/flat_set.h"
 
 namespace arc {
 
@@ -20,8 +21,10 @@ class FakeCompatibilityModeInstance : public mojom::CompatibilityModeInstance {
   // mojom::CompatibilityModeInstance overrides:
   void SetResizeLockState(const std::string& package_name,
                           mojom::ArcResizeLockState state) override;
-  void IsGioApplicable(const std::string& package_name,
-                       IsGioApplicableCallback callback) override;
+  // TODO(b/308526374): remove the mojom call.
+  void DEPRECATED_IsGioApplicable(
+      const std::string& package_name,
+      DEPRECATED_IsGioApplicableCallback callback) override;
   void IsOptimizedForCrosApp(const std::string& package_name,
                              IsOptimizedForCrosAppCallback callback) override;
 
@@ -30,14 +33,14 @@ class FakeCompatibilityModeInstance : public mojom::CompatibilityModeInstance {
   }
 
   void set_o4c_pkg(std::string_view pkg_name) {
-    o4c_pkgs_.emplace_back(std::string(pkg_name));
+    o4c_pkgs_.emplace(std::string(pkg_name));
   }
 
  private:
   bool is_gio_applicable_ = false;
 
   // Stores information for serving IsOptimizedForCrosApp calls.
-  std::vector<std::string> o4c_pkgs_;
+  base::flat_set<std::string> o4c_pkgs_;
 };
 
 }  // namespace arc

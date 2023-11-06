@@ -38,6 +38,10 @@ class CONTENT_EXPORT MojoBinderPolicyMapImpl : public MojoBinderPolicyMap {
   // prerendering are same origin. Currently this is the only use of this class.
   static const MojoBinderPolicyMapImpl* GetInstanceForSameOriginPrerendering();
 
+  // Returns the instance used by MojoBinderPolicyApplier for preview mode. This
+  // is used when a page is shown in preview mode.
+  static const MojoBinderPolicyMapImpl* GetInstanceForPreview();
+
   // Gets the corresponding policy of a given Mojo interface name.
   // If the interface name is not in `non_associated_policy_map_`, the given
   // `default_policy` will be returned.

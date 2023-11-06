@@ -492,22 +492,6 @@ gfx::Range InputMethodAsh::GetAutocorrectRange() {
   return GetTextInputClient()->GetAutocorrectRange();
 }
 
-gfx::Rect InputMethodAsh::GetAutocorrectCharacterBounds() {
-  if (IsTextInputTypeNone())
-    return gfx::Rect();
-  return GetTextInputClient()->GetAutocorrectCharacterBounds();
-}
-
-gfx::Rect InputMethodAsh::GetTextFieldBounds() {
-  if (IsTextInputTypeNone())
-    return gfx::Rect();
-  absl::optional<gfx::Rect> control_bounds;
-  absl::optional<gfx::Rect> selection_bounds;
-  GetTextInputClient()->GetActiveTextInputControlLayoutBounds(
-      &control_bounds, &selection_bounds);
-  return control_bounds ? *control_bounds : gfx::Rect();
-}
-
 void InputMethodAsh::SetAutocorrectRange(
     const gfx::Range& range,
     SetAutocorrectRangeDoneCallback callback) {
@@ -570,10 +554,8 @@ void InputMethodAsh::ConfirmComposition(bool reset_engine) {
     pending_composition_ = absl::nullopt;
     composition_changed_ = false;
   }
-  if (client &&
-      (client->HasCompositionText() ||
-       (base::FeatureList::IsEnabled(::features::kAlwaysConfirmComposition) &&
-        client->SupportsAlwaysConfirmComposition()))) {
+  if (client && (client->HasCompositionText() ||
+                 client->SupportsAlwaysConfirmComposition())) {
     const size_t characters_committed =
         client->ConfirmCompositionText(/*keep_selection*/ true);
     typing_session_manager_.CommitCharacters(characters_committed);
@@ -1127,20 +1109,6 @@ bool InputMethodAsh::IsPasswordOrNoneInputFieldFocused() {
 bool InputMethodAsh::HasCompositionText() {
   TextInputClient* client = GetTextInputClient();
   return client && client->HasCompositionText();
-}
-
-std::u16string InputMethodAsh::GetCompositionText() {
-  TextInputClient* client = GetTextInputClient();
-  if (!client) {
-    return u"";
-  }
-
-  gfx::Range composition_range;
-  client->GetCompositionTextRange(&composition_range);
-  std::u16string composition_text;
-  client->GetTextFromRange(composition_range, &composition_text);
-
-  return composition_text;
 }
 
 ukm::SourceId InputMethodAsh::GetClientSourceForMetrics() {

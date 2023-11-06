@@ -64,10 +64,12 @@
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom-shared.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-shared.h"
+#include "third_party/blink/public/platform/child_url_loader_factory_bundle.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -115,6 +117,7 @@ enum class TreeScopeType;
 
 class AssociatedInterfaceProvider;
 class BrowserInterfaceBrokerProxy;
+class WebBackgroundResourceFetchAssets;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebDedicatedWorkerHostFactoryClient;
@@ -556,9 +559,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // A performance timing event (e.g. first paint) occurred
   virtual void DidChangePerformanceTiming() {}
 
-  // An Input Event observed.
-  virtual void DidObserveInputDelay(base::TimeDelta input_delay) {}
-
   // A user interaction is observed. A user interaction can be built up from
   // multiple input events (e.g. keydown then keyup). Each of these events has
   // an input to next frame latency. This reports the timings of the max
@@ -695,8 +695,18 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
+  virtual blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() {
+    NOTREACHED();
+    return nullptr;
+  }
+
   virtual std::unique_ptr<WebURLLoaderThrottleProviderForFrame>
   CreateWebURLLoaderThrottleProviderForFrame() {
+    return nullptr;
+  }
+
+  virtual scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() {
     return nullptr;
   }
 

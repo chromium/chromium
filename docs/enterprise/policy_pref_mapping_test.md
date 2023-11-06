@@ -112,9 +112,9 @@ separate preferences, their default values, and that either `IdleActionAC` or
 ### policy_test_cases.json
 
 The test cases per policy are defined in
-[//components/policy/test/data/policy_test_cases.json](https://cs.chromium.org/chromium/src/components/policy/test/data/policy_test_cases.json)
+[//components/policy/test/data/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/components/policy/test/data/)
 (for iOS, see separate
-[//ios/chrome/test/data/policy/policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json)).
+[//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping)).
 
 These files are JSON files with the policy name as key and a `PolicyTestCase`
 (see below) as value). Each policy must have at least one meaningful test case
@@ -135,8 +135,7 @@ anywhere to add further documentation.
 
 The `os` field should be a list of strings representing the operating systems
 the test case should be run on. Each supported operating system (indicated by
-`supported_on` in
-[policy_templates.json](https://cs.chromium.org/chromium/src/components/policy/resources/policy_templates.json))
+`supported_on` in PolicyName.yaml)
 needs to have at least one test case. Valid values are:
 
 - `win`
@@ -146,7 +145,7 @@ needs to have at least one test case. Valid values are:
 - `chromeos_lacros`
 - `android`
 - `fuchsia`
-- `ios` (tested via separate [policy_test_cases.json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/policy_test_cases.json))
+- `ios` (tested via separate [//ios/chrome/test/data/policy/pref_mapping/[PolicyName].json](https://cs.chromium.org/chromium/src/ios/chrome/test/data/policy/pref_mapping))
 
 The boolean `official_only` field indicates whether this policy is only
 supported in official builds. Defaults to `false` if not specified.

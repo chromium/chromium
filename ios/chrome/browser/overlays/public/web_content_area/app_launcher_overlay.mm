@@ -38,25 +38,62 @@ std::unique_ptr<OverlayResponse> CreateAllowAppLaunchResponse(
 OVERLAY_USER_DATA_SETUP_IMPL(AppLaunchConfirmationRequest);
 
 AppLaunchConfirmationRequest::AppLaunchConfirmationRequest(
-    bool is_repeated_request)
-    : is_repeated_request_(is_repeated_request) {}
+    AppLaunchConfirmationRequestCause cause)
+    : cause_(cause) {}
 
 AppLaunchConfirmationRequest::~AppLaunchConfirmationRequest() = default;
 
 void AppLaunchConfirmationRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
-  NSString* alert_message =
-      is_repeated_request()
-          ? l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP)
-          : l10n_util::GetNSString(IDS_IOS_OPEN_IN_ANOTHER_APP);
-  NSString* reject_button_title = l10n_util::GetNSString(IDS_CANCEL);
-  NSString* allow_button_title =
-      is_repeated_request()
-          ? l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_ALLOW)
-          : l10n_util::GetNSString(IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL);
-  const std::vector<std::vector<ButtonConfig>> alert_button_configs{
-      {ButtonConfig(allow_button_title)},
-      {ButtonConfig(reject_button_title, UIAlertActionStyleCancel)}};
+  NSString* alert_message = nil;
+  NSString* allow_button_title = nil;
+  NSString* reject_button_title = nil;
+  switch (cause_) {
+    case AppLaunchConfirmationRequestCause::kOther:
+      alert_message = l10n_util::GetNSString(IDS_IOS_OPEN_IN_ANOTHER_APP);
+      allow_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
+      break;
+    case AppLaunchConfirmationRequestCause::kRepeatedRequest:
+      alert_message =
+          l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP);
+      allow_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
+      break;
+    case AppLaunchConfirmationRequestCause::kOpenFromIncognito:
+      alert_message =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FROM_INCOGNITO);
+      allow_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
+      break;
+    case AppLaunchConfirmationRequestCause::kNoUserInteraction:
+      alert_message = l10n_util::GetNSString(IDS_IOS_OPEN_IN_ANOTHER_APP);
+      allow_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_ALLOW);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_BLOCK);
+      break;
+    case AppLaunchConfirmationRequestCause::kAppLaunchFailed:
+      alert_message = l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FAILED);
+      reject_button_title =
+          l10n_util::GetNSString(IDS_IOS_OPEN_ANOTHER_APP_FAILED_CONFIRM);
+      break;
+  }
+
+  std::vector<std::vector<ButtonConfig>> alert_button_configs;
+  if (allow_button_title) {
+    alert_button_configs.push_back({ButtonConfig(allow_button_title)});
+  }
+  if (reject_button_title) {
+    alert_button_configs.push_back(
+        {ButtonConfig(reject_button_title, UIAlertActionStyleCancel)});
+  }
   AlertRequest::CreateForUserData(
       user_data, /*title=*/nil, alert_message, /*accessibility_identifier=*/nil,
       /*text_field_configs=*/nil, alert_button_configs,

@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_ITEM_FACTORY_H_
 #define CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_ITEM_FACTORY_H_
 
+#include <memory>
+#include <string>
+
 #include "ash/public/cpp/shelf_model.h"
 
 class Profile;
@@ -17,16 +20,18 @@ class ChromeShelfItemFactory : public ash::ShelfModel::ShelfItemFactory {
   virtual ~ChromeShelfItemFactory();
 
   // ShelfItemFactoryDelegate override:
-  bool CreateShelfItemForAppId(
-      const std::string& app_id,
-      ash::ShelfItem* item,
-      std::unique_ptr<ash::ShelfItemDelegate>* delegate) override;
+  std::unique_ptr<ash::ShelfItem> CreateShelfItemForApp(
+      const ash::ShelfID& shelf_id,
+      ash::ShelfItemStatus status,
+      ash::ShelfItemType shelf_item_type,
+      const std::u16string& title) override;
+  std::unique_ptr<ash::ShelfItemDelegate> CreateShelfItemDelegateForAppId(
+      const std::string& app_id) override;
 
- protected:
-  // Virtual for testing. Returns the primary profile. Note that Lacros is
-  // mutually exclusive with multi-signon, so the primary profile is the only
-  // profile.
-  virtual Profile* GetPrimaryProfile();
+  void set_profile(Profile* profile) { profile_ = profile; }
+
+ private:
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_CHROME_SHELF_ITEM_FACTORY_H_

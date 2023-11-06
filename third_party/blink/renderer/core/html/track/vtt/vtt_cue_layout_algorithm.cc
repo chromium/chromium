@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue_box.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 
 namespace blink {
 
@@ -85,7 +85,7 @@ void VttCueLayoutAlgorithm::Layout() {
 PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
     const LayoutBox& cue_box) {
   DCHECK(cue_box.IsLayoutNGObject());
-  NGInlineCursor cursor(To<LayoutBlockFlow>(cue_box));
+  InlineCursor cursor(To<LayoutBlockFlow>(cue_box));
   cursor.MoveToFirstLine();
   if (cursor.IsNull())
     return {};
@@ -95,7 +95,7 @@ PhysicalSize VttCueLayoutAlgorithm::FirstInlineBoxSize(
   cursor.MoveToNext();
   if (cursor.IsNull())
     return {};
-  const NGFragmentItem& first_item = *cursor.CurrentItem();
+  const FragmentItem& first_item = *cursor.CurrentItem();
   DCHECK(first_item.GetLayoutObject());
   DCHECK(IsA<VTTCueBackgroundBox>(first_item.GetLayoutObject()->GetNode()));
   return first_item.Size();

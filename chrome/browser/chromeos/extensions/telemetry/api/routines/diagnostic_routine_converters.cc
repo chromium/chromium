@@ -73,6 +73,18 @@ cx_diag::MemoryRoutineFinishedInfo UncheckedConvertPtr(
   return result;
 }
 
+cx_diag::VolumeButtonRoutineFinishedInfo UncheckedConvertPtr(
+    crosapi::TelemetryDiagnosticVolumeButtonRoutineDetailPtr input,
+    base::Uuid uuid,
+    bool has_passed) {
+  cx_diag::VolumeButtonRoutineFinishedInfo result;
+
+  result.uuid = uuid.AsLowercaseString();
+  result.has_passed = has_passed;
+
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_diag::ExceptionReason Convert(

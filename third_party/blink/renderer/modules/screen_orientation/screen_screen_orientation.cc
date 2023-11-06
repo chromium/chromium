@@ -32,7 +32,7 @@ ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
   if (!self.orientation_)
     self.orientation_ = ScreenOrientation::Create(window);
 
-  return self.orientation_;
+  return self.orientation_.Get();
 }
 
 const char ScreenScreenOrientation::kSupplementName[] =

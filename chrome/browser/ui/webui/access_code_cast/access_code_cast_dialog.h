@@ -76,20 +76,9 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
       AccessCodeCastDialogMode dialog_mode);
 
  private:
-  ui::ModalType GetDialogModalType() const override;
-  std::u16string GetDialogTitle() const override;
-  GURL GetDialogContentURL() const override;
-  void GetWebUIMessageHandlers(
-      std::vector<content::WebUIMessageHandler*>* handlers) const override;
-  void GetDialogSize(gfx::Size* size) const override;
-  std::string GetDialogArgs() const override;
   void OnDialogShown(content::WebUI* webui) override;
-  void OnDialogClosed(const std::string& json_retval) override;
   void OnCloseContents(content::WebContents* source,
                        bool* out_close_dialog) override;
-  bool ShouldShowDialogTitle() const override;
-  bool ShouldShowCloseButton() const override;
-  FrameKind GetWebDialogFrameKind() const override;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -102,11 +91,6 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   void ShowWebDialog(AccessCodeCastDialogMode dialog_mode);
 
   gfx::NativeView GetParentView();
-
-  // ObserveWidget must be called during dialog initialization so that we can
-  // observe the dialog for activation state changes and close the dialog when
-  // it loses focus.
-  void ObserveWidget(views::Widget*);
 
   raw_ptr<views::Widget> dialog_widget_ = nullptr;
   raw_ptr<content::WebUI> webui_ = nullptr;
@@ -124,6 +108,9 @@ class AccessCodeCastDialog : public ui::WebDialogDelegate,
   const raw_ptr<Profile> context_;
   base::Time dialog_creation_timestamp_;
   bool closing_dialog_ = false;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   static bool block_widget_activation_changed_for_test_;
 

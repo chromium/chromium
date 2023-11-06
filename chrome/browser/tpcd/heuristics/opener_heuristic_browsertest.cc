@@ -5,17 +5,24 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +34,11 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/base/window_open_disposition.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using content::NavigationHandle;
 using content::RenderFrameHost;
@@ -94,6 +106,27 @@ class NavigationFinishObserver : public WebContentsObserver {
 
 class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
  public:
+  explicit OpenerHeuristicBrowserTest(
+      bool current_interaction_grant_enabled = false,
+      bool past_interaction_grant_enabled = false,
+      bool backfill_grant_enabled = false) {
+    std::string current_interaction_grant_enabled_ttl =
+        current_interaction_grant_enabled ? "20m" : "0s";
+    std::string past_interaction_grant_enabled_ttl =
+        past_interaction_grant_enabled ? "20m" : "0s";
+    std::string backfill_grant_enabled_lookback =
+        backfill_grant_enabled ? "10m" : "0m";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        content_settings::features::kTpcdHeuristicsGrants,
+        {{"TpcdReadHeuristicsGrants", "true"},
+         {"TpcdWritePopupCurrentInteractionHeuristicsGrants",
+          current_interaction_grant_enabled_ttl},
+         {"TpcdWritePopupPastInteractionHeuristicsGrants",
+          past_interaction_grant_enabled_ttl},
+         {"TpcdBackfillPopupHeuristicsGrants",
+          backfill_grant_enabled_lookback}});
+  }
+
   void SetUp() override {
     OpenerHeuristicTabHelper::SetClockForTesting(&clock_);
     PlatformBrowserTest::SetUp();
@@ -110,6 +143,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
     host_resolver()->AddRule("b.test", "127.0.0.1");
     host_resolver()->AddRule("sub.b.test", "127.0.0.1");
     host_resolver()->AddRule("c.test", "127.0.0.1");
+    host_resolver()->AddRule("d.test", "127.0.0.1");
     host_resolver()->AddRule("google.com", "127.0.0.1");
     DIPSService::Get(GetActiveWebContents()->GetBrowserContext())
         ->SetStorageClockForTesting(&clock_);
@@ -186,6 +220,7 @@ class OpenerHeuristicBrowserTest : public PlatformBrowserTest {
   }
 
   base::SimpleTestClock clock_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -244,12 +279,12 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
 
 // TODO(crbug.com/1469394): Flaky on android.
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE_NewTabsDoNotHavePopupState DISABLED_NewTabsDoNotHavePopupState
+#define MAYBE_NewTabURLsHavePopupState DISABLED_NewTabURLsHavePopupState
 #else
-#define MAYBE_NewTabsDoNotHavePopupState NewTabsDoNotHavePopupState
+#define MAYBE_NewTabURLsHavePopupState NewTabURLsHavePopupState
 #endif
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
-                       MAYBE_NewTabsDoNotHavePopupState) {
+                       MAYBE_NewTabURLsHavePopupState) {
   WebContents* web_contents = GetActiveWebContents();
   GURL popup_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
@@ -262,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   auto* popup_tab_helper =
       OpenerHeuristicTabHelper::FromWebContents(observer.popup());
   ASSERT_TRUE(popup_tab_helper);
-  ASSERT_FALSE(popup_tab_helper->popup_observer_for_testing());
+  ASSERT_TRUE(popup_tab_helper->popup_observer_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
@@ -300,6 +335,53 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   EXPECT_THAT(entries[0].metrics,
               ElementsAre(Pair("HoursSinceLastInteraction", 3)));
 }
+
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicPastInteractionGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicPastInteractionGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/false,
+            /*past_interaction_grant_enabled=*/GetParam(),
+            /*backfill_grant_enabled=*/false) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicPastInteractionGrantBrowserTest,
+                       PopupPastInteractionIsReported_WithStorageAccessGrant) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_TRUE(OpenPopup(popup_url).has_value());
+
+  // Expect that cookie access was granted for the Popup With Past Interaction
+  // heuristic, if the feature is enabled.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicPastInteractionGrantBrowserTest,
+                         ::testing::Values(false, true));
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/1457925): Test is flaky on Android.
 #if BUILDFLAG(IS_ANDROID)
@@ -393,6 +475,11 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
   GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  // Allow access for third-party cookies from popup_url.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  cookie_settings->SetCookieSetting(popup_url, CONTENT_SETTING_ALLOW);
 
   // Initialize interaction and popup.
   RecordInteraction(popup_url, clock_.Now() - base::Hours(3));
@@ -493,6 +580,54 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, PopupInteraction) {
   EXPECT_EQ(entries[0].metrics["UrlIndex"], 3);
 }
 
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicCurrentInteractionGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicCurrentInteractionGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/GetParam(),
+            /*past_interaction_grant_enabled=*/false,
+            /*backfill_grant_enabled=*/false) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+    browser()->profile()->GetPrefs()->SetBoolean(
+        prefs::kTrackingProtection3pcdEnabled, true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicCurrentInteractionGrantBrowserTest,
+                       PopupInteractionWithStorageAccessGrant) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url = embedded_test_server()->GetURL("b.test", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  auto maybe_popup = OpenPopup(popup_url);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  // Expect that cookie access was granted for the Popup With Current
+  // Interaction heuristic.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                popup_url, opener_url, net::CookieSettingOverrides(), nullptr),
+            GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicCurrentInteractionGrantBrowserTest,
+                         ::testing::Values(false, true));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest,
                        PopupInteractionIsOnlyReportedOnce) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -569,6 +704,13 @@ IN_PROC_BROWSER_TEST_F(
   GURL popup_url_2 =
       embedded_test_server()->GetURL("b.test", "/server-redirect?title1.html");
   GURL popup_url_3 = embedded_test_server()->GetURL("b.test", "/title1.html");
+
+  // Allow access for third-party cookies from the popup URLs.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  cookie_settings->SetCookieSetting(popup_url_1, CONTENT_SETTING_ALLOW);
+  cookie_settings->SetCookieSetting(popup_url_2, CONTENT_SETTING_ALLOW);
+  cookie_settings->SetCookieSetting(popup_url_3, CONTENT_SETTING_ALLOW);
 
   // Initialize popup and interaction.
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
@@ -872,3 +1014,105 @@ IN_PROC_BROWSER_TEST_F(OpenerHeuristicBrowserTest, TopLevel_PopupId) {
   EXPECT_NE(popup_id2, 0);
   EXPECT_NE(popup_id, popup_id2);
 }
+
+// chrome/browser/ui/browser.h (for changing profile prefs) is not available on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
+class OpenerHeuristicBackfillGrantBrowserTest
+    : public OpenerHeuristicBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OpenerHeuristicBackfillGrantBrowserTest()
+      : OpenerHeuristicBrowserTest(
+            /*current_interaction_grant_enabled=*/false,
+            /*past_interaction_grant_enabled=*/false,
+            /*backfill_grant_enabled=*/GetParam()) {}
+
+  void SetUpOnMainThread() override {
+    OpenerHeuristicBrowserTest::SetUpOnMainThread();
+
+    clock_.SetNow(base::Time::Now());
+
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
+  }
+};
+
+// Test the backfill grants created by DIPSService when tracking protection is
+// onboarded. This logic is located in DIPSService in order to run as a
+// singleton, rather than once per tab.
+IN_PROC_BROWSER_TEST_P(OpenerHeuristicBackfillGrantBrowserTest,
+                       TrackingProtectionOnboardingCreatesBackfillGrants) {
+  GURL opener_url = embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL popup_url_1 = embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL popup_url_2 = embedded_test_server()->GetURL("c.test", "/title1.html");
+  GURL popup_url_3 = embedded_test_server()->GetURL("d.test", "/title1.html");
+
+  // popup_url_1 was opened further back than the backfill lookback period of 10
+  // minutes.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  auto maybe_popup = OpenPopup(popup_url_1);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  clock_.Advance(base::Minutes(10));
+
+  // popup_url_2 was opened with a past interaction, not a current interaction.
+  RecordInteraction(popup_url_2, clock_.Now() - base::Hours(3));
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  ASSERT_TRUE(OpenPopup(popup_url_2).has_value());
+
+  // Only popup_url_3 is eligible for a backfill grant.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), opener_url));
+  maybe_popup = OpenPopup(popup_url_3);
+  clock_.Advance(base::Minutes(1));
+  SimulateMouseClick(*maybe_popup);
+
+  // The pref is updated when the user in onboarded to 3PCD tracking protection,
+  // and a PrefChangeRegistrar updates the TrackingProtectionSettingsObservers.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kTrackingProtection3pcdEnabled, true);
+  GetDipsService()->storage()->FlushPostedTasksForTesting();
+
+  // Expect that a cookie access grant is not backfilled for popup_url_1 or
+  // popup_url_2.
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext()));
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_1, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_2, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      CONTENT_SETTING_BLOCK);
+
+  // Expect that a cookie access grant is backfilled for popup_url_3 when the
+  // experiment is enabled.
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+
+  // Expect that the cookie access grant applies to other URLs with the same
+  // eTLD+1.
+  GURL popup_url_3a =
+      embedded_test_server()->GetURL("www.d.test", "/favicon.png");
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3a, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  GURL popup_url_3b =
+      embedded_test_server()->GetURL("corp.d.test", "/title.html");
+  EXPECT_EQ(
+      cookie_settings->GetCookieSetting(popup_url_3b, opener_url,
+                                        net::CookieSettingOverrides(), nullptr),
+      GetParam() ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OpenerHeuristicBackfillGrantBrowserTest,
+                         ::testing::Values(false, true));
+#endif  // !BUILDFLAG(IS_ANDROID)

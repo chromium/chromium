@@ -28,6 +28,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -176,7 +177,7 @@ class SpdySessionTest : public PlatformTest, public WithTaskEnvironment {
         test_url_(kDefaultUrl),
         test_server_(test_url_),
         key_(HostPortPair::FromURL(test_url_),
-             ProxyServer::Direct(),
+             ProxyChain::Direct(),
              PRIVACY_MODE_DISABLED,
              SpdySessionKey::IsProxySession::kFalse,
              SocketTag(),
@@ -3246,7 +3247,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnection) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
 
   // Create an idle SPDY session.
   CreateSpdySession();
@@ -3300,11 +3301,11 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
 
   // Create an idle SPDY session.
-  SpdySessionKey key1(HostPortPair("www.example.org", 80),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+  SpdySessionKey key1(HostPortPair("www.example.org", 80), ProxyChain::Direct(),
+                      PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   base::WeakPtr<SpdySession> session1 =
@@ -3313,7 +3314,7 @@ TEST_F(SpdySessionTest, CloseOneIdleConnectionWithAlias) {
 
   // Set up an alias for the idle SPDY session, increasing its ref count to 2.
   SpdySessionKey key2(HostPortPair("mail.example.org", 80),
-                      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+                      ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
                       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> request;
@@ -3400,7 +3401,7 @@ TEST_F(SpdySessionTest, CloseSessionOnIdleWhenPoolStalled) {
   CreateNetworkSession();
 
   ClientSocketPool* pool = http_session_->GetSocketPool(
-      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct());
+      HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyChain::Direct());
 
   // Create a SPDY session.
   CreateSpdySession();
@@ -3463,11 +3464,11 @@ TEST_F(SpdySessionTest, SpdySessionKeyPrivacyMode) {
 
   HostPortPair host_port_pair("www.example.org", 443);
   SpdySessionKey key_privacy_enabled(
-      host_port_pair, ProxyServer::Direct(), PRIVACY_MODE_ENABLED,
+      host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_ENABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
   SpdySessionKey key_privacy_disabled(
-      host_port_pair, ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+      host_port_pair, ProxyChain::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kFalse, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
 
@@ -5787,7 +5788,7 @@ TEST_F(AltSvcFrameTest,
   const SchemefulSite kSite2(GURL("https://bar.test/"));
   const auto kNetworkAnonymizationKey2 =
       NetworkAnonymizationKey::CreateSameSite(kSite2);
-  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyServer::Direct(),
+  key_ = SpdySessionKey(HostPortPair::FromURL(test_url_), ProxyChain::Direct(),
                         PRIVACY_MODE_DISABLED,
                         SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                         kNetworkAnonymizationKey1, SecureDnsPolicy::kAllow);

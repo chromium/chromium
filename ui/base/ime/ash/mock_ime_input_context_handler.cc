@@ -62,14 +62,6 @@ gfx::Range MockIMEInputContextHandler::GetAutocorrectRange() {
   return autocorrect_range_;
 }
 
-gfx::Rect MockIMEInputContextHandler::GetAutocorrectCharacterBounds() {
-  return gfx::Rect();
-}
-
-gfx::Rect MockIMEInputContextHandler::GetTextFieldBounds() {
-  return gfx::Rect();
-}
-
 void MockIMEInputContextHandler::SetAutocorrectRange(
     const gfx::Range& range,
     SetAutocorrectRangeDoneCallback callback) {
@@ -170,10 +162,6 @@ void MockIMEInputContextHandler::ConfirmComposition(bool reset_engine) {
 
 bool MockIMEInputContextHandler::HasCompositionText() {
   return !last_update_composition_arg_.composition_text.text.empty();
-}
-
-std::u16string MockIMEInputContextHandler::GetCompositionText() {
-  return last_update_composition_arg_.composition_text.text;
 }
 
 ukm::SourceId MockIMEInputContextHandler::GetClientSourceForMetrics() {

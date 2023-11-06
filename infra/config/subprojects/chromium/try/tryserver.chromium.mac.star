@@ -79,19 +79,6 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
-# This trybot mirrors the trybot mac-rel
-try_.builder(
-    name = "mac-inverse-fieldtrials-fyi-rel",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac13 Tests",
-        "ci/GPU Mac Builder",
-        "ci/Mac Release (Intel)",
-        "ci/Mac Retina Release (AMD)",
-    ],
-    os = os.MAC_DEFAULT,
-)
-
 try_.builder(
     name = "mac-intel-on-arm64-rel",
     mirrors = [
@@ -422,6 +409,7 @@ ios_builder(
     mirrors = [
         "ci/ios-blink-dbg-fyi",
     ],
+    builderless = True,
     cpu = cpu.ARM64,
     execution_timeout = 4 * time.hour,
 )
@@ -453,14 +441,6 @@ ios_builder(
     mirrors = ["ci/ios-m1-simulator"],
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
-)
-
-ios_builder(
-    name = "ios-m1-simulator-cronet",
-    mirrors = ["ci/ios-m1-simulator-cronet"],
-    os = os.MAC_DEFAULT,
-    cpu = cpu.ARM64,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.orchestrator_builder(
@@ -535,25 +515,6 @@ try_.compilator_builder(
 )
 
 ios_builder(
-    name = "ios-simulator-cronet",
-    branch_selector = branches.selector.IOS_BRANCHES,
-    mirrors = [
-        "ci/ios-simulator-cronet",
-    ],
-    cpu = cpu.ARM64,
-    main_list_view = "try",
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "components/cronet/.+",
-            "components/grpc_support/.+",
-            "ios/.+",
-            cq.location_filter(exclude = True, path_regexp = "components/cronet/android/.+"),
-        ],
-    ),
-)
-
-ios_builder(
     name = "ios-simulator-full-configs",
     branch_selector = branches.selector.IOS_BRANCHES,
     mirrors = [
@@ -570,12 +531,6 @@ ios_builder(
         ],
     ),
     use_clang_coverage = True,
-)
-
-ios_builder(
-    name = "ios-simulator-inverse-fieldtrials-fyi",
-    mirrors = builder_config.copy_from("try/ios-simulator"),
-    cpu = cpu.ARM64,
 )
 
 ios_builder(

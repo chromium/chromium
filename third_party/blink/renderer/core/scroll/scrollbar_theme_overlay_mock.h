@@ -40,12 +40,9 @@ namespace blink {
 class CORE_EXPORT ScrollbarThemeOverlayMock
     : public ScrollbarThemeOverlayMobile {
  public:
-  // These parameters should be the same as those used by
-  // cc::SolidColorScrollbarLayerImpl to make sure composited and
-  // non-composited scrollbars have the same appearance for tests using mock
-  // overlay scrollbars.
   ScrollbarThemeOverlayMock()
-      : ScrollbarThemeOverlayMobile(3, 4, 3, 4, Color(128, 128, 128, 128)) {}
+      : ScrollbarThemeOverlayMobile(/*thumb_thickness=*/3,
+                                    /*scrollbar_margin=*/4) {}
 
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override {
     return delay_;

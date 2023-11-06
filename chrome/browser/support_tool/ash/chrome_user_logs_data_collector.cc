@@ -183,6 +183,14 @@ void ChromeUserLogsDataCollector::CollectDataAndDetectPII(
     scoped_refptr<redaction::RedactionToolContainer> redaction_tool_container) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    SupportToolError error = {SupportToolErrorCode::kDataCollectorError,
+                              "A user must have logged in for "
+                              "ChromeUserLogsDataCollector."};
+    std::move(on_data_collected_callback).Run(error);
+    return;
+  }
+
   on_data_collector_done_callback_ = std::move(on_data_collected_callback);
   task_runner_for_redaction_tool_ = task_runner_for_redaction_tool;
   redaction_tool_container_ = redaction_tool_container;

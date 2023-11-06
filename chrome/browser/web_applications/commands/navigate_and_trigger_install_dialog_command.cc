@@ -77,7 +77,7 @@ base::Value NavigateAndTriggerInstallDialogCommand::ToDebugValue() const {
 }
 
 bool NavigateAndTriggerInstallDialogCommand::IsWebContentsDestroyed() {
-  return web_contents_ == nullptr || web_contents_->IsBeingDestroyed();
+  return !web_contents_ || web_contents_->IsBeingDestroyed();
 }
 
 void NavigateAndTriggerInstallDialogCommand::StartWithLock(
@@ -94,9 +94,9 @@ void NavigateAndTriggerInstallDialogCommand::StartWithLock(
   // specify an initiator origin.
   load_url_params.initiator_origin = url::Origin::Create(origin_url_);
 
-  web_contents_ = ui_manager_->CreateNewTab();
+  web_contents_ = ui_manager_->CreateNewTab()->GetWeakPtr();
   url_loader_->LoadUrl(
-      std::move(load_url_params), web_contents_,
+      std::move(load_url_params), web_contents_.get(),
       WebAppUrlLoader::UrlComparison::kIgnoreQueryParamsAndRef,
       base::BindOnce(&NavigateAndTriggerInstallDialogCommand::OnUrlLoaded,
                      weak_factory_.GetWeakPtr()));
@@ -118,7 +118,7 @@ void NavigateAndTriggerInstallDialogCommand::OnUrlLoaded(
     return;
   }
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      web_contents_, /*bypass_service_worker_check=*/true,
+      web_contents_.get(),
       base::BindOnce(
           &NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked,
           weak_factory_.GetWeakPtr()));
@@ -134,6 +134,11 @@ void NavigateAndTriggerInstallDialogCommand::OnInstallabilityChecked(
     data_retriever_error.Set("webapps::InstallableStatusCode",
                              GetErrorMessage(error_code));
     error_log_.Append(std::move(data_retriever_error));
+    Abort(NavigateAndTriggerInstallDialogCommandResult::kFailure);
+    return;
+  }
+  if (IsWebContentsDestroyed()) {
+    error_log_.Append(base::Value("Web contents destroyed"));
     Abort(NavigateAndTriggerInstallDialogCommandResult::kFailure);
     return;
   }
@@ -168,7 +173,7 @@ void NavigateAndTriggerInstallDialogCommand::OnAppLockGranted(
             NavigateAndTriggerInstallDialogCommandResult::kAlreadyInstalled));
     return;
   }
-  ui_manager_->TriggerInstallDialog(web_contents_);
+  ui_manager_->TriggerInstallDialog(web_contents_.get());
   SignalCompletionAndSelfDestruct(
       CommandResult::kSuccess,
       base::BindOnce(

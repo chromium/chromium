@@ -275,7 +275,7 @@ class CORE_EXPORT SVGElement : public Element {
   SVGElementSet* SetOfIncomingReferences() const;
 
   SVGElementRareData* EnsureSVGRareData();
-  inline bool HasSVGRareData() const { return svg_rare_data_; }
+  inline bool HasSVGRareData() const { return svg_rare_data_ != nullptr; }
   inline SVGElementRareData* SvgRareData() const {
     DCHECK(svg_rare_data_);
     return svg_rare_data_.Get();
@@ -327,7 +327,8 @@ void SVGElement::NotifyIncomingReferences(
   // adjustments on changes, so we need to break possible cycles here.
   SVGElementSet& invalidating_dependencies = GetDependencyTraversalVisitedSet();
 
-  for (SVGElement* element : *dependencies) {
+  for (auto& member : *dependencies) {
+    auto* element = member.Get();
     if (!element->GetLayoutObject())
       continue;
     if (UNLIKELY(!invalidating_dependencies.insert(element).is_new_entry)) {

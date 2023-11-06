@@ -38,6 +38,11 @@ bool SimpleMenuModel::Delegate::IsCommandIdAlerted(int command_id) const {
   return false;
 }
 
+bool SimpleMenuModel::Delegate::IsElementIdAlerted(
+    ui::ElementIdentifier element_id) const {
+  return false;
+}
+
 bool SimpleMenuModel::Delegate::IsItemForCommandIdDynamic(
     int command_id) const {
   return false;
@@ -493,6 +498,14 @@ bool SimpleMenuModel::IsAlertedAt(size_t index) const {
       if (submenu->IsAlertedAt(i))
         return true;
     }
+  }
+
+  // A submenu may assign element identifiers to menu items. This
+  // information needs to be shared with the delegate which may want to
+  // highlight specific elements keyed by identifier.
+  const ui::ElementIdentifier element_id = GetElementIdentifierAt(index);
+  if (element_id && delegate_->IsElementIdAlerted(element_id)) {
+    return true;
   }
 
   return delegate_->IsCommandIdAlerted(command_id);

@@ -37,6 +37,14 @@ BASE_EXPORT void SetLinuxDistro(const std::string& distro);
 // true and appends the list of threads to |tids|. Otherwise, returns false.
 BASE_EXPORT bool GetThreadsForProcess(pid_t pid, std::vector<pid_t>* tids);
 
+// Get a list of all threads for the current process. On success, returns true
+// and appends the list of threads to |tids|. Otherwise, returns false.
+// Unlike the function above, this function reads /proc/self/tasks, not
+// /proc/<pid>/tasks. On Android, the former should always be accessible to
+// GPU and Browser processes, while the latter may or may not be accessible
+// depending on the system and the app configuration.
+BASE_EXPORT bool GetThreadsForCurrentProcess(std::vector<pid_t>* tids);
+
 // For a given process |pid|, look through all its threads and find the first
 // thread with /proc/[pid]/task/[thread_id]/syscall whose first N bytes matches
 // |expected_data|, where N is the length of |expected_data|.

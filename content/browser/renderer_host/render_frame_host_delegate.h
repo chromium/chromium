@@ -335,7 +335,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options);
 
-#if defined(USE_AURA)
   // Request to maximize window.
   virtual void Maximize() {}
 
@@ -344,7 +343,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Request to restore window.
   virtual void Restore() {}
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Updates information to determine whether a user gesture should carryover to
@@ -502,6 +500,17 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Notifies observers if the frame has changed audible state.
   virtual void OnFrameAudioStateChanged(RenderFrameHostImpl* host,
                                         bool is_audible) {}
+
+  // Notifies observers that the frame's visibility has changed.
+  virtual void OnFrameVisibilityChanged(
+      RenderFrameHostImpl* host,
+      blink::mojom::FrameVisibility visibility) {}
+
+  // Notifies observers if the frame has started/stopped capturing a video
+  // stream.
+  virtual void OnFrameIsCapturingVideoStreamChanged(
+      RenderFrameHostImpl* host,
+      bool is_capturing_video_stream) {}
 
   // Returns FrameTreeNodes that are logically owned by another frame even
   // though this relationship is not yet reflected in their frame trees. This

@@ -1,0 +1,55 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "policy_pinned_launcher_apps": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "policies": {
+          "PinnedLauncherApps": []
+        },
+        "prefs": {
+          "policy_pinned_launcher_apps": {}
+        }
+      },
+      {
+        "policies": {
+          "PinnedLauncherApps": [
+            "abcdefghijklmnopabcdefghijklmnop",
+            "com.google.android.pm",
+            "https://google.com",
+            "camera",
+            "unknown_id_should_be_filtered"
+          ]
+        },
+        "prefs": {
+          "policy_pinned_launcher_apps": {
+            "value": [
+              {
+                "id": "abcdefghijklmnopabcdefghijklmnop"
+              },
+              {
+                "id": "com.google.android.pm"
+              },
+              {
+                "id": "https://google.com"
+              },
+              {
+                "id": "camera"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

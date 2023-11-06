@@ -105,6 +105,13 @@ const GaiaSigninElementBase = mixinBehaviors(
  */
 GaiaSigninElementBase.$;
 
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   hasUserPods: boolean,
+ * }}
+ */
+let GaiaSigninScreenData;
 
 /**
  * @polymer
@@ -356,7 +363,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
 
   get EXTERNAL_API() {
     return [
-      'loadAuthExtension',
+      'loadAuthenticator',
       'doReload',
       'showEnrollmentNudge',
       'showPinDialog',
@@ -589,11 +596,11 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Loads the authentication extension into the iframe.
-   * @param {!Object} data Extension parameters bag.
+   * Loads authenticator.
+   * @param {!Object} data Input for authenticator parameters.
    * @suppress {missingProperties}
    */
-  loadAuthExtension(data) {
+  loadAuthenticator(data) {
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
 
     this.authCompleted_ = false;
@@ -624,7 +631,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
     this.authenticatorParams_ = params;
 
     this.loadAuthenticator_(params.doSamlRedirect);
-    chrome.send('authExtensionLoaded');
+    chrome.send('authenticatorLoaded');
   }
 
   /**
@@ -866,7 +873,7 @@ class GaiaSigninElement extends GaiaSigninElementBase {
   }
 
   /**
-   * Reloads extension frame.
+   * Reloads authenticator.
    */
   doReload() {
     this.authenticator_.reload();

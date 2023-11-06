@@ -63,6 +63,10 @@ constexpr int kUpgradeTimeoutMs = 60 * 1000;  // 60 seconds
 // 10MB. It's the current restriction enforced by session manager.
 const size_t kSharedMemoryDataSizeLimit = 10 * 1024 * 1024;
 
+// Copy of values from login_manager::SessionManagerImpl.
+// TODO(crbug.com/1477697): Move to system_api/dbus/service_constants.h
+constexpr char kStopping[] = "stopping";
+
 // Helper to get the enum type of RetrievePolicyResponseType based on error
 // name.
 RetrievePolicyResponseType GetPolicyResponseTypeByError(
@@ -362,9 +366,14 @@ class SessionManagerClientImpl : public SessionManagerClient {
                                        base::DoNothing());
   }
 
-  void StartDeviceWipe() override {
-    SimpleMethodCallToSessionManager(
-        login_manager::kSessionManagerStartDeviceWipe);
+  void StartDeviceWipe(chromeos::VoidDBusMethodCallback callback) override {
+    dbus::MethodCall method_call(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionManagerClearForcedReEnrollmentVpd);
+    session_manager_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&SessionManagerClientImpl::OnVoidMethod,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     for (auto& observer : observers_) {
       observer.PowerwashRequested(/*admin_requested*/ false);
     }
@@ -817,6 +826,14 @@ class SessionManagerClientImpl : public SessionManagerClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&SessionManagerClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    session_manager_proxy_->ConnectToSignal(
+        login_manager::kSessionManagerInterface,
+        login_manager::kSessionStateChangedSignal,
+        base::BindRepeating(&SessionManagerClientImpl::SessionStateChanged,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&SessionManagerClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
  private:
@@ -1086,6 +1103,20 @@ class SessionManagerClientImpl : public SessionManagerClient {
     for (auto& observer : observers_) {
       observer.ArcInstanceStopped(
           static_cast<login_manager::ArcContainerStopReason>(reason));
+    }
+  }
+
+  void SessionStateChanged(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    std::string result_string;
+    if (!reader.PopString(&result_string)) {
+      LOG(ERROR) << "Invalid signal: " << signal->ToString();
+      return;
+    }
+    if (result_string == kStopping) {
+      for (auto& observer : observers_) {
+        observer.SessionStopping();
+      }
     }
   }
 

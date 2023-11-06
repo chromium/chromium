@@ -35,7 +35,7 @@ InterpolationValue CSSDefaultInterpolationType::MaybeConvertSingle(
   if (!css_value)
     return nullptr;
 
-  return InterpolationValue(std::make_unique<InterpolableList>(0),
+  return InterpolationValue(MakeGarbageCollected<InterpolableList>(0),
                             CSSDefaultNonInterpolableValue::Create(css_value));
 }
 

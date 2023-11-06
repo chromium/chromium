@@ -45,16 +45,14 @@ typedef base::RepeatingCallback<void(int, net::StreamSocket*)> SocketCallback;
 typedef base::RepeatingCallback<void(const std::string&)> ParserCallback;
 
 std::string EncodeMessage(const std::string& message) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
   size_t length = message.length();
-  std::string result(4, '\0');
-  char b = reinterpret_cast<const char*>(&length)[1];
-  result[0] = kHexChars[(b >> 4) & 0xf];
-  result[1] = kHexChars[b & 0xf];
-  b = reinterpret_cast<const char*>(&length)[0];
-  result[2] = kHexChars[(b >> 4) & 0xf];
-  result[3] = kHexChars[b & 0xf];
+  CHECK_LE(length, 0xffffu);
+  std::string result;
+  result.reserve(4);
+  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[1],
+                             result);
+  base::AppendHexEncodedByte(reinterpret_cast<const uint8_t*>(&length)[0],
+                             result);
   return result + message;
 }
 
@@ -418,7 +416,7 @@ class AdbSendFileSocket : AdbClientSocket {
       buffer.append(payload, payload_length);
 
     scoped_refptr<net::StringIOBuffer> request_buffer =
-        base::MakeRefCounted<net::StringIOBuffer>(buffer);
+        base::MakeRefCounted<net::StringIOBuffer>(std::move(buffer));
 
     auto split_callback = base::SplitOnceCallback(std::move(callback));
     int result = socket_->Write(request_buffer.get(), request_buffer->size(),

@@ -242,12 +242,13 @@ NSEvent* MockTabletEventWithParams(CGEventType type,
                                    NSPointingDeviceType device_type) {
   base::apple::ScopedCFTypeRef<CGEventRef> cg_event(
       CGEventCreate(/*source=*/nullptr));
-  CGEventSetType(cg_event, type);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
+  CGEventSetType(cg_event.get(), type);
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventPointerType,
-                              device_type);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventPointerType, device_type);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   return event;
 }
 
@@ -263,17 +264,18 @@ NSEvent* MockMouseEventWithParams(CGEventType mouse_type,
       CGPointMake(location.x, NSHeight(NSScreen.screens[0].frame) - location.y);
   base::apple::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
       /*source=*/nullptr, mouse_type, cg_location, button));
-  CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
-  CGEventSetIntegerValueField(cg_event, kCGTabletProximityEventEnterProximity,
+  CGEventSetIntegerValueField(cg_event.get(), kCGMouseEventSubtype, subtype);
+  CGEventSetIntegerValueField(cg_event.get(),
+                              kCGTabletProximityEventEnterProximity,
                               is_entering_proximity);
-  CGEventSetIntegerValueField(cg_event, kCGTabletEventRotation, 300);
+  CGEventSetIntegerValueField(cg_event.get(), kCGTabletEventRotation, 300);
   if (is_pen_tip)
-    CGEventSetIntegerValueField(cg_event, kCGTabletEventPointButtons, 1);
+    CGEventSetIntegerValueField(cg_event.get(), kCGTabletEventPointButtons, 1);
   CGEventTimestamp timestamp =
       (ui::EventTimeForNow() - base::TimeTicks()).InMicroseconds() *
       base::Time::kNanosecondsPerMicrosecond;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   return event;
 }
 
@@ -326,14 +328,16 @@ class MockRenderWidgetHostImpl : public RenderWidgetHostImpl {
                            base::SafeRef<SiteInstanceGroup> site_instance_group,
                            int32_t routing_id,
                            bool for_frame_widget)
-      : RenderWidgetHostImpl(/*frame_tree=*/nullptr,
-                             /*self_owned=*/false,
-                             delegate,
-                             std::move(site_instance_group),
-                             routing_id,
-                             /*hidden=*/false,
-                             /*renderer_initiated_creation=*/false,
-                             std::make_unique<FrameTokenMessageQueue>()) {
+      : RenderWidgetHostImpl(
+            /*frame_tree=*/nullptr,
+            /*self_owned=*/false,
+            DefaultFrameSinkId(*site_instance_group, routing_id),
+            delegate,
+            std::move(site_instance_group),
+            routing_id,
+            /*hidden=*/false,
+            /*renderer_initiated_creation=*/false,
+            std::make_unique<FrameTokenMessageQueue>()) {
     mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host;
     BindWidgetInterfaces(widget_host.BindNewEndpointAndPassDedicatedReceiver(),
                          TestRenderWidgetHost::CreateStubWidgetRemote());
@@ -441,8 +445,8 @@ NSEvent* MockScrollWheelEventWithPhase(SEL mockPhaseSelector, int32_t delta) {
       CGEventCreateScrollWheelEvent(
           /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(phase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);
@@ -458,8 +462,8 @@ NSEvent* MockScrollWheelEventWithMomentumPhase(SEL mockPhaseSelector,
       CGEventCreateScrollWheelEvent(
           /*source=*/nullptr, kCGScrollEventUnitLine, 1, delta, 0));
   CGEventTimestamp timestamp = 0;
-  CGEventSetTimestamp(cg_event, timestamp);
-  NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
+  CGEventSetTimestamp(cg_event.get(), timestamp);
+  NSEvent* event = [NSEvent eventWithCGEvent:cg_event.get()];
   method_setImplementation(
       class_getInstanceMethod([NSEvent class], @selector(momentumPhase)),
       [MockPhaseMethods instanceMethodForSelector:mockPhaseSelector]);

@@ -14,12 +14,12 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {RouteObserverMixin} from '../../route_observer_mixin.js';
+import {AppManagementStore, AppMap} from '../../common/app_management/store.js';
+import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
+import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
 import {Route, routes} from '../../router.js';
 
 import {getTemplate} from './main_view.html.js';
-import {AppManagementStore, AppMap} from './store.js';
-import {AppManagementStoreMixin} from './store_mixin.js';
 
 const AppManagementMainViewElementBase =
     AppManagementStoreMixin(RouteObserverMixin(PolymerElement));

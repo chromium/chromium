@@ -73,7 +73,8 @@ void DocumentLoadTiming::NotifyDocumentTimingChanged() {
 
 void DocumentLoadTiming::EnsureReferenceTimesSet() {
   if (reference_wall_time_.is_zero()) {
-    reference_wall_time_ = base::Seconds(clock_->Now().ToDoubleT());
+    reference_wall_time_ =
+        base::Seconds(clock_->Now().InSecondsFSinceUnixEpoch());
   }
   if (reference_monotonic_time_.is_null())
     reference_monotonic_time_ = tick_clock_->NowTicks();

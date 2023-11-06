@@ -74,18 +74,22 @@ import org.chromium.ui.test.util.ViewUtils;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Integration tests of the tab switcher when {@link StartSurface} is enabled.
- */
+/** Integration tests of the tab switcher when {@link StartSurface} is enabled. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@Restriction(
-        {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-@EnableFeatures(
-        {ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.EMPTY_STATES})
+@Restriction({
+    UiRestriction.RESTRICTION_TYPE_PHONE,
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+    ChromeFeatureList.EMPTY_STATES
+})
 @DoNotBatch(reason = "StartSurface*Test tests startup behaviours and thus can't be batched.")
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
 public class StartSurfaceTabSwitcherTest {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams = sClassParamsForStartSurfaceTest;
@@ -93,12 +97,9 @@ public class StartSurfaceTabSwitcherTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
-    /**
-     * Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled.
-     */
+    /** Whether feature {@link ChromeFeatureList#INSTANT_START} is enabled. */
     private final boolean mUseInstantStart;
 
     /**
@@ -110,8 +111,8 @@ public class StartSurfaceTabSwitcherTest {
 
     private CallbackHelper mLayoutChangedCallbackHelper;
     private LayoutStateProvider.LayoutStateObserver mLayoutObserver;
-    @LayoutType
-    private int mCurrentlyActiveLayout;
+    @LayoutType private int mCurrentlyActiveLayout;
+
     public StartSurfaceTabSwitcherTest(boolean useInstantStart, boolean immediateReturn) {
         ChromeFeatureList.sInstantStart.setForTesting(useInstantStart);
 
@@ -132,22 +133,29 @@ public class StartSurfaceTabSwitcherTest {
             mCurrentlyActiveLayout = StartSurfaceTestUtils.getStartSurfaceLayoutType();
         }
 
-        mLayoutObserver = new LayoutStateProvider.LayoutStateObserver() {
-            @Override
-            public void onFinishedShowing(@LayoutType int layoutType) {
-                mCurrentlyActiveLayout = layoutType;
-                mLayoutChangedCallbackHelper.notifyCalled();
-            }
-        };
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getLayoutManagerSupplier().addObserver((manager) -> {
-                if (manager.getActiveLayout() != null) {
-                    mCurrentlyActiveLayout = manager.getActiveLayout().getLayoutType();
-                    mLayoutChangedCallbackHelper.notifyCalled();
-                }
-                manager.addObserver(mLayoutObserver);
-            });
-        });
+        mLayoutObserver =
+                new LayoutStateProvider.LayoutStateObserver() {
+                    @Override
+                    public void onFinishedShowing(@LayoutType int layoutType) {
+                        mCurrentlyActiveLayout = layoutType;
+                        mLayoutChangedCallbackHelper.notifyCalled();
+                    }
+                };
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getLayoutManagerSupplier()
+                            .addObserver(
+                                    (manager) -> {
+                                        if (manager.getActiveLayout() != null) {
+                                            mCurrentlyActiveLayout =
+                                                    manager.getActiveLayout().getLayoutType();
+                                            mLayoutChangedCallbackHelper.notifyCalled();
+                                        }
+                                        manager.addObserver(mLayoutObserver);
+                                    });
+                });
     }
 
     @Test
@@ -156,8 +164,10 @@ public class StartSurfaceTabSwitcherTest {
     @CommandLineFlags.Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS})
     public void testShow_SingleAsTabSwitcher() {
         if (mImmediateReturn) {
-            StartSurfaceTestUtils.waitForStartSurfaceVisible(mLayoutChangedCallbackHelper,
-                    mCurrentlyActiveLayout, mActivityTestRule.getActivity());
+            StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                    mLayoutChangedCallbackHelper,
+                    mCurrentlyActiveLayout,
+                    mActivityTestRule.getActivity());
             if (isInstantReturn()) {
                 // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
                 // omnibox.
@@ -176,8 +186,10 @@ public class StartSurfaceTabSwitcherTest {
             onViewWaiting(withId(R.id.secondary_tasks_surface_view));
         }
 
-        onViewWaiting(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
-                              withId(R.id.tab_list_recycler_view)))
+        onViewWaiting(
+                        allOf(
+                                withParent(withId(TabUiTestHelper.getTabSwitcherParentId(cta))),
+                                withId(R.id.tab_list_recycler_view)))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
@@ -198,7 +210,9 @@ public class StartSurfaceTabSwitcherTest {
         assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.VISIBLE);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { cta.getTabModelSelector().getModel(false).closeAllTabs(); });
+                () -> {
+                    cta.getTabModelSelector().getModel(false).closeAllTabs();
+                });
         TabUiTestHelper.verifyTabModelTabCount(cta, 0, 0);
         assertEquals(cta.findViewById(R.id.tab_switcher_title).getVisibility(), View.GONE);
     }
@@ -220,42 +234,58 @@ public class StartSurfaceTabSwitcherTest {
         // Restart and open tab grid dialog.
         mActivityTestRule.startMainActivityFromLauncher();
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                           instanceof TabGroupModelFilter);
-        TabGroupModelFilter filter = (TabGroupModelFilter) cta.getTabModelSelector()
-                                             .getTabModelFilterProvider()
-                                             .getTabModelFilter(false);
+        assertTrue(
+                cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
+                        instanceof TabGroupModelFilter);
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        cta.getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getTabModelFilter(false);
         if (mImmediateReturn) {
             StartSurfaceTestUtils.clickFirstTabInCarousel();
         } else {
-            onViewWaiting(allOf(withId(R.id.toolbar_left_button),
-                                  isDescendantOfA(withId(R.id.bottom_controls))))
+            onViewWaiting(
+                            allOf(
+                                    withId(R.id.toolbar_left_button),
+                                    isDescendantOfA(withId(R.id.bottom_controls))))
                     .perform(click());
         }
-        onViewWaiting(allOf(withId(R.id.tab_list_recycler_view),
-                              withParent(withId(R.id.dialog_container_view))))
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.tab_list_recycler_view),
+                                withParent(withId(R.id.dialog_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(2));
 
         // Show start surface through tab grid dialog toolbar plus button and create a new tab by
         // clicking on MV tiles.
-        onView(allOf(withId(R.id.toolbar_right_button),
-                       isDescendantOfA(withId(R.id.dialog_container_view))))
+        onView(
+                        allOf(
+                                withId(R.id.toolbar_right_button),
+                                isDescendantOfA(withId(R.id.dialog_container_view))))
                 .perform(click());
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 2);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 2);
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(ViewUtils.isEventuallyVisible(
-                        allOf(withId(R.id.tab_list_recycler_view), isCompletelyDisplayed())));
-        onView(allOf(withId(R.id.tab_list_recycler_view),
-                       withParent(withId(R.id.toolbar_container_view))))
+                .check(
+                        ViewUtils.isEventuallyVisible(
+                                allOf(
+                                        withId(R.id.tab_list_recycler_view),
+                                        isCompletelyDisplayed())));
+        onView(
+                        allOf(
+                                withId(R.id.tab_list_recycler_view),
+                                withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(3));
         assertEquals(1, filter.getTabGroupCount());
 
         // Show start surface through tab strip plus button and create a new tab by perform a query
         // search in fake box.
-        onView(allOf(withId(R.id.toolbar_right_button),
-                       isDescendantOfA(withId(R.id.bottom_controls))))
+        onView(
+                        allOf(
+                                withId(R.id.toolbar_right_button),
+                                isDescendantOfA(withId(R.id.bottom_controls))))
                 .perform(click());
         onViewWaiting(withId(R.id.search_box_text))
                 .check(matches(isCompletelyDisplayed()))
@@ -264,10 +294,15 @@ public class StartSurfaceTabSwitcherTest {
 
         // Verify a tab is created within the group by checking the tab strip and tab model.
         onView(withId(R.id.toolbar_container_view))
-                .check(ViewUtils.isEventuallyVisible(
-                        allOf(withId(R.id.tab_list_recycler_view), isCompletelyDisplayed())));
-        onView(allOf(withId(R.id.tab_list_recycler_view),
-                       withParent(withId(R.id.toolbar_container_view))))
+                .check(
+                        ViewUtils.isEventuallyVisible(
+                                allOf(
+                                        withId(R.id.tab_list_recycler_view),
+                                        isCompletelyDisplayed())));
+        onView(
+                        allOf(
+                                withId(R.id.tab_list_recycler_view),
+                                withParent(withId(R.id.toolbar_container_view))))
                 .check(TabUiTestHelper.ChildrenCountAssertion.havingTabCount(4));
         assertEquals(4, cta.getTabModelSelector().getCurrentModel().getCount());
         assertEquals(1, filter.getTabGroupCount());
@@ -276,8 +311,9 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.
-    Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"})
+    @CommandLineFlags.Add({
+        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"
+    })
     public void test_CarouselTabSwitcherShowTabsInMRUOrder() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -290,17 +326,21 @@ public class StartSurfaceTabSwitcherTest {
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
         Tab tab2 = cta.getActivityTab();
         // Verifies that the titles of the two Tabs are different.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle()); });
+                () -> {
+                    Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle());
+                });
 
         // Returns to the Start surface.
         StartSurfaceTestUtils.pressHomePageButton(cta);
         StartSurfaceTestUtils.waitForStartSurfaceVisible(cta);
-        ViewUtils.waitForVisibleView(allOf(withParent(withId(R.id.tab_switcher_module_container)),
-                withId(R.id.tab_list_recycler_view)));
+        ViewUtils.waitForVisibleView(
+                allOf(
+                        withParent(withId(R.id.tab_switcher_module_container)),
+                        withId(R.id.tab_list_recycler_view)));
 
         RecyclerView recyclerView =
                 (RecyclerView) StartSurfaceTestUtils.getCarouselTabSwitcherTabListView(cta);
@@ -322,8 +362,9 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    @CommandLineFlags.
-    Add({START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"})
+    @CommandLineFlags.Add({
+        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/show_tabs_in_mru_order/true"
+    })
     public void testShow_GridTabSwitcher_AlwaysShowTabsInCreationOrder() {
         tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
@@ -331,12 +372,12 @@ public class StartSurfaceTabSwitcherTest {
     @Test
     @LargeTest
     @Feature({"StartSurface"})
-    // clang-format off
-    @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS
-        + "show_tabs_in_mru_order/true/open_ntp_instead_of_start/false/open_start_as_homepage/true",
-        DISABLE_ANIMATION_SWITCH})
+    @CommandLineFlags.Add({
+        START_SURFACE_TEST_BASE_PARAMS
+                + "show_tabs_in_mru_order/true/open_ntp_instead_of_start/false/open_start_as_homepage/true",
+        DISABLE_ANIMATION_SWITCH
+    })
     public void testShowV2_GridTabSwitcher_AlwaysShowTabsInCreationOrder() {
-        // clang-format on
         tabSwitcher_AlwaysShowTabsInGridTabSwitcherInCreationOrderImpl();
     }
 
@@ -354,12 +395,14 @@ public class StartSurfaceTabSwitcherTest {
         Tab tab1 = cta.getCurrentTabModel().getTabAt(0);
 
         // Launches the first site in MV tiles.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 1);
         Tab tab2 = cta.getActivityTab();
 
         // Verifies that the titles of the two Tabs are different.
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle()); });
+                () -> {
+                    Assert.assertNotEquals(tab1.getTitle(), tab2.getTitle());
+                });
 
         if (isInstantReturn()) {
             // TODO(crbug.com/1076274): fix toolbar to avoid wrongly focusing on the toolbar
@@ -368,9 +411,10 @@ public class StartSurfaceTabSwitcherTest {
         }
         // Enter the Tab switcher.
         TabUiTestHelper.enterTabSwitcher(cta);
-        int parentViewId = TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
-                ? R.id.compositor_view_holder
-                : R.id.secondary_tasks_surface_view;
+        int parentViewId =
+                TabUiTestHelper.getIsStartSurfaceRefactorEnabledFromUIThread(cta)
+                        ? R.id.compositor_view_holder
+                        : R.id.secondary_tasks_surface_view;
         // TODO(crbug.com/1469988): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
                 allOf(withParent(withId(parentViewId)), withId(R.id.tab_list_recycler_view)));
@@ -393,8 +437,8 @@ public class StartSurfaceTabSwitcherTest {
     }
 
     /**
-     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and
-     * {@link ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
+     * @return Whether both features {@link ChromeFeatureList#INSTANT_START} and {@link
+     *     ChromeFeatureList#START_SURFACE_RETURN_TIME} are enabled.
      */
     private boolean isInstantReturn() {
         return mUseInstantStart && mImmediateReturn;

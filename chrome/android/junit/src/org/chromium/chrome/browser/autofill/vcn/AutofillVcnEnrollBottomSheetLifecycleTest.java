@@ -35,21 +35,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
 public final class AutofillVcnEnrollBottomSheetLifecycleTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    @Mock
-    private TabModelSelector mTabModelSelector;
-    @Mock
-    private TabModel mTabModel;
-    @Mock
-    private TabModel mNewTabModel;
-    @Mock
-    private Tab mTab;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private TabModel mTabModel;
+    @Mock private TabModel mNewTabModel;
+    @Mock private Tab mTab;
 
     private boolean mObserverWasNotifiedAboutLifecycleEnd;
     private AutofillVcnEnrollBottomSheetLifecycle mLifecycle;
@@ -57,8 +50,9 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Before
     public void setUp() {
         mObserverWasNotifiedAboutLifecycleEnd = false;
-        mLifecycle = new AutofillVcnEnrollBottomSheetLifecycle(
-                mLayoutStateProvider, mTabModelSelectorSupplier);
+        mLifecycle =
+                new AutofillVcnEnrollBottomSheetLifecycle(
+                        mLayoutStateProvider, mTabModelSelectorSupplier);
     }
 
     @Test
@@ -78,14 +72,14 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Test
     public void cannotBeginTwice() {
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
-        mLifecycle.begin(/*onEndOfLifecycle=*/() -> {});
+        mLifecycle.begin(/* onEndOfLifecycle= */ () -> {});
 
         assertFalse(mLifecycle.canBegin());
     }
 
     @Test
     public void testBeginStartsObservingLayoutAndTabModelSelectorSupplier() {
-        mLifecycle.begin(/*onEndOfLifecycle=*/() -> {});
+        mLifecycle.begin(/* onEndOfLifecycle= */ () -> {});
 
         verify(mLayoutStateProvider).addObserver(eq(mLifecycle));
         verify(mTabModelSelectorSupplier).addObserver(eq(mLifecycle));
@@ -103,7 +97,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     public void testLayoutStateChangeEndsLifecycleAndNotifiesObserver() {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
 
-        ((LayoutStateObserver) mLifecycle).onStartedShowing(/*layoutType=*/-1);
+        ((LayoutStateObserver) mLifecycle).onStartedShowing(/* layoutType= */ -1);
 
         verify(mLayoutStateProvider).removeObserver(eq(mLifecycle));
         verify(mTabModelSelectorSupplier).removeObserver(eq(mLifecycle));
@@ -117,7 +111,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
         when(mTabModel.index()).thenReturn(0);
         mLifecycle.onResult(mTabModelSelector);
 
-        mLifecycle.onTabModelSelected(/*newModel=*/mNewTabModel, /*oldModel=*/mTabModel);
+        mLifecycle.onTabModelSelected(/* newModel= */ mNewTabModel, /* oldModel= */ mTabModel);
 
         assertTrue(mObserverWasNotifiedAboutLifecycleEnd);
         verifyNoInteractions(mNewTabModel);
@@ -130,7 +124,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
         when(mTabModel.index()).thenReturn(-1);
         mLifecycle.onResult(mTabModelSelector);
 
-        mLifecycle.onTabModelSelected(/*newModel=*/mNewTabModel, /*oldModel=*/mTabModel);
+        mLifecycle.onTabModelSelected(/* newModel= */ mNewTabModel, /* oldModel= */ mTabModel);
 
         assertFalse(mObserverWasNotifiedAboutLifecycleEnd);
         verify(mNewTabModel).addObserver(eq(mLifecycle));
@@ -139,7 +133,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Test
     public void testNullTabSelectionEndsLifecycle() {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
-        mLifecycle.didSelectTab(/*tab=*/null, TabSelectionType.FROM_USER, /*lastId=*/-1);
+        mLifecycle.didSelectTab(/* tab= */ null, TabSelectionType.FROM_USER, /* lastId= */ -1);
 
         assertTrue(mObserverWasNotifiedAboutLifecycleEnd);
     }
@@ -148,7 +142,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     public void testDifferentTabSelectionEndsLifecycle() {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
         when(mTab.getId()).thenReturn(1);
-        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /*lastId=*/0);
+        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
 
         assertTrue(mObserverWasNotifiedAboutLifecycleEnd);
     }
@@ -157,7 +151,7 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     public void testSameTabSelectionDoesNotEndLifecycle() {
         mLifecycle.begin(this::notifyObserverAboutLifecycleEnd);
         when(mTab.getId()).thenReturn(1);
-        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /*lastId=*/1);
+        mLifecycle.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 1);
 
         assertFalse(mObserverWasNotifiedAboutLifecycleEnd);
     }

@@ -28,7 +28,7 @@ class APIBindingHooksDelegate {
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs);
 
   // Allows custom implementations to add additional properties or types to an

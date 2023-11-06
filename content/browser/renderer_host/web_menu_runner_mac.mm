@@ -107,11 +107,12 @@
       [[NSAttributedString alloc] initWithString:title attributes:attrs];
   menuItem.attributedTitle = attrTitle;
 
-  // We set the title as well as the attributed title here. The attributed title
-  // will be displayed in the menu, but typeahead will use the non-attributed
-  // string that doesn't contain any leading or trailing whitespace. This is
-  // what Apple uses in WebKit as well:
-  // http://trac.webkit.org/browser/trunk/Source/WebKit2/UIProcess/mac/WebPopupMenuProxyMac.mm#L90
+  // Set the title as well as the attributed title here. The attributed title
+  // will be displayed in the menu, but type-ahead will use the non-attributed
+  // string that doesn't contain any leading or trailing whitespace.
+  //
+  // This is the approach that WebKit uses; see PopupMenuMac::populate():
+  // https://github.com/search?q=repo%3AWebKit/WebKit%20PopupMenuMac%3A%3Apopulate&type=code
   NSCharacterSet* whitespaceSet = [NSCharacterSet whitespaceCharacterSet];
   [menuItem setTitle:[title stringByTrimmingCharactersInSet:whitespaceSet]];
 
@@ -173,8 +174,43 @@
     _index = [cell indexOfSelectedItem];
 }
 
-- (void)hide {
-  [_menu cancelTracking];
+- (void)cancelSynchronously {
+  [_menu cancelTrackingWithoutAnimation];
+
+  // Starting with macOS 14, menus were reimplemented with Cocoa (rather than
+  // with the old Carbon). However, with that reimplementation came a bug
+  // whereupon using -cancelTrackingWithoutAnimation does not consistently
+  // immediately cancel the tracking, and leaves associated state remaining
+  // uncleared for an indeterminate amount of time. If a new tracking session is
+  // begun before that state is cleared, an NSInternalInconsistencyException is
+  // thrown. See the discussion on https://crbug.com/1497774 and FB13320260.
+  // Therefore, on macOS 14+, clear out that state so that a new tracking
+  // session can begin immediately.
+  if (@available(macOS 14, *)) {
+    // When running a menu tracking session, the instances of
+    // NSMenuTrackingSession make calls to class methods of NSPopupMenuWindow:
+    //
+    // -[NSMenuTrackingSession sendBeginTrackingNotifications]
+    //   -> +[NSPopupMenuWindow enableWindowReuse]
+    // and
+    // -[NSMenuTrackingSession sendEndTrackingNotifications]
+    //   -> +[NSPopupMenuWindow disableWindowReusePurgingCache]
+    //
+    // +enableWindowReuse populates the _NSContextMenuWindowReuseSet global, and
+    // +disableWindowReusePurgingCache walks the set, clears out some state
+    // inside of each item, and then nils out the global, preparing for the next
+    // call to +enableWindowReuse.
+    //
+    // +disableWindowReusePurgingCache can be called directly here, as it's
+    // idempotent enough.
+
+    Class popupMenuWindowClass = NSClassFromString(@"NSPopupMenuWindow");
+    if ([popupMenuWindowClass
+            respondsToSelector:@selector(disableWindowReusePurgingCache)]) {
+      [popupMenuWindowClass
+          performSelector:@selector(disableWindowReusePurgingCache)];
+    }
+  }
 }
 
 - (int)indexOfSelectedItem {

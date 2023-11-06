@@ -4,7 +4,6 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -12,32 +11,27 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/top_level_storage_access_api/top_level_storage_access_permission_context.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
-#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_partition_key_collection.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -45,7 +39,6 @@
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
 
 using content::BrowserThread;
@@ -63,7 +56,7 @@ constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
 
 // Path for URL of custom response
-const char* kFetchWithCredentialsPath = "/respondwithcookies";
+constexpr char kFetchWithCredentialsPath[] = "/respondwithcookies";
 
 constexpr char kQueryTopLevelStorageAccessPermission[] =
     "navigator.permissions.query({name: 'top-level-storage-access', "
@@ -73,10 +66,7 @@ constexpr char kVerifyHasStorageAccessPermission[] =
     "navigator.permissions.query({name: 'storage-access'}).then("
     "  (permission) => permission.name === 'storage-access' && "
     "permission.state === 'granted');";
-constexpr char kRequestStorageAccess[] =
-    "document.requestStorageAccess()"
-    ".then(() => true)"
-    ".catch(() => false);";
+constexpr char kRequestStorageAccess[] = "document.requestStorageAccess()";
 
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
     const net::test_server::HttpRequest& request) {
@@ -114,9 +104,7 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() {
-    std::vector<base::test::FeatureRefAndParams> enabled(
-        {{blink::features::kStorageAccessAPI, {}}});
-    return enabled;
+    return {{blink::features::kStorageAccessAPI, {}}};
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
@@ -150,10 +138,11 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
         base::StrCat({"cross-site=", embedded_host, "(partitioned)"});
     net::CookiePartitionKey partition_key =
         net::CookiePartitionKey::FromURLForTesting(GetURL(top_level_host));
-    content::SetPartitionedCookie(
+    content::SetCookie(
         browser()->profile(), host_url,
         base::StrCat({cookie, ";SameSite=None;Secure;Partitioned"}),
-        partition_key);
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+        &partition_key);
     ASSERT_THAT(content::GetCookies(
                     browser()->profile(), host_url,
                     net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
@@ -174,22 +163,20 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateToPageWithFrame(const std::string& host) {
-    GURL main_url(https_server_.GetURL(host, "/iframe.html"));
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(host, "/iframe.html")));
   }
 
   void NavigateToNewTabWithFrame(const std::string& host) {
-    GURL main_url(https_server_.GetURL(host, "/iframe.html"));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        browser(), https_server_.GetURL(host, "/iframe.html"),
+        WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   void NavigateFrameTo(const std::string& host, const std::string& path) {
-    GURL page = https_server_.GetURL(host, path);
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
+    EXPECT_TRUE(NavigateIframeToURL(active_web_contents(), "test",
+                                    https_server_.GetURL(host, path)));
   }
 
   std::string GetFrameContent() {
@@ -197,14 +184,11 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateNestedFrameTo(const std::string& host, const std::string& path) {
-    GURL url(https_server_.GetURL(host, path));
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    content::TestNavigationObserver load_observer(web_contents);
+    content::TestNavigationObserver load_observer(active_web_contents());
     ASSERT_TRUE(ExecJs(
         GetFrame(),
         base::StringPrintf("document.body.querySelector('iframe').src = '%s';",
-                           url.spec().c_str())));
+                           https_server_.GetURL(host, path).spec().c_str())));
     load_observer.Wait();
   }
 
@@ -227,9 +211,7 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   }
 
   content::RenderFrameHost* GetPrimaryMainFrame() {
-    content::WebContents* web_contents =
-        browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents->GetPrimaryMainFrame();
+    return active_web_contents()->GetPrimaryMainFrame();
   }
 
   content::RenderFrameHost* GetFrame() {
@@ -251,6 +233,10 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   net::test_server::EmbeddedTestServer& https_server() { return https_server_; }
 
  private:
+  content::WebContents* active_web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
 };
@@ -366,7 +352,6 @@ class RequestStorageAccessForEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        SameOriginGrantedByDefault) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   NavigateToPageWithFrame(kHostA);
 
@@ -543,7 +528,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
-                  0 /*RequestOutcome::kGrantedByFirstPartySet*/),
+                  TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
 }
 
@@ -559,18 +544,16 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   NavigateFrameTo(kHostB, "/");
   // First, verify that executing `requestStorageAccess` without a user gesture
   // results in a rejection.
-  EXPECT_FALSE(content::EvalJs(GetFrame(), kRequestStorageAccess,
-                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                   .ExtractBool());
+  EXPECT_FALSE(content::ExecJs(GetFrame(), kRequestStorageAccess,
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   // Then invoke `requestStorageAccessFor` at the top level on behalf of
   // the frame.
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
   // With the permission set, executing `requestStorageAccess` should now
   // resolve, even without a user gesture.
-  EXPECT_TRUE(content::EvalJs(GetFrame(), kRequestStorageAccess,
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                  .ExtractBool());
+  EXPECT_TRUE(content::ExecJs(GetFrame(), kRequestStorageAccess,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(storage::test::HasStorageAccessForFrame(GetFrame()));
   EXPECT_EQ(ReadCookiesViaJS(GetFrame()), "cross-site=b.test");
 
@@ -580,9 +563,8 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   NavigateFrameTo(kHostC, "/");
   // Verify that there was not a side effect on `kHostC`: invoking
   // `requestStorageAccess` without a user gesture should lead to rejection.
-  EXPECT_FALSE(content::EvalJs(GetFrame(), kRequestStorageAccess,
-                               content::EXECUTE_SCRIPT_NO_USER_GESTURE)
-                   .ExtractBool());
+  EXPECT_FALSE(content::ExecJs(GetFrame(), kRequestStorageAccess,
+                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
@@ -617,14 +599,13 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
-                  5 /*RequestOutcome::kDeniedByPrerequisites*/),
+                  TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
               Gt(0));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedForServiceDomainInIframe) {
   SetBlockThirdPartyCookies(true);
-  base::HistogramTester histogram_tester;
 
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
@@ -691,7 +672,7 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
-                  3 /*RequestOutcome::kDeniedByFirstPartySet*/),
+                  TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
               Gt(0));
 }
 
@@ -843,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_THAT(histogram_tester.GetBucketCount(
                   kRequestOutcomeHistogram,
-                  5 /*RequestOutcome::kDeniedByPrerequisites*/),
+                  TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
               Gt(0));
 }
 

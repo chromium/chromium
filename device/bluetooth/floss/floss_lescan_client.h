@@ -158,6 +158,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
 
   virtual void RegisterScanner(
@@ -166,7 +167,7 @@ class DEVICE_BLUETOOTH_EXPORT FlossLEScanClient : public FlossDBusClient,
                                  uint8_t scanner_id);
   virtual void StartScan(ResponseCallback<BtifStatus> callback,
                          uint8_t scanner_id,
-                         const ScanSettings& scan_settings,
+                         const absl::optional<ScanSettings>& scan_settings,
                          const absl::optional<ScanFilter>& filter);
   virtual void StopScan(ResponseCallback<BtifStatus> callback,
                         uint8_t scanner_id);

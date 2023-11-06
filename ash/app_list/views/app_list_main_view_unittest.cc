@@ -221,7 +221,8 @@ INSTANTIATE_TEST_SUITE_P(All, AppListMainViewTest, testing::Bool());
 TEST_P(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
   PressAndReleaseKey(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
-  EXPECT_FALSE(search_box_view()->close_button()->GetVisible());
+  EXPECT_FALSE(
+      search_box_view()->filter_and_close_button_container()->GetVisible());
 }
 
 // Tests that the search box becomes empty after close button is clicked.

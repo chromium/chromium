@@ -119,6 +119,8 @@ enum PrefPath {
   [MinVersion=13] kAccessibilityPdfOcrAlwaysActive = 41,
   // M117 proxy_config::prefs::kProxy (profile)
   [MinVersion=14] kProxy = 42,
+  // M121: DefaultSearchManager::kDefaultSearchProviderDataPrefName
+  [MinVersion=15] kDefaultSearchProviderDataPrefName = 43,
 };
 
 // Information about who or what is controlling a particular pref. This is used

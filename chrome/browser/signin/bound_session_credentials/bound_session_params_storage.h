@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_PARAMS_STORAGE_H_
 
 #include <memory>
+#include <string_view>
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,7 +24,8 @@ class PrefRegistrySyncable;
 // - stores the parameters in memory if a profile is off-the-record, or
 // - stores the parameters on disk, in user prefs, otherwise
 //
-// Currently, supports only a single simultaneous session.
+// Session params are keyed by a (site, session_id) pair, which should be
+// uniquely identifying.
 class BoundSessionParamsStorage {
  public:
   BoundSessionParamsStorage() = default;
@@ -45,23 +47,25 @@ class BoundSessionParamsStorage {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  static bool AreParamsValid(
-      const bound_session_credentials::BoundSessionParams&
-          bound_session_params);
-
-  // Saves `params` to storage. Overwrites existing params if any. `params` are
-  // verified before being saved.
+  // Saves `params` to storage. Overwrites existing params with the same
+  // (site, session_id) key.
+  // `params` are verified before being saved.
   // Returns whether the new parameters were saved. In case of a failure, keeps
   // the existing value intact.
   [[nodiscard]] virtual bool SaveParams(
       const bound_session_credentials::BoundSessionParams& params) = 0;
 
-  // Returns currently stored parameters if any.
-  virtual absl::optional<bound_session_credentials::BoundSessionParams>
-  ReadParams() const = 0;
+  // Returns parameters for all stored sessions.
+  virtual std::vector<bound_session_credentials::BoundSessionParams>
+  ReadAllParams() const = 0;
 
-  // Cleans the storage.
-  virtual void ClearParams() = 0;
+  // Removes params identified by (site, session_id) from the storage.
+  // Returns true if an entry was removed or false otherwise.
+  virtual bool ClearParams(std::string_view site,
+                           std::string_view session_id) = 0;
+
+  // Completely wipes the storage.
+  virtual void ClearAllParams() = 0;
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_BOUND_SESSION_PARAMS_STORAGE_H_

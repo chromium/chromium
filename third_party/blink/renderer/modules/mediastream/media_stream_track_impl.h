@@ -90,7 +90,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
   MediaTrackCapabilities* getCapabilities() const override;
   MediaTrackConstraints* getConstraints() const override;
   MediaTrackSettings* getSettings() const override;
-  MediaStreamTrackVideoStats* stats(ExceptionState&) override;
+  MediaStreamTrackVideoStats* stats() override;
   CaptureHandle* getCaptureHandle() const override;
   ScriptPromise applyConstraints(ScriptState*,
                                  const MediaTrackConstraints*) override;
@@ -114,7 +114,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
     return ready_state_;
   }
 
-  MediaStreamComponent* Component() const override { return component_; }
+  MediaStreamComponent* Component() const override { return component_.Get(); }
   bool Ended() const override;
 
   void RegisterMediaStream(MediaStream*) override;
@@ -134,7 +134,7 @@ class MODULES_EXPORT MediaStreamTrackImpl : public MediaStreamTrack,
 
   MediaStreamTrackPlatform::VideoFrameStats GetVideoFrameStats() const;
 
-  ImageCapture* GetImageCapture() override { return image_capture_; }
+  ImageCapture* GetImageCapture() override { return image_capture_.Get(); }
 
   absl::optional<const MediaStreamDevice> device() const override;
 

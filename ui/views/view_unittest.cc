@@ -34,6 +34,8 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/metadata/metadata_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
@@ -221,6 +223,8 @@ using ViewTest = ViewsTestBase;
 
 // A derived class for testing purpose.
 class TestView : public View {
+  METADATA_HEADER(TestView, View)
+
  public:
   TestView() = default;
   ~TestView() override = default;
@@ -290,7 +294,12 @@ class TestView : public View {
   ax::mojom::Event last_a11y_event_ = ax::mojom::Event::kNone;
 };
 
+BEGIN_METADATA(TestView)
+END_METADATA
+
 class A11yTestView : public TestView {
+  METADATA_HEADER(A11yTestView, TestView)
+
  public:
   // Convenience constructor to test `View::SetAccessibilityProperties`
   explicit A11yTestView(
@@ -333,6 +342,9 @@ class A11yTestView : public TestView {
   absl::optional<std::u16string> name_prefix_;
   absl::optional<ax::mojom::NameFrom> name_from_;
 };
+
+BEGIN_METADATA(A11yTestView)
+END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
 // Metadata
@@ -1886,6 +1898,8 @@ TEST_F(ViewTest, PaintInPromotedToLayer) {
 
 // A derived class for testing paint.
 class TestPaintView : public TestView {
+  METADATA_HEADER(TestPaintView, TestView)
+
  public:
   TestPaintView() = default;
   ~TestPaintView() override = default;
@@ -1901,6 +1915,9 @@ class TestPaintView : public TestView {
  private:
   gfx::Rect canvas_bounds_;
 };
+
+BEGIN_METADATA(TestPaintView)
+END_METADATA
 
 TEST_F(ViewTest, PaintLocalBounds) {
   ScopedTestPaintWidget widget(CreateParams(Widget::InitParams::TYPE_POPUP));
@@ -3011,6 +3028,8 @@ TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
 // Native view hierachy
 ////////////////////////////////////////////////////////////////////////////////
 class ToplevelWidgetObserverView : public View {
+  METADATA_HEADER(ToplevelWidgetObserverView, View)
+
  public:
   ToplevelWidgetObserverView() = default;
 
@@ -3038,6 +3057,9 @@ class ToplevelWidgetObserverView : public View {
  private:
   raw_ptr<Widget> toplevel_ = nullptr;
 };
+
+BEGIN_METADATA(ToplevelWidgetObserverView)
+END_METADATA
 
 // Test that
 // a) a view can track the current top level widget by overriding
@@ -3086,6 +3108,8 @@ TEST_F(ViewTest, NativeViewHierarchyChanged) {
 ////////////////////////////////////////////////////////////////////////////////
 
 class TransformPaintView : public TestView {
+  METADATA_HEADER(TransformPaintView, TestView)
+
  public:
   TransformPaintView() = default;
 
@@ -3107,6 +3131,9 @@ class TransformPaintView : public TestView {
  private:
   gfx::Rect scheduled_paint_rect_;
 };
+
+BEGIN_METADATA(TransformPaintView)
+END_METADATA
 
 TEST_F(ViewTest, TransformPaint) {
   auto view1 = std::make_unique<TransformPaintView>();
@@ -3309,6 +3336,8 @@ TEST_F(ViewTest, TransformVisibleBound) {
 // OnVisibleBoundsChanged()
 
 class VisibleBoundsView : public View {
+  METADATA_HEADER(VisibleBoundsView, View)
+
  public:
   VisibleBoundsView() = default;
 
@@ -3331,6 +3360,9 @@ class VisibleBoundsView : public View {
 
   bool received_notification_ = false;
 };
+
+BEGIN_METADATA(VisibleBoundsView)
+END_METADATA
 
 TEST_F(ViewTest, OnVisibleBoundsChanged) {
   gfx::Rect viewport_bounds(0, 0, 100, 100);
@@ -3806,6 +3838,8 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
 }
 
 class ObserverView : public View {
+  METADATA_HEADER(ObserverView, View)
+
  public:
   ObserverView();
 
@@ -3846,6 +3880,9 @@ void ObserverView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   (details.is_add ? add_details_ : remove_details_).emplace(details);
 }
+
+BEGIN_METADATA(ObserverView)
+END_METADATA
 
 using ViewHierarchyChangedTest = ViewTest;
 
@@ -3979,6 +4016,8 @@ TEST_F(ViewHierarchyChangedTest, HierarchyReceivesMove) {
 }
 
 class WidgetObserverView : public View {
+  METADATA_HEADER(WidgetObserverView, View)
+
  public:
   WidgetObserverView();
 
@@ -4018,6 +4057,9 @@ void WidgetObserverView::AddedToWidget() {
 void WidgetObserverView::RemovedFromWidget() {
   ++removed_from_widget_count_;
 }
+
+BEGIN_METADATA(WidgetObserverView)
+END_METADATA
 
 // Verifies that AddedToWidget and RemovedFromWidget are called for a view when
 // it is added to hierarchy.
@@ -4987,6 +5029,8 @@ TEST_F(ViewLayerTest, OrphanLayerAfterViewRemove) {
 }
 
 class PaintTrackingView : public View {
+  METADATA_HEADER(PaintTrackingView, View)
+
  public:
   PaintTrackingView() = default;
 
@@ -5001,6 +5045,9 @@ class PaintTrackingView : public View {
  private:
   bool painted_ = false;
 };
+
+BEGIN_METADATA(PaintTrackingView)
+END_METADATA
 
 // Makes sure child views with layers aren't painted when paint starts at an
 // ancestor.
@@ -5594,6 +5641,8 @@ TEST_F(ViewLayerTest, LayerBeneathMovedWithView) {
 namespace {
 
 class PaintLayerView : public View {
+  METADATA_HEADER(PaintLayerView, View)
+
  public:
   PaintLayerView() = default;
 
@@ -5612,6 +5661,9 @@ class PaintLayerView : public View {
  private:
   std::unique_ptr<PaintInfo> last_paint_info_;
 };
+
+BEGIN_METADATA(PaintLayerView)
+END_METADATA
 
 }  // namespace
 
@@ -5858,6 +5910,8 @@ class WidgetWithCustomTheme : public Widget {
 
 // See comment above test for details.
 class ViewThatAddsViewInOnThemeChanged : public View {
+  METADATA_HEADER(ViewThatAddsViewInOnThemeChanged, View)
+
  public:
   ViewThatAddsViewInOnThemeChanged() { SetPaintToLayer(); }
 
@@ -5882,6 +5936,9 @@ class ViewThatAddsViewInOnThemeChanged : public View {
  private:
   bool on_native_theme_changed_called_ = false;
 };
+
+BEGIN_METADATA(ViewThatAddsViewInOnThemeChanged)
+END_METADATA
 
 // Creates and adds a new child view to |parent| that has a layer.
 void AddViewWithChildLayer(View* parent) {
@@ -5916,6 +5973,8 @@ TEST_F(ViewTest, CrashOnAddFromFromOnThemeChanged) {
 
 // A View that removes its Layer when hidden.
 class NoLayerWhenHiddenView : public View {
+  METADATA_HEADER(NoLayerWhenHiddenView, View)
+
  public:
   using RemovedFromWidgetCallback = base::OnceCallback<void()>;
   explicit NoLayerWhenHiddenView(RemovedFromWidgetCallback removed_from_widget)
@@ -5946,6 +6005,9 @@ class NoLayerWhenHiddenView : public View {
   bool was_hidden_ = false;
   RemovedFromWidgetCallback removed_from_widget_;
 };
+
+BEGIN_METADATA(NoLayerWhenHiddenView)
+END_METADATA
 
 // Test that Views can safely manipulate Layers during Widget closure.
 TEST_F(ViewTest, DestroyLayerInClose) {
@@ -5978,6 +6040,8 @@ TEST_F(ViewTest, DestroyLayerInClose) {
 
 // A View that keeps the children with a special ID above other children.
 class OrderableView : public View {
+  METADATA_HEADER(OrderableView, View)
+
  public:
   // ID used by the children that are stacked above other children.
   static constexpr int VIEW_ID_RAISED = 1000;
@@ -5997,6 +6061,9 @@ class OrderableView : public View {
     return children_in_z_order;
   }
 };
+
+BEGIN_METADATA(OrderableView)
+END_METADATA
 
 TEST_F(ViewTest, ChildViewZOrderChanged) {
   const size_t kNumChildren = 4;
@@ -6493,6 +6560,8 @@ TEST_F(ViewObserverTest, ViewPropertyChanged) {
 // Provides a simple parent view implementation which tracks layer change
 // notifications from child views.
 class TestParentView : public View {
+  METADATA_HEADER(TestParentView, View)
+
  public:
   TestParentView() = default;
 
@@ -6525,6 +6594,9 @@ class TestParentView : public View {
   int layer_change_count_ = 0;
 };
 
+BEGIN_METADATA(TestParentView)
+END_METADATA
+
 // Tests the following cases.
 // 1. We receive the OnChildLayerChanged() notification when a layer change
 //    occurs in a child view.
@@ -6551,6 +6623,8 @@ namespace {
 
 // This view always resizes the associated layer when bounds change.
 class LayerResizingView : public View {
+  METADATA_HEADER(LayerResizingView, View)
+
  public:
   explicit LayerResizingView(ui::Layer* layer) : layer_(layer) {}
 
@@ -6563,6 +6637,9 @@ class LayerResizingView : public View {
 
   raw_ptr<ui::Layer> layer_;
 };
+
+BEGIN_METADATA(LayerResizingView)
+END_METADATA
 
 }  // namespace
 

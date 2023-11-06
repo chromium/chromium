@@ -82,6 +82,7 @@ constexpr size_t kMaxFileUploadRequestsPerBatch = 64;
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
+class SlopBucket;
 class URLLoaderFactory;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
@@ -177,7 +178,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           accept_ch_frame_observer,
       net::CookieSettingOverrides cookie_setting_overrides,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
-      bool shared_storage_writable);
+      bool shared_storage_writable_eligible);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -338,17 +339,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
                    int error_code,
                    const std::vector<base::File> opened_files);
 
-  // A `ResourceRequest` where `shared_storage_writable` is true, is eligible
-  // for shared storage operations via response headers.
+  // A `ResourceRequest` where `shared_storage_writable_eligible` is true, is
+  // eligible for shared storage operations via response headers.
   //
   // Outbound control flow:
   //
   // Start in `ProcessOutboundSharedStorageInterceptor()`
   // - Execute `SharedStorageRequestHelper::ProcessOutgoingRequest`, which will
-  // add the `kSharedStorageWritableHeader` request header to the `URLRequest`
-  // if `ResourceRequest::shared_storage_writable` is true and there is a
-  // `mojom::URLLoaderNetworkServiceObserver*` available to forward processed
-  // headers to.
+  // add the `kSecSharedStorageWritableHeader` request header to the
+  // `URLRequest` if `ResourceRequest::shared_storage_writable_eligible` is true
+  // and there is a `mojom::URLLoaderNetworkServiceObserver*` available to
+  // forward processed headers to.
   // - `ScheduleStart` immediately afterwards regardless of eligibility for
   // shared storage
   //
@@ -356,10 +357,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   //
   // Start in `FollowRedirect`
   // - Execute
-  // `SharedStorageRequestHelper::`
-  //   `RemoveEligibilityIfSharedStorageWritableRemoved`
-  // to remove the `kSharedStorageWritableHeader` request header if eligibility
-  // has been lost
+  // `SharedStorageRequestHelper::UpdateSharedStorageWritableEligible`
+  // to remove or restore the `kSecSharedStorageWritableHeader` request header
+  // if eligibility has been lost or regained
   //
   // Inbound redirection control flow:
   //
@@ -367,7 +367,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
   // - If the request has received the `kSharedStorageWriteHeader` response
   // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSharedStorageWritableHeader` has not been removed on a
+  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
   // redirect), the helper will parse the header value into a vector of Shared
   // Storage operations to call
   // - If the request has not received the `kSharedStorageWriteHeader` response
@@ -383,7 +383,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // - Execute `SharedStorageRequestHelper::ProcessIncomingResponse`
   // - If the request has received the `kSharedStorageWriteHeader` response
   // header and if it is currently eligible for shared storage (i.e., in
-  // particular, the `kSharedStorageWritableHeader` has not been removed on a
+  // particular, the `kSecSharedStorageWritableHeader` has not been removed on a
   // redirect), the helper will parse the header value into a vector of Shared
   // Storage operations to call
   // - If the request has not received the `kSharedStorageWriteHeader` response
@@ -488,7 +488,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   void ScheduleStart();
   void ReadMore();
-  void DidRead(int num_bytes, bool completed_synchronously);
+  void DidRead(int num_bytes,
+               bool completed_synchronously,
+               bool into_slop_bucket);
   void NotifyCompleted(int error_code);
   void OnMojoDisconnect();
   void OnResponseBodyStreamConsumerClosed(MojoResult result);
@@ -594,6 +596,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const int keepalive_request_size_;
   const bool keepalive_;
   const bool do_not_prompt_for_login_;
+  const bool is_ad_tagged_;
   std::unique_ptr<net::URLRequest> url_request_;
   mojo::Receiver<mojom::URLLoader> receiver_;
   mojo::Receiver<mojom::AuthChallengeResponder>
@@ -778,6 +781,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   std::vector<network::mojom::CookieAccessDetailsPtr> cookie_access_details_;
 
   const bool provide_data_use_updates_;
+
+  // A SlopBucket is used as temporary storage for response body data from
+  // high-priority requests that cannot yet be written to the mojo data pipe
+  // because it is full.
+  std::unique_ptr<SlopBucket> slop_bucket_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };

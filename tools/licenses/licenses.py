@@ -79,12 +79,14 @@ PRUNE_PATHS = set([
     os.path.join('third_party', 'syzygy'),
 
     # Stuff pulled in from chrome-internal for official builds/tools.
+    os.path.join('third_party', 'amd'),
     os.path.join('third_party', 'clear_cache'),
     os.path.join('third_party', 'gnu'),
     os.path.join('third_party', 'googlemac'),
     os.path.join('third_party', 'pcre'),
     os.path.join('third_party', 'psutils'),
     os.path.join('third_party', 'sawbuck'),
+    os.path.join('third_party', 'wix'),
     # See crbug.com/350472
     os.path.join('chrome', 'browser', 'resources', 'chromeos', 'quickoffice'),
     # Chrome for Android proprietary code.

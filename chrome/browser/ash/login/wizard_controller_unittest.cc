@@ -454,8 +454,7 @@ TEST_F(WizardControllerTest, DemoModeOobeFlowEndsOnGaiaScreenAndCompletesOobe) {
 
   PerformUserAction(kActionStartSetup);
 
-  // TODO: handle return value.
-  std::ignore = enrollment_signal.Wait();
+  ASSERT_TRUE(enrollment_signal.Wait());
 
   ASSERT_TRUE(AwaitScreen(kGaiaSigninScreen));
   EXPECT_TRUE(StartupUtils::IsOobeCompleted());

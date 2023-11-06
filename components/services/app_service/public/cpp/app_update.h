@@ -54,9 +54,23 @@ struct RunOnOsLogin;
 // See components/services/app_service/README.md for more details.
 class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
  public:
-  // Modifies |state| by copying over all of |delta|'s known fields: those
-  // fields whose values aren't "unknown". The |state| may not be nullptr.
+  // Modifies `new_delta` by copying over all of `delta`'s known fields: those
+  // fields whose values aren't "unknown". The `new_delta` may not be nullptr.
+  //
+  // For `icon_key`, if `new_delta`'s `update_version` is true, keep that as
+  // true. Otherwise, copying `delta`'s `icon_key` if it has a value.
+  static void MergeDelta(App* new_delta, App* delta);
+
+  // Modifies `state` by copying over all of `delta`'s known fields: those
+  // fields whose values aren't "unknown". The `state` may not be nullptr.
+  //
+  // For `icon_key`, if `delta`'s `update_version` is true, increase `state`'s
+  // `update_version`.
   static void Merge(App* state, const App* delta);
+
+  // Returns true if there are some changed for `delta` compared with `state`.
+  // Otherwise, returns false. `state` and `delta` must have the same`app_id`.
+  static bool IsChanged(const App* state, const App* delta);
 
   // At most one of |state| or |delta| may be nullptr.
   AppUpdate(const App* state, const App* delta, const AccountId& account_id);
@@ -76,9 +90,16 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   apps::Readiness PriorReadiness() const;
   bool ReadinessChanged() const;
 
+  // The full name of the app. This is the name that should be used by default
+  // in most UIs.
   const std::string& Name() const;
   bool NameChanged() const;
 
+  // A possibly shortened version of the app name. May omit branding (e.g.
+  // "Google" prefixes) or rely on abbreviations (e.g. "YT Music"). If the
+  // developer/publisher does not supply a short name, this will be the same as
+  // the Name() field. May be used in UIs where space is limited and/or we want
+  // to optimize for scannability.
   const std::string& ShortName() const;
   bool ShortNameChanged() const;
 
@@ -174,6 +195,16 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
 
   absl::optional<uint64_t> DataSizeInBytes() const;
   bool DataSizeInBytesChanged() const;
+
+  // App-specified supported locales.
+  const std::vector<std::string>& SupportedLocales() const;
+  bool SupportedLocalesChanged() const;
+
+  // Currently selected locale, empty string means system language is used.
+  // ARC-specific note: Based on Android implementation, `selected_locale`
+  //  is not necessarily part of `supported_locales`.
+  absl::optional<std::string> SelectedLocale() const;
+  bool SelectedLocaleChanged() const;
 
   const App* State() const { return state_.get(); }
   const App* Delta() const { return delta_.get(); }

@@ -330,9 +330,9 @@ struct URLRequest {
   // https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md#step-3-get-response-blobs-to-browser
   bool ad_auction_headers;
 
-  // True if the request should send the `Shared-Storage-Writable` request
+  // True if the request should send the `Sec-Shared-Storage-Writable` request
   // header.
-  bool shared_storage_writable;
+  bool shared_storage_writable_eligible;
 
   // True if the request was user initiated.
   bool has_user_gesture;
@@ -500,6 +500,13 @@ struct URLRequest {
   // other than `kUnknown`.
   IPAddressSpace target_ip_address_space;
 
+  // The target address space to which a given fetch operation is expected to
+  // connect. See more:
+  // https://wicg.github.io/private-network-access/#permission-prompt.
+  // If the actual address space and the expected address space don't match, a
+  // network error will be returned.
+  network.mojom.IPAddressSpace required_ip_address_space;
+
   // True if the request is eligible for using Storage Access API grant (if
   // one exists). This is secure since the renderer cannot forge a new storage
   // access permission grant, so the renderer would not be able to gain access
@@ -529,6 +536,10 @@ struct URLRequest {
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
+
+  // Indicates whether this request has been determined to be used for
+  // advertising purposes.
+  bool is_ad_tagged = false;
 
   // Indicate the state of CompressionDictionaryTransport feature. When it is
   // true, `use-as-dictionary` response HTTP header may be processed.

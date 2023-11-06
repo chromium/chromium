@@ -510,6 +510,7 @@ generate_jni("browser_jni_headers") {
     "java/src/org/chromium/android_webview/AwContentsClientBridge.java",
     "java/src/org/chromium/android_webview/AwContentsIoThreadClient.java",
     "java/src/org/chromium/android_webview/AwContentsLifecycleNotifier.java",
+    "java/src/org/chromium/android_webview/AwContentsOriginMatcher.java",
     "java/src/org/chromium/android_webview/AwContentsStatics.java",
     "java/src/org/chromium/android_webview/AwCookieManager.java",
     "java/src/org/chromium/android_webview/AwDarkMode.java",
@@ -562,6 +563,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwContentsClientCallbackHelper.java",
     "java/src/org/chromium/android_webview/AwContentsIoThreadClient.java",
     "java/src/org/chromium/android_webview/AwContentsLifecycleNotifier.java",
+    "java/src/org/chromium/android_webview/AwContentsOriginMatcher.java",
     "java/src/org/chromium/android_webview/AwContentsStatics.java",
     "java/src/org/chromium/android_webview/AwCookieManager.java",
     "java/src/org/chromium/android_webview/AwDarkMode.java",
@@ -574,6 +576,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/AwGeolocationPermissions.java",
     "java/src/org/chromium/android_webview/AwHistogramRecorder.java",
     "java/src/org/chromium/android_webview/AwHttpAuthHandler.java",
+    "java/src/org/chromium/android_webview/AwIntegrityApiStatusConfig.java",
     "java/src/org/chromium/android_webview/AwKeyboardShortcuts.java",
     "java/src/org/chromium/android_webview/AwLayoutSizer.java",
     "java/src/org/chromium/android_webview/AwNetworkChangeNotifierRegistrationPolicy.java",
@@ -618,6 +621,7 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/NoopSafeModeAction.java",
     "java/src/org/chromium/android_webview/NullAwViewMethods.java",
     "java/src/org/chromium/android_webview/OverScrollGlow.java",
+    "java/src/org/chromium/android_webview/PlatformServiceBridgeAwContentsWrapper.java",
     "java/src/org/chromium/android_webview/PopupTouchHandleDrawable.java",
     "java/src/org/chromium/android_webview/ScriptHandler.java",
     "java/src/org/chromium/android_webview/ScrollAccessibilityHelper.java",
@@ -672,7 +676,6 @@ android_library("browser_java") {
     ":resources",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//cc/mojom:mojom_java",
     "//components/android_autofill/browser:java",
@@ -682,10 +685,10 @@ android_library("browser_java") {
     "//components/content_capture/android:java",
     "//components/crash/android:handler_java",
     "//components/crash/android:java",
+    "//components/embedder_support/android:embedder_util_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/embedder_support/android/metrics:java",
-    "//components/environment_integrity/android:java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/navigation_interception/android:navigation_interception_java",
     "//components/policy/android:policy_java",
@@ -711,6 +714,7 @@ android_library("browser_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/metrics_proto:metrics_proto_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
@@ -783,8 +787,8 @@ android_library("crash_client_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -797,8 +801,8 @@ android_library("common_origin_trials_java") {
   deps = [
     ":common_java",
     "//base:base_java",
-    "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -826,6 +830,7 @@ android_library("common_java") {
     "java/src/org/chromium/android_webview/common/Lifetime.java",
     "java/src/org/chromium/android_webview/common/ProductionSupportedFlagList.java",
     "java/src/org/chromium/android_webview/common/SafeModeAction.java",
+    "java/src/org/chromium/android_webview/common/SafeModeActionIds.java",
     "java/src/org/chromium/android_webview/common/SafeModeController.java",
     "java/src/org/chromium/android_webview/common/VariationsFastFetchModeUtils.java",
     "java/src/org/chromium/android_webview/common/services/ServiceConnectionDelayRecorder.java",
@@ -834,7 +839,6 @@ android_library("common_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//cc/base:cc_base_java",
     "//components/android_autofill/browser:features_java",
@@ -857,6 +861,7 @@ android_library("common_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
     "//third_party/blink/renderer/platform/scheduler:blink_scheduler_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:accessibility_features_java",
     "//ui/android:ui_android_features_java",
   ]
@@ -1135,9 +1140,11 @@ grit("generate_components_resources") {
 
   deps = [
     ":concatenate_resources_allowlists",
+    "//components/neterror/resources:bundle_js",
     "//components/resources:about_credits",
     "//components/resources/ssl/ssl_error_assistant:make_ssl_error_assistant_protobuf",
     "//components/security_interstitials/content/resources:build_ts",
+    "//components/security_interstitials/core/browser/resources:bundle_js",
   ]
 
   if (safe_browsing_mode != 0) {

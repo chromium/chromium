@@ -4,6 +4,11 @@
     "args": ["--enable-features=BackForwardCache"]
   },
   {
+    "name": "background-resource-fetch",
+    "args": ["--enable-features=BackgroundResourceFetch"],
+    "smoke_file": "TestLists/background-resource-fetch"
+  },
+  {
     "name": "chrome-for-testing",
     "args": [],
     "comments": [

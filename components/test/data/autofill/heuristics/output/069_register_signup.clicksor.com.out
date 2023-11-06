@@ -1,7 +1,7 @@
 EMAIL_ADDRESS | email1 | Email: |  | email1_1
 EMAIL_ADDRESS | email2 | Confirm                           email: |  | email1_1
 UNKNOWN_TYPE | website | Website: |  | email1_1
-PHONE_HOME_WHOLE_NUMBER | phone | Phone: |  | email1_1
+PHONE_HOME_CITY_AND_NUMBER | phone | Phone: |  | email1_1
 UNKNOWN_TYPE | timezone | Time Zone: | 1 | email1_1
 UNKNOWN_TYPE | password | Password: |  | email1_1
 UNKNOWN_TYPE | RePassword | Confirm                           password: |  | email1_1

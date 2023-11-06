@@ -894,7 +894,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   } else if (self.checkDidRun && !issuesFound) {
     // Clear the timestamp if the last check found no issues.
     [[NSUserDefaults standardUserDefaults]
-        setDouble:base::Time().ToDoubleT()
+        setDouble:base::Time().InSecondsFSinceUnixEpoch()
            forKey:kTimestampOfLastIssueFoundKey];
     self.checkDidRun = NO;
 
@@ -950,8 +950,8 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // jittery, delay the reconfigure call, using `newRowState`.
 - (void)possiblyDelayReconfigureUpdateCheckItemWithState:
     (UpdateCheckRowStates)newRowState {
-  double secondsSinceStart =
-      base::Time::Now().ToDoubleT() - self.checkStartTime.ToDoubleT();
+  double secondsSinceStart = base::Time::Now().InSecondsFSinceUnixEpoch() -
+                             self.checkStartTime.InSecondsFSinceUnixEpoch();
   double minDelay = kUpdateRowMinDelay;
   if (secondsSinceStart < minDelay) {
     // Want to show the loading wheel for minimum time.
@@ -1319,7 +1319,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // Updates the timestamp of when safety check last found an issue.
 - (void)updateTimestampOfLastCheck {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults setDouble:base::Time::Now().ToDoubleT()
+  [defaults setDouble:base::Time::Now().InSecondsFSinceUnixEpoch()
                forKey:kTimestampOfLastIssueFoundKey];
 }
 
@@ -1349,7 +1349,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // Formats the last safety check issues found timestamp for display.
 - (NSString*)formatElapsedTimeSinceLastCheck {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  base::Time lastCompletedCheck = base::Time::FromDoubleT(
+  base::Time lastCompletedCheck = base::Time::FromSecondsSinceUnixEpoch(
       [defaults doubleForKey:kTimestampOfLastIssueFoundKey]);
 
   base::TimeDelta elapsedTime = base::Time::Now() - lastCompletedCheck;

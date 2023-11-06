@@ -8,9 +8,12 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_service.h"
+#include "device/fido/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/trusted_vault/trusted_vault_client_android.h"
@@ -32,25 +35,19 @@
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
-constexpr base::FilePath::CharType kTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kDeprecatedTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("Trusted Vault");
-
 std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreateStandaloneTrustedVaultClient(Profile* profile) {
-  const base::FilePath profile_path = profile->GetPath();
+CreateChromeSyncStandaloneTrustedVaultClient(Profile* profile) {
   return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
-      profile_path.Append(kTrustedVaultFilename),
-      profile_path.Append(kDeprecatedTrustedVaultFilename),
+      trusted_vault::SecurityDomainId::kChromeSync,
+      /*base_dir=*/profile->GetPath(),
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess());
 }
 #endif
 
-std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
-    Profile* profile) {
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreateChromeSyncTrustedVaultClient(Profile* profile) {
 #if BUILDFLAG(IS_ANDROID)
   return std::make_unique<
       TrustedVaultClientAndroid>(/*gaia_account_info_by_gaia_id_cb=*/
@@ -68,11 +65,11 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!base::FeatureList::IsEnabled(
           trusted_vault::kChromeOSTrustedVaultClientShared)) {
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
   if (!profile->IsMainProfile()) {
     // Secondary Lacros profiles use standalone implementation.
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
 
   auto* lacros_service = chromeos::LacrosService::Get();
@@ -84,22 +81,42 @@ std::unique_ptr<trusted_vault::TrustedVaultClient> CreateTrustedVaultClient(
     // possible to have Ash-side TrustedVault Crosapi disabled (two milestones
     // after kChromeOSTrustedVaultClientShared is guaranteed to be enabled in
     // Ash).
-    return CreateStandaloneTrustedVaultClient(profile);
+    return CreateChromeSyncStandaloneTrustedVaultClient(profile);
   }
   return std::make_unique<CrosapiTrustedVaultClient>(
       &lacros_service->GetRemote<crosapi::mojom::TrustedVaultBackend>());
 #else
-  return CreateStandaloneTrustedVaultClient(profile);
+  return CreateChromeSyncStandaloneTrustedVaultClient(profile);
 #endif
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::unique_ptr<trusted_vault::TrustedVaultClient>
+CreatePasskeyTrustedVaultClient(Profile* profile) {
+  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+      trusted_vault::SecurityDomainId::kPasskeys,
+      /*base_dir=*/profile->GetPath(),
+      IdentityManagerFactory::GetForProfile(profile),
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<KeyedService> BuildTrustedVaultService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(device::kChromeOsPasskeys)) {
+    return std::make_unique<trusted_vault::TrustedVaultService>(
+        CreateChromeSyncTrustedVaultClient(profile),
+        CreatePasskeyTrustedVaultClient(profile));
+  }
+#endif
+
   return std::make_unique<trusted_vault::TrustedVaultService>(
-      CreateTrustedVaultClient(profile));
+      CreateChromeSyncTrustedVaultClient(profile));
 }
 
 }  // namespace

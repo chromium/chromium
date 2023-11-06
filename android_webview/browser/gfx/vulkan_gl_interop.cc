@@ -62,13 +62,13 @@ VulkanGLInterop::GLNonOwnedCompatibilityContext* VulkanGLInterop::g_gl_context =
 class VulkanGLInterop::GLNonOwnedCompatibilityContext
     : public gl::GLContextEGL {
  public:
-  GLNonOwnedCompatibilityContext()
-      : gl::GLContextEGL(nullptr),
-        surface_(base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
-            gl::GLSurfaceEGL::GetGLDisplayEGL(),
-            gfx::Size(1, 1))) {
+  GLNonOwnedCompatibilityContext() : gl::GLContextEGL(nullptr) {
     gl::GLContextAttribs attribs;
-    Initialize(surface_.get(), attribs);
+    // No need to store the surface as the gl::GLContext will have it saved.
+    auto surface = base::MakeRefCounted<gl::PbufferGLSurfaceEGL>(
+        gl::GLSurfaceEGL::GetGLDisplayEGL(), gfx::Size(1, 1));
+    Initialize(surface.get(), attribs);
+    DCHECK(default_surface());
 
     DCHECK(!g_gl_context);
     g_gl_context = this;
@@ -97,7 +97,7 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
     return gl::GLContextEGL::MakeCurrentImpl(surface);
   }
 
-  bool MakeCurrent() { return gl::GLContext::MakeCurrent(surface_.get()); }
+  bool MakeCurrent() { return gl::GLContext::MakeCurrentDefault(); }
 
   static scoped_refptr<GLNonOwnedCompatibilityContext> GetOrCreateInstance() {
     if (g_gl_context)
@@ -110,8 +110,6 @@ class VulkanGLInterop::GLNonOwnedCompatibilityContext
     DCHECK_EQ(g_gl_context, this);
     g_gl_context = nullptr;
   }
-
-  scoped_refptr<gl::GLSurface> surface_;
 };
 
 VulkanGLInterop::InFlightInteropDraw::InFlightInteropDraw(

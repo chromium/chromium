@@ -14,7 +14,7 @@ ADDRESS_HOME_ZIP | creditCard.billingContact.address.postalCode | Zip code: |  |
 EMAIL_ADDRESS | user.email | email address: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX | user.phone.areaCode | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 PHONE_HOME_NUMBER | user.phone.exchangeNumber | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
-PHONE_HOME_WHOLE_NUMBER | user.phone.subscriberNumber | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
+PHONE_HOME_CITY_AND_NUMBER | user.phone.subscriberNumber | phone: |  | creditCard.billingContact.shippingAddressAsBillingAddress_2
 UNKNOWN_TYPE | user.profile.createAccount | Yes! Create an account for me at macys.com | true | creditCard.billingContact.shippingAddressAsBillingAddress_2
 EMAIL_ADDRESS | user.profile.email | email address: |  | user.profile.email_3
 EMAIL_ADDRESS | user.profile.confirmEmail | Confirm email address: |  | user.profile.email_3

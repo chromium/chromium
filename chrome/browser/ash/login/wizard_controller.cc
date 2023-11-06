@@ -102,6 +102,7 @@
 #include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/recovery_eligibility_screen.h"
+#include "chrome/browser/ash/login/screens/remote_activity_notification_screen.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
 #include "chrome/browser/ash/login/screens/saml_confirm_password_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
@@ -191,6 +192,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -232,6 +234,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -477,10 +480,7 @@ void WizardController::OnDestroyingOobeUI() {
   previous_screens_.clear();
 
   // Reset `current_screen_` to prevent its usage after OobeUI is gone.
-  if (current_screen_) {
-    current_screen_->Hide();
-    current_screen_ = nullptr;
-  }
+  ResetCurrentScreen();
 
   // Reset screens, they should not access handlers anymore.
   // TODO(https://crbug.com/1309022): This should probably be removed when all
@@ -863,6 +863,16 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnThemeSelectionScreenExit,
                           weak_factory_.GetWeakPtr())));
 
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
+    append(std::make_unique<RemoteActivityNotificationScreen>(
+        oobe_ui->GetView<RemoteActivityNotificationScreenHandler>()
+            ->AsWeakPtr(),
+        base::BindRepeating(
+            &WizardController::OnRemoteActivityNotificationScreenExit,
+            weak_factory_.GetWeakPtr())));
+  }
+
   if (features::IsCryptohomeRecoveryEnabled()) {
     append(std::make_unique<CryptohomeRecoveryScreen>(
         oobe_ui->GetView<CryptohomeRecoveryScreenHandler>()->AsWeakPtr(),
@@ -1016,7 +1026,7 @@ void WizardController::ShowLocalPasswordSetupScreen() {
 
 void WizardController::ShowEnrollmentScreen() {
   // Update the enrollment configuration and start the screen.
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnEnrollmentScreenShown();
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
   StartEnrollmentScreen(false);
@@ -1110,6 +1120,10 @@ void WizardController::ShowMarketingOptInScreen() {
 
 void WizardController::ShowRecommendAppsScreen() {
   SetCurrentScreen(GetScreen(RecommendAppsScreenView::kScreenId));
+}
+
+void WizardController::ShowRemoteActivityNotificationScreen() {
+  SetCurrentScreen(GetScreen(RemoteActivityNotificationView::kScreenId));
 }
 
 void WizardController::ShowAppDownloadingScreen() {
@@ -1227,6 +1241,8 @@ void WizardController::ShowCryptohomeRecoveryScreen(
     std::unique_ptr<UserContext> user_context) {
   DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
+  wizard_context_->knowledge_factor_setup.auth_setup_flow =
+      WizardContext::AuthChangeFlow::kRecovery;
   SetCurrentScreen(GetScreen(CryptohomeRecoveryScreenView::kScreenId));
 }
 
@@ -1777,8 +1793,8 @@ void WizardController::OnScreenExit(OobeScreenId screen,
   }
   DCHECK(current_screen_->screen_id() == screen);
 
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenExited(screen,
-                                                                exit_reason);
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenExit(screen,
+                                                                  exit_reason);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1831,6 +1847,7 @@ void WizardController::OnQuickStartScreenExit(QuickStartScreen::Result result) {
       ShowWelcomeScreen();
       return;
     case QuickStartScreen::Result::WIFI_CONNECTED:
+    case QuickStartScreen::Result::WIFI_CREDENTIALS_RECEIVED:
     case QuickStartScreen::Result::CANCEL_AND_RETURN_TO_NETWORK:
       ShowNetworkScreen();
       return;
@@ -2241,6 +2258,10 @@ void WizardController::OnRecommendAppsScreenExit(
   }
 }
 
+void WizardController::OnRemoteActivityNotificationScreenExit() {
+  OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
+}
+
 void WizardController::OnAppDownloadingScreenExit() {
   OnScreenExit(AppDownloadingScreenView::kScreenId, kDefaultExitReason);
 
@@ -2297,8 +2318,7 @@ void WizardController::OnDeviceModificationCanceled() {
     previous_screen = previous_screens_[current_screen_];
   }
 
-  current_screen_->Hide();
-  current_screen_ = nullptr;
+  ResetCurrentScreen();
 
   if (previous_screen) {
     if (IsSigninScreen(previous_screen->screen_id())) {
@@ -2331,8 +2351,7 @@ void WizardController::OnManagementTransitionScreenExit() {
 }
 
 void WizardController::OnUpdateRequiredScreenExit() {
-  current_screen_->Hide();
-  current_screen_ = nullptr;
+  ResetCurrentScreen();
   ShowLoginScreen();
 }
 
@@ -2375,7 +2394,7 @@ void WizardController::OnOobeFlowFinished() {
     active_user_prefs->ClearPref(prefs::kChoobeCompletedScreens);
   }
 
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnOnboadingFlowCompleted(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordOnboadingComplete(
       GetLocalState()->GetTime(prefs::kOobeStartTime),
       active_user_prefs->GetTime(prefs::kOobeOnboardingTime));
 
@@ -2487,7 +2506,7 @@ void WizardController::PerformOOBECompletedActions(
   }
 
   StartupUtils::MarkOobeCompleted();
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnPreLoginOobeCompleted(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordPreLoginOobeComplete(
       flow_type);
 
   // Triggers DLC installation once OOBE is complete.
@@ -2509,11 +2528,9 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
       }
     }
 
-    GetLoginDisplayHost()
-        ->GetOobeMetricsHelper()
-        ->OnScreenShownStatusDetermined(
-            new_current->screen_id(),
-            OobeMetricsHelper::ScreenShownStatus::kSkipped);
+    GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenShownStatus(
+        new_current->screen_id(),
+        OobeMetricsHelper::ScreenShownStatus::kSkipped);
     return;
   }
 
@@ -2528,9 +2545,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
     previous_screens_[new_current] = current_screen_;
   }
 
-  if (current_screen_) {
-    current_screen_->Hide();
-  }
+  ResetCurrentScreen();
 
   current_screen_ = new_current;
 
@@ -2559,7 +2574,7 @@ void WizardController::SetCurrentScreen(BaseScreen* new_current) {
   }
 
   UpdateStatusAreaVisibilityForScreen(current_screen_->screen_id());
-  GetLoginDisplayHost()->GetOobeMetricsHelper()->OnScreenShownStatusDetermined(
+  GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordScreenShownStatus(
       current_screen_->screen_id(),
       OobeMetricsHelper::ScreenShownStatus::kShown);
   current_screen_->Show(wizard_context_);
@@ -2682,6 +2697,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowSyncConsentScreen();
   } else if (screen_id == RecommendAppsScreenView::kScreenId) {
     ShowRecommendAppsScreen();
+  } else if (screen_id == RemoteActivityNotificationView::kScreenId) {
+    ShowRemoteActivityNotificationScreen();
   } else if (screen_id == AppDownloadingScreenView::kScreenId) {
     ShowAppDownloadingScreen();
   } else if (screen_id == WrongHWIDScreenView::kScreenId) {
@@ -3084,6 +3101,13 @@ void WizardController::MaybeTakeTPMOwnership() {
 
   chromeos::TpmManagerClient::Get()->TakeOwnership(
       ::tpm_manager::TakeOwnershipRequest(), base::DoNothing());
+}
+
+void WizardController::ResetCurrentScreen() {
+  if (current_screen_) {
+    current_screen_->Hide();
+    current_screen_ = nullptr;
+  }
 }
 
 }  // namespace ash

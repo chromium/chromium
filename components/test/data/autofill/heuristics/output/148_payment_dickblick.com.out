@@ -28,8 +28,8 @@ UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | unbxd_q_1
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | unbxd_q_1
 ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | unbxd_q_1
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | unbxd_q_1
-PHONE_HOME_WHOLE_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | unbxd_q_1
-PHONE_HOME_WHOLE_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | unbxd_q_1
+PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | unbxd_q_1
+PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | unbxd_q_1
 EMAIL_ADDRESS | ContactEmailAddress | Email Address: |  | unbxd_q_1
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickWebSite | I want to receive emails about special sales and promotions on Blick's website. | true | unbxd_q_1
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickRetailStores | I want to receive emails about special sales and promotions at Blick's retail stores. | true | unbxd_q_1
@@ -56,8 +56,8 @@ UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | BillingAddressFir
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | BillingAddressFirstName_3
 ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | BillingAddressFirstName_3
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | BillingAddressFirstName_3
-PHONE_HOME_WHOLE_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_3
-PHONE_HOME_WHOLE_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_3
+PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | BillingAddressFirstName_3
+PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | BillingAddressFirstName_3
 EMAIL_ADDRESS | ContactEmailAddress | Email Address: |  | BillingAddressFirstName_3
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickWebSite | I want to receive emails about special sales and promotions on Blick's website. | true | BillingAddressFirstName_3
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickRetailStores | I want to receive emails about special sales and promotions at Blick's retail stores. | true | BillingAddressFirstName_3
@@ -84,8 +84,8 @@ UNKNOWN_TYPE | BillingAddressNotUsState | State/Province: |  | paymentMethod_1
 ADDRESS_HOME_ZIP | BillingAddressZipCode | Zip Code: |  | paymentMethod_1
 ADDRESS_HOME_ZIP | BillingAddressPostalCode | Postal Code: |  | paymentMethod_1
 ADDRESS_HOME_COUNTRY | BillingAddressCountry | Country: | 0 | paymentMethod_1
-PHONE_HOME_WHOLE_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | paymentMethod_1
-PHONE_HOME_WHOLE_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | paymentMethod_1
+PHONE_HOME_CITY_AND_NUMBER | ContactDaytimePhoneNumber | Daytime Telephone: |  | paymentMethod_1
+PHONE_HOME_CITY_AND_NUMBER | ContactEveningPhoneNumber | Evening Telephone: |  | paymentMethod_1
 EMAIL_ADDRESS | ContactEmailAddress | Email Address: |  | paymentMethod_1
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickWebSite | I want to receive emails about special sales and promotions on Blick's website. | true | paymentMethod_1
 UNKNOWN_TYPE | SendEmailSpecialSalesBlickRetailStores | I want to receive emails about special sales and promotions at Blick's retail stores. | true | paymentMethod_1

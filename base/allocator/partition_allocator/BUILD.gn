@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("raw_ptr") {
+  public_deps = [ "src/partition_alloc:raw_ptr" ]
+}
+
+group("partition_alloc") {
+  public_deps = [ "src/partition_alloc:partition_alloc" ]
+}
+
+group("buildflags") {
+  public_deps = [ "src/partition_alloc:buildflags" ]
+}

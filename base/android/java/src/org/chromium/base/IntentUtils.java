@@ -20,7 +20,6 @@ import android.os.TransactionTooLargeException;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
-import androidx.core.app.BundleCompat;
 
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForS;
@@ -343,12 +342,16 @@ public class IntentUtils {
     }
 
     /**
-     * Just like {@link BundleCompat#getBinder()}, but doesn't throw exceptions.
+     * Returns the value associated with the given name, or null if no mapping of the desired type
+     * exists for the given name or a null value is explicitly associated with the name.
+     *
+     * @param name a key string
+     * @return an IBinder value, or null
      */
     public static IBinder safeGetBinder(Bundle bundle, String name) {
         if (bundle == null) return null;
         try {
-            return BundleCompat.getBinder(bundle, name);
+            return bundle.getBinder(name);
         } catch (Throwable t) {
             // Catches un-parceling exceptions.
             Log.e(TAG, "getBinder failed on bundle " + bundle);
@@ -371,8 +374,6 @@ public class IntentUtils {
     /**
      * Inserts a {@link Binder} value into an Intent as an extra.
      *
-     * Uses {@link BundleCompat#putBinder()}, but doesn't throw exceptions.
-     *
      * @param intent Intent to put the binder into.
      * @param name Key.
      * @param binder Binder object.
@@ -381,7 +382,7 @@ public class IntentUtils {
         if (intent == null) return;
         Bundle bundle = new Bundle();
         try {
-            BundleCompat.putBinder(bundle, name, binder);
+            bundle.putBinder(name, binder);
         } catch (Throwable t) {
             // Catches parceling exceptions.
             Log.e(TAG, "putBinder failed on bundle " + bundle);

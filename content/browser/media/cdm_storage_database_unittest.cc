@@ -157,8 +157,7 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForStorageKey) {
                                             kFileNameTwo),
             kPopulatedFileValue);
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey,
-                                                             kCdmType));
+  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey));
 
   // Expect that for the storage key, all of the file content returned is empty.
   EXPECT_TRUE(
@@ -184,8 +183,7 @@ TEST_F(CdmStorageDatabaseInMemoryTest, DeleteForStorageKeyWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey,
-                                                             kCdmType));
+  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)
@@ -259,8 +257,7 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForStorageKey) {
                                             kFileNameTwo),
             kPopulatedFileValue);
 
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey,
-                                                             kCdmType));
+  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey));
 
   // Expect that for the storage key, all of the file content returned is empty.
   EXPECT_TRUE(
@@ -286,8 +283,7 @@ TEST_F(CdmStorageDatabaseValidPathTest, DeleteForStorageKeyWithNoData) {
 
   // Even if there is no data for the storage key, the SQL statement should
   // still run properly.
-  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey,
-                                                             kCdmType));
+  EXPECT_TRUE(cdm_storage_database_->DeleteDataForStorageKey(kTestStorageKey));
 
   EXPECT_TRUE(
       cdm_storage_database_->ReadFile(kTestStorageKey, kCdmType, kFileName)

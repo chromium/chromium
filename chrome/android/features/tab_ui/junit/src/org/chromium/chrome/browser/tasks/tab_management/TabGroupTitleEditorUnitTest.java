@@ -43,15 +43,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tests for {@link TabGroupTitleEditor}.
- */
+/** Tests for {@link TabGroupTitleEditor}. */
 @SuppressWarnings({"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored"})
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupTitleEditorUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private static final String TAB1_TITLE = "Tab1";
     private static final String TAB2_TITLE = "Tab2";
@@ -64,18 +61,12 @@ public class TabGroupTitleEditorUnitTest {
     private static final int TAB3_ID = 123;
     private static final int TAB4_ID = 357;
 
-    @Mock
-    TabModel mTabModel;
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    TabGroupModelFilter mTabGroupModelFilter;
-    @Mock
-    TabModelFilterProvider mTabModelFilterProvider;
-    @Captor
-    ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
-    @Captor
-    ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
+    @Mock TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock TabGroupModelFilter mTabGroupModelFilter;
+    @Mock TabModelFilterProvider mTabModelFilterProvider;
+    @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
+    @Captor ArgumentCaptor<TabGroupModelFilter.Observer> mTabGroupModelFilterObserverCaptor;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
@@ -105,26 +96,26 @@ public class TabGroupTitleEditorUnitTest {
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverCaptor.capture());
 
-        mTabGroupTitleEditor = new TabGroupTitleEditor(
-                RuntimeEnvironment.application, mTabModelSelector) {
-            @Override
-            protected void updateTabGroupTitle(Tab tab, String title) {}
+        mTabGroupTitleEditor =
+                new TabGroupTitleEditor(RuntimeEnvironment.application, mTabModelSelector) {
+                    @Override
+                    protected void updateTabGroupTitle(Tab tab, String title) {}
 
-            @Override
-            protected void storeTabGroupTitle(int tabRootId, String title) {
-                mStorage.put(String.valueOf(tabRootId), title);
-            }
+                    @Override
+                    protected void storeTabGroupTitle(int tabRootId, String title) {
+                        mStorage.put(String.valueOf(tabRootId), title);
+                    }
 
-            @Override
-            protected void deleteTabGroupTitle(int tabRootId) {
-                mStorage.remove(String.valueOf(tabRootId));
-            }
+                    @Override
+                    protected void deleteTabGroupTitle(int tabRootId) {
+                        mStorage.remove(String.valueOf(tabRootId));
+                    }
 
-            @Override
-            protected String getTabGroupTitle(int tabRootId) {
-                return mStorage.get(String.valueOf(tabRootId));
-            }
-        };
+                    @Override
+                    protected String getTabGroupTitle(int tabRootId) {
+                        return mStorage.get(String.valueOf(tabRootId));
+                    }
+                };
         mStorage = new HashMap<>();
     }
 
@@ -274,9 +265,15 @@ public class TabGroupTitleEditorUnitTest {
     public void testDefaultTitle() {
         int relatedTabCount = 5;
 
-        String expectedTitle = RuntimeEnvironment.application.getResources().getQuantityString(
-                R.plurals.bottom_tab_grid_title_placeholder, relatedTabCount, relatedTabCount);
-        assertEquals(expectedTitle,
+        String expectedTitle =
+                RuntimeEnvironment.application
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.bottom_tab_grid_title_placeholder,
+                                relatedTabCount,
+                                relatedTabCount);
+        assertEquals(
+                expectedTitle,
                 TabGroupTitleEditor.getDefaultTitle(
                         RuntimeEnvironment.application, relatedTabCount));
     }

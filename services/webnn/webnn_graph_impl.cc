@@ -12,6 +12,7 @@
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "services/webnn/dml/graph_impl.h"
@@ -77,6 +78,32 @@ webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
   NOTREACHED_NORETURN();
 }
 
+webnn::ReduceKind MojoReduceTypeToComponent(mojom::Reduce::Kind kind) {
+  switch (kind) {
+    case mojom::Reduce::Kind::kL1:
+      return webnn::ReduceKind::kL1;
+    case mojom::Reduce::Kind::kL2:
+      return webnn::ReduceKind::kL2;
+    case mojom::Reduce::Kind::kLogSum:
+      return webnn::ReduceKind::kLogSum;
+    case mojom::Reduce::Kind::kLogSumExp:
+      return webnn::ReduceKind::kLogSumExp;
+    case mojom::Reduce::Kind::kMax:
+      return webnn::ReduceKind::kMax;
+    case mojom::Reduce::Kind::kMean:
+      return webnn::ReduceKind::kMean;
+    case mojom::Reduce::Kind::kMin:
+      return webnn::ReduceKind::kMin;
+    case mojom::Reduce::Kind::kProduct:
+      return webnn::ReduceKind::kProduct;
+    case mojom::Reduce::Kind::kSum:
+      return webnn::ReduceKind::kSum;
+    case mojom::Reduce::Kind::kSumSquare:
+      return webnn::ReduceKind::kSumSquare;
+  }
+  NOTREACHED_NORETURN();
+}
+
 bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   if (std::isnan(clamp->min_value) || std::isnan(clamp->max_value)) {
     // The min or max value are nan.
@@ -89,16 +116,39 @@ bool ValidateClampAttributes(const mojom::ClampPtr& clamp) {
   return true;
 }
 
-bool ValidateActivation(const mojom::OperationPtr& activation) {
-  switch (activation->which()) {
-    case mojom::Operation::Tag::kClamp:
-      return ValidateClampAttributes(activation->get_clamp());
-    case mojom::Operation::Tag::kRelu:
-      return true;
-    default:
-      // The activation is not supported.
-      return false;
+bool ValidateEluAttributes(const mojom::EluPtr& elu) {
+  if (std::isnan(elu->alpha) || elu->alpha <= 0.0f) {
+    // The value of alpha must be greater than 0.
+    return false;
   }
+
+  return true;
+}
+
+bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
+  if (std::isnan(leaky_relu->alpha)) {
+    // The value of alpha should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateActivation(const mojom::ActivationPtr& activation) {
+  switch (activation->which()) {
+    case mojom::Activation::Tag::kClamp:
+      return ValidateClampAttributes(activation->get_clamp());
+    case mojom::Activation::Tag::kElu:
+      return ValidateEluAttributes(activation->get_elu());
+    case mojom::Activation::Tag::kLeakyRelu:
+      return ValidateLeakyReluAttributes(activation->get_leaky_relu());
+    case mojom::Activation::Tag::kRelu:
+    case mojom::Activation::Tag::kSigmoid:
+    case mojom::Activation::Tag::kSoftmax:
+    case mojom::Activation::Tag::kTanh:
+      return true;
+  }
+  NOTREACHED_NORETURN();
 }
 
 webnn::Conv2dAttributes ConvertToConv2dAttributes(
@@ -174,51 +224,33 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
   return component_attributes;
 }
 
-absl::optional<webnn::GemmAttributes> ConvertToGemmAttributes(
+webnn::GemmAttributes ConvertToGemmAttributes(
     const IdToOperandMap& id_to_operand_map,
-    const webnn::mojom::OperatorAttributesPtr& attributes) {
-  if (!attributes->is_gemm()) {
-    // The type of attribute is not gemm.
-    return absl::nullopt;
-  }
-  auto& mojo_attributes = attributes->get_gemm();
-  if (!mojo_attributes) {
-    // The attributes of gemm were not configured.
-    return absl::nullopt;
-  }
+    const mojom::GemmPtr& gemm) {
   webnn::GemmAttributes component_attributes;
-  auto& c_operand_id = mojo_attributes->c_operand_id;
+  auto& c_operand_id = gemm->c_operand_id;
   if (c_operand_id) {
-    if (!id_to_operand_map.contains(c_operand_id.value())) {
-      // The third operand is invalid.
-      return absl::nullopt;
-    }
     const mojom::OperandPtr& c_operand =
         id_to_operand_map.at(c_operand_id.value());
     component_attributes.c_operand = ConvertToComponentOperand(c_operand.get());
   }
-  component_attributes.alpha = mojo_attributes->alpha;
-  component_attributes.beta = mojo_attributes->beta;
-  component_attributes.a_transpose = mojo_attributes->a_transpose;
-  component_attributes.b_transpose = mojo_attributes->b_transpose;
+  component_attributes.alpha = gemm->alpha;
+  component_attributes.beta = gemm->beta;
+  component_attributes.a_transpose = gemm->a_transpose;
+  component_attributes.b_transpose = gemm->b_transpose;
   return component_attributes;
 }
 
-// TODO(crbug.com/1273291): This function will replaced by `operation`
-const mojom::Operand* GetMojoOperand(
-    const IdToOperandMap& id_to_operand_map,
-    const std::vector<uint64_t>& operand_id_array,
-    size_t index = 0) {
-  if (index >= operand_id_array.size()) {
-    // Index out of range.
-    return nullptr;
+webnn::SliceAttributes ConvertToSliceAttributes(
+    const webnn::mojom::SlicePtr& slice) {
+  webnn::SliceAttributes component_attributes;
+  component_attributes.starts.reserve(slice->starts_and_sizes.size());
+  component_attributes.sizes.reserve(slice->starts_and_sizes.size());
+  for (const auto& start_and_size : slice->starts_and_sizes) {
+    component_attributes.starts.push_back(start_and_size->start);
+    component_attributes.sizes.push_back(start_and_size->size);
   }
-  uint64_t operand_id = operand_id_array[index];
-  if (!id_to_operand_map.contains(operand_id)) {
-    // There is no operand for the id.
-    return nullptr;
-  }
-  return id_to_operand_map.at(operand_id).get();
+  return component_attributes;
 }
 
 const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
@@ -231,25 +263,56 @@ const mojom::Operand* GetMojoOperand(const IdToOperandMap& id_to_operand_map,
   return operand_iterator->second.get();
 }
 
-bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
-                   const mojom::ClampPtr& clamp) {
-  auto* input = GetMojoOperand(id_to_operand_map, clamp->input_operand_id);
-  auto* output = GetMojoOperand(id_to_operand_map, clamp->output_operand_id);
+bool ValidateUnaryOperation(const mojom::Operand* input,
+                            const mojom::Operand* output) {
   if (!input || !output || output == input) {
-    // The clamp operator is invalid.
-    return false;
-  }
-  if (!ValidateClampAttributes(clamp)) {
-    // The attributes of clamp are invalid.
+    // The unary operator is invalid.
     return false;
   }
   if (output->data_type != input->data_type) {
     // The output data type doesn't match input data type.
     return false;
   }
-
   if (output->dimensions != input->dimensions) {
     // The output shape is not expected.
+    return false;
+  }
+  return true;
+}
+
+template <typename Operation>
+bool ValidateUnaryOperation(const IdToOperandMap& id_to_operand_map,
+                            const Operation& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+  return ValidateUnaryOperation(input, output);
+}
+
+template <typename Operation>
+bool ValidateFloatingPointUnaryOperation(
+    const IdToOperandMap& id_to_operand_map,
+    const Operation& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+  if (!ValidateUnaryOperation(input, output)) {
+    return false;
+  }
+
+  if (!IsFloatingPointType(MojoOperandTypeToComponent(input->data_type))) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
+                   const mojom::ClampPtr& clamp) {
+  if (!ValidateUnaryOperation(id_to_operand_map, clamp)) {
+    return false;
+  }
+  if (!ValidateClampAttributes(clamp)) {
     return false;
   }
 
@@ -320,10 +383,10 @@ bool ValidateConv2d(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
-                               const mojom::OperatorPtr& operation) {
-  auto* a = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
-  auto* b = GetMojoOperand(id_to_operand_map, operation->input_operands, 1);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+                               const mojom::ElementWiseBinaryPtr& operation) {
+  auto* a = GetMojoOperand(id_to_operand_map, operation->lhs_operand);
+  auto* b = GetMojoOperand(id_to_operand_map, operation->rhs_operand);
+  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operand);
   if (!a || !b || !output || output == a || output == b) {
     // The elementWise binary operator is invalid.
     return false;
@@ -345,24 +408,120 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateElu(const IdToOperandMap& id_to_operand_map,
+                 const mojom::EluPtr& elu) {
+  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, elu)) {
+    return false;
+  }
+  if (!ValidateEluAttributes(elu)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateElementWiseUnary(const IdToOperandMap& id_to_operand_map,
+                              const mojom::ElementWiseUnaryPtr& operation) {
+  switch (operation->kind) {
+    case mojom::ElementWiseUnary::Kind::kLogicalNot: {
+      // Only uint8 is supported
+      auto* input =
+          GetMojoOperand(id_to_operand_map, operation->input_operand_id);
+      auto* output =
+          GetMojoOperand(id_to_operand_map, operation->output_operand_id);
+      if (ValidateUnaryOperation(input, output)) {
+        return input->data_type == mojom::Operand::DataType::kUint8;
+      }
+      return false;
+    }
+    case mojom::ElementWiseUnary::Kind::kIdentity: {
+      // All data types are supported
+      return ValidateUnaryOperation(id_to_operand_map, operation);
+    }
+    case mojom::ElementWiseUnary::Kind::kSqrt:
+      [[fallthrough]];
+    case mojom::ElementWiseUnary::Kind::kErf:
+      [[fallthrough]];
+    case mojom::ElementWiseUnary::Kind::kReciprocal: {
+      // Only float data type is supported
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map, operation);
+    }
+  }
+  return false;
+}
+
 bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
-                  const mojom::OperatorPtr& operation) {
-  auto* a = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
-  auto* b = GetMojoOperand(id_to_operand_map, operation->input_operands, 1);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
-  if (!a || !b || !output || output == a || output == b ||
-      !operation->attributes) {
+                  const mojom::GemmPtr& gemm) {
+  auto* a = GetMojoOperand(id_to_operand_map, gemm->a_operand_id);
+  auto* b = GetMojoOperand(id_to_operand_map, gemm->b_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, gemm->output_operand_id);
+  if (!a || !b || !output || output == a || output == b) {
     // The gemm operator is invalid.
     return false;
   }
-  auto component_attributes =
-      ConvertToGemmAttributes(id_to_operand_map, operation->attributes);
-  if (!component_attributes) {
+  auto& c_operand_id = gemm->c_operand_id;
+  if (c_operand_id && !id_to_operand_map.contains(c_operand_id.value())) {
+    // The third operand is invalid.
     return false;
   }
   auto validated_output = ValidateGemmAndInferOutput(
       ConvertToComponentOperand(a), ConvertToComponentOperand(b),
-      component_attributes.value());
+      ConvertToGemmAttributes(id_to_operand_map, gemm));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateLeakyRelu(const IdToOperandMap& id_to_operand_map,
+                       const mojom::LeakyReluPtr& leaky_relu) {
+  if (!ValidateFloatingPointUnaryOperation(id_to_operand_map, leaky_relu)) {
+    return false;
+  }
+  if (!ValidateLeakyReluAttributes(leaky_relu)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidateMatmul(const IdToOperandMap& id_to_operand_map,
+                    const mojom::MatmulPtr& matmul) {
+  auto* a = GetMojoOperand(id_to_operand_map, matmul->a_operand_id);
+  auto* b = GetMojoOperand(id_to_operand_map, matmul->b_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, matmul->output_operand_id);
+  if (!a || !b || !output || output == a || output == b) {
+    // The matmul operator is invalid.
+    return false;
+  }
+  auto validated_output = ValidateMatmulAndInferOutput(
+      ConvertToComponentOperand(a), ConvertToComponentOperand(b));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool ValidatePad(const IdToOperandMap& id_to_operand_map,
+                 const mojom::PadPtr& pad) {
+  auto* input = GetMojoOperand(id_to_operand_map, pad->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, pad->output_operand_id);
+  if (!input || !output || output == input) {
+    // The pad operator is invalid.
+    return false;
+  }
+
+  auto validated_output =
+      ValidatePadAndInferOutput(ConvertToComponentOperand(input),
+                                pad->beginning_padding, pad->ending_padding);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -399,23 +558,25 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateRelu(const IdToOperandMap& id_to_operand_map,
-                  const mojom::ReluPtr& relu) {
-  auto* input = GetMojoOperand(id_to_operand_map, relu->input_operand_id);
-  auto* output = GetMojoOperand(id_to_operand_map, relu->output_operand_id);
-  if (!input || !output || output == input) {
-    // The relu operator is invalid.
-    return false;
-  }
-  if (output->data_type != input->data_type) {
-    // The output data type doesn't match input data type.
+bool ValidatePrelu(const IdToOperandMap& id_to_operand_map,
+                   const mojom::PreluPtr& prelu) {
+  auto* input = GetMojoOperand(id_to_operand_map, prelu->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, prelu->output_operand_id);
+  auto* slope = GetMojoOperand(id_to_operand_map, prelu->slope_operand_id);
+  if (!input || !output || !slope || output == input || output == slope) {
+    // The prelu operator is invalid.
     return false;
   }
 
-  if (output->dimensions != input->dimensions) {
-    // The output shape is not expected.
+  auto validated_output = ValidatePreluAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToComponentOperand(slope));
+  if (!validated_output.has_value()) {
     return false;
   }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -428,8 +589,31 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
     // The resample2d operator is invalid.
     return false;
   }
-  if (output->data_type != input->data_type) {
-    // The output data type doesn't match input data type.
+
+  // Validate and infer the output for resample2d with given scales or with the
+  // sizes from output dimensions along axes.
+  absl::variant<base::span<const float>, base::span<const uint32_t>>
+      scales_or_sizes;
+  const auto& axes = resample2d->axes;
+  std::vector<uint32_t> sizes;
+  if (resample2d->scales) {
+    scales_or_sizes = resample2d->scales.value();
+  } else {
+    const auto& output_dimensions = output->dimensions;
+    if (axes.size() != 2 || axes[0] >= output_dimensions.size() ||
+        axes[1] >= output_dimensions.size()) {
+      return false;
+    }
+    sizes = {output_dimensions[axes[0]], output_dimensions[axes[1]]};
+    scales_or_sizes = sizes;
+  }
+
+  auto validated_output = ValidateResample2dAndInferOutput(
+      ConvertToComponentOperand(input), scales_or_sizes, axes);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
     return false;
   }
 
@@ -437,9 +621,9 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
 }
 
 bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
-                     const mojom::OperatorPtr& operation) {
-  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operands);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+                     const mojom::ReshapePtr& reshape) {
+  auto* input = GetMojoOperand(id_to_operand_map, reshape->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, reshape->output_operand_id);
   if (!input || !output || output == input) {
     // The reshape operator is invalid.
     return false;
@@ -461,6 +645,28 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
     // The output shape is not expected.
     return false;
   }
+  return true;
+}
+
+bool ValidateSlice(const IdToOperandMap& id_to_operand_map,
+                   const mojom::SlicePtr& slice) {
+  auto* input = GetMojoOperand(id_to_operand_map, slice->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, slice->output_operand_id);
+
+  if (!input || !output || output == input) {
+    // The slice operator is invalid.
+    return false;
+  }
+
+  auto validated_output = ValidateSliceAndInferOutput(
+      ConvertToComponentOperand(input), ConvertToSliceAttributes(slice));
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -551,23 +757,26 @@ bool ValidateTranspose(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-bool ValidateGenericOperator(const IdToOperandMap& id_to_operand_map,
-                             const mojom::OperatorPtr& operation) {
-  switch (operation->kind) {
-    case mojom::Operator::Kind::kAdd:
-    case mojom::Operator::Kind::kSub:
-    case mojom::Operator::Kind::kMul:
-    case mojom::Operator::Kind::kDiv:
-    case mojom::Operator::Kind::kMax:
-    case mojom::Operator::Kind::kMin:
-    case mojom::Operator::Kind::kPow:
-      return ValidateElementWiseBinary(id_to_operand_map, operation);
-    case mojom::Operator::Kind::kGemm:
-      return ValidateGemm(id_to_operand_map, operation);
-    case mojom::Operator::Kind::kReshape:
-      return ValidateReshape(id_to_operand_map, operation);
+bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
+                    const mojom::ReducePtr& reduce) {
+  auto* input = GetMojoOperand(id_to_operand_map, reduce->input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, reduce->output_operand_id);
+  if (!input || !output || output == input) {
+    // The reduce operator is invalid.
+    return false;
   }
-  NOTREACHED_NORETURN();
+
+  auto validated_output = ValidateReduceAndInferOutput(
+      MojoReduceTypeToComponent(reduce->kind), ConvertToComponentOperand(input),
+      reduce->axes, reduce->keep_dimensions);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != ConvertToComponentOperand(output)) {
+    return false;
+  }
+
+  return true;
 }
 
 base::flat_map<std::string, size_t> CreateByteLengthMap(
@@ -599,21 +808,48 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateConcat(id_to_operand_map, operation->get_concat());
     case mojom::Operation::Tag::kConv2d:
       return ValidateConv2d(id_to_operand_map, operation->get_conv2d());
+    case mojom::Operation::Tag::kElementWiseBinary:
+      return ValidateElementWiseBinary(id_to_operand_map,
+                                       operation->get_element_wise_binary());
+    case mojom::Operation::Tag::kElu:
+      return ValidateElu(id_to_operand_map, operation->get_elu());
+    case mojom::Operation::Tag::kElementWiseUnary:
+      return ValidateElementWiseUnary(id_to_operand_map,
+                                      operation->get_element_wise_unary());
+    case mojom::Operation::Tag::kGemm:
+      return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kLeakyRelu:
+      return ValidateLeakyRelu(id_to_operand_map, operation->get_leaky_relu());
+    case mojom::Operation::Tag::kMatmul:
+      return ValidateMatmul(id_to_operand_map, operation->get_matmul());
+    case mojom::Operation::Tag::kPad:
+      return ValidatePad(id_to_operand_map, operation->get_pad());
     case mojom::Operation::Tag::kPool2d:
       return ValidatePool2d(id_to_operand_map, operation->get_pool2d());
+    case mojom::Operation::Tag::kPrelu:
+      return ValidatePrelu(id_to_operand_map, operation->get_prelu());
+    case mojom::Operation::Tag::kReduce:
+      return ValidateReduce(id_to_operand_map, operation->get_reduce());
     case mojom::Operation::Tag::kResample2d:
       return ValidateResample2d(id_to_operand_map, operation->get_resample2d());
+    case mojom::Operation::Tag::kReshape:
+      return ValidateReshape(id_to_operand_map, operation->get_reshape());
     case mojom::Operation::Tag::kRelu:
-      return ValidateRelu(id_to_operand_map, operation->get_relu());
+      return ValidateUnaryOperation(id_to_operand_map, operation->get_relu());
+    case mojom::Operation::Tag::kSlice:
+      return ValidateSlice(id_to_operand_map, operation->get_slice());
+    case mojom::Operation::Tag::kSigmoid:
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
+                                                 operation->get_sigmoid());
     case mojom::Operation::Tag::kSoftmax:
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
+    case mojom::Operation::Tag::kTanh:
+      return ValidateFloatingPointUnaryOperation(id_to_operand_map,
+                                                 operation->get_tanh());
     case mojom::Operation::Tag::kTranspose:
       return ValidateTranspose(id_to_operand_map, operation->get_transpose());
-    case mojom::Operation::Tag::kGenericOperator:
-      return ValidateGenericOperator(id_to_operand_map,
-                                     operation->get_generic_operator());
   }
   NOTREACHED_NORETURN();
 }

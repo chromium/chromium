@@ -52,6 +52,11 @@
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
 #include "media/gpu/mac/vt_config_util.h"
 #include "media/video/h264_level_limits.h"
+#include "third_party/libgav1/src/src/buffer_pool.h"
+#include "third_party/libgav1/src/src/decoder_state.h"
+#include "third_party/libgav1/src/src/gav1/status_code.h"
+#include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/constants.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gl/gl_context.h"
@@ -89,6 +94,9 @@ constexpr VideoCodecProfile kSupportedProfiles[] = {
     // 8 ~ 10 bit 400, 420, 422, 444 HW decoding, Intel Mac supports 8 ~ 12
     // bit 400, 420, 422, 444 SW decoding.
     HEVCPROFILE_REXT,
+
+    // Only available when the OS indicates hardware support.
+    AV1PROFILE_PROFILE_MAIN,
 
     // TODO(sandersd): Hi10p fails during
     // CMVideoFormatDescriptionCreateFromH264ParameterSets with
@@ -176,10 +184,12 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BuildImageConfig(
   if (!image_config.get())
     return image_config;
 
-  CFDictionarySetValue(image_config, kCVPixelBufferPixelFormatTypeKey,
-                       cf_pixel_format);
-  CFDictionarySetValue(image_config, kCVPixelBufferWidthKey, cf_width);
-  CFDictionarySetValue(image_config, kCVPixelBufferHeightKey, cf_height);
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferPixelFormatTypeKey,
+                       cf_pixel_format.get());
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferWidthKey,
+                       cf_width.get());
+  CFDictionarySetValue(image_config.get(), kCVPixelBufferHeightKey,
+                       cf_height.get());
 
   return image_config;
 }
@@ -258,13 +268,14 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatH264(
 }
 
 base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
+    int bit_depth,
     media::VideoColorSpace color_space,
     media::VideoCodecProfile profile,
     absl::optional<gfx::HDRMetadata> hdr_metadata,
     const gfx::Size& coded_size) {
   base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
-      CreateFormatExtensions(kCMVideoCodecType_VP9, profile, color_space,
-                             hdr_metadata);
+      CreateFormatExtensions(kCMVideoCodecType_VP9, profile, bit_depth,
+                             color_space, hdr_metadata, absl::nullopt);
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
   if (!format_config) {
@@ -274,7 +285,32 @@ base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatVP9(
 
   OSStatus status = CMVideoFormatDescriptionCreate(
       kCFAllocatorDefault, kCMVideoCodecType_VP9, coded_size.width(),
-      coded_size.height(), format_config, format.InitializeInto());
+      coded_size.height(), format_config.get(), format.InitializeInto());
+  OSSTATUS_DLOG_IF(WARNING, status != noErr, status)
+      << "CMVideoFormatDescriptionCreate()";
+  return format;
+}
+
+base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> CreateVideoFormatAV1(
+    int bit_depth,
+    base::span<const uint8_t> av1c,
+    media::VideoColorSpace color_space,
+    absl::optional<gfx::HDRMetadata> hdr_metadata,
+    const gfx::Size& coded_size) {
+  // Profile is unused since we provide the av1c box directly.
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> format_config =
+      CreateFormatExtensions(kCMVideoCodecType_AV1, AV1PROFILE_PROFILE_MAIN,
+                             bit_depth, color_space, hdr_metadata, av1c);
+
+  base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> format;
+  if (!format_config) {
+    DLOG(ERROR) << "Failed to configure av1 decoder.";
+    return format;
+  }
+
+  OSStatus status = CMVideoFormatDescriptionCreate(
+      kCFAllocatorDefault, kCMVideoCodecType_AV1, coded_size.width(),
+      coded_size.height(), format_config.get(), format.InitializeInto());
   OSSTATUS_DLOG_IF(WARNING, status != noErr, status)
       << "CMVideoFormatDescriptionCreate()";
   return format;
@@ -305,11 +341,11 @@ bool CreateVideoToolboxSession(
   // iOS is always hardware-accelerate while on mac, decoder configuration
   // handling is necessary.
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_EnableHardwareAcceleratedVideoDecoder,
       kCFBooleanTrue);
   CFDictionarySetValue(
-      decoder_config,
+      decoder_config.get(),
       kVTVideoDecoderSpecification_RequireHardwareAcceleratedVideoDecoder,
       require_hardware ? kCFBooleanTrue : kCFBooleanFalse);
 #endif
@@ -330,10 +366,10 @@ bool CreateVideoToolboxSession(
 
   OSStatus status = VTDecompressionSessionCreate(
       kCFAllocatorDefault,
-      format,          // video_format_description
-      decoder_config,  // video_decoder_specification
-      image_config,    // destination_image_buffer_attributes
-      callback,        // output_callback
+      format,                // video_format_description
+      decoder_config.get(),  // video_decoder_specification
+      image_config.get(),    // destination_image_buffer_attributes
+      callback,              // output_callback
       session->InitializeInto());
   if (status != noErr) {
     OSSTATUS_DLOG(WARNING, status) << "VTDecompressionSessionCreate()";
@@ -412,6 +448,17 @@ gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
   return gfx::BufferFormat::RGBA_8888;
 }
 
+bool HasPlatformHevcSupport() {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  if (base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
+    if (__builtin_available(macOS 11.0, *)) {
+      return true;
+    }
+  }
+#endif  //  BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  return false;
+}
+
 }  // namespace
 
 // Detects coded size and color space changes. Also indicates when a frame won't
@@ -468,6 +515,78 @@ class VP9ConfigChangeDetector {
   bool pending_config_changed_ = false;
   VideoColorSpace color_space_;
   Vp9Parser vp9_parser_;
+};
+
+class AV1ConfigChangeDetector {
+ public:
+  AV1ConfigChangeDetector()
+      : buffer_pool_(/*on_frame_buffer_size_changed=*/nullptr,
+                     /*get_frame_buffer=*/nullptr,
+                     /*release_frame_buffer=*/nullptr,
+                     /*callback_private_data=*/nullptr) {}
+  ~AV1ConfigChangeDetector() = default;
+
+  void DetectConfig(const uint8_t* stream, unsigned int size) {
+    auto parser = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
+        stream, size, /*operating_point=*/0, &buffer_pool_, &state_));
+    config_changed_ = false;
+
+    libgav1::RefCountedBufferPtr current_frame;
+    while (parser->ParseOneFrame(&current_frame) == libgav1::kStatusOk) {
+      if (!current_frame || !parser->sequence_header_changed()) {
+        continue;
+      }
+
+      config_changed_ = true;
+
+      const auto current_sequence_header = parser->sequence_header();
+
+      const auto& cc = current_sequence_header.color_config;
+      color_space_ = VideoColorSpace(
+          cc.color_primary, cc.transfer_characteristics, cc.matrix_coefficients,
+          cc.color_range == libgav1::kColorRangeStudio
+              ? gfx::ColorSpace::RangeID::LIMITED
+              : gfx::ColorSpace::RangeID::FULL);
+
+      size_ = gfx::Size(
+          base::strict_cast<int>(current_sequence_header.max_frame_width),
+          base::strict_cast<int>(current_sequence_header.max_frame_height));
+
+      bit_depth_ = base::checked_cast<uint8_t>(cc.bitdepth);
+
+      av1c_ = libgav1::ObuParser::GetAV1CodecConfigurationBox(stream, size,
+                                                              &av1c_size_);
+    }
+  }
+
+  gfx::Size GetCodedSize(const gfx::Size& container_coded_size) const {
+    return size_.IsEmpty() ? container_coded_size : size_;
+  }
+
+  VideoColorSpace GetColorSpace(const VideoColorSpace& container_cs) const {
+    return container_cs.IsSpecified() ? container_cs : color_space_;
+  }
+
+  bool config_changed() const { return config_changed_; }
+
+  uint8_t bit_depth() const { return bit_depth_; }
+
+  base::span<const uint8_t> GetAV1CBox() const {
+    return {av1c_.get(), av1c_size_};
+  }
+
+ private:
+  libgav1::DecoderState state_;
+  libgav1::BufferPool buffer_pool_;
+
+  bool config_changed_ = false;
+
+  gfx::Size size_;
+  VideoColorSpace color_space_;
+  uint8_t bit_depth_ = 0;
+
+  std::unique_ptr<uint8_t[]> av1c_;
+  size_t av1c_size_ = 0;
 };
 
 void InitializeVideoToolbox() {
@@ -559,7 +678,8 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
     uint64_t total_size = 0;
     for (const auto& it : base::GetUnderlyingContainer(task_queue_)) {
       if (it.frame.get() && it.frame->image) {
-        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it.frame->image);
+        IOSurfaceRef io_surface =
+            CVPixelBufferGetIOSurface(it.frame->image.get());
         if (io_surface) {
           ++total_count;
           total_size += IOSurfaceGetAllocSize(io_surface);
@@ -584,7 +704,7 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
     uint64_t total_size = 0;
     for (const auto& it : base::GetUnderlyingContainer(reorder_queue_)) {
       if (it.get() && it->image) {
-        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it->image);
+        IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(it->image.get());
         if (io_surface) {
           ++total_count;
           total_size += IOSurfaceGetAllocSize(io_surface);
@@ -650,7 +770,8 @@ bool VTVideoDecodeAccelerator::FinishDelayedFrames() {
   DVLOG(3) << __func__;
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
   if (session_) {
-    OSStatus status = VTDecompressionSessionWaitForAsynchronousFrames(session_);
+    OSStatus status =
+        VTDecompressionSessionWaitForAsynchronousFrames(session_.get());
     output_count_for_cra_rasl_workaround_ = 0;
     if (status) {
       NOTIFY_STATUS("VTDecompressionSessionWaitForAsynchronousFrames()", status,
@@ -680,15 +801,36 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
       for (auto& it : seen_pps_)
         param_sets.push_back(it.second);
       format = CreateVideoFormatHEVC(param_sets);
+      bit_depth_ = (config_.profile == HEVCPROFILE_MAIN10 ||
+                    config_.profile == HEVCPROFILE_REXT)
+                       ? 10
+                       : 8;
       break;
     }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case VideoCodec::kVP9:
+      bit_depth_ = config_.profile == VP9PROFILE_PROFILE2 ? 10 : 8;
       format = CreateVideoFormatVP9(
-          cc_detector_->GetColorSpace(config_.container_color_space),
+          bit_depth_,
+          vp9_cc_detector_->GetColorSpace(config_.container_color_space),
           config_.profile, config_.hdr_metadata,
-          cc_detector_->GetCodedSize(config_.initial_expected_coded_size));
+          vp9_cc_detector_->GetCodedSize(config_.initial_expected_coded_size));
+
       break;
+
+    case VideoCodec::kAV1:
+      // Only 8, 10 bit depth are supported.
+      bit_depth_ = av1_cc_detector_->bit_depth();
+      if (bit_depth_ == 8 || bit_depth_ == 10) {
+        format = CreateVideoFormatAV1(
+            bit_depth_, av1_cc_detector_->GetAV1CBox(),
+            av1_cc_detector_->GetColorSpace(config_.container_color_space),
+            config_.hdr_metadata,
+            av1_cc_detector_->GetCodedSize(
+                config_.initial_expected_coded_size));
+      }
+      break;
+
     default:
       // We can reach this case for non-built-in codecs.
       break;
@@ -717,13 +859,11 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   // hardware acceleration may be unavailable for a number of reasons,
   // so just enable hardware and let vt choose whether to use
   // hardware of software decode
-  const bool require_hardware = config_.profile == VP9PROFILE_PROFILE0 ||
-                                config_.profile == VP9PROFILE_PROFILE2;
-  const bool is_hbd = config_.profile == VP9PROFILE_PROFILE2 ||
-                      config_.profile == HEVCPROFILE_MAIN10 ||
-                      config_.profile == HEVCPROFILE_REXT;
-  if (!CreateVideoToolboxSession(format_, require_hardware, is_hbd, has_alpha_,
-                                 &callback_, &session_, &configured_size_)) {
+  const bool require_hardware =
+      codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1;
+  if (!CreateVideoToolboxSession(format_.get(), require_hardware,
+                                 bit_depth_ > 8, has_alpha_, &callback_,
+                                 &session_, &configured_size_)) {
     NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
     return false;
   }
@@ -732,11 +872,11 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   bool using_hardware = false;
   base::apple::ScopedCFTypeRef<CFBooleanRef> cf_using_hardware;
   if (VTSessionCopyProperty(
-          session_,
+          session_.get(),
           // kVTDecompressionPropertyKey_UsingHardwareAcceleratedVideoDecoder
           CFSTR("UsingHardwareAcceleratedVideoDecoder"), kCFAllocatorDefault,
           cf_using_hardware.InitializeInto()) == 0) {
-    using_hardware = CFBooleanGetValue(cf_using_hardware);
+    using_hardware = CFBooleanGetValue(cf_using_hardware.get());
   }
   UMA_HISTOGRAM_BOOLEAN("Media.VTVDA.HardwareAccelerated", using_hardware);
 
@@ -759,6 +899,73 @@ bool VTVideoDecodeAccelerator::ConfigureDecoder() {
   return true;
 }
 
+void VTVideoDecodeAccelerator::DecodeTaskAv1(
+    scoped_refptr<DecoderBuffer> buffer,
+    Frame* frame) {
+  DVLOG(2) << __func__ << ": bit_stream=" << frame->bitstream_id
+           << ", buffer=" << buffer->AsHumanReadableString();
+  DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
+
+  if (!av1_cc_detector_) {
+    av1_cc_detector_ = std::make_unique<AV1ConfigChangeDetector>();
+  }
+  av1_cc_detector_->DetectConfig(buffer->data(), buffer->data_size());
+
+  if (!session_ || av1_cc_detector_->config_changed()) {
+    // ConfigureDecoder() calls NotifyError() on failure.
+    if (!ConfigureDecoder()) {
+      return;
+    }
+  }
+
+  // Now that the configuration is up to date, copy it into the frame.
+  frame->image_size = configured_size_;
+
+  auto data =
+      VP9SuperFrameBitstreamFilter::CreatePassthroughBuffer(std::move(buffer));
+  if (!data) {
+    WriteToMediaLog(MediaLogMessageLevel::kERROR, "Unsupported AV1 stream");
+    NotifyError(UNREADABLE_INPUT, SFT_INVALID_STREAM);
+    return;
+  }
+
+  // Package the data in a CMSampleBuffer.
+  base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
+  OSStatus status =
+      CMSampleBufferCreateReady(kCFAllocatorDefault,
+                                data.get(),     // data_buffer
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                0,              // num_sample_size_entries
+                                nullptr,        // &sample_size_array
+                                sample.InitializeInto());
+  if (status) {
+    NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
+    return;
+  }
+
+  // Send the frame for decoding.
+  // Asynchronous Decompression allows for parallel submission of frames
+  // (without it, DecodeFrame() does not return until the frame has been
+  // decoded). We don't enable Temporal Processing because we are not passing
+  // timestamps anyway.
+  VTDecodeFrameFlags decode_flags =
+      kVTDecodeFrame_EnableAsynchronousDecompression;
+  status = VTDecompressionSessionDecodeFrame(
+      session_.get(),
+      sample.get(),                    // sample_buffer
+      decode_flags,                    // decode_flags
+      reinterpret_cast<void*>(frame),  // source_frame_refcon
+      nullptr);                        // &info_flags_out
+  if (status) {
+    NOTIFY_STATUS("VTDecompressionSessionDecodeFrame()", status,
+                  SFT_DECODE_ERROR);
+    return;
+  }
+}
+
 void VTVideoDecodeAccelerator::DecodeTaskVp9(
     scoped_refptr<DecoderBuffer> buffer,
     Frame* frame) {
@@ -766,11 +973,12 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
            << ", buffer=" << buffer->AsHumanReadableString();
   DCHECK(decoder_task_runner_->RunsTasksInCurrentSequence());
 
-  if (!cc_detector_)
-    cc_detector_ = std::make_unique<VP9ConfigChangeDetector>();
-  cc_detector_->DetectConfig(buffer->data(), buffer->data_size());
+  if (!vp9_cc_detector_) {
+    vp9_cc_detector_ = std::make_unique<VP9ConfigChangeDetector>();
+  }
+  vp9_cc_detector_->DetectConfig(buffer->data(), buffer->data_size());
 
-  if (!session_ || cc_detector_->config_changed()) {
+  if (!session_ || vp9_cc_detector_->config_changed()) {
     // ConfigureDecoder() calls NotifyError() on failure.
     if (!ConfigureDecoder())
       return;
@@ -797,15 +1005,16 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
 
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
-  OSStatus status = CMSampleBufferCreateReady(kCFAllocatorDefault,
-                                              data,     // data_buffer
-                                              format_,  // format_description
-                                              1,        // num_samples
-                                              0,  // num_sample_timing_entries
-                                              nullptr,  // &sample_timing_array
-                                              0,  // num_sample_size_entries
-                                              nullptr,  // &sample_size_array
-                                              sample.InitializeInto());
+  OSStatus status =
+      CMSampleBufferCreateReady(kCFAllocatorDefault,
+                                data.get(),     // data_buffer
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                0,              // num_sample_size_entries
+                                nullptr,        // &sample_size_array
+                                sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
     return;
@@ -819,8 +1028,8 @@ void VTVideoDecodeAccelerator::DecodeTaskVp9(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
@@ -1147,7 +1356,7 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   // Make sure that the memory is actually allocated.
   // CMBlockBufferReplaceDataBytes() is documented to do this, but prints a
   // message each time starting in Mac OS X 10.10.
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status) {
     NOTIFY_STATUS("CMBlockBufferAssureBlockMemory()", status,
                   SFT_PLATFORM_ERROR);
@@ -1159,15 +1368,15 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   for (size_t i = 0; i < nalus.size(); i++) {
     H264NALU& nalu_ref = nalus[i];
     uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
@@ -1180,16 +1389,16 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,        // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                format_,     // format_description
-                                1,           // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // &sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // &sample_size_array
+                                data.get(),     // data_buffer
+                                true,           // data_ready
+                                nullptr,        // make_data_ready_callback
+                                nullptr,        // make_data_ready_refcon
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                1,              // num_sample_size_entries
+                                &data_size,     // &sample_size_array
                                 sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
@@ -1204,8 +1413,8 @@ void VTVideoDecodeAccelerator::DecodeTaskH264(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
@@ -1580,7 +1789,7 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   // Make sure that the memory is actually allocated.
   // CMBlockBufferReplaceDataBytes() is documented to do this, but prints a
   // message each time starting in Mac OS X 10.10.
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status) {
     NOTIFY_STATUS("CMBlockBufferAssureBlockMemory()", status,
                   SFT_PLATFORM_ERROR);
@@ -1592,15 +1801,15 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   for (size_t i = 0; i < nalus.size(); i++) {
     H265NALU& nalu_ref = nalus[i];
     uint32_t header = base::HostToNet32(static_cast<uint32_t>(nalu_ref.size));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
                     SFT_PLATFORM_ERROR);
       return;
     }
     offset += kNALUHeaderLength;
-    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_ref.data, data.get(), offset,
                                            nalu_ref.size);
     if (status) {
       NOTIFY_STATUS("CMBlockBufferReplaceDataBytes()", status,
@@ -1613,16 +1822,16 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   // Package the data in a CMSampleBuffer.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,        // data_buffer
-                                true,        // data_ready
-                                nullptr,     // make_data_ready_callback
-                                nullptr,     // make_data_ready_refcon
-                                format_,     // format_description
-                                1,           // num_samples
-                                0,           // num_sample_timing_entries
-                                nullptr,     // &sample_timing_array
-                                1,           // num_sample_size_entries
-                                &data_size,  // &sample_size_array
+                                data.get(),     // data_buffer
+                                true,           // data_ready
+                                nullptr,        // make_data_ready_callback
+                                nullptr,        // make_data_ready_refcon
+                                format_.get(),  // format_description
+                                1,              // num_samples
+                                0,              // num_sample_timing_entries
+                                nullptr,        // &sample_timing_array
+                                1,              // num_sample_size_entries
+                                &data_size,     // &sample_size_array
                                 sample.InitializeInto());
   if (status) {
     NOTIFY_STATUS("CMSampleBufferCreate()", status, SFT_PLATFORM_ERROR);
@@ -1637,8 +1846,8 @@ void VTVideoDecodeAccelerator::DecodeTaskHEVC(
   VTDecodeFrameFlags decode_flags =
       kVTDecodeFrame_EnableAsynchronousDecompression;
   status = VTDecompressionSessionDecodeFrame(
-      session_,
-      sample,                          // sample_buffer
+      session_.get(),
+      sample.get(),                    // sample_buffer
       decode_flags,                    // decode_flags
       reinterpret_cast<void*>(frame),  // source_frame_refcon
       nullptr);                        // &info_flags_out
@@ -1725,7 +1934,7 @@ void VTVideoDecodeAccelerator::FlushTask(TaskType type) {
   if (type == TASK_DESTROY) {
     if (session_) {
       // Destroy the decoding session before returning from the decoder thread.
-      VTDecompressionSessionInvalidate(session_);
+      VTDecompressionSessionInvalidate(session_.get());
       session_.reset();
     }
 
@@ -1776,6 +1985,11 @@ void VTVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
     decoder_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskVp9,
+                       decoder_weak_this_, std::move(buffer), frame));
+  } else if (codec_ == VideoCodec::kAV1) {
+    decoder_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&VTVideoDecodeAccelerator::DecodeTaskAv1,
                        decoder_weak_this_, std::move(buffer), frame));
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (codec_ == VideoCodec::kHEVC) {
@@ -1848,7 +2062,7 @@ void VTVideoDecodeAccelerator::ProcessWorkQueues() {
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   switch (state_) {
     case STATE_DECODING:
-      if (codec_ == VideoCodec::kVP9) {
+      if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
         while (state_ == STATE_DECODING) {
           if (!ProcessOutputQueue() && !ProcessTaskQueue())
             break;
@@ -1888,10 +2102,16 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
   if (task_queue_.empty())
     return false;
 
+  const bool has_sent_all_outputs =
+      ((codec_ == VideoCodec::kH264 || codec_ == VideoCodec::kHEVC) &&
+       reorder_queue_.size() == 0) ||
+      ((codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) &&
+       output_queue_.empty());
+
   Task& task = task_queue_.front();
   switch (task.type) {
     case TASK_FRAME: {
-      if (codec_ == VideoCodec::kVP9) {
+      if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
         // Once we've reached our maximum output queue size, defer end of
         // bitstream buffer signals to avoid piling up too many frames.
         if (output_queue_.size() >= limits::kMaxVideoFrames)
@@ -1923,8 +2143,7 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_FLUSH:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ != VideoCodec::kVP9 && reorder_queue_.size() == 0) ||
-          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
+      if (has_sent_all_outputs) {
         DVLOG(1) << "Flush complete";
         pending_flush_tasks_.pop();
         client_->NotifyFlushDone();
@@ -1935,8 +2154,7 @@ bool VTVideoDecodeAccelerator::ProcessTaskQueue() {
 
     case TASK_RESET:
       DCHECK_EQ(task.type, pending_flush_tasks_.front());
-      if ((codec_ != VideoCodec::kVP9 && reorder_queue_.size() == 0) ||
-          (codec_ == VideoCodec::kVP9 && output_queue_.empty())) {
+      if (has_sent_all_outputs) {
         DVLOG(1) << "Reset complete";
         waiting_for_idr_ = true;
         pending_flush_tasks_.pop();
@@ -2029,9 +2247,8 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
     if (has_alpha_) {
       si_format_ = viz::MultiPlaneFormat::kNV12A;
       picture_format_ = PIXEL_FORMAT_NV12A;
-    } else if (config_.profile == VP9PROFILE_PROFILE2 ||
-               config_.profile == HEVCPROFILE_MAIN10 ||
-               config_.profile == HEVCPROFILE_REXT) {
+    } else if (bit_depth_ > 8) {
+      DCHECK_EQ(bit_depth_, 10u);  // Only 8, 10 bit are supported.
       si_format_ = viz::MultiPlaneFormat::kP010;
       picture_format_ = PIXEL_FORMAT_P016LE;
     } else {
@@ -2064,16 +2281,16 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   PictureInfo* picture_info = it->second.get();
 
   gfx::ColorSpace color_space;
-  if (codec_ == VideoCodec::kVP9) {
+  if (codec_ == VideoCodec::kVP9 || codec_ == VideoCodec::kAV1) {
     // Prefer the color space from the config if available. It generally comes
     // from the color tag which is more expressive than the VP9 bitstream.
     color_space = config_.container_color_space.ToGfxColorSpace();
     if (!color_space.IsValid()) {
-      color_space = GetImageBufferColorSpace(frame.image);
+      color_space = GetImageBufferColorSpace(frame.image.get());
     }
   } else {
     // Otherwise prefer the frame color space.
-    color_space = GetImageBufferColorSpace(frame.image);
+    color_space = GetImageBufferColorSpace(frame.image.get());
     if (!color_space.IsValid()) {
       color_space = config_.container_color_space.ToGfxColorSpace();
     }
@@ -2120,7 +2337,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     gfx::GpuMemoryBufferHandle handle;
     handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
     handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-    handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image),
+    handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image.get()),
                             base::scoped_policy::RETAIN);
 
     gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
@@ -2191,7 +2408,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
                                     plane);
   }
 
-  if (IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(frame.image))) {
+  if (IOSurfaceIsWebGPUCompatible(
+          CVPixelBufferGetIOSurface(frame.image.get()))) {
     picture.set_is_webgpu_compatible(true);
   }
 
@@ -2286,6 +2504,8 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
   InitializeVideoToolbox();
 
   for (const auto& supported_profile : kSupportedProfiles) {
+    int max_dimension = 4096;
+
     if (supported_profile == VP9PROFILE_PROFILE0 ||
         supported_profile == VP9PROFILE_PROFILE2) {
       if (workarounds.disable_accelerated_vp9_decode)
@@ -2294,33 +2514,42 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         continue;
       // Success! We have VP9 hardware decoding support.
     }
+    if (supported_profile >= AV1PROFILE_MIN &&
+        supported_profile <= AV1PROFILE_MAX) {
+      if (workarounds.disable_accelerated_av1_decode) {
+        continue;
+      }
+      if (!base::FeatureList::IsEnabled(kVideoToolboxAv1Decoding)) {
+        continue;
+      }
+      if (!VTIsHardwareDecodeSupported(kCMVideoCodecType_AV1)) {
+        continue;
+      }
+
+      // Success! We have AV1 hardware decoding support.
+      max_dimension = 8192;
+    }
 
     if (supported_profile == HEVCPROFILE_MAIN ||
         supported_profile == HEVCPROFILE_MAIN10 ||
         supported_profile == HEVCPROFILE_MAIN_STILL_PICTURE ||
         supported_profile == HEVCPROFILE_REXT) {
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      if (!workarounds.disable_accelerated_hevc_decode &&
-          base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
-        if (__builtin_available(macOS 11.0, *)) {
-          // Success! We have HEVC hardware decoding (or software
-          // decoding if the hardware is not good enough) support too.
-          SupportedProfile profile;
-          profile.profile = supported_profile;
-          profile.min_resolution.SetSize(16, 16);
-          // max supported resolution -> 8k 👍
-          profile.max_resolution.SetSize(8192, 8192);
-          profiles.push_back(profile);
-        }
+      if (workarounds.disable_accelerated_hevc_decode) {
+        continue;
       }
-#endif  //  BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      continue;
+      if (!HasPlatformHevcSupport()) {
+        continue;
+      }
+      // Success! We have HEVC hardware decoding (or software
+      // decoding if the hardware is not good enough) support too.
+      // max supported resolution -> 8k 👍
+      max_dimension = 8192;
     }
 
     SupportedProfile profile;
     profile.profile = supported_profile;
     profile.min_resolution.SetSize(16, 16);
-    profile.max_resolution.SetSize(4096, 4096);
+    profile.max_resolution.SetSize(max_dimension, max_dimension);
     profiles.push_back(profile);
   }
   return profiles;

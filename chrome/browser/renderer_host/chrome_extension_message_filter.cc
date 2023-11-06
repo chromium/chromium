@@ -28,6 +28,8 @@
 #include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/common/message_bundle.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
 using content::BrowserThread;
 
 namespace {
@@ -164,3 +166,5 @@ void ChromeExtensionMessageFilter::OnProfileWillBeDestroyed(Profile* profile) {
   observed_profile_.Reset();
   profile_ = nullptr;
 }
+
+#endif

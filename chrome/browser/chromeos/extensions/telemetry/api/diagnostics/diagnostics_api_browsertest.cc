@@ -122,6 +122,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kBluetoothDiscovery,
         crosapi::DiagnosticsRoutineEnum::kBluetoothScanning,
         crosapi::DiagnosticsRoutineEnum::kBluetoothPairing,
+        crosapi::DiagnosticsRoutineEnum::kFan,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -164,7 +165,8 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "audio_driver",
               "bluetooth_discovery",
               "bluetooth_scanning",
-              "bluetooth_pairing"
+              "bluetooth_pairing",
+              "fan"
             ]
           }, response);
         chrome.test.succeed();
@@ -1315,6 +1317,37 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runAudioDriverRoutine() {
         const response =
           await chrome.os.diagnostics.runAudioDriverRoutine();
+        chrome.test.assertEq({id: 0, status: "ready"}, response);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
+                       RunFanRoutineSuccess) {
+  // Configure FakeDiagnosticsService.
+  {
+    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
+    expected_response->id = 0;
+    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
+
+    // Set the return value for a call to RunFanRoutine.
+    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
+    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
+
+    // Set the expected called routine.
+    fake_service_impl->SetExpectedLastCalledRoutine(
+        crosapi::DiagnosticsRoutineEnum::kFan);
+
+    SetServiceForTesting(std::move(fake_service_impl));
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function runFanRoutine() {
+        const response =
+          await chrome.os.diagnostics.runFanRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

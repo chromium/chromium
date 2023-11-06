@@ -84,11 +84,11 @@ TEST(ResourceRequestTest, IsFeatureEnabledForSubresourceRequestAssumingOptIn) {
   request_with_topics_opt_in.SetBrowsingTopics(true);
 
   ResourceRequest request_with_shared_storage_opt_in;
-  request_with_shared_storage_opt_in.SetSharedStorageWritable(true);
+  request_with_shared_storage_opt_in.SetSharedStorageWritableOptedIn(true);
 
   ResourceRequest request_with_both_opt_in;
   request_with_both_opt_in.SetBrowsingTopics(true);
-  request_with_both_opt_in.SetSharedStorageWritable(true);
+  request_with_both_opt_in.SetSharedStorageWritableOptedIn(true);
 
   const url::Origin origin_a =
       url::Origin::Create(GURL("https://example.com/"));

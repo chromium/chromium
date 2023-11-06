@@ -45,18 +45,13 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
-/**
- * Unit tests for {@link AutofillProgressDialogBridge}
- */
+/** Unit tests for {@link AutofillProgressDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AutofillProgressDialogBridgeTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mMocker = new JniMocker();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     private static final String PROGRESS_DIALOG_TITLE = "Verify your card";
     private static final String PROGRESS_DIALOG_MESSAGE = "Contacting your bank...";
@@ -64,16 +59,18 @@ public class AutofillProgressDialogBridgeTest {
     private static final String PROGRESS_DIALOG_BUTTON_LABEL = "Cancel";
     private static final long NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW = 100L;
 
-    @Mock
-    private AutofillProgressDialogBridge.Natives mNativeMock;
+    @Mock private AutofillProgressDialogBridge.Natives mNativeMock;
 
     private AutofillProgressDialogBridge mAutofillProgressDialogBridge;
     private FakeModalDialogManager mModalDialogManager;
     private Resources mResources;
 
     private void showProgressDialog(int titleIconId) {
-        mAutofillProgressDialogBridge.showDialog(PROGRESS_DIALOG_TITLE, PROGRESS_DIALOG_MESSAGE,
-                PROGRESS_DIALOG_BUTTON_LABEL, /* iconId= */ titleIconId);
+        mAutofillProgressDialogBridge.showDialog(
+                PROGRESS_DIALOG_TITLE,
+                PROGRESS_DIALOG_MESSAGE,
+                PROGRESS_DIALOG_BUTTON_LABEL,
+                /* iconId= */ titleIconId);
     }
 
     @Before
@@ -82,8 +79,10 @@ public class AutofillProgressDialogBridgeTest {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
         mAutofillProgressDialogBridge =
-                new AutofillProgressDialogBridge(NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW,
-                        mModalDialogManager, ApplicationProvider.getApplicationContext());
+                new AutofillProgressDialogBridge(
+                        NATIVE_AUTOFILL_PROGRESS_DIALOG_VIEW,
+                        mModalDialogManager,
+                        ApplicationProvider.getApplicationContext());
         mMocker.mock(AutofillProgressDialogBridgeJni.TEST_HOOKS, mNativeMock);
     }
 
@@ -151,10 +150,14 @@ public class AutofillProgressDialogBridgeTest {
         assertThat(model.get(ModalDialogProperties.TITLE)).isEqualTo(PROGRESS_DIALOG_TITLE);
 
         // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable = ResourcesCompat.getDrawable(
-                mResources, titleIconId, ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(getBitmap(expectedDrawable)
-                           .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        titleIconId,
+                        ApplicationProvider.getApplicationContext().getTheme());
+        assertTrue(
+                getBitmap(expectedDrawable)
+                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
 
         // Verify that title and title icon is not set by custom view.
         View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
@@ -180,8 +183,11 @@ public class AutofillProgressDialogBridgeTest {
 
         // Verify that the title icon set by custom view is correct.
         ImageView title_icon = (ImageView) customView.findViewById(R.id.title_icon);
-        Drawable expectedDrawable = ResourcesCompat.getDrawable(
-                mResources, titleIconId, ApplicationProvider.getApplicationContext().getTheme());
+        Drawable expectedDrawable =
+                ResourcesCompat.getDrawable(
+                        mResources,
+                        titleIconId,
+                        ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
 
@@ -192,8 +198,11 @@ public class AutofillProgressDialogBridgeTest {
 
     // Convert a drawable to a Bitmap for comparison.
     private static Bitmap getBitmap(Drawable drawable) {
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(),
-                drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap =
+                Bitmap.createBitmap(
+                        drawable.getIntrinsicWidth(),
+                        drawable.getIntrinsicHeight(),
+                        Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);

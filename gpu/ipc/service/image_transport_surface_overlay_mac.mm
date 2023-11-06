@@ -51,10 +51,8 @@ BASE_FEATURE(kAVFoundationOverlays,
              base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace
 
-ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
-    base::WeakPtr<ImageTransportSurfaceDelegate> delegate)
-    : delegate_(delegate),
-      use_remote_layer_api_(ui::RemoteLayerAPISupported()),
+ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL()
+    : use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),
       weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =

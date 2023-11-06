@@ -94,6 +94,82 @@ bool IsBlockedByBuildInfo() {
 }
 
 BASE_FEATURE(kVulkanV2, "VulkanV2", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kVulkanV3, "VulkanV3", base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
+                                    const base::Feature* feature) {
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+
+  const base::FeatureParam<std::string> kBlockListByHardware{
+      feature, "BlockListByHardware", ""};
+
+  const base::FeatureParam<std::string> kBlockListByBrand{
+      feature, "BlockListByBrand", ""};
+
+  const base::FeatureParam<std::string> kBlockListByDevice{
+      feature, "BlockListByDevice", ""};
+
+  const base::FeatureParam<std::string> kBlockListByAndroidBuildId{
+      feature, "BlockListByAndroidBuildId", ""};
+
+  const base::FeatureParam<std::string> kBlockListByManufacturer{
+      feature, "BlockListByManufacturer", ""};
+
+  const base::FeatureParam<std::string> kBlockListByModel{
+      feature, "BlockListByModel", ""};
+
+  const base::FeatureParam<std::string> kBlockListByBoard{
+      feature, "BlockListByBoard", ""};
+
+  const base::FeatureParam<std::string> kBlockListByAndroidBuildFP{
+      feature, "BlockListByAndroidBuildFP", ""};
+
+  const base::FeatureParam<std::string> kBlockListByGLDriver{
+      feature, "BlockListByGLDriver", ""};
+
+  const base::FeatureParam<std::string> kBlockListByGLRenderer{
+      feature, "BlockListByGLRenderer", ""};
+
+  // Check block list against build info.
+  if (IsDeviceBlocked(build_info->hardware(), kBlockListByHardware.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->brand(), kBlockListByBrand.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->device(), kBlockListByDevice.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->android_build_id(),
+                      kBlockListByAndroidBuildId.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->manufacturer(),
+                      kBlockListByManufacturer.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->model(), kBlockListByModel.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->board(), kBlockListByBoard.Get())) {
+    return true;
+  }
+  if (IsDeviceBlocked(build_info->android_build_fp(),
+                      kBlockListByAndroidBuildFP.Get())) {
+    return true;
+  }
+
+  if (IsDeviceBlocked(gpu_info.gl_renderer, kBlockListByGLRenderer.Get())) {
+    return true;
+  }
+
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      kBlockListByGLDriver.Get())) {
+    return true;
+  }
+
+  return false;
+}
 
 bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
                        base::StringPiece experiment_arm) {
@@ -108,76 +184,12 @@ bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
     return false;
   }
 
-  const base::FeatureParam<std::string> kBlockListByHardware{
-      &kVulkanV2, "BlockListByHardware", ""};
-
-  const base::FeatureParam<std::string> kBlockListByBrand{
-      &kVulkanV2, "BlockListByBrand", ""};
-
-  const base::FeatureParam<std::string> kBlockListByDevice{
-      &kVulkanV2, "BlockListByDevice", ""};
-
-  const base::FeatureParam<std::string> kBlockListByAndroidBuildId{
-      &kVulkanV2, "BlockListByAndroidBuildId", ""};
-
-  const base::FeatureParam<std::string> kBlockListByManufacturer{
-      &kVulkanV2, "BlockListByManufacturer", ""};
-
-  const base::FeatureParam<std::string> kBlockListByModel{
-      &kVulkanV2, "BlockListByModel", ""};
-
-  const base::FeatureParam<std::string> kBlockListByBoard{
-      &kVulkanV2, "BlockListByBoard", ""};
-
-  const base::FeatureParam<std::string> kBlockListByAndroidBuildFP{
-      &kVulkanV2, "BlockListByAndroidBuildFP", ""};
-
-  const base::FeatureParam<std::string> kBlockListByGLDriver{
-      &kVulkanV2, "BlockListByGLDriver", ""};
-
-  const base::FeatureParam<std::string> kBlockListByGLRenderer{
-      &kVulkanV2, "BlockListByGLRenderer", ""};
+  if (IsDeviceBlockedByFeatureParams(gpu_info, &kVulkanV2)) {
+    return false;
+  }
 
   const base::FeatureParam<std::string> kBlockListByExperimentArm{
       &kVulkanV2, "BlockListByExperimentArm", ""};
-
-  // Check block list against build info.
-  if (IsDeviceBlocked(build_info->hardware(), kBlockListByHardware.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->brand(), kBlockListByBrand.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->device(), kBlockListByDevice.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->android_build_id(),
-                      kBlockListByAndroidBuildId.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->manufacturer(),
-                      kBlockListByManufacturer.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->model(), kBlockListByModel.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->board(), kBlockListByBoard.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(build_info->android_build_fp(),
-                      kBlockListByAndroidBuildFP.Get())) {
-    return false;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gl_renderer, kBlockListByGLRenderer.Get())) {
-    return false;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                      kBlockListByGLDriver.Get())) {
-    return false;
-  }
 
   if (IsDeviceBlocked(experiment_arm, kBlockListByExperimentArm.Get())) {
     return false;
@@ -186,16 +198,94 @@ bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
   return true;
 }
 
-bool ShouldBypassImaginationBlock(const GPUInfo& gpu_info) {
+bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
+  return IsVulkanV2Enabled(gpu_info, "Mediatek");
+}
+
+// Imagination is allowed with V2.
+bool IsVulkanV2EnabledForImagination(const GPUInfo& gpu_info) {
   return IsVulkanV2Enabled(gpu_info, "Imagination");
 }
 
-bool ShouldBypassAdrenoBlock(const GPUInfo& gpu_info) {
-  return IsVulkanV2Enabled(gpu_info, "Adreno");
+// Everything except MediaTek.
+bool IsVulkanV1EnabledForMali(const GPUInfo& gpu_info) {
+  // https://crbug.com/1183702
+  if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*")) {
+    return false;
+  }
+  return true;
 }
 
-bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
-  return IsVulkanV2Enabled(gpu_info, "Mediatek");
+// Everything that passed 2022 deQP tests.
+bool IsVulkanV2EnabledForMali(const GPUInfo& gpu_info) {
+  // For V2 we MediaTek is allowed.
+  return ShouldBypassMediatekBlock(gpu_info);
+}
+
+// Only Adreno 630 with drivers newer than 444.0
+bool IsVulkanV1EnabledForAdreno(const GPUInfo& gpu_info,
+                                const VulkanPhysicalDeviceInfo& device_info) {
+  // https://crbug.com/1246857
+  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
+                      "324.0|331.0|334.0|378.0|415.0|420.0|444.0")) {
+    return false;
+  }
+
+  // https:://crbug.com/1165783: Performance is not yet as good as GL.
+  return device_info.properties.deviceName ==
+         base::StringPiece("Adreno (TM) 630");
+}
+
+// Adreno 630+ and 2022 deQP tests.
+bool IsVulkanV2EnabledForAdreno(const GPUInfo& gpu_info,
+                                const VulkanPhysicalDeviceInfo& device_info) {
+  std::vector<const char*> slow_gpus_for_v2 = {
+      "Adreno (TM) 2??", "Adreno (TM) 3??", "Adreno (TM) 4??",
+      "Adreno (TM) 5??", "Adreno (TM) 61?", "Adreno (TM) 62?",
+  };
+
+  const bool is_slow_gpu_for_v2 =
+      base::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
+        return base::MatchPattern(device_info.properties.deviceName, pattern);
+      });
+
+  // Don't run vulkan for old gpus or if we are not in v2.
+  return !is_slow_gpu_for_v2 && IsVulkanV2Enabled(gpu_info, "Adreno");
+}
+
+// Adreno 610+ and drivers 502+.
+bool IsVulkanV3EnabledForAdreno(const GPUInfo& gpu_info,
+                                const VulkanPhysicalDeviceInfo& device_info) {
+  std::vector<const char*> slow_gpus_for_v3 = {
+      "Adreno (TM) 2??",
+      "Adreno (TM) 3??",
+      "Adreno (TM) 4??",
+      "Adreno (TM) 5??",
+  };
+
+  const bool is_slow_gpu_for_v3 =
+      base::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
+        return base::MatchPattern(device_info.properties.deviceName, pattern);
+      });
+
+  if (is_slow_gpu_for_v3) {
+    return false;
+  }
+
+  constexpr uint32_t kMinVersion = 0x801F6000;  // 502.0
+  if (device_info.properties.driverVersion < kMinVersion) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kVulkanV3)) {
+    return false;
+  }
+
+  if (IsDeviceBlockedByFeatureParams(gpu_info, &kVulkanV3)) {
+    return false;
+  }
+
+  return true;
 }
 
 #endif
@@ -389,12 +479,6 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       return false;
     }
 
-    // https://crbug.com/1183702
-    if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*") &&
-        !ShouldBypassMediatekBlock(gpu_info)) {
-      return false;
-    }
-
     // Remove "Mali-" prefix.
     base::StringPiece device_name(device_info.properties.deviceName);
     if (!base::StartsWith(device_name, "Mali-")) {
@@ -414,45 +498,22 @@ bool CheckVulkanCompabilities(const VulkanInfo& vulkan_info,
       if (base::MatchPattern(device_name, slow_gpu))
         return false;
     }
+
+    return IsVulkanV1EnabledForMali(gpu_info) ||
+           IsVulkanV2EnabledForMali(gpu_info);
   }
 
   if (device_info.properties.vendorID == kVendorQualcomm) {
-    // https://crbug.com/1246857
-    if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                        "324.0|331.0|334.0|378.0|415.0|420.0|444.0") &&
-        !ShouldBypassAdrenoBlock(gpu_info)) {
-      return false;
-    }
-
-    // https:://crbug.com/1165783: Performance is not yet as good as GL.
-    if (device_info.properties.deviceName ==
-        base::StringPiece("Adreno (TM) 630")) {
-      return true;
-    }
-
-    std::vector<const char*> slow_gpus_for_v2 = {
-        "Adreno (TM) 2??", "Adreno (TM) 3??", "Adreno (TM) 4??",
-        "Adreno (TM) 5??", "Adreno (TM) 61?", "Adreno (TM) 62?",
-    };
-
-    const bool is_slow_gpu_for_v2 =
-        base::ranges::any_of(slow_gpus_for_v2, [&](const char* pattern) {
-          return base::MatchPattern(device_info.properties.deviceName, pattern);
-        });
-
-    // Don't run vulkan for old gpus or if we are not in v2.
-    if (is_slow_gpu_for_v2 || !ShouldBypassAdrenoBlock(gpu_info)) {
-      return false;
-    }
-
-    return true;
+    return IsVulkanV1EnabledForAdreno(gpu_info, device_info) ||
+           IsVulkanV2EnabledForAdreno(gpu_info, device_info) ||
+           IsVulkanV3EnabledForAdreno(gpu_info, device_info);
   }
 
   // https://crbug.com/1122650: Poor performance and untriaged crashes with
   // Imagination GPUs.
-  if (device_info.properties.vendorID == kVendorImagination &&
-      !ShouldBypassImaginationBlock(gpu_info)) {
-    return false;
+  if (device_info.properties.vendorID == kVendorImagination) {
+    // Not allowed with V1.
+    return IsVulkanV2EnabledForImagination(gpu_info);
   }
 
   // Some devices implement Vulkan using Swiftshader. We do not want those,

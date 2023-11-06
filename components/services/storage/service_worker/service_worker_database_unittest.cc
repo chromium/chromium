@@ -24,6 +24,7 @@
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
@@ -601,7 +602,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data1.script = URL(origin1, "/script1.js");
   data1.version_id = 1000;
   data1.resources_total_size_bytes = 100;
-  data1.script_response_time = base::Time::FromJsTime(0);
+  data1.script_response_time = base::Time::UnixEpoch();
   data1.ancestor_frame_type = blink::mojom::AncestorFrameType::kNormalFrame;
   data1.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
@@ -627,7 +628,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data2.script = URL(origin2, "/script2.js");
   data2.version_id = 2000;
   data2.resources_total_size_bytes = 200;
-  data2.script_response_time = base::Time::FromJsTime(42);
+  data2.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(42);
   data2.ancestor_frame_type = blink::mojom::AncestorFrameType::kFencedFrame;
   data2.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
@@ -655,7 +656,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data3.script = URL(origin3, "/script3.js");
   data3.version_id = 3000;
   data3.resources_total_size_bytes = 300;
-  data3.script_response_time = base::Time::FromJsTime(420);
+  data3.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(420);
   data3.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data3.policy_container_policies->cross_origin_embedder_policy =
@@ -673,7 +674,7 @@ TEST(ServiceWorkerDatabaseTest, GetRegistrationsForStorageKey) {
   data4.script = URL(origin3, "/script4.js");
   data4.version_id = 4000;
   data4.resources_total_size_bytes = 400;
-  data4.script_response_time = base::Time::FromJsTime(4200);
+  data4.script_response_time = base::Time::FromMillisecondsSinceUnixEpoch(4200);
   data4.policy_container_policies =
       blink::mojom::PolicyContainerPolicies::New();
   data4.policy_container_policies->cross_origin_embedder_policy =
@@ -3362,7 +3363,7 @@ TEST(ServiceWorkerDatabaseTest, PolicyContainerPoliciesStoreRestore) {
 // impl can still be correctly read by the blink::StorageKey impl.
 TEST(ServiceWorkerDatabaseTest, StorageKeyImplCanReadPreviousOriginImplDB) {
   base::FilePath root_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &root_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
   base::FilePath database_dir = root_path.AppendASCII(
       "components/test/data/service_worker/created_by_origin_impl/Database/");
 
@@ -3593,8 +3594,6 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
     url_pattern.protocol.emplace_back(liburlpattern::PartType::kFixed, "https",
                                       liburlpattern::Modifier::kNone);
@@ -3617,8 +3616,47 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     url_pattern.hash.emplace_back(liburlpattern::PartType::kFixed, "hash",
                                   liburlpattern::Modifier::kNone);
     url_pattern.options.ignore_case = true;
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.emplace_back(condition);
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // `or` condition
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    blink::ServiceWorkerRouterOrCondition or_condition;
+    {
+      or_condition.conditions =
+          std::vector(3, blink::ServiceWorkerRouterCondition::WithRequest({}));
+    }
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithOrCondition(or_condition);
+
+    blink::ServiceWorkerRouterSource source;
+    source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
+    source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+    rule.sources.emplace_back(source);
+    router_rules.rules.emplace_back(rule);
+
+    store_and_restore(router_rules);
+  }
+
+  // empty request
+  {
+    blink::ServiceWorkerRouterRules router_rules;
+    blink::ServiceWorkerRouterRule rule;
+    {
+      // test with request.
+      rule.condition = blink::ServiceWorkerRouterCondition::WithRequest({});
+    }
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
@@ -3634,80 +3672,46 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
     {
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
       blink::SafeUrlPattern url_pattern;
-      url_pattern.protocol.emplace_back(liburlpattern::PartType::kFixed,
-                                        "https",
-                                        liburlpattern::Modifier::kNone);
-      url_pattern.username.emplace_back(liburlpattern::PartType::kFixed,
-                                        "username",
-                                        liburlpattern::Modifier::kNone);
-      url_pattern.password.emplace_back(liburlpattern::PartType::kFixed,
-                                        "password",
-                                        liburlpattern::Modifier::kNone);
-      url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
-                                        "example.com",
-                                        liburlpattern::Modifier::kNone);
-      url_pattern.port.emplace_back(liburlpattern::PartType::kFixed, "8000",
-                                    liburlpattern::Modifier::kNone);
-      url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
-                                        "/test_data",
-                                        liburlpattern::Modifier::kNone);
-      url_pattern.search.emplace_back(liburlpattern::PartType::kFixed, "search",
-                                      liburlpattern::Modifier::kNone);
-      url_pattern.hash.emplace_back(liburlpattern::PartType::kFixed, "hash",
-                                    liburlpattern::Modifier::kNone);
-      condition.url_pattern = std::move(url_pattern);
-      rule.conditions.push_back(condition);
-    }
-    {
-      // test with full data.
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      blink::ServiceWorkerRouterRequestCondition request;
-      request.method = "GET";
-      request.mode = network::mojom::RequestMode::kNavigate;
-      request.destination = network::mojom::RequestDestination::kDocument;
-      condition.request = request;
-      rule.conditions.push_back(condition);
-    }
-    {
-      // test with empty data.
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      blink::ServiceWorkerRouterRequestCondition request;
-      condition.request = request;
-      rule.conditions.push_back(condition);
-    }
-    {
-      // test for running status.
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type =
-          blink::ServiceWorkerRouterCondition::Type::kRunningStatus;
-      blink::ServiceWorkerRouterRunningStatusCondition running_status;
-      running_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
-          RunningStatusEnum::kRunning;
-      condition.running_status = running_status;
-      rule.conditions.push_back(condition);
-    }
-    {
-      // test for `or` condition
-      blink::ServiceWorkerRouterCondition condition;
-      condition.type = blink::ServiceWorkerRouterCondition::Type::kOr;
-      blink::ServiceWorkerRouterOrCondition or_condition;
-      blink::ServiceWorkerRouterConditionObject fake_object;
       {
-        blink::ServiceWorkerRouterCondition fake;
-        fake.type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-        blink::ServiceWorkerRouterRequestCondition request;
-        fake.request = request;
-
-        fake_object.conditions = std::vector(3, fake);
+        url_pattern.protocol.emplace_back(liburlpattern::PartType::kFixed,
+                                          "https",
+                                          liburlpattern::Modifier::kNone);
+        url_pattern.username.emplace_back(liburlpattern::PartType::kFixed,
+                                          "username",
+                                          liburlpattern::Modifier::kNone);
+        url_pattern.password.emplace_back(liburlpattern::PartType::kFixed,
+                                          "password",
+                                          liburlpattern::Modifier::kNone);
+        url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
+                                          "example.com",
+                                          liburlpattern::Modifier::kNone);
+        url_pattern.port.emplace_back(liburlpattern::PartType::kFixed, "8000",
+                                      liburlpattern::Modifier::kNone);
+        url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
+                                          "/test_data",
+                                          liburlpattern::Modifier::kNone);
+        url_pattern.search.emplace_back(liburlpattern::PartType::kFixed,
+                                        "search",
+                                        liburlpattern::Modifier::kNone);
+        url_pattern.hash.emplace_back(liburlpattern::PartType::kFixed, "hash",
+                                      liburlpattern::Modifier::kNone);
       }
-      or_condition.objects = std::vector(3, fake_object);
-      condition.or_condition = or_condition;
-      rule.conditions.push_back(condition);
+      // test with request.
+      blink::ServiceWorkerRouterRequestCondition request;
+      {
+        request.method = "GET";
+        request.mode = network::mojom::RequestMode::kNavigate;
+        request.destination = network::mojom::RequestDestination::kDocument;
+      }
+      // test for running status.
+      blink::ServiceWorkerRouterRunningStatusCondition running_status;
+      {
+        running_status.status =
+            blink::ServiceWorkerRouterRunningStatusCondition::
+                RunningStatusEnum::kRunning;
+      }
+      rule.condition = {url_pattern, request, running_status, absl::nullopt};
     }
 
     blink::ServiceWorkerRouterSource source;
@@ -3723,8 +3727,6 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
@@ -3738,8 +3740,8 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
                                       "name", "prefix", "", "suffix",
                                       liburlpattern::Modifier::kOneOrMore);
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.emplace_back(condition);
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
@@ -3754,8 +3756,6 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
     url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
                                       "example.com",
@@ -3769,8 +3769,8 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     url_pattern.hostname.emplace_back(liburlpattern::PartType::kSegmentWildcard,
                                       "name", "prefix", "", "suffix",
                                       liburlpattern::Modifier::kOneOrMore);
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.emplace_back(condition);
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
@@ -3785,8 +3785,6 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
     url_pattern.hostname.emplace_back(liburlpattern::PartType::kFixed,
                                       "example.com",
@@ -3794,8 +3792,8 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.emplace_back(condition);
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
 
     {
       blink::ServiceWorkerRouterSource source;
@@ -3838,14 +3836,12 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesStoreRestore) {
   {
     blink::ServiceWorkerRouterRules router_rules;
     blink::ServiceWorkerRouterRule rule;
-    blink::ServiceWorkerRouterCondition condition;
-    condition.type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
     blink::SafeUrlPattern url_pattern;
     url_pattern.pathname.emplace_back(liburlpattern::PartType::kFixed,
                                       "/test_data",
                                       liburlpattern::Modifier::kNone);
-    condition.url_pattern = std::move(url_pattern);
-    rule.conditions.emplace_back(condition);
+    rule.condition =
+        blink::ServiceWorkerRouterCondition::WithUrlPattern(url_pattern);
 
     blink::ServiceWorkerRouterSource source;
     source.type = blink::ServiceWorkerRouterSource::Type::kNetwork;
@@ -3926,8 +3922,10 @@ TEST(ServiceWorkerDatabaseTest, RouterRulesLegacyPathname) {
       url_pattern.hash.push_back(part);
     }
 
-    EXPECT_EQ(url_pattern,
-              registration->router_rules->rules[0].conditions[0].url_pattern);
+    const auto& registered_url_pattern =
+        std::get<absl::optional<blink::SafeUrlPattern>&>(
+            registration->router_rules->rules[0].condition.get());
+    EXPECT_EQ(url_pattern, registered_url_pattern);
   }
 }
 

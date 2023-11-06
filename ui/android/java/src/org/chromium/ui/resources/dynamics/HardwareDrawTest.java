@@ -43,43 +43,52 @@ public class HardwareDrawTest extends BlankUiTestActivityTestCase {
     private HardwareDraw mHardwareDraw;
     private List<Bitmap> mCapturedBitmaps;
 
-    private CaptureObserver mCaptureObserver = new CaptureObserver() {
-        @Override
-        public void onCaptureStart(Canvas canvas, Rect dirtyRect) {}
-        @Override
-        public void onCaptureEnd() {}
-    };
+    private CaptureObserver mCaptureObserver =
+            new CaptureObserver() {
+                @Override
+                public void onCaptureStart(Canvas canvas, Rect dirtyRect) {}
 
-    Callback<Bitmap> mOnCapture = (Bitmap bitmap) -> {
-        mCapturedBitmaps.add(bitmap);
-    };
+                @Override
+                public void onCaptureEnd() {}
+            };
+
+    Callback<Bitmap> mOnCapture =
+            (Bitmap bitmap) -> {
+                mCapturedBitmaps.add(bitmap);
+            };
 
     private boolean startBitmapCapture() {
         AtomicBoolean atomicBoolean = new AtomicBoolean();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Rect dirtyRect = new Rect(0, 0, mView.getWidth(), mView.getHeight());
-            atomicBoolean.set(mHardwareDraw.startBitmapCapture(
-                    mView, dirtyRect, 1, mCaptureObserver, mOnCapture));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Rect dirtyRect = new Rect(0, 0, mView.getWidth(), mView.getHeight());
+                    atomicBoolean.set(
+                            mHardwareDraw.startBitmapCapture(
+                                    mView, dirtyRect, 1, mCaptureObserver, mOnCapture));
+                });
         return atomicBoolean.get();
     }
 
     @Before
     public void setup() {
         mCapturedBitmaps = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            mView = new LinearLayout(activity);
-            activity.setContentView(mView);
-            mHardwareDraw = new HardwareDraw();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    mView = new LinearLayout(activity);
+                    activity.setContentView(mView);
+                    mHardwareDraw = new HardwareDraw();
+                });
     }
 
     @Test
     @SmallTest
     public void testDropCachedBitmap_notInitialized() {
         // Verifies we do not NPE during #dropCachedBitmap, see https://crbug.com/1344654.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mHardwareDraw.dropCachedBitmap(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHardwareDraw.dropCachedBitmap();
+                });
     }
 
     @Test
@@ -88,7 +97,10 @@ public class HardwareDrawTest extends BlankUiTestActivityTestCase {
         // Verifies rapid captures does not get stuck, see https://crbug.com/1344612. This test is
         // inherently racy and it is likely it could let false negatives through.
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mHardwareDraw.onViewSizeChange(mView, 1); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mHardwareDraw.onViewSizeChange(mView, 1);
+                });
 
         final int minCompletedCaptures = 2;
         final int minRequestCaptures = 100;
@@ -115,16 +127,23 @@ public class HardwareDrawTest extends BlankUiTestActivityTestCase {
         }
 
         final int finalExpectedCount = captureTakenCount;
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Not all captures completed.", mCapturedBitmaps.size(),
-                    Matchers.equalTo(finalExpectedCount));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Not all captures completed.",
+                            mCapturedBitmaps.size(),
+                            Matchers.equalTo(finalExpectedCount));
+                });
 
         // With the above waits, a typical device will see ~20 captures before hitting
         // minRequestCaptures. And if it continues to until maxRequestCaptures, we see ~90 captures.
         // We need all devices to see at least 2 captures 100% of the time to avoid flakes.
-        Assert.assertTrue("Only " + mCapturedBitmaps.size()
-                        + " successful captures. Expected at least " + minCompletedCaptures + ".",
+        Assert.assertTrue(
+                "Only "
+                        + mCapturedBitmaps.size()
+                        + " successful captures. Expected at least "
+                        + minCompletedCaptures
+                        + ".",
                 mCapturedBitmaps.size() >= minCompletedCaptures);
     }
 }

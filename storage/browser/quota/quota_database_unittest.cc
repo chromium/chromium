@@ -521,25 +521,25 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   AssignBucketTable(db.get(), kTableEntries);
 
   // Update access time for three temporary storages, and
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id1, base::Time::FromJavaTime(10)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id2, base::Time::FromJavaTime(20)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id3, base::Time::FromJavaTime(30)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id1, base::Time::FromMillisecondsSinceUnixEpoch(10)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id2, base::Time::FromMillisecondsSinceUnixEpoch(20)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id3, base::Time::FromMillisecondsSinceUnixEpoch(30)),
+            QuotaError::kNone);
 
   // One persistent.
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id4, base::Time::FromJavaTime(40)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id4, base::Time::FromMillisecondsSinceUnixEpoch(40)),
+            QuotaError::kNone);
 
   // One non-existent.
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(BucketId(777), base::Time::FromJavaTime(40)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                BucketId(777), base::Time::FromMillisecondsSinceUnixEpoch(40)),
+            QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketLocator> result,
@@ -640,12 +640,12 @@ TEST_P(QuotaDatabaseTest, BucketPersistence) {
   Entry kTableEntries[] = {bucket1->Clone(), bucket2->Clone()};
   AssignBucketTable(db.get(), kTableEntries);
 
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id1, base::Time::FromJavaTime(10)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastAccessTime(bucket_id2, base::Time::FromJavaTime(20)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id1, base::Time::FromMillisecondsSinceUnixEpoch(10)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(
+                bucket_id2, base::Time::FromMillisecondsSinceUnixEpoch(20)),
+            QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(
       std::set<BucketLocator> result,
@@ -746,23 +746,23 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
           kDefaultBucketName, kSync));
 
   // Report last modified time for the buckets.
-  EXPECT_EQ(
-      db->SetBucketLastModifiedTime(bucket1.id, base::Time::FromJavaTime(0)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastModifiedTime(bucket2.id, base::Time::FromJavaTime(10)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastModifiedTime(bucket3.id, base::Time::FromJavaTime(20)),
-      QuotaError::kNone);
-  EXPECT_EQ(
-      db->SetBucketLastModifiedTime(bucket4.id, base::Time::FromJavaTime(30)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastModifiedTime(
+                bucket1.id, base::Time::FromMillisecondsSinceUnixEpoch(0)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastModifiedTime(
+                bucket2.id, base::Time::FromMillisecondsSinceUnixEpoch(10)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastModifiedTime(
+                bucket3.id, base::Time::FromMillisecondsSinceUnixEpoch(20)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastModifiedTime(
+                bucket4.id, base::Time::FromMillisecondsSinceUnixEpoch(30)),
+            QuotaError::kNone);
 
   // Non-existent bucket.
-  EXPECT_EQ(
-      db->SetBucketLastModifiedTime(BucketId(777), base::Time::FromJavaTime(0)),
-      QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastModifiedTime(
+                BucketId(777), base::Time::FromMillisecondsSinceUnixEpoch(0)),
+            QuotaError::kNone);
 
   ASSERT_OK_AND_ASSIGN(buckets, db->GetBucketsModifiedBetween(
                                     kTemp, base::Time(), base::Time::Max()));
@@ -772,9 +772,10 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
   EXPECT_TRUE(ContainsBucket(buckets, bucket3));
   EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
-  ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
-                                             base::Time::Max()));
+  ASSERT_OK_AND_ASSIGN(buckets,
+                       db->GetBucketsModifiedBetween(
+                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(5),
+                           base::Time::Max()));
   EXPECT_EQ(2U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
@@ -783,7 +784,8 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   ASSERT_OK_AND_ASSIGN(
       buckets, db->GetBucketsModifiedBetween(
-                   kTemp, base::Time::FromJavaTime(15), base::Time::Max()));
+                   kTemp, base::Time::FromMillisecondsSinceUnixEpoch(15),
+                   base::Time::Max()));
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_FALSE(ContainsBucket(buckets, bucket2));
@@ -792,30 +794,34 @@ TEST_P(QuotaDatabaseTest, BucketLastModifiedBetween) {
 
   ASSERT_OK_AND_ASSIGN(
       buckets, db->GetBucketsModifiedBetween(
-                   kTemp, base::Time::FromJavaTime(25), base::Time::Max()));
+                   kTemp, base::Time::FromMillisecondsSinceUnixEpoch(25),
+                   base::Time::Max()));
   EXPECT_TRUE(buckets.empty());
 
-  ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(5),
-                                             base::Time::FromJavaTime(15)));
+  ASSERT_OK_AND_ASSIGN(buckets,
+                       db->GetBucketsModifiedBetween(
+                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(5),
+                           base::Time::FromMillisecondsSinceUnixEpoch(15)));
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_FALSE(ContainsBucket(buckets, bucket3));
   EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
-  ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(kTemp, base::Time::FromJavaTime(0),
-                                             base::Time::FromJavaTime(20)));
+  ASSERT_OK_AND_ASSIGN(buckets,
+                       db->GetBucketsModifiedBetween(
+                           kTemp, base::Time::FromMillisecondsSinceUnixEpoch(0),
+                           base::Time::FromMillisecondsSinceUnixEpoch(20)));
   EXPECT_EQ(2U, buckets.size());
   EXPECT_TRUE(ContainsBucket(buckets, bucket1));
   EXPECT_TRUE(ContainsBucket(buckets, bucket2));
   EXPECT_FALSE(ContainsBucket(buckets, bucket3));
   EXPECT_FALSE(ContainsBucket(buckets, bucket4));
 
-  ASSERT_OK_AND_ASSIGN(
-      buckets, db->GetBucketsModifiedBetween(kSync, base::Time::FromJavaTime(0),
-                                             base::Time::FromJavaTime(35)));
+  ASSERT_OK_AND_ASSIGN(buckets,
+                       db->GetBucketsModifiedBetween(
+                           kSync, base::Time::FromMillisecondsSinceUnixEpoch(0),
+                           base::Time::FromMillisecondsSinceUnixEpoch(35)));
   EXPECT_EQ(1U, buckets.size());
   EXPECT_FALSE(ContainsBucket(buckets, bucket1));
   EXPECT_FALSE(ContainsBucket(buckets, bucket2));
@@ -851,7 +857,7 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
 
   EXPECT_EQ(db->SetStorageKeyLastAccessTime(
                 StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
-                base::Time::FromDoubleT(1.0)),
+                base::Time::FromSecondsSinceUnixEpoch(1.0)),
             QuotaError::kNone);
   ASSERT_OK_AND_ASSIGN(info, db->GetBucketInfoForTest(bucket_result.id));
   EXPECT_EQ(1, info->use_count);

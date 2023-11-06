@@ -23,11 +23,12 @@ namespace base {
 
 TEST(ContiguousIteratorTest, ForwardIterator) {
   using ForwardIterator = std::forward_list<int>::iterator;
-  static_assert(std::is_same<std::forward_iterator_tag,
-                             typename std::iterator_traits<
-                                 ForwardIterator>::iterator_category>::value,
-                "Error: The iterator_category of ForwardIterator is not "
-                "std::forward_iterator_tag.");
+  static_assert(
+      std::is_same_v<
+          std::forward_iterator_tag,
+          typename std::iterator_traits<ForwardIterator>::iterator_category>,
+      "Error: The iterator_category of ForwardIterator is not "
+      "std::forward_iterator_tag.");
   static_assert(
       !IsContiguousIterator<ForwardIterator>::value,
       "Error: ForwardIterator should not be considered a contiguous iterator.");
@@ -44,12 +45,11 @@ TEST(ContiguousIteratorTest, ForwardIterator) {
 
 TEST(ContiguousIteratorTest, BidirectionalIterator) {
   using BidirectionalIterator = std::set<int>::iterator;
-  static_assert(
-      std::is_same<std::bidirectional_iterator_tag,
-                   typename std::iterator_traits<
-                       BidirectionalIterator>::iterator_category>::value,
-      "Error: The iterator_category of BidirectionalIterator is not "
-      "std::bidirectional_iterator_tag.");
+  static_assert(std::is_same_v<std::bidirectional_iterator_tag,
+                               typename std::iterator_traits<
+                                   BidirectionalIterator>::iterator_category>,
+                "Error: The iterator_category of BidirectionalIterator is not "
+                "std::bidirectional_iterator_tag.");
   static_assert(!IsContiguousIterator<BidirectionalIterator>::value,
                 "Error: BidirectionalIterator should not be considered a "
                 "contiguous iterator.");
@@ -70,12 +70,11 @@ TEST(ContiguousIteratorTest, BidirectionalIterator) {
 
 TEST(ContiguousIteratorTest, RandomAccessIterator) {
   using RandomAccessIterator = std::deque<int>::iterator;
-  static_assert(
-      std::is_same<std::random_access_iterator_tag,
-                   typename std::iterator_traits<
-                       RandomAccessIterator>::iterator_category>::value,
-      "Error: The iterator_category of RandomAccessIterator is not "
-      "std::random_access_iterator_tag.");
+  static_assert(std::is_same_v<std::random_access_iterator_tag,
+                               typename std::iterator_traits<
+                                   RandomAccessIterator>::iterator_category>,
+                "Error: The iterator_category of RandomAccessIterator is not "
+                "std::random_access_iterator_tag.");
   static_assert(!IsContiguousIterator<RandomAccessIterator>::value,
                 "Error: RandomAccessIterator should not be considered a "
                 "contiguous iterator.");

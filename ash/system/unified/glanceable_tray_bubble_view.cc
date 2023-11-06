@@ -5,12 +5,14 @@
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
 #include <algorithm>
+#include <memory>
 
+#include "ash/api/tasks/tasks_client.h"
+#include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/glanceables_classroom_client.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/tasks/glanceables_tasks_client.h"
-#include "ash/glanceables/tasks/glanceables_tasks_types.h"
+#include "ash/glanceables/tasks/glanceables_tasks_view.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -23,6 +25,7 @@
 #include "ash/system/unified/classroom_bubble_teacher_view.h"
 #include "ash/system/unified/tasks_bubble_view.h"
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -308,16 +311,23 @@ void GlanceableTrayBubbleView::AddClassroomBubbleViewIfNeeded(
 }
 
 void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
-    ui::ListModel<GlanceablesTaskList>* task_lists) {
+    const ui::ListModel<api::TaskList>* task_lists) {
   if (task_lists->item_count() == 0) {
     return;
   }
   // Add tasks bubble before everything.
   auto* const scroll_contents = scroll_view_->contents();
-  tasks_bubble_view_ = scroll_contents->AddChildViewAt(
-      std::make_unique<TasksBubbleView>(detailed_view_delegate_.get(),
-                                        task_lists),
-      0);
+
+  std::unique_ptr<GlanceablesTasksViewBase> view;
+  if (base::FeatureList::IsEnabled(
+          features::kGlanceablesTimeManagementStableLaunch)) {
+    view = std::make_unique<GlanceablesTasksView>(detailed_view_delegate_.get(),
+                                                  task_lists);
+  } else {
+    view = std::make_unique<TasksBubbleView>(detailed_view_delegate_.get(),
+                                             task_lists);
+  }
+  tasks_bubble_view_ = scroll_contents->AddChildViewAt(std::move(view), 0);
 
   views::View* const default_focused_child =
       scroll_contents->GetChildrenFocusList().front();

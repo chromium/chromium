@@ -6,11 +6,15 @@
 
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -21,6 +25,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/style/typography.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -31,12 +36,14 @@ constexpr gfx::Tween::Type kTweenType = gfx::Tween::FAST_OUT_SLOW_IN_2;
 WebAppOriginText::WebAppOriginText(Browser* browser) {
   DCHECK(web_app::AppBrowserController::IsWebApp(browser));
 
+  browser->tab_strip_model()->AddObserver(this);
+  Observe(browser->tab_strip_model()->GetActiveWebContents());
+
   SetID(VIEW_ID_WEB_APP_ORIGIN_TEXT);
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   label_ = std::make_unique<views::Label>(
-               browser->app_controller()->GetLaunchFlashText(),
-               ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
+               origin_text_, ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
                views::style::STYLE_EMPHASIZED)
                .release();
   label_->SetElideBehavior(gfx::ELIDE_HEAD);
@@ -66,7 +73,15 @@ void WebAppOriginText::SetTextColor(SkColor color, bool show_text) {
     StartFadeAnimation();
 }
 
+void WebAppOriginText::SetAllowedToAnimate(bool allowed) {
+  allowed_to_animate_ = allowed;
+}
+
 void WebAppOriginText::StartFadeAnimation() {
+  if (!allowed_to_animate_) {
+    return;
+  }
+
   SetVisible(true);
 
   ui::Layer* label_layer = label_->layer();
@@ -106,7 +121,58 @@ void WebAppOriginText::OnLayerAnimationEnded(
 
 void WebAppOriginText::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kApplication;
-  node_data->SetNameChecked(label_->GetText());
+  if (!label_->GetText().empty()) {
+    node_data->SetNameChecked(label_->GetText());
+  }
+}
+
+const std::u16string& WebAppOriginText::GetLabelTextForTesting() {
+  CHECK(label_ != nullptr);
+  return label_->GetText();
+}
+
+void WebAppOriginText::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (selection.active_tab_changed() && !tab_strip_model->empty()) {
+    Observe(selection.new_contents);
+  }
+}
+
+void WebAppOriginText::DidFinishNavigation(content::NavigationHandle* handle) {
+  if (!handle->IsInPrimaryMainFrame() || handle->IsSameDocument()) {
+    return;
+  }
+  content::WebContents* web_contents = handle->GetWebContents();
+  if (!web_contents) {
+    return;
+  }
+  Browser* browser = chrome::FindBrowserWithTab(web_contents);
+  if (!browser) {
+    return;
+  }
+  web_app::AppBrowserController* app_controller = browser->app_controller();
+  if (!app_controller) {
+    return;
+  }
+  std::u16string new_origin_text = app_controller->GetLaunchFlashText();
+  if (new_origin_text.empty() || new_origin_text == origin_text_) {
+    return;
+  }
+  origin_text_ = std::move(new_origin_text);
+  label_->SetText(origin_text_);
+  // CCT UI already displays origin information so there is no need to animate
+  // origin text.
+  // TODO(crbug.com/1485373): Instead of DidFinishNavigation, we can use
+  // ReadyToCommitNavigation if this logic does not consider
+  // ShouldShowCustomTabBar or if ShouldShowCustomTabBar can take pre-commit URL
+  // as input. ShouldShowCustomTabBar is currently implemented to be used after
+  // navigation has committed.
+  if (app_controller->ShouldShowCustomTabBar()) {
+    return;
+  }
+  StartFadeAnimation();
 }
 
 BEGIN_METADATA(WebAppOriginText, views::View)

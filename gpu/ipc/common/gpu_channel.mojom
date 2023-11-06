@@ -52,10 +52,7 @@ struct ContextCreationAttribs {
   gl.mojom.GpuPreference gpu_preference = kLowPower;
 
   // -1 if invalid or unspecified.
-  [EnableIf=is_android] int32 alpha_size = -1;
-  [EnableIf=is_android] int32 blue_size = -1;
-  [EnableIf=is_android] int32 green_size = -1;
-  [EnableIf=is_android] int32 red_size = -1;
+  [EnableIf=is_android] bool need_alpha = false;
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;
   bool lose_context_when_out_of_memory = false;
@@ -70,7 +67,7 @@ struct ContextCreationAttribs {
 };
 
 struct CreateCommandBufferParams {
-  SurfaceHandle surface_handle;
+  [EnableIf=is_android] SurfaceHandle surface_handle;
   int32 share_group_id;
   int32 stream_id;
   SchedulingPriority stream_priority;

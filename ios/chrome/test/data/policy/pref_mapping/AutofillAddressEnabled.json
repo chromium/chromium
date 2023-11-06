@@ -1,0 +1,29 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "autofill.profile_enabled": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AutofillAddressEnabled": false
+        },
+        "prefs": {
+          "autofill.profile_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

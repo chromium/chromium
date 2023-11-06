@@ -19,7 +19,6 @@ def CheckTryjobFooters(input_api, output_api):
       "Cq-Include-Trybots: luci.chromium.try:chromeos-amd64-generic-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:ios-simulator-siso\n"
       "Cq-Include-Trybots: luci.chromium.try:linux-siso-rel\n"
-      "Cq-Include-Trybots: luci.chromium.try:linux-wayland-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:linux_chromium_asan_siso_rel_ng\n"
       "Cq-Include-Trybots: luci.chromium.try:mac-siso-rel\n"
       "Cq-Include-Trybots: luci.chromium.try:win-siso-rel\n"

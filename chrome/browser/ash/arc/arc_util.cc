@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -43,11 +44,11 @@
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
@@ -233,10 +234,11 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
                          const std::vector<base::FilePath>& paths_to_share) {
   DCHECK(arc::IsArcVmEnabled() || paths_to_share.empty());
   std::vector<base::FilePath> path_list;
+  Profile* const profile = ProfileManager::GetPrimaryUserProfile();
+  DCHECK(profile);
   for (const auto& path : paths_to_share) {
-    if (!guest_os::GuestOsSharePath::GetForProfile(
-             ProfileManager::GetPrimaryUserProfile())
-             ->IsPathShared(arc::kArcVmName, path)) {
+    if (!guest_os::GuestOsSharePath::GetForProfile(profile)->IsPathShared(
+            kArcVmName, path)) {
       path_list.push_back(path);
     }
   }
@@ -245,29 +247,29 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
     return;
   }
 
-  const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
+  const auto& vm_info =
+      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+          kArcVmName);
   if (!vm_info) {
     LOG(WARNING) << "ARCVM not running, cannot share paths";
     std::move(callback).Run(std::vector<GURL>());
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(
-      ProfileManager::GetPrimaryUserProfile())
-      ->SharePaths(arc::kArcVmName, vm_info->seneschal_server_handle(),
-                   path_list,
-                   base::BindOnce(
-                       [](ConvertToContentUrlsAndShareCallback callback,
-                          const std::vector<GURL>& content_urls, bool success,
-                          const std::string& failure_reason) {
-                         if (success) {
-                           std::move(callback).Run(content_urls);
-                         } else {
-                           LOG(ERROR) << "Error sharing ARC content URLs: "
-                                      << failure_reason;
-                           std::move(callback).Run(std::vector<GURL>());
-                         }
-                       },
-                       std::move(callback), content_urls));
+  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
+      kArcVmName, vm_info->seneschal_server_handle(), path_list,
+      base::BindOnce(
+          [](ConvertToContentUrlsAndShareCallback callback,
+             const std::vector<GURL>& content_urls, bool success,
+             const std::string& failure_reason) {
+            if (success) {
+              std::move(callback).Run(content_urls);
+            } else {
+              LOG(ERROR) << "Error sharing ARC content URLs: "
+                         << failure_reason;
+              std::move(callback).Run(std::vector<GURL>());
+            }
+          },
+          std::move(callback), content_urls));
 }
 
 }  // namespace
@@ -549,7 +551,7 @@ bool IsArcTermsOfServiceOobeNegotiationNeeded() {
 bool IsArcStatsReportingEnabled() {
   // Managed guest session users never saw the consent for stats reporting even
   // if the admin forced the pref by a policy.
-  if (profiles::IsManagedGuestSession()) {
+  if (chromeos::IsManagedGuestSession()) {
     return false;
   }
 

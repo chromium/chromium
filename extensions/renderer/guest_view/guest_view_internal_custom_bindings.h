@@ -5,7 +5,9 @@
 #ifndef EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 #define EXTENSIONS_RENDERER_GUEST_VIEW_GUEST_VIEW_INTERNAL_CUSTOM_BINDINGS_H_
 
+#include "components/guest_view/common/guest_view.mojom.h"
 #include "extensions/renderer/object_backed_native_handler.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace extensions {
 
@@ -19,9 +21,10 @@ class GuestViewInternalCustomBindings : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
+  struct ViewHolder;
   // ResetMapEntry is called as a callback to SetWeak(). It resets the
   // weak view reference held in |view_map_|.
-  static void ResetMapEntry(const v8::WeakCallbackInfo<int>& data);
+  static void ResetMapEntry(const v8::WeakCallbackInfo<ViewHolder>& data);
 
   // AttachIframeGuest attaches a GuestView to a provided <iframe> container
   // element. Once attached, the GuestView will participate in layout of the
@@ -76,6 +79,10 @@ class GuestViewInternalCustomBindings : public ObjectBackedNativeHandler {
   // with allowlisted custom element names.
   void AllowGuestViewElementDefinition(
       const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  guest_view::mojom::GuestViewHost* GetGuestViewHost();
+
+  mojo::AssociatedRemote<guest_view::mojom::GuestViewHost> remote_;
 };
 
 }  // namespace extensions

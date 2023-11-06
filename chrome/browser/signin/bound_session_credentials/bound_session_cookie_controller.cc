@@ -11,7 +11,6 @@
 
 BoundSessionCookieController::BoundSessionCookieController(
     const bound_session_credentials::BoundSessionParams& bound_session_params,
-    const base::flat_set<std::string>& cookie_names,
     Delegate* delegate)
     : url_(bound_session_params.site()),
       session_id_(bound_session_params.session_id()),
@@ -19,9 +18,19 @@ BoundSessionCookieController::BoundSessionCookieController(
           bound_session_params.creation_time())),
       delegate_(delegate) {
   CHECK(!url_.is_empty());
-  CHECK(!cookie_names.empty());
-  for (const std::string& cookie_name : cookie_names) {
-    bound_cookies_info_.insert({cookie_name, base::Time()});
+  CHECK(!bound_session_params.credentials().empty());
+  // Note:
+  // - Same cookie name with a different scope (Domain, Path) is not
+  //   supported. We expect cookie names to be unique.
+  // - The scope of the cookie is ignored and is assumed to have the same scope
+  //   of the session.
+  // - The scope of the session is site based (not origin) and is specified in
+  //   `url`.
+  // - A cookie path other than '/' isn't supported.
+  for (const bound_session_credentials::Credential& credential :
+       bound_session_params.credentials()) {
+    bound_cookies_info_.insert(
+        {credential.cookie_credential().name(), base::Time()});
   }
 }
 

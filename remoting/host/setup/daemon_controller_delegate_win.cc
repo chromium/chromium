@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
+#include "remoting/base/is_google_email.h"
 #include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/branding.h"
 #include "remoting/host/host_config.h"
@@ -67,6 +68,14 @@ const char* const kUnprivilegedConfigKeys[] = {kHostIdConfigPath,
 
 // Reads and parses the configuration file up to |kMaxConfigFileSize| in size.
 bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
+  // ReadConfig is called in cases where no config file is expected to be
+  // present so check to see if a file exists before attempting to read and
+  // parse it.
+  if (!base::PathExists(filename)) {
+    LOG(INFO) << "'" << filename.value() << "' does not exist, skipping read.";
+    return false;
+  }
+
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(filename, &file_content,
                                          kMaxConfigFileSize)) {
@@ -76,6 +85,7 @@ bool ReadConfig(const base::FilePath& filename, base::Value::Dict& config_out) {
 
   absl::optional<base::Value::Dict> config = HostConfigFromJson(file_content);
   if (!config.has_value()) {
+    LOG(ERROR) << "Config file: '" << filename.value() << "' is empty.";
     return false;
   }
 
@@ -153,12 +163,16 @@ bool WriteConfig(const base::Value::Dict& config) {
     LOG(ERROR) << "Config is missing " << kHostIdConfigPath;
     return false;
   }
-  if (!config.FindString(kHostSecretHashConfigPath)) {
-    LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
+  const std::string* host_owner = config.FindString(kHostOwnerConfigPath);
+  if (!host_owner) {
+    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
     return false;
   }
-  if (!config.FindString(kHostOwnerConfigPath)) {
-    LOG(ERROR) << "Config is missing " << kHostOwnerConfigPath;
+  if (!config.FindString(kHostSecretHashConfigPath) &&
+      !IsGoogleEmail(*host_owner)) {
+    // PIN authentication is not needed for Google hosts so we only want to
+    // fail if a secret_hash value isn't present for a non-Google host.
+    LOG(ERROR) << "Config is missing " << kHostSecretHashConfigPath;
     return false;
   }
   if (!config.FindString(kServiceAccountConfigPath) &&

@@ -31,17 +31,7 @@ template("ios_chrome_xcuitest_app_host") {
     testonly = true
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
 
-    _output_name = target_name
-    if (defined(output_name)) {
-      _output_name = output_name
-    }
-
-    if (ios_use_shared_bundle_id_for_test_apps) {
-      bundle_identifier = shared_bundle_id_for_test_apps
-    } else {
-      bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
-                          string_replace(_output_name, "_", "-")
-    }
+    bundle_identifier = shared_bundle_id_for_test_apps
 
     if (!defined(deps)) {
       deps = []

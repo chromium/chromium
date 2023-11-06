@@ -252,9 +252,6 @@ void AndroidSmsAppSetupControllerImpl::TryInstallApp(const GURL& install_url,
       install_url, web_app::mojom::UserDisplayMode::kStandalone,
       web_app::ExternalInstallSource::kInternalDefault);
   options.override_previous_user_uninstall = true;
-  // The ServiceWorker does not load in time for the installability check, so
-  // bypass it as a workaround.
-  options.bypass_service_worker_check = true;
   options.require_manifest = true;
   externally_managed_app_manager_->Install(
       std::move(options),

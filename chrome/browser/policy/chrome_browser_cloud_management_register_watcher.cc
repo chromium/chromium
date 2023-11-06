@@ -57,14 +57,15 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
   EnterpriseStartupDialog::DialogResultCallback callback = base::BindOnce(
       &ChromeBrowserCloudManagementRegisterWatcher::OnDialogClosed,
       base::Unretained(this));
-  if (dialog_creation_callback_)
-    dialog_ = std::move(dialog_creation_callback_).Run(std::move(callback));
-  else
+  if (test_create_dialog_callback_) {
+    dialog_ = std::move(test_create_dialog_callback_).Run(std::move(callback));
+  } else {
     dialog_ = EnterpriseStartupDialog::CreateAndShowDialog(std::move(callback));
+  }
 
   visible_start_time_ = base::Time::Now();
 
-  if (register_result_) {
+  if (register_result_.has_value()) {
     // |register_result_| has been set only if the enrollment has finished.
     // And it must be failed if it's finished without a DM token which is
     // checked above. Show the error message directly.
@@ -85,7 +86,7 @@ RegisterResult ChromeBrowserCloudManagementRegisterWatcher::
     return RegisterResult::kEnrollmentSuccess;
 
   if (!token_storage->ShouldDisplayErrorMessageOnFailure() &&
-      register_result_) {
+      register_result_.has_value()) {
     SYSLOG(ERROR) << "Chrome browser cloud management enrollment has failed.";
     return RegisterResult::kEnrollmentFailedSilently;
   }
@@ -106,7 +107,7 @@ bool ChromeBrowserCloudManagementRegisterWatcher::IsDialogShowing() {
 
 void ChromeBrowserCloudManagementRegisterWatcher::
     SetDialogCreationCallbackForTesting(DialogCreationCallback callback) {
-  dialog_creation_callback_ = std::move(callback);
+  test_create_dialog_callback_ = std::move(callback);
 }
 
 // static

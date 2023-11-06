@@ -110,6 +110,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     GURL accounts;
     GURL client_metadata;
     GURL metrics;
+    GURL revoke;
   };
 
   struct CONTENT_EXPORT WellKnown {
@@ -155,6 +156,56 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kTokenEndpointInvalidResponse = 402,
   };
 
+  enum class RevokeResponse {
+    kSuccess,
+    kError,
+  };
+
+  // This enum describes the type of error dialog shown.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmErrorDialogType {
+    kGenericEmptyWithoutUrl = 0,
+    kGenericEmptyWithUrl = 1,
+    kGenericNonEmptyWithoutUrl = 2,
+    kGenericNonEmptyWithUrl = 3,
+    kInvalidRequestWithoutUrl = 4,
+    kInvalidRequestWithUrl = 5,
+    kUnauthorizedClientWithoutUrl = 6,
+    kUnauthorizedClientWithUrl = 7,
+    kAccessDeniedWithoutUrl = 8,
+    kAccessDeniedWithUrl = 9,
+    kTemporarilyUnavailableWithoutUrl = 10,
+    kTemporarilyUnavailableWithUrl = 11,
+    kServerErrorWithoutUrl = 12,
+    kServerErrorWithUrl = 13,
+
+    kMaxValue = kServerErrorWithUrl
+  };
+
+  // This enum describes the type of token response received.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmTokenResponseType {
+    kTokenReceivedAndErrorNotReceived = 0,
+    kTokenReceivedAndErrorReceived = 1,
+    kTokenNotReceivedAndErrorNotReceived = 2,
+    kTokenNotReceivedAndErrorReceived = 3,
+
+    kMaxValue = kTokenNotReceivedAndErrorReceived
+  };
+
+  // This enum describes the type of error URL compared to the IDP's config URL.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class FedCmErrorUrlType {
+    kSameOrigin = 0,
+    kCrossOriginSameSite = 1,
+    kCrossSite = 2,
+
+    kMaxValue = kCrossSite
+  };
+
   using AccountList = std::vector<IdentityRequestAccount>;
   using AccountsRequestCallback =
       base::OnceCallback<void(FetchStatus, AccountList)>;
@@ -172,9 +223,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   using ParseJsonCallback =
       base::OnceCallback<void(FetchStatus,
                               data_decoder::DataDecoder::ValueOrError)>;
+  using RevokeCallback =
+      base::OnceCallback<void(FetchStatus, const std::string&)>;
   using TokenRequestCallback =
       base::OnceCallback<void(FetchStatus, TokenResult)>;
   using ContinueOnCallback = base::OnceCallback<void(FetchStatus, const GURL&)>;
+  using RecordErrorMetricsCallback =
+      base::OnceCallback<void(FedCmTokenResponseType,
+                              absl::optional<FedCmErrorDialogType>,
+                              absl::optional<FedCmErrorUrlType>)>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       RenderFrameHostImpl* host);
@@ -213,11 +270,13 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                    AccountsRequestCallback callback);
 
   // Request a new token for this user account and RP from the IDP.
-  virtual void SendTokenRequest(const GURL& token_url,
-                                const std::string& account,
-                                const std::string& url_encoded_post_data,
-                                TokenRequestCallback callback,
-                                ContinueOnCallback continue_on);
+  virtual void SendTokenRequest(
+      const GURL& token_url,
+      const std::string& account,
+      const std::string& url_encoded_post_data,
+      TokenRequestCallback callback,
+      ContinueOnCallback continue_on,
+      RecordErrorMetricsCallback record_error_metrics_callback);
 
   // Sends metrics to metrics endpoint after a token was successfully generated.
   virtual void SendSuccessfulTokenRequestMetrics(
@@ -235,6 +294,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
+  // Send a revoke request to the IDP.
+  virtual void SendRevokeRequest(const GURL& revoke_url,
+                                 const std::string& account_hint,
+                                 const std::string& client_id,
+                                 RevokeCallback callback);
+
  private:
   // Starts download request using `url_loader`. Calls `parse_json_callback`
   // when the download result has been parsed.
@@ -242,14 +307,16 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
       std::unique_ptr<network::ResourceRequest> resource_request,
       absl::optional<std::string> url_encoded_post_data,
       ParseJsonCallback parse_json_callback,
-      size_t max_download_size);
+      size_t max_download_size,
+      bool allow_http_error_results = false);
 
   // Starts download result using `url_loader`. Calls `download_callback` when
   // the download completes.
   void DownloadUrl(std::unique_ptr<network::ResourceRequest> resource_request,
                    absl::optional<std::string> url_encoded_post_data,
                    DownloadCallback download_callback,
-                   size_t max_download_size);
+                   size_t max_download_size,
+                   bool allow_http_error_results = false);
 
   // Called when download initiated by DownloadUrl() completes.
   void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,

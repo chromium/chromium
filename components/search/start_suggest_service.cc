@@ -209,7 +209,7 @@ void StartSuggestService::SuggestionsParsed(
       SearchSuggestionParser::Results results;
       AutocompleteInput input;
       if (SearchSuggestionParser::ParseSuggestResults(
-              result->GetList(), input.text(), *scheme_classifier_,
+              result->GetList(), input, *scheme_classifier_,
               /*default_result_relevance=*/-1, /*is_keyword_result=*/false,
               &results)) {
         for (SearchSuggestionParser::SuggestResult suggest :

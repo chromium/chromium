@@ -16,13 +16,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/reading_list/core/dual_reading_list_model.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/service/local_data_description.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_bookmarks/local_bookmark_model_merger.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/models/tree_node_iterator.h"
@@ -66,14 +67,14 @@ syncer::LocalDataDescription CreateLocalDataDescription(syncer::ModelType type,
 // Returns urls of all the bookmarks which can be moved to the account store,
 // i.e. it does not include folders nor managed bookmarks.
 std::vector<GURL> GetAllUserBookmarksExcludingFolders(
-    bookmarks::BookmarkModel* model) {
+    sync_bookmarks::BookmarkModelView* model) {
   std::vector<GURL> bookmarked_urls;
   ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
       model->root_node());
   while (iterator.has_next()) {
     const bookmarks::BookmarkNode* const node = iterator.Next();
-    // Skip folders and managed bookmarks.
-    if (node->is_url() && !model->client()->IsNodeManaged(node)) {
+    // Skip folders and non-syncable nodes (e.g. managed bookmarks).
+    if (node->is_url() && model->IsNodeSyncable(node)) {
       bookmarked_urls.push_back(node->url());
     }
   }
@@ -86,6 +87,36 @@ base::Time GetLatestOfTimeLastUsedOrModifiedOrCreated(
     const password_manager::PasswordForm& form) {
   return std::max(
       {form.date_last_used, form.date_password_modified, form.date_created});
+}
+
+// Some of the services required for data migrations might not exist (e.g.
+// disabled for some reason) or may not have initialized (initialization is
+// ongoing or failed). In these cases, a sensible fallback is to exclude the
+// affected types. This function returns the set of types that are usable,
+// i.e. their dependent services are available and ready.
+syncer::ModelTypeSet FilterUsableTypes(
+    syncer::ModelTypeSet types,
+    password_manager::PasswordStoreInterface* profile_password_store,
+    password_manager::PasswordStoreInterface* account_password_store,
+    sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
+    reading_list::DualReadingListModel* reading_list_model) {
+  if (!profile_password_store || !account_password_store ||
+      !account_password_store->IsAbleToSavePasswords()) {
+    types.Remove(syncer::PASSWORDS);
+  }
+
+  if (!local_bookmark_sync_service || !account_bookmark_sync_service ||
+      !local_bookmark_sync_service->bookmark_model_view() ||
+      !account_bookmark_sync_service->bookmark_model_view()) {
+    types.Remove(syncer::BOOKMARKS);
+  }
+
+  if (!reading_list_model || !reading_list_model->loaded()) {
+    types.Remove(syncer::READING_LIST);
+  }
+
+  return types;
 }
 
 }  // namespace
@@ -131,7 +162,8 @@ class LocalDataQueryHelper::LocalDataQueryRequest
           weak_ptr_factory_.GetWeakPtr());
     }
     if (types_.Has(syncer::BOOKMARKS)) {
-      CHECK(helper_->local_bookmark_model_);
+      CHECK(helper_->local_bookmark_sync_service_);
+      CHECK(helper_->local_bookmark_sync_service_->bookmark_model_view());
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
@@ -164,8 +196,8 @@ class LocalDataQueryHelper::LocalDataQueryRequest
   }
 
   void FetchLocalBookmarks() {
-    std::vector<GURL> bookmarked_urls =
-        GetAllUserBookmarksExcludingFolders(helper_->local_bookmark_model_);
+    std::vector<GURL> bookmarked_urls = GetAllUserBookmarksExcludingFolders(
+        helper_->local_bookmark_sync_service_->bookmark_model_view());
     result_.emplace(syncer::BOOKMARKS,
                     CreateLocalDataDescription(
                         syncer::BOOKMARKS, std::move(bookmarked_urls),
@@ -176,7 +208,7 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 
   void FetchLocalReadingList() {
     base::flat_set<GURL> keys =
-        helper_->dual_reading_list_model_->GetLocalOrSyncableModel()->GetKeys();
+        helper_->dual_reading_list_model_->GetKeysThatNeedUploadToSyncServer();
 
     result_.emplace(
         syncer::READING_LIST,
@@ -207,13 +239,13 @@ class LocalDataQueryHelper::LocalDataQueryRequest
 LocalDataQueryHelper::LocalDataQueryHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
     password_manager::PasswordStoreInterface* account_password_store,
-    bookmarks::BookmarkModel* local_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model,
+    sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     reading_list::DualReadingListModel* dual_reading_list_model)
     : profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
-      local_bookmark_model_(local_bookmark_model),
-      account_bookmark_model_(account_bookmark_model),
+      local_bookmark_sync_service_(local_bookmark_sync_service),
+      account_bookmark_sync_service_(account_bookmark_sync_service),
       dual_reading_list_model_(dual_reading_list_model) {}
 
 LocalDataQueryHelper::~LocalDataQueryHelper() = default;
@@ -222,9 +254,14 @@ void LocalDataQueryHelper::Run(
     syncer::ModelTypeSet types,
     base::OnceCallback<void(
         std::map<syncer::ModelType, syncer::LocalDataDescription>)> callback) {
-  // Create a request to query info about local data of all `types`.
+  syncer::ModelTypeSet usable_types = FilterUsableTypes(
+      types, profile_password_store_, account_password_store_,
+      local_bookmark_sync_service_, account_bookmark_sync_service_,
+      dual_reading_list_model_);
+  // Create a request to query info about local data of all `usable_types`.
   std::unique_ptr<LocalDataQueryRequest> request_ptr =
-      std::make_unique<LocalDataQueryRequest>(this, types, std::move(callback));
+      std::make_unique<LocalDataQueryRequest>(this, usable_types,
+                                              std::move(callback));
   LocalDataQueryRequest& request = *request_ptr;
   request_list_.push_back(std::move(request_ptr));
   request.Run();
@@ -274,14 +311,18 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
           weak_ptr_factory_.GetWeakPtr());
     }
     if (types_.Has(syncer::BOOKMARKS)) {
-      CHECK(helper_->local_bookmark_model_);
-      CHECK(helper_->account_bookmark_model_);
+      CHECK(helper_->local_bookmark_sync_service_);
+      CHECK(helper_->account_bookmark_sync_service_);
+      CHECK(helper_->local_bookmark_sync_service_->bookmark_model_view());
+      CHECK(helper_->account_bookmark_sync_service_->bookmark_model_view());
       // Merge all local bookmarks into the account bookmark model.
-      sync_bookmarks::LocalBookmarkModelMerger(helper_->local_bookmark_model_,
-                                               helper_->account_bookmark_model_)
+      sync_bookmarks::LocalBookmarkModelMerger(
+          helper_->local_bookmark_sync_service_->bookmark_model_view(),
+          helper_->account_bookmark_sync_service_->bookmark_model_view())
           .Merge();
       // Remove all bookmarks from the local model.
-      helper_->local_bookmark_model_->RemoveAllUserBookmarks();
+      helper_->local_bookmark_sync_service_->bookmark_model_view()
+          ->RemoveAllUserBookmarks();
     }
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);
@@ -380,22 +421,26 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
 LocalDataMigrationHelper::LocalDataMigrationHelper(
     password_manager::PasswordStoreInterface* profile_password_store,
     password_manager::PasswordStoreInterface* account_password_store,
-    bookmarks::BookmarkModel* local_bookmark_model,
-    bookmarks::BookmarkModel* account_bookmark_model,
+    sync_bookmarks::BookmarkSyncService* local_bookmark_sync_service,
+    sync_bookmarks::BookmarkSyncService* account_bookmark_sync_service,
     reading_list::DualReadingListModel* dual_reading_list_model)
     : profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
-      local_bookmark_model_(local_bookmark_model),
-      account_bookmark_model_(account_bookmark_model),
+      local_bookmark_sync_service_(local_bookmark_sync_service),
+      account_bookmark_sync_service_(account_bookmark_sync_service),
       dual_reading_list_model_(dual_reading_list_model) {}
 
 LocalDataMigrationHelper::~LocalDataMigrationHelper() = default;
 
 void LocalDataMigrationHelper::Run(syncer::ModelTypeSet types) {
-  // Create a request to move all local data of all `types` to the account
-  // store.
+  syncer::ModelTypeSet usable_types = FilterUsableTypes(
+      types, profile_password_store_, account_password_store_,
+      local_bookmark_sync_service_, account_bookmark_sync_service_,
+      dual_reading_list_model_);
+  // Create a request to move all local data of all `usable_types` to the
+  // account store.
   std::unique_ptr<LocalDataMigrationRequest> request_ptr =
-      std::make_unique<LocalDataMigrationRequest>(this, types);
+      std::make_unique<LocalDataMigrationRequest>(this, usable_types);
   LocalDataMigrationRequest& request = *request_ptr;
   request_list_.push_back(std::move(request_ptr));
   request.Run();

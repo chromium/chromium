@@ -54,8 +54,8 @@ import java.util.concurrent.TimeoutException;
 public class TabbedNavigationBarColorControllerTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+
+    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
     private Window mWindow;
     private int mRegularNavigationColor;
     private int mDarkNavigationColor;
@@ -72,47 +72,67 @@ public class TabbedNavigationBarColorControllerTest {
     @Test
     @SmallTest
     public void testToggleOverview() {
-        assertEquals("Navigation bar should be colorSurface before entering overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface before entering overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
 
-        assertEquals("Navigation bar should be colorSurface in overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface in overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         LayoutTestUtils.startShowingAndWaitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
 
-        assertEquals("Navigation bar should be colorSurface after exiting overview mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after exiting overview mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
     }
 
     @Test
     @SmallTest
     public void testToggleIncognito() {
-        assertEquals("Navigation bar should be colorSurface on normal tabs.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface on normal tabs.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), true, true);
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                true,
+                true);
 
-        assertEquals("Navigation bar should be dark_elev_3 on incognito tabs.",
-                mDarkNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be dark_elev_3 on incognito tabs.",
+                mDarkNavigationColor,
+                mWindow.getNavigationBarColor());
 
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), false, true);
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                false,
+                true);
 
-        assertEquals("Navigation bar should be colorSurface after switching back to normal tab.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after switching back to normal tab.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
     }
 
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/1381509")
     public void testToggleFullscreen() throws TimeoutException {
-        assertEquals("Navigation bar should be colorSurface before entering fullscreen mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface before entering fullscreen mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
 
         String url =
                 mTestServerRule.getServer().getURL("/content/test/data/media/video-player.html");
@@ -124,13 +144,17 @@ public class TabbedNavigationBarColorControllerTest {
 
         enterFullscreen(observer, activity.getCurrentWebContents());
 
-        assertEquals("Navigation bar should be dark in fullscreen mode.", mDarkNavigationColor,
+        assertEquals(
+                "Navigation bar should be dark in fullscreen mode.",
+                mDarkNavigationColor,
                 mWindow.getNavigationBarColor());
 
         exitFullscreen(observer, activity.getCurrentWebContents());
 
-        assertEquals("Navigation bar should be colorSurface after exiting fullscreen mode.",
-                mRegularNavigationColor, mWindow.getNavigationBarColor());
+        assertEquals(
+                "Navigation bar should be colorSurface after exiting fullscreen mode.",
+                mRegularNavigationColor,
+                mWindow.getNavigationBarColor());
     }
 
     private void enterFullscreen(FullscreenToggleObserver observer, WebContents webContents)
@@ -144,16 +168,16 @@ public class TabbedNavigationBarColorControllerTest {
         // Trigger requestFullscreen() via a click on a button.
         Assert.assertTrue(
                 "Failed to click fullscreen node", DOMUtils.clickNode(webContents, "fullscreen"));
-        observer.getOnEnterFullscreenHelper().waitForCallback(
-                "Failed to enter full screen", onEnterCallCount);
+        observer.getOnEnterFullscreenHelper()
+                .waitForCallback("Failed to enter full screen", onEnterCallCount);
     }
 
     private void exitFullscreen(FullscreenToggleObserver observer, WebContents webContents)
             throws TimeoutException {
         int onExitCallCount = observer.getOnExitFullscreenHelper().getCallCount();
         DOMUtils.exitFullscreen(webContents);
-        observer.getOnExitFullscreenHelper().waitForCallback(
-                "Failed to exit full screen", onExitCallCount);
+        observer.getOnExitFullscreenHelper()
+                .waitForCallback("Failed to exit full screen", onExitCallCount);
     }
 
     private class FullscreenToggleObserver implements FullscreenManager.Observer {

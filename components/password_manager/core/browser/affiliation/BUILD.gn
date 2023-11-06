@@ -9,6 +9,8 @@ import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 source_set("affiliation") {
   sources = [
+    "affiliated_match_helper.cc",
+    "affiliated_match_helper.h",
     "affiliation_backend.cc",
     "affiliation_backend.h",
     "affiliation_database.cc",
@@ -38,10 +40,11 @@ source_set("affiliation") {
     "lookup_affiliation_response_parser.h",
   ]
   deps = [
+    ":affiliation_proto",
     "//base",
     "//components/keyed_service/core",
-    "//components/password_manager/core/browser:affiliation_proto",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/browser:sql_builder",
     "//components/password_manager/core/browser/features:password_features",
     "//components/prefs",
@@ -73,6 +76,10 @@ source_set("affiliation_fetching") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+fuzzable_proto_library("affiliation_proto") {
+  sources = [ "affiliation_api.proto" ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [
@@ -82,6 +89,8 @@ source_set("test_support") {
     "fake_affiliation_fetcher.h",
     "fake_affiliation_service.cc",
     "fake_affiliation_service.h",
+    "mock_affiliated_match_helper.cc",
+    "mock_affiliated_match_helper.h",
     "mock_affiliation_consumer.cc",
     "mock_affiliation_consumer.h",
     "mock_affiliation_fetcher.cc",
@@ -106,6 +115,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "affiliated_match_helper_unittest.cc",
     "affiliation_backend_unittest.cc",
     "affiliation_database_unittest.cc",
     "affiliation_fetch_throttler_unittest.cc",
@@ -117,11 +127,12 @@ source_set("unit_tests") {
   ]
   deps = [
     ":affiliation",
+    ":affiliation_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//components/password_manager/core/browser:affiliation_proto",
     "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser:password_store_interface",
     "//components/password_manager/core/common",
     "//components/password_manager/core/common:features",
     "//components/variations:test_support",
@@ -149,4 +160,17 @@ source_set("affiliation_fetching_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+if (use_fuzzing_engine_with_lpm) {
+  fuzzer_test("lookup_affiliation_response_parser_fuzzer") {
+    sources = [ "lookup_affiliation_response_parser_fuzzer.cc" ]
+    deps = [
+      ":affiliation",
+      ":affiliation_proto",
+      "//base:base",
+      "//base:i18n",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

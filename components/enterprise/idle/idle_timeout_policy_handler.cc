@@ -118,12 +118,10 @@ void IdleTimeoutActionsPolicyHandler::ApplyPolicySettings(
   prefs->SetValue(prefs::kIdleTimeoutActions,
                   base::Value(std::move(converted_actions)));
 
-  if (browsing_data::IsPolicyDependencyEnabled()) {
-    std::string log_message = browsing_data::DisableSyncTypes(
-        forced_disabled_sync_types_, prefs, policy_name());
-    if (!log_message.empty()) {
-      LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
-    }
+  std::string log_message = browsing_data::DisableSyncTypes(
+      forced_disabled_sync_types_, prefs, policy_name());
+  if (!log_message.empty()) {
+    LOG_POLICY(INFO, POLICY_PROCESSING) << log_message;
   }
 }
 
@@ -152,30 +150,6 @@ bool IdleTimeoutActionsPolicyHandler::CheckPolicySettings(
   const base::Value* sync_disabled =
       policies.GetValue(policy::key::kSyncDisabled, base::Value::Type::BOOLEAN);
   if (sync_disabled && sync_disabled->GetBool()) {
-    return true;
-  }
-
-  if (!browsing_data::IsPolicyDependencyEnabled()) {
-    std::vector<std::string> invalid_actions;
-    const base::Value* value =
-        policies.GetValue(policy_name(), base::Value::Type::LIST);
-    DCHECK(value);
-    for (const base::Value& action : value->GetList()) {
-      if (action.is_string() && !AllowsSyncEnabled(action.GetString())) {
-        invalid_actions.push_back(action.GetString());
-      }
-    }
-    if (!invalid_actions.empty()) {
-      errors->AddError(
-          policy_name(), IDS_POLICY_IDLE_TIMEOUT_ACTIONS_DEPENDENCY_ERROR,
-          std::vector<std::string>{policy::key::kSyncDisabled, "Enabled",
-                                   base::JoinString(invalid_actions, ", ")});
-      return false;
-    }
-    return true;
-  }
-#else
-  if (!browsing_data::IsPolicyDependencyEnabled()) {
     return true;
   }
 #endif  //! BUILDFLAG(IS_ANDROID)

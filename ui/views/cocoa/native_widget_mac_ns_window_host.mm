@@ -23,6 +23,7 @@
 #include "components/remote_cocoa/browser/window.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
@@ -101,6 +102,7 @@ class BridgedNativeWidgetHostDummy
   void OnImmersiveFullscreenToolbarRevealChanged(bool is_revealed) override {}
   void OnImmersiveFullscreenMenuBarRevealChanged(float reveal_amount) override {
   }
+  void OnAutohidingMenuBarHeightChanged(int menu_bar_height) override {}
   void DoDialogButtonAction(ui::DialogButton button) override {}
   void OnFocusWindowToolbar() override {}
   void SetRemoteAccessibilityTokens(
@@ -518,8 +520,18 @@ void NativeWidgetMacNSWindowHost::SetBoundsInScreen(const gfx::Rect& bounds) {
          !native_widget_mac_->GetWidget()->GetMinimumSize().IsEmpty())
       << "Zero-sized windows are not supported on Mac";
   UpdateLocalWindowFrame(bounds);
+
+  // `SetBounds()` accepts an optional maximum size, while
+  // `Widget::GetMaximumSize()` uses an empty size to represent "no maximum
+  // size", so we convert between those here.
+  absl::optional<gfx::Size> maximum_size =
+      native_widget_mac_->GetWidget()->GetMaximumSize();
+  if (maximum_size->IsEmpty()) {
+    maximum_size = absl::nullopt;
+  }
+
   GetNSWindowMojo()->SetBounds(
-      bounds, native_widget_mac_->GetWidget()->GetMinimumSize());
+      bounds, native_widget_mac_->GetWidget()->GetMinimumSize(), maximum_size);
 
   if (remote_ns_window_remote_) {
     gfx::Rect window_in_screen =
@@ -1300,6 +1312,13 @@ void NativeWidgetMacNSWindowHost::OnImmersiveFullscreenMenuBarRevealChanged(
         reveal_amount);
   }
 }
+void NativeWidgetMacNSWindowHost::OnAutohidingMenuBarHeightChanged(
+    int menu_bar_height) {
+  if (immersive_mode_reveal_client_) {
+    immersive_mode_reveal_client_->OnAutohidingMenuBarHeightChanged(
+        menu_bar_height);
+  }
+}
 
 void NativeWidgetMacNSWindowHost::DoDialogButtonAction(
     ui::DialogButton button) {
@@ -1394,6 +1413,11 @@ void NativeWidgetMacNSWindowHost::SetRemoteAccessibilityTokens(
       ui::RemoteAccessibility::GetRemoteElementFromToken(view_token);
   [remote_view_accessible_ setWindowUIElement:remote_window_accessible_];
   [remote_view_accessible_ setTopLevelUIElement:remote_window_accessible_];
+
+  if (features::IsAccessibilityRemoteUIAppEnabled() &&
+      ![NSAccessibilityRemoteUIElement isRemoteUIApp]) {
+    [NSAccessibilityRemoteUIElement setRemoteUIApp:YES];
+  }
 }
 
 bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
@@ -1401,6 +1425,15 @@ bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
     std::vector<uint8_t>* token) {
   *pid = getpid();
   id element_id = GetNativeViewAccessible();
+
+  if (features::IsAccessibilityRemoteUIAppEnabled()) {
+    pid_t client_pid = [remote_view_accessible_ processIdentifier];
+    if ([element_id respondsToSelector:@selector
+                    (accessibilitySetPresenterProcessIdentifier:)]) {
+      [element_id accessibilitySetPresenterProcessIdentifier:client_pid];
+    }
+  }
+
   *token = ui::RemoteAccessibility::GetTokenForLocalElement(element_id);
   return true;
 }

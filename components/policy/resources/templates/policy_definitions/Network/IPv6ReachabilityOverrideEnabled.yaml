@@ -1,0 +1,30 @@
+caption: Enable IPv6 reachability check override
+default: false
+desc: |-
+  Setting the policy to true overrides the IPv6 reachability check. This means that the
+  system will always query AAAA records when resolving host names. It applies to
+  all users and interfaces on the device.
+
+  Setting the policy to false or leaving it unset does not overrides the IPv6 reachability check.
+  The system only queries AAAA records when it is reachable to a global IPv6 host.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Override the IPv6 reachability check. Always query AAAA record for host name resolution.
+  value: true
+- caption: Do not override the IPv6 reachability check. Only query AAAA record for host name resolution when the device is reachable to a global IPv6 host.
+  value: false
+owners:
+- bashi@chromium.org
+- file://net/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:120-
+- chrome.*:120-
+- chrome_os:120-
+- fuchsia:120-
+tags: []
+type: main

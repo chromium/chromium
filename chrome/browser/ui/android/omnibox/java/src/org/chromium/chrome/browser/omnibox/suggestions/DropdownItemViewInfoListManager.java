@@ -48,16 +48,23 @@ class DropdownItemViewInfoListManager {
 
         mListActiveOmniboxTopSmallMargin =
                 OmniboxResourceProvider.getActiveOmniboxTopSmallMargin(context);
-        mListActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_active_top_big_margin);
-        mListNonActiveOmniboxTopSmallMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_non_active_top_small_margin);
-        mListNonActiveOmniboxTopBigMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_list_non_active_top_big_margin);
+        mListActiveOmniboxTopBigMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_list_active_top_big_margin);
+        mListNonActiveOmniboxTopSmallMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_list_non_active_top_small_margin);
+        mListNonActiveOmniboxTopBigMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_list_non_active_top_big_margin);
     }
 
     /**
      * Sets the layout direction to be used for any new suggestion views.
+     *
      * @see View#setLayoutDirection(int)
      */
     void setLayoutDirection(int layoutDirection) {
@@ -72,6 +79,7 @@ class DropdownItemViewInfoListManager {
 
     /**
      * Specifies the visual theme to be used by the suggestions.
+     *
      * @param brandedColorScheme Specifies which {@link BrandedColorScheme} should be used.
      */
     void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
@@ -102,18 +110,22 @@ class DropdownItemViewInfoListManager {
 
         // Build a new list of suggestions. Honor the default collapsed state.
         final List<ListItem> suggestionsList = new ArrayList<>();
-        int deviceType = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                ? SuggestionCommonProperties.FormFactor.TABLET
-                : SuggestionCommonProperties.FormFactor.PHONE;
+        int deviceType =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                        ? SuggestionCommonProperties.FormFactor.TABLET
+                        : SuggestionCommonProperties.FormFactor.PHONE;
         DropdownItemViewInfo previousItem = null;
         boolean useSmallestMargins = OmniboxFeatures.shouldShowSmallestMargins(mContext);
         int groupTopMargin = OmniboxResourceProvider.getSuggestionGroupTopMargin(mContext);
-        int groupBottomMargin = mContext.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
-        int suggestionVerticalMargin = useSmallestMargins
-                ? 0
-                : mContext.getResources().getDimensionPixelSize(
-                        R.dimen.omnibox_suggestion_vertical_margin);
+        int groupBottomMargin =
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.omnibox_suggestion_group_vertical_smallest_margin);
+        int suggestionVerticalMargin =
+                useSmallestMargins
+                        ? 0
+                        : mContext.getResources()
+                                .getDimensionPixelSize(R.dimen.omnibox_suggestion_vertical_margin);
 
         GroupSection previousSection = null;
         GroupSection currentSection;
@@ -133,8 +145,10 @@ class DropdownItemViewInfoListManager {
                 var applyRounding = currentSection != previousSection;
                 int topMargin;
                 if (previousItemWasHeader) {
-                    topMargin = mContext.getResources().getDimensionPixelSize(
-                            R.dimen.omnibox_suggestion_group_vertical_margin);
+                    topMargin =
+                            mContext.getResources()
+                                    .getDimensionPixelSize(
+                                            R.dimen.omnibox_suggestion_group_vertical_margin);
                 } else {
                     topMargin = applyRounding ? groupTopMargin : suggestionVerticalMargin;
                 }
@@ -143,7 +157,8 @@ class DropdownItemViewInfoListManager {
                 model.set(DropdownCommonProperties.BG_TOP_CORNER_ROUNDED, applyRounding);
                 // Do not have margin for the first suggestion, otherwise the first suggestion will
                 // have a big gap with the Omnibox.
-                model.set(DropdownCommonProperties.TOP_MARGIN,
+                model.set(
+                        DropdownCommonProperties.TOP_MARGIN,
                         previousItem == null
                                 ? getSuggestionListTopMargin(item.processor.getViewTypeId())
                                 : topMargin);
@@ -159,9 +174,11 @@ class DropdownItemViewInfoListManager {
                 previousSection = currentSection;
             }
 
-            previousItemWasHeader = item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
-                    && shouldShowModernizeVisualUpdate
-                    && (useSmallestMargins || OmniboxFeatures.shouldShowSmallerMargins(mContext));
+            previousItemWasHeader =
+                    item.processor.getViewTypeId() == OmniboxSuggestionUiType.HEADER
+                            && shouldShowModernizeVisualUpdate
+                            && (useSmallestMargins
+                                    || OmniboxFeatures.shouldShowSmallerMargins(mContext));
 
             suggestionsList.add(item);
         }
@@ -175,13 +192,16 @@ class DropdownItemViewInfoListManager {
     }
 
     /**
-     * Return the top margin for the suggestion list in pixel size.
-     * The padding size between the Omnibox and the top suggestion is dependent on the top
-     * suggestion type and variations of the experiment:
-     * 1. If the type is EDIT_URL_SUGGESTION, being an integral part of the Search Ready Omnibox
-     * appears closer to the Omnibox.
-     * 2. Everything else is spaced farther away, keeping the same distance between the Omnibox and
-     * the Top suggestion as the distance between individual Suggestion sections.
+     * Return the top margin for the suggestion list in pixel size. The padding size between the
+     * Omnibox and the top suggestion is dependent on the top suggestion type and variations of the
+     * experiment:
+     *
+     * <ul>
+     *   <li>If the type is EDIT_URL_SUGGESTION, being an integral part of the Search Ready Omnibox
+     *       appears closer to the Omnibox.
+     *   <li>Everything else is spaced farther away, keeping the same distance between the Omnibox
+     *       and the Top suggestion as the distance between individual Suggestion sections.
+     * </ul>
      *
      * @param firstSuggestionUiType The type of the first suggestion.
      */

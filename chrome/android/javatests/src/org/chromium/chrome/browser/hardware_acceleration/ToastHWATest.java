@@ -43,14 +43,11 @@ import org.chromium.ui.widget.ToastManager;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * Tests that toasts don't trigger HW acceleration.
- */
+/** Tests that toasts don't trigger HW acceleration. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ToastHWATest implements CustomMainActivityStart {
-    @Rule
-    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+    @Rule public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
 
     private EmbeddedTestServer mTestServer;
 
@@ -66,8 +63,9 @@ public class ToastHWATest implements CustomMainActivityStart {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
         mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     @After
@@ -104,8 +102,12 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         // Download an image (shows 'Downloading...' toast)
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, IMAGE_ID, R.id.contextmenu_save_image);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                IMAGE_ID,
+                R.id.contextmenu_save_image);
 
         // Wait for UI activity to settle
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -126,8 +128,12 @@ public class ToastHWATest implements CustomMainActivityStart {
 
         // Open link in a new tab (shows 'Tab Opened In Background' toast)
         Tab tab = mDownloadTestRule.getActivity().getActivityTab();
-        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
-                mDownloadTestRule.getActivity(), tab, LINK_ID, R.id.contextmenu_open_in_new_tab);
+        ContextMenuUtils.selectContextMenuItem(
+                InstrumentationRegistry.getInstrumentation(),
+                mDownloadTestRule.getActivity(),
+                tab,
+                LINK_ID,
+                R.id.contextmenu_open_in_new_tab);
 
         // Wait for UI activity to settle
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
@@ -142,8 +148,9 @@ public class ToastHWATest implements CustomMainActivityStart {
     public void testToastNoAcceleration() throws Exception {
         // Toasts created on low-end devices shouldn't be HW accelerated.
         Assert.assertFalse(isToastAcceleratedWithContext(mDownloadTestRule.getActivity()));
-        Assert.assertFalse(isToastAcceleratedWithContext(
-                mDownloadTestRule.getActivity().getApplicationContext()));
+        Assert.assertFalse(
+                isToastAcceleratedWithContext(
+                        mDownloadTestRule.getActivity().getApplicationContext()));
     }
 
     @Test
@@ -152,31 +159,35 @@ public class ToastHWATest implements CustomMainActivityStart {
     public void testToastAcceleration() throws Exception {
         // Toasts created on high-end devices should be HW accelerated.
         Assert.assertTrue(isToastAcceleratedWithContext(mDownloadTestRule.getActivity()));
-        Assert.assertTrue(isToastAcceleratedWithContext(
-                mDownloadTestRule.getActivity().getApplicationContext()));
+        Assert.assertTrue(
+                isToastAcceleratedWithContext(
+                        mDownloadTestRule.getActivity().getApplicationContext()));
     }
 
     private static boolean isToastAcceleratedWithContext(final Context context) throws Exception {
         final AtomicBoolean accelerated = new AtomicBoolean();
         final CallbackHelper listenerCalled = new CallbackHelper();
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, new Runnable() {
-            @Override
-            public void run() {
-                // We are using Toast.makeText(context, ...) instead of new Toast(context)
-                // because that Toast constructor is unused and is deleted by proguard.
-                Toast toast = Toast.makeText(context, "Test", Toast.LENGTH_SHORT);
-                toast.setView(new View(context) {
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                new Runnable() {
                     @Override
-                    public void onAttachedToWindow() {
-                        super.onAttachedToWindow();
-                        accelerated.set(isHardwareAccelerated());
-                        listenerCalled.notifyCalled();
+                    public void run() {
+                        // We are using Toast.makeText(context, ...) instead of new Toast(context)
+                        // because that Toast constructor is unused and is deleted by proguard.
+                        Toast toast = Toast.makeText(context, "Test", Toast.LENGTH_SHORT);
+                        toast.setView(
+                                new View(context) {
+                                    @Override
+                                    public void onAttachedToWindow() {
+                                        super.onAttachedToWindow();
+                                        accelerated.set(isHardwareAccelerated());
+                                        listenerCalled.notifyCalled();
+                                    }
+                                });
+                        toast.show();
                     }
                 });
-                toast.show();
-            }
-        });
 
         listenerCalled.waitForCallback(0);
         ToastManager.resetForTesting();

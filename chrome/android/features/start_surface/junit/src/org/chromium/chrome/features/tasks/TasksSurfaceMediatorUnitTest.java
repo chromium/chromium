@@ -58,35 +58,25 @@ import java.util.List;
 public class TasksSurfaceMediatorUnitTest {
     private TasksSurfaceMediator mMediator;
 
-    @Mock
-    private PropertyModel mPropertyModel;
-    @Mock
-    private OmniboxStub mOmniboxStub;
-    @Mock
-    private VoiceRecognitionHandler mVoiceRecognitionHandler;
-    @Mock
-    private View.OnClickListener mLearnMoreOnClickListener;
-    @Mock
-    private IncognitoCookieControlsManager mCookieControlsManager;
-    @Mock
-    private FeedReliabilityLogger mFeedReliabilityLogger;
-    @Captor
-    private ArgumentCaptor<View.OnClickListener> mFakeboxClickListenerCaptor;
-    @Captor
-    private ArgumentCaptor<TextWatcher> mFakeboxTextWatcherCaptor;
-    @Captor
-    private ArgumentCaptor<View.OnClickListener> mVoiceSearchButtonClickListenerCaptor;
-    @Captor
-    private ArgumentCaptor<View.OnClickListener> mLearnMoreOnClickListenerCaptor;
-    @Captor
-    private ArgumentCaptor<IncognitoCookieControlsManager> mCookieControlsManagerCaptor;
+    @Mock private PropertyModel mPropertyModel;
+    @Mock private OmniboxStub mOmniboxStub;
+    @Mock private VoiceRecognitionHandler mVoiceRecognitionHandler;
+    @Mock private View.OnClickListener mLearnMoreOnClickListener;
+    @Mock private IncognitoCookieControlsManager mCookieControlsManager;
+    @Mock private FeedReliabilityLogger mFeedReliabilityLogger;
+    @Captor private ArgumentCaptor<View.OnClickListener> mFakeboxClickListenerCaptor;
+    @Captor private ArgumentCaptor<TextWatcher> mFakeboxTextWatcherCaptor;
+    @Captor private ArgumentCaptor<View.OnClickListener> mVoiceSearchButtonClickListenerCaptor;
+    @Captor private ArgumentCaptor<View.OnClickListener> mLearnMoreOnClickListenerCaptor;
+    @Captor private ArgumentCaptor<IncognitoCookieControlsManager> mCookieControlsManagerCaptor;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mMediator = new TasksSurfaceMediator(
-                mPropertyModel, mLearnMoreOnClickListener, mCookieControlsManager, true);
+        mMediator =
+                new TasksSurfaceMediator(
+                        mPropertyModel, mLearnMoreOnClickListener, mCookieControlsManager, true);
         mMediator.initWithNative(mOmniboxStub, mFeedReliabilityLogger);
     }
 
@@ -104,7 +94,8 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mPropertyModel)
                 .set(eq(FAKE_SEARCH_BOX_TEXT_WATCHER), mFakeboxTextWatcherCaptor.capture());
         verify(mPropertyModel)
-                .set(eq(VOICE_SEARCH_BUTTON_CLICK_LISTENER),
+                .set(
+                        eq(VOICE_SEARCH_BUTTON_CLICK_LISTENER),
                         mVoiceSearchButtonClickListenerCaptor.capture());
         verify(mPropertyModel).set(eq(IS_FAKE_SEARCH_BOX_VISIBLE), eq(true));
         verify(mPropertyModel).set(eq(IS_VOICE_RECOGNITION_BUTTON_VISIBLE), eq(false));
@@ -112,7 +103,8 @@ public class TasksSurfaceMediatorUnitTest {
         verify(mPropertyModel)
                 .set(eq(INCOGNITO_COOKIE_CONTROLS_MANAGER), mCookieControlsManagerCaptor.capture());
         verify(mPropertyModel)
-                .set(eq(INCOGNITO_LEARN_MORE_CLICK_LISTENER),
+                .set(
+                        eq(INCOGNITO_LEARN_MORE_CLICK_LISTENER),
                         mLearnMoreOnClickListenerCaptor.capture());
         assertEquals(mLearnMoreOnClickListener, mLearnMoreOnClickListenerCaptor.getValue());
         assertFalse(mPropertyModel.get(IS_INCOGNITO_DESCRIPTION_VISIBLE));
@@ -139,7 +131,9 @@ public class TasksSurfaceMediatorUnitTest {
         Editable editable = Editable.Factory.getInstance().newEditable(inputText);
         mFakeboxTextWatcherCaptor.getValue().afterTextChanged(editable);
         verify(mOmniboxStub, times(1))
-                .setUrlBarFocus(eq(true), eq(inputText),
+                .setUrlBarFocus(
+                        eq(true),
+                        eq(inputText),
                         eq(OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS));
         assertThat(editable.length(), equalTo(0));
     }
@@ -160,7 +154,8 @@ public class TasksSurfaceMediatorUnitTest {
     @Test
     public void clickVoiceRecognitionButton() {
         verify(mPropertyModel)
-                .set(eq(VOICE_SEARCH_BUTTON_CLICK_LISTENER),
+                .set(
+                        eq(VOICE_SEARCH_BUTTON_CLICK_LISTENER),
                         mVoiceSearchButtonClickListenerCaptor.capture());
         doReturn(mVoiceRecognitionHandler).when(mOmniboxStub).getVoiceRecognitionHandler();
 

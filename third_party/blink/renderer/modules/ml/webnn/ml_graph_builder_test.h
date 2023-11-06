@@ -91,7 +91,18 @@ MLOperand* BuildGemm(V8TestingScope& scope,
                      const MLOperand* b,
                      const MLGemmOptions* options = MLGemmOptions::Create());
 
-enum class ReduceKind { kMean, kSum };
+enum class ReduceKind {
+  kL1,
+  kL2,
+  kLogSum,
+  kLogSumExp,
+  kMax,
+  kMean,
+  kMin,
+  kProduct,
+  kSum,
+  kSumSquare
+};
 
 MLOperand* BuildReduce(
     V8TestingScope& scope,

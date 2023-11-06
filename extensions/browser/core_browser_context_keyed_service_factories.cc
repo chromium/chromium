@@ -4,6 +4,7 @@
 
 #include "extensions/browser/core_browser_context_keyed_service_factories.h"
 
+#include "extensions/browser/api/web_request/web_request_event_router_factory.h"
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/event_router_factory.h"
@@ -18,8 +19,10 @@
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/process_manager_factory.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/browser/updater/update_service_factory.h"
+#include "extensions/buildflags/buildflags.h"
 
 namespace extensions {
 
@@ -30,16 +33,20 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   EventRouterFactory::GetInstance();
   ExtensionActionManager::EnsureFactoryBuilt();
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   ExtensionMessageFilter::EnsureShutdownNotifierFactoryBuilt();
   ExtensionServiceWorkerMessageFilter::EnsureShutdownNotifierFactoryBuilt();
+#endif
   ExtensionPrefsFactory::GetInstance();
   ExtensionPrefsHelperFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
   MimeHandlerStreamManager::EnsureFactoryBuilt();
   ProcessManagerFactory::GetInstance();
   RendererStartupHelperFactory::GetInstance();
+  ServiceWorkerKeepalive::EnsureShutdownNotifierFactoryBuilt();
   ServiceWorkerTaskQueueFactory::GetInstance();
   UpdateServiceFactory::GetInstance();
+  WebRequestEventRouterFactory::GetInstance();
 }
 
 }  // namespace extensions

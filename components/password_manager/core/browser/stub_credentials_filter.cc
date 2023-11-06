@@ -24,9 +24,6 @@ bool StubCredentialsFilter::ShouldSaveEnterprisePasswordHash(
   return false;
 }
 
-void StubCredentialsFilter::ReportFormLoginSuccess(
-    const PasswordFormManager& form_manager) const {}
-
 bool StubCredentialsFilter::IsSyncAccountEmail(
     const std::string& username) const {
   return false;

@@ -46,6 +46,7 @@
 #include "chrome/browser/support_tool/ash/system_logs_data_collector.h"
 #include "chrome/browser/support_tool/ash/system_state_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
@@ -221,8 +222,12 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
             /*requested_logs=*/std::set<base::FilePath>()));
         break;
       case support_tool::CHROMEOS_CHROME_USER_LOGS:
-        handler->AddDataCollector(
-            std::make_unique<ChromeUserLogsDataCollector>());
+        // TODO(b:294844737): Add testing for this check.
+        // User session must be active to read user data from Cryptohome.
+        if (ash::IsUserBrowserContext(profile)) {
+          handler->AddDataCollector(
+              std::make_unique<ChromeUserLogsDataCollector>());
+        }
         break;
       case support_tool::CHROMEOS_BLUETOOTH_FLOSS:
         handler->AddDataCollector(

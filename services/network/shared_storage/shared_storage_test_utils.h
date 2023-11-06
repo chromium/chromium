@@ -60,8 +60,9 @@ class SharedStorageResponse : public net::test_server::BasicHttpResponse {
 
 // Sends a response with the "Shared-Storage-Write" header, with value
 // `shared_storage_write`, to any request whose path starts with the
-// `kSharedStoragePathPrefix` prefix and which has the "Shared-Storage-Writable:
-// ?1" request header or whose full path is `MakeSharedStorageBypassPath()`.
+// `kSharedStoragePathPrefix` prefix and which has the
+// "Sec-Shared-Storage-Writable: ?1" request header or whose full path is
+// `MakeSharedStorageBypassPath()`.
 std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestSimple(std::string shared_storage_write,
                                  const net::test_server::HttpRequest& request);
@@ -70,9 +71,9 @@ HandleSharedStorageRequestSimple(std::string shared_storage_write,
 // available value in `shared_storage_write_headers` as tracked by
 // `SharedStorageRequestCount`, to any request whose path starts with the
 // `kSharedStoragePathPrefix` prefix and ends with the
-// `kSharedStorageWritePathSuffix` and which has the "Shared-Storage-Writable:
-// ?1" request header, as long as `shared_storage_write_headers` has not yet
-// been fully iterated through..
+// `kSharedStorageWritePathSuffix` and which has the
+// "Sec-Shared-Storage-Writable: ?1" request header, as long as
+// `shared_storage_write_headers` has not yet been fully iterated through..
 std::unique_ptr<net::test_server::HttpResponse>
 HandleSharedStorageRequestMultiple(
     std::vector<std::string> shared_storage_write_headers,

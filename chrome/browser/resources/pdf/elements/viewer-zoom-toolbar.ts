@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './viewer-zoom-button.js';
 
-import {isRTL} from 'chrome://resources/js/util_ts.js';
+import {isRTL} from 'chrome://resources/js/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FittingType} from '../constants.js';

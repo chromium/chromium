@@ -13,8 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
+#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/floss/floss_features.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
@@ -55,6 +57,8 @@ const ui::InputDevice kSampleMouseBluetooth = {25, ui::INPUT_DEVICE_BLUETOOTH,
                                                "kSampleMouseBluetooth"};
 const ui::InputDevice kSampleMouseInternal = {30, ui::INPUT_DEVICE_INTERNAL,
                                               "kSampleMouseInternal"};
+const ui::InputDevice kSampleFlossExtraMouse = {35, ui::INPUT_DEVICE_UNKNOWN,
+                                                "suspend uhid"};
 
 template <typename Comp = base::ranges::less>
 void SortDevices(std::vector<ui::KeyboardDevice>& devices, Comp comp = {}) {
@@ -621,6 +625,22 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
 TEST_F(InputDeviceMouseNotifierTest, InternalMiceFilteredOut) {
   ui::DeviceDataManagerTestApi().SetMouseDevices(
       {kSampleMouseUsb, kSampleMouseBluetooth, kSampleMouseInternal});
+  EXPECT_TRUE(device_ids_to_remove_.empty());
+  ASSERT_EQ(2u, devices_to_add_.size());
+  EXPECT_EQ(kSampleMouseUsb.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleMouseUsb.id, devices_to_add_[0].id);
+  EXPECT_EQ(kSampleMouseBluetooth.name, devices_to_add_[1].name);
+  EXPECT_EQ(kSampleMouseBluetooth.id, devices_to_add_[1].id);
+}
+
+// When an internal mouse in the list received from DeviceDataManager, filter it
+// out as this is likely not a real device.
+TEST_F(InputDeviceMouseNotifierTest, FlossMouseFilteredOut) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(floss::features::kFlossEnabled);
+
+  ui::DeviceDataManagerTestApi().SetMouseDevices(
+      {kSampleMouseUsb, kSampleMouseBluetooth, kSampleFlossExtraMouse});
   EXPECT_TRUE(device_ids_to_remove_.empty());
   ASSERT_EQ(2u, devices_to_add_.size());
   EXPECT_EQ(kSampleMouseUsb.name, devices_to_add_[0].name);

@@ -32,7 +32,7 @@ base::Value::Dict NetLogSimpleEntryCreationParams(
   base::Value::Dict dict;
   dict.Set("net_error", net_error);
   if (net_error == net::OK)
-    dict.Set("key", entry->key());
+    dict.Set("key", entry->key().value_or("(nullopt)"));
   return dict;
 }
 

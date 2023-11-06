@@ -143,7 +143,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
 
   Element* Owner() {
     if (slot_)
-      return slot_;
+      return slot_.Get();
 
     return FindOwner(*root_);
   }
@@ -175,7 +175,7 @@ class FocusNavigation : public GarbageCollected<FocusNavigation> {
   Element* FindOwner(ContainerNode& node) {
     auto result = owner_map_.find(&node);
     if (result != owner_map_.end())
-      return result->value;
+      return result->value.Get();
 
     // Fallback contents owner is set to the nearest ancestor slot node even if
     // the slot node have assigned nodes.

@@ -22,9 +22,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Unit tests for {@link AwSiteVisitLogger}.
- */
+/** Unit tests for {@link AwSiteVisitLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwSiteVisitLoggerTest {
@@ -36,8 +34,7 @@ public class AwSiteVisitLoggerTest {
     private static final long SITE_HASH_C = 1894809809L;
     private static final String HISTOGRAM_NAME = "Android.WebView.SitesVisitedWeekly";
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Test
     @SmallTest

@@ -7,6 +7,9 @@
 const char kOmniboxSteadyStatePositionAtStartup[] =
     "IOS.Omnibox.SteadyStatePositionAtStartup";
 
+const char kOmniboxSteadyStatePositionAtStartupSelected[] =
+    "IOS.Omnibox.SteadyStatePositionAtStartup.Selected";
+
 const char kOmniboxDeviceSwitcherResultAtStartup[] =
     "IOS.Omnibox.DeviceSwitcherResult.AtStartup";
 

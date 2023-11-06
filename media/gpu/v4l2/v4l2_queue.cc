@@ -22,6 +22,9 @@ namespace media {
 
 namespace {
 
+// TODO(jkardatzke): Remove this when it is in linux/videodev2.h.
+#define V4L2_MEMORY_FLAG_SECURE 0x2
+
 // Maximum number of requests that can be created.
 constexpr size_t kMaxNumRequests = 32;
 
@@ -1191,12 +1194,15 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
   planes_count_ = format->fmt.pix_mp.num_planes;
   DCHECK_LE(planes_count_, static_cast<size_t>(VIDEO_MAX_PLANES));
 
-  const __u8 coherency = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  __u8 flags = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  if (allocate_secure_cb_) {
+    flags |= V4L2_MEMORY_FLAG_SECURE;
+  }
   struct v4l2_requestbuffers reqbufs = {
       .count = base::checked_cast<decltype(v4l2_requestbuffers::count)>(count),
       .type = type_,
       .memory = memory,
-      .flags = coherency};
+      .flags = flags};
   DVQLOGF(3) << "Requesting " << count << " buffers ("
              << (incoherent ? "incoherent" : "coherent") << ")";
 
@@ -1254,9 +1260,12 @@ bool V4L2Queue::DeallocateBuffers() {
   free_buffers_ = nullptr;
 
   // Free all buffers.
-  const __u8 coherency = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  __u8 flags = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  if (allocate_secure_cb_) {
+    flags |= V4L2_MEMORY_FLAG_SECURE;
+  }
   struct v4l2_requestbuffers reqbufs = {
-      .count = 0, .type = type_, .memory = memory_, .flags = coherency};
+      .count = 0, .type = type_, .memory = memory_, .flags = flags};
 
   int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {

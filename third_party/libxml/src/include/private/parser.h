@@ -24,7 +24,7 @@
 #define XML_INPUT_AUTO_UTF16BE      (3u << 1)
 #define XML_INPUT_AUTO_OTHER        (4u << 1)
 #define XML_INPUT_USES_ENC_DECL     (1u << 4)
-#define XML_INPUT_8_BIT             (1u << 5)
+#define XML_INPUT_ENCODING_ERROR    (1u << 5)
 
 XML_HIDDEN void
 xmlErrMemory(xmlParserCtxtPtr ctxt, const char *extra);
@@ -48,5 +48,19 @@ XML_HIDDEN void
 xmlDetectEncoding(xmlParserCtxtPtr ctxt);
 XML_HIDDEN void
 xmlSetDeclaredEncoding(xmlParserCtxtPtr ctxt, xmlChar *encoding);
+
+XML_HIDDEN xmlParserNsData *
+xmlParserNsCreate(void);
+XML_HIDDEN void
+xmlParserNsFree(xmlParserNsData *nsdb);
+/*
+ * These functions allow SAX handlers to attach extra data to namespaces
+ * efficiently and should be made public.
+ */
+XML_HIDDEN int
+xmlParserNsUpdateSax(xmlParserCtxtPtr ctxt, const xmlChar *prefix,
+                     void *saxData);
+XML_HIDDEN void *
+xmlParserNsLookupSax(xmlParserCtxtPtr ctxt, const xmlChar *prefix);
 
 #endif /* XML_PARSER_H_PRIVATE__ */

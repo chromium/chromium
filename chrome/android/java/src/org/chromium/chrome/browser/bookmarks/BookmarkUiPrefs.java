@@ -18,9 +18,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Self-documenting preference class for bookmarks.
- */
+/** Self-documenting preference class for bookmarks. */
 public class BookmarkUiPrefs {
     private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
             BookmarkRowDisplayPref.VISUAL;
@@ -30,8 +28,11 @@ public class BookmarkUiPrefs {
     // These values are persisted to prefs/logs. Entries should not be renumbered and numeric
     // values should never be reused. Keep up-to-date with the
     // MobileBookmarkManagerBookmarkRowDisplayPref enum in tools/metrics/histograms/enums.xml.
-    @IntDef({BookmarkRowDisplayPref.COMPACT, BookmarkRowDisplayPref.VISUAL,
-            BookmarkRowDisplayPref.COUNT})
+    @IntDef({
+        BookmarkRowDisplayPref.COMPACT,
+        BookmarkRowDisplayPref.VISUAL,
+        BookmarkRowDisplayPref.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BookmarkRowDisplayPref {
         int COMPACT = 0;
@@ -42,10 +43,15 @@ public class BookmarkUiPrefs {
     // These values are persisted to prefs/logs. Entries should not be renumbered and numeric
     // values should never be reused. Keep up-to-date with the
     // MobileBookmarkManagerBookmarkRowSortOrder enum in tools/metrics/histograms/enums.xml.
-    @IntDef({BookmarkRowSortOrder.CHRONOLOGICAL, BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
-            BookmarkRowSortOrder.ALPHABETICAL, BookmarkRowSortOrder.REVERSE_ALPHABETICAL,
-            BookmarkRowSortOrder.RECENTLY_USED, BookmarkRowSortOrder.MANUAL,
-            BookmarkRowSortOrder.COUNT})
+    @IntDef({
+        BookmarkRowSortOrder.CHRONOLOGICAL,
+        BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
+        BookmarkRowSortOrder.ALPHABETICAL,
+        BookmarkRowSortOrder.REVERSE_ALPHABETICAL,
+        BookmarkRowSortOrder.RECENTLY_USED,
+        BookmarkRowSortOrder.MANUAL,
+        BookmarkRowSortOrder.COUNT
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BookmarkRowSortOrder {
         // Oldest -> newest
@@ -92,8 +98,8 @@ public class BookmarkUiPrefs {
     @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
     public BookmarkUiPrefs(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
-        ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(
-                mPrefsListener);
+        ContextUtils.getAppSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(mPrefsListener);
     }
 
     /** Add the given observer to the list. */
@@ -120,6 +126,7 @@ public class BookmarkUiPrefs {
 
     /**
      * Sets the value for the bookmark row display pref.
+     *
      * @param displayPref The pref value to be set.
      */
     public void setBookmarkRowDisplayPref(@BookmarkRowDisplayPref int displayPref) {

@@ -20,10 +20,6 @@
 
 class Browser;
 class ReadAnythingController;
-class SidePanelRegistry;
-namespace views {
-class View;
-}  // namespace views
 
 ///////////////////////////////////////////////////////////////////////////////
 // ReadAnythingCoordinator
@@ -37,7 +33,6 @@ class View;
 //  This class has the same lifetime as the browser.
 //
 class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
-                                public SidePanelEntryObserver,
                                 public TabStripModelObserver,
                                 public content::WebContentsObserver,
                                 public BrowserListObserver {
@@ -52,7 +47,6 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   explicit ReadAnythingCoordinator(Browser* browser);
   ~ReadAnythingCoordinator() override;
 
-  void CreateAndRegisterEntry(SidePanelRegistry* global_registry);
   ReadAnythingController* GetController();
   ReadAnythingModel* GetModel();
 
@@ -61,10 +55,17 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   void AddModelObserver(ReadAnythingModel::Observer* observer);
   void RemoveModelObserver(ReadAnythingModel::Observer* observer);
 
+  void OnReadAnythingSidePanelEntryShown();
+  void OnReadAnythingSidePanelEntryHidden();
+
  private:
   friend class BrowserUserData<ReadAnythingCoordinator>;
   friend class ReadAnythingCoordinatorTest;
   friend class ReadAnythingCoordinatorScreen2xDataCollectionModeTest;
+
+  void CreateAndRegisterEntriesForExistingWebContents(
+      TabStripModel* tab_strip_model);
+  void CreateAndRegisterEntryForWebContents(content::WebContents* web_contents);
 
   // Used during construction to initialize the model with saved user prefs.
   void InitModelWithUserPrefs();
@@ -72,14 +73,6 @@ class ReadAnythingCoordinator : public BrowserUserData<ReadAnythingCoordinator>,
   void StartPageChangeDelay();
   // Occurs when the timer set when changing tabs is finished.
   void OnTabChangeDelayComplete();
-
-  // SidePanelEntryObserver:
-  void OnEntryShown(SidePanelEntry* entry) override;
-  void OnEntryHidden(SidePanelEntry* entry) override;
-
-  // Callback passed to SidePanelCoordinator. This function creates the
-  // container view and all its child views and returns it.
-  std::unique_ptr<views::View> CreateContainerView();
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

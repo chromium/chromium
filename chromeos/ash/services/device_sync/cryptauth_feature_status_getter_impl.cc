@@ -153,7 +153,8 @@ base::Time GetMaxLastModifiedTimeFromFeatureStatuses(
                                              max_last_modified_time_millis);
   }
 
-  return base::Time::FromJavaTime(max_last_modified_time_millis);
+  return base::Time::FromMillisecondsSinceUnixEpoch(
+      max_last_modified_time_millis);
 }
 
 void RecordGetFeatureStatusesMetrics(base::TimeDelta execution_time,

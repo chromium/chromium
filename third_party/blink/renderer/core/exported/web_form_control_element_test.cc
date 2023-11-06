@@ -23,6 +23,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 using ::testing::ElementsAre;

@@ -57,6 +57,11 @@ TEST_F(HanKerningTest, FontDataHorizontal) {
   EXPECT_EQ(zhs_data.type_for_semicolon, HanKerning::CharType::kClose);
   EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kMiddle);
   EXPECT_EQ(zht_data.type_for_semicolon, HanKerning::CharType::kMiddle);
+
+  // Quote characters are proportional for Japanese, fullwidth for Chinese.
+  EXPECT_FALSE(ja_data.is_quote_fullwidth);
+  EXPECT_TRUE(zhs_data.is_quote_fullwidth);
+  EXPECT_TRUE(zht_data.is_quote_fullwidth);
 }
 
 TEST_F(HanKerningTest, FontDataVertical) {
@@ -85,6 +90,12 @@ TEST_F(HanKerningTest, FontDataVertical) {
   EXPECT_EQ(zhs_data.type_for_semicolon, HanKerning::CharType::kOther);
   EXPECT_EQ(zht_data.type_for_colon, HanKerning::CharType::kOther);
   EXPECT_EQ(zht_data.type_for_semicolon, HanKerning::CharType::kOther);
+
+  // Quote characters are fullwidth when vertical upright, but Japanese
+  // placement is different from expected.
+  EXPECT_FALSE(ja_data.is_quote_fullwidth);
+  EXPECT_TRUE(zhs_data.is_quote_fullwidth);
+  EXPECT_TRUE(zht_data.is_quote_fullwidth);
 }
 
 TEST_F(HanKerningTest, ResetFeatures) {

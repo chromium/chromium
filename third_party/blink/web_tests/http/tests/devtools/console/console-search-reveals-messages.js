@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ConsoleTestRunner} from 'console_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Console from 'devtools/panels/console/console.js';
 
 (async function() {
@@ -32,7 +33,7 @@ import * as Console from 'devtools/panels/console/console.js';
       var viewportMessagesCount = viewport.lastVisibleIndex - viewport.firstVisibleIndex;
       if (viewportMessagesCount > maximumViewportMessagesCount) {
         TestRunner.addResult(
-          String.sprintf(
+          Platform.StringUtilities.sprintf(
             'Test cannot be run because viewport could fit %d messages which is more than maximum of %d.',
             viewportMessagesCount,
             maximumViewportMessagesCount

@@ -25,13 +25,12 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/account_manager_ui_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/fingerprint_handler.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/people/os_sync_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/parental_controls_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/people/quick_unlock_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/people_handler.h"
 #include "chrome/browser/ui/webui/settings/profile_info_handler.h"
 #include "chrome/browser/ui/webui/settings/shared_settings_localized_strings_provider.h"
@@ -46,11 +45,9 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/account_manager_core/pref_names.h"
-#include "components/google/core/common/google_util.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -66,9 +63,6 @@ namespace ash::settings {
 namespace mojom {
 using ::chromeos::settings::mojom::kMyAccountsSubpagePath;
 using ::chromeos::settings::mojom::kPeopleSectionPath;
-using ::chromeos::settings::mojom::kSyncDeprecatedAdvancedSubpagePath;
-using ::chromeos::settings::mojom::kSyncSetupSubpagePath;
-using ::chromeos::settings::mojom::kSyncSubpagePath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -117,18 +111,6 @@ const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts(
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRemoveAccount}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_SYNC,
-       mojom::kSyncSubpagePath,
-       mojom::SearchResultIcon::kSync,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kSync}},
   });
   return *tags;
 }
@@ -315,6 +297,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_TITLE},
       {"setLocalPasswordDialogInternalError",
        IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_INTERNAL_ERROR},
+      {"showPassword", IDS_AUTH_SETUP_SHOW_PASSWORD},
+      {"hidePassword", IDS_AUTH_SETUP_HIDE_PASSWORD},
       {"setLocalPasswordPlaceholder",
        IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER},
       {"setLocalPasswordConfirmPlaceholder",
@@ -425,56 +409,6 @@ void AddSetupPinDialogStrings(content::WebUIDataSource* html_source) {
   }
 }
 
-void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"syncEverythingCheckboxLabel",
-       IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
-      {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
-      {"syncEverythingCheckboxLabel",
-       IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
-      {"nonPersonalizedServicesSectionLabel",
-       IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
-      {"customizeSyncLabel", IDS_SETTINGS_CUSTOMIZE_SYNC},
-      {"syncData", IDS_SETTINGS_SYNC_DATA},
-      {"wallpaperCheckboxLabel", IDS_OS_SETTINGS_WALLPAPER_CHECKBOX_LABEL},
-      {"osSyncTurnOff", IDS_OS_SETTINGS_SYNC_TURN_OFF},
-      {"osSyncSettingsCheckboxLabel",
-       IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_LABEL},
-      {"osSyncWifiConfigurationsCheckboxLabel",
-       IDS_OS_SETTINGS_WIFI_CONFIGURATIONS_CHECKBOX_LABEL},
-      {"osSyncAppsCheckboxLabel", IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL},
-      {"osSyncAppsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_SUBLABEL},
-      {"osSyncSettingsCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_SETTINGS_CHECKBOX_SUBLABEL},
-      {"osSyncWifiCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WIFI_CHECKBOX_SUBLABEL},
-      {"osSyncWallpaperCheckboxSublabel",
-       IDS_OS_SETTINGS_SYNC_WALLPAPER_CHECKBOX_SUBLABEL},
-      {"osSyncAppsTooltipText", IDS_OS_SETTINGS_SYNC_APPS_TOOLTIP},
-      {"osSyncTurnOn", IDS_OS_SETTINGS_SYNC_TURN_ON},
-      {"osSyncFeatureLabel", IDS_OS_SETTINGS_SYNC_FEATURE_LABEL},
-      {"spellingPref", IDS_SETTINGS_SPELLING_PREF},
-      {"spellingDescription", IDS_SETTINGS_SPELLING_PREF_DESC},
-      {"enablePersonalizationLogging", IDS_SETTINGS_ENABLE_LOGGING_PREF},
-      {"enablePersonalizationLoggingDesc",
-       IDS_SETTINGS_ENABLE_LOGGING_PREF_DESC},
-  };
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-
-  html_source->AddBoolean(
-      "appsToggleSharingEnabled",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
-          crosapi::browser_util::IsLacrosEnabled());
-
-  html_source->AddBoolean(
-      "osDeprecateSyncMetricsToggle",
-      ash::features::IsOsSettingsDeprecateSyncMetricsToggleEnabled());
-
-  // This handler is for chrome://os-settings.
-  html_source->AddBoolean("isOSSettings", true);
-}
-
 void AddUsersStrings(content::WebUIDataSource* html_source) {
   const bool kIsRevampEnabled =
       ash::features::IsOsSettingsRevampWayfindingEnabled();
@@ -542,6 +476,10 @@ PeopleSection::PeopleSection(Profile* profile,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
+      sync_subsection_(
+          !ash::features::IsOsSettingsRevampWayfindingEnabled()
+              ? absl::make_optional<SyncSection>(profile, search_tag_registry)
+              : absl::nullopt),
       identity_manager_(identity_manager),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
@@ -549,6 +487,10 @@ PeopleSection::PeopleSection(Profile* profile,
   // No search tags are registered if in guest mode.
   if (IsGuestModeActive()) {
     return;
+  }
+
+  if (!ash::features::IsOsSettingsRevampWayfindingEnabled()) {
+    CHECK(sync_subsection_);
   }
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
@@ -571,8 +513,6 @@ PeopleSection::PeopleSection(Profile* profile,
     FetchAccounts();
   }
 
-  updater.AddSearchTags(GetCategorizedSyncSearchConcepts());
-
   // Parental control search tags are added if necessary and do not update
   // dynamically during a user session.
   if (ShouldShowParentalControlSettings(profile)) {
@@ -593,9 +533,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"lockScreenFingerprintTitle",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_FINGERPRINT_SUBPAGE_TITLE},
       {"manageOtherPeople", IDS_SETTINGS_PEOPLE_MANAGE_OTHER_PEOPLE},
-      {"syncAndNonPersonalizedServices",
-       IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
-      {"syncDisconnectConfirm", IDS_SETTINGS_SYNC_DISCONNECT_CONFIRM},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -618,23 +555,6 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       user->IsActiveDirectoryUser() ||
           profile()->GetProfilePolicyConnector()->IsManaged());
 
-  static constexpr webui::LocalizedString kSignOutStrings[] = {
-      {"syncDisconnect", IDS_SETTINGS_PEOPLE_SIGN_OUT},
-      {"syncDisconnectTitle", IDS_SETTINGS_SYNC_DISCONNECT_TITLE},
-  };
-  html_source->AddLocalizedStrings(kSignOutStrings);
-
-  std::string sync_dashboard_url =
-      google_util::AppendGoogleLocaleParam(
-          GURL(chrome::kSyncGoogleDashboardURL),
-          g_browser_process->GetApplicationLocale())
-          .spec();
-
-  html_source->AddString(
-      "syncDisconnectExplanation",
-      l10n_util::GetStringFUTF8(IDS_SETTINGS_SYNC_DISCONNECT_EXPLANATION,
-                                base::ASCIIToUTF16(sync_dashboard_url)));
-
   html_source->AddBoolean(
       "secondaryGoogleAccountSigninAllowed",
       pref_service_->GetBoolean(
@@ -650,13 +570,17 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddFingerprintResources(html_source, AreFingerprintSettingsAllowed());
   AddSetupFingerprintDialogStrings(html_source);
   AddSetupPinDialogStrings(html_source);
-  AddSyncControlsStrings(html_source);
   AddUsersStrings(html_source);
   AddParentalControlStrings(html_source,
                             ShouldShowParentalControlSettings(profile()));
 
   ::settings::AddPasswordPromptDialogStrings(html_source);
-  ::settings::AddSharedSyncPageStrings(html_source);
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // disabled.
+  if (sync_subsection_) {
+    sync_subsection_->AddLoadTimeData(html_source);
+  }
 }
 
 void PeopleSection::AddHandlers(content::WebUI* web_ui) {
@@ -671,8 +595,6 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
         account_apps_availability_));
   }
 
-  web_ui->AddMessageHandler(std::make_unique<OSSyncHandler>(profile()));
-
   web_ui->AddMessageHandler(
       std::make_unique<QuickUnlockHandler>(profile(), pref_service_));
 
@@ -682,6 +604,12 @@ void PeopleSection::AddHandlers(content::WebUI* web_ui) {
       ShouldShowParentalControlSettings(profile())) {
     web_ui->AddMessageHandler(
         std::make_unique<ParentalControlsHandler>(profile()));
+  }
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // disabled.
+  if (sync_subsection_) {
+    sync_subsection_->AddHandlers(web_ui);
   }
 }
 
@@ -737,38 +665,15 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                               generator);
   }
 
-  // Combined browser/OS sync.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES,
-      mojom::Subpage::kSyncSetup, mojom::SearchResultIcon::kSync,
-      mojom::SearchResultDefaultRank::kMedium, mojom::kSyncSetupSubpagePath);
-  static constexpr mojom::Setting kSyncSettings[] = {
-      mojom::Setting::kNonSplitSyncEncryptionOptions,
-      mojom::Setting::kImproveSearchSuggestions,
-      mojom::Setting::kMakeSearchesAndBrowsingBetter,
-      mojom::Setting::kGoogleDriveSearchSuggestions,
-  };
-  RegisterNestedSettingBulk(mojom::Subpage::kSyncSetup, kSyncSettings,
-                            generator);
-
-  // TODO(crbug.com/1249845): Remove this.
-  generator->RegisterNestedSubpage(
-      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE,
-      mojom::Subpage::kSyncDeprecatedAdvanced, mojom::Subpage::kSyncSetup,
-      mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncDeprecatedAdvancedSubpagePath);
-
-  // Page with OS-specific sync data types.
-  generator->RegisterTopLevelSubpage(
-      IDS_SETTINGS_SYNC_ADVANCED_PAGE_TITLE, mojom::Subpage::kSync,
-      mojom::SearchResultIcon::kSync, mojom::SearchResultDefaultRank::kMedium,
-      mojom::kSyncSubpagePath);
-  generator->RegisterNestedSetting(mojom::Setting::kSplitSyncOnOff,
-                                   mojom::Subpage::kSync);
-
   // Smart Lock -- main setting is on multidevice page, but is mirrored here
   generator->RegisterNestedAltSetting(mojom::Setting::kSmartLockOnOff,
                                       mojom::Subpage::kSecurityAndSignInV2);
+
+  // `sync_subsection_` is initialized only if the feature revamp wayfinding is
+  // disabled.
+  if (sync_subsection_) {
+    sync_subsection_->RegisterHierarchy(generator);
+  }
 }
 
 void PeopleSection::FetchAccounts() {

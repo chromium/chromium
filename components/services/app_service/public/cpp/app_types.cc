@@ -148,6 +148,11 @@ bool App::operator==(const App& other) const {
     return false;
   }
 
+  IS_VECTOR_VALUE_EQUAL(supported_locales);
+  if (this->selected_locale != other.selected_locale) {
+    return false;
+  }
+
   return true;
 }
 
@@ -198,6 +203,9 @@ AppPtr App::Clone() const {
 
   app->app_size_in_bytes = app_size_in_bytes;
   app->data_size_in_bytes = data_size_in_bytes;
+
+  app->supported_locales = supported_locales;
+  app->selected_locale = selected_locale;
 
   return app;
 }

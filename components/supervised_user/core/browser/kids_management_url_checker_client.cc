@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -56,6 +57,9 @@ KidsManagementURLCheckerClient::KidsManagementURLCheckerClient(
     KidsChromeManagementClient* kids_chrome_management_client,
     const std::string& country)
     : kids_chrome_management_client_(kids_chrome_management_client),
+      safe_search_client_(
+          kids_chrome_management_client->url_loader_factory(),
+          supervised_user::kClassifyUrlConfig.traffic_annotation()),
       country_(country),
       fetch_manager_(base::BindRepeating(
           &ClassifyURL,
@@ -130,5 +134,10 @@ void KidsManagementURLCheckerClient::CheckURL(
         base::BindOnce(
             &KidsManagementURLCheckerClient::LegacyConvertResponseCallback,
             weak_factory_.GetWeakPtr(), url, std::move(callback)));
+  }
+
+  if (supervised_user::IsShadowKidsApiWithSafeSitesEnabled()) {
+    // Actual client is timing the latency in Enterprise.SafeSites.Latency
+    safe_search_client_.CheckURL(url, base::DoNothing());
   }
 }

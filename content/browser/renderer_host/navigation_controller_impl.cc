@@ -116,7 +116,7 @@
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/navigation/prefetched_signed_exchange_info.mojom.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -3970,12 +3970,13 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           /*view_transition_state=*/absl::nullopt,
           /*soft_navigation_heuristics_task_id=*/absl::nullopt,
           /*modified_runtime_features=*/
-          base::flat_map<::blink::mojom::RuntimeFeatureState, bool>(),
+          base::flat_map<::blink::mojom::RuntimeFeature, bool>(),
           /*fenced_frame_properties=*/absl::nullopt,
           /*not_restored_reasons=*/nullptr,
           /*load_with_storage_access=*/false,
           /*browsing_context_group_info=*/absl::nullopt,
-          /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings());
+          /*lcpp_hint=*/nullptr, blink::CreateDefaultRendererContentSettings(),
+          /*cookie_deprecation_label=*/absl::nullopt);
 #if BUILDFLAG(IS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();
@@ -4317,15 +4318,14 @@ void NavigationControllerImpl::InsertEntriesFrom(
     NavigationControllerImpl* source,
     int max_index) {
   DCHECK_LE(max_index, source->GetEntryCount());
-  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
-      std::make_unique<NavigationEntryRestoreContextImpl>();
+  NavigationEntryRestoreContextImpl context;
   for (int i = 0; i < max_index; i++) {
     // Normally, cloning a NavigationEntryImpl results in sharing
     // FrameNavigationEntries between the original and the clone. However, when
     // cloning from a different NavigationControllerImpl, we want to fork the
     // FrameNavigationEntries.
     entries_.insert(entries_.begin() + i,
-                    source->entries_[i]->CloneWithoutSharing(context.get()));
+                    source->entries_[i]->CloneWithoutSharing(&context));
   }
   DCHECK_GE(entries_.size(), 1u);
   DCHECK(pending_entry_index_ == -1 ||

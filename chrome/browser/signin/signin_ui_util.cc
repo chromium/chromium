@@ -361,41 +361,57 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 }
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    Profile* profile,
+    signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync) {
-  // Fetch account ids for accounts that have a token.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+  // Fetch account ids for accounts that have a token and are in cookie jar.
   std::vector<AccountInfo> accounts_with_tokens =
       identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken();
-
+  signin::AccountsInCookieJarInfo accounts_in_jar =
+      identity_manager->GetAccountsInCookieJar();
   // Compute the default account.
   CoreAccountId default_account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
 
-  // Fetch account information for each id and make sure that the first account
-  // in the list matches the unconsented primary account (if available).
   std::vector<AccountInfo> accounts;
-  for (auto& account_info : accounts_with_tokens) {
-    DCHECK(!account_info.IsEmpty());
-    if (restrict_to_accounts_eligible_for_sync &&
-        !signin::IsUsernameAllowedByPatternFromPrefs(
-            g_browser_process->local_state(), account_info.email)) {
+
+  // First, add the primary account (if available), even if it is not in the
+  // cookie jar.
+  std::vector<AccountInfo>::iterator it = base::ranges::find(
+      accounts_with_tokens, default_account_id, &AccountInfo::account_id);
+
+  if (it != accounts_with_tokens.end()) {
+    accounts.push_back(std::move(*it));
+  }
+
+  // Then, add the other accounts in the order of the accounts in the cookie
+  // jar.
+  for (auto& account_info : accounts_in_jar.signed_in_accounts) {
+    DCHECK(!account_info.id.empty());
+    if (account_info.id == default_account_id ||
+        (restrict_to_accounts_eligible_for_sync &&
+         !signin::IsUsernameAllowedByPatternFromPrefs(
+             g_browser_process->local_state(), account_info.email))) {
       continue;
     }
-    if (account_info.account_id == default_account_id)
-      accounts.insert(accounts.begin(), std::move(account_info));
-    else
-      accounts.push_back(std::move(account_info));
+
+    // Only insert the account if it has a refresh token, because we need the
+    // account info.
+    it = base::ranges::find(accounts_with_tokens, account_info.id,
+                            &AccountInfo::account_id);
+
+    if (it != accounts_with_tokens.end()) {
+      accounts.push_back(std::move(*it));
+    }
   }
   return accounts;
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-AccountInfo GetSingleAccountForPromos(Profile* profile) {
+AccountInfo GetSingleAccountForPromos(
+    signin::IdentityManager* identity_manager) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
-      profile, /*restrict_to_accounts_eligible_for_sync=*/true);
+      identity_manager, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
     return accounts[0];
   return AccountInfo();

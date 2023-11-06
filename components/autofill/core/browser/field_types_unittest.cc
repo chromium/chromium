@@ -11,12 +11,12 @@
 namespace autofill {
 
 TEST(FieldTypesTest, TypeStringConversion) {
-  EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringPiece(NO_SERVER_DATA)),
+  EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
     if (ServerFieldType raw_value = static_cast<ServerFieldType>(i);
         ToSafeServerFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
-      EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringPiece(raw_value)),
+      EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);
     }
   }
@@ -45,7 +45,9 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
       PHONE_HOME_WHOLE_NUMBER,
       ADDRESS_HOME_LINE1,
       ADDRESS_HOME_LINE2,
+      ADDRESS_HOME_APT,
       ADDRESS_HOME_APT_NUM,
+      ADDRESS_HOME_APT_TYPE,
       ADDRESS_HOME_CITY,
       ADDRESS_HOME_STATE,
       ADDRESS_HOME_ZIP,
@@ -125,24 +127,16 @@ TEST(FieldTypesTest, IsValidServerFieldType) {
 }
 
 TEST(FieldTypesTest, TestWith2DigitExpirationYear) {
-  FormFieldData field_data;
-  field_data.name = u"expiration_year";
-  field_data.value = u"23";
-  AutofillField field(field_data);
   ServerFieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_2_DIGIT_YEAR, NO_SERVER_DATA);
-  size_t result = DetermineExpirationYearLength(field, assumed_field_type);
+  size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(2));
 }
 
 TEST(FieldTypesTest, TestWith4DigitExpirationYear) {
-  FormFieldData field_data;
-  field_data.name = u"expiration_year";
-  field_data.value = u"2023";
-  AutofillField field(field_data);
   ServerFieldType assumed_field_type =
       ToSafeServerFieldType(CREDIT_CARD_EXP_4_DIGIT_YEAR, NO_SERVER_DATA);
-  size_t result = DetermineExpirationYearLength(field, assumed_field_type);
+  size_t result = DetermineExpirationYearLength(assumed_field_type);
   EXPECT_EQ(result, static_cast<size_t>(4));
 }
 

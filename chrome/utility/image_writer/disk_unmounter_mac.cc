@@ -25,7 +25,7 @@ DiskUnmounterMac::DiskUnmounterMac() : cf_thread_("ImageWriterDiskArb") {
 
 DiskUnmounterMac::~DiskUnmounterMac() {
   if (disk_)
-    DADiskUnclaim(disk_);
+    DADiskUnclaim(disk_.get());
 }
 
 void DiskUnmounterMac::Unmount(const std::string& device_path,
@@ -98,11 +98,11 @@ void DiskUnmounterMac::UnmountOnWorker(const std::string& device_path) {
 
   session_.reset(DASessionCreate(NULL));
 
-  DASessionScheduleWithRunLoop(
-      session_, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
+  DASessionScheduleWithRunLoop(session_.get(), CFRunLoopGetCurrent(),
+                               kCFRunLoopCommonModes);
 
-  disk_.reset(DADiskCreateFromBSDName(
-      kCFAllocatorDefault, session_, device_path.c_str()));
+  disk_.reset(DADiskCreateFromBSDName(kCFAllocatorDefault, session_.get(),
+                                      device_path.c_str()));
 
   if (!disk_) {
     LOG(ERROR) << "Unable to get disk reference.";
@@ -110,12 +110,8 @@ void DiskUnmounterMac::UnmountOnWorker(const std::string& device_path) {
     return;
   }
 
-  DADiskClaim(disk_,
-              kDADiskClaimOptionDefault,
-              DiskClaimRevoked,
-              this,
-              DiskClaimed,
-              this);
+  DADiskClaim(disk_.get(), kDADiskClaimOptionDefault, DiskClaimRevoked, this,
+              DiskClaimed, this);
 }
 
 void DiskUnmounterMac::Error() {

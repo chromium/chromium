@@ -183,6 +183,9 @@ struct OfflineItem {
   // Identifies the item's publisher.
   std::string attribution;
 
+  // The URL of document that is considered the referrer for the original URL.
+  GURL referrer_url;
+
   // In Progress Metadata.
   // ---------------------------------------------------------------------------
   // The current state of the OfflineItem.

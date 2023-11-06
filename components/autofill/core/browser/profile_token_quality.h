@@ -44,11 +44,6 @@ class PersonalDataManager;
 // an observation for a derived type, it is stored as an observation for the
 // corresponding stored type.
 // See `components/autofill/README.md` for details on stored and derived types.
-//
-// TODO(crbug.com/1453650): Interface + logic to reset observations for
-// `kAccount` profiles and for edits via settings.
-// TODO(crbug.com/1453650): Treat values entered through settings as `kAccepted`
-// observations.
 class ProfileTokenQuality {
  public:
   // Describes the different types of observations, derived from an autofilled
@@ -103,6 +98,9 @@ class ProfileTokenQuality {
   ProfileTokenQuality(const ProfileTokenQuality& other);
   ~ProfileTokenQuality();
 
+  bool operator==(const ProfileTokenQuality& other) const;
+  bool operator!=(const ProfileTokenQuality& other) const;
+
   // Determines if a `type` is considered stored. Observations are only tracked
   // for stored types.
   static bool IsStoredType(ServerFieldType type);
@@ -134,8 +132,9 @@ class ProfileTokenQuality {
       PersonalDataManager& pdm);
 
   // Returns all `ObservationType`s available for the `type`. The resulting
-  // vector has at most `kMaxNumberOfObservations` items. It is guaranteed that
-  // no observation type is `kNone`.
+  // vector has at most `kMaxNumberOfObservations` items. It can contain
+  // observations of type `kUnknown`, if a newer client synced observation types
+  // that this client doesn't understand.
   // `type` must be a supported type of `AutofillProfile`. For a derived `type`,
   // the observations of the corresponding stored type are returned.
   std::vector<ObservationType> GetObservationTypesForFieldType(
@@ -165,6 +164,11 @@ class ProfileTokenQuality {
 
   // Resets all observations for the `type`.
   void ResetObservationsForStoredType(ServerFieldType type);
+
+  // Resets the observations for all tokens in which `profile_` and `other`
+  // differ. This is used as a mechanism to reset outdated observations, by
+  // setting `other` to the profile before modifications took place.
+  void ResetObservationsForDifferingTokens(const AutofillProfile& other);
 
   void disable_randomization_for_testing() {
     diable_randomization_for_testing_ = true;
@@ -208,6 +212,9 @@ class ProfileTokenQuality {
     // Getters expose unknown values as `kUnknown`.
     std::underlying_type_t<ObservationType> type;
     FormSignatureHash form_hash = FormSignatureHash(0);
+
+    bool operator==(const Observation& other) const;
+    bool operator!=(const Observation& other) const;
   };
 
   // Returns a low-entry hash of the `form_signature`.

@@ -29,6 +29,17 @@ function objectsAreEqual(
   return true;
 }
 
+function deviceInList(
+    deviceId: number, deviceList: InputDeviceType[]): boolean {
+  for (const device of deviceList) {
+    if (device.id === deviceId) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 export function settingsAreEqual(
     settings1: DeviceSettings, settings2: DeviceSettings): boolean {
   return objectsAreEqual(settings1, settings2);
@@ -77,13 +88,13 @@ export function getDeviceStateChangesToAnnounce(
   let msgId: string;
   let devices: InputDeviceType[];
   if (newDeviceList.length > prevDeviceList.length) {
-    devices =
-        newDeviceList.filter((device) => !prevDeviceList.includes(device));
+    devices = newDeviceList.filter(
+        (device) => !deviceInList(device.id, prevDeviceList));
     msgId = 'deviceConnectedA11yLabel';
   } else {
     msgId = 'deviceDisconnectedA11yLabel';
-    devices =
-        prevDeviceList.filter((device) => !newDeviceList.includes(device));
+    devices = prevDeviceList.filter(
+        (device) => !deviceInList(device.id, newDeviceList));
   }
 
   return {msgId, deviceNames: devices.map(device => device.name)};

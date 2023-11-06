@@ -39,9 +39,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests whether popup windows appear.
- */
+/** Tests whether popup windows appear. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE)
@@ -69,8 +67,9 @@ public class PopupTest {
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT, () -> Assert.assertTrue(getNumInfobarsShowing() == 0));
 
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mPopupHtmlUrl = mTestServer.getURL(POPUP_HTML_PATH);
     }
 
@@ -125,22 +124,28 @@ public class PopupTest {
     }
 
     private void waitForForegroundInfoBar(@InfoBarIdentifier int id) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(getNumInfobarsShowing(), Matchers.greaterThan(0));
-            InfoBar frontInfoBar = mActivityTestRule.getInfoBars().get(0);
-            if (frontInfoBar.getInfoBarIdentifier() != id) frontInfoBar.onCloseButtonClicked();
-            Criteria.checkThat("Invalid infobar type shown", frontInfoBar.getInfoBarIdentifier(),
-                    Matchers.is(id));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(getNumInfobarsShowing(), Matchers.greaterThan(0));
+                    InfoBar frontInfoBar = mActivityTestRule.getInfoBars().get(0);
+                    if (frontInfoBar.getInfoBarIdentifier() != id) {
+                        frontInfoBar.onCloseButtonClicked();
+                    }
+                    Criteria.checkThat(
+                            "Invalid infobar type shown",
+                            frontInfoBar.getInfoBarIdentifier(),
+                            Matchers.is(id));
+                });
     }
 
     private void waitForNoInfoBarOfType(@InfoBarIdentifier int id) {
-        CriteriaHelper.pollUiThread(() -> {
-            List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-            for (InfoBar infoBar : infoBars) {
-                Criteria.checkThat(infoBar.getInfoBarIdentifier(), Matchers.not(id));
-            }
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
+                    for (InfoBar infoBar : infoBars) {
+                        Criteria.checkThat(infoBar.getInfoBarIdentifier(), Matchers.not(id));
+                    }
+                });
     }
 
     @Test
@@ -157,16 +162,20 @@ public class PopupTest {
 
         // Wait until the animations are done, then click the "open popups" button.
         final InfoBar infobar = infobars.get(0);
-        Assert.assertEquals(InfoBarIdentifier.POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE,
+        Assert.assertEquals(
+                InfoBarIdentifier.POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE,
                 infobar.getInfoBarIdentifier());
         CriteriaHelper.pollUiThread(() -> !container.isAnimating());
         TouchCommon.singleClickView(infobar.getView().findViewById(R.id.button_primary));
 
         // Document mode popups appear slowly and sequentially to prevent Android from throwing them
         // away, so use a long timeout.  http://crbug.com/498920.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(selector.getCurrentTab().getTitle(), Matchers.is("Two"));
-        }, 7500, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(selector.getCurrentTab().getTitle(), Matchers.is("Two"));
+                },
+                7500,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         waitForNoInfoBarOfType(InfoBarIdentifier.POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE);
 
         Assert.assertEquals(3, selector.getTotalTabCount());
@@ -174,12 +183,15 @@ public class PopupTest {
 
         // Test that revisiting the original page makes popup windows immediately.
         mActivityTestRule.loadUrl(mPopupHtmlUrl);
-        CriteriaHelper.pollUiThread(() -> {
-            int tabCount = selector.getTotalTabCount();
-            Criteria.checkThat(tabCount, Matchers.is(5));
-            String tabTitle = selector.getCurrentTab().getTitle();
-            Criteria.checkThat(tabTitle, Matchers.is("Two"));
-        }, 7500, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    int tabCount = selector.getTotalTabCount();
+                    Criteria.checkThat(tabCount, Matchers.is(5));
+                    String tabTitle = selector.getCurrentTab().getTitle();
+                    Criteria.checkThat(tabTitle, Matchers.is("Two"));
+                },
+                7500,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         waitForNoInfoBarOfType(InfoBarIdentifier.POPUP_BLOCKED_INFOBAR_DELEGATE_MOBILE);
 
         Assert.assertNotSame(currentTabId, selector.getCurrentTab().getId());

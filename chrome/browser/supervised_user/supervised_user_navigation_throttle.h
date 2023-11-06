@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -49,11 +50,10 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
 
   void ShowInterstitialAsync(supervised_user::FilteringBehaviorReason reason);
 
-  void OnCheckDone(
-      const GURL& url,
-      supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior,
-      supervised_user::FilteringBehaviorReason reason,
-      bool uncertain);
+  void OnCheckDone(const GURL& url,
+                   supervised_user::FilteringBehavior behavior,
+                   supervised_user::FilteringBehaviorReason reason,
+                   bool uncertain);
 
   void OnInterstitialResult(CallbackActions continue_request,
                             bool already_requested_permission,
@@ -62,7 +62,7 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
   bool deferred_;
   supervised_user::FilteringBehaviorReason reason_;
-  supervised_user::SupervisedUserURLFilter::FilteringBehavior behavior_;
+  supervised_user::FilteringBehavior behavior_;
   base::WeakPtrFactory<SupervisedUserNavigationThrottle> weak_ptr_factory_{
       this};
 };

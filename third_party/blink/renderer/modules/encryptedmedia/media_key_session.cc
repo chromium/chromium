@@ -154,11 +154,11 @@ class MediaKeySession::PendingAction final
 
   Type GetType() const { return type_; }
 
-  ContentDecryptionModuleResult* Result() const { return result_; }
+  ContentDecryptionModuleResult* Result() const { return result_.Get(); }
 
   DOMArrayBuffer* Data() const {
     DCHECK(type_ == Type::kGenerateRequest || type_ == Type::kUpdate);
-    return data_;
+    return data_.Get();
   }
 
   media::EmeInitDataType InitDataType() const {
@@ -482,7 +482,7 @@ ScriptPromise MediaKeySession::closed(ScriptState* script_state) {
 }
 
 MediaKeyStatusMap* MediaKeySession::keyStatuses() {
-  return key_statuses_map_;
+  return key_statuses_map_.Get();
 }
 
 ScriptPromise MediaKeySession::generateRequest(

@@ -8,8 +8,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
+#include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
+#include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace test {
+#include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
+#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
+}  // namespace test
 
 using lookalikes::ComboSquattingParams;
 using lookalikes::ComboSquattingType;
@@ -49,7 +56,38 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
   NOTREACHED();
 }
 
-TEST(LookalikeUrlUtilTest, IsEditDistanceAtMostOne) {
+// These tests do not use the production top domain list. This is to avoid
+// having to adjust the tests when the top domain list is updated. Instead,
+// these tests use the data in `test_domains.list` and `common_words_test.gpref`
+// files.
+class LookalikeUrlUtilTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    // Use test top domain lists instead of the actual list.
+    url_formatter::IDNSpoofChecker::HuffmanTrieParams trie_params{
+        test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
+        test::kTopDomainsTrie, test::kTopDomainsTrieBits,
+        test::kTopDomainsRootPosition};
+    url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
+
+    // Use test top bucket domain skeletons instead of the actual list.
+    lookalikes::TopBucketDomainsParams top_bucket_params{
+        test_top_bucket_domains::kTopBucketEditDistanceSkeletons,
+        test_top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
+    lookalikes::SetTopBucketDomainsParamsForTesting(top_bucket_params);
+
+    url_formatter::common_words::SetCommonWordDAFSAForTesting(
+        test::kDafsa, sizeof(test::kDafsa));
+  }
+
+  void TearDown() override {
+    url_formatter::common_words::ResetCommonWordDAFSAForTesting();
+    lookalikes::ResetTopBucketDomainsParamsForTesting();
+    url_formatter::IDNSpoofChecker::RestoreTrieParamsForTesting();
+  }
+};
+
+TEST_F(LookalikeUrlUtilTest, IsEditDistanceAtMostOne) {
   const struct TestCase {
     const wchar_t* domain;
     const wchar_t* top_domain;
@@ -110,7 +148,7 @@ TEST(LookalikeUrlUtilTest, IsEditDistanceAtMostOne) {
   }
 }
 
-TEST(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
+TEST_F(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
   const struct TestCase {
     const char* domain;
     const char* top_domain;
@@ -168,7 +206,7 @@ TEST(LookalikeUrlUtilTest, EditDistanceExcludesCommonFalsePositives) {
   }
 }
 
-TEST(LookalikeUrlUtilTest, CharacterSwapExcludesCommonFalsePositives) {
+TEST_F(LookalikeUrlUtilTest, CharacterSwapExcludesCommonFalsePositives) {
   const struct TestCase {
     const char* domain;
     const char* top_domain;
@@ -203,7 +241,7 @@ struct TargetEmbeddingHeuristicTestCase {
   const TargetEmbeddingType expected_type;
 };
 
-TEST(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
+TEST_F(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
   EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
       GetDomainInfo(GURL("https://example.com"))));
   // ASCII short eTLD+1:
@@ -235,7 +273,7 @@ TEST(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
       ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.ττ.рф"))));
 }
 
-TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
+TEST_F(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
       GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
@@ -435,7 +473,7 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   }
 }
 
-TEST(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
+TEST_F(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://commonword.com")),
       GetDomainInfo(GURL("https://uncommonword.com")),
@@ -459,7 +497,7 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingIgnoresComponentWordlist) {
   EXPECT_EQ(embedding_type, TargetEmbeddingType::kNone);
 }
 
-TEST(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
+TEST_F(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
   const struct GetETLDPlusOneTestCase {
     const std::string hostname;
     const std::string expected_etldp1;
@@ -483,7 +521,7 @@ TEST(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
 }
 
 // Tests for the character swap heuristic.
-TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
+TEST_F(LookalikeUrlUtilTest, HasOneCharacterSwap) {
   const struct TestCase {
     const wchar_t* str1;
     const wchar_t* str2;
@@ -525,7 +563,7 @@ TEST(LookalikeUrlUtilTest, HasOneCharacterSwap) {
   }
 }
 
-TEST(LookalikeUrlUtilTest, GetSuggestedURL) {
+TEST_F(LookalikeUrlUtilTest, GetSuggestedURL) {
   const struct TestCase {
     const LookalikeUrlMatchType match_type;
     const GURL navigated_url;
@@ -575,7 +613,7 @@ TEST(LookalikeUrlUtilTest, GetSuggestedURL) {
   }
 }
 
-TEST(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
+TEST_F(LookalikeUrlUtilTest, IsHeuristicEnabledForHostname) {
   reputation::SafetyTipsConfig proto;
   reputation::HeuristicLaunchConfig* config = proto.add_launch_config();
   config->set_heuristic(reputation::HeuristicLaunchConfig::

@@ -9,15 +9,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
-#include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
+#include "third_party/blink/renderer/core/layout/mathml/mathml_paint_info.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/physical_fragment_rare_data.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/table/table_borders.h"
+#include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
@@ -127,13 +127,13 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return MutableChildrenForOutOfFlow(children_.data(), children_.size());
   }
 
-  // Returns |NGFragmentItems| if this fragment has one.
+  // Returns |FragmentItems| if this fragment has one.
   bool HasItems() const {
     // Use get_concurrently because it can be called from a background thread in
     // TraceAfterDispatch().
     return bit_field_.get_concurrently<ConstHasFragmentItemsFlag>();
   }
-  const NGFragmentItems* Items() const {
+  const FragmentItems* Items() const {
     return HasItems() ? ComputeItemsAddress() : nullptr;
   }
 
@@ -165,15 +165,15 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return rare_data_->GetField(FieldId::kTableGridRect)->table_grid_rect;
   }
 
-  const NGTableFragmentData::ColumnGeometries* TableColumnGeometries() const {
-    return rare_data_->table_column_geometries_;
+  const TableFragmentData::ColumnGeometries* TableColumnGeometries() const {
+    return rare_data_->table_column_geometries_.Get();
   }
 
-  const NGTableBorders* TableCollapsedBorders() const {
-    return rare_data_ ? rare_data_->table_collapsed_borders_ : nullptr;
+  const TableBorders* TableCollapsedBorders() const {
+    return rare_data_ ? rare_data_->table_collapsed_borders_.Get() : nullptr;
   }
 
-  const NGTableFragmentData::CollapsedBordersGeometry*
+  const TableFragmentData::CollapsedBordersGeometry*
   TableCollapsedBordersGeometry() const {
     if (const auto* field =
             GetRareField(FieldId::kTableCollapsedBordersGeometry)) {
@@ -188,7 +188,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   absl::optional<wtf_size_t> TableSectionStartRowIndex() const {
-    DCHECK(IsTableNGSection());
+    DCHECK(IsTableSection());
     if (const auto* field = GetRareField(FieldId::kTableSectionStartRowIndex)) {
       return field->table_section_start_row_index;
     }
@@ -196,7 +196,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
 
   const Vector<LayoutUnit>* TableSectionRowOffsets() const {
-    DCHECK(IsTableNGSection());
+    DCHECK(IsTableSection());
     if (const auto* field = GetRareField(FieldId::kTableSectionRowOffsets)) {
       return &field->table_section_row_offsets;
     }
@@ -401,7 +401,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   bool IsOnlyForNode() const { return IsFirstForNode() && !BreakToken(); }
 
   bool HasDescendantsForTablePart() const {
-    DCHECK(IsTableNGPart() || IsTableNGCell());
+    DCHECK(IsTablePart() || IsTableCell());
     return bit_field_.get<HasDescendantsForTablePartFlag>();
   }
 
@@ -428,7 +428,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
 
     return GetRareField(FieldId::kMathMLPaintInfo);
   }
-  const NGMathMLPaintInfo& GetMathMLPaintInfo() const {
+  const MathMLPaintInfo& GetMathMLPaintInfo() const {
     return *rare_data_->GetField(FieldId::kMathMLPaintInfo)
                 ->mathml_paint_info.get();
   }
@@ -586,10 +586,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   }
   PhysicalFragmentRareData::RareField& EnsureRareField(FieldId id);
 
-  const NGFragmentItems* ComputeItemsAddress() const {
+  const FragmentItems* ComputeItemsAddress() const {
     DCHECK(HasItems());
-    return reinterpret_cast<const NGFragmentItems*>(base::bits::AlignUp(
-        reinterpret_cast<const uint8_t*>(this + 1), alignof(NGFragmentItems)));
+    return reinterpret_cast<const FragmentItems*>(base::bits::AlignUp(
+        reinterpret_cast<const uint8_t*>(this + 1), alignof(FragmentItems)));
   }
 
   void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);

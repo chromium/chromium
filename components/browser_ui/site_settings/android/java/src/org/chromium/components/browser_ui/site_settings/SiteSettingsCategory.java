@@ -40,14 +40,41 @@ import java.lang.annotation.RetentionPolicy;
  * A base class for dealing with website settings categories.
  */
 public class SiteSettingsCategory {
-    @IntDef({Type.ALL_SITES, Type.ADS, Type.AUGMENTED_REALITY, Type.AUTOMATIC_DOWNLOADS,
-            Type.BACKGROUND_SYNC, Type.BLUETOOTH, Type.BLUETOOTH_SCANNING, Type.CAMERA,
-            Type.CLIPBOARD, Type.COOKIES, Type.IDLE_DETECTION, Type.DEVICE_LOCATION,
-            Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC, Type.NOTIFICATIONS, Type.POPUPS,
-            Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND, Type.USB, Type.VIRTUAL_REALITY,
-            Type.USE_STORAGE, Type.AUTO_DARK_WEB_CONTENT, Type.REQUEST_DESKTOP_SITE,
-            Type.FEDERATED_IDENTITY_API, Type.THIRD_PARTY_COOKIES, Type.SITE_DATA, Type.ANTI_ABUSE,
-            Type.ZOOM, Type.NUM_ENTRIES})
+    @IntDef({
+        Type.ALL_SITES,
+        Type.ADS,
+        Type.AUGMENTED_REALITY,
+        Type.AUTOMATIC_DOWNLOADS,
+        Type.BACKGROUND_SYNC,
+        Type.BLUETOOTH,
+        Type.BLUETOOTH_SCANNING,
+        Type.CAMERA,
+        Type.CLIPBOARD,
+        Type.COOKIES,
+        Type.IDLE_DETECTION,
+        Type.DEVICE_LOCATION,
+        Type.JAVASCRIPT,
+        Type.MICROPHONE,
+        Type.NFC,
+        Type.NOTIFICATIONS,
+        Type.POPUPS,
+        Type.PROTECTED_MEDIA,
+        Type.SENSORS,
+        Type.SOUND,
+        Type.USB,
+        Type.VIRTUAL_REALITY,
+        Type.USE_STORAGE,
+        Type.AUTO_DARK_WEB_CONTENT,
+        Type.REQUEST_DESKTOP_SITE,
+        Type.FEDERATED_IDENTITY_API,
+        Type.THIRD_PARTY_COOKIES,
+        Type.SITE_DATA,
+        Type.ANTI_ABUSE,
+        Type.ZOOM,
+        Type.STORAGE_ACCESS,
+        Type.TRACKING_PROTECTION,
+        Type.NUM_ENTRIES
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // All updates here must also be reflected in {@link #preferenceKey(int)
@@ -83,10 +110,10 @@ public class SiteSettingsCategory {
         int ANTI_ABUSE = 28;
         int ZOOM = 29;
         int STORAGE_ACCESS = 30;
-        /**
-         * Number of handled categories used for calculating array sizes.
-         */
-        int NUM_ENTRIES = 31;
+        int TRACKING_PROTECTION = 31;
+
+        /** Number of handled categories used for calculating array sizes. */
+        int NUM_ENTRIES = 32;
     }
 
     private final BrowserContextHandle mBrowserContextHandle;
@@ -220,6 +247,7 @@ public class SiteSettingsCategory {
             case Type.ALL_SITES:
             case Type.USE_STORAGE:
             case Type.ZOOM:
+            case Type.TRACKING_PROTECTION:
                 return ContentSettingsType.DEFAULT; // Conversion unavailable.
         }
         assert false;
@@ -307,6 +335,8 @@ public class SiteSettingsCategory {
                 return "site_data";
             case Type.THIRD_PARTY_COOKIES:
                 return "third_party_cookies";
+            case Type.TRACKING_PROTECTION:
+                return "tracking_protection";
             case Type.ZOOM:
                 return "zoom";
             default:

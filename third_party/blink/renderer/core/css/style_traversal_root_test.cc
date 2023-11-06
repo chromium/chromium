@@ -89,7 +89,7 @@ class StyleTraversalRootTest : public testing::Test {
     //     `-- div#g
   }
   Document& GetDocument() { return *document_; }
-  Element* DivElement(ElementIndex index) { return elements_->at(index); }
+  Element* DivElement(ElementIndex index) { return elements_->at(index).Get(); }
 
  private:
   ScopedNullExecutionContext execution_context_;

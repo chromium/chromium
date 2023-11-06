@@ -4,7 +4,7 @@
 
 // Load api_listener after other assets have initialized.
 
-import './api_listener.js';
+import '../../common/app_management/api_listener.js';
 import './main_view.js';
 import '../../settings_shared.css.js';
 

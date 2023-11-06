@@ -77,8 +77,8 @@ class AddressNormalizer;
 class AutocompleteHistoryManager;
 class AutofillAblationStudy;
 class AutofillComposeDelegate;
-class AutofillDriver;
 class AutofillDownloadManager;
+class AutofillDriver;
 struct AutofillErrorDialogContext;
 class AutofillMlPredictionModelHandler;
 class AutofillOfferData;
@@ -99,8 +99,8 @@ class FormDataImporter;
 class Iban;
 class IbanManager;
 class LogManager;
-class MigratableCreditCard;
 class MerchantPromoCodeManager;
+class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
@@ -370,13 +370,13 @@ class AutofillClient : public RiskDataLoader {
   using MigrationDeleteCardCallback =
       base::RepeatingCallback<void(const std::string&)>;
 
-  // Callback to run after local IBAN save is offered. The callback runs with
-  // `user_decision` indicating whether the prompt was accepted, declined,
+  // Callback to run after local/upload IBAN save is offered. The callback runs
+  // with `user_decision` indicating whether the prompt was accepted, declined,
   // or ignored. `nickname` is optionally provided by the user when IBAN local
-  // save is offered, and can be nullopt.
-  using LocalSaveIbanPromptCallback =
+  // or upload save is offered, and can be nullopt.
+  using SaveIbanPromptCallback =
       base::OnceCallback<void(SaveIbanOfferUserDecision user_decision,
-                              const absl::optional<std::u16string>& nickname)>;
+                              std::optional<std::u16string> nickname)>;
 
   // Callback to run if the OK button or the cancel button in a
   // Webauthn dialog is clicked.
@@ -551,8 +551,8 @@ class AutofillClient : public RiskDataLoader {
   virtual void ShowUnmaskPrompt(
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
-  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result) = 0;
+      base::WeakPtr<CardUnmaskDelegate> delegate);
+  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
 
   // Shows a dialog for the user to choose/confirm the authentication
   // to use in card unmasking.
@@ -606,7 +606,7 @@ class AutofillClient : public RiskDataLoader {
   // Runs |show_migration_dialog_closure| if the user accepts the card migration
   // offer. This causes the card migration dialog to be shown.
   virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure) = 0;
+      base::OnceClosure show_migration_dialog_closure);
 
   // Shows a dialog with the given |legal_message_lines| and the |user_email|.
   // Runs |start_migrating_cards_callback| if the user would like the selected
@@ -615,7 +615,7 @@ class AutofillClient : public RiskDataLoader {
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      LocalCardMigrationCallback start_migrating_cards_callback) = 0;
+      LocalCardMigrationCallback start_migrating_cards_callback);
 
   // Will show a dialog containing a error message if |has_server_error|
   // is true, or the migration results for cards in
@@ -628,14 +628,23 @@ class AutofillClient : public RiskDataLoader {
       const bool has_server_error,
       const std::u16string& tip_message,
       const std::vector<MigratableCreditCard>& migratable_credit_cards,
-      MigrationDeleteCardCallback delete_local_card_callback) = 0;
+      MigrationDeleteCardCallback delete_local_card_callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
   // `should_show_prompt` is true; otherwise only shows the omnibox icon.
   virtual void ConfirmSaveIbanLocally(const Iban& iban,
                                       bool should_show_prompt,
-                                      LocalSaveIbanPromptCallback callback) = 0;
+                                      SaveIbanPromptCallback callback);
+
+  // Runs `callback` once the user makes a decision with respect to the
+  // offer-to-upload prompt. On desktop, shows the offer-to-upload bubble if
+  // `should_show_prompt` is true; otherwise only shows the omnibox icon.
+  virtual void ConfirmUploadIbanToCloud(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      SaveIbanPromptCallback callback);
 
   // TODO(crbug.com/991037): Find a way to merge these two functions. Shouldn't
   // use WebauthnDialogState as that state is a purely UI state (should not be
@@ -647,33 +656,33 @@ class AutofillClient : public RiskDataLoader {
   // unmasked. Runs |offer_dialog_callback| if the OK button or the cancel
   // button in the dialog is clicked.
   virtual void ShowWebauthnOfferDialog(
-      WebauthnDialogCallback offer_dialog_callback) = 0;
+      WebauthnDialogCallback offer_dialog_callback);
 
   // Will show a dialog indicating the card verification is in progress. It is
   // shown after verification starts only if the WebAuthn is enabled.
   virtual void ShowWebauthnVerifyPendingDialog(
-      WebauthnDialogCallback verify_pending_dialog_callback) = 0;
+      WebauthnDialogCallback verify_pending_dialog_callback);
 
   // Will update the WebAuthn dialog content when there is an error fetching the
   // challenge.
-  virtual void UpdateWebauthnOfferDialogWithError() = 0;
+  virtual void UpdateWebauthnOfferDialogWithError();
 
   // Will close the current visible WebAuthn dialog. Returns true if dialog was
   // visible and has been closed.
-  virtual bool CloseWebauthnDialog() = 0;
+  virtual bool CloseWebauthnDialog();
 
   // Shows the dialog including all credit cards that are available to be used
   // as a virtual card. |candidates| must not be empty and has at least one
   // card. Runs |callback| when a card is selected.
   virtual void OfferVirtualCardOptions(
       const std::vector<CreditCard*>& candidates,
-      base::OnceCallback<void(const std::string&)> callback) = 0;
+      base::OnceCallback<void(const std::string&)> callback);
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
-      base::OnceCallback<void(const std::u16string&)> callback) = 0;
+      base::OnceCallback<void(const std::u16string&)> callback);
 
   // Display the expiration date fix flow prompt with the |card| details
   // and run the |callback| if the card should be uploaded to payments with
@@ -681,7 +690,7 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmExpirationDateFixFlow(
       const CreditCard& card,
       base::OnceCallback<void(const std::u16string&, const std::u16string&)>
-          callback) = 0;
+          callback);
 #endif
 
   // Runs |callback| once the user makes a decision with respect to the
@@ -693,7 +702,7 @@ class AutofillClient : public RiskDataLoader {
   virtual void ConfirmSaveCreditCardLocally(
       const CreditCard& card,
       AutofillClient::SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback) = 0;
+      LocalSaveCardPromptCallback callback);
 
   // Runs |callback| once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and
@@ -712,13 +721,13 @@ class AutofillClient : public RiskDataLoader {
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,
-      UploadSaveCardPromptCallback callback) = 0;
+      UploadSaveCardPromptCallback callback);
 
   // Called after credit card upload is finished. Will show upload result to
   // users. |card_saved| indicates if the card is successfully saved.
   // TODO(crbug.com/932818): This function is overridden in iOS codebase.
   // Ideally should remove it if iOS is not using it to do anything.
-  virtual void CreditCardUploadCompleted(bool card_saved) = 0;
+  virtual void CreditCardUploadCompleted(bool card_saved);
 
   // Will show an infobar to get user consent for Credit Card assistive filling.
   // Will run |callback| on success.
@@ -786,8 +795,7 @@ class AutofillClient : public RiskDataLoader {
 
   // Update the data list values shown by the Autofill popup, if visible.
   virtual void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) = 0;
+      base::span<const SelectOption> datalist) = 0;
 
   // Informs the client that the popup needs to be kept alive. Call before
   // |UpdatePopup| to update the open popup in-place.
@@ -865,10 +873,9 @@ class AutofillClient : public RiskDataLoader {
   virtual bool IsPasswordManagerEnabled() = 0;
 
   // Inform the client that the form has been filled.
-  virtual void DidFillOrPreviewForm(
-      mojom::AutofillActionPersistence action_persistence,
-      AutofillTriggerSource trigger_source,
-      bool is_refill) = 0;
+  virtual void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                                    AutofillTriggerSource trigger_source,
+                                    bool is_refill) = 0;
 
   // Inform the client that the field has been filled.
   virtual void DidFillOrPreviewField(

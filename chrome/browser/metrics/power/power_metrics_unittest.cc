@@ -76,10 +76,6 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
   // time the metric was sampled. See base/process/process_metrics.h for a
   // more detailed explanation.
   process_metrics.package_idle_wakeups = 52;
-
-  // "Energy Impact" is a synthetic power estimation metric displayed by macOS
-  // in Activity Monitor and the battery menu.
-  process_metrics.energy_impact = 10.00;
 #endif
 
   ReportAggregatedProcessMetricsHistograms(process_metrics, suffixes);
@@ -98,7 +94,6 @@ TEST(PowerMetricsTest, ReportAggregatedProcessMetricsHistograms) {
 
 #if BUILDFLAG(IS_MAC)
         {"PerformanceMonitor.PackageExitIdleWakeups2.Total", 52},
-        {"PerformanceMonitor.EnergyImpact2.Total", 10},
 #endif
   });
 }

@@ -9,6 +9,8 @@
 #include <cstdint>
 #include <memory>
 
+#include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/system/eche/eche_tray.h"
@@ -16,9 +18,13 @@
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "services/accessibility/android/public/mojom/accessibility_helper.mojom-shared.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -78,16 +84,18 @@ void AccessibilityProvider::TrackView(AshWebView* view) {
   tree_source_ = std::make_unique<ax::android::AXTreeSourceAndroid>(
       this, std::make_unique<SerializationDelegate>(device_bounds_),
       view->GetNativeView() /*window*/);
-  auto* child_view = view->children().at(0);
-  if (child_view) {
-    auto* webview = static_cast<views::WebView*>(child_view);
-    webview->set_lock_child_ax_tree_id_override(true);
-    webview->GetViewAccessibility().OverrideChildTreeID(
-        tree_source_->ax_tree_id());
-  } else {
-    view->GetViewAccessibility().OverrideChildTreeID(
-        tree_source_->ax_tree_id());
-  }
+  auto* child_view = view->GetViewByID(kAshWebViewChildWebViewId);
+  CHECK(child_view);
+  auto* webview = static_cast<views::WebView*>(child_view);
+  webview->set_lock_child_ax_tree_id_override(true);
+  webview->GetViewAccessibility().OverrideChildTreeID(
+      tree_source_->ax_tree_id());
+  auto* window_ptr =
+      webview->web_contents()->GetRenderWidgetHostView()->GetNativeView();
+  CHECK(window_ptr);
+  // The render host view gets hit tests, set the hit test tree id.
+  window_ptr->SetProperty(ui::kChildAXTreeID,
+                          tree_source_->ax_tree_id().ToString());
   proxy_->OnViewTracked();
 }
 
@@ -120,8 +128,11 @@ void AccessibilityProvider::HandleAccessibilityEventReceived(
       if (mojom_event_data) {
         // Pass into correct tree. Currently there is only one.
         // Tree source will only be initialized once TrackView has been called.
-        CHECK(tree_source_);
-        tree_source_->NotifyAccessibilityEvent(mojom_event_data.get());
+        // Sometimes an event will come it right as the window is closed, which
+        // can cause a crash with a check.
+        if (tree_source_) {
+          tree_source_->NotifyAccessibilityEvent(mojom_event_data.get());
+        }
       }
     } break;
     case ax::android::mojom::AccessibilityFilterType::FOCUS:
@@ -162,6 +173,25 @@ void AccessibilityProvider::UpdateDeviceBounds(
   CHECK(height > 0);
   CHECK(width > 0);
   device_bounds_.set_size({width, height});
+}
+
+// TODO(b/296326746) The current implementation is a workaround for Select to
+// Speak, and a proper fix is pending hit test logic for android trees.
+void AccessibilityProvider::HandleHitTest(const ui::AXActionData& data) const {
+  // A hit test may come in just after a user closes the window.
+  if (!tree_source_ || !tree_source_->root_id().has_value()) {
+    return;
+  }
+
+  auto* automation_router = extensions::AutomationEventRouter::GetInstance();
+  ui::AXEvent event;
+  event.action_request_id = data.request_id;
+  event.event_from_action = data.action;
+  event.event_intents = {};
+  event.id = tree_source_->root_id().value();
+  event.event_type = data.hit_test_event_to_fire;
+  automation_router->DispatchAccessibilityEvents(tree_source_->ax_tree_id(), {},
+                                                 data.target_point, {event});
 }
 
 void AccessibilityProvider::OnGetTextLocationDataResult(
@@ -214,6 +244,12 @@ void AccessibilityProvider::OnAction(const ui::AXActionData& action) const {
     OnActionResult(action, false);
     return;
   }
+
+  if (action.action == ax::mojom::Action::kHitTest) {
+    HandleHitTest(action);
+    return;
+  }
+
   AccessibilityTreeConverter converter;
   auto proto_action =
       converter.ConvertActionDataToProto(action, *tree_source_->window_id());

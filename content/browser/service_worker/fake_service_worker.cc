@@ -33,8 +33,9 @@ void FakeServiceWorker::Bind(
 }
 
 void FakeServiceWorker::RunUntilInitializeGlobalScope() {
-  if (host_)
+  if (host_) {
     return;
+  }
   base::RunLoop loop;
   quit_closure_for_initialize_global_scope_ = loop.QuitClosure();
   loop.Run();
@@ -42,6 +43,10 @@ void FakeServiceWorker::RunUntilInitializeGlobalScope() {
 
 void FakeServiceWorker::FlushForTesting() {
   receiver_.FlushForTesting();
+}
+
+base::WeakPtr<FakeServiceWorker> FakeServiceWorker::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void FakeServiceWorker::InitializeGlobalScope(
@@ -78,8 +83,9 @@ void FakeServiceWorker::InitializeGlobalScope(
 
   registration_info_ = std::move(registration_info);
   service_worker_info_ = std::move(service_worker_info);
-  if (quit_closure_for_initialize_global_scope_)
+  if (quit_closure_for_initialize_global_scope_) {
     std::move(quit_closure_for_initialize_global_scope_).Run();
+  }
 
   fetch_handler_existence_ = fetch_handler_existence;
 }

@@ -58,10 +58,10 @@ namespace crc_internal {
 
 #if defined(ABSL_CRC_INTERNAL_HAVE_ARM_SIMD)
 using V128 = uint64x2_t;
-using V128u = uint64x2_t;
 #else
+// Note: Do not use __m128i_u, it is not portable.
+// Use V128_LoadU() perform an unaligned load from __m128i*.
 using V128 = __m128i;
-using V128u = __m128i_u;
 #endif
 
 // Starting with the initial value in |crc|, accumulates a CRC32 value for
@@ -78,7 +78,7 @@ uint32_t CRC32_u64(uint32_t crc, uint64_t v);
 V128 V128_Load(const V128* src);
 
 // Load 128 bits of integer data. |src| does not need to be aligned.
-V128 V128_LoadU(const V128u* src);
+V128 V128_LoadU(const V128* src);
 
 // Store 128 bits of integer data. |src| must be 16-byte aligned.
 void V128_Store(V128* dst, V128 data);
@@ -146,7 +146,7 @@ inline uint32_t CRC32_u64(uint32_t crc, uint64_t v) {
 
 inline V128 V128_Load(const V128* src) { return _mm_load_si128(src); }
 
-inline V128 V128_LoadU(const V128u* src) { return _mm_loadu_si128(src); }
+inline V128 V128_LoadU(const V128* src) { return _mm_loadu_si128(src); }
 
 inline void V128_Store(V128* dst, V128 data) { _mm_store_si128(dst, data); }
 
@@ -215,7 +215,7 @@ inline V128 V128_Load(const V128* src) {
   return vld1q_u64(reinterpret_cast<const uint64_t*>(src));
 }
 
-inline V128 V128_LoadU(const V128u* src) {
+inline V128 V128_LoadU(const V128* src) {
   return vld1q_u64(reinterpret_cast<const uint64_t*>(src));
 }
 

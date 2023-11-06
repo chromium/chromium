@@ -530,6 +530,9 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             RecordUserAction.record("SharingHubAndroid.GenericFaviconShown");
         } else {
             scaledIcon = Bitmap.createScaledBitmap(icon, size, size, true);
+            // Align the bitmap density to match the context DisplayMetrics density. This is
+            // particularly important on automotive, where the density is intentionally scaled up.
+            scaledIcon.setDensity(mActivity.getResources().getDisplayMetrics().densityDpi);
             RecordUserAction.record("SharingHubAndroid.LinkFaviconShown");
         }
         ImageView imageView = this.getContentView().findViewById(R.id.image_preview);

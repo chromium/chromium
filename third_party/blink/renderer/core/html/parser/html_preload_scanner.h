@@ -35,6 +35,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -93,6 +94,10 @@ struct CORE_EXPORT CachedDocumentParameters {
   network::mojom::ReferrerPolicy referrer_policy;
   SubresourceIntegrity::IntegrityFeatures integrity_features;
   LocalFrame::LazyLoadImageSetting lazy_load_image_setting;
+  // Work with the element locators. If the LCP candidate image is found and
+  // that has a lazy loading indicator, ignore it and create preload request.
+  // This will override |lazy_load_image_setting| behavior.
+  features::LcppPreloadLazyLoadImageType preload_lazy_load_image_type;
   HashSet<String> disabled_image_types;
 };
 

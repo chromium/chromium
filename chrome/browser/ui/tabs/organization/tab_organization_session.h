@@ -15,28 +15,37 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Browser;
+class TabOrganizationService;
 
 class TabOrganizationSession {
  public:
+  // TODO(dpenning): make this a base::Token.
+  using ID = int;
+  using TabOrganizations = std::vector<std::unique_ptr<TabOrganization>>;
+
   TabOrganizationSession();
   explicit TabOrganizationSession(
+      const TabOrganizationService* service,
       std::unique_ptr<TabOrganizationRequest> request);
   ~TabOrganizationSession();
 
   const TabOrganizationRequest* request() const { return request_.get(); }
-  const std::vector<TabOrganization>& tab_organizations() const {
+  const TabOrganizations& tab_organizations() const {
     return tab_organizations_;
   }
+  ID session_id() const { return session_id_; }
 
   static std::unique_ptr<TabOrganizationSession> CreateSessionForBrowser(
-      const Browser* browser);
+      const Browser* browser,
+      const TabOrganizationService* service);
 
   const TabOrganization* GetNextTabOrganization() const;
   TabOrganization* GetNextTabOrganization();
 
   void StartRequest();
 
-  void AddOrganizationForTesting(TabOrganization tab_organization) {
+  void AddOrganizationForTesting(
+      std::unique_ptr<TabOrganization> tab_organization) {
     tab_organizations_.emplace_back(std::move(tab_organization));
   }
 
@@ -52,8 +61,10 @@ class TabOrganizationSession {
   // completes.
   void PopulateOrganizations(const TabOrganizationResponse* response);
 
+  raw_ptr<const TabOrganizationService> service_;
   std::unique_ptr<TabOrganizationRequest> request_;
-  std::vector<TabOrganization> tab_organizations_;
+  TabOrganizations tab_organizations_;
+  ID session_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_ORGANIZATION_SESSION_H_

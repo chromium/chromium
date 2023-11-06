@@ -1099,15 +1099,26 @@ void NativeThemeBase::PaintInnerSpinButton(
     north_state = north_state != kDisabled ? kNormal : kDisabled;
 
   gfx::Rect half = rect;
-  half.set_height(rect.height() / 2);
   ScrollbarArrowExtraParams arrow = ScrollbarArrowExtraParams();
   arrow.zoom = 1.0;
-  PaintArrowButton(canvas, color_provider, half, kScrollbarUpArrow, north_state,
-                   color_scheme, arrow);
+  if (spin_button.spin_arrows_direction ==
+      ui::NativeTheme::SpinArrowsDirection::kUpDown) {
+    half.set_height(rect.height() / 2);
+    PaintArrowButton(canvas, color_provider, half, kScrollbarUpArrow,
+                     north_state, color_scheme, arrow);
 
-  half.set_y(rect.y() + rect.height() / 2);
-  PaintArrowButton(canvas, color_provider, half, kScrollbarDownArrow,
-                   south_state, color_scheme, arrow);
+    half.set_y(rect.y() + rect.height() / 2);
+    PaintArrowButton(canvas, color_provider, half, kScrollbarDownArrow,
+                     south_state, color_scheme, arrow);
+  } else {
+    half.set_width(rect.width() / 2);
+    PaintArrowButton(canvas, color_provider, half, kScrollbarLeftArrow,
+                     south_state, color_scheme, arrow);
+
+    half.set_x(rect.x() + rect.width() / 2);
+    PaintArrowButton(canvas, color_provider, half, kScrollbarRightArrow,
+                     north_state, color_scheme, arrow);
+  }
 }
 
 void NativeThemeBase::PaintProgressBar(

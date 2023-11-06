@@ -91,6 +91,10 @@ class PageLoadMetricsObserverDelegate {
   // The time the navigation was initiated.
   virtual base::TimeTicks GetNavigationStart() const = 0;
 
+  // The id of the main navigation associated with this page, which created the
+  // main document. Not updated for same-document navigations.
+  virtual int64_t GetNavigationId() const = 0;
+
   // The duration until the first time that the page was backgrounded since the
   // navigation started. Will be nullopt if the page has never been
   // backgrounded.

@@ -37,6 +37,10 @@ void FakeContentAnalysisSdkManager::SetClientCancelStatus(int status) {
 std::unique_ptr<content_analysis::sdk::Client>
 FakeContentAnalysisSdkManager::CreateClient(
     const content_analysis::sdk::Client::Config& config) {
+  if (!can_create_client_) {
+    return nullptr;
+  }
+
   auto client = std::make_unique<FakeContentAnalysisSdkClient>(config);
   client->SetSendStatus(send_status_);
   client->SetSendResponse(response_);
@@ -56,6 +60,11 @@ void FakeContentAnalysisSdkManager::ResetClient(
 void FakeContentAnalysisSdkManager::ResetAllClients() {
   ContentAnalysisSdkManager::ResetAllClients();
   fake_clients_.clear();
+}
+
+void FakeContentAnalysisSdkManager::SetCreateClientAbility(
+    bool can_create_client) {
+  can_create_client_ = can_create_client;
 }
 
 bool FakeContentAnalysisSdkManager::NoConnectionEstablished() {

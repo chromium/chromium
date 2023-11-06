@@ -20,20 +20,17 @@ import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBui
 import java.util.concurrent.TimeoutException;
 
 /**
- * Helper methods for running a test against multiple activity types.
- * Supported activity types: webapp, WebAPK, CCT, and TWA.
+ * Helper methods for running a test against multiple activity types. Supported activity types:
+ * webapp, WebAPK, CCT, and TWA.
  */
 public class CustomTabActivityTypeTestUtils {
     public static ChromeActivityTestRule<? extends BaseCustomTabActivity> createActivityTestRule(
             @ActivityType int activityType) {
-        switch (activityType) {
-            case ActivityType.WEBAPP:
-                return new WebappActivityTestRule();
-            case ActivityType.WEB_APK:
-                return new WebApkActivityTestRule();
-            default:
-                return new CustomTabActivityTestRule();
-        }
+        return switch (activityType) {
+            case ActivityType.WEBAPP -> new WebappActivityTestRule();
+            case ActivityType.WEB_APK -> new WebApkActivityTestRule();
+            default -> new CustomTabActivityTestRule();
+        };
     }
 
     public static void launchActivity(

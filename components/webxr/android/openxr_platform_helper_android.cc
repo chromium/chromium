@@ -30,10 +30,13 @@ OpenXrPlatformHelperAndroid::GetGraphicsBinding() {
 
 void OpenXrPlatformHelperAndroid::GetPlatformCreateInfo(
     const device::OpenXrCreateInfo& create_info,
-    PlatformCreateInfoReadyCallback callback) {
-  session_coordinator_->RequestXrSession(
+    PlatformCreateInfoReadyCallback result_callback,
+    PlatormInitiatedShutdownCallback shutdown_callback) {
+  auto activity_ready_callback =
       base::BindOnce(&OpenXrPlatformHelperAndroid::OnXrActivityReady,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this), std::move(result_callback));
+  session_coordinator_->RequestXrSession(std::move(activity_ready_callback),
+                                         std::move(shutdown_callback));
 }
 
 void OpenXrPlatformHelperAndroid::OnXrActivityReady(

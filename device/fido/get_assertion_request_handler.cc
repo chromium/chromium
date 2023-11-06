@@ -785,9 +785,8 @@ void GetAssertionRequestHandler::HandleResponse(
   CancelActiveAuthenticators(authenticator->GetId());
 
   if (status != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "Failing assertion request due to status "
-                    << static_cast<int>(status) << " from "
-                    << authenticator->GetDisplayName();
+    FIDO_LOG(ERROR) << "Failing assertion request due to status " << status
+                    << " from " << authenticator->GetDisplayName();
     std::move(completion_callback_)
         .Run(*maybe_result, absl::nullopt, authenticator);
     return;

@@ -63,14 +63,15 @@ WebKioskAppManager::~WebKioskAppManager() {
   g_web_kiosk_app_manager = nullptr;
 }
 
-void WebKioskAppManager::GetApps(std::vector<App>* apps) const {
-  apps->clear();
-  apps->reserve(apps_.size());
-  for (auto& web_app : apps_) {
-    App app(*web_app);
-    app.url = web_app->install_url();
-    apps->push_back(std::move(app));
+std::vector<WebKioskAppManager::App> WebKioskAppManager::GetApps() const {
+  std::vector<App> apps;
+  apps.reserve(apps_.size());
+  for (const auto& manager_app : apps_) {
+    App app(*manager_app);
+    app.url = manager_app->install_url();
+    apps.push_back(std::move(app));
   }
+  return apps;
 }
 
 void WebKioskAppManager::LoadIcons() {

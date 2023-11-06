@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/highlight/highlight_registry.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
+#include "third_party/blink/renderer/core/paint/ng/marker_range_mapping_context.h"
 #include "third_party/blink/renderer/platform/fonts/ng_text_fragment_paint_info.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -23,18 +23,6 @@ using HighlightRange = NGHighlightOverlay::HighlightRange;
 using HighlightEdge = NGHighlightOverlay::HighlightEdge;
 using HighlightDecoration = NGHighlightOverlay::HighlightDecoration;
 using HighlightPart = NGHighlightOverlay::HighlightPart;
-
-unsigned GetTextContentOffset(const Text& text, unsigned offset) {
-  // TODO(yoichio): Sanitize DocumentMarker around text length.
-  const Position position(text, std::min(offset, text.length()));
-  const NGOffsetMapping* const offset_mapping =
-      NGOffsetMapping::GetFor(position);
-  DCHECK(offset_mapping);
-  const absl::optional<unsigned>& ng_offset =
-      offset_mapping->GetTextContentOffset(position);
-  DCHECK(ng_offset.has_value());
-  return ng_offset.value();
-}
 
 unsigned ClampOffset(unsigned offset, const NGTextFragmentPaintInfo& fragment) {
   return std::min(std::max(offset, fragment.from), fragment.to);
@@ -278,7 +266,7 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
     const Node* node,
     const HighlightRegistry* registry,
     bool is_generated_text_fragment,
-    const NGTextFragmentPaintInfo& originating,
+    absl::optional<TextOffsetRange> dom_offsets,
     const LayoutSelectionStatus* selection,
     const DocumentMarkerVector& custom,
     const DocumentMarkerVector& grammar,
@@ -317,29 +305,19 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
            target.empty())
         << "no marker can ever apply to fragment items with generated text";
   } else {
-    // We can save time by skipping marker-based highlights that are outside the
-    // originating fragment (e.g. on a different line), but we can only compare
-    // offsets that are in the same offset space (DOM or canonical text), and
-    // converting each marker to canonical text offsets is the most expensive
-    // step of this function. We can avoid that by converting the originating
-    // fragment back to DOM offsets for comparison.
-    const NGOffsetMapping* mapping =
-        NGOffsetMapping::GetFor(text_node->GetLayoutObject());
-    unsigned last_from =
-        mapping->GetLastPosition(originating.from).OffsetInContainerNode();
-    unsigned first_to =
-        mapping->GetFirstPosition(originating.to).OffsetInContainerNode();
-
+    DCHECK(dom_offsets);
+    MarkerRangeMappingContext mapping_context(*text_node, *dom_offsets);
     for (const auto& marker : custom) {
-      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+      absl::optional<TextOffsetRange> marker_offsets =
+          mapping_context.GetTextContentOffsets(*marker);
+      if (!marker_offsets) {
+        continue;
+      }
+      const unsigned content_start = marker_offsets->start;
+      const unsigned content_end = marker_offsets->end;
+      if (content_start >= content_end)
         continue;
       auto* custom_marker = To<CustomHighlightMarker>(marker.Get());
-      unsigned content_start =
-          GetTextContentOffset(*text_node, marker->StartOffset());
-      unsigned content_end =
-          GetTextContentOffset(*text_node, marker->EndOffset());
-      if (content_start >= content_end)
-        continue;
       result.emplace_back(HighlightRange{content_start, content_end},
                           HighlightLayer{HighlightLayerType::kCustom,
                                          custom_marker->GetHighlightName()},
@@ -350,13 +328,15 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
                           HighlightEdgeType::kEnd);
     }
 
+    mapping_context.Reset();
     for (const auto& marker : grammar) {
-      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+      absl::optional<TextOffsetRange> marker_offsets =
+          mapping_context.GetTextContentOffsets(*marker);
+      if (!marker_offsets) {
         continue;
-      unsigned content_start =
-          GetTextContentOffset(*text_node, marker->StartOffset());
-      unsigned content_end =
-          GetTextContentOffset(*text_node, marker->EndOffset());
+      }
+      const unsigned content_start = marker_offsets->start;
+      const unsigned content_end = marker_offsets->end;
       if (content_start >= content_end)
         continue;
       result.emplace_back(HighlightRange{content_start, content_end},
@@ -367,13 +347,15 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
                           HighlightEdgeType::kEnd);
     }
 
+    mapping_context.Reset();
     for (const auto& marker : spelling) {
-      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+      absl::optional<TextOffsetRange> marker_offsets =
+          mapping_context.GetTextContentOffsets(*marker);
+      if (!marker_offsets) {
         continue;
-      unsigned content_start =
-          GetTextContentOffset(*text_node, marker->StartOffset());
-      unsigned content_end =
-          GetTextContentOffset(*text_node, marker->EndOffset());
+      }
+      const unsigned content_start = marker_offsets->start;
+      const unsigned content_end = marker_offsets->end;
       if (content_start >= content_end)
         continue;
       result.emplace_back(HighlightRange{content_start, content_end},
@@ -384,13 +366,15 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
                           HighlightEdgeType::kEnd);
     }
 
+    mapping_context.Reset();
     for (const auto& marker : target) {
-      if (marker->EndOffset() <= last_from || marker->StartOffset() >= first_to)
+      absl::optional<TextOffsetRange> marker_offsets =
+          mapping_context.GetTextContentOffsets(*marker);
+      if (!marker_offsets) {
         continue;
-      unsigned content_start =
-          GetTextContentOffset(*text_node, marker->StartOffset());
-      unsigned content_end =
-          GetTextContentOffset(*text_node, marker->EndOffset());
+      }
+      const unsigned content_start = marker_offsets->start;
+      const unsigned content_end = marker_offsets->end;
       if (content_start >= content_end)
         continue;
       result.emplace_back(HighlightRange{content_start, content_end},
@@ -411,34 +395,35 @@ Vector<HighlightEdge> NGHighlightOverlay::ComputeEdges(
 }
 
 Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
-    const NGTextFragmentPaintInfo& originating,
+    const NGTextFragmentPaintInfo& content_offsets,
     const Vector<HighlightLayer>& layers,
     const Vector<HighlightEdge>& edges) {
   DCHECK(RuntimeEnabledFeatures::HighlightOverlayPaintingEnabled());
   const HighlightLayer originating_layer{HighlightLayerType::kOriginating};
   const HighlightDecoration originating_decoration{
-      originating_layer, {originating.from, originating.to}};
+      originating_layer, {content_offsets.from, content_offsets.to}};
   Vector<HighlightPart> result{};
   Vector<absl::optional<HighlightRange>> active(layers.size());
   absl::optional<unsigned> prev_offset{};
   if (edges.empty()) {
     result.push_back(HighlightPart{originating_layer,
-                                   {originating.from, originating.to},
+                                   {content_offsets.from, content_offsets.to},
                                    {originating_decoration}});
     return result;
   }
-  if (originating.from < edges.front().Offset()) {
-    result.push_back(HighlightPart{
-        originating_layer,
-        {originating.from, ClampOffset(edges.front().Offset(), originating)},
-        {originating_decoration}});
+  if (content_offsets.from < edges.front().Offset()) {
+    result.push_back(
+        HighlightPart{originating_layer,
+                      {content_offsets.from,
+                       ClampOffset(edges.front().Offset(), content_offsets)},
+                      {originating_decoration}});
   }
   for (const HighlightEdge& edge : edges) {
     // If there is actually some text between the previous and current edges...
     if (prev_offset.has_value() && *prev_offset < edge.Offset()) {
       // ...and the range overlaps with the fragment being painted...
-      unsigned part_from = ClampOffset(*prev_offset, originating);
-      unsigned part_to = ClampOffset(edge.Offset(), originating);
+      unsigned part_from = ClampOffset(*prev_offset, content_offsets);
+      unsigned part_to = ClampOffset(edge.Offset(), content_offsets);
       if (part_from < part_to) {
         // ...then find the topmost layer and enqueue a new part to be painted.
         HighlightPart part{
@@ -446,8 +431,9 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
         for (wtf_size_t i = 0; i < layers.size(); i++) {
           if (active[i]) {
             unsigned decoration_from =
-                ClampOffset(active[i]->from, originating);
-            unsigned decoration_to = ClampOffset(active[i]->to, originating);
+                ClampOffset(active[i]->from, content_offsets);
+            unsigned decoration_to =
+                ClampOffset(active[i]->to, content_offsets);
             part.layer = layers[i];
             part.decorations.push_back(HighlightDecoration{
                 layers[i], {decoration_from, decoration_to}});
@@ -470,11 +456,12 @@ Vector<HighlightPart> NGHighlightOverlay::ComputeParts(
     }
     prev_offset.emplace(edge.Offset());
   }
-  if (edges.back().Offset() < originating.to) {
-    result.push_back(HighlightPart{
-        originating_layer,
-        {ClampOffset(edges.back().Offset(), originating), originating.to},
-        {originating_decoration}});
+  if (edges.back().Offset() < content_offsets.to) {
+    result.push_back(
+        HighlightPart{originating_layer,
+                      {ClampOffset(edges.back().Offset(), content_offsets),
+                       content_offsets.to},
+                      {originating_decoration}});
   }
   return result;
 }

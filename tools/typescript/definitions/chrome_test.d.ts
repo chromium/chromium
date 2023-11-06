@@ -13,6 +13,7 @@ declare namespace chrome {
     export function fail(message?: string): never;
     export function runTests(tests: Array<() => void>): void;
     export function runWithUserGesture(callback: () => void): void;
+    export function sendMessage(message: string): void;
     export function succeed(message?: string): void;
   }
 }

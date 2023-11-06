@@ -29,7 +29,9 @@ class ScriptStateImpl final : public ScriptState {
   ~ScriptStateImpl() override = default;
   void Trace(Visitor*) const override;
 
-  ExecutionContext* GetExecutionContext() const { return execution_context_; }
+  ExecutionContext* GetExecutionContext() const {
+    return execution_context_.Get();
+  }
 
  private:
   static ScriptState* Create(v8::Local<v8::Context>,

@@ -62,11 +62,13 @@ FileAnalyzer::~FileAnalyzer() {}
 
 void FileAnalyzer::Start(const base::FilePath& target_path,
                          const base::FilePath& tmp_path,
+                         base::optional_ref<const std::string> password,
                          base::OnceCallback<void(Results)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   target_path_ = target_path;
   tmp_path_ = tmp_path;
+  password_ = password.CopyAsOptional();
   callback_ = std::move(callback);
   start_time_ = base::Time::Now();
 
@@ -130,8 +132,7 @@ void FileAnalyzer::StartExtractZipFeatures() {
 
   // We give the zip analyzer a weak pointer to this object.
   zip_analyzer_ = SandboxedZipAnalyzer::CreateAnalyzer(
-      tmp_path_,
-      /*password=*/absl::nullopt,
+      tmp_path_, password_,
       base::BindOnce(&FileAnalyzer::OnZipAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
       LaunchFileUtilService());
@@ -159,6 +160,10 @@ void FileAnalyzer::OnZipAnalysisFinished(
              ArchiveAnalysisResult::kTooLarge) {
     results_.archive_summary.set_parser_status(
         ClientDownloadRequest::ArchiveSummary::TOO_LARGE);
+  } else if (archive_results.analysis_result ==
+             ArchiveAnalysisResult::kDiskError) {
+    results_.archive_summary.set_parser_status(
+        ClientDownloadRequest::ArchiveSummary::DISK_ERROR);
   }
   results_.archived_executable = archive_results.has_executable;
   results_.archived_archive = archive_results.has_archive;
@@ -190,8 +195,7 @@ void FileAnalyzer::StartExtractRarFeatures() {
   // We give the rar analyzer a weak pointer to this object. Since the
   // analyzer is refcounted, it might outlive the request.
   rar_analyzer_ = SandboxedRarAnalyzer::CreateAnalyzer(
-      tmp_path_,
-      /*password=*/absl::nullopt,
+      tmp_path_, password_,
       base::BindOnce(&FileAnalyzer::OnRarAnalysisFinished,
                      weakptr_factory_.GetWeakPtr()),
       LaunchFileUtilService());

@@ -20,9 +20,9 @@ namespace ash {
 
 class UnifiedSystemTrayController;
 
-// Controller of a feature pod button that toggles do-not-disturb mode.
-// If the do-not-disturb mode is enabled, the button indicates it by bright
-// background color and different icon.
+// Controller of a feature tile that toggles do-not-disturb mode. If the
+// do-not-disturb mode is enabled, this tile indicates it by bright background
+// color and different icon.
 class ASH_EXPORT QuietModeFeaturePodController
     : public FeaturePodControllerBase,
       public message_center::MessageCenterObserver,
@@ -42,7 +42,6 @@ class ASH_EXPORT QuietModeFeaturePodController
   static bool CalculateButtonVisibility();
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -63,8 +62,6 @@ class ASH_EXPORT QuietModeFeaturePodController
   const raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> tray_controller_;
 
   // Owned by the views hierarchy.
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
   raw_ptr<FeatureTile, DanglingUntriaged | ExperimentalAsh> tile_ = nullptr;
 
   absl::optional<int> last_disabled_count_;

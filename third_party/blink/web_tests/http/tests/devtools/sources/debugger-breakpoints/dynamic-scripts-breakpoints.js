@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as Sources from 'devtools/panels/sources/sources.js';
+import * as Breakpoints from 'devtools/models/breakpoints/breakpoints.js';
 
 (async function() {
   TestRunner.addResult(
@@ -14,7 +15,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   await TestRunner.navigatePromise(
       'resources/dynamic-scripts-breakpoints.html');
 
-  Bindings.breakpointManager.storage.breakpoints = new Map();
+  Breakpoints.BreakpointManager.BreakpointManager.instance().storage.breakpoints = new Map();
   var panel = Sources.SourcesPanel.SourcesPanel.instance();
 
   SourcesTestRunner.startDebuggerTest();
@@ -27,7 +28,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   }
 
   function dumpBreakpointStorage() {
-    var breakpointManager = Bindings.breakpointManager;
+    var breakpointManager = Breakpoints.BreakpointManager.BreakpointManager.instance();
     var breakpoints = breakpointManager.storage.setting.get();
     TestRunner.addResult('    Dumping breakpoint storage');
     for (var i = 0; i < breakpoints.length; ++i)
@@ -39,7 +40,7 @@ import * as Sources from 'devtools/panels/sources/sources.js';
   async function didShowScriptSource(sourceFrame) {
     TestRunner.addResult('Setting breakpoint:');
     TestRunner.addSniffer(
-        Bindings.BreakpointManager.ModelBreakpoint.prototype,
+        Breakpoints.BreakpointManager.ModelBreakpoint.prototype,
         'addResolvedLocation', breakpointResolved);
     await SourcesTestRunner.setBreakpoint(sourceFrame, 7, '', true);
   }

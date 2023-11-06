@@ -44,6 +44,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/test/action_logger.h"
 #include "ui/display/manager/test/test_native_display_delegate.h"
@@ -64,6 +65,15 @@ void ExpectFocused(views::View* view) {
 void ExpectNotFocused(views::View* view) {
   EXPECT_FALSE(view->GetWidget()->IsActive());
   EXPECT_FALSE(login_views_utils::HasFocusInAnyChildView(view));
+}
+
+std::vector<KioskAppMenuEntry> GetNFakeKioskApps(int n) {
+  return std::vector<KioskAppMenuEntry>(
+      n, KioskAppMenuEntry(KioskAppMenuEntry::AppType::kWebApp,
+                           AccountId::FromUserEmail("fake@email.com"),
+                           /*chrome_app_id=*/absl::nullopt,
+                           /*name=*/u"Fake App",
+                           /*icon=*/gfx::ImageSkia()));
 }
 
 class LoginShelfViewTest : public LoginTestBase {
@@ -128,8 +138,9 @@ class LoginShelfViewTest : public LoginTestBase {
   // the specified list must be unique.
   bool ShowsShelfButtons(const std::vector<LoginShelfView::ButtonId>& ids) {
     for (LoginShelfView::ButtonId id : ids) {
-      if (!login_shelf_view_->GetViewByID(id)->GetVisible())
+      if (!login_shelf_view_->GetViewByID(id)->GetVisible()) {
         return false;
+      }
     }
     const size_t visible_buttons = base::ranges::count_if(
         login_shelf_view_->children(), &views::View::GetVisible);
@@ -303,8 +314,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiBasedOnShutdownPolicyInActiveSession) {
 TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
 
@@ -318,8 +328,7 @@ TEST_F(LoginShelfViewTest, ShouldNotShowAppsButtonAfterSessionStarted) {
 TEST_F(LoginShelfViewTest, ShouldShowShutdownOrRestartButtonsBeforeApps) {
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
 
   // |reboot_on_shutdown| is initially off
   EXPECT_TRUE(ShowsShelfButtons(
@@ -389,8 +398,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterKioskAppsLoaded) {
                                  LoginShelfView::kBrowseAsGuest,
                                  LoginShelfView::kAddUser}));
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(2);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(2));
   EXPECT_TRUE(ShowsShelfButtons(
       {LoginShelfView::kShutdown, LoginShelfView::kBrowseAsGuest,
        LoginShelfView::kAddUser, LoginShelfView::kApps}));
@@ -473,8 +481,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
 
   // By default apps button is hidden during gaia sign in
   login_shelf_view_->SetLoginDialogState(OobeDialogState::GAIA_SIGNIN);
-  std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 
   // Apps button is hidden during SAML_PASSWORD_CONFIRM STATE
@@ -524,7 +531,7 @@ TEST_F(LoginShelfViewTest, ShouldUpdateUiAfterDialogStateChange) {
 
   // Only Shutdown button should be available if some device blocking
   // screen is shown (e.g. Device Disabled, or Update Required).
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
   login_shelf_view_->SetLoginDialogState(OobeDialogState::BLOCKING);
   EXPECT_TRUE(ShowsShelfButtons({LoginShelfView::kShutdown}));
 }
@@ -1427,8 +1434,7 @@ TEST_F(LoginShelfViewWithKioskLicenseTest, ShouldShowKioskInstructionBubble) {
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
 
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
@@ -1441,8 +1447,7 @@ TEST_F(LoginShelfViewWithKioskLicenseTest, ShouldHideKioskInstructionBubble) {
   SetKioskLicenseModeForTesting(false);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(1);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps(GetNFakeKioskApps(1));
 
   EXPECT_TRUE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());
@@ -1456,8 +1461,7 @@ TEST_F(LoginShelfViewWithKioskLicenseTest,
   SetKioskLicenseModeForTesting(true);
   NotifySessionStateChanged(SessionState::LOGIN_PRIMARY);
 
-  std::vector<KioskAppMenuEntry> kiosk_apps(0);
-  login_shelf_view_->SetKioskApps(kiosk_apps);
+  login_shelf_view_->SetKioskApps({});
 
   EXPECT_FALSE(
       login_shelf_view_->GetViewByID(LoginShelfView::kApps)->GetVisible());

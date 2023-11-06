@@ -22,6 +22,19 @@ static_library("keyboard_diagram_strings") {
   ]
 }
 
+static_library("shortcut_input_key_strings") {
+  sources = [
+    "shortcut_input_key_strings.cc",
+    "shortcut_input_key_strings.h",
+  ]
+
+  deps = [
+    "//chromeos/strings/",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
 source_set("chrome_os_webui_config") {
   sources = [ "chrome_os_webui_config.h" ]
 

@@ -53,7 +53,9 @@ import java.util.List;
 
 /** A simple test for {@link TileRenderer} using real {@link android.view.View} objects. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowPostTask.class})
 public class TileRendererTest {
     /**
      * Backend that substitutes normal PostTask operations. Allow us to coordinate task execution
@@ -78,32 +80,23 @@ public class TileRendererTest {
     private static final int TITLE_LINES = 1;
     private static final GURL TEST_URL = JUnitTestGURLs.EXAMPLE_URL;
 
-    @Mock
-    private ImageFetcher mMockImageFetcher;
+    @Mock private ImageFetcher mMockImageFetcher;
 
-    @Mock
-    private TileGroup.TileSetupDelegate mTileSetupDelegate;
+    @Mock private TileGroup.TileSetupDelegate mTileSetupDelegate;
 
-    @Mock
-    private TileGroup.TileInteractionDelegate mTileInteractionDelegate;
+    @Mock private TileGroup.TileInteractionDelegate mTileInteractionDelegate;
 
-    @Mock
-    private Runnable mTileSetupCallback;
+    @Mock private Runnable mTileSetupCallback;
 
-    @Mock
-    private TemplateUrlService mMockTemplateUrlService;
+    @Mock private TemplateUrlService mMockTemplateUrlService;
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Mock
-    private RoundedIconGenerator mIconGenerator;
+    @Mock private RoundedIconGenerator mIconGenerator;
 
-    @Mock
-    private Bitmap mBitmap;
+    @Mock private Bitmap mBitmap;
 
-    @Mock
-    private ColorStateList mFakeColorStateList;
+    @Mock private ColorStateList mFakeColorStateList;
 
     private ShadowPostTaskImpl mPostTaskRunner;
     private Activity mActivity;
@@ -139,16 +132,17 @@ public class TileRendererTest {
     }
 
     private SuggestionsTileView buildTileView(@TileStyle int style, int titleLines) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            TileRenderer tileRenderer =
-                    new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);
-            tileRenderer.setIconGeneratorForTesting(mIconGenerator);
-            tileRenderer.onNativeInitializationReady();
-            SuggestionsTileView tileView =
-                    tileRenderer.buildTileView(mTile, mSharedParent, mTileSetupDelegate);
-            Assert.assertNotNull(tileView);
-            return tileView;
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    TileRenderer tileRenderer =
+                            new TileRenderer(mActivity, style, titleLines, mMockImageFetcher);
+                    tileRenderer.setIconGeneratorForTesting(mIconGenerator);
+                    tileRenderer.onNativeInitializationReady();
+                    SuggestionsTileView tileView =
+                            tileRenderer.buildTileView(mTile, mSharedParent, mTileSetupDelegate);
+                    Assert.assertNotNull(tileView);
+                    return tileView;
+                });
     }
 
     @Test
@@ -178,8 +172,9 @@ public class TileRendererTest {
         verify(mMockImageFetcher, times(1))
                 .makeLargeIconRequest(any(), anyInt(), mImageFetcherCallbackCaptor.capture());
         verify(mTileSetupCallback, times(0)).run();
-        mImageFetcherCallbackCaptor.getValue().onLargeIconAvailable(
-                null, 0xace0ba5e, false, IconType.FAVICON);
+        mImageFetcherCallbackCaptor
+                .getValue()
+                .onLargeIconAvailable(null, 0xace0ba5e, false, IconType.FAVICON);
         verify(mTileSetupCallback, times(1)).run();
 
         Assert.assertEquals(IconType.FAVICON, mTile.getIconType());
@@ -199,8 +194,9 @@ public class TileRendererTest {
         verify(mMockImageFetcher, times(1))
                 .makeLargeIconRequest(any(), anyInt(), mImageFetcherCallbackCaptor.capture());
         verify(mTileSetupCallback, times(0)).run();
-        mImageFetcherCallbackCaptor.getValue().onLargeIconAvailable(
-                mBitmap, 0xace0ba5e, false, IconType.TOUCH_ICON);
+        mImageFetcherCallbackCaptor
+                .getValue()
+                .onLargeIconAvailable(mBitmap, 0xace0ba5e, false, IconType.TOUCH_ICON);
         verify(mTileSetupCallback, times(1)).run();
 
         Assert.assertEquals(IconType.TOUCH_ICON, mTile.getIconType());

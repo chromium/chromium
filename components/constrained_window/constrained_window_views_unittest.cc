@@ -97,19 +97,26 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
     dialog_ = views::DialogDelegate::CreateDialogWidget(delegate_.get(),
                                                         GetContext(), nullptr);
+
+    // Create a dialog host sufficiently large enough to accommodate dialog
+    // size changes during testing.
+    dialog_host_widget_ = CreateTestWidget();
+    dialog_host_widget_->SetBounds(GetPrimaryDisplayWorkArea());
     dialog_host_ = std::make_unique<web_modal::TestWebContentsModalDialogHost>(
-        dialog_->GetNativeView());
+        dialog_host_widget_->GetNativeView());
     dialog_host_->set_max_dialog_size(gfx::Size(5000, 5000));
 
     // Make sure the dialog size is dominated by the preferred size of the
     // contents.
     gfx::Size preferred_size = dialog()->GetRootView()->GetPreferredSize();
-    preferred_size.Enlarge(500, 500);
+    preferred_size.Enlarge(300, 300);
     contents_->SetPreferredSize(preferred_size);
   }
 
   void TearDown() override {
     contents_ = nullptr;
+    dialog_host_widget_->CloseNow();
+    dialog_host_widget_.reset();
     dialog_host_.reset();
     dialog_->CloseNow();
     ViewsTestBase::TearDown();
@@ -117,6 +124,10 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
 
   gfx::Size GetDialogSize() {
     return dialog()->GetRootView()->GetBoundsInScreen().size();
+  }
+
+  gfx::Rect GetPrimaryDisplayWorkArea() const {
+    return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
   }
 
   views::DialogDelegate* delegate() { return delegate_.get(); }
@@ -130,6 +141,7 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   std::unique_ptr<views::DialogDelegate> delegate_;
   raw_ptr<views::View> contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
+  std::unique_ptr<views::Widget> dialog_host_widget_;
   raw_ptr<Widget, DanglingUntriaged> dialog_ = nullptr;
 };
 

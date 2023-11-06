@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ForceYouTubeRestrict": 1
+        },
+        "prefs": {
+          "settings.force_youtube_restrict": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "android"
+    ],
+    "reason_for_missing_test": "TODO(http://crbug.com/1141521): enable this policy test on Android"
+  }
+]

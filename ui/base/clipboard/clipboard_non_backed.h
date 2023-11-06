@@ -52,7 +52,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardNonBacked
       ClipboardBuffer buffer = ClipboardBuffer::kCopyPaste);
 
   // Clipboard overrides:
-  DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
+  absl::optional<DataTransferEndpoint> GetSource(
+      ClipboardBuffer buffer) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
 

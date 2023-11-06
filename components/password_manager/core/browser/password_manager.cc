@@ -310,6 +310,8 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
   registry->RegisterDoublePref(prefs::kTimeOfLastMigrationAttempt, 0.0);
+  registry->RegisterBooleanPref(prefs::kPasswordsUseUPMLocalAndSeparateStores,
+                                false);
   registry->RegisterBooleanPref(prefs::kRequiresMigrationAfterSyncStatusChange,
                                 false);
   registry->RegisterBooleanPref(
@@ -552,6 +554,21 @@ void PasswordManager::OnDynamicFormSubmission(
   // is actually null.
   if (!submitted_manager || !submitted_manager->GetSubmittedForm())
     return;
+
+  if (
+#if BUILDFLAG(IS_IOS)
+      // On iOS, drivers are bound to WebFrames, but some pages (e.g. files)
+      // do not lead to creating WebFrame objects, therefore. If the driver is
+      // missing, the current page has no password forms, but we still are
+      // interested in detecting a submission.
+      driver &&
+#endif  // BUILDFLAG(IS_IOS)
+      !driver->IsInPrimaryMainFrame() &&
+      submitted_manager->GetFrameId() != driver->GetFrameId()) {
+    // Frames different from the main frame and the frame of the submitted form
+    // are unlikely relevant to success of submission.
+    return;
+  }
 
   const PasswordForm* submitted_form = submitted_manager->GetSubmittedForm();
 
@@ -1016,7 +1033,7 @@ void PasswordManager::OnPasswordFormsRendered(
       // On iOS, drivers are bound to WebFrames, but some pages (e.g. files)
       // do not lead to creating WebFrame objects, therefore. If the driver is
       // missing, the current page has no password forms, but we still are
-      // interested in detecting a submisison.
+      // interested in detecting a submission.
       driver &&
 #endif  // BUILDFLAG(IS_IOS)
       !driver->IsInPrimaryMainFrame() &&
@@ -1088,7 +1105,6 @@ void PasswordManager::OnLoginSuccessful() {
   if (!client_->IsSavingAndFillingEnabled(submitted_form->url))
     return;
 
-  client_->GetStoreResultFilter()->ReportFormLoginSuccess(*submitted_manager);
   // Check for leaks only if there are no muted credentials and it is not a
   // single username submission (a leak warning may offer an automated password
   // change, which requires a user to be logged in).
@@ -1161,7 +1177,8 @@ void PasswordManager::OnLoginSuccessful() {
     }
 
     if (submitted_manager->HasGeneratedPassword()) {
-      client_->AutomaticPasswordSave(MoveOwnedSubmittedManager());
+      client_->AutomaticPasswordSave(MoveOwnedSubmittedManager(),
+                                     /*is_update_confirmation=*/false);
     }
   }
   ResetSubmittedManager();

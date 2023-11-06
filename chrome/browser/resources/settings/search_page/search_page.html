@@ -4,34 +4,95 @@
     display: flex;
     min-height: var(--cr-section-min-height);
   }
+
+  .default-search-engine .cr-row {
+    --cr-section-min-height: 55px;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .default-search-engine {
+    padding-top: var(--cr-section-vertical-padding);
+  }
+
+  .search-engine-name {
+    margin-inline-end: auto;
+  }
+
+  site-favicon {
+    --site-favicon-border-radius: 4px;
+    --site-favicon-height: 24px;
+    --site-favicon-width: 24px;
+  }
+
 </style>
 <settings-animated-pages id="pages" section="search"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
     <!-- Omnibox search engine -->
     <div class="cr-row first">
-      <div id="searchExplanation" class="flex cr-padded-text">
-        $i18n{searchExplanation}
-        <a href="$i18n{searchExplanationLearnMoreURL}"
-            aria-label="$i18n{searchExplanationLearnMoreA11yLabel}"
-            target="_blank">
-          $i18n{learnMore}
-        </a>
-      </div>
-      <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
-          prefs.default_search_provider_data.template_url_data)]]">
-        <cr-policy-pref-indicator pref="[[
-            prefs.default_search_provider_data.template_url_data]]">
-        </cr-policy-pref-indicator>
-      </template>
-      <select class="md-select" on-change="onChange_"
-          aria-labelledby="searchExplanation"
-          disabled$="[[isDefaultSearchEngineEnforced_(
+      <template is="dom-if" if="[[searchEngineChoiceSettingsUi_]]">
+        <div class="default-search-engine flex">
+          $i18n{searchPageTitle}
+          <div class="secondary">
+            $i18n{searchEngineChoiceEntryPointSubtitle}
+            <a href="$i18n{searchExplanationLearnMoreURL}"
+                aria-label="$i18n{searchExplanationLearnMoreA11yLabel}"
+                target="_blank">
+              $i18n{learnMore}
+            </a>
+          </div>
+          <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
               prefs.default_search_provider_data.template_url_data)]]">
-        <template is="dom-repeat" items="[[searchEngines_]]">
-          <option selected="[[item.default]]">[[item.name]]</option>
+            <cr-policy-pref-indicator pref="[[
+                prefs.default_search_provider_data.template_url_data]]">
+            </cr-policy-pref-indicator>
+          </template>
+          <div class="cr-row first">
+            <site-favicon favicon-url="[[defaultSearchEngine_.iconURL]]"
+                url="[[defaultSearchEngine_.url]]"
+                icon-path="[[defaultSearchEngine_.iconPath]]">
+            </site-favicon>
+            <div class="search-engine-name">[[defaultSearchEngine_.name]]</div>
+            <cr-button id="openDialogButton"
+                on-click="onOpenDialogButtonClick_"
+                disabled$="[[isDefaultSearchEngineEnforced_(
+                    prefs.default_search_provider_data.template_url_data)]]">
+              $i18n{searchEnginesChange}
+            </cr-button>
+            <template is="dom-if" if="[[showSearchEngineListDialog_]]" restamp>
+              <settings-search-engine-list-dialog
+                  search-engines="[[searchEngines_]]"
+                  on-close="onSearchEngineListDialogClose_">
+              </settings-search-engine-list-dialog>
+            </template>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="[[!searchEngineChoiceSettingsUi_]]">
+        <div id="searchExplanation" class="flex cr-padded-text">
+          $i18n{searchExplanation}
+          <a href="$i18n{searchExplanationLearnMoreURL}"
+              aria-label="$i18n{searchExplanationLearnMoreA11yLabel}"
+              target="_blank">
+            $i18n{learnMore}
+          </a>
+        </div>
+        <template is="dom-if" if="[[isDefaultSearchControlledByPolicy_(
+            prefs.default_search_provider_data.template_url_data)]]">
+          <cr-policy-pref-indicator pref="[[
+              prefs.default_search_provider_data.template_url_data]]">
+          </cr-policy-pref-indicator>
         </template>
-      </select>
+        <select class="md-select" on-change="onChange_"
+            aria-labelledby="searchExplanation"
+            disabled$="[[isDefaultSearchEngineEnforced_(
+                prefs.default_search_provider_data.template_url_data)]]">
+          <template is="dom-repeat" items="[[searchEngines_]]">
+            <option selected="[[item.default]]">[[item.name]]</option>
+          </template>
+        </select>
+      </template>
     </div>
     <template is="dom-if"
         if="[[prefs.default_search_provider_data.template_url_data.extensionId]]">

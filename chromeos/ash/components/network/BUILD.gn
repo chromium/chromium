@@ -13,8 +13,10 @@ config("network_config") {
 component("network") {
   configs += [ ":network_config" ]
   deps = [
+    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/hermes",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/feature_usage",
@@ -282,6 +284,7 @@ source_set("unit_tests") {
   deps = [
     ":network",
     ":test_support",
+    "//ash/components/arc:prefs",
     "//ash/constants",
     "//base",
     "//base:i18n",

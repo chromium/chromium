@@ -45,7 +45,7 @@ public class ProfileResolverTest {
 
     @Rule
     public ReducedModeNativeTestRule mReducedModeNativeTestRule =
-            new ReducedModeNativeTestRule(/*autoLoadNative=*/false);
+            new ReducedModeNativeTestRule(/* autoLoadNative= */ false);
 
     private ProfileResolver mProfileResolver;
 
@@ -69,17 +69,19 @@ public class ProfileResolverTest {
 
     private Profile getPrimaryOtrProfileOnUiThread() throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                                /*createIfNeeded=*/true));
+                () ->
+                        Profile.getLastUsedRegularProfile()
+                                .getPrimaryOTRProfile(/* createIfNeeded= */ true));
     }
 
     private Profile newOtrProfileOnUiThread(String profileIdPrefix) throws ExecutionException {
-        return TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Profile regularProfile = Profile.getLastUsedRegularProfile();
-            OTRProfileID otrProfileId = OTRProfileID.createUnique(profileIdPrefix);
-            return regularProfile.getOffTheRecordProfile(otrProfileId, /*createIfNeeded=*/true);
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Profile regularProfile = Profile.getLastUsedRegularProfile();
+                    OTRProfileID otrProfileId = OTRProfileID.createUnique(profileIdPrefix);
+                    return regularProfile.getOffTheRecordProfile(
+                            otrProfileId, /* createIfNeeded= */ true);
+                });
     }
 
     private ProfileKey getPrimaryProfileKeyOnUiThread() throws ExecutionException {
@@ -109,37 +111,42 @@ public class ProfileResolverTest {
 
     private Profile resolveProfileSync(String token) {
         PayloadCallbackHelper<Profile> callbackHelper = new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileResolver.resolveProfile(token, (Profile p) -> callbackHelper.notifyCalled(p));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileResolver.resolveProfile(
+                            token, (Profile p) -> callbackHelper.notifyCalled(p));
+                });
         return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private ProfileKey resolveProfileKeySync(String token) {
         PayloadCallbackHelper<ProfileKey> callbackHelper = new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileResolver.resolveProfileKey(
-                    token, (ProfileKey p) -> callbackHelper.notifyCalled(p));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileResolver.resolveProfileKey(
+                            token, (ProfileKey p) -> callbackHelper.notifyCalled(p));
+                });
         return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private BrowserContextHandle resolveBrowserContextSync(String token) {
         PayloadCallbackHelper<BrowserContextHandle> callbackHelper = new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileResolver.resolveBrowserContext(
-                    token, (BrowserContextHandle p) -> callbackHelper.notifyCalled(p));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileResolver.resolveBrowserContext(
+                            token, (BrowserContextHandle p) -> callbackHelper.notifyCalled(p));
+                });
         return callbackHelper.getOnlyPayloadBlocking();
     }
 
     private SimpleFactoryKeyHandle resolveSimpleFactoryKeySync(String token) {
         PayloadCallbackHelper<SimpleFactoryKeyHandle> callbackHelper =
                 new PayloadCallbackHelper<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileResolver.resolveSimpleFactoryKey(
-                    token, (SimpleFactoryKeyHandle p) -> callbackHelper.notifyCalled(p));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mProfileResolver.resolveSimpleFactoryKey(
+                            token, (SimpleFactoryKeyHandle p) -> callbackHelper.notifyCalled(p));
+                });
         return callbackHelper.getOnlyPayloadBlocking();
     }
 
@@ -150,11 +157,15 @@ public class ProfileResolverTest {
         Profile profile = getLastUsedRegularProfileOnUiThread();
 
         String firstToken = tokenizeOnUiThread(profile);
-        Assert.assertEquals("Round tripping should result in the same Profile object", profile,
+        Assert.assertEquals(
+                "Round tripping should result in the same Profile object",
+                profile,
                 resolveProfileSync(firstToken));
 
         String secondToken = tokenizeOnUiThread(profile);
-        Assert.assertEquals("Round tripping should result in the same Profile object", profile,
+        Assert.assertEquals(
+                "Round tripping should result in the same Profile object",
+                profile,
                 resolveProfileSync(secondToken));
         Assert.assertEquals("Tokens should be identical", firstToken, secondToken);
     }
@@ -169,22 +180,27 @@ public class ProfileResolverTest {
 
         String primaryOtrToken = tokenizeOnUiThread(primaryOtrProfile);
         Profile resolvedPrimaryOtrProfile = resolveProfileSync(primaryOtrToken);
-        Assert.assertEquals("Round tripped primary otr profile should match", primaryOtrProfile,
+        Assert.assertEquals(
+                "Round tripped primary otr profile should match",
+                primaryOtrProfile,
                 resolvedPrimaryOtrProfile);
         Assert.assertNotEquals(
                 "Round tripped primary OTR profile should be different from original Profile",
-                profile, resolvedPrimaryOtrProfile);
+                profile,
+                resolvedPrimaryOtrProfile);
 
         String newOtrToken = tokenizeOnUiThread(newOtrProfile);
         Profile resolvedNewOtrProfile = resolveProfileSync(newOtrToken);
         Assert.assertEquals(
                 "Round tripped new otr profile should match", newOtrProfile, resolvedNewOtrProfile);
         Assert.assertNotEquals(
-                "Round tripped new OTR profile should be different from original Profile", profile,
+                "Round tripped new OTR profile should be different from original Profile",
+                profile,
                 resolvedNewOtrProfile);
         Assert.assertNotEquals(
                 "Round tripped new OTR profile should be different from original OTR Profile",
-                primaryOtrProfile, resolvedNewOtrProfile);
+                primaryOtrProfile,
+                resolvedNewOtrProfile);
     }
 
     @Test
@@ -239,8 +255,10 @@ public class ProfileResolverTest {
         String token = tokenizeOnUiThread(handle);
         BrowserContextHandle resolvedHandle = resolveBrowserContextSync(token);
 
-        Assert.assertEquals("Round tripping should result in the same BrowserContextHandle object",
-                handle, resolvedHandle);
+        Assert.assertEquals(
+                "Round tripping should result in the same BrowserContextHandle object",
+                handle,
+                resolvedHandle);
     }
 
     @Test
@@ -253,7 +271,8 @@ public class ProfileResolverTest {
         SimpleFactoryKeyHandle resolvedHandle = resolveSimpleFactoryKeySync(token);
 
         Assert.assertEquals(
-                "Round tripping should result in the same SimpleFactoryKeyHandle object", handle,
+                "Round tripping should result in the same SimpleFactoryKeyHandle object",
+                handle,
                 resolvedHandle);
     }
 
@@ -264,11 +283,15 @@ public class ProfileResolverTest {
 
         // Put nulls into variables first to get correct overloaded methods.
         Profile profile = null;
-        assertThat("Tokenizing a null profile should not work", tokenizeOnUiThread(profile),
+        assertThat(
+                "Tokenizing a null profile should not work",
+                tokenizeOnUiThread(profile),
                 isEmptyString());
 
         ProfileKey profileKey = null;
-        assertThat("Tokenizing a null profile key should not work", tokenizeOnUiThread(profileKey),
+        assertThat(
+                "Tokenizing a null profile key should not work",
+                tokenizeOnUiThread(profileKey),
                 isEmptyString());
     }
 
@@ -279,9 +302,11 @@ public class ProfileResolverTest {
         List<String> badTokens = Arrays.asList(null, "", "abcdef");
 
         for (String token : badTokens) {
-            Assert.assertNull("#resolveProfile() did not resolve null for " + token,
+            Assert.assertNull(
+                    "#resolveProfile() did not resolve null for " + token,
                     resolveProfileSync(token));
-            Assert.assertNull("#resolveProfileKey() did not resolve null for " + token,
+            Assert.assertNull(
+                    "#resolveProfileKey() did not resolve null for " + token,
                     resolveProfileKeySync(token));
         }
     }

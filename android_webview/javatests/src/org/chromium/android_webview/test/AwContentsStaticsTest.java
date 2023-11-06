@@ -11,6 +11,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -21,28 +23,28 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.net.AndroidNetworkLibraryTestUtil;
 import org.chromium.net.test.EmbeddedTestServer;
 
-/**
- * AwContentsStatics tests.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsStaticsTest {
+/** AwContentsStatics tests. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsStaticsTest extends AwParameterizedTest {
     private AwContents mAwContents;
     private AwTestContainerView mTestContainer;
     private TestAwContentsClient mContentsClient;
 
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule() {
-        /**
-         * This is necessary so we can set the cleartext setting before browser startup.
-         */
-        @Override
-        public boolean needsBrowserProcessStarted() {
-            return false;
-        }
-    };
+    public AwActivityTestRule mActivityTestRule;
 
-    private static class ClearClientCertCallbackHelper extends CallbackHelper
-            implements Runnable {
+    public AwContentsStaticsTest(AwSettingsMutation param) {
+        mActivityTestRule = new AwActivityTestRule(param.getMutation()) {
+            /** This is necessary so we can set the cleartext setting before browser startup. */
+            @Override
+            public boolean needsBrowserProcessStarted() {
+                return false;
+            }
+        };
+    }
+
+    private static class ClearClientCertCallbackHelper extends CallbackHelper implements Runnable {
         @Override
         public void run() {
             notifyCalled();
@@ -56,12 +58,14 @@ public class AwContentsStaticsTest {
         mActivityTestRule.startBrowserProcess();
         final ClearClientCertCallbackHelper callbackHelper = new ClearClientCertCallbackHelper();
         int currentCallCount = callbackHelper.getCallCount();
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            // Make sure calling clearClientCertPreferences with null callback does not
-            // cause a crash.
-            AwContentsStatics.clearClientCertPreferences(null);
-            AwContentsStatics.clearClientCertPreferences(callbackHelper);
-        });
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            // Make sure calling clearClientCertPreferences with null callback does
+                            // not cause a crash.
+                            AwContentsStatics.clearClientCertPreferences(null);
+                            AwContentsStatics.clearClientCertPreferences(callbackHelper);
+                        });
         callbackHelper.waitForCallback(currentCallCount);
     }
 
@@ -84,15 +88,18 @@ public class AwContentsStaticsTest {
 
         createContainerView();
 
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         String url = testServer.getURL("/android_webview/test/data/hello_world.html");
         OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
         Assert.assertEquals(
                 "onReceivedError should be called.", errorCount + 1, errorHelper.getCallCount());
-        Assert.assertEquals("Incorrect network error code.", WebviewErrorCode.ERROR_UNKNOWN,
+        Assert.assertEquals(
+                "Incorrect network error code.",
+                WebviewErrorCode.ERROR_UNKNOWN,
                 errorHelper.getError().errorCode);
         Assert.assertEquals(
                 "onReceivedError was called for the wrong URL.", url, errorHelper.getRequest().url);
@@ -111,8 +118,9 @@ public class AwContentsStaticsTest {
 
         createContainerView();
 
-        EmbeddedTestServer testServer = EmbeddedTestServer.createAndStartServer(
-                InstrumentationRegistry.getInstrumentation().getContext());
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         String url = testServer.getURL("/android_webview/test/data/hello_world.html");
         OnReceivedErrorHelper errorHelper = mContentsClient.getOnReceivedErrorHelper();
         int errorCount = errorHelper.getCallCount();

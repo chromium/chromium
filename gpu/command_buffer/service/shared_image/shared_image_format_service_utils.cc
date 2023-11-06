@@ -6,6 +6,7 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
 
 #include "base/check.h"
 #include "base/check_op.h"
@@ -283,33 +284,66 @@ GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
   return gl_format;
 }
 
+GLFormatDesc ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
+                                                 int plane_index,
+                                                 bool use_angle_rgbx_format,
+                                                 bool use_half_float_oes) {
+  GLFormatDesc format_desc =
+      ToGLFormatDesc(format, plane_index, use_angle_rgbx_format);
+  // GL_HALF_FLOAT and GL_HALF_FLOAT_OES have different values so cannot be used
+  // interchangeably.
+  if (format_desc.data_type == GL_HALF_FLOAT_OES && !use_half_float_oes) {
+    format_desc.data_type = GL_HALF_FLOAT;
+  }
+  // ES3 requires using sized internal format for GL_HALF_FLOAT.
+  if (format_desc.image_internal_format == GL_RGBA &&
+      format_desc.data_format == GL_RGBA &&
+      format_desc.data_type == GL_HALF_FLOAT) {
+    format_desc.image_internal_format = GL_RGBA16F;
+  }
+  return format_desc;
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 bool HasVkFormat(viz::SharedImageFormat format) {
   if (format.is_single_plane()) {
     return ToVkFormatSinglePlanarInternal(format) != VK_FORMAT_UNDEFINED;
-  } else if (format == viz::MultiPlaneFormat::kYV12 ||
-             format == viz::MultiPlaneFormat::kNV12 ||
-             format == viz::MultiPlaneFormat::kP010 ||
-             format == viz::MultiPlaneFormat::kI420) {
-    return true;
   }
-
-  return false;
+  if (format.PrefersExternalSampler()) {
+    return ToVkFormatExternalSampler(format) != VK_FORMAT_UNDEFINED;
+  }
+  for (int plane = 0; plane < format.NumberOfPlanes(); plane++) {
+    if (ToVkFormat(format, plane) == VK_FORMAT_UNDEFINED) {
+      return false;
+    }
+  }
+  return true;
 }
 
 VkFormat ToVkFormatExternalSampler(viz::SharedImageFormat format) {
   CHECK(format.PrefersExternalSampler());
-  if (format == viz::MultiPlaneFormat::kYV12 ||
-      format == viz::MultiPlaneFormat::kI420) {
-    return VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    return VK_FORMAT_G8_B8R8_2PLANE_420_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kP010) {
-    return VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16;
+
+  // Return early for unsupported kY_UV_A plane configs.
+  if (format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV_A) {
+    return VK_FORMAT_UNDEFINED;
   }
 
-  NOTREACHED() << "Unsupported format: " << format.ToString();
-  return VK_FORMAT_UNDEFINED;
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G8_B8R8_2PLANE_420_UNORM
+                 : VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16
+                 : VK_FORMAT_G10X6_B10X6_R10X6_3PLANE_420_UNORM_3PACK16;
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return format.plane_config() == viz::SharedImageFormat::PlaneConfig::kY_UV
+                 ? VK_FORMAT_G16_B16R16_2PLANE_420_UNORM
+                 : VK_FORMAT_G16_B16_R16_3PLANE_420_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return VK_FORMAT_UNDEFINED;
+  }
 }
 
 VkFormat ToVkFormatSinglePlanar(viz::SharedImageFormat format) {
@@ -327,27 +361,23 @@ VkFormat ToVkFormat(viz::SharedImageFormat format, int plane_index) {
     return ToVkFormatSinglePlanar(format);
   }
 
-  // The following SharedImageFormat constants have PrefersExternalSampler()
-  // false so they create a separate VkImage per plane and return the single
-  // planar equivalents. NOTE: Callsites that handle formats with external
-  // sampling need to call ToVkFormatExternalSampler() if external sampling is
-  // being used.
+  // Since the format has PrefersExternalSampler() false we create a separate
+  // VkImage per plane and return the single planar equivalents. NOTE: Callsites
+  // that handle formats with external sampling need to call
+  // ToVkFormatExternalSampler() if external sampling is being used.
   CHECK(!format.PrefersExternalSampler());
-  if (format == viz::MultiPlaneFormat::kYV12 ||
-      format == viz::MultiPlaneFormat::kI420) {
-    // Based on VK_FORMAT_G8_B8_R8_3PLANE_420_UNORM.
-    return VK_FORMAT_R8_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kNV12) {
-    // Based on VK_FORMAT_G8_B8R8_2PLANE_420_UNORM.
-    return plane_index == 0 ? VK_FORMAT_R8_UNORM : VK_FORMAT_R8G8_UNORM;
-  } else if (format == viz::MultiPlaneFormat::kP010) {
-    // Based on VK_FORMAT_G10X6_B10X6R10X6_2PLANE_420_UNORM_3PACK16 but using
-    // 16bit unorm plane formats as they are class compatible and more widely
-    // supported.
-    return plane_index == 0 ? VK_FORMAT_R16_UNORM : VK_FORMAT_R16G16_UNORM;
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  CHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? VK_FORMAT_R8G8_UNORM : VK_FORMAT_R8_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+      return num_channels == 2 ? VK_FORMAT_R16G16_UNORM : VK_FORMAT_R16_UNORM;
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      break;
   }
 
-  NOTREACHED() << "Unsupported format: " << format.ToString();
   return VK_FORMAT_UNDEFINED;
 }
 #endif
@@ -422,16 +452,10 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
   }
 }
 
-WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
-}
-
-WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format, int plane_index) {
-  return static_cast<WGPUTextureFormat>(ToDawnFormat(format, plane_index));
-}
-
-wgpu::TextureUsage GetSupportedDawnTextureUsage(bool is_yuv_plane,
-                                                bool is_dcomp_surface) {
+wgpu::TextureUsage GetSupportedDawnTextureUsage(
+    bool is_yuv_plane,
+    bool is_dcomp_surface,
+    bool supports_multiplanar_rendering) {
   if (is_dcomp_surface) {
     // Textures from DComp surfaces cannot be used as TextureBinding, however
     // DCompSurfaceImageBacking creates a textureable intermediate texture.
@@ -444,13 +468,18 @@ wgpu::TextureUsage GetSupportedDawnTextureUsage(bool is_yuv_plane,
 
   // The below usages are not supported for multiplanar formats in Dawn.
   // TODO(crbug.com/1451784): Use read/write intent instead of format to get
-  // correct usages. This needs support in Skia to loosen TextureUsage
-  // validation. Alternatively, add support in Dawn for multiplanar formats to
-  // be Renderable.
+  // correct usages.
   if (!is_yuv_plane) {
     return wgpu::TextureUsage::RenderAttachment |
            wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopySrc |
            wgpu::TextureUsage::CopyDst;
+  }
+
+  // This indirectly checks for MultiPlanarRenderTargets feature being supported
+  // by the dawn backend device.
+  if (supports_multiplanar_rendering) {
+    return wgpu::TextureUsage::RenderAttachment |
+           wgpu::TextureUsage::TextureBinding;
   }
 
   return wgpu::TextureUsage::TextureBinding;
@@ -477,7 +506,8 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     int plane_index,
     bool is_yuv_plane,
     bool mipmapped,
-    bool scanout_dcomp_surface) {
+    bool scanout_dcomp_surface,
+    bool supports_multiplanar_rendering) {
   if (gr_context_type == GrContextType::kGraphiteMetal) {
 #if BUILDFLAG(SKIA_USE_METAL)
     return GetGraphiteMetalTextureInfo(format, plane_index, is_yuv_plane,
@@ -487,7 +517,8 @@ skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
 #if BUILDFLAG(SKIA_USE_DAWN)
     return GetGraphiteDawnTextureInfo(format, plane_index, is_yuv_plane,
-                                      mipmapped, scanout_dcomp_surface);
+                                      mipmapped, scanout_dcomp_surface,
+                                      supports_multiplanar_rendering);
 #endif
   }
   NOTREACHED_NORETURN();
@@ -499,14 +530,15 @@ skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     int plane_index,
     bool is_yuv_plane,
     bool mipmapped,
-    bool scanout_dcomp_surface) {
+    bool scanout_dcomp_surface,
+    bool supports_multiplanar_rendering) {
   skgpu::graphite::DawnTextureInfo dawn_texture_info;
   wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
   if (wgpu_format != wgpu::TextureFormat::Undefined) {
     dawn_texture_info.fSampleCount = 1;
     dawn_texture_info.fFormat = wgpu_format;
-    dawn_texture_info.fUsage =
-        GetSupportedDawnTextureUsage(is_yuv_plane, scanout_dcomp_surface);
+    dawn_texture_info.fUsage = GetSupportedDawnTextureUsage(
+        is_yuv_plane, scanout_dcomp_surface, supports_multiplanar_rendering);
     dawn_texture_info.fMipmapped =
         mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
   }

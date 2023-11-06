@@ -366,18 +366,24 @@
     <message name="IDS_TWO_STRINGS_CONNECTOR" desc="This is used to connect two sentences together by using a ending period and a space. The first sentence does not contain an ending period, but the second sentence will.">
       <ph name="FIRST_STRING">$1<ex>Use this code at checkout</ex></ph>. <ph name="SECOND_STRING">$2<ex>Valid until Aug 15 2023.</ex></ph>
     </message>
+    <message name="IDS_TWO_STRINGS_CONNECTOR_WITH_SPACE" desc="This is used to connect two sentences together with a space.">
+      <ph name="FIRST_STRING">$1<ex>Use this code at checkout. Valid until Aug 15 2023.</ex></ph> <ph name="SECOND_STRING">$2<ex>See Seller's terms and conditions</ex></ph>
+    </message>
+    <message name="IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_TITLE" desc="This is the title for the 'Terms and condition' dialog which shows users the additional qualification of the discount from the seller.">
+      Seller's terms and conditions
+    </message>
+    <message name="IDS_SELLER_TERMS_AND_CONDITIONS_DIALOG_FOOTER" desc="This is the footer in the 'Terms and condition' dialog. It's a disclaimer that the terms and conditions are provided by the seller.">
+      Terms and conditions provided by <ph name="URL">$1<ex>google.com</ex></ph>
+    </message>
+    <message name="IDS_SEE_SELLER_TERMS_AND_CONDITIONS" desc="This is used as a linked text in the discount dialog, when user clicks the text, it opens the 'Seller's terms and conditions' dialog to see additional qualification of the discount.">
+      See seller's terms and conditions
+    </message>
     <if expr="use_titlecase">
-      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
-        Terms and Conditions
-      </message>
       <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
         Discount Found
       </message>
     </if> <!-- use_titlecase -->
     <if expr="not use_titlecase">
-      <message name="IDS_DISCOUNT_TERMS_AND_CONDITIONS" desc="This text is used in two places. 1) Use as title for the 'Terms and condition' dialog which shows users the additional qualification of the discount. 2) Use as a linked text in the discount dialog, when user clicks the text, it opens the 'Terms and conditions' dialog.">
-        Terms and conditions
-      </message>
       <message name="IDS_DISCOUNT_ICON_EXPANDED_TEXT" desc="The text to use when the icon is expanded in the location bar, indicating discount has been found for the viewing product.">
         Discount found
       </message>

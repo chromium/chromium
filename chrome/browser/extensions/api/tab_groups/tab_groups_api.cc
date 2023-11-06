@@ -144,7 +144,7 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
         continue;
       }
 
-      if (params->query_info.color != api::tab_groups::COLOR_NONE &&
+      if (params->query_info.color != api::tab_groups::Color::kNone &&
           params->query_info.color !=
               tab_groups_util::ColorIdToColor(visual_data->color())) {
         continue;
@@ -181,8 +181,9 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     collapsed = *params->update_properties.collapsed;
 
   tab_groups::TabGroupColorId color = visual_data->color();
-  if (params->update_properties.color != api::tab_groups::COLOR_NONE)
+  if (params->update_properties.color != api::tab_groups::Color::kNone) {
     color = tab_groups_util::ColorToColorId(params->update_properties.color);
+  }
 
   std::u16string title = visual_data->title();
   if (params->update_properties.title)

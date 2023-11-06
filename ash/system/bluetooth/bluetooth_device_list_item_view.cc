@@ -5,6 +5,7 @@
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -290,8 +291,9 @@ void BluetoothDeviceListItemView::UpdateMultipleBatteryView(
   // Remove battery view if it is not a multiple battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (sub_row()->children().at(0)->GetClassName() !=
-        BluetoothDeviceListItemMultipleBatteryView::kViewClassName) {
+    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
+        std::string_view(
+            BluetoothDeviceListItemMultipleBatteryView::kViewClassName)) {
       sub_row()->RemoveAllChildViews();
     }
   }
@@ -317,8 +319,8 @@ void BluetoothDeviceListItemView::UpdateSingleBatteryView(
   // Remove battery view if it is not a single battery view.
   if (!sub_row()->children().empty()) {
     DCHECK(sub_row()->children().size() == 1);
-    if (sub_row()->children().at(0)->GetClassName() !=
-        BluetoothDeviceListItemBatteryView::kViewClassName) {
+    if (std::string_view(sub_row()->children().at(0)->GetClassName()) !=
+        std::string_view(BluetoothDeviceListItemBatteryView::kViewClassName)) {
       sub_row()->RemoveAllChildViews();
     }
   }

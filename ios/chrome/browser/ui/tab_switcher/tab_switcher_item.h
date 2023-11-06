@@ -38,9 +38,9 @@ typedef void (^TabSwitcherImageFetchingCompletionBlock)(TabSwitcherItem* item,
 #ifdef __cplusplus
 @property(nonatomic, readonly) web::WebStateID identifier;
 #endif
-@property(nonatomic, copy) NSString* title;
-@property(nonatomic, assign) BOOL hidesTitle;
-@property(nonatomic, assign) BOOL showsActivity;
+@property(nonatomic, readonly) NSString* title;
+@property(nonatomic, readonly) BOOL hidesTitle;
+@property(nonatomic, readonly) BOOL showsActivity;
 
 #pragma mark - Image Fetching
 

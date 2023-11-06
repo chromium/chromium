@@ -20,9 +20,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Robolectric tests for {@link NotificationPermissionChangeReceiver}.
- */
+/** Robolectric tests for {@link NotificationPermissionChangeReceiver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 30, manifest = Config.NONE)
 public class NotificationPermissionChangeReceiverTest {
@@ -34,7 +32,8 @@ public class NotificationPermissionChangeReceiverTest {
     private void verifyPermissionChangeHistogramWasRecorded(boolean expectedPermissionState) {
         int histogramValue = expectedPermissionState ? 1 : 0;
 
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Permission.Change", histogramValue));
     }

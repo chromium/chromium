@@ -168,7 +168,7 @@ void ParentAccessUiHandlerImpl::OnParentAccessDone(
       delegate_->SetApproved(
           parent_access_token_->token(),
           // Only keep the seconds, not the nanoseconds.
-          base::Time::FromDoubleT(
+          base::Time::FromSecondsSinceUnixEpoch(
               parent_access_token_->expire_time().seconds()));
       break;
     case parent_access_ui::mojom::ParentAccessResult::kDeclined:

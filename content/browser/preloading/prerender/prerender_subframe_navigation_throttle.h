@@ -35,6 +35,7 @@ class PrerenderSubframeNavigationThrottle : public NavigationThrottle,
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
+  ThrottleCheckResult WillCommitWithoutUrlLoader() override;
 
   // PrerenderHost::Observer
   void OnActivated() override;

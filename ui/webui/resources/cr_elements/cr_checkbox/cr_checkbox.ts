@@ -71,6 +71,8 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
 
       ariaDescription: String,
 
+      ariaLabelOverride: String,
+
       tabIndex: {
         type: Number,
         value: 0,
@@ -82,6 +84,7 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
   checked: boolean;
   disabled: boolean;
   ariaDescription: string;
+  ariaLabelOverride: string;
   override tabIndex: number;
 
   /* eslint-disable-next-line @typescript-eslint/naming-convention */

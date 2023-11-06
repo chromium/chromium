@@ -164,6 +164,7 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     // Remaining types receive no-access-to-anything.
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
 #if BUILDFLAG(ENABLE_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif

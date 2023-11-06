@@ -5,10 +5,13 @@
 #ifndef CHROME_TEST_BASE_CHROMEOS_CROSIER_HELPER_TEST_SUDO_HELPER_CLIENT_H_
 #define CHROME_TEST_BASE_CHROMEOS_CROSIER_HELPER_TEST_SUDO_HELPER_CLIENT_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/files/scoped_file.h"
+#include "base/functional/callback.h"
+#include "base/threading/thread.h"
 #include "base/values.h"
 
 namespace base {
@@ -41,14 +44,30 @@ class TestSudoHelperClient {
   // disconnects. Fails if the server path switch is not found.
   static Result ConnectAndRunCommand(const std::string_view command);
 
+  // Starts the session_manager daemon. `stopped_callback` will be invoked
+  // when session_manager daemon terminates.
+  Result StartSessionManager(base::OnceClosure stopped_callback);
+
+  // Stops the session manager daemon.
+  Result StopSessionManager();
+
+  // Ensures that session manager daemon is not left running from this client.
+  void EnsureSessionManagerStopped();
+
  private:
   base::ScopedFD ConnectToServer(const base::FilePath& client_path);
 
-  Result SendDictAndGetResult(const base::Value::Dict& dict);
+  Result SendDictAndGetResult(const base::Value::Dict& dict,
+                              base::ScopedFD* out_sock = nullptr);
+
+  void ReadSessionManagerEventOnWatcherThread(base::ScopedFD sock);
 
   // Socket path where `test_sudo_helper` server is listening. By default,
   // it is `kTestSudoHelperServerSocketPath`.
   std::string server_path_;
+
+  std::unique_ptr<base::Thread> session_manager_watcher_thread_;
+  base::OnceClosure session_manager_stopped_callback_;
 };
 
 #endif  // CHROME_TEST_BASE_CHROMEOS_CROSIER_HELPER_TEST_SUDO_HELPER_CLIENT_H_

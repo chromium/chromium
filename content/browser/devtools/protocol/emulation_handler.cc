@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
+#include "content/browser/generic_sensor/web_contents_sensor_provider_proxy.h"
 #include "content/browser/idle/idle_manager_impl.h"
 #include "content/browser/renderer_host/input/touch_emulator.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -21,9 +24,11 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "net/http/http_util.h"
+#include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
+#include "services/device/public/mojom/sensor.mojom-shared.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "ui/display/mojom/screen_orientation.mojom.h"
 #include "ui/events/gesture_detection/gesture_provider_config_helper.h"
@@ -35,6 +40,10 @@ namespace {
 
 constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
     "Command can only be executed on top-level targets";
+constexpr char kSensorIsAlreadyOverridden[] =
+    "The specified sensor type is already overridden";
+constexpr char kSensorIsNotOverridden[] =
+    "This sensor type is not being overridden with a virtual sensor";
 
 display::mojom::ScreenOrientation WebScreenOrientationTypeFromString(
     const std::string& type) {
@@ -105,6 +114,9 @@ void EmulationHandler::SetRenderer(int process_host_id,
                                    RenderFrameHostImpl* frame_host) {
   if (host_ == frame_host)
     return;
+  if (!frame_host) {
+    sensor_overrides_.clear();
+  }
   host_ = frame_host;
   if (touch_emulation_enabled_)
     UpdateTouchEventEmulationState();
@@ -131,7 +143,251 @@ Response EmulationHandler::Disable() {
   prefers_color_scheme_ = "";
   prefers_reduced_motion_ = "";
   prefers_reduced_transparency_ = "";
+  sensor_overrides_.clear();
   return Response::Success();
+}
+
+namespace {
+
+Response ConvertSensorType(const Emulation::SensorType& type,
+                           device::mojom::SensorType* out_type) {
+  if (type == Emulation::SensorTypeEnum::AbsoluteOrientation) {
+    *out_type = device::mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION;
+  } else if (type == Emulation::SensorTypeEnum::Accelerometer) {
+    *out_type = device::mojom::SensorType::ACCELEROMETER;
+  } else if (type == Emulation::SensorTypeEnum::AmbientLight) {
+    *out_type = device::mojom::SensorType::AMBIENT_LIGHT;
+  } else if (type == Emulation::SensorTypeEnum::Gravity) {
+    *out_type = device::mojom::SensorType::GRAVITY;
+  } else if (type == Emulation::SensorTypeEnum::Gyroscope) {
+    *out_type = device::mojom::SensorType::GYROSCOPE;
+  } else if (type == Emulation::SensorTypeEnum::LinearAcceleration) {
+    *out_type = device::mojom::SensorType::LINEAR_ACCELERATION;
+  } else if (type == Emulation::SensorTypeEnum::Magnetometer) {
+    *out_type = device::mojom::SensorType::MAGNETOMETER;
+  } else if (type == Emulation::SensorTypeEnum::RelativeOrientation) {
+    *out_type = device::mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION;
+  } else {
+    return Response::InvalidParams("Invalid sensor type: " + type);
+  }
+
+  return Response::Success();
+}
+
+Response ConvertSensorReading(device::mojom::SensorType type,
+                              Emulation::SensorReading* const reading,
+                              device::SensorReading* out_reading) {
+  switch (type) {
+    case device::mojom::SensorType::AMBIENT_LIGHT: {
+      if (!reading->HasSingle()) {
+        return Response::InvalidParams(
+            "This sensor type requires a 'single' parameter");
+      }
+      auto* single_value = reading->GetSingle(nullptr);
+      out_reading->als.value = single_value->GetValue();
+      break;
+    }
+    case device::mojom::SensorType::ACCELEROMETER:
+    case device::mojom::SensorType::GRAVITY:
+    case device::mojom::SensorType::GYROSCOPE:
+    case device::mojom::SensorType::LINEAR_ACCELERATION:
+    case device::mojom::SensorType::MAGNETOMETER: {
+      if (!reading->HasXyz()) {
+        return Response::InvalidParams(
+            "This sensor type requires an 'xyz' parameter");
+      }
+      auto* xyz = reading->GetXyz(nullptr);
+      out_reading->accel.x = xyz->GetX();
+      out_reading->accel.y = xyz->GetY();
+      out_reading->accel.z = xyz->GetZ();
+      break;
+    }
+    case device::mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION:
+    case device::mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION: {
+      if (!reading->HasQuaternion()) {
+        return Response::InvalidParams(
+            "This sensor type requires a 'quaternion' parameter");
+      }
+      auto* quaternion = reading->GetQuaternion(nullptr);
+      out_reading->orientation_quat.x = quaternion->GetX();
+      out_reading->orientation_quat.y = quaternion->GetY();
+      out_reading->orientation_quat.z = quaternion->GetZ();
+      out_reading->orientation_quat.w = quaternion->GetW();
+      break;
+    }
+    case device::mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES:
+    case device::mojom::SensorType::PRESSURE:
+    case device::mojom::SensorType::PROXIMITY:
+    case device::mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES:
+      return Response::InvalidParams("Unsupported sensor type");
+  }
+  out_reading->raw.timestamp =
+      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
+  return Response::Success();
+}
+
+base::expected<device::mojom::VirtualSensorMetadataPtr, Response>
+ParseSensorMetadata(Maybe<Emulation::SensorMetadata>& metadata) {
+  if (!metadata.has_value()) {
+    return device::mojom::VirtualSensorMetadata::New();
+  }
+
+  if (metadata->HasMinimumFrequency() && metadata->HasMaximumFrequency() &&
+      metadata->GetMinimumFrequency(0) > metadata->GetMaximumFrequency(0)) {
+    return base::unexpected(
+        Response::InvalidParams("The specified minimum frequency is higher "
+                                "than the maximum frequency"));
+  }
+
+  auto virtual_sensor_metadata = device::mojom::VirtualSensorMetadata::New();
+  if (metadata->HasAvailable()) {
+    virtual_sensor_metadata->available = metadata->GetAvailable(true);
+  }
+  if (metadata->HasMinimumFrequency()) {
+    virtual_sensor_metadata->minimum_frequency =
+        device::mojom::NullableDouble::New(metadata->GetMinimumFrequency(0));
+  }
+  if (metadata->HasMaximumFrequency()) {
+    virtual_sensor_metadata->maximum_frequency =
+        device::mojom::NullableDouble::New(metadata->GetMaximumFrequency(0));
+  }
+  return virtual_sensor_metadata;
+}
+
+}  // namespace
+
+void EmulationHandler::GetOverriddenSensorInformation(
+    const Emulation::SensorType& type,
+    std::unique_ptr<GetOverriddenSensorInformationCallback> callback) {
+  if (!host_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  device::mojom::SensorType sensor_type;
+  if (auto response = ConvertSensorType(type, &sensor_type);
+      !response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  auto it = sensor_overrides_.find(sensor_type);
+  if (it == sensor_overrides_.end()) {
+    callback->sendFailure(Response::InvalidParams(kSensorIsNotOverridden));
+    return;
+  }
+
+  it->second->GetVirtualSensorInformation(base::BindOnce(
+      [](std::unique_ptr<GetOverriddenSensorInformationCallback> callback,
+         device::mojom::GetVirtualSensorInformationResultPtr result) {
+        if (result->is_error()) {
+          switch (result->get_error()) {
+            case device::mojom::GetVirtualSensorInformationError::
+                kSensorTypeNotOverridden:
+              callback->sendFailure(
+                  Response::InvalidParams(kSensorIsNotOverridden));
+              return;
+          }
+        }
+        CHECK(result->is_info());
+        callback->sendSuccess(result->get_info()->sampling_frequency);
+      },
+      std::move(callback)));
+}
+
+void EmulationHandler::SetSensorOverrideEnabled(
+    bool enabled,
+    const Emulation::SensorType& type,
+    Maybe<Emulation::SensorMetadata> metadata,
+    std::unique_ptr<SetSensorOverrideEnabledCallback> callback) {
+  if (!host_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  device::mojom::SensorType sensor_type;
+  if (auto response = ConvertSensorType(type, &sensor_type);
+      !response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  if (enabled) {
+    auto virtual_sensor_metadata = ParseSensorMetadata(metadata);
+    if (!virtual_sensor_metadata.has_value()) {
+      callback->sendFailure(virtual_sensor_metadata.error());
+      return;
+    }
+
+    if (sensor_overrides_.contains(sensor_type)) {
+      callback->sendFailure(
+          Response::InvalidParams(kSensorIsAlreadyOverridden));
+      return;
+    }
+
+    auto virtual_sensor =
+        WebContentsSensorProviderProxy::GetOrCreate(GetWebContents())
+            ->CreateVirtualSensorForDevTools(
+                sensor_type, std::move(virtual_sensor_metadata.value()));
+    if (!virtual_sensor) {
+      callback->sendFailure(
+          Response::InvalidParams(kSensorIsAlreadyOverridden));
+      return;
+    }
+    sensor_overrides_[sensor_type] = std::move(virtual_sensor);
+  } else {
+    sensor_overrides_.erase(sensor_type);
+  }
+  callback->sendSuccess();
+}
+
+void EmulationHandler::SetSensorOverrideReadings(
+    const Emulation::SensorType& type,
+    std::unique_ptr<Emulation::SensorReading> reading,
+    std::unique_ptr<SetSensorOverrideReadingsCallback> callback) {
+  if (!host_) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  device::mojom::SensorType sensor_type;
+  if (auto response = ConvertSensorType(type, &sensor_type);
+      !response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  device::SensorReading device_reading;
+  if (auto response =
+          ConvertSensorReading(sensor_type, reading.get(), &device_reading);
+      !response.IsSuccess()) {
+    callback->sendFailure(response);
+    return;
+  }
+
+  auto it = sensor_overrides_.find(sensor_type);
+  if (it == sensor_overrides_.end()) {
+    callback->sendFailure(Response::InvalidParams(kSensorIsNotOverridden));
+    return;
+  }
+
+  it->second->UpdateVirtualSensor(
+      device_reading,
+      base::BindOnce(
+          [](std::unique_ptr<SetSensorOverrideReadingsCallback> callback,
+             device::mojom::UpdateVirtualSensorResult result) {
+            switch (result) {
+              case device::mojom::UpdateVirtualSensorResult::
+                  kSensorTypeNotOverridden:
+                callback->sendFailure(
+                    Response::InvalidParams(kSensorIsNotOverridden));
+                break;
+              case device::mojom::UpdateVirtualSensorResult::kSuccess:
+                callback->sendSuccess();
+                break;
+            }
+          },
+          std::move(callback)));
 }
 
 Response EmulationHandler::SetIdleOverride(bool is_user_active,

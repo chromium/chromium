@@ -58,7 +58,6 @@ VRBrowserRendererThreadWin::~VRBrowserRendererThreadWin() {
 
 void VRBrowserRendererThreadWin::StopOverlay() {
   browser_renderer_ = nullptr;
-  initializing_graphics_ = nullptr;
   started_ = false;
   graphics_ = nullptr;
   scheduler_ = nullptr;
@@ -258,17 +257,17 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   if (started_)
     return;
 
-  initializing_graphics_ = std::make_unique<GraphicsDelegateWin>();
-  if (!initializing_graphics_->InitializeOnMainThread()) {
-    return;
-  }
+  // The graphics delegate will eventually be owned by the browser_renderer_,
+  // but we need to keep a raw pointer to it.
+  std::unique_ptr<GraphicsDelegateWin> initializing_graphics =
+      std::make_unique<GraphicsDelegateWin>();
+  graphics_ = initializing_graphics.get();
 
   // We should have received valid views from the ui host before rendering.
   DCHECK(!default_views_.empty());
-  initializing_graphics_->SetXrViews(default_views_);
+  graphics_->SetXrViews(default_views_);
 
-  initializing_graphics_->InitializeOnGLThread();
-  initializing_graphics_->BindContext();
+  graphics_->BindContext();
 
   // Create a vr::Ui
   ui_browser_interface_ = std::make_unique<VRUiBrowserInterface>();
@@ -279,12 +278,11 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   ui_ = static_cast<BrowserUiInterface*>(ui.get());
   scheduler_ui_ = static_cast<UiInterface*>(ui.get())->GetSchedulerUiPtr();
 
-  // Create the delegates, and keep raw pointers to them.  They are owned by
-  // browser_renderer_.
+  // Create the remaining delegates, and keep raw pointers to them.  They are
+  // also owned by browser_renderer_.
   std::unique_ptr<SchedulerDelegateWin> scheduler_delegate =
       std::make_unique<SchedulerDelegateWin>();
   scheduler_ = scheduler_delegate.get();
-  graphics_ = initializing_graphics_.get();
   std::unique_ptr<InputDelegateWin> input_delegate =
       std::make_unique<InputDelegateWin>();
   input_ = input_delegate.get();
@@ -292,7 +290,7 @@ void VRBrowserRendererThreadWin::StartOverlay() {
   // Create the BrowserRenderer to drive UI rendering based on the delegates.
   browser_renderer_ = std::make_unique<BrowserRenderer>(
       std::move(ui), std::move(scheduler_delegate),
-      std::move(initializing_graphics_), std::move(input_delegate),
+      std::move(initializing_graphics), std::move(input_delegate),
       nullptr /*browser_renderer_interface*/, kSlidingAverageSize);
 
   graphics_->ClearContext();

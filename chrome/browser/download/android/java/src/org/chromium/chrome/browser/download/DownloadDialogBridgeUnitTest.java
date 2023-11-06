@@ -36,9 +36,7 @@ import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Unit test for {@link DownloadDialogBridge}.
- */
+/** Unit test for {@link DownloadDialogBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
@@ -57,28 +55,21 @@ public class DownloadDialogBridgeUnitTest {
 
     private DownloadDialogBridge mBridge;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private DownloadDialogBridge.Natives mNativeMock;
+    @Mock private DownloadDialogBridge.Natives mNativeMock;
 
-    @Mock
-    ModalDialogManager mModalDialogManager;
+    @Mock ModalDialogManager mModalDialogManager;
 
     Activity mActivity;
 
-    @Mock
-    DownloadLocationDialogCoordinator mLocationDialog;
+    @Mock DownloadLocationDialogCoordinator mLocationDialog;
 
-    @Mock
-    private PrefService mPrefService;
+    @Mock private PrefService mPrefService;
 
-    @Captor
-    private ArgumentCaptor<PropertyModel> mModelCaptor;
+    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     @Before
     public void setUp() {
@@ -97,34 +88,58 @@ public class DownloadDialogBridgeUnitTest {
     }
 
     private void showDialog() {
-        mBridge.showDialog(mActivity, mModalDialogManager, mPrefService, TOTAL_BYTES,
-                CONNECTION_TYPE, LOCATION_DIALOG_TYPE, SUGGESTED_PATH, isIncognito);
+        mBridge.showDialog(
+                mActivity,
+                mModalDialogManager,
+                mPrefService,
+                TOTAL_BYTES,
+                CONNECTION_TYPE,
+                LOCATION_DIALOG_TYPE,
+                SUGGESTED_PATH,
+                isIncognito);
     }
 
     private void locationDialogWillReturn(String newPath) {
-        doAnswer(invocation -> {
-            mBridge.onDownloadLocationDialogComplete(newPath);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            mBridge.onDownloadLocationDialogComplete(newPath);
+                            return null;
+                        })
                 .when(mLocationDialog)
-                .showDialog(any(), any(), eq(TOTAL_BYTES), anyInt(), eq(SUGGESTED_PATH),
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        anyInt(),
+                        eq(SUGGESTED_PATH),
                         eq(isIncognito));
     }
 
     @Test
     public void testShowDialog() {
-        doAnswer(invocation -> {
-            mBridge.onDownloadLocationDialogComplete(NEW_SUGGESTED_PATH);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            mBridge.onDownloadLocationDialogComplete(NEW_SUGGESTED_PATH);
+                            return null;
+                        })
                 .when(mLocationDialog)
-                .showDialog(any(), any(), eq(TOTAL_BYTES), eq(LOCATION_DIALOG_TYPE),
-                        eq(SUGGESTED_PATH), eq(isIncognito));
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(isIncognito));
 
         showDialog();
         verify(mLocationDialog)
-                .showDialog(any(), any(), eq(TOTAL_BYTES), eq(LOCATION_DIALOG_TYPE),
-                        eq(SUGGESTED_PATH), eq(isIncognito));
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(isIncognito));
         verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH));
     }
 
@@ -136,13 +151,19 @@ public class DownloadDialogBridgeUnitTest {
 
     @Test
     public void testLocationDialogCanceled() {
-        doAnswer(invocation -> {
-            mBridge.onDownloadLocationDialogCanceled();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            mBridge.onDownloadLocationDialogCanceled();
+                            return null;
+                        })
                 .when(mLocationDialog)
-                .showDialog(any(), any(), eq(TOTAL_BYTES), eq(LOCATION_DIALOG_TYPE),
-                        eq(SUGGESTED_PATH), eq(isIncognito));
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(isIncognito));
 
         showDialog();
         verify(mNativeMock).onCanceled(anyLong(), any());

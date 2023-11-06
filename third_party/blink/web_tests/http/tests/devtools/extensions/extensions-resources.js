@@ -7,13 +7,13 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import {ExtensionsTestRunner} from 'extensions_test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Console from 'devtools/panels/console/console.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Components from 'devtools/ui/legacy/components/utils/utils.js';
 
 (async function() {
   TestRunner.addResult(`Tests resource-related methods of WebInspector extension API\n`);
-  await TestRunner.loadLegacyModule('components');
 
   TestRunner.clickOnURL = async function() {
     await UI.ViewManager.ViewManager.instance().showView("console").then(() => {
@@ -166,7 +166,7 @@ import * as Console from 'devtools/panels/console/console.js';
       webInspector.panels.setOpenResourceHandler(handleOpenResource);
       webInspector.inspectedWindow.eval("logMessage()", function() {
         evaluateOnFrontend("TestRunner.clickOnURL();");
-        evaluateOnFrontend("Components.Linkifier.linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
+        evaluateOnFrontend("Components.Linkifier.Linkifier.linkHandlerSetting().set('test extension'); TestRunner.clickOnURL();");
       });
     },
   ]);

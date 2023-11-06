@@ -34,17 +34,15 @@ struct is_reference_wrapper<std::reference_wrapper<T>> : std::true_type {};
 
 // Small helpers used below in internal::invoke to make the SFINAE more concise.
 template <typename F>
-const bool& IsMemFunPtr =
-    std::is_member_function_pointer<std::decay_t<F>>::value;
+const bool& IsMemFunPtr = std::is_member_function_pointer_v<std::decay_t<F>>;
 
 template <typename F>
-const bool& IsMemObjPtr = std::is_member_object_pointer<std::decay_t<F>>::value;
+const bool& IsMemObjPtr = std::is_member_object_pointer_v<std::decay_t<F>>;
 
 template <typename F,
           typename T,
           typename MemPtrClass = member_pointer_class_t<std::decay_t<F>>>
-const bool& IsMemPtrToBaseOf =
-    std::is_base_of<MemPtrClass, std::decay_t<T>>::value;
+const bool& IsMemPtrToBaseOf = std::is_base_of_v<MemPtrClass, std::decay_t<T>>;
 
 template <typename T>
 const bool& IsRefWrapper = is_reference_wrapper<std::decay_t<T>>::value;

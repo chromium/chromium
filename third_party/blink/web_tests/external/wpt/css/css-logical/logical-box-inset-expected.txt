@@ -1,47 +1,63 @@
 This is a testharness.js-based test.
-PASS Test that logical inset-* properties are supported.
-PASS Test that inset-inline shorthand sets longhands and serializes correctly.
-PASS Test that inset-block shorthand sets longhands and serializes correctly.
-PASS Test that inset shorthand sets longhands and serializes correctly.
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
-FAIL Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', bottom expected "1px" but got "4px"
-FAIL Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', bottom expected "1px" but got "0px"
-FAIL Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', inset-block-end expected "1px" but got "4px"
-FAIL Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '. assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', inset-block-end expected "1px" but got "4px"
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
-FAIL Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', top expected "1px" but got "3px"
-FAIL Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', top expected "1px" but got "0px"
-FAIL Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', left expected "1px" but got "5px"
-FAIL Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '. assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', left expected "1px" but got "5px"
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
-FAIL Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', bottom expected "1px" but got "4px"
-FAIL Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', bottom expected "1px" but got "0px"
-FAIL Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', left expected "1px" but got "5px"
-FAIL Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '. assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', left expected "1px" but got "5px"
-PASS Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-PASS Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
-FAIL Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', top expected "1px" but got "3px"
-FAIL Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', top expected "1px" but got "0px"
-FAIL Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', inset-block-start expected "1px" but got "3px"
-FAIL Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '. assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', inset-block-start expected "1px" but got "3px"
+[PASS] Test that logical inset-* properties are supported.
+[PASS] Test that inset-inline shorthand sets longhands and serializes correctly.
+[PASS] Test that inset-block shorthand sets longhands and serializes correctly.
+[PASS] Test that inset shorthand sets longhands and serializes correctly.
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: ltr; '.
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: horizontal-tb; direction: rtl; '.
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: rtl; '.
+[FAIL] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', bottom expected "1px" but got "4px"
+[FAIL] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: rtl; ', bottom expected "1px" but got "0px"
+[FAIL] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: rtl; ', inset-block-end expected "1px" but got "4px"
+[FAIL] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: rtl; '.
+  assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-rl; direction: rtl; ', inset-block-end expected "1px" but got "4px"
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-rl; direction: ltr; '.
+[FAIL] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', top expected "1px" but got "3px"
+[FAIL] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-rl; direction: ltr; ', top expected "1px" but got "0px"
+[FAIL] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-rl; direction: ltr; ', left expected "1px" but got "5px"
+[FAIL] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-rl; direction: ltr; '.
+  assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-rl; direction: ltr; ', left expected "1px" but got "5px"
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: rtl; '.
+[FAIL] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', bottom expected "1px" but got "4px"
+[FAIL] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: ltr; ', bottom expected "1px" but got "0px"
+[FAIL] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: ltr; ', left expected "1px" but got "5px"
+[FAIL] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: ltr; '.
+  assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-lr; direction: ltr; ', left expected "1px" but got "5px"
+[PASS] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[PASS] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: vertical-lr; direction: ltr; '.
+[FAIL] Test that logical inset-* properties share computed values with their physical associates, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: logical properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', top expected "1px" but got "3px"
+[FAIL] Test that inset-* shorthands set the computed value of both logical and physical longhands, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: shorthand properties on one declaration, writing mode properties on another, 'writing-mode: sideways-lr; direction: rtl; ', top expected "1px" but got "0px"
+[FAIL] Test that inset-* properties honor order of appearance when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'inset-inline-start' last on single declaration, 'writing-mode: sideways-lr; direction: rtl; ', inset-block-start expected "1px" but got "3px"
+[FAIL] Test that inset-* properties honor selector specificty when both logical and physical associates are declared, with 'writing-mode: sideways-lr; direction: rtl; '.
+  assert_equals: 'inset-inline-start', two declarations, 'writing-mode: sideways-lr; direction: rtl; ', inset-block-start expected "1px" but got "3px"
 Harness: the test ran to completion.
 

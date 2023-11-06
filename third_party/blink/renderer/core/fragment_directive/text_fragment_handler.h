@@ -64,7 +64,7 @@ class CORE_EXPORT TextFragmentHandler final
   void Trace(Visitor*) const;
 
   TextFragmentSelectorGenerator* GetTextFragmentSelectorGenerator() {
-    return text_fragment_selector_generator_;
+    return text_fragment_selector_generator_.Get();
   }
 
   void DidDetachDocumentOrFrame();
@@ -92,7 +92,7 @@ class CORE_EXPORT TextFragmentHandler final
 
   TextFragmentAnchor* GetTextFragmentAnchor();
 
-  LocalFrame* GetFrame() { return frame_; }
+  LocalFrame* GetFrame() { return frame_.Get(); }
 
   HeapVector<Member<AnnotationAgentImpl>> annotation_agents_;
 

@@ -26,6 +26,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHAutoDarkUserEducationMessageOptInFeature,
+    &kIPHCCTMinimized,
     &kIPHDataSaverDetailFeature,
     &kIPHDataSaverMilestonePromoFeature,
     &kIPHDataSaverPreviewFeature,
@@ -83,6 +84,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHRequestDesktopSiteDefaultOnFeature,
     &kIPHRequestDesktopSiteOptInFeature,
     &kIPHRequestDesktopSiteExceptionsGenericFeature,
+    &kIPHRequestDesktopSiteWindowSettingFeature,
     &kIPHShoppingListMenuItemFeature,
     &kIPHShoppingListSaveFlowFeature,
     &kIPHTabGroupsQuicklyComparePagesFeature,
@@ -141,6 +143,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSPromoPostRestoreDefaultBrowserFeature,
     &kIPHiOSPromoPasswordManagerWidgetFeature,
     &kIPHiOSChoiceScreenFeature,
+    &kIPHiOSParcelTrackingFeature,
 #endif  // BUILDFLAG(IS_IOS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
@@ -151,6 +154,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,
     &kIPHDesktopCustomizeChromeRefreshFeature,
+    &kIPHDesktopNewTabPageModulesCustomizeFeature,
     &kIPHDownloadToolbarButtonFeature,
     &kIPHExtensionsMenuFeature,
     &kIPHExtensionsRequestAccessButtonFeature,
@@ -165,6 +169,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHPasswordsManagementBubbleDuringSigninFeature,
     &kIPHPasswordsWebAppProfileSwitchFeature,
     &kIPHPasswordManagerShortcutFeature,
+    &kIPHPasswordSharingFeature,
     &kIPHPowerBookmarksSidePanelFeature,
     &kIPHPriceInsightsPageActionIconLabelFeature,
     &kIPHPriceTrackingChipFeature,
@@ -179,6 +184,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSideSearchFeature,
     &kIPHSideSearchPageActionLabelFeature,
     &kIPHTabSearchFeature,
+    &kIPHTrackingProtectionOffboardingFeature,
     &kIPHTrackingProtectionOnboardingFeature,
     &kIPHWebUITabStripFeature,
     &kIPHDesktopPwaInstallFeature,

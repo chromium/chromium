@@ -10,6 +10,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "ash/shell.h"
+#include "ash/webui/common/shortcut_input_key_strings.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -1043,7 +1044,7 @@ DeviceSection::DeviceSection(Profile* profile,
   if (night_light_controller) {
     NightLightController::GetInstance()->AddObserver(this);
     OnNightLightEnabledChanged(
-        NightLightController::GetInstance()->GetEnabled());
+        NightLightController::GetInstance()->IsNightLightEnabled());
   }
 }
 
@@ -1069,6 +1070,16 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                         : IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL},
       {"touchpadScrollDescription",
        IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_DESCRIPTION},
+      {"deviceMenuItemDescriptionKeyboard",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_KEYBOARD},
+      {"deviceMenuItemDescriptionMouse",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_MOUSE},
+      {"deviceMenuItemDescriptionTouchpad",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_TOUCHPAD},
+      {"deviceMenuItemDescriptionPrint",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_PRINT},
+      {"deviceMenuItemDescriptionDisplay",
+       IDS_OS_SETTINGS_DEVICE_MENU_ITEM_DESCRIPTION_DISPLAY},
   };
   html_source->AddLocalizedStrings(kDeviceStrings);
 
@@ -1543,7 +1554,7 @@ void DeviceSection::OnGetDisplayLayoutInfo(
   }
 
   // Night Light on settings.
-  if (NightLightController::GetInstance()->GetEnabled()) {
+  if (NightLightController::GetInstance()->IsNightLightEnabled()) {
     updater.AddSearchTags(GetDisplayNightLightOnSearchConcepts());
   } else {
     updater.RemoveSearchTags(GetDisplayNightLightOnSearchConcepts());
@@ -1576,6 +1587,8 @@ void DeviceSection::AddDevicePointersStrings(
       features::IsAllowScrollSettingsEnabled();
 
   webui::LocalizedString kPointersStrings[] = {
+      {"allGraphicsTabletsDisconnectedA11yLabel",
+       IDS_SETTINGS_PER_DEVICE_ALL_GRAPHICS_TABLETS_DISCONNECTED_A11Y_LABEL},
       {"allMiceDisconnectedA11yLabel",
        IDS_SETTINGS_PER_DEVICE_ALL_MICE_DISCONNECTED_A11Y_LABEL},
       {"allTouchpadsDisconnectedA11yLabel",
@@ -1704,19 +1717,29 @@ void DeviceSection::AddCustomizeButtonsPageStrings(
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_LABEL},
       {"buttonRemappingDialogCancelLabel",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_CANCEL},
+      {"buttonRemappingDialogDescription",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_DESCRIPTION},
       {"buttonRemappingDialogSaveLabel",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_DIALOG_SAVE},
+      {"buttonRemappingDropdownAriaLabel",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_REMAPPING_DROPDOWN_ARIA_LABEL},
+      {"buttonRenamingDialogErrorMessage",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_ERROR_MESSAGE},
+      {"buttonRenamingDialogInputCharCount",
+       IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_INPUT_CHARACTER_COUNT},
       {"buttonRenamingDialogTitle",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_RENAMING_DIALOG_TITLE},
       {"customizeButtonSubpageDescription",
        IDS_SETTINGS_CUSTOMIZE_BUTTONS_SUBPAGE_DESCRIPTION},
       {"customizeMouseButtonsTitle",
        IDS_SETTINGS_CUSTOMIZE_MOUSE_BUTTONS_TITLE},
+      {"disbableOptionLabel", IDS_SETTINGS_DISABLE_OPTION_LABEL},
       {"keyCombinationDialogTitle", IDS_SETTINGS_KEY_COMBINATION_DIALOG_TITLE},
       {"keyCombinationOptionLabel", IDS_SETTINGS_KEY_COMBINATION_OPTION_LABEL},
       {"noRemappingOptionLabel", IDS_SETTINGS_NO_REMAPPING_OPTION_LABEL},
   };
   html_source->AddLocalizedStrings(kCustomizeButtonsPageStrings);
+  ash::common::AddShortcutInputKeyStrings(html_source);
 }
 
 void DeviceSection::AddDeviceDisplayStrings(

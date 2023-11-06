@@ -6,7 +6,9 @@
 
 #include <tuple>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -210,6 +212,21 @@ std::string CreateApnShillDict() {
   test_apn_data.onc_ip_type = ::onc::cellular_apn::kIpTypeIpv4;
   test_apn_data.onc_apn_types.emplace_back(kCellularTestApnTypes1);
   return test_apn_data.AsApnShillDict();
+}
+
+mojom::ConfigPropertiesPtr CreateFakeVpnConfig(std::string name,
+                                               std::string host,
+                                               mojom::VpnType type) {
+  auto vpn = mojom::VPNConfigProperties::New();
+  vpn->host = host;
+  vpn->type = mojom::VpnTypeConfig::New();
+  vpn->type->value = type;
+
+  auto config = mojom::ConfigProperties::New();
+  config->name = name;
+  config->type_config =
+      mojom::NetworkTypeConfigProperties::NewVpn(std::move(vpn));
+  return config;
 }
 
 bool OncApnHasId(const base::Value::Dict& apn) {
@@ -776,6 +793,17 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void SetArcAlwaysOnUserPrefs(std::string package_name,
+                               bool lockdown,
+                               bool vpn_configured_allowed = false) {
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnPackage,
+                            base::Value(package_name));
+    user_prefs_.SetUserPref(arc::prefs::kAlwaysOnVpnLockdown,
+                            base::Value(lockdown));
+    user_prefs_.SetUserPref(prefs::kVpnConfigAllowed,
+                            base::Value(vpn_configured_allowed));
+  }
+
   std::vector<std::string> GetSupportedVpnTypes() {
     std::vector<std::string> result;
     base::RunLoop run_loop;
@@ -867,9 +895,19 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
-  void CreateCustomApn(const std::string& guid, mojom::ApnPropertiesPtr apn) {
-    cros_network_config()->CreateCustomApn(guid, std::move(apn));
-    base::RunLoop().RunUntilIdle();
+  bool CreateCustomApn(const std::string& guid, mojom::ApnPropertiesPtr apn) {
+    bool success = false;
+    base::RunLoop run_loop;
+    cros_network_config()->CreateCustomApn(
+        guid, std::move(apn),
+        base::BindOnce(
+            [](bool* successp, base::OnceClosure quit_closure, bool success) {
+              *successp = success;
+              std::move(quit_closure).Run();
+            },
+            &success, run_loop.QuitClosure()));
+    run_loop.Run();
+    return success;
   }
 
   void RemoveCustomApn(const std::string& guid, const std::string& apn_id) {
@@ -1931,6 +1969,47 @@ TEST_F(CrosNetworkConfigTest, CustomAPN) {
   EXPECT_TRUE(test_apn_data3.MojoApnEquals(*first_apn));
 }
 
+TEST_F(CrosNetworkConfigTest,
+       CanCreateDisabledAttachApnWithoutExistingDefaultApn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
+
+  // Register an observer to capture values sent to Shill
+  TestNetworkConfigurationObserver network_config_observer(
+      network_configuration_handler());
+
+  ASSERT_FALSE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+
+  // CreateCustomApn with an exclusively attach APN in the disabled state, and
+  // verify that it is created even though a default APN does not exist.
+  TestApnData test_apn1;
+  test_apn1.mojo_state = mojom::ApnState::kDisabled;
+  test_apn1.onc_state = ::onc::cellular_apn::kStateDisabled;
+  test_apn1.access_point_name = kCellularTestApn1;
+  test_apn1.name = kCellularTestApnName1;
+  test_apn1.username = kCellularTestApnUsername1;
+  test_apn1.password = kCellularTestApnPassword1;
+  test_apn1.attach = kCellularTestApnAttach1;
+  test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
+  test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
+  ASSERT_TRUE(network_metadata_store()->GetCustomApnList(kCellularGuid));
+  {
+    std::vector<TestApnData*> expected_apns({&test_apn1});
+    EXPECT_TRUE(
+        CustomApnsInNetworkMetadataStoreMatch(kCellularGuid, expected_apns));
+    EXPECT_TRUE(CustomApnsInCellularConfigMatch(kCellularGuid, expected_apns,
+                                                network_config_observer));
+    EXPECT_TRUE(
+        CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
+  }
+  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnPropertiesBucketCount(
+      mojom::ApnAuthenticationType::kAutomatic,
+      /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
+      /*ip_type_count=*/1, ApnTypes::kAttach, /*apn_types_count=*/1);
+}
+
 TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kApnRevamp);
@@ -1953,7 +2032,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_FALSE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
 
   EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -1985,7 +2064,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
                               mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_FALSE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
   EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
     std::vector<TestApnData*> empty_apn_list({});
@@ -2003,7 +2082,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
       /*ip_type_count=*/0, ApnTypes::kDefaultAndAttach, /*apn_types_count=*/0);
 
   // Try again to create the APN without mocking a failure.
-  CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
 
   EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -2031,7 +2110,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
   test_apn3.attach = kCellularTestApnAttach1;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn()));
 
   EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -2071,7 +2150,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
 
   EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -2104,7 +2183,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn2.attach = "attach";
   test_apn2.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
 
   EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -2155,7 +2234,7 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
   test_apn3.attach = "";
   test_apn3.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
-  CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn()));
 
   EXPECT_EQ(3u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
@@ -2280,7 +2359,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
 
   // Verify that the API called sent the right values to Shill
   EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -2321,7 +2400,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn1.attach = kCellularTestApnAttach1;
   test_apn1.mojo_apn_types = {mojom::ApnType::kDefault};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault};
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
   EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
     std::vector<TestApnData*> expected_apns({&test_apn1});
@@ -2372,7 +2451,7 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
   test_apn3.attach = kCellularTestApnAttach1;
   test_apn3.mojo_apn_types = {mojom::ApnType::kAttach};
   test_apn3.onc_apn_types = {::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn3.AsMojoApn()));
   EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
   {
     std::vector<TestApnData*> expected_apns({&test_apn3, &test_apn1});
@@ -2509,7 +2588,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
                               mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
 
   // Verify that the API called sent the right values to Shill
   EXPECT_EQ(1u, network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -2543,7 +2622,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
                               mojom::ApnType::kAttach};
   test_apn2.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+  EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
 
   // Verify that the API called sent the right values to Shill
   EXPECT_EQ(2u, network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -2586,7 +2665,7 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
                               mojom::ApnType::kAttach};
   test_apn1.onc_apn_types = {::onc::cellular_apn::kApnTypeDefault,
                              ::onc::cellular_apn::kApnTypeAttach};
-  CreateCustomApn(guid, test_apn1.AsMojoApn());
+  EXPECT_FALSE(CreateCustomApn(guid, test_apn1.AsMojoApn()));
 
   // Verify that no values were sent to Shill
   EXPECT_EQ(0u, network_config_observer.GetOnConfigurationModifiedCallCount());
@@ -2641,10 +2720,10 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {
 
   // Add two custom APNs using the official API
   {
-    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
     EXPECT_EQ(++expected_network_config_calls,
               network_config_observer.GetOnConfigurationModifiedCallCount());
-    CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+    EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
     EXPECT_EQ(++expected_network_config_calls,
               network_config_observer.GetOnConfigurationModifiedCallCount());
   }
@@ -2757,12 +2836,12 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_MaxAmountAllowed) {
 
   // Verify that the API creates as many APNs as allowed
   for (size_t i = 0; i < mojom::kMaxNumCustomApns; ++i) {
-    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
     EXPECT_EQ(i + 1,
               network_config_observer.GetOnConfigurationModifiedCallCount());
   }
   // Verify that the next call does nothing
-  CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+  EXPECT_FALSE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
   EXPECT_EQ(mojom::kMaxNumCustomApns,
             network_config_observer.GetOnConfigurationModifiedCallCount());
 
@@ -2831,10 +2910,10 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApn) {
 
   // Add two custom APNs using the official API
   {
-    CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn());
+    EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn1.AsMojoApn()));
     EXPECT_EQ(++expected_network_config_calls,
               network_config_observer.GetOnConfigurationModifiedCallCount());
-    CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn());
+    EXPECT_TRUE(CreateCustomApn(kCellularGuid, test_apn2.AsMojoApn()));
     EXPECT_EQ(++expected_network_config_calls,
               network_config_observer.GetOnConfigurationModifiedCallCount());
   }
@@ -4009,6 +4088,27 @@ TEST_F(CrosNetworkConfigTest, SetAlwaysOnVpn) {
   EXPECT_EQ(vpn_path(), helper()->GetProfileStringProperty(
                             helper()->ProfilePathUser(),
                             shill::kAlwaysOnVpnServiceProperty));
+}
+
+TEST_F(CrosNetworkConfigTest, IsProhibitedFromConfiguringVpn) {
+  arc::prefs::RegisterProfilePrefs(user_prefs_.registry());
+  user_prefs_.registry()->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
+
+  for (const std::string& package_name : {"", "package_name"}) {
+    for (const bool lockdown : {true, false}) {
+      for (const bool vpn_configure_allowed : {true, false}) {
+        SetArcAlwaysOnUserPrefs(package_name, lockdown, vpn_configure_allowed);
+        const std::string guid = ConfigureNetwork(
+            CreateFakeVpnConfig("name", "host", mojom::VpnType::kArc),
+            /*shared=*/true);
+        if (package_name.empty() || !lockdown || vpn_configure_allowed) {
+          EXPECT_FALSE(guid.empty());
+          continue;
+        }
+        EXPECT_TRUE(guid.empty());
+      }
+    }
+  }
 }
 
 TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {

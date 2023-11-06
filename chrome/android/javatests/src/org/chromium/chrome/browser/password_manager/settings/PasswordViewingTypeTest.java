@@ -29,9 +29,9 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
- * Tests for verifying whether users are presented with the correct option of viewing
- * passwords according to the user group they belong to (syncing with sync passphrase,
- * syncing without sync passsphrase, non-syncing).
+ * Tests for verifying whether users are presented with the correct option of viewing passwords
+ * according to the user group they belong to (syncing with sync passphrase, syncing without sync
+ * passsphrase, non-syncing).
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PasswordViewingTypeTest {
@@ -46,12 +46,10 @@ public class PasswordViewingTypeTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mChromeBrowserTestRule).around(mSettingsActivityTestRule);
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private ChromeBasePreference mPasswordsPref;
-    @Mock
-    private SyncService mSyncService;
+    @Mock private SyncService mSyncService;
 
     @Before
     public void setUp() {
@@ -81,8 +79,7 @@ public class PasswordViewingTypeTest {
     }
 
     /**
-     * Verifies that syncing users with a custom passphrase are allowed to
-     * natively view passwords.
+     * Verifies that syncing users with a custom passphrase are allowed to natively view passwords.
      */
     @Test
     @SmallTest
@@ -96,9 +93,7 @@ public class PasswordViewingTypeTest {
         Assert.assertNotNull(mSettingsActivityTestRule.getActivity().getIntent());
     }
 
-    /**
-     * Verifies that non-syncing users are allowed to natively view passwords.
-     */
+    /** Verifies that non-syncing users are allowed to natively view passwords. */
     @Test
     @SmallTest
     public void testNonSyncingNativePasswordView() {

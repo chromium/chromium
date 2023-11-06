@@ -58,6 +58,14 @@ const ManagedTermsOfServiceBase = mixinBehaviors(
 ManagedTermsOfServiceBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   manager: string,
+ * }}
+ */
+let ManagedTermsOfServiceScreenData;
+
+/**
  * @polymer
  */
 class ManagedTermsOfService extends ManagedTermsOfServiceBase {
@@ -105,7 +113,7 @@ class ManagedTermsOfService extends ManagedTermsOfServiceBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {{manager: string}} data contains manager string whose
+   * @param {ManagedTermsOfServiceScreenData} data contains manager string whose
    * Terms of Service are being shown.
    */
   onBeforeShow(data) {

@@ -34,8 +34,9 @@ void FindDescendentsOfClass(views::View* parent,
                             std::vector<views::View*>* descendents) {
   if (parent) {
     for (auto* child : parent->children()) {
-      if (child->GetClassName() == T::kViewClassName)
+      if (IsViewClass<T>(child)) {
         descendents->push_back(child);
+      }
       FindDescendentsOfClass<T>(child, descendents);
     }
   }
@@ -65,8 +66,9 @@ HoldingSpaceTestApi::HoldingSpaceTestApi()
 }
 
 HoldingSpaceTestApi::~HoldingSpaceTestApi() {
-  if (!Shell::HasInstance())
+  if (!Shell::HasInstance()) {
     return;
+  }
 
   holding_space_tray_->set_use_zero_previews_update_delay_for_testing(false);
   // Enable blocking during drag/drop that was disabled for holding space tests.
@@ -80,13 +82,15 @@ aura::Window* HoldingSpaceTestApi::GetRootWindowForNewWindows() {
 }
 
 void HoldingSpaceTestApi::Show() {
-  if (!IsShowing())
+  if (!IsShowing()) {
     TapOn(holding_space_tray_);
+  }
 }
 
 void HoldingSpaceTestApi::Close() {
-  if (IsShowing())
+  if (IsShowing()) {
     TapOn(holding_space_tray_);
+  }
 }
 
 bool HoldingSpaceTestApi::IsShowing() {
@@ -225,15 +229,17 @@ views::View* HoldingSpaceTestApi::GetBubble() {
 }
 
 views::View* HoldingSpaceTestApi::GetPinnedFilesBubble() {
-  if (!holding_space_tray_->GetBubbleView())
+  if (!holding_space_tray_->GetBubbleView()) {
     return nullptr;
+  }
   return holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpacePinnedFilesBubbleId);
 }
 
 bool HoldingSpaceTestApi::PinnedFilesBubbleShown() const {
-  if (!holding_space_tray_->GetBubbleView())
+  if (!holding_space_tray_->GetBubbleView()) {
     return false;
+  }
 
   views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpacePinnedFilesBubbleId);
@@ -241,15 +247,17 @@ bool HoldingSpaceTestApi::PinnedFilesBubbleShown() const {
 }
 
 views::View* HoldingSpaceTestApi::GetRecentFilesBubble() {
-  if (!holding_space_tray_->GetBubbleView())
+  if (!holding_space_tray_->GetBubbleView()) {
     return nullptr;
+  }
   return holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpaceRecentFilesBubbleId);
 }
 
 bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
-  if (!holding_space_tray_->GetBubbleView())
+  if (!holding_space_tray_->GetBubbleView()) {
     return false;
+  }
 
   views::View* bubble = holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpaceRecentFilesBubbleId);
@@ -257,8 +265,9 @@ bool HoldingSpaceTestApi::RecentFilesBubbleShown() const {
 }
 
 bool HoldingSpaceTestApi::RecentFilesPlaceholderShown() const {
-  if (!holding_space_tray_->GetBubbleView())
+  if (!holding_space_tray_->GetBubbleView()) {
     return false;
+  }
 
   views::View* placeholder = holding_space_tray_->GetBubbleView()->GetViewByID(
       kHoldingSpaceRecentFilesPlaceholderId);

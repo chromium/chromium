@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_API_I18N_HOOKS_DELEGATE_H_
 #define EXTENSIONS_RENDERER_API_I18N_HOOKS_DELEGATE_H_
 
-#include <vector>
-
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "v8/include/v8-forward.h"
@@ -29,7 +27,7 @@ class I18nHooksDelegate : public APIBindingHooksDelegate {
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
 
  private:

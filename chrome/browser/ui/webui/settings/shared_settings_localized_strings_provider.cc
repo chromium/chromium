@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
@@ -51,9 +52,10 @@ namespace {
 // Generates a Google Help URL which includes a "board type" parameter. Some
 // help pages need to be adjusted depending on the type of CrOS device that is
 // accessing the page.
-std::u16string GetHelpUrlWithBoard(const std::string& original_url) {
-  return base::ASCIIToUTF16(original_url +
-                            "&b=" + base::SysInfo::GetLsbReleaseBoard());
+std::u16string GetHelpUrlWithBoard(const std::u16string& original_url) {
+  return base::StrCat(
+      {original_url, u"&b=",
+       base::ASCIIToUTF16(base::SysInfo::GetLsbReleaseBoard())});
 }
 
 }  // namespace
@@ -240,7 +242,7 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
           GetHelpUrlWithBoard(chrome::kSyncEncryptionHelpURL)));
 #else
-          base::ASCIIToUTF16(chrome::kSyncEncryptionHelpURL)));
+                              chrome::kSyncEncryptionHelpURL));
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   html_source->AddBoolean(
@@ -337,12 +339,28 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool kIsRevampEnabled =
+      ash::features::IsOsSettingsRevampWayfindingEnabled();
+#endif
+
+  webui::LocalizedString kLocalizedStrings[] = {
     {"secureDns", IDS_SETTINGS_SECURE_DNS},
     {"secureDnsDescription", IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"secureDnsOsSettingsTitle", kIsRevampEnabled
+                                     ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS
+                                     : IDS_SETTINGS_SECURE_DNS},
+    {"secureDnsOsSettingsDescription",
+     kIsRevampEnabled ? IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DESCRIPTION
+                      : IDS_SETTINGS_SECURE_DNS_DESCRIPTION},
     {"secureDnsWithIdentifiersDescription",
      IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+    {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
+    {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
+    {"secureDnsDialogCancel", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_CANCEL},
+    {"secureDnsDialogTurnOff",
+     IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TURN_OFF},
 #endif
     {"secureDnsDisabledForManagedEnvironment",
      IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_MANAGED_ENVIRONMENT},
@@ -350,10 +368,8 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
      IDS_SETTINGS_SECURE_DNS_DISABLED_FOR_PARENTAL_CONTROL},
     {"secureDnsAutomaticModeDescription",
      IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION},
-    {"secureDnsAutomaticModeDescriptionSecondary",
-     IDS_SETTINGS_AUTOMATIC_MODE_DESCRIPTION_SECONDARY},
-    {"secureDnsSecureModeA11yLabel",
-     IDS_SETTINGS_SECURE_MODE_DESCRIPTION_ACCESSIBILITY_LABEL},
+    {"secureDnsCustomProviderDescription",
+     IDS_SETTINGS_SECURE_DNS_CUSTOM_DESCRIPTION},
     {"secureDnsDropdownA11yLabel",
      IDS_SETTINGS_SECURE_DNS_DROPDOWN_ACCESSIBILITY_LABEL},
     {"secureDnsSecureDropdownModeDescription",

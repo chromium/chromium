@@ -220,8 +220,16 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
       lcp_timestamps[2].value());
 }
 
+// TODO(https://crbug.com/1493285): This test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  DISABLED_LargestContentfulPaint_SubframeInput
+#else
+#define MAYBE_LargestContentfulPaint_SubframeInput \
+  LargestContentfulPaint_SubframeInput
+#endif
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       LargestContentfulPaint_SubframeInput) {
+                       MAYBE_LargestContentfulPaint_SubframeInput) {
   Start();
   Load("/lcp_subframe_input.html");
   auto* sub = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
@@ -1200,14 +1208,9 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_NativeLazyLoadingImage) {
   Validate();
 }
 
-// TODO(https://crbug.com/1487837): This test is failing on Linux CFI, Chrome
-// OS (Both Lacros and ASH) and Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_ManualLazyLoadingImage DISABLED_ManualLazyLoadingImage
-#else
-#define MAYBE_ManualLazyLoadingImage ManualLazyLoadingImage
-#endif
-IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_ManualLazyLoadingImage) {
+// TODO(https://crbug.com/1487837): This test is flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest,
+                       DISABLED_ManualLazyLoadingImage) {
   std::string test_url =
       "/lcp_breakdown_timings_manual_lazy_loading_images.html";
   std::string resource = "lcp-16x16.png";
@@ -1437,8 +1440,14 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
       web_exposed_lcp2, epsilon);
 }
 
+// TODO(1495363): Flaky on ChromeOS LSAN/ASAN and Linux builders
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_LCPBreakdownTimings_DetachedWindow DISABLED_LCPBreakdownTimings_DetachedWindow
+#else
+#define MAYBE_LCPBreakdownTimings_DetachedWindow LCPBreakdownTimings_DetachedWindow
+#endif
 IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
-                       LCPBreakdownTimings_DetachedWindow) {
+                       MAYBE_LCPBreakdownTimings_DetachedWindow) {
   Start();
 
   Load("/lcp_detached_window.html");

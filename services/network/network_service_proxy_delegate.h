@@ -54,16 +54,19 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   }
 
   // net::ProxyDelegate implementation:
-  void OnResolveProxy(const GURL& url,
-                      const GURL& top_frame_url,
-                      const std::string& method,
-                      const net::ProxyRetryInfoMap& proxy_retry_info,
-                      net::ProxyInfo* result) override;
-  void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override;
-  void OnBeforeTunnelRequest(const net::ProxyServer& proxy_server,
+  void OnResolveProxy(
+      const GURL& url,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const std::string& method,
+      const net::ProxyRetryInfoMap& proxy_retry_info,
+      net::ProxyInfo* result) override;
+  void OnFallback(const net::ProxyChain& bad_chain, int net_error) override;
+  void OnBeforeTunnelRequest(const net::ProxyChain& proxy_chain,
+                             size_t chain_index,
                              net::HttpRequestHeaders* extra_headers) override;
   net::Error OnTunnelHeadersReceived(
-      const net::ProxyServer& proxy_server,
+      const net::ProxyChain& proxy_chain,
+      size_t chain_index,
       const net::HttpResponseHeaders& response_headers) override;
 
   IpProtectionConfigCache* GetIpProtectionConfigCache() {

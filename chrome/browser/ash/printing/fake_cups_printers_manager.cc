@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/observer_list.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,6 +34,16 @@ void FakeCupsPrintersManager::RemoveSavedPrinter(
     const std::string& printer_id) {
   installed_.erase(printer_id);
   printers_.Remove(PrinterClass::kSaved, printer_id);
+}
+
+void FakeCupsPrintersManager::AddLocalPrintersObserver(
+    LocalPrintersObserver* observer) {
+  local_printers_observer_list_.AddObserver(observer);
+}
+
+void FakeCupsPrintersManager::RemoveLocalPrintersObserver(
+    LocalPrintersObserver* observer) {
+  local_printers_observer_list_.RemoveObserver(observer);
 }
 
 bool FakeCupsPrintersManager::IsPrinterInstalled(
@@ -105,6 +116,12 @@ void FakeCupsPrintersManager::QueryPrinterForAutoConf(
     base::OnceCallback<void(bool)> callback) {
   std::move(callback).Run(
       !printers_marked_as_not_autoconf_.contains(printer.id()));
+}
+
+void FakeCupsPrintersManager::TriggerLocalPrintersObserver() {
+  for (auto& observer : local_printers_observer_list_) {
+    observer.OnLocalPrintersUpdated();
+  }
 }
 
 }  // namespace ash

@@ -567,8 +567,9 @@ void VerifySharedStorageTablesAndColumns(sql::Database& db) {
 }
 
 bool GetTestDataSharedStorageDir(base::FilePath* dir) {
-  if (!base::PathService::Get(base::DIR_SOURCE_ROOT, dir))
+  if (!base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, dir)) {
     return false;
+  }
   *dir = dir->AppendASCII("components");
   *dir = dir->AppendASCII("test");
   *dir = dir->AppendASCII("data");

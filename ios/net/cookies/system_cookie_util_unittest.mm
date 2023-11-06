@@ -59,7 +59,7 @@ void CheckSystemCookie(const base::Time& expires, bool secure, bool httponly) {
     EXPECT_NSEQ(NSHTTPCookieSameSiteLax, [system_cookie sameSitePolicy]);
   }
   // Allow 1 second difference as iOS rounds expiry time to the nearest second.
-  base::Time system_cookie_expire_date = base::Time::FromDoubleT(
+  base::Time system_cookie_expire_date = base::Time::FromSecondsSinceUnixEpoch(
       [[system_cookie expiresDate] timeIntervalSince1970]);
   EXPECT_LE(expires - base::Seconds(1), system_cookie_expire_date);
   EXPECT_GE(expires + base::Seconds(1), system_cookie_expire_date);
@@ -72,8 +72,8 @@ using CookieUtil = PlatformTest;
 TEST_F(CookieUtil, CanonicalCookieFromSystemCookie) {
   base::Time creation_time = base::Time::Now();
   base::Time expire_date = creation_time + base::Hours(2);
-  NSDate* system_expire_date =
-      [NSDate dateWithTimeIntervalSince1970:expire_date.ToDoubleT()];
+  NSDate* system_expire_date = [NSDate
+      dateWithTimeIntervalSince1970:expire_date.InSecondsFSinceUnixEpoch()];
   NSMutableDictionary* properties =
       [NSMutableDictionary dictionaryWithDictionary:@{
         NSHTTPCookieDomain : @"foo",

@@ -106,6 +106,7 @@ class MenuListSelectType final : public SelectType {
   bool PopupIsVisible() const override;
   PopupMenu* PopupForTesting() const override;
   AXObject* PopupRootAXObject() const override;
+  void ShowPicker() override;
 
   void DidMutateSubtree();
 
@@ -394,6 +395,19 @@ AXObject* MenuListSelectType::PopupRootAXObject() const {
   return popup_ ? popup_->PopupRootAXObject() : nullptr;
 }
 
+void MenuListSelectType::ShowPicker() {
+  // We need to make the layout tree up-to-date to have GetLayoutObject() give
+  // the correct result below. An author event handler may have set display to
+  // some element to none which will cause a layout tree detach.
+  select_->GetDocument().UpdateStyleAndLayoutTree();
+  // Save the selection so it can be compared to the new selection
+  // when we call onChange during selectOption, which gets called
+  // from selectOptionByPopup, which gets called after the user
+  // makes a selection from the menu.
+  SaveLastSelection();
+  ShowPopup(PopupMenu::kOther);
+}
+
 void MenuListSelectType::DidSelectOption(
     HTMLOptionElement* element,
     HTMLSelectElement::SelectOptionFlags flags,
@@ -564,12 +578,12 @@ HTMLOptionElement* MenuListSelectType::OptionToBeShown() const {
           select_->OptionAtListIndex(select_->index_to_select_on_cancel_))
     return option;
   if (select_->suggested_option_)
-    return select_->suggested_option_;
+    return select_->suggested_option_.Get();
   // TODO(tkent): We should not call OptionToBeShown() in IsMultiple() case.
   if (select_->IsMultiple())
     return select_->SelectedOption();
   DCHECK_EQ(select_->SelectedOption(), select_->last_on_change_option_);
-  return select_->last_on_change_option_;
+  return select_->last_on_change_option_.Get();
 }
 
 void MenuListSelectType::MaximumOptionWidthMightBeChanged() const {
@@ -1070,7 +1084,7 @@ void ListBoxSelectType::SetActiveSelectionEnd(HTMLOptionElement* option) {
 
 HTMLOptionElement* ListBoxSelectType::ActiveSelectionEnd() const {
   if (active_selection_end_)
-    return active_selection_end_;
+    return active_selection_end_.Get();
   return select_->LastSelectedOption();
 }
 
@@ -1085,7 +1099,7 @@ void ListBoxSelectType::ScrollToSelection() {
 void ListBoxSelectType::ScrollToOption(HTMLOptionElement* option) {
   if (!option)
     return;
-  bool has_pending_task = option_to_scroll_to_;
+  bool has_pending_task = option_to_scroll_to_ != nullptr;
   // We'd like to keep an HTMLOptionElement reference rather than the index of
   // the option because the task should work even if unselected option is
   // inserted before executing ScrollToOptionTask().
@@ -1387,6 +1401,8 @@ Element& SelectType::InnerElement() const {
   // to compile this source. This function must not be called.
   return *select_;
 }
+
+void SelectType::ShowPicker() {}
 
 void SelectType::ShowPopup(PopupMenu::ShowEventType) {
   NOTREACHED();

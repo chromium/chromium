@@ -165,7 +165,7 @@
       </template>
 
       <template is="dom-if" if="[[enableSafetyHub_]]">
-        <template is="dom-if" route-path="/safetyHub">
+        <template is="dom-if" route-path="/safetyCheck">
           <!-- TODO(crbug.com/1443466): Make the page searchable.-->
           <settings-subpage id="safetyHub" page-title="$i18n{safetyHub}"
               class="multi-card" no-search>
@@ -718,7 +718,7 @@
                 <settings-safety-hub-module id="safetyHubEntryPoint"
                     header="[[notificationPermissionsReviewHeader_]]"
                     subheader="[[notificationPermissionsReviewSubheader_]]"
-                    header-icon="settings:shield-with-heart">
+                    header-icon="cr:security" header-icon-color="blue">
                   <cr-button id="safetyHubButton" slot="button-container"
                       on-click="onSafetyHubButtonClick_">
                     $i18n{safetyHubEntryPointButton}
@@ -1004,6 +1004,13 @@
           <template is="dom-if" if="[[showPersistentPermissions_]]">
             <file-system-site-list></file-system-site-list>
           </template>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/content/filesystem/siteDetails"
+          no-search>
+        <settings-subpage page-title="[[pageTitle]]">
+          <file-system-site-details page-title="{{pageTitle}}">
+          </file-system-site-details>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/content/hidDevices" no-search>
@@ -1340,14 +1347,13 @@
             <div class="content-settings-header secondary">
               $i18n{siteSettingsAutoPictureInPictureDescription}
             </div>
-            <!-- TODO(https://crbug.com/1471051): Use real icons. -->
             <settings-category-default-radio-group
                 category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"
                 allow-option-label=
                     "$i18n{siteSettingsAutoPictureInPictureAllowed}"
-                allow-option-icon="settings:window-management"
+                allow-option-icon="settings:picture-in-picture"
                 block-option-label="$i18n{siteSettingsAutoPictureInPictureBlocked}"
-                block-option-icon="settings:window-management-off">
+                block-option-icon="settings:picture-in-picture-off">
             </settings-category-default-radio-group>
             <category-setting-exceptions
                 category="[[contentSettingsTypesEnum_.AUTO_PICTURE_IN_PICTURE]]"

@@ -172,6 +172,9 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // Returns a Value::List representing Nigori node.
   void GetNigoriNodeForDebugging(AllNodesCallback callback);
 
+  // Record histograms related to Nigori data type.
+  void RecordNigoriMemoryUsageAndCountsHistograms();
+
   // Returns types that have local changes yet to be synced to the server.
   ModelTypeSet GetTypesWithUnsyncedData() const;
 

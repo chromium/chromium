@@ -16,6 +16,9 @@
 
 @property(nonatomic, weak) id<UnitConversionConsumer> consumer;
 
+// Logs all the unit conversion histograms at the coordinator stop.
+- (void)reportMetrics;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_UNIT_CONVERSION_UNIT_CONVERSION_MEDIATOR_H_

@@ -223,7 +223,7 @@ class SharedEventAndSignalValue : public BackpressureMetalSharedEvent {
 
   bool HasCompleted() const override;
 
-  id<MTLSharedEvent> shared_event() const { return shared_event_; }
+  id<MTLSharedEvent> shared_event() const { return shared_event_.get(); }
 
   // This is the value which will be signaled on the associated MTLSharedEvent.
   uint64_t signaled_value() const { return signaled_value_; }

@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -35,8 +36,7 @@ import java.util.Optional;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SendTabToSelfCoordinatorTest {
-    @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Before
     public void setUp() {
@@ -52,12 +52,12 @@ public class SendTabToSelfCoordinatorTest {
     public void testShowDeviceListIfSignedIn() {
         // Sign in and wait for the device list to be downloaded.
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        CriteriaHelper.pollUiThread(() -> {
-            return SendTabToSelfAndroidBridge
-                    .getEntryPointDisplayReason(
-                            Profile.getLastUsedRegularProfile(), HTTP_URL.getSpec())
-                    .equals(Optional.of(EntryPointDisplayReason.OFFER_FEATURE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return SendTabToSelfAndroidBridge.getEntryPointDisplayReason(
+                                    Profile.getLastUsedRegularProfile(), HTTP_URL.getSpec())
+                            .equals(Optional.of(EntryPointDisplayReason.OFFER_FEATURE));
+                });
 
         buildAndShowCoordinator();
 
@@ -66,7 +66,8 @@ public class SendTabToSelfCoordinatorTest {
 
     @Test
     @LargeTest
-    @DisabledTest(message = "https://crbug.com/1302062")
+    // TODO(crbug.com/1302062): Flaky on Nexus 5x (bullhead).
+    @DisableIf.Build(hardware_is = "bullhead")
     public void testShowSigninPromoIfSignedOut() {
         // An account must be added to the device so the promo is offered.
         mSyncTestRule.addTestAccount();
@@ -75,11 +76,12 @@ public class SendTabToSelfCoordinatorTest {
         // Check the promo is displayed, in particular the sign-in button.
         waitForViewShown(R.id.account_picker_continue_as_button);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            getBottomSheetView()
-                    .findViewById(R.id.account_picker_continue_as_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getBottomSheetView()
+                            .findViewById(R.id.account_picker_continue_as_button)
+                            .performClick();
+                });
 
         waitForViewShown(R.id.device_picker_list);
     }
@@ -87,28 +89,36 @@ public class SendTabToSelfCoordinatorTest {
     private void buildAndShowCoordinator() {
         ChromeTabbedActivity activity = mSyncTestRule.getActivity();
         WindowAndroid windowAndroid = activity.getWindowAndroid();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SendTabToSelfCoordinator coordinator =
-                    new SendTabToSelfCoordinator(activity, windowAndroid, HTTP_URL.getSpec(),
-                            "Page", BottomSheetControllerProvider.from(windowAndroid),
-                            Profile.getLastUsedRegularProfile(), null);
-            coordinator.show();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SendTabToSelfCoordinator coordinator =
+                            new SendTabToSelfCoordinator(
+                                    activity,
+                                    windowAndroid,
+                                    HTTP_URL.getSpec(),
+                                    "Page",
+                                    BottomSheetControllerProvider.from(windowAndroid),
+                                    Profile.getLastUsedRegularProfile(),
+                                    null);
+                    coordinator.show();
+                });
     }
 
     private View getBottomSheetView() {
         WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return BottomSheetControllerProvider.from(windowAndroid)
-                    .getCurrentSheetContent()
-                    .getContentView();
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return BottomSheetControllerProvider.from(windowAndroid)
+                            .getCurrentSheetContent()
+                            .getContentView();
+                });
     }
 
     private void waitForViewShown(@IdRes int id) {
-        CriteriaHelper.pollUiThread(() -> {
-            View view = getBottomSheetView().findViewById(id);
-            return view != null && view.getVisibility() == View.VISIBLE;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    View view = getBottomSheetView().findViewById(id);
+                    return view != null && view.getVisibility() == View.VISIBLE;
+                });
     }
 }

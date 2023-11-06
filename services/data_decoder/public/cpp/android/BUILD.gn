@@ -16,8 +16,8 @@ if (current_toolchain == default_toolchain) {
   android_library("safe_json_java") {
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
 
     srcjar_deps = [ ":safe_json_jni_headers" ]

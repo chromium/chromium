@@ -4,8 +4,16 @@
 
 #include "chrome/browser/ui/web_applications/sub_apps_install_dialog_controller.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
+#include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "components/webapps/common/web_app_id.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -33,6 +41,8 @@ void SubAppsInstallDialogController::Init(
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& sub_apps,
     const std::string& parent_app_name,
     const std::string& parent_app_scope,
+    const webapps::AppId& parent_app_id,
+    Profile* profile,
     gfx::NativeWindow window) {
   if (g_dialog_override_for_testing) {
     switch (g_dialog_override_for_testing.value()) {
@@ -48,14 +58,17 @@ void SubAppsInstallDialogController::Init(
 
   callback_ = std::move(callback);
 
-  widget_ = CreateSubAppsInstallDialogWidget(parent_app_name, parent_app_scope,
-                                             sub_apps, window);
-  widget_->AddObserver(this);
+  widget_ = CreateSubAppsInstallDialogWidget(
+      base::UTF8ToUTF16(parent_app_name), base::UTF8ToUTF16(parent_app_scope),
+      sub_apps,
+      base::BindRepeating(OpenAppSettingsForParentApp, parent_app_id, profile),
+      window);
+  widget_observation_.Observe(widget_);
   widget_->Show();
 }
 
 void SubAppsInstallDialogController::OnWidgetDestroying(views::Widget* widget) {
-  widget_->RemoveObserver(this);
+  widget_observation_.Reset();
   widget_ = nullptr;
   switch (widget->closed_reason()) {
     case views::Widget::ClosedReason::kAcceptButtonClicked:
@@ -77,10 +90,9 @@ views::Widget* SubAppsInstallDialogController::GetWidgetForTesting() {
 
 SubAppsInstallDialogController::~SubAppsInstallDialogController() {
   if (widget_) {
-    widget_->RemoveObserver(this);
+    widget_observation_.Reset();
     widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   }
-  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 }  // namespace web_app

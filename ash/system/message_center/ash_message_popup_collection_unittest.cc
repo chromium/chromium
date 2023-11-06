@@ -24,6 +24,7 @@
 #include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/message_center_test_util.h"
 #include "ash/system/message_center/message_popup_animation_waiter.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -36,10 +37,13 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/fake_phone_hub_manager.h"
 #include "chromeos/ash/components/phonehub/feature_status.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
@@ -65,7 +69,7 @@ namespace {
 class TestMessagePopupCollection : public AshMessagePopupCollection {
  public:
   explicit TestMessagePopupCollection(Shelf* shelf)
-      : AshMessagePopupCollection(shelf) {}
+      : AshMessagePopupCollection(display::Screen::GetScreen(), shelf) {}
 
   TestMessagePopupCollection(const TestMessagePopupCollection&) = delete;
   TestMessagePopupCollection& operator=(const TestMessagePopupCollection&) =
@@ -95,11 +99,9 @@ class TestMessagePopupCollection : public AshMessagePopupCollection {
 
 }  // namespace
 
-class AshMessagePopupCollectionTest
-    : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<
-          /*IsQsRevampEnabled=*/bool,
-          /*IsNotifierCollisionEnabled=*/bool>> {
+class AshMessagePopupCollectionTest : public AshTestBase,
+                                      public testing::WithParamInterface<
+                                          /*IsNotifierCollisionEnabled=*/bool> {
  public:
   AshMessagePopupCollectionTest() = default;
 
@@ -114,12 +116,6 @@ class AshMessagePopupCollectionTest
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    if (IsQsRevampEnabled()) {
-      enabled_features.emplace_back(features::kQsRevamp);
-    } else {
-      disabled_features.emplace_back(features::kQsRevamp);
-    }
 
     if (IsNotifierCollisionEnabled()) {
       enabled_features.emplace_back(features::kNotifierCollision);
@@ -155,14 +151,14 @@ class AshMessagePopupCollectionTest
     }
   }
 
-  bool IsQsRevampEnabled() const { return std::get<0>(GetParam()); }
-  bool IsNotifierCollisionEnabled() const { return std::get<1>(GetParam()); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsNotifierCollisionEnabled() const { return GetParam(); }
 
  protected:
   enum Position { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, OUTSIDE };
 
   AshMessagePopupCollection* GetPrimaryPopupCollection() {
-    return GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection();
+    return GetPrimaryNotificationCenterTray()->popup_collection();
   }
 
   void UpdateWorkArea(AshMessagePopupCollection* popup_collection,
@@ -190,10 +186,11 @@ class AshMessagePopupCollectionTest
       return OUTSIDE;
     }
 
-    if (center_point.x() < point.x())
+    if (center_point.x() < point.x()) {
       return (center_point.y() < point.y()) ? BOTTOM_RIGHT : TOP_RIGHT;
-    else
+    } else {
       return (center_point.y() < point.y()) ? BOTTOM_LEFT : TOP_LEFT;
+    }
   }
 
   gfx::Rect GetWorkArea() { return GetPrimaryPopupCollection()->work_area_; }
@@ -220,11 +217,9 @@ class AshMessagePopupCollectionTest
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AshMessagePopupCollectionTest,
-    testing::Combine(/*IsQsRevampEnabled()=*/testing::Bool(),
-                     /*IsNotifierCollisionEnabled()=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         AshMessagePopupCollectionTest,
+                         /*IsNotifierCollisionEnabled()=*/testing::Bool());
 
 TEST_P(AshMessagePopupCollectionTest, ShelfAlignment) {
   const gfx::Rect popup_size(0, 0, 10, 10);
@@ -357,7 +352,8 @@ TEST_P(AshMessagePopupCollectionTest, Extended) {
   display::Display second_display = GetSecondaryDisplay();
   Shelf* second_shelf =
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())->shelf();
-  AshMessagePopupCollection for_2nd_display(second_shelf);
+  AshMessagePopupCollection for_2nd_display(display::Screen::GetScreen(),
+                                            second_shelf);
   UpdateWorkArea(&for_2nd_display, second_display);
   // Make sure that the popup position on the secondary display is
   // positioned correctly.
@@ -507,7 +503,7 @@ TEST_P(AshMessagePopupCollectionTest, BaselineInOverview) {
   const int baseline_with_hidden_shelf = popup_collection->GetBaseline();
   EXPECT_NE(baseline_with_visible_shelf, baseline_with_hidden_shelf);
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const int baseline_in_overview = popup_collection->GetBaseline();
@@ -539,7 +535,7 @@ class NotificationDestructingNotificationDelegate
     Shell::Get()
         ->GetPrimaryRootWindowController()
         ->GetStatusAreaWidget()
-        ->unified_system_tray()
+        ->notification_center_tray()
         ->ShowBubble();
   }
 };
@@ -751,11 +747,6 @@ TEST_P(AshMessagePopupCollectionTest,
 // Tests that `TrayBubbleView` elements (e.g. Quick Settings) and popups
 // are placed on top of each other based on which was shown most recently.
 TEST_P(AshMessagePopupCollectionTest, PopupsAndTrayBubbleViewsZOrdering) {
-  // Notification popups close when Quick Settings is opened pre-QsRevamp.
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   // Add a notification popup.
   AddNotification();
   auto* popup = GetLastPopUpAdded();
@@ -790,12 +781,6 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_OnTrayBubbleShown) {
   AddNotification();
   auto* popup = GetLastPopUpAdded();
 
-  if (!IsQsRevampEnabled()) {
-    // When QsRevamp is not enabled, the popup will not be shown when Quick
-    // Settings is open.
-    EXPECT_FALSE(popup);
-    return;
-  }
   ASSERT_TRUE(popup);
 
   auto* bubble_widget = unified_system_tray->bubble()->GetBubbleWidget();
@@ -851,10 +836,6 @@ TEST_P(AshMessagePopupCollectionTest, BaselineUpdates_OnTrayBubbleShown) {
 
 TEST_P(AshMessagePopupCollectionTest,
        BaselineUpdates_OnTrayBubbleShownWithAutoHideShelf) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   // Create a window, otherwise autohide doesn't work.
   Shelf* shelf = GetPrimaryShelf();
   std::unique_ptr<views::Widget> widget = CreateTestWidget(
@@ -908,10 +889,6 @@ TEST_P(AshMessagePopupCollectionTest,
 // anchored to the shelf corner opens (i.e. the IME tray bubble).
 TEST_P(AshMessagePopupCollectionTest,
        BaselineDoesNotUpdate_OnNonAnchoredTrayBubbleShown) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   Shell::Get()->ime_controller()->ShowImeMenuOnShelf(true);
 
   auto* ime_tray =
@@ -930,16 +907,13 @@ TEST_P(AshMessagePopupCollectionTest,
 
 TEST_P(AshMessagePopupCollectionTest,
        BaselineUpdates_OnTrayBubbleShownWithMultiDisplay) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("801x800,801x800");
 
   display::Display second_display = GetSecondaryDisplay();
   Shelf* second_shelf =
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())->shelf();
-  AshMessagePopupCollection secondary_popup_collection(second_shelf);
+  AshMessagePopupCollection secondary_popup_collection(
+      display::Screen::GetScreen(), second_shelf);
   UpdateWorkArea(&secondary_popup_collection, second_display);
 
   auto* primary_popup_collection = GetPrimaryPopupCollection();
@@ -1035,12 +1009,6 @@ TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForShelfPodBubble) {
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
-  // Notification popups will be closed on QS bubble open pre-QS revamp.
-  if (!IsQsRevampEnabled()) {
-    histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 0);
-    return;
-  }
-
   if (IsNotifierCollisionEnabled()) {
     // The popup should appear on top of the bubble and histogram is recorded.
     histogram_tester.ExpectBucketCount(popup_count_histogram_name, 1, 1);
@@ -1074,10 +1042,6 @@ TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForShelfPodBubble) {
 }
 
 TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForSliderAndHotseat) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   using SurfaceType = AshMessagePopupCollection::NotifierCollisionSurfaceType;
 
   base::HistogramTester histogram_tester;
@@ -1142,7 +1106,7 @@ TEST_P(AshMessagePopupCollectionTest, HistogramRecordedForSliderAndHotseat) {
 }
 
 TEST_P(AshMessagePopupCollectionTest, HistogramNotRecordedWhenAllPopupsClosed) {
-  if (!IsQsRevampEnabled() || !IsNotifierCollisionEnabled()) {
+  if (!IsNotifierCollisionEnabled()) {
     return;
   }
 
@@ -1186,10 +1150,6 @@ TEST_P(AshMessagePopupCollectionTest, HistogramNotRecordedWhenAllPopupsClosed) {
 }
 
 TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("801x600");
 
   auto* popup_collection = GetPrimaryPopupCollection();
@@ -1262,10 +1222,6 @@ TEST_P(AshMessagePopupCollectionTest, NotificationAddedOnTrayBubbleOpen) {
 }
 
 TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("801x600");
 
   auto* popup_collection = GetPrimaryPopupCollection();
@@ -1328,10 +1284,6 @@ TEST_P(AshMessagePopupCollectionTest, NotificationUpdatedOnTrayBubbleOpen) {
 // collection height expands and it needs more space for it to be displayed.
 TEST_P(AshMessagePopupCollectionTest,
        BubbleCloses_OnPopupExpandedUsedAvailableSpace) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("801x800");
 
   AddNotification(/*has_image=*/true);
@@ -1381,10 +1333,6 @@ TEST_P(AshMessagePopupCollectionTest,
 // change and there is not enough space for the popups to be displayed.
 TEST_P(AshMessagePopupCollectionTest,
        PopupsClose_OnBubbleHeightChangedUsedAvailableSpace) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("801x800");
 
   AddNotification(/*has_image=*/true);
@@ -1444,10 +1392,6 @@ TEST_P(AshMessagePopupCollectionTest,
 // the shelf pod bubble, not the slider.
 TEST_P(AshMessagePopupCollectionTest,
        BaselineUpdates_OnTrayBubbleAndSliderShown) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   UpdateDisplay("1001x900");
 
   auto* popup_collection = GetPrimaryPopupCollection();
@@ -1517,6 +1461,7 @@ TEST_P(AshMessagePopupCollectionTest,
 
   display::Display second_display = GetSecondaryDisplay();
   AshMessagePopupCollection secondary_popup_collection(
+      display::Screen::GetScreen(),
       Shell::GetRootWindowControllerWithDisplayId(second_display.id())
           ->shelf());
   UpdateWorkArea(&secondary_popup_collection, second_display);
@@ -1607,7 +1552,7 @@ TEST_P(AshMessagePopupCollectionTest,
 // b/291988617
 TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
   // Skip since b/291988617 only happens when both features are enabled.
-  if (!IsQsRevampEnabled() || !IsNotifierCollisionEnabled()) {
+  if (!IsNotifierCollisionEnabled()) {
     return;
   }
 
@@ -1645,7 +1590,7 @@ TEST_P(AshMessagePopupCollectionTest, QsBubbleNotCloseWhenPopupClose) {
 // this case.
 TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
   // Skip since b/291988617 only happens when both features are enabled.
-  if (!IsQsRevampEnabled() || !IsNotifierCollisionEnabled()) {
+  if (!IsNotifierCollisionEnabled()) {
     return;
   }
 
@@ -1681,6 +1626,60 @@ TEST_P(AshMessagePopupCollectionTest, BubbleNotCloseWhenPopupClose) {
 
   EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
   EXPECT_TRUE(phone_hub_tray->GetBubbleView());
+}
+
+class AshMessagePopupCollectionMockTimeTest : public ash::AshTestBase {
+ public:
+  AshMessagePopupCollectionMockTimeTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  AshMessagePopupCollectionMockTimeTest(
+      const AshMessagePopupCollectionMockTimeTest&) = delete;
+  AshMessagePopupCollectionMockTimeTest& operator=(
+      const AshMessagePopupCollectionMockTimeTest&) = delete;
+  ~AshMessagePopupCollectionMockTimeTest() override = default;
+};
+
+TEST_F(AshMessagePopupCollectionMockTimeTest, PopupTimeouts) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      ::features::kNotificationsIgnoreRequireInteraction);
+
+  auto* popup_collection =
+      GetPrimaryNotificationCenterTray()->popup_collection();
+  auto* message_center = message_center::MessageCenter::Get();
+  std::string id = "0";
+  auto notification_priorities = {
+      message_center::DEFAULT_PRIORITY, message_center::HIGH_PRIORITY,
+      message_center::MAX_PRIORITY, message_center::SYSTEM_PRIORITY};
+
+  // Make sure all notification popups below `SYSTEM_PRIORITY` are dismissed
+  // after `kAutocloseShortDelaySeconds` seconds. Also, make sure
+  // `SYSTEM_PRIORITY` notifications are dismissed after
+  // `kAutocloseCrosHighPriorityDelaySeconds`.
+  for (auto priority : notification_priorities) {
+    auto notification = CreateSimpleNotification(id);
+    notification->set_priority(priority);
+    if (priority == message_center::SYSTEM_PRIORITY) {
+      notification->SetSystemPriority();
+    }
+    message_center->AddNotification(std::move(notification));
+    EXPECT_TRUE(popup_collection->GetPopupViewForNotificationID(id));
+
+    int timeout = priority == message_center::SYSTEM_PRIORITY
+                      ? message_center::kAutocloseCrosHighPriorityDelaySeconds
+                      : message_center::kAutocloseShortDelaySeconds;
+    task_environment()->FastForwardBy(base::Seconds(timeout - 1));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(popup_collection->GetPopupViewForNotificationID(id));
+
+    task_environment()->FastForwardBy(base::Seconds(timeout));
+    base::RunLoop().RunUntilIdle();
+
+    EXPECT_FALSE(popup_collection->GetPopupViewForNotificationID(id));
+
+    message_center->RemoveNotification(id,
+                                       /*by_user=*/false);
+  }
 }
 
 }  // namespace ash

@@ -8,8 +8,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/supervised_user/core/browser/supervised_user_metrics_service.h"
 
-class PrefService;
-
 namespace supervised_user {
 class SupervisedUserURLFilter;
 
@@ -18,7 +16,6 @@ class SupervisedUserURLFilter;
 class ParentalControlMetrics : public SupervisedUserMetricsService::Observer {
  public:
   explicit ParentalControlMetrics(
-      PrefService* user_prefs,
       supervised_user::SupervisedUserURLFilter* url_filter);
   ParentalControlMetrics(const ParentalControlMetrics&) = delete;
   ParentalControlMetrics& operator=(const ParentalControlMetrics&) = delete;
@@ -28,7 +25,6 @@ class ParentalControlMetrics : public SupervisedUserMetricsService::Observer {
   void OnNewDay() override;
 
  private:
-  const raw_ptr<PrefService> user_prefs_;
   const raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
 };
 

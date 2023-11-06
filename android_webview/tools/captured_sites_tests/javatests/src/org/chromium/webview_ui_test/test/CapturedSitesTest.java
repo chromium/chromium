@@ -25,14 +25,14 @@ import org.chromium.webview_ui_test.test.util.CapturedSitesInstructions;
 import org.chromium.webview_ui_test.test.util.CapturedSitesTestRule;
 import org.chromium.webview_ui_test.test.util.PerformActions;
 import org.chromium.webview_ui_test.test.util.UseLayout;
-/**
- * Tests for WebView CapturedSites.
- */
+
+/** Tests for WebView CapturedSites. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class CapturedSitesTest {
     @Rule
     public CapturedSitesTestRule mWebViewActivityRule =
             new CapturedSitesTestRule(WebViewUiTestActivity.class);
+
     private PerformActions mPerformActions;
     private static final String TAG = "CapturedSitesTest";
 
@@ -40,9 +40,10 @@ public class CapturedSitesTest {
     public void setUp() {
         mWebViewActivityRule.launchActivity();
         onWebView().forceJavascriptEnabled();
-        mPerformActions = new PerformActions(
-                UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),
-                mWebViewActivityRule);
+        mPerformActions =
+                new PerformActions(
+                        UiDevice.getInstance(InstrumentationRegistry.getInstrumentation()),
+                        mWebViewActivityRule);
     }
 
     // Tests scrolling to the credit card name field, clicking on it,

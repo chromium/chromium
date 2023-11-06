@@ -20,9 +20,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
-/**
- * Unit tests for RoundedIconGenerator.
- */
+/** Unit tests for RoundedIconGenerator. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class RoundedIconGeneratorTest {
@@ -39,8 +37,8 @@ public class RoundedIconGeneratorTest {
     }
 
     /**
-     * Verifies that RoundedIconGenerator's ability to generate icons based on URLs considers
-     * the appropriate parts of the URL for the icon to generate.
+     * Verifies that RoundedIconGenerator's ability to generate icons based on URLs considers the
+     * appropriate parts of the URL for the icon to generate.
      */
     @Test
     @SmallTest
@@ -65,14 +63,13 @@ public class RoundedIconGeneratorTest {
         Assert.assertEquals("127.0.0.1", getIconTextForUrl("http://127.0.0.1/", false));
 
         // Verify that the fallback is the the URL itself.
-        Assert.assertEquals("file:///home/chrome/test.html",
+        Assert.assertEquals(
+                "file:///home/chrome/test.html",
                 getIconTextForUrl("file:///home/chrome/test.html", false));
         Assert.assertEquals("data:image", getIconTextForUrl("data:image", false));
     }
 
-    /**
-     * Verifies that asking for more letters than can be served does not crash.
-     */
+    /** Verifies that asking for more letters than can be served does not crash. */
     @Test
     @SmallTest
     @Feature({"Browser", "RoundedIconGenerator"})
@@ -82,8 +79,14 @@ public class RoundedIconGeneratorTest {
         final int iconTextSizeDp = 12;
 
         int iconColor = Color.GRAY;
-        RoundedIconGenerator generator = new RoundedIconGenerator(sContext.getResources(),
-                iconSizeDp, iconSizeDp, iconCornerRadiusDp, iconColor, iconTextSizeDp);
+        RoundedIconGenerator generator =
+                new RoundedIconGenerator(
+                        sContext.getResources(),
+                        iconSizeDp,
+                        iconSizeDp,
+                        iconCornerRadiusDp,
+                        iconColor,
+                        iconTextSizeDp);
 
         Assert.assertTrue(generator.generateIconForText("") != null);
         Assert.assertTrue(generator.generateIconForText("A") != null);

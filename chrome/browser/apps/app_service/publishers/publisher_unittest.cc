@@ -54,6 +54,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
 #include "components/services/app_service/public/cpp/capability_access_update.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -139,9 +140,7 @@ apps::AppPtr MakeApp(apps::AppType app_type,
   app->short_name = name;
   app->install_reason = apps::InstallReason::kUser;
   app->install_source = apps::InstallSource::kSync;
-  app->icon_key = apps::IconKey(
-      /*timeline=*/1, apps::IconKey::kInvalidResourceId,
-      /*icon_effects=*/0);
+  app->icon_key = apps::IconKey();
   return app;
 }
 
@@ -747,7 +746,8 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 
     // This test class could be inherited and set different feature flag, we
     // only expect Lacros is the primary browser when the Lacros flags are set.
-    ASSERT_EQ(base::FeatureList::IsEnabled(ash::features::kLacrosOnly),
+    ASSERT_EQ(base::FeatureList::IsEnabled(
+                  ash::standalone_browser::features::kLacrosOnly),
               crosapi::browser_util::IsLacrosEnabled());
   }
 

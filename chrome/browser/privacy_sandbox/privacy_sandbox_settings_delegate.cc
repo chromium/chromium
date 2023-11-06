@@ -22,10 +22,12 @@
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "content/public/common/content_features.h"
@@ -35,6 +37,8 @@
 #endif
 
 namespace {
+
+using TpcdExperimentEligibility = privacy_sandbox::TpcdExperimentEligibility;
 
 signin::Tribool GetPrivacySandboxRestrictedByAccountCapability(
     signin::IdentityManager* identity_manager) {
@@ -176,7 +180,7 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
   }
 
   if (!features::kCookieDeprecationFacilitatedTestingEnableOTRProfiles.Get() &&
-      profile_->IsOffTheRecord()) {
+      (profile_->IsOffTheRecord() || profile_->IsGuestSession())) {
     return false;
   }
 
@@ -185,7 +189,7 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
     // The 3PCD experiment eligibility persists for the browser session.
     if (!is_cookie_deprecation_experiment_eligible_.has_value()) {
       is_cookie_deprecation_experiment_eligible_ =
-          IsCookieDeprecationExperimentCurrentlyEligible();
+          GetCookieDeprecationExperimentCurrentEligibility().is_eligible();
     }
 
     return *is_cookie_deprecation_experiment_eligible_;
@@ -198,32 +202,31 @@ bool PrivacySandboxSettingsDelegate::IsCookieDeprecationExperimentEligible()
   return false;
 }
 
-bool PrivacySandboxSettingsDelegate::
-    IsCookieDeprecationExperimentCurrentlyEligible() const {
+TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
+    GetCookieDeprecationExperimentCurrentEligibility() const {
   if (tpcd::experiment::kForceEligibleForTesting.Get()) {
-    return true;
+    return TpcdExperimentEligibility(
+        TpcdExperimentEligibility::Reason::kForcedEligible);
   }
 
-  TpcdExperimentEligibility eligibility =
-      GetCookieDeprecationExperimentCurrentEligibility();
-  base::UmaHistogramEnumeration(
-      "PrivacySandbox.CookieDeprecationFacilitatedTesting.ProfileEligibility",
-      eligibility);
-
-  return eligibility == TpcdExperimentEligibility::kEligible;
-}
-
-PrivacySandboxSettingsDelegate::TpcdExperimentEligibility
-PrivacySandboxSettingsDelegate::
-    GetCookieDeprecationExperimentCurrentEligibility() const {
   // Whether third-party cookies are blocked.
-  scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile_);
-  DCHECK(cookie_settings);
-  if (cookie_settings->ShouldBlockThirdPartyCookies() ||
-      cookie_settings->GetDefaultCookieSetting() ==
-          ContentSetting::CONTENT_SETTING_BLOCK) {
-    return TpcdExperimentEligibility::k3pCookiesBlocked;
+  if (tpcd::experiment::kExclude3PCBlocked.Get()) {
+    const auto cookie_controls_mode =
+        static_cast<content_settings::CookieControlsMode>(
+            profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
+    if (cookie_controls_mode ==
+        content_settings::CookieControlsMode::kBlockThirdParty) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
+    }
+    scoped_refptr<content_settings::CookieSettings> cookie_settings =
+        CookieSettingsFactory::GetForProfile(profile_);
+    DCHECK(cookie_settings);
+    if (cookie_settings->GetDefaultCookieSetting() ==
+        ContentSetting::CONTENT_SETTING_BLOCK) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::k3pCookiesBlocked);
+    }
   }
 
   // Whether the privacy sandbox Ads APIs notice has been seen.
@@ -231,38 +234,51 @@ PrivacySandboxSettingsDelegate::
   // TODO(linnan): Consider checking whether the restricted notice has been
   // acknowledged (`prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged`) as
   // well.
-  const bool row_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
-      prefs::kPrivacySandboxM1RowNoticeAcknowledged);
-  const bool eaa_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
-      prefs::kPrivacySandboxM1EEANoticeAcknowledged);
-  if (!row_notice_acknowledged && !eaa_notice_acknowledged) {
-    return TpcdExperimentEligibility::kHasNotSeenNotice;
+  if (tpcd::experiment::kExcludeNotSeenAdsAPIsNotice.Get()) {
+    const bool row_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
+        prefs::kPrivacySandboxM1RowNoticeAcknowledged);
+    const bool eaa_notice_acknowledged = profile_->GetPrefs()->GetBoolean(
+        prefs::kPrivacySandboxM1EEANoticeAcknowledged);
+    if (!row_notice_acknowledged && !eaa_notice_acknowledged) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kHasNotSeenNotice);
+    }
   }
 
   // Whether it's a dasher account.
-  if (IsSubjectToEnterprisePolicies()) {
-    return TpcdExperimentEligibility::kEnterpriseUser;
+  if (tpcd::experiment::kExcludeDasherAccount.Get() &&
+      IsSubjectToEnterprisePolicies()) {
+    return TpcdExperimentEligibility(
+        TpcdExperimentEligibility::Reason::kEnterpriseUser);
   }
 
   // TODO(linnan): Consider moving the following client-level filtering to
   // `ExperimentManager`.
 
   // Whether it's a new client.
-  base::Time install_date = base::Time::FromTimeT(
-      g_browser_process->local_state()->GetInt64(metrics::prefs::kInstallDate));
-  if (install_date.is_null() ||
-      base::Time::Now() - install_date < base::Days(30)) {
-    return TpcdExperimentEligibility::kNewUser;
+  if (tpcd::experiment::kExcludeNewUser.Get()) {
+    base::Time install_date =
+        base::Time::FromTimeT(g_browser_process->local_state()->GetInt64(
+            metrics::prefs::kInstallDate));
+    if (install_date.is_null() ||
+        base::Time::Now() - install_date <
+            tpcd::experiment::kInstallTimeForNewUser.Get()) {
+      return TpcdExperimentEligibility(
+          TpcdExperimentEligibility::Reason::kNewUser);
+    }
   }
 
 // Whether PWA or TWA has been installed on Android.
 #if BUILDFLAG(IS_ANDROID)
-  if (!webapp_registry_->GetOriginsWithInstalledApp().empty()) {
-    return TpcdExperimentEligibility::kPwaOrTwaInstalled;
+  if (tpcd::experiment::kExcludePwaOrTwaInstalled.Get() &&
+      !webapp_registry_->GetOriginsWithInstalledApp().empty()) {
+    return TpcdExperimentEligibility(
+        TpcdExperimentEligibility::Reason::kPwaOrTwaInstalled);
   }
 #endif
 
-  return TpcdExperimentEligibility::kEligible;
+  return TpcdExperimentEligibility(
+      TpcdExperimentEligibility::Reason::kEligible);
 }
 
 bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {

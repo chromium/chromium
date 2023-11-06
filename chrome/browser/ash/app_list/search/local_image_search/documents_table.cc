@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "sql/statement.h"
@@ -142,4 +143,57 @@ bool DocumentsTable::Remove(SqlDatabase* db, const base::FilePath& file_path) {
   return true;
 }
 
+// static
+bool DocumentsTable::GetAllFiles(SqlDatabase* db,
+                                 std::vector<base::FilePath>& documents) {
+  static constexpr char kQuery[] =
+      "SELECT directory_path, file_name "
+      "FROM documents "
+      "ORDER BY directory_path, file_name";
+
+  std::unique_ptr<sql::Statement> statement =
+      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    return false;
+  }
+
+  while (statement->Step()) {
+    base::FilePath file_path(statement->ColumnString(0));
+    file_path = file_path.Append(statement->ColumnString(1));
+
+    DVLOG(1) << "GetAll : " << file_path;
+    documents.emplace_back(base::FilePath(std::move(file_path)));
+  }
+
+  return true;
+}
+
+// static
+bool DocumentsTable::SearchByDirectory(
+    SqlDatabase* db,
+    const base::FilePath& directory,
+    std::vector<base::FilePath>& matched_paths) {
+  static constexpr char kQuery[] =
+      "SELECT directory_path, file_name "
+      "FROM documents WHERE directory_path LIKE ? "
+      "ORDER BY file_name";
+
+  std::unique_ptr<sql::Statement> statement =
+      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    return false;
+  }
+
+  statement->BindString(0, base::StrCat({directory.value(), "%"}));
+
+  while (statement->Step()) {
+    base::FilePath file_path(statement->ColumnString(0));
+    file_path = file_path.Append(statement->ColumnString(1));
+    matched_paths.emplace_back(file_path);
+  }
+
+  return true;
+}
 }  // namespace app_list

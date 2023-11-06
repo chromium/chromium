@@ -1,0 +1,204 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is a static copy of chrome://theme/typography.css and is only used
+ * by cca.py local dev server. */
+:root {
+  color-scheme: light dark;
+}
+
+@font-face {
+  font-family: "GSR";
+  src: local("Google Sans Regular");
+}
+
+@font-face {
+  font-family: "GSM";
+  src: local("Google Sans Medium");
+}
+
+@font-face {
+  font-family: "GSB";
+  src: local("Google Sans Bold");
+}
+
+@font-face {
+  font-family: "GSTR";
+  src: local("Google Sans Text Regular");
+}
+
+@font-face {
+  font-family: "GSTM";
+  src: local("Google Sans Text Medium");
+}
+
+@font-face {
+  font-family: "GSTB";
+  src: local("Google Sans Text Bold");
+}
+
+html:not(body) {}
+html {
+  /* font families */
+  --cros-font-family-google-sans-regular: 'GSR', 'Google Sans', 'Roboto', sans-serif;
+  --cros-font-family-google-sans-medium: 'GSM', 'Google Sans', 'Roboto', sans-serif;
+  --cros-font-family-google-sans-bold: 'GSB', 'Google Sans', 'Roboto', sans-serif;
+  --cros-font-family-google-sans-text-regular: 'GSTR', 'Google Sans', 'Roboto', sans-serif;
+  --cros-font-family-google-sans-text-medium: 'GSTM', 'Google Sans', 'Roboto', sans-serif;
+  --cros-font-family-google-sans-text-bold: 'GSTB', 'Google Sans', 'Roboto', sans-serif;
+
+  /* typefaces */
+  --cros-display-0-font: 500 52px/60px var(--cros-font-family-google-sans-medium);
+  --cros-display-0-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-0-font-size: 52px;
+  --cros-display-0-font-weight: 500;
+  --cros-display-0-line-height: 60px;
+
+
+  --cros-display-1-font: 500 44px/52px var(--cros-font-family-google-sans-medium);
+  --cros-display-1-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-1-font-size: 44px;
+  --cros-display-1-font-weight: 500;
+  --cros-display-1-line-height: 52px;
+
+
+  --cros-display-2-font: 500 36px/44px var(--cros-font-family-google-sans-medium);
+  --cros-display-2-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-2-font-size: 36px;
+  --cros-display-2-font-weight: 500;
+  --cros-display-2-line-height: 44px;
+
+
+  --cros-display-3-font: 500 32px/40px var(--cros-font-family-google-sans-medium);
+  --cros-display-3-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-3-font-size: 32px;
+  --cros-display-3-font-weight: 500;
+  --cros-display-3-line-height: 40px;
+
+
+  --cros-display-3_regular-font: 400 32px/40px var(--cros-font-family-google-sans-regular);
+  --cros-display-3_regular-font-family: var(--cros-font-family-google-sans-regular);
+  --cros-display-3_regular-font-size: 32px;
+  --cros-display-3_regular-font-weight: 400;
+  --cros-display-3_regular-line-height: 40px;
+
+
+  --cros-display-4-font: 500 28px/36px var(--cros-font-family-google-sans-medium);
+  --cros-display-4-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-4-font-size: 28px;
+  --cros-display-4-font-weight: 500;
+  --cros-display-4-line-height: 36px;
+
+
+  --cros-display-5-font: 500 24px/32px var(--cros-font-family-google-sans-medium);
+  --cros-display-5-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-5-font-size: 24px;
+  --cros-display-5-font-weight: 500;
+  --cros-display-5-line-height: 32px;
+
+
+  --cros-display-6-font: 500 22px/28px var(--cros-font-family-google-sans-medium);
+  --cros-display-6-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-6-font-size: 22px;
+  --cros-display-6-font-weight: 500;
+  --cros-display-6-line-height: 28px;
+
+
+  --cros-display-6_regular-font: 400 22px/28px var(--cros-font-family-google-sans-regular);
+  --cros-display-6_regular-font-family: var(--cros-font-family-google-sans-regular);
+  --cros-display-6_regular-font-size: 22px;
+  --cros-display-6_regular-font-weight: 400;
+  --cros-display-6_regular-line-height: 28px;
+
+
+  --cros-display-7-font: 500 18px/24px var(--cros-font-family-google-sans-medium);
+  --cros-display-7-font-family: var(--cros-font-family-google-sans-medium);
+  --cros-display-7-font-size: 18px;
+  --cros-display-7-font-weight: 500;
+  --cros-display-7-line-height: 24px;
+
+
+  --cros-title-1-font: 500 16px/24px var(--cros-font-family-google-sans-text-medium);
+  --cros-title-1-font-family: var(--cros-font-family-google-sans-text-medium);
+  --cros-title-1-font-size: 16px;
+  --cros-title-1-font-weight: 500;
+  --cros-title-1-line-height: 24px;
+
+
+  --cros-title-2-font: 700 13px/20px var(--cros-font-family-google-sans-text-bold);
+  --cros-title-2-font-family: var(--cros-font-family-google-sans-text-bold);
+  --cros-title-2-font-size: 13px;
+  --cros-title-2-font-weight: 700;
+  --cros-title-2-line-height: 20px;
+
+
+  --cros-headline-1-font: 500 15px/22px var(--cros-font-family-google-sans-text-medium);
+  --cros-headline-1-font-family: var(--cros-font-family-google-sans-text-medium);
+  --cros-headline-1-font-size: 15px;
+  --cros-headline-1-font-weight: 500;
+  --cros-headline-1-line-height: 22px;
+
+
+  --cros-button-1-font: 500 14px/20px var(--cros-font-family-google-sans-text-medium);
+  --cros-button-1-font-family: var(--cros-font-family-google-sans-text-medium);
+  --cros-button-1-font-size: 14px;
+  --cros-button-1-font-weight: 500;
+  --cros-button-1-line-height: 20px;
+
+
+  --cros-button-2-font: 500 13px/20px var(--cros-font-family-google-sans-text-medium);
+  --cros-button-2-font-family: var(--cros-font-family-google-sans-text-medium);
+  --cros-button-2-font-size: 13px;
+  --cros-button-2-font-weight: 500;
+  --cros-button-2-line-height: 20px;
+
+
+  --cros-body-0-font: 400 16px/24px var(--cros-font-family-google-sans-text-regular);
+  --cros-body-0-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-body-0-font-size: 16px;
+  --cros-body-0-font-weight: 400;
+  --cros-body-0-line-height: 24px;
+
+
+  --cros-body-1-font: 400 14px/20px var(--cros-font-family-google-sans-text-regular);
+  --cros-body-1-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-body-1-font-size: 14px;
+  --cros-body-1-font-weight: 400;
+  --cros-body-1-line-height: 20px;
+
+
+  --cros-body-2-font: 400 13px/20px var(--cros-font-family-google-sans-text-regular);
+  --cros-body-2-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-body-2-font-size: 13px;
+  --cros-body-2-font-weight: 400;
+  --cros-body-2-line-height: 20px;
+
+
+  --cros-annotation-1-font: 400 12px/18px var(--cros-font-family-google-sans-text-regular);
+  --cros-annotation-1-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-annotation-1-font-size: 12px;
+  --cros-annotation-1-font-weight: 400;
+  --cros-annotation-1-line-height: 18px;
+
+
+  --cros-annotation-2-font: 400 11px/16px var(--cros-font-family-google-sans-text-regular);
+  --cros-annotation-2-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-annotation-2-font-size: 11px;
+  --cros-annotation-2-font-weight: 400;
+  --cros-annotation-2-line-height: 16px;
+
+
+  --cros-label-1-font: 500 10px/10px var(--cros-font-family-google-sans-text-medium);
+  --cros-label-1-font-family: var(--cros-font-family-google-sans-text-medium);
+  --cros-label-1-font-size: 10px;
+  --cros-label-1-font-weight: 500;
+  --cros-label-1-line-height: 10px;
+
+
+  --cros-label-2-font: 400 10px/10px var(--cros-font-family-google-sans-text-regular);
+  --cros-label-2-font-family: var(--cros-font-family-google-sans-text-regular);
+  --cros-label-2-font-size: 10px;
+  --cros-label-2-font-weight: 400;
+  --cros-label-2-line-height: 10px;
+}

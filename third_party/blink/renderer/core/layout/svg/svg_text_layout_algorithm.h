@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_LAYOUT_ALGORITHM_H_
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_items_builder.h"
 
 namespace blink {
 
@@ -16,39 +16,37 @@ class SvgTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
  public:
-  SvgTextLayoutAlgorithm(NGInlineNode node, WritingMode writing_mode);
+  SvgTextLayoutAlgorithm(InlineNode node, WritingMode writing_mode);
 
   // Apply SVG specific text layout algorithm to |items|.
   // Text items in |items| will be converted to kSVGText type.
   PhysicalSize Layout(const String& ifc_text_content,
-                      NGFragmentItemsBuilder::ItemWithOffsetList& items);
+                      FragmentItemsBuilder::ItemWithOffsetList& items);
 
  private:
   // Returns false if we should skip the following steps.
   bool Setup(wtf_size_t approximate_count);
   void SetFlags(const String& ifc_text_content,
-                const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+                const FragmentItemsBuilder::ItemWithOffsetList& items);
   void AdjustPositionsDxDy(
-      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+      const FragmentItemsBuilder::ItemWithOffsetList& items);
   void ApplyTextLengthAttribute(
-      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
-  void ResolveTextLength(
-      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
-      const SvgTextContentRange& range,
-      Vector<wtf_size_t>& resolved_descendant_node_starts);
-  void AdjustPositionsXY(
-      const NGFragmentItemsBuilder::ItemWithOffsetList& items);
-  void ApplyAnchoring(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
-  void PositionOnPath(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+      const FragmentItemsBuilder::ItemWithOffsetList& items);
+  void ResolveTextLength(const FragmentItemsBuilder::ItemWithOffsetList& items,
+                         const SvgTextContentRange& range,
+                         Vector<wtf_size_t>& resolved_descendant_node_starts);
+  void AdjustPositionsXY(const FragmentItemsBuilder::ItemWithOffsetList& items);
+  void ApplyAnchoring(const FragmentItemsBuilder::ItemWithOffsetList& items);
+  void PositionOnPath(const FragmentItemsBuilder::ItemWithOffsetList& items);
 
   PhysicalSize WriteBackToFragmentItems(
-      NGFragmentItemsBuilder::ItemWithOffsetList& items);
+      FragmentItemsBuilder::ItemWithOffsetList& items);
 
-  float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+  float ScalingFactorAt(const FragmentItemsBuilder::ItemWithOffsetList& items,
                         wtf_size_t addressable_index) const;
   bool IsFirstCharacterInTextPath(wtf_size_t index) const;
 
-  NGInlineNode inline_node_;
+  InlineNode inline_node_;
 
   // This data member represents the number of addressable characters in the
   // target IFC. It's similar to "count" defined in the specification.
@@ -77,8 +75,8 @@ class SvgTextLayoutAlgorithm {
   // This data member represents "result" defined in the specification, but it
   // contains only addressable characters.
   //
-  // This is built from NGFragmentItem text sequence. For example, if the input
-  // is two NGFragmenItems like:
+  // This is built from FragmentItem text sequence. For example, if the input
+  // is two FragmentItems like:
   //  0: <code point 1>, <a lead surrogate>
   //  1: <a trail surrogate>, <code point 2>
   // it produces four entries for <code point 1>, <a lead surroagte>,

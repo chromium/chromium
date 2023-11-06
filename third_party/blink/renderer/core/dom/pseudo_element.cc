@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/generated_children.h"
-#include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
@@ -50,6 +49,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 bool PseudoElementLayoutObjectIsNeeded(const DisplayStyle& pseudo_style,
                                        const Element* originating_element);
@@ -184,11 +185,11 @@ PseudoElement::PseudoElement(Element* parent,
     UseCounter::Count(parent->GetDocument(),
                       WebFeature::kPseudoBeforeAfterForInputElement);
     if (HTMLInputElement* input = DynamicTo<HTMLInputElement>(parent)) {
-      if (input->type() == input_type_names::kDate ||
-          input->type() == input_type_names::kDatetimeLocal ||
-          input->type() == input_type_names::kMonth ||
-          input->type() == input_type_names::kWeek ||
-          input->type() == input_type_names::kTime) {
+      if (input->FormControlType() == FormControlType::kInputDate ||
+          input->FormControlType() == FormControlType::kInputDatetimeLocal ||
+          input->FormControlType() == FormControlType::kInputMonth ||
+          input->FormControlType() == FormControlType::kInputWeek ||
+          input->FormControlType() == FormControlType::kInputTime) {
         UseCounter::Count(
             parent->GetDocument(),
             WebFeature::kPseudoBeforeAfterForDateTimeInputElement);
@@ -314,14 +315,6 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
               tree.FindOrCreateEnclosingScopeForElement(*this);
           scope->AttachQuote(*To<LayoutQuote>(child));
           tree.UpdateOutermostQuotesDirtyScope(scope);
-        }
-        if (auto* counter = DynamicTo<LayoutCounter>(child)) {
-          StyleContainmentScopeTree& tree =
-              GetDocument().GetStyleEngine().EnsureStyleContainmentScopeTree();
-          StyleContainmentScope* scope =
-              tree.FindOrCreateEnclosingScopeForElement(*this);
-          scope->CreateCounterNodeForLayoutCounter(*counter);
-          tree.UpdateOutermostCountersDirtyScope(scope);
         }
       } else {
         child->Destroy();

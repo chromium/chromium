@@ -37,9 +37,9 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     };
   }
 
-  protected extensionIconSrc: string;
-  protected extensionName: string;
-  protected extensionPermissions: Permission[];
+  extensionIconSrc: string;
+  extensionName: string;
+  extensionPermissions: Permission[];
 
   override ready() {
     super.ready();

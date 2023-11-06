@@ -78,6 +78,10 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/trusted_vault/features.h"
+#endif
+
 namespace {
 
 // Helpers --------------------------------------------------------------------
@@ -324,6 +328,15 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
       break;
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForEverythingError:
     case AvatarSyncErrorType::kTrustedVaultKeyMissingForPasswordsError:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (base::FeatureList::IsEnabled(
+              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+        OpenDialogForSyncKeyRetrieval(
+            browser()->profile(),
+            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+        break;
+      }
+#endif
       OpenTabForSyncKeyRetrieval(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
@@ -331,6 +344,15 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
         kTrustedVaultRecoverabilityDegradedForEverythingError:
     case AvatarSyncErrorType::
         kTrustedVaultRecoverabilityDegradedForPasswordsError:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+      if (base::FeatureList::IsEnabled(
+              trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+        OpenDialogForSyncKeyRecoverabilityDegraded(
+            browser()->profile(),
+            syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+        break;
+      }
+#endif
       OpenTabForSyncKeyRecoverabilityDegraded(
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
@@ -498,11 +520,12 @@ void ProfileMenuView::BuildIdentity() {
   } else {
     if (base::FeatureList::IsEnabled(switches::kUnoDesktop) &&
         account.IsEmpty()) {
-      account_info = signin_ui_util::GetSingleAccountForPromos(profile);
+      account_info =
+          signin_ui_util::GetSingleAccountForPromos(identity_manager);
     }
-    menu_title_ = std::u16string();
-    menu_subtitle_ =
-        l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+    menu_title_ = l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+    // The email may be empty.
+    menu_subtitle_ = base::UTF8ToUTF16(account_info.email);
     SetProfileIdentityInfo(
         profile_name, background_color, edit_button_params,
         ui::ImageModel::FromImage(
@@ -609,7 +632,7 @@ void ProfileMenuView::BuildSyncInfo() {
   CoreAccountInfo account_info =
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   AccountInfo account_info_for_promos =
-      signin_ui_util::GetSingleAccountForPromos(profile);
+      signin_ui_util::GetSingleAccountForPromos(identity_manager);
   std::u16string description;
   std::u16string button_text;
   ActionableItem button_type = ActionableItem::kSigninAccountButton;

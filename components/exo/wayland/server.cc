@@ -148,13 +148,9 @@ void wayland_log(const char* fmt, va_list argp) {
 }
 
 int GetTextInputExtensionV1Version() {
-  if (base::FeatureList::IsEnabled(
-          ash::features::kExoExtendedConfirmComposition) &&
-      base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
+  if (base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
     // set_surrounding_text_offset_utf16 + new surrounding_text_support
     // strategy enabled once at version 10 was reverted (crbug.com/1451324).
-    // Unfortunately, we have to disable confirm-composition in version 11
-    // together, because of wayland's versioning system.
     //
     // Now, the new API to fix the issue is introduced in version 12.
     // We cannot enable confirm-composition only, because it will be hitting

@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL \n    Document#fullscreenEnabled removing allowfullscreen after load and then\n    navigating\n assert_false: document.fullscreenEnabled in the iframe, after navigation expected false got true
+[FAIL] \n    Document#fullscreenEnabled removing allowfullscreen after load and then\n    navigating\n
+  assert_false: document.fullscreenEnabled in the iframe, after navigation expected false got true
 Harness: the test ran to completion.
 

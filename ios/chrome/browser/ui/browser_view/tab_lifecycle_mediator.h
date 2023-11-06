@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AppLauncherTabHelperBrowserPresentationProvider;
 @class CommandDispatcher;
 @protocol DownloadManagerTabHelperDelegate;
 @class NewTabPageCoordinator;
@@ -52,6 +53,8 @@ class WebStateList;
     passwordControllerDelegate;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate>
     snapshotGeneratorDelegate;
+@property(nonatomic, weak) id<AppLauncherTabHelperBrowserPresentationProvider>
+    appLauncherBrowserPresentationProvider;
 
 // Creates an instance of the mediator. Delegates will be installed into all
 // existing web states in `webStateList`. While the mediator is alive,

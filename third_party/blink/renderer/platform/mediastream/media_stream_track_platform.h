@@ -115,12 +115,15 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   virtual CaptureHandle GetCaptureHandle();
 
   // Adds a one off callback that will be invoked when observing the first frame
-  // where |metadata.crop_version >= crop_version|.
-  virtual void AddCropVersionCallback(uint32_t crop_version,
-                                      base::OnceClosure callback) {}
+  // where |metadata.sub_capture_target_version >= sub_capture_target_version|.
+  virtual void AddSubCaptureTargetVersionCallback(
+      uint32_t sub_capture_target_version,
+      base::OnceClosure callback) {}
 
-  // Removes the callback that was associated with this |crop_version|, if any.
-  virtual void RemoveCropVersionCallback(uint32_t crop_version) {}
+  // Removes the callback that was associated with this
+  // |sub_capture_target_version|, if any.
+  virtual void RemoveSubCaptureTargetVersionCallback(
+      uint32_t sub_capture_target_version) {}
 
   bool is_local_track() const { return is_local_track_; }
 

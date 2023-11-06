@@ -272,6 +272,8 @@ Object.freeze(VolumeManagerCommon.VolumeType);
 /**
  * Obtains volume type from root type.
  * @param {VolumeManagerCommon.RootType} rootType RootType
+// @ts-ignore: error TS2366: Function lacks ending return statement and return
+type does not include 'undefined'.
  * @return {VolumeManagerCommon.VolumeType}
  */
 VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
@@ -316,11 +318,14 @@ VolumeManagerCommon.getVolumeTypeFromRootType = rootType => {
   }
 
   assertNotReached('Unknown root type: ' + rootType);
+  return VolumeManagerCommon.VolumeType.DOWNLOADS;
 };
 
 /**
  * Obtains root type from volume type.
  * @param {VolumeManagerCommon.VolumeType} volumeType .
+// @ts-ignore: error TS2366: Function lacks ending return statement and return
+type does not include 'undefined'.
  * @return {VolumeManagerCommon.RootType}
  */
 VolumeManagerCommon.getRootTypeFromVolumeType = volumeType => {
@@ -356,6 +361,7 @@ VolumeManagerCommon.getRootTypeFromVolumeType = volumeType => {
   }
 
   assertNotReached('Unknown volume type: ' + volumeType);
+  return VolumeManagerCommon.VolumeType.DOWNLOADS;
 };
 
 /**
@@ -456,6 +462,9 @@ VolumeManagerCommon.MEDIA_DOCUMENTS_PROVIDER_ID =
  * @return {!CustomEvent<!DirectoryEntry>}
  */
 VolumeManagerCommon.createArchiveOpenedEvent = mountPoint => {
+  // @ts-ignore: error TS2322: Type 'CustomEvent<{ mountPoint:
+  // FileSystemDirectoryEntry; }>' is not assignable to type
+  // 'CustomEvent<FileSystemDirectoryEntry>'.
   return new CustomEvent(
       VolumeManagerCommon.ARCHIVE_OPENED_EVENT_TYPE,
       {detail: {mountPoint: mountPoint}});

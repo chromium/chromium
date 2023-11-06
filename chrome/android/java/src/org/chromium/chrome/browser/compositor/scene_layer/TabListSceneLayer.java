@@ -95,13 +95,7 @@ public class TabListSceneLayer extends SceneLayer {
                 ? LayoutTab.SHADOW_ALPHA_ON_DARK_BG
                 : LayoutTab.SHADOW_ALPHA_ON_LIGHT_BG;
 
-        float toolbarYOffset = 0;
-        int contentOffset = 0;
-        if (browserControls != null) {
-            toolbarYOffset = browserControls.getTopControlOffset()
-                    + browserControls.getTopControlsMinHeight();
-            contentOffset = browserControls.getContentOffset();
-        }
+        int contentOffset = browserControls != null ? browserControls.getContentOffset() : 0;
         final int urlBarBackgroundId = R.drawable.modern_location_bar;
 
         for (int i = 0; i < tabsCount; i++) {
@@ -111,23 +105,42 @@ public class TabListSceneLayer extends SceneLayer {
             int defaultThemeColor = ChromeColors.getDefaultThemeColor(context, useIncognitoColors);
 
             // TODO(dtrainor, clholgat): remove "* dpToPx" once the native part fully supports dp.
-            TabListSceneLayerJni.get().putTabLayer(mNativePtr, TabListSceneLayer.this, t.getId(),
-                    R.id.control_container, R.drawable.tabswitcher_border_frame_shadow,
-                    R.drawable.tabswitcher_border_frame_decoration,
-                    R.drawable.tabswitcher_border_frame,
-                    R.drawable.tabswitcher_border_frame_inner_shadow, t.canUseLiveTexture(),
-                    t.getBackgroundColor(), t.isIncognito(), t.getRenderX() * dpToPx,
-                    t.getRenderY() * dpToPx, t.getScaledContentWidth() * dpToPx,
-                    t.getScaledContentHeight() * dpToPx, t.getOriginalContentWidth() * dpToPx,
-                    t.getOriginalContentHeight() * dpToPx,
-                    Math.min(t.getClippedWidth(), t.getScaledContentWidth()) * dpToPx,
-                    Math.min(t.getClippedHeight(), t.getScaledContentHeight()) * dpToPx,
-                    t.getAlpha(), t.getBorderAlpha() * decoration,
-                    t.getBorderInnerShadowAlpha() * decoration, decoration,
-                    shadowAlpha * decoration, t.getStaticToViewBlend(), t.getBorderScale(),
-                    t.getSaturation(), t.showToolbar(), defaultThemeColor,
-                    t.getToolbarBackgroundColor(), t.anonymizeToolbar(), urlBarBackgroundId,
-                    t.getTextBoxBackgroundColor(), toolbarYOffset, contentOffset);
+            TabListSceneLayerJni.get()
+                    .putTabLayer(
+                            mNativePtr,
+                            TabListSceneLayer.this,
+                            t.getId(),
+                            R.id.control_container,
+                            R.drawable.tabswitcher_border_frame_shadow,
+                            R.drawable.tabswitcher_border_frame_decoration,
+                            R.drawable.tabswitcher_border_frame,
+                            R.drawable.tabswitcher_border_frame_inner_shadow,
+                            t.canUseLiveTexture(),
+                            t.getBackgroundColor(),
+                            t.isIncognito(),
+                            t.getRenderX() * dpToPx,
+                            t.getRenderY() * dpToPx,
+                            t.getScaledContentWidth() * dpToPx,
+                            t.getScaledContentHeight() * dpToPx,
+                            t.getOriginalContentWidth() * dpToPx,
+                            t.getOriginalContentHeight() * dpToPx,
+                            Math.min(t.getClippedWidth(), t.getScaledContentWidth()) * dpToPx,
+                            Math.min(t.getClippedHeight(), t.getScaledContentHeight()) * dpToPx,
+                            t.getAlpha(),
+                            t.getBorderAlpha() * decoration,
+                            t.getBorderInnerShadowAlpha() * decoration,
+                            decoration,
+                            shadowAlpha * decoration,
+                            t.getStaticToViewBlend(),
+                            t.getBorderScale(),
+                            t.getSaturation(),
+                            t.showToolbar(),
+                            defaultThemeColor,
+                            t.getToolbarBackgroundColor(),
+                            t.anonymizeToolbar(),
+                            urlBarBackgroundId,
+                            t.getTextBoxBackgroundColor(),
+                            contentOffset);
         }
         TabListSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabListSceneLayer.this);
     }
@@ -167,17 +180,43 @@ public class TabListSceneLayer extends SceneLayer {
         void updateLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
                 int backgroundColor, float viewportX, float viewportY, float viewportWidth,
                 float viewportHeight);
+
         // TODO(meiliang): Need to provide a resource that indicates the selected tab on the layer.
-        void putTabLayer(long nativeTabListSceneLayer, TabListSceneLayer caller, int selectedId,
-                int toolbarResourceId, int shadowResourceId, int contourResourceId,
-                int borderResourceId, int borderInnerShadowResourceId, boolean canUseLiveLayer,
-                int tabBackgroundColor, boolean incognito, float x, float y, float width,
-                float height, float contentWidth, float contentHeight, float shadowWidth,
-                float shadowHeight, float alpha, float borderAlpha, float borderInnerShadowAlpha,
-                float contourAlpha, float shadowAlpha, float staticToViewBlend, float borderScale,
-                float saturation, boolean showToolbar, int defaultThemeColor,
-                int toolbarBackgroundColor, boolean anonymizeToolbar, int toolbarTextBoxResource,
-                int toolbarTextBoxBackgroundColor, float toolbarYOffset, float contentOffset);
+        void putTabLayer(
+                long nativeTabListSceneLayer,
+                TabListSceneLayer caller,
+                int selectedId,
+                int toolbarResourceId,
+                int shadowResourceId,
+                int contourResourceId,
+                int borderResourceId,
+                int borderInnerShadowResourceId,
+                boolean canUseLiveLayer,
+                int tabBackgroundColor,
+                boolean incognito,
+                float x,
+                float y,
+                float width,
+                float height,
+                float contentWidth,
+                float contentHeight,
+                float shadowWidth,
+                float shadowHeight,
+                float alpha,
+                float borderAlpha,
+                float borderInnerShadowAlpha,
+                float contourAlpha,
+                float shadowAlpha,
+                float staticToViewBlend,
+                float borderScale,
+                float saturation,
+                boolean showToolbar,
+                int defaultThemeColor,
+                int toolbarBackgroundColor,
+                boolean anonymizeToolbar,
+                int toolbarTextBoxResource,
+                int toolbarTextBoxBackgroundColor,
+                float contentOffset);
 
         void putBackgroundLayer(long nativeTabListSceneLayer, TabListSceneLayer caller,
                 int resourceId, float alpha, int topOffset);

@@ -17,6 +17,18 @@ namespace {
 void LogCacheHitOrMiss(bool is_hit) {
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.CacheHit", is_hit);
 }
+void LogInitialCacheDurationOnSet(base::TimeDelta cache_duration) {
+  // The cache is only expected to last a few minutes, but we allow logging up
+  // to 1 hour to confirm that there aren't unexpected times.
+  base::UmaHistogramLongTimes("SafeBrowsing.HPRT.CacheDuration.InitialOnSet",
+                              cache_duration);
+}
+void LogRemainingCacheDurationOnHit(base::Time expiration_time) {
+  // The cache is only expected to last a few minutes, but we allow logging up
+  // to 1 hour to confirm that there aren't unexpected times.
+  base::UmaHistogramLongTimes("SafeBrowsing.HPRT.CacheDuration.RemainingOnHit",
+                              expiration_time - base::Time::Now());
+}
 
 }  // namespace
 
@@ -36,6 +48,7 @@ HashRealTimeCache::SearchCache(
     if (cached_result_it != cache_.end() &&
         cached_result_it->second.expiration_time > base::Time::Now()) {
       results[hash_prefix] = cached_result_it->second.full_hash_and_details;
+      LogRemainingCacheDurationOnHit(cached_result_it->second.expiration_time);
       LogCacheHitOrMiss(/*is_hit=*/true);
     } else {
       LogCacheHitOrMiss(/*is_hit=*/false);
@@ -52,10 +65,12 @@ void HashRealTimeCache::CacheSearchHashesResponse(
   // latest expiry.
   for (const auto& hash_prefix : requested_hash_prefixes) {
     FullHashesAndDetails entry;
-    entry.expiration_time = base::Time::Now() +
-                            base::Seconds(cache_duration.seconds()) +
-                            base::Nanoseconds(cache_duration.nanos());
+    base::TimeDelta cache_duration_time_delta =
+        base::Seconds(cache_duration.seconds()) +
+        base::Nanoseconds(cache_duration.nanos());
+    entry.expiration_time = base::Time::Now() + cache_duration_time_delta;
     cache_[hash_prefix] = entry;
+    LogInitialCacheDurationOnSet(cache_duration_time_delta);
   }
   // Then, add all matching and relevant full hashes into the cache. Hash
   // prefixes only sometimes have matching full hashes, so some may remain empty

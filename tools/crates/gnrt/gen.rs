@@ -315,7 +315,7 @@ fn generate_for_std(args: &clap::ArgMatches, paths: &paths::ChromiumPaths) -> Re
     // is generated with "--locked", the outcome should be the same.
     command.other_options(vec!["--offline".to_string()]);
 
-    // Compute the set of crates we need to build to build libstd. Note this
+    // Compute the set of crates we need to build libstd. Note this
     // contains a few kinds of entries:
     // * Rust workspace packages (e.g. core, alloc, std, unwind, etc)
     // * Non-workspace packages supplied in Rust source tree (e.g. stdarch)

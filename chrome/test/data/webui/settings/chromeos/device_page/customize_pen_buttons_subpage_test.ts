@@ -35,17 +35,33 @@ suite('<settings-customize-pen-buttons-subpage>', () => {
     Router.getInstance().resetRouteForTesting();
   });
 
-  test('navigate to device page when graphics tablet detached', async () => {
-    assertEquals(
-        Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
-    const graphicsTablet: GraphicsTablet = page.selectedTablet;
-    assertTrue(!!graphicsTablet);
-    assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
-    // Remove fakeGraphicsTablets[0] from the mouse list.
-    page.graphicsTablets = [fakeGraphicsTablets[1]!];
-    await flushTasks();
-    assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
-  });
+  test(
+      'navigate to graphics tablet subpage when only current device detached',
+      async () => {
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
+        const graphicsTablet: GraphicsTablet = page.selectedTablet;
+        assertTrue(!!graphicsTablet);
+        assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
+        // Remove fakeGraphicsTablets[0] from the graphics tablet list.
+        page.graphicsTablets = [fakeGraphicsTablets[1]!];
+        await flushTasks();
+        assertEquals(Router.getInstance().currentRoute, routes.GRAPHICS_TABLET);
+      });
+
+  test(
+      'navigate to device page when all graphics tablets detached',
+      async () => {
+        assertEquals(
+            Router.getInstance().currentRoute, routes.CUSTOMIZE_PEN_BUTTONS);
+        const graphicsTablet: GraphicsTablet = page.selectedTablet;
+        assertTrue(!!graphicsTablet);
+        assertEquals(graphicsTablet.id, fakeGraphicsTablets[0]!.id);
+        // Remove all graphics tablets from the graphics tablet list.
+        page.graphicsTablets = [];
+        await flushTasks();
+        assertEquals(Router.getInstance().currentRoute, routes.DEVICE);
+      });
 
   test('button action list fetched from provider', async () => {
     const observed_devices: number[] = provider.getObservedDevices();

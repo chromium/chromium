@@ -148,6 +148,7 @@ class CORE_EXPORT InspectorCSSAgent final
   void GetTextPosition(wtf_size_t offset,
                        const String* text,
                        TextPosition* result);
+  void DidReplaceStyleSheetText(CSSStyleSheet* style_sheet, const String& text);
   void LocalFontsEnabled(bool* result);
 
   void enable(std::unique_ptr<EnableCallback>) override;

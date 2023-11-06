@@ -10,6 +10,7 @@ import "chromeos/crosapi/mojom/tts.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/range/mojom/range.mojom";
+import "url/mojom/url.mojom";
 
 // The enum of possible states for a shelf item.
 // Each value must be a power of 2.
@@ -271,8 +272,8 @@ enum AssistiveTechnologyType {
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
-// Next version: 29
-// Next method id: 43
+// Next version: 30
+// Next method id: 44
 [Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
 interface TestController {
   // Clicks the middle of the views element identified by |element_name|.
@@ -507,4 +508,8 @@ interface TestController {
   // observed, or no ash browser window is open when it times out.
   [MinVersion=28]
   CheckAtLeastOneAshBrowserWindowOpen@42() => (bool has_open_window);
+
+  // Gets the last committed URL for each browser tab currently open in Ash.
+  [MinVersion=29]
+  GetAllOpenTabURLs@43() => (array<url.mojom.Url> urls);
 };

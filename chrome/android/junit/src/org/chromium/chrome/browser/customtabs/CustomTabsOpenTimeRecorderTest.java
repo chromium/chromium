@@ -35,19 +35,13 @@ import java.util.function.BooleanSupplier;
 public class CustomTabsOpenTimeRecorderTest {
     private static final String CHROME_PACKAGE_NAME = "chrome.package.name";
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private Context mAppContext;
-    @Mock
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock
-    private CustomTabActivityNavigationController mNavigationController;
-    @Mock
-    private BooleanSupplier mIsCctFinishing;
-    @Mock
-    private BrowserServicesIntentDataProvider mIntent;
+    @Mock private Context mAppContext;
+    @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock private CustomTabActivityNavigationController mNavigationController;
+    @Mock private BooleanSupplier mIsCctFinishing;
+    @Mock private BrowserServicesIntentDataProvider mIntent;
 
     private CustomTabsOpenTimeRecorder mRecorder;
 
@@ -58,14 +52,16 @@ public class CustomTabsOpenTimeRecorderTest {
     }
 
     private void createRecorder() {
-        mRecorder = new CustomTabsOpenTimeRecorder(
-                mLifecycleDispatcher, mNavigationController, mIsCctFinishing, mIntent);
+        mRecorder =
+                new CustomTabsOpenTimeRecorder(
+                        mLifecycleDispatcher, mNavigationController, mIsCctFinishing, mIntent);
     }
 
     @Test
     public void testGetPackageName_EmptyPcct_3rdParty() {
         createRecorder();
-        assertTrue("Should return empty package name",
+        assertTrue(
+                "Should return empty package name",
                 TextUtils.isEmpty(mRecorder.getPackageName(true)));
     }
 
@@ -75,7 +71,9 @@ public class CustomTabsOpenTimeRecorderTest {
         when(mIntent.isOpenedByChrome()).thenReturn(true);
         when(mIntent.isTrustedIntent()).thenReturn(true);
         createRecorder();
-        assertEquals("Should return Chrome's package name", CHROME_PACKAGE_NAME,
+        assertEquals(
+                "Should return Chrome's package name",
+                CHROME_PACKAGE_NAME,
                 mRecorder.getPackageName(true));
     }
 
@@ -83,7 +81,9 @@ public class CustomTabsOpenTimeRecorderTest {
     public void testGetPackageName_EmptyPcct_1p() {
         when(mIntent.isTrustedIntent()).thenReturn(true);
         createRecorder();
-        assertEquals("Should return 1p package name",
-                CustomTabsOpenTimeRecorder.PACKAGE_NAME_EMPTY_1P, mRecorder.getPackageName(true));
+        assertEquals(
+                "Should return 1p package name",
+                CustomTabsOpenTimeRecorder.PACKAGE_NAME_EMPTY_1P,
+                mRecorder.getPackageName(true));
     }
 }

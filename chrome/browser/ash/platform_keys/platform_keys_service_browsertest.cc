@@ -302,8 +302,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest, GetTokens) {
   ASSERT_TRUE(get_tokens_waiter.Wait());
 
   EXPECT_EQ(get_tokens_waiter.status(), Status::kSuccess);
-  ASSERT_TRUE(get_tokens_waiter.token_ids());
-  EXPECT_THAT(*get_tokens_waiter.token_ids(),
+  EXPECT_THAT(get_tokens_waiter.token_ids(),
               ::testing::UnorderedElementsAreArray(GetParam().token_ids));
 }
 

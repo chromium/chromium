@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -408,13 +409,12 @@ void SyntheticSmoothMoveGesture::ComputeNextMoveSegment() {
   if (params().granularity == ui::ScrollGranularity::kScrollByPercentage) {
     current_move_segment_start_time_ = current_move_segment_stop_time_;
   } else {
-    int64_t total_duration_in_us = static_cast<int64_t>(
-        1e6 * (params().distances[current_move_segment_].Length() /
-               params().speed_in_pixels_s));
-    DCHECK_GT(total_duration_in_us, 0);
+    const auto duration = base::Seconds(
+        double{params().distances[current_move_segment_].Length()} /
+        params().speed_in_pixels_s);
     current_move_segment_start_time_ = current_move_segment_stop_time_;
-    current_move_segment_stop_time_ = current_move_segment_start_time_ +
-                                      base::Microseconds(total_duration_in_us);
+    current_move_segment_stop_time_ =
+        current_move_segment_start_time_ + duration;
   }
 }
 

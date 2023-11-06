@@ -47,9 +47,7 @@ import org.chromium.ui.base.PageTransition;
 
 import java.util.ArrayList;
 
-/**
- * Instrumentation tests for ChromeTabbedActivity.
- */
+/** Instrumentation tests for ChromeTabbedActivity. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -57,6 +55,7 @@ public class ChromeTabbedActivityTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
     @Rule
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
@@ -82,17 +81,30 @@ public class ChromeTabbedActivityTest {
         // Create two tabs - tab[0] in the foreground and tab[1] in the background.
         final TabImpl[] tabs = new TabImpl[2];
         sActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Foreground tab.
-            ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
-            tabs[0] = (TabImpl) tabCreator.createNewTab(
-                    new LoadUrlParams(sActivityTestRule.getTestServer().getURL(FILE_PATH)),
-                    TabLaunchType.FROM_CHROME_UI, null);
-            // Background tab.
-            tabs[1] = (TabImpl) tabCreator.createNewTab(
-                    new LoadUrlParams(sActivityTestRule.getTestServer().getURL(FILE_PATH)),
-                    TabLaunchType.FROM_LONGPRESS_BACKGROUND, null);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Foreground tab.
+                    ChromeTabCreator tabCreator = mActivity.getCurrentTabCreator();
+                    tabs[0] =
+                            (TabImpl)
+                                    tabCreator.createNewTab(
+                                            new LoadUrlParams(
+                                                    sActivityTestRule
+                                                            .getTestServer()
+                                                            .getURL(FILE_PATH)),
+                                            TabLaunchType.FROM_CHROME_UI,
+                                            null);
+                    // Background tab.
+                    tabs[1] =
+                            (TabImpl)
+                                    tabCreator.createNewTab(
+                                            new LoadUrlParams(
+                                                    sActivityTestRule
+                                                            .getTestServer()
+                                                            .getURL(FILE_PATH)),
+                                            TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                                            null);
+                });
 
         // Verify that the front tab is in the 'visible' state.
         Assert.assertFalse(tabs[0].isHidden());
@@ -118,8 +130,9 @@ public class ChromeTabbedActivityTest {
     @Test
     @SmallTest
     public void testTabAnimationsCorrectlyEnabled() {
-        boolean animationsEnabled = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivity.getLayoutManager().animationsEnabled());
+        boolean animationsEnabled =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> mActivity.getLayoutManager().animationsEnabled());
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
     }
 
@@ -139,13 +152,15 @@ public class ChromeTabbedActivityTest {
         var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
         TestThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
         Assert.assertTrue(
-                "Regular tab count should be written to SharedPreferences after tab state initialization.",
+                "Regular tab count should be written to SharedPreferences after tab state"
+                        + " initialization.",
                 ChromeSharedPreferences.getInstance()
                                 .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT)
                                 .size()
                         > 0);
         Assert.assertTrue(
-                "Incognito tab count should be written to SharedPreferences after tab state initialization.",
+                "Incognito tab count should be written to SharedPreferences after tab state"
+                        + " initialization.",
                 ChromeSharedPreferences.getInstance()
                                 .readIntsWithPrefix(
                                         ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT)
@@ -160,8 +175,10 @@ public class ChromeTabbedActivityTest {
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1347506")
     public void testMultiUrlIntent() {
-        Intent viewIntent = new Intent(
-                Intent.ACTION_VIEW, Uri.parse(sActivityTestRule.getTestServer().getURL("/first")));
+        Intent viewIntent =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(sActivityTestRule.getTestServer().getURL("/first")));
         viewIntent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, mActivity.getApplicationContext().getPackageName());
         viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -169,48 +186,58 @@ public class ChromeTabbedActivityTest {
         viewIntent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
         viewIntent.setClass(mActivity, ChromeLauncherActivity.class);
         ArrayList<String> extraUrls =
-                Lists.newArrayList(sActivityTestRule.getTestServer().getURL("/second"),
+                Lists.newArrayList(
+                        sActivityTestRule.getTestServer().getURL("/second"),
                         sActivityTestRule.getTestServer().getURL("/third"));
         viewIntent.putExtra(IntentHandler.EXTRA_ADDITIONAL_URLS, extraUrls);
         IntentUtils.addTrustedIntentExtras(viewIntent);
 
         mActivity.getApplicationContext().startActivity(viewIntent);
-        CriteriaHelper.pollUiThread(() -> {
-            TabModel tabModel = mActivity.getCurrentTabModel();
-            Criteria.checkThat(tabModel.getCount(), Matchers.is(4));
-            Criteria.checkThat(tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("first"));
-            Criteria.checkThat(
-                    tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("second"));
-            Criteria.checkThat(tabModel.getTabAt(3).getUrl().getSpec(), Matchers.endsWith("third"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(4));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("first"));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("second"));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(3).getUrl().getSpec(), Matchers.endsWith("third"));
+                });
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getCurrentTabModel().closeAllTabs(false));
 
         viewIntent.putExtra(IntentHandler.EXTRA_OPEN_ADDITIONAL_URLS_IN_TAB_GROUP, true);
         mActivity.getApplicationContext().startActivity(viewIntent);
-        CriteriaHelper.pollUiThread(() -> {
-            TabModel tabModel = mActivity.getCurrentTabModel();
-            Criteria.checkThat(tabModel.getCount(), Matchers.is(3));
-            Criteria.checkThat(tabModel.getTabAt(0).getUrl().getSpec(), Matchers.endsWith("first"));
-            int parentId = tabModel.getTabAt(0).getId();
-            Criteria.checkThat(
-                    tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("second"));
-            Criteria.checkThat(tabModel.getTabAt(1).getParentId(), Matchers.is(parentId));
-            Criteria.checkThat(tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
-            Criteria.checkThat(tabModel.getTabAt(2).getParentId(), Matchers.is(parentId));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(3));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(0).getUrl().getSpec(), Matchers.endsWith("first"));
+                    int parentId = tabModel.getTabAt(0).getId();
+                    Criteria.checkThat(
+                            tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("second"));
+                    Criteria.checkThat(tabModel.getTabAt(1).getParentId(), Matchers.is(parentId));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
+                    Criteria.checkThat(tabModel.getTabAt(2).getParentId(), Matchers.is(parentId));
+                });
 
         viewIntent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         mActivity.getApplicationContext().startActivity(viewIntent);
-        CriteriaHelper.pollUiThread(() -> {
-            TabModel tabModel = mActivity.getCurrentTabModel();
-            Criteria.checkThat(tabModel.isIncognito(), Matchers.is(true));
-            Criteria.checkThat(tabModel.getCount(), Matchers.is(3));
-            Criteria.checkThat(tabModel.getTabAt(0).getUrl().getSpec(), Matchers.endsWith("first"));
-            Criteria.checkThat(
-                    tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("second"));
-            Criteria.checkThat(tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.isIncognito(), Matchers.is(true));
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(3));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(0).getUrl().getSpec(), Matchers.endsWith("first"));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(1).getUrl().getSpec(), Matchers.endsWith("second"));
+                    Criteria.checkThat(
+                            tabModel.getTabAt(2).getUrl().getSpec(), Matchers.endsWith("third"));
+                });
     }
 }

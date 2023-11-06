@@ -680,10 +680,24 @@ void av1_warp_affine_neon(const int32_t *mat, const uint8_t *ref, int width, int
 RTCD_EXTERN void (*av1_warp_affine)(const int32_t *mat, const uint8_t *ref, int width, int height, int stride, uint8_t *pred, int p_col, int p_row, int p_width, int p_height, int p_stride, int subsampling_x, int subsampling_y, ConvolveParams *conv_params, int16_t alpha, int16_t beta, int16_t gamma, int16_t delta);
 
 void av1_wedge_compute_delta_squares_c(int16_t *d, const int16_t *a, const int16_t *b, int N);
-#define av1_wedge_compute_delta_squares av1_wedge_compute_delta_squares_c
+void av1_wedge_compute_delta_squares_neon(int16_t* d,
+                                          const int16_t* a,
+                                          const int16_t* b,
+                                          int N);
+RTCD_EXTERN void (*av1_wedge_compute_delta_squares)(int16_t* d,
+                                                    const int16_t* a,
+                                                    const int16_t* b,
+                                                    int N);
 
 int8_t av1_wedge_sign_from_residuals_c(const int16_t *ds, const uint8_t *m, int N, int64_t limit);
-#define av1_wedge_sign_from_residuals av1_wedge_sign_from_residuals_c
+int8_t av1_wedge_sign_from_residuals_neon(const int16_t* ds,
+                                          const uint8_t* m,
+                                          int N,
+                                          int64_t limit);
+RTCD_EXTERN int8_t (*av1_wedge_sign_from_residuals)(const int16_t* ds,
+                                                    const uint8_t* m,
+                                                    int N,
+                                                    int64_t limit);
 
 uint64_t av1_wedge_sse_from_residuals_c(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
 uint64_t av1_wedge_sse_from_residuals_neon(const int16_t *r1, const int16_t *d, const uint8_t *m, int N);
@@ -977,6 +991,14 @@ static void setup_rtcd_internal(void)
     }
     av1_warp_affine = av1_warp_affine_c;
     if (flags & HAS_NEON) av1_warp_affine = av1_warp_affine_neon;
+    av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_c;
+    if (flags & HAS_NEON) {
+      av1_wedge_compute_delta_squares = av1_wedge_compute_delta_squares_neon;
+    }
+    av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_c;
+    if (flags & HAS_NEON) {
+      av1_wedge_sign_from_residuals = av1_wedge_sign_from_residuals_neon;
+    }
     av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_c;
     if (flags & HAS_NEON) av1_wedge_sse_from_residuals = av1_wedge_sse_from_residuals_neon;
     av1_wiener_convolve_add_src = av1_wiener_convolve_add_src_c;

@@ -43,7 +43,7 @@ GlTextureView GpuBufferStorageCvPixelBuffer::GetTexture(
   cv_texture.adopt(cv_texture_temp);
   return GlTextureView(
       gl_context.get(), CVOpenGLTextureGetTarget(*cv_texture),
-      CVOpenGLTextureGetName(*cv_texture), width(), height(), *this, plane,
+      CVOpenGLTextureGetName(*cv_texture), width(), height(), plane,
       [cv_texture](mediapipe::GlTextureView&) { /* only retains cv_texture */ },
       done_writing);
 #else
@@ -151,7 +151,7 @@ static std::shared_ptr<GpuBufferStorageCvPixelBuffer> ConvertFromImageFrame(
     std::shared_ptr<GpuBufferStorageImageFrame> frame) {
   auto status_or_buffer =
       CreateCVPixelBufferForImageFrame(frame->image_frame());
-  ABSL_CHECK(status_or_buffer.ok());
+  ABSL_CHECK_OK(status_or_buffer);
   return std::make_shared<GpuBufferStorageCvPixelBuffer>(
       std::move(status_or_buffer).value());
 }

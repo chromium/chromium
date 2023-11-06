@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from './util.js';
+import {FileErrorToDomError} from './util.js';
 
 /**
  * Joins paths so that the two paths are connected by only 1 '/'.
@@ -29,7 +29,7 @@ export class MockFileSystem {
     /** @type {string} */
     this.name = volumeId;
 
-    /** @type {!Object<!Entry>} */
+    /** @type {!Record<string, !Entry>} */
     this.entries = {};
     this.entries['/'] = MockDirectoryEntry.create(this, '/');
 
@@ -63,10 +63,17 @@ export class MockFileSystem {
         entry.filesystem = this;
         return;
       }
+      // @ts-ignore: error TS2339: Property 'fullPath' does not exist on type
+      // 'string | Object | FileSystemEntry'.
       const path = entry.fullPath || entry;
+      // @ts-ignore: error TS2339: Property 'metadata' does not exist on type
+      // 'string | Object | FileSystemEntry'.
       const metadata = entry.metadata || {size: 0};
+      // @ts-ignore: error TS2339: Property 'content' does not exist on type
+      // 'string | Object | FileSystemEntry'.
       const content = entry.content;
       const pathElements = path.split('/');
+      // @ts-ignore: error TS7006: Parameter 'i' implicitly has an 'any' type.
       pathElements.forEach((_, i) => {
         const subpath = pathElements.slice(0, i).join('/');
         if (subpath && !(subpath in this.entries)) {
@@ -102,6 +109,8 @@ export class MockFileSystem {
         }
       }
     }
+    // @ts-ignore: error TS2322: Type '(FileSystemEntry | undefined)[]' is not
+    // assignable to type 'FileSystemEntry[]'.
     return children;
   }
 }
@@ -115,7 +124,11 @@ export class MockEntryInterface {
    * @param {FileSystem=} opt_filesystem New file system
    * @return {Entry} Cloned entry.
    */
-  clone(fullpath, opt_filesystem) {}
+  // @ts-ignore: error TS6133: 'opt_filesystem' is declared but its value is
+  // never read.
+  clone(fullpath, opt_filesystem) {
+    return /** @type {Entry}*/ ({});
+  }
 }
 
 /**
@@ -131,12 +144,16 @@ export class MockEntry {
    * @param {Metadata=} opt_metadata Metadata.
    */
   constructor(filesystem, fullPath, opt_metadata) {
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'FileSystem'.
     filesystem.entries[fullPath] = this;
     this.filesystem = filesystem;
     this.fullPath = fullPath;
     /** @public @type {!Metadata} */
     this.metadata = opt_metadata || /** @type {!Metadata} */ ({});
     this.removed_ = false;
+    this.isFile = true;
+    this.isDirectory = false;
   }
 
   /**
@@ -149,15 +166,20 @@ export class MockEntry {
   /**
    * Obtains metadata of the entry.
    *
-   * @param {function(!Metadata)} onSuccess Function to take the metadata.
-   * @param {function(!FileError)=} onError
+   * @param {function(!Metadata):void} onSuccess Function to take the metadata.
+   * @param {function(!FileError):void=} onError
    */
   getMetadata(onSuccess, onError) {
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'FileSystem'.
     if (this.filesystem.entries[this.fullPath]) {
       onSuccess(this.metadata);
     } else {
+      // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
+      // 'undefined'.
       onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
   }
 
@@ -169,27 +191,38 @@ export class MockEntry {
   toURL() {
     const segments = this.fullPath.split('/');
     for (let i = 0; i < segments.length; i++) {
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string | number | boolean'.
       segments[i] = encodeURIComponent(segments[i]);
     }
 
+    // @ts-ignore: error TS2339: Property 'rootURL' does not exist on type
+    // 'FileSystem'.
     return joinPath(this.filesystem.rootURL, segments.join('/'));
   }
 
   /**
    * Obtains parent directory.
    *
-   * @param {function(!Entry)} onSuccess Callback invoked with
+   * @param {function(DirectoryEntry)=} onSuccess Callback invoked with
    *     the parent directory.
-   * @param {function(!FileError)=} onError Callback invoked with an error
+   * @param {function(!Error)=} onError Callback invoked with an error
    *     object.
    */
   getParent(onSuccess, onError) {
     const path = this.fullPath.replace(/\/[^\/]+$/, '') || '/';
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'FileSystem'.
     if (this.filesystem.entries[path]) {
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       onSuccess(this.filesystem.entries[path]);
     } else {
+      // @ts-ignore: error TS2722: Cannot invoke an object which is possibly
+      // 'undefined'.
       onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
   }
 
@@ -200,19 +233,27 @@ export class MockEntry {
    * @param {string=} opt_newName New name.
    * @param {function(!Entry)=} opt_successCallback Callback invoked with the
    *     moved entry.
-   * @param {function(!FileError)=} opt_errorCallback Callback invoked with
-   *     an error object.
+   * @param {function(!FileError)=} opt_errorCallback Callback invoked
+   *     with an error object.
    */
+  // @ts-ignore: error TS6133: 'opt_errorCallback' is declared but its value is
+  // never read.
   moveTo(parent, opt_newName, opt_successCallback, opt_errorCallback) {
     Promise.resolve()
         .then(() => {
+          // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+          // 'FileSystem'.
           delete this.filesystem.entries[this.fullPath];
           const newPath = joinPath(parent.fullPath, opt_newName || this.name);
           const newFs = parent.filesystem;
           // For directories, also move all descendant entries.
           if (this.isDirectory) {
+            // @ts-ignore: error TS2339: Property 'entries' does not exist on
+            // type 'FileSystem'.
             for (const e of Object.values(this.filesystem.entries)) {
               if (e.fullPath.startsWith(this.fullPath)) {
+                // @ts-ignore: error TS2339: Property 'entries' does not exist
+                // on type 'FileSystem'.
                 delete this.filesystem.entries[e.fullPath];
                 e.clone(e.fullPath.replace(this.fullPath, newPath), newFs);
               }
@@ -229,6 +270,8 @@ export class MockEntry {
    * @param {function(!Entry)=} opt_successCallback
    * @param {function(!FileError)=} opt_errorCallback
    */
+  // @ts-ignore: error TS6133: 'opt_errorCallback' is declared but its value is
+  // never read.
   copyTo(parent, opt_newName, opt_successCallback, opt_errorCallback) {
     Promise.resolve()
         .then(() => {
@@ -242,13 +285,17 @@ export class MockEntry {
   /**
    * Removes the entry.
    *
-   * @param {function()} onSuccess Success callback.
-   * @param {function(!FileError)=} onError Callback invoked with an error
-   *     object.
+   * @param {function():void} onSuccess Success callback.
+   * @param {function(!FileError):void=} onError Callback invoked with
+   *     an error object.
    */
+  // @ts-ignore: error TS6133: 'onError' is declared but its value is never
+  // read.
   remove(onSuccess, onError) {
     this.removed_ = true;
     Promise.resolve().then(() => {
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       delete this.filesystem.entries[this.fullPath];
       onSuccess();
     });
@@ -257,16 +304,24 @@ export class MockEntry {
   /**
    * Removes the entry and any children.
    *
-   * @param {function()} onSuccess Success callback.
-   * @param {function(!FileError)=} onError Callback invoked with an error
-   *     object.
+   * @param {function():void} onSuccess Success callback.
+   * @param {function(!FileError):void=} onError Callback invoked with
+   *     an error object.
    */
+  // @ts-ignore: error TS6133: 'onError' is declared but its value is never
+  // read.
   removeRecursively(onSuccess, onError) {
     this.removed_ = true;
     Promise.resolve().then(() => {
+      // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+      // 'FileSystem'.
       for (const path in this.filesystem.entries) {
         if (path.startsWith(this.fullPath)) {
+          // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+          // 'FileSystem'.
           this.filesystem.entries[path].removed_ = true;
+          // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+          // 'FileSystem'.
           delete this.filesystem.entries[path];
         }
       }
@@ -288,6 +343,8 @@ export class MockEntry {
    * @param {FileSystem=} opt_filesystem New file system
    * @return {Entry} Cloned entry.
    */
+  // @ts-ignore: error TS6133: 'opt_filesystem' is declared but its value is
+  // never read.
   clone(fullpath, opt_filesystem) {
     throw new Error('Not implemented.');
   }
@@ -328,9 +385,11 @@ export class MockFileEntry extends MockEntry {
   /**
    * Returns a File that this represents.
    *
-   * @param {function(!File)} onSuccess Function to take the file.
-   * @param {function(!FileError)=} onError
+   * @param {function(!File):void} onSuccess Function to take the file.
+   * @param {function(!FileError):void=} onError
    */
+  // @ts-ignore: error TS6133: 'onError' is declared but its value is never
+  // read.
   file(onSuccess, onError) {
     onSuccess(new File([this.content], this.toURL()));
   }
@@ -338,14 +397,20 @@ export class MockFileEntry extends MockEntry {
   /**
    * Returns a FileWriter.
    *
-   * @param {function(!FileWriter)} successCallback
-   * @param {function(!FileError)=} opt_errorCallback
+   * @param {function(!FileWriter):void} successCallback
+   * @param {function(!FileError):void=} opt_errorCallback
    */
+  // @ts-ignore: error TS6133: 'opt_errorCallback' is declared but its value is
+  // never read.
   createWriter(successCallback, opt_errorCallback) {
+    // @ts-ignore: error TS2345: Argument of type 'MockFileWriter' is not
+    // assignable to parameter of type 'FileWriter'.
     successCallback(new MockFileWriter(this));
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'opt_filesystem' implicitly has an
+  // 'any' type.
   clone(path, opt_filesystem) {
     return MockFileEntry.create(
         opt_filesystem || this.filesystem, path, this.metadata, this.content);
@@ -357,6 +422,7 @@ export class MockFileEntry extends MockEntry {
    * @return {!MockEntry}
    */
   asMock() {
+    // @ts-ignore: error TS1110: Type expected.
     return /** @type{!MockEntry} */ (/** @type(*) */ (this));
   }
 
@@ -379,6 +445,7 @@ export class MockFileWriter {
    */
   constructor(entry) {
     this.entry_ = entry;
+    // @ts-ignore: error TS7006: Parameter 'e' implicitly has an 'any' type.
     this.onwriteend = (e) => {};
   }
 
@@ -427,6 +494,8 @@ export class MockDirectoryEntry extends MockEntry {
   }
 
   /** @override */
+  // @ts-ignore: error TS7006: Parameter 'opt_filesystem' implicitly has an
+  // 'any' type.
   clone(path, opt_filesystem) {
     return MockDirectoryEntry.create(opt_filesystem || this.filesystem, path);
   }
@@ -436,6 +505,8 @@ export class MockDirectoryEntry extends MockEntry {
    * @return {!Array<!Entry>}
    */
   getAllChildren() {
+    // @ts-ignore: error TS2341: Property 'findChildren_' is private and only
+    // accessible within class 'MockFileSystem'.
     return /** @type {MockFileSystem} */ (this.filesystem).findChildren_(this);
   }
 
@@ -453,31 +524,44 @@ export class MockDirectoryEntry extends MockEntry {
   getEntry_(expectedClass, path, option, onSuccess, onError) {
     // As onSuccess and onError are optional, if they are not supplied we
     // default them to be no-ops to save on checking their validity later.
+    // @ts-ignore: error TS6133: 'entry' is declared but its value is never
+    // read.
     onSuccess = onSuccess || (entry => {});  // no-op
+    // @ts-ignore: error TS6133: 'error' is declared but its value is never
+    // read.
     onError = onError || (error => {});      // no-op
     if (this.removed_) {
       return onError(
-          /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+          /** @type {!FileError} */ (
+              {name: FileErrorToDomError.NOT_FOUND_ERR}));
     }
     option = option || {};
     const fullPath = path[0] === '/' ? path : joinPath(this.fullPath, path);
+    // @ts-ignore: error TS2339: Property 'entries' does not exist on type
+    // 'FileSystem'.
     const result = this.filesystem.entries[fullPath];
     if (result) {
       if (!(result instanceof expectedClass)) {
         onError(
             /** @type {!FileError} */ (
-                {name: util.FileError.TYPE_MISMATCH_ERR}));
+                {name: FileErrorToDomError.TYPE_MISMATCH_ERR}));
       } else if (option['create'] && option['exclusive']) {
         onError(
-            /** @type {!FileError} */ ({name: util.FileError.PATH_EXISTS_ERR}));
+            /** @type {!FileError} */ (
+                {name: FileErrorToDomError.PATH_EXISTS_ERR}));
       } else {
+        // @ts-ignore: error TS2345: Argument of type '{}' is not assignable to
+        // parameter of type 'FileSystemEntry'.
         onSuccess(result);
       }
     } else {
       if (!option['create']) {
         onError(
-            /** @type {!FileError} */ ({name: util.FileError.NOT_FOUND_ERR}));
+            /** @type {!FileError} */ (
+                {name: FileErrorToDomError.NOT_FOUND_ERR}));
       } else {
+        // @ts-ignore: error TS2339: Property 'create' does not exist on type
+        // 'Function'.
         const newEntry = expectedClass.create(this.filesystem, fullPath);
         onSuccess(newEntry);
       }
@@ -495,6 +579,8 @@ export class MockDirectoryEntry extends MockEntry {
   getFile(path, option, onSuccess, onError) {
     return this.getEntry_(
         MockFileEntry, path, option,
+        // @ts-ignore: error TS7014: Function type, which lacks return-type
+        // annotation, implicitly has an 'any' return type.
         /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
   }
 
@@ -509,6 +595,8 @@ export class MockDirectoryEntry extends MockEntry {
   getDirectory(path, option, onSuccess, onError) {
     return this.getEntry_(
         MockDirectoryEntry, path, option,
+        // @ts-ignore: error TS7014: Function type, which lacks return-type
+        // annotation, implicitly has an 'any' return type.
         /** @type {function(!Entry)|undefined} */ (onSuccess), onError);
   }
 
@@ -518,6 +606,8 @@ export class MockDirectoryEntry extends MockEntry {
    */
   createReader() {
     return new MockDirectoryReader(
+        // @ts-ignore: error TS2341: Property 'findChildren_' is private and
+        // only accessible within class 'MockFileSystem'.
         /** @type {MockFileSystem} */ (this.filesystem).findChildren_(this));
   }
 }
@@ -538,9 +628,10 @@ export class MockDirectoryReader {
    * Returns entries from the filesystem associated with this directory
    * in chunks of 2.
    *
-   * @param {function(!Array<!Entry>)} success Success callback.
-   * @param {function(!FileError)=} error Error callback.
+   * @param {function(!Array<!Entry>):void} success Success callback.
+   * @param {function(!FileError):void=} error Error callback.
    */
+  // @ts-ignore: error TS6133: 'error' is declared but its value is never read.
   readEntries(success, error) {
     if (this.entries_.length > 0) {
       const chunk = this.entries_.splice(0, 2);

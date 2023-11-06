@@ -5,8 +5,8 @@
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {mockUtilVisitURL} from '../common/js/mock_util.js';
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
+import {getLastVisitedURL} from '../common/js/util.js';
 import {updateBulkPinProgress} from '../state/ducks/bulk_pinning.js';
 import {getEmptyState, getStore} from '../state/store.js';
 
@@ -356,14 +356,10 @@ export async function testLearnMore() {
   const link =
       dialog.shadowRoot!.querySelector<HTMLAnchorElement>('#learn-more-link')!;
   assertNotEquals(null, link);
-  const visit = mockUtilVisitURL();
-  try {
-    link.click();
-    assertEquals(
-        visit.getURL(), 'https://support.google.com/chromebook?p=my_drive_cbx');
-  } finally {
-    visit.restoreVisitURL();
-  }
+  link.click();
+  assertEquals(
+      getLastVisitedURL(),
+      'https://support.google.com/chromebook?p=my_drive_cbx');
 }
 
 

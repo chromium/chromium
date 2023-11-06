@@ -4,9 +4,7 @@
 
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_impl.h"
-#include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
 
 namespace ash {
 namespace {
@@ -19,14 +17,11 @@ BluetoothDetailedView::BluetoothDetailedView(Delegate* delegate)
 std::unique_ptr<BluetoothDetailedView> BluetoothDetailedView::Factory::Create(
     DetailedViewDelegate* detailed_view_delegate,
     Delegate* delegate) {
-  if (g_test_factory)
+  if (g_test_factory) {
     return g_test_factory->CreateForTesting(delegate);  // IN-TEST
-  if (features::IsQsRevampEnabled()) {
-    return std::make_unique<BluetoothDetailedViewImpl>(detailed_view_delegate,
-                                                       delegate);
   }
-  return std::make_unique<BluetoothDetailedViewLegacy>(detailed_view_delegate,
-                                                       delegate);
+  return std::make_unique<BluetoothDetailedViewImpl>(detailed_view_delegate,
+                                                     delegate);
 }
 
 void BluetoothDetailedView::Factory::SetFactoryForTesting(

@@ -27,12 +27,12 @@
 #include "base/synchronization/lock.h"
 #include "crypto/mac_security_services_lock.h"
 #include "net/base/host_port_pair.h"
-#include "net/cert/pki/extended_key_usage.h"
-#include "net/cert/pki/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
 #include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/ssl_platform_key_util.h"
+#include "third_party/boringssl/src/pki/extended_key_usage.h"
+#include "third_party/boringssl/src/pki/parse_certificate.h"
 
 using base::apple::ScopedCFTypeRef;
 
@@ -67,7 +67,7 @@ OSStatus CopyCertChain(
   SecTrustRef trust_ref = nullptr;
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    result = SecTrustCreateWithCertificates(input_certs, ssl_policy,
+    result = SecTrustCreateWithCertificates(input_certs.get(), ssl_policy.get(),
                                             &trust_ref);
   }
   if (result)
@@ -80,8 +80,8 @@ OSStatus CopyCertChain(
     // The return value is intentionally ignored since we only care about
     // building a cert chain, not whether it is trusted (the server is the
     // only one that can decide that.)
-    std::ignore = SecTrustEvaluateWithError(trust, nullptr);
-    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust);
+    std::ignore = SecTrustEvaluateWithError(trust.get(), nullptr);
+    *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust.get());
   }
   return result;
 }
@@ -110,10 +110,10 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
     return false;
 
   std::vector<base::apple::ScopedCFTypeRef<SecCertificateRef>> intermediates;
-  for (CFIndex i = 1, chain_count = CFArrayGetCount(cert_chain);
+  for (CFIndex i = 1, chain_count = CFArrayGetCount(cert_chain.get());
        i < chain_count; ++i) {
     SecCertificateRef sec_cert = reinterpret_cast<SecCertificateRef>(
-        const_cast<void*>(CFArrayGetValueAtIndex(cert_chain, i)));
+        const_cast<void*>(CFArrayGetValueAtIndex(cert_chain.get(), i)));
     intermediates.emplace_back(sec_cert, base::scoped_policy::RETAIN);
   }
 
@@ -141,14 +141,14 @@ bool IsIssuedByInKeychain(const std::vector<std::string>& valid_issuers,
 bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
   DCHECK(cert);
 
-  ParseCertificateOptions options;
+  bssl::ParseCertificateOptions options;
   options.allow_invalid_serial_numbers = true;
-  der::Input tbs_certificate_tlv;
-  der::Input signature_algorithm_tlv;
-  der::BitString signature_value;
-  ParsedTbsCertificate tbs;
-  if (!ParseCertificate(
-          der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
+  bssl::der::Input tbs_certificate_tlv;
+  bssl::der::Input signature_algorithm_tlv;
+  bssl::der::BitString signature_value;
+  bssl::ParsedTbsCertificate tbs;
+  if (!bssl::ParseCertificate(
+          bssl::der::Input(CRYPTO_BUFFER_data(cert), CRYPTO_BUFFER_len(cert)),
           &tbs_certificate_tlv, &signature_algorithm_tlv, &signature_value,
           nullptr /* errors*/) ||
       !ParseTbsCertificate(tbs_certificate_tlv, options, &tbs,
@@ -159,7 +159,7 @@ bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
   if (!tbs.extensions_tlv)
     return true;
 
-  std::map<der::Input, ParsedExtension> extensions;
+  std::map<bssl::der::Input, bssl::ParsedExtension> extensions;
   if (!ParseExtensions(tbs.extensions_tlv.value(), &extensions))
     return false;
 
@@ -170,23 +170,25 @@ bool SupportsSSLClientAuth(CRYPTO_BUFFER* cert) {
   //
   // In particular, if a key has the nonRepudiation bit and not the
   // digitalSignature one, we will not offer it to the user.
-  if (auto it = extensions.find(der::Input(kKeyUsageOid));
+  if (auto it = extensions.find(bssl::der::Input(bssl::kKeyUsageOid));
       it != extensions.end()) {
-    der::BitString key_usage;
-    if (!ParseKeyUsage(it->second.value, &key_usage) ||
-        !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
+    bssl::der::BitString key_usage;
+    if (!bssl::ParseKeyUsage(it->second.value, &key_usage) ||
+        !key_usage.AssertsBit(bssl::KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {
       return false;
     }
   }
 
-  if (auto it = extensions.find(der::Input(kExtKeyUsageOid));
+  if (auto it = extensions.find(bssl::der::Input(bssl::kExtKeyUsageOid));
       it != extensions.end()) {
-    std::vector<der::Input> extended_key_usage;
-    if (!ParseEKUExtension(it->second.value, &extended_key_usage))
+    std::vector<bssl::der::Input> extended_key_usage;
+    if (!bssl::ParseEKUExtension(it->second.value, &extended_key_usage)) {
       return false;
+    }
     bool found_acceptable_eku = false;
     for (const auto& oid : extended_key_usage) {
-      if (oid == der::Input(kAnyEKU) || oid == der::Input(kClientAuth)) {
+      if (oid == bssl::der::Input(bssl::kAnyEKU) ||
+          oid == bssl::der::Input(bssl::kClientAuth)) {
         found_acceptable_eku = true;
         break;
       }
@@ -313,7 +315,7 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
     {
       base::AutoLock lock(crypto::GetMacSecurityServicesLock());
       preferred_sec_identity.reset(
-          SecIdentityCopyPreferred(domain_str, nullptr, nullptr));
+          SecIdentityCopyPreferred(domain_str.get(), nullptr, nullptr));
     }
   }
 
@@ -374,12 +376,12 @@ ClientCertIdentityList GetClientCertsOnBackgroundThread(
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
     err = SecItemCopyMatching(
-        query, reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
+        query.get(), reinterpret_cast<CFTypeRef*>(result.InitializeInto()));
   }
   if (!err) {
-    for (CFIndex i = 0; i < CFArrayGetCount(result); i++) {
+    for (CFIndex i = 0; i < CFArrayGetCount(result.get()); i++) {
       SecIdentityRef item = reinterpret_cast<SecIdentityRef>(
-          const_cast<void*>(CFArrayGetValueAtIndex(result, i)));
+          const_cast<void*>(CFArrayGetValueAtIndex(result.get(), i)));
       AddIdentity(
           ScopedCFTypeRef<SecIdentityRef>(item, base::scoped_policy::RETAIN),
           preferred_sec_identity.get(), &regular_identities,

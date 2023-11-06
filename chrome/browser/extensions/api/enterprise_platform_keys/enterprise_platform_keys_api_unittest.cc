@@ -387,11 +387,11 @@ TEST_P(EPKChallengeKeyTest, Success) {
   auto scope = std::get<0>(GetParam());
   ::attestation::VerifiedAccessFlow expected_va_flow_type;
   switch (scope) {
-    case api::enterprise_platform_keys::SCOPE_NONE:
-    case api::enterprise_platform_keys::SCOPE_MACHINE:
+    case api::enterprise_platform_keys::Scope::kNone:
+    case api::enterprise_platform_keys::Scope::kMachine:
       expected_va_flow_type = ::attestation::ENTERPRISE_MACHINE;
       break;
-    case api::enterprise_platform_keys::SCOPE_USER:
+    case api::enterprise_platform_keys::Scope::kUser:
       expected_va_flow_type = ::attestation::ENTERPRISE_USER;
       break;
   }
@@ -402,11 +402,11 @@ TEST_P(EPKChallengeKeyTest, Success) {
       register_key = absl::nullopt;
   if (algorithm_opt.has_value()) {
     switch (algorithm_opt.value()) {
-      case api::enterprise_platform_keys::ALGORITHM_NONE:
-      case api::enterprise_platform_keys::ALGORITHM_RSA:
+      case api::enterprise_platform_keys::Algorithm::kNone:
+      case api::enterprise_platform_keys::Algorithm::kRsa:
         expect_crypto_key_type = ::attestation::KEY_TYPE_RSA;
         break;
-      case api::enterprise_platform_keys::ALGORITHM_ECDSA:
+      case api::enterprise_platform_keys::Algorithm::kEcdsa:
         expect_crypto_key_type = ::attestation::KEY_TYPE_ECC;
         break;
     }
@@ -453,12 +453,11 @@ INSTANTIATE_TEST_SUITE_P(
     EPKChallengeKeyTests,
     EPKChallengeKeyTest,
     testing::Combine(
-        testing::Values(api::enterprise_platform_keys::Scope::SCOPE_MACHINE,
-                        api::enterprise_platform_keys::Scope::SCOPE_USER),
-        testing::Values(
-            api::enterprise_platform_keys::Algorithm::ALGORITHM_RSA,
-            api::enterprise_platform_keys::Algorithm::ALGORITHM_ECDSA,
-            absl::nullopt)),
+        testing::Values(api::enterprise_platform_keys::Scope::kMachine,
+                        api::enterprise_platform_keys::Scope::kUser),
+        testing::Values(api::enterprise_platform_keys::Algorithm::kRsa,
+                        api::enterprise_platform_keys::Algorithm::kEcdsa,
+                        absl::nullopt)),
 
     [](const testing::TestParamInfo<EPKChallengeKeyParams>& info) {
       std::string alg =

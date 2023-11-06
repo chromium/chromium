@@ -35,7 +35,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
   bool HasEverBeenBound() const { return object_ && target_; }
 
-  WebGLProgram* GetProgram() const { return program_; }
+  WebGLProgram* GetProgram() const { return program_.Get(); }
   void SetProgram(WebGLProgram*);
 
   // These are the indexed bind points for transform feedback buffers.

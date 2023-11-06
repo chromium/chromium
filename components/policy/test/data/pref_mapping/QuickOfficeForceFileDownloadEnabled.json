@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "quickoffice.force_file_download_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickOfficeForceFileDownloadEnabled": true
+        },
+        "prefs": {
+          "quickoffice.force_file_download_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "QuickOfficeForceFileDownloadEnabled": false
+        },
+        "prefs": {
+          "quickoffice.force_file_download_enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

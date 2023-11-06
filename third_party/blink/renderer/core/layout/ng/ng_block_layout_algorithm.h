@@ -8,9 +8,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_child_layout_context.h"
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
@@ -78,20 +78,20 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   NOINLINE const NGLayoutResult* HandleNonsuccessfulLayoutResult(
       const NGLayoutResult*);
 
-  const NGLayoutResult* LayoutInlineChild(const NGInlineNode& child);
+  const NGLayoutResult* LayoutInlineChild(const InlineNode& child);
   NOINLINE const NGLayoutResult* LayoutWithSimpleInlineChildLayoutContext(
-      const NGInlineNode& child);
+      const InlineNode& child);
   template <wtf_size_t capacity>
   NOINLINE const NGLayoutResult* LayoutWithOptimalInlineChildLayoutContext(
-      const NGInlineNode& child);
+      const InlineNode& child);
 
   NOINLINE const NGLayoutResult* RelayoutIgnoringLineClamp();
 
   inline const NGLayoutResult* Layout(
-      NGInlineChildLayoutContext* inline_child_layout_context);
+      InlineChildLayoutContext* inline_child_layout_context);
 
   const NGLayoutResult* FinishLayout(NGPreviousInflowPosition*,
-                                     NGInlineChildLayoutContext*);
+                                     InlineChildLayoutContext*);
 
   // Return the BFC block offset of this block.
   LayoutUnit BfcBlockOffset() const {
@@ -160,9 +160,9 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
   // |break_token_| to continue layout from the last reused fragment, and
   // returns |true|. Otherwise returns |false|.
   bool TryReuseFragmentsFromCache(
-      NGInlineNode child,
+      InlineNode child,
       NGPreviousInflowPosition*,
-      const NGInlineBreakToken** inline_break_token_out);
+      const InlineBreakToken** inline_break_token_out);
 
   void HandleOutOfFlowPositioned(const NGPreviousInflowPosition&, NGBlockNode);
   void HandleFloat(const NGPreviousInflowPosition&,
@@ -209,8 +209,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       NGLayoutInputNode child,
       const NGBreakToken* child_break_token,
       NGPreviousInflowPosition*,
-      NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      InlineChildLayoutContext*,
+      const InlineBreakToken** previous_inline_break_token);
 
   NGLayoutResult::EStatus FinishInflow(
       NGLayoutInputNode child,
@@ -220,8 +220,8 @@ class CORE_EXPORT NGBlockLayoutAlgorithm
       const NGLayoutResult*,
       NGInflowChildData*,
       NGPreviousInflowPosition*,
-      NGInlineChildLayoutContext*,
-      const NGInlineBreakToken** previous_inline_break_token);
+      InlineChildLayoutContext*,
+      const InlineBreakToken** previous_inline_break_token);
 
   // Consume all remaining fragmentainer space. This happens when we decide to
   // break before a child.

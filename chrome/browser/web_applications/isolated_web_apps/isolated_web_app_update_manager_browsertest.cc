@@ -88,10 +88,7 @@ class ServiceWorkerVersionStartedRunningWaiter
   ServiceWorkerVersionStartedRunningWaiter& operator=(
       const ServiceWorkerVersionStartedRunningWaiter&) = delete;
 
-  void AwaitStartedRunning() {
-    // TODO: handle return value.
-    std::ignore = future_.Wait();
-  }
+  void AwaitStartedRunning() { CHECK(future_.Wait()); }
 
  protected:
   // `content::ServiceWorkerContextObserver`:
@@ -379,8 +376,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
     base::test::TestFuture<void> future;
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE, future.GetCallback(), TestTimeouts::action_timeout());
-    // TODO: handle return value.
-    std::ignore = future.Wait();
+    ASSERT_TRUE(future.Wait());
   }
 }
 

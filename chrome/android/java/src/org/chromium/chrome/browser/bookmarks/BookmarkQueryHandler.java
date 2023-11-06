@@ -20,18 +20,20 @@ public interface BookmarkQueryHandler {
 
     /**
      * Builds entries for a given parent folder.
+     *
      * @param parentId The id of the parent.
      * @return The list of bookmarks to shown.
      */
     default List<BookmarkListEntry> buildBookmarkListForParent(@NonNull BookmarkId parentId) {
-        return buildBookmarkListForParent(parentId, /*powerFilter*/ null);
+        return buildBookmarkListForParent(parentId, /* powerFilter= */ null);
     }
 
     /**
      * Builds entries for a given parent folder.
+     *
      * @param parentId The id of the parent.
      * @param powerFilter The filter to be applied to the {@link parentId} subtree. When a filter is
-     *         present, all matching descendants must be returned,
+     *     present, all matching descendants must be returned,
      * @return The list of bookmarks to shown.
      */
     List<BookmarkListEntry> buildBookmarkListForParent(

@@ -41,8 +41,7 @@ size_t AddressLineIndex(ServerFieldType type);
 
 // Returns whether the expiration year should be filled with two or four
 // digits.
-size_t DetermineExpirationYearLength(const AutofillField& field,
-                                     ServerFieldType assumed_field_type);
+size_t DetermineExpirationYearLength(ServerFieldType assumed_field_type);
 
 }  // namespace autofill
 

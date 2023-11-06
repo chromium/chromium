@@ -95,6 +95,7 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
     {0x046d, 0xc087},  // Logitech G703
     {0x046d, 0xc088},  // Logitech G Pro Wireless (USB)
     {0x046d, 0xc08b},  // Logitech G502 Hero
+    {0x046d, 0xc08c},  // Logitech G Pro Gaming Mouse (Wired)
     {0x046d, 0xc091},  // Logitech G903
     {0x046d, 0xc092},  // Logitech G203 LIGHTSYNC
     {0x046d, 0xc093},  // Logitech M500s
@@ -300,6 +301,10 @@ constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
 
 constexpr DeviceId kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
+};
+
+constexpr DeviceId kHeatmapSupportedDevices[] = {
+    {0x04f3, 0x4222},  // Rex
 };
 
 // Certain devices need to be forced to use libinput in place of
@@ -642,6 +647,16 @@ bool EventDeviceInfo::HasProp(unsigned int code) const {
   if (code > INPUT_PROP_MAX)
     return false;
   return EvdevBitIsSet(prop_bits_.data(), code);
+}
+
+bool EventDeviceInfo::SupportsHeatmap() const {
+  for (const auto& device_id : kHeatmapSupportedDevices) {
+    if (input_id_.vendor == device_id.vendor &&
+        input_id_.product == device_id.product_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 int32_t EventDeviceInfo::GetAbsMinimum(unsigned int code) const {

@@ -37,31 +37,26 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Class containing the core framework for all XR (VR and AR) testing, which requires
- * back-and-forth communication with JavaScript running in the browser. Feature-specific behavior
- * can be found in the *TestFramework subclasses. Additional utility methods that don't relate
- * to the core framework can be found in the util/ directory.
+ * Class containing the core framework for all XR (VR and AR) testing, which requires back-and-forth
+ * communication with JavaScript running in the browser. Feature-specific behavior can be found in
+ * the *TestFramework subclasses. Additional utility methods that don't relate to the core framework
+ * can be found in the util/ directory.
  *
- * The general test flow is:
- * - Load the HTML file containing the test, which:
- *   - Loads the WebVR boilerplate code and some test functions
- *   - Sets up common elements like the canvas and synchronization variable
- *   - Sets up any steps that need to be triggered by the Java code
- * - Check if any VRDisplay objects were found and fail the test if it doesn't
- *       match what we expect for that test
- * - Repeat:
- *   - Run any necessary Java-side code, e.g. trigger a user action
- *   - Trigger the next JavaScript test step and wait for it to finish
+ * <p>The general test flow is: - Load the HTML file containing the test, which: - Loads the WebVR
+ * boilerplate code and some test functions - Sets up common elements like the canvas and
+ * synchronization variable - Sets up any steps that need to be triggered by the Java code - Check
+ * if any VRDisplay objects were found and fail the test if it doesn't match what we expect for that
+ * test - Repeat: - Run any necessary Java-side code, e.g. trigger a user action - Trigger the next
+ * JavaScript test step and wait for it to finish
  *
- * The JavaScript code will automatically process test results once all
- * testharness.js tests are done, just like in layout tests. Once the results
- * are processed, the JavaScript code will automatically signal the Java code,
- * which can then grab the results and pass/fail the instrumentation test.
+ * <p>The JavaScript code will automatically process test results once all testharness.js tests are
+ * done, just like in layout tests. Once the results are processed, the JavaScript code will
+ * automatically signal the Java code, which can then grab the results and pass/fail the
+ * instrumentation test.
  */
 public abstract class XrTestFramework {
     public static final HashSet<String> OLD_DEVICE_BOARDS =
-            new HashSet(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */
-                    ));
+            new HashSet(Arrays.asList("bullhead" /* Nexus 5X */, "marlin" /* Pixel 1 */));
     public static final int PAGE_LOAD_TIMEOUT_S = 10;
     // These two were originally different values, but the short one was bumped up to increase
     // test harness reliability. The long version might also want to be bumped up at some point, or
@@ -75,10 +70,15 @@ public abstract class XrTestFramework {
     // The "3" corresponds to the "Mobile Bookmarks" folder - omitting a particular folder
     // automatically redirects to that folder, and not having it in the URL causes issues with the
     // URL we expect to be loaded being different than the actual URL.
-    public static final String[] NATIVE_URLS_OF_INTEREST = {UrlConstants.BOOKMARKS_FOLDER_URL + "3",
-            UrlConstants.BOOKMARKS_UNCATEGORIZED_URL, UrlConstants.BOOKMARKS_URL,
-            UrlConstants.DOWNLOADS_URL, UrlConstants.NATIVE_HISTORY_URL, UrlConstants.NTP_URL,
-            UrlConstants.RECENT_TABS_URL};
+    public static final String[] NATIVE_URLS_OF_INTEREST = {
+        UrlConstants.BOOKMARKS_FOLDER_URL + "3",
+        UrlConstants.BOOKMARKS_UNCATEGORIZED_URL,
+        UrlConstants.BOOKMARKS_URL,
+        UrlConstants.DOWNLOADS_URL,
+        UrlConstants.NATIVE_HISTORY_URL,
+        UrlConstants.NTP_URL,
+        UrlConstants.RECENT_TABS_URL
+    };
 
     private static final String TAG = "XrTestFramework";
     static final String TEST_DIR = "chrome/test/data/xr/e2e_test_files";
@@ -117,7 +117,10 @@ public abstract class XrTestFramework {
      * @return The file:// URL to the specified test file.
      */
     public static String getFileUrlForHtmlTestFile(String testName) {
-        return "file://" + UrlUtils.getIsolatedTestFilePath(TEST_DIR) + "/html/" + testName
+        return "file://"
+                + UrlUtils.getIsolatedTestFilePath(TEST_DIR)
+                + "/html/"
+                + testName
                 + ".html";
     }
 
@@ -125,14 +128,16 @@ public abstract class XrTestFramework {
      * Checks whether a request for the given permission would trigger a permission prompt.
      *
      * @param permission The name of the permission to check. Must come from PermissionName enum
-     *         (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
+     *     (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
      * @param webContents The WebContents to run the JavaScript in.
      * @return True if the permission request would trigger a prompt, false otherwise.
      */
     public static boolean permissionRequestWouldTriggerPrompt(
             String permission, WebContents webContents) {
-        runJavaScriptOrFail("checkPermissionRequestWouldTriggerPrompt('" + permission + "')",
-                POLL_TIMEOUT_SHORT_MS, webContents);
+        runJavaScriptOrFail(
+                "checkPermissionRequestWouldTriggerPrompt('" + permission + "')",
+                POLL_TIMEOUT_SHORT_MS,
+                webContents);
         pollJavaScriptBooleanOrFail("wouldPrompt !== null", POLL_TIMEOUT_SHORT_MS, webContents);
         return Boolean.valueOf(
                 runJavaScriptOrFail("wouldPrompt", POLL_TIMEOUT_SHORT_MS, webContents));
@@ -150,13 +155,17 @@ public abstract class XrTestFramework {
     public static String runJavaScriptOrFail(String js, int timeout, WebContents webContents) {
         if (DEBUG_LOGS) Log.i(TAG, "runJavaScriptOrFail " + js);
         try {
-            String ret = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                    webContents, js, timeout, TimeUnit.MILLISECONDS);
+            String ret =
+                    JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                            webContents, js, timeout, TimeUnit.MILLISECONDS);
             if (DEBUG_LOGS) Log.i(TAG, "runJavaScriptOrFail result=" + ret);
             return ret;
         } catch (TimeoutException e) {
-            Assert.fail("Fatal interruption or timeout running JavaScript '" + js
-                    + "': " + e.toString());
+            Assert.fail(
+                    "Fatal interruption or timeout running JavaScript '"
+                            + js
+                            + "': "
+                            + e.toString());
         }
         return "Not reached";
     }
@@ -171,7 +180,7 @@ public abstract class XrTestFramework {
      */
     public static String runJavaScriptInFrameOrFail(
             String js, int timeout, final WebContents webContents) {
-        return runJavaScriptInFrameInternal(js, timeout, webContents, true /* failOnTimeout */);
+        return runJavaScriptInFrameInternal(js, timeout, webContents, /* failOnTimeout= */ true);
     }
 
     /**
@@ -190,19 +199,32 @@ public abstract class XrTestFramework {
         }
 
         try {
-            CriteriaHelper.pollInstrumentationThread(() -> {
-                String result = "false";
-                try {
-                    result = JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents,
-                            boolExpression, POLL_CHECK_INTERVAL_SHORT_MS, TimeUnit.MILLISECONDS);
-                    if (DEBUG_LOGS) {
-                        Log.i(TAG, "pollJavaScriptBoolean " + boolExpression + " => " + result);
-                    }
-                } catch (TimeoutException e) {
-                    // Expected to happen regularly, do nothing
-                }
-                return Boolean.parseBoolean(result);
-            }, "Polling timed out", timeoutMs, POLL_CHECK_INTERVAL_LONG_MS);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        String result = "false";
+                        try {
+                            result =
+                                    JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                            webContents,
+                                            boolExpression,
+                                            POLL_CHECK_INTERVAL_SHORT_MS,
+                                            TimeUnit.MILLISECONDS);
+                            if (DEBUG_LOGS) {
+                                Log.i(
+                                        TAG,
+                                        "pollJavaScriptBoolean "
+                                                + boolExpression
+                                                + " => "
+                                                + result);
+                            }
+                        } catch (TimeoutException e) {
+                            // Expected to happen regularly, do nothing
+                        }
+                        return Boolean.parseBoolean(result);
+                    },
+                    "Polling timed out",
+                    timeoutMs,
+                    POLL_CHECK_INTERVAL_LONG_MS);
         } catch (AssertionError e) {
             Log.d(TAG, "pollJavaScriptBoolean() timed out: " + e.toString());
             return false;
@@ -223,15 +245,28 @@ public abstract class XrTestFramework {
             final String boolExpression, int timeoutMs, final WebContents webContents) {
         if (DEBUG_LOGS) Log.i(TAG, "pollJavaScriptBooleanInFrame " + boolExpression);
         try {
-            CriteriaHelper.pollInstrumentationThread(() -> {
-                String result = "false";
-                result = runJavaScriptInFrameInternal(boolExpression, POLL_CHECK_INTERVAL_SHORT_MS,
-                        webContents, false /* failOnTimeout */);
-                if (DEBUG_LOGS) {
-                    Log.i(TAG, "pollJavaScriptBooleanInFrame " + boolExpression + " => " + result);
-                }
-                return Boolean.parseBoolean(result);
-            }, "Polling timed out", timeoutMs, POLL_CHECK_INTERVAL_LONG_MS);
+            CriteriaHelper.pollInstrumentationThread(
+                    () -> {
+                        String result = "false";
+                        result =
+                                runJavaScriptInFrameInternal(
+                                        boolExpression,
+                                        POLL_CHECK_INTERVAL_SHORT_MS,
+                                        webContents,
+                                        /* failOnTimeout= */ false);
+                        if (DEBUG_LOGS) {
+                            Log.i(
+                                    TAG,
+                                    "pollJavaScriptBooleanInFrame "
+                                            + boolExpression
+                                            + " => "
+                                            + result);
+                        }
+                        return Boolean.parseBoolean(result);
+                    },
+                    "Polling timed out",
+                    timeoutMs,
+                    POLL_CHECK_INTERVAL_LONG_MS);
         } catch (AssertionError e) {
             Log.d(TAG, "pollJavaScriptBooleanInFrame() timed out: " + e.toString());
             return false;
@@ -240,8 +275,8 @@ public abstract class XrTestFramework {
     }
 
     /**
-     * Polls the provided JavaScript boolean expression, failing the test if it does not evaluate
-     * to true within the provided timeout.
+     * Polls the provided JavaScript boolean expression, failing the test if it does not evaluate to
+     * true within the provided timeout.
      *
      * @param boolExpression The JavaScript boolean expression to poll.
      * @param timeoutMs The polling timeout in milliseconds.
@@ -249,13 +284,14 @@ public abstract class XrTestFramework {
      */
     public static void pollJavaScriptBooleanOrFail(
             String boolExpression, int timeoutMs, WebContents webContents) {
-        Assert.assertTrue("Timed out polling JavaScript boolean expression: " + boolExpression,
+        Assert.assertTrue(
+                "Timed out polling JavaScript boolean expression: " + boolExpression,
                 pollJavaScriptBoolean(boolExpression, timeoutMs, webContents));
     }
 
     /**
-     * Polls the provided JavaScript boolean expression in the focused frame, failing the test if
-     * it does not evaluate to true within the provided timeout.
+     * Polls the provided JavaScript boolean expression in the focused frame, failing the test if it
+     * does not evaluate to true within the provided timeout.
      *
      * @param boolExpression The JavaScript boolean expression to poll.
      * @param timeoutMs The polling timeout in milliseconds.
@@ -263,7 +299,8 @@ public abstract class XrTestFramework {
      */
     public static void pollJavaScriptBooleanInFrameOrFail(
             String boolExpression, int timeoutMs, WebContents webContents) {
-        Assert.assertTrue("Timed out polling JavaScript boolean expression in focused frame: "
+        Assert.assertTrue(
+                "Timed out polling JavaScript boolean expression in focused frame: "
                         + boolExpression,
                 pollJavaScriptBooleanInFrame(boolExpression, timeoutMs, webContents));
     }
@@ -315,19 +352,22 @@ public abstract class XrTestFramework {
     public static void waitOnJavaScriptStep(WebContents webContents, int timeoutMs) {
         if (DEBUG_LOGS) Log.i(TAG, "waitOnJavaScriptStep, timeoutMs=" + timeoutMs);
         // Make sure we aren't trying to wait on a JavaScript test step without the code to do so.
-        Assert.assertTrue("Attempted to wait on a JavaScript step without the code to do so. You "
+        Assert.assertTrue(
+                "Attempted to wait on a JavaScript step without the code to do so. You "
                         + "either forgot to import webxr_e2e.js or are incorrectly using a "
                         + "Java method.",
-                Boolean.parseBoolean(runJavaScriptOrFail("typeof javascriptDone !== 'undefined'",
-                        POLL_TIMEOUT_SHORT_MS, webContents)));
+                Boolean.parseBoolean(
+                        runJavaScriptOrFail(
+                                "typeof javascriptDone !== 'undefined'",
+                                POLL_TIMEOUT_SHORT_MS,
+                                webContents)));
 
         // Actually wait for the step to finish
         boolean success = pollJavaScriptBoolean("javascriptDone", timeoutMs, webContents);
 
         // Check what state we're in to make sure javascriptDone wasn't called because the test
         // failed.
-        @TestStatus
-        int testStatus = checkTestStatus(webContents);
+        @TestStatus int testStatus = checkTestStatus(webContents);
         if (!success || testStatus == TestStatus.FAILED) {
             // Failure states: Either polling failed or polling succeeded, but because the test
             // failed.
@@ -335,8 +375,9 @@ public abstract class XrTestFramework {
             if (!success) {
                 reason = "Timed out waiting for JavaScript step to finish.";
             } else {
-                reason = "JavaScript testharness reported failure while waiting for JavaScript "
-                        + "step to finish";
+                reason =
+                        "JavaScript testharness reported failure while waiting for JavaScript "
+                                + "step to finish";
             }
             String resultString =
                     runJavaScriptOrFail("resultString", POLL_TIMEOUT_SHORT_MS, webContents);
@@ -361,8 +402,9 @@ public abstract class XrTestFramework {
     public static @TestStatus int checkTestStatus(WebContents webContents) {
         String resultString =
                 runJavaScriptOrFail("resultString", POLL_TIMEOUT_SHORT_MS, webContents);
-        boolean testPassed = Boolean.parseBoolean(
-                runJavaScriptOrFail("testPassed", POLL_TIMEOUT_SHORT_MS, webContents));
+        boolean testPassed =
+                Boolean.parseBoolean(
+                        runJavaScriptOrFail("testPassed", POLL_TIMEOUT_SHORT_MS, webContents));
         if (testPassed) {
             return TestStatus.PASSED;
         } else if (!testPassed && resultString.equals("\"\"")) {
@@ -415,18 +457,24 @@ public abstract class XrTestFramework {
 
     private static String runJavaScriptInFrameInternal(
             String js, int timeout, final WebContents webContents, boolean failOnTimeout) {
-        RenderFrameHostTestExt rfh = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> new RenderFrameHostTestExt(WebContentsUtils.getFocusedFrame(webContents)));
+        RenderFrameHostTestExt rfh =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () ->
+                                new RenderFrameHostTestExt(
+                                        WebContentsUtils.getFocusedFrame(webContents)));
         Assert.assertTrue("Did not get a focused frame", rfh != null);
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<String> result = new AtomicReference<String>();
         // The JS execution needs to be started on the UI thread to avoid hitting a DCHECK.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            rfh.executeJavaScript(js, (String r) -> {
-                result.set(r);
-                latch.countDown();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    rfh.executeJavaScript(
+                            js,
+                            (String r) -> {
+                                result.set(r);
+                                latch.countDown();
+                            });
+                });
         try {
             if (!latch.await(timeout, TimeUnit.MILLISECONDS) && failOnTimeout) {
                 Assert.fail("Timed out running JavaScript in focused frame: " + js);
@@ -438,8 +486,8 @@ public abstract class XrTestFramework {
     }
 
     /**
-     * Must be constructed after the rule has been applied (e.g. in whatever method is
-     * tagged with @Before).
+     * Must be constructed after the rule has been applied (e.g. in whatever method is tagged
+     * with @Before).
      */
     public XrTestFramework(ChromeActivityTestRule rule) {
         mRule = rule;
@@ -449,10 +497,9 @@ public abstract class XrTestFramework {
     }
 
     /**
-     * Gets the URL that loads the given test file from the embedded test server
-     * Note that because sessions may cause permissions prompts to appear, this
-     * uses the embedded server, as granting permissions to file:// URLs results
-     * in DCHECKs.
+     * Gets the URL that loads the given test file from the embedded test server Note that because
+     * sessions may cause permissions prompts to appear, this uses the embedded server, as granting
+     * permissions to file:// URLs results in DCHECKs.
      *
      * @param testName The name of the test whose file will be retrieved.
      */
@@ -461,9 +508,9 @@ public abstract class XrTestFramework {
     }
 
     /**
-     * Loads the given file on an embedded server with the given timeout then
-     * waits for JavaScript to signal that it's ready for testing. Throws an
-     * assertion error if an improper page load is detected.
+     * Loads the given file on an embedded server with the given timeout then waits for JavaScript
+     * to signal that it's ready for testing. Throws an assertion error if an improper page load is
+     * detected.
      *
      * @param file The name of the page to load.
      * @param timeoutSec The timeout of the page load in seconds.
@@ -472,18 +519,22 @@ public abstract class XrTestFramework {
     public int loadFileAndAwaitInitialization(String url, int timeoutSec) {
         int result = mRule.loadUrl(getUrlForFile(url), timeoutSec);
         Assert.assertEquals(
-                "Page did not load correctly. Load result enum: " + String.valueOf(result), result,
+                "Page did not load correctly. Load result enum: " + String.valueOf(result),
+                result,
                 Tab.TabLoadStatus.DEFAULT_PAGE_LOAD);
         if (!pollJavaScriptBoolean(
-                    "isInitializationComplete()", POLL_TIMEOUT_LONG_MS, mRule.getWebContents())) {
-            Log.e(TAG,
+                "isInitializationComplete()", POLL_TIMEOUT_LONG_MS, mRule.getWebContents())) {
+            Log.e(
+                    TAG,
                     "Timed out waiting for JavaScript test initialization, attempting to get "
                             + "additional debug information");
-            String initSteps = runJavaScriptOrFail(
-                    "initializationSteps", POLL_TIMEOUT_SHORT_MS, mRule.getWebContents());
+            String initSteps =
+                    runJavaScriptOrFail(
+                            "initializationSteps", POLL_TIMEOUT_SHORT_MS, mRule.getWebContents());
             Assert.fail(
                     "Timed out waiting for JavaScript test initialization. Initialization steps "
-                    + "object: " + initSteps);
+                            + "object: "
+                            + initSteps);
         }
         // It is possible, particularly with multiple sessions and navigations within a single test,
         // for the page to get zoomed in on navigation. So, ensure that we are always zoomed out
@@ -497,7 +548,7 @@ public abstract class XrTestFramework {
      * Helper method to run permissionRequestWouldTriggerPrompt with the current tab's WebContents.
      *
      * @param permission The name of the permission to check. Must come from PermissionName enum
-     *         (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
+     *     (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
      * @return True if the permission request would trigger a prompt, false otherwise.
      */
     public boolean permissionRequestWouldTriggerPrompt(String permission) {
@@ -587,9 +638,7 @@ public abstract class XrTestFramework {
         executeStepAndWait(stepFunction, getCurrentWebContents(), timeoutMs);
     }
 
-    /**
-     * Helper function to run waitOnJavaScriptStep with current current tab's WebContents.
-     */
+    /** Helper function to run waitOnJavaScriptStep with current current tab's WebContents. */
     public void waitOnJavaScriptStep() {
         waitOnJavaScriptStep(getCurrentWebContents());
     }
@@ -603,16 +652,12 @@ public abstract class XrTestFramework {
         return checkTestStatus(getCurrentWebContents());
     }
 
-    /**
-     * Helper function to run endTest with the current tab's WebContents.
-     */
+    /** Helper function to run endTest with the current tab's WebContents. */
     public void endTest() {
         endTest(getCurrentWebContents());
     }
 
-    /**
-     * Helper function to run assertNoJavaScriptErrors with the current tab's WebContents.
-     */
+    /** Helper function to run assertNoJavaScriptErrors with the current tab's WebContents. */
     public void assertNoJavaScriptErrors() {
         assertNoJavaScriptErrors(getCurrentWebContents());
     }
@@ -639,10 +684,11 @@ public abstract class XrTestFramework {
     }
 
     public void openIncognitoTab(final String url) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mRule.getActivity()
-                    .getTabCreator(true /* incognito */)
-                    .launchUrl(url, TabLaunchType.FROM_LINK);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mRule.getActivity()
+                            .getTabCreator(/* incognito= */ true)
+                            .launchUrl(url, TabLaunchType.FROM_LINK);
+                });
     }
 }

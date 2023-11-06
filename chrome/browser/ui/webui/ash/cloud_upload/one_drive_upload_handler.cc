@@ -139,6 +139,38 @@ void OneDriveUploadHandler::Run(UploadCallback callback) {
     return;
   }
 
+  // First check that ODFS is not in the "ReauthenticationRequired" state.
+  file_system_provider::ProvidedFileSystemInterface* file_system =
+      GetODFS(profile_);
+  if (!file_system) {
+    // TODO(b/293363474): Remove when the underlying cause is diagnosed.
+    base::debug::DumpWithoutCrashing(FROM_HERE);
+    OnEndUpload(base::unexpected(GetGenericErrorMessage()),
+                OfficeFilesUploadResult::kFileSystemNotFound);
+    return;
+  }
+  GetODFSMetadata(
+      file_system,
+      base::BindOnce(
+          &OneDriveUploadHandler::CheckReauthenticationAndStartIOTask, this,
+          destination_folder_url));
+}
+
+void OneDriveUploadHandler::CheckReauthenticationAndStartIOTask(
+    const FileSystemURL& destination_folder_url,
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error) {
+  if (!metadata_or_error.has_value()) {
+    // Try the copy/move anyway.
+    LOG(ERROR) << "Failed to get reauthentication required state: "
+               << metadata_or_error.error();
+  } else if (metadata_or_error->reauthentication_required) {
+    // Show the reauthentication required error notification.
+    OnEndUpload(
+        base::unexpected(GetReauthenticationRequiredMessage()),
+        OfficeFilesUploadResult::kUploadNotStartedReauthenticationRequired);
+    return;
+  }
+
   const file_manager::io_task::OperationType operation_type =
       GetUploadType(profile_, source_url_) == UploadType::kCopy
           ? file_manager::io_task::OperationType::kCopy

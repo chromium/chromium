@@ -123,12 +123,13 @@ interface CustomProxyConnectionObserver {
   // network error encountered, if any, and OK if the fallback was for a reason
   // other than a network error (e.g. the proxy service was explicitly directed
   // to skip a proxy).
-  OnFallback(ProxyServer bad_proxy, int32 net_error);
+  OnFallback(ProxyChain bad_chain, int32 net_error);
 
   // Called when the response headers for the proxy tunnel request have been
   // received.
   OnTunnelHeadersReceived(
-      ProxyServer proxy_server,
+      ProxyChain proxy_chain,
+      uint64 chain_index,
       HttpResponseHeaders response_headers);
 };
 
@@ -908,6 +909,9 @@ struct BlindSignedAuthToken {
   mojo_base.mojom.Time expiration;
 };
 
+// The proxy layer to fetch batches of tokens for.
+enum IpProtectionProxyLayer {kProxyA, kProxyB};
+
 // A source for new BlindSignedAuthTokens.
 interface IpProtectionConfigGetter {
   // Try to get a batch of new tokens.
@@ -919,7 +923,7 @@ interface IpProtectionConfigGetter {
   //
   // It is forbidden for two calls to this method to be outstanding at the same
   // time.
-  TryGetAuthTokens(uint32 batch_size) =>
+  TryGetAuthTokens(uint32 batch_size, IpProtectionProxyLayer proxy_layer) =>
     (array<BlindSignedAuthToken>? bsa_tokens,
      mojo_base.mojom.Time? try_again_after);
 
@@ -1086,8 +1090,14 @@ interface NetworkContext {
 
   // Clears all entries from the HTTP Auth cache that were between |start_time|
   // and |end_time|, with |start_time| being inclusive and |end_time| exclusive.
+  //
+  // If a non-null |filter| is specified, ClearHttpAuthCache will clear only
+  // AuthCache entries for URLs matching the filter. Filtering by both origins
+  // and domains is supported. If |filter| is non-null, you must provide either
+  // |filter.origins| or |filter.domains|, or both to define the filtering.
   ClearHttpAuthCache(mojo_base.mojom.Time start_time,
-                     mojo_base.mojom.Time end_time) => ();
+                     mojo_base.mojom.Time end_time,
+                     ClearDataFilter? filter) => ();
 
   // Clears entries from the Preflight Cache according to the specified filter.
   // Clear browsing history supports time ranges for the last 1hr, 24hr, 7d, 4w,
@@ -1358,14 +1368,16 @@ interface NetworkContext {
   // |additional_headers| are miscellaneous HTTP headers to be added to the
   // request. Headers semantically relevant to the WebSocket handshake such
   // as "sec-websocket-protocol" and "origin" are handled separately, (e.g.,
-  // "sec-websocket-protocol" is constructed from  |requested_protocols| in
-  // this message). |site_for_cookies| represents the first-party origin for
-  // the request. |options| may be a combination of the kWebSocketOption* flags.
-  // |isolation_info| includes SiteForCookies, top frame origin, and current
-  // frame origin, and is used to isolate shared network stack resources based
-  // on the context. It must have RediredMode::kUpdateNothing. Currently,
-  // |isolation_info|'s SiteForCookies field is ignored, but it will eventually
-  // replace the |site_for_cookies| parameter.
+  // "sec-websocket-protocol" is constructed from  |requested_protocols| in this
+  // message). |site_for_cookies| represents the first-party origin for the
+  // request. |has_storage_access| is whether the calling context has opted into
+  // using a "storage-access" permission grant. |options| may be a combination
+  // of the kWebSocketOption* flags.  |isolation_info| includes SiteForCookies,
+  // top frame origin, and current frame origin, and is used to isolate shared
+  // network stack resources based on the context. It must have
+  // RediredMode::kUpdateNothing. Currently, |isolation_info|'s SiteForCookies
+  // field is ignored, but it will eventually replace the |site_for_cookies|
+  // parameter.
   //
   // If |header_client| is set, requests with the kURLLoadOptionUseHeaderClient
   // option will callback to the |header_client|, allowing the Cookie/Referrer
@@ -1393,6 +1405,7 @@ interface NetworkContext {
       url.mojom.Url url,
       array<string> requested_protocols,
       SiteForCookies site_for_cookies,
+      bool has_storage_access,
       IsolationInfo isolation_info,
       array<HttpHeader> additional_headers,
       int32 process_id,

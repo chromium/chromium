@@ -123,6 +123,16 @@ class WGPURepeatingCallback<R(Args...)>
   }
 };
 
+template <typename CallbackType>
+auto MakeWGPUOnceCallback(CallbackType&& cb) {
+  static_assert(
+      std::is_same<CallbackType,
+                   base::OnceCallback<typename CallbackType::RunType>>::value,
+      "Callback must be base::OnceCallback");
+  return new gpu::webgpu::WGPUOnceCallback<typename CallbackType::RunType>(
+      std::move(cb));
+}
+
 template <typename FunctionType, typename... BoundParameters>
 auto BindWGPUOnceCallback(FunctionType&& function,
                           BoundParameters&&... bound_parameters) {
@@ -133,19 +143,27 @@ auto BindWGPUOnceCallback(FunctionType&& function,
   static_assert(!is_weak_method,
                 "BindWGPUOnceCallback cannot be used with weak methods");
 
-  auto cb = base::BindOnce(std::forward<FunctionType>(function),
-                           std::forward<BoundParameters>(bound_parameters)...);
-  return new WGPUOnceCallback<typename decltype(cb)::RunType>(std::move(cb));
+  return MakeWGPUOnceCallback(
+      base::BindOnce(std::forward<FunctionType>(function),
+                     std::forward<BoundParameters>(bound_parameters)...));
+}
+
+template <typename CallbackType>
+auto MakeWGPURepeatingCallback(CallbackType&& cb) {
+  static_assert(
+      std::is_same<CallbackType, base::RepeatingCallback<
+                                     typename CallbackType::RunType>>::value,
+      "Callback must be base::RepeatingCallback");
+  return new gpu::webgpu::WGPURepeatingCallback<typename CallbackType::RunType>(
+      std::move(cb));
 }
 
 template <typename FunctionType, typename... BoundParameters>
 auto BindWGPURepeatingCallback(FunctionType&& function,
                                BoundParameters&&... bound_parameters) {
-  auto cb =
+  return MakeWGPURepeatingCallback(
       base::BindRepeating(std::forward<FunctionType>(function),
-                          std::forward<BoundParameters>(bound_parameters)...);
-  return std::make_unique<
-      WGPURepeatingCallback<typename decltype(cb)::RunType>>(std::move(cb));
+                          std::forward<BoundParameters>(bound_parameters)...));
 }
 
 }  // namespace gpu::webgpu

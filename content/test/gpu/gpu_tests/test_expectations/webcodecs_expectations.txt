@@ -11,8 +11,8 @@
 # tags: [ android-nexus-5x android-pixel-2 android-pixel-4
 #             android-pixel-6 android-shield-android-tv android-sm-a135m
 #             android-sm-a235m
-#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
-#             chromeos-board-jacuzzi chromeos-board-octopus
+#         chromeos-board-amd64-generic chromeos-board-eve chromeos-board-jacuzzi
+#             chromeos-board-octopus
 #         fuchsia-board-astro fuchsia-board-nelson fuchsia-board-sherlock
 #             fuchsia-board-qemu-x64 ]
 # Platform
@@ -136,7 +136,6 @@ crbug.com/1424154 [ win amd-0x7340 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
-crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_copyTo_sw_decoder [ Failure ]
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_copyTo_hw_decoder [ Failure ]
 

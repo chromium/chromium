@@ -65,8 +65,10 @@ ci.builder(
     ),
     builderless = False,
     cores = None,
-    # TODO(crbug.com/1486663): Restore tree-closing when bot is fixed.
+    # TODO(crbug.com/1486663): Restore tree-closing and sheriff rotation if/when
+    # bot is fixed.
     # tree_closing = True,
+    sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm",
         short_name = "san",
@@ -680,6 +682,7 @@ ci.builder(
         short_name = "dbg",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -714,6 +717,7 @@ ci.builder(
         short_name = "rel",
     ),
     cq_mirrors_console_view = "mirrors",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -742,6 +746,7 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -770,6 +775,7 @@ ci.builder(
         category = "cronet|arm64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -797,6 +803,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "cronet|asan",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -826,6 +833,7 @@ ci.builder(
         category = "cronet|mainline_clang|arm64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -855,6 +863,7 @@ ci.builder(
         category = "cronet|mainline_clang|arm64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -889,6 +898,7 @@ ci.builder(
         category = "cronet|mainline_clang|x86",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -918,6 +928,7 @@ ci.builder(
         category = "cronet|mainline_clang|x86",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -933,9 +944,67 @@ ci.builder(
         category = "cronet|test|perf",
         short_name = "m",
     ),
-    contact_team_email = "clank-engprod@google.com",
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
     reclient_jobs = reclient.jobs.DEFAULT,
+)
+
+ci.builder(
+    name = "android-cronet-riscv64-dbg",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|riscv64",
+        short_name = "dbg",
+    ),
+    contact_team_email = "cronet-sheriff@google.com",
+    notifies = ["cronet"],
+)
+
+ci.builder(
+    name = "android-cronet-riscv64-rel",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|riscv64",
+        short_name = "rel",
+    ),
+    contact_team_email = "cronet-sheriff@google.com",
+    notifies = ["cronet"],
 )
 
 ci.builder(
@@ -968,6 +1037,7 @@ ci.builder(
         category = "cronet|x86",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1001,6 +1071,7 @@ ci.builder(
         category = "cronet|x64",
         short_name = "dbg",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1033,8 +1104,9 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
-        short_name = "s",
+        short_name = "12",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1067,8 +1139,45 @@ ci.thin_tester(
     sheriff_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "cronet|test",
-        short_name = "t",
+        short_name = "13",
     ),
+    contact_team_email = "cronet-team@google.com",
+    notifies = ["cronet"],
+)
+
+ci.thin_tester(
+    name = "android-cronet-x64-dbg-14-tests",
+    description_html = "Tests Cronet against Android 14",
+    triggered_by = ["ci/android-cronet-x64-dbg"],
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x64_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    sheriff_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|test",
+        short_name = "14",
+    ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1103,6 +1212,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "l",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1137,6 +1247,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "m",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1171,6 +1282,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "n",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1205,6 +1317,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "o",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1239,6 +1352,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "p",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1274,6 +1388,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "10",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1308,6 +1423,7 @@ ci.thin_tester(
         category = "cronet|test",
         short_name = "11",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1336,6 +1452,7 @@ ci.builder(
         category = "cronet|x86",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 
@@ -1364,6 +1481,7 @@ ci.builder(
         category = "cronet|x64",
         short_name = "rel",
     ),
+    contact_team_email = "cronet-team@google.com",
     notifies = ["cronet"],
 )
 

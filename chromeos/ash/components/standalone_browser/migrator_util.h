@@ -2,14 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATOR_UTIL_H_
+#define CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATOR_UTIL_H_
+
 #include <string_view>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
 namespace ash::standalone_browser::migrator_util {
+
+// Specifies the mode of migration. Used to distinguish what migration mode the
+// user used to migrate to Lacros.
+enum class MigrationMode {
+  kCopy = 0,  // Migrate using `CopyMigrator`. CopyMigrator is deprecated.
+  kMove = 1,  // Migrate using `MoveMigrator`.
+  kSkipForNewUser = 2,  // Skip migration for new users.
+};
+
 // Maximum number of migration attempts. Migration will be skipped for the user
 // after reaching this limit with this many failed/skipped attempts.
 constexpr int kMaxMigrationAttemptCount = 3;
@@ -42,4 +55,44 @@ void UpdateMigrationAttemptCountForUser(PrefService* local_state,
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
 void ClearMigrationAttemptCountForUser(PrefService* local_state,
                                        std::string_view user_id_hash);
+
+// Returns the migration mode that was used to mark profile migration as
+// completed. If migration is not completed, the `optional` will not have a
+// value.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+absl::optional<MigrationMode> GetCompletedMigrationMode(
+    PrefService* local_state,
+    std::string_view user_id_hash);
+
+// Checks if profile migration has been completed for the user. If `print_mode`
+// is true, it prints the mode the migration was completed with.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+bool IsProfileMigrationCompletedForUser(PrefService* local_state,
+                                        std::string_view user_id_hash,
+                                        bool print_mode = false);
+
+// Sets the value of `kProfileMigrationCompletedForUserPref` or
+// `kProfileMoveMigrationCompletedForUserPref` to be true for the user
+// identified by `user_id_hash`, depending on `mode`.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+void SetProfileMigrationCompletedForUser(PrefService* local_state,
+                                         std::string_view user_id_hash,
+                                         MigrationMode mode);
+
+// Clears the values of `kProfileMigrationCompletedForUserPref` and
+// `kProfileMoveMigrationCompletedForUserPref` prefs for user identified by
+// `user_id_hash`:
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+void ClearProfileMigrationCompletedForUser(PrefService* local_state,
+                                           std::string_view user_id_hash);
+
+// Makes `IsProfileMigrationCompletedForUser()` return true without actually
+// updating Local State. It allows tests to avoid marking profile migration as
+// completed by getting user_id_hash of the logged in user and updating
+// g_browser_process->local_state() etc.
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER)
+void SetProfileMigrationCompletedForTest(absl::optional<bool> is_completed);
+
 }  // namespace ash::standalone_browser::migrator_util
+
+#endif  // CHROMEOS_ASH_COMPONENTS_STANDALONE_BROWSER_MIGRATOR_UTIL_H_

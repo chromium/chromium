@@ -22,7 +22,7 @@ namespace bits {
 // Returns true iff |value| is a power of 2.
 //
 // TODO(pkasting): When C++20 is available, replace with std::has_single_bit().
-template <typename T, typename = std::enable_if_t<std::is_integral<T>::value>>
+template <typename T, typename = std::enable_if_t<std::is_integral_v<T>>>
 constexpr bool IsPowerOfTwo(T value) {
   // From "Hacker's Delight": Section 2.1 Manipulating Rightmost Bits.
   //
@@ -42,7 +42,7 @@ constexpr T AlignDown(T size, T alignment) {
 
 // Move |ptr| back to the previous multiple of alignment, which must be a power
 // of two. Defined for types where sizeof(T) is one byte.
-template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
+template <typename T, typename = std::enable_if_t<sizeof(T) == 1>>
 inline T* AlignDown(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
       AlignDown(reinterpret_cast<uintptr_t>(ptr), alignment));
@@ -57,7 +57,7 @@ constexpr T AlignUp(T size, T alignment) {
 
 // Advance |ptr| to the next multiple of alignment, which must be a power of
 // two. Defined for types where sizeof(T) is one byte.
-template <typename T, typename = typename std::enable_if<sizeof(T) == 1>::type>
+template <typename T, typename = std::enable_if_t<sizeof(T) == 1>>
 inline T* AlignUp(T* ptr, uintptr_t alignment) {
   return reinterpret_cast<T*>(
       AlignUp(reinterpret_cast<uintptr_t>(ptr), alignment));
@@ -85,8 +85,7 @@ inline T* AlignUp(T* ptr, uintptr_t alignment) {
 // do better, but we'll avoid doing that unless we see proof that we need to.
 template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE constexpr
-    typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            int>::type
+    typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountLeadingZeroBits(T value) {
   static_assert(bits > 0, "invalid instantiation");
   return LIKELY(value)
@@ -98,8 +97,7 @@ ALWAYS_INLINE constexpr
 
 template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE constexpr
-    typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            int>::type
+    typename std::enable_if<std::is_unsigned_v<T> && sizeof(T) <= 8, int>::type
     CountTrailingZeroBits(T value) {
   return LIKELY(value) ? bits == 64
                              ? __builtin_ctzll(static_cast<uint64_t>(value))
@@ -130,7 +128,7 @@ constexpr int Log2Ceiling(uint32_t n) {
 // Can be used instead of manually shifting a 1 to the left.
 template <typename T>
 constexpr T LeftmostBit() {
-  static_assert(std::is_integral<T>::value,
+  static_assert(std::is_integral_v<T>,
                 "This function can only be used with integral types.");
   T one(1u);
   return one << (8 * sizeof(T) - 1);

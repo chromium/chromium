@@ -264,7 +264,7 @@ jboolean SyncServiceAndroidBridge::SetDecryptionPassphrase(
 jlong SyncServiceAndroidBridge::GetExplicitPassphraseTime(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()
       ->GetExplicitPassphraseTime()
-      .ToJavaTime();
+      .InMillisecondsSinceUnixEpoch();
 }
 
 void SyncServiceAndroidBridge::GetAllNodes(

@@ -134,17 +134,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
   // overlay. Instead, we should plumb this information to DRM/KMS so that if
   // the resource does get promoted to overlay, the display controller knows how
   // to perform the YUV-to-RGB conversion.
-  //
-  // TODO(b/246974264): Consider using |color_space| to replace |ycbcr_info|
-  // since the former is more general and not specific to Vulkan.
   gfx::ColorSpace color_space;
-  // The color space in which the resource is sampled, if different from
-  // |color_space|. If absl::nullopt, then sampling will occur in the same color
-  // space as |color_space|.
-  //
-  // TODO(crbug.com/1230619): Use this to implement support for WebGL sRGB
-  // framebuffers.
-  absl::optional<gfx::ColorSpace> color_space_when_sampled;
   gfx::HDRMetadata hdr_metadata;
 
   // A gpu resource may be possible to use directly in an overlay if this is

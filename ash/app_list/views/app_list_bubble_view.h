@@ -42,9 +42,9 @@ class ViewShadow;
 class ASH_EXPORT AppListBubbleView : public views::View,
                                      public SearchBoxViewDelegate,
                                      public AppListFolderController {
- public:
-  METADATA_HEADER(AppListBubbleView);
+  METADATA_HEADER(AppListBubbleView, views::View)
 
+ public:
   AppListBubbleView(AppListViewDelegate* view_delegate,
                     ApplicationDragAndDropHost* drag_and_drop_host);
   AppListBubbleView(const AppListBubbleView&) = delete;

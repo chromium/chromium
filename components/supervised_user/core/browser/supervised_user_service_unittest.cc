@@ -27,10 +27,12 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/core/common/supervised_user_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -55,8 +57,7 @@ class SupervisedUserServiceTestBase : public ::testing::Test {
                 &test_url_loader_factory_),
             identity_test_env_.identity_manager()) {
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
-    SupervisedUserService::RegisterProfilePrefs(
-        syncable_pref_service_.registry());
+    supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
     if (is_supervised) {
       syncable_pref_service_.SetString(prefs::kSupervisedUserId,
                                        kChildAccountSUID);
@@ -117,9 +118,11 @@ TEST_F(SupervisedUserServiceTest, IsURLFilteringEnabled) {
 
 TEST_F(SupervisedUserServiceTest,
        AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagDisabled) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
@@ -130,8 +133,10 @@ TEST_F(SupervisedUserServiceTest,
 
 TEST_F(SupervisedUserServiceTest,
        AreExtensionsPermissionsEnabledWithExtensionsPermissionsFlagEnabled) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list(
       kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   EXPECT_TRUE(service_->AreExtensionsPermissionsEnabled());
@@ -150,7 +155,7 @@ TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   // doesn't change and no report here.
   syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
-      SupervisedUserURLFilter::ALLOW);
+      static_cast<int>(FilteringBehavior::kAllow));
   syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
 
   // Blocks `kExampleUrl0`.
@@ -329,7 +334,7 @@ TEST_F(SupervisedUserServiceTestUnsupervised, AreExtensionsPermissionsEnabled) {
 TEST_F(SupervisedUserServiceTest, MAYBE_DeprecatedFilterPolicy) {
   ASSERT_EQ(syncable_pref_service_.GetInteger(
                 prefs::kDefaultSupervisedUserFilteringBehavior),
-            SupervisedUserURLFilter::ALLOW);
+            static_cast<int>(FilteringBehavior::kAllow));
   EXPECT_DCHECK_DEATH(syncable_pref_service_.SetInteger(
       prefs::kDefaultSupervisedUserFilteringBehavior,
       /* SupervisedUserURLFilter::WARN */ 1));

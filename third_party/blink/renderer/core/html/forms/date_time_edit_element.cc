@@ -868,7 +868,7 @@ DateTimeFieldElement* DateTimeEditElement::GetField(DateTimeField type) const {
   auto* it = base::ranges::find(fields_, type, &DateTimeFieldElement::Type);
   if (it == fields_.end())
     return nullptr;
-  return *it;
+  return it->Get();
 }
 
 bool DateTimeEditElement::HasField(DateTimeField type) const {

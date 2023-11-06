@@ -64,9 +64,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Tests logic in the SelectFileDialog class.
- */
+/** Tests logic in the SelectFileDialog class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.PAUSED)
@@ -77,8 +75,7 @@ public class SelectFileDialogTest {
     // The Executor to run tasks on during the test.
     private final PausedExecutorService mExecutor = new PausedExecutorService();
 
-    @Mock
-    FileUtils.Natives mFileUtilsMocks;
+    @Mock FileUtils.Natives mFileUtilsMocks;
 
     @Before
     public void setUp() throws Exception {
@@ -103,9 +100,7 @@ public class SelectFileDialogTest {
         shadowOf(Looper.getMainLooper()).idle();
     }
 
-    /**
-     * Argument matcher that matches Intents using |filterEquals| method.
-     */
+    /** Argument matcher that matches Intents using |filterEquals| method. */
     private static class IntentArgumentMatcher implements ArgumentMatcher<Intent> {
         private final Intent mIntent;
 
@@ -144,8 +139,10 @@ public class SelectFileDialogTest {
         }
 
         @Override
-        protected void onMultipleFilesSelected(long nativeSelectFileDialogImpl,
-                String[] filePathArray, String[] displayNameArray) {
+        protected void onMultipleFilesSelected(
+                long nativeSelectFileDialogImpl,
+                String[] filePathArray,
+                String[] displayNameArray) {
             mFileSelectionSuccess++;
             mOnActionCallback.notifyCalled();
         }
@@ -170,8 +167,11 @@ public class SelectFileDialogTest {
         // Select a simple (non-media) MIME type without setting up successful intent handling, to
         // simulate the pipeline aborting because showIntent fails.
         int callCount = mOnActionCallback.getCallCount();
-        selectFileDialog.selectFile(new String[] {"application/pdf"}, /*capture=*/false,
-                /*multiple=*/false, windowAndroid);
+        selectFileDialog.selectFile(
+                new String[] {"application/pdf"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(1, selectFileDialog.mFileSelectionAborted);
@@ -180,58 +180,78 @@ public class SelectFileDialogTest {
         // Now setup WindowAndroid#showIntent to succeed for our next run.
         IntentArgumentMatcher chooserIntentArgumentMatcher =
                 new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
-        Mockito.doAnswer((invocation) -> {
-                   // When showIntent is called, we use the opportunity to check on the values we
-                   // expect to see within the Intent data.
-                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
-                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-                   assertEquals("*/*", getContentIntent.getType());
-                   String[] mimeTypes =
-                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
-                   assertArrayEquals(new String[] {"application/pdf"}, mimeTypes);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
-                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
-                   return true;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            // When showIntent is called, we use the opportunity to check on the
+                            // values we expect to see within the Intent data.
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(new String[] {"application/pdf"}, mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
                 .when(windowAndroid)
-                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
-                        (WindowAndroid.IntentCallback) any(), anyInt());
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
 
         // Simulate showing the dialog, allowing a PDF to be uploaded and watch the pipeline
         // remain open.
         callCount = mOnActionCallback.getCallCount();
-        selectFileDialog.selectFile(new String[] {"application/pdf"}, /*capture=*/false,
-                /*multiple=*/false, windowAndroid);
+        selectFileDialog.selectFile(
+                new String[] {"application/pdf"},
+                /* capture= */ false,
+                /* multiple= */ false,
+                windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
 
         // Setup showIntent to check for slightly different values for our next run.
-        Mockito.doAnswer((invocation) -> {
-                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
-                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
-                   assertEquals(true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-                   assertEquals("*/*", getContentIntent.getType());
-                   String[] mimeTypes =
-                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
-                   // Adding a media related MIME-type adds an extra MIME type to avoid
-                   // ACTION_GET_CONTENT hijacking.
-                   assertArrayEquals(
-                           new String[] {"application/pdf", "image/gif", "type/nonexistent"},
-                           mimeTypes);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
-                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
-                   return true;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    true, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            // Adding a media related MIME-type adds an extra MIME type to avoid
+                            // ACTION_GET_CONTENT hijacking.
+                            assertArrayEquals(
+                                    new String[] {
+                                        "application/pdf", "image/gif", "type/nonexistent"
+                                    },
+                                    mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
                 .when(windowAndroid)
-                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
-                        (WindowAndroid.IntentCallback) any(), anyInt());
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
 
         // Add a media file to the mix and allow multiple files.
         callCount = mOnActionCallback.getCallCount();
-        selectFileDialog.selectFile(new String[] {"application/pdf", "image/gif"},
-                /*capture=*/false, /*multiple=*/true, windowAndroid);
+        selectFileDialog.selectFile(
+                new String[] {"application/pdf", "image/gif"},
+                /* capture= */ false,
+                /* multiple= */ true,
+                windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
@@ -245,25 +265,31 @@ public class SelectFileDialogTest {
         // Setup WindowAndroid#showIntent to succeed (and validate the call).
         IntentArgumentMatcher chooserIntentArgumentMatcher =
                 new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
-        Mockito.doAnswer((invocation) -> {
-                   // When showIntent is called, we use the opportunity to check on the values we
-                   // expect to see within the Intent data.
-                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
-                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-                   assertEquals("*/*", getContentIntent.getType());
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
-                   assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
-                   return true;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            // When showIntent is called, we use the opportunity to check on the
+                            // values we expect to see within the Intent data.
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES));
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            assertTrue(getContentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
+                            return true;
+                        })
                 .when(windowAndroid)
-                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
-                        (WindowAndroid.IntentCallback) any(), anyInt());
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
 
         // Select an empty MIME type.
-        selectFileDialog.selectFile(new String[] {}, /*capture=*/false,
-                /*multiple=*/false, windowAndroid);
+        selectFileDialog.selectFile(
+                new String[] {}, /* capture= */ false, /* multiple= */ false, windowAndroid);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(0, selectFileDialog.mFileSelectionAborted);
         selectFileDialog.resetFileSelectionAttempts();
@@ -280,7 +306,10 @@ public class SelectFileDialogTest {
         // is denied).
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
-                new String[] {"image/jpeg"}, /*capture=*/true, /*multiple=*/false, windowAndroid);
+                new String[] {"image/jpeg"},
+                /* capture= */ true,
+                /* multiple= */ false,
+                windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(1, selectFileDialog.mFileSelectionAborted);
@@ -306,14 +335,18 @@ public class SelectFileDialogTest {
 
         // Test LAUNCH_CAMERA, which requires a bit of mocking to make sure the permissions are
         // setup correctly (ensure that the requests for the CAMERA permission are denied).
-        Mockito.doAnswer((invocation) -> {
-                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
-                   callback.onRequestPermissionsResult(new String[] {Manifest.permission.CAMERA},
-                           new int[] {PackageManager.PERMISSION_DENIED});
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            PermissionCallback callback =
+                                    (PermissionCallback) invocation.getArguments()[1];
+                            callback.onRequestPermissionsResult(
+                                    new String[] {Manifest.permission.CAMERA},
+                                    new int[] {PackageManager.PERMISSION_DENIED});
+                            return null;
+                        })
                 .when(windowAndroid)
-                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                .requestPermissions(
+                        aryEq(new String[] {Manifest.permission.CAMERA}),
                         (PermissionCallback) any());
 
         // Test LAUNCH_CAMERA when permission is denied. Note: this is different from the other
@@ -328,14 +361,18 @@ public class SelectFileDialogTest {
         selectFileDialog.resetFileSelectionAttempts();
 
         // Setup for another LAUNCH_CAMERA test, this time with the CAMERA permission enabled.
-        Mockito.doAnswer((invocation) -> {
-                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
-                   callback.onRequestPermissionsResult(new String[] {Manifest.permission.CAMERA},
-                           new int[] {PackageManager.PERMISSION_GRANTED});
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            PermissionCallback callback =
+                                    (PermissionCallback) invocation.getArguments()[1];
+                            callback.onRequestPermissionsResult(
+                                    new String[] {Manifest.permission.CAMERA},
+                                    new int[] {PackageManager.PERMISSION_GRANTED});
+                            return null;
+                        })
                 .when(windowAndroid)
-                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                .requestPermissions(
+                        aryEq(new String[] {Manifest.permission.CAMERA}),
                         (PermissionCallback) any());
 
         // Since the permission is now allowed, the LAUNCH_CAMERA event should keep the pipeline
@@ -365,20 +402,27 @@ public class SelectFileDialogTest {
         // the test reruns.
         IntentArgumentMatcher chooserIntentArgumentMatcher =
                 new IntentArgumentMatcher(new Intent(Intent.ACTION_CHOOSER));
-        Mockito.doAnswer((invocation) -> {
-                   Intent chooserIntent = (Intent) invocation.getArguments()[0];
-                   Intent getContentIntent = (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-                   assertEquals("*/*", getContentIntent.getType());
-                   String[] mimeTypes =
-                           (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
-                   assertArrayEquals(new String[] {"image/jpeg", "type/nonexistent"}, mimeTypes);
-                   assertEquals(null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
-                   return true;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            Intent chooserIntent = (Intent) invocation.getArguments()[0];
+                            Intent getContentIntent =
+                                    (Intent) chooserIntent.getExtra(Intent.EXTRA_INTENT);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_ALLOW_MULTIPLE));
+                            assertEquals("*/*", getContentIntent.getType());
+                            String[] mimeTypes =
+                                    (String[]) getContentIntent.getExtra(Intent.EXTRA_MIME_TYPES);
+                            assertArrayEquals(
+                                    new String[] {"image/jpeg", "type/nonexistent"}, mimeTypes);
+                            assertEquals(
+                                    null, getContentIntent.getExtra(Intent.EXTRA_INITIAL_INTENTS));
+                            return true;
+                        })
                 .when(windowAndroid)
-                .showIntent(ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
-                        (WindowAndroid.IntentCallback) any(), anyInt());
+                .showIntent(
+                        ArgumentMatchers.argThat(chooserIntentArgumentMatcher),
+                        (WindowAndroid.IntentCallback) any(),
+                        anyInt());
 
         // Rerun the test. Because showIntent now reports success, the upload should still be in
         // progress.
@@ -401,23 +445,29 @@ public class SelectFileDialogTest {
         IntentArgumentMatcher imageCaptureIntentArgumentMatcher =
                 new IntentArgumentMatcher(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));
         when(windowAndroid.canResolveActivity(
-                     ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
+                        ArgumentMatchers.argThat(imageCaptureIntentArgumentMatcher)))
                 .thenReturn(true);
 
         // Setup the request callback to simulate an interrupted permission flow.
-        Mockito.doAnswer((invocation) -> {
-                   PermissionCallback callback = (PermissionCallback) invocation.getArguments()[1];
-                   callback.onRequestPermissionsResult(new String[] {}, new int[] {});
-                   return null;
-               })
+        Mockito.doAnswer(
+                        (invocation) -> {
+                            PermissionCallback callback =
+                                    (PermissionCallback) invocation.getArguments()[1];
+                            callback.onRequestPermissionsResult(new String[] {}, new int[] {});
+                            return null;
+                        })
                 .when(windowAndroid)
-                .requestPermissions(aryEq(new String[] {Manifest.permission.CAMERA}),
+                .requestPermissions(
+                        aryEq(new String[] {Manifest.permission.CAMERA}),
                         (PermissionCallback) any());
 
         // Ensure permission request in selectFile can handle interrupted permission flow.
         int callCount = mOnActionCallback.getCallCount();
         selectFileDialog.selectFile(
-                new String[] {"image/jpeg"}, /*capture=*/true, /*multiple=*/false, windowAndroid);
+                new String[] {"image/jpeg"},
+                /* capture= */ true,
+                /* multiple= */ false,
+                windowAndroid);
         mOnActionCallback.waitForCallback(callCount, 1);
         assertEquals(0, selectFileDialog.mFileSelectionSuccess);
         assertEquals(1, selectFileDialog.mFileSelectionAborted);
@@ -434,11 +484,9 @@ public class SelectFileDialogTest {
         selectFileDialog.resetFileSelectionAttempts();
     }
 
-    /**
-     * Returns the determined scope for the accepted |fileTypes|.
-     */
+    /** Returns the determined scope for the accepted |fileTypes|. */
     private int scopeForFileTypes(String... fileTypes) {
-        SelectFileDialog instance = SelectFileDialog.create((long) 0 /* nativeSelectFileDialog */);
+        SelectFileDialog instance = SelectFileDialog.create((long) /* nativeSelectFileDialog= */ 0);
         instance.setFileTypesForTests(new ArrayList<String>(Arrays.asList(fileTypes)));
 
         return instance.determineSelectFileDialogScope();
@@ -455,49 +503,64 @@ public class SelectFileDialogTest {
                 SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES, scopeForFileTypes("image/*"));
         assertEquals(
                 SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES, scopeForFileTypes("image/png"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes("image/*", "test/plain"));
 
         assertEquals(
                 SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS, scopeForFileTypes("video/*"));
         assertEquals(
                 SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS, scopeForFileTypes("video/ogg"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes("video/*", "test/plain"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
                 scopeForFileTypes("image/x-png", "image/gif", "image/jpeg"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes("image/x-png", "image/gif", "image/jpeg", "text/plain"));
 
         // Test image extensions only.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
-                scopeForFileTypes(".jpg", ".jpeg", ".png", ".gif", ".apng", ".tiff", ".tif", ".bmp",
-                        ".xcf", ".webp"));
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
+                scopeForFileTypes(
+                        ".jpg", ".jpeg", ".png", ".gif", ".apng", ".tiff", ".tif", ".bmp", ".xcf",
+                        ".webp"));
         // Test image extensions mixed with image MIME types.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES,
                 scopeForFileTypes(".JPG", ".jpeg", "image/gif", "image/jpeg"));
         // Image extensions mixed with image MIME types and other.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes(".jpg", "image/gif", "text/plain"));
         // Video extensions only.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS,
-                scopeForFileTypes(".asf", ".avhcd", ".avi", ".flv", ".mov", ".mp4", ".mpeg", ".mpg",
-                        ".swf", ".wmv", ".webm", ".mkv", ".divx"));
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS,
+                scopeForFileTypes(
+                        ".asf", ".avhcd", ".avi", ".flv", ".mov", ".mp4", ".mpeg", ".mpg", ".swf",
+                        ".wmv", ".webm", ".mkv", ".divx"));
         // Video extensions and video MIME types.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_VIDEOS,
                 scopeForFileTypes(".avi", ".mp4", "video/ogg"));
         // Video extensions and video MIME types and other.
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes(".avi", ".mp4", "video/ogg", "text/plain"));
 
         // Non-image, non-video extension only.
         assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC, scopeForFileTypes(".doc"));
 
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS,
                 scopeForFileTypes("video/*", "image/*"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_IMAGES_AND_VIDEOS,
                 scopeForFileTypes("image/jpeg", "video/ogg"));
-        assertEquals(SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
+        assertEquals(
+                SelectFileDialog.SELECT_FILE_DIALOG_SCOPE_GENERIC,
                 scopeForFileTypes("video/*", "image/*", "text/plain"));
     }
 
@@ -517,16 +580,21 @@ public class SelectFileDialogTest {
 
         assertEquals(null, SelectFileDialog.convertToSupportedPhotoPickerTypes(new ArrayList<>()));
         assertEquals(null, SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("")));
-        assertEquals(null,
+        assertEquals(
+                null,
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("foo/bar")));
-        assertEquals(Arrays.asList("image/jpeg"),
+        assertEquals(
+                Arrays.asList("image/jpeg"),
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList(".jpg")));
-        assertEquals(Arrays.asList("image/jpeg"),
+        assertEquals(
+                Arrays.asList("image/jpeg"),
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("image/jpeg")));
-        assertEquals(Arrays.asList("image/jpeg"),
+        assertEquals(
+                Arrays.asList("image/jpeg"),
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(
                         Arrays.asList(".jpg", "image/jpeg")));
-        assertEquals(Arrays.asList("image/gif", "image/jpeg"),
+        assertEquals(
+                Arrays.asList("image/gif", "image/jpeg"),
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(
                         Arrays.asList(".gif", "image/jpeg")));
 
@@ -534,14 +602,17 @@ public class SelectFileDialogTest {
         // expect failure until it is turned on by default.
         assertEquals(
                 null, SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList(".mpg")));
-        assertEquals(null,
+        assertEquals(
+                null,
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(Arrays.asList("video/mpeg")));
-        assertEquals(null,
+        assertEquals(
+                null,
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(
                         Arrays.asList(".jpg", "image/jpeg", ".mpg")));
 
         // Returns null because generic picker is required (due to addition of .txt file).
-        assertEquals(null,
+        assertEquals(
+                null,
                 SelectFileDialog.convertToSupportedPhotoPickerTypes(
                         Arrays.asList(".txt", ".jpg", "image/jpeg")));
     }
@@ -549,16 +620,17 @@ public class SelectFileDialogTest {
     @Test
     public void testMultipleFileSelectorWithFileUris() {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
-        Uri[] filePathArray = new Uri[] {
-                Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"),
-                Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_1.jpg")};
-        SelectFileDialog.GetDisplayNameTask task = selectFileDialog.new GetDisplayNameTask(
-                ContextUtils.getApplicationContext(), true, filePathArray);
+        Uri[] filePathArray =
+                new Uri[] {
+                    Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_0.jpg"),
+                    Uri.parse("file:///storage/emulated/0/DCIM/Camera/IMG_1.jpg")
+                };
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
         task.doInBackground();
-        assertEquals(task.mFilePaths[0].toString(),
-                "///storage/emulated/0/DCIM/Camera/IMG_0.jpg");
-        assertEquals(task.mFilePaths[1].toString(),
-                "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
+        assertEquals(task.mFilePaths[0].toString(), "///storage/emulated/0/DCIM/Camera/IMG_0.jpg");
+        assertEquals(task.mFilePaths[1].toString(), "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
     }
 
     private void testFilePath(
@@ -566,16 +638,21 @@ public class SelectFileDialogTest {
         testFilePath(path, selectFileDialog, expectedPass, expectedPass);
     }
 
-    private void testFilePath(String path, SelectFileDialog selectFileDialog,
-            boolean expectedFileSelectionResult, boolean expectedGetDisplayNameResult) {
+    private void testFilePath(
+            String path,
+            SelectFileDialog selectFileDialog,
+            boolean expectedFileSelectionResult,
+            boolean expectedGetDisplayNameResult) {
         Uri[] uris = new Uri[1];
         uris[0] = Uri.fromFile(new File(path));
 
-        SelectFileDialog.FilePathSelectedTask task = selectFileDialog.new FilePathSelectedTask(
-                ContextUtils.getApplicationContext(), path, null);
+        SelectFileDialog.FilePathSelectedTask task =
+                selectFileDialog
+                .new FilePathSelectedTask(ContextUtils.getApplicationContext(), path, null);
         SelectFileDialog.GetDisplayNameTask task2 =
-                selectFileDialog.new GetDisplayNameTask(ContextUtils.getApplicationContext(),
-                        /* isMultiple = */ false, uris);
+                selectFileDialog
+                .new GetDisplayNameTask(
+                        ContextUtils.getApplicationContext(), /* isMultiple= */ false, uris);
         assertEquals(expectedFileSelectionResult, task.doInBackground());
         assertEquals(expectedGetDisplayNameResult, null != task2.doInBackground());
     }
@@ -609,16 +686,23 @@ public class SelectFileDialogTest {
         String lastComponent = path.getName(path.getNameCount() - 1).toString();
 
         // Make sure that base/./dataDir is treated the same as base/dataDir (and fail the request).
-        testFilePath(parent + "/./" + lastComponent + "/xyz.jpg", selectFileDialog,
+        testFilePath(
+                parent + "/./" + lastComponent + "/xyz.jpg",
+                selectFileDialog,
                 /* expectedPass= */ false);
         // Make sure that dataDir/../dataDir is treated the same as dataDir (and fail the request).
-        testFilePath(dataDir + "/../" + lastComponent + "/xyz.jpg", selectFileDialog,
+        testFilePath(
+                dataDir + "/../" + lastComponent + "/xyz.jpg",
+                selectFileDialog,
                 /* expectedPass= */ false);
 
         // Tests invalid file path should fail file selection.
         doReturn(new String()).when(mFileUtilsMocks).getAbsoluteFilePath(any());
-        testFilePath("\\/tmp/xyz.jpg", selectFileDialog,
-                /* expectedFileSelectionResult= */ false, /* expectedGetDisplayNameResult= */ true);
+        testFilePath(
+                "\\/tmp/xyz.jpg",
+                selectFileDialog,
+                /* expectedFileSelectionResult= */ false,
+                /* expectedGetDisplayNameResult= */ true);
     }
 
     @Test
@@ -718,7 +802,7 @@ public class SelectFileDialogTest {
         final Cursor cursor = Mockito.mock(Cursor.class);
 
         String[] filePathColumn = {
-                MediaStore.Files.FileColumns.MIME_TYPE,
+            MediaStore.Files.FileColumns.MIME_TYPE,
         };
         if ("THROW".equals(mimeType)) {
             Mockito.doThrow(new RuntimeException())
@@ -736,7 +820,8 @@ public class SelectFileDialogTest {
         return contentResolver;
     }
 
-    HistogramWatcher getHistogramWatcher(@SelectFileDialog.FileSelectedAction int expectAction,
+    HistogramWatcher getHistogramWatcher(
+            @SelectFileDialog.FileSelectedAction int expectAction,
             @SelectFileDialog.FileSelectedUploadMethod int expectMethod) {
         return HistogramWatcher.newBuilder()
                 .expectIntRecord("Android.SelectFileDialogContentSelected", expectAction)
@@ -748,68 +833,151 @@ public class SelectFileDialogTest {
     public void testUploadMethodLogging() {
         SelectFileDialog selectFileDialog = new SelectFileDialog(0);
 
-        List<Object[]> testCases = Arrays.asList(new Object[][] {
-                // Test cases for MIME-type lookup:
-                {"foo.jpg", "image/jpg", /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_IMAGE_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_IMAGE},
-                {"foo.jpg", "image/jpg", /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_IMAGE_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_IMAGE},
-                {"foo.mp4", "video/mp4", /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_VIDEO_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_VIDEO},
-                {"foo.mp4", "video/mp4", /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_VIDEO_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_VIDEO},
-                {"foo.txt", "text/plain", /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_OTHER_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_OTHER},
-                {"foo.txt", "text/plain", /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_OTHER_BY_MIME_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_OTHER},
-                // Test cases for lookup by extension:
-                {"foo.jpg", null, /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_IMAGE_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_IMAGE},
-                {"foo.jpg", null, /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_IMAGE_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_IMAGE},
-                {"foo.mp4", null, /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_VIDEO_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_VIDEO},
-                {"foo.mp4", null, /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_VIDEO_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_VIDEO},
-                {"foo.txt", null, /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_OTHER_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_OTHER},
-                {"foo.txt", null, /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_OTHER_BY_EXTENSION,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_OTHER},
+        List<Object[]> testCases =
+                Arrays.asList(
+                        new Object[][] {
+                            // Test cases for MIME-type lookup:
+                            {
+                                "foo.jpg",
+                                "image/jpg",
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_IMAGE_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_IMAGE
+                            },
+                            {
+                                "foo.jpg",
+                                "image/jpg",
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_IMAGE_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_IMAGE
+                            },
+                            {
+                                "foo.mp4",
+                                "video/mp4",
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_VIDEO_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_VIDEO
+                            },
+                            {
+                                "foo.mp4",
+                                "video/mp4",
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_VIDEO_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_VIDEO
+                            },
+                            {
+                                "foo.txt",
+                                "text/plain",
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_OTHER_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_OTHER
+                            },
+                            {
+                                "foo.txt",
+                                "text/plain",
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_OTHER_BY_MIME_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_OTHER
+                            },
+                            // Test cases for lookup by extension:
+                            {
+                                "foo.jpg",
+                                null,
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_IMAGE_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_IMAGE
+                            },
+                            {
+                                "foo.jpg",
+                                null,
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_IMAGE_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_IMAGE
+                            },
+                            {
+                                "foo.mp4",
+                                null,
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_VIDEO_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_VIDEO
+                            },
+                            {
+                                "foo.mp4",
+                                null,
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_VIDEO_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_VIDEO
+                            },
+                            {
+                                "foo.txt",
+                                null,
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_OTHER_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_OTHER
+                            },
+                            {
+                                "foo.txt",
+                                null,
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction
+                                        .EXTERNAL_PICKER_OTHER_BY_EXTENSION,
+                                SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_OTHER
+                            },
 
-                // Pathological (no filename -- results in URI parsing failing):
-                {"", null, /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE},
-                {"", null, /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_UNKNOWN_TYPE},
-                // Pathological (no MIME type and no extension):
-                {"foo", null, /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE},
-                {"foo", null, /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_UNKNOWN_TYPE},
-                // Pathological (ContentResolver throwing exception):
-                {"foo", "THROW", /* useMediaPicker= */ true,
-                        SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE},
-                {"foo", "THROW", /* useMediaPicker= */ false,
-                        SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
-                        SelectFileDialog.FileSelectedUploadMethod.EXTERNAL_PICKER_UNKNOWN_TYPE},
-        });
+                            // Pathological (no filename -- results in URI parsing failing):
+                            {
+                                "",
+                                null,
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE
+                            },
+                            {
+                                "",
+                                null,
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod
+                                        .EXTERNAL_PICKER_UNKNOWN_TYPE
+                            },
+                            // Pathological (no MIME type and no extension):
+                            {
+                                "foo",
+                                null,
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE
+                            },
+                            {
+                                "foo",
+                                null,
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod
+                                        .EXTERNAL_PICKER_UNKNOWN_TYPE
+                            },
+                            // Pathological (ContentResolver throwing exception):
+                            {
+                                "foo",
+                                "THROW",
+                                /* useMediaPicker= */ true,
+                                SelectFileDialog.FileSelectedAction.MEDIA_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod.MEDIA_PICKER_UNKNOWN_TYPE
+                            },
+                            {
+                                "foo",
+                                "THROW",
+                                /* useMediaPicker= */ false,
+                                SelectFileDialog.FileSelectedAction.EXTERNAL_PICKER_UNKNOWN_TYPE,
+                                SelectFileDialog.FileSelectedUploadMethod
+                                        .EXTERNAL_PICKER_UNKNOWN_TYPE
+                            },
+                        });
 
         for (Object[] testCase : testCases) {
             String filename = (String) testCase[0];
@@ -820,14 +988,24 @@ public class SelectFileDialogTest {
 
             var histogramWatcher = getHistogramWatcher(action, method);
             String[] filesSelected = new String[] {filename};
-            AsyncTask<Boolean> task = selectFileDialog.getUploadMetricTaskForTesting(
-                    mimeType != null ? getMockContentResolver(mimeType)
-                                     : ContextUtils.getApplicationContext().getContentResolver(),
-                    filesSelected, useMediaPicker);
+            AsyncTask<Boolean> task =
+                    selectFileDialog.getUploadMetricTaskForTesting(
+                            mimeType != null
+                                    ? getMockContentResolver(mimeType)
+                                    : ContextUtils.getApplicationContext().getContentResolver(),
+                            filesSelected,
+                            useMediaPicker);
             task.executeOnExecutor(mExecutor);
             runAllAsyncTasks();
-            histogramWatcher.assertExpected("File: " + filename + " MimeType: " + mimeType
-                    + " Action: " + action + " Method: " + method);
+            histogramWatcher.assertExpected(
+                    "File: "
+                            + filename
+                            + " MimeType: "
+                            + mimeType
+                            + " Action: "
+                            + action
+                            + " Method: "
+                            + method);
         }
     }
 }

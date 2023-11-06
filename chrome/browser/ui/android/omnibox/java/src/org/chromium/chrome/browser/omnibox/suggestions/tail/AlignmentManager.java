@@ -10,22 +10,27 @@ import android.view.View;
 import org.chromium.ui.base.ViewUtils;
 
 /**
- * Coordinates horizontal alignment of the tail suggestions.
- * Tail suggestions are aligned to
- * - the user input in the Omnibox, when possible,
- * - to each other (left edge) when longest tail suggestion makes it impossible to align it to
- *   user input.
+ * Coordinates horizontal alignment of the tail suggestions. Tail suggestions are aligned to - the
+ * user input in the Omnibox, when possible, - to each other (left edge) when longest tail
+ * suggestion makes it impossible to align it to user input.
  *
- * Examples:
- * 1. Aligned to User input:
+ * <p>Examples:
+ *
+ * <p>Aligned to User input:
+ *
+ * <pre>
  *    ( User Query In Omni             )
  *    [           ... Omnibox          ]
  *    [           ... Omnibox Android  ]
+ * </pre>
  *
- * 2. Aligned to longest suggestion:
+ * <p>Aligned to longest suggestion:
+ *
+ * <pre>
  *    ( Longer User Query In The Omni  )
  *    [             ... Omnibox        ]
  *    [             ... Omnibox Android]
+ * </pre>
  */
 class AlignmentManager {
     private final ArraySet<View> mVisibleTailSuggestions = new ArraySet<>();
@@ -33,11 +38,9 @@ class AlignmentManager {
     private int mLongestCompletionWidth;
 
     /**
-     * Compute additional suggestion text offset for tail suggestions.
-     * Ensures that tail suggestion is
-     * - aligned with user query, if adjusted suggestion can still fit in the available space, or
-     *   right edge otherwise,
-     * - all tail suggestions are left aligned with each other.
+     * Compute additional suggestion text offset for tail suggestions. Ensures that tail suggestion
+     * is - aligned with user query, if adjusted suggestion can still fit in the available space, or
+     * right edge otherwise, - all tail suggestions are left aligned with each other.
      *
      * @param requestor View requesting the pad.
      * @param completionTextWidth Length of the text that is displayed in the suggestion.
@@ -66,8 +69,8 @@ class AlignmentManager {
     }
 
     /**
-     * Register view to receive layout requests in cases where it may be misaligned
-     * with other views.
+     * Register view to receive layout requests in cases where it may be misaligned with other
+     * views.
      *
      * @param View view to register.
      */
@@ -76,9 +79,8 @@ class AlignmentManager {
     }
 
     /**
-     * Re-layout all views except supplied one.
-     * This call is needed to re-align all existing suggestion views, if the newly added view causes
-     * lack of horizontal alignment.
+     * Re-layout all views except supplied one. This call is needed to re-align all existing
+     * suggestion views, if the newly added view causes lack of horizontal alignment.
      *
      * @param excluded View to be excluded from re-layout process.
      */

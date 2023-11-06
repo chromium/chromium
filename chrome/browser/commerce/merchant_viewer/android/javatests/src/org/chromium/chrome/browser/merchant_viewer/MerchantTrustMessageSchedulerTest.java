@@ -42,45 +42,36 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link MerchantTrustMessageScheduler}.
- */
+/** Tests for {@link MerchantTrustMessageScheduler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MerchantTrustMessageSchedulerTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private MessageDispatcher mMockMessageDispatcher;
+    @Mock private MessageDispatcher mMockMessageDispatcher;
 
-    @Mock
-    private WebContents mMockWebContents;
+    @Mock private WebContents mMockWebContents;
 
-    @Mock
-    private MerchantTrustMetrics mMockMetrics;
+    @Mock private MerchantTrustMetrics mMockMetrics;
 
-    @Mock
-    private Handler mMockHandler;
+    @Mock private Handler mMockHandler;
 
-    @Mock
-    private ObservableSupplier<Tab> mMockTabProvider;
+    @Mock private ObservableSupplier<Tab> mMockTabProvider;
 
-    @Mock
-    private Tab mMockTab;
+    @Mock private Tab mMockTab;
 
-    @Mock
-    private WebContents mMockWebContents2;
+    @Mock private WebContents mMockWebContents2;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        doAnswer(invocation -> {
-            Runnable runnable = (Runnable) (invocation.getArguments()[0]);
-            runnable.run();
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = (Runnable) (invocation.getArguments()[0]);
+                            runnable.run();
+                            return null;
+                        })
                 .when(mMockHandler)
                 .postDelayed(any(Runnable.class), anyLong());
         doReturn(mMockTab).when(mMockTabProvider).get();
@@ -112,8 +103,11 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(1))
-                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION), eq(false));
+                .enqueueMessage(
+                        eq(mockPropteryModel),
+                        eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
         verify(mMockMetrics, times(1)).startRecordingMessageImpact(eq("fake_host"), eq(4.7));
         verify(mMockMetrics, times(1)).recordMetricsForMessageShown();
         Assert.assertNull(scheduler.getScheduledMessageContext());
@@ -122,8 +116,10 @@ public class MerchantTrustMessageSchedulerTest {
     @Test
     public void testSchedule_DisableMessageForImpactStudy() throws TimeoutException {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
-                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM, "true");
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DISABLED_FOR_IMPACT_STUDY_PARAM,
+                "true");
         FeatureList.setTestValues(testValues);
 
         MerchantTrustSignalsCallbackHelper callbackHelper =
@@ -149,8 +145,11 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockMetrics, times(1)).recordMetricsForMessagePrepared();
         verify(mMockHandler, times(1)).postDelayed(any(Runnable.class), eq(2000L));
         verify(mMockMessageDispatcher, times(0))
-                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION), eq(false));
+                .enqueueMessage(
+                        eq(mockPropteryModel),
+                        eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
         verify(mMockMetrics, times(1)).startRecordingMessageImpact(eq("fake_host"), eq(4.7));
         verify(mMockMetrics, times(0)).recordMetricsForMessageShown();
         verify(mMockMetrics, times(1))
@@ -184,8 +183,11 @@ public class MerchantTrustMessageSchedulerTest {
                 .recordMetricsForMessageCleared(
                         eq(MessageClearReason.MESSAGE_CONTEXT_NO_LONGER_VALID));
         verify(mMockMessageDispatcher, never())
-                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION), eq(false));
+                .enqueueMessage(
+                        eq(mockPropteryModel),
+                        eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
         Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
@@ -215,8 +217,11 @@ public class MerchantTrustMessageSchedulerTest {
                 .recordMetricsForMessageCleared(
                         eq(MessageClearReason.SWITCH_TO_DIFFERENT_WEBCONTENTS));
         verify(mMockMessageDispatcher, never())
-                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION), eq(false));
+                .enqueueMessage(
+                        eq(mockPropteryModel),
+                        eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
         Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
@@ -246,8 +251,11 @@ public class MerchantTrustMessageSchedulerTest {
         verify(mMockMetrics, times(1))
                 .recordMetricsForMessageCleared(eq(MessageClearReason.UNKNOWN));
         verify(mMockMessageDispatcher, never())
-                .enqueueMessage(eq(mockPropteryModel), eq(mMockWebContents),
-                        eq(MessageScopeType.NAVIGATION), eq(false));
+                .enqueueMessage(
+                        eq(mockPropteryModel),
+                        eq(mMockWebContents),
+                        eq(MessageScopeType.NAVIGATION),
+                        eq(false));
         Assert.assertNull(scheduler.getScheduledMessageContext());
     }
 
@@ -261,8 +269,9 @@ public class MerchantTrustMessageSchedulerTest {
         doReturn(true).when(mockMessagesContext).isValid();
         doReturn(mMockWebContents).when(mockMessagesContext).getWebContents();
 
-        scheduler.setScheduledMessage(new Pair<MerchantTrustMessageContext, PropertyModel>(
-                mockMessagesContext, mockPropteryModel));
+        scheduler.setScheduledMessage(
+                new Pair<MerchantTrustMessageContext, PropertyModel>(
+                        mockMessagesContext, mockPropteryModel));
         Assert.assertNotNull(scheduler.getScheduledMessageContext());
         scheduler.clear(MessageClearReason.UNKNOWN);
         Assert.assertNull(scheduler.getScheduledMessageContext());

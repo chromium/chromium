@@ -22,6 +22,8 @@ component("types") {
 
   defines = [ "DISPLAY_TYPES_IMPLEMENTATION" ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//skia",

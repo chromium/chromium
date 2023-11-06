@@ -65,11 +65,12 @@ The `//services` side also includes a few other directories:
     consumers.
 *   `//services/device/public/mojom` contains Mojo interfaces by the Generic
     Sensor implementation.
-    *   [SensorProvider](/services/device/public/mojom/sensor_provider.mojom) is
-        a “factory-like” interface that provides data about the sensors present
-        on the device and their capabilities (reporting mode, maximum sampling
-        frequency), and allows users to request a specific sensor. Note that
-        Blink calls go through
+    *   [SensorProvider](/services/device/public/mojom/sensor_provider.mojom)
+        is a “factory-like” interface that provides data about the sensors
+        present on the device and their capabilities (reporting mode, maximum
+        sampling frequency), and allows users to request a specific sensor or
+        request that a specific sensor be backed by a "virtual sensor" for
+        testing purposes. Note that Blink calls go through
         [WebSensorProvider](/third_party/blink/public/mojom/sensor/web_sensor_provider.mojom)
         first.
     *   [Sensor](/services/device/public/mojom/sensor.mojom) is an interface
@@ -88,6 +89,10 @@ The Blink implementation also contains the following directories:
         allows the latter to offer privileged methods that should not be
         visible or accessible by Blink. The translation between the two Mojo
         interfaces happens in `//content`.
+    *   [WebSensorProviderAutomation](/third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom)
+        is used by the Internals code in Blink to communicate with
+        `WebTestVirtualSensorProvider` and allow content_shell to invoke
+        virtual sensor operations.
 
 Actual sensor data is not passed to consumers (such as Blink) via Mojo
 calls \- a shared memory buffer is used instead, thus we avoid filling up the
@@ -188,31 +193,43 @@ and incognito windows.
 
 #### //services main classes
 
-*   `PlatformSensorProvider`: singleton class whose main functionality is to
-    create and track `PlatformSensor` instances. `PlatformSensorProvider` is
-    also responsible for creating a shared buffer for sensor readings. Every
-    platform has its own implementation of `PlatformSensorProvider`
-    (`PlatformSensorProviderAndroid`, `PlatformSensorProviderWin` etc).
-
-*   `PlatformSensor`: represents device sensor of a given type. There can be
-    only one `PlatformSensor` instance of the same type at a time, its ownership
-    is shared between existing `SensorImpl` instances. `PlatformSensor` is an
-    abstract class which encapsulates generic functionality and is inherited by
-    the platform-specific implementations (`PlatformSensorAndroid`,
-    `PlatformSensorWin` etc).
-
 *   `SensorImpl`: implements the exposed `Sensor` Mojo interface and forwards
     IPC calls to the owned PlatformSensor instance. `SensorImpl` implements the
     `PlatformSensor::Client` interface to receive notifications from
     `PlatformSensor`.
 
 *   `SensorProviderImpl`: implements the exposed `SensorProvider` Mojo interface
-    and forwards IPC calls to the `PlatformSensorProvider` singleton instance.
+    and forwards IPC calls to either the `PlatformSensorProvider` singleton
+    instance or one of the `VirtualPlatformSensorProvider` instances.
+
+*   `PlatformSensor`: represents a device sensor of a given type. There can be
+    only one `PlatformSensor` instance of the same type at a time; its ownership
+    is shared between existing `SensorImpl` instances. `PlatformSensor` is an
+    abstract class which encapsulates generic functionality and is inherited by
+    the platform-specific implementations (`PlatformSensorAndroid`,
+    `PlatformSensorWin` etc).
+
+    `VirtualPlatformSensor` is a specialized subclass used for testing. Its
+    implementation is platform-agnostic, and ownership and cardinality vary
+    slightly: there is one `VirtualPlatformSensor` instance of the same type per
+    Mojo connection to `SensorProviderImpl`, as the `VirtualPlatformSensor`
+    instances are managed by `VirtualPlatformSensorProvider`, which exists on a
+    per-Mojo connection (i.e. per-`content::WebContents`) basis.
+
+*   `PlatformSensorProvider`: singleton class whose main functionality is to
+    create and track `PlatformSensor` instances. `PlatformSensorProvider` is
+    also responsible for creating a shared buffer for sensor readings. Every
+    platform has its own implementation of `PlatformSensorProvider`
+    (`PlatformSensorProviderAndroid`, `PlatformSensorProviderWin` etc).
+
+    `VirtualPlatformSensorProvider` is a specialized subclass used for tests
+    that manages `VirtualPlatformSensor` instances, which are OS-independent.
 
 The classes above have the following ownership relationships:
 
 *   `SensorProviderImpl` owns a single `PlatformSensorProvider` instance via a
-    `std::unique_ptr`.
+    `std::unique_ptr` and multiple `VirtualPlatformSensorProvider` (one per
+    `mojo::RemoteId`).
 *   `SensorProviderImpl` owns all `SensorImpl` instances via a
     `mojo::UniqueReceiverSet`.
 *   `PlatformSensor` is a ref-counted class, and a `SensorImpl` has a reference
@@ -222,20 +239,68 @@ The classes above have the following ownership relationships:
     `PlatformSensorProvider` if one does not exist and pass it to
     `SensorProviderImpl`.
 
+#### //content main classes
+
+*   [`EmulationHandler`](/content/browser/devtools/protocol/emulation_handler.h)
+    is not a sensor-specific class, but it implements several commands from the
+    `Emulation` DevTools domain as specified in
+    [`browser_protocol.pdl`](/third_party/blink/public/devtools_protocol/browser_protocol.pdl).
+    Namely, the `getOverriddenSensorInformation`, `setSensorOverrideEnabled`,
+    and `setSensorOverrideReadings` commands are implemented by using a
+    [`ScopedVirtualSensorForDevTools`](https://source.chromium.org/chromium/chromium/src/+/main:content/browser/generic_sensor/web_contents_sensor_provider_proxy.h?q=symbol:%5Cbcontent::ScopedVirtualSensorForDevTools%5Cb)
+    to invoke virtual sensor operations.
+
+*   `FrameSensorProviderProxy`: a per-RenderFrameHost implementation of the
+    `SensorProvider` Mojo interface. Blink Mojo connections are routed to
+    instances of this class, which then forwards the binding request to
+    `WebContentsSensorProviderProxy` with extra RenderFrameHost information.
+
+*   `WebContentsSensorProviderProxy`: does not implement any Mojo interface,
+    but communicates with `SensorProviderImpl` in `//services` via Mojo. This
+    class provides access to privileged virtual sensor operations and can only
+    be reached by other classes in `content` itself; Blink can only access
+    `FrameSensorProviderProxy` and its `GetSensor()` method.
+
+*   `WebTestVirtualSensorProvider`: partial implementation of the
+    `VirtualSensorProvider` Mojo interface that is exposed only to
+    `content_shell` when it is run in web tests mode. It is used by the
+    `InternalsSensor` code to provide access to the virtual sensor functions to
+    testdriver.js when web tests are run via `content_shell`.
+
+`FrameSensorProviderProxy` and `WebContentsSensorProviderProxy` exist as
+separate entities with different granularity solely because of the virtual
+sensor-related operations used by WebDriver and web tests.
+
+In Blink, `SensorProviderProxy` exists on a per-DOMWindow basis, but limitations
+in testdriver and how it communicates with WebDriver require all WebDriver
+communication to go through the frame that includes testharness.js. In other
+words, if an iframe tries to create a virtual sensor, the call will ultimately
+be issued by the top-level frame instead. If the calls to //services are all
+routed through a per-WebContents object, this does not matter since the same
+virtual sensors are used by all frames in the tree. This also makes more sense
+from a testing perspective since the environment behaves more similarly to a
+real one.
+
+Furthermore, while the Blink issue above could be solved by using a per-Page
+object rather than a per-WebContents one, we also want the virtual sensor
+information to persist across navigations, as this allow WebDriver users to make
+use of the sensor endpoints more effectively: they can set up virtual sensors
+before loading the page(s) that will be tested.
+
 #### Blink main classes
 
 *   `Sensor`: implements bindings for the `Sensor` IDL interface. All classes
     that implement concrete sensor interfaces (such as `AmbientLightSensor`,
     `Gyroscope`, `Accelerometer`) must inherit from it.
 
-*   `SensorProviderProxy`: owns one side of the `SensorProvider` Mojo interface
-    pipe and manages `SensorProxy` instances. This class supplements
+*   `SensorProviderProxy`: owns one side of the `WebSensorProvider` Mojo
+    interface pipe and manages `SensorProxy` instances. This class supplements
     `DOMWindow`, so `Sensor` obtains a `SensorProviderProxy` instance via
     `SensorProviderProxy::From()` and uses it to the get `SensorProxy` instance
     for a given sensor type.
 
 *   `SensorProxy`: owns one side of the `Sensor` Mojo interface and implements
-    the `device::mojom::blink::SensorClient` Mojo interface. It also defines a
+    the `SensorClient` Mojo interface. It also defines a
     `SensorProxy::Observer` interface that is used to notify `Sensor` and its
     subclasses of errors or data updates from the platform side. `Sensor` and
     its subclasses interact with the `//services` side via `SensorProxy` (and
@@ -245,6 +310,110 @@ In a `LocalDOMWindow`, there is one `SensorProxy` instance for a given sensor
 type (ambient light, accelerometer, etc) whose ownership is shared among
 `Sensor` instances. `SensorProxy` instances are created when `Sensor::start()`
 is called and are destroyed when there are no more active Sensor instances left.
+
+### Testing and virtual sensors
+
+When running web tests and/or doing automation via WebDriver, one cannot depend
+on the availability of specific hardware sensors, especially when the idea is to
+test the general mechanism of sensor management.
+
+This is addressed by introducing the concept of **virtual sensors**: sensors
+that are not backed by one or more hardware sensor and whose state and readings
+are entirely controlled by API users.
+
+In the Generic Sensor specification, "virtual sensors" are defined as "device
+sensors" since its definition of platform sensor is quite abstract and works
+like a mixture of the `PlatformSensor` class and Blink's `SensorProxy`. In
+Chromium, the implementation of the specification's "virtual sensors" works as
+both a platform sensor and a device sensor from a spec perspective.
+
+`VirtualPlatformSensorProvider` and `VirtualPlatformSensor` inherit from
+`PlatformSensorProvider` and `PlatformSensor` respectively, but their
+cardinality and the way they are managed differ from the other, non-virtual
+platform sensor classes in //services.
+
+Conceptually, virtual sensors exist on a per-`WebContents` basis, so that
+different tabs can run their tests concurrently without one page's readings
+interfering with another's. This is achieved in `SensorProviderImpl`, which
+keeps a mapping of `mojo::RemoteId`s to `VirtualPlatformSensorProvider`
+instances. This works in contrast to the non-virtual approach, where the idea
+is that the same readings are shared with all readers, and as such
+`SensorProviderImpl` keeps a single `PlatformSensorProvider` instance.
+
+It is possible for regular sensors and virtual sensors (even those of the same
+type) to coexist in the same page, provided that the real sensors are created
+before `SensorProviderImpl::CreateVirtualSensor()` is called. After that
+function is called, all calls to `GetSensor()` with the sensor type passed to it
+will result in the creation of a virtual sensor, and not a real one. Existing
+real sensors will continue to work as usual.
+
+When `SensorProviderImpl::RemoveVirtualSensor()` is called, all existing virtual
+sensors of a given type for a given frame will stop and behave as if a
+corresponding hardware sensor had been disconnected (resulting in an "error"
+event being fired in Blink on all active sensors of the given type, for
+example).
+
+The only way to update a virtual sensor's readings are by calling
+`SensorProviderImpl::UpdateVirtualSensor()`. In other words, any mechanisms to
+update readings on a periodic basis, for example, need to be implemented by
+callers.
+
+It is also important to notice that updating a virtual sensor's readings does
+not necessarily mean that the exposed readings will be updated and that e.g. a
+"reading" event will be fired by Blink: calling `UpdateVirtualSensor()` is akin
+to a `PlatformSensor` class receiving a new reading from the operating system.
+The new reading will still be passed to
+`PlatformSensor::UpdateSharedBufferAndNotifyClients()`, which may discard it
+depending on the sensor's reporting mode and the threshold and rounding checks.
+
+#### Interacting with virtual sensors as a user
+
+*** aside
+The implementation of the CDP commands below, the content_shell version and
+WebContentsSensorProviderProxy's architecture are documented in more depth in
+[content/browser/generic_sensor's
+README.md](/content/browser/generic_sensor/README.md#Virtual-Sensor-support).
+***
+
+API users cannot reach //service classes such as `SensorProviderImpl` and
+`VirtualPlatformSensor` directly. The virtual sensor functionality is exposed to
+users in a few different manners.
+
+The base of the user-facing API is in CDP (Chrome DevTools Protocol): the
+`getOverriddenSensorInformation`, `setSensorOverrideEnabled`, and
+`setSensorOverrideReadings` commands in the `Emulation` domain are essentially
+wrappers for the virtual sensor `SensorProvider` Mojo calls that reach
+`SensorProviderImpl` via //content's `WebContentsSensorProviderProxy`.
+
+On top of the CDP layer, there sits the ChromeDriver layer: it implements the
+[WebDriver endpoints described in the Generic Sensor
+spec](https://w3c.github.io/sensors/#automation) as a thin wrapper for the CDP
+calls above and also exposes them via its Python API.
+
+Web tests in [WPT](https://web-platform-tests.org) can make use of the
+[testdriver.js
+APIs](https://web-platform-tests.org/writing-tests/testdriver.html#sensors) to
+manage virtual sensors. The testdriver.js code is essentially a JavaScript
+wrapper for the WebDriver endpoints described above.
+
+*** note
+When the web tests in WPT are run in the Chromium CI (i.e. via
+`run_web_tests.py`), they follow a different code path compared to WPT's `wpt
+run` (or Chromium's `run_wpt_tests.py`), as they are run with content_shell
+rather than Chromium and ChromeDriver.
+
+To allow the tests to work with content_shell, there is a [separate
+implementation](/third_party/blink/web_tests/resources/testdriver-vendor.js) of
+the testdriver.js API that relies on Blink's `Internals` JS API. The Internals
+implementation for the Sensor APIs lives in
+[`internals_sensor.cc`](/third_party/blink/renderer/modules/sensor/testing/internals_sensor.cc).
+It uses [a separate Mojo
+interface](/third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom)
+to make virtual sensor calls. This Mojo interface is implemented on the
+//content side by
+[WebTestSensorProviderManager](/content/web_test/browser/web_test_sensor_provider_manager.h),
+which exists only to content_shell running in web tests mode.
+***
 
 ### Code flow
 

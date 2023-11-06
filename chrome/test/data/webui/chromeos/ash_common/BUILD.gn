@@ -14,11 +14,24 @@ ts_library("build_ts") {
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
   in_files = [
+    "ash_common_unified_test.js",
     "cr_container_shadow_behavior_test.ts",
     "cr_policy_indicator_behavior_test.ts",
     "cr_policy_strings.ts",
     "cr_scrollable_behavior_test.ts",
+    "cr_test.js",
+    "fake_method_resolver_test.js",
+    "fake_observables_test.js",
+    "i18n_behavior_test.js",
+    "keyboard_diagram_test.js",
     "list_property_update_behavior_test.ts",
+    "navigation_selector_test.js",
+    "navigation_view_panel_test.js",
+    "page_toolbar_test.js",
+    "post_message_api/post_message_api_client_test.js",
+    "post_message_api/post_message_api_test.js",
+    "shortcut_input_key_test.ts",
+    "shortcut_input_test.ts",
     "typescript_utils/strict_query_test.ts",
   ]
   deps = [
@@ -34,6 +47,12 @@ ts_library("build_ts") {
 generate_grd("build_grdp") {
   grd_prefix = "webui_chromeos_ash_common"
   out_grd = "$target_gen_dir/resources.grdp"
+
+  input_files = [
+    "post_message_api/iframe.html",
+    "cr_test.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]
   manifest_files =

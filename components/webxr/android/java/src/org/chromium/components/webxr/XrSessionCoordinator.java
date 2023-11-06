@@ -11,12 +11,13 @@ import android.view.Surface;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -189,7 +190,10 @@ public class XrSessionCoordinator {
         if (mImmersiveOverlay != null) {
             mImmersiveOverlay.cleanupAndExit();
             mImmersiveOverlay = null;
+        } else {
+            onJavaShutdown();
         }
+
         mActiveSessionType = SessionType.NONE;
         mWebContents = null;
         sActiveSessionInstance = null;
@@ -246,9 +250,14 @@ public class XrSessionCoordinator {
 
     public void onDrawingSurfaceDestroyed() {
         if (DEBUG_LOGS) Log.i(TAG, "onDrawingSurfaceDestroyed");
+        onJavaShutdown();
+    }
+
+    private void onJavaShutdown() {
+        if (DEBUG_LOGS) Log.i(TAG, "onJavaShutdown");
         if (mNativeXrSessionCoordinator == 0) return;
-        XrSessionCoordinatorJni.get().onDrawingSurfaceDestroyed(
-                mNativeXrSessionCoordinator, XrSessionCoordinator.this);
+        XrSessionCoordinatorJni.get()
+                .onJavaShutdown(mNativeXrSessionCoordinator, XrSessionCoordinator.this);
     }
 
     public void onXrSessionButtonTouched() {
@@ -294,8 +303,9 @@ public class XrSessionCoordinator {
                 Surface surface, WindowAndroid rootWindow, int rotation, int width, int height);
         void onDrawingSurfaceTouch(long nativeXrSessionCoordinator, XrSessionCoordinator caller,
                 boolean primary, boolean touching, int pointerId, float x, float y);
-        void onDrawingSurfaceDestroyed(
-                long nativeXrSessionCoordinator, XrSessionCoordinator caller);
+
+        void onJavaShutdown(long nativeXrSessionCoordinator, XrSessionCoordinator caller);
+
         void onXrSessionButtonTouched(long nativeXrSessionCoordinator, XrSessionCoordinator caller);
         void onXrHostActivityReady(
                 long nativeXrSessionCoordinator, XrSessionCoordinator caller, Activity activity);

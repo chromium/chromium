@@ -96,10 +96,19 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE);
   builder->Add("assistantRelatedInfoReturnedUserMessageForChild",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD);
-  builder->Add("assistantRelatedInfoExample",
-               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
-  builder->Add("assistantRelatedInfoExampleForChild",
-               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD);
+
+  if (assistant::features::IsRelatedInfoStringUpdateEnabled()) {
+    builder->Add("assistantRelatedInfoExample",
+                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_NEW);
+    builder->Add("assistantRelatedInfoExampleForChild",
+                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD_NEW);
+  } else {
+    builder->Add("assistantRelatedInfoExample",
+                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
+    builder->Add("assistantRelatedInfoExampleForChild",
+                 IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD);
+  }
+
   builder->Add("assistantScreenContextTitle",
                IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);

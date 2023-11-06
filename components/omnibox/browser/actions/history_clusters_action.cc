@@ -4,11 +4,16 @@
 
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/history_clusters/core/config.h"
@@ -42,21 +47,22 @@ namespace {
 // A template function for recording enum metrics for shown and used journey
 // chips as well as their CTR metrics.
 template <class EnumT>
-void RecordShownUsedEnumAndCtrMetrics(const std::string& metric_name,
+void RecordShownUsedEnumAndCtrMetrics(std::string_view metric_name,
                                       EnumT val,
-                                      const std::string& label,
+                                      std::string_view label,
                                       bool executed) {
-  base::UmaHistogramEnumeration("Omnibox.ResumeJourneyShown." + metric_name,
-                                val);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Omnibox.ResumeJourneyShown.", metric_name}), val);
   if (executed) {
     base::UmaHistogramEnumeration(
-        "Omnibox.SuggestionUsed.ResumeJourney." + metric_name, val);
+        base::StrCat({"Omnibox.SuggestionUsed.ResumeJourney.", metric_name}),
+        val);
   }
 
   // Record the CTR metric.
   std::string ctr_metric_name =
-      base::StringPrintf("Omnibox.SuggestionUsed.ResumeJourney.%s.%s.CTR",
-                         metric_name.c_str(), label.c_str());
+      base::StrCat({"Omnibox.SuggestionUsed.ResumeJourney.", metric_name, ".",
+                    label, ".CTR"});
   base::UmaHistogramBoolean(ctr_metric_name, executed);
 }
 

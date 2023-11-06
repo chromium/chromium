@@ -16,6 +16,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/fake_cups_printers_manager.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -204,6 +206,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   ~CupsPrintersHandlerTest() override = default;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(::features::kLocalPrinterObserving);
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
         profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
         &printers_manager_);
@@ -268,6 +271,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   // Must outlive |profile_|.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  base::test::ScopedFeatureList feature_list_;
   content::TestWebUI web_ui_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;
   FakeCupsPrintersManager printers_manager_;
@@ -509,6 +513,21 @@ TEST_F(CupsPrintersHandlerTest, GetSavedPrinters) {
   histogram_tester_.ExpectBucketCount(kSavedPrintersCountHistogramName,
                                       /*sample=*/2,
                                       /*expected_count=*/1);
+}
+
+// Verify the saved printers are sent to the "local-printers-updated" event when
+// the LocalPrintersObserver is triggered.
+TEST_F(CupsPrintersHandlerTest, LocalPrintersObserver) {
+  Printer printer1("id1");
+  Printer printer2("id2");
+  printers_manager_.SavePrinter(printer1);
+  printers_manager_.SavePrinter(printer2);
+  printers_manager_.TriggerLocalPrintersObserver();
+  const content::TestWebUI::CallData& data = *web_ui_.call_data().back();
+  ASSERT_TRUE(data.arg1()->is_string());
+  EXPECT_EQ("local-printers-updated", data.arg1()->GetString());
+  ASSERT_TRUE(data.arg2()->is_list());
+  EXPECT_EQ(2u, data.arg2()->GetList().size());
 }
 
 }  // namespace ash::settings

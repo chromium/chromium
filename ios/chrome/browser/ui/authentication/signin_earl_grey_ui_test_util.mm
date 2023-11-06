@@ -227,8 +227,8 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // If the history type isn't enabled yet, the history opt-in dialog should
   // show up now. Tap the "Yes, I'm In" button.
   if (![ChromeEarlGrey isSyncHistoryDataTypeSelected]) {
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            HistoryOptInPrimaryButtonMatcher()]
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
         performAction:grey_tap()];
   }
 }

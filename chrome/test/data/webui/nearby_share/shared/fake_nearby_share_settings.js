@@ -6,12 +6,10 @@
  * @fileoverview Fake implementation of NearbyShareSettings for testing.
  */
 
-import {DataUsage, DeviceNameValidationResult, FastInitiationNotificationState, NearbyShareSettingsInterface, NearbyShareSettingsObserverInterface, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
+import {DataUsage, DeviceNameValidationResult, FastInitiationNotificationState, Visibility} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 
 /**
  * Fake implementation of NearbyShareSettingsInterface
- *
- * @implements {NearbyShareSettingsInterface}
  */
 export class FakeNearbyShareSettings {
   constructor() {
@@ -30,7 +28,10 @@ export class FakeNearbyShareSettings {
     this.visibility_ = Visibility.kAllContacts;
     /** @private {!Array<!string>} */
     this.allowedContacts_ = [];
-    /** @private {!NearbyShareSettingsObserverInterface} */
+    /**
+     * Restore NearbyShareSettingsObserverInterface type when migrated to TS.
+     * @private {!Object}
+     */
     this.observer_;
     /** @private {!DeviceNameValidationResult} */
     this.nextDeviceNameResult_ = DeviceNameValidationResult.kValid;
@@ -43,8 +44,8 @@ export class FakeNearbyShareSettings {
   }
 
   /**
-   * @param { !NearbyShareSettingsObserverInterface }
-   *     observer
+   * Restore NearbyShareSettingsObserverInterface type when migrated to TS.
+   * @param { !Object } observer
    */
   addSettingsObserver(observer) {
     // Just support a single observer for testing.

@@ -590,6 +590,14 @@ void ArcMetricsService::ReportAppKill(mojom::AppKillPtr app_kill) {
     case mojom::AppKillType::OOM_KILL:
       NotifyOOMKillCount(app_kill->count);
       break;
+    case mojom::AppKillType::GMS_UPDATE_KILL:
+    case mojom::AppKillType::GMS_START_KILL:
+      for (uint32_t i = 0; i < app_kill->count; i++) {
+        UMA_HISTOGRAM_ENUMERATION(
+            "Arc.App.GmsCoreKill" + BootTypeToString(boot_type_),
+            app_kill->type);
+      }
+      break;
   }
 }
 

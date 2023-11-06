@@ -23,15 +23,11 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests for {@link EnhancedProtectionSettingsFragment}.
- */
+/** Tests for {@link EnhancedProtectionSettingsFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
 public class EnhancedProtectionSettingsFragmentTest {
-    // clang-format on
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+
     @Rule
     public SettingsActivityTestRule<EnhancedProtectionSettingsFragment> mTestRule =
             new SettingsActivityTestRule<>(EnhancedProtectionSettingsFragment.class);
@@ -86,51 +82,91 @@ public class EnhancedProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @EnableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
     public void testFriendlierSafeBrowsingSettingsEnhancedProtection() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+                });
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Check that the learn more label is shown
-            Assert.assertNotNull(mEnhancedProtectionLearnMore);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Check that the learn more label is shown
+                    Assert.assertNotNull(mEnhancedProtectionLearnMore);
 
-            EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
+                    EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
-            String enhancedProtectionSubtitle = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_subtitle_updated);
-            String whenOn = fragment.getContext().getString(R.string.privacy_guide_when_on);
-            String friendlierBulletOne = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_one_updated);
-            String friendlierBulletTwo = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_two_updated);
-            String friendlierBulletThree = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_three_updated);
-            String friendlierBulletFour = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_four_updated);
-            String friendlierBulletFive = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_five_updated);
-            String thingsToConsider =
-                    fragment.getContext().getString(R.string.privacy_guide_things_to_consider);
-            String friendlierBulletSix = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_six_updated);
-            String friendlierBulletSeven = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_seven_updated);
-            String friendlierBulletEight = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_eight_updated);
+                    String enhancedProtectionSubtitle =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_subtitle_updated);
+                    String whenOn = fragment.getContext().getString(R.string.privacy_guide_when_on);
+                    String friendlierBulletOne =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_one_updated);
+                    String friendlierBulletTwo =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_two_updated);
+                    String friendlierBulletThree =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_three_updated);
+                    String friendlierBulletFour =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_four_updated);
+                    String friendlierBulletFive =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_five_updated);
+                    String thingsToConsider =
+                            fragment.getContext()
+                                    .getString(R.string.privacy_guide_things_to_consider);
+                    String friendlierBulletSix =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_six_updated);
+                    String friendlierBulletSeven =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_seven_updated);
+                    String friendlierBulletEight =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_eight_updated);
 
-            Assert.assertEquals(enhancedProtectionSubtitle, mEnhancedProtectionSubtitle.getTitle());
-            Assert.assertEquals(whenOn, mEnhancedProtectionWhenOn.getTitle());
-            Assert.assertEquals(friendlierBulletOne, mEnhancedProtectionBulletOne.getSummary());
-            Assert.assertEquals(friendlierBulletTwo, mEnhancedProtectionBulletTwo.getSummary());
-            Assert.assertEquals(friendlierBulletThree, mEnhancedProtectionBulletThree.getSummary());
-            Assert.assertEquals(friendlierBulletFour, mEnhancedProtectionBulletFour.getSummary());
-            Assert.assertEquals(friendlierBulletFive, mEnhancedProtectionBulletFive.getSummary());
-            Assert.assertEquals(thingsToConsider, mEnhancedProtectionThingsToConsider.getTitle());
-            Assert.assertEquals(friendlierBulletSix, mEnhancedProtectionBulletSix.getSummary());
-            Assert.assertEquals(friendlierBulletSeven, mEnhancedProtectionBulletSeven.getSummary());
-            Assert.assertEquals(friendlierBulletEight, mEnhancedProtectionBulletEight.getSummary());
-        });
+                    Assert.assertEquals(
+                            enhancedProtectionSubtitle, mEnhancedProtectionSubtitle.getTitle());
+                    Assert.assertEquals(whenOn, mEnhancedProtectionWhenOn.getTitle());
+                    Assert.assertEquals(
+                            friendlierBulletOne, mEnhancedProtectionBulletOne.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletTwo, mEnhancedProtectionBulletTwo.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletThree, mEnhancedProtectionBulletThree.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletFour, mEnhancedProtectionBulletFour.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletFive, mEnhancedProtectionBulletFive.getSummary());
+                    Assert.assertEquals(
+                            thingsToConsider, mEnhancedProtectionThingsToConsider.getTitle());
+                    Assert.assertEquals(
+                            friendlierBulletSix, mEnhancedProtectionBulletSix.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletSeven, mEnhancedProtectionBulletSeven.getSummary());
+                    Assert.assertEquals(
+                            friendlierBulletEight, mEnhancedProtectionBulletEight.getSummary());
+                });
     }
 
     @Test
@@ -138,42 +174,57 @@ public class EnhancedProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     @DisableFeatures(ChromeFeatureList.FRIENDLIER_SAFE_BROWSING_SETTINGS_ENHANCED_PROTECTION)
     public void testDisabledFriendlierSafeBrowsingSettingsEnhancedProtection() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SafeBrowsingBridge.setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
+                });
         launchSettingsActivity();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Check that the extra bullet points and friendlier When On/Things to Consider headings
-            // and the learn more label are gone.
-            Assert.assertNull(mEnhancedProtectionWhenOn);
-            Assert.assertNull(mEnhancedProtectionThingsToConsider);
-            Assert.assertNull(mEnhancedProtectionBulletSix);
-            Assert.assertNull(mEnhancedProtectionBulletSeven);
-            Assert.assertNull(mEnhancedProtectionBulletEight);
-            Assert.assertNull(mEnhancedProtectionLearnMore);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Check that the extra bullet points and friendlier When On/Things to Consider
+                    // headings and the learn more label are gone.
+                    Assert.assertNull(mEnhancedProtectionWhenOn);
+                    Assert.assertNull(mEnhancedProtectionThingsToConsider);
+                    Assert.assertNull(mEnhancedProtectionBulletSix);
+                    Assert.assertNull(mEnhancedProtectionBulletSeven);
+                    Assert.assertNull(mEnhancedProtectionBulletEight);
+                    Assert.assertNull(mEnhancedProtectionLearnMore);
 
-            EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
+                    EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
 
-            String enhancedProtectionSubtitle = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_subtitle);
-            String bulletOne = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_one);
-            String bulletTwo = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_two);
-            String bulletThree = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_three);
-            String bulletFour = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_four);
-            String bulletFive = fragment.getContext().getString(
-                    R.string.safe_browsing_enhanced_protection_bullet_five);
+                    String enhancedProtectionSubtitle =
+                            fragment.getContext()
+                                    .getString(R.string.safe_browsing_enhanced_protection_subtitle);
+                    String bulletOne =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.safe_browsing_enhanced_protection_bullet_one);
+                    String bulletTwo =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.safe_browsing_enhanced_protection_bullet_two);
+                    String bulletThree =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string
+                                                    .safe_browsing_enhanced_protection_bullet_three);
+                    String bulletFour =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.safe_browsing_enhanced_protection_bullet_four);
+                    String bulletFive =
+                            fragment.getContext()
+                                    .getString(
+                                            R.string.safe_browsing_enhanced_protection_bullet_five);
 
-            Assert.assertEquals(enhancedProtectionSubtitle, mEnhancedProtectionSubtitle.getTitle());
-            Assert.assertEquals(bulletOne, mEnhancedProtectionBulletOne.getSummary());
-            Assert.assertEquals(bulletTwo, mEnhancedProtectionBulletTwo.getSummary());
-            Assert.assertEquals(bulletThree, mEnhancedProtectionBulletThree.getSummary());
-            Assert.assertEquals(bulletFour, mEnhancedProtectionBulletFour.getSummary());
-            Assert.assertEquals(bulletFive, mEnhancedProtectionBulletFive.getSummary());
-        });
+                    Assert.assertEquals(
+                            enhancedProtectionSubtitle, mEnhancedProtectionSubtitle.getTitle());
+                    Assert.assertEquals(bulletOne, mEnhancedProtectionBulletOne.getSummary());
+                    Assert.assertEquals(bulletTwo, mEnhancedProtectionBulletTwo.getSummary());
+                    Assert.assertEquals(bulletThree, mEnhancedProtectionBulletThree.getSummary());
+                    Assert.assertEquals(bulletFour, mEnhancedProtectionBulletFour.getSummary());
+                    Assert.assertEquals(bulletFive, mEnhancedProtectionBulletFive.getSummary());
+                });
     }
 }

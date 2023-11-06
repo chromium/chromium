@@ -55,14 +55,6 @@ class PrerenderManager : public content::WebContentsObserver,
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // The entry of Default Search Engine prerender. Calling this method will lead
-  // to the cancellation of the previous prerender if the given `match`'s search
-  // suggestion canonical URL differs from the ongoing one's.
-  // TODO(https://crbug.com/1295170): Remove this method after Search prerender
-  // work properly with Search prefetch.
-  void StartPrerenderSearchSuggestion(const AutocompleteMatch& match,
-                                      const GURL& canonical_search_url);
-
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `canonical_search_url` differs from the ongoing one's.
   void StartPrerenderSearchResult(
@@ -121,10 +113,6 @@ class PrerenderManager : public content::WebContentsObserver,
   // Returns empty string otherwise.
   const GURL GetPrerenderCanonicalSearchURLForTesting() const;
 
-  void set_skip_template_url_service_for_testing() {
-    skip_template_url_service_for_testing_ = true;
-  }
-
  private:
   class SearchPrerenderTask;
 
@@ -144,14 +132,6 @@ class PrerenderManager : public content::WebContentsObserver,
       const GURL& canonical_search_url,
       base::WeakPtr<content::PreloadingAttempt> attempt);
 
-  void StartPrerenderSearchResultInternal(
-      const GURL& canonical_search_url,
-      const GURL& prerendering_url,
-      base::WeakPtr<content::PreloadingAttempt> attempt);
-
-  // Stops search prefetch from being upgraded to prerender.
-  void UnregisterSearchPrerender();
-
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and it keeps alive even if the
   // prerender has been destroyed by the timer. With its help, PrerenderManager
@@ -163,8 +143,6 @@ class PrerenderManager : public content::WebContentsObserver,
   std::unique_ptr<content::PrerenderHandle> new_tab_page_prerender_handle_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
-
-  bool skip_template_url_service_for_testing_ = false;
 
   base::WeakPtrFactory<PrerenderManager> weak_factory_{this};
 

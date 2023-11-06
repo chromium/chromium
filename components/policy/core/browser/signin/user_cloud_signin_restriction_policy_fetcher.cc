@@ -73,7 +73,14 @@ void UserCloudSigninRestrictionPolicyFetcher::
     GetManagedAccountsSigninRestriction(
         signin::IdentityManager* identity_manager,
         const CoreAccountId& account_id,
-        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback) {
+        base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
+        const std::string& response_for_testing) {
+  if (!response_for_testing.empty()) {
+    OnManagedAccountsSigninRestrictionResult(
+        std::move(callback),
+        std::make_unique<std::string>(response_for_testing));
+    return;
+  }
   // base::Unretained is safe here because the callback is called in the
   // lifecycle of `this`.
   FetchAccessToken(
@@ -161,32 +168,36 @@ void UserCloudSigninRestrictionPolicyFetcher::
         base::OnceCallback<void(const ProfileSeparationPolicies&)> callback,
         std::unique_ptr<std::string> response_body) {
   std::string restriction;
+  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   std::unique_ptr<network::SimpleURLLoader> url_loader = std::move(url_loader_);
 
-  GoogleServiceAuthError error = GoogleServiceAuthError::AuthErrorNone();
   absl::optional<int> response_code;
-  if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
-    response_code = url_loader->ResponseInfo()->headers->response_code();
+  if (url_loader) {
+    if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
+      response_code = url_loader->ResponseInfo()->headers->response_code();
+    }
 
-  if (response_code)
-    base::UmaHistogramSparse(
-        "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
-        response_code.value());
-
-  base::UmaHistogramSparse(
-      "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
-      url_loader->NetError());
-  if (url_loader->NetError() != net::OK) {
     if (response_code) {
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << "ManagedAccountsSigninRestriction request failed with HTTP code: "
-          << response_code.value();
-    } else {
-      error =
-          GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
-      LOG_POLICY(WARNING, POLICY_AUTH)
-          << "ManagedAccountsSigninRestriction request failed with error: "
-          << url_loader->NetError();
+      base::UmaHistogramSparse(
+          "Enterprise.ProfileSeparation.DasherPolicyFetch.HttpResponse",
+          response_code.value());
+    }
+
+    base::UmaHistogramSparse(
+        "Enterprise.ProfileSeparation.DasherPolicyFetch.NetworkError",
+        url_loader->NetError());
+    if (url_loader->NetError() != net::OK) {
+      if (response_code) {
+        LOG_POLICY(WARNING, POLICY_AUTH) << "ManagedAccountsSigninRestriction "
+                                            "request failed with HTTP code: "
+                                         << response_code.value();
+      } else {
+        error =
+            GoogleServiceAuthError::FromConnectionError(url_loader->NetError());
+        LOG_POLICY(WARNING, POLICY_AUTH)
+            << "ManagedAccountsSigninRestriction request failed with error: "
+            << url_loader->NetError();
+      }
     }
   }
 

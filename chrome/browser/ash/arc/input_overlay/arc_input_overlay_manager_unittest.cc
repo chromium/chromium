@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/components/arc/test/fake_compatibility_mode_instance.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -32,11 +31,13 @@
 namespace arc::input_overlay {
 namespace {
 // Package names for testing.
-constexpr char kEnabledPackageName[] = "org.chromium.arc.testapp.inputoverlay";
 constexpr char kRandomPackageName[] =
     "org.chromium.arc.testapp.inputoverlay_no_data";
 constexpr char kRandomGamePackageName[] =
     "org.chromium.arc.testapp.inputoverlay_game";
+constexpr char kGameControlsOptOutPackageName[] =
+    "org.chromium.arc.testapp.inputoverlay_opt_out";
+
 constexpr const float kTolerance = 0.999f;
 
 }  // namespace
@@ -162,10 +163,14 @@ class VersionArcInputOverlayManagerTest
     arc_app_test_.set_wait_compatibility_mode(true);
     arc_app_test_.SetUp(profile_.get());
 
-    arc_app_test_.app_instance()->set_game_control_applicable_pkg(
-        kRandomGamePackageName);
-    arc_app_test_.app_instance()->set_game_control_applicable_pkg(
-        kEnabledPackageName);
+    SimulatedAppInstalled(task_environment(), arc_app_test_,
+                          kEnabledPackageName,
+                          /*is_gc_opt_out=*/false,
+                          /*is_game=*/true);
+    SimulatedAppInstalled(task_environment(), arc_app_test_,
+                          kRandomGamePackageName,
+                          /*is_gc_opt_out=*/false,
+                          /*is_game=*/true);
   }
 
   void TearDown() override {
@@ -566,6 +571,17 @@ TEST_P(VersionArcInputOverlayManagerTest, TestGameWithoutDefaultMapping) {
   }
 
   game_window.reset();
+}
+
+TEST_P(VersionArcInputOverlayManagerTest, TestGameControlsOptOut) {
+  SimulatedAppInstalled(task_environment(), arc_app_test_,
+                        kGameControlsOptOutPackageName,
+                        /*is_gc_opt_out=*/true,
+                        /*is_game=*/true);
+  auto game_window = CreateArcWindow(ash::Shell::GetPrimaryRootWindow(),
+                                     gfx::Rect(10, 10, 100, 100),
+                                     kGameControlsOptOutPackageName);
+  EXPECT_FALSE(GetTouchInjector(game_window->GetNativeWindow()));
 }
 
 TEST_P(VersionArcInputOverlayManagerTest, TestO4CGame) {

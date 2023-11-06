@@ -13,6 +13,6 @@ BASE_FEATURE(kPowerBookmarkBackend,
 
 BASE_FEATURE(kSimplifiedBookmarkSaveFlow,
              "SimplifiedBookmarkSaveFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace power_bookmarks

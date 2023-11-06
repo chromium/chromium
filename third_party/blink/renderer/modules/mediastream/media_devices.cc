@@ -16,6 +16,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-blink.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -45,6 +46,8 @@
 #include "third_party/blink/renderer/modules/mediastream/input_device_info.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/navigator_media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/restriction_target.h"
+#include "third_party/blink/renderer/modules/mediastream/sub_capture_target.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -151,7 +154,7 @@ enum class DisplayCapturePolicyResult {
 #if !BUILDFLAG(IS_ANDROID)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ProduceCropTargetFunctionResult {
+enum class ProduceTargetFunctionResult {
   kPromiseProduced = 0,
   kGenericError = 1,
   kInvalidContext = 2,
@@ -161,23 +164,39 @@ enum class ProduceCropTargetFunctionResult {
   kMaxValue = kElementAndMediaDevicesNotInSameExecutionContext
 };
 
-void RecordUma(ProduceCropTargetFunctionResult result) {
-  base::UmaHistogramEnumeration(
-      "Media.RegionCapture.ProduceCropTarget.Function.Result", result);
+void RecordUma(SubCaptureTarget::Type type,
+               ProduceTargetFunctionResult result) {
+  if (type == SubCaptureTarget::Type::kCropTarget) {
+    base::UmaHistogramEnumeration(
+        "Media.RegionCapture.ProduceCropTarget.Function.Result", result);
+  } else if (type == SubCaptureTarget::Type::kRestrictionTarget) {
+    base::UmaHistogramEnumeration(
+        "Media.ElementCapture.ProduceTarget.Function.Result", result);
+  } else {
+    NOTREACHED();
+  }
 }
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum class ProduceCropTargetPromiseResult {
+enum class ProduceTargetPromiseResult {
   kPromiseResolved = 0,
   kPromiseRejected = 1,
   kMaxValue = kPromiseRejected
 };
 
-void RecordUma(ProduceCropTargetPromiseResult result) {
-  base::UmaHistogramEnumeration(
-      "Media.RegionCapture.ProduceCropTarget.Promise.Result", result);
+void RecordUma(SubCaptureTarget::Type type, ProduceTargetPromiseResult result) {
+  if (type == SubCaptureTarget::Type::kCropTarget) {
+    base::UmaHistogramEnumeration(
+        "Media.RegionCapture.ProduceCropTarget.Promise.Result", result);
+  } else if (type == SubCaptureTarget::Type::kRestrictionTarget) {
+    base::UmaHistogramEnumeration(
+        "Media.ElementCapture.ProduceTarget.Promise.Result", result);
+  } else {
+    NOTREACHED();
+  }
 }
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // When `blink::features::kGetDisplayMediaRequiresUserActivation` is enabled,
@@ -683,9 +702,10 @@ ScriptPromise MediaDevices::ProduceSubCaptureTarget(
     ScriptState* script_state,
     Element* element,
     ExceptionState& exception_state,
-    SubCaptureTargetType type) {
+    SubCaptureTarget::Type type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(type, SubCaptureTargetType::kCropTarget);
+  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
+        type == SubCaptureTarget::Type::kRestrictionTarget);
 
 #if BUILDFLAG(IS_ANDROID)
   exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
@@ -695,13 +715,13 @@ ScriptPromise MediaDevices::ProduceSubCaptureTarget(
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
-    RecordUma(ProduceCropTargetFunctionResult::kInvalidContext);
+    RecordUma(type, ProduceTargetFunctionResult::kInvalidContext);
     return ScriptPromise();
   }
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(GetExecutionContext());
   if (!window) {
-    RecordUma(ProduceCropTargetFunctionResult::kGenericError);
+    RecordUma(type, ProduceTargetFunctionResult::kGenericError);
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Missing execution context.");
     return ScriptPromise();
@@ -714,51 +734,65 @@ ScriptPromise MediaDevices::ProduceSubCaptureTarget(
   }
 
   if (GetExecutionContext() != element->GetExecutionContext()) {
-    RecordUma(ProduceCropTargetFunctionResult::
-                  kElementAndMediaDevicesNotInSameExecutionContext);
+    RecordUma(type, ProduceTargetFunctionResult::
+                        kElementAndMediaDevicesNotInSameExecutionContext);
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The Element and the MediaDevices object must be same-window.");
     return ScriptPromise();
   }
 
-  const RegionCaptureCropId* const old_crop_id =
-      element->GetRegionCaptureCropId();
-  if (old_crop_id) {
-    // The Element has a crop-ID which was previously produced.
-    DCHECK(!old_crop_id->value().is_zero());
+  if ((type == SubCaptureTarget::Type::kCropTarget &&
+       element->GetRegionCaptureCropId()) ||
+      (type == SubCaptureTarget::Type::kRestrictionTarget &&
+       element->GetRestrictionTargetId())) {
+    // A token was produced earlier and associated with the Element.
+    const base::Token token = (type == SubCaptureTarget::Type::kCropTarget)
+                                  ? element->GetRegionCaptureCropId()->value()
+                                  : element->GetRestrictionTargetId()->value();
+    DCHECK(!token.is_zero());
     auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
         script_state, exception_state.GetContext());
     const ScriptPromise promise = resolver->Promise();
-    resolver->Resolve(MakeGarbageCollected<CropTarget>(WTF::String(
-        blink::TokenToGUID(old_crop_id->value()).AsLowercaseString())));
+    const WTF::String token_str(blink::TokenToGUID(token).AsLowercaseString());
+    if (type == SubCaptureTarget::Type::kCropTarget) {
+      resolver->Resolve(MakeGarbageCollected<CropTarget>(token_str));
+    } else {  // kRestrictionTarget
+      resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(token_str));
+    }
     RecordUma(
-        ProduceCropTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
+        type,
+        ProduceTargetFunctionResult::kDuplicateCallAfterPromiseResolution);
     return promise;
   }
 
-  const auto it = crop_id_resolvers_.find(element);
-  if (it != crop_id_resolvers_.end()) {
-    // The Element does not yet have a crop-ID, but the production of one
-    // has already been kicked off, and a response will soon arrive from
-    // the browser process. The Promise we return here will be resolved along
-    // with the original one.
+  ElementToResolverMap& map = GetResolverMap(type);
+  const auto it = map.find(element);
+  if (it != map.end()) {
+    // The Element does not yet have the SubCaptureTarget attached,
+    // but the production of one has already been kicked off, and a response
+    // will soon arrive from the browser process.
+    // The Promise we return here will be resolved along with the original one.
     RecordUma(
-        ProduceCropTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
+        type,
+        ProduceTargetFunctionResult::kDuplicateCallBeforePromiseResolution);
     return it->value->Promise();
   }
 
-  // Mints a new crop-ID on the browser process. Resolve when it's produced
-  // and ready to be used.
+  // Mints a new ID on the browser process.
+  // Resolves after it has been produced and is ready to be used.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
       script_state, exception_state.GetContext());
-  crop_id_resolvers_.insert(element, resolver);
+  map.insert(element, resolver);
   const ScriptPromise promise = resolver->Promise();
+
+  base::OnceCallback callback =
+      WTF::BindOnce(&MediaDevices::ResolveSubCaptureTargetPromise,
+                    WrapPersistent(this), WrapPersistent(element), type);
   GetDispatcherHost(window->GetFrame())
-      .ProduceCropId(WTF::BindOnce(&MediaDevices::ResolveProduceCropIdPromise,
-                                   WrapPersistent(this),
-                                   WrapPersistent(element)));
-  RecordUma(ProduceCropTargetFunctionResult::kPromiseProduced);
+      .ProduceSubCaptureTargetId(type, std::move(callback));
+
+  RecordUma(type, ProduceTargetFunctionResult::kPromiseProduced);
   return promise;
 #endif
 }
@@ -1067,7 +1101,8 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(scheduled_events_);
   visitor->Trace(enumerate_device_requests_);
 #if !BUILDFLAG(IS_ANDROID)
-  visitor->Trace(crop_id_resolvers_);
+  visitor->Trace(crop_target_resolvers_);
+  visitor->Trace(restriction_target_resolvers_);
 #endif
   Supplement<Navigator>::Trace(visitor);
   EventTarget::Trace(visitor);
@@ -1075,6 +1110,17 @@ void MediaDevices::Trace(Visitor* visitor) const {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+MediaDevices::ElementToResolverMap& MediaDevices::GetResolverMap(
+    SubCaptureTarget::Type type) {
+  switch (type) {
+    case SubCaptureTarget::Type::kCropTarget:
+      return crop_target_resolvers_;
+    case SubCaptureTarget::Type::kRestrictionTarget:
+      return restriction_target_resolvers_;
+  }
+  NOTREACHED_NORETURN();
+}
+
 void MediaDevices::EnqueueMicrotaskToCloseFocusWindowOfOpportunity(
     const String& id,
     CaptureController* capture_controller) {
@@ -1110,29 +1156,40 @@ void MediaDevices::CloseFocusWindowOfOpportunity(
   GetDispatcherHost(window->GetFrame()).CloseFocusWindowOfOpportunity(id);
 }
 
-// An empty |crop_id| signals failure; anything else has to be a valid GUID
+// An empty |id| signals failure; anything else has to be a valid GUID
 // and signals success.
-void MediaDevices::ResolveProduceCropIdPromise(Element* element,
-                                               const WTF::String& crop_id) {
+void MediaDevices::ResolveSubCaptureTargetPromise(Element* element,
+                                                  SubCaptureTarget::Type type,
+                                                  const WTF::String& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(element);  // Persistent.
+  CHECK(type == SubCaptureTarget::Type::kCropTarget ||
+        type == SubCaptureTarget::Type::kRestrictionTarget);
+  CHECK(element);  // Persistent.
 
-  const auto it = crop_id_resolvers_.find(element);
-  DCHECK_NE(it, crop_id_resolvers_.end());
+  ElementToResolverMap& map = GetResolverMap(type);
+  const auto it = map.find(element);
+  DCHECK_NE(it, map.end());
   ScriptPromiseResolver* const resolver = it->value;
-  crop_id_resolvers_.erase(it);
+  map.erase(it);
 
-  if (crop_id.empty()) {
+  if (id.empty()) {
     resolver->Reject();
-    RecordUma(ProduceCropTargetPromiseResult::kPromiseRejected);
-  } else {
-    const base::Uuid guid = base::Uuid::ParseLowercase(crop_id.Ascii());
-    DCHECK(guid.is_valid());
+    RecordUma(type, ProduceTargetPromiseResult::kPromiseRejected);
+    return;
+  }
+
+  const base::Uuid guid = base::Uuid::ParseLowercase(id.Ascii());
+  DCHECK(guid.is_valid());
+  if (type == SubCaptureTarget::Type::kCropTarget) {
     element->SetRegionCaptureCropId(
         std::make_unique<RegionCaptureCropId>(blink::GUIDToToken(guid)));
-    resolver->Resolve(MakeGarbageCollected<CropTarget>(crop_id));
-    RecordUma(ProduceCropTargetPromiseResult::kPromiseResolved);
+    resolver->Resolve(MakeGarbageCollected<CropTarget>(id));
+  } else {  // kRestrictionTarget as per earlier CHECK.
+    element->SetRestrictionTargetId(
+        std::make_unique<RestrictionTargetId>(blink::GUIDToToken(guid)));
+    resolver->Resolve(MakeGarbageCollected<RestrictionTarget>(id));
   }
+  RecordUma(type, ProduceTargetPromiseResult::kPromiseResolved);
 }
 #endif
 

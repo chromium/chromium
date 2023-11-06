@@ -15,7 +15,7 @@ namespace {
 
 TEST(FileEnumerationEntryMojomTraitsTest, SuccessCase) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   constexpr int64_t size = 19;
   constexpr base::Time last_accessed =
       base::Time::UnixEpoch() + base::Seconds(99);

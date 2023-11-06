@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
 
 namespace mojo::core::ipcz_driver {
@@ -25,9 +26,9 @@ size_t RingBuffer::Write(base::span<const uint8_t> source) {
   const size_t first_chunk_size = std::min(source.size(), bytes.first.size());
   const size_t second_chunk_size =
       std::min(source.size() - first_chunk_size, bytes.second.size());
-  memcpy(bytes.first.data(), source.data(), first_chunk_size);
-  memcpy(bytes.second.data(), source.subspan(first_chunk_size).data(),
-         second_chunk_size);
+  base::ranges::copy(source.first(first_chunk_size), bytes.first.data());
+  base::ranges::copy(source.subspan(first_chunk_size, second_chunk_size),
+                     bytes.second.data());
 
   const size_t write_size = first_chunk_size + second_chunk_size;
   bool ok = ExtendDataRange(write_size);

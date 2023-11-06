@@ -44,7 +44,7 @@ class MouseWheelEvent;
 class ScrollEvent;
 class TouchEvent;
 
-enum class DomCode;
+enum class DomCode : uint32_t;
 
 // Note: In order for Clone() to work properly, every concrete class
 // transitively inheriting Event must implement Clone() explicitly, even if any

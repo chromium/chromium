@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_mathml_painter.h"
 
-#include "third_party/blink/renderer/core/layout/ng/mathml/ng_math_layout_utils.h"
+#include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
 #include "third_party/blink/renderer/core/mathml/mathml_radical_element.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -36,7 +36,7 @@ void NGMathMLPainter::PaintStretchyOrLargeOperator(
     const PaintInfo& info,
     PhysicalOffset paint_offset) {
   const ComputedStyle& style = box_fragment_.Style();
-  const NGMathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
+  const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   UChar operator_character = parameters.operator_character;
   NGTextFragmentPaintInfo text_fragment_paint_info = {
       StringView(&operator_character, 1), 0, 1,
@@ -75,7 +75,7 @@ void NGMathMLPainter::PaintFractionBar(
 void NGMathMLPainter::PaintOperator(const PaintInfo& info,
                                     PhysicalOffset paint_offset) {
   const ComputedStyle& style = box_fragment_.Style();
-  const NGMathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
+  const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   LogicalOffset offset(LayoutUnit(), parameters.operator_ascent);
   PhysicalOffset physical_offset = offset.ConvertToPhysical(
       style.GetWritingDirection(),
@@ -113,7 +113,7 @@ void NGMathMLPainter::PaintRadicalSymbol(
         base_child.FirstBaseline().value_or(base_child.Size().height);
   }
 
-  const NGMathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
+  const MathMLPaintInfo& parameters = box_fragment_.GetMathMLPaintInfo();
   DCHECK(box_fragment_.Style().IsHorizontalWritingMode());
 
   // Paint the vertical symbol.

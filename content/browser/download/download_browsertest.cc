@@ -4229,10 +4229,9 @@ class DownloadContentSameSiteCookieTest
       public ::testing::WithParamInterface<bool> {
  public:
   DownloadContentSameSiteCookieTest() {
-    if (DoesCookieSameSiteConsiderRedirectChain()) {
-      inner_feature_list_.InitAndEnableFeature(
-          net::features::kCookieSameSiteConsidersRedirectChain);
-    }
+    inner_feature_list_.InitWithFeatureState(
+        net::features::kCookieSameSiteConsidersRedirectChain,
+        DoesCookieSameSiteConsiderRedirectChain());
   }
 
   bool DoesCookieSameSiteConsiderRedirectChain() { return GetParam(); }
@@ -5034,7 +5033,7 @@ class MhtmlLoadingTest : public DownloadContentTest {
   // Return an URL for loading a local test file.
   GURL GetFileURL(const base::FilePath::CharType* file_path) {
     base::FilePath path;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &path));
+    CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path));
     path = path.Append(GetTestDataFilePath());
     path = path.Append(file_path);
     return GURL("file:" + path.AsUTF8Unsafe());

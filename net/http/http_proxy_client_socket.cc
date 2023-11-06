@@ -14,8 +14,8 @@
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/io_buffer.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
-#include "net/base/proxy_server.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
@@ -35,7 +35,8 @@ HttpProxyClientSocket::HttpProxyClientSocket(
     std::unique_ptr<StreamSocket> socket,
     const std::string& user_agent,
     const HostPortPair& endpoint,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
+    size_t proxy_chain_index,
     scoped_refptr<HttpAuthController> http_auth_controller,
     ProxyDelegate* proxy_delegate,
     const NetworkTrafficAnnotationTag& traffic_annotation)
@@ -44,7 +45,8 @@ HttpProxyClientSocket::HttpProxyClientSocket(
       socket_(std::move(socket)),
       endpoint_(endpoint),
       auth_(std::move(http_auth_controller)),
-      proxy_server_(proxy_server),
+      proxy_chain_(proxy_chain),
+      proxy_chain_index_(proxy_chain_index),
       proxy_delegate_(proxy_delegate),
       traffic_annotation_(traffic_annotation),
       net_log_(socket_->NetLog()) {
@@ -352,8 +354,8 @@ int HttpProxyClientSocket::DoSendRequest() {
 
     if (proxy_delegate_) {
       HttpRequestHeaders proxy_delegate_headers;
-      proxy_delegate_->OnBeforeTunnelRequest(proxy_server_,
-                                             &proxy_delegate_headers);
+      proxy_delegate_->OnBeforeTunnelRequestServerOnly(
+          proxy_chain_, proxy_chain_index_, &proxy_delegate_headers);
       extra_headers.MergeFrom(proxy_delegate_headers);
     }
 
@@ -404,8 +406,8 @@ int HttpProxyClientSocket::DoReadHeadersComplete(int result) {
       response_.headers.get());
 
   if (proxy_delegate_) {
-    int rv = proxy_delegate_->OnTunnelHeadersReceived(proxy_server_,
-                                                      *response_.headers);
+    int rv = proxy_delegate_->OnTunnelHeadersReceivedServerOnly(
+        proxy_chain_, proxy_chain_index_, *response_.headers);
     if (rv != OK) {
       DCHECK_NE(ERR_IO_PENDING, rv);
       return rv;

@@ -40,8 +40,6 @@ source_set("browser_sources") {
     "audio_stream_broker.cc",
     "audio_stream_broker.h",
     "authenticator_common.h",
-    "authenticator_request_client_delegate.cc",
-    "authenticator_request_client_delegate.h",
     "ax_event_notification_details.cc",
     "ax_event_notification_details.h",
     "ax_inspect_factory.cc",
@@ -222,6 +220,8 @@ source_set("browser_sources") {
     "interest_group_api_operation.h",
     "interest_group_manager.h",
     "invalidate_type.h",
+    "isolated_context_util.cc",
+    "isolated_context_util.h",
     "isolated_web_apps_policy.cc",
     "isolated_web_apps_policy.h",
     "jank_monitor.h",
@@ -323,6 +323,7 @@ source_set("browser_sources") {
     "presentation_request.h",
     "presentation_screen_availability_listener.h",
     "presentation_service_delegate.h",
+    "privacy_sandbox_attestations_observer.h",
     "privacy_sandbox_invoking_api.h",
     "private_aggregation_data_model.cc",
     "private_aggregation_data_model.h",
@@ -410,7 +411,6 @@ source_set("browser_sources") {
     "storage_partition.h",
     "storage_partition_config.cc",
     "storage_partition_config.h",
-    "storage_partition_user_data.h",
     "storage_usage_info.h",
     "stored_payment_app.cc",
     "stored_payment_app.h",
@@ -671,6 +671,8 @@ source_set("browser_sources") {
 
       # Some Web Authentication related targets only apply to desktop because
       # Android provides its own native implementation of that API.
+      "authenticator_request_client_delegate.cc",
+      "authenticator_request_client_delegate.h",
       "web_authentication_request_proxy.h",
     ]
   }

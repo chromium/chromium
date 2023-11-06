@@ -76,7 +76,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   views::NativeViewHost* GetNativeViewHost();
 
   // Control button. Must only be called once.
-  std::unique_ptr<views::View> CreateNewTabButton();
   std::unique_ptr<views::View> CreateTabCounter();
 
   views::View* tab_counter() const { return tab_counter_; }
@@ -86,7 +85,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // should be called instead. View::SetVisible() isn't sufficient since
   // the container's preferred size will change.
   void SetVisibleForTesting(bool visible);
-  views::View* new_tab_button_for_testing() const { return new_tab_button_; }
   views::WebView* web_view_for_testing() const { return web_view_; }
 
   // Finish the open or close animation if it's active.
@@ -109,8 +107,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // just this direction to animate open or closed.
   void EndDragToOpen(absl::optional<WebUITabStripDragDirection>
                          fling_direction = absl::nullopt);
-
-  void NewTabButtonPressed(const ui::Event& event);
 
   void TabCounterPressed(const ui::Event& event);
 
@@ -165,7 +161,6 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
   // This field is not a raw_ptr<> because of conflicting types in an
   // initializer list.
   RAW_PTR_EXCLUSION views::View* tab_counter_ = nullptr;
-  raw_ptr<views::View> new_tab_button_ = nullptr;
 
 #if BUILDFLAG(IS_WIN)
   // If the user interacts with Windows in a way that changes the width of the

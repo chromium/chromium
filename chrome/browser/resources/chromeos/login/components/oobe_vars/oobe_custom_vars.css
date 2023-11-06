@@ -320,7 +320,7 @@
       --oobe-adaptive-dialog-icon-fill-color: var(--cros-sys-primary);
     }
 
-    html.simon-enabled {
+    html.boot-animation-enabled {
       --oobe-welcome-header-font-size:
           var(--cros-display-0_regular-font-size);
       --oobe-welcome-header-font-weight:

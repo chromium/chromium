@@ -26,6 +26,9 @@ struct CookieManagerParams {
   // the value).
   bool block_truncated_cookies = true;
 
+  // Whether tracking protection for 3PCD (prefs + UX) is enabled.
+  bool tracking_protection_enabled_for_3pcd = false;
+
   // Whether Third Party Cookie Deprecation mitigations efforts such as Third
   // Party Cookie Deprecation Metadata grants are permitted.
   bool mitigations_enabled_for_3pcd = false;
@@ -471,4 +474,7 @@ interface CookieManager {
 
   // Enables/Disables mitigations for third-party cookies deprecation.
   SetMitigationsEnabledFor3pcd(bool enable);
+
+  // Enables/Disables tracking protection for 3PCD (prefs + UX).
+  SetTrackingProtectionEnabledFor3pcd(bool enable);
 };

@@ -58,6 +58,7 @@ class CookieSettings
     virtual void OnThirdPartyCookieBlockingChanged(
         bool block_third_party_cookies) {}
     virtual void OnMitigationsEnabledFor3pcdChanged(bool enable) {}
+    virtual void OnTrackingProtectionEnabledFor3pcdChanged(bool enable) {}
     virtual void OnCookieSettingChanged() {}
   };
 
@@ -102,13 +103,25 @@ class CookieSettings
   // This should only be called on the UI thread.
   void SetCookieSetting(const GURL& primary_url, ContentSetting setting);
 
-  // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`first_party_url`,
-  // `third_party_url`) pair, for the provided `ttl`.
+  // Returns whether a cookie access is allowed for the `TPCD_METADATA_GRANTS`
+  // content settings type, scoped on the provided `url` and `first_party_url`.
+  //
+  // This may be called on any thread.
+  bool IsAllowedByTpcdMetadataGrant(const GURL& url,
+                                    const GURL& first_party_url) const;
+
+  // Sets the `TPCD_HEURISTICS_GRANTS` setting for the given (`url`,
+  // `first_party_url`) pair, for the provided `ttl`. If
+  // `use_schemeless_pattern` is set, the patterns will be generated from
+  // `ContentSettingsPattern::FromUrl`, which maps HTTP URLs onto a wildcard
+  // scheme.
   //
   // This should only be called on the UI thread.
-  void SetTemporaryCookieGrantForHeuristic(const GURL& first_party_url,
-                                           const GURL& third_party_url,
-                                           const base::TimeDelta& ttl);
+  void SetTemporaryCookieGrantForHeuristic(
+      const GURL& url,
+      const GURL& first_party_url,
+      base::TimeDelta ttl,
+      bool use_schemeless_patterns = false);
 
   // Represents the TTL of each User Bypass entries.
   static constexpr base::TimeDelta kUserBypassEntriesTTL = base::Days(90);
@@ -134,18 +147,12 @@ class CookieSettings
   // to be held and accessed from memory by the cookie settings object.
   void SetContentSettingsFor3pcdMetadataGrants(
       const ContentSettingsForOneType settings) {
+    base::AutoLock lock(tpcd_lock_);
     settings_for_3pcd_metadata_grants_ = settings;
   }
 
-  ContentSetting GetContentSettingForTesting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      content_settings::SettingInfo* info = nullptr) {
-    return GetContentSetting(primary_url, secondary_url, content_type);
-  }
-
   ContentSettingsForOneType GetTpcdMetadataGrantsForTesting() {
+    base::AutoLock lock(tpcd_lock_);
     return settings_for_3pcd_metadata_grants_;
   }
 
@@ -192,6 +199,9 @@ class CookieSettings
   //
   // This method may be called on any thread. Virtual for testing.
   bool MitigationsEnabledFor3pcd() const override;
+
+  // Returns true iff tracking protection for 3PCD (prefs + UX) is enabled.
+  bool TrackingProtectionEnabledFor3pcd() const;
 
   // Returns true if there is an active storage access exception with
   // |first_party_url| as the secondary pattern.
@@ -270,11 +280,15 @@ class CookieSettings
   // TODO(http://b/290039145): There's a chance for the list to get considerably
   // big. Look into optimizing memory by querying straight from a global
   // service.
-  ContentSettingsForOneType settings_for_3pcd_metadata_grants_;
+
+  mutable base::Lock tpcd_lock_;
+  ContentSettingsForOneType settings_for_3pcd_metadata_grants_
+      GUARDED_BY(tpcd_lock_);
 
   mutable base::Lock lock_;
   bool block_third_party_cookies_ GUARDED_BY(lock_);
   bool mitigations_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
+  bool tracking_protection_enabled_for_3pcd_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace content_settings

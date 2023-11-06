@@ -1,5 +1,8 @@
 caption: Enable the <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph> attestation flow for a list of URLs
+deprecated: true
 desc: |-
+  This policy is deprecated and has been split into <ph name="BROWSER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">BrowserContextAwareAccessSignalsAllowlist</ph>, <ph name="USER_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">UserContextAwareAccessSignalsAllowlist</ph> and <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME">DeviceLoginScreenContextAwareAccessSignalsAllowlist</ph>.
+
   Enable <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR">Chrome Enterprise Device Trust Connector</ph> for a list of URLs.
 
   Setting this policy specifies for which URLs <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer to start the attestation flow. The latter allows those websites to get an attested set of context-aware signals from the device.
@@ -30,9 +33,9 @@ schema:
     type: string
   type: array
 supported_on:
-- chrome.win:108-
-- chrome.linux:108-
-- chrome.mac:109-
-- chrome_os:108-
+- chrome.win:108-120
+- chrome.linux:108-120
+- chrome.mac:109-120
+- chrome_os:108-120
 tags: []
 type: list

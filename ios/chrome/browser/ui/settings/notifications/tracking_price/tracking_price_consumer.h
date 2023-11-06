@@ -7,13 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_consumer.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_consumer.h"
 
 @class TableViewHeaderFooterItem;
 @class TableViewItem;
 
 // Consumer protocol for Tracking Price settings menu.
-@protocol TrackingPriceConsumer <ChromeTableViewConsumer>
+@protocol TrackingPriceConsumer <LegacyChromeTableViewConsumer>
 
 // Initializes `mobileNotificationItem`.
 - (void)setMobileNotificationItem:(TableViewItem*)mobileNotificationItem;

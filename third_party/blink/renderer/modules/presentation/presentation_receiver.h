@@ -49,7 +49,7 @@ class MODULES_EXPORT PresentationReceiver final
   void RemoveConnection(ReceiverPresentationConnection*);
   void Terminate();
 
-  LocalDOMWindow* GetWindow() const { return window_; }
+  LocalDOMWindow* GetWindow() const { return window_.Get(); }
 
   void Trace(Visitor*) const override;
 

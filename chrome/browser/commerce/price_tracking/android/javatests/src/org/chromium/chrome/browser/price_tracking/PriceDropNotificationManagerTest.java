@@ -62,18 +62,16 @@ import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
 import org.chromium.components.commerce.core.ShoppingService;
 
-/**
- * Tests for  {@link PriceDropNotificationManager}.
- */
+/** Tests for {@link PriceDropNotificationManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
+    "force-fieldtrials=Study/Group",
+    "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"
+})
 @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
-    // clang-format on
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
     private static final String EXTRA_APP_PACKAGE = "app_package";
@@ -91,21 +89,17 @@ public class PriceDropNotificationManagerTest {
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Mock
-    private ShoppingService mMockShoppingService;
-    @Mock
-    private BookmarkModel mMockBookmarkModel;
-    @Mock
-    private Profile mMockProfile;
-    @Captor
-    private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
+    @Mock private ShoppingService mMockShoppingService;
+    @Mock private BookmarkModel mMockBookmarkModel;
+    @Mock private Profile mMockProfile;
+    @Captor private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     @Before
     public void setUp() {
@@ -129,15 +123,20 @@ public class PriceDropNotificationManagerTest {
     private void verifyClickIntent(Intent intent) {
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
         assertEquals(Uri.parse(TEST_URL), intent.getData());
-        assertEquals(DismissNotificationChromeActivity.class.getName(),
+        assertEquals(
+                DismissNotificationChromeActivity.class.getName(),
                 intent.getComponent().getClassName());
-        assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT,
+        assertEquals(
+                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NEW_DOCUMENT,
                 intent.getFlags());
-        assertEquals(ContextUtils.getApplicationContext().getPackageName(),
+        assertEquals(
+                ContextUtils.getApplicationContext().getPackageName(),
                 intent.getStringExtra(Browser.EXTRA_APPLICATION_ID));
-        assertEquals(true,
+        assertEquals(
+                true,
                 intent.getBooleanExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, false));
-        assertEquals(NOTIFICATION_ID,
+        assertEquals(
+                NOTIFICATION_ID,
                 intent.getIntExtra(PriceDropNotificationManagerImpl.EXTRA_NOTIFICATION_ID, 0));
     }
 
@@ -177,7 +176,8 @@ public class PriceDropNotificationManagerTest {
 
             mPriceDropNotificationManager.createNotificationChannel();
             assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
-            assertEquals(NotificationManager.IMPORTANCE_DEFAULT,
+            assertEquals(
+                    NotificationManager.IMPORTANCE_DEFAULT,
                     mPriceDropNotificationManager.getNotificationChannel().getImportance());
 
             assertTrue(mPriceDropNotificationManager.canPostNotification());
@@ -192,13 +192,16 @@ public class PriceDropNotificationManagerTest {
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(ContextUtils.getApplicationContext().getPackageName(),
+            assertEquals(
+                    ContextUtils.getApplicationContext().getPackageName(),
                     intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(ContextUtils.getApplicationContext().getApplicationInfo().uid,
+            assertEquals(
+                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
                     intent.getIntExtra(EXTRA_APP_UID, 0));
         } else {
             assertEquals(Settings.ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(ContextUtils.getApplicationContext().getPackageName(),
+            assertEquals(
+                    ContextUtils.getApplicationContext().getPackageName(),
                     intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
         }
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
@@ -211,15 +214,19 @@ public class PriceDropNotificationManagerTest {
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(ContextUtils.getApplicationContext().getPackageName(),
+            assertEquals(
+                    ContextUtils.getApplicationContext().getPackageName(),
                     intent.getStringExtra(EXTRA_APP_PACKAGE));
-            assertEquals(ContextUtils.getApplicationContext().getApplicationInfo().uid,
+            assertEquals(
+                    ContextUtils.getApplicationContext().getApplicationInfo().uid,
                     intent.getIntExtra(EXTRA_APP_UID, 0));
         } else {
             assertEquals(Settings.ACTION_CHANNEL_NOTIFICATION_SETTINGS, intent.getAction());
-            assertEquals(ContextUtils.getApplicationContext().getPackageName(),
+            assertEquals(
+                    ContextUtils.getApplicationContext().getPackageName(),
                     intent.getStringExtra(Settings.EXTRA_APP_PACKAGE));
-            assertEquals(ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
+            assertEquals(
+                    ChromeChannelDefinitions.ChannelId.PRICE_DROP_DEFAULT,
                     intent.getStringExtra(Settings.EXTRA_CHANNEL_ID));
         }
         assertEquals(Intent.FLAG_ACTIVITY_NEW_TASK, intent.getFlags());
@@ -228,35 +235,56 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testGetNotificationClickIntent() {
-        verifyClickIntent(mPriceDropNotificationManager.getNotificationClickIntent(
-                TEST_URL, NOTIFICATION_ID));
+        verifyClickIntent(
+                mPriceDropNotificationManager.getNotificationClickIntent(
+                        TEST_URL, NOTIFICATION_ID));
     }
 
     @Test
     @MediumTest
     public void testGetNotificationActionClickIntent() {
-        verifyClickIntent(mPriceDropNotificationManager.getNotificationActionClickIntent(
-                ACTION_ID_VISIT_SITE, TEST_URL, OFFER_ID, PRODUCT_CLUSTER_ID, NOTIFICATION_ID));
-        Intent turnOffAlertIntent = mPriceDropNotificationManager.getNotificationActionClickIntent(
-                ACTION_ID_TURN_OFF_ALERT, TEST_URL, OFFER_ID, PRODUCT_CLUSTER_ID, NOTIFICATION_ID);
+        verifyClickIntent(
+                mPriceDropNotificationManager.getNotificationActionClickIntent(
+                        ACTION_ID_VISIT_SITE,
+                        TEST_URL,
+                        OFFER_ID,
+                        PRODUCT_CLUSTER_ID,
+                        NOTIFICATION_ID));
+        Intent turnOffAlertIntent =
+                mPriceDropNotificationManager.getNotificationActionClickIntent(
+                        ACTION_ID_TURN_OFF_ALERT,
+                        TEST_URL,
+                        OFFER_ID,
+                        PRODUCT_CLUSTER_ID,
+                        NOTIFICATION_ID);
         assertNotNull(turnOffAlertIntent);
-        assertEquals(PriceDropNotificationManagerImpl.TrampolineActivity.class.getName(),
+        assertEquals(
+                PriceDropNotificationManagerImpl.TrampolineActivity.class.getName(),
                 turnOffAlertIntent.getComponent().getClassName());
-        assertEquals(PRODUCT_CLUSTER_ID,
-                IntentUtils.safeGetStringExtra(turnOffAlertIntent,
+        assertEquals(
+                PRODUCT_CLUSTER_ID,
+                IntentUtils.safeGetStringExtra(
+                        turnOffAlertIntent,
                         PriceDropNotificationManagerImpl.EXTRA_PRODUCT_CLUSTER_ID));
-        assertEquals(OFFER_ID,
+        assertEquals(
+                OFFER_ID,
                 IntentUtils.safeGetStringExtra(
                         turnOffAlertIntent, PriceDropNotificationManagerImpl.EXTRA_OFFER_ID));
-        assertEquals(TEST_URL,
-                IntentUtils.safeGetStringExtra(turnOffAlertIntent,
+        assertEquals(
+                TEST_URL,
+                IntentUtils.safeGetStringExtra(
+                        turnOffAlertIntent,
                         PriceDropNotificationManagerImpl.EXTRA_DESTINATION_URL));
-        assertEquals(ACTION_ID_TURN_OFF_ALERT,
+        assertEquals(
+                ACTION_ID_TURN_OFF_ALERT,
                 IntentUtils.safeGetStringExtra(
                         turnOffAlertIntent, PriceDropNotificationManagerImpl.EXTRA_ACTION_ID));
-        assertEquals(NOTIFICATION_ID,
-                IntentUtils.safeGetIntExtra(turnOffAlertIntent,
-                        PriceDropNotificationManagerImpl.EXTRA_NOTIFICATION_ID, 0));
+        assertEquals(
+                NOTIFICATION_ID,
+                IntentUtils.safeGetIntExtra(
+                        turnOffAlertIntent,
+                        PriceDropNotificationManagerImpl.EXTRA_NOTIFICATION_ID,
+                        0));
     }
 
     @Test
@@ -289,8 +317,11 @@ public class PriceDropNotificationManagerTest {
     public void testUpdateNotificationTimestamps() {
         SharedPreferencesManager preferencesManager = ChromeSharedPreferences.getInstance();
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
-        long mockTimestamp = System.currentTimeMillis()
-                - 2 * PriceTrackingNotificationConfig.getNotificationTimestampsStoreWindowMs();
+        long mockTimestamp =
+                System.currentTimeMillis()
+                        - 2
+                                * PriceTrackingNotificationConfig
+                                        .getNotificationTimestampsStoreWindowMs();
         JSONArray jsonArray = new JSONArray();
         jsonArray.put(mockTimestamp);
         preferencesManager.writeString(
@@ -320,15 +351,18 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testHasReachedMaxAllowedNotificationNumber() {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
-        assertEquals(false,
+        assertEquals(
+                false,
                 mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
 
         mPriceDropNotificationManager.updateNotificationTimestamps(mockType, true);
-        assertEquals(false,
+        assertEquals(
+                false,
                 mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
 
         mPriceDropNotificationManager.updateNotificationTimestamps(mockType, true);
-        assertEquals(true,
+        assertEquals(
+                true,
                 mPriceDropNotificationManager.hasReachedMaxAllowedNotificationNumber(mockType));
     }
 }

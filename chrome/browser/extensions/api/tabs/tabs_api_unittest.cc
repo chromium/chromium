@@ -436,6 +436,7 @@ TEST_F(TabsApiUnitTest, PDFExtensionNavigation) {
   int tab_id = sessions::SessionTabHelper::IdForTab(raw_web_contents).id();
 
   scoped_refptr<TabsUpdateFunction> function = new TabsUpdateFunction();
+  function->SetBrowserContextForTesting(profile());
   function->set_extension(extension.get());
   function->SetArgs(base::test::ParseJsonList(
       base::StringPrintf(R"([%d, {"url":"http://example.com"}])", tab_id)));

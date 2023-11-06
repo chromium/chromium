@@ -136,10 +136,14 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
       const base::Location& call_location) override {
+    web_app::IsolatedWebAppLocation destination_location =
+        web_app::InstalledBundle{
+            .path = base::FilePath{FILE_PATH_LITERAL("/some/random/path")}};
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  web_app::InstallIsolatedWebAppCommandSuccess{
-                                      base::Version{}}));
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       web_app::InstallIsolatedWebAppCommandSuccess(
+                           base::Version{}, std::move(destination_location))));
   }
 };
 

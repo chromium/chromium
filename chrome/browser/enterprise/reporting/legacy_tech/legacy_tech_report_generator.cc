@@ -38,7 +38,7 @@ std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
   report->set_feature_id(legacy_tech_data.type);
   // Blur timestamp for privacy.
   report->set_event_timestamp_millis(
-      legacy_tech_data.timestamp.UTCMidnight().ToJavaTime());
+      legacy_tech_data.timestamp.UTCMidnight().InMillisecondsSinceUnixEpoch());
   report->set_url(legacy_tech_data.url.spec());
   report->set_allowlisted_url_match(legacy_tech_data.matched_url);
   report->set_filename(legacy_tech_data.filename);

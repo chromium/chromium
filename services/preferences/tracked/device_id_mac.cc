@@ -19,11 +19,12 @@ MachineIdStatus GetDeterministicMachineSpecificId(std::string* machine_id) {
     return MachineIdStatus::FAILURE;
 
   base::apple::ScopedCFTypeRef<CFTypeRef> uuid(IORegistryEntryCreateCFProperty(
-      platform_expert, CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault, 0));
+      platform_expert.get(), CFSTR(kIOPlatformUUIDKey), kCFAllocatorDefault,
+      0));
   if (!uuid.get())
     return MachineIdStatus::FAILURE;
 
-  CFStringRef uuid_string = base::apple::CFCast<CFStringRef>(uuid);
+  CFStringRef uuid_string = base::apple::CFCast<CFStringRef>(uuid.get());
   if (!uuid_string)
     return MachineIdStatus::FAILURE;
 

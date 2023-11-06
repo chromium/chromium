@@ -6,20 +6,21 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/values_util.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
 
@@ -407,6 +408,125 @@ TEST_F(WebAppPrefsUtilsTest, MLGuardrailConsecutiveAppAgnosticDismissDays) {
     const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
     EXPECT_EQ(*dict.FindString(kMLPromotionGuardrailBlockReason),
               "app_agnostic_ml_install_dismiss_days_hit");
+  }
+}
+
+// TODO(b/308774918): Consider using ScopedTimeClockOverrides instead of moving
+// time forward.
+class WebAppPrefsMLGuardrailsMaxStorageTest : public WebAppTest {
+ public:
+  WebAppPrefsMLGuardrailsMaxStorageTest()
+      : WebAppTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    WebAppPrefsUtilsRegisterProfilePrefs(prefs_.registry());
+    base::FieldTrialParams params;
+    params["max_days_to_store_guardrails"] = "2";
+    feature_list_.InitAndEnableFeatureWithParameters(
+        webapps::features::kWebAppsEnableMLModelForPromotion,
+        std::move(params));
+  }
+
+  bool IsMLPromoBlockedTimeSet() {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    return dict.contains(kAllMLPromosBlockedTime);
+  }
+
+  absl::optional<base::Time> GetMLPromoBlockedTime() {
+    const auto& dict = prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    auto* value = dict.FindByDottedPath(kAllMLPromosBlockedTime);
+    EXPECT_NE(value, nullptr) << " kAllMLPromosBlockedTime not set.";
+    return base::ValueToTime(value);
+  }
+
+  void FastForwardTimeForMaxDaysToStoreGuardrails() {
+    task_environment()->FastForwardBy(base::Days(
+        webapps::features::kMaxDaysForMLPromotionGuardrailStorage.Get()));
+  }
+
+  // Mimic a user blocked by guardrails for continous 5 dismissals or ignores.
+  void ForceMLPromoAgnosticGuardrailsBlocked() {
+    const webapps::AppId& app_id1 = "app1";
+    const webapps::AppId& app_id2 = "app2";
+    const webapps::AppId& app_id3 = "app3";
+    const webapps::AppId& app_id4 = "app4";
+    const webapps::AppId& app_id5 = "app5";
+    RecordMlInstallIgnored(prefs(), app_id1, base::Time::Now());
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+    RecordMlInstallDismissed(prefs(), app_id2, base::Time::Now());
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+    RecordMlInstallIgnored(prefs(), app_id3, base::Time::Now());
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+    RecordMlInstallDismissed(prefs(), app_id4, base::Time::Now());
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+    RecordMlInstallIgnored(prefs(), app_id5, base::Time::Now());
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+    EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+    task_environment()->FastForwardBy(base::Milliseconds(1));
+  }
+
+ protected:
+  sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  sync_preferences::TestingPrefServiceSyncable prefs_;
+};
+
+TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest,
+       BasicBehaviorGuardrailBlockedAfter5NonAccepts) {
+  EXPECT_FALSE(IsMLPromoBlockedTimeSet());
+
+  ForceMLPromoAgnosticGuardrailsBlocked();
+  EXPECT_TRUE(IsMLPromoBlockedTimeSet());
+  EXPECT_TRUE(GetMLPromoBlockedTime().has_value());
+}
+
+TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest,
+       MLBlockedPrefClearedOnInstallAccept) {
+  EXPECT_FALSE(IsMLPromoBlockedTimeSet());
+
+  ForceMLPromoAgnosticGuardrailsBlocked();
+  EXPECT_TRUE(IsMLPromoBlockedTimeSet());
+
+  RecordMlInstallAccepted(prefs(), "app_id", base::Time::Now());
+  EXPECT_FALSE(IsMLPromoBlockedTimeSet());
+}
+
+TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest,
+       MoreThan5NonAcceptsDoesNotUpdateBlockTime) {
+  ForceMLPromoAgnosticGuardrailsBlocked();
+
+  // Triggering a non-acceptance of the dialog after already not accepting 5
+  // times should not update the time the ML promos blocked pref was set.
+  const base::Time time_ml_install_dismissed_again = base::Time::Now();
+  RecordMlInstallDismissed(prefs(), "app", time_ml_install_dismissed_again);
+  EXPECT_TRUE(IsMLPromoBlockedTimeSet());
+
+  absl::optional<base::Time> ml_promo_time_blocked_from_pref =
+      GetMLPromoBlockedTime();
+  EXPECT_TRUE(ml_promo_time_blocked_from_pref.has_value());
+  EXPECT_NE(*ml_promo_time_blocked_from_pref, time_ml_install_dismissed_again);
+}
+
+TEST_F(WebAppPrefsMLGuardrailsMaxStorageTest, ClearAndResetGuardrails) {
+  ForceMLPromoAgnosticGuardrailsBlocked();
+  EXPECT_TRUE(IsMLPromoBlockedTimeSet());
+
+  FastForwardTimeForMaxDaysToStoreGuardrails();
+
+  EXPECT_TRUE(IsMlPromotionBlockedByHistoryGuardrail(prefs(), app_id));
+  EXPECT_FALSE(IsMLPromoBlockedTimeSet());
+  absl::optional<int> app_specific_count =
+      GetIntWebAppPref(prefs(), app_id, kConsecutiveMlInstallNotAcceptedCount);
+  EXPECT_TRUE(app_specific_count.has_value());
+  EXPECT_EQ(app_specific_count.value(), 0);
+
+  {
+    const base::Value::Dict& dict =
+        prefs()->GetDict(prefs::kWebAppsAppAgnosticMlState);
+    absl::optional<int> agnostic_not_installed_count =
+        dict.FindInt(kConsecutiveMlInstallNotAcceptedCount);
+    EXPECT_TRUE(agnostic_not_installed_count.has_value());
+    EXPECT_EQ(*agnostic_not_installed_count, 0);
   }
 }
 

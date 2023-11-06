@@ -7,11 +7,9 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/nudge_util.h"
 #include "chromeos/ui/base/tablet_state.h"
-#include "chromeos/ui/wm/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
@@ -103,10 +101,7 @@ std::unique_ptr<views::Widget> CreateWidget(aura::Window* window) {
   contents_view->SetBackground(views::CreateThemedRoundedRectBackground(
       ui::kColorSysSurface3, corner_radius));
   contents_view->SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
+      corner_radius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
 
   widget->SetContentsView(std::move(contents_view));
   return widget;
@@ -169,8 +164,7 @@ void MultitaskMenuNudgeController::MaybeShowNudge(aura::Window* window,
     return;
   }
 
-  if (!chromeos::wm::features::IsWindowLayoutMenuEnabled() ||
-      g_suppress_nudge_for_testing || nudge_widget_) {
+  if (g_suppress_nudge_for_testing || nudge_widget_) {
     return;
   }
 

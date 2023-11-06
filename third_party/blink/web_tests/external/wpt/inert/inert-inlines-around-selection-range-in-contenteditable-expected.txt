@@ -1,16 +1,18 @@
 This is a testharness.js-based test.
-PASS <span inert>a[bc</span><span>de]f</span>
-PASS <span>a[bc</span><span inert>de]f</span>
-PASS <span inert>d[ef</span><span>ab]c</span>
-PASS <span>d[ef</span><span inert>ab]c</span>
-PASS a[bc<span inert>XYZ</span>de]f
-PASS <span inert style="display:contents">a[bc</span><span>de]f</span>
-PASS <span inert style="display:contents">{abc</span><span>de]f</span>
-PASS <span inert><span style="display:contents">a[bc</span></span><span>de]f</span>
-PASS <span inert><span style="display:contents">{abc</span></span><span>de]f</span>
-FAIL <span inert style="display:none">a[bc</span><span>de]f</span> assert_equals: execCommand("delete") at <span inert style="display:none">a[bc</span><span>de]f</span>: <span> content should not be deleted because anchor node of Selection is in the <span inert> expected "<span inert=\"\" style=\"display:none\">abc</span><span>def</span>" but got "<span>f</span>"
-FAIL <span inert style="display:none">{abc</span><span>de]f</span> assert_equals: execCommand("delete") at <span inert style="display:none">{abc</span><span>de]f</span>: <span> content should not be deleted because anchor node of Selection is in the <span inert> expected "<span inert=\"\" style=\"display:none\">abc</span><span>def</span>" but got "<span>f</span>"
-PASS <span inert><span style="display:none">a[bc</span></span><span>de]f</span>
-PASS <span inert><span style="display:none">{abc</span></span><span>de]f</span>
+[PASS] <span inert>a[bc</span><span>de]f</span>
+[PASS] <span>a[bc</span><span inert>de]f</span>
+[PASS] <span inert>d[ef</span><span>ab]c</span>
+[PASS] <span>d[ef</span><span inert>ab]c</span>
+[PASS] a[bc<span inert>XYZ</span>de]f
+[PASS] <span inert style="display:contents">a[bc</span><span>de]f</span>
+[PASS] <span inert style="display:contents">{abc</span><span>de]f</span>
+[PASS] <span inert><span style="display:contents">a[bc</span></span><span>de]f</span>
+[PASS] <span inert><span style="display:contents">{abc</span></span><span>de]f</span>
+[FAIL] <span inert style="display:none">a[bc</span><span>de]f</span>
+  assert_equals: execCommand("delete") at <span inert style="display:none">a[bc</span><span>de]f</span>: <span> content should not be deleted because anchor node of Selection is in the <span inert> expected "<span inert=\"\" style=\"display:none\">abc</span><span>def</span>" but got "<span>f</span>"
+[FAIL] <span inert style="display:none">{abc</span><span>de]f</span>
+  assert_equals: execCommand("delete") at <span inert style="display:none">{abc</span><span>de]f</span>: <span> content should not be deleted because anchor node of Selection is in the <span inert> expected "<span inert=\"\" style=\"display:none\">abc</span><span>def</span>" but got "<span>f</span>"
+[PASS] <span inert><span style="display:none">a[bc</span></span><span>de]f</span>
+[PASS] <span inert><span style="display:none">{abc</span></span><span>de]f</span>
 Harness: the test ran to completion.
 

@@ -20,8 +20,12 @@ import java.util.Objects;
 
 /** A class representing the UI state of the {@link BookmarkManagerMediator}. */
 public class BookmarkUiState {
-    @IntDef({BookmarkUiMode.INVALID, BookmarkUiMode.LOADING, BookmarkUiMode.FOLDER,
-            BookmarkUiMode.SEARCHING})
+    @IntDef({
+        BookmarkUiMode.INVALID,
+        BookmarkUiMode.LOADING,
+        BookmarkUiMode.FOLDER,
+        BookmarkUiMode.SEARCHING
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface BookmarkUiMode {
         int INVALID = 0;
@@ -41,18 +45,21 @@ public class BookmarkUiState {
     final @Nullable String mSearchText;
 
     static BookmarkUiState createLoadingState() {
-        return new BookmarkUiState(BookmarkUiMode.LOADING, /*url*/ "", /*folder*/ null,
-                /*queryString*/ null);
+        return new BookmarkUiState(
+                BookmarkUiMode.LOADING, /* url= */ "", /* folder= */ null, /* queryString= */ null);
     }
 
     static BookmarkUiState createSearchState(@NonNull String queryString) {
         return new BookmarkUiState(
-                BookmarkUiMode.SEARCHING, /*url*/ "", /*folder*/ null, queryString);
+                BookmarkUiMode.SEARCHING, /* url= */ "", /* folder= */ null, queryString);
     }
 
     static BookmarkUiState createShoppingFilterState() {
-        return new BookmarkUiState(BookmarkUiMode.FOLDER, SHOPPING_FILTER_URL,
-                BookmarkId.SHOPPING_FOLDER, /*queryString*/ null);
+        return new BookmarkUiState(
+                BookmarkUiMode.FOLDER,
+                SHOPPING_FILTER_URL,
+                BookmarkId.SHOPPING_FOLDER,
+                /* queryString= */ null);
     }
 
     static BookmarkUiState createFolderState(BookmarkId folder, BookmarkModel bookmarkModel) {
@@ -63,7 +70,9 @@ public class BookmarkUiState {
         }
     }
 
-    /** @see #createStateFromUrl(Uri, BookmarkModel). */
+    /**
+     * @see #createStateFromUrl(Uri, BookmarkModel).
+     */
     static BookmarkUiState createStateFromUrl(String url, BookmarkModel bookmarkModel) {
         if (SHOPPING_FILTER_URL.equals(url)) {
             return createShoppingFilterState();
@@ -74,7 +83,7 @@ public class BookmarkUiState {
 
     /**
      * @return A state corresponding to the URI object. If the URI is not valid a folder state for
-     * the root folder will be returned.
+     *     the root folder will be returned.
      */
     static BookmarkUiState createStateFromUrl(Uri uri, BookmarkModel bookmarkModel) {
         String url = uri.toString();
@@ -85,8 +94,12 @@ public class BookmarkUiState {
         } else if (url.startsWith(UrlConstants.BOOKMARKS_FOLDER_URL)) {
             String path = uri.getLastPathSegment();
             if (!path.isEmpty()) {
-                tempState = new BookmarkUiState(BookmarkUiMode.FOLDER, url,
-                        BookmarkId.getBookmarkIdFromString(path), /*queryString*/ null);
+                tempState =
+                        new BookmarkUiState(
+                                BookmarkUiMode.FOLDER,
+                                url,
+                                BookmarkId.getBookmarkIdFromString(path),
+                                /* queryString= */ null);
             }
         }
 
@@ -105,7 +118,10 @@ public class BookmarkUiState {
         return builder.build();
     }
 
-    private BookmarkUiState(@BookmarkUiMode int uiMode, @NonNull String url, BookmarkId folder,
+    private BookmarkUiState(
+            @BookmarkUiMode int uiMode,
+            @NonNull String url,
+            BookmarkId folder,
             @Nullable String queryString) {
         assert (uiMode == BookmarkUiMode.SEARCHING) != (queryString == null);
         mUiMode = uiMode;
@@ -123,7 +139,8 @@ public class BookmarkUiState {
     public boolean equals(Object obj) {
         if (!(obj instanceof BookmarkUiState)) return false;
         BookmarkUiState other = (BookmarkUiState) obj;
-        return mUiMode == other.mUiMode && TextUtils.equals(mUrl, other.mUrl)
+        return mUiMode == other.mUiMode
+                && TextUtils.equals(mUrl, other.mUrl)
                 && Objects.equals(mSearchText, other.mSearchText);
     }
 

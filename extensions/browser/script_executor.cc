@@ -25,10 +25,10 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "ipc/ipc_message.h"
@@ -216,7 +216,8 @@ class Handler : public content::WebContentsObserver {
                                    const char* format) {
     ScriptExecutor::FrameResult& frame_result =
         GetFrameResult(render_frame_host->GetFrameToken());
-    frame_result.error = base::StringPrintf(format, frame_result.frame_id);
+    frame_result.error =
+        base::StringPrintfNonConstexpr(format, frame_result.frame_id);
   }
 
   ScriptExecutor::FrameResult& GetFrameResult(
@@ -234,18 +235,18 @@ class Handler : public content::WebContentsObserver {
     DCHECK(base::Contains(pending_render_frames_, frame));
 
     if (params->injection->is_js()) {
-      ContentScriptTracker::ScriptType script_type =
-          ContentScriptTracker::ScriptType::kContentScript;
+      ScriptInjectionTracker::ScriptType script_type =
+          ScriptInjectionTracker::ScriptType::kContentScript;
 
       switch (params->injection->get_js()->world) {
         case mojom::ExecutionWorld::kMain:
         case mojom::ExecutionWorld::kIsolated:
           break;  // kContentScript above is correct.
         case mojom::ExecutionWorld::kUserScript:
-          script_type = ContentScriptTracker::ScriptType::kUserScript;
+          script_type = ScriptInjectionTracker::ScriptType::kUserScript;
       }
-      ContentScriptTracker::WillExecuteCode(pass_key, script_type, frame,
-                                            host_id_);
+      ScriptInjectionTracker::WillExecuteCode(pass_key, script_type, frame,
+                                              host_id_);
     }
     ExtensionWebContentsObserver::GetForWebContents(web_contents())
         ->GetLocalFrame(frame)

@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
@@ -35,10 +35,10 @@ namespace {
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
 class AutofillSettingsProfileEditTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     delegate_mock_ = OCMProtocolMock(
         @protocol(AutofillProfileEditTableViewControllerDelegate));
     CreateController();
@@ -49,7 +49,7 @@ class AutofillSettingsProfileEditTableViewControllerTest
     [controller() loadModel];
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
@@ -133,7 +133,7 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
  protected:
   AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled() {}
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil
@@ -232,7 +232,7 @@ TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
 class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
     : public AutofillSettingsProfileEditTableViewControllerTest {
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     AutofillSettingsProfileEditTableViewController* viewController =
         [[AutofillSettingsProfileEditTableViewController alloc]
                             initWithDelegate:nil

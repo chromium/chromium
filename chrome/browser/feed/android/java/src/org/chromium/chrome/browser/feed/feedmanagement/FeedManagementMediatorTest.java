@@ -33,9 +33,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
-/**
- * Tests {@link FeedManagementMediator}.
- */
+/** Tests {@link FeedManagementMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
 public class FeedManagementMediatorTest {
@@ -45,17 +43,13 @@ public class FeedManagementMediatorTest {
     private ModelList mModelList;
     private FeedManagementMediator mFeedManagementMediator;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
+    @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
-    @Mock
-    private FeedManagementMediator.FollowManagementLauncher mFollowManagementLauncher;
+    @Mock private FeedManagementMediator.FollowManagementLauncher mFollowManagementLauncher;
 
     @Before
     public void setUpTest() {
@@ -65,8 +59,9 @@ public class FeedManagementMediatorTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
-        mFeedManagementMediator = new FeedManagementMediator(
-                mActivity, mModelList, mFollowManagementLauncher, TEST_STREAM_KIND);
+        mFeedManagementMediator =
+                new FeedManagementMediator(
+                        mActivity, mModelList, mFollowManagementLauncher, TEST_STREAM_KIND);
     }
 
     @Test
@@ -89,7 +84,8 @@ public class FeedManagementMediatorTest {
 
         // Assert
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(intent.getData(),
+        assertEquals(
+                intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(
@@ -103,7 +99,8 @@ public class FeedManagementMediatorTest {
 
         // Assert
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
-        assertEquals(intent.getData(),
+        assertEquals(
+                intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(

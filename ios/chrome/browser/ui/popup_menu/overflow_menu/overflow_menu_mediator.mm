@@ -1874,14 +1874,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and reloads the current page.
 - (void)reload {
   RecordAction(UserMetricsAction("MobileMenuReload"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   self.navigationAgent->Reload();
 }
 
 // Dismisses the menu and stops the current page load.
 - (void)stopLoading {
   RecordAction(UserMetricsAction("MobileMenuStop"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   self.navigationAgent->StopLoading();
 }
 
@@ -1890,23 +1890,24 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuNewTab"));
   RecordAction(UserMetricsAction("MobileTabNewTab"));
 
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO]];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
+      openURLInNewTab:[OpenNewTabCommand commandWithIncognito:NO]];
 }
 
 // Dismisses the menu and opens a new incognito tab.
 - (void)openIncognitoTab {
   RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
       openURLInNewTab:[OpenNewTabCommand commandWithIncognito:YES]];
 }
 
 // Dismisses the menu and opens a new window.
 - (void)openNewWindow {
   RecordAction(UserMetricsAction("MobileMenuNewWindow"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
       openNewWindowWithActivity:ActivityToLoadURL(WindowActivityToolsOrigin,
                                                   GURL(kChromeUINewTabURL))];
 }
@@ -1914,8 +1915,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens the Clear Browsing Data screen.
 - (void)openClearBrowsingData {
   RecordAction(UserMetricsAction("MobileMenuClearBrowsingData"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showClearBrowsingDataSettings];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler showClearBrowsingDataSettings];
 }
 
 // Follows the website corresponding to `webPage` and dismisses the menu.
@@ -1924,7 +1925,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
   if (followBrowserAgent)
     followBrowserAgent->FollowWebSite(webPage, FollowSource::OverflowMenu);
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
 }
 
 // Unfollows the website corresponding to `webPage` and dismisses the menu.
@@ -1933,7 +1934,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   FollowBrowserAgent* followBrowserAgent = self.followBrowserAgent;
   if (followBrowserAgent)
     followBrowserAgent->UnfollowWebSite(webPage, FollowSource::OverflowMenu);
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and adds the current page as a bookmark or opens the
@@ -1943,12 +1944,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   // Dismissing the menu disconnects the mediator, so save anything cleaned up
   // there.
   web::WebState* currentWebState = self.webState;
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   LogBookmarkUseForDefaultBrowserPromo();
   if (!currentWebState) {
     return;
   }
-  [self.bookmarksCommandsHandler bookmarkWithWebState:currentWebState];
+  [self.bookmarksHandler bookmarkWithWebState:currentWebState];
 }
 
 // Dismisses the menu and adds the current page to the reading list.
@@ -1965,50 +1966,50 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   reading_list::AddToReadingListUsingCanonicalUrl(self.readingListBrowserAgent,
                                                   webState);
 
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
 }
 
 // Dismisses the menu and starts translating the current page.
 - (void)translatePage {
   base::RecordAction(UserMetricsAction("MobileMenuTranslate"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showTranslate];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showTranslate];
 }
 
 // Dismisses the menu and requests the desktop version of the current page
 - (void)requestDesktopSite {
   RecordAction(UserMetricsAction("MobileMenuRequestDesktopSite"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   self.navigationAgent->RequestDesktopSite();
-  [self.dispatcher showDefaultSiteViewIPH];
+  [self.browserCoordinatorHandler showDefaultSiteViewIPH];
 }
 
 // Dismisses the menu and requests the mobile version of the current page
 - (void)requestMobileSite {
   RecordAction(UserMetricsAction("MobileMenuRequestMobileSite"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   self.navigationAgent->RequestMobileSite();
 }
 
 // Dismisses the menu and opens Find In Page
 - (void)openFindInPage {
   RecordAction(UserMetricsAction("MobileMenuFindInPage"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher openFindInPage];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.findInPageHandler openFindInPage];
 }
 
 // Dismisses the menu and opens Text Zoom
 - (void)openTextZoom {
   RecordAction(UserMetricsAction("MobileMenuTextZoom"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher openTextZoom];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.textZoomHandler openTextZoom];
 }
 
 // Dismisses the menu and opens the Report an Issue screen.
 - (void)reportAnIssue {
   RecordAction(UserMetricsAction("MobileMenuReportAnIssue"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
       showReportAnIssueFromViewController:self.baseViewController
                                    sender:UserFeedbackSender::ToolsMenu];
 }
@@ -2016,16 +2017,18 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 // Dismisses the menu and opens the help screen.
 - (void)openHelp {
   RecordAction(UserMetricsAction("MobileMenuHelp"));
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showHelpPage];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showHelpPage];
 }
 
 // Begins the action edit flow.
 - (void)beginCustomization {
-  [self.dispatcher showMenuCustomization];
+  [self.overflowMenuCustomizationHandler showMenuCustomization];
 }
+
 - (void)beginCustomizationFromActionType:(overflow_menu::ActionType)actionType {
-  [self.dispatcher showMenuCustomizationFromActionType:actionType];
+  [self.overflowMenuCustomizationHandler
+      showMenuCustomizationFromActionType:actionType];
 }
 
 - (void)hideDestination:(overflow_menu::Destination)destination {
@@ -2055,15 +2058,15 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Dismisses the menu and opens bookmarks.
 - (void)openBookmarks {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   LogBookmarkUseForDefaultBrowserPromo();
-  [self.dispatcher showBookmarksManager];
+  [self.browserCoordinatorHandler showBookmarksManager];
 }
 
 // Dismisses the menu and opens share sheet to share Chrome's app store link
 - (void)shareChromeApp {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher shareChromeApp];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.activityServiceHandler shareChromeApp];
 }
 
 // Dismisses the menu and opens history.
@@ -2075,16 +2078,14 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
         feature_engagement::events::kHistoryOnOverflowMenuUsed);
   }
   [IntentDonationHelper donateIntent:IntentType::kViewHistory];
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showHistory];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler showHistory];
 }
 
 // Dismisses the menu and opens reading list.
 - (void)openReadingList {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  // TODO(crbug.com/906662): This will need to be called on the
-  // BrowserCoordinatorCommands handler.
-  [self.dispatcher showReadingList];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showReadingList];
 }
 
 // Dismisses the menu and opens password list.
@@ -2092,8 +2093,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   UmaHistogramEnumeration(
       "PasswordManager.ManagePasswordsReferrer",
       password_manager::ManagePasswordsReferrer::kChromeMenuItem);
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
       showSavedPasswordsSettingsFromViewController:self.baseViewController
                                   showCancelButton:NO
                                 startPasswordCheck:NO];
@@ -2104,35 +2105,31 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuPriceNotifications"));
   _engagementTracker->NotifyEvent(
       feature_engagement::events::kPriceNotificationsUsed);
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showPriceNotifications];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.priceNotificationHandler showPriceNotifications];
 }
 
 // Dismisses the menu and opens downloads.
 - (void)openDownloads {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
                        : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
                           type);
-  // TODO(crbug.com/906662): This will need to be called on the
-  // BrowserCoordinatorCommands handler.
-  [self.dispatcher showDownloadsFolder];
+  [self.browserCoordinatorHandler showDownloadsFolder];
 }
 
 // Dismisses the menu and opens recent tabs.
 - (void)openRecentTabs {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  // TODO(crbug.com/906662): This will need to be called on the
-  // BrowserCoordinatorCommands handler.
-  [self.dispatcher showRecentTabs];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showRecentTabs];
 }
 
 // Dismisses the menu and shows page information.
 - (void)openSiteInformation {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.pageInfoCommandsHandler showPageInfo];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.pageInfoHandler showPageInfo];
 }
 
 // Dismisses the menu and opens What's New.
@@ -2145,8 +2142,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kViewedWhatsNew);
   }
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showWhatsNew];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showWhatsNew];
 }
 
 // Dismisses the menu and opens settings.
@@ -2156,33 +2153,35 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.engagementTracker->NotifyEvent(
         feature_engagement::events::kBlueDotPromoOverflowMenuDismissed);
   }
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   profile_metrics::BrowserProfileType type =
       self.isIncognito ? profile_metrics::BrowserProfileType::kIncognito
                        : profile_metrics::BrowserProfileType::kRegular;
   UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType", type);
-  [self.dispatcher showSettingsFromViewController:self.baseViewController];
+  [self.applicationHandler
+      showSettingsFromViewController:self.baseViewController];
 }
 
 - (void)enterpriseLearnMore {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.applicationHandler
       openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:
                                              GURL(kChromeUIManagementURL)]];
 }
 
 - (void)parentLearnMore {
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
   GURL familyLinkURL =
       GURL(supervised_user::kManagedByParentUiMoreInfoUrl.Get());
-  [self.dispatcher openURLInNewTab:[OpenNewTabCommand
-                                       commandWithURLFromChrome:familyLinkURL]];
+  [self.applicationHandler
+      openURLInNewTab:[OpenNewTabCommand
+                          commandWithURLFromChrome:familyLinkURL]];
 }
 
 - (void)openSpotlightDebugger {
   DCHECK(IsSpotlightDebuggingEnabled());
-  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
-  [self.dispatcher showSpotlightDebugger];
+  [self.popupMenuHandler dismissPopupMenuAnimated:YES];
+  [self.browserCoordinatorHandler showSpotlightDebugger];
 }
 
 // Make any necessary updates for when `destination`'s shown state is toggled.

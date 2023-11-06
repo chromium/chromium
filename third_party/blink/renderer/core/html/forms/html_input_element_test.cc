@@ -243,7 +243,7 @@ TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
   DateTimeChooserParameters params;
   bool success = input->SetupDateTimeChooserParameters(params);
   EXPECT_TRUE(success);
-  EXPECT_EQ("date", params.type);
+  EXPECT_EQ(InputType::Type::kDate, params.type);
   EXPECT_EQ(gfx::Rect(16, 16, 400, 100), params.anchor_rect_in_screen);
 }
 

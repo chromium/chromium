@@ -411,6 +411,12 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_MAC)
+  void PrivilegedHelperInstall() const override {
+    RunCommand("privileged_helper_install");
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   void ExpectLegacyUpdaterMigrated() const override {
     RunCommand("expect_legacy_updater_migrated");
   }
@@ -425,7 +431,8 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   void SetLastChecked(const base::Time& time) const override {
     RunCommand(
         "set_last_checked",
-        {Param("time", base::NumberToString(time.ToJsTimeIgnoringNull()))});
+        {Param("time", base::NumberToString(
+                           time.InMillisecondsFSinceUnixEpochIgnoringNull()))});
   }
 
   void ExpectLastChecked() const override { RunCommand("expect_last_checked"); }

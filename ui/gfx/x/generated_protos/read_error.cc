@@ -45,7 +45,7 @@ namespace x11 {
 namespace {
 
 template <typename T>
-std::unique_ptr<Error> MakeError(Connection::RawError error_) {
+std::unique_ptr<Error> MakeError(RawError error_) {
   ReadBuffer buf(error_);
   auto error = std::make_unique<T>();
   ReadError(error.get(), &buf);

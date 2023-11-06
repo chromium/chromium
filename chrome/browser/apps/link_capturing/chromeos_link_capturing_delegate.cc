@@ -4,19 +4,31 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
+#include <string_view>
+
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/values_equivalent.h"
+#include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
-#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"  // nogncheck https://crbug.com/1474116
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_tab_helper.h"
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -26,12 +38,7 @@ namespace {
 // Usually we want to only capture navigations from clicking a link. For a
 // subset of apps, we want to capture typing into the omnibox as well.
 bool ShouldOnlyCaptureLinks(const std::vector<std::string>& app_ids) {
-  for (const auto& app_id : app_ids) {
-    if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
-      return false;
-    }
-  }
-  return true;
+  return !base::Contains(app_ids, ash::kChromeUIUntrustedProjectorSwaAppId);
 }
 
 bool IsSystemWebApp(Profile* profile, const std::string& app_id) {
@@ -109,6 +116,44 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
   }
 }
 
+base::flat_set<std::string>* GetWorkspaceAppAllowlist() {
+  static base::NoDestructor<base::flat_set<std::string>> g_workspace_allowlist(
+      {web_app::kGoogleDriveAppId, web_app::kGoogleDocsAppId,
+       web_app::kGoogleSheetsAppId, web_app::kGoogleSlidesAppId});
+  return g_workspace_allowlist.get();
+}  // namespace
+
+bool IsWorkspaceApp(const std::string& app_id) {
+  return base::Contains(*GetWorkspaceAppAllowlist(), app_id);
+}
+
+// Returns the ID of the app window where the link click originated. Returns
+// nullopt if the link was not clicked in an app window.
+absl::optional<webapps::AppId> GetSourceAppId(
+    Profile* profile,
+    content::WebContents* web_contents) {
+  const webapps::AppId* app_id = web_app::WebAppProvider::GetForWebApps(profile)
+                                     ->ui_manager()
+                                     .GetAppIdForWindow(web_contents);
+  if (app_id) {
+    return *app_id;
+  }
+
+  // LinkCapturingTabHelper contains the App ID of the app which caused this
+  // navigation, in cases where the navigation is happening in a different
+  // browser to where it was initiated. We should only use this ID if it's the
+  // first navigation in this WebContents -- i.e., the there is no committed
+  // URL.
+  auto* helper = LinkCapturingTabHelper::FromWebContents(web_contents);
+  const GURL& last_committed_url = web_contents->GetLastCommittedURL();
+  if (helper &&
+      (!last_committed_url.is_valid() || last_committed_url.IsAboutBlank())) {
+    return helper->source_app_id();
+  }
+
+  return absl::nullopt;
+}
+
 void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
                const std::string& app_id,
                int32_t event_flags,
@@ -129,16 +174,78 @@ void LaunchApp(base::WeakPtr<AppServiceProxy> proxy,
   IntentHandlingMetrics::RecordPreferredAppLinkClickMetrics(
       GetMetricsPlatform(app_type));
 }
+
+// Used to create a unique timestamped URL to force reload apps.
+// Points to the base::DefaultTickClock by default.
+static const base::TickClock*& GetTickClock() {
+  static const base::TickClock* g_clock = base::DefaultTickClock::GetInstance();
+  return g_clock;
+}
+
 }  // namespace
 
 // static
-const base::TickClock* ChromeOsLinkCapturingDelegate::clock_ =
-    base::DefaultTickClock::GetInstance();
+absl::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
+    const AppIdsToLaunchForUrl& app_ids_to_launch,
+    bool is_navigation_from_link,
+    absl::optional<webapps::AppId> source_app_id) {
+  if (app_ids_to_launch.candidates.empty()) {
+    return absl::nullopt;
+  }
+
+  if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
+      !is_navigation_from_link) {
+    return absl::nullopt;
+  }
+
+  if (app_ids_to_launch.preferred) {
+    return app_ids_to_launch.preferred;
+  }
+
+  // If there's no user preference, but the link was clicked from within an app
+  // window, we may still launch the app.
+  if (!source_app_id.has_value()) {
+    return absl::nullopt;
+  }
+
+  // When AppToAppLinkCapturing is enabled, always capture links from within
+  // app windows, if there is only one candidate app.
+  if (app_ids_to_launch.candidates.size() == 1 &&
+      base::FeatureList::IsEnabled(apps::features::kAppToAppLinkCapturing)) {
+    return app_ids_to_launch.candidates[0];
+  }
+
+  // When AppToAppLinkCapturingWorkspaceApps is enabled, launch the app if
+  // both source and destination are Workspace apps.
+  if (base::FeatureList::IsEnabled(
+          apps::features::kAppToAppLinkCapturingWorkspaceApps)) {
+    if (!IsWorkspaceApp(source_app_id.value())) {
+      return absl::nullopt;
+    }
+
+    auto dest_app =
+        base::ranges::find_if(app_ids_to_launch.candidates, &IsWorkspaceApp);
+    if (dest_app != app_ids_to_launch.candidates.end()) {
+      return *dest_app;
+    }
+  }
+
+  return absl::nullopt;
+}
 
 // static
-void ChromeOsLinkCapturingDelegate::SetClockForTesting(
+base::AutoReset<const base::TickClock*>
+ChromeOsLinkCapturingDelegate::SetClockForTesting(
     const base::TickClock* tick_clock) {
-  clock_ = tick_clock;
+  return base::AutoReset<const base::TickClock*>(&GetTickClock(), tick_clock);
+}
+
+// static
+base::AutoReset<base::flat_set<std::string>>
+ChromeOsLinkCapturingDelegate::SetWorkspaceAppAllowlistForTesting(
+    base::flat_set<std::string> allowlist) {
+  return base::AutoReset<base::flat_set<std::string>>(
+      GetWorkspaceAppAllowlist(), allowlist);
 }
 
 ChromeOsLinkCapturingDelegate::ChromeOsLinkCapturingDelegate() = default;
@@ -160,45 +267,38 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     bool is_navigation_from_link) {
   AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  AppIdsToLaunchForUrl app_id_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
+  AppIdsToLaunchForUrl app_ids_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
 
-  if (app_id_to_launch.candidates.empty()) {
+  absl::optional<std::string> launch_app_id =
+      GetLaunchAppId(app_ids_to_launch, is_navigation_from_link,
+                     GetSourceAppId(profile, web_contents));
+  if (!launch_app_id) {
     return absl::nullopt;
   }
 
-  if (ShouldOnlyCaptureLinks(app_id_to_launch.candidates) &&
-      !is_navigation_from_link) {
-    return absl::nullopt;
-  }
-
-  if (!app_id_to_launch.preferred) {
-    return absl::nullopt;
-  }
-
-  const std::string& preferred_app_id = *app_id_to_launch.preferred;
   // Only automatically launch supported app types.
-  AppType app_type = proxy->AppRegistryCache().GetAppType(preferred_app_id);
+  AppType app_type = proxy->AppRegistryCache().GetAppType(*launch_app_id);
   if (app_type != AppType::kArc && app_type != AppType::kWeb &&
-      !IsSystemWebApp(profile, preferred_app_id)) {
+      !IsSystemWebApp(profile, *launch_app_id)) {
     return absl::nullopt;
   }
 
   // Don't capture if already inside the target app scope.
   if (app_type == AppType::kWeb &&
       base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
-                             &preferred_app_id)) {
+                             &launch_app_id.value())) {
     return absl::nullopt;
   }
 
   auto launch_source = is_navigation_from_link ? LaunchSource::kFromLink
                                                : LaunchSource::kFromOmnibox;
   GURL redirected_url =
-      RedirectUrlIfSwa(profile, preferred_app_id, url, clock_);
+      RedirectUrlIfSwa(profile, *launch_app_id, url, GetTickClock());
 
   // Note: The launch can occur after this object is destroyed, so bind to a
   // static function.
   return base::BindOnce(
-      &LaunchApp, proxy->GetWeakPtr(), preferred_app_id,
+      &LaunchApp, proxy->GetWeakPtr(), *launch_app_id,
       GetEventFlags(WindowOpenDisposition::NEW_WINDOW,
                     /*prefer_container=*/true),
       redirected_url, launch_source,

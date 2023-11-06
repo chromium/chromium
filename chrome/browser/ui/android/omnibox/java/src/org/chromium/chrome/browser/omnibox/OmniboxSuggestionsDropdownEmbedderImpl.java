@@ -29,10 +29,12 @@ import org.chromium.ui.display.DisplayUtil;
 /**
  * Implementation of {@link OmniboxSuggestionsDropdownEmbedder} that positions it using an "anchor"
  * and "horizontal alignment" view.
- * */
-class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdownEmbedder,
-                                                        OnLayoutChangeListener,
-                                                        OnGlobalLayoutListener, ComponentCallbacks {
+ */
+class OmniboxSuggestionsDropdownEmbedderImpl
+        implements OmniboxSuggestionsDropdownEmbedder,
+                OnLayoutChangeListener,
+                OnGlobalLayoutListener,
+                ComponentCallbacks {
     private final ObservableSupplierImpl<OmniboxAlignment> mOmniboxAlignmentSupplier =
             new ObservableSupplierImpl<>();
     private final @NonNull WindowAndroid mWindowAndroid;
@@ -50,18 +52,18 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     private DeferredIMEWindowInsetApplicationCallback mDeferredIMEWindowInsetApplicationCallback;
 
     /**
-     *
      * @param windowAndroid Window object in which the dropdown will be displayed.
      * @param windowDelegate Delegate object for performing window operations.
      * @param anchorView View to which the dropdown should be "anchored" i.e. vertically positioned
-     *         next to and matching the width of. This must be a descendant of the top-level content
-     *         (android.R.id.content) view.
+     *     next to and matching the width of. This must be a descendant of the top-level content
+     *     (android.R.id.content) view.
      * @param horizontalAlignmentView View to which the dropdown should be horizontally aligned when
-     *         its width is smaller than the anchor view. This must be a descendant of the anchor
-     *         view.
+     *     its width is smaller than the anchor view. This must be a descendant of the anchor view.
      */
-    OmniboxSuggestionsDropdownEmbedderImpl(@NonNull WindowAndroid windowAndroid,
-            @NonNull WindowDelegate windowDelegate, @NonNull View anchorView,
+    OmniboxSuggestionsDropdownEmbedderImpl(
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull WindowDelegate windowDelegate,
+            @NonNull View anchorView,
             @NonNull View horizontalAlignmentView) {
         mWindowAndroid = windowAndroid;
         mWindowDelegate = windowDelegate;
@@ -127,8 +129,16 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
 
     // View.OnLayoutChangeListener
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
-            int oldTop, int oldRight, int oldBottom) {
+    public void onLayoutChange(
+            View v,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
         recalculateOmniboxAlignment();
     }
 
@@ -156,25 +166,37 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     public void onLowMemory() {}
 
     /**
-     * Recalculates the desired alignment of the omnibox and sends the updated alignment data to
-     * any observers. Currently will send an update message unconditionally. This method is called
+     * Recalculates the desired alignment of the omnibox and sends the updated alignment data to any
+     * observers. Currently will send an update message unconditionally. This method is called
      * during layout and should avoid memory allocations other than the necessary new
-     * OmniboxAlignment().
-     *  The method aligns the omnibox dropdown as follows:
-     *  Case 1: Omnibox revamp enabled on tablet window.
+     * OmniboxAlignment(). The method aligns the omnibox dropdown as follows:
+     *
+     * <p>Case 1: Omnibox revamp enabled on tablet window.
+     *
+     * <pre>
      *  | anchor  [  alignment  ]       |
      *            |  dropdown   |
-     *  Case 2: Omnibox revamp disabled on tablet window.
+     * </pre>
+     *
+     * <p>Case 2: Omnibox revamp disabled on tablet window.
+     *
+     * <pre>
      *  | anchor    [alignment]         |
      *  |{pad_left} dropdown {pad_right}|
-     *  Case 3: Phone window. Full width and no padding.
+     * </pre>
+     *
+     * <p>Case 3: Phone window. Full width and no padding.
+     *
+     * <pre>
      *  | anchor     [alignment]        |
      *  |           dropdown            |
+     * </pre>
      */
     void recalculateOmniboxAlignment() {
         View contentView = mAnchorView.getRootView().findViewById(android.R.id.content);
+        int contentViewTopPadding = contentView == null ? 0 : contentView.getPaddingTop();
         ViewUtils.getRelativeLayoutPosition(contentView, mAnchorView, mPositionArray);
-        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight();
+        int top = mPositionArray[1] + mAnchorView.getMeasuredHeight() - contentViewTopPadding;
         int left;
         int width;
         int paddingLeft;
@@ -184,7 +206,11 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
                     mAnchorView, mHorizontalAlignmentView, mPositionArray);
             if (OmniboxFeatures.shouldShowModernizeVisualUpdate(mContext)) {
                 // Case 1: tablets with revamp enabled. Width equal to alignment view and left
-                // equivalent to left of alignment view.
+                // equivalent to left of alignment view. Top minus a small overlap.
+                top -=
+                        mContext.getResources()
+                                .getDimensionPixelSize(
+                                        R.dimen.omnibox_suggestion_list_toolbar_overlap);
                 int sideSpacing = OmniboxResourceProvider.getSideSpacing(mContext);
                 width = mHorizontalAlignmentView.getMeasuredWidth() + 2 * sideSpacing;
 
@@ -206,8 +232,10 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
                 left = 0;
                 width = mAnchorView.getMeasuredWidth();
                 paddingLeft = mPositionArray[0];
-                paddingRight = mAnchorView.getMeasuredWidth()
-                        - mHorizontalAlignmentView.getMeasuredWidth() - mPositionArray[0];
+                paddingRight =
+                        mAnchorView.getMeasuredWidth()
+                                - mHorizontalAlignmentView.getMeasuredWidth()
+                                - mPositionArray[0];
             }
         } else {
             // Case 3: phones or phone-sized windows on tablets. Full bleed width with no padding or
@@ -222,11 +250,17 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
                 mDeferredIMEWindowInsetApplicationCallback != null
                         ? mDeferredIMEWindowInsetApplicationCallback.getCurrentKeyboardHeight()
                         : 0;
+        int windowHeight = DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp);
+        int minSpaceAboveWindowBottom =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_min_space_above_window_bottom);
         int windowSpace =
-                DisplayUtil.dpToPx(mWindowAndroid.getDisplay(), mWindowHeightDp) - keyboardHeight;
+                Math.min(windowHeight - keyboardHeight, windowHeight - minSpaceAboveWindowBottom);
         // If content view is null, then omnibox might not be in the activity content.
         int contentSpace =
-                contentView == null ? Integer.MAX_VALUE : contentView.getMeasuredHeight();
+                contentView == null
+                        ? Integer.MAX_VALUE
+                        : contentView.getMeasuredHeight() - keyboardHeight;
         int height = Math.min(windowSpace, contentSpace) - top;
 
         // TODO(pnoland@, https://crbug.com/1416985): avoid pushing changes that are identical to
@@ -248,8 +282,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl implements OmniboxSuggestionsDropdo
     }
 
     /**
-     * Returns whether the window insets corresponding to the given view have changed since the
-     * last call to insetsHaveChanged().
+     * Returns whether the window insets corresponding to the given view have changed since the last
+     * call to insetsHaveChanged().
      */
     private boolean insetsHaveChanged(View view) {
         WindowInsets rootWindowInsets = view.getRootWindowInsets();

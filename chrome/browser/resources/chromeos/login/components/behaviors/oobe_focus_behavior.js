@@ -33,9 +33,9 @@ export const OobeFocusBehavior = {
     if (!root) {
       return;
     }
-    var focusedElements = root.getElementsByClassName('focus-on-show');
-    var focused = false;
-    for (var i = 0; i < focusedElements.length; ++i) {
+    const focusedElements = root.getElementsByClassName('focus-on-show');
+    let focused = false;
+    for (let i = 0; i < focusedElements.length; ++i) {
       if (focusedElements[i].hidden) {
         continue;
       }

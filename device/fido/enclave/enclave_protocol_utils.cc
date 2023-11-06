@@ -24,6 +24,7 @@
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/json_request.h"
+#include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/value_response_conversions.h"
 
@@ -213,7 +214,8 @@ std::string AuthenticatorGetAssertionResponseToJson(
 }
 
 std::pair<absl::optional<AuthenticatorGetAssertionResponse>, std::string>
-ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor) {
+ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor,
+                          base::span<uint8_t> credential_id) {
   absl::optional<cbor::Value> response_value =
       cbor::Reader::Read(response_cbor);
   if (!response_value || !response_value->is_array() ||
@@ -253,6 +255,10 @@ ParseGetAssertionResponse(const std::vector<uint8_t>& response_cbor) {
   if (!response) {
     return {absl::nullopt, "Assertion response failed to parse."};
   }
+
+  response->credential = PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey,
+      fido_parsing_utils::Materialize(credential_id));
 
   return {std::move(response), std::string()};
 }

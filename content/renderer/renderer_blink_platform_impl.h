@@ -214,7 +214,6 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
       const blink::WebURL& url,
       blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
   base::PlatformThreadId GetIOThreadId() const override;
-  network::mojom::AttributionSupport GetAttributionReportingSupport() override;
   scoped_refptr<base::SingleThreadTaskRunner> VideoFrameCompositorTaskRunner()
       override;
 #if BUILDFLAG(IS_ANDROID)
@@ -258,6 +257,13 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
 
   // Thread to run the VideoFrameCompositor on.
   std::unique_ptr<base::Thread> video_frame_compositor_thread_;
+
+  // FrameSinks are generated on both the browser and the renderer. The
+  // browser uses routing IDs and will be in the range [0,
+  // std::numeric_limits<int32_t>::max()] The renderer has the
+  // [std::numeric_limits<int32_t>::max() + 1,
+  // std::numeric_limits<uint32_t>::max()] range.
+  uint32_t next_frame_sink_id_;
 
   THREAD_CHECKER(main_thread_checker_);
 };

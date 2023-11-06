@@ -179,7 +179,18 @@ void VerifyPowersForURL(GURL url,
               ContainerEq(GetPowersForURLAsString(url, service1)));
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest, AddOnePower) {
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class TwoClientPowerBookmarksSyncTestNoTestingConfig
+    : public TwoClientPowerBookmarksSyncTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    TwoClientPowerBookmarksSyncTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTestNoTestingConfig,
+                       AddOnePower) {
   ASSERT_TRUE(SetupSync());
   SetupServices();
 
@@ -228,7 +239,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest, DeleteOnePower) {
   EXPECT_TRUE(PowerBookmarkChecker(service0_, service1_, kGoogleURL).Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTest, AddMultiplePowers) {
+IN_PROC_BROWSER_TEST_F(TwoClientPowerBookmarksSyncTestNoTestingConfig,
+                       AddMultiplePowers) {
   ASSERT_TRUE(SetupSync());
   SetupServices();
 

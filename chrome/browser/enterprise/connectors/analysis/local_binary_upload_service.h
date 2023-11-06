@@ -70,6 +70,7 @@ class LocalBinaryUploadService : public safe_browsing::BinaryUploadService {
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override;
   void MaybeAcknowledge(std::unique_ptr<Ack> ack) override;
   void MaybeCancelRequests(std::unique_ptr<CancelRequests> cancel) override;
+  base::WeakPtr<BinaryUploadService> AsWeakPtr() override;
 
   size_t GetActiveRequestCountForTesting() const {
     return active_requests_.size();

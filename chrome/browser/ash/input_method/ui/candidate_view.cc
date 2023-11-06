@@ -39,8 +39,9 @@ class VerticalCandidateLabel : public views::Label {
   // views::Label:
   // Returns the preferred size, but guarantees that the width has at
   // least kMinCandidateLabelWidth pixels.
-  gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = Label::CalculatePreferredSize();
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override {
+    gfx::Size size = Label::CalculatePreferredSize(available_size);
     size.SetToMax(gfx::Size(kMinCandidateLabelWidth, 0));
     size.SetToMin(gfx::Size(kMaxCandidateLabelWidth, size.height()));
     return size;

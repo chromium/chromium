@@ -134,7 +134,11 @@ class AbstractRebaseliningCommand(Command):
 
     @functools.cached_property
     def _host_port(self):
-        return self._tool.port_factory.get()
+        # TODO(crbug.com/1498195): This may be changed to `--no-wdspec`.
+        return self._tool.port_factory.get(options=optparse.Values({
+            'test_types':
+            ['testharness', 'reftest', 'wdspec', 'crashtest', 'print-reftest']
+        }))
 
     def _file_name_for_actual_result(self, test_name, suffix):
         # output_filename takes extensions starting with '.'.
@@ -259,8 +263,14 @@ class TestBaselineSet(collections.abc.Set):
             step_name: The name of the build step this test was run for.
             port_name: This specifies what platform the baseline is for.
         """
-        port_name = port_name or self._builders.port_name_for_builder_name(
-            build.builder_name)
+        if not port_name:
+            product = self._builders.product_for_build_step(
+                build.builder_name, step_name)
+            if product == 'content_shell':
+                port_name = self._builders.port_name_for_builder_name(
+                    build.builder_name)
+            else:
+                port_name = product
         self._build_steps.add((build.builder_name, step_name))
         build_step = (build, step_name, port_name)
         self._test_map[test].append(build_step)
@@ -351,18 +361,17 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         #TODO: we should make the selection of (builder, step) deterministic
         for builder, step in list(release_build_steps) + list(
                 debug_build_steps):
-            if not self._tool.builders.uses_wptrunner(builder, step):
-                # Some result db related unit tests set step to None
-                is_legacy_step = step is None or 'blink_web_tests' in step
-                flag_spec_option = self._tool.builders.flag_specific_option(
-                    builder, step)
-                port = self._tool.port_factory.get_from_builder_name(builder)
-                port.set_option_default('flag_specific', flag_spec_option)
-                fallback_path = port.baseline_search_path()
-                if fallback_path not in list(
-                        build_steps_to_fallback_paths[is_legacy_step].values()):
-                    build_steps_to_fallback_paths[
-                        is_legacy_step][builder, step] = fallback_path
+            # Some result db related unit tests set step to None
+            is_legacy_step = step is None or 'blink_web_tests' in step
+            flag_spec_option = self._tool.builders.flag_specific_option(
+                builder, step)
+            port = self._tool.port_factory.get_from_builder_name(builder)
+            port.set_option_default('flag_specific', flag_spec_option)
+            fallback_path = port.baseline_search_path()
+            if fallback_path not in list(
+                    build_steps_to_fallback_paths[is_legacy_step].values()):
+                build_steps_to_fallback_paths[is_legacy_step][
+                    builder, step] = fallback_path
         return (set(build_steps_to_fallback_paths[True])
                 | set(build_steps_to_fallback_paths[False]))
 
@@ -592,7 +601,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         results = sorted(set(result.actual_results()))
         result_tags = ' '.join(RESULT_TAGS[result] for result in results)
         reason = self._rebaseline_failures[task].value
-        return f'[ {specifier} ] {task.test} [ {result_tags} ]  # {reason}'
+        line = f'{task.test} [ {result_tags} ]  # {reason}'
+        return f'[ {specifier} ] {line}' if specifier else line
 
     def unstaged_baselines(self):
         """Returns absolute paths for unstaged (including untracked) baselines."""

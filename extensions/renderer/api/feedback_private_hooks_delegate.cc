@@ -20,8 +20,8 @@ constexpr char kSendFeedback[] = "feedbackPrivate.sendFeedback";
 // Note: This is to allow the promise version of the API to return a
 // single object, while still supporting the previous callback version which
 // expects multiple parameters to be passed to the callback.
-std::vector<v8::Local<v8::Value>> MassageSendFeedbackResults(
-    const std::vector<v8::Local<v8::Value>>& result_args,
+v8::LocalVector<v8::Value> MassageSendFeedbackResults(
+    const v8::LocalVector<v8::Value>& result_args,
     v8::Local<v8::Context> context,
     binding::AsyncResponseType async_type) {
   // If this is not a callback based API call, we don't need to modify anything.
@@ -43,8 +43,8 @@ std::vector<v8::Local<v8::Value>> MassageSendFeedbackResults(
   success = v8_helpers::GetProperty(context, result_obj, "landingPageType",
                                     &landingPageType);
   DCHECK(success);
-  std::vector<v8::Local<v8::Value>> new_args{status, landingPageType};
-
+  v8::LocalVector<v8::Value> new_args(context->GetIsolate(),
+                                      {status, landingPageType});
   return new_args;
 }
 
@@ -59,7 +59,7 @@ RequestResult FeedbackPrivateHooksDelegate::HandleRequest(
     const std::string& method_name,
     const APISignature* signature,
     v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& refs) {
   // Only add the result handler for the sendFeedback function.
   if (method_name != kSendFeedback)

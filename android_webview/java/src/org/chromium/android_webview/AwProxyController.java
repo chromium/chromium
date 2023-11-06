@@ -4,10 +4,11 @@
 
 package org.chromium.android_webview;
 
+import org.jni_zero.CalledByNativeUnchecked;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.concurrent.Executor;
 

@@ -22,6 +22,7 @@
 #include "net/log/net_log_with_source.h"
 #include "services/network/cors/cors_util.h"
 #include "services/network/network_service.h"
+#include "services/network/private_network_access_checker.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
@@ -522,10 +523,12 @@ class PreflightController::PreflightLoader final {
     // only happens if we skipped the mixed content check before sending the
     // preflight.
     const bool needs_permission =
-        base::FeatureList::IsEnabled(
-            features::kPrivateNetworkAccessPermissionPrompt) &&
-        client_security_state_->is_web_secure_context &&
-        !IsUrlPotentiallyTrustworthy(original_request_.url);
+        client_security_state_ &&
+        PrivateNetworkAccessChecker::NeedPermission(
+            original_request_.url,
+            client_security_state_->is_web_secure_context,
+            original_request_.target_address_space);
+
     if (!needs_permission) {
       FinishHandleResponseHeader(net_error, std::move(detected_error_status),
                                  std::move(result));

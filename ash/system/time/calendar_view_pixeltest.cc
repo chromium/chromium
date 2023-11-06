@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_event_list_view.h"
@@ -11,13 +10,10 @@
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 
 namespace ash {
@@ -40,16 +36,6 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 class CalendarViewPixelTest : public AshTestBase {
  public:
   CalendarViewPixelTest() = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    scoped_feature_list_->InitWithFeatures(
-        {chromeos::features::kJelly, features::kQsRevamp,
-         features::kCalendarJelly},
-        {});
-    AshTestBase::SetUp();
-  }
 
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -92,7 +78,6 @@ class CalendarViewPixelTest : public AshTestBase {
  private:
   raw_ptr<CalendarView, DanglingUntriaged | ExperimentalAsh> calendar_view_ =
       nullptr;
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   static base::Time fake_time_;
 };
 

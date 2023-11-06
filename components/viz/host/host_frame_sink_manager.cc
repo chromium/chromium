@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
@@ -405,6 +406,16 @@ void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
   for (HitTestRegionObserver& observer : observers_)
     observer.OnAggregatedHitTestRegionListUpdated(frame_sink_id, hit_test_data);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void HostFrameSinkManager::VerifyThreadIdsDoNotBelongToHost(
+    const std::vector<int32_t>& thread_ids,
+    VerifyThreadIdsDoNotBelongToHostCallback callback) {
+  base::flat_set<base::PlatformThreadId> tids(thread_ids.begin(),
+                                              thread_ids.end());
+  std::move(callback).Run(CheckThreadIdsDoNotBelongToCurrentProcess(tids));
+}
+#endif
 
 uint32_t HostFrameSinkManager::CacheBackBufferForRootSink(
     const FrameSinkId& root_sink_id) {

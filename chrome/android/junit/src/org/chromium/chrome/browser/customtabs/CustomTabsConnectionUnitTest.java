@@ -65,19 +65,13 @@ import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 @Batch(Batch.UNIT_TESTS)
 @Config(shadows = {CustomTabsConnectionUnitTest.ShadowUmaSessionStats.class, ShadowPostTask.class})
 public class CustomTabsConnectionUnitTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private SessionHandler mSessionHandler;
-    @Mock
-    private CustomTabsSessionToken mSession;
-    @Mock
-    private CustomTabsCallback mCallback;
-    @Mock
-    private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
-    @Mock
-    private EngagementSignalsCallback mEngagementSignalsCallback;
+    @Mock private SessionHandler mSessionHandler;
+    @Mock private CustomTabsSessionToken mSession;
+    @Mock private CustomTabsCallback mCallback;
+    @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private EngagementSignalsCallback mEngagementSignalsCallback;
 
     private CustomTabsConnection mConnection;
 
@@ -97,27 +91,32 @@ public class CustomTabsConnectionUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        ShadowPostTask.setTestImpl(new TestImpl() {
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                task.run();
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new TestImpl() {
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        task.run();
+                    }
+                });
         CustomTabsConnection.setInstanceForTesting(null);
         mConnection = CustomTabsConnection.getInstance();
         mConnection.setIsDynamicFeaturesEnabled(true);
         when(mSession.getCallback()).thenReturn(mCallback);
         when(mSessionHandler.getSession()).thenReturn(mSession);
-        ChromeApplicationImpl.getComponent().resolveSessionDataHolder().setActiveHandler(
-                mSessionHandler);
+        ChromeApplicationImpl.getComponent()
+                .resolveSessionDataHolder()
+                .setActiveHandler(mSessionHandler);
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
     }
 
     @After
     public void tearDown() {
-        ChromeApplicationImpl.getComponent().resolveSessionDataHolder().removeActiveHandler(
-                mSessionHandler);
+        ChromeApplicationImpl.getComponent()
+                .resolveSessionDataHolder()
+                .removeActiveHandler(mSessionHandler);
     }
+
     @Test
     public void areExperimentsSupported_NullInputs() {
         assertFalse(mConnection.areExperimentsSupported(null, null));
@@ -188,27 +187,32 @@ public class CustomTabsConnectionUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
-            ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
-    public void
-    setEngagementSignalsCallback_Available() {
+    @EnableFeatures({
+        ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
+    })
+    public void setEngagementSignalsCallback_Available() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(true);
-        assertTrue(mConnection.setEngagementSignalsCallback(
-                mSession, mEngagementSignalsCallback, Bundle.EMPTY));
-        assertEquals(mEngagementSignalsCallback,
+        assertTrue(
+                mConnection.setEngagementSignalsCallback(
+                        mSession, mEngagementSignalsCallback, Bundle.EMPTY));
+        assertEquals(
+                mEngagementSignalsCallback,
                 mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSession));
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
-            ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
-    public void
-    setEngagementSignalsCallback_NotAvailable() {
+    @EnableFeatures({
+        ChromeFeatureList.CCT_BRAND_TRANSPARENCY,
+        ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS
+    })
+    public void setEngagementSignalsCallback_NotAvailable() {
         initSession();
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted()).thenReturn(false);
-        assertFalse(mConnection.setEngagementSignalsCallback(
-                mSession, mEngagementSignalsCallback, Bundle.EMPTY));
+        assertFalse(
+                mConnection.setEngagementSignalsCallback(
+                        mSession, mEngagementSignalsCallback, Bundle.EMPTY));
         assertNull(mConnection.mClientManager.getEngagementSignalsCallbackForSession(mSession));
     }
 

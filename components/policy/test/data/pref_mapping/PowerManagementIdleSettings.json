@@ -1,0 +1,59 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PowerManagementIdleSettings": {
+            "AC": {
+              "Delays": {
+                "Idle": 9000,
+                "IdleWarning": 8000,
+                "ScreenDim": 5000,
+                "ScreenOff": 7000
+              },
+              "IdleAction": "Logout"
+            },
+            "Battery": {
+              "Delays": {
+                "Idle": 5000,
+                "IdleWarning": 4000,
+                "ScreenDim": 1000,
+                "ScreenOff": 3000
+              },
+              "IdleAction": "Logout"
+            }
+          }
+        },
+        "prefs": {
+          "power.ac_idle_delay_ms": {
+            "value": 9000
+          },
+          "power.ac_idle_warning_delay_ms": {
+            "value": 8000
+          },
+          "power.ac_screen_dim_delay_ms": {
+            "value": 5000
+          },
+          "power.ac_screen_off_delay_ms": {
+            "value": 7000
+          },
+          "power.battery_idle_delay_ms": {
+            "value": 5000
+          },
+          "power.battery_idle_warning_delay_ms": {
+            "value": 4000
+          },
+          "power.battery_screen_dim_delay_ms": {
+            "value": 1000
+          },
+          "power.battery_screen_off_delay_ms": {
+            "value": 3000
+          }
+        }
+      }
+    ]
+  }
+]

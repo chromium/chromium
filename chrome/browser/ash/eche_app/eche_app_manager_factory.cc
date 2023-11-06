@@ -112,8 +112,7 @@ void LaunchWebApp(const std::string& package_name,
   url.append(visible_name);
   url.append(u"&timestamp=");
 
-  double now_seconds = base::Time::Now().ToDoubleT();
-  int64_t now_ms = static_cast<int64_t>(now_seconds * 1000);
+  int64_t now_ms = base::Time::Now().InMillisecondsSinceUnixEpoch();
   url.append(base::NumberToString16(now_ms));
 
   if (user_id.has_value()) {

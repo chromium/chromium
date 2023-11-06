@@ -27,6 +27,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/switches.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -88,6 +89,8 @@ class ExtensionTelemetryServiceTest : public ::testing::Test {
                                           Extension::NO_FLAGS);
   }
 
+  base::FilePath CreateExtensionForCommandLineLoad(
+      const std::string& extension_name);
   void RegisterExtensionWithExtensionService(const ExtensionId& extension_id,
                                              const std::string& extension_name,
                                              const ManifestLocation& location,
@@ -155,6 +158,30 @@ ExtensionTelemetryServiceTest::ExtensionTelemetryServiceTest()
   // Create telemetry service instance.
   telemetry_service_ = std::make_unique<ExtensionTelemetryService>(
       &profile_, test_url_loader_factory_.GetSafeWeakWrapper());
+}
+
+base::FilePath ExtensionTelemetryServiceTest::CreateExtensionForCommandLineLoad(
+    const std::string& extension_name) {
+  // Create extension path.
+  base::FilePath path =
+      extensions_root_dir_.GetPath().AppendASCII(extension_name);
+  CreateDirectory(path);
+
+  scoped_refptr<const extensions::Extension> extension =
+      ExtensionBuilder(extension_name)
+          .SetLocation(ManifestLocation::kCommandLine)
+          .SetPath(path)
+          .Build();
+
+  // Write extension files.
+  EXPECT_TRUE(
+      base::WriteFile(path.AppendASCII(kJavaScriptFile), kJavaScriptFile));
+  base::FilePath manifest_path = path.AppendASCII(kManifestFile);
+  JSONFileValueSerializer(manifest_path)
+      .Serialize(*extension->manifest()->value());
+  EXPECT_TRUE(base::PathExists(manifest_path));
+
+  return path;
 }
 
 void ExtensionTelemetryServiceTest::RegisterExtensionWithExtensionService(
@@ -243,7 +270,8 @@ TEST_F(ExtensionTelemetryServiceTest, ProcessesSignal) {
   EXPECT_EQ(info->name(), kExtensionName[0]);
   EXPECT_EQ(info->version(), kExtensionVersion);
   EXPECT_EQ(info->install_timestamp_msec(),
-            extension_prefs_->GetLastUpdateTime(kExtensionId[0]).ToJavaTime());
+            extension_prefs_->GetLastUpdateTime(kExtensionId[0])
+                .InMillisecondsSinceUnixEpoch());
 }
 
 TEST_F(ExtensionTelemetryServiceTest, DiscardsInvalidSignal) {
@@ -321,7 +349,8 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithNoSignals) {
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetLastUpdateTime(kExtensionId[i]).ToJavaTime());
+        extension_prefs_->GetLastUpdateTime(kExtensionId[i])
+            .InMillisecondsSinceUnixEpoch());
     // Verify that there is no signal data associated with the extension.
     EXPECT_EQ(telemetry_report_pb->reports(i).signals().size(), 0);
   }
@@ -347,7 +376,8 @@ TEST_F(ExtensionTelemetryServiceTest, GeneratesTelemetryReportWithSignal) {
               kExtensionVersion);
     EXPECT_EQ(
         telemetry_report_pb->reports(i).extension().install_timestamp_msec(),
-        extension_prefs_->GetLastUpdateTime(kExtensionId[i]).ToJavaTime());
+        extension_prefs_->GetLastUpdateTime(kExtensionId[i])
+            .InMillisecondsSinceUnixEpoch());
   }
 
   // Verify that first extension's report has signal data.
@@ -733,8 +763,7 @@ TEST_F(ExtensionTelemetryServiceTest, FileData_IgnoresNonOffstoreExtensions) {
   EXPECT_FALSE(file_data_dict.contains(kExtensionId[4]));
 }
 
-TEST_F(ExtensionTelemetryServiceTest,
-       FileData_RemovesUninstalledExtensionFromPref) {
+TEST_F(ExtensionTelemetryServiceTest, FileData_RemovesStaleExtensionFromPref) {
   // Process extension 0 and 1 and save to prefs.
   telemetry_service_->SetEnabled(false);
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -884,6 +913,53 @@ TEST_F(ExtensionTelemetryServiceTest,
             kJavaScriptFile);
   EXPECT_EQ(telemetry_report_pb->reports(1).extension().file_infos(0).hash(),
             *(extension_1_dict->FindString(kJavaScriptFile)));
+}
+
+TEST_F(ExtensionTelemetryServiceTest,
+       FileData_IncludesCommandlineExtensionsFileDataInReport) {
+  // Remove previously installed extensions.
+  UnregisterExtensionWithExtensionService(kExtensionId[0]);
+  UnregisterExtensionWithExtensionService(kExtensionId[1]);
+  telemetry_service_->SetEnabled(false);
+  // Enable necessary features.
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      // enabled_features
+      {{kExtensionTelemetryFileDataForCommandLineExtensions, {}},
+       {kExtensionTelemetryFileData,
+        {{"StartupDelaySeconds",
+          base::NumberToString(kFileDataStartUpDelaySeconds)}}}},
+      // disabled_features
+      {});
+  // Create a commandline extension, set up the --load-extension commandline
+  // switch, and re-enable the telemetry service.
+  base::FilePath path = CreateExtensionForCommandLineLoad("commandline_crx");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchPath(
+      extensions::switches::kLoadExtension, path);
+  telemetry_service_->SetEnabled(true);
+  task_environment_.FastForwardBy(base::Seconds(kFileDataStartUpDelaySeconds));
+  task_environment_.RunUntilIdle();
+
+  // Generate and verify telemetry report contents.
+  std::unique_ptr<TelemetryReport> telemetry_report_pb = GetTelemetryReport();
+  ASSERT_TRUE(telemetry_report_pb);
+  ASSERT_EQ(telemetry_report_pb->reports_size(), 1);
+  // Verify that cmdline extension file data stored in prefs matches that in the
+  // telemetry report.
+  const auto& file_data_dict =
+      profile_.GetPrefs()->GetDict(prefs::kExtensionTelemetryFileData);
+  ASSERT_EQ(file_data_dict.size(), 1u);
+  auto cmdline_extension_id = telemetry_report_pb->reports(0).extension().id();
+  const base::Value::Dict* cmdline_extension_dict =
+      file_data_dict.FindDict(cmdline_extension_id)
+          ->FindDict(kFileDataDictPref);
+  ASSERT_TRUE(cmdline_extension_dict);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().manifest_json(),
+            *(cmdline_extension_dict->FindString(kManifestFile)));
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos_size(), 1);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos(0).name(),
+            kJavaScriptFile);
+  EXPECT_EQ(telemetry_report_pb->reports(0).extension().file_infos(0).hash(),
+            *(cmdline_extension_dict->FindString(kJavaScriptFile)));
 }
 
 TEST_F(ExtensionTelemetryServiceTest,

@@ -18,14 +18,11 @@ mojom("test_api_mojom") {
 }
 
 build_webui_tests("build") {
-  resource_path_prefix = "webui_settings_chromeos"
-
   files = [
     "apn_subpage_tests.js",
     "apn_detail_dialog_test.ts",
     "cellular_networks_list_test.js",
     "cellular_roaming_toggle_button_test.js",
-    "crostini_page_test.js",
     "esim_remove_profile_dialog_test.js",
     "fake_canvas_context.js",
     "fake_input_method_private.js",
@@ -66,6 +63,7 @@ build_webui_tests("build") {
     "app_management/toggle_row_test.ts",
 
     "crostini_page/crostini_extra_containers_subpage_test.ts",
+    "crostini_page/crostini_page_test.ts",
     "crostini_page/crostini_settings_card_test.ts",
     "crostini_page/test_crostini_browser_proxy.ts",
 
@@ -118,7 +116,7 @@ build_webui_tests("build") {
     "internet_page/hotspot_summary_item_test.ts",
     "internet_page/internet_config_test.ts",
     "internet_page/internet_detail_menu_test.ts",
-    "internet_page/internet_detail_subpage_tests.js",
+    "internet_page/internet_detail_subpage_test.ts",
     "internet_page/internet_known_networks_subpage_test.ts",
     "internet_page/internet_subpage_menu_test.ts",
     "internet_page/internet_subpage_test.ts",
@@ -210,7 +208,7 @@ build_webui_tests("build") {
     "os_apps_page/test_android_apps_browser_proxy.ts",
 
     "os_bluetooth_page/os_bluetooth_change_device_name_dialog_test.ts",
-    "os_bluetooth_page/os_bluetooth_device_detail_subpage_tests.js",
+    "os_bluetooth_page/os_bluetooth_device_detail_subpage_test.ts",
     "os_bluetooth_page/os_bluetooth_devices_subpage_test.ts",
     "os_bluetooth_page/os_bluetooth_page_test.ts",
     "os_bluetooth_page/os_bluetooth_pairing_dialog_test.ts",
@@ -270,8 +268,10 @@ build_webui_tests("build") {
     "os_printing_page/printing_settings_card_test.ts",
     "os_printing_page/test_cups_printers_browser_proxy.ts",
 
+    "os_privacy_page/fake_app_permission_handler.ts",
     "os_privacy_page/manage_users_subpage_test.ts",
     "os_privacy_page/os_privacy_page_test.ts",
+    "os_privacy_page/privacy_hub_app_permission_row_test.ts",
     "os_privacy_page/privacy_hub_microphone_subpage_test.ts",
     "os_privacy_page/privacy_hub_subpage_test.ts",
     "os_privacy_page/smart_privacy_subpage_test.ts",
@@ -324,13 +324,13 @@ build_webui_tests("build") {
   ]
 
   mojo_files = [
-    "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/os_people_page/password_settings_api.test-mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/test/data/webui/settings/chromeos/os_people_page/set_local_password_input_api.test-mojom-webui.js",
+    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/test_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/password_settings_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/pin_settings_api.test-mojom-webui.ts",
+    "$root_gen_dir/chrome/test/data/webui/settings/chromeos/os_people_page/set_local_password_input_api.test-mojom-webui.ts",
   ]
 
-  mojo_files_deps = [ ":test_api_mojom_js__generator" ]
+  mojo_files_deps = [ ":test_api_mojom_ts__generator" ]
 
   ts_deps = [
     "//ash/webui/common/resources:build_ts",

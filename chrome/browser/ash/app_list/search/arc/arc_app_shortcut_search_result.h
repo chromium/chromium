@@ -53,8 +53,10 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
 
  private:
   // AppIconLoaderDelegate:
-  void OnAppImageUpdated(const std::string& app_id,
-                         const gfx::ImageSkia& image) override;
+  void OnAppImageUpdated(
+      const std::string& app_id,
+      const gfx::ImageSkia& image,
+      const absl::optional<gfx::ImageSkia>& badge_image) override;
 
   // Gets app id of the app that publishes this app shortcut.
   std::string GetAppId() const;

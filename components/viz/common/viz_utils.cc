@@ -29,13 +29,11 @@
 
 namespace viz {
 
-bool PreferRGB565ResourcesForDisplay() {
 #if BUILDFLAG(IS_ANDROID)
+bool PreferRGB565ResourcesForDisplay() {
   return base::SysInfo::AmountOfPhysicalMemoryMB() <= 512;
-#else
-  return false;
-#endif
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 bool AlwaysUseWideColorGamut() {

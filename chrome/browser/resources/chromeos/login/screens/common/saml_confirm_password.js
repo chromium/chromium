@@ -54,6 +54,15 @@ const SamlConfirmPasswordBase = mixinBehaviors(
 SamlConfirmPasswordBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   email: string,
+ *   manualPasswordInput: boolean,
+ * }}
+ */
+let SamlConfirmPasswordScreenData;
+
+/**
  * @polymer
  */
 class SamlConfirmPassword extends SamlConfirmPasswordBase {
@@ -110,7 +119,7 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {Object} data Screen init payload
+   * @param {SamlConfirmPasswordScreenData} data Screen init payload
    */
   onBeforeShow(data) {
     this.reset_();
@@ -162,7 +171,8 @@ class SamlConfirmPassword extends SamlConfirmPasswordBase {
     }
     if (this.isManualInput) {
       // When using manual password entry, both passwords must match.
-      var confirmPasswordInput = this.shadowRoot.querySelector('#confirmPasswordInput');
+      const confirmPasswordInput =
+          this.shadowRoot.querySelector('#confirmPasswordInput');
       if (!confirmPasswordInput.validate()) {
         return;
       }

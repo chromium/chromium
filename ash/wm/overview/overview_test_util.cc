@@ -66,7 +66,7 @@ const aura::Window* GetOverviewFocusedWindow() {
 }
 
 void ToggleOverview(OverviewEnterExitType type) {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   if (overview_controller->InOverviewSession())
     overview_controller->EndOverview(OverviewEndAction::kTests, type);
   else
@@ -85,7 +85,7 @@ void WaitForOverviewExitAnimation() {
 OverviewGrid* GetOverviewGridForRoot(aura::Window* root) {
   DCHECK(root->IsRootWindow());
 
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   DCHECK(overview_controller->InOverviewSession());
 
   return overview_controller->overview_session()->GetGridWithRootWindow(root);

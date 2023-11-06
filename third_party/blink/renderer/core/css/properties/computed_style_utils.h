@@ -72,13 +72,18 @@ class CORE_EXPORT ComputedStyleUtils {
   static const CSSValueList* CreatePositionListForLayer(const CSSProperty&,
                                                         const FillLayer&,
                                                         const ComputedStyle&);
-  static const CSSValue* ValueForFillRepeat(EFillRepeat x_repeat,
-                                            EFillRepeat y_repeat);
+  static const CSSValue* ValueForFillRepeat(const FillLayer* curr_layer);
+  static const CSSValue* MaskMode(const FillLayer* curr_layer);
+  static const CSSValue* RepeatStyle(const FillLayer* curr_layer);
   static const CSSValueList* ValuesForBackgroundShorthand(
       const ComputedStyle&,
       const LayoutObject*,
       bool allow_visited_style);
-  static const CSSValue* BackgroundRepeatOrWebkitMaskRepeat(const FillLayer*);
+  static const CSSValueList* ValuesForMaskShorthand(
+      const StylePropertyShorthand&,
+      const ComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style);
   static const CSSValue* BackgroundPositionOrWebkitMaskPosition(
       const CSSProperty&,
       const ComputedStyle&,
@@ -229,6 +234,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                          float zoom,
                                          gfx::SizeF box_size = gfx::SizeF(0,
                                                                           0));
+  static CSSValue* ValueForTransformFunction(const TransformOperations&);
   static gfx::RectF ReferenceBoxForTransform(
       const LayoutObject&,
       UsePixelSnappedBox = kUsePixelSnappedBox);

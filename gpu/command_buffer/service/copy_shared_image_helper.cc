@@ -89,10 +89,42 @@ GrGLenum GetSurfaceColorFormat(GrGLenum format, GrGLenum type) {
   return format;
 }
 
+// Returns an SkSurface wrapping `texture_id`. Assumes the presence of a Ganesh
+// GL context to do the wrapping.
+sk_sp<SkSurface> CreateSkSurfaceWrappingGLTexture(
+    SharedContextState* shared_context_state,
+    GLuint texture_id,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y) {
+  CHECK_NE(texture_id, 0u);
+  CHECK(shared_context_state->GrContextIsGL());
+  GrGLTextureInfo texture_info;
+  texture_info.fID = texture_id;
+  texture_info.fTarget = target;
+  // Get the surface color format similar to that in VideoFrameYUVConverter.
+  texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
+  auto backend_texture = GrBackendTextures::MakeGL(
+      width, height, skgpu::Mipmapped::kNo, texture_info);
+
+  auto dest_color_space = SkColorSpace::MakeSRGB();
+  GrDirectContext* direct_context = shared_context_state->gr_context();
+  CHECK(direct_context);
+  return SkSurfaces::WrapBackendTexture(
+      direct_context, backend_texture,
+      flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
+             : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+      /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
+      dest_color_space, nullptr);
+}
+
 // Return true if all of `sk_yuv_color_space`, `sk_plane_config`,
-// `sk_subsampling`, `rgba_image, `num_yuva_images`, and `yuva_images` were
-// successfully populated. Return false on error. If this returns false, some
-// of the output arguments may be left populated.
+// `sk_subsampling`, `num_yuva_images`, and `yuva_images` were successfully
+// populated. Return false on error. If this returns false, some of the output
+// arguments may be left populated.
 base::expected<void, GLError> ConvertYUVACommon(
     const char* function_name,
     GLenum yuv_color_space_in,
@@ -104,7 +136,6 @@ base::expected<void, GLError> ConvertYUVACommon(
     SkYUVColorSpace& sk_yuv_color_space,
     SkYUVAInfo::PlaneConfig& sk_plane_config,
     SkYUVAInfo::Subsampling& sk_subsampling,
-    std::unique_ptr<SkiaImageRepresentation>& rgba_image,
     int& num_yuva_planes,
     std::array<std::unique_ptr<SkiaImageRepresentation>,
                SkYUVAInfo::kMaxPlanes>& yuva_images) {
@@ -130,6 +161,12 @@ base::expected<void, GLError> ConvertYUVACommon(
   }
   sk_subsampling = static_cast<SkYUVAInfo::Subsampling>(subsampling_in);
 
+  if (sk_plane_config == SkYUVAInfo::PlaneConfig::kUnknown ||
+      sk_subsampling == SkYUVAInfo::Subsampling::kUnknown) {
+    return base::unexpected(
+        GLError(GL_INVALID_ENUM, function_name, "Invalid SkYUVAInfo"));
+  }
+
   std::array<gpu::Mailbox, SkYUVAInfo::kMaxPlanes> yuva_mailboxes;
   num_yuva_planes = SkYUVAInfo::NumPlanes(sk_plane_config);
   for (int i = 0; i < num_yuva_planes; ++i) {
@@ -140,12 +177,6 @@ base::expected<void, GLError> ConvertYUVACommon(
         << " was passed an invalid mailbox for YUVA plane: " << i
         << " with plane config " << plane_config_in;
   }
-  gpu::Mailbox rgba_mailbox;
-  rgba_mailbox =
-      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
-          mailboxes_in)[SkYUVAInfo::kMaxPlanes]);
-  DLOG_IF(ERROR, !rgba_mailbox.Verify())
-      << function_name << " was passed an invalid mailbox for RGBA";
 
   for (int i = 0; i < num_yuva_planes; ++i) {
     yuva_images[i] = representation_factory->ProduceSkia(yuva_mailboxes[i],
@@ -158,13 +189,6 @@ base::expected<void, GLError> ConvertYUVACommon(
       return base::unexpected(
           GLError(GL_INVALID_OPERATION, function_name, msg));
     }
-  }
-  rgba_image =
-      representation_factory->ProduceSkia(rgba_mailbox, shared_context_state);
-  if (!rgba_image) {
-    return base::unexpected(
-        GLError(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
-                "Attempting to operate on unknown dest mailbox."));
   }
   return base::ok();
 }
@@ -351,18 +375,33 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in) {
+  // Populate the RGBA image.
+  gpu::Mailbox rgba_mailbox =
+      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
+          mailboxes_in)[SkYUVAInfo::kMaxPlanes]);
+  DLOG_IF(ERROR, !rgba_mailbox.Verify())
+      << "ConvertRGBAToYUVAMailboxes was passed an invalid mailbox for RGBA";
+  std::unique_ptr<SkiaImageRepresentation> rgba_image =
+      representation_factory_->ProduceSkia(rgba_mailbox,
+                                           shared_context_state_.get());
+  if (!rgba_image) {
+    return base::unexpected(
+        GLError(GL_INVALID_OPERATION, "ConvertRGBAToYUVAMailboxes",
+                "Attempting to operate on unknown RGBA mailbox."));
+  }
+
+  // Populate common parameters.
   SkYUVColorSpace dst_color_space;
   SkYUVAInfo::PlaneConfig dst_plane_config;
   SkYUVAInfo::Subsampling dst_subsampling;
-  std::unique_ptr<SkiaImageRepresentation> rgba_image;
   int num_yuva_planes;
   std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
       yuva_images;
   RETURN_IF_ERROR(ConvertYUVACommon(
       "ConvertYUVAMailboxesToRGB", yuv_color_space, plane_config, subsampling,
       mailboxes_in, representation_factory_, shared_context_state_,
-      dst_color_space, dst_plane_config, dst_subsampling, rgba_image,
-      num_yuva_planes, yuva_images));
+      dst_color_space, dst_plane_config, dst_subsampling, num_yuva_planes,
+      yuva_images));
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
@@ -375,6 +414,13 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "glConvertYUVAMailboxesToRGB",
                                     "RGBA shared image is not readable"));
   }
+
+  // The yuva_scoped_access must be destroyed after `cleanup` is done so that
+  // Skia performs submits properly.
+  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
+             SkYUVAInfo::kMaxPlanes>
+      yuva_scoped_access;
+
   // Perform ApplyBackendSurfaceEndState() on the ScopedReadAccess before
   // exiting.
   absl::Cleanup cleanup = [&]() {
@@ -390,9 +436,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
                                     "Couldn't create SkImage for reading."));
   }
 
-  std::array<std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>,
-             SkYUVAInfo::kMaxPlanes>
-      yuva_scoped_access;
   for (int i = 0; i < num_yuva_planes; ++i) {
     yuva_scoped_access[i] = yuva_images[i]->BeginScopedWriteAccess(
         &begin_semaphores, &end_semaphores,
@@ -439,19 +482,22 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* bytes_in) {
-  SkYUVColorSpace src_yuv_color_space;
-  SkYUVAInfo::PlaneConfig src_plane_config;
-  SkYUVAInfo::Subsampling src_subsampling;
-  std::unique_ptr<SkiaImageRepresentation> rgba_image;
-  int num_src_planes;
-  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
-      yuva_images;
-  RETURN_IF_ERROR(ConvertYUVACommon(
-      "ConvertYUVAMailboxesToRGB", planes_yuv_color_space, plane_config,
-      subsampling, bytes_in, representation_factory_, shared_context_state_,
-      src_yuv_color_space, src_plane_config, src_subsampling, rgba_image,
-      num_src_planes, yuva_images));
+  // Populate the destination image.
+  gpu::Mailbox rgba_mailbox =
+      Mailbox::FromVolatile(reinterpret_cast<const volatile Mailbox*>(
+          bytes_in)[SkYUVAInfo::kMaxPlanes]);
+  DLOG_IF(ERROR, !rgba_mailbox.Verify())
+      << "ConvertYUVAMailboxesToRGB was passed an invalid mailbox for RGBA";
+  std::unique_ptr<SkiaImageRepresentation> rgba_image =
+      representation_factory_->ProduceSkia(rgba_mailbox,
+                                           shared_context_state_.get());
+  if (!rgba_image) {
+    return base::unexpected(
+        GLError(GL_INVALID_OPERATION, "ConvertYUVAMailboxesToRGB",
+                "Attempting to operate on unknown dest mailbox."));
+  }
 
+  // Populate the source RGB color space.
   sk_sp<SkColorSpace> src_rgb_color_space = ReadSkColorSpace(
       bytes_in + (SkYUVAInfo::kMaxPlanes + 1) * sizeof(gpu::Mailbox));
 
@@ -468,6 +514,50 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
                 "Destination shared image is not writable"));
   }
 
+  auto result = ConvertYUVAMailboxesToSkSurface(
+      "glConvertYUVAMailboxesToRGB", src_x, src_y, width, height,
+      planes_yuv_color_space, plane_config, subsampling, bytes_in,
+      dest_scoped_access->surface(), begin_semaphores, end_semaphores,
+      src_rgb_color_space,
+      [&dest_scoped_access]() { FlushSurface(dest_scoped_access.get()); });
+
+  bool drew_image = result.has_value();
+  if (!rgba_image->IsCleared() && drew_image) {
+    rgba_image->SetCleared();
+  }
+
+  return result;
+}
+
+base::expected<void, GLError>
+CopySharedImageHelper::ConvertYUVAMailboxesToSkSurface(
+    const char* function_name,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* bytes_in,
+    SkSurface* dest_surface,
+    std::vector<GrBackendSemaphore>& begin_semaphores,
+    std::vector<GrBackendSemaphore>& end_semaphores,
+    sk_sp<SkColorSpace> src_rgb_color_space,
+    base::FunctionRef<void()> flush_dest_surface_function) {
+  // Populate common parameters.
+  SkYUVColorSpace src_yuv_color_space;
+  SkYUVAInfo::PlaneConfig src_plane_config;
+  SkYUVAInfo::Subsampling src_subsampling;
+  int num_src_planes;
+  std::array<std::unique_ptr<SkiaImageRepresentation>, SkYUVAInfo::kMaxPlanes>
+      yuva_images;
+  RETURN_IF_ERROR(ConvertYUVACommon(
+      function_name, planes_yuv_color_space, plane_config, subsampling,
+      bytes_in, representation_factory_, shared_context_state_,
+      src_yuv_color_space, src_plane_config, src_subsampling, num_src_planes,
+      yuva_images));
+
   base::expected<void, GLError> result;
   bool source_access_valid = true;
   std::array<std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>,
@@ -483,13 +573,12 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
           "Couldn't access shared image for mailbox of plane index " +
           base::NumberToString(i) + " using plane config " +
           base::NumberToString(plane_config) + ".";
-      result = base::unexpected(
-          GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB", msg));
+      result =
+          base::unexpected(GLError(GL_INVALID_OPERATION, function_name, msg));
       break;
     }
   }
 
-  auto* dest_surface = dest_scoped_access->surface();
   if (!begin_semaphores.empty()) {
     bool ret =
         dest_surface->wait(begin_semaphores.size(), begin_semaphores.data(),
@@ -497,7 +586,6 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
     DCHECK(ret);
   }
 
-  bool drew_image = false;
   if (source_access_valid) {
     // Disable color space conversion if no source color space was specified.
     if (!src_rgb_color_space) {
@@ -513,8 +601,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
 
     gfx::Rect dest_rect(0, 0, width, height);
     if (!gfx::Rect(dest_size).Contains(dest_rect)) {
-      return base::unexpected(GLError(GL_INVALID_VALUE,
-                                      "ConvertYUVAMailboxesToRGB",
+      return base::unexpected(GLError(GL_INVALID_VALUE, function_name,
                                       "destination texture bad dimensions."));
     }
 
@@ -547,8 +634,8 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
 
     if (!result_image) {
       result = base::unexpected(
-          GLError(GL_INVALID_OPERATION, "glConvertYUVAMailboxesToRGB",
-                  "Couldn't create destination images from provided sources"));
+          GLError(GL_INVALID_OPERATION, function_name,
+                  "Couldn't create destination image from provided sources"));
     } else {
       SkPaint paint;
       paint.setBlendMode(SkBlendMode::kSrc);
@@ -556,11 +643,10 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
       dest_surface->getCanvas()->drawImageRect(
           result_image, src_rect, gfx::RectToSkRect(dest_rect),
           SkSamplingOptions(), &paint, SkCanvas::kStrict_SrcRectConstraint);
-      drew_image = true;
     }
   }
 
-  FlushSurface(dest_scoped_access.get());
+  flush_dest_surface_function();
   for (int i = 0; i < num_src_planes; ++i) {
     if (source_scoped_access[i]) {
       source_scoped_access[i]->ApplyBackendSurfaceEndState();
@@ -569,11 +655,50 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
   SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
                     is_drdc_enabled_);
 
-  if (!rgba_image->IsCleared() && drew_image) {
-    rgba_image->SetCleared();
+  return result;
+}
+
+base::expected<void, GLError>
+CopySharedImageHelper::ConvertYUVAMailboxesToGLTexture(
+    GLuint dest_texture_id,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    bool flip_y,
+    GLenum planes_yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* bytes_in) {
+  // This function requires a Ganesh GL context to create an SkSurface wrapping
+  // `dest_texture_id`.
+  GrDirectContext* direct_context = shared_context_state_->gr_context();
+  CHECK(direct_context);
+
+  // Create an SKSurface to wrap `dest_texture_id`.
+  sk_sp<SkSurface> dest_surface = CreateSkSurfaceWrappingGLTexture(
+      shared_context_state_, dest_texture_id, target, internal_format, type,
+      width, height, flip_y);
+
+  if (!dest_surface) {
+    return base::unexpected<GLError>(
+        GLError(GL_INVALID_VALUE, "glConvertYUVAMailboxesToGLTexture",
+                "Cannot create destination surface"));
   }
 
-  return result;
+  // Draw the YUVA planes into the SKSurface (and hence the GL texture) as RGBA.
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  return ConvertYUVAMailboxesToSkSurface(
+      "glConvertYUVAMailboxesToGLTexture", src_x, src_y, width, height,
+      planes_yuv_color_space, plane_config, subsampling, bytes_in,
+      dest_surface.get(), begin_semaphores, end_semaphores,
+      /*src_rgb_color_space=*/nullptr, [direct_context, &dest_surface]() {
+        direct_context->flush(dest_surface.get());
+      });
 }
 
 base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
@@ -744,9 +869,6 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
                             gfx::RectToSkRect(dest_rect), SkSamplingOptions(),
                             &paint, SkCanvas::kStrict_SrcRectConstraint);
     } else {
-      // TODO(crbug.com/1450879): Make this path work for Graphite after Dawn
-      // supports multiplanar rendering and we integrate it into Chrome.
-      CHECK(shared_context_state_->gr_context());
       SkSurface* yuva_sk_surfaces[SkYUVAInfo::kMaxPlanes] = {};
       for (int plane_index = 0; plane_index < dest_format.NumberOfPlanes();
            plane_index++) {
@@ -803,31 +925,18 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     GLsizei height,
     GLboolean flip_y,
     const volatile GLbyte* src_mailbox) {
-  CHECK(shared_context_state_->gr_context());
   Mailbox source_mailbox = Mailbox::FromVolatile(
       reinterpret_cast<const volatile Mailbox*>(src_mailbox)[0]);
   DLOG_IF(ERROR, !source_mailbox.Verify())
       << "CopySharedImageToGLTexture was passed an invalid mailbox";
 
-  CHECK_NE(dest_texture_id, 0u);
-  CHECK(shared_context_state_->GrContextIsGL());
-  GrGLTextureInfo texture_info;
-  texture_info.fID = dest_texture_id;
-  texture_info.fTarget = target;
-  // Get the surface color format similar to that in VideoFrameYUVConverter.
-  texture_info.fFormat = GetSurfaceColorFormat(internal_format, type);
-  auto backend_texture = GrBackendTextures::MakeGL(
-      width, height, skgpu::Mipmapped::kNo, texture_info);
-
-  auto dest_color_space = SkColorSpace::MakeSRGB();
   GrDirectContext* direct_context = shared_context_state_->gr_context();
   CHECK(direct_context);
-  sk_sp<SkSurface> dest_surface = SkSurfaces::WrapBackendTexture(
-      direct_context, backend_texture,
-      flip_y ? GrSurfaceOrigin::kBottomLeft_GrSurfaceOrigin
-             : GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
-      /*sampleCnt=*/1, GetCompatibleSurfaceColorType(texture_info.fFormat),
-      dest_color_space, nullptr);
+
+  sk_sp<SkSurface> dest_surface = CreateSkSurfaceWrappingGLTexture(
+      shared_context_state_, dest_texture_id, target, internal_format, type,
+      width, height, flip_y);
+
   if (!dest_surface) {
     return base::unexpected<GLError>(
         GLError(GL_INVALID_VALUE, "glCopySharedImageToTexture",
@@ -975,6 +1084,9 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   gfx::Size src_size = source_shared_image->size();
   gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
   if (!gfx::Rect(src_size).Contains(src_rect)) {
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
+                      is_drdc_enabled_);
     return base::unexpected(GLError(GL_INVALID_VALUE, "glReadbackImagePixels",
                                     "source shared image bad dimensions."));
   }

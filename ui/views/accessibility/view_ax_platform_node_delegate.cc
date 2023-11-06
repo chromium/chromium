@@ -479,9 +479,7 @@ ui::AXNodePosition::AXPositionInstance
 ViewAXPlatformNodeDelegate::CreateTextPositionAt(
     int offset,
     ax::mojom::TextAffinity affinity) const {
-  // Support text navigation only on text fields for now. Primarily this is to
-  // support navigating the address bar.
-  if (!atomic_view_ax_tree_manager_ || !IsDescendantOfAtomicTextField()) {
+  if (!atomic_view_ax_tree_manager_) {
     return ui::AXNodePosition::CreateNullPosition();
   }
 

@@ -207,11 +207,11 @@ bool AudioWorkletNode::HasPendingActivity() const {
 }
 
 AudioParamMap* AudioWorkletNode::parameters() const {
-  return parameter_map_;
+  return parameter_map_.Get();
 }
 
 MessagePort* AudioWorkletNode::port() const {
-  return node_port_;
+  return node_port_.Get();
 }
 
 void AudioWorkletNode::FireProcessorError(

@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/plus_addresses",
+  "+ios/chrome/browser/device_reauth",
   "+ios/chrome/browser/ui/settings/autofill/autofill_constants.h",
   "+ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h",
   "+ios/chrome/browser/ui/settings/password",

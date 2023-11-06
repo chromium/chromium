@@ -16,6 +16,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -73,6 +74,39 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
   }
 }
 
+bool AreAllMLPromosBlocked(PrefService* pref_service) {
+  const base::Value::Dict& dict =
+      pref_service->GetDict(prefs::kWebAppsAppAgnosticMlState);
+  return dict.contains(kAllMLPromosBlockedTime);
+}
+
+// Return true or false based on whether the kAllMLPromosBlockedDate should be
+// deleted based on the difference between today's date and
+// kTotalDaysToStoreMLGuardrails.
+bool ShouldResetMLPromosBlockData(PrefService* pref_service) {
+  // If all ML promotion has not been blocked yet, i.e. the date when it was
+  // blocked was not set, then return early.
+  if (!AreAllMLPromosBlocked(pref_service)) {
+    return false;
+  }
+
+  const base::Value::Dict& dict =
+      pref_service->GetDict(prefs::kWebAppsAppAgnosticMlState);
+  const base::Value* value = dict.FindByDottedPath(kAllMLPromosBlockedTime);
+  if (!value) {
+    return false;
+  }
+
+  absl::optional<base::Time> last_time_ml_promo_blocked =
+      base::ValueToTime(value);
+
+  // We only want to clear the ML guardrails if
+  // kMaxDaysForMLPromotionGuardrailStorage is crossed.
+  return !TimeOccurredWithinDays(
+      last_time_ml_promo_blocked,
+      webapps::features::kMaxDaysForMLPromotionGuardrailStorage.Get());
+}
+
 }  // namespace
 
 // The stored preferences look like:
@@ -101,6 +135,7 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //       microseconds since the Windows epoch, using base::TimeToValue().
 //       "ML_last_time_install_dismissed": "13249617864945580",
 //       "ML_num_of_consecutive_not_accepted": 2,
+//       "ML_all_promos_blocked_date": "13249617864945580",
 //   },
 //   "app_agnostic_iph_state": {
 //     "IPH_num_of_consecutive_ignore": 3,
@@ -117,7 +152,6 @@ void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
 //
 
 const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";
-
 const char kIphLastIgnoreTime[] = "IPH_last_ignore_time";
 
 void WebAppPrefsUtilsRegisterProfilePrefs(
@@ -275,7 +309,16 @@ const char kLastTimeMlInstallIgnored[] = "ML_last_time_install_ignored";
 const char kLastTimeMlInstallDismissed[] = "ML_last_time_install_dismissed";
 const char kConsecutiveMlInstallNotAcceptedCount[] =
     "ML_num_of_consecutive_not_accepted";
+const char kAllMLPromosBlockedTime[] = "ML_all_promos_blocked_date";
 const char kMLPromotionGuardrailBlockReason[] = "ML_guardrail_blocked";
+
+const int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount = 3;
+const int kMuteMlInstallAfterIgnoreForDays = 2;
+const int kMuteMlInstallAfterDismissForDays = 14;
+
+const int kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount = 5;
+const int kMuteMlInstallAfterAnyIgnoreForDays = 1;
+const int kMuteMlInstallAfterAnyDismissForDays = 7;
 
 void RecordMlInstallIgnored(PrefService* pref_service,
                             const webapps::AppId& app_id,
@@ -330,17 +373,19 @@ void RecordMlInstallAccepted(PrefService* pref_service,
 
   ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
   update->Set(kConsecutiveMlInstallNotAcceptedCount, 0);
+
+  // If an ML install is accepted, remove the kAllMLPromosBlockedTime entry as a
+  // "reset".
+  update->Remove(kAllMLPromosBlockedTime);
 }
 
 bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
                                             const webapps::AppId& app_id) {
-  constexpr int kMuteMlInstallAfterConsecutiveAppSpecificNotAcceptedCount = 3;
-  constexpr int kMuteMlInstallAfterIgnoreForDays = 2;
-  constexpr int kMuteMlInstallAfterDismissForDays = 14;
-
-  constexpr int kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount = 5;
-  constexpr int kMuteMlInstallAfterAnyIgnoreForDays = 1;
-  constexpr int kMuteMlInstallAfterAnyDismissForDays = 7;
+  // Reset kAllMLPromosBlockedTime and consective ML install not accepted count
+  // data if needed before going through guardrail logic.
+  if (ShouldResetMLPromosBlockData(pref_service)) {
+    ResetAllMLPromosBlockedDateAndGuardrails(pref_service, app_id);
+  }
 
   // Do not show Ml install if the user ignored the last N+ promos for this app.
   int app_ignored_count =
@@ -384,12 +429,23 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
       pref_service->GetDict(prefs::kWebAppsAppAgnosticMlState);
 
   // Do not show Ml install if the user ignored the last N+ promos for any app.
+  // Also set the date for the ML promotion being permanently blocked so that it
+  // can be tracked.
   int global_ignored_count =
       dict.FindInt(kConsecutiveMlInstallNotAcceptedCount).value_or(0);
   if (global_ignored_count >=
       kMuteMlInstallAfterConsecutiveAppAgnosticNotAcceptedCount) {
     ScopedDictPrefUpdate update(pref_service,
                                 prefs::kWebAppsAppAgnosticMlState);
+
+    // Only set the date that ML promos were blocked if the field does not
+    // exist. This prevents a situation where the date gets set everytime this
+    // guardrail condition is hit, leading to an user being permanently blocked
+    // from ever seeing the install dialog triggered by ML.
+    if (!AreAllMLPromosBlocked(pref_service)) {
+      update->Set(kAllMLPromosBlockedTime,
+                  base::TimeToValue(base::Time::Now()));
+    }
     update->Set(kMLPromotionGuardrailBlockReason,
                 "app_agnostic_not_accept_count_exceeded");
     return true;
@@ -407,7 +463,7 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
                 "app_agnostic_ml_install_ignore_days_hit");
     return true;
   }
-  // Do not show Ml install if the user ignored a promo for any app within N
+  // Do not show Ml install if the user dismissed a promo for any app within N
   // days.
   auto global_last_dismiss =
       base::ValueToTime(dict.Find(kLastTimeMlInstallDismissed));
@@ -420,6 +476,21 @@ bool IsMlPromotionBlockedByHistoryGuardrail(PrefService* pref_service,
     return true;
   }
   return false;
+}
+
+// Resets kAllMLPromosBlockedDate and kConsecutiveMlInstallNotAcceptedCount on
+// the app specific and app agnostic levels.
+void ResetAllMLPromosBlockedDateAndGuardrails(PrefService* pref_service,
+                                              const webapps::AppId& app_id) {
+  // First reset the app agnostic data.
+  ScopedDictPrefUpdate update(pref_service, prefs::kWebAppsAppAgnosticMlState);
+  update->Remove(kAllMLPromosBlockedTime);
+  update->Remove(kMLPromotionGuardrailBlockReason);
+  update->Set(kConsecutiveMlInstallNotAcceptedCount, 0);
+
+  // Next, reset the app specific data.
+  UpdateIntWebAppPref(pref_service, app_id,
+                      kConsecutiveMlInstallNotAcceptedCount, 0);
 }
 
 }  // namespace web_app

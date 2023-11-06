@@ -38,12 +38,10 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -670,14 +668,13 @@ TEST_F(AppServiceFileTasksTestEnabled,
 // Enable MV3 File Handlers.
 class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
  public:
-  AppServiceFileHandlersTest() : channel_(version_info::Channel::BETA) {
+  AppServiceFileHandlersTest() {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionWebFileHandlers);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel channel_;
 };
 
 // Verify App Service tasks for extensions with MV3 File Handlers.
@@ -966,15 +963,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
                 (override));
   };
 
-  AppServiceFileTasksPolicyTest()
-      : user_manager_(new ash::FakeChromeUserManager()),
-        scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
-            base::WrapUnique(user_manager_.get()))) {}
+  AppServiceFileTasksPolicyTest() = default;
 
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context) {
     auto dlp_rules_manager =
-        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>();
+        std::make_unique<testing::NiceMock<policy::MockDlpRulesManager>>(
+            Profile::FromBrowserContext(context));
     rules_manager_ = dlp_rules_manager.get();
     return dlp_rules_manager;
   }
@@ -986,13 +981,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
         AccountId::FromUserEmailGaiaId("test@example.com", "12345");
     profile_->SetIsNewProfile(true);
     user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
             account_id, /*is_affiliated=*/false,
             user_manager::USER_TYPE_REGULAR, profile_.get());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
-    user_manager_->SimulateUserProfileLoad(account_id);
+    fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
+                                     /*browser_restart=*/false,
+                                     /*is_child=*/false);
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
         profile_.get(),
@@ -1008,14 +1003,13 @@ class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
         .WillByDefault(testing::Return(mock_files_controller_.get()));
   }
 
-  void TearDown() override { scoped_user_manager_.reset(); }
+  void TearDown() override { fake_user_manager_.Reset(); }
 
   raw_ptr<policy::MockDlpRulesManager, ExperimentalAsh> rules_manager_ =
       nullptr;
   std::unique_ptr<MockFilesController> mock_files_controller_ = nullptr;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
 };
 
 // Test that out of two apps, one can be blocked by DLP and the other allowed.

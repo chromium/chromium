@@ -16,6 +16,7 @@ import {EventLevelResult} from './event_level_result.mojom-webui.js';
 import {SourceType} from './source_type.mojom-webui.js';
 import {StoreSourceResult} from './store_source_result.mojom-webui.js';
 import {Column, TableModel} from './table_model.js';
+import {TriggerDataMatching} from './trigger_data_matching.mojom-webui.js';
 
 // If kAttributionAggregatableBudgetPerSource changes, update this value
 const BUDGET_PER_SOURCE = 65536;
@@ -84,7 +85,8 @@ class CodeColumn<T> extends ValueColumn<T, string> {
 class ListColumn<T, V> extends ValueColumn<T, V[]> {
   constructor(
       header: string, getValue: (p: T) => V[],
-      private readonly flatten: boolean = false) {
+      private readonly flatten: boolean = false,
+      private readonly renderItem: (p: V) => string = (p) => `${p}`) {
     super(header, getValue, /*comparable=*/ false);
   }
 
@@ -95,7 +97,7 @@ class ListColumn<T, V> extends ValueColumn<T, V[]> {
     }
 
     if (this.flatten && values.length === 1) {
-      td.innerText = `${values[0]}`;
+      td.innerText = this.renderItem(values[0]!);
       return;
     }
 
@@ -103,7 +105,7 @@ class ListColumn<T, V> extends ValueColumn<T, V[]> {
 
     values.forEach(value => {
       const li = td.ownerDocument.createElement('li');
-      li.innerText = `${value}`;
+      li.innerText = this.renderItem(value);
       ul.appendChild(li);
     });
 
@@ -234,7 +236,9 @@ class Source {
   reportingOrigin: string;
   sourceTime: Date;
   expiryTime: Date;
+  triggerSpecs: string;
   aggregatableReportWindowTime: Date;
+  maxEventLevelReports: bigint;
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
@@ -244,6 +248,8 @@ class Source {
   status: string;
   aggregatableBudgetConsumed: bigint;
   aggregatableDedupKeys: bigint[];
+  triggerDataMatching: string;
+  debugCookieSet: boolean;
 
   constructor(mojo: WebUISource) {
     this.sourceEventId = mojo.sourceEventId;
@@ -253,18 +259,23 @@ class Source {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.sourceTime = new Date(mojo.sourceTime);
     this.expiryTime = new Date(mojo.expiryTime);
+    this.triggerSpecs = mojo.triggerSpecsJson;
     this.aggregatableReportWindowTime =
         new Date(mojo.aggregatableReportWindowTime);
+    this.maxEventLevelReports = BigInt(mojo.maxEventLevelReports);
     this.sourceType = sourceTypeText[mojo.sourceType];
     this.priority = mojo.priority;
-    this.filterData = JSON.stringify(mojo.filterData, null, ' ');
+    this.filterData = JSON.stringify(mojo.filterData.filterValues, null, ' ');
     this.aggregationKeys =
         JSON.stringify(mojo.aggregationKeys, bigintReplacer, ' ');
-    this.debugKey = mojo.debugKey ? `${mojo.debugKey.value}` : '';
+    this.debugKey = mojo.debugKey ? `${mojo.debugKey}` : '';
     this.dedupKeys = mojo.dedupKeys;
     this.aggregatableBudgetConsumed = mojo.aggregatableBudgetConsumed;
     this.aggregatableDedupKeys = mojo.aggregatableDedupKeys;
+    this.triggerDataMatching =
+        triggerDataMatchingText[mojo.triggerConfig.triggerDataMatching];
     this.status = attributabilityText[mojo.attributability];
+    this.debugCookieSet = mojo.debugCookieSet;
   }
 }
 
@@ -286,17 +297,24 @@ class SourceTableModel extends TableModel<Source> {
           new DateColumn<Source>(
               'Source Registration Time', (e) => e.sourceTime),
           new DateColumn<Source>('Expiry Time', (e) => e.expiryTime),
+          new CodeColumn<Source>('Trigger Specs', (e) => e.triggerSpecs),
           new DateColumn<Source>(
               'Aggregatable Report Window Time',
               (e) => e.aggregatableReportWindowTime),
+          new ValueColumn<Source, bigint>(
+              'Max Event Level Reports', (e) => e.maxEventLevelReports),
           new ValueColumn<Source, string>('Source Type', (e) => e.sourceType),
           new ValueColumn<Source, bigint>('Priority', (e) => e.priority),
           new CodeColumn<Source>('Filter Data', (e) => e.filterData),
           new CodeColumn<Source>('Aggregation Keys', (e) => e.aggregationKeys),
           new ValueColumn<Source, string>(
+              'Trigger Data Matching', (e) => e.triggerDataMatching),
+          new ValueColumn<Source, string>(
               'Aggregatable Budget Consumed',
               (e) => `${e.aggregatableBudgetConsumed} / ${BUDGET_PER_SOURCE}`),
           new ValueColumn<Source, string>('Debug Key', (e) => e.debugKey),
+          new ValueColumn<Source, boolean>(
+              'Debug Cookie Set', (e) => e.debugCookieSet),
           new ListColumn<Source, bigint>('Dedup Keys', (e) => e.dedupKeys),
           new ListColumn<Source, bigint>(
               'Aggregatable Dedup Keys', (e) => e.aggregatableDedupKeys),
@@ -334,7 +352,7 @@ class Registration {
     this.reportingOrigin = originToText(mojo.reportingOrigin);
     this.registrationJson = mojo.registrationJson;
     this.clearedDebugKey =
-        mojo.clearedDebugKey ? `${mojo.clearedDebugKey.value}` : '';
+        mojo.clearedDebugKey ? `${mojo.clearedDebugKey}` : '';
   }
 }
 
@@ -872,6 +890,11 @@ const sourceTypeText: Readonly<Record<SourceType, string>> = {
   [SourceType.kEvent]: 'Event',
 };
 
+const triggerDataMatchingText: Readonly<Record<TriggerDataMatching, string>> = {
+  [TriggerDataMatching.kModulus]: 'modulus',
+  [TriggerDataMatching.kExact]: 'exact',
+};
+
 const attributabilityText:
     Readonly<Record<WebUISource_Attributability, string>> = {
       [WebUISource_Attributability.kAttributable]: 'Attributable',
@@ -948,6 +971,8 @@ const eventLevelResultText: Readonly<Record<EventLevelResult, string>> = {
   [EventLevelResult.kNoMatchingConfigurations]:
       'Failure: no matching event-level configurations',
   [EventLevelResult.kExcessiveReports]: commonResult.excessiveReports,
+  [EventLevelResult.kNoMatchingTriggerData]:
+      'Failure: no matching trigger data',
 };
 
 const aggregatableResultText: Readonly<Record<AggregatableResult, string>> = {

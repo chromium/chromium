@@ -9,4 +9,10 @@
 
 namespace update_client::features {
 BASE_FEATURE(kPuffinPatches, "PuffinPatches", base::FEATURE_ENABLED_BY_DEFAULT);
-}
+
+#if BUILDFLAG(IS_MAC)
+BASE_FEATURE(kBackgroundCrxDownloaderMac,
+             "BackgroundCrxDownloaderMac",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+}  // namespace update_client::features

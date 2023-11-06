@@ -23,8 +23,8 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   GLContextStub& operator=(const GLContextStub&) = delete;
 
   // Implement GLContext.
-  bool Initialize(GLSurface* compatible_surface,
-                  const GLContextAttribs& attribs) override;
+  bool InitializeImpl(GLSurface* compatible_surface,
+                      const GLContextAttribs& attribs) override;
   bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override;
   bool IsCurrent(GLSurface* surface) override;

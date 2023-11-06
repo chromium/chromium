@@ -115,7 +115,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     public void onContentChanged(Tab tab) {
         // Native initialization happens after a page loads or content is changed to ensure profile
         // is initialized.
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
+        Profile profile = tab.getProfile();
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
             mNativeHelper = ContextualSearchTabHelperJni.get().init(
                     ContextualSearchTabHelper.this, profile);

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_bloberizer.h"
 
 #include <memory>
+#include "skia/ext/font_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
@@ -29,7 +30,7 @@ namespace {
 static scoped_refptr<SimpleFontData> CreateTestSimpleFontData(
     bool force_rotation = false) {
   FontPlatformData platform_data(
-      SkTypeface::MakeDefault(), std::string(), 10, false, false,
+      skia::DefaultTypeface(), std::string(), 10, false, false,
       TextRenderingMode::kAutoTextRendering, {},
       force_rotation ? FontOrientation::kVerticalUpright
                      : FontOrientation::kHorizontal);

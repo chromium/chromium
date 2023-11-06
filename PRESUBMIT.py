@@ -1000,6 +1000,8 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
+        # Needed to use MediaPipe API.
+        r'components/media_effects/.*\.cc',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK
       ],
@@ -1101,9 +1103,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           # Required for interop with the third-party webrtc library.
           'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.cc',
           'third_party/blink/renderer/modules/peerconnection/mock_peer_connection_impl\.h',
-          # This code is in the process of being extracted into a third-party library.
-          # See https://crbug.com/1322914
-          '^net/cert/pki/path_builder_unittest\.cc',
           # TODO(https://crbug.com/1364577): Various uses that should be
           # migrated to something else.
           # Should use base::OnceCallback or base::RepeatingCallback.

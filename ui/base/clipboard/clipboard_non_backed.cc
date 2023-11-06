@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -357,9 +358,8 @@ class ClipboardDataBuilder {
  public:
   // If |data_src| is nullptr, this means that the data source isn't
   // confidential and the data can be pasted in any document.
-  static void CommitToClipboard(
-      ClipboardInternal& clipboard,
-      std::unique_ptr<DataTransferEndpoint> data_src) {
+  static void CommitToClipboard(ClipboardInternal& clipboard,
+                                absl::optional<DataTransferEndpoint> data_src) {
     ClipboardData* data = GetCurrentData();
 #if BUILDFLAG(IS_CHROMEOS)
     data->set_commit_time(base::Time::Now());
@@ -498,10 +498,10 @@ std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
 
 void ClipboardNonBacked::OnPreShutdown() {}
 
-DataTransferEndpoint* ClipboardNonBacked::GetSource(
+absl::optional<DataTransferEndpoint> ClipboardNonBacked::GetSource(
     ClipboardBuffer buffer) const {
   const ClipboardData* data = GetInternalClipboard(buffer).GetData();
-  return data ? data->source() : nullptr;
+  return data ? data->source() : absl::nullopt;
 }
 
 const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(
@@ -901,8 +901,8 @@ void ClipboardNonBacked::WritePortableAndPlatformRepresentations(
   for (const auto& object : objects)
     DispatchPortableRepresentation(object.second);
 
-  ClipboardDataBuilder::CommitToClipboard(clipboard_internal,
-                                          std::move(data_src));
+  ClipboardDataBuilder::CommitToClipboard(
+      clipboard_internal, base::OptionalFromPtr(data_src.get()));
 }
 
 void ClipboardNonBacked::WriteText(base::StringPiece text) {

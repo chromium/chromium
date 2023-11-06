@@ -76,7 +76,7 @@ class APIEventHandler {
                           mojom::EventFilteringInfoPtr filter);
   void FireEventInContext(const std::string& event_name,
                           v8::Local<v8::Context> context,
-                          std::vector<v8::Local<v8::Value>>* arguments,
+                          v8::LocalVector<v8::Value>* arguments,
                           mojom::EventFilteringInfoPtr filter,
                           JSRunner::ResultCallback callback);
 

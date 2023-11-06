@@ -194,7 +194,75 @@ TEST_F(TabOrganizationTest, TabDataWebContentsDeletionIsNotValidForOrganizing) {
   EXPECT_FALSE(tab_data->IsValidForOrganizing());
 }
 
+TEST_F(TabOrganizationTest, TabDataObserverTest) {
+  class TestObserver : public TabData::Observer {
+   public:
+    void OnTabDataUpdated(const TabData* tab_data) override {
+      update_call_count++;
+    }
+
+    void OnTabDataDestroyed(TabData::TabID tab_id) override {
+      if (!tab_data_) {
+        return;
+      }
+
+      destroy_call_count++;
+      tab_data_ = nullptr;
+    }
+
+    ~TestObserver() override {
+      if (tab_data_) {
+        tab_data_->RemoveObserver(this);
+      }
+    }
+
+    int update_call_count = 0;
+    int destroy_call_count = 0;
+    raw_ptr<TabData> tab_data_;
+  };
+
+  content::WebContents* old_contents = AddTab();
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), old_contents);
+
+  {
+    TabData::Observer default_observer;
+    tab_data->AddObserver(&default_observer);
+    tab_data->RemoveObserver(&default_observer);
+  }
+
+  TestObserver observer;
+  tab_data->AddObserver(&observer);
+  observer.tab_data_ = tab_data.get();
+
+  // replace the contents which should result in an update call.
+  std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
+  content::WebContents* new_contents_ptr = new_contents.get();
+  tab_strip_model()->ReplaceWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(old_contents),
+      std::move(new_contents));
+  EXPECT_EQ(observer.update_call_count, 1);
+
+  // Add another tab so that the tabstripmodel doesnt go away. Arbitrary
+  // TabStripModelChanges should not update the observer.
+  AddTab();
+  EXPECT_EQ(observer.update_call_count, 1);
+
+  // Remove the original webcontents and expect an update call.
+  tab_strip_model()->CloseWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(new_contents_ptr),
+      TabCloseTypes::CLOSE_NONE);
+  EXPECT_EQ(observer.update_call_count, 2);
+}
+
 // TabOrganization tests.
+
+TEST_F(TabOrganizationTest, TabOrganizationIDs) {
+  TabOrganization organization_1({}, {u"default_name"}, 0, absl::nullopt);
+  TabOrganization organization_2({}, {u"default_name"}, 0, absl::nullopt);
+
+  EXPECT_NE(organization_1.organization_id(), organization_2.organization_id());
+}
 
 TEST_F(TabOrganizationTest, TabOrganizationAddingTabData) {
   TabOrganization organization({}, {u"default_name"}, 0, absl::nullopt);
@@ -342,7 +410,86 @@ TEST_F(TabOrganizationTest, TabOrganizationRequestOnCancelRequest) {
   EXPECT_TRUE(cancel_called);
 }
 
+TEST_F(TabOrganizationTest, TabOrganizationObserverTest) {
+  class TestObserver : public TabOrganization::Observer {
+   public:
+    void OnTabOrganizationUpdated(
+        const TabOrganization* tab_organization) override {
+      update_call_count++;
+    }
+
+    void OnTabOrganizationDestroyed(
+        TabOrganization::ID tab_organization_id) override {
+      if (!tab_organization_) {
+        return;
+      }
+
+      destroy_call_count++;
+      tab_organization_ = nullptr;
+    }
+
+    ~TestObserver() override {
+      if (tab_organization_) {
+        tab_organization_->RemoveObserver(this);
+      }
+    }
+
+    int update_call_count = 0;
+    int destroy_call_count = 0;
+    raw_ptr<TabOrganization> tab_organization_;
+  };
+
+  // Create an organization and observe it.
+  std::unique_ptr<TabOrganization> organization =
+      std::make_unique<TabOrganization>(
+          std::vector<std::unique_ptr<TabData>>{},
+          std::vector<std::u16string>{u"Organization"}, 0, absl::nullopt);
+  TestObserver observer;
+  organization->AddObserver(&observer);
+  observer.tab_organization_ = organization.get();
+
+  // AddTabData to the organization.
+  content::WebContents* old_contents = AddTab(tab_strip_model());
+  std::unique_ptr<TabData> tab_data =
+      std::make_unique<TabData>(tab_strip_model(), old_contents);
+  organization->AddTabData(std::move(tab_data));
+  EXPECT_EQ(observer.update_call_count, 1);
+
+  // Make changes to tab data and make sure it propagates up to organization
+  // updates. Add another tab so that the tabstripmodel doesnt go away.
+  // Arbitrary TabStripModelChanges should not update the observer.
+  std::unique_ptr<content::WebContents> new_contents = CreateWebContents();
+  tab_strip_model()->ReplaceWebContentsAt(
+      tab_strip_model()->GetIndexOfWebContents(old_contents),
+      std::move(new_contents));
+  EXPECT_EQ(observer.update_call_count, 2);
+
+  // Add another tab to create a valid organization.
+  organization->AddTabData(
+      std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
+  EXPECT_EQ(observer.update_call_count, 3);
+  organization->AddTabData(
+      std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
+  EXPECT_EQ(observer.update_call_count, 4);
+
+  // Make changes to the organization, expect the update method to be called.
+  organization->Accept();
+  EXPECT_EQ(observer.update_call_count, 5);
+
+  // Destroy the organization and expect onDestroy to be called.
+  organization.reset();
+  EXPECT_EQ(observer.destroy_call_count, 1);
+}
+
 // TabOrganizationSession Tests.
+
+TEST_F(TabOrganizationTest, TabOrganizationSessionIDs) {
+  std::unique_ptr<TabOrganizationSession> session1 =
+      std::make_unique<TabOrganizationSession>();
+  std::unique_ptr<TabOrganizationSession> session2 =
+      std::make_unique<TabOrganizationSession>();
+  EXPECT_NE(session1->session_id(), session2->session_id());
+}
 
 TEST_F(TabOrganizationTest,
        TabOrganizationSessionDestructionCancelsRequestIfStarted) {
@@ -355,7 +502,7 @@ TEST_F(TabOrganizationTest,
                                  }));
 
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
   session->StartRequest();
   session.reset();
 
@@ -365,13 +512,14 @@ TEST_F(TabOrganizationTest,
 TEST_F(TabOrganizationTest, TabOrganizationSessionGetNextTabOrganization) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
   const std::u16string name = u"default_name";
-  session->AddOrganizationForTesting(
-      TabOrganization({}, {name}, 0, absl::nullopt));
+  session->AddOrganizationForTesting(std::make_unique<TabOrganization>(
+      std::vector<std::unique_ptr<TabData>>{},
+      std::vector<std::u16string>{name}, 0, absl::nullopt));
   const TabOrganization* const organization_1 =
       session->GetNextTabOrganization();
   EXPECT_NE(organization_1, nullptr);
@@ -388,14 +536,17 @@ TEST_F(TabOrganizationTest,
        TabOrganizationSessionGetNextTabOrganizationAfterAccept) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
-  TabOrganization organization({}, {u"Organization"}, 0, absl::nullopt);
-  organization.AddTabData(
+  std::unique_ptr<TabOrganization> organization =
+      std::make_unique<TabOrganization>(
+          std::vector<std::unique_ptr<TabData>>{},
+          std::vector<std::u16string>{u"Organization"}, 0, absl::nullopt);
+  organization->AddTabData(
       std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
-  organization.AddTabData(
+  organization->AddTabData(
       std::make_unique<TabData>(tab_strip_model(), AddTab(tab_strip_model())));
 
   const std::u16string name = u"default_name";
@@ -414,13 +565,14 @@ TEST_F(TabOrganizationTest,
        TabOrganizationSessionGetNextTabOrganizationAfterReject) {
   std::unique_ptr<TabOrganizationSession> session =
       std::make_unique<TabOrganizationSession>(
-          std::make_unique<TabOrganizationRequest>());
+          nullptr, std::make_unique<TabOrganizationRequest>());
 
   EXPECT_EQ(session->GetNextTabOrganization(), nullptr);
 
   const std::u16string name = u"default_name";
-  session->AddOrganizationForTesting(
-      TabOrganization({}, {name}, 0, absl::nullopt));
+  session->AddOrganizationForTesting(std::make_unique<TabOrganization>(
+      std::vector<std::unique_ptr<TabData>>{},
+      std::vector<std::u16string>{name}, 0, absl::nullopt));
   TabOrganization* const organization_1 = session->GetNextTabOrganization();
   EXPECT_NE(organization_1, nullptr);
   EXPECT_EQ(organization_1->GetDisplayName(), name);
@@ -464,7 +616,7 @@ TEST_F(TabOrganizationTest,
   // Create the session.
   TabOrganizationRequest* request_ptr = request.get();
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   // Create the a response that uses the invalid tab.
   std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
@@ -483,10 +635,10 @@ TEST_F(TabOrganizationTest,
   EXPECT_EQ(request_ptr->response()->organizations.size(), 1u);
 
   EXPECT_EQ(session->tab_organizations().size(), 1u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 2u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[0]->web_contents(),
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas().size(), 2u);
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas()[0]->web_contents(),
             valid_web_contents_1);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[1]->web_contents(),
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas()[1]->web_contents(),
             valid_web_contents_2);
 }
 
@@ -526,7 +678,7 @@ TEST_F(TabOrganizationTest,
   // Create the session.
   TabOrganizationRequest* request_ptr = request.get();
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   // Create the a response that uses the missing tab.
   std::vector<TabData::TabID> tab_ids{valid_tab_data_id_1, valid_tab_data_id_2,
@@ -545,10 +697,10 @@ TEST_F(TabOrganizationTest,
   EXPECT_EQ(request_ptr->response()->organizations.size(), 1u);
 
   EXPECT_EQ(session->tab_organizations().size(), 1u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas().size(), 2u);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[0]->web_contents(),
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas().size(), 2u);
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas()[0]->web_contents(),
             valid_web_contents_1);
-  EXPECT_EQ(session->tab_organizations()[0].tab_datas()[1]->web_contents(),
+  EXPECT_EQ(session->tab_organizations()[0]->tab_datas()[1]->web_contents(),
             valid_web_contents_2);
 }
 
@@ -577,7 +729,7 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
       std::make_unique<TabData>(tab_strip_model(), tab_to_not_group));
 
   std::unique_ptr<TabOrganizationSession> session =
-      std::make_unique<TabOrganizationSession>(std::move(request));
+      std::make_unique<TabOrganizationSession>(nullptr, std::move(request));
 
   std::vector<TabOrganizationResponse::Organization> response_organizations;
   TabOrganizationResponse::Organization organization(
@@ -590,9 +742,7 @@ TEST_F(TabOrganizationTest, TabOrganizationSessionCreation) {
   session->StartRequest();
   request_ptr->CompleteRequestForTesting(std::move(response));
 
-  const std::vector<TabOrganization>& organizations =
-      session->tab_organizations();
-  EXPECT_EQ(organizations.size(), 1u);
+  EXPECT_EQ(session->tab_organizations().size(), 1u);
 
   /*
     TODO, once completion does not call PopulateAndCreate, the organization must

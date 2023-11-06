@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/language_packs/handwriting.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -85,63 +86,6 @@ class DelegateUtil {
 
     util_.InitXkbInputMethodsForTesting(descriptors);
   }
-};
-
-// Fake InputMethodManager used for testing.
-// InputMethodManager with available IMEs.
-class FakeInputMethodManager : public MockInputMethodManager {
- public:
-  class TestState : public MockInputMethodManager::State {
-   public:
-    // This constructor takes in engine IDs for conciseness and readability in
-    // testing, so we convert them to input method IDs here.
-    TestState(const std::vector<std::string>& engine_ids) {
-      for (const auto& engine_id : engine_ids) {
-        input_method_ids_.push_back(
-            extension_ime_util::GetInputMethodIDByEngineID(engine_id));
-      }
-    }
-
-    TestState(const TestState&) = delete;
-    TestState& operator=(const TestState&) = delete;
-
-    const std::vector<std::string>& GetEnabledInputMethodIds() const override {
-      return input_method_ids_;
-    }
-
-    std::vector<std::string> input_method_ids_;
-
-   protected:
-    friend base::RefCounted<InputMethodManager::State>;
-    ~TestState() override {}
-  };
-
-  // Constructor.
-  // The first argument `enabled_engine_ids` contains the list of engine IDs
-  // that corresponds to the input methods that the user has currently enabled.
-  // The second argument `partial_descriptors` is used for internal mapping: in
-  // correct scenarios it should always include the IDs of the first argument.
-  explicit FakeInputMethodManager(
-      const std::vector<std::string>& enabled_engine_ids,
-      base::span<const PartialDescriptor> partial_descriptors)
-      : state_(base::MakeRefCounted<TestState>(enabled_engine_ids)),
-        delegate_util_(partial_descriptors) {}
-
-  FakeInputMethodManager(const FakeInputMethodManager&) = delete;
-  FakeInputMethodManager& operator=(const FakeInputMethodManager&) = delete;
-
-  ~FakeInputMethodManager() override = default;
-
-  scoped_refptr<InputMethodManager::State> GetActiveIMEState() override {
-    return state_;
-  }
-
-  InputMethodUtil* GetInputMethodUtil() override {
-    return delegate_util_.util();
-  }
-
-  scoped_refptr<TestState> state_;
-  DelegateUtil delegate_util_;
 };
 
 TEST_F(HandwritingTest, MapEngineIdToHandwritingLocaleNoInputMethods) {
@@ -414,56 +358,6 @@ TEST_F(HandwritingTest, FilterHandwritingDlcsVariousEntries) {
   EXPECT_THAT(
       ConvertDlcsWithContentToHandwritingLocales(dlcs_with_some_handwriting),
       UnorderedElementsAre("fr", "it"));
-}
-
-TEST_F(HandwritingTest, GetTargetLocalesEmpty) {
-  FakeInputMethodManager fake_imm({}, {});
-
-  EXPECT_THAT(GetHandwritingLocalesFromEnabledInputMethods(&fake_imm),
-              IsEmpty());
-}
-
-TEST_F(HandwritingTest, GetTargetLocalesNoMapping) {
-  const std::vector<std::string> enabled_engine_ids(
-      {"xkb:us::eng", "xkb:it::ita"});
-  const std::vector<const PartialDescriptor> partial_descriptors({});
-  FakeInputMethodManager fake_imm(enabled_engine_ids, partial_descriptors);
-
-  EXPECT_THAT(GetHandwritingLocalesFromEnabledInputMethods(&fake_imm),
-              IsEmpty());
-}
-
-TEST_F(HandwritingTest, GetTargetLocalesValidMapping) {
-  const std::vector<std::string> enabled_engine_ids(
-      {"xkb:fr::fra", "xkb:de::ger", "xkb:it::ita"});
-  const std::vector<const PartialDescriptor> partial_descriptors(
-      {{{"xkb:fr::fra", "fr"}, {"xkb:it::ita", "it"}}});
-  FakeInputMethodManager fake_imm(enabled_engine_ids, partial_descriptors);
-
-  EXPECT_THAT(GetHandwritingLocalesFromEnabledInputMethods(&fake_imm),
-              UnorderedElementsAre("fr", "it"));
-}
-
-TEST_F(HandwritingTest, GetTargetLocalesMappingMissing) {
-  const std::vector<std::string> enabled_engine_ids(
-      {"xkb:de::ger", "xkb:it::ita"});
-  const std::vector<const PartialDescriptor> partial_descriptors(
-      {{{"xkb:fr::fra", "fr"}, {"xkb:it::ita", "it"}}});
-  FakeInputMethodManager fake_imm(enabled_engine_ids, partial_descriptors);
-
-  EXPECT_THAT(GetHandwritingLocalesFromEnabledInputMethods(&fake_imm),
-              UnorderedElementsAre("it"));
-}
-
-TEST_F(HandwritingTest, GetTargetLocalesMalformedIds) {
-  const std::vector<std::string> enabled_engine_ids(
-      {"xkb:fr::fra", "xkb:de::ger", "xkb:it::ita"});
-  const std::vector<const PartialDescriptor> partial_descriptors(
-      {{{"xkb:cy::woo", "fr"}, {"xkb:it::ita", "it"}, {"xkb_ime_lol", "it"}}});
-  FakeInputMethodManager fake_imm(enabled_engine_ids, partial_descriptors);
-
-  EXPECT_THAT(GetHandwritingLocalesFromEnabledInputMethods(&fake_imm),
-              UnorderedElementsAre("it"));
 }
 
 }  // namespace

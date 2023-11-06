@@ -11,12 +11,15 @@
 #import "ios/chrome/browser/synced_sessions/model/synced_sessions_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/closed_tabs_observer_bridge.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_activity_observer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 class BrowserList;
 class FaviconLoader;
 @protocol GridToolbarsMutator;
 @protocol RecentTabsConsumer;
+@class SceneState;
+@protocol TabGridToolbarsActionWrangler;
 
 namespace signin {
 class IdentityManager;
@@ -41,6 +44,7 @@ class TabRestoreService;
 // ChromeToDevice and changes/updates the RecentTabsConsumer accordingly.
 @interface RecentTabsMediator : NSObject <ClosedTabsObserving,
                                           RecentTabsTableViewControllerDelegate,
+                                          TabGridActivityObserver,
                                           TabGridPageMutator,
                                           TableViewFaviconDataSource>
 
@@ -49,6 +53,9 @@ class TabRestoreService;
 @property(nonatomic, strong) id<RecentTabsConsumer> consumer;
 // Mutator to handle toolbars modification.
 @property(nonatomic, weak) id<GridToolbarsMutator> toolbarsMutator;
+// Wrangler handling the TabGrid modifications.
+@property(nonatomic, weak) id<TabGridToolbarsActionWrangler>
+    toolbarActionWrangler;
 
 - (instancetype)
     initWithSessionSyncService:
@@ -58,7 +65,8 @@ class TabRestoreService;
                  faviconLoader:(FaviconLoader*)faviconLoader
                    syncService:(syncer::SyncService*)syncService
                    browserList:(BrowserList*)browserList
-    NS_DESIGNATED_INITIALIZER;
+                    sceneState:(SceneState*)sceneState
+              disabledByPolicy:(BOOL)disabled NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

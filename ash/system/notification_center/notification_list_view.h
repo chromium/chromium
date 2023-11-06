@@ -6,9 +6,7 @@
 #define ASH_SYSTEM_NOTIFICATION_CENTER_NOTIFICATION_LIST_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/throughput_tracker.h"
@@ -31,7 +29,6 @@ class Notification;
 namespace ash {
 
 class NotificationCenterView;
-class UnifiedSystemTrayModel;
 
 // Manages list of notifications. The class doesn't know about the ScrollView
 // it's enclosed. This class is used only from NotificationCenterView.
@@ -45,8 +42,7 @@ class ASH_EXPORT NotificationListView
   METADATA_HEADER(NotificationListView);
 
   // |message_center_view| can be null in unit tests.
-  NotificationListView(NotificationCenterView* message_center_view,
-                       scoped_refptr<UnifiedSystemTrayModel> model);
+  explicit NotificationListView(NotificationCenterView* message_center_view);
   NotificationListView(const NotificationListView& other) = delete;
   NotificationListView& operator=(const NotificationListView& other) = delete;
   ~NotificationListView() override;
@@ -135,6 +131,9 @@ class ASH_EXPORT NotificationListView
   void ConvertGroupedNotificationViewToNotificationView(
       const std::string& grouped_notification_id,
       const std::string& new_single_notification_id) override;
+  void OnChildNotificationViewUpdated(
+      const std::string& parent_notification_id,
+      const std::string& child_notification_id) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -252,7 +251,6 @@ class ASH_EXPORT NotificationListView
   void UpdateClearAllAnimation();
 
   const raw_ptr<NotificationCenterView, ExperimentalAsh> message_center_view_;
-  scoped_refptr<UnifiedSystemTrayModel> model_;
 
   // Non-null during State::EXPAND_OR_COLLAPSE. Keeps track of the
   // MessageViewContainer that is animating.

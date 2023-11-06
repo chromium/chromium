@@ -12,7 +12,6 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"

@@ -20,8 +20,8 @@ import {CrosNetworkConfigInterface, ManagedProperties, MAX_NUM_CUSTOM_APNS, Netw
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
 import {Constructor} from '../common/types.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './apn_subpage.html.js';
@@ -170,12 +170,6 @@ export class ApnSubpageElement extends ApnSubpageElementBase {
       return;
     }
 
-    if (this.deviceState_ && this.deviceState_.scanning) {
-      // Cellular properties may be invalid while scanning, so keep the
-      // existing properties instead.
-      response.result.typeProperties.cellular =
-          this.managedProperties_!.typeProperties.cellular;
-    }
     this.managedProperties_ = response.result;
 
     if (!this.deviceState_) {

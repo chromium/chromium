@@ -306,7 +306,25 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
       },
 
       /**
-       * List of tiles to be displayed to the user.
+       * Stores a list of promoted tiles, including Time of Day and SeaPen.
+       */
+      promotedTiles_: {
+        type: Array,
+        value() {
+          return [
+            {type: TileType.LOADING, id: kSeaPenId} as LoadingTile,
+            {
+              type: TileType.LOADING,
+              id: loadTimeData.getString('timeOfDayWallpaperCollectionId'),
+            } as LoadingTile,
+          ];
+        },
+      },
+
+      /**
+       * List of tiles to be displayed to the user. The Time of Day tile is in
+       * promotedTiles_ when SeaPen is enabled, and in tiles_ when SeaPen is
+       * disabled.
        */
       tiles_: {
         type: Array,
@@ -318,14 +336,9 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
           let currentIndex = 0;
           // Time of day tile.
-          if (isTimeOfDayWallpaperEnabled()) {
+          if (isTimeOfDayWallpaperEnabled() && !isSeaPenEnabled()) {
             placeholders[currentIndex].id =
                 loadTimeData.getString('timeOfDayWallpaperCollectionId');
-            currentIndex++;
-          }
-
-          if (isSeaPenEnabled()) {
-            placeholders[currentIndex].id = kSeaPenId;
             currentIndex++;
           }
 
@@ -378,11 +391,12 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
   private imagesLoading_: Record<string, boolean>;
   private imageCounts_: Record<string, number|null>;
   private googlePhotosEnabled_: GooglePhotosEnablementState|undefined;
-  private seaPenEnabled_: boolean;
+  private isSeaPenEnabled_: boolean;
   private localImages_: Array<FilePath|DefaultImageSymbol>|null;
   private localImagesLoading_: boolean;
   private localImageData_: Record<string|DefaultImageSymbol, Url>;
   private tiles_: Tile[];
+  private promotedTiles_: Tile[];
   private hasError_: boolean;
   private isPersonalizationJellyEnabled_: boolean;
 
@@ -475,6 +489,8 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
     if (!timeOfDay && isTimeOfDayWallpaperEnabled()) {
       console.error('missing time of day wallpaper from collections');
       this.tiles_ = this.tiles_.filter(tile => !isTimeOfDay(tile));
+      this.promotedTiles_ =
+          this.promotedTiles_.filter(tile => !isTimeOfDay(tile));
     }
 
     // Delay assigning `this.splitCollections_` until the correct number of
@@ -589,17 +605,23 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
 
     if (splitCollections.timeOfDay &&
         imageCounts[splitCollections.timeOfDay.id] !== undefined) {
-      const tileIndex = this.tiles_.findIndex(isTimeOfDay);
+      const timeOfDayContainer =
+          isSeaPenEnabled() ? this.promotedTiles_ : this.tiles_;
+      const tileIndex = timeOfDayContainer.findIndex(isTimeOfDay);
       if (tileIndex < 0) {
         console.warn('received time of day collection when not supported');
         return;
       }
-      const tile = this.tiles_[tileIndex];
+      const tile = timeOfDayContainer[tileIndex];
       const newTile = getOnlineTile(
           splitCollections.timeOfDay,
           imageCounts[splitCollections.timeOfDay.id]);
       if (tile.type !== newTile.type || tile.count !== newTile.count) {
-        this.set(`tiles_.${tileIndex}`, newTile);
+        if (isSeaPenEnabled()) {
+          this.set(`promotedTiles_.${tileIndex}`, newTile);
+        } else {
+          this.set(`tiles_.${tileIndex}`, newTile);
+        }
       }
     }
   }
@@ -625,9 +647,9 @@ export class WallpaperCollectionsElement extends WithPersonalizationStore {
       return;
     }
     const tile = getSeaPenTile();
-    const index = this.tiles_.findIndex(tile => tile.id === kSeaPenId);
+    const index = this.promotedTiles_.findIndex(tile => tile.id === kSeaPenId);
     assert(index >= 0, `${kSeaPenId} not found`);
-    this.set(`tiles_.${index}`, tile);
+    this.set(`promotedTiles_.${index}`, tile);
   }
 
   /**

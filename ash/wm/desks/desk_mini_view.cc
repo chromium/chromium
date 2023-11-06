@@ -23,6 +23,7 @@
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desk_textfield.h"
 #include "ash/wm/desks/desks_constants.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/overview/overview_constants.h"
@@ -32,6 +33,7 @@
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -377,7 +379,18 @@ bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
 }
 
 void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
+  // When there is only one desk, do nothing.
+  DesksController* desk_controller = DesksController::Get();
+  if (!desk_controller->CanRemoveDesks()) {
+    return;
+  }
+
   is_context_menu_open_ = true;
+  base::UmaHistogramBoolean(
+      owner_bar_->type() == DeskBarViewBase::Type::kDeskButton
+          ? kDeskButtonDeskBarOpenContextMenuHistogramName
+          : kOverviewDeskBarOpenContextMenuHistogramName,
+      true);
   UpdateDeskButtonVisibility();
 
   desk_preview_->SetHighlightOverlayVisibility(true);
@@ -389,7 +402,7 @@ void DeskMiniView::OpenContextMenu(ui::MenuSourceType source) {
   context_menu_ = std::make_unique<DeskActionContextMenu>(
       ContainsAppWindows(desk_)
           ? absl::make_optional(
-                DesksController::Get()->GetCombineDesksTargetName(desk_))
+                desk_controller->GetCombineDesksTargetName(desk_))
           : absl::nullopt,
       show_on_top ? views::MenuAnchorPosition::kBubbleTopRight
                   : views::MenuAnchorPosition::kBubbleBottomRight,

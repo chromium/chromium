@@ -258,7 +258,6 @@ void VideoToolboxVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     switch (result) {
       case AcceleratedVideoDecoder::kDecodeError:
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
-      case AcceleratedVideoDecoder::kNeedContextUpdate:
       case AcceleratedVideoDecoder::kTryAgain:
         // More specific reasons are logged to the media log.
         NotifyError(DecoderStatus::Codes::kMalformedBitstream);

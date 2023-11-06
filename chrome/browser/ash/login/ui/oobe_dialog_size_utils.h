@@ -20,6 +20,9 @@ extern const gfx::Size kMinLandscapeDialogSize;
 extern const gfx::Size kMaxPortraitDialogSize;
 extern const gfx::Size kMinPortraitDialogSize;
 
+extern const int kOobeDialogShadowElevation;
+extern const int kOobeDialogCornerRadius;
+
 // Calculated the size of OOBE dialog for particular host_size. It is expected
 // that `host_size` is the hosting display size for fullscreen OOBE dialog and
 // available remainig size for on-login OOBE.

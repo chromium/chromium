@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "engagement"
-
   files = [ "site_engagement_test.ts" ]
 
   ts_path_mappings =

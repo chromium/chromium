@@ -19,9 +19,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.ChromeActivity;
 
-/**
- * Hardware acceleration-related manifest tests.
- */
+/** Hardware acceleration-related manifest tests. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ManifestHWATest {
@@ -30,8 +28,10 @@ public class ManifestHWATest {
     public void testAccelerationDisabled() throws Exception {
         PackageInfo info = PackageUtils.getApplicationPackageInfo(PackageManager.GET_ACTIVITIES);
         for (ActivityInfo activityInfo : info.activities) {
-            String activityName = activityInfo.targetActivity != null ? activityInfo.targetActivity
-                                                                      : activityInfo.name;
+            String activityName =
+                    activityInfo.targetActivity != null
+                            ? activityInfo.targetActivity
+                            : activityInfo.name;
             try {
                 Class<?> activityClass = Class.forName(activityName);
                 if (ChromeActivity.class.isAssignableFrom(activityClass)) {

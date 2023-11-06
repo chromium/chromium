@@ -202,7 +202,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
     ON_CALL(*test_item_, GetId())
         .WillByDefault(Return(kTestDownloadId));
     ON_CALL(*test_item_, GetEndTime())
-        .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
+        .WillByDefault(Return(base::Time::FromMillisecondsSinceUnixEpoch(
+            kTestDownloadEndTimeMs)));
     ON_CALL(*test_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
     content::DownloadItemUtils::AttachInfoForTesting(test_item_.get(),
@@ -214,7 +215,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
     ON_CALL(*other_item_, GetId())
         .WillByDefault(Return(kOtherDownloadId));
     ON_CALL(*other_item_, GetEndTime())
-        .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
+        .WillByDefault(Return(base::Time::FromMillisecondsSinceUnixEpoch(
+            kTestDownloadEndTimeMs)));
     content::DownloadItemUtils::AttachInfoForTesting(other_item_.get(),
                                                      &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, other_item_.get());
@@ -224,7 +226,8 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
     ON_CALL(*zero_item_, GetId())
         .WillByDefault(Return(0));
     ON_CALL(*zero_item_, GetEndTime())
-        .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
+        .WillByDefault(Return(base::Time::FromMillisecondsSinceUnixEpoch(
+            kTestDownloadEndTimeMs)));
     ON_CALL(*zero_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
     content::DownloadItemUtils::AttachInfoForTesting(zero_item_.get(),

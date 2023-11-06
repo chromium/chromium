@@ -49,8 +49,6 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
       base::CancelableTaskTracker* tracker) override;
   bool SupportsTypedCountForUrls() override;
   void GetTypedCountForUrls(UrlTypedCountMap* url_typed_count_map) override;
-  bool IsPermanentNodeVisibleWhenEmpty(
-      bookmarks::BookmarkNode::Type type) override;
   bookmarks::LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bookmarks::metrics::StorageStateForUma GetStorageStateForUma() override;
   bool CanSetPermanentNodeTitle(

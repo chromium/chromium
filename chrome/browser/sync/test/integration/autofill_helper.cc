@@ -26,16 +26,16 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/webdata/common/web_database.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using autofill::AutofillChangeList;
-using autofill::AutofillEntry;
-using autofill::AutofillKey;
+using autofill::AutocompleteChangeList;
+using autofill::AutocompleteEntry;
+using autofill::AutocompleteKey;
 using autofill::AutofillProfile;
 using autofill::AutofillTable;
 using autofill::AutofillType;
@@ -57,8 +57,8 @@ class MockWebDataServiceObserver
     : public AutofillWebDataServiceObserverOnDBSequence {
  public:
   MOCK_METHOD(void,
-              AutofillEntriesChanged,
-              (const AutofillChangeList& changes),
+              AutocompleteEntriesChanged,
+              (const AutocompleteChangeList& changes),
               (override));
 };
 
@@ -75,12 +75,12 @@ void WaitForCurrentTasksToComplete(base::SequencedTaskRunner* task_runner) {
   event.Wait();
 }
 
-void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
+void RemoveKeyDontBlockForSync(int profile, const AutocompleteKey& key) {
   WaitableEvent done_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
+  EXPECT_CALL(mock_observer, AutocompleteEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
@@ -101,17 +101,19 @@ void RemoveKeyDontBlockForSync(int profile, const AutofillKey& key) {
       FROM_HERE, base::BindOnce(remove_observer_func, wds, &mock_observer));
 }
 
-void GetAllAutofillEntriesOnDBSequence(AutofillWebDataService* wds,
-                                       std::vector<AutofillEntry>* entries) {
+void GetAllAutocompleteEntriesOnDBSequence(
+    AutofillWebDataService* wds,
+    std::vector<AutocompleteEntry>* entries) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   AutofillTable::FromWebDatabase(wds->GetDatabase())
-      ->GetAllAutofillEntries(entries);
+      ->GetAllAutocompleteEntries(entries);
 }
 
-std::vector<AutofillEntry> GetAllAutofillEntries(AutofillWebDataService* wds) {
-  std::vector<AutofillEntry> entries;
+std::vector<AutocompleteEntry> GetAllAutocompleteEntries(
+    AutofillWebDataService* wds) {
+  std::vector<AutocompleteEntry> entries;
   wds->GetDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&GetAllAutofillEntriesOnDBSequence,
+      FROM_HERE, base::BindOnce(&GetAllAutocompleteEntriesOnDBSequence,
                                 base::Unretained(wds), &entries));
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
   return entries;
@@ -217,9 +219,9 @@ PersonalDataManager* GetPersonalDataManager(int index) {
       test()->GetProfile(index));
 }
 
-void AddKeys(int profile, const std::set<AutofillKey>& keys) {
+void AddKeys(int profile, const std::set<AutocompleteKey>& keys) {
   std::vector<FormFieldData> form_fields;
-  for (const AutofillKey& key : keys) {
+  for (const AutocompleteKey& key : keys) {
     FormFieldData field;
     field.name = key.name();
     field.value = key.value();
@@ -229,7 +231,7 @@ void AddKeys(int profile, const std::set<AutofillKey>& keys) {
   WaitableEvent done_event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED);
   MockWebDataServiceObserver mock_observer;
-  EXPECT_CALL(mock_observer, AutofillEntriesChanged)
+  EXPECT_CALL(mock_observer, AutocompleteEntriesChanged)
       .WillOnce(SignalEvent(&done_event));
 
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
@@ -251,23 +253,24 @@ void AddKeys(int profile, const std::set<AutofillKey>& keys) {
       FROM_HERE, base::BindOnce(remove_observer_func, wds, &mock_observer));
 }
 
-void RemoveKey(int profile, const AutofillKey& key) {
+void RemoveKey(int profile, const AutocompleteKey& key) {
   RemoveKeyDontBlockForSync(profile, key);
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
 }
 
 void RemoveKeys(int profile) {
-  std::set<AutofillEntry> keys = GetAllKeys(profile);
-  for (const AutofillEntry& entry : keys) {
+  std::set<AutocompleteEntry> keys = GetAllKeys(profile);
+  for (const AutocompleteEntry& entry : keys) {
     RemoveKeyDontBlockForSync(profile, entry.key());
   }
   WaitForCurrentTasksToComplete(GetWebDataService(profile)->GetDBTaskRunner());
 }
 
-std::set<AutofillEntry> GetAllKeys(int profile) {
+std::set<AutocompleteEntry> GetAllKeys(int profile) {
   scoped_refptr<AutofillWebDataService> wds = GetWebDataService(profile);
-  std::vector<AutofillEntry> all_entries = GetAllAutofillEntries(wds.get());
-  return std::set<AutofillEntry>(all_entries.begin(), all_entries.end());
+  std::vector<AutocompleteEntry> all_entries =
+      GetAllAutocompleteEntries(wds.get());
+  return std::set<AutocompleteEntry>(all_entries.begin(), all_entries.end());
 }
 
 bool KeysMatch(int profile_a, int profile_b) {
@@ -359,13 +362,13 @@ bool ProfilesMatch(int profile_a, int profile_b) {
 
 }  // namespace autofill_helper
 
-AutofillKeysChecker::AutofillKeysChecker(int profile_a, int profile_b)
+AutocompleteKeysChecker::AutocompleteKeysChecker(int profile_a, int profile_b)
     : MultiClientStatusChangeChecker(
           sync_datatype_helper::test()->GetSyncServices()),
       profile_a_(profile_a),
       profile_b_(profile_b) {}
 
-bool AutofillKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
+bool AutocompleteKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill keys";
   return autofill_helper::KeysMatch(profile_a_, profile_b_);
 }

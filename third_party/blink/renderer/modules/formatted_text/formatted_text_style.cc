@@ -22,7 +22,7 @@ void FormattedTextStyle::SetStyle(const CSSParserContext* context,
 }
 
 const CSSPropertyValueSet* FormattedTextStyle::GetCssPropertySet() const {
-  return css_property_value_set_;
+  return css_property_value_set_.Get();
 }
 
 void FormattedTextStyle::Trace(Visitor* visitor) const {

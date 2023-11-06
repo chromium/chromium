@@ -75,7 +75,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [IntentDonationHelper donateIntent:IntentType::kSetDefaultBrowser];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];

@@ -23,9 +23,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Utilities for writing tests that check for or perform direct actions on an activity.
- */
+/** Utilities for writing tests that check for or perform direct actions on an activity. */
 class DirectActionTestUtils {
     /** Perform a direct action, with the given name. */
     public static void callOnPerformDirectActions(
@@ -33,10 +31,14 @@ class DirectActionTestUtils {
         // This method is not taking a Consumer to avoid issues with tests running against Android
         // API < 24 not even being able to load the test class.
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.onPerformDirectAction(actionId, Bundle.EMPTY, new CancellationSignal(),
-                    (r) -> callback.onResult((Bundle) r));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.onPerformDirectAction(
+                            actionId,
+                            Bundle.EMPTY,
+                            new CancellationSignal(),
+                            (r) -> callback.onResult((Bundle) r));
+                });
     }
 
     /** Gets the list of direct actions. */
@@ -45,10 +47,12 @@ class DirectActionTestUtils {
 
         // onGetDirectActions reports a List<String> because that's what FakeDirectActionReporter
         // creates.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.onGetDirectActions(new CancellationSignal(),
-                    (actions) -> directActions.addAll((List<String>) actions));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activity.onGetDirectActions(
+                            new CancellationSignal(),
+                            (actions) -> directActions.addAll((List<String>) actions));
+                });
         return directActions;
     }
 
@@ -71,8 +75,9 @@ class DirectActionTestUtils {
      */
     static void allowGoForward(ChromeActivityTestRule<?> rule) throws Exception {
         ChromeActivity activity = rule.getActivity();
-        String initialUrl = TestThreadUtils.runOnUiThreadBlocking(
-                () -> activity.getCurrentWebContents().getLastCommittedUrl().getSpec());
+        String initialUrl =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.getCurrentWebContents().getLastCommittedUrl().getSpec());
 
         // Any built-in page that is not about:blank and is reasonably cheap to render will do,
         // here.

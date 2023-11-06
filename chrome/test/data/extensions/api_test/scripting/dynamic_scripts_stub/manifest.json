@@ -1,0 +1,7 @@
+{
+  "name": "Dynamic Content Scripts Stub",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": ["scripting"],
+  "host_permissions": ["*://example.com/*"]
+}

@@ -65,51 +65,42 @@ bool ShouldProcessLocatedEvent(const ui::LocatedEvent& event) {
 // Moves the focus ring to the next traversable view.
 void MoveFocus(const DeskBarController::BarWidgetAndView& desk_bar,
                bool reverse) {
+  DesksController* desks_controller = DesksController::Get();
   auto* focus_manager = desk_bar.bar_widget->GetFocusManager();
+  views::View* focused_view = focus_manager->GetFocusedView();
 
-  // When ChromeVox is not enabled, we do not need to advance focus outside of
-  // the normal focus order (i.e. to a button on a toast that will undo the desk
-  // close operation). Therefore, in this case we can just advance focus
-  // normally.
-  if (!Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+  // Focus the first/last focusable view when tabbing out from the toast.
+  if (desks_controller->IsUndoToastHighlighted()) {
+    desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
     focus_manager->AdvanceFocus(reverse);
     return;
   }
 
-  views::View* focused_view = focus_manager->GetFocusedView();
-
-  views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
-  views::View* last_focusable_view = desk_bar.GetLastFocusableView();
-
-  // When a desk is removed and the undo desk removal toast is shown, we return
-  // focus back to the start of the cycling order.
-  views::View* next_focusable_view;
-  DesksController* desks_controller = DesksController::Get();
-  if (focused_view) {
-    next_focusable_view = desk_bar.GetNextFocusableView(focused_view, reverse);
-
-    // If we are moving over either end of the list of traversible views and
-    // there is an active toast with an undo button for desk removal that can be
-    // focused, then we unfocus any traversible views while the dismiss button
-    // is focused.
-    if (((next_focusable_view == first_focusable_view && !reverse) ||
-         (next_focusable_view == last_focusable_view && reverse)) &&
-        desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
-      focus_manager->ClearFocus();
-      return;
+  // Focus the toast when tabbing out from the first/last focusable view.
+  if (desks_controller->IsUndoToastShown() &&
+      Shell::Get()->accessibility_controller()->spoken_feedback().enabled()) {
+    if (focused_view) {
+      views::View* first_focusable_view = desk_bar.GetFirstFocusableView();
+      views::View* last_focusable_view = desk_bar.GetLastFocusableView();
+      views::View* next_focusable_view =
+          desk_bar.GetNextFocusableView(focused_view, reverse);
+      if (((next_focusable_view == first_focusable_view && !reverse) ||
+           (next_focusable_view == last_focusable_view && reverse)) &&
+          desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
+        focus_manager->ClearFocus();
+        return;
+      }
     }
-  } else if (reverse &&
-             desks_controller
-                 ->MaybeToggleA11yHighlightOnUndoDeskRemovalToast()) {
-    focus_manager->ClearFocus();
-    return;
   }
 
-  if (desks_controller->IsUndoToastHighlighted()) {
-    desks_controller->MaybeToggleA11yHighlightOnUndoDeskRemovalToast();
+  // Focus from and to views within the desk bar.
+  if (focused_view) {
+    focus_manager->AdvanceFocus(reverse);
+  } else {
+    focus_manager->SetFocusedView(
+        desk_bar.bar_view->FindMiniViewForDesk(desks_controller->active_desk())
+            ->desk_preview());
   }
-
-  focus_manager->AdvanceFocus(reverse);
 }
 
 }  // namespace
@@ -253,12 +244,15 @@ void DeskBarController::OnKeyEvent(ui::KeyEvent* event) {
     // TODO(b/290651821): Consolidates arrow key behaviors for the desk bar.
     switch (event->key_code()) {
       case ui::VKEY_BROWSER_BACK:
-      case ui::VKEY_ESCAPE:
+      case ui::VKEY_ESCAPE: {
         if (focused_name_view) {
           return;
         }
+        base::AutoReset<bool> auto_reset(&should_desk_button_acquire_focus_,
+                                         true);
         CloseAllDeskBars();
         break;
+      }
       case ui::VKEY_UP:
       case ui::VKEY_DOWN:
         MoveFocus(desk_bar,
@@ -414,6 +408,10 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
   // is opening.
   base::AutoReset<bool> auto_reset(&should_ignore_activation_change_, true);
 
+  desk_button_root_ = root;
+
+  SetDeskButtonActivation(root, /*is_activated=*/true);
+
   // Calculates bar widget and bar view.
   DeskBarViewBase* bar_view = GetDeskBarView(root);
   if (!bar_view) {
@@ -432,8 +430,6 @@ void DeskBarController::OpenDeskBar(aura::Window* root) {
   } else {
     bar_view->GetWidget()->Show();
   }
-
-  SetDeskButtonActivation(root, /*is_activated=*/true);
 }
 
 void DeskBarController::CloseDeskBar(aura::Window* root) {
@@ -479,6 +475,11 @@ void DeskBarController::CloseDeskBarInternal(BarWidgetAndView& desk_bar) {
   // Deletes asynchronously so it is less likely to result in UAF.
   base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
       FROM_HERE, desk_bar.bar_widget.release());
+
+  // Resets `desk_button_root_` when there is no active desk bar.
+  if (!IsShowingDeskBar()) {
+    desk_button_root_ = nullptr;
+  }
 
   SetDeskButtonActivation(desk_bar.bar_view->root(),
                           /*is_activated=*/false);
@@ -534,7 +535,20 @@ DeskButton* DeskBarController::GetDeskButton(aura::Window* root) {
 
 void DeskBarController::SetDeskButtonActivation(aura::Window* root,
                                                 bool is_activated) {
-  GetDeskButton(root)->SetActivation(/*is_activated=*/is_activated);
+  // Store the desk button focus when opening the desk bar.
+  if (desk_button_root_ == root && is_activated) {
+    Shelf::ForWindow(root)->desk_button_widget()->StoreDeskButtonFocus();
+  }
+
+  GetDeskButton(root)->SetActivation(is_activated);
+
+  // Restore the desk button focus when closing the desk bar.
+  if (should_desk_button_acquire_focus_ && desk_button_root_ == root &&
+      !is_activated) {
+    Shelf::ForWindow(desk_button_root_)
+        ->desk_button_widget()
+        ->RestoreDeskButtonFocus();
+  }
 }
 
 }  // namespace ash

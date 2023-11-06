@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/button_configuration_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -72,79 +72,41 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
   cell.textLabel.textAlignment = self.textAlignment;
 
-  if (IsUIButtonConfigurationEnabled()) {
-    if (cell.button.configuration) {
-      UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
-      UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-      NSDictionary* attributes = @{NSFontAttributeName : font};
-      NSMutableAttributedString* attributedString =
-          [[NSMutableAttributedString alloc] initWithString:self.buttonText
-                                                 attributes:attributes];
-      buttonConfiguration.attributedTitle = attributedString;
+  UIButtonConfiguration* buttonConfiguration = cell.button.configuration;
+  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithString:self.buttonText
+                                             attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
 
-      // Decide cell.button titleColor in order:
-      //   1. self.buttonTextColor;
-      //   2. [UIColor colorNamed:kSolidButtonTextColor]
-      if (self.buttonTextColor) {
-        buttonConfiguration.baseForegroundColor = self.buttonTextColor;
-      } else {
-        buttonConfiguration.baseForegroundColor =
-            [UIColor colorNamed:kSolidButtonTextColor];
-      }
-
-      // Decide cell.button.backgroundColor in order:
-      //   1. self.buttonBackgroundColor
-      //   2. [UIColor colorNamed:kBlueColor]
-      if (self.buttonBackgroundColor) {
-        buttonConfiguration.background.backgroundColor =
-            self.buttonBackgroundColor;
-      } else {
-        buttonConfiguration.background.backgroundColor =
-            [UIColor colorNamed:kBlueColor];
-      }
-
-      if (!self.enabled && self.dimBackgroundWhenDisabled) {
-        buttonConfiguration.background.backgroundColor =
-            [buttonConfiguration.background.backgroundColor
-                colorWithAlphaComponent:kDisabledButtonAlpha];
-      }
-
-      cell.button.configuration = buttonConfiguration;
-    }
+  // Decide cell.button titleColor in order:
+  //   1. self.buttonTextColor;
+  //   2. [UIColor colorNamed:kSolidButtonTextColor]
+  if (self.buttonTextColor) {
+    buttonConfiguration.baseForegroundColor = self.buttonTextColor;
   } else {
-    [cell.button setTitle:self.buttonText forState:UIControlStateNormal];
-
-    // Decide cell.button titleColor in order:
-    //   1. self.buttonTextColor;
-    //   2. [UIColor colorNamed:kSolidButtonTextColor]
-    if (self.buttonTextColor) {
-      [cell.button setTitleColor:self.buttonTextColor
-                        forState:UIControlStateNormal];
-    } else {
-      [cell.button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                        forState:UIControlStateNormal];
-    }
-
-    // Decide cell.button.backgroundColor in order:
-    //   1. self.buttonBackgroundColor
-    //   2. [UIColor colorNamed:kBlueColor]
-    if (self.buttonBackgroundColor) {
-      cell.button.backgroundColor = self.buttonBackgroundColor;
-    } else {
-      cell.button.backgroundColor = [UIColor colorNamed:kBlueColor];
-    }
-
-    if (!self.boldButtonText) {
-      [cell.button.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
-      cell.button.titleLabel.adjustsFontForContentSizeCategory = YES;
-    }
-
-    if (!self.enabled && self.dimBackgroundWhenDisabled) {
-      cell.button.backgroundColor = [cell.button.backgroundColor
-          colorWithAlphaComponent:kDisabledButtonAlpha];
-    }
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
   }
+
+  // Decide cell.button.backgroundColor in order:
+  //   1. self.buttonBackgroundColor
+  //   2. [UIColor colorNamed:kBlueColor]
+  if (self.buttonBackgroundColor) {
+    buttonConfiguration.background.backgroundColor = self.buttonBackgroundColor;
+  } else {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+  }
+
+  if (!self.enabled && self.dimBackgroundWhenDisabled) {
+    buttonConfiguration.background.backgroundColor =
+        [buttonConfiguration.background.backgroundColor
+            colorWithAlphaComponent:kDisabledButtonAlpha];
+  }
+
+  cell.button.configuration = buttonConfiguration;
 
   [cell disableButtonIntrinsicWidth:self.disableButtonIntrinsicWidth];
   cell.button.accessibilityIdentifier = self.buttonAccessibilityIdentifier;
@@ -183,28 +145,15 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = kButtonCornerRadius;
     self.button.clipsToBounds = YES;
 
-    if (IsUIButtonConfigurationEnabled()) {
-      UIButtonConfiguration* buttonConfiguration =
-          [UIButtonConfiguration plainButtonConfiguration];
-      buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
-      buttonConfiguration.titleAlignment =
-          UIButtonConfigurationTitleAlignmentCenter;
-      self.button.configuration = buttonConfiguration;
-    } else {
-      [self.button.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleBody]];
-      self.button.titleLabel.adjustsFontForContentSizeCategory = YES;
-      self.button.titleLabel.numberOfLines = 0;
-      self.button.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-      self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
-      UIEdgeInsets contentInsets = UIEdgeInsetsMake(
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
-          kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
-      SetContentEdgeInsets(self.button, contentInsets);
-    }
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
+        kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+    buttonConfiguration.titleAlignment =
+        UIButtonConfigurationTitleAlignmentCenter;
+    self.button.configuration = buttonConfiguration;
 
     self.button.pointerInteractionEnabled = YES;
     // This button's background color is configured whenever the cell is
@@ -268,20 +217,12 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  if (IsUIButtonConfigurationEnabled()) {
-    if (self.button.configuration) {
-      UIButtonConfiguration* buttonConfiguration = self.button.configuration;
-      buttonConfiguration.baseForegroundColor =
-          [UIColor colorNamed:kSolidButtonTextColor];
-      buttonConfiguration.titleAlignment =
-          UIButtonConfigurationTitleAlignmentCenter;
-      self.button.configuration = buttonConfiguration;
-    }
-  } else {
-    [self.button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                      forState:UIControlStateNormal];
-    self.textLabel.textAlignment = kDefaultTextAlignment;
-  }
+  UIButtonConfiguration* buttonConfiguration = self.button.configuration;
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kSolidButtonTextColor];
+  buttonConfiguration.titleAlignment =
+      UIButtonConfigurationTitleAlignmentCenter;
+  self.button.configuration = buttonConfiguration;
   [self disableButtonIntrinsicWidth:NO];
 }
 

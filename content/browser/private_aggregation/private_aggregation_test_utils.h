@@ -80,6 +80,7 @@ class MockPrivateAggregationHost : public PrivateAggregationHost {
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
                absl::optional<base::TimeDelta>,
+               absl::optional<url::Origin>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -107,6 +108,7 @@ class MockPrivateAggregationManagerImpl : public PrivateAggregationManagerImpl {
                PrivateAggregationBudgetKey::Api,
                absl::optional<std::string>,
                absl::optional<base::TimeDelta>,
+               absl::optional<url::Origin>,
                mojo::PendingReceiver<blink::mojom::PrivateAggregationHost>),
               (override));
 
@@ -150,7 +152,8 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
               IsPrivacySandboxReportingDestinationAttested,
               (content::BrowserContext * browser_context,
                const url::Origin& destination_origin,
-               content::PrivacySandboxInvokingAPI invoking_api),
+               content::PrivacySandboxInvokingAPI invoking_api,
+               bool post_impression_reporting),
               (override));
 };
 

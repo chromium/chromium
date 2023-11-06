@@ -159,10 +159,10 @@ size_t UnfilteredEventListeners::GetNumListeners() {
   return listeners_.size();
 }
 
-std::vector<v8::Local<v8::Function>> UnfilteredEventListeners::GetListeners(
+v8::LocalVector<v8::Function> UnfilteredEventListeners::GetListeners(
     mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
-  std::vector<v8::Local<v8::Function>> listeners;
+  v8::LocalVector<v8::Function> listeners(context->GetIsolate());
   listeners.reserve(listeners_.size());
   for (const auto& listener : listeners_)
     listeners.push_back(listener.Get(context->GetIsolate()));
@@ -308,7 +308,7 @@ size_t FilteredEventListeners::GetNumListeners() {
   return listeners_.size();
 }
 
-std::vector<v8::Local<v8::Function>> FilteredEventListeners::GetListeners(
+v8::LocalVector<v8::Function> FilteredEventListeners::GetListeners(
     mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
   std::set<int> ids = listener_tracker_->GetMatchingFilteredListeners(
@@ -316,7 +316,7 @@ std::vector<v8::Local<v8::Function>> FilteredEventListeners::GetListeners(
       filter ? std::move(filter) : mojom::EventFilteringInfo::New(),
       kIgnoreRoutingId);
 
-  std::vector<v8::Local<v8::Function>> listeners;
+  v8::LocalVector<v8::Function> listeners(context->GetIsolate());
   listeners.reserve(ids.size());
   for (const auto& listener : listeners_) {
     if (ids.count(listener.filter_id))

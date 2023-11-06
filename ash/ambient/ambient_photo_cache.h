@@ -46,9 +46,10 @@ class ASH_EXPORT AmbientPhotoCache {
   static void SetFactoryForTesting(
       base::RepeatingCallback<std::unique_ptr<AmbientPhotoCache>()> factory_fn);
 
-  virtual void DownloadPhoto(
+  static void DownloadPhoto(
       const std::string& url,
-      base::OnceCallback<void(std::string&&)> callback) = 0;
+      AmbientAccessTokenController& access_token_controller,
+      base::OnceCallback<void(std::string&&)> callback);
 
   // Saves the photo at |url| to |cache_index| and calls |callback| with a
   // boolean that indicates success.

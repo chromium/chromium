@@ -128,6 +128,11 @@ int GetTabIdForExtensions(const WebContents* web_contents) {
   return sessions::SessionTabHelper::IdForTab(web_contents).id();
 }
 
+bool IsFileUrl(const GURL& url) {
+  return url.SchemeIsFile() || (url.SchemeIs(content::kViewSourceScheme) &&
+                                GURL(url.GetContent()).SchemeIsFile());
+}
+
 ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehaviorImpl(
     const Extension* extension,
     Feature::Context context,
@@ -478,7 +483,7 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
   tab_object.discarded =
       tab_lifecycle_unit_external && tab_lifecycle_unit_external->IsDiscarded();
   DCHECK(!tab_object.discarded ||
-         tab_object.status == api::tabs::TAB_STATUS_UNLOADED);
+         tab_object.status == api::tabs::TabStatus::kUnloaded);
   tab_object.auto_discardable =
       !tab_lifecycle_unit_external ||
       tab_lifecycle_unit_external->IsAutoDiscardable();
@@ -589,10 +594,10 @@ api::tabs::MutedInfo ExtensionTabUtil::CreateMutedInfo(
     case TabMutedReason::AUDIO_INDICATOR:
     case TabMutedReason::CONTENT_SETTING:
     case TabMutedReason::CONTENT_SETTING_CHROME:
-      info.reason = api::tabs::MUTED_INFO_REASON_USER;
+      info.reason = api::tabs::MutedInfoReason::kUser;
       break;
     case TabMutedReason::EXTENSION:
-      info.reason = api::tabs::MUTED_INFO_REASON_EXTENSION;
+      info.reason = api::tabs::MutedInfoReason::kExtension;
       info.extension_id =
           LastMuteMetadata::FromWebContents(contents)->extension_id;
       DCHECK(!info.extension_id->empty());
@@ -713,10 +718,19 @@ bool ExtensionTabUtil::GetTabById(int tab_id,
                                   int* tab_index) {
   if (tab_id == api::tabs::TAB_ID_NONE)
     return false;
+  // If `browser_context` is null, then `Profile::FromBrowserContext` below
+  // will return nullptr, and the subsequent call to `GetPrimaryOTRProfile`
+  // will crash. Since this can happen during shutdown, early-out to avoid
+  // crashing.
+  if (!browser_context) {
+    return false;
+  }
+
   Profile* profile = Profile::FromBrowserContext(browser_context);
   Profile* incognito_profile =
       include_incognito
-          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+          ? (profile ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+                     : nullptr)
           : nullptr;
   for (auto* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() == profile ||
@@ -885,7 +899,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   // non-extension contexts (e.g. WebUI pages). In that case, we allow the
   // navigation as such contexts are trusted and do not have a concept of file
   // access.
-  if (extension && url.SchemeIsFile() &&
+  if (extension && IsFileUrl(url) &&
       // PDF viewer extension can navigate to file URLs.
       extension->id() != extension_misc::kPdfExtensionId &&
       !util::AllowFileAccess(extension->id(), browser_context) &&
@@ -1030,14 +1044,14 @@ bool ExtensionTabUtil::BrowserSupportsTabs(Browser* browser) {
 // static
 api::tabs::TabStatus ExtensionTabUtil::GetLoadingStatus(WebContents* contents) {
   if (contents->IsLoading())
-    return api::tabs::TAB_STATUS_LOADING;
+    return api::tabs::TabStatus::kLoading;
 
   // Anything that isn't backed by a process is considered unloaded.
   if (!HasValidMainFrameProcess(contents))
-    return api::tabs::TAB_STATUS_UNLOADED;
+    return api::tabs::TabStatus::kUnloaded;
 
   // Otherwise its considered loaded.
-  return api::tabs::TAB_STATUS_COMPLETE;
+  return api::tabs::TabStatus::kComplete;
 }
 
 void ExtensionTabUtil::ClearBackForwardCache() {

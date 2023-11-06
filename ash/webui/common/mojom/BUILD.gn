@@ -12,7 +12,24 @@ mojom("mojom") {
 
   webui_module_path = "/ash/webui/common"
 
-  use_typescript_sources = true
+  disable_variants = true
+
+  public_deps = [
+    ":shortcut_input_provider",
+    "//mojo/public/mojom/base",
+  ]
+}
+
+# This is a separate target so that downstream WebUI targets can take
+# advantage of JS module Mojom files, without having to generate WebUI Mojom
+# files for all dependencies(and their dependencies) in //ash/public/mojom.
+mojom("shortcut_input_provider") {
+  disable_variants = true
+  webui_module_path = "/"
+
+  sources = [ "shortcut_input_provider.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  deps = [ "//ash/public/mojom:mojom" ]
 }

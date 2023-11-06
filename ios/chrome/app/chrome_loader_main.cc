@@ -55,7 +55,7 @@ const char kBlinkFrameworkPath[] =
 class Library {
  public:
   static Library Load(const std::string& path) {
-    void* handle = dlopen(path.data(), RTLD_NOW | RTLD_LOCAL | RTLD_FIRST);
+    void* handle = dlopen(path.data(), RTLD_LAZY | RTLD_LOCAL | RTLD_FIRST);
     if (!handle) {
       FatalError("dlopen %s: %s.", path.data(), dlerror());
     }

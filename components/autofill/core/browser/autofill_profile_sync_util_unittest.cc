@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -30,12 +31,13 @@ using syncer::EntityData;
 const char kGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kGuidInvalid[] = "EDC609ED";
 
-const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
+const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 // Returns a profile with all fields set.  Contains identical data to the data
 // returned from ConstructCompleteSpecifics().
 AutofillProfile ConstructCompleteProfile() {
-  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          AddressCountryCode("ES"));
 
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
@@ -88,9 +90,6 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"94043",
-                                           VerificationStatus::kObserved);
-
-  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"US",
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
@@ -249,7 +248,7 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_zip_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
-  specifics.set_address_home_country("US");
+  specifics.set_address_home_country("ES");
   specifics.set_address_home_country_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
@@ -289,9 +288,11 @@ class AutofillProfileSyncUtilTest : public testing::Test {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
     features_.InitWithFeatures(
-        {features::kAutofillEnableSupportForLandmark,
+        {features::kAutofillUseI18nAddressModel,
+         features::kAutofillEnableSupportForLandmark,
          features::kAutofillEnableSupportForBetweenStreets,
-         features::kAutofillEnableSupportForAdminLevel2},
+         features::kAutofillEnableSupportForAdminLevel2,
+         features::kAutofillEnableSupportForApartmentNumbers},
         {});
   }
 
@@ -326,7 +327,8 @@ TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile) {
 
 // Test that fields not set for the input are empty in the output.
 TEST_F(AutofillProfileSyncUtilTest, CreateEntityDataFromAutofillProfile_Empty) {
-  AutofillProfile profile(kGuid);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   ASSERT_FALSE(profile.HasRawInfo(NAME_FULL));
   ASSERT_FALSE(profile.HasRawInfo(COMPANY_NAME));
 
@@ -344,7 +346,8 @@ TEST_F(AutofillProfileSyncUtilTest,
   std::string kNameLong(AutofillTable::kMaxDataLength + 1, 'a');
   std::string kNameTrimmed(AutofillTable::kMaxDataLength, 'a');
 
-  AutofillProfile profile(kGuid);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, ASCIIToUTF16(kNameLong));
 
   std::unique_ptr<EntityData> entity_data =
@@ -368,7 +371,8 @@ TEST_F(AutofillProfileSyncUtilTest,
     kNameTrimmed += "ä";
   }
 
-  AutofillProfile profile(kGuid);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
   profile.SetRawInfo(NAME_FULL, UTF8ToUTF16(kNameLong));
 
   std::unique_ptr<EntityData> entity_data =
@@ -455,7 +459,8 @@ TEST_F(AutofillProfileSyncUtilTest,
 
 // Tests that guid is returned as storage key.
 TEST_F(AutofillProfileSyncUtilTest, GetStorageKeyFromAutofillProfile) {
-  AutofillProfile profile(kGuid);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable,
+                          i18n_model_definition::kLegacyHierarchyCountryCode);
 
   EXPECT_EQ(kGuid, GetStorageKeyFromAutofillProfile(profile));
 }

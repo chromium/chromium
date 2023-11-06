@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillErrorDialogBridge_jni.h"
 #include "components/grit/components_scaled_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -30,10 +31,11 @@ AutofillErrorDialogViewAndroid::~AutofillErrorDialogViewAndroid() = default;
 
 // static
 AutofillErrorDialogView* AutofillErrorDialogView::CreateAndShow(
-    AutofillErrorDialogController* controller) {
+    AutofillErrorDialogController* controller,
+    content::WebContents* web_contents) {
   AutofillErrorDialogViewAndroid* dialog_view =
       new AutofillErrorDialogViewAndroid(controller);
-  dialog_view->Show();
+  dialog_view->Show(web_contents);
   return dialog_view;
 }
 
@@ -52,10 +54,9 @@ void AutofillErrorDialogViewAndroid::OnDismissed(JNIEnv* env) {
   delete this;
 }
 
-void AutofillErrorDialogViewAndroid::Show() {
+void AutofillErrorDialogViewAndroid::Show(content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ui::ViewAndroid* view_android =
-      controller_->GetWebContents()->GetNativeView();
+  ui::ViewAndroid* view_android = web_contents->GetNativeView();
   DCHECK(view_android);
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
   if (!window_android)

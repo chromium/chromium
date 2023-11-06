@@ -10,7 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
-#import "ios/chrome/browser/photos/photos_service_factory.h"
+#import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -250,6 +250,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       [coordinator conformsToProtocol:@protocol(SaveToPhotosMediatorDelegate)]);
 
   NSString* productIdentifier = @"product_identifier";
+  NSString* campaignToken = @"campaign_token";
 
   id mock_store_kit_coordinator = OCMClassMock([StoreKitCoordinator class]);
   OCMExpect([mock_store_kit_coordinator alloc])
@@ -260,14 +261,18 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesStoreKit) {
       .andReturn(mock_store_kit_coordinator);
   OCMExpect([mock_store_kit_coordinator
       setDelegate:static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)]);
-  OCMExpect([mock_store_kit_coordinator setITunesProductParameters:@{
-    SKStoreProductParameterITunesItemIdentifier : productIdentifier
-  }]);
+  NSDictionary* expectedITunesProductParameters = @{
+    SKStoreProductParameterITunesItemIdentifier : productIdentifier,
+    SKStoreProductParameterCampaignToken : campaignToken
+  };
+  OCMExpect([mock_store_kit_coordinator
+      setITunesProductParameters:expectedITunesProductParameters]);
   OCMExpect([base::apple::ObjCCast<StoreKitCoordinator>(
       mock_store_kit_coordinator) start]);
 
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
-      showStoreKitWithProductIdentifier:productIdentifier];
+      showStoreKitWithProductIdentifier:productIdentifier
+                          campaignToken:campaignToken];
   EXPECT_OCMOCK_VERIFY(mock_store_kit_coordinator);
 
   OCMExpect([base::apple::ObjCCast<StoreKitCoordinator>(
@@ -358,7 +363,8 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAndHidesAccountPicker) {
       mock_account_picker_coordinator) start]);
 
   [static_cast<id<SaveToPhotosMediatorDelegate>>(coordinator)
-      showAccountPickerWithConfiguration:expected_configuration];
+      showAccountPickerWithConfiguration:expected_configuration
+                        selectedIdentity:nil];
   EXPECT_OCMOCK_VERIFY(mock_account_picker_coordinator);
 
   OCMExpect([base::apple::ObjCCast<AccountPickerCoordinator>(

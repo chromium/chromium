@@ -8,7 +8,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 }
 
 namespace exo {

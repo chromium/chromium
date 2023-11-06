@@ -13,6 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/gpu/vp9_decoder.h"
 
 namespace media {
@@ -28,20 +29,16 @@ bool GetSpatialLayerFrameSize(const DecoderBuffer& decoder_buffer,
   }
 
   bool enable_vp9_ksvc =
-// On windows, currently only d3d11 supports decoding VP9 kSVC stream, we
-// shouldn't combine the switch kD3D11Vp9kSVCHWDecoding to kVp9kSVCHWDecoding
-// due to we want keep returning false to MediaCapability.
-#if BUILDFLAG(IS_WIN)
-      base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
-#elif BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
-      // V4L2 stateless API decoder is not capable of decoding VP9 k-SVC stream.
+  // V4L2 stateless decoder does not support VP9 kSVC streams.
+  // See comments in media::IsVp9kSVCHWDecodingEnabled().
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
       false;
 #else
-      base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding);
-#endif
+      media::IsVp9kSVCHWDecodingEnabled();
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_ARM_FAMILY)
 
   if (!enable_vp9_ksvc) {
-    DLOG(ERROR) << "Vp9 k-SVC hardware decoding is disabled";
+    DLOG(ERROR) << "VP9 k-SVC hardware decoding is disabled";
     return false;
   }
 
@@ -105,10 +102,6 @@ VP9Decoder::VP9Accelerator::VP9Accelerator() {}
 
 VP9Decoder::VP9Accelerator::~VP9Accelerator() {}
 
-bool VP9Decoder::VP9Accelerator::SupportsContextProbabilityReadback() const {
-  return false;
-}
-
 VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
                        VideoCodecProfile profile,
                        const VideoColorSpace& container_color_space)
@@ -117,8 +110,7 @@ VP9Decoder::VP9Decoder(std::unique_ptr<VP9Accelerator> accelerator,
       // TODO(hiroh): Set profile to UNKNOWN.
       profile_(profile),
       accelerator_(std::move(accelerator)),
-      parser_(accelerator_->NeedsCompressedHeaderParsed(),
-              accelerator_->SupportsContextProbabilityReadback()) {}
+      parser_(accelerator_->NeedsCompressedHeaderParsed()) {}
 
 VP9Decoder::~VP9Decoder() = default;
 
@@ -198,10 +190,6 @@ VP9Decoder::DecodeResult VP9Decoder::Decode() {
           DVLOG(1) << "Error parsing stream";
           SetError();
           return kDecodeError;
-
-        case Vp9Parser::kAwaitingRefresh:
-          DVLOG(4) << "Awaiting context update";
-          return kNeedContextUpdate;
       }
     }
 
@@ -393,19 +381,9 @@ VP9Decoder::VP9Accelerator::Status VP9Decoder::DecodeAndOutputPicture(
   DCHECK(!pic_size_.IsEmpty());
   DCHECK(pic->frame_hdr);
 
-  base::OnceClosure done_cb;
-  Vp9Parser::ContextRefreshCallback context_refresh_cb =
-      parser_.GetContextRefreshCb(pic->frame_hdr->frame_context_idx);
-  if (context_refresh_cb) {
-    done_cb =
-        base::BindOnce(&VP9Decoder::UpdateFrameContext, base::Unretained(this),
-                       pic, std::move(context_refresh_cb));
-  }
-
   const Vp9Parser::Context& context = parser_.context();
   VP9Accelerator::Status status = accelerator_->SubmitDecode(
-      pic, context.segmentation(), context.loop_filter(), ref_frames_,
-      std::move(done_cb));
+      pic, context.segmentation(), context.loop_filter(), ref_frames_);
   if (status != VP9Accelerator::Status::kOk) {
     if (status == VP9Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);

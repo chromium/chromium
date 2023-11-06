@@ -82,7 +82,8 @@ class ClipboardHostImplBrowserTest : public ContentBrowserTest {
 
     // Put files on clipboard.
     base::FilePath source_root;
-    ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
     std::vector<std::string> expected;
     std::vector<ui::FileInfo> file_infos;
     std::vector<std::u16string> file_paths;

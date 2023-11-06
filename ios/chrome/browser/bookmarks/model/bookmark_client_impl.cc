@@ -15,6 +15,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
@@ -78,11 +79,6 @@ void BookmarkClientImpl::GetTypedCountForUrls(
   }
 }
 
-bool BookmarkClientImpl::IsPermanentNodeVisibleWhenEmpty(
-    bookmarks::BookmarkNode::Type type) {
-  return type == bookmarks::BookmarkNode::MOBILE;
-}
-
 bookmarks::LoadManagedNodeCallback
 BookmarkClientImpl::GetLoadManagedNodeCallback() {
   if (managed_bookmark_service_) {
@@ -126,8 +122,15 @@ std::string BookmarkClientImpl::EncodeBookmarkSyncMetadata() {
 void BookmarkClientImpl::DecodeBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
+  // On iOS, for historic reasons, a dedicated BookmarkModel is used for account
+  // bookmarks and, counter-intuitively, the local-or-syncable nodes within are
+  // used to represent account data. This means
+  // `BookmarkModelViewUsingLocalOrSyncableNodes` is appropriate in all cases on
+  // iOS.
   bookmark_sync_service_->DecodeBookmarkSyncMetadata(
-      metadata_str, schedule_save_closure, model_);
+      metadata_str, schedule_save_closure,
+      std::make_unique<
+          sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(

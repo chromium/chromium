@@ -56,9 +56,10 @@ public class CustomTabActivitySecurityIndicatorTest {
     public void setUp() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
 
-        Context appContext = InstrumentationRegistry.getInstrumentation()
-                                     .getTargetContext()
-                                     .getApplicationContext();
+        Context appContext =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         mTestServer =
                 EmbeddedTestServer.createAndStartHTTPSServer(appContext, ServerCertificate.CERT_OK);
         mTestPage = mTestServer.getURL("/chrome/test/data/android/google.html");
@@ -78,17 +79,21 @@ public class CustomTabActivitySecurityIndicatorTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
     public void testCustomTabSecurityIndicators() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
+        Context context =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         // Check that tab has loaded the expected URL.
-        CriteriaHelper.pollUiThread(() -> {
-            final Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(ChromeTabUtils.getUrlStringOnUiThread(currentTab), is(mTestPage));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final Tab currentTab =
+                            mCustomTabActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(
+                            ChromeTabUtils.getUrlStringOnUiThread(currentTab), is(mTestPage));
+                });
 
         // Test that the security indicator is the lock icon.
         final int expectedSecurityIcon = R.drawable.omnibox_https_valid;
@@ -97,7 +102,8 @@ public class CustomTabActivitySecurityIndicatorTest {
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
         ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(ApplicationProvider.getApplicationContext(),
+                AppCompatResources.getColorStateList(
+                        ApplicationProvider.getApplicationContext(),
                         R.color.default_icon_color_light_tint_list);
         ImageView expectedSecurityButton =
                 new ImageView(ApplicationProvider.getApplicationContext());
@@ -116,17 +122,21 @@ public class CustomTabActivitySecurityIndicatorTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS})
     public void testCustomTabSecurityIndicator_UpdateEnabled() throws Exception {
-        Context context = InstrumentationRegistry.getInstrumentation()
-                                  .getTargetContext()
-                                  .getApplicationContext();
+        Context context =
+                InstrumentationRegistry.getInstrumentation()
+                        .getTargetContext()
+                        .getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         // Check that tab has loaded the expected URL.
-        CriteriaHelper.pollUiThread(() -> {
-            final Tab currentTab = mCustomTabActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(ChromeTabUtils.getUrlStringOnUiThread(currentTab), is(mTestPage));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    final Tab currentTab =
+                            mCustomTabActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(
+                            ChromeTabUtils.getUrlStringOnUiThread(currentTab), is(mTestPage));
+                });
 
         // Test that the security indicator is the lock icon.
         final int expectedSecurityIcon = R.drawable.omnibox_https_valid;
@@ -135,7 +145,8 @@ public class CustomTabActivitySecurityIndicatorTest {
         Assert.assertEquals(View.VISIBLE, securityButton.getVisibility());
 
         ColorStateList colorStateList =
-                AppCompatResources.getColorStateList(ApplicationProvider.getApplicationContext(),
+                AppCompatResources.getColorStateList(
+                        ApplicationProvider.getApplicationContext(),
                         R.color.default_icon_color_light_tint_list);
         ImageView expectedSecurityButton =
                 new ImageView(ApplicationProvider.getApplicationContext());

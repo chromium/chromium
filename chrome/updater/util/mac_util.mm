@@ -6,6 +6,7 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -226,6 +227,16 @@ absl::optional<base::FilePath> GetInstallDirectory(UpdaterScope scope) {
               : absl::nullopt;
 }
 
+absl::optional<base::FilePath> GetCacheBaseDirectory(UpdaterScope scope) {
+  base::FilePath caches_path;
+  if (!base::apple::GetLocalDirectory(NSCachesDirectory, &caches_path)) {
+    VLOG(1) << "Could not get Caches path";
+    return absl::nullopt;
+  }
+  return absl::optional<base::FilePath>(
+      caches_path.AppendASCII(MAC_BUNDLE_IDENTIFIER_STRING));
+}
+
 absl::optional<base::FilePath> GetUpdateServiceLauncherPath(
     UpdaterScope scope) {
   absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
@@ -265,6 +276,38 @@ absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
         .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
         .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
   }
+}
+
+absl::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
+                                               const std::string& key) {
+  if (key.empty() || path.empty()) {
+    return absl::nullopt;
+  }
+  NSData* data;
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+    data =
+        [NSData dataWithContentsOfFile:base::apple::FilePathToNSString(path)];
+  }
+  if ([data length] == 0) {
+    return absl::nullopt;
+  }
+  NSDictionary* all_keys = base::apple::ObjCCastStrict<NSDictionary>(
+      [NSPropertyListSerialization propertyListWithData:data
+                                                options:NSPropertyListImmutable
+                                                 format:nil
+                                                  error:nil]);
+  if (all_keys == nil) {
+    return absl::nullopt;
+  }
+  CFStringRef value = base::apple::GetValueFromDictionary<CFStringRef>(
+      base::apple::NSToCFPtrCast(all_keys),
+      base::SysUTF8ToCFStringRef(key).get());
+  if (value == nullptr) {
+    return absl::nullopt;
+  }
+  return base::SysCFStringRefToUTF8(value);
 }
 
 }  // namespace updater

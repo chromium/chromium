@@ -1795,7 +1795,7 @@ void BluetoothAdapterBlueZ::OnRegisterProfileError(
 void BluetoothAdapterBlueZ::OnSetDiscoverable(base::OnceClosure callback,
                                               ErrorCallback error_callback,
                                               bool success) {
-  if (!IsPresent()) {
+  if (!success || !IsPresent()) {
     std::move(error_callback).Run();
     return;
   }

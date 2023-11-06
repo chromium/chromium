@@ -18,6 +18,9 @@ namespace safe_browsing {
 // for example to control how often collection should occur.
 BASE_DECLARE_FEATURE(kAdSamplerTriggerFeature);
 
+// Enables adding warning shown timestamp to client safe browsing report.
+BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
+
 // Enables logging new phishing prevention data.
 BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
 
@@ -44,9 +47,6 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // the client_side_detection_type field
 BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
 
-// Controls whether new deep scanning UX is enabled or not.
-BASE_DECLARE_FEATURE(kDeepScanningUpdatedUX);
-
 // Controls whether we prompt encrypted archive deep scans to provide a
 // password.
 BASE_DECLARE_FEATURE(kDeepScanningEncryptedArchives);
@@ -68,6 +68,10 @@ BASE_DECLARE_FEATURE(kDownloadBubbleV2);
 // The kill switch for download tailored warnings. The main control is on the
 // server-side.
 BASE_DECLARE_FEATURE(kDownloadTailoredWarnings);
+
+// Controls whether Standard Safe Browsing users are permitted to provide
+// passwords for local decryption on encrypted archives.
+BASE_DECLARE_FEATURE(kEncryptedArchivesMetadata);
 
 // Enables decreased Phishguard password length minimum.
 BASE_DECLARE_FEATURE(kEvaluateProtectedPasswordLengthMinimum);
@@ -103,6 +107,10 @@ extern const base::FeatureParam<int>
 // offstore extension file data.
 extern const base::FeatureParam<int>
     kExtensionTelemetryFileDataStartupDelaySeconds;
+
+// Allows the Extension Telemetry Service to include file data of extensions
+// specified in the --load-extension commandline switch in telemetry reports.
+BASE_DECLARE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions);
 
 // Enables collection of telemetry signal whenever an extension invokes the
 // chrome.tabs API methods.
@@ -322,6 +330,8 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // the warning or not. Note: specifying any combination of TRUE and FALSE
 // corresponds to "don't care."
 extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
+
+BASE_DECLARE_FEATURE(kClientSideDetectionImagesCache);
 
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

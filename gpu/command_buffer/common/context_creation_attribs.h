@@ -48,12 +48,9 @@ struct GPU_EXPORT ContextCreationAttribs {
   // Used only by tests and not serialized over IPC.
   gfx::Size offscreen_framebuffer_size_for_testing;
   gl::GpuPreference gpu_preference = gl::GpuPreference::kLowPower;
-  // -1 if invalid or unspecified.
+
 #if BUILDFLAG(IS_ANDROID)
-  int32_t alpha_size = -1;
-  int32_t blue_size = -1;
-  int32_t green_size = -1;
-  int32_t red_size = -1;
+  bool need_alpha = false;
 #endif
   bool bind_generates_resource = true;
   bool fail_if_major_perf_caveat = false;

@@ -94,11 +94,13 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 
  private:
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
-                              const ui::DataTransferEndpoint* const data_dst,
-                              const absl::optional<size_t> size) override {
-    if (data_src)
+  bool IsClipboardReadAllowed(
+      base::optional_ref<const ui::DataTransferEndpoint> data_src,
+      base::optional_ref<const ui::DataTransferEndpoint> data_dst,
+      const absl::optional<size_t> size) override {
+    if (data_src.has_value()) {
       last_src_type_ = data_src->type();
+    }
     last_dst_type_ = data_dst->type();
     return true;
   }

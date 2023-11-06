@@ -21,6 +21,7 @@
 #include "chrome/common/pepper_permission_util.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -130,12 +131,13 @@ ChromeContentBrowserClientPluginsPart::ChromeContentBrowserClientPluginsPart() =
 ChromeContentBrowserClientPluginsPart::
     ~ChromeContentBrowserClientPluginsPart() = default;
 
-void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
-    service_manager::BinderRegistry* registry,
-    blink::AssociatedInterfaceRegistry* associated_registry,
-    content::RenderProcessHost* host) {
-  associated_registry->AddInterface<chrome::mojom::PluginInfoHost>(
-      base::BindRepeating(&BindPluginInfoHost, host->GetID()));
+void ChromeContentBrowserClientPluginsPart::
+    ExposeInterfacesToRendererForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface<chrome::mojom::PluginInfoHost>(
+      base::BindRepeating(&BindPluginInfoHost,
+                          render_frame_host.GetProcess()->GetID()));
 }
 
 bool ChromeContentBrowserClientPluginsPart::

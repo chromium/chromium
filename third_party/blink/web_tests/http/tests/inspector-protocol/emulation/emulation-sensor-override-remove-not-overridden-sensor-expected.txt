@@ -1,0 +1,2 @@
+Tests removing a non-existent virtual sensor is a no-op
+

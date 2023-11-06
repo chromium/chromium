@@ -1,0 +1,111 @@
+<style include="signin-shared">
+
+#interceptDialog {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+#product-logo {
+  width: 24px;
+  height: 24px;
+}
+
+#title,
+#name {
+  color: var(--cr-primary-text-color);
+  font-weight: 500;
+  line-height: 24px;
+  margin-top: 8px;
+}
+
+#title {
+  font-size: 1.125rem;
+}
+
+#subtitle,
+#email {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+#subtitle {
+  margin-top: 8px;
+}
+
+#account-icon {
+  flex-shrink: 0;
+  height: 60px;
+  width: 60px;
+  border-radius: 30px;
+}
+
+#contents-container {
+  margin-top: 16px;
+  padding: 20px;
+  border-radius: 16px;
+  background-color: var(--google-blue-50);
+}
+
+#name {
+  font-size: 1rem;
+}
+
+#button-container {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+}
+
+#accept-button,
+#cancel-button {
+  width: 100%;
+}
+
+#cancel-button {
+  border: none;
+}
+
+</style>
+
+<div role="dialog" id="interceptDialog" aria-labelledby="title"
+aria-describedby="contents">
+
+  <div id="header-container">
+    <img id="product-logo"
+      srcset="chrome://theme/current-channel-logo@1x 1x,
+              chrome://theme/current-channel-logo@2x 2x"
+      role="presentation">
+
+    <div id="title">$i18n{chromeSigninTitle}</div>
+    <div id="subtitle">$i18n{chromeSigninSubtitle}</div>
+
+  </div>
+
+  <div id="contents-container">
+    <div id="contents">
+
+      <img id="account-icon" alt=""
+          src="[[interceptionParameters_.pictureUrl]]">
+
+      <div id="name">[[interceptionParameters_.fullName]]</div>
+      <div id="email">[[interceptionParameters_.email]]</div>
+
+      <div id="button-container">
+        <cr-button id="accept-button" class="action-button"
+            on-click="onAccept_">
+          [[i18n('chromeSigninAcceptText', interceptionParameters_.givenName)]]
+        </cr-button>
+        <cr-button id="cancel-button" on-click="onCancel_">
+          $i18n{chromeSigninDeclineText}
+        </cr-button>
+      </div>
+
+    </div>
+  </div>
+
+</div>

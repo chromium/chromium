@@ -451,7 +451,8 @@ void CartService::RecordDiscountConsentStatusAtLoad(bool should_show_consent) {
 }
 
 bool CartService::IsCartExpired(const cart_db::ChromeCartContentProto& proto) {
-  return (base::Time::Now() - base::Time::FromDoubleT(proto.timestamp()))
+  return (base::Time::Now() -
+          base::Time::FromSecondsSinceUnixEpoch(proto.timestamp()))
              .InDays() > kCartExpirationTimeInDays;
 }
 
@@ -677,8 +678,8 @@ CartDB* CartService::GetDB() {
 
 void CartService::AddCartsWithFakeData() {
   DeleteCartsWithFakeData();
-  // Polulate and add some carts with fake data.
-  double time_now = base::Time::Now().ToDoubleT();
+  // Populate and add some carts with fake data.
+  double time_now = base::Time::Now().InSecondsFSinceUnixEpoch();
   cart_db::ChromeCartContentProto dummy_proto1;
   GURL dummy_url1 = GURL("https://www.example.com");
   dummy_proto1.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url1));

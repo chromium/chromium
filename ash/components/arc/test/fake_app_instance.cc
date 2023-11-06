@@ -302,6 +302,8 @@ void FakeAppInstance::UninstallPackage(const std::string& package_name) {
   app_host_->OnPackageRemoved(package_name);
 }
 
+void FakeAppInstance::UpdateAppDetails(const std::string& package_name) {}
+
 void FakeAppInstance::SetTaskActive(int32_t task_id) {}
 
 void FakeAppInstance::CloseTask(int32_t task_id) {}
@@ -477,18 +479,6 @@ void FakeAppInstance::GetAppCategory(const std::string& package_name,
 
   if (itr != pkg_name_to_app_category_.end()) category = itr->second;
   std::move(callback).Run(category);
-}
-
-void FakeAppInstance::IsGameControlsApplicable(
-    const std::string& package_name,
-    IsGameControlsApplicableCallback callback) {
-  bool applicable = false;
-  if (std::find(game_control_applicable_pkgs_.begin(),
-                game_control_applicable_pkgs_.end(),
-                package_name) != game_control_applicable_pkgs_.end()) {
-    applicable = true;
-  }
-  std::move(callback).Run(applicable);
 }
 
 void FakeAppInstance::LaunchIntentWithWindowInfo(

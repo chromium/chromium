@@ -18,12 +18,12 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/invalidate_type.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_user_script_loader.h"
 #include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/extension.h"
@@ -364,9 +364,9 @@ void RequestContentScript::Revert(const ApplyInfo& apply_info) const {}
 void RequestContentScript::InstructRenderProcessToInject(
     content::WebContents* contents,
     const Extension* extension) const {
-  ContentScriptTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
-                                        contents->GetPrimaryMainFrame(),
-                                        *extension);
+  ScriptInjectionTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
+                                          contents->GetPrimaryMainFrame(),
+                                          *extension);
 
   mojom::LocalFrame* local_frame =
       ExtensionWebContentsObserver::GetForWebContents(contents)->GetLocalFrame(

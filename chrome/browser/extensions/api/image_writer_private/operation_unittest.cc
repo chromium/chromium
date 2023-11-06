@@ -150,13 +150,13 @@ TEST_F(ImageWriterOperationTest, ExtractNonZipFile) {
 TEST_F(ImageWriterOperationTest, ExtractZipFile) {
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_UNZIP, _))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kUnzip, _))
       .Times(AtLeast(1));
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_UNZIP, 0))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kUnzip, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_UNZIP, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kUnzip, 100))
       .Times(AtLeast(1));
 
   operation_->SetImagePath(zip_file_);
@@ -184,13 +184,13 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
 #endif
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, _))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, _))
       .Times(AtLeast(1));
   EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 0))
+              OnProgress(kDummyExtensionId, image_writer_api::Stage::kWrite, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(manager_,
-              OnProgress(kDummyExtensionId, image_writer_api::STAGE_WRITE, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kWrite, 100))
       .Times(AtLeast(1));
 
   operation_->Start();
@@ -212,17 +212,14 @@ TEST_F(ImageWriterOperationTest, VerifyFileSuccess) {
       base::BindOnce(&SetUpUtilityClientProgressOnVerifyWrite, progress_list,
                      true /* will_succeed */));
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, _))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
       .Times(AtLeast(1));
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, 0))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, 0))
       .Times(AtLeast(1));
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, 100))
       .Times(AtLeast(1));
 
   test_utils_.FillFile(
@@ -241,18 +238,15 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
   test_utils_.RunOnUtilityClientCreation(
       base::BindOnce(&SetUpUtilityClientProgressOnVerifyWrite, progress_list,
                      false /* will_succeed */));
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, _))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, _))
       .Times(AnyNumber());
-  EXPECT_CALL(
-      manager_,
-      OnProgress(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, 100))
+  EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
+                                   image_writer_api::Stage::kVerifyWrite, 100))
       .Times(0);
   EXPECT_CALL(manager_, OnComplete(kDummyExtensionId)).Times(0);
-  EXPECT_CALL(
-      manager_,
-      OnError(kDummyExtensionId, image_writer_api::STAGE_VERIFYWRITE, _, _))
+  EXPECT_CALL(manager_, OnError(kDummyExtensionId,
+                                image_writer_api::Stage::kVerifyWrite, _, _))
       .Times(1);
 
   test_utils_.FillFile(
@@ -267,7 +261,7 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
 // Tests that on creation the operation_ has the expected state.
 TEST_F(ImageWriterOperationTest, Creation) {
   EXPECT_EQ(0, operation_->GetProgress());
-  EXPECT_EQ(image_writer_api::STAGE_UNKNOWN, operation_->GetStage());
+  EXPECT_EQ(image_writer_api::Stage::kUnknown, operation_->GetStage());
 }
 
 }  // namespace image_writer

@@ -92,15 +92,15 @@ void ShouldNeverRun(T t) {
 //
 // See also
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/callback.md
-template <typename T,
-          typename RawArg = base::remove_cvref_t<T>,
-          typename DoneArg = std::vector<RawArg>,
-          template <typename>
-          class CallbackType,
-          typename std::enable_if<std::is_same<
-              std::vector<RawArg>,
-              base::remove_cvref_t<DoneArg>>::value>::type* = nullptr,
-          typename = base::EnableIfIsBaseCallback<CallbackType>>
+template <
+    typename T,
+    typename RawArg = base::remove_cvref_t<T>,
+    typename DoneArg = std::vector<RawArg>,
+    template <typename>
+    class CallbackType,
+    std::enable_if_t<std::is_same_v<std::vector<RawArg>,
+                                    base::remove_cvref_t<DoneArg>>>* = nullptr,
+    typename = base::EnableIfIsBaseCallback<CallbackType>>
 RepeatingCallback<void(T)> BarrierCallback(
     size_t num_callbacks,
     CallbackType<void(DoneArg)> done_callback) {

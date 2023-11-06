@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
@@ -73,6 +74,15 @@ void PrintHelpMessage(const char* process_name) {
           process_name);
 }
 
+void PrintCorpHelpMessage(const char* process_name) {
+  fprintf(stdout,
+          "Too many arguments provided.\nSetting up a machine for a corp user "
+          "requires the email address of that user and an optional display "
+          "name.\nExample usage: %s --corp-user=<user_email_address> "
+          "[--display-name=corp-machine-name]\n",
+          process_name);
+}
+
 // Lets us hide the PIN that a user types.
 void SetEcho(bool echo) {
 #if BUILDFLAG(IS_WIN)
@@ -129,6 +139,7 @@ void OnDone(HostStarter::Result result) {
   switch (result) {
     case HostStarter::START_COMPLETE:
       g_started = true;
+      printf("Host started successfully.\n");
       break;
     case HostStarter::NETWORK_ERROR:
       fprintf(stderr, "Couldn't start host: network error.\n");
@@ -139,6 +150,8 @@ void OnDone(HostStarter::Result result) {
     case HostStarter::START_ERROR:
       fprintf(stderr, "Couldn't start host.\n");
       break;
+    default:
+      NOTREACHED() << "Unexpected HostStarter result: " << result;
   }
 
   g_active_run_loop->Quit();
@@ -193,6 +206,34 @@ bool InitializeHostStarterParams(HostStarter::Params& params,
       fprintf(stderr, "Please use a PIN consisting of at least six digits.\n");
       return false;
     }
+  }
+
+  return true;
+}
+
+bool InitializeCorpMachineParams(HostStarter::Params& params,
+                                 const base::CommandLine* command_line) {
+  size_t corp_arg_count = 1;
+  params.owner_email =
+      base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
+  // Crash reporting is always enabled for this flow.
+  params.enable_crash_reporting = true;
+
+  if (command_line->HasSwitch("display-name")) {
+    corp_arg_count++;
+    params.name = command_line->GetSwitchValueASCII("display-name");
+  }
+
+  // Allow debugging switches.
+  if (command_line->HasSwitch("v")) {
+    corp_arg_count++;
+  }
+  if (command_line->HasSwitch("vmodule")) {
+    corp_arg_count++;
+  }
+
+  if (command_line->GetSwitches().size() > corp_arg_count) {
+    return false;
   }
 
   return true;
@@ -260,21 +301,12 @@ int StartHostMain(int argc, char** argv) {
   }
 
   HostStarter::Params params;
-  bool useCorpMachineFlow = false;
-  if (command_line->HasSwitch("corp-user")) {
-    if (command_line->GetSwitches().size() > 1) {
-      fprintf(
-          stdout,
-          "Too many arguments provided.\n\nOnly one argument is needed when "
-          "setting up a corp machine: `--corp-user=<user_email_address>`\n");
+  bool use_corp_machine_flow = command_line->HasSwitch("corp-user");
+  if (use_corp_machine_flow) {
+    if (!InitializeCorpMachineParams(params, command_line)) {
+      PrintCorpHelpMessage(argv[0]);
       return 1;
     }
-
-    useCorpMachineFlow = true;
-    params.owner_email =
-        base::ToLowerASCII(command_line->GetSwitchValueASCII("corp-user"));
-    // Crash reporting is always enabled for this flow.
-    params.enable_crash_reporting = true;
   } else if (!InitializeHostStarterParams(params, command_line)) {
     PrintHelpMessage(argv[0]);
     return 1;
@@ -291,11 +323,11 @@ int StartHostMain(int argc, char** argv) {
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
       new remoting::URLRequestContextGetter(io_thread.task_runner()));
   network::TransitionalURLLoaderFactoryOwner url_loader_factory_owner(
-      url_request_context_getter);
+      url_request_context_getter, /*is_trusted=*/use_corp_machine_flow);
 
   // Start the host.
   std::unique_ptr<HostStarter> host_starter;
-  if (useCorpMachineFlow) {
+  if (use_corp_machine_flow) {
     host_starter =
         ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
   } else {

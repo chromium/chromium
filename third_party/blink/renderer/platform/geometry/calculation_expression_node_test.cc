@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -98,7 +99,8 @@ TEST(CalculationExpressionOperationNodeTest,
      SignRelatedFunctionsPixelsAndPercent) {
   scoped_refptr<CalculationExpressionNode> pixels_and_percent_node =
       base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-          PixelsAndPercent(-100.0f, -100.0f));
+          PixelsAndPercent(-100.0f, -100.0f, /*has_explicit_pixels=*/true,
+                           /*has_explicit_percent=*/true));
   CalculationExpressionOperationNode::Children children;
   children.push_back(pixels_and_percent_node);
   scoped_refptr<const CalculationExpressionNode>
@@ -114,7 +116,8 @@ TEST(CalculationExpressionOperationNodeTest,
      SignRelatedFunctionsPixelsAndZeroPercent) {
   scoped_refptr<CalculationExpressionNode> pixels_and_zero_percent_node =
       base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-          PixelsAndPercent(-100.0f, 0.0f));
+          PixelsAndPercent(-100.0f, 0.0f, /*has_explicit_pixels=*/true,
+                           /*has_explicit_percent=*/false));
   CalculationExpressionOperationNode::Children children;
   children.push_back(pixels_and_zero_percent_node);
   scoped_refptr<const CalculationExpressionNode>
@@ -161,6 +164,39 @@ TEST(CalculationExpressionOperationNodeTest, SignRelatedFunctions) {
   EXPECT_EQ(operation_sign_minus_1->Evaluate(FLT_MAX, nullptr), -1.0f);
   EXPECT_EQ(operation_sign_0->Evaluate(FLT_MAX, nullptr), 0.0f);
   EXPECT_TRUE(std::signbit(operation_sign_minus_0->Evaluate(FLT_MAX, nullptr)));
+}
+
+TEST(CalculationExpressionOperationNodeTest, ExplicitPixelsAndPercent) {
+  scoped_refptr<CalculationExpressionNode> node_1 =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(0.0f, -100.0f, /*has_explicit_pixels=*/false,
+                           /*has_explicit_percent=*/true));
+  scoped_refptr<CalculationExpressionNode> node_2 =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(100.0f));
+  auto operation_node = CalculationExpressionOperationNode::CreateSimplified(
+      {node_1, node_2}, CalculationOperator::kAdd);
+  auto* pixels_and_percent_node =
+      DynamicTo<CalculationExpressionPixelsAndPercentNode>(*operation_node);
+  EXPECT_TRUE(operation_node->IsPixelsAndPercent());
+  EXPECT_TRUE(pixels_and_percent_node->HasExplicitPixels());
+  EXPECT_TRUE(pixels_and_percent_node->HasExplicitPercent());
+}
+
+TEST(CalculationExpressionOperationNodeTest, NonExplicitPixelsAndPercent) {
+  scoped_refptr<CalculationExpressionNode> node_1 =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(10.0f));
+  scoped_refptr<CalculationExpressionNode> node_2 =
+      base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+          PixelsAndPercent(100.0f));
+  auto operation_node = CalculationExpressionOperationNode::CreateSimplified(
+      {node_1, node_2}, CalculationOperator::kAdd);
+  auto* pixels_and_percent_node =
+      DynamicTo<CalculationExpressionPixelsAndPercentNode>(*operation_node);
+  EXPECT_TRUE(operation_node->IsPixelsAndPercent());
+  EXPECT_TRUE(pixels_and_percent_node->HasExplicitPixels());
+  EXPECT_FALSE(pixels_and_percent_node->HasExplicitPercent());
 }
 
 }  // namespace blink

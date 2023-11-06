@@ -1804,9 +1804,10 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
       ContentSettingsType::STORAGE_ACCESS);
 
   EXPECT_EQ(settings[0].primary_pattern,
-            content_settings::URLToSchemefulSitePattern(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(secondary_url));
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
+  EXPECT_EQ(
+      settings[0].secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
   //   WebsiteSettingsInfo::REQUESTING_SCHEMEFUL_SITE_ONLY_SCOPE,
@@ -1818,7 +1819,7 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
       ContentSettingsType::COOKIE_CONTROLS_METADATA);
 
   EXPECT_EQ(settings[0].primary_pattern,
-            content_settings::URLToSchemefulSitePattern(primary_url));
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(primary_url));
   EXPECT_EQ(settings[0].secondary_pattern, ContentSettingsPattern::Wildcard());
 
   // Testing cases:
@@ -1846,8 +1847,9 @@ TEST_F(HostContentSettingsMapTest, GetPatternsFromScopingType) {
 
   EXPECT_EQ(settings[0].primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(primary_url));
-  EXPECT_EQ(settings[0].secondary_pattern,
-            content_settings::URLToSchemefulSitePattern(secondary_url));
+  EXPECT_EQ(
+      settings[0].secondary_pattern,
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(secondary_url));
 
   // Testing cases:
   //   WebsiteSettingsInfo::TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
@@ -2323,4 +2325,32 @@ TEST_F(HostContentSettingsMapTest, Increments3pcSettingsMetrics) {
   t.ExpectUniqueSample(base_histogram + ".AllowThirdParty", 3, 1);
   t.ExpectUniqueSample(base_histogram + ".TemporaryAllowThirdParty", 1, 1);
   t.ExpectUniqueSample(base_histogram + ".DomainWildcardAllowThirdParty", 1, 1);
+}
+
+// Regression test for https://crbug.com/1497777.
+TEST_F(HostContentSettingsMapTest, IncognitoInheritSaaAndRenew) {
+  TestingProfile profile;
+  GURL host("https://example.com/");
+  auto type = ContentSettingsType::STORAGE_ACCESS;
+
+  // Create StorageAccess permission in regular profile.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  content_settings::ContentSettingConstraints constraint;
+  constraint.set_lifetime(base::Hours(1));
+  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW,
+                                     constraint);
+
+  // Create OTR profile.
+  Profile* otr_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto* otr_map = HostContentSettingsMapFactory::GetForProfile(otr_profile);
+
+  // Check that only the regular profile is allowed.
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetContentSetting(host, host, type));
+  EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
+
+  // Renew the setting on the OTR profile and check that it still returns ASK.
+  otr_map->RenewContentSetting(host, host, type,
+                               ContentSetting::CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ASK, otr_map->GetContentSetting(host, host, type));
 }

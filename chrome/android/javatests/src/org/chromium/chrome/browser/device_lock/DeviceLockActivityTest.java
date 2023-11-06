@@ -28,16 +28,17 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.IntentRequestTracker;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Tests for the {@link DeviceLockActivity}.
- */
+/** Tests for the {@link DeviceLockActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "ActivityScenario tests should run separately, ActivityScenarioRule does "
-                + "not support #launchActivityForResult")
+@DoNotBatch(
+        reason =
+                "ActivityScenario tests should run separately, ActivityScenarioRule does "
+                        + "not support #launchActivityForResult")
 public class DeviceLockActivityTest {
     private DeviceLockActivity mDeviceLockActivity;
     private ActivityScenario<DeviceLockActivity> mActivityScenario;
@@ -55,7 +56,9 @@ public class DeviceLockActivityTest {
 
         mDeviceLockActivity.onDeviceLockReady();
         assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
-        assertEquals("Setting a device lock should set activity result to OK", Activity.RESULT_OK,
+        assertEquals(
+                "Setting a device lock should set activity result to OK",
+                Activity.RESULT_OK,
                 mActivityScenario.getResult().getResultCode());
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
     }
@@ -69,8 +72,10 @@ public class DeviceLockActivityTest {
         mDeviceLockActivity.onDeviceLockRefused();
 
         assertEquals("Activity should be finished", mDeviceLockActivity.isFinishing(), true);
-        assertEquals("Refusing a device lock should set activity result to CANCELED",
-                Activity.RESULT_CANCELED, mActivityScenario.getResult().getResultCode());
+        assertEquals(
+                "Refusing a device lock should set activity result to CANCELED",
+                Activity.RESULT_CANCELED,
+                mActivityScenario.getResult().getResultCode());
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.DESTROYED);
     }
 
@@ -89,8 +94,12 @@ public class DeviceLockActivityTest {
     }
 
     public void launchActivity() {
-        Intent intent = DeviceLockActivity.createIntent(
-                ContextUtils.getApplicationContext(), "testSelectedAccount", true);
+        Intent intent =
+                DeviceLockActivity.createIntent(
+                        ContextUtils.getApplicationContext(),
+                        "testSelectedAccount",
+                        true,
+                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         mActivityScenario = ActivityScenario.launchActivityForResult(intent);
         mActivityScenario.onActivity(activity -> mDeviceLockActivity = activity);

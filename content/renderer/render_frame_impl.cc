@@ -86,6 +86,7 @@
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/accessibility/render_accessibility_manager.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/background_resource_fetch_assets.h"
 #include "content/renderer/content_security_policy_util.h"
 #include "content/renderer/document_state.h"
 #include "content/renderer/dom_automation_controller.h"
@@ -113,10 +114,12 @@
 #include "crypto/sha2.h"
 #include "ipc/ipc_message.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/data_url.h"
 #include "net/base/load_flags.h"
@@ -167,6 +170,7 @@
 #include "third_party/blink/public/mojom/frame/view_transition_state.mojom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-shared.h"
+#include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_cache.mojom.h"
@@ -1087,6 +1091,11 @@ void FillMiscNavigationParams(
 
   navigation_params->content_settings =
       std::move(commit_params.content_settings);
+
+  if (commit_params.cookie_deprecation_label.has_value()) {
+    navigation_params->cookie_deprecation_label =
+        WebString::FromASCII(*commit_params.cookie_deprecation_label);
+  }
 }
 
 std::string GetUniqueNameOfWebFrame(WebFrame* web_frame) {
@@ -1611,20 +1620,22 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
     // the creator frame (e.g. TrackedChildURLLoaderFactoryBundle will be
     // updated when the creator's bundle recovers from a NetworkService crash).
     // See also https://crbug.com/1194763#c5.
-    render_frame->loader_factories_ =
+    render_frame->SetLoaderFactoryBundle(
         base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
             base::WrapUnique(
                 static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
-                    params->subresource_loader_factories.release())));
+                    params->subresource_loader_factories.release()))));
   } else {
     // In browser-initiated creation of a new main frame (e.g. popup with
     // rel=noopener, or when creating a new tab) the Browser process provides
     // `params->subresource_loader_factories`.
-    render_frame->loader_factories_ = render_frame->CreateLoaderFactoryBundle(
-        std::move(params->subresource_loader_factories),
-        /*subresource_overrides=*/absl::nullopt,
-        /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
-        /*keep_alive_loader_factory=*/mojo::NullRemote());
+    render_frame->SetLoaderFactoryBundle(
+        render_frame->CreateLoaderFactoryBundle(
+            std::move(params->subresource_loader_factories),
+            /*subresource_overrides=*/absl::nullopt,
+            /*subresource_proxying_loader_factory=*/mojo::NullRemote(),
+            /*keep_alive_loader_factory=*/mojo::NullRemote(),
+            /*fetch_later_loader_factory=*/mojo::NullAssociatedRemote()));
   }
 
   return render_frame;
@@ -2639,6 +2650,8 @@ void RenderFrameImpl::CommitNavigation(
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory,
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -2703,7 +2716,8 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
       std::move(subresource_proxying_loader_factory),
-      std::move(keep_alive_loader_factory), std::move(code_cache_host),
+      std::move(keep_alive_loader_factory),
+      std::move(fetch_later_loader_factory), std::move(code_cache_host),
       std::move(resource_cache), std::move(cookie_manager_info),
       std::move(storage_info), std::move(document_state));
 
@@ -2824,6 +2838,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -2853,7 +2869,8 @@ void RenderFrameImpl::CommitNavigationWithParams(
       CreateLoaderFactoryBundle(std::move(subresource_loader_factories),
                                 std::move(subresource_overrides),
                                 std::move(subresource_proxying_loader_factory),
-                                std::move(keep_alive_loader_factory));
+                                std::move(keep_alive_loader_factory),
+                                std::move(fetch_later_loader_factory));
 
   DCHECK(new_loader_factories);
   DCHECK(new_loader_factories->HasBoundDefaultFactory());
@@ -3010,7 +3027,8 @@ void RenderFrameImpl::CommitFailedNavigation(
           std::move(subresource_loader_factories),
           absl::nullopt /* subresource_overrides */,
           mojo::NullRemote() /* subresource_proxying_loader_factory */,
-          mojo::NullRemote() /* keep_alive_loader_factory */);
+          mojo::NullRemote() /* keep_alive_loader_factory */,
+          mojo::NullAssociatedRemote() /* fetch_later_loader_factory */);
   DCHECK(new_loader_factories->HasBoundDefaultFactory());
 
   // Send the provisional load failure.
@@ -3301,6 +3319,10 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
         ->Update(std::move(subresource_loader_factories));
     loader_factories_->Update(partial_bundle->PassInterface());
   }
+
+  // Resetting `background_resource_fetch_context_` here so it will be recreated
+  // when MaybeGetBackgroundResourceFetchAssets() is called.
+  background_resource_fetch_context_.reset();
 }
 
 // blink::WebLocalFrameClient implementation
@@ -3632,7 +3654,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       *agent_scheduling_group_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       std::move(associated_interface_provider), devtools_frame_token);
-  child_render_frame->loader_factories_ = CloneLoaderFactories();
+  child_render_frame->SetLoaderFactoryBundle(CloneLoaderFactories());
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
   if (is_created_by_script)
@@ -3800,7 +3822,7 @@ void RenderFrameImpl::DidCommitNavigation(
   if (pending_loader_factories_) {
     // Commits triggered by the browser process should always provide
     // |pending_loader_factories_|.
-    loader_factories_ = std::move(pending_loader_factories_);
+    SetLoaderFactoryBundle(std::move(pending_loader_factories_));
   }
   DCHECK(loader_factories_);
   DCHECK(loader_factories_->HasBoundDefaultFactory());
@@ -4445,11 +4467,6 @@ void RenderFrameImpl::DidReceiveTransferSizeUpdate(int resource_id,
 void RenderFrameImpl::DidChangePerformanceTiming() {
   for (auto& observer : observers_)
     observer.DidChangePerformanceTiming();
-}
-
-void RenderFrameImpl::DidObserveInputDelay(base::TimeDelta input_delay) {
-  for (auto& observer : observers_)
-    observer.DidObserveInputDelay(input_delay);
 }
 
 void RenderFrameImpl::DidObserveUserInteraction(
@@ -5669,6 +5686,15 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
   GetFrameHost()->OpenURL(std::move(params));
 }
 
+void RenderFrameImpl::SetLoaderFactoryBundle(
+    scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories) {
+  // `background_resource_fetch_context_` will be lazy initialized the first
+  // time MaybeGetBackgroundResourceFetchAssets() is called if
+  // BackgroundResourceFetch feature is enabled.
+  background_resource_fetch_context_.reset();
+  loader_factories_ = std::move(loader_factories);
+}
+
 blink::ChildURLLoaderFactoryBundle* RenderFrameImpl::GetLoaderFactoryBundle() {
   // GetLoaderFactoryBundle should not be called before `loader_factories_` have
   // been set up - before a document is committed (e.g. before a navigation
@@ -5688,7 +5714,9 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
-        keep_alive_loader_factory) {
+        keep_alive_loader_factory,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory) {
   DCHECK(info);
   // We don't check `DCHECK(info->pending_default_factory())`, because it will
   // be missing for speculative frames (and in other cases where no subresource
@@ -5713,6 +5741,11 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
   if (keep_alive_loader_factory) {
     loader_factories->SetKeepAliveLoaderFactory(
         std::move(keep_alive_loader_factory));
+  }
+  if (base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
+      fetch_later_loader_factory) {
+    loader_factories->SetFetchLaterLoaderFactory(
+        std::move(fetch_later_loader_factory));
   }
 
   return loader_factories;
@@ -6152,6 +6185,27 @@ RenderFrameImpl::CreateWebURLLoaderThrottleProviderForFrame() {
       routing_id_);
 }
 
+scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+RenderFrameImpl::MaybeGetBackgroundResourceFetchAssets() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kBackgroundResourceFetch)) {
+    return nullptr;
+  }
+
+  if (!background_resource_fetch_context_) {
+    if (!background_resource_fetch_task_runner_) {
+      background_resource_fetch_task_runner_ =
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::TaskPriority::USER_BLOCKING});
+    }
+    background_resource_fetch_context_ =
+        base::MakeRefCounted<BackgroundResourceFetchAssets>(
+            GetLoaderFactoryBundle()->Clone(),
+            background_resource_fetch_task_runner_);
+  }
+  return background_resource_fetch_context_;
+}
+
 void RenderFrameImpl::OnStopLoading() {
   for (auto& observer : observers_)
     observer.OnStop();
@@ -6179,7 +6233,8 @@ void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
           network::NotImplementedURLLoaderFactory::Create()),
       /*subresource_overrides=*/absl::nullopt,
       /*subresource_proxying_loader_factory=*/{},
-      /*keep_alive_loader_factory=*/{});
+      /*keep_alive_loader_factory=*/{},
+      /*fetch_later_loader_factory=*/{});
 
   auto navigation_params = std::make_unique<WebNavigationParams>();
   navigation_params->url = base_url;

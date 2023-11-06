@@ -71,9 +71,10 @@ enum BasePathKey {
   DIR_SRC_TEST_DATA_ROOT,  // The root of files in the source tree that are
                            // made available to tests. Useful for tests that use
                            // resources that exist in the source tree.
-  DIR_SOURCE_ROOT = DIR_SRC_TEST_DATA_ROOT,  // Legacy name still widely used.
-                                             // TODO(crbug.com/1264897): Replace
-                                             // all instances and remove alias.
+                           // On posix and windows platform, this can be
+                           // overridden using the CR_SOURCE_ROOT environment
+                           // variable. If it contains a relative path, it will
+                           // be appended to the DIR_EXE directory path.
   DIR_OUT_TEST_DATA_ROOT,  // Path of build outputs available to tests. Build
                            // output files are normally placed directly in the
                            // build output directory on platforms that do not

@@ -241,7 +241,7 @@ static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
   specifics->set_client_name(
       base::android::ConvertJavaStringToUTF8(env, client_name));
   specifics->set_last_updated_timestamp(syncer::TimeToProtoTime(
-      base::Time::FromJavaTime(last_updated_timestamp)));
+      base::Time::FromMillisecondsSinceUnixEpoch(last_updated_timestamp)));
   // Every client supports send-tab-to-self these days.
   specifics->mutable_feature_fields()->set_send_tab_to_self_receiving_enabled(
       true);
@@ -258,9 +258,11 @@ static void JNI_FakeServerHelper_InjectDeviceInfoEntity(
               syncer::DeviceInfoUtil::SpecificsToTag(*specifics),
               entity_specifics,
               syncer::TimeToProtoTime(
-                  base::Time::FromJavaTime(creation_timestamp)),
+                  base::Time::FromMillisecondsSinceUnixEpoch(
+                      creation_timestamp)),
               syncer::TimeToProtoTime(
-                  base::Time::FromJavaTime(last_updated_timestamp))));
+                  base::Time::FromMillisecondsSinceUnixEpoch(
+                      last_updated_timestamp))));
 }
 
 static void JNI_FakeServerHelper_InjectBookmarkEntity(

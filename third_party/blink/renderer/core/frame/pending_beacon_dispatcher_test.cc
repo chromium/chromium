@@ -76,7 +76,7 @@ class MockPendingBeacon : public GarbageCollected<MockPendingBeacon>,
     on_send_.Run(id_);
     PendingBeaconDispatcher::From(*ec_)->Unregister(this);
   }
-  ExecutionContext* GetExecutionContext() override { return ec_; }
+  ExecutionContext* GetExecutionContext() override { return ec_.Get(); }
   bool IsPending() const override { return is_pending_; }
   void MarkNotPending() override { is_pending_ = false; }
 

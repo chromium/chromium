@@ -26,14 +26,11 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
 
-/**
- * Unit tests for the BrowserStateBrowserControlsVisibilityDelegate.
- */
+/** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BrowserStateBrowserControlsVisibilityDelegateTest {
-    @Mock
-    private Callback<Integer> mCallback;
+    @Mock private Callback<Integer> mCallback;
 
     private BrowserStateBrowserControlsVisibilityDelegate mDelegate;
     private ObservableSupplierImpl<Boolean> mPersistentModeSupplier;

@@ -44,21 +44,19 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class TabStripSnapshotterTest {
     private static final PropertyKey[] PROPERTY_KEYS =
-            new PropertyKey[] {TabProperties.FAVICON_FETCHER, TabProperties.FAVICON_FETCHED,
-                    TabProperties.IS_SELECTED};
+            new PropertyKey[] {
+                TabProperties.FAVICON_FETCHER,
+                TabProperties.FAVICON_FETCHED,
+                TabProperties.IS_SELECTED
+            };
 
-    @Captor
-    private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
+    @Captor private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
 
-    @Mock
-    private RecyclerView mRecyclerView;
+    @Mock private RecyclerView mRecyclerView;
 
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherA;
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherB;
-    @Mock
-    private TabFaviconFetcher mTabFaviconFetcherC;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherA;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherB;
+    @Mock private TabFaviconFetcher mTabFaviconFetcherC;
 
     private final List<Object> mTokenList = new ArrayList<>();
 
@@ -112,7 +110,7 @@ public class TabStripSnapshotterTest {
         Mockito.when(mRecyclerView.computeHorizontalScrollOffset()).thenReturn(0);
         ModelList modelList = new ModelList();
         PropertyModel propertyModel1 = makePropertyModel(mTabFaviconFetcherA, false, false);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel1));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel1));
         TabStripSnapshotter tabStripSnapshotter =
                 new TabStripSnapshotter(this::onModelTokenChange, modelList, mRecyclerView);
 
@@ -122,7 +120,7 @@ public class TabStripSnapshotterTest {
         Assert.assertEquals(1, mTokenList.size());
 
         PropertyModel propertyModel2 = makePropertyModel(mTabFaviconFetcherA, true, true);
-        modelList.add(new ListItem(/*type*/ 0, propertyModel2));
+        modelList.add(new ListItem(/* type= */ 0, propertyModel2));
         Assert.assertEquals(2, mTokenList.size());
         Assert.assertNotEquals(mTokenList.get(0), mTokenList.get(1));
 

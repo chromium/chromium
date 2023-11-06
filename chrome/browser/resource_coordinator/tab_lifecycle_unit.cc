@@ -21,7 +21,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
@@ -429,6 +428,11 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
       web_app_provider->ui_manager().IsInAppWindow(web_contents())) {
     // Do not discard Desktop PWA windows. Preserve native-app experience.
     decision_details->AddReason(DecisionFailureReason::LIVE_WEB_APP);
+  }
+
+  if (web_contents()->HasPictureInPictureVideo() ||
+      web_contents()->HasPictureInPictureDocument()) {
+    decision_details->AddReason(DecisionFailureReason::LIVE_PICTURE_IN_PICTURE);
   }
 
   if (decision_details->reasons().empty()) {

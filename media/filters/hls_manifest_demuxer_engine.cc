@@ -140,12 +140,21 @@ std::string HlsManifestDemuxerEngine::GetName() const {
   return "HlsManifestDemuxer";
 }
 
-void HlsManifestDemuxerEngine::Initialize(ManifestDemuxerEngineHost* host,
-                                          PipelineStatusCallback status_cb) {
+void HlsManifestDemuxerEngine::InitializeWithMockCodecDetectorForTesting(
+    ManifestDemuxerEngineHost* host,
+    PipelineStatusCallback cb,
+    std::unique_ptr<HlsCodecDetector> codec_detector) {
+  InitializeWithCodecDetector(host, std::move(cb), std::move(codec_detector));
+}
+
+void HlsManifestDemuxerEngine::InitializeWithCodecDetector(
+    ManifestDemuxerEngineHost* host,
+    PipelineStatusCallback status_cb,
+    std::unique_ptr<HlsCodecDetector> codec_detector) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
 
   // Initialize the codec detector on the media thread.
-  codec_detector_ = std::make_unique<HlsCodecDetector>(media_log_.get(), this);
+  codec_detector_ = std::move(codec_detector);
   host_ = host;
   PlaylistParseInfo parse_info(root_playlist_uri_, {}, kPrimary,
                                /*allow_multivariant_playlist=*/true);
@@ -153,6 +162,14 @@ void HlsManifestDemuxerEngine::Initialize(ManifestDemuxerEngineHost* host,
               base::BindOnce(&HlsManifestDemuxerEngine::ParsePlaylist,
                              weak_factory_.GetWeakPtr(), std::move(status_cb),
                              std::move(parse_info)));
+}
+
+void HlsManifestDemuxerEngine::Initialize(ManifestDemuxerEngineHost* host,
+                                          PipelineStatusCallback status_cb) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
+  InitializeWithCodecDetector(
+      host, std::move(status_cb),
+      std::make_unique<HlsCodecDetectorImpl>(media_log_.get(), this));
 }
 
 void HlsManifestDemuxerEngine::OnTimeUpdate(base::TimeDelta time,
@@ -225,7 +242,13 @@ void HlsManifestDemuxerEngine::OnStateChecked(
 void HlsManifestDemuxerEngine::Seek(base::TimeDelta time,
                                     ManifestDemuxer::SeekCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
-  CHECK(data_source_provider_);
+  if (!data_source_provider_) {
+    // The pipeline can call Seek just after an error was surfaced. The error
+    // handler resets |data_source_provider_|, so we should just reply with
+    // another error here.
+    std::move(cb).Run(PIPELINE_ERROR_ABORT);
+    return;
+  }
   data_source_provider_.AsyncCall(&HlsDataSourceProvider::AbortPendingReads)
       .WithArgs(base::BindPostTaskToCurrentDefault(
           base::BindOnce(&HlsManifestDemuxerEngine::ContinueSeekInternal,

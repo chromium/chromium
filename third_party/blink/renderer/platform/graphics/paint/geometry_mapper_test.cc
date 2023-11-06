@@ -490,16 +490,15 @@ TEST_P(GeometryMapperTest, SimpleClipInclusiveIntersect) {
   FloatClipRect actual_clip_rect(gfx::RectF(60, 10, 10, 10));
   GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_clip_rect,
-      kIgnoreOverlayScrollbarSize, kInclusiveIntersect);
+      kIgnoreOverlayScrollbarSize, kEdgeInclusive);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF(60, 10, 0, 10)),
                       actual_clip_rect);
 
   // Check that not passing kExcludeOverlayScrollbarSizeForHitTesting gives
   // a different result.
   actual_clip_rect.SetRect(gfx::RectF(60, 10, 10, 10));
-  GeometryMapper::LocalToAncestorVisualRect(
-      local_state, ancestor_state, actual_clip_rect,
-      kIgnoreOverlayScrollbarSize, kNonInclusiveIntersect);
+  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+                                            actual_clip_rect);
   EXPECT_CLIP_RECT_EQ(FloatClipRect(gfx::RectF()), actual_clip_rect);
 }
 
@@ -528,7 +527,7 @@ TEST_P(GeometryMapperTest, SimpleClipPlusOpacityInclusiveIntersect) {
   FloatClipRect actual_clip_rect(gfx::RectF(10, 10, 10, 0));
   auto intersects = GeometryMapper::LocalToAncestorVisualRect(
       local_state, ancestor_state, actual_clip_rect,
-      kIgnoreOverlayScrollbarSize, kInclusiveIntersect);
+      kIgnoreOverlayScrollbarSize, kEdgeInclusive);
 
   EXPECT_TRUE(actual_clip_rect.Rect().IsEmpty());
   EXPECT_TRUE(intersects);
@@ -1057,6 +1056,35 @@ TEST_P(GeometryMapperTest, Reflection) {
   expected_clip.ClearIsTight();
 
   CheckMappings();
+}
+
+TEST_P(GeometryMapperTest, IgnoreFilters) {
+  CompositorFilterOperations filters;
+  filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
+      BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
+  auto effect = CreateFilterEffect(e0(), filters);
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
+
+  local_state.SetEffect(*effect);
+  local_state.SetClip(*clip_expander);
+
+  // Test with filters to ensure test is correctly set up.
+  FloatClipRect actual_clip_rect(gfx::RectF(100, 100, 50, 50));
+  GeometryMapper::LocalToAncestorVisualRect(local_state, ancestor_state,
+                                            actual_clip_rect);
+  FloatClipRect expected_with_filter(gfx::RectF(-150, 100, 300, 50));
+  expected_with_filter.ClearIsTight();
+  EXPECT_CLIP_RECT_EQ(expected_with_filter, actual_clip_rect);
+
+  // Test with filters ignored.
+  actual_clip_rect.SetRect(gfx::RectF(100, 100, 50, 50));
+  GeometryMapper::LocalToAncestorVisualRect(
+      local_state, ancestor_state, actual_clip_rect,
+      kIgnoreOverlayScrollbarSize, kIgnoreFilters);
+  FloatClipRect expected_without_filter(gfx::RectF(100, 100, 50, 50));
+  // We still conservatively clear the tight flag.
+  expected_without_filter.ClearIsTight();
+  EXPECT_CLIP_RECT_EQ(expected_without_filter, actual_clip_rect);
 }
 
 TEST_P(GeometryMapperTest, Precision) {

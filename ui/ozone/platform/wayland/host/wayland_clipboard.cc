@@ -175,12 +175,13 @@ class ClipboardImpl final : public Clipboard, public DataSource::Delegate {
   }
 
   // WaylandDataSource::Delegate:
-  void OnDataSourceFinish(bool completed) override {
+  void OnDataSourceFinish(DataSource* source, bool completed) override {
     if (!completed)
       Write(nullptr);
   }
 
-  void OnDataSourceSend(const std::string& mime_type,
+  void OnDataSourceSend(DataSource* source,
+                        const std::string& mime_type,
                         std::string* contents) override {
     DCHECK(contents);
     auto it = offered_data_.find(mime_type);

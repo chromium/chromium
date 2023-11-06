@@ -22,22 +22,23 @@
 // This file only contains tests relevant to the bound session credentials
 // feature.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-#include "chrome/common/bound_session_request_throttled_listener.h"
+#include "chrome/common/bound_session_request_throttled_handler.h"
 
 namespace {
 
 enum class RequestAction { kWillStartRequest, kWillRedirectRequest };
 
-class FakeBoundSessionRequestThrottledListener
-    : public BoundSessionRequestThrottledListener {
+class FakeBoundSessionRequestThrottledHandler
+    : public BoundSessionRequestThrottledHandler {
  public:
-  void OnRequestBlockedOnCookie(
+  void HandleRequestBlockedOnCookie(
       ResumeOrCancelThrottledRequestCallback callback) override {
     EXPECT_FALSE(callback_);
     callback_ = std::move(callback);
   }
 
-  void SimulateOnRequestBlockedOnCookieCompleted(UnblockAction unblock_action) {
+  void SimulateHandleRequestBlockedOnCookieCompleted(
+      UnblockAction unblock_action) {
     std::move(callback_).Run(unblock_action);
   }
 
@@ -74,7 +75,7 @@ class GoogleURLLoaderThrottleTest
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  FakeBoundSessionRequestThrottledListener* bound_session_listener() {
+  FakeBoundSessionRequestThrottledHandler* bound_session_listener() {
     return bound_session_listener_.get();
   }
 
@@ -115,17 +116,17 @@ class GoogleURLLoaderThrottleTest
   }
 
   void UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction unblock_action) {
+      BoundSessionRequestThrottledHandler::UnblockAction unblock_action) {
     switch (unblock_action) {
-      case BoundSessionRequestThrottledListener::UnblockAction::kResume:
+      case BoundSessionRequestThrottledHandler::UnblockAction::kResume:
         EXPECT_CALL(*delegate(), Resume());
         break;
-      case BoundSessionRequestThrottledListener::UnblockAction::kCancel:
+      case BoundSessionRequestThrottledHandler::UnblockAction::kCancel:
         EXPECT_CALL(*delegate(), CancelWithError(net::ERR_ABORTED, testing::_));
         break;
     }
 
-    bound_session_listener_->SimulateOnRequestBlockedOnCookieCompleted(
+    bound_session_listener_->SimulateHandleRequestBlockedOnCookieCompleted(
         unblock_action);
 
     RunUntilIdle();
@@ -143,9 +144,9 @@ class GoogleURLLoaderThrottleTest
     dynamic_params->bound_session_throttler_params =
         bound_session_throttler_params_.Clone();
 
-    std::unique_ptr<FakeBoundSessionRequestThrottledListener>
+    std::unique_ptr<FakeBoundSessionRequestThrottledHandler>
         bound_session_listener =
-            std::make_unique<FakeBoundSessionRequestThrottledListener>();
+            std::make_unique<FakeBoundSessionRequestThrottledHandler>();
     bound_session_listener_ = bound_session_listener.get();
     delegate_ = std::make_unique<MockThrottleDelegate>();
 
@@ -160,7 +161,7 @@ class GoogleURLLoaderThrottleTest
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeBoundSessionRequestThrottledListener, DanglingUntriaged>
+  raw_ptr<FakeBoundSessionRequestThrottledHandler, DanglingUntriaged>
       bound_session_listener_ = nullptr;
   std::unique_ptr<GoogleURLLoaderThrottle> throttle_;
   std::unique_ptr<MockThrottleDelegate> delegate_;
@@ -216,7 +217,7 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpired) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, GURL("https://accounts.google.com/test/bar.html"));
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest,
@@ -226,7 +227,7 @@ TEST_P(GoogleURLLoaderThrottleTest,
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, GURL("https://google.com/"));
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest,
@@ -236,7 +237,7 @@ TEST_P(GoogleURLLoaderThrottleTest,
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, GURL("https://google.com/"));
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpiresNow) {
@@ -245,7 +246,7 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionCookieExpiresNow) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, kGoogleSubdomainURL);
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionPathEmpty) {
@@ -254,7 +255,7 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptBoundSessionPathEmpty) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, kGoogleSubdomainURL);
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest,
@@ -272,7 +273,7 @@ TEST_P(GoogleURLLoaderThrottleTest,
       /*expect_defer=*/true,
       GURL("https://accounts.google.com/test/foo/bar.html"));
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kResume);
+      BoundSessionRequestThrottledHandler::UnblockAction::kResume);
 }
 
 TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {
@@ -281,7 +282,7 @@ TEST_P(GoogleURLLoaderThrottleTest, InterceptAndCancelRequest) {
   CallThrottleAndVerifyDeferExpectation(
       /*expect_defer=*/true, kGoogleSubdomainURL);
   UnblockRequestAndVerifyCallbackAction(
-      BoundSessionRequestThrottledListener::UnblockAction::kCancel);
+      BoundSessionRequestThrottledHandler::UnblockAction::kCancel);
 }
 
 INSTANTIATE_TEST_SUITE_P(WillStartRequest,

@@ -575,6 +575,12 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
         mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(primaryAccountId);
     }
 
+    /** Called when account seeding is complete. */
+    public void onAccountsSeeded(List<CoreAccountInfo> coreAccountInfos) {
+        // TODO(crbug/1491005): Call this right after seeding.
+        mIdentityManager.refreshAccountInfoIfStale(coreAccountInfos);
+    }
+
     /**
      * Wipes the user's bookmarks and sync data.
      *

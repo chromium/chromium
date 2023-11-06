@@ -24,6 +24,7 @@ public class TabSelectionEditorActionProperties {
     public static final ReadableIntPropertyKey SHOW_MODE = new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey BUTTON_TYPE = new ReadableIntPropertyKey();
     public static final ReadableIntPropertyKey ICON_POSITION = new ReadableIntPropertyKey();
+    public static final ReadableIntPropertyKey TEXT_APPEARANCE_ID = new ReadableIntPropertyKey();
 
     public static final WritableIntPropertyKey TITLE_RESOURCE_ID = new WritableIntPropertyKey();
     public static final WritableBooleanPropertyKey TITLE_IS_PLURAL =
@@ -53,17 +54,35 @@ public class TabSelectionEditorActionProperties {
     public static final WritableObjectPropertyKey<Callback<List<Integer>>>
             ON_SELECTION_STATE_CHANGE = new WritableObjectPropertyKey<>();
 
-    /**
-     * Keys for the {@link TabSelectionEditorAction}.
-     */
-    public static final PropertyKey[] ACTION_KEYS = {MENU_ITEM_ID, SHOW_MODE, BUTTON_TYPE,
-            ICON_POSITION, TITLE_RESOURCE_ID, TITLE_IS_PLURAL, CONTENT_DESCRIPTION_RESOURCE_ID,
-            ICON, ENABLED, ITEM_COUNT, TEXT_TINT, ICON_TINT, ON_CLICK_LISTENER, SHOULD_DISMISS_MENU,
-            ON_SELECTION_STATE_CHANGE};
+    /** Keys for the {@link TabSelectionEditorAction}. */
+    public static final PropertyKey[] ACTION_KEYS = {
+        MENU_ITEM_ID,
+        SHOW_MODE,
+        BUTTON_TYPE,
+        ICON_POSITION,
+        TEXT_APPEARANCE_ID,
+        TITLE_RESOURCE_ID,
+        TITLE_IS_PLURAL,
+        CONTENT_DESCRIPTION_RESOURCE_ID,
+        ICON,
+        ENABLED,
+        ITEM_COUNT,
+        TEXT_TINT,
+        ICON_TINT,
+        ON_CLICK_LISTENER,
+        SHOULD_DISMISS_MENU,
+        ON_SELECTION_STATE_CHANGE
+    };
 
-    /**
-     * Keys for the {@link TabSelectionEditorMenuItem}.
-     */
+    /** Keys for the {@link TabSelectionEditorMenuItem}. */
     public static final PropertyKey[] MENU_ITEM_KEYS = {
-            MENU_ITEM_ID, TITLE, CONTENT_DESCRIPTION, ICON, ICON_TINT, ENABLED, ITEM_COUNT};
+        MENU_ITEM_ID,
+        TEXT_APPEARANCE_ID,
+        TITLE,
+        CONTENT_DESCRIPTION,
+        ICON,
+        ICON_TINT,
+        ENABLED,
+        ITEM_COUNT
+    };
 }

@@ -12,7 +12,7 @@ namespace blink {
 InterpolationValue CSSAngleInterpolationType::MaybeConvertNeutral(
     const InterpolationValue&,
     ConversionCheckers&) const {
-  return InterpolationValue(std::make_unique<InterpolableNumber>(0));
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(0));
 }
 
 InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(
@@ -20,10 +20,11 @@ InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(
     const StyleResolverState*,
     ConversionCheckers&) const {
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-  if (!primitive_value || !primitive_value->IsAngle())
+  if (!primitive_value || !primitive_value->IsAngle()) {
     return nullptr;
-  return InterpolationValue(
-      std::make_unique<InterpolableNumber>(primitive_value->ComputeDegrees()));
+  }
+  return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+      primitive_value->ComputeDegrees()));
 }
 
 const CSSValue* CSSAngleInterpolationType::CreateCSSValue(

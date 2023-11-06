@@ -16,10 +16,15 @@ def _CheckNoDirectLitImport(input_api, output_api):
         xf_base_file_path = input_api.os_path.join('ui', 'file_manager',
                                                    'file_manager', 'widgets',
                                                    'xf_base.ts')
+        selector_path = input_api.os_path.join('ui', 'file_manager',
+                                               'file_manager', 'lib',
+                                               'selector.ts')
+
+        allowed_paths = {xf_base_file_path, selector_path}
         local_path = file_path.LocalPath()
         return Path(local_path).suffix in {
             '.ts', '.js'
-        } and local_path != xf_base_file_path
+        } and local_path not in allowed_paths
 
     ts_files = input_api.AffectedFiles(include_deletes=False,
                                        file_filter=_isLitDisallowed)
@@ -40,5 +45,29 @@ def _CheckNoDirectLitImport(input_api, output_api):
                         "all other files should import xf_base instead." %
                         (f.LocalPath(), line_num, line.strip())))
                 break
+
+    return results
+
+
+def _IsComment(line):
+    l = line.lstrip()
+    return l.startswith(('//', '/*', '* '))
+
+
+def _CheckBannedTsTags(input_api, output_api):
+    ts_only = lambda f: f.LocalPath().endswith('.ts')
+    results = []
+    offending_files = []
+    for f in input_api.AffectedFiles(file_filter=ts_only):
+        for line_num, line in f.ChangedContents():
+            if not _IsComment(line):
+                continue
+            if '@ts-ignore' in line:
+                offending_files.append(f'{f}: {line_num}: {line[:100]}')
+
+    if offending_files:
+        results.append(
+            output_api.PresubmitError('@ts-ignore is banned in TS files.',
+                                      offending_files))
 
     return results

@@ -7,7 +7,7 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutNGTableRow TR",
+      "name": "LayoutTableRow TR",
       "position": [-1, -1],
       "bounds": [70, 24],
       "invalidations": [

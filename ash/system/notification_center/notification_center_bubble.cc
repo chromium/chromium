@@ -6,14 +6,11 @@
 
 #include <memory>
 
-#include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
-#include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -29,12 +26,9 @@ NotificationCenterBubble::NotificationCenterBubble(
     : notification_center_tray_(notification_center_tray) {
   auto init_params = CreateInitParamsForTrayBubble(
       /*tray=*/notification_center_tray_, /*anchor_to_shelf_corner=*/true);
-  // For Jelly: the bubble corner radius should be 24px instead of 16px.
-  if (chromeos::features::IsJellyEnabled()) {
-    init_params.corner_radius = kNotificationCenterBubbleCornerRadius;
-  }
 
   // Create and customize bubble view.
+  init_params.corner_radius = kNotificationCenterBubbleCornerRadius;
   bubble_view_ = std::make_unique<TrayBubbleView>(init_params);
   bubble_view_->SetMaxHeight(CalculateMaxTrayBubbleHeight(
       notification_center_tray_->GetBubbleWindowContainer()));

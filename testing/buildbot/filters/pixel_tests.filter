@@ -50,6 +50,7 @@ IntentPickerDialogTest.*
 IntentPickerDialogGridViewTest.*
 InteractionTestUtilBrowserTest.CompareScreenshot_*
 InteractionTestUtilBrowserUiTest.CompareScreenshot_*
+IsolatedWebAppInstallerViewUiPixelTest.*
 LocalCardMigrationBrowserUiTest.*
 NewTabPageTest.*
 OfferNotificationBubbleViewPixelBrowserTest.*
@@ -61,6 +62,7 @@ PageInfoBubbleViewHistoryDialogBrowserTest.*
 PageInfoBubbleViewCookiesSubpageBrowserTest.*
 PageInfoBubbleViewIsolatedWebAppBrowserTest.*
 *PasswordBubbleBrowserTest.*
+*PasswordAutomaticSaveBubbleBrowserTest.*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
 PasswordReuseModalWarningTest.*

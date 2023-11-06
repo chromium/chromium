@@ -131,13 +131,13 @@ CounterStyle* CounterStyleMap::FindCounterStyleAcrossScopes(
       return nullptr;
     }
     if (iter->value) {
-      return iter->value;
+      return iter->value.Get();
     }
     return &const_cast<CounterStyleMap*>(this)->CreateUACounterStyle(name);
   }
   auto it = counter_styles_.find(name);
   if (it != counter_styles_.end()) {
-    return it->value;
+    return it->value.Get();
   }
   return GetAncestorMap()->FindCounterStyleAcrossScopes(name);
 }

@@ -279,7 +279,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
     return new Promise((resolve) => {
       resolve({
         status: this.httpOk,
-        featuredGifs: this.gifs[query]!,
+        featuredGifs: this.gifs[query] ?? this.gifs['trending']!,
       });
     });
   }
@@ -289,7 +289,7 @@ export class TestEmojiPickerApiProxyImpl extends EmojiPickerApiProxyImpl {
     query = (pos ? query + pos : query).replace('#', '');
     return Promise.resolve({
       status: this.httpOk,
-      searchGifs: this.searchResults[query]!,
+      searchGifs: this.searchResults[query] ?? this.searchResults['face']!,
     });
   }
 

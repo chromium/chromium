@@ -9,11 +9,11 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/telemetry_extension/common/self_owned_mojo_proxy.h"
 #include "chrome/browser/ash/telemetry_extension/common/telemetry_extension_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_control.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_converters.h"
 #include "chrome/browser/ash/telemetry_extension/routines/routine_events_forwarder.h"
-#include "chrome/browser/ash/telemetry_extension/routines/self_owned_mojo_proxy.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_routines.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom.h"
@@ -71,7 +71,7 @@ TelemetryDiagnosticsRoutineServiceAsh::TelemetryDiagnosticsRoutineServiceAsh() =
 TelemetryDiagnosticsRoutineServiceAsh::
     ~TelemetryDiagnosticsRoutineServiceAsh() {
   for (auto&& proxy : routine_controls_and_observers_) {
-    proxy->OnServiceDestroyed();
+    proxy.ExtractAsDangling()->OnServiceDestroyed();
   }
   routine_controls_and_observers_.clear();
 }

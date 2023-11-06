@@ -25,7 +25,6 @@ class AssistantClientImpl : public AssistantClientV1 {
  public:
   AssistantClientImpl(
       std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal,
       const std::string& libassistant_service_address,
       const std::string& assistant_service_address);
 

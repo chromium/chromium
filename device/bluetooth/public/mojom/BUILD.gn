@@ -8,6 +8,11 @@ mojom("mojom") {
   generate_java = true
   sources = [ "uuid.mojom" ]
   webui_module_path = "/"
+  use_typescript_sources = true
+
+  # Indirect dependency of Blink test support so generate legacy bindings for
+  # Blink in JavaScript.
+  generate_legacy_js_bindings = true
 
   cpp_typemaps = [
     {

@@ -16,6 +16,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "minidump/minidump_thread_id_map.h"
 #include "snapshot/thread_snapshot.h"

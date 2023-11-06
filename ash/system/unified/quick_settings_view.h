@@ -23,7 +23,7 @@ namespace ash {
 
 class FeatureTile;
 class FeatureTilesContainerView;
-class PageIndicatorView;
+class PaginationView;
 class QuickSettingsFooter;
 class QuickSettingsHeader;
 class QuickSettingsMediaViewContainer;
@@ -117,9 +117,8 @@ class ASH_EXPORT QuickSettingsView : public views::View,
     return static_cast<T*>(view);
   }
 
-  PageIndicatorView* page_indicator_view_for_test() {
-    return page_indicator_view_;
-  }
+  PaginationView* pagination_view_for_test() { return pagination_view_; }
+
   UnifiedMediaControlsContainer* media_controls_container_for_testing() {
     return media_controls_container_;
   }
@@ -142,7 +141,7 @@ class ASH_EXPORT QuickSettingsView : public views::View,
   raw_ptr<QuickSettingsHeader, ExperimentalAsh> header_ = nullptr;
   raw_ptr<FeatureTilesContainerView, ExperimentalAsh> feature_tiles_container_ =
       nullptr;
-  raw_ptr<PageIndicatorView, ExperimentalAsh> page_indicator_view_ = nullptr;
+  raw_ptr<PaginationView, ExperimentalAsh> pagination_view_ = nullptr;
   raw_ptr<views::FlexLayoutView, ExperimentalAsh> sliders_container_ = nullptr;
   raw_ptr<QuickSettingsFooter, ExperimentalAsh> footer_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> detailed_view_container_ = nullptr;

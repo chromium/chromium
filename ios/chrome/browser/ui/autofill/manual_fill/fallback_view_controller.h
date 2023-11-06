@@ -7,12 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 
 @protocol TableViewFaviconDataSource;
 
 // This class presents a list of fallback item in a table view.
-@interface FallbackViewController : ChromeTableViewController
+@interface FallbackViewController : LegacyChromeTableViewController
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

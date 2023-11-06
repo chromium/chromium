@@ -1,9 +1,0 @@
-CONSOLE WARNING: line 53: The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu
-CONSOLE WARNING: line 56: The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://goo.gl/7K7WLu
-CONSOLE ERROR: line 40: Uncaught (in promise) InvalidStateError: suspend(1) failed to suspend at frame 2944 because it is earlier than the current frame of 4000 (1.33333 seconds)
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = suspend(1) failed to suspend at frame 2944 because it is earlier than the current frame of 4000 (1.33333 seconds)
-PASS OfflineAudioContext can always be resumed.
-PASS AudioContext.resume() resolves if/when the context starts.
-Harness: the test ran to completion.
-

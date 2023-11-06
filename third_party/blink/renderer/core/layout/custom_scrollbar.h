@@ -68,13 +68,16 @@ class CORE_EXPORT CustomScrollbar final : public Scrollbar {
 
   void PositionScrollbarParts();
 
+  // Custom scrollbars may be translucent.
+  bool IsOpaque() const override { return false; }
+
   LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) {
     auto it = parts_.find(part_type);
-    return it != parts_.end() ? it->value : nullptr;
+    return it != parts_.end() ? it->value.Get() : nullptr;
   }
   const LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) const {
     auto it = parts_.find(part_type);
-    return it != parts_.end() ? it->value : nullptr;
+    return it != parts_.end() ? it->value.Get() : nullptr;
   }
 
   void InvalidateDisplayItemClientsOfScrollbarParts();

@@ -167,8 +167,8 @@ function addModelHeader(model) {
   header.getElementsByClassName('arc-tracing-app-fps')[0].textContent =
       calculateFPS(getAppCommitEvents(model), model.information.duration)
           .toFixed(2);
-  header.getElementsByClassName('arc-tracing-chromeos-fps')[0].textContent =
-      calculateFPS(getChromeSwapEvents(model), model.information.duration)
+  header.getElementsByClassName('arc-tracing-perceived-fps')[0].textContent =
+      calculateFPS(getPerceivedFrameEvents(model), model.information.duration)
           .toFixed(2);
   const renderQualityAndCommitDeviation =
       calculateAppRenderQualityAndCommitDeviation(model);
@@ -202,9 +202,9 @@ function addModelHeader(model) {
 }
 
 /**
- * Helper that analyzes model, extracts surface commit events and creates
- * composited events. These events are distributed per different buffers and
- * output contains these events in one line.
+ * Helper that extracts surface commit events and creates composited events.
+ * These differ from perceived swaps in that app commit events may be discarded
+ * before they are swapped onto the display by ChromeOS.
  *
  * @param {object} model source model to analyze.
  */
@@ -260,9 +260,30 @@ function getAveragePower(model, eventType) {
 }
 
 /**
- * Helper that analyzes model, extracts ChromeOS swap events and creates
- * composited events. These events are distributed per different buffers and
- * output contains these events in one line.
+ * Extracts perceived frame presented.
+ *
+ * @param {object} model source model to analyze.
+ */
+function getPerceivedFrameEvents(model) {
+  const events = [];
+  const presentEvents = new Events(
+      model.chrome.global_events, 503 /* kChromeOSPresentationDone */);
+  let index = presentEvents.getFirstEvent();
+  while (index >= 0) {
+    events.push(presentEvents.events[index]);
+    index = presentEvents.getNextEvent(index, 1 /* direction */);
+  }
+  // Sort by timestamp.
+  events.sort(function(a, b) {
+    return a[1] - b[1];
+  });
+
+  return new Events(events, 503 /* kChromeOSPresentationDone */);
+}
+
+/**
+ * Helper that extracts ChromeOS swap events. These are different from perceived
+ * swap events in that a ChromeOS swap may not contain new app content.
  *
  * @param {object} model source model to analyze.
  */
@@ -575,7 +596,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
 
   bands.addChartText('App', titleXOffset, titleYOffset, 'start' /* anchor */);
   bands.addChartText(
-      'ChromeOS', titleXOffset + fullSectionWidth, titleYOffset,
+      'Perceived', titleXOffset + fullSectionWidth, titleYOffset,
       'start' /* anchor */);
 
   const fpsBandYOffset = 80;
@@ -593,7 +614,7 @@ function addFPSHistograms(parent, anchor, timeBasedView) {
 
     for (let m = 0; m < models.length; ++m) {
       const events = t == 0 ? getAppCommitEvents(models[m]) :
-                              getChromeSwapEvents(models[m]);
+                              getPerceivedFrameEvents(models[m]);
       // Presort deltas between frames. Fastest one goes first.
       const deltas = createDeltaEvents(events);
       if (deltas.events.length == 0) {
@@ -818,11 +839,14 @@ function refreshModels() {
   addFPSView(parent, resolution, duration, 'App FPS', getAppCommitEvents);
   addDeltaView(
       parent, resolution, duration, 'App commit time', getAppCommitEvents);
-  // TODO(b/296595454) Remove ChromeOS FPS and replace with perceived FPS and
-  // perceived swap time.
-  addFPSView(parent, resolution, duration, 'ChromeOS FPS', getChromeSwapEvents);
   addDeltaView(
       parent, resolution, duration, 'ChromeOS swap time', getChromeSwapEvents);
+  addFPSView(
+      parent, resolution, duration, 'Perceived FPS', getPerceivedFrameEvents);
+  addDeltaView(
+      parent, resolution, duration, 'Perceived swap time',
+      getPerceivedFrameEvents);
+
   addFPSHistograms(parent, parent.lastChild, false /* timeBasedView */);
   addPowerView(
       parent, 'Package power constraint', resolution, duration,

@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -74,10 +75,6 @@ using OperationID = storage::FileSystemOperationRunner::OperationID;
 using FileSystemContextPtr = scoped_refptr<storage::FileSystemContext>;
 
 using enum extensions::events::HistogramValue;
-using enum fmp::DeviceEventType;
-using enum fmp::DriveSyncErrorType;
-using enum fmp::MountCompletedEventType;
-using enum fmp::MountError;
 using enum message_center::NotificationType;
 
 void CancelCopyOnIOThread(FileSystemContextPtr file_system_context,
@@ -384,7 +381,7 @@ void SystemNotificationManager::HandleDeviceEvent(
   NotificationPtr notification;
   const std::string id = ToString(event.type);
   switch (event.type) {
-    case DEVICE_EVENT_TYPE_DISABLED:
+    case fmp::DeviceEventType::kDisabled:
       notification =
           CreateNotification(id, IDS_REMOVABLE_DEVICE_DETECTION_TITLE,
                              IDS_EXTERNAL_STORAGE_DISABLED_MESSAGE);
@@ -392,25 +389,25 @@ void SystemNotificationManager::HandleDeviceEvent(
           DeviceNotificationUmaType::DEVICE_EXTERNAL_STORAGE_DISABLED);
       break;
 
-    case DEVICE_EVENT_TYPE_REMOVED:
+    case fmp::DeviceEventType::kRemoved:
       // Hide device fail & storage disabled notifications.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
-          ToString(DEVICE_EVENT_TYPE_DISABLED));
+          ToString(fmp::DeviceEventType::kDisabled));
       // Remove the device from the mount status map.
       mount_status_.erase(event.device_path);
       break;
 
-    case DEVICE_EVENT_TYPE_HARD_UNPLUGGED:
+    case fmp::DeviceEventType::kHardUnplugged:
       notification = CreateNotification(id, IDS_DEVICE_HARD_UNPLUGGED_TITLE,
                                         IDS_DEVICE_HARD_UNPLUGGED_MESSAGE);
       RecordDeviceNotificationMetric(
           DeviceNotificationUmaType::DEVICE_HARD_UNPLUGGED);
       break;
 
-    case DEVICE_EVENT_TYPE_FORMAT_START:
+    case fmp::DeviceEventType::kFormatStart:
       notification = CreateNotification(
           id,
           GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_DIALOG_TITLE,
@@ -420,15 +417,15 @@ void SystemNotificationManager::HandleDeviceEvent(
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::FORMAT_START);
       break;
 
-    case DEVICE_EVENT_TYPE_FORMAT_SUCCESS:
-    case DEVICE_EVENT_TYPE_FORMAT_FAIL:
-    case DEVICE_EVENT_TYPE_PARTITION_FAIL: {
+    case fmp::DeviceEventType::kFormatSuccess:
+    case fmp::DeviceEventType::kFormatFail:
+    case fmp::DeviceEventType::kPartitionFail: {
       // Hide the formatting notification.
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT,
-          ToString(DEVICE_EVENT_TYPE_FORMAT_START));
+          ToString(fmp::DeviceEventType::kFormatStart));
       std::u16string message;
-      if (event.type == DEVICE_EVENT_TYPE_FORMAT_SUCCESS) {
+      if (event.type == fmp::DeviceEventType::kFormatSuccess) {
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_SUCCESS_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
@@ -437,7 +434,7 @@ void SystemNotificationManager::HandleDeviceEvent(
         message = GetStringFUTF16(IDS_FILE_BROWSER_FORMAT_FAILURE_MESSAGE,
                                   UTF8ToUTF16(event.device_label));
         RecordDeviceNotificationMetric(
-            event.type == DEVICE_EVENT_TYPE_FORMAT_FAIL
+            event.type == fmp::DeviceEventType::kFormatFail
                 ? DeviceNotificationUmaType::FORMAT_FAIL
                 : DeviceNotificationUmaType::PARTITION_FAIL);
       }
@@ -449,21 +446,21 @@ void SystemNotificationManager::HandleDeviceEvent(
       break;
     }
 
-    case DEVICE_EVENT_TYPE_PARTITION_START:
-    case DEVICE_EVENT_TYPE_PARTITION_SUCCESS:
+    case fmp::DeviceEventType::kPartitionStart:
+    case fmp::DeviceEventType::kPartitionSuccess:
       // No-op.
       break;
 
-    case DEVICE_EVENT_TYPE_RENAME_FAIL:
+    case fmp::DeviceEventType::kRenameFail:
       notification =
           CreateNotification(id, IDS_RENAMING_OF_DEVICE_FAILED_TITLE,
                              IDS_RENAMING_OF_DEVICE_FINISHED_FAILURE_MESSAGE);
       RecordDeviceNotificationMetric(DeviceNotificationUmaType::RENAME_FAIL);
       break;
 
-    case DEVICE_EVENT_TYPE_NONE:
-    case DEVICE_EVENT_TYPE_RENAME_START:
-    case DEVICE_EVENT_TYPE_RENAME_SUCCESS:
+    case fmp::DeviceEventType::kNone:
+    case fmp::DeviceEventType::kRenameStart:
+    case fmp::DeviceEventType::kRenameSuccess:
     default:
       VLOG(1) << "No notification for device event " << id;
       break;
@@ -504,34 +501,34 @@ NotificationPtr SystemNotificationManager::MakeBulkPinningErrorNotification(
     return nullptr;
   }
 
-  if (old_stage != BULK_PIN_STAGE_LISTING_FILES &&
-      old_stage != BULK_PIN_STAGE_SYNCING) {
+  if (old_stage != BulkPinStage::kListingFiles &&
+      old_stage != BulkPinStage::kSyncing) {
     return nullptr;
   }
 
   // Check the bulk-pinning stage.
   switch (bulk_pin_stage_) {
-    case BULK_PIN_STAGE_NONE:
-    case BULK_PIN_STAGE_STOPPED:
-    case BULK_PIN_STAGE_PAUSED_OFFLINE:
-    case BULK_PIN_STAGE_PAUSED_BATTERY_SAVER:
-    case BULK_PIN_STAGE_GETTING_FREE_SPACE:
-    case BULK_PIN_STAGE_LISTING_FILES:
-    case BULK_PIN_STAGE_SYNCING:
-    case BULK_PIN_STAGE_SUCCESS:
+    case BulkPinStage::kNone:
+    case BulkPinStage::kStopped:
+    case BulkPinStage::kPausedOffline:
+    case BulkPinStage::kPausedBatterySaver:
+    case BulkPinStage::kGettingFreeSpace:
+    case BulkPinStage::kListingFiles:
+    case BulkPinStage::kSyncing:
+    case BulkPinStage::kSuccess:
       return nullptr;
 
-    case BULK_PIN_STAGE_NOT_ENOUGH_SPACE:
-    case BULK_PIN_STAGE_CANNOT_GET_FREE_SPACE:
-    case BULK_PIN_STAGE_CANNOT_LIST_FILES:
-    case BULK_PIN_STAGE_CANNOT_ENABLE_DOCS_OFFLINE:
+    case BulkPinStage::kNotEnoughSpace:
+    case BulkPinStage::kCannotGetFreeSpace:
+    case BulkPinStage::kCannotListFiles:
+    case BulkPinStage::kCannotEnableDocsOffline:
       break;
   }
 
   VLOG(1) << "Creating bulk-pinning error notification";
   int title_id, message_id;
 
-  if (bulk_pin_stage_ == BULK_PIN_STAGE_NOT_ENOUGH_SPACE) {
+  if (bulk_pin_stage_ == BulkPinStage::kNotEnoughSpace) {
     if (progress.emptied_queue) {
       title_id = IDS_FILE_BROWSER_DRIVE_SYNC_TURNED_OFF_TITLE;
       message_id =
@@ -571,37 +568,37 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
   const GURL file_url(sync_error.file_url);
 
   switch (sync_error.type) {
-    case DRIVE_SYNC_ERROR_TYPE_DELETE_WITHOUT_PERMISSION:
+    case fmp::DriveSyncErrorType::kDeleteWithoutPermission:
       return CreateNotification(
           id, title,
           GetStringFUTF16(IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR,
                           util::GetDisplayableFileName16(file_url)));
 
-    case DRIVE_SYNC_ERROR_TYPE_SERVICE_UNAVAILABLE:
+    case fmp::DriveSyncErrorType::kServiceUnavailable:
       return CreateNotification(
           id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
           IDS_FILE_BROWSER_SYNC_SERVICE_UNAVAILABLE_ERROR);
 
-    case DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE:
+    case fmp::DriveSyncErrorType::kNoServerSpace:
       return CreateNotification(
           id, title, GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE));
 
-    case DRIVE_SYNC_ERROR_TYPE_NO_SERVER_SPACE_ORGANIZATION:
+    case fmp::DriveSyncErrorType::kNoServerSpaceOrganization:
       return CreateNotification(
           id, title,
           GetStringUTF16(IDS_FILE_BROWSER_SYNC_NO_SERVER_SPACE_ORGANIZATION));
 
-    case DRIVE_SYNC_ERROR_TYPE_NO_LOCAL_SPACE:
+    case fmp::DriveSyncErrorType::kNoLocalSpace:
       return CreateNotification(id, IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL,
                                 IDS_FILE_BROWSER_DRIVE_OUT_OF_SPACE_HEADER);
 
-    case DRIVE_SYNC_ERROR_TYPE_MISC:
+    case fmp::DriveSyncErrorType::kMisc:
       return CreateNotification(
           id, title,
           GetStringFUTF16(IDS_FILE_BROWSER_SYNC_MISC_ERROR,
                           util::GetDisplayableFileName16(file_url)));
 
-    case DRIVE_SYNC_ERROR_TYPE_NO_SHARED_DRIVE_SPACE:
+    case fmp::DriveSyncErrorType::kNoSharedDriveSpace:
       if (!sync_error.shared_drive.has_value()) {
         DLOG(WARNING) << "No shared drive provided for error notification";
         return nullptr;
@@ -612,11 +609,12 @@ NotificationPtr SystemNotificationManager::MakeDriveSyncErrorNotification(
           GetStringFUTF16(IDS_FILE_BROWSER_SYNC_ERROR_SHARED_DRIVE_OUT_OF_SPACE,
                           UTF8ToUTF16(sync_error.shared_drive.value())));
 
-    case DRIVE_SYNC_ERROR_TYPE_NONE:
+    case fmp::DriveSyncErrorType::kNone:
       break;
   }
 
-  LOG(ERROR) << "Unexpected Drive sync error: " << sync_error.type;
+  LOG(ERROR) << "Unexpected Drive sync error: "
+             << base::to_underlying(sync_error.type);
   return nullptr;
 }
 
@@ -693,8 +691,8 @@ NotificationPtr SystemNotificationManager::UpdateDriveSyncNotification(
   }
 
   using enum fmp::TransferState;
-  if (status.transfer_state == TRANSFER_STATE_COMPLETED ||
-      status.transfer_state == TRANSFER_STATE_FAILED) {
+  if (status.transfer_state == fmp::TransferState::kCompleted ||
+      status.transfer_state == fmp::TransferState::kFailed) {
     // We only close when there are no jobs left, we could have received
     // a TRANSFER_STATE_COMPLETED event when there are more jobs to run.
     if (status.num_total_jobs == 0) {
@@ -918,7 +916,7 @@ NotificationPtr SystemNotificationManager::MakeMountErrorNotification(
     // We have either an unsupported or unknown filesystem on the mount.
     case MOUNT_STATUS_ONLY_PARENT_ERROR:
     case MOUNT_STATUS_CHILD_ERROR:
-      if (event.status == MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
+      if (event.status == fmp::MountError::kUnsupportedFilesystem) {
         if (volume.drive_label().empty()) {
           message = GetStringUTF16(IDS_DEVICE_UNSUPPORTED_DEFAULT_MESSAGE);
         } else {
@@ -1004,7 +1002,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(MountCompletedEvent& event,
       }
       [[fallthrough]];
     case MOUNT_STATUS_NO_RESULT:
-      if (event.status == MOUNT_ERROR_SUCCESS) {
+      if (event.status == fmp::MountError::kSuccess) {
         status = MOUNT_STATUS_SUCCESS;
       } else if (event.volume_metadata.is_parent_device) {
         status = MOUNT_STATUS_ONLY_PARENT_ERROR;
@@ -1015,7 +1013,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(MountCompletedEvent& event,
     case MOUNT_STATUS_SUCCESS:
     case MOUNT_STATUS_CHILD_ERROR:
       if (status == MOUNT_STATUS_SUCCESS &&
-          event.status == MOUNT_ERROR_SUCCESS) {
+          event.status == fmp::MountError::kSuccess) {
         status = MOUNT_STATUS_SUCCESS;
       } else {
         // Multi partition device with at least one partition in error.
@@ -1032,7 +1030,7 @@ NotificationPtr SystemNotificationManager::MakeRemovableNotification(
     MountCompletedEvent& event,
     const Volume& volume) {
   NotificationPtr notification;
-  if (event.status == MOUNT_ERROR_SUCCESS) {
+  if (event.status == fmp::MountError::kSuccess) {
     bool show_settings_button = false;
     std::u16string title = GetStringUTF16(IDS_REMOVABLE_DEVICE_DETECTION_TITLE);
     std::u16string message;
@@ -1164,13 +1162,13 @@ void SystemNotificationManager::HandleMountCompletedEvent(
   NotificationPtr notification;
 
   switch (event.event_type) {
-    case MOUNT_COMPLETED_EVENT_TYPE_MOUNT:
+    case fmp::MountCompletedEventType::kMount:
       if (event.should_notify) {
         notification = MakeRemovableNotification(event, volume);
       }
       break;
 
-    case MOUNT_COMPLETED_EVENT_TYPE_UNMOUNT:
+    case fmp::MountCompletedEventType::kUnmount:
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kRemovableNotificationId);
 
@@ -1180,9 +1178,10 @@ void SystemNotificationManager::HandleMountCompletedEvent(
       }
       break;
 
-    case MOUNT_COMPLETED_EVENT_TYPE_NONE:
+    case fmp::MountCompletedEventType::kNone:
     default:
-      VLOG(1) << "Unexpected mount event " << event.event_type;
+      VLOG(1) << "Unexpected mount event "
+              << base::to_underlying(event.event_type);
       break;
   }
 

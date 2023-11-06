@@ -49,16 +49,21 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
 
 - (void)setUp {
   [super setUp];
+  [self signInWithSupervisedAccount];
+}
+
+- (void)tearDown {
+  [super tearDown];
+}
+
+// Signs in with a supervised account.
+- (void)signInWithSupervisedAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:fakeIdentity];
 
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
-}
-
-- (void)tearDown {
-  [super tearDown];
 }
 
 // Test that the tools menu item "New Incognito Tab" is disabled.
@@ -92,6 +97,31 @@ NSString* const kTestLearnMoreLabel = @"Learn more";
   policy::AssertButtonInCollectionEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   policy::AssertButtonInCollectionDisabled(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+}
+
+// Tests that the "edit" button of the tab grid is disabled.
+- (void)testTabGridEditButtonDisabled {
+  // Sign out so it is possible to open new incognito tab.
+  [SigninEarlGreyUI
+      signOutWithConfirmationChoice:SignOutConfirmationChoiceNotSyncing];
+  [SigninEarlGrey verifySignedOut];
+
+  // Open new incognito tab then a regular one to get back to non-incognito
+  // mode.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey openNewTab];
+
+  // Re-sign in.
+  [self signInWithSupervisedAccount];
+
+  // Check that the button is disabled.
+  [ChromeEarlGreyUI openTabGrid];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionRight)];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
 }
 
 // Test that the "New Incognito Tab" item is available in the popup menu

@@ -24,6 +24,9 @@ class PerformancePageHandler
   PerformancePageHandler& operator=(const PerformancePageHandler&) = delete;
   ~PerformancePageHandler() override;
 
+  // side_panel::mojom::PerformancePageHandler:
+  void ShowUI() override;
+
  private:
   mojo::Receiver<side_panel::mojom::PerformancePageHandler> receiver_;
   mojo::Remote<side_panel::mojom::PerformancePage> page_;

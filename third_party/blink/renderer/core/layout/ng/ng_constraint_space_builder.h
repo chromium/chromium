@@ -9,8 +9,8 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
@@ -20,7 +20,7 @@
 
 namespace blink {
 
-class NGExclusionSpace;
+class ExclusionSpace;
 
 class CORE_EXPORT NGConstraintSpaceBuilder final {
   STACK_ALLOCATED();
@@ -440,7 +440,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     space_.bitfields_.is_restricted_block_size_table_cell_child = true;
   }
 
-  void SetExclusionSpace(const NGExclusionSpace& exclusion_space) {
+  void SetExclusionSpace(const ExclusionSpace& exclusion_space) {
     if (!is_new_fc_)
       space_.exclusion_space_ = exclusion_space;
   }
@@ -457,7 +457,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
     }
   }
 
-  void SetTableRowData(const NGTableConstraintSpaceData* table_data,
+  void SetTableRowData(const TableConstraintSpaceData* table_data,
                        wtf_size_t row_index) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_row_data_set_);
@@ -467,7 +467,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
   }
 
   void SetTableSectionData(
-      scoped_refptr<const NGTableConstraintSpaceData> table_data,
+      scoped_refptr<const TableConstraintSpaceData> table_data,
       wtf_size_t section_index) {
 #if DCHECK_IS_ON()
     DCHECK(!is_table_section_data_set_);
@@ -515,7 +515,7 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
         target_stretch_block_sizes);
   }
 
-  void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
+  void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
 #if DCHECK_IS_ON()
     DCHECK(!is_grid_layout_subtree_set_);
     is_grid_layout_subtree_set_ = true;

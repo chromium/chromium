@@ -11,7 +11,6 @@
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
 #include "ui/gfx/linux/native_pixmap_dmabuf.h"
-#include "ui/gfx/x/connection.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_egl_x11_gles2.h"

@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "suggest_logout_after_closing_last_window": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SuggestLogoutAfterClosingLastWindow": false
+        },
+        "prefs": {
+          "suggest_logout_after_closing_last_window": {
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

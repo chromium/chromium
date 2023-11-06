@@ -12,15 +12,15 @@
 #include "services/network/ip_protection_proxy_list_manager_impl.h"
 #include "services/network/ip_protection_token_cache_manager.h"
 #include "services/network/ip_protection_token_cache_manager_impl.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace network {
 
 IpProtectionConfigCacheImpl::IpProtectionConfigCacheImpl(
     mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
         config_getter) {
-  // Proxy list and token cache managers are null upon cache creation.
+  // Proxy list is null upon cache creation.
   ipp_proxy_list_manager_ = nullptr;
-  ipp_token_cache_manager_ = nullptr;
 
   if (config_getter.is_valid()) {
     config_getter_.Bind(std::move(config_getter));
@@ -32,39 +32,53 @@ IpProtectionConfigCacheImpl::~IpProtectionConfigCacheImpl() = default;
 void IpProtectionConfigCacheImpl::SetUp() {
   ipp_proxy_list_manager_ =
       std::make_unique<IpProtectionProxyListManagerImpl>(&config_getter_);
-  ipp_token_cache_manager_ =
-      std::make_unique<IpProtectionTokenCacheManagerImpl>(&config_getter_);
+
+  ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyA] =
+      std::make_unique<IpProtectionTokenCacheManagerImpl>(
+          &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyA);
+
+  ipp_token_cache_managers_[network::mojom::IpProtectionProxyLayer::kProxyB] =
+      std::make_unique<IpProtectionTokenCacheManagerImpl>(
+          &config_getter_, network::mojom::IpProtectionProxyLayer::kProxyB);
 }
 
-bool IpProtectionConfigCacheImpl::IsAuthTokenAvailable() {
-  return ipp_token_cache_manager_ != nullptr
-             ? ipp_token_cache_manager_->IsAuthTokenAvailable()
-             : false;
+bool IpProtectionConfigCacheImpl::AreAuthTokensAvailable() {
+  for (const auto& manager : ipp_token_cache_managers_) {
+    if (!manager.second->IsAuthTokenAvailable()) {
+      return false;
+    }
+  }
+  return !ipp_token_cache_managers_.empty();
 }
 
 absl::optional<network::mojom::BlindSignedAuthTokenPtr>
-IpProtectionConfigCacheImpl::GetAuthToken() {
+IpProtectionConfigCacheImpl::GetAuthToken(size_t chain_index) {
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result;
-  if (ipp_token_cache_manager_ != nullptr) {
-    result = ipp_token_cache_manager_->GetAuthToken();
+  auto proxy_layer = chain_index == 0
+                         ? network::mojom::IpProtectionProxyLayer::kProxyA
+                         : network::mojom::IpProtectionProxyLayer::kProxyB;
+  if (ipp_token_cache_managers_.count(proxy_layer) > 0) {
+    result = ipp_token_cache_managers_[proxy_layer]->GetAuthToken();
   }
   return result;
 }
 
 void IpProtectionConfigCacheImpl::InvalidateTryAgainAfterTime() {
-  if (ipp_token_cache_manager_ != nullptr) {
-    ipp_token_cache_manager_->InvalidateTryAgainAfterTime();
+  for (const auto& manager : ipp_token_cache_managers_) {
+    manager.second->InvalidateTryAgainAfterTime();
   }
 }
 
 void IpProtectionConfigCacheImpl::SetIpProtectionTokenCacheManagerForTesting(
+    network::mojom::IpProtectionProxyLayer proxy_layer,
     std::unique_ptr<IpProtectionTokenCacheManager> ipp_token_cache_manager) {
-  ipp_token_cache_manager_ = std::move(ipp_token_cache_manager);
+  ipp_token_cache_managers_[proxy_layer] = std::move(ipp_token_cache_manager);
 }
 
 IpProtectionTokenCacheManager*
-IpProtectionConfigCacheImpl::GetIpProtectionTokenCacheManagerForTesting() {
-  return ipp_token_cache_manager_.get();
+IpProtectionConfigCacheImpl::GetIpProtectionTokenCacheManagerForTesting(
+    network::mojom::IpProtectionProxyLayer proxy_layer) {
+  return ipp_token_cache_managers_[proxy_layer].get();
 }
 
 void IpProtectionConfigCacheImpl::SetIpProtectionProxyListManagerForTesting(

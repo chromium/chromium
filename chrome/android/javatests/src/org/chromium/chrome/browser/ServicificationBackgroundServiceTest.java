@@ -42,8 +42,8 @@ public final class ServicificationBackgroundServiceTest {
     private File mSpareFile;
 
     /**
-     The size of the persistent/shared memory to store histograms. It should be consistent with
-     the |kAllocSize| in persistent_histograms.cc.
+     * The size of the persistent/shared memory to store histograms. It should be consistent with
+     * the |kAllocSize| in persistent_histograms.cc.
      */
     private static final int ALLOC_SIZE = 4 << 20; // 4 MiB
 
@@ -54,7 +54,7 @@ public final class ServicificationBackgroundServiceTest {
     @Before
     public void setUp() {
         mServicificationBackgroundService =
-                new ServicificationBackgroundService(true /*supportsMinimalBrowser*/);
+                new ServicificationBackgroundService(/* supportsMinimalBrowser= */ true);
     }
 
     @After
@@ -65,8 +65,10 @@ public final class ServicificationBackgroundServiceTest {
     // Creates the memory-mapped file which is used to persist histograms data before native is
     // loaded.
     private void createBrowserMetricsSpareFile() {
-        File appChromeDir = new File(
-                ContextUtils.getApplicationContext().getApplicationInfo().dataDir, APP_CHROME_DIR);
+        File appChromeDir =
+                new File(
+                        ContextUtils.getApplicationContext().getApplicationInfo().dataDir,
+                        APP_CHROME_DIR);
         if (!appChromeDir.exists()) appChromeDir.mkdir();
 
         mSpareFile = new File(appChromeDir + File.separator + SPARE_FILE_NAME);
@@ -81,8 +83,10 @@ public final class ServicificationBackgroundServiceTest {
             try {
                 mMappedSpareFile = new RandomAccessFile(mSpareFile, "rw");
 
-                MappedByteBuffer mappedByteBuffer = mMappedSpareFile.getChannel().map(
-                        FileChannel.MapMode.READ_WRITE, 0, ALLOC_SIZE);
+                MappedByteBuffer mappedByteBuffer =
+                        mMappedSpareFile
+                                .getChannel()
+                                .map(FileChannel.MapMode.READ_WRITE, 0, ALLOC_SIZE);
 
                 mappedByteBuffer.put(0, (byte) 0);
                 mappedByteBuffer.force();
@@ -115,7 +119,12 @@ public final class ServicificationBackgroundServiceTest {
     @Test
     @LargeTest
     @Feature({"ServicificationStartup"})
-    @CommandLineFlags.Add({"force-fieldtrials=*Foo/Bar", "enable-features=UMABackgroundSessions"})
+    @CommandLineFlags.Add({
+        "force-fieldtrials=*Foo/Bar",
+        "enable-features=UMABackgroundSessions",
+        // TODO(crbug.com/1491942): This fails with the field trial testing config.
+        "disable-field-trial-config"
+    })
     @Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE}) // crbug.com/1096833
     // Verifies that the memory-mapped file for persistent histogram data exists and contains a
     // valid SystemProfile. This test isn't run on low end devices which use local memory for

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/python.gni")
 import("//build/config/ui.gni")
 if (is_linux) {
@@ -10,6 +11,14 @@ if (is_linux) {
 import("//build/util/lastchange.gni")
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
+
+declare_args() {
+  # Make macOS request permissions for the chrome binary instead of its parent
+  # process (usually the Terminmal.app).
+  # This is required for running chrome tests on Google's CI machines, but for
+  # some vendor builds like Microsoft Teams they need to turn this off.
+  chromedriver_disclaim_responsibility = true
+}
 
 action("embed_js_in_cpp") {
   script = "embed_js_in_cpp.py"
@@ -385,6 +394,7 @@ source_set("lib") {
   }
 
   if (is_mac) {
+    deps += [ ":buildflags" ]
     frameworks = [ "Carbon.framework" ]
   }
 }
@@ -434,6 +444,15 @@ if (is_linux) {
     if (is_mac && is_component_ffmpeg) {
       ldflags = [ "-Wl,-rpath,@executable_path/." ]
     }
+  }
+}
+
+if (is_mac) {
+  buildflag_header("buildflags") {
+    header = "buildflags.h"
+    flags = [
+      "CHROMEDRIVER_DISCLAIM_RESPONSIBILITY=$chromedriver_disclaim_responsibility",
+    ]
   }
 }
 

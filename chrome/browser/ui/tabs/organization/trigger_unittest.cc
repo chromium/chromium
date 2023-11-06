@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 
+#include "chrome/browser/ui/tabs/organization/trigger_policies.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -50,17 +51,19 @@ class TriggerTest : public testing::Test {
 };
 
 TEST_F(TriggerTest, MVPTriggerHappyPath) {
-  std::unique_ptr<TabOrganizationTrigger> trigger = MakeMVPTrigger();
+  auto trigger = std::make_unique<TabOrganizationTrigger>(
+      GetDefaultTriggerScoringFunction(), GetDefaultTriggerScoreThreshold(),
+      std::make_unique<GreedyTriggerPolicy>());
 
-  // Should not trigger with few tabs.
+  // Should not trigger under the score threshold.
   EXPECT_FALSE(trigger->ShouldTrigger(tab_strip_model()));
 
-  // Should trigger with more tabs.
+  // Should trigger the first time over the score threshold.
   for (int i = 0; i < 10; i++) {
     AddTab();
   }
   EXPECT_TRUE(trigger->ShouldTrigger(tab_strip_model()));
 
-  // Should trigger only once.
+  // Should trigger only once (because GreedyTriggerPolicy).
   EXPECT_FALSE(trigger->ShouldTrigger(tab_strip_model()));
 }

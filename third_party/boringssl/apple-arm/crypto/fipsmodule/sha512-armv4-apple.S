@@ -63,7 +63,6 @@
 # define VFP_ABI_PUSH	vstmdb	sp!,{d8-d15}
 # define VFP_ABI_POP	vldmia	sp!,{d8-d15}
 #else
-# define __ARM_ARCH__ __LINUX_ARM_ARCH__
 # define __ARM_MAX_ARCH__ 7
 # define VFP_ABI_PUSH
 # define VFP_ABI_POP
@@ -151,7 +150,7 @@ LOPENSSL_armcap:
 #endif
 _sha512_block_data_order:
 Lsha512_block_data_order:
-#if __ARM_ARCH__<7 && !defined(__thumb2__)
+#if __ARM_ARCH<7 && !defined(__thumb2__)
 	sub	r3,pc,#8		@ _sha512_block_data_order
 #else
 	adr	r3,Lsha512_block_data_order
@@ -201,7 +200,7 @@ Loop:
 	str	r4,[sp,#40+4]
 
 L00_15:
-#if __ARM_ARCH__<7
+#if __ARM_ARCH<7
 	ldrb	r3,[r1,#7]
 	ldrb	r9, [r1,#6]
 	ldrb	r10, [r1,#5]
@@ -278,7 +277,7 @@ L00_15:
 	teq	r9,#148
 
 	ldr	r12,[sp,#16+0]	@ c.lo
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	it	eq			@ Thumb2 thing, sanity check in ARM
 #endif
 	orreq	r14,r14,#1
@@ -418,7 +417,7 @@ L16_79:
 	teq	r9,#23
 
 	ldr	r12,[sp,#16+0]	@ c.lo
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	it	eq			@ Thumb2 thing, sanity check in ARM
 #endif
 	orreq	r14,r14,#1
@@ -455,7 +454,7 @@ L16_79:
 	adc	r6,r6,r4		@ h += T
 	tst	r14,#1
 	add	r14,r14,#8
-#if __ARM_ARCH__>=7
+#if __ARM_ARCH>=7
 	ittt	eq			@ Thumb2 thing, sanity check in ARM
 #endif
 	ldreq	r9,[sp,#184+0]
@@ -534,7 +533,7 @@ L16_79:
 	bne	Loop
 
 	add	sp,sp,#8*9		@ destroy frame
-#if __ARM_ARCH__>=5
+#if __ARM_ARCH>=5
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,pc}
 #else
 	ldmia	sp!,{r4,r5,r6,r7,r8,r9,r10,r11,r12,lr}

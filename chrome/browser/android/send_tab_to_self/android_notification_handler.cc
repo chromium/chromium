@@ -160,7 +160,7 @@ void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
           ConvertUTF8ToJavaString(env, entry.GetURL().spec()),
           ConvertUTF8ToJavaString(env, entry.GetTitle()),
           ConvertUTF8ToJavaString(env, entry.GetDeviceName()),
-          expiraton_time.ToJavaTime(),
+          expiraton_time.InMillisecondsSinceUnixEpoch(),
           send_tab_to_self_notification_receiver_class);
     }
   }

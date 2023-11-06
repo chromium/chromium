@@ -463,14 +463,15 @@ class MenuController::MenuScrollTask {
     SubmenuView* const new_menu = part.submenu;
     CHECK(new_menu);
     const bool new_is_up = part.type == MenuPartType::kScrollUp;
-    if (std::exchange(submenu_, new_menu) == new_menu &&
-        std::exchange(is_scrolling_up_, new_is_up) == new_is_up) {
+    if (new_menu == submenu_ && is_scrolling_up_ == new_is_up) {
       return;
     }
 
     start_scroll_time_ = base::Time::Now();
+    submenu_ = new_menu;
     pixels_per_second_ = submenu_->GetPreferredItemHeight() * 20;
     start_y_ = submenu_->GetVisibleBounds().y();
+    is_scrolling_up_ = new_is_up;
     if (!scrolling_timer_.IsRunning()) {
       scrolling_timer_.Start(FROM_HERE, base::Hertz(60), this,
                              &MenuScrollTask::Run);
@@ -2203,16 +2204,15 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
           : CalculateMenuBounds(item, preferred_open_direction,
                                 &resulting_direction, &anchor);
 
-  // TODO(crbug.com/1467321): Investigate why menu bounds can be zero. Remove
-  // the log when the crash is fixed.
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(!bounds.size().IsEmpty())
-      << "Menu size must NOT be empty but it is " << bounds.ToString()
-      << " calculated as "
-      << (calculate_as_bubble_menu ? "bubble menu" : "menu")
-      << ". The item count is "
-      << static_cast<int>(item->GetSubmenu()->GetMenuItems().size())
-      << ". See crbug.com/1467321.";
+  if (bounds.size().IsEmpty()) {
+    LOG(WARNING) << "Menu size is unexpectedly zero. Bounds: "
+                 << bounds.ToString()
+                 << ", anchor: " << anchor.anchor_rect.ToString()
+                 << ", display_bounds: " << state_.monitor_bounds.ToString()
+                 << ", calculated as bubble: " << calculate_as_bubble_menu;
+    base::debug::DumpWithoutCrashing();
+  }
 #endif
 
   SetChildMenuOpenDirectionAtDepth(menu_depth, resulting_direction);

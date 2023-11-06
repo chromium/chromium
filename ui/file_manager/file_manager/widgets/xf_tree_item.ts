@@ -159,6 +159,13 @@ export class XfTreeItem extends XfBase {
     }
   }
 
+  /**
+   * This will be called when tree item is being set as a drop target.
+   */
+  doDropTargetAction() {
+    this.expanded = true;
+  }
+
   static override get styles() {
     return getCSS();
   }
@@ -554,17 +561,10 @@ function getCSS() {
 
     slot[name="trailingIcon"]::slotted(.root-eject) {
       --text-color: currentColor;
-      --hover-bg-color: var(--cros-sys-hover_on_subtle);
+      --hover-bg-color: none;
+      --ripple-opacity: 1;
       min-width: 32px;
       padding: 0;
-    }
-
-    :host([selected]) slot[name="trailingIcon"]::slotted(.root-eject) {
-      --hover-bg-color: var(--cros-sys-hover_on_prominent);
-    }
-
-    :host-context(html.col-resize) slot[name="trailingIcon"]::slotted(.root-eject:hover) {
-      --hover-bg-color: none;
     }
 
     slot[name="trailingIcon"]::slotted(.root-eject:focus) {

@@ -25,8 +25,7 @@ class LensRegionSearchControllerTest : public TestWithBrowserView {
 
     // Create an active web contents.
     AddTab(browser_view()->browser(), GURL("about:blank"));
-    controller_ =
-        std::make_unique<LensRegionSearchController>(browser_view()->browser());
+    controller_ = std::make_unique<LensRegionSearchController>();
     controller_->SetWebContentsForTesting(
         browser_view()->GetActiveWebContents());
     controller_->SetEntryPointForTesting(

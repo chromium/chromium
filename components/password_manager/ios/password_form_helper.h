@@ -26,16 +26,28 @@ struct PasswordFormFillData;
 
 namespace password_manager {
 struct FillData;
-// Returns true if the trust level for the current page URL of |web_state| is
-// kAbsolute. If |page_url| is not null, fills it with the current page URL.
-bool GetPageURLAndCheckTrustLevel(web::WebState* web_state,
-                                  GURL* __nullable page_url);
 }  // namespace password_manager
 
 namespace web {
 class WebFrame;
 class WebState;
 }  // namespace web
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Status returned after handling the submitted form. Any item that isn't
+// kHandled represents a rejection where the submission wasn't handled.
+enum class HandleSubmittedFormStatus {
+  kHandled = 0,
+  kRejectedNoWebState = 1,
+  kRejectedNoDelegate = 2,
+  kRejectedMessageBodyNotADict = 3,
+  kRejectedNoFrameMatchingId = 4,
+  kRejectedNoTrustedUrl = 5,
+  kRejectedCantExtractFormData = 6,
+  kMaxValue = kRejectedCantExtractFormData
+};
 
 // A protocol implemented by a delegate of PasswordFormHelper.
 @protocol PasswordFormHelperDelegate
@@ -118,7 +130,8 @@ class WebState;
 
 // Processes `message` sent by JavaScript to the `PasswordFormSubmitButtonClick`
 // handler.
-- (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message;
+- (HandleSubmittedFormStatus)handleFormSubmittedMessage:
+    (const web::ScriptMessage&)message;
 
 // Creates a instance with the given |webState|.
 - (instancetype)initWithWebState:(web::WebState*)webState

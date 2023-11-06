@@ -65,7 +65,7 @@ base::CallbackListSubscription TestSafeBrowsingService::RegisterStateCallback(
   return {};
 }
 
-std::string TestSafeBrowsingService::serilized_download_report() {
+std::string TestSafeBrowsingService::serialized_download_report() {
   return serialized_download_report_;
 }
 

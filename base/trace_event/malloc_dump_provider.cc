@@ -461,9 +461,6 @@ void MallocDumpProvider::ReportPerMinuteStats(
 }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-// static
-const char* MemoryDumpPartitionStatsDumper::kPartitionsDumpName = "partitions";
-
 std::string GetPartitionDumpName(const char* root_name,
                                  const char* partition_name) {
   return base::StringPrintf("%s/%s/%s", root_name,

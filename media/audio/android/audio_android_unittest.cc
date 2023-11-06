@@ -249,7 +249,8 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
 
     // Open up the binary file which will be written to in the destructor.
     base::FilePath file_path;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+    EXPECT_TRUE(
+        base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path));
     file_path = file_path.AppendASCII(file_name.c_str());
     binary_file_ = base::OpenFile(file_path, "wb");
     DLOG_IF(ERROR, !binary_file_) << "Failed to open binary PCM data file.";

@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/download/ar_quick_look_tab_helper_delegate.h"
+#import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 
 // ARQuickLookTabHelperDelegate which collects all file URLs into `fileURLs`.
 @interface FakeARQuickLookTabHelperDelegate

@@ -1,0 +1,46 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ThrottleNonVisibleCrossOriginIframesAllowed": true
+        },
+        "prefs": {
+          "throttle_non_visible_cross_origin_iframes_allowed": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "ThrottleNonVisibleCrossOriginIframesAllowed": false
+        },
+        "prefs": {
+          "throttle_non_visible_cross_origin_iframes_allowed": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "throttle_non_visible_cross_origin_iframes_allowed": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

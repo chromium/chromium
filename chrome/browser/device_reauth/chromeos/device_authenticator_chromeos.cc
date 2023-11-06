@@ -12,9 +12,9 @@ DeviceAuthenticatorChromeOS::DeviceAuthenticatorChromeOS(
     std::unique_ptr<AuthenticatorChromeOSInterface> authenticator,
     DeviceAuthenticatorProxy* proxy,
     const device_reauth::DeviceAuthParams& params)
-    : ChromeDeviceAuthenticatorCommon(proxy,
-                                      params.GetAuthenticationValidityPeriod(),
-                                      params.GetAuthResultHistogram()),
+    : DeviceAuthenticatorCommon(proxy,
+                                params.GetAuthenticationValidityPeriod(),
+                                params.GetAuthResultHistogram()),
       authenticator_(std::move(authenticator)) {}
 
 DeviceAuthenticatorChromeOS::~DeviceAuthenticatorChromeOS() = default;

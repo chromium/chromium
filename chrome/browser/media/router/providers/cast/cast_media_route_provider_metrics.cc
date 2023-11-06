@@ -37,23 +37,26 @@ void RecordLaunchSessionResponseAppType(const base::Value* app_type) {
   }
 }
 
-void RecordSinkRemotingCompatibility(bool is_supported_model,
-                                     bool is_supported_audio_codec,
-                                     media::AudioCodec audio_codec,
-                                     bool is_supported_video_codec,
-                                     media::VideoCodec video_codec) {
+void RecordSinkRemotingCompatibility(
+    bool is_supported_model,
+    bool is_supported_audio_codec,
+    absl::optional<media::AudioCodec> audio_codec,
+    bool is_supported_video_codec,
+    media::VideoCodec video_codec) {
   base::UmaHistogramBoolean(kHistogramSinkModelSupportsRemoting,
                             is_supported_model);
   if (!is_supported_model) {
     return;
   }
 
-  if (is_supported_audio_codec) {
-    base::UmaHistogramEnumeration(kHistogramSinkCapabilitySupportedAudioCodec,
-                                  audio_codec);
-  } else {
-    base::UmaHistogramEnumeration(kHistogramSinkCapabilityUnsupportedAudioCodec,
-                                  audio_codec);
+  if (audio_codec.has_value()) {
+    if (is_supported_audio_codec) {
+      base::UmaHistogramEnumeration(kHistogramSinkCapabilitySupportedAudioCodec,
+                                    audio_codec.value());
+    } else {
+      base::UmaHistogramEnumeration(
+          kHistogramSinkCapabilityUnsupportedAudioCodec, audio_codec.value());
+    }
   }
 
   if (is_supported_video_codec) {

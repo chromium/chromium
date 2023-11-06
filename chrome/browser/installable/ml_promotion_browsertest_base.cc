@@ -88,7 +88,6 @@ bool MLPromotionBrowserTestBase::InstallAppForCurrentWebContents(
 
   provider->scheduler().FetchManifestAndInstall(
       WebappInstallSource::OMNIBOX_INSTALL_ICON, web_contents()->GetWeakPtr(),
-      /*bypass_service_worker_check=*/true,
       base::BindOnce(web_app::test::TestAcceptDialogCallback),
       install_future.GetCallback(), /*use_fallback=*/false);
 
@@ -117,7 +116,6 @@ bool MLPromotionBrowserTestBase::InstallAppFromUserInitiation(
                                        dialog_name);
   web_app::CreateWebAppFromManifest(
       web_contents(),
-      /*bypass_service_worker_check=*/true,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       install_future.GetCallback(), web_app::PwaInProductHelpState::kNotShown);
   views::Widget* widget = waiter.WaitIfNeededAndGet();

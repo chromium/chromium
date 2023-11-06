@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DiskCacheDir": "${user_home}/test-cache"
+        },
+        "prefs": {
+          "browser.disk_cache_dir": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -333,8 +333,7 @@ const int kInvalidLanguageIndex = -1;
   languageMapping.reserve(languageNames.size());
 
   for (size_t i = 0; i < languageNames.size(); ++i) {
-    if (translate::IsForceTranslateEnabled() && shouldSkipFirstLanguage &&
-        i == 0) {
+    if (shouldSkipFirstLanguage && i == 0) {
       // "Detected Language" is the first item in the languages list and should
       // only be added to the source language menu.
       continue;

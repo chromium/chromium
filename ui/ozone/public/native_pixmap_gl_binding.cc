@@ -41,7 +41,7 @@ unsigned NativePixmapGLBinding::BufferFormatToGLInternalFormatDefaultMapping(
     case gfx::BufferFormat::BGRA_8888:
       return GL_BGRA_EXT;
     case gfx::BufferFormat::RGBA_F16:
-      return GL_RGBA;
+      return GL_RGBA16F_EXT;
     case gfx::BufferFormat::YVU_420:
       return GL_RGB_YCRCB_420_CHROMIUM;
     case gfx::BufferFormat::YUV_420_BIPLANAR:

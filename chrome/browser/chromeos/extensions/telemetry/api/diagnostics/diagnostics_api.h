@@ -423,6 +423,17 @@ class OsDiagnosticsRunAudioDriverRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunFanRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runFanRoutine",
+                             OS_DIAGNOSTICS_RUNFANROUTINE)
+ private:
+  ~OsDiagnosticsRunFanRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 /****************** DIAGNOSTICS API V2 ******************/
 
 class OsDiagnosticsCreateMemoryRoutineFunction
@@ -431,6 +442,17 @@ class OsDiagnosticsCreateMemoryRoutineFunction
                              OS_DIAGNOSTICS_CREATEMEMORYROUTINE)
  private:
   ~OsDiagnosticsCreateMemoryRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
+class OsDiagnosticsCreateVolumeButtonRoutineFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.createVolumeButtonRoutine",
+                             OS_DIAGNOSTICS_CREATEVOLUMEBUTTONROUTINE)
+ private:
+  ~OsDiagnosticsCreateVolumeButtonRoutineFunction() override = default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -462,6 +484,21 @@ class OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction
                              OS_DIAGNOSTICS_ISMEMORYROUTINEARGUMENTSUPPORTED)
  private:
   ~OsDiagnosticsIsMemoryRoutineArgumentSupportedFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(crosapi::mojom::TelemetryExtensionSupportStatusPtr result);
+};
+
+class OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction
+    : public DiagnosticsApiFunctionBaseV2 {
+  DECLARE_EXTENSION_FUNCTION(
+      "os.diagnostics.isVolumeButtonRoutineArgumentSupported",
+      OS_DIAGNOSTICS_ISVOLUMEBUTTONROUTINEARGUMENTSUPPORTED)
+ private:
+  ~OsDiagnosticsIsVolumeButtonRoutineArgumentSupportedFunction() override =
+      default;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

@@ -12,6 +12,7 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,6 +28,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -43,9 +45,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.ExecutionException;
 
-/**
- * Tests for {@link DragAndDropLauncherActivity}.
- */
+/** Tests for {@link DragAndDropLauncherActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "This class tests activity start behavior and thus cannot be batched.")
@@ -58,12 +58,19 @@ public class DragAndDropLauncherActivityTest {
     private Context mContext;
     private String mLinkUrl;
     private final CallbackHelper mTabAddedCallback = new CallbackHelper();
+    private UserActionTester mActionTester;
 
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
         mContext = ContextUtils.getApplicationContext();
-        mLinkUrl = JUnitTestGURLs.HTTP_URL.getSpec();
+        mLinkUrl = JUnitTestGURLs.EXAMPLE_URL.getSpec();
+        mActionTester = new UserActionTester();
+    }
+
+    @After
+    public void tearDown() {
+        mActionTester.tearDown();
     }
 
     /**
@@ -74,26 +81,41 @@ public class DragAndDropLauncherActivityTest {
     @LargeTest
     public void testDragAndDropLauncherActivity_createNewTabbedActivity() throws Exception {
         Intent intent = createLinkDragDropIntent(mLinkUrl, null);
-        ChromeTabbedActivity lastAccessedActivity = ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class, Stage.CREATED, () -> mContext.startActivity(intent));
+        ChromeTabbedActivity lastAccessedActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mContext.startActivity(intent));
         mActivityTestRule.setActivity(lastAccessedActivity);
 
         // Verify that a new Chrome instance is created.
-        Assert.assertEquals("Number of Chrome instances should be correct.", 2,
+        Assert.assertEquals(
+                "Number of Chrome instances should be correct.",
+                2,
                 MultiWindowUtils.getInstanceCount());
 
-        CriteriaHelper.pollUiThread(() -> {
-            Tab activityTab = mActivityTestRule.getActivity().getActivityTab();
-            Criteria.checkThat(
-                    "Activity tab should be non-null.", activityTab, Matchers.notNullValue());
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab activityTab = mActivityTestRule.getActivity().getActivityTab();
+                    Criteria.checkThat(
+                            "Activity tab should be non-null.",
+                            activityTab,
+                            Matchers.notNullValue());
+                });
 
         // Verify that the link is opened in the activity tab of the new Chrome instance.
-        Tab activityTab = TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivityTestRule.getActivity().getActivityTab());
-        Assert.assertEquals("Activity tab URL should match the dragged link URL.",
+        Tab activityTab =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getActivityTab());
+        Assert.assertEquals(
+                "Activity tab URL should match the dragged link URL.",
                 new GURL(mLinkUrl).getSpec(),
                 ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec());
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester
+                        .getActions()
+                        .contains(DragAndDropLauncherActivity.LAUNCHED_FROM_LINK_USER_ACTION));
     }
 
     /**
@@ -109,13 +131,17 @@ public class DragAndDropLauncherActivityTest {
         // cause a significant overhead for testing this scenario where a link is opened in an
         // existing instance.
         Intent intent = createLinkDragDropIntent(mLinkUrl, null);
-        ChromeTabbedActivity lastAccessedActivity = ApplicationTestUtils.waitForActivityWithClass(
-                ChromeTabbedActivity.class, Stage.CREATED, () -> mContext.startActivity(intent));
+        ChromeTabbedActivity lastAccessedActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mContext.startActivity(intent));
         mActivityTestRule.setActivity(lastAccessedActivity);
-        int lastAccessedInstanceId = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> TabWindowManagerSingleton.getInstance().getIndexForWindow(
-                                lastAccessedActivity));
+        int lastAccessedInstanceId =
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                TabWindowManagerSingleton.getInstance()
+                                        .getIndexForWindow(lastAccessedActivity));
         addTabModelSelectorObserver(lastAccessedActivity);
 
         // Simulate an attempt to open a new window from a dragged link intent when max instances
@@ -127,16 +153,20 @@ public class DragAndDropLauncherActivityTest {
         mTabAddedCallback.waitForCallback(0);
 
         // Verify that no new Chrome instance is created.
-        Assert.assertEquals("Number of Chrome instances should be correct.", 2,
+        Assert.assertEquals(
+                "Number of Chrome instances should be correct.",
+                2,
                 MultiWindowUtils.getInstanceCount());
 
         // Verify that the link is opened in the activity tab of the last accessed Chrome instance.
-        CriteriaHelper.pollUiThread(() -> {
-            Tab activityTab = lastAccessedActivity.getActivityTab();
-            Criteria.checkThat("Activity tab URL should match the dragged link URL.",
-                    ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec(),
-                    Matchers.is(JUnitTestGURLs.MAPS_URL.getSpec()));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab activityTab = lastAccessedActivity.getActivityTab();
+                    Criteria.checkThat(
+                            "Activity tab URL should match the dragged link URL.",
+                            ChromeTabUtils.getUrlOnUiThread(activityTab).getSpec(),
+                            Matchers.is(JUnitTestGURLs.MAPS_URL.getSpec()));
+                });
     }
 
     /**
@@ -157,22 +187,25 @@ public class DragAndDropLauncherActivityTest {
 
     private void addTabModelSelectorObserver(ChromeTabbedActivity activity) {
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModelSelectorObserver tabModelSelectorObserver = new TabModelSelectorObserver() {
-                @Override
-                public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-                    mTabAddedCallback.notifyCalled();
-                }
-            };
-            tabModelSelector.addObserver(tabModelSelectorObserver);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModelSelectorObserver tabModelSelectorObserver =
+                            new TabModelSelectorObserver() {
+                                @Override
+                                public void onNewTabCreated(
+                                        Tab tab, @TabCreationState int creationState) {
+                                    mTabAddedCallback.notifyCalled();
+                                }
+                            };
+                    tabModelSelector.addObserver(tabModelSelectorObserver);
+                });
     }
 
     private Intent createLinkDragDropIntent(String linkUrl, Integer windowId)
             throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> DragAndDropLauncherActivity.getLinkLauncherIntent(
+                () ->
+                        DragAndDropLauncherActivity.getLinkLauncherIntent(
                                 mContext, linkUrl, windowId));
     }
 }

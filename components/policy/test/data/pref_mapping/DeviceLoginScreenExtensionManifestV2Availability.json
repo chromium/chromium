@@ -1,0 +1,20 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceLoginScreenExtensionManifestV2Availability": 1
+        },
+        "prefs": {
+          "extensions.manifest_v2": {
+            "location": "signin_profile",
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

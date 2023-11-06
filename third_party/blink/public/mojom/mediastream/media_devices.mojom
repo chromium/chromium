@@ -130,11 +130,14 @@ interface MediaDevicesDispatcherHost {
   [EnableIfNot=is_android]
   CloseFocusWindowOfOpportunity(string label);
 
-  // Mints a new crop-ID, associates it with the browsing context in which
-  // it was produced, and returns it. This crop-ID can later be used as the
-  // input for BrowserCaptureMediaStreamTrack.cropTo().
+  // Mints a new ID backing a SubCaptureTarget.
+  // * CropTargetIds back a CropTarget, which is the input type
+  //   for BrowserCaptureMediaStreamTrack.cropTo().
+  // * RestrictionTargetIds back a RestrictionTarget, which is the input type
+  //   for BrowserCaptureMediaStreamTrack.restrictTo().
   [EnableIfNot=is_android]
-  ProduceCropId() => (string crop_id);
+  ProduceSubCaptureTargetId(media.mojom.SubCaptureTargetType type)
+      => (string id);
 };
 
 // This object lives in the renderer process and is used by the browser process

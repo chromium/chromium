@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -46,11 +46,13 @@ NGBlockBreakToken* NGBlockBreakToken::CreateRepeated(const NGBlockNode& node,
 NGBlockBreakToken* NGBlockBreakToken::CreateForBreakInRepeatedFragment(
     const NGBlockNode& node,
     unsigned sequence_number,
-    LayoutUnit consumed_block_size) {
+    LayoutUnit consumed_block_size,
+    bool is_at_block_end) {
   auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
   token->data_ = MakeGarbageCollected<NGBlockBreakTokenData>();
   token->data_->sequence_number = sequence_number;
   token->data_->consumed_block_size = consumed_block_size;
+  token->is_at_block_end_ = is_at_block_end;
 #if DCHECK_IS_ON()
   token->is_repeated_actual_break_ = true;
 #endif
@@ -77,26 +79,26 @@ NGBlockBreakToken::NGBlockBreakToken(PassKey key, NGLayoutInputNode node)
       data_(MakeGarbageCollected<NGBlockBreakTokenData>()),
       const_num_children_(0) {}
 
-const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
+const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
     const NGLayoutInputNode& node) const {
   DCHECK(node.GetLayoutBox());
   return InlineBreakTokenFor(*node.GetLayoutBox());
 }
 
-const NGInlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
+const InlineBreakToken* NGBlockBreakToken::InlineBreakTokenFor(
     const LayoutBox& layout_object) const {
   DCHECK(&layout_object);
   for (const NGBreakToken* child : ChildBreakTokens()) {
     switch (child->Type()) {
       case kBlockBreakToken:
-        // Currently there are no cases where NGInlineBreakToken is stored in
+        // Currently there are no cases where InlineBreakToken is stored in
         // non-direct child descendants.
         DCHECK(
             !To<NGBlockBreakToken>(child)->InlineBreakTokenFor(layout_object));
         break;
       case kInlineBreakToken:
         if (child->InputNode().GetLayoutBox() == &layout_object)
-          return To<NGInlineBreakToken>(child);
+          return To<InlineBreakToken>(child);
         break;
     }
   }

@@ -4543,15 +4543,18 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   int rph_id_3 = current_frame_host()->GetProcess()->GetID();
   EXPECT_EQ(rph_id_2, rph_id_3);
 
-  // This test is parameterized on whether the bfcache is enabled.  With
-  // bfcache, we force a BrowsingInstance swap at the very beginning when the
-  // navigation to `url_2` starts, so there's no need to create a new
-  // SiteInstance when we learn about COOP at response time, since the
+  // The original speculative RFH should always be destroyed.
+  //
+  // Subtle note: this happens even when bfcache is enabled. With bfcache,
+  // we force a BrowsingInstance swap at the very beginning when the navigation
+  // to `url_2` starts.  So when we learn about COOP at response time, the
   // candidate (speculative RFH's) SiteInstance is already in a fresh
-  // BrowsingInstance.  Therefore, with bfcache, the original speculative RFH
-  // will be the RFH that eventually commits.  Otherwise, the original
-  // speculative RFH should be destroyed and replaced by another RFH.
-  EXPECT_NE(IsBackForwardCacheEnabled(), speculative_rfh.IsDestroyed());
+  // BrowsingInstance. However, it cannot be reused, because COOP requires a
+  // BrowsingInstance with b.test as its common_coop_origin(), and the
+  // candidate SiteInstance's BrowsingInstance has no common_coop_origin(), so
+  // it cannot be reused, and we end up creating a new speculative RFH and
+  // destroying the original one.
+  EXPECT_TRUE(speculative_rfh.IsDestroyed());
 }
 
 // Ensure that same-site navigations that result in a COOP mismatch avoid an
@@ -7038,8 +7041,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // BrowsingInstance will have visibility of all its BrowsingInstance frames, but
 // will only have visibility of the direct opener frame in a different
 // BrowsingInstance in the same CoopRelatedGroup.
+// TODO(1495328): Failing on Mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChainedPopupsMixedBrowsingInstanceProxies DISABLED_ChainedPopupsMixedBrowsingInstanceProxies
+#else
+#define MAYBE_ChainedPopupsMixedBrowsingInstanceProxies ChainedPopupsMixedBrowsingInstanceProxies
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       ChainedPopupsMixedBrowsingInstanceProxies) {
+                       MAYBE_ChainedPopupsMixedBrowsingInstanceProxies) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
@@ -7323,8 +7332,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 // event.source, even cross-BrowsingInstance, even when the source is an iframe
 // for which the target frame's SiteInstanceGroup does not have a main frame
 // proxy yet.
+// TODO(1495328) Failing on mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubframePostMessageProxiesCrossBrowsingInstance DISABLED_SubframePostMessageProxiesCrossBrowsingInstance
+#else
+#define MAYBE_SubframePostMessageProxiesCrossBrowsingInstance SubframePostMessageProxiesCrossBrowsingInstance
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       SubframePostMessageProxiesCrossBrowsingInstance) {
+                       MAYBE_SubframePostMessageProxiesCrossBrowsingInstance) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
@@ -7435,8 +7450,14 @@ IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
 
 // Smoke test for the case where a proxy for a given subframe is created before
 // other subframe proxies, that might be below it in the indexed order.
+// TODO(1495328): Failing on Mac bots
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SubframesProxiesInWrongOrderSmokeTest DISABLED_SubframesProxiesInWrongOrderSmokeTest
+#else
+#define MAYBE_SubframesProxiesInWrongOrderSmokeTest SubframesProxiesInWrongOrderSmokeTest
+#endif
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesProxiesBrowserTest,
-                       SubframesProxiesInWrongOrderSmokeTest) {
+                       MAYBE_SubframesProxiesInWrongOrderSmokeTest) {
   GURL coop_rp_page(https_server()->GetURL(
       "a.test",
       "/set-header"
@@ -9823,6 +9844,62 @@ IN_PROC_BROWSER_TEST_P(
   // Always-allowed properties should still be accessible.
   EXPECT_EQ(true, EvalJs(current_frame_host(), "window.w.closed == false"));
   EXPECT_EQ(true, EvalJs(popup_rfh, "opener.closed == false"));
+}
+
+// Regression test for https://crbug.com/1491282.  Ensure that when a
+// navigation to a COOP: RP page requires a new BrowsingInstance in a new
+// CoopRelatedGroup, a subsequent navigation that stays in the same
+// CoopRelatedGroup does not crash.  In this case, it is essential that when a
+// new non-COOP BrowsingInstance in a new CoopRelatedGroup is created at
+// request start time, that BrowsingInstance isn't incorrectly reused at
+// response started time, if the response came back with COOP: RP headers and
+// requires a BrowsingInstance with a different common_coop_origin().
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest,
+                       NewBrowsingInstanceFromBeginNavigationCannotBeReused) {
+  // Start on a WebUI page. The repro for https://crbug.com/1491282 required
+  // this, because the security swap from WebUI to normal pages requires a new
+  // BrowsingInstance (with no common_coop_origin) and a new CoopRelatedGroup
+  // at both request and response time. In contrast, navigating from a normal
+  // page to a COOP:RP page would pick a new BrowsingInstance (with a
+  // common_coop_origin) in the same CoopRelatedGroup at response time, because
+  // the kRelatedCoopSwap reason is chosen after checking for security swaps
+  // but before checking for proactive swaps. A new CoopRelatedGroup guarantees
+  // that ConvertToSiteInstance() will attempt to reuse the speculative
+  // RenderFrameHost's SiteInstance (the "candidate_instance") at response
+  // time, rather than getting a SiteInstance + BrowsingInstance in the same
+  // CoopRelatedGroup.
+  GURL webui_page("chrome://ukm");
+  ASSERT_TRUE(NavigateToURL(shell(), webui_page));
+  scoped_refptr<SiteInstanceImpl> webui_instance(
+      current_frame_host()->GetSiteInstance());
+
+  // Now, navigate to a COOP: restrict-properties page.  This will create a
+  // fresh BrowsingInstance at request start time, and evaluate whether it can
+  // stay in that BrowsingInstance after receiving the response.  In
+  // https://crbug.com/1491282, the BrowsingInstance from request start was
+  // incorrectly reused, resulting in not having a common_coop_origin() at the
+  // end of this navigation.  Ensure this is not the case.
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  ASSERT_TRUE(NavigateToURL(shell(), coop_rp_page));
+  scoped_refptr<SiteInstanceImpl> coop_rp_instance(
+      current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(
+      webui_instance->IsCoopRelatedSiteInstance(coop_rp_instance.get()));
+  EXPECT_TRUE(coop_rp_instance->GetCommonCoopOrigin().has_value());
+  EXPECT_EQ("a.test", coop_rp_instance->GetCommonCoopOrigin()->host());
+
+  // Ensure that we can navigate to a page without COOP: restrict-properties.
+  // This should swap BrowsingInstances but stay in the same CoopRelatedGroup,
+  // and this shouldn't crash.
+  GURL non_coop_rp_page(https_server()->GetURL("b.test", "/title1.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), non_coop_rp_page));
+  SiteInstanceImpl* non_coop_instance(current_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(non_coop_instance->GetCommonCoopOrigin().has_value());
+  EXPECT_FALSE(coop_rp_instance->IsRelatedSiteInstance(non_coop_instance));
+  EXPECT_TRUE(coop_rp_instance->IsCoopRelatedSiteInstance(non_coop_instance));
 }
 
 IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest, Prerender) {

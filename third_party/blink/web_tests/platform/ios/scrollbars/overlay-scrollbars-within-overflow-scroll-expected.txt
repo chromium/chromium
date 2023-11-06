@@ -1,0 +1,53 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [980, 735],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [94, 1],
+      "bounds": [7, 100],
+      "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [394, 1],
+      "bounds": [7, 300]
+    },
+    {
+      "name": "Inner Viewport Horizontal Scrollbar",
+      "position": [0, 728],
+      "bounds": [973, 7]
+    },
+    {
+      "name": "Inner Viewport Vertical Scrollbar",
+      "position": [973, 0],
+      "bounds": [7, 728]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -302, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [1, 501, 0, 1]
+      ]
+    }
+  ]
+}
+

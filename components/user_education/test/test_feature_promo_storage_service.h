@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/feature_list.h"
+#include "components/user_education/common/feature_promo_data.h"
 #include "components/user_education/common/feature_promo_storage_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -21,14 +22,14 @@ class TestFeaturePromoStorageService : public FeaturePromoStorageService {
   ~TestFeaturePromoStorageService() override;
 
   // FeaturePromoStorageService:
-  absl::optional<PromoData> ReadPromoData(
+  absl::optional<FeaturePromoData> ReadPromoData(
       const base::Feature& iph_feature) const override;
   void SavePromoData(const base::Feature& iph_feature,
-                     const PromoData& promo_data) override;
+                     const FeaturePromoData& promo_data) override;
   void Reset(const base::Feature& iph_feature) override;
 
  private:
-  std::map<const base::Feature*, PromoData> promo_data_;
+  std::map<const base::Feature*, FeaturePromoData> promo_data_;
 };
 
 }  // namespace user_education::test

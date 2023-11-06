@@ -39,12 +39,9 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabUsageTrackerTest {
-    @Mock
-    TabModelSelector mTabModelSelector;
-    @Mock
-    ActivityLifecycleDispatcher mDispatcher;
-    @Mock
-    TabModel mTabModel;
+    @Mock TabModelSelector mTabModelSelector;
+    @Mock ActivityLifecycleDispatcher mDispatcher;
+    @Mock TabModel mTabModel;
 
     private static final int INITIAL_TAB_COUNT = 0;
     private static final String NUMBER_OF_TABS_USED = "Android.ActivityStop.NumberOfTabsUsed";
@@ -106,7 +103,7 @@ public class TabUsageTrackerTest {
         Tab selectedTab = getMockedTab(3);
         // Start with 5 existing tabs and 1 selected tab.
         Mockito.when(mTabModelSelector.getTotalTabCount()).thenReturn(5);
-        Mockito.when(mTabModel.getTabAt(Mockito.anyInt())).thenReturn(selectedTab);
+        Mockito.when(mTabModelSelector.getCurrentTab()).thenReturn(selectedTab);
         mTabUsageTracker.onResumeWithNative();
 
         // Act: Create 1 tab, select 1 tab and call onStop.

@@ -36,7 +36,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/color/color_mixers.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -61,11 +60,6 @@
 #include "ui/linux/linux_ui_getter.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace {
 

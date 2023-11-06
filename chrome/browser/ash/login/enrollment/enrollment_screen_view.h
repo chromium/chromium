@@ -21,8 +21,7 @@ class EnrollmentStatus;
 namespace ash {
 
 // Interface class for the enterprise enrollment screen view.
-class EnrollmentScreenView
-    : public base::SupportsWeakPtr<EnrollmentScreenView> {
+class EnrollmentScreenView {
  public:
   // This defines the interface for controllers which will be called back when
   // something happens on the UI.
@@ -52,7 +51,8 @@ class EnrollmentScreenView
     kEnterprise,
     kCFM,
     kEnterpriseLicense,
-    kEducationLicense
+    kEducationLicense,
+    kDeviceEnrollment,
   };
   enum class GaiaButtonsType {
     kDefault,
@@ -121,6 +121,8 @@ class EnrollmentScreenView
   virtual void ShowEnrollmentStatus(policy::EnrollmentStatus status) = 0;
 
   virtual void Shutdown() = 0;
+
+  virtual base::WeakPtr<EnrollmentScreenView> AsWeakPtr() = 0;
 };
 
 }  // namespace ash

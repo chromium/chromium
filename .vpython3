@@ -500,6 +500,15 @@ wheel: <
   version: "version:11.0.3"
 >
 
+wheel: <
+  name: "infra/python/wheels/beautifulsoup4-py3"
+  version: "version:4.9.0"
+>
+wheel: <
+  name: "infra/python/wheels/soupsieve-py3"
+  version: "version:1.9.5"
+>
+
 # Used by:
 #   //tools/infra/find_bad_builds.py
 wheel: <
@@ -555,6 +564,11 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/hjson-py2_py3"
   version: "version:3.1.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/frozendict-py3"
+  version: "version:2.0.6"
 >
 
 # Used by:

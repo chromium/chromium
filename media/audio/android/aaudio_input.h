@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
 #include "media/audio/audio_io.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
 
 namespace media {
@@ -57,6 +58,8 @@ class AAudioInputStream : public AudioInputStream,
 
   const raw_ptr<AudioManagerAndroid> audio_manager_;
   const AudioParameters params_;
+
+  AmplitudePeakDetector peak_detector_;
 
   std::unique_ptr<AAudioStreamWrapper> stream_wrapper_;
 

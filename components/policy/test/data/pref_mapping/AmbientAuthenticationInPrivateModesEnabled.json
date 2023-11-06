@@ -1,0 +1,35 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "auth.ambient_auth_in_private_modes": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "AmbientAuthenticationInPrivateModesEnabled": 3
+        },
+        "prefs": {
+          "auth.ambient_auth_in_private_modes": {
+            "location": "local_state",
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

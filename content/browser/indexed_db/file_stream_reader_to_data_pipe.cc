@@ -37,25 +37,25 @@ void FileStreamReaderToDataPipe::Start(
 
 void FileStreamReaderToDataPipe::ReadMore() {
   DCHECK(!pending_write_.get());
-
-  uint32_t num_bytes;
-  MojoResult mojo_result = network::NetToMojoPendingBuffer::BeginWrite(
-      &dest_, &pending_write_, &num_bytes);
-  if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
-    // The pipe is full.  We need to wait for it to have more space.
-    writable_handle_watcher_->ArmOrNotify();
-    return;
-  } else if (mojo_result == MOJO_RESULT_FAILED_PRECONDITION) {
-    // The data pipe consumer handle has been closed.
-    OnComplete(net::ERR_ABORTED);
-    return;
-  } else if (mojo_result != MOJO_RESULT_OK) {
-    // The body stream is in a bad state. Bail out.
-    OnComplete(net::ERR_UNEXPECTED);
-    return;
+  MojoResult mojo_result =
+      network::NetToMojoPendingBuffer::BeginWrite(&dest_, &pending_write_);
+  switch (mojo_result) {
+    case MOJO_RESULT_OK:
+      break;
+    case MOJO_RESULT_SHOULD_WAIT:
+      // The pipe is full.  We need to wait for it to have more space.
+      writable_handle_watcher_->ArmOrNotify();
+      return;
+    case MOJO_RESULT_FAILED_PRECONDITION:
+      // The data pipe consumer handle has been closed.
+      OnComplete(net::ERR_ABORTED);
+      return;
+    default:
+      // The body stream is in a bad state. Bail out.
+      OnComplete(net::ERR_UNEXPECTED);
+      return;
   }
-
-  uint64_t read_bytes = std::min(static_cast<uint64_t>(num_bytes),
+  uint64_t read_bytes = std::min(static_cast<uint64_t>(pending_write_->size()),
                                  read_length_ - transferred_bytes_);
 
   auto buffer =

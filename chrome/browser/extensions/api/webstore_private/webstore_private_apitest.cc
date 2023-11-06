@@ -346,13 +346,15 @@ class SupervisedUserExtensionWebstorePrivateApiTest
                 .sign_in_mode =
                     supervised_user::SupervisionMixin::SignInMode::kSupervised,
             }) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/
-          {supervised_user::
-               kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
-           // Used to prevent user sign-out which crashes the test.
-           supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
-          /*disabled_features=*/{});
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {supervised_user::
+             kEnableExtensionsPermissionsForSupervisedUsersOnDesktop,
+         // Used to prevent user sign-out which crashes the test.
+         supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn},
+        /*disabled_features=*/{});
+#endif
   }
 
   ~SupervisedUserExtensionWebstorePrivateApiTest() override {
@@ -433,7 +435,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
             break;
           }
           ash::ParentAccessDialog::GetInstance()->SetApproved(
-              "test_token", base::Time::FromDoubleT(123456L));
+              "test_token", base::Time::FromSecondsSinceUnixEpoch(123456L));
           break;
       }
     }

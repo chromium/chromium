@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Property text-justify value 'distribute' assert_true: text-justify doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property text-justify value 'distribute'
+  assert_true: text-justify doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

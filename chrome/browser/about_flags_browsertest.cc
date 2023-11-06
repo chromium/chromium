@@ -132,7 +132,9 @@ bool IsFlagPresent(content::WebContents* contents, const char* experiment_id) {
 
 void WaitForExperimentalFeatures(content::WebContents* contents) {
   ASSERT_TRUE(content::ExecJs(
-      contents, "experimentalFeaturesReadyForTest.then(() => true);"));
+      contents,
+      "var k = document.querySelector('flags-app');"
+      "k.experimentalFeaturesReadyForTesting().then(() => true);"));
 }
 
 const std::vector<flags_ui::FeatureEntry> GetFeatureEntries(

@@ -32,6 +32,8 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInLTR) {
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button != nullptr);
 
+  EXPECT_EQ(side_panel_button->context_menu_controller(), nullptr);
+
   // Set right aligned side panel.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);
@@ -67,6 +69,8 @@ TEST_F(SidePanelToolbarButtonTest, SetCorrectIconInRTL) {
 
   SidePanelToolbarButton* const side_panel_button = GetSidePanelToolbarButton();
   ASSERT_TRUE(side_panel_button != nullptr);
+
+  EXPECT_EQ(side_panel_button->context_menu_controller(), nullptr);
 
   // Set right aligned side panel.
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(

@@ -519,10 +519,12 @@ void FlossSocketManager::Close(const SocketId id,
 void FlossSocketManager::Init(dbus::Bus* bus,
                               const std::string& service_name,
                               const int adapter_index,
+                              base::Version version,
                               base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   adapter_path_ = GenerateAdapterPath(adapter_index);
+  version_ = version;
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, adapter_path_);

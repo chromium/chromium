@@ -33,6 +33,19 @@ class AutomationTestSupport {
   }
 
   /**
+   * Waits for the page with the given `url` to exist, then
+   * gets its bounds.
+   * @param {string} url
+   */
+  async getBoundsForRootWebArea(url) {
+    const findParams = {
+      role: 'rootWebArea',
+      attributes: {url},
+    };
+    await this.getBoundsForNodeWithParams_(findParams);
+  }
+
+  /**
    * Gets the bounds for the automation node with the given `name` and
    * `role`. Waits for the node to exist if it does not yet.
    * @param {string} name
@@ -69,6 +82,22 @@ class AutomationTestSupport {
     }
     node.focus();
     this.notifyCcTests_('ready');
+  }
+
+  /**
+   * Checks if an automation node with the given `name` and
+   * `role` exists in the desktop tree, without waiting.
+   * @param {string} name
+   * @param {string} role
+   */
+  nodeExistsNoWait(name, role) {
+    const findParams = {role, attributes: {name}};
+    const node = this.desktop_.find(findParams);
+    if (node) {
+      this.notifyCcTests_('true');
+    } else {
+      this.notifyCcTests_('false');
+    }
   }
 
   /**
@@ -131,6 +160,15 @@ class AutomationTestSupport {
    */
   async waitForValueChangedEvent() {
     await this.waitForEventHelper_(chrome.automation.EventType.VALUE_CHANGED);
+  }
+
+  /**
+   * Waits for a chrome.automation.EventType.CHILDREN_CHANGED event to be fired
+   * on the desktop node.
+   */
+  async waitForChildrenChangedEvent() {
+    await this.waitForEventHelper_(
+        chrome.automation.EventType.CHILDREN_CHANGED);
   }
 
   /**

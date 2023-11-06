@@ -32,6 +32,7 @@
 #include "chrome/browser/ip_protection/ip_protection_config_provider.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/sct_reporting_service.h"
 #include "chrome/browser/ssl/sct_reporting_service_factory.h"
@@ -181,11 +182,11 @@ bool IsAmbientAuthAllowedForProfile(Profile* profile) {
           prefs::kAmbientAuthenticationInPrivateModesEnabled));
 
   if (profile->IsGuestSession()) {
-    return type == net::AmbientAuthAllowedProfileTypes::GUEST_AND_REGULAR ||
-           type == net::AmbientAuthAllowedProfileTypes::ALL;
+    return type == net::AmbientAuthAllowedProfileTypes::kGuestAndRegular ||
+           type == net::AmbientAuthAllowedProfileTypes::kAll;
   } else if (profile->IsIncognitoProfile()) {
-    return type == net::AmbientAuthAllowedProfileTypes::INCOGNITO_AND_REGULAR ||
-           type == net::AmbientAuthAllowedProfileTypes::ALL;
+    return type == net::AmbientAuthAllowedProfileTypes::kIncognitoAndRegular ||
+           type == net::AmbientAuthAllowedProfileTypes::kAll;
   }
 
   // Profile type not yet supported.
@@ -375,7 +376,7 @@ void ProfileNetworkContextService::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kAmbientAuthenticationInPrivateModesEnabled,
-      static_cast<int>(net::AmbientAuthAllowedProfileTypes::REGULAR_ONLY));
+      static_cast<int>(net::AmbientAuthAllowedProfileTypes::kRegularOnly));
 
   // For information about whether to reset the HTTP Cache or not, defaults
   // to the empty string, which does not prompt a reset.
@@ -420,6 +421,18 @@ void ProfileNetworkContextService::OnMitigationsEnabledFor3pcdChanged(
       [](bool enable, content::StoragePartition* storage_partition) {
         storage_partition->GetCookieManagerForBrowserProcess()
             ->SetMitigationsEnabledFor3pcd(enable);
+      },
+      enable));
+}
+
+void ProfileNetworkContextService::OnTrackingProtectionEnabledFor3pcdChanged(
+    bool enable) {
+  profile_->ForEachLoadedStoragePartition(base::BindRepeating(
+      [](bool tracking_protection_3pcb_enabled,
+         content::StoragePartition* storage_partition) {
+        storage_partition->GetCookieManagerForBrowserProcess()
+            ->SetTrackingProtectionEnabledFor3pcd(
+                tracking_protection_3pcb_enabled);
       },
       enable));
 }
@@ -594,6 +607,9 @@ ProfileNetworkContextService::CreateCookieManagerParams(
 
   out->mitigations_enabled_for_3pcd =
       cookie_settings.MitigationsEnabledFor3pcd();
+
+  out->tracking_protection_enabled_for_3pcd =
+      cookie_settings.TrackingProtectionEnabledFor3pcd();
 
   return out;
 }
@@ -786,7 +802,9 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       ->ConfigureDefaultNetworkContextParams(network_context_params);
 
   network_context_params->enable_zstd =
-      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding);
+      base::FeatureList::IsEnabled(net::features::kZstdContentEncoding) &&
+      g_browser_process->local_state()->GetBoolean(
+          prefs::kZstdContentEncodingEnabled);
   network_context_params->accept_language = ComputeAcceptLanguage();
   network_context_params->enable_referrers = enable_referrers_.GetValue();
 

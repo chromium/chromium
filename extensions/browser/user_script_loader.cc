@@ -21,11 +21,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/renderer_startup_helper.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -480,7 +480,7 @@ void UserScriptLoader::SendUpdate(
       return;
   }
 
-  ContentScriptTracker::WillUpdateContentScriptsInRenderer(
+  ScriptInjectionTracker::WillUpdateScriptsInRenderer(
       base::PassKey<UserScriptLoader>(), host_id_, *process);
 
   mojom::Renderer* renderer =

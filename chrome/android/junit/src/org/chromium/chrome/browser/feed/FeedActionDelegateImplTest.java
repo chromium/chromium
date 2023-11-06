@@ -44,32 +44,23 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 /** Tests for FeedActionDelegateImpl. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class FeedActionDelegateImplTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    private WebFeedBridge.Natives mWebFeedBridgeJniMock;
+    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
-    @Mock
-    private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
+    @Mock private SyncConsentActivityLauncher mMockSyncConsentActivityLauncher;
 
-    @Mock
-    private SnackbarManager mMockSnackbarManager;
+    @Mock private SnackbarManager mMockSnackbarManager;
 
-    @Mock
-    private NativePageNavigationDelegate mMockNavigationDelegate;
+    @Mock private NativePageNavigationDelegate mMockNavigationDelegate;
 
-    @Mock
-    private BookmarkModel mMockBookmarkModel;
+    @Mock private BookmarkModel mMockBookmarkModel;
 
-    @Mock
-    private Context mActivityContext;
+    @Mock private Context mActivityContext;
 
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    @Mock private TabModelSelector mTabModelSelector;
 
-    @Captor
-    ArgumentCaptor<Intent> mIntentCaptor;
+    @Captor ArgumentCaptor<Intent> mIntentCaptor;
 
     private FeedActionDelegateImpl mFeedActionDelegateImpl;
 
@@ -78,9 +69,14 @@ public final class FeedActionDelegateImplTest {
         MockitoAnnotations.initMocks(this);
 
         SyncConsentActivityLauncherImpl.setLauncherForTest(mMockSyncConsentActivityLauncher);
-        mFeedActionDelegateImpl = new FeedActionDelegateImpl(mActivityContext, mMockSnackbarManager,
-                mMockNavigationDelegate, mMockBookmarkModel, BrowserUiUtils.HostSurface.NOT_SET,
-                mTabModelSelector);
+        mFeedActionDelegateImpl =
+                new FeedActionDelegateImpl(
+                        mActivityContext,
+                        mMockSnackbarManager,
+                        mMockNavigationDelegate,
+                        mMockBookmarkModel,
+                        BrowserUiUtils.HostSurface.NOT_SET,
+                        mTabModelSelector);
         jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
 
         when(mWebFeedBridgeJniMock.isCormorantEnabledForLocale()).thenReturn(true);
@@ -112,7 +108,9 @@ public final class FeedActionDelegateImplTest {
         mFeedActionDelegateImpl.openWebFeed(webFeedName, SingleWebFeedEntryPoint.OTHER);
 
         verify(mActivityContext).startActivity(mIntentCaptor.capture());
-        Assert.assertArrayEquals("Feed ID not passed correctly.", webFeedName.getBytes(),
+        Assert.assertArrayEquals(
+                "Feed ID not passed correctly.",
+                webFeedName.getBytes(),
                 mIntentCaptor.getValue().getByteArrayExtra("CREATOR_WEB_FEED_ID"));
     }
 

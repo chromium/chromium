@@ -24,9 +24,9 @@ typedef bool (*LogMessageHandlerFunction)(int severity,
                                           int line,
                                           size_t message_start,
                                           const char* str);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void SetLogMessageHandler(LogMessageHandlerFunction handler);
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 LogMessageHandlerFunction GetLogMessageHandler();
 
 using LogSeverity = int;
@@ -47,7 +47,7 @@ constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #endif
 
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 extern base::strings::CStringBuilder* g_swallow_stream;
 
 // This class more or less represents a particular log message.  You
@@ -58,7 +58,7 @@ extern base::strings::CStringBuilder* g_swallow_stream;
 // You shouldn't actually use LogMessage's constructor to log things,
 // though.  You should use the PA_LOG() macro (and variants thereof)
 // above.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) LogMessage {
  public:
   // Used for PA_LOG(severity).
   LogMessage(const char* file, int line, LogSeverity severity);
@@ -110,11 +110,12 @@ typedef int SystemErrorCode;
 
 // Alias for ::GetLastError() on Windows and errno on POSIX. Avoids having to
 // pull in windows.h just for GetLastError() and DWORD.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) SystemErrorCode GetLastSystemErrorCode();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+SystemErrorCode GetLastSystemErrorCode();
 
 #if BUILDFLAG(IS_WIN)
 // Appends a formatted system message of the GetLastError() type.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Win32ErrorLogMessage
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) Win32ErrorLogMessage
     : public LogMessage {
  public:
   Win32ErrorLogMessage(const char* file,
@@ -131,7 +132,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Win32ErrorLogMessage
 };
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Appends a formatted system message of the errno type
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ErrnoLogMessage : public LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) ErrnoLogMessage
+    : public LogMessage {
  public:
   ErrnoLogMessage(const char* file,
                   int line,

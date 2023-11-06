@@ -6,6 +6,7 @@
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_ZERO_STATE_VIEW_H_
 
 #include "ash/assistant/model/assistant_ui_model_observer.h"
+#include "ash/assistant/ui/main_stage/launcher_search_iph_view.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/component_export.h"
@@ -19,14 +20,14 @@ class Label;
 
 namespace ash {
 
-class AppListToastView;
 class AssistantOnboardingView;
 class AssistantViewDelegate;
 
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
     : public views::View,
       public AssistantControllerObserver,
-      public AssistantUiModelObserver {
+      public AssistantUiModelObserver,
+      public LauncherSearchIphView::Delegate {
  public:
   explicit AssistantZeroStateView(AssistantViewDelegate* delegate);
   AssistantZeroStateView(const AssistantZeroStateView&) = delete;
@@ -49,10 +50,13 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  // LauncherSearchIphView::Delegate:
+  void RunLauncherSearchQuery(const std::u16string& query) override;
+  void OpenAssistantPage() override;
+
  private:
   void InitLayout();
   void UpdateLayout();
-  void OnLearnMoreButtonPressed();
 
   // Owned by AssistantController.
   const raw_ptr<AssistantViewDelegate, ExperimentalAsh> delegate_;
@@ -61,7 +65,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   raw_ptr<AssistantOnboardingView, ExperimentalAsh> onboarding_view_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> greeting_label_ = nullptr;
   raw_ptr<views::View> spacer_ = nullptr;
-  raw_ptr<AppListToastView> learn_more_toast_ = nullptr;
+  raw_ptr<LauncherSearchIphView> iph_view_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

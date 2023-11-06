@@ -335,6 +335,12 @@ ConvertPayloadContentsFromProto(
       return absl::nullopt;
   }
 
+  absl::optional<url::Origin> aggregation_coordinator_origin;
+  if (proto.has_aggregation_coordinator_origin()) {
+    aggregation_coordinator_origin =
+        url::Origin::Create(GURL(proto.aggregation_coordinator_origin()));
+  }
+
   int max_contributions_allowed = proto.max_contributions_allowed();
   if (max_contributions_allowed < 0) {
     return absl::nullopt;
@@ -346,8 +352,7 @@ ConvertPayloadContentsFromProto(
   // Report storage doesn't support multiple aggregation coordinators.
   return AggregationServicePayloadContents(
       operation, std::move(contributions), aggregation_mode,
-      /*aggregation_coordinator_origin=*/absl::nullopt,
-      max_contributions_allowed);
+      std::move(aggregation_coordinator_origin), max_contributions_allowed);
 }
 
 absl::optional<AggregatableReportSharedInfo> ConvertSharedInfoFromProto(
@@ -442,11 +447,15 @@ void ConvertPayloadContentsToProto(
       break;
   }
 
+  if (base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders) &&
+      payload_contents.aggregation_coordinator_origin.has_value()) {
+    out->set_aggregation_coordinator_origin(
+        payload_contents.aggregation_coordinator_origin->Serialize());
+  }
+
   out->set_max_contributions_allowed(
       payload_contents.max_contributions_allowed);
-
-  // Report storage doesn't support multiple aggregation coordinators.
-  CHECK(!payload_contents.aggregation_coordinator_origin.has_value());
 }
 
 void ConvertSharedInfoToProto(const AggregatableReportSharedInfo& shared_info,
@@ -582,8 +591,9 @@ std::string AggregatableReportSharedInfo::SerializeAsJson() const {
   DCHECK(!scheduled_report_time.is_null());
   DCHECK(!scheduled_report_time.is_inf());
   value.Set("scheduled_report_time",
-            base::NumberToString(scheduled_report_time.ToJavaTime() /
-                                 base::Time::kMillisecondsPerSecond));
+            base::NumberToString(
+                scheduled_report_time.InMillisecondsSinceUnixEpoch() /
+                base::Time::kMillisecondsPerSecond));
 
   value.Set("version", api_version);
 

@@ -521,7 +521,10 @@ IN_PROC_BROWSER_TEST_P(DictationTest, WorksWithSelectToSpeak) {
   aura::Window* root_window = Shell::Get()->GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root_window);
 
-  sts_test_utils::StartSelectToSpeakInBrowserWindow(browser(), &generator);
+  gfx::Rect bounds =
+      utils()->automation_test_utils()->GetBoundsForNodeInRootByClassName(
+          "editableForDictation");
+  sts_test_utils::StartSelectToSpeakWithBounds(bounds, &generator);
 
   // Now ensure STS still works properly.
   sm.ExpectSpeechPattern("Not idly do the leaves of Lorien fall*");
@@ -2105,7 +2108,6 @@ class NotificationCenterDictationTest : public DictationTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DictationTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(features::kQsRevamp);
   }
 
   void SetUpOnMainThread() override {
@@ -2122,15 +2124,12 @@ class NotificationCenterDictationTest : public DictationTest {
 
   NotificationCenterTestApi* test_api() {
     if (!test_api_) {
-      test_api_ = std::make_unique<NotificationCenterTestApi>(
-          StatusAreaWidgetTestHelper::GetStatusAreaWidget()
-              ->notification_center_tray());
+      test_api_ = std::make_unique<NotificationCenterTestApi>();
     }
     return test_api_.get();
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
 };
 

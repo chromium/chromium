@@ -106,6 +106,8 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   virtual void ResetSameDocumentNavigationTasks() = 0;
   virtual TaskAttributionInfo* CommitSameDocumentNavigation(
       TaskAttributionId) = 0;
+  virtual Observer* GetObserverForTaskDisposal(TaskAttributionId) = 0;
+  virtual void SetObserverForTaskDisposal(TaskAttributionId, Observer*) = 0;
 };
 
 }  // namespace blink::scheduler

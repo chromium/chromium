@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {SecurityInterstitialCommandId, sendCommand} from 'chrome://interstitials/common/resources/interstitial_common.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 // Other constants defined in security_interstitial_page.h.
 const SB_BOX_CHECKED = 'boxchecked';
@@ -11,7 +12,7 @@ const SB_DISPLAY_CHECK_BOX = 'displaycheckbox';
 // This sets up the Extended Safe Browsing Reporting opt-in, either for
 // reporting malware or invalid certificate chains. Does nothing if the
 // interstitial type is not SAFEBROWSING or SSL or CAPTIVE_PORTAL.
-function setupExtendedReportingCheckbox() {
+export function setupExtendedReportingCheckbox() {
   const interstitialType = loadTimeData.getString('type');
   if (interstitialType !== 'SAFEBROWSING' && interstitialType !== 'SSL' &&
       interstitialType !== 'CAPTIVE_PORTAL') {

@@ -1,0 +1,86 @@
+/* Copyright 2023 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:host {
+  display: inline-block;
+  width: 400px;
+}
+
+:host > *:not(:last-child) {
+  margin-bottom: 15px;
+}
+
+.header {
+  font-size: 16px
+}
+
+.input-row,
+.header-row,
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-row {
+  padding: 2px 0;
+}
+
+.input-row:hover {
+  background-color: var(--hover-background);
+}
+
+input,
+button {
+  color: var(--text);
+  font: normal 12px arial;
+  border: 0;
+  outline: 1px solid var(--dark-border);
+}
+
+input {
+  background-color: var(--theme);
+  width: 80px;
+}
+
+input.empty {
+  background-color: var(--light-background);
+}
+
+.input-row:hover input {
+  background-color: var(--hover-background);
+  outline-color: var(--active-border);
+}
+
+.input-row input:focus {
+  background-color: var(--theme);
+  outline-color: var(--active-border);
+}
+
+a {
+  color: var(--blue-text);
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button:not(:last-child) {
+  margin-right: 15px;
+}
+
+button {
+  background-color: var(--light-background);
+}
+
+button:hover {
+  background-color: var(--hover-background);
+  outline-color: var(--active-border);
+}
+
+button:active {
+  background-color: var(--active-background);
+  outline-color: var(--active-border);
+}

@@ -34,9 +34,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for MediaCaptureOverlayController.
- */
+/** Tests for MediaCaptureOverlayController. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -44,9 +42,11 @@ public class MediaCaptureOverlayControllerTest {
     @ClassRule
     public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
     @Rule
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
     private ChromeTabbedActivity mActivity;
 
     private MediaCaptureOverlayController mController;
@@ -55,9 +55,10 @@ public class MediaCaptureOverlayControllerTest {
     @Before
     public void setUp() throws Exception {
         mActivity = sActivityTestRule.getActivity();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mController = MediaCaptureOverlayController.from(mActivity.getWindowAndroid());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mController = MediaCaptureOverlayController.from(mActivity.getWindowAndroid());
+                });
         Assert.assertNotNull(mController);
         mOverlayView = mActivity.findViewById(R.id.capture_overlay);
     }
@@ -69,10 +70,13 @@ public class MediaCaptureOverlayControllerTest {
     }
 
     public void waitForOverlayVisibility(boolean visible) {
-        CriteriaHelper.pollUiThread(() -> {
-            return visible ? (mOverlayView.getVisibility() == View.VISIBLE)
-                           : (mOverlayView.getVisibility() != View.VISIBLE);
-        }, "Overlay did not reach desired visibility in the alloted time.");
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return visible
+                            ? (mOverlayView.getVisibility() == View.VISIBLE)
+                            : (mOverlayView.getVisibility() != View.VISIBLE);
+                },
+                "Overlay did not reach desired visibility in the alloted time.");
     }
 
     @Test

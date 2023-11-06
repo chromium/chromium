@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
 <translation id="1310380015393971138">Aucun réseau <ph name="NETWORK_NAME" /> accessible</translation>
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">RPV Android</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> gère cet utilisateur et peut gérer ses paramètres et faire le suivi de son activité à distance.</translation>
 <translation id="150962533380566081">Clé PUK non valide.</translation>
 <translation id="1510238584712386396">Lanceur</translation>
+<translation id="1515129336378114413">Page d'accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'écran de veille</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
 <translation id="1555130319947370107">Bleu</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
 <translation id="160633243685262989">Aperçu de l'image</translation>
+<translation id="1611649489706141841">suivant</translation>
 <translation id="1615335640928990664">Utilisation de données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Exécuter le test de recharge</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
@@ -119,6 +122,7 @@
 <translation id="1768959921651994223">Type d'authentification</translation>
 <translation id="1776228893584526149">Ton de fond d'écran</translation>
 <translation id="1782199038061388045">traduction</translation>
+<translation id="1788485524395674731">Cette application est gérée par votre administrateur</translation>
 <translation id="1792647875738159689">Annulation de la numérisation en cours…</translation>
 <translation id="1801418420130173017">Désactiver le thème sombre</translation>
 <translation id="1807246157184219062">Clair</translation>
@@ -167,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Votre administrateur a configuré <ph name="APP_NAME_1" /> pour qu'elle démarre automatiquement à chaque connexion.}=2{Votre administrateur a configuré <ph name="APP_NAME_1" /> et <ph name="APP_NAME_2" /> pour qu'elles démarrent automatiquement à chaque connexion.}=3{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et <ph name="APP_NAME_3" /> pour qu'elles démarrent automatiquement à chaque connexion.}one{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autre application pour qu'elles démarrent automatiquement à chaque connexion.}other{Votre administrateur a configuré <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> et # autres applications pour qu'elles démarrent automatiquement à chaque connexion.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
+<translation id="215916044711630446">Le bouton Ajouter un nom de point d'accès est désormais désactivé</translation>
 <translation id="2161394479394250669">Annuler la tâche d'impression</translation>
 <translation id="2161656808144014275">Texte</translation>
 <translation id="2163937499206714165">Activer le mode sombre</translation>
@@ -183,6 +189,7 @@
 <translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
 <translation id="225692081236532131">État de l'activation</translation>
+<translation id="2267285889943769271">Ajouter une capture d'écran</translation>
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2276999893457278469">Contenu d'aide le plus populaire</translation>
 <translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
@@ -284,6 +291,7 @@
 <translation id="3226405216343213872">Recherche de numériseurs en cours…</translation>
 <translation id="3226657629376379887">Menu des actions de mise en page</translation>
 <translation id="3246869037381808805">Les tâches d'impression de plus d'un jour seront retirées</translation>
+<translation id="324961752321393509">Votre administrateur n'autorise pas la fermeture de cette application</translation>
 <translation id="3268178239013324452">Échec : porte de l'imprimante ouverte</translation>
 <translation id="3275729367986477355">Image d'avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifier le fichier}one{Modifier le fichier}other{Modifier les fichiers}}</translation>
@@ -335,7 +343,6 @@
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée pour les sites Web utilisant le protocole HTTPS</translation>
-<translation id="3607216139080387279">Afficher l'écran de veille</translation>
 <translation id="361575905210396100">Merci de vos commentaires</translation>
 <translation id="3632579075709132555">Commutateur de l'écran de confidentialité</translation>
 <translation id="3651050199673793219">Sélectionnez une unité de température</translation>
@@ -347,7 +354,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
-<translation id="3766934827878963937">pendant 1 heure</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="380097101658023925">Commandes RVB</translation>
@@ -398,6 +404,7 @@
 <translation id="4117637339509843559">Mode sombre</translation>
 <translation id="4130035430755296270">Continuez à pointer pour plus d'options de mise en page</translation>
 <translation id="4131410914670010031">Noir et blanc</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> a démarré automatiquement}one{# application a démarré automatiquement}other{# applications ont démarré automatiquement}}</translation>
 <translation id="4145784616224233563">Pare-feu HTTP</translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4150201353443180367">Affichage</translation>
@@ -426,6 +433,7 @@
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
+<translation id="4354430579665871434">touche</translation>
 <translation id="435692326371619097">Gérez les paramètres de NPA du réseau. Les NPA établissent une connexion entre un réseau cellulaire et Internet. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
@@ -443,6 +451,7 @@
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Numériser vers</translation>
+<translation id="4456812688969919973">Le bouton Enregistrer le nom de point d'accès est désormais désactivé</translation>
 <translation id="4469288414739283461">Écran de veille Earth Flow</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Impossible d'effectuer un ping avec la passerelle réseau autre que celle par défaut</translation>
@@ -627,6 +636,7 @@
 <translation id="584953448295717128">Le nom de point d'accès (APN) est automatiquement détecté.</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
 <translation id="5859603669299126575">Album de galerie d'art</translation>
+<translation id="5859969039821714932">Raccourci non accessible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
 <translation id="5860491529813859533">Activer</translation>
 <translation id="5876385649737594562">Activez pour sélectionner les options</translation>
@@ -686,6 +696,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activer le thème sombre</translation>
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
+<translation id="6292095526077353682">Pendant le chargement, affichez l'écran de veille pour la période suivante :</translation>
 <translation id="629550705077076970">assombrissement du clavier</translation>
 <translation id="6302401976930124515">Le test <ph name="TEST_NAME" /> a été annulé</translation>
 <translation id="631063167932043783">Application Explorer</translation>
@@ -713,6 +724,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
+<translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Numériser de nouveau la page?}=1{Numériser de nouveau la page {PAGE_NUMBER}?}one{Numériser de nouveau la page {PAGE_NUMBER}?}other{Numériser de nouveau les pages {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">Phr passe usage uniq</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -747,6 +759,7 @@
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="6673898378497337661">augmenter la luminosité du clavier</translation>
 <translation id="6692996468359469499">Obtenir de l'information sur votre sélection</translation>
+<translation id="6694534975463174713">Verrouiller</translation>
 <translation id="6704062477274546131">Résolution DNS</translation>
 <translation id="6723839937902243910">Alimentation</translation>
 <translation id="6723847290197874913">Rétroéclairage du clavier</translation>
@@ -937,6 +950,7 @@
 <translation id="8227119283605456246">Joindre un fichier</translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8246209727385807362">Opérateur inconnu</translation>
+<translation id="8262870577632766028">1 heure</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Veuillez vous connecter au réseau et actualiser la page pour afficher le fond d'écran.</translation>
 <translation id="8291967909914612644">Pays du propriétaire</translation>
@@ -1001,6 +1015,7 @@
 <translation id="8747900814994928677">Confirmer la modification</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Google Photos</translation>
+<translation id="8775713578693478175">Nom de point d'accès du modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Le raccourci est utilisé pour « <ph name="CONFLICT_ACCEL_NAME" /> ». Appuyez sur un nouveau raccourci. Pour remplacer le raccourci d'origine, appuyez à nouveau sur ce raccourci.</translation>
 <translation id="879568662008399081">Ce réseau peut présenter un portail captif</translation>
@@ -1050,6 +1065,7 @@
 <translation id="902638246363752736">Paramètres du clavier</translation>
 <translation id="9028832514430399253">Activez le commutateur pour sélectionner les options de l'écran de veille</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Le bouton Enregistrer un nom de point d'accès est maintenant activé</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">La résolution DNS présente une latence élevée</translation>
 <translation id="9065203028668620118">Modifier</translation>
@@ -1065,11 +1081,9 @@
 <translation id="9111102763498581341">Déverrouiller</translation>
 <translation id="9122602430962285795">Pour vous reconnecter, accédez à Paramètres</translation>
 <translation id="9126720536733509015">Enregistrer plusieurs pages en un seul PDF</translation>
-<translation id="9133104754938025929">Pour augmenter l'autonomie de la pile, l'écran de veille fonctionne uniquement pendant la recharge.</translation>
 <translation id="9133772297793293778">Appuyez sur les modificateurs 1 à 4 et sur 1 autre touche de votre clavier. Pour quitter le mode de modification, appuyez sur alt+esc.</translation>
 <translation id="9137526406337347448">Services Google</translation>
 <translation id="9138630967333032450">Majuscule gauche</translation>
-<translation id="9143347780818904997">pendant <ph name="MINUTES" /> minutes</translation>
 <translation id="9149391708638971077">Exécuter le test de mémoire</translation>
 <translation id="9161276708550942948">espace</translation>
 <translation id="9173638680043580060">Il reste moins d'une minute</translation>

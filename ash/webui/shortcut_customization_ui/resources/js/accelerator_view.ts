@@ -15,13 +15,13 @@ import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AcceleratorResultData, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
+import {AcceleratorResultData, Subactions, UserAction} from '../mojom-webui/ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-webui.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
+import {Accelerator, AcceleratorConfigResult, AcceleratorKeyState, AcceleratorSource, AcceleratorState, EditAction, Modifier, ShortcutProviderInterface, StandardAcceleratorInfo} from './shortcut_types.js';
 import {areAcceleratorsEqual, canBypassErrorWithRetry, createEmptyAcceleratorInfo, getAccelerator, getKeyDisplay, getModifiersForAcceleratorInfo, isCustomizationAllowed, isFunctionKey, isStandardAcceleratorInfo, keyCodeToModifier, keyToIconNameMap, LWIN_KEY, META_KEY, unidentifiedKeyCodeToKey} from './shortcut_utils.js';
 export interface AcceleratorViewElement {
   $: {
@@ -98,6 +98,15 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         type: Boolean,
         value: false,
         notify: true,
+        observer: AcceleratorViewElement.prototype.onErrorUpdated,
+      },
+
+      // Keeps track if there was ever an error when interacting with this
+      // accelerator.
+      recordedError: {
+        type: Boolean,
+        value: false,
+        notify: true,
       },
 
       action: {
@@ -134,11 +143,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         computed: 'computeIsDisabled(acceleratorInfo.*)',
         reflectToAttribute: true,
       },
-
-      highlighted: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -146,6 +150,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   viewState: ViewState;
   statusMessage: string;
   hasError: boolean;
+  recordedError: boolean;
   action: number;
   source: AcceleratorSource;
   sourceIsLocked: boolean;
@@ -153,7 +158,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   categoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
-  highlighted: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   protected isCapturing: boolean;
   protected lastAccelerator: Accelerator;
@@ -163,6 +167,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private lookupManager: AcceleratorLookupManager =
       AcceleratorLookupManager.getInstance();
   private eventTracker: EventTracker = new EventTracker();
+  private editAction: EditAction = EditAction.NONE;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -194,8 +199,6 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.eventTracker.add(this, 'keyup', (e: KeyboardEvent) => this.onKeyUp(e));
     this.eventTracker.add(this, 'focus', () => this.startCapture());
     this.eventTracker.add(this, 'mouseup', () => this.startCapture());
-    this.eventTracker.add(
-        this, 'blur', () => this.endCapture(/*should_delay=*/ false));
     this.$.container.focus();
   }
 
@@ -223,13 +226,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     this.makeA11yAnnouncement(this.i18n('editViewStatusMessage'));
   }
 
-  private async endCapture(shouldDelay: boolean): Promise<void> {
+  async endCapture(shouldDelay: boolean): Promise<void> {
     if (!this.isCapturing) {
       return;
     }
     await this.shortcutProvider.preventProcessingAccelerators(false);
 
     this.isCapturing = false;
+    this.editAction = EditAction.NONE;
     this.dispatchEvent(new CustomEvent('accelerator-capturing-ended', {
       bubbles: true,
       composed: true,
@@ -371,11 +375,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         this.acceleratorInfo.state === AcceleratorState.kDisabledByUser;
 
     if (this.viewState === ViewState.ADD || isDisabledAccelerator) {
+      this.editAction = EditAction.ADD;
       result = await this.shortcutProvider.addAccelerator(
           this.source, this.action, getAccelerator(pendingAccelInfo));
     }
 
     if (this.viewState === ViewState.EDIT && !isDisabledAccelerator) {
+      this.editAction = EditAction.EDIT;
       const originalAccelerator: Accelerator|undefined =
           this.acceleratorInfo.layoutProperties.standardAccelerator
               ?.originalAccelerator;
@@ -462,16 +468,22 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
             this.pendingAcceleratorInfo.layoutProperties.standardAccelerator
                 .keyDisplay);
         this.hasError = true;
+        this.makeA11yAnnouncement(this.statusMessage);
         return;
       }
       case AcceleratorConfigResult.kSuccess: {
-        this.fireUpdateEvent();
+        this.fireEditCompletedActionEvent(this.editAction);
+        getShortcutProvider().recordAddOrEditSubactions(
+            this.viewState === ViewState.ADD,
+            this.recordedError ? Subactions.kErrorSuccess :
+                                 Subactions.kNoErrorSuccess);
         getShortcutProvider().recordUserAction(
             UserAction.kSuccessfulModification);
         const message = (this.viewState == ViewState.ADD) ?
             this.i18n('shortcutAdded') :
             this.i18n('shortcutEdited');
         this.makeA11yAnnouncement(message);
+        this.fireUpdateEvent();
         return;
       }
     }
@@ -619,8 +631,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
       }
       return keyDisplay.toLowerCase();
     }
-    // TODO(jimmyxgong): Reset to a localized default empty state.
-    return 'key';
+    return this.i18n('inputKeyPlaceholder');
   }
 
   /**
@@ -662,6 +673,16 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     // Always end input capturing if an update event was fired.
     this.endCapture(/*should_delay=*/ true);
+  }
+
+  private fireEditCompletedActionEvent(editAction: EditAction): void {
+    this.dispatchEvent(new CustomEvent('edit-action-completed', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        editAction: editAction,
+      },
+    }));
   }
 
   private shouldShowLockIcon(): boolean {
@@ -722,6 +743,14 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   private computeIsDisabled(): boolean {
     return this.acceleratorInfo.state === AcceleratorState.kDisabledByUser ||
         this.acceleratorInfo.state === AcceleratorState.kDisabledByConflict;
+  }
+
+  private onErrorUpdated(): void {
+    // `recordedError` will only update if it was previously false and
+    // an error has been detected.
+    if (!this.recordedError && this.hasError) {
+      this.recordedError = true;
+    }
   }
 }
 

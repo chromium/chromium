@@ -1,0 +1,53 @@
+[
+  {
+    "os": [
+      "win"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RoamingProfileLocation": "C:\\Users\\test_user_name\\AppData\\Roaming"
+        },
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "value": "C:\\Users\\test_user_name\\AppData\\Roaming"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "default_value": ""
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RoamingProfileLocation": "/Users/test_user_name/chrome_roaming_profile_dir"
+        },
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "value": "/Users/test_user_name/chrome_roaming_profile_dir"
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "sync.local_sync_backend_dir": {
+            "default_value": ""
+          }
+        }
+      }
+    ]
+  }
+]

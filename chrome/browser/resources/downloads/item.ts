@@ -26,7 +26,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {htmlEscape} from 'chrome://resources/js/util_ts.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -148,20 +148,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       },
 
       showCancel_: {
-        computed: 'computeShowCancel_(data.state, updateDeepScanningUx_)',
+        computed: 'computeShowCancel_(data.state)',
         type: Boolean,
         value: false,
       },
 
       showProgress_: {
-        computed: 'computeShowProgress_(showCancel_, data.percent,' +
-            'updateDeepScanningUx_)',
-        type: Boolean,
-        value: false,
-      },
-
-      showOpenNow_: {
-        computed: 'computeShowOpenNow_(data.state, updateDeepScanningUx_)',
+        computed: 'computeShowProgress_(showCancel_, data.percent)',
         type: Boolean,
         value: false,
       },
@@ -184,11 +177,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
             'data.hasSafeBrowsingVerdict)',
         type: DisplayType,
         value: DisplayType.NORMAL,
-      },
-
-      updateDeepScanningUx_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('updateDeepScanningUX'),
       },
 
       improvedDownloadWarningsUx_: {
@@ -225,7 +213,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
   private displayType_: DisplayType;
-  private updateDeepScanningUx_: boolean;
   private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
   override overrideCustomEquivalent: boolean;
@@ -352,8 +339,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeSecondLineVisible_(): boolean {
-    return this.updateDeepScanningUx_ && this.data &&
-        this.data.state === State.kAsyncScanning;
+    return this.data && this.data.state === State.kAsyncScanning;
   }
 
   private computeDisplayType_(): DisplayType {
@@ -367,7 +353,8 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     }
 
     if (this.data.state === State.kAsyncScanning ||
-        this.data.state === State.kPromptForScanning) {
+        this.data.state === State.kPromptForScanning ||
+        this.data.state === State.kPromptForLocalPasswordScanning) {
       return DisplayType.SUSPICIOUS;
     }
 
@@ -408,6 +395,16 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return DisplayType.NORMAL;
   }
 
+  private computeDeepScanControlText_(): string {
+    if (this.data.state === State.kPromptForScanning) {
+      return loadTimeData.getString('controlDeepScan');
+    } else if (this.data.state === State.kPromptForLocalPasswordScanning) {
+      return loadTimeData.getString('controlLocalPasswordScan');
+    }
+
+    return '';
+  }
+
   private computeSaveDangerousLabel_(): string {
     switch (this.displayType_) {
       case DisplayType.DANGEROUS:
@@ -433,9 +430,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kComplete:
         switch (data.dangerType) {
           case DangerType.kDeepScannedSafe:
-            return this.updateDeepScanningUx_ ?
-                '' :
-                loadTimeData.getString('deepScannedSafeDesc');
+            return '';
           case DangerType.kDeepScannedOpenedDangerous:
             return loadTimeData.getString('deepScannedOpenedDangerousDesc');
           case DangerType.kDeepScannedFailed:
@@ -473,6 +468,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       case State.kAsyncScanning:
         return loadTimeData.getString('asyncScanningDownloadDesc');
       case State.kPromptForScanning:
+      case State.kPromptForLocalPasswordScanning:  // Fallthrough.
         return loadTimeData.getString('promptForScanningDesc');
       case State.kInProgress:
       case State.kPaused:  // Fallthrough.
@@ -562,11 +558,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return 'cr:error';
       }
 
-      if (this.data.state === State.kAsyncScanning) {
-        return this.updateDeepScanningUx_ ? 'cr:warning' : 'cr:info';
-      }
-
-      if (this.data.state === State.kPromptForScanning) {
+      if (this.data.state === State.kAsyncScanning ||
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return 'cr:warning';
       }
     }
@@ -602,11 +596,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         return 'red';
       }
 
-      if (this.data.state === State.kAsyncScanning) {
-        return this.updateDeepScanningUx_ ? 'yellow' : 'grey';
-      }
-
-      if (this.data.state === State.kPromptForScanning) {
+      if (this.data.state === State.kAsyncScanning ||
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return 'yellow';
       }
     }
@@ -697,9 +689,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private computeShowCancel_(): boolean {
     return !!this.data &&
         (this.data.state === State.kInProgress ||
-         this.data.state === State.kPaused ||
-         (this.data.state === State.kAsyncScanning &&
-          !this.updateDeepScanningUx_));
+         this.data.state === State.kPaused);
   }
 
   private computeShowProgress_(): boolean {
@@ -707,17 +697,13 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       return true;
     }
     return this.showCancel_ && this.data.percent >= -1 &&
-        this.data.state !== State.kPromptForScanning;
-  }
-
-  private computeShowOpenNow_(): boolean {
-    const allowOpenNow = loadTimeData.getBoolean('allowOpenNow');
-    return !!this.data && this.data.state === State.kAsyncScanning &&
-        allowOpenNow && !this.updateDeepScanningUx_;
+        this.data.state !== State.kPromptForScanning &&
+        this.data.state !== State.kPromptForLocalPasswordScanning;
   }
 
   private computeShowDeepScan_(): boolean {
-    return this.data.state === State.kPromptForScanning;
+    return this.data.state === State.kPromptForScanning ||
+        this.data.state === State.kPromptForLocalPasswordScanning;
   }
 
   private computeShowOpenAnyway_(): boolean {
@@ -789,10 +775,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
         return false;
       }
-      if (this.data.state === State.kAsyncScanning) {
-        return false;
-      }
-      if (this.data.state === State.kPromptForScanning) {
+      if (this.data.state === State.kAsyncScanning ||
+          this.data.state === State.kPromptForScanning ||
+          this.data.state === State.kPromptForLocalPasswordScanning) {
         return false;
       }
       return true;

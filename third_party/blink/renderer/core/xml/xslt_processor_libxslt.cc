@@ -66,7 +66,7 @@ void XSLTProcessor::GenericErrorFunc(void*, const char*, ...) {
   // It would be nice to do something with this error message.
 }
 
-void XSLTProcessor::ParseErrorFunc(void* user_data, xmlError* error) {
+void XSLTProcessor::ParseErrorFunc(void* user_data, const xmlError* error) {
   FrameConsole* console = static_cast<FrameConsole*>(user_data);
   if (!console)
     return;

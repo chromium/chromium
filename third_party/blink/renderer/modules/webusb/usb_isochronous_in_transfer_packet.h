@@ -33,7 +33,7 @@ class USBIsochronousInTransferPacket final : public ScriptWrappable {
   ~USBIsochronousInTransferPacket() override = default;
 
   String status() const { return status_; }
-  DOMDataView* data() const { return data_; }
+  DOMDataView* data() const { return data_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(data_);

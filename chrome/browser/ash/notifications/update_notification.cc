@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -16,8 +17,6 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_navigator.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,10 +91,9 @@ void UpdateNotification::OnNotificationClick(absl::optional<int> button_index) {
 
   if (button_index == 0) {
     // Load the page in a new tab.
-    NavigateParams params(profile_, GURL(kUpdateURL), ui::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    params.window_action = NavigateParams::SHOW_WINDOW;
-    Navigate(&params);
+    NewWindowDelegate::GetPrimary()->OpenUrl(
+        GURL(kUpdateURL), NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        NewWindowDelegate::Disposition::kNewForegroundTab);
   }
 }
 

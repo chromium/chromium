@@ -82,7 +82,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
 #import "ios/chrome/browser/web/web_state_update_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webui/model/show_mail_composer_context.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
@@ -639,11 +639,6 @@ enum HeaderBehaviour {
   };
 
   [self setLastTapPointFromCommand:originPoint];
-  // The new tab can be opened before BVC has been made visible onscreen.  Test
-  // for this case by checking if the parent container VC is currently in the
-  // process of being presented.
-  DCHECK(self.visible || self.dismissingModal ||
-         self.parentViewController.isBeingPresented);
 
   // In most cases, we want to take a snapshot of the current tab before opening
   // a new tab. However, if the current tab is not fully visible (did not finish

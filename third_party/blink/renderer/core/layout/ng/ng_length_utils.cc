@@ -7,10 +7,10 @@
 #include <algorithm>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -1152,8 +1152,8 @@ BoxStrut ComputeMarginsFor(const NGConstraintSpace& constraint_space,
 namespace {
 
 BoxStrut ComputeBordersInternal(const ComputedStyle& style) {
-  return {style.BorderStartWidth(), style.BorderEndWidth(),
-          style.BorderBeforeWidth(), style.BorderAfterWidth()};
+  return {style.BorderInlineStartWidth(), style.BorderInlineEndWidth(),
+          style.BorderBlockStartWidth(), style.BorderBlockEndWidth()};
 }
 
 }  // namespace
@@ -1172,7 +1172,7 @@ BoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
     return constraint_space.TableCellBorders();
 
   if (node.IsTable()) {
-    return To<NGTableNode>(node).GetTableBorders()->TableBorder();
+    return To<TableNode>(node).GetTableBorders()->TableBorder();
   }
 
   return ComputeBordersInternal(node.Style());
@@ -1209,11 +1209,14 @@ BoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode()
           .ClampIndefiniteToZero();
-  return {
-      MinimumValueForLength(style.PaddingStart(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingEnd(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingBefore(), percentage_resolution_size),
-      MinimumValueForLength(style.PaddingAfter(), percentage_resolution_size)};
+  return {MinimumValueForLength(style.PaddingInlineStart(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingInlineEnd(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingBlockStart(),
+                                percentage_resolution_size),
+          MinimumValueForLength(style.PaddingBlockEnd(),
+                                percentage_resolution_size)};
 }
 
 BoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
@@ -1231,8 +1234,8 @@ void ResolveInlineAutoMargins(const ComputedStyle& style,
                               BoxStrut* margins) {
   const LayoutUnit used_space = inline_size + margins->InlineSum();
   const LayoutUnit available_space = available_inline_size - used_space;
-  bool is_start_auto = style.MarginStartUsing(container_style).IsAuto();
-  bool is_end_auto = style.MarginEndUsing(container_style).IsAuto();
+  bool is_start_auto = style.MarginInlineStartUsing(container_style).IsAuto();
+  bool is_end_auto = style.MarginInlineEndUsing(container_style).IsAuto();
   if (is_start_auto && is_end_auto) {
     margins->inline_start = (available_space / 2).ClampNegativeToZero();
     margins->inline_end =

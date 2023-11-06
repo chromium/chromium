@@ -10,7 +10,7 @@
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
@@ -19,7 +19,7 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/policy/policy_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -43,8 +43,8 @@
 #import "ios/chrome/browser/signin/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
-#import "ios/chrome/browser/tabs/tab_pickup/features.h"
+#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
+#import "ios/chrome/browser/tabs/model/tab_pickup/features.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -63,10 +63,11 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using web::WebTaskEnvironment;
 
-class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
+class SettingsTableViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  public:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
@@ -141,20 +142,19 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 
     [static_cast<SettingsTableViewController*>(controller())
         settingsWillBeDismissed];
-    ChromeTableViewControllerTest::TearDown();
+    LegacyChromeTableViewControllerTest::TearDown();
   }
 
-  ChromeTableViewController* InstantiateController() override {
-    id mockSnackbarCommandHandler =
-        OCMProtocolMock(@protocol(SnackbarCommands));
-
-    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
-    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
-    // as well.
+  LegacyChromeTableViewController* InstantiateController() override {
+    // Create mock command handlers. These are just for initializing the view
+    // controller; because the handlers are local to this methdd, they will not
+    // exist during tests, so if the tests call any commands they will fail.
     id mockApplicationCommandHandler =
         OCMProtocolMock(@protocol(ApplicationCommands));
     id mockApplicationSettingsCommandHandler =
         OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    id mockSnackbarCommandHandler =
+        OCMProtocolMock(@protocol(SnackbarCommands));
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:mockSnackbarCommandHandler
@@ -166,15 +166,13 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
                      forProtocol:@protocol(ApplicationSettingsCommands)];
 
     SettingsTableViewController* controller =
-        [[SettingsTableViewController alloc]
-            initWithBrowser:browser_.get()
-                 dispatcher:static_cast<id<ApplicationCommands, BrowserCommands,
-                                           BrowsingDataCommands>>(
-                                browser_->GetCommandDispatcher())];
-    controller.applicationCommandsHandler = HandlerForProtocol(
-        browser_->GetCommandDispatcher(), ApplicationCommands);
-    controller.snackbarCommandsHandler =
-        HandlerForProtocol(browser_->GetCommandDispatcher(), SnackbarCommands);
+        [[SettingsTableViewController alloc] initWithBrowser:browser_.get()];
+    controller.applicationHandler =
+        HandlerForProtocol(dispatcher, ApplicationCommands);
+    controller.settingsHandler =
+        HandlerForProtocol(dispatcher, ApplicationSettingsCommands);
+    controller.snackbarHandler =
+        HandlerForProtocol(dispatcher, SnackbarCommands);
     return controller;
   }
 

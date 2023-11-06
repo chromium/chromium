@@ -1,8 +1,10 @@
 This is a testharness.js-based test.
-PASS e.style['stroke-linejoin'] = "miter" should set the property value
-FAIL e.style['stroke-linejoin'] = "miter-clip" should set the property value assert_not_equals: property should be set got disallowed value ""
-PASS e.style['stroke-linejoin'] = "round" should set the property value
-PASS e.style['stroke-linejoin'] = "bevel" should set the property value
-FAIL e.style['stroke-linejoin'] = "arcs" should set the property value assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['stroke-linejoin'] = "miter" should set the property value
+[FAIL] e.style['stroke-linejoin'] = "miter-clip" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[PASS] e.style['stroke-linejoin'] = "round" should set the property value
+[PASS] e.style['stroke-linejoin'] = "bevel" should set the property value
+[FAIL] e.style['stroke-linejoin'] = "arcs" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
 Harness: the test ran to completion.
 

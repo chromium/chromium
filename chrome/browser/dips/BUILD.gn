@@ -61,6 +61,7 @@ source_set("browser_tests") {
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/ui",
     "//chrome/test:test_support",
+    "//components/privacy_sandbox:tracking_protection_prefs",
     "//components/site_engagement/content:content",
     "//components/ukm:test_support",
     "//content/test:test_support",

@@ -10,9 +10,12 @@
 @protocol SaveToPhotosSettingsMutator <NSObject>
 
 // Save `gaiaID` to preferences to use the associated identity as a default to
-// save images to Google Photos. If `gaiaID` is nil, then the default identity
-// will be cleared from preferences.
+// save images to Google Photos.
 - (void)setSelectedIdentityGaiaID:(NSString*)gaiaID;
+
+// Opt-in to use the account picker to choose which account to use every time
+// the user saves an image to Google Photos.
+- (void)setAskWhichAccountToUseEveryTime:(BOOL)askWhichAccountToUseEveryTime;
 
 @end
 

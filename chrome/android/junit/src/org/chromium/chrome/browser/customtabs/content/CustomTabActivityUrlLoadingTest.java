@@ -54,7 +54,9 @@ import org.chromium.url.Origin;
  * properly loaded in Custom Tabs in different conditions.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @DisableFeatures(ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS)
 public class CustomTabActivityUrlLoadingTest {
     public static final String PASSWORD_CHANGE_USERNAME = "Peter";
@@ -71,29 +73,25 @@ public class CustomTabActivityUrlLoadingTest {
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
-    @Rule
-    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+    @Rule public Features.JUnitProcessor processor = new Features.JUnitProcessor();
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityNavigationController mNavigationController;
     private CustomTabIntentHandler mIntentHandler;
 
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    @Rule public JniMocker mocker = new JniMocker();
 
-    @Mock
-    UrlUtilities.Natives mUrlUtilitiesJniMock;
-    @Mock
-    PasswordChangeSuccessTrackerBridge.Natives mPasswordChangeSuccessTrackerBridge;
+    @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock PasswordChangeSuccessTrackerBridge.Natives mPasswordChangeSuccessTrackerBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
-        mocker.mock(PasswordChangeSuccessTrackerBridgeJni.TEST_HOOKS,
+        mocker.mock(
+                PasswordChangeSuccessTrackerBridgeJni.TEST_HOOKS,
                 mPasswordChangeSuccessTrackerBridge);
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();

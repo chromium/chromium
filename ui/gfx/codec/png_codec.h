@@ -30,9 +30,12 @@ class CODEC_EXPORT PNGCodec {
 
   enum ColorFormat {
     // 4 bytes per pixel, in RGBA order in memory regardless of endianness.
+    // Alpha is unpremultiplied, the same as what PNG uses.
     FORMAT_RGBA,
 
     // 4 bytes per pixel, in BGRA order in memory regardless of endianness.
+    // Alpha is unpremultiplied, the same as what PNG uses.
+    //
     // This is the default Windows DIB order.
     FORMAT_BGRA,
 
@@ -40,6 +43,31 @@ class CODEC_EXPORT PNGCodec {
     // kAlpha_8_SkColorType (1 byte per pixel) formats are supported.
     // kAlpha_8_SkColorType gets encoded into a grayscale PNG treating alpha as
     // the color intensity. For Decode() kN32_SkColorType is always used.
+    //
+    // When encoding from a SkBitmap (which implicitly chooses the
+    // FORMAT_SkBitmap ColorFormat), this respects the input's alpha type:
+    // kOpaque_SkAlphaType, kPremul_SkAlphaType or kUnpremul_SkAlphaType. For
+    // premul input, the Encode callee will convert to PNG's unpremul.
+    //
+    // When encoding from a std::vector, passing FORMAT_SkBitmap treats the
+    // pixel data as kN32_SkColorType and kPremul_SkAlphaType. Again, the
+    // Encode callee will convert to PNG's unpremul.
+    //
+    // When decoding with FORMAT_SkBitmap (implicitly if passing a SkBitmap* to
+    // Decode), the output SkBitmap or pixel data is kN32_SkColorType and
+    // either kOpaque_SkAlphaType or kPremul_SkAlphaType, depending on whether
+    // the source PNG image is opaque.
+    //
+    // FORMAT_SkBitmap prefers premultiplied alpha even though the PNG file
+    // format (and other ColorFormat enum values) work with unpremultiplied
+    // alpha. Per SkAlphaType documentation, premultiplied color components
+    // improve performance.
+    //
+    // This implies that, for a kUnpremul_SkAlphaType input SkBitmap, a round
+    // trip (encoding to PNG and decoding back via this file's functions) can
+    // be lossy, even though PNG is a lossless format (in unpremultiplied alpha
+    // space). The input can distinguish completely transparent red from
+    // completely transparent black but the output will not.
     FORMAT_SkBitmap
   };
 
@@ -59,9 +87,6 @@ class CODEC_EXPORT PNGCodec {
   // given in 'format'. The encoded PNG data will be written into the supplied
   // vector and true will be returned on success. On failure (false), the
   // contents of the output buffer are undefined.
-  //
-  // When writing alpha values, the input colors are assumed to be post
-  // multiplied.
   //
   // size: dimensions of the image
   // row_byte_width: the width in bytes of each row. This may be greater than
@@ -110,9 +135,12 @@ class CODEC_EXPORT PNGCodec {
   // This function may not support all PNG types, and it hasn't been tested
   // with a large number of images, so assume a new format may not work. It's
   // really designed to be able to read in something written by Encode() above.
-  static bool Decode(const unsigned char* input, size_t input_size,
-                     ColorFormat format, std::vector<unsigned char>* output,
-                     int* w, int* h);
+  static bool Decode(const unsigned char* input,
+                     size_t input_size,
+                     ColorFormat format,
+                     std::vector<unsigned char>* output,
+                     int* w,
+                     int* h);
 
   // Decodes the PNG data directly into the passed in SkBitmap. This is
   // significantly faster than the vector<unsigned char> version of Decode()
@@ -122,7 +150,8 @@ class CODEC_EXPORT PNGCodec {
   //
   // Returns true if data is non-null and can be decoded as a png, false
   // otherwise.
-  static bool Decode(const unsigned char* input, size_t input_size,
+  static bool Decode(const unsigned char* input,
+                     size_t input_size,
                      SkBitmap* bitmap);
 };
 

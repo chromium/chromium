@@ -14,10 +14,6 @@
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace assistant_client {
-class AlarmTimerManager;
-}  // namespace assistant_client
-
 namespace ash::libassistant {
 
 class ServicesStatusObserver;
@@ -25,14 +21,11 @@ class ServicesStatusObserver;
 class AssistantClientV1 : public AssistantClient {
  public:
   AssistantClientV1(
-      std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-      assistant_client::AssistantManagerInternal* assistant_manager_internal);
+      std::unique_ptr<assistant_client::AssistantManager> assistant_manager);
   ~AssistantClientV1() override;
 
   // AssistantClient:
   void StartServices(ServicesStatusObserver* services_status_observer) override;
-  void SetChromeOSApiDelegate(
-      assistant_client::ChromeOSApiDelegate* delegate) override;
   bool StartGrpcServices() override;
   void StartGrpcHttpConnectionClient(
       assistant_client::HttpConnectionFactory*) override;
@@ -111,47 +104,19 @@ class AssistantClientV1 : public AssistantClient {
   class AssistantManagerDelegateImpl;
 
   void AddMediaManagerListener();
-  void HandleMediaAction(const std::string& action_name,
-                         const std::string& media_action_args_proto);
-
-  void NotifyConversationStateEvent(
-      const OnConversationStateEventRequest& request);
 
   void NotifyDeviceStateEvent(const OnDeviceStateEventRequest& request);
 
   void NotifyAllServicesReady();
 
-  void OnSpeakerIdEnrollmentUpdate(
-      const assistant_client::SpeakerIdEnrollmentUpdate& update);
-
-  assistant_client::AlarmTimerManager* alarm_timer_manager();
-
-  // Get the timer status and notify the `timer_observer_`.
-  void GetAndNotifyTimerStatus();
-
   absl::optional<bool> dark_mode_enabled_;
 
   std::unique_ptr<DeviceStateListener> device_state_listener_;
 
-  std::unique_ptr<DisplayConnectionImpl> display_connection_;
   std::unique_ptr<MediaManagerListener> media_manager_listener_;
-  std::unique_ptr<AssistantManagerDelegateImpl> assistant_manager_delegate_;
-
-  base::ObserverList<GrpcServicesObserver<OnSpeakerIdEnrollmentEventRequest>>
-      speaker_event_observer_list_;
-
-  base::ObserverList<GrpcServicesObserver<OnConversationStateEventRequest>>
-      conversation_state_event_observer_list_;
 
   base::ObserverList<GrpcServicesObserver<OnDeviceStateEventRequest>>
       device_state_event_observer_list_;
-
-  base::ObserverList<GrpcServicesObserver<OnMediaActionFallbackEventRequest>>
-      media_action_fallback_event_observer_list_;
-
-  base::ObserverList<
-      GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
-      timer_event_observer_list_;
 
   raw_ptr<ServicesStatusObserver, ExperimentalAsh> services_status_observer_ =
       nullptr;

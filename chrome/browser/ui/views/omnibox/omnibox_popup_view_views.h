@@ -85,6 +85,7 @@ class OmniboxPopupViewViews : public views::View,
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, ClickOmnibox);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
   friend class OmniboxPopupViewViewsTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;

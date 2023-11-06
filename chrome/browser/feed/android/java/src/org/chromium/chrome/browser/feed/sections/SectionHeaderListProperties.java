@@ -8,7 +8,7 @@ import android.view.View;
 
 import androidx.annotation.Px;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyListModel;

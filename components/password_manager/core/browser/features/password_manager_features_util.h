@@ -74,7 +74,7 @@ bool IsUserEligibleForAccountStorage(const syncer::SyncService* sync_service);
 
 // Whether the current signed-in user (aka unconsented primary account) has
 // opted in to use the Google account storage for passwords (as opposed to
-// local/profile storage).
+// local/profile storage). This always returns false for sync-the-feature users.
 // |pref_service| must not be null.
 // |sync_service| may be null (commonly the case in incognito mode), in which
 // case this will simply return false.

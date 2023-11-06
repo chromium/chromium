@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -48,8 +49,8 @@ constexpr char kPersonalizedButtonFrameUrl[] = "https://idp.example/button";
 constexpr char kProviderUrl[] = "https://idp.example/fedcm.json";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
+constexpr char kLoginUrl[] = "https://idp.example/login";
 constexpr char kClientId[] = "client_id_123";
-constexpr char kNonce[] = "nonce123";
 
 constexpr char kAccountEmailFormat[] = "%s@foo.com";
 constexpr char kAccountName[] = "The Liliputian";
@@ -153,6 +154,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
     IdentityProviderMetadata idp_metadata;
     idp_metadata.config_url = GURL(kProviderUrl);
+    idp_metadata.idp_login_url = GURL(kLoginUrl);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), config_.config_fetch_status,
@@ -170,7 +172,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
           account_config.id, GenerateEmailForUserId(account_config.id),
           kAccountName, kAccountGivenName, GURL(kAccountPicture),
           /*login_hints=*/std::vector<std::string>(),
-          /*hosted_domains=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
           account_config.login_state);
     }
 
@@ -185,6 +187,10 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
            has_fetched_accounts_endpoint_;
   }
 
+  base::WeakPtr<TestIdpNetworkRequestManager> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  protected:
   bool has_fetched_well_known_{false};
   bool has_fetched_config_{false};
@@ -192,6 +198,7 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
 
  private:
   const Config config_;
+  base::WeakPtrFactory<TestIdpNetworkRequestManager> weak_ptr_factory_{this};
 };
 
 class TestApiPermissionDelegate : public MockApiPermissionDelegate {
@@ -276,13 +283,12 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
     auto network_manager =
         std::make_unique<TestIdpNetworkRequestManager>(config);
-    network_manager_ = network_manager.get();
+    network_manager_ = network_manager->AsWeakPtr();
 
     blink::mojom::IdentityProviderConfigPtr idp_ptr =
         blink::mojom::IdentityProviderConfig::New();
     idp_ptr->config_url = GURL(kProviderUrl);
     idp_ptr->client_id = kClientId;
-    idp_ptr->nonce = kNonce;
 
     UserInfoCallbackHelper callback_helper;
     request_ = FederatedAuthUserInfoRequest::Create(
@@ -335,7 +341,7 @@ class FederatedAuthUserInfoRequestTest : public RenderViewHostImplTestHarness {
 
  protected:
   raw_ptr<TestRenderFrameHost, DanglingUntriaged> iframe_render_frame_host_;
-  raw_ptr<TestIdpNetworkRequestManager, DanglingUntriaged> network_manager_;
+  base::WeakPtr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<TestApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
   std::unique_ptr<NiceMock<FedCmMetrics>> metrics_;

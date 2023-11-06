@@ -171,7 +171,7 @@ void HistoryClustersBridge::ClustersQueryDone(
             base::android::ConvertUTF16ToJavaString(env, raw_label),
             base::android::ToJavaIntArray(env, label_match_starts),
             base::android::ToJavaIntArray(env, label_match_ends),
-            visit_time.ToJavaTime(),
+            visit_time.InMillisecondsSinceUnixEpoch(),
             base::android::ToJavaArrayOfStrings(env, cluster.related_searches));
     j_clusters.push_back(j_cluster);
   }

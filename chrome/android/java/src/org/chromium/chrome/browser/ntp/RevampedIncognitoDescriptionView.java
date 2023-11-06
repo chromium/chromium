@@ -68,16 +68,19 @@ public class RevampedIncognitoDescriptionView
     @Override
     public void setCookieControlsToggleOnCheckedChangeListener(
             CompoundButton.OnCheckedChangeListener listener) {
+        if (!findCookieControlElements()) return;
         mCookieControlsToggle.setOnCheckedChangeListener(listener);
     }
 
     @Override
     public void setCookieControlsToggle(boolean enabled) {
+        if (!findCookieControlElements()) return;
         mCookieControlsToggle.setChecked(enabled);
     }
 
     @Override
     public void setCookieControlsIconOnclickListener(OnClickListener listener) {
+        if (!findCookieControlElements()) return;
         mCookieControlsManagedIcon.setOnClickListener(listener);
     }
 
@@ -105,10 +108,6 @@ public class RevampedIncognitoDescriptionView
         mDoesNotLayout = findViewById(R.id.revamped_incognito_ntp_does_not_layout);
         mLearnMore = findViewById(R.id.revamped_incognito_ntp_learn_more);
         mCookieControlsCard = findViewById(R.id.revamped_cookie_controls_card);
-        mCookieControlsToggle = findViewById(R.id.revamped_cookie_controls_card_toggle);
-        mCookieControlsManagedIcon = findViewById(R.id.revamped_cookie_controls_card_managed_icon);
-        mCookieControlsTitle = findViewById(R.id.revamped_cookie_controls_card_title);
-        mCookieControlsSubtitle = findViewById(R.id.revamped_cookie_controls_card_subtitle);
 
         adjustLayout();
     }
@@ -274,6 +273,7 @@ public class RevampedIncognitoDescriptionView
 
     @Override
     public void setCookieControlsEnforcement(@CookieControlsEnforcement int enforcement) {
+        if (!findCookieControlElements()) return;
         boolean enforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
         mCookieControlsToggle.setEnabled(!enforced);
         mCookieControlsManagedIcon.setVisibility(enforced ? View.VISIBLE : View.GONE);
@@ -307,5 +307,15 @@ public class RevampedIncognitoDescriptionView
         subtitleText.append("\n");
         subtitleText.append(addition);
         mCookieControlsSubtitle.setText(subtitleText.toString());
+    }
+
+    /** Finds the 3PC controls and returns true if they exist. */
+    private boolean findCookieControlElements() {
+        mCookieControlsToggle = findViewById(R.id.revamped_cookie_controls_card_toggle);
+        if (mCookieControlsToggle == null) return false;
+        mCookieControlsManagedIcon = findViewById(R.id.revamped_cookie_controls_card_managed_icon);
+        mCookieControlsTitle = findViewById(R.id.revamped_cookie_controls_card_title);
+        mCookieControlsSubtitle = findViewById(R.id.revamped_cookie_controls_card_subtitle);
+        return true;
     }
 }

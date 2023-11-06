@@ -16,35 +16,12 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 
 namespace chromeos {
-
-namespace {
-
-constexpr base::StringPiece kOrcaKey = "orca-key";
-constexpr char kOrcaKeyHash[] =
-    "\x7a\xf3\xa1\x57\x28\x48\xc4\x14\x27\x13\x53\x5a\x09\xf3\x0e\xfc\xee\xa6"
-    "\xbb\xa4";
-
-bool CheckOrcaKey() {
-  const std::string& debug_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          /*ash::switches::kOrcaKey=*/kOrcaKey));
-  // See go/orca-key for the key.
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/auuf123 --orca-key="INSERT KEY
-  //  HERE" --enable-features=Orca
-  bool orca_key_check = (debug_key_hash == kOrcaKeyHash);
-  if (!orca_key_check) {
-    LOG(ERROR) << "Provided debug key does not match with the expected one.";
-  }
-  return orca_key_check;
-}
-
-}  // namespace
 
 ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     : quick_answers_controller_(
@@ -63,18 +40,19 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
 ReadWriteCardsManagerImpl::~ReadWriteCardsManagerImpl() = default;
 
 ReadWriteCardController* ReadWriteCardsManagerImpl::GetController(
-    const content::ContextMenuParams& params) {
+    const content::ContextMenuParams& params,
+    content::BrowserContext* context) {
   // Skip password input field.
   const bool is_password_field =
-      params.input_field_type ==
-      blink::mojom::ContextMenuDataInputFieldType::kPassword;
+      params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   if (is_password_field) {
     return nullptr;
   }
 
   if (chromeos::features::IsOrcaEnabled()) {
     if (params.is_editable) {
-      return CheckOrcaKey() ? editor_menu_controller_.get() : nullptr;
+      editor_menu_controller_->SetBrowserContext(context);
+      return editor_menu_controller_.get();
     }
   }
 

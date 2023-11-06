@@ -36,13 +36,19 @@ const test::UIPath kCaptivePortalLink = {"error-message",
 
 class CaptivePortalWindowTest : public InProcessBrowserTest {
  protected:
-  void ShowIfRedirected() { captive_portal_window_proxy_->ShowIfRedirected(); }
+  void ShowIfRedirected(const std::string& network_name) {
+    captive_portal_window_proxy_->ShowIfRedirected(network_name);
+  }
 
-  void Show() { captive_portal_window_proxy_->Show(); }
+  void Show(const std::string& network_name) {
+    captive_portal_window_proxy_->Show(network_name);
+  }
 
   void Close() { captive_portal_window_proxy_->Close(); }
 
-  void OnRedirected() { captive_portal_window_proxy_->OnRedirected(); }
+  void OnRedirected(const std::string& network_name) {
+    captive_portal_window_proxy_->OnRedirected(network_name);
+  }
 
   void OnOriginalURLLoaded() {
     captive_portal_window_proxy_->OnOriginalURLLoaded();
@@ -81,13 +87,13 @@ class CaptivePortalWindowTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, Show) {
-  Show();
+  Show(kWifiServicePath);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, ShowClose) {
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  Show();
+  Show(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/false);
 
   Close();
@@ -99,10 +105,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, ShowClose) {
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnRedirected) {
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  ShowIfRedirected();
+  ShowIfRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  OnRedirected();
+  OnRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   Close();
@@ -114,10 +120,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnRedirected) {
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnOriginalURLLoaded) {
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  ShowIfRedirected();
+  ShowIfRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  OnRedirected();
+  OnRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   OnOriginalURLLoaded();
@@ -129,10 +135,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, OnOriginalURLLoaded) {
 IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  ShowIfRedirected();
+  ShowIfRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  Show();
+  Show(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/false);
 
   Close();
@@ -140,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
   base::RunLoop().RunUntilIdle();
   CheckState(/*is_shown=*/false, /*in_progress=*/false);
 
-  OnRedirected();
+  OnRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/false, /*in_progress=*/true);
 
   OnOriginalURLLoaded();
@@ -148,10 +154,10 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalWindowTest, MultipleCalls) {
   base::RunLoop().RunUntilIdle();
   CheckState(/*is_shown=*/false, /*in_progress=*/true);
 
-  Show();
+  Show(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
-  OnRedirected();
+  OnRedirected(kWifiServicePath);
   CheckState(/*is_shown=*/true, /*in_progress=*/true);
 
   Close();
@@ -172,7 +178,7 @@ class CaptivePortalWindowCtorDtorTest : public LoginManagerTest {
   CaptivePortalWindowCtorDtorTest& operator=(
       const CaptivePortalWindowCtorDtorTest&) = delete;
 
-  ~CaptivePortalWindowCtorDtorTest() override {}
+  ~CaptivePortalWindowCtorDtorTest() override = default;
 
   void SetUpOnMainThread() override {
     // Set up fake networks.

@@ -42,6 +42,8 @@ static_library("common") {
     "//third_party/protobuf:protobuf_lite",
     "//url",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 static_library("test_support") {

@@ -145,6 +145,49 @@ _OS_SPECIFIC_FILTER['mac'] = [
     'ChromeDriverTest.testTakeElementScreenshotPartlyVisible',
     'ChromeDriverTest.testTakeLargeElementScreenshot',
     'ChromeDriverSiteIsolation.testCanClickOOPIF',
+    # Flaky: https://crbug.com/1496826.
+    'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
+    'PureBidiTest.testSessionCommandInEndedSession',
+    # Flaky: https://crbug.com/1481915
+    'ChromeDriverTest.testExecuteScriptStaleElement1',
+    'ChromeDriverTest.testExecuteScriptStaleElement2',
+    # Flaky: https://crbug.com/1486474
+    'ChromeDriverTest.testFindChildElementStaleElement2',
+    # Flaky: https://crbug.com/1486604
+    'ChromeDriverTest.testFindChildElementsStaleElement2',
+    # Flaky: https://crbug.com/1486520
+    'ChromeDriverTest.testClickStaleElement',
+]
+
+_BROWSER_SPECIFIC_FILTER = {}
+_BROWSER_SPECIFIC_FILTER['chrome'] = [
+]
+_BROWSER_SPECIFIC_FILTER['chrome-headless-shell'] = [
+    # TODO: Each test in this list must have an explanation why it is expected
+    # to fail. If the test is not expected to fail a corresponding issue must
+    # be created and referred to in the comment above the excluded test.
+    # See crbug.com/chromedriver/4358.
+    'ZChromeStartRetryCountTest.testChromeStartRetryCount',
+    'ChromeDriverTest.testWindowMaximize',
+    'ChromeDriverTest.testWindowFullScreen',
+    'ChromeDriverTest.testCanSwitchToPrintPreviewDialog',
+    'ChromeDriverSecureContextTest.*',
+    'RemoteBrowserTest.testConnectToRemoteBrowser',
+    'LaunchDesktopTest.testExistingDevToolsPortFile',
+    # FedCM is not supported by chrome-headless-shell.
+    'FedCmSpecificTest.*',
+    'ChromeDriverTest.testSlowIFrame',
+    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
+    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
+    # chrome-headless-shell does not support chrome:about page
+    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPort',
+    # chrome-headless-shell does not support chrome:about page
+    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
+    'ChromeExtensionsCapabilityTest.testIFrameWithExtensionsSource',
+    'ChromeExtensionsCapabilityTest.testCanInspectBackgroundPage',
+    'ChromeDriverTest.testShouldHandleNewWindowLoadingProperly',
+    'ChromeDriverTest.testSetRPHResgistrationMode',
+    'ChromeDownloadDirTest.testDownloadDirectoryOverridesExistingPreferences',
 ]
 
 _DESKTOP_NEGATIVE_FILTER = [
@@ -180,11 +223,13 @@ _INTEGRATION_NEGATIVE_FILTER = [
 ]
 
 
-def _GetDesktopNegativeFilter():
+def _GetDesktopNegativeFilter(browser_name = 'chrome'):
   filter = _NEGATIVE_FILTER + _DESKTOP_NEGATIVE_FILTER
   os = util.GetPlatformName()
   if os in _OS_SPECIFIC_FILTER:
     filter += _OS_SPECIFIC_FILTER[os]
+  if browser_name in _BROWSER_SPECIFIC_FILTER:
+    filter += _BROWSER_SPECIFIC_FILTER[browser_name]
   return filter
 
 _ANDROID_NEGATIVE_FILTER = {}
@@ -336,6 +381,104 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
     ]
 )
 
+def _GetChromePathList(driver_path, platform):
+  path_mapping = {
+    'linux': [os.path.join(driver_path, 'chrome')],
+    'mac': [
+      os.path.join(driver_path,
+                   'Google Chrome for Testing.app',
+                   'Contents', 'MacOS',
+                   'Google Chrome for Testing'),
+      os.path.join(driver_path, 'Google Chrome.app',
+                   'Contents', 'MacOS', 'Google Chrome'),
+      os.path.join(driver_path, 'Chromium.app',
+                   'Contents', 'MacOS', 'Chromium')],
+    'win': [os.path.join(driver_path, 'chrome.exe')]}
+  if platform in path_mapping:
+    return path_mapping[platform]
+  return []
+
+def _GetHeadlessShellPathList(driver_path, platform):
+  posix_path_list = [
+    os.path.join(driver_path, 'chrome-headless-shell'),
+    os.path.join(driver_path, 'headless_shell')]
+  path_mapping = {
+    'linux': posix_path_list,
+    'mac': posix_path_list,
+    'win': [
+      os.path.join(driver_path, 'chrome-headless-shell.exe'),
+      os.path.join(driver_path, 'headless_shell.exe')]}
+  if platform in path_mapping:
+    return path_mapping[platform]
+  return []
+
+def _InferBrowserName(chrome_binary):
+  components = os.path.split(chrome_binary)
+  if len(components) == 0:
+    return 'chrome' # default to chrome if path is not provided
+  program = os.path.splitext(os.path.basename(chrome_binary))[0]
+  if program in {'chrome-headless-shell', 'headless_shell'}:
+    return 'chrome-headless-shell'
+  else:
+    return 'chrome'
+
+def _InferBrowserPath(browser_name,
+                      driver_path,
+                      platform,
+                      path_exists = os.path.exists):
+  path_list = []
+  if browser_name == 'chrome':
+    path_list = _GetChromePathList(driver_path, platform)
+  elif browser_name == 'chrome-headless-shell':
+    path_list = _GetHeadlessShellPathList(driver_path, platform)
+  for path in path_list:
+    if path_exists(path):
+      return path
+  return None
+
+class RunnerSelfTest(unittest.TestCase):
+  def testPathListsForKnownPlatforms(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'linux')), 0)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'mac')), 0)
+    self.assertGreater(len(_GetChromePathList(driver_path, 'win')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'linux')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'mac')), 0)
+    self.assertGreater(len(_GetHeadlessShellPathList(driver_path, 'win')), 0)
+
+  def testPathListsForUnknownPlatforms(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    self.assertIsNotNone(_GetChromePathList(driver_path, 'unknown'))
+    self.assertIsNotNone(_GetHeadlessShellPathList(driver_path, 'unknown'))
+    self.assertEqual(len(_GetChromePathList(driver_path, 'unknown')), 0)
+    self.assertEqual(len(_GetHeadlessShellPathList(driver_path, 'unknown')), 0)
+    self.assertIsNotNone(_GetChromePathList(driver_path, ''))
+    self.assertIsNotNone(_GetHeadlessShellPathList(driver_path, ''))
+    self.assertEqual(len(_GetChromePathList(driver_path, '')), 0)
+    self.assertEqual(len(_GetHeadlessShellPathList(driver_path, '')), 0)
+
+  def testBrowserNameInference(self):
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    for platform in ['linux', 'mac', 'win']:
+      for path in _GetChromePathList(driver_path, platform):
+        self.assertEqual('chrome', _InferBrowserName(path))
+      for path in _GetHeadlessShellPathList(driver_path, platform):
+        self.assertEqual('chrome-headless-shell', _InferBrowserName(path))
+
+  def testBrowserPathInference(self):
+    is_headless_shell = lambda path: 'chrome-headless-shell' in path
+    is_not_headless_shell = lambda path: 'chrome-headless-shell' not in path
+    driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
+    for platform in ['linux', 'mac', 'win']:
+      self.assertGreater(len(_InferBrowserPath('chrome',
+                                driver_path,
+                                platform,
+                                is_not_headless_shell)), 0)
+      self.assertGreater(len(_InferBrowserPath('chrome-headless-shell',
+                                               driver_path,
+                                               platform,
+                                               is_headless_shell)), 0)
+
 
 class ChromeDriverBaseTest(unittest.TestCase):
   """Base class for testing chromedriver functionalities."""
@@ -369,7 +512,7 @@ class ChromeDriverBaseTest(unittest.TestCase):
     return temp_dir
 
   def CreateDriver(self, server_url=None, server_pid=None,
-                   download_dir=None, **kwargs):
+                   download_dir=None, browser_name=None, **kwargs):
     if server_url is None:
       server_url = _CHROMEDRIVER_SERVER_URL
     if server_pid is None:
@@ -394,8 +537,12 @@ class ChromeDriverBaseTest(unittest.TestCase):
         android_activity = constants.PACKAGE_INFO[_ANDROID_PACKAGE_KEY].activity
         android_process = '%s:main' % android_package
 
+    if browser_name is None:
+      browser_name = _BROWSER_NAME
+
     driver = chromedriver.ChromeDriver(server_url, server_pid,
                                        chrome_binary=_CHROME_BINARY,
+                                       browser_name=browser_name,
                                        android_package=android_package,
                                        android_activity=android_activity,
                                        android_process=android_process,
@@ -1077,6 +1224,28 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.SwitchToFrame(element)
+
+  def testReturnFrameElement(self):
+    # The test is based on crbug.com/chromedriver/4477.
+    # It asserts the reason for closing the issue with WON'T FIX resolution.
+    # Informal explanation:
+    # Switching between frames is similar to switching between windows.
+    # ChromeDriver changes its focus to the new window / frame object.
+    # All the references outside it are treated as stale.
+    # Formal explantation:
+    # According to https://w3c.github.io/webdriver/#dfn-is-stale
+    # An element is stale if its node document is not the active document
+    # or if it is not connected.
+    # window.frameElement is connected because its shadow-including root is a
+    # document (just some document no matter which).
+    # However its node document is the higher level document, not the active
+    # one. Therefore it must be treated as stale.
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/nested.html'))
+    frame = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame)
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript('return window.frameElement')
 
   def testGetTitle(self):
     script = 'document.title = "title"; return 1;'
@@ -2384,7 +2553,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertNotEqual(old_rect_list, new_rect_list)
 
     self._driver.SetWindowRect(*old_rect_list)
-    for i in range(10):
+    for _ in range(10):
       if old_rect_list == self._driver.GetWindowRect():
         break
       time.sleep(0.1)
@@ -3653,6 +3822,18 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     message = self._driver.FindElement('css selector', '#message.result')
     self.assertTrue('clicked' in message.GetText())
 
+  def testBrowserNameIsEchoed(self):
+    """Verifies that the returned browserName capability is the same as the
+    sent browserName capability. The feature is relied upon by
+    test_merge_browserName Web Platform Test.
+    """
+    browser_name = self._driver.capabilities['browserName']
+    # The 'browserName' capability must always present in accordance with the
+    # standard: https://w3c.github.io/webdriver/#capabilities
+    self.assertIsNotNone(browser_name)
+    driver = self.CreateDriver(browser_name=browser_name)
+    self.assertEqual(browser_name, driver.capabilities['browserName'])
+
   def testHeadlessWithUserDataDirStarts(self):
     """Tests that ChromeDriver can launch Chrome in headless mode
        with user-data-dir provided as a command line argument.
@@ -4176,6 +4357,196 @@ class ChromeDriverSecureContextTest(ChromeDriverBaseTestWithWebServer):
     self._driver.SetUserVerified(authenticatorId, True)
     result = self._driver.ExecuteAsyncScript(register_uv_script)
     self.assertEqual("OK", result['status'])
+
+  def testCreateVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: 'type' must be a string",
+                           self._driver.CreateVirtualSensor, 42)
+
+  def testUpdateVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Unexpected type invalid_sensor in 'type' field",
+        self._driver.UpdateVirtualSensor, 'invalid_sensor', {
+            'x': 1.0,
+            'y': 2.0,
+            'z': 3.0
+        })
+
+  def testUpdateVirtualSensorWithoutIlluminanceValue(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse illuminance",
+                           self._driver.UpdateVirtualSensor, 'ambient-light',
+                           {'invalid_value_key': 1.0})
+
+  def testUpdateVirtualSensorWithoutXYZValues(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'y': 2.0,
+                               'z': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'x': 1.0,
+                               'z': 3.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse XYZ fields",
+                           self._driver.UpdateVirtualSensor, 'accelerometer', {
+                               'x': 1.0,
+                               'y': 2.0
+                           })
+
+  def testUpdateVirtualSensorWithoutXYZWValues(self):
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'y': 2.0,
+                               'z': 3.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'z': 3.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'y': 2.0,
+                               'w': 4.0
+                           })
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           "invalid argument: Could not parse quaternion",
+                           self._driver.UpdateVirtualSensor,
+                           'absolute-orientation', {
+                               'x': 1.0,
+                               'y': 2.0,
+                               'z': 3.0
+                           })
+
+  def testRemoveVirtualSensorWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Invalid sensor type: invalid_sensor",
+        self._driver.RemoveVirtualSensor, 'invalid_sensor')
+
+  def testGetVirtualSensorInformationWithInvalidSensorName(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "invalid argument: Invalid sensor type: invalid_sensor",
+        self._driver.GetVirtualSensorInformation, 'invalid_sensor')
+
+  def testGetVirtualSensorInformationWithNotOverriddenType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "This sensor type is not being overridden with a virtual sensor",
+        self._driver.GetVirtualSensorInformation, 'accelerometer')
+
+  def testCreateAlreadyOverriddenVirtualSensor(self):
+    self._driver.CreateVirtualSensor('accelerometer')
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+    self.assertRaisesRegex(chromedriver.InvalidArgument,
+                           'The specified sensor type is already overridden',
+                           self._driver.CreateVirtualSensor, 'accelerometer')
+
+  def testCreateVirtualSensorNotConnected(self):
+    self._driver.CreateVirtualSensor('accelerometer', {'connected': False})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(lambda: self._driver.ExecuteScript(
+            'return sensorErrorEvent !== undefined')))
+
+    error_name = self._driver.ExecuteScript(
+        'return sensorErrorEvent.error.name')
+    self.assertEqual('NotReadableError', error_name)
+
+  def testCreateVirtualSensorWithMinimumFrequency(self):
+    self._driver.CreateVirtualSensor('accelerometer',
+                                     {'minSamplingFrequency': 6})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(6.0, info['requestedSamplingFrequency'])
+
+  def testCreateVirtualSensorWithMaximumFrequency(self):
+    self._driver.CreateVirtualSensor('accelerometer',
+                                     {'maxSamplingFrequency': 3})
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(3.0, info['requestedSamplingFrequency'])
+
+  def testGetVirtualSensorInformation(self):
+    self._driver.CreateVirtualSensor('accelerometer')
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertEqual(0.0, info['requestedSamplingFrequency'])
+
+    self._driver.ExecuteScript('startSensor()')
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.activated')))
+
+    info = self._driver.GetVirtualSensorInformation('accelerometer')
+    self.assertLess(0.0, info['requestedSamplingFrequency'])
+
+  def testUpdateVirtualSensor(self):
+    testedSensor = 'accelerometer'
+
+    self._driver.CreateVirtualSensor(testedSensor)
+    self._driver.Load(
+        self.GetHttpsUrlForFile('/chromedriver/sensors_test.html'))
+
+    self._driver.ExecuteScript('startSensor()')
+
+    reading = {'x': 1.0, 'y': 2.0, 'z': 3.0}
+
+    self._driver.UpdateVirtualSensor(testedSensor, reading)
+
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: self._driver.ExecuteScript('return sensor.hasReading')))
+
+    sensor = self._driver.ExecuteScript('return sensor')
+    self.assertEqual(reading['x'], sensor['x'])
+    self.assertEqual(reading['y'], sensor['y'])
+    self.assertEqual(reading['z'], sensor['z'])
+
+    self._driver.RemoveVirtualSensor(testedSensor)
+
+  def testUpdateVirtualSensorWitNotOverriddenType(self):
+    self.assertRaisesRegex(
+        chromedriver.InvalidArgument,
+        "This sensor type is not being overridden with a virtual sensor",
+        self._driver.UpdateVirtualSensor, 'ambient-light', {'illuminance': 42})
+
 
 # Tests in the following class are expected to be moved to ChromeDriverTest
 # class when we no longer support the legacy mode.
@@ -5034,7 +5405,7 @@ class ChromeDownloadDirTest(ChromeDriverBaseTest):
     with open(prefs_file_path, 'w') as f:
       json.dump(prefs, f)
 
-    driver = self.CreateDriver(
+    self.CreateDriver(
         chrome_switches=['user-data-dir=' + user_data_dir],
         download_dir=download_dir)
 
@@ -6208,74 +6579,240 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
 
   def tearDown(self):
     for conn in self._connections:
-      conn.Close()
+      try:
+        conn.PostCommand({
+          'method': 'session.end',
+          'params': {}
+        })
+        conn.Close()
+      except chromedriver.WebSocketConnectionClosedException:
+        pass
     super().tearDown()
 
-  def createUnboundWebSocketConnection(self):
+  def createSessionNewCommand(self, browser_name=None, chrome_binary=None):
+    if browser_name is None:
+      browser_name = _BROWSER_NAME
+    if chrome_binary is None:
+      chrome_binary = _CHROME_BINARY
+    options = {
+      'w3c': True
+    }
+    android_package = None
+    if _ANDROID_PACKAGE_KEY:
+      android_package = constants.PACKAGE_INFO[_ANDROID_PACKAGE_KEY].package
+    # The code concerning chrome switches was carried over from
+    # client/chromedriver.py
+    chrome_switches = []
+    if sys.platform.startswith('linux') and android_package is None:
+      # Workaround for crbug.com/611886.
+      chrome_switches.append('no-sandbox')
+      # https://bugs.chromium.org/p/chromedriver/issues/detail?id=1695
+      chrome_switches.append('disable-gpu')
+    chrome_switches.append('force-color-profile=srgb')
+    # Resampling can change the distance of a synthetic scroll.
+    chrome_switches.append('disable-features=ResamplingScrollEvents')
+    options['args'] = chrome_switches
+    # TODO(crbug.com/1011000): Work around a bug with headless on Mac.
+    if (util.GetPlatformName() == 'mac' and
+        browser_name == 'chrome-headless-shell'):
+      options['excludeSwitches'] = ['--enable-logging']
+    if chrome_binary is not None:
+      options['binary'] = chrome_binary
+    if _MINIDUMP_PATH:
+      options['minidumpPath'] =  _MINIDUMP_PATH
+    return {
+        'method': 'session.new',
+        'params': {
+            'capabilities': {
+                'alwaysMatch': {
+                    'browserName': browser_name,
+                    'goog:chromeOptions': options,
+                    'goog:testName': self.id(),
+                }
+            }
+        }
+    }
+
+
+  def createWebSocketConnection(self, session_id = None):
     server_url = _CHROMEDRIVER_SERVER_URL
-    conn = WebSocketConnection(server_url)
+    conn = WebSocketConnection(server_url, session_id = session_id)
     conn.SetTimeout(5 * 60) # 5 minutes
     self._connections.append(conn)
     return conn
 
   def testSessionStatus(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
+    conn = self.createWebSocketConnection()
+    status = conn.SendCommand({
       'method': 'session.status',
       'params': {}
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('success', status['type'])
-    self.assertEqual(False, status['result']['ready'])
-    self.assertEqual('ChromeDriver does not yet support BiDi-only sessions.',
-                     status['result']['message'])
+    self.assertEqual(True, status['ready'])
+    self.assertEqual('ChromeDriver ready for new sessions.',
+                     status['message'])
 
   def testSessionNew(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'session.new',
+    conn = self.createWebSocketConnection()
+    response = conn.SendCommand(self.createSessionNewCommand())
+    self.assertRegex(response['sessionId'], '\\w+')
+
+  def testSessionNewWithUnknownBrowserName(self):
+    """Tests that unknown browserName in the capabilities is treated as error
+    """
+    conn = self.createWebSocketConnection()
+    with self.assertRaises(chromedriver.SessionNotCreated):
+      conn.SendCommand({
+        'method': 'session.new',
+        'params': {
+            'capabilities': {
+                'alwaysMatch': {
+                    'browserName': 'quick-brown-dog',
+                }
+            }
+        }
+      })
+
+  def testStatusInActiveSession(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand())
+    status = conn.SendCommand({
+      'method': 'session.status',
+      'params': {}
+    })
+    self.assertEqual(False, status['ready'])
+    self.assertEqual('already connected', status['message'])
+
+  def testSessionNewIfSessionAlreadyCreated(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand())
+    with self.assertRaisesRegex(chromedriver.SessionNotCreated,
+                  "session not created: session already exists"):
+      conn.SendCommand(self.createSessionNewCommand())
+
+  def testAnySessionCommand(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand())
+    response = conn.SendCommand({
+      'method': 'browsingContext.getTree',
       'params': {
-          'capabilities': {}
       }
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('session not created', status['error'])
-    self.assertEqual(''.join([
-        'session not created: ',
-        'ChromeDriver does not yet support BiDi-only sessions.']),
-        status['message'])
+    context = response['contexts'][0]['context']
+    self.assertIsNotNone(context)
 
   def testUnknownStaticCommand(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'method': 'abracadabra',
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('unknown command', status['error'])
-    self.assertEqual('unknown command: abracadabra', status['message'])
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.UnknownCommand,
+                                'unknown command: abracadabra'):
+      conn.SendCommand({
+        'method': 'abracadabra',
+        'params': {}
+      })
 
   def testStaticCommandWithoutMethod(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-      'params': {}
-    })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+method')
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.InvalidArgument,
+                                'no\\s+method'):
+      conn.SendCommand({
+        'params': {}
+      })
 
   def testStaticCommandWithoutParams(self):
-    conn = self.createUnboundWebSocketConnection()
-    cmd_id = conn.SendCommand({
-        'method': 'session.status'
+    conn = self.createWebSocketConnection()
+    with self.assertRaisesRegex(chromedriver.InvalidArgument,
+                                'no\\s+params'):
+      conn.SendCommand({
+          'method': 'session.status'
+      })
+
+  def testSessionCommandInEndedSession(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand())
+    conn.SendCommand({
+      'method': 'session.end',
+      'params': {
+      }
     })
-    status = conn.WaitForResponse(cmd_id)
-    self.assertEqual('error', status['type'])
-    self.assertEqual('invalid argument', status['error'])
-    self.assertRegex(status['message'], 'no\\s+params')
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      conn.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
+
+  def testSessionCommandInEndedSessionNoWait(self):
+    conn = self.createWebSocketConnection()
+    conn.SendCommand(self.createSessionNewCommand())
+    conn.PostCommand({
+      'method': 'session.end',
+      'params': {
+      }
+    })
+    # Depending on timing the command might fail with either
+    # WebSocketConnectionClosedException or it might return an error code
+    # "invalid session id".
+    try:
+      conn.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
+    except chromedriver.WebSocketConnectionClosedException:
+      pass
+    except chromedriver.InvalidSessionId:
+      # This situation can happen if "browsingContext.getTree" arrives before
+      # the ExecuteBidiSessionEnd response is returned to the CMD thread.
+      pass
+
+  def testMultipleConnectionsToSameSession(self):
+    conn1 = self.createWebSocketConnection()
+    response = conn1.SendCommand(self.createSessionNewCommand())
+    session_id = response['sessionId']
+    conn2 = self.createWebSocketConnection(session_id=session_id)
+    response = conn1.SendCommand({
+      'method': 'browsingContext.getTree',
+      'params': {
+      }
+    })
+    context = response['contexts'][0]['context']
+    conn1.PostCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'window.test_desert = "Kalahari"',
+          'target': {
+              'context': context
+          },
+          'awaitPromise': True,
+      }
+    })
+    response = conn2.SendCommand({
+      'method': 'script.evaluate',
+      'params': {
+          'expression': 'window.test_desert',
+          'target': {
+              'context': context
+          },
+          'awaitPromise': True,
+      }
+    })
+    self.assertEqual('Kalahari', response['result']['value'])
+
+  def testParallelConnectionIsClosedOnSessionEnd(self):
+    conn1 = self.createWebSocketConnection()
+    response = conn1.SendCommand(self.createSessionNewCommand())
+    session_id = response['sessionId']
+    conn2 = self.createWebSocketConnection(session_id=session_id)
+    conn2.SendCommand({
+      'method': 'session.end',
+      'params': {
+      }
+    })
+    with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
+      conn1.SendCommand({
+        'method': 'browsingContext.getTree',
+        'params': {
+        }
+      })
 
 class BidiTest(ChromeDriverBaseTestWithWebServer):
 
@@ -6306,13 +6843,12 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     return conn
 
   def getContextId(self, conn, idx):
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    return resp['result']['contexts'][idx]['context']
+    return response['contexts'][idx]['context']
 
   def postEvaluate(self, conn, expression, context_id=None, channel=None,
                    id=None):
@@ -6332,55 +6868,46 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       command['channel'] = channel
     if id is not None:
       command['id'] = id
-    return conn.SendCommand(command)
+    return conn.PostCommand(command)
 
   def testCreateContext(self):
     conn = self.createWebSocketConnection()
-
     old_handles = self._driver.GetWindowHandles()
     self.assertEqual(1, len(old_handles))
     self.assertNotEqual("BiDi Mapper", self._driver.GetTitle())
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
     new_handles = self._driver.GetWindowHandles()
     diff = set(new_handles) - set(old_handles)
     self.assertEqual(1, len(diff))
 
   def testGetBrowsingContextTree(self):
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
+    contexts = response['contexts']
     self.assertEqual(1, len(contexts))
 
   def testMapperIsNotDisplacedByNavigation(self):
     self._http_server.SetDataForPath('/page.html',
      bytes('<html><title>Regular Page</title></body></html>', 'utf-8'))
-
     conn = self.createWebSocketConnection()
     old_handles = self._driver.GetWindowHandles()
-
     self._driver.Load(self._http_server.GetUrl() + '/page.html')
     self.assertEqual("Regular Page", self._driver.GetTitle())
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
     new_handles = self._driver.GetWindowHandles()
     diff = set(new_handles) - set(old_handles)
     self.assertEqual(1, len(diff))
@@ -6402,11 +6929,9 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testBrowserQuitsWhenLastPageIsClosed(self):
     conn = self.createWebSocketConnection()
-
     handles = self._driver.GetWindowHandles()
     self.assertEqual(1, len(handles))
     self._driver.CloseWindow()
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6414,42 +6939,32 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
   def testCloseOneOfManyPages(self):
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.create',
       'params': {
           'type': 'tab'
       }
     })
-    conn.WaitForResponse(cmd_id)
-
     handles = self._driver.GetWindowHandles()
     self.assertEqual(2, len(handles))
     self._driver.CloseWindow()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
+    contexts = response['contexts']
     self.assertEqual(1, len(contexts))
 
   def testBrowserQuitsWhenLastBrowsingContextIsClosed(self):
     conn = self.createWebSocketConnection()
-
     context_id = self.getContextId(conn, 0)
-
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'browsingContext.close',
       'params': {
           'context': context_id
       }
     })
-    response = conn.WaitForResponse(cmd_id)
-    self.assertEqual('success', response['type'])
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6459,12 +6974,10 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(web_socket_url=True)
     conn = self.createWebSocketConnection(driver)
     driver.Quit()
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
       conn.WaitForResponse(-1)
-
 
   def testCmdIdCheatAndBrowserClosing(self):
     # Browser closing mechanism should not rely on command id
@@ -6477,8 +6990,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
                                   "24",
                                   context_id = context_id,
                                   id = 10005)
-
-    cmd_id2 = conn.SendCommand({
+    cmd_id2 = conn.PostCommand({
       'id': 10005,
       'method': 'browsingContext.close',
       'params': {
@@ -6487,7 +6999,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     })
     self.assertEqual(cmd_id1, cmd_id2)
     conn.WaitForResponse(cmd_id2)
-
     with self.assertRaises(chromedriver.WebSocketConnectionClosedException):
       # BiDi messages cannot have negative "id".
       # Wait indefinitely until time out.
@@ -6501,17 +7012,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     # to the duplication of the nested browsing context.
     self._driver.Load(url)
     self._driver.Load(url)
-
     conn = self.createWebSocketConnection()
-
-    cmd_id = conn.SendCommand({
+    response = conn.SendCommand({
       'method': 'browsingContext.getTree',
       'params': {
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    contexts = resp['result']['contexts']
-
+    contexts = response['contexts']
     self.assertIsNotNone(contexts)
     self.assertIsInstance(contexts, list)
     self.assertEqual(1, len(contexts))
@@ -6531,11 +7038,11 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id2 = self.postEvaluate(conn, '13', context_id=context_id)
 
     resp = conn.WaitForResponse(cmd_id2)
-    self.assertEqual(13, resp['result']['result']['value'])
+    self.assertEqual(13, resp['result']['value'])
     resp = conn.TryGetResponse(cmd_id1)
     self.assertIsNone(resp)
     resp = conn.WaitForResponse(cmd_id1, channel="abc")
-    self.assertEqual(9, resp['result']['result']['value'])
+    self.assertEqual(9, resp['result']['value'])
 
   def testMultipleConnections(self):
     conn1 = self.createWebSocketConnection()
@@ -6551,13 +7058,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
 
     resp = conn1.WaitForResponse(cmd_id1)
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id3)
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4)
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id2)
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
 
   def testMultipleConnectionsDifferentIPs(self):
     conn1 = self.createWebSocketConnection()
@@ -6573,13 +7080,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id4 = self.postEvaluate(conn2, '98', context_id = context_id)
 
     resp = conn1.WaitForResponse(cmd_id1)
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id3)
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4)
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id2)
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
 
   def testMultipleConnectionsNamedChannels(self):
     conn1 = self.createWebSocketConnection()
@@ -6600,15 +7107,15 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     cmd_id5 = self.postEvaluate(conn2, '6', context_id=context_id, id=100)
 
     resp = conn2.WaitForResponse(cmd_id3, channel='3')
-    self.assertEqual(41, resp['result']['result']['value'])
+    self.assertEqual(41, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id1, channel = '3')
-    self.assertEqual(77, resp['result']['result']['value'])
+    self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id2, channel='/')
-    self.assertEqual(23, resp['result']['result']['value'])
+    self.assertEqual(23, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id4, channel='')
-    self.assertEqual(98, resp['result']['result']['value'])
+    self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id5)
-    self.assertEqual(6, resp['result']['result']['value'])
+    self.assertEqual(6, resp['result']['value'])
 
   def subscribeToLoad(self, conn, channel=None):
     command = {
@@ -6618,7 +7125,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
               'browsingContext.load']}}
     if channel is not None:
       command['channel'] = channel
-    return conn.SendCommand(command)
+    return conn.SendCommand(command, channel=channel)
 
   def navigateSomewhere(self, conn, context_id=None, channel=None):
     if context_id is None:
@@ -6631,7 +7138,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
             'context': context_id}}
     if channel is not None:
       command['channel'] = channel
-    return conn.SendCommand(command)
+    return conn.SendCommand(command, channel=channel)
 
   def testEvent(self):
     conn = self.createWebSocketConnection()
@@ -6639,8 +7146,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn)
-    cmd_id = self.navigateSomewhere(conn, context_id)
-    conn.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn, context_id)
 
     events = conn.TakeEvents()
     # The event for about:blank is also possible
@@ -6654,8 +7160,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn, channel='abc')
-    cmd_id = self.navigateSomewhere(conn, context_id, channel='abc')
-    conn.WaitForResponse(cmd_id, channel='abc')
+    self.navigateSomewhere(conn, context_id, channel='abc')
 
     events = conn.TakeEvents()
     # The event for about:blank is also possible
@@ -6670,8 +7175,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
 
     self.subscribeToLoad(conn)
     self.subscribeToLoad(conn, channel='x')
-    cmd_id = self.navigateSomewhere(conn, context_id)
-    conn.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn, context_id)
 
     all_events = conn.TakeEvents()
     events = [evt for evt in all_events if 'channel' not in evt]
@@ -6695,8 +7199,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertIsNotNone(context_id)
 
     self.subscribeToLoad(conn2)
-    cmd_id = self.navigateSomewhere(conn1, context_id=context_id)
-    conn1.WaitForResponse(cmd_id)
+    self.navigateSomewhere(conn1, context_id=context_id)
     # push the events
     cmd_id = self.postEvaluate(conn2, '12', context_id=context_id)
     conn2.WaitForResponse(cmd_id)
@@ -6737,7 +7240,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertGreaterEqual(pos, 0, "Element Id format is incorrect")
     classic_backend_node_id = node_id[pos+1:]
 
-    cmd_id = conn.SendCommand({
+    resp = conn.SendCommand({
       'method': 'script.evaluate',
       'params': {
           'expression': 'document.getElementsByTagName("div")[0]',
@@ -6748,8 +7251,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    shared_id = resp['result']['result']['sharedId']
+    shared_id = resp['result']['sharedId']
     self.assertRegex(shared_id, '\\w+_element_\\w',
                      msg='Shared id format is incorrect')
     pos = shared_id.rfind('_')
@@ -6770,7 +7272,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
         '});'
         'return div;')
 
-    cmd_id = conn.SendCommand({
+    conn.SendCommand({
       'method': 'script.callFunction',
       'params': {
           'functionDeclaration': '(elem) => elem.click()',
@@ -6784,15 +7286,13 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    self.assertNotIn('error', resp)
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
 
   def testBidiIdInClassic(self):
     conn = self.createWebSocketConnection()
     root_context = self.getContextId(conn, 0)
 
-    cmd_id = conn.SendCommand({
+    resp = conn.SendCommand({
       'method': 'script.evaluate',
       'params': {
           'expression': 'document.body.innerHTML = "<div>old</div>";'
@@ -6808,8 +7308,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
           'resultOwnership': 'root',
       }
     })
-    resp = conn.WaitForResponse(cmd_id)
-    node_id = resp['result']['result']['sharedId']
+    node_id = resp['result']['sharedId']
     div = webelement.WebElement(self._driver, node_id)
     div.Click()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
@@ -6853,7 +7352,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       titles.append(self._driver.GetTitle())
     expected_titles = [''] + ['iframes' for _ in range(0, 10)]
     self.assertListEqual(expected_titles, sorted(titles))
-
 
 
 class CustomBidiMapperTest(ChromeDriverBaseTest):
@@ -7014,7 +7512,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
       """ % self._url_prefix, 'utf-8')
 
     def respondWithSignedInHeader(request):
-      return {'IdP-Signin-Status': 'action=signin'}, b"Header sent"
+      return {'Set-Login': 'logged-in'}, b"Header sent"
 
     def respondWithAccountList(request):
       return {'Content-Type': 'application/json'}, bytes("""
@@ -7177,6 +7675,21 @@ if __name__ == '__main__':
       action='store_true',
       default=False,
       help='Allow ChromeDriver to run with an incompatible Chrome version')
+  parser.add_argument(
+      '--browser-name',
+      default=None,
+      help='Browser specific test subset selector. Inferred from the path '
+           'to the binary if possible. Otherwise defaults to chrome')
+
+  ##############################################################################
+  # Note for other Chromium based browsers!!!
+  # Path inference works only for Chrome and chrome-headless-shell.
+  # Therefore you need to pass the path to your browser explicitly via the
+  # --chrome argument.
+  # The test set for your browser most likely coincides with the test set for
+  # 'chrome'. Therefore you need to pass --browser-name=chrome or just omit this
+  # argument altogether as 'chrome' is already the default value.
+  ##############################################################################
 
   options = parser.parse_args()
 
@@ -7223,39 +7736,34 @@ if __name__ == '__main__':
   global _CHROMEDRIVER_SERVER_URL
   _CHROMEDRIVER_SERVER_URL = chromedriver_server.GetUrl()
 
-
   global _CHROME_BINARY
+  browser_name = options.browser_name
+
   if options.chrome:
     _CHROME_BINARY = util.GetAbsolutePathOfUserPath(options.chrome)
+    if browser_name is None:
+      browser_name = _InferBrowserName(options.chrome)
   else:
     # In some test environments (such as commit queue), it's not convenient to
     # specify Chrome binary location on the command line. Try to use heuristics
     # to locate the Chrome binary next to the ChromeDriver binary.
     driver_path = os.path.dirname(_CHROMEDRIVER_BINARY)
-    chrome_path = None
-    platform = util.GetPlatformName()
-    if platform == 'linux':
-      chrome_path = os.path.join(driver_path, 'chrome')
-    elif platform == 'mac':
-      if os.path.exists(os.path.join(driver_path,
-                                     'Google Chrome for Testing.app')):
-          chrome_path = os.path.join(driver_path,
-                                     'Google Chrome for Testing.app',
-                                     'Contents', 'MacOS',
-                                     'Google Chrome for Testing')
-      elif os.path.exists(os.path.join(driver_path, 'Google Chrome.app')):
-        chrome_path = os.path.join(driver_path, 'Google Chrome.app',
-                                   'Contents', 'MacOS', 'Google Chrome')
-      else:
-        chrome_path = os.path.join(driver_path, 'Chromium.app',
-                                   'Contents', 'MacOS', 'Chromium')
-    elif platform == 'win':
-      chrome_path = os.path.join(driver_path, 'chrome.exe')
 
-    if chrome_path is not None and os.path.exists(chrome_path):
-      _CHROME_BINARY = chrome_path
-    else:
-      _CHROME_BINARY = None
+    if browser_name is None:
+      browser_name = 'chrome'
+    _CHROME_BINARY = _InferBrowserPath(browser_name,
+                                       driver_path,
+                                       util.GetPlatformName())
+    if _CHROME_BINARY is None:
+      print(('Failed to find the browser "%s". ' % browser_name) +
+            'Delegating this task to ChromeDriver')
+
+  # If the browser lookup mechanism of the tests fails then this task is
+  # delegated to ChromeDriver. The later needs to know which browser to search.
+  # Therefore the browser name is stored in a global variable and passed to
+  # ChromeDriver via the "browserName" capability.
+  global _BROWSER_NAME
+  _BROWSER_NAME = browser_name
 
   global _ANDROID_PACKAGE_KEY
   _ANDROID_PACKAGE_KEY = options.android_package
@@ -7273,7 +7781,7 @@ if __name__ == '__main__':
     if _ANDROID_PACKAGE_KEY:
       negative_filter = _ANDROID_NEGATIVE_FILTER[_ANDROID_PACKAGE_KEY]
     else:
-      negative_filter = _GetDesktopNegativeFilter()
+      negative_filter = _GetDesktopNegativeFilter(_BROWSER_NAME)
 
     if options.test_type is not None:
       if options.test_type == 'integration':

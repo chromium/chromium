@@ -15,9 +15,7 @@ import androidx.annotation.DimenRes;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.interpolators.Interpolators;
 
-/**
- * Helper class to animate the security status icon.
- */
+/** Helper class to animate the security status icon. */
 public class SecurityButtonAnimationDelegate {
     public static final int SLIDE_DURATION_MS = 200;
     public static final int FADE_DURATION_MS = 150;
@@ -43,27 +41,30 @@ public class SecurityButtonAnimationDelegate {
         Animator fadeIn = ObjectAnimator.ofFloat(mSecurityButton, View.ALPHA, 1);
         fadeIn.setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN_INTERPOLATOR);
         fadeIn.setDuration(FADE_DURATION_MS);
-        fadeIn.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onStart(Animator animation) {
-                mSecurityButton.setVisibility(View.VISIBLE);
-            }
-        });
+        fadeIn.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onStart(Animator animation) {
+                        mSecurityButton.setVisibility(View.VISIBLE);
+                    }
+                });
         mSecurityButtonShowAnimator.playSequentially(translateRight, fadeIn);
 
         mSecurityButtonHideAnimator = new AnimatorSet();
         Animator fadeOut = ObjectAnimator.ofFloat(mSecurityButton, View.ALPHA, 0);
         fadeOut.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         fadeOut.setDuration(FADE_DURATION_MS);
-        fadeOut.addListener(new CancelAwareAnimatorListener() {
-            @Override
-            public void onEnd(Animator animation) {
-                mSecurityButton.setVisibility(View.INVISIBLE);
-            }
-        });
+        fadeOut.addListener(
+                new CancelAwareAnimatorListener() {
+                    @Override
+                    public void onEnd(Animator animation) {
+                        mSecurityButton.setVisibility(View.INVISIBLE);
+                    }
+                });
 
-        Animator translateLeft = ObjectAnimator.ofFloat(
-                mTitleUrlContainer, View.TRANSLATION_X, -mSecurityButtonWidth);
+        Animator translateLeft =
+                ObjectAnimator.ofFloat(
+                        mTitleUrlContainer, View.TRANSLATION_X, -mSecurityButtonWidth);
         translateLeft.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         translateLeft.setDuration(SLIDE_DURATION_MS);
         mSecurityButtonHideAnimator.playSequentially(fadeOut, translateLeft);
@@ -76,11 +77,12 @@ public class SecurityButtonAnimationDelegate {
 
     /**
      * Based on |securityIconResource|, updates the security status icon.
+     *
      * @param securityIconResource The updated resource to be assigned to the security status icon.
      * @param animate When this is true, the update is performed via an animation: If
-     * |securityIconResource| is null, the icon is animated to the left and faded out; otherwise,
-     * the icon is animated to the right and faded in. If false, the updates are performed
-     * immediately without animation.
+     *     |securityIconResource| is null, the icon is animated to the left and faded out;
+     *     otherwise, the icon is animated to the right and faded in. If false, the updates are
+     *     performed immediately without animation.
      * @param isActualResourceChange If the resource id is different from what was previously set.
      */
     public void updateSecurityButton(
@@ -97,9 +99,7 @@ public class SecurityButtonAnimationDelegate {
         }
     }
 
-    /**
-     * Shows the security button, either immediately or via an animation.
-     */
+    /** Shows the security button, either immediately or via an animation. */
     private void showSecurityButton(boolean animate) {
         if (mSecurityButtonHideAnimator.isStarted()) mSecurityButtonHideAnimator.cancel();
         if (mSecurityButtonShowAnimator.isStarted()
@@ -115,9 +115,7 @@ public class SecurityButtonAnimationDelegate {
         }
     }
 
-    /**
-     * Hides the security button, either immediately or via an animation.
-     */
+    /** Hides the security button, either immediately or via an animation. */
     private void hideSecurityButton(boolean animate) {
         if (mSecurityButtonShowAnimator.isStarted()) mSecurityButtonShowAnimator.cancel();
         if (mSecurityButtonHideAnimator.isStarted()

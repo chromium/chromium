@@ -365,6 +365,23 @@ class SharedDictionaryManagerOnDisk::CacheEvictionTask
     if (result.has_value()) {
       manager_->OnDictionaryDeleted(result.value(),
                                     /*need_to_doom_disk_cache_entries=*/true);
+    } else if (result.error() == net::SQLitePersistentSharedDictionaryStore::
+                                     Error::kFailedToGetTotalDictSize) {
+      // Assume the database gets corrupted for some reason, so call
+      // ClearAllDictionaries() to reset the database.
+      manager_->metadata_store().ClearAllDictionaries(
+          base::BindOnce(&CacheEvictionTask::OnClearAllDictionariesFinished,
+                         weak_factory_.GetWeakPtr()));
+      return;
+    }
+    manager_->OnFinishSerializedTask();
+  }
+  void OnClearAllDictionariesFinished(
+      net::SQLitePersistentSharedDictionaryStore::UnguessableTokenSetOrError
+          result) {
+    if (result.has_value()) {
+      manager_->OnDictionaryDeleted(result.value(),
+                                    /*need_to_doom_disk_cache_entries=*/true);
     }
     manager_->OnFinishSerializedTask();
   }
@@ -458,7 +475,7 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
     uint64_t cache_max_size,
     uint64_t cache_max_count,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory)
@@ -475,7 +492,7 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
                base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
   disk_cache_.Initialize(cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-                         app_status_listener,
+                         app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
                          std::move(file_operations_factory));
   MaybePostExpiredDictionaryDeletionTask();

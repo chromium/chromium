@@ -117,7 +117,7 @@ TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
     return;
 
   EXPECT_EQ(expected_final_status_, final_status())
-      << " when testing URL " << prerender_url().path()
+      << " when testing URL " << prefetch_url().path()
       << " (Expected: " << NameFromFinalStatus(expected_final_status_)
       << ", Actual: " << NameFromFinalStatus(final_status()) << ")";
 
@@ -327,7 +327,7 @@ TestNoStatePrefetchContentsFactory::~TestNoStatePrefetchContentsFactory() {
 std::unique_ptr<TestPrerender>
 TestNoStatePrefetchContentsFactory::ExpectNoStatePrefetchContents(
     FinalStatus final_status) {
-  std::unique_ptr<TestPrerender> handle(new TestPrerender());
+  auto handle = std::make_unique<TestPrerender>();
   expected_contents_queue_.push_back(
       ExpectedContents(final_status, handle->AsWeakPtr()));
   return handle;

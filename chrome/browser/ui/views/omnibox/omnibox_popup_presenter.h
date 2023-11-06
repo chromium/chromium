@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
 
+#include "chrome/browser/ui/webui/realbox/realbox_handler.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class LocationBarView;
 class OmniboxController;
-class RealboxHandler;
 
 // An assistant class for OmniboxPopupViewWebUI, this manages a WebView and a
 // Widget to present WebUI suggestions.  This class is an implementation detail
@@ -24,7 +25,9 @@ class RealboxHandler;
 // logic concerns and communication between native omnibox code and the WebUI
 // code, work with OmniboxPopupViewWebUI directly.
 class OmniboxPopupPresenter : public views::WebView,
-                              public views::WidgetObserver {
+                              public views::WidgetObserver,
+                              public OmniboxWebUIPopupChangeObserver,
+                              public views::ViewObserver {
  public:
   METADATA_HEADER(OmniboxPopupPresenter);
   explicit OmniboxPopupPresenter(LocationBarView* location_bar_view,
@@ -44,12 +47,14 @@ class OmniboxPopupPresenter : public views::WebView,
   // Returns nullptr if handler is not ready.
   RealboxHandler* GetHandler();
 
-  // views::WebView
-  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
-                        const gfx::Size& frame_size) override;
-
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
+
+  // RealboxWebUIChangeClient:
+  void OnPopupElementSizeChanged(gfx::Size size) override;
+
+  // views::ViewObserver:
+  void OnViewBoundsChanged(View* observed_view) override;
 
  private:
   friend class OmniboxPopupViewWebUITest;
@@ -68,6 +73,9 @@ class OmniboxPopupPresenter : public views::WebView,
 
   // Whether any call to `GetHandler` has been made.
   bool requested_handler_;
+
+  // Last reported WebUI element size.
+  gfx::Size webui_element_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

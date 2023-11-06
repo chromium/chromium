@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/** Unit tests for the {@link CachedTintedBitmap}.*/
+/** Unit tests for the {@link CachedTintedBitmap}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class CachedTintedBitmapUnitTest {
@@ -34,10 +34,8 @@ public class CachedTintedBitmapUnitTest {
 
     @Test
     public void testGetDefaultGoogleLogoAndGoogleIsDse() {
-        @DrawableRes
-        int drawableId = R.drawable.google_logo;
-        @ColorRes
-        int colorId = R.color.google_logo_tint_color;
+        @DrawableRes int drawableId = R.drawable.google_logo;
+        @ColorRes int colorId = R.color.google_logo_tint_color;
         Assert.assertEquals(Color.TRANSPARENT, mContext.getColor(colorId));
         // Build verifyLogo for later comparison.
         Bitmap verifyLogo = BitmapFactory.decodeResource(mContext.getResources(), drawableId);

@@ -94,8 +94,8 @@ class CORE_EXPORT MediaList final : public ScriptWrappable {
   String MediaTextInternal() const { return Queries()->MediaText(); }
 
   // Not part of CSSOM.
-  CSSRule* ParentRule() const { return parent_rule_; }
-  CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_; }
+  CSSRule* ParentRule() const { return parent_rule_.Get(); }
+  CSSStyleSheet* ParentStyleSheet() const { return parent_style_sheet_.Get(); }
 
   const MediaQuerySet* Queries() const;
 

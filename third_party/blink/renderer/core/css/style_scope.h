@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-class Element;
+
 class StyleRule;
 class StyleSheetContents;
 
@@ -53,18 +53,14 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // if there is no list.
   const CSSSelector* From() const;
   const CSSSelector* To() const;
-  const StyleScope* Parent() const { return parent_; }
+  const StyleScope* Parent() const { return parent_.Get(); }
 
   // The rule to use for resolving the nesting selector (&) for this scope's
   // inner rules.
-  StyleRule* RuleForNesting() const { return from_; }
+  StyleRule* RuleForNesting() const { return from_.Get(); }
 
   // https://drafts.csswg.org/css-cascade-6/#implicit-scope
-  bool IsImplicit() const { return contents_; }
-
-  // True if this StyleScope has an implicit root at the specified element.
-  // This is used to find the roots for prelude-less @scope rules.
-  bool HasImplicitRoot(Element*) const;
+  bool IsImplicit() const { return contents_ != nullptr; }
 
  private:
   // If `contents_` is not nullptr, then this is a prelude-less @scope rule

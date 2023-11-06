@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.JsReplyProxy;
@@ -46,9 +48,10 @@ import java.util.concurrent.TimeoutException;
  * the call to GMS core which would check if the current user can load
  * a particular url.
  */
-@RunWith(AwJUnit4ClassRunner.class)
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @Batch(Batch.PER_CLASS)
-public class AwSupervisedUserTest {
+public class AwSupervisedUserTest extends AwParameterizedTest {
     private static final String SAFE_SITE_TITLE = "Safe site";
     private static final String SAFE_SITE_PATH = "/safe.html";
     private static final String SAFE_SITE_IFRAME_TITLE = "IFrame safe site";
@@ -80,12 +83,16 @@ public class AwSupervisedUserTest {
     }
 
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
 
     private OnProgressChangedClient mContentsClient = new OnProgressChangedClient();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
     private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
+
+    public AwSupervisedUserTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -95,10 +102,11 @@ public class AwSupervisedUserTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         mAwContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mAwContents.addWebMessageListener(
-                    "myObject", new String[] {"*"}, mIFrameLoadedListener);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mAwContents.addWebMessageListener(
+                            "myObject", new String[] {"*"}, mIFrameLoadedListener);
+                });
     }
 
     @After
@@ -174,10 +182,12 @@ public class AwSupervisedUserTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add("disable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK + ","
-            + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
-    public void
-    testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
+    @CommandLineFlags.Add(
+            "disable-features="
+                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK
+                    + ","
+                    + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_DETECTION)
+    public void testDisallowedSiteIsLoadedFeatureOff() throws Throwable {
         String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
         String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
 
@@ -192,8 +202,8 @@ public class AwSupervisedUserTest {
     }
 
     private void loadUrl(String requestUrl) throws TimeoutException {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mAwContents.loadUrl(requestUrl, null));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mAwContents.loadUrl(requestUrl, null));
         mContentsClient.waitForFullLoad();
     }
 
@@ -229,8 +239,13 @@ public class AwSupervisedUserTest {
         private volatile String mResult;
 
         @Override
-        public void onPostMessage(MessagePayload payload, Uri sourceOrigin, boolean isMainFrame,
-                JsReplyProxy replyProxy, MessagePort[] ports) {
+        public void onPostMessage(
+                MessagePayload payload,
+                Uri topLevelOrigin,
+                Uri sourceOrigin,
+                boolean isMainFrame,
+                JsReplyProxy replyProxy,
+                MessagePort[] ports) {
             mResult = payload.getAsString();
             mCallbackHelper.notifyCalled();
         }

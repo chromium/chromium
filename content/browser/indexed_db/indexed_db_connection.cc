@@ -15,6 +15,7 @@
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -33,14 +34,14 @@ IndexedDBConnection::IndexedDBConnection(
     base::WeakPtr<IndexedDBDatabase> database,
     base::RepeatingClosure on_version_change_ignored,
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
-    scoped_refptr<IndexedDBDatabaseCallbacks> callbacks,
+    std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
     scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
       on_version_change_ignored_(std::move(on_version_change_ignored)),
       on_close_(std::move(on_close)),
-      callbacks_(callbacks),
+      callbacks_(std::move(callbacks)),
       client_state_checker_(std::move(client_state_checker)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
@@ -59,14 +60,15 @@ IndexedDBConnection::~IndexedDBConnection() {
   AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
 }
 
-void IndexedDBConnection::AbortTransactionsAndClose(
+std::unique_ptr<IndexedDBDatabaseCallbacks>
+IndexedDBConnection::AbortTransactionsAndClose(
     CloseErrorHandling error_handling) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsConnected())
-    return;
+  if (!IsConnected()) {
+    return {};
+  }
 
   DCHECK(database_);
-  callbacks_ = nullptr;
 
   // Finish up any transaction, in case there were any running.
   IndexedDBDatabaseError error(blink::mojom::IDBException::kUnknownError,
@@ -81,6 +83,7 @@ void IndexedDBConnection::AbortTransactionsAndClose(
       break;
   }
 
+  std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks = std::move(callbacks_);
   std::move(on_close_).Run(this);
   client_keep_active_remotes_.Clear();
   bucket_context_handle_->quota_manager()->NotifyBucketAccessed(
@@ -89,6 +92,7 @@ void IndexedDBConnection::AbortTransactionsAndClose(
     bucket_context_handle_->delegate().on_fatal_error.Run(status);
   }
   bucket_context_handle_.Release();
+  return callbacks;
 }
 
 void IndexedDBConnection::CloseAndReportForceClose() {
@@ -96,9 +100,8 @@ void IndexedDBConnection::CloseAndReportForceClose() {
   if (!IsConnected())
     return;
 
-  scoped_refptr<IndexedDBDatabaseCallbacks> callbacks(callbacks_);
-  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError);
-  callbacks->OnForcedClose();
+  AbortTransactionsAndClose(CloseErrorHandling::kAbortAllReturnLastError)
+      ->OnForcedClose();
 }
 
 void IndexedDBConnection::VersionChangeIgnored() {
@@ -111,18 +114,34 @@ bool IndexedDBConnection::IsConnected() {
   return callbacks_.get();
 }
 
+IndexedDBTransaction* IndexedDBConnection::CreateVersionChangeTransaction(
+    int64_t id,
+    const std::set<int64_t>& scope,
+    IndexedDBBackingStore::Transaction* backing_store_transaction) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
+  return (transactions_[id] = std::make_unique<IndexedDBTransaction>(
+              id, this, scope, blink::mojom::IDBTransactionMode::VersionChange,
+              bucket_context_handle_, backing_store_transaction))
+      .get();
+}
+
 IndexedDBTransaction* IndexedDBConnection::CreateTransaction(
+    mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
+        transaction_receiver,
     int64_t id,
     const std::set<int64_t>& scope,
     blink::mojom::IDBTransactionMode mode,
     IndexedDBBackingStore::Transaction* backing_store_transaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(GetTransaction(id), nullptr) << "Duplicate transaction id." << id;
-  auto transaction = std::make_unique<IndexedDBTransaction>(
-      id, this, scope, mode, bucket_context_handle_, backing_store_transaction);
-  IndexedDBTransaction* transaction_ptr = transaction.get();
-  transactions_[id] = std::move(transaction);
-  return transaction_ptr;
+  IndexedDBTransaction* transaction =
+      (transactions_[id] = std::make_unique<IndexedDBTransaction>(
+           id, this, scope, mode, bucket_context_handle_,
+           backing_store_transaction))
+          .get();
+  transaction->BindReceiver(std::move(transaction_receiver));
+  return transaction;
 }
 
 void IndexedDBConnection::AbortTransactionAndTearDownOnError(

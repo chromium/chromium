@@ -69,7 +69,7 @@ BASE_EXPORT void UmaHistogramExactLinear(const char* name,
 // Keep them synchronized.
 template <typename T>
 void UmaHistogramEnumeration(const std::string& name, T sample) {
-  static_assert(std::is_enum<T>::value, "T is not an enum.");
+  static_assert(std::is_enum_v<T>, "T is not an enum.");
   // This also ensures that an enumeration that doesn't define kMaxValue fails
   // with a semi-useful error ("no member named 'kMaxValue' in ...").
   static_assert(static_cast<uintmax_t>(T::kMaxValue) <=
@@ -83,7 +83,7 @@ void UmaHistogramEnumeration(const std::string& name, T sample) {
 
 template <typename T>
 void UmaHistogramEnumeration(const char* name, T sample) {
-  static_assert(std::is_enum<T>::value, "T is not an enum.");
+  static_assert(std::is_enum_v<T>, "T is not an enum.");
   // This also ensures that an enumeration that doesn't define kMaxValue fails
   // with a semi-useful error ("no member named 'kMaxValue' in ...").
   static_assert(static_cast<uintmax_t>(T::kMaxValue) <=
@@ -113,7 +113,7 @@ void UmaHistogramEnumeration(const char* name, T sample) {
 // otherwise functionally equivalent to the above.
 template <typename T>
 void UmaHistogramEnumeration(const std::string& name, T sample, T enum_size) {
-  static_assert(std::is_enum<T>::value, "T is not an enum.");
+  static_assert(std::is_enum_v<T>, "T is not an enum.");
   DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
   return UmaHistogramExactLinear(name, static_cast<int>(sample),
@@ -122,7 +122,7 @@ void UmaHistogramEnumeration(const std::string& name, T sample, T enum_size) {
 
 template <typename T>
 void UmaHistogramEnumeration(const char* name, T sample, T enum_size) {
-  static_assert(std::is_enum<T>::value, "T is not an enum.");
+  static_assert(std::is_enum_v<T>, "T is not an enum.");
   DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
   return UmaHistogramExactLinear(name, static_cast<int>(sample),

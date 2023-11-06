@@ -310,11 +310,6 @@ void EventConverterEvdevImpl::DispatchMouseButton(const input_event& input) {
 void EventConverterEvdevImpl::OnButtonChange(int code,
                                              bool down,
                                              base::TimeTicks timestamp) {
-  if (code == BTN_SIDE)
-    code = BTN_BACK;
-  else if (code == BTN_EXTRA)
-    code = BTN_FORWARD;
-
   int button_offset = code - BTN_MOUSE;
   if (mouse_button_state_.test(button_offset) == down)
     return;

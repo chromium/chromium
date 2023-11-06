@@ -219,6 +219,50 @@ TEST_F(OpenscreenFrameSenderTest, RecordsRtpTimestamps) {
                                 openscreen::cast::FrameId(2000)));
 }
 
+TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
+  // First two frames should be fine and set everything up.
+  constexpr RtpTimeTicks kAudioRtpTimestamp{456};
+  auto audio_frame = std::make_unique<SenderEncodedFrame>();
+  audio_frame->frame_id = openscreen::cast::FrameId(1);
+  audio_frame->referenced_frame_id = openscreen::cast::FrameId(1);
+  audio_frame->reference_time = base::TimeTicks::Now();
+  audio_frame->rtp_timestamp = kAudioRtpTimestamp;
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            audio_sender().EnqueueFrame(std::move(audio_frame)));
+  EXPECT_EQ(kAudioRtpTimestamp, audio_sender().GetRecordedRtpTimestamp(
+                                    openscreen::cast::FrameId(1)));
+
+  constexpr RtpTimeTicks kVideoRtpTimestamp{1337};
+  auto video_frame = std::make_unique<SenderEncodedFrame>();
+  video_frame->frame_id = openscreen::cast::FrameId(1);
+  video_frame->referenced_frame_id = openscreen::cast::FrameId(1);
+  video_frame->reference_time = base::TimeTicks::Now();
+  video_frame->rtp_timestamp = kVideoRtpTimestamp;
+  EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
+            video_sender().EnqueueFrame(std::move(video_frame)));
+  EXPECT_EQ(kVideoRtpTimestamp, video_sender().GetRecordedRtpTimestamp(
+                                    openscreen::cast::FrameId(1)));
+
+  // Then the next two should be dropped for referencing unknown IDs.
+  constexpr RtpTimeTicks kAudioRtpTimestampTwo{600};
+  auto audio_frame_two = std::make_unique<SenderEncodedFrame>();
+  audio_frame_two->frame_id = openscreen::cast::FrameId(10);
+  audio_frame_two->referenced_frame_id = openscreen::cast::FrameId(9);
+  audio_frame_two->reference_time = base::TimeTicks::Now();
+  audio_frame_two->rtp_timestamp = kAudioRtpTimestampTwo;
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            audio_sender().EnqueueFrame(std::move(audio_frame_two)));
+
+  constexpr RtpTimeTicks kVideoRtpTimestampTwo{1500};
+  auto video_frame_two = std::make_unique<SenderEncodedFrame>();
+  video_frame_two->frame_id = openscreen::cast::FrameId(3);
+  video_frame_two->referenced_frame_id = openscreen::cast::FrameId(2);
+  video_frame_two->reference_time = base::TimeTicks::Now();
+  video_frame_two->rtp_timestamp = kVideoRtpTimestampTwo;
+  EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
+            video_sender().EnqueueFrame(std::move(video_frame_two)));
+}
+
 TEST_F(OpenscreenFrameSenderTest, HandlesSuggestedBitratesCorrectly) {
   // NOTE: the VideoBitrateSuggester tests this workflow more thoroughly.
 

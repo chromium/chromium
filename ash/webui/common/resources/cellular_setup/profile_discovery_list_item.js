@@ -42,10 +42,6 @@ Polymer({
       reflectToAttribute: true,
     },
 
-    showLoadingIndicator: {
-      type: Boolean,
-    },
-
     /**
      * @type {boolean}
      * @private

@@ -47,8 +47,8 @@ class CORE_EXPORT MessageChannel final : public ScriptWrappable {
 
   explicit MessageChannel(ExecutionContext*);
 
-  MessagePort* port1() const { return port1_; }
-  MessagePort* port2() const { return port2_; }
+  MessagePort* port1() const { return port1_.Get(); }
+  MessagePort* port2() const { return port2_.Get(); }
 
   void Trace(Visitor*) const override;
 

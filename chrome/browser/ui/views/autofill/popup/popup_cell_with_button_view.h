@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view_observer.h"
@@ -21,10 +22,6 @@ namespace views {
 class ImageButton;
 }  // namespace views
 
-namespace gfx {
-class canvas;
-}  // namespace gfx
-
 namespace autofill {
 
 // Receives notifications of mouse enter/exit events of the cell button.
@@ -35,30 +32,7 @@ class CellButtonDelegate {
 };
 
 namespace {
-
-// Used to determine when both the placeholder and the button are painted
-// and have dimensions. This is important to solve the issue where deleting an
-// entry leads to another entry being rendered right under the cursor.
-class ButtonPlaceholder : public views::View, public views::ViewObserver {
- public:
-  explicit ButtonPlaceholder(CellButtonDelegate* cell_button_delegate);
-  ~ButtonPlaceholder() override;
-
-  // views::View:
-  void OnPaint(gfx::Canvas* canvas) override;
-  int GetHeightForWidth(int width) const override;
-
-  // views::ViewObserver:
-  void OnViewBoundsChanged(views::View* observed_view) override;
-
- private:
-  // Scoped observation for OnViewBoundsChanged.
-  base::ScopedObservation<views::View, views::ViewObserver>
-      view_bounds_changed_observer_{this};
-  const raw_ptr<CellButtonDelegate> cell_button_delegate_ = nullptr;
-  bool first_paint_happened_ = false;
-};
-
+class ButtonPlaceholder;
 }  // namespace
 
 // A class for a single selectable popup cell that also has a button.
@@ -66,7 +40,9 @@ class PopupCellWithButtonView : public PopupCellView,
                                 public CellButtonDelegate {
  public:
   METADATA_HEADER(PopupCellWithButtonView);
-  PopupCellWithButtonView();
+  PopupCellWithButtonView(base::WeakPtr<AutofillPopupController> controller,
+                          int line_number);
+
   PopupCellWithButtonView(const PopupCellWithButtonView&) = delete;
   PopupCellWithButtonView& operator=(const PopupCellWithButtonView&) = delete;
   ~PopupCellWithButtonView() override;
@@ -90,7 +66,7 @@ class PopupCellWithButtonView : public PopupCellView,
   void SetCellButtonBehavior(CellButtonBehavior cell_button_behavior);
 
   // Returns the view that contains the button or `nullptr` if no button is set.
-  views::View* GetButtonContainer() { return button_placeholder_; }
+  views::View* GetButtonContainer();
 
   // PopupCellView:
   void SetSelected(bool selected) override;
@@ -110,6 +86,11 @@ class PopupCellWithButtonView : public PopupCellView,
 
   // Returns whether the cell button (if there is one) should be visible.
   bool ShouldCellButtonBeVisible() const;
+
+  // TODO(crbug.com/1491373): Make it inherited from PopupRowView, remove
+  // `controller_` and `line_number_`, and use them from the parent class.
+  const base::WeakPtr<AutofillPopupController> controller_;
+  const int line_number_;
 
   raw_ptr<views::ImageButton> button_ = nullptr;
   raw_ptr<ButtonPlaceholder> button_placeholder_ = nullptr;

@@ -23,6 +23,7 @@
 #include "content/renderer/pepper/ppb_graphics_3d_impl.h"
 #include "content/renderer/pepper/video_decoder_shim.h"
 #include "content/renderer/render_thread_impl.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
@@ -547,11 +548,13 @@ gpu::Mailbox PepperVideoDecoderHost::CreateSharedImage(gfx::Size size) {
   auto* sii = context_provider->SharedImageInterface();
   auto* rii = context_provider->RasterInterface();
 
-  auto mailbox = sii->CreateSharedImage(
+  auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
       kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
       gpu::SHARED_IMAGE_USAGE_GLES2 | gpu::SHARED_IMAGE_USAGE_RASTER,
       "PepperVideoDecoder", gpu::SurfaceHandle());
+  CHECK(client_shared_image);
+  auto mailbox = client_shared_image->mailbox();
 
   // This SI will be used on raster interface later, to avoid plumbing
   // SyncTokens just for creation wait on it here.

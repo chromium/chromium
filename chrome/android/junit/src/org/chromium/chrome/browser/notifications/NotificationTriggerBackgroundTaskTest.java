@@ -19,35 +19,27 @@ import android.os.PersistableBundle;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.background_task_scheduler.ChromeBackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
-import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
-/**
- * Unit tests for NotificationTriggerBackgroundTask.
- */
+/** Unit tests for NotificationTriggerBackgroundTask. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NotificationTriggerBackgroundTaskTest {
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Mock
-    private NotificationTriggerScheduler mTriggerScheduler;
-    @Mock
-    private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Mock private NotificationTriggerScheduler mTriggerScheduler;
+    @Mock private BackgroundTask.TaskFinishedCallback mTaskFinishedCallback;
 
     @Before
     public void setUp() {
@@ -64,29 +56,6 @@ public class NotificationTriggerBackgroundTaskTest {
     }
 
     @Test
-    @DisabledTest(message = "crbug.com/1379251")
-    public void testScheduleInitializesOneOffTask() {
-        long delay = 1000;
-        long timestamp = System.currentTimeMillis() + delay;
-        ArgumentCaptor<TaskInfo> taskInfoCaptor = ArgumentCaptor.forClass(TaskInfo.class);
-        NotificationTriggerBackgroundTask.schedule(timestamp, delay);
-        verify(mTaskScheduler).schedule(any(), taskInfoCaptor.capture());
-        TaskInfo taskInfo = taskInfoCaptor.getValue();
-
-        assertEquals(TaskIds.NOTIFICATION_TRIGGER_JOB_ID, taskInfo.getTaskId());
-        assertTrue(taskInfo.isPersisted());
-        assertTrue(taskInfo.shouldUpdateCurrent());
-        assertEquals(TaskInfo.NetworkType.NONE, taskInfo.getRequiredNetworkType());
-        assertEquals(timestamp,
-                taskInfo.getExtras().getLong(NotificationTriggerBackgroundTask.KEY_TIMESTAMP));
-        // See crbug.com/1379251.
-        // TaskInfo.TimingInfo timingInfo = taskInfo.getTimingInfo();
-        // assertTrue(timingInfo instanceof TaskInfo.ExactInfo);
-        // TaskInfo.ExactInfo exactTimingInfo = (TaskInfo.ExactInfo) timingInfo;
-        // assertEquals(timestamp, exactTimingInfo.getTriggerAtMs());
-    }
-
-    @Test
     public void testCancelCancelsTask() {
         NotificationTriggerBackgroundTask.cancel();
         verify(mTaskScheduler).cancel(any(), eq(TaskIds.NOTIFICATION_TRIGGER_JOB_ID));
@@ -97,9 +66,12 @@ public class NotificationTriggerBackgroundTaskTest {
         long timestamp = System.currentTimeMillis() + 1000;
         doReturn(true).when(mTriggerScheduler).checkAndResetTrigger(eq(timestamp));
 
-        int result = new NotificationTriggerBackgroundTask().onStartTaskBeforeNativeLoaded(
-                RuntimeEnvironment.application, createTaskParameters(timestamp),
-                mTaskFinishedCallback);
+        int result =
+                new NotificationTriggerBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                RuntimeEnvironment.application,
+                                createTaskParameters(timestamp),
+                                mTaskFinishedCallback);
 
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
         verify(mTriggerScheduler).checkAndResetTrigger(eq(timestamp));
@@ -111,9 +83,12 @@ public class NotificationTriggerBackgroundTaskTest {
         long timestamp = System.currentTimeMillis() + 1000;
         doReturn(false).when(mTriggerScheduler).checkAndResetTrigger(eq(timestamp));
 
-        int result = new NotificationTriggerBackgroundTask().onStartTaskBeforeNativeLoaded(
-                RuntimeEnvironment.application, createTaskParameters(timestamp),
-                mTaskFinishedCallback);
+        int result =
+                new NotificationTriggerBackgroundTask()
+                        .onStartTaskBeforeNativeLoaded(
+                                RuntimeEnvironment.application,
+                                createTaskParameters(timestamp),
+                                mTaskFinishedCallback);
 
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.DONE, result);
         verify(mTriggerScheduler).checkAndResetTrigger(eq(timestamp));
@@ -123,9 +98,11 @@ public class NotificationTriggerBackgroundTaskTest {
     @Test
     public void testStartWithNativeCallsTriggerNotifications() {
         long timestamp = System.currentTimeMillis() + 1000;
-        new NotificationTriggerBackgroundTask().onStartTaskWithNative(
-                RuntimeEnvironment.application, createTaskParameters(timestamp),
-                mTaskFinishedCallback);
+        new NotificationTriggerBackgroundTask()
+                .onStartTaskWithNative(
+                        RuntimeEnvironment.application,
+                        createTaskParameters(timestamp),
+                        mTaskFinishedCallback);
 
         verify(mTriggerScheduler).triggerNotifications();
         verify(mTaskFinishedCallback).taskFinished(eq(false));
@@ -135,16 +112,19 @@ public class NotificationTriggerBackgroundTaskTest {
     public void testReschedule_BeforeNative() {
         long timestamp = System.currentTimeMillis() + 1000;
         boolean shouldReschedule =
-                new NotificationTriggerBackgroundTask().onStopTaskBeforeNativeLoaded(
-                        RuntimeEnvironment.application, createTaskParameters(timestamp));
+                new NotificationTriggerBackgroundTask()
+                        .onStopTaskBeforeNativeLoaded(
+                                RuntimeEnvironment.application, createTaskParameters(timestamp));
         assertTrue(shouldReschedule);
     }
 
     @Test
     public void testReschedule_WithNative() {
         long timestamp = System.currentTimeMillis() + 1000;
-        boolean shouldReschedule = new NotificationTriggerBackgroundTask().onStopTaskWithNative(
-                RuntimeEnvironment.application, createTaskParameters(timestamp));
+        boolean shouldReschedule =
+                new NotificationTriggerBackgroundTask()
+                        .onStopTaskWithNative(
+                                RuntimeEnvironment.application, createTaskParameters(timestamp));
         assertTrue(shouldReschedule);
     }
 

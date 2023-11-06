@@ -22,6 +22,7 @@ source_set("navigation") {
     "navigation_context.h",
     "navigation_item.h",
     "navigation_manager.h",
+    "navigation_util.h",
     "referrer.h",
     "reload_type.h",
     "url_schemes.h",

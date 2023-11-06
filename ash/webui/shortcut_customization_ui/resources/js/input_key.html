@@ -81,19 +81,19 @@
     padding-inline: 11px;
   }
 
-  :host([highlighted][key-state='modifier-selected']) div.key-container {
+  :host(:focus-within[key-state='modifier-selected']) div.key-container {
     background-color: var(--cros-color-prominent);
   }
 
-  :host([highlighted][key-state='modifier-selected']) #key-text {
+  :host(:focus-within[key-state='modifier-selected']) #key-text {
     color: var(--cros-button-label-color-primary);
   }
 
-  :host([highlighted][key-state='alpha-numeric-selected']) div.key-container {
+  :host(:focus-within[key-state='alpha-numeric-selected']) div.key-container {
     background-color: var(--cros-bg-color);
   }
 
-  :host([highlighted][key-state='modifier-selected']) #key-icon {
+  :host(:focus-within[key-state='modifier-selected']) #key-icon {
     --iron-icon-fill-color: var(--cros-button-label-color-primary);
   }
 

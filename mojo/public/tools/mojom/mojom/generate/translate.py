@@ -908,7 +908,10 @@ def _ResolveNumericEnumValues(enum):
     else:
       raise Exception('Unresolved enum value for %s' % field.value.GetSpec())
 
-    #resolved_enum_values[field.mojom_name] = prev_value
+    if prev_value in (-128, -127):
+      raise Exception(f'{field.mojom_name} in {enum.spec} has the value '
+                      f'{prev_value}, which is reserved for WTF::HashTrait\'s '
+                      'default enum specialization and may not be used.')
     field.numeric_value = prev_value
     if min_value is None or prev_value < min_value:
       min_value = prev_value

@@ -22,28 +22,22 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import java.io.File;
 import java.util.ArrayList;
 
-/**
- * Tests for {@link DexLoader}.
- */
+/** Tests for {@link DexLoader}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class DexLoaderTest {
-    /**
-     * Package of APK to load dex file from.
-     */
+    /** Package of APK to load dex file from. */
     private static final String PACKAGE_WITH_DEX_TO_EXTRACT =
             "org.chromium.webapk.shell_apk.test.dex_optimizer";
 
-    /**
-     * Name of dex files in DexOptimizer.apk.
-     */
+    /** Name of dex files in DexOptimizer.apk. */
     private static final String DEX_ASSET_NAME = "canary.dex";
+
     private static final String DEX_ASSET_NAME2 = "canary2.dex";
 
-    /**
-     * Classes to load to check whether dex is valid.
-     */
+    /** Classes to load to check whether dex is valid. */
     private static final String CANARY_CLASS_NAME =
             "org.chromium.webapk.shell_apk.test.canary.Canary";
+
     private static final String CANARY_CLASS_NAME2 =
             "org.chromium.webapk.shell_apk.test.canary.Canary2";
 
@@ -52,9 +46,7 @@ public class DexLoaderTest {
     private DexLoader mDexLoader;
     private File mLocalDexDir;
 
-    /**
-     * Monitors read files and modified files in the directory passed to the constructor.
-     */
+    /** Monitors read files and modified files in the directory passed to the constructor. */
     private static class FileMonitor extends FileObserver {
         public ArrayList<String> mReadPaths = new ArrayList<String>();
         public ArrayList<String> mModifiedPaths = new ArrayList<String>();
@@ -140,8 +132,9 @@ public class DexLoaderTest {
             // generate the optimized dex file.
             FileMonitor localDexDirMonitor = new FileMonitor(mLocalDexDir);
             localDexDirMonitor.startWatching();
-            ClassLoader loader = mDexLoader.load(
-                    mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
+            ClassLoader loader =
+                    mDexLoader.load(
+                            mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
             localDexDirMonitor.stopWatching();
 
             Assert.assertNotNull(loader);
@@ -154,8 +147,9 @@ public class DexLoaderTest {
             // Load dex a second time. We should use the already extracted dex file.
             FileMonitor localDexDirMonitor = new FileMonitor(mLocalDexDir);
             localDexDirMonitor.startWatching();
-            ClassLoader loader = mDexLoader.load(
-                    mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
+            ClassLoader loader =
+                    mDexLoader.load(
+                            mRemoteContext, DEX_ASSET_NAME, CANARY_CLASS_NAME, mLocalDexDir);
             localDexDirMonitor.stopWatching();
 
             // The returned ClassLoader should be valid.
@@ -207,8 +201,10 @@ public class DexLoaderTest {
      */
     private Context getRemoteContext(Context context) {
         try {
-            return context.getApplicationContext().createPackageContext(PACKAGE_WITH_DEX_TO_EXTRACT,
-                    Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
+            return context.getApplicationContext()
+                    .createPackageContext(
+                            PACKAGE_WITH_DEX_TO_EXTRACT,
+                            Context.CONTEXT_IGNORE_SECURITY | Context.CONTEXT_INCLUDE_CODE);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
             Assert.fail("Could not get remote context");

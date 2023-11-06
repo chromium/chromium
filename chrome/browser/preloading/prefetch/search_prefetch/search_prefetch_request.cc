@@ -409,24 +409,25 @@ void SearchPrefetchRequest::ErrorEncountered() {
 void SearchPrefetchRequest::OnServableResponseCodeReceived() {
   servable_response_code_received_ = true;
 
+  if (!prerender_manager_) {
+    return;
+  }
+
   // TODO(https://crbug.com/1295170): Do not start prerendering if this request
   // is about to expire.
-  if (prerender_manager_) {
-    DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
-    if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
-      // Start prerender synchronously. For shareable cache cases, the request
-      // will build the data pipe by itself and we do not need to wait.
-      prerender_manager_->StartPrerenderSearchResult(
-          canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
-    } else {
-      // Start prerender asynchronously, so that the request can prepare the
-      // data pipe completely
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
-                         prerender_manager_, canonical_search_url_,
-                         prerender_url_, prerender_preloading_attempt_));
-    }
+  if (prerender_utils::SearchPreloadShareableCacheIsEnabled()) {
+    // Start prerender synchronously. For shareable cache cases, the request
+    // will build the data pipe by itself and we do not need to wait.
+    prerender_manager_->StartPrerenderSearchResult(
+        canonical_search_url_, prerender_url_, prerender_preloading_attempt_);
+  } else {
+    // Start prerender asynchronously, so that the request can prepare the
+    // data pipe completely
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
+                       prerender_manager_, canonical_search_url_,
+                       prerender_url_, prerender_preloading_attempt_));
   }
 }
 
@@ -483,8 +484,12 @@ SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchRequest::CreateResponseReader() {
   DCHECK(prerender_utils::SearchPreloadShareableCacheIsEnabled());
   DCHECK(streaming_url_loader_);
-  // Make a new refptr for `streaming_url_loader_`, to keep it alive during
-  // serving.
+  if (!servable_response_code_received_) {
+    // It is not expected to reach here, as DSE prerender should only be
+    // triggered after `this` received servable response. But other triggers may
+    // unexpectedly trigger prerendering due to https://crbug.com/1484914.
+    return {};
+  }
   return StreamingSearchPrefetchURLLoader::
       GetCallbackForReadingViaResponseReader(streaming_url_loader_);
 }

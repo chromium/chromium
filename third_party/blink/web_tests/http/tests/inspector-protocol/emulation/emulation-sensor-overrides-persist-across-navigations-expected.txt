@@ -1,0 +1,7 @@
+Tests that sensor overrides persist across navigations
+PASS: Created gyroscope virtual sensor
+Navigating to a different URL
+Creating Gyroscope object in script
+Verifying sensor override information
+PASS: 'gyroscope' is being overridden
+

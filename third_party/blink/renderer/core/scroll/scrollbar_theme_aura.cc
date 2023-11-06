@@ -164,8 +164,9 @@ bool ScrollbarThemeAura::SupportsDragSnapBack() const {
 #endif
 }
 
-int ScrollbarThemeAura::ScrollbarThickness(float scale_from_dip,
-                                           EScrollbarWidth scrollbar_width) {
+int ScrollbarThemeAura::ScrollbarThickness(
+    float scale_from_dip,
+    EScrollbarWidth scrollbar_width) const {
   if (scrollbar_width == EScrollbarWidth::kNone)
     return 0;
 
@@ -283,6 +284,9 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
 
   WebThemeEngine::ScrollbarButtonExtraParams scrollbar_button;
   scrollbar_button.zoom = scrollbar.EffectiveZoom();
+  // TODO(crbug.com/1493088): Should not draw rounded corner for a button
+  // adjacent to the scroll corner.
+  scrollbar_button.needs_rounded_corner = scrollbar.ContainerIsFormControl();
   scrollbar_button.right_to_left = scrollbar.ContainerIsRightToLeft();
   if (scrollbar.ScrollbarThumbColor().has_value()) {
     scrollbar_button.thumb_color =

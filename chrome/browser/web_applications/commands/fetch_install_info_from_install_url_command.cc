@@ -165,7 +165,7 @@ void FetchInstallInfoFromInstallUrlCommand::OnGetWebAppInstallInfo(
   install_info->parent_app_manifest_id = parent_manifest_id_;
 
   data_retriever_->CheckInstallabilityAndRetrieveManifest(
-      &lock_->shared_web_contents(), /*bypass_service_worker_check=*/false,
+      &lock_->shared_web_contents(),
       base::BindOnce(
           &FetchInstallInfoFromInstallUrlCommand::OnManifestRetrieved,
           weak_ptr_factory_.GetWeakPtr(), std::move(install_info)));

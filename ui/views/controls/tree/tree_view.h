@@ -253,9 +253,6 @@ class VIEWS_EXPORT TreeView : public View,
 
     // Gets or sets a virtual accessibility view that is used to expose
     // information about this node to assistive software.
-    //
-    // This is a weak pointer. This class doesn't own its virtual accessibility
-    // view but the Views system does.
     void set_accessibility_view(AXVirtualView* accessibility_view) {
       accessibility_view_ = accessibility_view;
     }
@@ -284,14 +281,11 @@ class VIEWS_EXPORT TreeView : public View,
 
    private:
     // The node from the model.
-    raw_ptr<ui::TreeModelNode, DanglingUntriaged> model_node_ = nullptr;
+    raw_ptr<ui::TreeModelNode> model_node_ = nullptr;
 
     // A virtual accessibility view that is used to expose information about
-    // this node to assistive software.
-    //
-    // This is a weak pointer. This class doesn't own its virtual accessibility
-    // view but the Views system does.
-    raw_ptr<AXVirtualView, DanglingUntriaged> accessibility_view_ = nullptr;
+    // this node to assistive software. The view is owned by the Views system.
+    raw_ptr<AXVirtualView> accessibility_view_ = nullptr;
 
     // Whether the children have been loaded.
     bool loaded_children_ = false;
@@ -475,10 +469,10 @@ class VIEWS_EXPORT TreeView : public View,
   InternalNode root_;
 
   // The selected node, may be null.
-  raw_ptr<InternalNode, DanglingUntriaged> selected_node_ = nullptr;
+  raw_ptr<InternalNode> selected_node_ = nullptr;
 
   // The current active node, may be null.
-  raw_ptr<InternalNode, DanglingUntriaged> active_node_ = nullptr;
+  raw_ptr<InternalNode> active_node_ = nullptr;
 
   bool editing_ = false;
 

@@ -6,22 +6,26 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_DECORATORS_FRAME_VISIBILITY_DECORATOR_H_
 
 #include "components/performance_manager/graph/initializing_frame_node_observer.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
 namespace performance_manager {
 
-// A decorator that observes changes to the visibility of all pages, and the
-// viewport intersection of all frames, and decorates each frame with their
-// visibility.
+// Decorates each frame with their visibility, which is based on its viewport
+// intersection and the visibility of the page containing the frame.
 //
-// Currently, all frame nodes are added with an empty viewport intersection.
-// Shorty after creation, a OnViewportIntersectionChanged() notification is
-// expected.
+// A page is considered "user visible" if its `IsVisible()` property is true, or
+// if it is being mirrored (PageLiveStateDecorator::Data::IsBeingMirrored).
+//
+// When the visibility of the frame cannot be determined, it is assigned a value
+// of FrameNode::Visibility::kUnknown. This can happen early in the lifetime of
+// a frame, where it hasn't been assigned its viewport intersection yet.
 class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
-                                 public InitializingFrameNodeObserver,
-                                 public PageNode::ObserverDefaultImpl {
+                                 public PageNode::ObserverDefaultImpl,
+                                 public PageLiveStateObserver,
+                                 public InitializingFrameNodeObserver {
  public:
   FrameVisibilityDecorator();
   ~FrameVisibilityDecorator() override;
@@ -34,12 +38,44 @@ class FrameVisibilityDecorator : public GraphOwnedDefaultImpl,
   void OnTakenFromGraph(Graph* graph) override;
 
   // PageNodeObserver:
+  void OnPageNodeAdded(const PageNode* page_node) override;
+  void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
+
+  // PageLiveStateObserver:
+  void OnIsBeingMirroredChanged(const PageNode* page_node) override;
+
+  // Unused from PageLiveStateObserver:
+  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
+  void OnIsConnectedToBluetoothDeviceChanged(
+      const PageNode* page_node) override {}
+  void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
+  void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
+  void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
+  void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
+  void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
+  void OnWasDiscardedChanged(const PageNode* page_node) override {}
+  void OnIsActiveTabChanged(const PageNode* page_node) override {}
+  void OnIsPinnedTabChanged(const PageNode* page_node) override {}
+  void OnContentSettingsChanged(const PageNode* page_node) override {}
+  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
 
   // FrameNodeObserver:
   void OnFrameNodeInitializing(const FrameNode* frame_node) override;
   void OnIsCurrentChanged(const FrameNode* frame_node) override;
-  void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
+  void OnIntersectsViewportChanged(const FrameNode* frame_node) override;
+
+ private:
+  // Handles changes in the user visibility of pages.
+  void OnPageUserVisibilityChanged(const PageNode* page_node,
+                                   bool page_is_user_visible);
+
+  // Handles changes to a frame's property.
+  void OnFramePropertyChanged(const FrameNode* frame_node);
+
+  // Returns true if the page node is visible to the user in some capacity,
+  // taking into account if the page is being mirrored.
+  bool IsPageUserVisible(const PageNode* page_node);
 };
 
 }  // namespace performance_manager

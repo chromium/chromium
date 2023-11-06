@@ -141,8 +141,8 @@ using web::WebThread;
       certStatus |= net::CERT_STATUS_AUTHORITY_INVALID;
       break;
     default:
-      certStatus |=
-          net::CertVerifyProcIOS::GetCertFailureStatusFromError(trustError);
+      certStatus |= net::CertVerifyProcIOS::GetCertFailureStatusFromError(
+          trustError.get());
       if (!net::IsCertStatusError(certStatus)) {
         certStatus |= net::CERT_STATUS_INVALID;
       }
@@ -240,7 +240,7 @@ using web::WebThread;
         SecTrustCopyCertificateChain(trust));
     SecCertificateRef secCertificate =
         base::apple::CFCastStrict<SecCertificateRef>(
-            CFArrayGetValueAtIndex(certificateChain, 0));
+            CFArrayGetValueAtIndex(certificateChain.get(), 0));
     leafCert = net::x509_util::CreateX509CertificateFromSecCertificate(
         base::apple::ScopedCFTypeRef<SecCertificateRef>(
             secCertificate, base::scoped_policy::RETAIN),

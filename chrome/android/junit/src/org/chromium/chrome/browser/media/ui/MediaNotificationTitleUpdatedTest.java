@@ -11,7 +11,6 @@ import static org.mockito.Mockito.doCallRealMethod;
 
 import android.app.Notification;
 import android.content.Intent;
-import android.os.Build;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +30,9 @@ import org.chromium.services.media_session.MediaMetadata;
  * MediaMetadata gets updated.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
@@ -58,19 +59,6 @@ public class MediaNotificationTitleUpdatedTest extends MediaNotificationTestBase
     @Test
     public void testSessionStatePlaying() {
         mTabHolder.simulateMediaSessionStateChanged(true, false);
-        assertEquals("title1", getDisplayedTitle());
-
-        mTabHolder.simulateTitleUpdated("title2");
-        advanceTimeByMillis(THROTTLE_MILLIS);
-        assertEquals("title2", getDisplayedTitle());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.N_MR1) // crbug.com/774315
-    public void testSessionStatePausedAfterPlaying() {
-        mTabHolder.simulateMediaSessionStateChanged(true, false);
-        mTabHolder.simulateMediaSessionStateChanged(true, true);
-        advanceTimeByMillis(THROTTLE_MILLIS);
         assertEquals("title1", getDisplayedTitle());
 
         mTabHolder.simulateTitleUpdated("title2");

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/private_network_access/private_network_device_permission_context.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -60,40 +61,49 @@ bool PrivateNetworkDevicePermissionContext::IsValidObject(
 
 void PrivateNetworkDevicePermissionContext::GrantDevicePermission(
     const url::Origin& origin,
-    const blink::mojom::PrivateNetworkDevice& device) {
+    const blink::mojom::PrivateNetworkDevice& device,
+    bool is_device_valid) {
   // Store ephemeral permission with IP address.
-  if (!device.id.has_value() || !device.name.has_value()) {
+  if (!is_device_valid) {
     ephemeral_devices_[origin].insert(device.ip_address);
+    base::UmaHistogramEnumeration(
+        kUserAcceptedPrivateNetworkDeviceHistogramName,
+        NewAcceptedDeviceType::kEphemeralDevice);
     return;
   }
+  base::UmaHistogramEnumeration(kUserAcceptedPrivateNetworkDeviceHistogramName,
+                                NewAcceptedDeviceType::kValidDevice);
   GrantObjectPermission(origin, DeviceInfoToValue(device));
 }
 
 bool PrivateNetworkDevicePermissionContext::HasDevicePermission(
     const url::Origin& origin,
-    const blink::mojom::PrivateNetworkDevice& device) {
-  std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
-  for (const auto& object : object_list) {
-    const base::Value::Dict& value = object->value;
-    DCHECK(IsValidObject(value));
-    if (device.id.has_value() &&
-        *value.FindString(kDeviceIdKey) == device.id.value()) {
-      return true;
+    const blink::mojom::PrivateNetworkDevice& device,
+    bool is_device_valid) {
+  if (is_device_valid) {
+    std::vector<std::unique_ptr<Object>> object_list =
+        GetGrantedObjects(origin);
+    for (const auto& object : object_list) {
+      const base::Value::Dict& value = object->value;
+      DCHECK(IsValidObject(value));
+      DCHECK(device.id.has_value());
+      if (*value.FindString(kDeviceIdKey) == device.id.value()) {
+        base::UmaHistogramEnumeration(
+            kPrivateNetworkDeviceValidityHistogramName,
+            PrivateNetworkDeviceValidity::kExistingDevice);
+        return true;
+      }
     }
-  }
-
-  if (!device.id.has_value() || !device.name.has_value()) {
-    return false;
-  }
-
-  // If there's no valid id and name, then look up for ephemeral permission
-  // based on IP address.
-  auto it = ephemeral_devices_.find(origin);
-  if (it != ephemeral_devices_.end()) {
-    std::set<net::IPAddress> device_set = it->second;
-    auto ip_address = device_set.find(device.ip_address);
-    if (ip_address != device_set.end()) {
-      return true;
+  } else {
+    // If there's no valid id and name, then look up for ephemeral permission
+    // based on IP address.
+    auto it = ephemeral_devices_.find(origin);
+    if (it != ephemeral_devices_.end()) {
+      std::set<net::IPAddress> device_set = it->second;
+      auto ip_address = device_set.find(device.ip_address);
+      if (ip_address != device_set.end()) {
+        return true;
+      }
     }
   }
 

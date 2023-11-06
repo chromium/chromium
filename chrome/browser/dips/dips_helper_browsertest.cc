@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
   GURL url_b = embedded_test_server()->GetURL("b.test", "/title1.html");
   const std::string kIframeId = "test";  // defined in iframe_blank.html
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   // The top-level page is on a.test.
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                        MultipleUserInteractionsRecorded) {
   GURL url = embedded_test_server()->GetURL("a.test", "/title1.html");
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   SetDIPSTime(time);
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
   GURL url_a = embedded_test_server()->GetURL("a.test", "/iframe_blank.html");
   GURL url_b = https_server.GetURL("b.test", "/title1.html");
   const std::string kIframeId = "test";  // defined in iframe_blank.html
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
   content::WebContents* web_contents = GetActiveWebContents();
 
   // The top-level page is on a.test, containing an iframe pointing at b.test.
@@ -331,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   GURL image_url =
       https_server.GetURL("b.test", "/set-cookie?foo=bar;Secure;SameSite=None");
   content::WebContents* web_contents = GetActiveWebContents();
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   SetDIPSTime(time);
   // Set SameSite=None cookie on b.test.
@@ -379,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, MultipleSiteStoragesRecorded) {
   GURL url = embedded_test_server()->GetURL("b.test", "/set-cookie?foo=bar");
-  base::Time time = base::Time::FromDoubleT(1);
+  base::Time time = base::Time::FromSecondsSinceUnixEpoch(1);
 
   SetDIPSTime(time);
   // Navigating to this URL sets a cookie.
@@ -599,7 +599,7 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
                            ->storage();
 
   for (int i = 0; i < 10; i++) {
-    const base::Time bounce_time = base::Time::FromDoubleT(i + 1);
+    const base::Time bounce_time = base::Time::FromSecondsSinceUnixEpoch(i + 1);
     SetDIPSTime(bounce_time);
     LOG(INFO) << "*** i=" << i << " ***";
     // Make b.test statefully bounce.
@@ -797,7 +797,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
 }
 
 #if BUILDFLAG(IS_LINUX)
-#define MAYBE_SitesInDestroyedTabsAreNotExempt DISABLED_SitesInDestroyedTabsAreNotExempt
+#define MAYBE_SitesInDestroyedTabsAreNotExempt \
+  DISABLED_SitesInDestroyedTabsAreNotExempt
 #else
 #define MAYBE_SitesInDestroyedTabsAreNotExempt SitesInDestroyedTabsAreNotExempt
 #endif

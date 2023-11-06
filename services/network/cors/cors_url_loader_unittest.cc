@@ -10,8 +10,10 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/base/features.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/test_net_log_util.h"
@@ -2502,6 +2504,36 @@ TEST_F(CorsURLLoaderTest, BypassBlockListDuringRedirect) {
   EXPECT_TRUE(client().has_received_response());
   EXPECT_TRUE(client().has_received_completion());
   EXPECT_EQ(net::OK, client().completion_status().error_code);
+}
+
+TEST_F(CorsURLLoaderTest, PrivateNetworkAccessTargetAddressSpaceCheck) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kPrivateNetworkAccessPermissionPrompt);
+
+  auto initiator = url::Origin::Create(GURL("https://foo.example"));
+  ResetFactoryParams factory_params;
+  factory_params.is_trusted = true;
+  factory_params.client_security_state = mojom::ClientSecurityState::New();
+  factory_params.client_security_state->is_web_secure_context = true;
+  ResetFactory(initiator, mojom::kBrowserProcessId, factory_params);
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.target_address_space = mojom::IPAddressSpace::kPrivate;
+  request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  request.url = GURL("http://foo.example/");
+  request.request_initiator = initiator;
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->client_security_state =
+      mojom::ClientSecurityState::New();
+  request.trusted_params->client_security_state->is_web_secure_context = true;
+
+  BadMessageTestHelper bad_message_helper;
+  CreateLoaderAndStart(request);
+  RunUntilCreateLoaderAndStartCalled();
+
+  EXPECT_EQ(client().completion_status().error_code, net::OK);
 }
 
 }  // namespace

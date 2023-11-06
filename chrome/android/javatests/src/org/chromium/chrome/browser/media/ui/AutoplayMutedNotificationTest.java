@@ -43,14 +43,16 @@ public class AutoplayMutedNotificationTest {
     private static final String VIDEO_ID = "video";
     private static final String PLAY_BUTTON_ID = "play";
     private static final String UNMUTE_BUTTON_ID = "unmute";
-    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500;  // ms
+    private static final int AUDIO_FOCUS_CHANGE_TIMEOUT = 500; // ms
 
     private EmbeddedTestServer mTestServer;
 
     private AudioManager getAudioManager() {
-        return (AudioManager) mActivityTestRule.getActivity()
-                .getApplicationContext()
-                .getSystemService(Context.AUDIO_SERVICE);
+        return (AudioManager)
+                mActivityTestRule
+                        .getActivity()
+                        .getApplicationContext()
+                        .getSystemService(Context.AUDIO_SERVICE);
     }
 
     private boolean isMediaNotificationVisible() {
@@ -70,8 +72,8 @@ public class AutoplayMutedNotificationTest {
         }
 
         public void requestAudioFocus(int focusType) {
-            int result = getAudioManager().requestAudioFocus(
-                    this, AudioManager.STREAM_MUSIC, focusType);
+            int result =
+                    getAudioManager().requestAudioFocus(this, AudioManager.STREAM_MUSIC, focusType);
             if (result != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                 Assert.fail("Did not get audio focus");
             } else {
@@ -84,8 +86,9 @@ public class AutoplayMutedNotificationTest {
 
     @Before
     public void setUp() {
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PATH));
     }
@@ -165,8 +168,9 @@ public class AutoplayMutedNotificationTest {
         sb.append("})();");
 
         // Unmute from script.
-        String result = JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                tab.getWebContents(), sb.toString());
+        String result =
+                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                        tab.getWebContents(), sb.toString());
         Assert.assertTrue(result.trim().equalsIgnoreCase("false"));
 
         // Video is paused.

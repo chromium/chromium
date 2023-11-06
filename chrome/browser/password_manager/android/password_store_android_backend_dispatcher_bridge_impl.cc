@@ -14,10 +14,10 @@
 #include "chrome/browser/password_manager/android/jni_headers/PasswordStoreAndroidBackendDispatcherBridgeImpl_jni.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/unified_password_manager_proto_utils.h"
 #include "components/password_manager/core/browser/protos/list_passwords_result.pb.h"
 #include "components/password_manager/core/browser/protos/password_with_local_data.pb.h"
 #include "components/password_manager/core/browser/sync/password_proto_utils.h"
-#include "components/password_manager/core/browser/unified_password_manager_proto_utils.h"
 
 namespace password_manager {
 
@@ -26,6 +26,7 @@ namespace {
 using JobId = PasswordStoreAndroidBackendDispatcherBridge::JobId;
 
 constexpr int kGMSCoreMinVersionForGetAffiliatedAPI = 232012000;
+constexpr int kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI = 233812000;
 
 base::android::ScopedJavaLocalRef<jstring> GetJavaStringFromAccount(
     PasswordStoreAndroidBackendDispatcherBridgeImpl::Account account) {
@@ -69,6 +70,22 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
       password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid);
 }
 
+bool PasswordStoreAndroidBackendDispatcherBridge::
+    CanUseGetAllLoginsWithBrandingInfoAPI() {
+  base::android::BuildInfo* info = base::android::BuildInfo::GetInstance();
+  int current_gms_core_version;
+  if (!base::StringToInt(info->gms_version_code(), &current_gms_core_version)) {
+    return false;
+  }
+  if (kGMSCoreMinVersionForGetAllLoginsWithBrandingAPI >
+      current_gms_core_version) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kUseGMSCoreForBrandingInfo);
+}
+
 PasswordStoreAndroidBackendDispatcherBridgeImpl::
     PasswordStoreAndroidBackendDispatcherBridgeImpl() {
   DETACH_FROM_THREAD(thread_checker_);
@@ -91,6 +108,14 @@ void PasswordStoreAndroidBackendDispatcherBridgeImpl::GetAllLogins(
     Account account) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLogins(
+      base::android::AttachCurrentThread(), java_object_, job_id.value(),
+      GetJavaStringFromAccount(std::move(account)));
+}
+
+void PasswordStoreAndroidBackendDispatcherBridgeImpl::
+    GetAllLoginsWithBrandingInfo(JobId job_id, Account account) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  Java_PasswordStoreAndroidBackendDispatcherBridgeImpl_getAllLoginsWithBrandingInfo(
       base::android::AttachCurrentThread(), java_object_, job_id.value(),
       GetJavaStringFromAccount(std::move(account)));
 }

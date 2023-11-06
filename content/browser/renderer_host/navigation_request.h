@@ -440,6 +440,8 @@ class CONTENT_EXPORT NavigationRequest
       override;
   void SetContentSettings(
       blink::mojom::RendererContentSettingsPtr content_settings) override;
+  blink::mojom::RendererContentSettingsPtr GetContentSettingsForTesting()
+      override;
   // End of NavigationHandle implementation.
 
   // mojom::NavigationRendererCancellationListener implementation:
@@ -822,20 +824,6 @@ class CONTENT_EXPORT NavigationRequest
   //
   // Must only be called after ReadyToCommitNavigation().
   scoped_refptr<PolicyContainerHost> TakePolicyContainerHost();
-
-  // Stores in this navigation a refptr to the proxying URLLoaderFactory used by
-  // multiple different subresource loading.
-  //
-  // Must only be called after ReadyToCommitNavigation().
-  void SetSubresourceProxyingFactoryBundle(
-      scoped_refptr<network::SharedURLLoaderFactory>
-          subresource_proxying_factory_bundle);
-
-  // Moves this navigation's subresource proxying factory out of this instance.
-  //
-  // Must only be called after ReadyToCommitNavigation().
-  scoped_refptr<network::SharedURLLoaderFactory>
-  TakeSubresourceProxyingFactoryBundle();
 
   CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_.get();
@@ -1265,7 +1253,9 @@ class CONTENT_EXPORT NavigationRequest
     return std::move(web_ui_);
   }
 
-  bool shared_storage_writable() const { return shared_storage_writable_; }
+  bool shared_storage_writable_eligible() const {
+    return shared_storage_writable_eligible_;
+  }
 
   enum ErrorPageProcess {
     kNotErrorPage,
@@ -2005,6 +1995,11 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   void RecordEarlyRenderFrameHostSwapMetrics();
 
+  // Helpers for GetTentativeOriginAtRequestTime and GetOriginToCommit.
+  std::pair<url::Origin, std::string>
+  GetOriginForURLLoaderFactoryUncheckedWithDebugInfo();
+  url::Origin GetOriginForURLLoaderFactoryUnchecked();
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
@@ -2071,6 +2066,12 @@ class CONTENT_EXPORT NavigationRequest
 
   NavigationState state_ = NOT_STARTED;
   bool is_navigation_started_ = false;
+
+  // Manages the lifetime of a pre-created ServiceWorkerContainerHost until a
+  // corresponding container is created in the renderer. This must be destroyed
+  // after `loader_` to avoid dangling pointers, since `loader_` can have a
+  // raw_ptr to this object.
+  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
 
   std::unique_ptr<NavigationURLLoader> loader_;
 
@@ -2291,10 +2292,6 @@ class CONTENT_EXPORT NavigationRequest
   // static member for generating the unique id above.
   static int64_t unique_id_counter_;
 
-  // Manages the lifetime of a pre-created ServiceWorkerContainerHost until a
-  // corresponding container is created in the renderer.
-  std::unique_ptr<ServiceWorkerMainResourceHandle> service_worker_handle_;
-
   // Timer for detecting an unexpectedly long time to commit a navigation.
   base::OneShotTimer commit_timeout_timer_;
 
@@ -2364,6 +2361,10 @@ class CONTENT_EXPORT NavigationRequest
   // This is defined if and only if |initiator_frame_token_| above is, and it is
   // only valid in conjunction with it.
   const int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+
+  // The initiator Document's token, if it is present when this
+  // NavigationRequest was created.
+  absl::optional<blink::DocumentToken> initiator_document_token_;
 
   // The sandbox flags of the navigation's initiator, if any.
   // WebSandboxFlags::kNone otherwise.
@@ -2530,10 +2531,6 @@ class CONTENT_EXPORT NavigationRequest
   // NavigationRequest.
   std::vector<ConsoleMessage> console_messages_;
 
-  // The initiator Document's token, if it is present when this
-  // NavigationRequest was created.
-  absl::optional<blink::DocumentToken> initiator_document_token_;
-
   // Indicates that this navigation is for PDF content in a renderer.
   bool is_pdf_ = false;
 
@@ -2610,10 +2607,15 @@ class CONTENT_EXPORT NavigationRequest
   // contain "Observe-Browsing-Topics: ?1", a topic observation will be stored.
   bool topics_eligible_ = false;
 
-  // Whether or not the request is eligible to write to shared storage from
+  // Whether or not the original request (without considering redirects or
+  // permissions policy) opted-in to write to shared storage from response
+  // headers. See https://github.com/WICG/shared-storage#from-response-headers
+  bool shared_storage_writable_opted_in_ = false;
+
+  // Whether or not the current request is eligible to shared storage from
   // response headers. See
   // https://github.com/WICG/shared-storage#from-response-headers
-  bool shared_storage_writable_ = false;
+  bool shared_storage_writable_eligible_ = false;
 
   // A WeakPtr for the BindContext associated with the browser routing loader
   // factory for the committing document. This will be set in

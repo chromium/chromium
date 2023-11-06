@@ -179,7 +179,7 @@ std::unique_ptr<Network::Cookie> BuildCookie(
           .SetPath(cookie.Path())
           .SetExpires(cookie.ExpiryDate().is_null()
                           ? -1
-                          : cookie.ExpiryDate().ToDoubleT())
+                          : cookie.ExpiryDate().InSecondsFSinceUnixEpoch())
           .SetSize(cookie.Name().length() + cookie.Value().length())
           .SetHttpOnly(cookie.IsHttpOnly())
           .SetSecure(cookie.IsSecure())
@@ -379,8 +379,8 @@ MakeCookieFromProtocolValues(const std::string& name,
 
   base::Time expiration_date;
   if (expires >= 0) {
-    expiration_date =
-        expires ? base::Time::FromDoubleT(expires) : base::Time::UnixEpoch();
+    expiration_date = expires ? base::Time::FromSecondsSinceUnixEpoch(expires)
+                              : base::Time::UnixEpoch();
   }
 
   net::CookieSameSite css = net::CookieSameSite::UNSPECIFIED;
@@ -1808,9 +1808,9 @@ std::unique_ptr<protocol::Network::SecurityDetails> BuildSecurityDetails(
           .SetSubjectName(ssl_info.cert->subject().common_name)
           .SetSanList(std::move(san_list))
           .SetIssuer(ssl_info.cert->issuer().common_name)
-          .SetValidFrom(ssl_info.cert->valid_start().ToDoubleT())
-          .SetValidTo(ssl_info.cert->valid_expiry().ToDoubleT())
-          .SetCertificateId(0)  // Keep this in protocol for compatability.
+          .SetValidFrom(ssl_info.cert->valid_start().InSecondsFSinceUnixEpoch())
+          .SetValidTo(ssl_info.cert->valid_expiry().InSecondsFSinceUnixEpoch())
+          .SetCertificateId(0)  // Keep this in protocol for compatibility.
           .SetSignedCertificateTimestampList(
               std::move(signed_certificate_timestamp_list))
           .SetCertificateTransparencyCompliance(
@@ -1949,7 +1949,8 @@ std::unique_ptr<Network::Response> BuildResponse(
   }
   response->SetFromPrefetchCache(info.was_in_prefetch_cache);
   if (!info.response_time.is_null()) {
-    response->SetResponseTime(info.response_time.ToJsTimeIgnoringNull());
+    response->SetResponseTime(
+        info.response_time.InMillisecondsFSinceUnixEpochIgnoringNull());
   }
   if (!info.cache_storage_cache_name.empty()) {
     response->SetCacheStorageCacheName(info.cache_storage_cache_name);
@@ -2110,7 +2111,7 @@ void NetworkHandler::PrefetchRequestWillBeSent(
 
   std::string url = request.url.is_valid() ? request.url.spec() : "";
   double current_ticks = timestamp.since_origin().InSecondsF();
-  double current_wall_time = base::Time::Now().ToDoubleT();
+  double current_wall_time = base::Time::Now().InSecondsFSinceUnixEpoch();
   auto initiator =
       Network::Initiator::Create()
           .SetType(Network::Initiator::TypeEnum::Script)
@@ -2207,7 +2208,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
   }
   std::string id = nav_request.devtools_navigation_token().ToString();
   double current_ticks = timestamp.since_origin().InSecondsF();
-  double current_wall_time = base::Time::Now().ToDoubleT();
+  double current_wall_time = base::Time::Now().InSecondsFSinceUnixEpoch();
   std::string frame_token = nav_request.frame_tree_node()
                                 ->current_frame_host()
                                 ->devtools_frame_token()
@@ -2285,8 +2286,9 @@ void NetworkHandler::RequestSent(
   // just returning false.
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
-      timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
-      std::move(initiator), /*redirect_emitted_extra_info=*/false,
+      timestamp.since_origin().InSecondsF(),
+      base::Time::Now().InSecondsFSinceUnixEpoch(), std::move(initiator),
+      /*redirect_emitted_extra_info=*/false,
       std::unique_ptr<Network::Response>(), resource_type,
       Maybe<std::string>() /* frame_id */, request_info.has_user_gesture);
 }

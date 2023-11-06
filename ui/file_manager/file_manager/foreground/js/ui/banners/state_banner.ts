@@ -10,7 +10,7 @@
 
 import {assertInstanceof} from 'chrome://resources/ash/common/assert.js';
 
-import {util} from '../../../../common/js/util.js';
+import {visitURL} from '../../../../common/js/util.js';
 import {Command} from '../command.js';
 
 import {getTemplate} from './state_banner.html.js';
@@ -101,7 +101,7 @@ export class StateBanner extends Banner {
           e.preventDefault();
           return;
         }
-        util.visitURL(extraButton.getAttribute('href')!);
+        visitURL(extraButton.getAttribute('href')!);
         e.preventDefault();
       });
     }

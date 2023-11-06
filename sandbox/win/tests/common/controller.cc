@@ -204,9 +204,8 @@ bool TestRunner::WaitForAllTargets() {
   return WaitForAllTargetsInternal();
 }
 
-bool TestRunner::AddRule(SubSystem subsystem,
-                         Semantics semantics,
-                         const wchar_t* pattern) {
+bool TestRunner::AllowFileAccess(FileSemantics semantics,
+                                 const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
@@ -214,10 +213,22 @@ bool TestRunner::AddRule(SubSystem subsystem,
     return false;
 
   return (SBOX_ALL_OK ==
-          policy_->GetConfig()->AddRule(subsystem, semantics, pattern));
+          policy_->GetConfig()->AllowFileAccess(semantics, pattern));
 }
 
-bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
+bool TestRunner::AllowNamedPipes(const wchar_t* pattern) {
+  if (!is_init_) {
+    return false;
+  }
+
+  if (policy_->GetConfig()->IsConfigured()) {
+    return false;
+  }
+
+  return (SBOX_ALL_OK == policy_->GetConfig()->AllowNamedPipes(pattern));
+}
+
+bool TestRunner::AddRuleSys32(FileSemantics semantics, const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
@@ -225,8 +236,9 @@ bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
   if (win32_path.empty())
     return false;
 
-  if (!AddRule(SubSystem::kFiles, semantics, win32_path.c_str()))
+  if (!AllowFileAccess(semantics, win32_path.c_str())) {
     return false;
+  }
 
   if (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     return true;
@@ -235,14 +247,7 @@ bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
   if (win32_path.empty())
     return false;
 
-  return AddRule(SubSystem::kFiles, semantics, win32_path.c_str());
-}
-
-bool TestRunner::AddFsRule(Semantics semantics, const wchar_t* pattern) {
-  if (!is_init_)
-    return false;
-
-  return AddRule(SubSystem::kFiles, semantics, pattern);
+  return AllowFileAccess(semantics, win32_path.c_str());
 }
 
 int TestRunner::RunTest(const wchar_t* command) {

@@ -4,11 +4,11 @@
 
 package org.chromium.android_webview.test.util;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 import org.junit.Assert;
 
 import org.chromium.android_webview.common.variations.VariationsUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;

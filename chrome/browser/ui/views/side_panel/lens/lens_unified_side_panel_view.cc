@@ -96,7 +96,6 @@ LensUnifiedSidePanelView::LensUnifiedSidePanelView(
       ui::PAGE_TRANSITION_FROM_API, std::string());
   web_view_ = AddChildView(CreateWebView(this, browser_context));
   separator_ = AddChildView(std::make_unique<views::Separator>());
-
   SetContentAndNewTabButtonVisible(/* visible= */ false,
                                    /* enable_new_tab_button= */ false);
 
@@ -335,7 +334,6 @@ void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
   // don't rerender the same page on a unrelated resize event.
   if (width() == 0 || !side_panel_url_params_)
     return;
-
   // Manually set web contents to the size of side panel view on initial load.
   // This prevents a bug in Lens Web that renders the page as if it was 0px
   // wide. Also, set the viewport width and height param of the request url.

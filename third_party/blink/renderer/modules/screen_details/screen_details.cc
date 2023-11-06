@@ -37,7 +37,7 @@ ScreenDetailed* ScreenDetails::currentScreen() const {
   auto* it = base::ranges::find(screens_, current_display_id_,
                                 &ScreenDetailed::DisplayId);
   DCHECK(it != screens_.end());
-  return *it;
+  return it->Get();
 }
 
 const AtomicString& ScreenDetails::InterfaceName() const {

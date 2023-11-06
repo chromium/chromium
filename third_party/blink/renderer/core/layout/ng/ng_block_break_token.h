@@ -16,8 +16,8 @@
 
 namespace blink {
 
+class InlineBreakToken;
 class NGBoxFragmentBuilder;
-class NGInlineBreakToken;
 
 // Represents a break token for a block node.
 class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
@@ -55,15 +55,17 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // Note: Although the break token created here corresponds with one inside the
   // first fragment, this break token is "crippled" in many ways. There'll never
   // be any child break tokens, for instance. The only information that's
-  // carried over from the original break token is consumed block-size, and we
-  // also set the correct sequence number. Break tokens created by this function
-  // aren't meant to be used in layout. They are just here to keep pre-paint and
-  // paint happy (which rely on sequence numbers and consumed block-size). Any
-  // other use of this break token is undefined (and likely to fail DCHECKs).
+  // carried over from the original break token is what need, such as consumed
+  // block-size, sequence number, and whether we are at/past the block-end.
+  // Break tokens created by this function aren't meant to be used in
+  // layout. They are just here to keep pre-paint and paint happy (which rely on
+  // sequence numbers and consumed block-size). Any other use of this break
+  // token is undefined (and likely to fail DCHECKs).
   static NGBlockBreakToken* CreateForBreakInRepeatedFragment(
       const NGBlockNode&,
       unsigned sequence_number,
-      LayoutUnit consumed_block_size);
+      LayoutUnit consumed_block_size,
+      bool is_at_block_end);
 
   // Represents the amount of block-size consumed by previous fragments.
   //
@@ -127,7 +129,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     DCHECK(!is_repeated_actual_break_);
 #endif
     DCHECK(data_);
-    return data_;
+    return data_.Get();
   }
 
   // Return true if this is a break token that was produced without any
@@ -184,12 +186,7 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // not ready to proceed to the next column. Anything that can fit at the
   // bottom of a column (either because it actually has 0 height, or e.g. a
   // negative top margin) will be put into that column, not the next.
-  bool IsAtBlockEnd() const {
-#if DCHECK_IS_ON()
-    DCHECK(!is_repeated_actual_break_);
-#endif
-    return is_at_block_end_;
-  }
+  bool IsAtBlockEnd() const { return is_at_block_end_; }
 
   // True if earlier fragments could not position the list marker.
   bool HasUnpositionedListMarker() const {
@@ -214,9 +211,9 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
     return ChildBreakTokensInternal();
   }
 
-  // Find the child NGInlineBreakToken for the specified node.
-  const NGInlineBreakToken* InlineBreakTokenFor(const NGLayoutInputNode&) const;
-  const NGInlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
+  // Find the child InlineBreakToken for the specified node.
+  const InlineBreakToken* InlineBreakTokenFor(const NGLayoutInputNode&) const;
+  const InlineBreakToken* InlineBreakTokenFor(const LayoutBox&) const;
 
 #if DCHECK_IS_ON()
   String ToString() const;

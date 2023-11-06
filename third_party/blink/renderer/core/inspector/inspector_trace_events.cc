@@ -279,6 +279,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
 #define DEFINE_STRING_MAPPING(pseudoType) \
   case CSSSelector::k##pseudoType:        \
     return #pseudoType;
+    DEFINE_STRING_MAPPING(PseudoActiveViewTransition)
     DEFINE_STRING_MAPPING(PseudoUnknown)
     DEFINE_STRING_MAPPING(PseudoEmpty)
     DEFINE_STRING_MAPPING(PseudoFirstChild)
@@ -370,7 +371,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoPlaying)
     DEFINE_STRING_MAPPING(PseudoInRange)
     DEFINE_STRING_MAPPING(PseudoOutOfRange)
-    DEFINE_STRING_MAPPING(PseudoToggle)
     DEFINE_STRING_MAPPING(PseudoTrue)
     DEFINE_STRING_MAPPING(PseudoWebKitCustomElement)
     DEFINE_STRING_MAPPING(PseudoBlinkInternalElement)
@@ -569,14 +569,6 @@ void inspector_schedule_style_invalidation_tracking_event::PseudoChange(
   auto dict = std::move(context).WriteDictionary();
   FillCommonPart(dict, element, invalidation_set, kAttribute);
   dict.Add("changedPseudo", PseudoTypeToString(pseudo_type));
-}
-
-void inspector_schedule_style_invalidation_tracking_event::RuleSetInvalidation(
-    perfetto::TracedValue context,
-    ContainerNode& root_node,
-    const InvalidationSet& invalidation_set) {
-  auto dict = std::move(context).WriteDictionary();
-  FillCommonPart(dict, root_node, invalidation_set, kRuleSet);
 }
 
 String DescendantInvalidationSetToIdString(const InvalidationSet& set) {
@@ -957,7 +949,8 @@ void inspector_receive_response_event::Data(perfetto::TracedValue context,
   }
 
   if (!response.ResponseTime().is_null()) {
-    dict.Add("responseTime", response.ResponseTime().ToJsTime());
+    dict.Add("responseTime",
+             response.ResponseTime().InMillisecondsFSinceUnixEpoch());
   }
   if (!response.CacheStorageCacheName().empty()) {
     dict.Add("cacheStorageCacheName", response.CacheStorageCacheName());

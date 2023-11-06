@@ -82,12 +82,11 @@ class CrdAdminSessionController : private StartCrdSessionJobDelegate {
   // reconnectable session has been re-established.
   void TryToReconnect(base::OnceClosure done_callback);
 
-  void OnCurtainSessionStarted();
   bool IsCurrentSessionCurtained() const;
 
   // `DeviceCommandStartCrdSessionJob::Delegate` implementation:
   bool HasActiveSession() const override;
-  void TerminateSession(base::OnceClosure callback) override;
+  void TerminateSession() override;
   void StartCrdHostAndGetCode(
       const SessionParameters& parameters,
       AccessCodeCallback success_callback,

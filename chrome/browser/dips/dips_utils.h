@@ -150,6 +150,12 @@ struct PopupsStateValue {
   bool is_current_interaction;
 };
 
+struct PopupWithTime {
+  std::string opener_site;
+  std::string popup_site;
+  base::Time last_popup_time;
+};
+
 inline bool operator==(const StateValue& lhs, const StateValue& rhs) {
   return std::tie(lhs.site_storage_times, lhs.user_interaction_times,
                   lhs.stateful_bounce_times, lhs.bounce_times,
@@ -171,12 +177,6 @@ std::string GetSiteForDIPS(const GURL& url);
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.
 bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url);
-
-// Returns true iff `first_party_url` directly precedes the last occurrence of
-// `third_party_url` in the entire tab history of `web_contents`.
-bool DoesFirstPartyPrecedeThirdParty(content::WebContents* web_contents,
-                                     const GURL& first_party_url,
-                                     const GURL& third_party_url);
 
 // Returns `True` iff the `navigation_handle` represents a navigation happening
 // in an iframe of the primary frame tree.

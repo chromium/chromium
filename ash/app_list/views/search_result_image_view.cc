@@ -49,7 +49,11 @@ constexpr double kDraggedImageOpacity = 0.6;
 
 class ImagePreviewView : public views::ImageButton {
  public:
-  ImagePreviewView() { SetInstallFocusRingOnFocus(false); }
+  METADATA_HEADER(ImagePreviewView);
+  ImagePreviewView() {
+    SetInstallFocusRingOnFocus(false);
+    SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  }
   ImagePreviewView(const ImagePreviewView&) = delete;
   ImagePreviewView& operator=(const ImagePreviewView&) = delete;
   ~ImagePreviewView() override = default;
@@ -69,6 +73,9 @@ class ImagePreviewView : public views::ImageButton {
     views::FocusRing::Get(parent())->SchedulePaint();
   }
 };
+
+BEGIN_METADATA(ImagePreviewView, views::ImageButton)
+END_METADATA
 
 }  // namespace
 

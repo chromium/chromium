@@ -232,7 +232,17 @@ Polymer({
       type = NameserversType.AUTOMATIC;
       nameservers = this.clearEmptyNameServers_(nameservers);
     }
-    this.setNameservers_(type, nameservers, false /* send */);
+    // When a network is connected, we receive connection strength updates and
+    // that prevents users from making any custom updates to network
+    // nameservers. These below conditions allow connection strength updates to
+    // be applied only if network is not connected or if nameservers type is set
+    // to auto or if we are receiving the update for the first time.
+    if (type !== NameserversType.CUSTOM || !oldValue ||
+        newValue.guid !== (oldValue && oldValue.guid) ||
+        !OncMojo.connectionStateIsConnected(
+            this.managedProperties.connectionState)) {
+      this.setNameservers_(type, nameservers, false /* send */);
+    }
   },
 
   /**

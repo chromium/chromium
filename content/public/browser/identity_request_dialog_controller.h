@@ -47,6 +47,8 @@ struct CONTENT_EXPORT IdentityProviderMetadata {
   // IdentityProviderMetadata so that the UI code can pass it along when an
   // Account is selected by the user.
   GURL config_url;
+  // Whether this IdP supports signing in to additional accounts.
+  bool supports_add_account{false};
 };
 
 struct CONTENT_EXPORT IdentityProviderData {
@@ -96,7 +98,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
-  using SigninToIdPCallback = base::OnceCallback<void()>;
+  using SigninToIdPCallback = base::OnceCallback<void(GURL /*idp_login_url*/)>;
   using MoreDetailsCallback = base::OnceCallback<void()>;
 
   IdentityRequestDialogController() = default;

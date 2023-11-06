@@ -98,7 +98,7 @@ class MIDIPort : public EventTarget,
 
   void open();
   bool IsOpening() { return running_open_count_; }
-  MIDIAccess* midiAccess() const { return access_; }
+  MIDIAccess* midiAccess() const { return access_.Get(); }
 
  private:
   void OpenAsynchronously(ScriptPromiseResolver*);

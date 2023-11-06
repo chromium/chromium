@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1178581264944972037">일시중지</translation>
+<translation id="2558806128245168542">뒤로 이동</translation>
 <translation id="3523426587027570423">'이 페이지의 내용 듣기'를 탭하여 종료합니다.</translation>
+<translation id="4431240646217225907">텍스트 강조 표시 및 자동 스크롤</translation>
 <translation id="4654641641922242357">'이 페이지의 내용 듣기' 플레이어입니다.</translation>
 <translation id="4731877163452936634">재생 속도는 <ph name="PLAYBACK_SPEED" />입니다. 변경하려면 클릭하세요.</translation>
 <translation id="5234971936051226002">'이 페이지의 내용 듣기' 플레이어가 최소화되었습니다.</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
+<translation id="6315170314923504164">음성</translation>
+<translation id="6550675742724504774">옵션</translation>
 <translation id="6790428901817661496">재생</translation>
+<translation id="6831043979455480757">번역</translation>
 <translation id="6846298663435243399">로드 중…</translation>
 <translation id="7587250070160020374">Chrome에서 재생 중</translation>
 <translation id="7945822420239537236"><ph name="NUMBER_OF_SECONDS" />초 앞으로 이동</translation>

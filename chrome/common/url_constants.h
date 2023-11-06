@@ -11,13 +11,13 @@
 // - When adding platform/feature specific constants, if there already exists an
 //   appropriate #if block, use that.
 // - Keep the constants sorted by name within its section.
-// - Use the same order in this header and url_constants.cc.
 
 #ifndef CHROME_COMMON_URL_CONSTANTS_H_
 #define CHROME_COMMON_URL_CONSTANTS_H_
 
 #include <stddef.h>
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -29,85 +29,131 @@
 namespace chrome {
 
 // "Learn more" URL linked in the dialog to cast using a code.
-extern const char kAccessCodeCastLearnMoreURL[];
+inline constexpr char kAccessCodeCastLearnMoreURL[] =
+    "https://support.google.com/chrome/a/?p=cast_to_class_teacher";
 
 // "Learn more" URL for accessibility image labels, linked from the permissions
 // dialog shown when a user enables the feature.
-extern const char kAccessibilityLabelsLearnMoreURL[];
+inline constexpr char kAccessibilityLabelsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=image_descriptions";
 
 // "Learn more" URL for Ad Privacy.
-extern const char kAdPrivacyLearnMoreURL[];
+inline constexpr char kAdPrivacyLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ad_privacy";
 
 // "Learn more" URL for when profile settings are automatically reset.
-extern const char kAutomaticSettingsResetLearnMoreURL[];
+inline constexpr char kAutomaticSettingsResetLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ui_automatic_settings_reset";
 
 // "Learn more" URL for Advanced Protection download warnings.
-extern const char kAdvancedProtectionDownloadLearnMoreURL[];
+inline constexpr char kAdvancedProtectionDownloadLearnMoreURL[] =
+    "https://support.google.com/accounts/accounts?p=safe-browsing";
 
 // "Chrome Settings" URL for website notifications linked out from OSSettings.
-extern const char kAppNotificationsBrowserSettingsURL[];
+inline constexpr char kAppNotificationsBrowserSettingsURL[] =
+    "chrome://settings/content/notifications";
 
 // "Learn more" URL for Battery Saver Mode.
-extern const char kBatterySaverModeLearnMoreUrl[];
+inline constexpr char kBatterySaverModeLearnMoreUrl[] =
+    "https://support.google.com/chrome?p=chrome_battery_saver";
 
 // The URL for providing help when the Bluetooth adapter is off.
-extern const char kBluetoothAdapterOffHelpURL[];
+inline constexpr char kBluetoothAdapterOffHelpURL[] =
+    "https://support.google.com/chrome?p=bluetooth";
 
 // "Learn more" URL shown in the dialog to enable cloud services for Cast.
-extern const char kCastCloudServicesHelpURL[];
+inline constexpr char kCastCloudServicesHelpURL[] =
+    "https://support.google.com/chromecast/?p=casting_cloud_services";
 
 // The URL for the help center article to show when no Cast destination has been
 // found.
-extern const char kCastNoDestinationFoundURL[];
+inline constexpr char kCastNoDestinationFoundURL[] =
+    "https://support.google.com/chromecast/?p=no_cast_destination";
 
 // The URL for the WebHID API help center article.
-extern const char kChooserHidOverviewUrl[];
+inline constexpr char kChooserHidOverviewUrl[] =
+    "https://support.google.com/chrome?p=webhid";
 
 // The URL for the Web Serial API help center article.
-extern const char kChooserSerialOverviewUrl[];
+inline constexpr char kChooserSerialOverviewUrl[] =
+    "https://support.google.com/chrome?p=webserial";
 
 // The URL for the WebUsb help center article.
-extern const char kChooserUsbOverviewURL[];
+inline constexpr char kChooserUsbOverviewURL[] =
+    "https://support.google.com/chrome?p=webusb";
 
 // Link to the forum for Chrome Beta.
-extern const char kChromeBetaForumURL[];
+inline constexpr char kChromeBetaForumURL[] =
+    "https://support.google.com/chrome?p=beta_forum";
 
 // The URL for the help center article to fix Chrome update problems.
-extern const char kChromeFixUpdateProblems[];
+inline constexpr char16_t kChromeFixUpdateProblems[] =
+    u"https://support.google.com/chrome?p=fix_chrome_updates";
 
 // General help links for Chrome, opened using various actions.
-extern const char kChromeHelpViaKeyboardURL[];
-extern const char kChromeHelpViaMenuURL[];
-extern const char kChromeHelpViaWebUIURL[];
+inline constexpr char kChromeHelpViaKeyboardURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kChromeOsHelpViaWebUIURL[];
-#endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html";
+#else
+    "https://support.google.com/chromebook?p=help&ctx=keyboard";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else
+    "https://support.google.com/chrome?p=help&ctx=keyboard";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+inline constexpr char kChromeHelpViaMenuURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html";
+#else
+    "https://support.google.com/chromebook?p=help&ctx=menu";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else
+    "https://support.google.com/chrome?p=help&ctx=menu";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+inline constexpr char kChromeHelpViaWebUIURL[] =
+    "https://support.google.com/chrome?p=help&ctx=settings";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+inline constexpr char kChromeOsHelpViaWebUIURL[] =
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    "chrome-extension://honijodknafkokifofgiaalefdiedpko/main.html";
+#else
+    "https://support.google.com/chromebook?p=help&ctx=settings";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The isolated-app: scheme is used for Isolated Web Apps. A public explainer
 // can be found here: https://github.com/reillyeon/isolated-web-apps
-extern const char kIsolatedAppScheme[];
+inline constexpr char kIsolatedAppScheme[] = "isolated-app";
+inline constexpr char16_t kIsolatedAppSchemeUtf16[] = u"isolated-app";
 
 // The chrome-native: scheme is used show pages rendered with platform specific
 // widgets instead of using HTML.
-extern const char kChromeNativeScheme[];
+inline constexpr char kChromeNativeScheme[] = "chrome-native";
 
 // The URL of safe section in Chrome page (https://www.google.com/chrome).
-extern const char kChromeSafePageURL[];
+inline constexpr char16_t kChromeSafePageURL[] =
+    u"https://www.google.com/chrome/#safe";
 
 // Pages under chrome-search.
-extern const char kChromeSearchLocalNtpHost[];
+inline constexpr char kChromeSearchLocalNtpHost[] = "local-ntp";
 
 // Host and URL for most visited iframes used on the Instant Extended NTP.
-extern const char kChromeSearchMostVisitedHost[];
-extern const char kChromeSearchMostVisitedUrl[];
+inline constexpr char kChromeSearchMostVisitedHost[] = "most-visited";
+inline constexpr char kChromeSearchMostVisitedUrl[] =
+    "chrome-search://most-visited/";
 
 // URL for NTP custom background image selected from the user's machine and
 // filename for the version of the file in the Profile directory
-extern const char kChromeUIUntrustedNewTabPageBackgroundUrl[];
-extern const char kChromeUIUntrustedNewTabPageBackgroundFilename[];
+inline constexpr char kChromeUIUntrustedNewTabPageBackgroundUrl[] =
+    "chrome-untrusted://new-tab-page/background.jpg";
+inline constexpr char kChromeUIUntrustedNewTabPageBackgroundFilename[] =
+    "background.jpg";
 
 // Page under chrome-search.
-extern const char kChromeSearchRemoteNtpHost[];
+inline constexpr char kChromeSearchRemoteNtpHost[] = "remote-ntp";
 
 // The chrome-search: scheme is served by the same backend as chrome:.  However,
 // only specific URLDataSources are enabled to serve requests via the
@@ -125,456 +171,660 @@ extern const char kChromeSearchRemoteNtpHost[];
 //  3. Browser: for specific sub-classes of URLDataSource, like ThemeSource
 //     there are additional Instant-PID checks that make sure the request is
 //     coming from a blessed Instant process, and deny the request.
-extern const char kChromeSearchScheme[];
+inline constexpr char kChromeSearchScheme[] = "chrome-search";
 
 // This is the base URL of content that can be embedded in chrome://new-tab-page
 // using an <iframe>. The embedded untrusted content can make web requests and
 // can include content that is from an external source.
-extern const char kChromeUIUntrustedNewTabPageUrl[];
+inline constexpr char kChromeUIUntrustedNewTabPageUrl[] =
+    "chrome-untrusted://new-tab-page/";
 
 // The URL for the Chromium project used in the About dialog.
-extern const char kChromiumProjectURL[];
+inline constexpr char16_t kChromiumProjectURL[] = u"https://www.chromium.org/";
 
-extern const char kContentSettingsExceptionsLearnMoreURL[];
+inline constexpr char16_t kContentSettingsExceptionsLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=settings_manage_exceptions";
 
 // "Learn more" URL for cookies.
-extern const char kCookiesSettingsHelpCenterURL[];
+inline constexpr char kCookiesSettingsHelpCenterURL[] =
+    "https://support.google.com/chrome?p=cpn_cookies";
 
 // "Learn more" URL for "Aw snap" page when showing "Reload" button.
-extern const char kCrashReasonURL[];
+inline constexpr char kCrashReasonURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=e_awsnap";
+#else
+    "https://support.google.com/chrome?p=e_awsnap";
+#endif
 
 // "Learn more" URL for "Aw snap" page when showing "Send feedback" button.
-extern const char kCrashReasonFeedbackDisplayedURL[];
+inline constexpr char kCrashReasonFeedbackDisplayedURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=e_awsnap_rl";
+#else
+    "https://support.google.com/chrome?p=e_awsnap_rl";
+#endif
 
 // "Learn more" URL for the "Do not track" setting in the privacy section.
-extern const char kDoNotTrackLearnMoreURL[];
+inline constexpr char16_t kDoNotTrackLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    u"https://support.google.com/chromebook?p=settings_do_not_track";
+#else
+    u"https://support.google.com/chrome?p=settings_do_not_track";
+#endif
 
 // The URL for the "Learn more" page for interrupted downloads.
-extern const char kDownloadInterruptedLearnMoreURL[];
+inline constexpr char kDownloadInterruptedLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ui_download_errors";
 
 // The URL for the "Learn more" page for download scanning.
-extern const char kDownloadScanningLearnMoreURL[];
+inline constexpr char kDownloadScanningLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ib_download_blocked";
 
 // The URL for the "Learn more" page for blocked downloads.
-extern const char kDownloadBlockedLearnMoreURL[];
+// Note: This is the same as the above URL. This is done to decouple the URLs,
+// in case the support page is split apart into separate pages in the future.
+inline constexpr char kDownloadBlockedLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ib_download_blocked";
 
 // "Learn more" URL for the Settings API, NTP bubble and other settings bubbles
 // showing which extension is controlling them.
-extern const char kExtensionControlledSettingLearnMoreURL[];
+inline constexpr char kExtensionControlledSettingLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ui_settings_api_extension";
 
 // URL used to indicate that an extension resource load request was invalid.
-extern const char kExtensionInvalidRequestURL[];
+inline constexpr char kExtensionInvalidRequestURL[] =
+    "chrome-extension://invalid/";
 
 // Link for creating family group with Google Families.
-extern const char kFamilyGroupCreateURL[];
+inline constexpr char16_t kFamilyGroupCreateURL[] =
+    u"https://myaccount.google.com/family/create?utm_source=cpwd";
 
 // Link for viewing family group with Google Families.
-extern const char kFamilyGroupViewURL[];
+inline constexpr char16_t kFamilyGroupViewURL[] =
+    u"https://myaccount.google.com/family/details?utm_source=cpwd";
 
 // "Learn more" URL for first party sets.
-extern const char kFirstPartySetsLearnMoreURL[];
+inline constexpr char kFirstPartySetsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=cpn_cookies"
+    "#zippy=%2Callow-related-sites-to-access-your-activity";
 
 // Url to a blogpost about Flash deprecation.
-extern const char kFlashDeprecationLearnMoreURL[];
+inline constexpr char kFlashDeprecationLearnMoreURL[] =
+    "https://blog.chromium.org/2017/07/so-long-and-thanks-for-all-flash.html";
 
 // URL of the Google account language selection page.
-extern const char kGoogleAccountLanguagesURL[];
+inline constexpr char kGoogleAccountLanguagesURL[] =
+    "https://myaccount.google.com/language";
 
 // URL of the 'Activity controls' section of the privacy settings page.
-extern const char kGoogleAccountActivityControlsURL[];
+inline constexpr char kGoogleAccountActivityControlsURL[] =
+    "https://myaccount.google.com/activitycontrols/search";
 
 // URL of the 'Activity controls' section of the privacy settings page, with
 // privacy guide parameters and a link for users to manage data.
-extern const char kGoogleAccountActivityControlsURLInPrivacyGuide[];
+inline constexpr char kGoogleAccountActivityControlsURLInPrivacyGuide[] =
+    "https://myaccount.google.com/activitycontrols/"
+    "search&utm_source=chrome&utm_medium=privacy-guide";
 
 // URL of the Google Account.
-extern const char kGoogleAccountURL[];
+inline constexpr char kGoogleAccountURL[] = "https://myaccount.google.com";
 
 // URL of the Google Account chooser.
-extern const char kGoogleAccountChooserURL[];
+inline constexpr char kGoogleAccountChooserURL[] =
+    "https://accounts.google.com/AccountChooser";
 
 // URL of the Google Account page showing the known user devices.
-extern const char kGoogleAccountDeviceActivityURL[];
+inline constexpr char kGoogleAccountDeviceActivityURL[] =
+    "https://myaccount.google.com/device-activity?utm_source=chrome";
 
 // URL of the Google Password Manager.
-extern const char kGooglePasswordManagerURL[];
+inline constexpr char kGooglePasswordManagerURL[] =
+    "https://passwords.google.com";
 
 // URL of the Google Photos.
-extern const char kGooglePhotosURL[];
+inline constexpr char kGooglePhotosURL[] = "https://photos.google.com";
 
 // The URL for the "Learn more" link for the High Efficiency Mode.
-extern const char kHighEfficiencyModeLearnMoreUrl[];
+inline constexpr char kHighEfficiencyModeLearnMoreUrl[] =
+    "https://support.google.com/chrome?p=chrome_memory_saver";
 
 // The URL in the help text for the High Efficiency Mode tab discarding
 // exceptions add dialog.
-extern const char kHighEfficiencyModeTabDiscardingHelpUrl[];
+inline constexpr char16_t kHighEfficiencyModeTabDiscardingHelpUrl[] =
+    u"https://support.google.com/chrome?p=performance_site_exclusion";
 
 // The URL to the help center article of Incognito mode.
-extern const char kIncognitoHelpCenterURL[];
+inline constexpr char16_t kIncognitoHelpCenterURL[] =
+    u"https://support.google.com/chrome?p=incognito";
 
 // The URL for "Learn more" page for Isolated Web Apps.
-extern const char kIsolatedWebAppsLearnMoreUrl[];
+// TODO(crbug.com/1480695): Update this URL with proper user-facing explainer.
+inline constexpr char16_t kIsolatedWebAppsLearnMoreUrl[] =
+    u"https://github.com/WICG/isolated-web-apps/blob/main/README.md";
 
 // The URL for the "Learn more" page for the usage/crash reporting option in the
 // first run dialog.
-extern const char kLearnMoreReportingURL[];
+inline constexpr char kLearnMoreReportingURL[] =
+    "https://support.google.com/chrome?p=ui_usagestat";
 
 // The URL for the Help Center page about managing third-party cookies.
-extern const char kManage3pcHelpCenterURL[];
+inline constexpr char kManage3pcHelpCenterURL[] =
+    "https://support.google.com/chrome?p=manage_tp_cookies";
 
 // The URL for the Learn More page about policies and enterprise enrollment.
-extern const char kManagedUiLearnMoreUrl[];
+inline constexpr char16_t kManagedUiLearnMoreUrl[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    u"https://support.google.com/chromebook?p=is_chrome_managed";
+#else
+    u"https://support.google.com/chrome?p=is_chrome_managed";
+#endif
 
 // The URL for the "Learn more" page for insecure download blocking.
-extern const char kInsecureDownloadBlockingLearnMoreUrl[];
+inline constexpr char kInsecureDownloadBlockingLearnMoreUrl[] =
+    "https://support.google.com/chrome?p=mixed_content_downloads";
 
 // "myactivity.google.com" URL for the history checkbox in ClearBrowsingData.
-extern const char kMyActivityUrlInClearBrowsingData[];
+inline constexpr char16_t kMyActivityUrlInClearBrowsingData[] =
+    u"https://myactivity.google.com/myactivity?utm_source=chrome_cbd";
 
 // Help URL for the Omnibox setting.
-extern const char kOmniboxLearnMoreURL[];
+inline constexpr char16_t kOmniboxLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    u"https://support.google.com/chromebook?p=settings_omnibox";
+#else
+    u"https://support.google.com/chrome?p=settings_omnibox";
+#endif
 
 // "What do these mean?" URL for the Page Info bubble.
-extern const char kPageInfoHelpCenterURL[];
+inline constexpr char kPageInfoHelpCenterURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=ui_security_indicator";
+#else
+    "https://support.google.com/chrome?p=ui_security_indicator";
+#endif
 
 // Help URL for the bulk password check.
-extern const char kPasswordCheckLearnMoreURL[];
+inline constexpr char kPasswordCheckLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook/"
+    "?p=settings_password#leak_detection_privacy";
+#else
+    "https://support.google.com/chrome/"
+    "?p=settings_password#leak_detection_privacy";
+#endif
 
 // Help URL for password generation.
-extern const char kPasswordGenerationLearnMoreURL[];
+inline constexpr char kPasswordGenerationLearnMoreURL[] =
+    "https://support.google.com/chrome?p=generate_password";
 
-extern const char kPasswordManagerLearnMoreURL[];
+inline constexpr char16_t kPasswordManagerLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    u"https://support.google.com/chromebook?p=settings_password";
+#else
+    u"https://support.google.com/chrome?p=settings_password";
+#endif
 
 // Help URL for passwords import.
-extern const char kPasswordManagerImportLearnMoreURL[];
+inline constexpr char kPasswordManagerImportLearnMoreURL[] =
+    "https://support.google.com/chrome?p=import-passwords-desktop";
 
 // Help URL for password sharing.
-extern const char kPasswordSharingLearnMoreURL[];
+inline constexpr char kPasswordSharingLearnMoreURL[] =
+    "https://support.google.com/chrome?p=password_sharing";
 
 // Help URL for troubleshooting password sharing.
-extern const char kPasswordSharingTroubleshootURL[];
-
-// Help URL for the Payment methods page of the Google Pay site.
-extern const char kPaymentMethodsURL[];
+inline constexpr char kPasswordSharingTroubleshootURL[] =
+    "https://support.google.com/chrome?p=password_sharing_troubleshoot";
 
 // The URL for the "Fill out forms automatically" support page.
-extern const char kAddressesAndPaymentMethodsLearnMoreURL[];
+inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=settings_autofill";
+#else
+    "https://support.google.com/chrome?p=settings_autofill";
+#endif
+
+// "Learn more" URL for the preloading section in Performance settings.
+inline constexpr char kPreloadingLearnMoreUrl[] =
+    "https://support.google.com/chrome/?p=performance_preload_pages";
 
 // "Learn more" URL for the Privacy section under Options.
-extern const char kPrivacyLearnMoreURL[];
+inline constexpr char kPrivacyLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=settings_privacy";
+#else
+    "https://support.google.com/chrome?p=settings_privacy";
+#endif
 
 // The URL for the Learn More link of the non-CWS bubble.
-extern const char kRemoveNonCWSExtensionURL[];
+inline constexpr char kRemoveNonCWSExtensionURL[] =
+    "https://support.google.com/chrome?p=ui_remove_non_cws_extensions";
 
 // "Learn more" URL for resetting profile preferences.
-extern const char kResetProfileSettingsLearnMoreURL[];
+inline constexpr char kResetProfileSettingsLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ui_reset_settings";
 
 // "Learn more" URL for Safebrowsing
-extern const char kSafeBrowsingHelpCenterURL[];
+inline constexpr char kSafeBrowsingHelpCenterURL[] =
+    "https://support.google.com/chrome?p=cpn_safe_browsing";
 
 // Updated "Info icon" URL for Safebrowsing
-extern const char kSafeBrowsingHelpCenterUpdatedURL[];
+inline constexpr char kSafeBrowsingHelpCenterUpdatedURL[] =
+    "https://support.google.com/chrome?p=safe_browsing_preferences";
 
 // "Learn more" URL for Enhanced Protection
-extern const char kSafeBrowsingInChromeHelpCenterURL[];
+inline constexpr char16_t kSafeBrowsingInChromeHelpCenterURL[] =
+    u"https://support.google.com/chrome?p=safebrowsing_in_chrome";
 
-// The URL of Safe Browsing p-tour.
-extern const char kSafeBrowsingPTourURL[];
+// The URL for Safe Browsing link in Safety Check page.
+inline constexpr char16_t kSafeBrowsingUseInChromeURL[] =
+    u"https://support.google.com/chrome/answer/9890866";
 
 // "Learn more" URL for safety tip bubble.
-extern const char kSafetyTipHelpCenterURL[];
+inline constexpr char kSafetyTipHelpCenterURL[] =
+    "https://support.google.com/chrome?p=safety_tip";
 
 // Google search history URL that leads users of the CBD dialog to their search
 // history in their Google account.
-extern const char kSearchHistoryUrlInClearBrowsingData[];
+inline constexpr char16_t kSearchHistoryUrlInClearBrowsingData[] =
+    u"https://myactivity.google.com/product/search?utm_source=chrome_cbd";
 
 // The URL for the "See more security tips" with advices how to create a strong
 // password.
-extern const char kSeeMoreSecurityTipsURL[];
+inline constexpr char kSeeMoreSecurityTipsURL[] =
+    "https://support.google.com/accounts/answer/32040";
 
 // Help URL for the settings page's search feature.
-extern const char kSettingsSearchHelpURL[];
+inline constexpr char16_t kSettingsSearchHelpURL[] =
+    u"https://support.google.com/chrome?p=settings_search_help";
 
 // The URL for the Learn More page about Sync and Google services.
-extern const char kSyncAndGoogleServicesLearnMoreURL[];
+inline constexpr char kSyncAndGoogleServicesLearnMoreURL[] =
+    "https://support.google.com/chrome?p=syncgoogleservices";
 
 // The URL for the "Learn more" page on sync encryption.
-extern const char kSyncEncryptionHelpURL[];
+inline constexpr char16_t kSyncEncryptionHelpURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    u"https://support.google.com/chromebook?p=settings_encryption";
+#else
+    u"https://support.google.com/chrome?p=settings_encryption";
+#endif
 
 // The URL for the "Learn more" link when there is a sync error.
-extern const char kSyncErrorsHelpURL[];
+inline constexpr char kSyncErrorsHelpURL[] =
+    "https://support.google.com/chrome?p=settings_sync_error";
 
-extern const char kSyncGoogleDashboardURL[];
+inline constexpr char kSyncGoogleDashboardURL[] =
+    "https://www.google.com/settings/chrome/sync";
 
 // The URL for the "Learn more" page for sync setup on the personal stuff page.
-extern const char kSyncLearnMoreURL[];
+inline constexpr char16_t kSyncLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=settings_sign_in";
 
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
-extern const char kSigninInterceptManagedDisclaimerLearnMoreURL[];
+inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =
+    "https://support.google.com/chrome/a/?p=profile_separation";
 
 #if !BUILDFLAG(IS_ANDROID)
 // The URL for the trusted vault sync passphrase opt in.
-extern const char kSyncTrustedVaultOptInURL[];
+inline constexpr char kSyncTrustedVaultOptInURL[] =
+    "https://passwords.google.com/encryption/enroll?"
+    "utm_source=chrome&utm_medium=desktop&utm_campaign=encryption_enroll";
 #endif
 
 // The URL for the "Learn more" link for the trusted vault sync passphrase.
-extern const char kSyncTrustedVaultLearnMoreURL[];
+inline constexpr char kSyncTrustedVaultLearnMoreURL[] =
+    "https://support.google.com/accounts?p=settings_password_ode";
 
 // The URL for the Help Center page about Tracking Protection settings.
-extern const char kTrackingProtectionHelpCenterURL[];
+inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
+    u"https://support.google.com/chrome?p=tracking_protection";
 
 // The URL for the Help Center page about User Bypass.
-extern const char kUserBypassHelpCenterURL[];
+inline constexpr char16_t kUserBypassHelpCenterURL[] =
+    u"https://support.google.com/chrome?p=pause_protections";
 
-extern const char kUpgradeHelpCenterBaseURL[];
+inline constexpr char kUpgradeHelpCenterBaseURL[] =
+    "https://support.google.com/installer/?product="
+    "{8A69D345-D564-463c-AFF1-A69D9E530F96}&error=";
 
 // The URL for the "Learn more" link for nearby share.
-extern const char kNearbyShareLearnMoreURL[];
+inline constexpr char16_t kNearbyShareLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=nearby_share";
 
 // Help center URL for who the account administrator is.
-extern const char kWhoIsMyAdministratorHelpURL[];
+inline constexpr char16_t kWhoIsMyAdministratorHelpURL[] =
+    u"https://support.google.com/chrome?p=your_administrator";
 
 // The URL for the "Learn more" link about CWS Enhanced Safe Browsing.
-extern const char kCwsEnhancedSafeBrowsingLearnMoreURL[];
+inline constexpr char16_t kCwsEnhancedSafeBrowsingLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=cws_enhanced_safe_browsing";
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // "Learn more" URL for the enhanced playback notification dialog.
-extern const char kEnhancedPlaybackNotificationLearnMoreURL[];
+inline constexpr char kEnhancedPlaybackNotificationLearnMoreURL[] =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    "https://support.google.com/chromebook?p=enhanced_playback";
+#else
+    // Keep in sync with
+    // chrome/browser/ui/android/strings/android_chrome_strings.grd
+    "https://support.google.com/chrome?p=mobile_protected_content";
+#endif
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Chrome OS default pre-defined custom handlers
-extern const char kChromeOSDefaultMailtoHandler[];
-extern const char kChromeOSDefaultWebcalHandler[];
+inline constexpr char kChromeOSDefaultMailtoHandler[] =
+    "https://mail.google.com/mail/?extsrc=mailto&amp;url=%s";
+inline constexpr char kChromeOSDefaultWebcalHandler[] =
+    "https://www.google.com/calendar/render?cid=%s";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Help center URL for Chrome OS Account Manager.
-extern const char kAccountManagerLearnMoreURL[];
+inline constexpr char kAccountManagerLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=google_accounts";
 
 // The URL for the "Account recovery" page.
-extern const char kAccountRecoveryURL[];
+inline constexpr char kAccountRecoveryURL[] =
+    "https://accounts.google.com/signin/recovery";
 
 // The URL for the "How to add a new user account on a Chromebook" page.
-extern const char kAddNewUserURL[];
+inline constexpr char16_t kAddNewUserURL[] =
+    u"https://www.google.com/chromebook/howto/add-another-account";
 
 // The URL for the "learn more" link for Google Play Store (ARC) settings.
-extern const char kAndroidAppsLearnMoreURL[];
+inline constexpr char kAndroidAppsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=playapps";
 
 // Help center URL for ARC ADB sideloading.
-extern const char kArcAdbSideloadingLearnMoreURL[];
+inline constexpr char16_t kArcAdbSideloadingLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=develop_android_apps";
 
 // The URL for the "Learn more" link in the External storage preferences
 // settings.
-extern const char kArcExternalStorageLearnMoreURL[];
+inline constexpr char16_t kArcExternalStorageLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=open_files";
 
 // The path format to the localized offline ARC++ Privacy Policy.
 // Relative to |kChromeOSAssetPath|.
-extern const char kArcPrivacyPolicyPathFormat[];
+inline constexpr char kArcPrivacyPolicyPathFormat[] =
+    "arc_tos/%s/privacy_policy.pdf";
 
 // The path format to the localized offline ARC++ Terms of Service.
 // Relative to |kChromeOSAssetPath|.
-extern const char kArcTermsPathFormat[];
+inline constexpr char kArcTermsPathFormat[] = "arc_tos/%s/terms.html";
 
 // The URL for the "Learn more" link during Bluetooth pairing.
-extern const char kBluetoothPairingLearnMoreUrl[];
+// TODO(crbug.com/1010321): Remove 'm100' prefix from link once Bluetooth Revamp
+// has shipped.
+inline constexpr char16_t kBluetoothPairingLearnMoreUrl[] =
+    u"https://support.google.com/chromebook?p=bluetooth_revamp_m100";
 
 // Accessibility help link for Chrome.
-extern const char kChromeAccessibilityHelpURL[];
+inline constexpr char kChromeAccessibilityHelpURL[] =
+    "https://support.google.com/chromebook/topic/6323347";
 
-extern const char kChromeOSAssetHost[];
-extern const char kChromeOSAssetPath[];
+inline constexpr char kChromeOSAssetHost[] = "chromeos-asset";
+inline constexpr char kChromeOSAssetPath[] = "/usr/share/chromeos-assets/";
 
 // Source for chrome://os-credits. On some devices, this will be compressed.
 // Check both.
-extern const char kChromeOSCreditsPath[];
-extern const char kChromeOSCreditsCompressedPath[];
+inline constexpr char kChromeOSCreditsPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html";
+
+inline constexpr char kChromeOSCreditsCompressedPath[] =
+    "/opt/google/chrome/resources/about_os_credits.html.gz";
 
 // Chrome OS tablet gestures education help link for Chrome.
-extern const char kChromeOSGestureEducationHelpURL[];
+// TODO(carpenterr): Have a solution for plink mapping in Help App.
+// The magic numbers in this url are the topic and article ids currently
+// required to navigate directly to a help article in the Help App.
+inline constexpr char kChromeOSGestureEducationHelpURL[] =
+    "chrome://help-app/help/sub/3399710/id/9739838";
 
 // Palette help link for Chrome.
-extern const char kChromePaletteHelpURL[];
+inline constexpr char kChromePaletteHelpURL[] =
+    "https://support.google.com/chromebook?p=stylus_help";
 
-extern const char kCupsPrintLearnMoreURL[];
+inline constexpr char kCupsPrintLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_printing";
 
-extern const char kCupsPrintPPDLearnMoreURL[];
+inline constexpr char kCupsPrintPPDLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=printing_advancedconfigurations";
 
 // The URL for the "Learn more" link the the Easy Unlock settings.
-extern const char kEasyUnlockLearnMoreUrl[];
+inline constexpr char kEasyUnlockLearnMoreUrl[] =
+    "https://support.google.com/chromebook?p=smart_lock";
 
 // The URL for the help center article about redeeming Chromebook offers.
-extern const char kEchoLearnMoreURL[];
+inline constexpr char kEchoLearnMoreURL[] =
+    "chrome://help-app/help/sub/3399709/id/2703646";
 
 // The URL for EOL notification
-extern const char kEolNotificationURL[];
+inline constexpr char16_t kEolNotificationURL[] =
+    u"https://www.google.com/chromebook/older/";
 
 // The URL for the EOL incentive with offer.
-extern const char kEolIncentiveNotificationOfferURL[];
+inline constexpr char kEolIncentiveNotificationOfferURL[] =
+    "https://www.google.com/chromebook/renew-chromebook-offer";
 
 // The URL for the EOL incentive with no offer.
-extern const char kEolIncentiveNotificationNoOfferURL[];
+inline constexpr char kEolIncentiveNotificationNoOfferURL[] =
+    "https://www.google.com/chromebook/renew-chromebook";
 
 // The URL for Auto Update Policy.
-extern const char kAutoUpdatePolicyURL[];
+inline constexpr char16_t kAutoUpdatePolicyURL[] =
+    u"https://support.google.com/chrome/a?p=auto-update-policy";
 
 // The URL for providing more information about Google nameservers.
-extern const char kGoogleNameserversLearnMoreURL[];
+inline constexpr char kGoogleNameserversLearnMoreURL[] =
+    "https://developers.google.com/speed/public-dns";
 
 // The URL for the "learn more" link for Instant Tethering.
-extern const char kInstantTetheringLearnMoreURL[];
+inline constexpr char kInstantTetheringLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=instant_tethering";
+
+// The URL for the "learn more" link for Chromebook hotspot.
+inline constexpr char kChromebookHotspotLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_hotspot";
 
 // The URL for the "Learn more" link for Kerberos accounts.
-extern const char kKerberosAccountsLearnMoreURL[];
+inline constexpr char kKerberosAccountsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=kerberos_accounts";
 
 // The URL for the "Learn more" link in the language settings.
-extern const char kLanguageSettingsLearnMoreUrl[];
+inline constexpr char16_t kLanguageSettingsLearnMoreUrl[] =
+    u"https://support.google.com/chromebook?p=order_languages";
 
 // The URL for the "Learn more" link in language settings regarding language
 // packs.
-extern const char kLanguagePacksLearnMoreURL[];
+inline constexpr char16_t kLanguagePacksLearnMoreURL[] =
+    u"https://support.google.com/chromebook?p=language_packs";
 
 // The URL for the Learn More page about enterprise enrolled devices.
-extern const char kLearnMoreEnterpriseURL[];
+inline constexpr char kLearnMoreEnterpriseURL[] =
+    "https://support.google.com/chromebook?p=managed";
 
 // The URL for the Learn More page about Linux for Chromebooks.
-extern const char kLinuxAppsLearnMoreURL[];
+inline constexpr char kLinuxAppsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_linuxapps";
 
 // The URL for the "Learn more" link for natural scrolling on ChromeOS.
-extern const char kNaturalScrollHelpURL[];
+inline constexpr char kNaturalScrollHelpURL[] =
+    "https://support.google.com/chromebook?p=simple_scrolling";
 
 // The URL for the "Learn more" link for scrolling acceleration on ChromeOS.
-extern const char kControlledScrollingHelpURL[];
+// TODO(zhangwenyu): Update link once confirmed.
+inline constexpr char kControlledScrollingHelpURL[] =
+    "https://support.google.com/chromebook?p=simple_scrolling";
 
 // The URL for the "Learn more" link for touchpad haptic feedback on Chrome OS.
-extern const char kHapticFeedbackHelpURL[];
+inline constexpr char kHapticFeedbackHelpURL[] =
+    "https://support.google.com/chromebook?p=haptic_feedback_m100";
 
 // The URL path to offline OEM EULA.
-extern const char kOemEulaURLPath[];
+inline constexpr char kOemEulaURLPath[] = "oem";
+
+inline constexpr char kOrcaSuggestionLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=copyeditor";
 
 // Help URL for the OS settings page's search feature.
-extern const char kOsSettingsSearchHelpURL[];
+inline constexpr char kOsSettingsSearchHelpURL[] =
+    "https://support.google.com/chromebook?p=settings_search_help";
 
 // The URL for the "Learn more" link in the peripheral data access protection
 // settings.
-extern const char kPeripheralDataAccessHelpURL[];
+inline constexpr char kPeripheralDataAccessHelpURL[] =
+    "https://support.google.com/chromebook?p=connect_thblt_usb4_accy";
 
 // The URL for the "Learn more" link for Enhanced network voices in Chrome OS
 // settings for Select-to-speak.
-extern const char kSelectToSpeakLearnMoreURL[];
+inline constexpr char kSelectToSpeakLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=select_to_speak";
 
 // The URL path to offline ARC++ Terms of Service.
-extern const char kArcTermsURLPath[];
+inline constexpr char kArcTermsURLPath[] = "arc/terms";
 
 // The URL path to offline ARC++ Privacy Policy.
-extern const char kArcPrivacyPolicyURLPath[];
+inline constexpr char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 
 // The URL path to Online Google EULA.
-extern const char kGoogleEulaOnlineURLPath[];
+inline constexpr char kGoogleEulaOnlineURLPath[] =
+    "https://policies.google.com/terms/embedded?hl=%s";
 
 // The URL path to Online Chrome and Chrome OS terms of service.
-extern const char kCrosEulaOnlineURLPath[];
+inline constexpr char kCrosEulaOnlineURLPath[] =
+    "https://www.google.com/intl/%s/chrome/terms/";
 
 // The URL path to online ARC++ terms of service.
-extern const char kArcTosOnlineURLPath[];
+inline constexpr char kArcTosOnlineURLPath[] =
+    "https://play.google.com/about/play-terms/embedded/";
 
 // The URL path to online privacy policy.
-extern const char kPrivacyPolicyOnlineURLPath[];
+inline constexpr char kPrivacyPolicyOnlineURLPath[] =
+    "https://policies.google.com/privacy/embedded";
 
 // The URL for the "learn more" link for TPM firmware update.
-extern const char kTPMFirmwareUpdateLearnMoreURL[];
+inline constexpr char kTPMFirmwareUpdateLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=tpm_update";
 
 // The URL for the "Learn more" page for the time zone settings page.
-extern const char kTimeZoneSettingsLearnMoreURL[];
+inline constexpr char kTimeZoneSettingsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_timezone&hl=%s";
 
 // The URL for the "Learn more" page for screen privacy protections.
-extern const char kSmartPrivacySettingsLearnMoreURL[];
+inline constexpr char kSmartPrivacySettingsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=screen_privacy_m100";
 
 // The URL for the "Learn more" page for the network file shares settings page.
-extern const char kSmbSharesLearnMoreURL[];
+inline constexpr char kSmbSharesLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=network_file_shares";
 
 // The URL for the "Learn more" page when the user tries to clean up their
 // Google Drive offline storage in the OS settings page.
-extern const char kGoogleDriveCleanUpStorageLearnMoreURL[];
+inline constexpr char kGoogleDriveCleanUpStorageLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=cleanup_offline_files";
 
-extern const char kGoogleDriveOfflineLearnMoreURL[];
+inline constexpr char kGoogleDriveOfflineLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=my_drive_cbx";
 
 // The URL for the "Learn more" page for Speak-on-mute Detection in the privacy
 // hub page.
-extern const char kSpeakOnMuteDetectionLearnMoreURL[];
+inline constexpr char kSpeakOnMuteDetectionLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=mic-mute";
 
-// The URL for the "Learn more" page for the geolocation toggle in the privacy
+// The URL for the "Learn more" page for the geolocation area in the privacy
 // hub page.
-extern const char kGeolocationToggleLearnMoreURL[];
+inline constexpr char kGeolocationAreaLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=cpn_location_sharing";
 
 // The URL for the "Learn more" page for Suggested Content in the privacy page.
-extern const char kSuggestedContentLearnMoreURL[];
+inline constexpr char kSuggestedContentLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=explorecontent";
 
 // The URL to a support article with more information about gestures available
 // in tablet mode on Chrome OS (gesture to go to home screen, overview, or to go
 // back). Used as a "Learn more" link URL for the accessibility option to shelf
 // navigation buttons in tablet mode (the buttons are hidden by default in
 // favour of the gestures in question).
-extern const char kTabletModeGesturesLearnMoreURL[];
+inline constexpr char kTabletModeGesturesLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=tablet_mode_gestures";
 
 // The URL for the help center article about Wi-Fi sync.
-extern const char kWifiSyncLearnMoreURL[];
+inline constexpr char kWifiSyncLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=wifisync";
 
 // The URL for the help center article about hidden Wi-Fi networks.
-extern const char kWifiHiddenNetworkURL[];
+inline constexpr char kWifiHiddenNetworkURL[] =
+    "https://support.google.com/chromebook?p=hidden_networks";
 
 // The URL for the help center article about Passpoint.
-extern const char kWifiPasspointURL[];
+inline constexpr char kWifiPasspointURL[] =
+    "https://support.google.com/chromebook?p=wifi_passpoint";
 
 // The URL for contacts management in Nearby Share feature.
-extern const char kNearbyShareManageContactsURL[];
+inline constexpr char16_t kNearbyShareManageContactsURL[] =
+    u"https://contacts.google.com";
 
 // The URL for the help center article about fingerprint on Chrome OS devices.
-extern const char kFingerprintLearnMoreURL[];
+inline constexpr char kFingerprintLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=chromebook_fingerprint";
 
 // The URL for the help center article about local data recovery on Chrome OS
 // devices.
-extern const char kRecoveryLearnMoreURL[];
+inline constexpr char kRecoveryLearnMoreURL[] =
+    "https://support.google.com/chrome?p=local_data_recovery";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_MAC)
 // "Learn more" URL for the enterprise sign-in confirmation dialog.
-extern const char kChromeEnterpriseSignInLearnMoreURL[];
+inline constexpr char kChromeEnterpriseSignInLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=is_chrome_managed";
 
 // The URL for the "learn more" link on the macOS version obsolescence infobar.
-extern const char kMacOsObsoleteURL[];
+inline constexpr char kMacOsObsoleteURL[] =
+    "https://support.google.com/chrome?p=unsupported_mac";
 #endif
 
 #if BUILDFLAG(IS_WIN)
 // The URL for the Windows XP/Vista deprecation help center article.
-extern const char kWindowsXPVistaDeprecationURL[];
+inline constexpr char kWindowsXPVistaDeprecationURL[] =
+    "https://chrome.blogspot.com/2015/11/"
+    "updates-to-chrome-platform-support.html";
 
 // The URL for the Windows 7/8.1 deprecation help center article.
-extern const char kWindows78DeprecationURL[];
+inline constexpr char kWindows78DeprecationURL[] =
+    "https://support.google.com/chrome?p=unsupported_windows";
 #endif
 
 // "Learn more" URL for the one click signin infobar.
-extern const char kChromeSyncLearnMoreURL[];
+inline constexpr char kChromeSyncLearnMoreURL[] =
+    "https://support.google.com/chrome?p=chrome_sync";
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-
 // The URL for the "Learn more" page for the outdated plugin infobar.
-extern const char kOutdatedPluginLearnMoreURL[];
+inline constexpr char kOutdatedPluginLearnMoreURL[] =
+    "https://support.google.com/chrome?p=ib_outdated_plugin";
 #endif
 
 // "Learn more" URL for the phone hub notifications and apps access setup.
-extern const char kPhoneHubPermissionLearnMoreURL[];
+// TODO (b/184137843): Use real link to phone hub notifications and apps access.
+inline constexpr char kPhoneHubPermissionLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=multidevice";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-
 // "Learn more" URL for the chrome apps deprecation dialog.
-extern const char kChromeAppsDeprecationLearnMoreURL[];
+inline constexpr char kChromeAppsDeprecationLearnMoreURL[] =
+    "https://support.google.com/chrome?p=chrome_app_deprecation";
 #endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-extern const char kChromeRootStoreSettingsHelpCenterURL[];
+inline constexpr char kChromeRootStoreSettingsHelpCenterURL[] =
+    "https://support.google.com/chrome?p=root_store";
 #endif
 
 // Please do not append entries here. See the comments at the top of the file.

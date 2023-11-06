@@ -59,7 +59,7 @@ class ProxyManagerImpl : public ProxyManager {
   ProxyManagerImpl(const ProxyManagerImpl&) = delete;
   ProxyManagerImpl& operator=(const ProxyManagerImpl&) = delete;
 
-  ~ProxyManagerImpl() override = default;
+  ~ProxyManagerImpl() override;
 
   void ProxyRequest(const std::string& method,
                     const std::string& url,
@@ -138,6 +138,12 @@ absl::optional<std::vector<uint8_t>> RebuildIppRequest(
   ret.insert(ret.end(), headers_buffer->begin(), headers_buffer->end());
   ret.insert(ret.end(), body.begin(), body.end());
   return ret;
+}
+
+ProxyManagerImpl::~ProxyManagerImpl() {
+  if (in_flight_) {
+    Fail("CupsProxy is shutting down", HTTP_STATUS_SERVICE_UNAVAILABLE);
+  }
 }
 
 void ProxyManagerImpl::ProxyRequest(

@@ -15,12 +15,14 @@
 #include "base/base64.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_writer.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/uuid.h"
 #include "base/values.h"
+#include "content/browser/interest_group/auction_metrics_recorder.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -161,11 +163,10 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
          "' rejected due to invalid origin of biddingLogicURL."}));
   }
 
-  auto synth_interest_group = std::make_unique<StorageInterestGroup>();
-  synth_interest_group->interest_group.name = *ig_name;
-  synth_interest_group->interest_group.owner = std::move(ig_owner).value();
-  synth_interest_group->interest_group.bidding_url = std::move(ig_bidding_url);
-
+  auto synth_interest_group = StorageInterestGroup();
+  synth_interest_group.interest_group.name = *ig_name;
+  synth_interest_group.interest_group.owner = std::move(ig_owner).value();
+  synth_interest_group.interest_group.bidding_url = std::move(ig_bidding_url);
   // Add ads.
   const base::Value::Dict* bid_dict = result_dict->FindDict("bid");
   if (!bid_dict) {
@@ -186,9 +187,9 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
   }
 
   // Create ad vector and its first entry.
-  synth_interest_group->interest_group.ads.emplace();
-  synth_interest_group->interest_group.ads.value().emplace_back();
-  synth_interest_group->interest_group.ads.value()[0].render_url = render_url;
+  synth_interest_group.interest_group.ads.emplace();
+  synth_interest_group.interest_group.ads.value().emplace_back();
+  synth_interest_group.interest_group.ads.value()[0].render_url = render_url;
 
   absl::optional<double> bid_val = bid_dict->FindDouble("bid");
   if (!bid_val || bid_val.value() <= 0) {
@@ -264,7 +265,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
            "' rejected due to too many ad component URLs."}));
     }
 
-    synth_interest_group->interest_group.ad_components.emplace();
+    synth_interest_group.interest_group.ad_components.emplace();
     for (const base::Value& ad_component : *ad_components_list) {
       const std::string* ad_component_str = ad_component.GetIfString();
       GURL ad_component_url;
@@ -278,7 +279,7 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       }
       ad_components.emplace_back(ad_component_url);
       // TODO(http://crbug.com/1464874): What's the story with dimensions?
-      synth_interest_group->interest_group.ad_components->emplace_back(
+      synth_interest_group.interest_group.ad_components->emplace_back(
           std::move(ad_component_url), /*metadata=*/absl::nullopt);
     }
   }
@@ -348,11 +349,12 @@ base::expected<AdditionalBidDecodeResult, std::string> DecodeAdditionalBid(
       result.negative_target_interest_group_names.push_back(*negative_ig_str);
     }
   }
-
-  result.bid_state = std::make_unique<InterestGroupAuction::BidState>();
+  SingleStorageInterestGroup storage_interest_group(
+      std::move(synth_interest_group));
+  result.bid_state = std::make_unique<InterestGroupAuction::BidState>(
+      std::move(storage_interest_group));
   result.bid_state->additional_bid_buyer =
-      synth_interest_group->interest_group.owner;
-  result.bid_state->bidder = std::move(synth_interest_group);
+      result.bid_state->bidder->interest_group.owner;
   result.bid_state->made_bid = true;
   result.bid_state->BeginTracing();
 
@@ -473,6 +475,10 @@ void AdAuctionNegativeTargeter::AddInterestGroupInfo(
   spot.key = key;
 }
 
+size_t AdAuctionNegativeTargeter::GetNumNegativeInterestGroups() {
+  return negative_interest_groups_.size();
+}
+
 bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     const url::Origin& buyer,
     const absl::optional<url::Origin>& negative_target_joining_origin,
@@ -480,6 +486,7 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     const std::vector<SignedAdditionalBidSignature>& signatures,
     const std::vector<size_t>& valid_signatures,
     const url::Origin& seller,
+    AuctionMetricsRecorder& auction_metrics_recorder,
     std::vector<std::string>& errors_out) {
   if (valid_signatures.size() != signatures.size()) {
     errors_out.push_back(
@@ -503,6 +510,8 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     // a matching signature.
     if (!AdditionalBidKeyHasMatchingValidSignature(signatures, valid_signatures,
                                                    negative_info.key)) {
+      auction_metrics_recorder
+          .RecordNegativeInterestGroupIgnoredDueToInvalidSignature();
       errors_out.push_back(base::StrCat(
           {"Warning: Ignoring negative targeting group '", ig_name,
            "' on an additional bid from '", buyer.Serialize(),
@@ -514,6 +523,8 @@ bool AdAuctionNegativeTargeter::ShouldDropDueToNegativeTargeting(
     // Must also have proper joining origin, if applicable.
     if (negative_target_joining_origin.has_value()) {
       if (*negative_target_joining_origin != negative_info.joining_origin) {
+        auction_metrics_recorder
+            .RecordNegativeInterestGroupIgnoredDueToJoiningOriginMismatch();
         errors_out.push_back(base::StrCat(
             {"Warning: Ignoring negative targeting group '", ig_name,
              "' on an additional bid from '", buyer.Serialize(),

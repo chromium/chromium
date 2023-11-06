@@ -1,0 +1,50 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia",
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrivacySandboxAdTopicsEnabled": false,
+          "PrivacySandboxPromptEnabled": false
+        },
+        "prefs": {
+          "privacy_sandbox.m1.prompt_suppressed": {
+            "location": "user_profile",
+            "note": "The value of 5 corresponds to PrivacySandboxService::PromptSuppressedReason::kPolicy",
+            "value": 5
+          },
+          "privacy_sandbox.m1.topics_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "PrivacySandboxAdTopicsEnabled": true,
+          "PrivacySandboxPromptEnabled": false
+        },
+        "prefs": {
+          "privacy_sandbox.m1.prompt_suppressed": {
+            "location": "user_profile",
+            "note": "The value of 5 corresponds to PrivacySandboxService::PromptSuppressedReason::kPolicy",
+            "value": 5
+          },
+          "privacy_sandbox.m1.topics_enabled": {
+            "default_value": false,
+            "location": "user_profile",
+            "note": "True values are not applied to the prefs."
+          }
+        }
+      }
+    ]
+  }
+]

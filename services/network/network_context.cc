@@ -298,6 +298,19 @@ base::RepeatingCallback<bool(const url::Origin&)> BuildOriginFilter(
                              std::move(filter_origins));
 }
 
+// Builds a generic URL-matching predicate function based on |filter|.
+// If |filter| is null, creates an always-true predicate.
+base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter(
+    mojom::ClearDataFilterPtr filter) {
+  return filter ? base::BindRepeating(
+                      &DoesUrlMatchFilter, filter->type,
+                      std::set<url::Origin>(filter->origins.begin(),
+                                            filter->origins.end()),
+                      std::set<std::string>(filter->domains.begin(),
+                                            filter->domains.end()))
+                : base::NullCallback();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class NetworkContextApplicationStatusListener
     : public base::android::ApplicationStatusListener {
@@ -317,6 +330,16 @@ class NetworkContextApplicationStatusListener
  private:
   ApplicationStateChangeCallback callback_;
 };
+
+base::android::ApplicationStatusListener* ReturnAppStatusListenerIfAlive(
+    base::WeakPtr<NetworkContext> network_context,
+    base::android::ApplicationStatusListener* listener) {
+  if (!network_context) {
+    return nullptr;
+  }
+  return listener;
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 struct TestVerifyCertState {
@@ -537,7 +560,9 @@ NetworkContext::NetworkContext(
           params_->shared_dictionary_cache_max_size,
           shared_dictionary::kDictionaryMaxCountPerNetworkContext,
 #if BUILDFLAG(IS_ANDROID)
-          app_status_listeners_.rbegin()->get(),
+          base::BindRepeating(&ReturnAppStatusListenerIfAlive,
+                              weak_factory_.GetWeakPtr(),
+                              app_status_listeners_.rbegin()->get()),
 #endif  // BUILDFLAG(IS_ANDROID)
           /*file_operations_factory=*/nullptr);
     } else {
@@ -1138,13 +1163,14 @@ void NetworkContext::ClearHostCache(mojom::ClearDataFilterPtr filter,
 
 void NetworkContext::ClearHttpAuthCache(base::Time start_time,
                                         base::Time end_time,
+                                        mojom::ClearDataFilterPtr filter,
                                         ClearHttpAuthCacheCallback callback) {
   net::HttpNetworkSession* http_session =
       url_request_context_->http_transaction_factory()->GetSession();
   DCHECK(http_session);
 
-  http_session->http_auth_cache()->ClearEntriesAddedBetween(start_time,
-                                                            end_time);
+  http_session->http_auth_cache()->ClearEntriesAddedBetween(
+      start_time, end_time, BuildUrlFilter(std::move(filter)));
   // TODO(mmenke): Use another error code for this, as ERR_ABORTED has somewhat
   // magical handling with respect to navigations.
   http_session->CloseAllConnections(net::ERR_ABORTED, "Clearing auth cache");
@@ -1702,6 +1728,7 @@ void NetworkContext::CreateWebSocket(
     const GURL& url,
     const std::vector<std::string>& requested_protocols,
     const net::SiteForCookies& site_for_cookies,
+    bool has_storage_access,
     const net::IsolationInfo& isolation_info,
     std::vector<mojom::HttpHeaderPtr> additional_headers,
     int32_t process_id,
@@ -1721,8 +1748,9 @@ void NetworkContext::CreateWebSocket(
   DCHECK_GE(process_id, 0);
 
   websocket_factory_->CreateWebSocket(
-      url, requested_protocols, site_for_cookies, isolation_info,
-      std::move(additional_headers), process_id, origin, options,
+      url, requested_protocols, site_for_cookies, has_storage_access,
+      isolation_info, std::move(additional_headers), process_id, origin,
+      options,
       static_cast<net::NetworkTrafficAnnotationTag>(traffic_annotation),
       std::move(handshake_client), std::move(url_loader_network_observer),
       std::move(auth_handler), std::move(header_client), throttling_profile_id);
@@ -1905,13 +1933,15 @@ void NetworkContext::GetHSTSState(const std::string& domain,
         result.Set("static_sts_include_subdomains",
                    static_sts_state.include_subdomains);
         result.Set("static_sts_observed",
-                   static_sts_state.last_observed.ToDoubleT());
-        result.Set("static_sts_expiry", static_sts_state.expiry.ToDoubleT());
+                   static_sts_state.last_observed.InSecondsFSinceUnixEpoch());
+        result.Set("static_sts_expiry",
+                   static_sts_state.expiry.InSecondsFSinceUnixEpoch());
         result.Set("static_pkp_include_subdomains",
                    static_pkp_state.include_subdomains);
         result.Set("static_pkp_observed",
-                   static_pkp_state.last_observed.ToDoubleT());
-        result.Set("static_pkp_expiry", static_pkp_state.expiry.ToDoubleT());
+                   static_pkp_state.last_observed.InSecondsFSinceUnixEpoch());
+        result.Set("static_pkp_expiry",
+                   static_pkp_state.expiry.InSecondsFSinceUnixEpoch());
         result.Set("static_spki_hashes",
                    HashesToBase64String(static_pkp_state.spki_hashes));
         result.Set("static_sts_domain", static_sts_state.domain);
@@ -1931,8 +1961,9 @@ void NetworkContext::GetHSTSState(const std::string& domain,
         result.Set("dynamic_sts_include_subdomains",
                    dynamic_sts_state.include_subdomains);
         result.Set("dynamic_sts_observed",
-                   dynamic_sts_state.last_observed.ToDoubleT());
-        result.Set("dynamic_sts_expiry", dynamic_sts_state.expiry.ToDoubleT());
+                   dynamic_sts_state.last_observed.InSecondsFSinceUnixEpoch());
+        result.Set("dynamic_sts_expiry",
+                   dynamic_sts_state.expiry.InSecondsFSinceUnixEpoch());
         result.Set("dynamic_sts_domain", dynamic_sts_state.domain);
       }
 
@@ -1940,8 +1971,9 @@ void NetworkContext::GetHSTSState(const std::string& domain,
         result.Set("dynamic_pkp_include_subdomains",
                    dynamic_pkp_state.include_subdomains);
         result.Set("dynamic_pkp_observed",
-                   dynamic_pkp_state.last_observed.ToDoubleT());
-        result.Set("dynamic_pkp_expiry", dynamic_pkp_state.expiry.ToDoubleT());
+                   dynamic_pkp_state.last_observed.InSecondsFSinceUnixEpoch());
+        result.Set("dynamic_pkp_expiry",
+                   dynamic_pkp_state.expiry.InSecondsFSinceUnixEpoch());
         result.Set("dynamic_spki_hashes",
                    HashesToBase64String(dynamic_pkp_state.spki_hashes));
         result.Set("dynamic_pkp_domain", dynamic_pkp_state.domain);
@@ -2014,7 +2046,8 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
   auto* ipp_token_cache_manager_impl =
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
   CHECK(ipp_token_cache_manager_impl);
 
   // If active cache management is enabled (the default), disable it and do a
@@ -2035,8 +2068,8 @@ void NetworkContext::VerifyIpProtectionConfigGetterForTesting(
               auto* ipp_config_cache =
                   weak_ptr->proxy_delegate_->GetIpProtectionConfigCache();
               ipp_config_cache->InvalidateTryAgainAfterTime();
-              while (ipp_config_cache->IsAuthTokenAvailable()) {
-                ipp_config_cache->GetAuthToken();
+              while (ipp_config_cache->AreAuthTokensAvailable()) {
+                ipp_config_cache->GetAuthToken(0);  // kProxyA.
               }
               // Call `PostTask()` instead of invoking the Verify method again
               // directly so that if `DisableCacheManagementForTesting()` needed
@@ -2077,10 +2110,11 @@ void NetworkContext::OnIpProtectionConfigAvailableForTesting(
   auto* ipp_token_cache_manager_impl =
       static_cast<IpProtectionTokenCacheManagerImpl*>(
           ipp_config_cache
-              ->GetIpProtectionTokenCacheManagerForTesting());  // IN-TEST
+              ->GetIpProtectionTokenCacheManagerForTesting(  // IN-TEST
+                  network::mojom::IpProtectionProxyLayer::kProxyA));
 
   absl::optional<network::mojom::BlindSignedAuthTokenPtr> result =
-      ipp_config_cache->GetAuthToken();
+      ipp_config_cache->GetAuthToken(0);  // kProxyA.
   if (result.has_value()) {
     std::move(callback).Run(std::move(result).value(), absl::nullopt);
     return;
@@ -2582,7 +2616,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 #if BUILDFLAG(IS_ANDROID)
     app_status_listeners_.push_back(
         std::make_unique<NetworkContextApplicationStatusListener>());
-    cache_params.app_status_listener = app_status_listeners_.rbegin()->get();
+    cache_params.app_status_listener_getter = base::BindRepeating(
+        &ReturnAppStatusListenerIfAlive, weak_factory_.GetWeakPtr(),
+        app_status_listeners_.rbegin()->get());
 #endif  // BUILDFLAG(IS_ANDROID)
     builder.EnableHttpCache(cache_params);
   }
@@ -3093,16 +3129,9 @@ void NetworkContext::ClearSharedDictionaryCache(
     std::move(callback).Run();
     return;
   }
-  shared_dictionary_manager_->ClearData(
-      start_time, end_time,
-      filter
-          ? base::BindRepeating(&DoesUrlMatchFilter, filter->type,
-                                std::set<url::Origin>(filter->origins.begin(),
-                                                      filter->origins.end()),
-                                std::set<std::string>(filter->domains.begin(),
-                                                      filter->domains.end()))
-          : base::RepeatingCallback<bool(const GURL&)>(),
-      std::move(callback));
+  shared_dictionary_manager_->ClearData(start_time, end_time,
+                                        BuildUrlFilter(std::move(filter)),
+                                        std::move(callback));
 }
 
 void NetworkContext::ClearSharedDictionaryCacheForIsolationKey(

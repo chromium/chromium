@@ -29,7 +29,7 @@ export function containerLabel(
   return id.vm_name + ':' + id.container_name;
 }
 
-class ContainerSelectElement extends PolymerElement {
+export class ContainerSelectElement extends PolymerElement {
   static get is() {
     return 'settings-guest-os-container-select';
   }

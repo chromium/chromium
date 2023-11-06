@@ -304,7 +304,7 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
     result_file_ = base::FilePath::FromUTF8Unsafe(*result_dir);
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(
-        base::NumberToString(base::Time::Now().ToJavaTime()) +
+        base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()) +
         "_chrometrace.log");
   }
 

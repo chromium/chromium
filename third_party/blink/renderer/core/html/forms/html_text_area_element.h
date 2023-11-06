@@ -97,7 +97,6 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool SupportsPlaceholder() const override { return true; }
   String GetPlaceholderValue() const final;
   void UpdatePlaceholderText() override;
-  bool IsEmptyValue() const override { return Value().empty(); }
   TextControlInnerEditorElement* EnsureInnerEditorElement() const final;
 
   bool IsOptionalFormControl() const override {
@@ -113,14 +112,14 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool IsInteractiveContent() const override;
   bool IsLabelable() const override { return true; }
 
-  enum FormControlType FormControlType() const override;
+  mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 
   bool IsTextControl() const override { return true; }
-  bool ShouldAutoDirUseValue() const final { return true; }
+  bool IsAutoDirectionalityFormAssociated() const final { return true; }
   int scrollWidth() override;
   int scrollHeight() override;
   void ChildrenChanged(const ChildrenChange&) override;

@@ -418,6 +418,14 @@ void FakeDiagnosticsService::RunAudioDriverRoutine(
       base::BindOnce(std::move(callback), run_routine_response_->Clone()));
 }
 
+void FakeDiagnosticsService::RunFanRoutine(RunFanRoutineCallback callback) {
+  actual_passed_parameters_.clear();
+  actual_called_routine_ = crosapi::DiagnosticsRoutineEnum::kFan;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), run_routine_response_->Clone()));
+}
+
 void FakeDiagnosticsService::SetRunRoutineResponse(
     crosapi::DiagnosticsRunRoutineResponsePtr response) {
   run_routine_response_ = std::move(response);

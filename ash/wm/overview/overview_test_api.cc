@@ -10,7 +10,6 @@
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
-#include "base/functional/callback.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -70,7 +69,7 @@ void OverviewTestApi::WaitForOverviewState(
 }
 
 absl::optional<OverviewInfo> OverviewTestApi::GetOverviewInfo() const {
-  auto* overview_controller = Shell::Get()->overview_controller();
+  auto* overview_controller = OverviewController::Get();
   if (!overview_controller->InOverviewSession())
     return absl::nullopt;
 

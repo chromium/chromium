@@ -60,3 +60,13 @@
 
 # crbug.com/1441685
 -org.chromium.chrome.browser.share.SaveBitmapDelegateTest.*
+
+# crbug.com/1498165
+-org.chromium.chrome.browser.media.MediaLauncherActivityTest.testHandleFileURIIntent
+
+# crbug.com/1498168
+-org.chromium.chrome.browser.webapps.WebappSplashScreenTest.testThemeColorWhenNotSpecified
+
+# crbug.com/1498169
+-org.chromium.chrome.features.start_surface.InstantStartTabSwitcherTest.testSingleAsHomepage_Landscape_TabSize
+-org.chromium.chrome.features.start_surface.InstantStartTabSwitcherTest.testSingleAsHomepage_Landscape_TabSize_RefactorEnabled

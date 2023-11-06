@@ -179,13 +179,15 @@ class SubRectExtractorMetal {
   }
 
   absl::Status Execute(id<MTLTexture> input_texture,
-                       const RotatedRect& sub_rect, bool flip_horizontaly,
-                       float alpha, float beta,
+                       const RotatedRect& sub_rect,
+                       bool flip_horizontally,
+                       float alpha,
+                       float beta,
                        const tflite::gpu::HW& destination_size,
                        id<MTLCommandBuffer> command_buffer,
                        id<MTLBuffer> destination) {
     auto output_texture = MTLTextureWithBuffer(destination_size, destination);
-    return InternalExecute(input_texture, sub_rect, flip_horizontaly, alpha,
+    return InternalExecute(input_texture, sub_rect, flip_horizontally, alpha,
                            beta, destination_size, command_buffer,
                            output_texture);
   }
@@ -211,7 +213,9 @@ class SubRectExtractorMetal {
 
   absl::Status InternalExecute(id<MTLTexture> input_texture,
                                const RotatedRect& sub_rect,
-                               bool flip_horizontaly, float alpha, float beta,
+                               bool flip_horizontally,
+                               float alpha,
+                               float beta,
                                const tflite::gpu::HW& destination_size,
                                id<MTLCommandBuffer> command_buffer,
                                id<MTLTexture> output_texture) {
@@ -223,7 +227,7 @@ class SubRectExtractorMetal {
     std::array<float, 16> transform_mat;
     GetRotatedSubRectToRectTransformMatrix(sub_rect, input_texture.width,
                                            input_texture.height,
-                                           flip_horizontaly, &transform_mat);
+                                           flip_horizontally, &transform_mat);
     id<MTLBuffer> transform_mat_buffer =
         [device_ newBufferWithBytes:&transform_mat
                              length:sizeof(transform_mat)
@@ -345,9 +349,9 @@ class MetalProcessor : public ImageToTensorConverter {
   absl::Status Init(CalculatorContext* cc, BorderMode border_mode) {
     metal_helper_ = [[MPPMetalHelper alloc] initWithCalculatorContext:cc];
     RET_CHECK(metal_helper_);
-    ASSIGN_OR_RETURN(extractor_, SubRectExtractorMetal::Make(
-                                     metal_helper_.mtlDevice,
-                                     OutputFormat::kF32C4, border_mode));
+    MP_ASSIGN_OR_RETURN(extractor_, SubRectExtractorMetal::Make(
+                                        metal_helper_.mtlDevice,
+                                        OutputFormat::kF32C4, border_mode));
     return absl::OkStatus();
   }
 
@@ -373,7 +377,7 @@ class MetalProcessor : public ImageToTensorConverter {
 
       constexpr float kInputImageRangeMin = 0.0f;
       constexpr float kInputImageRangeMax = 1.0f;
-      ASSIGN_OR_RETURN(
+      MP_ASSIGN_OR_RETURN(
           auto transform,
           GetValueRangeTransformation(kInputImageRangeMin, kInputImageRangeMax,
                                       range_min, range_max));
@@ -383,7 +387,7 @@ class MetalProcessor : public ImageToTensorConverter {
           MtlBufferView::GetWriteView(output_tensor, command_buffer);
       MP_RETURN_IF_ERROR(extractor_->Execute(
           texture, roi,
-          /*flip_horizontaly=*/false, transform.scale, transform.offset,
+          /*flip_horizontally=*/false, transform.scale, transform.offset,
           tflite::gpu::HW(output_shape.dims[1], output_shape.dims[2]),
           command_buffer, buffer_view.buffer()));
       [command_buffer commit];

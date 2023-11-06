@@ -30,6 +30,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/compositor/layer.h"
@@ -503,6 +504,12 @@ int64_t LoginScreenTestApi::GetUiUpdateCount() {
 bool LoginScreenTestApi::LaunchApp(const std::string& app_id) {
   LoginShelfView* view = GetLoginShelfView();
   return view && view->LaunchAppForTesting(app_id);
+}
+
+// static
+bool LoginScreenTestApi::LaunchApp(const AccountId& account_id) {
+  LoginShelfView* view = GetLoginShelfView();
+  return view && view->LaunchAppForTesting(account_id);
 }
 
 // static

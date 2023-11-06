@@ -96,7 +96,7 @@ class ModuleSystem : public ObjectBackedNativeHandler {
                             const std::string& method_name);
   void CallModuleMethodSafe(const std::string& module_name,
                             const std::string& method_name,
-                            std::vector<v8::Local<v8::Value>>* args);
+                            v8::LocalVector<v8::Value>* args);
   void CallModuleMethodSafe(const std::string& module_name,
                             const std::string& method_name,
                             int argc,

@@ -20,7 +20,7 @@ ConditionValidator::Result NeverConditionValidator::MeetsConditions(
     const AvailabilityModel& availability_model,
     const DisplayLockController& display_lock_controller,
     const Configuration* configuration,
-    uint32_t current_day) const {
+    const TimeProvider& time_provider) const {
   return ConditionValidator::Result(false);
 }
 

@@ -14,8 +14,6 @@
 #include "ash/shell.h"
 #include "ash/utility/layer_util.h"
 #include "ash/utility/transformer_util.h"
-#include "base/command_line.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/sequenced_task_runner.h"
@@ -23,12 +21,10 @@
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "ui/aura/window.h"
-#include "ui/base/class_property.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/layer_owner.h"
@@ -38,16 +34,12 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
-#include "ui/display/util/display_util.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/transform_util.h"
 #include "ui/wm/core/window_util.h"
-
-DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ScreenRotationAnimator*)
 
 namespace ash {
 
@@ -65,12 +57,6 @@ const int kClockWiseRotationFactor = -1;
 
 constexpr char kRotationAnimationSmoothness[] =
     "Ash.Rotation.AnimationSmoothness";
-
-// A property key to store the ScreenRotationAnimator of the window; Used for
-// screen rotation.
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ScreenRotationAnimator,
-                                   kScreenRotationAnimatorKey,
-                                   nullptr)
 
 display::Display::Rotation GetCurrentScreenRotation(int64_t display_id) {
   return Shell::Get()
@@ -167,24 +153,6 @@ std::unique_ptr<ui::LayerTreeOwner> CreateMaskLayerTreeOwner(
 }
 
 }  // namespace
-
-// static
-ScreenRotationAnimator* ScreenRotationAnimator::GetForRootWindow(
-    aura::Window* root_window) {
-  auto* animator = root_window->GetProperty(kScreenRotationAnimatorKey);
-  if (!animator) {
-    animator = new ScreenRotationAnimator(root_window);
-    root_window->SetProperty(kScreenRotationAnimatorKey, animator);
-  }
-  return animator;
-}
-
-// static
-void ScreenRotationAnimator::SetScreenRotationAnimatorForTest(
-    aura::Window* root_window,
-    std::unique_ptr<ScreenRotationAnimator> animator) {
-  root_window->SetProperty(kScreenRotationAnimatorKey, std::move(animator));
-}
 
 ScreenRotationAnimator::ScreenRotationAnimator(aura::Window* root_window)
     : root_window_(root_window),
@@ -324,25 +292,19 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
   for (auto& observer : screen_rotation_animator_observers_)
     observer.OnScreenCopiedBeforeRotation();
 
-  // TODO(http://b/293667233): Remove this once the bug is resolved. It seems
-  // that setting the rotation below can somehow result in the destruction of
-  // `this`.
-  auto* screen = display::Screen::GetScreen();
-  SCOPED_CRASH_KEY_NUMBER("DispRotation", "num_displays_before",
-                          screen->GetNumDisplays());
-  const auto display = screen->GetDisplayNearestWindow(root_window_);
-  SCOPED_CRASH_KEY_BOOL("DispRotation", "display_valid", display.is_valid());
-  SCOPED_CRASH_KEY_BOOL("DispRotation", "is_internal",
-                        display::IsInternalDisplayId(display.id()));
-
   auto weak_ptr = weak_factory_.GetWeakPtr();
 
   SetRotation(rotation_request->display_id, rotation_request->old_rotation,
               rotation_request->new_rotation, rotation_request->source);
 
-  SCOPED_CRASH_KEY_NUMBER("DispRotation", "num_displays_after",
-                          screen->GetNumDisplays());
-  CHECK(weak_ptr);
+  if (!weak_ptr) {
+    // The above call to `SetRotation()` will end up calling
+    // `DisplayManager::UpdateDisplaysWith()`, which may lead to display
+    // removals while we're in the middle of rotation. In this case, `this` will
+    // be destroyed in `RootWindowController::Shutdown()`, and we should early
+    // exit here. See http://b/293667233.
+    return;
+  }
 
   RequestCopyScreenRotationContainerLayer(
       std::make_unique<viz::CopyOutputRequest>(

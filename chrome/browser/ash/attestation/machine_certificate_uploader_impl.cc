@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -101,6 +102,14 @@ void MachineCertificateUploaderImpl::Start() {
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
     LOG(ERROR) << "MachineCertificateUploaderImpl: Invalid CloudPolicyClient.";
+    certificate_uploaded_ = false;
+    RunCallbacks(certificate_uploaded_.value());
+    return;
+  }
+
+  // We always expect a valid attestation client, except for testing scenarios.
+  if (!AttestationClient::Get()) {
+    CHECK_IS_TEST();
     certificate_uploaded_ = false;
     RunCallbacks(certificate_uploaded_.value());
     return;

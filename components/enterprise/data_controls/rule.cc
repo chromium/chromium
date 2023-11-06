@@ -23,18 +23,6 @@ constexpr char kKeyRestrictions[] = "restrictions";
 constexpr char kKeyClass[] = "class";
 constexpr char kKeyLevel[] = "level";
 
-constexpr char kRestrictionClipboard[] = "CLIPBOARD";
-constexpr char kRestrictionScreenshot[] = "SCREENSHOT";
-constexpr char kRestrictionPrinting[] = "PRINTING";
-constexpr char kRestrictionPrivacyScreen[] = "PRIVACY_SCREEN";
-constexpr char kRestrictionScreenShare[] = "SCREEN_SHARE";
-constexpr char kRestrictionFiles[] = "FILES";
-
-constexpr char kLevelAllow[] = "ALLOW";
-constexpr char kLevelBlock[] = "BLOCK";
-constexpr char kLevelWarn[] = "WARN";
-constexpr char kLevelReport[] = "REPORT";
-
 // Helper to make dictionary parsing code more readable.
 std::string GetStringOrEmpty(const base::Value::Dict& dict, const char* key) {
   const std::string* value = dict.FindString(key);
@@ -194,8 +182,7 @@ base::flat_map<Rule::Restriction, Rule::Level> Rule::GetRestrictions(
 }
 
 // static
-inline Rule::Restriction Rule::StringToRestriction(
-    const std::string& restriction) {
+Rule::Restriction Rule::StringToRestriction(const std::string& restriction) {
   static constexpr auto kMap =
       base::MakeFixedFlatMap<base::StringPiece, Restriction>({
           {kRestrictionClipboard, Restriction::kClipboard},
@@ -218,7 +205,7 @@ inline Rule::Restriction Rule::StringToRestriction(
 }
 
 // static
-inline Rule::Level Rule::StringToLevel(const std::string& level) {
+Rule::Level Rule::StringToLevel(const std::string& level) {
   static constexpr auto kMap =
       base::MakeFixedFlatMap<base::StringPiece, Level>({
           {kLevelAllow, Level::kAllow},
@@ -239,7 +226,7 @@ inline Rule::Level Rule::StringToLevel(const std::string& level) {
 }
 
 // static
-inline const char* Rule::RestrictionToString(Restriction restriction) {
+const char* Rule::RestrictionToString(Restriction restriction) {
   // A switch statement is used here instead of a map so that new values being
   // added to the `Restriction` enum break compilation and force updating this
   // code.
@@ -262,7 +249,7 @@ inline const char* Rule::RestrictionToString(Restriction restriction) {
 }
 
 // static
-inline const char* Rule::LevelToString(Level level) {
+const char* Rule::LevelToString(Level level) {
   // A switch statement is used here instead of a map so that new values being
   // added to the `Level` enum break compilation and force updating this code.
   switch (level) {

@@ -88,11 +88,6 @@ class NewTabButton : public views::ImageButton,
   // views::MaskedTargeterDelegate:
   bool GetHitTestMask(SkPath* mask) const override;
 
-  // The NewTabButton consists of a foreground image on top of a background
-  // texture. First we paint the background with PaintFill. This is clipped to a
-  // circle to make the button appear circular. Then we paint the
-  // foreground image with PaintIcon.
-  //
   // Paints the fill region of the button into |canvas|.
   void PaintFill(gfx::Canvas* canvas) const;
 

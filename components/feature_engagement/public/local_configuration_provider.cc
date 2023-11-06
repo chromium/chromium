@@ -34,13 +34,11 @@ bool LocalConfigurationProvider::MaybeProvideFeatureConfiguration(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(kIPHGroups)) {
-    // If the config contains any groups, check if those groups are supported.
-    for (const auto& group_name : config.groups) {
-      CHECK(ContainsFeature(group_name, known_groups))
-          << "Local configuration for " << feature.name
-          << " references unknown group " << group_name;
-    }
+  // If the config contains any groups, check if those groups are supported.
+  for (const auto& group_name : config.groups) {
+    CHECK(ContainsFeature(group_name, known_groups))
+        << "Local configuration for " << feature.name
+        << " references unknown group " << group_name;
   }
 
   // TODO(dfried): Validate trigger, used, blocking, blocked_by, etc.

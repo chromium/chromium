@@ -24,6 +24,12 @@ const remainder = (lhs: number, rhs: number) => ((lhs % rhs) + rhs) % rhs;
 const CHAR_TYPED_TO_PAINT = 'Realbox.CharTypedToRepaintLatency.ToPaint';
 const RESULT_CHANGED_TO_PAINT = 'Realbox.ResultChangedToRepaintLatency.ToPaint';
 
+export interface RealboxDropdownElement {
+  $: {
+    content: HTMLElement,
+  };
+}
+
 // A dropdown element that contains autocomplete matches. Provides an API for
 // the embedder (i.e., <ntp-realbox>) to change the selection.
 export class RealboxDropdownElement extends PolymerElement {
@@ -118,12 +124,30 @@ export class RealboxDropdownElement extends PolymerElement {
   private hiddenGroupIds_: number[];
   private selectableMatchElements_: RealboxMatchElement[];
   private showSecondarySide_: boolean;
-
+  private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
   constructor() {
     super();
     this.pageHandler_ = RealboxBrowserProxy.getInstance().handler;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.resizeObserver_ = new ResizeObserver(
+        (entries: ResizeObserverEntry[]) =>
+            this.pageHandler_.popupElementSizeChanged({
+              width: entries[0].contentRect.width,
+              height: entries[0].contentRect.height,
+            }));
+    this.resizeObserver_.observe(this.$.content);
+  }
+
+  override disconnectedCallback() {
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+    }
+    super.disconnectedCallback();
   }
 
   //============================================================================
@@ -368,6 +392,10 @@ export class RealboxDropdownElement extends PolymerElement {
    * @returns Icon name for suggestion group show/hide toggle button.
    */
   private toggleButtonIconForGroup_(groupId: number): string {
+    if (loadTimeData.getBoolean('realboxCr23ExpandedStateIcons')) {
+      return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
+                                            'icon-arrow-drop-up-cr23';
+    }
     return this.groupIsHidden_(groupId) ? 'icon-expand-more' :
                                           'icon-expand-less';
   }

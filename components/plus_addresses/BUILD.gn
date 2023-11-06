@@ -56,10 +56,21 @@ source_set("unit_tests") {
   deps = [
     ":features",
     ":plus_addresses",
+    ":test_support",
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
   ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "plus_address_test_utils.cc",
+    "plus_address_test_utils.h",
+    "plus_address_types.h",
+  ]
+  deps = [ "//base" ]
 }

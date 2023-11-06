@@ -93,7 +93,7 @@ ScriptValue RTCSessionDescription::toJSONForBinding(ScriptState* script_state) {
 }
 
 RTCSessionDescriptionPlatform* RTCSessionDescription::WebSessionDescription() {
-  return platform_session_description_;
+  return platform_session_description_.Get();
 }
 
 void RTCSessionDescription::Trace(Visitor* visitor) const {

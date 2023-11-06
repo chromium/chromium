@@ -26,12 +26,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
@@ -337,8 +337,12 @@ void PasswordGenerationPopupControllerImpl::EditPasswordClicked() {
   Show(kEditGeneratedPassword);
 }
 
-void PasswordGenerationPopupControllerImpl::EditPasswordSelected() {
-  driver_->PreviewGenerationSuggestion(current_generated_password_);
+void PasswordGenerationPopupControllerImpl::EditPasswordHovered(bool hovered) {
+  if (hovered) {
+    driver_->PreviewGenerationSuggestion(current_generated_password_);
+  } else {
+    driver_->ClearPreviewedForm();
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

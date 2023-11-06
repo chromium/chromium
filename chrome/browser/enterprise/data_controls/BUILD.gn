@@ -10,6 +10,8 @@ source_set("data_controls") {
   sources = [
     "chrome_dlp_rules_manager.cc",
     "chrome_dlp_rules_manager.h",
+    "dlp_reporting_manager.cc",
+    "dlp_reporting_manager.h",
     "dlp_rules_manager_base.h",
   ]
 
@@ -20,29 +22,68 @@ source_set("data_controls") {
 
   deps = [
     "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/keyed_service/core",
     "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_factory",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:status",
     "//components/url_matcher",
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/startup" ]
+  }
+  if (is_chromeos_ash) {
+    deps += [ "//components/user_manager" ]
+  }
 }
 
 source_set("test_support") {
   testonly = true
+  sources = [
+    "dlp_reporting_manager_test_helper.cc",
+    "dlp_reporting_manager_test_helper.h",
+  ]
   public_deps = [
     ":data_controls",
     "//base",
-    "//components/policy/core/browser",
-    "//components/policy/core/common:common_constants",
+    "//base/test:test_support",
+    "//components/account_id",
+    "//components/enterprise/data_controls:dlp_policy_event_proto",
     "//components/prefs",
+    "//components/reporting/client:test_support",
+    "//components/reporting/util:status",
+    "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
+  if (is_chromeos) {
+    public_deps += [ "//chromeos/startup" ]
+  }
+  if (is_chromeos_ash) {
+    public_deps += [ "//components/user_manager" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  deps = [ "//components/enterprise/data_controls:unit_tests" ]
+  deps = [
+    ":data_controls",
+    ":test_support",
+    "//components/enterprise/data_controls:unit_tests",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash:test_support" ]
+  }
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/lacros" ]
+  }
 }

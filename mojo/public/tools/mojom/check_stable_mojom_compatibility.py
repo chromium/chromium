@@ -80,7 +80,7 @@ def _ValidateDelta(root, delta):
     # (at the moment) since they may not exist in the output directory.
     generated_files_to_skip = {
         ('third_party/blink/public/mojom/runtime_feature_state/'
-         'runtime_feature_state.mojom'),
+         'runtime_feature.mojom'),
         ('third_party/blink/public/mojom/origin_trial_feature/'
          'origin_trial_feature.mojom'),
     }

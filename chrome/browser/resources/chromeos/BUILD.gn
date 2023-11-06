@@ -22,6 +22,7 @@ group("resources") {
     "borealis_installer:resources",
     "cloud_upload:resources",
     "desk_api:resources",
+    "edu_coexistence:resources",
     "emoji_picker:resources",
     "enterprise_reporting:resources",
     "gaia_action_buttons:resources",
@@ -93,7 +94,6 @@ group("closure_compile") {
     "bluetooth_pairing_dialog:closure_compile",
     "crostini_installer:closure_compile",
     "crostini_upgrader:closure_compile",
-    "edu_coexistence:closure_compile",
     "emulator:closure_compile",
     "gaia_action_buttons:closure_compile",
     "internet_config_dialog:closure_compile",
@@ -105,7 +105,6 @@ group("closure_compile") {
     "password_change:closure_compile",
     "set_time_dialog:closure_compile",
     "smb_shares:closure_compile",
-    "supervision:closure_compile",
     "sys_internals:closure_compile",
     "vm:closure_compile",
   ]

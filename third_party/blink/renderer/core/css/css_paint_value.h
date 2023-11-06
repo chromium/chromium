@@ -47,7 +47,7 @@ class CORE_EXPORT CSSPaintValue : public CSSImageGeneratorValue {
       const Document&) const;
 
   const CSSStyleValueVector* GetParsedInputArgumentsForTesting() {
-    return parsed_input_arguments_;
+    return parsed_input_arguments_.Get();
   }
   void BuildInputArgumentValuesForTesting(
       Vector<std::unique_ptr<CrossThreadStyleValue>>& style_value) {

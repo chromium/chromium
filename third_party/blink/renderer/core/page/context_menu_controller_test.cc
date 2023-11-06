@@ -1824,37 +1824,34 @@ TEST_F(ContextMenuControllerTest, CheckRendererIdFromContextMenuOnTextField) {
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
   // field_id, is_form_renderer_id_present, is_field_renderer_id_present,
-  // input_field_type
+  // form_control_type
   std::vector<std::tuple<AtomicString, bool, bool,
-                         mojom::ContextMenuDataInputFieldType>>
+                         std::optional<mojom::FormControlType>>>
       expectations = {// Input Text Field
                       {AtomicString("name"), true, true,
-                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                       mojom::FormControlType::kInputText},
                       // Text Area Field
                       {AtomicString("address"), true, true,
-                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                       mojom::FormControlType::kTextArea},
                       // Non form element
-                      {AtomicString("one"), false, false,
-                       mojom::ContextMenuDataInputFieldType::kNone},
+                      {AtomicString("one"), false, false, std::nullopt},
                       // Formless Input field
                       {AtomicString("two"), false, true,
-                       mojom::ContextMenuDataInputFieldType::kPlainText},
+                       mojom::FormControlType::kInputText},
                       // Formless text area field
                       {AtomicString("three"), false, true,
-                       mojom::ContextMenuDataInputFieldType::kPlainText}};
+                       mojom::FormControlType::kTextArea}};
 
   for (const auto& expectation : expectations) {
     auto [field_id, is_form_renderer_id_present, is_field_renderer_id_present,
-          input_field_type] = expectation;
+          form_control_type] = expectation;
     Element* form_element = document->getElementById(field_id);
     EXPECT_TRUE(ShowContextMenuForElement(form_element, kMenuSourceMouse));
     ContextMenuData context_menu_data =
         GetWebFrameClient().GetContextMenuData();
-    EXPECT_EQ(context_menu_data.form_renderer_id.has_value(),
+    EXPECT_EQ(context_menu_data.form_renderer_id != 0,
               is_form_renderer_id_present);
-    EXPECT_EQ(context_menu_data.field_renderer_id.has_value(),
-              is_field_renderer_id_present);
-    EXPECT_EQ(context_menu_data.input_field_type, input_field_type);
+    EXPECT_EQ(context_menu_data.form_control_type, form_control_type);
   }
 }
 
@@ -2058,7 +2055,7 @@ TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
   ASSERT_TRUE(IsA<HTMLDocument>(document));
 
   // Heuristics-based recognition is not needed, it is a clear password by
-  // input_field_type.
+  // form_control_type.
   Element* not_heuristic_password =
       document->getElementById(AtomicString("not_heuristic"));
   EXPECT_TRUE(

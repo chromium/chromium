@@ -66,9 +66,7 @@ bool AudioInitializeConfig(sandbox::TargetConfig* config) {
 
   // The Audio Service process uses a base::SyncSocket for transmitting audio
   // data.
-  result = config->AddRule(sandbox::SubSystem::kNamedPipes,
-                           sandbox::Semantics::kNamedPipesAllowAny,
-                           L"\\\\.\\pipe\\chrome.sync.*");
+  result = config->AllowNamedPipes(L"\\\\.\\pipe\\chrome.sync.*");
   if (result != sandbox::SBOX_ALL_OK) {
     return false;
   }
@@ -152,21 +150,33 @@ bool IconReaderInitializeConfig(sandbox::TargetConfig* config) {
     return false;
 
   // Allow file read. These should match IconLoader::GroupForFilepath().
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.exe");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.exe");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.dll");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.dll");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
-  result =
-      config->AddRule(sandbox::SubSystem::kFiles,
-                      sandbox::Semantics::kFilesAllowReadonly, L"\\??\\*.ico");
+  result = config->AllowFileAccess(sandbox::FileSemantics::kAllowReadonly,
+                                   L"\\??\\*.ico");
   if (result != sandbox::SBOX_ALL_OK)
     return false;
+  return true;
+}
+
+bool OnDeviceModelExecutionInitializeConfig(
+    sandbox::TargetConfig* config,
+    base::CommandLine& cmd_line,
+    sandbox::mojom::Sandbox sandbox_type) {
+  DCHECK(!config->IsConfigured());
+  // USER_RESTRICTED breaks the Direct3D backend, so for now we can only go as
+  // low as USER_LIMITED.
+  sandbox::ResultCode result = config->SetTokenLevel(
+      sandbox::USER_RESTRICTED_SAME_ACCESS, sandbox::USER_LIMITED);
+  if (result != sandbox::SBOX_ALL_OK) {
+    return false;
+  }
   return true;
 }
 
@@ -260,6 +270,7 @@ bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
   switch (sandbox_type_) {
     case sandbox::mojom::Sandbox::kMediaFoundationCdm:
     case sandbox::mojom::Sandbox::kNetwork:
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
     case sandbox::mojom::Sandbox::kXrCompositing:
       *appcontainer_id = UtilityAppContainerId(cmd_line_);
@@ -283,6 +294,9 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
       return true;
     case sandbox::mojom::Sandbox::kNetwork:
       // An LPAC specific policy for network service is set elsewhere.
+      return true;
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+      // An LPAC policy is used for on-device model execution.
       return true;
     case sandbox::mojom::Sandbox::kWindowsSystemProxyResolver:
       // Default policy is disabled for Windows System Proxy Resolver process to
@@ -313,6 +327,13 @@ bool UtilitySandboxedProcessLauncherDelegate::InitializeConfig(
   }
   if (sandbox_type_ == sandbox::mojom::Sandbox::kIconReader) {
     if (!IconReaderInitializeConfig(config)) {
+      return false;
+    }
+  }
+
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceModelExecution) {
+    if (!OnDeviceModelExecutionInitializeConfig(config, cmd_line_,
+                                                sandbox_type_)) {
       return false;
     }
   }

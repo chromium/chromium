@@ -2,7 +2,7 @@
     const {page, session, dp} = await testRunner.startHTML(`
         <style>
             @keyframes foo { from { opacity: 0.5; } }
-            ::view-transition-old(*) { animation-name: foo; }
+            ::view-transition-old(*) { animation-name: foo; animation-duration: 30s; }
         </style>
         <div style='width:100px; height:100px; view-transition-name: shared; contain:paint;'></div>`,
         'The test verifies functionality of querying keyframe information for view-transition pseudo elements');

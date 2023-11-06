@@ -38,7 +38,8 @@ bool FastCheckoutDelegateImpl::TryToShowFastCheckout(
 bool FastCheckoutDelegateImpl::IntendsToShowFastCheckout(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
-    autofill::FieldGlobalId field_id) const {
+    autofill::FieldGlobalId field_id,
+    const autofill::FormData& form_data) const {
   if (const autofill::FormStructure* form =
           manager_->FindCachedFormById(form_id)) {
     if (const autofill::AutofillField* field = form->GetFieldById(field_id)) {

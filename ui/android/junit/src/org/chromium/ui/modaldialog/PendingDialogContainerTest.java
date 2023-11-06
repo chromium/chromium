@@ -29,16 +29,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.HashSet;
 import java.util.function.Consumer;
 
-/**
- * Robolectric tests for testing the functionalities of {@link PendingDialogContainer}.
- */
+/** Robolectric tests for testing the functionalities of {@link PendingDialogContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class PendingDialogContainerTest {
     private PendingDialogContainer mPendingDialogContainer;
 
-    @Mock
-    private Consumer<PropertyModel> mPropertyModelConsumerMock;
+    @Mock private Consumer<PropertyModel> mPropertyModelConsumerMock;
 
     @Before
     public void setUp() {
@@ -51,7 +48,7 @@ public class PendingDialogContainerTest {
     public void testSimpleInsertion() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model, /* showAsNext= */ false);
         assertTrue("Model should exist after insertion.", mPendingDialogContainer.contains(model));
     }
 
@@ -62,9 +59,9 @@ public class PendingDialogContainerTest {
         PropertyModel model2 = new PropertyModel();
 
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /* showAsNext= */ false);
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model2, /*showAsNext=*/true);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model2, /* showAsNext= */ true);
 
         assertTrue(
                 "model1 should exist after insertion.", mPendingDialogContainer.contains(model1));
@@ -74,19 +71,27 @@ public class PendingDialogContainerTest {
         PendingDialogContainer.PendingDialogType nextDialog =
                 mPendingDialogContainer.getNextPendingDialog(new HashSet<>());
         // Model2 should be put in first because |showAsNext| was set to true for it.
-        assertEquals("model2 should be the next dialog to be shown because of |showAsNext| to true",
-                model2, nextDialog.propertyModel);
-        assertEquals("The dialog type should never change for a pending dialog.",
-                ModalDialogType.APP, nextDialog.dialogType);
-        assertEquals("The dialog priority should never change for a pending dialog.",
-                ModalDialogPriority.LOW, nextDialog.dialogPriority);
+        assertEquals(
+                "model2 should be the next dialog to be shown because of |showAsNext| to true",
+                model2,
+                nextDialog.propertyModel);
+        assertEquals(
+                "The dialog type should never change for a pending dialog.",
+                ModalDialogType.APP,
+                nextDialog.dialogType);
+        assertEquals(
+                "The dialog priority should never change for a pending dialog.",
+                ModalDialogPriority.LOW,
+                nextDialog.dialogPriority);
 
         // Check getNextPendingDialog removes the property model.
-        assertFalse("getNextPendingDialog should have removed the model2 from pending dialog"
+        assertFalse(
+                "getNextPendingDialog should have removed the model2 from pending dialog"
                         + " container.",
                 mPendingDialogContainer.contains(model2));
         // Check getNextPendingDialog doesn't touch the other property model.
-        assertTrue("model1 should continue existing in pending dialog container.",
+        assertTrue(
+                "model1 should continue existing in pending dialog container.",
                 mPendingDialogContainer.contains(model1));
     }
 
@@ -97,9 +102,9 @@ public class PendingDialogContainerTest {
         PropertyModel model2 = new PropertyModel();
 
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /* showAsNext= */ false);
         mPendingDialogContainer.put(
-                ModalDialogType.TAB, ModalDialogPriority.HIGH, model2, /*showAsNext=*/false);
+                ModalDialogType.TAB, ModalDialogPriority.HIGH, model2, /* showAsNext= */ false);
 
         assertTrue(
                 "model1 should exist after insertion.", mPendingDialogContainer.contains(model1));
@@ -110,19 +115,27 @@ public class PendingDialogContainerTest {
                 mPendingDialogContainer.getNextPendingDialog(new HashSet<>());
         // Even though model2 is TAB based dialog, this is the next dialog in line because of its
         // priority.
-        assertEquals("model2 should be the next dialog because of higher priority than model1.",
-                model2, nextDialog.propertyModel);
-        assertEquals("The dialog type should never change for a pending dialog.",
-                ModalDialogType.TAB, nextDialog.dialogType);
-        assertEquals("The dialog priority should never change for a pending dialog.",
-                ModalDialogPriority.HIGH, nextDialog.dialogPriority);
+        assertEquals(
+                "model2 should be the next dialog because of higher priority than model1.",
+                model2,
+                nextDialog.propertyModel);
+        assertEquals(
+                "The dialog type should never change for a pending dialog.",
+                ModalDialogType.TAB,
+                nextDialog.dialogType);
+        assertEquals(
+                "The dialog priority should never change for a pending dialog.",
+                ModalDialogPriority.HIGH,
+                nextDialog.dialogPriority);
 
         // Check getNextPendingDialog removes the property model.
-        assertFalse("getNextPendingDialog should have removed the model2 from"
+        assertFalse(
+                "getNextPendingDialog should have removed the model2 from"
                         + " pending dialog container.",
                 mPendingDialogContainer.contains(model2));
         // Check getNextPendingDialog doesn't touch the other property model.
-        assertTrue("model1 should continue existing in pending dialog container.",
+        assertTrue(
+                "model1 should continue existing in pending dialog container.",
                 mPendingDialogContainer.contains(model1));
     }
 
@@ -131,11 +144,12 @@ public class PendingDialogContainerTest {
     public void testSimpleRemoval() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model, /* showAsNext= */ false);
         assertTrue("model should exist after insertion.", mPendingDialogContainer.contains(model));
         assertTrue(
                 "model should have been found and removed.", mPendingDialogContainer.remove(model));
-        assertFalse("model should have been removed after remove operation.",
+        assertFalse(
+                "model should have been removed after remove operation.",
                 mPendingDialogContainer.contains(model));
     }
 
@@ -144,14 +158,16 @@ public class PendingDialogContainerTest {
     public void testRemovalWithConsumer() {
         PropertyModel model = new PropertyModel();
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model, /* showAsNext= */ false);
         assertTrue("model should exist after insertion.", mPendingDialogContainer.contains(model));
 
         doNothing().when(mPropertyModelConsumerMock).accept(model);
-        assertTrue("model should have been found and removed.",
+        assertTrue(
+                "model should have been found and removed.",
                 mPendingDialogContainer.remove(ModalDialogType.APP, mPropertyModelConsumerMock));
         verify(mPropertyModelConsumerMock).accept(model);
-        assertFalse("model should have been removed after remove operation.",
+        assertFalse(
+                "model should have been removed after remove operation.",
                 mPendingDialogContainer.contains(model));
     }
 
@@ -161,9 +177,9 @@ public class PendingDialogContainerTest {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /* showAsNext= */ false);
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model2, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model2, /* showAsNext= */ false);
         assertTrue(
                 "model1 should exist after insertion.", mPendingDialogContainer.contains(model1));
         assertTrue(
@@ -171,13 +187,16 @@ public class PendingDialogContainerTest {
 
         doNothing().when(mPropertyModelConsumerMock).accept(model1);
         doNothing().when(mPropertyModelConsumerMock).accept(model2);
-        assertTrue("App based dialogs should have been found and removed.",
+        assertTrue(
+                "App based dialogs should have been found and removed.",
                 mPendingDialogContainer.remove(ModalDialogType.APP, mPropertyModelConsumerMock));
         verify(mPropertyModelConsumerMock, times(2)).accept(any());
 
-        assertFalse("model1 should have been removed because it was of APP type.",
+        assertFalse(
+                "model1 should have been removed because it was of APP type.",
                 mPendingDialogContainer.contains(model1));
-        assertFalse("model2 should have been removed because it was of APP type.",
+        assertFalse(
+                "model2 should have been removed because it was of APP type.",
                 mPendingDialogContainer.contains(model2));
         assertTrue("All dialogs should have been removed.", mPendingDialogContainer.isEmpty());
     }
@@ -188,25 +207,29 @@ public class PendingDialogContainerTest {
         PropertyModel model1 = new PropertyModel();
         PropertyModel model2 = new PropertyModel();
         mPendingDialogContainer.put(
-                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /*showAsNext=*/false);
+                ModalDialogType.APP, ModalDialogPriority.LOW, model1, /* showAsNext= */ false);
         mPendingDialogContainer.put(
-                ModalDialogType.TAB, ModalDialogPriority.LOW, model2, /*showAsNext=*/false);
+                ModalDialogType.TAB, ModalDialogPriority.LOW, model2, /* showAsNext= */ false);
         assertTrue(
                 "model1 should exist after insertion.", mPendingDialogContainer.contains(model1));
         assertTrue(
                 "model2 should exist after insertion.", mPendingDialogContainer.contains(model2));
 
         doNothing().when(mPropertyModelConsumerMock).accept(model1);
-        assertTrue("App based dialogs should have been found and removed.",
+        assertTrue(
+                "App based dialogs should have been found and removed.",
                 mPendingDialogContainer.remove(ModalDialogType.APP, mPropertyModelConsumerMock));
         verify(mPropertyModelConsumerMock).accept(model1);
 
-        assertFalse("model1 should have been removed because it was of APP type.",
+        assertFalse(
+                "model1 should have been removed because it was of APP type.",
                 mPendingDialogContainer.contains(model1));
-        assertTrue("Nothing should happen to dialogs of type TAB because we only removed"
+        assertTrue(
+                "Nothing should happen to dialogs of type TAB because we only removed"
                         + " APP based dialogs.",
                 mPendingDialogContainer.contains(model2));
-        assertFalse("Container shouldn't be empty because there's still model2.",
+        assertFalse(
+                "Container shouldn't be empty because there's still model2.",
                 mPendingDialogContainer.isEmpty());
     }
 
@@ -214,7 +237,8 @@ public class PendingDialogContainerTest {
     @SmallTest
     public void testNonExistentenceOfDialogs() {
         PropertyModel model = new PropertyModel();
-        assertFalse("Model was not added therefore shouldn't be contained in pending dialog"
+        assertFalse(
+                "Model was not added therefore shouldn't be contained in pending dialog"
                         + " container.",
                 mPendingDialogContainer.contains(model));
     }
@@ -223,7 +247,8 @@ public class PendingDialogContainerTest {
     @SmallTest
     public void testRemovalOfNonExistententPendingDialogs() {
         PropertyModel model = new PropertyModel();
-        assertFalse("Model was not added therefore shouldn't have been found and removed.",
+        assertFalse(
+                "Model was not added therefore shouldn't have been found and removed.",
                 mPendingDialogContainer.remove(model));
     }
 
@@ -231,32 +256,36 @@ public class PendingDialogContainerTest {
     @SmallTest
     public void testOutOfBoundValues_LowerBound() {
         PropertyModel model = new PropertyModel();
-        mPendingDialogContainer.put(ModalDialogType.APP, 0, model, /*showAsNext=*/false);
+        mPendingDialogContainer.put(ModalDialogType.APP, 0, model, /* showAsNext= */ false);
     }
 
     @Test(expected = AssertionError.class)
     @SmallTest
     public void testOutOfBoundValues_UpperBound() {
         PropertyModel model = new PropertyModel();
-        mPendingDialogContainer.put(ModalDialogType.APP, 10, model, /*showAsNext=*/false);
+        mPendingDialogContainer.put(ModalDialogType.APP, 10, model, /* showAsNext= */ false);
     }
 
     @Test
     @SmallTest
     public void testKeyUniqueness() {
         for (@ModalDialogPriority int priority = ModalDialogPriority.RANGE_MIN;
-                priority <= ModalDialogPriority.RANGE_MAX; ++priority) {
+                priority <= ModalDialogPriority.RANGE_MAX;
+                ++priority) {
             for (@ModalDialogType int type = ModalDialogType.RANGE_MIN;
-                    type <= ModalDialogType.RANGE_MAX; ++type) {
+                    type <= ModalDialogType.RANGE_MAX;
+                    ++type) {
                 mPendingDialogContainer.put(
-                        type, priority, new PropertyModel(), /*showAsNext=*/false);
+                        type, priority, new PropertyModel(), /* showAsNext= */ false);
             }
         }
         final int totalPriorities = ModalDialogPriority.NUM_ENTRIES;
         final int totalTypes = ModalDialogType.NUM_ENTRIES;
 
-        assertEquals("mPendingDialogContainer should have created unique keys to map the"
+        assertEquals(
+                "mPendingDialogContainer should have created unique keys to map the"
                         + " pending dialog list of distinct type and priority.",
-                totalPriorities * totalTypes, mPendingDialogContainer.size());
+                totalPriorities * totalTypes,
+                mPendingDialogContainer.size());
     }
 }

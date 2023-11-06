@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -56,17 +57,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for LocationBarModel.
- */
+/** Tests for LocationBarModel. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocationBarModelTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() throws InterruptedException {
@@ -81,45 +80,53 @@ public class LocationBarModelTest {
     @Feature({"Android-Toolbar"})
     @MediumTest
     public void testClosingLastTabReflectedInModel() {
-        Assert.assertNotSame("No current tab", Tab.INVALID_TAB_ID,
+        Assert.assertNotSame(
+                "No current tab",
+                Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
         ChromeTabUtils.closeCurrentTab(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        assertEquals("Didn't close all tabs.", 0,
+        assertEquals(
+                "Didn't close all tabs.",
+                0,
                 ChromeTabUtils.getNumOpenTabs(mActivityTestRule.getActivity()));
-        assertEquals("LocationBarModel is still trying to show a tab.", Tab.INVALID_TAB_ID,
+        assertEquals(
+                "LocationBarModel is still trying to show a tab.",
+                Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
     }
 
     @Test
     @SmallTest
     public void testDisplayAndEditText() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TestLocationBarModel model = new TestLocationBarModel(mActivityTestRule.getActivity());
-            model.setVisibleGurl(UrlConstants.ntpGurl());
-            assertDisplayAndEditText(model, "", null);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TestLocationBarModel model =
+                            new TestLocationBarModel(mActivityTestRule.getActivity());
+                    model.setVisibleGurl(UrlConstants.ntpGurl());
+                    assertDisplayAndEditText(model, "", null);
 
-            model.setVisibleGurl(JUnitTestGURLs.CHROME_ABOUT);
-            model.setDisplayUrl("chrome://about");
-            model.setFullUrl("chrome://about");
-            assertDisplayAndEditText(model, "chrome://about", "chrome://about");
+                    model.setVisibleGurl(JUnitTestGURLs.CHROME_ABOUT);
+                    model.setDisplayUrl("chrome://about");
+                    model.setFullUrl("chrome://about");
+                    assertDisplayAndEditText(model, "chrome://about", "chrome://about");
 
-            model.setVisibleGurl(JUnitTestGURLs.URL_1);
-            model.setDisplayUrl("https://one.com");
-            model.setFullUrl("https://one.com");
-            assertDisplayAndEditText(model, "https://one.com", "https://one.com");
+                    model.setVisibleGurl(JUnitTestGURLs.URL_1);
+                    model.setDisplayUrl("https://one.com");
+                    model.setFullUrl("https://one.com");
+                    assertDisplayAndEditText(model, "https://one.com", "https://one.com");
 
-            model.setDisplayUrl("one.com");
-            assertDisplayAndEditText(model, "one.com", "https://one.com");
+                    model.setDisplayUrl("one.com");
+                    assertDisplayAndEditText(model, "one.com", "https://one.com");
 
-            // https://crbug.com/1214481
-            model.setVisibleGurl(GURL.emptyGURL());
-            model.setDisplayUrl("about:blank");
-            model.setFullUrl("about:blank");
-            assertDisplayAndEditText(model, "about:blank", "about:blank");
+                    // https://crbug.com/1214481
+                    model.setVisibleGurl(GURL.emptyGURL());
+                    model.setDisplayUrl("about:blank");
+                    model.setFullUrl("about:blank");
+                    assertDisplayAndEditText(model, "about:blank", "about:blank");
 
-            model.destroy();
-        });
+                    model.destroy();
+                });
     }
 
     /** Provides parameters for different types of transitions between tabs. */
@@ -129,10 +136,12 @@ public class LocationBarModelTest {
             List<ParameterSet> result = new ArrayList<>(8);
             for (boolean fromIncognito : Arrays.asList(true, false)) {
                 for (boolean toIncognito : Arrays.asList(true, false)) {
-                    result.add(new ParameterSet()
-                                       .value(fromIncognito, toIncognito)
-                                       .name(String.format(
-                                               "from_%b_to_%b", fromIncognito, toIncognito)));
+                    result.add(
+                            new ParameterSet()
+                                    .value(fromIncognito, toIncognito)
+                                    .name(
+                                            String.format(
+                                                    "from_%b_to_%b", fromIncognito, toIncognito)));
                 }
             }
             return result;
@@ -144,32 +153,42 @@ public class LocationBarModelTest {
     @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
     public void testOnIncognitoStateChange_switchTab(boolean fromIncognito, boolean toIncognito) {
         // Add a regular tab next to the one created in setup.
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
         // Add two incognito tabs.
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         LocationBarModel locationBarModel =
                 activity.getToolbarManager().getLocationBarModelForTesting();
         LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
-        doAnswer((invocation) -> {
-            assertEquals(toIncognito, locationBarModel.isIncognito());
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            assertEquals(toIncognito, locationBarModel.isIncognito());
+                            return null;
+                        })
                 .when(observer)
                 .onIncognitoStateChanged();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getTabModelSelector().selectModel(fromIncognito);
-            locationBarModel.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .selectModel(fromIncognito);
+                    locationBarModel.addObserver(observer);
 
-            // Switch to an existing tab.
-            mActivityTestRule.getActivity().getTabModelSelector().selectModel(/*incognito=*/
-                    toIncognito);
-            mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER, false);
-        });
+                    // Switch to an existing tab.
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .selectModel(/* incognito= */ toIncognito);
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .getCurrentModel()
+                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                });
 
         assertEquals(toIncognito, locationBarModel.isIncognito());
         if (fromIncognito != toIncognito) {
@@ -184,26 +203,31 @@ public class LocationBarModelTest {
     @ParameterAnnotations.UseMethodParameter(IncognitoTransitionParamProvider.class)
     public void testOnIncognitoStateChange_newTab(boolean fromIncognito, boolean toIncognito) {
         // Add a regular tab next to the one created in setup.
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/false);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
         // Add two incognito tabs.
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
-        mActivityTestRule.loadUrlInNewTab("about:blank", /*incognito=*/true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
 
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         LocationBarModel locationBarModel =
                 activity.getToolbarManager().getLocationBarModelForTesting();
         LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
-        doAnswer((invocation) -> {
-            assertEquals(toIncognito, locationBarModel.isIncognito());
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            assertEquals(toIncognito, locationBarModel.isIncognito());
+                            return null;
+                        })
                 .when(observer)
                 .onIncognitoStateChanged();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivityTestRule.getActivity().getTabModelSelector().selectModel(fromIncognito);
-            locationBarModel.addObserver(observer);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule
+                            .getActivity()
+                            .getTabModelSelector()
+                            .selectModel(fromIncognito);
+                    locationBarModel.addObserver(observer);
+                });
 
         // Switch to a new tab.
         mActivityTestRule.loadUrlInNewTab("about:blank", toIncognito);
@@ -222,7 +246,10 @@ public class LocationBarModelTest {
         LocationBarModel locationBarModel =
                 mActivityTestRule.getActivity().getToolbarManager().getLocationBarModelForTesting();
         LocationBarDataProvider.Observer observer = mock(LocationBarDataProvider.Observer.class);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { locationBarModel.addObserver(observer); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    locationBarModel.addObserver(observer);
+                });
 
         mActivityTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("test content"));
 
@@ -231,17 +258,20 @@ public class LocationBarModelTest {
 
     private void assertDisplayAndEditText(
             ToolbarDataProvider dataProvider, String displayText, String editText) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UrlBarData urlBarData = dataProvider.getUrlBarData();
-            assertEquals(
-                    "Display text did not match", displayText, urlBarData.displayText.toString());
-            assertEquals("Editing text did not match", editText, urlBarData.editingText);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UrlBarData urlBarData = dataProvider.getUrlBarData();
+                    assertEquals(
+                            "Display text did not match",
+                            displayText,
+                            urlBarData.displayText.toString());
+                    assertEquals("Editing text did not match", editText, urlBarData.editingText);
+                });
     }
 
     /**
-     * @param activity A reference to {@link ChromeTabbedActivity} to pull
-     *            {@link android.view.View} data from.
+     * @param activity A reference to {@link ChromeTabbedActivity} to pull {@link android.view.View}
+     *     data from.
      * @return The id of the current {@link Tab} as far as the {@link LocationBarModel} sees it.
      */
     public static int getCurrentTabId(final ChromeTabbedActivity activity) {
@@ -255,25 +285,27 @@ public class LocationBarModelTest {
 
     private class TestLocationBarModel extends LocationBarModel {
         public TestLocationBarModel(Context context) {
-            // clang-format off
-            super(context, NewTabPageDelegate.EMPTY,
-                DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                window -> null, new LocationBarModel.OfflineStatus() {},
-                SearchEngineLogoUtils.getInstance());
-            // clang-format on
+            super(
+                    context,
+                    NewTabPageDelegate.EMPTY,
+                    DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
+                    window -> null,
+                    new LocationBarModel.OfflineStatus() {},
+                    SearchEngineLogoUtils.getInstance());
             initializeWithNative();
 
-            Tab tab = new MockTab(0, false) {
-                @Override
-                public boolean isInitialized() {
-                    return true;
-                }
+            Tab tab =
+                    new MockTab(0, Profile.getLastUsedRegularProfile()) {
+                        @Override
+                        public boolean isInitialized() {
+                            return true;
+                        }
 
-                @Override
-                public boolean isFrozen() {
-                    return false;
-                }
-            };
+                        @Override
+                        public boolean isFrozen() {
+                            return false;
+                        }
+                    };
             setTab(tab, false);
         }
 
@@ -296,8 +328,9 @@ public class LocationBarModelTest {
 
         @Override
         public String calculateFormattedFullUrl() {
-            return mFormattedFullUrl == null ? super.calculateFormattedFullUrl()
-                                             : mFormattedFullUrl;
+            return mFormattedFullUrl == null
+                    ? super.calculateFormattedFullUrl()
+                    : mFormattedFullUrl;
         }
 
         @Override

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/views/profiles/dice_web_signin_interception_bubble_view.h"
 
 #include <string>
@@ -125,6 +126,20 @@ const TestParam kTestParams[] = {
      WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
      policy::EnterpriseManagementAuthority::NONE,
      /*is_intercepted_account_managed=*/false},
+
+    // Chrome Signin bubble: no accounts in chrome, and signing triggers this
+    // intercept bubble.
+    {"ChromeSignin",
+     WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     policy::EnterpriseManagementAuthority::NONE,
+     /*is_intercepted_account_managed=*/false,
+     /*use_dark_theme=*/false},
+    // TODO(b/301431278): Implement the dark mode and update the test.
+    {"ChromeSigninDarkMode",
+     WebSigninInterceptor::SigninInterceptionType::kChromeSignin,
+     policy::EnterpriseManagementAuthority::NONE,
+     /*is_intercepted_account_managed=*/false,
+     /*use_dark_theme=*/true},
 };
 
 // Returns the avatar button, which is the anchor view for the interception
@@ -176,8 +191,14 @@ class DiceWebSigninInterceptionBubblePixelTest
     DCHECK(entry);
     entry->SetProfileThemeColors(colors);
 
+    std::string expected_intercept_url_string =
+        GetParam().interception_type ==
+                WebSigninInterceptor::SigninInterceptionType::kChromeSignin
+            ? chrome::kChromeUIDiceWebSigninInterceptChromeSigninURL
+            : chrome::kChromeUIDiceWebSigninInterceptURL;
+
     content::TestNavigationObserver observer{
-        GURL(chrome::kChromeUIDiceWebSigninInterceptURL)};
+        GURL(expected_intercept_url_string)};
     observer.StartWatchingNewWebContents();
 
     views::NamedWidgetShownWaiter widget_waiter(
@@ -228,7 +249,6 @@ class DiceWebSigninInterceptionBubblePixelTest
             intercepted_account,
             primary_account,
             GetParam().intercepted_profile_color.toSkColor(),
-            /*show_guest_option=*/false,
             /*show_link_data_option=*/false,
             show_managed_disclaimer};
   }

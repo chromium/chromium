@@ -23,10 +23,7 @@ class AckHandler;
 // and simple serialization to pref values.
 class INVALIDATION_EXPORT Invalidation {
  public:
-  // Factory functions.
-  static Invalidation Init(const Topic& topic,
-                           int64_t version,
-                           const std::string& payload);
+  Invalidation(const Topic& topic, int64_t version, const std::string& payload);
   Invalidation(const Invalidation& other);
   Invalidation& operator=(const Invalidation& other);
   ~Invalidation();
@@ -60,11 +57,6 @@ class INVALIDATION_EXPORT Invalidation {
   void Acknowledge() const;
 
  private:
-  Invalidation(const Topic& topic,
-               int64_t version,
-               const std::string& payload,
-               AckHandle ack_handle);
-
   // The Topic to which this invalidation belongs.
   Topic topic_;
 

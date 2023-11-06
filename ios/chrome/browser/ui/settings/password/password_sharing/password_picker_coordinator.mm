@@ -98,10 +98,9 @@
 }
 
 - (void)passwordPickerClosed:(PasswordPickerViewController*)controller
-     withSelectedCredentials:
-         (const std::vector<password_manager::CredentialUIEntry>&)credentials {
-  [self.delegate passwordPickerCoordinator:self
-                      didSelectCredentials:credentials];
+      withSelectedCredential:
+          (const password_manager::CredentialUIEntry&)credential {
+  [self.delegate passwordPickerCoordinator:self didSelectCredential:credential];
 }
 
 @end

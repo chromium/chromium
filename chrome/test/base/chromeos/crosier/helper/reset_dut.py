@@ -58,6 +58,7 @@ DAEMONS = [
     "attestationd",
     "u2fd",
     "cryptohomed",
+    "device_managementd",
     # Stateful daemons
     "update-engine",
     # Biod

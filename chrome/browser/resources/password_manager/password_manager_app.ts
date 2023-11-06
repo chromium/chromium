@@ -19,12 +19,13 @@ import './toolbar.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {SettingsPrefsElement} from 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement, listenOnce} from 'chrome://resources/js/util.js';
 import {IronPagesElement} from 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import {DomIf, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -132,6 +133,32 @@ export class PasswordManagerAppElement extends PasswordManagerAppElementBase {
 
   override ready() {
     super.ready();
+
+    window.CrPolicyStrings = {
+      controlledSettingExtension:
+          loadTimeData.getString('controlledSettingExtension'),
+      controlledSettingExtensionWithoutName:
+          loadTimeData.getString('controlledSettingExtensionWithoutName'),
+      controlledSettingPolicy:
+          loadTimeData.getString('controlledSettingPolicy'),
+      controlledSettingRecommendedMatches:
+          loadTimeData.getString('controlledSettingRecommendedMatches'),
+      controlledSettingRecommendedDiffers:
+          loadTimeData.getString('controlledSettingRecommendedDiffers'),
+      controlledSettingChildRestriction:
+          loadTimeData.getString('controlledSettingChildRestriction'),
+      controlledSettingParent:
+          loadTimeData.getString('controlledSettingParent'),
+
+      // <if expr="chromeos_ash">
+      controlledSettingShared:
+          loadTimeData.getString('controlledSettingShared'),
+      controlledSettingWithOwner:
+          loadTimeData.getString('controlledSettingWithOwner'),
+      controlledSettingNoOwner:
+          loadTimeData.getString('controlledSettingNoOwner'),
+      // </if>
+    };
 
     document.addEventListener('keydown', e => {
       // <if expr="is_macosx">

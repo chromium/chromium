@@ -40,6 +40,7 @@ build_webui("build") {
   }
   if (enable_dice_support) {
     static_files += [
+      "dice_web_signin_intercept/chrome_signin/chrome_signin.html",
       "dice_web_signin_intercept/dice_web_signin_intercept.html",
       "dice_web_signin_intercept/images/split_header.svg",
     ]
@@ -60,8 +61,10 @@ build_webui("build") {
     ]
   }
   if (enable_dice_support) {
-    web_component_files +=
-        [ "dice_web_signin_intercept/dice_web_signin_intercept_app.ts" ]
+    web_component_files += [
+      "dice_web_signin_intercept/chrome_signin/chrome_signin_app.ts",
+      "dice_web_signin_intercept/dice_web_signin_intercept_app.ts",
+    ]
   }
 
   non_web_component_files = [

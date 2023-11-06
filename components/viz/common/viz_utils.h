@@ -20,9 +20,8 @@ class QuadF;
 
 namespace viz {
 
-VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
-
 #if BUILDFLAG(IS_ANDROID)
+VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
 VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 

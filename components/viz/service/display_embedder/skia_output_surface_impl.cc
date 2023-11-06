@@ -500,7 +500,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImage(
     ImageContext* image_context,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& color_space) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
@@ -533,9 +533,9 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(
   auto format = image_context->format();
   if (format.is_single_plane() || format.PrefersExternalSampler()) {
     MakePromiseSkImageSinglePlane(image_context_impl, /*mipmapped=*/false,
-                                  yuv_color_space);
+                                  color_space);
   } else {
-    MakePromiseSkImageMultiPlane(image_context_impl, yuv_color_space);
+    MakePromiseSkImageMultiPlane(image_context_impl, color_space);
   }
 
   if (mailbox_holder.sync_token.HasData()) {
@@ -621,7 +621,7 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
 void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     ImageContextImpl* image_context,
     bool mipmap,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& color_space) {
   CHECK(!image_context->has_image());
   auto format = image_context->format();
   CHECK(format.is_single_plane() || format.PrefersExternalSampler());
@@ -647,12 +647,10 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
     image_context->SetImage(std::move(image), {texture_info});
   } else {
     CHECK(gr_context_thread_safe_);
-    // NOTE: To compute the format, it is necessary to pass the ColorSpace that
-    // came originally from the TransferableResource.
     GrBackendFormat backend_format = GetGrBackendFormatForTexture(
         format, /*plane_index=*/0,
         image_context->mailbox_holder().texture_target,
-        image_context->ycbcr_info(), yuv_color_space);
+        image_context->ycbcr_info(), color_space);
     auto image = SkImages::PromiseTextureFrom(
         gr_context_thread_safe_, backend_format,
         gfx::SizeToSkISize(image_context->size()),
@@ -666,7 +664,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
 
 void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     ImageContextImpl* image_context,
-    const gfx::ColorSpace& yuv_color_space) {
+    const gfx::ColorSpace& color_space) {
   CHECK(!image_context->has_image());
   auto format = image_context->format();
   CHECK(format.is_multi_plane());
@@ -674,8 +672,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
   // TODO(crbug.com/828599): This should really default to rec709.
   SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
-  yuv_color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
-                                    &sk_yuv_color_space);
+  color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                &sk_yuv_color_space);
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
                        subsampling, sk_yuv_color_space);
   if (graphite_recorder_) {
@@ -708,7 +706,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
       // that came originally from the TransferableResource.
       formats.push_back(GetGrBackendFormatForTexture(
           format, plane_index, image_context->mailbox_holder().texture_target,
-          image_context->ycbcr_info(), yuv_color_space));
+          image_context->ycbcr_info(), color_space));
       fulfills[plane_index] = new FulfillForPlane(image_context, plane_index);
     }
 

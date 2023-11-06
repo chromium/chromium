@@ -835,14 +835,17 @@ void ServiceWorkerRegisterJob::CompleteInternal(
           new_version()->SetStartWorkerStatusCode(
               blink::ServiceWorkerStatusCode::kErrorExists);
         } else {
-          const char* error_prefix =
+          const char* const scope = scope_.spec().c_str();
+          const char* const script_url = script_url_.spec().c_str();
+          const std::string error_prefix =
               job_type_ == REGISTRATION_JOB
-                  ? ServiceWorkerConsts::kServiceWorkerRegisterErrorPrefix
-                  : ServiceWorkerConsts::kServiceWorkerUpdateErrorPrefix;
-          new_version()->ReportError(
-              status, base::StringPrintf(error_prefix, scope_.spec().c_str(),
-                                         script_url_.spec().c_str()) +
-                          status_message);
+                  ? base::StringPrintf(
+                        ServiceWorkerConsts::kServiceWorkerRegisterErrorPrefix,
+                        scope, script_url)
+                  : base::StringPrintf(
+                        ServiceWorkerConsts::kServiceWorkerUpdateErrorPrefix,
+                        scope, script_url);
+          new_version()->ReportError(status, error_prefix + status_message);
         }
         registration()->UnsetVersion(new_version());
         new_version()->Doom();

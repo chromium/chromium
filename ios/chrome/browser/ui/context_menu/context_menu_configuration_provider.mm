@@ -11,11 +11,12 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/photos/photos_availability.h"
+#import "ios/chrome/browser/photos/model/photos_availability.h"
+#import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
-#import "ios/chrome/browser/search_engines/search_engines_util.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -153,6 +154,8 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
   const bool isLink = linkURL.is_valid();
   const GURL imageURL = params.src_url;
   const bool isImage = imageURL.is_valid();
+  const bool saveToPhotosAvailable =
+      IsSaveToPhotosAvailable(self.browser->GetBrowserState());
 
   DCHECK(self.browser->GetBrowserState());
   const bool isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
@@ -256,17 +259,29 @@ const NSUInteger kContextMenuMaxTitleLength = 30;
                                  referrer:referrer
                                  webState:weakSelf.currentWebState
                        baseViewController:weakBaseViewController];
+      base::UmaHistogramEnumeration(
+          kSaveToPhotosContextMenuActionsHistogram,
+          saveToPhotosAvailable
+              ? SaveToPhotosContextMenuActions::kAvailableDidSaveImageLocally
+              : SaveToPhotosContextMenuActions::
+                    kUnavailableDidSaveImageLocally);
     }];
     [menuElements addObject:saveImage];
 
     // Save Image to Photos.
-    const BOOL saveToPhotosAvailable =
-        IsSaveToPhotosAvailable(self.browser->GetBrowserState());
     if (saveToPhotosAvailable) {
-      UIAction* saveImageToPhotosAction =
-          [actionFactory actionToSaveToPhotosWithImageURL:imageURL
-                                                 referrer:referrer
-                                                 webState:webState];
+      base::RecordAction(base::UserMetricsAction(
+          "MobileWebContextMenuImageWithSaveToPhotosImpression"));
+      UIAction* saveImageToPhotosAction = [actionFactory
+          actionToSaveToPhotosWithImageURL:imageURL
+                                  referrer:referrer
+                                  webState:webState
+                                     block:^{
+                                       base::UmaHistogramEnumeration(
+                                           kSaveToPhotosContextMenuActionsHistogram,
+                                           SaveToPhotosContextMenuActions::
+                                               kAvailableDidSaveImageToGooglePhotos);
+                                     }];
       [menuElements addObject:saveImageToPhotosAction];
     }
 

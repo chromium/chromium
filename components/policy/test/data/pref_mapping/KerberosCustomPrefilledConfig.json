@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "kerberos.custom_prefilled_config": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "KerberosCustomPrefilledConfig": "custom-config"
+        },
+        "prefs": {
+          "kerberos.custom_prefilled_config": {
+            "location": "local_state",
+            "value": "custom-config"
+          }
+        }
+      }
+    ]
+  }
+]

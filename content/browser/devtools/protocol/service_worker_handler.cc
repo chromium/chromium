@@ -430,8 +430,10 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
             .SetRunningStatus(
                 GetVersionRunningStatusString(version.running_status))
             .SetStatus(GetVersionStatusString(version.status))
-            .SetScriptLastModified(version.script_last_modified.ToDoubleT())
-            .SetScriptResponseTime(version.script_response_time.ToDoubleT())
+            .SetScriptLastModified(
+                version.script_last_modified.InSecondsFSinceUnixEpoch())
+            .SetScriptResponseTime(
+                version.script_response_time.InSecondsFSinceUnixEpoch())
             .SetControlledClients(std::move(clients))
             .Build();
     scoped_refptr<DevToolsAgentHostImpl> host(
@@ -439,8 +441,12 @@ void ServiceWorkerHandler::OnWorkerVersionUpdated(
             ->GetDevToolsAgentHostForWorker(
                 version.process_id,
                 version.devtools_agent_route_id));
-    if (host)
+    if (host) {
       version_value->SetTargetId(host->GetId());
+    }
+    if (version.router_rules) {
+      version_value->SetRouterRules(*version.router_rules);
+    }
     result->emplace_back(std::move(version_value));
   }
   frontend_->WorkerVersionUpdated(std::move(result));

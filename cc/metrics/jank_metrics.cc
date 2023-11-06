@@ -23,7 +23,6 @@ namespace {
 constexpr uint64_t kMaxNoUpdateFrameQueueLength = 100;
 constexpr int kBuiltinSequenceNum =
     static_cast<int>(FrameSequenceTrackerType::kMaxType) + 1;
-constexpr int kMaximumJankHistogramIndex = 2 * kBuiltinSequenceNum;
 constexpr int kMaximumStaleHistogramIndex = kBuiltinSequenceNum;
 
 constexpr base::TimeDelta kStaleHistogramMin = base::Microseconds(1);
@@ -36,39 +35,8 @@ constexpr bool IsValidJankThreadType(
          type == FrameInfo::SmoothEffectDrivingThread::kMain;
 }
 
-const char* GetJankThreadTypeName(FrameInfo::SmoothEffectDrivingThread type) {
-  DCHECK(IsValidJankThreadType(type));
-
-  switch (type) {
-    case FrameInfo::SmoothEffectDrivingThread::kCompositor:
-      return "Compositor";
-    case FrameInfo::SmoothEffectDrivingThread::kMain:
-      return "Main";
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-int GetIndexForJankMetric(FrameInfo::SmoothEffectDrivingThread thread_type,
-                          FrameSequenceTrackerType type) {
-  DCHECK(IsValidJankThreadType(thread_type));
-  if (thread_type == FrameInfo::SmoothEffectDrivingThread::kMain)
-    return static_cast<int>(type);
-
-  DCHECK_EQ(thread_type, FrameInfo::SmoothEffectDrivingThread::kCompositor);
-  return static_cast<int>(type) + kBuiltinSequenceNum;
-}
-
 int GetIndexForStaleMetric(FrameSequenceTrackerType type) {
   return static_cast<int>(type);
-}
-
-std::string GetJankHistogramName(FrameSequenceTrackerType type,
-                                 const char* thread_name) {
-  return base::StrCat(
-      {"Graphics.Smoothness.Jank.", thread_name, ".",
-       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
 std::string GetStaleHistogramName(FrameSequenceTrackerType type) {
@@ -227,15 +195,6 @@ void JankMetrics::AddPresentedFrame(
     if (!prev_frame_delta_.is_zero() &&
         current_frame_delta > prev_frame_delta_ + 0.5 * frame_interval) {
       jank_count_++;
-
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-          "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
-          last_presentation_timestamp_, "thread-type",
-          GetJankThreadTypeName(effective_thread_));
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP1(
-          "cc,benchmark", "Jank", TRACE_ID_LOCAL(this),
-          current_presentation_timestamp, "tracker-type",
-          FrameSequenceTracker::GetFrameSequenceTrackerTypeName(tracker_type_));
     }
   }
   last_presentation_timestamp_ = current_presentation_timestamp;
@@ -246,41 +205,6 @@ void JankMetrics::AddPresentedFrame(
 void JankMetrics::ReportJankMetrics(int frames_expected) {
   if (tracker_type_ == FrameSequenceTrackerType::kCustom)
     return;
-
-  int jank_percent = static_cast<int>(100 * jank_count_ / frames_expected);
-
-  const char* jank_thread_name = GetJankThreadTypeName(effective_thread_);
-
-  STATIC_HISTOGRAM_POINTER_GROUP(
-      GetJankHistogramName(tracker_type_, jank_thread_name),
-      GetIndexForJankMetric(effective_thread_, tracker_type_),
-      kMaximumJankHistogramIndex, Add(jank_percent),
-      base::LinearHistogram::FactoryGet(
-          GetJankHistogramName(tracker_type_, jank_thread_name), 1, 100, 101,
-          base::HistogramBase::kUmaTargetedHistogramFlag));
-
-  const bool is_animation =
-      ShouldReportForAnimation(tracker_type_, effective_thread_);
-
-  // Jank reporter's effective thread is guaranteed to be identical to that of
-  // the owning FrameSequenceMetrics instance.
-  const bool is_interaction = ShouldReportForInteraction(
-      tracker_type_, effective_thread_, effective_thread_);
-
-  if (is_animation) {
-    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllAnimations",
-                             jank_percent);
-  }
-
-  if (is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllInteractions",
-                             jank_percent);
-  }
-
-  if (is_animation || is_interaction) {
-    UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank.AllSequences",
-                             jank_percent);
-  }
 
   // Report the max staleness metrics
   STATIC_HISTOGRAM_POINTER_GROUP(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../strings.m.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {ShoppingListApiProxy, ShoppingListApiProxyImpl} from '//shopping-insights-side-panel.top-chrome/shared/commerce/shopping_list_api_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

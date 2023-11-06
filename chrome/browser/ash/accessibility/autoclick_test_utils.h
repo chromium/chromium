@@ -53,6 +53,7 @@ class AutoclickTestUtils {
   // Waits for the given node to exist, then returns its bounds.
   gfx::Rect GetNodeBoundsInRoot(const std::string& name,
                                 const std::string& role);
+  gfx::Rect GetBoundsForNodeInRootByClassName(const std::string& class_name);
 
  private:
   void WaitForAutoclickReady();

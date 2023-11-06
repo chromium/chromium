@@ -340,6 +340,22 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
             shortcut_iter->second.match_core.contents);
 }
 
+// Tests that zero suggest matches are not added to the database.
+TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut_ZeroSuggest) {
+  InitBackend();
+  EXPECT_FALSE(changed_notified());
+
+  scoped_refptr<FakeAutocompleteProvider> zero_suggest_provider =
+      new FakeAutocompleteProvider(
+          AutocompleteProvider::Type::TYPE_ZERO_SUGGEST);
+  AutocompleteMatch zero_suggest_match(
+      zero_suggest_provider.get(), 400, true,
+      AutocompleteMatchType::TILE_MOST_VISITED_SITE);
+
+  backend()->AddOrUpdateShortcut(u"some text", zero_suggest_match);
+  EXPECT_FALSE(changed_notified());
+}
+
 TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   InitBackend();
   ShortcutsDatabase::Shortcut shortcut1(

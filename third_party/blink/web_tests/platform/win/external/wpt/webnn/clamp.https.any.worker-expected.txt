@@ -1,35 +1,51 @@
 This is a testharness.js-based test.
-PASS clamp float32 1D tensor default options / sync
-PASS clamp float32 2D tensor default options / sync
-PASS clamp float32 3D tensor default options / sync
-PASS clamp float32 4D tensor default options / sync
-PASS clamp float32 5D tensor default options / sync
-PASS clamp float32 4D tensor default options.maxValue and specified negative options.minValue / sync
-PASS clamp float32 3D tensor default options.maxValue and specified options.minValue=0.0 / sync
-PASS clamp float32 2D tensor default options.maxValue and specified positive options.minValue / sync
-PASS clamp float32 5D tensor default options.minValue and specified negative options.maxValue / sync
-PASS clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0 / sync
-PASS clamp float32 3D tensor default options.minValue and specified positive options.maxValue / sync
-PASS clamp float32 5D tensor specified both negative options.minValue and options.maxValue / sync
-PASS clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0 / sync
-PASS clamp float32 3D tensor specified negative options.minValue and positive options.maxValue / sync
-PASS clamp float32 2D tensor specified options.minValue=0.0 and positive options.maxValue / sync
-PASS clamp float32 1D tensor specified both positive options.minValue and options.maxValue / sync
-FAIL clamp float32 1D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 2D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 3D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 4D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 5D tensor default options / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 4D tensor default options.maxValue and specified negative options.minValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 3D tensor default options.maxValue and specified options.minValue=0.0 / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 2D tensor default options.maxValue and specified positive options.minValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 5D tensor default options.minValue and specified negative options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0 / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 3D tensor default options.minValue and specified positive options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 5D tensor specified both negative options.minValue and options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0 / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 3D tensor specified negative options.minValue and positive options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 2D tensor specified options.minValue=0.0 and positive options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
-FAIL clamp float32 1D tensor specified both positive options.minValue and options.maxValue / async promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[PASS] clamp float32 1D tensor default options / sync
+[PASS] clamp float32 2D tensor default options / sync
+[PASS] clamp float32 3D tensor default options / sync
+[PASS] clamp float32 4D tensor default options / sync
+[PASS] clamp float32 5D tensor default options / sync
+[PASS] clamp float32 4D tensor default options.maxValue and specified negative options.minValue / sync
+[PASS] clamp float32 3D tensor default options.maxValue and specified options.minValue=0.0 / sync
+[PASS] clamp float32 2D tensor default options.maxValue and specified positive options.minValue / sync
+[PASS] clamp float32 5D tensor default options.minValue and specified negative options.maxValue / sync
+[PASS] clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0 / sync
+[PASS] clamp float32 3D tensor default options.minValue and specified positive options.maxValue / sync
+[PASS] clamp float32 5D tensor specified both negative options.minValue and options.maxValue / sync
+[PASS] clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0 / sync
+[PASS] clamp float32 3D tensor specified negative options.minValue and positive options.maxValue / sync
+[PASS] clamp float32 2D tensor specified options.minValue=0.0 and positive options.maxValue / sync
+[PASS] clamp float32 1D tensor specified both positive options.minValue and options.maxValue / sync
+[FAIL] clamp float32 1D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 2D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 3D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 4D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 5D tensor default options / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 4D tensor default options.maxValue and specified negative options.minValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 3D tensor default options.maxValue and specified options.minValue=0.0 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 2D tensor default options.maxValue and specified positive options.minValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 5D tensor default options.minValue and specified negative options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 1D tensor default options.minValue and specified options.maxValue=0.0 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 3D tensor default options.minValue and specified positive options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 5D tensor specified both negative options.minValue and options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 4D tensor specified negative options.minValue and options.maxValue=0.0 / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 3D tensor specified negative options.minValue and positive options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 2D tensor specified options.minValue=0.0 and positive options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
+[FAIL] clamp float32 1D tensor specified both positive options.minValue and options.maxValue / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder.build is not a function"
 Harness: the test ran to completion.
 

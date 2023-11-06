@@ -97,9 +97,9 @@ class CORE_EXPORT WritableStreamDefaultWriter final : public ScriptWrappable {
   // not appear in the standard.
   //
 
-  StreamPromiseResolver* ClosedPromise() { return closed_promise_; }
-  StreamPromiseResolver* ReadyPromise() { return ready_promise_; }
-  WritableStream* OwnerWritableStream() { return owner_writable_stream_; }
+  StreamPromiseResolver* ClosedPromise() { return closed_promise_.Get(); }
+  StreamPromiseResolver* ReadyPromise() { return ready_promise_.Get(); }
+  WritableStream* OwnerWritableStream() { return owner_writable_stream_.Get(); }
 
   // This is a variant of GetDesiredSize() that doesn't create an intermediate
   // JavaScript object. Instead it returns absl::nullopt where the JavaScript

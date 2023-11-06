@@ -93,7 +93,7 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
   // be valid by the time it's used.
   SystemClipboard* system_clipboard() {
     DCHECK(promise_->GetLocalFrame());
-    return system_clipboard_;
+    return system_clipboard_.Get();
   }
 
   // This ClipboardPromise owns this ClipboardWriter. Subclasses use `promise_`

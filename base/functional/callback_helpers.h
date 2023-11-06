@@ -260,6 +260,20 @@ constexpr auto DoNothingWithBoundArgs(Args&&... args) {
       std::forward<Args>(args)...);
 }
 
+// Creates a callback that returns `value` when invoked. This helper is useful
+// for implementing factories that return a constant value.
+// Example:
+//
+// void F(base::OnceCallback<Widget()> factory);
+//
+// Widget widget = ...;
+// F(base::ReturnValueOnce(std::move(widget)));
+template <typename T>
+constexpr OnceCallback<T(void)> ReturnValueOnce(T value) {
+  static_assert(!std::is_reference_v<T>);
+  return base::BindOnce([](T value) { return value; }, std::move(value));
+}
+
 // Useful for creating a Closure that will delete a pointer when invoked. Only
 // use this when necessary. In most cases MessageLoop::DeleteSoon() is a better
 // fit.

@@ -351,8 +351,10 @@ TEST_F(TerminaInstallTest, InstallDlcFallbackOffline) {
 TEST_F(TerminaInstallTest, InstallDlcFallbackOfflineComponentAlreadyInstalled) {
   fake_dlc_client_->set_install_error("An error");
   PrepareComponentForLoad();
-  component_manager_->RegisterCompatiblePath(imageloader::kTerminaComponentName,
-                                             component_install_path_);
+  component_manager_->RegisterCompatiblePath(
+      imageloader::kTerminaComponentName,
+      component_updater::CompatibleComponentInfo(component_install_path_,
+                                                 /* version= */ absl::nullopt));
 
   auto* network_connection_tracker =
       network::TestNetworkConnectionTracker::GetInstance();

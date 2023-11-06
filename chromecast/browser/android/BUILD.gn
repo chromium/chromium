@@ -102,10 +102,10 @@ android_library("reactive_android_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -123,10 +123,10 @@ android_library("crash_handler_java") {
   deps = [
     ":reactive_android_java",
     "//base:base_java",
-    "//base:jni_java",
     "//chromecast/base:base_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
   annotation_processor_deps =
       [ "//components/module_installer/android:module_interface_processor" ]
@@ -142,7 +142,6 @@ common_android_library_deps = [
   ":crash_handler_java",
   ":reactive_android_java",
   "//base:base_java",
-  "//base:jni_java",
   "//build/android:build_java",
   "//chromecast/base:base_java",
   "//chromecast/media/cma/backend/android:audio_track_java",
@@ -156,6 +155,7 @@ common_android_library_deps = [
   "//net/android:net_java",
   "//third_party/androidx:androidx_annotation_annotation_java",
   "//third_party/androidx:androidx_core_core_java",
+  "//third_party/jni_zero:jni_zero_java",
 
   # TODO(slan): We may need to pass this in as a parameter.
   "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
@@ -259,7 +259,6 @@ robolectric_binary("cast_shell_junit_tests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//build/android:build_java",
     "//chromecast/base:base_java",
     "//chromecast/base:cast_base_test_utils_java",
@@ -268,5 +267,6 @@ robolectric_binary("cast_shell_junit_tests") {
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }

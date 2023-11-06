@@ -22,7 +22,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -82,7 +82,8 @@ WebUIInfoSingleton* WebUIInfoSingleton::GetInstance() {
             .empty())
       << "chrome://safe-browsing WebUI is only available in the browser "
          "process";
-  return base::Singleton<WebUIInfoSingleton>::get();
+  static base::NoDestructor<WebUIInfoSingleton> instance;
+  return instance.get();
 }
 
 // static
@@ -1339,6 +1340,9 @@ base::Value::Dict SerializeSafeBrowsingClientProperties(
     case ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING_REAL_TIME:
       url_api_type = "ANDROID_SAFEBROWSING_REAL_TIME";
       break;
+    case ClientSafeBrowsingReportRequest::ANDROID_SAFEBROWSING:
+      url_api_type = "ANDROID_SAFEBROWSING";
+      break;
     case ClientSafeBrowsingReportRequest::PVER3_NATIVE:
     case ClientSafeBrowsingReportRequest::FLYWHEEL:
       NOTREACHED();
@@ -1519,6 +1523,10 @@ base::Value::Dict SerializeDownloadWarningAction(
       break;
     case ClientSafeBrowsingReportRequest::DownloadWarningAction::OPEN_SUBPAGE:
       action = "OPEN_SUBPAGE";
+      break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        PROCEED_DEEP_SCAN:
+      action = "PROCEED_DEEP_SCAN";
       break;
   }
   action_dict.Set("action", action);
@@ -1722,6 +1730,9 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ThreatSource::ANDROID_SAFEBROWSING_REAL_TIME:
       threat_source = "ANDROID_SAFEBROWSING_REAL_TIME";
       break;
+    case ThreatSource::ANDROID_SAFEBROWSING:
+      threat_source = "ANDROID_SAFEBROWSING";
+      break;
     case ThreatSource::UNKNOWN:
       threat_source = "UNKNOWN";
       break;
@@ -1808,7 +1819,7 @@ base::Value::Dict SerializePGEvent(const sync_pb::UserEventSpecifics& event) {
 
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(event.event_time_usec()));
-  result.Set("time", timestamp.ToJsTime());
+  result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
 
   base::Value::Dict event_dict;
 
@@ -2492,7 +2503,7 @@ std::string SerializeHPRTLookupResponse(
 base::Value::Dict SerializeLogMessage(const base::Time& timestamp,
                                       const std::string& message) {
   base::Value::Dict result;
-  result.Set("time", timestamp.ToJsTime());
+  result.Set("time", timestamp.InMillisecondsFSinceUnixEpoch());
   result.Set("message", message);
   return result;
 }
@@ -2701,7 +2712,8 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
   value.Set("token", token);
 
   if (!data.request_time.is_null()) {
-    value.Set("request_time", data.request_time.ToJsTime());
+    value.Set("request_time",
+              data.request_time.InMillisecondsFSinceUnixEpoch());
   }
 
   if (data.request.has_value()) {
@@ -2712,7 +2724,8 @@ base::Value::Dict SerializeDeepScanDebugData(const std::string& token,
   }
 
   if (!data.response_time.is_null()) {
-    value.Set("response_time", data.response_time.ToJsTime());
+    value.Set("response_time",
+              data.response_time.InMillisecondsFSinceUnixEpoch());
   }
 
   if (!data.response_status.empty()) {
@@ -2823,7 +2836,7 @@ void SafeBrowsingUIHandler::OnGetCookie(
   double time = 0.0;
   if (!cookies.empty()) {
     cookie = cookies[0].Value();
-    time = cookies[0].CreationDate().ToJsTime();
+    time = cookies[0].CreationDate().InMillisecondsFSinceUnixEpoch();
   }
 
   base::Value::List response;

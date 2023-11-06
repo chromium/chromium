@@ -76,16 +76,11 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
     const AtomicString& family_name) {
   if (!font_palette->IsInterpolablePalette()) {
     if (font_palette->IsCustomPalette()) {
-      scoped_refptr<FontPalette> normal_palette = FontPalette::Create();
-      normal_palette->SetMatchFamilyName(family_name);
-
       scoped_refptr<FontPalette> retrieved_palette =
           RetrieveFontPaletteFromStyleEngine(font_palette, style_engine,
                                              family_name);
-
-      return retrieved_palette ? retrieved_palette : normal_palette;
+      return retrieved_palette ? retrieved_palette : FontPalette::Create();
     } else {
-      font_palette->SetMatchFamilyName(family_name);
       return font_palette;
     }
   }
@@ -93,12 +88,6 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
       font_palette->GetStart(), style_engine, family_name);
   scoped_refptr<FontPalette> end_palette = ResolveInterpolableFontPalette(
       font_palette->GetEnd(), style_engine, family_name);
-
-  /* Since we use normal font-palette with the current family_name if we were
-   * unable to retrieve font-palette-values for current family_name, then
-   * matched font families on both endpoints should be equal. */
-  DCHECK_EQ(start_palette->GetMatchFamilyName(),
-            end_palette->GetMatchFamilyName());
 
   // If two endpoints of the interpolation are equal, we can simplify the tree
   if (*start_palette.get() == *end_palette.get()) {
@@ -112,7 +101,6 @@ scoped_refptr<FontPalette> ResolveInterpolableFontPalette(
       font_palette->GetAlphaMultiplier(),
       font_palette->GetColorInterpolationSpace(),
       font_palette->GetHueInterpolationMethod());
-  new_palette->SetMatchFamilyName(start_palette->GetMatchFamilyName());
   return new_palette;
 }
 
@@ -296,7 +284,7 @@ FontMatchingMetrics* CSSFontSelector::GetFontMatchingMetrics() const {
 }
 
 bool CSSFontSelector::IsAlive() const {
-  return tree_scope_;
+  return tree_scope_ != nullptr;
 }
 
 void CSSFontSelector::Trace(Visitor* visitor) const {

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -65,6 +66,22 @@ MATCHER_P(ContainsDataType, type, "") {
 }
 
 constexpr char kTestUser[] = "test_user@gmail.com";
+
+SyncCycleSnapshot MakeDefaultSyncCycleSnapshot() {
+  // It doesn't matter what exactly we set here, it's only relevant that the
+  // SyncCycleSnapshot is initialized at all.
+  return SyncCycleSnapshot(
+      /*birthday=*/std::string(), /*bag_of_chips=*/std::string(),
+      syncer::ModelNeutralState(), syncer::ProgressMarkerMap(),
+      /*is_silenced=*/false,
+      /*num_server_conflicts=*/0,
+      /*notifications_enabled=*/true,
+      /*sync_start_time=*/base::Time::Now(),
+      /*poll_finish_time=*/base::Time::Now(),
+      sync_pb::SyncEnums::UNKNOWN_ORIGIN,
+      /*poll_interval=*/base::Minutes(1),
+      /*has_remaining_local_changes=*/false);
+}
 
 class MockSyncServiceObserver : public SyncServiceObserver {
  public:
@@ -663,8 +680,10 @@ TEST_F(
   // kPayments should be disabled when kAutofill is disabled.
   // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
   // decoupled from kAutofill.
-  EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
-      UserSelectableType::kPayments));
+  if (!base::FeatureList::IsEnabled(kSyncDecoupleAddressPaymentSettings)) {
+    EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
+        UserSelectableType::kPayments));
+  }
 
   // The user enables addresses sync.
   service()->GetUserSettings()->SetSelectedType(
@@ -1779,6 +1798,12 @@ TEST_F(SyncServiceImplTest, ShouldWaitForPollRequest) {
                                     /*expected_count=*/1);
   histogram_tester.ExpectTotalCount("Sync.ModelTypeUpToDateTime",
                                     /*expected_count=*/1);
+
+  // Ignore following poll requests once the first sync cycle is completed.
+  service()->OnSyncCycleCompleted(MakeDefaultSyncCycleSnapshot());
+  engine()->SetPollIntervalElapsed(true);
+  EXPECT_EQ(service()->GetDownloadStatusFor(syncer::BOOKMARKS),
+            SyncService::ModelTypeDownloadStatus::kUpToDate);
 }
 
 TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {

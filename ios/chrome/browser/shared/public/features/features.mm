@@ -6,21 +6,6 @@
 
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(kDefaultBrowserBlueDotPromo,
-             "DefaultBrowserBlueDotPromo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<BlueDotPromoUserGroup>::Option
-    kBlueDotPromoUserGroupOptions[] = {
-        {BlueDotPromoUserGroup::kAllDBPromosDisabled, "all-db-promos-disabled"},
-        {BlueDotPromoUserGroup::kAllDBPromosEnabled, "all-db-promos-enabled"},
-        {BlueDotPromoUserGroup::kOnlyBlueDotPromoEnabled,
-         "only-blue-dot-promo-enabled"}};
-
-constexpr base::FeatureParam<BlueDotPromoUserGroup> kBlueDotPromoUserGroupParam{
-    &kDefaultBrowserBlueDotPromo, "user-group",
-    BlueDotPromoUserGroup::kAllDBPromosEnabled, &kBlueDotPromoUserGroupOptions};
-
 BASE_FEATURE(kIOSPaymentsBottomSheet,
              "IOSPaymentsBottomSheet",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -78,10 +63,6 @@ const base::FeatureParam<DefaultBrowserPromoGenericTailoredArm>
         DefaultBrowserPromoGenericTailoredArm::kOnlyGeneric,
         &kDefaultBrowserPromoGenericTailoredArmOptions};
 
-BASE_FEATURE(kDefaultBrowserRefactoringPromoManager,
-             "DefaultBrowserRefactoringPromoManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kDefaultBrowserVideoPromo,
              "DefaultBrowserVideoPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -116,7 +97,7 @@ const char kIOSEditMenuSearchWithTitleSearchWithParam[] = "SearchWith";
 const char kIOSEditMenuSearchWithTitleWebSearchParam[] = "WebSearch";
 BASE_FEATURE(kIOSEditMenuSearchWith,
              "IOSEditMenuSearchWith",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsSearchWithEnabled() {
   if (@available(iOS 16, *)) {
@@ -127,7 +108,7 @@ bool IsSearchWithEnabled() {
 
 BASE_FEATURE(kIOSEditMenuHideSearchWeb,
              "IOSEditMenuHideSearchWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSNewOmniboxImplementation,
              "kIOSNewOmniboxImplementation",
@@ -148,10 +129,6 @@ BASE_FEATURE(kEnableLensInKeyboard,
 BASE_FEATURE(kEnableLensInNTP,
              "EnableLensInNTP",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEnableLensContextMenuAltText,
-             "EnableLensContextMenuAltText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              "EnableLensInOmniboxCopiedImage",
@@ -180,6 +157,10 @@ BASE_FEATURE(kEnableShortenedPasswordAutoFillInstruction,
 BASE_FEATURE(kEnableExpKitAppleCalendar,
              "EnableExpKitAppleCalendar",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTCRexKillSwitch,
+             "kTCRexKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGridNewTransitions,
              "TabGridNewTransitions",
@@ -228,7 +209,7 @@ BASE_FEATURE(kNewNTPOmniboxLayout,
 
 BASE_FEATURE(kBottomOmniboxSteadyState,
              "BottomOmniboxSteadyState",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kBottomOmniboxDefaultSettingParam[] =
     "BottomOmniboxDefaultSettingParam";
@@ -240,12 +221,21 @@ BASE_FEATURE(kBottomOmniboxDefaultSetting,
              "BottomOmniboxDefaultSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBottomOmniboxDeviceSwitcherResults,
+             "BottomOmniboxDeviceSwitcherResults",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsBottomOmniboxSteadyStateEnabled() {
   // Bottom omnibox is only available on phones.
   if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
     return false;
   }
   return base::FeatureList::IsEnabled(kBottomOmniboxSteadyState);
+}
+
+bool IsBottomOmniboxDeviceSwitcherResultsEnabled() {
+  return IsBottomOmniboxSteadyStateEnabled() &&
+         base::FeatureList::IsEnabled(kBottomOmniboxDeviceSwitcherResults);
 }
 
 BASE_FEATURE(kOnlyAccessClipboardAsync,
@@ -265,6 +255,12 @@ BASE_FEATURE(kFullScreenPromoOnOmniboxCopyPaste,
 BASE_FEATURE(kThemeColorInTopToolbar,
              "ThemeColorInTopToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicThemeColor,
+             "DynamicThemeColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDynamicBackgroundColor,
+             "DynamicBackgroundColor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGridRefactoring,
              "TabGridRefactoring",
@@ -274,18 +270,22 @@ bool IsSafetyCheckMagicStackEnabled() {
   return base::FeatureList::IsEnabled(kSafetyCheckMagicStack);
 }
 
-BASE_FEATURE(kBlockSimultaneousCellSelectionKillSwitch,
-             "BlockSimultaneousCellSelectionKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSSaveToDrive,
+             "IOSSaveToDrive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIOSSaveToPhotos,
              "IOSSaveToPhotos",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSettingsWillBeDismissedBugFixKillSwitch,
-             "SettingsWillBeDismissedBugFixKillSwitch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableUIEditMenuInteraction,
              "EnableUIEditMenuInteraction",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHistoryOptInForRestoreShortyAndReSignin,
+             "HistoryOptInForRestoreShortyAndReSignin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEnableBatchUploadFromBookmarksManager,
+             "EnableBatchUploadFromBookmarksManager",
              base::FEATURE_DISABLED_BY_DEFAULT);

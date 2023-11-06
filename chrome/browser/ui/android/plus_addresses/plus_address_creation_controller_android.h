@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
 #include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/origin.h"
@@ -38,6 +39,9 @@ class PlusAddressCreationControllerAndroid
   // comes fully online.
   void set_suppress_ui_for_testing(bool should_suppress);
 
+  // Validate storage and clearing of `plus_profile_`.
+  absl::optional<PlusProfile> get_plus_profile_for_testing();
+
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerAndroid(
@@ -45,12 +49,22 @@ class PlusAddressCreationControllerAndroid
   friend class content::WebContentsUserData<
       PlusAddressCreationControllerAndroid>;
 
+  // Shows a dialog with `primary_email_address` and the plus_address on the
+  // `maybe_plus_profile` if it isn't an error.
+  void OnPlusAddressReserved(const std::string& primary_email_address,
+                             const PlusProfileOrError& maybe_plus_profile);
+  // Autofills the targeted field by running callback_ with the plus_address on
+  // the `maybe_plus_profile` if it isn't an error.
+  void OnPlusAddressConfirmed(const PlusProfileOrError& maybe_plus_profile);
   base::WeakPtr<PlusAddressCreationControllerAndroid> GetWeakPtr();
 
   std::unique_ptr<PlusAddressCreationViewAndroid> view_;
   url::Origin relevant_origin_;
   PlusAddressCallback callback_;
   bool suppress_ui_for_testing_ = false;
+  // This is set by OnPlusAddressReserved and cleared when it's confirmed or
+  // when the dialog is closed or cancelled.
+  absl::optional<PlusProfile> plus_profile_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};

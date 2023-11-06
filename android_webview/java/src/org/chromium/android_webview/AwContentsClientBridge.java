@@ -14,15 +14,16 @@ import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeUnchecked;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -371,14 +372,11 @@ public class AwContentsClientBridge {
                 new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
                         method, requestHeaderNames, requestHeaderValues);
 
-        // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
-        // clang-format off
         Callback<AwSafeBrowsingResponse> callback =
                 response -> PostTask.runOrPostTask(TaskTraits.UI_DEFAULT,
                         () -> AwContentsClientBridgeJni.get().takeSafeBrowsingAction(
                                 mNativeContentsClientBridge, AwContentsClientBridge.this,
                                 response.action(), response.reporting(), requestId));
-        // clang-format on
 
         int webViewThreatType = AwSafeBrowsingConversionHelper.convertThreatType(threatType);
         mClient.getCallbackHelper().postOnSafeBrowsingHit(request, webViewThreatType, callback);

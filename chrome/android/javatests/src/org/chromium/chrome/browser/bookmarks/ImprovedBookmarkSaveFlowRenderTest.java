@@ -43,9 +43,7 @@ import org.chromium.ui.test.util.NightModeTestUtils.NightModeParams;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render tests for the improved bookmark row.
- */
+/** Render tests for the improved bookmark row. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
@@ -55,11 +53,13 @@ public class ImprovedBookmarkSaveFlowRenderTest {
 
     @Rule
     public final DisableAnimationsTestRule mDisableAnimationsRule = new DisableAnimationsTestRule();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -83,36 +83,49 @@ public class ImprovedBookmarkSaveFlowRenderTest {
         mActivityTestRule.launchActivity(null);
         mActivityTestRule.getActivity().setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        int bitmapSize = mActivityTestRule.getActivity().getResources().getDimensionPixelSize(
-                R.dimen.improved_bookmark_save_flow_image_size);
+        int bitmapSize =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_save_flow_image_size);
         mBitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         mBitmap.eraseColor(Color.GREEN);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mContentView = new LinearLayout(mActivityTestRule.getActivity());
-            mContentView.setBackgroundColor(Color.WHITE);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mContentView = new LinearLayout(mActivityTestRule.getActivity());
+                    mContentView.setBackgroundColor(Color.WHITE);
 
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mActivityTestRule.getActivity().setContentView(mContentView, params);
+                    FrameLayout.LayoutParams params =
+                            new FrameLayout.LayoutParams(
+                                    ViewGroup.LayoutParams.MATCH_PARENT,
+                                    ViewGroup.LayoutParams.WRAP_CONTENT);
+                    mActivityTestRule.getActivity().setContentView(mContentView, params);
 
-            LayoutInflater.from(mActivityTestRule.getActivity())
-                    .inflate(R.layout.improved_bookmark_save_flow, /*root=*/mContentView);
+                    LayoutInflater.from(mActivityTestRule.getActivity())
+                            .inflate(
+                                    R.layout.improved_bookmark_save_flow, /* root= */ mContentView);
 
-            mView = mContentView.findViewById(R.id.improved_bookmark_save_flow);
-            mModel = new PropertyModel.Builder(ImprovedBookmarkSaveFlowProperties.ALL_KEYS)
-                             .with(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
-                                     new BitmapDrawable(
-                                             mActivityTestRule.getActivity().getResources(),
-                                             mBitmap))
-                             .with(ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT,
-                                     new FolderText("in test folder", 3, 11))
-                             .with(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, false)
-                             .build();
+                    mView = mContentView.findViewById(R.id.improved_bookmark_save_flow);
+                    mModel =
+                            new PropertyModel.Builder(ImprovedBookmarkSaveFlowProperties.ALL_KEYS)
+                                    .with(
+                                            ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
+                                            new BitmapDrawable(
+                                                    mActivityTestRule.getActivity().getResources(),
+                                                    mBitmap))
+                                    .with(
+                                            ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT,
+                                            new FolderText("in test folder", 3, 11))
+                                    .with(
+                                            ImprovedBookmarkSaveFlowProperties
+                                                    .PRICE_TRACKING_VISIBLE,
+                                            false)
+                                    .build();
 
-            PropertyModelChangeProcessor.create(
-                    mModel, mView, ImprovedBookmarkSaveFlowViewBinder::bind);
-        });
+                    PropertyModelChangeProcessor.create(
+                            mModel, mView, ImprovedBookmarkSaveFlowViewBinder::bind);
+                });
     }
 
     @Test
@@ -130,10 +143,13 @@ public class ImprovedBookmarkSaveFlowRenderTest {
                 BookmarkUtils.getFaviconDisplaySize(mActivityTestRule.getActivity().getResources());
         Bitmap bitmap = Bitmap.createBitmap(bitmapSize, bitmapSize, Bitmap.Config.ARGB_8888);
         bitmap.eraseColor(Color.GREEN);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
-                    new BitmapDrawable(mActivityTestRule.getActivity().getResources(), bitmap));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON,
+                            new BitmapDrawable(
+                                    mActivityTestRule.getActivity().getResources(), bitmap));
+                });
         mRenderTestRule.render(mContentView, "favicon");
     }
 
@@ -141,10 +157,12 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
+                });
         mRenderTestRule.render(mContentView, "price_tracking");
     }
 
@@ -152,10 +170,13 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking_switchUnchecked() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED,
+                            false);
+                });
         mRenderTestRule.render(mContentView, "price_tracking_switch_unchecked");
     }
 
@@ -163,11 +184,13 @@ public class ImprovedBookmarkSaveFlowRenderTest {
     @MediumTest
     @Feature({"RenderTest"})
     public void testPriceTracking_visibleNotEnabled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
-            mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
+                    mModel.set(
+                            ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, true);
+                    mModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, false);
+                });
         mRenderTestRule.render(mContentView, "price_tracking_visible_not_enabled");
     }
 }

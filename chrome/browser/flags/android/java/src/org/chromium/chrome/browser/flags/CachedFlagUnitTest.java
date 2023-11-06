@@ -19,13 +19,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit Tests for {@link CachedFlag}.
- */
+/** Unit Tests for {@link CachedFlag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class CachedFlagUnitTest {
-    @Rule
-    public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule baseFlagTestRule = new BaseFlagTestRule();
 
     @Test(expected = AssertionError.class)
     public void testDuplicateFeature_throwsException() {

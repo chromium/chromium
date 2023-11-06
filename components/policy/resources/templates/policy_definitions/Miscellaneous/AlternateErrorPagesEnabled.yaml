@@ -6,7 +6,6 @@ desc: |-
   If you set the policy, users can't change it. If not set, the policy is on, but users can change this setting.
 example_value: true
 features:
-  can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
 future_on:

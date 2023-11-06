@@ -71,7 +71,14 @@ DefaultPlatformConfiguration::GetEnableRates(
   CHECK(*release_channel == version_info::Channel::CANARY ||
         *release_channel == version_info::Channel::DEV);
 
+#if BUILDFLAG(IS_ANDROID)
+  // This is temporary, in order to run the Java Name Hashing field trial.
+  //
+  // TODO(crbug.com/1475718): Remove this once the field trial is done.
+  return RelativePopulations{1, 99};
+#else
   return RelativePopulations{80, 20};
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 double DefaultPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(
@@ -200,12 +207,15 @@ AndroidPlatformConfiguration::GetEnableRates(
   DCHECK(*release_channel == version_info::Channel::CANARY ||
          *release_channel == version_info::Channel::DEV);
 
-  // For 80% of population always enable profiling.
-  // For 20% of population
-  // - 50% within the subgroup, i.e. 10% of total population, enable profiling.
-  // - 50% within the subgroup, disable profiling.
-  // This results a total of 90% enable rate.
-  return RelativePopulations{80, 20};
+  // For 1% of population always enable profiling.
+  // For 99% of population
+  // - 1/3 within the subgroup, i.e. 33% of total population, enable profiling.
+  // - 1/3 within the subgroup, enable profiling with Java name hashing.
+  // - 1/3 within the subgroup, disable profiling.
+  // This results a total of 67% enable rate.
+  //
+  // TODO(crbug.com/1475718): Remove this once the field trial is done.
+  return RelativePopulations{1, 99};
 }
 
 double AndroidPlatformConfiguration::GetChildProcessPerExecutionEnableFraction(

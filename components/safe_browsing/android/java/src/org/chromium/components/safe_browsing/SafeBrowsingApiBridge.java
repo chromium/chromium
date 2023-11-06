@@ -6,11 +6,12 @@ package org.chromium.components.safe_browsing;
 
 import androidx.annotation.GuardedBy;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.safe_browsing.SafeBrowsingApiHandler.LookupResult;
 
 /**
@@ -264,7 +265,13 @@ public final class SafeBrowsingApiBridge {
     private static void startUriLookupBySafeBrowsingApi(
             long callbackId, String uri, int[] threatTypes, int protocol) {
         synchronized (sSafeBrowsingApiHandlerLock) {
-            assert sSafeBrowsingApiHandler != null;
+            if (sSafeBrowsingApiHandler == null) {
+                // sSafeBrowsingApiHandler can only be null in tests.
+                SafeBrowsingApiBridgeJni.get()
+                        .onUrlCheckDoneBySafeBrowsingApi(
+                                callbackId, LookupResult.FAILURE_HANDLER_NULL, 0, new int[0], 0, 0);
+                return;
+            }
             sSafeBrowsingApiHandler.startUriLookup(callbackId, uri, threatTypes, protocol);
         }
     }

@@ -16,7 +16,6 @@
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/privacy/privacy_indicators_tray_item_view.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/system/unified/unified_system_tray.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -147,11 +146,8 @@ void UpdatePrivacyIndicatorsView(bool is_camera_used,
     DCHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     DCHECK(privacy_indicators_view);
     privacy_indicators_view->OnCameraAndMicrophoneAccessStateChanged(
@@ -190,11 +186,8 @@ void UpdatePrivacyIndicatorsVisibility() {
     CHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
     CHECK(privacy_indicators_view);
 
     privacy_indicators_view->UpdateVisibility();
@@ -395,11 +388,8 @@ void UpdatePrivacyIndicatorsScreenShareStatus(bool is_screen_sharing) {
     DCHECK(status_area_widget);
 
     auto* privacy_indicators_view =
-        features::IsQsRevampEnabled()
-            ? status_area_widget->notification_center_tray()
-                  ->privacy_indicators_view()
-            : status_area_widget->unified_system_tray()
-                  ->privacy_indicators_view();
+        status_area_widget->notification_center_tray()
+            ->privacy_indicators_view();
 
     DCHECK(privacy_indicators_view);
 

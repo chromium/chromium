@@ -186,6 +186,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_test_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   std::vector<std::string> credit_card_ids_;
@@ -345,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(AutofillCounterTest, ComplexResult) {
 // Tests that the counting respects time ranges.
 IN_PROC_BROWSER_TEST_F(AutofillCounterTest, TimeRanges) {
   autofill::TestAutofillClock test_clock;
-  const base::Time kTime1 = base::Time::FromDoubleT(25);
+  const base::Time kTime1 = base::Time::FromSecondsSinceUnixEpoch(25);
   test_clock.SetNow(kTime1);
   AddAutocompleteSuggestion("email", "example@example.com");
   AddCreditCard("0000-0000-0000-0000", "1", "2015", "1");

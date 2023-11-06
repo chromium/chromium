@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -111,7 +112,8 @@ CheckClientDownloadRequest::CheckClientDownloadRequest(
     CheckDownloadRepeatingCallback callback,
     DownloadProtectionService* service,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor)
+    scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
+    base::optional_ref<const std::string> password)
     : CheckClientDownloadRequestBase(
           item->GetURL(),
           item->GetTargetFilePath(),
@@ -120,8 +122,10 @@ CheckClientDownloadRequest::CheckClientDownloadRequest(
           service,
           std::move(database_manager),
           DownloadRequestMaker::CreateFromDownloadItem(binary_feature_extractor,
-                                                       item)),
+                                                       item,
+                                                       password)),
       item_(item),
+      password_(password.CopyAsOptional()),
       callback_(callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   item_->AddObserver(this);
@@ -196,6 +200,10 @@ CheckClientDownloadRequest::~CheckClientDownloadRequest() {
 bool CheckClientDownloadRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
   return IsSupportedDownload(*item_, item_->GetTargetFilePath(), reason);
+}
+
+download::DownloadItem* CheckClientDownloadRequest::item() const {
+  return item_;
 }
 
 content::BrowserContext* CheckClientDownloadRequest::GetBrowserContext() const {
@@ -343,6 +351,54 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
   }
 
   return false;
+}
+
+bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
+    bool server_requests_prompt) const {
+  if (!server_requests_prompt) {
+    return false;
+  }
+
+  if (!DownloadItemWarningData::IsEncryptedArchive(item_)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
+  if (!profile) {
+    return false;
+  }
+
+  // While this isn't a "deep" scan, enterprise customers may have similar
+  // reactions to it, so we use the same policy to control it.
+  if (!AreDeepScansAllowedByPolicy(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (GetSafeBrowsingState(*profile->GetPrefs()) !=
+      SafeBrowsingState::STANDARD_PROTECTION) {
+    return false;
+  }
+
+  // Too large archive extraction would fail immediately, so don't prompt in
+  // this case.
+  if (static_cast<size_t>(item_->GetTotalBytes()) >=
+      FileTypePolicies::GetInstance()->GetMaxFileSizeToAnalyze(
+          item_->GetTargetFilePath())) {
+    return false;
+  }
+
+  return base::FeatureList::IsEnabled(kEncryptedArchivesMetadata);
+}
+
+bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {
+  return password_.has_value() &&
+         DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
+         DownloadItemWarningData::HasIncorrectPassword(item_);
+}
+
+bool CheckClientDownloadRequest::ShouldShowScanFailure() const {
+  return DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
+         !DownloadItemWarningData::IsFullyExtractedArchive(item_);
 }
 
 bool CheckClientDownloadRequest::IsAllowlistedByPolicy() const {

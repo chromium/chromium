@@ -151,7 +151,9 @@ v8::Local<v8::Value> MessageToV8(v8::Local<v8::Context> context,
   v8::Local<v8::Value> parsed_message;
   v8::TryCatch try_catch(isolate);
   if (!v8::JSON::Parse(context, v8_message_string).ToLocal(&parsed_message)) {
-    NOTREACHED();
+    // TODO(crbug.com/1439827): Replace the above with a CHECK that parsing
+    // should always succeed here. This should be trusted data.
+    DUMP_WILL_BE_NOTREACHED_NORETURN();
     return v8::Local<v8::Value>();
   }
   return parsed_message;
@@ -281,10 +283,9 @@ bool GetTargetExtensionId(ScriptContext* script_context,
   return true;
 }
 
-void MassageSendMessageArguments(
-    v8::Isolate* isolate,
-    bool allow_options_argument,
-    std::vector<v8::Local<v8::Value>>* arguments_out) {
+void MassageSendMessageArguments(v8::Isolate* isolate,
+                                 bool allow_options_argument,
+                                 v8::LocalVector<v8::Value>* arguments_out) {
   base::span<const v8::Local<v8::Value>> arguments = *arguments_out;
   size_t max_size = allow_options_argument ? 4u : 3u;
   if (arguments.empty() || arguments.size() > max_size)

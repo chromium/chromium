@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -590,12 +591,12 @@ class URLRequestMockDohJob : public URLRequestJob, public AsyncSocket {
                    IOBuffer* buf,
                    int buf_size) {
     if (data_len > buf_size) {
-      memcpy(buf->data(), data, buf_size);
+      std::copy(data, data + buf_size, buf->data());
       leftover_data_ = data + buf_size;
       leftover_data_len_ = data_len - buf_size;
       return buf_size;
     }
-    memcpy(buf->data(), data, data_len);
+    std::copy(data, data + data_len, buf->data());
     return data_len;
   }
 

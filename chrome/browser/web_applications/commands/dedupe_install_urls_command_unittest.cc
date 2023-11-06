@@ -37,10 +37,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    // TODO: handle return value.
-    std::ignore =
-        PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
-
     fake_web_contents_manager_ = static_cast<FakeWebContentsManager*>(
         &provider().web_contents_manager());
 
@@ -83,7 +79,6 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
                                    mojom::UserDisplayMode::kStandalone,
                                    ExternalInstallSource::kExternalDefault);
     options.user_type_allowlist = {"unmanaged"};
-    options.bypass_service_worker_check = true;
     scope.apps.push_back(std::move(options));
 
     base::test::TestFuture<std::map<GURL /*install_url*/,

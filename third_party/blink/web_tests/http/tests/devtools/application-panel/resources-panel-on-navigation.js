@@ -9,6 +9,7 @@ import {ConsoleTestRunner} from 'console_test_runner';
 import * as Common from 'devtools/core/common/common.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 import * as Application from 'devtools/panels/application/application.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests Application Panel response to a main frame navigation.\n`);

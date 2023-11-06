@@ -39,8 +39,11 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests for the PermissionInfoTest. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1", "ignore-certificate-errors"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+    "ignore-certificate-errors"
+})
 @Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class PermissionInfoTest {
     private static final String DSE_ORIGIN = "https://www.google.com";
@@ -66,10 +69,14 @@ public class PermissionInfoTest {
     private static void clearPermissions() throws TimeoutException {
         // Clean up cookies and permissions.
         CallbackHelper helper = new CallbackHelper();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
-                    new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    helper::notifyCalled,
+                                    new int[] {BrowsingDataType.SITE_SETTINGS},
+                                    TimePeriod.ALL_TIME);
+                });
         helper.waitForCallback(0);
     }
 
@@ -79,36 +86,47 @@ public class PermissionInfoTest {
     }
 
     private static Profile getNonPrimaryOTRProfile() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException((Callable<Profile>) () -> {
-            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-            return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
-                    otrProfileID, /*createIfNeeded=*/true);
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                (Callable<Profile>)
+                        () -> {
+                            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                            return Profile.getLastUsedRegularProfile()
+                                    .getOffTheRecordProfile(
+                                            otrProfileID, /* createIfNeeded= */ true);
+                        });
     }
 
     private static Profile getPrimaryOTRProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
-                (Callable<Profile>) ()
-                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
-                                /*createIfNeeded=*/true));
+                (Callable<Profile>)
+                        () ->
+                                Profile.getLastUsedRegularProfile()
+                                        .getPrimaryOTRProfile(/* createIfNeeded= */ true));
     }
 
-    private void setSettingAndExpectValue(@ContentSettingsType int type, String origin,
-            String embedder, @ContentSettingValues int setting, Profile profile,
+    private void setSettingAndExpectValue(
+            @ContentSettingsType int type,
+            String origin,
+            String embedder,
+            @ContentSettingValues int setting,
+            Profile profile,
             @ContentSettingValues int expectedSetting) {
-        PermissionInfo info = new PermissionInfo(type, origin, embedder, /*isEmbargoed=*/false);
+        PermissionInfo info = new PermissionInfo(type, origin, embedder, /* isEmbargoed= */ false);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
 
         CriteriaHelper.pollUiThread(
-                () -> { return info.getContentSetting(profile) == expectedSetting; });
+                () -> {
+                    return info.getContentSetting(profile) == expectedSetting;
+                });
     }
 
     private void resetNotificationsSettingsForTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().resetNotificationsSettingsForTest(
-                    Profile.getLastUsedRegularProfile());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridgeJni.get()
+                            .resetNotificationsSettingsForTest(Profile.getLastUsedRegularProfile());
+                });
     }
 
     @Test
@@ -117,10 +135,20 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile primaryOTRProfile = getPrimaryOTRProfile();
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, primaryOTRProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, primaryOTRProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                primaryOTRProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                primaryOTRProfile,
+                ContentSettingValues.ASK);
     }
 
     @Test
@@ -129,10 +157,20 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
             throws Throwable {
         Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, nonPrimaryOTRProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                nonPrimaryOTRProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                nonPrimaryOTRProfile,
+                ContentSettingValues.ASK);
     }
 
     @Test
@@ -140,10 +178,20 @@ public class PermissionInfoTest {
     @Feature({"Preferences"})
     public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, regularProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.GEOLOCATION, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, regularProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                regularProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.GEOLOCATION,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                regularProfile,
+                ContentSettingValues.ASK);
     }
 
     @Test
@@ -155,10 +203,20 @@ public class PermissionInfoTest {
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, primaryOTRProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, primaryOTRProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                primaryOTRProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                primaryOTRProfile,
+                ContentSettingValues.ASK);
     }
 
     @Test
@@ -170,10 +228,20 @@ public class PermissionInfoTest {
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, nonPrimaryOTRProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, nonPrimaryOTRProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                nonPrimaryOTRProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                nonPrimaryOTRProfile,
+                ContentSettingValues.ASK);
     }
 
     @Test
@@ -182,9 +250,19 @@ public class PermissionInfoTest {
     public void testResetDSENotification_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         resetNotificationsSettingsForTest();
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.BLOCK, regularProfile, ContentSettingValues.BLOCK);
-        setSettingAndExpectValue(ContentSettingsType.NOTIFICATIONS, DSE_ORIGIN, null,
-                ContentSettingValues.DEFAULT, regularProfile, ContentSettingValues.ASK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.BLOCK,
+                regularProfile,
+                ContentSettingValues.BLOCK);
+        setSettingAndExpectValue(
+                ContentSettingsType.NOTIFICATIONS,
+                DSE_ORIGIN,
+                null,
+                ContentSettingValues.DEFAULT,
+                regularProfile,
+                ContentSettingValues.ASK);
     }
 }

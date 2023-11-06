@@ -34,6 +34,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -1239,12 +1240,16 @@ TEST_F(AuthenticatorImplTest, TestGetAssertionTimeout) {
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<device::FidoDiscoveryFactory>());
   NavigateAndCommit(GURL(kTestOrigin1));
+  base::HistogramTester histogram_tester;
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
 
   EXPECT_EQ(
       AuthenticatorGetAssertionAndWaitForTimeout(std::move(options)).status,
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Result",
+      AuthenticatorCommonImpl::GetAssertionResult::kTimeout, 1);
 }
 
 TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
@@ -1802,12 +1807,6 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
     return caller_origin == remote_desktop_client_override_origin;
   }
 
-  bool IsSecurityLevelAcceptableForWebAuthn(
-      content::RenderFrameHost* rfh,
-      const url::Origin& origin) override {
-    return is_webauthn_security_level_acceptable;
-  }
-
   // If set, the return value of IsUVPAA() will be overridden with this value.
   // Platform-specific implementations will not be invoked.
   absl::optional<bool> is_uvpaa_override;
@@ -1832,9 +1831,6 @@ class TestWebAuthenticationDelegate : public WebAuthenticationDelegate {
 
   // The return value of the focus check issued at the end of a request.
   bool is_focused = true;
-
-  // The return value of IsSecurityLevelAcceptableForWebAuthn.
-  bool is_webauthn_security_level_acceptable = true;
 
 #if BUILDFLAG(IS_MAC)
   // Configuration data for the macOS platform authenticator.
@@ -1929,12 +1925,14 @@ class TestAuthenticatorRequestDelegate
       RenderFrameHost* render_frame_host,
       base::OnceClosure action_callbacks_registered_callback,
       AttestationConsent attestation_consent,
-      base::OnceClosure started_over_callback)
+      base::OnceClosure started_over_callback,
+      bool simulate_user_cancelled)
       : action_callbacks_registered_callback_(
             std::move(action_callbacks_registered_callback)),
         attestation_consent_(attestation_consent),
         started_over_callback_(std::move(started_over_callback)),
-        does_block_request_on_failure_(!started_over_callback_.is_null()) {}
+        does_block_request_on_failure_(!started_over_callback_.is_null()),
+        simulate_user_cancelled_(simulate_user_cancelled) {}
 
   TestAuthenticatorRequestDelegate(const TestAuthenticatorRequestDelegate&) =
       delete;
@@ -1998,7 +1996,8 @@ class TestAuthenticatorRequestDelegate
     // Simulate the behaviour of Chrome's |AuthenticatorRequestDialogModel|
     // which shows a specific error when no transports are available and lets
     // the user cancel the request.
-    if (transport_info.available_transports.empty()) {
+    if (transport_info.available_transports.empty() ||
+        simulate_user_cancelled_) {
       std::move(cancel_callback_).Run();
     }
   }
@@ -2020,6 +2019,7 @@ class TestAuthenticatorRequestDelegate
   base::OnceClosure start_over_callback_;
   bool does_block_request_on_failure_ = false;
   bool attestation_consent_queried_ = false;
+  bool simulate_user_cancelled_ = false;
 };
 
 // TestAuthenticatorContentBrowserClient is a test fake implementation of the
@@ -2036,6 +2036,12 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
     return &web_authentication_delegate;
   }
 
+  bool IsSecurityLevelAcceptableForWebAuthn(
+      content::RenderFrameHost* rfh,
+      const url::Origin& origin) override {
+    return is_webauthn_security_level_acceptable;
+  }
+
   std::unique_ptr<AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       RenderFrameHost* render_frame_host) override {
@@ -2047,7 +2053,8 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
         action_callbacks_registered_callback
             ? std::move(action_callbacks_registered_callback)
             : base::DoNothing(),
-        attestation_consent, std::move(started_over_callback_));
+        attestation_consent, std::move(started_over_callback_),
+        simulate_user_cancelled_);
   }
 
   TestWebAuthenticationDelegate web_authentication_delegate;
@@ -2069,6 +2076,13 @@ class TestAuthenticatorContentBrowserClient : public ContentBrowserClient {
   // second time action callbacks are registered. It also causes
   // DoesBlockRequestOnFailure to return true, once.
   base::OnceClosure started_over_callback_;
+
+  // This simulates the user immediately cancelling the request after transport
+  // availability info is enumerated.
+  bool simulate_user_cancelled_ = false;
+
+  // The return value of IsSecurityLevelAcceptableForWebAuthn.
+  bool is_webauthn_security_level_acceptable = true;
 };
 
 // A test class that installs and removes an
@@ -2266,8 +2280,7 @@ class AuthenticatorContentBrowserClientTest : public AuthenticatorImplTest {
 
 TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialCreationOptionsPtr options =
       GetTestPublicKeyCredentialCreationOptions();
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
@@ -2276,8 +2289,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
 
 TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
   NavigateAndCommit(GURL(kTestOrigin1));
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
@@ -2292,8 +2304,7 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           static_cast<content::RenderFrameHostImpl*>(main_rfh())
               ->frame_tree_node(),
           /*enable_ui=*/false);
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialCreationOptionsPtr options =
       GetTestPublicKeyCredentialCreationOptions();
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
@@ -2308,14 +2319,27 @@ TEST_F(AuthenticatorContentBrowserClientTest,
           static_cast<content::RenderFrameHostImpl*>(main_rfh())
               ->frame_tree_node(),
           /*enable_ui=*/false);
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
       options->allow_credentials[0].id, kTestRelyingPartyId));
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::SUCCESS);
+}
+
+TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+  test_client_.simulate_user_cancelled_ = true;
+  base::HistogramTester histogram_tester;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+
+  EXPECT_EQ(AuthenticatorGetAssertion().status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Result",
+      AuthenticatorCommonImpl::GetAssertionResult::kUserCancelled, 1);
 }
 
 // Test that credentials can be created and used from an extension origin when
@@ -3543,7 +3567,8 @@ class MockAuthenticatorRequestDelegateObserver
             nullptr /* render_frame_host */,
             base::DoNothing() /* did_start_request_callback */,
             AttestationConsent::NOT_USED,
-            /*started_over_callback=*/base::OnceClosure()),
+            /*started_over_callback=*/base::OnceClosure(),
+            /*simulate_user_cancelled=*/false),
         failure_reasons_callback_(std::move(failure_reasons_callback)) {}
 
   MockAuthenticatorRequestDelegateObserver(
@@ -3898,6 +3923,34 @@ TEST_F(AuthenticatorImplTest, MakeCredentialWithLargeExcludeList) {
               has_excluded_credential ? AuthenticatorStatus::CREDENTIAL_EXCLUDED
                                       : AuthenticatorStatus::SUCCESS);
   }
+}
+
+TEST_F(AuthenticatorImplTest, GetAssertionResultMetricError) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  base::HistogramTester histogram_tester;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Result",
+      AuthenticatorCommonImpl::GetAssertionResult::kOtherError, 1);
+}
+
+TEST_F(AuthenticatorImplTest, GetAssertionResultMetricSuccess) {
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  base::HistogramTester histogram_tester;
+  PublicKeyCredentialRequestOptionsPtr options =
+      GetTestPublicKeyCredentialRequestOptions();
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->allow_credentials.back().id, kTestRelyingPartyId));
+  EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
+            AuthenticatorStatus::SUCCESS);
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.GetAssertion.Result",
+      AuthenticatorCommonImpl::GetAssertionResult::kOtherSuccess, 1);
 }
 
 // Tests that for an authenticator that does not support batching, credential
@@ -8797,8 +8850,7 @@ TEST_F(InternalAuthenticatorImplTest, MakeCredentialSkipTLSCheck) {
   NavigateAndCommit(GURL(kTestOrigin1));
   InternalAuthenticatorImpl* authenticator =
       GetAuthenticator(url::Origin::Create(GURL(kTestOrigin1)));
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialCreationOptionsPtr options =
       GetTestPublicKeyCredentialCreationOptions();
   TestMakeCredentialCallback callback;
@@ -8812,8 +8864,7 @@ TEST_F(InternalAuthenticatorImplTest, GetAssertionSkipTLSCheck) {
   NavigateAndCommit(GURL(kTestOrigin1));
   InternalAuthenticatorImpl* authenticator =
       GetAuthenticator(url::Origin::Create(GURL(kTestOrigin1)));
-  test_client_.GetTestWebAuthenticationDelegate()
-      ->is_webauthn_security_level_acceptable = false;
+  test_client_.is_webauthn_security_level_acceptable = false;
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
   ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(

@@ -839,6 +839,10 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
   if (base::android::BuildInfo::GetInstance()->is_automotive()) {
     if (!blink::IsSupportedMimeType(mime_type)) {
       download_message_bridge_->ShowUnsupportedDownloadMessage(web_contents);
+      base::UmaHistogramEnumeration(
+          "Download.Blocked.ContentType.Automotive",
+          download::DownloadContentFromMimeType(mime_type, false),
+          download::DownloadContent::MAX);
       return true;
     }
   }
@@ -1340,7 +1344,9 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT ||
       item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
       item->GetDangerType() ==
-          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING ||
+      item->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING) {
     download::DownloadDangerType danger_type =
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS;
     switch (result) {
@@ -1404,6 +1410,7 @@ void ChromeDownloadManagerDelegate::CheckClientDownloadDone(
         break;
       case safe_browsing::DownloadCheckResult::
           PROMPT_FOR_LOCAL_PASSWORD_SCANNING:
+        is_pending_scanning = true;
         danger_type =
             download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
         break;
@@ -1597,7 +1604,7 @@ void ChromeDownloadManagerDelegate::OnDownloadTargetDetermined(
         web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
     if (native_window && item) {
       InsecureDownloadDialogBridge::GetInstance()->CreateDialog(
-          item, target_path.BaseName(), native_window,
+          item, item->GetFileNameToReportUser(), native_window,
           base::BindOnce(HandleInsecureDownloadInfoBarResult, item,
                          std::move(target_info), std::move(callback)));
       return;

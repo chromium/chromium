@@ -389,6 +389,21 @@ const struct InputMethodNameMap {
     {"__MSG_TRANSLITERATION_UR__", IDS_IME_NAME_TRANSLITERATION_UR},
 };
 
+// Inserts {key, value} into the multimap if it does not exist.
+void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
+                                const std::string& key,
+                                const std::string& value) {
+  using It = LanguageCodeToIdsMap::const_iterator;
+  std::pair<It, It> range = multimap.equal_range(key);
+  It it = range.first;
+  for (; it != range.second; ++it) {
+    if (it->second == value) {
+      return;
+    }
+  }
+  multimap.insert(it, {key, value});
+}
+
 }  // namespace
 
 InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
@@ -418,7 +433,7 @@ InputMethodUtil::InputMethodUtil(InputMethodDelegate* delegate)
 InputMethodUtil::~InputMethodUtil() = default;
 
 std::string InputMethodUtil::GetLocalizedDisplayName(
-    const InputMethodDescriptor& descriptor) const {
+    const InputMethodDescriptor& descriptor) {
   // Localizes the input method name.
   const std::string& disp = descriptor.name();
   if (base::StartsWith(disp, "__MSG_", base::CompareCase::SENSITIVE)) {
@@ -535,7 +550,7 @@ bool InputMethodUtil::GetInputMethodIdsFromLanguageCodeInternal(
     const LanguageCodeToIdsMap& language_code_to_ids,
     std::string_view normalized_language_code,
     InputMethodType type,
-    std::vector<std::string>* out_input_method_ids) const {
+    std::vector<std::string>* out_input_method_ids) {
   DCHECK(out_input_method_ids);
   out_input_method_ids->clear();
 
@@ -750,21 +765,6 @@ bool InputMethodUtil::IsLoginKeyboard(const std::string& input_method_id)
   const InputMethodDescriptor* ime =
       GetInputMethodDescriptorFromId(input_method_id);
   return ime ? ime->is_login_keyboard() : false;
-}
-
-// Inserts {key, value} into the multimap if it does not exist.
-void MultimapDeduplicatedInsert(LanguageCodeToIdsMap& multimap,
-                                const std::string& key,
-                                const std::string& value) {
-  using It = LanguageCodeToIdsMap::const_iterator;
-  std::pair<It, It> range = multimap.equal_range(key);
-  It it = range.first;
-  for (; it != range.second; ++it) {
-    if (it->second == value) {
-      return;
-    }
-  }
-  multimap.insert(it, {key, value});
 }
 
 void InputMethodUtil::AppendInputMethods(const InputMethodDescriptors& imes) {

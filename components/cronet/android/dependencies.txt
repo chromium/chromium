@@ -1,5 +1,6 @@
 //base
 //base/allocator
+//base/allocator/partition_allocator
 //base/allocator/partition_allocator/src/partition_alloc
 //base/android/jni_generator
 //base/numerics

@@ -17,7 +17,7 @@ namespace internal {
 
 template <typename T>
 class CheckedNumeric {
-  static_assert(std::is_arithmetic<T>::value,
+  static_assert(std::is_arithmetic_v<T>,
                 "CheckedNumeric<T>: T must be a numeric type.");
 
  public:
@@ -42,7 +42,7 @@ class CheckedNumeric {
   // This is not an explicit constructor because we implicitly upgrade regular
   // numerics to CheckedNumerics to make them easier to use.
   template <typename Src,
-            typename = std::enable_if_t<std::is_arithmetic<Src>::value>>
+            typename = std::enable_if_t<std::is_arithmetic_v<Src>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
   constexpr CheckedNumeric(Src value) : state_(value) {}
 
@@ -144,14 +144,14 @@ class CheckedNumeric {
 
   constexpr CheckedNumeric operator-() const {
     // Use an optimized code path for a known run-time variable.
-    if (!IsConstantEvaluated() && std::is_signed<T>::value &&
-        std::is_floating_point<T>::value) {
+    if (!IsConstantEvaluated() && std::is_signed_v<T> &&
+        std::is_floating_point_v<T>) {
       return FastRuntimeNegate();
     }
     // The negation of two's complement int min is int min.
     const bool is_valid =
         IsValid() &&
-        (!std::is_signed<T>::value || std::is_floating_point<T>::value ||
+        (!std::is_signed_v<T> || std::is_floating_point_v<T> ||
          NegateWrapper(state_.value()) != std::numeric_limits<T>::lowest());
     return CheckedNumeric<T>(NegateWrapper(state_.value()), is_valid);
   }

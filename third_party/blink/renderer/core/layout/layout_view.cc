@@ -110,6 +110,7 @@ class HitTestLatencyRecorder {
 LayoutView::LayoutView(ContainerNode* document)
     : LayoutNGBlockFlow(document),
       frame_view_(To<Document>(document)->View()),
+      layout_counter_count_(0),
       hit_test_count_(0),
       hit_test_cache_hits_(0),
       hit_test_cache_(MakeGarbageCollected<HitTestCache>()),
@@ -701,7 +702,7 @@ PhysicalSize LayoutView::PageAreaSize(wtf_size_t page_index,
   const ComputedStyle* page_style =
       GetDocument().StyleForPage(page_index, page_name);
   WebPrintPageDescription description = default_page_description_;
-  GetDocument().GetPageDescription(*page_style, &description);
+  GetDocument().GetPageDescriptionNoLifecycleUpdate(*page_style, &description);
 
   gfx::SizeF page_size(
       std::max(.0f, description.size.width() -
@@ -958,6 +959,10 @@ void LayoutView::StyleDidChange(StyleDifference diff,
                           visual_viewport.UsedColorSchemeScrollbars()) {
       visual_viewport.UsedColorSchemeChanged();
     }
+    if (old_style && old_style->ScrollbarThumbColorResolved() !=
+                         visual_viewport.CSSScrollbarThumbColor()) {
+      visual_viewport.ScrollbarColorChanged();
+    }
   }
 }
 
@@ -1003,7 +1008,7 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
          "container query style recalcs";
 
   needs_marker_counter_update_ = false;
-  if (!HasLayoutListItems()) {
+  if (!HasLayoutCounters() && !HasLayoutListItems()) {
     return;
   }
 
@@ -1025,6 +1030,8 @@ void LayoutView::UpdateMarkersAndCountersAfterStyleChange(
     } else if (auto* inline_list_item =
                    DynamicTo<LayoutInlineListItem>(layout_object)) {
       inline_list_item->UpdateCounterStyle();
+    } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
+      counter->UpdateCounter();
     }
   }
 }

@@ -554,6 +554,10 @@ bool OmniboxFieldTrial::IsActionsUISimplificationEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxActionsUISimplification);
 }
 
+bool OmniboxFieldTrial::IsKeywordModeRefreshEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kOmniboxKeywordModeRefresh);
+}
+
 const base::FeatureParam<bool>
     OmniboxFieldTrial::kActionsUISimplificationIncludeRealbox(
         &omnibox::kOmniboxActionsUISimplification,
@@ -951,6 +955,27 @@ const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring(
     "DomainSuggestionsAlternativeScoring",
     false);
 
+const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>::Option
+    kCompanyEntityIconAdjustmentGroupOptions[] = {
+        {omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive,
+         "least-aggressive"},
+        {omnibox::CompanyEntityIconAdjustmentGroup::kModerate, "moderate"},
+        {omnibox::CompanyEntityIconAdjustmentGroup::kMostAggressive,
+         "most-aggressive"},
+};
+
+const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
+    kCompanyEntityIconAdjustmentGroup{
+        &omnibox::kCompanyEntityIconAdjustment,
+        "OmniboxCompanyEntityAdjustmentGroup",
+        omnibox::CompanyEntityIconAdjustmentGroup::kLeastAggressive,
+        &kCompanyEntityIconAdjustmentGroupOptions};
+
+const base::FeatureParam<bool> kCompanyEntityIconAdjustmentCounterfactual(
+    &omnibox::kCompanyEntityIconAdjustment,
+    "CompanyEntityIconAdjustmentCounterfactual",
+    false);
+
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 
@@ -1015,6 +1040,14 @@ MLConfig::MLConfig() {
   enable_scoring_signals_annotators =
       kEnableScoringSignalsAnnotatorsForLogging.Get() ||
       kEnableScoringSignalsAnnotatorsForMlScoring.Get();
+  shortcut_document_signals =
+      base::FeatureParam<bool>(&omnibox::kLogUrlScoringSignals,
+                               "MlUrlScoringShortcutDocumentSignals", false)
+          .Get() ||
+      base::FeatureParam<bool>(&omnibox::kMlUrlScoring,
+                               "MlUrlScoringShortcutDocumentSignals", false)
+          .Get();
+
   ml_url_scoring = base::FeatureList::IsEnabled(omnibox::kMlUrlScoring);
   ml_sync_batch_url_scoring = kMlSyncBatchUrlScoring.Get();
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();

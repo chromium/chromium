@@ -61,6 +61,8 @@ class CompanionSidePanelUntrustedUIConfig : public content::WebUIConfig {
   CompanionSidePanelUntrustedUIConfig();
   ~CompanionSidePanelUntrustedUIConfig() override = default;
 
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;

@@ -8,7 +8,7 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 
 import {DiscoverySessionRemote} from './adapter.mojom-webui.js';
 import {AdapterBroker, AdapterProperty, getAdapterBroker} from './adapter_broker.js';

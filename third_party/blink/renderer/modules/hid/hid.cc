@@ -286,7 +286,7 @@ void HID::Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
 HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
   auto it = device_cache_.find(info->guid);
   if (it != device_cache_.end()) {
-    return it->value;
+    return it->value.Get();
   }
 
   const String guid = info->guid;

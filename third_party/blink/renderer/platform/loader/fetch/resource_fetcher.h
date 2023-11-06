@@ -147,7 +147,7 @@ class PLATFORM_EXPORT ResourceFetcher
   ResourceLoadObserver* GetResourceLoadObserver() {
     // When detached, we must have a null observer.
     DCHECK(!IsDetached() || !resource_load_observer_);
-    return resource_load_observer_;
+    return resource_load_observer_.Get();
   }
   // This must be called right after construction.
   void SetResourceLoadObserver(ResourceLoadObserver* observer) {
@@ -326,10 +326,6 @@ class PLATFORM_EXPORT ResourceFetcher
         is_potentially_lcp_element, is_potentially_lcp_influencer);
   }
 
-  bool ShouldLoadIncrementalForTesting(ResourceType type) {
-    return ShouldLoadIncremental(type);
-  }
-
   void SetThrottleOptionOverride(
       ResourceLoadScheduler::ThrottleOptionOverride throttle_option_override) {
     scheduler_->SetThrottleOptionOverride(throttle_option_override);
@@ -339,7 +335,7 @@ class PLATFORM_EXPORT ResourceFetcher
   SubresourceWebBundleList* GetOrCreateSubresourceWebBundleList();
 
   BackForwardCacheLoaderHelper* GetBackForwardCacheLoaderHelper() {
-    return back_forward_cache_loader_helper_;
+    return back_forward_cache_loader_helper_.Get();
   }
 
   void SetEarlyHintsPreloadedResources(
@@ -394,6 +390,11 @@ class PLATFORM_EXPORT ResourceFetcher
       const absl::optional<float> resource_height = absl::nullopt,
       bool is_potentially_lcp_element = false,
       bool is_potentially_lcp_influencer = false);
+  // A helper that uses `params` to fill out other remaining parameters.
+  ResourceLoadPriority ComputeLoadPriorityHelper(
+      ResourceType,
+      ResourcePriority::VisibilityStatus,
+      const FetchParameters& params);
   ResourceLoadPriority AdjustImagePriority(
       ResourceLoadPriority priority_so_far,
       ResourceType type,
@@ -402,7 +403,6 @@ class PLATFORM_EXPORT ResourceFetcher
       bool is_link_preload,
       const absl::optional<float> resource_width,
       const absl::optional<float> resource_height);
-  bool ShouldLoadIncremental(ResourceType type) const;
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
   // create a new WebScopedVirtualTimePauser and set it to

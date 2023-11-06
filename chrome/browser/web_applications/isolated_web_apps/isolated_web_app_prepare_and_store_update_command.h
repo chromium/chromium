@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_PREPARE_AND_STORE_UPDATE_COMMAND_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_PREPARE_AND_STORE_UPDATE_COMMAND_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <type_traits>
 
@@ -45,28 +45,28 @@ class WebAppUrlLoader;
 enum class WebAppUrlLoaderResult;
 
 struct IsolatedWebAppUpdatePrepareAndStoreCommandSuccess {
-  base::Version update_version;
+  IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
+      base::Version update_version,
+      IsolatedWebAppLocation destination_location);
+  IsolatedWebAppUpdatePrepareAndStoreCommandSuccess(
+      const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& other);
+  ~IsolatedWebAppUpdatePrepareAndStoreCommandSuccess();
 
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success) {
-    return os << "IsolatedWebAppUpdatePrepareAndStoreCommandSuccess { "
-                 "update_version = \""
-              << success.update_version.GetString() << "\" }.";
-  }
+  base::Version update_version;
+  IsolatedWebAppLocation location;
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandSuccess& success);
 
 struct IsolatedWebAppUpdatePrepareAndStoreCommandError {
   std::string message;
-
-  friend std::ostream& operator<<(
-      std::ostream& os,
-      const IsolatedWebAppUpdatePrepareAndStoreCommandError& error) {
-    return os << "IsolatedWebAppUpdatePrepareAndStoreCommandError { "
-                 "message = \""
-              << error.message << "\" }.";
-  }
 };
+
+std::ostream& operator<<(
+    std::ostream& os,
+    const IsolatedWebAppUpdatePrepareAndStoreCommandError& error);
 
 using IsolatedWebAppUpdatePrepareAndStoreCommandResult =
     base::expected<IsolatedWebAppUpdatePrepareAndStoreCommandSuccess,
@@ -92,6 +92,10 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
     const IsolatedWebAppLocation& location() const { return location_; }
     const absl::optional<base::Version>& expected_version() const {
       return expected_version_;
+    }
+
+    void set_location(IsolatedWebAppLocation location) {
+      location_ = std::move(location);
     }
 
    private:
@@ -160,6 +164,14 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   Profile& profile();
 
+  void CopyToProfileDirectory(
+      base::OnceCallback<void(base::expected<IsolatedWebAppLocation,
+                                             std::string>)> next_step_callback);
+
+  void UpdateLocation(
+      base::OnceClosure next_step_callback,
+      base::expected<IsolatedWebAppLocation, std::string> new_location);
+
   void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
   void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
@@ -191,9 +203,10 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::unique_ptr<AppLock> lock_;
   base::Value::Dict debug_log_;
 
-  UpdateInfo update_info_;
+  UpdateInfo source_update_info_;
   IsolatedWebAppUrlInfo url_info_;
   base::Version installed_version_;
+  absl::optional<UpdateInfo> lazy_destination_update_info_;
 
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppUrlLoader> url_loader_;

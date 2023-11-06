@@ -52,6 +52,10 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
 CheckFileSystemAccessWriteRequest ::~CheckFileSystemAccessWriteRequest() =
     default;
 
+download::DownloadItem* CheckFileSystemAccessWriteRequest::item() const {
+  return nullptr;
+}
+
 bool CheckFileSystemAccessWriteRequest::IsSupportedDownload(
     DownloadCheckResultReason* reason) {
   if (!FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
@@ -113,6 +117,20 @@ void CheckFileSystemAccessWriteRequest::UploadBinary(
 
 bool CheckFileSystemAccessWriteRequest::ShouldPromptForDeepScanning(
     bool server_requests_prompt) const {
+  return false;
+}
+
+bool CheckFileSystemAccessWriteRequest::ShouldPromptForLocalDecryption(
+    bool server_requests_prompt) const {
+  return false;
+}
+
+bool CheckFileSystemAccessWriteRequest::ShouldPromptForIncorrectPassword()
+    const {
+  return false;
+}
+
+bool CheckFileSystemAccessWriteRequest::ShouldShowScanFailure() const {
   return false;
 }
 

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
-#include <algorithm>
 #include <string>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
@@ -19,13 +19,17 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/search_engine_choice_utils.h"
+#include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -132,8 +136,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
     defaults.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the second list (active search engines). This will not have any
-  // entries if the new Search Engines page is not enabled.
+  // Build the second list (active search engines).
   base::Value::List actives;
   size_t last_active_engine_index =
       list_controller_.table_model()->last_active_engine_index();
@@ -145,7 +148,7 @@ base::Value::Dict SearchEnginesHandler::GetSearchEnginesList() {
     actives.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
-  // Build the second list (other search engines).
+  // Build the third list (other search engines).
   base::Value::List others;
   size_t last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
@@ -223,6 +226,18 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
   GURL icon_url = template_url->favicon_url();
   if (icon_url.is_valid())
     dict.Set("iconURL", icon_url.spec());
+
+  const bool is_search_engine_choice_settings_ui =
+      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceSettingsUi) &&
+      search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kAny);
+  if (is_search_engine_choice_settings_ui &&
+      template_url->prepopulate_id() != 0) {
+    const std::u16string icon_path = GetGeneratedIconPath(
+        template_url->keyword(), /*parent_directory_path=*/u"images/");
+    dict.Set("iconPath", icon_path);
+  }
+
   dict.Set("modelIndex", base::checked_cast<int>(index));
 
   dict.Set("canBeRemoved", list_controller_.CanRemove(template_url));
@@ -264,7 +279,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::Value::List& args) {
-  CHECK_EQ(1U, args.size());
+  CHECK_EQ(2U, args.size());
   int index = args[0].GetInt();
   if (index < 0 || static_cast<size_t>(index) >=
                        list_controller_.table_model()->RowCount()) {
@@ -272,6 +287,23 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   }
 
   list_controller_.MakeDefaultTemplateURL(index);
+
+#if BUILDFLAG(ENABLE_SEARCH_ENGINE_CHOICE)
+  Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(&profile);
+  search_engines::ChoiceMadeLocation choice_made_location =
+      static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
+
+  CHECK(choice_made_location ==
+            search_engines::ChoiceMadeLocation::kSearchSettings ||
+        choice_made_location ==
+            search_engines::ChoiceMadeLocation::kSearchEngineSettings);
+  // `RecordChoiceMade` should always be called after setting the default
+  // search engine.
+  search_engines::RecordChoiceMade(profile.GetPrefs(), choice_made_location,
+                                   template_url_service);
+#endif
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }

@@ -61,14 +61,24 @@ enum DCLayerResult {
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA = 18,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG = 19,
   DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT = 20,
-  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_P010_VIDEO_PROCESSOR_SUPPORT,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN = 21,
+  DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010 = 22,
+  kMaxValue = DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010,
 };
+
+bool IsCompatibleHDRMetadata(
+    const absl::optional<gfx::HDRMetadata>& hdr_metadata) {
+  return hdr_metadata && hdr_metadata->smpte_st_2086 &&
+         hdr_metadata->smpte_st_2086->IsValid() && hdr_metadata->cta_861_3 &&
+         hdr_metadata->cta_861_3->IsValid();
+}
 
 DCLayerResult ValidateYUVOverlay(
     const gfx::ProtectedVideoType& protected_video_type,
     const gfx::ColorSpace& video_color_space,
     const gfx::BufferFormat& buffer_format,
     const absl::optional<gfx::HDRMetadata>& hdr_metadata,
+    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -96,10 +106,27 @@ DCLayerResult ValidateYUVOverlay(
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG;
   }
 
-  // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-  // hdr metadata is still missing. We shouldn't promote too for that case.
-  if (video_color_space.IsHDR() && !hdr_metadata.has_value()) {
-    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+  if (video_color_space.IsHDR()) {
+    // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
+    // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
+    // could always cause intel driver crash when in HDR overlay mode, and
+    // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
+    // could solve the crash issue, but for safe reason, validate both here.
+    if (!IsCompatibleHDRMetadata(hdr_metadata)) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+    }
+
+    // Do not promote hdr overlay when not in fullscreen mode, as this may cause
+    // inconsistent tone mapping result and may cause low fps page scrolling.
+    if (!is_page_fullscreen_mode) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN;
+    }
+
+    // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
+    // may cause blue output result if content is NV12 8bit HDR10.
+    if (buffer_format != gfx::BufferFormat::P010) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010;
+    }
   }
 
   // Only promote overlay for 10bit+ contents when video processor can
@@ -115,6 +142,7 @@ DCLayerResult ValidateYUVOverlay(
 DCLayerResult ValidateYUVQuad(
     const YUVVideoDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
+    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -162,10 +190,27 @@ DCLayerResult ValidateYUVQuad(
     return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HLG;
   }
 
-  // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
-  // hdr metadata is still missing. We shouldn't promote too for that case.
-  if (quad->video_color_space.IsHDR() && !quad->hdr_metadata.has_value()) {
-    return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+  if (quad->video_color_space.IsHDR()) {
+    // Otherwise, it could be a parser bug like https://crbug.com/1362288 if the
+    // hdr metadata is still missing. Missing `smpte_st_2086` and `cta_861_3`
+    // could always cause intel driver crash when in HDR overlay mode, and
+    // technically as long as one of the `smpte_st_2086` or `cta_861_3` exists
+    // could solve the crash issue, but for safe reason, validate both here.
+    if (!IsCompatibleHDRMetadata(quad->hdr_metadata)) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_NO_HDR_METADATA;
+    }
+
+    // Do not promote hdr overlay when not in fullscreen mode, as this may cause
+    // inconsistent tone mapping result and may cause low fps page scrolling.
+    if (!is_page_fullscreen_mode) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_FULLSCREEN;
+    }
+
+    // Do not promote hdr overlay if buffer is not in 10bit P010 format. as this
+    // may cause blue output result if content is NV12 8bit HDR10.
+    if (quad->bits_per_channel != 10) {
+      return DC_LAYER_FAILED_YUV_VIDEO_QUAD_HDR_NON_P010;
+    }
   }
 
   // Only promote overlay for 10bit+ contents when video processor can
@@ -217,6 +262,7 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
 DCLayerResult ValidateTextureQuad(
     const TextureDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
+    bool is_page_fullscreen_mode,
     bool has_overlay_support,
     bool has_p010_video_processor_support,
     int allowed_yuv_overlay_count,
@@ -244,13 +290,12 @@ DCLayerResult ValidateTextureQuad(
   }
 
   if (quad->is_video_frame) {
-    auto color_space =
-        resource_provider->GetOverlayColorSpace(quad->resource_id());
+    auto color_space = resource_provider->GetColorSpace(quad->resource_id());
     auto buffer_format =
         resource_provider->GetBufferFormat(quad->resource_id());
     auto result = ValidateYUVOverlay(
         quad->protected_video_type, color_space, buffer_format,
-        quad->hdr_metadata, has_overlay_support,
+        quad->hdr_metadata, is_page_fullscreen_mode, has_overlay_support,
         has_p010_video_processor_support, allowed_yuv_overlay_count,
         processed_yuv_overlay_count);
     return result;
@@ -292,8 +337,7 @@ void FromTextureQuad(const TextureDrawQuad* quad,
         quad->shared_quad_state->clip_rect.value_or(gfx::Rect()));
   }
 
-  dc_layer->color_space =
-      resource_provider->GetOverlayColorSpace(quad->resource_id());
+  dc_layer->color_space = resource_provider->GetColorSpace(quad->resource_id());
   dc_layer->hdr_metadata = quad->hdr_metadata;
   // Both color space and protected_video_type are hard-coded for stream video.
   // TODO(crbug.com/1384544): Consider using quad->protected_video_type.
@@ -686,7 +730,7 @@ void DCLayerOverlayProcessor::UpdateDamageRect(
         // We only support at most two overlays. The size of
         // damages_to_be_removed will not be bigger than 2. We should revisit
         // this damages_to_be_removed for-loop if we try to support many
-        // overlays. See capabilities.supports_two_yuv_hardware_overlays.
+        // overlays. See capabilities.allowed_yuv_overlay_count.
         for (const auto index_to_be_removed :
              current_frame_state.damages_to_be_removed) {
           // The overlay damages and the damages right below them will not be
@@ -781,7 +825,8 @@ void DCLayerOverlayProcessor::CollectCandidates(
     const FilterOperationsMap& render_pass_backdrop_filters,
     RenderPassOverlayData& overlay_data,
     RenderPassCurrentFrameState& render_pass_state,
-    GlobalOverlayState& global_overlay_state) {
+    GlobalOverlayState& global_overlay_state,
+    bool is_page_fullscreen_mode) {
   // Output rects of child render passes that have backdrop filters in target
   // space. These rects are used to determine if the overlay rect could be read
   // by backdrop filters.
@@ -821,8 +866,8 @@ void DCLayerOverlayProcessor::CollectCandidates(
       case DrawQuad::Material::kYuvVideoContent:
         result = ValidateYUVQuad(
             YUVVideoDrawQuad::MaterialCast(*it), backdrop_filter_rects,
-            has_overlay_support_, has_p010_video_processor_support_,
-            allowed_yuv_overlay_count_,
+            is_page_fullscreen_mode, has_overlay_support_,
+            has_p010_video_processor_support_, allowed_yuv_overlay_count_,
             global_overlay_state.processed_yuv_overlay_count,
             resource_provider);
         is_yuv_overlay = true;
@@ -836,8 +881,9 @@ void DCLayerOverlayProcessor::CollectCandidates(
           result = DC_LAYER_SUCCESS;
         } else {
           result = ValidateTextureQuad(
-              tex_quad, backdrop_filter_rects, has_overlay_support_,
-              has_p010_video_processor_support_, allowed_yuv_overlay_count_,
+              tex_quad, backdrop_filter_rects, is_page_fullscreen_mode,
+              has_overlay_support_, has_p010_video_processor_support_,
+              allowed_yuv_overlay_count_,
               global_overlay_state.processed_yuv_overlay_count,
               resource_provider);
         }
@@ -1024,7 +1070,8 @@ void DCLayerOverlayProcessor::Process(
 
     CollectCandidates(resource_provider, render_pass,
                       render_pass_backdrop_filters, overlay_data,
-                      current_frame_state, global_overlay_state);
+                      current_frame_state, global_overlay_state,
+                      is_page_fullscreen_mode);
   }
 
   // We might not save power if there are more than one videos and only part of

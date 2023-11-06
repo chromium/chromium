@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.bookmarks;
 
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.IntDef;
 
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
+import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -22,7 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Responsible for hosting properties of the improved bookmark row. */
 public class ImprovedBookmarkRowProperties {
-    @IntDef({ImageVisibility.DRAWABLE, ImageVisibility.FOLDER_DRAWABLE, ImageVisibility.MENU})
+    @IntDef({
+        ImageVisibility.DRAWABLE,
+        ImageVisibility.FOLDER_DRAWABLE,
+        ImageVisibility.MENU,
+        ImageVisibility.NONE
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ImageVisibility {
         // Single drawable displayed.
@@ -31,6 +38,8 @@ public class ImprovedBookmarkRowProperties {
         int FOLDER_DRAWABLE = 1;
         // Menu displayed.
         int MENU = 2;
+        // Nothing shown.
+        int NONE = 3;
     }
 
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
@@ -46,8 +55,8 @@ public class ImprovedBookmarkRowProperties {
     // Sets the tint color for the start image.
     public static final WritableObjectPropertyKey<ColorStateList> START_ICON_TINT =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Drawable> START_ICON_DRAWABLE =
-            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<LazyOneshotSupplier<Drawable>>
+            START_ICON_DRAWABLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View> ACCESSORY_VIEW =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<ListMenuButtonDelegate>
@@ -58,7 +67,7 @@ public class ImprovedBookmarkRowProperties {
     // This means that the model won't necessarily always be up-to-date. Using skipEquality to
     // push events to the view even if the property is the same.
     public static final WritableObjectPropertyKey<Boolean> SELECTED =
-            new WritableObjectPropertyKey<>(/*skipEquality=*/true);
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     // Not if the row is currently selected, but whether another row in the same list is selected.
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
@@ -75,18 +84,49 @@ public class ImprovedBookmarkRowProperties {
 
     public static final WritableObjectPropertyKey<ShoppingAccessoryCoordinator>
             SHOPPING_ACCESSORY_COORDINATOR = new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<ImprovedBookmarkFolderViewCoordinator>
-            FOLDER_COORDINATOR = new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<String> CONTENT_DESCRIPTION =
             new WritableObjectPropertyKey<>();
 
-    private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {TITLE, DESCRIPTION,
-            DESCRIPTION_VISIBLE, START_IMAGE_VISIBILITY, START_AREA_BACKGROUND_COLOR,
-            START_ICON_TINT, START_ICON_DRAWABLE, ACCESSORY_VIEW, LIST_MENU_BUTTON_DELEGATE,
-            POPUP_LISTENER, SELECTED, SELECTION_ACTIVE, DRAG_ENABLED, EDITABLE, ROW_CLICK_LISTENER,
-            ROW_LONG_CLICK_LISTENER, SHOPPING_ACCESSORY_COORDINATOR, FOLDER_COORDINATOR,
-            END_IMAGE_VISIBILITY, END_IMAGE_RES, CONTENT_DESCRIPTION};
-    public static final PropertyKey[] ALL_KEYS = PropertyModel.concatKeys(
-            BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
+    // Folder-specific properties.
+    public static final WritableIntPropertyKey FOLDER_START_AREA_BACKGROUND_COLOR =
+            new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<ColorStateList> FOLDER_START_ICON_TINT =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Drawable> FOLDER_START_ICON_DRAWABLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<LazyOneshotSupplier<Pair<Drawable, Drawable>>>
+            FOLDER_START_IMAGE_FOLDER_DRAWABLES = new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey FOLDER_CHILD_COUNT = new WritableIntPropertyKey();
+
+    private static final PropertyKey[] IMPROVED_BOOKMARK_ROW_PROPERTIES = {
+        TITLE,
+        DESCRIPTION,
+        DESCRIPTION_VISIBLE,
+        START_IMAGE_VISIBILITY,
+        START_AREA_BACKGROUND_COLOR,
+        START_ICON_TINT,
+        START_ICON_DRAWABLE,
+        ACCESSORY_VIEW,
+        LIST_MENU_BUTTON_DELEGATE,
+        POPUP_LISTENER,
+        SELECTED,
+        SELECTION_ACTIVE,
+        DRAG_ENABLED,
+        EDITABLE,
+        ROW_CLICK_LISTENER,
+        ROW_LONG_CLICK_LISTENER,
+        SHOPPING_ACCESSORY_COORDINATOR,
+        END_IMAGE_VISIBILITY,
+        END_IMAGE_RES,
+        CONTENT_DESCRIPTION,
+        FOLDER_START_AREA_BACKGROUND_COLOR,
+        FOLDER_START_ICON_TINT,
+        FOLDER_START_ICON_DRAWABLE,
+        FOLDER_START_IMAGE_FOLDER_DRAWABLES,
+        FOLDER_CHILD_COUNT
+    };
+    public static final PropertyKey[] ALL_KEYS =
+            PropertyModel.concatKeys(
+                    BookmarkManagerProperties.ALL_KEYS, IMPROVED_BOOKMARK_ROW_PROPERTIES);
 }

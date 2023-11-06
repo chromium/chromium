@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -188,6 +189,34 @@ std::vector<ImageInfo> AnnotationStorage::GetAllAnnotations() {
   return matched_paths;
 }
 
+std::vector<base::FilePath> AnnotationStorage::GetAllFiles() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "GetAllFiles";
+
+  std::vector<base::FilePath> documents;
+  if (!DocumentsTable::GetAllFiles(sql_database_.get(), documents)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    return {};
+  }
+
+  return documents;
+}
+
+std::vector<base::FilePath> AnnotationStorage::SearchByDirectory(
+    const base::FilePath& directory) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "SearchByDirectory " << directory;
+
+  std::vector<base::FilePath> files;
+  if (!DocumentsTable::SearchByDirectory(sql_database_.get(), directory,
+                                         files)) {
+    LOG(ERROR) << "Failed to get file paths from the db.";
+    return {};
+  }
+
+  return files;
+}
+
 std::vector<ImageInfo> AnnotationStorage::FindImagePath(
     const base::FilePath& image_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -313,16 +342,21 @@ std::vector<FileSearchResult> AnnotationStorage::Search(
   }
 
   if (results.size() <= max_num_results) {
-    std::sort(results.begin(), results.end(),
-              [](const FileSearchResult& a, const FileSearchResult& b) {
-                return a.relevance > b.relevance;
-              });
+    std::sort(
+        results.begin(), results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          // Sort in descending order by relevance and last_modified, then in
+          // ascending order by file_path
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
   } else {
-    std::partial_sort(results.begin(), results.begin() + max_num_results,
-                      results.end(),
-                      [](const FileSearchResult& a, const FileSearchResult& b) {
-                        return a.relevance > b.relevance;
-                      });
+    std::partial_sort(
+        results.begin(), results.begin() + max_num_results, results.end(),
+        [](const FileSearchResult& a, const FileSearchResult& b) {
+          return std::tie(a.relevance, a.last_modified, b.file_path.value()) >
+                 std::tie(b.relevance, b.last_modified, a.file_path.value());
+        });
     results = std::vector<FileSearchResult>(results.begin(),
                                             results.begin() + max_num_results);
   }

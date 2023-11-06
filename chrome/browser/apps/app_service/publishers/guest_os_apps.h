@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -91,7 +90,6 @@ class GuestOSApps : public KeyedService,
   raw_ptr<guest_os::GuestOsRegistryService> registry_;
   base::ScopedObservation<guest_os::GuestOsRegistryService, GuestOSApps>
       registry_observation_{this};
-  apps_util::IncrementingIconKeyFactory icon_key_factory_;
 };
 
 // Create a file intent filter with mime type conditions for App Service.

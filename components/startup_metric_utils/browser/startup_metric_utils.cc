@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/trace_event/trace_event.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -564,8 +565,7 @@ void BrowserStartupMetricRecorder::RecordPrivacySandboxAttestationsFirstReady(
     is_privacy_sandbox_attestations_histogram_recorded_ = true;
     UmaHistogramWithTraceAndTemperature(
         &base::UmaHistogramMediumTimes,
-        "PrivacySandbox.Attestations.InitializationDuration."
-        "ComponentReadyFromBrowserWindowFirstPaint",
+        privacy_sandbox::kComponentReadyFromBrowserWindowFirstPaintUMA,
         browser_window_first_paint_ticks_, ticks);
     return;
   }
@@ -577,15 +577,13 @@ void BrowserStartupMetricRecorder::RecordPrivacySandboxAttestationsFirstReady(
     // The durations should be a few minutes.
     UmaHistogramWithTraceAndTemperature(
         &base::UmaHistogramMediumTimes,
-        "PrivacySandbox.Attestations.InitializationDuration."
-        "ComponentReadyFromApplicationStartWithInterruption",
+        privacy_sandbox::kComponentReadyFromApplicationStartWithInterruptionUMA,
         GetCommon().application_start_ticks_, ticks);
   } else {
     // The durations should be a few milliseconds.
     UmaHistogramWithTraceAndTemperature(
         &base::UmaHistogramTimes,
-        "PrivacySandbox.Attestations.InitializationDuration."
-        "ComponentReadyFromApplicationStart",
+        privacy_sandbox::kComponentReadyFromApplicationStartUMA,
         GetCommon().application_start_ticks_, ticks);
   }
 }

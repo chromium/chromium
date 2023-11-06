@@ -122,14 +122,14 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   void NotifyBucketModified(
       QuotaClientType client_id,
       const BucketLocator& bucket,
-      int64_t delta,
+      absl::optional<int64_t> delta,
       base::Time modification_time,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, bucket.type);
     modifications_[bucket.storage_key].first += 1;
-    modifications_[bucket.storage_key].second += delta;
+    modifications_[bucket.storage_key].second += delta.value_or(0);
     if (callback)
       callback_task_runner->PostTask(FROM_HERE, std::move(callback));
   }

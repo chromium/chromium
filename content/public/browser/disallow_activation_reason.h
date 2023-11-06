@@ -60,6 +60,7 @@ enum DisallowActivationReasonId : uint64_t {
   kIndexedDBTransactionIsAcquiringLocks = 36,
   kIndexedDBTransactionIsBlockingOthers = 37,
   kSafeBrowsingUnsafeSubresource = 38,
+  kFileSystemAccessLockingContention = 39,
   // New entries go above here. New entries should be added to
   // tools/metrics/histograms/enums.xml .
   kMinEmbedderDisallowActivationReason = 2 << 16,

@@ -30,35 +30,50 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * JUnit tests of the class {@link PrivacyGuidePagerAdapter}
- */
+/** JUnit tests of the class {@link PrivacyGuidePagerAdapter} */
 @RunWith(ParameterizedRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
-        ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID})
+@EnableFeatures({
+    ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3,
+    ChromeFeatureList.PRIVACY_GUIDE_PRELOAD_ANDROID
+})
 public class PrivacyGuidePagerAdapterTest {
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{false, false, false, false},
-                {false, false, false, true}, {false, false, true, false},
-                {false, false, true, true}, {false, true, false, false}, {false, true, false, true},
-                {false, true, true, false}, {false, true, true, true}, {true, false, false, false},
-                {true, false, false, true}, {true, false, true, false}, {true, false, true, true},
-                {true, true, false, false}, {true, true, false, true}, {true, true, true, false},
-                {true, true, true, true}});
+        return Arrays.asList(
+                new Object[][] {
+                    {false, false, false, false},
+                    {false, false, false, true},
+                    {false, false, true, false},
+                    {false, false, true, true},
+                    {false, true, false, false},
+                    {false, true, false, true},
+                    {false, true, true, false},
+                    {false, true, true, true},
+                    {true, false, false, false},
+                    {true, false, false, true},
+                    {true, false, true, false},
+                    {true, false, true, true},
+                    {true, true, false, false},
+                    {true, true, false, true},
+                    {true, true, true, false},
+                    {true, true, true, true}
+                });
     }
+
     @Rule(order = -2)
     public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Parameter(0)
     public boolean mShouldDisplayHistorySync;
+
     @Parameter(1)
     public boolean mShouldDisplaySafeBrowsing;
+
     @Parameter(2)
     public boolean mShouldDisplayCookies;
+
     @Parameter(3)
     public boolean mShouldDisplayPreload;
 
@@ -69,8 +84,9 @@ public class PrivacyGuidePagerAdapterTest {
 
     @Before
     public void setUp() {
-        mScenario = FragmentScenario.launchInContainer(
-                Fragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
+        mScenario =
+                FragmentScenario.launchInContainer(
+                        Fragment.class, Bundle.EMPTY, R.style.Theme_MaterialComponents);
         mScenario.onFragment(fragment -> mFragment = fragment);
         initPagerAdapterWithState();
     }
@@ -81,29 +97,33 @@ public class PrivacyGuidePagerAdapterTest {
     }
 
     private void initPagerAdapterWithState() {
-        mStepDisplayHandler = new StepDisplayHandler() {
-            @Override
-            public boolean shouldDisplayHistorySync() {
-                return mShouldDisplayHistorySync;
-            }
+        mStepDisplayHandler =
+                new StepDisplayHandler() {
+                    @Override
+                    public boolean shouldDisplayHistorySync() {
+                        return mShouldDisplayHistorySync;
+                    }
 
-            @Override
-            public boolean shouldDisplaySafeBrowsing() {
-                return mShouldDisplaySafeBrowsing;
-            }
+                    @Override
+                    public boolean shouldDisplaySafeBrowsing() {
+                        return mShouldDisplaySafeBrowsing;
+                    }
 
-            @Override
-            public boolean shouldDisplayCookies() {
-                return mShouldDisplayCookies;
-            }
+                    @Override
+                    public boolean shouldDisplayCookies() {
+                        return mShouldDisplayCookies;
+                    }
 
-            @Override
-            public boolean shouldDisplayPreload() {
-                return mShouldDisplayPreload;
-            }
-        };
-        mPagerAdapter = new PrivacyGuidePagerAdapter(
-                mFragment, mStepDisplayHandler, PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER_PG3);
+                    @Override
+                    public boolean shouldDisplayPreload() {
+                        return mShouldDisplayPreload;
+                    }
+                };
+        mPagerAdapter =
+                new PrivacyGuidePagerAdapter(
+                        mFragment,
+                        mStepDisplayHandler,
+                        PrivacyGuideFragment.ALL_FRAGMENT_TYPE_ORDER_PG3);
     }
 
     private Set<Class> getDisplayedFragmentClasses() {
@@ -118,14 +138,22 @@ public class PrivacyGuidePagerAdapterTest {
     public void testFragmentsDisplayed() {
         Set<Class> fragmentClassSet = getDisplayedFragmentClasses();
         Assert.assertTrue(fragmentClassSet.contains(MSBBFragment.class));
-        Assert.assertEquals("History Sync step displayed incorrectly", mShouldDisplayHistorySync,
+        Assert.assertEquals(
+                "History Sync step displayed incorrectly",
+                mShouldDisplayHistorySync,
                 fragmentClassSet.contains(HistorySyncFragment.class));
-        Assert.assertEquals("Cookies step displayed incorrectly", mShouldDisplayCookies,
+        Assert.assertEquals(
+                "Cookies step displayed incorrectly",
+                mShouldDisplayCookies,
                 fragmentClassSet.contains(CookiesFragment.class));
-        Assert.assertEquals("Safe Browsing step displayed incorrectly", mShouldDisplaySafeBrowsing,
+        Assert.assertEquals(
+                "Safe Browsing step displayed incorrectly",
+                mShouldDisplaySafeBrowsing,
                 fragmentClassSet.contains(SafeBrowsingFragment.class));
         Assert.assertTrue(fragmentClassSet.contains(SearchSuggestionsFragment.class));
-        Assert.assertEquals("Preload step displayed incorrectly", mShouldDisplayPreload,
+        Assert.assertEquals(
+                "Preload step displayed incorrectly",
+                mShouldDisplayPreload,
                 fragmentClassSet.contains(PreloadFragment.class));
     }
 }

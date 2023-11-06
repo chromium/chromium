@@ -15,7 +15,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -299,6 +298,9 @@ extern const base::FeatureParam<bool> kActionsUISimplificationIncludeRealbox;
 // total number of matches exceeds the limit (i.e. there are extra matches).
 extern const base::FeatureParam<bool> kActionsUISimplificationTrimExtra;
 
+// Returns true if the OmniboxKeywordModeRefresh feature is enabled.
+bool IsKeywordModeRefreshEnabled();
+
 // Returns true if the fuzzy URL suggestions feature is enabled.
 bool IsFuzzyUrlSuggestionsEnabled();
 // Indicates whether fuzzy match behavior is counterfactual.
@@ -564,6 +566,12 @@ extern const base::FeatureParam<double> kDomainSuggestionsScoreFactor;
 // traditional and the alternate scoring algorithms.
 extern const base::FeatureParam<bool> kDomainSuggestionsAlternativeScoring;
 
+extern const base::FeatureParam<omnibox::CompanyEntityIconAdjustmentGroup>
+    kCompanyEntityIconAdjustmentGroup;
+
+extern const base::FeatureParam<bool>
+    kCompanyEntityIconAdjustmentCounterfactual;
+
 // ---------------------------------------------------------
 // ML Relevance Scoring ->
 
@@ -585,6 +593,10 @@ struct MLConfig {
   // If true, enables scoring signal annotators for populating additional
   // Omnibox URL scoring signals for logging or ML scoring.
   bool enable_scoring_signals_annotators{false};
+
+  // If true, document suggestions from the shortcut provider will include
+  // shortcut signals.
+  bool shortcut_document_signals{false};
 
   // If true, runs the ML scoring model to assign new relevance scores to the
   // URL suggestions and reranks them.
@@ -698,6 +710,36 @@ extern const base::FeatureParam<bool>
 
 // <- Two-column realbox
 // ---------------------------------------------------------
+// Inspire Me ->
+
+// Specify number of additional Related and Trending queries appended to the
+// suggestion list, when the Inspire Me feature is enabled.
+constexpr base::FeatureParam<int> kInspireMeAdditionalRelatedQueries(
+    &omnibox::kInspireMe,
+    "AdditionalRelatedQueries",
+    0);
+
+constexpr base::FeatureParam<int> kInspireMeAdditionalTrendingQueries(
+    &omnibox::kInspireMe,
+    "AdditionalTrendingQueries",
+    0);
+
+constexpr base::FeatureParam<int> kInspireMePsuggestQueries(
+    &omnibox::kInspireMe,
+    "PersonalizedSuggestQueries",
+    20);
+
+constexpr base::FeatureParam<int> kQueryTilesCacheMaxAge(
+    &omnibox::kQueryTilesInZPSOnNTP,
+    "QueryTilesMaxCacheAgeHours",
+    8);
+
+constexpr base::FeatureParam<bool> kQueryTilesShowAboveTrends(
+    &omnibox::kQueryTilesInZPSOnNTP,
+    "QueryTilesShowAboveTrends",
+    true);
+// <- Inspire Me
+// ---------------------------------------------------------
 // Actions In Suggest ->
 //
 // When set to true, permits Entity suggestion with associated Actions to be
@@ -705,7 +747,7 @@ extern const base::FeatureParam<bool>
 constexpr base::FeatureParam<bool> kActionsInSuggestPromoteEntitySuggestion(
     &omnibox::kActionsInSuggest,
     "PromoteEntitySuggestion",
-    false);
+    !!BUILDFLAG(IS_ANDROID));
 
 // Specifies which actions in suggest will be offered to users.
 constexpr base::FeatureParam<omnibox::ActionInfo::ActionType>::Option

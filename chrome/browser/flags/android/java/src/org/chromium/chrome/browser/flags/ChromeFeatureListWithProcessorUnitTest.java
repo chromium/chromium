@@ -35,37 +35,28 @@ import java.util.Set;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeFeatureListWithProcessorUnitTest {
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    /**
-     * In unit tests, all flags checked must have their value specified.
-     */
+    /** In unit tests, all flags checked must have their value specified. */
     @Test(expected = IllegalArgumentException.class)
     public void testNoOverridesDefaultDisabled_throws() {
         ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED);
     }
 
-    /**
-     * In unit tests, all flags checked must have their value specified.
-     */
+    /** In unit tests, all flags checked must have their value specified. */
     @Test(expected = IllegalArgumentException.class)
     public void testNoOverridesDefaultEnabled_throws() {
         ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED);
     }
 
-    /**
-     * In unit tests, flags may have their value specified by the EnableFeatures annotation.
-     */
+    /** In unit tests, flags may have their value specified by the EnableFeatures annotation. */
     @Test
     @EnableFeatures(ChromeFeatureList.TEST_DEFAULT_DISABLED)
     public void testAnnotationEnabled_returnsEnabled() {
         assertTrue(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_DISABLED));
     }
 
-    /**
-     * In unit tests, flags may have their value specified by the DisableFeatures annotation.
-     */
+    /** In unit tests, flags may have their value specified by the DisableFeatures annotation. */
     @Test
     @DisableFeatures(ChromeFeatureList.TEST_DEFAULT_ENABLED)
     public void testAnnotationDisabled_returnsDisabled() {
@@ -73,8 +64,8 @@ public class ChromeFeatureListWithProcessorUnitTest {
     }
 
     /**
-     * In unit tests, flags may have their value specified by calling
-     * {@link FeatureList#setTestFeatures(java.util.Map)}.
+     * In unit tests, flags may have their value specified by calling {@link
+     * FeatureList#setTestFeatures(java.util.Map)}.
      */
     @Test
     @EnableFeatures(ChromeFeatureList.TEST_DEFAULT_DISABLED)
@@ -83,8 +74,8 @@ public class ChromeFeatureListWithProcessorUnitTest {
     }
 
     /**
-     * In unit tests, flags may have their value specified by calling
-     * {@link FeatureList#setTestFeatures(java.util.Map)}.
+     * In unit tests, flags may have their value specified by calling {@link
+     * FeatureList#setTestFeatures(java.util.Map)}.
      */
     @Test
     @DisableFeatures(ChromeFeatureList.TEST_DEFAULT_ENABLED)
@@ -97,8 +88,10 @@ public class ChromeFeatureListWithProcessorUnitTest {
         HashSet<String> cachedFlagsDeclared = new HashSet<>();
         for (Field field : ChromeFeatureList.class.getDeclaredFields()) {
             int modifiers = field.getModifiers();
-            if (CachedFlag.class.isAssignableFrom(field.getType()) && Modifier.isPublic(modifiers)
-                    && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers)) {
+            if (CachedFlag.class.isAssignableFrom(field.getType())
+                    && Modifier.isPublic(modifiers)
+                    && Modifier.isStatic(modifiers)
+                    && Modifier.isFinal(modifiers)) {
                 CachedFlag flag = (CachedFlag) field.get(null);
                 cachedFlagsDeclared.add(flag.getFeatureName());
             }
@@ -109,11 +102,14 @@ public class ChromeFeatureListWithProcessorUnitTest {
         Set<String> declaredButNotListed = Sets.difference(cachedFlagsDeclared, cachedFlagsListed);
         assertEquals(
                 "Cached flags declared in ChromeFeatureList, but not added to |sAllCachedFlags|",
-                Collections.emptySet(), declaredButNotListed);
+                Collections.emptySet(),
+                declaredButNotListed);
 
         Set<String> listedButNotDeclared = Sets.difference(cachedFlagsListed, cachedFlagsDeclared);
-        assertEquals("Cached flags listed in |sAllCachedFlags|, but not declared as public static "
+        assertEquals(
+                "Cached flags listed in |sAllCachedFlags|, but not declared as public static "
                         + "final in ChromeFeatureList",
-                Collections.emptySet(), listedButNotDeclared);
+                Collections.emptySet(),
+                listedButNotDeclared);
     }
 }

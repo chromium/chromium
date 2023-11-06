@@ -9,6 +9,7 @@ import android.os.Process;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JNINamespace;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,7 +18,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
@@ -153,8 +153,11 @@ public class TrackExitReasonsOfInterest {
             int state = jsonObj.optInt(LAST_STATE_KEY);
 
             return new ExitReasonData(exitInfoPid, timestampAtLastRecordingInMillis, state);
-        } catch (JSONException | IOException e) {
-            Log.e(TAG, "Failed to parse JSON from file.");
+        } catch (IOException e) {
+            // File does not exist or the file read fails here
+            return null;
+        } catch (JSONException e) {
+            Log.i(TAG, "Failed to parse JSON from file.");
         }
 
         return null;

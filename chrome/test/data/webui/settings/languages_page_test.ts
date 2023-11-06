@@ -6,8 +6,8 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrCheckboxElement, LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
-import {CrActionMenuElement, CrButtonElement, CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, SettingsAddLanguagesDialogElement, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import {SettingsCheckboxListEntryElement, CrActionMenuElement, CrButtonElement, CrSettingsPrefs, loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertGE, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -94,7 +94,7 @@ suite('LanguagesPage', function() {
 
   suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
-    let dialogItems: NodeListOf<CrCheckboxElement>;
+    let dialogItems: NodeListOf<SettingsCheckboxListEntryElement>;
     let cancelButton: CrButtonElement;
     let actionButton: CrButtonElement;
     let dialogClosedResolver: PromiseResolver<void>;
@@ -152,8 +152,9 @@ suite('LanguagesPage', function() {
 
         // The fixed-height dialog's iron-list should stamp far fewer than
         // 50 items.
-        dialogItems = dialog.$.dialog.querySelectorAll<CrCheckboxElement>(
-            '.list-item:not([hidden])');
+        dialogItems =
+            dialog.$.dialog.querySelectorAll<SettingsCheckboxListEntryElement>(
+                'settings-checkbox-list-entry:not([hidden])');
         assertGT(dialogItems.length, 1);
         assertLT(dialogItems.length, 50);
 
@@ -227,7 +228,8 @@ suite('LanguagesPage', function() {
       assertTrue(!!searchInput);
 
       const getItems = function() {
-        return dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
+        return dialog.$.dialog.querySelectorAll(
+            'settings-checkbox-list-entry:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.

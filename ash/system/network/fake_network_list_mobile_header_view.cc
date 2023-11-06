@@ -23,11 +23,4 @@ void FakeNetworkListMobileHeaderView::SetToggleState(bool enabled,
   set_toggle_state_count_++;
 }
 
-void FakeNetworkListMobileHeaderView::SetAddESimButtonState(bool enabled,
-                                                            bool visible) {
-  is_add_esim_enabled_ = enabled;
-  is_add_esim_visible_ = visible;
-  set_add_esim_button_state_count_++;
-}
-
 }  // namespace ash

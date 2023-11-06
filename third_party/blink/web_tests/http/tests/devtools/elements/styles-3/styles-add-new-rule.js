@@ -6,6 +6,7 @@ import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as Workspace from 'devtools/models/workspace/workspace.js';
 
 (async function() {
   TestRunner.addResult(`Tests that adding a new rule works after switching nodes.\n`);
@@ -31,7 +32,7 @@ import * as Common from 'devtools/core/common/common.js';
   var testFinished = false;
   var displayName = null;
 
-  TestRunner.addSniffer(Workspace.UISourceCode.prototype, 'addRevision', onRevisionAdded);
+  TestRunner.addSniffer(Workspace.UISourceCode.UISourceCode.prototype, 'addRevision', onRevisionAdded);
 
   function step1() {
     // Click "Add new rule".

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -205,9 +206,9 @@ class CORE_EXPORT AtomicHTMLToken {
     return dom_part_data_->metadata_;
   }
 
-  bool NeedsNodePart() const {
-    DCHECK(type_ == HTMLToken::kStartTag);
-    return needs_node_part_;
+  DOMPartsNeeded GetDOMPartsNeeded() {
+    DCHECK_EQ(type_, HTMLToken::kStartTag);
+    return dom_parts_needed_;
   }
 
   explicit AtomicHTMLToken(HTMLToken& token)
@@ -226,7 +227,7 @@ class CORE_EXPORT AtomicHTMLToken {
       case HTMLToken::kEndOfFile:
         break;
       case HTMLToken::kStartTag:
-        needs_node_part_ = token.NeedsNodePart();
+        dom_parts_needed_ = token.GetDOMPartsNeeded();
         [[fallthrough]];
       case HTMLToken::kEndTag: {
         self_closing_ = token.SelfClosing();
@@ -328,7 +329,7 @@ class CORE_EXPORT AtomicHTMLToken {
 
   // For DOM Parts
   std::unique_ptr<DOMPartData> dom_part_data_;
-  bool needs_node_part_{false};
+  DOMPartsNeeded dom_parts_needed_;
 
   // For StartTag and EndTag
   bool self_closing_ = false;

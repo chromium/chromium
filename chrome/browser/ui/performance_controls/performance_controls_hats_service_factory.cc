@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/performance_controls/performance_controls_hats_service_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -33,6 +34,7 @@ PerformanceControlsHatsServiceFactory::GetInstance() {
 PerformanceControlsHatsService*
 PerformanceControlsHatsServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<PerformanceControlsHatsService*>(
+      g_browser_process->local_state(),
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
 
@@ -69,5 +71,6 @@ PerformanceControlsHatsServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<PerformanceControlsHatsService>(profile);
+  return std::make_unique<PerformanceControlsHatsService>(
+      g_browser_process->local_state(), profile);
 }

@@ -140,7 +140,8 @@ using IndexedRulesetFormatVersionTest = ::testing::Test;
 // schema is modified.
 TEST_F(IndexedRulesetFormatVersionTest, CheckVersionUpdated) {
   base::FilePath source_root;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
+  ASSERT_TRUE(
+      base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root));
 
   base::FilePath flatbuffer_schema_path = source_root.AppendASCII(
       "extensions/browser/api/declarative_net_request/flat/"

@@ -26,7 +26,6 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/disconnectable_client.h"
 #include "components/reporting/util/status.h"
-#include "components/reporting/util/statusor.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -34,14 +33,15 @@
 #include "third_party/cros_system_api/dbus/missive/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using std::literals::string_view_literals::operator""sv;
+
+using ::reporting::Priority;
+using ::reporting::Record;
+using ::reporting::SequenceInformation;
+using ::reporting::SignedEncryptionInfo;
+using ::reporting::Status;
+
 namespace chromeos {
-
-using reporting::Priority;
-using reporting::Record;
-using reporting::SequenceInformation;
-using reporting::SignedEncryptionInfo;
-using reporting::Status;
-
 namespace {
 
 MissiveClient* g_instance = nullptr;
@@ -49,8 +49,8 @@ MissiveClient* g_instance = nullptr;
 // Returns `false` if the api_key is empty or known to be used for testing
 // purposes, or by devices that are running unofficial builds.
 bool IsApiKeyAccepted(std::string_view api_key) {
-  static constexpr const char* kBlockListedKeys[] = {
-      "dummykey", "dummytoken",
+  static constexpr std::string_view kBlockListedKeys[] = {
+      "dummykey"sv, "dummytoken"sv,
       // More keys or key fragments can be added.
   };
   if (api_key.empty()) {
@@ -58,7 +58,7 @@ bool IsApiKeyAccepted(std::string_view api_key) {
     return false;
   }
   const std::string lowercase_api_key = base::ToLowerASCII(api_key);
-  for (const auto* key : kBlockListedKeys) {
+  for (auto key : kBlockListedKeys) {
     if (base::Contains(lowercase_api_key, key)) {
       LOG(ERROR) << "API Key is block-listed: " << api_key;
       return false;
@@ -78,6 +78,12 @@ class MissiveClientImpl : public MissiveClient {
     DCHECK(bus);
     origin_task_runner_ = bus->GetOriginTaskRunner();
 
+    // Never changes after this moment.
+    has_valid_api_key_ = IsApiKeyAccepted(google_apis::GetAPIKey());
+
+    // Never changes back to `false`.
+    is_initialized_ = true;
+
     DCHECK(!missive_service_proxy_);
     missive_service_proxy_ =
         bus->GetObjectProxy(missive::kMissiveServiceName,
@@ -85,7 +91,7 @@ class MissiveClientImpl : public MissiveClient {
     missive_service_proxy_->SetNameOwnerChangedCallback(base::BindRepeating(
         &MissiveClientImpl::OwnerChanged, weak_ptr_factory_.GetWeakPtr()));
     missive_service_proxy_->WaitForServiceToBeAvailable(base::BindOnce(
-        &MissiveClientImpl::ServerAvailable, weak_ptr_factory_.GetWeakPtr()));
+        &MissiveClientImpl::ServiceAvailable, weak_ptr_factory_.GetWeakPtr()));
   }
 
   void EnqueueRecord(const reporting::Priority priority,
@@ -93,10 +99,16 @@ class MissiveClientImpl : public MissiveClient {
                      base::OnceCallback<void(reporting::Status)>
                          completion_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled()) {
+    if (!is_initialized_) {
       std::move(completion_callback)
           .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
-                                 "Reporting disabled, unsupported API Key"));
+                                 "Reporting not started yet"));
+      return;
+    }
+    if (!has_valid_api_key()) {
+      std::move(completion_callback)
+          .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
+                                 "Cannot report with unsupported API Key"));
       return;
     }
     auto delegate = std::make_unique<EnqueueRecordDelegate>(
@@ -108,10 +120,16 @@ class MissiveClientImpl : public MissiveClient {
              base::OnceCallback<void(reporting::Status)> completion_callback)
       override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled()) {
+    if (!is_initialized_) {
       std::move(completion_callback)
           .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
-                                 "Reporting disabled, unsupported API Key"));
+                                 "Reporting not started yet"));
+      return;
+    }
+    if (!has_valid_api_key()) {
+      std::move(completion_callback)
+          .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
+                                 "Cannot report with unsupported API Key"));
       return;
     }
     auto delegate = std::make_unique<FlushDelegate>(
@@ -122,7 +140,7 @@ class MissiveClientImpl : public MissiveClient {
   void UpdateConfigInMissive(
       const reporting::ListOfBlockedDestinations& destinations) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled()) {
+    if (!is_initialized_ || !has_valid_api_key()) {
       return;
     }
     auto delegate =
@@ -133,7 +151,7 @@ class MissiveClientImpl : public MissiveClient {
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled()) {
+    if (!is_initialized_ || !has_valid_api_key()) {
       return;
     }
     auto delegate =
@@ -144,7 +162,7 @@ class MissiveClientImpl : public MissiveClient {
   void ReportSuccess(const reporting::SequenceInformation& sequence_information,
                      bool force_confirm) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled()) {
+    if (!is_initialized_ || !has_valid_api_key()) {
       return;
     }
     auto delegate = std::make_unique<ReportSuccessDelegate>(
@@ -427,14 +445,11 @@ class MissiveClientImpl : public MissiveClient {
   void OwnerChanged(const std::string& old_owner,
                     const std::string& new_owner) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    ServerAvailable(/*service_is_available=*/!new_owner.empty());
+    ServiceAvailable(/*service_is_available=*/!new_owner.empty());
   }
 
-  void ServerAvailable(bool service_is_available) {
+  void ServiceAvailable(bool service_is_available) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    if (is_disabled_ && IsApiKeyAccepted(google_apis::GetAPIKey())) {
-      is_disabled_ = false;
-    }
     client_.SetAvailability(/*is_available=*/service_is_available);
   }
 
@@ -458,9 +473,8 @@ MissiveClient::~MissiveClient() {
   g_instance = nullptr;
 }
 
-bool MissiveClient::is_disabled() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-  return is_disabled_;
+bool MissiveClient::has_valid_api_key() const {
+  return has_valid_api_key_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> MissiveClient::origin_task_runner()

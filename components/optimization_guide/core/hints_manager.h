@@ -120,7 +120,8 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // be computed on |url_keyed_hint| or |host_keyed_hint| if possible.
   // |skip_cache| will be used to determine if the decision is unknown.
   OptimizationTypeDecision CanApplyOptimization(
-      const GURL& navigation_url,
+      bool is_on_demand_request,
+      const GURL& url,
       proto::OptimizationType optimization_type,
       const proto::Hint* url_keyed_hint,
       const proto::Hint* host_keyed_hint,
@@ -488,9 +489,6 @@ class HintsManager : public OptimizationHintsComponentObserver,
 
   // The current applcation locale of Chrome.
   const std::string application_locale_;
-
-  // The set of OAuth scopes to use for personalized metadata.
-  std::set<std::string> oauth_scopes_;
 
   // A reference to the PrefService for this profile. Not owned.
   raw_ptr<PrefService> pref_service_ = nullptr;

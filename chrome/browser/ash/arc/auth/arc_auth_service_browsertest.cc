@@ -58,6 +58,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -280,7 +281,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   void SetUp() override {
     std::vector<base::test::FeatureRef> lacros =
         ash::standalone_browser::GetFeatureRefs();
-    lacros.push_back(crosapi::browser_util::kLacrosForSupervisedUsers);
+    lacros.push_back(
+        ash::standalone_browser::features::kLacrosForSupervisedUsers);
     if (IsArcAccountRestrictionsEnabled()) {
       feature_list_.InitWithFeatures(lacros, {});
     } else {

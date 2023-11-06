@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/exo/data_source_delegate.h"
 #include "components/exo/test/exo_test_base.h"
@@ -207,6 +208,19 @@ TEST_F(DataSourceTest, ReadData_Cancelled) {
       }));
   data_source.Cancelled();
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(DataSourceTest, ReadData_Deleted) {
+  TestDataSourceDelegate delegate;
+  auto data_source = std::make_unique<DataSource>(&delegate);
+  std::string mime_type("text/plain;charset=utf-8");
+  data_source->Offer(mime_type);
+
+  base::RunLoop run_loop;
+  data_source->ReadDataForTesting(mime_type, base::DoNothing(),
+                                  run_loop.QuitClosure());
+  data_source.reset();
+  run_loop.Run();
 }
 
 TEST_F(DataSourceTest, CheckDteMimeTypeReceived) {

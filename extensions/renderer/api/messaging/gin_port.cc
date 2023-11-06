@@ -5,7 +5,6 @@
 #include "extensions/renderer/api/messaging/gin_port.h"
 
 #include <cstring>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "extensions/common/api/messaging/message.h"
@@ -84,7 +83,7 @@ void GinPort::DispatchOnMessage(v8::Local<v8::Context> context,
   }
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
-  std::vector<v8::Local<v8::Value>> args = {parsed_message, self};
+  v8::LocalVector<v8::Value> args(isolate, {parsed_message, self});
   DispatchEvent(context, &args, kOnMessageEvent);
 }
 
@@ -101,7 +100,7 @@ void GinPort::DispatchOnDisconnect(v8::Local<v8::Context> context) {
   v8::Context::Scope context_scope(context);
 
   v8::Local<v8::Object> self = GetWrapper(isolate).ToLocalChecked();
-  std::vector<v8::Local<v8::Value>> args = {self};
+  v8::LocalVector<v8::Value> args(isolate, {self});
   DispatchEvent(context, &args, kOnDisconnectEvent);
 
   InvalidateEvents(context);
@@ -236,7 +235,7 @@ v8::Local<v8::Object> GinPort::GetEvent(v8::Local<v8::Context> context,
 }
 
 void GinPort::DispatchEvent(v8::Local<v8::Context> context,
-                            std::vector<v8::Local<v8::Value>>* args,
+                            v8::LocalVector<v8::Value>* args,
                             base::StringPiece event_name) {
   v8::Isolate* isolate = context->GetIsolate();
   v8::Local<v8::Value> on_message = GetEvent(context, event_name);

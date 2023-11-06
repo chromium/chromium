@@ -38,6 +38,14 @@ void IsolatedWebAppUpdateApplyWaiter::Wait(Profile* profile,
           : std::make_unique<ScopedProfileKeepAlive>(
                 profile, ProfileKeepAliveOrigin::kIsolatedWebAppUpdate);
 
+  // If we do not need to wait, then synchronously signal so that an update
+  // apply task can immediately be scheduled before another update discovery
+  // task is run.
+  if (ui_manager_->GetNumWindowsForApp(url_info_.app_id()) == 0) {
+    Signal();
+    return;
+  }
+
   ui_manager_->NotifyOnAllAppWindowsClosed(
       url_info_.app_id(),
       // Do _not_ bind the keep alives to this callback - we want the

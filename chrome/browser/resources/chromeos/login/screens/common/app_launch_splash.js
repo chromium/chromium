@@ -9,7 +9,7 @@
 import '//resources/js/action_link.js';
 import '../../components/throbber_notice.js';
 
-import {announceAccessibleMessage, ensureTransitionEndEvent} from '//resources/ash/common/util.js';
+import {ensureTransitionEndEvent} from '//resources/ash/common/util.js';
 import {html, mixinBehaviors, Polymer, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
@@ -35,6 +35,24 @@ const AppLaunchSplashBase =
  * }}
  */
 AppLaunchSplashBase.$;
+
+/**
+ * @typedef {{
+ *   name: string,
+ *   iconURL: string,
+ *   url: string,
+ * }}
+ */
+let AppData;
+
+/**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   shortcutEnabled: boolean,
+ *   appInfo: AppData,
+ * }}
+ */
+let AppLaunchSplashScreenData;
 
 /**
  * @polymer
@@ -97,7 +115,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
 
   /**
    * Event handler that is invoked just before the frame is shown.
-   * @param {string} data Screen init payload.
+   * @param {AppLaunchSplashScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     this.$.configNetwork.hidden = true;
@@ -112,7 +130,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
    * @param {boolean} visible Whether to show the option.
    */
   toggleNetworkConfig(visible) {
-    var currVisible =
+    const currVisible =
         !this.$.configNetworkContainer.classList.contains('faded');
     if (currVisible == visible) {
       return;
@@ -128,8 +146,7 @@ class AppLaunchSplash extends AppLaunchSplashBase {
 
   /**
    * Updates the app name and icon.
-   * @param {Object} app Details of app being launched.
-   * @suppress {missingProperties}
+   * @param {AppData} app Details of app being launched.
    */
   updateApp(app) {
     this.appName = app.name;

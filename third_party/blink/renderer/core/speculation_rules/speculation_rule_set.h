@@ -60,24 +60,39 @@ class CORE_EXPORT SpeculationRuleSet final
     static Source* FromRequest(const String& source_text,
                                const KURL& base_url,
                                uint64_t request_id);
+    static Source* FromBrowserInjected(const String& source_text,
+                                       const KURL& base_url);
 
     const String& GetSourceText() const;
+
+    // Has a value iff IsFromInlineScript() is true.
     const absl::optional<DOMNodeId>& GetNodeId() const;
-    const absl::optional<KURL>& GetSourceURL() const;
+
+    // Have values iff IsFromRequest() is true.
+    const absl::optional<KURL> GetSourceURL() const;
     const absl::optional<uint64_t>& GetRequestId() const;
+
+    // Has a value iff IsFromRequest() or IsFromBrowserInjected() is true.
     KURL GetBaseURL() const;
+
+    bool IsFromInlineScript() const;
+    bool IsFromRequest() const;
+    bool IsFromBrowserInjected() const;
 
     void Trace(Visitor*) const;
 
    private:
+    // Set for all types
     String source_text_;
-    // Fields below are only set when the SpeculationRuleSet was loaded from
-    // inline script.
+
+    // Set by FromInlineScript()
     Member<Document> document_;
     absl::optional<DOMNodeId> node_id_;
-    // Fields below are only set when the SpeculationRuleSet was
-    // "out-of-document" (i.e. loaded by a SpeculationRuleLoader).
+
+    // Set by FromRequest() and FromBrowserInjected()
     absl::optional<KURL> base_url_;
+
+    // Set by FromRequest()
     absl::optional<uint64_t> request_id_;
   };
 
@@ -104,7 +119,7 @@ class CORE_EXPORT SpeculationRuleSet final
   bool has_document_rule() const { return has_document_rule_; }
   bool requires_unfiltered_input() const { return requires_unfiltered_input_; }
 
-  Source* source() const { return source_; }
+  Source* source() const { return source_.Get(); }
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 

@@ -51,11 +51,11 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
+#include "third_party/blink/renderer/core/layout/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/map_coordinates_flags.h"
-#include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
@@ -99,13 +99,6 @@
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
-
-struct SameSizeAsBorderValue {
-  StyleColor color_;
-  unsigned bitfield_;
-};
-
-ASSERT_SIZE(BorderValue, SameSizeAsBorderValue);
 
 // Since different compilers/architectures pack ComputedStyle differently,
 // re-create the same structure for an accurate size comparison.
@@ -1218,7 +1211,7 @@ static bool HasPropertyThatCreatesStackingContext(
       case CSSPropertyID::kOffsetPath:
       case CSSPropertyID::kOffsetPosition:
       case CSSPropertyID::kWebkitMask:
-      case CSSPropertyID::kWebkitAlternativeMask:
+      case CSSPropertyID::kAlternativeMask:
       case CSSPropertyID::kWebkitMaskBoxImage:
       case CSSPropertyID::kClipPath:
       case CSSPropertyID::kWebkitBoxReflect:
@@ -2503,14 +2496,14 @@ const AtomicString& ComputedStyle::ListStyleStringValue() const {
   return ListStyleType()->GetStringValue();
 }
 
-bool ComputedStyle::MarkerShouldBeInside(const Node& parent_node) const {
+bool ComputedStyle::MarkerShouldBeInside(const Element& parent) const {
   // https://w3c.github.io/csswg-drafts/css-lists/#list-style-position-outside
   // > If the list item is an inline box: this value is equivalent to inside.
   if (Display() == EDisplay::kInlineListItem) {
     return true;
   }
   return ListStylePosition() == EListStylePosition::kInside ||
-         (IsA<HTMLLIElement>(parent_node) && !IsInsideListElement());
+         (IsA<HTMLLIElement>(parent) && !IsInsideListElement());
 }
 
 absl::optional<blink::Color> ComputedStyle::AccentColorResolved() const {

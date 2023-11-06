@@ -19,7 +19,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/device_reauth/device_authenticator.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/device_reauth/device_reauth_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +27,7 @@
 namespace {
 
 using device_reauth::DeviceAuthenticator;
-using password_manager::metrics_util::ReauthResult;
+using device_reauth::ReauthResult;
 using testing::_;
 using testing::Return;
 

@@ -56,6 +56,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-forward.h"
 #include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom-shared.h"
 #include "components/account_id/account_id.h"
@@ -695,8 +696,6 @@ class StartupAppLauncherNoCreateTest
 
   std::unique_ptr<extensions::ExternalProviderImpl> primary_app_provider_;
   std::unique_ptr<extensions::ExternalProviderImpl> secondary_apps_provider_;
-
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 };
 
 // Tests that extension download backoff is reduced during Chrome app Kiosk
@@ -1510,12 +1509,11 @@ class FakeChromeKioskLaunchController : public ChromeKioskLaunchController {
 
 class StartupAppLauncherUsingLacrosTest : public testing::Test {
  public:
-  StartupAppLauncherUsingLacrosTest()
-      : fake_user_manager_(new FakeChromeUserManager()),
-        scoped_user_manager_(base::WrapUnique(fake_user_manager_.get())) {
+  StartupAppLauncherUsingLacrosTest() {
     std::vector<base::test::FeatureRef> enabled =
         ash::standalone_browser::GetFeatureRefs();
-    enabled.push_back(::features::kChromeKioskEnableLacros);
+    enabled.push_back(
+        ash::standalone_browser::features::kChromeKioskEnableLacros);
     scoped_feature_list_.InitWithFeatures(enabled, {});
   }
 
@@ -1526,8 +1524,8 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
     profile_ = testing_profile_manager_.CreateTestingProfile("Default");
     crosapi_manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
     const AccountId account_id(AccountId::FromUserEmail(kTestUserAccount));
-    fake_user_manager().AddKioskAppUser(account_id);
-    fake_user_manager().LoginUser(account_id);
+    fake_user_manager_->AddKioskAppUser(account_id);
+    fake_user_manager_->LoginUser(account_id);
     kiosk_app_manager_ = std::make_unique<KioskAppManager>();
     kiosk_app_manager_overrides_.InitializePrimaryAppState();
     RegisterFakeCrosapi();
@@ -1601,8 +1599,6 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   TestAppLaunchDelegate startup_launch_delegate_;
 
  private:
-  FakeChromeUserManager& fake_user_manager() { return *fake_user_manager_; }
-
   void RegisterFakeCrosapi() {
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
@@ -1612,12 +1608,11 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
   raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
-  user_manager::ScopedUserManager scoped_user_manager_;
   FakeChromeKioskLaunchController launch_controller_;
   crosapi::FakeBrowserManager browser_manager_;
 

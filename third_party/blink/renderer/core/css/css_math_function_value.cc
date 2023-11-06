@@ -83,7 +83,7 @@ double CSSMathFunctionValue::ComputeLengthPx(
   // |CSSToLengthConversionData| only resolves relative length units, but not
   // percentages.
   DCHECK_EQ(kCalcLength, expression_->Category());
-  DCHECK(expression_->CanBeResolvedWithConversionData());
+  DCHECK(!expression_->HasPercentage());
   return ClampToPermittedRange(expression_->ComputeLengthPx(length_resolver));
 }
 
@@ -92,7 +92,7 @@ int CSSMathFunctionValue::ComputeInteger(
   // |CSSToLengthConversionData| only resolves relative length units, but not
   // percentages.
   DCHECK_EQ(kCalcNumber, expression_->Category());
-  DCHECK(expression_->CanBeResolvedWithConversionData());
+  DCHECK(!expression_->HasPercentage());
   return ClampTo<int>(
       ClampToPermittedRange(expression_->ComputeNumber(length_resolver)));
 }

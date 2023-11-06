@@ -32,6 +32,7 @@ using base::Seconds;
 using base::SequencedTaskRunner;
 using base::TimeDelta;
 using base::UmaHistogramBoolean;
+using mojom::DocsOfflineEnableStatus;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using mojom::QueryItem;
@@ -244,7 +245,7 @@ void RecordBulkPinningEnabledSource(BulkPinningEnabledSource source) {
       "FileBrowser.GoogleDrive.BulkPinning.Enabled.Source", source);
 }
 
-std::ostream& NiceNum(std::ostream& out) {
+ostream& NiceNum(ostream& out) {
   out.imbue(NiceNumLocale());
   return out;
 }
@@ -390,6 +391,29 @@ bool IsPausedOrInProgress(const Stage stage) {
   }
 
   NOTREACHED_NORETURN() << "Unexpected Stage " << Quote(stage);
+}
+
+bool IsSuccessfulDocsOfflineEnablement(DocsOfflineEnableStatus status) {
+  switch (status) {
+    case DocsOfflineEnableStatus::kSuccess:
+    case DocsOfflineEnableStatus::kAlreadyEnabled:
+    case DocsOfflineEnableStatus::kOfflineEligible:
+      return true;
+
+    case DocsOfflineEnableStatus::kUnknownError:
+    case DocsOfflineEnableStatus::kDisableUnsupported:
+    case DocsOfflineEnableStatus::kOfflineIneligibleUnknown:
+    case DocsOfflineEnableStatus::kOfflineIneligibleOtherUser:
+    case DocsOfflineEnableStatus::kOfflineIneligibleDbInInvalidState:
+    case DocsOfflineEnableStatus::kOfflineIneligiblePolicyDisallow:
+    case DocsOfflineEnableStatus::kOfflineIneligibleNoExtension:
+    case DocsOfflineEnableStatus::kOfflineIneligibleInsufficientDiskSpace:
+    case DocsOfflineEnableStatus::kNativeMessageHostError:
+    case DocsOfflineEnableStatus::kNativeMessageClientError:
+    case DocsOfflineEnableStatus::kSystemError:
+    case DocsOfflineEnableStatus::kUnknown:
+      return false;
+  }
 }
 
 std::string ToString(Stage stage) {
@@ -649,6 +673,7 @@ PinningManager::PinningManager(Path profile_path,
       queue_size_(queue_size),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
+  VLOG(1) << "Creating bulk-pinning manager";
   chromeos::PowerManagerClient* const p = chromeos::PowerManagerClient::Get();
   power_manager_.Observe(p);
   p->GetBatterySaverModeState(base::BindOnce(
@@ -656,13 +681,16 @@ PinningManager::PinningManager(Path profile_path,
   user_data_auth_client_.Observe(ash::UserDataAuthClient::Get());
 }
 
-PinningManager::~PinningManager() = default;
+PinningManager::~PinningManager() {
+  VLOG(1) << "Deleting bulk-pinning manager";
+}
 
 void PinningManager::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (InProgress(progress_.stage)) {
-    LOG(ERROR) << "Pin manager is already started: " << Quote(progress_.stage);
+    LOG(ERROR) << "Bulk-pinning manager is already started: It is in stage "
+               << Quote(progress_.stage);
     return;
   }
 
@@ -708,7 +736,7 @@ bool PinningManager::CalculateRequiredSpace() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (IsPausedOrInProgress(progress_.stage) && progress_.should_pin) {
     LOG(ERROR) << "Cannot calculate required space: "
-               << "Pin manager is in stage " << progress_.stage;
+               << "Bulk-pinning manager is in stage " << progress_.stage;
     return false;
   }
 
@@ -1202,9 +1230,12 @@ void PinningManager::EnableDocsOffline() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(drivefs_);
   drivefs_->SetDocsOfflineEnabled(
-      true, base::BindOnce([](drive::FileError error) {
+      true, base::BindOnce([](drive::FileError error,
+                              DocsOfflineEnableStatus status) {
         LOG_IF(ERROR, error != drive::FILE_ERROR_OK)
-            << "Failed to enable Docs offline: " << error;
+            << "Failed to enable Docs offline: " << error << " with status "
+            << Quote(status);
+        VLOG(1) << "Docs offline enablement status: " << Quote(status);
         base::UmaHistogramExactLinear(
             "FileBrowser.GoogleDrive.BulkPinning.EnableDocsOfflineResult",
             1 - error, 2 - drive::FILE_ERROR_MAX);

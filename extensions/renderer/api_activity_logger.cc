@@ -71,7 +71,7 @@ void APIActivityLogger::LogAPICall(
     IPCMessageSender* ipc_sender,
     v8::Local<v8::Context> context,
     const std::string& call_name,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const v8::LocalVector<v8::Value>& arguments) {
   if (!IsLoggingEnabled())
     return;
 

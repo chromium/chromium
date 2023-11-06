@@ -36,15 +36,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /**
- * Controls the bookmarks save-flow, which has 2 variants: standard, improved.
- * The two variants have different properties, so each of the methods is branched to reflect that.
- * BookmarkSaveFlowProperties shouldn't be used for the improved variant (it'll crash), and the
- * same is true for ImprovedBookmarkSaveFlow properties with the standard variant.
- * standard: The default save experience prior to android-improved-bookmarks.
- * improved: The new experience for saving when android-improved-bookmarks is enabled.
+ * Controls the bookmarks save-flow, which has 2 variants: standard, improved. The two variants have
+ * different properties, so each of the methods is branched to reflect that.
+ * BookmarkSaveFlowProperties shouldn't be used for the improved variant (it'll crash), and the same
+ * is true for ImprovedBookmarkSaveFlow properties with the standard variant. standard: The default
+ * save experience prior to android-improved-bookmarks. improved: The new experience for saving when
+ * android-improved-bookmarks is enabled.
  */
-public class BookmarkSaveFlowMediator
-        extends BookmarkModelObserver implements SubscriptionsObserver {
+public class BookmarkSaveFlowMediator extends BookmarkModelObserver
+        implements SubscriptionsObserver {
     private static final String FOLDER_TEXT_TOKEN = "%1$s";
     private final Context mContext;
     private final Runnable mCloseRunnable;
@@ -66,16 +66,21 @@ public class BookmarkSaveFlowMediator
     /**
      * @param bookmarkModel The {@link BookmarkModel} which supplies the data.
      * @param propertyModel The {@link PropertyModel} which allows the mediator to push data to the
-     *         model.
+     *     model.
      * @param context The {@link Context} associated with this mediator.
      * @param closeRunnable A {@link Runnable} which closes the bookmark save flow.
      * @param shoppingService Used to manage the price-tracking subscriptions.
      * @param bookmarkImageFetcher Used to fetch images/favicons for bookmarks.
      * @param profile The current chrome profile.
      */
-    public BookmarkSaveFlowMediator(BookmarkModel bookmarkModel, PropertyModel propertyModel,
-            Context context, Runnable closeRunnable, ShoppingService shoppingService,
-            BookmarkImageFetcher bookmarkImageFetcher, Profile profile) {
+    public BookmarkSaveFlowMediator(
+            BookmarkModel bookmarkModel,
+            PropertyModel propertyModel,
+            Context context,
+            Runnable closeRunnable,
+            ShoppingService shoppingService,
+            BookmarkImageFetcher bookmarkImageFetcher,
+            Profile profile) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.addObserver(this);
 
@@ -98,14 +103,18 @@ public class BookmarkSaveFlowMediator
      * @param bookmarkId The {@link BookmarkId} to show.
      * @param meta The power bookmark metadata for the given BookmarkId.
      * @param fromExplicitTrackUi Whether the bookmark was added via a dedicated tracking entry
-     *         point. This will change the UI of the bookmark save flow, either adding type-specific
-     *         text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
-     *         bookmark.
+     *     point. This will change the UI of the bookmark save flow, either adding type-specific
+     *     text (e.g. price tracking text) or adding UI bits to allow users to upgrade a regular
+     *     bookmark.
      * @param wasBookmarkMoved Whether the save flow is shown as a result of a moved bookmark.
      * @param isNewBookmark Whether the bookmark is newly created.
      */
-    public void show(BookmarkId bookmarkId, @Nullable PowerBookmarkMeta meta,
-            boolean fromExplicitTrackUi, boolean wasBookmarkMoved, boolean isNewBookmark) {
+    public void show(
+            BookmarkId bookmarkId,
+            @Nullable PowerBookmarkMeta meta,
+            boolean fromExplicitTrackUi,
+            boolean wasBookmarkMoved,
+            boolean isNewBookmark) {
         RecordUserAction.record("MobileBookmark.SaveFlow.Show");
 
         mBookmarkId = bookmarkId;
@@ -114,12 +123,14 @@ public class BookmarkSaveFlowMediator
         mIsNewBookmark = isNewBookmark;
 
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER,
+            mPropertyModel.set(
+                    ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_CLICK_LISTENER,
                     this::onEditClicked);
         } else {
             mPropertyModel.set(
                     BookmarkSaveFlowProperties.EDIT_ONCLICK_LISTENER, this::onEditClicked);
-            mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER,
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.FOLDER_SELECT_ONCLICK_LISTENER,
                     this::onFolderSelectClicked);
         }
 
@@ -142,20 +153,32 @@ public class BookmarkSaveFlowMediator
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
             String folderDisplayTextRaw = getFolderDisplayTextRaw(wasBookmarkMoved);
             String folderDisplayText = getFolderDisplayText(wasBookmarkMoved);
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT,
-                    new FolderText(folderDisplayText,
-                            folderDisplayTextRaw.indexOf(FOLDER_TEXT_TOKEN), mFolderName.length()));
+            mPropertyModel.set(
+                    ImprovedBookmarkSaveFlowProperties.FOLDER_TEXT,
+                    new FolderText(
+                            folderDisplayText,
+                            folderDisplayTextRaw.indexOf(FOLDER_TEXT_TOKEN),
+                            mFolderName.length()));
         } else {
-            mPropertyModel.set(BookmarkSaveFlowProperties.TITLE_TEXT,
-                    mContext.getResources().getString(wasBookmarkMoved
-                                    ? R.string.bookmark_save_flow_title_move
-                                    : R.string.bookmark_save_flow_title));
-            mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
-                    BookmarkUtils.getFolderIcon(mContext, item.getId(), mBookmarkModel,
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.TITLE_TEXT,
+                    mContext.getResources()
+                            .getString(
+                                    wasBookmarkMoved
+                                            ? R.string.bookmark_save_flow_title_move
+                                            : R.string.bookmark_save_flow_title));
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.FOLDER_SELECT_ICON,
+                    BookmarkUtils.getFolderIcon(
+                            mContext,
+                            item.getId(),
+                            mBookmarkModel,
                             BookmarkRowDisplayPref.COMPACT));
-            mPropertyModel.set(BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED,
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.FOLDER_SELECT_ICON_ENABLED,
                     BookmarkUtils.isMovable(mBookmarkModel, item));
-            mPropertyModel.set(BookmarkSaveFlowProperties.SUBTITLE_TEXT,
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.SUBTITLE_TEXT,
                     getFolderDisplayText(wasBookmarkMoved));
         }
     }
@@ -170,7 +193,8 @@ public class BookmarkSaveFlowMediator
             if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
                 mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_VISIBLE, true);
 
-                mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED,
+                mPropertyModel.set(
+                        ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED,
                         fromExplicitTrackUi);
                 mPropertyModel.set(
                         ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
@@ -179,10 +203,12 @@ public class BookmarkSaveFlowMediator
                         PriceTrackingState.PRICE_TRACKING_SHOWN);
             } else {
                 mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_VISIBLE, true);
-                mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
-                        mContext.getResources().getString(
-                                R.string.enable_price_tracking_menu_item));
-                mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
+                mPropertyModel.set(
+                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TITLE,
+                        mContext.getResources()
+                                .getString(R.string.enable_price_tracking_menu_item));
+                mPropertyModel.set(
+                        BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
                         this::handleNotificationSwitchToggle);
 
                 if (fromExplicitTrackUi) {
@@ -196,9 +222,11 @@ public class BookmarkSaveFlowMediator
     }
 
     void bindImage(BookmarkItem item, @Nullable PowerBookmarkMeta meta) {
-        Callback<Drawable> callback = drawable -> {
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
-        };
+        Callback<Drawable> callback =
+                drawable -> {
+                    mPropertyModel.set(
+                            ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
+                };
 
         if (meta != null && meta.hasShoppingSpecifics()) {
             mBookmarkImageFetcher.fetchImageUrlWithFallbacks(
@@ -211,10 +239,11 @@ public class BookmarkSaveFlowMediator
     void handleNotificationSwitchToggle(CompoundButton view, boolean toggled) {
         if (mSubscriptionsManagerCallback == null) {
             mSubscriptionsManagerCallback =
-                    mCallbackController.makeCancelable((Boolean success) -> {
-                        setPriceTrackingToggleVisualsOnly(success && view.isChecked());
-                        setPriceTrackingNotificationUiEnabled(success);
-                    });
+                    mCallbackController.makeCancelable(
+                            (Boolean success) -> {
+                                setPriceTrackingToggleVisualsOnly(success && view.isChecked());
+                                setPriceTrackingNotificationUiEnabled(success);
+                            });
         }
 
         // Make sure the notification channel is initialized when the user tracks a product.
@@ -224,9 +253,14 @@ public class BookmarkSaveFlowMediator
             PriceDropNotificationManagerFactory.create().createNotificationChannel();
         }
         setPriceTrackingIconForEnabledState(toggled);
-        PriceTrackingUtils.setPriceTrackingStateForBookmark(mProfile, mBookmarkId.getId(), toggled,
-                mSubscriptionsManagerCallback, mIsNewBookmark);
-        PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(toggled
+        PriceTrackingUtils.setPriceTrackingStateForBookmark(
+                mProfile,
+                mBookmarkId.getId(),
+                toggled,
+                mSubscriptionsManagerCallback,
+                mIsNewBookmark);
+        PowerBookmarkMetrics.reportBookmarkSaveFlowPriceTrackingState(
+                toggled
                         ? PriceTrackingState.PRICE_TRACKING_ENABLED
                         : PriceTrackingState.PRICE_TRACKING_DISABLED);
     }
@@ -236,17 +270,24 @@ public class BookmarkSaveFlowMediator
             mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_ENABLED, enabled);
         } else {
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_UI_ENABLED, enabled);
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,
-                    mContext.getResources().getString(enabled
-                                    ? R.string.price_tracking_save_flow_notification_switch_subtitle
-                                    : R.string.price_tracking_save_flow_notification_switch_subtitle_error));
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_SUBTITLE,
+                    mContext.getResources()
+                            .getString(
+                                    enabled
+                                            ? R.string
+                                                    .price_tracking_save_flow_notification_switch_subtitle
+                                            : R.string
+                                                    .price_tracking_save_flow_notification_switch_subtitle_error));
         }
     }
 
     void setPriceTrackingIconForEnabledState(boolean enabled) {
         if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES,
-                    enabled ? R.drawable.price_tracking_enabled_filled
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_START_ICON_RES,
+                    enabled
+                            ? R.drawable.price_tracking_enabled_filled
                             : R.drawable.price_tracking_disabled);
         }
     }
@@ -271,14 +312,16 @@ public class BookmarkSaveFlowMediator
                     ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER, null);
             mPropertyModel.set(
                     ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_CHECKED, enabled);
-            mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
+            mPropertyModel.set(
+                    ImprovedBookmarkSaveFlowProperties.PRICE_TRACKING_SWITCH_LISTENER,
                     this::handleNotificationSwitchToggle);
         } else {
             mPropertyModel.set(
                     BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER, null);
             mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLED, enabled);
             setPriceTrackingIconForEnabledState(enabled);
-            mPropertyModel.set(BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
+            mPropertyModel.set(
+                    BookmarkSaveFlowProperties.NOTIFICATION_SWITCH_TOGGLE_LISTENER,
                     this::handleNotificationSwitchToggle);
         }
     }
@@ -318,8 +361,7 @@ public class BookmarkSaveFlowMediator
     // Private functions
 
     private String getFolderDisplayTextRaw(boolean wasBookmarkMoved) {
-        @StringRes
-        int stringRes;
+        @StringRes int stringRes;
         if (wasBookmarkMoved) {
             stringRes = R.string.bookmark_page_moved_location;
         } else {
@@ -330,8 +372,7 @@ public class BookmarkSaveFlowMediator
     }
 
     private String getFolderDisplayText(boolean wasBookmarkMoved) {
-        @StringRes
-        int stringRes;
+        @StringRes int stringRes;
         if (wasBookmarkMoved) {
             stringRes = R.string.bookmark_page_moved_location;
         } else {
@@ -350,8 +391,8 @@ public class BookmarkSaveFlowMediator
     private void onFolderSelectClicked(View v) {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
         BookmarkUtils.startFolderSelectActivity(mContext, mBookmarkId);
-        TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(
-                EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
+        TrackerFactory.getTrackerForProfile(mProfile)
+                .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
         mCloseRunnable.run();
     }
 }

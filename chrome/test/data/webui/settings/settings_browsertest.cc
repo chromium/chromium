@@ -81,6 +81,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Checkbox) {
   RunTest("settings/checkbox_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, CheckboxListEntry) {
+  RunTest("settings/checkbox_list_entry_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, ChooserExceptionList) {
   RunTest("settings/chooser_exception_list_test.js", "mocha.run()");
 }
@@ -127,6 +131,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, EditDictionaryPage) {
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, ExtensionControlledIndicator) {
   RunTest("settings/extension_controlled_indicator_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsSiteDetails) {
+  RunTest("settings/file_system_site_details_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsList) {
@@ -206,7 +214,13 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionCardDialogs) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionCardRows) {
-  RunTest("settings/payments_section_card_rows_test.js", "mocha.run()");
+  RunTest("settings/payments_section_card_rows_test.js",
+          "runMochaSuite('PaymentsSectionCardRows')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionEditCreditCardLink) {
+  RunTest("settings/payments_section_card_rows_test.js",
+          "runMochaSuite('PaymentsSectionEditCreditCardLink')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, PaymentsSectionIban) {
@@ -307,9 +321,21 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Section) {
   RunTest("settings/settings_section_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
-  RunTest("settings/secure_dns_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsInput) {
+  RunTest("settings/secure_dns_test.js",
+          "runMochaSuite('SettingsSecureDnsInput')");
 }
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
+  RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsDialog) {
+  RunTest("settings/secure_dns_test.js",
+          "runMochaSuite('OsSettingsRevampSecureDnsDialog')");
+}
+#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");
@@ -884,13 +910,23 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list2_;
 };
 
+// TODO(crbug.com/1491942): This fails with the field trial testing config.
+class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SettingsPrivacyPageTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+};
+
 // TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_PrivacyPage DISABLED_PrivacyPage
 #else
 #define MAYBE_PrivacyPage PrivacyPage
 #endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, MAYBE_PrivacyPage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig,
+                       MAYBE_PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
@@ -1101,6 +1137,12 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
   RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
+                       SecurityPageHappinessTrackingSurveys) {
+  RunTest("settings/security_page_test.js",
+          "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
 }
 
 // TODO(crbug.com/1403969): SafeBrowsing suite is flaky on Mac.

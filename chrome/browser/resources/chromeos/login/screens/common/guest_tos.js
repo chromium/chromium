@@ -63,6 +63,15 @@ const GuestTosScreenElementBase = mixinBehaviors(
     [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   googleEulaUrl: string,
+ *   crosEulaUrl: string,
+ * }}
+ */
+let GuestTosScreenData;
+
+/**
  * @polymer
  */
 class GuestTos extends GuestTosScreenElementBase {
@@ -100,6 +109,9 @@ class GuestTos extends GuestTosScreenElementBase {
     this.updateLocalizedContent();
   }
 
+  /**
+   * @param {GuestTosScreenData} data Screen init payload.
+   */
   onBeforeShow(data) {
     const googleEulaUrl = data['googleEulaUrl'];
     const crosEulaUrl = data['crosEulaUrl'];

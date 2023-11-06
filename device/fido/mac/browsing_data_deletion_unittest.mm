@@ -57,13 +57,14 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
       CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
                                 &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(query, kSecClass, kSecClassKey);
+  CFDictionarySetValue(query.get(), kSecClass, kSecClassKey);
   base::apple::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
-  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
-  CFDictionarySetValue(query, kSecAttrNoLegacy, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
+  CFDictionarySetValue(query.get(), kSecAttrAccessGroup,
+                       access_group_ref.get());
+  CFDictionarySetValue(query.get(), kSecAttrNoLegacy, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecReturnAttributes, kCFBooleanTrue);
+  CFDictionarySetValue(query.get(), kSecMatchLimit, kSecMatchLimitAll);
   return query;
 }
 
@@ -73,7 +74,7 @@ base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
 base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items;
   OSStatus status = Keychain::GetInstance().ItemCopyMatching(
-      BaseQuery(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
+      BaseQuery().get(), reinterpret_cast<CFTypeRef*>(items.InitializeInto()));
   if (status == errSecItemNotFound) {
     // The API returns null, but we should return an empty array instead to
     // distinguish from real errors.
@@ -89,11 +90,11 @@ base::apple::ScopedCFTypeRef<CFArrayRef> QueryAllCredentials() {
 // profiles), or -1 if an error occurs.
 ssize_t KeychainItemCount() {
   base::apple::ScopedCFTypeRef<CFArrayRef> items = QueryAllCredentials();
-  return items ? CFArrayGetCount(items) : -1;
+  return items ? CFArrayGetCount(items.get()) : -1;
 }
 
 bool ResetKeychain() {
-  OSStatus status = Keychain::GetInstance().ItemDelete(BaseQuery());
+  OSStatus status = Keychain::GetInstance().ItemDelete(BaseQuery().get());
   if (status != errSecSuccess && status != errSecItemNotFound) {
     OSSTATUS_DLOG(ERROR, status);
     return false;

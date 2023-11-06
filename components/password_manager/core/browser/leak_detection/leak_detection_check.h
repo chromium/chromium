@@ -9,6 +9,12 @@
 
 #include "url/gurl.h"
 
+namespace autofill {
+class SavePasswordProgressLogger;
+}  // namespace autofill
+
+class PrefService;
+
 namespace password_manager {
 
 enum class LeakDetectionInitiator;
@@ -33,6 +39,12 @@ class LeakDetectionCheck {
                      const GURL& url,
                      std::u16string username,
                      std::u16string password) = 0;
+
+  // Determines whether the leak check can be started depending on `prefs`. Will
+  // use `logger` for logging if non-null.
+  static bool CanStartLeakCheck(
+      const PrefService& prefs,
+      std::unique_ptr<autofill::SavePasswordProgressLogger> logger);
 };
 
 }  // namespace password_manager

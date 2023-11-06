@@ -16,4 +16,9 @@ MockMojoIndexedDBDatabaseCallbacks::CreateInterfacePtrAndBind() {
   return receiver_.BindNewEndpointAndPassRemote();
 }
 
+mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
+MockMojoIndexedDBDatabaseCallbacks::BindNewEndpointAndPassDedicatedRemote() {
+  return receiver_.BindNewEndpointAndPassDedicatedRemote();
+}
+
 }  // namespace content

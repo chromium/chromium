@@ -72,8 +72,9 @@ class ReadAnythingModelTest : public TestWithBrowserView {
 // TODO(crbug.com/1344891): Fix the memory leak on destruction observed on these
 // tests on asan mac.
 #if !BUILDFLAG(IS_MAC) || !defined(ADDRESS_SANITIZER)
-
-TEST_F(ReadAnythingModelTest, AddingModelObserverNotifiesAllObservers) {
+// TODO(crbug.com/1494163): Test is flaky on all platforms.
+TEST_F(ReadAnythingModelTest,
+       DISABLED_AddingModelObserverNotifiesAllObservers) {
   model_->AddObserver(&model_observer_1_);
 
   EXPECT_CALL(model_observer_1_,

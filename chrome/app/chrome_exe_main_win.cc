@@ -382,7 +382,9 @@ int main() {
   if (AttemptFastNotify(*command_line))
     return 0;
 
-  RemoveAppCompatFlagsEntry();
+  if (!command_line->HasSwitch(switches::kNoAppCompatClear)) {
+    RemoveAppCompatFlagsEntry();
+  }
 
   // Load and launch the chrome dll. *Everything* happens inside.
   VLOG(1) << "About to load main DLL.";

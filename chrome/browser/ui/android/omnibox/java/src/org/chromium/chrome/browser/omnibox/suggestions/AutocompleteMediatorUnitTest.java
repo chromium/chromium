@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -87,13 +88,14 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for {@link AutocompleteMediator}.
- */
+/** Tests for {@link AutocompleteMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
-                ShadowLooper.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {
+            AutocompleteMediatorUnitTest.ShadowTemplateUrlServiceFactory.class,
+            ShadowLooper.class
+        })
 @EnableFeatures({ChromeFeatureList.CLEAR_OMNIBOX_FOCUS_AFTER_NAVIGATION})
 public class AutocompleteMediatorUnitTest {
     private static final int SUGGESTION_MIN_HEIGHT = 20;
@@ -154,22 +156,30 @@ public class AutocompleteMediatorUnitTest {
 
         mTabWindowManagerSupplier = new ObservableSupplierImpl<>();
 
-        mMediator = new AutocompleteMediator(ContextUtils.getApplicationContext(),
-                mAutocompleteProvider, mAutocompleteDelegate, mTextStateProvider, mListModel,
-                new Handler(),
-                ()
-                        -> mModalDialogManager,
-                null, null, mLocationBarDataProvider,
-                tab
-                -> {},
-                mTabWindowManagerSupplier,
-                url -> false, mOmniboxActionDelegate, mOpenHistoryClustersDelegate);
+        mMediator =
+                new AutocompleteMediator(
+                        ContextUtils.getApplicationContext(),
+                        mAutocompleteProvider,
+                        mAutocompleteDelegate,
+                        mTextStateProvider,
+                        mListModel,
+                        new Handler(),
+                        () -> mModalDialogManager,
+                        null,
+                        null,
+                        mLocationBarDataProvider,
+                        tab -> {},
+                        mTabWindowManagerSupplier,
+                        url -> false,
+                        mOmniboxActionDelegate,
+                        mOpenHistoryClustersDelegate);
 
-        // clang-format on
-        mMediator.getDropdownItemViewInfoListBuilderForTest().registerSuggestionProcessor(
-                mMockProcessor);
-        mMediator.getDropdownItemViewInfoListBuilderForTest().setHeaderProcessorForTest(
-                mMockHeaderProcessor);
+        mMediator
+                .getDropdownItemViewInfoListBuilderForTest()
+                .registerSuggestionProcessor(mMockProcessor);
+        mMediator
+                .getDropdownItemViewInfoListBuilderForTest()
+                .setHeaderProcessorForTest(mMockHeaderProcessor);
 
         doReturn(SUGGESTION_MIN_HEIGHT).when(mMockProcessor).getMinimumViewHeight();
         doReturn(true).when(mMockProcessor).doesProcessSuggestion(any(), anyInt());
@@ -200,9 +210,10 @@ public class AutocompleteMediatorUnitTest {
     private List<AutocompleteMatch> buildSampleSuggestionsList(int count, String prefix) {
         List<AutocompleteMatch> list = new ArrayList<>();
         for (int index = 0; index < count; ++index) {
-            list.add(AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
-                             .setDisplayText(prefix + (index + 1))
-                             .build());
+            list.add(
+                    AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                            .setDisplayText(prefix + (index + 1))
+                            .build());
         }
 
         return list;
@@ -242,9 +253,7 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(pageClassification);
     }
 
-    /**
-     * Sets the native object reference for all suggestions in mSuggestionList.
-     */
+    /** Sets the native object reference for all suggestions in mSuggestionList. */
     void setSuggestionNativeObjectRef() {
         for (int index = 0; index < mSuggestionsList.size(); index++) {
             mSuggestionsList.get(index).updateNativeObjectRef(index + 1);
@@ -583,6 +592,38 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void onSuggestionClicked_deferLoadingUntilNativeLibrariesLoaded() {
+        var url = new GURL("http://test");
+        var match =
+                AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
+                        .build();
+
+        // Simulate interaction with match before native initialization completed.
+        mMediator.onSuggestionClicked(match, 0, url);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Simulate native initialization complete, but still no profile.
+        mMediator.onNativeInitialized();
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Simulate profile loaded.
+        mMediator.setAutocompleteProfile(mProfile);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mAutocompleteDelegate)
+                .loadUrl(eq(url.getSpec()), anyInt(), anyLong(), /*openInNewTab*/ eq(false));
+        verify(mAutocompleteDelegate).clearOmniboxFocus();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+
+        // Verify no reload on profile change.
+        Profile newProfile = mock(Profile.class);
+        mMediator.setAutocompleteProfile(newProfile);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+    }
+
+    @Test
     @SmallTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.onNativeInitialized();
@@ -592,10 +633,13 @@ public class AutocompleteMediatorUnitTest {
                 AutocompleteResult.fromCache(mSuggestionsList, null), "", true);
         Assert.assertEquals(mSuggestionsList.size(), mSuggestionModels.size());
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(i + "th model does not have the expected layout direction.",
+            Assert.assertEquals(
+                    i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_RTL,
-                    mSuggestionModels.get(i).model.get(
-                            SuggestionCommonProperties.LAYOUT_DIRECTION));
+                    mSuggestionModels
+                            .get(i)
+                            .model
+                            .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         }
     }
 
@@ -610,18 +654,24 @@ public class AutocompleteMediatorUnitTest {
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(i + "th model does not have the expected layout direction.",
+            Assert.assertEquals(
+                    i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_RTL,
-                    mSuggestionModels.get(i).model.get(
-                            SuggestionCommonProperties.LAYOUT_DIRECTION));
+                    mSuggestionModels
+                            .get(i)
+                            .model
+                            .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         }
 
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         for (int i = 0; i < mSuggestionModels.size(); i++) {
-            Assert.assertEquals(i + "th model does not have the expected layout direction.",
+            Assert.assertEquals(
+                    i + "th model does not have the expected layout direction.",
                     View.LAYOUT_DIRECTION_LTR,
-                    mSuggestionModels.get(i).model.get(
-                            SuggestionCommonProperties.LAYOUT_DIRECTION));
+                    mSuggestionModels
+                            .get(i)
+                            .model
+                            .get(SuggestionCommonProperties.LAYOUT_DIRECTION));
         }
     }
 
@@ -777,34 +827,41 @@ public class AutocompleteMediatorUnitTest {
 
     /**
      * Verify the values recorded by SuggestionList.RequestToUiModel.* histograms.
+     *
      * @param firstHistogramTotalCount total number of recorded values for the
-     *         RequestToUiModel.First histogram
+     *     RequestToUiModel.First histogram
      * @param firstHistogramTime the value to expect to be recorded as RequestToUiModel.First, or
-     *         null if this histogram should not be recorded
-     * @param lastHistogramTotalCount total number of recorded values for the
-     *         RequestToUiModel.Last histogram
-     * @param lastHistogramTime the value to expect to be recorded as RequestToUiModel.Last, or
-     *         null if this histogram should not be recorded
+     *     null if this histogram should not be recorded
+     * @param lastHistogramTotalCount total number of recorded values for the RequestToUiModel.Last
+     *     histogram
+     * @param lastHistogramTime the value to expect to be recorded as RequestToUiModel.Last, or null
+     *     if this histogram should not be recorded
      */
-    private void verifySuggestionRequestToUiModelHistograms(int firstHistogramTotalCount,
-            @Nullable Integer firstHistogramTime, int lastHistogramTotalCount,
+    private void verifySuggestionRequestToUiModelHistograms(
+            int firstHistogramTotalCount,
+            @Nullable Integer firstHistogramTime,
+            int lastHistogramTotalCount,
             @Nullable Integer lastHistogramTime) {
-        Assert.assertEquals(firstHistogramTotalCount,
+        Assert.assertEquals(
+                firstHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST));
-        Assert.assertEquals(lastHistogramTotalCount,
+        Assert.assertEquals(
+                lastHistogramTotalCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST));
 
         if (firstHistogramTime != null) {
-            Assert.assertEquals(1,
+            Assert.assertEquals(
+                    1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST,
                             firstHistogramTime));
         }
 
         if (lastHistogramTime != null) {
-            Assert.assertEquals(1,
+            Assert.assertEquals(
+                    1,
                     RecordHistogram.getHistogramValueCountForTesting(
                             OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
                             lastHistogramTime));
@@ -832,17 +889,17 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first results. Observe first results histogram reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
 
         // Report next results. Observe first results histogram not reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(300));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 100, 0, null);
 
         // Report last results. Observe two histograms reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(1, 100, 1, 500);
     }
 
@@ -867,7 +924,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first results. Observe first results histogram reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(10));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 10, 0, null);
 
         // Cancel the interaction.
@@ -900,11 +957,11 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(false);
 
         // Report first results. Observe no report (no focus).
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
 
         // Report last results. Observe no final report (no focus).
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(0, null, 0, null);
     }
 
@@ -929,7 +986,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first result as final. Observe both metrics reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(1, 150, 1, 150);
     }
 
@@ -954,7 +1011,7 @@ public class AutocompleteMediatorUnitTest {
 
         // Report first result as final. Observe both metrics reported.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(150));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/false);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ false);
         verifySuggestionRequestToUiModelHistograms(1, 150, 0, null);
 
         // No change on key press. No unexpected recordings.
@@ -965,7 +1022,7 @@ public class AutocompleteMediatorUnitTest {
 
         // No change on key press. No unexpected recordings.
         ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
-        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /*isFinal=*/true);
+        mMediator.onSuggestionsReceived(mAutocompleteResult, "", /* isFinal= */ true);
         verifySuggestionRequestToUiModelHistograms(2, 100, 1, 100);
     }
 
@@ -1020,7 +1077,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(true);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1029,7 +1086,7 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to the suggestion that was prefetched. This causes metrics about
         // prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(0), /*matchIndex=*/0, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(0), /* matchIndex= */ 0, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);
@@ -1060,7 +1117,7 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(true);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1069,7 +1126,7 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to a suggestion that was not prefetched. This causes metrics about
         // prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(1), /*matchIndex=*/1, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(1), /* matchIndex= */ 1, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);
@@ -1102,7 +1159,7 @@ public class AutocompleteMediatorUnitTest {
                 .thenReturn(false);
 
         // Simulate a suggestion being touched down.
-        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /*matchIndex=*/0);
+        mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), /* matchIndex= */ 0);
 
         // Ensure that no extra signals are sent to native.
         verify(mAutocompleteController, times(1))
@@ -1111,7 +1168,7 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a navigation to the suggestion that was not prefetched. This causes metrics
         // about prefetch to be recorded.
         mMediator.onSuggestionClicked(
-                mSuggestionsList.get(0), /*matchIndex=*/0, JUnitTestGURLs.URL_1);
+                mSuggestionsList.get(0), /* matchIndex= */ 0, JUnitTestGURLs.URL_1);
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
         mMediator.onOmniboxSessionStateChange(false);
@@ -1151,8 +1208,9 @@ public class AutocompleteMediatorUnitTest {
         }
 
         // Ensure that no extra signals are sent to native.
-        verify(mAutocompleteController,
-                times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
+        verify(
+                        mAutocompleteController,
+                        times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION))
                 .onSuggestionTouchDown(any(), anyInt(), any());
 
         // Ends the omnibox session to reset state of touch down prefetch, and record metrics.
@@ -1162,8 +1220,9 @@ public class AutocompleteMediatorUnitTest {
         // Simulate a new omnibox session start.
         mMediator.onOmniboxSessionStateChange(true);
         mMediator.onSuggestionTouchDown(mSuggestionsList.get(0), 0);
-        verify(mAutocompleteController,
-                times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
+        verify(
+                        mAutocompleteController,
+                        times(OmniboxFeatures.DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION + 1))
                 .onSuggestionTouchDown(any(), anyInt(), any());
         mMediator.onOmniboxSessionStateChange(false);
 

@@ -81,6 +81,7 @@ enum class RequestTypeForUma {
   // PERMISSION_U2F_API_REQUEST = 29,
   PERMISSION_TOP_LEVEL_STORAGE_ACCESS = 30,
   PERMISSION_MIDI = 31,
+  PERMISSION_FILE_SYSTEM_ACCESS = 32,
   // NUM must be the last value in the enum.
   NUM
 };

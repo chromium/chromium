@@ -78,12 +78,8 @@
   if (preferenceName == prefs::kSupervisedUserId) {
     [_consumer updateParentalControlStatus:
                    supervised_user::IsSubjectToParentalControls(_prefService)];
-    BOOL isTabGridUpdated = [_consumer
-        updateTabGridForIncognitoModeDisabled:IsIncognitoModeDisabled(
-                                                  _prefService)];
-    if (isTabGridUpdated) {
-      [_delegate updateIncognitoTabGridState];
-    }
+    [_consumer updateTabGridForIncognitoModeDisabled:IsIncognitoModeDisabled(
+                                                         _prefService)];
   }
 }
 

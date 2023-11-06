@@ -1049,8 +1049,6 @@ error::Error DoInitializeDiscardableTextureCHROMIUM(
     ServiceDiscardableHandle&& discardable_handle);
 error::Error DoUnlockDiscardableTextureCHROMIUM(GLuint texture_id);
 error::Error DoLockDiscardableTextureCHROMIUM(GLuint texture_id);
-error::Error DoTexImage2DSharedImageCHROMIUM(GLuint client_id,
-                                             const volatile GLbyte* mailbox);
 error::Error DoCreateAndTexStorage2DSharedImageINTERNAL(
     GLuint client_id,
     const volatile GLbyte* mailbox);
@@ -1071,6 +1069,21 @@ error::Error DoConvertYUVAMailboxesToRGBINTERNAL(
     GLenum plane_config,
     GLenum subsampling,
     const volatile GLbyte* mailboxes_in);
+error::Error DoConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in);
+
 error::Error DoCopySharedImageINTERNAL(GLint xoffset,
                                        GLint yoffset,
                                        GLint x,

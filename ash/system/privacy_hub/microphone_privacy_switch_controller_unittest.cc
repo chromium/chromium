@@ -101,20 +101,14 @@ class MockFrontendAPI : public PrivacyHubDelegate {
 }  // namespace
 
 // Test fixture used to test privacy hub specific behavior.
-// The two bool params are as follows, and every combination of the two are ran:
-// 0. `IsPrivacyIndicatorsEnabled()`
-// 1. `IsVideoConferenceEnabled()`
 class PrivacyHubMicrophoneControllerTest
     : public AshTestBase,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<bool> {
  public:
   PrivacyHubMicrophoneControllerTest()
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     std::vector<base::test::FeatureRef> enabled_features{
         ash::features::kCrosPrivacyHub};
-    if (IsPrivacyIndicatorsEnabled()) {
-      enabled_features.push_back(features::kPrivacyIndicators);
-    }
     if (IsVideoConferenceEnabled()) {
       fake_video_conference_tray_controller_ =
           std::make_unique<FakeVideoConferenceTrayController>();
@@ -157,9 +151,7 @@ class PrivacyHubMicrophoneControllerTest
     AshTestBase::TearDown();
   }
 
-  bool IsPrivacyIndicatorsEnabled() { return std::get<0>(GetParam()); }
-
-  bool IsVideoConferenceEnabled() { return std::get<1>(GetParam()); }
+  bool IsVideoConferenceEnabled() { return GetParam(); }
 
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
@@ -263,7 +255,7 @@ class PrivacyHubMicrophoneControllerTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrivacyHubMicrophoneControllerTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 TEST_P(PrivacyHubMicrophoneControllerTest, SetSystemMuteOnLogin) {
   for (bool microphone_allowed : {false, true, false}) {

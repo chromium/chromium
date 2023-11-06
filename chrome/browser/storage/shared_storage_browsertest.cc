@@ -19,6 +19,7 @@
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -255,6 +257,49 @@ MakeSharedStoragePrivacySandboxAttestationsMap(
   return attestations_map;
 }
 
+class MockChromeContentBrowserClient : public ChromeContentBrowserClient {
+ public:
+  bool IsSharedStorageAllowed(content::BrowserContext* browser_context,
+                              content::RenderFrameHost* rfh,
+                              const url::Origin& top_frame_origin,
+                              const url::Origin& accessing_origin) override {
+    if (bypass_shared_storage_allowed_count_ > 0) {
+      bypass_shared_storage_allowed_count_--;
+      return true;
+    }
+
+    return ChromeContentBrowserClient::IsSharedStorageAllowed(
+        browser_context, rfh, top_frame_origin, accessing_origin);
+  }
+
+  bool IsSharedStorageSelectURLAllowed(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin) override {
+    if (bypass_shared_storage_select_url_allowed_count_) {
+      bypass_shared_storage_select_url_allowed_count_--;
+      return true;
+    }
+
+    return ChromeContentBrowserClient::IsSharedStorageSelectURLAllowed(
+        browser_context, top_frame_origin, accessing_origin);
+  }
+
+  void set_bypass_shared_storage_allowed_count(int count) {
+    CHECK_EQ(bypass_shared_storage_allowed_count_, 0);
+    bypass_shared_storage_allowed_count_ = count;
+  }
+
+  void set_bypass_shared_storage_select_url_allowed_count(int count) {
+    CHECK_EQ(bypass_shared_storage_select_url_allowed_count_, 0);
+    bypass_shared_storage_select_url_allowed_count_ = count;
+  }
+
+ private:
+  int bypass_shared_storage_allowed_count_ = 0;
+  int bypass_shared_storage_select_url_allowed_count_ = 0;
+};
+
 }  // namespace
 
 class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
@@ -271,6 +316,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
                                   kOverridePrivacySandboxSettingsLocalTesting},
         /*disabled_features=*/{});
   }
+
+  ~SharedStorageChromeBrowserTestBase() override = default;
 
   void SetUpOnMainThread() override {
     // `PrivacySandboxAttestations` has a member of type
@@ -289,9 +336,16 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
     SetPrefs(EnablePrivacySandbox(), AllowThirdPartyCookies());
     FinishSetUp();
+
+    mock_chrome_content_browser_client_ =
+        std::make_unique<MockChromeContentBrowserClient>();
+    old_chrome_content_browser_client_ = content::SetBrowserClientForTesting(
+        mock_chrome_content_browser_client_.get());
   }
 
-  ~SharedStorageChromeBrowserTestBase() override = default;
+  void TearDownOnMainThread() override {
+    content::SetBrowserClientForTesting(old_chrome_content_browser_client_);
+  }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -591,12 +645,16 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
  protected:
   base::HistogramTester histogram_tester_;
+  std::unique_ptr<MockChromeContentBrowserClient>
+      mock_chrome_content_browser_client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<privacy_sandbox::ScopedPrivacySandboxAttestations>
       scoped_attestations_;
+  raw_ptr<content::ContentBrowserClient, AcrossTasksDanglingUntriaged>
+      old_chrome_content_browser_client_ = nullptr;
 };
 
 class SharedStorageChromeBrowserTest
@@ -659,8 +717,11 @@ class SharedStoragePrefBrowserTest
     add_module_console_observer.SetFilter(
         MakeFilter({"Finish executing simple_module.js"}));
 
-    // We allow Shared Storage for `addModule()`.
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/true);
+    // Bypass the following permissions to allow one `addModule()` call.
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_allowed_count(1);
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_select_url_allowed_count(1);
 
     EXPECT_TRUE(content::ExecJs(execution_target, R"(
       sharedStorage.worklet.addModule('shared_storage/simple_module.js');
@@ -673,8 +734,6 @@ class SharedStoragePrefBrowserTest
     EXPECT_EQ(
         "Finish executing simple_module.js",
         base::UTF16ToUTF8(add_module_console_observer.messages()[0].message));
-
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/false);
   }
 
   bool ExecuteScriptInWorkletWithOuterPermissionsBypassed(
@@ -697,12 +756,16 @@ class SharedStoragePrefBrowserTest
                   "/shared_storage/customizable_module.js",
                   run_function_body_replacement));
 
-    // We allow Shared Storage for `addModule()` and `run()`, but any operations
-    // nested within the script run by `run()` will have preferences applied
-    // according to test parameters. When the latter disallow Shared Storage, it
-    // siumlates the situation where preferences are updated to block Shared
-    // Storage during the course of a previously allowed `run()` call.
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/true);
+    // Bypass the following permissions to allow one call for `addModule()` and
+    // `run()` respectively. Any operations nested within the script run by
+    // `run()` will have preferences applied according to test parameters. When
+    // the latter disallow Shared Storage, it siumlates the situation where
+    // preferences are updated to block Shared Storage during the course of a
+    // previously allowed `run()` call.
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_allowed_count(2);
+    mock_chrome_content_browser_client_
+        ->set_bypass_shared_storage_select_url_allowed_count(1);
 
     EXPECT_TRUE(content::ExecJs(
         execution_target,
@@ -749,8 +812,6 @@ class SharedStoragePrefBrowserTest
 
     WaitForHistograms({kTimingDocumentRunHistogram});
     histogram_tester_.ExpectTotalCount(kTimingDocumentRunHistogram, 1);
-
-    content::SetBypassIsSharedStorageAllowed(/*allow=*/false);
 
     return result.error.empty();
   }
@@ -1956,10 +2017,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
       GetActiveWebContents(),
       content::JsReplace("sharedStorage.worklet.addModule($1)", script_url));
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() can only ",
-                          "be invoked once per browsing context.\"\n"}),
-            result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() can only "
+                                 "be invoked once per browsing context"));
 
   // Navigate away to record `kWorkletNumPerPageHistogram` histogram.
   EXPECT_TRUE(content::NavigateToURL(GetActiveWebContents(),
@@ -1976,16 +2036,20 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotLoadedError) {
   Set3rdPartyCookieAndMainHostAttestationSettingsThenNavigateToMainHostPage();
 
-  EXPECT_TRUE(content::ExecJs(GetActiveWebContents(),
-                              R"(
+  content::EvalJsResult result = content::EvalJs(GetActiveWebContents(), R"(
       sharedStorage.run(
           'test-operation', {data: {}});
-    )"));
+    )");
+
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr(
+          "sharedStorage.worklet.addModule() has to be called before run()"));
 
   WaitForHistograms({kErrorTypeHistogram});
   histogram_tester_.ExpectUniqueSample(
-      kErrorTypeHistogram,
-      blink::SharedStorageWorkletErrorType::kRunNonWebVisible, 1);
+      kErrorTypeHistogram, blink::SharedStorageWorkletErrorType::kRunWebVisible,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest, Run_NotRegisteredError) {
@@ -2126,10 +2190,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageChromeBrowserTest,
         })()
       )");
 
-  EXPECT_EQ(base::StrCat({"a JavaScript error: \"Error: ",
-                          "sharedStorage.worklet.addModule() has to be ",
-                          "called before sharedStorage.selectURL().\"\n"}),
-            result.error);
+  EXPECT_THAT(result.error,
+              testing::HasSubstr("sharedStorage.worklet.addModule() has to be "
+                                 "called before selectURL()"));
 
   WaitForHistograms({kErrorTypeHistogram});
 
@@ -3081,7 +3144,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageHeaderPrefBrowserTest, Basic) {
 
   response.WaitForRequest();
   ASSERT_TRUE(base::Contains(response.http_request()->headers,
-                             "Shared-Storage-Writable"));
+                             "Sec-Shared-Storage-Writable"));
   EXPECT_EQ(response.http_request()->content, "");
   response.Send(
       /*http_status=*/net::HTTP_OK,

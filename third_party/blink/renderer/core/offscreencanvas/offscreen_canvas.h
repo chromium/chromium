@@ -113,7 +113,9 @@ class CORE_EXPORT OffscreenCanvas final
   void PreFinalizeFrame() override {}
   void PostFinalizeFrame(FlushReason) override {}
   void DetachContext() override { context_ = nullptr; }
-  CanvasRenderingContext* RenderingContext() const override { return context_; }
+  CanvasRenderingContext* RenderingContext() const override {
+    return context_.Get();
+  }
 
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource>&& frame,
@@ -183,6 +185,11 @@ class CORE_EXPORT OffscreenCanvas final
   bool IsWebGL1Enabled() const override { return true; }
   bool IsWebGL2Enabled() const override { return true; }
   bool IsWebGLBlocked() const override { return false; }
+
+  void CheckForGpuContextLost();
+  void SetRestoringGpuContext(bool restoring_gpu_context) {
+    restoring_gpu_context_ = restoring_gpu_context;
+  }
 
   FontSelector* GetFontSelector() override;
 
@@ -274,6 +281,8 @@ class CORE_EXPORT OffscreenCanvas final
   // then the following members would remain as initialized zero values.
   uint32_t client_id_ = 0;
   uint32_t sink_id_ = 0;
+
+  bool restoring_gpu_context_ = false;
 };
 
 }  // namespace blink

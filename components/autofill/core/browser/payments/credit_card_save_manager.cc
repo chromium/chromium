@@ -136,7 +136,7 @@ bool CreditCardSaveManager::AttemptToOfferCvcLocalSave(const CreditCard& card) {
 bool CreditCardSaveManager::ShouldOfferCvcSave(
     const CreditCard& card,
     FormDataImporter::CreditCardImportType credit_card_import_type,
-    bool is_credit_card_upload_enabled) {
+    bool is_credit_card_upstream_enabled) {
   // Only offer CVC save if CVC storage is enabled.
   if (!personal_data_manager_->IsPaymentCvcStorageEnabled()) {
     return false;
@@ -155,11 +155,64 @@ bool CreditCardSaveManager::ShouldOfferCvcSave(
         personal_data_manager_->GetCreditCardByGUID(card.guid());
   } else if (credit_card_import_type ==
                  FormDataImporter::CreditCardImportType::kServerCard &&
-             is_credit_card_upload_enabled) {
+             is_credit_card_upstream_enabled) {
     existing_credit_card = personal_data_manager_->GetCreditCardByInstrumentId(
         card.instrument_id());
   }
   return existing_credit_card && existing_credit_card->cvc() != card.cvc();
+}
+
+bool CreditCardSaveManager::ProceedWithSavingIfApplicable(
+    const FormStructure& submitted_form,
+    const CreditCard& card,
+    FormDataImporter::CreditCardImportType credit_card_import_type,
+    bool is_credit_card_upstream_enabled) {
+  // Prioritize card upload save if it is allowed. Check if card upload save
+  // should be offer and attempt to offer card upload save.
+  if (is_credit_card_upstream_enabled &&
+      credit_card_import_type !=
+          FormDataImporter::CreditCardImportType::kServerCard) {
+    AttemptToOfferCardUploadSave(
+        submitted_form, card,
+        /*uploading_local_card=*/credit_card_import_type ==
+            FormDataImporter::CreditCardImportType::kLocalCard);
+    return true;
+  }
+
+  // If card upload is not allowed, we check if CVC save should be offer and
+  // attempt to offer CVC save.
+  if (personal_data_manager_->IsPaymentCvcStorageEnabled() &&
+      !card.cvc().empty()) {
+    // We will only offer CVC-only save if the card is known to Autofill.
+    CreditCard* existing_credit_card = nullptr;
+    if (credit_card_import_type ==
+        FormDataImporter::CreditCardImportType::kLocalCard) {
+      existing_credit_card =
+          personal_data_manager_->GetCreditCardByGUID(card.guid());
+      if (existing_credit_card && existing_credit_card->cvc() != card.cvc()) {
+        AttemptToOfferCvcLocalSave(card);
+        return true;
+      }
+    } else if (credit_card_import_type ==
+                   FormDataImporter::CreditCardImportType::kServerCard &&
+               is_credit_card_upstream_enabled) {
+      existing_credit_card =
+          personal_data_manager_->GetCreditCardByInstrumentId(
+              card.instrument_id());
+      if (existing_credit_card && existing_credit_card->cvc() != card.cvc()) {
+        AttemptToOfferCvcUploadSave(card);
+        return true;
+      }
+    }
+  }
+
+  // If card upload save and CVC save are not allowed, new cards should be saved
+  // locally.
+  if (credit_card_import_type ==
+      FormDataImporter::CreditCardImportType::kNewCard) {
+    return AttemptToOfferCardLocalSave(card);
+  }
+  return false;
 }
 
 void CreditCardSaveManager::AttemptToOfferCardUploadSave(
@@ -278,10 +331,10 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   // full addresses even after this function goes out of scope.
   std::vector<AutofillProfile> country_only_profiles;
   for (const AutofillProfile& address : upload_request_.profiles) {
-    AutofillProfile country_only;
-    country_only.SetInfo(ADDRESS_HOME_COUNTRY,
-                         address.GetInfo(ADDRESS_HOME_COUNTRY, app_locale_),
-                         app_locale_);
+    const std::u16string country_code =
+        address.GetRawInfo(ADDRESS_HOME_COUNTRY);
+    AutofillProfile country_only(
+        AddressCountryCode(base::UTF16ToUTF8(country_code)));
     country_only_profiles.emplace_back(std::move(country_only));
   }
 
@@ -320,7 +373,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
       upload_request_.client_behavior_signals, app_locale_,
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr()),
-      payments::kUploadCardBillableServiceNumber,
+      payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(personal_data_manager_),
       payments::PaymentsClient::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }

@@ -45,9 +45,7 @@ import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests for {@link OmniboxImageSupplier}.
- */
+/** Tests for {@link OmniboxImageSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class OmniboxImageSupplierUnitTest {
     private static final GURL NAV_URL = JUnitTestGURLs.URL_1;
@@ -77,8 +75,9 @@ public final class OmniboxImageSupplierUnitTest {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJni);
 
         var context = ContextUtils.getApplicationContext();
-        mFaviconSize = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_favicon_size);
+        mFaviconSize =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
         assert mFaviconSize != 0;
         mSupplier = new OmniboxImageSupplier(context);
         mSupplier.setRoundedIconGeneratorForTesting(mIconGenerator);
@@ -90,8 +89,8 @@ public final class OmniboxImageSupplierUnitTest {
     }
 
     /**
-     * Confirm that icon of expected size was requested from LargeIconBridge, and report a
-     * supplied bitmap back to the caller.
+     * Confirm that icon of expected size was requested from LargeIconBridge, and report a supplied
+     * bitmap back to the caller.
      *
      * @param url the url to expect a lookup for
      * @param bitmap the bitmap to return to the caller (may be null)
@@ -99,8 +98,13 @@ public final class OmniboxImageSupplierUnitTest {
     private void verifyLargeIconBridgeRequest(@NonNull GURL url, @Nullable Bitmap bitmap) {
         ShadowLooper.runUiThreadTasks();
         verify(mLargeIconBridgeJni)
-                .getLargeIconForURL(anyLong(), eq(mProfile), eq(url), eq(mFaviconSize / 2),
-                        eq(mFaviconSize), mIconCallbackCaptor.capture());
+                .getLargeIconForURL(
+                        anyLong(),
+                        eq(mProfile),
+                        eq(url),
+                        eq(mFaviconSize / 2),
+                        eq(mFaviconSize),
+                        mIconCallbackCaptor.capture());
         mIconCallbackCaptor.getValue().onLargeIconAvailable(bitmap, FALLBACK_COLOR, true, 0);
     }
 
@@ -115,8 +119,8 @@ public final class OmniboxImageSupplierUnitTest {
     }
 
     /**
-     * Confirm no unexpected calls were made to any of our data producers or consumers and
-     * clear all counters.
+     * Confirm no unexpected calls were made to any of our data producers or consumers and clear all
+     * counters.
      */
     private void verifyNoOtherInteractionsAndClearInteractions() {
         verifyNoMoreInteractions(mLargeIconBridgeJni);

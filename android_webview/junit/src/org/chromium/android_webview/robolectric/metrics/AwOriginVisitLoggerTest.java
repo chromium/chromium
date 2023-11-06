@@ -22,9 +22,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Unit tests for {@link AwOriginVisitLogger}.
- */
+/** Unit tests for {@link AwOriginVisitLogger}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwOriginVisitLoggerTest {
@@ -34,8 +32,7 @@ public class AwOriginVisitLoggerTest {
     private static final long ORIGIN_HASH_C = 1894809809L;
     private static final String HISTOGRAM_NAME = "Android.WebView.OriginsVisited";
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Test
     @SmallTest

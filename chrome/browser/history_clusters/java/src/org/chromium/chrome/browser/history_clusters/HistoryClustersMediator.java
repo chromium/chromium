@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClusterView.ClusterVi
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.AsyncTabLauncher;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -316,13 +316,16 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                     isIncognito, true, inTabGroup, additionalUrls);
             ContextUtils.getApplicationContext().startActivity(intent);
         } else {
-            Tab parent = createNewTab(visits.get(0).getNormalizedUrl(), isIncognito, null,
+            createNewTab(
+                    visits.get(0).getNormalizedUrl(),
+                    isIncognito,
+                    null,
                     TabLaunchType.FROM_CHROME_UI);
             @TabLaunchType
             int tabLaunchType = inTabGroup ? TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                                            : TabLaunchType.FROM_CHROME_UI;
             for (int i = 1; i < visits.size(); i++) {
-                createNewTab(visits.get(i).getNormalizedUrl(), isIncognito, parent, tabLaunchType);
+                createNewTab(visits.get(i).getNormalizedUrl(), isIncognito, null, tabLaunchType);
             }
         }
     }
@@ -405,10 +408,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mVisitMetadataMap.remove(visit);
     }
 
-    private Tab createNewTab(GURL gurl, boolean incognito, Tab parentTab, int tabLaunchType) {
-        TabCreator tabCreator = mDelegate.getTabCreator(incognito);
+    private void createNewTab(GURL gurl, boolean incognito, Tab parentTab, int tabLaunchType) {
+        AsyncTabLauncher tabCreator = mDelegate.getTabLauncher(incognito);
         assert tabCreator != null;
-        return tabCreator.createNewTab(new LoadUrlParams(gurl), tabLaunchType, parentTab);
+        tabCreator.launchNewTab(new LoadUrlParams(gurl), tabLaunchType, parentTab);
     }
 
     private void queryComplete(HistoryClustersResult result) {
@@ -420,8 +423,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         boolean showClustersAsSearchSuggestions =
                 !mQueryState.isSearching() || mQueryState.getQuery().isEmpty();
         if (showClustersAsSearchSuggestions) {
-            ensureHeaders();
             addClustersAsSearchSuggestions(result);
+            ensureHeaders();
         } else {
             addExpandedClusters(result);
         }

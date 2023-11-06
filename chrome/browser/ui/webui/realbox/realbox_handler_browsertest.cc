@@ -162,6 +162,12 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
         /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
   }
 
+  // TODO(crbug.com/1491942): This fails with the field trial testing config.
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SearchPrefetchBaseBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("disable-field-trial-config");
+  }
+
  private:
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS SameOrigin
-PASS SameSite
-PASS CrossSite
-PASS beforeunload
-PRECONDITION_FAILED unload Could have been BFCached but actually wasn't
+[PASS] SameOrigin
+[PASS] SameSite
+[PASS] CrossSite
+[PASS] beforeunload
+[PRECONDITION_FAILED] unload
+  Could have been BFCached but actually wasn't
 Harness: the test ran to completion.
 

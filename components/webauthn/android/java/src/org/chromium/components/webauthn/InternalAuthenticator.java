@@ -8,15 +8,15 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,16 +36,21 @@ public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
-    private InternalAuthenticator(long nativeInternalAuthenticatorAndroid, Context context,
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+    private InternalAuthenticator(
+            long nativeInternalAuthenticatorAndroid,
+            Context context,
+            FidoIntentSender intentSender,
+            RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
         mAuthenticator = new AuthenticatorImpl(context, intentSender,
                 /*createConfirmationUiDelegate=*/null, renderFrameHost, topOrigin);
     }
 
-    public static InternalAuthenticator createForTesting(Context context,
-            WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost renderFrameHost,
+    public static InternalAuthenticator createForTesting(
+            Context context,
+            FidoIntentSender intentSender,
+            RenderFrameHost renderFrameHost,
             Origin topOrigin) {
         return new InternalAuthenticator(-1, context, intentSender, renderFrameHost, topOrigin);
     }

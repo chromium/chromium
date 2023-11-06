@@ -5,6 +5,7 @@
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/web_app_types.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
 // Describes an Android package associated with a web app.
@@ -30,8 +31,8 @@ struct WebApkCreationParams {
 
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
-// Next version: 7
-// Next method id: 8
+// Next version: 8
+// Next method id: 9
 [Stable, Uuid="84eb46eb-76fe-439c-9fcb-3388492e141d"]
 interface WebAppProviderBridge {
   // Called when a web app described by |info| is installed in ARC (Android
@@ -82,6 +83,15 @@ interface WebAppProviderBridge {
   [MinVersion=6]
   InstallPreloadWebApp@7(PreloadWebAppInstallInfo preload_install_info)
     => (string app_id, WebAppInstallResultCode install_result);
+
+  // Requests that Lacros launch the Isolated Web App installation UI for the
+  // bundle with the given path.
+  //
+  // Bundles come from the web so the receiving-side implementation assumes it
+  // can be malicious. There is no path or bundle validation done at the Mojo
+  // layer.
+  [MinVersion=7]
+  LaunchIsolatedWebAppInstaller@8(mojo_base.mojom.FilePath bundle_path);
 };
 
 // An interface implemented in ash-chrome. Allows lacros-chrome:

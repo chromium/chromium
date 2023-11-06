@@ -332,8 +332,9 @@ em::DeviceManagementRequest GetCertBasedRegistrationRequest(
     register_request->set_psm_determination_timestamp_ms(
         psm_determination_timestamp.value());
   }
-  if (psm_execution_result.has_value())
+  if (psm_execution_result.has_value()) {
     register_request->set_psm_execution_result(psm_execution_result.value());
+  }
   if (demo_mode_dimensions.has_value()) {
     *register_request->mutable_demo_mode_dimensions() =
         demo_mode_dimensions.value();
@@ -491,8 +492,9 @@ class CloudPolicyClientTest : public testing::Test {
     service_.ScheduleInitialization(0);
     base::RunLoop().RunUntilIdle();
 
-    if (client_)
+    if (client_) {
       client_->RemoveObserver(&observer_);
+    }
 
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -1145,7 +1147,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithMetaData) {
   em::DeviceManagementRequest policy_request = GetPolicyRequest();
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->mutable_requests(0);
-  policy_fetch_request->set_timestamp(kOldTimestamp.ToJavaTime());
+  policy_fetch_request->set_timestamp(
+      kOldTimestamp.InMillisecondsSinceUnixEpoch());
   policy_fetch_request->set_public_key_version(kPublicKeyVersion);
 
   em::DeviceManagementResponse policy_response = GetPolicyResponse();
@@ -2222,109 +2225,6 @@ TEST_F(CloudPolicyClientTest, UploadAppInstallReportSupersedesPending) {
                             base::Unretained(&result_callback_observer_));
   client_->UploadAppInstallReport(MakeDefaultRealtimeReport(),
                                   std::move(callback));
-  EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
-      job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-  EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
-}
-
-TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportNotRegistered) {
-  ASSERT_FALSE(client_->is_registered());
-
-  base::test::TestFuture<CloudPolicyClient::Result> result_future;
-
-  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
-                                        result_future.GetCallback());
-
-  const CloudPolicyClient::Result& result = result_future.Get();
-  EXPECT_EQ(result,
-            CloudPolicyClient::Result(CloudPolicyClient::NotRegistered()));
-}
-
-TEST_F(CloudPolicyClientTest, UploadExtensionInstallReport) {
-  RegisterClient();
-
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(result_callback_observer_,
-              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
-      .Times(1);
-  CloudPolicyClient::ResultCallback callback =
-      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&result_callback_observer_));
-
-  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
-                                        std::move(callback));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(
-      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
-      job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-  EXPECT_EQ(DM_STATUS_SUCCESS, client_->last_dm_status());
-}
-
-TEST_F(CloudPolicyClientTest, CancelUploadExtensionInstallReport) {
-  RegisterClient();
-
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(result_callback_observer_,
-              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
-      .Times(0);
-
-  CloudPolicyClient::ResultCallback callback =
-      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&result_callback_observer_));
-
-  em::ExtensionInstallReportRequest app_install_report;
-  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
-                                        std::move(callback));
-  EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
-
-  // The job expected by the call to ExpectRealTimeReport() completes
-  // when base::RunLoop().RunUntilIdle() is called.  To simulate a cancel
-  // before the response for the request is processed, make sure to cancel it
-  // before running a loop.
-  client_->CancelExtensionInstallReportUpload();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(0, client_->GetActiveRequestCountForTest());
-  EXPECT_EQ(
-      DeviceManagementService::JobConfiguration::TYPE_UPLOAD_REAL_TIME_REPORT,
-      job_type_);
-  EXPECT_EQ(auth_data_, DMAuth::FromDMToken(kDMToken));
-}
-
-TEST_F(CloudPolicyClientTest, UploadExtensionInstallReportSupersedesPending) {
-  RegisterClient();
-
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(result_callback_observer_,
-              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
-      .Times(0);
-  CloudPolicyClient::ResultCallback callback =
-      base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
-                     base::Unretained(&result_callback_observer_));
-
-  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
-                                        std::move(callback));
-
-  EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
-  Mock::VerifyAndClearExpectations(&service_);
-  Mock::VerifyAndClearExpectations(&status_callback_observer_);
-
-  // Starting another extension install report upload should cancel the pending
-  // one.
-  ExpectAndCaptureJSONJob(/*response=*/"{}");
-  EXPECT_CALL(result_callback_observer_,
-              OnCallbackComplete(CloudPolicyClient::Result(DM_STATUS_SUCCESS)))
-      .Times(1);
-  callback = base::BindOnce(&MockResultCallbackObserver::OnCallbackComplete,
-                            base::Unretained(&result_callback_observer_));
-  client_->UploadExtensionInstallReport(MakeDefaultRealtimeReport(),
-                                        std::move(callback));
   EXPECT_EQ(1, client_->GetActiveRequestCountForTest());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(

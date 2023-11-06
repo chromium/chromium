@@ -6,7 +6,7 @@ import {TestRunner} from 'test_runner';
 import {SourcesTestRunner} from 'sources_test_runner';
 
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
-import * as BindingsModule from 'devtools/models/bindings/bindings.js';
+import * as Bindings from 'devtools/models/bindings/bindings.js';
 
 (async function() {
   TestRunner.addResult(
@@ -24,14 +24,14 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
   }
 
   function step2(uiSourceCode) {
-    TestRunner.addSnifferPromise(BindingsModule.ResourceScriptMapping.ResourceScriptFile.prototype, 'mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptMapping.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => step3(uiSourceCode));
     SourcesTestRunner.showScriptSource('test.js');
   }
 
   function step3(uiSourceCode) {
     var debuggerModel = TestRunner.debuggerModel;
-    var scriptFile = Bindings.debuggerWorkspaceBinding.scriptFile(uiSourceCode, debuggerModel);
+    var scriptFile = Bindings.DebuggerWorkspaceBinding.DebuggerWorkspaceBinding.instance().scriptFile(uiSourceCode, debuggerModel);
     if (!scriptFile) {
       TestRunner.addResult('[FAIL]: no script file for test.js');
       SourcesTestRunner.completeDebuggerTest();
@@ -47,7 +47,7 @@ import * as BindingsModule from 'devtools/models/bindings/bindings.js';
         .addSnifferPromise(
             SourcesModule.DebuggerPlugin.DebuggerPlugin.prototype, 'didDivergeFromVM')
         .then(dumpDivergeFromVM);
-    TestRunner.addSnifferPromise(BindingsModule.ResourceScriptMapping.ResourceScriptFile.prototype, 'mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptMapping.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => SourcesTestRunner.completeDebuggerTest());
     TestRunner.evaluateInPage(changedScriptSource);
   }

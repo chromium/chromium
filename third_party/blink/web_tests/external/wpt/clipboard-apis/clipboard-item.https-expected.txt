@@ -1,15 +1,18 @@
 This is a testharness.js-based test.
-PASS ClipboardItem({string, Blob}) succeeds with different types
-PASS ClipboardItem() succeeds with empty options
-PASS ClipboardItem({}) fails with empty dictionary input
-PASS ClipboardItem(Blob) fails
-PASS ClipboardItem() fails with null input
-PASS ClipboardItem() fails with no input
-PASS types() returns correct values
-PASS getType(DOMString valid type) succeeds with correct output
-PASS getType(DOMString invalid type) succeeds with correct output
-PASS getType(DOMString type) rejects correctly when querying for missing type
-FAIL getType(DOMString valid type) converts DOMString to Blob assert_equals: expected (string) "text/plain" but got (undefined) undefined
-FAIL getType(DOMString invalid type) converts DOMString to Blob assert_equals: expected (string) "not a/real type" but got (undefined) undefined
+[PASS] ClipboardItem({string, Blob}) succeeds with different types
+[PASS] ClipboardItem() succeeds with empty options
+[PASS] ClipboardItem({}) fails with empty dictionary input
+[PASS] ClipboardItem(Blob) fails
+[PASS] ClipboardItem() fails with null input
+[PASS] ClipboardItem() fails with no input
+[PASS] types() returns correct values
+[PASS] getType(DOMString valid type) succeeds with correct output
+[PASS] getType(DOMString invalid type) succeeds with correct output
+[PASS] getType(DOMString type) rejects correctly when querying for missing type
+[FAIL] getType(DOMString valid type) converts DOMString to Blob
+  assert_equals: expected (string) "text/plain" but got (undefined) undefined
+[FAIL] getType(DOMString invalid type) converts DOMString to Blob
+  assert_equals: expected (string) "not a/real type" but got (undefined) undefined
+[PASS] supports(DOMString) returns true for types that are supported, false otherwise
 Harness: the test ran to completion.
 

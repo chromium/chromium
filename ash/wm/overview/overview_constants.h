@@ -14,10 +14,6 @@ namespace ash {
 // The time duration for transformation animations.
 constexpr base::TimeDelta kTransition = base::Milliseconds(300);
 
-// The duration for window restore animation when feature Jellyroll is Enabled.
-constexpr base::TimeDelta kWindowRestoreDurationCrOSNext =
-    base::Milliseconds(350);
-
 // In the conceptual overview table, the horizontal space between two adjacent
 // items.
 constexpr int kHorizontalSpaceBetweenItemsDp = 10;

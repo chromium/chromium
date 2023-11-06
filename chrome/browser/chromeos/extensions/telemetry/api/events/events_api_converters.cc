@@ -119,7 +119,8 @@ cx_events::ExternalDisplayInfo UncheckedConvertPtr(
   result.refresh_rate = std::move(input->refresh_rate);
   result.manufacturer = std::move(input->manufacturer);
   result.model_id = std::move(input->model_id);
-  result.serial_number = std::move(input->serial_number);
+  // Not reporting serial_number for now until we get Privacy's approval.
+  // result.serial_number = std::move(input->serial_number);
   result.manufacture_week = std::move(input->manufacture_week);
   result.manufacture_year = std::move(input->manufacture_year);
   result.edid_version = std::move(input->edid_version);

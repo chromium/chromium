@@ -45,7 +45,7 @@ using NativeLibrary = NativeLibraryStruct*;
 using NativeLibrary = void*;
 #endif  // OS_*
 
-struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryLoadError {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NativeLibraryLoadError {
 #if BUILDFLAG(IS_WIN)
   NativeLibraryLoadError() : code(0) {}
 #endif  // BUILDFLAG(IS_WIN)
@@ -60,7 +60,7 @@ struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryLoadError {
 #endif  // BUILDFLAG(IS_WIN)
 };
 
-struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryOptions {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NativeLibraryOptions {
   NativeLibraryOptions() = default;
   NativeLibraryOptions(const NativeLibraryOptions& options) = default;
 
@@ -75,20 +75,20 @@ struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryOptions {
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 NativeLibrary LoadNativeLibrary(const FilePath& library_path,
                                 NativeLibraryLoadError* error);
 
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
                                            const NativeLibraryOptions& options,
                                            NativeLibraryLoadError* error);
 
 // Gets a function pointer from a native library.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
                                           const std::string& name);
 

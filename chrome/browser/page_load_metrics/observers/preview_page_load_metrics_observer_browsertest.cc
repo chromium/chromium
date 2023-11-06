@@ -5,6 +5,7 @@
 #include "chrome/browser/page_load_metrics/observers/preview_page_load_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/preloading/preview/preview_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -20,7 +21,10 @@ namespace {
 
 class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
  public:
-  PreviewPageLoadMetricsObserverBrowserTest() = default;
+  PreviewPageLoadMetricsObserverBrowserTest()
+      : helper_(base::BindRepeating(
+            &PreviewPageLoadMetricsObserverBrowserTest::GetWebContents,
+            base::Unretained(this))) {}
   ~PreviewPageLoadMetricsObserverBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -35,13 +39,13 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   void NavigateToOriginPath(const std::string& path) {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetOriginURL(path)));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL(path)));
     base::RunLoop().RunUntilIdle();
   }
 
   void NavigateToOriginPathFromRenderer(const std::string& path) {
     ASSERT_TRUE(content::NavigateToURLFromRenderer(
-        GetWebContents()->GetPrimaryMainFrame(), GetOriginURL(path)));
+        GetWebContents()->GetPrimaryMainFrame(), GetTestURL(path)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -57,8 +61,8 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  GURL GetOriginURL(const std::string& path) {
-    return embedded_test_server()->GetURL("origin.com", path);
+  GURL GetTestURL(const std::string& path) {
+    return embedded_test_server()->GetURL("example.com", path);
   }
 
   void DisableBackForwardCache() {
@@ -67,6 +71,7 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester& histogram_tester() { return *histogram_tester_; }
+  test::PreviewTestHelper& helper() { return helper_; }
 
  private:
   content::WebContents* GetWebContents() {
@@ -74,6 +79,7 @@ class PreviewPageLoadMetricsObserverBrowserTest : public InProcessBrowserTest {
   }
 
   absl::optional<base::HistogramTester> histogram_tester_;
+  test::PreviewTestHelper helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
@@ -228,6 +234,54 @@ IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
       "PageLoad.Experimental.TotalForegroundDuration.TerminalVisit", 2);
   histogram_tester().ExpectTotalCount(
       "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 3);
+}
+
+IN_PROC_BROWSER_TEST_F(PreviewPageLoadMetricsObserverBrowserTest,
+                       PreviewFinalStatus) {
+  // Navigates to an initial page.
+  NavigateToOriginPath("/title1.html");
+
+  // Open a preview page.
+  helper().InitiatePreview(GetTestURL("/title2.html"));
+  helper().WaitUntilLoadFinished();
+
+  // Flush metrics.
+  helper().CloseAndWaitUntilFinished();
+  NavigateAway();
+
+  // TotalForegroundDuration.AllVisit should count only non-previewed page.
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.PreviewFinalStatus", 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PreviewFinalStatus",
+      PreviewPageLoadMetricsObserver::PreviewFinalStatus::kPreviewed, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PreviewFinalStatus",
+      PreviewPageLoadMetricsObserver::PreviewFinalStatus::kPromoted, 0);
+
+  // Open a preview page.
+  helper().InitiatePreview(GetTestURL("/title2.html"));
+  helper().WaitUntilLoadFinished();
+  test::PreviewTestHelper::Waiter waiter = helper().CreateActivationWaiter();
+  helper().PromoteToNewTab();
+  waiter.Wait();
+
+  // Flush metrics.
+  NavigateAway();
+
+  // TotalForegroundDuration.AllVisit should count only non-previewed page.
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.TotalForegroundDuration.AllVisit", 1);
+  histogram_tester().ExpectTotalCount(
+      "PageLoad.Experimental.PreviewFinalStatus", 2);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PreviewFinalStatus",
+      PreviewPageLoadMetricsObserver::PreviewFinalStatus::kPreviewed, 1);
+  histogram_tester().ExpectBucketCount(
+      "PageLoad.Experimental.PreviewFinalStatus",
+      PreviewPageLoadMetricsObserver::PreviewFinalStatus::kPromoted, 1);
 }
 
 }  // namespace

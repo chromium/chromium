@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Gamepad API is not exposed in non-secure contexts assert_array_equals: getGamepads returns an empty array lengths differ, expected array [] length 0, got [null, null, null, null] length 4
+[FAIL] Gamepad API is not exposed in non-secure contexts
+  assert_array_equals: getGamepads returns an empty array lengths differ, expected array [] length 0, got [null, null, null, null] length 4
 Harness: the test ran to completion.
 

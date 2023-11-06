@@ -75,6 +75,10 @@ bool GetContentProtectionMethods(DisplayConnectionType type,
 DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactors(
     const ManagedDisplayMode& mode);
 
+// Returns a list of display zooms supported by the given |display_width|.
+DISPLAY_MANAGER_EXPORT std::vector<float> GetDisplayZoomFactorsByDsiplayWidth(
+    const int display_width);
+
 // Returns a list of display zooms based on the provided |dsf| of the display.
 // This is useful for displays that have a non unity device scale factors
 // applied to them.

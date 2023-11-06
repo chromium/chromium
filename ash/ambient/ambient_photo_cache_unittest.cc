@@ -61,6 +61,10 @@ class AmbientPhotoCacheTest : public testing::Test {
     return ambient_ash_test_helper_->ambient_client().test_url_loader_factory();
   }
 
+  AmbientAccessTokenController& access_token_controller() {
+    return *access_token_controller_;
+  }
+
   bool IsAccessTokenRequestPending() {
     return ambient_ash_test_helper_->ambient_client()
         .IsAccessTokenRequestPending();
@@ -151,7 +155,8 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
 TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
   std::string fake_url = "https://faketesturl/";
 
-  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
+  AmbientPhotoCache::DownloadPhoto(fake_url, access_token_controller(),
+                                   base::BindOnce([](std::string&&) {}));
   RunUntilIdle();
   EXPECT_TRUE(IsAccessTokenRequestPending());
   IssueAccessToken();

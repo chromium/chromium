@@ -119,15 +119,9 @@ class PriceTrackingViewTestBase : public BrowserWithTestWindowTest {
   void VerifyToggleState(bool expected_toggle_on) {
     EXPECT_EQ(price_tracking_view_->IsToggleOn(), expected_toggle_on);
 
-    if (expected_toggle_on) {
-      EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
-                l10n_util::GetStringUTF16(
-                    IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY));
-    } else {
-      EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
-                l10n_util::GetStringUTF16(
-                    IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY));
-    }
+    EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
+              l10n_util::GetStringUTF16(
+                  IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY));
   }
 
   void VerifyBodyMessage(std::u16string expected_message) {

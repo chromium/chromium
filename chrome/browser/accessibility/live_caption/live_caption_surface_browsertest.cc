@@ -250,9 +250,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, SessionIds) {
 }
 
 // Test that a surface reports the end of live caption sessions.
-//
-// TODO(b/266148747): this test is very-occasionaly flaky.
-IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, DISABLED_Sessions) {
+IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, Sessions) {
   // Create two tabs with surfaces attached.
   MockSurfaceClient client_1, client_2;
   content::WebContents* wc_1 = LoadNewTab(kAboutBlankUrl);
@@ -289,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSurfaceTest, DISABLED_Sessions) {
     ASSERT_EQ(wc_1, browser()->tab_strip_model()->GetActiveWebContents());
 
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
-    content::WaitForLoadStop(wc_2);
+    content::WaitForLoadStop(wc_1);
     base::RunLoop().RunUntilIdle();
     checkpointer.Call(2);
 

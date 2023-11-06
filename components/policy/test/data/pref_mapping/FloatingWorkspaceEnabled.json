@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "FloatingWorkspaceEnabled": true
+        },
+        "prefs": {
+          "ash.floating_workspace_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "FloatingWorkspaceEnabled": false
+        },
+        "prefs": {
+          "ash.floating_workspace_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "ash.floating_workspace_enabled": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

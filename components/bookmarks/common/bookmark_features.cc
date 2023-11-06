@@ -15,4 +15,11 @@ BASE_FEATURE(kRollbackBookmarksAccountStorage,
              "RollbackBookmarksAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature controls the default visibility for permanent folders when
+// empty. It effectively swaps in "other bookmarks" as the default-visible
+// empty folder on mobile. This flag has no effect for desktop.
+BASE_FEATURE(kAllBookmarksBaselineFolderVisibility,
+             "AllBookmarksBaselineFolderVisibility",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace bookmarks

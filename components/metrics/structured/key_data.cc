@@ -34,6 +34,10 @@ std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
 }
 
+int NowInDays() {
+  return (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+}
+
 }  // namespace
 
 KeyData::KeyData(const base::FilePath& path,
@@ -95,7 +99,7 @@ absl::optional<std::string> KeyData::ValidateAndGetKey(
     return absl::nullopt;
   }
 
-  const int now = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
+  const int now = NowInDays();
   KeyProto& key = (*(proto_.get()->get()->mutable_keys()))[project_name_hash];
 
   // Generate or rotate key.
@@ -202,6 +206,16 @@ absl::optional<int> KeyData::LastKeyRotation(const uint64_t project_name_hash) {
     return it->second.last_rotation();
   }
   return absl::nullopt;
+}
+
+absl::optional<int> KeyData::GetKeyAgeInWeeks(uint64_t project_name_hash) {
+  absl::optional<int> last_rotation = LastKeyRotation(project_name_hash);
+  if (!last_rotation.has_value()) {
+    return absl::nullopt;
+  }
+  const int now = NowInDays();
+  const int days_since_rotation = now - *last_rotation;
+  return days_since_rotation / 7;
 }
 
 void KeyData::Purge() {

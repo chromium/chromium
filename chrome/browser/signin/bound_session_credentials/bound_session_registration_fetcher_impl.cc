@@ -29,19 +29,20 @@
 
 namespace {
 constexpr char kSessionIdentifier[] = "session_identifier";
+constexpr char kCredentials[] = "credentials";
 const char kXSSIPrefix[] = ")]}'";
 
-bound_session_credentials::BoundSessionParams CreateBoundSessionParams(
-    const std::string& url,
-    const std::string& session_id,
-    const std::string& wrapped_key) {
-  bound_session_credentials::BoundSessionParams params;
-  params.set_site(url);
-  params.set_session_id(session_id);
-  params.set_wrapped_key(wrapped_key);
-  *params.mutable_creation_time() =
-      bound_session_credentials::TimeToTimestamp(base::Time::Now());
-  return params;
+bound_session_credentials::Credential CreateCookieCredential(
+    const std::string& name,
+    const std::string& domain,
+    const std::string& path) {
+  bound_session_credentials::Credential credential;
+  bound_session_credentials::CookieCredential* cookie_credential =
+      credential.mutable_cookie_credential();
+  cookie_credential->set_name(name);
+  cookie_credential->set_domain(domain);
+  cookie_credential->set_path(path);
+  return credential;
 }
 }  // namespace
 
@@ -110,42 +111,30 @@ void BoundSessionRegistrationFetcherImpl::OnURLLoaderComplete(
     return;
   }
 
-  // JSON responses normally should start with XSSI-protection prefix which
-  // should be removed prior to parsing.
-  base::StringPiece response_json = *response_body;
-  if (base::StartsWith(*response_body, kXSSIPrefix,
-                       base::CompareCase::SENSITIVE)) {
-    response_json = response_json.substr(strlen(kXSSIPrefix));
-  }
-
-  absl::optional<base::Value::Dict> maybe_root =
-      base::JSONReader::ReadDict(response_json);
-  if (!maybe_root) {
-    RunCallbackAndRecordMetrics(
-        base::unexpected(RegistrationError::kParseJsonFailed));
+  RegistrationErrorOr<bound_session_credentials::BoundSessionParams>
+      params_or_error = ParseJsonResponse(std::move(response_body));
+  if (!params_or_error.has_value()) {
+    RunCallbackAndRecordMetrics(params_or_error);
     return;
   }
 
-  std::string* session_id = maybe_root->FindString(kSessionIdentifier);
-  if (!session_id) {
-    RunCallbackAndRecordMetrics(
-        base::unexpected(RegistrationError::kRequiredFieldMissing));
-    return;
-  }
+  bound_session_credentials::BoundSessionParams params =
+      std::move(params_or_error).value();
+  params.set_site(
+      net::SchemefulSite(registration_params_.RegistrationEndpoint())
+          .Serialize());
+  params.set_wrapped_key(wrapped_key_str_);
+  *params.mutable_creation_time() =
+      bound_session_credentials::TimeToTimestamp(base::Time::Now());
 
-  bound_session_credentials::BoundSessionParams session_params =
-      CreateBoundSessionParams(
-          net::SchemefulSite(registration_params_.RegistrationEndpoint())
-              .Serialize(),
-          *session_id, wrapped_key_str_);
-  if (!BoundSessionParamsStorage::AreParamsValid(session_params)) {
+  if (!bound_session_credentials::AreParamsValid(params)) {
     RunCallbackAndRecordMetrics(
         base::unexpected(RegistrationError::kInvalidSessionParams));
     return;
   }
 
   // Finish the request, object is invalid after this.
-  RunCallbackAndRecordMetrics(std::move(session_params));
+  RunCallbackAndRecordMetrics(std::move(params));
 }
 
 void BoundSessionRegistrationFetcherImpl::OnRegistrationTokenCreated(
@@ -250,4 +239,75 @@ void BoundSessionRegistrationFetcherImpl::RunCallbackAndRecordMetrics(
       params_or_error.has_value()
           ? std::move(params_or_error).value()
           : absl::optional<bound_session_credentials::BoundSessionParams>());
+}
+
+BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
+    bound_session_credentials::BoundSessionParams>
+BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
+    std::unique_ptr<std::string> response_body) {
+  // JSON responses normally should start with XSSI-protection prefix which
+  // should be removed prior to parsing.
+  base::StringPiece response_json = *response_body;
+  if (base::StartsWith(*response_body, kXSSIPrefix,
+                       base::CompareCase::SENSITIVE)) {
+    response_json = response_json.substr(strlen(kXSSIPrefix));
+  }
+  absl::optional<base::Value::Dict> maybe_root =
+      base::JSONReader::ReadDict(response_json);
+  if (!maybe_root) {
+    return base::unexpected(RegistrationError::kParseJsonFailed);
+  }
+
+  std::string* session_id = maybe_root->FindString(kSessionIdentifier);
+  base::Value::List* credentials_list = maybe_root->FindList(kCredentials);
+  if (!session_id || !credentials_list) {
+    // Incorrect registration params.
+    return base::unexpected(RegistrationError::kRequiredFieldMissing);
+  }
+
+  bound_session_credentials::BoundSessionParams params;
+  params.set_session_id(*session_id);
+
+  RegistrationErrorOr<std::vector<bound_session_credentials::Credential>>
+      credentials_or_error = ParseCredentials(*credentials_list);
+  if (!credentials_or_error.has_value()) {
+    return base::unexpected(credentials_or_error.error());
+  }
+
+  for (auto& credential : credentials_or_error.value()) {
+    *params.add_credentials() = std::move(credential);
+  }
+  return params;
+}
+
+BoundSessionRegistrationFetcherImpl::RegistrationErrorOr<
+    std::vector<bound_session_credentials::Credential>>
+BoundSessionRegistrationFetcherImpl::ParseCredentials(
+    const base::Value::List& credentials_list) {
+  std::vector<bound_session_credentials::Credential> cookie_credentials;
+  for (const auto& credential : credentials_list) {
+    const base::Value::Dict* credential_dict = credential.GetIfDict();
+    if (!credential_dict) {
+      // The parser ignores unknown dictionary entries and so we can do the same
+      // for unknown list entries.
+      continue;
+    }
+    const std::string* name = credential_dict->FindString("name");
+    const base::Value::Dict* scope = credential_dict->FindDict("scope");
+    if (!name || !scope) {
+      // Invalid credential.
+      return base::unexpected(
+          RegistrationError::kRequiredCredentialFieldMissing);
+    }
+    const std::string* domain = scope->FindString("domain");
+    const std::string* path = scope->FindString("path");
+    if (!domain || !path) {
+      // Invalid credential.
+      return base::unexpected(
+          RegistrationError::kRequiredCredentialFieldMissing);
+    }
+    cookie_credentials.emplace_back(
+        CreateCookieCredential(*name, *domain, *path));
+  }
+  return cookie_credentials;
 }

@@ -11,9 +11,11 @@
 // `AutocompleteMatch`s in tests with specific provider types.
 class FakeAutocompleteProvider : public AutocompleteProvider {
  public:
-  explicit FakeAutocompleteProvider(Type type) : AutocompleteProvider(type) {}
+  explicit FakeAutocompleteProvider(Type type);
 
-  void Start(const AutocompleteInput& input, bool minimal_changes) override {}
+  // AutocompleteProvider:
+  void Start(const AutocompleteInput& input, bool minimal_changes) override;
+  void DeleteMatch(const AutocompleteMatch& match) override;
 
   // Used by some tests that create providers ahead of time and later set the
   // specific type needed.
@@ -22,8 +24,10 @@ class FakeAutocompleteProvider : public AutocompleteProvider {
   using AutocompleteProvider::done_;
   using AutocompleteProvider::matches_;
 
+  ACMatches deleted_matches_;
+
  private:
-  ~FakeAutocompleteProvider() override = default;
+  ~FakeAutocompleteProvider() override;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_FAKE_AUTOCOMPLETE_PROVIDER_H_

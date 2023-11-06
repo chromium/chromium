@@ -28,39 +28,28 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Tests for ChildIndexUi2Locator
- */
+/** Tests for ChildIndexUi2Locator */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ChildIndexUi2LocatorTest {
-    @Mock
-    private UiDevice mDevice;
+    @Mock private UiDevice mDevice;
 
-    @Mock
-    private UiObject2 mNode0;
+    @Mock private UiObject2 mNode0;
 
-    @Mock
-    private UiObject2 mNode1;
+    @Mock private UiObject2 mNode1;
 
-    @Mock
-    private UiObject2 mNode00;
+    @Mock private UiObject2 mNode00;
 
-    @Mock
-    private UiObject2 mNode01;
+    @Mock private UiObject2 mNode01;
 
-    @Mock
-    private UiObject2 mNode10;
+    @Mock private UiObject2 mNode10;
 
-    @Mock
-    private UiObject2 mNode11;
+    @Mock private UiObject2 mNode11;
 
-    @Mock
-    private UiObject2 mNode110;
+    @Mock private UiObject2 mNode110;
 
-    @Mock
-    private UiObject2 mNode111;
+    @Mock private UiObject2 mNode111;
 
     private List<UiObject2> mNodeList;
     private List<UiObject2> mNode0Children;

@@ -378,13 +378,13 @@ TEST_F(FileProxyTest, MAYBE_SetTimes) {
 
   // The returned values may only have the seconds precision, so we cast
   // the double values to int here.
-  EXPECT_EQ(static_cast<int>(last_modified_time.ToDoubleT()),
-            static_cast<int>(info.last_modified.ToDoubleT()));
+  EXPECT_EQ(static_cast<int>(last_modified_time.InSecondsFSinceUnixEpoch()),
+            static_cast<int>(info.last_modified.InSecondsFSinceUnixEpoch()));
 
 #if !BUILDFLAG(IS_FUCHSIA)
   // On Fuchsia, /tmp is noatime
-  EXPECT_EQ(static_cast<int>(last_accessed_time.ToDoubleT()),
-            static_cast<int>(info.last_accessed.ToDoubleT()));
+  EXPECT_EQ(static_cast<int>(last_accessed_time.InSecondsFSinceUnixEpoch()),
+            static_cast<int>(info.last_accessed.InSecondsFSinceUnixEpoch()));
 #endif  // BUILDFLAG(IS_FUCHSIA)
 }
 

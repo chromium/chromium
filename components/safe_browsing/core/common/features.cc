@@ -25,6 +25,10 @@ BASE_FEATURE(kAdSamplerTriggerFeature,
              "SafeBrowsingAdSamplerTrigger",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport,
+             "AddWarningShownTSToClientSafeBrowsingReport",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAntiPhishingTelemetry,
              "AntiPhishingTelemetry",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -43,10 +47,6 @@ BASE_FEATURE(kClientSideDetectionModelTag,
 
 BASE_FEATURE(kClientSideDetectionTypeForceRequest,
              "ClientSideDetectionTypeForceRequest",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDeepScanningUpdatedUX,
-             "SafeBrowsingDeepScanningUpdatedUX",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDeepScanningEncryptedArchives,
@@ -75,6 +75,10 @@ BASE_FEATURE(kDownloadBubbleV2,
 BASE_FEATURE(kDownloadTailoredWarnings,
              "DownloadTailoredWarnings",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEncryptedArchivesMetadata,
+             "SafeBrowsingEncryptedArchivesMetadata",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEvaluateProtectedPasswordLengthMinimum,
              "EvaluateProtectedPasswordLengthMinimum",
@@ -109,6 +113,10 @@ const base::FeatureParam<int> kExtensionTelemetryFileDataStartupDelaySeconds{
     &kExtensionTelemetryFileData, "StartupDelaySeconds",
     /*default_value=*/300};
 
+BASE_FEATURE(kExtensionTelemetryFileDataForCommandLineExtensions,
+             "SafeBrowsingExtensionTelemetryFileDataForCommandLineExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionTelemetryPotentialPasswordTheft,
              "SafeBrowsingExtensionTelemetryPotentialPasswordTheft",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -124,7 +132,7 @@ BASE_FEATURE(kExtensionTelemetryReportHostsContactedViaWebSocket,
 BASE_FEATURE(
     kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
     "SafeBrowsingExtensionTelmetryInterceptRemoteHostsContactedInRenderer",
-    base::FEATURE_DISABLED_BY_DEFAULT);
+    base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionTelemetryTabsApiSignal,
              "SafeBrowsingExtensionTelemetryTabsApiSignal",
@@ -165,7 +173,7 @@ constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
 
 BASE_FEATURE(kImprovedDownloadBubbleWarnings,
              "ImprovedDownloadBubbleWarnings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
@@ -258,7 +266,7 @@ BASE_FEATURE(kSafeBrowsingSkipImageCssFont,
 
 BASE_FEATURE(kSafeBrowsingSkipSubresources,
              "SafeBrowsingSkipSubResources",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeBrowsingSkipSubresources2,
              "SafeBrowsingSkipSubResources2",
@@ -313,7 +321,7 @@ BASE_FEATURE(kVisualFeaturesSizes,
 
 BASE_FEATURE(kClientSideDetectionModelImageEmbedder,
              "ClientSideDetectionModelImageEmbedder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
              "SafeBrowsingPhishingClassificationESBThreshold",
@@ -321,6 +329,10 @@ BASE_FEATURE(kSafeBrowsingPhishingClassificationESBThreshold,
 
 BASE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit,
              "SafeBrowsingDailyPhishingReportsLimit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kClientSideDetectionImagesCache,
+             "ClientSideDetectionImagesCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
@@ -339,6 +351,7 @@ constexpr struct {
   bool show_state;
 } kExperimentalFeatures[]{
     {&kAdSamplerTriggerFeature, false},
+    {&kAddWarningShownTSToClientSafeBrowsingReport, false},
     {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
     {&kClientSideDetectionModelIsFlatBuffer, true},

@@ -46,34 +46,29 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class BookmarkAddNewFolderCoordinatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private ModalDialogManager mModalDialogManager;
-    @Mock
-    private BookmarkId mUserBokmarkId;
-    @Mock
-    private BookmarkId mRootFolderId;
-    @Mock
-    private BookmarkId mOtherFolderId;
-    @Captor
-    private ArgumentCaptor<PropertyModel> mModelCaptor;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private BookmarkId mUserBokmarkId;
+    @Mock private BookmarkId mRootFolderId;
+    @Mock private BookmarkId mOtherFolderId;
+    @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
     private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
     private Context mContext;
 
     @Before
     public void setUp() {
-        mContext = new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
 
         // Setup the bookmark model ids/items.
         doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();

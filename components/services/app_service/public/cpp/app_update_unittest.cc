@@ -5,6 +5,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
@@ -34,6 +35,8 @@ PermissionPtr MakePermission(PermissionType permission_type,
 
 class AppUpdateTest : public testing::Test {
  protected:
+  bool expect_changed_;
+
   Readiness expect_readiness_;
   Readiness expect_prior_readiness_;
   bool expect_readiness_changed_;
@@ -130,7 +133,14 @@ class AppUpdateTest : public testing::Test {
   absl::optional<uint64_t> expect_data_size_in_bytes_;
   bool expect_data_size_in_bytes_changed_;
 
+  std::vector<std::string> expect_supported_locales_;
+  bool expect_supported_locales_changed_;
+
+  absl::optional<std::string> expect_selected_locale_;
+  bool expect_selected_locale_changed_;
+
   void ExpectNoChange() {
+    expect_changed_ = false;
     expect_readiness_changed_ = false;
     expect_name_changed_ = false;
     expect_short_name_changed_ = false;
@@ -162,9 +172,13 @@ class AppUpdateTest : public testing::Test {
     expect_run_on_os_login_changed_ = false;
     expect_app_size_in_bytes_changed_ = false;
     expect_data_size_in_bytes_changed_ = false;
+    expect_supported_locales_changed_ = false;
+    expect_selected_locale_changed_ = false;
   }
 
   void CheckExpects(const AppUpdate& u) {
+    EXPECT_EQ(expect_changed_, AppUpdate::IsChanged(u.State(), u.Delta()));
+
     EXPECT_EQ(expect_readiness_, u.Readiness());
     EXPECT_EQ(expect_prior_readiness_, u.PriorReadiness());
     EXPECT_EQ(expect_readiness_changed_, u.ReadinessChanged());
@@ -262,6 +276,9 @@ class AppUpdateTest : public testing::Test {
 
     EXPECT_EQ(expect_data_size_in_bytes_, u.DataSizeInBytes());
     EXPECT_EQ(expect_data_size_in_bytes_changed_, u.DataSizeInBytesChanged());
+
+    EXPECT_EQ(expect_supported_locales_changed_, u.SupportedLocalesChanged());
+    EXPECT_EQ(expect_selected_locale_changed_, u.SelectedLocaleChanged());
   }
 
   void TestAppUpdate(App* state, App* delta) {
@@ -301,13 +318,21 @@ class AppUpdateTest : public testing::Test {
     expect_run_on_os_login_ = absl::nullopt;
     expect_app_size_in_bytes_ = absl::nullopt;
     expect_data_size_in_bytes_ = absl::nullopt;
+    expect_supported_locales_.clear();
+    expect_selected_locale_ = absl::nullopt;
     ExpectNoChange();
+
+    if (!state && delta) {
+      expect_changed_ = true;
+    }
+
     CheckExpects(u);
 
     if (delta) {
       delta->name = test_name_0;
       expect_name_ = test_name_0;
       expect_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -315,6 +340,7 @@ class AppUpdateTest : public testing::Test {
       state->name = test_name_0;
       expect_name_ = test_name_0;
       expect_name_changed_ = false;
+      expect_changed_ = false;
       CheckExpects(u);
     }
 
@@ -322,6 +348,7 @@ class AppUpdateTest : public testing::Test {
       delta->readiness = Readiness::kReady;
       expect_readiness_ = Readiness::kReady;
       expect_readiness_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
 
       delta->name = absl::nullopt;
@@ -346,6 +373,7 @@ class AppUpdateTest : public testing::Test {
       delta->name = test_name_1;
       expect_name_ = test_name_1;
       expect_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -362,6 +390,7 @@ class AppUpdateTest : public testing::Test {
       delta->short_name = "Bob";
       expect_short_name_ = "Bob";
       expect_short_name_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -386,6 +415,7 @@ class AppUpdateTest : public testing::Test {
       delta->publisher_id = "com.android.youtube";
       expect_publisher_id_ = "com.android.youtube";
       expect_publisher_id_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -409,6 +439,7 @@ class AppUpdateTest : public testing::Test {
       delta->description = "Has a dog.";
       expect_description_ = "Has a dog.";
       expect_description_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -432,6 +463,7 @@ class AppUpdateTest : public testing::Test {
       delta->version = "1.0.1";
       expect_version_ = "1.0.1";
       expect_version_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -460,6 +492,7 @@ class AppUpdateTest : public testing::Test {
       expect_additional_search_terms_.push_back("horse");
       expect_additional_search_terms_.push_back("mouse");
       expect_additional_search_terms_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -474,21 +507,31 @@ class AppUpdateTest : public testing::Test {
     // IconKey tests.
 
     if (state) {
-      state->icon_key = IconKey(100, 0, 0);
-      expect_icon_key_ = IconKey(100, 0, 0);
+      state->icon_key = IconKey();
+      state->icon_key->update_version = 100;
+      expect_icon_key_ = IconKey();
+      expect_icon_key_->update_version = 100;
       expect_icon_key_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->icon_key = IconKey(200, 0, 0);
-      expect_icon_key_ = IconKey(200, 0, 0);
+      delta->icon_key = IconKey(/*raw_icon_updated=*/true, IconEffects::kNone);
+      expect_icon_key_ = IconKey();
+      expect_icon_key_->update_version =
+          (state && state->icon_key.has_value())
+              ? absl::get<int32_t>(state->icon_key->update_version) + 1
+              : IconKey::kInitVersion;
       expect_icon_key_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
     if (state) {
       AppUpdate::Merge(state, delta);
+      if (delta) {
+        delta->icon_key->update_version = false;
+      }
       EXPECT_EQ(expect_icon_key_.value(), state->icon_key.value());
       ExpectNoChange();
       CheckExpects(u);
@@ -497,16 +540,17 @@ class AppUpdateTest : public testing::Test {
     // LastLaunchTime tests.
 
     if (state) {
-      state->last_launch_time = base::Time::FromDoubleT(1000.0);
-      expect_last_launch_time_ = base::Time::FromDoubleT(1000.0);
+      state->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1000);
+      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1000);
       expect_last_launch_time_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->last_launch_time = base::Time::FromDoubleT(1001.0);
-      expect_last_launch_time_ = base::Time::FromDoubleT(1001.0);
+      delta->last_launch_time = base::Time::FromSecondsSinceUnixEpoch(1001);
+      expect_last_launch_time_ = base::Time::FromSecondsSinceUnixEpoch(1001);
       expect_last_launch_time_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -520,16 +564,17 @@ class AppUpdateTest : public testing::Test {
     // InstallTime tests.
 
     if (state) {
-      state->install_time = base::Time::FromDoubleT(2000.0);
-      expect_install_time_ = base::Time::FromDoubleT(2000.0);
+      state->install_time = base::Time::FromSecondsSinceUnixEpoch(2000);
+      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2000);
       expect_install_time_changed_ = false;
       CheckExpects(u);
     }
 
     if (delta) {
-      delta->install_time = base::Time::FromDoubleT(2001.0);
-      expect_install_time_ = base::Time::FromDoubleT(2001.0);
+      delta->install_time = base::Time::FromSecondsSinceUnixEpoch(2001);
+      expect_install_time_ = base::Time::FromSecondsSinceUnixEpoch(2001);
       expect_install_time_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -568,6 +613,7 @@ class AppUpdateTest : public testing::Test {
       expect_permissions_.push_back(p0->Clone());
       expect_permissions_.push_back(p1->Clone());
       expect_permissions_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -591,6 +637,7 @@ class AppUpdateTest : public testing::Test {
       delta->install_reason = InstallReason::kPolicy;
       expect_install_reason_ = InstallReason::kPolicy;
       expect_install_reason_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -614,6 +661,7 @@ class AppUpdateTest : public testing::Test {
       delta->install_source = InstallSource::kSync;
       expect_install_source_ = InstallSource::kSync;
       expect_install_source_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -637,6 +685,7 @@ class AppUpdateTest : public testing::Test {
       delta->policy_ids = {"https://app.site/delta", "https://site.app/delta"};
       expect_policy_ids_ = {"https://app.site/delta", "https://site.app/delta"};
       expect_policy_ids_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -661,6 +710,7 @@ class AppUpdateTest : public testing::Test {
       delta->is_platform_app = true;
       expect_is_platform_app_ = true;
       expect_is_platform_app_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -684,6 +734,7 @@ class AppUpdateTest : public testing::Test {
       delta->recommendable = true;
       expect_recommendable_ = true;
       expect_recommendable_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -707,6 +758,7 @@ class AppUpdateTest : public testing::Test {
       delta->searchable = true;
       expect_searchable_ = true;
       expect_searchable_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -730,6 +782,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_launcher = true;
       expect_show_in_launcher_ = true;
       expect_show_in_launcher_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -753,6 +806,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_shelf = true;
       expect_show_in_shelf_ = true;
       expect_show_in_shelf_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -776,6 +830,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_search = true;
       expect_show_in_search_ = true;
       expect_show_in_search_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -799,6 +854,7 @@ class AppUpdateTest : public testing::Test {
       delta->show_in_management = true;
       expect_show_in_management_ = true;
       expect_show_in_management_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -822,6 +878,7 @@ class AppUpdateTest : public testing::Test {
       delta->handles_intents = true;
       expect_handles_intents_ = true;
       expect_handles_intents_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -845,6 +902,7 @@ class AppUpdateTest : public testing::Test {
       delta->allow_uninstall = true;
       expect_allow_uninstall_ = true;
       expect_allow_uninstall_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -868,6 +926,7 @@ class AppUpdateTest : public testing::Test {
       delta->has_badge = true;
       expect_has_badge_ = true;
       expect_has_badge_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -891,6 +950,7 @@ class AppUpdateTest : public testing::Test {
       delta->paused = true;
       expect_paused_ = true;
       expect_paused_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -952,6 +1012,7 @@ class AppUpdateTest : public testing::Test {
       delta->intent_filters.push_back(intent_filter->Clone());
       expect_intent_filters_.push_back(intent_filter->Clone());
       expect_intent_filters_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -975,6 +1036,7 @@ class AppUpdateTest : public testing::Test {
       delta->resize_locked = true;
       expect_resize_locked_ = true;
       expect_resize_locked_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -998,6 +1060,7 @@ class AppUpdateTest : public testing::Test {
       delta->window_mode = WindowMode::kWindow;
       expect_window_mode_ = WindowMode::kWindow;
       expect_window_mode_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1022,6 +1085,7 @@ class AppUpdateTest : public testing::Test {
       expect_run_on_os_login_ =
           RunOnOsLogin(RunOnOsLoginMode::kWindowed, false);
       expect_run_on_os_login_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1046,6 +1110,7 @@ class AppUpdateTest : public testing::Test {
       delta->app_size_in_bytes = 42;
       expect_app_size_in_bytes_ = 42;
       expect_app_size_in_bytes_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
@@ -1069,12 +1134,66 @@ class AppUpdateTest : public testing::Test {
       delta->data_size_in_bytes = 42;
       expect_data_size_in_bytes_ = 42;
       expect_data_size_in_bytes_changed_ = true;
+      expect_changed_ = true;
       CheckExpects(u);
     }
 
     if (state) {
       apps::AppUpdate::Merge(state, delta);
       EXPECT_EQ(expect_data_size_in_bytes_, state->data_size_in_bytes);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Supported locales tests.
+
+    if (state) {
+      state->supported_locales.push_back("en-US");
+      state->supported_locales.push_back("ja-JP");
+      expect_supported_locales_.push_back("en-US");
+      expect_supported_locales_.push_back("ja-JP");
+      expect_supported_locales_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      expect_supported_locales_.clear();
+      delta->supported_locales.push_back("en-GB");
+      delta->supported_locales.push_back("fr-FR");
+      expect_supported_locales_.push_back("en-GB");
+      expect_supported_locales_.push_back("fr-FR");
+      expect_supported_locales_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_supported_locales_, state->supported_locales);
+      ExpectNoChange();
+      CheckExpects(u);
+    }
+
+    // Selected locale tests.
+
+    if (state) {
+      state->selected_locale = "en-US";
+      expect_selected_locale_ = "en-US";
+      expect_selected_locale_changed_ = false;
+      CheckExpects(u);
+    }
+
+    if (delta) {
+      delta->selected_locale = "ja-JP";
+      expect_selected_locale_ = "ja-JP";
+      expect_selected_locale_changed_ = true;
+      expect_changed_ = true;
+      CheckExpects(u);
+    }
+
+    if (state) {
+      apps::AppUpdate::Merge(state, delta);
+      EXPECT_EQ(expect_selected_locale_, state->selected_locale);
       ExpectNoChange();
       CheckExpects(u);
     }
@@ -1095,6 +1214,215 @@ TEST_F(AppUpdateTest, BothAreNonNull) {
   App state(app_type, app_id);
   App delta(app_type, app_id);
   TestAppUpdate(&state, &delta);
+}
+
+TEST_F(AppUpdateTest, VerifyIconKeyWithResourceId) {
+  // Verify for the null delta.
+  App state(app_type, app_id);
+  AppUpdate update1(&state, nullptr, account_id_);
+  EXPECT_FALSE(update1.IconKeyChanged());
+  EXPECT_FALSE(update1.IconKey().has_value());
+  EXPECT_FALSE(state.icon_key.has_value());
+
+  EXPECT_FALSE(AppUpdate::IsChanged(&state, nullptr));
+  AppUpdate::Merge(&state, nullptr);
+  EXPECT_FALSE(state.icon_key.has_value());
+
+  // Update for the icon having a `resource_id`.
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/65535, IconEffects::kCrOsStandardIcon);
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate update2(&state, &delta, account_id_);
+  EXPECT_TRUE(update2.IconKeyChanged());
+  icon_key.update_version = IconKey::kInvalidVersion;
+  EXPECT_EQ(icon_key, update2.IconKey().value());
+  EXPECT_FALSE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update for the icon having a `resource_id` again, and verify, no change.
+  AppUpdate update3(&state, &delta, account_id_);
+  EXPECT_FALSE(update3.IconKeyChanged());
+  EXPECT_EQ(icon_key, update3.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_FALSE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update the icon effect.
+  delta.icon_key->icon_effects = IconEffects::kNone;
+  icon_key.icon_effects = IconEffects::kNone;
+  AppUpdate update4(&state, &delta, account_id_);
+  EXPECT_TRUE(update4.IconKeyChanged());
+  EXPECT_EQ(icon_key, update4.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+}
+
+TEST_F(AppUpdateTest, VerifyIconKeyWithoutResourceId) {
+  // Update for the icon without a `resource_id`.
+  App state(app_type, app_id);
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/IconKey::kInvalidResourceId,
+                   IconEffects::kCrOsStandardIcon);
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate update1(&state, &delta, account_id_);
+  EXPECT_TRUE(update1.IconKeyChanged());
+  icon_key.update_version = IconKey::kInitVersion;
+  EXPECT_EQ(icon_key, update1.IconKey().value());
+  EXPECT_FALSE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update the icon again, and verify, no change.
+  AppUpdate update2(&state, &delta, account_id_);
+  EXPECT_FALSE(update2.IconKeyChanged());
+  EXPECT_EQ(icon_key, update2.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_FALSE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update the icon with `update_version` = true, and verify `update_version`
+  // is increased.
+  delta.icon_key->update_version = true;
+  AppUpdate update3(&state, &delta, account_id_);
+  EXPECT_TRUE(update3.IconKeyChanged());
+  icon_key.update_version = IconKey::kInitVersion + 1;
+  EXPECT_EQ(icon_key, update3.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+}
+
+TEST_F(AppUpdateTest, VerifyIconKeyWithEffectChange) {
+  // Update for the icon without a `resource_id`.
+  App state(app_type, app_id);
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/IconKey::kInvalidResourceId,
+                   IconEffects::kCrOsStandardIcon);
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate update1(&state, &delta, account_id_);
+  EXPECT_TRUE(update1.IconKeyChanged());
+  icon_key.update_version = IconKey::kInitVersion;
+  EXPECT_EQ(icon_key, update1.IconKey().value());
+  EXPECT_FALSE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update the icon with the icon effect change.
+  delta.icon_key->icon_effects =
+      IconEffects::kCrOsStandardIcon | IconEffects::kPaused;
+  AppUpdate update2(&state, &delta, account_id_);
+  EXPECT_TRUE(update2.IconKeyChanged());
+  icon_key.icon_effects = IconEffects::kCrOsStandardIcon | IconEffects::kPaused;
+  EXPECT_EQ(icon_key, update2.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+
+  // Update the icon with `update_version` = true, and the icon effect change.
+  // Verify `update_version` is increased.
+  delta.icon_key->update_version = true;
+  delta.icon_key->icon_effects = IconEffects::kCrOsStandardIcon;
+  AppUpdate update3(&state, &delta, account_id_);
+  EXPECT_TRUE(update3.IconKeyChanged());
+  icon_key.update_version = IconKey::kInitVersion + 1;
+  icon_key.icon_effects = IconEffects::kCrOsStandardIcon;
+  EXPECT_EQ(icon_key, update3.IconKey().value());
+  EXPECT_TRUE(state.icon_key.has_value());
+
+  EXPECT_TRUE(AppUpdate::IsChanged(&state, &delta));
+  AppUpdate::Merge(&state, &delta);
+  EXPECT_EQ(icon_key, state.icon_key.value());
+}
+
+TEST_F(AppUpdateTest, VerifyMergeIconKeyDeltaWithResourceId) {
+  App new_delta(app_type, app_id);
+  AppUpdate::MergeDelta(&new_delta, nullptr);
+  EXPECT_FALSE(new_delta.icon_key.has_value());
+
+  // Update for the icon having a `resource_id`.
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/65535, IconEffects::kCrOsStandardIcon);
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update for the icon having a `resource_id` again, and verify, no change.
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update the icon effect.
+  icon_key.icon_effects = IconEffects::kNone;
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+}
+
+TEST_F(AppUpdateTest, VerifyMergeIconKeyDeltaWithoutResourceId) {
+  // Update for the icon without a `resource_id`.
+  App new_delta(app_type, app_id);
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/IconKey::kInvalidResourceId,
+                   IconEffects::kCrOsStandardIcon);
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update the icon again, and verify, no change.
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update the icon with `update_version` = true.
+  icon_key.update_version = true;
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+}
+
+TEST_F(AppUpdateTest, VerifyMergeIconKeyDeltaWithEffectChange) {
+  // Update for the icon without a `resource_id`.
+  App new_delta(app_type, app_id);
+  App delta(app_type, app_id);
+  IconKey icon_key(/*resource_id=*/IconKey::kInvalidResourceId,
+                   IconEffects::kCrOsStandardIcon);
+  icon_key.update_version = true;
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update the icon with the icon effect change.
+  icon_key.icon_effects = IconEffects::kCrOsStandardIcon | IconEffects::kPaused;
+  icon_key.update_version = false;
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  icon_key.update_version = true;
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
+
+  // Update the icon with `update_version` = true, and the icon effect change.
+  icon_key.update_version = true;
+  icon_key.icon_effects = IconEffects::kCrOsStandardIcon;
+  delta.icon_key = std::move(*icon_key.Clone());
+  AppUpdate::MergeDelta(&new_delta, &delta);
+  EXPECT_EQ(icon_key, new_delta.icon_key.value());
 }
 
 }  // namespace apps

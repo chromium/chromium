@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import '../shared_style.css.js';
 import './credential_details_card.css.js';
 import '../dialogs/edit_password_dialog.js';
@@ -17,6 +18,7 @@ import '../sharing/metrics_utils.js';
 
 import {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
+import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
@@ -57,12 +59,12 @@ export interface PasswordDetailsCardElement {
     showPasswordButton: CrIconButtonElement,
     toast: CrToastElement,
     usernameValue: CredentialFieldElement,
-    shareButton: HTMLButtonElement,
+    shareButton: CrButtonElement,
   };
 }
 
-const PasswordDetailsCardElementBase = HelpBubbleMixin(
-    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement))));
+const PasswordDetailsCardElementBase = PrefsMixin(HelpBubbleMixin(
+    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)))));
 
 export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   static get is() {
@@ -95,6 +97,13 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
             'isOptedInForAccountStorage, isSyncingPasswords)',
       },
 
+      passwordSharingDisabled_: {
+        type: Boolean,
+        computed: 'computePasswordSharingDisabled_(' +
+            'prefs.password_manager.password_sharing_enabled.enforcement, ' +
+            'prefs.password_manager.password_sharing_enabled.value)',
+      },
+
       showShareFlow_: {
         type: Boolean,
         value: false,
@@ -114,6 +123,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   iconUrl: string;
   private toastMessage_: string;
   private showEditPasswordDialog_: boolean;
+  private passwordSharingDisabled_: boolean;
   private showDeletePasswordDialog_: boolean;
   private showShareFlow_: boolean;
   private showShareButton_: boolean;
@@ -201,6 +211,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private onShareButtonClick_() {
     recordPasswordSharingInteraction(
         PasswordSharingActions.PASSWORD_DETAILS_SHARE_BUTTON_CLICKED);
+    this.hideHelpBubble(PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID);
     this.showShareFlow_ = true;
   }
 
@@ -228,8 +239,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         (this.isSyncingPasswords || this.isOptedInForAccountStorage);
   }
 
+  private computePasswordSharingDisabled_(): boolean {
+    const pref = this.getPref('password_manager.password_sharing_enabled');
+    return pref.enforcement === chrome.settingsPrivate.Enforcement.ENFORCED &&
+        !pref.value;
+  }
+
   maybeRegisterSharingHelpBubble(): void {
-    if (!this.showShareButton_) {
+    if (!this.showShareButton_ && !this.passwordSharingDisabled_) {
       return;
     }
 

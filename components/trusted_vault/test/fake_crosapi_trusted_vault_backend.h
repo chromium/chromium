@@ -9,6 +9,7 @@
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -21,13 +22,15 @@ class FakeCrosapiTrustedVaultBackend
       public TrustedVaultClient::Observer {
  public:
   explicit FakeCrosapiTrustedVaultBackend(
-      const CoreAccountInfo& primary_account_info,
       TrustedVaultClient* client);
   ~FakeCrosapiTrustedVaultBackend() override;
 
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::TrustedVaultBackend> receiver);
+  mojo::PendingRemote<crosapi::mojom::TrustedVaultBackend>
+  BindNewPipeAndPassRemote();
   void FlushMojo();
+  void SetPrimaryAccountInfo(const CoreAccountInfo& primary_account_info);
 
   // TrustedVaultClient::Observer implementation.
   void OnTrustedVaultKeysChanged() override;
@@ -59,7 +62,7 @@ class FakeCrosapiTrustedVaultBackend
   bool ValidateAccountKeyIsPrimaryAccount(
       const crosapi::mojom::AccountKeyPtr& account_key) const;
 
-  const CoreAccountInfo primary_account_info_;
+  CoreAccountInfo primary_account_info_;
   const raw_ptr<TrustedVaultClient> trusted_vault_client_;
 
   mojo::Receiver<crosapi::mojom::TrustedVaultBackend> receiver_{this};

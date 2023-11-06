@@ -29,17 +29,14 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.util.ColorUtils;
 
-/**
- * Integration test suite for the MediaViewerUtils.
- */
+/** Integration test suite for the MediaViewerUtils. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class MediaViewerUtilsTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Test
     @MediumTest
@@ -47,12 +44,18 @@ public class MediaViewerUtilsTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
                         ApplicationProvider.getApplicationContext(),
-                        ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ false));
+                        ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                        /* inNightMode= */ false));
 
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(uri, uri, "image/png",
-                false /*allowExternalAppHandlers */, true /*allowShareAction*/,
-                mCustomTabActivityTestRule.getActivity());
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        uri,
+                        uri,
+                        "image/png",
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
+                        mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertFalse(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
     }
@@ -63,12 +66,18 @@ public class MediaViewerUtilsTest {
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntentWithTheme(
                         ApplicationProvider.getApplicationContext(),
-                        ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, /* inNightMode= */ true));
+                        ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                        /* inNightMode= */ true));
 
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(uri, uri, "image/png",
-                false /*allowExternalAppHandlers */, true /*allowShareAction*/,
-                mCustomTabActivityTestRule.getActivity());
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        uri,
+                        uri,
+                        "image/png",
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ true,
+                        mCustomTabActivityTestRule.getActivity());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         Assert.assertTrue(ColorUtils.inNightMode(mCustomTabActivityTestRule.getActivity()));
     }
@@ -77,18 +86,26 @@ public class MediaViewerUtilsTest {
     @MediumTest
     public void testViewMediaWithoutShareAction() {
         Uri uri = Uri.parse(TestContentProvider.createContentUrl("google.png"));
-        Intent intent = MediaViewerUtils.getMediaViewerIntent(uri, uri, "image/png",
-                false /*allowExternalAppHandlers */, false /*allowShareAction*/,
-                InstrumentationRegistry.getInstrumentation().getContext());
+        Intent intent =
+                MediaViewerUtils.getMediaViewerIntent(
+                        uri,
+                        uri,
+                        "image/png",
+                        /* allowExternalAppHandlers= */ false,
+                        /* allowShareAction= */ false,
+                        InstrumentationRegistry.getInstrumentation().getContext());
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         mCustomTabActivityTestRule.waitForActivityCompletelyLoaded();
 
         ViewGroup customActionButtons =
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.action_buttons);
-        Assert.assertEquals("allowShareAction = false will lead to no custom action being added.",
-                0, customActionButtons.getChildCount());
-        Assert.assertNull("allowExternalAppHandlers = false will lead to 0 menu items in CCT. "
+        Assert.assertEquals(
+                "allowShareAction = false will lead to no custom action being added.",
+                0,
+                customActionButtons.getChildCount());
+        Assert.assertNull(
+                "allowExternalAppHandlers = false will lead to 0 menu items in CCT. "
                         + "Menu button should be hidden.",
                 mCustomTabActivityTestRule.getActivity().findViewById(R.id.menu_button_wrapper));
     }

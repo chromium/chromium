@@ -59,6 +59,8 @@ constexpr uint64_t kEventSixHash = UINT64_C(2873337042686447043);
 constexpr uint64_t kEventSevenHash = UINT64_C(16749091071228286247);
 // The name hash of "chrome::CrOSEvents::NoMetricsEvent".
 constexpr uint64_t kNoMetricsEventHash = UINT64_C(5106854608989380457);
+// The name has for "chrome::TestProjectSevent::TestEventEight".
+const uint64_t kEventEightHash = UINT64_C(16290206418240617738);
 
 // The name hash of "TestMetricOne".
 constexpr uint64_t kMetricOneHash = UINT64_C(637929385654885975);
@@ -195,6 +197,11 @@ class StructuredMetricsRecorderTest : public testing::Test {
     key_three.set_last_rotation(today);
     key_three.set_rotation_period(90);
 
+    KeyProto& cros_events = (*proto.mutable_keys())[kCrOSEventsProjectHash];
+    cros_events.set_key("cccccccccccccccccccccccccccccccc");
+    cros_events.set_last_rotation(today);
+    cros_events.set_rotation_period(90);
+
     base::CreateDirectory(ProfileKeyFilePath().DirName());
     ASSERT_TRUE(
         base::WriteFile(ProfileKeyFilePath(), proto.SerializeAsString()));
@@ -280,10 +287,7 @@ class StructuredMetricsRecorderTest : public testing::Test {
         std::make_unique<TestKeyDataProvider>(device_key_path_));
   }
 
-  bool is_initialized() {
-    return recorder_->init_state_ ==
-           StructuredMetricsRecorder::InitState::kInitialized;
-  }
+  bool is_initialized() { return recorder_->IsInitialized(); }
 
   bool is_recording_enabled() { return recorder_->recording_enabled_; }
 
@@ -989,26 +993,6 @@ TEST_F(StructuredMetricsRecorderTest,
   EXPECT_EQ(GetEventMetrics().events_size(), 0);
 }
 
-// Check that LastKeyRotation returns a value in the correct range of possible
-// last rotations for a newly generated key.
-TEST_F(StructuredMetricsRecorderTest, LastKeyRotation) {
-  Init();
-
-  events::v2::test_project_one::TestEventOne event;
-
-  // Record a metric so that the key is created.
-  event.Record();
-
-  const int today = (base::Time::Now() - base::Time::UnixEpoch()).InDays();
-  const absl::optional<int> last_rotation =
-      Recorder::GetInstance()->LastKeyRotation(event);
-
-  // The last rotation should be a random day between today and 90 days in the
-  // past, ie. the rotation period for this project.
-  ASSERT_TRUE(last_rotation.has_value());
-  EXPECT_GE(last_rotation, today - 90);
-}
-
 // Ensures that events part of event sequence are recorded properly.
 TEST_F(StructuredMetricsRecorderTest, EventSequenceLogging) {
   Init();
@@ -1088,6 +1072,27 @@ TEST_F(StructuredMetricsRecorderTest, DisallowedProjectAreDropped) {
   ASSERT_EQ(data.events(0).project_name_hash(), kProjectTwoHash);
 }
 
+TEST_F(StructuredMetricsRecorderTest, CorrectClientAge) {
+  WriteTestingProfileKeys();
+
+  Init();
+
+  const int advance_days = 30;
+  const uint32_t expected_client_age_weeks = advance_days / 7;
+
+  // Advance clock by 30 days.
+  task_environment_.AdvanceClock(base::Days(advance_days));
+
+  events::v2::cr_os_events::NoMetricsEvent test_event;
+  test_event.SetEventSequenceMetadata(Event::EventSequenceMetadata(1));
+  test_event.Record();
+
+  const auto data = GetEventMetrics();
+  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events(0).event_sequence_metadata().client_id_rotation_weeks(),
+            expected_client_age_weeks);
+}
+
 class TestProcessor : public EventsProcessorInterface {
   bool ShouldProcessOnEventRecord(const Event& event) override { return true; }
 
@@ -1112,6 +1117,36 @@ TEST_F(StructuredMetricsRecorderTest, AppliesProcessorCorrectly) {
   const auto data = GetEventMetrics();
 
   EXPECT_TRUE(data.is_device_enrolled());
+}
+
+TEST_F(StructuredMetricsRecorderTest, ForceRecordedEvents) {
+  // Init and disable recorder.
+  Init();
+  OnRecordingDisabled();
+
+  events::v2::test_project_seven::TestEventEight().Record();
+
+  OnRecordingEnabled();
+  const auto data = GetEventMetrics();
+
+  ASSERT_EQ(data.events_size(), 1);
+  ASSERT_EQ(data.events(0).event_name_hash(), kEventEightHash);
+}
+
+TEST_F(StructuredMetricsRecorderTest, PurgeForceRecordedEvents) {
+  // Init and disable recorder.
+  Init();
+  OnRecordingDisabled();
+
+  events::v2::test_project_seven::TestEventEight().Record();
+
+  OnReportingStateChanged(false);
+
+  OnRecordingEnabled();
+
+  const auto data = GetEventMetrics();
+
+  ASSERT_EQ(data.events_size(), 0);
 }
 
 }  // namespace metrics::structured

@@ -151,14 +151,12 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   // |test_dir_gen_root| will be /abs/path/out/<out_dir>/gen/chrome/test/data.
   base::FilePath dir_src_test_data_root;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir_src_test_data_root);
-  base::FilePath exe_dir;
-  base::PathService::Get(base::DIR_EXE, &exe_dir);
+  base::FilePath gen_test_data_root_dir;
+  base::PathService::Get(base::DIR_GEN_TEST_DATA_ROOT, &gen_test_data_root_dir);
   base::FilePath relative_root_path;
   dir_src_test_data_root.AppendRelativePath(test_dir_root, &relative_root_path);
-  // TODO(dpapad): Add a new DIR_GEN key to PathService instead of manually
-  // appending "gen".
   base::FilePath test_dir_gen_root =
-      exe_dir.AppendASCII("gen").Append(relative_root_path);
+      gen_test_data_root_dir.Append(relative_root_path);
 
   // Then check if the file exists in the |test_dir_gen_root| folder
   // covering cases where the test file is generated at build time.

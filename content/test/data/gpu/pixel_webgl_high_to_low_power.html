@@ -13,19 +13,26 @@
 
 <script>
 function ready() {
-  sendResult("READY", "Ready for second tab to be launched");
+  sendResult("CONTINUE", "Ready for second tab to be launched");
 }
 
 function initialize(runningOnDualGPUMacBookPro) {
   if (runningOnDualGPUMacBookPro)
     setRunningOnDualGpuSystem();
-  if (setup())
-    drawSomeFrames(notifyHarness);
+  if (setup()) {
+    if (runningOnDualGPUMacBookPro) {
+      drawSomeFrames(notifyHarness);
+    } else {
+      // Short circuit the tab and high perf portion since we are not on a dual
+      // GPU machine.
+      runToCompletion();
+    }
+  }
 }
 
 function notifyHarness() {
   assertRunningOnHighPerformanceGpu();
-  sendResult("READY", "Ready for second tab to be closed");
+  sendResult("CONTINUE", "Ready for second tab to be closed");
   // When running on the passthrough command decoder and ANGLE, ANGLE
   // can only detect the need to switch GPUs upon context switch.
   // Schedule some rendering work 10 seconds from now so that ANGLE

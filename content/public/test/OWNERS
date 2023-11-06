@@ -22,9 +22,6 @@ per-file test_aggregation_service*=file://content/browser/aggregation_service/OW
 # Network Service
 per-file network_service_test_helper.*=file://services/network/OWNERS
 
-# Cert Verifier Service
-per-file test_cert_verifier_service_factory.*=file://services/cert_verifier/OWNERS
-
 # DevTools-specific changes
 per-file *devtools*=file://content/browser/devtools/OWNERS
 

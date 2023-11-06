@@ -127,6 +127,8 @@ class RenderWidgetHostViewChildFrameTest
     // OOPIF.
     widget_host_ = RenderWidgetHostImpl::Create(
         /*frame_tree=*/&contents()->GetPrimaryFrameTree(), &delegate_,
+        RenderWidgetHostImpl::DefaultFrameSinkId(*site_instance_group_,
+                                                 routing_id),
         site_instance_group_->GetSafeRef(), routing_id,
         /*hidden=*/false, /*renderer_initiated_creation=*/false,
         std::make_unique<FrameTokenMessageQueue>());

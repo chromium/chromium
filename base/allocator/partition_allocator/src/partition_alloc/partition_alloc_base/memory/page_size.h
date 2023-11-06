@@ -15,7 +15,7 @@ namespace partition_alloc::internal::base {
 // the number of pages in a block of memory for calling mincore(). On some
 // platforms, e.g. iOS, mincore() uses a different page size from what is
 // returned by GetPageSize().
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) size_t GetPageSize();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) size_t GetPageSize();
 
 }  // namespace partition_alloc::internal::base
 

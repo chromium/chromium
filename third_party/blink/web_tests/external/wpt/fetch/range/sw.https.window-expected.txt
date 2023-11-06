@@ -1,13 +1,14 @@
 This is a testharness.js-based test.
-PASS Defer range header filter tests to service worker
-PASS Defer range header passthrough tests to service worker
-PASS Ranged response not allowed following no-cors ranged request
-PASS Non-opaque ranged response executed
-FAIL Accept-Encoding should not appear in a service worker assert_equals: Accept-Encoding should not be set for media expected (object) null but got (string) "identity;q=1, *;q=0"
-PASS Opaque range preload successes and failures should be indistinguishable
-PASS Range headers correctly preserved
-PASS Range headers correctly removed
-PASS Headers correctly filtered
-PASS Include range header in network request
+[PASS] Defer range header filter tests to service worker
+[PASS] Defer range header passthrough tests to service worker
+[PASS] Ranged response not allowed following no-cors ranged request
+[PASS] Non-opaque ranged response executed
+[FAIL] Accept-Encoding should not appear in a service worker
+  assert_equals: Accept-Encoding should not be set for media expected (object) null but got (string) "identity;q=1, *;q=0"
+[PASS] Opaque range preload successes and failures should be indistinguishable
+[PASS] Range headers correctly preserved
+[PASS] Range headers correctly removed
+[PASS] Headers correctly filtered
+[PASS] Include range header in network request
 Harness: the test ran to completion.
 

@@ -24,17 +24,18 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.io.File;
 
-/**
- * Tests for WebContentsAccessibilityImpl integration with accessibility services.
- */
+/** Tests for WebContentsAccessibilityImpl integration with accessibility services. */
 @RunWith(ContentJUnit4ClassRunner.class)
 @SuppressLint("VisibleForTests")
 @DoNotBatch(reason = "Flaky tests")
+@Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class WebContentsAccessibilityTreeTest {
     // File path that holds all the relevant tests.
     private static final String BASE_ACCNAME_FILE_PATH = "content/test/data/accessibility/accname/";
@@ -65,8 +66,10 @@ public class WebContentsAccessibilityTreeTest {
         mActivityTestRule.setupTestFromFile(expectationFilePath + inputFile);
 
         // Create an extra string to print to logs along with potential error for rebase tool.
-        String errorStringPrefix = String.format("\n\nTesting: %s%s\nExpected output: %s%s",
-                expectationFilePath, inputFile, expectationFilePath, expectationFile);
+        String errorStringPrefix =
+                String.format(
+                        "\n\nTesting: %s%s\nExpected output: %s%s",
+                        expectationFilePath, inputFile, expectationFilePath, expectationFile);
 
         // Generate full AccessibilityNodeInfo tree and verify results.
         assertResults(
@@ -147,9 +150,16 @@ public class WebContentsAccessibilityTreeTest {
         String expectedResults = mActivityTestRule.readExpectationFile(expectationFile).trim();
 
         Assert.assertNotNull(RESULTS_NULL, actualResults);
-        Assert.assertEquals(NODE_ERROR + errorPrefix + "\n\nExpected\n--------\n" + expectedResults
-                        + "\n\nActual\n------\n" + actualResults + "\n<-- End-of-file -->\n\n\n",
-                expectedResults, actualResults);
+        Assert.assertEquals(
+                NODE_ERROR
+                        + errorPrefix
+                        + "\n\nExpected\n--------\n"
+                        + expectedResults
+                        + "\n\nActual\n------\n"
+                        + actualResults
+                        + "\n<-- End-of-file -->\n\n\n",
+                expectedResults,
+                actualResults);
     }
 
     /**
@@ -180,7 +190,9 @@ public class WebContentsAccessibilityTreeTest {
         TestViewStructure testViewStructure = new TestViewStructure();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.mWcax.onProvideVirtualStructure(testViewStructure, false));
-        CriteriaHelper.pollUiThread(testViewStructure::isDone, "Failed to get AssistData.");
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.mWcax::hasFinishedLatestAccessibilitySnapshotForTesting,
+                "Failed to get AssistData.");
         return testViewStructure.toString();
     }
 
@@ -288,6 +300,7 @@ public class WebContentsAccessibilityTreeTest {
     public void test_ariaBrailleLabel() {
         performAriaTest("aria-braillelabel.html");
     }
+
     @Test
     @SmallTest
     public void test_ariaBrailleRoleDescription() {

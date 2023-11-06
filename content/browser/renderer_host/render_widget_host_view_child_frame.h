@@ -250,6 +250,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   void ProcessFrameSwappedCallbacks();
 
   // RenderWidgetHostViewBase:
+  void UpdateFrameSinkIdRegistration() override;
   void UpdateBackgroundColor() override;
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(

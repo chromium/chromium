@@ -20,7 +20,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
-#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/strings/grit/components_strings.h"
@@ -58,18 +57,16 @@ class ArcGhostWindowViewTest : public testing::Test {
   ~ArcGhostWindowViewTest() override = default;
 
   void SetUp() override {
-    user_manager_ = new FakeChromeUserManager;
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::unique_ptr<user_manager::UserManager>(user_manager_));
+    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
     const user_manager::User* user =
-        user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
-    user_manager_->LoginUser(user->GetAccountId());
-    user_manager_->SwitchActiveUser(user->GetAccountId());
+        fake_user_manager_->AddUser(AccountId::FromUserEmail(kTestProfileName));
+    fake_user_manager_->LoginUser(user->GetAccountId());
+    fake_user_manager_->SwitchActiveUser(user->GetAccountId());
 
     // Note that user profiles are created after user login in reality.
     profile_ = profile_manager_->CreateTestingProfile(
@@ -84,11 +81,10 @@ class ArcGhostWindowViewTest : public testing::Test {
   void InstallApp(const std::string& app_id) {
     auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
     std::vector<apps::AppPtr> deltas;
-    apps::AppRegistryCache& cache = proxy->AppRegistryCache();
     deltas.push_back(MakeApp(app_id.c_str(), apps::AppType::kArc,
                              apps::InstallReason::kUser));
-    cache.OnApps(std::move(deltas), apps::AppType::kUnknown,
-                 false /* should_notify_initialized */);
+    proxy->OnApps(std::move(deltas), apps::AppType::kUnknown,
+                  false /* should_notify_initialized */);
   }
 
   void CreateView(arc::GhostWindowType type, uint32_t theme_color) {
@@ -114,10 +110,8 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;  // Not own.
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };

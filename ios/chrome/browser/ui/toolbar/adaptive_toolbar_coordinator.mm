@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -159,6 +159,10 @@
 
 - (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
   [self.mediator updateConsumerWithNewTabButtonIPHHighlighted:iphHighlighted];
+}
+
+- (void)showShareButtonIPHAfterLocationBarUnfocus {
+  // no-op, handled in ToolbarCoordinator.
 }
 
 #pragma mark - ToolbarCoordinatee

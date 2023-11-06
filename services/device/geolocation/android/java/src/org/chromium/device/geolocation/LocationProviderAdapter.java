@@ -6,10 +6,11 @@ package org.chromium.device.geolocation;
 
 import android.location.Location;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 
 import java.util.concurrent.FutureTask;
 

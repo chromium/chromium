@@ -23,6 +23,7 @@
 #include "base/test/task_environment.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/test/test_context_support.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/config/gpu_feature_info.h"
@@ -103,19 +104,20 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   TestSharedImageInterface() = default;
   ~TestSharedImageInterface() override = default;
 
-  gpu::Mailbox CreateSharedImage(viz::SharedImageFormat format,
-                                 const gfx::Size& size,
-                                 const gfx::ColorSpace& color_space,
-                                 GrSurfaceOrigin surface_origin,
-                                 SkAlphaType alpha_type,
-                                 uint32_t usage,
-                                 base::StringPiece debug_label,
-                                 gpu::SurfaceHandle surface_handle) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      base::StringPiece debug_label,
+      gpu::SurfaceHandle surface_handle) override {
     ADD_FAILURE();
-    return gpu::Mailbox();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
   }
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -125,10 +127,10 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       base::StringPiece debug_label,
       base::span<const uint8_t> pixel_data) override {
     ADD_FAILURE();
-    return gpu::Mailbox();
+    return base::MakeRefCounted<gpu::ClientSharedImage>(gpu::Mailbox());
   }
 
-  gpu::Mailbox CreateSharedImage(
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       viz::SharedImageFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
@@ -139,7 +141,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
       gfx::GpuMemoryBufferHandle buffer_handle) override {
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
-    return result;
+    return base::MakeRefCounted<gpu::ClientSharedImage>(result);
   }
 
   gpu::Mailbox CreateSharedImage(
@@ -175,6 +177,13 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   void DestroySharedImage(const gpu::SyncToken& sync_token,
                           const gpu::Mailbox& mailbox) override {
     CHECK_EQ(mailboxes_.erase(mailbox), 1U);
+  }
+
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> client_shared_image) override {
+    CHECK(client_shared_image->HasOneRef());
+    DestroySharedImage(sync_token, client_shared_image->mailbox());
   }
 
   SwapChainMailboxes CreateSwapChain(viz::SharedImageFormat format,

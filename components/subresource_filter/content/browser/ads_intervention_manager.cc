@@ -65,7 +65,7 @@ void AdsInterventionManager::TriggerAdsInterventionForUrlOnSubsequentLoads(
     mojom::AdsViolation ads_violation) {
   base::Value::Dict additional_metadata;
 
-  double now = clock_->Now().ToDoubleT();
+  double now = clock_->Now().InSecondsFSinceUnixEpoch();
   additional_metadata.Set(kLastAdsViolationTimeKey, now);
   additional_metadata.Set(kLastAdsViolationKey,
                           static_cast<int>(ads_violation));
@@ -98,7 +98,8 @@ AdsInterventionManager::GetLastAdsIntervention(const GURL& url) const {
 
   if (ads_violation && last_violation_time) {
     base::TimeDelta diff =
-        clock_->Now() - base::Time::FromDoubleT(*last_violation_time);
+        clock_->Now() -
+        base::Time::FromSecondsSinceUnixEpoch(*last_violation_time);
 
     return LastAdsIntervention(
         {diff, static_cast<mojom::AdsViolation>(*ads_violation)});

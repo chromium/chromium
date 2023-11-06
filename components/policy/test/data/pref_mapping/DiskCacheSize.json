@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DiskCacheSize": 100
+        },
+        "prefs": {
+          "browser.disk_cache_size": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

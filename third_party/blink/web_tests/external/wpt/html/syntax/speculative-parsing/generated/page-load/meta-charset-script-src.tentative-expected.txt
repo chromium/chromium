@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL Speculative parsing, page load: meta-charset-script-src Unhandled rejection: assert_equals: expected `param-encodingcheck` values to match between speculative and non-speculative expected "%26%23286%3B" but got "%D0"
+[FAIL] Speculative parsing, page load: meta-charset-script-src
+  Unhandled rejection: assert_equals: expected `param-encodingcheck` values to match between speculative and non-speculative expected "%26%23286%3B" but got "%D0"
 Harness: the test ran to completion.
 

@@ -17,6 +17,7 @@
 #include <string>
 
 #include "gtest/gtest.h"
+#include "absl/types/optional.h"
 
 namespace {
 
@@ -32,6 +33,8 @@ TEST(HasAbslStringifyTest, Works) {
   EXPECT_FALSE(absl::HasAbslStringify<std::string>::value);
   EXPECT_FALSE(absl::HasAbslStringify<TypeWithoutAbslStringify>::value);
   EXPECT_TRUE(absl::HasAbslStringify<TypeWithAbslStringify>::value);
+  EXPECT_FALSE(
+      absl::HasAbslStringify<absl::optional<TypeWithAbslStringify>>::value);
 }
 
 }  // namespace

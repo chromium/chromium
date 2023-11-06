@@ -10,9 +10,10 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -53,10 +54,17 @@ public class DeviceLockBridge {
         if (context != null) {
             DeviceLockActivityLauncher deviceLockActivityLauncher =
                     DeviceLockActivityLauncherSupplier.from(windowAndroid).get();
-            deviceLockActivityLauncher.launchDeviceLockActivity(context, null, false, windowAndroid,
-                    (resultCode, unused)
-                            -> DeviceLockBridgeJni.get().onDeviceLockUiFinished(
-                                    mNativeDeviceLockBridge, resultCode == Activity.RESULT_OK));
+            deviceLockActivityLauncher.launchDeviceLockActivity(
+                    context,
+                    null,
+                    false,
+                    windowAndroid,
+                    (resultCode, unused) ->
+                            DeviceLockBridgeJni.get()
+                                    .onDeviceLockUiFinished(
+                                            mNativeDeviceLockBridge,
+                                            resultCode == Activity.RESULT_OK),
+                    DeviceLockActivityLauncher.Source.AUTOFILL);
         } else {
             DeviceLockBridgeJni.get().onDeviceLockUiFinished(mNativeDeviceLockBridge, false);
         }

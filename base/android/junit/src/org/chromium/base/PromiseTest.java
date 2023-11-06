@@ -58,9 +58,10 @@ public class PromiseTest {
         final Value value = new Value();
 
         Promise<Integer> promise = new Promise<>();
-        Callback<Integer> callback = unusedArg -> {
-            value.set(value.get() + 1);
-        };
+        Callback<Integer> callback =
+                unusedArg -> {
+                    value.set(value.get() + 1);
+                };
         promise.then(callback);
         promise.then(callback);
 
@@ -91,7 +92,10 @@ public class PromiseTest {
 
         promise.then((Integer arg) -> arg.toString())
                 .then((String arg) -> arg + arg)
-                .then(result -> { value.set(result.length()); });
+                .then(
+                        result -> {
+                            value.set(result.length());
+                        });
 
         promise.fulfill(123);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -106,7 +110,11 @@ public class PromiseTest {
 
         final Promise<String> innerPromise = new Promise<>();
 
-        promise.then(arg -> innerPromise).then(result -> { value.set(result.length()); });
+        promise.then(arg -> innerPromise)
+                .then(
+                        result -> {
+                            value.set(result.length());
+                        });
 
         assertEquals(0, value.get());
 
@@ -205,7 +213,11 @@ public class PromiseTest {
     public void rejectOnThrow() {
         Value value = new Value();
         Promise<Integer> promise = new Promise<>();
-        promise.then((Function) (unusedArg -> { throw new IllegalArgumentException(); }))
+        promise.then(
+                        (Function)
+                                (unusedArg -> {
+                                    throw new IllegalArgumentException();
+                                }))
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
 
         promise.fulfill(0);
@@ -220,9 +232,11 @@ public class PromiseTest {
         Value value = new Value();
         Promise<Integer> promise = new Promise<>();
 
-        promise.then((Promise.AsyncFunction) (unusedArg -> {
-                   throw new IllegalArgumentException();
-               }))
+        promise.then(
+                        (Promise.AsyncFunction)
+                                (unusedArg -> {
+                                    throw new IllegalArgumentException();
+                                }))
                 .then(PromiseTest.pass(), PromiseTest.setValue(value, 5));
 
         promise.fulfill(0);

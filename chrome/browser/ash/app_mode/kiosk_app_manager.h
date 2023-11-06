@@ -184,7 +184,7 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // KioskAppManagerBase:
   // Gets info of all apps that have no meta data load error.
-  void GetApps(Apps* apps) const override;
+  std::vector<App> GetApps() const override;
 
   // Gets app data for the given app id. Returns true if `app_id` is known and
   // `app` is populated. Otherwise, return false.

@@ -91,7 +91,8 @@ std::u16string ManagePasswordsIconViews::GetTextForTooltipAndAccessibleName()
     const {
   switch (state_) {
     case password_manager::ui::INACTIVE_STATE:
-    case password_manager::ui::CONFIRMATION_STATE:
+    case password_manager::ui::SAVE_CONFIRMATION_STATE:
+    case password_manager::ui::UPDATE_CONFIRMATION_STATE:
     case password_manager::ui::CREDENTIAL_REQUEST_STATE:
     case password_manager::ui::AUTO_SIGNIN_STATE:
     case password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE:

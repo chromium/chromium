@@ -72,7 +72,7 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
   SVGPathByteStreamSource path_source(style_path->ByteStream());
   wtf_size_t length = 0;
   PathCoordinates current_coordinates;
-  Vector<std::unique_ptr<InterpolableValue>> interpolable_path_segs;
+  HeapVector<Member<InterpolableValue>> interpolable_path_segs;
   Vector<SVGPathSegType> path_seg_types;
 
   while (path_source.HasMoreData()) {
@@ -87,17 +87,18 @@ InterpolationValue PathInterpolationFunctions::ConvertValue(
     length++;
   }
 
-  auto path_args = std::make_unique<InterpolableList>(length);
+  auto* path_args = MakeGarbageCollected<InterpolableList>(length);
   for (wtf_size_t i = 0; i < interpolable_path_segs.size(); i++)
     path_args->Set(i, std::move(interpolable_path_segs[i]));
 
-  auto result = std::make_unique<InterpolableList>(kPathComponentIndexCount);
-  result->Set(kPathArgsIndex, std::move(path_args));
-  result->Set(kPathNeutralIndex, std::make_unique<InterpolableNumber>(0));
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kPathComponentIndexCount);
+  result->Set(kPathArgsIndex, path_args);
+  result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(0));
 
-  return InterpolationValue(std::move(result),
-                            SVGPathNonInterpolableValue::Create(
-                                path_seg_types, style_path->GetWindRule()));
+  return InterpolationValue(
+      result, SVGPathNonInterpolableValue::Create(path_seg_types,
+                                                  style_path->GetWindRule()));
 }
 
 class UnderlyingPathSegTypesChecker final
@@ -142,14 +143,14 @@ InterpolationValue PathInterpolationFunctions::MaybeConvertNeutral(
     InterpolationType::ConversionCheckers& conversion_checkers) {
   conversion_checkers.push_back(
       UnderlyingPathSegTypesChecker::Create(underlying));
-  auto result = std::make_unique<InterpolableList>(kPathComponentIndexCount);
+  auto* result =
+      MakeGarbageCollected<InterpolableList>(kPathComponentIndexCount);
   result->Set(kPathArgsIndex,
               To<InterpolableList>(*underlying.interpolable_value)
                   .Get(kPathArgsIndex)
                   ->CloneAndZero());
-  result->Set(kPathNeutralIndex, std::make_unique<InterpolableNumber>(1));
-  return InterpolationValue(std::move(result),
-                            underlying.non_interpolable_value.get());
+  result->Set(kPathNeutralIndex, MakeGarbageCollected<InterpolableNumber>(1));
+  return InterpolationValue(result, underlying.non_interpolable_value.get());
 }
 
 static bool PathSegTypesMatch(const Vector<SVGPathSegType>& a,

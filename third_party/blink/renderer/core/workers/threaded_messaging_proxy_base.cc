@@ -182,7 +182,7 @@ void ThreadedMessagingProxyBase::TerminateGlobalScope() {
 
 ExecutionContext* ThreadedMessagingProxyBase::GetExecutionContext() const {
   DCHECK(IsParentContextThread());
-  return execution_context_;
+  return execution_context_.Get();
 }
 
 ParentExecutionContextTaskRunners*

@@ -27,7 +27,7 @@
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_provider_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/browser_context.h"
@@ -347,9 +347,6 @@ TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
 }
 
 TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kPasswordsImportM2};
-
   password_manager::PasswordForm test_form;
   test_form.url = GURL("https://test.com");
   test_form.signon_realm = test_form.url.spec();
@@ -395,9 +392,6 @@ TEST_F(PasswordManagerPorterTest, ContinueImportWithConflicts) {
 }
 
 TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kPasswordsImportM2};
-
   password_manager::PasswordForm test_form;
   test_form.url = GURL("https://test.com");
   test_form.signon_realm = test_form.url.spec();
@@ -441,9 +435,6 @@ TEST_F(PasswordManagerPorterTest, RejectNewImportsWhenConflictsNotResolved) {
 }
 
 TEST_F(PasswordManagerPorterTest, ResetImporterTriggersFileDeletion) {
-  base::test::ScopedFeatureList feature_list{
-      password_manager::features::kPasswordsImportM2};
-
   ASSERT_TRUE(base::WriteFile(temp_file_path(),
                               "origin,username,password\n"
                               "https://test.com,username,secret\n"));

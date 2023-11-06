@@ -177,6 +177,10 @@
 
 - (void)presentationControllerDidAttemptToDismiss:
     (UIPresentationController*)presentationController {
+  if (!_viewController.canBeDismissed) {
+    return;
+  }
+
   self.actionSheetCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser

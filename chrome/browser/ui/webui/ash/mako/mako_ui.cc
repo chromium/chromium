@@ -8,7 +8,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/hash/sha1.h"
-#include "chrome/browser/ash/input_method/editor_mediator.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/url_constants.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -44,19 +44,6 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
     : ui::UntrustedBubbleWebUIController(web_ui) {
   CHECK(chromeos::features::IsOrcaEnabled());
 
-  const std::string debug_key_hash = base::SHA1HashString(
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kOrcaKey));
-  // See go/orca-key for the key
-  // Commandline looks like:
-  //  out/Default/chrome --user-data-dir=/tmp/auuf123 --orca-key="INSERT KEY
-  //  HERE" --enable-features=Orca
-  const std::string hash =
-      "\x7a\xf3\xa1\x57\x28\x48\xc4\x14\x27\x13\x53\x5a\x09\xf3\x0e\xfc\xee\xa6"
-      "\xbb\xa4";
-  // If key fails to match, crash chrome.
-  CHECK_EQ(debug_key_hash, hash);
-
   // Setup the data source
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(), kChromeUIMakoURL);
@@ -73,7 +60,7 @@ MakoUntrustedUI::MakoUntrustedUI(content::WebUI* web_ui)
       "polymer-template-event-attribute-policy polymer-html-literal; ");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'unsafe-inline'; ");
+      "style-src 'unsafe-inline'  chrome-untrusted://theme; ");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc, "img-src data:; ");
 }
@@ -81,8 +68,17 @@ MakoUntrustedUI::~MakoUntrustedUI() = default;
 
 void MakoUntrustedUI::BindInterface(
     mojo::PendingReceiver<orca::mojom::EditorClient> pending_receiver) {
-  input_method::EditorMediator::Get()->BindEditorClient(
-      std::move(pending_receiver));
+  // If mako ui is shown to the user, then we know that EditorMediator is
+  // allowed for the current profile and will return a valid instance.
+  input_method::EditorMediatorFactory::GetInstance()
+      ->GetForProfile(Profile::FromWebUI(web_ui()))
+      ->BindEditorClient(std::move(pending_receiver));
+}
+
+void MakoUntrustedUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(MakoUntrustedUI)

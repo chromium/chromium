@@ -811,17 +811,13 @@ xsltStyleGetExtData(xsltStylesheetPtr style, const xmlChar * URI)
     * Old behaviour.
     */
     tmpStyle = style;
-    while (tmpStyle != NULL) {
-	if (tmpStyle->extInfos != NULL) {
-	    dataContainer =
-		(xsltExtDataPtr) xmlHashLookup(tmpStyle->extInfos, URI);
-	    if (dataContainer != NULL) {
-		return(dataContainer->extData);
-	    }
-	}
-	tmpStyle = xsltNextImport(tmpStyle);
+    if (tmpStyle->extInfos != NULL) {
+        dataContainer =
+            (xsltExtDataPtr) xmlHashLookup(tmpStyle->extInfos, URI);
+        if (dataContainer != NULL) {
+            return(dataContainer->extData);
+        }
     }
-    tmpStyle = style;
 #endif
 
     dataContainer =

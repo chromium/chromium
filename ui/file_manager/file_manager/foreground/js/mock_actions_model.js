@@ -30,11 +30,14 @@ export class MockActionModel extends EventTarget {
 }
 
 export class MockActionsModel extends EventTarget {
+  // @ts-ignore: error TS7006: Parameter 'actions' implicitly has an 'any' type.
   constructor(actions) {
     super();
 
     this.actions_ = actions;
     Object.keys(actions).forEach(function(key) {
+      // @ts-ignore: error TS2683: 'this' implicitly has type 'any' because it
+      // does not have a type annotation.
       actions[key].actionsModel = this;
     });
   }

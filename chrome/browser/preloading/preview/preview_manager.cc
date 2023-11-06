@@ -10,36 +10,42 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-// A duration to wait a prerendering after renderer deciced to preview.
-// TODO(b:296992745): Consider to let renderer handle the initiations of both
-// prerendering and preview.
-const base::TimeDelta kPreviewWarmupDuration = base::Milliseconds(300);
-
 PreviewManager::PreviewManager(content::WebContents* web_contents)
-    : content::WebContentsUserData<PreviewManager>(*web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PreviewManager>(*web_contents) {}
 
 PreviewManager::~PreviewManager() = default;
 
-void PreviewManager::InitiatePreview(const GURL& url) {
-  // Other preloadings are features to speed up navigations, which user agents
-  // may do. On the other hand, preview is a feature that is UI-triggered and
-  // gives UI feedback to users. So, we don't check eligibiilty with
-  // prefetch::IsSomePreloadingEnabled.
-
-  // TODO(b:292184832): Pass more load params.
-  tab_ = std::make_unique<PreviewTab>(GetWebContents(), url);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&PreviewManager::Show, weak_factory_.GetWeakPtr(),
-                     tab_.get()),
-      kPreviewWarmupDuration);
+void PreviewManager::PrimaryPageChanged(content::Page& page) {
+  // When initiator page has gone, cancel preview.
+  tab_.reset();
 }
 
-void PreviewManager::Show(PreviewTab* tab) {
-  // Show preview if PreviewManager didn't receive other new requests.
-  if (tab_.get() == tab) {
-    tab_->Show();
+void PreviewManager::InitiatePreview(const GURL& url) {
+  // TODO(b:292184832): Pass more load params.
+  tab_ = std::make_unique<PreviewTab>(this, GetWebContents(), url);
+}
+
+void PreviewManager::PromoteToNewTab() {
+  if (!tab_) {
+    return;
   }
+
+  tab_->PromoteToNewTab(GetWebContents());
+  // Delete `tab_` asynchronously so that we can call this inside PreviewTab.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::DoNothingWithBoundArgs(std::move(tab_)));
+}
+
+base::WeakPtr<content::WebContents>
+PreviewManager::GetWebContentsForPreviewTab() {
+  CHECK(tab_);
+  return tab_->GetWebContents();
+}
+
+void PreviewManager::CloseForTesting() {
+  CHECK(tab_);
+  tab_.reset();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PreviewManager);

@@ -296,6 +296,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
                       ClearHostCacheCallback callback) override;
   void ClearHttpAuthCache(base::Time start_time,
                           base::Time end_time,
+                          mojom::ClearDataFilterPtr filter,
                           ClearHttpAuthCacheCallback callback) override;
   void ClearReportingCacheReports(
       mojom::ClearDataFilterPtr filter,
@@ -382,6 +383,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
       const net::SiteForCookies& site_for_cookies,
+      bool has_storage_access,
       const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,

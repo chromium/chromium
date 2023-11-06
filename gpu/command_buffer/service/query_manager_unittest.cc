@@ -252,8 +252,8 @@ TEST_F(QueryManagerTest, ProcessPendingQuery) {
       .RetiresOnSaturation();
   manager_->ProcessPendingQueries(false);
   EXPECT_TRUE(query->IsPending());
-  EXPECT_EQ(0, sync->process_count);
-  EXPECT_EQ(0u, sync->result);
+  EXPECT_EQ(0, base::subtle::Atomic32{sync->process_count});
+  EXPECT_EQ(0u, uint64_t{sync->result});
 
   // Process with return available.
   // Expect 2 GL commands.
@@ -266,8 +266,8 @@ TEST_F(QueryManagerTest, ProcessPendingQuery) {
       .RetiresOnSaturation();
   manager_->ProcessPendingQueries(false);
   EXPECT_FALSE(query->IsPending());
-  EXPECT_EQ(kSubmitCount, sync->process_count);
-  EXPECT_EQ(kResult, sync->result);
+  EXPECT_EQ(kSubmitCount, base::subtle::Atomic32{sync->process_count});
+  EXPECT_EQ(kResult, uint64_t{sync->result});
   EXPECT_FALSE(manager_->HavePendingQueries());
 
   // Process with no queries.
@@ -352,12 +352,12 @@ TEST_F(QueryManagerTest, ProcessPendingQueries) {
   EXPECT_FALSE(query1->IsPending());
   EXPECT_FALSE(query2->IsPending());
   EXPECT_TRUE(query3->IsPending());
-  EXPECT_EQ(kSubmitCount1, sync1->process_count);
-  EXPECT_EQ(kSubmitCount2, sync2->process_count);
-  EXPECT_EQ(kResult1, sync1->result);
-  EXPECT_EQ(kResult2, sync2->result);
-  EXPECT_EQ(0, sync3->process_count);
-  EXPECT_EQ(0u, sync3->result);
+  EXPECT_EQ(kSubmitCount1, base::subtle::Atomic32{sync1->process_count});
+  EXPECT_EQ(kSubmitCount2, base::subtle::Atomic32{sync2->process_count});
+  EXPECT_EQ(kResult1, uint64_t{sync1->result});
+  EXPECT_EQ(kResult2, uint64_t{sync2->result});
+  EXPECT_EQ(0, base::subtle::Atomic32{sync3->process_count});
+  EXPECT_EQ(0u, uint64_t{sync3->result});
   EXPECT_TRUE(manager_->HavePendingQueries());
 
   // Process with renaming query. No result.
@@ -368,8 +368,8 @@ TEST_F(QueryManagerTest, ProcessPendingQueries) {
       .RetiresOnSaturation();
   manager_->ProcessPendingQueries(false);
   EXPECT_TRUE(query3->IsPending());
-  EXPECT_EQ(0, sync3->process_count);
-  EXPECT_EQ(0u, sync3->result);
+  EXPECT_EQ(0, base::subtle::Atomic32{sync3->process_count});
+  EXPECT_EQ(0u, uint64_t{sync3->result});
   EXPECT_TRUE(manager_->HavePendingQueries());
 
   // Process with renaming query. With result.
@@ -383,8 +383,8 @@ TEST_F(QueryManagerTest, ProcessPendingQueries) {
       .RetiresOnSaturation();
   manager_->ProcessPendingQueries(false);
   EXPECT_FALSE(query3->IsPending());
-  EXPECT_EQ(kSubmitCount3, sync3->process_count);
-  EXPECT_EQ(kResult3, sync3->result);
+  EXPECT_EQ(kSubmitCount3, base::subtle::Atomic32{sync3->process_count});
+  EXPECT_EQ(kResult3, uint64_t{sync3->result});
   EXPECT_FALSE(manager_->HavePendingQueries());
 }
 
@@ -527,7 +527,7 @@ TEST_F(QueryManagerTest, ARBOcclusionPauseResume) {
 
   QuerySync* sync = decoder_->GetSharedMemoryAs<QuerySync*>(
       shared_memory_id_, kSharedMemoryOffset, sizeof(*sync));
-  EXPECT_EQ(1u, sync->result);
+  EXPECT_EQ(1u, uint64_t{sync->result});
 
   // Make sure new query still works.
   EXPECT_CALL(*gl_, DeleteQueries(1, ::testing::Pointee(kService2Id)))
@@ -552,7 +552,7 @@ TEST_F(QueryManagerTest, ARBOcclusionPauseResume) {
   manager->ProcessPendingQueries(false);
   EXPECT_TRUE(query->IsFinished());
 
-  EXPECT_EQ(0u, sync->result);
+  EXPECT_EQ(0u, uint64_t{sync->result});
   EXPECT_CALL(*gl_, DeleteQueries(1, ::testing::Pointee(kService1Id)))
       .Times(1)
       .RetiresOnSaturation();
@@ -586,7 +586,7 @@ TEST_F(QueryManagerTest, TimeElapsedQuery) {
       shared_memory_id_, kSharedMemoryOffset, sizeof(*sync));
   const uint64_t expected_result =
       100u * base::Time::kNanosecondsPerMicrosecond;
-  EXPECT_EQ(expected_result, sync->result);
+  EXPECT_EQ(expected_result, uint64_t{sync->result});
 
   manager_->Destroy(false);
 }
@@ -628,7 +628,7 @@ TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
       shared_memory_id_, kSharedMemoryOffset, sizeof(*sync));
   const uint64_t expected_result =
       300u * base::Time::kNanosecondsPerMicrosecond;
-  EXPECT_EQ(expected_result, sync->result);
+  EXPECT_EQ(expected_result, uint64_t{sync->result});
 
   // Make sure next query works properly.
   fake_timing_queries.SetCurrentGLTime(
@@ -643,7 +643,7 @@ TEST_F(QueryManagerTest, TimeElapsedPauseResume) {
 
   const uint64_t expected_result2 =
       100u * base::Time::kNanosecondsPerMicrosecond;
-  EXPECT_EQ(expected_result2, sync->result);
+  EXPECT_EQ(expected_result2, uint64_t{sync->result});
 
   manager_->Destroy(false);
 }
@@ -717,7 +717,7 @@ TEST_F(QueryManagerTest, TimeStampQuery) {
 
   QuerySync* sync = decoder_->GetSharedMemoryAs<QuerySync*>(
       shared_memory_id_, kSharedMemoryOffset, sizeof(*sync));
-  EXPECT_EQ(expected_result, sync->result);
+  EXPECT_EQ(expected_result, uint64_t{sync->result});
 
   manager_->Destroy(false);
 }
@@ -747,7 +747,7 @@ TEST_F(QueryManagerTest, TimeStampQueryPending) {
 
   QuerySync* sync = decoder_->GetSharedMemoryAs<QuerySync*>(
       shared_memory_id_, kSharedMemoryOffset, sizeof(*sync));
-  EXPECT_EQ(expected_result, sync->result);
+  EXPECT_EQ(expected_result, uint64_t{sync->result});
 
   manager_->Destroy(false);
 }
@@ -871,7 +871,7 @@ TEST_F(QueryManagerTest, GetErrorQuery) {
   manager->EndQuery(query, kSubmitCount);
   EXPECT_FALSE(query->IsPending());
 
-  EXPECT_EQ(static_cast<GLuint>(GL_INVALID_ENUM), sync->result);
+  EXPECT_EQ(static_cast<GLuint>(GL_INVALID_ENUM), uint64_t{sync->result});
 
   manager->Destroy(false);
 }

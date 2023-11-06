@@ -9,7 +9,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.robolectric.annotation.LooperMode;
 
 import android.app.Activity;
 
@@ -21,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -30,9 +30,7 @@ import org.chromium.base.test.util.Feature;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Tests for {@link GoogleApiClientHelper}
- */
+/** Tests for {@link GoogleApiClientHelper} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class GoogleApiClientHelperTest {

@@ -42,7 +42,7 @@ jboolean JNI_TemplateUrl_IsPrepopulatedOrCreatedByPolicy(
 
 jlong JNI_TemplateUrl_GetLastVisitedTime(JNIEnv* env, jlong template_url_ptr) {
   TemplateURL* template_url = ToTemplateURL(template_url_ptr);
-  return template_url->last_visited().ToJavaTime();
+  return template_url->last_visited().InMillisecondsSinceUnixEpoch();
 }
 
 jint JNI_TemplateUrl_GetPrepopulatedId(JNIEnv* env, jlong template_url_ptr) {

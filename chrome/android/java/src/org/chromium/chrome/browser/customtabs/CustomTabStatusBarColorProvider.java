@@ -48,14 +48,13 @@ public class CustomTabStatusBarColorProvider {
         @ToolbarColorType
         int toolbarColorType = CustomTabToolbarColorController.computeToolbarColorType(
                 mIntentDataProvider, mUseTabThemeColor, tab);
-        switch (toolbarColorType) {
-            case ToolbarColorType.THEME_COLOR:
-                return UNDEFINED_STATUS_BAR_COLOR;
-            case ToolbarColorType.DEFAULT_COLOR:
-                return DEFAULT_STATUS_BAR_COLOR;
-            case ToolbarColorType.INTENT_TOOLBAR_COLOR:
-                return mIntentDataProvider.getColorProvider().getToolbarColor();
-        }
-        return DEFAULT_STATUS_BAR_COLOR;
+        return switch (toolbarColorType) {
+            case ToolbarColorType.THEME_COLOR -> UNDEFINED_STATUS_BAR_COLOR;
+            case ToolbarColorType.DEFAULT_COLOR -> DEFAULT_STATUS_BAR_COLOR;
+            case ToolbarColorType.INTENT_TOOLBAR_COLOR -> mIntentDataProvider
+                    .getColorProvider()
+                    .getToolbarColor();
+            default -> DEFAULT_STATUS_BAR_COLOR;
+        };
     }
 }

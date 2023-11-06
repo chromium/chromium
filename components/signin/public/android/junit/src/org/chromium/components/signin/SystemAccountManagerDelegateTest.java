@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.components.signin;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,20 +34,14 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Robolectric tests for {@link SystemAccountManagerDelegateTest}.
- */
+/** Robolectric tests for {@link SystemAccountManagerDelegateTest}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SystemAccountManagerDelegateTest {
-    @Mock
-    private AccountManager mAccountManager;
-    @Mock
-    private AccountManagerFuture<Bundle> mAccountManagerFuture;
-    @Mock
-    private Account mAccount;
-    @Mock
-    private Activity mActivity;
+    @Mock private AccountManager mAccountManager;
+    @Mock private AccountManagerFuture<Bundle> mAccountManagerFuture;
+    @Mock private Account mAccount;
+    @Mock private Activity mActivity;
 
     private final AtomicReference<Bundle> mConfirmCredentialsResponse = new AtomicReference<>();
     private SystemAccountManagerDelegate mDelegate;
@@ -64,11 +59,12 @@ public class SystemAccountManagerDelegateTest {
         Bundle bundle = new Bundle();
         doReturn(bundle).when(mAccountManagerFuture).getResult();
 
-        doAnswer((invocation) -> {
-            AccountManagerCallback<Bundle> callback = invocation.getArgument(3);
-            callback.run(mAccountManagerFuture);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            AccountManagerCallback<Bundle> callback = invocation.getArgument(3);
+                            callback.run(mAccountManagerFuture);
+                            return null;
+                        })
                 .when(mAccountManager)
                 .confirmCredentials(any(), any(), any(), any(), any());
 
@@ -83,11 +79,12 @@ public class SystemAccountManagerDelegateTest {
     public void testConfirmCredentials_exceptionOnResult_triggersCallback() throws Exception {
         doThrow(IOException.class).when(mAccountManagerFuture).getResult();
 
-        doAnswer((invocation) -> {
-            AccountManagerCallback<Bundle> callback = invocation.getArgument(3);
-            callback.run(mAccountManagerFuture);
-            return null;
-        })
+        doAnswer(
+                        (invocation) -> {
+                            AccountManagerCallback<Bundle> callback = invocation.getArgument(3);
+                            callback.run(mAccountManagerFuture);
+                            return null;
+                        })
                 .when(mAccountManager)
                 .confirmCredentials(any(), any(), any(), any(), any());
 

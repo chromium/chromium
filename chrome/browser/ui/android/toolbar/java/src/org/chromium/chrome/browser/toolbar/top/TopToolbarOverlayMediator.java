@@ -132,28 +132,37 @@ public class TopToolbarOverlayMediator {
         activityTabCallback.onResult(tabSupplier.get());
         mTabObserver.triggerWithCurrentTab();
 
-        mBrowserControlsObserver = new BrowserControlsStateProvider.Observer() {
-            @Override
-            public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
-                    int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
-                // The toolbar layer is positioned below the minimum height (i.e. the top of the
-                // toolbar layer is set to the bottom of minimum height). Hence, the offset
-                // consists of the top controls offset plus top controls minimum height.
-                int yOffset = topOffset + mBrowserControlsStateProvider.getTopControlsMinHeight();
-                mModel.set(TopToolbarOverlayProperties.Y_OFFSET, yOffset);
+        mBrowserControlsObserver =
+                new BrowserControlsStateProvider.Observer() {
+                    @Override
+                    public void onControlsOffsetChanged(
+                            int topOffset,
+                            int topControlsMinHeightOffset,
+                            int bottomOffset,
+                            int bottomControlsMinHeightOffset,
+                            boolean needsAnimate) {
+                        // The content offset is passed to the toolbar layer so that it can position
+                        // itself for using content offset instead of top controls offset is that
+                        // top controls can have a different height than that of the toolbar, (e.g.
+                        // when status indicator is visible or tab strip is hidden), and the toolbar
+                        // needs to be positioned at the bottom of the top controls regardless of
+                        // the total height.
+                        mModel.set(
+                                TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                mBrowserControlsStateProvider.getContentOffset());
 
-                updateShadowState();
-                updateVisibility();
-            }
+                        updateShadowState();
+                        updateVisibility();
+                    }
 
-            @Override
-            public void onAndroidControlsVisibilityChanged(int visibility) {
-                if (ToolbarFeatures.shouldSuppressCaptures()) {
-                    mIsBrowserControlsAndroidViewVisible = visibility == View.VISIBLE;
-                    updateShadowState();
-                }
-            }
-        };
+                    @Override
+                    public void onAndroidControlsVisibilityChanged(int visibility) {
+                        if (ToolbarFeatures.shouldSuppressCaptures()) {
+                            mIsBrowserControlsAndroidViewVisible = visibility == View.VISIBLE;
+                            updateShadowState();
+                        }
+                    }
+                };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
         if (ToolbarFeatures.shouldSuppressCaptures()) {
             mIsBrowserControlsAndroidViewVisible =

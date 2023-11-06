@@ -34,7 +34,7 @@ class ErrorBuilder {
 
   // Appends a string |error| with the first %s replaced by |sub|.
   void Append(base::StringPiece error, base::StringPiece sub) {
-    Append(base::StringPrintf(error.data(), sub.data()));
+    Append(base::StringPrintfNonConstexpr(error.data(), sub.data()));
   }
 
  private:

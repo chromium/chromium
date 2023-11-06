@@ -97,9 +97,6 @@ void TargetDeviceBootstrapController::StartAdvertisingAndMaybeGetQRCode() {
         TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported);
   CHECK_EQ(status_.step, Step::NONE);
 
-  // No pending requests.
-  CHECK(!weak_ptr_factory_.HasWeakPtrs());
-
   bool use_pin_authentication =
       accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
 
@@ -138,14 +135,14 @@ void TargetDeviceBootstrapController::CloseOpenConnections() {
 }
 
 void TargetDeviceBootstrapController::PrepareForUpdate() {
-  if (status_.step != Step::CONNECTED_TO_WIFI || !authenticated_connection_) {
+  if (status_.step != Step::WIFI_CREDENTIALS_RECEIVED ||
+      !authenticated_connection_) {
     return;
   }
 
-  authenticated_connection_->NotifySourceOfUpdate(
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
-          weak_ptr_factory_.GetWeakPtr()));
+  authenticated_connection_->NotifySourceOfUpdate(base::BindOnce(
+      &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
@@ -168,13 +165,8 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
                                      Step::ADVERTISING_WITHOUT_QR_CODE,
                                      Step::PIN_VERIFICATION};
   CHECK(base::Contains(kPossibleSteps, status_.step));
-
   authenticated_connection_ = authenticated_connection;
-
-  status_.step = Step::CONNECTED;
-  status_.payload.emplace<absl::monostate>();
-  NotifyObservers();
-  AttemptWifiCredentialTransfer();
+  WaitForUserVerification();
 }
 
 void TargetDeviceBootstrapController::OnConnectionRejected() {
@@ -186,9 +178,9 @@ void TargetDeviceBootstrapController::OnConnectionRejected() {
 
 void TargetDeviceBootstrapController::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
-  if (status_.step == Step::CONNECTING_TO_WIFI) {
-    quick_start_metrics::RecordWifiTransferResult(
-        /*succeeded=*/false, /*failure_reason=*/quick_start_metrics::
+  if (status_.step == Step::REQUESTING_WIFI_CREDENTIALS) {
+    QuickStartMetrics::RecordWifiTransferResult(
+        /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
             WifiTransferResultFailureReason::kConnectionDroppedDuringAttempt);
   }
   status_.step = Step::ERROR;
@@ -205,6 +197,9 @@ std::string TargetDeviceBootstrapController::GetDiscoverableName() {
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
+  QS_LOG(INFO)
+      << "Notifying observers that the status has changed. New status step: "
+      << status_.step;
   for (auto& obs : observers_) {
     obs.OnStatusChanged(status_);
   }
@@ -257,15 +252,13 @@ void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
   }
 }
 
-void TargetDeviceBootstrapController::WaitForUserVerification(
-    base::OnceClosure on_verification) {
-  authenticated_connection_->WaitForUserVerification(base::BindOnce(
-      &TargetDeviceBootstrapController::OnUserVerificationResult,
-      weak_ptr_factory_.GetWeakPtr(), std::move(on_verification)));
+void TargetDeviceBootstrapController::WaitForUserVerification() {
+  authenticated_connection_->WaitForUserVerification(
+      base::BindOnce(&TargetDeviceBootstrapController::OnUserVerificationResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnUserVerificationResult(
-    base::OnceClosure on_verification,
     absl::optional<mojom::UserVerificationResponse>
         user_verification_response) {
   if (!user_verification_response.has_value() ||
@@ -277,49 +270,62 @@ void TargetDeviceBootstrapController::OnUserVerificationResult(
     return;
   }
 
-  std::move(on_verification).Run();
+  status_.step = Step::CONNECTED;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::AttemptWifiCredentialTransfer() {
-  status_.step = Step::CONNECTING_TO_WIFI;
+  status_.step = Step::REQUESTING_WIFI_CREDENTIALS;
   status_.payload.emplace<absl::monostate>();
-
-  WaitForUserVerification(base::BindOnce(
-      &TargetDeviceConnectionBroker::AuthenticatedConnection::
-          RequestWifiCredentials,
-      authenticated_connection_,
-      base::BindOnce(
-          &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
-          weak_ptr_factory_.GetWeakPtr())));
-
   NotifyObservers();
+
+  authenticated_connection_->RequestWifiCredentials(base::BindOnce(
+      &TargetDeviceBootstrapController::OnWifiCredentialsReceived,
+      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnWifiCredentialsReceived(
     absl::optional<mojom::WifiCredentials> credentials) {
-  CHECK_EQ(status_.step, Step::CONNECTING_TO_WIFI);
-  if (!credentials.has_value()) {
-    status_.step = Step::ERROR;
-    status_.payload = ErrorCode::WIFI_CREDENTIALS_NOT_RECEIVED;
-    NotifyObservers();
-    return;
+  CHECK_EQ(status_.step, Step::REQUESTING_WIFI_CREDENTIALS);
+
+  if (credentials.has_value()) {
+    status_.step = Step::WIFI_CREDENTIALS_RECEIVED;
+    status_.wifi_credentials = credentials.value();
+  } else {
+    status_.step = Step::EMPTY_WIFI_CREDENTIALS_RECEIVED;
   }
 
-  status_.step = Step::CONNECTED_TO_WIFI;
   status_.payload.emplace<absl::monostate>();
-  status_.ssid = credentials->ssid;
-  status_.password = credentials->password;
   NotifyObservers();
 
   // Record successful wifi credentials transfer. Failures will be
   // logged from the QuickStartDecoder class.
-  quick_start_metrics::RecordWifiTransferResult(
+  QuickStartMetrics::RecordWifiTransferResult(
       /*succeeded=*/true, /*failure_reason=*/absl::nullopt);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kQuickStartTestForcedUpdateSwitch)) {
     PrepareForUpdate();
   }
+}
+
+void TargetDeviceBootstrapController::RequestGoogleAccountInfo() {
+  CHECK(authenticated_connection_);
+
+  status_.step = Step::REQUESTING_GOOGLE_ACCOUNT_INFO;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
+
+  authenticated_connection_->RequestAccountInfo(base::BindOnce(
+      &TargetDeviceBootstrapController::OnGoogleAccountInfoReceived,
+      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void TargetDeviceBootstrapController::OnGoogleAccountInfoReceived() {
+  status_.step = Step::GOOGLE_ACCOUNT_INFO_RECEIVED;
+  status_.payload.emplace<absl::monostate>();
+  NotifyObservers();
 }
 
 void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
@@ -336,6 +342,11 @@ void TargetDeviceBootstrapController::AttemptGoogleAccountTransfer() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void TargetDeviceBootstrapController::Cleanup() {
+  status_ = Status();
+  CleanupIfNeeded();
+}
+
 void TargetDeviceBootstrapController::OnChallengeBytesReceived(
     SecondDeviceAuthBroker::ChallengeBytesOrError challenge) {
   if (!challenge.has_value()) {
@@ -343,7 +354,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
                                << "Reason: " << challenge.error().ToString();
     status_.step = Step::ERROR;
     status_.payload = ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED;
-    quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/false);
+    QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/false);
     NotifyObservers();
     return;
     // TODO(b:286853512) - Implement retry mechanism.
@@ -359,7 +370,7 @@ void TargetDeviceBootstrapController::OnChallengeBytesReceived(
       << "Received challenge bytes from Gaia. Requesting FIDO assertion.";
   challenge_bytes_ = challenge.value();
 
-  quick_start_metrics::RecordGaiaTransferAttempted(/*attempted=*/true);
+  QuickStartMetrics::RecordGaiaTransferAttempted(/*attempted=*/true);
   authenticated_connection_->RequestAccountTransferAssertion(
       challenge_bytes_,
       base::BindOnce(&TargetDeviceBootstrapController::OnFidoAssertionReceived,
@@ -385,6 +396,84 @@ void TargetDeviceBootstrapController::CleanupIfNeeded() {
   if (base::Contains(kPossibleSteps, status_.step)) {
     quick_start_connectivity_service_->Cleanup();
   }
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const TargetDeviceBootstrapController::Step& step) {
+  switch (step) {
+    case TargetDeviceBootstrapController::Step::NONE:
+      stream << "[none]";
+      break;
+    case TargetDeviceBootstrapController::Step::ERROR:
+      stream << "[error]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITH_QR_CODE:
+      stream << "[advertising with QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::ADVERTISING_WITHOUT_QR_CODE:
+      stream << "[advertising without QR code]";
+      break;
+    case TargetDeviceBootstrapController::Step::PIN_VERIFICATION:
+      stream << "[pin verification]";
+      break;
+    case TargetDeviceBootstrapController::Step::CONNECTED:
+      stream << "[connected]";
+      break;
+    case TargetDeviceBootstrapController::Step::REQUESTING_WIFI_CREDENTIALS:
+      stream << "[requesting wifi credentials]";
+      break;
+    case TargetDeviceBootstrapController::Step::WIFI_CREDENTIALS_RECEIVED:
+      stream << "[wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
+      stream << "[empty wifi credentials received]";
+      break;
+    case TargetDeviceBootstrapController::Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      stream << "[requesting google account info]";
+      break;
+    case TargetDeviceBootstrapController::Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      stream << "[google account info received]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferring Google account details]";
+      break;
+    case TargetDeviceBootstrapController::Step::
+        TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
+      stream << "[transferred Google account details]";
+      break;
+  }
+
+  return stream;
+}
+
+std::ostream& operator<<(
+    std::ostream& stream,
+    const TargetDeviceBootstrapController::ErrorCode& error_code) {
+  switch (error_code) {
+    case TargetDeviceBootstrapController::ErrorCode::START_ADVERTISING_FAILED:
+      stream << "[start advertising failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_REJECTED:
+      stream << "[connection rejected]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::CONNECTION_CLOSED:
+      stream << "[connection closed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::USER_VERIFICATION_FAILED:
+      stream << "[user verification failed]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        GAIA_ASSERTION_NOT_RECEIVED:
+      stream << "[Gaia assertion not received]";
+      break;
+    case TargetDeviceBootstrapController::ErrorCode::
+        FETCHING_CHALLENGE_BYTES_FAILED:
+      stream << "[fetching Challenge Bytes failed]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start

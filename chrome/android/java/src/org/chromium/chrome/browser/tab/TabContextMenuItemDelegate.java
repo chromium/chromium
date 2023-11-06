@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
+import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -191,11 +191,15 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
 
     @Override
     public void onOpenInOtherWindow(GURL url, Referrer referrer) {
-        TabDelegate tabDelegate = new TabDelegate(mTab.isIncognito());
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher =
+                new ChromeAsyncTabLauncher(mTab.isIncognito());
         LoadUrlParams loadUrlParams = new LoadUrlParams(url.getSpec());
         loadUrlParams.setReferrer(referrer);
         Activity activity = TabUtils.getActivity(mTab);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, activity, mTab.getParentId(),
+        chromeAsyncTabLauncher.launchTabInOtherWindow(
+                loadUrlParams,
+                activity,
+                mTab.getParentId(),
                 MultiWindowUtils.getAdjacentWindowActivity(activity));
     }
 
@@ -257,7 +261,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
                 || mEphemeralTabCoordinatorSupplier.get() == null) {
             return;
         }
-        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.isIncognito());
+        mEphemeralTabCoordinatorSupplier.get().requestOpenSheet(url, title, mTab.getProfile());
     }
 
     @Override
@@ -265,20 +269,23 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
         if (url == null || url.isEmpty()) return;
         assert url.isValid();
 
-        BookmarkModel bookmarkModel =
-                BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
-        bookmarkModel.finishLoadingBookmarkModel(() -> {
-            // Add to reading list.
-            BookmarkUtils.addToReadingList(
-                    url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
-            TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                    .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
+        Profile profile = mTab.getProfile().getOriginalProfile();
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
+        bookmarkModel.finishLoadingBookmarkModel(
+                () -> {
+                    // Add to reading list.
+                    BookmarkUtils.addToReadingList(
+                            url, title, mSnackbarManager.get(), bookmarkModel, mTab.getContext());
+                    TrackerFactory.getTrackerForProfile(profile)
+                            .notifyEvent(EventConstants.READ_LATER_CONTEXT_MENU_TAPPED);
 
-            // Add to offline pages.
-            RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
-                    .savePageLater(url.getSpec(), OfflinePageBridge.BOOKMARK_NAMESPACE,
-                            /*userRequested*/ true);
-        });
+                    // Add to offline pages.
+                    RequestCoordinatorBridge.getForProfile(profile)
+                            .savePageLater(
+                                    url.getSpec(),
+                                    OfflinePageBridge.BOOKMARK_NAMESPACE,
+                                    /*userRequested*/ true);
+                });
     }
 
     @Override

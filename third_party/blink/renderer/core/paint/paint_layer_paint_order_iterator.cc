@@ -40,7 +40,7 @@ PaintLayer* PaintLayerPaintOrderIterator::Next() {
     if (root_->StackingNode()) {
       const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
       if (index_ < neg_z_order_list.size())
-        return neg_z_order_list[index_++];
+        return neg_z_order_list[index_++].Get();
     }
 
     index_ = 0;
@@ -68,7 +68,7 @@ PaintLayer* PaintLayerPaintOrderIterator::Next() {
     if (root_->StackingNode()) {
       const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
       if (index_ < pos_z_order_list.size())
-        return pos_z_order_list[index_++];
+        return pos_z_order_list[index_++].Get();
     }
 
     index_ = 0;
@@ -83,7 +83,7 @@ PaintLayer* PaintLayerPaintOrderReverseIterator::Next() {
     if (root_->StackingNode()) {
       const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
       if (index_ >= 0)
-        return neg_z_order_list[index_--];
+        return neg_z_order_list[index_--].Get();
     }
 
     remaining_children_ &= ~kNegativeZOrderChildren;
@@ -111,7 +111,7 @@ PaintLayer* PaintLayerPaintOrderReverseIterator::Next() {
     if (root_->StackingNode()) {
       const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
       if (index_ >= 0)
-        return pos_z_order_list[index_--];
+        return pos_z_order_list[index_--].Get();
     }
 
     remaining_children_ &= ~kPositiveZOrderChildren;

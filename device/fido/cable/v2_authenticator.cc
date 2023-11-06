@@ -392,8 +392,9 @@ class TunnelTransport : public Transport {
 
     network_context_->CreateWebSocket(
         target_, {device::kCableWebSocketProtocol}, net::SiteForCookies(),
-        net::IsolationInfo(), /*additional_headers=*/{},
-        network::mojom::kBrowserProcessId, url::Origin::Create(target_),
+        /*has_storage_access=*/false, net::IsolationInfo(),
+        /*additional_headers=*/{}, network::mojom::kBrowserProcessId,
+        url::Origin::Create(target_),
         network::mojom::kWebSocketOptionBlockAllCookies,
         net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
         websocket_client_->BindNewHandshakeClientPipe(),

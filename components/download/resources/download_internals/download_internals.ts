@@ -8,7 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
-import {getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import {DownloadInternalsBrowserProxy, DownloadInternalsBrowserProxyImpl, ServiceEntry, ServiceEntryState, ServiceRequest, ServiceStatus} from './download_internals_browser_proxy.js';
 

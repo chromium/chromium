@@ -59,7 +59,7 @@ AppPtr MakeApp(const std::string& app_id,
   return app;
 }
 
-void AddApp(AppRegistryCache& cache,
+void AddApp(AppServiceProxy* proxy,
             const std::string& app_id,
             AppType app_type,
             const std::string& publisher_id,
@@ -69,11 +69,12 @@ void AddApp(AppRegistryCache& cache,
             bool should_notify_initialized,
             bool is_platform_app,
             WindowMode window_mode) {
+  CHECK(proxy);
   std::vector<AppPtr> deltas;
   deltas.push_back(MakeApp(app_id, app_type, publisher_id, readiness,
                            install_reason, install_source, is_platform_app,
                            window_mode));
-  cache.OnApps(std::move(deltas), app_type, should_notify_initialized);
+  proxy->OnApps(std::move(deltas), app_type, should_notify_initialized);
 }
 
 AppPlatformMetricsServiceTestBase::AppPlatformMetricsServiceTestBase() =
@@ -102,7 +103,7 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
 
   // Install a BuiltIn app before app_platform_metrics_service_ started to
   // verify the install AppKM.
-  AddApp(AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
+  AddApp(AppServiceProxyFactory::GetForProfile(profile()),
          /*app_id=*/"bu", AppType::kBuiltIn, "", Readiness::kReady,
          InstallReason::kSystem, InstallSource::kSystem,
          true /* should_notify_initialized */);
@@ -126,8 +127,7 @@ void AppPlatformMetricsServiceTestBase::InstallOneApp(
     bool is_platform_app,
     WindowMode window_mode) {
   auto* proxy = AppServiceProxyFactory::GetForProfile(profile());
-  AppRegistryCache& cache = proxy->AppRegistryCache();
-  AddApp(cache, app_id, app_type, publisher_id, readiness, InstallReason::kUser,
+  AddApp(proxy, app_id, app_type, publisher_id, readiness, InstallReason::kUser,
          install_source, false /* should_notify_initialized */, is_platform_app,
          window_mode);
 }

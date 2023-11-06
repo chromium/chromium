@@ -320,6 +320,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       override;
   void UpdatePageBrowsingContextGroup(
       const BrowsingContextGroupInfo& browsing_context_group_info) override;
+  void SetPageAttributionSupport(
+      network::mojom::AttributionSupport support) override;
 
   void DispatchPersistedPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -547,7 +549,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Called when some JS code has instructed the window associated to the main
   // frame to close, which will result in a request to the browser to close the
   // Widget associated to it.
-  void CloseWindowSoon();
+  void CloseWindow();
 
   // Controls whether pressing Tab key advances focus to links.
   bool TabsToLinks() const;
@@ -596,10 +598,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // empty document of a main frame.
   void DidAccessInitialMainDocument();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Sends window.setResizable() requests to the browser window.
   void SetResizable(bool resizable);
-#endif
 
   // TODO(crbug.com/1149992): This is called from the associated widget and this
   // code should eventually move out of WebView into somewhere else.

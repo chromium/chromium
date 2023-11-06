@@ -57,8 +57,8 @@ class CORE_EXPORT PropertyRegistration final
 
   const CSSSyntaxDefinition& Syntax() const { return syntax_; }
   bool Inherits() const { return inherits_; }
-  const CSSValue* Initial() const { return initial_; }
-  StyleRuleProperty* PropertyRule() const { return property_rule_; }
+  const CSSValue* Initial() const { return initial_.Get(); }
+  StyleRuleProperty* PropertyRule() const { return property_rule_.Get(); }
   const InterpolationTypes& GetInterpolationTypes() const {
     return interpolation_types_;
   }

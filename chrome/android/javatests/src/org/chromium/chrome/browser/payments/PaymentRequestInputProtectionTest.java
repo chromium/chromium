@@ -23,9 +23,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * A payment integration test for a merchant that requests payment via Bob Pay.
- */
+/** A payment integration test for a merchant that requests payment via Bob Pay. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -34,9 +32,7 @@ public class PaymentRequestInputProtectionTest {
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_bobpay_test.html");
 
-    /**
-     * Test that UI interactions are ignored before the input protector threshold.
-     */
+    /** Test that UI interactions are ignored before the input protector threshold. */
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -52,16 +48,19 @@ public class PaymentRequestInputProtectionTest {
         Assert.assertFalse(mPaymentRequestTestRule.getPaymentRequestUI().isAcceptingUserInput());
 
         // Interacting with the UI does nothing.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.button_primary)
-                    .performClick();
-            mPaymentRequestTestRule.getPaymentRequestUI()
-                    .getDialogForTest()
-                    .findViewById(R.id.close_button)
-                    .performClick();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.button_primary)
+                            .performClick();
+                    mPaymentRequestTestRule
+                            .getPaymentRequestUI()
+                            .getDialogForTest()
+                            .findViewById(R.id.close_button)
+                            .performClick();
+                });
         Assert.assertTrue(
                 mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest().isShowing());
 

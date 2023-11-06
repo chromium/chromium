@@ -58,7 +58,7 @@ TEST(ProcessDelegateData, AddDelegateDataAndRule) {
   std::wstring message(L"Delegate-Data-For-The-Target");
   runner.GetPolicy()->AddDelegateData(base::as_bytes(base::make_span(message)));
   // Rule doesn't matter - but exercises having all three target regions.
-  runner.AddFsRule(Semantics::kFilesAllowAny, L"c:\\windows\\*");
+  runner.AllowFileAccess(FileSemantics::kAllowAny, L"c:\\windows\\*");
   std::wstring command = L"Process_CheckData ";
   command.append(message);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(command.c_str()));

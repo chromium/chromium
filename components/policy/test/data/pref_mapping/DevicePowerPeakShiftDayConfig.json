@@ -1,0 +1,52 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DevicePowerPeakShiftDayConfig": {
+            "entries": [
+              {
+                "charge_start_time": {
+                  "hour": 20,
+                  "minute": 0
+                },
+                "day": "MONDAY",
+                "end_time": {
+                  "hour": 10,
+                  "minute": 15
+                },
+                "start_time": {
+                  "hour": 7,
+                  "minute": 30
+                }
+              },
+              {
+                "charge_start_time": {
+                  "hour": 22,
+                  "minute": 30
+                },
+                "day": "FRIDAY",
+                "end_time": {
+                  "hour": 9,
+                  "minute": 45
+                },
+                "start_time": {
+                  "hour": 4,
+                  "minute": 0
+                }
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "ash.power.peak_shift_day_config": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

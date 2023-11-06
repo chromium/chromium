@@ -18,7 +18,7 @@ found in the LICENSE file.
         android:layout_width="16dp"
         android:layout_height="match_parent" />
 
-    <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
+    <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"
         android:visibility="gone"
         android:layout_width="@dimen/min_touch_target_size"

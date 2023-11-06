@@ -15,7 +15,6 @@
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/notification_center/notification_center_view.h"
@@ -99,7 +98,8 @@ class UnifiedSystemTrayTest
     }
   }
 
-  bool IsQsRevampEnabled() { return std::get<0>(GetParam()); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
   bool IsVcControlsUiEnabled() { return std::get<1>(GetParam()); }
 
@@ -369,85 +369,12 @@ TEST_P(UnifiedSystemTrayTest, HorizontalImeAndTimeLabelAlignment) {
 
   gfx::Rect time_bounds = time_view()
                               ->time_view()
-                              ->horizontal_label_for_test()
+                              ->horizontal_time_label_for_test()
                               ->GetBoundsInScreen();
   gfx::Rect ime_bounds = ime_mode_view()->label()->GetBoundsInScreen();
 
   EXPECT_EQ(time_bounds.y(), ime_bounds.y());
   EXPECT_EQ(time_bounds.height(), ime_bounds.height());
-}
-
-TEST_P(UnifiedSystemTrayTest, FocusMessageCenter) {
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
-  auto* message_center_view =
-      tray->message_center_bubble()->notification_center_view();
-  auto* focus_manager = message_center_view->GetFocusManager();
-
-  AddNotification();
-  AddNotification();
-  message_center_view->SetVisible(true);
-
-  EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
-  EXPECT_FALSE(message_center_view->collapsed());
-
-  auto did_focus = tray->FocusMessageCenter(false);
-
-  EXPECT_TRUE(did_focus);
-
-  EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
-  EXPECT_FALSE(message_center_view->collapsed());
-  EXPECT_TRUE(message_center_view->Contains(focus_manager->GetFocusedView()));
-}
-
-TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_MessageCenterBubbleNotShown) {
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-  auto* message_center_bubble = tray->message_center_bubble();
-
-  EXPECT_FALSE(message_center_bubble->IsMessageCenterVisible());
-
-  auto did_focus = tray->FocusMessageCenter(false);
-
-  EXPECT_FALSE(did_focus);
-}
-
-TEST_P(UnifiedSystemTrayTest, FocusMessageCenter_VoxEnabled) {
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
-  auto* message_center_bubble = tray->message_center_bubble();
-  auto* message_center_view = message_center_bubble->notification_center_view();
-
-  AddNotification();
-  AddNotification();
-  message_center_view->SetVisible(true);
-  Shell::Get()->accessibility_controller()->spoken_feedback().SetEnabled(true);
-
-  EXPECT_FALSE(message_center_bubble->GetBubbleWidget()->IsActive());
-
-  auto did_focus = tray->FocusMessageCenter(false);
-
-  EXPECT_TRUE(did_focus);
-
-  auto* focus_manager = tray->GetFocusManager();
-
-  EXPECT_TRUE(tray->IsMessageCenterBubbleShown());
-  EXPECT_TRUE(message_center_bubble->GetBubbleWidget()->IsActive());
-  EXPECT_FALSE(message_center_view->Contains(focus_manager->GetFocusedView()));
 }
 
 TEST_P(UnifiedSystemTrayTest, FocusQuickSettings) {
@@ -631,44 +558,6 @@ TEST_P(UnifiedSystemTrayTest, CalendarAcceleratorFocusesDateCell) {
   EXPECT_TRUE(focus_manager->GetFocusedView());
   EXPECT_STREQ(focus_manager->GetFocusedView()->GetClassName(),
                "CalendarDateCellView");
-}
-
-// Tests that CalendarView switches back to Quick Settings when screen size is
-// limited and the bubble requires a collapsed state.
-TEST_P(UnifiedSystemTrayTest, CalendarGoesToMainView) {
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
-  auto* tray = GetPrimaryUnifiedSystemTray();
-  tray->ShowBubble();
-
-  // Set a limited screen size.
-  UpdateDisplay("800x600");
-
-  // Generate a notification, close and open the bubble so we can show the
-  // collapsed message center.
-  AddNotification();
-  tray->CloseBubble();
-  tray->ShowBubble();
-
-  // Ensure message center is collapsed when Calendar is not being shown.
-  auto* message_center_view =
-      tray->message_center_bubble()->notification_center_view();
-  EXPECT_FALSE(tray->IsShowingCalendarView());
-  EXPECT_TRUE(message_center_view->collapsed());
-
-  // Ensure message center is collapsed when the Calendar is being shown.
-  ShellTestApi().PressAccelerator(
-      ui::Accelerator(ui::VKEY_C, ui::EF_COMMAND_DOWN));
-  EXPECT_TRUE(tray->IsShowingCalendarView());
-  EXPECT_TRUE(message_center_view->collapsed());
-
-  // Test that Calendar is no longer shown after expanding the collapsed
-  // message center.
-  tray->message_center_bubble()->ExpandMessageCenter();
-  EXPECT_FALSE(message_center_view->collapsed());
-  EXPECT_FALSE(tray->IsShowingCalendarView());
 }
 
 // Tests that using functional keys to change brightness/volume when the
@@ -1051,20 +940,6 @@ TEST_P(UnifiedSystemTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   EXPECT_FALSE(tray->privacy_indicators_view());
 }
 
-// Tests that no camera or microphone views are present with VideoConference
-// enabled.
-TEST_P(UnifiedSystemTrayTest, NoCamOrMicViewWhenVcEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kVideoConference},
-      /*disabled_features=*/{});
-
-  auto tray = std::make_unique<UnifiedSystemTray>(GetPrimaryShelf());
-
-  EXPECT_FALSE(tray->mic_view());
-  EXPECT_FALSE(tray->camera_view());
-}
-
 // Tests that there's no bubble in the kiosk mode.
 TEST_P(UnifiedSystemTrayTest, NoBubbleAndNoDetailedViewInKioskMode) {
   SimulateKioskMode(user_manager::USER_TYPE_KIOSK_APP);
@@ -1107,7 +982,8 @@ class UnifiedSystemTrayPrivacyIndicatorsTest
     AshTestBase::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

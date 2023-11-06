@@ -28,8 +28,12 @@ extern const char kUnifiedConsentMigrationState[];
 //     NewAnonymizedDataCollectionConsentHelper.
 extern const char kUrlKeyedAnonymizedDataCollectionEnabled[];
 
+// TODO(http://crbug.com/1493415) Tightly couple these preferences with MSBB
 // Whether the user has enabled sharing page content.
 extern const char kPageContentCollectionEnabled[];
+
+// Whether the user has enabled Autofill assistance.
+extern const char kAutofillAssistanceEnabled[];
 
 }  // namespace unified_consent::prefs
 

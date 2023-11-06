@@ -56,7 +56,7 @@ template <typename ObjT, typename Method, typename Tuple>
 inline void DispatchToMethod(const ObjT& obj,
                              Method method,
                              Tuple&& args) {
-  constexpr size_t size = std::tuple_size<std::decay_t<Tuple>>::value;
+  constexpr size_t size = std::tuple_size_v<std::decay_t<Tuple>>;
   DispatchToMethodImpl(obj, method, std::forward<Tuple>(args),
                        std::make_index_sequence<size>());
 }
@@ -72,7 +72,7 @@ inline void DispatchToFunctionImpl(Function function,
 
 template <typename Function, typename Tuple>
 inline void DispatchToFunction(Function function, Tuple&& args) {
-  constexpr size_t size = std::tuple_size<std::decay_t<Tuple>>::value;
+  constexpr size_t size = std::tuple_size_v<std::decay_t<Tuple>>;
   DispatchToFunctionImpl(function, std::forward<Tuple>(args),
                          std::make_index_sequence<size>());
 }
@@ -100,8 +100,8 @@ inline void DispatchToMethod(const ObjT& obj,
                              Method method,
                              InTuple&& in,
                              OutTuple* out) {
-  constexpr size_t in_size = std::tuple_size<std::decay_t<InTuple>>::value;
-  constexpr size_t out_size = std::tuple_size<OutTuple>::value;
+  constexpr size_t in_size = std::tuple_size_v<std::decay_t<InTuple>>;
+  constexpr size_t out_size = std::tuple_size_v<OutTuple>;
   DispatchToMethodImpl(obj, method, std::forward<InTuple>(in), out,
                        std::make_index_sequence<in_size>(),
                        std::make_index_sequence<out_size>());

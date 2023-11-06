@@ -47,12 +47,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Integration tests for the Tab Groups feature on Android.
- */
+/** Integration tests for the Tab Groups feature on Android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_STARTUP_PROMOS
+})
 @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
 @Batch(Batch.PER_CLASS)
 public class TabGroupsTest {
@@ -64,8 +64,7 @@ public class TabGroupsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Mock
-    private TabModelObserver mTabModelFilterObserver;
+    @Mock private TabModelObserver mTabModelFilterObserver;
 
     private TabModel mTabModel;
     private TabGroupModelFilter mTabGroupModelFilter;
@@ -74,32 +73,44 @@ public class TabGroupsTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTabModel = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        mTabGroupModelFilter = (TabGroupModelFilter) sActivityTestRule.getActivity()
-                                       .getTabModelSelector()
-                                       .getTabModelFilterProvider()
-                                       .getTabModelFilter(false);
+        mTabGroupModelFilter =
+                (TabGroupModelFilter)
+                        sActivityTestRule
+                                .getActivity()
+                                .getTabModelSelector()
+                                .getTabModelFilterProvider()
+                                .getTabModelFilter(false);
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabGroupModelFilter.addObserver(mTabModelFilterObserver); });
+                () -> {
+                    mTabGroupModelFilter.addObserver(mTabModelFilterObserver);
+                });
     }
 
     @After
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mTabGroupModelFilter.removeObserver(mTabModelFilterObserver); });
+                () -> {
+                    mTabGroupModelFilter.removeObserver(mTabModelFilterObserver);
+                });
     }
 
     private void prepareTabs(List<Integer> tabsPerGroup) {
         for (int tabsToCreate : tabsPerGroup) {
             List<Tab> tabs = new ArrayList<>();
             for (int i = 0; i < tabsToCreate; i++) {
-                Tab tab = ChromeTabUtils.fullyLoadUrlInNewTab(
-                        InstrumentationRegistry.getInstrumentation(),
-                        sActivityTestRule.getActivity(), "about:blank", /*incognito=*/false);
+                Tab tab =
+                        ChromeTabUtils.fullyLoadUrlInNewTab(
+                                InstrumentationRegistry.getInstrumentation(),
+                                sActivityTestRule.getActivity(),
+                                "about:blank",
+                                /* incognito= */ false);
                 tabs.add(tab);
             }
-            TestThreadUtils.runOnUiThreadBlocking(() -> {
-                mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tabs.get(0), false, false);
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                                tabs, tabs.get(0), false, false);
+                    });
         }
     }
 
@@ -113,7 +124,7 @@ public class TabGroupsTest {
         // Tab 1, 2, 3
         // Tab (tab added here)
         // Tab 4
-        Tab tab = addTabAt(/*index=*/3, /*parent=*/null);
+        Tab tab = addTabAt(/* index= */ 3, /* parent= */ null);
         tabs.add(4, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
@@ -128,7 +139,7 @@ public class TabGroupsTest {
         // Tab 0
         // Tab (tab added here), 1, 2, 3
         // Tab 4
-        Tab tab = addTabAt(/*index=*/0, /*parent=*/tabs.get(1));
+        Tab tab = addTabAt(/* index= */ 0, /* parent= */ tabs.get(1));
         tabs.add(1, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
@@ -143,7 +154,7 @@ public class TabGroupsTest {
         // Tab 0
         // Tab 1, 2, 3, (tab added here)
         // Tab 4
-        Tab tab = addTabAt(/*index=*/mTabModel.getCount(), /*parent=*/tabs.get(1));
+        Tab tab = addTabAt(/* index= */ mTabModel.getCount(), /* parent= */ tabs.get(1));
         tabs.add(4, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
@@ -158,7 +169,7 @@ public class TabGroupsTest {
         // Tab 0
         // Tab 1, (tab added here), 2, 3
         // Tab 4
-        Tab tab = addTabAt(/*index=*/2, /*parent=*/tabs.get(1));
+        Tab tab = addTabAt(/* index= */ 2, /* parent= */ tabs.get(1));
         tabs.add(2, tab);
         assertEquals(tabs, getCurrentTabs());
         assertOrderValid(true);
@@ -232,10 +243,11 @@ public class TabGroupsTest {
         final List<Tab> tabs = getCurrentTabs();
         assertEquals(5, tabs.size());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
-            mTabModel.closeAllTabs();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.setIndex(2, TabSelectionType.FROM_USER, false);
+                    mTabModel.closeAllTabs();
+                });
 
         List<Tab> noTabs = getCurrentTabs();
         assertTrue(noTabs.isEmpty());
@@ -245,16 +257,19 @@ public class TabGroupsTest {
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
         InOrder calledInOrder = inOrder(mTabModelFilterObserver);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (Tab tab : tabs) {
-                mTabModel.cancelTabClosure(tab.getId());
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (Tab tab : tabs) {
+                        mTabModel.cancelTabClosure(tab.getId());
+                    }
+                });
         // Ensure didSelectTab is called and the call occurs after the tab closure is actually
         // undone.
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(0)));
-        calledInOrder.verify(mTabModelFilterObserver)
-                .didSelectTab(eq(tabs.get(0)), eq(TabSelectionType.FROM_UNDO), /*lastId=*/eq(-1));
+        calledInOrder
+                .verify(mTabModelFilterObserver)
+                .didSelectTab(
+                        eq(tabs.get(0)), eq(TabSelectionType.FROM_UNDO), /* lastId= */ eq(-1));
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(1)));
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(2)));
         calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(3)));
@@ -270,13 +285,19 @@ public class TabGroupsTest {
     }
 
     private void assertOrderValid(boolean expectedState) {
-        boolean isOrderValid = TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> { return mTabGroupModelFilter.isOrderValid(); });
+        boolean isOrderValid =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return mTabGroupModelFilter.isOrderValid();
+                        });
         assertEquals(expectedState, isOrderValid);
     }
 
     private void moveTab(Tab tab, int index) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mTabModel.moveTab(tab.getId(), index); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabModel.moveTab(tab.getId(), index);
+                });
     }
 
     /**
@@ -284,34 +305,43 @@ public class TabGroupsTest {
      * index used can be directly specified.
      */
     private Tab addTabAt(int index, Tab parent) {
-        Tab tab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            @TabLaunchType
-            int type =
-                    parent != null ? TabLaunchType.FROM_TAB_GROUP_UI : TabLaunchType.FROM_CHROME_UI;
-            TabCreator tabCreator =
-                    sActivityTestRule.getActivity().getTabCreator(/*incognito=*/false);
-            return tabCreator.createNewTab(new LoadUrlParams("about:blank"), type, parent, index);
-        });
+        Tab tab =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            @TabLaunchType
+                            int type =
+                                    parent != null
+                                            ? TabLaunchType.FROM_TAB_GROUP_UI
+                                            : TabLaunchType.FROM_CHROME_UI;
+                            TabCreator tabCreator =
+                                    sActivityTestRule
+                                            .getActivity()
+                                            .getTabCreator(/* incognito= */ false);
+                            return tabCreator.createNewTab(
+                                    new LoadUrlParams("about:blank"), type, parent, index);
+                        });
         return tab;
     }
 
     private List<Tab> getCurrentTabs() {
         List<Tab> tabs = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < mTabModel.getCount(); i++) {
-                tabs.add(mTabModel.getTabAt(i));
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < mTabModel.getCount(); i++) {
+                        tabs.add(mTabModel.getTabAt(i));
+                    }
+                });
         return tabs;
     }
 
     private List<Integer> getCurrentTabIds() {
         List<Integer> tabIds = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            for (int i = 0; i < mTabModel.getCount(); i++) {
-                tabIds.add(mTabModel.getTabAt(i).getId());
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    for (int i = 0; i < mTabModel.getCount(); i++) {
+                        tabIds.add(mTabModel.getTabAt(i).getId());
+                    }
+                });
         return tabIds;
     }
 }

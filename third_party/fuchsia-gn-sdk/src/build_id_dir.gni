@@ -72,7 +72,7 @@ template("build_id_dir") {
                              "testonly",
                              "visibility",
                            ])
-    script = "${fuchsia_sdk}/build/populate_build_id_dir.py"
+    script = "//third_party/fuchsia-gn-sdk/src/populate_build_id_dir.py"
     inputs = [ _all_ids_txt_path ]
     _stamp = "$target_gen_dir/$target_name.stamp"
     outputs = [

@@ -1,0 +1,31 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "browser_switcher.parsing_mode": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "BrowserSwitcherParsingMode": 1
+        },
+        "prefs": {
+          "browser_switcher.parsing_mode": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

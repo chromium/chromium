@@ -61,7 +61,7 @@ TEST_F(ActivityLoggerTest, DontCrashOnUnconvertedValues) {
       context, nullptr, extension.get(), kContextType, extension.get(),
       kContextType));
 
-  std::vector<v8::Local<v8::Value>> args = {v8::Undefined(isolate())};
+  v8::LocalVector<v8::Value> args(isolate(), {v8::Undefined(isolate())});
 
   std::unique_ptr<TestIPCMessageSender> ipc_sender =
       std::make_unique<testing::StrictMock<TestIPCMessageSender>>();

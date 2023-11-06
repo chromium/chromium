@@ -36,6 +36,12 @@ const char kChromeLabsActivationParameterName[] =
 const base::FeatureParam<int> kChromeLabsActivationPercentage{
     &kChromeLabs, kChromeLabsActivationParameterName, 99};
 
+// When enabled, clicks outside the omnibox and its popup will close an open
+// omnibox popup.
+BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,
+             "CloseOmniboxPopupOnInactiveAreaClick",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Create new Extensions app menu option (removing "More Tools -> Extensions")
 // with submenu to manage extensions and visit chrome web store.
 BASE_FEATURE(kExtensionsMenuInAppMenu,
@@ -195,7 +201,12 @@ BASE_FEATURE(kTabGroupsSave,
 // Enables configuring tab hover card image previews in the settings.
 BASE_FEATURE(kTabHoverCardImageSettings,
              "TabHoverCardImageSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_MAC)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
@@ -300,11 +311,11 @@ BASE_FEATURE(kTopChromeWebUIUsesSpareRenderer,
 // button, menu item and confirmation dialog.
 BASE_FEATURE(kUpdateTextOptions,
              "UpdateTextOptions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Used to present different flavors of update strings in browser app menu
 // button.
 const base::FeatureParam<int> kUpdateTextOptionNumber{
-    &kUpdateTextOptions, "UpdateTextOptionNumber", 1};
+    &kUpdateTextOptions, "UpdateTextOptionNumber", 2};
 #endif
 
 // This enables enables persistence of a WebContents in a 1-to-1 association

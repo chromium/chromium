@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RULE_VIEW_TRANSITIONS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
 namespace blink {
@@ -18,14 +17,19 @@ class CORE_EXPORT StyleRuleViewTransitions : public StyleRuleBase {
   ~StyleRuleViewTransitions();
 
   const CSSValue* GetNavigationTrigger() const;
+  void SetNavigationTrigger(const CSSValue* new_value);
 
   StyleRuleViewTransitions* Copy() const {
     return MakeGarbageCollected<StyleRuleViewTransitions>(*this);
   }
 
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_.Get(); }
+
   void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
+  Member<const CascadeLayer> layer_;
   Member<const CSSValue> navigation_trigger_;
 };
 

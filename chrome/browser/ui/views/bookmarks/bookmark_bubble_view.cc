@@ -394,9 +394,9 @@ void BookmarkBubbleView::ShowBubble(
     product_info = shopping_service->GetAvailableProductInfoForUrl(url);
     auto* tab_helper =
         commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
-    CHECK(tab_helper);
-
-    product_image = tab_helper->GetProductImage();
+    if (tab_helper) {
+      product_image = tab_helper->GetProductImage();
+    }
   }
 
   auto dialog_model_builder =

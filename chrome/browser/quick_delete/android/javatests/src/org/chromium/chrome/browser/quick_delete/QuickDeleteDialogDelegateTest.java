@@ -53,9 +53,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for quick delete dialog view.
- */
+/** Tests for quick delete dialog view. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
@@ -64,8 +62,7 @@ public class QuickDeleteDialogDelegateTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
@@ -83,10 +80,14 @@ public class QuickDeleteDialogDelegateTest {
         CallbackHelper callbackHelper = new CallbackHelper();
 
         // Clear history.
-        runOnUiThreadBlocking(() -> {
-            BrowsingDataBridge.getInstance().clearBrowsingData(callbackHelper::notifyCalled,
-                    new int[] {BrowsingDataType.HISTORY}, TimePeriod.ALL_TIME);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    BrowsingDataBridge.getInstance()
+                            .clearBrowsingData(
+                                    callbackHelper::notifyCalled,
+                                    new int[] {BrowsingDataType.HISTORY},
+                                    TimePeriod.ALL_TIME);
+                });
 
         callbackHelper.waitForCallback(0);
 
@@ -95,17 +96,20 @@ public class QuickDeleteDialogDelegateTest {
 
     private void openQuickDeleteDialog() {
         // Open 3 dot menu.
-        runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.showAppMenu(mActivityTestRule.getAppMenuCoordinator(), null, false);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.showAppMenu(
+                            mActivityTestRule.getAppMenuCoordinator(), null, false);
+                });
         onViewWaiting(withId(R.id.app_menu_list))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
         // Click on quick delete menu item.
-        runOnUiThreadBlocking(() -> {
-            AppMenuTestSupport.callOnItemClick(
-                    mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    AppMenuTestSupport.callOnItemClick(
+                            mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
+                });
     }
 
     @Test
@@ -125,8 +129,13 @@ public class QuickDeleteDialogDelegateTest {
         onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
-                       R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getResources()
+                                        .getQuantityString(
+                                                R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
                 .check(matches(isDisplayed()));
@@ -135,10 +144,12 @@ public class QuickDeleteDialogDelegateTest {
 
         // TODO(crbug.com/1412087): Get the full dialog for render test instead of just the custom
         // view.
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog-signed-in-and-sync");
     }
 
@@ -158,18 +169,25 @@ public class QuickDeleteDialogDelegateTest {
         onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
                 .check(matches(not(isDisplayed())));
-        onView(withText(mActivityTestRule.getActivity().getResources().getQuantityString(
-                       R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getResources()
+                                        .getQuantityString(
+                                                R.plurals.quick_delete_dialog_tabs_closed_text, 1)))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.search_history_disambiguation)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_more_options)).check(matches(isDisplayed()));
 
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog-signed-in");
     }
 
@@ -178,8 +196,10 @@ public class QuickDeleteDialogDelegateTest {
     @DisabledTest(message = "crbug.com/1459604")
     @Feature({"RenderTest"})
     public void testQuickDeleteDialogView_WithoutTabsOrHistory() throws IOException {
-        String timePeriodString = mActivityTestRule.getActivity().getString(
-                R.string.quick_delete_time_period_15_minutes);
+        String timePeriodString =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.quick_delete_time_period_15_minutes);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().getCurrentTabModel().closeAllTabs(false));
 
@@ -187,22 +207,34 @@ public class QuickDeleteDialogDelegateTest {
 
         onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.quick_delete_dialog_zero_browsing_history_domain_count_text,
-                       timePeriodString)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string
+                                                        .quick_delete_dialog_zero_browsing_history_domain_count_text,
+                                                timePeriodString)))
                 .check(matches(isDisplayed()));
-        onView(withText(mActivityTestRule.getActivity().getString(
-                       R.string.quick_delete_dialog_zero_tabs_closed_text, timePeriodString)))
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(
+                                                R.string.quick_delete_dialog_zero_tabs_closed_text,
+                                                timePeriodString)))
                 .check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_cookies_cache_and_other_site_data_text))
                 .check(matches(isDisplayed()));
         onView(withId(R.id.search_history_disambiguation)).check(matches(not(isDisplayed())));
         onView(withId(R.id.quick_delete_more_options)).check(matches(isDisplayed()));
 
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         mRenderTestRule.render(dialogView, "quick_delete_dialog-no-tabs-or-history");
     }
 
@@ -212,10 +244,12 @@ public class QuickDeleteDialogDelegateTest {
     public void testQuickDeleteDialogDefaultSpinnerView() throws IOException {
         openQuickDeleteDialog();
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
         mRenderTestRule.render(spinnerView, "quick_delete_dialog_spinner_default");
     }
@@ -225,29 +259,43 @@ public class QuickDeleteDialogDelegateTest {
     public void testQuickDeleteDialogSpinnerViewContents() throws IOException {
         openQuickDeleteDialog();
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         Spinner spinnerView = dialogView.findViewById(R.id.quick_delete_spinner);
         assertEquals(6, spinnerView.getAdapter().getCount());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_15_minutes),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_15_minutes),
                 spinnerView.getItemAtPosition(0).toString());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_hour),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_hour),
                 spinnerView.getItemAtPosition(1).toString());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_24_hours),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_24_hours),
                 spinnerView.getItemAtPosition(2).toString());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_7_days),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_7_days),
                 spinnerView.getItemAtPosition(3).toString());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_four_weeks),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_four_weeks),
                 spinnerView.getItemAtPosition(4).toString());
-        assertEquals(mActivityTestRule.getActivity().getString(
-                             R.string.clear_browsing_data_tab_period_everything),
+        assertEquals(
+                mActivityTestRule
+                        .getActivity()
+                        .getString(R.string.clear_browsing_data_tab_period_everything),
                 spinnerView.getItemAtPosition(5).toString());
     }
 
@@ -257,10 +305,12 @@ public class QuickDeleteDialogDelegateTest {
     public void testQuickDeleteDialogMoreOptionsButton() throws IOException {
         openQuickDeleteDialog();
         onView(withId(R.id.quick_delete_more_options)).check(matches(isDisplayed()));
-        View dialogView = mActivityTestRule.getActivity()
-                                  .getModalDialogManager()
-                                  .getCurrentDialogForTest()
-                                  .get(ModalDialogProperties.CUSTOM_VIEW);
+        View dialogView =
+                mActivityTestRule
+                        .getActivity()
+                        .getModalDialogManager()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CUSTOM_VIEW);
         ButtonCompat moreOptionsView = dialogView.findViewById(R.id.quick_delete_more_options);
         mRenderTestRule.render(moreOptionsView, "quick_delete_dialog_more-options");
     }

@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "kerberos.domain_autocomplete": {
+            "default_value": "",
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "KerberosDomainAutocomplete": "kerberos-domain.com"
+        },
+        "prefs": {
+          "kerberos.domain_autocomplete": {
+            "location": "local_state",
+            "value": "kerberos-domain.com"
+          }
+        }
+      }
+    ]
+  }
+]

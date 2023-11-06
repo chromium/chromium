@@ -1,1 +1,3 @@
-mixins: "//printing/COMMON_METADATA"
+monorail {
+  component: "Internals>Printing"
+}

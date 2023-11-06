@@ -94,7 +94,7 @@ class Vector2dF;
 }  // namespace gfx
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 }
 
 namespace content {
@@ -157,6 +157,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   static std::unique_ptr<RenderWidgetHostImpl> Create(
       FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
+      viz::FrameSinkId frame_sink_id,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
       bool hidden,
@@ -194,6 +195,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // Use RenderWidgetHostImpl::From(rwh) to downcast a RenderWidgetHost to a
   // RenderWidgetHostImpl.
   static RenderWidgetHostImpl* From(RenderWidgetHost* rwh);
+
+  // Generates the FrameSinkId to use for a RenderWidgetHost allocated with
+  // `group` and `routing_id`.
+  static viz::FrameSinkId DefaultFrameSinkId(const SiteInstanceGroup& group,
+                                             int routing_id);
 
   // TODO(crbug.com/1179502): FrameTree and FrameTreeNode will not be const as
   // with prerenderer activation the page needs to move between FrameTreeNodes
@@ -914,6 +920,11 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                      const gfx::Rect& drag_obj_rect_in_dip,
                      blink::mojom::DragEventSourceInfoPtr event_info);
 
+  // Notifies the widget that the viz::FrameSinkId assigned to it is now bound
+  // to its renderer side widget. If the renderer issued a FrameSink request
+  // before this handoff, the request is buffered and will be issued here.
+  void SetViewIsFrameSinkIdOwner(bool is_owner);
+
  protected:
   // |routing_id| must not be MSG_ROUTING_NONE.
   // If this object outlives |delegate|, DetachDelegate() must be called when
@@ -923,6 +934,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   RenderWidgetHostImpl(
       FrameTree* frame_tree,
       bool self_owned,
+      viz::FrameSinkId frame_sink_id,
       RenderWidgetHostDelegate* delegate,
       base::SafeRef<SiteInstanceGroup> site_instance_group,
       int32_t routing_id,
@@ -980,6 +992,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
                            ShorterDelayInputEventAckTimeout);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            AddAndRemoveInputEventObserver);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
+                           ScopedObservationWithInputEventObserver);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
                            AddAndRemoveImeInputEventObserver);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostTest,
@@ -1174,6 +1188,10 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // clears the counter and is called after navigations or timeouts.
   void AddPendingUserActivation(const blink::WebInputEvent& event);
   void ClearPendingUserActivation();
+
+  // Dispatch any buffered FrameSink requests from the renderer if the widget
+  // has a view and is the owner for the FrameSinkId assigned to it.
+  void MaybeDispatchBufferedFrameSinkRequest();
 
   // An expiry time for resetting the pending_user_activation_timer_.
   static const base::TimeDelta kActivationNotificationExpireTime;
@@ -1509,6 +1527,16 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
+
+  // Same-process cross-RenderFrameHost navigations may reuse the compositor
+  // from the previous RenderFrameHost. While the speculative RenderWidgetHost
+  // is created early, ownership of the FrameSinkId is transferred at commit.
+  // This bit is used to track which view owns the FrameSinkId.
+  //
+  // The renderer side WebFrameWidget's compositor can create a FrameSink and
+  // produce frames associated with `frame_sink_id_` only when it owns that
+  // FrameSinkId.
+  bool view_is_frame_sink_id_owner_{false};
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };

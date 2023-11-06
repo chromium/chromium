@@ -29,9 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Image fetching mechanism for Omnibox and Suggestions.
- */
+/** Image fetching mechanism for Omnibox and Suggestions. */
 public class OmniboxImageSupplier {
     private static final int MAX_IMAGE_CACHE_SIZE = 500 * ConversionUtils.BYTES_PER_KILOBYTE;
 
@@ -47,22 +45,26 @@ public class OmniboxImageSupplier {
      * @param context An Android context.
      */
     public OmniboxImageSupplier(@NonNull Context context) {
-        mDesiredFaviconWidthPx = context.getResources().getDimensionPixelSize(
-                R.dimen.omnibox_suggestion_favicon_size);
+        mDesiredFaviconWidthPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.omnibox_suggestion_favicon_size);
 
         int fallbackIconSize =
                 context.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_size);
         int fallbackIconColor = context.getColor(R.color.default_favicon_background_color);
         int fallbackIconTextSize =
                 context.getResources().getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
-        mIconGenerator = new RoundedIconGenerator(fallbackIconSize, fallbackIconSize,
-                fallbackIconSize / 2, fallbackIconColor, fallbackIconTextSize);
+        mIconGenerator =
+                new RoundedIconGenerator(
+                        fallbackIconSize,
+                        fallbackIconSize,
+                        fallbackIconSize / 2,
+                        fallbackIconColor,
+                        fallbackIconTextSize);
         mPendingImageRequests = new HashMap<>();
     }
 
-    /**
-     * Release any resources and deregister any callbacks created by this class.
-     */
+    /** Release any resources and deregister any callbacks created by this class. */
     public void destroy() {
         if (mIconBridge != null) {
             mIconBridge.destroy();
@@ -94,9 +96,12 @@ public class OmniboxImageSupplier {
             mImageFetcher.destroy();
         }
 
-        mImageFetcher = ImageFetcherFactory.createImageFetcher(ImageFetcherConfig.IN_MEMORY_ONLY,
-                profile.getProfileKey(), GlobalDiscardableReferencePool.getReferencePool(),
-                MAX_IMAGE_CACHE_SIZE);
+        mImageFetcher =
+                ImageFetcherFactory.createImageFetcher(
+                        ImageFetcherConfig.IN_MEMORY_ONLY,
+                        profile.getProfileKey(),
+                        GlobalDiscardableReferencePool.getReferencePool(),
+                        MAX_IMAGE_CACHE_SIZE);
     }
 
     /**
@@ -115,7 +120,10 @@ public class OmniboxImageSupplier {
 
         // Note: LargeIconBridge will serve <null> right away if a fetch was previously made and was
         // unsuccessful.
-        mIconBridge.getLargeIconForUrl(url, mDesiredFaviconWidthPx / 2, mDesiredFaviconWidthPx,
+        mIconBridge.getLargeIconForUrl(
+                url,
+                mDesiredFaviconWidthPx / 2,
+                mDesiredFaviconWidthPx,
                 (icon, fallbackColor, isFallbackColorDefault, iconType) -> {
                     callback.onResult(icon);
                 });
@@ -128,15 +136,15 @@ public class OmniboxImageSupplier {
      * @param callback The callback that will be invoked with the result.
      */
     public void generateFavicon(@NonNull GURL url, @NonNull Callback<Bitmap> callback) {
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            Bitmap icon = mIconGenerator.generateIconForUrl(url);
-            callback.onResult(icon);
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    Bitmap icon = mIconGenerator.generateIconForUrl(url);
+                    callback.onResult(icon);
+                });
     }
 
-    /**
-     * Clear all cached entries.
-     */
+    /** Clear all cached entries. */
     public void resetCache() {
         if (mIconBridge != null) mIconBridge.createCache(MAX_IMAGE_CACHE_SIZE);
         if (mImageFetcher != null) mImageFetcher.clear();
@@ -144,9 +152,8 @@ public class OmniboxImageSupplier {
     }
 
     /**
-     * Asynchronously retrieve image for supplied GURL.
-     * Calls to this method result with callback being invoked if and only if the fetch was executed
-     * and was successful.
+     * Asynchronously retrieve image for supplied GURL. Calls to this method result with callback
+     * being invoked if and only if the fetch was executed and was successful.
      *
      * @param url The url to retrieve a favicon for.
      * @param callback The callback that will be invoked with the result.
@@ -170,19 +177,22 @@ public class OmniboxImageSupplier {
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(url, ImageFetcher.OMNIBOX_UMA_CLIENT_NAME);
 
-        mImageFetcher.fetchImage(params, bitmap -> {
-            final var pendingCallbacks = mPendingImageRequests.remove(url);
-            // Callbacks may be erased when Omnibox interaction is over.
-            if (bitmap == null || pendingCallbacks == null) return;
+        mImageFetcher.fetchImage(
+                params,
+                bitmap -> {
+                    final var pendingCallbacks = mPendingImageRequests.remove(url);
+                    // Callbacks may be erased when Omnibox interaction is over.
+                    if (bitmap == null || pendingCallbacks == null) return;
 
-            for (int i = 0; i < pendingCallbacks.size(); i++) {
-                pendingCallbacks.get(i).onResult(bitmap);
-            }
-        });
+                    for (int i = 0; i < pendingCallbacks.size(); i++) {
+                        pendingCallbacks.get(i).onResult(bitmap);
+                    }
+                });
     }
 
     /**
      * Overrides RoundedIconGenerator for testing.
+     *
      * @param generator RoundedIconGenerator to use
      */
     void setRoundedIconGeneratorForTesting(@NonNull RoundedIconGenerator generator) {
@@ -191,6 +201,7 @@ public class OmniboxImageSupplier {
 
     /**
      * Overrides ImageFetcher instance for testing.
+     *
      * @param generator ImageFetcher instance to use
      */
     void setImageFetcherForTesting(@Nullable ImageFetcher fetcher) {

@@ -2408,7 +2408,7 @@
     {
       "id": 309,
       "cr_bugs": [993233],
-      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs.",
+      "description": "Don't use video processor scaling on non-Intel, non-NVIDIA GPUs and older AMD GPUs",
       "os": {
         "type" : "win"
       },
@@ -2418,6 +2418,13 @@
         },
         {
           "vendor_id": "0x10de"
+        },
+        {
+          "vendor_id": "0x1002",
+          "driver_version": {
+            "op": ">=",
+            "value": "31.0.14001.45012"
+          }
         }
       ],
       "features": [
@@ -3784,6 +3791,7 @@
         "type": "win"
       },
       "vendor_id": "0x8086",
+      "multi_gpu_category": "any",
       "features": [
         "avoid_consecutive_keyframes_for_vp9"
       ]
@@ -3803,6 +3811,36 @@
       },
       "features": [
         "disable_accelerated_hevc_decode"
+      ]
+    },
+    {
+      "id": 421,
+      "cr_bugs": [1494147],
+      "description": "Accelerated video decoding leads to lock up in ChromeOS Zork (AMD Radeon Vega 3 GPUs).",
+      "os": {
+        "type" : "chromeos"
+      },
+      "vendor_id": "0x1002",
+      "device_id": ["0x15d8", "0x15dd"],
+      "features": [
+        "disable_accelerated_h264_decode",
+        "disable_accelerated_h264_encode",
+        "disable_accelerated_vp9_decode",
+        "disable_accelerated_vp9_profile2_decode",
+        "disable_accelerated_hevc_decode"
+      ]
+    },
+    {
+      "id": 422,
+      "description": "Disable video acceleration on some Intel 8LP GPUs on ChromeOS [b/293173688]",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x22b1"],
+      "features": [
+        "disable_accelerated_vp8_encode",
+        "disable_accelerated_h264_encode"
       ]
     }
   ]

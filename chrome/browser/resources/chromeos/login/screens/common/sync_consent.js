@@ -84,6 +84,14 @@ const SyncConsentScreenElementBase = mixinBehaviors(
 SyncConsentScreenElementBase.$;
 
 /**
+ * Data that is passed to the screen during onBeforeShow.
+ * @typedef {{
+ *   isLacrosEnabled: boolean,
+ * }}
+ */
+let SyncConsentScreenData;
+
+/**
  * @polymer
  */
 class SyncConsentScreen extends SyncConsentScreenElementBase {
@@ -173,7 +181,7 @@ class SyncConsentScreen extends SyncConsentScreenElementBase {
 
   /**
    * Event handler that is invoked just before the screen is shown.
-   * @param {Object} data Screen init payload.
+   * @param {SyncConsentScreenData} data Screen init payload.
    */
   onBeforeShow(data) {
     this.isLacrosEnabled_ = data['isLacrosEnabled'];

@@ -1,0 +1,43 @@
+
+<html>
+  <head>
+    <title>E2E Auto</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    >
+    <!-- Stylesheet -->
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        [hidden] {
+            display: none !important;
+        }
+        body {
+            min-height: 100vh;
+            width:100%;
+            border: 10px solid orange;
+            margin:0
+        }
+        .pink-footer-inset {
+            position: fixed;
+            left: 25%;
+            bottom: 0;
+            padding-bottom:env(safe-area-inset-bottom);
+            width: 50%;
+            background-color: pink;
+            color: black;
+            text-align: center;
+        }
+    </style>
+  </head>
+  <body style="background-color:grey;">
+    <p>Test page for viewport-fit and notch support</p>
+    <h2>
+       Uses viewport-fit=auto
+    </h2>
+    <div class="pink-footer-inset">Footer</div>
+  </body>
+</html>
+

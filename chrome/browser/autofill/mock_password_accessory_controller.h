@@ -66,6 +66,13 @@ class MockPasswordAccessoryController : public PasswordAccessoryController {
               OnToggleChanged,
               (autofill::AccessoryAction toggled_action, bool enabled),
               (override));
+
+  base::WeakPtr<PasswordAccessoryController> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockPasswordAccessoryController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_PASSWORD_ACCESSORY_CONTROLLER_H_

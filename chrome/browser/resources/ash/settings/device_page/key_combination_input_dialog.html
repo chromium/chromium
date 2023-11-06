@@ -1,11 +1,45 @@
 <style include="settings-shared input-device-settings-shared">
+  :host {
+    --cr-dialog-width: 416px;
+  }
+
+  #shortcut-input-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin:0;
+    padding: 20px 0px;
+  }
+
+  #shortcut-input-container:focus {
+    outline: none;
+  }
+
+  #dialogDescription {
+    margin: 0;
+    text-align: center;
+    padding-bottom: 24px;
+  }
 </style>
 <cr-dialog id="keyCombinationInputDialog">
   <div slot="title">$i18n{keyCombinationDialogTitle}</div>
   <div slot="body">
-    <div id="keyCombinationSubsection">
-      <!-- Display button remapping name for placeholder only. -->
-      [[buttonRemapping_.name]]
+    <div id="dialogDescription">
+      $i18n{buttonRemappingDialogDescription}
+    </div>
+    <div id="shortcut-input-container" class="flex-row" tabindex="-1">
+      <shortcut-input id="shortcutInput"
+          shortcut-input-provider="[[getShortcutProvider()]]"
+          show-separator="true">
+      </shortcut-input>
+      <template is="dom-if" if="[[shouldShowEditButton_(isCapturing)]]">
+        <div class="edit-icon-container">
+          <cr-icon-button class="edit-button"
+              iron-icon="os-settings:edit"
+              on-click="onEditButtonClicked_">
+          </cr-icon-button>
+        </div>
+      </template>
     </div>
   </div>
   <div slot="button-container">
@@ -17,7 +51,8 @@
     </div>
     <div>
       <cr-button id="saveButton" class="action-button"
-          on-click="saveDialogClicked_">
+          on-click="saveDialogClicked_"
+          disabled$="[[shouldDisableSaveButton_(inputKeyEvent)]]">
         $i18n{buttonRemappingDialogSaveLabel}
       </cr-button>
     </div>

@@ -1,0 +1,47 @@
+This is a testharness.js-based test.
+[FAIL] Initial  directionality of element div1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div1_1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1_1:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div2 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div2:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div2_1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div2_1:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div3 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div3:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div3_1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div3_1:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div3_2 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div3_2:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div4 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div4:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div4_1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div4_1:dir(ltr)' is not a valid selector.
+[FAIL] Initial  directionality of element div4_1_1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div4_1_1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div1_1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div1_1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div1_1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1_1:dir(ltr)' is not a valid selector.
+[FAIL] Reupdated  directionality of element div1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1:dir(ltr)' is not a valid selector.
+[FAIL] Reupdated  directionality of element div1_1 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div1_1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div2 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div2:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div3 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div3:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div3 is ltr
+  Failed to execute 'querySelector' on 'Document': '#div3:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div4 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div4:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div4_1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div4_1:dir(ltr)' is not a valid selector.
+[FAIL] Updated  directionality of element div4_1_1 is rtl
+  Failed to execute 'querySelector' on 'Document': '#div4_1_1:dir(ltr)' is not a valid selector.
+Harness: the test ran to completion.
+

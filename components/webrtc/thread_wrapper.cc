@@ -43,7 +43,7 @@ ABSL_CONST_INIT thread_local ThreadWrapper* jingle_thread_wrapper = nullptr;
 class ThreadWrapper::PostTaskLatencySampler {
  public:
   PostTaskLatencySampler(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      ::scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       SampledDurationCallback task_latency_callback)
       : task_runner_(task_runner),
         task_latency_callback_(std::move(task_latency_callback)) {
@@ -83,7 +83,7 @@ class ThreadWrapper::PostTaskLatencySampler {
   }
 
   SEQUENCE_CHECKER(current_);
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  ::scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::RepeatingCallback<void(base::TimeDelta)> task_latency_callback_
       GUARDED_BY_CONTEXT(current_);
   bool should_sample_next_task_duration_ GUARDED_BY_CONTEXT(current_) = false;
@@ -111,7 +111,7 @@ void ThreadWrapper::EnsureForCurrentMessageLoop() {
 }
 
 std::unique_ptr<ThreadWrapper> ThreadWrapper::WrapTaskRunner(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    ::scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(task_runner->BelongsToCurrentThread());
   return base::WrapUnique(new ThreadWrapper(task_runner));
 }
@@ -129,7 +129,7 @@ void ThreadWrapper::SetLatencyAndTaskDurationCallbacks(
 }
 
 ThreadWrapper::ThreadWrapper(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    ::scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : Thread(std::make_unique<rtc::PhysicalSocketServer>()),
       resetter_(&jingle_thread_wrapper, this, nullptr),
       task_runner_(task_runner),

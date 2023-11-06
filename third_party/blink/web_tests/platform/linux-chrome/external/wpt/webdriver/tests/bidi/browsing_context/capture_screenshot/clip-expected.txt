@@ -1,0 +1,9 @@
+This is a wdspec test.
+[PASS] test_clip_element
+[FAIL] test_clip_element_with_scroll_into_view
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation ('scrollIntoView' is currently not supported)
+[PASS] test_clip_viewport
+[FAIL] test_clip_viewport_scroll_to
+  assert False
+[PASS] test_clip_viewport_partially_visible
+Harness: the test ran to completion.

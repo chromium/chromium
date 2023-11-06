@@ -314,6 +314,9 @@ struct KeyEvent {
   uint32 dom_code;
   uint32 dom_key;
   uint32 modifiers;
+
+  // Name of the key to display in the UI.
+  string key_display;
 };
 
 // Represents the button to remap which can be either a virtual key or
@@ -339,6 +342,15 @@ enum StaticShortcutAction {
   kDisable = 0,
   kCopy = 1,
   kPaste = 2,
+  kUndo = 3,
+  kRedo = 4,
+  kZoomIn = 5,
+  kZoomOut = 6,
+  kPreviousPage = 7,
+  kNextPage = 8,
+  kLeftClick = 9,
+  kRightClick = 10,
+  kMiddleClick = 11,
 };
 
 // Contains the customization restrictions of the devices.

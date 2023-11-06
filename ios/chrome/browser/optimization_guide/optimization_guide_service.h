@@ -17,7 +17,7 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "ios/chrome/browser/download/background_service/background_download_service_factory.h"
+#include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "url/gurl.h"
 
 namespace leveldb_proto {

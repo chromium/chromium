@@ -727,11 +727,6 @@ void DownloadToolbarButtonView::ButtonPressed() {
   controller_->OnButtonPressed();
 }
 
-void DownloadToolbarButtonView::OnThemeChanged() {
-  ToolbarButton::OnThemeChanged();
-  UpdateIcon();
-}
-
 void DownloadToolbarButtonView::ShowPendingDownloadStartedAnimation() {
   if (!has_pending_download_started_animation_) {
     return;

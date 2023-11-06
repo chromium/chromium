@@ -124,6 +124,10 @@ std::unique_ptr<mc::Notification> FromMojo(
     }
   }
 
+  if (notification->image_path) {
+    rich_data.image_path = notification->image_path;
+  }
+
   return std::make_unique<mc::Notification>(
       FromMojo(notification->type), notification->id, notification->title,
       notification->message, ui::ImageModel::FromImage(icon),

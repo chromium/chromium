@@ -9,27 +9,32 @@
 #include <stdint.h>
 
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_base/gtest_prod_util.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
 class RandomGenerator;
+
+namespace internal {
+template <typename QuarantineEntry, size_t CountCapacity>
+class LightweightQuarantineList;
+}
 }  // namespace partition_alloc
 
 namespace partition_alloc::internal::base {
 
 // Returns a random number in range [0, UINT64_MAX]. Thread-safe.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint64_t RandUint64();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) uint64_t RandUint64();
 
 // Returns a random number in range [0, range).  Thread-safe.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint64_t RandGenerator(uint64_t range);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
+uint64_t RandGenerator(uint64_t range);
 
 // Fills |output_length| bytes of |output| with random data. Thread-safe.
 //
 // Although implementations are required to use a cryptographically secure
 // random number source, code outside of base/ that relies on this should use
 // crypto::RandBytes instead to ensure the requirement is easily discoverable.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE)
 void RandBytes(void* output, size_t output_length);
 
 // Fast, insecure pseudo-random number generator.
@@ -58,13 +63,17 @@ void RandBytes(void* output, size_t output_length);
 // re-seeded during use.
 //
 // Uses the XorShift128+ generator under the hood.
-class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InsecureRandomGenerator {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) InsecureRandomGenerator {
  public:
   // Never use outside testing, not enough entropy.
   void ReseedForTesting(uint64_t seed);
 
   uint32_t RandUint32();
   uint64_t RandUint64();
+
+  static InsecureRandomGenerator ConstructForTesting() {
+    return InsecureRandomGenerator();
+  }
 
  private:
   InsecureRandomGenerator();
@@ -80,14 +89,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) InsecureRandomGenerator {
   // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
   // free() time.
   friend class ::partition_alloc::RandomGenerator;
-
-  PA_FRIEND_TEST_ALL_PREFIXES(
-      PartitionAllocBaseRandUtilTest,
-      InsecureRandomGeneratorProducesBothValuesOfAllBits);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                              InsecureRandomGeneratorChiSquared);
-  PA_FRIEND_TEST_ALL_PREFIXES(PartitionAllocBaseRandUtilTest,
-                              InsecureRandomGeneratorRandDouble);
+  template <typename QuarantineEntry, size_t CountCapacity>
+  friend class ::partition_alloc::internal::LightweightQuarantineList;
 };
 
 }  // namespace partition_alloc::internal::base

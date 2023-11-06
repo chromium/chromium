@@ -20,6 +20,7 @@
 #include "components/services/screen_ai/buildflags/buildflags.h"
 #include "content/child/child_process.h"
 #include "content/common/content_switches_internal.h"
+#include "content/common/features.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
@@ -29,6 +30,8 @@
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/policy/sandbox.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "services/on_device_model/on_device_model_service.h"
+#include "services/on_device_model/public/cpp/features.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
@@ -38,6 +41,7 @@
 #include "base/file_descriptor_store.h"
 #include "base/files/file_util.h"
 #include "base/pickle.h"
+#include "content/child/sandboxed_process_thread_type_handler.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/utility/speech/speech_recognition_sandbox_hook_linux.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -195,6 +199,11 @@ int UtilityMain(MainFunctionParams parameters) {
           ? base::MessagePumpType::UI
           : base::MessagePumpType::DEFAULT;
 
+  if (parameters.command_line->GetSwitchValueASCII(switches::kUtilitySubType) ==
+      on_device_model::mojom::OnDeviceModelService::Name_) {
+    CHECK(on_device_model::OnDeviceModelService::PreSandboxInit());
+  }
+
 #if BUILDFLAG(IS_MAC)
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*parameters.command_line);
@@ -238,6 +247,17 @@ int UtilityMain(MainFunctionParams parameters) {
       WaitForDebugger(utility_sub_type.empty() ? "Utility" : utility_sub_type);
     }
   }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Thread type delegate of the process should be registered before
+  // first thread type change in ChildProcess constructor.
+  // It also needs to be registered before the process has multiple threads,
+  // which may race with application of the sandbox.
+  if (base::FeatureList::IsEnabled(
+          features::kHandleChildThreadTypeChangesInBrowser)) {
+    SandboxedProcessThreadTypeHandler::Create();
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Initializes the sandbox before any threads are created.

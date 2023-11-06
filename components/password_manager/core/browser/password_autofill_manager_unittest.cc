@@ -132,11 +132,12 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               PreviewSuggestion,
               (const std::u16string&, const std::u16string&),
               (override));
-  MOCK_METHOD(void,
-              SetSuggestionAvailability,
-              (autofill::FieldRendererId element_id,
-               const autofill::mojom::AutofillState state),
-              (override));
+  MOCK_METHOD(
+      void,
+      SetSuggestionAvailability,
+      (autofill::FieldRendererId element_id,
+       autofill::mojom::AutofillSuggestionAvailability suggestion_availability),
+      (override));
   MOCK_METHOD(PasswordManager*, GetPasswordManager, (), (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const override));
 };
@@ -2264,24 +2265,30 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSignInLaunchesWebAuthnFlow) {
   password_autofill_manager_->DidAcceptSuggestion(suggestion, /*position=*/1);
 }
 
-// Test that the AutofillState is set according to the popup availability.
-TEST_F(PasswordAutofillManagerTest, AutofillStateNoSuggestions) {
+// Test that the AutofillSuggestionAvailability is set according to the popup
+// availability.
+TEST_F(PasswordAutofillManagerTest,
+       AutofillSuggestionAvailabilityNoSuggestions) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
 
   // No popup, thus kNoSuggestions is set on the field.
   EXPECT_CALL(*client.mock_driver(), CanShowAutofillUi).WillOnce(Return(false));
-  EXPECT_CALL(*client.mock_driver(),
-              SetSuggestionAvailability(
-                  kElementId, autofill::mojom::AutofillState::kNoSuggestions));
+  EXPECT_CALL(
+      *client.mock_driver(),
+      SetSuggestionAvailability(
+          kElementId,
+          autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());
 }
 
-// Test that the AutofillState is set according to the popup availability.
-TEST_F(PasswordAutofillManagerTest, AutofillStateAutofillAvailable) {
+// Test that the AutofillSuggestionAvailability is set according to the popup
+// availability.
+TEST_F(PasswordAutofillManagerTest,
+       AutofillSuggestionAvailabilityAutofillAvailable) {
   TestPasswordManagerClient client;
   NiceMock<MockAutofillClient> autofill_client;
   InitializePasswordAutofillManager(&client, &autofill_client);
@@ -2291,7 +2298,8 @@ TEST_F(PasswordAutofillManagerTest, AutofillStateAutofillAvailable) {
   EXPECT_CALL(
       *client.mock_driver(),
       SetSuggestionAvailability(
-          kElementId, autofill::mojom::AutofillState::kAutofillAvailable));
+          kElementId,
+          autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable));
   password_autofill_manager_->OnShowPasswordSuggestions(
       kElementId, base::i18n::RIGHT_TO_LEFT, std::u16string(),
       autofill::SHOW_ALL | autofill::IS_PASSWORD_FIELD, gfx::RectF());

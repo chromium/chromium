@@ -9,12 +9,13 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Vibrator;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.CalledByNativeForTesting;
+import org.jni_zero.JNINamespace;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.CalledByNativeForTesting;
-import org.chromium.base.annotations.JNINamespace;
 import org.chromium.device.mojom.VibrationManager;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.services.service_manager.InterfaceFactory;

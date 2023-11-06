@@ -128,6 +128,7 @@ void ScrollbarTheme::PaintScrollCorner(
                                       .toSkColor4f()
                                       .toSkColor();
   }
+  // TODO(crbug.com/1493088): Rounded corner of scroll corner for form controls.
   WebThemeEngine::ExtraParams extra_params(scrollbar_track);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,

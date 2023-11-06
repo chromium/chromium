@@ -123,7 +123,7 @@ IN_PROC_BROWSER_TEST_P(ParentAccessDialogBrowserTest, SetApproved) {
   expected_result.status = ParentAccessDialog::Result::Status::kApproved;
   expected_result.parent_access_token = "TEST_TOKEN";
   expected_result.parent_access_token_expire_timestamp =
-      base::Time::FromDoubleT(123456L);
+      base::Time::FromSecondsSinceUnixEpoch(123456L);
 
   ParentAccessDialog::Callback callback = base::BindLambdaForTesting(
       [&](std::unique_ptr<ParentAccessDialog::Result> result) -> void {

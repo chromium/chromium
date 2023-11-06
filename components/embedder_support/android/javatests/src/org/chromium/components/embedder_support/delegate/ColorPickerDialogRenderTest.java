@@ -33,9 +33,7 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.io.IOException;
 import java.util.List;
 
-/**
- * Render tests for color picker dialog.
- */
+/** Render tests for color picker dialog. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Batch(Batch.UNIT_TESTS)
@@ -69,14 +67,15 @@ public class ColorPickerDialogRenderTest extends BlankUiTestActivityTestCase {
         suggestions[5] = new ColorSuggestion(Color.RED, "red");
         suggestions[6] = new ColorSuggestion(Color.MAGENTA, "magenta");
         suggestions[7] = new ColorSuggestion(Color.CYAN, "cyan");
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            ColorPickerDialog dialog =
-                    new ColorPickerDialog(activity, (v) -> {}, Color.RED, suggestions);
-            mView = dialog.getContentView();
-            mView.setBackgroundResource(R.color.default_bg_color_baseline);
-            activity.setContentView(mView, new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    ColorPickerDialog dialog =
+                            new ColorPickerDialog(activity, (v) -> {}, Color.RED, suggestions);
+                    mView = dialog.getContentView();
+                    mView.setBackgroundResource(R.color.default_bg_color_baseline);
+                    activity.setContentView(mView, new LayoutParams(WRAP_CONTENT, WRAP_CONTENT));
+                });
     }
 
     @Test

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/editing/ng_flat_tree_shorthands.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
+#include "third_party/blink/renderer/core/layout/inline/caret_position.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
@@ -19,7 +19,7 @@ namespace {
 
 // Gets the resolved direction for any inline, including non-atomic inline
 // boxes.
-TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
+TextDirection ResolvedDirection(const InlineCursor& cursor) {
   if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
     return cursor.Current().ResolvedDirection();
 
@@ -28,14 +28,14 @@ TextDirection ResolvedDirection(const NGInlineCursor& cursor) {
   // text editing caret. We currently use the line's base direction, but this is
   // wrong:
   //   <div dir=ltr>abc A<span>B</span>C abc</div>
-  NGInlineCursor line_box;
+  InlineCursor line_box;
   line_box.MoveTo(cursor);
   line_box.MoveToContainingLine();
   return line_box.Current().BaseDirection();
 }
 
 // Gets the bidi level for any inline, including non-atomic inline boxes.
-UBiDiLevel BidiLevel(const NGInlineCursor& cursor) {
+UBiDiLevel BidiLevel(const InlineCursor& cursor) {
   if (cursor.Current().IsText() || cursor.Current().IsAtomicInline())
     return cursor.Current().BidiLevel();
 
@@ -43,7 +43,7 @@ UBiDiLevel BidiLevel(const NGInlineCursor& cursor) {
   // level of an inline box should also be defined. Since |ResolvedDirection|
   // defaults to the line's base direction, though, we use the corresponding
   // base level here.
-  NGInlineCursor line_box;
+  InlineCursor line_box;
   line_box.MoveTo(cursor);
   line_box.MoveToContainingLine();
   return IsLtr(line_box.Current().BaseDirection()) ? 0 : 1;
@@ -60,7 +60,7 @@ class AbstractInlineBox {
  public:
   AbstractInlineBox() : type_(InstanceType::kNull) {}
 
-  explicit AbstractInlineBox(const NGInlineCursor& cursor)
+  explicit AbstractInlineBox(const InlineCursor& cursor)
       : type_(InstanceType::kNG),
         line_cursor_(CreateLineRootedCursor(cursor)) {}
 
@@ -82,7 +82,7 @@ class AbstractInlineBox {
 
   // Returns containing block rooted cursor instead of line rooted cursor for
   // ease of handling, e.g. equiality check, move to next/previous line, etc.
-  NGInlineCursor GetCursor() const {
+  InlineCursor GetCursor() const {
     return line_cursor_.CursorForMovingAcrossFragmentainer();
   }
 
@@ -98,28 +98,28 @@ class AbstractInlineBox {
 
   AbstractInlineBox PrevLeafChild() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToPreviousInlineLeaf();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox PrevLeafChildIgnoringLineBreak() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToPreviousInlineLeafIgnoringLineBreak();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox NextLeafChild() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToNextInlineLeaf();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
 
   AbstractInlineBox NextLeafChildIgnoringLineBreak() const {
     DCHECK(IsNotNull());
-    NGInlineCursor cursor(line_cursor_);
+    InlineCursor cursor(line_cursor_);
     cursor.MoveToNextInlineLeafIgnoringLineBreak();
     return cursor ? AbstractInlineBox(cursor) : AbstractInlineBox();
   }
@@ -130,16 +130,16 @@ class AbstractInlineBox {
   }
 
  private:
-  static NGInlineCursor CreateLineRootedCursor(const NGInlineCursor& cursor) {
-    NGInlineCursor line_cursor = GetLineBox(cursor).CursorForDescendants();
+  static InlineCursor CreateLineRootedCursor(const InlineCursor& cursor) {
+    InlineCursor line_cursor = GetLineBox(cursor).CursorForDescendants();
     line_cursor.MoveTo(cursor);
     return line_cursor;
   }
 
   // Returns containing line box of |cursor| even if |cursor| is scoped inside
   // line.
-  static NGInlineCursor GetLineBox(const NGInlineCursor& cursor) {
-    NGInlineCursor line_box;
+  static InlineCursor GetLineBox(const InlineCursor& cursor) {
+    InlineCursor line_box;
     line_box.MoveTo(cursor);
     line_box.MoveToContainingLine();
     return line_box;
@@ -151,7 +151,7 @@ class AbstractInlineBox {
   // Because of |MoveToContainingLine()| isn't cheap and we avoid to call each
   // |MoveTo{Next,Previous}InlineLeaf()|, we hold containing line rooted cursor
   // instead of containing block rooted cursor.
-  NGInlineCursor line_cursor_;
+  InlineCursor line_cursor_;
 };
 
 // |SideAffinity| represents the left or right side of a leaf inline
@@ -160,13 +160,13 @@ class AbstractInlineBox {
 enum SideAffinity { kLeft, kRight };
 
 // Returns whether |caret_position| is at the start of its fragment.
-bool IsAtFragmentStart(const NGCaretPosition& caret_position) {
+bool IsAtFragmentStart(const CaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case NGCaretPositionType::kBeforeBox:
+    case CaretPositionType::kBeforeBox:
       return true;
-    case NGCaretPositionType::kAfterBox:
+    case CaretPositionType::kAfterBox:
       return false;
-    case NGCaretPositionType::kAtTextOffset:
+    case CaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextStartOffset();
@@ -176,13 +176,13 @@ bool IsAtFragmentStart(const NGCaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the end of its fragment.
-bool IsAtFragmentEnd(const NGCaretPosition& caret_position) {
+bool IsAtFragmentEnd(const CaretPosition& caret_position) {
   switch (caret_position.position_type) {
-    case NGCaretPositionType::kBeforeBox:
+    case CaretPositionType::kBeforeBox:
       return false;
-    case NGCaretPositionType::kAfterBox:
+    case CaretPositionType::kAfterBox:
       return true;
-    case NGCaretPositionType::kAtTextOffset:
+    case CaretPositionType::kAtTextOffset:
       DCHECK(caret_position.text_offset.has_value());
       return *caret_position.text_offset ==
              caret_position.cursor.Current().TextEndOffset();
@@ -192,7 +192,7 @@ bool IsAtFragmentEnd(const NGCaretPosition& caret_position) {
 }
 
 // Returns whether |caret_position| is at the left or right side of fragment.
-SideAffinity GetSideAffinity(const NGCaretPosition& caret_position) {
+SideAffinity GetSideAffinity(const CaretPosition& caret_position) {
   DCHECK(!caret_position.IsNull());
   DCHECK(IsAtFragmentStart(caret_position) || IsAtFragmentEnd(caret_position));
   const bool is_at_start = IsAtFragmentStart(caret_position);
@@ -214,32 +214,31 @@ class AbstractInlineBoxAndSideAffinity {
     DCHECK(box_.IsNotNull());
   }
 
-  explicit AbstractInlineBoxAndSideAffinity(
-      const NGCaretPosition& caret_position)
+  explicit AbstractInlineBoxAndSideAffinity(const CaretPosition& caret_position)
       : box_(caret_position.cursor), side_(GetSideAffinity(caret_position)) {
     DCHECK(!caret_position.IsNull());
   }
 
-  NGCaretPosition ToNGCaretPosition() const {
+  CaretPosition ToCaretPosition() const {
     DCHECK(box_.IsNotNull());
     const bool is_at_start = IsLtr(box_.Direction()) == AtLeftSide();
-    NGInlineCursor cursor(box_.GetCursor());
+    InlineCursor cursor(box_.GetCursor());
 
     if (!cursor.Current().IsText()) {
       return {cursor,
-              is_at_start ? NGCaretPositionType::kBeforeBox
-                          : NGCaretPositionType::kAfterBox,
+              is_at_start ? CaretPositionType::kBeforeBox
+                          : CaretPositionType::kAfterBox,
               absl::nullopt};
     }
 
-    return {cursor, NGCaretPositionType::kAtTextOffset,
+    return {cursor, CaretPositionType::kAtTextOffset,
             is_at_start ? cursor.Current().TextStartOffset()
                         : cursor.Current().TextEndOffset()};
   }
 
   PositionInFlatTree GetPosition() const {
     DCHECK(box_.IsNotNull());
-    return ToPositionInFlatTree(ToNGCaretPosition().ToPositionInDOMTree());
+    return ToPositionInFlatTree(ToCaretPosition().ToPositionInDOMTree());
   }
 
   AbstractInlineBox GetBox() const { return box_; }
@@ -651,7 +650,7 @@ class RangeSelectionAdjuster {
         : box_(box), bidi_boundary_type_(type) {}
 
     static BidiBoundaryType GetPotentialBidiBoundaryType(
-        const NGCaretPosition& caret_position) {
+        const CaretPosition& caret_position) {
       DCHECK(!caret_position.IsNull());
       DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
       if (!IsAtFragmentStart(caret_position) &&
@@ -673,7 +672,7 @@ class RangeSelectionAdjuster {
         return RenderedPosition();
 
       if (NGInlineFormattingContextOf(adjusted.GetPosition())) {
-        const NGCaretPosition caret_position = ComputeNGCaretPosition(adjusted);
+        const CaretPosition caret_position = ComputeCaretPosition(adjusted);
         if (caret_position.IsNull())
           return RenderedPosition();
         return RenderedPosition(AbstractInlineBox(caret_position.cursor),
@@ -741,8 +740,8 @@ RangeSelectionAdjuster::RenderedPosition::Create(
 
 }  // namespace
 
-NGCaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
-    const NGCaretPosition& caret_position) {
+CaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
+    const CaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
@@ -751,18 +750,18 @@ NGCaretPosition BidiAdjustment::AdjustForCaretPositionResolution(
                 unadjusted.GetBox())
           : CaretPositionResolutionAdjuster<TraverseLeft>::AdjustFor(
                 unadjusted.GetBox());
-  return adjusted.ToNGCaretPosition();
+  return adjusted.ToCaretPosition();
 }
 
-NGCaretPosition BidiAdjustment::AdjustForHitTest(
-    const NGCaretPosition& caret_position) {
+CaretPosition BidiAdjustment::AdjustForHitTest(
+    const CaretPosition& caret_position) {
   DCHECK(!RuntimeEnabledFeatures::BidiCaretAffinityEnabled());
   const AbstractInlineBoxAndSideAffinity unadjusted(caret_position);
   const AbstractInlineBoxAndSideAffinity adjusted =
       unadjusted.AtLeftSide()
           ? HitTestAdjuster<TraverseRight>::AdjustFor(unadjusted.GetBox())
           : HitTestAdjuster<TraverseLeft>::AdjustFor(unadjusted.GetBox());
-  return adjusted.ToNGCaretPosition();
+  return adjusted.ToCaretPosition();
 }
 
 SelectionInFlatTree BidiAdjustment::AdjustForRangeSelection(

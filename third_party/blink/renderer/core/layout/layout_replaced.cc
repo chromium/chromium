@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/layout_view_transition_content.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
@@ -442,7 +442,7 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
   if (layout_replaced.IsInline() &&
       layout_replaced.IsInLayoutNGInlineFormattingContext()) {
     // Step 1: Find the line box containing |layout_replaced|.
-    NGInlineCursor line_box;
+    InlineCursor line_box;
     line_box.MoveTo(layout_replaced);
     if (!line_box)
       return fallback;
@@ -510,7 +510,7 @@ PhysicalRect LayoutReplaced::LocalSelectionVisualRect() const {
 
   if (IsInline() && IsInLayoutNGInlineFormattingContext()) {
     PhysicalRect rect;
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveTo(*this);
     for (; cursor; cursor.MoveToNextForSameLayoutObject())
       rect.Unite(cursor.CurrentLocalSelectionRectForReplaced());

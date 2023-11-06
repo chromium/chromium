@@ -55,6 +55,8 @@ import java.util.List;
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AttributionReportingTest {
+    private static final String SOURCE_REGISTRATION_PATH = "/source";
+    private static final String TRIGGER_REGISTRATION_PATH = "/trigger";
     private static final String OS_SOURCE_RESPONSE_HEADER =
             "Attribution-Reporting-Register-OS-Source";
     private static final String OS_TRIGGER_RESPONSE_HEADER =
@@ -63,11 +65,9 @@ public class AttributionReportingTest {
     private static final String TRIGGER_REGISTRATION_URL =
             "https://adtech.example/register/trigger";
 
-    @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 
-    @Mock
-    private MeasurementManagerFutures mMockAttributionManager;
+    @Mock private MeasurementManagerFutures mMockAttributionManager;
 
     private CallbackHelper mMockCallbackHelper;
 
@@ -85,27 +85,31 @@ public class AttributionReportingTest {
         mMockCallbackHelper = new CallbackHelper();
 
         when(mMockAttributionManager.registerWebSourceAsync(
-                     any(WebSourceRegistrationRequest.class)))
-                .thenAnswer(invocation -> {
-                    mMockCallbackHelper.notifyCalled();
-                    return Futures.immediateFuture(null);
-                });
+                        any(WebSourceRegistrationRequest.class)))
+                .thenAnswer(
+                        invocation -> {
+                            mMockCallbackHelper.notifyCalled();
+                            return Futures.immediateFuture(null);
+                        });
         when(mMockAttributionManager.registerSourceAsync(any(Uri.class), eq(null)))
-                .thenAnswer(invocation -> {
-                    mMockCallbackHelper.notifyCalled();
-                    return Futures.immediateFuture(null);
-                });
+                .thenAnswer(
+                        invocation -> {
+                            mMockCallbackHelper.notifyCalled();
+                            return Futures.immediateFuture(null);
+                        });
         when(mMockAttributionManager.registerWebTriggerAsync(
-                     any(WebTriggerRegistrationRequest.class)))
-                .thenAnswer(invocation -> {
-                    mMockCallbackHelper.notifyCalled();
-                    return Futures.immediateFuture(null);
-                });
+                        any(WebTriggerRegistrationRequest.class)))
+                .thenAnswer(
+                        invocation -> {
+                            mMockCallbackHelper.notifyCalled();
+                            return Futures.immediateFuture(null);
+                        });
         when(mMockAttributionManager.registerTriggerAsync(any(Uri.class)))
-                .thenAnswer(invocation -> {
-                    mMockCallbackHelper.notifyCalled();
-                    return Futures.immediateFuture(null);
-                });
+                .thenAnswer(
+                        invocation -> {
+                            mMockCallbackHelper.notifyCalled();
+                            return Futures.immediateFuture(null);
+                        });
 
         AttributionOsLevelManager.setManagerForTesting(mMockAttributionManager);
 
@@ -130,10 +134,12 @@ public class AttributionReportingTest {
     @SmallTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
-    public void
-    testDefaultBehavior() throws Exception {
+    @CommandLineFlags.Add(
+            "enable-features="
+                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+                    + ","
+                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void testDefaultBehavior() throws Exception {
         assertEquals(
                 AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER, mSettings.getAttributionBehavior());
     }
@@ -141,28 +147,44 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
-    public void
-    testDisabledBehavior() throws Exception {
+    @CommandLineFlags.Add(
+            "enable-features="
+                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+                    + ","
+                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void testDisabledBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.DISABLED);
         assertEquals(AttributionBehavior.DISABLED, mSettings.getAttributionBehavior());
 
         loadUrlSync(mTestPage);
 
+        // When disabled, we don't expect any calls to the attribution server.
+        Assert.assertEquals(0, mAttributionServer.getRequestCount(SOURCE_REGISTRATION_PATH));
+        Assert.assertEquals(0, mAttributionServer.getRequestCount(TRIGGER_REGISTRATION_PATH));
+
         // When disabled, we don't expect any calls to any of the actual registration methods.
         verify(mMockAttributionManager, never())
-                .registerWebSourceAsync(new WebSourceRegistrationRequest(
-                        Arrays.asList(
-                                new WebSourceParams(Uri.parse(SOURCE_REGISTRATION_URL), false)),
-                        Uri.parse(mWebServer.getBaseUrl()), null, null, null, null));
+                .registerWebSourceAsync(
+                        new WebSourceRegistrationRequest(
+                                Arrays.asList(
+                                        new WebSourceParams(
+                                                Uri.parse(SOURCE_REGISTRATION_URL), false)),
+                                Uri.parse(mWebServer.getBaseUrl()),
+                                null,
+                                null,
+                                null,
+                                null));
         verify(mMockAttributionManager, never())
                 .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
         verify(mMockAttributionManager, never())
-                .registerWebTriggerAsync(eq(new WebTriggerRegistrationRequest(
-                        Arrays.asList(
-                                new WebTriggerParams(Uri.parse(TRIGGER_REGISTRATION_URL), false)),
-                        (Uri.parse(mWebServer.getBaseUrl())))));
+                .registerWebTriggerAsync(
+                        eq(
+                                new WebTriggerRegistrationRequest(
+                                        Arrays.asList(
+                                                new WebTriggerParams(
+                                                        Uri.parse(TRIGGER_REGISTRATION_URL),
+                                                        false)),
+                                        (Uri.parse(mWebServer.getBaseUrl())))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -170,10 +192,12 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
-    public void
-    testAppSourceAndWebTriggerBehavior() throws Exception {
+    @CommandLineFlags.Add(
+            "enable-features="
+                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+                    + ","
+                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void testAppSourceAndWebTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER);
         assertEquals(
                 AttributionBehavior.APP_SOURCE_AND_WEB_TRIGGER, mSettings.getAttributionBehavior());
@@ -184,17 +208,27 @@ public class AttributionReportingTest {
         mMockCallbackHelper.waitForCallback(callBackCount, 2);
 
         verify(mMockAttributionManager, never())
-                .registerWebSourceAsync(new WebSourceRegistrationRequest(
-                        Arrays.asList(
-                                new WebSourceParams(Uri.parse(SOURCE_REGISTRATION_URL), false)),
-                        Uri.parse(mWebServer.getBaseUrl()), null, null, null, null));
+                .registerWebSourceAsync(
+                        new WebSourceRegistrationRequest(
+                                Arrays.asList(
+                                        new WebSourceParams(
+                                                Uri.parse(SOURCE_REGISTRATION_URL), false)),
+                                Uri.parse(mWebServer.getBaseUrl()),
+                                null,
+                                null,
+                                null,
+                                null));
         verify(mMockAttributionManager, times(1))
                 .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
         verify(mMockAttributionManager, times(1))
-                .registerWebTriggerAsync(eq(new WebTriggerRegistrationRequest(
-                        Arrays.asList(
-                                new WebTriggerParams(Uri.parse(TRIGGER_REGISTRATION_URL), false)),
-                        (Uri.parse(mWebServer.getBaseUrl())))));
+                .registerWebTriggerAsync(
+                        eq(
+                                new WebTriggerRegistrationRequest(
+                                        Arrays.asList(
+                                                new WebTriggerParams(
+                                                        Uri.parse(TRIGGER_REGISTRATION_URL),
+                                                        false)),
+                                        (Uri.parse(mWebServer.getBaseUrl())))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -202,10 +236,12 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
-    public void
-    testWebSourceAndWebTriggerBehavior() throws Exception {
+    @CommandLineFlags.Add(
+            "enable-features="
+                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+                    + ","
+                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void testWebSourceAndWebTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER);
         assertEquals(
                 AttributionBehavior.WEB_SOURCE_AND_WEB_TRIGGER, mSettings.getAttributionBehavior());
@@ -216,17 +252,27 @@ public class AttributionReportingTest {
         mMockCallbackHelper.waitForCallback(callBackCount, 2);
 
         verify(mMockAttributionManager, times(1))
-                .registerWebSourceAsync(new WebSourceRegistrationRequest(
-                        Arrays.asList(
-                                new WebSourceParams(Uri.parse(SOURCE_REGISTRATION_URL), false)),
-                        Uri.parse(mWebServer.getBaseUrl()), null, null, null, null));
+                .registerWebSourceAsync(
+                        new WebSourceRegistrationRequest(
+                                Arrays.asList(
+                                        new WebSourceParams(
+                                                Uri.parse(SOURCE_REGISTRATION_URL), false)),
+                                Uri.parse(mWebServer.getBaseUrl()),
+                                null,
+                                null,
+                                null,
+                                null));
         verify(mMockAttributionManager, never())
                 .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
         verify(mMockAttributionManager, times(1))
-                .registerWebTriggerAsync(eq(new WebTriggerRegistrationRequest(
-                        Arrays.asList(
-                                new WebTriggerParams(Uri.parse(TRIGGER_REGISTRATION_URL), false)),
-                        (Uri.parse(mWebServer.getBaseUrl())))));
+                .registerWebTriggerAsync(
+                        eq(
+                                new WebTriggerRegistrationRequest(
+                                        Arrays.asList(
+                                                new WebTriggerParams(
+                                                        Uri.parse(TRIGGER_REGISTRATION_URL),
+                                                        false)),
+                                        (Uri.parse(mWebServer.getBaseUrl())))));
         verify(mMockAttributionManager, never())
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -234,10 +280,12 @@ public class AttributionReportingTest {
     @LargeTest
     @Test
     @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
-    @CommandLineFlags.Add("enable-features=" + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
-            + "," + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
-    public void
-    testAppSourceAndAppTriggerBehavior() throws Exception {
+    @CommandLineFlags.Add(
+            "enable-features="
+                    + ContentFeatures.PRIVACY_SANDBOX_ADS_AP_IS_OVERRIDE
+                    + ","
+                    + NetworkServiceFeatures.ATTRIBUTION_REPORTING_CROSS_APP_WEB)
+    public void testAppSourceAndAppTriggerBehavior() throws Exception {
         mSettings.setAttributionBehavior(AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER);
         assertEquals(
                 AttributionBehavior.APP_SOURCE_AND_APP_TRIGGER, mSettings.getAttributionBehavior());
@@ -248,17 +296,27 @@ public class AttributionReportingTest {
         mMockCallbackHelper.waitForCallback(callBackCount, 2);
 
         verify(mMockAttributionManager, never())
-                .registerWebSourceAsync(new WebSourceRegistrationRequest(
-                        Arrays.asList(
-                                new WebSourceParams(Uri.parse(SOURCE_REGISTRATION_URL), false)),
-                        Uri.parse(mWebServer.getBaseUrl()), null, null, null, null));
+                .registerWebSourceAsync(
+                        new WebSourceRegistrationRequest(
+                                Arrays.asList(
+                                        new WebSourceParams(
+                                                Uri.parse(SOURCE_REGISTRATION_URL), false)),
+                                Uri.parse(mWebServer.getBaseUrl()),
+                                null,
+                                null,
+                                null,
+                                null));
         verify(mMockAttributionManager, times(1))
                 .registerSourceAsync(eq(Uri.parse(SOURCE_REGISTRATION_URL)), eq(null));
         verify(mMockAttributionManager, never())
-                .registerWebTriggerAsync(eq(new WebTriggerRegistrationRequest(
-                        Arrays.asList(
-                                new WebTriggerParams(Uri.parse(TRIGGER_REGISTRATION_URL), false)),
-                        (Uri.parse(mWebServer.getBaseUrl())))));
+                .registerWebTriggerAsync(
+                        eq(
+                                new WebTriggerRegistrationRequest(
+                                        Arrays.asList(
+                                                new WebTriggerParams(
+                                                        Uri.parse(TRIGGER_REGISTRATION_URL),
+                                                        false)),
+                                        (Uri.parse(mWebServer.getBaseUrl())))));
         verify(mMockAttributionManager, times(1))
                 .registerTriggerAsync(Uri.parse(TRIGGER_REGISTRATION_URL));
     }
@@ -270,11 +328,18 @@ public class AttributionReportingTest {
     }
 
     private String createTestPage() {
-        String sourceUrl = mAttributionServer.setResponse("/source", "",
-                getAttributionResponseHeaders(OS_SOURCE_RESPONSE_HEADER, SOURCE_REGISTRATION_URL));
-        String triggerUrl = mAttributionServer.setResponse("/trigger", "",
-                getAttributionResponseHeaders(
-                        OS_TRIGGER_RESPONSE_HEADER, TRIGGER_REGISTRATION_URL));
+        String sourceUrl =
+                mAttributionServer.setResponse(
+                        SOURCE_REGISTRATION_PATH,
+                        "",
+                        getAttributionResponseHeaders(
+                                OS_SOURCE_RESPONSE_HEADER, SOURCE_REGISTRATION_URL));
+        String triggerUrl =
+                mAttributionServer.setResponse(
+                        TRIGGER_REGISTRATION_PATH,
+                        "",
+                        getAttributionResponseHeaders(
+                                OS_TRIGGER_RESPONSE_HEADER, TRIGGER_REGISTRATION_URL));
 
         StringBuilder sb = new StringBuilder();
         sb.append("<html><head></head><body>Hello world!");

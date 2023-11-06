@@ -21,7 +21,7 @@ namespace element_locator {
 
 // Attempt to generate an `ElementLocator` that specifies the relative position
 // of the `element` within its document.
-CORE_EXPORT absl::optional<ElementLocator> OfElement(Element* element);
+CORE_EXPORT ElementLocator OfElement(const Element& element);
 
 // Generate a string representation of the given `ElementLocator`.
 // Intended for testing and debugging purposes.

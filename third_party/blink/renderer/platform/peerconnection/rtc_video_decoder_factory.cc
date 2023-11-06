@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_util.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
@@ -272,9 +273,7 @@ RTCVideoDecoderFactory::QueryCodecSupport(const webrtc::SdpVideoFormat& format,
     // return false if the configuration requires reference scaling unless we
     // explicitly know that the HW decoder can handle this.
     if (codec == media::VideoCodec::kVP9 &&
-        (!gpu_factories_ ||
-         !RTCVideoDecoderAdapter::Vp9HwSupportForSpatialLayers(
-             gpu_factories_->GetDecoderType()))) {
+        !media::IsVp9kSVCHWDecodingEnabled()) {
       return {false, false};
     }
   }

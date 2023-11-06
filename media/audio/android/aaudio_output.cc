@@ -4,15 +4,12 @@
 
 #include "media/audio/android/aaudio_output.h"
 
-#include "base/android/build_info.h"
-#include "base/functional/callback_helpers.h"
-#include "base/logging.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/thread_annotations.h"
-#include "base/trace_event/trace_event.h"
-#include "media/audio/android/aaudio_stubs.h"
 #include "media/audio/android/audio_manager_android.h"
+#include "media/audio/audio_manager.h"
+#include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_bus.h"
 
 namespace media {
@@ -22,6 +19,9 @@ AAudioOutputStream::AAudioOutputStream(AudioManagerAndroid* manager,
                                        aaudio_usage_t usage)
     : audio_manager_(manager),
       params_(params),
+      peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
+                                         base::Unretained(audio_manager_),
+                                         /*trace_start=*/false)),
       stream_wrapper_(this,
                       AAudioStreamWrapper::StreamType::kOutput,
                       params,
@@ -122,6 +122,8 @@ bool AAudioOutputStream::OnAudioDataRequested(void* audio_data,
 
   const int frames_filled =
       callback_->OnMoreData(delay, delay_timestamp, {}, audio_bus_.get());
+
+  peak_detector_.FindPeak(audio_bus_.get());
 
   audio_bus_->Scale(muted_ ? 0.0 : volume_);
   audio_bus_->ToInterleaved<Float32SampleTypeTraits>(

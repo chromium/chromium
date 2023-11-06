@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {DomainSecurityPolicyView} from 'chrome://net-internals/domain_security_policy_view.js';
-import {$} from 'chrome://resources/js/util_ts.js';
+import {$} from 'chrome://resources/js/util.js';
 import {assertEquals, assertLE, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {Task, TaskQueue} from './task_queue.js';

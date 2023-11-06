@@ -47,6 +47,7 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
+#include "chrome/browser/chromeos/extensions/web_file_handlers/intent_util.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -74,6 +75,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
@@ -301,7 +303,7 @@ void ExtensionAppsChromeOs::LaunchAppWithParamsImpl(AppLaunchParams&& params,
   }
 }
 
-void ExtensionAppsChromeOs::LaunchAppWithIntentCallback(
+void ExtensionAppsChromeOs::LaunchAppWithArgumentsCallback(
     LaunchSource launch_source,
     const std::string& app_id,
     int32_t event_flags,
@@ -334,23 +336,10 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     return;
   }
 
-  bool supports_web_file_handlers =
-      extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
-
-  // Launch Web File Handlers.
-  if (supports_web_file_handlers) {
-    // Get all names that were selected when the intent to open was initiated.
-    std::vector<base::SafeBaseName> base_names;
-    for (const auto& file : intent->files) {
-      auto optional_base_name = base::SafeBaseName::Create(file->url.path());
-      // Launch requires that every file have a base name.
-      if (!optional_base_name.has_value()) {
-        base_names.clear();
-        break;
-      }
-
-      base_names.emplace_back(optional_base_name.value());
-    }
+  // Launch Web File Handlers if they're supported by the extension.
+  if (extensions::WebFileHandlers::SupportsWebFileHandlers(*extension)) {
+    std::vector<base::SafeBaseName> base_names =
+        extensions::GetBaseNamesForIntent(*intent);
 
     // This vector cannot be empty because this is reached after explicitly
     // opening one or more files.
@@ -362,7 +351,7 @@ void ExtensionAppsChromeOs::LaunchAppWithIntent(const std::string& app_id,
     // Confirm that the extension can open the file and then call the callback.
     web_file_handlers_permission_handler_->Confirm(
         *extension, base_names,
-        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithIntentCallback,
+        base::BindOnce(&ExtensionAppsChromeOs::LaunchAppWithArgumentsCallback,
                        weak_factory_.GetWeakPtr(), launch_source, app_id,
                        event_flags, std::move(intent), std::move(window_info),
                        std::move(callback)));
@@ -475,7 +464,7 @@ void ExtensionAppsChromeOs::LaunchExtension(const std::string& app_id,
              std::string error) {
             bool success =
                 result !=
-                extensions::api::file_manager_private::TASK_RESULT_FAILED;
+                extensions::api::file_manager_private::TaskResult::kFailed;
             std::move(callback).Run(ConvertBoolToLaunchResult(success));
           },
           std::move(callback)));
@@ -967,8 +956,7 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   auto app = CreateAppImpl(
       extension, is_app_disabled ? Readiness::kDisabledByPolicy : readiness);
   bool paused = paused_apps_.IsPaused(extension->id());
-  app->icon_key = std::move(
-      *icon_key_factory().CreateIconKey(GetIconEffects(extension, paused)));
+  app->icon_key = IconKey(GetIconEffects(extension, paused));
 
   if (is_app_disabled && is_disabled_apps_mode_hidden_) {
     app->show_in_launcher = false;
@@ -980,14 +968,8 @@ AppPtr ExtensionAppsChromeOs::CreateApp(const extensions::Extension* extension,
   app->has_badge = app_notifications_.HasNotification(extension->id());
   app->paused = paused;
 
-  // Legacy versions of the QuickOffice extension are treated as a Chrome App,
-  // to allow file handling. Once QuickOffice supports MV3, it can use the Web
-  // File Handlers extension API instead.
-  bool is_legacy_quick_office_extension =
-      extension_misc::IsQuickOfficeExtension(extension->id()) &&
-      !extensions::WebFileHandlers::SupportsWebFileHandlers(*extension);
-
-  if (extension->is_app() || is_legacy_quick_office_extension) {
+  if (extension->is_app() ||
+      extensions::IsLegacyQuickOfficeExtension(*extension)) {
     app->intent_filters = apps_util::CreateIntentFiltersForChromeApp(extension);
   } else if (extension->is_extension()) {
     app->intent_filters = apps_util::CreateIntentFiltersForExtension(extension);
@@ -1046,8 +1028,8 @@ void ExtensionAppsChromeOs::SetIconEffect(const std::string& app_id) {
   }
 
   auto app = std::make_unique<App>(app_type(), app_id);
-  app->icon_key = std::move(*icon_key_factory().CreateIconKey(
-      GetIconEffects(extension, paused_apps_.IsPaused(app_id))));
+  app->icon_key =
+      IconKey(GetIconEffects(extension, paused_apps_.IsPaused(app_id)));
   AppPublisher::Publish(std::move(app));
 }
 

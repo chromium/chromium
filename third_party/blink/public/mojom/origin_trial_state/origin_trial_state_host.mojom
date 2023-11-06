@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 module blink.mojom;
-import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom";
+import "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom";
 import "url/mojom/origin.mojom";
 
 // This struct carries information about origin trial features. It's sent with
@@ -36,7 +36,7 @@ interface OriginTrialStateHost {
   //
   // The browser should validate the origin trial token before changing any
   // security state.
-  ApplyFeatureDiffForOriginTrial(map<blink.mojom.RuntimeFeatureState,
+  ApplyFeatureDiffForOriginTrial(map<blink.mojom.RuntimeFeature,
     blink.mojom.OriginTrialFeatureState> origin_trial_features);
 
   // Enable the trial represented by the |token|, provided the token represents

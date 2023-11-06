@@ -32,10 +32,12 @@ bool FilterETWSessionByURLCallback(v8::Local<v8::Context> context,
     }
 
     ExecutionContext* execution_context = ToExecutionContext(context);
-    std::string url(execution_context->Url().GetString().Utf8());
-    const RE2 regex(filtered_url.GetString());
-    if (RE2::FullMatch(url, regex)) {
-      return true;
+    if (execution_context != nullptr) {
+      std::string url(execution_context->Url().GetString().Utf8());
+      const RE2 regex(filtered_url.GetString());
+      if (RE2::FullMatch(url, regex)) {
+        return true;
+      }
     }
   }
   return false;  // No regex matching found.

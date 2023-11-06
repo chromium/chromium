@@ -34,8 +34,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 /**
- * Tests for StylusWritingController.
- * Specifically how it handles whether to show a stylus hover icon or not.
+ * Tests for StylusWritingController. Specifically how it handles whether to show a stylus hover
+ * icon or not.
  */
 @Batch(Batch.PER_CLASS)
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,8 +46,7 @@ public class StylusWritingControllerTest {
     private StylusWritingController mStylusWritingController;
     private ViewAndroidDelegate mViewAndroidDelegate;
     private PointerIcon mPointerIcon;
-    @Mock
-    private WebContents mWebContents;
+    @Mock private WebContents mWebContents;
 
     @Before
     public void setUp() {

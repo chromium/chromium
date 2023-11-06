@@ -82,12 +82,12 @@ InvalidationHandler.
 
 InvalidationService provides the following methods (the list is not exhaustive):
 
-* **RegisterInvalidationHandler** allows an InvalidationHandler to register
+* **AddObserver** allows an InvalidationHandler to register
 itself as a observer for Invalidations. InvalidationService will only
 dispatch messages to registered handlers.
 * **UpdateInterestedTopics** allows InvalidationHandler to change the set of
 Topics it is interested in.
-* **UnregisterInvalidationHandler** lets an InvalidationHandler unregister
+* **RemoveObserver** lets an InvalidationHandler unregister
 itself again, after which it stops receiving Invalidations.
 
 An InvalidationService instance is usually tied to a profile (via

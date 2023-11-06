@@ -30,6 +30,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -38,20 +39,17 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * Tests for {@link MissingDeviceLockCoordinator}.
- */
+/** Tests for {@link MissingDeviceLockCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class MissingDeviceLockCoordinatorTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private Activity mActivity;
+    @Mock private Activity mActivity;
     private FakeModalDialogManager mModalDialogManager;
 
     private final AtomicReference<Boolean> mOnContinueWithoutDeviceLockCalledWith =
@@ -81,13 +79,23 @@ public class MissingDeviceLockCoordinatorTest {
     @Test
     @SmallTest
     public void testMissingDeviceLockCoordinator_showAndHideDialog() throws InterruptedException {
+        HistogramWatcher dialogShownHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Automotive.DeviceLockRemovalDialogEvent",
+                                MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                        .DIALOG_SHOWN)
+                        .build();
+
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
                         (wipeAllData) -> {}, mActivity, mModalDialogManager);
-        assertNotNull("The Missing Device Lock coordinator should not be null.",
+        assertNotNull(
+                "The Missing Device Lock coordinator should not be null.",
                 missingDeviceLockCoordinator);
         missingDeviceLockCoordinator.showDialog();
         assertTrue("The modal dialog should be showing.", mModalDialogManager.isShowing());
+        dialogShownHistogram.assertExpected();
         missingDeviceLockCoordinator.hideDialog(DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
     }
 
@@ -96,6 +104,13 @@ public class MissingDeviceLockCoordinatorTest {
     public void testMissingDeviceLockCoordinator_continueWithoutDeviceLock() {
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putBoolean(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED, true).apply();
+        HistogramWatcher continueWithoutDeviceLockHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Android.Automotive.DeviceLockRemovalDialogEvent",
+                                MissingDeviceLockCoordinator.MissingDeviceLockDialogEvent
+                                        .CONTINUE_WITHOUT_DEVICE_LOCK)
+                        .build();
 
         MissingDeviceLockCoordinator missingDeviceLockCoordinator =
                 new MissingDeviceLockCoordinator(
@@ -104,11 +119,14 @@ public class MissingDeviceLockCoordinatorTest {
         Callback<Boolean> onContinueWithoutDeviceLock = mOnContinueWithoutDeviceLockCalledWith::set;
         missingDeviceLockCoordinator.continueWithoutDeviceLock(true, onContinueWithoutDeviceLock);
 
-        assertTrue("#onContinueWithoutDeviceLock should have been called with the wipeAllData "
+        assertTrue(
+                "#onContinueWithoutDeviceLock should have been called with the wipeAllData "
                         + "parameter.",
                 mOnContinueWithoutDeviceLockCalledWith.get());
-        assertFalse("DEVICE_LOCK_PAGE_HAS_BEEN_PASSED should have been removed from the "
+        assertFalse(
+                "DEVICE_LOCK_PAGE_HAS_BEEN_PASSED should have been removed from the "
                         + "SharedPreferencesManager keys.",
                 prefs.contains(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED));
+        continueWithoutDeviceLockHistogram.assertExpected();
     }
 }

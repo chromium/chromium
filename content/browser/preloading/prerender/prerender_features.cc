@@ -19,6 +19,6 @@ BASE_FEATURE(kPrerender2BypassMemoryLimitCheck,
 // See crbug.com/1464021 for more details.
 BASE_FEATURE(kPrerender2NewLimitAndScheduler,
              "Prerender2NewLimitAndScheduler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content::features

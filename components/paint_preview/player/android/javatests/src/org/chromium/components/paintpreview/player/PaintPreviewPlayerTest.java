@@ -45,9 +45,7 @@ import org.chromium.url.GURL;
 
 import java.util.List;
 
-/**
- * Instrumentation tests for the Paint Preview player.
- */
+/** Instrumentation tests for the Paint Preview player. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     private static final long TIMEOUT_MS = 5000;
@@ -62,11 +60,9 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     private static final int TEST_PAGE_WIDTH = 1082;
     private static final int TEST_PAGE_HEIGHT = 5019;
 
-    @Rule
-    public PaintPreviewTestRule mPaintPreviewTestRule = new PaintPreviewTestRule();
+    @Rule public PaintPreviewTestRule mPaintPreviewTestRule = new PaintPreviewTestRule();
 
-    @Rule
-    public TemporaryFolder mTempFolder = new TemporaryFolder();
+    @Rule public TemporaryFolder mTempFolder = new TemporaryFolder();
 
     private FrameLayout mLayout;
     private PlayerManager mPlayerManager;
@@ -82,9 +78,7 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
                     .setRevision(0)
                     .build();
 
-    /**
-     * LinkClickHandler implementation for caching the last URL that was clicked.
-     */
+    /** LinkClickHandler implementation for caching the last URL that was clicked. */
     public class TestLinkClickHandler implements LinkClickHandler {
         GURL mUrl;
 
@@ -97,20 +91,24 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            mLayout = new FrameLayout(getActivity());
-            getActivity().setContentView(mLayout);
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mLayout = new FrameLayout(getActivity());
+                    getActivity().setContentView(mLayout);
+                });
     }
 
     @Override
     public void tearDownTest() throws Exception {
         super.tearDownTest();
         CallbackHelper destroyed = new CallbackHelper();
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            mPlayerManager.destroy();
-            destroyed.notifyCalled();
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    mPlayerManager.destroy();
+                    destroyed.notifyCalled();
+                });
         destroyed.waitForFirst();
     }
 
@@ -120,14 +118,18 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         final View activityContentView = mLayout;
 
         // Assert that the player view has the same dimensions as the content view.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(activityContentView.getWidth(), Matchers.greaterThan(0));
-            Criteria.checkThat(activityContentView.getHeight(), Matchers.greaterThan(0));
-            Criteria.checkThat(
-                    activityContentView.getWidth(), Matchers.is(playerHostView.getWidth()));
-            Criteria.checkThat(
-                    activityContentView.getHeight(), Matchers.is(playerHostView.getHeight()));
-        }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(activityContentView.getWidth(), Matchers.greaterThan(0));
+                    Criteria.checkThat(activityContentView.getHeight(), Matchers.greaterThan(0));
+                    Criteria.checkThat(
+                            activityContentView.getWidth(), Matchers.is(playerHostView.getWidth()));
+                    Criteria.checkThat(
+                            activityContentView.getHeight(),
+                            Matchers.is(playerHostView.getHeight()));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -179,16 +181,13 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         mRenderTestRule.render(mPlayerManager.getView(), "multi_frame_wide");
     }
 
-    /**
-     * Tests that link clicks in the player work correctly.
-     */
+    /** Tests that link clicks in the player work correctly. */
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Test is failing on Android P+, see crbug.com/1110939.",
+    @DisableIf.Build(
+            message = "Test is failing on Android P+, see crbug.com/1110939.",
             sdk_is_greater_than = VERSION_CODES.O_MR1)
-    // clang-format off
     public void linkClickTest() {
-        // clang-format on
         initPlayerManager(false);
         final View playerHostView = mPlayerManager.getView();
 
@@ -229,59 +228,68 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         mRefreshedCallback.waitForFirst();
     }
 
-    /**
-     * Tests that an initialization failure is reported properly.
-     */
+    /** Tests that an initialization failure is reported properly. */
     @Test
     @MediumTest
     public void initializationCallbackErrorReported() throws Exception {
         CallbackHelper compositorErrorCallback = new CallbackHelper();
         mLinkClickHandler = new TestLinkClickHandler();
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            PaintPreviewTestService service =
-                    new PaintPreviewTestService(mTempFolder.getRoot().getPath());
-            // Use the wrong URL to simulate a failure.
-            mPlayerManager = new PlayerManager(new GURL("about:blank"), getActivity(), service,
-                    TEST_DIRECTORY_KEY, new PlayerManager.Listener() {
-                        @Override
-                        public void onCompositorError(int status) {
-                            compositorErrorCallback.notifyCalled();
-                        }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    PaintPreviewTestService service =
+                            new PaintPreviewTestService(mTempFolder.getRoot().getPath());
+                    // Use the wrong URL to simulate a failure.
+                    mPlayerManager =
+                            new PlayerManager(
+                                    new GURL("about:blank"),
+                                    getActivity(),
+                                    service,
+                                    TEST_DIRECTORY_KEY,
+                                    new PlayerManager.Listener() {
+                                        @Override
+                                        public void onCompositorError(int status) {
+                                            compositorErrorCallback.notifyCalled();
+                                        }
 
-                        @Override
-                        public void onViewReady() {
-                            Assert.fail("View Ready callback occurred, but expected a failure.");
-                        }
+                                        @Override
+                                        public void onViewReady() {
+                                            Assert.fail(
+                                                    "View Ready callback occurred, but expected a"
+                                                            + " failure.");
+                                        }
 
-                        @Override
-                        public void onFirstPaint() {}
+                                        @Override
+                                        public void onFirstPaint() {}
 
-                        @Override
-                        public void onUserInteraction() {}
+                                        @Override
+                                        public void onUserInteraction() {}
 
-                        @Override
-                        public void onUserFrustration() {}
+                                        @Override
+                                        public void onUserFrustration() {}
 
-                        @Override
-                        public void onPullToRefresh() {
-                            Assert.fail("Unexpected overscroll refresh attempted.");
-                        }
+                                        @Override
+                                        public void onPullToRefresh() {
+                                            Assert.fail("Unexpected overscroll refresh attempted.");
+                                        }
 
-                        @Override
-                        public void onLinkClick(GURL url) {
-                            mLinkClickHandler.onLinkClicked(url);
-                        }
+                                        @Override
+                                        public void onLinkClick(GURL url) {
+                                            mLinkClickHandler.onLinkClicked(url);
+                                        }
 
-                        @Override
-                        public boolean isAccessibilityEnabled() {
-                            return false;
-                        }
+                                        @Override
+                                        public boolean isAccessibilityEnabled() {
+                                            return false;
+                                        }
 
-                        @Override
-                        public void onAccessibilityNotSupported() {}
-                    }, 0xffffffff, false);
-            mPlayerManager.setCompressOnClose(false);
-        });
+                                        @Override
+                                        public void onAccessibilityNotSupported() {}
+                                    },
+                                    0xffffffff,
+                                    false);
+                    mPlayerManager.setCompressOnClose(false);
+                });
         compositorErrorCallback.waitForFirst();
     }
 
@@ -334,18 +342,14 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         Assert.assertTrue("Failed to pinch player view.", didPinch);
     }
 
-    /**
-     * Tests that scaling works and doesn't crash.
-     */
+    /** Tests that scaling works and doesn't crash. */
     @Test
     @MediumTest
     public void singleFrameScaleSmokeTest() throws Exception {
         scaleSmokeTest(false);
     }
 
-    /**
-     * Tests that scaling works and doesn't crash with multiple frames.
-     */
+    /** Tests that scaling works and doesn't crash with multiple frames. */
     @Test
     @MediumTest
     public void multiFrameScaleSmokeTest() throws Exception {
@@ -360,17 +364,17 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
 
     private int navigationBarHeight() {
         int navigationBarHeight = 100;
-        int resourceId = getActivity().getResources().getIdentifier(
-                "navigation_bar_height", "dimen", "android");
+        int resourceId =
+                getActivity()
+                        .getResources()
+                        .getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
             navigationBarHeight = getActivity().getResources().getDimensionPixelSize(resourceId);
         }
         return navigationBarHeight;
     }
 
-    /**
-     * Scrolls to the bottom fo the paint preview.
-     */
+    /** Scrolls to the bottom fo the paint preview. */
     private void scrollToBottom() {
         UiDevice uiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         int deviceHeight = uiDevice.getDisplayHeight();
@@ -393,10 +397,13 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
     }
 
     private void initSingleSkp(PaintPreviewTestService service) {
-        FrameData singleFrame = new FrameData(new Size(TEST_PAGE_WIDTH, TEST_PAGE_HEIGHT),
-                new Rect[] {mInViewportLinkRect, mOutOfViewportLinkRect},
-                new String[] {TEST_IN_VIEWPORT_LINK_URL, TEST_OUT_OF_VIEWPORT_LINK_URL},
-                new Rect[] {}, new FrameData[] {});
+        FrameData singleFrame =
+                new FrameData(
+                        new Size(TEST_PAGE_WIDTH, TEST_PAGE_HEIGHT),
+                        new Rect[] {mInViewportLinkRect, mOutOfViewportLinkRect},
+                        new String[] {TEST_IN_VIEWPORT_LINK_URL, TEST_OUT_OF_VIEWPORT_LINK_URL},
+                        new Rect[] {},
+                        new FrameData[] {});
         Assert.assertTrue(service.createFramesForKey(TEST_DIRECTORY_KEY, TEST_URL, singleFrame));
     }
 
@@ -414,25 +421,44 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         // C: Doesn't scroll
         // D: Scrolls
 
-        FrameData childD = new FrameData(new Size(300, 500), new Rect[] {}, new String[] {},
-                new Rect[] {}, new FrameData[] {});
+        FrameData childD =
+                new FrameData(
+                        new Size(300, 500),
+                        new Rect[] {},
+                        new String[] {},
+                        new Rect[] {},
+                        new FrameData[] {});
         FrameData childB =
-                new FrameData(new Size(900, 3000), new Rect[] {new Rect(50, 2300, 250, 2800)},
+                new FrameData(
+                        new Size(900, 3000),
+                        new Rect[] {new Rect(50, 2300, 250, 2800)},
                         new String[] {TEST_OUT_OF_VIEWPORT_LINK_URL},
-                        new Rect[] {new Rect(50, 2000, 150, 2100)}, new FrameData[] {childD});
+                        new Rect[] {new Rect(50, 2000, 150, 2100)},
+                        new FrameData[] {childD});
 
         // Link is located at 200, 200.
-        FrameData childC = new FrameData(new Size(400, 200),
-                new Rect[] {new Rect(50, 50, 300, 200)}, new String[] {TEST_IN_VIEWPORT_LINK_URL},
-                new Rect[] {}, new FrameData[] {});
-        FrameData childA = new FrameData(new Size(500, 300), new Rect[] {}, new String[] {},
-                new Rect[] {new Rect(50, 50, 450, 250)}, new FrameData[] {childC});
+        FrameData childC =
+                new FrameData(
+                        new Size(400, 200),
+                        new Rect[] {new Rect(50, 50, 300, 200)},
+                        new String[] {TEST_IN_VIEWPORT_LINK_URL},
+                        new Rect[] {},
+                        new FrameData[] {});
+        FrameData childA =
+                new FrameData(
+                        new Size(500, 300),
+                        new Rect[] {},
+                        new String[] {},
+                        new Rect[] {new Rect(50, 50, 450, 250)},
+                        new FrameData[] {childC});
 
-        FrameData rootFrame = new FrameData(new Size(TEST_PAGE_WIDTH, TEST_PAGE_HEIGHT),
-                new Rect[] {mInViewportLinkRect, mOutOfViewportLinkRect},
-                new String[] {TEST_IN_VIEWPORT_LINK_URL, TEST_OUT_OF_VIEWPORT_LINK_URL},
-                new Rect[] {new Rect(100, 100, 600, 400), new Rect(50, 1000, 900, 2000)},
-                new FrameData[] {childA, childB});
+        FrameData rootFrame =
+                new FrameData(
+                        new Size(TEST_PAGE_WIDTH, TEST_PAGE_HEIGHT),
+                        new Rect[] {mInViewportLinkRect, mOutOfViewportLinkRect},
+                        new String[] {TEST_IN_VIEWPORT_LINK_URL, TEST_OUT_OF_VIEWPORT_LINK_URL},
+                        new Rect[] {new Rect(100, 100, 600, 400), new Rect(50, 1000, 900, 2000)},
+                        new FrameData[] {childA, childB});
         Assert.assertTrue(service.createFramesForKey(TEST_DIRECTORY_KEY, TEST_URL, rootFrame));
     }
 
@@ -443,65 +469,79 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         CallbackHelper firstPaint = new CallbackHelper();
         mInitializationFailed = false;
 
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            PaintPreviewTestService service =
-                    new PaintPreviewTestService(mTempFolder.getRoot().getPath());
-            if (multiSkp) {
-                initMultiSkp(service);
-            } else {
-                initSingleSkp(service);
-            }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    PaintPreviewTestService service =
+                            new PaintPreviewTestService(mTempFolder.getRoot().getPath());
+                    if (multiSkp) {
+                        initMultiSkp(service);
+                    } else {
+                        initSingleSkp(service);
+                    }
 
-            mPlayerManager = new PlayerManager(new GURL(TEST_URL), getActivity(), service,
-                    TEST_DIRECTORY_KEY, new PlayerManager.Listener() {
-                        @Override
-                        public void onCompositorError(int status) {
-                            mInitializationFailed = true;
-                        }
+                    mPlayerManager =
+                            new PlayerManager(
+                                    new GURL(TEST_URL),
+                                    getActivity(),
+                                    service,
+                                    TEST_DIRECTORY_KEY,
+                                    new PlayerManager.Listener() {
+                                        @Override
+                                        public void onCompositorError(int status) {
+                                            mInitializationFailed = true;
+                                        }
 
-                        @Override
-                        public void onViewReady() {
-                            viewReady.notifyCalled();
-                        }
+                                        @Override
+                                        public void onViewReady() {
+                                            viewReady.notifyCalled();
+                                        }
 
-                        @Override
-                        public void onFirstPaint() {
-                            firstPaint.notifyCalled();
-                        }
+                                        @Override
+                                        public void onFirstPaint() {
+                                            firstPaint.notifyCalled();
+                                        }
 
-                        @Override
-                        public void onUserInteraction() {}
+                                        @Override
+                                        public void onUserInteraction() {}
 
-                        @Override
-                        public void onUserFrustration() {}
+                                        @Override
+                                        public void onUserFrustration() {}
 
-                        @Override
-                        public void onPullToRefresh() {
-                            mRefreshedCallback.notifyCalled();
-                        }
+                                        @Override
+                                        public void onPullToRefresh() {
+                                            mRefreshedCallback.notifyCalled();
+                                        }
 
-                        @Override
-                        public void onLinkClick(GURL url) {
-                            mLinkClickHandler.onLinkClicked(url);
-                        }
+                                        @Override
+                                        public void onLinkClick(GURL url) {
+                                            mLinkClickHandler.onLinkClicked(url);
+                                        }
 
-                        @Override
-                        public boolean isAccessibilityEnabled() {
-                            return false;
-                        }
+                                        @Override
+                                        public boolean isAccessibilityEnabled() {
+                                            return false;
+                                        }
 
-                        @Override
-                        public void onAccessibilityNotSupported() {}
-                    }, 0xffffffff, false);
-            mLayout.addView(mPlayerManager.getView());
-            mPlayerManager.setCompressOnClose(false);
-        });
+                                        @Override
+                                        public void onAccessibilityNotSupported() {}
+                                    },
+                                    0xffffffff,
+                                    false);
+                    mLayout.addView(mPlayerManager.getView());
+                    mPlayerManager.setCompressOnClose(false);
+                });
 
         // Wait until PlayerManager is initialized.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(
-                    "PlayerManager was not initialized.", mPlayerManager, Matchers.notNullValue());
-        }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "PlayerManager was not initialized.",
+                            mPlayerManager,
+                            Matchers.notNullValue());
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
         try {
             viewReady.waitForFirst();
@@ -514,19 +554,30 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         }
 
         // Assert that the player view is added to the player host view.
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Player view is not added to the host view.",
-                    ((ViewGroup) mPlayerManager.getView()).getChildCount(),
-                    Matchers.greaterThan(0));
-        }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Player view is not added to the host view.",
+                            ((ViewGroup) mPlayerManager.getView()).getChildCount(),
+                            Matchers.greaterThan(0));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
 
-        ViewUtils.onViewWaiting(allOf(
-                equalTo(((ViewGroup) mPlayerManager.getView()).getChildAt(0)), isDisplayed()));
+        ViewUtils.onViewWaiting(
+                allOf(
+                        equalTo(((ViewGroup) mPlayerManager.getView()).getChildAt(0)),
+                        isDisplayed()));
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Required bitmaps were not loaded.",
-                    mPlayerManager.checkRequiredBitmapsLoadedForTest(), Matchers.is(true));
-        }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Required bitmaps were not loaded.",
+                            mPlayerManager.checkRequiredBitmapsLoadedForTest(),
+                            Matchers.is(true));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         if (mInitializationFailed) {
             Assert.fail("Compositor may have crashed.");
         }
@@ -556,8 +607,9 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         // In this test scaledY will only exceed the view height if scrolled to the bottom of a
         // page.
         if (scaledY > view.getHeight()) {
-            scaledY = view.getHeight()
-                    - (scaleAbsoluteCoordinateToViewCoordinate(TEST_PAGE_HEIGHT) - scaledY);
+            scaledY =
+                    view.getHeight()
+                            - (scaleAbsoluteCoordinateToViewCoordinate(TEST_PAGE_HEIGHT) - scaledY);
         }
 
         mLinkClickHandler.mUrl = null;
@@ -568,24 +620,30 @@ public class PaintPreviewPlayerTest extends BlankUiTestActivityTestCase {
         device.waitForIdle();
         device.click(scaledX + locationXY[0], scaledY + locationXY[1]);
 
-        CriteriaHelper.pollUiThread(() -> {
-            GURL url = mLinkClickHandler.mUrl;
-            String msg = "Link press on abs (" + x + ", " + y + ") failed.";
-            Criteria.checkThat(msg, url, Matchers.notNullValue());
-            Criteria.checkThat(msg, url.getSpec(), Matchers.is(expectedUrl));
-        }, TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    GURL url = mLinkClickHandler.mUrl;
+                    String msg = "Link press on abs (" + x + ", " + y + ") failed.";
+                    Criteria.checkThat(msg, url, Matchers.notNullValue());
+                    Criteria.checkThat(msg, url.getSpec(), Matchers.is(expectedUrl));
+                },
+                TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     private void makeLayoutWide() throws Exception {
         CallbackHelper widened = new CallbackHelper();
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mLayout.getLayoutParams();
-            params.width = mLayout.getWidth() * 2;
-            params.height = mLayout.getHeight() * 2;
-            mLayout.setLayoutParams(params);
-            mLayout.invalidate();
-            widened.notifyCalled();
-        });
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    FrameLayout.LayoutParams params =
+                            (FrameLayout.LayoutParams) mLayout.getLayoutParams();
+                    params.width = mLayout.getWidth() * 2;
+                    params.height = mLayout.getHeight() * 2;
+                    mLayout.setLayoutParams(params);
+                    mLayout.invalidate();
+                    widened.notifyCalled();
+                });
         widened.waitForFirst();
     }
 }

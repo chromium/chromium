@@ -33,9 +33,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * Unit test for {@link CustomTabActivityLifecycleUmaTracker}.
- */
+/** Unit test for {@link CustomTabActivityLifecycleUmaTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(shadows = {ShadowSystemClock.class})
@@ -75,7 +73,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_SamePackageName() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.PACKAGE_NAME);
     }
 
@@ -83,7 +81,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffPackageName() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_B, REFERRER_B, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                PACKAGE_B, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.DIFFERENT);
     }
 
@@ -91,7 +89,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_SameReferrer() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_A, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.REFERRER);
     }
 
@@ -99,7 +97,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffReferrer() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_B, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                null, REFERRER_B, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.DIFFERENT);
     }
 
@@ -107,7 +105,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_Mixed_ReferrerThenPackage() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, "Random referral", TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                PACKAGE_A, "Random referral", TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.MIXED);
     }
 
@@ -115,7 +113,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_Mixed_PackageThenReferrer() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                null, REFERRER_A, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                null, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.MIXED);
     }
 
@@ -123,7 +121,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffUri() {
         recordPrefForTesting(null, REFERRER_A, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /*launchWithSameUri=*/false);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ false);
         assertNoInteractionRecorded();
     }
 
@@ -131,7 +129,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
     public void testRecord_DiffTaskId() {
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, 99, mPref, /*launchWithSameUri=*/true);
+                PACKAGE_A, REFERRER_A, 99, mPref, /* launchWithSameUri= */ true);
         assertInteractionRecorded(ClientIdentifierType.PACKAGE_NAME);
     }
 
@@ -141,7 +139,7 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
         recordPrefForTesting(PACKAGE_A, null, TASK_ID_123);
         CustomTabActivityLifecycleUmaTracker.recordForRetainableSessions(
-                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /*launchWithSameUri=*/true);
+                PACKAGE_A, REFERRER_A, TASK_ID_123, mPref, /* launchWithSameUri= */ true);
         assertNoInteractionRecorded();
     }
 
@@ -151,13 +149,19 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
         Uri activityReferrer = Uri.parse("android-app://activity.referrer");
         String extraReferrerName = "android-app://extra.referrer.name";
 
-        Assert.assertEquals("IntentHandler.EXTRA_ACTIVITY_REFERRER should be used.",
+        Assert.assertEquals(
+                "IntentHandler.EXTRA_ACTIVITY_REFERRER should be used.",
                 extraActivityReferrer,
-                getReferrer(buildMockActivity(
-                        extraActivityReferrer, activityReferrer, extraReferrerName)));
-        Assert.assertEquals("Activity#getReferrer should be used.", activityReferrer.toString(),
+                getReferrer(
+                        buildMockActivity(
+                                extraActivityReferrer, activityReferrer, extraReferrerName)));
+        Assert.assertEquals(
+                "Activity#getReferrer should be used.",
+                activityReferrer.toString(),
                 getReferrer(buildMockActivity(null, activityReferrer, extraReferrerName)));
-        Assert.assertEquals("Intent.EXTRA_REFERRER should be used.", extraReferrerName,
+        Assert.assertEquals(
+                "Intent.EXTRA_REFERRER should be used.",
+                extraReferrerName,
                 getReferrer(buildMockActivity(null, null, extraReferrerName)));
     }
 
@@ -178,12 +182,17 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     private void assertInteractionRecorded(@ClientIdentifierType String expectedSuffix) {
         String prefix = "CustomTabs.RetainableSessionsV2.TimeBetweenLaunch";
-        String[] suffixes = {ClientIdentifierType.REFERRER, ClientIdentifierType.PACKAGE_NAME,
-                ClientIdentifierType.MIXED, ClientIdentifierType.DIFFERENT};
+        String[] suffixes = {
+            ClientIdentifierType.REFERRER,
+            ClientIdentifierType.PACKAGE_NAME,
+            ClientIdentifierType.MIXED,
+            ClientIdentifierType.DIFFERENT
+        };
 
         for (String suffix : suffixes) {
             String histogram = prefix + suffix;
-            Assert.assertEquals("<" + histogram + "> record is different.",
+            Assert.assertEquals(
+                    "<" + histogram + "> record is different.",
                     expectedSuffix.equals(suffix) ? 1 : 0,
                     RecordHistogram.getHistogramTotalCountForTesting(histogram));
         }
@@ -215,7 +224,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_SamePackageName() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.PACKAGE_NAME,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         PACKAGE_A, PACKAGE_A, REFERRER_A, null, TASK_ID_123, 99));
@@ -223,7 +233,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_DiffPackageName() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.DIFFERENT,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         PACKAGE_A, PACKAGE_B, REFERRER_B, null, TASK_ID_123, TASK_ID_123));
@@ -231,7 +242,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_SameReferrer() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.REFERRER,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         null, null, REFERRER_A, REFERRER_A, TASK_ID_123, TASK_ID_123));
@@ -239,7 +251,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_DiffReferrer() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.DIFFERENT,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         null, null, REFERRER_A, REFERRER_B, TASK_ID_123, TASK_ID_123));
@@ -247,7 +260,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_Mixed_ReferrerThenPackage() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.MIXED,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         PACKAGE_A, null, "Random referral", REFERRER_A, TASK_ID_123, TASK_ID_123));
@@ -255,7 +269,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_Mixed_PackageThenReferrer() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.MIXED,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         null, PACKAGE_A, REFERRER_A, null, TASK_ID_123, TASK_ID_123));
@@ -263,7 +278,8 @@ public class CustomTabActivityLifecycleUmaTrackerUnitTest {
 
     @Test
     public void testClientId_DiffTaskId() {
-        Assert.assertEquals("ClientIdentifierType mismatch.",
+        Assert.assertEquals(
+                "ClientIdentifierType mismatch.",
                 CustomTabActivityLifecycleUmaTracker.ClientIdentifierType.PACKAGE_NAME,
                 CustomTabActivityLifecycleUmaTracker.getClientIdentifierType(
                         PACKAGE_A, PACKAGE_A, REFERRER_A, null, 99, TASK_ID_123));

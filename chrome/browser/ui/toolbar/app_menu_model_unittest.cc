@@ -14,22 +14,31 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/defaults.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service_factory.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/menu_model_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/signin/public/base/consent_level.h"
@@ -37,6 +46,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 
@@ -47,9 +57,9 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
+#include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "components/user_manager/fake_user_manager.h"
-
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -122,9 +132,6 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class ExtensionsMenuModelTest : public AppMenuModelTest,
@@ -148,6 +155,9 @@ class ExtensionsMenuModelTest : public AppMenuModelTest,
   ExtensionsMenuModelTest& operator=(const ExtensionsMenuModelTest&) = delete;
 
   ~ExtensionsMenuModelTest() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -158,13 +168,17 @@ INSTANTIATE_TEST_SUITE_P(
 class TestAppMenuModelCR2023 : public AppMenuModelTest {
  public:
   TestAppMenuModelCR2023() {
-    feature_list_.InitWithFeatures({features::kChromeRefresh2023}, {});
+    feature_list_.InitWithFeatures(
+        {features::kTabOrganization, features::kChromeRefresh2023}, {});
   }
 
   TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
   TestAppMenuModelCR2023& operator=(const TestAppMenuModelCR2023&) = delete;
 
   ~TestAppMenuModelCR2023() override = default;
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Copies parts of MenuModelTest::Delegate and combines them with the
@@ -227,7 +241,8 @@ TEST_F(AppMenuModelTest, Basics) {
   // becomes visible. Note that profile migration is only enabled if Lacros is
   // the only browser.
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({ash::features::kLacrosOnly}, {});
+  feature_list.InitAndEnableFeature(
+      ash::standalone_browser::features::kLacrosOnly);
 #endif
 
   FakeIconDelegate fake_delegate;
@@ -351,6 +366,14 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   size_t performance_index =
       toolModel.GetIndexOfCommandId(IDC_PERFORMANCE).value();
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
+}
+
+TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
+  AppMenuModel model(this, browser());
+  model.Init();
+  size_t organize_tabs_index =
+      model.GetIndexOfCommandId(IDC_ORGANIZE_TABS).value();
+  EXPECT_TRUE(model.IsEnabledAt(organize_tabs_index));
 }
 
 TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
@@ -506,3 +529,54 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+class TestAppMenuModelSafetyHubTest : public AppMenuModelTest {
+ public:
+  TestAppMenuModelSafetyHubTest() {
+    feature_list_.InitAndEnableFeature(features::kSafetyHub);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(TestAppMenuModelSafetyHubTest, SafetyHubMenuNotification) {
+  // When there is no issue identified by Safety Hub, there shouldn't be an
+  // entry in the AppMenu either.
+  AppMenuModel model(this, browser());
+  model.Init();
+  EXPECT_FALSE(model.GetIndexOfCommandId(IDC_OPEN_SAFETY_HUB).has_value());
+
+  // Creating and showing a notification for a site that has never been
+  // interacted with, will be caught by the notification permission review
+  // service, and raised as a Safety Hub issue to be reviewed. In this case a
+  // menu entry should be there with the action to open the Safety Hub settings
+  // page.
+  auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile());
+  const GURL kUrl("https://example.com");
+  hcsm->SetContentSettingDefaultScope(
+      kUrl, GURL(), ContentSettingsType::NOTIFICATIONS, CONTENT_SETTING_ALLOW);
+  auto* notifications_engagement_service =
+      NotificationsEngagementServiceFactory::GetForProfile(profile());
+  // There should be at least an average of 1 recorded notification per day, for
+  // the past week to trigger a Safety Hub review.
+  notifications_engagement_service->RecordNotificationDisplayed(kUrl, 7);
+
+  // Update the notification permissions review service for it to capture the
+  // recently added notification permission.
+  auto* notification_permissions_service =
+      NotificationPermissionsReviewServiceFactory::GetForProfile(profile());
+  safety_hub_test_util::UpdateSafetyHubServiceAsync(
+      notification_permissions_service);
+
+  AppMenuModel new_model(this, browser());
+  new_model.Init();
+
+  // The notification should be shown with the correct label and command.
+  EXPECT_TRUE(new_model.GetIndexOfCommandId(IDC_OPEN_SAFETY_HUB).has_value());
+  const size_t menu_index =
+      new_model.GetIndexOfCommandId(IDC_OPEN_SAFETY_HUB).value();
+  new_model.ActivatedAt(menu_index);
+  EXPECT_TRUE(new_model.IsEnabledAt(menu_index));
+  EXPECT_FALSE(new_model.GetLabelAt(menu_index).empty());
+}

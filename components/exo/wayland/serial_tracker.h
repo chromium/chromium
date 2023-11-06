@@ -31,6 +31,8 @@ class SerialTracker {
     OTHER_EVENT,
   };
 
+  static std::string ToString(EventType type);
+
   explicit SerialTracker(struct wl_display* display);
   SerialTracker(const SerialTracker&) = delete;
   SerialTracker& operator=(const SerialTracker&) = delete;

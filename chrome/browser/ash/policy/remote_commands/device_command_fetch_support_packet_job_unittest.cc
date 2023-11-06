@@ -200,6 +200,10 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailWithWrongPayload) {
 }
 
 TEST_F(DeviceCommandFetchSupportPacketTest, FailForNonKioskDevice) {
+  // The expected result payload for when the command fails because of not being
+  // supported on the active session type.
+  constexpr char kExpectedResultPayload[] = R"({"result":2})";
+
   // Set LoginState as non-kiosk device.
   ash::LoginState::Get()->SetLoggedInState(
       ash::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
@@ -225,7 +229,7 @@ TEST_F(DeviceCommandFetchSupportPacketTest, FailForNonKioskDevice) {
   ASSERT_TRUE(job_finished_future.Wait()) << "Job did not finish.";
   // Expect the job to fail for non-kiosk device.
   EXPECT_EQ(job->status(), RemoteCommandJob::FAILED);
-  EXPECT_EQ(*job->GetResultPayload(), kCommandNotEnabledForUserMessage);
+  EXPECT_EQ(*job->GetResultPayload(), kExpectedResultPayload);
   histogram_tester_.ExpectUniqueSample(kFetchSupportPacketFailureHistogramName,
                                        EnterpriseFetchSupportPacketFailureType::
                                            kFailedOnCommandEnabledForUserCheck,

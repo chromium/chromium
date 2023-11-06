@@ -398,7 +398,7 @@ void WebFrameWidgetImpl::Close() {
 }
 
 WebLocalFrame* WebFrameWidgetImpl::LocalRoot() const {
-  return local_root_;
+  return local_root_.Get();
 }
 
 bool WebFrameWidgetImpl::RequestedMainFramePending() {
@@ -1885,6 +1885,10 @@ void WebFrameWidgetImpl::SetHaveScrollEventHandlers(bool has_handlers) {
 void WebFrameWidgetImpl::SetEventListenerProperties(
     cc::EventListenerClass listener_class,
     cc::EventListenerProperties listener_properties) {
+  if (widget_base_->WillBeDestroyed()) {
+    return;
+  }
+
   widget_base_->LayerTreeHost()->SetEventListenerProperties(
       listener_class, listener_properties);
 
@@ -2315,6 +2319,8 @@ void WebFrameWidgetImpl::InitializeCompositingInternal(
       previous_widget ? static_cast<WebFrameWidgetImpl*>(previous_widget)
                             ->widget_base_.get()
                       : nullptr);
+
+  probe::DidInitializeFrameWidget(local_root_->GetFrame());
 
   // TODO(bokan): This seems wrong. Page may host multiple FrameWidgets so this
   // will call DidInitializeCompositing once per FrameWidget. It probably makes
@@ -4118,7 +4124,8 @@ void WebFrameWidgetImpl::CollapseSelection() {
 
   focused_frame->SelectRange(blink::WebRange(range.EndOffset(), 0),
                              blink::WebLocalFrame::kHideSelectionHandle,
-                             mojom::blink::SelectionMenuBehavior::kHide);
+                             mojom::blink::SelectionMenuBehavior::kHide,
+                             blink::WebLocalFrame::kSelectionDoNotSetFocus);
 }
 
 void WebFrameWidgetImpl::Replace(const String& word) {
@@ -4178,7 +4185,8 @@ void WebFrameWidgetImpl::AdjustSelectionByCharacterOffset(
   focused_frame->SelectRange(blink::WebRange(range.StartOffset() + start,
                                              range.length() + end - start),
                              blink::WebLocalFrame::kPreserveHandleVisibility,
-                             selection_menu_behavior);
+                             selection_menu_behavior,
+                             blink::WebLocalFrame::kSelectionSetFocus);
 }
 
 void WebFrameWidgetImpl::MoveRangeSelectionExtent(
@@ -4346,7 +4354,7 @@ cc::LayerTreeHost* WebFrameWidgetImpl::LayerTreeHostForTesting() const {
 }
 
 ScreenMetricsEmulator* WebFrameWidgetImpl::DeviceEmulator() {
-  return device_emulator_;
+  return device_emulator_.Get();
 }
 
 bool WebFrameWidgetImpl::AutoResizeMode() {
@@ -4874,6 +4882,10 @@ void WebFrameWidgetImpl::NotifyZoomLevelChanged(LocalFrame* root) {
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyZoomLevelChanged();
   }
+}
+
+bool WebFrameWidgetImpl::WillBeDestroyed() const {
+  return widget_base_->WillBeDestroyed();
 }
 
 }  // namespace blink

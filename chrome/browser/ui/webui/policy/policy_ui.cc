@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -25,7 +26,6 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
-#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
 #include "components/policy/policy_constants.h"
@@ -159,16 +159,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kPolicyLogsStrings);
 
-  source->AddBoolean(
-      "loggingEnabled",
-      policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled());
+  std::string variations_json_value;
+  base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
 
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    std::string variations_json_value;
-    base::JSONWriter::Write(GetVersionInfo(), &variations_json_value);
-
-    source->AddString("versionInfo", variations_json_value);
-  }
+  source->AddString("versionInfo", variations_json_value);
 
   source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
   source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
@@ -222,36 +216,11 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
       return policy::IsPolicyNameSensitive(policy.GetString());
     });
 
-    std::string policy_names_to_types_str = "{";
-    for (auto& policy_name : policy_names) {
-      base::Value::Type policy_type =
-          chrome_schema.GetKnownProperty(policy_name.GetString()).type();
-      std::string policy_type_string;
-      switch (policy_type) {
-        case base::Value::Type::BOOLEAN:
-          policy_type_string = "boolean";
-          break;
-        case base::Value::Type::DICT:
-          policy_type_string = "dictionary";
-          break;
-        case base::Value::Type::INTEGER:
-          policy_type_string = "integer";
-          break;
-        case base::Value::Type::LIST:
-          policy_type_string = "list";
-          break;
-        case base::Value::Type::STRING:
-          policy_type_string = "string";
-          break;
-        default:
-          break;
-      }
-      policy_names_to_types_str +=
-          "\"" + policy_name.GetString() + "\":\"" + policy_type_string + "\",";
-    }
-    policy_names_to_types_str.pop_back();  // remove last divider
-    policy_names_to_types_str += "}";
-    source->AddString("policyNamesToTypes", policy_names_to_types_str);
+    std::string policy_names_to_types;
+    JSONStringValueSerializer serializer(&policy_names_to_types);
+    serializer.Serialize(
+        policy::utils::GetPolicyNameToTypeMapping(policy_names, chrome_schema));
+    source->AddString("policyNamesToTypes", policy_names_to_types);
 
     // Strings for policy levels, scopes and sources.
     static constexpr webui::LocalizedString kPolicyTestTypes[] = {

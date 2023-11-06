@@ -629,8 +629,6 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
           ? entry->processingEnd()
           : MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
 
-  base::TimeDelta input_delay =
-      base::Milliseconds(entry->processingStart() - entry->startTime());
   base::TimeDelta processing_time =
       base::Milliseconds(entry->processingEnd() - entry->processingStart());
   base::TimeDelta time_to_next_paint =
@@ -643,22 +641,20 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
 
   if (entry->name() == "pointerdown") {
     pending_pointer_down_start_time_ = entry->startTime();
-    pending_pointer_down_input_delay_ = input_delay;
     pending_pointer_down_processing_time_ = processing_time;
     pending_pointer_down_time_to_next_paint_ = time_to_next_paint;
   } else if (entry->name() == "pointerup") {
     if (pending_pointer_down_time_to_next_paint_.has_value() &&
         interactive_detector) {
-      interactive_detector->RecordInputEventTimingUKM(
-          pending_pointer_down_input_delay_.value(),
+      interactive_detector->RecordInputEventTimingUMA(
           pending_pointer_down_processing_time_.value(),
-          pending_pointer_down_time_to_next_paint_.value(), entry->name());
+          pending_pointer_down_time_to_next_paint_.value());
     }
   } else if ((entry->name() == "click" || entry->name() == "keydown" ||
               entry->name() == "mousedown") &&
              interactive_detector) {
-    interactive_detector->RecordInputEventTimingUKM(
-        input_delay, processing_time, time_to_next_paint, entry->name());
+    interactive_detector->RecordInputEventTimingUMA(processing_time,
+                                                    time_to_next_paint);
   }
 
   // Event Timing
@@ -888,7 +884,7 @@ void WindowPerformance::PageVisibilityChanged() {
 EventCounts* WindowPerformance::eventCounts() {
   if (!event_counts_)
     event_counts_ = MakeGarbageCollected<EventCounts>();
-  return event_counts_;
+  return event_counts_.Get();
 }
 
 uint64_t WindowPerformance::interactionCount() const {
@@ -931,7 +927,7 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
 
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
-        lcpp->OnLargestContentfulPaintUpdated(element);
+        lcpp->OnLargestContentfulPaintUpdated(*element);
       }
     }
   }

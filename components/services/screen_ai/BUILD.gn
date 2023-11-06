@@ -94,3 +94,18 @@ source_set("unit_tests") {
     data_deps = [ ":test_support_data" ]
   }
 }
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "public/test/fake_screen_ai_annotator.cc",
+    "public/test/fake_screen_ai_annotator.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/services/screen_ai/public/mojom",
+    "//ui/accessibility:test_support",
+  ]
+}

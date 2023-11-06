@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
 <translation id="131421566576084655">နောက်ဆုံး ဒေတာပြင်ဆင်သတ်မှတ်သည့်ရက်စွဲ ရှာမတွေ့ပါ</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732">ဤအသုံးပြုသူကို <ph name="MANAGER" /> က စီမံခန့်ခွဲသည့်အတွက် ဆက်တင်များကို အဝေးထိန်းစီမံပြီး အသုံးပြုသူ၏လုပ်ဆောင်ချက်ကို စောင့်ကြည့်နိုင်သည်။</translation>
 <translation id="150962533380566081">PUK မမှန်ကန်ပါ။</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1515129336378114413">ဘရောင်ဇာ ပင်မစာမျက်နှာ</translation>
 <translation id="1526389707933164996">စခရင်နားချိန်ပုံ လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">နောက်ခံအဖြစ် သတ်မှတ်ရန်</translation>
 <translation id="1578784163189013834">စခရင်နားချိန်ပုံ နောက်ခံရွေးရန်</translation>
 <translation id="160633243685262989">ပုံ အစမ်းကြည့်ရှုရန်</translation>
+<translation id="1611649489706141841">ရှေ့သို့</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
@@ -131,6 +134,7 @@
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
 <translation id="1858620243986915808">ဖန်သားပြင်ဓာတ်ပုံ ပူးတွဲရန်</translation>
+<translation id="1871413952174074704">APN တွင် အက္ခရာ <ph name="CHAR_LIMIT" /> လုံးထက် ပိုရှိ၍မရပါ</translation>
 <translation id="1871569928317311284">အမှောင်နောက်ခံ ပိတ်ရန်</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="188114911237521550">အမှောင်မုဒ် ပိတ်ရန်</translation>
@@ -186,6 +190,7 @@
 <translation id="2236746079896696523">ကီးဘုတ်နောက်ခံမီး ခလုတ်</translation>
 <translation id="2240366984605217732">အပြင်အဆင် ပြောင်းရန်</translation>
 <translation id="225692081236532131">စဖွင့်ခြင်း အခြေအနေ</translation>
+<translation id="2267285889943769271">ဖန်သားပြင်ဓာတ်ပုံ ထည့်ရန်</translation>
 <translation id="2271469253353559191">အမှောင်မုဒ် အချိန်ဇယား</translation>
 <translation id="2276999893457278469">ထိပ်တန်းအကူအညီ အကြောင်းအရာ</translation>
 <translation id="2279051792571591988">မူရင်းအခြေအနေ ပြန်ပြောင်းရန်</translation>
@@ -287,6 +292,7 @@
 <translation id="3226405216343213872">စကင်ဖတ်စက်များ ရှာနေသည်</translation>
 <translation id="3226657629376379887">အပြင်အဆင် လုပ်ဆောင်ချက် မီနူး</translation>
 <translation id="3246869037381808805">1 ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
+<translation id="324961752321393509">သင့်စီမံခန့်ခွဲသူသည် ဤအက်ပ်ကို ခွင့်မပြုပါ</translation>
 <translation id="3268178239013324452">မအောင်မြင်ပါ - တံခါးပွင့်နေသည်</translation>
 <translation id="3275729367986477355">ချန်နယ်ပုံ</translation>
 <translation id="3283504360622356314">{0,plural, =1{ဖိုင် တည်းဖြတ်ရန်}other{ဖိုင်များ တည်းဖြတ်ရန်}}</translation>
@@ -338,7 +344,6 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
-<translation id="3607216139080387279">စခရင်နားချိန်ပုံ ပြရန်</translation>
 <translation id="361575905210396100">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3651050199673793219">အပူချိန်ယူနစ်ရွေးရန်</translation>
@@ -350,7 +355,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
 <translation id="3748026146096797577">ချိတ်ဆက် မထား</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
-<translation id="3766934827878963937">၁ နာရီကြာ</translation>
 <translation id="3771294271822695279">ဗီဒီယို ဖိုင်များ</translation>
 <translation id="3784455785234192852">သော့ခတ်</translation>
 <translation id="380097101658023925">rgb သတ်မှတ်ချက်များ</translation>
@@ -430,6 +434,7 @@
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ခလုတ် နှိပ်လိုက်သည်</translation>
+<translation id="4354430579665871434">ကီး</translation>
 <translation id="435692326371619097">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">ဖြတ်လမ်းလင့်ခ်အားလုံး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
@@ -692,6 +697,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">အမှောင်နောက်ခံ ဖွင့်ရန်</translation>
 <translation id="628726841779494414">ပရင်တာဆက်တင်များတွင် သင့်ပရင်တာများကို စီမံနိုင်သည်</translation>
+<translation id="6292095526077353682">အားသွင်းနေစဉ် စခရင်နားချိန်ပုံပြပါ</translation>
 <translation id="629550705077076970">ကီးဘုတ် မှိန်သွားခြင်း</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> စစ်ဆေးမှုကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="631063167932043783">Explore အက်ပ်</translation>
@@ -754,6 +760,7 @@
 <translation id="6659594942844771486">တဘ်</translation>
 <translation id="6673898378497337661">ကီးဘုတ်တောက်ပမှု တိုးရန်</translation>
 <translation id="6692996468359469499">သင့်ရွေးချယ်မှုနှင့် သက်ဆိုင်သည့် အချက်အလက်များ ရယူခြင်း</translation>
+<translation id="6694534975463174713">လော့ခ် သင်္ကေတ</translation>
 <translation id="6704062477274546131">DNS ဖြေရှင်းချက်</translation>
 <translation id="6723839937902243910">ပါဝါ</translation>
 <translation id="6723847290197874913">ကီးဘုတ်နောက်ခံအလင်းရောင်</translation>
@@ -944,6 +951,7 @@
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8246209727385807362">အမျိုးအမည်မသိရသော ဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="8262870577632766028">၁ နာရီ</translation>
 <translation id="827422111966801947">မဲနယ်</translation>
 <translation id="8286154143153872371">နောက်ခံကိုကြည့်ရန် ကွန်ရက်ချိတ်ဆက်၍ စာမျက်နှာကို ပြန်လည် စတင်ပါ။</translation>
 <translation id="8291967909914612644">ပင်မထောက်ပံ့သူ နိုင်ငံ</translation>
@@ -1008,6 +1016,7 @@
 <translation id="8747900814994928677">ပြောင်းလဲမှုကို အတည်ပြုခြင်း</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos အယ်လ်ဘမ်</translation>
+<translation id="8775713578693478175">မိုဒမ် APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">ဖြတ်လမ်းလင့်ခ်ကို “<ph name="CONFLICT_ACCEL_NAME" />” အတွက် သုံးထားသည်။ ဖြတ်လမ်းလင့်ခ်အသစ်တစ်ခုကို နှိပ်ပါ။ မူရင်းဖြတ်လမ်းလင့်ခ်ကို အစားထိုးရန် ဤဖြတ်လမ်းလင့်ခ်ကို ထပ်နှိပ်ပါ။</translation>
 <translation id="879568662008399081">ဤကွန်ရက်တွင် စတင်ဝင်ရန်စာမျက်နှာ ရှိနိုင်သည်</translation>
@@ -1073,11 +1082,9 @@
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 <translation id="9122602430962285795">ပြန်ချိတ်ဆက်ရန် ဆက်တင်များသို့ သွားပါ</translation>
 <translation id="9126720536733509015">စာမျက်နှာအများအပြားကို PDF တစ်ခုအဖြစ်သိမ်းရန်</translation>
-<translation id="9133104754938025929">ဘက်ထရီချွေတာရန် စခရင်နားချိန်ပုံသည် အားသွင်းချိန်တွင်သာ အလုပ်လုပ်သည်။</translation>
 <translation id="9133772297793293778">သင့်ကီးဘုတ်တွင် မွမ်းမံခလုတ် ၁-၄ ခုနှင့်အတူ အခြားခလုတ် ၁ ခုကို နှိပ်ပါ။ တည်းဖြတ်မုဒ်မှ ထွက်ရန် Alt + Esc နှိပ်ပါ။</translation>
 <translation id="9137526406337347448">Google ဝန်ဆောင်မှုများ</translation>
 <translation id="9138630967333032450">ဘယ်ဘက် shift</translation>
-<translation id="9143347780818904997"><ph name="MINUTES" /> မိနစ်ကြာ</translation>
 <translation id="9149391708638971077">မှတ်ဉာဏ်စစ်ဆေးရန်</translation>
 <translation id="9161276708550942948">space ကီး</translation>
 <translation id="9173638680043580060">တစ်မိနစ်ပင် မကျန်တော့ပါ</translation>
@@ -1097,4 +1104,5 @@
 <translation id="979450713603643090">ပန်းရောင်ဖျော့</translation>
 <translation id="982713511914535780">အားသုံးစွဲမှု စစ်ဆေးရန်</translation>
 <translation id="987264212798334818">အထွေထွေ</translation>
+<translation id="995062385528875723">အသံပြောင်း စာလုံးများ၊ လက်တင်မဟုတ်သော အက္ခရာ (သို့) သင်္ကေတများ သုံး၍မရပါ</translation>
 </translationbundle>

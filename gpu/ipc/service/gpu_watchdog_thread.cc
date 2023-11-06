@@ -66,13 +66,11 @@ base::TimeDelta GetGpuWatchdogTimeout(bool software_rendering) {
 }
 
 GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
-                                     int init_factor,
                                      int restart_factor,
                                      bool is_test_mode,
                                      const std::string& thread_name)
     : base::Thread(thread_name),
       watchdog_timeout_(timeout),
-      watchdog_init_factor_(init_factor),
       watchdog_restart_factor_(restart_factor),
       is_test_mode_(is_test_mode) {
   base::CurrentThread::Get()->AddTaskObserver(this);
@@ -141,12 +139,11 @@ GpuWatchdogThread::~GpuWatchdogThread() {
 std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     bool start_backgrounded,
     base::TimeDelta timeout,
-    int init_factor,
     int restart_factor,
     bool is_test_mode,
     const std::string& thread_name) {
   auto watchdog_thread = base::WrapUnique(new GpuWatchdogThread(
-      timeout, init_factor, restart_factor, is_test_mode, thread_name));
+      timeout, restart_factor, is_test_mode, thread_name));
   watchdog_thread->Start();
   if (start_backgrounded)
     watchdog_thread->OnBackgrounded();
@@ -159,7 +156,7 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     bool software_rendering,
     const std::string& thread_name) {
   return Create(start_backgrounded, GetGpuWatchdogTimeout(software_rendering),
-                kInitFactor, kRestartFactor, /*test_mode=*/false, thread_name);
+                kRestartFactor, /*test_mode=*/false, thread_name);
 }
 
 // static
@@ -169,7 +166,6 @@ std::unique_ptr<GpuWatchdogThread> GpuWatchdogThread::Create(
     const std::string& thread_name) {
   DCHECK(existing_watchdog);
   return Create(start_backgrounded, existing_watchdog->watchdog_timeout_,
-                existing_watchdog->watchdog_init_factor_,
                 existing_watchdog->watchdog_restart_factor_,
                 /*test_mode=*/false, thread_name);
 }
@@ -288,16 +284,15 @@ void GpuWatchdogThread::DisableReportOnlyMode() {
 void GpuWatchdogThread::Init() {
   // Get and Invalidate weak_ptr should be done on the watchdog thread only.
   weak_ptr_ = weak_factory_.GetWeakPtr();
-  base::TimeDelta timeout = watchdog_timeout_ * kInitFactor;
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&GpuWatchdogThread::OnWatchdogTimeout, weak_ptr_),
-      timeout);
+      watchdog_timeout_);
 
   last_arm_disarm_counter_ = ReadArmDisarmCounter();
   watchdog_start_timeticks_ = base::TimeTicks::Now();
   last_on_watchdog_timeout_timeticks_ = watchdog_start_timeticks_;
-  next_on_watchdog_timeout_time_ = base::Time::Now() + timeout;
+  next_on_watchdog_timeout_time_ = base::Time::Now() + watchdog_timeout_;
   in_gpu_initialization_ = true;
 
 #if BUILDFLAG(IS_WIN)
@@ -305,7 +300,7 @@ void GpuWatchdogThread::Init() {
     if (base::ThreadTicks::IsSupported())
       base::ThreadTicks::WaitUntilInitialized();
     last_on_watchdog_timeout_thread_ticks_ = GetWatchedThreadTime();
-    remaining_watched_thread_ticks_ = timeout;
+    remaining_watched_thread_ticks_ = watchdog_timeout_;
   }
 #endif
 }
@@ -398,7 +393,7 @@ void GpuWatchdogThread::RestartWatchdogTimeoutTask(
       if (!is_paused_)
         return;
       is_paused_ = false;
-      timeout = watchdog_timeout_ * watchdog_init_factor_;
+      timeout = watchdog_timeout_;
       watchdog_resume_timeticks_ = base::TimeTicks::Now();
       break;
   }

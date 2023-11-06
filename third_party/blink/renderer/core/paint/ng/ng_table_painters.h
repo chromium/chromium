@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_NG_NG_TABLE_PAINTERS_H_
 
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
+#include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -24,7 +24,7 @@ class NGTablePainter {
  public:
   explicit NGTablePainter(const NGPhysicalBoxFragment& table_wrapper_fragment)
       : fragment_(table_wrapper_fragment) {
-    DCHECK(fragment_.IsTableNG());
+    DCHECK(fragment_.IsTable());
   }
 
   bool WillCheckColumnBackgrounds();
@@ -48,7 +48,7 @@ class NGTableSectionPainter {
   explicit NGTableSectionPainter(
       const NGPhysicalBoxFragment& table_section_fragment)
       : fragment_(table_section_fragment) {
-    DCHECK(fragment_.IsTableNGSection());
+    DCHECK(fragment_.IsTableSection());
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
@@ -58,7 +58,7 @@ class NGTableSectionPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& section_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const NGTableFragmentData::ColumnGeometries&);
+                              const TableFragmentData::ColumnGeometries&);
 
  private:
   const NGPhysicalBoxFragment& fragment_;
@@ -70,7 +70,7 @@ class NGTableRowPainter {
  public:
   explicit NGTableRowPainter(const NGPhysicalBoxFragment& table_row_fragment)
       : fragment_(table_row_fragment) {
-    DCHECK(fragment_.IsTableNGRow());
+    DCHECK(fragment_.IsTableRow());
   }
 
   void PaintBoxDecorationBackground(const PaintInfo&,
@@ -86,7 +86,7 @@ class NGTableRowPainter {
   void PaintColumnsBackground(const PaintInfo&,
                               const PhysicalOffset& row_paint_offset,
                               const PhysicalRect& columns_paint_rect,
-                              const NGTableFragmentData::ColumnGeometries&);
+                              const TableFragmentData::ColumnGeometries&);
 
  private:
   const NGPhysicalBoxFragment& fragment_;

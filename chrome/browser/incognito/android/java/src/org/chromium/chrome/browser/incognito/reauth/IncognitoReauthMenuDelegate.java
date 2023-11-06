@@ -14,10 +14,11 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
-import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -93,7 +94,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
 
     private BasicListMenu buildIncognitoReauthMenu() {
         MVCListAdapter.ModelList itemList = buildMenuItems();
-        return new BasicListMenu(
+        return BrowserUiListMenuUtils.getBasicListMenu(
                 mContext, itemList, this, R.color.menu_item_bg_color_dark_baseline);
     }
 
@@ -156,13 +157,14 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     private static MVCListAdapter.ListItem buildMenuListItemWithCustomApperance(
             @StringRes int titleId, @IdRes int menuId, @DrawableRes int startIconId,
             boolean enabled, int colorTint, int textAppearanceStyle, boolean textEllipsizedAtEnd) {
-        return new MVCListAdapter.ListItem(BasicListMenu.ListMenuItemType.MENU_ITEM,
+        return new MVCListAdapter.ListItem(
+                BasicListMenu.ListMenuItemType.MENU_ITEM,
                 new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
                         .with(ListMenuItemProperties.TITLE_ID, titleId)
                         .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
                         .with(ListMenuItemProperties.START_ICON_ID, startIconId)
                         .with(ListMenuItemProperties.ENABLED, enabled)
-                        .with(ListMenuItemProperties.TINT_COLOR_ID, colorTint)
+                        .with(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID, colorTint)
                         .with(ListMenuItemProperties.TEXT_APPEARANCE_ID, textAppearanceStyle)
                         .with(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END, textEllipsizedAtEnd)
                         .build());

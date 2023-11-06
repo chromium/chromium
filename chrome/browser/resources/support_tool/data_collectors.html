@@ -21,6 +21,10 @@ found in the LICENSE file.
     </cr-checkbox>
   </template>
 </iron-list>
+<cr-button class="select-all-button" id="selectAllButton"
+    on-click="onSelectAllClick_">
+  [[getSelectAllButtonLabel_(allSelected_)]]
+</cr-button>
 
 <template is="dom-if" if="[[enableScreenshot_]]" restamp>
   <screenshot-element id="screenshot"></screenshot-element>

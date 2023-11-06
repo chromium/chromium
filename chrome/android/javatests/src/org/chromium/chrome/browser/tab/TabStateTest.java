@@ -27,15 +27,15 @@ import java.io.File;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class TabStateTest {
-    @Rule
-    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+    @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     private TestTabModelDirectory mTestTabModelDirectory;
 
     @Before
     public void setUp() {
-        mTestTabModelDirectory = new TestTabModelDirectory(
-                ApplicationProvider.getApplicationContext(), "TabStateTest", null);
+        mTestTabModelDirectory =
+                new TestTabModelDirectory(
+                        ApplicationProvider.getApplicationContext(), "TabStateTest", null);
     }
 
     @After

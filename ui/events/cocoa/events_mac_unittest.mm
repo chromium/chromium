@@ -59,8 +59,9 @@ class EventsMacTest : public CocoaTest {
         Flip(window_location).ToCGPoint(), test_window());
     base::apple::ScopedCFTypeRef<CGEventRef> mouse(
         CGEventCreateMouseEvent(nullptr, type, screen_point, other_button));
-    CGEventSetFlags(mouse, event_flags);
-    return cocoa_test_event_utils::AttachWindowToCGEvent(mouse, test_window());
+    CGEventSetFlags(mouse.get(), event_flags);
+    return cocoa_test_event_utils::AttachWindowToCGEvent(mouse.get(),
+                                                         test_window());
   }
 
   // Creates a scroll event from a "real" mouse wheel (i.e. not a trackpad).
@@ -368,7 +369,7 @@ TEST_F(EventsMacTest, NoWindowLocation) {
   base::apple::ScopedCFTypeRef<CGEventRef> mouse(CGEventCreateMouseEvent(
       nullptr, kCGEventMouseMoved, location, kCGMouseButtonLeft));
 
-  NSEvent* event = [NSEvent eventWithCGEvent:mouse];
+  NSEvent* event = [NSEvent eventWithCGEvent:mouse.get()];
   EXPECT_FALSE(event.window);
   EXPECT_EQ(gfx::Point(location),
             gfx::ToFlooredPoint(

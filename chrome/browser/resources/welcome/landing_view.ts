@@ -13,9 +13,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './landing_view.html.js';
-import {LandingViewProxy, LandingViewProxyImpl} from './landing_view_proxy.js';
+import type {LandingViewProxy} from './landing_view_proxy.js';
+import {LandingViewProxyImpl} from './landing_view_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
-import {OnboardingBackgroundElement} from './shared/onboarding_background.js';
+import type {OnboardingBackgroundElement} from './shared/onboarding_background.js';
 import {WelcomeBrowserProxyImpl} from './welcome_browser_proxy.js';
 
 export interface LandingViewElement {

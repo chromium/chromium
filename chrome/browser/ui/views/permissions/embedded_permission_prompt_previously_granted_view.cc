@@ -14,7 +14,7 @@
 EmbeddedPermissionPromptPreviouslyGrantedView::
     EmbeddedPermissionPromptPreviouslyGrantedView(
         Browser* browser,
-        base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
+        base::WeakPtr<Delegate> delegate)
     : EmbeddedPermissionPromptBaseView(browser, delegate) {}
 
 EmbeddedPermissionPromptPreviouslyGrantedView::
@@ -39,23 +39,23 @@ void EmbeddedPermissionPromptPreviouslyGrantedView::RunButtonCallback(
 
   ButtonType button = GetButtonType(button_id);
   if (button == ButtonType::kContinueAllowing) {
-    // The permission is already allowed.
-    return;
+    delegate()->Acknowledge();
   }
 
   if (button == ButtonType::kStopAllowing) {
-    delegate()->Deny();
+    delegate()->StopAllowing();
   }
 }
 
 std::vector<
     EmbeddedPermissionPromptPreviouslyGrantedView::RequestLineConfiguration>
-EmbeddedPermissionPromptPreviouslyGrantedView::GetRequestLinesConfiguration() {
+EmbeddedPermissionPromptPreviouslyGrantedView::GetRequestLinesConfiguration()
+    const {
   return {{/*icon=*/nullptr, GetMessageText()}};
 }
 
 std::vector<EmbeddedPermissionPromptPreviouslyGrantedView::ButtonConfiguration>
-EmbeddedPermissionPromptPreviouslyGrantedView::GetButtonsConfiguration() {
+EmbeddedPermissionPromptPreviouslyGrantedView::GetButtonsConfiguration() const {
   std::vector<ButtonConfiguration> buttons;
   buttons.emplace_back(
       l10n_util::GetStringUTF16(IDS_EMBEDDED_PROMPT_CONTINUE_ALLOWING),

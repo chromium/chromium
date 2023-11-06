@@ -219,7 +219,10 @@ void WebFrameImpl::LogScriptWarning(NSString* script, NSError* error) {
   DLOG(WARNING) << "Script execution of:" << base::SysNSStringToUTF16(script)
                 << "\nfailed with error: "
                 << base::SysNSStringToUTF16(
-                       error.userInfo[NSLocalizedDescriptionKey]);
+                       error.userInfo[NSLocalizedDescriptionKey])
+                << "\nand exception: "
+                << base::SysNSStringToUTF16(
+                       error.userInfo[@"WKJavaScriptExceptionMessage"]);
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
@@ -238,11 +241,7 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
     base::WeakPtr<WebFrameImpl> weak_frame = base::AsWeakPtr(this);
     completion_handler = ^void(id value, NSError* error) {
       if (error) {
-        DLOG(WARNING) << "Script execution of:"
-                      << base::SysNSStringToUTF16(script)
-                      << "\nfailed with error: "
-                      << base::SysNSStringToUTF16(
-                             error.userInfo[NSLocalizedDescriptionKey]);
+        LogScriptWarning(script, error);
       }
       if (weak_frame) {
         weak_frame->CompleteRequest(message_id,

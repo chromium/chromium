@@ -97,6 +97,7 @@ source_set("core") {
     "navigation_manager_delegate.h",
     "navigation_manager_impl.h",
     "navigation_manager_impl.mm",
+    "navigation_util.mm",
     "referrer.cc",
     "synthesized_history_entry_data.h",
     "synthesized_history_entry_data.mm",

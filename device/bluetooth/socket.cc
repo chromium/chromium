@@ -178,7 +178,8 @@ void Socket::SendMore() {
   }
 
   bluetooth_socket_->Send(base::MakeRefCounted<net::WrappedIOBuffer>(
-                              static_cast<const char*>(pending_read_buffer)),
+                              static_cast<const char*>(pending_read_buffer),
+                              static_cast<size_t>(pending_read_buffer_size)),
                           pending_read_buffer_size,
                           base::BindOnce(&Socket::OnBluetoothSocketSend,
                                          weak_ptr_factory_.GetWeakPtr()),

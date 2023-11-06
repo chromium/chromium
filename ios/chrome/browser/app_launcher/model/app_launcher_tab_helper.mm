@@ -12,6 +12,7 @@
 #import "components/policy/core/browser/url_blocklist_manager.h"
 #import "components/reading_list/core/reading_list_model.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_abuse_detector.h"
+#import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
@@ -67,10 +68,12 @@ enum class ExternalURLRequestStatus {
 
 AppLauncherTabHelper::AppLauncherTabHelper(
     web::WebState* web_state,
-    AppLauncherAbuseDetector* abuse_detector)
+    AppLauncherAbuseDetector* abuse_detector,
+    bool incognito)
     : web::WebStatePolicyDecider(web_state),
       web_state_(web_state),
-      abuse_detector_(abuse_detector) {
+      abuse_detector_(abuse_detector),
+      incognito_(incognito) {
   DCHECK(abuse_detector_);
 }
 
@@ -88,18 +91,45 @@ void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
   delegate_ = delegate;
 }
 
+void AppLauncherTabHelper::SetBrowserPresentationProvider(
+    id<AppLauncherTabHelperBrowserPresentationProvider>
+        browser_presentation_provider) {
+  browser_presentation_provider_ = browser_presentation_provider;
+}
+
 void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
                                               const GURL& source_page_url,
-                                              bool link_transition) {
-  // Don't open external application if chrome is not active.
+                                              bool link_transition,
+                                              bool is_user_initiated) {
+  // Don't open external application if chrome is not active, or if the
+  // web_state is not visible.
   if ([[UIApplication sharedApplication] applicationState] !=
-      UIApplicationStateActive) {
+          UIApplicationStateActive ||
+      !web_state_->IsVisible() || !browser_presentation_provider_ ||
+      [browser_presentation_provider_ isBrowserPresentingUI]) {
     return;
   }
 
   // Don't try to open external application if a prompt is already active or an
   // app launch request is already pending completion.
   if (is_prompt_active_ || is_app_launch_request_pending_) {
+    return;
+  }
+
+  if (incognito_) {
+    ShowAppLaunchAlert(AppLauncherAlertCause::kOpenFromIncognito, url);
+    return;
+  }
+
+  if (!is_user_initiated) {
+    ShowAppLaunchAlert(AppLauncherAlertCause::kNoUserInteraction, url);
+    return;
+  }
+
+  // Show the a dialog for app store launches and external URL navigations that
+  // did not originate from a link tap.
+  if (UrlHasAppStoreScheme(url) || !link_transition) {
+    ShowAppLaunchAlert(AppLauncherAlertCause::kOther, url);
     return;
   }
 
@@ -116,50 +146,68 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
       if (delegate_) {
         is_app_launch_request_pending_ = true;
         delegate_->LaunchAppForTabHelper(
-            this, url, link_transition,
-            base::BindOnce(&AppLauncherTabHelper::AppLaunchCompleted,
+            this, url,
+            base::BindOnce(&AppLauncherTabHelper::OnAppLaunchCompleted,
                            weak_factory_.GetWeakPtr()));
       }
       return;
     }
     case ExternalAppLaunchPolicyPrompt: {
-      is_prompt_active_ = true;
-      base::WeakPtr<AppLauncherTabHelper> weak_this =
-          weak_factory_.GetWeakPtr();
-      if (!delegate_) {
-        return;
-      }
-      delegate_->ShowRepeatedAppLaunchAlert(
-          this,
-          base::BindOnce(&AppLauncherTabHelper::ShowRepeatedAppLaunchAlertDone,
-                         weak_factory_.GetWeakPtr(), url));
+      ShowAppLaunchAlert(AppLauncherAlertCause::kRepeatedLaunchDetected, url);
       return;
     }
   }
 }
 
-void AppLauncherTabHelper::AppLaunchCompleted() {
+void AppLauncherTabHelper::ShowAppLaunchAlert(AppLauncherAlertCause cause,
+                                              const GURL& url) {
+  if (!delegate_) {
+    return;
+  }
+  is_prompt_active_ = true;
+  delegate_->ShowAppLaunchAlert(
+      this, cause,
+      base::BindOnce(&AppLauncherTabHelper::OnShowAppLaunchAlertDone,
+                     weak_factory_.GetWeakPtr(), url));
+}
+
+void AppLauncherTabHelper::OnShowAppLaunchAlertDone(const GURL& url,
+                                                    bool user_allowed) {
+  if (!user_allowed || !delegate_) {
+    is_prompt_active_ = false;
+    return;
+  }
+
+  is_app_launch_request_pending_ = true;
+  delegate_->LaunchAppForTabHelper(
+      this, url,
+      base::BindOnce(&AppLauncherTabHelper::OnAppLaunchTried,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AppLauncherTabHelper::OnAppLaunchTried(bool success) {
+  if (success) {
+    return OnAppLaunchCompleted(success);
+  }
+  delegate_->ShowAppLaunchAlert(
+      this, AppLauncherAlertCause::kAppLaunchFailed,
+      base::BindOnce(&AppLauncherTabHelper::ShowFailureAlertDone,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void AppLauncherTabHelper::ShowFailureAlertDone(bool user_allowed) {
+  return OnAppLaunchCompleted(false);
+}
+
+void AppLauncherTabHelper::OnAppLaunchCompleted(bool success) {
   is_app_launch_request_pending_ = false;
+  is_prompt_active_ = false;
 
   // Call and clear all callbacks waiting for app launch completion.
   for (auto& callback : callbacks_waiting_for_app_launch_completion_) {
     std::move(callback).Run();
   }
   callbacks_waiting_for_app_launch_completion_.clear();
-}
-
-void AppLauncherTabHelper::ShowRepeatedAppLaunchAlertDone(const GURL& url,
-                                                          bool user_allowed) {
-  is_prompt_active_ = false;
-  if (!user_allowed || !delegate_) {
-    return;
-  }
-
-  is_app_launch_request_pending_ = true;
-  delegate_->LaunchAppForTabHelper(
-      this, url, /*link_transition=*/true,
-      base::BindOnce(&AppLauncherTabHelper::AppLaunchCompleted,
-                     weak_factory_.GetWeakPtr()));
 }
 
 void AppLauncherTabHelper::ShouldAllowRequest(
@@ -185,7 +233,8 @@ void AppLauncherTabHelper::ShouldAllowRequest(
         policy_decision_and_optional_app_launch_request.second.value();
     RequestToLaunchApp(app_launch_request.url,
                        app_launch_request.source_page_url,
-                       app_launch_request.link_transition);
+                       app_launch_request.link_transition,
+                       app_launch_request.has_user_gesture);
   }
 
   std::move(callback).Run(policy_decision);
@@ -275,7 +324,8 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
     // Launch the app if the URL is valid or if it is the first page of the
     // tab.
     optional_app_launch_request =
-        AppLaunchRequest{request_url, last_committed_url, is_link_transition};
+        AppLaunchRequest{request_url, last_committed_url, is_link_transition,
+                         request_info.has_user_gesture};
   }
   return {PolicyDecision::Cancel(), std::move(optional_app_launch_request)};
 }

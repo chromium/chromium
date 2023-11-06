@@ -100,6 +100,13 @@ message ConfigureVideoEncoder {
     REALTIME = 1;
   }
 
+  enum ContentHint {
+    NONE = 0;
+    MOTION = 1;
+    DETAIL = 2;
+    TEXT = 3;
+  }
+
   enum VideoEncoderBitrateMode {
     CONSTANT = 0;
     VARIABLE = 1;
@@ -132,6 +139,8 @@ message ConfigureVideoEncoder {
   optional LatencyMode latency_mode = 11;
 
   optional AlphaOption alpha = 12;
+
+  optional ContentHint content_hint = 13;
 }
 
 message ConfigureAudioDecoder {

@@ -7,8 +7,6 @@ import("../build_webui_tests.gni")
 assert(is_chromeos_ash || is_win || is_mac)
 
 build_webui_tests("build") {
-  resource_path_prefix = "inline_login"
-
   files = [
     "inline_login_test.ts",
     "inline_login_test_util.ts",

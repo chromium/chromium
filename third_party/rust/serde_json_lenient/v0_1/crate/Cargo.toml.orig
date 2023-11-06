@@ -1,6 +1,6 @@
 [package]
 name = "serde_json_lenient"
-version = "0.1.7" # remember to update html_root_url
+version = "0.1.8" # remember to update html_root_url
 authors = [
     "Adrian Taylor <adetaylor@chromium.org>",
     "Michael Bolin <bolinfest@gmail.com>",

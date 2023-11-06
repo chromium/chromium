@@ -4,7 +4,7 @@ UNKNOWN_TYPE | FormField[1][3] | * Confirm Password: |  | FormField[1][1]_1
 NAME_FIRST | FormField[2][4] | * First Name: |  | FormField[1][1]_1
 NAME_LAST | FormField[2][5] | * Last Name: |  | FormField[1][1]_1
 COMPANY_NAME | FormField[2][6] | * Company Name: |  | FormField[1][1]_1
-PHONE_HOME_WHOLE_NUMBER | FormField[2][7] | * Phone Number: |  | FormField[1][1]_1
+PHONE_HOME_CITY_AND_NUMBER | FormField[2][7] | * Phone Number: |  | FormField[1][1]_1
 ADDRESS_HOME_LINE1 | FormField[2][8] | * Address Line 1: |  | FormField[1][1]_1
 ADDRESS_HOME_LINE2 | FormField[2][9] | * Address Line 2: |  | FormField[1][1]_1
 ADDRESS_HOME_CITY | FormField[2][10] | * Suburb/City: |  | FormField[1][1]_1

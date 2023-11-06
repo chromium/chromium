@@ -4136,13 +4136,18 @@ if (enable_java_templates) {
         }
         deps = [ ":$_build_config_target_name" ]
         if (_is_robolectric) {
-          # For robolectric tests, we also add the normal sdk jar to the
-          # classpath since whenever we start using a new Android SDK,
-          # robolectric doesn't support it, and they often take a few months to
-          # support it. This causes issues when mocking classes that reference
-          # new SDK classes, so providing our normal SDK will allow these
-          # classes to resolve. For an example, see crbug.com/1350963.
-          extra_classpath_jars = [ android_sdk_jar ]
+          # For robolectric tests, we add the sdk stub jars so that classes
+          # that reference Android types can be loaded without throwing
+          # NoClassDefFoundErrors. The Robolectric sandbox makes these types
+          # available in non-stub form, but not until test classes are loaded
+          # into it. Before being loaded into the sandbox, they must be loaded
+          # outside of it in order to read their annotations (which configure
+          # the sandbox), and to enumerate test methods.
+          extra_classpath_jars = [
+            android_sdk_jar,
+            "$android_sdk/optional/android.test.base.jar",
+            "$android_sdk/optional/android.test.runner.jar",
+          ]
         }
       }
     }
@@ -4195,6 +4200,39 @@ if (enable_java_templates) {
                                ])
         if (!defined(deps)) {
           deps = []
+        }
+        if (is_cronet_build) {
+          _abs_deps = []
+          if (defined(invoker.deps)) {
+            foreach(dep, invoker.deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          if (defined(invoker.public_deps)) {
+            foreach(dep, invoker.public_deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          if (defined(invoker.srcjar_deps)) {
+            foreach(dep, invoker.srcjar_deps) {
+              _abs_deps += [ get_label_info(dep, "label_no_toolchain") ]
+            }
+          }
+          _abs_path_source_files = []
+          if (defined(invoker.sources)) {
+            foreach(source_file, invoker.sources) {
+              _abs_path_source_files +=
+                  [ get_path_info(source_file, "abspath") ]
+            }
+          }
+
+          # See crbug/1449896 for more details about the metadata fields
+          # and why they are added.
+          metadata = {
+            source_files = _abs_path_source_files
+            all_deps = _abs_deps
+            target_type = [ _type ]
+          }
         }
         if (!defined(public_deps)) {
           public_deps = []

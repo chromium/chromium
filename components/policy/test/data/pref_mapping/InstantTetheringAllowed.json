@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "tether.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "InstantTetheringAllowed": false
+        },
+        "prefs": {
+          "tether.allowed": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "InstantTetheringAllowed": true
+        },
+        "prefs": {
+          "tether.allowed": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

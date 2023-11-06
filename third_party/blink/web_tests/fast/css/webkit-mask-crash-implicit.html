@@ -3,15 +3,15 @@
 <script src="../../resources/js-test.js"></script>
 <style>
 .box {
--webkit-mask-repeat: repeat-x; -webkit-mask-repeat-y: inherit;
+mask-repeat: repeat-x;
 }
 </style>
 <script>
 if (window.internals)
     testRunner.dumpAsText();
-shouldBeEqualToString("document.styleSheets[1].rules[0].style.cssText", "-webkit-mask-repeat-x: repeat; -webkit-mask-repeat-y: inherit;");
+shouldBeEqualToString("document.styleSheets[1].rules[0].style.cssText", "mask-repeat: repeat-x;");
 shouldBeEqualToString("document.styleSheets[1].rules[0].style.getPropertyValue('-webkit-mask')", "");
-shouldBeEqualToString("document.styleSheets[1].rules[0].style.getPropertyValue('-webkit-mask-repeat')", "");
+shouldBeEqualToString("document.styleSheets[1].rules[0].style.getPropertyValue('mask-repeat')", "repeat-x");
 </script>
 </head>
 <body>

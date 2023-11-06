@@ -1,0 +1,38 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/features.gni")
+
+# This component facilitates `ReportingClient` ability to select underlying
+# storage for encrypted reporting pipeline report client. It is built into
+# Chrome and configured differently depending on whether Chrome is intended for
+# Ash/LaCros: in that case it can store events in `missived` daemon,
+# otherwise it stores them locally and also provides the uploader for them.
+# It can also be built into other daemons; in that case it always connects to
+# `missived` daemon.
+component("storage_selector") {
+  defines = [ "IS_STORAGE_SELECTOR_IMPL" ]
+
+  check_includes = false
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/reporting/storage:storage_uploader_interface",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+  ]
+  sources = [ "storage_selector.h" ]
+  if (is_chromeos) {
+    sources += [ "storage_selector_chromeos.cc" ]
+    deps += [
+      "//chromeos/dbus/missive",
+      "//components/reporting/proto:interface_proto",
+      "//components/reporting/storage:missive_storage_module",
+    ]
+  } else {
+    sources += [ "storage_selector.cc" ]
+    deps += [ "//components/reporting/storage:storage_module" ]
+  }
+}

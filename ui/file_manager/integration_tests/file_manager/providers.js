@@ -170,14 +170,18 @@ async function requestMountNotInMenuInternal(manifest) {
       '#show-providers-submenu', element.attributes['command']);
   chrome.test.assertEq('#providers-menu', element.attributes['sub-menu']);
 
+  // Open the providers submenu by hovering over the menu item.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseOver', appId, ['#gear-menu-providers']),
+      'fakeMouseOver failed');
+
   // Extract 'providers-menu' sub-menu items.
-  const selector = ['#providers-menu[hidden] cr-menu-item'];
-  const submenu =
-      await remoteCall.callRemoteTestUtil('queryAllElements', appId, selector);
+  const selector = ['#providers-menu:not([hidden]) cr-menu-item'];
+  const submenu = await remoteCall.waitForElement(appId, selector);
 
   // Check the sub-menu do not contain the |manifest| provider.
-  chrome.test.assertEq(1, submenu.length);
-  chrome.test.assertEq('SMB file share', submenu[0].text);
+  chrome.test.assertEq('SMB file share', submenu.innerText);
 }
 
 /**

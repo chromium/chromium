@@ -10,7 +10,7 @@
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 #include "base/files/file_path.h"
-#include "net/cert/pki/trust_store.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 class X509Certificate;
@@ -36,7 +36,7 @@ struct CertInput {
 // applied to them.
 struct CertInputWithTrustSetting {
   CertInput cert_input;
-  net::CertificateTrust trust;
+  bssl::CertificateTrust trust;
 };
 
 // Parses |file_path| as a single DER cert or a PEM certificate list.

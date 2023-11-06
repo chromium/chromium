@@ -114,6 +114,7 @@ source_set("eg2_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics:eg_test_support+eg2",
     "//ios/chrome/browser/policy:eg_test_support+eg2",
     "//ios/chrome/browser/policy:policy_earl_grey_matchers",
     "//ios/chrome/browser/policy:policy_util",

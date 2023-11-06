@@ -63,25 +63,16 @@ import org.chromium.ui.permissions.AndroidPermissionDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarButtonControllerTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private AndroidPermissionDelegate mAndroidPermissionDelegate;
-    @Mock
-    private ButtonDataProvider mShareButtonController;
-    @Mock
-    private ButtonDataProvider mVoiceToolbarButtonController;
-    @Mock
-    private ButtonDataProvider mNewTabButtonController;
-    @Mock
-    private ButtonDataProvider mPriceTrackingButtonController;
-    @Mock
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private Configuration mConfiguration;
+    @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
+    @Mock private ButtonDataProvider mShareButtonController;
+    @Mock private ButtonDataProvider mVoiceToolbarButtonController;
+    @Mock private ButtonDataProvider mNewTabButtonController;
+    @Mock private ButtonDataProvider mPriceTrackingButtonController;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private Tab mTab;
+    @Mock private Configuration mConfiguration;
 
     private ButtonDataImpl mButtonData;
 
@@ -91,19 +82,25 @@ public class AdaptiveToolbarButtonControllerTest {
         UmaRecorderHolder.resetForTesting();
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        mButtonData = new ButtonDataImpl(
-                /*canShow=*/true, /*drawable=*/null, mock(View.OnClickListener.class),
-                /*contentDescription=*/"", /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, /*isEnabled=*/true,
-                AdaptiveToolbarButtonVariant.UNKNOWN, /*tooltipTextResId=*/Resources.ID_NULL,
-                /*showHoverHighlight=*/false);
+        mButtonData =
+                new ButtonDataImpl(
+                        /* canShow= */ true,
+                        /* drawable= */ null,
+                        mock(View.OnClickListener.class),
+                        /* contentDescription= */ "",
+                        /* supportsTinting= */ false,
+                        /* iphCommandBuilder= */ null,
+                        /* isEnabled= */ true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        /* tooltipTextResId= */ Resources.ID_NULL,
+                        /* showHoverHighlight= */ false);
         mConfiguration.screenWidthDp = 420;
     }
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance().removeKey(
-                ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS);
     }
 
@@ -125,7 +122,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mNewTabButtonController,
+        Assert.assertEquals(
+                mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
 
@@ -147,7 +145,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mShareButtonController,
+        Assert.assertEquals(
+                mShareButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
 
@@ -169,7 +168,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mVoiceToolbarButtonController,
+        Assert.assertEquals(
+                mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
 
@@ -191,14 +191,18 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mVoiceToolbarButtonController,
+        Assert.assertEquals(
+                mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
-        ChromeSharedPreferences.getInstance().writeInt(
-                ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS, AdaptiveToolbarButtonVariant.NEW_TAB);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS,
+                        AdaptiveToolbarButtonVariant.NEW_TAB);
 
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertEquals(mNewTabButtonController,
+        Assert.assertEquals(
+                mNewTabButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
     }
 
@@ -215,16 +219,25 @@ public class AdaptiveToolbarButtonControllerTest {
 
         AdaptiveButtonActionMenuCoordinator menuCoordinator =
                 mock(AdaptiveButtonActionMenuCoordinator.class);
-        Answer<OnLongClickListener> listenerAnswer = invocation -> (view -> {
-            invocation.<Callback<Integer>>getArgument(0).onResult(
-                    Integer.valueOf(R.id.customize_adaptive_button_menu_id));
-            return true;
-        });
+        Answer<OnLongClickListener> listenerAnswer =
+                invocation ->
+                        (view -> {
+                            invocation
+                                    .<Callback<Integer>>getArgument(0)
+                                    .onResult(
+                                            Integer.valueOf(
+                                                    R.id.customize_adaptive_button_menu_id));
+                            return true;
+                        });
         doAnswer(listenerAnswer).when(menuCoordinator).createOnLongClickListener(any());
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                new AdaptiveToolbarButtonController(activity, settingsLauncher,
-                        mActivityLifecycleDispatcher, menuCoordinator, mAndroidPermissionDelegate,
+                new AdaptiveToolbarButtonController(
+                        activity,
+                        settingsLauncher,
+                        mActivityLifecycleDispatcher,
+                        menuCoordinator,
+                        mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
@@ -260,19 +273,24 @@ public class AdaptiveToolbarButtonControllerTest {
         AdaptiveButtonActionMenuCoordinator menuCoordinator =
                 mock(AdaptiveButtonActionMenuCoordinator.class);
 
-        doReturn(new OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Assert.fail("This long click listener shouldn't be invoked.");
-                return false;
-            }
-        })
+        doReturn(
+                        new OnLongClickListener() {
+                            @Override
+                            public boolean onLongClick(View view) {
+                                Assert.fail("This long click listener shouldn't be invoked.");
+                                return false;
+                            }
+                        })
                 .when(menuCoordinator)
                 .createOnLongClickListener(any());
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                new AdaptiveToolbarButtonController(activity, settingsLauncher,
-                        mActivityLifecycleDispatcher, menuCoordinator, mAndroidPermissionDelegate,
+                new AdaptiveToolbarButtonController(
+                        activity,
+                        settingsLauncher,
+                        mActivityLifecycleDispatcher,
+                        menuCoordinator,
+                        mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
@@ -293,7 +311,8 @@ public class AdaptiveToolbarButtonControllerTest {
         // Button data should have change twice, first on native initialization and then after
         // showing the dynamic action.
         verify(observer, times(2)).buttonDataChanged(true);
-        Assert.assertEquals(mPriceTrackingButtonController,
+        Assert.assertEquals(
+                mPriceTrackingButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         ButtonSpec buttonSpec = adaptiveToolbarButtonController.get(mTab).getButtonSpec();
@@ -327,7 +346,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mVoiceToolbarButtonController,
+        Assert.assertEquals(
+                mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         Assert.assertTrue(adaptiveToolbarButtonController.get(mTab).canShow());
@@ -355,7 +375,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mVoiceToolbarButtonController,
+        Assert.assertEquals(
+                mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
@@ -384,7 +405,8 @@ public class AdaptiveToolbarButtonControllerTest {
         adaptiveToolbarButtonController.onFinishNativeInitialization();
 
         verify(observer).buttonDataChanged(true);
-        Assert.assertEquals(mVoiceToolbarButtonController,
+        Assert.assertEquals(
+                mVoiceToolbarButtonController,
                 adaptiveToolbarButtonController.getSingleProviderForTesting());
 
         Assert.assertFalse(adaptiveToolbarButtonController.get(mTab).canShow());
@@ -428,9 +450,12 @@ public class AdaptiveToolbarButtonControllerTest {
         doReturn(mConfiguration).when(mockResources).getConfiguration();
 
         AdaptiveToolbarButtonController adaptiveToolbarButtonController =
-                new AdaptiveToolbarButtonController(mockActivity, mock(SettingsLauncher.class),
+                new AdaptiveToolbarButtonController(
+                        mockActivity,
+                        mock(SettingsLauncher.class),
                         mActivityLifecycleDispatcher,
-                        mock(AdaptiveButtonActionMenuCoordinator.class), mAndroidPermissionDelegate,
+                        mock(AdaptiveButtonActionMenuCoordinator.class),
+                        mAndroidPermissionDelegate,
                         ChromeSharedPreferences.getInstance());
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
@@ -442,10 +467,16 @@ public class AdaptiveToolbarButtonControllerTest {
     }
 
     private static ButtonSpec makeButtonSpec(@AdaptiveToolbarButtonVariant int variant) {
-        return new ButtonSpec(/*drawable=*/null, mock(View.OnClickListener.class),
-                /*onLongClickListener=*/null,
-                /*contentDescription=*/"description", /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, variant, /*actionChipLabelResId=*/0,
-                /*tooltipTextResId=*/Resources.ID_NULL, /*showHoverHighlight=*/false);
+        return new ButtonSpec(
+                /* drawable= */ null,
+                mock(View.OnClickListener.class),
+                /* onLongClickListener= */ null,
+                /* contentDescription= */ "description",
+                /* supportsTinting= */ false,
+                /* iphCommandBuilder= */ null,
+                variant,
+                /* actionChipLabelResId= */ 0,
+                /* tooltipTextResId= */ Resources.ID_NULL,
+                /* showHoverHighlight= */ false);
     }
 }

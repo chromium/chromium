@@ -44,17 +44,10 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
  public:
   METADATA_HEADER(AnchoredNudge);
 
-  explicit AnchoredNudge(const AnchoredNudgeData& nudge_data);
+  explicit AnchoredNudge(AnchoredNudgeData& nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;
-
-  // Getters for `system_nudge_view_` elements.
-  views::ImageView* GetImageView();
-  const std::u16string& GetBodyText();
-  const std::u16string& GetTitleText();
-  views::LabelButton* GetFirstButton();
-  views::LabelButton* GetSecondButton();
 
   // views::BubbleDialogDelegateView:
   gfx::Rect GetBubbleBounds() override;

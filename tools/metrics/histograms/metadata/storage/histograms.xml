@@ -123,7 +123,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestOutcome"
-    enum="StorageAccessAPIRequestOutcome" expires_after="2024-02-04">
+    enum="StorageAccessAPIRequestOutcome" expires_after="2024-04-28">
   <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="API.StorageAccess.RequestStorageAccess2"
-    enum="RequestStorageResult" expires_after="2024-02-25">
+    enum="RequestStorageResult" expires_after="2024-04-28">
   <owner>mkwst@chromium.org</owner>
   <owner>cfredric@chromium.org</owner>
   <owner>brandm@microsoft.com</owner>
@@ -208,7 +208,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Read" enum="ClipboardFormatRead"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.Write" enum="ClipboardFormatWrite"
-    expires_after="2024-02-25">
+    expires_after="2024-04-28">
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -292,7 +292,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -301,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sql.Recovery.ResultCode" enum="SqliteLoggedResultCode"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>asully@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.RegisterURLTimeWithPartitioningSupport.{Type}"
-    units="ms" expires_after="2024-02-20">
+    units="ms" expires_after="2024-04-28">
   <owner>awillia@chromium.org</owner>
   <owner>chrome-owp-storage@chromium.org</owner>
   <summary>
@@ -550,7 +550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBMaintenanceTime" units="microseconds"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -563,7 +563,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.DBSize" units="KB"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.InterestGroup.PerSiteCount" units="groups"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>behamilton@google.com</owner>
   <owner>pauljensen@chromium.org</owner>
   <summary>
@@ -600,7 +600,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Count of database entries queued to be sent to the async iterator. Recorded
-    in `SharedStorageIterator::DidReadEntries()`.
+    in `SharedStorage::IterationSource::DidReadEntries()`.
   </summary>
 </histogram>
 
@@ -612,7 +612,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each of a set of benchmark percentages, we record that benchmark when
     the async iterator first iterates through at least that percentage of queued
-    entries. Recorded in `SharedStorageIterator::NextHelper()`.
+    entries. Recorded in `SharedStorage::IterationSource::TryResolvePromise()`.
   </summary>
 </histogram>
 
@@ -624,7 +624,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     For each of a set of benchmark percentages, we record that benchmark when
     the async iterator first receives from the database at least that percentage
-    of queued entries. Recorded in `SharedStorageIterator::DidReadEntries()`.
+    of queued entries. Recorded in
+    `SharedStorage::IterationSource::DidReadEntries()`.
   </summary>
 </histogram>
 
@@ -1074,10 +1075,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Measures the time from the start of the call to
-    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
-    promise is returned, for the iterator in `Mode::kKeyValue`. Includes only
-    calls where `has_error_` is false. Recorded in
-    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a key-value pair iterator. Includes only calls
+    where promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
     `LogElapsedTime()`.
   </summary>
 </histogram>
@@ -1117,10 +1118,10 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
     Measures the time from the start of the call to
-    `shared_storage_worklet::SharedStorageiterator::Next()` to just before the
-    promise is returned, for the iterator in `Mode::kKey`. Includes only calls
-    where `has_error_` is false. Recorded in
-    `shared_storage_worklet::SharedStorageIterator::NextHelper()` via
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a key iterator. Includes only calls where
+    promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
     `LogElapsedTime()`.
   </summary>
 </histogram>
@@ -1183,8 +1184,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Worklet.Timing.Values.Next" units="ms"
+    expires_after="2024-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from the start of the call to
+    `SharedStorage::IterationSource::GetNextIterationResult()` to just before
+    the promise is returned, for a value iterator. Includes only calls where
+    promises are successfully resolved. Recorded in
+    `SharedStorage::IterationSource::TryResolvePromise()` via
+    `LogElapsedTime()`.
+  </summary>
+</histogram>
+
 <histogram name="Storage.StoragePressure.Bubble"
-    enum="StoragePressureBubbleUserAction" expires_after="2024-02-01">
+    enum="StoragePressureBubbleUserAction" expires_after="2024-04-28">
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

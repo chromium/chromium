@@ -67,6 +67,8 @@ class CheckClientDownloadRequestBase {
 
   DownloadProtectionService* service() const { return service_; }
 
+  virtual download::DownloadItem* item() const = 0;
+
  protected:
   // Subclasses can call this method to mark the request as finished (for
   // example because the download was cancelled) before the safe browsing
@@ -88,6 +90,16 @@ class CheckClientDownloadRequestBase {
   void StartTimeout();
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+
+  // If we need to perform additional prompting (e.g. deep scanning, local
+  // password decryption) due to the response, this method will update `result`
+  // and `reason` appropriately. This method also performs logging related to
+  // these additional prompts. If both prompts are allowed, deep scanning will
+  // be prioritized.
+  void GetAdditionalPromptResult(const ClientDownloadResponse& response,
+                                 DownloadCheckResult* result,
+                                 DownloadCheckResultReason* reason,
+                                 std::string* token) const;
 
   virtual bool IsSupportedDownload(DownloadCheckResultReason* reason) = 0;
   virtual content::BrowserContext* GetBrowserContext() const = 0;
@@ -137,6 +149,11 @@ class CheckClientDownloadRequestBase {
   virtual bool ShouldPromptForDeepScanning(
       bool server_requests_prompt) const = 0;
 
+  // Called when finishing the download, to decide whether to prompt the user
+  // for local decryption or not.
+  virtual bool ShouldPromptForLocalDecryption(
+      bool server_requests_prompt) const = 0;
+
   // Called when |token_fetcher_| has finished fetching the access token.
   void OnGotAccessToken(const std::string& access_token);
 
@@ -151,7 +168,16 @@ class CheckClientDownloadRequestBase {
   // Called when a deep scanning prompt is about to be shown.
   virtual void LogDeepScanningPrompt() const = 0;
 
-  // Source URL being downloaded from. This shuold always be set, but could be
+  // Returns whether we should skip sending a ping to Safe Browsing because the
+  // provided password was incorrect.
+  virtual bool ShouldPromptForIncorrectPassword() const = 0;
+
+  // Returns whether we should skip sending a ping to Safe Browsing because
+  // extraction failed in a way that makes the data useless (e.g. disk write
+  // failure).
+  virtual bool ShouldShowScanFailure() const = 0;
+
+  // Source URL being downloaded from. This should always be set, but could be
   // for example an artificial blob: URL if there is no source URL.
   const GURL source_url_;
   const base::FilePath target_file_path_;

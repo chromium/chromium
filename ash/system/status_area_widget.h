@@ -102,12 +102,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Called by shelf layout manager when a locale change has been detected.
   void HandleLocaleChange();
 
-  // It is called when the visibility of any tray bubbles changes.
-  // Bubbles report their visibility change here and other tray items get
-  // notified about when their `OnAnyBubbleVisibilityChanged` is called.
-  void NotifyAnyBubbleVisibilityChanged(views::Widget* bubble_widget,
-                                        bool visible);
-
   // Sets system tray visibility. Shows or hides widget if needed.
   void SetSystemTrayVisibility(bool visible);
 

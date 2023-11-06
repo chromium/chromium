@@ -8,20 +8,47 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator_delegate.h"
 
+@protocol DisabledGridViewControllerDelegate;
+@class GridContainerViewController;
+@protocol GridCoordinatorAudience;
 @protocol GridMediatorDelegate;
 @protocol GridToolbarsMutator;
+@class IncognitoGridViewController;
 @class IncognitoGridMediator;
+@protocol TabContextMenuDelegate;
 @class TabGridViewController;
 
 @interface IncognitoGridCoordinator
     : ChromeCoordinator <IncognitoGridMediatorDelegate>
-// Incognito view controller.
-// TODO(crbug.com/1457146): Replace this once the incognito grid view controller
-// is created.
-@property(nonatomic, weak) TabGridViewController* incognitoViewController;
+
+// Grid view controller container.
+@property(nonatomic, readonly, strong)
+    GridContainerViewController* gridContainerViewController;
+// The Grid view controller.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong)
+    IncognitoGridViewController* gridViewController;
+// The view controller to displayed when incognito is disabled.
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong) UIViewController* disabledViewController;
 // Incognito grid mediator.
-@property(nonatomic, readonly, weak)
+// TODO(crbug.com/1457146): Make it private.
+@property(nonatomic, readonly, strong)
     IncognitoGridMediator* incognitoGridMediator;
+
+// Audience for this coordinator.
+@property(nonatomic, weak) id<GridCoordinatorAudience> audience;
+
+// The overall TabGrid.
+// TODO(crbug.com/1457146): Remove this.
+@property(nonatomic, weak) TabGridViewController* tabGridViewController;
+// TODO(crbug.com/1457146): This protocol should be implemented by this object.
+// Delegate for when this is presenting the Disable View Controller.
+@property(nonatomic, weak) id<DisabledGridViewControllerDelegate>
+    disabledTabViewControllerDelegate;
+// Tab Context Menu delegate.
+// TODO(crbug.com/1457146): This protocol should be implemented by this object.
+@property(nonatomic, weak) id<TabContextMenuDelegate> tabContextMenuDelegate;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
@@ -31,6 +58,12 @@
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// The incognito browser can be reset during the execution of the app.
+- (void)setIncognitoBrowser:(Browser*)incognitoBrowser;
+
+// Stops all child coordinators.
+- (void)stopChidCoordinators;
 
 @end
 

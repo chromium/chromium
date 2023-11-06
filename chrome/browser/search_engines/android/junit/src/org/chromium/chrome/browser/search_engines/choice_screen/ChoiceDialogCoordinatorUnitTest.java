@@ -91,13 +91,16 @@ public class ChoiceDialogCoordinatorUnitTest {
         coordinator.show();
 
         verify(mModalDialogManager)
-                .showDialog(mDialogModelCaptor.capture(), eq(ModalDialogType.APP),
+                .showDialog(
+                        mDialogModelCaptor.capture(),
+                        eq(ModalDialogType.APP),
                         eq(ModalDialogPriority.VERY_HIGH));
 
         // Simulate an unexpected dialog closure.
         int unexpectedDismissalCause = ChoiceDialogCoordinator.SUCCESS_DISMISSAL_CAUSE + 1;
         PropertyModel dialogModel = mDialogModelCaptor.getValue();
-        dialogModel.get(ModalDialogProperties.CONTROLLER)
+        dialogModel
+                .get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(dialogModel, unexpectedDismissalCause);
 
         verify(mOnSuccessCallback).onResult(false);
@@ -121,7 +124,9 @@ public class ChoiceDialogCoordinatorUnitTest {
         coordinator.show();
 
         verify(mModalDialogManager)
-                .showDialog(mDialogModelCaptor.capture(), eq(ModalDialogType.APP),
+                .showDialog(
+                        mDialogModelCaptor.capture(),
+                        eq(ModalDialogType.APP),
                         eq(ModalDialogPriority.VERY_HIGH));
         assertTrue(delegateCaptor.isFulfilled());
 
@@ -129,8 +134,10 @@ public class ChoiceDialogCoordinatorUnitTest {
         delegateCaptor.getResult().onChoiceMade(FAKE_SEARCH_ENGINE_B.getKeyword());
 
         verify(mDialogHelperDelegate)
-                .onUserSearchEngineChoice(SearchEnginePromoType.SHOW_WAFFLE,
-                        List.of(FAKE_SEARCH_ENGINE_A.getKeyword(),
+                .onUserSearchEngineChoice(
+                        SearchEnginePromoType.SHOW_WAFFLE,
+                        List.of(
+                                FAKE_SEARCH_ENGINE_A.getKeyword(),
                                 FAKE_SEARCH_ENGINE_B.getKeyword()),
                         FAKE_SEARCH_ENGINE_B.getKeyword());
         verify(mOnSuccessCallback).onResult(true);

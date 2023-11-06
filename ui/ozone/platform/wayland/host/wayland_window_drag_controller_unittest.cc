@@ -593,6 +593,8 @@ TEST_P(WaylandWindowDragControllerTest, DragExitWindowAndDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
+// TODO(crbug.com/1405471): Test needs to be updated for 112.0.5570.0 to remove
+// special handling logic in wayland_pointer.cc.
 TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
@@ -914,6 +916,8 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
 //    during the dnd operation. It should be ignored...
 // 6. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then drop.
+// TODO(crbug.com/1405471): Test needs to be updated for 112.0.5570.0 to remove
+// special handling logic in wayland_pointer.cc.
 TEST_P(WaylandWindowDragControllerTest,
        DragToOtherWindowIgnoringSpuriousPointerEnterEvent) {
   // Init and open |target_window|.
@@ -1178,6 +1182,9 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
   SendPointerPress(window_.get(), &delegate_, BTN_LEFT);
   SendPointerMotion(window_.get(), &delegate_, {200, 200});
 
+  EXPECT_EQ(gfx::Point(0, 0), window_->GetBoundsInDIP().origin());
+  EXPECT_EQ(gfx::Point(200, 200), screen_->GetCursorScreenPoint());
+
   // Set up an "interaction flow", start the drag session and run move loop:
   //  - Event dispatching and bounds changes are monitored
   //  - At each event, emulates a new event at server side and proceeds to the
@@ -1202,13 +1209,17 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({200, 200}, {}));
-        // Drag it a bit more. We are in the middle of
-        // WaylandWindowDragController::OnDragEnter. Run this via a task run.
-        // Otherwise, the data offer will be reset and
+        // `window_` starts at origin 0,0.
+        EXPECT_EQ(gfx::Point(0, 0), window_->GetBoundsInDIP().origin());
+        // test_data_device sends first enter event at location 0,0.
+        EXPECT_EQ(gfx::Point(0, 0), screen_->GetCursorScreenPoint());
+
+        // Drag it a bit more. We are in the middle of wl_data_device.enter. Run
+        // this via a task run. Otherwise, the data offer will be reset and
         // WaylandWindowDragController will crash.
         ScheduleTestTask(base::BindOnce(
             &WaylandWindowDragControllerTest::SendDndMotionForWindowDrag,
-            base::Unretained(this), gfx::Point(100, 100)));
+            base::Unretained(this), gfx::Point(50, 50)));
         test_step = kDragging;
         break;
       case kDropping: {
@@ -1222,8 +1233,9 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         EXPECT_EQ(window_->GetWidget(),
                   screen_->GetLocalProcessWidgetAtPoint({100, 100}, {}));
 
-        // Rather, only PlatformScreen's cursor position is updated accordingly.
-        gfx::Point expected_point{20, 20};
+        // TODO(crbug.com/1498170): Remove window's origin here once the
+        // non-Lacros motion events handling in detached mode gets fixed.
+        gfx::Point expected_point{50, 50};
         expected_point += window_->GetBoundsInDIP().origin().OffsetFromOrigin();
         EXPECT_EQ(expected_point, screen_->GetCursorScreenPoint());
         test_step = kDone;
@@ -1246,8 +1258,10 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         EXPECT_EQ(State::kDetached, drag_controller()->state());
         EXPECT_EQ(kDragging, test_step);
         EXPECT_TRUE(change.origin_changed);
-        EXPECT_EQ(gfx::Point(100, 100), window_->GetBoundsInDIP().origin());
         EXPECT_TRUE(change.origin_changed);
+
+        EXPECT_EQ(gfx::Point(50, 50), window_->GetBoundsInDIP().origin());
+        EXPECT_EQ(gfx::Point(50, 50), screen_->GetCursorScreenPoint());
 
         // WaylandWindowDragController might be in the middle of something, when
         // calling this. However, given issuing commands to a server result in
@@ -1257,31 +1271,14 @@ TEST_P(WaylandWindowDragControllerTest, IgnorePointerEventsUntilDrop) {
         // it must complete before getting the below commands processed by the
         // server and received by the client. Thus, prepare a task to avoid that
         // and let the WaylandWindowDragController to do what it needs to do.
-        base::OnceClosure send_pointer_motion_30_30 =
-            base::BindOnce(&WaylandWindowDragControllerTest::SendPointerMotion,
-                           base::Unretained(this), nullptr, nullptr,
-                           gfx::Point(30, 30), false);
-        base::OnceClosure send_pointer_motion_20_20 =
-            base::BindOnce(&WaylandWindowDragControllerTest::SendPointerMotion,
-                           base::Unretained(this), nullptr, nullptr,
-                           gfx::Point(20, 20), false);
-        base::OnceClosure send_drop = base::BindOnce(
-            &WaylandDragDropTest::SendDndDrop, base::Unretained(this));
-
-        auto test = [](base::OnceClosure send_pointer_motion_30_30,
-                       base::OnceClosure send_pointer_motion_20_20,
-                       base::OnceClosure send_dnd_drop) {
-          // Send a few wl_pointer::motion events skipping sync and dispatch
-          // checks, which will be done at |kDropping| test step handling.
-          std::move(send_pointer_motion_30_30).Run();
-          std::move(send_pointer_motion_20_20).Run();
-          std::move(send_dnd_drop).Run();
-        };
         test_step = kDropping;
-        auto closure_cb = base::BindLambdaForTesting(std::move(test));
-        ScheduleTestTask(base::BindOnce(
-            std::move(closure_cb), std::move(send_pointer_motion_30_30),
-            std::move(send_pointer_motion_20_20), std::move(send_drop)));
+        ScheduleTestTask(base::BindLambdaForTesting([&]() {
+          // Send a few wl_pointer::motion events. Required checks are done
+          // in |kDropping| test step above.
+          SendPointerMotion(nullptr, nullptr, gfx::Point(30, 30), false);
+          SendPointerMotion(nullptr, nullptr, gfx::Point(20, 20), false);
+          SendDndDrop();
+        }));
       });
 
   // RunMoveLoop() blocks until the dragging session ends.

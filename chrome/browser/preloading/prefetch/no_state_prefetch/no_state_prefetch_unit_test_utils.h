@@ -37,8 +37,8 @@ class FakeNoStatePrefetchContents : public NoStatePrefetchContents {
 
   FinalStatus expected_final_status() const { return expected_final_status_; }
 
-  bool prerendering_has_been_cancelled() const {
-    return NoStatePrefetchContents::prerendering_has_been_cancelled();
+  bool prefetching_has_been_cancelled() const {
+    return NoStatePrefetchContents::prefetching_has_been_cancelled();
   }
 
  private:

@@ -124,7 +124,7 @@ API_AVAILABLE(macos(13.2))
   }
 
   base::apple::ScopedCFTypeRef<CGImageRef> croppedImage(
-      CGImageCreateWithImageInRect(cgImage, cropRegion));
+      CGImageCreateWithImageInRect(cgImage.get(), cropRegion));
   _sampleCallback.Run(croppedImage, _sourceId);
 }
 

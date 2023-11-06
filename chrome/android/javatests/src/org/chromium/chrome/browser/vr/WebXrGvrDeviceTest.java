@@ -29,19 +29,22 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * End-to-end tests for WebXR where the choice of test device has a greater
- * impact than the usual Daydream-ready vs. non-Daydream-ready effect.
+ * End-to-end tests for WebXR where the choice of test device has a greater impact than the usual
+ * Daydream-ready vs. non-Daydream-ready effect.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=gvr"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=gvr"
+})
 public class WebXrGvrDeviceTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             GvrTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrGvrTestFramework mWebXrVrTestFramework;
@@ -56,9 +59,7 @@ public class WebXrGvrDeviceTest {
         mWebXrVrTestFramework = new WebXrGvrTestFramework(mTestRule);
     }
 
-    /**
-     * Tests that reported WebXR capabilities match expectations.
-     */
+    /** Tests that reported WebXR capabilities match expectations. */
     @Test
     @MediumTest
     @CommandLineFlags.Add({"enable-features=WebXR"})

@@ -12,6 +12,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedLoginRequestHelper;
@@ -21,19 +23,26 @@ import org.chromium.net.test.util.TestWebServer;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests for the AwContentsClient.onReceivedLoginRequest callback.
- */
-@RunWith(AwJUnit4ClassRunner.class)
-public class AwContentsClientAutoLoginTest {
+/** Tests for the AwContentsClient.onReceivedLoginRequest callback. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+public class AwContentsClientAutoLoginTest extends AwParameterizedTest {
     @Rule
-    public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
+    public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
-    private void autoLoginTestHelper(final String testName, final String xAutoLoginHeader,
-            final String expectedRealm, final String expectedAccount, final String expectedArgs)
-            throws Throwable {
+    public AwContentsClientAutoLoginTest(AwSettingsMutation param) {
+        this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
+    }
+
+    private void autoLoginTestHelper(
+            final String testName,
+            final String xAutoLoginHeader,
+            final String expectedRealm,
+            final String expectedAccount,
+            final String expectedArgs)
+    throws Throwable {
         AwTestContainerView testView =
                 mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
         AwContents awContents = testView.getAwContents();
@@ -65,12 +74,11 @@ public class AwContentsClientAutoLoginTest {
     @SmallTest
     public void testAutoLoginOnGoogleCom() throws Throwable {
         autoLoginTestHelper(
-                "testAutoLoginOnGoogleCom",  /* testName */
-                "realm=com.google&account=foo%40bar.com&args=random_string", /* xAutoLoginHeader */
-                "com.google",  /* expectedRealm */
-                "foo@bar.com",  /* expectedAccount */
-                "random_string"  /* expectedArgs */);
-
+                /* testName= */ "testAutoLoginOnGoogleCom",
+                /* xAutoLoginHeader= */ "realm=com.google&account=foo%40bar.com&args=random_string",
+                /* expectedRealm= */ "com.google",
+                /* expectedAccount= */ "foo@bar.com",
+                /* expectedArgs= */ "random_string");
     }
 
     @Test
@@ -78,11 +86,11 @@ public class AwContentsClientAutoLoginTest {
     @SmallTest
     public void testAutoLoginWithNullAccount() throws Throwable {
         autoLoginTestHelper(
-                "testAutoLoginOnGoogleCom",  /* testName */
-                "realm=com.google&args=not.very.inventive", /* xAutoLoginHeader */
-                "com.google",  /* expectedRealm */
-                null,  /* expectedAccount */
-                "not.very.inventive"  /* expectedArgs */);
+                /* testName= */ "testAutoLoginOnGoogleCom",
+                /* xAutoLoginHeader= */ "realm=com.google&args=not.very.inventive",
+                /* expectedRealm= */ "com.google",
+                /* expectedAccount= */ null,
+                /* expectedArgs= */ "not.very.inventive");
     }
 
     @Test
@@ -90,10 +98,10 @@ public class AwContentsClientAutoLoginTest {
     @SmallTest
     public void testAutoLoginOnNonGoogle() throws Throwable {
         autoLoginTestHelper(
-                "testAutoLoginOnGoogleCom",  /* testName */
-                "realm=com.bar&account=foo%40bar.com&args=args", /* xAutoLoginHeader */
-                "com.bar",  /* expectedRealm */
-                "foo@bar.com",  /* expectedAccount */
-                "args"  /* expectedArgs */);
+                /* testName= */ "testAutoLoginOnGoogleCom",
+                /* xAutoLoginHeader= */ "realm=com.bar&account=foo%40bar.com&args=args",
+                /* expectedRealm= */ "com.bar",
+                /* expectedAccount= */ "foo@bar.com",
+                /* expectedArgs= */ "args");
     }
 }

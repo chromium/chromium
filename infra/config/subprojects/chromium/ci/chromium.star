@@ -74,6 +74,7 @@ ci.builder(
         category = "android",
         short_name = "rel",
     ),
+    contact_team_email = "clank-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -160,6 +161,7 @@ ci.builder(
         category = "android",
         short_name = "off",
     ),
+    contact_team_email = "clank-engprod@google.com",
     # See https://crbug.com/1153349#c22, as we update symbol_level=2, build
     # needs longer time to complete.
     execution_timeout = 7 * time.hour,
@@ -317,6 +319,7 @@ ci.builder(
         category = "lacros",
         short_name = "rel",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -361,6 +364,7 @@ ci.builder(
         category = "lacros",
         short_name = "arm",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -615,6 +619,7 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     tree_closing = True,
@@ -622,6 +627,7 @@ ci.builder(
         category = "win|rel",
         short_name = "64",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -653,12 +659,14 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win|off",
         short_name = "64",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
@@ -680,6 +688,7 @@ ci.builder(
             target_bits = 32,
         ),
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     tree_closing = True,
@@ -687,6 +696,7 @@ ci.builder(
         category = "win|rel",
         short_name = "32",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     properties = {
         # The format of these properties is defined at archive/properties.proto
         "$build/archive": {
@@ -718,12 +728,14 @@ ci.builder(
             target_bits = 32,
         ),
     ),
+    builderless = False,
     cores = 32,
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "win|off",
         short_name = "32",
     ),
+    contact_team_email = "chrome-desktop-engprod@google.com",
     # TODO(crbug.com/1155416) builds with PGO change take long time.
     execution_timeout = 7 * time.hour,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,

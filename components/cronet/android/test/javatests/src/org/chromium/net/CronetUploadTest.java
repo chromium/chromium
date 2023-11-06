@@ -15,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.net.CronetTestRule.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.impl.CronetUploadDataStream;
@@ -29,12 +30,13 @@ import java.util.concurrent.Executors;
  * Tests that directly drive {@code CronetUploadDataStream} and {@code UploadDataProvider} to
  * simulate different ordering of reset, init, read, and rewind calls.
  */
+@DoNotBatch(reason = "crbug/1459563")
 @RunWith(AndroidJUnit4.class)
-@IgnoreFor(implementations = {CronetImplementation.FALLBACK},
-        reason = "Testing internals of the native implementation")
+@IgnoreFor(
+        implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+        reason = "crbug.com/1494845: Testing internals of the native implementation")
 public class CronetUploadTest {
-    @Rule
-    public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
+    @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
 
     private TestDrivenDataProvider mDataProvider;
     private CronetUploadDataStream mUploadDataStream;
@@ -49,14 +51,20 @@ public class CronetUploadTest {
 
         // Creates a no-op CronetUrlRequest, which is not used to drive CronetUploadDataStream.
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        UrlRequest.Builder builder = mTestRule.getTestFramework().getEngine().newUrlRequestBuilder(
-                "https://no-op.url", callback, callback.getExecutor());
+        UrlRequest.Builder builder =
+                mTestRule
+                        .getTestFramework()
+                        .getEngine()
+                        .newUrlRequestBuilder(
+                                "https://no-op.url", callback, callback.getExecutor());
         UrlRequest urlRequest = builder.build();
 
         mUploadDataStream =
                 new CronetUploadDataStream(mDataProvider, executor, (CronetUrlRequest) urlRequest);
-        mHandler = new TestUploadDataStreamHandler(mTestRule.getTestFramework().getContext(),
-                mUploadDataStream.createUploadDataStreamForTesting());
+        mHandler =
+                new TestUploadDataStreamHandler(
+                        mTestRule.getTestFramework().getContext(),
+                        mUploadDataStream.createUploadDataStreamForTesting());
     }
 
     @After

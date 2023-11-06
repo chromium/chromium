@@ -1,8 +1,12 @@
 This is a testharness.js-based test.
 Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_equals: expected (string) "auto" but got (undefined) undefined
-FAIL Property input-security value 'initial' assert_true: input-security doesn't seem to be supported in the computed style expected true got false
-FAIL Property input-security value 'inherit' assert_true: input-security doesn't seem to be supported in the computed style expected true got false
-FAIL Property input-security value 'auto' assert_true: input-security doesn't seem to be supported in the computed style expected true got false
-FAIL Property input-security value 'none' assert_true: input-security doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property input-security value 'initial'
+  assert_true: input-security doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property input-security value 'inherit'
+  assert_true: input-security doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property input-security value 'auto'
+  assert_true: input-security doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property input-security value 'none'
+  assert_true: input-security doesn't seem to be supported in the computed style expected true got false
 Harness: the test ran to completion.
 

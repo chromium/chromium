@@ -2,3 +2,6 @@ cduvall@chromium.org
 jam@chromium.org
 rockot@google.com
 sky@chromium.org
+
+per-file pre_sandbox_init.cc=set noparent
+per-file pre_sandbox_init.cc=file://ipc/SECURITY_OWNERS

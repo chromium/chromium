@@ -399,7 +399,8 @@ testcase.dirPasteWithoutChangingCurrent = async () => {
   await clickDirectoryTreeContextMenuItem(appId, '/Downloads/photos', 'copy');
   await clickDirectoryTreeContextMenuItem(
       appId, destinationPath, 'paste-into-folder');
-  await directoryTree.waitForItemToMayHaveChildrenByLabel('destination');
+  await directoryTree.waitForItemToHaveChildrenByLabel(
+      'destination', /* hasChildren= */ true);
   await directoryTree.expandTreeItemByPath(destinationPath);
 
   // Confirm the copied directory is added to the directory tree.

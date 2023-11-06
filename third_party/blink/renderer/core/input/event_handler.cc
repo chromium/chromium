@@ -116,6 +116,8 @@
 
 namespace blink {
 
+using mojom::blink::FormControlType;
+
 namespace {
 
 // Refetch the event target node if it is removed or currently is the shadow
@@ -431,7 +433,7 @@ gfx::Point EventHandler::DragDataTransferLocationForTesting() {
 static bool IsSubmitImage(const Node* node) {
   auto* html_input_element = DynamicTo<HTMLInputElement>(node);
   return html_input_element &&
-         html_input_element->type() == input_type_names::kImage;
+         html_input_element->FormControlType() == FormControlType::kInputImage;
 }
 
 bool EventHandler::UsesHandCursor(const Node* node) {
@@ -1472,7 +1474,7 @@ LocalFrame* EventHandler::DetermineActivePointerTrackerFrame(
   // current frame's PEM; otherwise, check if it's a touch-like pointer that
   // have its active states in the local frame root's PEM.
   if (IsPointerIdActiveOnFrame(pointer_id, frame_))
-    return frame_;
+    return frame_.Get();
   if (RootFrameTrackedActivePointerInCurrentFrame(pointer_id))
     return &frame_->LocalFrameRoot();
   return nullptr;
@@ -1574,12 +1576,8 @@ WebInputEventResult EventHandler::HandleGestureEvent(
   DCHECK_EQ(frame_, &frame_->LocalFrameRoot());
   DCHECK_NE(0, gesture_event.FrameScale());
 
-  // Scrolling-related gesture events invoke EventHandler recursively for each
-  // frame down the chain, doing a single-frame hit-test per frame. This matches
-  // handleWheelEvent.
-  // FIXME: Add a test that traverses this path, e.g. for devtools overlay.
-  if (gesture_event.IsScrollEvent())
-    return HandleGestureScrollEvent(gesture_event);
+  // Gesture scroll events are handled on the compositor thread.
+  DCHECK(!gesture_event.IsScrollEvent());
 
   // Hit test across all frames and do touch adjustment as necessary for the
   // event type.

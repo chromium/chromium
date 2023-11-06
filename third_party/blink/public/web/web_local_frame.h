@@ -538,9 +538,17 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
     kPreserveHandleVisibility,
   };
 
+  enum SelectionSetFocusBehavior {
+    // Set Focus in the new selection.
+    kSelectionSetFocus,
+    // Not set focus in the new selection.
+    kSelectionDoNotSetFocus,
+  };
+
   virtual void SelectRange(const WebRange&,
                            HandleVisibilityBehavior,
-                           mojom::SelectionMenuBehavior) = 0;
+                           mojom::SelectionMenuBehavior,
+                           SelectionSetFocusBehavior) = 0;
 
   virtual WebString RangeAsText(const WebRange&) = 0;
 
@@ -680,6 +688,10 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // Usage count for chrome.loadtimes deprecation.
   // This will be removed following the deprecation. See: crbug.com/621512
   virtual void UsageCountChromeLoadTimes(const WebString& metric) = 0;
+
+  // Usage count for chrome.csi deprecation.
+  // This will be removed following the deprecation. See: crbug.com/113048
+  virtual void UsageCountChromeCSI(const WebString& metric) = 0;
 
   // Whether we've dispatched "pagehide" on the current document in this frame
   // previously, and haven't dispatched the "pageshow" event after the last time

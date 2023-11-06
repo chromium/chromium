@@ -102,6 +102,7 @@ class StyleRuleFontFace;
 class StyleRuleFontPaletteValues;
 class StyleRuleKeyframes;
 class StyleRuleUsageTracker;
+class StyleScopeFrame;
 class StyleSheet;
 class StyleSheetContents;
 class StyleInitialData;
@@ -207,7 +208,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
     return injected_author_style_sheets_;
   }
 
-  CSSStyleSheet* InspectorStyleSheet() const { return inspector_style_sheet_; }
+  CSSStyleSheet* InspectorStyleSheet() const {
+    return inspector_style_sheet_.Get();
+  }
 
   void AddTextTrack(TextTrack*);
   void RemoveTextTrack(TextTrack*);
@@ -312,14 +315,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void SetStyleAffectedByLayout() { style_affected_by_layout_ = true; }
   bool StyleAffectedByLayout() { return style_affected_by_layout_; }
 
-  void SetStyleMaybeAffectedByLayoutForAccessibility() {
-    style_affected_by_layout_for_accessibility_ = true;
-  }
-  bool StyleMaybeAffectedByLayoutForAccessibility() {
-    return style_affected_by_layout_for_accessibility_ ||
-           style_affected_by_layout_;
-  }
-
   bool StyleMaybeAffectedByLayout(const Node&);
 
   bool SkippedContainerRecalc() const { return skipped_container_recalc_ != 0; }
@@ -358,7 +353,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   StyleContainmentScopeTree& EnsureStyleContainmentScopeTree();
   StyleContainmentScopeTree* GetStyleContainmentScopeTree() const {
-    return style_containment_scope_tree_;
+    return style_containment_scope_tree_.Get();
   }
 
   void SetRuleUsageTracker(StyleRuleUsageTracker*);
@@ -436,7 +431,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // resume it during layout.
   bool SkipStyleRecalcAllowed() const { return allow_skip_style_recalc_; }
 
-  CSSFontSelector* GetFontSelector() { return font_selector_; }
+  CSSFontSelector* GetFontSelector() { return font_selector_.Get(); }
 
   void RemoveFontFaceRules(const HeapVector<Member<const StyleRuleFontFace>>&);
   // updateGenericFontFamilySettings is used from WebSettingsImpl.
@@ -486,11 +481,22 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
                                               Element& removed_element,
                                               Element& after_element);
   void ScheduleNthPseudoInvalidations(ContainerNode&);
-  void ApplyRuleSetInvalidation(TreeScope&,
-                                ContainerNode&,
-                                SelectorFilter&,
-                                const HeapHashSet<Member<RuleSet>>&,
-                                InvalidationScope = kInvalidateCurrentScope);
+  void ApplyRuleSetInvalidationForTreeScope(
+      TreeScope&,
+      ContainerNode&,
+      SelectorFilter&,
+      StyleScopeFrame&,
+      const HeapHashSet<Member<RuleSet>>&,
+      InvalidationScope = kInvalidateCurrentScope);
+  void ApplyRuleSetInvalidationForSubtree(
+      TreeScope&,
+      Element&,
+      SelectorFilter&,
+      StyleScopeFrame& parent_style_scope_frame,
+      const HeapHashSet<Member<RuleSet>>&,
+      InvalidationScope,
+      bool invalidate_slotted,
+      bool invalidate_part);
   void ScheduleCustomElementInvalidations(HashSet<AtomicString> tag_names);
   void ScheduleInvalidationsForHasPseudoAffectedByInsertion(
       Element* parent,
@@ -504,8 +510,8 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
 
   void NodeWillBeRemoved(Node&);
   void ChildrenRemoved(ContainerNode& parent);
-  void RemovedFromFlatTree(Node& node) {
-    style_recalc_root_.RemovedFromFlatTree(node);
+  void FlatTreePositionChanged(Node& node) {
+    style_recalc_root_.FlatTreePositionChanged(node);
   }
   void PseudoElementRemoved(Element& originating_element) {
     layout_tree_rebuild_root_.SubtreeModified(originating_element);
@@ -568,12 +574,14 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       AtomicString palette_name,
       AtomicString font_family);
 
-  CounterStyleMap* GetUserCounterStyleMap() { return user_counter_style_map_; }
+  CounterStyleMap* GetUserCounterStyleMap() {
+    return user_counter_style_map_.Get();
+  }
   const CounterStyle& FindCounterStyleAcrossScopes(const AtomicString&,
                                                    const TreeScope*) const;
 
   const CascadeLayerMap* GetUserCascadeLayerMap() const {
-    return user_cascade_layer_map_;
+    return user_cascade_layer_map_.Get();
   }
 
   DocumentStyleEnvironmentVariables& EnsureEnvironmentVariables();
@@ -672,6 +680,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
 
   RuleSet* DefaultViewTransitionStyle() const;
+  void UpdateViewTransitionsOptIn();
 
   const ActiveStyleSheetVector& ActiveUserStyleSheets() const {
     return active_user_style_sheets_;
@@ -756,6 +765,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
       const TreeScope& tree_scope,
       Element& element,
       SelectorFilter& selector_filter,
+      StyleScopeFrame& style_scope_frame,
       const HeapHashSet<Member<RuleSet>>& rule_sets,
       bool is_shadow_host);
   void InvalidateSlottedElements(HTMLSlotElement&);
@@ -802,6 +812,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool UserKeyframeStyleShouldOverride(
       const StyleRuleKeyframes* new_rule,
       const StyleRuleKeyframes* existing_rule) const;
+  void AddViewTransitionsRules(const ActiveStyleSheetVector& sheets);
 
   CounterStyleMap& EnsureUserCounterStyleMap();
 
@@ -891,7 +902,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // True if we have performed style recalc for at least one element that
   // depends on container queries.
   bool style_affected_by_layout_{false};
-  bool style_affected_by_layout_for_accessibility_{false};
   // The number of elements currently in a skipped style recalc state.
   //
   // Style recalc can be skipped for an element [1] if its style depends on
@@ -1027,6 +1037,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // The set of IDs for which ::view-transition-group pseudo elements are
   // generated during a ViewTransition.
   Vector<AtomicString> view_transition_names_;
+
+  // The @view-transitions rule currently applying to the document.
+  Member<StyleRuleViewTransitions> view_transitions_rule_;
 
   // Cache for sharing StyleFetchedImage between CSSValues referencing the same
   // URL.

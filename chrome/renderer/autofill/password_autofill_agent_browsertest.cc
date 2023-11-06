@@ -377,7 +377,7 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
     // TODO(crbug/862989): Remove workaround preventing non-test classes to bind
     // fake_driver_ or fake_pw_client_.
-    password_autofill_agent_->SetAutofillAgent(autofill_agent_);
+    password_autofill_agent_->Init(autofill_agent_);
     password_autofill_agent_->GetPasswordManagerDriver();
     password_generation_->RequestPasswordManagerClientForTesting();
     base::RunLoop().RunUntilIdle();  // Executes binding the interfaces.
@@ -594,7 +594,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     static_cast<content::RenderFrameObserver*>(autofill_agent_)
         ->FocusedElementChanged(username_element_);
     // Fill focused element (i.e. |username_element_|).
-    autofill_agent_->FillFieldWithValue(
+    autofill_agent_->ApplyFieldAction(
+        mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
         form_util::GetFieldRendererId(username_element_), text);
   }
 

@@ -184,6 +184,9 @@ const char kAdditionalPadding[] =
     "[blink-gc] Additional padding causes the sizeof(%0) to grow by %1. "
     "Consider reordering fields.";
 
+const char kTraceablePartObjectInUnmanaged[] =
+    "[blink-gc] Traceable part object field %0 found in unmanaged class:";
+
 const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
@@ -277,6 +280,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberOnStack);
   diag_additional_padding_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kAdditionalPadding);
+  diag_part_object_in_unmanaged_ = diagnostic_.getCustomDiagID(
+      getErrorLevel(), kTraceablePartObjectInUnmanaged);
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
       DiagnosticsEngine::Note, kBaseRequiresTracingNote);
@@ -433,6 +438,9 @@ void DiagnosticsReporter::ClassContainsInvalidFields(
       note = diag_iterator_to_gc_managed_collection_note_;
     } else if (error.second == CheckFieldsVisitor::kMemberInStackAllocated) {
       note = diag_member_in_stack_allocated_class_;
+    } else if (error.second ==
+               CheckFieldsVisitor::kTraceablePartObjectInUnmanaged) {
+      note = diag_part_object_in_unmanaged_;
     } else {
       llvm_unreachable("Unknown field error.");
     }

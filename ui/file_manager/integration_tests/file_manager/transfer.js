@@ -84,11 +84,19 @@ class TransferInfo {
     this.destination = opts.destination;
 
     /**
-     * The expected content of the transfer dialog (including any buttons), or
-     * undefined if no dialog is expected.
+     * The expected content of the transfer dialog, or undefined if no dialog is
+     * expected.
      * @type {string}
      */
     this.expectedDialogText = opts.expectedDialogText || undefined;
+
+    /**
+     * The expected label of the “ok” button on the dialog, if the dialog is
+     * expected.
+     * @type {string}
+     */
+    this.expectedDialogOkButtonText =
+        opts.expectedDialogOkButtonText || undefined;
 
     /**
      * True if this transfer is for a move operation, false for a copy
@@ -193,9 +201,18 @@ async function transferBetweenVolumes(transferInfo) {
 
   // If we're expecting a confirmation dialog, confirm that it is shown.
   if (transferInfo.expectedDialogText !== undefined) {
-    const {text} =
-        await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
-    chrome.test.assertEq(transferInfo.expectedDialogText, text);
+    const {innerText} = await remoteCall.waitForElement(
+        appId, '.cr-dialog-container.shown .cr-dialog-text');
+    chrome.test.assertEq(transferInfo.expectedDialogText, innerText);
+
+    // Check that the dialog contains required buttons.
+    const okButton = await remoteCall.waitForElement(
+        appId, '.cr-dialog-container.shown .cr-dialog-ok');
+    chrome.test.assertEq(
+        transferInfo.expectedDialogOkButtonText, okButton.innerText);
+    const cancelButton = await remoteCall.waitForElement(
+        appId, '.cr-dialog-container.shown .cr-dialog-cancel');
+    chrome.test.assertEq('Cancel', cancelButton.innerText);
 
     // Press OK button.
     chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -421,7 +438,8 @@ testcase.transferFromDownloadsToSharedFolder = () => {
     destination: TRANSFER_LOCATIONS.driveSharedDirectory,
     expectedDialogText:
         'Copying this item will share it with everyone who can see the ' +
-        'shared folder \'Shared\'.CopyCancel',
+        'shared folder \'Shared\'.',
+    expectedDialogOkButtonText: 'Copy',
   }));
 };
 
@@ -435,7 +453,8 @@ testcase.transferFromDownloadsToSharedFolderMove = () => {
     destination: TRANSFER_LOCATIONS.driveSharedDirectory,
     expectedDialogText:
         'Moving this item will share it with everyone who can see the ' +
-        'shared folder \'Shared\'.MoveCancel',
+        'shared folder \'Shared\'.',
+    expectedDialogOkButtonText: 'Move',
     isMove: true,
   }));
 };
@@ -494,7 +513,8 @@ testcase.transferFromDriveToTeamDrive = () => {
     destination: TRANSFER_LOCATIONS.driveTeamDriveA,
     expectedDialogText:
         'Members of \'Team Drive A\' will gain access to the copy of these ' +
-        'items.CopyCancel',
+        'items.',
+    expectedDialogOkButtonText: 'Copy',
   }));
 };
 
@@ -533,7 +553,8 @@ testcase.transferFromDownloadsToTeamDrive = () => {
     destination: TRANSFER_LOCATIONS.driveTeamDriveA,
     expectedDialogText:
         'Members of \'Team Drive A\' will gain access to the copy of these ' +
-        'items.CopyCancel',
+        'items.',
+    expectedDialogOkButtonText: 'Copy',
   }));
 };
 
@@ -547,7 +568,8 @@ testcase.transferBetweenTeamDrives = () => {
     destination: TRANSFER_LOCATIONS.driveTeamDriveA,
     expectedDialogText:
         'Members of \'Team Drive A\' will gain access to the copy of these ' +
-        'items.CopyCancel',
+        'items.',
+    expectedDialogOkButtonText: 'Copy',
   }));
 };
 

@@ -415,7 +415,7 @@ void PrintJobWorkerOop::FinishDocumentDone(int job_id) {
 
 void PrintJobWorkerOop::SendEstablishPrintingContext() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
 
   PrintBackendServiceManager& service_mgr =
       PrintBackendServiceManager::GetInstance();
@@ -439,7 +439,7 @@ void PrintJobWorkerOop::SendEstablishPrintingContext() {
 void PrintJobWorkerOop::SendStartPrinting(const std::string& device_name,
                                           const std::u16string& document_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(features::kEnableOopPrintDriversJobPrint.Get());
+  DCHECK(features::ShouldPrintJobOop());
 
   // The device name is needed repeatedly for each call to the service, cache
   // that for this print job.

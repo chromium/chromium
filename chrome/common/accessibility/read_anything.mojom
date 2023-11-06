@@ -11,6 +11,7 @@ import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
 // presentation/theme. This includes font name, size, spacing, and colors.
@@ -112,6 +113,10 @@ interface UntrustedPageHandler {
   // https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
   OnSpeechRateChange(double rate);
 
+  // Informs the browser controller that the user updated the voice used for
+  // speech via the webui toolbar. lang is the language code that voice is for.
+  OnVoiceChange(string voice, string lang);
+
   // Informs the browser controller that the user updated the granularity of
   // the highlight that follows along with speech via the webui toolbar.
   OnHighlightGranularityChanged(read_anything.mojom.HighlightGranularity granularity);
@@ -139,6 +144,11 @@ interface UntrustedPageHandler {
 
   // Informs the browser to collapse the selection made in the WebUI.
   OnCollapseSelection();
+
+  // Informs the browser controller to enable accessibility on target_tree_id.
+  // This is used on PDF web contents so the app controller can receive
+  // information from a PDF.
+  EnablePDFContentAccessibility(ax.mojom.AXTreeID target_tree_id);
 };
 
 // Untrusted WebUI-side handler for requests from the browser.
@@ -154,9 +164,17 @@ interface UntrustedPage {
   // after the tree_id was previously passed to AccessibilityEventsReceived.
   // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the
   // main frame URL for metrics collection.
+  // force_update_state, if true, will force the WebUI to update, even if
+  // tree_id did not change. This is used for PDFs, in
+  // EnablePDFContentAccessibility, since the tree id of the main web contents
+  // is sent back to the WebUI (not the tree id of the pdf web contents). In
+  // this case, the tree_id will not be different from what is already stored
+  // in the model, but an update will still be needed since the WebUI will be
+  // getting information from the pdf web contents now.
   OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id,
                           int64 ukm_source_id,
-                          url.mojom.Url url);
+                          url.mojom.Url url,
+                          bool force_update_state);
 
   // Notifies the WebUI that an AXTree with the provided AXTreeID was
   // destroyed. This is not guaranteed to be called after the tree_id was
@@ -169,13 +187,15 @@ interface UntrustedPage {
   // Send an updated default language code to the WebUI.
   SetDefaultLanguageCode(string code);
 
-  // Send the theme values stored in prefs to the WebUI.
+  // Send the settings values stored in prefs to the WebUI. voices maps
+  // language to voice name
   OnSettingsRestoredFromPrefs(read_anything.mojom.LineSpacing line_spacing,
                            read_anything.mojom.LetterSpacing letter_spacing,
                            string font,
                            double font_size,
                            read_anything.mojom.Colors color,
                            double speech_rate,
+                           mojo_base.mojom.DictionaryValue voices,
                            read_anything.mojom.HighlightGranularity granularity);
 
   // Notifies the WebUI that the ScreenAI service is ready on this device.

@@ -98,7 +98,8 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       keepalive_(false),
       browsing_topics_(false),
       ad_auction_headers_(false),
-      shared_storage_writable_(false),
+      shared_storage_writable_opted_in_(false),
+      shared_storage_writable_eligible_(false),
       allow_stale_response_(false),
       cache_mode_(mojom::blink::FetchCacheMode::kDefault),
       skip_service_worker_(false),
@@ -118,7 +119,8 @@ ResourceRequestHead::ResourceRequestHead(const KURL& url)
       referrer_string_(Referrer::ClientReferrerString()),
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
       cors_preflight_policy_(
-          network::mojom::CorsPreflightPolicy::kConsiderPreflight) {}
+          network::mojom::CorsPreflightPolicy::kConsiderPreflight),
+      target_address_space_(network::mojom::IPAddressSpace::kUnknown) {}
 
 ResourceRequestHead::ResourceRequestHead(const ResourceRequestHead&) = default;
 
@@ -209,7 +211,7 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetKeepalive(GetKeepalive());
   request->SetBrowsingTopics(GetBrowsingTopics());
   request->SetAdAuctionHeaders(GetAdAuctionHeaders());
-  request->SetSharedStorageWritable(GetSharedStorageWritable());
+  request->SetSharedStorageWritableOptedIn(GetSharedStorageWritableOptedIn());
   request->SetPriority(Priority());
   request->SetPriorityIncremental(PriorityIncremental());
 
@@ -486,7 +488,7 @@ bool ResourceRequest::IsFeatureEnabledForSubresourceRequestAssumingOptIn(
       GetBrowsingTopics();
   bool shared_storage_opted_in =
       feature == mojom::blink::PermissionsPolicyFeature::kSharedStorage &&
-      GetSharedStorageWritable();
+      GetSharedStorageWritableOptedIn();
 
   if (!browsing_topics_opted_in && !shared_storage_opted_in) {
     return false;

@@ -22,16 +22,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history.HistoryDeletionInfo;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
 
-/**
- * Unit tests for the ContentCaptureHistoryDeletionObserver.
- */
+/** Unit tests for the ContentCaptureHistoryDeletionObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ContentCaptureHistoryDeletionObserverTest {
-    @Mock
-    PlatformContentCaptureController mContentCaptureController;
-    @Mock
-    HistoryDeletionInfo mHistoryDeletionInfo;
+    @Mock PlatformContentCaptureController mContentCaptureController;
+    @Mock HistoryDeletionInfo mHistoryDeletionInfo;
 
     ContentCaptureHistoryDeletionObserver mContentCaptureHistoryDeletionObserver;
 

@@ -18,7 +18,6 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/rand_util.h"
 #include "base/strings/escape.h"
@@ -68,24 +67,10 @@ using metrics::OmniboxEventProto;
 
 namespace {
 
-// We keep track in a histogram how many suggest requests we send, how
-// many suggest requests we invalidate (e.g., due to a user typing
-// another character), and how many replies we receive.
-// *** ADD NEW ENUMS AFTER ALL PREVIOUSLY DEFINED ONES! ***
-//     (excluding the end-of-list enum value)
-// We do not want values of existing enums to change or else it screws
-// up the statistics.
-enum SuggestRequestsHistogramValue {
-  REQUEST_SENT = 1,
-  REQUEST_INVALIDATED,
-  REPLY_RECEIVED,
-  MAX_SUGGEST_REQUEST_HISTOGRAM_VALUE
-};
-
 // Increments the appropriate value in the histogram by one.
-void LogOmniboxSuggestRequest(SuggestRequestsHistogramValue request_value) {
-  UMA_HISTOGRAM_ENUMERATION("Omnibox.SuggestRequests", request_value,
-                            MAX_SUGGEST_REQUEST_HISTOGRAM_VALUE);
+void LogOmniboxSuggestRequest(RemoteRequestHistogramValue request_value) {
+  base::UmaHistogramEnumeration("Omnibox.SuggestRequests", request_value,
+                                RemoteRequestHistogramValue::kMaxValue);
 }
 
 bool HasMultipleWords(const std::u16string& text) {
@@ -444,7 +429,7 @@ void SearchProvider::OnURLLoadComplete(
       SearchSuggestionParser::Results* results =
           is_keyword ? &keyword_results_ : &default_results_;
       results_updated = SearchSuggestionParser::ParseSuggestResults(
-          *data, GetInput(is_keyword).text(), client()->GetSchemeClassifier(),
+          *data, GetInput(is_keyword), client()->GetSchemeClassifier(),
           /*default_result_relevance=*/-1, /*is_keyword_result=*/is_keyword,
           results);
       if (results_updated) {
@@ -520,7 +505,8 @@ void SearchProvider::SortResults(bool is_keyword,
 }
 
 void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
-  LogOmniboxSuggestRequest(REPLY_RECEIVED);
+  LogOmniboxSuggestRequest(
+      RemoteRequestHistogramValue::kRemoteResponseReceived);
   // Record response time for suggest requests sent to Google.  We care
   // only about the common case: the Google default provider used in
   // non-keyword mode.
@@ -531,11 +517,11 @@ void SearchProvider::LogLoadComplete(bool success, bool is_keyword) {
     const base::TimeDelta elapsed_time =
         base::TimeTicks::Now() - time_suggest_request_sent_;
     if (success) {
-      UMA_HISTOGRAM_TIMES("Omnibox.SuggestRequest.Success.GoogleResponseTime",
-                          elapsed_time);
+      base::UmaHistogramTimes(
+          "Omnibox.SuggestRequest.Success.GoogleResponseTime", elapsed_time);
     } else {
-      UMA_HISTOGRAM_TIMES("Omnibox.SuggestRequest.Failure.GoogleResponseTime",
-                          elapsed_time);
+      base::UmaHistogramTimes(
+          "Omnibox.SuggestRequest.Failure.GoogleResponseTime", elapsed_time);
     }
   }
 }
@@ -767,7 +753,7 @@ void SearchProvider::StartOrStopSuggestQuery(bool minimal_changes) {
 void SearchProvider::CancelLoader(
     std::unique_ptr<network::SimpleURLLoader>* loader) {
   if (*loader) {
-    LogOmniboxSuggestRequest(REQUEST_INVALIDATED);
+    LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestInvalidated);
     loader->reset();
   }
 }
@@ -929,7 +915,7 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
     search_term_args.current_page_url = input.current_url().spec();
   }
 
-  LogOmniboxSuggestRequest(REQUEST_SENT);
+  LogOmniboxSuggestRequest(RemoteRequestHistogramValue::kRequestSent);
 
   // If the request is from omnibox focus, send empty search term args. The
   // purpose of such a request is to signal the server to warm up; no info

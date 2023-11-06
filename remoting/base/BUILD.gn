@@ -49,6 +49,10 @@ source_set("base") {
     "cpu_utils.h",
     "directory_service_client.cc",
     "directory_service_client.h",
+    "hostname.cc",
+    "hostname.h",
+    "is_google_email.cc",
+    "is_google_email.h",
     "leaky_bucket.cc",
     "leaky_bucket.h",
     "name_value_map.h",
@@ -87,6 +91,8 @@ source_set("base") {
     "telemetry_log_writer.cc",
     "telemetry_log_writer.h",
     "typed_buffer.h",
+    "url_loader_network_service_observer.cc",
+    "url_loader_network_service_observer.h",
     "url_request_context_getter.cc",
     "url_request_context_getter.h",
     "util.cc",
@@ -112,6 +118,7 @@ source_set("base") {
   deps = [
     ":authorization",
     ":buildflags",
+    ":logging",
     ":protobuf_http_client_messages_proto",
     "//base/third_party/dynamic_annotations",
     "//build:chromeos_buildflags",
@@ -137,6 +144,7 @@ source_set("base") {
 
   if (is_win) {
     sources += [ "scoped_sc_handle_win.h" ]
+    libs = [ "crypt32.lib" ]  # For CryptoAPI functions in certificate_helpers
   } else if (is_linux || is_chromeos) {
     sources += [
       "file_path_util_linux.cc",

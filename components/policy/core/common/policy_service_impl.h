@@ -83,11 +83,19 @@ class POLICY_EXPORT PolicyServiceImpl
   // notified yet because it was throttled, will notify observers synchronously.
   // Has no effect if initialization was not throttled.
   void UnthrottleInitialization();
+  void UseLocalTestPolicyProvider(
+      ConfigurationPolicyProvider* provider) override;
 
   // Precedence policies cannot be set at the user cloud level regardless of
   // affiliation status. This is done to prevent cloud users from potentially
   // giving themselves increased priority, causing a security issue.
   static void IgnoreUserCloudPrecedencePolicies(PolicyMap* policies);
+
+  // Merges the policies from `bundles` into one bundle while respecting the
+  // policy priorities and applying the appropriate `migrators`.
+  static PolicyBundle MergePolicyBundles(
+      std::vector<const policy::PolicyBundle*>& bundles,
+      Migrators& migrators);
 
  private:
   enum class PolicyDomainStatus { kUninitialized, kInitialized, kPolicyReady };
@@ -113,6 +121,8 @@ class POLICY_EXPORT PolicyServiceImpl
 
   void NotifyProviderUpdatesPropagated();
 
+  void NotifyPoliciesUpdated(const PolicyBundle& old_bundle);
+
   // Combines the policies from all the providers, and notifies the observers
   // of namespaces whose policies have been modified.
   void MergeAndTriggerUpdates();
@@ -136,6 +146,7 @@ class POLICY_EXPORT PolicyServiceImpl
 
   // The providers, in order of decreasing priority.
   Providers providers_;
+  raw_ptr<ConfigurationPolicyProvider> local_test_policy_provider_ = nullptr;
 
   Migrators migrators_;
 

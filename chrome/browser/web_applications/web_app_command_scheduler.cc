@@ -97,7 +97,6 @@ void WebAppCommandScheduler::Shutdown() {
 void WebAppCommandScheduler::FetchManifestAndInstall(
     webapps::WebappInstallSource install_surface,
     base::WeakPtr<content::WebContents> contents,
-    bool bypass_service_worker_check,
     WebAppInstallDialogCallback dialog_callback,
     OnceInstallCallback callback,
     bool use_fallback,
@@ -112,8 +111,8 @@ void WebAppCommandScheduler::FetchManifestAndInstall(
 
   provider_->command_manager().ScheduleCommand(
       std::make_unique<FetchManifestAndInstallCommand>(
-          install_surface, std::move(contents), bypass_service_worker_check,
-          std::move(dialog_callback), std::move(callback), use_fallback,
+          install_surface, std::move(contents), std::move(dialog_callback),
+          std::move(callback), use_fallback,
           provider_->ui_manager().GetWeakPtr(),
           provider_->web_contents_manager().CreateDataRetriever()),
       location);
@@ -368,7 +367,6 @@ void WebAppCommandScheduler::InstallIsolatedWebApp(
           url_info, location, expected_version,
           IsolatedWebAppInstallCommandHelper::CreateIsolatedWebAppWebContents(
               *profile_),
-          provider_->web_contents_manager().CreateUrlLoader(),
           std::move(optional_keep_alive),
           std::move(optional_profile_keep_alive), std::move(callback),
           std::make_unique<IsolatedWebAppInstallCommandHelper>(
@@ -911,7 +909,7 @@ void WebAppCommandScheduler::LaunchAppWithKeepAlives(
   webapps::AppId app_id = params.app_id;
   ScheduleCallbackWithLock(
       "LaunchApp", std::make_unique<AppLockDescription>(app_id),
-      base::BindOnce(&WebAppUiManager::LaunchWebApp,
+      base::BindOnce(&WebAppUiManager::WaitForFirstRunAndLaunchWebApp,
                      base::Unretained(&provider_->ui_manager()),
                      std::move(params), launch_setting, std::ref(*profile_),
                      std::move(callback)),

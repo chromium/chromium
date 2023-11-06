@@ -139,6 +139,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothScanning;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPairing:
       return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPairing;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kFan:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kFan;
     default:
       return absl::nullopt;
   }

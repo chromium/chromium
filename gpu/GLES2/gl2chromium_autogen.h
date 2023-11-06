@@ -364,8 +364,6 @@
 #define glFramebufferTextureMultiviewOVR \
   GLES2_GET_FUN(FramebufferTextureMultiviewOVR)
 #define glMaxShaderCompilerThreadsKHR GLES2_GET_FUN(MaxShaderCompilerThreadsKHR)
-#define glTexImage2DSharedImageCHROMIUM \
-  GLES2_GET_FUN(TexImage2DSharedImageCHROMIUM)
 #define glCreateAndTexStorage2DSharedImageCHROMIUM \
   GLES2_GET_FUN(CreateAndTexStorage2DSharedImageCHROMIUM)
 #define glBeginSharedImageAccessDirectCHROMIUM \
@@ -376,6 +374,8 @@
   GLES2_GET_FUN(ConvertRGBAToYUVAMailboxesINTERNAL)
 #define glConvertYUVAMailboxesToRGBINTERNAL \
   GLES2_GET_FUN(ConvertYUVAMailboxesToRGBINTERNAL)
+#define glConvertYUVAMailboxesToTextureINTERNAL \
+  GLES2_GET_FUN(ConvertYUVAMailboxesToTextureINTERNAL)
 #define glCopySharedImageINTERNAL GLES2_GET_FUN(CopySharedImageINTERNAL)
 #define glCopySharedImageToTextureINTERNAL \
   GLES2_GET_FUN(CopySharedImageToTextureINTERNAL)

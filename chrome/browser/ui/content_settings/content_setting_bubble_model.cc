@@ -272,7 +272,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
       PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
 
   static const ContentSettingsTypeIdEntry kBlockedTitleIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_TITLE},
+      {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_TITLE},
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_TITLE},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_TITLE},
       {ContentSettingsType::MIXEDSCRIPT,
@@ -285,7 +285,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
   };
   // Fields as for kBlockedTitleIDs, above.
   static const ContentSettingsTypeIdEntry kAccessedTitleIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_TITLE},
+      {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_TITLE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_TITLE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_TITLE},
@@ -310,7 +310,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   // TODO(https://crbug.com/978882): Make the two arrays below static again once
   // we no longer need to check base::FeatureList.
   const ContentSettingsTypeIdEntry kBlockedMessageIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_MESSAGE},
+      {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE},
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_MESSAGE},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_MESSAGE},
       // {ContentSettingsType::POPUPS, No message. intentionally left out},
@@ -327,7 +327,7 @@ void ContentSettingSimpleBubbleModel::SetMessage() {
   };
   // Fields as for kBlockedMessageIDs, above.
   const ContentSettingsTypeIdEntry kAccessedMessageIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_ACCESSED_COOKIES_MESSAGE},
+      {ContentSettingsType::COOKIES, IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_MESSAGE},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_MESSAGE},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -355,8 +355,9 @@ void ContentSettingSimpleBubbleModel::SetManageText() {
 }
 
 void ContentSettingSimpleBubbleModel::OnManageButtonClicked() {
-  if (delegate())
+  if (delegate()) {
     delegate()->ShowContentSettingsPage(content_type());
+  }
 
   if (content_type() == ContentSettingsType::POPUPS) {
     content_settings::RecordPopupsAction(
@@ -366,7 +367,6 @@ void ContentSettingSimpleBubbleModel::OnManageButtonClicked() {
 
 void ContentSettingSimpleBubbleModel::SetCustomLink() {
   static const ContentSettingsTypeIdEntry kCustomIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_INFO},
       {ContentSettingsType::MIXEDSCRIPT, IDS_ALLOW_INSECURE_CONTENT_BUTTON},
   };
   int custom_link_id =
@@ -623,7 +623,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   radio_group.url = url;
 
   static const ContentSettingsTypeIdEntry kBlockedAllowIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_UNBLOCK},
+      {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_UNBLOCK},
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_UNBLOCK},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_UNBLOCK},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_UNBLOCK},
@@ -636,7 +636,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   };
   // Fields as for kBlockedAllowIDs, above.
   static const ContentSettingsTypeIdEntry kAllowedAllowIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_NO_ACTION},
+      {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_NO_ACTION},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_NO_ACTION},
       {ContentSettingsType::CLIPBOARD_READ_WRITE,
@@ -650,14 +650,17 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
         kAllowedAllowIDs, std::size(kAllowedAllowIDs), content_type());
     radio_allow_label = l10n_util::GetStringUTF16(resource_id);
   } else {
-    radio_allow_label = l10n_util::GetStringFUTF16(
-        GetIdForContentType(kBlockedAllowIDs, std::size(kBlockedAllowIDs),
-                            content_type()),
-        display_url);
+    int resource_id = GetIdForContentType(
+        kBlockedAllowIDs, std::size(kBlockedAllowIDs), content_type());
+    if (content_type() == ContentSettingsType::COOKIES) {
+      radio_allow_label = l10n_util::GetStringUTF16(resource_id);
+    } else {
+      radio_allow_label = l10n_util::GetStringFUTF16(resource_id, display_url);
+    }
   }
 
   static const ContentSettingsTypeIdEntry kBlockedBlockIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_NO_ACTION},
+      {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_NO_ACTION},
       {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_NO_ACTION},
       {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_NO_ACTION},
       {ContentSettingsType::POPUPS, IDS_BLOCKED_POPUPS_REDIRECTS_NO_ACTION},
@@ -669,7 +672,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
       {ContentSettingsType::SENSORS, IDS_BLOCKED_SENSORS_NO_ACTION},
   };
   static const ContentSettingsTypeIdEntry kAllowedBlockIDs[] = {
-      {ContentSettingsType::COOKIES, IDS_ALLOWED_COOKIES_BLOCK},
+      {ContentSettingsType::COOKIES, IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK},
       {ContentSettingsType::GEOLOCATION, IDS_ALLOWED_GEOLOCATION_BLOCK},
       {ContentSettingsType::MIDI_SYSEX, IDS_ALLOWED_MIDI_SYSEX_BLOCK},
       {ContentSettingsType::CLIPBOARD_READ_WRITE, IDS_ALLOWED_CLIPBOARD_BLOCK},
@@ -680,7 +683,11 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   if (allowed) {
     int resource_id = GetIdForContentType(
         kAllowedBlockIDs, std::size(kAllowedBlockIDs), content_type());
-    radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_url);
+    if (content_type() == ContentSettingsType::COOKIES) {
+      radio_block_label = l10n_util::GetStringUTF16(resource_id);
+    } else {
+      radio_block_label = l10n_util::GetStringFUTF16(resource_id, display_url);
+    }
   } else {
     radio_block_label = l10n_util::GetStringUTF16(GetIdForContentType(
         kBlockedBlockIDs, std::size(kBlockedBlockIDs), content_type()));
@@ -807,9 +814,7 @@ class ContentSettingCookiesBubbleModel : public ContentSettingSingleRadioGroup {
 
   // ContentSettingBubbleModel:
   void CommitChanges() override;
-
- private:
-  void OnCustomLinkClicked() override;
+  void OnManageButtonClicked() override;
 };
 
 ContentSettingCookiesBubbleModel::ContentSettingCookiesBubbleModel(
@@ -817,9 +822,7 @@ ContentSettingCookiesBubbleModel::ContentSettingCookiesBubbleModel(
     WebContents* web_contents)
     : ContentSettingSingleRadioGroup(delegate,
                                      web_contents,
-                                     ContentSettingsType::COOKIES) {
-  set_custom_link_enabled(true);
-}
+                                     ContentSettingsType::COOKIES) {}
 
 ContentSettingCookiesBubbleModel::~ContentSettingCookiesBubbleModel() = default;
 
@@ -833,7 +836,7 @@ void ContentSettingCookiesBubbleModel::CommitChanges() {
   ContentSettingSingleRadioGroup::CommitChanges();
 }
 
-void ContentSettingCookiesBubbleModel::OnCustomLinkClicked() {
+void ContentSettingCookiesBubbleModel::OnManageButtonClicked() {
   delegate()->ShowCollectedCookiesDialog(web_contents());
 }
 

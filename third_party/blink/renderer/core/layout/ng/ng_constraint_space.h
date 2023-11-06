@@ -10,16 +10,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/geometry/bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/margin_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
+#include "third_party/blink/renderer/core/layout/grid/grid_data.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_margin_strut.h"
-#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_appeal.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
-#include "third_party/blink/renderer/core/layout/ng/table/ng_table_constraint_space_data.h"
+#include "third_party/blink/renderer/core/layout/table/table_constraint_space_data.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -165,7 +165,7 @@ class CORE_EXPORT NGConstraintSpace final {
       delete rare_data_;
   }
 
-  const NGExclusionSpace& ExclusionSpace() const { return exclusion_space_; }
+  const ExclusionSpace& GetExclusionSpace() const { return exclusion_space_; }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(bitfields_.direction);
@@ -329,7 +329,7 @@ class CORE_EXPORT NGConstraintSpace final {
                          : false;
   }
 
-  const NGTableConstraintSpaceData* TableData() const {
+  const TableConstraintSpaceData* TableData() const {
     return HasRareData() ? rare_data_->TableData() : nullptr;
   }
 
@@ -729,7 +729,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
   // Return true if there were any earlier floats that may affect the current
   // layout.
-  bool HasFloats() const { return !ExclusionSpace().IsEmpty(); }
+  bool HasFloats() const { return !GetExclusionSpace().IsEmpty(); }
 
   bool HasClearanceOffset() const {
     return HasRareData() && rare_data_->ClearanceOffset() != LayoutUnit::Min();
@@ -753,8 +753,8 @@ class CORE_EXPORT NGConstraintSpace final {
     return HasRareData() ? rare_data_->LinesUntilClamp() : absl::nullopt;
   }
 
-  const NGGridLayoutSubtree* GridLayoutSubtree() const {
-    return HasRareData() ? rare_data_->GridLayoutSubtree() : nullptr;
+  const GridLayoutSubtree* GetGridLayoutSubtree() const {
+    return HasRareData() ? rare_data_->GetGridLayoutSubtree() : nullptr;
   }
 
   // Return true if the two constraint spaces are similar enough that it *may*
@@ -836,7 +836,7 @@ class CORE_EXPORT NGConstraintSpace final {
     return true;
   }
 
-  void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+  void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
                            const wtf_size_t row_index) {
     DCHECK(HasRareData());
     rare_data_->ReplaceTableRowData(table_data, row_index);
@@ -1204,20 +1204,20 @@ class CORE_EXPORT NGConstraintSpace final {
     }
 
     void SetTableRowData(
-        scoped_refptr<const NGTableConstraintSpaceData> table_data,
+        scoped_refptr<const TableConstraintSpaceData> table_data,
         wtf_size_t row_index) {
       EnsureTableRowData()->table_data = std::move(table_data);
       EnsureTableRowData()->row_index = row_index;
     }
 
     void SetTableSectionData(
-        scoped_refptr<const NGTableConstraintSpaceData> table_data,
+        scoped_refptr<const TableConstraintSpaceData> table_data,
         wtf_size_t section_index) {
       EnsureTableSectionData()->table_data = std::move(table_data);
       EnsureTableSectionData()->section_index = section_index;
     }
 
-    void ReplaceTableRowData(const NGTableConstraintSpaceData& table_data,
+    void ReplaceTableRowData(const TableConstraintSpaceData& table_data,
                              wtf_size_t row_index) {
       DCHECK_EQ(GetDataUnionType(), DataUnionType::kTableRowData);
       DCHECK(
@@ -1228,7 +1228,7 @@ class CORE_EXPORT NGConstraintSpace final {
       table_row_data_.row_index = row_index;
     }
 
-    const NGTableConstraintSpaceData* TableData() {
+    const TableConstraintSpaceData* TableData() {
       if (GetDataUnionType() == DataUnionType::kTableRowData)
         return table_row_data_.table_data.get();
       if (GetDataUnionType() == DataUnionType::kTableSectionData)
@@ -1283,13 +1283,13 @@ class CORE_EXPORT NGConstraintSpace final {
           target_stretch_block_sizes;
     }
 
-    const NGGridLayoutSubtree* GridLayoutSubtree() const {
+    const GridLayoutSubtree* GetGridLayoutSubtree() const {
       return GetDataUnionType() == DataUnionType::kSubgridData
                  ? &subgrid_data_.layout_subtree
                  : nullptr;
     }
 
-    void SetGridLayoutSubtree(NGGridLayoutSubtree&& grid_layout_subtree) {
+    void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
       EnsureSubgridData()->layout_subtree = std::move(grid_layout_subtree);
     }
 
@@ -1381,7 +1381,7 @@ class CORE_EXPORT NGConstraintSpace final {
         return !table_data && row_index == kNotFound;
       }
 
-      scoped_refptr<const NGTableConstraintSpaceData> table_data;
+      scoped_refptr<const TableConstraintSpaceData> table_data;
       wtf_size_t row_index = kNotFound;
     };
 
@@ -1395,7 +1395,7 @@ class CORE_EXPORT NGConstraintSpace final {
         return !table_data && section_index == kNotFound;
       }
 
-      scoped_refptr<const NGTableConstraintSpaceData> table_data;
+      scoped_refptr<const TableConstraintSpaceData> table_data;
       wtf_size_t section_index = kNotFound;
     };
 
@@ -1437,7 +1437,7 @@ class CORE_EXPORT NGConstraintSpace final {
 
       bool IsInitialForMaySkipLayout() const { return !layout_subtree; }
 
-      NGGridLayoutSubtree layout_subtree;
+      GridLayoutSubtree layout_subtree;
     };
 
     BlockData* EnsureBlockData() {
@@ -1656,7 +1656,7 @@ class CORE_EXPORT NGConstraintSpace final {
     RareData* rare_data_;
   };
 
-  NGExclusionSpace exclusion_space_;
+  ExclusionSpace exclusion_space_;
   Bitfields bitfields_;
 };
 

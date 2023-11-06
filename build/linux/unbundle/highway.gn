@@ -1,0 +1,9 @@
+import("//build/config/linux/pkg_config.gni")
+
+pkg_config("libhwy_external_config") {
+  packages = [ "libhwy" ]
+}
+
+source_set("libhwy") {
+  public_configs = [ ":libhwy_external_config" ]
+}

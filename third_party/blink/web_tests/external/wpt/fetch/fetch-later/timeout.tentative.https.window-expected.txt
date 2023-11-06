@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL fetchLater() sends out based on activationTimeout.  assert_equals: Number of sent beacons does not match expected count: expected 1 but got 0
-FAIL fetchLater() sends out based on activationTimeout, even if document is in BFCache.  assert_equals: Number of sent beacons does not match expected count: expected 1 but got 0
-Harness: the test ran to completion.
-

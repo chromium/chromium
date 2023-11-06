@@ -1301,7 +1301,19 @@ TEST_F(InputMethodManagerImplTest, ChangeInputMethodComponentExtensionTwoIME) {
             manager_->GetActiveIMEState()->GetCurrentInputMethod().id());
 }
 
-TEST_F(InputMethodManagerImplTest, MigrateInputMethodTest) {
+TEST_F(InputMethodManagerImplTest, GetMigratedInputMethodIDTest) {
+  EXPECT_EQ(ImeIdFromEngineId("xkb:us::eng"),
+            manager_->GetMigratedInputMethodID("xkb:us::eng"));
+  EXPECT_EQ(ImeIdFromEngineId("xkb:fr::fra"),
+            manager_->GetMigratedInputMethodID("xkb:fr::fra"));
+  EXPECT_EQ(
+      "_comp_ime_asdf_invalid_pinyin",
+      manager_->GetMigratedInputMethodID("_comp_ime_asdf_invalid_pinyin"));
+  EXPECT_EQ(ImeIdFromEngineId("zh-t-i0-pinyin"),
+            manager_->GetMigratedInputMethodID("zh-t-i0-pinyin"));
+}
+
+TEST_F(InputMethodManagerImplTest, MigrateInputMethodsTest) {
   std::vector<std::string> input_method_ids;
   input_method_ids.emplace_back("xkb:us::eng");
   input_method_ids.emplace_back("xkb:fr::fra");

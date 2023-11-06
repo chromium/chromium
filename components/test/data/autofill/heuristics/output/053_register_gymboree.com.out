@@ -9,7 +9,7 @@ ADDRESS_HOME_LINE3 | LOYALTY_ADDRESS<>address3 | Address Line 3 |  | LOYALTY_ACC
 ADDRESS_HOME_CITY | LOYALTY_ADDRESS<>city | City* |  | LOYALTY_ACCOUNT<>email_1
 ADDRESS_HOME_STATE | LOYALTY_ADDRESS<>state_cd | State/Province* |  | LOYALTY_ACCOUNT<>email_1
 ADDRESS_HOME_ZIP | LOYALTY_ADDRESS<>postal | Zip/Postal Code*! |  | LOYALTY_ACCOUNT<>email_1
-PHONE_HOME_WHOLE_NUMBER | LOYALTY_ADDRESS<>phone | Daytime Phone* |  | LOYALTY_ACCOUNT<>email_1
+PHONE_HOME_CITY_AND_NUMBER | LOYALTY_ADDRESS<>phone | Daytime Phone* |  | LOYALTY_ACCOUNT<>email_1
 UNKNOWN_TYPE | LOYALTY_ACCOUNT<>password | Password*! |  | LOYALTY_ACCOUNT<>email_1
 UNKNOWN_TYPE | LOYALTY_ACCOUNT<>confirmPassword | Confirm Password* |  | LOYALTY_ACCOUNT<>email_1
 UNKNOWN_TYPE | LOYALTY_ACCOUNT<>ATR_USER_Password_Hint | Password Hint* |  | LOYALTY_ACCOUNT<>email_1

@@ -757,6 +757,15 @@ ServiceWorkerContextCore::PopNextWarmUpRequest() {
   return request;
 }
 
+bool ServiceWorkerContextCore::IsWaitingForWarmUp(
+    const blink::StorageKey& key) const {
+  return std::find_if(
+             warm_up_requests_.begin(), warm_up_requests_.end(), [&](auto& it) {
+               const blink::StorageKey& warm_up_request_key = std::get<1>(it);
+               return key == warm_up_request_key;
+             }) != warm_up_requests_.end();
+}
+
 void ServiceWorkerContextCore::RegistrationComplete(
     const GURL& scope,
     const blink::StorageKey& key,
@@ -1191,6 +1200,13 @@ void ServiceWorkerContextCore::OnRunningStateChanged(
 void ServiceWorkerContextCore::OnVersionStateChanged(
     ServiceWorkerVersion* version) {
   DCHECK_EQ(this, version->context().get());
+  if (version->status() == ServiceWorkerVersion::INSTALLED &&
+      version->router_evaluator()) {
+    observer_list_->Notify(
+        FROM_HERE,
+        &ServiceWorkerContextCoreObserver::OnVersionRouterRulesChanged,
+        version->version_id(), version->router_evaluator()->ToString());
+  }
   observer_list_->Notify(
       FROM_HERE, &ServiceWorkerContextCoreObserver::OnVersionStateChanged,
       version->version_id(), version->scope(), version->key(),

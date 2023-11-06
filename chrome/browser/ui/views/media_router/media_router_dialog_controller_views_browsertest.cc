@@ -111,9 +111,10 @@ IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
             nullptr);
 }
 
+// TODO(crbug.com/1499812): Disabled flaky test.
 // Regression test for crbug.com/1308341.
 IN_PROC_BROWSER_TEST_F(MediaRouterDialogControllerViewsTest,
-                       MediaBubbleClosedByPlatform) {
+                       DISABLED_MediaBubbleClosedByPlatform) {
   OpenMediaRouterDialog();
   base::RunLoop().RunUntilIdle();
   CastDialogCoordinator& cast_dialog_coordinator =

@@ -252,7 +252,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     return;
   }
 
-  double current_timestamp = base::Time::Now().ToDoubleT();
+  double current_timestamp = base::Time::Now().InSecondsFSinceUnixEpoch();
 
   base::flat_map<GURL,
                  std::vector<std::unique_ptr<autofill::AutofillOfferData>>>
@@ -296,7 +296,8 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
       for (const coupon_db::FreeListingCouponInfoProto& coupon_info :
            merchant_discounts.coupon_discounts) {
         int64_t offer_id = coupon_info.coupon_id();
-        base::Time expiry = base::Time::FromDoubleT(coupon_info.expiry_time());
+        base::Time expiry =
+            base::Time::FromSecondsSinceUnixEpoch(coupon_info.expiry_time());
         std::vector<GURL> merchant_origins;
         merchant_origins.emplace_back(cart_url_origin);
         GURL offer_details_url = GURL();

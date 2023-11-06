@@ -26,28 +26,26 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Test for ManageSyncSettings with FakeSyncServiceImpl.
- */
+/** Test for ManageSyncSettings with FakeSyncServiceImpl. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ManageSyncSettingsWithFakeSyncServiceImplTest {
     @Rule
-    public SyncTestRule mSyncTestRule = new SyncTestRule() {
-        @Override
-        protected FakeSyncServiceImpl createSyncServiceImpl() {
-            return new FakeSyncServiceImpl();
-        }
-    };
+    public SyncTestRule mSyncTestRule =
+            new SyncTestRule() {
+                @Override
+                protected FakeSyncServiceImpl createSyncServiceImpl() {
+                    return new FakeSyncServiceImpl();
+                }
+            };
+
     @Rule
     public SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
     private SettingsActivity mSettingsActivity;
 
-    /**
-     * Test that triggering OnPassphraseAccepted dismisses PassphraseDialogFragment.
-     */
+    /** Test that triggering OnPassphraseAccepted dismisses PassphraseDialogFragment. */
     @Test
     @SmallTest
     @Feature({"Sync"})
@@ -65,20 +63,25 @@ public class ManageSyncSettingsWithFakeSyncServiceImplTest {
         Preference encryption = fragment.findPreference(ManageSyncSettings.PREF_ENCRYPTION);
         clickPreference(encryption);
 
-        final PassphraseDialogFragment passphraseFragment = ActivityTestUtils.waitForFragment(
-                mSettingsActivity, ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE);
+        final PassphraseDialogFragment passphraseFragment =
+                ActivityTestUtils.waitForFragment(
+                        mSettingsActivity, ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE);
         Assert.assertTrue(passphraseFragment.isAdded());
 
         // Simulate OnPassphraseAccepted from external event by setting PassphraseRequired to false
         // and triggering syncStateChanged().
         // PassphraseDialogFragment should be dismissed.
         fakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            fragment.getFragmentManager().executePendingTransactions();
-            Assert.assertNull("PassphraseDialogFragment should be dismissed.",
-                    mSettingsActivity.getFragmentManager().findFragmentByTag(
-                            ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    fragment.getFragmentManager().executePendingTransactions();
+                    Assert.assertNull(
+                            "PassphraseDialogFragment should be dismissed.",
+                            mSettingsActivity
+                                    .getFragmentManager()
+                                    .findFragmentByTag(
+                                            ManageSyncSettings.FRAGMENT_ENTER_PASSPHRASE));
+                });
     }
 
     private ManageSyncSettings startManageSyncPreferences() {

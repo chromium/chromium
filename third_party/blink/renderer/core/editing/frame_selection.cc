@@ -902,10 +902,6 @@ void FrameSelection::FocusedOrActiveStateChanged() {
     element->FocusStateChanged();
   }
 
-  if (!GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
-    return;
-  }
-
   // Selection style may depend on the active state of the document, so style
   // and paint must be invalidated when active status changes.
   if (GetDocument().GetLayoutView()) {
@@ -975,8 +971,7 @@ static bool IsFrameElement(const Node* n) {
 
 void FrameSelection::SetFocusedNodeIfNeeded() {
   if (ComputeVisibleSelectionInDOMTreeDeprecated().IsNone() ||
-      !FrameIsFocused() ||
-      !GetDocument().HaveRenderBlockingStylesheetsLoaded()) {
+      !FrameIsFocused()) {
     return;
   }
 
@@ -1330,12 +1325,12 @@ void FrameSelection::ClearDocumentCachedRange() {
 }
 
 LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
-    const NGInlineCursor& cursor) const {
+    const InlineCursor& cursor) const {
   return layout_selection_->ComputeSelectionStatus(cursor);
 }
 
 SelectionState FrameSelection::ComputePaintingSelectionStateForCursor(
-    const NGInlineCursorPosition& position) const {
+    const InlineCursorPosition& position) const {
   return layout_selection_->ComputePaintingSelectionStateForCursor(position);
 }
 

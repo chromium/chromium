@@ -75,7 +75,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // information contained in it, as well as current segmentation and loop
     // filter state in |segm_params| and |lf_params|, respectively, and using
     // pictures in |ref_pictures| for reference.
-    // If done_cb_ is not null, it will be run once decode is done in hardware.
     //
     // Note that returning from this method does not mean that the decode
     // process is finished, but the caller may drop its references to |pic|
@@ -83,11 +82,11 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // |lf_params| does not need to remain valid after this method returns.
     //
     // Return true when successful, false otherwise.
-    virtual Status SubmitDecode(scoped_refptr<VP9Picture> pic,
-                                const Vp9SegmentationParams& segm_params,
-                                const Vp9LoopFilterParams& lf_params,
-                                const Vp9ReferenceFrameVector& reference_frames,
-                                const base::OnceClosure done_cb) = 0;
+    virtual Status SubmitDecode(
+        scoped_refptr<VP9Picture> pic,
+        const Vp9SegmentationParams& segm_params,
+        const Vp9LoopFilterParams& lf_params,
+        const Vp9ReferenceFrameVector& reference_frames) = 0;
 
     // Schedule output (display) of |pic|.
     //
@@ -112,11 +111,6 @@ class MEDIA_GPU_EXPORT VP9Decoder : public AcceleratedVideoDecoder {
     // success, false otherwise.
     virtual bool GetFrameContext(scoped_refptr<VP9Picture> pic,
                                  Vp9FrameContext* frame_ctx) = 0;
-
-    // VP9Parser can update the context probabilities or can query the driver
-    // to get the updated numbers. By default drivers don't support it, and in
-    // particular it's true for legacy (unstable) V4L2 API versions.
-    virtual bool SupportsContextProbabilityReadback() const;
   };
 
   explicit VP9Decoder(

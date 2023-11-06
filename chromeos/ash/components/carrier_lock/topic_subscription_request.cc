@@ -134,23 +134,31 @@ void TopicSubscriptionRequest::Start() {
   DCHECK(!url_loader_.get());
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("carrier_lock_fcm_topic", R"(
+      net::DefineNetworkTrafficAnnotation("carrier_lock_manager_fcm_topic", R"(
         semantics {
-          sender: "Carrier Lock Manager"
+          sender: "Carrier Lock manager"
           description:
             "Carrier Lock Manager subscribes to public topics on FCM"
             "to receive push notifications in case of lock changes."
+          trigger: "This request happens once on every boot if the device"
+                   "has carrier lock enabled."
           data:
-            "The topic name and list of registration tokens."
+            "The topic name and a registration token."
           destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts {
+                email: "cros-cellular-core@google.com"
+            }
+          }
+          user_data {
+            type: SESSION_ID
+          }
+          last_reviewed: "2023-10-24"
         }
         policy {
           cookies_allowed: NO
-          setting:
-            "Support for interacting with Firebase Cloud Messaging is enabled "
-            "by default."
-          policy_exception_justification:
-            "Not implemented, considered not useful."
+          setting: "This feature cannot be disabled in settings."
+          policy_exception_justification: "Carrier Lock is always enforced."
         })");
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = topic_subscription_url_;

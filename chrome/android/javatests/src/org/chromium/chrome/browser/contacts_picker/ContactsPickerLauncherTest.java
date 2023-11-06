@@ -43,8 +43,9 @@ public class ContactsPickerLauncherTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
 
         loadNative();
     }
@@ -52,28 +53,38 @@ public class ContactsPickerLauncherTest {
     // Based on BackgroundMetricsTest.java
     private void loadNative() {
         final AtomicBoolean mNativeLoaded = new AtomicBoolean();
-        final BrowserParts parts = new EmptyBrowserParts() {
-            @Override
-            public void finishNativeInitialization() {
-                mNativeLoaded.set(true);
-            }
-        };
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            ChromeBrowserInitializer.getInstance().handlePreNativeStartupAndLoadLibraries(parts);
-            ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
-        });
+        final BrowserParts parts =
+                new EmptyBrowserParts() {
+                    @Override
+                    public void finishNativeInitialization() {
+                        mNativeLoaded.set(true);
+                    }
+                };
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    ChromeBrowserInitializer.getInstance()
+                            .handlePreNativeStartupAndLoadLibraries(parts);
+                    ChromeBrowserInitializer.getInstance().handlePostNativeStartup(true, parts);
+                });
         CriteriaHelper.pollUiThread(
                 () -> mNativeLoaded.get(), "Failed while waiting for starting native.");
     }
 
     private boolean showContactsPicker(WebContents webContents) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return ContactsPicker.showContactsPicker(webContents, /* listener */ null,
-                    true /* allowMultiple */,
-                    /* includeNames */ true, /*  includeEmails*/ true, /* includeTel */ true,
-                    /* includeAddresses */ true, /* includeIcons */ true,
-                    webContents.getMainFrame().getLastCommittedOrigin().getScheme());
-        });
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> {
+                    return ContactsPicker.showContactsPicker(
+                            webContents,
+                            /* listener= */ null,
+                            /* allowMultiple= */ true,
+                            /* includeNames= */ true,
+                            /* includeEmails= */ true,
+                            /* includeTel= */ true,
+                            /* includeAddresses= */ true,
+                            /* includeIcons= */ true,
+                            webContents.getMainFrame().getLastCommittedOrigin().getScheme());
+                });
     }
 
     @Test

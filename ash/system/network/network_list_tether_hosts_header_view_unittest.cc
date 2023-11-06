@@ -29,8 +29,7 @@ class NetworkListTetherHostsHeaderViewTest : public AshTestBase {
  public:
   NetworkListTetherHostsHeaderViewTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kQsRevamp,
-                              features::kInstantHotspotRebrand},
+        /*enabled_features=*/{features::kInstantHotspotRebrand},
         /*disabled_features=*/{});
   }
   ~NetworkListTetherHostsHeaderViewTest() override = default;
@@ -72,11 +71,6 @@ class NetworkListTetherHostsHeaderViewTest : public AshTestBase {
     return network_list_tether_hosts_header_view_->entry_row();
   }
 
-  views::Label* GetLabelView() {
-    return FindViewById<views::Label*>(
-        NetworkListHeaderView::kTitleLabelViewId);
-  }
-
   FakeNetworkListNetworkHeaderViewDelegate*
   fake_network_list_network_header_delegate() {
     return &fake_network_list_network_header_delegate_;
@@ -86,13 +80,8 @@ class NetworkListTetherHostsHeaderViewTest : public AshTestBase {
   base::test::ScopedFeatureList feature_list_;
   template <class T>
   T FindViewById(int id) {
-    // For QsRevamp: child views are added into `entry_row()`.
-    if (features::IsQsRevampEnabled()) {
-      return static_cast<T>(
-          network_list_tether_hosts_header_view_->entry_row()->GetViewByID(id));
-    }
     return static_cast<T>(
-        network_list_tether_hosts_header_view_->container()->GetViewByID(id));
+        network_list_tether_hosts_header_view_->entry_row()->GetViewByID(id));
   }
 
   std::unique_ptr<views::Widget> widget_;

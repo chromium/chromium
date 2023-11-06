@@ -5,6 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_url.star", "linkify_builder")
 load("//lib/builders.star", "os", "reclient", "siso")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
@@ -63,20 +64,80 @@ try_.builder(
     ),
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "chromeos-amd64-generic-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a compile only builder for Ash chrome." +
+                       " This builder also build Lacros with alternative toolchain.",
     mirrors = ["ci/chromeos-amd64-generic-rel"],
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+)
+
+try_.orchestrator_builder(
+    name = "chromeos-amd64-generic-rel-gtest",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is an Ash chrome builder which only runs gtest." +
+                       " This builder is the default CQ builder for" +
+                       " non-ChromeOS engineers only. See the builder" +
+                       " description for " +
+                       linkify_builder("try", "chromeos-amd64-generic-rel-gtest-and-tast", "chromium") +
+                       " for more information",
+    mirrors = [
+        "ci/chromeos-amd64-generic-rel",
+        "ci/chromeos-amd64-generic-rel-gtest",
+    ],
     compilator = "chromeos-amd64-generic-rel-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        equivalent_builder = "try/chromeos-amd64-generic-rel-gtest-and-tast",
+        equivalent_builder_percentage = 100,
+        equivalent_builder_whitelist = "google/chromeos-pa@google.com",
+        # Use dummypath to make sure it's not auto triggered.
+        location_filters = ["dummypath/*"],
+    ),
+)
+
+try_.orchestrator_builder(
+    name = "chromeos-amd64-generic-rel-gtest-and-tast",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is an Ash chrome builder which runs gtest" +
+                       " and Tast tests. This builder is the default CQ" +
+                       " builder for ChromeOS engineers only." +
+                       " For a CL, infra would check the CL’s owner to see" +
+                       " if the owner is a ChromeOS org engineer or not." +
+                       " If the owner is a ChromeOS org engineer, the" +
+                       " default CQ would include this builder which runs" +
+                       " both Tast tests and gtests. Otherwise, the default" +
+                       " CQ would include `chromeos-amd64-generic-rel-gtest`" +
+                       " which only runs gtests.",
+    mirrors = [
+        "ci/chromeos-amd64-generic-rel",
+        "ci/chromeos-amd64-generic-rel-gtest",
+        "ci/chromeos-amd64-generic-rel-tast",
+    ],
+    compilator = "chromeos-amd64-generic-rel-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
+    main_list_view = "try",
+    tryjob = try_.job(
+        omit_from_luci_cv = True,
+    ),
+)
+
+try_.orchestrator_builder(
+    name = "chromeos-amd64-generic-rel-renamed",
+    branch_selector = branches.selector.CROS_LTS_BRANCHES,
+    description_html = "This is a renamed builder of chromeos-amd64-generic-rel.",
+    mirrors = ["ci/chromeos-amd64-generic-rel-renamed"],
+    compilator = "chromeos-amd64-generic-rel-compilator",
+    contact_team_email = "chromeos-sw-engprod@google.com",
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
-    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
-    # are addressed
-    # use_orchestrator_pool = True,
 )
 
 try_.compilator_builder(
@@ -92,7 +153,7 @@ try_.orchestrator_builder(
 This builder shadows chromeos-amd64-generic-rel builder to compare between Siso builds and Ninja builds.<br/>
 This builder should be removed after migrating chromeos-amd64-generic-rel from Ninja to Siso. b/277863839
 """,
-    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel"),
+    mirrors = builder_config.copy_from("try/chromeos-amd64-generic-rel-renamed"),
     try_settings = builder_config.try_settings(
         is_compile_only = True,
     ),
@@ -143,9 +204,30 @@ try_.builder(
     ],
     builderless = not settings.is_main,
     contact_team_email = "chrome-desktop-engprod@google.com",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
+    main_list_view = "try",
+    tryjob = try_.job(),
+)
+
+# crbug/1298113: Temporary orchestrator/compilator builders to test
+# orchestrator compatability before converting lacros-amd64-generic-rel
+try_.orchestrator_builder(
+    name = "lacros-amd64-generic-rel-orchestrator",
+    description_html = """\
+Temporary orchestrator setup for lacros-amd-generic-rel""",
+    mirrors = [
+        "ci/lacros-amd64-generic-rel",
+    ],
+    compilator = "lacros-amd64-generic-rel-compilator",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    main_list_view = "try",
+)
+
+try_.compilator_builder(
+    name = "lacros-amd64-generic-rel-compilator",
+    description_html = """\
+Temporary compilator setup for lacros-amd-generic-rel""",
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -240,11 +322,6 @@ try_.builder(
     main_list_view = "try",
 )
 
-try_.builder(
-    name = "linux-chromeos-inverse-fieldtrials-fyi-rel",
-    mirrors = builder_config.copy_from("try/linux-chromeos-rel"),
-)
-
 try_.orchestrator_builder(
     name = "linux-chromeos-rel",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
@@ -256,6 +333,7 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
+        "chromium.pre_retry_shards_without_patch_compile": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -291,6 +369,10 @@ try_.orchestrator_builder(
     ],
     compilator = "linux-lacros-rel-compilator",
     coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+    },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,

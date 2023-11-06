@@ -203,6 +203,11 @@ BASE_FEATURE(kFledgeLimitNumAuctions,
 const base::FeatureParam<int> kFledgeLimitNumAuctionsParam{
     &kFledgeLimitNumAuctions, "max_auctions_per_page", 8};
 
+// Enables caching when loading interest groups for a bidder in an auction.
+BASE_FEATURE(kFledgeUseInterestGroupCache,
+             "FledgeUseInterestGroupCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables fixes for matching src: local() for web fonts correctly against full
 // font name or postscript name. Rolling out behind a flag, as enabling this
 // enables a font indexer on Android which we need to test in the field first.
@@ -227,13 +232,20 @@ BASE_FEATURE(kGpuInfoCollectionSeparatePrefetch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// Group network isolation key(NIK) by storage interest group joining origin to
+// improve privacy and performance -- IGs of the same joining origin can reuse
+// sockets, so we don't need to renegotiate those connections.
+BASE_FEATURE(kGroupNIKByJoiningOrigin,
+             "GroupNIKByJoiningOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Supports proxying thread type changes of renderer processes to browser
 // process and having browser process handle adjusting thread properties (nice
-// value, c-group, latency sensitivity...) for renderers which have sandbox
+// value, c-group, latency sensitivity...) for children which have sandbox
 // restrictions.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-BASE_FEATURE(kHandleRendererThreadTypeChangesInBrowser,
-             "HandleRendererThreadTypeChangesInBrowser",
+BASE_FEATURE(kHandleChildThreadTypeChangesInBrowser,
+             "HandleChildThreadTypeChangesInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 

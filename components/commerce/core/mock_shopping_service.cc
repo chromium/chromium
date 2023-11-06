@@ -6,7 +6,6 @@
 
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/uuid.h"
 
 namespace commerce {
 
@@ -29,12 +28,13 @@ MockShoppingService::MockShoppingService()
                                 nullptr,
                                 nullptr,
                                 nullptr,
+                                nullptr,
                                 nullptr) {
   // Set up some defaults so tests don't have to explicitly set up each.
   SetIsReady(true);
   SetResponseForGetProductInfoForUrl(absl::nullopt);
   SetResponsesForGetUpdatedProductInfoForBookmarks(
-      std::map<base::Uuid, ProductInfo>());
+      std::map<int64_t, ProductInfo>());
   ON_CALL(*this, GetMaxProductBookmarkUpdatesPerBatch)
       .WillByDefault(testing::Return(30));
   SetResponseForGetMerchantInfoForUrl(absl::nullopt);
@@ -53,6 +53,7 @@ MockShoppingService::MockShoppingService()
       std::vector<const bookmarks::BookmarkNode*>());
   SetIsPriceInsightsEligible(true);
   SetResponseForGetPriceInsightsInfoForUrl(absl::nullopt);
+  SetGetAllParcelStatusesCallbackValue(std::vector<ParcelTrackingStatus>());
 }
 
 MockShoppingService::~MockShoppingService() = default;
@@ -83,14 +84,14 @@ void MockShoppingService::SetResponseForGetPriceInsightsInfoForUrl(
 }
 
 void MockShoppingService::SetResponsesForGetUpdatedProductInfoForBookmarks(
-    std::map<base::Uuid, ProductInfo> bookmark_updates) {
+    std::map<int64_t, ProductInfo> bookmark_updates) {
   ON_CALL(*this, GetUpdatedProductInfoForBookmarks)
       .WillByDefault(
           [bookmark_updates = std::move(bookmark_updates)](
-              const std::vector<base::Uuid>& bookmark_uuids,
+              const std::vector<int64_t>& bookmark_ids,
               BookmarkProductInfoUpdatedCallback info_updated_callback) {
-            for (const auto& uuid : bookmark_uuids) {
-              auto it = bookmark_updates.find(uuid);
+            for (auto id : bookmark_ids) {
+              auto it = bookmark_updates.find(id);
 
               if (it == bookmark_updates.end()) {
                 continue;
@@ -252,5 +253,21 @@ void MockShoppingService::SetIsParcelTrackingEligible(bool is_eligible) {
   ON_CALL(*this, IsParcelTrackingEligible)
       .WillByDefault(testing::Return(is_eligible));
 }
+
+void MockShoppingService::SetGetAllParcelStatusesCallbackValue(
+    std::vector<ParcelTrackingStatus> parcels) {
+  ON_CALL(*this, GetAllParcelStatuses)
+      .WillByDefault(
+          [parcels = std::move(parcels)](GetParcelStatusCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    std::move(callback), true,
+                    make_unique<std::vector<ParcelTrackingStatus>>(parcels)));
+          });
+}
+
+void StopTrackingParcel(const std::string& tracking_id,
+                        base::OnceCallback<void(bool)> callback) {}
 
 }  // namespace commerce

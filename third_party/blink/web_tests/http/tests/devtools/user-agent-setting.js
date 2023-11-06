@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(`Test user agent setting\n`);
 
@@ -16,12 +18,12 @@ import {NetworkTestRunner} from 'network_test_runner';
   ];
 
   for (var i = 0; i < cases.length; i++) {
-    var result = SDK.MultitargetNetworkManager.patchUserAgentWithChromeVersion(cases[i]);
+    var result = SDK.NetworkManager.MultitargetNetworkManager.patchUserAgentWithChromeVersion(cases[i]);
     TestRunner.addResult(result);
   }
 
   TestRunner.addResult('\nManually setting custom user agent');
-  SDK.multitargetNetworkManager.setCustomUserAgentOverride('foobar with %s inside');
+  SDK.NetworkManager.MultitargetNetworkManager.instance().setCustomUserAgentOverride('foobar with %s inside');
 
   TestRunner.evaluateInPage('navigator.userAgent', step2);
 

@@ -107,13 +107,21 @@ void AutofillProviderAndroidBridgeImpl::OnFocusChanged(
 }
 
 void AutofillProviderAndroidBridgeImpl::ShowDatalistPopup(
-    base::span<const std::u16string> values,
-    base::span<const std::u16string> labels,
+    base::span<const SelectOption> options,
     bool is_rtl) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
   if (obj.is_null()) {
     return;
+  }
+
+  std::vector<std::u16string> values;
+  std::vector<std::u16string> labels;
+  values.reserve(options.size());
+  labels.reserve(options.size());
+  for (const SelectOption& option : options) {
+    values.push_back(option.value);
+    labels.push_back(option.content);
   }
 
   Java_AutofillProvider_showDatalistPopup(

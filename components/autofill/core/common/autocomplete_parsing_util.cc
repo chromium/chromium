@@ -181,8 +181,8 @@ bool operator!=(const AutocompleteParsingResult& a,
 
 std::string AutocompleteParsingResult::ToString() const {
   return base::StrCat({"section='", section, "' ", "mode='",
-                       HtmlFieldModeToStringPiece(mode), "' ", "field_type='",
-                       FieldTypeToStringPiece(field_type), "'"});
+                       HtmlFieldModeToStringView(mode), "' ", "field_type='",
+                       FieldTypeToStringView(field_type), "'"});
 }
 
 HtmlFieldType FieldTypeFromAutocompleteAttributeValue(std::string value) {
@@ -264,7 +264,7 @@ absl::optional<AutocompleteParsingResult> ParseAutocompleteAttribute(
   if (!tokens.empty()) {
     for (HtmlFieldMode mode :
          {HtmlFieldMode::kBilling, HtmlFieldMode::kShipping})
-      if (tokens.back() == HtmlFieldModeToStringPiece(mode)) {
+      if (tokens.back() == HtmlFieldModeToStringView(mode)) {
         result.mode = mode;
         tokens.pop_back();
         break;

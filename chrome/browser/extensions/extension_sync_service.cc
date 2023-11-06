@@ -20,9 +20,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/model/sync_change.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
@@ -33,11 +31,6 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#endif
 
 using extensions::AppSorting;
 using extensions::Extension;

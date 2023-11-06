@@ -36,9 +36,12 @@ class VIEWS_EXAMPLES_EXPORT ActionsExample : public ExampleBase {
 
  private:
   void ActionSelected();
-  void AssignAction(actions::ActionItem* action);
-  void ActionInvoked(actions::ActionItem* action);
-  void CreateControl(actions::ActionItem* action);
+  void AssignAction(actions::ActionItem* action,
+                    actions::ActionInvocationContext context);
+  void ActionInvoked(actions::ActionItem* action,
+                     actions::ActionInvocationContext context);
+  void CreateControl(actions::ActionItem* action,
+                     actions::ActionInvocationContext context);
   void CreateActions(actions::ActionManager* manager);
   void CheckedChanged();
   void EnabledChanged();

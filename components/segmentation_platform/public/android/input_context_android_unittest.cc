@@ -55,7 +55,7 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
   std::vector<const std::string> string_values({"Hello, World!", "Foo", "bar"});
 
   std::vector<const std::string> time_keys({"time_argument"});
-  int64_t time_values[]{time.ToJavaTime()};
+  int64_t time_values[]{time.InMillisecondsSinceUnixEpoch()};
 
   std::vector<const std::string> int64_keys({"int64_argument"});
   int64_t int64_values[]{123456};
@@ -155,10 +155,11 @@ TEST_F(InputContextAndroidTest, FromJavaParams) {
       native_input_context->metadata_args.find("third_string")->second.str_val);
 
   ASSERT_TRUE(native_input_context->metadata_args.contains("time_argument"));
-  // ToJavaTime is a lossy operation, so we must compare java times.
-  ASSERT_EQ(time.ToJavaTime(),
+  // InMillisecondsSinceUnixEpoch is a lossy operation, so we must compare java
+  // times.
+  ASSERT_EQ(time.InMillisecondsSinceUnixEpoch(),
             native_input_context->metadata_args.find("time_argument")
-                ->second.time_val.ToJavaTime());
+                ->second.time_val.InMillisecondsSinceUnixEpoch());
 
   ASSERT_TRUE(native_input_context->metadata_args.contains("int64_argument"));
   ASSERT_EQ(123456, native_input_context->metadata_args.find("int64_argument")

@@ -1,0 +1,124 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "android",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set)",
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Empty policy.",
+        "policies": {},
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy, violates policy schema.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "additions": 123,
+            "replacements": "clearly not a list"
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Invalid policy, violates First-Party Sets invariants.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "additions": [
+              {
+                "associatedSites": [
+                  "https://associate2.test"
+                ],
+                "primary": "https://primary1.test"
+              }
+            ],
+            "replacements": [
+              {
+                "associatedSites": [
+                  "https://associate1.test"
+                ],
+                "primary": "https://primary1.test"
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "default_value": {},
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "note": "Properly formatted replacements and additions policy set lists.",
+        "policies": {
+          "FirstPartySetsOverrides": {
+            "additions": [
+              {
+                "associatedSites": [
+                  "https://associate2.test"
+                ],
+                "primary": "https://primary2.test"
+              }
+            ],
+            "replacements": [
+              {
+                "associatedSites": [
+                  "https://associate1.test"
+                ],
+                "primary": "https://primary1.test"
+              }
+            ]
+          }
+        },
+        "prefs": {
+          "first_party_sets.overrides": {
+            "location": "user_profile",
+            "value": {
+              "additions": [
+                {
+                  "associatedSites": [
+                    "https://associate2.test"
+                  ],
+                  "primary": "https://primary2.test"
+                }
+              ],
+              "replacements": [
+                {
+                  "associatedSites": [
+                    "https://associate1.test"
+                  ],
+                  "primary": "https://primary1.test"
+                }
+              ]
+            }
+          }
+        }
+      }
+    ]
+  }
+]

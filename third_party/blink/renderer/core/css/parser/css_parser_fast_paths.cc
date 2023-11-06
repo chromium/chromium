@@ -1089,6 +1089,11 @@ static ParseColorResult ParseColor(CSSPropertyID property_id,
   DCHECK(!string.empty());
   DCHECK(IsColorPropertyID(property_id));
   CSSValueID value_id = CssValueKeywordID(string);
+  if ((value_id == CSSValueID::kAccentcolor ||
+       value_id == CSSValueID::kAccentcolortext) &&
+      !RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+    return ParseColorResult::kFailure;
+  }
   if (StyleColor::IsColorKeyword(value_id)) {
     if (!isValueAllowedInMode(value_id, parser_mode)) {
       return ParseColorResult::kFailure;
@@ -1160,10 +1165,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
               value_id <= CSSValueID::kMathematical);
     case CSSPropertyID::kAll:
       return false;  // Only accepts css-wide keywords
-    case CSSPropertyID::kBackgroundRepeatX:
-    case CSSPropertyID::kBackgroundRepeatY:
-      return value_id == CSSValueID::kRepeat ||
-             value_id == CSSValueID::kNoRepeat;
     case CSSPropertyID::kBaselineSource:
       DCHECK(RuntimeEnabledFeatures::CSSBaselineSourceEnabled());
       return value_id == CSSValueID::kAuto || value_id == CSSValueID::kFirst ||
@@ -1666,8 +1667,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kAppearance,
     CSSPropertyID::kMixBlendMode,
     CSSPropertyID::kIsolation,
-    CSSPropertyID::kBackgroundRepeatX,
-    CSSPropertyID::kBackgroundRepeatY,
     CSSPropertyID::kBaselineSource,
     CSSPropertyID::kBorderBottomStyle,
     CSSPropertyID::kBorderCollapse,

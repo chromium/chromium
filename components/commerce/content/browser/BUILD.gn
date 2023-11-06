@@ -10,11 +10,14 @@ static_library("browser") {
     "commerce_tab_helper.h",
     "web_contents_wrapper.cc",
     "web_contents_wrapper.h",
+    "web_extractor_impl.cc",
+    "web_extractor_impl.h",
   ]
 
   deps = [
     "//base",
     "//components/commerce/core:shopping_service",
+    "//components/resources:components_resources_grit",
     "//content/public/browser",
     "//ui/webui",
   ]

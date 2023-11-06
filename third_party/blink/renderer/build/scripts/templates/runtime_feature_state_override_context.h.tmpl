@@ -10,7 +10,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
-#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom-shared.h"
+#include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-shared.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
 }
 
   void ApplyOverrideValuesFromParams(
-      const base::flat_map<mojom::RuntimeFeatureState, bool>&
+      const base::flat_map<mojom::RuntimeFeature, bool>&
           values_from_params);
 
   void ApplyOriginTrialOverride(
@@ -69,7 +69,7 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
       const WTF::Vector<scoped_refptr<const blink::SecurityOrigin>>&
           script_origins);
 
-  const base::flat_map<mojom::RuntimeFeatureState, bool>&
+  const base::flat_map<mojom::RuntimeFeature, bool>&
   GetOverrideValuesForTesting() const {
     return override_values_;
   }
@@ -79,8 +79,8 @@ class PLATFORM_EXPORT RuntimeFeatureStateOverrideContext
  private:
   mojom::blink::OriginTrialStateHost* GetOrBindOriginTrialStateHost();
 
-  base::flat_map<mojom::RuntimeFeatureState, bool> override_values_;
-  base::flat_map<mojom::RuntimeFeatureState,
+  base::flat_map<mojom::RuntimeFeature, bool> override_values_;
+  base::flat_map<mojom::RuntimeFeature,
                  mojom::blink::OriginTrialFeatureStatePtr>
       origin_trial_overrides_;
   Member<MojoBindingContext> binding_context_;

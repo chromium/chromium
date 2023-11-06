@@ -49,9 +49,9 @@ nearby::fastpair::FastPairInfo BuildFastPairInfo(
   discovery_item.set_action_url_type(nearby::fastpair::ResolvedUrlType::APP);
   discovery_item.set_action_url(details.intent_uri());
   discovery_item.set_last_observation_timestamp_millis(
-      base::Time::Now().ToJavaTime());
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   discovery_item.set_first_observation_timestamp_millis(
-      base::Time::Now().ToJavaTime());
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   discovery_item.set_state(nearby::fastpair::StoredDiscoveryItem_State::
                                StoredDiscoveryItem_State_STATE_ENABLED);
 

@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 import android.content.Context;
+import android.os.Build;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -49,38 +50,26 @@ import org.chromium.components.download.DownloadTaskType;
 
 /** Unit tests for {@link org.chromium.chrome.browser.download.service.DownloadBackgroundTask}. */
 @RunWith(BaseRobolectricTestRunner.class)
-// TODO(crbug/1483735): Update this to 34 once robolectric support is added.
-@Config(manifest = Config.NONE, sdk = 33)
+@Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
 @EnableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
 public class DownloadBackgroundTaskTest {
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock
-    private DownloadBackgroundTask.Natives mNativeMock;
+    @Mock private DownloadBackgroundTask.Natives mNativeMock;
 
-    @Mock
-    private ProfileKey mProfileKey;
+    @Mock private ProfileKey mProfileKey;
 
-    @Mock
-    private DownloadManagerService mDownloadManagerService;
-    @Mock
-    private DownloadNotificationService mDownloadNotificationService;
+    @Mock private DownloadManagerService mDownloadManagerService;
+    @Mock private DownloadNotificationService mDownloadNotificationService;
 
-    @Mock
-    private Context mContext;
-    @Mock
-    private TaskFinishedCallback mTaskFinishedCallback;
+    @Mock private Context mContext;
+    @Mock private TaskFinishedCallback mTaskFinishedCallback;
     private TestDownloadBackgroundTask mTask;
 
-    @Mock
-    private BackgroundTaskScheduler mTaskScheduler;
-    @Captor
-    private ArgumentCaptor<TaskInfo> mTaskInfoCapture;
+    @Mock private BackgroundTaskScheduler mTaskScheduler;
+    @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCapture;
 
     private class TestDownloadBackgroundTask extends DownloadBackgroundTask {
         public TestDownloadBackgroundTask() {
@@ -159,11 +148,12 @@ public class DownloadBackgroundTaskTest {
     @Test
     @Feature({"Download"})
     public void testIsUserInitiatedJob() {
-        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
-        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
-        Assert.assertTrue(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
+        Assert.assertTrue(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
+        Assert.assertTrue(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
         Assert.assertFalse(
                 DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
         Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
@@ -175,25 +165,29 @@ public class DownloadBackgroundTaskTest {
     @Feature({"Download"})
     @Config(sdk = 30)
     public void testIsUserInitiatedJobForLowerAndroidVersions() {
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
         Assert.assertFalse(
                 DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
         Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
         Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_CLEANUP_JOB_ID));
         Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_LATER_JOB_ID));
     }
+
     @Test
     @Feature({"Download"})
     @DisableFeatures(ChromeFeatureList.DOWNLOADS_MIGRATE_TO_JOBS_API)
     public void testIsUserInitiatedJobForDisabledFeature() {
-        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
-        Assert.assertFalse(DownloadUtils.isUserInitiatedJob(
-                TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_JOB_ID));
+        Assert.assertFalse(
+                DownloadUtils.isUserInitiatedJob(
+                        TaskIds.DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK_JOB_ID));
         Assert.assertFalse(
                 DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID));
         Assert.assertFalse(DownloadUtils.isUserInitiatedJob(TaskIds.DOWNLOAD_SERVICE_JOB_ID));
@@ -204,7 +198,6 @@ public class DownloadBackgroundTaskTest {
     @Test
     @Feature({"Download"})
     public void testScheduleTaskForUITask() {
-        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
         int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_UNMETERED_TASK;
         DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
         Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());
@@ -224,7 +217,6 @@ public class DownloadBackgroundTaskTest {
     @Test
     @Feature({"Download"})
     public void testScheduleTaskForNonUITask() {
-        DownloadUtils.setMinSdkVersionForUserInitiatedJobsForTesting(33);
         int taskType = DownloadTaskType.DOWNLOAD_AUTO_RESUMPTION_TASK;
         DownloadTaskScheduler.scheduleTask(taskType, true, false, 0, 60, 120);
         Mockito.verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCapture.capture());
@@ -241,6 +233,7 @@ public class DownloadBackgroundTaskTest {
         Assert.assertEquals(60000, oneOffInfo.getWindowStartTimeMs());
         Assert.assertEquals(120000, oneOffInfo.getWindowEndTimeMs());
     }
+
     @Test
     @Feature({"Download"})
     public void testCancelTask() {

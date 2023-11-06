@@ -179,8 +179,7 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::CommitSameDocumentNavigation(
     auto task = same_document_navigation_tasks_.front();
     same_document_navigation_tasks_.pop_front();
     // TODO(https://crbug.com/1486774) - Investigate when |task| can be nullptr.
-    CHECK(task);
-    if (task->Id() == task_id) {
+    if (task && task->Id() == task_id) {
       return task;
     }
   }
@@ -197,6 +196,23 @@ ScriptWrappableTaskState*
 TaskAttributionTrackerImpl::GetCurrentTaskContinuationData(
     ScriptState* script_state) const {
   return ScriptWrappableTaskState::GetCurrent(script_state);
+}
+
+TaskAttributionTracker::Observer*
+TaskAttributionTrackerImpl::GetObserverForTaskDisposal(TaskAttributionId id) {
+  auto it = task_id_observers_.find(id.value());
+  if (it == task_id_observers_.end()) {
+    return nullptr;
+  }
+  auto* observer = it->value.Get();
+  task_id_observers_.erase(it);
+  return observer;
+}
+
+void TaskAttributionTrackerImpl::SetObserverForTaskDisposal(
+    TaskAttributionId id,
+    Observer* observer) {
+  task_id_observers_.insert(id.value(), observer);
 }
 
 // TaskScope's implementation

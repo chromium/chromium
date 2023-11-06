@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_
 
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
@@ -15,15 +16,16 @@ using NearbyConnectionsMojom = ::nearby::connections::mojom::NearbyConnections;
 using AdvertisingOptionsPtr = ::nearby::connections::mojom::AdvertisingOptionsPtr;
 using ConnectionLifecycleListener =
     ::nearby::connections::mojom::ConnectionLifecycleListener;
+using ConnectionListenerV3 = ::nearby::connections::mojom::ConnectionListenerV3;
 using ConnectionOptionsPtr = ::nearby::connections::mojom::ConnectionOptionsPtr;
 using DiscoveryOptionsPtr = ::nearby::connections::mojom::DiscoveryOptionsPtr;
 using EndpointDiscoveryListener =
     ::nearby::connections::mojom::EndpointDiscoveryListener;
 using PayloadListener = ::nearby::connections::mojom::PayloadListener;
+using PayloadListenerV3 = ::nearby::connections::mojom::PayloadListenerV3;
 using PayloadPtr = ::nearby::connections::mojom::PayloadPtr;
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 class MockNearbyConnections : public NearbyConnectionsMojom {
  public:
@@ -130,13 +132,39 @@ class MockNearbyConnections : public NearbyConnectionsMojom {
                base::File output_file,
                RegisterPayloadFileCallback callback),
               (override));
+  MOCK_METHOD(void,
+              RequestConnectionV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               ConnectionOptionsPtr connection_options,
+               mojo::PendingRemote<ConnectionListenerV3> listener,
+               RequestConnectionV3Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              AcceptConnectionV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               mojo::PendingRemote<PayloadListenerV3> listener,
+               AcceptConnectionV3Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              RejectConnectionV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               RejectConnectionV3Callback callback),
+              (override));
+  MOCK_METHOD(void,
+              DisconnectFromDeviceV3,
+              (const std::string& service_id,
+               presence::mojom::PresenceDevicePtr remote_device,
+               DisconnectFromDeviceV3Callback callback),
+              (override));
 
  private:
   mojo::ReceiverSet<NearbyConnectionsMojom> receiver_set_;
   mojo::SharedRemote<NearbyConnectionsMojom> shared_remote_;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 #endif  // CHROMEOS_ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_

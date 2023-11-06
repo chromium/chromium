@@ -106,7 +106,7 @@ enum CrossedReason {
 void RecordIgnore(base::Value::Dict& dict) {
   int times_ignored = dict.FindInt(kNumTimesIgnoredName).value_or(0);
   dict.Set(kNumTimesIgnoredName, ++times_ignored);
-  dict.Set(kTimeLastIgnored, base::Time::Now().ToDoubleT());
+  dict.Set(kTimeLastIgnored, base::Time::Now().InSecondsFSinceUnixEpoch());
 }
 
 // If we should suppress the item with the given dictionary ignored record.
@@ -114,7 +114,8 @@ bool ShouldSuppressItem(base::Value::Dict& dict) {
   absl::optional<double> last_ignored_time = dict.FindDouble(kTimeLastIgnored);
   if (last_ignored_time) {
     base::TimeDelta diff =
-        base::Time::Now() - base::Time::FromDoubleT(*last_ignored_time);
+        base::Time::Now() -
+        base::Time::FromSecondsSinceUnixEpoch(*last_ignored_time);
     if (diff >= base::Days(kSuppressionExpirationTimeDays)) {
       dict.Set(kNumTimesIgnoredName, 0);
       dict.Remove(kTimeLastIgnored);

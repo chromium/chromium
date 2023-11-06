@@ -94,10 +94,9 @@ grit("content_resources") {
     "grit/content_resources_map.h",
     "content_resources.pak",
   ]
-  deps = [ "//components/ukm/debug:build_ts" ]
 
   if (is_chromeos_ash) {
-    deps += [
+    deps = [
       "//mojo/public/mojom/base:base_js__generator",
       "//ui/base/mojom:mojom_js__generator",
       "//url/mojom:url_mojom_gurl_js__generator",

@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "default_value": true,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "ParcelTrackingEnabled": false
+        },
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "ParcelTrackingEnabled": true
+        },
+        "prefs": {
+          "ios.parcel_tracking.policy_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

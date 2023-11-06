@@ -14,6 +14,9 @@ mojom("trusted") {
   sources = [ "face_ml_app_ui.mojom" ]
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/$cur_dir"
+
+  # Generate WebUI bindings in JavaScript instead of TypeScript.
+  use_typescript_sources = false
 }
 
 ts_library("mojom_ts") {

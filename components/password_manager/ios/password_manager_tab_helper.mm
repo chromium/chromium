@@ -4,6 +4,7 @@
 
 #import "components/password_manager/ios/password_manager_tab_helper.h"
 
+#import "base/metrics/histogram_functions.h"
 #import "components/password_manager/ios/password_form_helper.h"
 
 namespace password_manager {
@@ -25,7 +26,9 @@ PasswordManagerTabHelper::~PasswordManagerTabHelper() {}
 
 void PasswordManagerTabHelper::ScriptMessageReceived(
     const web::ScriptMessage& message) {
-  [password_form_helper_ handleFormSubmittedMessage:message];
+  HandleSubmittedFormStatus status =
+      [password_form_helper_ handleFormSubmittedMessage:message];
+  base::UmaHistogramEnumeration(kHandleFormSubmitEventHistogram, status);
 }
 
 void PasswordManagerTabHelper::SetFormHelper(PasswordFormHelper* form_helper) {

@@ -7,8 +7,8 @@
 
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -18,7 +18,7 @@ namespace web_app {
 bool PreinstalledWebAppsDisabled();
 
 // Returns the list of web apps that should be pre-installed on new profiles.
-std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
+std::vector<ExternalInstallOptions> GetPreinstalledWebApps(Profile& profile);
 
 // A subset of ExternalInstallOptions pertaining to web app migration.
 struct PreinstalledWebAppMigration {

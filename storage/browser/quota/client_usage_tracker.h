@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -49,6 +48,9 @@ enum class InvalidOriginReason {
 // called on the same sequence.
 class ClientUsageTracker : public SpecialStoragePolicy::Observer {
  public:
+  using BucketUsageMap =
+      std::map<BucketLocator, int64_t, CompareBucketLocators>;
+
   // The caller must ensure that `client` outlives this instance.
   ClientUsageTracker(
       UsageTracker* tracker,
@@ -67,11 +69,13 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
 
   // Reflects an increase by `delta` to `bucket`'s quota usage.
   //
-  // This can be called with a `bucket` whose usage is not yet cached.
-  // A negative `delta` value reflects a reduction in quota usage.
-  // Negative `delta` values are clamped to ensure the total cached usage never
-  // goes below zero (crbug.com/463729).
-  void UpdateBucketUsageCache(const BucketLocator& bucket, int64_t delta);
+  // This will be ignored if called with a `bucket` whose usage is not yet
+  // cached. If `delta` is nullopt, the usage will be removed from the cache and
+  // later re-calculated as needed. A negative `delta` value reflects a
+  // reduction in quota usage. Negative `delta` values are clamped to ensure the
+  // total cached usage never goes below zero (crbug.com/463729).
+  void UpdateBucketUsageCache(const BucketLocator& bucket,
+                              absl::optional<int64_t> delta);
 
   // Deletes `bucket` from the cache if it exists. Called either for bucket
   // deletion or disabling cache for `bucket`'s Storage Key.
@@ -83,7 +87,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   // Returns cached usage organized by bucket. Used for histogram recording and
   // eviction. Expected to be called after GetGlobalUsage which retrieves and
   // caches usage.
-  const std::map<BucketLocator, int64_t>& GetCachedBucketsUsage() const;
+  const BucketUsageMap& GetCachedBucketsUsage() const;
 
   // Sets if a `storage_key` for `client_` should / should not be excluded from
   // quota restrictions.
@@ -133,7 +137,7 @@ class ClientUsageTracker : public SpecialStoragePolicy::Observer {
   // The implementation relies on a collection whose erase() only invalidates
   // iterators that point to the erased element. This comment is intended to
   // prevent accidental conversion to other containers, such as base::flat_map.
-  std::map<BucketLocator, int64_t> cached_bucket_usage_;
+  BucketUsageMap cached_bucket_usage_;
 
   // Storage Keys that are excluded from quota restrictions.
   std::set<blink::StorageKey> non_cached_limited_storage_keys_;

@@ -9,8 +9,6 @@ assert(is_chromeos_ash)
 
 mojom("mojom") {
   disable_variants = true
-  use_typescript_sources = true
-  generate_legacy_js_bindings = true
 
   sources = [ "shortcut_customization.mojom" ]
 

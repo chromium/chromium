@@ -6,7 +6,7 @@ import("//ash/webui/help_app_ui/help_app_ui.gni")
 import("//ash/webui/web_applications/system_apps.gni")
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
@@ -72,6 +72,9 @@ mojom("mojo_bindings") {
   sources = [ "help_app_ui.mojom" ]
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
   webui_module_path = "/"
+
+  # Help app is still using JS + Closure Compiler.
+  use_typescript_sources = false
 }
 
 source_set("unit_tests") {

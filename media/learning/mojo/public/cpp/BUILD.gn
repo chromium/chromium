@@ -21,6 +21,8 @@ component("cpp") {
     "//media/learning/common",
     "//media/learning/mojo/public/mojom",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 # Normally typemap traits sources should be build directly into mojom targets
@@ -41,6 +43,8 @@ component("shared_typemap_traits") {
     "//media/learning/common",
     "//media/learning/mojo/public/mojom:mojom_shared",
   ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 source_set("unit_tests") {

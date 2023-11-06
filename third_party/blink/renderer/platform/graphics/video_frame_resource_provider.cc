@@ -50,8 +50,7 @@ void VideoFrameResourceProvider::Initialize(
   resource_updater_ = std::make_unique<media::VideoResourceUpdater>(
       media_context_provider, shared_bitmap_reporter, resource_provider_.get(),
       settings_.use_stream_video_draw_quad,
-      settings_.resource_settings.use_gpu_memory_buffer_resources,
-      settings_.resource_settings.use_r16_texture, max_texture_size);
+      settings_.use_gpu_memory_buffer_resources, max_texture_size);
 }
 
 void VideoFrameResourceProvider::OnContextLost() {

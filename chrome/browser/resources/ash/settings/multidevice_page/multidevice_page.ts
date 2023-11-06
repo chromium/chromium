@@ -6,6 +6,10 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+// <if expr="_google_chrome">
+import '/nearby/nearby-share-internal-icons.m.js';
+// </if>
+
 import '/shared/settings/controls/password_prompt_dialog.js';
 import '../settings_shared.css.js';
 import '../nearby_share_page/nearby_share_subpage.js';
@@ -27,12 +31,12 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from './multidevice_browser_proxy.js';
@@ -162,6 +166,13 @@ export class SettingsMultidevicePageElement extends
         type: Boolean,
         value: () => {
           return isRevampWayfindingEnabled();
+        },
+      },
+
+      isNameEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isNameEnabled');
         },
       },
 

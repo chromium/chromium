@@ -251,6 +251,72 @@ TEST_F(ConnectTetheringOperationTest, ProvisioningFailed) {
   operation_->OnMessageReceived(std::move(message), remote_device_);
 }
 
+TEST_F(ConnectTetheringOperationTest, InvalidWifiApConfig) {
+  EXPECT_CALL(*mock_tether_host_response_recorder_,
+              RecordSuccessfulConnectTetheringResponse(_))
+      .Times(0);
+
+  // Verify that the observer is called with failure and the appropriate error
+  // code.
+  EXPECT_CALL(
+      mock_observer_,
+      OnConnectTetheringFailure(
+          remote_device_, ConnectTetheringOperation::HostResponseErrorCode::
+                              INVALID_WIFI_AP_CONFIG));
+
+  ConnectTetheringResponse response;
+  response.set_response_code(
+      ConnectTetheringResponse_ResponseCode::
+          ConnectTetheringResponse_ResponseCode_INVALID_WIFI_AP_CONFIG);
+  std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
+
+  operation_->OnMessageReceived(std::move(message), remote_device_);
+}
+
+TEST_F(ConnectTetheringOperationTest, InvalidActiveExistingSoftApConfig) {
+  EXPECT_CALL(*mock_tether_host_response_recorder_,
+              RecordSuccessfulConnectTetheringResponse(_))
+      .Times(0);
+
+  // Verify that the observer is called with failure and the appropriate error
+  // code.
+  EXPECT_CALL(
+      mock_observer_,
+      OnConnectTetheringFailure(
+          remote_device_, ConnectTetheringOperation::HostResponseErrorCode::
+                              INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG));
+
+  ConnectTetheringResponse response;
+  response.set_response_code(
+      ConnectTetheringResponse_ResponseCode::
+          ConnectTetheringResponse_ResponseCode_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
+  std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
+
+  operation_->OnMessageReceived(std::move(message), remote_device_);
+}
+
+TEST_F(ConnectTetheringOperationTest, InvalidNewSoftApConfig) {
+  EXPECT_CALL(*mock_tether_host_response_recorder_,
+              RecordSuccessfulConnectTetheringResponse(_))
+      .Times(0);
+
+  // Verify that the observer is called with failure and the appropriate error
+  // code.
+  EXPECT_CALL(
+      mock_observer_,
+      OnConnectTetheringFailure(
+          remote_device_, ConnectTetheringOperation::HostResponseErrorCode::
+                              INVALID_NEW_SOFT_AP_CONFIG));
+
+  ConnectTetheringResponse response;
+  response.set_response_code(
+      ConnectTetheringResponse_ResponseCode::
+          ConnectTetheringResponse_ResponseCode_INVALID_NEW_SOFT_AP_CONFIG);
+  std::unique_ptr<MessageWrapper> message(new MessageWrapper(response));
+
+  operation_->OnMessageReceived(std::move(message), remote_device_);
+}
+
 // Tests that observers are notified when the connection request is sent.
 TEST_F(ConnectTetheringOperationTest, NotifyConnectTetheringRequest) {
   EXPECT_CALL(mock_observer_, OnConnectTetheringRequestSent(remote_device_));

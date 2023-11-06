@@ -309,6 +309,7 @@ struct MEDIA_EXPORT TrackFragmentRun : FullBox {
 
 // Track Fragment Decode Time (`tfdt`) box.
 struct MEDIA_EXPORT TrackFragmentDecodeTime : Box {
+  uint32_t track_id;
   base::TimeDelta base_media_decode_time;
 };
 

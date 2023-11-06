@@ -484,27 +484,33 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
       const voices = this.contentPage.getVoices();
       const selectedVoice = this.contentPage.getSpeechSynthesisVoice();
 
+      // TODO(crbug.com/1474951): Use the full language code instead of
+      // splitting it once we start using page language instead of browser
+      // language.
       this.voiceSelectionOptions_ = Object.entries(voices).reduce(
           (aggregateVoiceList: Array<MenuStateItem<VoiceDropdown>>,
            [_, voiceListForLang]) =>
               ([
                 ...aggregateVoiceList,
-                ...(voiceListForLang).map(speechSynthesisVoice => ({
-                                            title: speechSynthesisVoice.name,
-                                            icon: '',
-                                            data: {
-                                              voice: speechSynthesisVoice,
-                                              selected: this.voicesAreEqual_(
-                                                  selectedVoice,
-                                                  speechSynthesisVoice),
-                                              previewPlaying: false,
-                                            },
-                                            callback: () => {},
-                                          })),
+                ...(voiceListForLang)
+                    .map(speechSynthesisVoice => ({
+                           title: speechSynthesisVoice.name,
+                           icon: '',
+                           data: {
+                             voice: speechSynthesisVoice,
+                             selected: this.voicesAreEqual_(
+                                 selectedVoice, speechSynthesisVoice),
+                             previewPlaying: false,
+                           },
+                           callback: () => chrome.readingMode.onVoiceChange(
+                               speechSynthesisVoice.name,
+                               speechSynthesisVoice.lang.split('-')[0]),
+                         })),
               ]),
           []);
 
-      this.openMenu_(this.$.voiceSelectionMenu, event.target as HTMLElement);
+      this.openMenu_(
+          this.$.voiceSelectionMenu, event.target as HTMLElement, true);
     }
   }
 
@@ -512,7 +518,9 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
     this.openMenu_(this.$.moreOptionsMenu, event.target as HTMLElement);
   }
 
-  private openMenu_(menuToOpen: CrActionMenuElement, target: HTMLElement) {
+  private openMenu_(
+      menuToOpen: CrActionMenuElement, target: HTMLElement,
+      fullScreen: boolean = false) {
     // The button should stay active while the menu is open and deactivate when
     // the menu closes.
     menuToOpen.addEventListener('close', () => {
@@ -523,11 +531,22 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
     const shadowRoot = this.shadowRoot;
     assert(shadowRoot);
-    menuToOpen.showAt(target, {
-      anchorAlignmentX: AnchorAlignment.AFTER_START,
-      anchorAlignmentY: AnchorAlignment.AFTER_END,
-      noOffset: true,
-    });
+    const minY = target.getBoundingClientRect().bottom;
+    if (fullScreen) {
+      menuToOpen.showAt(target, {
+        minY: minY,
+        left: 0,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
+        noOffset: true,
+      });
+    } else {
+      menuToOpen.showAt(target, {
+        minY: minY,
+        anchorAlignmentX: AnchorAlignment.AFTER_START,
+        anchorAlignmentY: AnchorAlignment.AFTER_END,
+        noOffset: true,
+      });
+    }
   }
 
   private onHighlightClick_() {
@@ -584,7 +603,7 @@ export class ReadAnythingToolbar extends ReadAnythingToolbarBase {
 
   private onVoiceSelectClick_(
       event: DomRepeatEvent<MenuStateItem<VoiceDropdown>>) {
-    // TODO(crbug.com/1474951): Save voice to prefs.
+    event.model.item.callback();
     if (this.contentPage) {
       const selectedVoice = event.model.item.data.voice;
       this.contentPage.setSpeechSynthesisVoice(selectedVoice);

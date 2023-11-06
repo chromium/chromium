@@ -119,12 +119,12 @@ DOMFloat32Array* XRRigidTransform::matrix() {
     return nullptr;
   }
 
-  return matrix_array_;
+  return matrix_array_.Get();
 }
 
 XRRigidTransform* XRRigidTransform::inverse() {
   EnsureInverse();
-  return inverse_;
+  return inverse_.Get();
 }
 
 gfx::Transform XRRigidTransform::InverseTransformMatrix() {

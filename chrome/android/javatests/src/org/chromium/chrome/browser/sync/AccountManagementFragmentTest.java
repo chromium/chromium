@@ -70,8 +70,7 @@ public class AccountManagementFragmentTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
-    @Rule
-    public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -111,8 +110,10 @@ public class AccountManagementFragmentTest {
     @MediumTest
     public void testAccountManagementViewForChildAccountWithNonDisplayableAccountEmail()
             throws Exception {
-        AccountInfo accountInfo = mSigninTestRule.addAccount(
-                CHILD_ACCOUNT_NAME, SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+        AccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        CHILD_ACCOUNT_NAME,
+                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         mSigninTestRule.waitForSeeding();
         mSigninTestRule.waitForSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -120,12 +121,14 @@ public class AccountManagementFragmentTest {
         // Force update the fragment so that NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES is
         // actually utilized. This is to replicate downstream implementation behavior, where
         // checkIfDisplayableEmailAddress() differs.
-        CriteriaHelper.pollUiThread(() -> {
-            return !mSettingsActivityTestRule.getFragment()
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mSettingsActivityTestRule
+                            .getFragment()
                             .getProfileDataCacheForTesting()
                             .getProfileDataOrDefault(CHILD_ACCOUNT_NAME)
                             .hasDisplayableEmailAddress();
-        });
+                });
         TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -136,19 +139,26 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     public void
-    testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
-            throws Exception {
-        CoreAccountInfo accountInfo = mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME, "", "", null,
-                SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
+            testAccountManagementViewForChildAccountWithNonDisplayableAccountEmailWithEmptyDisplayName()
+                    throws Exception {
+        CoreAccountInfo accountInfo =
+                mSigninTestRule.addAccount(
+                        CHILD_ACCOUNT_NAME,
+                        "",
+                        "",
+                        null,
+                        SigninTestRule.NON_DISPLAYABLE_EMAIL_ACCOUNT_CAPABILITIES);
         mSigninTestRule.waitForSeeding();
         mSigninTestRule.waitForSignin(accountInfo);
         mSettingsActivityTestRule.startSettingsActivity();
-        CriteriaHelper.pollUiThread(() -> {
-            return !mSettingsActivityTestRule.getFragment()
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return !mSettingsActivityTestRule
+                            .getFragment()
                             .getProfileDataCacheForTesting()
                             .getProfileDataOrDefault(CHILD_ACCOUNT_NAME)
                             .hasDisplayableEmailAddress();
-        });
+                });
         TestThreadUtils.runOnUiThreadBlocking(mSettingsActivityTestRule.getFragment()::update);
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -162,18 +172,22 @@ public class AccountManagementFragmentTest {
     @Feature("RenderTest")
     public void testAccountManagementViewForChildAccount() throws Exception {
         mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
-        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
-                Profile::getLastUsedRegularProfile);
+        final Profile profile =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
         mSettingsActivityTestRule.startSettingsActivity();
-        CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getFragment()
-                    .getProfileDataCacheForTesting()
-                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mSettingsActivityTestRule
+                            .getFragment()
+                            .getProfileDataCacheForTesting()
+                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view,
+        mRenderTestRule.render(
+                view,
                 "account_management_fragment_for_child_account_with_add_account_for_supervised_users");
     }
 
@@ -184,18 +198,22 @@ public class AccountManagementFragmentTest {
         mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
         mSigninTestRule.addAccount("account@school.com");
         mSigninTestRule.waitForSeeding();
-        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
-                Profile::getLastUsedRegularProfile);
+        final Profile profile =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
         mSettingsActivityTestRule.startSettingsActivity();
-        CriteriaHelper.pollUiThread(() -> {
-            return mSettingsActivityTestRule.getFragment()
-                    .getProfileDataCacheForTesting()
-                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mSettingsActivityTestRule
+                            .getFragment()
+                            .getProfileDataCacheForTesting()
+                            .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+                });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view,
+        mRenderTestRule.render(
+                view,
                 "account_management_fragment_for_child_and_edu_accounts_with_add_account_for_supervised_users");
     }
 
@@ -207,8 +225,9 @@ public class AccountManagementFragmentTest {
 
         onView(withText(R.string.sign_out)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> Assert.assertFalse("Account should be signed out!",
+                () ->
+                        Assert.assertFalse(
+                                "Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
                                         .hasPrimaryAccount(ConsentLevel.SIGNIN)));

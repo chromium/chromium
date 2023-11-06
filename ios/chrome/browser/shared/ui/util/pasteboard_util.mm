@@ -31,12 +31,18 @@ void StoreURLsInPasteboard(const std::vector<const GURL>& urls) {
       continue;
     }
 
+    NSMutableDictionary* copiedItem = [[NSMutableDictionary alloc] init];
+
+    NSURL* nsURL = net::NSURLWithGURL(URL);
+    if (nsURL) {
+      copiedItem[UTTypeURL.identifier] = nsURL;
+    }
+
     NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
         dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary* copiedItem = @{
-      UTTypeURL.identifier : net::NSURLWithGURL(URL),
-      UTTypeUTF8PlainText.identifier : plainText,
-    };
+    if (plainText) {
+      copiedItem[UTTypeUTF8PlainText.identifier] = plainText;
+    }
 
     [pasteboard_items addObject:copiedItem];
   }

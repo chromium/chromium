@@ -158,20 +158,6 @@ bool IsMainProfileCheckSkippedForTesting();
 // TODO(crbug.com/1425284): use a better domain name, or maybe use a unique
 // domain for each app.
 constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
-
-// Generates an appropriate path for a new web app profile. This does not create
-// the profile.
-base::FilePath GenerateWebAppProfilePath(const webapps::AppId& app_id);
-
-enum class ExperimentalWebAppIsolationMode {
-  kDisabled,
-  kStoragePartition,
-  kProfile,
-};
-
-// Get the experimental web app isolation mode. Prefer using this instead of
-// using the flag directly since this respects the precedence of the flags.
-ExperimentalWebAppIsolationMode ResolveExperimentalWebAppIsolationFeature();
 #endif
 
 constexpr char kAppSettingsPageEntryPointsHistogramName[] =
@@ -185,7 +171,8 @@ enum class AppSettingsPageEntryPoint {
   kPageInfoView = 0,
   kChromeAppsPage = 1,
   kBrowserCommand = 2,
-  kMaxValue = kBrowserCommand,
+  kSubAppsInstallPrompt = 3,
+  kMaxValue = kSubAppsInstallPrompt,
 };
 
 // When user_display_mode indicates a user preference for opening in

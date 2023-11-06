@@ -15,14 +15,14 @@ export function getFakeAccountsList(): string[] {
   return ['test@gmail.com', 'test2@gmail.com', 'test3@gmail.com'];
 }
 
-export const fakeAuthExtensionData = {
+export const fakeAuthenticationData = {
   hl: 'hl',
   gaiaUrl: 'https://accounts.google.com/',
   gaiaPath: 'gaiaPath',
   authMode: 1,
 };
 
-export const fakeAuthExtensionDataWithEmail = {
+export const fakeAuthenticationDataWithEmail = {
   hl: 'hl',
   gaiaUrl: 'https://accounts.google.com/',
   gaiaPath: 'gaiaPath',
@@ -75,19 +75,11 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'initialize',
-      'authExtensionReady',
-      'switchToFullTab',
-      'completeLogin',
-      'lstFetchResults',
-      'metricsHandler:recordAction',
-      'showIncognito',
-      'getAccounts',
-      'dialogClose',
+      'initialize', 'authenticatorReady', 'switchToFullTab', 'completeLogin',
+      'lstFetchResults', 'metricsHandler:recordAction', 'showIncognito',
+      'getAccounts', 'dialogClose',
       // <if expr="chromeos_ash">
-      'skipWelcomePage',
-      'openGuestWindow',
-      'getDialogArguments',
+      'skipWelcomePage', 'openGuestWindow', 'getDialogArguments',
       // </if>
     ]);
   }
@@ -102,8 +94,8 @@ export class TestInlineLoginBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('initialize');
   }
 
-  authExtensionReady() {
-    this.methodCalled('authExtensionReady');
+  authenticatorReady() {
+    this.methodCalled('authenticatorReady');
   }
 
   switchToFullTab(url: string) {

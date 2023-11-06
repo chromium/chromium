@@ -167,9 +167,31 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
   base::flat_map<AggregatedRenderPassId, RenderPassRequirements>
       render_passes_in_frame;
   for (const auto& pass : render_passes_in_draw_order) {
+    const bool is_root = pass == root_render_pass;
+
+#if BUILDFLAG(IS_WIN)
+    // For delegated compositing the root pass is preserved, but not rendered.
+    // If a previous frame fell out of delegated compositing we want to make
+    // sure that we deallocate its backing when switching back to delegated
+    // compositing.
+    if (is_root && output_surface_->IsDisplayedAsOverlayPlane() &&
+        !current_frame()->output_surface_plane) {
+      // We expect to be in delegated compositing mode, which means the root
+      // damage rect has been cleared.
+      CHECK(current_frame()->root_damage_rect.IsEmpty());
+      continue;
+    }
+#else
+    // TODO(crbug.com/1322528): Consider deallocating the primary plane in this
+    // case.
+    // Non-Windows platforms use BufferQueue, which are not owned by the render
+    // pass backing. ChromeOS must hold on to the root surface buffers to ensure
+    // overlay-ability and macOS wants to just discard the underlying surfaces
+    // for performance.
+#endif
+
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
-    bool is_root = pass == root_render_pass;
     if (!is_root && pass->copy_requests.empty()) {
       if (const DrawQuad* quad = CanPassBeDrawnDirectly(pass.get())) {
         // If the render pass is drawn directly, it will not be drawn from as
@@ -902,6 +924,15 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
               gfx::Rect expanded_rect =
                   GetExpandedRectWithPixelMovingForegroundFilter(
                       *rpdq, *foreground_filters);
+
+              // Expanding damage outside of the 'clip_rect' can cause parts of
+              // the root to be rendered that may never have been included due
+              // to 'aggregate_only_damaged_' in SurfaceAggregator. See
+              // crbug.com/1492891
+              if (rpdq->shared_quad_state->clip_rect) {
+                expanded_rect.Intersect(*rpdq->shared_quad_state->clip_rect);
+              }
+
               if (root_damage_rect.Intersects(expanded_rect))
                 root_damage_rect.Union(expanded_rect);
             }
@@ -1110,17 +1141,9 @@ SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = SupportsBGRA();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/1317015): add support RGBA_F16 in LaCrOS.
-  auto format = color_space.IsHDR()
-                    ? SinglePlaneFormat::kRGBA_1010102
-                    : PlatformColor::BestSupportedTextureFormat(caps);
-#else
   auto format = color_space.IsHDR()
                     ? SinglePlaneFormat::kRGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
-#endif
   return format;
 }
 

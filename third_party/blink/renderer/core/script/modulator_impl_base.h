@@ -38,7 +38,7 @@ class ModulatorImplBase : public Modulator {
 
   ExecutionContext* GetExecutionContext() const;
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
  private:
   // Implements Modulator

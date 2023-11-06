@@ -112,6 +112,10 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
       return accepted
                  ? kBadgeButtonPermissionsMicrophoneAcceptedAccessibilityIdentifier
                  : kBadgeButtonPermissionsMicrophoneAccessibilityIdentifier;
+    case kBadgeTypeParcelTracking:
+      return accepted
+                 ? kBadgeButtonParcelTrackingAcceptedAccessibilityIdentifier
+                 : kBadgeButtonParcelTrackingAccessibilityIdentifier;
   }
 }
 

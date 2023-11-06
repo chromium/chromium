@@ -78,6 +78,7 @@ android_resources("java_resources") {
     "res/layout/item_chooser_dialog.xml",
     "res/layout/item_chooser_dialog_row.xml",
     "res/layout/update_permissions_dialog.xml",
+    "res/values/dimens.xml",
     "res/values/styles.xml",
   ]
   deps = [
@@ -110,8 +111,11 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/DeviceItemRow.java",
     "java/src/org/chromium/components/permissions/ItemChooserDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
+    "java/src/org/chromium/components/permissions/PermissionDialogCustomViewBinder.java",
+    "java/src/org/chromium/components/permissions/PermissionDialogCustomViewModelFactory.java",
+    "java/src/org/chromium/components/permissions/PermissionDialogCustomViewProperties.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
-    "java/src/org/chromium/components/permissions/PermissionDialogModel.java",
+    "java/src/org/chromium/components/permissions/PermissionDialogModelFactory.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
@@ -119,10 +123,10 @@ android_library("java") {
     ":core_java",
     ":java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
     "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/omnibox/browser:scheme_classifier_java",
     "//content/public/android:content_java",
@@ -130,6 +134,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
 
@@ -153,23 +158,30 @@ android_library("core_java") {
   ]
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/location/android:location_java",
     "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
 robolectric_library("components_permissions_junit_tests") {
-  sources = [ "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java" ]
+  sources = [
+    "junit/src/org/chromium/components/permissions/PermissionDialogCustomViewBinderTest.java",
+    "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java",
+  ]
   deps = [
     ":java",
     ":java_resources",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/theme/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

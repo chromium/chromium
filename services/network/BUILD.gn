@@ -175,6 +175,8 @@ component("network_service") {
     "shared_dictionary/shared_dictionary_writer_in_memory.h",
     "shared_dictionary/shared_dictionary_writer_on_disk.cc",
     "shared_dictionary/shared_dictionary_writer_on_disk.h",
+    "slop_bucket.cc",
+    "slop_bucket.h",
     "socket_data_pump.cc",
     "socket_data_pump.h",
     "socket_factory.cc",

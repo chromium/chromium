@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(X11) Shm {
   enum class Seg : uint32_t {};
 
   struct CompletionEvent {
-    static constexpr int type_id = 7;
+    static constexpr uint8_t type_id = 7;
     static constexpr uint8_t opcode = 0;
     uint16_t sequence{};
     Drawable drawable{};

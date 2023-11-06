@@ -21,6 +21,69 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
+<histogram name="StructuredMetrics.ExternalMetricsDropped.{Project}"
+    units="count" expires_after="2024-07-14">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The number of events that are dropped when processing External Metrics per
+    project. Events are dropped once a threshold, 50 by default, is reached.
+    This field is only recorded when recording is enabled.
+  </summary>
+  <token key="Project">
+    <variant name="AudioPeripheral"/>
+    <variant name="AudioPeripheralInfo"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothChipset"/>
+    <variant name="BluetoothDevice"/>
+    <variant name="Cellular"/>
+    <variant name="HardwareVerifier"/>
+    <variant name="Rmad"/>
+    <variant name="RollbackEnterprise"/>
+    <variant name="UNKOWN"/>
+    <variant name="UsbDevice"/>
+    <variant name="UsbError"/>
+    <variant name="UsbPdDevice"/>
+    <variant name="UsbSession"/>
+    <variant name="WiFi"/>
+    <variant name="WiFiAP"/>
+    <variant name="WiFiChipset"/>
+  </token>
+</histogram>
+
+<histogram name="StructuredMetrics.ExternalMetricsProduced.{Project}"
+    units="count" expires_after="2024-07-14">
+  <owner>andrewbregger@google.com</owner>
+  <owner>jongahn@google.com</owner>
+  <owner>chromeos-data-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    The number of events that are produced by Platform2 per-project. This field
+    is only recorded when recording is enabled.
+  </summary>
+  <token key="Project">
+    <variant name="AudioPeripheral"/>
+    <variant name="AudioPeripheralInfo"/>
+    <variant name="Bluetooth"/>
+    <variant name="BluetoothChipset"/>
+    <variant name="BluetoothDevice"/>
+    <variant name="Cellular"/>
+    <variant name="HardwareVerifier"/>
+    <variant name="Rmad"/>
+    <variant name="RollbackEnterprise"/>
+    <variant name="UNKOWN"/>
+    <variant name="UsbDevice"/>
+    <variant name="UsbError"/>
+    <variant name="UsbPdDevice"/>
+    <variant name="UsbSession"/>
+    <variant name="WiFi"/>
+    <variant name="WiFiAP"/>
+    <variant name="WiFiChipset"/>
+  </token>
+</histogram>
+
 <histogram name="StructuredMetrics.InitSequence" enum="UmaInitSequence"
     expires_after="2024-07-14">
   <owner>andrewbregger@google.com</owner>

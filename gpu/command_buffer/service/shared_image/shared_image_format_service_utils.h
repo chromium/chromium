@@ -73,6 +73,13 @@ ToGLFormatDescExternalSampler(viz::SharedImageFormat format);
 GPU_GLES2_EXPORT GLFormatDesc ToGLFormatDesc(viz::SharedImageFormat format,
                                              int plane_index,
                                              bool use_angle_rgbx_format);
+// Same as above with an additional param to control whether to use
+// HALF_FLOAT_OES extension types or core types for F16 format.
+GPU_GLES2_EXPORT GLFormatDesc
+ToGLFormatDescOverrideHalfFloatType(viz::SharedImageFormat format,
+                                    int plane_index,
+                                    bool use_angle_rgbx_format,
+                                    bool use_half_float_oes);
 
 // Following functions return the appropriate Vulkan format for a
 // SharedImageFormat.
@@ -101,17 +108,16 @@ GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(
 // `plane_index` must be 0 if `format` is single-plane.
 GPU_GLES2_EXPORT wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format,
                                                   int plane_index);
-// Same as ToDawnFormat, except it casts from wgpu::TextureFormat to
-// WGPUTextureFormat instead.
-GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format);
-GPU_GLES2_EXPORT WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format,
-                                                int plane_index);
 
 // Returns the supported Dawn texture usage. `is_yuv_plane` indicates if the
 // texture corresponds to a plane of a multi-planar image and `is_dcomp_surface`
 // indicates if the texture corresponds to a direct composition surface.
-wgpu::TextureUsage GetSupportedDawnTextureUsage(bool is_yuv_plane = false,
-                                                bool is_dcomp_surface = false);
+// `supports_multiplanar_rendering` indicates if the dawn texture supports
+// drawing to multiplanar render targets.
+wgpu::TextureUsage GetSupportedDawnTextureUsage(
+    bool is_yuv_plane = false,
+    bool is_dcomp_surface = false,
+    bool supports_multiplanar_rendering = false);
 
 // Returns wgpu::TextureAspect corresponding to `plane_index` of a particular
 // `format`.
@@ -130,14 +136,16 @@ GPU_GLES2_EXPORT unsigned int ToMTLPixelFormat(viz::SharedImageFormat format,
 // `is_yuv_plane` indicates if the texture corresponds to a plane of a
 // multi-planar image. `mipmapped` indicates if the texture has mipmaps.
 // `scanout_dcomp_surface` indicates if the texture corresponds to a Windows
-// direct composition surface.
+// direct composition surface. `supports_multiplanar_rendering` indicates if the
+// dawn texture supports drawing to multiplanar render targets.
 GPU_GLES2_EXPORT skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
     GrContextType gr_context_type,
     viz::SharedImageFormat format,
     int plane_index = 0,
     bool is_yuv_plane = false,
     bool mipmapped = false,
-    bool scanout_dcomp_surface = false);
+    bool scanout_dcomp_surface = false,
+    bool supports_multiplanar_rendering = false);
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
@@ -145,7 +153,8 @@ GPU_GLES2_EXPORT skgpu::graphite::DawnTextureInfo GetGraphiteDawnTextureInfo(
     int plane_index = 0,
     bool is_yuv_plane = false,
     bool mipmapped = false,
-    bool scanout_dcomp_surface = false);
+    bool scanout_dcomp_surface = false,
+    bool supports_multiplanar_rendering = false);
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)

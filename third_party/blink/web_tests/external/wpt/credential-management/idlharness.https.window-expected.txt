@@ -1,99 +1,100 @@
 This is a testharness.js-based test.
 Found 95 tests; 94 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS idl_test setup
-PASS idl_test validation
-PASS Partial interface Navigator: original interface defined
-PASS Partial interface Navigator: member names are unique
-PASS Partial dictionary CredentialRequestOptions: original dictionary defined
-PASS Partial dictionary CredentialRequestOptions: member names are unique
-PASS Partial dictionary CredentialCreationOptions: original dictionary defined
-PASS Partial dictionary CredentialCreationOptions: member names are unique
-PASS Partial dictionary CredentialRequestOptions[2]: original dictionary defined
-PASS Partial dictionary CredentialRequestOptions[2]: member names are unique
-PASS Partial dictionary CredentialCreationOptions[2]: original dictionary defined
-PASS Partial dictionary CredentialCreationOptions[2]: member names are unique
-PASS Partial interface Navigator[2]: member names are unique
-PASS Partial interface mixin NavigatorID: member names are unique
-PASS PasswordCredential includes CredentialUserData: member names are unique
-PASS FederatedCredential includes CredentialUserData: member names are unique
-PASS HTMLElement includes GlobalEventHandlers: member names are unique
-PASS HTMLElement includes ElementContentEditable: member names are unique
-PASS HTMLElement includes HTMLOrSVGElement: member names are unique
-PASS Navigator includes NavigatorID: member names are unique
-PASS Navigator includes NavigatorLanguage: member names are unique
-PASS Navigator includes NavigatorOnLine: member names are unique
-PASS Navigator includes NavigatorContentUtils: member names are unique
-PASS Navigator includes NavigatorCookies: member names are unique
-PASS Navigator includes NavigatorPlugins: member names are unique
-PASS Navigator includes NavigatorConcurrentHardware: member names are unique
-PASS Element includes ParentNode: member names are unique
-PASS Element includes NonDocumentTypeChildNode: member names are unique
-PASS Element includes ChildNode: member names are unique
-PASS Element includes Slottable: member names are unique
-PASS Credential interface: existence and properties of interface object
-PASS Credential interface object length
-PASS Credential interface object name
-PASS Credential interface: existence and properties of interface prototype object
-PASS Credential interface: existence and properties of interface prototype object's "constructor" property
-PASS Credential interface: existence and properties of interface prototype object's @@unscopables property
-PASS Credential interface: attribute id
-PASS Credential interface: attribute type
-FAIL Credential interface: operation isConditionalMediationAvailable() assert_own_property: interface object missing static operation expected property "isConditionalMediationAvailable" missing
-PASS CredentialsContainer interface: existence and properties of interface object
-PASS CredentialsContainer interface object length
-PASS CredentialsContainer interface object name
-PASS CredentialsContainer interface: existence and properties of interface prototype object
-PASS CredentialsContainer interface: existence and properties of interface prototype object's "constructor" property
-PASS CredentialsContainer interface: existence and properties of interface prototype object's @@unscopables property
-PASS CredentialsContainer interface: operation get(optional CredentialRequestOptions)
-PASS CredentialsContainer interface: operation store(Credential)
-PASS CredentialsContainer interface: operation create(optional CredentialCreationOptions)
-PASS CredentialsContainer interface: operation preventSilentAccess()
-PASS CredentialsContainer must be primary interface of navigator.credentials
-PASS Stringification of navigator.credentials
-PASS CredentialsContainer interface: navigator.credentials must inherit property "get(optional CredentialRequestOptions)" with the proper type
-PASS CredentialsContainer interface: calling get(optional CredentialRequestOptions) on navigator.credentials with too few arguments must throw TypeError
-PASS CredentialsContainer interface: navigator.credentials must inherit property "store(Credential)" with the proper type
-PASS CredentialsContainer interface: calling store(Credential) on navigator.credentials with too few arguments must throw TypeError
-PASS CredentialsContainer interface: navigator.credentials must inherit property "create(optional CredentialCreationOptions)" with the proper type
-PASS CredentialsContainer interface: calling create(optional CredentialCreationOptions) on navigator.credentials with too few arguments must throw TypeError
-PASS CredentialsContainer interface: navigator.credentials must inherit property "preventSilentAccess()" with the proper type
-PASS PasswordCredential interface: existence and properties of interface object
-PASS PasswordCredential interface object length
-PASS PasswordCredential interface object name
-PASS PasswordCredential interface: existence and properties of interface prototype object
-PASS PasswordCredential interface: existence and properties of interface prototype object's "constructor" property
-PASS PasswordCredential interface: existence and properties of interface prototype object's @@unscopables property
-PASS PasswordCredential interface: attribute password
-PASS PasswordCredential interface: attribute name
-PASS PasswordCredential interface: attribute iconURL
-PASS PasswordCredential must be primary interface of passwordCredential
-PASS Stringification of passwordCredential
-PASS PasswordCredential interface: passwordCredential must inherit property "password" with the proper type
-PASS PasswordCredential interface: passwordCredential must inherit property "name" with the proper type
-PASS PasswordCredential interface: passwordCredential must inherit property "iconURL" with the proper type
-PASS Credential interface: passwordCredential must inherit property "id" with the proper type
-PASS Credential interface: passwordCredential must inherit property "type" with the proper type
-PASS Credential interface: passwordCredential must inherit property "isConditionalMediationAvailable()" with the proper type
-PASS FederatedCredential interface: existence and properties of interface object
-PASS FederatedCredential interface object length
-PASS FederatedCredential interface object name
-PASS FederatedCredential interface: existence and properties of interface prototype object
-PASS FederatedCredential interface: existence and properties of interface prototype object's "constructor" property
-PASS FederatedCredential interface: existence and properties of interface prototype object's @@unscopables property
-PASS FederatedCredential interface: attribute provider
-PASS FederatedCredential interface: attribute protocol
-PASS FederatedCredential interface: attribute name
-PASS FederatedCredential interface: attribute iconURL
-PASS FederatedCredential must be primary interface of federatedCredential
-PASS Stringification of federatedCredential
-PASS FederatedCredential interface: federatedCredential must inherit property "provider" with the proper type
-PASS FederatedCredential interface: federatedCredential must inherit property "protocol" with the proper type
-PASS FederatedCredential interface: federatedCredential must inherit property "name" with the proper type
-PASS FederatedCredential interface: federatedCredential must inherit property "iconURL" with the proper type
-PASS Credential interface: federatedCredential must inherit property "id" with the proper type
-PASS Credential interface: federatedCredential must inherit property "type" with the proper type
-PASS Credential interface: federatedCredential must inherit property "isConditionalMediationAvailable()" with the proper type
-PASS Navigator interface: attribute credentials
+[PASS] idl_test setup
+[PASS] idl_test validation
+[PASS] Partial interface Navigator: original interface defined
+[PASS] Partial interface Navigator: member names are unique
+[PASS] Partial dictionary CredentialRequestOptions: original dictionary defined
+[PASS] Partial dictionary CredentialRequestOptions: member names are unique
+[PASS] Partial dictionary CredentialCreationOptions: original dictionary defined
+[PASS] Partial dictionary CredentialCreationOptions: member names are unique
+[PASS] Partial dictionary CredentialRequestOptions[2]: original dictionary defined
+[PASS] Partial dictionary CredentialRequestOptions[2]: member names are unique
+[PASS] Partial dictionary CredentialCreationOptions[2]: original dictionary defined
+[PASS] Partial dictionary CredentialCreationOptions[2]: member names are unique
+[PASS] Partial interface Navigator[2]: member names are unique
+[PASS] Partial interface mixin NavigatorID: member names are unique
+[PASS] PasswordCredential includes CredentialUserData: member names are unique
+[PASS] FederatedCredential includes CredentialUserData: member names are unique
+[PASS] HTMLElement includes GlobalEventHandlers: member names are unique
+[PASS] HTMLElement includes ElementContentEditable: member names are unique
+[PASS] HTMLElement includes HTMLOrSVGElement: member names are unique
+[PASS] Navigator includes NavigatorID: member names are unique
+[PASS] Navigator includes NavigatorLanguage: member names are unique
+[PASS] Navigator includes NavigatorOnLine: member names are unique
+[PASS] Navigator includes NavigatorContentUtils: member names are unique
+[PASS] Navigator includes NavigatorCookies: member names are unique
+[PASS] Navigator includes NavigatorPlugins: member names are unique
+[PASS] Navigator includes NavigatorConcurrentHardware: member names are unique
+[PASS] Element includes ParentNode: member names are unique
+[PASS] Element includes NonDocumentTypeChildNode: member names are unique
+[PASS] Element includes ChildNode: member names are unique
+[PASS] Element includes Slottable: member names are unique
+[PASS] Credential interface: existence and properties of interface object
+[PASS] Credential interface object length
+[PASS] Credential interface object name
+[PASS] Credential interface: existence and properties of interface prototype object
+[PASS] Credential interface: existence and properties of interface prototype object's "constructor" property
+[PASS] Credential interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] Credential interface: attribute id
+[PASS] Credential interface: attribute type
+[FAIL] Credential interface: operation isConditionalMediationAvailable()
+  assert_own_property: interface object missing static operation expected property "isConditionalMediationAvailable" missing
+[PASS] CredentialsContainer interface: existence and properties of interface object
+[PASS] CredentialsContainer interface object length
+[PASS] CredentialsContainer interface object name
+[PASS] CredentialsContainer interface: existence and properties of interface prototype object
+[PASS] CredentialsContainer interface: existence and properties of interface prototype object's "constructor" property
+[PASS] CredentialsContainer interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] CredentialsContainer interface: operation get(optional CredentialRequestOptions)
+[PASS] CredentialsContainer interface: operation store(Credential)
+[PASS] CredentialsContainer interface: operation create(optional CredentialCreationOptions)
+[PASS] CredentialsContainer interface: operation preventSilentAccess()
+[PASS] CredentialsContainer must be primary interface of navigator.credentials
+[PASS] Stringification of navigator.credentials
+[PASS] CredentialsContainer interface: navigator.credentials must inherit property "get(optional CredentialRequestOptions)" with the proper type
+[PASS] CredentialsContainer interface: calling get(optional CredentialRequestOptions) on navigator.credentials with too few arguments must throw TypeError
+[PASS] CredentialsContainer interface: navigator.credentials must inherit property "store(Credential)" with the proper type
+[PASS] CredentialsContainer interface: calling store(Credential) on navigator.credentials with too few arguments must throw TypeError
+[PASS] CredentialsContainer interface: navigator.credentials must inherit property "create(optional CredentialCreationOptions)" with the proper type
+[PASS] CredentialsContainer interface: calling create(optional CredentialCreationOptions) on navigator.credentials with too few arguments must throw TypeError
+[PASS] CredentialsContainer interface: navigator.credentials must inherit property "preventSilentAccess()" with the proper type
+[PASS] PasswordCredential interface: existence and properties of interface object
+[PASS] PasswordCredential interface object length
+[PASS] PasswordCredential interface object name
+[PASS] PasswordCredential interface: existence and properties of interface prototype object
+[PASS] PasswordCredential interface: existence and properties of interface prototype object's "constructor" property
+[PASS] PasswordCredential interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] PasswordCredential interface: attribute password
+[PASS] PasswordCredential interface: attribute name
+[PASS] PasswordCredential interface: attribute iconURL
+[PASS] PasswordCredential must be primary interface of passwordCredential
+[PASS] Stringification of passwordCredential
+[PASS] PasswordCredential interface: passwordCredential must inherit property "password" with the proper type
+[PASS] PasswordCredential interface: passwordCredential must inherit property "name" with the proper type
+[PASS] PasswordCredential interface: passwordCredential must inherit property "iconURL" with the proper type
+[PASS] Credential interface: passwordCredential must inherit property "id" with the proper type
+[PASS] Credential interface: passwordCredential must inherit property "type" with the proper type
+[PASS] Credential interface: passwordCredential must inherit property "isConditionalMediationAvailable()" with the proper type
+[PASS] FederatedCredential interface: existence and properties of interface object
+[PASS] FederatedCredential interface object length
+[PASS] FederatedCredential interface object name
+[PASS] FederatedCredential interface: existence and properties of interface prototype object
+[PASS] FederatedCredential interface: existence and properties of interface prototype object's "constructor" property
+[PASS] FederatedCredential interface: existence and properties of interface prototype object's @@unscopables property
+[PASS] FederatedCredential interface: attribute provider
+[PASS] FederatedCredential interface: attribute protocol
+[PASS] FederatedCredential interface: attribute name
+[PASS] FederatedCredential interface: attribute iconURL
+[PASS] FederatedCredential must be primary interface of federatedCredential
+[PASS] Stringification of federatedCredential
+[PASS] FederatedCredential interface: federatedCredential must inherit property "provider" with the proper type
+[PASS] FederatedCredential interface: federatedCredential must inherit property "protocol" with the proper type
+[PASS] FederatedCredential interface: federatedCredential must inherit property "name" with the proper type
+[PASS] FederatedCredential interface: federatedCredential must inherit property "iconURL" with the proper type
+[PASS] Credential interface: federatedCredential must inherit property "id" with the proper type
+[PASS] Credential interface: federatedCredential must inherit property "type" with the proper type
+[PASS] Credential interface: federatedCredential must inherit property "isConditionalMediationAvailable()" with the proper type
+[PASS] Navigator interface: attribute credentials
 Harness: the test ran to completion.
 

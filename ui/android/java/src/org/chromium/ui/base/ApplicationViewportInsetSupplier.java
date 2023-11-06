@@ -45,7 +45,9 @@ public class ApplicationViewportInsetSupplier
     private ObservableSupplier<Integer> mKeyboardInsetSupplier;
     private ObservableSupplier<Integer> mKeyboardAccessoryInsetSupplier;
 
-    /** The observer that gets attached to all keyboard inset suppliers. */
+    private ObservableSupplier<Integer> mBottomSheetInsetSupplier;
+
+    /** The observer that gets attached to all inset suppliers. */
     private final Callback<Integer> mInsetSupplierObserver = (unused) -> computeInsets();
 
     /**
@@ -91,8 +93,6 @@ public class ApplicationViewportInsetSupplier
     public void setVirtualKeyboardMode(@VirtualKeyboardMode.EnumType int mode) {
         if (mVirtualKeyboardMode == mode) return;
 
-        @VirtualKeyboardMode.EnumType
-        int oldMode = mVirtualKeyboardMode;
         mVirtualKeyboardMode = mode;
 
         computeInsets();
@@ -145,6 +145,24 @@ public class ApplicationViewportInsetSupplier
         }
     }
 
+    public void setBottomSheetInsetSupplier(ObservableSupplier<Integer> insetSupplier) {
+        boolean didRemove = false;
+        if (mBottomSheetInsetSupplier != null) {
+            mBottomSheetInsetSupplier.removeObserver(mInsetSupplierObserver);
+            didRemove = true;
+        }
+
+        mBottomSheetInsetSupplier = insetSupplier;
+
+        if (mBottomSheetInsetSupplier != null) {
+            mBottomSheetInsetSupplier.addObserver(mInsetSupplierObserver);
+        } else if (didRemove) {
+            // If a supplier was removed, removeObserver will not have notified observers (unlike
+            // addObserver) so make sure insets get recomputed in this case.
+            computeInsets();
+        }
+    }
+
     /** Compute the new total inset based on all registered suppliers. */
     private void computeInsets() {
         ViewportInsets newValues = new ViewportInsets();
@@ -153,6 +171,7 @@ public class ApplicationViewportInsetSupplier
         int accessoryInset = intFromSupplier(mKeyboardAccessoryInsetSupplier);
         int totalKeyboardInset = keyboardInset + accessoryInset;
 
+        int bottomSheetInset = intFromSupplier(mBottomSheetInsetSupplier);
         newValues.viewVisibleHeightInset = accessoryInset;
         newValues.visualViewportBottomInset =
                 mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_VISUAL ? totalKeyboardInset : 0;
@@ -174,6 +193,7 @@ public class ApplicationViewportInsetSupplier
             // accounted for in the View height so just add the accessory.
             webContentsInset = accessoryInset;
         }
+        webContentsInset += bottomSheetInset;
 
         newValues.webContentsHeightInset = webContentsInset;
 
@@ -183,5 +203,15 @@ public class ApplicationViewportInsetSupplier
     private int intFromSupplier(ObservableSupplier<Integer> supplier) {
         if (supplier == null || supplier.get() == null) return 0;
         return supplier.get();
+    }
+
+    public boolean insetsAffectWebContentsSize() {
+        // TODO(bokan): OVERLAYS_CONTENT is included only to ensure dispatch of the keyboard
+        // geometrychange event. The WebContents doesn't actually change size in OVERLAYS_CONTENT
+        // so we should factor the event dispatch code out of CompositorViewHolder
+        // #updateWebContentsSize and then replace this call.
+        return mVirtualKeyboardMode == VirtualKeyboardMode.RESIZES_CONTENT
+                || mVirtualKeyboardMode == VirtualKeyboardMode.OVERLAYS_CONTENT
+                || mBottomSheetInsetSupplier != null;
     }
 }

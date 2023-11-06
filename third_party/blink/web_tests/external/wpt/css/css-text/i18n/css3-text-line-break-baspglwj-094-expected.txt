@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL white-space:normal assert_true: expected true got false
-FAIL white-space:pre-line assert_true: expected true got false
-FAIL white-space:pre-wrap assert_true: expected true got false
-FAIL white-space:break-spaces assert_true: expected true got false
-Harness: the test ran to completion.
-

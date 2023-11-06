@@ -12,6 +12,7 @@
 
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "build/build_config.h"
@@ -66,9 +67,9 @@ constexpr int size_coefficient_v =
 // Convenience typedef that checks whether the passed in type is integral (i.e.
 // bool, char, int or their extended versions) and is of the correct size.
 template <typename Char, size_t N>
-using EnableIfBitsAre = std::enable_if_t<std::is_integral<Char>::value &&
-                                             CHAR_BIT * sizeof(Char) == N,
-                                         bool>;
+using EnableIfBitsAre =
+    std::enable_if_t<std::is_integral_v<Char> && CHAR_BIT * sizeof(Char) == N,
+                     bool>;
 
 template <typename Char, EnableIfBitsAre<Char, 8> = true>
 void UnicodeAppendUnsafe(Char* out,

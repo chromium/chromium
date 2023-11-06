@@ -12,172 +12,88 @@ namespace crosapi {
 
 namespace gurl_os_handler_utils {
 
-TEST(GurlOsHandlerUtilsTest, SanitizeAshURL) {
-  // Using a known GURL scheme, we should get scheme + host + sub-host.
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version")), GURL("http://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/#foo")),
-            GURL("http://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/1/#foo")),
-            GURL("http://version/1/"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/1/?foo")),
-            GURL("http://version/1/"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo/?bar")),
-            GURL("http://version/foo/"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo/?bar"),
-                           /*include_path=*/false),
-            GURL("http://version/"));
-  EXPECT_EQ(SanitizeAshURL(GURL("http://version/foo")),
-            GURL("http://version/foo"));
-
-  // Using an unknown GURL scheme, we should get the same.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/#foo")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/#foo")),
-            GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")),
-            GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo/?bar")),
-            GURL("os://version/foo"));
-
-  // Using a standard path, we should get scheme + host.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version")), GURL("os://version"));
-
-  // Passing in an empty scheme will lead into an invalid result.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://")), GURL(""));
-
-  // Any path more than that will be ignored.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1")), GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/foo")), GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version#")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version?")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version&")), GURL("os://version"));
-
-  // Special characters get ignored
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version%65")), GURL("os://version"));
-
-  // Passing in any parameters, etc. we should get nothing as that is invalid.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/query?foo=1&bar=1")),
-            GURL("os://version/query"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/+/query")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/#foo")), GURL("os://version"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/#foo")),
-            GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo")),
-            GURL("os://version/1"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/1/?foo"), /*include_path=*/false),
-            GURL("os://version"));
-
-  // Invalid syntax of kind will be detected by GURL as well.
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo#")),
-            GURL("os://version/foo"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/ver\\")),
-            GURL("os://version/ver"));
-  EXPECT_EQ(SanitizeAshURL(GURL("os://version/foo bar")),
-            GURL("os://version/foo"));
-
-  // Case insensitive
-  EXPECT_EQ(SanitizeAshURL(GURL("Os://Foo/Bar")), GURL("os://foo/bar"));
-
-  // Check that a port get removed.
-  EXPECT_EQ(SanitizeAshURL(GURL("https://a.test:35649/title1.html")),
-            GURL("https://a.test/title1.html"));
-}
-
-TEST(GurlOsHandlerUtilsTest, IsURLInList) {
-  std::vector<GURL> list_of_urls = {
-      GURL("os://version"),  GURL("Os://version2"), GURL("http://version"),
-      GURL("http://Foobar"), GURL("os://flags"),    GURL("os://foo/bar")};
-  // As we expect the input to be sanitized, we cannot add any parameters.
-  EXPECT_TRUE(IsUrlInList(GURL("os://version"), list_of_urls));
-  EXPECT_TRUE(IsUrlInList(GURL("os://flags"), list_of_urls));
-  EXPECT_TRUE(IsUrlInList(GURL("http://version"), list_of_urls));
-  // Sub hosts can - or cannot be supplied.
-  EXPECT_TRUE(IsUrlInList(GURL("os://version/12"), list_of_urls));
-  // Does not exist.
-  EXPECT_FALSE(IsUrlInList(GURL("http://flags"), list_of_urls));
-  // Our internal URLs will be treated part in part in/sensitive. The scheme
-  // is treated insensitive, while the host is not - so if an os:// URL in the
-  // list is upper case, it cannot be (ever) found.
-  // Note that DCHECKs make sure that no case insensitive host can be passed.
-  EXPECT_TRUE(IsUrlInList(GURL("Os://version"), list_of_urls));
-  EXPECT_TRUE(IsUrlInList(GURL("Os://version2"), list_of_urls));
-  // Whereas - if there is a valid scheme, the rest of the host will be handled
-  // case insensitive and be found.
-  EXPECT_TRUE(IsUrlInList(GURL("http://fOOBar"), list_of_urls));
-  // Sub hosts should also be handled.
-  EXPECT_TRUE(IsUrlInList(GURL("os://foo/bar"), list_of_urls));
-  EXPECT_FALSE(IsUrlInList(GURL("os://foo/ba"), list_of_urls));
-}
-
-TEST(GurlOsHandlerUtilsTest, IsAshOsUrl) {
-  // As we expect the input to be sanitized, we cannot add any parameters.
-  EXPECT_TRUE(IsAshOsUrl(GURL("os://version")));
-  EXPECT_TRUE(IsAshOsUrl(GURL("os://flags")));
-  EXPECT_TRUE(IsAshOsUrl(GURL("OS://flags")));     // case insensitive.
-  EXPECT_FALSE(IsAshOsUrl(GURL("os:/flags")));     // Proper '://' required.
-  EXPECT_FALSE(IsAshOsUrl(GURL("os://")));         // There needs to be a host.
-  EXPECT_FALSE(IsAshOsUrl(GURL("oo://version")));  // scheme need matching.
-  EXPECT_FALSE(IsAshOsUrl(GURL("")));              // No crash.
-  EXPECT_FALSE(IsAshOsUrl(GURL("::/bar")));        // No crash.
-  EXPECT_FALSE(IsAshOsUrl(GURL("osos::/bar")));    // In string correct.
-}
-
-TEST(GurlOsHandlerUtilsTest, IsAshOsAsciiScheme) {
-  // As we expect the input to be sanitized, we cannot add any parameters.
-  EXPECT_TRUE(IsAshOsAsciiScheme("os"));
-  EXPECT_TRUE(IsAshOsAsciiScheme("Os"));
-  EXPECT_FALSE(IsAshOsAsciiScheme(""));  // Should not crash.
-  EXPECT_FALSE(IsAshOsAsciiScheme("so"));
-  EXPECT_FALSE(IsAshOsAsciiScheme("soo"));
-}
-
-TEST(GurlOsHandlerUtilsTest, GetOsUrlFromChromeUrl) {
-  url::ScopedSchemeRegistryForTests scoped_registry;
-  url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
-  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags/")), GURL("os://flags"));
-  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags/abc")),
-            GURL("os://flags"));
-  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://flags?foo")),
-            GURL("os://flags"));
-  EXPECT_EQ(GetOsUrlFromChromeUrl(GURL("chrome://foo")), GURL("os://foo"));
-}
-
-TEST(GurlOsHandlerUtilsTest, GetChromeUrlFromOsUrl) {
-  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags/abc/def")),
-            GURL("chrome://flags/abc"));
-  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags/abc")),
-            GURL("chrome://flags/abc"));
-  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://flags?foo")),
-            GURL("chrome://flags"));
-  EXPECT_EQ(GetChromeUrlFromOsUrl(GURL("os://foo")), GURL("chrome://foo"));
-}
-
 TEST(GurlOsHandlerUtilsTest, GetAshUrlFromLacrosUrl) {
-  // To allow the "chrome" schemer, we need to add it to the registry.
+  // To allow the "chrome" scheme, we need to add it to the registry.
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  CHECK(GURL("chrome://version").has_host());
 
-  // os://settings need to be converted to chrome://os-settings
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://settings/foo")),
-            GURL("chrome://os-settings/foo"));
-  // os://os-settings doesn't really matter but we treat it the same:
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://os-settings")),
-            GURL("chrome://os-settings/"));
-  // chrome://settings should not be touched.
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("chrome://settings/foo")),
-            GURL("chrome://settings/foo"));
-  // Needs to be sanitized.
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("chrome://settings/foo#bar")),
-            GURL("chrome://settings/foo"));
-  // os:// is changed to chrome://
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://flags")),
-            GURL("chrome://flags"));
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://flags/")),
-            GURL("chrome://flags"));
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://scanning")),
-            GURL("chrome://scanning"));
-  EXPECT_EQ(GetTargetURLFromLacrosURL(GURL("os://scanning/")),
-            GURL("chrome://scanning"));
+  EXPECT_EQ(GetAshUrlFromLacrosUrl(GURL("http://abc:123/def/ghi?jkl#mno")),
+            GURL("http://abc:123/def/ghi?jkl#mno"));
+
+  EXPECT_EQ(GetAshUrlFromLacrosUrl(GURL("chrome://abc/def/ghi?jkl#mno")),
+            GURL("chrome://abc/def/ghi?jkl#mno"));
+
+  EXPECT_EQ(GetAshUrlFromLacrosUrl(GURL("os://abc/def/ghi?jkl#mno")),
+            GURL("chrome://abc/def/ghi?jkl#mno"));
+
+  // os://settings is mapped to chrome://os-settings.
+  EXPECT_EQ(GetAshUrlFromLacrosUrl(GURL("os://settings/def/ghi?jkl#mno")),
+            GURL("chrome://os-settings/def/ghi?jkl#mno"));
+}
+
+TEST(GurlOsHandlerUtilsTest, SanitizeAshUrl) {
+  // To allow the "chrome" scheme, we need to add it to the registry.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  CHECK(GURL("chrome://version").has_host());
+
+  // Invalid examples.
+  EXPECT_EQ(SanitizeAshUrl(GURL("os://version")), GURL());  // Unknown scheme.
+  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://")), GURL());     // No host.
+
+  // Valid examples.
+  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://version")), GURL("chrome://version"));
+  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://abc/def/ghi?jkl")),
+            GURL("chrome://abc/def/ghi?jkl"));  // Query preserved.
+  EXPECT_EQ(SanitizeAshUrl(GURL("chrome://abc:123/def/ghi?jkl#mno")),
+            GURL("chrome://abc/def/ghi?jkl"));  // Port and ref removed.
+  EXPECT_EQ(SanitizeAshUrl(GURL("https://abc:123/def/ghi?jkl#mno")),
+            GURL("https://abc/def/ghi?jkl"));  // Here too.
+}
+
+TEST(GurlOsHandlerUtilsTest, IsAshUrlInList) {
+  // To allow the "chrome" scheme, we need to add it to the registry.
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
+  CHECK(GURL("chrome://version").has_host());
+
+  std::vector<GURL> list_of_urls = {GURL("chrome://flags"),
+                                    GURL("chrome://foo/bar")};
+
+  EXPECT_FALSE(IsAshUrlInList(GURL("os://version"), list_of_urls));
+  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://version"), list_of_urls));
+
+  EXPECT_FALSE(IsAshUrlInList(GURL("os://flags"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags?baz"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://flags#baz"), list_of_urls));
+  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://flagsz"), list_of_urls));
+
+  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://foo"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar?baz"), list_of_urls));
+  EXPECT_TRUE(IsAshUrlInList(GURL("chrome://foo/bar#baz"), list_of_urls));
+  EXPECT_FALSE(IsAshUrlInList(GURL("chrome://foo/baz"), list_of_urls));
+}
+
+TEST(GurlOsHandlerUtilsTest, HasOsScheme) {
+  EXPECT_TRUE(HasOsScheme(GURL("os://version?foo#bar")));
+  EXPECT_TRUE(HasOsScheme(GURL("os://flags")));
+  EXPECT_TRUE(HasOsScheme(GURL("OS://flags")));     // case insensitive.
+  EXPECT_FALSE(HasOsScheme(GURL("os:/flags")));     // Proper '://' required.
+  EXPECT_FALSE(HasOsScheme(GURL("os://")));         // There needs to be a host.
+  EXPECT_FALSE(HasOsScheme(GURL("oo://version")));  // scheme need matching.
+  EXPECT_FALSE(HasOsScheme(GURL("")));              // No crash.
+  EXPECT_FALSE(HasOsScheme(GURL("::/bar")));        // No crash.
+  EXPECT_FALSE(HasOsScheme(GURL("osos::/bar")));    // In string correct.
+}
+
+TEST(GurlOsHandlerUtilsTest, IsOsScheme) {
+  EXPECT_TRUE(IsOsScheme("os"));
+  EXPECT_TRUE(IsOsScheme("Os"));
+  EXPECT_FALSE(IsOsScheme("oss"));
+  EXPECT_FALSE(IsOsScheme(""));  // Should not crash.
 }
 
 }  // namespace gurl_os_handler_utils

@@ -42,8 +42,8 @@ class NearbyShareSessionImplTest : public testing::Test {
   // not commence until an ARC window is visible.
   NearbyShareSessionImpl* MakeSession(mojom::ShareIntentInfoPtr share_info) {
     shelf_model_ = std::make_unique<ash::ShelfModel>();
-    shelf_controller_ = std::make_unique<ChromeShelfController>(
-        &profile_, shelf_model_.get(), nullptr);
+    shelf_controller_ =
+        std::make_unique<ChromeShelfController>(&profile_, shelf_model_.get());
     shelf_controller_->Init();
 
     session_ = std::make_unique<NearbyShareSessionImpl>(
@@ -113,6 +113,10 @@ class NearbyShareSessionImplFuseBoxTest : public NearbyShareSessionImplTest {
     arc_service_manager_->set_browser_context(profile());
     EXPECT_TRUE(arc::ArcFileSystemMounter::GetForBrowserContext(profile()));
     fusebox_server_ = std::make_unique<fusebox::Server>(/*delegate=*/nullptr);
+  }
+
+  void TearDown() override {
+    arc_service_manager_->set_browser_context(nullptr);
   }
 
  private:

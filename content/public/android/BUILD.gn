@@ -88,12 +88,12 @@ android_library("content_main_dex_java") {
   deps = [
     ":content_java_resources",
     "//base:base_java",
-    "//base:jni_java",
     "//base:process_launcher_java",
     "//build/android:build_java",
     "//components/version_info/android:version_constants_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   sources = [
@@ -148,7 +148,6 @@ android_library("content_full_java") {
     "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
-    "//base:jni_java",
     "//base:process_launcher_java",
     "//build:chromeos_buildflags",
     "//build/android:build_java",
@@ -178,7 +177,6 @@ android_library("content_full_java") {
     "//services/shape_detection/public/mojom:mojom_java",
     "//skia/public/mojom:mojom_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
-    "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -192,6 +190,7 @@ android_library("content_full_java") {
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/blink/public/mojom:mojom_core_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//ui/accessibility:ax_base_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",
@@ -395,7 +394,6 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/StylusWritingHandler.java",
     "java/src/org/chromium/content_public/browser/StylusWritingImeCallback.java",
     "java/src/org/chromium/content_public/browser/ViewEventSink.java",
-    "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
     "java/src/org/chromium/content_public/browser/WebContents.java",
     "java/src/org/chromium/content_public/browser/WebContentsAccessibility.java",
     "java/src/org/chromium/content_public/browser/WebContentsInternals.java",
@@ -517,7 +515,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content_public/browser/LoadCommittedDetails.java",
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",
     "java/src/org/chromium/content_public/browser/NavigationHandle.java",
-    "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
   ]
 }
 
@@ -713,7 +710,6 @@ robolectric_binary("content_junit_tests") {
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//cc/mojom:mojom_java",
     "//content/public/common:common_java",
     "//content/public/test/android:content_java_test_support",
@@ -727,6 +723,7 @@ robolectric_binary("content_junit_tests") {
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",

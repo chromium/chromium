@@ -15,17 +15,26 @@ import '../settings_shared.css.js';
 import '../os_settings_icons.html.js';
 import './menu_item.js';
 
+import {getDeviceName} from 'chrome://resources/ash/common/bluetooth/bluetooth_utils.js';
+import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {BluetoothSystemProperties, DeviceConnectionState, PairedBluetoothDeviceProperties, SystemPropertiesObserverReceiver as BluetoothPropertiesObserverReceiver} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertExists} from '../assert_extras.js';
+import {assertExists, castExists} from '../assert_extras.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {FakeInputDeviceSettingsProvider} from '../device_page/fake_input_device_settings_provider.js';
+import {getInputDeviceSettingsProvider} from '../device_page/input_device_mojo_interface_provider.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from '../device_page/input_device_settings_types.js';
+import {KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import * as routesMojom from '../mojom-webui/routes.mojom-webui.js';
+import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.js';
+import {MultiDevicePageContentData, MultiDeviceSettingsMode} from '../multidevice_page/multidevice_constants.js';
 import {OsPageAvailability} from '../os_page_availability.js';
 import {AccountManagerBrowserProxyImpl} from '../os_people_page/account_manager_browser_proxy.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {isAdvancedRoute, Route, Router} from '../router.js';
 
 import {getTemplate} from './os_settings_menu.html.js';
@@ -47,6 +56,16 @@ export interface OsSettingsMenuElement {
     topMenu: IronSelectorElement,
     topMenuRepeat: DomRepeat,
   };
+}
+
+/**
+ * Returns a copy of the given `str` with the first letter capitalized according
+ * to the locale.
+ */
+function capitalize(str: string): string {
+  const firstChar = str.charAt(0).toLocaleUpperCase();
+  const remainingStr = str.slice(1);
+  return `${firstChar}${remainingStr}`;
 }
 
 const OsSettingsMenuElementBase =
@@ -79,7 +98,10 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
       basicMenuItems_: {
         type: Array,
         computed: 'computeBasicMenuItems_(pageAvailability.*,' +
-            'accountsMenuItemDescription_)',
+            'accountsMenuItemDescription_,' +
+            'bluetoothMenuItemDescription_,' +
+            'deviceMenuItemDescription_,' +
+            'multideviceMenuItemDescription_)',
         readOnly: true,
       },
 
@@ -116,6 +138,34 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           return this.i18n('primaryUserEmail');
         },
       },
+
+      bluetoothMenuItemDescription_: {
+        type: String,
+        value: '',
+      },
+
+      hasKeyboard_: Boolean,
+
+      hasMouse_: Boolean,
+
+      /**
+       * Whether a pointing stick (such as a TrackPoint) is connected.
+       */
+      hasPointingStick_: Boolean,
+
+      hasTouchpad_: Boolean,
+
+      deviceMenuItemDescription_: {
+        type: String,
+        value: '',
+        computed: 'computeDeviceMenuItemDescription_(hasKeyboard_,' +
+            'hasMouse_, hasPointingStick_, hasTouchpad_, hasHapticTouchpad_)',
+      },
+
+      multideviceMenuItemDescription_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -126,25 +176,91 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   private isRevampWayfindingEnabled_: boolean;
   private selectedItemPath_: string;
   private aboutMenuItemPath_: string;
+
+  // Accounts section members.
   private accountsMenuItemDescription_: string;
+
+  // Bluetooth section members.
+  private bluetoothMenuItemDescription_: string;
+  private bluetoothPropertiesObserverReceiver_:
+      BluetoothPropertiesObserverReceiver|undefined;
+
+  // Device section members.
+  private deviceMenuItemDescription_: string;
+  private hasKeyboard_: boolean|undefined;
+  private hasMouse_: boolean|undefined;
+  private hasPointingStick_: boolean|undefined;
+  private hasTouchpad_: boolean|undefined;
+  private inputDeviceSettingsProvider_: InputDeviceSettingsProviderInterface;
+  private keyboardSettingsObserverReceiver_: KeyboardSettingsObserverReceiver|
+      undefined;
+  private mouseSettingsObserverReceiver_: MouseSettingsObserverReceiver|
+      undefined;
+  private pointingStickSettingsObserverReceiver_:
+      PointingStickSettingsObserverReceiver|undefined;
+  private touchpadSettingsObserverReceiver_: TouchpadSettingsObserverReceiver|
+      undefined;
+
+  // Multidevice section members.
+  private multideviceBrowserProxy_: MultiDeviceBrowserProxy;
+  private multideviceMenuItemDescription_: string;
+
+  constructor() {
+    super();
+
+    this.inputDeviceSettingsProvider_ = getInputDeviceSettingsProvider();
+    this.multideviceBrowserProxy_ = MultiDeviceBrowserProxyImpl.getInstance();
+  }
 
   override connectedCallback(): void {
     super.connectedCallback();
 
     if (this.isRevampWayfindingEnabled_) {
+      // Accounts menu item.
       this.updateAccountsMenuItemDescription_();
       this.addWebUiListener(
           'accounts-changed',
           this.updateAccountsMenuItemDescription_.bind(this));
+
+      // Bluetooth menu item.
+      this.observeBluetoothProperties_();
+
+      // Device menu item.
+      this.observeKeyboardSettings_();
+      this.observeMouseSettings_();
+      this.observePointingStickSettings_();
+      this.observeTouchpadSettings_();
+
+      // Multidevice menu item.
+      this.addWebUiListener(
+          'settings.updateMultidevicePageContentData',
+          this.updateMultideviceMenuItemDescription_.bind(this));
     }
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.bluetoothPropertiesObserverReceiver_?.$.close();
+
+    // The following receivers are undefined in tests.
+    this.keyboardSettingsObserverReceiver_?.$.close();
+    this.mouseSettingsObserverReceiver_?.$.close();
+    this.pointingStickSettingsObserverReceiver_?.$.close();
+    this.touchpadSettingsObserverReceiver_?.$.close();
   }
 
   override ready(): void {
     super.ready();
 
     // Force render menu items so the matching item can be selected when the
-    // page initially loads
+    // page initially loads.
     this.$.topMenuRepeat.render();
+
+    if (this.isRevampWayfindingEnabled_) {
+      this.multideviceBrowserProxy_.getPageContentData().then(
+          this.updateMultideviceMenuItemDescription_.bind(this));
+    }
   }
 
   override currentRouteChanged(newRoute: Route): void {
@@ -193,12 +309,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.BLUETOOTH_SECTION_PATH}`,
           icon: 'cr:bluetooth',
           label: this.i18n('bluetoothPageTitle'),
+          sublabel: this.bluetoothMenuItemDescription_,
         },
         {
           section: Section.kMultiDevice,
           path: `/${routesMojom.MULTI_DEVICE_SECTION_PATH}`,
           icon: 'os-settings:connected-devices',
           label: this.i18n('multidevicePageTitle'),
+          sublabel: this.multideviceMenuItemDescription_,
         },
         {
           section: Section.kPeople,
@@ -218,6 +336,7 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.DEVICE_SECTION_PATH}`,
           icon: 'os-settings:laptop-chromebook',
           label: this.i18n('devicePageTitle'),
+          sublabel: this.deviceMenuItemDescription_,
         },
         {
           section: Section.kPersonalization,
@@ -231,12 +350,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.PRIVACY_AND_SECURITY_SECTION_PATH}`,
           icon: 'cr:security',
           label: this.i18n('privacyPageTitle'),
+          sublabel: this.i18n('privacyMenuItemDescription'),
         },
         {
           section: Section.kApps,
           path: `/${routesMojom.APPS_SECTION_PATH}`,
           icon: 'os-settings:apps',
           label: this.i18n('appsPageTitle'),
+          sublabel: this.i18n('appsMenuItemDescription'),
         },
         {
           section: Section.kAccessibility,
@@ -249,12 +370,14 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
           path: `/${routesMojom.SYSTEM_PREFERENCES_SECTION_PATH}`,
           icon: 'os-settings:system-preferences',
           label: this.i18n('systemPreferencesTitle'),
+          sublabel: this.i18n('systemPreferencesMenuItemDescription'),
         },
         {
           section: Section.kAboutChromeOs,
           path: this.aboutMenuItemPath_,
           icon: 'os-settings:chrome',
           label: this.i18n('aboutOsPageTitle'),
+          sublabel: this.i18n('aboutChromeOsMenuItemDescription'),
         },
       ];
     } else {
@@ -423,6 +546,31 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   }
 
   /**
+   * Updates the "Multidevice" menu item description to one of the following:
+   * - If there is a phone connected, show "Connected to <phone name>".
+   * - If there is a phone connected but the device name is missing, show
+   *   "Connected to Android phone".
+   * - If there is no phone connected, show "Phone Hub, Nearby Share".
+   */
+  private updateMultideviceMenuItemDescription_(
+      pageContentData: MultiDevicePageContentData): void {
+    if (pageContentData.mode === MultiDeviceSettingsMode.HOST_SET_VERIFIED) {
+      if (pageContentData.hostDeviceName) {
+        this.multideviceMenuItemDescription_ = this.i18n(
+            'multideviceMenuItemDescriptionPhoneConnected',
+            pageContentData.hostDeviceName);
+      } else {
+        this.multideviceMenuItemDescription_ =
+            this.i18n('multideviceMenuItemDescriptionDeviceNameMissing');
+      }
+      return;
+    }
+
+    this.multideviceMenuItemDescription_ =
+        this.i18n('multideviceMenuItemDescription');
+  }
+
+  /**
    * Updates the "Accounts" menu item description to one of the following:
    * - If there are multiple accounts (> 1), show "N accounts".
    * - If there is only one account, show the account email.
@@ -438,6 +586,160 @@ export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
     const deviceAccount = accounts.find(account => account.isDeviceAccount);
     assertExists(deviceAccount, 'No device account found.');
     this.accountsMenuItemDescription_ = deviceAccount.email;
+  }
+
+  private observeBluetoothProperties_(): void {
+    this.bluetoothPropertiesObserverReceiver_ =
+        new BluetoothPropertiesObserverReceiver(this);
+    getBluetoothConfig().observeSystemProperties(
+        this.bluetoothPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements SystemPropertiesObserverInterface */
+  onPropertiesUpdated(properties: BluetoothSystemProperties): void {
+    const connectedDevices = properties.pairedDevices.filter(
+        (device) => device.deviceProperties.connectionState ===
+            DeviceConnectionState.kConnected);
+    this.updateBluetoothMenuItemDescription_(connectedDevices);
+  }
+
+  /**
+   * Updates the "Bluetooth" menu item description to one of the following:
+   * - No description if no bluetooth devices are connected.
+   * - If one device is connected, show the name of the device.
+   * - If there are multiple devices connected, show "N devices connected".
+   */
+  private updateBluetoothMenuItemDescription_(
+      connectedDevices: PairedBluetoothDeviceProperties[]): void {
+    if (connectedDevices.length === 0) {
+      this.bluetoothMenuItemDescription_ = '';
+      return;
+    }
+
+    if (connectedDevices.length === 1) {
+      const device = castExists(connectedDevices[0]);
+      this.bluetoothMenuItemDescription_ = getDeviceName(device);
+      return;
+    }
+
+    this.bluetoothMenuItemDescription_ = this.i18n(
+        'bluetoothMenuItemDescriptionMultipleDevicesConnected',
+        connectedDevices.length);
+  }
+
+  private observeKeyboardSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeKeyboardSettings(this);
+      return;
+    }
+
+    this.keyboardSettingsObserverReceiver_ =
+        new KeyboardSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeKeyboardSettings(
+        this.keyboardSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements KeyboardSettingsObserverInterface */
+  onKeyboardListUpdated(keyboards: Keyboard[]): void {
+    this.hasKeyboard_ = keyboards.length > 0;
+  }
+
+  /** Implements KeyboardSettingsObserverInterface */
+  onKeyboardPoliciesUpdated(): void {
+    // Not handled.
+  }
+
+  private observeMouseSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeMouseSettings(this);
+      return;
+    }
+
+    this.mouseSettingsObserverReceiver_ =
+        new MouseSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeMouseSettings(
+        this.mouseSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements MouseSettingsObserverInterface */
+  onMouseListUpdated(mice: Mouse[]): void {
+    this.hasMouse_ = mice.length > 0;
+  }
+
+  /** Implements MouseSettingsObserverInterface */
+  onMousePoliciesUpdated(): void {
+    // Not handled.
+  }
+
+  private observePointingStickSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observePointingStickSettings(this);
+      return;
+    }
+
+    this.pointingStickSettingsObserverReceiver_ =
+        new PointingStickSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observePointingStickSettings(
+        this.pointingStickSettingsObserverReceiver_.$
+            .bindNewPipeAndPassRemote());
+  }
+
+  /** Implements PointingStickSettingsObserverInterface */
+  onPointingStickListUpdated(pointingSticks: PointingStick[]): void {
+    this.hasPointingStick_ = pointingSticks.length > 0;
+  }
+
+  private observeTouchpadSettings_(): void {
+    if (this.inputDeviceSettingsProvider_ instanceof
+        FakeInputDeviceSettingsProvider) {
+      this.inputDeviceSettingsProvider_.observeTouchpadSettings(this);
+      return;
+    }
+
+    this.touchpadSettingsObserverReceiver_ =
+        new TouchpadSettingsObserverReceiver(this);
+    this.inputDeviceSettingsProvider_.observeTouchpadSettings(
+        this.touchpadSettingsObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
+  /** Implements TouchpadSettingsObserverInterface */
+  onTouchpadListUpdated(touchpads: Touchpad[]): void {
+    this.hasTouchpad_ = touchpads.length > 0;
+  }
+
+  /**
+   * Only show at most 3 strings in order of priority:
+   * - "keyboard" (if available)
+   * - "mouse" OR "touchpad" (if available, prioritize mouse)
+   * - "print"
+   * - "display"
+   */
+  private computeDeviceMenuItemDescription_(): string {
+    if (!this.isRevampWayfindingEnabled_) {
+      return '';
+    }
+
+    const wordOptions: string[] = [];
+
+    if (this.hasKeyboard_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionKeyboard'));
+    }
+
+    if (this.hasMouse_ || this.hasPointingStick_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionMouse'));
+    } else if (this.hasTouchpad_) {
+      wordOptions.push(this.i18n('deviceMenuItemDescriptionTouchpad'));
+    }
+
+    wordOptions.push(
+        this.i18n('deviceMenuItemDescriptionPrint'),
+        this.i18n('deviceMenuItemDescriptionDisplay'));
+
+    const words = wordOptions.slice(0, 3);
+    return capitalize(words.join(this.i18n('listSeparator')));
   }
 }
 

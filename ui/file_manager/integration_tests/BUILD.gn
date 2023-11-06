@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
 js_type_check("closure_compile") {
   testonly = true
@@ -76,4 +77,131 @@ js_library("test_util") {
 
 js_library("testcase") {
   testonly = true
+}
+
+preprocess_folder = "$target_gen_dir/preprocessed"
+tsc_folder = "$target_gen_dir/tsc"
+
+# TODO: Replace allowed_paths, dialog_type, files_app_state, metadata_stats_type
+# and volume_manager_common_volume_type with definitions from Files app.
+js_files = [
+  "allowed_paths.js",
+  "dialog_type.js",
+  "element_object.js",
+  "files_app_state.js",
+  "key_modifiers.js",
+  "metadata_stats_type.js",
+  "remote_call.js",
+  "test_util.js",
+  "testcase.js",
+  "volume_manager_common_volume_type.js",
+
+  # File Manager.
+  "file_manager/android_photos.js",
+  "file_manager/background.js",
+  "file_manager/breadcrumbs.js",
+  "file_manager/context_menu.js",
+  "file_manager/copy_between_windows.js",
+  "file_manager/create_new_folder.js",
+  "file_manager/crostini.js",
+  "file_manager/directory_tree.js",
+  "file_manager/directory_tree_context_menu.js",
+  "file_manager/dlp.js",
+  "file_manager/dlp_enterprise_connectors.js",
+  "file_manager/drive_specific.js",
+  "file_manager/file_dialog.js",
+  "file_manager/file_display.js",
+  "file_manager/file_list.js",
+  "file_manager/file_transfer_connector.js",
+  "file_manager/files_tooltip.js",
+  "file_manager/folder_shortcuts.js",
+  "file_manager/format_dialog.js",
+  "file_manager/gear_menu.js",
+  "file_manager/grid_view.js",
+  "file_manager/guest_os.js",
+  "file_manager/holding_space.js",
+  "file_manager/install_linux_package_dialog.js",
+  "file_manager/keyboard_operations.js",
+  "file_manager/metadata.js",
+  "file_manager/metrics.js",
+  "file_manager/my_files.js",
+  "file_manager/navigation.js",
+  "file_manager/office.js",
+  "file_manager/open_audio_media_app.js",
+  "file_manager/open_files_in_web_drive.js",
+  "file_manager/open_image_media_app.js",
+  "file_manager/open_media_app.js",
+  "file_manager/open_sniffed_files.js",
+  "file_manager/open_video_media_app.js",
+  "file_manager/providers.js",
+  "file_manager/quick_view.js",
+  "file_manager/recents.js",
+  "file_manager/restore_prefs.js",
+  "file_manager/search.js",
+  "file_manager/share.js",
+  "file_manager/share_and_manage_dialog.js",
+  "file_manager/sort_columns.js",
+  "file_manager/tab_index.js",
+  "file_manager/tasks.js",
+  "file_manager/test_data.js",
+  "file_manager/toolbar.js",
+  "file_manager/transfer.js",
+  "file_manager/trash.js",
+  "file_manager/traverse.js",
+  "file_manager/zip_files.js",
+
+  # Page Objects.
+  "file_manager/page_objects/directory_tree.js",
+]
+
+ts_files = [
+  "file_manager/choose_entry.ts",
+  "file_manager/choose_entry_const.ts",
+]
+
+# TS/JS files.
+copy("copy_src") {
+  sources = js_files + ts_files
+  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+}
+
+# All non JS/TS files.
+copy("copy_app") {
+  sources = [
+    "file_manager/background.html",
+    "file_manager/choose_entry.html",
+    "file_manager_test_manifest.json",
+  ]
+  outputs = [ "$tsc_folder/{{source_target_relative}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = tsc_folder
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
+
+  definitions = [
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/file_system.d.ts",
+    "definitions.d.ts",
+  ]
+
+  extra_deps = [ ":copy_src" ]
+
+  in_files = js_files + ts_files
+}
+
+group("build") {
+  deps = [
+    ":build_ts",
+    ":copy_app",
+  ]
+
+  # Also as data_deps to make the files available at runtime to the
+  # browser_tests binary, see `gn help runtime_deps` for more info.
+  data_deps = [
+    ":build_ts",
+    ":copy_app",
+  ]
 }

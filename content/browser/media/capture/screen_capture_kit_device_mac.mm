@@ -269,8 +269,8 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
                       absl::optional<gfx::Rect> visible_rect) {
     if (requested_capture_format_) {
       // Does the size of io_surface match the requested format?
-      size_t io_surface_width = IOSurfaceGetWidth(io_surface);
-      size_t io_surface_height = IOSurfaceGetHeight(io_surface);
+      size_t io_surface_width = IOSurfaceGetWidth(io_surface.get());
+      size_t io_surface_height = IOSurfaceGetHeight(io_surface.get());
       DVLOG(3) << "Waiting for new capture format, "
                << requested_capture_format_->frame_size.width() << " x "
                << requested_capture_format_->frame_size.height()

@@ -34,6 +34,7 @@ class AwWebMessageHostFactory : public js_injection::WebMessageHostFactory {
 
   // js_injection::WebMessageConnection:
   std::unique_ptr<js_injection::WebMessageHost> CreateHost(
+      const std::string& top_level_origin_string,
       const std::string& origin_string,
       bool is_main_frame,
       js_injection::WebMessageReplyProxy* proxy) override;

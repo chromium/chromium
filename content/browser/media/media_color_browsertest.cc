@@ -127,11 +127,11 @@ IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv444pH264) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(MediaColorTest, Yuv420pMpeg4) {
   RunColorTest("yuv420p.avi");
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 }  // namespace content

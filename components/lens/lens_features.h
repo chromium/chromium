@@ -44,10 +44,6 @@ BASE_DECLARE_FEATURE(kEnableImageTranslate);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kEnableImageSearchSidePanelFor3PDse);
 
-// Enables launching the region search experience in a new tab with WebUI.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensRegionSearchStaticPage);
-
 // Enables using more optimized image formats for Lens requests.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensImageFormatOptimizations);
@@ -200,10 +196,6 @@ extern bool IsLensFullscreenSearchEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSidePanelEnabled();
 
-// Returns whether the Lens side panel is enabled for region search.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSidePanelEnabledForRegionSearch();
-
 // Returns whether the Search Image button in the Chrome Screenshot Sharing
 // feature is enabled
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -212,11 +204,6 @@ extern bool IsLensInScreenshotSharingEnabled();
 // Returns whether we should use a WebUI static page for region search.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensRegionSearchStaticPageEnabled();
-
-// Returns whether we should use the search inside image with Google context
-// menu string.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseLensContextMenuItemAlternateText();
 
 // Returns whether to use WebP encoding for image search queries.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -263,6 +250,11 @@ extern bool GetShouldIssuePreconnectForLens();
 // is shown.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetPreconnectKeyForLens();
+
+// Returns whether to start a Spare Render process when the context menu item
+// is shown.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetShouldIssueProcessPrewarmingForLens();
 }  // namespace features
 }  // namespace lens
 

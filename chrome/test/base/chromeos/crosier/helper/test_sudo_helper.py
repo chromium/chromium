@@ -29,7 +29,11 @@ from pathlib import Path
 import socket
 import subprocess
 import sys
+import threading
+import time
 from typing import Dict, List, Optional
+
+THIS_FILE = Path(__file__).resolve()
 
 
 def _read_release_file(path: Path) -> Dict[str, str]:
@@ -65,6 +69,12 @@ def _send_string(sock: socket.socket, message: str):
     sock.sendall(buf)
 
 
+def _send_code_and_string(sock: socket.socket, code: int, message: str):
+    """Sends a byte code and a string to the given socket."""
+    sock.sendall(code.to_bytes(1, byteorder="big"))
+    _send_string(sock, message)
+
+
 def _run_cmd(sock: socket.socket, cmd: str):
     """Runs the given command.
 
@@ -88,9 +98,81 @@ def _run_cmd(sock: socket.socket, cmd: str):
 
     except Exception as e:
         logging.error("Exception: %s", e)
+        _send_code_and_string(sock, 0xFF, str(e))
 
-        sock.sendall(b"\xFF")
-        _send_string(sock, str(e))
+
+def _wait_for_fake_chrome():
+    pid = None
+
+    # Loop until `fake_chrome` PID is available.
+    while True:
+        process = subprocess.run(
+            "pgrep fake_chrome -P $(pgrep session_manager) | head -n 1",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True,
+            check=False)
+        if len(process.stdout) > 0:
+            pid = process.stdout.decode("utf-8").strip()
+            break
+
+        time.sleep(0.1)
+
+    assert pid
+    return
+
+
+class SessionManagerRunner(threading.Thread):
+    """Runs the session manager daemon and watch for its state.
+
+    It runs session manager in a thread and sends the stopped state to the
+    original client socket that requests to start the daemon.
+    """
+    def __init__(self, sock: socket.socket):
+        self._sock = sock
+        self._flag = threading.Event()
+        self._session_manager_proc = None
+        threading.Thread.__init__(self)
+
+    def run(self):
+        try:
+            args = [
+                "/sbin/session_manager",
+                ("--chrome-command=%s" % str(THIS_FILE.parent / "fake_chrome")),
+            ]
+            logging.info("Starting session manager: args=%s", str(args))
+            self._session_manager_proc = subprocess.Popen(
+                args, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+
+            _wait_for_fake_chrome()
+            _send_code_and_string(self._sock, 0, "started")
+        except Exception as e:
+            logging.error("Exception: %s", e)
+            _send_code_and_string(self._sock, 0xFF, str(e))
+            self._session_manager_proc = None
+            return
+
+        stopped = False
+        while not self._flag.is_set():
+            if self._session_manager_proc.poll() != None:
+                stopped = True
+                break
+            # Sleep a bit so that it is not a busy loop.
+            time.sleep(0.5)
+
+        if not stopped:
+            self._session_manager_proc.terminate()
+            self._session_manager_proc.wait()
+
+        self._session_manager_proc = None
+
+        _send_code_and_string(self._sock, 0, "stopped")
+        self._sock.close()
+
+    def stop(self):
+        if self.is_alive:
+            self._flag.set()
+            self.join()
 
 
 class HelperServer:
@@ -98,6 +180,7 @@ class HelperServer:
     def __init__(self, socket_path: str):
         self._socket_path = socket_path
         self._socket = None
+        self._session_manager_runner = None
 
     def _create_and_bind_socket(self):
         # `unlink` in case there was left over from previous runs.
@@ -114,6 +197,23 @@ class HelperServer:
         # Allow access from all.
         os.chmod(self._socket_path, 0o777)
 
+    def _ensure_sesion_manager_stopped(self):
+        if not self._session_manager_runner:
+            return
+
+        self._session_manager_runner.stop()
+        self._session_manager_runner = None
+
+    def _start_session_manager(self, sock: socket.socket):
+        self._ensure_sesion_manager_stopped()
+        self._session_manager_runner = SessionManagerRunner(sock)
+        self._session_manager_runner.start()
+
+    def _stop_session_manager(self, sock: socket.socket):
+        self._ensure_sesion_manager_stopped()
+
+        _send_code_and_string(sock, 0, "ok")
+
     def _handle_client(self, client_sock: socket.socket):
         """Handles the requests from a client."""
         request = json.loads(_read_string(client_sock))
@@ -122,13 +222,21 @@ class HelperServer:
 
         if method == "runCommand":
             _run_cmd(client_sock, request["command"])
+            client_sock.close()
+        elif method == "startSessionManager":
+            self._start_session_manager(client_sock)
+            # `client_sock` is not closed until runner stops and sent back
+            # the "stopped" event.
+        elif method == "stopSessionManager":
+            self._stop_session_manager(client_sock)
+            client_sock.close()
         else:
             logging.error("Unknown method: %s", method)
 
             client_sock.sendall(b"\xFF")
             _send_string(client_sock, ("Unknown method: %s", method))
+            client_sock.close()
 
-        client_sock.close()
 
     def run(self) -> int:
         """Listens and processes client requests."""

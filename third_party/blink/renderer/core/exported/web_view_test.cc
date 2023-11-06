@@ -5884,65 +5884,6 @@ TEST_F(WebViewTest, FirstInputDelayReported) {
                     .InMillisecondsF());
 }
 
-// Check that longest input delay is correctly reported to the document.
-TEST_F(WebViewTest, LongestInputDelayReported) {
-  WebViewImpl* web_view = web_view_helper_.Initialize();
-  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url);
-
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  ASSERT_NE(nullptr, main_frame);
-
-  Document* document = main_frame->GetDocument();
-  ASSERT_NE(nullptr, document);
-
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
-
-  InteractiveDetector* interactive_detector =
-      GetTestInteractiveDetector(*document);
-
-  EXPECT_FALSE(interactive_detector->GetLongestInputDelay().has_value());
-
-  WebKeyboardEvent key_event1(WebInputEvent::Type::kRawKeyDown,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests());
-  key_event1.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event1.windows_key_code = VKEY_SPACE;
-  key_event1.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event1, ui::LatencyInfo()));
-
-  base::TimeTicks longest_input_timestamp = test_task_runner_->NowTicks();
-
-  WebKeyboardEvent key_event2(WebInputEvent::Type::kRawKeyDown,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests());
-  key_event2.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event2.windows_key_code = VKEY_SPACE;
-  key_event2.SetTimeStamp(longest_input_timestamp);
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event2, ui::LatencyInfo()));
-
-  WebKeyboardEvent key_event3(WebInputEvent::Type::kRawKeyDown,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests());
-  key_event3.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event3.windows_key_code = VKEY_SPACE;
-  key_event3.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event3, ui::LatencyInfo()));
-
-  EXPECT_NEAR(100,
-              (*interactive_detector->GetLongestInputDelay()).InMillisecondsF(),
-              0.01);
-  EXPECT_EQ(longest_input_timestamp,
-            interactive_detector->GetLongestInputTimestamp());
-}
-
 TEST_F(WebViewTest, InputDelayReported) {
   test_task_runner_->FastForwardBy(base::Milliseconds(50));
 
@@ -6007,143 +5948,6 @@ TEST_F(WebViewTest, InputDelayReported) {
       "PageLoad.InteractiveTiming.InputTimestamp3", 120, 1);
   histogram_tester.ExpectBucketCount(
       "PageLoad.InteractiveTiming.InputTimestamp3", 170, 1);
-}
-
-// Tests that if the page was backgrounded while an input event was queued,
-// we do not count its delay to calculate longest input delay.
-TEST_F(WebViewTest, LongestInputDelayPageBackgroundedDuringQueuing) {
-  WebViewImpl* web_view = web_view_helper_.Initialize();
-  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url);
-
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  ASSERT_NE(nullptr, main_frame);
-
-  Document* document = main_frame->GetDocument();
-  ASSERT_NE(nullptr, document);
-
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
-
-  InteractiveDetector* interactive_detector =
-      GetTestInteractiveDetector(*document);
-
-  EXPECT_FALSE(interactive_detector->GetLongestInputDelay().has_value());
-
-  WebKeyboardEvent key_event1(WebInputEvent::Type::kRawKeyDown,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests());
-  key_event1.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event1.windows_key_code = VKEY_SPACE;
-  base::TimeTicks key_event1_time = test_task_runner_->NowTicks();
-  key_event1.SetTimeStamp(key_event1_time);
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event1, ui::LatencyInfo()));
-
-  WebKeyboardEvent key_event2(WebInputEvent::Type::kRawKeyDown,
-                              WebInputEvent::kNoModifiers,
-                              WebInputEvent::GetStaticTimeStampForTests());
-  key_event2.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event2.windows_key_code = VKEY_SPACE;
-  key_event2.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
-                               /*initial_state=*/false);
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
-                               /*initial_state=*/false);
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  // Total input delay is >300ms.
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event2, ui::LatencyInfo()));
-
-  EXPECT_NEAR(50,
-              (*interactive_detector->GetLongestInputDelay()).InMillisecondsF(),
-              0.01);
-  EXPECT_EQ(key_event1_time, interactive_detector->GetLongestInputTimestamp());
-}
-
-// Tests that if the page was backgrounded at navigation start and an input
-// event was queued before it was foregrounded, we do not count its delay to
-// calculate longest input delay.
-TEST_F(WebViewTest, LongestInputDelayPageBackgroundedAtNavStart) {
-  WebViewImpl* web_view = web_view_helper_.Initialize();
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
-                               /*initial_state=*/false);
-  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url);
-
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  ASSERT_NE(nullptr, main_frame);
-
-  Document* document = main_frame->GetDocument();
-  ASSERT_NE(nullptr, document);
-
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
-
-  InteractiveDetector* interactive_detector =
-      GetTestInteractiveDetector(*document);
-
-  WebKeyboardEvent key_event(WebInputEvent::Type::kRawKeyDown,
-                             WebInputEvent::kNoModifiers,
-                             WebInputEvent::GetStaticTimeStampForTests());
-  key_event.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event.windows_key_code = VKEY_SPACE;
-  key_event.SetTimeStamp(test_task_runner_->NowTicks());
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
-                               /*initial_state=*/false);
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
-
-  EXPECT_FALSE(interactive_detector->GetLongestInputDelay().has_value());
-}
-
-// Tests page backgrounding outside of input queuing time does not affect
-// longest input delay.
-TEST_F(WebViewTest, LongestInputDelayPageBackgroundedNotDuringQueuing) {
-  WebViewImpl* web_view = web_view_helper_.Initialize();
-  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url);
-
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  ASSERT_NE(nullptr, main_frame);
-
-  Document* document = main_frame->GetDocument();
-  ASSERT_NE(nullptr, document);
-
-  test_task_runner_->FastForwardBy(base::Milliseconds(70));
-
-  InteractiveDetector* interactive_detector =
-      GetTestInteractiveDetector(*document);
-
-  EXPECT_FALSE(interactive_detector->GetLongestInputDelay().has_value());
-
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
-                               /*initial_state=*/false);
-  test_task_runner_->FastForwardBy(base::Milliseconds(100));
-  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
-                               /*initial_state=*/false);
-  test_task_runner_->FastForwardBy(base::Milliseconds(1));
-
-  WebKeyboardEvent key_event(WebInputEvent::Type::kRawKeyDown,
-                             WebInputEvent::kNoModifiers,
-                             WebInputEvent::GetStaticTimeStampForTests());
-  key_event.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event.windows_key_code = VKEY_SPACE;
-  base::TimeTicks key_event_time = test_task_runner_->NowTicks();
-  key_event.SetTimeStamp(key_event_time);
-  test_task_runner_->FastForwardBy(base::Milliseconds(50));
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
-
-  EXPECT_NEAR(50,
-              (*interactive_detector->GetLongestInputDelay()).InMillisecondsF(),
-              0.01);
-  EXPECT_EQ(key_event_time, interactive_detector->GetLongestInputTimestamp());
 }
 
 // TODO(npm): Improve this test to receive real input sequences and avoid hacks.
@@ -6269,51 +6073,6 @@ TEST_F(WebViewTest, FirstInputDelayExcludesProcessingTime) {
   base::TimeDelta first_input_delay =
       *interactive_detector->GetFirstInputDelay();
   EXPECT_EQ(5000, first_input_delay.InMillisecondsF());
-
-  web_view_helper_.Reset();  // Remove dependency on locally scoped client.
-}
-
-// Check that the longest input delay is correctly reported to the document.
-TEST_F(WebViewTest, LongestInputDelayExcludesProcessingTime) {
-  // Page load timing logic depends on the time not being zero.
-  test_task_runner_->FastForwardBy(base::Milliseconds(1));
-  MockClockAdvancingWebFrameClient frame_client(test_task_runner_,
-                                                base::Milliseconds(6000));
-  WebViewImpl* web_view = web_view_helper_.Initialize(&frame_client);
-  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
-  frame_test_helpers::LoadHTMLString(web_view->MainFrameImpl(),
-                                     "<html><body></body></html>", base_url);
-
-  LocalFrame* main_frame = web_view->MainFrameImpl()->GetFrame();
-  ASSERT_NE(nullptr, main_frame);
-
-  Document* document = main_frame->GetDocument();
-  ASSERT_NE(nullptr, document);
-
-  WebLocalFrame* frame = web_view_helper_.LocalMainFrame();
-  // console.log will advance the mock clock.
-  frame->ExecuteScript(
-      WebScriptSource("document.addEventListener('keydown', "
-                      "() => {console.log('advancing timer');})"));
-
-  InteractiveDetector* interactive_detector =
-      GetTestInteractiveDetector(*document);
-
-  WebKeyboardEvent key_event(WebInputEvent::Type::kRawKeyDown,
-                             WebInputEvent::kNoModifiers,
-                             WebInputEvent::GetStaticTimeStampForTests());
-  key_event.dom_key = ui::DomKey::FromCharacter(' ');
-  key_event.windows_key_code = VKEY_SPACE;
-  key_event.SetTimeStamp(test_task_runner_->NowTicks());
-
-  test_task_runner_->FastForwardBy(base::Milliseconds(5000));
-
-  web_view->MainFrameWidget()->HandleInputEvent(
-      WebCoalescedInputEvent(key_event, ui::LatencyInfo()));
-
-  base::TimeDelta longest_input_delay =
-      *interactive_detector->GetLongestInputDelay();
-  EXPECT_EQ(5000, longest_input_delay.InMillisecondsF());
 
   web_view_helper_.Reset();  // Remove dependency on locally scoped client.
 }
@@ -6637,6 +6396,82 @@ TEST_F(WebViewTest, HiddenButPaintingPageIsntThrottled) {
       mojom::blink::PageVisibilityState::kHiddenButPainting,
       /*is_initial_state=*/false);
   EXPECT_TRUE(scheduler->IsPageVisible());
+}
+
+TEST_F(WebViewTest, HiddenVisibilityTransitionsDontDispatchEvents) {
+  // When switching between `kHidden` and `kHiddenButPainting`, there should not
+  // be events sent about it.  See https://crbug.com/1493618 .
+  WebViewImpl* web_view = web_view_helper_.Initialize();
+
+  // Switch in the 'kVisible' state, before we start checking.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+
+  WebURL base_url = url_test_helpers::ToKURL("http://example.com/");
+  frame_test_helpers::LoadHTMLString(
+      web_view->MainFrameImpl(),
+      "<input id=input></input>"
+      "<div id=log></div>"
+      "<script>"
+      "  var count = 0;"
+      "  document.onvisibilitychange = function() {"
+      "    ++count;"
+      "    document.getElementById('log').textContent ="
+      "      document.visibilityState + ' ' + count;"
+      "  }"
+      "</script>",
+      base_url);
+
+  WebLocalFrameImpl* frame = web_view->MainFrameImpl();
+  WebElement log_element = frame->GetDocument().GetElementById("log");
+
+  // kVisible => kHidden should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kHidden should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kHiddenButPainting should not fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHiddenButPainting => kHiddenButPainting should not fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHiddenButPainting => kHidden should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 1", log_element.TextContent());
+
+  // kHidden => kVisible should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 2", log_element.TextContent());
+
+  // kVisible => kHiddenButPainting should fire an event.
+  web_view->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHiddenButPainting,
+      /*is_initial_state=*/false);
+  EXPECT_EQ("hidden 3", log_element.TextContent());
+
+  // kHiddenButPainting => kVisible should fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 4", log_element.TextContent());
+
+  // kVisible => kVisible should not fire an event.
+  web_view->SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
+                               /*is_initial_state=*/false);
+  EXPECT_EQ("visible 4", log_element.TextContent());
 }
 
 }  // namespace blink

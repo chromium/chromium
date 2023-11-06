@@ -39,14 +39,19 @@
 #include "base/process/internal_linux.h"
 #endif
 
-namespace base {
-namespace debug {
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
     BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
+#define ENABLE_CPU_TESTS 1
+#else
+#define ENABLE_CPU_TESTS 0
+#endif
+
+namespace base::debug {
 
 namespace {
+
+#if ENABLE_CPU_TESTS
 
 void BusyWork(std::vector<std::string>* vec) {
   int64_t test_value = 0;
@@ -56,11 +61,38 @@ void BusyWork(std::vector<std::string>* vec) {
   }
 }
 
-}  // namespace
+TimeDelta TestCumulativeCPU(ProcessMetrics* metrics, TimeDelta prev_cpu_usage) {
+  const TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  return current_cpu_usage;
+}
 
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+TimeDelta TestPreciseCumulativeCPU(ProcessMetrics* metrics,
+                                   TimeDelta prev_cpu_usage) {
+#if BUILDFLAG(IS_WIN)
+  const TimeDelta current_cpu_usage = metrics->GetPreciseCumulativeCPUUsage();
+  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+  return current_cpu_usage;
+#else
+  // Do nothing. Not supported on this platform.
+  return base::TimeDelta();
+#endif
+}
+
+#endif  // ENABLE_CPU_TESTS
+
+std::unique_ptr<ProcessMetrics> CreateProcessMetricsForTest(
+    ProcessHandle handle) {
+#if BUILDFLAG(IS_MAC)
+  return ProcessMetrics::CreateProcessMetrics(handle, nullptr);
+#else
+  return ProcessMetrics::CreateProcessMetrics(handle);
+#endif
+}
+
+}  // namespace
 
 // Tests for SystemMetrics.
 // Exists as a class so it can be a friend of SystemMetrics.
@@ -345,19 +377,19 @@ TEST_F(SystemMetricsTest, ParseVmstat) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||      \
-    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
-
+#if ENABLE_CPU_TESTS
 // Test that ProcessMetrics::GetPlatformIndependentCPUUsage() doesn't return
 // negative values when the number of threads running on the process decreases
 // between two successive calls to it.
 TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   ProcessHandle handle = GetCurrentProcessHandle();
-  std::unique_ptr<ProcessMetrics> metrics(
-      ProcessMetrics::CreateProcessMetrics(handle));
+  std::unique_ptr<ProcessMetrics> metrics(CreateProcessMetricsForTest(handle));
 
   EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_GE(metrics->GetPreciseCPUUsage(), 0.0);
+#endif
+
   Thread thread1("thread1");
   Thread thread2("thread2");
   Thread thread3("thread3");
@@ -378,31 +410,26 @@ TEST_F(SystemMetricsTest, TestNoNegativeCpuUsage) {
   thread2.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec2));
   thread3.task_runner()->PostTask(FROM_HERE, BindOnce(&BusyWork, &vec3));
 
-  TimeDelta prev_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(prev_cpu_usage, TimeDelta());
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  TimeDelta prev_cpu_usage = TestCumulativeCPU(metrics.get(), TimeDelta());
+  TimeDelta prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), TimeDelta());
 
   thread1.Stop();
-  TimeDelta current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread2.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  prev_cpu_usage = current_cpu_usage;
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 
   thread3.Stop();
-  current_cpu_usage = metrics->GetCumulativeCPUUsage();
-  EXPECT_GE(current_cpu_usage, prev_cpu_usage);
-  EXPECT_GE(metrics->GetPlatformIndependentCPUUsage(), 0.0);
+  prev_cpu_usage = TestCumulativeCPU(metrics.get(), prev_cpu_usage);
+  prev_precise_cpu_usage =
+      TestPreciseCumulativeCPU(metrics.get(), prev_precise_cpu_usage);
 }
-
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#endif  // ENABLE_CPU_TESTS
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(SystemMetricsTest, ParseZramMmStat) {
@@ -493,7 +520,8 @@ TEST(SystemMetrics2Test, GetSystemMemoryInfo) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 TEST(ProcessMetricsTest, ParseProcStatCPU) {
   // /proc/self/stat for a process running "top".
-  const char kTopStat[] = "960 (top) S 16230 960 16230 34818 960 "
+  const char kTopStat[] =
+      "960 (top) S 16230 960 16230 34818 960 "
       "4202496 471 0 0 0 "
       "12 16 0 0 "  // <- These are the goods.
       "20 0 1 0 121946157 15077376 314 18446744073709551615 4194304 "
@@ -502,7 +530,8 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
   EXPECT_EQ(12 + 16, ParseProcStatCPU(kTopStat));
 
   // cat /proc/self/stat on a random other machine I have.
-  const char kSelfStat[] = "5364 (cat) R 5354 5364 5354 34819 5364 "
+  const char kSelfStat[] =
+      "5364 (cat) R 5354 5364 5354 34819 5364 "
       "0 142 0 0 0 "
       "0 0 0 0 "  // <- No CPU, apparently.
       "16 0 1 0 1676099790 2957312 114 4294967295 134512640 134528148 "
@@ -512,7 +541,8 @@ TEST(ProcessMetricsTest, ParseProcStatCPU) {
 
   // Some weird long-running process with a weird name that I created for the
   // purposes of this test.
-  const char kWeirdNameStat[] = "26115 (Hello) You ()))  ) R 24614 26115 24614"
+  const char kWeirdNameStat[] =
+      "26115 (Hello) You ()))  ) R 24614 26115 24614"
       " 34839 26115 4218880 227 0 0 0 "
       "5186 11 0 0 "
       "20 0 1 0 36933953 4296704 90 18446744073709551615 4194304 4196116 "
@@ -581,8 +611,9 @@ bool CheckEvent(const FilePath& signal_dir, const char* signal_file) {
 
 // Busy-wait for an event to be signaled.
 void WaitForEvent(const FilePath& signal_dir, const char* signal_file) {
-  while (!CheckEvent(signal_dir, signal_file))
+  while (!CheckEvent(signal_dir, signal_file)) {
     PlatformThread::Sleep(Milliseconds(10));
+  }
 }
 
 // Subprocess to test the number of open file descriptors.
@@ -608,8 +639,9 @@ MULTIPROCESS_TEST_MAIN(ChildMain) {
   CHECK(SignalEvent(temp_path, kSignalClosed));
 
   // Wait to be terminated.
-  while (true)
+  while (true) {
     PlatformThread::Sleep(Seconds(1));
+  }
 }
 
 }  // namespace
@@ -627,11 +659,7 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
   WaitForEvent(temp_path, kSignalReady);
 
   std::unique_ptr<ProcessMetrics> metrics =
-#if BUILDFLAG(IS_MAC)
-      ProcessMetrics::CreateProcessMetrics(child.Handle(), nullptr);
-#else
-      ProcessMetrics::CreateProcessMetrics(child.Handle());
-#endif  // BUILDFLAG(IS_MAC)
+      CreateProcessMetricsForTest(child.Handle());
 
   const int fd_count = metrics->GetOpenFdCount();
   EXPECT_GE(fd_count, 0);
@@ -652,11 +680,7 @@ TEST(ProcessMetricsTest, GetChildOpenFdCount) {
 TEST(ProcessMetricsTest, GetOpenFdCount) {
   base::ProcessHandle process = base::GetCurrentProcessHandle();
   std::unique_ptr<base::ProcessMetrics> metrics =
-#if BUILDFLAG(IS_MAC)
-      ProcessMetrics::CreateProcessMetrics(process, nullptr);
-#else
-      ProcessMetrics::CreateProcessMetrics(process);
-#endif  // BUILDFLAG(IS_MAC)
+      CreateProcessMetricsForTest(process);
 
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -669,7 +693,6 @@ TEST(ProcessMetricsTest, GetOpenFdCount) {
   EXPECT_GT(new_fd_count, 0);
   EXPECT_EQ(new_fd_count, fd_count + 1);
 }
-
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -759,12 +782,12 @@ TEST(ProcessMetricsTestLinux, GetCumulativeCPUUsagePerThread) {
           return entry.first == prev_entry.first;
         });
 
-    if (prev_it != prev_thread_times.end())
+    if (prev_it != prev_thread_times.end()) {
       EXPECT_GE(entry.second, prev_it->second);
+    }
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

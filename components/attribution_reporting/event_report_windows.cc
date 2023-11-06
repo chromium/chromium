@@ -210,6 +210,18 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
 
 // static
 base::expected<EventReportWindows, SourceRegistrationError>
+EventReportWindows::ParseWindows(const base::Value::Dict& dict,
+                                 base::TimeDelta expiry,
+                                 const EventReportWindows& default_if_absent) {
+  const base::Value* value = dict.Find(kEventReportWindows);
+  if (!value) {
+    return default_if_absent;
+  }
+  return ParseWindowsJSON(*value, expiry);
+}
+
+// static
+base::expected<EventReportWindows, SourceRegistrationError>
 EventReportWindows::ParseWindowsJSON(const base::Value& v,
                                      base::TimeDelta expiry) {
   const base::Value::Dict* dict = v.GetIfDict();

@@ -142,32 +142,20 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     textColor = [UIColor colorNamed:kRedColor];
   }
 
-  GrayHighlightButton* button = nil;
-  if (IsUIButtonConfigurationEnabled()) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.contentInsets =
-        NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                                    kButtonInsetBottom, kButtonInsetTrailing);
-    NSDictionary* attributes = @{NSFontAttributeName : font};
-    NSAttributedString* title =
-        [[NSAttributedString alloc] initWithString:action.title
-                                        attributes:attributes];
-    buttonConfiguration.attributedTitle = title;
-    buttonConfiguration.baseForegroundColor = textColor;
-    button = [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
-                                            primaryAction:nil];
-  } else {
-    button = [[GrayHighlightButton alloc] init];
-    UIEdgeInsets contentEdgeInsets =
-        UIEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
-                         kButtonInsetBottom, kButtonInsetTrailing);
-    SetContentEdgeInsets(button, contentEdgeInsets);
-    button.titleLabel.font = font;
-    button.titleLabel.adjustsFontForContentSizeCategory = YES;
-    [button setTitleColor:textColor forState:UIControlStateNormal];
-    [button setTitle:action.title forState:UIControlStateNormal];
-  }
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.contentInsets =
+      NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
+                                  kButtonInsetBottom, kButtonInsetTrailing);
+  NSDictionary* attributes = @{NSFontAttributeName : font};
+  NSAttributedString* title =
+      [[NSAttributedString alloc] initWithString:action.title
+                                      attributes:attributes];
+  buttonConfiguration.attributedTitle = title;
+  buttonConfiguration.baseForegroundColor = textColor;
+  GrayHighlightButton* button =
+      [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
+                                     primaryAction:nil];
 
   button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;

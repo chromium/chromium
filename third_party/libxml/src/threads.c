@@ -579,6 +579,7 @@ xmlInitParser(void) {
 
     if (xmlParserInnerInitialized == 0) {
 #if defined(_WIN32) && \
+    !defined(LIBXML_THREAD_ALLOC_ENABLED) && \
     (!defined(LIBXML_STATIC) || defined(LIBXML_STATIC_FOR_DLL))
         if (xmlFree == free)
             atexit(xmlCleanupParser);
@@ -586,6 +587,7 @@ xmlInitParser(void) {
 
         xmlInitMemoryInternal(); /* Should come second */
         xmlInitGlobalsInternal();
+        xmlInitRandom();
         xmlInitDictInternal();
         xmlInitEncodingInternal();
 #if defined(LIBXML_XPATH_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
@@ -650,6 +652,7 @@ xmlCleanupParser(void) {
 #endif
 
     xmlCleanupDictInternal();
+    xmlCleanupRandom();
     xmlCleanupGlobalsInternal();
     /*
      * Must come last. On Windows, xmlCleanupGlobalsInternal can call
@@ -663,7 +666,9 @@ xmlCleanupParser(void) {
     xmlParserInnerInitialized = 0;
 }
 
-#if defined(HAVE_ATTRIBUTE_DESTRUCTOR) && !defined(LIBXML_STATIC) && \
+#if defined(HAVE_ATTRIBUTE_DESTRUCTOR) && \
+    !defined(LIBXML_THREAD_ALLOC_ENABLED) && \
+    !defined(LIBXML_STATIC) && \
     !defined(_WIN32)
 static void
 ATTRIBUTE_DESTRUCTOR

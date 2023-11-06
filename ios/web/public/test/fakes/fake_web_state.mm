@@ -37,9 +37,11 @@ void FakeWebState::CloseWebState() {
   is_closed_ = true;
 }
 
-FakeWebState::FakeWebState()
+FakeWebState::FakeWebState() : FakeWebState(WebStateID::NewUnique()) {}
+
+FakeWebState::FakeWebState(WebStateID unique_identifier)
     : stable_identifier_([[NSUUID UUID] UUIDString]),
-      unique_identifier_(web::WebStateID::NewUnique()) {
+      unique_identifier_(unique_identifier) {
   DCHECK(stable_identifier_.length);
   DCHECK(unique_identifier_.valid());
 }

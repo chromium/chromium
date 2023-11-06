@@ -51,9 +51,10 @@ RenderViewHost* TestRenderViewHostFactory::CreateRenderViewHost(
     CreateRenderViewHostCase create_case) {
   return new TestRenderViewHost(
       frame_tree, group, storage_partition_config,
-      TestRenderWidgetHost::Create(frame_tree, widget_delegate,
-                                   group->GetSafeRef(), widget_routing_id,
-                                   false),
+      TestRenderWidgetHost::Create(
+          frame_tree, widget_delegate,
+          RenderWidgetHostImpl::DefaultFrameSinkId(*group, routing_id),
+          group->GetSafeRef(), widget_routing_id, false),
       delegate, routing_id, main_frame_routing_id,
       std::move(main_browsing_context_state), create_case);
 }

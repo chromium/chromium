@@ -21,7 +21,8 @@
   <cr-tabs
       tab-names="[[tabNames_]]"
       tab-icons="[[tabIcons_]]"
-      selected="{{selectedTabIndex_}}">
+      selected="{{selectedTabIndex_}}"
+      on-selected-changed="onSelectedTabChanged_">
   </cr-tabs>
   <iron-pages selected="[[selectedTabIndex_]]">
     <tab-search-page></tab-search-page>

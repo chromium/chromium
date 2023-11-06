@@ -70,7 +70,6 @@ public class ShareServiceImpl implements ShareService {
     // - //third_party/blink/renderer/modules/webshare/FILE_TYPES.md
     // - //chrome/browser/webshare/share_service_impl.cc
 
-    // clang-format off
     private static final Set<String> PERMITTED_EXTENSIONS =
             Collections.unmodifiableSet(CollectionUtil.newHashSet(
                     "avif", // image/avif
@@ -147,7 +146,6 @@ public class ShareServiceImpl implements ShareService {
                      "video/ogg",
                      "video/webm"
             ));
-    // clang-format on
 
     private static final TaskRunner TASK_RUNNER =
             PostTask.createSequencedTaskRunner(TaskTraits.USER_BLOCKING);

@@ -613,7 +613,7 @@ void APIBinding::HandleCall(const std::string& name,
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> argument_list = arguments->GetAll();
+  v8::LocalVector<v8::Value> argument_list = arguments->GetAll();
 
   bool invalid_invocation = false;
   v8::Local<v8::Function> custom_callback;

@@ -52,7 +52,7 @@ bool IsStyleDirective(CSPDirectiveName directive_type) {
 
 }  // namespace
 
-bool CSPSourceListAllows(
+CSPCheckResult CSPSourceListAllows(
     const network::mojom::blink::CSPSourceList& source_list,
     const network::mojom::blink::CSPSource& self_source,
     const KURL& url,
@@ -63,21 +63,30 @@ bool CSPSourceListAllows(
   // schemes, including custom schemes, must be explicitly listed in a source
   // list.
   if (source_list.allow_star) {
-    if (url.ProtocolIsInHTTPFamily() || url.ProtocolIs("ftp") ||
-        url.ProtocolIs("ws") || url.ProtocolIs("wss") ||
+    if (url.ProtocolIsInHTTPFamily() ||
         (!url.Protocol().empty() &&
-         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme)))
-      return true;
+         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme))) {
+      return CSPCheckResult::Allowed();
+    }
 
-    return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
-                                redirect_status);
+    if (HasSourceMatchInList(source_list.sources, self_source.scheme, url,
+                             redirect_status)) {
+      return CSPCheckResult::Allowed();
+    }
+
+    if (url.ProtocolIs("ws") || url.ProtocolIs("wss")) {
+      return CSPCheckResult::AllowedOnlyIfWildcardMatchesWs();
+    }
+    if (url.ProtocolIs("ftp")) {
+      return CSPCheckResult::AllowedOnlyIfWildcardMatchesFtp();
+    }
   }
   if (source_list.allow_self && CSPSourceMatchesAsSelf(self_source, url)) {
-    return true;
+    return CSPCheckResult::Allowed();
   }
 
-  return HasSourceMatchInList(source_list.sources, self_source.scheme, url,
-                              redirect_status);
+  return CSPCheckResult(HasSourceMatchInList(
+      source_list.sources, self_source.scheme, url, redirect_status));
 }
 
 bool CSPSourceListAllowNonce(

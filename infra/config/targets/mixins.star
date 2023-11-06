@@ -47,6 +47,27 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "12-google-atd-x64-emulator",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_31_google_atd_x64.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_31_google_atd_x64",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_31_google_atd_x64",
+                path = ".android_emulator/android_31_google_atd_x64",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "12-x64-emulator",
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
@@ -62,6 +83,27 @@ targets.mixin(
             swarming.cache(
                 name = "generic_android31",
                 path = ".android_emulator/generic_android31",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
+    name = "12l-google-atd-x64-emulator",
+    args = [
+        "--avd-config=../../tools/android/avd/proto/android_32_google_atd_x64_foldable.textpb",
+    ],
+    swarming = targets.swarming(
+        # soft affinity so that bots with caches will be picked first
+        optional_dimensions = {
+            60: {
+                "caches": "android_32_google_atd_x64_foldable",
+            },
+        },
+        named_caches = [
+            swarming.cache(
+                name = "android_32_google_atd_x64_foldable",
+                path = ".android_emulator/android_32_google_atd_x64_foldable",
             ),
         ],
     ),
@@ -89,21 +131,21 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "12l-x64-emulator-experimental",
+    name = "13-google-atd-x64-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android32_foldable_experimental.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_33_google_atd_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android32_foldable_experimental",
+                "caches": "android_33_google_atd_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android32_foldable_experimental",
-                path = ".android_emulator/generic_android32_foldable_experimental",
+                name = "android_33_google_atd_x64",
+                path = ".android_emulator/android_33_google_atd_x64",
             ),
         ],
     ),
@@ -131,21 +173,21 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "13-x64-emulator-experimental",
+    name = "14-x64-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android33_experimental.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android33_experimental",
+                "caches": "android_34_google_apis_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android33_experimental",
-                path = ".android_emulator/generic_android33_experimental",
+                name = "android_34_google_apis_x64",
+                path = ".android_emulator/android_34_google_apis_x64",
             ),
         ],
     ),
@@ -627,6 +669,18 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "ios_runtime_cache_17_2",
+    swarming = targets.swarming(
+        named_caches = [
+            swarming.cache(
+                name = "runtime_ios_17_2",
+                path = "Runtime-ios-17.2",
+            ),
+        ],
+    ),
+)
+
+targets.mixin(
     name = "ioswpt-chromium-swarming-pool",
     swarming = targets.swarming(
         dimensions = {
@@ -641,7 +695,7 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "junit-swarming",
+    name = "junit-swarming-emulator",
     swarming = targets.swarming(
         dimensions = {
             "cores": "8",
@@ -771,6 +825,13 @@ targets.mixin(
             "pool": "chromium.tests.gpu",
         },
     ),
+)
+
+targets.mixin(
+    name = "linux_vulkan",
+    linux_args = [
+        "--extra-browser-args=--enable-features=Vulkan",
+    ],
 )
 
 targets.mixin(
@@ -1071,7 +1132,7 @@ targets.mixin(
             targets.cipd_package(
                 package = "infra/tools/mac_toolchain/${platform}",
                 location = ".",
-                revision = "git_revision:59ddedfe3849abf560cbe0b41bb8e431041cd2bb",
+                revision = "git_revision:32d81d877ee07af07bf03b7f70ce597e323b80ce",
             ),
         ],
     ),
@@ -1427,9 +1488,19 @@ targets.mixin(
         "--use-webgpu-power-preference=default-high-performance",
         "$$MAGIC_SUBSTITUTION_GPUParallelJobs",
     ],
-    linux_args = [
-        "--extra-browser-args=--enable-features=Vulkan",
-    ],
+)
+
+targets.mixin(
+    name = "webview_cts_archive",
+    swarming = targets.swarming(
+        cipd_packages = [
+            targets.cipd_package(
+                package = "chromium/android_webview/tools/cts_archive",
+                location = "android_webview/tools/cts_archive",
+                revision = "akIIr4yAFQwo3j5WYo2PQvy6z8XI51UiwiikPYzI4tUC",
+            ),
+        ],
+    ),
 )
 
 targets.mixin(
@@ -1564,12 +1635,12 @@ targets.mixin(
     name = "xcode_15_beta",
     args = [
         "--xcode-build-version",
-        "15c5028h",
+        "15c5042i",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_15c5028h",
+                name = "xcode_ios_15c5042i",
                 path = "Xcode.app",
             ),
         ],

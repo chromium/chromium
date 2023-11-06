@@ -7,9 +7,9 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_box_fragment_painter.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -31,8 +31,8 @@ class NGInlineBoxFragmentPainterBase {
 
  protected:
   NGInlineBoxFragmentPainterBase(const NGPhysicalFragment& inline_box_fragment,
-                                 const NGInlineCursor* inline_box_cursor,
-                                 const NGFragmentItem& inline_box_item,
+                                 const InlineCursor* inline_box_cursor,
+                                 const FragmentItem& inline_box_item,
                                  const LayoutObject& layout_object,
                                  const ComputedStyle& style,
                                  const ComputedStyle& line_style,
@@ -56,10 +56,10 @@ class NGInlineBoxFragmentPainterBase {
 #endif
   }
 
-  // Constructor for |NGFragmentItem|.
+  // Constructor for |FragmentItem|.
   NGInlineBoxFragmentPainterBase(
-      const NGInlineCursor& inline_box_cursor,
-      const NGFragmentItem& inline_box_item,
+      const InlineCursor& inline_box_cursor,
+      const FragmentItem& inline_box_item,
       const NGPhysicalBoxFragment& inline_box_fragment,
       const LayoutObject& layout_object,
       const ComputedStyle& style,
@@ -147,8 +147,8 @@ class NGInlineBoxFragmentPainterBase {
   const ComputedStyle& line_style_;
 
   const NGPhysicalFragment& inline_box_fragment_;
-  const NGFragmentItem& inline_box_item_;
-  const NGInlineCursor* inline_box_cursor_ = nullptr;
+  const FragmentItem& inline_box_item_;
+  const InlineCursor* inline_box_cursor_ = nullptr;
   NGInlinePaintContext* inline_context_ = nullptr;
 };
 
@@ -158,9 +158,9 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
   STACK_ALLOCATED();
 
  public:
-  // Constructor for |NGFragmentItem|.
-  NGInlineBoxFragmentPainter(const NGInlineCursor& inline_box_cursor,
-                             const NGFragmentItem& inline_box_item,
+  // Constructor for |FragmentItem|.
+  NGInlineBoxFragmentPainter(const InlineCursor& inline_box_cursor,
+                             const FragmentItem& inline_box_item,
                              const NGPhysicalBoxFragment& inline_box_fragment,
                              NGInlinePaintContext* inline_context)
       : NGInlineBoxFragmentPainterBase(inline_box_cursor,
@@ -172,8 +172,8 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
                                        inline_context) {
     CheckValid();
   }
-  NGInlineBoxFragmentPainter(const NGInlineCursor& inline_box_cursor,
-                             const NGFragmentItem& inline_box_item,
+  NGInlineBoxFragmentPainter(const InlineCursor& inline_box_cursor,
+                             const FragmentItem& inline_box_item,
                              NGInlinePaintContext* inline_context)
       : NGInlineBoxFragmentPainter(inline_box_cursor,
                                    inline_box_item,
@@ -184,7 +184,15 @@ class NGInlineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
   void Paint(const PaintInfo&, const PhysicalOffset& paint_offset);
 
+  // Paint all fragments generated for the inline within the given block
+  // container, specified as a fragment data index. The index is relative to the
+  // first block fragment where the inline occurs.
+  //
+  // TODO(crbug.com/1478119): If looking up a FragmentData were O(1) instead of
+  // O(n), there should be no need to pass both FragmentData and the index.
   static void PaintAllFragments(const LayoutInline& layout_inline,
+                                const FragmentData& fragment_data,
+                                wtf_size_t fragment_data_idx,
                                 const PaintInfo&);
 
  private:
@@ -211,7 +219,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
  public:
   NGLineBoxFragmentPainter(const NGPhysicalFragment& line_box_fragment,
-                           const NGFragmentItem& line_box_item,
+                           const FragmentItem& line_box_item,
                            const NGPhysicalBoxFragment& block_fragment)
       : NGLineBoxFragmentPainter(line_box_fragment,
                                  line_box_item,
@@ -231,7 +239,7 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
 
  private:
   NGLineBoxFragmentPainter(const NGPhysicalFragment& line_box_fragment,
-                           const NGFragmentItem& line_box_item,
+                           const FragmentItem& line_box_item,
                            const NGPhysicalBoxFragment& block_fragment,
                            const LayoutObject& layout_block_flow)
       : NGInlineBoxFragmentPainterBase(
@@ -253,8 +261,8 @@ class NGLineBoxFragmentPainter : public NGInlineBoxFragmentPainterBase {
     DCHECK(layout_block_flow.IsLayoutNGObject());
   }
 
-  const NGPhysicalLineBoxFragment& PhysicalFragment() const {
-    return static_cast<const NGPhysicalLineBoxFragment&>(inline_box_fragment_);
+  const PhysicalLineBoxFragment& PhysicalFragment() const {
+    return static_cast<const PhysicalLineBoxFragment&>(inline_box_fragment_);
   }
 
   PhysicalBoxSides SidesToInclude() const final { return PhysicalBoxSides(); }

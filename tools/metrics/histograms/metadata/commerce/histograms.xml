@@ -259,7 +259,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.Eligible" enum="Boolean"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -277,7 +277,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPNavigation.{FeatureName}.IneligibilityReason"
-    enum="ShoppingFeatureIneligibilityReason" expires_after="2024-02-20">
+    enum="ShoppingFeatureIneligibilityReason" expires_after="2024-04-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -294,7 +294,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PDPStateOnNavigation" enum="ShoppingPDPState"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -313,8 +313,8 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     Records if and how a page has been determined to be a product details page
     after the page has finished loading. This histogram includes pages that are
     most likely product pages based on metadata extracted from the head section
-    of the page (via javascript). If the page navigates prior to the javascript
-    being executed, this metric is not recorded.
+    of the page (via local extraction). If the page navigates prior to the local
+    extraction being executed, this metric is not recorded.
   </summary>
 </histogram>
 
@@ -395,7 +395,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelBlocked" enum="Boolean"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -407,7 +407,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.NotificationChannelCreated" enum="Boolean"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -419,7 +419,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrop.SystemNotificationEnabled" enum="Boolean"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -553,7 +553,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.EmailNotificationsEnabled"
-    enum="PriceNotificationEmailState" expires_after="2024-02-04">
+    enum="PriceNotificationEmailState" expires_after="2024-04-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>
@@ -648,10 +648,11 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
-    Records whick type of fallback data (javascript on-page heuristics) was used
-    when filling in gaps from Optimization Guide. This does not track whether
-    the page was actually bookmarked, it only indicates what information might
-    be missing or how often we get supplementary images when on a product page.
+    Records whick type of fallback data (local extraction by on-page heuristics)
+    was used when filling in gaps from Optimization Guide. This does not track
+    whether the page was actually bookmarked, it only indicates what information
+    might be missing or how often we get supplementary images when on a product
+    page.
   </summary>
 </histogram>
 
@@ -660,9 +661,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
-    Records whether fallback data (javascript on-page heuristics) was used to
-    supplement the data provided by Optimization Guide. This does not track
-    whether the page was actually bookmarked.
+    Records whether fallback data (local extraction by on-page heuristics) was
+    used to supplement the data provided by Optimization Guide. This does not
+    track whether the page was actually bookmarked.
   </summary>
 </histogram>
 
@@ -687,13 +688,13 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
-    Records the amount of time spent executing the on-page javascript for
-    extracting product info. This metric will only be recorded if the javascript
-    executes successfully and the page that ran for is still in an active tab.
-    This metric will help us identify possible performance regressions as we
-    improve the extraction heuristics. This metric is recorded from the browser
-    side which means it includes compiling and the other prep work done before
-    the script is actually run on the page.
+    Records the amount of time spent executing the on-page local extraction for
+    extracting product info. This metric will only be recorded if the on-page
+    local extraction executes successfully and the page that ran for is still in
+    an active tab. This metric will help us identify possible performance
+    regressions as we improve the extraction heuristics. This metric is recorded
+    from the browser side which means it includes compiling and the other prep
+    work done before the script is actually run on the page.
   </summary>
 </histogram>
 

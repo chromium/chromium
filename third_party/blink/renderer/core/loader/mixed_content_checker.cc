@@ -34,6 +34,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -535,12 +536,19 @@ bool MixedContentChecker::ShouldBlockFetch(
   };
 
   // Skip mixed content check for private and local targets.
+  // `target_address_space` here is private/local only when resource request
+  // has explicitly set `targetAddressSpace` fetch option.
   // TODO(lyf): check the IP address space for initiator, only skip when the
   // initiator is more public.
-  if (RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled()) {
+  if (base::FeatureList::IsEnabled(
+          network::features::kPrivateNetworkAccessPermissionPrompt) &&
+      RuntimeEnabledFeatures::PrivateNetworkAccessPermissionPromptEnabled(
+          frame->DomWindow())) {
     if (target_address_space ==
             network::mojom::blink::IPAddressSpace::kPrivate ||
         target_address_space == network::mojom::blink::IPAddressSpace::kLocal) {
+      UseCounter::Count(frame->GetDocument(),
+                        WebFeature::kPrivateNetworkAccessPermissionPrompt);
       allowed = true;
     }
   }

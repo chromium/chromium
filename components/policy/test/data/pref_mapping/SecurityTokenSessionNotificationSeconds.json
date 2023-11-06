@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SecurityTokenSessionNotificationSeconds": 10
+        },
+        "prefs": {
+          "security_token_session_notification_seconds": {
+            "location": "local_state",
+            "value": 10
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "security_token_session_notification_seconds": {
+            "default_value": 0,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -109,18 +109,18 @@ suite('SpeedPage', function() {
   });
 
   test('testPreloadPagesStandardExpand', function() {
-    // By default, the preloadingStandard option will be selected and expanded.
-    assertTrue(speedPage.$.preloadingStandard.expanded);
-
-    speedPage.$.preloadingStandard.$.expandButton.click();
-    flush();
-
+    // By default, the preloadingStandard option will be selected and collapsed.
     assertFalse(speedPage.$.preloadingStandard.expanded);
 
     speedPage.$.preloadingStandard.$.expandButton.click();
     flush();
 
     assertTrue(speedPage.$.preloadingStandard.expanded);
+
+    speedPage.$.preloadingStandard.$.expandButton.click();
+    flush();
+
+    assertFalse(speedPage.$.preloadingStandard.expanded);
   });
 
   test('testPreloadPagesExtendedExpand', function() {

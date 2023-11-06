@@ -267,7 +267,7 @@ class LookalikeUrlNavigationThrottleBrowserTest
     test_helper_ =
         std::make_unique<LookalikeTestHelper>(test_ukm_recorder_.get());
 
-    const base::Time kNow = base::Time::FromDoubleT(1000);
+    const base::Time kNow = base::Time::FromSecondsSinceUnixEpoch(1000);
     test_clock_.SetNow(kNow);
 
     LookalikeUrlService* lookalike_service =
@@ -1690,9 +1690,9 @@ class LookalikeUrlNavigationThrottleSignedExchangeBrowserTest
     net::CertVerifyResult dummy_result;
     dummy_result.verified_cert = original_cert;
     dummy_result.cert_status = net::OK;
-    dummy_result.ocsp_result.response_status = net::OCSPVerifyResult::PROVIDED;
+    dummy_result.ocsp_result.response_status = bssl::OCSPVerifyResult::PROVIDED;
     dummy_result.ocsp_result.revocation_status =
-        net::OCSPRevocationStatus::GOOD;
+        bssl::OCSPRevocationStatus::GOOD;
     mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
         original_cert, "google-com.example.org", dummy_result, net::OK);
   }

@@ -1,0 +1,2 @@
+Tests maximized browser window size.
+Success

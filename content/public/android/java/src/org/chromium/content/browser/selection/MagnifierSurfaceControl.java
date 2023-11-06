@@ -13,8 +13,9 @@ import android.widget.Magnifier;
 
 import androidx.annotation.RequiresApi;
 
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 
 /**

@@ -46,6 +46,7 @@
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.h"
@@ -1579,11 +1580,8 @@ TEST_P(AttributionStorageSqlTest, ReportTablesStoreDestinationOrigin) {
 TEST_P(AttributionStorageSqlTest, FakeReportUsesSourceOriginAsContext) {
   OpenDatabase();
 
-  delegate()->set_randomized_response(
-      std::vector<AttributionStorageDelegate::FakeReport>{
-          {.trigger_data = 1,
-           .trigger_time = base::Time::Now() + base::Microseconds(1),
-           .report_time = base::Time::Now() + base::Microseconds(2)}});
+  delegate()->set_randomized_response(std::vector<FakeEventLevelReport>{
+      {.trigger_data = 1, .window_index = 0}});
 
   storage()->StoreSource(
       SourceBuilder()
@@ -1680,16 +1678,30 @@ TEST_P(AttributionStorageSqlTest,
     sql::Database raw_db;
     ASSERT_TRUE(raw_db.Open(db_path()));
 
-    static constexpr char kUpdateSql[] =
-        "UPDATE sources SET read_only_source_data=?";
-    sql::Statement statement(raw_db.GetUniqueStatement(kUpdateSql));
-    // `randomized_response_rate` field will not be set in the serialized proto.
-    statement.BindBlob(
-        0, SerializeReadOnlySourceData(
-               *attribution_reporting::EventReportWindows::Create(
-                   base::Seconds(0), {base::Days(1)}),
-               /*max_event_level_reports=*/3, /*randomized_response_rate=*/-1));
-    ASSERT_TRUE(statement.Run());
+    static constexpr char kGetSql[] =
+        "SELECT source_id,read_only_source_data FROM sources";
+    sql::Statement get_statement(raw_db.GetUniqueStatement(kGetSql));
+
+    static constexpr char kSetSql[] =
+        "UPDATE sources SET read_only_source_data=? WHERE source_id=?";
+    sql::Statement set_statement(raw_db.GetUniqueStatement(kSetSql));
+
+    while (get_statement.Step()) {
+      int64_t id = get_statement.ColumnInt64(0);
+
+      std::string blob;
+      ASSERT_TRUE(get_statement.ColumnBlobAsString(1, &blob));
+
+      proto::AttributionReadOnlySourceData msg;
+      ASSERT_TRUE(msg.ParseFromString(blob));
+
+      msg.clear_randomized_response_rate();
+
+      set_statement.Reset(/*clear_bound_vars=*/true);
+      set_statement.BindBlob(0, msg.SerializeAsString());
+      set_statement.BindInt64(1, id);
+      ASSERT_TRUE(set_statement.Run());
+    }
   }
 
   OpenDatabase();
@@ -1697,6 +1709,16 @@ TEST_P(AttributionStorageSqlTest,
   delegate()->set_randomized_response_rate(0.2);
   EXPECT_THAT(storage()->GetActiveSources(),
               ElementsAre(RandomizedResponseRateIs(0.2)));
+}
+
+// Having the missing field default to the correct value allows us to avoid a
+// DB migration to populate the field.
+TEST_P(AttributionStorageSqlTest,
+       MissingTriggerDataMatchingProtoField_DefaultsToModulus) {
+  proto::AttributionReadOnlySourceData msg;
+  ASSERT_FALSE(msg.has_trigger_data_matching());
+  EXPECT_EQ(msg.trigger_data_matching(),
+            proto::AttributionReadOnlySourceData::MODULUS);
 }
 
 TEST_P(AttributionStorageSqlTest, InvalidReportingOrigin_FailsDeserializaiton) {
@@ -1828,8 +1850,15 @@ TEST_P(AttributionStorageSqlTest,
 
     histograms.ExpectUniqueSample("Conversions.ValidReportsInDatabase",
                                   test_case.valid, 1);
-    histograms.ExpectUniqueSample("Conversions.CorruptReportsInDatabase",
-                                  !test_case.valid, 1);
+
+    if (!test_case.valid) {
+      histograms.ExpectBucketCount(
+          "Conversions.CorruptReportsInDatabase2",
+          AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
+      histograms.ExpectBucketCount(
+          "Conversions.CorruptReportsInDatabase2",
+          AttributionStorageSql::ReportCorruptionStatus::kInvalidMetadata, 1);
+    }
   }
 }
 
@@ -2003,8 +2032,14 @@ TEST_P(AttributionStorageSqlTest,
 
     histograms.ExpectUniqueSample("Conversions.ValidReportsInDatabase",
                                   test_case.valid, 1);
-    histograms.ExpectUniqueSample("Conversions.CorruptReportsInDatabase",
-                                  !test_case.valid, 1);
+    if (!test_case.valid) {
+      histograms.ExpectBucketCount(
+          "Conversions.CorruptReportsInDatabase2",
+          AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
+      histograms.ExpectBucketCount(
+          "Conversions.CorruptReportsInDatabase2",
+          AttributionStorageSql::ReportCorruptionStatus::kInvalidMetadata, 1);
+    }
   }
 }
 
@@ -2089,6 +2124,277 @@ TEST_P(AttributionStorageSqlTest,
         storage()->GetAttributionReports(/*max_report_time=*/base::Time::Max()),
         SizeIs(test_case.valid))
         << test_case.desc;
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+  }
+}
+
+TEST_P(AttributionStorageSqlTest, InvalidStoredFields_ReportMarkedAsCorrupted) {
+  const struct {
+    const char* desc;
+    bool source_id_mismatch = false;
+    AttributionReportRecord record;
+    AttributionStorageSql::ReportCorruptionStatus status;
+  } kTestCases[] = {
+      {
+          .desc = "invalid_failed_send_attempts",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .failed_send_attempts = -1,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kInvalidFailedSendAttempts,
+      },
+      {
+          .desc = "invalid_external_report_id",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .external_report_id = "0",
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kInvalidExternalReportID,
+      },
+      {
+          .desc = "invalid_context_origin",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .context_origin = "-1",
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kInvalidContextOrigin,
+      },
+      {
+          .desc = "invalid_reporting_origin",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .reporting_origin = "-1",
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kInvalidReportingOrigin,
+      },
+      {
+          .desc = "reporting_origin_mismatch",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .reporting_origin = "https://reporter2.test/",
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kReportingOriginMismatch,
+      },
+      {
+          .desc = "source_data_missing_event_level",
+          .source_id_mismatch = true,
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .source_id = 0,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .reporting_origin = "https://reporter2.test/",
+                  .report_type =
+                      static_cast<int>(AttributionReport::Type::kEventLevel),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kSourceDataMissingEventLevel,
+      },
+      {
+          .desc = "source_data_missing_aggregatable",
+          .source_id_mismatch = true,
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .source_id = 0,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .reporting_origin = "https://reporter2.test/",
+                  .report_type = static_cast<int>(
+                      AttributionReport::Type::kAggregatableAttribution),
+                  .metadata = SerializeReportMetadata(
+                      AttributionEventLevelMetadataRecord{
+                          .trigger_data = 1,
+                          .priority = 2,
+                      }),
+              },
+          .status = AttributionStorageSql::ReportCorruptionStatus::
+              kSourceDataMissingAggregatable,
+      },
+  };
+
+  for (auto test_case : kTestCases) {
+    OpenDatabase();
+    storage()->StoreSource(SourceBuilder()
+                               .SetReportingOrigin(*SuitableOrigin::Deserialize(
+                                   kDefaultReportOrigin))
+                               .Build());
+    auto sources = storage()->GetActiveSources();
+    if (!test_case.source_id_mismatch) {
+      test_case.record.source_id = *sources.front().source_id();
+    }
+    CloseDatabase();
+
+    StoreAttributionReport(test_case.record);
+
+    base::HistogramTester histograms;
+    OpenDatabase();
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    CloseDatabase();
+
+    histograms.ExpectBucketCount("Conversions.CorruptReportsInDatabase2",
+                                 test_case.status, 1);
+    histograms.ExpectBucketCount(
+        "Conversions.CorruptReportsInDatabase2",
+        AttributionStorageSql::ReportCorruptionStatus::kAnyFieldCorrupted, 1);
+    histograms.ExpectTotalCount("Conversions.CorruptReportsInDatabase2", 2);
+  }
+}
+
+TEST_P(AttributionStorageSqlTest, SourceDebugKeyAndDebugCookieSetCombination) {
+  const struct {
+    const char* desc;
+    absl::optional<bool> debug_cookie_set;
+    absl::optional<uint64_t> debug_key;
+    absl::optional<bool> expected_debug_cookie_set;
+  } kTestCases[] = {
+      {
+          .desc = "debug cookie missing, debug key set",
+          .debug_cookie_set = absl::nullopt,
+          .debug_key = 123,
+          .expected_debug_cookie_set = true,
+      },
+      {
+          .desc = "debug cookie missing, debug key not set",
+          .debug_cookie_set = absl::nullopt,
+          .debug_key = absl::nullopt,
+          .expected_debug_cookie_set = false,
+      },
+      {
+          .desc = "debug cookie not set, debug key set",
+          .debug_cookie_set = false,
+          .debug_key = 123,
+          .expected_debug_cookie_set = absl::nullopt,
+      },
+      {
+          .desc = "debug cookie not set, debug key not set",
+          .debug_cookie_set = false,
+          .debug_key = absl::nullopt,
+          .expected_debug_cookie_set = false,
+      },
+      {
+          .desc = "debug cookie set, debug key set",
+          .debug_cookie_set = true,
+          .debug_key = 123,
+          .expected_debug_cookie_set = true,
+      },
+      {
+          .desc = "debug cookie set, debug key not set",
+          .debug_cookie_set = true,
+          .debug_key = absl::nullopt,
+          .expected_debug_cookie_set = true,
+      },
+  };
+
+  constexpr char kReadSql[] = "SELECT read_only_source_data FROM sources";
+  constexpr char kUpdateSql[] = "UPDATE sources SET read_only_source_data=?";
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    OpenDatabase();
+
+    storage()->StoreSource(
+        SourceBuilder().SetDebugKey(test_case.debug_key).Build(),
+        /*debug_cookie_set=*/true);
+    ASSERT_THAT(storage()->GetActiveSources(), SizeIs(1));
+
+    CloseDatabase();
+
+    {
+      sql::Database raw_db;
+      ASSERT_TRUE(raw_db.Open(db_path()));
+
+      sql::Statement read_statement(raw_db.GetUniqueStatement(kReadSql));
+      ASSERT_TRUE(read_statement.Step());
+      absl::optional<proto::AttributionReadOnlySourceData>
+          read_only_source_data_msg =
+              DeserializeReadOnlySourceDataAsProto(read_statement, 0);
+      ASSERT_TRUE(read_only_source_data_msg);
+
+      if (test_case.debug_cookie_set.has_value()) {
+        read_only_source_data_msg->set_debug_cookie_set(
+            *test_case.debug_cookie_set);
+      } else {
+        read_only_source_data_msg->clear_debug_cookie_set();
+      }
+
+      sql::Statement update_statement(raw_db.GetUniqueStatement(kUpdateSql));
+      update_statement.BindString(
+          0, read_only_source_data_msg->SerializeAsString());
+      ASSERT_TRUE(update_statement.Run());
+    }
+
+    OpenDatabase();
+    auto sources = storage()->GetActiveSources();
+    if (test_case.expected_debug_cookie_set.has_value()) {
+      ASSERT_THAT(sources, ElementsAre(SourceDebugCookieSetIs(
+                               *test_case.expected_debug_cookie_set)));
+    } else {
+      ASSERT_THAT(sources, IsEmpty());
+    }
     storage()->ClearData(base::Time::Min(), base::Time::Max(),
                          base::NullCallback());
     CloseDatabase();

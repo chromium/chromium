@@ -75,6 +75,8 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
 
   int GetNextInstanceID();
 
+  base::WeakPtr<GuestViewManager> AsWeakPtr();
+
   using GuestViewCreateFunction =
       base::RepeatingCallback<std::unique_ptr<GuestViewBase>(
           content::RenderFrameHost* owner_rfh)>;
@@ -133,6 +135,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   friend class GuestViewBase;
   friend class GuestViewEvent;
   friend class GuestViewMessageHandler;
+  friend class ViewHandle;
 
   class EmbedderRenderProcessHostObserver;
 
@@ -278,8 +281,6 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   using CallbacksForEachEmbedderID = std::map<int, CallbacksForEachViewID>;
   CallbacksForEachEmbedderID view_destruction_callback_map_;
 
-  // This is used to ensure that an EmbedderRenderProcessHostObserver will not
-  // call into this GuestViewManager after it has been destroyed.
   base::WeakPtrFactory<GuestViewManager> weak_ptr_factory_{this};
 };
 

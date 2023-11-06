@@ -64,6 +64,7 @@
 #include <iterator>
 #include <string>
 
+#include "absl/base/attributes.h"
 #include "absl/base/const_init.h"
 #include "absl/base/internal/identity.h"
 #include "absl/base/internal/low_level_alloc.h"
@@ -536,6 +537,7 @@ class ABSL_LOCKABLE Mutex {
   void Block(base_internal::PerThreadSynch* s);
   // Wake a thread; return successor.
   base_internal::PerThreadSynch* Wakeup(base_internal::PerThreadSynch* w);
+  void Dtor();
 
   friend class CondVar;   // for access to Trans()/Fer().
   void Trans(MuHow how);  // used for CondVar->Mutex transfer
@@ -909,7 +911,6 @@ class CondVar {
   // A `CondVar` allocated on the heap or on the stack can use the this
   // constructor.
   CondVar();
-  ~CondVar();
 
   // CondVar::Wait()
   //
@@ -1060,6 +1061,21 @@ inline Mutex::Mutex() : mu_(0) {
 }
 
 inline constexpr Mutex::Mutex(absl::ConstInitType) : mu_(0) {}
+
+#if !defined(__APPLE__) && !defined(ABSL_BUILD_DLL)
+ABSL_ATTRIBUTE_ALWAYS_INLINE
+inline Mutex::~Mutex() { Dtor(); }
+#endif
+
+#if defined(NDEBUG) && !defined(ABSL_HAVE_THREAD_SANITIZER)
+// Use default (empty) destructor in release build for performance reasons.
+// We need to mark both Dtor and ~Mutex as always inline for inconsistent
+// builds that use both NDEBUG and !NDEBUG with dynamic libraries. In these
+// cases we want the empty functions to dissolve entirely rather than being
+// exported from dynamic libraries and potentially override the non-empty ones.
+ABSL_ATTRIBUTE_ALWAYS_INLINE
+inline void Mutex::Dtor() {}
+#endif
 
 inline CondVar::CondVar() : cv_(0) {}
 

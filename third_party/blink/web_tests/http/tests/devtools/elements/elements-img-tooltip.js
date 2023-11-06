@@ -5,9 +5,10 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Components from 'devtools/ui/legacy/components/utils/utils.js';
+
 (async function() {
   TestRunner.addResult(`Tests the tooltip for the image on hover.\n`);
-  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('elements');
   const imgURL = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANcAAACuCAIAAAAqMg/rAAAAAXNSR0IArs4c6QAAAU9JREFUeNrt0jERAAAIxDDAv+dHAxNLIqHXTlLwaiTAheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSFEuBCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLoSDBZXqBFnkRyeqAAAAAElFTkSuQmCC`;
   await TestRunner.loadHTML(`
@@ -21,9 +22,9 @@ import {ElementsTestRunner} from 'elements_test_runner';
   const nodeWithBorder = await ElementsTestRunner.nodeWithIdPromise('image-bordered');
   const nodeWithBoxSizing = await ElementsTestRunner.nodeWithIdPromise('image-box-size');
   const treeOutline = ElementsTestRunner.firstElementsTreeOutline();
-  dumpDimensions(await Components.ImagePreview.loadDimensionsForNode(node));
-  dumpDimensions(await Components.ImagePreview.loadDimensionsForNode(nodeWithBorder));
-  dumpDimensions(await Components.ImagePreview.loadDimensionsForNode(nodeWithBoxSizing));
+  dumpDimensions(await Components.ImagePreview.ImagePreview.loadDimensionsForNode(node));
+  dumpDimensions(await Components.ImagePreview.ImagePreview.loadDimensionsForNode(nodeWithBorder));
+  dumpDimensions(await Components.ImagePreview.ImagePreview.loadDimensionsForNode(nodeWithBoxSizing));
 
   TestRunner.completeTest();
 

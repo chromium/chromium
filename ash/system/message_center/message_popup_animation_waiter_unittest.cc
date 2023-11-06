@@ -5,7 +5,7 @@
 #include "ash/system/message_center/message_popup_animation_waiter.h"
 
 #include "ash/system/message_center/message_center_test_util.h"
-#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -20,7 +20,7 @@ TEST_F(MessagePopupAnimationWaiterTest, Basic) {
   message_center::MessageCenter::Get()->AddNotification(
       CreateSimpleNotification(/*id=*/"id"));
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 }
 
@@ -28,7 +28,7 @@ TEST_F(MessagePopupAnimationWaiterTest, Basic) {
 // popup collection.
 TEST_F(MessagePopupAnimationWaiterTest, NoOperate) {
   MessagePopupAnimationWaiter(
-      GetPrimaryUnifiedSystemTray()->GetMessagePopupCollection())
+      GetPrimaryNotificationCenterTray()->popup_collection())
       .Wait();
 }
 

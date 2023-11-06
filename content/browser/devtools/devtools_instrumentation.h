@@ -26,12 +26,9 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
-#include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
-#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
 class GURL;
 
@@ -72,6 +69,7 @@ class ServiceWorkerContextWrapper;
 class SignedExchangeEnvelope;
 class StoragePartition;
 class WebContents;
+struct PrerenderMismatchedHeaders;
 
 struct SignedExchangeError;
 
@@ -243,7 +241,8 @@ void DidUpdatePrerenderStatus(
     absl::optional<blink::mojom::SpeculationTargetHint> target_hint,
     PreloadingTriggeringOutcome status,
     absl::optional<PrerenderFinalStatus> prerender_status,
-    absl::optional<std::string> disallowed_mojo_interface);
+    absl::optional<std::string> disallowed_mojo_interface,
+    absl::optional<const PrerenderMismatchedHeaders*> mismatched_headers);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,

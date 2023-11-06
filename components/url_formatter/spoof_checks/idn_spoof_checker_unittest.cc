@@ -1103,7 +1103,7 @@ const IDNTestCase kIdnCases[] = {
 };
 
 namespace test {
-#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
+#include "components/url_formatter/spoof_checks/top_domains/idn_test_domains-trie-inc.cc"
 }
 
 bool IsPunycode(const std::u16string& s) {

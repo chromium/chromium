@@ -61,10 +61,6 @@ class WebUIMochaBrowserTest : public InProcessBrowserTest {
   // involve the WebContents, before the Mocha test runs.
   virtual void OnWebContentsAvailable(content::WebContents* web_contents);
 
-  // Hook for subclasses that want to run the Mocha test on a different set of
-  // WebContents than the WebContents of the test tab.
-  virtual void SubstituteWebContents(content::WebContents** out_new_contents);
-
   // Gets the WebContents instance to set up the chrome://webui-test data
   // source for. Defaults to chrome_test_utils::GetActiveWebContents(this);
   virtual content::WebContents* GetWebContentsForSetup();

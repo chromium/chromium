@@ -1,20 +1,25 @@
 This is a testharness.js-based test.
-PASS Basic load of stylesheet
-PASS Attempted load of nonexistent stylesheet
-PASS Import of stylesheet
-PASS Import of nonexistent stylesheet
-PASS Import of import of stylesheet
-FAIL Import of import of nonexistent stylesheet assert_unreached: load fired when error expected Reached unreachable code
-FAIL Load of non-CSS stylesheet assert_unreached: load fired when error expected Reached unreachable code
-FAIL Import of non-CSS stylesheet assert_unreached: load fired when error expected Reached unreachable code
-FAIL Import of import of non-CSS stylesheet assert_unreached: load fired when error expected Reached unreachable code
-PASS Load of http:// stylesheet
-PASS Import of http:// stylesheet
-FAIL Import of import of http:// stylesheet assert_unreached: load fired when error expected Reached unreachable code
-PASS Load of https:// stylesheet
-PASS Import of https:// stylesheet
-PASS Import of import of https:// stylesheet
-PASS Slow successful import, fast failing import
-PASS Fast successful import, slow failing import
+[PASS] Basic load of stylesheet
+[PASS] Attempted load of nonexistent stylesheet
+[PASS] Import of stylesheet
+[PASS] Import of nonexistent stylesheet
+[PASS] Import of import of stylesheet
+[FAIL] Import of import of nonexistent stylesheet
+  assert_unreached: load fired when error expected Reached unreachable code
+[FAIL] Load of non-CSS stylesheet
+  assert_unreached: load fired when error expected Reached unreachable code
+[FAIL] Import of non-CSS stylesheet
+  assert_unreached: load fired when error expected Reached unreachable code
+[FAIL] Import of import of non-CSS stylesheet
+  assert_unreached: load fired when error expected Reached unreachable code
+[PASS] Load of http:// stylesheet
+[PASS] Import of http:// stylesheet
+[FAIL] Import of import of http:// stylesheet
+  assert_unreached: load fired when error expected Reached unreachable code
+[PASS] Load of https:// stylesheet
+[PASS] Import of https:// stylesheet
+[PASS] Import of import of https:// stylesheet
+[PASS] Slow successful import, fast failing import
+[PASS] Fast successful import, slow failing import
 Harness: the test ran to completion.
 

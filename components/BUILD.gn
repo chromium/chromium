@@ -114,7 +114,6 @@ test("components_unittests") {
       "test/data/custom_handlers/",
       "test/data/device_signals/",
       "test/data/dom_distiller/",
-      "test/data/environment_integrity/",
       "test/data/explore_sites/",
       "test/data/feed/",
       "test/data/fenced_frames/",
@@ -209,6 +208,7 @@ test("components_unittests") {
     "//components/cross_device/logging:unit_tests",
     "//components/crx_file:unit_tests",
     "//components/device_event_log:unit_tests",
+    "//components/device_reauth:unit_tests",
     "//components/device_signals/core:unit_tests",
     "//components/dom_distiller/core:unit_tests",
     "//components/download:unit_tests",
@@ -261,6 +261,8 @@ test("components_unittests") {
     "//components/password_manager/core/browser/features:unit_tests",
     "//components/password_manager/core/browser/generation:unit_tests",
     "//components/password_manager/core/browser/sharing:unit_tests",
+    "//components/password_manager/core/browser/sync:unit_tests",
+    "//components/password_manager/core/browser/ui:unit_tests",
     "//components/password_manager/core/browser/well_known_change_password:unit_tests",
     "//components/password_manager/core/common:unit_tests",
     "//components/payments/core:unit_tests",
@@ -598,7 +600,6 @@ test("components_unittests") {
       "//components/embedder_support/android:native_java_unittests_java",
       "//components/embedder_support/android/metrics:test_support_java",
       "//components/embedder_support/android/metrics:unit_tests",
-      "//components/environment_integrity/android:unit_tests",
       "//components/gcm_driver/instance_id:test_support",
       "//components/gcm_driver/instance_id/android:instance_id_driver_java",
       "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
@@ -710,11 +711,12 @@ test("components_unittests") {
     deps += [ "//components/constrained_window:unit_tests" ]
   }
 
+  if (is_win || is_linux || is_chromeos) {
+    deps += [ "//components/stability_report:unit_tests" ]
+  }
+
   if (is_win) {
-    deps += [
-      "//components/stability_report:unit_tests",
-      "//components/winhttp:unit_tests",
-    ]
+    deps += [ "//components/winhttp:unit_tests" ]
   }
 
   if (enable_printing) {
@@ -1026,6 +1028,7 @@ if (use_blink) {
     if (enable_screen_ai_service) {
       deps += [
         "//components/services/screen_ai",
+        "//components/services/screen_ai:test_support",
         "//components/services/screen_ai/public/mojom",
         "//skia",
       ]
@@ -1199,7 +1202,6 @@ if (is_android) {
       "//components/crash/android:junit",
       "//components/download/network:junit",
       "//components/embedder_support/android:components_embedder_support_junit_tests",
-      "//components/environment_integrity/android:junit",
       "//components/gcm_driver/android:components_gcm_driver_junit_tests",
       "//components/image_fetcher:junit",
       "//components/installedapp/android:junit",

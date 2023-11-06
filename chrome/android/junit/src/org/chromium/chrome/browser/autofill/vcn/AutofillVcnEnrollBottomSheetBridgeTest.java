@@ -37,7 +37,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -58,21 +57,14 @@ import java.util.LinkedList;
 public final class AutofillVcnEnrollBottomSheetBridgeTest {
     private static final long NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE = 0xa1fabe7a;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Mock
-    private AutofillVcnEnrollBottomSheetBridge.Natives mBridgeNatives;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private ManagedBottomSheetController mBottomSheetController;
-    @Mock
-    private LayoutStateProvider mLayoutStateProvider;
-    @Mock
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private AutofillVcnEnrollBottomSheetBridge.Natives mBridgeNatives;
+    @Mock private WebContents mWebContents;
+    @Mock private ManagedBottomSheetController mBottomSheetController;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
+    @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private ShadowActivity mShadowActivity;
     private WindowAndroid mWindow;
@@ -88,7 +80,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(AutofillVcnEnrollBottomSheetBridgeJni.TEST_HOOKS, mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
-        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mShadowActivity = shadowOf(activity);
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
@@ -107,17 +98,25 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     private void requestShowContent(WebContents webContents) {
-        mBridge.requestShowContent(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE, webContents,
-                "Message text", "Description text. Learn more", "Learn more",
-                "Card container accessibility description", /*issuerIcon=*/null, "Card label",
-                "Card description", /*googleLegaleMessages=*/new LinkedList<LegalMessageLine>(),
-                /*issuerLegalMessages=*/new LinkedList<LegalMessageLine>(), "Accept button label",
+        mBridge.requestShowContent(
+                NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE,
+                webContents,
+                "Message text",
+                "Description text. Learn more",
+                "Learn more",
+                "Card container accessibility description",
+                /* issuerIcon= */ null,
+                "Card label",
+                "Card description",
+                /* googleLegaleMessages= */ new LinkedList<LegalMessageLine>(),
+                /* issuerLegalMessages= */ new LinkedList<LegalMessageLine>(),
+                "Accept button label",
                 "Cancel button label");
     }
 
     @Test
     public void testCannotShowWithNullWebContents() {
-        requestShowContent(/*webContents=*/null);
+        requestShowContent(/* webContents= */ null);
 
         verifyNoInteractions(mBottomSheetController);
     }
@@ -149,8 +148,8 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         requestShowContent(mWebContents);
 
         verify(mBottomSheetController)
-                .requestShowContent(any(AutofillVcnEnrollBottomSheetContent.class),
-                        /*animate=*/eq(true));
+                .requestShowContent(
+                        any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
     }
 
     @Test
@@ -278,17 +277,21 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
         requestShowContent(mWebContents);
 
-        mBridge.openLink("https://example.test",
+        mBridge.openLink(
+                "https://example.test",
                 VirtualCardEnrollmentLinkType.VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK);
 
         Intent intent = mShadowActivity.getNextStartedActivity();
         assertThat(intent.getData(), equalTo(Uri.parse("https://example.test")));
         assertThat(intent.getAction(), equalTo(Intent.ACTION_VIEW));
-        assertThat(intent.getExtras().get(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE),
+        assertThat(
+                intent.getExtras().get(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE),
                 equalTo(CustomTabsIntent.SHOW_PAGE_TITLE));
         verify(mBridgeNatives)
-                .recordLinkClickMetric(eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE),
-                        eq(VirtualCardEnrollmentLinkType
+                .recordLinkClickMetric(
+                        eq(NATIVE_AUTOFILL_VCN_ENROLL_BOTTOM_SHEET_BRIDGE),
+                        eq(
+                                VirtualCardEnrollmentLinkType
                                         .VIRTUAL_CARD_ENROLLMENT_GOOGLE_PAYMENTS_TOS_LINK));
     }
 
@@ -308,7 +311,9 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         mBridge.hide();
 
         verify(mBottomSheetController)
-                .hideContent(any(), eq(true),
+                .hideContent(
+                        any(),
+                        eq(true),
                         eq(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE));
     }
 

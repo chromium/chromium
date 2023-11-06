@@ -19,7 +19,7 @@ layer at (0,0)
           LayoutText {#text} at (0,0) size 294x18
             text run at (0,0) width 294: "Abe should be outside the frame and inside it."
 layer at (0,0)
-  LayoutIFrame {IFRAME} at (0,0) size 208x208 [border: (4px solid #000000)]
+  LayoutIFrame {IFRAME} at (0,0) size 208x208 [border: (4px solid #000000) (4px solid #000000) (4px solid #000000) (4px solid #000000)]
     layer at (0,0)
       LayoutView at (0,0) size 200x200
     layer at (0,0)

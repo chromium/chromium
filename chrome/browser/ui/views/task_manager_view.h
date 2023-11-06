@@ -48,7 +48,7 @@ class TaskManagerView : public TableViewDelegate,
 
   // task_manager::TableViewDelegate:
   bool IsColumnVisible(int column_id) const override;
-  void SetColumnVisibility(int column_id, bool new_visibility) override;
+  bool SetColumnVisibility(int column_id, bool new_visibility) override;
   bool IsTableSorted() const override;
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
@@ -85,12 +85,12 @@ class TaskManagerView : public TableViewDelegate,
   void ExecuteCommand(int id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
+  static TaskManagerView* GetInstanceForTests();
+
  private:
   friend class TaskManagerViewTest;
 
   TaskManagerView();
-
-  static TaskManagerView* GetInstanceForTests();
 
   // Creates the child controls.
   void Init();

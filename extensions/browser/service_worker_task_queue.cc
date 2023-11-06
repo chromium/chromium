@@ -560,8 +560,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
         "Service worker registration failed. Status code: %d",
         static_cast<int>(status_code));
     auto error = std::make_unique<ManifestError>(
-        extension_id, base::UTF8ToUTF16(msg),
-        base::UTF8ToUTF16(manifest_keys::kBackground),
+        extension_id, base::UTF8ToUTF16(msg), manifest_keys::kBackground,
         base::UTF8ToUTF16(
             BackgroundInfo::GetBackgroundServiceWorkerScript(extension)));
 

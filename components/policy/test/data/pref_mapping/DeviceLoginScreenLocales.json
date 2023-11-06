@@ -1,0 +1,27 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "description": "Test mapping to the signin profile",
+        "policies": {
+          "DeviceLoginScreenLocales": [
+            "en-US",
+            "fr-FR"
+          ]
+        },
+        "prefs": {
+          "intl.forced_languages": {
+            "location": "signin_profile",
+            "value": [
+              "en-US",
+              "fr-FR"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

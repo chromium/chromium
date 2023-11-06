@@ -121,6 +121,8 @@ class AppBannerManagerTest : public AppBannerManager {
     return false;
   }
 
+  bool IsInAppBrowsingContext() const override { return false; }
+
   void SaveInstallationDismissedForMl(const GURL& manifest_id) override {}
   void SaveInstallationIgnoredForMl(const GURL& manifest_id) override {}
   void SaveInstallationAcceptedForMl(const GURL& manifest_id) override {}

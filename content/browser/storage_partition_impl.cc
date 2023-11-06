@@ -34,7 +34,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_local_storage_slot.h"
-#include "base/time/default_clock.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -1032,6 +1031,9 @@ class StoragePartitionImpl::DataDeletionHelper {
       AggregationService* aggregation_service,
       PrivateAggregationManagerImpl* private_aggregation_manager,
       storage::SharedStorageManager* shared_storage_manager,
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      CdmStorageManager* cdm_storage_manager,
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
       bool perform_storage_cleanup,
       const base::Time begin,
       const base::Time end);
@@ -1316,6 +1318,13 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
 #if DCHECK_IS_ON()
   on_browser_context_will_be_destroyed_called_ = true;
 #endif
+
+  // Shut down service worker and shared worker machinery because these can keep
+  // RenderProcessHosts and SiteInstances alive, and the codebase assumes these
+  // are destroyed before the BrowserContext is destroyed.
+  GetServiceWorkerContext()->Shutdown();
+  GetSharedWorkerService()->Shutdown();
+
   // These hold raw pointers to objects that are about to be destroyed, before
   // this object is destroyed. Shut them down now to avoid dangling pointers.
   if (GetFileSystemAccessManager()) {
@@ -1324,6 +1333,10 @@ void StoragePartitionImpl::OnBrowserContextWillBeDestroyed() {
 
   if (GetContentIndexContext()) {
     GetContentIndexContext()->Shutdown();
+  }
+
+  if (keep_alive_url_loader_service_) {
+    keep_alive_url_loader_service_->Shutdown();
   }
 }
 
@@ -1413,7 +1426,6 @@ void StoragePartitionImpl::Initialize(
   base::FilePath path = is_in_memory() ? base::FilePath() : partition_path_;
   indexed_db_control_wrapper_ = std::make_unique<IndexedDBControlWrapper>(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
-      base::DefaultClock::GetInstance(),
       ChromeBlobStorageContext::GetRemoteFor(browser_context_),
       std::move(file_system_access_context), GetIOThreadTaskRunner({}),
       /*task_runner=*/nullptr);
@@ -1577,8 +1589,15 @@ void StoragePartitionImpl::Initialize(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
-        partition_path_.Append(kCdmStorageDatabaseFileName));
+    if (is_in_memory()) {
+      // Pass an empty path if in_memory so that CdmStorage.db is not stored on
+      // disk.
+      cdm_storage_manager_ =
+          std::make_unique<CdmStorageManager>(base::FilePath());
+    } else {
+      cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
+          partition_path_.Append(kCdmStorageDatabaseFileName));
+    }
   }
 
   media_license_manager_ = std::make_unique<MediaLicenseManager>(
@@ -2549,7 +2568,11 @@ void StoragePartitionImpl::ClearDataImpl(
       filesystem_context_.get(), GetCookieManagerForBrowserProcess(),
       interest_group_manager_.get(), attribution_manager_.get(),
       aggregation_service_.get(), private_aggregation_manager_.get(),
-      shared_storage_manager_.get(), perform_storage_cleanup, begin, end);
+      shared_storage_manager_.get(),
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      cdm_storage_manager_.get(),
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+      perform_storage_cleanup, begin, end);
 }
 
 void StoragePartitionImpl::DeletionHelperDone(base::OnceClosure callback) {
@@ -2747,6 +2770,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     AggregationService* aggregation_service,
     PrivateAggregationManagerImpl* private_aggregation_manager,
     storage::SharedStorageManager* shared_storage_manager,
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+    CdmStorageManager* cdm_storage_manager,
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
     bool perform_storage_cleanup,
     const base::Time begin,
     const base::Time end) {
@@ -2836,6 +2862,22 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     }
   }
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) && cdm_storage_manager) {
+    // If no storage key specified, then delete the CdmStorage.db.
+    if (storage_key_origin_empty) {
+      cdm_storage_manager->DeleteDatabase();
+    } else {
+      // TODO(crbug.com/1454512): Investigate and add logic to handle
+      // filter_builder and storage_key_policy_matcher.
+      cdm_storage_manager->DeleteDataForStorageKey(storage_key,
+                                                   base::DoNothing());
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+  // TODO(crbug.com/1454512): Remove REMOVE_DATA_MASK_MEDIA_LICENSES from here
+  // when MediaLicense is removed from Quota types.
   if (remove_mask_ & REMOVE_DATA_MASK_INDEXEDDB ||
       remove_mask_ & REMOVE_DATA_MASK_WEBSQL ||
       remove_mask_ & REMOVE_DATA_MASK_FILE_SYSTEMS ||

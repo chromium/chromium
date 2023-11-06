@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.directactions;
+
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import androidx.test.filters.MediumTest;
@@ -28,11 +29,9 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class DirectActionAvailabilityWebappTest {
-    @Rule
-    public WebappActivityTestRule mWebAppActivityTestRule = new WebappActivityTestRule();
+    @Rule public WebappActivityTestRule mWebAppActivityTestRule = new WebappActivityTestRule();
 
-    @Rule
-    public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
+    @Rule public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
 
     @Test
     @MediumTest
@@ -40,7 +39,8 @@ public class DirectActionAvailabilityWebappTest {
     public void testCoreDirectActionInWebappActivity() throws Exception {
         mWebAppActivityTestRule.startWebappActivity();
 
-        assertThat(DirectActionTestUtils.setupActivityAndGetDirectAction(mWebAppActivityTestRule),
+        assertThat(
+                DirectActionTestUtils.setupActivityAndGetDirectAction(mWebAppActivityTestRule),
                 Matchers.containsInAnyOrder("go_back", "reload", "go_forward", "find_in_page"));
     }
 }

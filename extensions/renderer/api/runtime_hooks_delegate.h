@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_RENDERER_API_RUNTIME_HOOKS_DELEGATE_H_
 #define EXTENSIONS_RENDERER_API_RUNTIME_HOOKS_DELEGATE_H_
 
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
 #include "extensions/renderer/bindings/api_signature.h"
@@ -33,14 +31,14 @@ class RuntimeHooksDelegate : public APIBindingHooksDelegate {
   // hooks.
   static APIBindingHooks::RequestResult GetURL(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& arguments);
+      const v8::LocalVector<v8::Value>& arguments);
 
   // APIBindingHooksDelegate:
   APIBindingHooks::RequestResult HandleRequest(
       const std::string& method_name,
       const APISignature* signature,
       v8::Local<v8::Context> context,
-      std::vector<v8::Local<v8::Value>>* arguments,
+      v8::LocalVector<v8::Value>* arguments,
       const APITypeReferenceMap& refs) override;
   void InitializeTemplate(v8::Isolate* isolate,
                           v8::Local<v8::ObjectTemplate> object_template,

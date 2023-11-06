@@ -106,16 +106,12 @@ public class EphemeralTabMediator {
         }
     }
 
-    /**
-     * Notify observers on navigation start.
-     */
-    public void onNavigationStarted(GURL clickedUrl, BottomSheetController bottomSheetController,
-            EphemeralTabSheetContent ephemeralTabSheetContent) {
+    /** Notify observers on navigation start. */
+    public void onNavigationStarted(GURL clickedUrl) {
         RewindableIterator<EphemeralTabObserver> observersIterator =
                 mObservers.rewindableIterator();
         while (observersIterator.hasNext()) {
-            observersIterator.next().onNavigationStarted(
-                    clickedUrl, bottomSheetController, ephemeralTabSheetContent);
+            observersIterator.next().onNavigationStarted(clickedUrl);
         }
     }
 
@@ -145,60 +141,65 @@ public class EphemeralTabMediator {
 
     private void createWebContentsObserver() {
         assert mWebContentsObserver == null;
-        mWebContentsObserver = new WebContentsObserver(mWebContents) {
-            /** Whether the currently loaded page is an error (interstitial) page. */
-            private boolean mIsOnErrorPage;
+        mWebContentsObserver =
+                new WebContentsObserver(mWebContents) {
+                    /** Whether the currently loaded page is an error (interstitial) page. */
+                    private boolean mIsOnErrorPage;
 
-            private GURL mCurrentUrl;
+                    private GURL mCurrentUrl;
 
-            @Override
-            public void loadProgressChanged(float progress) {
-                if (mSheetContent != null) mSheetContent.setProgress(progress);
-            }
-
-            @Override
-            public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (!navigation.isSameDocument()) {
-                    GURL url = navigation.getUrl();
-                    if (url.equals(mCurrentUrl)) return;
-
-                    // The link Back to Safety on the interstitial page will go to the previous
-                    // page. If there is no previous page, i.e. previous page is NTP, the preview
-                    // tab will be closed.
-                    if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
-                        mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-                        mCurrentUrl = null;
-                        return;
+                    @Override
+                    public void loadProgressChanged(float progress) {
+                        if (mSheetContent != null) mSheetContent.setProgress(progress);
                     }
 
-                    onNavigationStarted(url, mBottomSheetController, mSheetContent);
+                    @Override
+                    public void didStartNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (!navigation.isSameDocument()) {
+                            GURL url = navigation.getUrl();
+                            if (url.equals(mCurrentUrl)) return;
 
-                    mCurrentUrl = url;
-                    mFaviconLoader.loadFavicon(
-                            url, (drawable) -> onFaviconAvailable(drawable), mProfile);
-                }
-            }
+                            // The link Back to Safety on the interstitial page will go to the
+                            // previous page. If there is no previous page, i.e. previous page is
+                            // NTP, the preview tab will be closed.
+                            if (mIsOnErrorPage && UrlUtilities.isNTPUrl(url)) {
+                                mBottomSheetController.hideContent(
+                                        mSheetContent, /* animate= */ true);
+                                mCurrentUrl = null;
+                                return;
+                            }
 
-            @Override
-            public void titleWasSet(String title) {
-                mSheetContent.updateTitle(title);
-                onTitleSet(mSheetContent, title);
-            }
+                            onNavigationStarted(url);
 
-            @Override
-            public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (navigation.hasCommitted()) {
-                    mIsOnErrorPage = navigation.isErrorPage();
-                    mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
-                } else if (navigation.isDownload()) {
-                    // Not viewable contents such as download. Show a toast and close the tab.
-                    Toast.makeText(ContextUtils.getApplicationContext(),
-                                 R.string.ephemeral_tab_sheet_not_viewable, Toast.LENGTH_SHORT)
-                            .show();
-                    mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
-                }
-            }
-        };
+                            mCurrentUrl = url;
+                            mFaviconLoader.loadFavicon(
+                                    url, (drawable) -> onFaviconAvailable(drawable), mProfile);
+                        }
+                    }
+
+                    @Override
+                    public void titleWasSet(String title) {
+                        mSheetContent.updateTitle(title);
+                        onTitleSet(mSheetContent, title);
+                    }
+
+                    @Override
+                    public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        if (navigation.hasCommitted()) {
+                            mIsOnErrorPage = navigation.isErrorPage();
+                            mSheetContent.updateURL(mWebContents.get().getVisibleUrl());
+                        } else if (navigation.isDownload()) {
+                            // Not viewable contents such as download. Show a toast and close the
+                            // tab.
+                            Toast.makeText(
+                                            ContextUtils.getApplicationContext(),
+                                            R.string.ephemeral_tab_sheet_not_viewable,
+                                            Toast.LENGTH_SHORT)
+                                    .show();
+                            mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
+                        }
+                    }
+                };
     }
 
     private void onFaviconAvailable(Drawable drawable) {

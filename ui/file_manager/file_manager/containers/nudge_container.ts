@@ -5,7 +5,7 @@
 import '../widgets/xf_nudge.js';
 
 import {storage} from '../common/js/storage.js';
-import {str} from '../common/js/util.js';
+import {str} from '../common/js/translations.js';
 import {NudgeDirection, XfNudge} from '../widgets/xf_nudge.js';
 
 /**
@@ -444,8 +444,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     },
     content: () => str('ONE_DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,
-    // Expire after 4 releases (expires when M120 hits Stable).
-    expiryDate: new Date(2023, 12, 5),
+    expiryDate: new Date(2025, 12, 5),
     selfDismiss: true,
     dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },
@@ -459,8 +458,7 @@ export const nudgeInfo: {[type in NudgeType]: NudgeInfo} = {
     },
     content: () => str('DRIVE_MOVED_FILE_NUDGE'),
     direction: NudgeDirection.TRAILING_DOWNWARD,
-    // Expire after 4 releases (expires when M120 hits Stable).
-    expiryDate: new Date(2023, 12, 5),
+    expiryDate: new Date(2025, 12, 5),
     selfDismiss: true,
     dismissOnKeyDown: treeDismissOnKeyDownOnTreeItem,
   },

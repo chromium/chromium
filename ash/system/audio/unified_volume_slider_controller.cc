@@ -4,7 +4,6 @@
 
 #include "ash/system/audio/unified_volume_slider_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/audio/unified_volume_view.h"
 #include "base/metrics/histogram_functions.h"
@@ -92,9 +91,9 @@ void UnifiedVolumeSliderController::SliderValueChanged(
                       audio_handler->GetOutputVolumePercent());
   audio_handler->SetOutputVolumePercent(level);
 
-  // For QsRevamp: Manually sets the mute state since we don't distinguish muted
-  // and level is 0 state in QsRevamp.
-  if (features::IsQsRevampEnabled() && level == 0) {
+  // Manually sets the mute state since we don't distinguish muted and level is
+  // 0 state.
+  if (level == 0) {
     audio_handler->SetOutputMute(/*mute_on=*/true);
   }
 
@@ -112,8 +111,7 @@ void UnifiedVolumeSliderController::SliderButtonPressed() {
   const bool mute = !audio_handler->IsOutputMuted();
 
   // If the level is 0, the slider is still muted, and nothing needs to be done.
-  if (features::IsQsRevampEnabled() &&
-      audio_handler->GetOutputVolumePercent() == 0) {
+  if (audio_handler->GetOutputVolumePercent() == 0) {
     return;
   }
 

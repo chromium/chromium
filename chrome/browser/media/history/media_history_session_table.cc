@@ -149,7 +149,7 @@ MediaHistorySessionTable::GetPlaybackSessions(
     session->metadata.source_title = statement.ColumnString16(7);
     session->last_updated_time = base::Time::FromDeltaSinceWindowsEpoch(
                                      base::Seconds(statement.ColumnInt64(8)))
-                                     .ToJsTime();
+                                     .InMillisecondsFSinceUnixEpoch();
 
     sessions.push_back(std::move(session));
 

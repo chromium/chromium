@@ -1,38 +1,39 @@
 This is a testharness.js-based test.
-PASS http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/common/blank.html#newhash should  work
-PASS http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/common/blank.html?newsearch should  work
-PASS http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/newpath should  work
-PASS http://web-platform.test:8001/common/blank.html to http://username:password@web-platform.test:8001/common/blank.html should not work
-PASS http://web-platform.test:8001/common/blank.html to blob:(a blob URL for this origin) should not work
-PASS http://web-platform.test:8001/common/blank.html to about:blank should not work
-PASS http://web-platform.test:8001/common/blank.html to about:srcdoc should not work
-PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin) should  work
-PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin)#newhash should  work
-PASS blob:(a blob URL for this origin) to blob:(a blob URL for this origin)?newsearch should not work
-PASS blob:(a blob URL for this origin) to blob:newpath should not work
-PASS blob:(a blob URL for this origin) to blob:http://web-platform.test:8001/syntheticblob should not work
-PASS blob:(a blob URL for this origin) to blob:(another blob URL for this origin) should not work
-PASS about:blank to about:blank should  work
-PASS about:blank to about:srcdoc should not work
-PASS about:blank to about:blank?newsearch should not work
-PASS about:blank to about:blank#newhash should  work
-PASS about:blank to http://web-platform.test:8001/blank should not work
-PASS http://web-platform.test:8001/common/blank.html to javascript:'foo' should not work
-PASS javascript:'foo' to javascript:'foo' should not work
-PASS javascript:'foo' to javascript:'foo'?newsearch should not work
-PASS javascript:'foo' to javascript:'foo'#newhash should not work
-PASS about:srcdoc to about:srcdoc should  work
-PASS about:srcdoc to about:srcdoc?newsearch should not work
-PASS about:srcdoc to about:srcdoc#newhash should  work
-PASS about:srcdoc to http://web-platform.test:8001/srcdoc should not work
-PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should  work
-PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html#newhash should  work
-PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html?newsearch should  work
-PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/newpath should  work
-PASS sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://username:password@web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should not work
-PASS data:(script to run this test) to data:(script to run this test) should  work
-PASS data:(script to run this test) to data:(script to run this test)#newhash should  work
-FAIL data:(script to run this test) to data:(script to run this test)?newsearch should not work assert_equals: expected "exception" but got "no exception"
-PASS data:(script to run this test) to data:newpath should not work
+[PASS] http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/common/blank.html#newhash should  work
+[PASS] http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/common/blank.html?newsearch should  work
+[PASS] http://web-platform.test:8001/common/blank.html to http://web-platform.test:8001/newpath should  work
+[PASS] http://web-platform.test:8001/common/blank.html to http://username:password@web-platform.test:8001/common/blank.html should not work
+[PASS] http://web-platform.test:8001/common/blank.html to blob:(a blob URL for this origin) should not work
+[PASS] http://web-platform.test:8001/common/blank.html to about:blank should not work
+[PASS] http://web-platform.test:8001/common/blank.html to about:srcdoc should not work
+[PASS] blob:(a blob URL for this origin) to blob:(a blob URL for this origin) should  work
+[PASS] blob:(a blob URL for this origin) to blob:(a blob URL for this origin)#newhash should  work
+[PASS] blob:(a blob URL for this origin) to blob:(a blob URL for this origin)?newsearch should not work
+[PASS] blob:(a blob URL for this origin) to blob:newpath should not work
+[PASS] blob:(a blob URL for this origin) to blob:http://web-platform.test:8001/syntheticblob should not work
+[PASS] blob:(a blob URL for this origin) to blob:(another blob URL for this origin) should not work
+[PASS] about:blank to about:blank should  work
+[PASS] about:blank to about:srcdoc should not work
+[PASS] about:blank to about:blank?newsearch should not work
+[PASS] about:blank to about:blank#newhash should  work
+[PASS] about:blank to http://web-platform.test:8001/blank should not work
+[PASS] http://web-platform.test:8001/common/blank.html to javascript:'foo' should not work
+[PASS] javascript:'foo' to javascript:'foo' should not work
+[PASS] javascript:'foo' to javascript:'foo'?newsearch should not work
+[PASS] javascript:'foo' to javascript:'foo'#newhash should not work
+[PASS] about:srcdoc to about:srcdoc should  work
+[PASS] about:srcdoc to about:srcdoc?newsearch should not work
+[PASS] about:srcdoc to about:srcdoc#newhash should  work
+[PASS] about:srcdoc to http://web-platform.test:8001/srcdoc should not work
+[PASS] sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should  work
+[PASS] sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html#newhash should  work
+[PASS] sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html?newsearch should  work
+[PASS] sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://web-platform.test:8001/newpath should  work
+[PASS] sandboxed http://web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html to http://username:password@web-platform.test:8001/html/browsers/history/the-history-interface/resources/url-rewriting-helper.html should not work
+[PASS] data:(script to run this test) to data:(script to run this test) should  work
+[PASS] data:(script to run this test) to data:(script to run this test)#newhash should  work
+[FAIL] data:(script to run this test) to data:(script to run this test)?newsearch should not work
+  assert_equals: expected "exception" but got "no exception"
+[PASS] data:(script to run this test) to data:newpath should not work
 Harness: the test ran to completion.
 

@@ -198,6 +198,13 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
              "ZeroSuggestPrefetchingOnWeb",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables storing successful query/match in the shortcut database.
+// Desktop will populate db regardless of this feature.
+// Android will not populate db regardless of this feature.
+BASE_FEATURE(kOmniboxPopulateShortcutsDatabase,
+             "OmniboxPopulateShortcutsDatabase",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
 // Incognito / NonIncognito  will only controls behaviors under incognito /
@@ -321,6 +328,11 @@ BASE_FEATURE(kNtpRealboxPedals,
 // Feature used to enable the simplified actions UI design.
 BASE_FEATURE(kOmniboxActionsUISimplification,
              "OmniboxActionsUISimplification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature used to enable the new keyword mode behavior.
+BASE_FEATURE(kOmniboxKeywordModeRefresh,
+             "OmniboxKeywordModeRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Feature used to synchronize the toolbar's and status bar's color.
@@ -485,6 +497,10 @@ BASE_FEATURE(kLogUrlScoringSignals,
 // URL suggestions and reranks them.
 BASE_FEATURE(kMlUrlScoring, "MlUrlScoring", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, appends additional Trending and Recent Search Related Queries to
+// the suggestion list on the NTP and SRP.
+BASE_FEATURE(kInspireMe, "OmniboxInspireMe", enabled_by_default_android_only);
+
 // If enabled, creates Omnibox autocompete URL scoring model.
 BASE_FEATURE(kUrlScoringModel,
              "UrlScoringModel",
@@ -530,4 +546,12 @@ bool IsOmniboxCr23CustomizeGuardedFeatureEnabled(const base::Feature& feature) {
 BASE_FEATURE(kOmniboxTouchDownTriggerForPrefetch,
              "OmniboxTouchDownTriggerForPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, site search engines defined by policy are saved into prefs and
+// committed to the keyword database, so that they can be accessed from the
+// Omnibox and the Settings page.
+BASE_FEATURE(kSiteSearchSettingsPolicy,
+             "SiteSearchSettingsPolicy",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace omnibox

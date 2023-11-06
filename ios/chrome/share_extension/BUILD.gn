@@ -34,6 +34,7 @@ source_set("share") {
   deps = [
     ":system_strings",
     "//base",
+    "//ios/chrome/common:extension_open_url",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:client",
     "//ios/chrome/common/app_group:command",

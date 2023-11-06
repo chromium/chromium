@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_handler.h"
@@ -35,10 +35,10 @@ namespace {
 const char16_t kTestSyncingEmail[] = u"test@email.com";
 
 class InfobarEditAddressProfileTableViewControllerTest
-    : public ChromeTableViewControllerTest {
+    : public LegacyChromeTableViewControllerTest {
  protected:
   void SetUp() override {
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     delegate_mock_ = OCMProtocolMock(
         @protocol(AutofillProfileEditTableViewControllerDelegate));
     delegate_modal_mock_ = OCMProtocolMock(@protocol(InfobarModalDelegate));
@@ -50,7 +50,7 @@ class InfobarEditAddressProfileTableViewControllerTest
     [controller() loadModel];
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     InfobarEditAddressProfileTableViewController* viewController =
         [[InfobarEditAddressProfileTableViewController alloc]
             initWithModalDelegate:delegate_modal_mock_];
@@ -178,7 +178,7 @@ class InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled
     return viewController;
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return CreateInfobarEditAddressProfileTableViewController();
   }
 
@@ -267,7 +267,7 @@ TEST_F(InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled,
 class InfobarEditAddressProfileTableViewControllerMigrationPromptTest
     : public InfobarEditAddressProfileTableViewControllerTestWithUnionViewEnabled {
  protected:
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     InfobarEditAddressProfileTableViewController* viewController =
         CreateInfobarEditAddressProfileTableViewController();
     [viewController setMigrationPrompt:YES];

@@ -59,8 +59,8 @@ class AnimatedImageViewTest : public ViewsTestBase {
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     widget_.Init(std::move(params));
 
-    view_ = widget_.SetContentsView(std::make_unique<AnimatedImageView>());
-    view_->SetUseDefaultFillLayout(true);
+    widget_.SetContentsView(std::make_unique<AnimatedImageView>());
+    view()->SetUseDefaultFillLayout(true);
 
     widget_.Show();
   }
@@ -81,60 +81,63 @@ class AnimatedImageViewTest : public ViewsTestBase {
     ui::PaintContext paint_context(display_list.get(),
                                    /*device_scale_factor=*/1.f,
                                    invalidation_rect, /*is_pixel_canvas=*/true);
-    view_->Paint(PaintInfo::CreateRootPaintInfo(paint_context,
-                                                invalidation_rect.size()));
+    view()->Paint(PaintInfo::CreateRootPaintInfo(paint_context,
+                                                 invalidation_rect.size()));
     RunPendingMessages();
     return display_list->FinalizeAndReleaseAsRecord();
   }
 
+  AnimatedImageView* view() {
+    return static_cast<AnimatedImageView*>(widget_.GetContentsView());
+  }
+
   Widget widget_;
-  raw_ptr<AnimatedImageView, DanglingUntriaged> view_;
 };
 
 TEST_F(AnimatedImageViewTest, PaintsWithAdditionalTranslation) {
-  view_->SetAnimatedImage(CreateAnimationWithSize(gfx::Size(80, 80)));
-  view_->SetVerticalAlignment(ImageViewBase::Alignment::kCenter);
-  view_->SetHorizontalAlignment(ImageViewBase::Alignment::kCenter);
-  views::test::RunScheduledLayout(view_);
-  view_->Play();
+  view()->SetAnimatedImage(CreateAnimationWithSize(gfx::Size(80, 80)));
+  view()->SetVerticalAlignment(ImageViewBase::Alignment::kCenter);
+  view()->SetHorizontalAlignment(ImageViewBase::Alignment::kCenter);
+  views::test::RunScheduledLayout(view());
+  view()->Play();
 
   static constexpr float kExpectedDefaultOrigin =
       (kDefaultWidthAndHeight - 80) / 2;
 
   // Default should be no extra translation.
-  cc::PaintRecord paint_record = Paint(view_->bounds());
+  cc::PaintRecord paint_record = Paint(view()->bounds());
   const cc::TranslateOp* translate_op =
       FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin));
 
-  view_->SetAdditionalTranslation(gfx::Vector2d(5, 5));
-  paint_record = Paint(view_->bounds());
+  view()->SetAdditionalTranslation(gfx::Vector2d(5, 5));
+  paint_record = Paint(view()->bounds());
   translate_op =
       FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
 
-  view_->SetAdditionalTranslation(gfx::Vector2d(5, -5));
-  paint_record = Paint(view_->bounds());
+  view()->SetAdditionalTranslation(gfx::Vector2d(5, -5));
+  paint_record = Paint(view()->bounds());
   translate_op =
       FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin + 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin - 5));
 
-  view_->SetAdditionalTranslation(gfx::Vector2d(-5, 5));
-  paint_record = Paint(view_->bounds());
+  view()->SetAdditionalTranslation(gfx::Vector2d(-5, 5));
+  paint_record = Paint(view()->bounds());
   translate_op =
       FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
   EXPECT_THAT(translate_op->dx, FloatEq(kExpectedDefaultOrigin - 5));
   EXPECT_THAT(translate_op->dy, FloatEq(kExpectedDefaultOrigin + 5));
 
-  view_->SetAdditionalTranslation(gfx::Vector2d(-5, -5));
-  paint_record = Paint(view_->bounds());
+  view()->SetAdditionalTranslation(gfx::Vector2d(-5, -5));
+  paint_record = Paint(view()->bounds());
   translate_op =
       FindPaintOp<cc::TranslateOp>(paint_record, cc::PaintOpType::kTranslate);
   ASSERT_THAT(translate_op, NotNull());
@@ -149,8 +152,8 @@ TEST_F(AnimatedImageViewTest, PlayBeforeWidget) {
   // a widget.
   animated_view->Play();
 
-  view_ = widget_.SetContentsView(std::move(animated_view));
-  view_->SetUseDefaultFillLayout(true);
+  widget_.SetContentsView(std::move(animated_view));
+  view()->SetUseDefaultFillLayout(true);
   widget_.Show();
 }
 

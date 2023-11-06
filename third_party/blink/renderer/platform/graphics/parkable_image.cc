@@ -9,6 +9,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -36,8 +37,10 @@ namespace {
 void RecordReadStatistics(size_t size,
                           base::TimeDelta duration,
                           base::TimeDelta time_since_freeze) {
-  int throughput_mb_s =
-      static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
+  int throughput_mb_s = duration.is_zero()
+                            ? INT_MAX
+                            : base::saturated_cast<int>(
+                                  size / duration.InSecondsF() / (1024 * 1024));
 
   // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
   // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the

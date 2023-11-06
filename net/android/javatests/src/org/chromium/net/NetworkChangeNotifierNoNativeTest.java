@@ -61,16 +61,15 @@ public class NetworkChangeNotifierNoNativeTest {
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());
     }
 
-    /**
-     * Verify NetworkChangeNotifier.registerNetworkCallbackFailed() catches exception properly.
-     */
+    /** Verify NetworkChangeNotifier.registerNetworkCallbackFailed() catches exception properly. */
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.N)
     public void testRegisterNetworkCallbackFail() {
         ConnectivityManager connectivityManager =
-                (ConnectivityManager) InstrumentationRegistry.getTargetContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager)
+                        InstrumentationRegistry.getTargetContext()
+                                .getSystemService(Context.CONNECTIVITY_SERVICE);
         Looper.prepare();
         NetworkChangeNotifier ncn = NetworkChangeNotifier.init();
         Assert.assertFalse(ncn.registerNetworkCallbackFailed());

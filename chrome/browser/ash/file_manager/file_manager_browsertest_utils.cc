@@ -139,17 +139,6 @@ TestCase& TestCase::EnableMirrorSync() {
   return *this;
 }
 
-TestCase& TestCase::EnableInlineSyncStatus() {
-  options.enable_inline_sync_status = true;
-  return *this;
-}
-
-TestCase& TestCase::EnableInlineSyncStatusProgressEvents() {
-  options.enable_inline_sync_status = true;
-  options.enable_inline_sync_status_progress_events = true;
-  return *this;
-}
-
 TestCase& TestCase::EnableFileTransferConnector() {
   options.enable_file_transfer_connector = true;
   return *this;
@@ -165,8 +154,8 @@ TestCase& TestCase::FileTransferConnectorReportOnlyMode() {
   return *this;
 }
 
-TestCase& TestCase::EnableSearchV2() {
-  options.enable_search_v2 = true;
+TestCase& TestCase::BypassRequiresJustification() {
+  options.bypass_requires_justification = true;
   return *this;
 }
 
@@ -266,16 +255,8 @@ std::string TestCase::GetFullName() const {
     full_name += "_MirrorSync";
   }
 
-  if (options.enable_inline_sync_status) {
-    full_name += "_InlineSyncStatus";
-  }
-
   if (options.file_transfer_connector_report_only) {
     full_name += "_ReportOnly";
-  }
-
-  if (options.enable_search_v2) {
-    full_name += "_SearchV2";
   }
 
   if (options.enable_local_image_search) {

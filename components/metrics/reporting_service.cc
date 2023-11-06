@@ -262,6 +262,8 @@ void ReportingService::OnLogUploadComplete(
       // Store the updated list to disk now that the removed log is uploaded.
       log_store()->TrimAndPersistUnsentLogs(/*overwrite_in_memory_store=*/true);
 
+      bool flush_local_state =
+          base::FeatureList::IsEnabled(features::kReportingServiceAlwaysFlush);
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       // If Chrome is in the background, flush the discarded and trimmed logs
       // from |local_state_| immediately because the process may be killed at
@@ -270,10 +272,11 @@ void ReportingService::OnLogUploadComplete(
       // Chrome is in the foreground because of the assumption that
       // |local_state_| will be flushed when convenient, and we do not want to
       // do more work than necessary on the main thread while Chrome is visible.
-      if (!is_in_foreground_) {
+      flush_local_state = flush_local_state || !is_in_foreground_;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+      if (flush_local_state) {
         local_state_->CommitPendingWrite();
       }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     }
   }
 

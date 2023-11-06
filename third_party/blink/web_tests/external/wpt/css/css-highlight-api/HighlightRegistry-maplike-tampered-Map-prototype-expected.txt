@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL HighlightRegistry is a maplike interface that works as expected even if Map.prototype is tampered. HighlightRegister is not defined
+[FAIL] HighlightRegistry is a maplike interface that works as expected even if Map.prototype is tampered.
+  HighlightRegister is not defined
 Harness: the test ran to completion.
 

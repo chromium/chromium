@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -49,17 +50,17 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   const auto self_destruct = base::WrapUnique(this);
 
   // Validate and accept asymmetric peer key.
-  if (!asymmetric_key_result.ok()) {
-    std::move(cb).Run(asymmetric_key_result.status());
+  if (!asymmetric_key_result.has_value()) {
+    std::move(cb).Run(base::unexpected(asymmetric_key_result.error()));
     return;
   }
-  const auto& asymmetric_key = asymmetric_key_result.ValueOrDie();
+  const auto& asymmetric_key = asymmetric_key_result.value();
   if (asymmetric_key.first.size() != kKeySize) {
-    std::move(cb).Run(Status(
+    std::move(cb).Run(base::unexpected(Status(
         error::INTERNAL,
         base::StrCat({"Asymmetric key size mismatch, expected=",
                       base::NumberToString(kKeySize), " actual=",
-                      base::NumberToString(asymmetric_key.first.size())})));
+                      base::NumberToString(asymmetric_key.first.size())}))));
     return;
   }
 
@@ -76,8 +77,8 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   if (!ComputeSharedSecret(
           reinterpret_cast<const uint8_t*>(asymmetric_key.first.data()),
           out_shared_secret, out_generatet_public_value)) {
-    std::move(cb).Run(
-        Status(error::DATA_LOSS, "Curve25519 shared secret not derived"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::DATA_LOSS, "Curve25519 shared secret not derived")));
     return;
   }
   encrypted_record.mutable_encryption_info()->mutable_encryption_key()->assign(
@@ -86,8 +87,8 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   // Produce symmetric key from shared secret using HKDF.
   uint8_t out_symmetric_key[kKeySize];
   if (!ProduceSymmetricKey(out_shared_secret, out_symmetric_key)) {
-    std::move(cb).Run(
-        Status(error::INTERNAL, "Symmetric key production failed"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::INTERNAL, "Symmetric key production failed")));
     return;
   }
 
@@ -96,7 +97,8 @@ void Encryptor::Handle::ProduceEncryptedRecord(
   if (!PerformSymmetricEncryption(
           out_symmetric_key, record_,
           encrypted_record.mutable_encrypted_wrapped_record())) {
-    std::move(cb).Run(Status(error::INTERNAL, "Symmetric encryption failed"));
+    std::move(cb).Run(base::unexpected(
+        Status(error::INTERNAL, "Symmetric encryption failed")));
     return;
   }
   record_.clear();  // Free unused memory.
@@ -168,8 +170,9 @@ void Encryptor::RetrieveAsymmetricKey(
                     },
                     std::move(cb),
                     !encryptor->asymmetric_key_.has_value()
-                        ? StatusOr<std::pair<std::string, PublicKeyId>>(Status(
-                              error::NOT_FOUND, "Asymmetric key not set"))
+                        ? StatusOr<std::pair<std::string, PublicKeyId>>(
+                              base::unexpected(Status(
+                                  error::NOT_FOUND, "Asymmetric key not set")))
                         : encryptor->asymmetric_key_.value()));
           },
           std::move(cb), base::WrapRefCounted(this)));

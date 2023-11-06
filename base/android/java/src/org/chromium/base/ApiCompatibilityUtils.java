@@ -29,12 +29,9 @@ import android.view.Display;
 import android.view.View;
 import android.view.textclassifier.TextClassifier;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.OptIn;
 import androidx.annotation.RequiresApi;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -289,7 +286,6 @@ public class ApiCompatibilityUtils {
      * passed to Chrome from a backgrounded app.
      * @param options {@ActivityOptions} to set the required mode to.
      */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static void setActivityOptionsBackgroundActivityStartMode(
             @NonNull ActivityOptions options) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) return;
@@ -302,7 +298,6 @@ public class ApiCompatibilityUtils {
      * See https://crbug.com/1427112
      * @param view The view on which to set the handwriting bounds.
      */
-    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
     public static void clearHandwritingBoundsOffsetBottom(View view) {
         // TODO(crbug.com/1427112): Replace uses of this method with direct calls once the API is
         // available.

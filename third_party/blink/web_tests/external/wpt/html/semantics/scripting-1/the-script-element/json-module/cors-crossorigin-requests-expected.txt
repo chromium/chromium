@@ -1,6 +1,9 @@
 This is a testharness.js-based test.
-FAIL Imported JSON module, cross-origin with CORS assert_equals: Unexpected _log value expected "imported JSON: 42" but got "10-174"
-FAIL Imported JSON module, cross-origin, missing CORS ACAO header assert_equals: Unexpected _log value expected "error" but got "10-131"
-FAIL Imported JSON module with parse error, cross-origin, with CORS assert_equals: Unexpected _log value expected "0-0" but got "10-181"
+[FAIL] Imported JSON module, cross-origin with CORS
+  assert_equals: Unexpected _log value expected "imported JSON: 42" but got "10-174"
+[FAIL] Imported JSON module, cross-origin, missing CORS ACAO header
+  assert_equals: Unexpected _log value expected "error" but got "10-131"
+[FAIL] Imported JSON module with parse error, cross-origin, with CORS
+  assert_equals: Unexpected _log value expected "0-0" but got "10-181"
 Harness: the test ran to completion.
 

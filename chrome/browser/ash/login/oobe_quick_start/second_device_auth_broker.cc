@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/common/channel_info.h"
+#include "chromeos/ash/components/attestation/attestation_features.h"
 #include "chromeos/ash/components/attestation/attestation_flow.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
@@ -274,8 +275,6 @@ void RunAttestationCertificateCallback(
       std::move(callback).Run(PEMCertChain(pem_certificate_chain));
       return;
     case attestation::ATTESTATION_UNSPECIFIED_FAILURE:
-      // TODO(b/259021973): Is it safe to consider
-      // `ATTESTATION_UNSPECIFIED_FAILURE` transient? Check its side effects.
       std::move(callback).Run(base::unexpected(
           SecondDeviceAuthBroker::AttestationErrorType::kTransientError));
       return;
@@ -344,9 +343,6 @@ std::string CreateStartSessionRequestData(
   base::Value::Dict source_device_info;
   source_device_info.Set(kDeviceTypeKey, "ANDROID");
 
-  // TODO(b/259021973): Figure out how to send the device model here - after
-  // taking user's consent. Also change the network annotation after adding
-  // this.
   base::Value::Dict chrome_os_device_info;
   // Gaia expects a byte array of cert chain in their request proto (see request
   // format above). We need to Base64 encode the cert chain on top of the PEM
@@ -647,23 +643,10 @@ void SecondDeviceAuthBroker::OnChallengeBytesFetched(
 void SecondDeviceAuthBroker::FetchAttestationCertificate(
     const std::string& fido_credential_id,
     AttestationCertificateCallback certificate_callback) {
-  // TODO(b/259021973): Figure out if we can use ECC keys where they are
-  // available.
-  ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
-  profile_specific_data.set_id(device_id_);
-  profile_specific_data.set_content_binding(fido_credential_id);
-  attestation_->GetCertificate(
-      /*certificate_profile=*/attestation::AttestationCertificateProfile::
-          PROFILE_DEVICE_SETUP_CERTIFICATE,
-      /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
-      /*force_new_key=*/true, /*key_crypto_type=*/::attestation::KEY_TYPE_RSA,
-      /*key_name=*/attestation::kDeviceSetupKey,
-      /*profile_specific_data=*/
-      absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
-          profile_specific_data)),
-      /*callback=*/
-      base::BindOnce(&RunAttestationCertificateCallback,
-                     std::move(certificate_callback)));
+  attestation::AttestationFeatures::GetFeatures(base::BindOnce(
+      &SecondDeviceAuthBroker::FetchAttestationCertificateInternal,
+      weak_ptr_factory_.GetWeakPtr(), fido_credential_id,
+      std::move(certificate_callback)));
 }
 
 void SecondDeviceAuthBroker::FetchRefreshToken(
@@ -742,6 +725,55 @@ void SecondDeviceAuthBroker::OnClientOAuthFailure(
       << "Received an unexpected callback for refresh token";
   LOG(ERROR) << "Could not fetch refresh token. Error: " << error.ToString();
   std::move(refresh_token_internal_callback_).Run(base::unexpected(error));
+}
+
+void SecondDeviceAuthBroker::FetchAttestationCertificateInternal(
+    const std::string& fido_credential_id,
+    AttestationCertificateCallback certificate_callback,
+    const attestation::AttestationFeatures* attestation_features) {
+  if (!attestation_features) {
+    LOG(ERROR) << "Failed to get AttestationFeatures";
+    std::move(certificate_callback)
+        .Run(base::unexpected(
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    return;
+  }
+
+  if (!attestation_features->IsAttestationAvailable()) {
+    LOG(ERROR) << "Attestation is not available";
+    std::move(certificate_callback)
+        .Run(base::unexpected(
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    return;
+  }
+
+  if (!attestation_features->IsEccSupported() &&
+      !attestation_features->IsRsaSupported()) {
+    LOG(ERROR) << "Could not find any supported attestation key type";
+    std::move(certificate_callback)
+        .Run(base::unexpected(
+            SecondDeviceAuthBroker::AttestationErrorType::kPermanentError));
+    return;
+  }
+
+  const ::attestation::KeyType attestation_key_type =
+      attestation_features->IsEccSupported() ? ::attestation::KEY_TYPE_ECC
+                                             : ::attestation::KEY_TYPE_RSA;
+  ::attestation::DeviceSetupCertificateRequestMetadata profile_specific_data;
+  profile_specific_data.set_id(device_id_);
+  profile_specific_data.set_content_binding(fido_credential_id);
+  attestation_->GetCertificate(
+      /*certificate_profile=*/attestation::AttestationCertificateProfile::
+          PROFILE_DEVICE_SETUP_CERTIFICATE,
+      /*account_id=*/EmptyAccountId(), /*request_origin=*/std::string(),
+      /*force_new_key=*/true, /*key_crypto_type=*/attestation_key_type,
+      /*key_name=*/attestation::kDeviceSetupKey,
+      /*profile_specific_data=*/
+      absl::make_optional(attestation::AttestationFlow::CertProfileSpecificData(
+          profile_specific_data)),
+      /*callback=*/
+      base::BindOnce(&RunAttestationCertificateCallback,
+                     std::move(certificate_callback)));
 }
 
 }  //  namespace ash::quick_start

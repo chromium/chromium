@@ -79,6 +79,8 @@ public abstract class StripStacker {
             float touchTargetOffset, float cachedTabWidth, boolean animate) {
         float rightEdge = stripLeftMargin;
         for (StripLayoutTab tab : indexOrderedTabs) {
+            if (tab.isDying()) continue;
+
             float tabWidth;
             float tabDrawX;
             float tabWidthWeight;
@@ -113,6 +115,8 @@ public abstract class StripStacker {
         float leftEdge = stripWidth - stripRightMargin;
 
         for (StripLayoutTab tab : indexOrderedTabs) {
+            if (tab.isDying()) continue;
+
             float drawX = animate ? tab.getIdealX() : tab.getDrawX();
             leftEdge = Math.min(drawX, leftEdge);
         }

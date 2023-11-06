@@ -1,46 +1,53 @@
 This is a testharness.js-based test.
-FAIL The document root element should be focusable. assert_equals: expected Element node <svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://w... but got null
-PASS rect should not be focusable.
-PASS svg should not be focusable.
-FAIL rect[focusable=true] should be focusable. assert_equals: expected Element node <rect focusable="true"></rect> but got null
-PASS a should not be focusable.
-PASS a[href] should be focusable.
-FAIL a[focusable=false] should not be focusable. assert_not_equals: got disallowed value Element node <a href="" focusable="false"></a>
-FAIL iframe should be focusable. assert_equals: expected Element node <iframe src="resources/blank.htm"></iframe> but got Element node <a href="" focusable="false"></a>
-PASS audio[controls] should be focusable.
-PASS video[controls] should be focusable.
-FAIL canvas[tabindex] should be focusable. assert_equals: expected Element node <canvas tabindex="0"></canvas> but got Element node <video controls="controls"></video>
-PASS circle[tabindex] should be focusable.
-PASS ellipse[tabindex] should be focusable.
-PASS foreignObject[tabindex] should be focusable.
-PASS g[tabindex] should be focusable.
-PASS image[tabindex] should be focusable.
-PASS line[tabindex] should be focusable.
-FAIL mesh[tabindex] should be focusable. assert_equals: expected Element node <mesh tabindex="0"></mesh> but got Element node <line tabindex="0"></line>
-PASS path[tabindex] should be focusable.
-PASS polygon[tabindex] should be focusable.
-PASS rect[tabindex] should be focusable.
-PASS svg[tabindex] should be focusable.
-PASS switch[tabindex] should be focusable.
-PASS text[tabindex] should be focusable.
-PASS textPath[tabindex] should be focusable.
-PASS tspan[tabindex] should be focusable.
-FAIL unknown[tabindex] should be focusable. assert_equals: expected Element node <unknown tabindex="0"></unknown> but got Element node <tspan tabindex="0"></tspan>
-PASS use[tabindex] should be focusable.
-PASS clipPath[tabindex] should not be focusable.
-PASS defs[tabindex] should not be focusable.
-PASS desc[tabindex] should not be focusable.
-PASS hatch[tabindex] should not be focusable.
-PASS linearGradient[tabindex] should not be focusable.
-PASS marker[tabindex] should not be focusable.
-PASS mask[tabindex] should not be focusable.
-PASS meshgradient[tabindex] should not be focusable.
-PASS metadata[tabindex] should not be focusable.
-PASS pattern[tabindex] should not be focusable.
-PASS radialGradient[tabindex] should not be focusable.
-PASS script[tabindex] should not be focusable.
-PASS style[tabindex] should not be focusable.
-PASS title[tabindex] should not be focusable.
-PASS symbol[tabindex] should not be focusable.
+[FAIL] The document root element should be focusable.
+  assert_equals: expected Element node <svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://w... but got null
+[PASS] rect should not be focusable.
+[PASS] svg should not be focusable.
+[FAIL] rect[focusable=true] should be focusable.
+  assert_equals: expected Element node <rect focusable="true"></rect> but got null
+[PASS] a should not be focusable.
+[PASS] a[href] should be focusable.
+[FAIL] a[focusable=false] should not be focusable.
+  assert_not_equals: got disallowed value Element node <a href="" focusable="false"></a>
+[FAIL] iframe should be focusable.
+  assert_equals: expected Element node <iframe src="resources/blank.htm"></iframe> but got Element node <a href="" focusable="false"></a>
+[PASS] audio[controls] should be focusable.
+[PASS] video[controls] should be focusable.
+[FAIL] canvas[tabindex] should be focusable.
+  assert_equals: expected Element node <canvas tabindex="0"></canvas> but got Element node <video controls="controls"></video>
+[PASS] circle[tabindex] should be focusable.
+[PASS] ellipse[tabindex] should be focusable.
+[PASS] foreignObject[tabindex] should be focusable.
+[PASS] g[tabindex] should be focusable.
+[PASS] image[tabindex] should be focusable.
+[PASS] line[tabindex] should be focusable.
+[FAIL] mesh[tabindex] should be focusable.
+  assert_equals: expected Element node <mesh tabindex="0"></mesh> but got Element node <line tabindex="0"></line>
+[PASS] path[tabindex] should be focusable.
+[PASS] polygon[tabindex] should be focusable.
+[PASS] rect[tabindex] should be focusable.
+[PASS] svg[tabindex] should be focusable.
+[PASS] switch[tabindex] should be focusable.
+[PASS] text[tabindex] should be focusable.
+[PASS] textPath[tabindex] should be focusable.
+[PASS] tspan[tabindex] should be focusable.
+[FAIL] unknown[tabindex] should be focusable.
+  assert_equals: expected Element node <unknown tabindex="0"></unknown> but got Element node <tspan tabindex="0"></tspan>
+[PASS] use[tabindex] should be focusable.
+[PASS] clipPath[tabindex] should not be focusable.
+[PASS] defs[tabindex] should not be focusable.
+[PASS] desc[tabindex] should not be focusable.
+[PASS] hatch[tabindex] should not be focusable.
+[PASS] linearGradient[tabindex] should not be focusable.
+[PASS] marker[tabindex] should not be focusable.
+[PASS] mask[tabindex] should not be focusable.
+[PASS] meshgradient[tabindex] should not be focusable.
+[PASS] metadata[tabindex] should not be focusable.
+[PASS] pattern[tabindex] should not be focusable.
+[PASS] radialGradient[tabindex] should not be focusable.
+[PASS] script[tabindex] should not be focusable.
+[PASS] style[tabindex] should not be focusable.
+[PASS] title[tabindex] should not be focusable.
+[PASS] symbol[tabindex] should not be focusable.
 Harness: the test ran to completion.
 

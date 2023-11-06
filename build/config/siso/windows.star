@@ -23,8 +23,8 @@ def __disable_remote_b289968566(ctx, step_config):
         # We should migrate default machine type to n2-standard-2.
         "name": "b289968566/exit-137",
         "action_outs": [
-            ".\\obj\\chrome\\test\\unit_tests\\chrome_browsing_data_remover_delegate_unittest.obj",
-            ".\\obj\\content\\browser\\browser\\browser_interface_binders.obj",
+            "./obj/chrome/test/unit_tests/chrome_browsing_data_remover_delegate_unittest.obj",
+            "./obj/content/browser/browser/browser_interface_binders.obj",
         ],
         "remote": False,
     }

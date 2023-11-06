@@ -18,12 +18,12 @@ const char kGetDetailsForEnrollmentRequestPath[] =
 // The billable service number for the request if the enrollment happens after
 // a local card upload.
 const int kUpstreamEnrollBillableServiceNumber =
-    kUploadCardBillableServiceNumber;
+    kUploadPaymentMethodBillableServiceNumber;
 
 // The billable service number for the request if the enrollment happens after a
 // server card retrieval or in the settings page.
 const int kDownstreamEnrollBillableServiceNumber =
-    kUnmaskCardBillableServiceNumber;
+    kUnmaskPaymentMethodBillableServiceNumber;
 
 }  // namespace
 

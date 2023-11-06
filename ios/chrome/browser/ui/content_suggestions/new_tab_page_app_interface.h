@@ -41,6 +41,14 @@
 // Returns YES if the SetUpListItemView for Autofill is complete.
 + (BOOL)setUpListItemAutofillIsComplete;
 
+// Returns YES if the Default Browser SetUpListItemView item in the Magic Stack
+// is complete.
++ (BOOL)setUpListItemDefaultBrowserInMagicStackIsComplete;
+
+// Returns YES if the Autofill SetUpListItemView item in the Magic Stack is
+// complete.
++ (BOOL)setUpListItemAutofillInMagicStackIsComplete;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_NEW_TAB_PAGE_APP_INTERFACE_H_

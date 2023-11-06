@@ -155,7 +155,7 @@ class CouponServiceTest : public testing::Test {
     EXPECT_TRUE(result);
     DCHECK_EQ(found.size(), 1u);
     DCHECK_EQ(found[0].second.free_listing_coupons()[0].last_display_time() ==
-                  time_to_compare.ToJavaTime(),
+                  time_to_compare.InMillisecondsSinceUnixEpoch(),
               should_be_equal);
     std::move(closure).Run();
   }

@@ -16,7 +16,7 @@
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -25,8 +25,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
@@ -117,6 +119,12 @@ class LocationBarCoordinatorTest : public PlatformTest {
     id mockLensCommandsHandler = OCMProtocolMock(@protocol(LensCommands));
     [dispatcher startDispatchingToTarget:mockLensCommandsHandler
                              forProtocol:@protocol(LensCommands)];
+    id mockHelpCommandsHandler = OCMProtocolMock(@protocol(HelpCommands));
+    [dispatcher startDispatchingToTarget:mockHelpCommandsHandler
+                             forProtocol:@protocol(HelpCommands)];
+    id mockToolbarCommandsHandler = OCMProtocolMock(@protocol(ToolbarCommands));
+    [dispatcher startDispatchingToTarget:mockToolbarCommandsHandler
+                             forProtocol:@protocol(ToolbarCommands)];
 
     // Set up ApplicationCommands mock. Because ApplicationCommands conforms
     // to ApplicationSettingsCommands, that needs to be mocked and dispatched

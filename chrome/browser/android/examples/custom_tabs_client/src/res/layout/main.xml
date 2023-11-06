@@ -613,5 +613,13 @@
             android:layout_height="wrap_content"
             android:checked = "true"
             android:text="@string/side_sheet_rounded_corner_text" />
+
+        <CheckBox
+            android:id="@+id/content_scroll_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/content_scroll_text" />
+
     </LinearLayout>
 </ScrollView>

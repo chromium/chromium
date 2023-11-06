@@ -158,7 +158,7 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
   auto* o_list_element = DynamicTo<HTMLOListElement>(list);
   const bool is_reversed = o_list_element && o_list_element->IsReversed();
   int value_step = is_reversed ? -1 : 1;
-  if (const auto* style = item_node.GetComputedStyle()) {
+  if (const auto* style = To<Element>(item_node).GetComputedStyle()) {
     const auto directives =
         style->GetCounterDirectives(AtomicString("list-item"));
     if (directives.IsSet())

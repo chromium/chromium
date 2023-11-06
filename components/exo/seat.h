@@ -112,6 +112,12 @@ class Seat : public aura::client::FocusChangeObserver,
   // Abort any drag operations that haven't been started yet.
   void AbortPendingDragOperation();
 
+  // Returns true if the drag and drop has been started (which happens
+  // asynchronously) and hasn't been fully finished yet. This can return true
+  // even if ash's DND session is finished because wayland's dnd finished event
+  // is sent asynchronosly.
+  bool IsDragDropOperationInProgress() const;
+
   // Overridden from aura::client::FocusChangeObserver:
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
@@ -199,7 +205,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Max value of SeatObserver's priority. Both side are inclusive.
   static constexpr int kMaxObserverPriority = 1;
 
-  // Map from priority to a list of SeatOberver pointers.
+  // Map from priority to a list of SeatObserver pointers.
   std::array<base::ObserverList<SeatObserver>::Unchecked,
              kMaxObserverPriority + 1>
       priority_observer_list_;
@@ -213,6 +219,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // Data source being used as a clipboard content.
   std::unique_ptr<ScopedDataSource> selection_source_;
 
+  // TODO(oshima): Move this to DataDevice.
   base::WeakPtr<DragDropOperation> drag_drop_operation_;
 
   // True while Seat is updating clipboard data to selection source.

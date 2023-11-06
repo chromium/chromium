@@ -10,15 +10,94 @@
     width: 60px;
     height: 60px;
   }
+
+  #notification-card {
+    display: flex;
+  }
+
+  .notification-message {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 12px
+  }
+
+  .notification-type {
+    text-transform: uppercase;
+    margin: 8px 0;
+    font-size: 13px;
+  }
+
+  .notification-type.error {
+    color: rgb(195, 40, 40);
+  }
+
+  .notification-type.accouncement {
+    color: rgb(98, 133, 52);
+  }
+
+  .notification-type.update {
+    color: rgb(34, 135, 211);
+  }
+
+  .notification-label {
+    color: white;
+  }
+
+  .icon-container {
+    width: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 24px;
+    height: auto;
+  }
+
+  .icon-container > iron-icon {
+    --iron-icon-fill-color: white;
+    --iron-icon-width: 40px;
+    --iron-icon-height: 40px;
+  }
+
+  .icon-container.error > iron-icon {
+    --iron-icon-fill-color: rgb(195, 40, 40);
+  }
+
+  .icon-container.accouncement > iron-icon {
+    --iron-icon-fill-color: rgb(98, 133, 52);
+  }
+
+  .icon-container.update > iron-icon {
+    --iron-icon-fill-color: rgb(34, 135, 211);
+  }
 </style>
+
 <template is="dom-if" if="[[isLoading]]">
   <div class="loading-spinner">
     <paper-spinner-lite active="[[isLoading]]">
     </paper-spinner-lite>
   </div>
 </template>
+
 <template is="dom-if" if="[[!isLoading]]">
   <template is="dom-repeat" items="[[traces]]">
-    <trace-report trace="[[item]]"></trace-report>
+    <trace-report trace="[[item]]" on-show-toast="showToastHandler_">
+    </trace-report>
   </template>
 </template>
+
+<cr-toast id="toast" duration="5000">
+  <div id="notification-card">
+    <div class$="icon-container [[getNotificationStyling_(notification.type)]]">
+      <iron-icon icon="[[getNotificationIcon_(notification.type)]]"
+          aria-hidden="true">
+      </iron-icon>
+    </div>
+    <div class="notification-message">
+      <h4 class$="notification-type
+          [[getNotificationStyling_(notification.type)]]">
+        [[notification.type]]
+      </h4>
+      <span class="notification-label">[[notification.label]]</span>
+    </div>
+  </div>
+</cr-toast>

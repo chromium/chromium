@@ -106,12 +106,14 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   // Ignored.
   void OnIsAudibleChanged(
       const performance_manager::FrameNode* frame_node) override {}
+  void OnIsCapturingVideoStreamChanged(
+      const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
   void OnFirstContentfulPaint(
       const performance_manager::FrameNode* frame_node,
       base::TimeDelta time_since_navigation_start) override {}
   // Ignored.
-  void OnViewportIntersectionChanged(
+  void OnIntersectsViewportChanged(
       const performance_manager::FrameNode* frame_node) override {}
   // Ignored.
   void OnFrameVisibilityChanged(
@@ -140,6 +142,9 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnIsAudibleChanged(
+      const performance_manager::PageNode* page_node) override {}
+  // Ignored.
+  void OnHasPictureInPictureChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
   void OnLoadingStateChanged(

@@ -12,13 +12,16 @@ build_webui("build") {
     "textarea.ts",
   ]
   non_web_component_files = [ "compose_api_proxy.ts" ]
+  icons_html_files = [ "icons.html" ]
   ts_composite = true
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   mojo_files_deps = [ "//chrome/common/compose:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/common/compose/compose.mojom-webui.ts" ]

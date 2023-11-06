@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL SVGPoint interface assert_throws_js: function "function() { point.x = NaN; }" did not throw
+[FAIL] SVGPoint interface
+  assert_throws_js: function "function() { point.x = NaN; }" did not throw
 Harness: the test ran to completion.
 

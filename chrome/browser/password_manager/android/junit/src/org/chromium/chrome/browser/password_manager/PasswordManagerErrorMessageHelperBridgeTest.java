@@ -61,36 +61,27 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
             spy(new FakeAccountManagerFacade());
 
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Rule
     public AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(mFakeAccountManagerFacade);
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Mock
-    private Profile mProfile;
+    @Mock private Profile mProfile;
 
-    @Mock
-    private PrefService mPrefService;
+    @Mock private PrefService mPrefService;
 
-    @Mock
-    private UserPrefs.Natives mUserPrefsJniMock;
+    @Mock private UserPrefs.Natives mUserPrefsJniMock;
 
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
 
-    @Mock
-    private WindowAndroid mWindowAndroidMock;
+    @Mock private WindowAndroid mWindowAndroidMock;
 
-    @Mock
-    private IdentityManager mIdentityManagerMock;
+    @Mock private IdentityManager mIdentityManagerMock;
 
     private SharedPreferencesManager mSharedPrefsManager;
 
@@ -122,8 +113,9 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Test
     public void testNotEnoughTimeSinceLastUI() {
         final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        final long timeOfSyncPrompt = timeOfFirstUpmPrompt
-                + PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
+        final long timeOfSyncPrompt =
+                timeOfFirstUpmPrompt
+                        + PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
@@ -138,8 +130,9 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
         mFakeTimeTestRule.advanceMillis(
                 PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_BETWEEN_PROMPTS_MS + 1);
-        final long timeOfSyncPrompt = TimeUtils.currentTimeMillis()
-                - PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
+        final long timeOfSyncPrompt =
+                TimeUtils.currentTimeMillis()
+                        - PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
         mSharedPrefsManager.writeLong(
@@ -150,8 +143,9 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     @Test
     public void testEnoughTimeSinceBothUis() {
         final long timeOfFirstUpmPrompt = TimeUtils.currentTimeMillis();
-        final long timeOfSyncPrompt = timeOfFirstUpmPrompt
-                + PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
+        final long timeOfSyncPrompt =
+                timeOfFirstUpmPrompt
+                        + PasswordManagerErrorMessageHelperBridge.MINIMAL_INTERVAL_TO_SYNC_ERROR_MS;
 
         when(mPrefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP))
                 .thenReturn(Long.toString(timeOfFirstUpmPrompt));
@@ -169,7 +163,8 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
         mFakeTimeTestRule.advanceMillis(timeIncrementMs);
         PasswordManagerErrorMessageHelperBridge.saveErrorUiShownTimestamp();
         verify(mPrefService)
-                .setString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP,
+                .setString(
+                        Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP,
                         Long.toString(currentTimeMs + timeIncrementMs));
     }
 
@@ -177,21 +172,26 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     public void testUpdateCredentialsRecordsSuccessWhenSigningInSucceeds() {
         final Activity activity = mock(Activity.class);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(2);
-            callback.onResult(true);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(true);
+                            return null;
+                        })
                 .when(mFakeAccountManagerFacade)
-                .updateCredentials(eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
-                        eq(activity), any());
+                .updateCredentials(
+                        eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(activity),
+                        any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
     }
@@ -200,21 +200,26 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     public void testUpdateCredentialsRecordsSuccessWhenSigningInFailed() {
         final Activity activity = mock(Activity.class);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(2);
-            callback.onResult(false);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Callback<Boolean> callback = invocation.getArgument(2);
+                            callback.onResult(false);
+                            return null;
+                        })
                 .when(mFakeAccountManagerFacade)
-                .updateCredentials(eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
-                        eq(activity), any());
+                .updateCredentials(
+                        eq(CoreAccountInfo.getAndroidAccountFrom(mCoreAccountInfo)),
+                        eq(activity),
+                        any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock);
-        assertEquals(1,
+        assertEquals(
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
-        assertEquals(0,
+        assertEquals(
+                0,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
     }

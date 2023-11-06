@@ -56,7 +56,8 @@ class NotificationCounterViewTest : public AshTestBase,
     AshTestBase::SetUp();
   }
 
-  bool IsQsRevampEnabled() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
  protected:
   NotificationCounterView* GetNotificationCounterView() {

@@ -57,6 +57,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossAdapterClient
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
   void SetName(ResponseCallback<Void> callback,
                const std::string& name) override;

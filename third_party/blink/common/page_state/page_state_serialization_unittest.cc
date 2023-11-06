@@ -23,7 +23,7 @@ namespace {
 
 base::FilePath GetFilePath() {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   return base::MakeAbsoluteFilePath(path.Append(
       FILE_PATH_LITERAL("third_party/blink/common/page_state/test_data")));
 }
@@ -166,8 +166,9 @@ class PageStateSerializationTest : public testing::Test {
     http_body->request_body->AppendBytes(test_body.data(), test_body.size());
 
     base::FilePath path(FILE_PATH_LITERAL("file.txt"));
-    http_body->request_body->AppendFileRange(base::FilePath(path), 100, 1024,
-                                             base::Time::FromDoubleT(9999.0));
+    http_body->request_body->AppendFileRange(
+        base::FilePath(path), 100, 1024,
+        base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
     referenced_files->emplace_back(path.AsUTF16Unsafe());
   }
@@ -253,7 +254,8 @@ class PageStateSerializationTest : public testing::Test {
 
       frame_state->http_body.request_body->AppendFileRange(
           base::FilePath(FILE_PATH_LITERAL("file.txt")), 0,
-          std::numeric_limits<uint64_t>::max(), base::Time::FromDoubleT(0.0));
+          std::numeric_limits<uint64_t>::max(),
+          base::Time::FromSecondsSinceUnixEpoch(0.0));
 
       std::string test_body2("data the second");
       frame_state->http_body.request_body->AppendBytes(test_body2.data(),
@@ -766,8 +768,9 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_HttpBody) {
   http_body.request_body->AppendBytes(test_body.data(), test_body.size());
 
   base::FilePath path(FILE_PATH_LITERAL("file.txt"));
-  http_body.request_body->AppendFileRange(base::FilePath(path), 100, 1024,
-                                          base::Time::FromDoubleT(9999.0));
+  http_body.request_body->AppendFileRange(
+      base::FilePath(path), 100, 1024,
+      base::Time::FromSecondsSinceUnixEpoch(9999.0));
 
   ExplodedPageState saved_state;
   ReadBackwardsCompatPageState("http_body", 26, &saved_state);

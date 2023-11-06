@@ -8,6 +8,7 @@
 #include <pk11pub.h>
 
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -41,7 +42,7 @@ class COMPONENT_EXPORT(CHAPS_UTIL) ChapsUtil {
   // If some of certificates can not be imported they will be skipped and
   // Pkcs12ReaderStatusCode::kFailureDuringCertImport error will be logged.
   // `is_software_backed` specifies whether a hardware-backed or software-backed
-  // storage is used.
+  // storage is used. Keys cannot be extracted from the hardware-backed storage.
   virtual bool ImportPkcs12Certificate(PK11SlotInfo* slot,
                                        const std::vector<uint8_t>& pkcs12_data,
                                        const std::string& password,

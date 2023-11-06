@@ -53,7 +53,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/first_run.h"
-#import "ios/chrome/browser/geolocation/geolocation_logger.h"
+#import "ios/chrome/browser/geolocation/model/geolocation_logger.h"
 #import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/mailto_handler_service_factory.h"
@@ -157,7 +157,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
-#import "ios/chrome/browser/web_state_list/session_metrics.h"
+#import "ios/chrome/browser/web_state_list/model/session_metrics.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -359,6 +359,9 @@ void InjectNTP(Browser* browser) {
 // YES if the Settings view is being dismissed.
 @property(nonatomic, assign) BOOL dismissingSettings;
 
+// The state of the scene controlled by this object.
+@property(nonatomic, weak, readonly) SceneState* sceneState;
+
 @end
 
 @implementation SceneController
@@ -439,10 +442,6 @@ void InjectNTP(Browser* browser) {
 - (void)setStartupParameters:(AppStartupParameters*)parameters {
   _startupParameters = parameters;
   self.startupParametersAreBeingHandled = NO;
-  BOOL shouldShowPromo =
-      self.sceneState.appState.shouldShowDefaultBrowserPromo &&
-      (parameters.postOpeningAction == NO_ACTION);
-  self.sceneState.appState.shouldShowDefaultBrowserPromo = shouldShowPromo;
 
   if (parameters.openedViaFirstPartyScheme) {
     [[NonModalDefaultBrowserPromoSchedulerSceneAgent
@@ -1126,10 +1125,6 @@ void InjectNTP(Browser* browser) {
         currentBrowser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];
   }
-
-  if (!IsDefaultBrowserInPromoManagerEnabled()) {
-    [self maybeShowDefaultBrowserPromo:self.mainInterface.browser];
-  }
 }
 
 // Notifies the Feature Engagement Tracker that an eligibility criterion has
@@ -1147,90 +1142,6 @@ void InjectNTP(Browser* browser) {
     tracker->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
     tracker->NotifyEvent(
         feature_engagement::events::kDefaultBrowserVideoPromoConditionsMet);
-  }
-}
-
-// `YES` if Chrome is not the default browser, the app did not crash recently,
-// the user never saw the promo UI and is in the correct experiment groups.
-- (BOOL)potentiallyInterestedUser {
-  // If skipping first run, not in Safe Mode, no post opening action and the
-  // launch is not after a crash, consider showing the default browser promo.
-  TabOpeningPostOpeningAction postOpeningAction =
-      self.NTPActionAfterTabSwitcherDismissal;
-  if (self.startupParameters) {
-    postOpeningAction = self.startupParameters.postOpeningAction;
-  }
-  return postOpeningAction == NO_ACTION &&
-         GetApplicationContext()->WasLastShutdownClean() &&
-         !IsChromeLikelyDefaultBrowser();
-}
-
-- (void)maybeShowDefaultBrowserPromo:(Browser*)browser {
-  ChromeBrowserState* browserState = self.sceneState.appState.mainBrowserState;
-  PrefService* prefService = browserState->GetPrefs();
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-
-  if (self.sceneState.appState.startupInformation.isFirstRun ||
-      IsUserPolicyNotificationNeeded(authService, prefService) ||
-      ![self potentiallyInterestedUser]) {
-    // Don't show the default browser promo when either (1) the user is going
-    // through the First Run screens, (2) the user MUST see the User Policy
-    // notification, OR (3) it was determined that the user isn't potentially
-    // interested in that promo.
-    //
-    // Showing the User Policy notification has priority over showing the
-    // default browser promo. Both dialogs are competing for the same time slot
-    // which is after the browser startup and the browser UI is initialized.
-    return;
-  }
-
-  // Don't show the default browser promo if the user is in the default browser
-  // blue dot experiment.
-  // TODO(crbug.com/1410229) clean-up experiment code when fully launched.
-  if (!AreDefaultBrowserPromosEnabled()) {
-    return;
-  }
-
-  // Show the Default Browser promo UI if the user's past behavior fits
-  // the categorization of potentially interested users or if the user is
-  // signed in. Do not show if it is determined that Chrome is already the
-  // default browser (checked in the if enclosing this comment) or if the user
-  // has already seen the promo UI. If the user was in the experiment group
-  // that showed the Remind Me Later button and tapped on it, then show the
-  // promo again if now is the right time.
-
-  BOOL isSignedIn = [self isSignedIn];
-
-  // Tailored promos take priority over general promo.
-  BOOL isMadeForIOSPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeMadeForIOS);
-  BOOL isAllTabsPromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeAllTabs) &&
-      isSignedIn;
-  BOOL isStaySafePromoEligible =
-      IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeStaySafe);
-
-  BOOL isTailoredPromoEligibleUser =
-      !HasUserInteractedWithTailoredFullscreenPromoBefore() &&
-      (isMadeForIOSPromoEligible || isAllTabsPromoEligible ||
-       isStaySafePromoEligible);
-  if (isTailoredPromoEligibleUser && !UserInFullscreenPromoCooldown()) {
-    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-    self.sceneState.appState.defaultBrowserPromoTypeToShow =
-        MostRecentInterestDefaultPromoType(!isSignedIn);
-    DCHECK(self.sceneState.appState.defaultBrowserPromoTypeToShow !=
-           DefaultPromoTypeGeneral);
-    return;
-  }
-
-  if (!HasUserInteractedWithFullscreenPromoBefore() &&
-      (IsLikelyInterestedDefaultBrowserUser(DefaultPromoTypeGeneral) ||
-       isSignedIn) &&
-      !UserInFullscreenPromoCooldown()) {
-    self.sceneState.appState.shouldShowDefaultBrowserPromo = YES;
-    self.sceneState.appState.defaultBrowserPromoTypeToShow =
-        DefaultPromoTypeGeneral;
   }
 }
 
@@ -1353,6 +1264,7 @@ void InjectNTP(Browser* browser) {
       self.mainInterface.browser->GetBrowserState()->GetPrefs());
 }
 
+// YES if incognito mode is forced by enterprise policy.
 - (BOOL)isIncognitoForced {
   return IsIncognitoModeForced(
       self.incognitoInterface.browser->GetBrowserState()->GetPrefs());
@@ -1564,25 +1476,6 @@ void InjectNTP(Browser* browser) {
   }
 }
 
-// TODO(crbug.com/779791) : Remove showing settings from MainController.
-- (void)showAutofillSettingsFromViewController:
-    (UIViewController*)baseViewController {
-  DCHECK(!self.signinCoordinator)
-      << "self.signinCoordinator: "
-      << base::SysNSStringToUTF8([self.signinCoordinator description]);
-  if (self.settingsNavigationController) {
-    return;
-  }
-
-  Browser* browser = self.mainInterface.browser;
-  self.settingsNavigationController =
-      [SettingsNavigationController autofillProfileControllerForBrowser:browser
-                                                               delegate:self];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
 - (void)showPrivacySettingsFromViewController:
     (UIViewController*)baseViewController {
   if (self.settingsNavigationController) {
@@ -1658,8 +1551,7 @@ void InjectNTP(Browser* browser) {
     self.settingsNavigationController =
         [SettingsNavigationController userFeedbackControllerForBrowser:browser
                                                               delegate:self
-                                                      userFeedbackData:data
-                                                               handler:handler];
+                                                      userFeedbackData:data];
     [baseViewController presentViewController:self.settingsNavigationController
                                      animated:YES
                                    completion:nil];
@@ -2351,22 +2243,6 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
-- (void)showTabPickupSettings {
-  UIViewController* baseViewController = self.currentInterface.viewController;
-  if (self.settingsNavigationController) {
-    [self.settingsNavigationController showTabPickupSettings];
-    return;
-  }
-  self.settingsNavigationController = [[SettingsNavigationController alloc]
-      initWithRootViewController:nil
-                         browser:self.mainInterface.browser
-                        delegate:self];
-  [self.settingsNavigationController showTabPickupSettings];
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
-}
-
 - (void)showContentsSettingsFromViewController:
     (UIViewController*)baseViewController {
   if (self.settingsNavigationController) {
@@ -2393,24 +2269,6 @@ void InjectNTP(Browser* browser) {
 - (void)settingsWasDismissed {
   [self.settingsNavigationController cleanUpSettings];
   self.settingsNavigationController = nil;
-}
-
-- (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return static_cast<id<ApplicationCommands, BrowserCommands>>(
-      self.mainInterface.browser->GetCommandDispatcher());
-}
-
-- (id<ApplicationCommands>)handlerForApplicationCommands {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                            ApplicationCommands);
-}
-
-- (id<SnackbarCommands>)handlerForSnackbarCommands {
-  // Assume that settings always wants the dispatcher from the main BVC.
-  return HandlerForProtocol(self.mainInterface.browser->GetCommandDispatcher(),
-                            SnackbarCommands);
 }
 
 #pragma mark - TabGridCoordinatorDelegate
@@ -2520,7 +2378,7 @@ void InjectNTP(Browser* browser) {
       };
     case START_LENS_FROM_INTENTS:
       return ^{
-        [weakSelf startLensWithEntryPoint:LensEntrypoint::Spotlight];
+        [weakSelf startLensWithEntryPoint:LensEntrypoint::Intents];
       };
     case FOCUS_OMNIBOX:
       return ^{
@@ -3867,7 +3725,7 @@ void InjectNTP(Browser* browser) {
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
 
-  if (breadcrumbs::IsEnabled()) {
+  if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
     BreadcrumbManagerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
         ->SetLoggingEnabled(false);
   }

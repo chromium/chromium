@@ -456,7 +456,7 @@ cc_library(
         "tensor.h",
         "//mediapipe/framework/formats/tensor:internal.h",
     ] + select({
-        "//mediapipe:ios": ["tensor_mtl_buffer_view.h"],
+        "//mediapipe:apple": ["tensor_mtl_buffer_view.h"],
         "//conditions:default": [],
     }),
     copts = select({
@@ -477,33 +477,35 @@ cc_library(
         "//conditions:default": [],
     }),
     linkopts = select({
-        "//mediapipe:ios": [
+        "//mediapipe:apple": [
             "-framework CoreVideo",
             "-framework MetalKit",
         ],
         "//conditions:default": [],
+        # Option for vendor binaries to avoid linking libandroid.so.
         "//mediapipe/framework:android_no_jni": [],
-        "//mediapipe:android": [
-            "-landroid",
-        ],
+        "//mediapipe:android": ["-landroid"],
         ":android_link_native_window": [
-            "-lnativewindow",  # Provides <android/hardware_buffer.h> to vendor processes on Android API >= 26.
+            "-lnativewindow",  # Provides <android/hardware_buffer.h> to vendor binaries on Android API >= 26.
         ],
     }),
     deps = [
-        "//mediapipe/framework:port",
-        "@com_google_absl//absl/container:flat_hash_map",
-        "@com_google_absl//absl/log:absl_check",
-        "@com_google_absl//absl/log:absl_log",
-        "@com_google_absl//absl/memory",
-        "@com_google_absl//absl/synchronization",
-    ] + select({
-        "//mediapipe/gpu:disable_gpu": [],
-        "//conditions:default": [
-            "//mediapipe/gpu:gl_base",
-            "//mediapipe/gpu:gl_context",
-        ],
-    }),
+               "//mediapipe/framework:port",
+               "@com_google_absl//absl/container:flat_hash_map",
+               "@com_google_absl//absl/log:absl_check",
+               "@com_google_absl//absl/log:absl_log",
+               "@com_google_absl//absl/memory",
+               "@com_google_absl//absl/synchronization",
+           ] + select({
+               "//mediapipe/gpu:disable_gpu": [],
+               "//conditions:default": [
+                   "//mediapipe/gpu:gl_base",
+                   "//mediapipe/gpu:gl_context",
+               ],
+           }) +
+           select({
+               "//conditions:default": [],
+           }),
 )
 
 cc_test(

@@ -2,15 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import imp
-import os.path
-import sys
 import unittest
 
 from mojom.parse import ast
 from mojom.parse import lexer
 from mojom.parse import parser
-
 
 class ParserTest(unittest.TestCase):
   """Tests |parser.Parse()|."""
@@ -1374,7 +1370,6 @@ class ParserTest(unittest.TestCase):
         parser.ParseError, r"^my_file\.mojom:2: Error: Unexpected '\?':\n"
         r" *associated\? MyInterface& a;$"):
       parser.Parse(source3, "my_file.mojom")
-
 
 if __name__ == "__main__":
   unittest.main()

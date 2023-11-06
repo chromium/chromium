@@ -18,14 +18,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit tests for {@link ResettersForTesting}.
- */
+/** Unit tests for {@link ResettersForTesting}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ResettersForTestingTest {
     private static class ResetsToNull {
         public static String str;
+
         public static void setStrForTesting(String newStr) {
             str = newStr;
             ResettersForTesting.register(() -> str = null);
@@ -48,20 +47,22 @@ public class ResettersForTestingTest {
 
         public static void setStrForTesting(String newStr) {
             str = newStr;
-            ResettersForTesting.register(() -> {
-                str = null;
-                resetCount++;
-            });
+            ResettersForTesting.register(
+                    () -> {
+                        str = null;
+                        resetCount++;
+                    });
         }
     }
 
     private static class ResetsToNullAndIncrementsWithOneShotResetter {
         public static String str;
         public static int resetCount;
-        private static Runnable sResetter = () -> {
-            str = null;
-            resetCount++;
-        };
+        private static Runnable sResetter =
+                () -> {
+                    str = null;
+                    resetCount++;
+                };
 
         public static void setStrForTesting(String newStr) {
             str = newStr;

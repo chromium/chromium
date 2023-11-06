@@ -8,7 +8,7 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
-#include "components/password_manager/core/browser/test_password_store.h"
+#include "components/password_manager/core/browser/password_store/test_password_store.h"
 
 using password_manager::TestPasswordStore;
 

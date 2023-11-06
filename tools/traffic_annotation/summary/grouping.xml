@@ -122,6 +122,7 @@ after discussions on the right group.
       <annotation id="ftl_messaging_client_send_messages"/>
       <annotation id="ftl_registration_manager"/>
       <annotation id="remoting_log_to_server"/>
+      <annotation id="remoting_provision_corp_machine"/>
       <annotation id="omnibox_result_change"/>
       <annotation id="browser_switcher_ieem_sitelist"/>
       <annotation id="adb_client_socket"/>
@@ -284,7 +285,6 @@ after discussions on the right group.
       <annotation id="ip_protection_service_get_token"/>
       <annotation id="supervised_user_request_blocked_site_permission"/>
       <annotation id="password_sharing_recipients"/>
-      <annotation id="page_insights"/>
       <annotation id="ntp_image_url_verification"/>
       <annotation id="passkey_enclave_client"/>
       <annotation id="iwa_update_discovery_update_manifest"/>
@@ -293,6 +293,13 @@ after discussions on the right group.
       <annotation id="ip_protection_service_get_proxy_config"/>
       <annotation id="customize_chrome_page_handler"/>
       <annotation id="almanac_icon_cache"/>
+      <annotation id="blink_fetch_later_manager"/>
+      <annotation id="carrier_lock_manager_fetch_configuration"/>
+      <annotation id="carrier_lock_manager_check_membership"/>
+      <annotation id="carrier_lock_manager_fcm_topic"/>
+      <annotation id="almanac_app_install"/>
+      <annotation id="remoting_report_provisioning_error"/>
+      <annotation id="webauthn_rp_id_check"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

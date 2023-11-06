@@ -19,19 +19,19 @@ import android.view.autofill.AutofillValue;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.autofill.AutofillRequest.FocusField;
 import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
-import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
@@ -475,11 +475,14 @@ public class AutofillProvider {
             String[] datalistValues, String[] datalistLabels, RectF bounds, boolean isRtl) {
         mDatalistSuggestions = new AutofillSuggestion[datalistValues.length];
         for (int i = 0; i < mDatalistSuggestions.length; i++) {
-            mDatalistSuggestions[i] = new AutofillSuggestion(datalistValues[i], datalistLabels[i],
-                    /* itemTag= */ "", DropdownItem.NO_ICON, false /* isIconAtLeft */,
-                    PopupItemId.DATALIST_ENTRY, false /* isDeletable */,
-                    false /* isMultilineLabel */, false /* isBoldLabel */,
-                    /* featureForIPH= */ "");
+            mDatalistSuggestions[i] =
+                    new AutofillSuggestion.Builder()
+                            .setLabel(datalistValues[i])
+                            .setSubLabel(datalistLabels[i])
+                            .setItemTag("")
+                            .setPopupItemId(PopupItemId.DATALIST_ENTRY)
+                            .setFeatureForIPH("")
+                            .build();
         }
         if (mWebContentsAccessibility == null) {
             mWebContentsAccessibility = WebContentsAccessibility.fromWebContents(mWebContents);

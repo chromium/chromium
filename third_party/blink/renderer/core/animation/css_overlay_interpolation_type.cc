@@ -100,7 +100,7 @@ class InheritedOverlayChecker
 InterpolationValue CSSOverlayInterpolationType::CreateOverlayValue(
     EOverlay overlay) const {
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(0),
       CSSOverlayNonInterpolableValue::Create(overlay, overlay));
 }
 
@@ -171,8 +171,8 @@ PairwiseInterpolationValue CSSOverlayInterpolationType::MaybeMergeSingles(
   EOverlay end_overlay =
       To<CSSOverlayNonInterpolableValue>(*end.non_interpolable_value).Overlay();
   return PairwiseInterpolationValue(
-      std::make_unique<InterpolableNumber>(0),
-      std::make_unique<InterpolableNumber>(1),
+      MakeGarbageCollected<InterpolableNumber>(0),
+      MakeGarbageCollected<InterpolableNumber>(1),
       CSSOverlayNonInterpolableValue::Create(start_overlay, end_overlay));
 }
 

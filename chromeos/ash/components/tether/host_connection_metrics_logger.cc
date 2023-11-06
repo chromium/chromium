@@ -109,6 +109,21 @@ void HostConnectionMetricsLogger::RecordConnectionToHostResult(
       RecordConnectionResultFailure(
           ConnectionToHostResult_FailureEventType::UNRECOGNIZED_RESPONSE_ERROR);
       break;
+    case ConnectionToHostResult::
+        CONNECTION_RESULT_FAILURE_INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG:
+      RecordConnectionResultFailure(ConnectionToHostResult_FailureEventType::
+                                        INVALID_ACTIVE_EXISTING_SOFT_AP_CONFIG);
+      break;
+    case ConnectionToHostResult::
+        CONNECTION_RESULT_FAILURE_INVALID_NEW_SOFT_AP_CONFIG:
+      RecordConnectionResultFailure(
+          ConnectionToHostResult_FailureEventType::INVALID_NEW_SOFT_AP_CONFIG);
+      break;
+    case ConnectionToHostResult::
+        CONNECTION_RESULT_FAILURE_INVALID_WIFI_AP_CONFIG:
+      RecordConnectionResultFailure(
+          ConnectionToHostResult_FailureEventType::INVALID_WIFI_AP_CONFIG);
+      break;
     default:
       NOTREACHED();
   };

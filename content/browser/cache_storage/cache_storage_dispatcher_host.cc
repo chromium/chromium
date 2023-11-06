@@ -604,8 +604,7 @@ class CacheStorageDispatcherHost::CacheImpl
       return;
     }
 
-    scoped_refptr<net::IOBuffer> buf =
-        base::MakeRefCounted<net::IOBuffer>(data.size());
+    auto buf = base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     if (data.size())
       memcpy(buf->data(), data.data(), data.size());
 

@@ -54,8 +54,7 @@ import java.util.Date;
 @Config(manifest = Config.NONE)
 public class RestoreTabsPromoScreenViewBinderUnitTest {
     private static final long JAN_1_1970 = new Date(70, Calendar.JANUARY, 1).getTime();
-    @Mock
-    private RestoreTabsPromoScreenCoordinator.Delegate mMockDelegate;
+    @Mock private RestoreTabsPromoScreenCoordinator.Delegate mMockDelegate;
 
     private Activity mActivity;
     private View mRestoreTabsPromoView;
@@ -66,25 +65,30 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mRestoreTabsPromoView = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_bottom_sheet, /*root=*/null);
+        mRestoreTabsPromoView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_bottom_sheet, /* root= */ null);
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(VISIBLE, false)
-                         .with(DEVICE_MODEL_LIST, new ModelList())
-                         .with(REVIEW_TABS_MODEL_LIST, new ModelList())
-                         .with(NUM_TABS_DESELECTED, 0)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(VISIBLE, false)
+                        .with(DEVICE_MODEL_LIST, new ModelList())
+                        .with(REVIEW_TABS_MODEL_LIST, new ModelList())
+                        .with(NUM_TABS_DESELECTED, 0)
+                        .build();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mModel,
-                new RestoreTabsPromoScreenViewBinder.ViewHolder(mRestoreTabsPromoView),
-                RestoreTabsPromoScreenViewBinder::bind);
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        new RestoreTabsPromoScreenViewBinder.ViewHolder(mRestoreTabsPromoView),
+                        RestoreTabsPromoScreenViewBinder::bind);
     }
 
     @Test
     public void testOnHomeScreen_setSelectedDevice() {
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
-        mModel.set(SELECTED_DEVICE,
+        mModel.set(
+                SELECTED_DEVICE,
                 new ForeignSession(
                         "tag", "John's iPhone 6", JAN_1_1970, new ArrayList<>(), FormFactor.PHONE));
         TextView deviceNameView =
@@ -98,7 +102,8 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testSetHomeScreen() {
         mModel.set(HOME_SCREEN_DELEGATE, mMockDelegate);
-        mModel.set(SELECTED_DEVICE,
+        mModel.set(
+                SELECTED_DEVICE,
                 new ForeignSession(
                         "tag", "John's iPhone 6", JAN_1_1970, new ArrayList<>(), FormFactor.PHONE));
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
@@ -143,7 +148,7 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
         ForeignSessionTab tab1 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        PropertyModel model1 = TabItemProperties.create(/*tab=*/tab1, /*isSelected=*/true);
+        PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
 
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
@@ -158,11 +163,11 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
         ForeignSessionTab tab1 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        PropertyModel model1 = TabItemProperties.create(/*tab=*/tab1, /*isSelected=*/true);
+        PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
-        PropertyModel model2 = TabItemProperties.create(/*tab=*/tab2, /*isSelected=*/true);
+        PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
@@ -177,11 +182,11 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
         ForeignSessionTab tab1 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
         ModelList tabItems = mModel.get(REVIEW_TABS_MODEL_LIST);
-        PropertyModel model1 = TabItemProperties.create(/*tab=*/tab1, /*isSelected=*/true);
+        PropertyModel model1 = TabItemProperties.create(/* tab= */ tab1, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model1));
         ForeignSessionTab tab2 =
                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", JAN_1_1970, 0);
-        PropertyModel model2 = TabItemProperties.create(/*tab=*/tab2, /*isSelected=*/true);
+        PropertyModel model2 = TabItemProperties.create(/* tab= */ tab2, /* isSelected= */ true);
         tabItems.add(new ListItem(DetailItemType.TAB, model2));
 
         mModel.set(NUM_TABS_DESELECTED, 1);
@@ -195,12 +200,17 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testSetHomeScreen_oneSessionInModelList() {
         mModel.set(HOME_SCREEN_DELEGATE, mMockDelegate);
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPhone 6", JAN_1_1970, new ArrayList<>(), FormFactor.PHONE);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPhone 6", JAN_1_1970, new ArrayList<>(), FormFactor.PHONE);
         ModelList deviceItems = mModel.get(DEVICE_MODEL_LIST);
-        PropertyModel model = ForeignSessionItemProperties.create(
-                /*session=*/session, /*isSelected=*/true,
-                /*onClickListener=*/() -> { mModel.set(CURRENT_SCREEN, DEVICE_SCREEN); });
+        PropertyModel model =
+                ForeignSessionItemProperties.create(
+                        /* session= */ session,
+                        /* isSelected= */ true,
+                        /* onClickListener= */ () -> {
+                            mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+                        });
         deviceItems.add(new ListItem(DetailItemType.DEVICE, model));
 
         ImageView expandSelectorView1 =
@@ -228,12 +238,17 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
     @Test
     public void testSetHomeScreen_sessionIsTablet() {
         mModel.set(HOME_SCREEN_DELEGATE, mMockDelegate);
-        ForeignSession session = new ForeignSession(
-                "tag", "John's iPad Air", JAN_1_1970, new ArrayList<>(), FormFactor.TABLET);
+        ForeignSession session =
+                new ForeignSession(
+                        "tag", "John's iPad Air", JAN_1_1970, new ArrayList<>(), FormFactor.TABLET);
         ModelList deviceItems = mModel.get(DEVICE_MODEL_LIST);
-        PropertyModel model = ForeignSessionItemProperties.create(
-                /*session=*/session, /*isSelected=*/true,
-                /*onClickListener=*/() -> { mModel.set(CURRENT_SCREEN, DEVICE_SCREEN); });
+        PropertyModel model =
+                ForeignSessionItemProperties.create(
+                        /* session= */ session,
+                        /* isSelected= */ true,
+                        /* onClickListener= */ () -> {
+                            mModel.set(CURRENT_SCREEN, DEVICE_SCREEN);
+                        });
         deviceItems.add(new ListItem(DetailItemType.DEVICE, model));
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
 

@@ -21,15 +21,14 @@ public interface SuggestionProcessor extends DropdownItemProcessor {
 
     /**
      * Populate a model for the given suggestion.
+     *
      * @param suggestion The suggestion to populate the model for.
      * @param model The model to populate.
      * @param position The position of the suggestion in the list.
      */
     void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position);
 
-    /**
-     * Return if the suggestion view can have background rounding.
-     */
+    /** Return if the suggestion view can have background rounding. */
     @Override
     default boolean allowBackgroundRounding() {
         return true;

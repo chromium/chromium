@@ -19,6 +19,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/flags_ui/flags_ui_constants.h"
@@ -36,7 +37,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -65,13 +65,6 @@ namespace {
 content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIFlagsHost);
-  source->EnableReplaceI18nInJS();
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self';");
-  source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types static-types;");
   source->AddString(flags_ui::kVersion,
                     std::string(version_info::GetVersionNumber()));
 
@@ -89,10 +82,9 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
   }
 #endif
 
-  source->AddResourcePaths(
-      base::make_span(kFlagsUiResources, kFlagsUiResourcesSize));
-  source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
-  source->UseStringsJs();
+  webui::SetupWebUIDataSource(
+      source, base::make_span(kFlagsUiResources, kFlagsUiResourcesSize),
+      IDR_FLAGS_UI_FLAGS_HTML);
   return source;
 }
 

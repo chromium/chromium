@@ -23,7 +23,7 @@ import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/beha
 import {OOBE_UI_STATE} from '../../components/display_manager_types.js';
 
 // Keep in sync with ArcVmDataMigrationScreenView::UIState.
-var ArcVmDataMigrationUIState = {
+const ArcVmDataMigrationUIState = {
   LOADING: 'loading',
   WELCOME: 'welcome',
   RESUM: 'resume',
@@ -33,7 +33,7 @@ var ArcVmDataMigrationUIState = {
 };
 
 // Keep in sync with kUserAction* in arc_vm_data_migration_screen.cc.
-var ArcVmDataMigrationUserAction = {
+const ArcVmDataMigrationUserAction = {
   SKIP: 'skip',
   UPDATE: 'update',
   RESUME: 'resume',

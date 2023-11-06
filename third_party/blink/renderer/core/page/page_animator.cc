@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
+#include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -22,10 +23,12 @@
 #include "third_party/blink/renderer/core/page/validation_message_client.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -66,6 +69,19 @@ void PageAnimator::ServiceScriptedAnimations(
   Clock().UpdateTime(monotonic_animation_start_time);
 
   DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+  for (const auto& [document, can_throttle] : documents) {
+    static TimeClamper time_clamper;
+    base::TimeTicks animation_time = document->Timeline().CalculateZeroTime();
+    if (monotonic_animation_start_time > animation_time) {
+      animation_time += time_clamper.ClampTimeResolution(
+          monotonic_animation_start_time - animation_time,
+          document->domWindow()->CrossOriginIsolatedCapability());
+    }
+    document->GetAnimationClock().SetAllowedToDynamicallyUpdateTime(false);
+    // TODO(crbug.com/1497922) timestamps outside rendering updates should also
+    // be coarsened.
+    document->GetAnimationClock().UpdateTime(animation_time);
+  }
 
   TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
   for (const auto& [document, can_throttle] : documents) {
@@ -99,14 +115,15 @@ void PageAnimator::ServiceScriptedAnimations(
         controller->GetExecutionContext()->IsContextFrozenOrPaused()) {
       continue;
     }
-    auto* loader = controller->GetWindow()->document()->Loader();
+
+    LocalDOMWindow* window = controller->GetWindow();
+    auto* loader = window->document()->Loader();
     if (!loader) {
       continue;
     }
+
     controller->SetCurrentFrameTimeMs(
-        loader->GetTiming()
-            .MonotonicTimeToZeroBasedDocumentTime(monotonic_time_now)
-            .InMillisecondsF());
+        window->document()->Timeline().CurrentTimeMilliseconds().value());
     controller->SetCurrentFrameLegacyTimeMs(
         loader->GetTiming()
             .MonotonicTimeToPseudoWallTime(monotonic_time_now)
@@ -202,6 +219,7 @@ void PageAnimator::ServiceScriptedAnimations(
   run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
     active_controllers[i]->DispatchEvents([](const Event* event) {
       return event->type() == event_type_names::kScroll ||
+             event->type() == event_type_names::kSnapchanged ||
              event->type() == event_type_names::kScrollend;
     });
   });
@@ -260,8 +278,13 @@ void PageAnimator::PostAnimate() {
   // events such as setInterval (see https://crbug.com/995806). This isn't a
   // perfect heuristic, but at the very least we know that if there is a pending
   // RAF we will be getting a new frame and thus don't need to unlock the clock.
-  if (!next_frame_has_pending_raf_)
+  if (!next_frame_has_pending_raf_) {
     Clock().SetAllowedToDynamicallyUpdateTime(true);
+    DocumentsVector documents = GetAllDocuments(page_->MainFrame());
+    for (const auto& [document, can_throttle] : documents) {
+      document->GetAnimationClock().SetAllowedToDynamicallyUpdateTime(true);
+    }
+  }
   next_frame_has_pending_raf_ = false;
 }
 

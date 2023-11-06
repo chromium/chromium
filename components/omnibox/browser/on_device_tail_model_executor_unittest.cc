@@ -23,7 +23,7 @@ constexpr int kEmbeddingDim = 64;
 
 base::FilePath GetTestFilePath(const std::string& filename) {
   base::FilePath file_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file_path);
   std::string fullname = "components/test/data/omnibox/" + filename;
   file_path = file_path.AppendASCII(fullname);
   return file_path;

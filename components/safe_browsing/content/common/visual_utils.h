@@ -15,6 +15,16 @@
 
 namespace safe_browsing::visual_utils {
 
+// Enum used to represent the result of the function |CanExtractVisualFeatures|.
+enum class CanExtractVisualFeaturesResult {
+  kCanExtractVisualFeatures = 0,
+  kNotExtendedReporting = 1,
+  kOffTheRecord = 2,
+  kBelowMinFrame = 3,
+  kAboveZoomLevel = 4,
+  kMaxValue = kAboveZoomLevel,
+};
+
 // Computes the BlurredImage for the given input image. This involves
 // downsampling the image to a certain fixed resolution, then blurring
 // by taking an average over fixed-size blocks of pixels.
@@ -31,14 +41,16 @@ std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
 // Whether we can extract visual features from a page with a given size and zoom
 // level.
 #if BUILDFLAG(IS_ANDROID)
-bool CanExtractVisualFeatures(bool is_extended_reporting,
-                              bool is_off_the_record,
-                              gfx::Size size);
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(
+    bool is_extended_reporting,
+    bool is_off_the_record,
+    gfx::Size size);
 #else
-bool CanExtractVisualFeatures(bool is_extended_reporting,
-                              bool is_off_the_record,
-                              gfx::Size size,
-                              double zoom_level);
+CanExtractVisualFeaturesResult CanExtractVisualFeatures(
+    bool is_extended_reporting,
+    bool is_off_the_record,
+    gfx::Size size,
+    double zoom_level);
 #endif
 
 // Extract a VisualFeatures proto from the given `bitmap`.

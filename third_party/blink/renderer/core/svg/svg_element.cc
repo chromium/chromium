@@ -683,15 +683,7 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
   Element::ParseAttribute(params);
 }
 
-// If the attribute is not present in the map, the map will return the "empty
-// value" - which is kAnimatedUnknown.
-using AnimatedPropertyTypeHashTraits =
-    EnumHashTraits<AnimatedPropertyType, kAnimatedUnknown>;
-
-using AttributeToPropertyTypeMap = HashMap<QualifiedName,
-                                           AnimatedPropertyType,
-                                           HashTraits<QualifiedName>,
-                                           AnimatedPropertyTypeHashTraits>;
+using AttributeToPropertyTypeMap = HashMap<QualifiedName, AnimatedPropertyType>;
 AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
     const QualifiedName& attribute_name) {
   DEFINE_STATIC_LOCAL(AttributeToPropertyTypeMap, css_property_map, ());

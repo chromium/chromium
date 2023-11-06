@@ -60,7 +60,7 @@ XRSpace* XRAnchor::anchorSpace(ExceptionState& exception_state) const {
         MakeGarbageCollected<XRObjectSpace<XRAnchor>>(session_, this);
   }
 
-  return anchor_space_;
+  return anchor_space_.Get();
 }
 
 device::mojom::blink::XRNativeOriginInformationPtr XRAnchor::NativeOrigin()

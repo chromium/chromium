@@ -202,6 +202,14 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
 }
 
+- (void)toggleOmniboxDebuggerView {
+  if (self.debugInfoViewController.viewIfLoaded.window) {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  } else {
+    [self showDebugUI];
+  }
+}
+
 #pragma mark - Getter/Setter
 
 - (void)setHighlightedIndexPath:(NSIndexPath*)highlightedIndexPath {
@@ -694,9 +702,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   if (section == (tableView.numberOfSections - 1)) {
     return nil;
   }
-  // When most visited tiles are enabled, only allow section separator under the
-  // verbatim suggestion.
-  if (section > 0) {
+  // Do not show footer when there is a header for the next section.
+  if (self.currentResult[section + 1].title.length > 0) {
     return nil;
   }
 

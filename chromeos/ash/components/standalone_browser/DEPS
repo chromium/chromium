@@ -1,6 +1,14 @@
 specific_include_rules = {
   "lacros_availability\.cc": [
+    "+components/policy/core/common/policy_map.h",
+    "+components/policy/policy_constants.h",
     "+components/user_manager/user.h",
+  ],
+  "browser_support\.cc": [
+    "+ash/constants/ash_switches.h",
+    "+components/user_manager/user.h",
+    "+components/user_manager/user_manager.h",
+    "+components/user_manager/user_type.h",
   ],
   "lacros_availability_unittest\.cc": [
     "+components/user_manager/fake_user_manager.h",

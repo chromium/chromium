@@ -860,16 +860,20 @@ TEST_P(PaintAndRasterInvalidationTest, SVGHiddenContainer) {
       ->setAttribute(svg_names::kXAttr, AtomicString("20"));
   UpdateAllLifecyclePhasesForTest();
 
+  const PaintInvalidationReason paint_inv_reason =
+      RuntimeEnabledFeatures::CSSMaskingInteropEnabled()
+          ? PaintInvalidationReason::kImage
+          : PaintInvalidationReason::kSubtree;
+
   // Should invalidate raster for real_rect only.
   EXPECT_THAT(
       GetRasterInvalidationTracking()->Invalidations(),
       UnorderedElementsAre(
           RasterInvalidationInfo{real_rect->Id(), real_rect->DebugName(),
-                                 gfx::Rect(155, 166, 7, 8),
-                                 PaintInvalidationReason::kSubtree},
+                                 gfx::Rect(155, 166, 7, 8), paint_inv_reason},
           RasterInvalidationInfo{real_rect->Id(), real_rect->DebugName(),
                                  gfx::Rect(154, 165, 9, 10),
-                                 PaintInvalidationReason::kSubtree}));
+                                 paint_inv_reason}));
 
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }

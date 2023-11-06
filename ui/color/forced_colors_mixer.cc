@@ -4,13 +4,17 @@
 
 #include "ui/color/forced_colors_mixer.h"
 
+#include "build/build_config.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
+
+#if BUILDFLAG(IS_WIN)
 #include "ui/color/win/forced_colors_mixer_win.h"
+#endif
 
 namespace ui {
 

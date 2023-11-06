@@ -62,13 +62,10 @@ const base::FilePath::CharType kCookieFilename[] = FILE_PATH_LITERAL("Cookies");
 class CookieCryptor : public CookieCryptoDelegate {
  public:
   CookieCryptor();
-  bool ShouldEncrypt() override;
   bool EncryptString(const std::string& plaintext,
                      std::string* ciphertext) override;
   bool DecryptString(const std::string& ciphertext,
                      std::string* plaintext) override;
-
-  bool should_encrypt_ = true;
 
  private:
   std::unique_ptr<crypto::SymmetricKey> key_;
@@ -84,10 +81,6 @@ CookieCryptor::CookieCryptor()
           256)) {
   std::string iv("the iv: 16 bytes");
   encryptor_.Init(key_.get(), crypto::Encryptor::CBC, iv);
-}
-
-bool CookieCryptor::ShouldEncrypt() {
-  return should_encrypt_;
 }
 
 bool CookieCryptor::EncryptString(const std::string& plaintext,
@@ -1085,57 +1078,6 @@ TEST_F(SQLitePersistentCookieStoreTest, UpdateToEncryption) {
   EXPECT_NE(0U, contents.length());
   EXPECT_EQ(contents.find("encrypted_value123XYZ"), std::string::npos);
   EXPECT_EQ(contents.find("something456ABC"), std::string::npos);
-}
-
-TEST_F(SQLitePersistentCookieStoreTest, UpdateFromEncryption) {
-  CanonicalCookieVector cookies;
-
-  // Create unencrypted cookie store and write something to it.
-  InitializeStore(true, false);
-  AddCookie("name", "value123XYZ", "foo.bar", "/", base::Time::Now());
-  DestroyStore();
-
-  // Verify that "value" is not visible in the file.
-  std::string contents = ReadRawDBContents();
-  EXPECT_NE(0U, contents.length());
-  EXPECT_EQ(contents.find("value123XYZ"), std::string::npos);
-
-  // Create encrypted cookie store and ensure old cookie still reads.
-  cookies.clear();
-  EXPECT_EQ(0U, cookies.size());
-  CreateAndLoad(true, false, &cookies);
-  EXPECT_EQ(1U, cookies.size());
-  EXPECT_EQ("name", cookies[0]->Name());
-  EXPECT_EQ("value123XYZ", cookies[0]->Value());
-
-  // Make sure we can update existing cookie and it writes unencrypted.
-  cookie_crypto_delegate_->should_encrypt_ = false;
-  store_->DeleteCookie(*(cookies[0]));
-  AddCookie("name", "plaintext_value123XYZ", "foo.bar", "/", base::Time::Now());
-  AddCookie("other", "something456ABC", "foo.bar", "/",
-            base::Time::Now() + base::Microseconds(10));
-  DestroyStore();
-  cookies.clear();
-  CreateAndLoad(true, false, &cookies);
-  EXPECT_EQ(2U, cookies.size());
-  CanonicalCookie* cookie_name = nullptr;
-  CanonicalCookie* cookie_other = nullptr;
-  if (cookies[0]->Name() == "name") {
-    cookie_name = cookies[0].get();
-    cookie_other = cookies[1].get();
-  } else {
-    cookie_name = cookies[1].get();
-    cookie_other = cookies[0].get();
-  }
-  EXPECT_EQ("plaintext_value123XYZ", cookie_name->Value());
-  EXPECT_EQ("something456ABC", cookie_other->Value());
-  DestroyStore();
-  cookies.clear();
-
-  // Verify that "value" is now visible in the file.
-  contents = ReadRawDBContents();
-  EXPECT_NE(0U, contents.length());
-  EXPECT_NE(contents.find("value123XYZ"), std::string::npos);
 }
 
 bool CompareCookies(const std::unique_ptr<CanonicalCookie>& a,

@@ -357,8 +357,7 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
   absl::variant<std::vector<std::unique_ptr<PasswordForm>>,
                 PasswordStoreBackendError>
       result;
-  base::MockCallback<AffiliatedMatchHelper::PasswordFormsOrErrorCallback>
-      mock_reply;
+  base::MockCallback<base::OnceCallback<void(LoginsResultOrError)>> mock_reply;
   EXPECT_CALL(mock_reply, Run).WillOnce(MoveArg(&result));
   match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
                                                           mock_reply.Get());

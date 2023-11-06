@@ -55,7 +55,9 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  protected:
-  WritableStreamDefaultController* Controller() const { return controller_; }
+  WritableStreamDefaultController* Controller() const {
+    return controller_.Get();
+  }
 
  private:
   Member<WritableStreamDefaultController> controller_;

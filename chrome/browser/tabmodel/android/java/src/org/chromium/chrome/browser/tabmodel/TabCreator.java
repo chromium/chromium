@@ -23,10 +23,6 @@ import org.chromium.url.GURL;
  * TODO(dfalcantara): Hunt down more places where we don't actually need to return a Tab.
  */
 public abstract class TabCreator {
-    /**
-     * @return Whether the TabCreator creates Tabs asynchronously.
-     */
-    public abstract boolean createsTabsAsynchronously();
 
     /**
      * Creates a new tab and posts to UI.
@@ -50,14 +46,14 @@ public abstract class TabCreator {
             LoadUrlParams loadUrlParams, @TabLaunchType int type, Tab parent, int position);
 
     /**
-     * On restore, allows us to create a frozen version of a tab using saved tab state we read
-     * from disk.
-     * @param state    The tab state that the tab can be restored from.
-     * @param id       The id to give the new tab.
-     * @param isIncognito if the {@link Tab} is incognito or not
-     * @param index    The index for where to place the tab.
+     * On restore, allows us to create a frozen version of a tab using saved tab state we read from
+     * disk.
+     *
+     * @param state The tab state that the tab can be restored from.
+     * @param id The id to give the new tab.
+     * @param index The index for where to place the tab.
      */
-    public abstract Tab createFrozenTab(TabState state, int id, boolean isIncognito, int index);
+    public abstract Tab createFrozenTab(TabState state, int id, int index);
 
     /*
      * Creates a new tab which is detached from the tab model.

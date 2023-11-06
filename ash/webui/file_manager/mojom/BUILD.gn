@@ -10,4 +10,7 @@ assert(is_chromeos_ash, "File Manager is ash-chrome only")
 mojom("mojom") {
   sources = [ "file_manager.mojom" ]
   webui_module_path = "/"
+
+  # Generate WebUI bindings in JavaScript instead of TypeScript.
+  use_typescript_sources = false
 }

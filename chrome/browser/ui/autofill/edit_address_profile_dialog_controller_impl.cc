@@ -77,14 +77,15 @@ std::u16string EditAddressProfileDialogControllerImpl::GetOkButtonLabel()
 
 const AutofillProfile&
 EditAddressProfileDialogControllerImpl::GetProfileToEdit() const {
-  return address_profile_to_edit_;
+  DCHECK(address_profile_to_edit_);
+  return *address_profile_to_edit_;
 }
 
 bool EditAddressProfileDialogControllerImpl::GetIsValidatable() const {
   // Only account address profiles should be validated, i.e. the ones already
   // stored in account (the source property) and those that are currently
   // migrating.
-  return address_profile_to_edit_.source() ==
+  return address_profile_to_edit_->source() ==
              AutofillProfile::Source::kAccount ||
          is_migration_to_account_;
 }

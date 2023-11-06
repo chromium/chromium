@@ -38,10 +38,7 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 }
 }  // namespace
 
-TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      browsing_data::features::kEnableBrowsingDataLifetimeManager);
+TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSyncDisabled) {
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile::Builder builder;
@@ -136,85 +133,9 @@ TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemoval) {
   delegate.VerifyAndClearExpectations();
 }
 
-TEST(ChromeBrowsingDataLifetimeManager, ScheduledRemovalWithSync) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {browsing_data::features::kEnableBrowsingDataLifetimeManager},
-      {browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded});
-  content::BrowserTaskEnvironment browser_task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile::Builder builder;
-  builder.SetIsNewProfile(true);
-  auto testing_profile = builder.Build();
-
-  content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover = testing_profile->GetBrowsingDataRemover();
-  remover->SetEmbedderDelegate(&delegate);
-  static constexpr char kPref[] =
-      R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
-      "site_settings"]}, {"time_to_live_in_hours": 2, "data_types":
-      ["cookies_and_other_site_data", "hosted_app_data"]}])";
-  uint64_t remove_mask_1_filterable =
-      content::BrowsingDataRemover::DATA_TYPE_CACHE;
-  uint64_t remove_mask_1_unfilterable =
-      chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS;
-  uint64_t remove_mask_2 = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
-  uint64_t origin_mask_2 =
-      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-      content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB;
-
-  // Sync is enabled, so no deletion should be made.
-  testing_profile->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
-                                   *base::JSONReader::Read(kPref));
-  browser_task_environment.RunUntilIdle();
-  delegate.VerifyAndClearExpectations();
-
-  // If sync gets disabled, the scheduled deletions should proceed as usual.
-  testing_profile->GetPrefs()->Set(syncer::prefs::internal::kSyncManaged,
-                                   base::Value(true));
-
-  base::Time current_time = base::Time::Now();
-  base::Time delete_start_time = base::Time::Min();
-
-  // Delete until 30 minutes from current delete end time because a task is
-  // scheduled for 30 minutes from now.
-  // Doing `delete_start_time` - 1 hour + 30 minutes is written in an expanded
-  // form for better understanding.
-  base::Time delete_end_time_1 =
-      current_time - base::Hours(1) + base::Minutes(30);
-  base::Time delete_end_time_2 =
-      current_time - base::Hours(2) + base::Minutes(30);
-
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_1, remove_mask_1_filterable, 0);
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_1, remove_mask_1_unfilterable, 0);
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_2, remove_mask_2, origin_mask_2);
-
-  // Data will be cleared after another 30 minutes.
-  delete_end_time_1 += base::Minutes(30);
-  delete_end_time_2 += base::Minutes(30);
-
-  // Each scheduled removal is called once every 30 minutes.
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_1, remove_mask_1_filterable, 0);
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_1, remove_mask_1_unfilterable, 0);
-  delegate.ExpectCallDontCareAboutFilterBuilder(
-      delete_start_time, delete_end_time_2, remove_mask_2, origin_mask_2);
-
-  browser_task_environment.FastForwardBy(base::Hours(1));
-  delegate.VerifyAndClearExpectations();
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST(ChromeBrowsingDataLifetimeManager,
-     ScheduledRemovalWithBrowserSigninDisabled_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded);
-
+     ScheduledRemovalWithBrowserSigninDisabled) {
   signin_util::ResetForceSigninForTesting();
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -289,49 +210,10 @@ TEST(ChromeBrowsingDataLifetimeManager,
   browser_task_environment.FastForwardBy(base::Hours(1));
   delegate.VerifyAndClearExpectations();
 }
-
-TEST(ChromeBrowsingDataLifetimeManager,
-     ScheduledRemovalWithBrowserSigninDisabled_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded);
-
-  signin_util::ResetForceSigninForTesting();
-  content::BrowserTaskEnvironment browser_task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile::Builder builder;
-  builder.SetIsNewProfile(true);
-  auto testing_profile = builder.Build();
-
-  content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover = testing_profile->GetBrowsingDataRemover();
-  remover->SetEmbedderDelegate(&delegate);
-  static constexpr char kPref[] =
-      R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
-      "site_settings"]}, {"time_to_live_in_hours": 2, "data_types":
-      ["cookies_and_other_site_data", "hosted_app_data"]}])";
-
-  // Sync is enabled, so no deletion should be made.
-  testing_profile->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
-                                   *base::JSONReader::Read(kPref));
-  browser_task_environment.RunUntilIdle();
-  delegate.VerifyAndClearExpectations();
-
-  // Disabling browser signin should have no effect if the feature is disabled.
-  testing_profile.get()->GetTestingPrefService()->SetManagedPref(
-      prefs::kSigninAllowed, base::Value(false));
-
-  browser_task_environment.RunUntilIdle();
-  delegate.VerifyAndClearExpectations();
-}
 #endif
 
 TEST(ChromeBrowsingDataLifetimeManager,
-     ScheduledRemovalWithBrowserSyncTypeDisabled_FeatureEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded);
-
+     ScheduledRemovalWithBrowserSyncTypeDisabled) {
   signin_util::ResetForceSigninForTesting();
   content::BrowserTaskEnvironment browser_task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -370,13 +252,14 @@ TEST(ChromeBrowsingDataLifetimeManager,
   browser_task_environment.RunUntilIdle();
   delegate.VerifyAndClearExpectations();
 
-  // If required sync types get disabled and the feature is enabled, the
-  // scheduled deletions should proceed as usual.
+  // If required sync types get disabled, the scheduled deletions should proceed
+  // as usual.
   sync_service->GetUserSettings()->SetTypeIsManaged(
       syncer::UserSelectableType::kPreferences, true);
 
   base::Time current_time = base::Time::Now();
   base::Time delete_start_time = base::Time::Min();
+
   // Delete until 30 minutes from current delete end time because a task is
   // scheduled for 30 minutes from now.
   // Doing `delete_start_time` - 1 hour + 30 minutes is written in an expanded
@@ -406,41 +289,5 @@ TEST(ChromeBrowsingDataLifetimeManager,
       delete_start_time, delete_end_time_2, remove_mask_2, origin_mask_2);
 
   browser_task_environment.FastForwardBy(base::Hours(1));
-  delegate.VerifyAndClearExpectations();
-}
-
-TEST(ChromeBrowsingDataLifetimeManager,
-     ScheduledRemovalWithBrowserSyncTypeDisabled_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      browsing_data::features::kDataRetentionPoliciesDisableSyncTypesNeeded);
-
-  signin_util::ResetForceSigninForTesting();
-  content::BrowserTaskEnvironment browser_task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile::Builder builder;
-  builder.SetIsNewProfile(true);
-  auto testing_profile = builder.Build();
-
-  content::MockBrowsingDataRemoverDelegate delegate;
-  auto* remover = testing_profile->GetBrowsingDataRemover();
-  remover->SetEmbedderDelegate(&delegate);
-  static constexpr char kPref[] =
-      R"([{"time_to_live_in_hours": 1, "data_types":["cached_images_and_files",
-      "site_settings"]}, {"time_to_live_in_hours": 2, "data_types":
-      ["cookies_and_other_site_data", "hosted_app_data"]}])";
-
-  // Sync is enabled, so no deletion should be made.
-  testing_profile->GetPrefs()->Set(browsing_data::prefs::kBrowsingDataLifetime,
-                                   *base::JSONReader::Read(kPref));
-  browser_task_environment.RunUntilIdle();
-  delegate.VerifyAndClearExpectations();
-
-  // Disabling sync types should have no effect on the data if the feature is
-  // disabled.
-  testing_profile.get()->GetTestingPrefService()->SetManagedPref(
-      syncer::prefs::internal::kSyncPreferences, base::Value(false));
-
-  browser_task_environment.RunUntilIdle();
   delegate.VerifyAndClearExpectations();
 }

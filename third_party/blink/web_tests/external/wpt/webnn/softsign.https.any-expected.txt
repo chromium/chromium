@@ -1,9 +1,15 @@
 This is a testharness.js-based test.
-FAIL softsign positive float32 1D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL softsign negative float32 1D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL softsign float32 2D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL softsign float32 3D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL softsign float32 4D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
-FAIL softsign float32 5D tensor / async promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign positive float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign negative float32 1D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign float32 2D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign float32 3D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign float32 4D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
+[FAIL] softsign float32 5D tensor / async
+  promise_test: Unhandled rejection with value: object "TypeError: builder[operationName] is not a function"
 Harness: the test ran to completion.
 

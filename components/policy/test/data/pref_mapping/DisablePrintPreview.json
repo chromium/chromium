@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "printing.print_preview_disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisablePrintPreview": false
+        },
+        "prefs": {
+          "printing.print_preview_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DisablePrintPreview": true
+        },
+        "prefs": {
+          "printing.print_preview_disabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -36,7 +36,7 @@ namespace {
 #if BUILDFLAG(IS_ANDROID)
 bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
   std::vector<std::string> blocklist = base::SplitString(
-      blocklist_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      blocklist_str, "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& blocklisted_value : blocklist) {
     if (base::StartsWith(current_value, blocklisted_value,
                          base::CompareCase::INSENSITIVE_ASCII)) {
@@ -166,6 +166,12 @@ BASE_FEATURE(kCanvasOopRasterization,
 );
 
 #if BUILDFLAG(IS_OZONE)
+// Enables per context GLTexture cache for OzoneImageBacking that avoids
+// unnecessary construction/destruction of GLTextures.
+BASE_FEATURE(kEnablePerContextGLTextureCache,
+             "EnablePerContextGLTextureCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Detect front buffering condition and set buffer usage as such.
 // This is a killswitch to be removed once launched.
 BASE_FEATURE(kOzoneFrontBufferUsage,
@@ -181,11 +187,6 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
 // Enables the use of ANGLE validation for non-WebGL contexts.
 BASE_FEATURE(kDefaultEnableANGLEValidation,
              "DefaultEnableANGLEValidation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Disables MSAA in Graphite if MSAA is reported as being slow for the device.
-BASE_FEATURE(kDisableSlowMSAAInGraphite,
-             "DisableSlowMSAAInGraphite",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables canvas to free its resources by default when it's running in
@@ -277,7 +278,8 @@ BASE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc,
 
 // Enable WebGPU on gpu service side only. This is used with origin trial and
 // enabled by default on supported platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID)
 #define WEBGPU_ENABLED base::FEATURE_ENABLED_BY_DEFAULT
 #else
 #define WEBGPU_ENABLED base::FEATURE_DISABLED_BY_DEFAULT
@@ -352,6 +354,8 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
 // Enable Skia Graphite. This will use the Dawn backend by default, but can be
 // overridden with command line flags for testing on non-official developer
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
+// Note: This can also be overridden by
+// --enable-skia-graphite & --disable-skia-graphite.
 BASE_FEATURE(kSkiaGraphite,
              "SkiaGraphite",
 #if BUILDFLAG(IS_IOS)
@@ -364,6 +368,14 @@ BASE_FEATURE(kSkiaGraphite,
 // Whether the Dawn "skip_validation" toggle is enabled for Skia Graphite.
 const base::FeatureParam<bool> kSkiaGraphiteDawnSkipValidation{
     &kSkiaGraphite, "dawn_skip_validation", true};
+
+// Whether Dawn backend validation is enabled for Skia Graphite.
+const base::FeatureParam<bool> kSkiaGraphiteDawnBackendValidation{
+    &kSkiaGraphite, "dawn_backend_validation", false};
+
+// Whether Dawn shares device with ANGLE.
+const base::FeatureParam<bool> kSkiaGraphiteDawnShareDevice{
+    &kSkiaGraphite, "dawn_share_device", true};
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
@@ -385,11 +397,6 @@ BASE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit,
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,
              "EnableVkPipelineCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enable Skia reduceOpsTaskSplitting to reduce render passes.
-BASE_FEATURE(kReduceOpsTaskSplitting,
-             "ReduceOpsTaskSplitting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enabling this will make the GPU decode path use a mock implementation of
@@ -422,10 +429,16 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
 
 // Use the ClientGmb interface to create GpuMemoryBuffers. This is supposed to
 // reduce number of IPCs happening while creating GpuMemoryBuffers by allowing
-// Renderers to do IPC directly to GPU process.
+// Renderers to do IPC directly to GPU process. This feature is now enabled by
+// default on all platforms except lacros.
 BASE_FEATURE(kUseClientGmbInterface,
              "UseClientGmbInterface",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 // When the application is in background, whether to perform immediate GPU
 // cleanup when executing deferred requests.
@@ -595,8 +608,13 @@ bool IsANGLEValidationEnabled() {
 }
 
 bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
-  // Force Graphite on if --skia-graphite-backend flag is specified.
-  if (command_line->HasSwitch(switches::kSkiaGraphiteBackend)) {
+  // Force disabling graphite if --disable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kDisableSkiaGraphite)) {
+    return false;
+  }
+
+  // Force Graphite on if --enable-skia-graphite flag is specified.
+  if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
     return true;
   }
 #if BUILDFLAG(IS_APPLE)

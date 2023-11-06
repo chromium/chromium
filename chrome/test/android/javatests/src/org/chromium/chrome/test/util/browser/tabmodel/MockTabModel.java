@@ -5,6 +5,7 @@
 package org.chromium.chrome.test.util.browser.tabmodel;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -40,18 +41,20 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
     private final ObserverList<TabModelObserver> mObservers = new ObserverList<>();
     private final ArrayList<Tab> mTabs = new ArrayList<Tab>();
-    private final boolean mIncognito;
+    private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
     private boolean mIsActiveModel;
 
-    public MockTabModel(boolean incognito, MockTabModelDelegate delegate) {
-        mIncognito = incognito;
+    public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
+        mProfile = profile;
         mDelegate = delegate;
     }
 
     public MockTab addTab(int id) {
-        MockTab tab = mDelegate == null ? new MockTab(id, isIncognito())
-                                        : mDelegate.createTab(id, isIncognito());
+        MockTab tab =
+                mDelegate == null
+                        ? new MockTab(id, mProfile)
+                        : mDelegate.createTab(id, isIncognito());
 
         addTab(tab, TabModel.INVALID_TAB_INDEX, TabLaunchType.FROM_CHROME_UI,
                 TabCreationState.LIVE_IN_FOREGROUND);
@@ -85,8 +88,13 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public Profile getProfile() {
+        return mProfile;
+    }
+
+    @Override
     public boolean isIncognito() {
-        return mIncognito;
+        return mProfile.isOffTheRecord();
     }
 
     @Override

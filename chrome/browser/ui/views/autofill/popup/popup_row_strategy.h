@@ -36,10 +36,8 @@ class PopupRowStrategy {
   // Creates the `PopupCellView` that contains the content area of the popup
   // row.
   virtual std::unique_ptr<PopupCellView> CreateContent() = 0;
-  // Creates the `PopupCellView` that contains the control area of the popup
-  // row. It will be `nullptr` by default for most types of popup suggestions.
-  virtual std::unique_ptr<PopupCellView> CreateControl() = 0;
 
+ private:
   // Returns the line number of the popup row that this strategy is for.
   virtual int GetLineNumber() const = 0;
 };
@@ -81,7 +79,6 @@ class PopupSuggestionStrategy : public PopupRowBaseStrategy {
 
   // PopupRowStrategy:
   std::unique_ptr<PopupCellView> CreateContent() override;
-  std::unique_ptr<PopupCellView> CreateControl() override;
 
  private:
   // Creates the cell for an Autocomplete entry with a delete button.
@@ -103,7 +100,6 @@ class PopupComposeSuggestionStrategy : public PopupRowBaseStrategy {
 
   // PopupRowStrategy:
   std::unique_ptr<PopupCellView> CreateContent() override;
-  std::unique_ptr<PopupCellView> CreateControl() override;
 
  private:
   // Indicates whether to show the "NEW" IPH badge.
@@ -124,7 +120,6 @@ class PopupPasswordSuggestionStrategy : public PopupRowBaseStrategy {
 
   // PopupRowStrategy:
   std::unique_ptr<PopupCellView> CreateContent() override;
-  std::unique_ptr<PopupCellView> CreateControl() override;
 
  private:
   // Creates the description label for this suggestion.
@@ -148,7 +143,6 @@ class PopupFooterStrategy : public PopupRowBaseStrategy {
 
   // PopupRowStrategy:
   std::unique_ptr<PopupCellView> CreateContent() override;
-  std::unique_ptr<PopupCellView> CreateControl() override;
 };
 
 }  // namespace autofill

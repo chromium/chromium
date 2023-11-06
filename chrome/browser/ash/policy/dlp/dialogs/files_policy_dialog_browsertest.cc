@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/rand_util.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -28,11 +29,25 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/data_controls/component.h"
 #include "components/enterprise/data_controls/dlp_histogram_helper.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/textarea/textarea.h"
 
 namespace policy {
+namespace {
+// Generate a random string with the given `length`.
+std::u16string GenerateText(size_t length) {
+  std::u16string random_string;
+  for (size_t index = 0; index < length; ++index) {
+    random_string += static_cast<char16_t>(base::RandInt('A', 'Z'));
+  }
+  return random_string;
+}
+}  // namespace
+
 class FilesPolicyDialogBrowserTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<dlp::FileAction> {
@@ -91,7 +106,7 @@ class WarningDialogBrowserTest : public FilesPolicyDialogBrowserTest {
 
  protected:
   std::vector<base::FilePath> warning_paths_;
-  base::MockCallback<OnDlpRestrictionCheckedWithJustificationCallback> cb_;
+  base::MockCallback<WarningWithJustificationCallback> cb_;
 };
 
 // Tests that the warning dialog is created as a system modal if no parent is
@@ -109,6 +124,12 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, NoParent) {
   FilesPolicyWarnDialog* dialog = static_cast<FilesPolicyWarnDialog*>(
       widget->widget_delegate()->AsDialogDelegate());
   ASSERT_TRUE(dialog);
+
+  // There should be no justification text area since it's not set in the
+  // FilesPolicyDialog::Info above.
+  ASSERT_EQ(widget->GetRootView()->GetViewByID(
+                PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId),
+            nullptr);
 
   EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
   // Proceed.
@@ -153,6 +174,69 @@ IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, WithParent) {
                        /*should_proceed=*/false))
       .Times(1);
   dialog->CancelDialog();
+  EXPECT_TRUE(widget->IsClosed());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  data_controls::GetDlpHistogramPrefix() +
+                  std::string(data_controls::dlp::kFileActionWarnReviewedUMA)),
+              base::BucketsAre(base::Bucket(action, 1)));
+}
+
+// Tests that the warning dialog contains a justification textarea and when the
+// warning is proceeded the user justification is forwarded to the continue
+// callback.
+IN_PROC_BROWSER_TEST_P(WarningDialogBrowserTest, JustificationTextarea) {
+  dlp::FileAction action = GetParam();
+
+  auto dialog_info = FilesPolicyDialog::Info::Warn(
+      FilesPolicyDialog::BlockReason::kEnterpriseConnectorsSensitiveData,
+      warning_paths_);
+  dialog_info.SetBypassRequiresJustification(true);
+
+  auto* widget = FilesPolicyDialog::CreateWarnDialog(
+      cb_.Get(), action, /*modal_parent=*/nullptr, std::move(dialog_info));
+  ASSERT_TRUE(widget);
+
+  FilesPolicyWarnDialog* dialog = static_cast<FilesPolicyWarnDialog*>(
+      widget->widget_delegate()->AsDialogDelegate());
+  ASSERT_TRUE(dialog);
+
+  views::Textarea* justification_area =
+      static_cast<views::Textarea*>(widget->GetRootView()->GetViewByID(
+          PolicyDialogBase::kEnterpriseConnectorsJustificationTextareaId));
+  ASSERT_TRUE(justification_area);
+
+  // The OK button should be disabled if there is no text in the justification
+  // area.
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  const size_t max_chars = dialog->GetMaxBypassJustificationLengthForTesting();
+  const std::u16string valid_justification = GenerateText(max_chars);
+
+  // The OK button should be enable if the max amount of char is inserted.
+  justification_area->SetText(u"");
+  justification_area->InsertText(
+      valid_justification,
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  // The OK button should also be disabled if an extra char is added.
+  justification_area->InsertText(
+      GenerateText(1),
+      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+  EXPECT_FALSE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  // Reset a valid justification by deleting the extra char to proceed the
+  // warning.
+  justification_area->DeleteRange(gfx::Range(max_chars, max_chars + 1));
+
+  EXPECT_TRUE(dialog->IsDialogButtonEnabled(ui::DIALOG_BUTTON_OK));
+
+  EXPECT_EQ(dialog->GetModalType(), ui::ModalType::MODAL_TYPE_SYSTEM);
+  // Proceed.
+  EXPECT_CALL(cb_, Run({valid_justification}, /*should_proceed=*/true))
+      .Times(1);
+  dialog->AcceptDialog();
   EXPECT_TRUE(widget->IsClosed());
 
   EXPECT_THAT(histogram_tester_.GetAllSamples(
@@ -437,7 +521,8 @@ IN_PROC_BROWSER_TEST_P(ErrorDialogBrowserTest,
   ASSERT_EQ(
       GetTitle(dialog,
                FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware),
-      malware_message);
+      l10n_util::GetStringFUTF16(IDS_POLICY_DLP_FROM_YOUR_ADMIN_MESSAGE,
+                                 malware_message));
 
   ASSERT_EQ(
       GetTitle(dialog, FilesPolicyDialog::BlockReason::kEnterpriseConnectors),

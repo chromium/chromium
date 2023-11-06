@@ -20,7 +20,6 @@
 #include "ash/components/arc/disk_quota/arc_disk_quota_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
 #include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
-#include "ash/components/arc/lock_screen/arc_lock_screen_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/memory_pressure/arc_memory_pressure_bridge.h"
@@ -278,7 +277,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     ArcKeymasterBridge::GetForBrowserContext(profile);
   }
   ArcKioskBridge::GetForBrowserContext(profile);
-  ArcLockScreenBridge::GetForBrowserContext(profile);
   ArcMediaSessionBridge::GetForBrowserContext(profile);
   {
     auto* metrics_service = ArcMetricsService::GetForBrowserContext(profile);
@@ -469,7 +467,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
     ArcKeymasterBridge::EnsureFactoryBuilt();
   }
   ArcKioskBridge::EnsureFactoryBuilt();
-  ArcLockScreenBridge::EnsureFactoryBuilt();
   ArcMediaSessionBridge::EnsureFactoryBuilt();
   ArcMemoryBridge::EnsureFactoryBuilt();
   ArcMemoryPressureBridge::EnsureFactoryBuilt();

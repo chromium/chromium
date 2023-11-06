@@ -7,8 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -17,7 +16,6 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "net/base/features.h"
-#include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
@@ -39,48 +37,13 @@ namespace {
 // sizes in ricea@'s cache on 3 Aug 2023.
 constexpr size_t kExpectedRawHeaderSize = 4035;
 
-void AddSpdyHeader(const std::string& name,
-                   const std::string& value,
-                   spdy::Http2HeaderBlock* headers) {
-  if (headers->find(name) == headers->end()) {
-    (*headers)[name] = value;
-  } else {
-    (*headers)[name] = base::StrCat(
-        {(*headers)[name].as_string(), base::StringPiece("\0", 1), value});
-  }
-}
-
-// Tries both the old and new implementations of
-// SpdyHeadersToHttpResponseHeaders() and creates a crash report if they do not
-// match. Always returns the results of the old implementation, so behavior is
-// unchanged (except for performance).
-base::expected<scoped_refptr<HttpResponseHeaders>, int>
-SpdyHeadersToHttpResponseHeadersVerifyingCorrectness(
-    const spdy::Http2HeaderBlock& headers) {
-  auto using_builder = SpdyHeadersToHttpResponseHeadersUsingBuilder(headers);
-  auto using_raw_string =
-      SpdyHeadersToHttpResponseHeadersUsingRawString(headers);
-  // If the code is working correctly, it shouldn't be possible to hit any of
-  // the DumpWithoutCrashing() conditions in this function, and so they will not
-  // have code coverage.
-  if (using_builder.has_value() != using_raw_string.has_value()) {
-    SCOPED_CRASH_KEY_BOOL("spdy", "builder_has", using_builder.has_value());
-    SCOPED_CRASH_KEY_BOOL("spdy", "raw_has", using_raw_string.has_value());
-    base::debug::DumpWithoutCrashing();
-  } else if (!using_builder.has_value()) {
-    if (using_builder.error() != using_raw_string.error()) {
-      SCOPED_CRASH_KEY_NUMBER("spdy", "builder_err", using_builder.error());
-      SCOPED_CRASH_KEY_NUMBER("spdy", "raw_err", using_raw_string.error());
-      base::debug::DumpWithoutCrashing();
-    }
-  } else {
-    if (!using_builder.value()->StrictlyEquals(*using_raw_string.value())) {
-      // We will have to add some diagnostics here if this actually triggers in
-      // practice. The privacy issues are complex so don't do anything yet.
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-  return using_raw_string;
+// Add header `name` with `value` to `headers`. `name` must not already exist in
+// `headers`.
+void AddUniqueSpdyHeader(base::StringPiece name,
+                         base::StringPiece value,
+                         spdy::Http2HeaderBlock* headers) {
+  auto insert_result = headers->insert({name, value});
+  CHECK_EQ(insert_result, spdy::Http2HeaderBlock::InsertResult::kInserted);
 }
 
 // Convert `headers` to an HttpResponseHeaders object based on the features
@@ -91,9 +54,6 @@ SpdyHeadersToHttpResponseHeadersUsingFeatures(
   if (base::FeatureList::IsEnabled(
           features::kSpdyHeadersToHttpResponseUseBuilder)) {
     return SpdyHeadersToHttpResponseHeadersUsingBuilder(headers);
-  } else if (base::FeatureList::IsEnabled(
-                 features::kSpdyHeadersToHttpResponseVerifyCorrectness)) {
-    return SpdyHeadersToHttpResponseHeadersVerifyingCorrectness(headers);
   } else {
     return SpdyHeadersToHttpResponseHeadersUsingRawString(headers);
   }
@@ -237,13 +197,14 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
                                       absl::optional<RequestPriority> priority,
                                       const HttpRequestHeaders& request_headers,
                                       spdy::Http2HeaderBlock* headers) {
-  (*headers)[spdy::kHttp2MethodHeader] = info.method;
+  headers->insert({spdy::kHttp2MethodHeader, info.method});
   if (info.method == "CONNECT") {
-    (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndPort(info.url);
+    headers->insert({spdy::kHttp2AuthorityHeader, GetHostAndPort(info.url)});
   } else {
-    (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndOptionalPort(info.url);
-    (*headers)[spdy::kHttp2SchemeHeader] = info.url.scheme();
-    (*headers)[spdy::kHttp2PathHeader] = info.url.PathForRequest();
+    headers->insert(
+        {spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(info.url)});
+    headers->insert({spdy::kHttp2SchemeHeader, info.url.scheme()});
+    headers->insert({spdy::kHttp2PathHeader, info.url.PathForRequest()});
   }
 
   HttpRequestHeaders::Iterator it(request_headers);
@@ -254,7 +215,7 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
         name == "host") {
       continue;
     }
-    AddSpdyHeader(name, it.value(), headers);
+    AddUniqueSpdyHeader(name, it.value(), headers);
   }
 
   // Add the priority header if there is not already one set. This uses the
@@ -266,8 +227,9 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;
     quic::HttpStreamPriority quic_priority{urgency, incremental};
-    AddSpdyHeader(kHttp2PriorityHeader,
-                  quic::SerializePriorityFieldValue(quic_priority), headers);
+    AddUniqueSpdyHeader(kHttp2PriorityHeader,
+                        quic::SerializePriorityFieldValue(quic_priority),
+                        headers);
   }
 }
 
@@ -275,11 +237,11 @@ void CreateSpdyHeadersFromHttpRequestForWebSocket(
     const GURL& url,
     const HttpRequestHeaders& request_headers,
     spdy::Http2HeaderBlock* headers) {
-  (*headers)[spdy::kHttp2MethodHeader] = "CONNECT";
-  (*headers)[spdy::kHttp2AuthorityHeader] = GetHostAndOptionalPort(url);
-  (*headers)[spdy::kHttp2SchemeHeader] = "https";
-  (*headers)[spdy::kHttp2PathHeader] = url.PathForRequest();
-  (*headers)[spdy::kHttp2ProtocolHeader] = "websocket";
+  headers->insert({spdy::kHttp2MethodHeader, "CONNECT"});
+  headers->insert({spdy::kHttp2AuthorityHeader, GetHostAndOptionalPort(url)});
+  headers->insert({spdy::kHttp2SchemeHeader, "https"});
+  headers->insert({spdy::kHttp2PathHeader, url.PathForRequest()});
+  headers->insert({spdy::kHttp2ProtocolHeader, "websocket"});
 
   HttpRequestHeaders::Iterator it(request_headers);
   while (it.GetNext()) {
@@ -289,7 +251,7 @@ void CreateSpdyHeadersFromHttpRequestForWebSocket(
         name == "transfer-encoding" || name == "host") {
       continue;
     }
-    AddSpdyHeader(name, it.value(), headers);
+    AddUniqueSpdyHeader(name, it.value(), headers);
   }
 }
 

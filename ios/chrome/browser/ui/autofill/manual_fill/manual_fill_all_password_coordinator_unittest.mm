@@ -9,7 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -153,7 +153,7 @@ TEST_F(ManualFillAllPasswordCoordinatorTest,
   // Passwords should be covered until auth is passed.
   ASSERT_FALSE(ArePasswordsVisible());
 
-  [mock_reauth_module_ returnMockedReathenticationResult];
+  [mock_reauth_module_ returnMockedReauthenticationResult];
 
   // Successful auth should leave Passwords visible.
   ASSERT_TRUE(ArePasswordsVisible());

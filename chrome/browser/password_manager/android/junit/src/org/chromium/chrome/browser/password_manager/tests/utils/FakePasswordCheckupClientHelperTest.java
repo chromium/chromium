@@ -51,8 +51,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.getPasswordCheckupIntent(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.getPasswordCheckupIntent(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward
@@ -74,8 +76,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.getPasswordCheckupIntent(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.getPasswordCheckupIntent(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward
@@ -92,8 +96,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.runPasswordCheckupInBackground(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward
@@ -114,8 +120,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.runPasswordCheckupInBackground(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward
@@ -135,8 +143,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.getBreachedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward
@@ -157,8 +167,10 @@ public class FakePasswordCheckupClientHelperTest {
         final PayloadCallbackHelper<Exception> failureCallbackHelper =
                 new PayloadCallbackHelper<>();
 
-        mFakeHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
-                Optional.of(TEST_ACCOUNT), successCallbackHelper::notifyCalled,
+        mFakeHelper.getBreachedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                Optional.of(TEST_ACCOUNT),
+                successCallbackHelper::notifyCalled,
                 failureCallbackHelper::notifyCalled);
 
         // Move the clock forward

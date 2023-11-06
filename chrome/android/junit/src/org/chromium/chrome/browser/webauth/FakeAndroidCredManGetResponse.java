@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.webauth;
 
-/**
- * Fake implementation of the Android Credential Manager GetCredentialResponse object.
- */
+/** Fake implementation of the Android Credential Manager GetCredentialResponse object. */
 public final class FakeAndroidCredManGetResponse {
     private final FakeAndroidCredential mCredential;
 

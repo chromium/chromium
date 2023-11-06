@@ -4,6 +4,10 @@
 
 #include "third_party/blink/renderer/modules/shared_storage/util.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/aggregation_service/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -13,9 +17,28 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
+bool StringFromV8(v8::Isolate* isolate, v8::Local<v8::Value> val, String* out) {
+  DCHECK(out);
+
+  if (!val->IsString()) {
+    return false;
+  }
+
+  v8::Local<v8::String> str = v8::Local<v8::String>::Cast(val);
+  wtf_size_t length = str->Utf8Length(isolate);
+  LChar* buffer;
+  *out = String::CreateUninitialized(length, buffer);
+
+  str->WriteUtf8(isolate, reinterpret_cast<char*>(buffer), length, nullptr,
+                 v8::String::NO_NULL_TERMINATION);
+
+  return true;
+}
 
 bool CheckBrowsingContextIsValid(ScriptState& script_state,
                                  ExceptionState& exception_state) {
@@ -63,27 +86,55 @@ bool CheckSharedStoragePermissionsPolicy(ScriptState& script_state,
   return true;
 }
 
-bool CheckPrivateAggregationContextId(
+bool CheckPrivateAggregationConfig(
     const SharedStorageRunOperationMethodOptions& options,
     ScriptState& script_state,
     ScriptPromiseResolver& resolver,
-    WTF::String* out_string) {
-  *out_string = WTF::String();
+    WTF::String& out_context_id,
+    scoped_refptr<SecurityOrigin>& out_aggregation_coordinator_origin) {
+  out_context_id = WTF::String();
+  out_aggregation_coordinator_origin.reset();
 
-  if (!options.hasPrivateAggregationConfig() ||
-      !options.privateAggregationConfig()->hasContextId()) {
+  if (!options.hasPrivateAggregationConfig()) {
     return true;
   }
 
-  if (options.privateAggregationConfig()->contextId().length() >
-      kPrivateAggregationApiContextIdMaxLength) {
-    resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state.GetIsolate(), DOMExceptionCode::kDataError,
-        "contextId length cannot be larger than 64"));
-    return false;
+  if (options.privateAggregationConfig()->hasContextId()) {
+    if (options.privateAggregationConfig()->contextId().length() >
+        kPrivateAggregationApiContextIdMaxLength) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "contextId length cannot be larger than 64"));
+      return false;
+    }
+    out_context_id = options.privateAggregationConfig()->contextId();
   }
 
-  *out_string = options.privateAggregationConfig()->contextId();
+  if (options.privateAggregationConfig()->hasAggregationCoordinatorOrigin() &&
+      base::FeatureList::IsEnabled(
+          features::kPrivateAggregationApiMultipleCloudProviders) &&
+      base::FeatureList::IsEnabled(
+          aggregation_service::kAggregationServiceMultipleCloudProviders)) {
+    scoped_refptr<SecurityOrigin> parsed_coordinator =
+        SecurityOrigin::CreateFromString(
+            options.privateAggregationConfig()->aggregationCoordinatorOrigin());
+    CHECK(parsed_coordinator);
+    if (parsed_coordinator->IsOpaque()) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kSyntaxError,
+          "aggregationCoordinatorOrigin must be a valid origin"));
+      return false;
+    }
+    if (!aggregation_service::IsAggregationCoordinatorOriginAllowed(
+            parsed_coordinator->ToUrlOrigin())) {
+      resolver.Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state.GetIsolate(), DOMExceptionCode::kDataError,
+          "aggregationCoordinatorOrigin must be on the allowlist"));
+      return false;
+    }
+    out_aggregation_coordinator_origin = parsed_coordinator;
+  }
+
   return true;
 }
 

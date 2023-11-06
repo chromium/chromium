@@ -47,7 +47,7 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   class ASH_EXPORT Delegate {
    public:
     virtual ~Delegate() {}
-    virtual void OnClosed() = 0;
+    virtual void CloseToast() = 0;
 
     // Called when a toast's hover state changed if the toast is supposed to
     // persist on hover.
@@ -145,8 +145,6 @@ class ASH_EXPORT ToastOverlay : public ui::ImplicitAnimationObserver,
   std::unique_ptr<ToastDisplayObserver> display_observer_;
   raw_ptr<aura::Window, ExperimentalAsh> root_window_;
   base::RepeatingClosure dismiss_callback_;
-
-  gfx::Size widget_size_;
 
   // Used to pause and resume the `ToastManagerImpl`'s
   // `current_toast_expiration_timer_` if we are allowing for the toast to

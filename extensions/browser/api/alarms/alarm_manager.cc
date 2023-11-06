@@ -38,8 +38,6 @@ namespace {
 const char kRegisteredAlarms[] = "alarms";
 const char kAlarmGranularity[] = "granularity";
 
-const int kSecondsPerMinute = 60;
-
 // The minimum period between polling for alarms to run.
 const base::TimeDelta kDefaultMinPollPeriod() {
   return base::Days(1);
@@ -72,7 +70,7 @@ base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
 }
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
-                                        bool is_unpacked,
+                                        base::TimeDelta min_delay,
                                         const base::Value::List& list) {
   AlarmManager::AlarmList alarms;
   const int max_to_create = std::min(base::saturated_cast<int>(list.size()),
@@ -90,10 +88,7 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
         // No else branch. It's okay to ignore the failure since we have
         // minimum granularity.
       }
-      alarm.minimum_granularity = base::Seconds(
-          (is_unpacked ? alarms_api_constants::kDevDelayMinimum
-                       : alarms_api_constants::kReleaseDelayMinimum) *
-          kSecondsPerMinute);
+      alarm.minimum_granularity = min_delay;
       if (alarm.granularity < alarm.minimum_granularity)
         alarm.granularity = alarm.minimum_granularity;
       alarms.emplace_back(std::move(alarm));
@@ -295,9 +290,9 @@ void AlarmManager::OnAlarm(AlarmIterator it) {
                                base::Time::kMicrosecondsPerMillisecond;
     // Find out how many periods have transpired since the alarm last went off
     // (it's possible that we missed some).
-    int transpired_periods =
-        (last_poll_time_.ToJsTime() - alarm.js_alarm->scheduled_time) /
-        period_in_js_time;
+    int transpired_periods = (last_poll_time_.InMillisecondsFSinceUnixEpoch() -
+                              alarm.js_alarm->scheduled_time) /
+                             period_in_js_time;
     // Schedule the alarm for the next period that is in-line with the original
     // scheduling.
     alarm.js_alarm->scheduled_time +=
@@ -315,8 +310,8 @@ void AlarmManager::AddAlarmImpl(const std::string& extension_id, Alarm alarm) {
   if (old_alarm.first != alarms_.end())
     RemoveAlarmIterator(old_alarm);
 
-  base::Time alarm_time =
-      base::Time::FromJsTime(alarm.js_alarm->scheduled_time);
+  base::Time alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      alarm.js_alarm->scheduled_time);
   alarms_[extension_id].emplace_back(std::move(alarm));
   if (next_poll_time_.is_null() || alarm_time < next_poll_time_)
     SetNextPollTime(alarm_time);
@@ -338,11 +333,11 @@ void AlarmManager::WriteToStorage(const std::string& extension_id) {
 }
 
 void AlarmManager::ReadFromStorage(const std::string& extension_id,
-                                   bool is_unpacked,
+                                   base::TimeDelta min_delay,
                                    absl::optional<base::Value> value) {
   if (value && value->is_list()) {
     AlarmList alarm_states =
-        AlarmsFromValue(extension_id, is_unpacked, value->GetList());
+        AlarmsFromValue(extension_id, min_delay, value->GetList());
     for (auto& alarm : alarm_states)
       AddAlarmImpl(extension_id, std::move(alarm));
   }
@@ -372,15 +367,15 @@ void AlarmManager::ScheduleNextPoll() {
   // Find the soonest alarm that is scheduled to run and the smallest
   // granularity of any alarm.
   // alarms_ guarantees that none of its contained lists are empty.
-  base::Time soonest_alarm_time = base::Time::FromJsTime(
+  base::Time soonest_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
       alarms_.begin()->second.begin()->js_alarm->scheduled_time);
   base::TimeDelta min_granularity = kDefaultMinPollPeriod();
   for (AlarmMap::const_iterator m_it = alarms_.begin(), m_end = alarms_.end();
        m_it != m_end; ++m_it) {
     for (auto l_it = m_it->second.cbegin(); l_it != m_it->second.cend();
          ++l_it) {
-      base::Time cur_alarm_time =
-          base::Time::FromJsTime(l_it->js_alarm->scheduled_time);
+      base::Time cur_alarm_time = base::Time::FromMillisecondsSinceUnixEpoch(
+          l_it->js_alarm->scheduled_time);
       if (cur_alarm_time < soonest_alarm_time)
         soonest_alarm_time = cur_alarm_time;
       if (l_it->granularity < min_granularity)
@@ -420,8 +415,8 @@ void AlarmManager::PollAlarms() {
     // iterator that the destruction invalidates.
     for (size_t i = cur_extension->second.size(); i > 0; --i) {
       auto cur_alarm = cur_extension->second.begin() + i - 1;
-      if (base::Time::FromJsTime(cur_alarm->js_alarm->scheduled_time) <=
-          last_poll_time_) {
+      if (base::Time::FromMillisecondsSinceUnixEpoch(
+              cur_alarm->js_alarm->scheduled_time) <= last_poll_time_) {
         OnAlarm(make_pair(cur_extension, cur_alarm));
       }
     }
@@ -450,10 +445,12 @@ void AlarmManager::OnExtensionLoaded(content::BrowserContext* browser_context,
   if (storage) {
     bool is_unpacked = Manifest::IsUnpackedLocation(extension->location());
     ready_actions_.insert(ReadyMap::value_type(extension->id(), ReadyQueue()));
+    base::TimeDelta min_delay = alarms_api_constants::GetMinimumDelay(
+        is_unpacked, extension->manifest_version());
     storage->GetExtensionValue(extension->id(), kRegisteredAlarms,
                                base::BindOnce(&AlarmManager::ReadFromStorage,
                                               weak_ptr_factory_.GetWeakPtr(),
-                                              extension->id(), is_unpacked));
+                                              extension->id(), min_delay));
   }
 }
 
@@ -481,7 +478,9 @@ Alarm::Alarm(const std::string& name,
   if (create_info.when) {
     // Absolute scheduling.
     js_alarm->scheduled_time = *create_info.when;
-    granularity = base::Time::FromJsTime(js_alarm->scheduled_time) - now;
+    granularity =
+        base::Time::FromMillisecondsSinceUnixEpoch(js_alarm->scheduled_time) -
+        now;
   } else {
     // Relative scheduling.
     CHECK(create_info.delay_in_minutes || create_info.period_in_minutes)
@@ -491,7 +490,7 @@ Alarm::Alarm(const std::string& name,
                                         ? *create_info.delay_in_minutes
                                         : *create_info.period_in_minutes;
     base::TimeDelta delay = TimeDeltaFromDelay(delay_in_minutes);
-    js_alarm->scheduled_time = (now + delay).ToJsTime();
+    js_alarm->scheduled_time = (now + delay).InMillisecondsFSinceUnixEpoch();
     granularity = delay;
   }
 

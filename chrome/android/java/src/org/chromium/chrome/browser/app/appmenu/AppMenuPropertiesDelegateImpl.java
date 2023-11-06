@@ -506,7 +506,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(true);
 
             int titleId = R.string.menu_stop_image_descriptions;
-            Profile profile = Profile.fromWebContents(currentTab.getWebContents());
+            Profile profile = currentTab.getProfile();
             // If image descriptions are not enabled, then we want the menu item to be "Get".
             if (!ImageDescriptionsController.getInstance().imageDescriptionsEnabled(profile)) {
                 titleId = R.string.menu_get_image_descriptions;
@@ -1092,9 +1092,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             return;
         }
 
-        Profile profile = Profile.fromWebContents(currentTab.getWebContents());
-        assert profile != null;
-
+        Profile profile = currentTab.getProfile();
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         ShoppingService.ProductInfo info = null;
         if (service != null) {

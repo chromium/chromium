@@ -13,10 +13,11 @@
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/network_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/parental_handoff_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 
@@ -36,18 +37,23 @@ absl::optional<QuickStartController::EntryPoint> EntryPointFromScreen(
   return absl::nullopt;
 }
 
-quick_start_metrics::ScreenName ScreenNameFromOobeScreenId(
+QuickStartMetrics::ScreenName ScreenNameFromOobeScreenId(
     OobeScreenId screen_id) {
   //  TODO(b/298042953): Check Screen IDs for Unicorn account setup flow.
   if (screen_id == ConsumerUpdateScreenView::kScreenId) {
     //  TODO(b/298042953): Update Screen ID when the new OOBE Checking for
     //  update and determining device configuration screen is added.
-    return quick_start_metrics::ScreenName::
+    return QuickStartMetrics::ScreenName::
         kCheckingForUpdateAndDeterminingDeviceConfiguration;
   } else if (screen_id == UserCreationView::kScreenId) {
-    return quick_start_metrics::ScreenName::kChooseChromebookSetup;
+    return QuickStartMetrics::ScreenName::kChooseChromebookSetup;
   }
-  return quick_start_metrics::ScreenName::kOther;
+  return QuickStartMetrics::ScreenName::kOther;
+}
+
+bool IsConnectedToWiFi() {
+  NetworkStateHandler* nsh = NetworkHandler::Get()->network_state_handler();
+  return nsh->ConnectedNetworkByType(NetworkTypePattern::WiFi()) != nullptr;
 }
 
 }  // namespace
@@ -111,7 +117,7 @@ void QuickStartController::DetermineEntryPointVisibility(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuickStartController::HandleFlowCancellationRequest() {
+void QuickStartController::AbortFlow() {
   CHECK(bootstrap_controller_);
   bootstrap_controller_->CloseOpenConnections();
   bootstrap_controller_->StopAdvertising();
@@ -119,7 +125,7 @@ void QuickStartController::HandleFlowCancellationRequest() {
 }
 
 QuickStartController::EntryPoint QuickStartController::GetExitPoint() {
-  return entry_point_.value();
+  return exit_point_.value();
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
@@ -155,38 +161,52 @@ void QuickStartController::OnStatusChanged(
   // TODO(b/298042953): Emit ScreenOpened metrics when automatically resuming
   // after an update.
   switch (status.step) {
-    case Step::ADVERTISING_WITH_QR_CODE: {
+    case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
       CHECK(absl::holds_alternative<QRCode::PixelData>(status.payload));
       qr_code_data_ = absl::get<QRCode::PixelData>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
-      quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kSetUpAndroidPhone);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
-    }
-    case Step::PIN_VERIFICATION: {
+    case Step::ADVERTISING_WITHOUT_QR_CODE:
+      // TODO(b/282934168): Implement these screens fully
+      QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
+      return;
+    case Step::PIN_VERIFICATION:
       CHECK(status.pin.length() == 4);
       pin_ = status.pin;
       UpdateUiState(UiState::SHOWING_PIN);
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kSetUpAndroidPhone);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
-    }
-    case Step::ERROR:
-      NOTIMPLEMENTED();
+    case Step::CONNECTED:
+      controller_state_ = ControllerState::CONNECTED;
+      if (IsConnectedToWiFi()) {
+        // This will cause the QuickStartScreen to exit and the NetworkScreen
+        // will be shown next.
+        UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
+      } else {
+        bootstrap_controller_->AttemptWifiCredentialTransfer();
+      }
       return;
-    case Step::CONNECTING_TO_WIFI:
+    case Step::REQUESTING_WIFI_CREDENTIALS:
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
-      quick_start::quick_start_metrics::RecordScreenOpened(
-          quick_start_metrics::ScreenName::kConnectingToWifi);
+      QuickStartMetrics::RecordScreenOpened(
+          QuickStartMetrics::ScreenName::kConnectingToWifi);
       return;
-    case Step::CONNECTED_TO_WIFI:
-      wifi_name_ = status.ssid;
-      UpdateUiState(UiState::CONNECTED_TO_WIFI_DEBUG);
-      // TODO(b:283965994) - Replace with better logic.
+    case Step::WIFI_CREDENTIALS_RECEIVED:
       LoginDisplayHost::default_host()
           ->GetWizardContext()
-          ->quick_start_setup_ongoing = true;
+          ->quick_start_wifi_credentials = status.wifi_credentials;
+      ABSL_FALLTHROUGH_INTENDED;
+    case Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
+      UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
+      return;
+    case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      return;
+    case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
+      bootstrap_controller_->AttemptGoogleAccountTransfer();
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
       // Intermediate state. Nothing to do.
@@ -215,12 +235,14 @@ void QuickStartController::OnStatusChanged(
     case Step::NONE:
       // Indicates we've stopped advertising. No action required.
       return;
-    case Step::CONNECTED:
-      controller_state_ = ControllerState::CONNECTED;
-      return;
-    case Step::ADVERTISING_WITHOUT_QR_CODE:
-      // TODO(b/282934168): Implement these screens fully
-      QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
+    case Step::ERROR:
+      AbortFlow();
+      // Triggers a screen exit if there is a UiDelegate driving the UI.
+      if (!ui_delegates_.empty()) {
+        CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
+              current_screen_ == NetworkScreenHandler::kScreenId);
+        ui_delegates_.begin()->OnUiUpdateRequested(UiState::EXIT_SCREEN);
+      }
       return;
   }
 }
@@ -235,7 +257,7 @@ void QuickStartController::OnCurrentScreenChanged(OobeScreenId previous_screen,
     // the Quick Start screen are recorded from OnStatusChanged().
     HandleTransitionToQuickStartScreen();
   } else if (IsSetupOngoing()) {
-    quick_start_metrics::RecordScreenOpened(
+    QuickStartMetrics::RecordScreenOpened(
         ScreenNameFromOobeScreenId(current_screen));
   }
 }
@@ -261,13 +283,16 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 
     // Request advertising to start.
     controller_state_ = ControllerState::INITIALIZING;
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->quick_start_setup_ongoing = true;
     bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
     CHECK(!entry_point_.has_value()) << "Entry point without ongoing setup";
 
     // Keep track of where the flow originated.
     const auto entry_point = EntryPointFromScreen(previous_screen_.value());
     CHECK(entry_point.has_value()) << "Unknown entry point!";
-    entry_point_ = entry_point;
+    exit_point_ = entry_point_ = entry_point;
   } else {
     // The flow must be resuming after reaching the UserCreation screen. Note
     // the the UserCreationScreen is technically never shown when it switches
@@ -275,9 +300,14 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     // may have appeared up to this point.
     // TODO(b:283965994) - Imrpve the resume logic.
     CHECK(controller_state_ == ControllerState::CONNECTED);
+    CHECK(LoginDisplayHost::default_host()
+              ->GetWizardContext()
+              ->quick_start_setup_ongoing);
     controller_state_ = ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS;
+    // OOBE flow cannot go back after enrollment checks, update exit point.
+    exit_point_ = QuickStartController::EntryPoint::GAIA_SCREEN;
 
-    bootstrap_controller_->AttemptGoogleAccountTransfer();
+    bootstrap_controller_->RequestGoogleAccountInfo();
     UpdateUiState(UiState::TRANSFERRING_GAIA_CREDENTIALS);
   }
 }
@@ -305,6 +335,10 @@ void QuickStartController::ResetState() {
   wifi_name_.reset();
   controller_state_ = ControllerState::NOT_ACTIVE;
   ui_state_.reset();
+  auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
+  wizard_context->quick_start_setup_ongoing = false;
+  wizard_context->quick_start_wifi_credentials.reset();
+  bootstrap_controller_->Cleanup();
 }
 
 }  // namespace ash::quick_start

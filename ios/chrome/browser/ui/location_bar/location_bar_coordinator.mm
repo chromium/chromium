@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/default_browser_promo_scene_agent_utils.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/commands/search_image_with_lens_command.h"
@@ -164,9 +165,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
   BOOL isIncognito = self.browserState->IsOffTheRecord();
 
-  PrefService* prefs =
-      ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
-          ->GetPrefs();
+  PrefService* originalPrefs = self.browser->GetBrowserState()
+                                   ->GetOriginalChromeBrowserState()
+                                   ->GetPrefs();
   self.viewController = [[LocationBarViewController alloc] init];
   self.viewController.incognito = isIncognito;
   self.viewController.delegate = self;
@@ -180,7 +181,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       ios::provider::IsVoiceSearchEnabled();
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.viewController.prefService = prefs;
+  self.viewController.originalPrefService = originalPrefs;
 
   _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
   _locationBar->SetURLLoader(self);
@@ -201,8 +202,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       willMoveToParentViewController:self.viewController];
   [self.viewController
       addChildViewController:self.omniboxCoordinator.managedViewController];
-  [self.viewController
-      setEditView:self.omniboxCoordinator.managedViewController.view];
+  [self.viewController setEditView:self.omniboxCoordinator.editView];
   [self.omniboxCoordinator.managedViewController
       didMoveToParentViewController:self.viewController];
   self.viewController.offsetProvider = [self.omniboxCoordinator offsetProvider];
@@ -420,6 +420,9 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
 
 - (void)locationBarCopyTapped {
   StoreURLInPasteboard(self.webState->GetVisibleURL());
+  id<HelpCommands> helpHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), HelpCommands);
+  [helpHandler presentShareButtonHelpBubbleIfEligible];
 }
 
 - (void)locationBarRequestScribbleTargetFocus {

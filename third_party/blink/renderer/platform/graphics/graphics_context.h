@@ -464,7 +464,7 @@ class PLATFORM_EXPORT GraphicsContext {
   // the backdrop (i.e. EndLayer()).
   void BeginLayer(float opacity = 1.0f);
   void BeginLayer(SkBlendMode);
-  void BeginLayer(sk_sp<cc::ColorFilter>);
+  void BeginLayer(sk_sp<cc::ColorFilter>, const SkBlendMode* = nullptr);
   void BeginLayer(sk_sp<PaintFilter>);
   void EndLayer();
 

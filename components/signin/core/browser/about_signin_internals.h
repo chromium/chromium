@@ -71,8 +71,8 @@ class AboutSigninInternals : public KeyedService,
 
   // Each instance of SigninInternalsUI adds itself as an observer to be
   // notified of all updates that AboutSigninInternals receives.
-  void AddSigninObserver(Observer* observer);
-  void RemoveSigninObserver(Observer* observer);
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Pulls all signin values that have been persisted in the user prefs.
   void RefreshSigninPrefs();
@@ -254,6 +254,25 @@ class AboutSigninInternals : public KeyedService,
   signin::AccountConsistencyMethod account_consistency_;
 
   base::ObserverList<Observer>::Unchecked signin_observers_;
+
+  // Used to keep track of observerations.
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observeration_{this};
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::DiagnosticsObserver>
+      diganostics_observeration_{this};
+
+  base::ScopedObservation<SigninClient, content_settings::Observer>
+      client_observeration_{this};
+
+  base::ScopedObservation<SigninErrorController,
+                          SigninErrorController::Observer>
+      signin_error_observeration_{this};
+
+  base::ScopedObservation<AccountReconcilor, AccountReconcilor::Observer>
+      account_reconcilor_observeration_{this};
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_

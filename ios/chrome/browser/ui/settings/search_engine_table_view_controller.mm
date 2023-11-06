@@ -15,13 +15,14 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/search_engine_choice_utils.h"
+#import "components/search_engines/search_engines_pref_names.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_observer.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
 #import "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/search_engines/search_engine_observer_bridge.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -68,6 +69,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
 @implementation SearchEngineTableViewController {
   TemplateURLService* _templateURLService;  // weak
+  PrefService* _prefService;
   std::unique_ptr<SearchEngineObserverBridge> _observer;
   // The list of choice screen search engines retrieved from the
   // TemplateURLService.
@@ -106,8 +108,9 @@ const char kUmaSelectDefaultSearchEngine[] =
     _templateURLService->Load();
     _faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+    _prefService = browserState->GetPrefs();
     _shouldShowUpdatedSettings =
-        search_engines::ShouldShowUpdatedSettings(*browserState->GetPrefs());
+        search_engines::ShouldShowUpdatedSettings(*_prefService);
     [self setTitle:l10n_util::GetNSString(IDS_IOS_SEARCH_ENGINE_SETTING_TITLE)];
     self.shouldDisableDoneButtonOnEdit = YES;
   }
@@ -214,7 +217,7 @@ const char kUmaSelectDefaultSearchEngine[] =
   [self updateUIForEditState];
 }
 
-#pragma mark - ChromeTableViewController
+#pragma mark - LegacyChromeTableViewController
 
 - (void)loadModel {
   [super loadModel];
@@ -281,6 +284,7 @@ const char kUmaSelectDefaultSearchEngine[] =
 
   // Clear C++ ivars.
   _templateURLService = nullptr;
+  _prefService = nullptr;
   _faviconLoader = nullptr;
 
   _settingsAreDismissed = YES;
@@ -395,6 +399,12 @@ const char kUmaSelectDefaultSearchEngine[] =
   }
   [self recordUmaOfDefaultSearchEngine];
   self.updatingBackend = NO;
+
+  // For choice screen eligible users, set the corresponding timestamp pref if
+  // it wasn't already set before.
+  search_engines::RecordChoiceMade(
+      _prefService, search_engines::ChoiceMadeLocation::kSearchEngineSettings,
+      _templateURLService);
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -713,8 +723,9 @@ const char kUmaSelectDefaultSearchEngine[] =
     SearchEngineItem* engineItem =
         base::apple::ObjCCastStrict<SearchEngineItem>(item);
     engineItem.enabled = !editing;
-    if (!editing && _firstList[indexPath.item] ==
-                        _templateURLService->GetDefaultSearchProvider()) {
+    if (!editing && [self isItem:engineItem
+                        equalForTemplateURL:_templateURLService
+                                                ->GetDefaultSearchProvider()]) {
       engineItem.accessoryType = UITableViewCellAccessoryCheckmark;
     } else {
       engineItem.accessoryType = UITableViewCellAccessoryNone;

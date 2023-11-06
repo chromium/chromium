@@ -22,7 +22,7 @@ class SVGLengthInterpolationType : public SVGInterpolationType {
             SVGLength::NegativeValuesForbiddenForAnimatedLengthAttribute(
                 attribute)) {}
 
-  static std::unique_ptr<InterpolableValue> NeutralInterpolableValue();
+  static InterpolableValue* NeutralInterpolableValue();
   static InterpolationValue MaybeConvertSVGLength(const SVGLength&);
   static SVGLength* ResolveInterpolableSVGLength(
       const InterpolableValue&,

@@ -1134,6 +1134,7 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   // Loads FetchLater request (which is also keepalive request) under invalid
   // configuration:
   feature_list().Reset();
+  feature_list().InitAndDisableFeature(blink::features::kFetchLaterAPI);
   renderer_loader_factory.CreateLoader(
       CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)),
       /*expect_success=*/false);
@@ -1233,6 +1234,29 @@ TEST_F(FetchLaterKeepAliveURLLoaderServiceTest,
   EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
   // The network should not create pending URLLoader.
   EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+}
+
+// Notifying KeepAliveURLLoaderService about shutdown should start any pending
+// loaders.
+TEST_F(FetchLaterKeepAliveURLLoaderServiceTest, Shutdown) {
+  FakeRemoteFetchLaterLoaderFactory renderer_loader_factory;
+  BindFetchLaterLoaderFactory(renderer_loader_factory);
+
+  // Loads FetchLater request (which is also keepalive request):
+  renderer_loader_factory.CreateLoader(
+      CreateFetchLaterResourceRequest(GURL(kTestRequestUrl)));
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // As the request is deferred, the pending URLoader in network is 0.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 0);
+
+  loader_service().Shutdown();
+
+  // The pending loader should still exist.
+  EXPECT_EQ(loader_service().NumLoadersForTesting(), 1u);
+  // There should be no disconnected loader.
+  EXPECT_EQ(loader_service().NumDisconnectedLoadersForTesting(), 0u);
+  // The network should now have created pending URLLoader.
+  EXPECT_EQ(network_url_loader_factory().NumPending(), 1);
 }
 
 }  // namespace content

@@ -275,8 +275,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verify that the notification's default timestamp is set in the last 30
   // seconds. (30 has no significance, just needs to be significantly high to
   // avoid test flakiness.)
-  EXPECT_NEAR(default_notification.timestamp().ToJsTime(),
-              base::Time::Now().ToJsTime(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
@@ -313,7 +313,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   EXPECT_TRUE(notification.renotify());
   EXPECT_TRUE(notification.never_timeout());
-  EXPECT_DOUBLE_EQ(621046800000., notification.timestamp().ToJsTime());
+  EXPECT_DOUBLE_EQ(621046800000.,
+                   notification.timestamp().InMillisecondsFSinceUnixEpoch());
 
 #if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(notification.image().IsEmpty());
@@ -388,8 +389,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // Verifies that the notification's default timestamp is set in the last 30
   // seconds. This number has no significance, but it needs to be significantly
   // high to avoid flakiness in the test.
-  EXPECT_NEAR(default_notification.timestamp().ToJsTime(),
-              base::Time::Now().ToJsTime(), 30 * 1000);
+  EXPECT_NEAR(default_notification.timestamp().InSecondsFSinceUnixEpoch(),
+              base::Time::Now().InSecondsFSinceUnixEpoch(), 30);
 
   // Now, test the non-default values.
 
@@ -419,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_TRUE(all_options_notification.renotify());
   EXPECT_TRUE(all_options_notification.silent());
   EXPECT_TRUE(all_options_notification.never_timeout());
-  EXPECT_DOUBLE_EQ(kNotificationTimestamp,
-                   all_options_notification.timestamp().ToJsTime());
+  EXPECT_DOUBLE_EQ(
+      kNotificationTimestamp,
+      all_options_notification.timestamp().InMillisecondsFSinceUnixEpoch());
   EXPECT_EQ(1u, all_options_notification.buttons().size());
   EXPECT_EQ("actionTitle",
             base::UTF16ToUTF8(all_options_notification.buttons()[0].title));

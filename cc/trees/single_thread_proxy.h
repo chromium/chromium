@@ -157,6 +157,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void RequestNewLayerTreeFrameSink();
 
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
 
@@ -180,7 +181,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void DoPostCommit();
   DrawResult DoComposite(LayerTreeHostImpl::FrameData* frame);
   void DoSwap();
-  void DidCommitAndDrawFrame();
+  void DidCommitAndDrawFrame(int source_frame_number);
   void CommitComplete();
 
   bool ShouldComposite() const;
@@ -231,6 +232,8 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   // A number that kept incrementing in CompositeImmediately, which indicates a
   // new impl frame.
   uint64_t begin_frame_sequence_number_ = 1u;
+
+  int source_frame_number_for_next_commit_ = kInvalidSourceFrameNumber;
 
   // This is the callback for the scheduled RequestNewLayerTreeFrameSink.
   base::CancelableOnceClosure layer_tree_frame_sink_creation_callback_;

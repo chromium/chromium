@@ -43,32 +43,27 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.lang.ref.WeakReference;
 
-/**
- * Unit tests for OfflinePageUtils.
- */
+/** Unit tests for OfflinePageUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OfflinePageTabObserverTest {
     // Using a null tab, as it cannot be mocked. TabHelper will help return proper mocked responses.
     private static final int TAB_ID = 77;
     private static final GURL TAB_URL = JUnitTestGURLs.EXAMPLE_URL;
-    @Mock
-    private ChromeActivity mActivity;
-    @Mock
-    private TabModelSelector mTabModelSelector;
+    @Mock private ChromeActivity mActivity;
+    @Mock private TabModelSelector mTabModelSelector;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private SnackbarController mSnackbarController;
-    @Mock
-    private Tab mTab;
-    @Mock
-    private OfflinePageUtils.Internal mOfflinePageUtils;
-    @Mock
-    private WindowAndroid mWindowAndroid;
+    @Mock private Tab mTab;
+    @Mock private OfflinePageUtils.Internal mOfflinePageUtils;
+    @Mock private WindowAndroid mWindowAndroid;
     private WeakReference<Activity> mActivityRef;
 
     private OfflinePageTabObserver createObserver() {
-        OfflinePageTabObserver observer = spy(new OfflinePageTabObserver(
-                mTabModelSelector, mSnackbarManager, mSnackbarController));
+        OfflinePageTabObserver observer =
+                spy(
+                        new OfflinePageTabObserver(
+                                mTabModelSelector, mSnackbarManager, mSnackbarController));
         // Mocking out all of the calls that touch on NetworkChangeNotifier, which we cannot
         // directly mock out.
         doNothing().when(observer).startObservingNetworkChanges();
@@ -110,8 +105,11 @@ public class OfflinePageTabObserverTest {
         doReturn(true).when(mOfflinePageUtils).isOfflinePage(any(Tab.class));
         doNothing()
                 .when(mOfflinePageUtils)
-                .showReloadSnackbar(any(Context.class), any(SnackbarManager.class),
-                        any(SnackbarController.class), anyInt());
+                .showReloadSnackbar(
+                        any(Context.class),
+                        any(SnackbarManager.class),
+                        any(SnackbarController.class),
+                        anyInt());
     }
 
     private void showTab(OfflinePageTabObserver observer) {

@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-PASS Animation does not apply when the timeline is inactive because there is not scroll range
-FAIL Animation does not apply when timeline is initially inactive assert_equals: expected "0px" but got "100px"
+[PASS] Animation does not apply when the timeline is inactive because there is not scroll range
+[FAIL] Animation does not apply when timeline is initially inactive
+  assert_equals: expected "0px" but got "100px"
 Harness: the test ran to completion.
 

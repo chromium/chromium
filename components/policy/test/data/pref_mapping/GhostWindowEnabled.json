@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GhostWindowEnabled": false
+        },
+        "prefs": {
+          "settings.ghost_window_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "GhostWindowEnabled": true
+        },
+        "prefs": {
+          "settings.ghost_window_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "settings.ghost_window_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
+  }
+]

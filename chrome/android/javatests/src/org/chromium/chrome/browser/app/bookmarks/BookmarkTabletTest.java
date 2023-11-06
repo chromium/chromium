@@ -40,18 +40,16 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the bookmark manager on tablet. */
-// clang-format off
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
 // TODO(crbug.com/1426138): Investigate batching.
 @DoNotBatch(reason = "Test has side-effects (bookmarks, pageloads) and thus can't be batched.")
 public class BookmarkTabletTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     private BookmarkManagerCoordinator mBookmarkManagerCoordinator;
     private BookmarkModel mBookmarkModel;
@@ -60,9 +58,10 @@ public class BookmarkTabletTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mBookmarkModel = mActivityTestRule.getActivity().getBookmarkModelForTesting();
+                });
     }
 
     private void openBookmarkManager() throws InterruptedException {
@@ -86,12 +85,15 @@ public class BookmarkTabletTest {
 
     /**
      * Simulates a click on a tab, selecting it.
+     *
      * @param incognito Whether or not this tab is in the incognito or normal stack.
      * @param id The id of the tab to click.
      */
     protected void selectTab(final boolean incognito, final int id) {
-        ChromeTabUtils.selectTabWithAction(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(), new Runnable() {
+        ChromeTabUtils.selectTabWithAction(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivityTestRule.getActivity(),
+                new Runnable() {
                     @Override
                     public void run() {
                         TabStripUtils.clickTab(
@@ -108,17 +110,21 @@ public class BookmarkTabletTest {
     public void switchBetweenTabs_editVisibility() throws Exception {
         Tab bookmarksTab = mActivityTestRule.getActivity().getActivityTab();
         openBookmarkManager();
-        BookmarkTestUtil.openMobileBookmarks(mItemsContainer,
-                mBookmarkManagerCoordinator.getBookmarkDelegateForTesting(), mBookmarkModel);
+        BookmarkTestUtil.openMobileBookmarks(
+                mItemsContainer,
+                mBookmarkManagerCoordinator.getBookmarkDelegateForTesting(),
+                mBookmarkModel);
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL);
         selectTab(false, bookmarksTab.getId());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
-        Assert.assertFalse(mBookmarkManagerCoordinator.getToolbarForTesting()
-                                   .getMenu()
-                                   .findItem(R.id.edit_menu_id)
-                                   .isVisible());
+        Assert.assertFalse(
+                mBookmarkManagerCoordinator
+                        .getToolbarForTesting()
+                        .getMenu()
+                        .findItem(R.id.edit_menu_id)
+                        .isVisible());
     }
 
     @Test
@@ -127,15 +133,18 @@ public class BookmarkTabletTest {
         BookmarkTestUtil.loadEmptyPartnerBookmarksForTesting(mBookmarkModel);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            BookmarkUtils.showBookmarkManager(mActivityTestRule.getActivity(),
-                    mBookmarkModel.getMobileFolderId(), /*isIncognito=*/false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    BookmarkUtils.showBookmarkManager(
+                            mActivityTestRule.getActivity(),
+                            mBookmarkModel.getMobileFolderId(),
+                            /* isIncognito= */ false);
+                });
 
         CriteriaHelper.pollUiThread(
-                ()
-                        -> mActivityTestRule.getActivity().getActivityTab().getNativePage() != null
-                        && mActivityTestRule.getActivity().getActivityTab().getNativePage()
+                () ->
+                        mActivityTestRule.getActivity().getActivityTab().getNativePage() != null
+                                && mActivityTestRule.getActivity().getActivityTab().getNativePage()
                                         instanceof BookmarkPage);
     }
 }

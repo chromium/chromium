@@ -28,8 +28,7 @@ namespace ash {
 // propagated to Observers.
 // All methods must be called from the same sequence (UI) and all observers'
 // notifications will be called from this sequence.
-class PrintServersProvider
-    : public base::SupportsWeakPtr<PrintServersProvider> {
+class PrintServersProvider {
  public:
   class Observer {
    public:
@@ -70,6 +69,9 @@ class PrintServersProvider
   // Returns the list of all print servers given from the data provided in
   // SetData(...) and limited by the allowlist.
   virtual absl::optional<std::vector<PrintServer>> GetPrintServers() = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PrintServersProvider> AsWeakPtr() = 0;
 
  protected:
   PrintServersProvider() = default;

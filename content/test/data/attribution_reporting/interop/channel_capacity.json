@@ -145,7 +145,7 @@
       },
       {
         // Max values for event_report_windows and max_event_level_reports,
-        // should register. Ensures `combinatorics.cc` doesn't kill the source
+        // should register. Ensures `privacy_math.cc` doesn't kill the source
         // registration when max values are provided.
         // Value: 5.38066e-9 bits
         "timestamp": "6000",

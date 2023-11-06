@@ -1,14 +1,25 @@
 This is a testharness.js-based test.
-FAIL name assert_implements: WebAssembly.Function is not implemented undefined
-FAIL length assert_implements: WebAssembly.Function is not implemented undefined
-FAIL Too few arguments assert_implements: WebAssembly.Function is not implemented undefined
-FAIL Calling assert_implements: WebAssembly.Function is not implemented undefined
-FAIL construct with JS function assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail with missing results assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail with missing parameters assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail with non-string parameters & results assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail with non-existent parameter and result type assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail with non-function object assert_implements: WebAssembly.Function is not implemented undefined
-FAIL fail to construct with non-callable object assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] name
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] length
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] Too few arguments
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] Calling
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] construct with JS function
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail with missing results
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail with missing parameters
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail with non-string parameters & results
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail with non-existent parameter and result type
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail with non-function object
+  assert_implements: WebAssembly.Function is not implemented undefined
+[FAIL] fail to construct with non-callable object
+  assert_implements: WebAssembly.Function is not implemented undefined
 Harness: the test ran to completion.
 

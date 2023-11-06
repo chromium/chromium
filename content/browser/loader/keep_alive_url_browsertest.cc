@@ -1007,10 +1007,6 @@ class FetchLaterNoBackForwardCacheBrowserTest
     : public FetchLaterBrowserTestBase,
       public testing::WithParamInterface<TestTimeoutType> {
  protected:
-  // TODO(crbug.com/1465781): Remove this after refactoring is done.
-  void SetUp() override {
-    GTEST_SKIP() << "Skipping all FetchLater tests until refactoring is done";
-  }
   const FeaturesType& GetEnabledFeatures() override {
     static const FeaturesType enabled_features = {
         {blink::features::kFetchLaterAPI, {{}}}};
@@ -1035,7 +1031,7 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // All pending FetchLater requests should be sent after the initiator page is
-// gone, no matter how much time their activationTimeout has left.
+// gone, no matter how much time their activateAfter has left.
 // Disables BackForwardCache such that a page is discarded right away on user
 // navigating to another page.
 IN_PROC_BROWSER_TEST_P(FetchLaterNoBackForwardCacheBrowserTest,
@@ -1044,11 +1040,11 @@ IN_PROC_BROWSER_TEST_P(FetchLaterNoBackForwardCacheBrowserTest,
   auto request_handlers = RegisterRequestHandlers({target_url, target_url});
   ASSERT_TRUE(server()->Start());
 
-  // Creates two FetchLater requests with various long activationTimeout, which
+  // Creates two FetchLater requests with various long activateAfter, which
   // should all be sent on page discard.
   RunScriptAndNavigateAway(JsReplace(R"(
-    fetchLater($1, {activationTimeout: $2});
-    fetchLater($1, {activationTimeout: $2});
+    fetchLater($1, {activateAfter: $2});
+    fetchLater($1, {activateAfter: $2});
   )",
                                      target_url, GetParam().timeout));
   // Ensure the 1st page has been unloaded.
@@ -1064,10 +1060,6 @@ class FetchLaterWithBackForwardCacheMetricsBrowserTestBase
     : public FetchLaterBrowserTestBase,
       public BackForwardCacheMetricsTestMatcher {
  protected:
-  // TODO(crbug.com/1465781): Remove this after refactoring is done.
-  void SetUp() override {
-    GTEST_SKIP() << "Skipping all FetchLater tests until refactoring is done";
-  }
   void SetUpOnMainThread() override {
     // TestAutoSetUkmRecorder's constructor requires a sequenced context.
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -1176,7 +1168,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
 }
 
-// Without a activationTimeout set, a pending FetchLater request should not be
+// Without an activateAfter set, a pending FetchLater request should not be
 // sent out during its page frozen state.
 // Similar to ResetActivationTimeoutTimerOnPageResume.
 IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
@@ -1184,7 +1176,7 @@ IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
   const std::string target_url = kFetchLaterEndpoint;
   ASSERT_TRUE(server()->Start());
 
-  // Creates a FetchLater request with NO activationTimeout.
+  // Creates a FetchLater request with NO activateAfter.
   // It should be impossible to send out during page frozen.
   ASSERT_TRUE(NavigateToURL(server()->GetURL(kPrimaryHost, "/title1.html")));
   ASSERT_TRUE(ExecJs(web_contents(), JsReplace(R"(
@@ -1211,7 +1203,7 @@ IN_PROC_BROWSER_TEST_F(FetchLaterNoActivationTimeoutBrowserTest,
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
 }
 
-// Tests to cover FetchLater's activationTimeout behaviors when BackForwardCache
+// Tests to cover FetchLater's activateAfter behaviors when BackForwardCache
 // is on and may come into play.
 //
 // BackForwardCache eviction is simulated by calling
@@ -1234,7 +1226,7 @@ class FetchLaterActivationTimeoutBrowserTest
   }
 };
 
-// When setting activationTimeout>0, a pending FetchLater request should be sent
+// When setting activateAfter>0, a pending FetchLater request should be sent
 // after around the specified time, if no navigation happens.
 IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
                        SendOnActivationTimeout) {
@@ -1242,35 +1234,31 @@ IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
   auto request_handlers = RegisterRequestHandlers({target_url});
   ASSERT_TRUE(server()->Start());
 
-  // Creates a FetchLater request with activationTimeout=2s.
+  // Creates a FetchLater request with activateAfter=2s.
   // It should be sent out after 2s.
   RunScript(JsReplace(R"(
-    fetchLater($1, {activationTimeout: 2000});
+    fetchLater($1, {activateAfter: 2000});
   )",
                       target_url));
   ASSERT_FALSE(current_document().IsDestroyed());
 
   // The loader should still exist as the page exists.
   EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
-  // The FetchLater request should be sent, triggered by its activationTimeout.
+  // The FetchLater request should be sent, triggered by its activateAfter.
   ExpectFetchLaterRequests(1, request_handlers);
 }
 
 // A pending FetchLater request should be sent when its page is evicted out of
 // BackForwardCache.
-// TODO(crbug.com/1465781): Fixed this by listening to BFCache eviction.
-// It looks like ContextLifecycleObserver::ContextDestroyed() is not called when
-// a document is evicted from cache, i.e. most of Document::Shutdown() is
-// skipped.
 IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
-                       DISABLED_SendOnBackForwardCachedEviction) {
+                       SendOnBackForwardCachedEviction) {
   const std::string target_url = kFetchLaterEndpoint;
   auto request_handlers = RegisterRequestHandlers({target_url});
   ASSERT_TRUE(server()->Start());
 
-  // Creates a FetchLater request with long activationTimeout (3min)
+  // Creates a FetchLater request with long activateAfter (3min)
   RunScriptAndNavigateAway(JsReplace(R"(
-    fetchLater($1, {activationTimeout: 180000});
+    fetchLater($1, {activateAfter: 180000});
   )",
                                      target_url));
   ASSERT_TRUE(previous_document()->IsInBackForwardCache());
@@ -1280,40 +1268,16 @@ IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
   // Eviction happens immediately, but RFH deletion may be delayed.
   ASSERT_TRUE(previous_document().WaitUntilRenderFrameDeleted());
 
-  // The loader is disconnected after the page is gone (evicted).
-  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 1u);
-  // The FetchLater request should've been sent on page deletion.
+  // The loader is disconnected after the page is evicted by browser process to
+  // start loading the request. However, it may happen earlier or later, so it's
+  // difficult to assert the existence of the disconnected loader.
+
+  // At the end, the FetchLater request should be sent, and the loader is
+  // expected to process the response.
   ExpectFetchLaterRequests(1, request_handlers);
 }
 
-// A FetchLater request can be fired immediately on entering BackForwardCache by
-// making its activationTimeout=0 in persisted pagehide event.
-// TODO(crbug.com/1465781): Fixed this by ensuring loading options for
-// FetchLater is kLoadingTasksUnfreezable (or after new mojo is submitted).
-// Currently, IPCs after BFCached is delayed and may not be sent to browser.
-IN_PROC_BROWSER_TEST_F(FetchLaterActivationTimeoutBrowserTest,
-                       DISABLED_SendOnEnterBackForwardCacheAfterNavigation) {
-  const std::string target_url = kFetchLaterEndpoint;
-  auto request_handlers = RegisterRequestHandlers({target_url});
-  ASSERT_TRUE(server()->Start());
-
-  // Creates a FetchLater request with activationTimeout=0 in persisted pagehide
-  // event. It should be sent out right away, i.e. page entering
-  // BackForwardCache.
-  RunScriptAndNavigateAway(JsReplace(R"(
-    window.addEventListener('pagehide', e => {
-      if (e.persisted) {
-        fetchLater($1, {activationTimeout: 0});
-      }
-    });
-  )",
-                                     target_url));
-  ASSERT_TRUE(previous_document()->IsInBackForwardCache());
-
-  // The loader should still exist as the page exists.
-  EXPECT_EQ(loader_service()->NumDisconnectedLoadersForTesting(), 0u);
-  // The FetchLater request should've been sent.
-  ExpectFetchLaterRequests(1, request_handlers);
-}
+// All other send-on-BFCache behaviors are covered in
+// send-on-deactivate.tentative.https.window.js
 
 }  // namespace content

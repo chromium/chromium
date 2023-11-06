@@ -52,9 +52,10 @@ const HeapVector<Member<MediaImage>>& MediaMetadata::artwork() const {
   return artwork_;
 }
 
-Vector<v8::Local<v8::Value>> MediaMetadata::artwork(
+v8::LocalVector<v8::Value> MediaMetadata::artwork(
     ScriptState* script_state) const {
-  Vector<v8::Local<v8::Value>> result(artwork_.size());
+  v8::LocalVector<v8::Value> result(script_state->GetIsolate(),
+                                    artwork_.size());
 
   for (wtf_size_t i = 0; i < artwork_.size(); ++i) {
     result[i] =

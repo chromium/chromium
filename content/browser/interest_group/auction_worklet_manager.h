@@ -74,6 +74,8 @@ class CONTENT_EXPORT AuctionWorkletManager {
       base::OnceCallback<void(FatalErrorType fatal_error_type,
                               const std::vector<std::string>& errors)>;
 
+  int GetFrameTreeNodeID();
+
   // Delegate class to allow dependency injection in tests. Note that passed in
   // URLLoaderFactories can crash and be restarted, so passing in raw pointers
   // would be problematic.

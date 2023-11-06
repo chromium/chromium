@@ -55,8 +55,7 @@ public class AutofillSaveCardBottomSheetRenderTest {
     public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final RenderTestRule mRenderTestRule =
@@ -66,51 +65,58 @@ public class AutofillSaveCardBottomSheetRenderTest {
                     .build();
 
     private BottomSheetController mBottomSheetController;
-    @Mock
-    private AutofillSaveCardBottomSheetContent.Delegate mSaveCardBottomSheetContentDelegate;
+    @Mock private AutofillSaveCardBottomSheetContent.Delegate mSaveCardBottomSheetContentDelegate;
     private AutofillSaveCardBottomSheetContent mSaveCardBottomSheetContent;
 
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(/*startIntent=*/null);
+        sActivityTestRule.launchActivity(/* startIntent= */ null);
     }
 
     @Before
     public void setUp() {
-        runOnUiThreadBlocking(() -> {
-            Activity activity = sActivityTestRule.getActivity();
-            ViewGroup activityContentView = activity.findViewById(android.R.id.content);
-            activityContentView.removeAllViews();
-            ScrimCoordinator scrimCoordinator =
-                    new ScrimCoordinator(activity, new ScrimCoordinator.SystemUiScrimDelegate() {
-                        @Override
-                        public void setStatusBarScrimFraction(float scrimFraction) {}
+        runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = sActivityTestRule.getActivity();
+                    ViewGroup activityContentView = activity.findViewById(android.R.id.content);
+                    activityContentView.removeAllViews();
+                    ScrimCoordinator scrimCoordinator =
+                            new ScrimCoordinator(
+                                    activity,
+                                    new ScrimCoordinator.SystemUiScrimDelegate() {
+                                        @Override
+                                        public void setStatusBarScrimFraction(
+                                                float scrimFraction) {}
 
-                        @Override
-                        public void setNavigationBarScrimFraction(float scrimFraction) {}
-                    }, activityContentView, Color.WHITE);
-            mBottomSheetController =
-                    BottomSheetControllerFactory.createFullWidthBottomSheetController(
-                            ()
-                                    -> scrimCoordinator,
-                            (unused)
-                                    -> {},
-                            activity.getWindow(), KeyboardVisibilityDelegate.getInstance(),
-                            () -> activityContentView);
+                                        @Override
+                                        public void setNavigationBarScrimFraction(
+                                                float scrimFraction) {}
+                                    },
+                                    activityContentView,
+                                    Color.WHITE);
+                    mBottomSheetController =
+                            BottomSheetControllerFactory.createFullWidthBottomSheetController(
+                                    () -> scrimCoordinator,
+                                    (unused) -> {},
+                                    activity.getWindow(),
+                                    KeyboardVisibilityDelegate.getInstance(),
+                                    () -> activityContentView);
 
-            mSaveCardBottomSheetContent =
-                    new AutofillSaveCardBottomSheetContent(sActivityTestRule.getActivity());
-            mSaveCardBottomSheetContent.setDelegate(mSaveCardBottomSheetContentDelegate);
-        });
+                    mSaveCardBottomSheetContent =
+                            new AutofillSaveCardBottomSheetContent(sActivityTestRule.getActivity());
+                    mSaveCardBottomSheetContent.setDelegate(mSaveCardBottomSheetContentDelegate);
+                });
     }
 
     @After
     public void tearDown() {
-        runOnUiThreadBlocking(() -> {
-            if (mBottomSheetController.getCurrentSheetContent() != null) {
-                mBottomSheetController.hideContent(mSaveCardBottomSheetContent, /*animate=*/false);
-            }
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    if (mBottomSheetController.getCurrentSheetContent() != null) {
+                        mBottomSheetController.hideContent(
+                                mSaveCardBottomSheetContent, /* animate= */ false);
+                    }
+                });
     }
 
     @Test
@@ -123,9 +129,14 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(
-                                Arrays.asList(new LegalMessageLine("Legal message line #1",
-                                                      Arrays.asList(new Link(/*start=*/0, /*end=*/5,
-                                                              /*url=*/"https://example.com"))),
+                                Arrays.asList(
+                                        new LegalMessageLine(
+                                                "Legal message line #1",
+                                                Arrays.asList(
+                                                        new Link(
+                                                                /* start= */ 0,
+                                                                /* end= */ 5,
+                                                                /* url= */ "https://example.com"))),
                                         new LegalMessageLine("Legal message line #2")))
                         .withTitleText("Title text")
                         .withConfirmText("Confirm text")
@@ -133,10 +144,11 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withIsGooglePayBrandingEnabled(true)
                         .withDescriptionText("Description text.")
                         .build());
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController.requestShowContent(
-                    mSaveCardBottomSheetContent, /*animate=*/false);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController.requestShowContent(
+                            mSaveCardBottomSheetContent, /* animate= */ false);
+                });
         ViewGroup activityContentView =
                 sActivityTestRule.getActivity().findViewById(android.R.id.content);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -155,17 +167,18 @@ public class AutofillSaveCardBottomSheetRenderTest {
                         .withCardDetail(
                                 new CardDetail(R.drawable.visa_card, "Card label", "Card sublabel"))
                         .withLegalMessageLines(Collections.emptyList()) // No legal message
-                                                                        // lines on local save.
+                        // lines on local save.
                         .withTitleText("Title text")
                         .withConfirmText("Confirm text")
                         .withCancelText("Cancel text")
                         .withIsGooglePayBrandingEnabled(false)
                         .withDescriptionText("") // Description text is empty on local save.
                         .build());
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController.requestShowContent(
-                    mSaveCardBottomSheetContent, /*animate=*/false);
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController.requestShowContent(
+                            mSaveCardBottomSheetContent, /* animate= */ false);
+                });
         ViewGroup activityContentView =
                 sActivityTestRule.getActivity().findViewById(android.R.id.content);
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);

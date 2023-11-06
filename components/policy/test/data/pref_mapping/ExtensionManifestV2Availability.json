@@ -1,0 +1,62 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ExtensionManifestV2Availability": 0
+        },
+        "prefs": {
+          "extensions.manifest_v2": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionManifestV2Availability": 1
+        },
+        "prefs": {
+          "extensions.manifest_v2": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionManifestV2Availability": 2
+        },
+        "prefs": {
+          "extensions.manifest_v2": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "ExtensionManifestV2Availability": 3
+        },
+        "prefs": {
+          "extensions.manifest_v2": {
+            "value": 3
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "extensions.manifest_v2": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

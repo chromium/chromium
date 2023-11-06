@@ -1,13 +1,15 @@
 This is a testharness.js-based test.
-PASS WebTransport client should be able to create and handle a bidirectional stream
-FAIL WebTransport client should be able to create and handle a bidirectional stream without waiting for ready promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
-PASS WebTransport server should be able to accept and handle a bidirectional stream
-PASS WebTransport client should be able to create, accept, and handle a unidirectional stream
-FAIL WebTransport client should be able to create, accept, and handle a unidirectional stream without waiting for ready promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
-PASS Can read data from a bidirectional stream with BYOB reader
-PASS Can read data from a unidirectional stream with BYOB reader
-PASS Transfer large chunks of data on a bidirectional stream
-PASS Transfer large chunks of data on a unidirectional stream
-PASS Closing the stream with no data still resolves the read request
+[PASS] WebTransport client should be able to create and handle a bidirectional stream
+[FAIL] WebTransport client should be able to create and handle a bidirectional stream without waiting for ready
+  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createBidirectionalStream' on 'WebTransport': No connection."
+[PASS] WebTransport server should be able to accept and handle a bidirectional stream
+[PASS] WebTransport client should be able to create, accept, and handle a unidirectional stream
+[FAIL] WebTransport client should be able to create, accept, and handle a unidirectional stream without waiting for ready
+  promise_test: Unhandled rejection with value: object "NetworkError: Failed to execute 'createUnidirectionalStream' on 'WebTransport': No connection."
+[PASS] Can read data from a bidirectional stream with BYOB reader
+[PASS] Can read data from a unidirectional stream with BYOB reader
+[PASS] Transfer large chunks of data on a bidirectional stream
+[PASS] Transfer large chunks of data on a unidirectional stream
+[PASS] Closing the stream with no data still resolves the read request
 Harness: the test ran to completion.
 

@@ -17,6 +17,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwDarkMode;
@@ -32,19 +34,18 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.Callable;
 
-/**
- * The integration test for the dark mode.
- */
-@RunWith(AwJUnit4ClassRunner.class)
+/** The integration test for the dark mode. */
+@RunWith(Parameterized.class)
+@UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
-public class AwDarkModeTest {
+public class AwDarkModeTest extends AwParameterizedTest {
     private static final String FILE = "/main.html";
     private static final String DATA =
             "<html><head><meta name=\"color-scheme\" content=\"dark light\"></head>"
-            + "<body>DarkMode</body></html>";
+                    + "<body>DarkMode</body></html>";
 
     @Rule
-    public AwActivityTestRule mRule = new AwActivityTestRule();
+    public AwActivityTestRule mRule;
 
     private TestWebServer mWebServer;
     private AwTestContainerView mTestContainerView;
@@ -52,13 +53,18 @@ public class AwDarkModeTest {
     private CallbackHelper mCallbackHelper = new CallbackHelper();
     private AwContents mAwContents;
 
+    public AwDarkModeTest(AwSettingsMutation param) {
+        this.mRule = new AwActivityTestRule(param.getMutation());
+    }
+
     @Before
     public void setUp() throws Exception {
         DarkModeHelper.setsLightThemeForTesting(DarkModeHelper.LightTheme.LIGHT_THEME_FALSE);
         mWebServer = TestWebServer.start();
         mContentsClient = new TestAwContentsClient();
-        mTestContainerView = mRule.createAwTestContainerViewOnMainSync(
-                mContentsClient, false, new TestDependencyFactory());
+        mTestContainerView =
+                mRule.createAwTestContainerViewOnMainSync(
+                        mContentsClient, false, new TestDependencyFactory());
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
@@ -237,11 +243,12 @@ public class AwDarkModeTest {
     }
 
     private boolean isForceDarkening() throws Throwable {
-        return TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return mAwContents.getSettings().isForceDarkApplied();
-            }
-        });
+        return TestThreadUtils.runOnUiThreadBlocking(
+                new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() {
+                        return mAwContents.getSettings().isForceDarkApplied();
+                    }
+                });
     }
 }

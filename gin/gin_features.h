@@ -53,6 +53,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8Sparkplug);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8SparkplugNeedsShortBuiltinCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turbofan);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turboshaft);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboshaftInstructionSelection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseLibmTrigFunctions);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
@@ -60,16 +61,18 @@ GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptChangeArrayByCopy);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRegExpUnicodeSets);
-GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptStringIsWellFormed);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptSymbolAsWeakMapKey);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptJsonParseWithSource);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayBufferTransfer);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptCompileHintsMagic);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptIteratorHelpers);
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptPromiseWithResolvers);
+GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptArrayFromAsync);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTailCall);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyInlining);
 GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyGenericWrapper);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyMultipleMemories);
+GIN_EXPORT BASE_DECLARE_FEATURE(kWebAssemblyTurboshaft);
 
 }  // namespace features
 

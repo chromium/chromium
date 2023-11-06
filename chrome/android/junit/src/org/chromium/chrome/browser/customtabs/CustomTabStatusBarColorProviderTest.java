@@ -27,9 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 
-/**
- * Tests for {@link CustomTabStatusBarColorProvider}.
- */
+/** Tests for {@link CustomTabStatusBarColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 @Config(manifest = Config.NONE)
@@ -38,18 +36,18 @@ public class CustomTabStatusBarColorProviderTest {
 
     @Mock public CustomTabIntentDataProvider mCustomTabIntentDataProvider;
     @Mock public StatusBarColorController mStatusBarColorController;
-    @Mock
-    public TabImpl mTab;
+    @Mock public TabImpl mTab;
     private CustomTabStatusBarColorProvider mStatusBarColorProvider;
-    @Mock
-    private ColorProvider mColorProvider;
+    @Mock private ColorProvider mColorProvider;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mStatusBarColorProvider = Mockito.spy(new CustomTabStatusBarColorProvider(
-                mCustomTabIntentDataProvider, mStatusBarColorController));
+        mStatusBarColorProvider =
+                Mockito.spy(
+                        new CustomTabStatusBarColorProvider(
+                                mCustomTabIntentDataProvider, mStatusBarColorController));
 
         when(mCustomTabIntentDataProvider.getColorProvider()).thenReturn(mColorProvider);
 

@@ -93,7 +93,7 @@ class AllConstraintSets {
       }
       // The advanced constraint sets.
       wtf_size_t advanced_index = index_ - 1u;
-      return constraints_->advanced()[advanced_index];
+      return constraints_->advanced()[advanced_index].Get();
     }
     ForwardIterator& operator++() {
       ++index_;
@@ -196,6 +196,9 @@ void CopyCommonMembers(const T* source,
   }
   if (source->hasBackgroundBlur()) {
     destination->setBackgroundBlur(source->backgroundBlur());
+  }
+  if (source->hasFaceFraming()) {
+    destination->setFaceFraming(source->faceFraming());
   }
 }
 
@@ -509,6 +512,10 @@ bool TrackIsInactive(const MediaStreamTrack& track) {
 
 BackgroundBlurMode ParseBackgroundBlur(bool blink_mode) {
   return blink_mode ? BackgroundBlurMode::BLUR : BackgroundBlurMode::OFF;
+}
+
+MeteringMode ParseFaceFraming(bool blink_mode) {
+  return blink_mode ? MeteringMode::CONTINUOUS : MeteringMode::NONE;
 }
 
 MeteringMode ParseMeteringMode(const String& blink_mode) {
@@ -1852,7 +1859,7 @@ void ImageCapture::OnSetPanTiltZoomSettingsFromTrack(
 }
 
 MediaTrackConstraints* ImageCapture::GetMediaTrackConstraints() const {
-  return current_constraints_;
+  return current_constraints_.Get();
 }
 
 void ImageCapture::ClearMediaTrackConstraints() {
@@ -2074,6 +2081,18 @@ void ImageCapture::ApplyMediaTrackConstraintSetToSettings(
       settings->background_blur_mode = ParseBackgroundBlur(setting);
     }
   }
+  if (constraint_set->hasFaceFraming() &&
+      effective_capabilities->hasFaceFraming()) {
+    bool has_setting = false;
+    bool setting;
+    effective_capabilities->setFaceFraming(ApplyValueConstraint(
+        &has_setting, &setting, effective_capabilities->faceFraming(),
+        constraint_set->faceFraming(), constraint_set_type));
+    if (has_setting) {
+      settings->has_face_framing_mode = true;
+      settings->face_framing_mode = ParseFaceFraming(setting);
+    }
+  }
 }
 
 // TODO(crbug.com/708723): Integrate image capture constraints processing with
@@ -2244,6 +2263,15 @@ bool ImageCapture::CheckMediaTrackConstraintSet(
     MaybeRejectWithOverconstrainedError(
         resolver, "backgroundBlur",
         "backgroundBlur setting value not supported");
+    return false;
+  }
+  if (constraint_set->hasFaceFraming() &&
+      effective_capabilities->hasFaceFraming() &&
+      !CheckValueConstraint(effective_capabilities->faceFraming(),
+                            constraint_set->faceFraming(),
+                            constraint_set_type)) {
+    MaybeRejectWithOverconstrainedError(
+        resolver, "faceFraming", "faceFraming setting value not supported");
     return false;
   }
 
@@ -2522,6 +2550,23 @@ void ImageCapture::UpdateMediaTrackSettingsAndCapabilities(
         ToBooleanMode(photo_state->background_blur_mode));
   }
 
+  if (photo_state->supported_face_framing_modes &&
+      !photo_state->supported_face_framing_modes->empty()) {
+    Vector<bool> supported_face_framing_modes;
+    for (auto mode : *photo_state->supported_face_framing_modes) {
+      if (mode == MeteringMode::CONTINUOUS) {
+        supported_face_framing_modes.push_back(true);
+      } else if (mode == MeteringMode::NONE) {
+        supported_face_framing_modes.push_back(false);
+      }
+    }
+    if (!supported_face_framing_modes.empty()) {
+      capabilities_->setFaceFraming(supported_face_framing_modes);
+      settings_->setFaceFraming(photo_state->current_face_framing_mode !=
+                                MeteringMode::NONE);
+    }
+  }
+
   std::move(initialized_callback).Run();
 }
 
@@ -2694,6 +2739,13 @@ ImageCapture::GetConstraintWithCapabilityExistenceMismatch(
           CapabilityExists(capabilities_->hasBackgroundBlur()),
           constraint_set_type)) {
     return "backgroundBlur";
+  }
+  if (constraint_set->hasFaceFraming() &&
+      !CheckIfCapabilityExistenceSatisfiesConstraint(
+          constraint_set->faceFraming(),
+          CapabilityExists(capabilities_->hasFaceFraming()),
+          constraint_set_type)) {
+    return "faceFraming";
   }
   return absl::nullopt;
 }

@@ -51,15 +51,14 @@ class AmbientManagedSlideshowUiLauncher
   void Finalize() override;
   AmbientBackendModel* GetAmbientBackendModel() override;
   AmbientPhotoController* GetAmbientPhotoController() override;
-  bool IsActive() override;
   std::unique_ptr<AmbientSessionMetricsRecorder::Delegate>
   CreateMetricsDelegate(AmbientUiSettings current_ui_settings) override;
 
  private:
   friend class AmbientAshTestBase;
 
-  // Calls update image file paths on AmbientManagedPhotoContorller. Used by
-  // the AmbientPhotoSource callback.
+  // Calls update image file paths on |AmbientManagedPhotoController|. Used by
+  // the |ScreensaverImagesPolicyHandler| callback.
   void UpdateImageFilePaths(const std::vector<base::FilePath>& path_to_images);
 
   bool ComputeReadyState();

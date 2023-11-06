@@ -55,11 +55,12 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
   void WillCommit(const CommitState&) override;
-  void DidCommit(base::TimeTicks commit_start_time,
+  void DidCommit(int source_frame_number,
+                 base::TimeTicks commit_start_time,
                  base::TimeTicks commit_finish_time) override;
-  void DidCommitAndDrawFrame() override;
+  void DidCommitAndDrawFrame(int source_frame_number) override;
   void DidReceiveCompositorFrameAck() override;
-  void DidCompletePageScaleAnimation() override;
+  void DidCompletePageScaleAnimation(int source_frame_number) override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
@@ -70,6 +71,7 @@ class CC_EXPORT LocalLayerContext : public LayerContext,
   std::unique_ptr<WebVitalMetrics> GetWebVitalMetrics() override;
   void NotifyThroughputTrackerResults(CustomTrackerResults results) override;
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override;
   void RunPaintBenchmark(int repeat_count,

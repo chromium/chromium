@@ -58,7 +58,7 @@ std::vector<uint8_t> ArrayBufferAsBytes(
 // will be initialized correctly.
 std::vector<chrome::mojom::TrustedVaultKeyPtr>
 SyncEncryptionKeysToTrustedVaultKeys(
-    const std::vector<v8::Local<v8::ArrayBuffer>>& encryption_keys,
+    const v8::LocalVector<v8::ArrayBuffer>& encryption_keys,
     int32_t last_key_version) {
   std::vector<chrome::mojom::TrustedVaultKeyPtr> trusted_vault_keys;
   for (const v8::Local<v8::ArrayBuffer>& encryption_key : encryption_keys) {
@@ -307,7 +307,7 @@ void TrustedVaultEncryptionKeysExtension::SetSyncEncryptionKeys(
     return;
   }
 
-  std::vector<v8::Local<v8::ArrayBuffer>> encryption_keys;
+  v8::LocalVector<v8::ArrayBuffer> encryption_keys(args->isolate());
   if (!args->GetNext(&encryption_keys)) {
     RecordCallToSetSyncEncryptionKeysToUma(kInvalidArgs);
     DLOG(ERROR) << "Not array of strings";

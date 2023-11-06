@@ -92,12 +92,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
 
-#if !BUILDFLAG(IS_CHROMEOS)
   // Provides the passkeys that will be made available to use for cloud-based
   // enclave authentication.
   void SetEnclavePasskeys(
       std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys);
-#endif
 
 #if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to absl::nullopt to disable it.
@@ -152,10 +150,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       const;
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS)
   void MaybeCreateEnclaveDiscovery(
       std::vector<std::unique_ptr<FidoDiscoveryBase>>& discoveries);
-#endif
 
 #if BUILDFLAG(IS_MAC)
   absl::optional<fido::mac::AuthenticatorConfig> mac_touch_id_config_;
@@ -186,9 +182,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
-#if !BUILDFLAG(IS_CHROMEOS)
   std::vector<sync_pb::WebauthnCredentialSpecifics> enclave_passkeys_;
-#endif
 };
 
 }  // namespace device

@@ -93,6 +93,7 @@ component("cast_browser") {
   deps = [
     ":common_apk_deps",
     "//chromecast:cast_shell_lib_simple",
+    "//third_party/jni_zero",
   ]
 
   cflags = [ "-fsymbol-partition=cast_browser_partition" ]

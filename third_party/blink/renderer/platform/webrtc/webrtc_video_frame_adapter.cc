@@ -13,6 +13,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -80,10 +81,12 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     if (!sii) {
       return;
     }
-    mailbox = sii->CreateSharedImage(si_format, gpu_memory_buffer->GetSize(),
-                                     color_space, surface_origin, alpha_type,
-                                     usage, "WebRTCVideoFramePool",
-                                     gpu_memory_buffer->CloneHandle());
+    auto client_shared_image = sii->CreateSharedImage(
+        si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
+        alpha_type, usage, "WebRTCVideoFramePool",
+        gpu_memory_buffer->CloneHandle());
+    CHECK(client_shared_image);
+    mailbox = client_shared_image->mailbox();
     sync_token = sii->GenVerifiedSyncToken();
   }
 

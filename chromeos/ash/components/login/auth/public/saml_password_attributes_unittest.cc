@@ -43,15 +43,19 @@ TEST(SamlPasswordAttributesTest, FromJs) {
   dict.Set("passwordChangeUrl", kPasswordChangeUrl);
   attrs = SamlPasswordAttributes::FromJs(dict);
 
-  EXPECT_EQ(base::Time::FromJsTime(kModified), attrs.modified_time());
-  EXPECT_EQ(base::Time::FromJsTime(kExpiration), attrs.expiration_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(kModified),
+            attrs.modified_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(kExpiration),
+            attrs.expiration_time());
   EXPECT_EQ(kPasswordChangeUrl, attrs.password_change_url());
 
   dict.Set("passwordChangeUrl", "");
   attrs = SamlPasswordAttributes::FromJs(dict);
 
-  EXPECT_EQ(base::Time::FromJsTime(kModified), attrs.modified_time());
-  EXPECT_EQ(base::Time::FromJsTime(kExpiration), attrs.expiration_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(kModified),
+            attrs.modified_time());
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(kExpiration),
+            attrs.expiration_time());
   EXPECT_FALSE(attrs.has_password_change_url());
 }
 
@@ -59,8 +63,10 @@ TEST(SamlPasswordAttributesTest, PrefsSerialization) {
   TestingPrefServiceSimple prefs;
   SamlPasswordAttributes::RegisterProfilePrefs(prefs.registry());
 
-  base::Time modified_time = base::Time::FromJsTime(kModified);
-  base::Time expiration_time = base::Time::FromJsTime(kExpiration);
+  base::Time modified_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(kModified);
+  base::Time expiration_time =
+      base::Time::FromMillisecondsSinceUnixEpoch(kExpiration);
   SamlPasswordAttributes original(modified_time, expiration_time,
                                   kPasswordChangeUrl);
   original.SaveToPrefs(&prefs);

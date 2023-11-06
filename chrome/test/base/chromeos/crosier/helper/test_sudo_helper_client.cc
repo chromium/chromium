@@ -8,6 +8,8 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -16,20 +18,30 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/test/base/chromeos/crosier/helper/switches.h"
 #include "chrome/test/base/chromeos/crosier/helper/utils.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace {
+
+// Tracks the start session manager calls. It should never go above one since
+// there could only be one instance of session manager daemon running.
+int g_start_session_manager_count = 0;
 
 inline constexpr char kKeyMethod[] = "method";
 
 inline constexpr char kMethodRunCommand[] = "runCommand";
 inline constexpr char kKeyCommand[] = "command";
+
+inline constexpr char kMethodStartSessionManager[] = "startSessionManager";
+inline constexpr char kMethodStopSessionManager[] = "stopSessionManager";
 
 std::string GetServerSocketPath() {
   base::CommandLine* command = base::CommandLine::ForCurrentProcess();
@@ -46,7 +58,13 @@ TestSudoHelperClient::TestSudoHelperClient()
   CHECK_LT(server_path_.size(), sizeof(sockaddr_un::sun_path));
 }
 
-TestSudoHelperClient::~TestSudoHelperClient() = default;
+TestSudoHelperClient::~TestSudoHelperClient() {
+  if (session_manager_watcher_thread_ &&
+      session_manager_watcher_thread_->IsRunning()) {
+    session_manager_watcher_thread_->FlushForTesting();
+    session_manager_watcher_thread_->Stop();
+  }
+}
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
     const std::string_view command) {
@@ -60,6 +78,54 @@ TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
   dict.Set(kKeyCommand, command);
 
   return SendDictAndGetResult(dict);
+}
+
+TestSudoHelperClient::Result TestSudoHelperClient::StartSessionManager(
+    base::OnceClosure stopped_callback) {
+  CHECK_EQ(g_start_session_manager_count, 0)
+      << "Starting more than one session manager instance is not supported.";
+
+  ++g_start_session_manager_count;
+
+  session_manager_stopped_callback_ = std::move(stopped_callback);
+
+  base::Value::Dict dict;
+  dict.Set(kKeyMethod, kMethodStartSessionManager);
+
+  base::ScopedFD sock;
+  Result result = SendDictAndGetResult(dict, &sock);
+
+  session_manager_watcher_thread_ =
+      std::make_unique<base::Thread>("SessionManagerWatcherThread");
+  session_manager_watcher_thread_->Start();
+
+  session_manager_watcher_thread_->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &TestSudoHelperClient::ReadSessionManagerEventOnWatcherThread,
+          base::Unretained(this), std::move(sock)));
+
+  return result;
+}
+
+TestSudoHelperClient::Result TestSudoHelperClient::StopSessionManager() {
+  CHECK_EQ(g_start_session_manager_count, 1)
+      << "No stop since session manager is not requested to start.";
+  CHECK(session_manager_watcher_thread_)
+      << "Unsupported because session manager is not started from this client.";
+
+  base::Value::Dict dict;
+  dict.Set(kKeyMethod, kMethodStopSessionManager);
+
+  return SendDictAndGetResult(dict);
+}
+
+void TestSudoHelperClient::EnsureSessionManagerStopped() {
+  if (g_start_session_manager_count == 0) {
+    return;
+  }
+
+  CHECK_EQ(StopSessionManager().return_code, 0);
 }
 
 // static
@@ -87,7 +153,8 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
-    const base::Value::Dict& dict) {
+    const base::Value::Dict& dict,
+    base::ScopedFD* out_sock) {
   std::string json_string;
   CHECK(base::JSONWriter::Write(dict, &json_string));
 
@@ -109,7 +176,11 @@ TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
   // Reads the output.
   result.output = crosier::ReadString(sock);
 
-  sock.reset();
+  if (out_sock) {
+    *out_sock = std::move(sock);
+  } else {
+    sock.reset();
+  }
 
   // Clean up the client socket path.
   unlink(client_path.value().c_str());
@@ -119,4 +190,22 @@ TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
   LOG(INFO) << "Output: " << result.output;
 
   return result;
+}
+
+void TestSudoHelperClient::ReadSessionManagerEventOnWatcherThread(
+    base::ScopedFD sock) {
+  CHECK_EQ(session_manager_watcher_thread_->GetThreadId(),
+           base::PlatformThread::CurrentId());
+
+  signed char byte_buffer = 0;
+  crosier::ReadBuffer(sock, &byte_buffer, 1);
+  CHECK_EQ(byte_buffer, 0);
+
+  std::string output = crosier::ReadString(sock);
+  CHECK_EQ(output, "stopped");
+
+  if (session_manager_stopped_callback_) {
+    content::BrowserThread::GetTaskRunnerForThread(content::BrowserThread::UI)
+        ->PostTask(FROM_HERE, std::move(session_manager_stopped_callback_));
+  }
 }

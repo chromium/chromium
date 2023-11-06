@@ -52,6 +52,8 @@ source_set("generic_sensor") {
     "virtual_platform_sensor_provider.h",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     "//base",
     "//build:chromeos_buildflags",
@@ -168,10 +170,10 @@ if (is_android) {
     sources = device_sensors_jni_sources
     deps = [
       "//base:base_java",
-      "//base:jni_java",
       "//build/android:build_java",
       "//services/device/public/mojom:generic_sensor_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

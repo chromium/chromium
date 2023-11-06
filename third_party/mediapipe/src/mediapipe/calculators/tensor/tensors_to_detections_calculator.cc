@@ -147,7 +147,7 @@ BoxFormat GetBoxFormat(const TensorsToDetectionsCalculatorOptions& options) {
 //  TENSORS - Vector of Tensors of type kFloat32. The vector of tensors can have
 //            2 or 3 tensors. First tensor is the predicted raw boxes/keypoints.
 //            The size of the values must be (num_boxes * num_predicted_values).
-//            Second tensor is the score tensor. The size of the valuse must be
+//            Second tensor is the score tensor. The size of the values must be
 //            (num_boxes * num_classes). It's optional to pass in a third tensor
 //            for anchors (e.g. for SSD models) depend on the outputs of the
 //            detection model. The size of anchor tensor must be (num_boxes *
@@ -266,7 +266,8 @@ absl::Status TensorsToDetectionsCalculator::UpdateContract(
     CalculatorContract* cc) {
   if (CanUseGpu()) {
 #ifndef MEDIAPIPE_DISABLE_GL_COMPUTE
-    MP_RETURN_IF_ERROR(mediapipe::GlCalculatorHelper::UpdateContract(cc));
+    MP_RETURN_IF_ERROR(mediapipe::GlCalculatorHelper::UpdateContract(
+        cc, /*request_gpu_as_optional=*/true));
 #elif MEDIAPIPE_METAL_ENABLED
     MP_RETURN_IF_ERROR([MPPMetalHelper updateContract:cc]);
 #endif  // !defined(MEDIAPIPE_DISABLE_GL_COMPUTE)
@@ -280,7 +281,6 @@ absl::Status TensorsToDetectionsCalculator::Open(CalculatorContext* cc) {
 
   if (CanUseGpu()) {
 #ifndef MEDIAPIPE_DISABLE_GL_COMPUTE
-    MP_RETURN_IF_ERROR(gpu_helper_.Open(cc));
 #elif MEDIAPIPE_METAL_ENABLED
     gpu_helper_ = [[MPPMetalHelper alloc] initWithCalculatorContext:cc];
     RET_CHECK(gpu_helper_);
@@ -676,13 +676,15 @@ absl::Status TensorsToDetectionsCalculator::ProcessGPU(
 
 absl::Status TensorsToDetectionsCalculator::Close(CalculatorContext* cc) {
 #ifndef MEDIAPIPE_DISABLE_GL_COMPUTE
-  gpu_helper_.RunInGlContext([this] {
-    decoded_boxes_buffer_ = nullptr;
-    scored_boxes_buffer_ = nullptr;
-    raw_anchors_buffer_ = nullptr;
-    glDeleteProgram(decode_program_);
-    glDeleteProgram(score_program_);
-  });
+  if (gpu_inited_) {
+    gpu_helper_.RunInGlContext([this] {
+      decoded_boxes_buffer_ = nullptr;
+      scored_boxes_buffer_ = nullptr;
+      raw_anchors_buffer_ = nullptr;
+      glDeleteProgram(decode_program_);
+      glDeleteProgram(score_program_);
+    });
+  }
 #elif MEDIAPIPE_METAL_ENABLED
   decoded_boxes_buffer_ = nullptr;
   scored_boxes_buffer_ = nullptr;
@@ -942,6 +944,7 @@ absl::Status TensorsToDetectionsCalculator::GpuInit(CalculatorContext* cc) {
       break;
   }
 #ifndef MEDIAPIPE_DISABLE_GL_COMPUTE
+  MP_RETURN_IF_ERROR(gpu_helper_.Open(cc));
   MP_RETURN_IF_ERROR(gpu_helper_.RunInGlContext([this, output_format_flag]()
                                                     -> absl::Status {
     // A shader to decode detection boxes.
@@ -1420,7 +1423,6 @@ kernel void scoreKernel(
           num_classes_, max_wg_size));
     }
   }
-
 #endif  // !defined(MEDIAPIPE_DISABLE_GL_COMPUTE)
 
   return absl::OkStatus();

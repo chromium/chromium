@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
-FAIL WebSockets: navigating top-level browsing context assert_unreached: Got unexpected event error Reached unreachable code
+[FAIL] WebSockets: navigating top-level browsing context
+  assert_unreached: Got unexpected event error Reached unreachable code
 Harness: the test ran to completion.
 

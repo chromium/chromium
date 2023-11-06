@@ -106,7 +106,6 @@ class DownloadToolbarButtonView : public ToolbarButton,
 
   // ToolbarButton:
   void UpdateIcon() override;
-  void OnThemeChanged() override;
   void Layout() override;
   bool ShouldShowInkdropAfterIphInteraction() override;
 

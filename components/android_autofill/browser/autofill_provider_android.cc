@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/android_autofill_features.h"
@@ -120,10 +119,10 @@ void AutofillProviderAndroid::OnAskForValuesToFill(
     StartNewSession(manager, form, field, bounding_box);
   }
 
-  if (field.datalist_values.empty()) {
+  if (field.datalist_options.empty()) {
     return;
   }
-  bridge_->ShowDatalistPopup(field.datalist_values, field.datalist_labels,
+  bridge_->ShowDatalistPopup(field.datalist_options,
                              field.text_direction == base::i18n::RIGHT_TO_LEFT);
 }
 
@@ -342,27 +341,13 @@ void AutofillProviderAndroid::OnHidePopup(AndroidAutofillManager* manager) {
 }
 
 void AutofillProviderAndroid::OnServerPredictionsAvailable(
-    AndroidAutofillManager* manager_for_debugging,
     FormGlobalId form) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!form_ || form_->form().global_id() != form) {
     return;
   }
 
-  if (!manager_) {
-    // TODO(crbug.com/1479006): This should never be reachable. Remove once it
-    // is clear how it can happen.
-    SCOPED_CRASH_KEY_STRING32("crbug1479006", "form_ token",
-                              form_->form().global_id().frame_token.ToString());
-    SCOPED_CRASH_KEY_STRING32("crbug1479006", "form token",
-                              form.frame_token.ToString());
-    SCOPED_CRASH_KEY_STRING32(
-        "crbug1479006", "manager token",
-        manager_for_debugging->driver().GetFrameToken().ToString());
-    base::debug::DumpWithoutCrashing();
-    return;
-  }
-
+  CHECK(manager_);
   const FormStructure* form_structure = manager_->FindCachedFormById(form);
   if (!form_structure) {
     return;

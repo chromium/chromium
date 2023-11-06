@@ -13,9 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
-#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/common/content_export.h"
@@ -54,16 +52,14 @@ base::FilePath ComputeCorruptionFileName(
 
 // Returns if the given file path is too long for the current operating system's
 // file system.
-bool IsPathTooLong(storage::FilesystemProxy* filesystem,
-                   const base::FilePath& leveldb_dir);
+bool IsPathTooLong(const base::FilePath& leveldb_dir);
 
 // If a corruption file for the given `storage_key` at the given |path_base|
 // exists it is deleted, and the message is returned. If the file does not
 // exist, or if there is an error parsing the message, then this method returns
 // an empty string (and deletes the file).
 std::string CONTENT_EXPORT
-ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
-                   const base::FilePath& path_base,
+ReadCorruptionInfo(const base::FilePath& path_base,
                    const storage::BucketLocator& bucket_locator);
 
 // Was able to use LevelDB to read the data w/o error, but the data read was not

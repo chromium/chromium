@@ -9,6 +9,7 @@
 
 #include "base/check_op.h"
 #include "base/values.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/http/http_network_session.h"
@@ -57,40 +58,40 @@ void ClientSocketPoolManagerImpl::CloseIdleSockets(
 }
 
 ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
-    const ProxyServer& proxy_server) {
-  SocketPoolMap::const_iterator it = socket_pools_.find(proxy_server);
+    const ProxyChain& proxy_chain) {
+  SocketPoolMap::const_iterator it = socket_pools_.find(proxy_chain);
   if (it != socket_pools_.end())
     return it->second.get();
 
-  int sockets_per_proxy_server;
+  int sockets_per_proxy_chain;
   int sockets_per_group;
-  if (proxy_server.is_direct()) {
-    sockets_per_proxy_server = max_sockets_per_pool(pool_type_);
+  if (proxy_chain.is_direct()) {
+    sockets_per_proxy_chain = max_sockets_per_pool(pool_type_);
     sockets_per_group = max_sockets_per_group(pool_type_);
   } else {
-    sockets_per_proxy_server = max_sockets_per_proxy_server(pool_type_);
+    sockets_per_proxy_chain = max_sockets_per_proxy_chain(pool_type_);
     sockets_per_group =
-        std::min(sockets_per_proxy_server, max_sockets_per_group(pool_type_));
+        std::min(sockets_per_proxy_chain, max_sockets_per_group(pool_type_));
   }
 
   std::unique_ptr<ClientSocketPool> new_pool;
 
-  // Use specialized WebSockets pool for WebSockets when no proxy is in use.
+  // Use specialized WebSockets pool for WebSockets when no proxies are in use.
   if (pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL &&
-      proxy_server.is_direct()) {
+      proxy_chain.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
-        sockets_per_proxy_server, sockets_per_group, proxy_server,
+        sockets_per_proxy_chain, sockets_per_group, proxy_chain,
         &websocket_common_connect_job_params_);
   } else {
     new_pool = std::make_unique<TransportClientSocketPool>(
-        sockets_per_proxy_server, sockets_per_group,
-        unused_idle_socket_timeout(pool_type_), proxy_server,
+        sockets_per_proxy_chain, sockets_per_group,
+        unused_idle_socket_timeout(pool_type_), proxy_chain,
         pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
         &common_connect_job_params_, cleanup_on_ip_address_change_);
   }
 
   std::pair<SocketPoolMap::iterator, bool> ret =
-      socket_pools_.insert(std::make_pair(proxy_server, std::move(new_pool)));
+      socket_pools_.insert(std::make_pair(proxy_chain, std::move(new_pool)));
   return ret.first->second.get();
 }
 
@@ -101,13 +102,13 @@ base::Value ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
     const char* type;
     if (socket_pool.first.is_direct()) {
       type = "transport_socket_pool";
-    } else if (socket_pool.first.is_socks()) {
+    } else if (socket_pool.first.proxy_server().is_socks()) {
       type = "socks_socket_pool";
     } else {
       type = "http_proxy_socket_pool";
     }
     list.Append(socket_pool.second->GetInfoAsValue(
-        ProxyServerToProxyUri(socket_pool.first), type));
+        ProxyServerToProxyUri(socket_pool.first.proxy_server()), type));
   }
 
   return base::Value(std::move(list));

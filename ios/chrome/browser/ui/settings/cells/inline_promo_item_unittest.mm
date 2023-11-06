@@ -7,7 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_styler.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/settings/cells/inline_promo_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "testing/gtest_mac.h"
@@ -77,26 +77,15 @@ TEST_F(InlinePromoItemTest, ConfigureCell) {
       close_button.configuration;
   UIButtonConfiguration* more_info_button_configuration =
       more_info_button.configuration;
-  if (IsUIButtonConfigurationEnabled()) {
-    EXPECT_NSEQ(close_button_configuration.image, GetCloseButtonImage());
-    EXPECT_TRUE([close_button_configuration.baseForegroundColor
-        isEqual:[UIColor colorNamed:kTextTertiaryColor]]);
-    EXPECT_TRUE([more_info_button_configuration.baseForegroundColor
-        isEqual:[UIColor colorNamed:kBlue600Color]]);
-    EXPECT_NSEQ(more_info_button_configuration.attributedTitle.string,
-                more_info_button_title);
-    EXPECT_EQ(GetMoreInfoButtonTitleFont(more_info_button_configuration),
-              [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
-  } else {
-    EXPECT_NSEQ(GetCloseButtonImage(),
-                [close_button imageForState:UIControlStateNormal]);
-    EXPECT_TRUE([[UIColor colorNamed:kTextTertiaryColor]
-        isEqual:close_button.tintColor]);
-    EXPECT_NSEQ([more_info_button titleForState:UIControlStateNormal],
-                more_info_button_title);
-    EXPECT_EQ([UIFont preferredFontForTextStyle:UIFontTextStyleBody],
-              more_info_button.titleLabel.font);
-  }
+  EXPECT_NSEQ(close_button_configuration.image, GetCloseButtonImage());
+  EXPECT_TRUE([close_button_configuration.baseForegroundColor
+      isEqual:[UIColor colorNamed:kTextTertiaryColor]]);
+  EXPECT_TRUE([more_info_button_configuration.baseForegroundColor
+      isEqual:[UIColor colorNamed:kBlue600Color]]);
+  EXPECT_NSEQ(more_info_button_configuration.attributedTitle.string,
+              more_info_button_title);
+  EXPECT_EQ(GetMoreInfoButtonTitleFont(more_info_button_configuration),
+            [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
 }
 
 // Tests that the close button visibility follows the item's

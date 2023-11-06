@@ -22,9 +22,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {MediaDevicesProxy} from './media_devices_proxy.js';
@@ -307,17 +307,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         (event.target as SettingsToggleButtonElement).checked);
   }
 
-  private navigateToMicrophoneSubpage_(): void {
+  private onMicrophoneSubpageLinkClick_(): void {
     Router.getInstance().navigateTo(routes.PRIVACY_HUB_MICROPHONE);
   }
 
-  private onMicrophoneWrapperClick_(): void {
-    this.navigateToMicrophoneSubpage_();
-  }
-
-  private onMicrophoneSubpageArrowClick_(e: Event): void {
-    this.navigateToMicrophoneSubpage_();
-    e.stopPropagation();
+  private onGeolocationAreaClick_(): void {
+    Router.getInstance().navigateTo(routes.PRIVACY_HUB_GEOLOCATION);
   }
 }
 

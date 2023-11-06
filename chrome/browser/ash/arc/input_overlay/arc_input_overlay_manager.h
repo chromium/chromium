@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
 #define CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_ARC_INPUT_OVERLAY_MANAGER_H_
 
+#include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -12,7 +13,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/input_overlay/db/data_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/db/proto/app_data.pb.h"
 #include "chrome/browser/ash/arc/input_overlay/key_event_source_rewriter.h"
@@ -26,6 +26,12 @@
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 
+class ArcAppListPrefs;
+
+namespace arc {
+class ArcBridgeService;
+}  // namespace arc
+
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -35,8 +41,6 @@ class InputMethod;
 }  // namespace ui
 
 namespace arc::input_overlay {
-
-class ArcBridgeService;
 
 // Manager for ARC input overlay feature which improves input compatibility
 // for touch-only apps.
@@ -103,19 +107,26 @@ class ArcInputOverlayManager : public KeyedService,
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when finishing reading default data.
   void OnFinishReadDefaultData(std::unique_ptr<TouchInjector> touch_injector);
-  // Called after checking if GIO is applicable, which means the app is a game
-  // and doesn't have GIO opt-out.
-  void OnDidCheckGioApplicable(std::unique_ptr<TouchInjector> touch_injector,
-                               bool is_gio_applicable);
-  // Called after checking if it is an O4C app.
-  void OnDidCheckO4C(std::unique_ptr<TouchInjector> touch_injector,
-                     bool is_o4c);
   // Apply the customized proto data.
   void OnProtoDataAvailable(std::unique_ptr<TouchInjector> touch_injector,
                             std::unique_ptr<AppDataProto> proto);
   // Callback function triggered by Save button.
   void OnSaveProtoFile(std::unique_ptr<AppDataProto> proto,
                        std::string package_name);
+
+  // Returns true if the app has Game Controls opt-out metadata set to true.
+  bool IsGameControlsOptOut(const std::string& package_name);
+  // Checks app category.
+  void CheckAppCategory(std::unique_ptr<TouchInjector> touch_injector);
+  // Called after getting app category.
+  void OnDidCheckAppCategory(std::unique_ptr<TouchInjector> touch_injector,
+                             arc::mojom::AppCategory app_category);
+  // Checks if it is O4C app.
+  void CheckO4C(std::unique_ptr<TouchInjector> touch_injector);
+  // Called after checking if it is an O4C game.
+  void OnDidCheckO4C(std::unique_ptr<TouchInjector> touch_injector,
+                     bool is_o4c);
+
   void NotifyTextInputState();
   void AddObserverToInputMethod();
   void RemoveObserverFromInputMethod();
@@ -141,11 +152,7 @@ class ArcInputOverlayManager : public KeyedService,
   void MayKeepTouchInjectorAfterError(
       std::unique_ptr<TouchInjector> touch_injector);
 
-  // TODO(b/303282089): Temporary functions before Android new mojom functions
-  // merged.
-  void CheckGioApplicableOld(std::unique_ptr<TouchInjector> touch_injector);
-  void OnDidCheckGioApplicableOld(std::unique_ptr<TouchInjector> touch_injector,
-                                  bool is_gio_applicable);
+  ArcAppListPrefs* GetArcAppListPrefs();
 
   // Returns the game window if `window` is game dashboard window which is the
   // window of `GameDashboardButton` or `GameDashboardMainMenu`. Otherwise,

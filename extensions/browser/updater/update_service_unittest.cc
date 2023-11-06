@@ -237,7 +237,12 @@ void FakeUpdateClient::Update(const std::vector<std::string>& ids,
                               CrxStateChangeCallback crx_state_change_callback,
                               bool is_foreground,
                               update_client::Callback callback) {
-  data_ = std::move(crx_data_callback).Run(ids);
+  std::move(crx_data_callback)
+      .Run(ids, base::BindLambdaForTesting(
+                    [&](const std::vector<
+                        absl::optional<update_client::CrxComponent>>& output) {
+                      data_ = output;
+                    }));
 
   UpdateRequest request{ids, crx_state_change_callback, std::move(callback)};
 

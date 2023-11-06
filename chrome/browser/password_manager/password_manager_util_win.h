@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UTIL_WIN_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_PASSWORD_MANAGER_UTIL_WIN_H_
 
-#include "components/password_manager/core/browser/reauth_purpose.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace password_manager_util_win {
@@ -15,10 +14,6 @@ namespace password_manager_util_win {
 // possible. Populates the user facing prompt with `password_prompt` message.
 bool AuthenticateUser(gfx::NativeWindow window,
                       const std::u16string& password_prompt);
-
-// Returns message that should be used in the AuthenticateUser method.
-std::u16string GetMessageForLoginPrompt(
-    password_manager::ReauthPurpose purpose);
 
 // Returns true if we can authenticate with screen lock, false otherwise. If we
 // can not retrieve a username for the device, we will treat that as being

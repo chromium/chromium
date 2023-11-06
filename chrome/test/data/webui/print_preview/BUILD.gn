@@ -5,8 +5,6 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  resource_path_prefix = "print_preview"
-
   files = [
     "advanced_dialog_test.ts",
     "advanced_item_test.ts",

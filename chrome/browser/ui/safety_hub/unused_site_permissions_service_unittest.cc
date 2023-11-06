@@ -722,12 +722,10 @@ TEST_F(UnusedSitePermissionsServiceTest, ResultToFromDict) {
 
   // When the Dict is restored into a UnusedSitePermissionsResult, the values
   // should be correctly created.
-  std::unique_ptr<SafetyHubService::Result> new_result =
-      service()->GetResultFromDictValue(dict);
+  auto new_result = std::make_unique<
+      UnusedSitePermissionsService::UnusedSitePermissionsResult>(dict);
   std::list<UnusedSitePermissionsService::RevokedPermission> new_revoked_perms =
-      static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
-          new_result.get())
-          ->GetRevokedPermissions();
+      new_result->GetRevokedPermissions();
   EXPECT_EQ(1U, new_revoked_perms.size());
   EXPECT_EQ(origin, new_revoked_perms.front().origin);
   EXPECT_EQ(1U, new_revoked_perms.front().permission_types.size());

@@ -148,7 +148,8 @@ void IOSChromePasswordManagerClient::FocusedInputChanged(
 }
 
 void IOSChromePasswordManagerClient::AutomaticPasswordSave(
-    std::unique_ptr<PasswordFormManagerForUI> saved_form_manager) {
+    std::unique_ptr<PasswordFormManagerForUI> saved_form_manager,
+    bool is_update_confirmation) {
   NOTIMPLEMENTED();
 }
 

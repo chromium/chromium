@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="1178581264944972037">Szünet</translation>
+<translation id="2558806128245168542">Vissza</translation>
 <translation id="3523426587027570423">Koppintson az „Oldal meghallgatása” lejátszó bezárásához.</translation>
+<translation id="4431240646217225907">Szöveg kiemelése és automatikus görgetés</translation>
 <translation id="4654641641922242357">Az „Oldal meghallgatása” lejátszó</translation>
 <translation id="4731877163452936634">Lejátszási sebesség: <ph name="PLAYBACK_SPEED" />. Kattintson a módosításhoz.</translation>
 <translation id="5234971936051226002">Az „Oldal meghallgatása” lejátszó kis méretre van állítva.</translation>
 <translation id="5596627076506792578">További lehetőségek</translation>
+<translation id="6315170314923504164">Hang</translation>
+<translation id="6550675742724504774">Beállítások</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
+<translation id="6831043979455480757">Fordítás</translation>
 <translation id="6846298663435243399">Betöltés…</translation>
 <translation id="7587250070160020374">A Chrome itt játszik le tartalmat:</translation>
 <translation id="7945822420239537236">Előre <ph name="NUMBER_OF_SECONDS" /> másodpercet</translation>

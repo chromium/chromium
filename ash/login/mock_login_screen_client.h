@@ -9,7 +9,6 @@
 #include "ash/public/cpp/login_screen_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/password_manager/core/browser/hash_password_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
@@ -36,6 +37,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -397,6 +399,8 @@ void DemoSession::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDemoModeCountry, kSupportedCountries[0]);
   registry->RegisterStringPref(prefs::kDemoModeRetailerId, std::string());
   registry->RegisterStringPref(prefs::kDemoModeStoreId, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeAppVersion, std::string());
+  registry->RegisterStringPref(prefs::kDemoModeResourcesVersion, std::string());
 }
 
 void DemoSession::EnsureResourcesLoaded(base::OnceClosure load_callback) {
@@ -602,6 +606,11 @@ void DemoSession::OnSessionStateChanged() {
       // Register the device with in the A/A experiment
       RegisterDemoModeAAExperiment();
 
+      // Create the window closer.
+      // TODO(b/302583338) Remove this when the issue with GMSCore gets fixed.
+      if (ash::features::IsDemoModeGMSCoreWindowCloserEnabled()) {
+        window_closer_ = std::make_unique<DemoModeWindowCloser>();
+      }
       break;
     default:
       break;

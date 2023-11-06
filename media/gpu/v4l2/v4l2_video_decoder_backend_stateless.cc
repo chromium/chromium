@@ -120,7 +120,11 @@ V4L2StatelessVideoDecoderBackend::V4L2StatelessVideoDecoderBackend(
 
 V4L2StatelessVideoDecoderBackend::~V4L2StatelessVideoDecoderBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(surfaces_at_device_.empty());
+  LOG_IF(WARNING, surfaces_at_device_.empty())
+      << "There is/are " << surfaces_at_device_.size()
+      << " pending CAPTURE queue buffers pending dequeuing. This might be "
+      << "fine or a problem depending on the destruction semantics (of the"
+      << "client code.";
 
   if (!output_request_queue_.empty() || flush_cb_ || current_decode_request_ ||
       !decode_request_queue_.empty()) {
@@ -209,16 +213,6 @@ void V4L2StatelessVideoDecoderBackend::OnOutputBufferDequeued(
   }
 
   PumpOutputSurfaces();
-
-  // If we were waiting for an output buffer to be available, schedule a
-  // decode task.
-  if (pause_reason_ == PauseReason::kWaitSubFrameDecoded) {
-    pause_reason_ = PauseReason::kNone;
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&V4L2StatelessVideoDecoderBackend::DoDecodeWork,
-                       weak_this_));
-  }
 }
 
 scoped_refptr<V4L2DecodeSurface>
@@ -478,11 +472,6 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
         DVLOGF(3) << "Ran out of surfaces. Resume when buffer is returned.";
         pause_reason_ = PauseReason::kRanOutOfSurfaces;
-        return true;
-
-      case AcceleratedVideoDecoder::kNeedContextUpdate:
-        DVLOGF(3) << "Awaiting context update";
-        pause_reason_ = PauseReason::kWaitSubFrameDecoded;
         return true;
 
       case AcceleratedVideoDecoder::kDecodeError:

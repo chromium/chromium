@@ -333,10 +333,10 @@ message SystemProfileProto {
     optional float max_dpi_x = 9;
     optional float max_dpi_y = 10;
 
-    // The form factor of the device. Added in M101.
-    // Android devices can be phone, tablet, or TV. iOS devices can be phone or
-    // tablet. For Windows, Mac, ChromeOS, Lacros, and Linux, the desktop form
-    // factor is always used.
+    // The form factor of the device. Added in M101, foldable added in M120.
+    // Android devices can be phone, tablet, TV, automotive or foldable. iOS
+    // devices can be phone or tablet. For Windows, Mac, ChromeOS, Lacros, and
+    // Linux, the desktop form factor is always used.
     enum FormFactor {
       FORM_FACTOR_UNKNOWN = 0;
       FORM_FACTOR_DESKTOP = 1;
@@ -345,6 +345,7 @@ message SystemProfileProto {
       FORM_FACTOR_TV = 4;
       FORM_FACTOR_MEET_DEVICE = 5;
       FORM_FACTOR_AUTOMOTIVE = 6;
+      FORM_FACTOR_FOLDABLE = 7;
     }
     optional FormFactor form_factor = 22;
 
@@ -1093,6 +1094,7 @@ message SystemProfileProto {
     SODA_JA_JP = 60;
     THIRD_PARTY_MODULE_LIST = 61;
     TRUST_TOKEN_KEY_COMMITMENTS = 62;
+    THIRD_PARTY_COOKIE_DEPRECATION_METADATA = 63;
   }
 
   // Information about what Chrome components are registered and at which
@@ -1220,7 +1222,8 @@ message SystemProfileProto {
     optional bool is_instant_tethering_enabled = 3;
 
     // True if Messages integration is enabled on this Chromebook.
-    optional bool is_messages_enabled = 4;
+    // Deprecated 10/23.
+    optional bool is_messages_enabled = 4 [deprecated = true];
   }
   optional LinkedAndroidPhoneData linked_android_phone_data = 29;
 

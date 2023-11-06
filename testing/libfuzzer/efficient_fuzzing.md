@@ -1,5 +1,8 @@
 # Efficient Fuzzing Guide
 
+This relates to fuzzers created using [libfuzzer] not [FuzzTests] - none of this
+advice is necessary for FuzzTests.
+
 Once you have a fuzz target running, you can analyze and tweak it to improve its
 efficiency. This document describes techniques to minimize fuzzing time and
 maximize your results.
@@ -298,6 +301,8 @@ crashes).
 [gn config]: getting_started.md#running-the-fuzz-target
 [corpus from ClusterFuzz]: libFuzzer_integration.md#Corpus
 [coverage script]: https://cs.chromium.org/chromium/src/tools/code_coverage/coverage.py
-[fuzzing coverage]: https://chromium-coverage.appspot.com/reports/latest_fuzzers_only/linux/index.html
+[fuzzing coverage]: https://analysis.chromium.org/coverage/p/chromium?platform=fuzz
 [gsutil]: https://cloud.google.com/storage/docs/gsutil
 [startup initialization]: https://llvm.org/docs/LibFuzzer.html#startup-initialization
+[libfuzzer]: getting_started_with_libfuzzer.md
+[fuzztests]: getting_started.md

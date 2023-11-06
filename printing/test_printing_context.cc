@@ -185,7 +185,7 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   DCHECK(!in_print_job_);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (!skip_system_calls() && features::kEnableOopPrintDriversJobPrint.Get() &&
+  if (!skip_system_calls() && features::ShouldPrintJobOop() &&
       !settings_->system_print_dialog_data().empty()) {
     // Mimic the update when system print dialog settings are provided to
     // Print Backend service from the browser process.

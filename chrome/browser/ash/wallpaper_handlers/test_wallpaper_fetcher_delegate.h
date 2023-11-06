@@ -15,6 +15,7 @@ namespace wallpaper_handlers {
 class BackdropCollectionInfoFetcher;
 class BackdropImageInfoFetcher;
 class BackdropSurpriseMeImageFetcher;
+class SeaPenFetcher;
 
 class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
  public:
@@ -46,6 +47,8 @@ class TestWallpaperFetcherDelegate : public WallpaperFetcherDelegate {
       const AccountId& account_id,
       ash::WallpaperControllerClient::FetchGooglePhotosAccessTokenCallback
           callback) const override;
+  std::unique_ptr<SeaPenFetcher> CreateSeaPenFetcher(
+      Profile* profile) const override;
 };
 
 }  // namespace wallpaper_handlers

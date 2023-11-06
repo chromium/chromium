@@ -58,9 +58,13 @@ class IdentityRegistryTest : public RenderViewHostImplTestHarness {
     static_cast<TestWebContents*>(web_contents())
         ->NavigateAndCommit(GURL(kRpUrl), ui::PAGE_TRANSITION_LINK);
   }
+  void TearDown() override {
+    identity_registry_ = nullptr;
+    RenderViewHostImplTestHarness::TearDown();
+  }
 
   std::unique_ptr<TestFederatedIdentityModalDialogViewDelegate> test_delegate_;
-  raw_ptr<IdentityRegistry, DanglingUntriaged> identity_registry_;
+  raw_ptr<IdentityRegistry> identity_registry_;
 };
 
 // If notifier origin and registry origin are same-origin, modal dialog should

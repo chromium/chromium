@@ -50,6 +50,7 @@ StreamPromiseResolver::StreamPromiseResolver(ScriptState* script_state) {
           .ToLocal(&resolver)) {
     resolver_.Reset(script_state->GetIsolate(), resolver);
   }
+  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
 
 StreamPromiseResolver::StreamPromiseResolver(
@@ -58,7 +59,6 @@ StreamPromiseResolver::StreamPromiseResolver(
     : StreamPromiseResolver(script_state) {
   class_like_name_ = exception_state.GetContext().GetClassName();
   property_like_name_ = exception_state.GetContext().GetPropertyName();
-  script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
 
 void StreamPromiseResolver::Resolve(ScriptState* script_state,

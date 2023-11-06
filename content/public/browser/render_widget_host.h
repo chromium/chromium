@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/scoped_observation_traits.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/common/drop_data.h"
@@ -343,5 +344,22 @@ class CONTENT_EXPORT RenderWidgetHost {
 };
 
 }  // namespace content
+
+namespace base {
+template <>
+struct ScopedObservationTraits<content::RenderWidgetHost,
+                               content::RenderWidgetHost::InputEventObserver> {
+  static void AddObserver(
+      content::RenderWidgetHost* rwh,
+      content::RenderWidgetHost::InputEventObserver* observer) {
+    rwh->AddInputEventObserver(observer);
+  }
+  static void RemoveObserver(
+      content::RenderWidgetHost* rwh,
+      content::RenderWidgetHost::InputEventObserver* observer) {
+    rwh->RemoveInputEventObserver(observer);
+  }
+};
+}  // namespace base
 
 #endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_H_

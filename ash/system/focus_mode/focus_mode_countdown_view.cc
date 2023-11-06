@@ -21,30 +21,39 @@ namespace ash {
 
 namespace {
 
-constexpr int kCountdownViewHeight = 74;
-constexpr int kButtonWidth = 79;
-constexpr int kSpaceBetweenButtons = 10;
+constexpr int kCountdownViewHeight = 72;
+constexpr int kSpaceBetweenButtons = 8;
 constexpr int kBarWidth = 200;
 constexpr int kBarHeight = 8;
-constexpr int kAboveBarSpace = 14;
-constexpr int kBelowBarSpace = 8;
-
-// The gap between the progress bar and the buttons.
-constexpr int kBarGapHorizontal = 50;
+constexpr int kAboveBarSpace = 8;
+constexpr int kBelowBarSpace = 6;
+constexpr int kSpaceBetweenContainers = 16;
 
 std::unique_ptr<views::Label> CreateTimerLabel(
     gfx::HorizontalAlignment alignment,
-    TypographyToken token) {
+    TypographyToken token,
+    ui::ColorId color_id) {
   auto label = std::make_unique<views::Label>();
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
+  label->SetEnabledColorId(color_id);
   return label;
+}
+
+std::unique_ptr<views::View> CreateSpacerView() {
+  auto spacer_view = std::make_unique<views::View>();
+  spacer_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  return spacer_view;
 }
 
 }  // namespace
 
-FocusModeCountdownView::FocusModeCountdownView() {
+FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
+    : include_end_button_(include_end_button) {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
@@ -55,14 +64,24 @@ FocusModeCountdownView::FocusModeCountdownView() {
   // Add a vertical container on the left for the countdown timer, the progress
   // bar, and the bar label container.
   auto* timer_container =
-      AddChildView(std::make_unique<views::FlexLayoutView>());
-  timer_container->SetOrientation(views::LayoutOrientation::kVertical);
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  timer_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
+  timer_container->SetMainAxisAlignment(
+      views::BoxLayout::MainAxisAlignment::kEnd);
   timer_container->SetPreferredSize(gfx::Size(kBarWidth, kCountdownViewHeight));
+  timer_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred,
+                               /*adjust_height_for_width =*/false));
+  timer_container->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::TLBR(0, 0, 0, kSpaceBetweenContainers)));
 
   time_remaining_label_ = timer_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular));
+      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosDisplay6Regular,
+                       cros_tokens::kCrosSysOnSurface));
 
-  // TODO(b/286931547): Timer Progress Bar
+  // TODO(b/286931547): Timer Progress Bar.
   progress_bar_ =
       timer_container->AddChildView(std::make_unique<views::ProgressBar>(
           /*preferred_height=*/kBarHeight, /*allow_round_corner*/ true));
@@ -78,17 +97,18 @@ FocusModeCountdownView::FocusModeCountdownView() {
   bar_label_container->SetOrientation(views::LayoutOrientation::kHorizontal);
 
   time_elapsed_label_ = bar_label_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosLabel1));
+      CreateTimerLabel(gfx::ALIGN_LEFT, TypographyToken::kCrosLabel1,
+                       cros_tokens::kCrosSysSecondary));
 
-  auto* bar_label_spacer_view =
-      bar_label_container->AddChildView(std::make_unique<views::View>());
-  bar_label_spacer_view->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
+  bar_label_container->AddChildView(CreateSpacerView());
 
   time_total_label_ = bar_label_container->AddChildView(
-      CreateTimerLabel(gfx::ALIGN_RIGHT, TypographyToken::kCrosLabel2));
+      CreateTimerLabel(gfx::ALIGN_RIGHT, TypographyToken::kCrosLabel2,
+                       cros_tokens::kCrosSysSecondary));
+
+  // Add a top level spacer in first layout manager, between the timer container
+  // and button container.
+  AddChildView(CreateSpacerView());
 
   // Add the vertical box layout for the button container that holds the "End"
   // and "+10 min" buttons.
@@ -96,21 +116,20 @@ FocusModeCountdownView::FocusModeCountdownView() {
       AddChildView(std::make_unique<views::BoxLayoutView>());
   button_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   button_container->SetMainAxisAlignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
+      views::BoxLayout::MainAxisAlignment::kStart);
   button_container->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   button_container->SetBetweenChildSpacing(kSpaceBetweenButtons);
-  button_container->SetMinimumCrossAxisSize(kButtonWidth);
-  button_container->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(0, kBarGapHorizontal, 0, 0)));
 
   FocusModeController* focus_mode_controller = FocusModeController::Get();
-  button_container->AddChildView(std::make_unique<PillButton>(
-      base::BindRepeating(&FocusModeController::ToggleFocusMode,
-                          base::Unretained(focus_mode_controller)),
-      l10n_util::GetStringUTF16(
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
-      PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
+  if (include_end_button_) {
+    button_container->AddChildView(std::make_unique<PillButton>(
+        base::BindRepeating(&FocusModeController::ToggleFocusMode,
+                            base::Unretained(focus_mode_controller)),
+        l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
+        PillButton::Type::kPrimaryWithoutIcon, /*icon=*/nullptr));
+  }
 
   extend_session_duration_button_ =
       button_container->AddChildView(std::make_unique<PillButton>(
@@ -120,19 +139,6 @@ FocusModeCountdownView::FocusModeCountdownView() {
               IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_LABEL),
           PillButton::Type::kSecondaryWithoutIcon,
           /*icon=*/nullptr));
-
-  focus_mode_controller->AddObserver(this);
-
-  // Set the label texts.
-  UpdateUI();
-}
-
-FocusModeCountdownView::~FocusModeCountdownView() {
-  FocusModeController::Get()->RemoveObserver(this);
-}
-
-void FocusModeCountdownView::OnTimerTick() {
-  UpdateUI();
 }
 
 void FocusModeCountdownView::UpdateUI() {

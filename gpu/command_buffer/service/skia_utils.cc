@@ -126,15 +126,13 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
                                             &glyph_cache_max_texture_bytes);
   options.fGlyphCacheTextureMaximumBytes = glyph_cache_max_texture_bytes;
 
-  // Disable multisampled antialiasing when it's slow if the relevant
-  // base::Feature is enabled.
+  // Disable multisampled antialiasing when it's slow.
   // NOTE: `workarounds.msaa_is_slow` is true on all Intel devices.
   // gpu::gles2::MSAAIsSlow() will return true on Intel devices unless the
   // features::kEnableMSAAOnNewIntelGPUs base::Feature is enabled. If rolling
   // out single-sampling for Graphite, we should consider whether to tie the
   // rollout to the features::kEnableMSSAOnNewIntelGPUs experiment.
-  if (workarounds.msaa_is_slow &&
-      base::FeatureList::IsEnabled(features::kDisableSlowMSAAInGraphite)) {
+  if (workarounds.msaa_is_slow) {
     options.fInternalMultisampleCount = 1;
   }
 
@@ -350,6 +348,13 @@ GrVkImageInfo CreateGrVkImageInfo(VulkanImage* image,
   image_info.fCurrentQueueFamily = image->queue_family_index();
   image_info.fProtected = is_protected ? GrProtected::kYes : GrProtected::kNo;
   image_info.fYcbcrConversionInfo = gr_ycbcr_info;
+
+  // Skia currently requires all wrapped VkImages to have transfer src and dst
+  // usage. Note, that driver _should_ advertise transfer support if any usage
+  // is supported, but spec hasn't updated yet:
+  // https://github.com/KhronosGroup/Vulkan-Docs/issues/1223#issuecomment-1379078493
+  image_info.fImageUsageFlags |=
+      VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT;
 
   return image_info;
 }

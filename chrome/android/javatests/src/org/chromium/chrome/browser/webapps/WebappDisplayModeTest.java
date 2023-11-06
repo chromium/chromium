@@ -38,9 +38,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Test for various Display Modes of Web Apps.
- */
+/** Test for various Display Modes of Web Apps. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -49,8 +47,7 @@ public class WebappDisplayModeTest {
 
     private static final String WEB_APP_PATH = "/chrome/test/data/banners/manifest_test_page.html";
 
-    @Rule
-    public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
+    @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Test
     @SmallTest
@@ -108,12 +105,17 @@ public class WebappDisplayModeTest {
         Assert.assertTrue(activity.getToolbarManager().getToolbarLayoutForTesting().isShown());
 
         Assert.assertEquals(Color.CYAN, activity.getToolbarManager().getPrimaryColor());
-        Assert.assertEquals("Web App title should be displayed on the title bar",
-                WEB_APP_PAGE_TITLE, ((TextView) activity.findViewById(R.id.title_bar)).getText());
-        Assert.assertEquals("URL Bar should display URL authority",
+        Assert.assertEquals(
+                "Web App title should be displayed on the title bar",
+                WEB_APP_PAGE_TITLE,
+                ((TextView) activity.findViewById(R.id.title_bar)).getText());
+        Assert.assertEquals(
+                "URL Bar should display URL authority",
                 Uri.parse(mActivityTestRule.getTestServer().getURL(WEB_APP_PATH)).getAuthority(),
                 ((UrlBar) activity.findViewById(R.id.url_bar)).getText().toString());
-        Assert.assertEquals("CCT Close button should not be visible", View.GONE,
+        Assert.assertEquals(
+                "CCT Close button should not be visible",
+                View.GONE,
                 activity.findViewById(R.id.close_button).getVisibility());
     }
 
@@ -121,17 +123,22 @@ public class WebappDisplayModeTest {
         try {
             return JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, js);
         } catch (TimeoutException e) {
-            Assert.fail("Fatal interruption or timeout running JavaScript '" + js
-                    + "': " + e.toString());
+            Assert.fail(
+                    "Fatal interruption or timeout running JavaScript '"
+                            + js
+                            + "': "
+                            + e.toString());
             return "";
         }
     }
 
     private WebappActivity startActivity(@DisplayMode.EnumType int displayMode, String action) {
-        String url = WebappTestPage.getServiceWorkerUrlWithAction(
-                mActivityTestRule.getTestServer(), action);
+        String url =
+                WebappTestPage.getServiceWorkerUrlWithAction(
+                        mActivityTestRule.getTestServer(), action);
         mActivityTestRule.startWebappActivity(
-                mActivityTestRule.createIntent()
+                mActivityTestRule
+                        .createIntent()
                         .putExtra(WebappConstants.EXTRA_URL, url)
                         .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, displayMode)
                         .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));

@@ -38,10 +38,49 @@ namespace blink {
 
 struct PixelsAndPercent {
   DISALLOW_NEW();
-  PixelsAndPercent(float pixels, float percent)
-      : pixels(pixels), percent(percent) {}
+  explicit PixelsAndPercent(float pixels)
+      : pixels(pixels),
+        percent(0.0f),
+        has_explicit_pixels(true),
+        has_explicit_percent(false) {}
+  PixelsAndPercent(float pixels,
+                   float percent,
+                   bool has_explicit_pixels,
+                   bool has_explicit_percent)
+      : pixels(pixels),
+        percent(percent),
+        has_explicit_pixels(has_explicit_pixels),
+        has_explicit_percent(has_explicit_percent) {}
+
+  PixelsAndPercent& operator+=(const PixelsAndPercent& rhs) {
+    pixels += rhs.pixels;
+    percent += rhs.percent;
+    has_explicit_pixels |= rhs.has_explicit_pixels;
+    has_explicit_percent |= rhs.has_explicit_percent;
+    return *this;
+  }
+  friend PixelsAndPercent operator+(PixelsAndPercent lhs,
+                                    const PixelsAndPercent& rhs) {
+    lhs += rhs;
+    return lhs;
+  }
+  PixelsAndPercent& operator-=(const PixelsAndPercent& rhs) {
+    pixels -= rhs.pixels;
+    percent -= rhs.percent;
+    has_explicit_pixels |= rhs.has_explicit_pixels;
+    has_explicit_percent |= rhs.has_explicit_percent;
+    return *this;
+  }
+  PixelsAndPercent& operator*=(float number) {
+    pixels *= number;
+    percent *= number;
+    return *this;
+  }
+
   float pixels;
   float percent;
+  bool has_explicit_pixels;
+  bool has_explicit_percent;
 };
 
 class CalculationExpressionNode;

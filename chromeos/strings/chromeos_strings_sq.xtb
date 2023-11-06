@@ -42,6 +42,7 @@
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Po përditësohet (<ph name="PERCENTAGE_VALUE" />% e përfunduar)</translation>
+<translation id="1309341072016605398"><ph name="MINUTES" /> minuta</translation>
 <translation id="1310380015393971138">Nuk ofrohet asnjë rrjet <ph name="NETWORK_NAME" /></translation>
 <translation id="131421566576084655">Data e rivendosjes së fundit të të dhënave nuk ofrohet</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -75,6 +76,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> menaxhon këtë përdorues dhe mund të menaxhojë në distancë cilësimet dhe të monitorojë aktivitetin e përdoruesit.</translation>
 <translation id="150962533380566081">Kodi PUK i pavlefshëm.</translation>
 <translation id="1510238584712386396">Nisësi</translation>
+<translation id="1515129336378114413">faqja kryesore e shfletuesit</translation>
 <translation id="1526389707933164996">Animacioni i mbrojtësit të ekranit</translation>
 <translation id="152892567002884378">Rrit volumin</translation>
 <translation id="1555130319947370107">E kaltër</translation>
@@ -85,6 +87,7 @@
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="1578784163189013834">Zgjidh imazhin e sfondit të mbrojtësit të ekranit</translation>
 <translation id="160633243685262989">Shiko paraprakisht imazhin</translation>
+<translation id="1611649489706141841">përpara</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
@@ -168,7 +171,9 @@
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2157660087437850958">zgjedhësi për emoji</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
+<translation id="2158450850127366833">{NUM_ROOL_APPS,plural,offset:2 =1{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> të niset automatikisht sa herë që ti identifikohesh.}=2{Administratori yt ka caktuar që <ph name="APP_NAME_1" /> dhe <ph name="APP_NAME_2" /> të nisen automatikisht sa herë që ti identifikohesh.}=3{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe <ph name="APP_NAME_3" /> të niset automatikisht sa herë që ti identifikohesh.}other{Administratori yt ka caktuar që <ph name="APP_NAME_1" />, <ph name="APP_NAME_2" /> dhe # aplikacione të tjera të nisen automatikisht sa herë që ti identifikohesh.}}</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
+<translation id="215916044711630446">Butoni "Shto APN-në" është çaktivizuar tani</translation>
 <translation id="2161394479394250669">Anulo printimin</translation>
 <translation id="2161656808144014275">Teksti</translation>
 <translation id="2163937499206714165">Aktivizo modalitetin e errët</translation>
@@ -184,6 +189,7 @@
 <translation id="2236746079896696523">Aktivizimi/çaktivizimi i dritës së sfondit të tastierës</translation>
 <translation id="2240366984605217732">Ndërrimi i strukturës</translation>
 <translation id="225692081236532131">Statusi i aktivizimit</translation>
+<translation id="2267285889943769271">Shto një pamje ekrani</translation>
 <translation id="2271469253353559191">Planifikimi i modalitetit të errët</translation>
 <translation id="2276999893457278469">Përmbajtjet kryesore të ndihmës</translation>
 <translation id="2279051792571591988">Restauro parazgjedhjet</translation>
@@ -285,6 +291,7 @@
 <translation id="3226405216343213872">Po kërkon për skanerë</translation>
 <translation id="3226657629376379887">Menyja e veprimeve të strukturës</translation>
 <translation id="3246869037381808805">Printimet më të vjetra se 1 ditë do të hiqen</translation>
+<translation id="324961752321393509">Administratori yt nuk e lejon mbylljen e këtij aplikacioni</translation>
 <translation id="3268178239013324452">Dështoi - Kapaku i hapur</translation>
 <translation id="3275729367986477355">Imazhi i simbolit</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifiko skedarin}other{Modifiko skedarët}}</translation>
@@ -336,7 +343,6 @@
 <translation id="3604713164406837697">Ndrysho imazhin e sfondit</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3606583719724308068">Vonesë e lartë në uebsajtet HTTPS</translation>
-<translation id="3607216139080387279">Shfaq mbrojtësin e ekranit</translation>
 <translation id="361575905210396100">Faleminderit për komentet e tua</translation>
 <translation id="3632579075709132555">Aktivizimi/çaktivizimi i ekranit të privatësisë</translation>
 <translation id="3651050199673793219">Zgjidh një njësi temperature</translation>
@@ -348,7 +354,6 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
 <translation id="3748026146096797577">Nuk është i lidhur</translation>
 <translation id="3749289110408117711">Emri i skedarit</translation>
-<translation id="3766934827878963937">për 1 orë</translation>
 <translation id="3771294271822695279">Skedarët video</translation>
 <translation id="3784455785234192852">Kyçe</translation>
 <translation id="380097101658023925">kontrollet me rbg</translation>
@@ -399,6 +404,7 @@
 <translation id="4117637339509843559">Modaliteti i errët</translation>
 <translation id="4130035430755296270">Vazhdo të mbash kursorin mbi të për opsione të tjera të strukturës</translation>
 <translation id="4131410914670010031">Bardhezi</translation>
+<translation id="4143820682073026914">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> u nis automatikisht}other{# aplikacione u nisën automatikisht}}</translation>
 <translation id="4145784616224233563">Mur mbrojtës HTTP</translation>
 <translation id="4147897805161313378">Fotografitë e Google</translation>
 <translation id="4150201353443180367">Ekrani</translation>
@@ -427,6 +433,7 @@
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4333390807948134856">Tasti <ph name="KEY_NAME" /> është i shtypur</translation>
+<translation id="4354430579665871434">tast</translation>
 <translation id="435692326371619097">Menaxho cilësimet e APN-së së rrjetit. APN-të vendosin një lidhje mes një rrjeti celular dhe internetit. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="437294888293595148">Rivendos të gjitha shkurtoret</translation>
 <translation id="4378373042927530923">Nuk u ekzekutua</translation>
@@ -444,6 +451,7 @@
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
 <translation id="4453205916657964690">Maska e nënrrjetit</translation>
 <translation id="4454245904991689773">Skano te</translation>
+<translation id="4456812688969919973">Butoni "Ruaj APN-në" është çaktivizuar tani</translation>
 <translation id="4469288414739283461">Mbrojtësi i ekranit për rrjedhën e tokës</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
@@ -688,6 +696,7 @@
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
 <translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
+<translation id="6292095526077353682">Gjatë karikimit, shfaq mbrojtësin e ekranit për:</translation>
 <translation id="629550705077076970">zbehja e tastierës</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
@@ -715,6 +724,7 @@
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
+<translation id="6462978824459367242">Butoni "Shto APN-në" është aktivizuar tani</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Të skanohet përsëri faqja?}=1{Të skanohet përsëri faqja {PAGE_NUMBER}?}other{Të skanohet përsëri faqja {PAGE_NUMBER}?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
@@ -749,6 +759,7 @@
 <translation id="6659594942844771486">Skeda</translation>
 <translation id="6673898378497337661">ngritja e ndriçimit të tastierës</translation>
 <translation id="6692996468359469499">Merr informacion në lidhje me përzgjedhjen tënde</translation>
+<translation id="6694534975463174713">kyç</translation>
 <translation id="6704062477274546131">Rezolucioni i DNS-së</translation>
 <translation id="6723839937902243910">Energjia</translation>
 <translation id="6723847290197874913">Drita e sfondit e tastierës</translation>
@@ -939,6 +950,7 @@
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8246209727385807362">Operator celular i panjohur</translation>
+<translation id="8262870577632766028">1 orë</translation>
 <translation id="827422111966801947">Indigo</translation>
 <translation id="8286154143153872371">Lidhu në një rrjet dhe ringarko faqen për të parë imazhin e sfondit.</translation>
 <translation id="8291967909914612644">Shteti i ofruesit të rrjetit bazë</translation>
@@ -1003,6 +1015,7 @@
 <translation id="8747900814994928677">Konfirmo ndryshimin</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albumi i "Fotografive të Google"</translation>
+<translation id="8775713578693478175">APN-ja e modemit</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8789196995628578448">Shkurtorja po përdoret për "<ph name="CONFLICT_ACCEL_NAME" />". Shtyp një shkurtore të re. Për të zëvendësuar shkurtoren origjinale, shtyp përsëri këtë shkurtore.</translation>
 <translation id="879568662008399081">Ky rrjet mund të ketë një portal izolues</translation>
@@ -1052,6 +1065,7 @@
 <translation id="902638246363752736">Cilësimet e tastierës</translation>
 <translation id="9028832514430399253">Aktivizo çelësin e aktivizimit/çaktivizimit për të zgjedhur opsionet e mbrojtësit të ekranit</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9049868303458988905">Butoni "Ruaj APN-në" është aktivizuar tani</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">Rezolucioni i DNS-së ka vonesë të lartë</translation>
 <translation id="9065203028668620118">Redakto</translation>
@@ -1067,11 +1081,9 @@
 <translation id="9111102763498581341">Shkyç</translation>
 <translation id="9122602430962285795">Për t'u rilidhur, shko te "Cilësimet"</translation>
 <translation id="9126720536733509015">Ruaj shumë faqe në një skedar PDF</translation>
-<translation id="9133104754938025929">Për të kursyer baterinë, mbrojtësi i ekranit funksionon vetëm gjatë karikimit.</translation>
 <translation id="9133772297793293778">Shtyp modifikuesit 1-4 dhe 1 tast tjetër në tastierën tënde. Për të dalë nga modaliteti i modifikimit, shtyp Alt + Esc.</translation>
 <translation id="9137526406337347448">Shërbimet e Google</translation>
 <translation id="9138630967333032450">Tasti i majtë "Shift"</translation>
-<translation id="9143347780818904997">për <ph name="MINUTES" /> minuta</translation>
 <translation id="9149391708638971077">Ekzekuto testin e memories</translation>
 <translation id="9161276708550942948">hapësirë</translation>
 <translation id="9173638680043580060">Ka mbetur më pak se një minutë</translation>

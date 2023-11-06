@@ -176,6 +176,13 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
         break;
       case blink::EmbeddedWorkerStatus::kStopped:
         initial_service_worker_status_ = InitialServiceWorkerStatus::kStopped;
+        if (base::WeakPtr<ServiceWorkerContextCore> core =
+                active_worker->context()) {
+          base::UmaHistogramBoolean(
+              "ServiceWorker.LoadTiming.MainFrame.MainResource."
+              "ServiceWorkerIsStopped.WaitingForWarmUp",
+              core->IsWaitingForWarmUp(active_worker->key()));
+        }
         break;
     }
     if (active_worker->IsWarmingUp()) {
@@ -326,6 +333,25 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                   &ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
                   weak_factory_.GetWeakPtr()));
           cache_matcher_->Run();
+          // If the kServiceWorkerStaticRouterStartServiceWorker feature is
+          // enabled, it starts the ServiceWorker manually since we don't
+          // instantiate ServiceWorkerFetchDispatcher, which involves the
+          // ServiceWorker startup.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](scoped_refptr<ServiceWorkerVersion> active_worker) {
+                    if (active_worker->running_status() !=
+                            blink::EmbeddedWorkerStatus::kRunning &&
+                        base::FeatureList::IsEnabled(
+                            features::
+                                kServiceWorkerStaticRouterStartServiceWorker)) {
+                      active_worker->StartWorker(
+                          ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                          base::DoNothing());
+                    }
+                  },
+                  active_worker));
           return;
       }
     }
@@ -504,7 +530,8 @@ bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
   mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
   forwarded_race_network_request_url_loader_factory_.emplace(
       forwarding_client.InitWithNewPipeAndPassReceiver(),
-      resource_request_.url);
+      ServiceWorkerFetchDispatcher::CreateNetworkURLLoaderFactory(
+          context, frame_tree_node_id_));
   CHECK(!race_network_request_url_loader_client_);
   race_network_request_url_loader_client_.emplace(
       resource_request_, AsWeakPtr(), std::move(forwarding_client));

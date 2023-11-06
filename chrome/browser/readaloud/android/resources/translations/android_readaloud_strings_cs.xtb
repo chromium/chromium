@@ -2,12 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1178581264944972037">Pozastavit</translation>
+<translation id="2558806128245168542">Přejít zpět</translation>
 <translation id="3523426587027570423">Klepnutím zavřete přehrávač „Poslechnout si tuto stránku“.</translation>
+<translation id="4431240646217225907">Zvýraznění textu a automatické posouvání</translation>
 <translation id="4654641641922242357">Přehrávač „Poslechnout si tuto stránku“.</translation>
 <translation id="4731877163452936634">Rychlost přehrávání: <ph name="PLAYBACK_SPEED" /> Kliknutím změníte.</translation>
 <translation id="5234971936051226002">Přehrávač „Poslechnout si tuto stránku“ byl minimalizován.</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
+<translation id="6315170314923504164">Hlas</translation>
+<translation id="6550675742724504774">Možnosti</translation>
 <translation id="6790428901817661496">Přehrát</translation>
+<translation id="6831043979455480757">Přeložit</translation>
 <translation id="6846298663435243399">Načítání…</translation>
 <translation id="7587250070160020374">V Chromu teď hraje</translation>
 <translation id="7945822420239537236">O <ph name="NUMBER_OF_SECONDS" /> s vpřed</translation>

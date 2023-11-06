@@ -9,7 +9,6 @@
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/fake_device_trust_connector_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/common/policy_types.h"

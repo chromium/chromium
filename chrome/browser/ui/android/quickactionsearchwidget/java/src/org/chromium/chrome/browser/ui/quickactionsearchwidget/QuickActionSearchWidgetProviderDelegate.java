@@ -32,10 +32,13 @@ public class QuickActionSearchWidgetProviderDelegate {
     static class WidgetVariant {
         /** LayoutRes that describes this widget. */
         public final @LayoutRes int layout;
+
         /** The Reference width of the widget where all the content is visible. */
         public final int widgetWidthDp;
+
         /** The Reference height of the widget where all the content is visible. */
         public final int widgetHeightDp;
+
         /** The width of the button and surrounding margins. */
         public final int buttonWidthDp;
 
@@ -46,8 +49,12 @@ public class QuickActionSearchWidgetProviderDelegate {
          * @param buttonWidthRes The Resource ID describing the width of the button.
          * @param buttonMarginRes The Resource ID describing the width of the button margins.
          */
-        public WidgetVariant(Context context, @LayoutRes int layoutRes, @DimenRes int widthDimenRes,
-                @DimenRes int heightDimenRes, @DimenRes int buttonWidthRes,
+        public WidgetVariant(
+                Context context,
+                @LayoutRes int layoutRes,
+                @DimenRes int widthDimenRes,
+                @DimenRes int heightDimenRes,
+                @DimenRes int buttonWidthRes,
                 @DimenRes int buttonMarginRes) {
             Resources res = context.getResources();
             layout = layoutRes;
@@ -79,15 +86,15 @@ public class QuickActionSearchWidgetProviderDelegate {
 
         /**
          * Given width of a target area compute how many buttons need to be hidden so that the
-         * widget fits in the area without truncation. When there is not enough width, we
-         * compensate by removing buttons.
+         * widget fits in the area without truncation. When there is not enough width, we compensate
+         * by removing buttons.
          *
-         * The method makes zero assumptions about the number of buttons, ie. it may return larger
-         * number than the total number of displayed buttons.
+         * <p>The method makes zero assumptions about the number of buttons, ie. it may return
+         * larger number than the total number of displayed buttons.
          *
          * @param areaWidthDp Width of the area where the widget is installed, expressed in dp.
          * @return Number of buttons that have to be hidden so that this widget fits correctly in
-         *         the target area.
+         *     the target area.
          */
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         int computeNumberOfButtonsToHide(int areaWidthDp) {
@@ -96,34 +103,31 @@ public class QuickActionSearchWidgetProviderDelegate {
             // dividing the remaining number by the button width, rounding up to the nearest
             // integer. Negative values indicate we have "more space" than we need, hence no need to
             // remove any buttons, so we just ignore this.
-            return (int) Math.max(
-                    0, Math.ceil(1.0 * (widgetWidthDp - areaWidthDp) / buttonWidthDp));
+            return (int)
+                    Math.max(0, Math.ceil(1.0 * (widgetWidthDp - areaWidthDp) / buttonWidthDp));
         }
     }
 
-    /**
-     * Class describing the widget button offerings.
-     */
+    /** Class describing the widget button offerings. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     static class WidgetButtonSettings {
         /** Whether Voice Search button should be visible. */
         public boolean voiceSearchVisible;
+
         /** Whether Incognito mode button should be visible. */
         public boolean incognitoModeVisible;
+
         /** Whether Google Lens button should be visible. */
         public boolean googleLensVisible;
+
         /** Whether Dino Game button should be visible. */
         public boolean dinoGameVisible;
 
-        /**
-         * Default constructor, accessible only for tests.
-         */
+        /** Default constructor, accessible only for tests. */
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         WidgetButtonSettings() {}
 
-        /**
-         * Construct an instance of this class from the SearchActivityPreferences.
-         */
+        /** Construct an instance of this class from the SearchActivityPreferences. */
         public WidgetButtonSettings(SearchActivityPreferences prefs) {
             voiceSearchVisible = prefs.voiceSearchAvailable;
             incognitoModeVisible = prefs.incognitoAvailable;
@@ -138,8 +142,11 @@ public class QuickActionSearchWidgetProviderDelegate {
          */
         public void hideButtons(int numButtonsToHide) {
             // Compute the actual number of visible buttons.
-            int numButtonsHidden = (voiceSearchVisible ? 0 : 1) + (incognitoModeVisible ? 0 : 1)
-                    + (googleLensVisible ? 0 : 1) + (dinoGameVisible ? 0 : 1);
+            int numButtonsHidden =
+                    (voiceSearchVisible ? 0 : 1)
+                            + (incognitoModeVisible ? 0 : 1)
+                            + (googleLensVisible ? 0 : 1)
+                            + (dinoGameVisible ? 0 : 1);
 
             // The series of calls below determine the priority in which we decide to hide buttons.
             // In the event we run out of space, we hide Dino game first, then Lens and so on.
@@ -167,29 +174,36 @@ public class QuickActionSearchWidgetProviderDelegate {
 
     /** The target component to receive search actions. */
     private final @NonNull ComponentName mSearchActivityComponent;
+
     /** The intent to create a new incognito tab. */
     private final @NonNull Intent mStartIncognitoTabIntent;
+
     /** The intent to begin the Dino game. */
     private final @NonNull Intent mStartDinoGameIntent;
 
     /** Widget variant describing the Medium widget. */
     private final @NonNull WidgetVariant mMediumWidgetVariant;
+
     /** Widget variant describing the Small widget. */
     private final @NonNull WidgetVariant mSmallWidgetVariant;
+
     /** Widget variant describing the Extra Small widget. */
     private final @NonNull WidgetVariant mExtraSmallWidgetVariant;
+
     /** Widget variant describing the Dino widget. */
     private final @NonNull WidgetVariant mDinoWidgetVariant;
 
     /**
      * @param context Context that can be used to pre-compute values. Do not cache.
      * @param searchActivityComponent Component linking to SearchActivity where all Search related
-     *         events will be propagated.
+     *     events will be propagated.
      * @param startIncognitoTabIntent A trusted intent starting a new Incognito tab.
      * @param startDinoGameIntent A trusted intent starting the Dino game.
      */
-    public QuickActionSearchWidgetProviderDelegate(@NonNull Context context,
-            @NonNull ComponentName searchActivityComponent, @NonNull Intent startIncognitoTabIntent,
+    public QuickActionSearchWidgetProviderDelegate(
+            @NonNull Context context,
+            @NonNull ComponentName searchActivityComponent,
+            @NonNull Intent startIncognitoTabIntent,
             @NonNull Intent startDinoGameIntent) {
         mSearchActivityComponent = searchActivityComponent;
         mStartIncognitoTabIntent = startIncognitoTabIntent;
@@ -197,45 +211,58 @@ public class QuickActionSearchWidgetProviderDelegate {
 
         context = context.getApplicationContext();
         mMediumWidgetVariant =
-                new WidgetVariant(context, R.layout.quick_action_search_widget_medium_layout,
+                new WidgetVariant(
+                        context,
+                        R.layout.quick_action_search_widget_medium_layout,
                         R.dimen.quick_action_search_widget_medium_width,
                         R.dimen.quick_action_search_widget_medium_height,
                         R.dimen.quick_action_search_widget_medium_button_width,
                         R.dimen.quick_action_search_widget_medium_button_horizontal_margin);
 
         mSmallWidgetVariant =
-                new WidgetVariant(context, R.layout.quick_action_search_widget_small_layout,
+                new WidgetVariant(
+                        context,
+                        R.layout.quick_action_search_widget_small_layout,
                         R.dimen.quick_action_search_widget_small_width,
                         R.dimen.quick_action_search_widget_small_height,
                         R.dimen.quick_action_search_widget_small_button_width,
                         R.dimen.quick_action_search_widget_small_button_horizontal_margin);
 
         mExtraSmallWidgetVariant =
-                new WidgetVariant(context, R.layout.quick_action_search_widget_xsmall_layout,
+                new WidgetVariant(
+                        context,
+                        R.layout.quick_action_search_widget_xsmall_layout,
                         R.dimen.quick_action_search_widget_xsmall_width,
                         R.dimen.quick_action_search_widget_xsmall_height,
                         R.dimen.quick_action_search_widget_xsmall_button_width,
                         R.dimen.quick_action_search_widget_xsmall_button_horizontal_margin);
         mDinoWidgetVariant =
-                new WidgetVariant(context, R.layout.quick_action_search_widget_dino_layout,
+                new WidgetVariant(
+                        context,
+                        R.layout.quick_action_search_widget_dino_layout,
                         R.dimen.quick_action_search_widget_dino_size,
-                        R.dimen.quick_action_search_widget_dino_size, 0, 0);
+                        R.dimen.quick_action_search_widget_dino_size,
+                        0,
+                        0);
     }
 
     /**
      * Adjust button visibility to match feature availability and widget area.
      *
-     * This method shows/hides widget buttons in order to reflect feature availability, eg.
-     * any feature that is not accessible to the user will have its corresponding button removed.
+     * <p>This method shows/hides widget buttons in order to reflect feature availability, eg. any
+     * feature that is not accessible to the user will have its corresponding button removed.
      *
-     * The method evaluates widget area width to determine if any additional buttons have to be
+     * <p>The method evaluates widget area width to determine if any additional buttons have to be
      * hidden in order to prevent button truncation: given widget variant and launcher area width
      * decide how many buttons have to be hidden in order to prevent the truncation and hide any
      * additional buttons in this order:
-     * - Dino Game (first),
-     * - Google Lens,
-     * - Incognito Mode,
-     * - Voice Search (last).
+     *
+     * <ul>
+     *   <li>Dino Game (first),
+     *   <li>Google Lens,
+     *   <li>Incognito Mode,
+     *   <li>Voice Search (last).
+     * </ul>
      *
      * @param views RemoteViews structure that hosts the buttons.
      * @param prefs SearchActivityPreferences structure describing feature availability.
@@ -243,17 +270,22 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param targetWidthDp The width of the space for the widget, as offered by the Launcher.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    void applyRemoteViewsButtonVisibilityToFitWidth(@NonNull RemoteViews views,
-            @NonNull SearchActivityPreferences prefs, @NonNull WidgetVariant variant,
+    void applyRemoteViewsButtonVisibilityToFitWidth(
+            @NonNull RemoteViews views,
+            @NonNull SearchActivityPreferences prefs,
+            @NonNull WidgetVariant variant,
             int targetWidthDp) {
         WidgetButtonSettings settings = new WidgetButtonSettings(prefs);
         settings.hideButtons(variant.computeNumberOfButtonsToHide(targetWidthDp));
 
-        views.setViewVisibility(R.id.voice_search_quick_action_button,
+        views.setViewVisibility(
+                R.id.voice_search_quick_action_button,
                 settings.voiceSearchVisible ? View.VISIBLE : View.GONE);
-        views.setViewVisibility(R.id.incognito_quick_action_button,
+        views.setViewVisibility(
+                R.id.incognito_quick_action_button,
                 settings.incognitoModeVisible ? View.VISIBLE : View.GONE);
-        views.setViewVisibility(R.id.lens_quick_action_button,
+        views.setViewVisibility(
+                R.id.lens_quick_action_button,
                 settings.googleLensVisible ? View.VISIBLE : View.GONE);
         views.setViewVisibility(
                 R.id.dino_quick_action_button, settings.dinoGameVisible ? View.VISIBLE : View.GONE);
@@ -261,15 +293,14 @@ public class QuickActionSearchWidgetProviderDelegate {
 
     /**
      * Given the width and height of the widget cell area (expressed in distance points) and the
-     * screen density, compute vertical and horizontal paddings that have to be applied to make
-     * the widget retain the square aspect ratio (1:1).
-     * The returned size is expressed in pixels.
+     * screen density, compute vertical and horizontal paddings that have to be applied to make the
+     * widget retain the square aspect ratio (1:1). The returned size is expressed in pixels.
      *
      * @param cellAreaWidthDp Width of the cell area, expressed in distance points.
      * @param cellAreaHeightDp Height of the cell area, expressed in distance points.
      * @param density Screen density.
      * @return Size object, describing required horizontal and vertical padding, expressed in
-     *         pixels.
+     *     pixels.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     Size computeWidgetAreaPaddingForDinoWidgetPx(
@@ -289,7 +320,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param cellAreaHeightDp Height of the cell area, expressed in distance points.
      * @param density Screen density.
      * @return Scale factor that should be applied to relevant dimensions to resize the widget
-     *         proportionately.
+     *     proportionately.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     float computeScaleFactorForDinoWidget(int cellAreaWidthDp, int cellAreaHeightDp) {
@@ -321,8 +352,12 @@ public class QuickActionSearchWidgetProviderDelegate {
         // The left/right and top/bottom dimensions are the same, since we want to center the view
         // in the area where we have some non-zero padding.
         Size paddings = computeWidgetAreaPaddingForDinoWidgetPx(areaWidthDp, areaHeightDp, density);
-        views.setViewPadding(R.id.dino_quick_action_area, paddings.getWidth(), paddings.getHeight(),
-                paddings.getWidth(), paddings.getHeight());
+        views.setViewPadding(
+                R.id.dino_quick_action_area,
+                paddings.getWidth(),
+                paddings.getHeight(),
+                paddings.getWidth(),
+                paddings.getHeight());
 
         // Now use the scale factor to modify all the dimensions that count.
         // We depend on the intrinsic view computations to infer a lot of these dimensions; the ones
@@ -333,18 +368,21 @@ public class QuickActionSearchWidgetProviderDelegate {
         final float scale = computeScaleFactorForDinoWidget(areaWidthDp, areaHeightDp);
         final float contentPaddingVertical =
                 resources.getDimension(R.dimen.quick_action_search_widget_dino_padding_vertical)
-                * scale;
+                        * scale;
         final float contentPaddingStart =
                 resources.getDimension(R.dimen.quick_action_search_widget_dino_padding_start)
-                * scale;
+                        * scale;
 
         // Note: there is no setViewRelativePadding method available for RemoteViews. This means
         // we have to be smart about what edge means "start".
         final float contentPaddingLeft = isLayoutDirectionRTL(resources) ? 0 : contentPaddingStart;
         final float contentPaddingRight = isLayoutDirectionRTL(resources) ? contentPaddingStart : 0;
 
-        views.setViewPadding(R.id.dino_quick_action_button, (int) contentPaddingLeft,
-                (int) contentPaddingVertical, (int) contentPaddingRight,
+        views.setViewPadding(
+                R.id.dino_quick_action_button,
+                (int) contentPaddingLeft,
+                (int) contentPaddingVertical,
+                (int) contentPaddingRight,
                 (int) contentPaddingVertical);
 
         // Scale text proportionately, ignoring the system font scaling. We have to apply this to
@@ -353,8 +391,9 @@ public class QuickActionSearchWidgetProviderDelegate {
         // - overlapping the dino image with text, or
         // - making the text so small that it leaves a lot of empty space on the widget.
         final float textSize =
-                resources.getDimension(R.dimen.quick_action_search_widget_dino_text_size) * scale
-                / resources.getDisplayMetrics().scaledDensity;
+                resources.getDimension(R.dimen.quick_action_search_widget_dino_text_size)
+                        * scale
+                        / resources.getDisplayMetrics().scaledDensity;
         views.setFloat(R.id.dino_quick_action_text, "setTextSize", textSize);
     }
 
@@ -367,8 +406,11 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param areaHeightDp Height of the widget area.
      * @return RemoteViews to be installed on the Dino widget.
      */
-    public @NonNull RemoteViews createDinoWidgetRemoteViews(@NonNull Context context,
-            @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp) {
+    public @NonNull RemoteViews createDinoWidgetRemoteViews(
+            @NonNull Context context,
+            @NonNull SearchActivityPreferences prefs,
+            int areaWidthDp,
+            int areaHeightDp) {
         RemoteViews views =
                 createWidgetRemoteViews(context, R.layout.quick_action_search_widget_dino_layout);
 
@@ -383,8 +425,8 @@ public class QuickActionSearchWidgetProviderDelegate {
     /**
      * Create configuration aware {@link RemoteViews} for the Search widget.
      *
-     * The returned RemoteViews are adjusted to fit given space, and respond to
-     * screen orientation changes.
+     * <p>The returned RemoteViews are adjusted to fit given space, and respond to screen
+     * orientation changes.
      *
      * @param context Current context.
      * @param prefs Structure describing current preferences and feature availability.
@@ -392,8 +434,11 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param areaHeightDp Height of the widget area.
      * @return RemoteViews to be installed on the Search widget for the passed variant.
      */
-    public @NonNull RemoteViews createSearchWidgetRemoteViews(@NonNull Context context,
-            @NonNull SearchActivityPreferences prefs, int areaWidthDp, int areaHeightDp) {
+    public @NonNull RemoteViews createSearchWidgetRemoteViews(
+            @NonNull Context context,
+            @NonNull SearchActivityPreferences prefs,
+            int areaWidthDp,
+            int areaHeightDp) {
         WidgetVariant variant = getSearchWidgetVariantForHeight(areaHeightDp);
         RemoteViews views = createWidgetRemoteViews(context, variant.layout);
         applyRemoteViewsButtonVisibilityToFitWidth(views, prefs, variant, areaWidthDp);
@@ -418,9 +463,8 @@ public class QuickActionSearchWidgetProviderDelegate {
     }
 
     /**
-     * Create a {@link RemoteViews} from supplied layoutRes.
-     * In this function, the appropriate {@link PendingIntent} is assigned to each tap target on the
-     * widget.
+     * Create a {@link RemoteViews} from supplied layoutRes. In this function, the appropriate
+     * {@link PendingIntent} is assigned to each tap target on the widget.
      *
      * @param context The {@link Context} from which the widget is being updated.
      * @param layoutRes The Layout to inflate.
@@ -430,14 +474,16 @@ public class QuickActionSearchWidgetProviderDelegate {
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutRes);
 
         // Search Bar Intent
-        PendingIntent textSearchPendingIntent = createPendingIntentForAction(
-                context, SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
+        PendingIntent textSearchPendingIntent =
+                createPendingIntentForAction(
+                        context, SearchActivityConstants.ACTION_START_EXTENDED_TEXT_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.quick_action_search_widget_search_bar_container, textSearchPendingIntent);
 
         // Voice Search Intent
-        PendingIntent voiceSearchPendingIntent = createPendingIntentForAction(
-                context, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
+        PendingIntent voiceSearchPendingIntent =
+                createPendingIntentForAction(
+                        context, SearchActivityConstants.ACTION_START_EXTENDED_VOICE_SEARCH);
         remoteViews.setOnClickPendingIntent(
                 R.id.voice_search_quick_action_button, voiceSearchPendingIntent);
 
@@ -448,8 +494,9 @@ public class QuickActionSearchWidgetProviderDelegate {
                 R.id.incognito_quick_action_button, incognitoTabPendingIntent);
 
         // Lens Search Intent
-        PendingIntent lensSearchPendingIntent = createPendingIntentForAction(
-                context, SearchActivityConstants.ACTION_START_LENS_SEARCH);
+        PendingIntent lensSearchPendingIntent =
+                createPendingIntentForAction(
+                        context, SearchActivityConstants.ACTION_START_LENS_SEARCH);
         remoteViews.setOnClickPendingIntent(R.id.lens_quick_action_button, lensSearchPendingIntent);
 
         // Dino Game intent
@@ -465,7 +512,7 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param context The Context from which the PendingIntent will perform the broadcast.
      * @param action A String specifying the action for the intent.
      * @return A {@link PendingIntent} that will broadcast a trusted intent for the specified
-     *         action.
+     *     action.
      */
     private PendingIntent createPendingIntentForAction(
             @NonNull Context context, @NonNull String action) {
@@ -482,12 +529,15 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param context The Context from which the PendingIntent will perform the broadcast.
      * @param intent An intent to execute.
      * @return A {@link PendingIntent} that will broadcast a trusted intent for the specified
-     *         action.
+     *     action.
      */
     private PendingIntent createPendingIntent(@NonNull Context context, @NonNull Intent intent) {
         intent.putExtra(
                 SearchActivityConstants.EXTRA_BOOLEAN_FROM_QUICK_ACTION_SEARCH_WIDGET, true);
-        return PendingIntent.getActivity(context, /*requestCode=*/0, intent,
+        return PendingIntent.getActivity(
+                context,
+                /* requestCode= */ 0,
+                intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
                         | IntentUtils.getPendingIntentMutabilityFlag(false));
     }

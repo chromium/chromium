@@ -1,120 +1,50 @@
 # Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//ui/webui/resources/tools/build_webui.gni")
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":edu_coexistence_app",
-    ":edu_coexistence_browser_proxy",
-    ":edu_coexistence_button",
-    ":edu_coexistence_controller",
-    ":edu_coexistence_error",
-    ":edu_coexistence_offline",
-    ":edu_coexistence_template",
-    ":edu_coexistence_ui",
+build_webui("build") {
+  grd_prefix = "edu_coexistence"
+  grd_resource_path_prefix = "edu_coexistence"
+  static_files = [ "edu_coexistence.html" ]
+  web_component_files = [
+    "edu_coexistence_app.ts",
+    "edu_coexistence_button.ts",
+    "edu_coexistence_error.ts",
+    "edu_coexistence_offline.ts",
+    "edu_coexistence_ui.ts",
+    "edu_coexistence_template.ts",
   ]
-
-  closure_flags =
-      default_closure_args + [
-        "js_module_root=" +
-            rebase_path("//chrome/browser/resources/gaia_auth_host/",
-                        root_build_dir),
-        "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-      ]
-}
-
-js_library("edu_coexistence_app") {
-  deps = [
-    ":edu_coexistence_browser_proxy",
-    ":edu_coexistence_error",
-    ":edu_coexistence_offline",
-    ":edu_coexistence_ui",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//chrome/browser/resources/chromeos/arc_account_picker:arc_account_picker_app",
-    "//chrome/browser/resources/chromeos/arc_account_picker:arc_util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  non_web_component_files = [
+    "edu_coexistence_controller.ts",
+    "edu_coexistence_browser_proxy.ts",
   ]
-
-  externs_list = [ "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js" ]
-}
-
-js_library("edu_coexistence_button") {
-  deps = [
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:util",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  css_files = [ "common.css" ]
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/webview_tag.d.ts",
+    "//tools/typescript/definitions/web_request.d.ts",
+    "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/context_menus.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
   ]
-}
-
-js_library("edu_coexistence_error") {
-  deps = [
-    ":edu_coexistence_button",
-    ":edu_coexistence_template",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_error",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ts_deps = [
+    "//ash/webui/common/resources:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-}
-
-js_library("edu_coexistence_offline") {
-  deps = [
-    ":edu_coexistence_button",
-    ":edu_coexistence_template",
-    "//chrome/browser/resources/chromeos/supervision:supervised_user_offline",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("edu_coexistence_ui") {
-  deps = [
-    ":edu_coexistence_browser_proxy",
-    ":edu_coexistence_button",
-    ":edu_coexistence_controller",
-    ":edu_coexistence_template",
-    "//ash/webui/common/resources:web_ui_listener_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
-
-js_library("edu_coexistence_template") {
-  deps = [
-    "//ash/webui/common/resources:cr_scrollable_behavior",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("edu_coexistence_controller") {
-  deps = [
-    ":edu_coexistence_browser_proxy",
-    "//ash/webui/common/resources/post_message_api:post_message_api_server",
-    "//chrome/browser/resources/gaia_auth_host:authenticator",
-  ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
-
-js_library("edu_coexistence_browser_proxy") {
-  deps = [ "//chrome/browser/resources/gaia_auth_host:authenticator" ]
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "edu_coexistence_app.js",
-    "edu_coexistence_button.js",
-    "edu_coexistence_css.js",
-    "edu_coexistence_error.js",
-    "edu_coexistence_offline.js",
-    "edu_coexistence_template.js",
-    "edu_coexistence_ui.js",
-  ]
+  ts_path_mappings =
+      [ "chrome://chrome-signin/gaia_auth_host/*|" +
+        rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+                    target_gen_dir) ]
+  if (is_chromeos_ash) {
+    ts_path_mappings +=
+        [ "chrome://chrome-signin/arc_account_picker/*|" +
+          rebase_path(
+              "//chrome/browser/resources/chromeos/arc_account_picker/*",
+              target_gen_dir) ]
+  }
 }

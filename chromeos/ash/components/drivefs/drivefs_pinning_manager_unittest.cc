@@ -50,6 +50,7 @@ using base::test::RunClosure;
 using base::test::RunOnceCallback;
 using base::test::TaskEnvironment;
 using drive::FileError;
+using mojom::DocsOfflineEnableStatus;
 using mojom::FileChange;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
@@ -186,7 +187,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
 
   MOCK_METHOD(void,
               SetDocsOfflineEnabled,
-              (bool, OnceCallback<void(FileError)>),
+              (bool, OnceCallback<void(FileError, DocsOfflineEnableStatus)>),
               (override));
 
  private:
@@ -1656,39 +1657,6 @@ TEST_F(DriveFsPinningManagerTest, OnItemProgress) {
     EXPECT_EQ(progress.required_space, 8192);
   }
 
-  // Events sent via `OnSsyncingStatusUpdate` are ignored when expecting
-  // `OnItemProgress`.
-  SyncingStatus events;
-
-  {
-    // An event with an unknown type is ignored.
-    ItemEventPtr event = ItemEvent::New();
-    event->is_download = true;
-    event->stable_id = static_cast<int64_t>(id2);
-    event->path = path2.value();
-    event->state = ItemEvent::State(-1);
-    event->bytes_to_transfer = -1;
-    event->bytes_transferred = -1;
-    events.item_events.push_back(std::move(event));
-  }
-
-  manager.OnSyncingStatusUpdate(std::as_const(events));
-
-  {
-    const Progress progress = manager.GetProgress();
-    EXPECT_EQ(progress.syncing_files, 1);
-    EXPECT_EQ(progress.failed_files, 0);
-    EXPECT_EQ(progress.pinned_files, 1);
-    EXPECT_EQ(progress.pinned_bytes, 20000);
-    EXPECT_EQ(progress.bytes_to_pin, 30000);
-    EXPECT_EQ(progress.required_space, 8192);
-  }
-
-  {
-    const auto it = manager.files_to_track_.find(id1);
-    EXPECT_EQ(it, manager.files_to_track_.end());
-  }
-
   manager.Stop();
 
   // Events received when the PinningManager is stopped are ignored.
@@ -2644,7 +2612,8 @@ TEST_F(DriveFsPinningManagerTest, StartPinning) {
 
   EXPECT_CALL(drivefs_, SetDocsOfflineEnabled(true, _))
       .Times(1)
-      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK));
+      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_OK,
+                                   DocsOfflineEnableStatus::kSuccess));
   manager.StartPinning();
   EXPECT_EQ(manager.progress_.stage, Stage::kSuccess);
 

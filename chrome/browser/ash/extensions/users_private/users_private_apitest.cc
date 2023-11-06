@@ -50,7 +50,7 @@ class TestPrefsUtil : public PrefsUtil {
 
     api::settings_private::PrefObject pref_object;
     pref_object.key = name;
-    pref_object.type = api::settings_private::PrefType::PREF_TYPE_LIST;
+    pref_object.type = api::settings_private::PrefType::kList;
 
     base::Value::List value;
     for (auto& email : user_list_) {

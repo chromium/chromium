@@ -89,9 +89,9 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
 
   ThreadGroupImpl(const ThreadGroupImpl&) = delete;
   ThreadGroupImpl& operator=(const ThreadGroupImpl&) = delete;
-  // Destroying a ThreadGroupImpl returned by Create() is not allowed in
-  // production; it is always leaked. In tests, it can only be destroyed after
-  // JoinForTesting() has returned.
+  // Destroying a ThreadGroupImpl is not allowed in production; it is always
+  // leaked. In tests, it can only be destroyed after JoinForTesting() has
+  // returned.
   ~ThreadGroupImpl() override;
 
   // ThreadGroup:
@@ -154,9 +154,6 @@ class BASE_EXPORT ThreadGroupImpl : public ThreadGroup {
   // worker, |max_tasks_| permitting.
   void MaintainAtLeastOneIdleWorkerLockRequired(
       ScopedCommandsExecutor* executor) EXCLUSIVE_LOCKS_REQUIRED(lock_);
-
-  // Returns true if worker cleanup is permitted.
-  bool CanWorkerCleanupForTestingLockRequired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Creates a worker, adds it to the thread group, schedules its start and
   // returns it. Cannot be called before Start().

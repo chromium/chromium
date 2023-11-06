@@ -228,20 +228,6 @@ class MediaNotificationViewImplTest : public views::ViewsTestBase {
     view()->GetFocusManager()->OnKeyEvent(pressed_tab);
   }
 
-  void ExpectHistogramArtworkRecorded(bool present, int count) {
-    histogram_tester_.ExpectBucketCount(
-        MediaNotificationViewImpl::kArtworkHistogramName,
-        static_cast<base::HistogramBase::Sample>(present), count);
-  }
-
-  void ExpectHistogramMetadataRecorded(
-      MediaNotificationViewImpl::Metadata metadata,
-      int count) {
-    histogram_tester_.ExpectBucketCount(
-        MediaNotificationViewImpl::kMetadataHistogramName,
-        static_cast<base::HistogramBase::Sample>(metadata), count);
-  }
-
  private:
   void NotifyUpdatedActions() { view_->UpdateWithMediaActions(actions_); }
 
@@ -504,15 +490,6 @@ TEST_F(MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EnableAllActions();
   widget()->LayoutRootViewIfNecessary();
 
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kTitle,
-                                  1);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kArtist,
-                                  1);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kAlbum,
-                                  0);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kCount,
-                                  1);
-
   EXPECT_FALSE(header_row()->summary_text_for_testing()->GetVisible());
 
   media_session::MediaMetadata metadata;
@@ -540,15 +517,6 @@ TEST_F(MediaNotificationViewImplTest, UpdateMetadata_FromObserver) {
   EXPECT_EQ(kMediaTitleArtistRowExpectedHeight, title_artist_row()->height());
 
   EXPECT_EQ(u"title2 - artist2 - album", accessible_name());
-
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kTitle,
-                                  2);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kArtist,
-                                  2);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kAlbum,
-                                  1);
-  ExpectHistogramMetadataRecorded(MediaNotificationViewImpl::Metadata::kCount,
-                                  2);
 }
 
 TEST_F(MediaNotificationViewImplTest, UpdateMetadata_AppName) {
@@ -717,8 +685,6 @@ TEST_F(MediaNotificationViewImplTest, UpdateArtworkFromItem) {
 
   view()->UpdateWithMediaArtwork(gfx::ImageSkia::CreateFrom1xBitmap(image));
 
-  ExpectHistogramArtworkRecorded(true, 1);
-
   // Ensure the title artist row has a small width than before now that we
   // have artwork.
   EXPECT_GT(title_artist_width, title_artist_row()->width());
@@ -737,8 +703,6 @@ TEST_F(MediaNotificationViewImplTest, UpdateArtworkFromItem) {
 
   view()->UpdateWithMediaArtwork(
       gfx::ImageSkia::CreateFrom1xBitmap(SkBitmap()));
-
-  ExpectHistogramArtworkRecorded(false, 1);
 
   // Ensure the title artist row goes back to the original width now that we
   // do not have any artwork.

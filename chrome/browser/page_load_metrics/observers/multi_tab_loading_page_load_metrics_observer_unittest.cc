@@ -57,7 +57,7 @@ class MultiTabLoadingPageLoadMetricsObserverTest
 
     page_load_metrics::mojom::PageLoadTiming timing;
     page_load_metrics::InitPageLoadTimingForTest(&timing);
-    timing.navigation_start = base::Time::FromDoubleT(1);
+    timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
     timing.parse_timing->parse_start = base::Milliseconds(300);
     timing.paint_timing->first_contentful_paint = base::Milliseconds(300);
     timing.paint_timing->first_meaningful_paint = base::Milliseconds(700);

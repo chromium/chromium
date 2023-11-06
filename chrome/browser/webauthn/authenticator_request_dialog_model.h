@@ -24,6 +24,7 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/observable_authenticator_list.h"
 #include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/cable_discovery_data.h"
@@ -775,7 +776,8 @@ class AuthenticatorRequestDialogModel
       device::AuthenticatorType source);
 
   // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged() override;
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
 
   // Identifier for the RenderFrameHost of the frame that initiated the current

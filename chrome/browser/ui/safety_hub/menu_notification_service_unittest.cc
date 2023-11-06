@@ -23,6 +23,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/constants.h"
 #include "components/permissions/pref_names.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -77,6 +78,20 @@ class SafetyHubMenuNotificationServiceTest
         unused_site_permissions_service());
   }
 
+  void ShowNotificationEnoughTimes(
+      int remainingImpressionCount =
+          kSafetyHubMenuNotificationMinImpressionCount) {
+    absl::optional<MenuNotificationEntry> notification;
+    AdvanceClockBy(base::Days(90));
+    for (int i = 0; i < remainingImpressionCount; ++i) {
+      notification = menu_notification_service()->GetNotificationToShow();
+      EXPECT_TRUE(notification.has_value());
+    }
+    AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
+    notification = menu_notification_service()->GetNotificationToShow();
+    EXPECT_FALSE(notification.has_value());
+  }
+
   UnusedSitePermissionsService* unused_site_permissions_service() {
     return UnusedSitePermissionsServiceFactory::GetForProfile(profile());
   }
@@ -86,6 +101,9 @@ class SafetyHubMenuNotificationServiceTest
   }
   SafetyHubMenuNotificationService* menu_notification_service() {
     return SafetyHubMenuNotificationServiceFactory::GetForProfile(profile());
+  }
+  extensions::CWSInfoService* extension_info_service() {
+    return extensions::CWSInfoService::Get(profile());
   }
   sync_preferences::TestingPrefServiceSyncable* prefs() {
     return profile()->GetTestingPrefService();
@@ -109,7 +127,7 @@ class SafetyHubMenuNotificationServiceTest
 };
 
 TEST_F(SafetyHubMenuNotificationServiceTest, GetNotificationToShowNoResult) {
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
 }
@@ -119,13 +137,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, SingleNotificationToShow) {
 
   // The notification to show should be the unused site permissions one with
   // one revoked permission. The relevant command should be to open Safety Hub.
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification.value().second);
-  EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().first);
+      notification.value().label);
+  EXPECT_EQ(IDC_OPEN_SAFETY_HUB, notification.value().command);
 }
 
 TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
@@ -133,12 +151,12 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   // available.
   CreateMockUnusedSitePermissionsEntry();
 
-  absl::optional<std::pair<int, std::u16string>> notification =
+  absl::optional<MenuNotificationEntry> notification =
       menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   SafetyHubMenuNotification* old_notification =
       menu_notification_service()->GetNotificationForTesting(
-          SafetyHubServiceType::UNUSED_SITE_PERMISSIONS);
+          safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(old_notification->IsCurrentlyActive());
   auto* old_result =
       static_cast<UnusedSitePermissionsService::UnusedSitePermissionsResult*>(
@@ -151,12 +169,13 @@ TEST_F(SafetyHubMenuNotificationServiceTest, PersistInPrefs) {
   std::unique_ptr<SafetyHubMenuNotificationService> new_service =
       std::make_unique<SafetyHubMenuNotificationService>(
           prefs(), unused_site_permissions_service(),
-          notification_permissions_service());
+          notification_permissions_service(), extension_info_service(),
+          profile());
   // Getting the in-memory notification to prevent the service from generating a
   // new one.
   SafetyHubMenuNotification* new_notification =
       new_service->GetNotificationForTesting(
-          SafetyHubServiceType::UNUSED_SITE_PERMISSIONS);
+          safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS);
   EXPECT_TRUE(new_notification->IsCurrentlyActive());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
@@ -181,16 +200,15 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsSequentially) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification sufficient days and times.
-  absl::optional<std::pair<int, std::u16string>> notification;
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount + 1; ++i) {
+  absl::optional<MenuNotificationEntry> notification;
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-        notification->second);
+        notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // The notification has been shown sufficiently, so shouldn't be shown again.
   notification = menu_notification_service()->GetNotificationToShow();
@@ -209,12 +227,12 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   CreateMockUnusedSitePermissionsEntry();
 
   // Show the notification once.
-  absl::optional<std::pair<int, std::u16string>> notification;
+  absl::optional<MenuNotificationEntry> notification;
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification->second);
+      notification->label);
 
   // Creating a notification permission shouldn't cause the active notification
   // to be overridden.
@@ -223,18 +241,17 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-      notification->second);
+      notification->label);
 
   // Showing the notification sufficient days and times.
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 2; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
-        notification->second);
+        notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // After the unused site permissions notification has been shown sufficient
   // times, the notification permission review notification should be shown.
@@ -242,21 +259,102 @@ TEST_F(SafetyHubMenuNotificationServiceTest, TwoNotificationsNoOverride) {
   EXPECT_TRUE(notification.has_value());
   ExpectPluralString(
       IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
-      1, notification->second);
+      1, notification->label);
 
   // Showing the new notification enough times and days.
-  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount; ++i) {
+  for (int i = 0; i < kSafetyHubMenuNotificationMinImpressionCount - 1; ++i) {
     notification = menu_notification_service()->GetNotificationToShow();
     EXPECT_TRUE(notification.has_value());
     ExpectPluralString(
         IDS_SETTINGS_SAFETY_HUB_REVIEW_NOTIFICATION_PERMISSIONS_MENU_NOTIFICATION,
-        1, notification->second);
+        1, notification->label);
   }
-  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration +
-                 base::Days(1));
+  AdvanceClockBy(kSafetyHubMenuNotificationMinNotificationDuration);
 
   // Both notifications have been shown sufficiently, so no new notification
   // should be shown.
   notification = menu_notification_service()->GetNotificationToShow();
   EXPECT_FALSE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingOverride) {
+  // Create a notification for a module that has low priority notifications.
+  CreateMockUnusedSitePermissionsEntry();
+  absl::optional<MenuNotificationEntry> notification;
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(
+      IDS_SETTINGS_SAFETY_HUB_UNUSED_SITE_PERMISSIONS_MENU_NOTIFICATION, 1,
+      notification->label);
+
+  // Disable safe browsing, which generates a medium-priority Safe Browsing
+  // notification that should override the low priority notification.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  AdvanceClockBy(base::Days(1));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SETTINGS_SAFETY_HUB_SAFE_BROWSING_MENU_NOTIFICATION),
+            notification.value().label);
+
+  // Re-enabling Safe Browsing should clear the notification. Because the unused
+  // site permission notification was dismissed, it will not be shown either.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, SafeBrowsingTriggerLogic) {
+  absl::optional<MenuNotificationEntry> notification;
+  // Disabling Safe Browsing should only trigger a menu notification after one
+  // day.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  AdvanceClockBy(base::Hours(12));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+  AdvanceClockBy(base::Hours(12));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+
+  // A notification for Safe Browsing should only be shown three times in total.
+  ShowNotificationEnoughTimes(kSafetyHubMenuNotificationMinImpressionCount - 1);
+  AdvanceClockBy(base::Days(90));
+  ShowNotificationEnoughTimes();
+  AdvanceClockBy(base::Days(90));
+  ShowNotificationEnoughTimes();
+  AdvanceClockBy(base::Days(90));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_FALSE(notification.has_value());
+
+  // When the user toggles the SB prefs, the notification can be shown again,
+  // after one day.
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  prefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  AdvanceClockBy(base::Days(1));
+  notification = menu_notification_service()->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+}
+
+TEST_F(SafetyHubMenuNotificationServiceTest, ExtensionsMenuNotification) {
+  // Create mock extensions that should result in two violations that are shown
+  // in the menu notification.
+  safety_hub_test_util::CreateMockExtensions(profile());
+  // The mock CWS info service ensures that the correct extension properties are
+  // provided.
+  std::unique_ptr<testing::NiceMock<safety_hub_test_util::MockCWSInfoService>>
+      cws_info_service = safety_hub_test_util::GetMockCWSInfoService(profile());
+  // Create a menu notification service with the mocked CWS info service.
+  std::unique_ptr<SafetyHubMenuNotificationService> mocked_service =
+      std::make_unique<SafetyHubMenuNotificationService>(
+          prefs(), unused_site_permissions_service(),
+          notification_permissions_service(), cws_info_service.get(),
+          profile());
+  absl::optional<MenuNotificationEntry> notification =
+      mocked_service->GetNotificationToShow();
+  EXPECT_TRUE(notification.has_value());
+  ExpectPluralString(IDS_SETTINGS_SAFETY_HUB_EXTENSIONS_MENU_NOTIFICATION, 2,
+                     notification->label);
 }

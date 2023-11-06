@@ -11,19 +11,22 @@ import android.os.Looper;
 import android.util.Pair;
 import android.view.View;
 
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.MediumTest;
+import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 
 import org.chromium.base.Callback;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -31,12 +34,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -58,19 +64,30 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Tests Chrome download feature by attempting to download some files.
- */
+/** Tests Chrome download feature by attempting to download some files. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class DownloadTest implements CustomMainActivityStart {
+@Batch(Batch.PER_CLASS)
+public class DownloadTest {
+    @ClassRule
+    public static DownloadTestRule sDownloadTestRule =
+            new DownloadTestRule(
+                    new CustomMainActivityStart() {
+                        @Override
+                        public void customMainActivityStart() throws InterruptedException {
+                            sDownloadTestRule.startMainActivityOnBlankPage();
+                        }
+                    });
+
     @Rule
-    public DownloadTestRule mDownloadTestRule = new DownloadTestRule(this);
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sDownloadTestRule, false);
 
-    private static final String SUPERBO_CONTENTS =
-            "plain text response from a POST";
+    private static final String SUPERBO_CONTENTS = "plain text response from a POST";
 
-    private EmbeddedTestServer mTestServer;
+    private static EmbeddedTestServer sTestServer;
+
+    @Mock private static AutocompleteController sACController;
 
     private static final String TEST_DOWNLOAD_DIRECTORY = "/chrome/test/data/android/download/";
 
@@ -81,10 +98,15 @@ public class DownloadTest implements CustomMainActivityStart {
     private static final String FILENAME_SWF = "test.swf";
     private static final String FILENAME_GZIP = "test.gzip";
 
-    private static final String[] TEST_FILES = new String[] {
-        FILENAME_WALLPAPER, FILENAME_TEXT, FILENAME_TEXT_1, FILENAME_TEXT_2, FILENAME_SWF,
-        FILENAME_GZIP
-    };
+    private static final String[] TEST_FILES =
+            new String[] {
+                FILENAME_WALLPAPER,
+                FILENAME_TEXT,
+                FILENAME_TEXT_1,
+                FILENAME_TEXT_2,
+                FILENAME_SWF,
+                FILENAME_GZIP
+            };
 
     static class DownloadManagerRequestInterceptorForTest
             implements DownloadManagerService.DownloadManagerRequestInterceptor {
@@ -140,31 +162,61 @@ public class DownloadTest implements CustomMainActivityStart {
         public void cancelNotification(int notificationId, ContentId id) {}
 
         @Override
-        public int notifyDownloadSuccessful(final ContentId id, final String filePath,
-                final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
-                final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
-                final GURL originalUrl, final boolean shouldPromoteOrigin, final GURL referrer,
+        public int notifyDownloadSuccessful(
+                final ContentId id,
+                final String filePath,
+                final String fileName,
+                final long systemDownloadId,
+                final OTRProfileID otrProfileID,
+                final boolean isSupportedMimeType,
+                final boolean isOpenable,
+                final Bitmap icon,
+                final GURL originalUrl,
+                final boolean shouldPromoteOrigin,
+                final GURL referrer,
                 final long totalBytes) {
             return 0;
         }
 
         @Override
-        public void notifyDownloadProgress(final ContentId id, final String fileName,
-                final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
-                final long startTime, final OTRProfileID otrProfileID,
-                final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
-                final GURL originalUrl, final boolean shouldPromoteOrigin) {}
+        public void notifyDownloadProgress(
+                final ContentId id,
+                final String fileName,
+                final Progress progress,
+                final long bytesReceived,
+                final long timeRemainingInMillis,
+                final long startTime,
+                final OTRProfileID otrProfileID,
+                final boolean canDownloadWhileMetered,
+                final boolean isTransient,
+                final Bitmap icon,
+                final GURL originalUrl,
+                final boolean shouldPromoteOrigin) {}
 
         @Override
-        void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
-                boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient,
-                Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
-                boolean hasUserGesture, boolean forceRebuild, @PendingState int pendingState) {}
+        void notifyDownloadPaused(
+                ContentId id,
+                String fileName,
+                boolean isResumable,
+                boolean isAutoResumable,
+                OTRProfileID otrProfileID,
+                boolean isTransient,
+                Bitmap icon,
+                final GURL originalUrl,
+                final boolean shouldPromoteOrigin,
+                boolean hasUserGesture,
+                boolean forceRebuild,
+                @PendingState int pendingState) {}
 
         @Override
-        public void notifyDownloadFailed(final ContentId id, final String fileName,
-                final Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
-                OTRProfileID otrProfileID, @FailState int failState) {}
+        public void notifyDownloadFailed(
+                final ContentId id,
+                final String fileName,
+                final Bitmap icon,
+                final GURL originalUrl,
+                final boolean shouldPromoteOrigin,
+                OTRProfileID otrProfileID,
+                @FailState int failState) {}
 
         @Override
         public void notifyDownloadCanceled(final ContentId id, boolean hasUserGesture) {}
@@ -173,13 +225,17 @@ public class DownloadTest implements CustomMainActivityStart {
         void resumeDownload(Intent intent) {}
     }
 
+    @BeforeClass
+    public static void beforeClass() {
+        AutocompleteControllerProvider.setControllerForTesting(sACController);
+        Looper.prepare();
+        sTestServer = sDownloadTestRule.getTestServer();
+        DownloadNotificationService.setInstanceForTests(new MockNotificationService());
+    }
+
     @Before
     public void setUp() {
-        deleteTestFiles();
-        Looper.prepare();
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
-        DownloadNotificationService.setInstanceForTests(new MockNotificationService());
+        sDownloadTestRule.resetCallbackHelper();
     }
 
     @After
@@ -187,114 +243,128 @@ public class DownloadTest implements CustomMainActivityStart {
         deleteTestFiles();
     }
 
-    @Override
-    public void customMainActivityStart() throws InterruptedException {
-        mDownloadTestRule.startMainActivityOnBlankPage();
-    }
-
     void waitForLastDownloadToFinish() {
-        CriteriaHelper.pollUiThread(() -> {
-            List<DownloadItem> downloads = mDownloadTestRule.getAllDownloads();
-            Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
-            Criteria.checkThat(downloads.get(downloads.size() - 1).getDownloadInfo().state(),
-                    Matchers.is(DownloadState.COMPLETE));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<DownloadItem> downloads = sDownloadTestRule.getAllDownloads();
+                    Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
+                    Criteria.checkThat(
+                            downloads.get(downloads.size() - 1).getDownloadInfo().state(),
+                            Matchers.is(DownloadState.COMPLETE));
+                });
     }
 
     void waitForAnyDownloadToCancel() {
-        CriteriaHelper.pollUiThread(() -> {
-            List<DownloadItem> downloads = mDownloadTestRule.getAllDownloads();
-            Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
-            boolean hasCanceled = false;
-            for (DownloadItem download : downloads) {
-                if (download.getDownloadInfo().state() == DownloadState.CANCELLED) {
-                    hasCanceled = true;
-                    break;
-                }
-            }
-            Criteria.checkThat(hasCanceled, Matchers.is(true));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    List<DownloadItem> downloads = sDownloadTestRule.getAllDownloads();
+                    Criteria.checkThat(downloads.size(), Matchers.greaterThanOrEqualTo(1));
+                    boolean hasCanceled = false;
+                    for (DownloadItem download : downloads) {
+                        if (download.getDownloadInfo().state() == DownloadState.CANCELLED) {
+                            hasCanceled = true;
+                            break;
+                        }
+                    }
+                    Criteria.checkThat(hasCanceled, Matchers.is(true));
+                });
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"Downloads"})
     public void testHttpGetDownload() throws Exception {
-        mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
+        loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
-        View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
 
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
+        int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_GZIP, null));
+        Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(sDownloadTestRule.hasDownloaded(FILENAME_GZIP, null));
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"Downloads"})
     public void testHttpPostDownload() throws Exception {
-        mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
+        loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
         waitForFocus();
-        View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
 
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
+        int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_TEXT, SUPERBO_CONTENTS));
+        Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(sDownloadTestRule.hasDownloaded(FILENAME_TEXT, SUPERBO_CONTENTS));
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"Downloads"})
-    @Policies.Add({ @Policies.Item(key = "PromptForDownloadLocation", string = "false") })
+    @Policies.Add({@Policies.Item(key = "PromptForDownloadLocation", string = "false")})
     public void testCloseEmptyDownloadTab() throws Exception {
-        mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
+        loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
-        final int initialTabCount = mDownloadTestRule.getActivity().getCurrentTabModel().getCount();
-        int currentCallCount = mDownloadTestRule.getChromeDownloadCallCount();
-        View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
+        final int initialTabCount = sDownloadTestRule.getActivity().getCurrentTabModel().getCount();
+        int currentCallCount = sDownloadTestRule.getChromeDownloadCallCount();
+        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
         TouchCommon.singleClickView(currentView);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
+        Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
 
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mDownloadTestRule.getActivity().getCurrentTabModel().getCount(),
-                    Matchers.is(initialTabCount));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            sDownloadTestRule.getActivity().getCurrentTabModel().getCount(),
+                            Matchers.is(initialTabCount));
+                });
     }
 
     private void openNewTab(String url) {
-        Tab oldTab = mDownloadTestRule.getActivity().getActivityTabProvider().get();
-        TabCreator tabCreator = mDownloadTestRule.getActivity().getTabCreator(false);
-        final TabModel model = mDownloadTestRule.getActivity().getCurrentTabModel();
+        Tab oldTab = sDownloadTestRule.getActivity().getActivityTabProvider().get();
+        TabCreator tabCreator = sDownloadTestRule.getActivity().getTabCreator(false);
+        final TabModel model = sDownloadTestRule.getActivity().getCurrentTabModel();
         final int count = model.getCount();
-        final Tab newTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            return tabCreator.createNewTab(
-                    new LoadUrlParams(url, PageTransition.LINK), TabLaunchType.FROM_LINK, oldTab);
-        });
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(count + 1, Matchers.is(model.getCount()));
-            Criteria.checkThat(newTab, Matchers.is(model.getTabAt(count)));
-            Criteria.checkThat(ChromeTabUtils.isRendererReady(newTab), Matchers.is(true));
-        });
+        final Tab newTab =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return tabCreator.createNewTab(
+                                    new LoadUrlParams(url, PageTransition.LINK),
+                                    TabLaunchType.FROM_LINK,
+                                    oldTab);
+                        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(count + 1, Matchers.is(model.getCount()));
+                    Criteria.checkThat(newTab, Matchers.is(model.getTabAt(count)));
+                    Criteria.checkThat(ChromeTabUtils.isRendererReady(newTab), Matchers.is(true));
+                });
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"Downloads"})
     public void testUrlEscaping() throws Exception {
-        mDownloadTestRule.loadUrl(mTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
+        loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
         waitForFocus();
-        View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
 
-        int callCount = mDownloadTestRule.getChromeDownloadCallCount();
+        int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
-        Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        Assert.assertTrue(mDownloadTestRule.hasDownloaded(FILENAME_WALLPAPER, null));
+        Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(callCount));
+        Assert.assertTrue(sDownloadTestRule.hasDownloaded(FILENAME_WALLPAPER, null));
+    }
+
+    private void loadUrl(String url) {
+        sDownloadTestRule.loadUrlInTab(
+                url,
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                sDownloadTestRule.getActivity().getActivityTab(),
+                20L // 20 seconds timeout
+                );
     }
 
     @Test
-    @MediumTest
+    @LargeTest
     @Feature({"Navigation"})
     public void testOMADownloadInterception() throws Exception {
         TestWebServer webServer = TestWebServer.start();
@@ -302,30 +372,37 @@ public class DownloadTest implements CustomMainActivityStart {
             final DownloadManagerRequestInterceptorForTest interceptor =
                     new DownloadManagerRequestInterceptorForTest();
             TestThreadUtils.runOnUiThreadBlocking(
-                    () -> DownloadManagerService.getDownloadManagerService()
-                            .setDownloadManagerRequestInterceptor(interceptor));
-            List<Pair<String, String>> headers = new ArrayList<Pair<String, String>>();
+                    () ->
+                            DownloadManagerService.getDownloadManagerService()
+                                    .setDownloadManagerRequestInterceptor(interceptor));
+            List<Pair<String, String>> headers = new ArrayList<>();
             headers.add(Pair.create("Content-Type", "application/vnd.oma.drm.message"));
             final String url = webServer.setResponse("/test.dm", "testdata", headers);
-            mDownloadTestRule.loadUrl(UrlUtils.encodeHtmlDataUri("<script>"
-                    + "  function download() {"
-                    + "    window.open( '" + url + "')"
-                    + "  }"
-                    + "</script>"
-                    + "<body id='body' onclick='download()'></body>"));
-            DOMUtils.clickNode(mDownloadTestRule.getActivity().getCurrentWebContents(), "body");
-            CriteriaHelper.pollUiThread(() -> {
-                Criteria.checkThat(interceptor.mDownloadItem, Matchers.notNullValue());
-                Criteria.checkThat(
-                        interceptor.mDownloadItem.getDownloadInfo().getUrl().getSpec(), Matchers.is(url));
-            });
+            sDownloadTestRule.loadUrl(
+                    UrlUtils.encodeHtmlDataUri(
+                            "<script>"
+                                    + "  function download() {"
+                                    + "    window.open( '"
+                                    + url
+                                    + "')"
+                                    + "  }"
+                                    + "</script>"
+                                    + "<body id='body' onclick='download()'></body>"));
+            DOMUtils.clickNode(sDownloadTestRule.getActivity().getCurrentWebContents(), "body");
+            CriteriaHelper.pollUiThread(
+                    () -> {
+                        Criteria.checkThat(interceptor.mDownloadItem, Matchers.notNullValue());
+                        Criteria.checkThat(
+                                interceptor.mDownloadItem.getDownloadInfo().getUrl().getSpec(),
+                                Matchers.is(url));
+                    });
         } finally {
             webServer.shutdown();
         }
     }
 
     private void waitForFocus() {
-        View currentView = mDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
         if (!currentView.hasFocus()) {
             TouchCommon.singleClickView(currentView);
         }
@@ -337,6 +414,6 @@ public class DownloadTest implements CustomMainActivityStart {
      * downloads directory
      */
     private void deleteTestFiles() {
-        mDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
+        sDownloadTestRule.deleteFilesInDownloadDirectory(TEST_FILES);
     }
 }

@@ -1,0 +1,30 @@
+Verifies that after a cross-site redirect SameSite cookies file an Issue
+
+{
+    issue : {
+        code : CookieIssue
+        details : {
+            cookieIssueDetails : {
+                cookie : {
+                    domain : firstparty.test
+                    name : fooStrict
+                    path : /
+                }
+                cookieExclusionReasons : [
+                    [0] : ExcludeSameSiteStrict
+                ]
+                cookieUrl : https://firstparty.test:8443/inspector-protocol/resources/redirect-chain.html?end
+                cookieWarningReasons : [
+                    [0] : WarnCrossSiteRedirectDowngradeChangesInclusion
+                ]
+                operation : ReadCookie
+                request : {
+                    requestId : <string>
+                    url : https://firstparty.test:8443/inspector-protocol/resources/redirect-chain.html?end
+                }
+                siteForCookies : https://firstparty.test/
+            }
+        }
+    }
+}
+

@@ -687,7 +687,7 @@ class SimpleURLLoaderTestBase {
   // Returns the path of a file that can be used in upload tests.
   static base::FilePath GetTestFilePath() {
     base::FilePath test_data_dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &test_data_dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
     return test_data_dir.AppendASCII("services/test/data/title1.html");
   }
 

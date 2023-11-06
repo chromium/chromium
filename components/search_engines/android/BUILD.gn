@@ -8,10 +8,10 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 
@@ -31,7 +31,12 @@ generate_jni("jni_headers") {
 
 android_library("test_utils_java") {
   testonly = true
-  sources =
-      [ "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java" ]
-  deps = [ ":java" ]
+  sources = [
+    "java/src/org/chromium/components/search_engines/FakeTemplateUrl.java",
+    "java/src/org/chromium/components/search_engines/TemplateUrlTestHelpers.java",
+  ]
+  deps = [
+    ":java",
+    "//third_party/mockito:mockito_java",
+  ]
 }

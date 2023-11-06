@@ -7,9 +7,9 @@
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_identifier.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom.h"
 #include "chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_identifier.h"
 
 namespace ash::settings {
 

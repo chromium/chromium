@@ -51,13 +51,19 @@ class PageNodeSortProxy {
                     bool is_marked,
                     bool is_visible,
                     bool is_protected,
+                    bool is_focused,
                     base::TimeDelta last_visible)
       : page_node_(page_node),
         is_marked_(is_marked),
         is_visible_(is_visible),
         is_protected_(is_protected),
+        is_focused_(is_focused),
         last_visible_(last_visible) {}
+
   const PageNode* page_node() const { return page_node_; }
+  bool is_protected() const { return is_protected_; }
+  bool is_visible() const { return is_visible_; }
+  bool is_focused() const { return is_focused_; }
 
   // Returns true if the rhs is more important.
   bool operator<(const PageNodeSortProxy& rhs) const {
@@ -78,6 +84,7 @@ class PageNodeSortProxy {
   bool is_marked_;
   bool is_visible_;
   bool is_protected_;
+  bool is_focused_;
   // Delta between current time and last visibility change time.
   base::TimeDelta last_visible_;
 };

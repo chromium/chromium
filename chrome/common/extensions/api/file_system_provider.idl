@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.fileSystemProvider</code> API to create file systems,
 // that can be accessible from the file manager on Chrome OS.
-[implemented_in="chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"]
+[implemented_in="chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h", modernised_enums]
 namespace fileSystemProvider {
   // Error codes used by providing extensions in response to requests as well
   // as in case of errors when calling methods of the API. For success,
@@ -603,7 +603,7 @@ namespace fileSystemProvider {
 
     // Notifies about changes in the watched directory at
     // <code>observedPath</code> in <code>recursive</code> mode. If the file
-    // system is mounted with <code>supportsNofityTag</code>, then
+    // system is mounted with <code>supportsNotifyTag</code>, then
     // <code>tag</code> must be provided, and all changes since the last
     // notification always reported, even if the system was shutdown. The last
     // tag can be obtained with $(ref:getAll).

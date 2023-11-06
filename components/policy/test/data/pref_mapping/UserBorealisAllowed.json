@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "borealis.allowed_for_user": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserBorealisAllowed": false
+        },
+        "prefs": {
+          "borealis.allowed_for_user": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "UserBorealisAllowed": true
+        },
+        "prefs": {
+          "borealis.allowed_for_user": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

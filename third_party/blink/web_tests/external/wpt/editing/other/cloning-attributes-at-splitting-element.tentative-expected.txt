@@ -1,64 +1,71 @@
 This is a testharness.js-based test.
 Found 60 tests; 53 PASS, 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
-PASS Splitting <div id="splittee">
-PASS Splitting <div class="splittee">
-PASS Splitting <div data-foo="1" data-bar="2">
-PASS Splitting <li id="splittee">
-PASS Splitting <li class="splittee">
-PASS Splitting <li data-foo="1" data-bar="2">
-PASS Splitting <h3 id="p">
-PASS Splitting <h3 class="splittee">
-PASS Splitting <h3 data-foo="1" data-bar="2">
-PASS Splitting <dt id="splittee">
-PASS Splitting <dt class="splittee">
-PASS Splitting <dt data-foo="1" data-bar="2">
-PASS Splitting <dd id="splittee">
-PASS Splitting <dd class="splittee">
-PASS Splitting <dd data-foo="1" data-bar="2">
-PASS Splitting <div id="splittee-parent"> and <span id="splittee">
-PASS Splitting <div class="splittee-parent"> and <span class="splittee">
-PASS Splitting <div data-foo="1" data-bar="2"> and <span data-foo="3" data-bar="4">
-PASS Cloning attributes at splitting an element in contenteditable
-FAIL Cloning attributes at splitting an element in contenteditable 1 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <div id="splittee">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 2
-PASS Cloning attributes at splitting an element in contenteditable 3
-PASS Cloning attributes at splitting an element in contenteditable 4
-PASS Cloning attributes at splitting an element in contenteditable 5
-PASS Cloning attributes at splitting an element in contenteditable 6
-FAIL Cloning attributes at splitting an element in contenteditable 7 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <li id="splittee">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 8
-PASS Cloning attributes at splitting an element in contenteditable 9
-PASS Cloning attributes at splitting an element in contenteditable 10
-PASS Cloning attributes at splitting an element in contenteditable 11
-PASS Cloning attributes at splitting an element in contenteditable 12
-FAIL Cloning attributes at splitting an element in contenteditable 13 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <h3 id="p">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 14
-PASS Cloning attributes at splitting an element in contenteditable 15
-PASS Cloning attributes at splitting an element in contenteditable 16
-PASS Cloning attributes at splitting an element in contenteditable 17
-PASS Cloning attributes at splitting an element in contenteditable 18
-FAIL Cloning attributes at splitting an element in contenteditable 19 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <dt id="splittee">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 20
-PASS Cloning attributes at splitting an element in contenteditable 21
-PASS Cloning attributes at splitting an element in contenteditable 22
-PASS Cloning attributes at splitting an element in contenteditable 23
-PASS Cloning attributes at splitting an element in contenteditable 24
-FAIL Cloning attributes at splitting an element in contenteditable 25 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <dd id="splittee">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 26
-PASS Cloning attributes at splitting an element in contenteditable 27
-PASS Cloning attributes at splitting an element in contenteditable 28
-PASS Cloning attributes at splitting an element in contenteditable 29
-FAIL Cloning attributes at splitting an element in contenteditable 30 assert_equals: The element instance returned by Document.getElementById shouldn't be changed after splitting the element (Splitting <div id="splittee-parent"> and <span id="splittee">) expected Element node <span>def</span> but got Element node <span id="splittee">abc</span>
-PASS Cloning attributes at splitting an element in contenteditable 31
-PASS Cloning attributes at splitting an element in contenteditable 32
-FAIL Cloning attributes at splitting an element in contenteditable 33 assert_equals: The new element created by splitting an element shouldn't have same id attribute value (splittee-parent) (Splitting <div id="splittee-parent"> and <span id="splittee">) expected 1 but got 2
-PASS Cloning attributes at splitting an element in contenteditable 34
-PASS Cloning attributes at splitting an element in contenteditable 35
-PASS Cloning attributes at splitting an element in contenteditable 36
-PASS Cloning attributes at splitting an element in contenteditable 37
-PASS Cloning attributes at splitting an element in contenteditable 38
-PASS Cloning attributes at splitting an element in contenteditable 39
-PASS Cloning attributes at splitting an element in contenteditable 40
-PASS Cloning attributes at splitting an element in contenteditable 41
+[PASS] Splitting <div id="splittee">
+[PASS] Splitting <div class="splittee">
+[PASS] Splitting <div data-foo="1" data-bar="2">
+[PASS] Splitting <li id="splittee">
+[PASS] Splitting <li class="splittee">
+[PASS] Splitting <li data-foo="1" data-bar="2">
+[PASS] Splitting <h3 id="p">
+[PASS] Splitting <h3 class="splittee">
+[PASS] Splitting <h3 data-foo="1" data-bar="2">
+[PASS] Splitting <dt id="splittee">
+[PASS] Splitting <dt class="splittee">
+[PASS] Splitting <dt data-foo="1" data-bar="2">
+[PASS] Splitting <dd id="splittee">
+[PASS] Splitting <dd class="splittee">
+[PASS] Splitting <dd data-foo="1" data-bar="2">
+[PASS] Splitting <div id="splittee-parent"> and <span id="splittee">
+[PASS] Splitting <div class="splittee-parent"> and <span class="splittee">
+[PASS] Splitting <div data-foo="1" data-bar="2"> and <span data-foo="3" data-bar="4">
+[PASS] Cloning attributes at splitting an element in contenteditable
+[FAIL] Cloning attributes at splitting an element in contenteditable 1
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <div id="splittee">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 2
+[PASS] Cloning attributes at splitting an element in contenteditable 3
+[PASS] Cloning attributes at splitting an element in contenteditable 4
+[PASS] Cloning attributes at splitting an element in contenteditable 5
+[PASS] Cloning attributes at splitting an element in contenteditable 6
+[FAIL] Cloning attributes at splitting an element in contenteditable 7
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <li id="splittee">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 8
+[PASS] Cloning attributes at splitting an element in contenteditable 9
+[PASS] Cloning attributes at splitting an element in contenteditable 10
+[PASS] Cloning attributes at splitting an element in contenteditable 11
+[PASS] Cloning attributes at splitting an element in contenteditable 12
+[FAIL] Cloning attributes at splitting an element in contenteditable 13
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <h3 id="p">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 14
+[PASS] Cloning attributes at splitting an element in contenteditable 15
+[PASS] Cloning attributes at splitting an element in contenteditable 16
+[PASS] Cloning attributes at splitting an element in contenteditable 17
+[PASS] Cloning attributes at splitting an element in contenteditable 18
+[FAIL] Cloning attributes at splitting an element in contenteditable 19
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <dt id="splittee">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 20
+[PASS] Cloning attributes at splitting an element in contenteditable 21
+[PASS] Cloning attributes at splitting an element in contenteditable 22
+[PASS] Cloning attributes at splitting an element in contenteditable 23
+[PASS] Cloning attributes at splitting an element in contenteditable 24
+[FAIL] Cloning attributes at splitting an element in contenteditable 25
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (Splitting <dd id="splittee">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 26
+[PASS] Cloning attributes at splitting an element in contenteditable 27
+[PASS] Cloning attributes at splitting an element in contenteditable 28
+[PASS] Cloning attributes at splitting an element in contenteditable 29
+[FAIL] Cloning attributes at splitting an element in contenteditable 30
+  assert_equals: The element instance returned by Document.getElementById shouldn't be changed after splitting the element (Splitting <div id="splittee-parent"> and <span id="splittee">) expected Element node <span>def</span> but got Element node <span id="splittee">abc</span>
+[PASS] Cloning attributes at splitting an element in contenteditable 31
+[PASS] Cloning attributes at splitting an element in contenteditable 32
+[FAIL] Cloning attributes at splitting an element in contenteditable 33
+  assert_equals: The new element created by splitting an element shouldn't have same id attribute value (splittee-parent) (Splitting <div id="splittee-parent"> and <span id="splittee">) expected 1 but got 2
+[PASS] Cloning attributes at splitting an element in contenteditable 34
+[PASS] Cloning attributes at splitting an element in contenteditable 35
+[PASS] Cloning attributes at splitting an element in contenteditable 36
+[PASS] Cloning attributes at splitting an element in contenteditable 37
+[PASS] Cloning attributes at splitting an element in contenteditable 38
+[PASS] Cloning attributes at splitting an element in contenteditable 39
+[PASS] Cloning attributes at splitting an element in contenteditable 40
+[PASS] Cloning attributes at splitting an element in contenteditable 41
 Harness: the test ran to completion.
 

@@ -661,13 +661,6 @@ const base::Value* PrefService::GetPreferenceValue(
     base::StringPiece path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(battre): This is a check for crbug.com/435208. After analyzing some
-  // crash dumps it looks like the PrefService is accessed even though it has
-  // been cleared already.
-  CHECK(pref_registry_);
-  CHECK(pref_registry_->defaults());
-  CHECK(pref_value_store_);
-
   const base::Value* default_value = nullptr;
   if (!pref_registry_->defaults()->GetValue(path, &default_value))
     return nullptr;

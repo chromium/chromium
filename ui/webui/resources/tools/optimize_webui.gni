@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ui/webui/resources/tools/bundle_js.gni")
+import("//ui/webui/resources/tools/bundle_js_excludes.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
 
 template("optimize_webui") {
@@ -10,9 +11,16 @@ template("optimize_webui") {
     forward_variables_from(invoker,
                            "*",
                            [
+                             "excludes",
                              "visibility",
                              "out_manifest",
                            ])
+
+    excludes = BUNDLE_JS_EXCLUDES
+    if (defined(invoker.excludes)) {
+      excludes += invoker.excludes
+    }
+
     out_folder = "$target_gen_dir/${target_name}_bundled"
     visibility = [ ":$target_name" ]
   }

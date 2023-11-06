@@ -40,9 +40,7 @@ import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for {@link ChromeActivity}'s {@link ActivityTabProvider}.
- */
+/** Tests for {@link ChromeActivity}'s {@link ActivityTabProvider}. */
 @DoNotBatch(reason = "waitForActivityCompletelyLoaded is unhappy when batched - more work needed")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -94,16 +92,20 @@ public class ActivityTabProviderTest {
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity = mActivityTestRule.getActivity();
-            mProvider = mActivity.getActivityTabProvider();
-            mProvider.addObserver(tab -> {
-                mActivityTab = tab;
-                mActivityTabChangedHelper.notifyCalled();
-            });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity = mActivityTestRule.getActivity();
+                    mProvider = mActivity.getActivityTabProvider();
+                    mProvider.addObserver(
+                            tab -> {
+                                mActivityTab = tab;
+                                mActivityTabChangedHelper.notifyCalled();
+                            });
+                });
         mActivityTabChangedHelper.waitForCallback(0);
-        assertEquals("Setup should have only triggered the event once.", 1,
+        assertEquals(
+                "Setup should have only triggered the event once.",
+                1,
                 mActivityTabChangedHelper.getCallCount());
     }
 
@@ -115,8 +117,8 @@ public class ActivityTabProviderTest {
     }
 
     /**
-     * Test that the onActivityTabChanged event is triggered when the observer is attached for
-     * only that observer.
+     * Test that the onActivityTabChanged event is triggered when the observer is attached for only
+     * that observer.
      */
     @Test
     @SmallTest
@@ -124,12 +126,18 @@ public class ActivityTabProviderTest {
     public void testTriggerOnAddObserver() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProvider.addObserver(tab -> helper.notifyCalled()); });
+                () -> {
+                    mProvider.addObserver(tab -> helper.notifyCalled());
+                });
         helper.waitForCallback(0);
 
-        assertEquals("Only the added observer should have been triggered.",
-                mActivityTabChangedHelper.getCallCount(), 1);
-        assertEquals("The added observer should have only been triggered once.", 1,
+        assertEquals(
+                "Only the added observer should have been triggered.",
+                mActivityTabChangedHelper.getCallCount(),
+                1);
+        assertEquals(
+                "The added observer should have only been triggered once.",
+                1,
                 helper.getCallCount());
     }
 
@@ -139,22 +147,30 @@ public class ActivityTabProviderTest {
     @Feature({"ActivityTabObserver"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testTriggerWithTabSwitcher() throws TimeoutException {
-        assertEquals("The activity tab should be the model's selected tab.", getModelSelectedTab(),
+        assertEquals(
+                "The activity tab should be the model's selected tab.",
+                getModelSelectedTab(),
                 mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         mActivityTabChangedHelper.waitForCallback(1);
-        assertEquals("Entering the tab switcher should have triggered the event once.", 2,
+        assertEquals(
+                "Entering the tab switcher should have triggered the event once.",
+                2,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be null.", null, mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
         mActivityTabChangedHelper.waitForCallback(2);
-        assertEquals("Exiting the tab switcher should have triggered the event once.", 3,
+        assertEquals(
+                "Exiting the tab switcher should have triggered the event once.",
+                3,
                 mActivityTabChangedHelper.getCallCount());
-        assertEquals("The activity tab should be the model's selected tab.", getModelSelectedTab(),
+        assertEquals(
+                "The activity tab should be the model's selected tab.",
+                getModelSelectedTab(),
                 mActivityTab);
     }
 
@@ -168,23 +184,33 @@ public class ActivityTabProviderTest {
     public void testTriggerWithTabSelection() throws TimeoutException {
         Tab startingTab = getModelSelectedTab();
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(), mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, false);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity,
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                false);
 
         assertNotEquals(
                 "A new tab should be in the foreground.", startingTab, getModelSelectedTab());
-        assertEquals("The activity tab should be the model's selected tab.", getModelSelectedTab(),
+        assertEquals(
+                "The activity tab should be the model's selected tab.",
+                getModelSelectedTab(),
                 mActivityTab);
 
         int callCount = mActivityTabChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Select the original tab without switching layouts.
-            mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Select the original tab without switching layouts.
+                    mActivity
+                            .getTabModelSelector()
+                            .getCurrentModel()
+                            .setIndex(0, TabSelectionType.FROM_USER, false);
+                });
         mActivityTabChangedHelper.waitForCallback(callCount);
 
-        assertEquals("Switching tabs should have triggered the event once.", callCount + 1,
+        assertEquals(
+                "Switching tabs should have triggered the event once.",
+                callCount + 1,
                 mActivityTabChangedHelper.getCallCount());
     }
 
@@ -197,15 +223,23 @@ public class ActivityTabProviderTest {
         // triggered when closing the last tab in normal mode.
         TabModelSelector selector = mActivity.getTabModelSelector();
         TestThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(true));
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(), mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, true);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity,
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                true);
         TestThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(false));
 
         int callCount = mActivityTabChangedHelper.getCallCount();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { selector.closeTab(getModelSelectedTab()); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    selector.closeTab(getModelSelectedTab());
+                });
         mActivityTabChangedHelper.waitForCallback(callCount);
 
-        assertEquals("Closing the last tab should have triggered the event once.", callCount + 1,
+        assertEquals(
+                "Closing the last tab should have triggered the event once.",
+                callCount + 1,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity's tab should be null.", null, mActivityTab);
     }
@@ -220,17 +254,26 @@ public class ActivityTabProviderTest {
     public void testCorrectTabAfterTabClosed() {
         Tab startingTab = getModelSelectedTab();
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(), mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, false);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity,
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                false);
 
-        assertNotEquals("The starting tab should not be the selected tab.", getModelSelectedTab(),
+        assertNotEquals(
+                "The starting tab should not be the selected tab.",
+                getModelSelectedTab(),
                 startingTab);
-        assertEquals("The activity tab should be the model's selected tab.", getModelSelectedTab(),
+        assertEquals(
+                "The activity tab should be the model's selected tab.",
+                getModelSelectedTab(),
                 mActivityTab);
         Tab activityTabBefore = mActivityTab;
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mActivity.getTabModelSelector().closeTab(startingTab); });
+                () -> {
+                    mActivity.getTabModelSelector().closeTab(startingTab);
+                });
 
         assertEquals("The activity tab should not have changed.", activityTabBefore, mActivityTab);
     }
@@ -244,14 +287,21 @@ public class ActivityTabProviderTest {
 
         TestActivityTabTabObserver tabObserver = new TestActivityTabTabObserver(mProvider);
 
-        assertEquals("The observer should be attached to the starting tab.", startingTab,
+        assertEquals(
+                "The observer should be attached to the starting tab.",
+                startingTab,
                 tabObserver.mObservedTab);
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(), mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, false);
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity,
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                false);
 
         assertNotEquals("The tab should have changed.", startingTab, getModelSelectedTab());
-        assertEquals("The observer should be attached to the new tab.", getModelSelectedTab(),
+        assertEquals(
+                "The observer should be attached to the new tab.",
+                getModelSelectedTab(),
                 tabObserver.mObservedTab);
 
         tabObserver.destroy();
@@ -261,27 +311,39 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
-    @Features.
-    EnableFeatures({ChromeFeatureList.INSTANT_START, ChromeFeatureList.BACK_GESTURE_REFACTOR})
+    @Features.EnableFeatures({
+        ChromeFeatureList.INSTANT_START,
+        ChromeFeatureList.BACK_GESTURE_REFACTOR
+    })
     public void testBeforeLayoutManagerAvailable() {
         ActivityTabProvider activityTabProvider =
                 TestThreadUtils.runOnUiThreadBlockingNoException(ActivityTabProvider::new);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activityTabProvider.setTabModelSelector(mActivity.getTabModelSelector());
-        });
-        ChromeTabUtils.fullyLoadUrlInNewTab(InstrumentationRegistry.getInstrumentation(), mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL, false);
-        assertEquals("The activity tab should be the selected tab.", getModelSelectedTab(),
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    activityTabProvider.setTabModelSelector(mActivity.getTabModelSelector());
+                });
+        ChromeTabUtils.fullyLoadUrlInNewTab(
+                InstrumentationRegistry.getInstrumentation(),
+                mActivity,
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
+                false);
+        assertEquals(
+                "The activity tab should be the selected tab.",
+                getModelSelectedTab(),
                 activityTabProvider.get());
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false);
-            activityTabProvider.setLayoutStateProvider(mActivity.getLayoutManager());
-        });
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            Criteria.checkThat("The activity tab should be null on tab switcher.",
-                    activityTabProvider.get(), Matchers.equalTo(null));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false);
+                    activityTabProvider.setLayoutStateProvider(mActivity.getLayoutManager());
+                });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    Criteria.checkThat(
+                            "The activity tab should be null on tab switcher.",
+                            activityTabProvider.get(),
+                            Matchers.equalTo(null));
+                });
         TestThreadUtils.runOnUiThreadBlocking(activityTabProvider::destroy);
     }
 }

@@ -5,7 +5,7 @@
     display: grid;
     grid-auto-rows: minmax(52px, auto);
     grid-template-columns: minmax(min-content, 286px) 50%;
-    padding: 0 20px;
+    padding-inline-end: 10px;
   }
 
   /* Show edit-button when user hover on the row container. */
@@ -27,6 +27,8 @@
 
   #container:focus {
     background-color: var(--cros-sys-highlight_shape);
+    box-shadow: -20px 0 var(--cros-sys-highlight_shape),
+                10px 0 var(--cros-sys-highlight_shape);
     outline: none;
   }
 
@@ -81,8 +83,9 @@
   }
 </style>
 
-<tr id="container" tabindex$="[[getTabIndex()]]" on-focus="onRowFocused"
-    on-blur="onRowBlur"
+<tr id="container" tabindex$="[[getTabIndex()]]"
+    on-focus="onFocusOrMouseEnter"
+    on-mouseenter="onFocusOrMouseEnter"
     aria-label$="[[getAriaLabel(description, acceleratorInfos)]]">
   <th id="descriptionText" scope="row">[[description]]</th>
   <td>
@@ -91,8 +94,7 @@
           index-as="index">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
             action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
-            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]"
-            highlighted="[[selected]]">
+            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]">
         </accelerator-view>
       </template>
       <div id="noShortcutAssignedContainer" hidden="[[!isEmptyList(acceleratorInfos)]]">

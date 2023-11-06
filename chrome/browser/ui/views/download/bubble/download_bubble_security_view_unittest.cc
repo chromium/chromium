@@ -106,6 +106,12 @@ class MockDownloadBubbleSecurityViewDelegate
 
   void ProcessDeepScanPress(const ContentId&,
                             base::optional_ref<const std::string>) override {}
+  void ProcessLocalDecryptionPress(
+      const offline_items_collection::ContentId& id,
+      base::optional_ref<const std::string> password) override {}
+  void ProcessLocalPasswordInProgressClick(
+      const offline_items_collection::ContentId& id,
+      DownloadCommands::Command command) override {}
   bool IsEncryptedArchive(const ContentId&) override { return false; }
   bool HasPreviousIncorrectPassword(const ContentId&) override { return false; }
 
@@ -518,14 +524,9 @@ TEST_F(DownloadBubbleSecurityViewTest, ProcessButtonClick) {
       security_view_->ProcessButtonClick(DownloadCommands::Command::DISCARD,
                                          /*is_secondary_button=*/false));
 
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(safe_browsing::kDeepScanningUpdatedUX);
-
     EXPECT_FALSE(
         security_view_->ProcessButtonClick(DownloadCommands::Command::DEEP_SCAN,
                                            /*is_secondary_button=*/false));
-  }
 }
 
 TEST_F(DownloadBubbleSecurityViewTest, InitializeAndReset) {

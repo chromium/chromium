@@ -76,7 +76,7 @@ class TextPaintTimingDetectorTest : public testing::Test {
   }
 
   LargestTextPaintManager* GetLargestTextPaintManager() {
-    return GetTextPaintTimingDetector()->ltp_manager_;
+    return GetTextPaintTimingDetector()->ltp_manager_.Get();
   }
 
   wtf_size_t CountRecordedSize() {

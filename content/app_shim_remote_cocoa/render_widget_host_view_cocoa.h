@@ -34,7 +34,7 @@ class RenderWidgetHostNSViewHostHelper;
 }  // namespace remote_cocoa
 
 namespace ui {
-enum class DomCode;
+enum class DomCode : uint32_t;
 struct DidOverscrollParams;
 }  // namespace ui
 

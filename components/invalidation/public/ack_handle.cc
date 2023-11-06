@@ -13,30 +13,28 @@
 namespace invalidation {
 
 namespace {
-// Hopefully enough bytes for uniqueness.
-const size_t kBytesInHandle = 16;
-}  // namespace
+std::string GetRandomId() {
+  // Hopefully enough bytes for uniqueness.
+  constexpr size_t kBytesInHandle = 16;
 
-AckHandle AckHandle::CreateUnique() {
   // This isn't a valid UUID, so we don't attempt to format it like one.
   uint8_t random_bytes[kBytesInHandle];
   base::RandBytes(random_bytes, sizeof(random_bytes));
-  return AckHandle(base::HexEncode(random_bytes, sizeof(random_bytes)),
-                   base::Time::Now());
-}
 
-bool AckHandle::Equals(const AckHandle& other) const {
-  return state_ == other.state_ && timestamp_ == other.timestamp_;
+  return base::HexEncode(random_bytes, sizeof(random_bytes));
 }
+}  // namespace
 
-AckHandle::AckHandle(const std::string& state, base::Time timestamp)
-    : state_(state), timestamp_(timestamp) {
-}
+AckHandle::AckHandle() : state_(GetRandomId()), timestamp_(base::Time::Now()) {}
 
 AckHandle::AckHandle(const AckHandle& other) = default;
 
 AckHandle& AckHandle::operator=(const AckHandle& other) = default;
 
 AckHandle::~AckHandle() = default;
+
+bool AckHandle::Equals(const AckHandle& other) const {
+  return state_ == other.state_ && timestamp_ == other.timestamp_;
+}
 
 }  // namespace invalidation

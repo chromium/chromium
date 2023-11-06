@@ -26,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/profiles/reporting_util.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -52,6 +51,10 @@
 #include "content/public/common/url_constants.h"
 #include "device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
@@ -142,6 +145,14 @@ absl::optional<std::string> GetDeviceDMToken() {
 }
 #endif
 
+bool IsManagedGuestSession() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return chromeos::IsManagedGuestSession();
+#else
+  return false;
+#endif
+}
+
 std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
   // In this case, we are just using the client metadata to indicate to
   // WebProtect whether or not the request is coming from a Managed Guest
@@ -150,7 +161,7 @@ std::unique_ptr<ClientMetadata> GetBasicClientMetadata() {
     auto metadata = std::make_unique<ClientMetadata>();
 
     metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
-        profiles::IsManagedGuestSession());
+        IsManagedGuestSession());
     return metadata;
   } else {
     return nullptr;
@@ -508,8 +519,9 @@ ConnectorsService::GetProfileDmToken() const {
 
   policy::UserCloudPolicyManager* policy_manager =
       profile->GetUserCloudPolicyManager();
-  if (!policy_manager || !policy_manager->IsClientRegistered())
+  if (!policy_manager || !policy_manager->IsClientRegistered()) {
     return absl::nullopt;
+  }
 
   return DmToken(policy_manager->core()->client()->dm_token(),
                  policy::POLICY_SCOPE_USER);
@@ -541,7 +553,7 @@ policy::PolicyScope ConnectorsService::GetPolicyScope(
 }
 
 bool ConnectorsService::ConnectorsEnabled() const {
-  if (profiles::IsManagedGuestSession() &&
+  if (IsManagedGuestSession() &&
       !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     return false;
   }
@@ -590,7 +602,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
 
   if (base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
     metadata->mutable_profile()->set_is_chrome_os_managed_guest_session(
-        profiles::IsManagedGuestSession());
+        IsManagedGuestSession());
   }
 
   bool include_device_info =
@@ -631,7 +643,7 @@ ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   bool observe_prefs =
-      profiles::IsManagedGuestSession()
+      IsManagedGuestSession()
           ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
           : true;
 

@@ -51,7 +51,8 @@ class IOSPasswordManagerDriver
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(
       autofill::FieldRendererId generation_element_id,
-      const autofill::mojom::AutofillState state) override;
+      autofill::mojom::AutofillSuggestionAvailability suggestion_availability)
+      override;
   password_manager::PasswordGenerationFrameHelper* GetPasswordGenerationHelper()
       override;
   password_manager::PasswordManagerInterface* GetPasswordManager() override;

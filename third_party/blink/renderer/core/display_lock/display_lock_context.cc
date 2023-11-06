@@ -15,7 +15,6 @@
 #include "third_party/blink/renderer/core/display_lock/content_visibility_auto_state_change_event.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
-#include "third_party/blink/renderer/core/dom/css_toggle.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -33,7 +32,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/pre_paint_tree_walk.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
-#include "third_party/blink/renderer/core/style/toggle_trigger.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -73,55 +71,29 @@ DisplayLockContext::DisplayLockContext(Element* element)
   DetermineIfDescendantIsViewTransitionElement();
 }
 
-void DisplayLockContext::SetRequestedState(EContentVisibility state,
-                                           const AtomicString& toggle_name) {
-  if (state_ == state && toggle_name_ == toggle_name)
+void DisplayLockContext::SetRequestedState(EContentVisibility state) {
+  if (state_ == state) {
     return;
+  }
   state_ = state;
-  toggle_name_ = toggle_name;
   base::AutoReset<bool> scope(&set_requested_state_scope_, true);
-  bool should_lock = false;
-  uint16_t lock_activation_mask = 0;
   switch (state_) {
     case EContentVisibility::kVisible:
+      RequestUnlock();
       break;
     case EContentVisibility::kAuto:
       UseCounter::Count(document_, WebFeature::kContentVisibilityAuto);
       had_any_viewport_intersection_notifications_ = false;
-      should_lock = true;
-      lock_activation_mask =
-          static_cast<uint16_t>(DisplayLockActivationReason::kAuto);
+      RequestLock(static_cast<uint16_t>(DisplayLockActivationReason::kAny));
       break;
     case EContentVisibility::kHidden:
       UseCounter::Count(document_, WebFeature::kContentVisibilityHidden);
-      should_lock = true;
-      lock_activation_mask =
+      RequestLock(
           is_hidden_until_found_ || is_details_slot_
               ? static_cast<uint16_t>(DisplayLockActivationReason::kFindInPage)
-              : 0u;
+              : 0u);
       break;
   }
-  if (!toggle_name.IsNull()) {
-    if (should_lock) {
-      // We have both 'content-visibility' and 'toggle-visibility'.  We want
-      // to combine their effects (i.e., content is hidden if *either* would
-      // hide it), which means we want to intersect the activation masks.
-      lock_activation_mask &=
-          static_cast<uint16_t>(DisplayLockActivationReason::kToggleVisibility);
-    } else {
-      // We have 'toggle-visibility', but no 'content-visibility'.
-      should_lock = true;
-      lock_activation_mask =
-          static_cast<uint16_t>(DisplayLockActivationReason::kToggleVisibility);
-    }
-  }
-
-  if (should_lock) {
-    RequestLock(lock_activation_mask);
-  } else {
-    RequestUnlock();
-  }
-
   // In a new state, we might need to either start or stop observing viewport
   // intersections.
   UpdateActivationObservationIfNeeded();
@@ -147,11 +119,12 @@ void DisplayLockContext::SetRequestedState(EContentVisibility state,
 
 const ComputedStyle* DisplayLockContext::AdjustElementStyle(
     const ComputedStyle* style) const {
-  if (IsAlwaysVisible())
+  if (state_ == EContentVisibility::kVisible) {
     return style;
+  }
   if (IsLocked()) {
     ComputedStyleBuilder builder(*style);
-    builder.SetSkipsContents();
+    builder.SetSkipsContents(true);
     return builder.TakeStyle();
   }
   return style;
@@ -216,8 +189,8 @@ void DisplayLockContext::UpdateActivationObservationIfNeeded() {
 
   // We require observation if we are in 'auto' mode and we're connected to a
   // view.
-  bool should_observe = state_ == EContentVisibility::kAuto &&
-                        toggle_name_.IsNull() && ConnectedToView();
+  bool should_observe =
+      state_ == EContentVisibility::kAuto && ConnectedToView();
   if (is_observed_ == should_observe)
     return;
   is_observed_ = should_observe;
@@ -328,8 +301,6 @@ void DisplayLockContext::Lock() {
   DetachDescendantTopLayerElements();
 
   // Schedule ContentVisibilityAutoStateChange event if needed.
-  // TODO(https://crbug.com/1250716): We shouldn't fire this if it was the
-  // result of toggle state changing.
   ScheduleStateChangeEventIfNeeded();
 
   if (!element_->GetLayoutObject())
@@ -362,7 +333,7 @@ void DisplayLockContext::DidStyleSelf() {
   // to the default state of being visible. This will get updated when we gain
   // new style.
   if (!element_->GetComputedStyle()) {
-    SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+    SetRequestedState(EContentVisibility::kVisible);
     return;
   }
 
@@ -370,7 +341,7 @@ void DisplayLockContext::DidStyleSelf() {
   if (ForceUnlockIfNeeded())
     return;
 
-  if (!IsLocked() && !IsAlwaysVisible()) {
+  if (!IsLocked() && state_ != EContentVisibility::kVisible) {
     UpdateActivationObservationIfNeeded();
     NotifyRenderAffectingStateChanged();
   }
@@ -391,8 +362,7 @@ bool DisplayLockContext::ShouldLayoutChildren() const {
               .ActivatableDisplayLocksForced() &&
           IsActivatable(DisplayLockActivationReason::kAny)) ||
          (document_->ExistingAXObjectCache() &&
-          document_->GetStyleEngine()
-              .StyleMaybeAffectedByLayoutForAccessibility() &&
+          document_->GetStyleEngine().SkippedContainerRecalc() &&
           IsActivatable(DisplayLockActivationReason::kAccessibility));
 }
 
@@ -447,14 +417,6 @@ void DisplayLockContext::CommitForActivation(
     // Note that because the visibility is only determined at the _end_ of the
     // next frame, we need to ensure that we stay unlocked for two frames.
     SetKeepUnlockedUntilLifecycleCount(2);
-  }
-
-  if (!toggle_name_.IsNull()) {
-    CSSToggle* toggle = CSSToggle::FindToggleInScope(*element_, toggle_name_);
-    DCHECK(toggle) << "should no longer be locked with a toggle state";
-    ToggleTrigger trigger(toggle_name_, ToggleTriggerMode::kSet,
-                          ToggleTrigger::State(1u));
-    toggle->FireToggleActivation(*element_, trigger);
   }
 
   if (reason == DisplayLockActivationReason::kFindInPage)
@@ -659,8 +621,6 @@ void DisplayLockContext::Unlock() {
     cache->ChildrenChanged(element_);
 
   // Schedule ContentVisibilityAutoStateChange event if needed.
-  // TODO(https://crbug.com/1250716): We shouldn't fire this if it was the
-  // result of toggle state changing.
   ScheduleStateChangeEventIfNeeded();
 
   auto* layout_object = element_->GetLayoutObject();
@@ -985,7 +945,7 @@ void DisplayLockContext::ElementDisconnected() {
   // We remove the style when disconnecting an element, so we should also unlock
   // the context.
   DCHECK(!element_->GetComputedStyle());
-  SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+  SetRequestedState(EContentVisibility::kVisible);
 
   if (auto* document_rules =
           DocumentSpeculationRules::FromIfExists(*document_)) {
@@ -1014,7 +974,7 @@ void DisplayLockContext::DetachLayoutTree() {
   // When |element_| is removed from the flat tree, we need to set this context
   // to visible.
   if (!element_->GetComputedStyle()) {
-    SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+    SetRequestedState(EContentVisibility::kVisible);
     blocked_child_recalc_change_ = StyleRecalcChange();
   }
 }
@@ -1106,7 +1066,7 @@ bool DisplayLockContext::ForceUnlockIfNeeded() {
       Unlock();
       // If we forced unlock, then we need to prevent subsequent calls to
       // Lock() until the next frame.
-      SetRequestedState(EContentVisibility::kVisible, g_null_atom);
+      SetRequestedState(EContentVisibility::kVisible);
     }
     return true;
   }
@@ -1286,19 +1246,19 @@ void DisplayLockContext::NotifyRenderAffectingStateChanged() {
   };
 
   // Check that we're visible if and only if lock has not been requested.
-  DCHECK_EQ(IsAlwaysVisible(), !state(RenderAffectingState::kLockRequested));
+  DCHECK_EQ(state_ == EContentVisibility::kVisible,
+            !state(RenderAffectingState::kLockRequested));
 
   // We should be locked if the lock has been requested (the above DCHECKs
   // verify that this means that we are not 'visible'), and any of the
   // following is true:
   // - We are not in 'auto' mode (meaning 'hidden') or
-  // - We have a non-null toggle_name_ (for 'toggle-visibility') or
   // - We are in 'auto' mode and nothing blocks locking: viewport is
   //   not intersecting, subtree doesn't have focus, and subtree doesn't have
   //   selection, etc. See the condition for the full list.
   bool should_be_locked =
       state(RenderAffectingState::kLockRequested) &&
-      (state_ != EContentVisibility::kAuto || !toggle_name_.IsNull() ||
+      (state_ != EContentVisibility::kAuto ||
        (!state(RenderAffectingState::kIntersectsViewport) &&
         !state(RenderAffectingState::kSubtreeHasFocus) &&
         !state(RenderAffectingState::kSubtreeHasSelection) &&

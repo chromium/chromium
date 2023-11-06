@@ -144,6 +144,9 @@ base::Value::Dict LocalPrinterHandlerChromeos::PrinterToValue(
   value.Set(kSettingPrinterName, printer.name);
   value.Set(kSettingPrinterDescription, printer.description);
   value.Set(kCUPSEnterprisePrinter, printer.configured_via_policy);
+  value.Set(kPrinterStatus, printer.printer_status
+                                ? StatusToValue(*printer.printer_status)
+                                : base::Value::Dict());
   return value;
 }
 
@@ -171,7 +174,8 @@ base::Value::Dict LocalPrinterHandlerChromeos::StatusToValue(
     const crosapi::mojom::PrinterStatus& status) {
   base::Value::Dict dict;
   dict.Set("printerId", status.printer_id);
-  dict.Set("timestamp", status.timestamp.ToJsTimeIgnoringNull());
+  dict.Set("timestamp",
+           status.timestamp.InMillisecondsFSinceUnixEpochIgnoringNull());
   base::Value::List status_reasons;
   for (const crosapi::mojom::StatusReasonPtr& reason_ptr :
        status.status_reasons) {

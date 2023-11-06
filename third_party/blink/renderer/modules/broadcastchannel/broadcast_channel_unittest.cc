@@ -57,7 +57,7 @@ class BroadcastChannelTester : public GarbageCollected<BroadcastChannelTester>,
     channel_->addEventListener(event_type_names::kMessageerror, listener);
   }
 
-  BroadcastChannel* channel() const { return channel_; }
+  BroadcastChannel* channel() const { return channel_.Get(); }
   const HeapVector<Member<MessageEvent>>& received_events() const {
     return received_events_;
   }

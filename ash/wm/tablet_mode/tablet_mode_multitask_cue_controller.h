@@ -85,6 +85,10 @@ class ASH_EXPORT TabletModeMultitaskCueController
     return &nudge_controller_;
   }
 
+  void set_pre_cue_shown_callback_for_test(base::OnceClosure callback) {
+    pre_cue_shown_callback_for_test_ = std::move(callback);
+  }
+
  private:
   friend class TabletModeMultitaskMenu;
   FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuTest,
@@ -113,6 +117,10 @@ class ASH_EXPORT TabletModeMultitaskCueController
 
   // Dismisses the cue after a short amount of time if it is still active.
   base::OneShotTimer cue_dismiss_timer_;
+
+  // If set, will be called after all checks have been passed but before the cue
+  // is initialized.
+  base::OnceClosure pre_cue_shown_callback_for_test_;
 };
 
 }  // namespace ash

@@ -8,7 +8,7 @@ yoshiki@chromium.org
 per-file *_linux*=thomasanderson@chromium.org
 
 # Mac files
-per-file *_mac*=rsesek@chromium.org
+per-file *_mac*=file://chrome/browser/notifications/mac/OWNERS
 
 per-file *permission_context*=file://components/permissions/PERMISSIONS_OWNERS
 

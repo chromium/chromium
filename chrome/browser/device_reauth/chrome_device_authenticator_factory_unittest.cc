@@ -6,11 +6,11 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_common.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/device_reauth/device_authenticator_common.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,15 +19,14 @@ namespace {
 constexpr base::TimeDelta kAuthValidityPeriod = base::Seconds(60);
 }  // namespace
 
-// Exposes protected methods of ChromeDeviceAuthenticatorCommon for testing.
-class FakeChromeDeviceAuthenticatorCommon
-    : public ChromeDeviceAuthenticatorCommon {
+// Exposes protected methods of DeviceAuthenticatorCommon for testing.
+class FakeDeviceAuthenticatorCommon : public DeviceAuthenticatorCommon {
  public:
-  using ChromeDeviceAuthenticatorCommon::NeedsToAuthenticate;
-  using ChromeDeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
+  using DeviceAuthenticatorCommon::NeedsToAuthenticate;
+  using DeviceAuthenticatorCommon::RecordAuthenticationTimeIfSuccessful;
 
  private:
-  ~FakeChromeDeviceAuthenticatorCommon() override = default;
+  ~FakeDeviceAuthenticatorCommon() override = default;
 };
 
 class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
@@ -82,7 +81,7 @@ class ChromeDeviceAuthenticatorFactoryTest : public testing::Test {
 // authenticate after that time.
 // Also checks that other profiles need to authenticate.
 TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
-  static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+  static_cast<FakeDeviceAuthenticatorCommon*>(
       ChromeDeviceAuthenticatorFactory::GetForProfile(
           profile1(), GetDeviceAuthenticatorParams())
           .get())
@@ -90,19 +89,19 @@ TEST_F(ChromeDeviceAuthenticatorFactoryTest, NeedAuthentication) {
           /*success=*/true);
 
   task_environment().FastForwardBy(kAuthValidityPeriod / 2);
-  EXPECT_FALSE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+  EXPECT_FALSE(static_cast<FakeDeviceAuthenticatorCommon*>(
                    ChromeDeviceAuthenticatorFactory::GetForProfile(
                        profile1(), GetDeviceAuthenticatorParams())
                        .get())
                    ->NeedsToAuthenticate());
-  EXPECT_TRUE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+  EXPECT_TRUE(static_cast<FakeDeviceAuthenticatorCommon*>(
                   ChromeDeviceAuthenticatorFactory::GetForProfile(
                       profile2(), GetDeviceAuthenticatorParams())
                       .get())
                   ->NeedsToAuthenticate());
 
   task_environment().FastForwardBy(kAuthValidityPeriod);
-  EXPECT_TRUE(static_cast<FakeChromeDeviceAuthenticatorCommon*>(
+  EXPECT_TRUE(static_cast<FakeDeviceAuthenticatorCommon*>(
                   ChromeDeviceAuthenticatorFactory::GetForProfile(
                       profile1(), GetDeviceAuthenticatorParams())
                       .get())

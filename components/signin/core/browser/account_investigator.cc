@@ -78,7 +78,7 @@ void AccountInvestigator::Initialize() {
 
   // TODO(crbug.com/1121923): Refactor to use signin::PersistentRepeatingTimer
   // instead.
-  Time previous = Time::FromDoubleT(
+  Time previous = Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kGaiaCookiePeriodicReportTime));
   if (previous.is_null())
     previous = Time::Now();
@@ -121,7 +121,7 @@ void AccountInvestigator::OnAccountsInCookieUpdated(
                           ReportingType::ON_CHANGE);
     pref_service_->SetString(prefs::kGaiaCookieHash, new_hash);
     pref_service_->SetDouble(prefs::kGaiaCookieChangedTime,
-                             Time::Now().ToDoubleT());
+                             Time::Now().InSecondsFSinceUnixEpoch());
   } else if (currently_authenticated && !previously_authenticated_) {
     SignedInAccountRelationReport(signed_in_accounts, signed_out_accounts,
                                   ReportingType::ON_CHANGE);
@@ -244,7 +244,7 @@ void AccountInvestigator::DoPeriodicReport(
 
   periodic_pending_ = false;
   pref_service_->SetDouble(prefs::kGaiaCookiePeriodicReportTime,
-                           Time::Now().ToDoubleT());
+                           Time::Now().InSecondsFSinceUnixEpoch());
   timer_.Start(FROM_HERE, kPeriodicReportingInterval, this,
                &AccountInvestigator::TryPeriodicReport);
 }
@@ -254,7 +254,7 @@ void AccountInvestigator::SharedCookieJarReport(
     const std::vector<ListedAccount>& signed_out_accounts,
     const Time now,
     const ReportingType type) {
-  const Time last_changed = Time::FromDoubleT(
+  const Time last_changed = Time::FromSecondsSinceUnixEpoch(
       pref_service_->GetDouble(prefs::kGaiaCookieChangedTime));
   base::TimeDelta stable_age;
   if (!last_changed.is_null())

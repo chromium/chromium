@@ -83,11 +83,12 @@ WebURL URLLoaderMock::ServeRedirect(const WebString& method,
   base::WeakPtr<URLLoaderMock> self = weak_factory_.GetWeakPtr();
 
   bool report_raw_headers = false;
+  net::HttpRequestHeaders modified_headers;
   bool follow = client_->WillFollowRedirect(
       redirect_url, net::SiteForCookies::FromUrl(GURL(redirect_url)),
       WebString(), network::mojom::ReferrerPolicy::kDefault, method,
       redirect_response, report_raw_headers, nullptr /* removed_headers */,
-      false /* insecure_scheme_was_upgraded */);
+      modified_headers, false /* insecure_scheme_was_upgraded */);
   // |this| might be deleted in willFollowRedirect().
   if (!self) {
     return redirect_url;
@@ -103,7 +104,7 @@ WebURL URLLoaderMock::ServeRedirect(const WebString& method,
 void URLLoaderMock::LoadSynchronously(
     std::unique_ptr<network::ResourceRequest> request,
     scoped_refptr<const SecurityOrigin> top_frame_origin,
-    bool pass_response_pipe_to_client,
+    bool download_to_blob,
     bool no_mime_sniffing,
     base::TimeDelta timeout_interval,
     URLLoaderClient* client,
@@ -126,6 +127,7 @@ void URLLoaderMock::LoadAsynchronously(
     bool no_mime_sniffing,
     std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper,
+    CodeCacheHost* code_cache_host,
     URLLoaderClient* client) {
   DCHECK(client);
   DCHECK(factory_->IsMockedURL(WebURL(KURL(request->url)))) << request->url;

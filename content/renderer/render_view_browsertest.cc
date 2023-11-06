@@ -2694,7 +2694,7 @@ TEST_F(RenderViewImplTest, BrowserNavigationStartSanitized) {
   base::RunLoop().RunUntilIdle();
   base::Time after_navigation = base::Time::Now() + base::Days(1);
 
-  base::Time late_nav_reported_start = base::Time::FromDoubleT(
+  base::Time late_nav_reported_start = base::Time::FromSecondsSinceUnixEpoch(
       GetMainFrame()->PerformanceMetricsForReporting().NavigationStart());
   EXPECT_LE(late_nav_reported_start, after_navigation);
 }
@@ -3279,6 +3279,63 @@ TEST_F(RenderViewImplTest, OriginTrialEnabled) {
   EXPECT_TRUE(blink::WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
   // Reset the origin trial policy.
   blink::TrialTokenValidator::ResetOriginTrialPolicyGetter();
+}
+
+TEST_F(RenderViewImplTest, CollapseSelectionNotChangeFocus) {
+  // https://crbug.com/1343298
+  // Load an test HTML page consisting of an input field.
+  LoadHTML(
+      "<html>"
+      "<head>"
+      "</head>"
+      "<style>"
+      "html, body, input {"
+      "    margin: 0;"
+      "    width:100%;"
+      "    height:100%;"
+      "}"
+      "</style>"
+      "<body>"
+      "<input id=\"test\" value=\"I love Cookie\"></input>"
+      "</body>"
+      "</html>");
+  GetWidgetInputHandler()->SetFocus(blink::mojom::FocusState::kFocused);
+
+  // Send a GestureTap event to change the value of the variable named
+  // is_handle_visible_ of the class named FrameSelection to true
+  WebGestureEvent gesture_event(WebInputEvent::Type::kGestureTap,
+                                WebInputEvent::kNoModifiers,
+                                ui::EventTimeForNow());
+  gesture_event.SetPositionInWidget(gfx::PointF(250, 250));
+  SendWebGestureEvent(gesture_event);
+
+  // Check the input element was focused.
+  int is_input = -1;
+  std::u16string check_active_element_is_input =
+      u"Number(document.activeElement.tagName == 'INPUT')";
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_input,
+                                                 &is_input));
+  EXPECT_EQ(1, is_input);
+
+  // Blur the input element, the active element document should be BODY.
+  ExecuteJavaScriptForTests("document.getElementById('test').blur();");
+
+  int is_body = -1;
+  std::u16string check_active_element_is_body =
+      u"Number(document.activeElement.tagName == 'BODY')";
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_body,
+                                                 &is_body));
+  EXPECT_EQ(1, is_body);
+
+  // Collapse selection, the active element document should be BODY too.
+  auto* frame_widget_input_handler = GetFrameWidgetInputHandler();
+  frame_widget_input_handler->CollapseSelection();
+  base::RunLoop().RunUntilIdle();
+
+  int is_body_again = -1;
+  EXPECT_TRUE(ExecuteJavaScriptAndReturnIntValue(check_active_element_is_body,
+                                                 &is_body_again));
+  EXPECT_EQ(1, is_body_again);
 }
 
 }  // namespace content

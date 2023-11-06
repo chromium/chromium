@@ -113,9 +113,8 @@ bool MandatoryReauthManager::ShouldOfferOptin(
           kCheckoutVirtualCard;
       break;
     case CreditCard::RecordType::kMaskedServerCard:
-      opt_in_source_ =
-          autofill_metrics::MandatoryReauthOptInOrOutSource::kUnknown;
-      NOTREACHED();
+      opt_in_source_ = autofill_metrics::MandatoryReauthOptInOrOutSource::
+          kCheckoutMaskedServerCard;
       break;
   }
   LogMandatoryReauthOfferOptInDecision(

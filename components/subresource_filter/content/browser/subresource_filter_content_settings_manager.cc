@@ -76,7 +76,7 @@ void SubresourceFilterContentSettingsManager::OnDidShowUI(const GURL& url) {
   if (!dict)
     dict = CreateMetadataDictWithActivation(true /* is_activated */);
 
-  double now = clock_->Now().ToDoubleT();
+  double now = clock_->Now().InSecondsFSinceUnixEpoch();
   dict->Set(kInfobarLastShownTimeKey, now);
   SetSiteMetadata(url, std::move(dict));
 }
@@ -92,7 +92,8 @@ bool SubresourceFilterContentSettingsManager::ShouldShowUIForSite(
 
   if (absl::optional<double> last_shown_time =
           dict->FindDouble(kInfobarLastShownTimeKey)) {
-    base::Time last_shown = base::Time::FromDoubleT(*last_shown_time);
+    base::Time last_shown =
+        base::Time::FromSecondsSinceUnixEpoch(*last_shown_time);
     if (clock_->Now() - last_shown < kDelayBeforeShowingInfobarAgain)
       return false;
   }
@@ -135,8 +136,8 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadataBasedOnActivation(
     // time or overwrite existing ads intervention metadata,
     if (dict->FindDouble(kNonRenewingExpiryTime))
       return;
-    double expiry_time =
-        (clock_->Now() + kMaxPersistMetadataDuration).ToDoubleT();
+    double expiry_time = (clock_->Now() + kMaxPersistMetadataDuration)
+                             .InSecondsFSinceUnixEpoch();
     dict->Set(kNonRenewingExpiryTime, expiry_time);
     dict->Set(kNonRenewingLifetimeKey,
               base::TimeDeltaToValue(kMaxPersistMetadataDuration));
@@ -178,7 +179,7 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
     absl::optional<double> metadata_expiry_time =
         dict->FindDouble(kNonRenewingExpiryTime);
     DCHECK(metadata_expiry_time);
-    expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+    expiry_time = base::Time::FromSecondsSinceUnixEpoch(*metadata_expiry_time);
 
     // If the lifetime was stored explicitly, we should use that instead of
     // assuming what it was. Users may edit the preferences file directly, so we
@@ -225,7 +226,8 @@ bool SubresourceFilterContentSettingsManager::ShouldDeleteDataWithNoActivation(
   if (!metadata_expiry_time)
     return true;
 
-  base::Time expiry_time = base::Time::FromDoubleT(*metadata_expiry_time);
+  base::Time expiry_time =
+      base::Time::FromSecondsSinceUnixEpoch(*metadata_expiry_time);
   return clock_->Now() > expiry_time;
 }
 

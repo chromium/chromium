@@ -8,9 +8,9 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.view.View;
 
 import androidx.test.filters.SmallTest;
 
@@ -20,7 +20,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -28,33 +28,30 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-/**
- * Tests for {@link DeviceLockCoordinator}.
- */
+/** Tests for {@link DeviceLockCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class DeviceLockCoordinatorTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Mock
-    private MockDelegate mMockDelegate;
-    @Mock
-    private Activity mActivity;
+    @Mock private DeviceLockCoordinator.Delegate mMockDelegate;
+    @Mock private Activity mActivity;
 
     @Before
     public void setUpTest() {
-        mMockDelegate = Mockito.mock(MockDelegate.class);
-        mActivity = Mockito.mock(Activity.class);
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.setFinishActivity(true);
 
         mActivityTestRule.launchActivity(null);
         mActivity = mActivityTestRule.getActivity();
+        when(mMockDelegate.getSource()).thenReturn(DeviceLockActivityLauncher.Source.AUTOFILL);
     }
 
     @After
@@ -76,16 +73,5 @@ public class DeviceLockCoordinatorTest {
         verify(mMockDelegate, times(1)).setView(any());
 
         deviceLockCoordinator.destroy();
-    }
-
-    private class MockDelegate implements DeviceLockCoordinator.Delegate {
-        @Override
-        public void setView(View view) {}
-
-        @Override
-        public void onDeviceLockReady() {}
-
-        @Override
-        public void onDeviceLockRefused() {}
     }
 }

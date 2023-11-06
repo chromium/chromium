@@ -41,8 +41,6 @@ backgroundPosition
 backgroundPositionX
 backgroundPositionY
 backgroundRepeat
-backgroundRepeatX
-backgroundRepeatY
 backgroundSize
 basePalette
 baselineShift
@@ -275,8 +273,12 @@ markerMid
 markerStart
 mask
 maskClip
+maskComposite
 maskImage
+maskMode
 maskOrigin
+maskPosition
+maskRepeat
 maskSize
 maskType
 mathDepth
@@ -462,11 +464,6 @@ textUnderlineOffset
 textUnderlinePosition
 textWrap
 timelineScope
-toggle
-toggleGroup
-toggleRoot
-toggleTrigger
-toggleVisibility
 top
 touchAction
 transform
@@ -592,8 +589,6 @@ webkitMaskPosition
 webkitMaskPositionX
 webkitMaskPositionY
 webkitMaskRepeat
-webkitMaskRepeatX
-webkitMaskRepeatY
 webkitMaskSize
 webkitMaxLogicalHeight
 webkitMaxLogicalWidth

@@ -78,7 +78,8 @@ scoped_refptr<EncodedFormData> ComplexFormData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
 
   data->AppendData("foo", 3);
-  data->AppendFileRange("/foo/bar/baz", 3, 4, base::Time::FromDoubleT(5));
+  data->AppendFileRange("/foo/bar/baz", 3, 4,
+                        base::Time::FromSecondsSinceUnixEpoch(5));
   auto blob_data = std::make_unique<BlobData>();
   blob_data->AppendText("hello", false);
   auto size = blob_data->length();

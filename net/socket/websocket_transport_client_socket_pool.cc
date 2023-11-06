@@ -31,12 +31,12 @@ namespace net {
 WebSocketTransportClientSocketPool::WebSocketTransportClientSocketPool(
     int max_sockets,
     int max_sockets_per_group,
-    const ProxyServer& proxy_server,
+    const ProxyChain& proxy_chain,
     const CommonConnectJobParams* common_connect_job_params)
     : ClientSocketPool(/*is_for_websockets=*/true,
                        common_connect_job_params,
                        std::make_unique<ConnectJobFactory>()),
-      proxy_server_(proxy_server),
+      proxy_chain_(proxy_chain),
       max_sockets_(max_sockets) {
   DCHECK(common_connect_job_params->websocket_endpoint_lock_manager);
 }
@@ -104,7 +104,7 @@ int WebSocketTransportClientSocketPool::RequestSocket(
                                            request_net_log);
 
   std::unique_ptr<ConnectJob> connect_job =
-      CreateConnectJob(group_id, params, proxy_server_, proxy_annotation_tag,
+      CreateConnectJob(group_id, params, proxy_chain_, proxy_annotation_tag,
                        priority, SocketTag(), connect_job_delegate.get());
 
   int result = connect_job_delegate->Connect(std::move(connect_job));

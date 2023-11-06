@@ -167,18 +167,9 @@ VideoToolboxH265Accelerator::SubmitFrameMetadata(
 
   ResetFrameData();
 
-  // Handle NoRaslOutputFlag.
-  if (slice_hdr->irap_pic) {
-    // H265Decoder computes this flag, we just need to store it for the rest of
-    // this RAP.
-    no_rasl_output_flag_ = pic->no_rasl_output_flag_;
-  } else if (no_rasl_output_flag_ &&
-             (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
-              slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
-    // H265Decoder attempts to compute this flag, but since it doesn't save the
-    // NoRaslOutputFlag it always thinks RASL frames should be output.
-    // TODO(crbug.com/1331597): Migrate this logic into H265Decoder.
-    pic->pic_output_flag_ = false;
+  if (pic->no_rasl_output_flag_ &&
+      (slice_hdr->nal_unit_type == H265NALU::RASL_N ||
+       slice_hdr->nal_unit_type == H265NALU::RASL_R)) {
     // Drop this RASL frame, otherwise VideoToolbox will fail to decode it.
     drop_frame_ = true;
     return Status::kOk;
@@ -310,7 +301,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     return Status::kFail;
   }
 
-  status = CMBlockBufferAssureBlockMemory(data);
+  status = CMBlockBufferAssureBlockMemory(data.get());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
         << "CMBlockBufferAssureBlockMemory()";
@@ -323,8 +314,8 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     // Write length header.
     uint32_t header =
         base::HostToNet32(static_cast<uint32_t>(nalu_data.size()));
-    status =
-        CMBlockBufferReplaceDataBytes(&header, data, offset, kNALUHeaderLength);
+    status = CMBlockBufferReplaceDataBytes(&header, data.get(), offset,
+                                           kNALUHeaderLength);
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
           << "CMBlockBufferReplaceDataBytes()";
@@ -333,7 +324,7 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
     offset += kNALUHeaderLength;
 
     // Write NALU data.
-    status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data, offset,
+    status = CMBlockBufferReplaceDataBytes(nalu_data.data(), data.get(), offset,
                                            nalu_data.size());
     if (status != noErr) {
       OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
@@ -346,16 +337,16 @@ VideoToolboxH265Accelerator::Status VideoToolboxH265Accelerator::SubmitDecode(
   // Wrap in a sample.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> sample;
   status = CMSampleBufferCreate(kCFAllocatorDefault,
-                                data,            // data_buffer
-                                true,            // data_ready
-                                nullptr,         // make_data_ready_callback
-                                nullptr,         // make_data_ready_refcon
-                                active_format_,  // format_description
-                                1,               // num_samples
-                                0,               // num_sample_timing_entries
-                                nullptr,         // sample_timing_array
-                                1,               // num_sample_size_entries
-                                &data_size,      // sample_size_array
+                                data.get(),  // data_buffer
+                                true,        // data_ready
+                                nullptr,     // make_data_ready_callback
+                                nullptr,     // make_data_ready_refcon
+                                active_format_.get(),  // format_description
+                                1,                     // num_samples
+                                0,           // num_sample_timing_entries
+                                nullptr,     // sample_timing_array
+                                1,           // num_sample_size_entries
+                                &data_size,  // sample_size_array
                                 sample.InitializeInto());
   if (status != noErr) {
     OSSTATUS_MEDIA_LOG(ERROR, status, media_log_.get())
@@ -379,7 +370,14 @@ bool VideoToolboxH265Accelerator::OutputPicture(
 void VideoToolboxH265Accelerator::Reset() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  no_rasl_output_flag_ = false;
+
+  // The decompression session will probably also be reset, so we can't expect
+  // it to know about any parameter sets. https://crbug.com/1493624
+  active_vps_data_.clear();
+  active_sps_data_.clear();
+  active_pps_data_.clear();
+  active_format_.reset();
+
   ResetFrameData();
 }
 

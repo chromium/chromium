@@ -159,26 +159,25 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
 // underlying preference is applied to the generated preference.
 TEST_F(GeneratedHttpsFirstModePrefTest, ManagementState) {
   GeneratedHttpsFirstModePref pref(profile());
-  EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_NONE);
+  EXPECT_EQ(pref.GetPrefObject().enforcement, settings_api::Enforcement::kNone);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
-            settings_api::ControlledBy::CONTROLLED_BY_NONE);
+            settings_api::ControlledBy::kNone);
 
   // Set HTTPS-Only Mode with recommended enforcement and check the generated
   // pref.
   prefs()->SetRecommendedPref(prefs::kHttpsOnlyModeEnabled,
                               std::make_unique<base::Value>(true));
   EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_RECOMMENDED);
+            settings_api::Enforcement::kRecommended);
   EXPECT_EQ(pref.GetPrefObject().recommended_value->GetBool(), true);
 
   // Set HTTPS-Only Mode with full enforcement and check the generated pref.
   prefs()->SetManagedPref(prefs::kHttpsOnlyModeEnabled,
                           std::make_unique<base::Value>(true));
   EXPECT_EQ(pref.GetPrefObject().enforcement,
-            settings_api::Enforcement::ENFORCEMENT_ENFORCED);
+            settings_api::Enforcement::kEnforced);
   EXPECT_EQ(pref.GetPrefObject().controlled_by,
-            settings_api::ControlledBy::CONTROLLED_BY_DEVICE_POLICY);
+            settings_api::ControlledBy::kDevicePolicy);
 
   // Check that the generated pref cannot be changed when the backing pref is
   // managed.

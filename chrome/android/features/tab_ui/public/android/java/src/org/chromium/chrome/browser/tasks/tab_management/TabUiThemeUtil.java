@@ -34,8 +34,12 @@ public class TabUiThemeUtil {
     public static @ColorInt int getTabStripBackgroundColor(Context context, boolean isIncognito) {
         if (TabManagementFieldTrial.isTabStripFolioEnabled()) {
             // Use black color for incognito and night mode for folio.
-            if (isIncognito || ColorUtils.inNightMode(context)) {
-                return Color.BLACK;
+            if (isIncognito) {
+                return context.getColor(R.color.default_bg_color_dark_elev_2_baseline);
+            }
+
+            if (ColorUtils.inNightMode(context)) {
+                return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
             }
 
             return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_3);

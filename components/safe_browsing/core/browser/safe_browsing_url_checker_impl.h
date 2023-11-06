@@ -103,6 +103,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // lookup is performed.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
+  // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
+  // and pass it here to log URT requests/responses on open
+  // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
+  // else to log those requests/responses to stderr.
   SafeBrowsingUrlCheckerImpl(
       const net::HttpRequestHeaders& headers,
       int load_flags,
@@ -111,6 +115,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter,
+      base::WeakPtr<web::WebState> weak_web_state,
       security_interstitials::UnsafeResource::RenderProcessId render_process_id,
       security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
       security_interstitials::UnsafeResource::FrameTreeNodeId
@@ -128,25 +133,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
       bool is_mechanism_experiment_allowed,
-      hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
-
-  // Constructor that takes only a RequestDestination, a UrlCheckerDelegate,
-  // URL real-time lookup-related arguments, and hash-real-time lookup-related
-  // arguments, omitting other arguments that never have non-default values on
-  // iOS.
-  // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
-  // and pass it here to log URT requests/responses on open
-  // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
-  // else to log those requests/responses to stderr.
-  SafeBrowsingUrlCheckerImpl(
-      network::mojom::RequestDestination request_destination,
-      scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
-      base::WeakPtr<web::WebState> weak_web_state,
-      bool url_real_time_lookup_enabled,
-      bool can_urt_check_subresource_url,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-      base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
@@ -364,8 +350,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // May be null on certain platforms that don't support chrome://safe-browsing
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
-  raw_ptr<UrlRealTimeMechanism::WebUIDelegate, LeakedDanglingUntriaged>
-      webui_delegate_ = nullptr;
+  raw_ptr<UrlRealTimeMechanism::WebUIDelegate> webui_delegate_ = nullptr;
 
   // This object is used to perform the hash-prefix real-time lookup. It can
   // only be accessed on the UI thread.

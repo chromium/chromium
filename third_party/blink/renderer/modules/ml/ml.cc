@@ -5,10 +5,17 @@
 #include "third_party/blink/renderer/modules/ml/ml.h"
 
 #include "components/ml/mojom/web_platform_model.mojom-blink.h"
+#include "components/ml/webnn/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/modules/ml/buildflags.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_context_mojo.h"
+#endif
 
 namespace blink {
 
@@ -45,6 +52,16 @@ void ML::CreateWebNNContext(
                                               std::move(callback));
 }
 
+bool ML::CreateWebNNContextSync(
+    webnn::mojom::blink::CreateContextOptionsPtr options,
+    webnn::mojom::blink::CreateContextResultPtr* out_result) {
+  CHECK(!IsMainThread());
+  // Connect to the WebNN Service if needed.
+  EnsureWebNNServiceConnection();
+  return webnn_context_provider_->CreateWebNNContext(std::move(options),
+                                                     out_result);
+}
+
 void ML::Trace(Visitor* visitor) const {
   visitor->Trace(model_loader_service_);
   visitor->Trace(webnn_context_provider_);
@@ -53,7 +70,7 @@ void ML::Trace(Visitor* visitor) const {
 }
 
 ScriptPromise ML::createContext(ScriptState* script_state,
-                                MLContextOptions* option,
+                                MLContextOptions* options,
                                 ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -66,14 +83,25 @@ ScriptPromise ML::createContext(ScriptState* script_state,
 
   auto promise = resolver->Promise();
 
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    if (base::FeatureList::IsEnabled(
+            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+      MLContextMojo::ValidateAndCreateAsync(resolver, options, this);
+    } else {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, "Not implemented"));
+    }
+    return promise;
+  }
+#endif
+
   // Notice that currently, we just create the context in the renderer. In the
   // future we may add backend query ability to check whether a context is
   // supportable or not. At that time, this function will be truly asynced.
-  auto* ml_context = MakeGarbageCollected<MLContext>(
-      option->devicePreference(), option->powerPreference(),
-      option->modelFormat(), option->numThreads(), this);
-  resolver->Resolve(ml_context);
-
+  //
+  // TODO(crbug.com/1273291): Support async context creation for all contexts.
+  resolver->Resolve(MLContext::ValidateAndCreateSync(options, this));
   return promise;
 }
 
@@ -86,11 +114,23 @@ MLContext* ML::createContextSync(ScriptState* script_state,
     return nullptr;
   }
 
-  // TODO(crbug/1405354): Query browser about whether the given context is
-  // supported.
-  return MakeGarbageCollected<MLContext>(
-      options->devicePreference(), options->powerPreference(),
-      options->modelFormat(), options->numThreads(), this);
+#if !BUILDFLAG(IS_CHROMEOS)
+  // The runtime enable feature is used to disable the cross process hardware
+  // acceleration by default.
+  if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
+    if (base::FeatureList::IsEnabled(
+            webnn::features::kEnableMachineLearningNeuralNetworkService)) {
+      return MLContextMojo::ValidateAndCreateSync(script_state, exception_state,
+                                                  options, this);
+    } else {
+      exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                        "Not implemented");
+      return nullptr;
+    }
+  }
+#endif
+
+  return MLContext::ValidateAndCreateSync(options, this);
 }
 
 void ML::EnsureModelLoaderServiceConnection(ScriptState* script_state) {

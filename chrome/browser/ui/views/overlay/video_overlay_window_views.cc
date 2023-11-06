@@ -49,9 +49,11 @@
 #include "ui/views/window/non_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/ash_constants.h"
 #include "ash/public/cpp/rounded_corner_utils.h"
 #include "ash/public/cpp/window_properties.h"  // nogncheck
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #endif
 
@@ -95,6 +97,9 @@ constexpr int kSecondaryControlBottomMargin = 8;
 
 // Margin between controls.
 constexpr int kControlMargin = 16;
+
+// Minimum padding between the overlay view, if shown, and the window.
+constexpr gfx::Size kOverlayViewPadding(64, 46);
 
 // Returns the quadrant the VideoOverlayWindowViews is primarily in on the
 // current work area.
@@ -273,6 +278,11 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.delegate = new OverlayWindowWidgetDelegate();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  params.init_properties_container.SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::BROWSER));
+#endif
+
   overlay_window->Init(std::move(params));
   overlay_window->OnRootViewReady();
 
@@ -349,7 +359,7 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
   // it's possible for the current size to be outside of those bounds
   // transiently on some platforms, so we need to cap it.
   window_size.SetToMin(max_size_);
-  window_size.SetToMax(min_size_);
+  window_size.SetToMax(GetMinimumSize());
 
   // Determine the window size by fitting |natural_size_| within |window_size|,
   // keeping to |natural_size_|'s aspect ratio.
@@ -375,8 +385,8 @@ gfx::Rect VideoOverlayWindowViews::CalculateAndUpdateWindowBounds() {
 
     // Update the window size to adhere to the aspect ratio.
     gfx::Rect window_rect(bounds.origin(), window_size);
-    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, min_size_, max_size_,
-                               &window_rect);
+    gfx::SizeRectToAspectRatio(resize_edge, aspect_ratio, GetMinimumSize(),
+                               max_size_, &window_rect);
     window_size = window_rect.size();
 
     UpdateLayerBoundsWithLetterboxing(window_size);
@@ -420,6 +430,14 @@ void VideoOverlayWindowViews::OnNativeBlur() {
 }
 
 gfx::Size VideoOverlayWindowViews::GetMinimumSize() const {
+  if (IsOverlayViewShown()) {
+    // Make sure that our minimum is sufficiently large to enclose the bubble,
+    // plus some margin to make it look nicer.
+    gfx::Size overlay_size =
+        overlay_view_->GetBubbleSize() + kOverlayViewPadding;
+    overlay_size.SetToMax(min_size_);
+    return overlay_size;
+  }
   return min_size_;
 }
 
@@ -450,6 +468,8 @@ void VideoOverlayWindowViews::OnNativeWidgetMove() {
   close_controls_view_->SetPosition(GetBounds().size(), quadrant);
   UpdateResizeHandleBounds(quadrant);
 #endif
+
+  views::Widget::OnNativeWidgetMove();
 }
 
 void VideoOverlayWindowViews::OnNativeWidgetSizeChanged(
@@ -561,18 +581,6 @@ bool VideoOverlayWindowViews::OnGestureEventHandledOrIgnored(
   return false;
 }
 
-void VideoOverlayWindowViews::RecordTapGesture(
-    OverlayWindowControl window_control) {
-  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.TapGesture",
-                            window_control);
-}
-
-void VideoOverlayWindowViews::RecordButtonPressed(
-    OverlayWindowControl window_control) {
-  UMA_HISTOGRAM_ENUMERATION("PictureInPictureWindow.ButtonPressed",
-                            window_control);
-}
-
 void VideoOverlayWindowViews::ReEnableControlsAfterMove() {
   is_moving_ = false;
 
@@ -636,6 +644,19 @@ void VideoOverlayWindowViews::OnDisplayMetricsChanged(
   }
 }
 
+void VideoOverlayWindowViews::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // If the visibility is changing due to a parent view/widget, then we don't
+  // care about it.
+  if (starting_view != overlay_view_) {
+    return;
+  }
+
+  // The visibility of `overlay_view_` affects our minimum size.
+  OnSizeConstraintsChanged();
+}
+
 gfx::Rect VideoOverlayWindowViews::GetWorkAreaForWindow() const {
   return display::Screen::GetScreen()
       ->GetDisplayNearestWindow(
@@ -689,7 +710,9 @@ bool VideoOverlayWindowViews::ControlsHitTestContainsPoint(
     // Let the overlay view consume this event if it wants to.  If not, then
     // ignore any of our controls as well.  This will still permit dragging the
     // window by any parts that aren't consumed by the overlay view.
-    return overlay_view_->GetEventHandlerForPoint(point);
+    gfx::Point point_in_screen =
+        views::View::ConvertPointToScreen(non_client_view(), point);
+    return overlay_view_->WantsEvent(point_in_screen);
   }
 
   if (!AreControlsVisible())
@@ -743,7 +766,6 @@ void VideoOverlayWindowViews::SetUpViews() {
                               kCloseWindowAndPauseVideo
                         : PictureInPictureWindowManager::UiBehavior::
                               kCloseWindowOnly);
-            overlay->RecordButtonPressed(OverlayWindowControl::kClose);
           },
           base::Unretained(this)));
   auto back_to_tab_label_button =
@@ -753,7 +775,6 @@ void VideoOverlayWindowViews::SetUpViews() {
                 ->ExitPictureInPictureViaWindowUi(
                     PictureInPictureWindowManager::UiBehavior::
                         kCloseWindowAndFocusOpener);
-            overlay->RecordButtonPressed(OverlayWindowControl::kBackToTab);
           },
           base::Unretained(this)));
   auto previous_track_controls_view =
@@ -761,8 +782,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->PreviousTrack();
-                overlay->RecordButtonPressed(
-                    OverlayWindowControl::kPreviousTrack);
               },
               base::Unretained(this)),
           vector_icons::kMediaPreviousTrackIcon,
@@ -772,7 +791,6 @@ void VideoOverlayWindowViews::SetUpViews() {
       std::make_unique<PlaybackImageButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->TogglePlayPause();
-            overlay->RecordButtonPressed(OverlayWindowControl::kPlayPause);
           },
           base::Unretained(this)));
   auto next_track_controls_view =
@@ -780,7 +798,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->NextTrack();
-                overlay->RecordButtonPressed(OverlayWindowControl::kNextTrack);
               },
               base::Unretained(this)),
           vector_icons::kMediaNextTrackIcon,
@@ -790,28 +807,23 @@ void VideoOverlayWindowViews::SetUpViews() {
       std::make_unique<SkipAdLabelButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->SkipAd();
-            overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
           },
           base::Unretained(this)));
   auto toggle_microphone_button =
       std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->ToggleMicrophone();
-            overlay->RecordButtonPressed(
-                OverlayWindowControl::kToggleMicrophone);
           },
           base::Unretained(this)));
   auto toggle_camera_button =
       std::make_unique<ToggleCameraButton>(base::BindRepeating(
           [](VideoOverlayWindowViews* overlay) {
             overlay->controller_->ToggleCamera();
-            overlay->RecordButtonPressed(OverlayWindowControl::kToggleCamera);
           },
           base::Unretained(this)));
   auto hang_up_button = std::make_unique<HangUpButton>(base::BindRepeating(
       [](VideoOverlayWindowViews* overlay) {
         overlay->controller_->HangUp();
-        overlay->RecordButtonPressed(OverlayWindowControl::kHangUp);
       },
       base::Unretained(this)));
   auto previous_slide_controls_view =
@@ -819,8 +831,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->PreviousSlide();
-                overlay->RecordButtonPressed(
-                    OverlayWindowControl::kPreviousSlide);
               },
               base::Unretained(this)),
           vector_icons::kMediaPreviousTrackIcon,
@@ -831,7 +841,6 @@ void VideoOverlayWindowViews::SetUpViews() {
           base::BindRepeating(
               [](VideoOverlayWindowViews* overlay) {
                 overlay->controller_->NextSlide();
-                overlay->RecordButtonPressed(OverlayWindowControl::kNextSlide);
               },
               base::Unretained(this)),
           vector_icons::kMediaNextTrackIcon,
@@ -1232,13 +1241,7 @@ void VideoOverlayWindowViews::ShowInactive() {
 #endif
 
   // If there is an existing overlay view, remove it now.
-  if (overlay_view_) {
-    // Remove and delete the outgoing view.  Note the trailing `T` on the method
-    // name -- this removes `overlay_view_` and returns a unique_ptr to it which
-    // we then discard.  Without the `T`, it returns nothing and frees nothing.
-    GetContentsView()->RemoveChildViewT(overlay_view_);
-    overlay_view_ = nullptr;
-  }
+  RemoveOverlayViewIfExists();
 
   // TODO(crbug.com/1472386): Confirm whether the anchor should remain as FLOAT.
   auto overlay_view =
@@ -1250,10 +1253,13 @@ void VideoOverlayWindowViews::ShowInactive() {
   // Re-add it if needed.
   if (overlay_view) {
     overlay_view_ = GetContentsView()->AddChildView(std::move(overlay_view));
+    overlay_view_->AddObserver(this);
     // Also update the bounds, since that's already happened for everything
     // else, potentially, during widget resize.
     overlay_view_->SetBoundsRect(gfx::Rect(GetBounds().size()));
-    overlay_view_->ShowBubble(GetNativeView());
+    overlay_view_->ShowBubble(
+        GetNativeView(), AutoPipSettingOverlayView::PipWindowType::kVideoPip);
+    SetBounds(CalculateAndUpdateWindowBounds());
   }
 
   // If this is not the first time the window is shown, this will be a no-op.
@@ -1261,6 +1267,8 @@ void VideoOverlayWindowViews::ShowInactive() {
 }
 
 void VideoOverlayWindowViews::Hide() {
+  // If there is an existing overlay view, remove it now.
+  RemoveOverlayViewIfExists();
   views::Widget::Hide();
   MaybeUnregisterFrameSinkHierarchy();
 }
@@ -1426,42 +1434,33 @@ void VideoOverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
 
   if (GetBackToTabControlsBounds().Contains(event->location())) {
     controller_->CloseAndFocusInitiator();
-    RecordTapGesture(OverlayWindowControl::kBackToTab);
     event->SetHandled();
   } else if (GetSkipAdControlsBounds().Contains(event->location())) {
     controller_->SkipAd();
-    RecordTapGesture(OverlayWindowControl::kSkipAd);
     event->SetHandled();
   } else if (GetCloseControlsBounds().Contains(event->location())) {
     PictureInPictureWindowManager::GetInstance()
         ->ExitPictureInPictureViaWindowUi(
             PictureInPictureWindowManager::UiBehavior::
                 kCloseWindowAndPauseVideo);
-    RecordTapGesture(OverlayWindowControl::kClose);
     event->SetHandled();
   } else if (GetPlayPauseControlsBounds().Contains(event->location())) {
     TogglePlayPause();
-    RecordTapGesture(OverlayWindowControl::kPlayPause);
     event->SetHandled();
   } else if (GetNextTrackControlsBounds().Contains(event->location())) {
     controller_->NextTrack();
-    RecordTapGesture(OverlayWindowControl::kNextTrack);
     event->SetHandled();
   } else if (GetPreviousTrackControlsBounds().Contains(event->location())) {
     controller_->PreviousTrack();
-    RecordTapGesture(OverlayWindowControl::kPreviousTrack);
     event->SetHandled();
   } else if (GetToggleMicrophoneButtonBounds().Contains(event->location())) {
     controller_->ToggleMicrophone();
-    RecordTapGesture(OverlayWindowControl::kToggleMicrophone);
     event->SetHandled();
   } else if (GetToggleCameraButtonBounds().Contains(event->location())) {
     controller_->ToggleCamera();
-    RecordTapGesture(OverlayWindowControl::kToggleCamera);
     event->SetHandled();
   } else if (GetHangUpButtonBounds().Contains(event->location())) {
     controller_->HangUp();
-    RecordTapGesture(OverlayWindowControl::kHangUp);
     event->SetHandled();
   }
 }
@@ -1614,4 +1613,15 @@ void VideoOverlayWindowViews::MaybeUnregisterFrameSinkHierarchy() {
 
 bool VideoOverlayWindowViews::IsOverlayViewShown() const {
   return overlay_view_ && overlay_view_->GetVisible();
+}
+
+void VideoOverlayWindowViews::RemoveOverlayViewIfExists() {
+  if (overlay_view_) {
+    // Remove and delete the outgoing view.  Note the trailing `T` on the method
+    // name -- this removes `overlay_view_` and returns a unique_ptr to it which
+    // we then discard.  Without the `T`, it returns nothing and frees nothing.
+    overlay_view_->RemoveObserver(this);
+    GetContentsView()->RemoveChildViewT(overlay_view_.ExtractAsDangling());
+    OnSizeConstraintsChanged();
+  }
 }

@@ -34,7 +34,6 @@ class DiceSignedInProfileCreator {
                              CoreAccountId account_id,
                              const std::u16string& local_profile_name,
                              absl::optional<size_t> icon_index,
-                             bool use_guest_profile,
                              base::OnceCallback<void(Profile*)> callback);
 
   // Uses this version when the profile already exists at `target_profile_path`

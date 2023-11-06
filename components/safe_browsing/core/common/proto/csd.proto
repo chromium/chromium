@@ -129,6 +129,9 @@ message ChromeUserPopulation {
   // If user has signed in. The user may or may not have sync enabled. For sync
   // status, check is_history_sync_enabled instead.
   optional bool is_signed_in = 18;
+
+  // Server-side only field.
+  reserved 19;
 }
 
 message ImageFeatureEmbedding {
@@ -970,6 +973,8 @@ message ClientDownloadRequest {
       PARSER_TIMED_OUT = 2;
       // The archive was too large to parse.
       TOO_LARGE = 3;
+      // Error writing to disk (e.g. disk full).
+      DISK_ERROR = 4;
     }
     optional Status parser_status = 1;
 
@@ -1002,6 +1007,9 @@ message ClientDownloadRequest {
   // Fields 87-89 are reserved for server-side use and are never sent by the
   // client.
   reserved 87 to 89;
+
+  // The token from previous requests related to this download, if any exists.
+  optional bytes previous_token = 90;
 }
 
 message ReferrerChainOptions {
@@ -1215,6 +1223,10 @@ message ClientDownloadResponse {
     repeated ExperimentalWarningAdjustment adjustments = 2 [packed = true];
   }
   optional TailoredVerdict tailored_verdict = 20;
+
+  // Whether this archive is suspicious and we should prompt the user for a
+  // password for use in local decryption.
+  optional bool is_suspicious_encrypted_archive = 21;
 }
 
 // The following protocol buffer holds the feedback report gathered
@@ -1490,7 +1502,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 32
+// Next tag: 33
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1628,6 +1640,8 @@ message ClientSafeBrowsingReportRequest {
     PVER5_NATIVE_REAL_TIME = 6;
     // The Android Safe Browsing API hit in real time.
     ANDROID_SAFEBROWSING_REAL_TIME = 7;
+    // The Android Safe Browsing API hit in local blocklist.
+    ANDROID_SAFEBROWSING = 8;
   }
 
   // The information propagated from the client about various environment
@@ -1688,7 +1702,8 @@ message ClientSafeBrowsingReportRequest {
       SURFACE_UNSPECIFIED = 0;
       // Applicable actions: DISCARD, OPEN_SUBPAGE
       BUBBLE_MAINPAGE = 1;
-      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK
+      // Applicable actions: PROCEED, DISCARD, DISMISS, CLOSE, BACK,
+      // PROCEED_DEEP_SCAN
       BUBBLE_SUBPAGE = 2;
       // Applicable actions: DISCARD, KEEP
       DOWNLOADS_PAGE = 3;
@@ -1719,6 +1734,8 @@ message ClientSafeBrowsingReportRequest {
       BACK = 7;
       // The user has opened the subpage from the main page.
       OPEN_SUBPAGE = 8;
+      // The user bypassed a deep scanning prompt
+      PROCEED_DEEP_SCAN = 9;
     }
     optional Action action = 2;
 
@@ -1904,6 +1921,9 @@ message ClientSafeBrowsingReportRequest {
 
   // List of user interactions that the user performs with a phishy site.
   repeated PhishySiteInteraction phishy_site_interactions = 31;
+
+  // Timestamp of when the warning was first shown to the user.
+  optional int64 warning_shown_timestamp_msec = 32;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).
@@ -2085,6 +2105,13 @@ message ExtensionTelemetryReportRequest {
         optional uint32 contact_count = 2;
         // Protocol used to make the connection.
         optional ProtocolType connection_protocol = 3;
+
+        enum ContactInitiator {
+          CONTACT_INITIATOR_UNSPECIFIED = 0;
+          EXTENSION = 1;
+          CONTENT_SCRIPT = 2;
+        }
+        optional ContactInitiator contacted_by = 4;
       }
       repeated RemoteHostInfo remote_host = 1;
 

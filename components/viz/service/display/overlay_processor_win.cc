@@ -30,6 +30,68 @@ constexpr gfx::Insets kDCLayerDebugBorderInsets = gfx::Insets(-2);
 // been produced.
 constexpr int kNumberOfFramesBeforeDisablingDCLayers = 60;
 
+gfx::Rect UpdateRenderPassFromOverlayData(
+    const DCLayerOverlayProcessor::RenderPassOverlayData& overlay_data,
+    AggregatedRenderPass* render_pass,
+    base::flat_map<AggregatedRenderPassId, int>&
+        frames_since_using_dc_layers_map) {
+  bool was_using_dc_layers =
+      frames_since_using_dc_layers_map.contains(render_pass->id);
+
+  // Force a swap chain when there is a copy request, since read back is
+  // impossible with a DComp surface.
+  //
+  // Normally, |DCLayerOverlayProcessor::Process| prevents overlays (and thus
+  // forces a swap chain) when there is a copy request, but
+  // |frames_since_using_dc_layers_map| implements a one-sided hysteresis that
+  // keeps us on DComp surfaces a little after we stop having overlays. If a
+  // client issues a copy request while we're in this timeout, we end up asking
+  // read back from a DComp surface, which fails later in
+  // |SkiaOutputSurfaceImplOnGpu::CopyOutput|.
+  const bool force_swap_chain_due_to_copy_request = render_pass->HasCapture();
+
+  bool using_dc_layers;
+  if (!overlay_data.promoted_overlays.empty()) {
+    frames_since_using_dc_layers_map[render_pass->id] = 0;
+    using_dc_layers = true;
+  } else if ((was_using_dc_layers &&
+              ++frames_since_using_dc_layers_map[render_pass->id] >=
+                  kNumberOfFramesBeforeDisablingDCLayers) ||
+             force_swap_chain_due_to_copy_request) {
+    frames_since_using_dc_layers_map.erase(render_pass->id);
+    using_dc_layers = false;
+  } else {
+    using_dc_layers = was_using_dc_layers;
+  }
+
+  if (using_dc_layers) {
+    // We have overlays, so our root surface requires a backing that
+    // synchronizes with DComp commit. A swap chain's Present does not
+    // synchronize with the DComp tree updates and would result in minor desync
+    // during e.g. scrolling videos.
+    render_pass->needs_synchronous_dcomp_commit = true;
+
+    // We only need to have a transparent backing if there's underlays, but we
+    // unconditionally ask for transparency to avoid thrashing allocations if a
+    // video alternated between overlay and underlay.
+    render_pass->has_transparent_background = true;
+  } else {
+    CHECK(!render_pass->needs_synchronous_dcomp_commit);
+  }
+
+  if (was_using_dc_layers != using_dc_layers) {
+    // The entire surface has to be redrawn if switching from or to direct
+    // composition layers, because the previous contents are discarded and some
+    // contents would otherwise be undefined.
+    return render_pass->output_rect;
+  } else {
+    // |DCLayerOverlayProcessor::Process| can modify the damage rect of the
+    // render pass. We don't modify the damage on the render pass directly since
+    // the root pass special-cases this.
+    return overlay_data.damage_rect;
+  }
+}
+
 }  // anonymous namespace
 
 OverlayProcessorWin::OverlayProcessorWin(
@@ -91,56 +153,24 @@ void OverlayProcessorWin::ProcessForOverlays(
       resource_provider, render_pass_filters, render_pass_backdrop_filters,
       surface_damage_rect_list_in_root_space, is_page_fullscreen_mode_,
       render_pass_overlay_data_map);
-  *root_damage_rect = root_render_pass_overlay_data.damage_rect;
-  *candidates = root_render_pass_overlay_data.promoted_overlays;
-
-  // Force a swap chain when there is a copy request, since read back is
-  // impossible with a DComp surface.
-  //
-  // Normally, |DCLayerOverlayProcessor::Process| prevents
-  // overlays (and thus forces a swap chain) when there is a copy request, but
-  // |frames_since_using_dc_layers_| implements a one-sided hysteresis that
-  // keeps us on DComp surfaces a little after we stop having overlays. If a
-  // client issues a copy request while we're in this timeout, we end up asking
-  // read back from a DComp surface, which fails later in
-  // |SkiaOutputSurfaceImplOnGpu::CopyOutput|.
-  const bool force_swap_chain_due_to_copy_request =
-      root_render_pass->HasCapture();
-  bool was_using_dc_layers = using_dc_layers_;
-  if (!candidates->empty()) {
-    using_dc_layers_ = true;
-    frames_since_using_dc_layers_ = 0;
-  } else if (++frames_since_using_dc_layers_ >=
-                 kNumberOfFramesBeforeDisablingDCLayers ||
-             force_swap_chain_due_to_copy_request) {
-    using_dc_layers_ = false;
+  if (!frames_since_using_dc_layers_map_.contains(root_render_pass->id)) {
+    // The root render pass ID has changed and we only expect
+    // |UpdateRenderPassFromOverlayData| to insert a single entry for the root
+    // pass, so we can remove all other entries.
+    frames_since_using_dc_layers_map_.clear();
   }
-
-  if (was_using_dc_layers != using_dc_layers_) {
-    // The entire surface has to be redrawn if switching from or to direct
-    // composition layers, because the previous contents are discarded and some
-    // contents would otherwise be undefined.
-    *root_damage_rect = root_render_pass->output_rect;
-  }
+  *root_damage_rect = UpdateRenderPassFromOverlayData(
+      root_render_pass_overlay_data, root_render_pass,
+      frames_since_using_dc_layers_map_);
+  *candidates = std::move(root_render_pass_overlay_data.promoted_overlays);
 
   if (base::FeatureList::IsEnabled(features::kDCompPresenter)) {
     if (!root_render_pass->copy_requests.empty()) {
       // A DComp surface is not readable by viz.
       // |DCLayerOverlayProcessor::Process| should avoid overlay candidates if
       // there are e.g. copy output requests present.
-      CHECK(!using_dc_layers_);
+      CHECK(!root_render_pass->needs_synchronous_dcomp_commit);
     }
-
-    // We have overlays, so our root surface requires a backing that
-    // synchronizes with DComp commit. A swap chain's Present does not
-    // synchronize with the DComp tree updates and would result in minor desync
-    // during e.g. scrolling videos.
-    root_render_pass->needs_synchronous_dcomp_commit = using_dc_layers_;
-
-    // We only need to have a transparent backing if there's underlays, but we
-    // unconditionally ask for transparency to avoid thrashing allocations if a
-    // video alternated between overlay and underlay.
-    root_render_pass->has_transparent_background = using_dc_layers_;
 
     // |root_render_pass| will be promoted to overlay only if
     // |output_surface_plane| is present.
@@ -148,9 +178,8 @@ void OverlayProcessorWin::ProcessForOverlays(
     output_surface_plane->enable_blending =
         root_render_pass->has_transparent_background;
   } else {
-    if (was_using_dc_layers != using_dc_layers_) {
-      output_surface_->SetEnableDCLayers(using_dc_layers_);
-    }
+    output_surface_->SetEnableDCLayers(
+        root_render_pass->needs_synchronous_dcomp_commit);
   }
 
   if (debug_settings_->show_dc_layer_debug_borders) {
@@ -162,6 +191,17 @@ void OverlayProcessorWin::ProcessForOverlays(
     // output as damaged instead of accounting for individual border quads which
     // can change positions across frames.
     *root_damage_rect = root_render_pass->output_rect;
+  }
+}
+
+void OverlayProcessorWin::SetUsingDCLayersForTesting(
+    AggregatedRenderPassId render_pass_id,
+    bool value) {
+  CHECK_IS_TEST();
+  if (value) {
+    frames_since_using_dc_layers_map_[render_pass_id] = 0;
+  } else {
+    frames_since_using_dc_layers_map_.erase(render_pass_id);
   }
 }
 

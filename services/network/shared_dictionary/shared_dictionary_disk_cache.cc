@@ -41,7 +41,7 @@ SharedDictionaryDiskCache::SharedDictionaryDiskCache() = default;
 void SharedDictionaryDiskCache::Initialize(
     const base::FilePath& cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory) {
@@ -50,7 +50,7 @@ void SharedDictionaryDiskCache::Initialize(
   disk_cache::BackendResult result = CreateCacheBackend(
       cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-      app_status_listener,
+      app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
       std::move(file_operations_factory),
       base::BindOnce(&SharedDictionaryDiskCache::DidCreateBackend,
@@ -65,7 +65,7 @@ SharedDictionaryDiskCache::~SharedDictionaryDiskCache() = default;
 disk_cache::BackendResult SharedDictionaryDiskCache::CreateCacheBackend(
     const base::FilePath& cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
-    base::android::ApplicationStatusListener* app_status_listener,
+    disk_cache::ApplicationStatusListenerGetter app_status_listener_getter,
 #endif  // BUILDFLAG(IS_ANDROID)
     scoped_refptr<disk_cache::BackendFileOperationsFactory>
         file_operations_factory,
@@ -82,7 +82,7 @@ disk_cache::BackendResult SharedDictionaryDiskCache::CreateCacheBackend(
       /*net_log=*/nullptr, std::move(callback)
 #if BUILDFLAG(IS_ANDROID)
                                ,
-      app_status_listener
+      std::move(app_status_listener_getter)
 #endif  // BUILDFLAG(IS_ANDROID));
   );
 }

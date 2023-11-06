@@ -11,7 +11,9 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 #include "third_party/blink/public/web/web_local_frame_observer.h"
 
@@ -20,6 +22,41 @@ class WebFormElementObserver;
 }
 
 namespace autofill {
+
+// Reference to a WebFormElement, represented as such and as a FormRendererId.
+// TODO(crbug.com/1427131): Replace with FormRendererId when
+// `kAutofillUseDomNodeIdForRendererId` launches.
+class FormRef {
+ public:
+  FormRef() = default;
+  explicit FormRef(blink::WebFormElement form);
+
+  blink::WebFormElement GetForm() const;
+  FormRendererId GetId() const;
+
+ private:
+  blink::WebFormElement form_;
+  FormRendererId form_renderer_id_;
+};
+
+// Reference to a WebFormControlElement, represented as such and as a
+// FieldRendererId.
+// TODO(crbug.com/1427131): Replace with FieldRendererId when
+// `kAutofillUseDomNodeIdForRendererId` launches.
+class FieldRef {
+ public:
+  FieldRef() = default;
+  explicit FieldRef(blink::WebFormControlElement form_control);
+  explicit FieldRef(blink::WebElement content_editable);
+
+  blink::WebFormControlElement GetField() const;
+  blink::WebElement GetContentEditable() const;
+  FieldRendererId GetId() const;
+
+ private:
+  blink::WebElement field_;
+  FieldRendererId field_renderer_id_;
+};
 
 // TODO(crbug.com/785531): Track the select and checkbox change.
 // This class is used to track user's change of form or WebFormControlElement,
@@ -47,7 +84,7 @@ class FormTracker : public content::RenderFrameObserver,
         const blink::WebFormControlElement& element,
         ElementChangeSource source) = 0;
 
-    // Invoked when the form is probably submitted, the submmited form could be
+    // Invoked when the form is probably submitted, the submitted form could be
     // the one saved in OnProvisionallySaveForm() or others in the page.
     virtual void OnProbablyFormSubmitted() = 0;
 
@@ -62,7 +99,7 @@ class FormTracker : public content::RenderFrameObserver,
     virtual void OnInferredFormSubmission(mojom::SubmissionSource source) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   explicit FormTracker(content::RenderFrame* render_frame);
@@ -140,6 +177,9 @@ class FormTracker : public content::RenderFrameObserver,
   void FireInferredFormSubmission(mojom::SubmissionSource source);
   void FireSubmissionIfFormDisappear(mojom::SubmissionSource source);
   bool CanInferFormSubmitted();
+
+  // Tracks the cached element, as well as its ancestors, until it disappears
+  // (removed or hidden), then directly infers submission.
   void TrackElement();
 
   void ResetLastInteractedElements();
@@ -151,8 +191,8 @@ class FormTracker : public content::RenderFrameObserver,
   base::ObserverList<Observer>::Unchecked observers_;
   bool ignore_control_changes_ = false;
   bool user_gesture_required_ = true;
-  blink::WebFormElement last_interacted_form_;
-  blink::WebFormControlElement last_interacted_formless_element_;
+  FormRef last_interacted_form_;
+  FieldRef last_interacted_formless_element_;
   raw_ptr<blink::WebFormElementObserver, ExperimentalRenderer>
       form_element_observer_ = nullptr;
 

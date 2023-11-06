@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
@@ -347,17 +348,20 @@ CSSValue* ConsumeSingleTimelineName(CSSParserTokenRange&,
 CSSValue* ConsumeSingleTimelineInset(CSSParserTokenRange&,
                                      const CSSParserContext&);
 
-void AddBackgroundValue(CSSValue*& list, CSSValue*);
+void AddBackgroundValue(CSSValue*& list, const CSSValue*);
 CSSValue* ConsumeBackgroundAttachment(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBlendMode(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBox(CSSParserTokenRange&);
 CSSValue* ConsumeBackgroundBoxOrText(CSSParserTokenRange&);
-CSSValue* ConsumeBackgroundComposite(CSSParserTokenRange&);
+CSSValue* ConsumeMaskComposite(CSSParserTokenRange&);
+CSSValue* ConsumePrefixedMaskComposite(CSSParserTokenRange&);
+CSSValue* ConsumeMaskMode(CSSParserTokenRange&);
 bool ConsumeBackgroundPosition(CSSParserTokenRange&,
                                const CSSParserContext&,
                                UnitlessQuirk,
-                               CSSValue*& result_x,
-                               CSSValue*& result_y);
+                               absl::optional<WebFeature> three_value_position,
+                               const CSSValue*& result_x,
+                               const CSSValue*& result_y);
 CSSValue* ConsumePrefixedBackgroundBox(CSSParserTokenRange&, AllowTextValue);
 CSSValue* ParseBackgroundBox(CSSParserTokenRange&,
                              const CSSParserLocalContext&,
@@ -378,14 +382,8 @@ bool ParseBackgroundOrMask(bool,
 
 CSSValue* ConsumeCoordBoxOrNoClip(CSSParserTokenRange&);
 
-bool ConsumeRepeatStyleComponent(CSSParserTokenRange&,
-                                 CSSValue*& value1,
-                                 CSSValue*& value2,
-                                 bool& implicit);
-bool ConsumeRepeatStyle(CSSParserTokenRange&,
-                        CSSValue*& result_x,
-                        CSSValue*& result_y,
-                        bool& implicit);
+CSSRepeatStyleValue* ConsumeRepeatStyleValue(CSSParserTokenRange& range);
+CSSValueList* ParseRepeatStyle(CSSParserTokenRange& range);
 
 CSSValue* ConsumeWebkitBorderImage(CSSParserTokenRange&,
                                    const CSSParserContext&);
@@ -534,10 +532,6 @@ CSSValue* ConsumeAutospace(CSSParserTokenRange&);
 // Consume the `spacing-trim` production.
 // https://drafts.csswg.org/css-text-4/#typedef-spacing-trim
 CSSValue* ConsumeSpacingTrim(CSSParserTokenRange&);
-
-CSSValue* ConsumeToggleGroup(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeToggleSpecifier(CSSParserTokenRange&, const CSSParserContext&);
-CSSValue* ConsumeToggleTrigger(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeTransformValue(CSSParserTokenRange&,
                                 const CSSParserContext&,

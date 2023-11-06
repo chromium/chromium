@@ -133,8 +133,6 @@ class CORE_EXPORT HTMLMediaElement
 
   static MIMETypeRegistry::SupportsType GetSupportsType(const ContentType&);
 
-  enum class RecordMetricsBehavior { kDoNotRecord, kDoRecord };
-
   static bool IsHLSURL(const KURL&);
 
   // Notify the HTMLMediaElement that the media controls settings have changed
@@ -264,8 +262,7 @@ class CORE_EXPORT HTMLMediaElement
   void DurationChanged(double duration, bool request_seek);
 
   // controls
-  bool ShouldShowControls(
-      const RecordMetricsBehavior = RecordMetricsBehavior::kDoNotRecord) const;
+  bool ShouldShowControls() const;
   bool ShouldShowAllControls() const;
   DOMTokenList* controlsList() const;
   HTMLMediaElementControlsList* ControlsListInternal() const;
@@ -345,7 +342,9 @@ class CORE_EXPORT HTMLMediaElement
   // ScriptWrappable functions.
   bool HasPendingActivity() const override;
 
-  AudioSourceProviderClient* AudioSourceNode() { return audio_source_node_; }
+  AudioSourceProviderClient* AudioSourceNode() {
+    return audio_source_node_.Get();
+  }
   void SetAudioSourceNode(AudioSourceProviderClient*);
 
   AudioSourceProvider& GetAudioSourceProvider() {
@@ -495,7 +494,8 @@ class CORE_EXPORT HTMLMediaElement
   bool AreAuthorShadowsAllowed() const final { return false; }
 
   bool SupportsFocus() const final;
-  bool IsFocusable() const final;
+  bool IsFocusable(
+      bool disallow_layout_updates_for_accessibility_only = false) const final;
   bool IsKeyboardFocusable() const final;
   int DefaultTabIndex() const final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
@@ -863,8 +863,8 @@ class CORE_EXPORT HTMLMediaElement
   // Whether the media content is encrypted.
   bool is_encrypted_media_ = false;
   WebString remote_device_friendly_name_;
-  media::AudioCodec audio_codec_ = media::AudioCodec::kUnknown;
-  media::VideoCodec video_codec_ = media::VideoCodec::kUnknown;
+  absl::optional<media::AudioCodec> audio_codec_ = absl::nullopt;
+  absl::optional<media::VideoCodec> video_codec_ = absl::nullopt;
 
   Member<AudioTrackList> audio_tracks_;
   Member<VideoTrackList> video_tracks_;

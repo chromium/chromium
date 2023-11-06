@@ -36,6 +36,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/page_info/core/features.h"
@@ -184,9 +185,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
     ASSERT_TRUE(page_info_ || incognito_page_info_)
         << "No PageInfo instance created.";
     incognito_web_contents_.reset();
-    ChromeRenderViewHostTestHarness::TearDown();
     page_info_.reset();
     incognito_page_info_.reset();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() const override {
@@ -226,8 +227,9 @@ class PageInfoTest : public ChromeRenderViewHostTestHarness {
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) {
     last_chosen_object_info_.clear();
-    for (auto& chosen_object_info : chosen_object_info_list)
+    for (auto& chosen_object_info : chosen_object_info_list) {
       last_chosen_object_info_.push_back(std::move(chosen_object_info));
+    }
     last_permission_info_list_ = permission_info_list;
   }
 
@@ -365,6 +367,7 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
     std::u16string mid_sentence =
         l10n_util::GetStringUTF16(info.string_id_mid_sentence);
     switch (info.type) {
+      case ContentSettingsType::MIDI:
       case ContentSettingsType::MIDI_SYSEX:
       case ContentSettingsType::NFC:
       case ContentSettingsType::USB_GUARD:
@@ -1538,9 +1541,9 @@ TEST_F(PageInfoTest, ShowInfoBarWhenAllowingThirdPartyCookies) {
     EXPECT_CALL(*mock_ui(), SetCookieInfo(_)).Times(2);
   }
 
-  page_info()->OnStatusChanged(CookieControlsStatus::kEnabled,
-                               CookieControlsEnforcement::kNoEnforcement,
-                               base::Time());
+  page_info()->OnStatusChanged(
+      CookieControlsStatus::kEnabled, CookieControlsEnforcement::kNoEnforcement,
+      CookieBlocking3pcdStatus::kNotIn3pcd, base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
   page_info()->OnThirdPartyToggleClicked(/*block_third_party_cookies=*/false);
@@ -1564,6 +1567,7 @@ TEST_F(PageInfoTest, ShowInfoBarWhenBlockingThirdPartyCookies) {
 
   page_info()->OnStatusChanged(CookieControlsStatus::kDisabledForSite,
                                CookieControlsEnforcement::kNoEnforcement,
+                               CookieBlocking3pcdStatus::kNotIn3pcd,
                                base::Time());
 
   EXPECT_EQ(0u, infobar_manager()->infobars().size());
@@ -2390,4 +2394,224 @@ TEST_F(PageInfoTest, WithoutPageSpecificContentSettings) {
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForPage(
       web_contents()->GetPrimaryPage()));
   page_info();
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenBlockMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenAllowkMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest, MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidi) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest,
+       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultBlockMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_BLOCK);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+}
+
+TEST_F(PageInfoTest,
+       MidiGrantsAreFilteredWhenNotBlockMidiByDefaultAllowkMidiAllowSysex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      permissions::features::kBlockMidiByDefault);
+
+  std::set<ContentSettingsType> expected_visible_permissions;
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  page_info()->PresentSitePermissionsForTesting();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Geolocation is always allowed to pass through to Android-specific logic to
+  // check for DSE settings (so expect 1 item), but isn't actually shown later
+  // on because this test isn't testing with a default search engine origin.
+  expected_visible_permissions.insert(ContentSettingsType::GEOLOCATION);
+#endif
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
+
+  map->SetContentSettingDefaultScope(url(), url(), ContentSettingsType::MIDI,
+                                     CONTENT_SETTING_ALLOW);
+  map->SetContentSettingDefaultScope(
+      url(), url(), ContentSettingsType::MIDI_SYSEX, CONTENT_SETTING_ALLOW);
+  page_info()->PresentSitePermissionsForTesting();
+  expected_visible_permissions.insert(ContentSettingsType::MIDI_SYSEX);
+  ExpectPermissionInfoList(expected_visible_permissions,
+                           last_permission_info_list());
 }

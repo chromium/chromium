@@ -47,7 +47,8 @@ void UsageTelemetryPeriodicCollectorBase::OnMetricDataCollected(
     // No data to report.
     return;
   }
-  metric_data->set_timestamp_ms(base::Time::Now().ToJavaTime());
+  metric_data->set_timestamp_ms(
+      base::Time::Now().InMillisecondsSinceUnixEpoch());
   metric_report_queue_->Enqueue(std::move(metric_data.value()));
 }
 

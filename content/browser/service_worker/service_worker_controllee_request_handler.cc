@@ -264,7 +264,6 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
 
   loader_callback_ = std::move(loader_callback);
   fallback_callback_ = std::move(fallback_callback);
-  browser_context_ = browser_context;
 
   // Look up a registration.
   context_->registry()->FindRegistrationForClientUrl(
@@ -362,7 +361,7 @@ void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
       GetContentClient()->browser()->AllowServiceWorker(
           registration->scope(), container_host_->site_for_cookies(),
           container_host_->top_frame_origin(), /*script_url=*/GURL(),
-          browser_context_);
+          context_->wrapper()->browser_context());
 
   service_worker_accessed_callback_.Run(registration->scope(),
                                         allow_service_worker);

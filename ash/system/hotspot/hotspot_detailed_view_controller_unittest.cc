@@ -142,7 +142,7 @@ TEST_F(HotspotDetailedViewControllerTest, NotifiesWhenHotspotInfoChanges) {
 
   UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed);
   EXPECT_TRUE(toggle->GetIsOn());
-  AssertSubtextLabel(u"On, no devices connected");
+  AssertSubtextLabel(u"No devices connected");
 
   UpdateHotspotInfo(HotspotState::kEnabled, HotspotAllowStatus::kAllowed,
                     /*client_count=*/1);

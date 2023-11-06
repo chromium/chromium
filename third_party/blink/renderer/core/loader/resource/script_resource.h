@@ -107,8 +107,6 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   void SetSerializedCachedMetadata(mojo_base::BigBuffer data) override;
 
-  bool CodeCacheHashRequired() const override;
-
   const ParkableString& SourceText();
 
   // Get the resource's current text. This can return partial data, so should
@@ -151,12 +149,12 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   v8_compile_hints::V8CrowdsourcedCompileHintsProducer*
   GetV8CrowdsourcedCompileHintsProducer() const {
-    return v8_compile_hints_producer_;
+    return v8_compile_hints_producer_.Get();
   }
 
   v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
   GetV8CrowdsourcedCompileHintsConsumer() const {
-    return v8_compile_hints_consumer_;
+    return v8_compile_hints_consumer_.Get();
   }
 
  protected:

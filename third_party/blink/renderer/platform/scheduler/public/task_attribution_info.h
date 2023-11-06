@@ -23,26 +23,17 @@ class TaskAttributionInfo final : public GarbageCollected<TaskAttributionInfo> {
 
   ~TaskAttributionInfo() = default;
 
-  void Dispose() {
-    if (observer_) {
-      observer_->OnTaskDisposal(*this);
-    }
-  }
+  PLATFORM_EXPORT void Dispose();
   TaskAttributionId Id() const { return task_id_; }
   TaskAttributionInfo* Parent() const { return parent_.Get(); }
 
-  void SetObserver(TaskAttributionTracker::Observer* observer) {
-    observer_ = observer;
-  }
   void Trace(Visitor* visitor) const {
     visitor->Trace(parent_);
-    visitor->Trace(observer_);
   }
 
  private:
   const TaskAttributionId task_id_;
   const Member<TaskAttributionInfo> parent_;
-  WeakMember<TaskAttributionTracker::Observer> observer_;
 };
 
 }  // namespace blink::scheduler

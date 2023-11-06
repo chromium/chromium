@@ -48,8 +48,8 @@ proto::PrintJobInfo CreatePrintJobInfoProto() {
   print_job_info.set_status(proto::PrintJobInfo_PrintJobStatus_PRINTED);
   print_job_info.set_printer_error_code(
       proto::PrintJobInfo_PrinterErrorCode_NO_ERROR);
-  print_job_info.set_creation_time(
-      static_cast<int64_t>(base::Time::UnixEpoch().ToJsTime()));
+  print_job_info.set_creation_time(static_cast<int64_t>(
+      base::Time::UnixEpoch().InMillisecondsFSinceUnixEpoch()));
   print_job_info.set_number_of_pages(kPagesNumber);
   *print_job_info.mutable_printer() = printer;
 
@@ -79,7 +79,7 @@ TEST(PrintJobInfoMojomConversionsTest, PrintJobProtoToMojom) {
 
   EXPECT_EQ(kId, print_job_mojo->id);
   EXPECT_EQ(kTitle16, print_job_mojo->title);
-  EXPECT_EQ(base::Time::FromJsTime(kJobCreationTime),
+  EXPECT_EQ(base::Time::FromMillisecondsSinceUnixEpoch(kJobCreationTime),
             print_job_mojo->creation_time);
   EXPECT_EQ(kPrinterId, print_job_mojo->printer_id);
   EXPECT_EQ(kName16, print_job_mojo->printer_name);

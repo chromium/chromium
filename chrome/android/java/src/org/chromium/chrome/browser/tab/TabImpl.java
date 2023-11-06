@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.content.WebContentsFactory;
 import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -91,8 +90,8 @@ public class TabImpl implements Tab {
     /** Unique id of this tab (within its container). */
     private final int mId;
 
-    /** Whether or not this tab is an incognito tab. */
-    private final boolean mIncognito;
+    /** The Profile associated with this tab. */
+    private final Profile mProfile;
 
     /**
      * An Application {@link Context}.  Unlike {@link #mActivity}, this is the only one that is
@@ -238,21 +237,18 @@ public class TabImpl implements Tab {
     private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
 
     /**
-     * Creates an instance of a {@link TabImpl}.
-     *
-     * This constructor can be called before the native library has been loaded, so any additions
-     * must be vetted for library calls.
-     *
-     * Package-private. Use {@link TabBuilder} to create an instance.
+     * Creates an instance of a {@link TabImpl}. Package-private. Use {@link TabBuilder} to create
+     * an instance.
      *
      * @param id The id this tab should be identified with.
-     * @param incognito Whether or not this tab is incognito.
+     * @param profile The profile associated with this Tab.
      * @param launchType Type indicating how this tab was launched.
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, boolean incognito, @Nullable @TabLaunchType Integer launchType) {
+    TabImpl(int id, @NonNull Profile profile, @Nullable @TabLaunchType Integer launchType) {
         mId = TabIdManager.getInstance().generateValidId(id);
-        mIncognito = incognito;
+        mProfile = profile;
+        assert mProfile != null;
         mRootId = mId;
 
         // Override the configuration for night mode to always stay in light mode until all UIs in
@@ -303,6 +299,11 @@ public class TabImpl implements Tab {
     @Override
     public UserDataHost getUserDataHost() {
         return mUserDataHost;
+    }
+
+    @Override
+    public Profile getProfile() {
+        return mProfile;
     }
 
     @Override
@@ -473,7 +474,7 @@ public class TabImpl implements Tab {
     @CalledByNative
     @Override
     public boolean isIncognito() {
-        return mIncognito;
+        return mProfile.isOffTheRecord();
     }
 
     @Override
@@ -603,9 +604,7 @@ public class TabImpl implements Tab {
             WebContents webContents =
                     WarmupManager.getInstance().takeSpareWebContents(isIncognito(), isHidden());
             if (webContents == null) {
-                Profile profile =
-                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden(), false);
+                webContents = WebContentsFactory.createWebContents(mProfile, isHidden(), false);
             }
             initWebContents(webContents);
             loadUrl(mPendingLoadParams);
@@ -903,7 +902,8 @@ public class TabImpl implements Tab {
                     : initializeRenderer;
             if (parent != null) {
                 mParentId = parent.getId();
-                mSourceTabId = parent.isIncognito() == mIncognito ? parent.getId() : INVALID_TAB_ID;
+                mSourceTabId =
+                        parent.isIncognito() == isIncognito() ? parent.getId() : INVALID_TAB_ID;
             }
 
             mTabLaunchTypeAtCreation = mLaunchType;
@@ -942,10 +942,9 @@ public class TabImpl implements Tab {
                 webContents = WarmupManager.getInstance().takeSpareWebContents(
                         isIncognito(), initiallyHidden);
                 if (webContents == null) {
-                    Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
-                            mWindowAndroid, isIncognito());
-                    webContents = WebContentsFactory.createWebContents(
-                            profile, initiallyHidden, initializeRenderer);
+                    webContents =
+                            WebContentsFactory.createWebContents(
+                                    mProfile, initiallyHidden, initializeRenderer);
                 }
             }
 
@@ -1336,8 +1335,7 @@ public class TabImpl implements Tab {
      */
     private void initializeNative() {
         if (mNativeTabAndroid == 0) {
-            TabImplJni.get().init(TabImpl.this,
-                    IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito()), mId);
+            TabImplJni.get().init(TabImpl.this, mProfile, mId);
         }
         assert mNativeTabAndroid != 0;
     }
@@ -1438,10 +1436,16 @@ public class TabImpl implements Tab {
             mWebContentsDelegate = createWebContentsDelegate();
 
             assert mNativeTabAndroid != 0;
-            TabImplJni.get().initWebContents(mNativeTabAndroid, mIncognito,
-                    TabUtils.isDetached(this), webContents, mWebContentsDelegate,
-                    new TabContextMenuPopulatorFactory(
-                            mDelegateFactory.createContextMenuPopulatorFactory(this), this));
+            TabImplJni.get()
+                    .initWebContents(
+                            mNativeTabAndroid,
+                            isIncognito(),
+                            TabUtils.isDetached(this),
+                            webContents,
+                            mWebContentsDelegate,
+                            new TabContextMenuPopulatorFactory(
+                                    mDelegateFactory.createContextMenuPopulatorFactory(this),
+                                    this));
 
             mWebContents.notifyRendererPreferenceUpdate();
             TabHelpers.initWebContentsHelpers(this);
@@ -1599,9 +1603,7 @@ public class TabImpl implements Tab {
                 // State restore failed, just create a new empty web contents as that is the best
                 // that can be done at this point. TODO(jcivelli) http://b/5910521 - we should show
                 // an error page instead of a blank page in that case (and the last loaded URL).
-                Profile profile =
-                        IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
-                webContents = WebContentsFactory.createWebContents(profile, isHidden(), false);
+                webContents = WebContentsFactory.createWebContents(mProfile, isHidden(), false);
                 for (TabObserver observer : mObservers) observer.onRestoreFailed(this);
                 restored = false;
             }
@@ -1796,7 +1798,6 @@ public class TabImpl implements Tab {
         @UserAgentOverrideOption
         int userAgentOverrideOption = UserAgentOverrideOption.INHERIT;
 
-        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
         if (url == null && webContents != null) {
             url = webContents.getVisibleUrl();
         }
@@ -1805,7 +1806,7 @@ public class TabImpl implements Tab {
         if (tabUserAgent != TabUserAgent.DEFAULT) {
             recordHistogramUseDesktopUserAgent(currentRequestDesktopSite);
             RequestDesktopUtils.maybeUpgradeTabLevelDesktopSiteSetting(
-                    this, profile, tabUserAgent, url);
+                    this, mProfile, tabUserAgent, url);
             return userAgentOverrideOption;
         }
 
@@ -1814,15 +1815,16 @@ public class TabImpl implements Tab {
         boolean alwaysRequestDesktopSite =
                 commandLine.hasSwitch(ChromeSwitches.REQUEST_DESKTOP_SITES);
 
-        boolean shouldRequestDesktopSite = alwaysRequestDesktopSite
-                || (TabUtils.readRequestDesktopSiteContentSettings(profile, url)
-                        && !RequestDesktopUtils.shouldApplyWindowSetting(
-                                profile, url, getContext()));
+        boolean shouldRequestDesktopSite =
+                alwaysRequestDesktopSite
+                        || (TabUtils.readRequestDesktopSiteContentSettings(mProfile, url)
+                                && !RequestDesktopUtils.shouldApplyWindowSetting(
+                                        mProfile, url, getContext()));
 
         if (!shouldRequestDesktopSite
                 && ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             // TODO(shuyng): Make additional setting compatible with site level setting.
-            PrefService prefService = UserPrefs.get(profile);
+            PrefService prefService = UserPrefs.get(mProfile);
             boolean peripheralPref =
                     prefService.getBoolean(DESKTOP_SITE_PERIPHERAL_SETTING_ENABLED);
             shouldRequestDesktopSite = TabUtils.isHardwareKeyboardAvailable(this) && peripheralPref;

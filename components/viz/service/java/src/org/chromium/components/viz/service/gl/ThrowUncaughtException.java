@@ -4,8 +4,9 @@
 
 package org.chromium.components.viz.service.gl;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
 
 abstract class ThrowUncaughtException {
     @CalledByNative

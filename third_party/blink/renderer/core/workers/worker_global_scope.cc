@@ -391,7 +391,7 @@ void WorkerGlobalScope::AddConsoleMessageImpl(ConsoleMessage* console_message,
                                               bool discard_duplicates) {
   DCHECK(IsContextThread());
   ReportingProxy().ReportConsoleMessage(
-      console_message->Source(), console_message->Level(),
+      console_message->GetSource(), console_message->GetLevel(),
       console_message->Message(), console_message->Location());
   GetThread()->GetConsoleMessageStorage()->AddConsoleMessage(
       this, console_message, discard_duplicates);

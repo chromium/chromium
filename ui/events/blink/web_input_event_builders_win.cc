@@ -290,16 +290,12 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     SystemParametersInfo(SPI_GETWHEELSCROLLCHARS, 0, &scroll_chars, 0);
     TRACE_EVENT1("input", "WebMouseWheelEventBuilder::Build", "scroll_chars",
                  scroll_chars);
-    base::UmaHistogramCounts10M("InputMethod.MouseWheel.ScrollCharacters",
-                                base::saturated_cast<int>(scroll_chars));
     scroll_delta *= static_cast<float>(scroll_chars);
   } else {
     unsigned long scroll_lines = kDefaultScrollLinesPerWheelDelta;
     SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0);
     TRACE_EVENT1("input", "WebMouseWheelEventBuilder::Build", "scroll_lines",
                  scroll_lines);
-    base::UmaHistogramCounts10M("InputMethod.MouseWheel.ScrollLines",
-                                base::saturated_cast<int>(scroll_lines));
     if (scroll_lines == WHEEL_PAGESCROLL)
       result.delta_units = ui::ScrollGranularity::kScrollByPage;
     else

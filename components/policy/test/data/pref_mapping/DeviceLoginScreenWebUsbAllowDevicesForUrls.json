@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DeviceLoginScreenWebUsbAllowDevicesForUrls": [
+            {
+              "devices": [
+                {
+                  "product_id": 5678,
+                  "vendor_id": 1234
+                }
+              ],
+              "urls": [
+                "https://google.com",
+                "https://requesting.com,https://embedded.com"
+              ]
+            }
+          ]
+        },
+        "prefs": {
+          "profile.managed_web_usb_allow_devices_for_urls": {
+            "location": "signin_profile"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -71,7 +71,7 @@ ScriptPromise InflateTransformer::Transform(
   Inflate(array_piece.Bytes(),
           static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
           controller, exception_state);
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 ScriptPromise InflateTransformer::Flush(
@@ -91,7 +91,7 @@ ScriptPromise InflateTransformer::Flush(
     exception_state.ThrowTypeError("Compressed input was truncated.");
   }
 
-  return ScriptPromise::CastUndefined(script_state_);
+  return ScriptPromise::CastUndefined(script_state_.Get());
 }
 
 void InflateTransformer::Inflate(const uint8_t* start,

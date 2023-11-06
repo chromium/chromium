@@ -44,6 +44,7 @@ source_set("tracking_protection_onboarding") {
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/version_info",
   ]
 
   public_deps = [ "//base" ]
@@ -91,6 +92,12 @@ if (use_blink) {
     sources = [
       "privacy_sandbox_settings.h",
       "privacy_sandbox_settings_impl.h",
+
+      # This file has no dependencies. However, privacy_sandbox_setttings files
+      # need it and it is only needed when :privacy_sandbox_settings_headers
+      # is needed. Putting it here seemed like a better alternative to creating
+      # a new :tpcd_experiment_eligibility target.
+      "tpcd_experiment_eligibility.h",
     ]
 
     deps = [
@@ -183,6 +190,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",
+    "//components/version_info",
     "//testing/gtest",
   ]
 
@@ -191,6 +199,7 @@ source_set("unit_tests") {
       "canonical_topic_unittest.cc",
       "privacy_sandbox_settings_impl_unittest.cc",
       "privacy_sandbox_test_util_unittest.cc",
+      "tpcd_experiment_eligibility_unittest.cc",
     ]
 
     deps += [

@@ -13,8 +13,8 @@
 #import "components/omnibox/browser/shortcuts_constants.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
-#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
-#import "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/search_engines/model/ui_thread_search_terms_data.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
@@ -32,6 +32,13 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(
       browser_state->GetStatePath().Append(kShortcutsDatabaseName),
       suppress_db));
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
+}
+
+scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return CreateShortcutsBackend(browser_state, false /* suppress_db */);
 }
 
 }  // namespace
@@ -57,6 +64,12 @@ ShortcutsBackendFactory* ShortcutsBackendFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+ShortcutsBackendFactory::TestingFactory
+ShortcutsBackendFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildShortcutsBackend);
+}
+
 ShortcutsBackendFactory::ShortcutsBackendFactory()
     : RefcountedBrowserStateKeyedServiceFactory(
           "ShortcutsBackend",
@@ -70,9 +83,7 @@ ShortcutsBackendFactory::~ShortcutsBackendFactory() {}
 scoped_refptr<RefcountedKeyedService>
 ShortcutsBackendFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return CreateShortcutsBackend(browser_state, false /* suppress_db */);
+  return BuildShortcutsBackend(context);
 }
 
 bool ShortcutsBackendFactory::ServiceIsNULLWhileTesting() const {

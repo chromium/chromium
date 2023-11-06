@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests to ensure cache is disabled when interception is enabled.\n`);
@@ -12,7 +13,7 @@ import * as Common from 'devtools/core/common/common.js';
   Common.Settings.moduleSetting('cacheDisabled').addChangeListener(cacheSettingChanged);
 
   TestRunner.addResult('Enabling Interception');
-  await SDK.multitargetNetworkManager.setInterceptionHandlerForPatterns([{urlPattern: '*'}], () => Promise.resolve());
+  await SDK.NetworkManager.MultitargetNetworkManager.instance().setInterceptionHandlerForPatterns([{urlPattern: '*'}], () => Promise.resolve());
   TestRunner.addResult('Interception Enabled');
   TestRunner.completeTest();
 

@@ -37,6 +37,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "components/sync/service/sync_token_status.h"
@@ -294,6 +295,18 @@ class UkmBrowserTestBase : public SyncTest {
       Profile* profile) {
     std::unique_ptr<SyncServiceImplHarness> harness =
         test::InitializeProfileForSync(profile, GetFakeServer()->AsWeakPtr());
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Apps sync is controlled by a dedicated preference on Lacros,
+    // corresponding to the Apps toggle in OS Sync settings.
+    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+      syncer::SyncUserSettings* user_settings =
+          harness->service()->GetUserSettings();
+      // Turn on App-sync in OS Sync.
+      user_settings->SetAppsSyncEnabledByOs(true);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
     EXPECT_TRUE(harness->SetupSync());
 
     // If unified consent is enabled, then enable url-keyed-anonymized data

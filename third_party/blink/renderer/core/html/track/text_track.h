@@ -65,7 +65,7 @@ class CORE_EXPORT TextTrack : public EventTarget, public TrackBase {
   ~TextTrack() override;
 
   virtual void SetTrackList(TextTrackList*);
-  TextTrackList* TrackList() { return track_list_; }
+  TextTrackList* TrackList() { return track_list_.Get(); }
 
   bool IsVisualKind() const;
   bool IsSpokenKind() const;

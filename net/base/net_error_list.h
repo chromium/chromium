@@ -790,7 +790,7 @@ NET_ERROR(HTTP2_STREAM_CLOSED, -376)
 
 // The server returned a non-2xx HTTP response code.
 //
-// Not that this error is only used by certain APIs that interpret the HTTP
+// Note that this error is only used by certain APIs that interpret the HTTP
 // response itself. URLRequest for instance just passes most non-2xx
 // response back as success.
 NET_ERROR(HTTP_RESPONSE_CODE_FAILURE, -379)

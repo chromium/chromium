@@ -1,5 +1,6 @@
 This is a testharness.js-based test.
-PASS SourceBuffer#abort() (video/webm; codecs="vorbis,vp8") : Check the algorithm when the updating attribute is true.
-FAIL SourceBuffer#abort() (video/mp4) : Check the algorithm when the updating attribute is true. assert_unreached: Browser doesn't support the MIME used in this test: video/mp4 Reached unreachable code
+[PASS] SourceBuffer#abort() (video/webm; codecs="vorbis,vp8") : Check the algorithm when the updating attribute is true.
+[FAIL] SourceBuffer#abort() (video/mp4) : Check the algorithm when the updating attribute is true.
+  assert_unreached: Browser doesn't support the MIME used in this test: video/mp4 Reached unreachable code
 Harness: the test ran to completion.
 

@@ -31,7 +31,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -198,7 +197,6 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
             }
         }
         if (isComponentValid) {
-            boolean retrieved = false;
             final PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
             try {
                 // TODO(dtrainor): Make asynchronous and have a callback to update the menu.
@@ -207,12 +205,9 @@ public class ShareHelper extends org.chromium.components.browser_ui.share.ShareH
                     directShareIcon = pm.getActivityIcon(component);
                     directShareTitle = pm.getActivityInfo(component, 0).loadLabel(pm);
                 }
-                retrieved = true;
             } catch (NameNotFoundException exception) {
                 // Use the default null values.
             }
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.IsLastSharedAppInfoRetrieved", retrieved);
         }
 
         return new Pair<>(directShareIcon, directShareTitle);

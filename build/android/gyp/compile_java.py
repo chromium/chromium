@@ -221,18 +221,9 @@ def ProcessJavacOutput(output, target_name):
       r'(Note: .* uses? unchecked or unsafe operations.)$')
   recompile_re = re.compile(r'(Note: Recompile with -Xlint:.* for details.)$')
 
-  activity_re = re.compile(r'^(?P<prefix>\s*location: )class Activity$')
-
   def ApplyFilters(line):
     return not (deprecated_re.match(line) or unchecked_re.match(line)
                 or recompile_re.match(line))
-
-  def Elaborate(line):
-    if activity_re.match(line):
-      prefix = ' ' * activity_re.match(line).end('prefix')
-      return '{}\n{}Expecting a FragmentActivity? See {}'.format(
-          line, prefix, 'docs/ui/android/bytecode_rewriting.md')
-    return line
 
   output = build_utils.FilterReflectiveAccessJavaWarnings(output)
 
@@ -248,7 +239,6 @@ def ProcessJavacOutput(output, target_name):
     output = re.sub(r'\d+ warnings\n', '', output)
 
   lines = (l for l in output.split('\n') if ApplyFilters(l))
-  lines = (Elaborate(l) for l in lines)
 
   output_processor = javac_output_processor.JavacOutputProcessor(target_name)
   lines = output_processor.Process(lines)

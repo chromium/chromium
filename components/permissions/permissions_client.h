@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/favicon/core/favicon_service.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_ui_selector.h"
@@ -36,6 +37,10 @@ class WebContents;
 namespace content_settings {
 class CookieSettings;
 }
+
+namespace privacy_sandbox {
+class TrackingProtectionSettings;
+}  // namespace privacy_sandbox
 
 namespace infobars {
 class InfoBar;
@@ -76,6 +81,10 @@ class PermissionsClient {
   // Retrieves the CookieSettings for this context.
   virtual scoped_refptr<content_settings::CookieSettings> GetCookieSettings(
       content::BrowserContext* browser_context) = 0;
+
+  // Retrieves the TrackingProtectionSettings for this context.
+  virtual privacy_sandbox::TrackingProtectionSettings*
+  GetTrackingProtectionSettings(content::BrowserContext* browser_context) = 0;
 
   // Retrieves the subresource filter activation from browser website settings.
   virtual bool IsSubresourceFilterActivated(
@@ -287,6 +296,9 @@ class PermissionsClient {
   // necessary permission(s) needed to provide a particular permission-gated
   // capability to sites.
   virtual bool CanRequestDevicePermission(ContentSettingsType type) const;
+
+  virtual favicon::FaviconService* GetFaviconService(
+      content::BrowserContext* browser_context);
 };
 
 }  // namespace permissions

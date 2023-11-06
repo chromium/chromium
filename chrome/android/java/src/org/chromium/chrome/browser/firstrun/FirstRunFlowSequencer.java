@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -53,9 +54,9 @@ public abstract class FirstRunFlowSequencer  {
      */
     @VisibleForTesting
     public static class FirstRunFlowSequencerDelegate {
-        private final OneshotSupplier<Profile> mProfileSupplier;
+        private final OneshotSupplier<ProfileProvider> mProfileSupplier;
 
-        public FirstRunFlowSequencerDelegate(OneshotSupplier<Profile> profileSupplier) {
+        public FirstRunFlowSequencerDelegate(OneshotSupplier<ProfileProvider> profileSupplier) {
             mProfileSupplier = profileSupplier;
         }
 
@@ -66,8 +67,10 @@ public abstract class FirstRunFlowSequencer  {
                 return true;
             }
             assert mProfileSupplier.get() != null;
+            Profile profile = mProfileSupplier.get().getOriginalProfile();
+
             final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(mProfileSupplier.get());
+                    IdentityServicesProvider.get().getIdentityManager(profile);
             if (identityManager.hasPrimaryAccount(ConsentLevel.SYNC) || !isSyncAllowed()) {
                 // No need to show the sync consent page if users already consented to sync or
                 // if sync is not allowed.
@@ -89,8 +92,8 @@ public abstract class FirstRunFlowSequencer  {
         /** @return true if Sync is allowed for the current user. */
         @VisibleForTesting
         protected boolean isSyncAllowed() {
-            SigninManager signinManager =
-                    IdentityServicesProvider.get().getSigninManager(mProfileSupplier.get());
+            Profile profile = mProfileSupplier.get().getOriginalProfile();
+            SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
             return FirstRunUtils.canAllowSync() && !signinManager.isSigninDisabledByPolicy()
                     && signinManager.isSigninSupported(/*requireUpdatedPlayServices=*/false);
         }
@@ -99,7 +102,8 @@ public abstract class FirstRunFlowSequencer  {
     /** Factory that provides Delegate instances for testing. */
     public interface DelegateFactoryForTesting {
         /** Build a test delegate for the given test. */
-        FirstRunFlowSequencerDelegate buildFactory(OneshotSupplier<Profile> profileSupplier);
+        FirstRunFlowSequencerDelegate buildFactory(
+                OneshotSupplier<ProfileProvider> profileSupplier);
     }
 
     private final Activity mActivity;
@@ -124,7 +128,9 @@ public abstract class FirstRunFlowSequencer  {
      */
     public abstract void onFlowIsKnown(Bundle freProperties);
 
-    public FirstRunFlowSequencer(Activity activity, OneshotSupplier<Profile> profileSupplier,
+    public FirstRunFlowSequencer(
+            Activity activity,
+            OneshotSupplier<ProfileProvider> profileSupplier,
             OneshotSupplier<Boolean> childAccountStatusSupplier) {
         mActivity = activity;
 

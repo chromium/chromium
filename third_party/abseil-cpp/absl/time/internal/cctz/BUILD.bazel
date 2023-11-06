@@ -12,7 +12,11 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-package(features = ["-parse_headers"])
+package(features = [
+    "header_modules",
+    "layering_check",
+    "parse_headers",
+])
 
 licenses(["notice"])
 
@@ -83,6 +87,7 @@ cc_test(
     deps = [
         ":civil_time",
         "//absl/base:config",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -103,6 +108,7 @@ cc_test(
         ":civil_time",
         ":time_zone",
         "//absl/base:config",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -124,6 +130,7 @@ cc_test(
         ":civil_time",
         ":time_zone",
         "//absl/base:config",
+        "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],
 )

@@ -58,8 +58,10 @@ public class ShoppingAccessoryView extends FrameLayout {
         mContainer.setBackgroundResource(
                 tracked ? R.drawable.shopping_accessory_view_background : Resources.ID_NULL);
         if (tracked) {
-            int padding = getContext().getResources().getDimensionPixelSize(
-                    R.dimen.shopping_chip_padding);
+            int padding =
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.shopping_chip_padding);
             mContainer.setPadding(padding, 0, padding, 0);
         }
         // Changing the tracked status should update the price info, since the background might
@@ -78,14 +80,20 @@ public class ShoppingAccessoryView extends FrameLayout {
         if (priceDrop) {
             // Our background will be null if the price isn't tracked.
             if (mContainer.getBackground() != null) {
-                mContainer.getBackground().setColorFilter(
-                        getContext().getResources().getColor(
-                                R.color.price_drop_annotation_bg_color),
-                        PorterDuff.Mode.SRC_ATOP);
+                mContainer
+                        .getBackground()
+                        .setColorFilter(
+                                getContext()
+                                        .getResources()
+                                        .getColor(R.color.price_drop_annotation_bg_color),
+                                PorterDuff.Mode.SRC_ATOP);
             }
-            ImageViewCompat.setImageTintList(mPriceTrackedIcon,
-                    ColorStateList.valueOf(getContext().getResources().getColor(
-                            R.color.price_drop_annotation_text_green)));
+            ImageViewCompat.setImageTintList(
+                    mPriceTrackedIcon,
+                    ColorStateList.valueOf(
+                            getContext()
+                                    .getResources()
+                                    .getColor(R.color.price_drop_annotation_text_green)));
 
             // Primary text displays the current price.
             mPriceDropText.setText(info.getCurrentPriceText());
@@ -97,12 +105,16 @@ public class ShoppingAccessoryView extends FrameLayout {
         } else {
             // Our background will be null if the price isn't tracked.
             if (mContainer.getBackground() != null) {
-                mContainer.getBackground().setColorFilter(
-                        ChromeColors.getSurfaceColor(getContext(), R.dimen.default_elevation_2),
-                        PorterDuff.Mode.SRC_ATOP);
+                mContainer
+                        .getBackground()
+                        .setColorFilter(
+                                ChromeColors.getSurfaceColor(
+                                        getContext(), R.dimen.default_elevation_2),
+                                PorterDuff.Mode.SRC_ATOP);
             }
 
-            ImageViewCompat.setImageTintList(mPriceTrackedIcon,
+            ImageViewCompat.setImageTintList(
+                    mPriceTrackedIcon,
                     ColorStateList.valueOf(
                             SemanticColorUtils.getDefaultIconColorSecondary(getContext())));
 

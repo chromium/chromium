@@ -104,7 +104,7 @@ class FolderImageTest : public testing::Test,
         CreateSquareBitmapWithColor(
             SharedAppListConfig::instance().default_grid_icon_dimension(),
             icon_color),
-        IconColor());
+        IconColor(), /*is_placeholder_icon=*/false);
     static_cast<AppListModel*>(app_list_model_.get())->AddItem(std::move(item));
   }
 
@@ -176,7 +176,7 @@ TEST_P(FolderImageTest, UpdateItemTest) {
       CreateSquareBitmapWithColor(
           SharedAppListConfig::instance().default_grid_icon_dimension(),
           SK_ColorMAGENTA),
-      IconColor());
+      IconColor(), /*is_placeholder_icon=*/false);
   EXPECT_TRUE(observer_.updated());
   observer_.Reset();
   EXPECT_FALSE(ImagesAreEqual(icon1, folder_image_->icon()));

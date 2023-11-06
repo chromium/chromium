@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/interactions_stats.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
@@ -57,7 +58,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -185,7 +185,8 @@ void ManagePasswordsUIController::OnHideManualFallbackForSaving() {
   if (passwords_data_.state() != password_manager::ui::PENDING_PASSWORD_STATE &&
       passwords_data_.state() !=
           password_manager::ui::PENDING_PASSWORD_UPDATE_STATE &&
-      passwords_data_.state() != password_manager::ui::CONFIRMATION_STATE) {
+      passwords_data_.state() !=
+          password_manager::ui::SAVE_CONFIRMATION_STATE) {
     return;
   }
   // Don't hide the fallback if the bubble is open.
@@ -254,17 +255,20 @@ void ManagePasswordsUIController::OnPromptEnableAutoSignin() {
 }
 
 void ManagePasswordsUIController::OnAutomaticPasswordSave(
-    std::unique_ptr<PasswordFormManagerForUI> form_manager) {
+    std::unique_ptr<PasswordFormManagerForUI> form_manager,
+    bool is_update_confirmation) {
   DestroyPopups();
   save_fallback_timer_.Stop();
   if (base::FeatureList::IsEnabled(
           password_manager::features::
               kNewConfirmationBubbleForGeneratedPasswords)) {
-    passwords_data_.OnSubmittedGeneratedPassword(
-        form_manager->GetPendingCredentials().username_value.empty()
+    auto ui_state =
+        is_update_confirmation ? password_manager::ui::UPDATE_CONFIRMATION_STATE
+        : form_manager->GetPendingCredentials().username_value.empty()
             ? password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE
-            : password_manager::ui::CONFIRMATION_STATE,
-        std::move(form_manager));
+            : password_manager::ui::SAVE_CONFIRMATION_STATE;
+    passwords_data_.OnSubmittedGeneratedPassword(ui_state,
+                                                 std::move(form_manager));
   } else {
     passwords_data_.OnAutomaticPasswordSave(std::move(form_manager));
   }
@@ -435,7 +439,7 @@ void ManagePasswordsUIController::OnAddUsernameSaveClicked(
 
   passwords_data_.form_manager()->Save();
   passwords_data_.OnSubmittedGeneratedPassword(
-      password_manager::ui::CONFIRMATION_STATE, nullptr);
+      password_manager::ui::SAVE_CONFIRMATION_STATE, nullptr);
   // After adding a new username, confirmation helium bubble should appear.
   bubble_status_ = BubbleStatus::SHOULD_POP_UP;
   UpdateBubbleAndIconVisibility();
@@ -529,7 +533,7 @@ ManagePasswordsUIController::GetPendingPassword() const {
   CHECK(
       GetState() == password_manager::ui::PENDING_PASSWORD_STATE ||
       GetState() == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
-      GetState() == password_manager::ui::CONFIRMATION_STATE ||
+      GetState() == password_manager::ui::SAVE_CONFIRMATION_STATE ||
       GetState() == password_manager::ui::CAN_MOVE_PASSWORD_TO_ACCOUNT_STATE ||
       GetState() == password_manager::ui::GENERATED_PASSWORD_CONFIRMATION_STATE)
       << GetState();
@@ -589,7 +593,7 @@ void ManagePasswordsUIController::OnBubbleHidden() {
   bool update_icon =
       (bubble_status_ == BubbleStatus::SHOWN_PENDING_ICON_UPDATE);
   bubble_status_ = BubbleStatus::NOT_SHOWN;
-  if (GetState() == password_manager::ui::CONFIRMATION_STATE ||
+  if (GetState() == password_manager::ui::SAVE_CONFIRMATION_STATE ||
       GetState() == password_manager::ui::AUTO_SIGNIN_STATE ||
       GetState() ==
           password_manager::ui::BIOMETRIC_AUTHENTICATION_CONFIRMATION_STATE ||

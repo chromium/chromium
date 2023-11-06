@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_ASH_APP_MODE_APP_LAUNCH_UTILS_H_
 
 #include <string>
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
@@ -17,15 +20,9 @@ class CommandLine;
 
 namespace ash {
 
-class KioskAppId;
-
-// Attempts to launch the app given by `kiosk_app_id` in app mode
-// or exit on failure. This function will not show any launch UI
-// during the launch. Use StartupAppLauncher for finer control
-// over the app launch processes.
-void LaunchAppOrDie(Profile* profile,
-                    const KioskAppId& kiosk_app_id,
-                    bool should_start_kiosk_system_session = true);
+// Attempts to launch the app given by `kiosk_app_id` in app mode or exit on
+// failure. This function will not show any launch UI during the launch.
+void LaunchAppOrDie(Profile* profile, const KioskAppId& kiosk_app_id);
 
 // Removes obsolete preferences left out by previous user session;
 void ResetEphemeralKioskPreferences(PrefService* prefs);

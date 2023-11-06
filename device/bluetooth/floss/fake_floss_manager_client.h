@@ -30,6 +30,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeFlossManagerClient
   void Init(dbus::Bus* bus,
             const std::string& service_name,
             const int adapter_index,
+            base::Version version,
             base::OnceClosure on_ready) override;
   void SetAdapterEnabled(int adapter,
                          bool enabled,

@@ -13,9 +13,9 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [ "java/src/org/chromium/components/prefs/PrefService.java" ]
   deps = [
-    "//base:jni_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 }
 
@@ -25,8 +25,8 @@ robolectric_library("junit") {
     ":java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//base:jni_java",
     "//base/test:test_support_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

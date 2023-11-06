@@ -308,9 +308,8 @@ DOMArrayBuffer* ToDOMArrayBuffer(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBuffer> v8_array_buffer = value.As<v8::ArrayBuffer>();
-  if (DOMArrayBuffer* array_buffer =
-          ToScriptWrappable(v8_array_buffer)->ToImpl<DOMArrayBuffer>()) {
-    return array_buffer;
+  if (ScriptWrappable* array_buffer = ToScriptWrappable(v8_array_buffer)) {
+    return array_buffer->ToImpl<DOMArrayBuffer>();
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -330,10 +329,9 @@ DOMSharedArrayBuffer* ToDOMSharedArrayBuffer(v8::Isolate* isolate,
 
   v8::Local<v8::SharedArrayBuffer> v8_shared_array_buffer =
       value.As<v8::SharedArrayBuffer>();
-  if (DOMSharedArrayBuffer* shared_array_buffer =
-          ToScriptWrappable(v8_shared_array_buffer)
-              ->ToImpl<DOMSharedArrayBuffer>()) {
-    return shared_array_buffer;
+  if (ScriptWrappable* shared_array_buffer =
+          ToScriptWrappable(v8_shared_array_buffer)) {
+    return shared_array_buffer->ToImpl<DOMSharedArrayBuffer>();
   }
 
   // Transfer the ownership of the allocated memory to a DOMArrayBuffer without
@@ -368,9 +366,8 @@ DOMViewType* ToDOMViewType(v8::Isolate* isolate, v8::Local<v8::Value> value) {
 
   v8::Local<typename Trait::V8ViewType> v8_view =
       value.As<typename Trait::V8ViewType>();
-  if (DOMViewType* blink_view =
-          ToScriptWrappable(v8_view)->template ToImpl<DOMViewType>()) {
-    return blink_view;
+  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
+    return blink_view->ToImpl<DOMViewType>();
   }
 
   v8::Local<v8::Object> v8_buffer = v8_view->Buffer();
@@ -401,9 +398,8 @@ DOMArrayBufferView* ToDOMArrayBufferView(v8::Isolate* isolate,
     return nullptr;
 
   v8::Local<v8::ArrayBufferView> v8_view = value.As<v8::ArrayBufferView>();
-  if (DOMArrayBufferView* blink_view =
-          ToScriptWrappable(v8_view)->template ToImpl<DOMArrayBufferView>()) {
-    return blink_view;
+  if (ScriptWrappable* blink_view = ToScriptWrappable(v8_view)) {
+    return blink_view->ToImpl<DOMArrayBufferView>();
   }
 
   if (v8_view->IsInt8Array())

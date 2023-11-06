@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
 
@@ -63,7 +64,9 @@ bool CalculationExpressionPixelsAndPercentNode::Equals(
 
 scoped_refptr<const CalculationExpressionNode>
 CalculationExpressionPixelsAndPercentNode::Zoom(double factor) const {
-  PixelsAndPercent result(value_.pixels * factor, value_.percent);
+  PixelsAndPercent result(value_.pixels * factor, value_.percent,
+                          value_.has_explicit_pixels,
+                          value_.has_explicit_percent);
   return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
       result);
 }
@@ -92,15 +95,14 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       }
       const auto& left_pixels_and_percent =
           To<CalculationExpressionPixelsAndPercentNode>(*children[0]);
-      const auto& right_pixels_and_percent =
-          To<CalculationExpressionPixelsAndPercentNode>(*children[1]);
+      PixelsAndPercent right_pixels_and_percent =
+          To<CalculationExpressionPixelsAndPercentNode>(*children[1])
+              .GetPixelsAndPercent();
       PixelsAndPercent value = left_pixels_and_percent.GetPixelsAndPercent();
       if (op == CalculationOperator::kAdd) {
-        value.pixels += right_pixels_and_percent.Pixels();
-        value.percent += right_pixels_and_percent.Percent();
+        value += right_pixels_and_percent;
       } else {
-        value.pixels -= right_pixels_and_percent.Pixels();
-        value.percent -= right_pixels_and_percent.Percent();
+        value -= right_pixels_and_percent;
       }
       return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
           value);
@@ -115,13 +117,13 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       }
       auto& number_node = children[0]->IsNumber() ? children[0] : children[1];
       const auto& number = To<CalculationExpressionNumberNode>(*number_node);
-      const auto& pixels_and_percent =
+      PixelsAndPercent pixels_and_percent =
           To<CalculationExpressionPixelsAndPercentNode>(
-              *maybe_pixels_and_percent_node);
-      PixelsAndPercent value(pixels_and_percent.Pixels() * number.Value(),
-                             pixels_and_percent.Percent() * number.Value());
+              *maybe_pixels_and_percent_node)
+              .GetPixelsAndPercent();
+      pixels_and_percent *= number.Value();
       return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-          value);
+          pixels_and_percent);
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax: {
@@ -149,7 +151,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       }
       if (can_simplify) {
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(simplified_px, 0));
+            PixelsAndPercent(simplified_px));
       }
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
@@ -177,7 +179,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         // https://drafts.csswg.org/css-values-4/#funcdef-clamp.
         float clamped_px = std::max(min_px, std::min(val_px, max_px));
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(clamped_px, 0));
+            PixelsAndPercent(clamped_px));
       }
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
@@ -198,7 +200,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         float value =
             EvaluateSteppedValueFunction(op, a->Pixels(), b->Pixels());
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(value, 0));
+            PixelsAndPercent(value));
       } else {
         return base::MakeRefCounted<CalculationExpressionOperationNode>(
             std::move(children), op);
@@ -224,7 +226,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
           value = std::hypot(value, operand);
         }
         return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-            PixelsAndPercent(value, 0));
+            PixelsAndPercent(value));
       }
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
@@ -243,7 +245,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         if (op == CalculationOperator::kAbs) {
           return base::MakeRefCounted<
               CalculationExpressionPixelsAndPercentNode>(
-              PixelsAndPercent(std::abs(value), 0));
+              PixelsAndPercent(std::abs(value)));
         } else {
           if (value == 0 || std::isnan(value)) {
             return base::MakeRefCounted<CalculationExpressionNumberNode>(value);

@@ -20,10 +20,6 @@
 
 - (void)cancelSearchButtonTapped:(id)sender;
 
-- (void)closeSelectedTabs:(id)sender;
-
-- (void)shareSelectedTabs:(id)sender;
-
 - (void)pageControlChangedValue:(id)sender;
 
 - (void)pageControlChangedPageByDrag:(id)sender;

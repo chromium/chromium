@@ -458,9 +458,10 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
 
       // Put HDR videos into an underlay.
       if (enable_hdr_underlays_) {
-        if (resource_provider->GetOverlayColorSpace(texture_quad->resource_id())
-                .IsHDR())
+        if (resource_provider->GetColorSpace(texture_quad->resource_id())
+                .IsHDR()) {
           force_quad_to_overlay = true;
+        }
       }
     }
 

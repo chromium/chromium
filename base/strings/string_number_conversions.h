@@ -107,6 +107,22 @@ BASE_EXPORT bool StringToDouble(StringPiece16 input, double* output);
 BASE_EXPORT std::string HexEncode(const void* bytes, size_t size);
 BASE_EXPORT std::string HexEncode(base::span<const uint8_t> bytes);
 
+// Appends a hex representation of `byte`, as two uppercase (by default)
+// characters, to `output`. This is a useful primitive in larger conversion
+// routines.
+inline void AppendHexEncodedByte(uint8_t byte,
+                                 std::string& output,
+                                 bool uppercase = true) {
+  static constexpr char kHexCharsUpper[] = {'0', '1', '2', '3', '4', '5',
+                                            '6', '7', '8', '9', 'A', 'B',
+                                            'C', 'D', 'E', 'F'};
+  static constexpr char kHexCharsLower[] = {'0', '1', '2', '3', '4', '5',
+                                            '6', '7', '8', '9', 'a', 'b',
+                                            'c', 'd', 'e', 'f'};
+  const char* const hex_chars = uppercase ? kHexCharsUpper : kHexCharsLower;
+  output.append({hex_chars[byte >> 4], hex_chars[byte & 0xf]});
+}
+
 // Best effort conversion, see StringToInt above for restrictions.
 // Will only successful parse hex values that will fit into |output|, i.e.
 // -0x80000000 < |input| < 0x7FFFFFFF.

@@ -136,6 +136,10 @@ void Seat::AbortPendingDragOperation() {
     drag_drop_operation_->AbortIfPending();
 }
 
+bool Seat::IsDragDropOperationInProgress() const {
+  return drag_drop_operation_ && drag_drop_operation_->started();
+}
+
 void Seat::SetSelection(DataSource* source) {
   Surface* focused_surface = GetFocusedSurface();
   if (!source || !focused_surface ||

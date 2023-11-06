@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
 #import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 
@@ -16,8 +16,8 @@
 
 // View Controller for displaying the page info.
 @interface PageInfoViewController
-    : ChromeTableViewController <PermissionsConsumer,
-                                 UIAdaptivePresentationControllerDelegate>
+    : LegacyChromeTableViewController <PermissionsConsumer,
+                                       UIAdaptivePresentationControllerDelegate>
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:

@@ -26,6 +26,8 @@
   [self configureEditOrUndoButton];
   [self.bottomToolbarConsumer
       setNewTabButtonEnabled:_configuration.newTabButton];
+  [self.topToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
+  [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
 }
 
 - (void)setToolbarsButtonsDelegate:

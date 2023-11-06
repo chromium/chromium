@@ -90,8 +90,8 @@ std::unique_ptr<UserScript> CreateUserScript(
           content_script.matches,
           base::OptionalToPtr(content_script.exclude_matches),
           extension->creation_flags(), can_execute_script_everywhere,
-          valid_schemes, all_urls_includes_chrome_urls, result.get(), error,
-          &wants_file_access, definition_index)) {
+          valid_schemes, all_urls_includes_chrome_urls, definition_index,
+          result.get(), error, &wants_file_access)) {
     return nullptr;
   }
 

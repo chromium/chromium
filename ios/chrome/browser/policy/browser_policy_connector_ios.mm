@@ -17,18 +17,23 @@
 #import "components/policy/core/common/cloud/device_management_service.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/configuration_policy_provider.h"
+#import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_loader_ios.h"
 #import "components/policy/core/common/policy_logger.h"
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/device_management_service_configuration_ios.h"
+#import "ios/chrome/common/channel_info.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using policy::AsyncPolicyLoader;
 using policy::AsyncPolicyProvider;
-using policy::BrowserPolicyConnectorBase;
 using policy::BrowserPolicyConnector;
+using policy::BrowserPolicyConnectorBase;
 using policy::ConfigurationPolicyProvider;
 using policy::HandlerListFactory;
+using policy::LocalTestPolicyProvider;
 using policy::PolicyLoaderIOS;
 
 BrowserPolicyConnectorIOS::BrowserPolicyConnectorIOS(
@@ -47,12 +52,26 @@ ConfigurationPolicyProvider* BrowserPolicyConnectorIOS::GetPlatformProvider() {
   return provider ? provider : platform_provider_;
 }
 
+void BrowserPolicyConnectorIOS::MaybeApplyLocalTestPolicies(
+    PrefService* local_state) {
+  std::string policies_to_apply = local_state->GetString(
+      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+  if (policies_to_apply.empty()) {
+    return;
+  }
+  for (ConfigurationPolicyProvider* provider : GetPolicyProviders()) {
+    provider->set_active(false);
+  }
+  local_test_provider_->set_active(true);
+  local_test_provider_->LoadJsonPolicies(policies_to_apply);
+  local_state->ClearPref(
+      policy::policy_prefs::kLocalTestPoliciesForNextStartup);
+}
+
 void BrowserPolicyConnectorIOS::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
-    policy::PolicyLogger::GetInstance()->EnableLogDeletion();
-  }
+  policy::PolicyLogger::GetInstance()->EnableLogDeletion();
   std::unique_ptr<policy::DeviceManagementService::Configuration> configuration(
       new policy::DeviceManagementServiceConfigurationIOS(
           GetDeviceManagementUrl(), GetRealtimeReportingUrl(),
@@ -63,6 +82,7 @@ void BrowserPolicyConnectorIOS::Init(
       kServiceInitializationStartupDelay);
 
   InitInternal(local_state, std::move(device_management_service));
+  MaybeApplyLocalTestPolicies(local_state);
 }
 
 bool BrowserPolicyConnectorIOS::IsDeviceEnterpriseManaged() const {
@@ -107,6 +127,14 @@ BrowserPolicyConnectorIOS::CreatePolicyProviders() {
     machine_level_user_cloud_policy_manager_ =
         machine_level_user_cloud_policy_manager.get();
     providers.push_back(std::move(machine_level_user_cloud_policy_manager));
+  }
+
+  std::unique_ptr<LocalTestPolicyProvider> local_test_provider =
+      LocalTestPolicyProvider::CreateIfAllowed(GetChannel());
+
+  if (local_test_provider) {
+    local_test_provider_ = local_test_provider.get();
+    providers.push_back(std::move(local_test_provider));
   }
 
   return providers;

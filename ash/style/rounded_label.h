@@ -23,7 +23,8 @@ class RoundedLabel : public views::Label {
 
  private:
   // views::Label:
-  gfx::Size CalculatePreferredSize() const override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
   int GetHeightForWidth(int width) const override;
   void OnPaintBorder(gfx::Canvas* canvas) override;
 

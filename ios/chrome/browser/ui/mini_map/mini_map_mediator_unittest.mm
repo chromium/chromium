@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/mini_map/mini_map_mediator.h"
 
+#import "base/ios/ios_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -56,6 +57,9 @@ class MiniMapMediatorTest : public PlatformTest {
 
 // Tests that consent screen is not triggered if not needed.
 TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
 
@@ -68,6 +72,9 @@ TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
 
 // Tests that settings are updated correctly after user consents.
 TEST_F(MiniMapMediatorTest, TestUserConsents) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
@@ -86,6 +93,9 @@ TEST_F(MiniMapMediatorTest, TestUserConsents) {
 
 // Tests that settings are updated correctly after user declines.
 TEST_F(MiniMapMediatorTest, TestUserDeclines) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
   browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
@@ -104,6 +114,9 @@ TEST_F(MiniMapMediatorTest, TestUserDeclines) {
 
 // Tests that consent is presented if it is forced.
 TEST_F(MiniMapMediatorTest, TestUserConsentForced) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams feature_parameters{
       {web::features::kOneTapForMapsConsentModeParamTitle,
@@ -126,6 +139,9 @@ TEST_F(MiniMapMediatorTest, TestUserConsentForced) {
 
 // Tests that consent screen is not triggered but IPH is displayed.
 TEST_F(MiniMapMediatorTest, TestConsentIPH) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams feature_parameters{
       {web::features::kOneTapForMapsConsentModeParamTitle,
@@ -148,6 +164,9 @@ TEST_F(MiniMapMediatorTest, TestConsentIPH) {
 
 // Tests that consent screen is not triggered if not needed.
 TEST_F(MiniMapMediatorTest, TestConsentDisabled) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
   base::test::ScopedFeatureList scoped_feature_list;
   base::FieldTrialParams feature_parameters{
       {web::features::kOneTapForMapsConsentModeParamTitle,

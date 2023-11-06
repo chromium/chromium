@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_notice_service.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 
 TrackingProtectionNoticeFactory*
@@ -24,6 +25,7 @@ TrackingProtectionNoticeFactory::GetForProfile(Profile* profile) {
 TrackingProtectionNoticeFactory::TrackingProtectionNoticeFactory()
     : ProfileKeyedServiceFactory("TrackingProtectionNotice") {
   DependsOn(TrackingProtectionOnboardingFactory::GetInstance());
+  DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>

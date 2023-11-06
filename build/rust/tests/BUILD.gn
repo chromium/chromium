@@ -27,17 +27,12 @@ group("deps") {
       "test_aliased_deps",
       "test_aliased_deps:test_aliased_deps_exe",
       "test_bin_crate",
-      "test_cpp_including_rust",
       "test_rlib_crate:target1",
       "test_rlib_crate:target2",
       "test_rlib_crate:test_rlib_crate_associated_bin",
-      "test_rust_calling_cpp",
-      "test_rust_exe",
       "test_rust_metadata:test_rust_metadata_cc_exe",
       "test_rust_metadata:test_rust_metadata_exe",
       "test_rust_multiple_dep_versions_exe",
-      "test_rust_static_library",
-      "test_serde_json_lenient",
       "test_simple_rust_exe",
 
       # TODO(https://crbug.com/1329611): Enable the additional target below
@@ -46,20 +41,31 @@ group("deps") {
       # `//build/rust/run_rs_bindings_from_cc.py`.
       #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
     ]
+
+    if (enable_cxx) {
+      deps += [
+        "test_cpp_including_rust",
+        "test_rust_calling_cpp",
+        "test_rust_exe",
+        "test_rust_static_library",
+      ]
+    }
+    if (build_with_chromium) {
+      # This tests integration with a 3p library that downstream projects
+      # don't need to have.
+      deps += [ "test_serde_json_lenient" ]
+    }
+
     if (can_build_rust_unit_tests) {
       deps += [
         "bindgen_test:bindgen_test_lib_unittests",
         "test_aliased_deps:test_aliased_deps_unittests",
-        "test_cpp_including_rust:test_cpp_including_rust_unittests",
         "test_rlib_crate:target1_test_rlib_crate_v0_2_unittests",
         "test_rlib_crate:target2_test_rlib_crate_v0_2_unittests",
-        "test_rust_exe:test_rust_exe_unittests",
         "test_rust_metadata:test_rust_metadata_unittests",
         "test_rust_multiple_dep_versions_exe/v1:test_lib_v1_unittests",
         "test_rust_multiple_dep_versions_exe/v2:test_lib_v2_unittests",
-        "test_rust_static_library:test_rust_static_library_unittests",
         "test_rust_static_library_non_standard_arrangement:foo_tests",
-        "test_rust_unittests",
 
         # TODO(https://crbug.com/1329611): Enable the additional target below
         # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
@@ -67,12 +73,21 @@ group("deps") {
         # `//build/rust/run_rs_bindings_from_cc.py`.
         #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
       ]
+
+      if (enable_cxx) {
+        deps += [
+          "test_cpp_including_rust:test_cpp_including_rust_unittests",
+          "test_rust_exe:test_rust_exe_unittests",
+          "test_rust_static_library:test_rust_static_library_unittests",
+          "test_rust_unittests",
+        ]
+      }
     }
 
     # Dylibs should only be built in component builds. We turn on flags which
     # are incompatible with shared library compilation in non-component builds
     # (such as code coverage https://crbug.com/1457533).
-    if (is_component_build) {
+    if (is_component_build && enable_cxx) {
       deps += [ "test_rust_shared_library" ]
       if (can_build_rust_unit_tests) {
         deps += [

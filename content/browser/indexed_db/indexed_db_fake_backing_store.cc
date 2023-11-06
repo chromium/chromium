@@ -37,9 +37,6 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
                                     "http://localhost:81"))),
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
-                            std::make_unique<storage::FilesystemProxy>(
-                                storage::FilesystemProxy::UNRESTRICTED,
-                                base::FilePath()),
                             BlobFilesCleanedCallback(),
                             ReportOutstandingBlobsCallback(),
                             base::SequencedTaskRunner::GetCurrentDefault()) {}
@@ -53,9 +50,6 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
                                     "http://localhost:81"))),
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
-                            std::make_unique<storage::FilesystemProxy>(
-                                storage::FilesystemProxy::UNRESTRICTED,
-                                base::FilePath()),
                             std::move(blob_files_cleaned),
                             std::move(report_outstanding_blobs),
                             task_runner) {}

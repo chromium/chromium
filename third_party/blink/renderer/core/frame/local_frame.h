@@ -67,6 +67,7 @@
 #include "third_party/blink/public/mojom/script/script_evaluation_params.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/public/platform/web_background_resource_fetch_assets.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -164,6 +165,10 @@ class WebPrescientNetworking;
 class URLLoader;
 struct BlinkTransferableMessage;
 struct WebScriptSource;
+
+namespace v8_compile_hints {
+class V8LocalCompileHintsProducer;
+}  // namespace v8_compile_hints
 
 enum class BackForwardCacheAware;
 
@@ -283,7 +288,7 @@ class CORE_EXPORT LocalFrame final
   Document* GetDocument() const;
   void SetPagePopupOwner(Element&);
   Element* PagePopupOwner() const { return page_popup_owner_.Get(); }
-  bool HasPagePopupOwner() const { return page_popup_owner_; }
+  bool HasPagePopupOwner() const { return page_popup_owner_ != nullptr; }
 
   // Root of the layout tree for the document contained in this frame.
   LayoutView* ContentLayoutObject() const;
@@ -343,6 +348,10 @@ class CORE_EXPORT LocalFrame final
     return history_user_activation_state_.IsActive();
   }
   void ConsumeHistoryUserActivation();
+
+  // Activates or clears history user activation state and also notifies frame
+  // scheduler of the state change.
+  void SetHadUserInteraction(bool had_user_interaction);
 
   // Registers an observer that will be notified if a VK occludes
   // the content when it raises/dismisses. The observer is a HeapHashSet
@@ -498,12 +507,14 @@ class CORE_EXPORT LocalFrame final
 
   PluginData* GetPluginData() const;
 
-  PerformanceMonitor* GetPerformanceMonitor() { return performance_monitor_; }
-  IdlenessDetector* GetIdlenessDetector() { return idleness_detector_; }
-  AdTracker* GetAdTracker() { return ad_tracker_; }
+  PerformanceMonitor* GetPerformanceMonitor() {
+    return performance_monitor_.Get();
+  }
+  IdlenessDetector* GetIdlenessDetector() { return idleness_detector_.Get(); }
+  AdTracker* GetAdTracker() { return ad_tracker_.Get(); }
   void SetAdTrackerForTesting(AdTracker* ad_tracker);
   AttributionSrcLoader* GetAttributionSrcLoader() {
-    return attribution_src_loader_;
+    return attribution_src_loader_.Get();
   }
 
   enum class LazyLoadImageSetting { kDisabled, kEnabledExplicit };
@@ -515,6 +526,9 @@ class CORE_EXPORT LocalFrame final
   // For some tests, we use this method to create a URLLoader instead of using
   // GetURLLoaderFactory().
   std::unique_ptr<URLLoader> CreateURLLoaderForTesting();
+
+  scoped_refptr<WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets();
 
   bool IsInert() const { return is_inert_; }
 
@@ -678,15 +692,6 @@ class CORE_EXPORT LocalFrame final
   // Whether the frame clips its content to the frame's size.
   bool ClipsContent() const;
 
-  // For a navigation initiated from this LocalFrame with user gesture, record
-  // the UseCounter AdClickNavigation if this frame is an adframe.
-  //
-  // TODO(crbug.com/939370): Currently this is called in a couple of sites,
-  // which is fragile and prone to break. If we have the ad status in
-  // RemoteFrame, we could call it at FrameLoader::StartNavigation where all
-  // navigations go through.
-  void MaybeLogAdClickNavigation();
-
   // Triggers a use counter if a feature, which is currently available in all
   // frames, would be blocked by the introduction of permissions policy. This
   // takes two counters (which may be the same). It triggers
@@ -811,7 +816,7 @@ class CORE_EXPORT LocalFrame final
   bool ShouldMaintainTrivialSessionHistory() const;
 
   TextFragmentHandler* GetTextFragmentHandler() const {
-    return text_fragment_handler_;
+    return text_fragment_handler_.Get();
   }
 
   void BindTextFragmentReceiver(
@@ -892,6 +897,11 @@ class CORE_EXPORT LocalFrame final
 
   bool IsSameOrigin();
 
+  v8_compile_hints::V8LocalCompileHintsProducer&
+  GetV8LocalCompileHintsProducer() {
+    return *v8_local_compile_hints_producer_;
+  }
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
@@ -911,14 +921,6 @@ class CORE_EXPORT LocalFrame final
   // already LocalFrame.
   bool IsLocalFrame() const override { return true; }
   bool IsRemoteFrame() const override { return false; }
-
-  void ActivateHistoryUserActivationState() override {
-    history_user_activation_state_.Activate();
-  }
-
-  void ClearHistoryUserActivationState() override {
-    history_user_activation_state_.Clear();
-  }
 
   void EnableNavigation() { --navigation_disable_count_; }
   void DisableNavigation() { ++navigation_disable_count_; }
@@ -1157,6 +1159,9 @@ class CORE_EXPORT LocalFrame final
 
   // Reduced accept language for top-level frame.
   AtomicString reduced_accept_language_;
+
+  Member<v8_compile_hints::V8LocalCompileHintsProducer>
+      v8_local_compile_hints_producer_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

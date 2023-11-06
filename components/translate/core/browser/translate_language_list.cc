@@ -172,6 +172,138 @@ const char* const kDefaultSupportedLanguages[] = {
     "zu",        // Zulu
 };
 
+// The default list of languages the Partial Translation service supports.
+// This list must be sorted in alphabetical order and contain no duplicates.
+// This list is identical to above except that it excludes
+// {ilo lus mni-Mtei gom doi bm ckb}.
+const char* const kDefaultSupportedPartialTranslateLanguages[] = {
+    "af",     // Afrikaans
+    "ak",     // Twi
+    "am",     // Amharic
+    "ar",     // Arabic
+    "as",     // Assamese
+    "ay",     // Aymara
+    "az",     // Azerbaijani
+    "be",     // Belarusian
+    "bg",     // Bulgarian
+    "bho",    // Bhojpuri
+    "bn",     // Bengali
+    "bs",     // Bosnian
+    "ca",     // Catalan
+    "ceb",    // Cebuano
+    "co",     // Corsican
+    "cs",     // Czech
+    "cy",     // Welsh
+    "da",     // Danish
+    "de",     // German
+    "dv",     // Dhivehi
+    "ee",     // Ewe
+    "el",     // Greek
+    "en",     // English
+    "eo",     // Esperanto
+    "es",     // Spanish
+    "et",     // Estonian
+    "eu",     // Basque
+    "fa",     // Persian
+    "fi",     // Finnish
+    "fr",     // French
+    "fy",     // Frisian
+    "ga",     // Irish
+    "gd",     // Scots Gaelic
+    "gl",     // Galician
+    "gu",     // Gujarati
+    "ha",     // Hausa
+    "haw",    // Hawaiian
+    "hi",     // Hindi
+    "hmn",    // Hmong
+    "hr",     // Croatian
+    "ht",     // Haitian Creole
+    "hu",     // Hungarian
+    "hy",     // Armenian
+    "id",     // Indonesian
+    "ig",     // Igbo
+    "is",     // Icelandic
+    "it",     // Italian
+    "iw",     // Hebrew - Chrome uses "he"
+    "ja",     // Japanese
+    "jw",     // Javanese - Chrome uses "jv"
+    "ka",     // Georgian
+    "kk",     // Kazakh
+    "km",     // Khmer
+    "kn",     // Kannada
+    "ko",     // Korean
+    "kri",    // Krio
+    "ku",     // Kurdish
+    "ky",     // Kyrgyz
+    "la",     // Latin
+    "lb",     // Luxembourgish
+    "lg",     // Luganda
+    "ln",     // Lingala
+    "lo",     // Lao
+    "lt",     // Lithuanian
+    "lv",     // Latvian
+    "mai",    // Maithili
+    "mg",     // Malagasy
+    "mi",     // Maori
+    "mk",     // Macedonian
+    "ml",     // Malayalam
+    "mn",     // Mongolian
+    "mr",     // Marathi
+    "ms",     // Malay
+    "mt",     // Maltese
+    "my",     // Burmese
+    "ne",     // Nepali
+    "nl",     // Dutch
+    "no",     // Norwegian - Chrome uses "nb"
+    "nso",    // Sepedi
+    "ny",     // Nyanja
+    "om",     // Oromo
+    "or",     // Odia (Oriya)
+    "pa",     // Punjabi
+    "pl",     // Polish
+    "ps",     // Pashto
+    "pt",     // Portuguese
+    "qu",     // Quechua
+    "ro",     // Romanian
+    "ru",     // Russian
+    "rw",     // Kinyarwanda
+    "sa",     // Sanskrit
+    "sd",     // Sindhi
+    "si",     // Sinhala
+    "sk",     // Slovak
+    "sl",     // Slovenian
+    "sm",     // Samoan
+    "sn",     // Shona
+    "so",     // Somali
+    "sq",     // Albanian
+    "sr",     // Serbian
+    "st",     // Southern Sotho
+    "su",     // Sundanese
+    "sv",     // Swedish
+    "sw",     // Swahili
+    "ta",     // Tamil
+    "te",     // Telugu
+    "tg",     // Tajik
+    "th",     // Thai
+    "ti",     // Tigrinya
+    "tk",     // Turkmen
+    "tl",     // Tagalog - Chrome uses "fil"
+    "tr",     // Turkish
+    "ts",     // Tsonga
+    "tt",     // Tatar
+    "ug",     // Uyghur
+    "uk",     // Ukrainian
+    "ur",     // Urdu
+    "uz",     // Uzbek
+    "vi",     // Vietnamese
+    "xh",     // Xhosa
+    "yi",     // Yiddish
+    "yo",     // Yoruba
+    "zh-CN",  // Chinese (Simplified)
+    "zh-TW",  // Chinese (Traditional)
+    "zu",     // Zulu
+};
+
 // Constant URL string to fetch server supporting language list.
 const char kLanguageListFetchPath[] = "translate_a/l?client=chrome";
 
@@ -217,8 +349,20 @@ void TranslateLanguageList::GetSupportedLanguages(
 
   // Update language lists if they are not updated after Chrome was launched
   // for later requests.
-  if (translate_allowed && !update_is_disabled && language_list_fetcher_.get())
+  if (translate_allowed && !update_is_disabled &&
+      language_list_fetcher_.get()) {
     RequestLanguageList();
+  }
+}
+
+// static
+void TranslateLanguageList::GetSupportedPartialTranslateLanguages(
+    std::vector<std::string>* languages) {
+  DCHECK(languages && languages->empty());
+
+  *languages = std::vector<std::string>(
+      std::begin(kDefaultSupportedPartialTranslateLanguages),
+      std::end(kDefaultSupportedPartialTranslateLanguages));
 }
 
 std::string TranslateLanguageList::GetLanguageCode(base::StringPiece language) {
@@ -230,8 +374,14 @@ std::string TranslateLanguageList::GetLanguageCode(base::StringPiece language) {
 }
 
 bool TranslateLanguageList::IsSupportedLanguage(base::StringPiece language) {
-  return std::binary_search(supported_languages_.begin(),
-                            supported_languages_.end(), language);
+  return base::ranges::binary_search(supported_languages_, language);
+}
+
+// static
+bool TranslateLanguageList::IsSupportedPartialTranslateLanguage(
+    base::StringPiece language) {
+  return base::ranges::binary_search(kDefaultSupportedPartialTranslateLanguages,
+                                     language);
 }
 
 // static

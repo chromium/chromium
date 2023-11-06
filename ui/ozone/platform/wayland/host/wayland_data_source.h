@@ -54,8 +54,9 @@ class DataSource {
  public:
   class Delegate {
    public:
-    virtual void OnDataSourceFinish(bool completed) = 0;
-    virtual void OnDataSourceSend(const std::string& mime_type,
+    virtual void OnDataSourceFinish(DataSource<T>* source, bool completed) = 0;
+    virtual void OnDataSourceSend(DataSource<T>* source,
+                                  const std::string& mime_type,
                                   std::string* contents) = 0;
 
    protected:

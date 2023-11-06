@@ -165,10 +165,6 @@ BASE_DECLARE_FEATURE(
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kPrivacySandboxProactiveTopicsBlocking);
 
-// Forces profile eligibility for Tracking Protection Onboarding.
-COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
-BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingForceEligibility);
-
 // Enables showing the rollback notice for Tracking Protection in settings.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
@@ -179,6 +175,10 @@ BASE_DECLARE_FEATURE(kTrackingProtectionSettingsPageRollbackNotice);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingSkipSecurePageCheck);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Enables the Tracking protection Rollback flow.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kTrackingProtectionOnboardingRollback);
 
 }  // namespace privacy_sandbox
 

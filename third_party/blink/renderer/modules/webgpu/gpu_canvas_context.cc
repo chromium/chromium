@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -242,7 +243,8 @@ bool GPUCanvasContext::PushFrame() {
 }
 
 ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   auto MakeFallbackImageBitmap =
       [this](V8GPUCanvasAlphaMode::Enum alpha_mode) -> ImageBitmap* {
     // It is not possible to create an empty image bitmap, return null in that
@@ -555,14 +557,14 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   // time, the same texture should be returned. |texture_| is set to
   // null when presented so that we know we should create a new one.
   if (texture_ && !new_texture_required_) {
-    return texture_;
+    return texture_.Get();
   }
   new_texture_required_ = false;
 
   if (!swap_buffers_) {
     device_->InjectError(WGPUErrorType_Validation,
                          "context configuration is invalid.");
-    return GPUTexture::CreateError(device_, &texture_descriptor_);
+    return GPUTexture::CreateError(device_.Get(), &texture_descriptor_);
   }
 
   ReplaceDrawingBuffer(/* destroy_swap_buffers */ false);
@@ -589,7 +591,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
     }
     texture_ = swap_texture_ =
         GPUTexture::CreateError(device_, &texture_descriptor_);
-    return texture_;
+    return texture_.Get();
   }
 
   mailbox_texture->SetNeedsPresent(true);
@@ -620,7 +622,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   UseCounter::Count(execution_context,
                     WebFeature::kWebGPUCanvasContextGetCurrentTexture);
 
-  return texture_;
+  return texture_.Get();
 }
 
 void GPUCanvasContext::ReplaceDrawingBuffer(bool destroy_swap_buffers) {

@@ -35,6 +35,7 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/zlib.h"
 
 namespace disk_cache {
@@ -193,7 +194,7 @@ EntryResult SimpleEntryImpl::OpenEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(net::NetLogEventType::SIMPLE_CACHE_ENTRY_CREATE_CALL);
 
@@ -234,7 +235,7 @@ EntryResult SimpleEntryImpl::CreateEntry(EntryResultCallback callback) {
 
 EntryResult SimpleEntryImpl::OpenOrCreateEntry(EntryResultCallback callback) {
   DCHECK(backend_.get());
-  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(key_));
+  DCHECK_EQ(entry_hash_, simple_util::GetEntryHashKey(*key_));
 
   net_log_.AddEvent(
       net::NetLogEventType::SIMPLE_CACHE_ENTRY_OPEN_OR_CREATE_CALL);
@@ -354,7 +355,7 @@ void SimpleEntryImpl::Close() {
 
 std::string SimpleEntryImpl::GetKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return key_;
+  return *key_;
 }
 
 Time SimpleEntryImpl::GetLastUsed() const {
@@ -480,7 +481,7 @@ int SimpleEntryImpl::WriteData(int stream_index,
     // operations.
     if (buf) {
       op_buf = base::MakeRefCounted<IOBuffer>(buf_len);
-      memcpy(op_buf->data(), buf->data(), buf_len);
+      std::copy(buf->data(), buf->data() + buf_len, op_buf->data());
     }
     op_callback = CompletionOnceCallback();
     ret_value = buf_len;
@@ -848,7 +849,7 @@ void SimpleEntryImpl::CreateEntryInternal(
 
   OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::CreateEntry, cache_type_, path_,
-                     key_, entry_hash_, file_tracker_,
+                     *key_, entry_hash_, file_tracker_,
                      file_operations_factory_->CreateUnbound(), results.get());
   OnceClosure reply = base::BindOnce(
       &SimpleEntryImpl::CreationOperationComplete, this, result_state,
@@ -909,7 +910,7 @@ void SimpleEntryImpl::OpenOrCreateEntryInternal(
 
   base::OnceClosure task =
       base::BindOnce(&SimpleSynchronousEntry::OpenOrCreateEntry, cache_type_,
-                     path_, key_, entry_hash_, index_state, optimistic_create,
+                     path_, *key_, entry_hash_, index_state, optimistic_create,
                      file_tracker_, file_operations_factory_->CreateUnbound(),
                      trailer_prefetch_size, results.get());
 
@@ -1427,13 +1428,13 @@ void SimpleEntryImpl::CreationOperationComplete(
 
   // If this entry was opened by hash, key_ could still be empty. If so, update
   // it with the key read from the synchronous entry.
-  if (key_.empty()) {
-    SetKey(synchronous_entry_->key());
+  if (!key_.has_value()) {
+    SetKey(*synchronous_entry_->key());
   } else {
     // This should only be triggered when creating an entry. In the open case
     // the key is either copied from the arguments to open, or checked
     // in the synchronous entry.
-    DCHECK_EQ(key_, synchronous_entry_->key());
+    DCHECK_EQ(*key_, *synchronous_entry_->key());
   }
 
   // Prefer index last used time to disk's, since that may be pretty inaccurate.
@@ -1655,7 +1656,7 @@ void SimpleEntryImpl::UpdateDataFromEntryStat(
 int64_t SimpleEntryImpl::GetDiskUsage() const {
   int64_t file_size = 0;
   for (int data_size : data_size_) {
-    file_size += simple_util::GetFileSizeFromDataSize(key_.size(), data_size);
+    file_size += simple_util::GetFileSizeFromDataSize(key_->size(), data_size);
   }
   file_size += sparse_data_size_;
   return file_size;
@@ -1667,7 +1668,8 @@ int SimpleEntryImpl::ReadFromBuffer(net::GrowableIOBuffer* in_buf,
                                     net::IOBuffer* out_buf) {
   DCHECK_GE(buf_len, 0);
 
-  memcpy(out_buf->data(), in_buf->data() + offset, buf_len);
+  std::copy(in_buf->data() + offset, in_buf->data() + offset + buf_len,
+            out_buf->data());
   UpdateDataFromEntryStat(SimpleEntryStat(base::Time::Now(), last_modified_,
                                           data_size_, sparse_data_size_));
   return buf_len;
@@ -1686,7 +1688,7 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
   int data_size = GetDataSize(0);
   if (offset == 0 && truncate) {
     stream_0_data_->SetCapacity(buf_len);
-    memcpy(stream_0_data_->data(), buf->data(), buf_len);
+    std::copy(buf->data(), buf->data() + buf_len, stream_0_data_->data());
     data_size_[0] = buf_len;
   } else {
     const int buffer_size =
@@ -1695,10 +1697,14 @@ int SimpleEntryImpl::SetStream0Data(net::IOBuffer* buf,
     // If |stream_0_data_| was extended, the extension until offset needs to be
     // zero-filled.
     const int fill_size = offset <= data_size ? 0 : offset - data_size;
-    if (fill_size > 0)
-      memset(stream_0_data_->data() + data_size, 0, fill_size);
-    if (buf)
-      memcpy(stream_0_data_->data() + offset, buf->data(), buf_len);
+    if (fill_size > 0) {
+      std::fill(stream_0_data_->data() + data_size,
+                stream_0_data_->data() + data_size + fill_size, 0);
+    }
+    if (buf) {
+      std::copy(buf->data(), buf->data() + buf_len,
+                stream_0_data_->data() + offset);
+    }
     data_size_[0] = buffer_size;
   }
   RecordHeaderSize(cache_type_, data_size_[0]);

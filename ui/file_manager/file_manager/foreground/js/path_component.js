@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {str, util} from '../../common/js/util.js';
+import {isFakeEntry} from '../../common/js/entry_utils.js';
+import {getEntryLabel, getRootTypeLabel, str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
@@ -55,6 +56,8 @@ export class PathComponent {
    * @param {!Entry|!FilesAppEntry} entry An entry.
    * @return {!Array<!PathComponent>} Components.
    */
+  // @ts-ignore: error TS7006: Parameter 'volumeManager' implicitly has an 'any'
+  // type.
   static computeComponentsFromEntry(entry, volumeManager) {
     /**
      * Replace the root directory name at the end of a url.
@@ -71,16 +74,20 @@ export class PathComponent {
       return url.slice(0, url.length - '/root'.length) + newRoot;
     };
 
+    // @ts-ignore: error TS7034: Variable 'components' implicitly has type
+    // 'any[]' in some locations where its type cannot be determined.
     const components = [];
     const locationInfo = volumeManager.getLocationInfo(entry);
 
     if (!locationInfo) {
+      // @ts-ignore: error TS7005: Variable 'components' implicitly has an
+      // 'any[]' type.
       return components;
     }
 
-    if (util.isFakeEntry(entry)) {
+    if (isFakeEntry(entry)) {
       components.push(new PathComponent(
-          util.getEntryLabel(locationInfo, entry), entry.toURL(),
+          getEntryLabel(locationInfo, entry), entry.toURL(),
           /** @type {!FakeEntry} */ (entry)));
       return components;
     }
@@ -121,17 +128,17 @@ export class PathComponent {
         locationInfo.rootType === VolumeManagerCommon.RootType.SHARED_DRIVE) {
       displayRootUrl = replaceRootName(
           displayRootUrl, VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_PATH);
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     } else if (
         locationInfo.rootType === VolumeManagerCommon.RootType.COMPUTER) {
       displayRootUrl = replaceRootName(
           displayRootUrl, VolumeManagerCommon.COMPUTERS_DIRECTORY_PATH);
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     } else {
-      components.push(new PathComponent(
-          util.getRootTypeLabel(locationInfo), displayRootUrl));
+      components.push(
+          new PathComponent(getRootTypeLabel(locationInfo), displayRootUrl));
     }
 
     // Get relative path to display root (e.g. /root/foo/bar -> foo/bar).
@@ -160,6 +167,8 @@ export class PathComponent {
     // Add directory components to the target path.
     const paths = relativePath.split('/');
     for (let i = 0; i < paths.length; i++) {
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string | number | boolean'.
       currentUrl += '/' + encodeURIComponent(paths[i]);
       let path = paths[i];
       if (i === 0 &&
@@ -174,6 +183,8 @@ export class PathComponent {
           path = str('CAMERA_DIRECTORY_LABEL');
         }
       }
+      // @ts-ignore: error TS2345: Argument of type 'string | undefined' is not
+      // assignable to parameter of type 'string'.
       components.push(new PathComponent(path, currentUrl));
     }
 

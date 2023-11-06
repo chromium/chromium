@@ -75,41 +75,27 @@ import java.util.List;
 @LooperMode(LooperMode.Mode.LEGACY)
 @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkToolbarMediatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock
-    private BookmarkDelegate mBookmarkDelegate;
-    @Mock
-    private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private BookmarkOpener mBookmarkOpener;
-    @Mock
-    private SelectionDelegate mSelectionDelegate;
-    @Mock
-    private Runnable mNavigateBackRunnable;
-    @Mock
-    private BookmarkId mBookmarkId;
-    @Mock
-    private BookmarkItem mBookmarkItem;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock
-    private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
-    @Mock
-    private PropertyObserver<PropertyKey> mPropertyObserver;
-    @Mock
-    private Runnable mEndSearchRunnable;
+    @Mock private BookmarkDelegate mBookmarkDelegate;
+    @Mock private DragReorderableRecyclerViewAdapter mDragReorderableRecyclerViewAdapter;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkOpener mBookmarkOpener;
+    @Mock private SelectionDelegate mSelectionDelegate;
+    @Mock private Runnable mNavigateBackRunnable;
+    @Mock private BookmarkId mBookmarkId;
+    @Mock private BookmarkItem mBookmarkItem;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private BookmarkAddNewFolderCoordinator mBookmarkAddNewFolderCoordinator;
+    @Mock private PropertyObserver<PropertyKey> mPropertyObserver;
+    @Mock private Runnable mEndSearchRunnable;
 
-    @Spy
-    private Context mContext;
+    @Spy private Context mContext;
 
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
@@ -118,8 +104,11 @@ public class BookmarkToolbarMediatorTest {
     @Before
     public void setUp() {
         // Setup the context, we need a spy here because the context is used to launch activities.
-        mContext = spy(new ContextThemeWrapper(
-                ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight));
+        mContext =
+                spy(
+                        new ContextThemeWrapper(
+                                ApplicationProvider.getApplicationContext(),
+                                R.style.Theme_BrowserUI_DayNight));
         doNothing().when(mContext).startActivity(any());
 
         // Setup the bookmark model ids/items.
@@ -130,21 +119,31 @@ public class BookmarkToolbarMediatorTest {
     }
 
     private void initModelAndMediator() {
-        mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
-                         .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
-                         .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
-                         .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
-                         .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
-                         .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
-                         .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
-                         .with(BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE,
-                                 mNavigateBackRunnable)
-                         .build();
+        mModel =
+                new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
+                        .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
+                        .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
+                        .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
+                        .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
+                        .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)
+                        .with(BookmarkToolbarProperties.DRAG_ENABLED, false)
+                        .with(
+                                BookmarkToolbarProperties.NAVIGATE_BACK_RUNNABLE,
+                                mNavigateBackRunnable)
+                        .build();
         mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
-        mMediator = new BookmarkToolbarMediator(mContext, mModel,
-                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs, mBookmarkAddNewFolderCoordinator,
-                mEndSearchRunnable);
+        mMediator =
+                new BookmarkToolbarMediator(
+                        mContext,
+                        mModel,
+                        mDragReorderableRecyclerViewAdapter,
+                        mBookmarkDelegateSupplier,
+                        mSelectionDelegate,
+                        mBookmarkModel,
+                        mBookmarkOpener,
+                        mBookmarkUiPrefs,
+                        mBookmarkAddNewFolderCoordinator,
+                        mEndSearchRunnable);
         mBookmarkDelegateSupplier.set(mBookmarkDelegate);
     }
 
@@ -171,10 +170,18 @@ public class BookmarkToolbarMediatorTest {
         verify(mContext).startActivity(intentCaptor.capture());
         assertEquals(clazz.getName(), intentCaptor.getValue().getComponent().getClassName());
 
-        mMediator = new BookmarkToolbarMediator(mContext, mModel,
-                mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
-                mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs, mBookmarkAddNewFolderCoordinator,
-                mEndSearchRunnable);
+        mMediator =
+                new BookmarkToolbarMediator(
+                        mContext,
+                        mModel,
+                        mDragReorderableRecyclerViewAdapter,
+                        mBookmarkDelegateSupplier,
+                        mSelectionDelegate,
+                        mBookmarkModel,
+                        mBookmarkOpener,
+                        mBookmarkUiPrefs,
+                        mBookmarkAddNewFolderCoordinator,
+                        mEndSearchRunnable);
     }
 
     @Test
@@ -186,15 +193,18 @@ public class BookmarkToolbarMediatorTest {
     @Test
     public void onStateChangedUpdatesModel() {
         mMediator.onUiModeChanged(BookmarkUiMode.LOADING);
-        assertEquals(BookmarkUiMode.LOADING,
+        assertEquals(
+                BookmarkUiMode.LOADING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
-        assertEquals(BookmarkUiMode.SEARCHING,
+        assertEquals(
+                BookmarkUiMode.SEARCHING,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
 
         mMediator.onUiModeChanged(BookmarkUiMode.FOLDER);
-        assertEquals(BookmarkUiMode.FOLDER,
+        assertEquals(
+                BookmarkUiMode.FOLDER,
                 mModel.get(BookmarkToolbarProperties.BOOKMARK_UI_MODE).intValue());
     }
 
@@ -290,8 +300,9 @@ public class BookmarkToolbarMediatorTest {
     @DisableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu() {
         mMediator.onFolderStateSet(mBookmarkId);
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.edit_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.edit_menu_id));
         verifyActivityLaunched(BookmarkAddEditFolderActivity.class);
     }
 
@@ -299,22 +310,25 @@ public class BookmarkToolbarMediatorTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS})
     public void testOnMenuItemClick_editMenu_improvedBookmarks() {
         mMediator.onFolderStateSet(mBookmarkId);
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.edit_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.edit_menu_id));
         verifyActivityLaunched(BookmarkEditActivity.class);
     }
 
     @Test
     public void testOnMenuItemClick_closeMenu() {
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.close_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.close_menu_id));
         // Difficult to verify that the activity has been finished, especially in a unit test.
     }
 
     @Test
     public void testOnMenuItemClick_searchMenu() {
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.search_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.search_menu_id));
         verify(mBookmarkDelegate).openSearchUi();
     }
 
@@ -322,8 +336,9 @@ public class BookmarkToolbarMediatorTest {
     public void testOnMenuItemClick_selectionModeEditMenu() {
         setCurrentSelection(mBookmarkId);
         doReturn(false).when(mBookmarkItem).isFolder();
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.selection_mode_edit_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_edit_menu_id));
         verifyActivityLaunched(BookmarkEditActivity.class);
     }
 
@@ -331,8 +346,9 @@ public class BookmarkToolbarMediatorTest {
     public void testOnMenuItemClick_selectionModeEditMenuFolder() {
         setCurrentSelection(mBookmarkId);
         doReturn(true).when(mBookmarkItem).isFolder();
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.selection_mode_edit_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_edit_menu_id));
         verifyActivityLaunched(BookmarkEditActivity.class);
     }
 
@@ -340,24 +356,27 @@ public class BookmarkToolbarMediatorTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void testOnMenuItemClick_selectionModeMoveMenu() {
         setCurrentSelection(mBookmarkId);
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.selection_mode_move_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_move_menu_id));
         verifyActivityLaunched(BookmarkFolderSelectActivity.class);
     }
 
     @Test
     public void testOnMenuItemClick_selectionModeMoveMenu_improvedBookmarksEnabled() {
         setCurrentSelection(mBookmarkId);
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.selection_mode_move_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_move_menu_id));
         verifyActivityLaunched(BookmarkFolderPickerActivity.class);
     }
 
     @Test
     public void testOnMenuItemClick_selectionModeDeleteMenu() {
         setCurrentSelection(mBookmarkId);
-        assertTrue(mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
-                           .apply(R.id.selection_mode_delete_menu_id));
+        assertTrue(
+                mModel.get(BookmarkToolbarProperties.MENU_ID_CLICKED_FUNCTION)
+                        .apply(R.id.selection_mode_delete_menu_id));
         verify(mBookmarkModel).deleteBookmarks(any());
     }
 
@@ -420,7 +439,8 @@ public class BookmarkToolbarMediatorTest {
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_last_opened));
-        assertEquals(R.id.sort_by_last_opened,
+        assertEquals(
+                R.id.sort_by_last_opened,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.RECENTLY_USED);
 
@@ -430,7 +450,8 @@ public class BookmarkToolbarMediatorTest {
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_reverse_alpha));
-        assertEquals(R.id.sort_by_reverse_alpha,
+        assertEquals(
+                R.id.sort_by_reverse_alpha,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_ALPHABETICAL);
     }
@@ -476,7 +497,8 @@ public class BookmarkToolbarMediatorTest {
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
 
         assertTrue(mMediator.onMenuIdClick(R.id.sort_by_reverse_alpha));
-        assertEquals(R.id.sort_by_reverse_alpha,
+        assertEquals(
+                R.id.sort_by_reverse_alpha,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
         verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_ALPHABETICAL);
     }
@@ -508,7 +530,8 @@ public class BookmarkToolbarMediatorTest {
                 .when(mBookmarkUiPrefs)
                 .getBookmarkRowSortOrder();
         initModelAndMediator();
-        assertEquals(R.id.sort_by_reverse_alpha,
+        assertEquals(
+                R.id.sort_by_reverse_alpha,
                 mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
     }
 
@@ -521,7 +544,8 @@ public class BookmarkToolbarMediatorTest {
 
         mMediator.onUiModeChanged(BookmarkUiMode.SEARCHING);
         assertEquals("Search", mModel.get(BookmarkToolbarProperties.TITLE));
-        assertEquals(NavigationButton.BACK,
+        assertEquals(
+                NavigationButton.BACK,
                 (long) mModel.get(BookmarkToolbarProperties.NAVIGATION_BUTTON_STATE));
     }
 

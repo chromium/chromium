@@ -15,10 +15,6 @@
 #include "content/browser/attribution_reporting/attribution_storage_delegate.h"
 #include "content/common/content_export.h"
 
-namespace attribution_reporting {
-class EventReportWindows;
-}  // namespace attribution_reporting
-
 namespace base {
 class Time;
 class TimeDelta;
@@ -92,49 +88,17 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports) const override;
+      attribution_reporting::MaxEventLevelReports) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
       absl::optional<base::Time> attributed_source_time) const override;
 
-  // Exposed for testing.
-  int64_t GetNumStates(attribution_reporting::mojom::SourceType,
-                       const attribution_reporting::EventReportWindows&,
-                       int max_event_level_reports) const;
-
-  // Generates fake reports using a random "stars and bars" sequence index of a
-  // possible output of the API.
-  //
-  // Exposed for testing.
-  std::vector<FakeReport> GetRandomFakeReports(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      base::Time source_time,
-      int64_t num_states) const;
-
-  // Generates fake reports from the "stars and bars" sequence index of a
-  // possible output of the API. This output is determined by the following
-  // algorithm:
-  // 1. Find all stars before the first bar. These stars represent suppressed
-  //    reports.
-  // 2. For all other stars, count the number of bars that precede them. Each
-  //    star represents a report where the reporting window and trigger data is
-  //    uniquely determined by that number.
-  //
-  // Exposed for testing.
-  std::vector<FakeReport> GetFakeReportsForSequenceIndex(
-      attribution_reporting::mojom::SourceType,
-      const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
-      base::Time source_time,
-      int64_t random_stars_and_bars_sequence_index) const;
 
  private:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,

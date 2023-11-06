@@ -60,7 +60,8 @@ class CC_EXPORT ScrollbarAnimationController {
       base::TimeDelta fade_delay,
       base::TimeDelta fade_duration,
       base::TimeDelta thinning_duration,
-      float initial_opacity);
+      float initial_opacity,
+      float idle_thickness_scale);
 
   ~ScrollbarAnimationController();
 
@@ -114,7 +115,8 @@ class CC_EXPORT ScrollbarAnimationController {
                                base::TimeDelta fade_delay,
                                base::TimeDelta fade_duration,
                                base::TimeDelta thinning_duration,
-                               float initial_opacity);
+                               float initial_opacity,
+                               float idle_thickness_scale);
 
   // Any scrollbar state update would show scrollbar hen post the delay fade out
   // if needed.

@@ -6,9 +6,9 @@
  * @fileoverview Helpers for APIs used within Files app.
  */
 
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
-import {util} from './util.js';
+import {unwrapEntry} from './entry_utils.js';
 
 /**
  * Calls the `fn` function which should expect the callback as last argument.
@@ -42,7 +42,7 @@ export async function openWindow(
 export async function resolveIsolatedEntries(isolatedEntries: Entry[]) {
   return promisify<Entry[]>(
       chrome.fileManagerPrivate.resolveIsolatedEntries,
-      isolatedEntries.map(e => util.unwrapEntry(e)));
+      isolatedEntries.map(e => unwrapEntry(e)));
 }
 
 export async function getPreferences() {
@@ -54,7 +54,7 @@ export async function validatePathNameLength(
     parentEntry: DirectoryEntry, name: string) {
   return promisify<boolean>(
       chrome.fileManagerPrivate.validatePathNameLength,
-      util.unwrapEntry(parentEntry), name);
+      unwrapEntry(parentEntry), name);
 }
 
 /**
@@ -72,7 +72,7 @@ export async function getSizeStats(volumeId: string) {
  */
 export async function getDriveQuotaMetadata(entry: Entry|FilesAppEntry) {
   return promisify<chrome.fileManagerPrivate.DriveQuotaMetadata|undefined>(
-      chrome.fileManagerPrivate.getDriveQuotaMetadata, util.unwrapEntry(entry));
+      chrome.fileManagerPrivate.getDriveQuotaMetadata, unwrapEntry(entry));
 }
 
 /**
@@ -89,11 +89,11 @@ export async function getHoldingSpaceState() {
  * async/await compatible style.
  */
 export async function getDisallowedTransfers(
-    entries: Entry[], destinationEntry: DirectoryEntry, isMove: boolean) {
+    entries: Entry[], destinationEntry: DirectoryEntry|FilesAppDirEntry,
+    isMove: boolean) {
   return promisify<Entry[]>(
       chrome.fileManagerPrivate.getDisallowedTransfers,
-      entries.map(e => util.unwrapEntry(e)), util.unwrapEntry(destinationEntry),
-      isMove);
+      entries.map(e => unwrapEntry(e)), unwrapEntry(destinationEntry), isMove);
 }
 
 /**
@@ -103,7 +103,7 @@ export async function getDisallowedTransfers(
 export async function getDlpMetadata(entries: Entry[]) {
   return promisify<chrome.fileManagerPrivate.DlpMetadata[]>(
       chrome.fileManagerPrivate.getDlpMetadata,
-      entries.map(e => util.unwrapEntry(e)));
+      entries.map(e => unwrapEntry(e)));
 }
 
 /**
@@ -196,11 +196,11 @@ export async function startIOTask(
     params: chrome.fileManagerPrivate.IOTaskParams) {
   if (params.destinationFolder) {
     params.destinationFolder =
-        util.unwrapEntry(params.destinationFolder) as DirectoryEntry;
+        unwrapEntry(params.destinationFolder) as DirectoryEntry;
   }
   return promisify<number>(
       chrome.fileManagerPrivate.startIOTask, type,
-      entries.map(e => util.unwrapEntry(e)), params);
+      entries.map(e => unwrapEntry(e)), params);
 }
 
 /**
@@ -209,19 +209,19 @@ export async function startIOTask(
 export async function parseTrashInfoFiles(entries: Entry[]) {
   return promisify<chrome.fileManagerPrivate.ParsedTrashInfoFile[]>(
       chrome.fileManagerPrivate.parseTrashInfoFiles,
-      entries.map(e => util.unwrapEntry(e)));
+      entries.map(e => unwrapEntry(e)));
 }
 
 export async function getMimeType(entry: Entry) {
   return promisify<string|undefined>(
-      chrome.fileManagerPrivate.getMimeType, util.unwrapEntry(entry));
+      chrome.fileManagerPrivate.getMimeType, unwrapEntry(entry));
 }
 
 export async function getFileTasks(
     entries: Array<Entry|FilesAppEntry>, dlpSourceUrls: string[]) {
   return promisify<chrome.fileManagerPrivate.ResultingTasks>(
-      chrome.fileManagerPrivate.getFileTasks,
-      entries.map(e => util.unwrapEntry(e)), dlpSourceUrls);
+      chrome.fileManagerPrivate.getFileTasks, entries.map(e => unwrapEntry(e)),
+      dlpSourceUrls);
 }
 
 export async function executeTask(
@@ -229,7 +229,7 @@ export async function executeTask(
     entries: Array<Entry|FilesAppEntry>) {
   return promisify<chrome.fileManagerPrivate.TaskResult>(
       chrome.fileManagerPrivate.executeTask, taskDescriptor,
-      entries.map(e => util.unwrapEntry(e)));
+      entries.map(e => unwrapEntry(e)));
 }
 
 /**

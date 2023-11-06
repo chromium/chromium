@@ -9,14 +9,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/common/pdf_util.h"
+#include "components/language/core/common/locale_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -43,11 +48,29 @@ int GetNormalizedFontScale(double font_scale) {
 
 }  // namespace
 
+ReadAnythingWebContentsObserver::ReadAnythingWebContentsObserver(
+    base::SafeRef<ReadAnythingUntrustedPageHandler> page_handler,
+    content::WebContents* web_contents)
+    : page_handler_(page_handler) {
+  Observe(web_contents);
+}
+
+ReadAnythingWebContentsObserver::~ReadAnythingWebContentsObserver() = default;
+
+void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
+  page_handler_->AccessibilityEventReceived(details);
+}
+
+void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
+  page_handler_->PrimaryPageChanged();
+}
+
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
     content::WebUI* web_ui)
-    : browser_(chrome::FindLastActive()),
+    : browser_(chrome::FindLastActive()->AsWeakPtr()),
       web_ui_(web_ui),
       receiver_(this, std::move(receiver)),
       page_(std::move(page)) {
@@ -56,7 +79,7 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
-  coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_);
+  coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
   if (coordinator_) {
     coordinator_->AddObserver(this);
     coordinator_->AddModelObserver(this);
@@ -83,7 +106,11 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
         prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
         static_cast<read_anything::mojom::Colors>(
             prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-        speechRate, highlightGranularity);
+        speechRate,
+        features::IsReadAnythingReadAloudEnabled()
+            ? prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone()
+            : base::Value::Dict(),
+        highlightGranularity);
   }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -104,7 +131,8 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   TabStripModelObserver::StopObservingAll(this);
-  Observe(nullptr);
+  main_observer_.reset();
+  pdf_observer_.reset();
   LogTextStyle();
 
   if (!coordinator_) {
@@ -116,6 +144,16 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
   // destroyed first, these will have been destroyed before this call.
   coordinator_->RemoveObserver(this);
   coordinator_->RemoveModelObserver(this);
+}
+
+void ReadAnythingUntrustedPageHandler::PrimaryPageChanged() {
+  OnActiveAXTreeIDChanged();
+}
+
+void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
+    const content::AXEventNotificationDetails& details) {
+  page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
+                                    details.events);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -131,47 +169,71 @@ void ReadAnythingUntrustedPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::OnCopy() {
-  web_contents()->Copy();
+  if (main_observer_ && main_observer_->web_contents()) {
+    main_observer_->web_contents()->Copy();
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnLineSpaceChange(
     read_anything::mojom::LineSpacing line_spacing) {
-  browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingLineSpacing,
-      static_cast<size_t>(line_spacing));
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingLineSpacing,
+        static_cast<size_t>(line_spacing));
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnLetterSpaceChange(
     read_anything::mojom::LetterSpacing letter_spacing) {
-  browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingLetterSpacing,
-      static_cast<size_t>(letter_spacing));
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingLetterSpacing,
+        static_cast<size_t>(letter_spacing));
+  }
 }
 void ReadAnythingUntrustedPageHandler::OnFontChange(const std::string& font) {
-  browser_->profile()->GetPrefs()->SetString(
-      prefs::kAccessibilityReadAnythingFontName, font);
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetString(
+        prefs::kAccessibilityReadAnythingFontName, font);
+  }
 }
 void ReadAnythingUntrustedPageHandler::OnFontSizeChange(double font_size) {
   double saved_font_size = std::min(font_size, kReadAnythingMaximumFontScale);
-  browser_->profile()->GetPrefs()->SetDouble(
-      prefs::kAccessibilityReadAnythingFontScale, saved_font_size);
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetDouble(
+        prefs::kAccessibilityReadAnythingFontScale, saved_font_size);
+  }
 }
 void ReadAnythingUntrustedPageHandler::OnColorChange(
     read_anything::mojom::Colors color) {
-  browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingColorInfo, static_cast<size_t>(color));
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingColorInfo, static_cast<size_t>(color));
+  }
 }
-
 void ReadAnythingUntrustedPageHandler::OnSpeechRateChange(double rate) {
-  browser_->profile()->GetPrefs()->SetDouble(
-      prefs::kAccessibilityReadAnythingSpeechRate, rate);
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetDouble(
+        prefs::kAccessibilityReadAnythingSpeechRate, rate);
+  }
+}
+void ReadAnythingUntrustedPageHandler::OnVoiceChange(const std::string& voice,
+                                                     const std::string& lang) {
+  if (browser_) {
+    PrefService* prefs = browser_->profile()->GetPrefs();
+    ScopedDictPrefUpdate update(prefs,
+                                prefs::kAccessibilityReadAnythingVoiceName);
+    update->Set(lang, voice);
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnHighlightGranularityChanged(
     read_anything::mojom::HighlightGranularity granularity) {
-  browser_->profile()->GetPrefs()->SetInteger(
-      prefs::kAccessibilityReadAnythingHighlightGranularity,
-      static_cast<size_t>(granularity));
+  if (browser_) {
+    browser_->profile()->GetPrefs()->SetInteger(
+        prefs::kAccessibilityReadAnythingHighlightGranularity,
+        static_cast<size_t>(granularity));
+  }
 }
 
 void ReadAnythingUntrustedPageHandler::OnLinkClicked(
@@ -213,7 +275,9 @@ void ReadAnythingUntrustedPageHandler::OnSelectionChange(
 }
 
 void ReadAnythingUntrustedPageHandler::OnCollapseSelection() {
-  web_contents()->CollapseSelection();
+  if (main_observer_ && main_observer_->web_contents()) {
+    main_observer_->web_contents()->CollapseSelection();
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -273,7 +337,8 @@ void ReadAnythingUntrustedPageHandler::StateChanged(
   DCHECK(features::IsReadAnythingWithScreen2xEnabled());
   // If Screen AI library is downloaded but not initialized yet, ensure it is
   // loadable and initializes without any problems.
-  if (state == screen_ai::ScreenAIInstallState::State::kDownloaded) {
+  if (state == screen_ai::ScreenAIInstallState::State::kDownloaded &&
+      browser_) {
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
         browser_->profile())
         ->InitializeMainContentExtractionIfNeeded();
@@ -307,20 +372,6 @@ void ReadAnythingUntrustedPageHandler::OnTabStripModelDestroyed(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// content::WebContentsObserver:
-///////////////////////////////////////////////////////////////////////////////
-
-void ReadAnythingUntrustedPageHandler::PrimaryPageChanged(content::Page& page) {
-  OnActiveAXTreeIDChanged();
-}
-
-void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
-    const content::AXEventNotificationDetails& details) {
-  page_->AccessibilityEventReceived(details.ax_tree_id, details.updates,
-                                    details.events);
-}
-
-///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // TODO(crbug.com/1266555): Disable accessibility.and stop observing events
@@ -332,10 +383,14 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   // 2. Set an AXContext on the web contents with web contents only mode
   //    enabled.
   content::WebContents* web_contents = nullptr;
-  if (active_) {
+  if (active_ && browser_) {
     web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   }
-  Observe(web_contents);
+
+  main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+      weak_factory_.GetSafeRef(), web_contents);
+  pdf_observer_.reset();
+
   // Enable accessibility for the top level render frame and all descendants.
   // This causes AXTreeSerializer to reset and send accessibility events of
   // the AXTree when it is re-serialized.
@@ -347,25 +402,27 @@ void ReadAnythingUntrustedPageHandler::OnActiveWebContentsChanged() {
   OnActiveAXTreeIDChanged();
 }
 
-void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
+void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged(
+    bool force_update_state) {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
   GURL visible_url;
-  if (active_ && web_contents()) {
-    visible_url = web_contents()->GetVisibleURL();
+  if (active_ && main_observer_ && main_observer_->web_contents()) {
+    visible_url = main_observer_->web_contents()->GetVisibleURL();
     content::RenderFrameHost* render_frame_host =
-        web_contents()->GetPrimaryMainFrame();
+        main_observer_->web_contents()->GetPrimaryMainFrame();
     if (render_frame_host) {
       tree_id = render_frame_host->GetAXTreeID();
       ukm_source_id = render_frame_host->GetPageUkmSourceId();
     }
   }
 
-  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url);
+  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url,
+                                 force_update_state);
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {
-  if (!browser_ || !browser_->profile()->GetPrefs()) {
+  if (!browser_) {
     return;
   }
 
@@ -400,4 +457,28 @@ void ReadAnythingUntrustedPageHandler::LogTextStyle() {
           prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing));
   base::UmaHistogramEnumeration(string_constants::kLetterSpacingHistogramName,
                                 letter_spacing);
+}
+
+void ReadAnythingUntrustedPageHandler::EnablePDFContentAccessibility(
+    const ui::AXTreeID& ax_tree_id) {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromAXTreeID(ax_tree_id);
+  if (!render_frame_host) {
+    return;
+  }
+
+  content::WebContents* contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (contents == main_observer_->web_contents()) {
+    return;
+  }
+
+  CHECK(IsPdfExtensionOrigin(
+      contents->GetPrimaryMainFrame()->GetLastCommittedOrigin()));
+  pdf_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+      weak_factory_.GetSafeRef(), contents);
+  contents->EnableWebContentsOnlyAccessibilityMode();
+
+  // Trigger distillation.
+  OnActiveAXTreeIDChanged(true);
 }

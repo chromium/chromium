@@ -33,7 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
+#import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_util.h"
@@ -247,16 +247,16 @@ TEST_F(KeyCommandsProviderTest, CanPerform_TabsActions) {
   // No tabs.
   ASSERT_EQ(web_state_list_->count(), 0);
   NSArray<NSString*>* actions = @[
-    @"keyCommand_openLocation",  @"keyCommand_closeTab",
-    @"keyCommand_showBookmarks", @"keyCommand_reload",
-    @"keyCommand_showHistory",   @"keyCommand_voiceSearch",
-    @"keyCommand_stop",          @"keyCommand_showHelp",
-    @"keyCommand_showDownloads", @"keyCommand_select1",
-    @"keyCommand_select2",       @"keyCommand_select3",
-    @"keyCommand_select4",       @"keyCommand_select5",
-    @"keyCommand_select6",       @"keyCommand_select7",
-    @"keyCommand_select8",       @"keyCommand_select9",
-    @"keyCommand_showNextTab",   @"keyCommand_showPreviousTab",
+    @"keyCommand_openLocation",    @"keyCommand_closeTab",
+    @"keyCommand_showBookmarks",   @"keyCommand_reload",
+    @"keyCommand_voiceSearch",     @"keyCommand_stop",
+    @"keyCommand_showHelp",        @"keyCommand_showDownloads",
+    @"keyCommand_select1",         @"keyCommand_select2",
+    @"keyCommand_select3",         @"keyCommand_select4",
+    @"keyCommand_select5",         @"keyCommand_select6",
+    @"keyCommand_select7",         @"keyCommand_select8",
+    @"keyCommand_select9",         @"keyCommand_showNextTab",
+    @"keyCommand_showPreviousTab",
   ];
   for (NSString* action in actions) {
     EXPECT_FALSE(CanPerform(action));
@@ -529,6 +529,34 @@ TEST_F(KeyCommandsProviderTest, CanPerform_OpenNewRegularTab_DisabledByPolicy) {
 
   // Verify that regular tabs can still be opened as a sanity check.
   EXPECT_TRUE(CanPerform(@"keyCommand_openNewRegularTab"));
+}
+
+// Checks the showHistory logic based on an regular browser state.
+TEST_F(KeyCommandsProviderTest, ShowHistory_RegularBrowserState) {
+  NSString* showHistoryCommand = @"keyCommand_showHistory";
+  EXPECT_FALSE(CanPerform(showHistoryCommand));
+  // Open a tab.
+  InsertNewWebState(0);
+  EXPECT_TRUE(CanPerform(showHistoryCommand));
+  // Close the tab.
+  CloseWebState(0);
+  EXPECT_FALSE(CanPerform(showHistoryCommand));
+}
+
+// Checks the showHistory logic based on an incognito browser state.
+TEST_F(KeyCommandsProviderTest, ShowHistory_IncognitoBrowserState) {
+  ChromeBrowserState* incognito_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+  web_state_list_ = browser_->GetWebStateList();
+
+  NSString* showHistoryCommand = @"keyCommand_showHistory";
+  EXPECT_FALSE(CanPerform(showHistoryCommand));
+  // Open a tab.
+  InsertNewWebState(0);
+  // This condition should be TRUE in regular but FALSE in incognito.
+  EXPECT_FALSE(CanPerform(showHistoryCommand));
 }
 
 #pragma mark - Metrics Tests

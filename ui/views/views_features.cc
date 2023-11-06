@@ -24,6 +24,20 @@ BASE_FEATURE(kEnableViewPaintOptimization,
              "EnableViewPaintOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, views::Label falls back to use the legacy preferred size
+// calculation in which the size bounds might be ignored to respect its
+// current width. TODO(crbug.com/1346889): remove this.
+BASE_FEATURE(kForceUseLegacyPreferredSize,
+             "ForceUseLegacyPreferredSize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Used to enable keyboard-accessible tooltips in Views UI, as opposed
+// to kKeyboardAccessibleTooltip in //ui/base/ui_base_features.cc.
+BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
+             "KeyboardAccessibleTooltipInViews",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables trackpad gestures to dismiss notifications. Also, updates gestures to
 // When enabled, widgets will be shown based on their z-order level
 BASE_FEATURE(kWidgetLayering,
              "WidgetLayering",

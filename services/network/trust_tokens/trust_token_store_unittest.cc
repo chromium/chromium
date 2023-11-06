@@ -25,7 +25,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-using ::base::EqualsProto;
+using ::base::test::EqualsProto;
 using ::testing::ElementsAre;
 using ::testing::Optional;
 

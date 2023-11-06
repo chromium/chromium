@@ -1346,7 +1346,7 @@ void MediaSource::SetSourceBufferActive(SourceBuffer* source_buffer,
 std::pair<scoped_refptr<MediaSourceAttachmentSupplement>, MediaSourceTracer*>
 MediaSource::AttachmentAndTracer() const {
   base::AutoLock lock(attachment_link_lock_);
-  return std::make_pair(media_source_attachment_, attachment_tracer_);
+  return std::make_pair(media_source_attachment_, attachment_tracer_.Get());
 }
 
 void MediaSource::EndOfStreamAlgorithm(
@@ -1421,7 +1421,7 @@ MediaSourceTracer* MediaSource::StartAttachingToMediaElement(
   media_source_attachment_ = attachment;
   attachment_tracer_ =
       MakeGarbageCollected<SameThreadMediaSourceTracer>(element, this);
-  return attachment_tracer_;
+  return attachment_tracer_.Get();
 }
 
 bool MediaSource::StartWorkerAttachingToMainThreadMediaElement(

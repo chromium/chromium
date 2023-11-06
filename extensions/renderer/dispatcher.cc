@@ -156,7 +156,7 @@ void CallModuleMethod(const std::string& module_name,
   std::unique_ptr<content::V8ValueConverter> converter =
       content::V8ValueConverter::Create();
 
-  std::vector<v8::Local<v8::Value>> arguments;
+  v8::LocalVector<v8::Value> arguments(context->isolate());
   for (const auto& arg : *args) {
     arguments.push_back(converter->ToV8Value(arg, context->v8_context()));
   }
@@ -278,7 +278,7 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       receiver_(this),
       dispatcher_(this) {
   bindings_system_ = CreateBindingsSystem(
-      IPCMessageSender::CreateMainThreadIPCMessageSender());
+      this, IPCMessageSender::CreateMainThreadIPCMessageSender());
 
   script_context_set_ =
       std::make_unique<ScriptContextSet>(&active_extension_ids_);
@@ -287,7 +287,9 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
       std::make_unique<ScriptInjectionManager>(user_script_set_manager_.get());
   user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
   PopulateSourceMap();
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   WakeEventPage::Get()->Init(RenderThread::Get());
+#endif
   // Ideally this should be done after checking
   // ExtensionAPIEnabledInExtensionServiceWorkers(), but the Dispatcher is
   // created so early that sending an IPC from browser/ process to synchronize
@@ -548,19 +550,22 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   context->set_service_worker_scope(service_worker_scope);
   context->set_service_worker_version_id(service_worker_version_id);
 
+  WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
+  absl::optional<base::UnguessableToken> worker_activation_token =
+      RendererExtensionRegistry::Get()->GetWorkerActivationToken(
+          extension->id());
+
   if (ExtensionsRendererClient::Get()
           ->ExtensionAPIEnabledForServiceWorkerScript(service_worker_scope,
                                                       script_url)) {
-    WorkerThreadDispatcher* worker_dispatcher = WorkerThreadDispatcher::Get();
     std::unique_ptr<IPCMessageSender> ipc_sender =
         IPCMessageSender::CreateWorkerThreadIPCMessageSender(
             worker_dispatcher, context_proxy, service_worker_version_id);
-    base::UnguessableToken worker_activation_token =
-        *RendererExtensionRegistry::Get()->GetWorkerActivationToken(
-            extension->id());
+    CHECK(worker_activation_token.has_value());
     worker_dispatcher->AddWorkerData(
         context_proxy, service_worker_version_id, worker_activation_token,
-        context, CreateBindingsSystem(std::move(ipc_sender)));
+        context,
+        CreateBindingsSystem(worker_dispatcher, std::move(ipc_sender)));
 
     // TODO(lazyboy): Make sure accessing |source_map_| in worker thread is
     // safe.
@@ -580,10 +585,14 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     // TODO(lazyboy): Get rid of RequireGuestViewModules() as this doesn't seem
     // necessary for Extension SW.
     RequireGuestViewModules(context);
-
-    WorkerThreadDispatcher::GetServiceWorkerData()->Init();
+  } else {
+    // For ServiceWorkers that do not have native bindings API attached we
+    // still create the WorkerData as native logging and wake event page
+    // will still be bound below.
+    worker_dispatcher->AddWorkerData(context_proxy, service_worker_version_id,
+                                     worker_activation_token, context, nullptr);
   }
-
+  WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
 
   v8::Isolate* isolate = context->isolate();
@@ -630,7 +639,7 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
       v8_helpers::ToV8StringUnsafe(
           isolate, BackgroundInfo::GetBackgroundURL(extension).spec()),
       // The wake-event-page native function.
-      WakeEventPage::Get()->GetForContext(context),
+      WakeEventPage::GetForContext(context),
       // The logging module.
       logging->NewInstance(),
   };
@@ -672,7 +681,7 @@ void Dispatcher::DidStartServiceWorkerContextOnWorkerThread(
   auto* service_worker_data = WorkerThreadDispatcher::GetServiceWorkerData();
   service_worker_data->GetServiceWorkerHost()->DidStartServiceWorkerContext(
       service_worker_data->context()->GetExtensionID(),
-      service_worker_data->activation_sequence(), service_worker_scope,
+      *service_worker_data->activation_sequence(), service_worker_scope,
       service_worker_version_id, thread_id);
 #endif
 }
@@ -694,17 +703,19 @@ void Dispatcher::WillDestroyServiceWorkerContextOnWorkerThread(
     // WorkerThreadDispatcher? If so, we should move the initialization as well.
     ScriptContext* script_context = service_worker_data->context();
     NativeExtensionBindingsSystem* worker_bindings_system =
-        WorkerThreadDispatcher::GetBindingsSystem();
-    worker_bindings_system->WillReleaseScriptContext(script_context);
+        service_worker_data->bindings_system();
+    if (worker_bindings_system) {
+      worker_bindings_system->WillReleaseScriptContext(script_context);
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-    WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
-                                                  service_worker_version_id);
+      WorkerThreadDispatcher::Get()->DidStopContext(service_worker_scope,
+                                                    service_worker_version_id);
 #else
-    service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
-        script_context->GetExtensionID(),
-        service_worker_data->activation_sequence(), service_worker_scope,
-        service_worker_version_id, thread_id);
+      service_worker_data->GetServiceWorkerHost()->DidStopServiceWorkerContext(
+          script_context->GetExtensionID(),
+          *service_worker_data->activation_sequence(), service_worker_scope,
+          service_worker_version_id, thread_id);
 #endif
+    }
     // Note: we have to remove the context (and thus perform invalidation on
     // the native handlers) prior to removing the worker data, which destroys
     // the associated bindings system.
@@ -1007,6 +1018,7 @@ void Dispatcher::RegisterNativeHandlers(
                                 content::WorkerThread::GetCurrentId()));
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   if (WorkerThreadDispatcher::Get()->OnControlMessageReceived(message))
     return true;
@@ -1021,6 +1033,7 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
 
   return handled;
 }
+#endif
 
 void Dispatcher::RegisterMojoInterfaces(
     blink::AssociatedInterfaceRegistry* associated_interfaces) {
@@ -1155,7 +1168,7 @@ void Dispatcher::LoadExtensions(
   // Update the available bindings for all contexts. These may have changed if
   // an externally_connectable extension was loaded that can connect to an
   // open webpage.
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 }
 
 void Dispatcher::UnloadExtension(const std::string& extension_id) {
@@ -1198,7 +1211,7 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
   // Update the available bindings for the remaining contexts. These may have
   // changed if an externally_connectable extension is unloaded and a webpage
   // is no longer accessible.
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 
   // Invalidates the messages map for the extension in case the extension is
   // reloaded with a new messages map.
@@ -1267,7 +1280,7 @@ void Dispatcher::UpdateDefaultPolicyHostRestrictions(
       UpdateOriginPermissions(*extension);
     }
   }
-  UpdateAllBindings();
+  UpdateAllBindings(/*api_permissions_changed=*/false);
 }
 
 void Dispatcher::UpdateUserScriptWorld(mojom::UserScriptWorldInfoPtr info) {
@@ -1331,6 +1344,7 @@ void Dispatcher::WatchPages(const std::vector<std::string>& css_selectors) {
   content_watcher_->OnWatchPages(css_selectors);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void Dispatcher::OnDeliverMessage(int worker_thread_id,
                                   const PortId& target_port_id,
                                   const Message& message) {
@@ -1349,8 +1363,8 @@ void Dispatcher::OnDispatchOnConnect(
   bindings_system_->messaging_service()->DispatchOnConnect(
       script_context_set_.get(), connect_data.target_port_id,
       connect_data.channel_type, connect_data.channel_name,
-      connect_data.tab_source, connect_data.external_connection_info,
-      nullptr);  // All render frames.
+      connect_data.tab_source, connect_data.external_connection_info, {}, {},
+      nullptr, base::DoNothing());  // All render frames.
 }
 
 void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
@@ -1361,9 +1375,11 @@ void Dispatcher::OnDispatchOnDisconnect(int worker_thread_id,
       script_context_set_.get(), port_id, error_message,
       nullptr);  // All render frames.
 }
+#endif
 
 void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                               base::Value::List event_args) {
+                               base::Value::List event_args,
+                               DispatchEventCallback callback) {
   CHECK_EQ(params->worker_thread_id, kMainThreadId);
   content::RenderFrame* background_frame =
       ExtensionFrameHelper::GetBackgroundPageFrame(params->extension_id);
@@ -1390,6 +1406,7 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
   DispatchEventHelper(params->extension_id, params->event_name, event_args,
                       std::move(params->filtering_info));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   if (background_frame) {
     // Tell the browser process when an event has been dispatched with a lazy
     // background page active.
@@ -1400,10 +1417,15 @@ void Dispatcher::DispatchEvent(mojom::DispatchEventParamsPtr params,
           background_frame->GetRoutingID(), params->event_id));
     }
   }
+#endif
+  std::move(callback).Run();
 }
 
 void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
   SetCurrentDeveloperMode(kRendererProfileId, current_developer_mode);
+  // Since this affects the availability of different APIs, we indicate that
+  // api permissions may have changed.
+  UpdateAllBindings(/*api_permissions_changed=*/true);
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,
@@ -1466,6 +1488,10 @@ void Dispatcher::OnUserScriptsUpdated(const mojom::HostID& changed_host) {
     UpdateActiveExtensions();
 }
 
+ScriptContextSetIterable* Dispatcher::GetScriptContextSet() {
+  return script_context_set_iterator();
+}
+
 void Dispatcher::UpdateActiveExtensions() {
   std::set<std::string> active_extensions = active_extension_ids_;
   user_script_set_manager_->GetAllActiveExtensionIds(&active_extensions);
@@ -1506,13 +1532,12 @@ void Dispatcher::EnableCustomElementAllowlist() {
   delegate_->EnableCustomElementAllowlist();
 }
 
-void Dispatcher::UpdateAllBindings() {
+void Dispatcher::UpdateAllBindings(bool api_permissions_changed) {
   bindings_system_->UpdateBindings(ExtensionId() /* all contexts */,
-                                   false /* permissions_changed */,
+                                   api_permissions_changed,
                                    script_context_set_iterator());
-  // TODO(crbug.com/986416): Can "externally_connectable" affect Service Worker
-  // ScriptContext-s in some way? We'd need to process that here if that is the
-  // case.
+
+  WorkerThreadDispatcher::Get()->UpdateAllServiceWorkerBindings();
 }
 
 void Dispatcher::UpdateBindingsForExtension(const Extension& extension) {
@@ -1622,9 +1647,10 @@ void Dispatcher::RequireGuestViewModules(ScriptContext* context) {
 }
 
 std::unique_ptr<NativeExtensionBindingsSystem> Dispatcher::CreateBindingsSystem(
+    NativeExtensionBindingsSystem::Delegate* delegate,
     std::unique_ptr<IPCMessageSender> ipc_sender) {
-  auto bindings_system =
-      std::make_unique<NativeExtensionBindingsSystem>(std::move(ipc_sender));
+  auto bindings_system = std::make_unique<NativeExtensionBindingsSystem>(
+      delegate, std::move(ipc_sender));
   delegate_->InitializeBindingsSystem(this, bindings_system.get());
   return bindings_system;
 }

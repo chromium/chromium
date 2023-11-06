@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "ShoppingListEnabled": false
+        },
+        "prefs": {
+          "shopping_list_enabled": {}
+        }
+      }
+    ]
+  }
+]

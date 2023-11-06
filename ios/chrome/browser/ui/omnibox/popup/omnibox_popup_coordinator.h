@@ -54,6 +54,9 @@ class OmniboxPopupViewIOS;
 // Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 
+/// Toggle visibility of the omnibox debugger view.
+- (void)toggleOmniboxDebuggerView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_COORDINATOR_H_

@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "gdata.disabled": {
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveDisabled": false
+        },
+        "prefs": {
+          "gdata.disabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DriveDisabled": true
+        },
+        "prefs": {
+          "gdata.disabled": {
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

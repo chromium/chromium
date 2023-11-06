@@ -50,17 +50,15 @@ import org.chromium.url.GURL;
 
 import java.util.concurrent.TimeoutException;
 
-/**
- * Integration test for the whole saving/updating password workflow.
- */
+/** Integration test for the whole saving/updating password workflow. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 public class PasswordSavingIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    @Rule
-    public SigninTestRule mSigninTestRule = new SigninTestRule();
+
+    @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
     private static final String SIGNIN_FORM_URL = "/chrome/test/data/password/simple_password.html";
     private static final String CHANGE_PASSWORD_FORM_URL =
@@ -87,12 +85,15 @@ public class PasswordSavingIntegrationTest {
     public void setup() throws Exception {
         PasswordStoreAndroidBackendFactory.setFactoryInstanceForTesting(
                 new FakePasswordStoreAndroidBackendFactoryImpl());
-        runOnUiThreadBlocking(() -> {
-            ((FakePasswordStoreAndroidBackend) PasswordStoreAndroidBackendFactory.getInstance()
-                            .createBackend())
-                    .setSyncingAccount(
-                            AccountUtils.createAccountFromName(SigninTestRule.TEST_ACCOUNT_EMAIL));
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    ((FakePasswordStoreAndroidBackend)
+                                    PasswordStoreAndroidBackendFactory.getInstance()
+                                            .createBackend())
+                            .setSyncingAccount(
+                                    AccountUtils.createAccountFromName(
+                                            SigninTestRule.TEST_ACCOUNT_EMAIL));
+                });
         PasswordSyncControllerDelegateFactory.setFactoryInstanceForTesting(
                 new FakePasswordSyncControllerDelegateFactoryImpl());
 
@@ -100,11 +101,13 @@ public class PasswordSavingIntegrationTest {
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
 
-        runOnUiThreadBlocking(() -> {
-            mBottomSheetController = BottomSheetControllerProvider.from(
-                    mActivityTestRule.getActivity().getWindowAndroid());
-            mPasswordStoreBridge = new PasswordStoreBridge();
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    mBottomSheetController =
+                            BottomSheetControllerProvider.from(
+                                    mActivityTestRule.getActivity().getWindowAndroid());
+                    mPasswordStoreBridge = new PasswordStoreBridge();
+                });
 
         mWebContents = mActivityTestRule.getWebContents();
         ImeAdapter imeAdapter = WebContentsUtils.getImeAdapter(mWebContents);
@@ -114,7 +117,10 @@ public class PasswordSavingIntegrationTest {
 
     @After
     public void tearDown() {
-        runOnUiThreadBlocking(() -> { mPasswordStoreBridge.clearAllPasswords(); });
+        runOnUiThreadBlocking(
+                () -> {
+                    mPasswordStoreBridge.clearAllPasswords();
+                });
         mSigninTestRule.tearDownRule();
     }
 
@@ -132,17 +138,21 @@ public class PasswordSavingIntegrationTest {
         waitForPmParserAnnotation(mWebContents, PASSWORD_NODE_ID);
 
         DOMUtils.clickNodeWithJavaScript(mWebContents, SUBMIT_BUTTON_ID);
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(),
                 mActivityTestRule.getTestServer().getURL(DONE_URL));
         waitForMessageShown();
 
         clickSaveUpdateButtonOnMessage();
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have added one password.", credentials.length, is(1));
-            Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
-            Criteria.checkThat(credentials[0].getPassword(), is(PASSWORD_TEXT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have added one password.", credentials.length, is(1));
+                    Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
+                    Criteria.checkThat(credentials[0].getPassword(), is(PASSWORD_TEXT));
+                });
     }
 
     @Test
@@ -152,11 +162,16 @@ public class PasswordSavingIntegrationTest {
     @DisabledTest(message = "https://crbug.com/1468903")
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.
-        PasswordStoreCredential testCredential = new PasswordStoreCredential(
-                new GURL(mActivityTestRule.getTestServer().getURL(CHANGE_PASSWORD_FORM_URL)),
-                USERNAME_TEXT, PASSWORD_TEXT);
+        PasswordStoreCredential testCredential =
+                new PasswordStoreCredential(
+                        new GURL(
+                                mActivityTestRule.getTestServer().getURL(CHANGE_PASSWORD_FORM_URL)),
+                        USERNAME_TEXT,
+                        PASSWORD_TEXT);
         runOnUiThreadBlocking(
-                () -> { mPasswordStoreBridge.insertPasswordCredential(testCredential); });
+                () -> {
+                    mPasswordStoreBridge.insertPasswordCredential(testCredential);
+                });
 
         mActivityTestRule.loadUrl(
                 mActivityTestRule.getTestServer().getURL(CHANGE_PASSWORD_FORM_URL));
@@ -172,7 +187,10 @@ public class PasswordSavingIntegrationTest {
 
         // Click the TTF button that inserts the credential in the form.
         ButtonCompat continueButton = (ButtonCompat) getCredentials().getChildAt(2);
-        runOnUiThreadBlocking(() -> { continueButton.performClick(); });
+        runOnUiThreadBlocking(
+                () -> {
+                    continueButton.performClick();
+                });
 
         // Wait till TTF closes.
         BottomSheetTestSupport.waitForState(mBottomSheetController, SheetState.HIDDEN);
@@ -180,12 +198,16 @@ public class PasswordSavingIntegrationTest {
         // Enter the new password.
         enterInputIntoTextField(
                 mWebContents, mInputMethodManagerWrapper, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
-        enterInputIntoTextField(mWebContents, mInputMethodManagerWrapper,
-                NEW_PASSWORD_REPEAT_NODE_ID, NEW_PASSWORD_TEXT);
+        enterInputIntoTextField(
+                mWebContents,
+                mInputMethodManagerWrapper,
+                NEW_PASSWORD_REPEAT_NODE_ID,
+                NEW_PASSWORD_TEXT);
 
         // Submit the form and wait for the success page to load.
         DOMUtils.clickNodeWithJavaScript(mWebContents, CHANGE_PASSWORD_BUTTON_ID);
-        ChromeTabUtils.waitForTabPageLoaded(mActivityTestRule.getActivity().getActivityTab(),
+        ChromeTabUtils.waitForTabPageLoaded(
+                mActivityTestRule.getActivity().getActivityTab(),
                 mActivityTestRule.getTestServer().getURL(DONE_URL));
 
         // Wait for the update message to show and confirm the update.
@@ -193,36 +215,47 @@ public class PasswordSavingIntegrationTest {
         clickSaveUpdateButtonOnMessage();
 
         // Check that the credential was updated.
-        CriteriaHelper.pollUiThread(() -> {
-            PasswordStoreCredential[] credentials = mPasswordStoreBridge.getAllCredentials();
-            Criteria.checkThat("Should have contained one password.", credentials.length, is(1));
-            Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
-            Criteria.checkThat(credentials[0].getPassword(), is(NEW_PASSWORD_TEXT));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    PasswordStoreCredential[] credentials =
+                            mPasswordStoreBridge.getAllCredentials();
+                    Criteria.checkThat(
+                            "Should have contained one password.", credentials.length, is(1));
+                    Criteria.checkThat(credentials[0].getUsername(), is(USERNAME_TEXT));
+                    Criteria.checkThat(credentials[0].getPassword(), is(NEW_PASSWORD_TEXT));
+                });
     }
 
     private void clickSaveUpdateButtonOnMessage() {
-        runOnUiThreadBlocking(() -> {
-            TextView button =
-                    mActivityTestRule.getActivity().findViewById(R.id.message_primary_button);
-            button.performClick();
-        });
+        runOnUiThreadBlocking(
+                () -> {
+                    TextView button =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.message_primary_button);
+                    button.performClick();
+                });
     }
 
     private void waitForMessageShown() {
         WindowAndroid window = mActivityTestRule.getActivity().getWindowAndroid();
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Message is not enqueued.",
-                    MessagesTestHelper.getMessageCount(window), Matchers.is(1));
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Message is not enqueued.",
+                            MessagesTestHelper.getMessageCount(window),
+                            Matchers.is(1));
+                });
     }
 
     private void waitForPmParserAnnotation(WebContents webContents, String nodeID) {
-        CriteriaHelper.pollInstrumentationThread(() -> {
-            String attribute = DOMUtils.getNodeAttribute(
-                    PASSWORD_MANAGER_ANNOTATION, webContents, nodeID, String.class);
-            return attribute != null;
-        });
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    String attribute =
+                            DOMUtils.getNodeAttribute(
+                                    PASSWORD_MANAGER_ANNOTATION, webContents, nodeID, String.class);
+                    return attribute != null;
+                });
     }
 
     private RecyclerView getCredentials() {

@@ -6,10 +6,8 @@
 
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/shell.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -17,7 +15,6 @@
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -27,13 +24,7 @@ class AccessibilityFeaturePodControllerTest
     : public NoSessionAshTestBase,
       public testing::WithParamInterface<bool> {
  public:
-  AccessibilityFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
+  AccessibilityFeaturePodControllerTest() = default;
 
   AccessibilityFeaturePodControllerTest(
       const AccessibilityFeaturePodControllerTest&) = delete;
@@ -42,15 +33,12 @@ class AccessibilityFeaturePodControllerTest
 
   ~AccessibilityFeaturePodControllerTest() override = default;
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
-
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
     GetPrimaryUnifiedSystemTray()->ShowBubble();
   }
 
   void TearDown() override {
-    button_.reset();
     controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
@@ -59,11 +47,7 @@ class AccessibilityFeaturePodControllerTest
   void SetUpButton() {
     controller_ =
         std::make_unique<AccessibilityFeaturePodController>(tray_controller());
-    if (IsQsRevampEnabled()) {
-      tile_ = controller_->CreateTile();
-    } else {
-      button_.reset(controller_->CreateButton());
-    }
+    tile_ = controller_->CreateTile();
   }
 
   AccessibilityControllerImpl* GetAccessibilityController() {
@@ -77,53 +61,42 @@ class AccessibilityFeaturePodControllerTest
         ->unified_system_tray_controller();
   }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
-  }
+  bool IsButtonVisible() { return tile_->GetVisible(); }
   void PressIcon() { controller_->OnIconPressed(); }
 
   void PressLabel() { controller_->OnLabelPressed(); }
 
   const char* GetToggledOnHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOn"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOn";
+    return "Ash.QuickSettings.FeaturePod.ToggledOn";
   }
 
   const char* GetToggledOffHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.ToggledOff"
-                               : "Ash.UnifiedSystemView.FeaturePod.ToggledOff";
+    return "Ash.QuickSettings.FeaturePod.ToggledOff";
   }
 
   const char* GetDiveInHistogramName() {
-    return IsQsRevampEnabled() ? "Ash.QuickSettings.FeaturePod.DiveIn"
-                               : "Ash.UnifiedSystemView.FeaturePod.DiveIn";
+    return "Ash.QuickSettings.FeaturePod.DiveIn";
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AccessibilityFeaturePodController> controller_;
-  std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         AccessibilityFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(AccessibilityFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
+TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
   SetUpButton();
   // If not logged in, it should be always visible.
   EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_P(AccessibilityFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
+TEST_F(AccessibilityFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
   CreateUserSessions(1);
   SetUpButton();
   // If logged in, it's not visible by default.
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(AccessibilityFeaturePodControllerTest, IconUMATracking) {
+TEST_F(AccessibilityFeaturePodControllerTest, IconUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
@@ -148,7 +121,7 @@ TEST_P(AccessibilityFeaturePodControllerTest, IconUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(AccessibilityFeaturePodControllerTest, LabelUMATracking) {
+TEST_F(AccessibilityFeaturePodControllerTest, LabelUMATracking) {
   SetUpButton();
 
   // No metrics logged before clicking on any views.
@@ -173,11 +146,7 @@ TEST_P(AccessibilityFeaturePodControllerTest, LabelUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileBasicToggleBehavior) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
+TEST_F(AccessibilityFeaturePodControllerTest, FeatureTileBasicToggleBehavior) {
   SetUpButton();
 
   EXPECT_FALSE(GetFeatureTile()->IsToggled());
@@ -201,11 +170,7 @@ TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileBasicToggleBehavior) {
 
 // Toggle all accessibility features one by one and make sure the feature tile
 // is updated appropriately.
-TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileAllFeaturesToggled) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
+TEST_F(AccessibilityFeaturePodControllerTest, FeatureTileAllFeaturesToggled) {
   SetUpButton();
 
   for (int type = 0; type != static_cast<int>(A11yFeatureType::kFeatureCount);
@@ -228,12 +193,8 @@ TEST_P(AccessibilityFeaturePodControllerTest, FeatureTileAllFeaturesToggled) {
 
 // Enable accessibility features one by one until we have double digits in the
 // count shown in the `sub_label`.
-TEST_P(AccessibilityFeaturePodControllerTest,
+TEST_F(AccessibilityFeaturePodControllerTest,
        FeatureTileSubLabelCounterBehavior) {
-  if (!IsQsRevampEnabled()) {
-    return;
-  }
-
   SetUpButton();
 
   GetAccessibilityController()

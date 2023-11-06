@@ -80,10 +80,12 @@ class LayerTreeCcWrapper : public LayerTree,
   void DidInitializeLayerTreeFrameSink() override;
   void DidFailToInitializeLayerTreeFrameSink() override;
   void WillCommit(const cc::CommitState&) override {}
-  void DidCommit(base::TimeTicks, base::TimeTicks) override {}
-  void DidCommitAndDrawFrame() override {}
+  void DidCommit(int source_frame_number,
+                 base::TimeTicks,
+                 base::TimeTicks) override {}
+  void DidCommitAndDrawFrame(int source_frame_number) override {}
   void DidReceiveCompositorFrameAck() override;
-  void DidCompletePageScaleAnimation() override {}
+  void DidCompletePageScaleAnimation(int source_frame_number) override {}
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
@@ -97,6 +99,7 @@ class LayerTreeCcWrapper : public LayerTree,
   void NotifyThroughputTrackerResults(
       cc::CustomTrackerResults results) override {}
   void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
 

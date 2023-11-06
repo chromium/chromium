@@ -21,7 +21,7 @@ namespace extensions {
 ServiceWorkerData::ServiceWorkerData(
     blink::WebServiceWorkerContextProxy* proxy,
     int64_t service_worker_version_id,
-    base::UnguessableToken activation_sequence,
+    const absl::optional<base::UnguessableToken>& activation_sequence,
     ScriptContext* context,
     std::unique_ptr<NativeExtensionBindingsSystem> bindings_system)
     : proxy_(proxy),
@@ -31,9 +31,16 @@ ServiceWorkerData::ServiceWorkerData(
       v8_schema_registry_(new V8SchemaRegistry),
       bindings_system_(std::move(bindings_system)) {
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
-  proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
-      base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
-                          weak_ptr_factory_.GetWeakPtr()));
+  // `bindings_system_` is null if `ExtensionAPIEnabledForServiceWorkerScript`
+  // returns false. That means we aren't exposing any bindings to the service
+  // worker, but we will have ServiceWorkerData for it so that the
+  // WakeEventPage and logging can communicate back to the browser via the
+  // `mojom::RendererHost`.
+  if (bindings_system_) {
+    proxy_->GetAssociatedInterfaceRegistry().AddInterface<mojom::ServiceWorker>(
+        base::BindRepeating(&ServiceWorkerData::OnServiceWorkerRequest,
+                            weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 }
 
@@ -42,6 +49,7 @@ ServiceWorkerData::~ServiceWorkerData() = default;
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ServiceWorkerData::OnServiceWorkerRequest(
     mojo::PendingAssociatedReceiver<mojom::ServiceWorker> receiver) {
+  CHECK(bindings_system_);
   receiver_.reset();
   receiver_.Bind(std::move(receiver));
 }
@@ -49,6 +57,7 @@ void ServiceWorkerData::OnServiceWorkerRequest(
 void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
                                           PermissionSet withheld_permissions) {
   DCHECK(worker_thread_util::IsWorkerThread());
+  CHECK(bindings_system_);
 
   const ExtensionId& extension_id = context_->GetExtensionID();
   const Extension* extension =
@@ -65,6 +74,7 @@ void ServiceWorkerData::UpdatePermissions(PermissionSet active_permissions,
 }
 
 mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
+  CHECK(bindings_system_);
   if (!service_worker_host_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         service_worker_host_.BindNewEndpointAndPassReceiver());
@@ -73,6 +83,7 @@ mojom::ServiceWorkerHost* ServiceWorkerData::GetServiceWorkerHost() {
 }
 
 mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
+  CHECK(bindings_system_);
   if (!event_router_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         event_router_remote_.BindNewEndpointAndPassReceiver());
@@ -81,6 +92,7 @@ mojom::EventRouter* ServiceWorkerData::GetEventRouter() {
 }
 
 mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
+  CHECK(bindings_system_);
   if (!renderer_automation_registry_remote_.is_bound()) {
     proxy_->GetRemoteAssociatedInterface(
         renderer_automation_registry_remote_.BindNewEndpointAndPassReceiver());
@@ -89,7 +101,20 @@ mojom::RendererAutomationRegistry* ServiceWorkerData::GetAutomationRegistry() {
 }
 #endif
 
+mojom::RendererHost* ServiceWorkerData::GetRendererHost() {
+  // We allow access to mojom::RendererHost without a `bindings_system_`.
+  if (!renderer_host_.is_bound()) {
+    proxy_->GetRemoteAssociatedInterface(
+        renderer_host_.BindNewEndpointAndPassReceiver());
+  }
+  return renderer_host_.get();
+}
+
 void ServiceWorkerData::Init() {
+  // If we do not have bindings there is no additional init necessary
+  if (!bindings_system_) {
+    return;
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
   WorkerThreadDispatcher::Get()->DidInitializeContext(
       service_worker_version_id_);
@@ -103,7 +128,8 @@ void ServiceWorkerData::Init() {
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
-                                      base::Value::List event_args) {
+                                      base::Value::List event_args,
+                                      DispatchEventCallback callback) {
   ScriptContext* script_context = context();
   // Note |scoped_extension_interaction| requires a HandleScope.
   v8::Isolate* isolate = script_context->isolate();
@@ -118,11 +144,28 @@ void ServiceWorkerData::DispatchEvent(mojom::DispatchEventParamsPtr params,
   bindings_system()->DispatchEventInContext(params->event_name, event_args,
                                             std::move(params->filtering_info),
                                             context());
-  const int worker_thread_id = content::WorkerThread::GetCurrentId();
-  WorkerThreadDispatcher::Get()->Send(new ExtensionHostMsg_EventAckWorker(
-      context()->GetExtensionID(), service_worker_version_id(),
-      worker_thread_id, params->event_id));
+  std::move(callback).Run();
 }
+
+void ServiceWorkerData::DispatchOnConnect(
+    const PortId& port_id,
+    extensions::mojom::ChannelType channel_type,
+    const std::string& channel_name,
+    extensions::mojom::TabConnectionInfoPtr tab_info,
+    extensions::mojom::ExternalConnectionInfoPtr external_connection_info,
+    mojo::PendingAssociatedReceiver<extensions::mojom::MessagePort> port,
+    mojo::PendingAssociatedRemote<extensions::mojom::MessagePortHost> port_host,
+    DispatchOnConnectCallback callback) {
+  WorkerThreadDispatcher::GetBindingsSystem()
+      ->messaging_service()
+      ->DispatchOnConnect(Dispatcher::GetWorkerScriptContextSet(), port_id,
+                          channel_type, channel_name, *tab_info,
+                          *external_connection_info, std::move(port),
+                          std::move(port_host),
+                          // Render frames do not matter.
+                          nullptr, std::move(callback));
+}
+
 #endif
 
 }  // namespace extensions

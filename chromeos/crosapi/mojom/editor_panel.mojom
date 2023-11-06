@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module crosapi.mojom;
 
@@ -73,4 +73,7 @@ interface EditorPanelManager {
 
   // Should be called when the editor menu is shown or hidden.
   [MinVersion=1] OnEditorMenuVisibilityChanged@6(bool visible);
+
+  // Reports the mode of the editor panel.
+  [MinVersion=2] LogEditorMode@7(EditorPanelMode mode);
 };

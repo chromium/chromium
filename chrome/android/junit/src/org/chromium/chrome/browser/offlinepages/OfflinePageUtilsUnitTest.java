@@ -41,30 +41,22 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.io.File;
 
-/**
- * Unit tests for OfflinePageUtils.
- */
+/** Unit tests for OfflinePageUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {OfflinePageUtilsUnitTest.WrappedEnvironment.class})
 public class OfflinePageUtilsUnitTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
-    @Mock
-    public Profile.Natives mMockProfileNatives;
+    @Rule public JniMocker mocker = new JniMocker();
+    @Mock public Profile.Natives mMockProfileNatives;
 
-    @Mock
-    private File mMockDataDirectory;
-    @Mock
-    private TabImpl mTab;
-    @Mock
-    private WebContents mWebContents;
-    @Mock
-    private OfflinePageBridge mOfflinePageBridge;
-    @Mock
-    private OfflinePageUtils.Internal mOfflinePageUtils;
+    @Mock private File mMockDataDirectory;
+    @Mock private TabImpl mTab;
+    @Mock private WebContents mWebContents;
+    @Mock private OfflinePageBridge mOfflinePageBridge;
+    @Mock private OfflinePageUtils.Internal mOfflinePageUtils;
 
-    @Rule
-    public final SadTabRule mSadTabRule = new SadTabRule();
+    @Rule public final SadTabRule mSadTabRule = new SadTabRule();
 
     @Before
     public void setUp() {
@@ -85,7 +77,9 @@ public class OfflinePageUtilsUnitTest {
 
         doNothing()
                 .when(mOfflinePageBridge)
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         doReturn(mOfflinePageBridge)
@@ -113,7 +107,9 @@ public class OfflinePageUtilsUnitTest {
     public void testSaveBookmarkOffline() {
         OfflinePageUtils.saveBookmarkOffline(new BookmarkId(42, BookmarkType.NORMAL), mTab);
         verify(mOfflinePageBridge, times(1))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
     }
 
@@ -123,7 +119,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(null, mTab);
         // Save page not called because bookmarkId is null.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         BookmarkId bookmarkId = new BookmarkId(42, BookmarkType.NORMAL);
@@ -131,7 +129,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(bookmarkId, mTab);
         // Save page not called because tab is showing an error page.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         doReturn(false).when(mTab).isShowingErrorPage();
@@ -139,7 +139,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(bookmarkId, mTab);
         // Save page not called because tab is showing a sad tab.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         mSadTabRule.show(false);
@@ -147,7 +149,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(bookmarkId, mTab);
         // Save page not called because tab returns null web contents.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         doReturn(mWebContents).when(mTab).getWebContents();
@@ -155,7 +159,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(bookmarkId, mTab);
         // Save page not called because web contents is destroyed.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
 
         doReturn(false).when(mWebContents).isDestroyed();
@@ -163,7 +169,9 @@ public class OfflinePageUtilsUnitTest {
         OfflinePageUtils.saveBookmarkOffline(bookmarkId, mTab);
         // Save page not called because web contents is incognito.
         verify(mOfflinePageBridge, times(0))
-                .savePage(eq(mWebContents), any(ClientId.class),
+                .savePage(
+                        eq(mWebContents),
+                        any(ClientId.class),
                         any(OfflinePageBridge.SavePageCallback.class));
     }
 

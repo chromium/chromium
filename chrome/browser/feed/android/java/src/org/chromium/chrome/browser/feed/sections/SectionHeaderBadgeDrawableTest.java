@@ -23,16 +23,13 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.feed.test.R;
 
-/**
- * Tests for the {@link SectionHeaderBadgeDrawabe} class.
- */
+/** Tests for the {@link SectionHeaderBadgeDrawabe} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SectionHeaderBadgeDrawableTest {
     private Activity mActivity;
     private SectionHeaderBadgeDrawable mDrawable;
 
-    @Mock
-    LinearLayout mMockAnchor;
+    @Mock LinearLayout mMockAnchor;
 
     @Before
     public void setUp() {
@@ -58,14 +55,17 @@ public class SectionHeaderBadgeDrawableTest {
     @Test
     public void animationStartsWhenNonNullTextAndAttached() {
         mDrawable.setText("new");
-        doAnswer((invocation) -> {
-            Rect r = invocation.getArgument(0);
-            r.left = 0;
-            r.top = 0;
-            r.right = 300;
-            r.bottom = 200;
-            return null;
-        }).when(mMockAnchor).getDrawingRect(any());
+        doAnswer(
+                        (invocation) -> {
+                            Rect r = invocation.getArgument(0);
+                            r.left = 0;
+                            r.top = 0;
+                            r.right = 300;
+                            r.bottom = 200;
+                            return null;
+                        })
+                .when(mMockAnchor)
+                .getDrawingRect(any());
         mDrawable.attach(new LinearLayout(mActivity));
         mDrawable.startAnimation();
         assertFalse(mDrawable.getHasPendingAnimationForTest());

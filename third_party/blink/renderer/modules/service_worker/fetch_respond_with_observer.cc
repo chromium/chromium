@@ -352,7 +352,8 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
     scoped_refptr<BlobDataHandle> blob_data_handle =
         buffer->DrainAsBlobDataHandle(
-            BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize);
+            BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize,
+            exception_state);
 
     if (blob_data_handle) {
       // Handle the blob response body.

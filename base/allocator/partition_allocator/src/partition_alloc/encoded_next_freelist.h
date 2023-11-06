@@ -74,7 +74,7 @@ class EncodedFreelistPtr {
 };
 
 // Freelist entries are encoded for security reasons. See
-// //base/allocator/partition_allocator/src/partition_alloc/PartitionAlloc.md
+// //base/allocator/partition_allocator/PartitionAlloc.md
 // and |Transform()| for the rationale and mechanism, respectively.
 class EncodedNextFreelistEntry {
  private:

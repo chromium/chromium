@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_error_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decode_success_callback.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 
 namespace base {
@@ -75,7 +76,7 @@ class AsyncAudioDecoder {
  private:
   AudioBuffer* CreateAudioBufferFromAudioBus(AudioBus*);
   static void DecodeOnBackgroundThread(
-      DOMArrayBuffer* audio_data,
+      ArrayBufferContents audio_data_contents,
       float sample_rate,
       CrossThreadHandle<V8DecodeSuccessCallback>,
       CrossThreadHandle<V8DecodeErrorCallback>,
@@ -83,7 +84,7 @@ class AsyncAudioDecoder {
       CrossThreadHandle<BaseAudioContext>,
       scoped_refptr<base::SingleThreadTaskRunner>,
       const ExceptionContext&);
-  static void NotifyComplete(DOMArrayBuffer* audio_data,
+  static void NotifyComplete(ArrayBufferContents audio_data_contents,
                              V8DecodeSuccessCallback*,
                              V8DecodeErrorCallback*,
                              AudioBus*,

@@ -19,16 +19,18 @@ class PLATFORM_EXPORT FontFormatCheck {
 
  public:
   explicit FontFormatCheck(sk_sp<SkData>);
-  bool IsVariableFont();
-  bool IsCbdtCblcColorFont();
-  bool IsColrCpalColorFont() {
+  virtual ~FontFormatCheck() = default;
+  virtual bool IsVariableFont() const;
+  virtual bool IsCbdtCblcColorFont() const;
+  virtual bool IsColrCpalColorFont() const {
     return IsColrCpalColorFontV0() || IsColrCpalColorFontV1();
   }
-  bool IsColrCpalColorFontV0();
-  bool IsColrCpalColorFontV1();
-  bool IsSbixColorFont();
-  bool IsCff2OutlineFont();
-  bool IsColorFont();
+  virtual bool IsColrCpalColorFontV0() const;
+  virtual bool IsColrCpalColorFontV1() const;
+  bool IsVariableColrV0Font() const;
+  virtual bool IsSbixColorFont() const;
+  virtual bool IsCff2OutlineFont() const;
+  bool IsColorFont() const;
 
   // Still needed in FontCustomPlatformData.
   enum class VariableFontSubType {

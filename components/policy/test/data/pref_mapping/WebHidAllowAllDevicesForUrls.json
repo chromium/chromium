@@ -1,0 +1,38 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebHidAllowAllDevicesForUrls": [
+            "https://www.google.com"
+          ]
+        },
+        "prefs": {
+          "managed.web_hid_allow_all_devices_for_urls": {
+            "location": "local_state",
+            "value": [
+              "https://www.google.com"
+            ]
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "managed.web_hid_allow_all_devices_for_urls": {
+            "default_value": [],
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

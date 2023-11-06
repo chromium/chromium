@@ -11,10 +11,8 @@
 namespace ash::libassistant {
 
 AssistantClient::AssistantClient(
-    std::unique_ptr<assistant_client::AssistantManager> assistant_manager,
-    assistant_client::AssistantManagerInternal* assistant_manager_internal)
-    : assistant_manager_(std::move(assistant_manager)),
-      assistant_manager_internal_(assistant_manager_internal) {}
+    std::unique_ptr<assistant_client::AssistantManager> assistant_manager)
+    : assistant_manager_(std::move(assistant_manager)) {}
 
 AssistantClient::~AssistantClient() = default;
 

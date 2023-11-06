@@ -13,8 +13,8 @@ FakeAttestationCertificateGenerator::FakeAttestationCertificateGenerator() =
 FakeAttestationCertificateGenerator::~FakeAttestationCertificateGenerator() =
     default;
 
-void FakeAttestationCertificateGenerator::RetrieveCertificate(
-    AttestationCertificateGenerator::OnCertificateRetrievedCallback callback) {
-  std::move(callback).Run(CERTS, true);
+void FakeAttestationCertificateGenerator::RetrieveCertificate() {
+  NotifyCertificateGenerated(CERTS, true);
 }
+
 }  // namespace ash::phonehub

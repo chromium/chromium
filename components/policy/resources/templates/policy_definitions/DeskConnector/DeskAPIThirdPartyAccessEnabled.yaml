@@ -1,0 +1,24 @@
+caption: Enable <ph name="DESK_API_NAME">Desk API</ph> for third-party <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> control
+default: false
+desc: Setting the policy to Enabled allows third-party web applications to use Desk
+  API to control <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> desks. If the policy is not set or disabled, the  <ph name="DESK_API_NAME">Desk API</ph>
+  will be unavailable. The policy will only take effect on enrolled devices.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+supported_on:
+- chrome_os:115-
+items:
+- caption: Enable <ph name="DESK_API_NAME">Desk API</ph> for third-party <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> control
+  value: true
+- caption: Do not enable <ph name="DESK_API_NAME">Desk API</ph> for third-party <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> control
+  value: false
+owners:
+- chromeos-commercial-remote-management@google.com
+- aprilzhou@google.com
+- yzd@google.com
+schema:
+  type: boolean
+tags: []
+type: main

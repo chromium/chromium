@@ -1,31 +1,34 @@
 This is a testharness.js-based test.
-PASS restartIce() has no effect on a closed peer connection
-FAIL restartIce() does not trigger negotiation ahead of initial negotiation assert_equals: No negotiationneeded event expected (undefined) undefined but got (object) object "[object Event]"
-PASS restartIce() has no effect on initial negotiation
-PASS restartIce() fires negotiationneeded after initial negotiation
-PASS restartIce() causes fresh ufrags
-PASS restartIce() retains dtls transports
-PASS restartIce() works in have-local-offer
-PASS restartIce() works in initial have-local-offer
-PASS restartIce() works in have-remote-offer
-PASS restartIce() does nothing in initial have-remote-offer
-PASS restartIce() survives remote offer
-PASS restartIce() is satisfied by remote ICE restart
-PASS restartIce() trumps {iceRestart: false}
-PASS restartIce() survives rollback
-FAIL restartIce() survives remote offer containing partial restart assert_false: Restarted 2 expected false got true
-PASS restartIce() has no effect on initial negotiation (perfect negotiation)
-PASS restartIce() fires negotiationneeded after initial negotiation (perfect negotiation)
-PASS restartIce() causes fresh ufrags (perfect negotiation)
-PASS restartIce() retains dtls transports (perfect negotiation)
-PASS restartIce() works in have-local-offer (perfect negotiation)
-PASS restartIce() works in initial have-local-offer (perfect negotiation)
-PASS restartIce() works in have-remote-offer (perfect negotiation)
-PASS restartIce() does nothing in initial have-remote-offer (perfect negotiation)
-PASS restartIce() survives remote offer (perfect negotiation)
-PASS restartIce() is satisfied by remote ICE restart (perfect negotiation)
-PASS restartIce() trumps {iceRestart: false} (perfect negotiation)
-PASS restartIce() survives rollback (perfect negotiation)
-FAIL restartIce() survives remote offer containing partial restart (perfect negotiation) assert_false: Restarted 2 expected false got true
+[PASS] restartIce() has no effect on a closed peer connection
+[FAIL] restartIce() does not trigger negotiation ahead of initial negotiation
+  assert_equals: No negotiationneeded event expected (undefined) undefined but got (object) object "[object Event]"
+[PASS] restartIce() has no effect on initial negotiation
+[PASS] restartIce() fires negotiationneeded after initial negotiation
+[PASS] restartIce() causes fresh ufrags
+[PASS] restartIce() retains dtls transports
+[PASS] restartIce() works in have-local-offer
+[PASS] restartIce() works in initial have-local-offer
+[PASS] restartIce() works in have-remote-offer
+[PASS] restartIce() does nothing in initial have-remote-offer
+[PASS] restartIce() survives remote offer
+[PASS] restartIce() is satisfied by remote ICE restart
+[PASS] restartIce() trumps {iceRestart: false}
+[PASS] restartIce() survives rollback
+[FAIL] restartIce() survives remote offer containing partial restart
+  assert_false: Restarted 2 expected false got true
+[PASS] restartIce() has no effect on initial negotiation (perfect negotiation)
+[PASS] restartIce() fires negotiationneeded after initial negotiation (perfect negotiation)
+[PASS] restartIce() causes fresh ufrags (perfect negotiation)
+[PASS] restartIce() retains dtls transports (perfect negotiation)
+[PASS] restartIce() works in have-local-offer (perfect negotiation)
+[PASS] restartIce() works in initial have-local-offer (perfect negotiation)
+[PASS] restartIce() works in have-remote-offer (perfect negotiation)
+[PASS] restartIce() does nothing in initial have-remote-offer (perfect negotiation)
+[PASS] restartIce() survives remote offer (perfect negotiation)
+[PASS] restartIce() is satisfied by remote ICE restart (perfect negotiation)
+[PASS] restartIce() trumps {iceRestart: false} (perfect negotiation)
+[PASS] restartIce() survives rollback (perfect negotiation)
+[FAIL] restartIce() survives remote offer containing partial restart (perfect negotiation)
+  assert_false: Restarted 2 expected false got true
 Harness: the test ran to completion.
 

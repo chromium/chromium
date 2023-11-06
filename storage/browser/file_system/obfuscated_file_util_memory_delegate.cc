@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -518,7 +519,9 @@ int ObfuscatedFileUtilMemoryDelegate::ReadFile(const base::FilePath& path,
   if (buf_len > remaining)
     buf_len = static_cast<int>(remaining);
 
-  memcpy(buf->data(), dp->entry->file_content.data() + offset, buf_len);
+  base::ranges::copy(
+      base::span(dp->entry->file_content).subspan(offset, buf_len),
+      buf->data());
 
   return buf_len;
 }

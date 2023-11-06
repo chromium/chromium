@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -41,7 +40,7 @@ class MockShoppingService : public commerce::ShoppingService {
               (override));
   MOCK_METHOD(void,
               GetUpdatedProductInfoForBookmarks,
-              (const std::vector<base::Uuid>& bookmark_uuids,
+              (const std::vector<int64_t>& bookmark_ids,
                BookmarkProductInfoUpdatedCallback info_updated_callback),
               (override));
   MOCK_METHOD(size_t, GetMaxProductBookmarkUpdatesPerBatch, (), (override));
@@ -113,13 +112,22 @@ class MockShoppingService : public commerce::ShoppingService {
               GetBookmarkModelUsedForSync,
               (),
               (override));
+  MOCK_METHOD(void,
+              GetAllParcelStatuses,
+              (GetParcelStatusCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              StopTrackingParcel,
+              (const std::string& tracking_id,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
   void SetResponseForGetPriceInsightsInfoForUrl(
       absl::optional<commerce::PriceInsightsInfo> price_insights_info);
   void SetResponsesForGetUpdatedProductInfoForBookmarks(
-      std::map<base::Uuid, ProductInfo> bookmark_updates);
+      std::map<int64_t, ProductInfo> bookmark_updates);
   void SetResponseForGetMerchantInfoForUrl(
       absl::optional<commerce::MerchantInfo> merchant_info);
   void SetResponseForIsShoppingPage(absl::optional<bool> is_shopping_page);
@@ -141,6 +149,8 @@ class MockShoppingService : public commerce::ShoppingService {
   void SetResponseForGetDiscountInfoForUrls(const DiscountsMap& discounts_map);
   void SetBookmarkModelUsedForSync(bookmarks::BookmarkModel* bookmark_model);
   void SetIsParcelTrackingEligible(bool is_eligible);
+  void SetGetAllParcelStatusesCallbackValue(
+      std::vector<ParcelTrackingStatus> parcels);
 
  private:
   // Since the discount API wants a const ref to some map, keep a default

@@ -28,7 +28,9 @@ import java.util.Set;
  * change or the tab navigates.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {MediaNotificationTestShadowResources.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {MediaNotificationTestShadowResources.class})
 public class MediaNotificationActionsUpdatedTest extends MediaNotificationTestBase {
     private static final int TAB_ID_1 = 1;
     private static final int THROTTLE_MILLIS =

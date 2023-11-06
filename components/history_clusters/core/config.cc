@@ -168,6 +168,12 @@ Config::Config() {
             "omnibox_history_cluster_provider_score",
             omnibox_history_cluster_provider_score);
 
+    omnibox_history_cluster_provider_inherit_search_match_score =
+        base::GetFieldTrialParamByFeatureAsBool(
+            internal::kOmniboxHistoryClusterProvider,
+            "omnibox_history_cluster_provider_inherit_search_match_score",
+            omnibox_history_cluster_provider_inherit_search_match_score);
+
     omnibox_history_cluster_provider_navigation_intent_score_threshold =
         base::GetFieldTrialParamByFeatureAsInt(
             internal::kOmniboxHistoryClusterProvider,

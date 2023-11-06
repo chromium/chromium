@@ -436,10 +436,11 @@ TEST_F(VerdictCacheManagerTest, MAYBE_TestCleanUpExpiredVerdict) {
   // (2) "www.example1.com" valid
   cache_manager_->SetPageLoadTokenForTesting(
       GURL("https://www.example.com"),
-      CreatePageLoadToken((now - base::Hours(1)).ToJavaTime(), "token1"));
+      CreatePageLoadToken((now - base::Hours(1)).InMillisecondsSinceUnixEpoch(),
+                          "token1"));
   cache_manager_->SetPageLoadTokenForTesting(
       GURL("https://www.example1.com"),
-      CreatePageLoadToken(now.ToJavaTime(), "token2"));
+      CreatePageLoadToken(now.InMillisecondsSinceUnixEpoch(), "token2"));
 
   CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/0, "aaaa");
   CacheHashPrefixRealTimeLookupResult(/*cache_duration_seconds=*/300, "bbbb");

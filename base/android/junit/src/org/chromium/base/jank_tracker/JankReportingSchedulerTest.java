@@ -20,16 +20,13 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- *  Tests for JankReportingScheduler.
- */
+/** Tests for JankReportingScheduler. */
 @RunWith(BaseRobolectricTestRunner.class)
 @LooperMode(LooperMode.Mode.LEGACY)
 public class JankReportingSchedulerTest {
     ShadowLooper mShadowLooper;
 
-    @Mock
-    private FrameMetricsStore mFrameMetricsStore;
+    @Mock private FrameMetricsStore mFrameMetricsStore;
 
     JankReportingScheduler createJankReportingScheduler() {
         JankReportingScheduler scheduler = new JankReportingScheduler(mFrameMetricsStore);
@@ -103,9 +100,11 @@ public class JankReportingSchedulerTest {
         // After both tasks we should have started and stopped tracking the periodic reporting
         // scenario.
         orderVerifier.verify(mFrameMetricsStore).initialize();
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
         // There should be another task posted to continue the loop.
@@ -141,15 +140,19 @@ public class JankReportingSchedulerTest {
 
         // This start/stop pair corresponds to the first reporting period.
         orderVerifier.verify(mFrameMetricsStore).initialize();
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
         // Stopping reporting forces an immediate report of recorded frames, if any.
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-        orderVerifier.verify(mFrameMetricsStore)
+        orderVerifier
+                .verify(mFrameMetricsStore)
                 .stopTrackingScenario(JankScenario.PERIODIC_REPORTING);
 
         // There should not be another task posted to continue the loop.

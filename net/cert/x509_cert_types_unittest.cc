@@ -4,9 +4,9 @@
 
 #include "net/cert/x509_cert_types.h"
 
-#include "net/der/input.h"
 #include "net/test/test_certificate_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/input.h"
 
 namespace net {
 
@@ -14,7 +14,7 @@ namespace {
 
 TEST(X509TypesTest, ParseDNVerisign) {
   CertPrincipal verisign;
-  EXPECT_TRUE(verisign.ParseDistinguishedName(der::Input(VerisignDN)));
+  EXPECT_TRUE(verisign.ParseDistinguishedName(bssl::der::Input(VerisignDN)));
   EXPECT_EQ("", verisign.common_name);
   EXPECT_EQ("US", verisign.country_name);
   ASSERT_EQ(1U, verisign.organization_names.size());
@@ -26,7 +26,7 @@ TEST(X509TypesTest, ParseDNVerisign) {
 
 TEST(X509TypesTest, ParseDNStartcom) {
   CertPrincipal startcom;
-  EXPECT_TRUE(startcom.ParseDistinguishedName(der::Input(StartComDN)));
+  EXPECT_TRUE(startcom.ParseDistinguishedName(bssl::der::Input(StartComDN)));
   EXPECT_EQ("StartCom Certification Authority", startcom.common_name);
   EXPECT_EQ("IL", startcom.country_name);
   ASSERT_EQ(1U, startcom.organization_names.size());
@@ -38,7 +38,7 @@ TEST(X509TypesTest, ParseDNStartcom) {
 
 TEST(X509TypesTest, ParseDNUserTrust) {
   CertPrincipal usertrust;
-  EXPECT_TRUE(usertrust.ParseDistinguishedName(der::Input(UserTrustDN)));
+  EXPECT_TRUE(usertrust.ParseDistinguishedName(bssl::der::Input(UserTrustDN)));
   EXPECT_EQ("UTN-USERFirst-Client Authentication and Email",
             usertrust.common_name);
   EXPECT_EQ("US", usertrust.country_name);
@@ -54,7 +54,7 @@ TEST(X509TypesTest, ParseDNUserTrust) {
 TEST(X509TypesTest, ParseDNTurkTrust) {
   // Note: This tests parsing UTF8STRINGs.
   CertPrincipal turktrust;
-  EXPECT_TRUE(turktrust.ParseDistinguishedName(der::Input(TurkTrustDN)));
+  EXPECT_TRUE(turktrust.ParseDistinguishedName(bssl::der::Input(TurkTrustDN)));
   EXPECT_EQ("TÜRKTRUST Elektronik Sertifika Hizmet Sağlayıcısı",
             turktrust.common_name);
   EXPECT_EQ("TR", turktrust.country_name);
@@ -67,7 +67,7 @@ TEST(X509TypesTest, ParseDNTurkTrust) {
 TEST(X509TypesTest, ParseDNATrust) {
   // Note: This tests parsing 16-bit BMPSTRINGs.
   CertPrincipal atrust;
-  EXPECT_TRUE(atrust.ParseDistinguishedName(der::Input(ATrustQual01DN)));
+  EXPECT_TRUE(atrust.ParseDistinguishedName(bssl::der::Input(ATrustQual01DN)));
   EXPECT_EQ("A-Trust-Qual-01",
             atrust.common_name);
   EXPECT_EQ("AT", atrust.country_name);
@@ -82,7 +82,7 @@ TEST(X509TypesTest, ParseDNATrust) {
 TEST(X509TypesTest, ParseDNEntrust) {
   // Note: This tests parsing T61STRINGs and fields with multiple values.
   CertPrincipal entrust;
-  EXPECT_TRUE(entrust.ParseDistinguishedName(der::Input(EntrustDN)));
+  EXPECT_TRUE(entrust.ParseDistinguishedName(bssl::der::Input(EntrustDN)));
   EXPECT_EQ("Entrust.net Certification Authority (2048)",
             entrust.common_name);
   EXPECT_EQ("", entrust.country_name);

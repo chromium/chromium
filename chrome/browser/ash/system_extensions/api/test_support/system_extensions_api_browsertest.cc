@@ -339,7 +339,7 @@ void SystemExtensionsApiBrowserTest::MaybeInstallSystemExtension(
   }
 
   // Write manifest.
-  const std::string manifest_str = base::StringPrintf(
+  const std::string manifest_str = base::StringPrintfNonConstexpr(
       manifest_template_.c_str(), std::string(test_file_name).c_str());
   CHECK(base::WriteFile(system_extension_path.AppendASCII("manifest.json"),
                         manifest_str))

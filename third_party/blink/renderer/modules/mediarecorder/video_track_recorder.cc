@@ -18,6 +18,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "media/base/async_destroy_video_encoder.h"
+#include "media/base/media_util.h"
 #include "media/base/video_encoder_metrics_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -25,6 +27,7 @@
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/gpu_video_accelerator_factories.h"
+#include "media/video/video_encode_accelerator_adapter.h"
 #include "media/video/vpx_video_encoder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
@@ -37,6 +40,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -243,7 +247,19 @@ bool MustUseVEA(CodecId codec_id) {
 #endif
 }
 
-#if BUILDFLAG(ENABLE_LIBAOM)
+MediaRecorderEncoderWrapper::CreateEncoderCB
+GetCreateHardwareVideoEncoderCallback() {
+  return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
+      [](media::GpuVideoAcceleratorFactories* gpu_factories)
+          -> std::unique_ptr<media::VideoEncoder> {
+        return std::make_unique<media::AsyncDestroyVideoEncoder<
+            media::VideoEncodeAcceleratorAdapter>>(
+            std::make_unique<media::VideoEncodeAcceleratorAdapter>(
+                gpu_factories, std::make_unique<media::NullMediaLog>(),
+                base::SequencedTaskRunner::GetCurrentDefault()));
+      }));
+}
+
 MediaRecorderEncoderWrapper::CreateEncoderCB
 GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
   switch (codec_id) {
@@ -277,7 +293,6 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
       return base::NullCallback();
   }
 }
-#endif  // BUILDFLAG(ENABLE_LIBAOM)
 }  // anonymous namespace
 
 VideoTrackRecorder::VideoTrackRecorder(
@@ -801,10 +816,64 @@ void VideoTrackRecorderImpl::ForceKeyFrameForNextFrameForTesting() {
 }
 
 std::unique_ptr<VideoTrackRecorder::Encoder>
+VideoTrackRecorderImpl::CreateMediaVideoEncoder(
+    scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+    CodecProfile codec_profile,
+    uint32_t bits_per_second,
+    bool is_screencast,
+    const OnEncodedVideoCB& on_encoded_video_cb,
+    bool create_vea_encoder) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  media::VideoCodecProfile video_codec_profile =
+      media::VIDEO_CODEC_PROFILE_UNKNOWN;
+  switch (codec_profile.codec_id) {
+#if BUILDFLAG(RTC_USE_H264)
+    case CodecId::kH264:
+      video_codec_profile =
+          codec_profile.profile.value_or(media::H264PROFILE_BASELINE);
+      break;
+#endif  // BUILDFLAG(RTC_USE_H264)
+    case CodecId::kVp8:
+      video_codec_profile =
+          codec_profile.profile.value_or(media::VP8PROFILE_ANY);
+      break;
+    case CodecId::kVp9:
+      video_codec_profile =
+          codec_profile.profile.value_or(media::VP9PROFILE_MIN);
+      break;
+#if BUILDFLAG(ENABLE_LIBAOM)
+    case CodecId::kAv1:
+      video_codec_profile =
+          codec_profile.profile.value_or(media::AV1PROFILE_MIN);
+      break;
+#endif  // BUILDFLAG(ENABLE_LIBAOM)
+    default:
+      NOTREACHED() << "Unsupported codec: "
+                   << static_cast<int>(codec_profile.codec_id);
+      return nullptr;
+  }
+  auto on_error_cb = base::BindPostTask(
+      main_thread_task_runner_,
+      WTF::BindOnce(&CallbackInterface::OnVideoEncodingError,
+                    WrapWeakPersistent(callback_interface())));
+
+  media::GpuVideoAcceleratorFactories* gpu_factories =
+      Platform::Current()->GetGpuFactories();
+  return std::make_unique<MediaRecorderEncoderWrapper>(
+      std::move(encoding_task_runner), video_codec_profile, bits_per_second,
+      is_screencast, create_vea_encoder ? gpu_factories : nullptr,
+      create_vea_encoder
+          ? GetCreateHardwareVideoEncoderCallback()
+          : GetCreateSoftwareVideoEncoderCallback(codec_profile.codec_id),
+      on_encoded_video_cb, std::move(on_error_cb));
+}
+
+std::unique_ptr<VideoTrackRecorder::Encoder>
 VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
     scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
     CodecProfile codec_profile,
     uint32_t bits_per_second,
+    bool is_screencast,
     const OnEncodedVideoCB& on_encoded_video_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   switch (codec_profile.codec_id) {
@@ -829,7 +898,7 @@ VideoTrackRecorderImpl::CreateSoftwareVideoEncoder(
       return std::make_unique<MediaRecorderEncoderWrapper>(
           std::move(encoding_task_runner),
           codec_profile.profile.value_or(media::AV1PROFILE_PROFILE_MAIN),
-          bits_per_second,
+          bits_per_second, is_screencast,
           /*gpu_factories=*/nullptr,
           GetCreateSoftwareVideoEncoderCallback(CodecId::kAv1),
           on_encoded_video_cb, std::move(on_error_cb));
@@ -940,17 +1009,26 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
 
   scoped_refptr<base::SequencedTaskRunner> encoding_task_runner;
   std::unique_ptr<Encoder> encoder;
-  if (create_vea_encoder) {
-    encoding_task_runner =
-        Platform::Current()->GetGpuFactories()->GetTaskRunner();
-    encoder = CreateHardwareVideoEncoder(
-        encoding_task_runner, codec_profile, input_size, bits_per_second,
-        on_encoded_video_cb, use_import_mode, is_screencast);
-  } else {
+  if (RuntimeEnabledFeatures::MediaRecorderUseMediaVideoEncoderEnabled()) {
     encoding_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-    encoder = CreateSoftwareVideoEncoder(encoding_task_runner, codec_profile,
-                                         bits_per_second, on_encoded_video_cb);
+    encoder = CreateMediaVideoEncoder(encoding_task_runner, codec_profile,
+                                      bits_per_second, is_screencast,
+                                      on_encoded_video_cb, create_vea_encoder);
+  } else {
+    if (create_vea_encoder) {
+      encoding_task_runner =
+          Platform::Current()->GetGpuFactories()->GetTaskRunner();
+      encoder = CreateHardwareVideoEncoder(
+          encoding_task_runner, codec_profile, input_size, bits_per_second,
+          on_encoded_video_cb, use_import_mode, is_screencast);
+    } else {
+      encoding_task_runner =
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+      encoder = CreateSoftwareVideoEncoder(encoding_task_runner, codec_profile,
+                                           bits_per_second, is_screencast,
+                                           on_encoded_video_cb);
+    }
   }
 
   UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", create_vea_encoder);

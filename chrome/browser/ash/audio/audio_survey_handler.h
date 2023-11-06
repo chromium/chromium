@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 #define CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
+#include "base/scoped_observation_traits.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 
 namespace ash {
@@ -15,28 +17,60 @@ namespace ash {
 // trigger event.
 class AudioSurveyHandler : public CrasAudioHandler::AudioObserver {
  public:
-  AudioSurveyHandler();
+  class Delegate {
+   public:
+    virtual ~Delegate() = default;
 
+    // Adds the survey handler as an observer of AudioObserver.
+    virtual void AddAudioObserver(
+        CrasAudioHandler::AudioObserver* observer) = 0;
+
+    // Removes the survey handler as an observer of AudioObserver.
+    virtual void RemoveAudioObserver(
+        CrasAudioHandler::AudioObserver* observer) = 0;
+
+    // Checks whether the device met all conditions to participate the survey.
+    virtual bool ShouldShowSurvey(CrasAudioHandler::SurveyType type) const = 0;
+
+    // Triggers the survey invitation notification, in which when open will
+    // show the audio survey.
+    virtual void ShowSurvey(CrasAudioHandler::SurveyType type,
+                            const CrasAudioHandler::AudioSurveyData& data) = 0;
+  };
+
+  AudioSurveyHandler();
+  // This is used for testing
+  explicit AudioSurveyHandler(std::unique_ptr<Delegate> delegate);
   AudioSurveyHandler(const AudioSurveyHandler&) = delete;
   AudioSurveyHandler& operator=(const AudioSurveyHandler&) = delete;
-
   ~AudioSurveyHandler() override;
 
   // CrasAudioHandler::AudioObserver
-  void OnSurveyTriggered(
-      const CrasAudioHandler::AudioSurveyData& survey_specific_data) override;
-
-  void OnHardwareInfoFetched(
-      const CrasAudioHandler::AudioSurveyData& audio_specific_data,
-      base::SysInfo::HardwareInfo hardware_info);
+  void OnSurveyTriggered(const CrasAudioHandler::AudioSurvey& survey) override;
 
  private:
-  scoped_refptr<HatsNotificationController> hats_notification_controller_;
+  const std::unique_ptr<Delegate> delegate_;
 
-  bool has_triggered_ = false;
-
+  base::ScopedObservation<Delegate, CrasAudioHandler::AudioObserver>
+      audio_observer_{this};
   base::WeakPtrFactory<AudioSurveyHandler> weak_ptr_factory_{this};
 };
-}  // namespace ash
 
+}  // namespace ash
+namespace base {
+
+template <>
+struct ScopedObservationTraits<ash::AudioSurveyHandler::Delegate,
+                               ash::CrasAudioHandler::AudioObserver> {
+  static void AddObserver(ash::AudioSurveyHandler::Delegate* source,
+                          ash::CrasAudioHandler::AudioObserver* observer) {
+    source->AddAudioObserver(observer);
+  }
+  static void RemoveObserver(ash::AudioSurveyHandler::Delegate* source,
+                             ash::CrasAudioHandler::AudioObserver* observer) {
+    source->RemoveAudioObserver(observer);
+  }
+};
+
+}  // namespace base
 #endif  // CHROME_BROWSER_ASH_AUDIO_AUDIO_SURVEY_HANDLER_H_

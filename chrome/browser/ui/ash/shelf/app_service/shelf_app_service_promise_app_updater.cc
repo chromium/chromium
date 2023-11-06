@@ -24,17 +24,16 @@ ShelfPromiseAppUpdater::~ShelfPromiseAppUpdater() = default;
 // PromiseAppRegistryCache::Observer overrides:
 void ShelfPromiseAppUpdater::OnPromiseAppUpdate(
     const apps::PromiseAppUpdate& update) {
-  // Trigger the Shelf item replacement if the promise app has been deleted.
-  if (IsPromiseAppCompleted(update.Status())) {
-    delegate()->OnPromiseAppRemoved(update.PackageId());
-  }
-
   // We should only make changes to the Shelf Item if the promise app needs to
   // be shown.
-  if (!update.ShouldShow()) {
-    return;
+  if (update.ShouldShow()) {
+    delegate()->OnPromiseAppUpdate(update);
   }
-  delegate()->OnPromiseAppUpdate(update);
+}
+
+void ShelfPromiseAppUpdater::OnPromiseAppRemoved(
+    const apps::PackageId& package_id) {
+  delegate()->OnPromiseAppRemoved(package_id);
 }
 
 void ShelfPromiseAppUpdater::OnPromiseAppRegistryCacheWillBeDestroyed(

@@ -38,7 +38,6 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/utility/haptics_util.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +48,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -474,6 +474,9 @@ void AppsGridView::CancelDragWithNoDropAnimation() {
   EndDrag(/*cancel=*/true);
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
+  if (!folder_to_open_after_drag_icon_animation_.empty()) {
+    open_folder_info_.reset();
+  }
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
   drag_image_layer_.reset();
@@ -557,6 +560,9 @@ bool AppsGridView::InitiateDrag(AppListItemView* view,
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();
   folder_icon_item_hider_.reset();
+  if (!folder_to_open_after_drag_icon_animation_.empty()) {
+    open_folder_info_.reset();
+  }
   folder_to_open_after_drag_icon_animation_.clear();
   drag_icon_proxy_.reset();
 
@@ -590,7 +596,7 @@ void AppsGridView::TryStartDragAndDropHostDrag(Pointer pointer) {
     StartDragAndDropHostDrag();
 
     if (pointer == MOUSE) {
-      haptics_util::PlayHapticTouchpadEffect(
+      chromeos::haptics_util::PlayHapticTouchpadEffect(
           ui::HapticTouchpadEffect::kTick,
           ui::HapticTouchpadEffectStrength::kMedium);
     }
@@ -3663,13 +3669,6 @@ void AppsGridView::OnFadeOutAnimationEnded(ReorderAnimationCallback callback,
   // Before starting the fade in animation, the reordered items should be at
   // their final positions instantly.
   base::AutoReset auto_reset(&enable_item_move_animation_, false);
-
-  // Prevent the opacity from changing before starting the fade in animation.
-  // It is necessary because `PagedAppsGridView::UpdateOpacity()` updates
-  // the apps grid opacity based on the app list state.
-  // TODO(https://crbug.com/1289380): remove this line when a better solution
-  // is came up with.
-  base::ScopedClosureRunner runner = LockAppsGridOpacity();
 
   callback.Run(aborted);
 

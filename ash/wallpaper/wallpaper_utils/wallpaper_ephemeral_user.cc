@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
+#include "components/user_manager/user_type.h"
 
 namespace ash {
 
@@ -26,7 +27,9 @@ bool IsEphemeralUser(const AccountId& account_id) {
     return false;
   }
 
-  return user_session->user_info.is_ephemeral;
+  // Public account(e.g. demo mode) should always be ephemeral.
+  return user_session->user_info.is_ephemeral ||
+         user_session->user_info.type == user_manager::USER_TYPE_PUBLIC_ACCOUNT;
 }
 
 }  // namespace ash

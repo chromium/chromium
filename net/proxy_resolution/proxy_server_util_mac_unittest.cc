@@ -7,6 +7,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
+#include "base/apple/scoped_cftyperef.h"
 #include "net/base/proxy_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,18 +16,17 @@ namespace net {
 // Test convert ProxyDictionary To ProxyServer with invalid inputs.
 // https://crbug.com/1478580
 TEST(ProxyServerUtilMacTest, InvalidProxyDictionaryToProxyServer) {
-  CFStringRef host_key = CFStringCreateWithCString(
-      kCFAllocatorDefault, "HttpHost", kCFStringEncodingUTF8);
-  CFStringRef port_key = CFStringCreateWithCString(
-      kCFAllocatorDefault, "HttpPort", kCFStringEncodingUTF8);
-  CFStringRef keys[] = {host_key};
-  CFStringRef values[] = {CFStringCreateWithCString(
-      kCFAllocatorDefault, "127.1110.0.1", kCFStringEncodingUTF8)};
-  CFDictionaryRef invalid_ip_dict = CFDictionaryCreate(
-      kCFAllocatorDefault, (const void**)keys, (const void**)values, 1,
-      &kCFCopyStringDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+  CFStringRef host_key = CFSTR("HttpHost");
+  CFStringRef port_key = CFSTR("HttpPort");
+  CFStringRef value = CFSTR("127.1110.0.1");
+  const void* keys[] = {host_key};
+  const void* values[] = {value};
+  base::apple::ScopedCFTypeRef<CFDictionaryRef> invalid_ip_dict(
+      CFDictionaryCreate(kCFAllocatorDefault, keys, values, 1,
+                         &kCFTypeDictionaryKeyCallBacks,
+                         &kCFTypeDictionaryValueCallBacks));
   ProxyServer proxy_server = ProxyDictionaryToProxyServer(
-      ProxyServer::SCHEME_HTTP, invalid_ip_dict, host_key, port_key);
+      ProxyServer::SCHEME_HTTP, invalid_ip_dict.get(), host_key, port_key);
   EXPECT_FALSE(proxy_server.is_valid());
 }
 

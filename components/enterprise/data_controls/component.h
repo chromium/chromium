@@ -8,6 +8,13 @@
 #include <array>
 #include <string>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace data_controls {
 
 // A representation of destinations to which sharing confidential data is
@@ -25,6 +32,14 @@ enum class Component {
   kMaxValue = kOneDrive
 };
 
+// String equivalents of the `Component` enum, used for parsing JSON.
+inline constexpr char kArc[] = "ARC";
+inline constexpr char kCrostini[] = "CROSTINI";
+inline constexpr char kPluginVm[] = "PLUGIN_VM";
+inline constexpr char kDrive[] = "DRIVE";
+inline constexpr char kOneDrive[] = "ONEDRIVE";
+inline constexpr char kUsb[] = "USB";
+
 // List of all possible component values, used to simplify iterating over all
 // the options.
 constexpr static const std::array<Component,
@@ -37,6 +52,10 @@ constexpr static const std::array<Component,
 // `Component::kUnknownComponent` is return if the string matches no component.
 Component GetComponentMapping(const std::string& component);
 std::string GetComponentMapping(Component component);
+
+#if BUILDFLAG(IS_CHROMEOS)
+::dlp::DlpComponent GetComponentProtoMapping(const std::string& component);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace data_controls
 

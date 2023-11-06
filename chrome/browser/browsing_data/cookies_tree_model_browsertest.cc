@@ -81,6 +81,11 @@ class CookiesTreeObserver : public CookiesTreeModel::Observer {
 class CookiesTreeModelBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
+    if (base::FeatureList::IsEnabled(
+            browsing_data::features::kDeprecateCookiesTreeModel)) {
+      GTEST_SKIP() << "kDeprecateCookiesTreeModel is enabled skipping "
+                      "CookiesTreeModel tests";
+    }
     InitFeatures();
     InProcessBrowserTest::SetUp();
   }

@@ -41,15 +41,17 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.io.IOException;
 
 /**
- * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different
- * configurations correctly. These tests are not batched because theme changes
- * don't seem to work with batched tests even with RequiresRestart as it results
- * in the current {@link Tab} in the {@link ChromeTabbedActivityTestRule} to be null.
+ * Tests for PageInfoView. Uses pixel tests to ensure the UI handles different configurations
+ * correctly. These tests are not batched because theme changes don't seem to work with batched
+ * tests even with RequiresRestart as it results in the current {@link Tab} in the {@link
+ * ChromeTabbedActivityTestRule} to be null.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
-        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_STARTUP_PROMOS,
+    ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"
+})
 public class PageInfoViewDarkModeTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
 
@@ -57,8 +59,7 @@ public class PageInfoViewDarkModeTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -75,11 +76,17 @@ public class PageInfoViewDarkModeTest {
     private void openPageInfo() {
         ChromeActivity activity = mActivityTestRule.getActivity();
         Tab tab = activity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            new ChromePageInfo(activity.getModalDialogManagerSupplier(), null,
-                    OpenedFromSource.TOOLBAR, null, null, null)
-                    .show(tab, ChromePageInfoHighlight.noHighlight());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    new ChromePageInfo(
+                                    activity.getModalDialogManagerSupplier(),
+                                    null,
+                                    OpenedFromSource.TOOLBAR,
+                                    null,
+                                    null,
+                                    null)
+                            .show(tab, ChromePageInfoHighlight.noHighlight());
+                });
         onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
     }
 
@@ -97,22 +104,24 @@ public class PageInfoViewDarkModeTest {
         mTestServerRule.setServerPort(424242);
         mTestServerRule.setServerUsesHttps(true);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(/*nightModeEnabled=*/true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                            /* nightModeEnabled= */ true);
+                });
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeNightModeTestUtils.setUpNightModeForChromeActivity(/*nightModeEnabled=*/false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
+                            /* nightModeEnabled= */ false);
+                });
     }
 
-    /**
-     * Tests the PageInfo UI on a secure website in dark mode.
-     */
+    /** Tests the PageInfo UI on a secure website in dark mode. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -121,9 +130,7 @@ public class PageInfoViewDarkModeTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDark");
     }
 
-    /**
-     * Tests PageInfo on internal page.
-     */
+    /** Tests PageInfo on internal page. */
     @Test
     @MediumTest
     @Feature({"RenderTest"})

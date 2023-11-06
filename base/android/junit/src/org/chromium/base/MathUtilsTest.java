@@ -71,6 +71,7 @@ public class MathUtilsTest {
         Assert.assertEquals(CLAMP_FAILURE, 9f, MathUtils.clamp(10.9f, min, max), EPSILON);
         Assert.assertEquals(CLAMP_FAILURE, 9f, MathUtils.clamp(30.1f, max, min), EPSILON);
     }
+
     @Test
     public void testPositiveModulo() {
         Assert.assertEquals(MODULO_FAILURE, 1, MathUtils.positiveModulo(3, 2));

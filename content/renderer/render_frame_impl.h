@@ -127,6 +127,7 @@ class WebAgentGroupScheduler;
 }  // namespace scheduler
 
 class WeakWrapperResourceLoadInfoNotifier;
+class WebBackgroundResourceFetchAssets;
 class WebComputedAXTree;
 class WebContentDecryptionModule;
 class WebElement;
@@ -455,6 +456,8 @@ class CONTENT_EXPORT RenderFrameImpl
           subresource_proxying_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           keep_alive_loader_factory,
+      mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+          fetch_later_loader_factory,
       const blink::DocumentToken& document_token,
       const base::UnguessableToken& devtools_navigation_token,
       const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
@@ -595,7 +598,6 @@ class CONTENT_EXPORT RenderFrameImpl
       const blink::WebURLRequest& request,
       const blink::WebURLResponse& response) override;
   void DidChangePerformanceTiming() override;
-  void DidObserveInputDelay(base::TimeDelta input_delay) override;
   void DidObserveUserInteraction(
       base::TimeTicks max_event_start,
       base::TimeTicks max_event_end,
@@ -633,6 +635,8 @@ class CONTENT_EXPORT RenderFrameImpl
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   std::unique_ptr<blink::WebURLLoaderThrottleProviderForFrame>
   CreateWebURLLoaderThrottleProviderForFrame() override;
+  scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+  MaybeGetBackgroundResourceFetchAssets() override;
   void OnStopLoading() override;
   void DraggableRegionsChanged() override;
   blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker() override;
@@ -781,6 +785,14 @@ class CONTENT_EXPORT RenderFrameImpl
 
   base::WeakPtr<media::DecoderFactory> GetMediaDecoderFactory();
 
+  // Returns a blink::ChildURLLoaderFactoryBundle which can be used to request
+  // subresources for this frame.
+  //
+  // The returned bundle was typically sent by the browser process when
+  // committing a navigation, but in some cases (about:srcdoc, initial empty
+  // document) it may be inherited from the parent or opener.
+  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle() override;
+
  protected:
   explicit RenderFrameImpl(CreateParams params);
 
@@ -898,13 +910,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // Requests that the browser process navigates to |url|.
   void OpenURL(std::unique_ptr<blink::WebNavigationInfo> info);
 
-  // Returns a blink::ChildURLLoaderFactoryBundle which can be used to request
-  // subresources for this frame.
-  //
-  // The returned bundle was typically sent by the browser process when
-  // committing a navigation, but in some cases (about:srcdoc, initial empty
-  // document) it may be inherited from the parent or opener.
-  blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle();
+  // Sets `loader_factories_`. And clears `background_resource_fetch_context_`.
+  // `background_resource_fetch_context_` will be lazily initialized when
+  // creating a WebURLLoader if BackgroundResourceFetch feature is enabled.
+  void SetLoaderFactoryBundle(
+      scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories);
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,
@@ -913,7 +923,9 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           subresource_proxying_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
-          keep_alive_loader_factory);
+          keep_alive_loader_factory,
+      mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+          fetch_later_loader_factory);
 
   // Update current main frame's encoding and send it to browser window.
   // Since we want to let users see the right encoding info from menu
@@ -979,6 +991,8 @@ class CONTENT_EXPORT RenderFrameImpl
           subresource_proxying_loader_factory,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           keep_alive_loader_factory,
+      mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+          fetch_later_loader_factory,
       mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
@@ -1417,6 +1431,14 @@ class CONTENT_EXPORT RenderFrameImpl
   // and DidCommitNavigation calls. These happen synchronously one after
   // another.
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> pending_loader_factories_;
+
+  // The context used for background resource fetch. Used only when
+  // BackgroundResourceFetch feature is enabled.
+  scoped_refptr<blink::WebBackgroundResourceFetchAssets>
+      background_resource_fetch_context_;
+  // Used for background resource fetch.
+  scoped_refptr<base::SequencedTaskRunner>
+      background_resource_fetch_task_runner_;
 
   mojo::PendingRemote<blink::mojom::CodeCacheHost> pending_code_cache_host_;
   mojo::PendingRemote<blink::mojom::ResourceCache> pending_resource_cache_;

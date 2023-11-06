@@ -308,6 +308,35 @@ suite('CategoriesTest', () => {
                     '#wallpaperSearchTile'),
                 flagEnabled);
           });
+
+      test('check category for wallpaper search background', async () => {
+        await setInitialSettings(1);
+
+        // Set a theme with wallpaper search background.
+        const theme = createTheme();
+        const backgroundImage = createBackgroundImage('https://test.jpg');
+        backgroundImage.isUploadedImage = true;
+        backgroundImage.localBackgroundId = {low: BigInt(10), high: BigInt(20)};
+        theme.backgroundImage = backgroundImage;
+        callbackRouterRemote.setTheme(theme);
+        await callbackRouterRemote.$.flushForTesting();
+        await waitAfterNextRender(categoriesElement);
+
+        // Check that wallpaper search is selected if flag is enabled and
+        // nothing is selected if flag is disabled.
+        const checkedCategories =
+            categoriesElement.shadowRoot!.querySelectorAll('[checked]');
+        if (flagEnabled) {
+          assertEquals(1, checkedCategories.length);
+          assertEquals(
+              checkedCategories[0]!.parentElement!.id, 'wallpaperSearchTile');
+          assertEquals(
+              checkedCategories[0]!.parentElement!.getAttribute('aria-current'),
+              'true');
+        } else {
+          assertEquals(0, checkedCategories.length);
+        }
+      });
     });
   });
 });

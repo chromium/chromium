@@ -182,10 +182,10 @@ TEST_F(EncryptedReportingClientTest, Default) {
         base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
 
     const auto actual_response = response_event.result();
-    ASSERT_OK(actual_response);
-    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
-    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
-    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
+    ASSERT_TRUE(actual_response.has_value());
+    ASSERT_THAT(actual_response.value(), SizeIs(1));
+    ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),
                 StrEq(kResponseValue));
   }
 
@@ -205,7 +205,7 @@ TEST_F(EncryptedReportingClientTest, Default) {
     // Sequence ID decreased, upload is rejected.
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
-                Property(&StatusOr<base::Value::Dict>::status,
+                Property(&StatusOr<base::Value::Dict>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
                                Property(&Status::error_message,
                                         StrEq("Too many upload requests")))));
@@ -224,7 +224,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   EXPECT_THAT(
       actual_response,
       Property(
-          &StatusOr<base::Value::Dict>::status,
+          &StatusOr<base::Value::Dict>::error,
           AllOf(
               Property(&Status::code, Eq(error::NOT_FOUND)),
               Property(
@@ -267,10 +267,10 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         base::StringPrintf(R"({"%s" : "%s"})", kResponseKey, kResponseValue));
 
     const auto actual_response = response_event.result();
-    ASSERT_OK(actual_response);
-    ASSERT_THAT(actual_response.ValueOrDie(), SizeIs(1));
-    ASSERT_TRUE(actual_response.ValueOrDie().FindString(kResponseKey));
-    EXPECT_THAT(*(actual_response.ValueOrDie().FindString(kResponseKey)),
+    ASSERT_TRUE(actual_response.has_value());
+    ASSERT_THAT(actual_response.value(), SizeIs(1));
+    ASSERT_TRUE(actual_response.value().FindString(kResponseKey));
+    EXPECT_THAT(*(actual_response.value().FindString(kResponseKey)),
                 StrEq(kResponseValue));
   }
 
@@ -283,7 +283,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         response_event.cb());
     const auto actual_response = response_event.result();
     EXPECT_THAT(actual_response,
-                Property(&StatusOr<base::Value::Dict>::status,
+                Property(&StatusOr<base::Value::Dict>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
                                Property(&Status::error_message,
                                         StrEq("Too many upload requests")))));

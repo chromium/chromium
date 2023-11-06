@@ -18,11 +18,8 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
-#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -37,7 +34,9 @@ namespace {
 
 constexpr char16_t kContainerTitle[] = u"Editor Menu Textfield";
 
-constexpr gfx::Size kArrowButtonSize(32, 32);
+constexpr gfx::Size kArrowButtonSize(20, 20);
+constexpr gfx::Insets kArrowButtonInsets(4);
+constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
 
 }  // namespace
 
@@ -58,9 +57,14 @@ void EditorMenuTextfieldView::AddedToWidget() {
 void EditorMenuTextfieldView::Layout() {
   View::Layout();
 
-  // Place the arrow button at the right end of the textfield.
-  arrow_button_->SetBounds(width() - kArrowButtonSize.width(), 0,
-                           kArrowButtonSize.width(), height());
+  // Vertically center the arrow button at the right end of the textfield.
+  arrow_button_->SetBounds(
+      width() - (kArrowButtonSize.width() + kArrowButtonInsets.right() +
+                 kPaddingBetweenArrowButtonAndTextfield),
+      height() / 2 -
+          (kArrowButtonSize.height() + kArrowButtonInsets.height()) / 2,
+      kArrowButtonSize.width() + kArrowButtonInsets.width(),
+      kArrowButtonSize.height() + kArrowButtonInsets.height());
 }
 
 void EditorMenuTextfieldView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -101,28 +105,21 @@ void EditorMenuTextfieldView::InitLayout() {
           : IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER));
   textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
   textfield_->RemoveHoverEffect();
-  textfield_->SetExtraInsets(
-      gfx::Insets::TLBR(0, 0, 0, kArrowButtonSize.width()));
+  textfield_->SetExtraInsets(gfx::Insets::TLBR(
+      0, 0, 0, kArrowButtonSize.width() + kArrowButtonInsets.width()));
 
-  arrow_button_ =
-      AddChildView(std::make_unique<views::ImageButton>(base::BindRepeating(
+  arrow_button_ = AddChildView(views::ImageButton::CreateIconButton(
+      base::BindRepeating(
           &EditorMenuTextfieldView::OnTextfieldArrowButtonPressed,
-          weak_factory_.GetWeakPtr())));
-  arrow_button_->SetAccessibleName(kContainerTitle);
-  arrow_button_->SetTooltipText(kContainerTitle);
-  arrow_button_->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kForwardArrowIcon));
+          weak_factory_.GetWeakPtr()),
+      vector_icons::kForwardArrowIcon,
+      l10n_util::GetStringUTF16(
+          IDS_EDITOR_MENU_FREEFORM_TEXTFIELD_ARROW_BUTTON_TOOLTIP)));
   arrow_button_->SetImageHorizontalAlignment(
       views::ImageButton::HorizontalAlignment::ALIGN_CENTER);
   arrow_button_->SetImageVerticalAlignment(
       views::ImageButton::VerticalAlignment::ALIGN_MIDDLE);
-  arrow_button_->SetPreferredSize(kArrowButtonSize);
   arrow_button_->SetVisible(false);
-  views::InkDrop::Get(arrow_button_)
-      ->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(arrow_button_)->SetBaseColorId(ui::kColorIcon);
-  arrow_button_->SetHasInkDropActionOnClick(true);
 }
 
 void EditorMenuTextfieldView::OnTextfieldArrowButtonPressed() {

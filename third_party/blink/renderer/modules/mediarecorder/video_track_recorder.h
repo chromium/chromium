@@ -196,11 +196,11 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     void SetPaused(bool paused);
     virtual bool CanEncodeAlphaChannel() const;
+    virtual bool IsScreenContentEncodingForTesting() const { return false; }
     virtual base::WeakPtr<Encoder> GetWeakPtr() = 0;
     void ForceKeyFrameForNextFrameForTesting() {
       request_key_frame_for_testing_ = true;
     }
-
    protected:
     friend class VideoTrackRecorderTest;
 
@@ -378,6 +378,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
       CodecProfile codec_profile,
       uint32_t bits_per_second,
+      bool is_screencast,
       const OnEncodedVideoCB& on_encoded_video_cb);
   std::unique_ptr<Encoder> CreateHardwareVideoEncoder(
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
@@ -386,6 +387,13 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       uint32_t bits_per_second,
       const OnEncodedVideoCB& on_encoded_video_cb,
       bool use_import_mode,
+      bool is_screencast);
+  std::unique_ptr<Encoder> CreateMediaVideoEncoder(
+      scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,
+      CodecProfile codec_profile,
+      uint32_t bits_per_second,
+      bool is_screencast,
+      const OnEncodedVideoCB& on_encoded_video_cb,
       bool create_vea_encoder);
   void OnHardwareEncoderError();
 

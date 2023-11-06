@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_pickup") {
+  sources = [
+    "tab_pickup_infobar_modal_overlay_coordinator.h",
+    "tab_pickup_infobar_modal_overlay_coordinator.mm",
+    "tab_pickup_infobar_modal_overlay_mediator.h",
+    "tab_pickup_infobar_modal_overlay_mediator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/sync/service",
+    "//ios/chrome/browser/overlays/public/default",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tabs/model/tab_pickup:features",
+    "//ios/chrome/browser/ui/infobars/modals/tab_pickup",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+  ]
+}

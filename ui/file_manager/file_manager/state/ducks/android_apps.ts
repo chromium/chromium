@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {util} from '../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
 import {AndroidApp, State} from '../../externs/ts/state.js';
 import {constants} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
@@ -32,8 +32,7 @@ function addAndroidAppsReducer(currentState: State, payload: {
     let icon: string|chrome.fileManagerPrivate.IconSet =
         constants.ICON_TYPES.GENERIC;
     if (app.iconSet) {
-      const backgroundImage =
-          util.iconSetToCSSBackgroundImageValue(app.iconSet);
+      const backgroundImage = iconSetToCSSBackgroundImageValue(app.iconSet);
       if (backgroundImage !== 'none') {
         icon = app.iconSet;
       }

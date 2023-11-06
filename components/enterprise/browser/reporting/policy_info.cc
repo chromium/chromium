@@ -156,8 +156,10 @@ void AppendMachineLevelUserCloudPolicyFetchTimestamp(
   auto* timestamp = profile_info->add_policy_fetched_timestamps();
   timestamp->set_type(
       policy::dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
-  timestamp->set_timestamp(
-      manager->core()->client()->last_policy_timestamp().ToJavaTime());
+  timestamp->set_timestamp(manager->core()
+                               ->client()
+                               ->last_policy_timestamp()
+                               .InMillisecondsSinceUnixEpoch());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 

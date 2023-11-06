@@ -47,6 +47,7 @@
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_api_component_factory.h"
 #include "components/sync/service/sync_auth_manager.h"
+#include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/trusted_vault_histograms.h"
@@ -210,6 +211,8 @@ SyncServiceImpl::SyncServiceImpl(InitParams init_params)
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       should_record_trusted_vault_error_shown_on_startup_(true),
+      sync_poll_immediately_on_every_startup_(
+          init_params.sync_poll_immediately_on_every_startup),
 #if BUILDFLAG(IS_ANDROID)
       sessions_invalidations_enabled_(false) {
 #else
@@ -378,6 +381,10 @@ void SyncServiceImpl::Initialize() {
           GetDeferredInitDelay());
     }
   }
+
+  sync_status_recorder_ =
+      std::make_unique<SyncFeatureStatusForMigrationsRecorder>(
+          sync_client_->GetPrefService(), this);
 }
 
 void SyncServiceImpl::StartSyncingWithServer() {
@@ -577,6 +584,8 @@ void SyncServiceImpl::TryStartImpl() {
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
+  params.sync_poll_immediately_on_every_startup =
+      sync_poll_immediately_on_every_startup_;
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();
@@ -1258,7 +1267,9 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
     // too. Payments should not be enabled when auto fill data type disabled.
     // TODO(crbug.com/1435431): This can be removed once kPayments is decoupled
     // from kAutofill.
-    GetUserSettings()->SetSelectedType(UserSelectableType::kPayments, false);
+    if (!base::FeatureList::IsEnabled(kSyncDecoupleAddressPaymentSettings)) {
+      GetUserSettings()->SetSelectedType(UserSelectableType::kPayments, false);
+    }
   }
   sync_prefs_.SetCachedPassphraseType(passphrase_type);
 }
@@ -2045,7 +2056,13 @@ SyncService::ModelTypeDownloadStatus SyncServiceImpl::GetDownloadStatusForImpl(
     return ModelTypeDownloadStatus::kWaitingForUpdates;
   }
 
-  if (engine_->IsNextPollTimeInThePast()) {
+  // Wait for the poll request only during browser startup (i.e. when there were
+  // not completed sync cycles). IsNextPollTimeInThePast() uses base::Time which
+  // while poll scheduler uses base::TimeTicks. They may diverge in sleep mode
+  // (TimeTicks may be paused) and it's possible that the actual timer for
+  // polling will take longer. This might result in a long-standing
+  // `kWaitingForUpdates` status.
+  if (!HasCompletedSyncCycle() && engine_->IsNextPollTimeInThePast()) {
     DVLOG(1) << "Waiting for updates due an upcoming poll request";
     LogWaitingForUpdatesReasonIfNeeded(
         DownloadStatusWaitingForUpdatesReason::kPollRequestScheduled, type,
@@ -2229,11 +2246,15 @@ void SyncServiceImpl::RemoveClientFromServer() const {
 }
 
 void SyncServiceImpl::RecordMemoryUsageAndCountsHistograms() {
+  CHECK(engine_);
   ModelTypeSet active_types = GetActiveDataTypes();
   for (ModelType type : active_types) {
     auto dtc_it = data_type_controllers_.find(type);
     if (dtc_it != data_type_controllers_.end()) {
       dtc_it->second->RecordMemoryUsageAndCountsHistograms();
+    } else if (type == NIGORI) {
+      // DTC for NIGORI is stored in the engine on sync thread.
+      engine_->RecordNigoriMemoryUsageAndCountsHistograms();
     }
   }
 }

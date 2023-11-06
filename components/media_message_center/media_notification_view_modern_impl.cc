@@ -81,12 +81,6 @@ constexpr gfx::Size kVolumeSliderSize = {50, 20};
 constexpr gfx::Size kMuteButtonSize = {20, 20};
 constexpr int kMuteButtonIconSize = 16;
 
-void RecordMetadataHistogram(
-    MediaNotificationViewModernImpl::Metadata metadata) {
-  UMA_HISTOGRAM_ENUMERATION(
-      MediaNotificationViewModernImpl::kMetadataHistogramName, metadata);
-}
-
 class MediaButton : public views::ImageButton {
  public:
   METADATA_HEADER(MediaButton);
@@ -138,14 +132,6 @@ BEGIN_METADATA(MediaButton, views::ImageButton)
 END_METADATA
 
 }  // anonymous namespace
-
-// static
-const char MediaNotificationViewModernImpl::kArtworkHistogramName[] =
-    "Media.Notification.ArtworkPresent";
-
-// static
-const char MediaNotificationViewModernImpl::kMetadataHistogramName[] =
-    "Media.Notification.MetadataPresent";
 
 MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     MediaNotificationContainer* container,
@@ -471,7 +457,6 @@ void MediaNotificationViewModernImpl::UpdateWithMediaMetadata(
     title_label_->SetFocusBehavior(FocusBehavior::NEVER);
   } else {
     title_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    RecordMetadataHistogram(Metadata::kTitle);
   }
 
   // The subtitle label should only be a11y-focusable when there is text to be
@@ -480,10 +465,7 @@ void MediaNotificationViewModernImpl::UpdateWithMediaMetadata(
     subtitle_label_->SetFocusBehavior(FocusBehavior::NEVER);
   } else {
     subtitle_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    RecordMetadataHistogram(Metadata::kSource);
   }
-
-  RecordMetadataHistogram(Metadata::kCount);
 
   container_->OnMediaSessionMetadataChanged(metadata);
 
@@ -513,7 +495,6 @@ void MediaNotificationViewModernImpl::UpdateWithMediaArtwork(
     const gfx::ImageSkia& image) {
   GetMediaNotificationBackground()->UpdateArtwork(image);
 
-  UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, !image.isNull());
   artwork_->SetImage(image);
   artwork_->SetPreferredSize(kArtworkSize);
 

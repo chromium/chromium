@@ -21,6 +21,7 @@ class PageInfoUiDelegate {
   virtual bool IsBlockAutoPlayEnabled() = 0;
   virtual bool IsMultipleTabsOpen() = 0;
 #endif
+  // This function is temporarily needed while rolling out 3PCD.
   virtual bool IsTrackingProtection3pcdEnabled() = 0;
   virtual content::PermissionResult GetPermissionResult(
       blink::PermissionType permission) = 0;

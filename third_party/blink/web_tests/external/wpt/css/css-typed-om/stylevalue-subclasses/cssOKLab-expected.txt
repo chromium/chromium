@@ -1,18 +1,33 @@
 This is a testharness.js-based test.
-FAIL Constructing a CSSOKLab with percent for the lightness works as intended. CSSOKLab is not defined
-FAIL CSSOKLab.l can be updated with a percent. CSSOKLab is not defined
-FAIL Constructing a CSSOKLab with number for the lightness works as intended. CSSOKLab is not defined
-FAIL CSSOKLab.l can be updated with a number. CSSOKLab is not defined
-FAIL Constructing a CSSOKLab with css pixels for lightness throws a SyntaxError. assert_throws_dom: function "() => new CSSOKLab(lightness, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-FAIL Constructing a CSSOKLab with degrees for lightness throws a SyntaxError. assert_throws_dom: function "() => new CSSOKLab(lightness, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-FAIL CSSOKLab can be constructed from three numbers and will get an alpha of 100%. CSSOKLab is not defined
-FAIL CSSOKLab can be constructed from four numbers. CSSOKLab is not defined
-FAIL Constructing a CSSOKLab with CSS.number for l or alpha throws a SyntaxError assert_throws_dom: function "() => new CSSOKLab(CSS.number(1), 0, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
-FAIL Updating a CSSOKLab with CSS.number for l throws a SyntaxError CSSOKLab is not defined
-FAIL CSSOKLab.l can be updated to a number. CSSOKLab is not defined
-FAIL CSSOKLab.l can be updated with a CSS percent. CSSOKLab is not defined
-FAIL Updating a CSSOKLab with CSS.number for alpha throws a SyntaxError CSSOKLab is not defined
-FAIL CSSOKLab.alpha can be updated to a number. CSSOKLab is not defined
-FAIL CSSOKLab.alpha can be updated with a CSS percent. CSSOKLab is not defined
+[FAIL] Constructing a CSSOKLab with percent for the lightness works as intended.
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.l can be updated with a percent.
+  CSSOKLab is not defined
+[FAIL] Constructing a CSSOKLab with number for the lightness works as intended.
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.l can be updated with a number.
+  CSSOKLab is not defined
+[FAIL] Constructing a CSSOKLab with css pixels for lightness throws a SyntaxError.
+  assert_throws_dom: function "() => new CSSOKLab(lightness, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+[FAIL] Constructing a CSSOKLab with degrees for lightness throws a SyntaxError.
+  assert_throws_dom: function "() => new CSSOKLab(lightness, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+[FAIL] CSSOKLab can be constructed from three numbers and will get an alpha of 100%.
+  CSSOKLab is not defined
+[FAIL] CSSOKLab can be constructed from four numbers.
+  CSSOKLab is not defined
+[FAIL] Constructing a CSSOKLab with CSS.number for l or alpha throws a SyntaxError
+  assert_throws_dom: function "() => new CSSOKLab(CSS.number(1), 0, 0, 0)" threw object "ReferenceError: CSSOKLab is not defined" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+[FAIL] Updating a CSSOKLab with CSS.number for l throws a SyntaxError
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.l can be updated to a number.
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.l can be updated with a CSS percent.
+  CSSOKLab is not defined
+[FAIL] Updating a CSSOKLab with CSS.number for alpha throws a SyntaxError
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.alpha can be updated to a number.
+  CSSOKLab is not defined
+[FAIL] CSSOKLab.alpha can be updated with a CSS percent.
+  CSSOKLab is not defined
 Harness: the test ran to completion.
 

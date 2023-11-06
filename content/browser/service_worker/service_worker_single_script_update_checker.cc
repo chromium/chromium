@@ -93,7 +93,8 @@ constexpr net::NetworkTrafficAnnotationTag kUpdateCheckTrafficAnnotation =
 class ServiceWorkerSingleScriptUpdateChecker::WrappedIOBuffer
     : public net::WrappedIOBuffer {
  public:
-  WrappedIOBuffer(const char* data) : net::WrappedIOBuffer(data) {}
+  WrappedIOBuffer(const char* data, size_t size)
+      : net::WrappedIOBuffer(data, size) {}
 
  private:
   ~WrappedIOBuffer() override = default;
@@ -513,9 +514,10 @@ void ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable(
             ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted);
   DCHECK(network_consumer_.is_valid());
   scoped_refptr<network::MojoToNetPendingBuffer> pending_buffer;
-  uint32_t bytes_available = 0;
   MojoResult result = network::MojoToNetPendingBuffer::BeginRead(
-      &network_consumer_, &pending_buffer, &bytes_available);
+      &network_consumer_, &pending_buffer);
+
+  const uint32_t bytes_available = pending_buffer ? pending_buffer->size() : 0;
   TRACE_EVENT_WITH_FLOW2(
       "ServiceWorker",
       "ServiceWorkerSingleScriptUpdateChecker::OnNetworkDataAvailable", this,
@@ -559,7 +561,8 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
 
   DCHECK(pending_buffer || bytes_to_compare == 0);
   auto buffer = base::MakeRefCounted<WrappedIOBuffer>(
-      pending_buffer ? pending_buffer->buffer() : nullptr);
+      pending_buffer ? pending_buffer->buffer() : nullptr,
+      pending_buffer ? pending_buffer->size() : 0);
 
   // Compare the network data and the stored data.
   net::Error error = cache_writer_->MaybeWriteData(

@@ -16,17 +16,11 @@
 namespace ash {
 
 // Pixel tests for the quick settings accessibility detailed view.
-class AccessibilityDetailedViewPixelTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class AccessibilityDetailedViewPixelTest : public AshTestBase {
  public:
   AccessibilityDetailedViewPixelTest() {
-    feature_list_.InitWithFeatureStates(
-        {{features::kQsRevamp, IsQsRevampEnabled()},
-         {chromeos::features::kJelly, IsQsRevampEnabled()}});
+    feature_list_.InitWithFeatureStates({{chromeos::features::kJelly, true}});
   }
-
-  bool IsQsRevampEnabled() { return GetParam(); }
 
   // AshTestBase:
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -37,11 +31,7 @@ class AccessibilityDetailedViewPixelTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         AccessibilityDetailedViewPixelTest,
-                         testing::Bool());
-
-TEST_P(AccessibilityDetailedViewPixelTest, Basics) {
+TEST_F(AccessibilityDetailedViewPixelTest, Basics) {
   UnifiedSystemTray* system_tray = GetPrimaryUnifiedSystemTray();
   system_tray->ShowBubble();
   ASSERT_TRUE(system_tray->bubble());
@@ -50,18 +40,14 @@ TEST_P(AccessibilityDetailedViewPixelTest, Basics) {
       ->unified_system_tray_controller()
       ->ShowAccessibilityDetailedView();
   views::View* detailed_view_container;
-  if (IsQsRevampEnabled()) {
-    detailed_view_container =
-        system_tray->bubble()->quick_settings_view()->detailed_view_container();
-  } else {
-    detailed_view_container =
-        system_tray->bubble()->unified_view()->detailed_view_container();
-  }
+  detailed_view_container =
+      system_tray->bubble()->quick_settings_view()->detailed_view_container();
+
   ASSERT_TRUE(detailed_view_container);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/5, detailed_view_container));
+      /*revision_number=*/6, detailed_view_container));
 }
 
 }  // namespace ash

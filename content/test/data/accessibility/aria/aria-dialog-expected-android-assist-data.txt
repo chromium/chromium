@@ -1,0 +1,3 @@
+WebView textSize:16.00 style:0 bundle:[display="", htmlTag="#document"]
+++Dialog textSize:16.00 style:0 bundle:[display="block", htmlTag="div", role="dialog"]
+++++TextView text:"This is ARIA dialog." textSize:16.00 style:0 bundle:[display="", htmlTag=""]

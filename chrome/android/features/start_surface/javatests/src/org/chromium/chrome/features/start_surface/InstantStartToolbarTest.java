@@ -57,16 +57,21 @@ import java.io.IOException;
  * startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
-@CommandLineFlags.
-    Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION, ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-    ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
-@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-    UiRestriction.RESTRICTION_TYPE_PHONE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+    ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+    ChromeFeatureList.INSTANT_START
+})
+@Restriction({
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+    UiRestriction.RESTRICTION_TYPE_PHONE
+})
 public class InstantStartToolbarTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -121,10 +126,10 @@ public class InstantStartToolbarTest {
         // Initializes native.
         StartSurfaceTestUtils.startAndWaitNativeInitialization(mActivityTestRule);
         CriteriaHelper.pollInstrumentationThread(
-                ()
-                        -> startSurfaceToolbarCoordinator
-                                   .getIncognitoToggleTabCountProviderForTesting()
-                        != null);
+                () ->
+                        startSurfaceToolbarCoordinator
+                                        .getIncognitoToggleTabCountProviderForTesting()
+                                != null);
     }
 
     @Test
@@ -161,30 +166,34 @@ public class InstantStartToolbarTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
-            ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available"})
-    public void
-    testMenuUpdateBadgeWithUpdateAvailable() throws IOException {
-        testMenuUpdateBadge(/*shouldShowUpdateBadgeOnStartAndTabs=*/true);
+    @CommandLineFlags.Add({
+        INSTANT_START_TEST_BASE_PARAMS,
+        ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available"
+    })
+    public void testMenuUpdateBadgeWithUpdateAvailable() throws IOException {
+        testMenuUpdateBadge(/* shouldShowUpdateBadgeOnStartAndTabs= */ true);
     }
 
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.Add({INSTANT_START_TEST_BASE_PARAMS,
-            ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=unsupported_os_version"})
-    public void
-    testMenuUpdateBadgeWithUnsupportedOsVersion() throws IOException {
-        testMenuUpdateBadge(/*shouldShowUpdateBadgeOnStartAndTabs=*/true);
+    @CommandLineFlags.Add({
+        INSTANT_START_TEST_BASE_PARAMS,
+        ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=unsupported_os_version"
+    })
+    public void testMenuUpdateBadgeWithUnsupportedOsVersion() throws IOException {
+        testMenuUpdateBadge(/* shouldShowUpdateBadgeOnStartAndTabs= */ true);
     }
 
     @Test
     @SmallTest
     @Feature({"RenderTest"})
-    @CommandLineFlags.
-    Add({INSTANT_START_TEST_BASE_PARAMS, ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=none"})
+    @CommandLineFlags.Add({
+        INSTANT_START_TEST_BASE_PARAMS,
+        ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=none"
+    })
     public void testMenuUpdateBadgeWithoutUpdate() throws IOException {
-        testMenuUpdateBadge(/*shouldShowUpdateBadgeOnStartAndTabs=*/false);
+        testMenuUpdateBadge(/* shouldShowUpdateBadgeOnStartAndTabs= */ false);
     }
 
     private void testMenuUpdateBadge(boolean shouldShowUpdateBadgeOnStartAndTabs)
@@ -198,17 +207,21 @@ public class InstantStartToolbarTest {
 
         // Check whether the update badge shows on start surface toolbar.
         if (shouldShowUpdateBadgeOnStartAndTabs) {
-            onViewWaiting(allOf(withId(R.id.menu_badge),
-                                  isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
+            onViewWaiting(
+                            allOf(
+                                    withId(R.id.menu_badge),
+                                    isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(isDisplayed()));
         } else {
-            onView(allOf(withId(R.id.menu_badge),
-                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
+            onView(
+                            allOf(
+                                    withId(R.id.menu_badge),
+                                    isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
 
         // Navigate to any tab to check whether the update badge shows on toolbar layout.
-        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 3);
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount= */ 3);
         if (shouldShowUpdateBadgeOnStartAndTabs) {
             onViewWaiting(allOf(withId(R.id.menu_badge), isDescendantOfA(withId(R.id.toolbar))))
                     .check(matches(isDisplayed()));
@@ -221,18 +234,24 @@ public class InstantStartToolbarTest {
         TabUiTestHelper.enterTabSwitcher(cta);
         StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
         onViewWaiting(
-                allOf(withId(R.id.menu_button), isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
+                        allOf(
+                                withId(R.id.menu_button),
+                                isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                 .check(matches(isDisplayed()));
         if (shouldShowUpdateBadgeOnStartAndTabs) {
             // If the update badge should show on homepage and tabs, it's suppressed in
             // StartSurfaceToolbarMediator#onStartSurfaceStateChanged when tab switcher surface is
             // shown. So its visibility should be Gone instead of Invisible (as initialized).
-            onView(allOf(withId(R.id.menu_badge),
-                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
+            onView(
+                            allOf(
+                                    withId(R.id.menu_badge),
+                                    isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.GONE)));
         } else {
-            onView(allOf(withId(R.id.menu_badge),
-                           isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
+            onView(
+                            allOf(
+                                    withId(R.id.menu_badge),
+                                    isDescendantOfA(withId(R.id.tab_switcher_toolbar))))
                     .check(matches(withEffectiveVisibility(Visibility.INVISIBLE)));
         }
     }

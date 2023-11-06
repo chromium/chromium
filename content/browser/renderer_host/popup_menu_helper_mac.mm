@@ -155,16 +155,13 @@ void PopupMenuHelper::ShowPopupMenu(
 }
 
 void PopupMenuHelper::Hide() {
-  // Blink core reuses the PopupMenu of an element and first invokes Hide() over
+  // FYI: Blink reuses the PopupMenu of an element and first invokes Hide() over
   // IPC if a menu is already showing. Attempting to show a new menu while the
   // old menu is fading out confuses AppKit, since we're still in the NESTED
-  // EVENT LOOP of ShowPopupMenu(). Disable pumping of events in the fade
-  // animation of the old menu in this case so that it closes synchronously.
-  // See http://crbug.com/812260.
-  pump_in_fade_ = nullptr;
-
+  // EVENT LOOP of ShowPopupMenu(). That is why WebMenuRunner has to provide a
+  // synchronous, no-animation cancellation. See https://crbug.com/812260.
   if (objc_storage_->menu_runner) {
-    [objc_storage_->menu_runner hide];
+    [objc_storage_->menu_runner cancelSynchronously];
   }
   popup_was_hidden_ = true;
   popup_client_.reset();

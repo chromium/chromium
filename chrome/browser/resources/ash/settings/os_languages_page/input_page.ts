@@ -33,10 +33,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin} from '../deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {RouteOriginMixin} from '../route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';
@@ -630,11 +630,34 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     }
   }
 
-  private shouldShowSpinner_(item: chrome.languageSettingsPrivate.InputMethod):
-      boolean {
+  private shouldShowSpinner_(imeId: string): boolean {
     return this.languagePacksInSettingsEnabled_ &&
-        this.languageHelper.getImeLanguagePackStatus(item.id) ===
+        this.languageHelper.getImeLanguagePackStatus(imeId) ===
         chrome.inputMethodPrivate.LanguagePackStatus.IN_PROGRESS;
+  }
+
+  private shouldShowLanguagePackError_(imeId: string): boolean {
+    if (!this.languagePacksInSettingsEnabled_) {
+      return false;
+    }
+    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
+    return status ===
+        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER ||
+        status ===
+        chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT;
+  }
+
+  private getLanguagePacksErrorMessage_(imeId: string): string {
+    const status = this.languageHelper.getImeLanguagePackStatus(imeId);
+    switch (status) {
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_NEEDS_REBOOT:
+        return this.i18n('inputMethodLanguagePacksNeedsRebootError');
+      case chrome.inputMethodPrivate.LanguagePackStatus.ERROR_OTHER:
+        return this.i18n('inputMethodLanguagePacksGeneralError');
+      default:
+        console.error('Invalid status:', status);
+        return '';
+    }
   }
 }
 

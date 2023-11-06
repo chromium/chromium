@@ -273,6 +273,7 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   MOCK_METHOD1(OnIsFocusedChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
   MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
+  MOCK_METHOD1(OnHasPictureInPictureChanged, void(const PageNode*));
   MOCK_METHOD2(OnLoadingStateChanged,
                void(const PageNode*, PageNode::LoadingState));
   MOCK_METHOD1(OnUkmSourceIdChanged, void(const PageNode*));

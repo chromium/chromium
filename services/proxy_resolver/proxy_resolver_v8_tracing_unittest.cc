@@ -57,7 +57,7 @@ class ProxyResolverV8TracingTest : public testing::Test {
 
 scoped_refptr<net::PacFileData> LoadScriptData(const char* filename) {
   base::FilePath path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &path);
   path = path.AppendASCII("services");
   path = path.AppendASCII("proxy_resolver");
   path = path.AppendASCII("test");

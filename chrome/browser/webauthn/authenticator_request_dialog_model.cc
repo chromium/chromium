@@ -36,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -158,8 +159,10 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
       return password_manager::PasskeyCredential::Source::kAndroidPhone;
     case device::AuthenticatorType::kICloudKeychain:
       return password_manager::PasskeyCredential::Source::kICloudKeychain;
-    case device::AuthenticatorType::kChromeOS:
     case device::AuthenticatorType::kEnclave:
+      return password_manager::PasskeyCredential::Source::
+          kGooglePasswordManager;
+    case device::AuthenticatorType::kChromeOS:
     case device::AuthenticatorType::kOther:
       return password_manager::PasskeyCredential::Source::kOther;
   }
@@ -2159,7 +2162,8 @@ AuthenticatorRequestDialogModel::RecognizedCredentialsFor(
   return ret;
 }
 
-void AuthenticatorRequestDialogModel::OnPasskeysChanged() {
+void AuthenticatorRequestDialogModel::OnPasskeysChanged(
+    const std::vector<webauthn::PasskeyModelChange>& changes) {
   if (current_step_ != Step::kConditionalMediation) {
     // Updating an in flight request is only supported for conditional UI.
     return;
@@ -2185,7 +2189,9 @@ void AuthenticatorRequestDialogModel::
 #if BUILDFLAG(IS_WIN)
   // The Windows-native UI already handles retrying so we do not offer a second
   // level of retry in that case.
-  offer_try_again_in_ui_ = false;
+  if (type != device::AuthenticatorType::kEnclave) {
+    offer_try_again_in_ui_ = false;
+  }
 #elif BUILDFLAG(IS_MAC)
   // If there are multiple platform authenticators, one of them is the default.
   if (!type.has_value() &&
@@ -2198,6 +2204,9 @@ void AuthenticatorRequestDialogModel::
       ephemeral_state_.saved_authenticators_.authenticator_list();
   auto platform_authenticator_it = base::ranges::find_if(
       authenticators, [type](const AuthenticatorReference& ref) -> bool {
+        if (type && *type == device::AuthenticatorType::kEnclave) {
+          return ref.type == *type;
+        }
         return ref.transport == device::FidoTransportProtocol::kInternal &&
                (!type || ref.type == *type ||
                 !base::FeatureList::IsEnabled(device::kWebAuthnICloudKeychain));

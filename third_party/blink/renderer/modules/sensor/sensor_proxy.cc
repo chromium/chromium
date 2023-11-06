@@ -61,29 +61,14 @@ void SensorProxy::ReportError(DOMExceptionCode code, const String& message) {
   }
 }
 
-namespace {
-
-uint16_t GetScreenOrientationAngle(LocalFrame& frame) {
-  if (WebTestSupport::IsRunningWebTest()) {
-    // Simulate that the device is turned 90 degrees on the right.
-    // 'orientation_angle' must be 270 as per
-    // https://w3c.github.io/screen-orientation/#dfn-update-the-orientation-information.
-    return 270;
-  }
-  return frame.GetChromeClient().GetScreenInfo(frame).orientation_angle;
-}
-
-}  // namespace
-
 const device::SensorReading& SensorProxy::GetReading(bool remapped) const {
   DCHECK(IsInitialized());
   if (remapped) {
     if (remapped_reading_.timestamp() != reading_.timestamp()) {
       remapped_reading_ = reading_;
+      LocalFrame& frame = *provider_->GetSupplementable()->GetFrame();
       SensorReadingRemapper::RemapToScreenCoords(
-          type_,
-          GetScreenOrientationAngle(
-              *provider_->GetSupplementable()->GetFrame()),
+          type_, frame.GetChromeClient().GetScreenInfo(frame).orientation_angle,
           &remapped_reading_);
     }
     return remapped_reading_;

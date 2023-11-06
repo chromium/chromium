@@ -7,11 +7,33 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace content {
+
+namespace {
+
+PrefetchStreamingURLLoaderStatus
+GetStatusForRecordingFromErrorOnResponseReceived(
+    PrefetchErrorOnResponseReceived status) {
+  switch (status) {
+    case PrefetchErrorOnResponseReceived::kPrefetchWasDecoy:
+      return PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy;
+    case PrefetchErrorOnResponseReceived::kFailedInvalidHead:
+      return PrefetchStreamingURLLoaderStatus::kFailedInvalidHead;
+    case PrefetchErrorOnResponseReceived::kFailedInvalidHeaders:
+      return PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders;
+    case PrefetchErrorOnResponseReceived::kFailedNon2XX:
+      return PrefetchStreamingURLLoaderStatus::kFailedNon2XX;
+    case PrefetchErrorOnResponseReceived::kFailedMIMENotSupported:
+      return PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported;
+  }
+}
+
+}  // namespace
 
 bool PrefetchResponseReader::Servable(
     base::TimeDelta cacheable_duration) const {
@@ -26,11 +48,12 @@ bool PrefetchResponseReader::Servable(
     case LoadState::kRedirectHandled:
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
+    case LoadState::kFailedRedirect:
       servable = false;
       break;
   }
 
-  // If the response hasn't been received yet (meaning response_complete_time_
+  // If the response hasn't been completed yet (meaning response_complete_time_
   // is absl::nullopt), we can still serve the prefetch (depending on |head_|).
   return servable && (!response_complete_time_.has_value() ||
                       base::TimeTicks::Now() <
@@ -47,6 +70,7 @@ bool PrefetchResponseReader::IsWaitingForResponse() const {
     case LoadState::kCompleted:
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
+    case LoadState::kFailedRedirect:
       return false;
   }
 }
@@ -103,6 +127,8 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
   }
   create_request_handler_called_ = true;
 
+  mojo::ScopedDataPipeConsumerHandle body;
+
   // Returns a null handler if some checks fail here.
   // This is a subset of the checks in `BindAndStart()`, but not identical,
   // because `load_state_` can be transitioned between the two methods. Still
@@ -112,7 +138,14 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
     case LoadState::kResponseReceived:
     case LoadState::kCompleted:
     case LoadState::kFailed:
-      if (!body_) {
+      if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+        if (body_tee_) {
+          body = body_tee_->Clone();
+        }
+      } else {
+        body = std::move(body_);
+      }
+      if (!body) {
         // This might be because `CreateRequestHandler()` is called for the
         // second time.
         return {};
@@ -120,10 +153,13 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
       break;
 
     case LoadState::kRedirectHandled:
+      CHECK(!body_);
+      CHECK(!body_tee_);
       break;
 
     case LoadState::kStarted:
     case LoadState::kFailedResponseReceived:
+    case LoadState::kFailedRedirect:
       return {};
   }
 
@@ -132,7 +168,7 @@ PrefetchRequestHandler PrefetchResponseReader::CreateRequestHandler() {
   }
 
   return base::BindOnce(&PrefetchResponseReader::BindAndStart,
-                        base::WrapRefCounted(this), std::move(body_));
+                        base::WrapRefCounted(this), std::move(body));
 }
 
 void PrefetchResponseReader::BindAndStart(
@@ -140,9 +176,10 @@ void PrefetchResponseReader::BindAndStart(
     const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  // Currently only one client is allowed.
-  // TODO(crbug.com/1449360): Actually support multiple clients.
-  CHECK(serving_url_loader_clients_.empty());
+  if (!base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+    // Only one client is allowed if the feature is disabled.
+    CHECK(serving_url_loader_clients_.empty());
+  }
 
   serving_url_loader_receivers_.Add(this, std::move(receiver));
   ServingUrlLoaderClientId client_id =
@@ -198,6 +235,7 @@ void PrefetchResponseReader::BindAndStart(
 
     case LoadState::kStarted:
     case LoadState::kFailedResponseReceived:
+    case LoadState::kFailedRedirect:
       // `CreateRequestHandler()` shouldn't be called for these non-servable
       // states.
       NOTREACHED();
@@ -298,6 +336,9 @@ void PrefetchResponseReader::OnComplete(
     case LoadState::kFailed:
       CHECK(false);
       break;
+    case LoadState::kFailedRedirect:
+      CHECK(false);
+      break;
   }
 
   CHECK(!response_complete_time_);
@@ -350,9 +391,7 @@ void PrefetchResponseReader::HandleRedirect(
       break;
 
     case PrefetchRedirectStatus::kFail:
-      load_state_ = LoadState::kFailed;
-      failure_reason_ =
-          PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
+      load_state_ = LoadState::kFailedRedirect;
       // Do not add to the event queue on failure.
       return;
   }
@@ -363,56 +402,36 @@ void PrefetchResponseReader::HandleRedirect(
 }
 
 void PrefetchResponseReader::OnReceiveResponse(
-    PrefetchStreamingURLLoaderStatus status,
+    absl::optional<PrefetchErrorOnResponseReceived> error,
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
   CHECK_EQ(load_state_, LoadState::kStarted);
   CHECK(!head_);
   CHECK(head);
   CHECK(!body_);
+  CHECK(!body_tee_);
   CHECK(serving_url_loader_clients_.empty());
 
-  switch (status) {
-    case PrefetchStreamingURLLoaderStatus::kHeadReceivedWaitingOnBody:
-      load_state_ = LoadState::kResponseReceived;
-      head->navigation_delivery_type =
-          network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
-      CHECK(body);
-      break;
-
-    case PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy:
-    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHead:
-    case PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders:
-    case PrefetchStreamingURLLoaderStatus::kFailedNon2XX:
-    case PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported:
-      load_state_ = LoadState::kFailedResponseReceived;
-      failure_reason_ = status;
-      // Discard `body` for non-servable cases, to keep the existing behavior
-      // and also because `body` is not used.
-      body.reset();
-      break;
-
-    case PrefetchStreamingURLLoaderStatus::kWaitingOnHead:
-    case PrefetchStreamingURLLoaderStatus::kRedirected_DEPRECATED:
-    case PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed:
-    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedAfterCompletion:
-    case PrefetchStreamingURLLoaderStatus::kSuccessfulServedBeforeCompletion:
-    case PrefetchStreamingURLLoaderStatus::kFailedNetError:
-    case PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed:
-    case PrefetchStreamingURLLoaderStatus::kFollowRedirect_DEPRECATED:
-    case PrefetchStreamingURLLoaderStatus::
-        kPauseRedirectForEligibilityCheck_DEPRECATED:
-    case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
-    case PrefetchStreamingURLLoaderStatus::
-        kStopSwitchInNetworkContextForRedirect:
-    case PrefetchStreamingURLLoaderStatus::
-        kServedSwitchInNetworkContextForRedirect:
-      NOTREACHED();
-      break;
+  if (!error) {
+    load_state_ = LoadState::kResponseReceived;
+    head->navigation_delivery_type =
+        network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
+    CHECK(body);
+  } else {
+    failure_reason_ = std::move(error);
+    load_state_ = LoadState::kFailedResponseReceived;
+    // Discard `body` for non-servable cases, to keep the existing behavior
+    // and also because `body` is not used.
+    body.reset();
   }
 
   head_ = std::move(head);
-  body_ = std::move(body);
+  if (base::FeatureList::IsEnabled(features::kPrefetchReusable)) {
+    body_tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
+        std::move(body), features::kPrefetchReusableBodySizeLimit.Get());
+  } else {
+    body_ = std::move(body);
+  }
   AddEventToQueue(base::BindRepeating(&PrefetchResponseReader::ForwardResponse,
                                       base::Unretained(this)));
 }
@@ -528,23 +547,14 @@ PrefetchStreamingURLLoaderStatus PrefetchResponseReader::GetStatusForRecording()
         return PrefetchStreamingURLLoaderStatus::kSuccessfulNotServed;
       }
 
+    case LoadState::kFailedRedirect:
+      return PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect;
+
     case LoadState::kFailedResponseReceived:
     case LoadState::kFailed:
       if (failure_reason_) {
-        // Only certain enum values can be set here.
-        switch (*failure_reason_) {
-          case PrefetchStreamingURLLoaderStatus::kPrefetchWasDecoy:
-          case PrefetchStreamingURLLoaderStatus::kFailedInvalidHead:
-          case PrefetchStreamingURLLoaderStatus::kFailedInvalidHeaders:
-          case PrefetchStreamingURLLoaderStatus::kFailedNon2XX:
-          case PrefetchStreamingURLLoaderStatus::kFailedMIMENotSupported:
-          case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
-            break;
-          default:
-            NOTREACHED();
-            break;
-        }
-        return *failure_reason_;
+        return GetStatusForRecordingFromErrorOnResponseReceived(
+            *failure_reason_);
       } else if (served_before_completion_) {
         return PrefetchStreamingURLLoaderStatus::kFailedNetErrorButServed;
       } else {

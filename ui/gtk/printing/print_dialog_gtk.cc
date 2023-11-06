@@ -457,8 +457,7 @@ void PrintDialogGtk::PrintDocument(const printing::MetafilePlayer& metafile,
                                    const std::u16string& document_name) {
 #if DCHECK_IS_ON()
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-  const bool kOopPrinting =
-      printing::features::kEnableOopPrintDriversJobPrint.Get();
+  const bool kOopPrinting = printing::features::ShouldPrintJobOop();
 #else
   const bool kOopPrinting = false;
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)

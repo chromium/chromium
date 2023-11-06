@@ -1155,9 +1155,6 @@ void FramebufferTextureMultiviewOVR(GLenum target,
 
 void MaxShaderCompilerThreadsKHR(GLuint count) override;
 
-void TexImage2DSharedImageCHROMIUM(GLuint texture,
-                                   const GLbyte* mailbox) override;
-
 GLuint CreateAndTexStorage2DSharedImageCHROMIUM(const GLbyte* mailbox) override;
 
 void BeginSharedImageAccessDirectCHROMIUM(GLuint texture, GLenum mode) override;
@@ -1177,6 +1174,20 @@ void ConvertYUVAMailboxesToRGBINTERNAL(GLint src_x,
                                        GLenum plane_config,
                                        GLenum subsampling,
                                        const GLbyte* mailboxes) override;
+
+void ConvertYUVAMailboxesToTextureINTERNAL(GLuint texture,
+                                           GLenum target,
+                                           GLuint internal_format,
+                                           GLenum type,
+                                           GLint src_x,
+                                           GLint src_y,
+                                           GLsizei width,
+                                           GLsizei height,
+                                           GLboolean flip_y,
+                                           GLenum planes_yuv_color_space,
+                                           GLenum plane_config,
+                                           GLenum subsampling,
+                                           const GLbyte* mailboxes) override;
 
 void CopySharedImageINTERNAL(GLint xoffset,
                              GLint yoffset,

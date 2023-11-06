@@ -505,6 +505,10 @@ bool ThemePainterDefault::PaintInnerSpinButton(const Element& element,
 
   inner_spin.spin_up = spin_up;
   inner_spin.read_only = read_only;
+  inner_spin.spin_arrows_direction =
+      IsHorizontalWritingMode(style.GetWritingMode())
+          ? WebThemeEngine::SpinArrowsDirection::kUpDown
+          : WebThemeEngine::SpinArrowsDirection::kLeftRight;
 
   WebThemeEngine::ExtraParams extra_params(inner_spin);
 

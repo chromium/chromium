@@ -41,6 +41,7 @@ class PasswordStoreAndroidBackendDispatcherBridgeImpl
  private:
   // Implements PasswordStoreAndroidBackendDispatcherBridge interface.
   void GetAllLogins(JobId job_id, Account account) override;
+  void GetAllLoginsWithBrandingInfo(JobId job_id, Account account) override;
   void GetAutofillableLogins(JobId job_id, Account account) override;
   void GetLoginsForSignonRealm(JobId job_id,
                                const std::string& signon_realm,

@@ -4,19 +4,20 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 
-#include <stddef.h>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -1835,6 +1836,9 @@ TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
 
 TEST(AutofillStructuredAddressAddressComponent,
      IsValueCompatibleWithAncestorsCompatible) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableSupportForApartmentNumbers};
+
   std::unique_ptr<AddressComponent> address =
       i18n_model_definition::CreateAddressComponentModel();
 

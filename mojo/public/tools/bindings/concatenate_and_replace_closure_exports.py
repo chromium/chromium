@@ -32,7 +32,7 @@ def FilterLine(filename, line, output):
     return
 
   if line.startswith("goog.provide"):
-    match = re.match("goog.provide\('([^']+)'\);", line)
+    match = re.match(r"goog.provide\('([^']+)'\);", line)
     if not match:
       print("Invalid goog.provide line in %s:\n%s" % (filename, line))
       sys.exit(1)

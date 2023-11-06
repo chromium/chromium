@@ -36,6 +36,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "content/public/browser/permission_result.h"
+#include "content/public/test/mock_permission_controller.h"
+#include "extensions/common/extension.h"
+#include "extensions/test/test_extension_dir.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_ANDROID)
 #include "components/gcm_driver/instance_id/instance_id_android.h"
 #include "components/gcm_driver/instance_id/scoped_use_fake_instance_id_android.h"
@@ -387,6 +397,132 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
                                               app_identifier.app_id());
   EXPECT_TRUE(deleted_identifier.is_null());
 }
+
+// Tests that extensions are permitted to pass userVisibleOnly true or false
+// when subscribing to push messages.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+namespace extensions {
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionsPushMessagingServiceTest
+    : public ExtensionServiceTestWithInstall,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionsPushMessagingServiceTest() = default;
+
+  ExtensionsPushMessagingServiceTest(
+      const ExtensionsPushMessagingServiceTest&) = delete;
+  ExtensionsPushMessagingServiceTest& operator=(
+      const ExtensionsPushMessagingServiceTest&) = delete;
+
+  void SetUp() override {
+    ExtensionServiceTestWithInstall::SetUp();
+    InitializeExtensionService(ExtensionServiceInitParams());
+  }
+};
+
+// Tests that extensions with various workers can request userVisible as true
+// or false when subscribing to push notifications. Only worker based extensions
+// are allowed to request userVisible as false.
+TEST_P(ExtensionsPushMessagingServiceTest,
+       GetPermissionStatus_ExtensionNonServiceWorker_UserVisible) {
+  static constexpr char kManifestPersistentBackgroundScript[] =
+      R"({"scripts": ["background.js"], "persistent": true})";
+  static constexpr char kManifestEventPageBackgroundScript[] =
+      R"({"persistent": false,
+          "scripts": ["background.js"]
+         }
+      )";
+  static constexpr char kManifestServiceWorkerBackgroundScript[] =
+      R"({"service_worker": "background.js"})";
+
+  // Load an extension of ContextType.
+  TestExtensionDir test_dir;
+  constexpr char kManifest[] =
+      R"({
+         "name": "Test Extension",
+         "manifest_version": %s,
+         "version": "0.1",
+         "background": %s,
+         "permissions": ["notifications"]
+       })";
+  ContextType extension_context_type = GetParam();
+  bool worker_extension = extension_context_type == ContextType::kServiceWorker;
+  const char* background_script;
+  if (worker_extension) {
+    background_script = kManifestServiceWorkerBackgroundScript;
+  } else if (extension_context_type == ContextType::kEventPage) {
+    background_script = kManifestEventPageBackgroundScript;
+  } else {
+    background_script = kManifestPersistentBackgroundScript;
+  }
+  const char* manifest_version = worker_extension ? "3" : "2";
+  std::string manifest =
+      base::StringPrintf(kManifest, manifest_version, background_script);
+  test_dir.WriteManifest(manifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Ensure that permissions are always granted by default when we are not
+  // applying the exception for worker-based extensions.
+  auto mock_permission_controller =
+      std::make_unique<content::MockPermissionController>();
+  auto permission_mock_return =
+      content::PermissionResult(content::PermissionStatus::GRANTED,
+                                content::PermissionStatusSource::UNSPECIFIED);
+  EXPECT_CALL(*mock_permission_controller,
+              GetPermissionResultForOriginWithoutContext(testing::_, testing::_,
+                                                         testing::_))
+      .WillRepeatedly(testing::Return(permission_mock_return));
+  EXPECT_CALL(
+      *mock_permission_controller,
+      GetPermissionResultForOriginWithoutContext(testing::_, testing::_))
+      .WillRepeatedly(testing::Return(permission_mock_return));
+  browser_context()->SetPermissionControllerForTesting(
+      std::move(mock_permission_controller));
+
+  PushMessagingServiceImpl* push_service =
+      PushMessagingServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(push_service);
+  const GURL extension_origin =
+      Extension::GetBaseURLFromExtensionId(extension->id());
+
+  // All workers can always set userVisible to true when subscribing.
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
+                                        true));
+
+  // Only worker based extensions can set userVisible to false when subscribing.
+  if (worker_extension) {
+    EXPECT_EQ(
+        blink::mojom::PermissionStatus::GRANTED,
+        push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
+                                          false));
+  } else {
+    EXPECT_EQ(
+        blink::mojom::PermissionStatus::DENIED,
+        push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
+                                          false));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    NonWorkerExtension,
+    ExtensionsPushMessagingServiceTest,
+    testing::ValuesIn({ContextType::kEventPage,
+                       ContextType::kPersistentBackground}));
+INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
+                         ExtensionsPushMessagingServiceTest,
+                         testing::Values(ContextType::kServiceWorker));
+
+}  // namespace extensions
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_ANDROID)
 class FCMRevocationTest : public PushMessagingServiceTest {

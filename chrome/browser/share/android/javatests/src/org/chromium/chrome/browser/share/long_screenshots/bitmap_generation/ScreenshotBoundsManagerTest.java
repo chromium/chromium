@@ -29,23 +29,17 @@ import org.chromium.content.browser.webcontents.WebContentsImpl;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ScreenshotBoundsManagerTest {
-    @Mock
-    private Context mContext;
+    @Mock private Context mContext;
 
-    @Mock
-    private Tab mTab;
+    @Mock private Tab mTab;
 
-    @Mock
-    private RenderCoordinatesImpl mRenderCoordinates;
+    @Mock private RenderCoordinatesImpl mRenderCoordinates;
 
-    @Mock
-    private WebContentsImpl mWebContents;
+    @Mock private WebContentsImpl mWebContents;
 
-    @Mock
-    private LongScreenshotsCompositor mCompositor;
+    @Mock private LongScreenshotsCompositor mCompositor;
 
-    @Mock
-    private LongScreenshotsTabService mTabService;
+    @Mock private LongScreenshotsTabService mTabService;
 
     @Before
     public void setUp() {

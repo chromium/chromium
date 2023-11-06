@@ -50,10 +50,10 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -134,7 +134,7 @@ static bool IsIndependentDescendant(const LayoutBlock* layout_object) {
   return IsA<LayoutView>(layout_object) || layout_object->IsFloating() ||
          layout_object->IsOutOfFlowPositioned() ||
          layout_object->IsTableCell() || layout_object->IsTableCaption() ||
-         layout_object->IsFlexibleBoxIncludingNG() ||
+         layout_object->IsFlexibleBox() ||
          (containing_block && containing_block->IsHorizontalWritingMode() !=
                                   layout_object->IsHorizontalWritingMode()) ||
          layout_object->StyleRef().IsDisplayReplacedType() ||
@@ -382,14 +382,14 @@ void TextAutosizer::BeginLayout(LayoutBlock* block) {
   DCHECK(!cluster_stack_.empty());
 
   // Cells in auto-layout tables are handled separately by InflateAutoTable.
-  auto* cell = DynamicTo<LayoutNGTableCell>(block);
+  auto* cell = DynamicTo<LayoutTableCell>(block);
   bool is_auto_table_cell =
       cell && !cell->Table()->StyleRef().IsFixedTableLayout();
   if (!is_auto_table_cell && !cluster_stack_.empty())
     Inflate(block);
 }
 
-void TextAutosizer::InflateAutoTable(LayoutNGTable* table) {
+void TextAutosizer::InflateAutoTable(LayoutTable* table) {
   DCHECK(table);
   DCHECK(!table->StyleRef().IsFixedTableLayout());
   DCHECK(table->ContainingBlock());
@@ -402,13 +402,13 @@ void TextAutosizer::InflateAutoTable(LayoutNGTable* table) {
   // widths will be used for column sizing.
   for (LayoutObject* child = table->FirstChild(); child;
        child = child->NextSibling()) {
-    auto* section = DynamicTo<LayoutNGTableSection>(child);
+    auto* section = DynamicTo<LayoutTableSection>(child);
     if (!section) {
       continue;
     }
-    for (const LayoutNGTableRow* row = section->FirstRow(); row;
+    for (const LayoutTableRow* row = section->FirstRow(); row;
          row = row->NextRow()) {
-      for (LayoutNGTableCell* cell = row->FirstCell(); cell;
+      for (LayoutTableCell* cell = row->FirstCell(); cell;
            cell = cell->NextCell()) {
         if (!cell->NeedsLayout()) {
           continue;
@@ -916,7 +916,7 @@ TextAutosizer::FingerprintMapper::CreateSuperclusterIfNeeded(
       superclusters_.insert(fingerprint, nullptr);
   is_new_entry = add_result.is_new_entry;
   if (!add_result.is_new_entry)
-    return add_result.stored_value->value;
+    return add_result.stored_value->value.Get();
 
   Supercluster* supercluster = MakeGarbageCollected<Supercluster>(roots);
   add_result.stored_value->value = supercluster;
@@ -1082,7 +1082,7 @@ const LayoutBlock* TextAutosizer::DeepestBlockContainingAllText(
     cluster->deepest_block_containing_all_text_ =
         DeepestBlockContainingAllText(cluster->root_);
 
-  return cluster->deepest_block_containing_all_text_;
+  return cluster->deepest_block_containing_all_text_.Get();
 }
 
 // FIXME: Refactor this to look more like TextAutosizer::deepestCommonAncestor.
@@ -1290,7 +1290,7 @@ void TextAutosizer::Supercluster::Trace(Visitor* visitor) const {
 
 TextAutosizer::Cluster* TextAutosizer::CurrentCluster() const {
   SECURITY_DCHECK(!cluster_stack_.empty());
-  return cluster_stack_.back();
+  return cluster_stack_.back().Get();
 }
 
 TextAutosizer::Cluster::Cluster(const LayoutBlock* root,
@@ -1414,7 +1414,7 @@ TextAutosizer::LayoutScope::~LayoutScope() {
     text_autosizer_->EndLayout(block_);
 }
 
-TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutNGTable* table)
+TextAutosizer::TableLayoutScope::TableLayoutScope(LayoutTable* table)
     : LayoutScope(table) {
   if (text_autosizer_) {
     DCHECK(text_autosizer_->ShouldHandleLayout());

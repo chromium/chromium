@@ -935,6 +935,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   void SkipWaiting(SkipWaitingCallback callback) override;
   void RegisterRouter(const blink::ServiceWorkerRouterRules& rules,
                       RegisterRouterCallback callback) override;
+  void AddRoutes(const blink::ServiceWorkerRouterRules& rules,
+                 RegisterRouterCallback callback) override;
 
   // Implements blink::mojom::AssociatedInterfaceProvider.
   void GetAssociatedInterface(
@@ -1298,6 +1300,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // version is created.
   absl::optional<std::string> sha256_script_checksum_;
 
+  using RouterRegistrationMethod = blink::mojom::RouterRegistrationMethod;
+  RouterRegistrationMethod router_registration_method_ =
+      RouterRegistrationMethod::Uninitialized;
   std::unique_ptr<content::ServiceWorkerRouterEvaluator> router_evaluator_;
 
   std::unique_ptr<blink::AssociatedInterfaceRegistry> associated_registry_;

@@ -17,9 +17,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
-/**
- * Tests public methods in SpanApplier.
- */
+/** Tests public methods in SpanApplier. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SpanApplierTest {
@@ -38,10 +36,11 @@ public class SpanApplierTest {
 
     @Test
     public void testApplyMultipleSpans() {
-        String input = "Lorem <link>ipsum</link> dolor sit amet, "
-                + "<cons>consectetur adipiscing</cons> <elit>elit. Proin<endElit> consectetur.";
-        String output = "Lorem ipsum dolor sit amet, "
-                + "consectetur adipiscing elit. Proin consectetur.";
+        String input =
+                "Lorem <link>ipsum</link> dolor sit amet, <cons>consectetur adipiscing</cons>"
+                        + " <elit>elit. Proin<endElit> consectetur.";
+        String output =
+                "Lorem ipsum dolor sit amet, " + "consectetur adipiscing elit. Proin consectetur.";
         SpanInfo linkSpan = new SpanInfo("<link>", "</link>", new QuoteSpan());
         SpanInfo consSpan = new SpanInfo("<cons>", "</cons>", new BulletSpan());
         SpanInfo elitSpan = new SpanInfo("<elit>", "<endElit>", new ScaleXSpan(1));
@@ -149,11 +148,10 @@ public class SpanApplierTest {
 
     @Test
     public void testRemoveMultipleSpanText() {
-        String input = "Lorem <link>ipsum</link> dolor sit amet, "
-                + "<cons>consectetur adipiscing</cons><elit>elit. Proin<endElit> consectetur.";
-        String expected = "Lorem "
-                + " dolor sit amet, "
-                + " consectetur.";
+        String input =
+                "Lorem <link>ipsum</link> dolor sit amet, <cons>consectetur"
+                        + " adipiscing</cons><elit>elit. Proin<endElit> consectetur.";
+        String expected = "Lorem " + " dolor sit amet, " + " consectetur.";
         SpanInfo linkSpan = new SpanInfo("<link>", "</link>");
         SpanInfo consSpan = new SpanInfo("<cons>", "</cons>");
         SpanInfo elitSpan = new SpanInfo("<elit>", "<endElit>");
@@ -180,11 +178,13 @@ public class SpanApplierTest {
     /*
      * Tests the attributes of two SpannableStrings and asserts expected equality.
      */
-    private void assertSpannableStringEquality(
-            SpannableString expected, SpannableString actual) {
+    private void assertSpannableStringEquality(SpannableString expected, SpannableString actual) {
         if (!expected.equals(actual)) {
-            Assert.fail("Expected string is " + getSpannableStringDescription(expected)
-                    + " Actual string is " + getSpannableStringDescription(actual));
+            Assert.fail(
+                    "Expected string is "
+                            + getSpannableStringDescription(expected)
+                            + " Actual string is "
+                            + getSpannableStringDescription(actual));
         }
     }
 
@@ -194,9 +194,12 @@ public class SpanApplierTest {
         description.append("\"" + spannableString + "\"" + " with spans: ");
         for (int i = 0; i < spans.length; i++) {
             Object span = spans[i];
-            description.append(span.getClass().getName()
-                    + " from " + spannableString.getSpanStart(span)
-                    + " to " + spannableString.getSpanEnd(span));
+            description.append(
+                    span.getClass().getName()
+                            + " from "
+                            + spannableString.getSpanStart(span)
+                            + " to "
+                            + spannableString.getSpanEnd(span));
             if (i != spans.length - 1) {
                 description.append(", ");
             }

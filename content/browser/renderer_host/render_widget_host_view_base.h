@@ -61,7 +61,7 @@ class Compositor;
 class Cursor;
 class LatencyInfo;
 class TouchEvent;
-enum class DomCode;
+enum class DomCode : uint32_t;
 struct DidOverscrollParams;
 }  // namespace ui
 
@@ -594,11 +594,16 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   bool HasFallbackSurfaceForTesting() const { return HasFallbackSurface(); }
 
+  void SetIsFrameSinkIdOwner(bool is_owner);
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;
 
   void NotifyObserversAboutShutdown();
+
+  virtual void UpdateFrameSinkIdRegistration();
+  bool is_frame_sink_id_owner() const { return is_frame_sink_id_owner_; }
 
   virtual MouseWheelPhaseHandler* GetMouseWheelPhaseHandler();
 
@@ -760,6 +765,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   bool view_stopped_flinging_for_test_ = false;
 
   bool is_evicted_ = false;
+
+  bool is_frame_sink_id_owner_ = false;
 
   base::WeakPtrFactory<RenderWidgetHostViewBase> weak_factory_{this};
 };

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -11,9 +12,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Mediator class responsible for controlling Read Aloud mini player. */
 public class MiniPlayerMediator {
     private final PropertyModel mModel;
+    private final BrowserControlsSizer mBrowserControlsSizer;
 
-    MiniPlayerMediator(PropertyModel model) {
+    MiniPlayerMediator(PropertyModel model, BrowserControlsSizer browserControlsSizer) {
         mModel = model;
+        mBrowserControlsSizer = browserControlsSizer;
         mModel.set(PlayerProperties.MINI_PLAYER_MEDIATOR, this);
     }
 

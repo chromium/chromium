@@ -13,13 +13,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Flag;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
-/**
- * Unit Tests for {@link Flag}.
- */
+/** Unit Tests for {@link Flag}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FlagUnitTest {
-    @Rule
-    public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
+    @Rule public final BaseFlagTestRule mBaseFlagTestRule = new BaseFlagTestRule();
 
     @Test
     public void testDuplicateFeatureFlags_throwsAssertionError() {

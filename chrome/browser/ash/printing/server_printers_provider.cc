@@ -36,9 +36,7 @@ struct PrintServerWithPrinters {
   std::vector<PrinterDetector::DetectedPrinter> printers;  // queried printers
 };
 
-class ServerPrintersProviderImpl
-    : public ServerPrintersProvider,
-      public base::SupportsWeakPtr<ServerPrintersProviderImpl> {
+class ServerPrintersProviderImpl : public ServerPrintersProvider {
  public:
   explicit ServerPrintersProviderImpl(Profile* profile) : profile_(profile) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

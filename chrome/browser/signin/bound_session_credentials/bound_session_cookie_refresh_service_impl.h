@@ -37,6 +37,16 @@ class BoundSessionCookieRefreshServiceImpl
       public BoundSessionCookieController::Delegate,
       public content::StoragePartition::DataRemovalObserver {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class SessionTerminationTrigger {
+    kCookieRotationPersistentError = 0,
+    kCookiesCleared = 1,
+    kSessionTerminationHeader = 2,
+    kSessionOverride = 3,
+    kMaxValue = kSessionOverride,
+  };
+
   explicit BoundSessionCookieRefreshServiceImpl(
       unexportable_keys::UnexportableKeyService& key_service,
       std::unique_ptr<BoundSessionParamsStorage> session_params_storage,
@@ -53,13 +63,13 @@ class BoundSessionCookieRefreshServiceImpl
   void MaybeTerminateSession(const net::HttpResponseHeaders* headers) override;
   chrome::mojom::BoundSessionThrottlerParamsPtr GetBoundSessionThrottlerParams()
       const override;
-  void AddBoundSessionRequestThrottledListenerReceiver(
-      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledListener>
+  void AddBoundSessionRequestThrottledHandlerReceiver(
+      mojo::PendingReceiver<chrome::mojom::BoundSessionRequestThrottledHandler>
           receiver) override;
 
-  // chrome::mojom::BoundSessionRequestThrottledListener:
-  void OnRequestBlockedOnCookie(
-      OnRequestBlockedOnCookieCallback resume_blocked_request) override;
+  // chrome::mojom::BoundSessionRequestThrottledHandler:
+  void HandleRequestBlockedOnCookie(
+      HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
 
   void CreateRegistrationRequest(
       BoundSessionRegistrationFetcherParam registration_params) override;
@@ -76,7 +86,6 @@ class BoundSessionCookieRefreshServiceImpl
       base::RepeatingCallback<std::unique_ptr<BoundSessionCookieController>(
           const bound_session_credentials::BoundSessionParams&
               bound_session_params,
-          const base::flat_set<std::string>& cookie_names,
           Delegate* delegate)>;
 
   // BoundSessionCookieRefreshService:
@@ -98,7 +107,7 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieController::Delegate
   void OnBoundSessionThrottlerParamsChanged() override;
-  void TerminateSession() override;
+  void OnPersistentErrorEncountered() override;
 
   // StoragePartition::DataRemovalObserver:
   void OnStorageKeyDataCleared(
@@ -109,13 +118,18 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(
-      const bound_session_credentials::BoundSessionParams& bound_session_params,
-      const base::flat_set<std::string>& cookie_names);
+      const bound_session_credentials::BoundSessionParams&
+          bound_session_params);
   void InitializeBoundSession(
       const bound_session_credentials::BoundSessionParams&
           bound_session_params);
 
   void UpdateAllRenderers();
+
+  // Terminates ongoing device bound session, clears the session params from
+  // storage and updates all renderers.
+  void TerminateSession(SessionTerminationTrigger trigger);
+  void RecordSessionTerminationTrigger(SessionTerminationTrigger trigger);
 
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   // Never null. Stored as `std::unique_ptr` for polymorphism.
@@ -132,8 +146,8 @@ class BoundSessionCookieRefreshServiceImpl
 
   std::unique_ptr<BoundSessionCookieController> cookie_controller_;
 
-  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
-      renderer_request_throttled_listener_;
+  mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledHandler>
+      renderer_request_throttled_handler_;
 
   // There is only one active session registration at a time.
   std::unique_ptr<BoundSessionRegistrationFetcher> active_registration_request_;

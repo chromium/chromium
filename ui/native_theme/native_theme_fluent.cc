@@ -117,13 +117,18 @@ void NativeThemeFluent::PaintScrollbarThumb(
   path.addRRect(rrect);
   canvas->clipPath(path, true);
 
-  ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
-  if (state == NativeTheme::kPressed) {
-    thumb_color_id = kColorWebNativeControlScrollbarThumbPressed;
-  } else if (state == NativeTheme::kHovered) {
-    thumb_color_id = kColorWebNativeControlScrollbarThumbHovered;
-  }
-  const SkColor thumb_color = color_provider->GetColor(thumb_color_id);
+  auto get_color = [color_provider, state]() {
+    ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
+    if (state == NativeTheme::kPressed) {
+      thumb_color_id = kColorWebNativeControlScrollbarThumbPressed;
+    } else if (state == NativeTheme::kHovered) {
+      thumb_color_id = kColorWebNativeControlScrollbarThumbHovered;
+    }
+    return color_provider->GetColor(thumb_color_id);
+  };
+  // TODO(crbug.com/891944): Adjust extra param `thumb_color` based on `state`.
+  const SkColor thumb_color = extra_params.thumb_color.value_or(get_color());
+
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(thumb_color);

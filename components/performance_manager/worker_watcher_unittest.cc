@@ -649,7 +649,8 @@ content::GlobalRenderFrameHostId TestFrameNodeSource::CreateFrameNode(
   content::GlobalRenderFrameHostId render_frame_host_id(render_process_id,
                                                         frame_id);
   auto frame_node = PerformanceManagerImpl::CreateFrameNode(
-      process_node, page_node_.get(), nullptr, frame_id,
+      process_node, page_node_.get(), /*parent_frame_node=*/nullptr,
+      /*fenced_frame_embedder_frame_node*/ nullptr, frame_id,
       blink::LocalFrameToken(), content::BrowsingInstanceId(0),
       content::SiteInstanceId(0));
 
@@ -916,7 +917,7 @@ TEST_F(WorkerWatcherTest, ServiceWorkerFrameClient) {
         EXPECT_TRUE(worker_node->client_frames().empty());
 
         // Save the token for the FindWorkerNodeForToken() test.
-        token = worker_node->worker_token();
+        token = worker_node->GetWorkerToken();
       }));
 
   // Now simulate the navigation commit.

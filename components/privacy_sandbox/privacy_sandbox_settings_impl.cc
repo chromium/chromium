@@ -29,6 +29,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/tpcd_experiment_eligibility.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_features.h"
@@ -485,6 +486,17 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
              reporting_origin.GetURL());
 }
 
+bool PrivacySandboxSettingsImpl::
+    IsAttributionReportingTransitionalDebuggingAllowed(
+        const url::Origin& top_frame_origin,
+        const url::Origin& reporting_origin) const {
+  // Third party cookies must also be available for this context. An empty site
+  // for cookies is provided so the context is always treated as a third party.
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      reporting_origin.GetURL(), net::SiteForCookies(), top_frame_origin,
+      net::CookieSettingOverrides());
+}
+
 void PrivacySandboxSettingsImpl::SetFledgeJoiningAllowed(
     const std::string& top_frame_etld_plus1,
     bool allowed) {
@@ -870,7 +882,8 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   DCHECK(pref_name == prefs::kPrivacySandboxM1TopicsEnabled ||
          pref_name == prefs::kPrivacySandboxM1FledgeEnabled ||
          pref_name == prefs::kPrivacySandboxM1AdMeasurementEnabled);
-  if (features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
+  if (delegate_->IsCookieDeprecationExperimentEligible() &&
+      features::kCookieDeprecationTestingDisableAdsAPIs.Get()) {
     return Status::kBlockedBy3pcdExperiment;
   }
 
@@ -896,9 +909,10 @@ PrivacySandboxSettingsImpl::GetM1PrivacySandboxApiEnabledStatus(
   return status;
 }
 
-bool PrivacySandboxSettingsImpl::
-    IsCookieDeprecationExperimentCurrentlyEligible() const {
-  return delegate_->IsCookieDeprecationExperimentCurrentlyEligible();
+TpcdExperimentEligibility
+PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
+    const {
+  return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
 bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {

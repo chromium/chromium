@@ -192,9 +192,9 @@ bool GamepadDeviceMac::AddButtons(Gamepad* gamepad) {
   size_t button_count = 0;
   size_t unmapped_button_count = 0;
 
-  for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(elements.get()); ++i) {
     IOHIDElementRef element =
-        (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
+        (IOHIDElementRef)CFArrayGetValueAtIndex(elements.get(), i);
     if (!CheckCollection(element))
       continue;
 
@@ -279,9 +279,9 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   size_t axis_count = 0;
   size_t unmapped_axis_count = 0;
 
-  for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(elements.get()); ++i) {
     IOHIDElementRef element =
-        (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
+        (IOHIDElementRef)CFArrayGetValueAtIndex(elements.get(), i);
     if (!CheckCollection(element))
       continue;
 
@@ -308,9 +308,9 @@ bool GamepadDeviceMac::AddAxes(Gamepad* gamepad) {
   if (unmapped_axis_count > 0) {
     // Insert unmapped axes at unused axis indices.
     size_t axis_index = 0;
-    for (CFIndex i = 0; i < CFArrayGetCount(elements); ++i) {
+    for (CFIndex i = 0; i < CFArrayGetCount(elements.get()); ++i) {
       IOHIDElementRef element =
-          (IOHIDElementRef)CFArrayGetValueAtIndex(elements, i);
+          (IOHIDElementRef)CFArrayGetValueAtIndex(elements.get(), i);
       if (!CheckCollection(element))
         continue;
 

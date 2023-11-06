@@ -547,6 +547,15 @@ void SyncEngineImpl::GetNigoriNodeForDebugging(AllNodesCallback callback) {
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
+void SyncEngineImpl::RecordNigoriMemoryUsageAndCountsHistograms() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sync_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SyncEngineBackend::RecordNigoriMemoryUsageAndCountsHistograms,
+          backend_));
+}
+
 void SyncEngineImpl::OnInvalidationReceived(const std::string& payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

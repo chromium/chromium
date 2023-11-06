@@ -308,6 +308,8 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
         event_type_names::kLeavepictureinpicture,
         WrapPersistent(picture_in_picture_window_.Get())));
 
+    picture_in_picture_window_ = nullptr;
+
     // Register the video frame sink back to the element when the PiP window
     // is closed and if the video is not unset.
     if (element->GetWebMediaPlayer()) {
@@ -321,11 +323,11 @@ void PictureInPictureControllerImpl::OnExitedPictureInPicture(
 
 PictureInPictureWindow* PictureInPictureControllerImpl::pictureInPictureWindow()
     const {
-  return picture_in_picture_window_;
+  return picture_in_picture_window_.Get();
 }
 
 Element* PictureInPictureControllerImpl::PictureInPictureElement() const {
-  return picture_in_picture_element_;
+  return picture_in_picture_element_.Get();
 }
 
 Element* PictureInPictureControllerImpl::PictureInPictureElement(
@@ -345,7 +347,7 @@ bool PictureInPictureControllerImpl::IsPictureInPictureElement(
 #if !BUILDFLAG(IS_ANDROID)
 LocalDOMWindow* PictureInPictureControllerImpl::documentPictureInPictureWindow()
     const {
-  return document_picture_in_picture_window_;
+  return document_picture_in_picture_window_.Get();
 }
 
 void PictureInPictureControllerImpl::CreateDocumentPictureInPictureWindow(

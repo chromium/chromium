@@ -2508,20 +2508,17 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
   ui::ScopedMakeCurrent smc(shared_context_state->context(),
                             shared_context_state->surface());
 
-  if (src_yuv_plane_config < 0 ||
-      src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
+  if (src_yuv_plane_config > static_cast<int>(SkYUVAInfo::PlaneConfig::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_plane_config must be a valid PlaneConfig");
     return error::kNoError;
   }
-  if (src_yuv_subsampling < 0 ||
-      src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
+  if (src_yuv_subsampling > static_cast<int>(SkYUVAInfo::Subsampling::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_subsampling must be a valid Subsampling");
     return error::kNoError;
   }
-  if (src_yuv_datatype < 0 ||
-      src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
+  if (src_yuv_datatype > static_cast<int>(SkYUVAPixmapInfo::DataType::kLast)) {
     InsertError(GL_INVALID_ENUM,
                 "src_yuv_datatype must be a valid SkYUVAPixmapInfo::DataType");
     return error::kNoError;
@@ -2710,12 +2707,12 @@ error::Error GLES2DecoderPassthroughImpl::DoReadbackARGBImagePixelsINTERNAL(
   ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
                             lazy_context_->shared_context_state()->surface());
 
-  if (dst_sk_color_type > kLastEnum_SkColorType || dst_sk_color_type < 0) {
+  if (dst_sk_color_type > kLastEnum_SkColorType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_color_type must be a valid SkColorType");
     return error::kNoError;
   }
-  if (dst_sk_alpha_type > kLastEnum_SkAlphaType || dst_sk_alpha_type < 0) {
+  if (dst_sk_alpha_type > kLastEnum_SkAlphaType) {
     InsertError(GL_INVALID_ENUM,
                 "dst_sk_alpha_type must be a valid SkAlphaType");
     return error::kNoError;
@@ -5156,48 +5153,6 @@ error::Error GLES2DecoderPassthroughImpl::DoUnlockDiscardableTextureCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::DoTexImage2DSharedImageCHROMIUM(
-    GLuint texture_client_id,
-    const volatile GLbyte* mailbox) {
-  if (!texture_client_id) {
-    InsertError(GL_INVALID_OPERATION, "invalid client ID");
-    return error::kNoError;
-  }
-
-  const Mailbox& mb = Mailbox::FromVolatile(
-      *reinterpret_cast<const volatile Mailbox*>(mailbox));
-  auto shared_image = group_->shared_image_representation_factory()
-                          ->ProduceGLTexturePassthrough(mb);
-  if (shared_image == nullptr) {
-    InsertError(GL_INVALID_OPERATION, "invalid mailbox name.");
-    DoGenTextures(1, &texture_client_id);
-    return error::kNoError;
-  }
-
-  auto texture = shared_image->GetTexturePassthrough();
-  if (texture->target() != GL_TEXTURE_2D) {
-    InsertError(GL_INVALID_OPERATION, "invalid texture target.");
-    return error::kNoError;
-  }
-
-  // Map `client_id` to the SharedImage's texture.
-  resources_->texture_id_map.RemoveClientID(texture_client_id);
-  resources_->texture_id_map.SetIDMapping(texture_client_id,
-                                          texture->service_id());
-  resources_->texture_object_map.RemoveClientID(texture_client_id);
-  resources_->texture_object_map.SetIDMapping(texture_client_id, texture);
-  resources_->texture_shared_image_map[texture_client_id] =
-      PassthroughResources::SharedImageData(this, std::move(shared_image));
-
-  // If the client has bound `client_texture_id`, the binding was done when
-  // `client_texture_id` did not necessarily map to `texture->service_id()`.
-  // Update any such binding so that `texture->service_id()` (which
-  // `texture_client_id` now maps to) is bound.
-  UpdateTextureBinding(texture->target(), texture_client_id, texture.get());
-
-  return error::kNoError;
-}
-
 error::Error
 GLES2DecoderPassthroughImpl::DoCreateAndTexStorage2DSharedImageINTERNAL(
     GLuint texture_client_id,
@@ -5325,6 +5280,54 @@ error::Error GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToRGBINTERNAL(
   auto result = helper.ConvertYUVAMailboxesToRGB(src_x, src_y, width, height,
                                                  yuv_color_space, plane_config,
                                                  subsampling, mailboxes_in);
+  if (!result.has_value()) {
+    InsertError(result.error().gl_error, result.error().msg);
+  }
+  return error::kNoError;
+}
+
+error::Error
+GLES2DecoderPassthroughImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
+    GLuint texture,
+    GLenum target,
+    GLuint internal_format,
+    GLenum type,
+    GLint src_x,
+    GLint src_y,
+    GLsizei width,
+    GLsizei height,
+    GLboolean flip_y,
+    GLenum yuv_color_space,
+    GLenum plane_config,
+    GLenum subsampling,
+    const volatile GLbyte* mailboxes_in) {
+  if (!lazy_context_) {
+    lazy_context_ = LazySharedContextState::Create(this);
+    if (!lazy_context_) {
+      return error::kNoError;
+    }
+  }
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  ui::ScopedMakeCurrent smc(lazy_context_->shared_context_state()->context(),
+                            lazy_context_->shared_context_state()->surface());
+
+  if (GLenumToTextureTarget(target) == TextureTarget::kUnkown) {
+    InsertError(GL_INVALID_VALUE, "Invalid texture target");
+    return error::kNoError;
+  }
+
+  GLuint gl_texture_service_id = GetTextureServiceID(
+      api(), texture, resources_, /*create_if_missing=*/false);
+  if (gl_texture_service_id == 0) {
+    InsertError(GL_INVALID_OPERATION, "Cannot get texture service id");
+    return error::kNoError;
+  }
+
+  CopySharedImageHelper helper(group_->shared_image_representation_factory(),
+                               lazy_context_->shared_context_state());
+  auto result = helper.ConvertYUVAMailboxesToGLTexture(
+      gl_texture_service_id, target, internal_format, type, src_x, src_y, width,
+      height, flip_y, yuv_color_space, plane_config, subsampling, mailboxes_in);
   if (!result.has_value()) {
     InsertError(result.error().gl_error, result.error().msg);
   }

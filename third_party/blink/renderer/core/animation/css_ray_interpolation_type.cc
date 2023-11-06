@@ -131,14 +131,14 @@ class InheritedRayChecker : public CSSInterpolationType::CSSConversionChecker {
   CoordBox coord_box_;
 };
 
-std::unique_ptr<InterpolableValue> ConvertCoordinate(
+InterpolableValue* ConvertCoordinate(
     const BasicShapeCenterCoordinate& coordinate,
     double zoom) {
   return InterpolableLength::MaybeConvertLength(coordinate.ComputedLength(),
                                                 zoom);
 }
 
-std::unique_ptr<InterpolableValue> CreateNeutralInterpolableCoordinate() {
+InterpolableValue* CreateNeutralInterpolableCoordinate() {
   return InterpolableLength::CreateNeutral();
 }
 
@@ -162,25 +162,25 @@ enum RayComponentIndex : unsigned {
 InterpolationValue CreateValue(const StyleRay& ray,
                                CoordBox coord_box,
                                double zoom) {
-  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
-  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(ray.Angle()));
+  auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex,
+            MakeGarbageCollected<InterpolableNumber>(ray.Angle()));
   list->Set(kRayCenterXIndex, ConvertCoordinate(ray.CenterX(), zoom));
   list->Set(kRayCenterYIndex, ConvertCoordinate(ray.CenterY(), zoom));
   list->Set(kRayHasExplicitCenterIndex,
-            std::make_unique<InterpolableNumber>(ray.HasExplicitCenter()));
-  return InterpolationValue(std::move(list), CSSRayNonInterpolableValue::Create(
-                                                 RayMode(ray, coord_box)));
+            MakeGarbageCollected<InterpolableNumber>(ray.HasExplicitCenter()));
+  return InterpolationValue(
+      list, CSSRayNonInterpolableValue::Create(RayMode(ray, coord_box)));
 }
 
 InterpolationValue CreateNeutralValue(const RayMode& mode) {
-  auto list = std::make_unique<InterpolableList>(kRayComponentIndexCount);
-  list->Set(kRayAngleIndex, std::make_unique<InterpolableNumber>(0));
+  auto* list = MakeGarbageCollected<InterpolableList>(kRayComponentIndexCount);
+  list->Set(kRayAngleIndex, MakeGarbageCollected<InterpolableNumber>(0));
   list->Set(kRayCenterXIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayCenterYIndex, CreateNeutralInterpolableCoordinate());
   list->Set(kRayHasExplicitCenterIndex,
-            std::make_unique<InterpolableNumber>(0));
-  return InterpolationValue(std::move(list),
-                            CSSRayNonInterpolableValue::Create(mode));
+            MakeGarbageCollected<InterpolableNumber>(0));
+  return InterpolationValue(list, CSSRayNonInterpolableValue::Create(mode));
 }
 
 }  // namespace

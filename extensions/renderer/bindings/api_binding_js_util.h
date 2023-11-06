@@ -47,7 +47,7 @@ class APIBindingJSUtil final : public gin::Wrappable<APIBindingJSUtil> {
   // replacement for custom bindings that utilize require('sendRequest').
   void SendRequest(gin::Arguments* arguments,
                    const std::string& name,
-                   const std::vector<v8::Local<v8::Value>>& request_args,
+                   const v8::LocalVector<v8::Value>& request_args,
                    v8::Local<v8::Value> options);
 
   // A handler to register an argument massager for a specific event.

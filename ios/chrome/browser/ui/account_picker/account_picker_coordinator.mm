@@ -38,9 +38,6 @@
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
-// Returns `_accountPickerConfirmationScreenCoordinator.selectedIdentity`.
-@property(nonatomic, readonly) id<SystemIdentity> selectedIdentity;
-
 @end
 
 @implementation AccountPickerCoordinator {
@@ -135,6 +132,11 @@
 
 - (id<SystemIdentity>)selectedIdentity {
   return _accountPickerConfirmationScreenCoordinator.selectedIdentity;
+}
+
+- (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
+  _accountPickerConfirmationScreenCoordinator.selectedIdentity =
+      selectedIdentity;
 }
 
 - (UIViewController*)viewController {

@@ -1545,11 +1545,6 @@ if (is_win) {
     ]
   }
 
-  process_version_rc_template("nacl64_exe_version") {
-    sources = [ "app/nacl64_exe.ver" ]
-    output = "$target_gen_dir/nacl64_exe_version.rc"
-  }
-
   process_version_rc_template("other_version") {
     sources = [ "app/other.ver" ]
     output = "$target_gen_dir/other_version.rc"

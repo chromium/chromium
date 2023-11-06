@@ -85,8 +85,8 @@ class BrandingSecurityButtonAnimationDelegate {
 
         // If the drawable is a transitional drawable, this means previous transition is in place.
         // We should start the transition with the previous target drawable.
-        if (existingDrawable instanceof TransitionDrawable
-                && ((TransitionDrawable) existingDrawable).getNumberOfLayers() == 2) {
+        if (existingDrawable instanceof TransitionDrawable transitionDrawable
+                && transitionDrawable.getNumberOfLayers() == 2) {
             existingDrawable = ((TransitionDrawable) existingDrawable).getDrawable(1);
         }
 
@@ -127,8 +127,8 @@ class BrandingSecurityButtonAnimationDelegate {
 
     private void resetAnimationStatus() {
         mIsAnimationInProgress = false;
-        if (mImageView.getDrawable() instanceof TransitionDrawable) {
-            ((TransitionDrawable) mImageView.getDrawable()).resetTransition();
+        if (mImageView.getDrawable() instanceof TransitionDrawable transitionDrawable) {
+            transitionDrawable.resetTransition();
         }
     }
 

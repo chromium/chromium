@@ -429,7 +429,7 @@ class BidirectionalStreamTest : public TestWithTaskEnvironment {
     session_deps_.socket_factory->AddSocketDataProvider(sequenced_data_.get());
     session_deps_.net_log = NetLog::Get();
     http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-    SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
+    SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, socket_tag,
                        NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);
@@ -621,7 +621,7 @@ TEST_F(BidirectionalStreamTest, ClientAuthRequestIgnored) {
   session_deps_.socket_factory->AddSocketDataProvider(&socket_data2);
 
   http_session_ = SpdySessionDependencies::SpdyCreateSession(&session_deps_);
-  SpdySessionKey key(host_port_pair_, ProxyServer::Direct(),
+  SpdySessionKey key(host_port_pair_, ProxyChain::Direct(),
                      PRIVACY_MODE_DISABLED,
                      SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                      NetworkAnonymizationKey(), SecureDnsPolicy::kAllow);

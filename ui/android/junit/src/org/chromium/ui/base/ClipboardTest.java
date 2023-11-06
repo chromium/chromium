@@ -45,11 +45,11 @@ import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-/**
- * Tests logic in the Clipboard class.
- */
+/** Tests logic in the Clipboard class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, shadows = {ShadowPostTask.class})
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowPostTask.class})
 public class ClipboardTest {
     private static final String PLAIN_TEXT = "plain";
     private static final String HTML_TEXT = "<span style=\"color: red;\">HTML</span>";
@@ -57,12 +57,13 @@ public class ClipboardTest {
 
     @Before
     public void setup() {
-        ShadowPostTask.setTestImpl(new TestImpl() {
-            @Override
-            public void postDelayedTask(int taskTraits, Runnable task, long delay) {
-                new Handler(Looper.getMainLooper()).postDelayed(task, delay);
-            }
-        });
+        ShadowPostTask.setTestImpl(
+                new TestImpl() {
+                    @Override
+                    public void postDelayedTask(int taskTraits, Runnable task, long delay) {
+                        new Handler(Looper.getMainLooper()).postDelayed(task, delay);
+                    }
+                });
         mTempImageUri = Uri.parse("content://tmp/test/image.jpg");
         ClipboardImpl.setSkipImageMimeTypeCheckForTesting(true);
     }
@@ -197,7 +198,9 @@ public class ClipboardTest {
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();
         String actualText = textView == null ? "" : textView.getText().toString();
 
-        assertEquals("Text for toast shown does not match.",
-                ContextUtils.getApplicationContext().getString(strRes), actualText);
+        assertEquals(
+                "Text for toast shown does not match.",
+                ContextUtils.getApplicationContext().getString(strRes),
+                actualText);
     }
 }

@@ -15,6 +15,7 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -183,6 +184,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
     case sandbox::mojom::Sandbox::kPpapi:
       return std::make_unique<PpapiProcessPolicy>();
 #endif
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kUtility:
       return std::make_unique<UtilityProcessPolicy>();
     case sandbox::mojom::Sandbox::kCdm:
@@ -296,6 +298,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
+    case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kUtility:
     case sandbox::mojom::Sandbox::kNoSandbox:
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
@@ -307,7 +310,8 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     std::unique_ptr<bpf_dsl::Policy> policy,
     base::ScopedFD proc_fd,
-    SandboxBPF::SeccompLevel seccomp_level) {
+    SandboxBPF::SeccompLevel seccomp_level,
+    bool force_disable_spectre_variant2_mitigation) {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   if (IsSeccompBPFDesired() && SupportsSandbox()) {
     CHECK(policy);
@@ -320,10 +324,19 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     sandbox.SetProcFd(std::move(proc_fd));
     bool enable_ibpb = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    enable_ibpb =
-        base::FeatureList::IsEnabled(
-            features::kForceSpectreVariant2Mitigation) ||
-        base::FeatureList::IsEnabled(features::kSpectreVariant2Mitigation);
+    if (base::FeatureList::IsEnabled(
+            features::kForceSpectreVariant2Mitigation)) {
+      enable_ibpb = true;
+    } else if (force_disable_spectre_variant2_mitigation) {
+      enable_ibpb = false;
+    } else {
+      enable_ibpb =
+          base::FeatureList::IsEnabled(features::kSpectreVariant2Mitigation);
+    }
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Linux desktop and Lacros, the Spectre variant 2 mitigation is
+    // on by default unless force disabled by the caller.
+    enable_ibpb = !force_disable_spectre_variant2_mitigation;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(sandbox.StartSandbox(seccomp_level, enable_ibpb));
     return true;

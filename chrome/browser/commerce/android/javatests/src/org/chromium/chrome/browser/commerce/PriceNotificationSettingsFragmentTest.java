@@ -47,14 +47,11 @@ public class PriceNotificationSettingsFragmentTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
 
-    @Mock
-    private IdentityManager mIdentityManager;
+    @Mock private IdentityManager mIdentityManager;
 
-    @Mock
-    private PrefService mPrefs;
+    @Mock private PrefService mPrefs;
 
     @Before
     public void setUp() {
@@ -109,7 +106,9 @@ public class PriceNotificationSettingsFragmentTest {
     }
 
     private ChromeSwitchPreference getEmailNotificationsSwitch() {
-        return (ChromeSwitchPreference) mTestRule.getFragment().findPreference(
-                PriceNotificationSettingsFragment.PREF_EMAIL_NOTIFICATIONS);
+        return (ChromeSwitchPreference)
+                mTestRule
+                        .getFragment()
+                        .findPreference(PriceNotificationSettingsFragment.PREF_EMAIL_NOTIFICATIONS);
     }
 }

@@ -33,10 +33,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 
-/**
- * Tests that {@link CustomTabActivity} launches into the correct color scheme.
- */
-// clang-format off
+/** Tests that {@link CustomTabActivity} launches into the correct color scheme. */
 @RunWith(ChromeRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES)
@@ -44,12 +41,10 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
 })
-// clang-format on
 public class LaunchesWithColorSchemeTest {
     private ActivityScenario<CustomTabActivity> mActivityScenario;
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
     @After
     public void tearDown() {
@@ -61,33 +56,39 @@ public class LaunchesWithColorSchemeTest {
     @Test
     @SmallTest
     public void testLaunchCustomTabWithColorSchemeDark() {
-        mActivityScenario = ActivityScenario.launch(
-                createIntentWithColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK));
+        mActivityScenario =
+                ActivityScenario.launch(
+                        createIntentWithColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK));
 
-        mActivityScenario.onActivity(activity -> {
-            assertNotNull(activity.getNightModeStateProviderForTesting());
-            assertTrue(activity.getNightModeStateProviderForTesting().isInNightMode());
+        mActivityScenario.onActivity(
+                activity -> {
+                    assertNotNull(activity.getNightModeStateProviderForTesting());
+                    assertTrue(activity.getNightModeStateProviderForTesting().isInNightMode());
 
-            MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
-            assertEquals(BrandedColorScheme.APP_DEFAULT,
-                    menuButtonView.getBrandedColorSchemeForTesting());
-        });
+                    MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
+                    assertEquals(
+                            BrandedColorScheme.APP_DEFAULT,
+                            menuButtonView.getBrandedColorSchemeForTesting());
+                });
     }
 
     @Test
     @SmallTest
     public void testLaunchCustomTabWithColorSchemeLight() {
-        mActivityScenario = ActivityScenario.launch(
-                createIntentWithColorScheme(CustomTabsIntent.COLOR_SCHEME_LIGHT));
+        mActivityScenario =
+                ActivityScenario.launch(
+                        createIntentWithColorScheme(CustomTabsIntent.COLOR_SCHEME_LIGHT));
 
-        mActivityScenario.onActivity(activity -> {
-            assertNotNull(activity.getNightModeStateProviderForTesting());
-            assertFalse(activity.getNightModeStateProviderForTesting().isInNightMode());
+        mActivityScenario.onActivity(
+                activity -> {
+                    assertNotNull(activity.getNightModeStateProviderForTesting());
+                    assertFalse(activity.getNightModeStateProviderForTesting().isInNightMode());
 
-            MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
-            assertEquals(BrandedColorScheme.APP_DEFAULT,
-                    menuButtonView.getBrandedColorSchemeForTesting());
-        });
+                    MenuButton menuButtonView = activity.findViewById(R.id.menu_button_wrapper);
+                    assertEquals(
+                            BrandedColorScheme.APP_DEFAULT,
+                            menuButtonView.getBrandedColorSchemeForTesting());
+                });
     }
 
     private static Intent createIntentWithColorScheme(int colorScheme) {

@@ -14,10 +14,14 @@ type DisplaySettingsProviderInterface =
     displaySettingsProviderMojom.DisplaySettingsProviderInterface;
 type TabletModeObserverInterface =
     displaySettingsProviderMojom.TabletModeObserverInterface;
+type DisplayConfigurationObserverInterface =
+    displaySettingsProviderMojom.DisplayConfigurationObserverInterface;
 
 export class FakeDisplaySettingsProvider implements
     DisplaySettingsProviderInterface {
   private tabletModeObservers: TabletModeObserverInterface[] = [];
+  private displayConfigurationObservers:
+      DisplayConfigurationObserverInterface[] = [];
   private isTabletMode: boolean = false;
 
   observeTabletMode(observer: TabletModeObserverInterface):
@@ -26,6 +30,13 @@ export class FakeDisplaySettingsProvider implements
     this.notifyTabletModeChanged();
 
     return Promise.resolve({isTabletMode: this.isTabletMode});
+  }
+
+  observeDisplayConfiguration(observer: DisplayConfigurationObserverInterface):
+      Promise<void> {
+    this.displayConfigurationObservers.push(observer);
+
+    return Promise.resolve();
   }
 
   notifyTabletModeChanged(): void {

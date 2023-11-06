@@ -43,6 +43,7 @@ namespace blink {
 HTMLDataListElement::HTMLDataListElement(Document& document)
     : HTMLElement(html_names::kDatalistTag, document) {
   UseCounter::Count(document, WebFeature::kDataListElement);
+  document.IncrementDataListCount();
 }
 
 HTMLDataListOptionsCollection* HTMLDataListElement::options() {
@@ -67,6 +68,16 @@ void HTMLDataListElement::FinishParsingChildren() {
 void HTMLDataListElement::OptionElementChildrenChanged() {
   GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
       GetIdAttribute());
+}
+
+void HTMLDataListElement::DidMoveToNewDocument(Document& old_doc) {
+  HTMLElement::DidMoveToNewDocument(old_doc);
+  old_doc.DecrementDataListCount();
+  GetDocument().IncrementDataListCount();
+}
+
+void HTMLDataListElement::Prefinalize() {
+  GetDocument().DecrementDataListCount();
 }
 
 }  // namespace blink

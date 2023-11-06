@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Pomóż nam ulepszyć Chrome, informując nas, dlaczego zezwalasz na pliki cookie innych firm. <ph name="BEGIN_LINK" />Prześlij opinię<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1181037720776840403">Usuń</translation>
+<translation id="1192844206376121885">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">Dalej</translation>
 <translation id="1242008676835033345">Umieszczono na <ph name="WEBSITE_URL" /></translation>
 <translation id="1272079795634619415">Zatrzymaj</translation>
@@ -21,10 +22,10 @@
 <translation id="1384959399684842514">Pobieranie wstrzymane</translation>
 <translation id="1415402041810619267">URL obcięty</translation>
 <translation id="1426410128494586442">Tak</translation>
-<translation id="1446450296470737166">Pełne sterowanie urządzeniami MIDI</translation>
 <translation id="1448064542941920355">Zmniejsz powiększenie</translation>
 <translation id="1510341833810331442">Witryny nie mogą zapisywać danych na Twoim urządzeniu</translation>
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
+<translation id="1568470248891039841">Witryny, które odwiedzasz, mogą wykorzystywać treści z innych witryn, np. obrazy, reklamy i tekst. Te inne witryny mogą prosić o zgodę na korzystanie z informacji o Tobie zapisanych przez nie podczas przeglądania tych witryn. <ph name="BEGIN_LINK" />Więcej informacji o ustawieniu „Umieszczona treść”<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">Nowe działania są dostępne u góry ekranu</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1633720957382884102">Powiązane witryny</translation>
@@ -41,7 +42,6 @@
 <translation id="187227595286001730">Powiązane witryny mają dostęp do danych o Twojej aktywności w tej grupie</translation>
 <translation id="1887786770086287077">Dostęp do lokalizacji jest wyłączony na tym urządzeniu. Włącz go w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="1915307458270490472">Rozłącz</translation>
-<translation id="1919345977826869612">Reklamy</translation>
 <translation id="1919950603503897840">Wybierz kontakty</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
@@ -59,6 +59,7 @@
 <translation id="216989819110952009">Chociaż oczy ich osłaniały zielone okulary, Dorotę i jej przyjaciół po prostu oślepił przepych</translation>
 <translation id="2176704795966505152">Pokaż opcję powiększenia w menu głównym</translation>
 <translation id="2182457891543959921">Pytaj, zanim zezwolisz stronom na tworzenie mapy 3D Twojego otoczenia lub śledzenie pozycji kamery (zalecane)</translation>
+<translation id="2185965788978862351">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez strony lub aplikacje na ekranie głównym.</translation>
 <translation id="2194856509914051091">Istotne kwestie</translation>
 <translation id="2212565012507486665">Zezwalaj na pliki cookie</translation>
 <translation id="2228071138934252756">Aby zezwolić aplikacji <ph name="APP_NAME" /> na dostęp do aparatu, musisz go też włączyć w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
@@ -71,7 +72,6 @@
 <translation id="2289270750774289114">Pytaj, gdy strona chce wykryć urządzenia Bluetooth w pobliżu (zalecane)</translation>
 <translation id="2315043854645842844">Wybieranie certyfikatu klienta nie jest obsługiwane przez ten system operacyjny.</translation>
 <translation id="2321958826496381788">Przeciągaj suwak, by umożliwić wygodne czytanie. Gdy dwukrotnie klikniesz akapit, tekst powiększy się co najmniej do tej wielkości.</translation>
-<translation id="2329473609445770916">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2379925928934107488">Stosuj ciemny motyw witryn w przypadkach, w których stosuje go Chrome, tam, gdzie to możliwe</translation>
 <translation id="2387895666653383613">Skalowanie tekstu</translation>
@@ -82,6 +82,7 @@
 <translation id="2434158240863470628">Ukończono pobieranie <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">W niektórych witrynach funkcje mogą nie działać w trybie incognito</translation>
 <translation id="2442870161001914531">Zawsze żądaj strony na komputery</translation>
+<translation id="2469312991797799607">Spowoduje to usunięcie wszystkich danych i plików cookie powiązanych z grupą <ph name="ORIGIN" /> i znajdującymi się w niej stronami</translation>
 <translation id="2479148705183875116">Otwórz Ustawienia</translation>
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -111,10 +112,11 @@
 <translation id="2891975107962658722">Nie zezwalaj witrynie na zapisywanie danych na Twoim urządzeniu</translation>
 <translation id="2903493209154104877">Adresy</translation>
 <translation id="2910701580606108292">Pytaj, zanim zezwolisz stronom na odtwarzanie treści chronionej</translation>
-<translation id="2913331724188855103">Zezwalaj witrynom na zapisywanie danych w plikach cookie i ich odczytywanie (zalecane)</translation>
 <translation id="2932883381142163287">Zgłoś nadużycie</translation>
 <translation id="2968755619301702150">Przeglądarka certyfikatów</translation>
+<translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="3008272652534848354">Zresetuj uprawnienia</translation>
+<translation id="3013291976881901233">Urządzenia MIDI</translation>
 <translation id="301521992641321250">Automatycznie zablokowane</translation>
 <translation id="3069226013421428034">Zezwalanie na logowanie przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
@@ -129,7 +131,6 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> zapisanych danych</translation>
 <translation id="321187648315454507">Aby zezwolić aplikacji <ph name="APP_NAME" /> na wysyłanie do Ciebie powiadomień, musisz je też włączyć w <ph name="BEGIN_LINK" />ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
-<translation id="3248611290851046188">Ta witryna określa zainteresowania, których inne witryny mogą używać, aby wyświetlać Ci reklamy. Witryna wykorzystuje też gromadzone przez Chrome informacje o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy.</translation>
 <translation id="3277252321222022663">Zezwalaj stronom na dostęp do czujników (zalecane)</translation>
 <translation id="3285500645985761267">Zezwalaj powiązanym witrynom na dostęp do danych o Twojej aktywności w grupie</translation>
 <translation id="3295019059349372795">Rozdział 11: Szmaragdowe Miasto</translation>
@@ -156,7 +157,6 @@
 <translation id="3721953990244350188">Zamknij i pokaż kolejne dostępne działanie</translation>
 <translation id="3744111561329211289">Synchronizacja w tle</translation>
 <translation id="3763247130972274048">Kliknij dwukrotnie z lewej lub prawej strony filmu, by przewinąć o 10 s</translation>
-<translation id="3794286421982011626">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Często witryny zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
 <translation id="3797520601150691162">Nie stosuj ciemnego motywu konkretnej witryny</translation>
 <translation id="3803367742635802571">Strony, które odwiedzasz, mogą przestać działać zgodnie z założeniami ich twórców</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
@@ -171,6 +171,7 @@
 <translation id="3918378745482005425">Niektóre funkcje mogą nie działać prawidłowo. Powiązane witryny mogą nadal używać plików cookie innych firm.</translation>
 <translation id="3955193568934677022">Zezwalaj stronom na odtwarzanie treści chronionej (zalecane)</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
+<translation id="3974105241379491420">Strony mogą prosić o zgodę na używanie zapisanych o Tobie informacji</translation>
 <translation id="3987993985790029246">Skopiuj link</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
@@ -193,7 +194,6 @@
 <translation id="4338831206024587507">Wszystkie witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
-<translation id="4428065317363009941">Personalizacja reklam</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
@@ -229,6 +229,7 @@
 <translation id="5063480226653192405">Wykorzystanie</translation>
 <translation id="5091013926750941408">Strona mobilna</translation>
 <translation id="509133520954049755">Żądaj wersji na komputery</translation>
+<translation id="5099358668261120049">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez stronę <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym.</translation>
 <translation id="5100237604440890931">Zwinięty – kliknij, by rozwinąć.</translation>
 <translation id="5123685120097942451">Karta incognito</translation>
 <translation id="5186036860380548585">Opcja dostępna u góry ekranu</translation>
@@ -245,12 +246,11 @@
 <translation id="5335288049665977812">Zezwalaj na wykonywanie kodu JavaScript w witrynach (zalecane)</translation>
 <translation id="534295439873310000">Urządzenia z funkcją NFC</translation>
 <translation id="5344522958567249764">Zarządzaj prywatnością w reklamach</translation>
+<translation id="5389626883706033615">Strony nie mogą prosić Cię o korzystanie z informacji, które o Tobie zapisały</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(i jeszcze 1)}few{(i jeszcze #)}many{(i jeszcze #)}other{(i jeszcze #)}}</translation>
 <translation id="5403592356182871684">Nazwy</translation>
-<translation id="5412236728747081950">Witryna korzysta z gromadzonych przez Chrome informacji o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy</translation>
 <translation id="5438097262470833822">Spowoduje to zresetowanie uprawnień witryny <ph name="WEBSITE" /></translation>
 <translation id="5489227211564503167">Upłynęło: <ph name="ELAPSED_TIME" /> z <ph name="TOTAL_TIME" /></translation>
-<translation id="5494752089476963479">Blokuj reklamy na stronach, które wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="5502860503640766021">Dozwolone: <ph name="PERMISSION_1" />, zablokowane: <ph name="PERMISSION_2" /></translation>
 <translation id="5505264765875738116">Strony nie mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="5516455585884385570">Otwórz ustawienia powiadomień</translation>
@@ -277,6 +277,7 @@
 <translation id="5916664084637901428">Włączone</translation>
 <translation id="5922853908706496913">Udostępnianie ekranu</translation>
 <translation id="5922967540311291836">Blokuj pliki cookie innych firm:</translation>
+<translation id="5923512600150154850">Spowoduje to usunięcie <ph name="DATASIZE" /> danych i plików cookie zapisanych przez strony.</translation>
 <translation id="5939518447894949180">Resetuj</translation>
 <translation id="5964247741333118902">Umieszczona treść</translation>
 <translation id="5968921426641056619">Podaj adres internetowy</translation>
@@ -292,6 +293,7 @@
 <translation id="6177128806592000436">Twoje połączenie z tą witryną nie jest bezpieczne</translation>
 <translation id="6181444274883918285">Dodaj witrynę do wyjątków</translation>
 <translation id="6192792657125177640">Wyjątki</translation>
+<translation id="6195163219142236913">Ograniczone pliki cookie innych firm</translation>
 <translation id="6196640612572343990">Blokuj pliki cookie innych firm</translation>
 <translation id="6205314730813004066">Prywatność w reklamach</translation>
 <translation id="6207207788774442484">Usuwanie danych i resetowanie uprawnień</translation>
@@ -302,6 +304,7 @@
 <translation id="6270391203985052864">Strony mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
 <translation id="6320088164292336938">Wibracje</translation>
+<translation id="6344622098450209924">Ochrona przed śledzeniem</translation>
 <translation id="6367753977865761591">Blokowanie logowania przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
 <translation id="640163077447496506">Wygasa dzisiaj</translation>
@@ -332,6 +335,7 @@
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
 <translation id="6912998170423641340">Zablokuj stronom możliwość odczytywania tekstu i obrazów ze schowka</translation>
 <translation id="6945221475159498467">Wybierz</translation>
+<translation id="6950072572526089586">Aby strona, na którą wchodzisz, działała zgodnie z oczekiwaniami – na przykład nie wylogowywała Cię lub pokazywała produkty w koszyku na zakupy – może ona zapisywać informacje o tym, co robisz. Strony często zapisują te informacje tymczasowo na Twoim urządzeniu.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
 <translation id="6992289844737586249">Pytaj, zanim zezwolisz stronom na korzystanie z mikrofonu (zalecane)</translation>
@@ -345,12 +349,14 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Odśwież</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
+<translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="7203150201908454328">Rozwinięty</translation>
 <translation id="7219254577985949841">Usunąć dane witryny?</translation>
 <translation id="723171743924126238">Wybierz zdjęcia</translation>
 <translation id="7243308994586599757">Opcje dostępne u dołu ekranu</translation>
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
+<translation id="7284451015630589124">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7302486331832100261">Zazwyczaj blokujesz powiadomienia. Aby na nie zezwolić, kliknij Szczegóły.</translation>
 <translation id="7366415735885268578">Dodawanie strony</translation>
 <translation id="7368695150573390554">Wszystkie dane offline zostaną usunięte</translation>
@@ -363,7 +369,6 @@
 <translation id="7554752735887601236">Strona używa mikrofonu</translation>
 <translation id="7561196759112975576">Zawsze</translation>
 <translation id="757524316907819857">Blokuj odtwarzanie treści chronionej na stronach</translation>
-<translation id="7577900504646297215">Zarządzaj zainteresowaniami</translation>
 <translation id="7594634374516752650">Połączono z urządzeniem Bluetooth</translation>
 <translation id="7641339528570811325">Wyczyść dane przeglądania…</translation>
 <translation id="7649070708921625228">Pomoc</translation>
@@ -430,6 +435,7 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}few{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}many{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryn <ph name="FPS_OWNER" />}other{Pliki cookie dozwolone w przypadku <ph name="FPS_MEMBERS_COUNT" /> witryny <ph name="FPS_OWNER" />}}</translation>
 <translation id="857943718398505171">Dozwolone (zalecane)</translation>
 <translation id="8609465669617005112">W górę</translation>
+<translation id="8649036394979866943">Chrome ogranicza większości witryn możliwość uzyskiwania informacji na temat przeglądania przez Ciebie internetu za pomocą plików cookie innych firm. Aby <ph name="BEGIN_LINK" />zarządzać ochroną przed śledzeniem<ph name="END_LINK" />, otwórz ustawienia</translation>
 <translation id="8676374126336081632">Wyczyść wpisany tekst</translation>
 <translation id="8681886425883659911">Reklamy są blokowane w witrynach, o których wiadomo, że wyświetlają reklamy uciążliwe lub wprowadzające w błąd</translation>
 <translation id="868929229000858085">Wyszukaj w kontaktach</translation>
@@ -452,6 +458,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkcja NFC na tym urządzeniu jest wyłączona. Włącz ją w <ph name="BEGIN_LINK" />Ustawieniach Androida<ph name="END_LINK" />.</translation>
 <translation id="8928445016601307354">Nie zezwalaj stronom na odczytywanie i zmienianie informacji na urządzeniach z funkcją NFC</translation>
+<translation id="8944485226638699751">Z ograniczeniami</translation>
 <translation id="8958424370300090006">Blokuj pliki cookie z określonej strony internetowej.</translation>
 <translation id="8959122750345127698">Adres nieosiągalny: <ph name="URL" /></translation>
 <translation id="8986362086234534611">Zapomnij</translation>

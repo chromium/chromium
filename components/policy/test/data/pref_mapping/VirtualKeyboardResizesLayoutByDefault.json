@@ -1,0 +1,37 @@
+[
+  {
+    "os": [
+      "android"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "VirtualKeyboardResizesLayoutByDefault": true
+        },
+        "prefs": {
+          "virtual_keyboard_resizes_layout_by_default": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "VirtualKeyboardResizesLayoutByDefault": false
+        },
+        "prefs": {
+          "virtual_keyboard_resizes_layout_by_default": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "virtual_keyboard_resizes_layout_by_default": {
+            "default_value": false
+          }
+        }
+      }
+    ]
+  }
+]

@@ -156,7 +156,7 @@ sorted so that the things that make the biggest difference are first.
 #### Use reclient
 
 If you are a Google employee, do not follow the instructions below. See
-[go/chrome-linux-build#using-remote-execution](http://go/chrome-linux-build#using-remote-execution)
+[go/chrome-linux-build#setup-remote-execution](http://go/chrome-linux-build#setup-remote-execution)
 instead.
 
 Google developed the

@@ -41,9 +41,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 
 /**
- * Tests for the Incognito reauth lock settings in Privacy and security.
- * TODO(crbug.com/1227656) : Add reauth check when user toggles the setting once the reauth feature
- * is implemented.
+ * Tests for the Incognito reauth lock settings in Privacy and security. TODO(crbug.com/1227656) :
+ * Add reauth check when user toggles the setting once the reauth feature is implemented.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -74,8 +73,11 @@ public class IncognitoReauthSettingTest {
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);
         Intents.init();
         intending(anyIntent()).respondWith(result);
-        String summaryText = ApplicationProvider.getApplicationContext().getResources().getString(
-                R.string.settings_incognito_tab_lock_summary_android_setting_off);
+        String summaryText =
+                ApplicationProvider.getApplicationContext()
+                        .getResources()
+                        .getString(
+                                R.string.settings_incognito_tab_lock_summary_android_setting_off);
         summaryText = summaryText.replaceAll("</?link>", "");
         scrollToSetting(withText(summaryText));
         onView(withText(summaryText)).perform(click());

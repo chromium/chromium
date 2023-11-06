@@ -8,14 +8,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/geometry/size.h"
-#include "ui/views/animation/ink_drop.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/painter.h"
 #include "ui/views/style/typography.h"
 
 namespace chromeos::editor_menu {
@@ -29,58 +25,26 @@ constexpr gfx::Insets kChipInsets = gfx::Insets::VH(6, 8);
 
 EditorMenuChipView::EditorMenuChipView(views::Button::PressedCallback callback,
                                        const PresetTextQuery& preset_text_query)
-    : views::LabelButton(std::move(callback), preset_text_query.name),
-      icon_(&GetIconForPresetQueryCategory(preset_text_query.category)) {
-  CHECK(icon_);
+    : views::MdTextButton(std::move(callback), preset_text_query.name) {
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(
+                    GetIconForPresetQueryCategory(preset_text_query.category),
+                    ui::kColorSysOnSurface, kIconSizeDip));
 
-  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
-  views::InkDrop::Get(this)->SetBaseColorId(ui::kColorIcon);
-  SetHasInkDropActionOnClick(true);
-  SetFocusRingCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::Emphasis::kHigh));
-
-  SetTooltipText(preset_text_query.name);
+  SetLabelStyle(views::style::STYLE_BODY_4_EMPHASIS);
+  SetTextColorId(ButtonState::STATE_NORMAL, ui::kColorSysOnSurface);
   SetImageLabelSpacing(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DistanceMetric::DISTANCE_VECTOR_ICON_PADDING));
+  SetCornerRadius(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kHigh));
+  SetCustomPadding(kChipInsets);
+
+  SetTooltipText(preset_text_query.name);
 }
 
 EditorMenuChipView::~EditorMenuChipView() = default;
 
-void EditorMenuChipView::AddedToWidget() {
-  // Only initialize the button after the button is added to a widget.
-  InitLayout();
-}
-
-void EditorMenuChipView::OnThemeChanged() {
-  LabelButton::OnThemeChanged();
-  UpdateBackgroundColor();
-}
-
-void EditorMenuChipView::InitLayout() {
-  SetHorizontalAlignment(gfx::ALIGN_CENTER);
-
-  label()->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
-  label()->SetEnabledColorId(ui::kColorSysOnSurface);
-  SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(*icon_, ui::kColorSysOnSurface,
-                                               kIconSizeDip));
-
-  SetBorder(views::CreateEmptyBorder(kChipInsets));
-  UpdateBackgroundColor();
-
-  PreferredSizeChanged();
-}
-
-void EditorMenuChipView::UpdateBackgroundColor() {
-  SetBackground(CreateBackgroundFromPainter(
-      views::Painter::CreateRoundRectWith1PxBorderPainter(
-          SK_ColorTRANSPARENT,
-          GetColorProvider()->GetColor(ui::kColorSysTonalOutline),
-          views::LayoutProvider::Get()->GetCornerRadiusMetric(
-              views::Emphasis::kHigh))));
-}
-
-BEGIN_METADATA(EditorMenuChipView, views::LabelButton)
+BEGIN_METADATA(EditorMenuChipView, views::MdTextButton)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

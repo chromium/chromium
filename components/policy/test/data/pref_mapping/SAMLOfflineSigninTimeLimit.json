@@ -1,0 +1,50 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SAMLOfflineSigninTimeLimit": 0
+        },
+        "prefs": {
+          "saml.offline_signin_time_limit": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "note": "Minimum value",
+        "policies": {
+          "SAMLOfflineSigninTimeLimit": -1
+        },
+        "prefs": {
+          "saml.offline_signin_time_limit": {
+            "value": -1
+          }
+        }
+      },
+      {
+        "note": "Value below minimum should be clamped to minimum",
+        "policies": {
+          "SAMLOfflineSigninTimeLimit": -2
+        },
+        "prefs": {
+          "saml.offline_signin_time_limit": {
+            "value": -1
+          }
+        }
+      },
+      {
+        "note": "Default value (14 days)",
+        "policies": {},
+        "prefs": {
+          "saml.offline_signin_time_limit": {
+            "default_value": 1209600
+          }
+        }
+      }
+    ]
+  }
+]

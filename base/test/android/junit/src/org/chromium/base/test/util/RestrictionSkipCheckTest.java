@@ -28,6 +28,7 @@ public class RestrictionSkipCheckTest {
         public TestRestrictionSkipCheck() {
             super(null);
         }
+
         @Override
         protected boolean restrictionApplies(String restriction) {
             return TextUtils.equals(restriction, TEST_RESTRICTION_APPLIES);
@@ -38,8 +39,12 @@ public class RestrictionSkipCheckTest {
         public UnannotatedBaseClass(String name) {
             super(name);
         }
-        @Restriction({TEST_RESTRICTION_APPLIES}) public void restrictedMethod() {}
-        @Restriction({TEST_RESTRICTION_DOES_NOT_APPLY}) public void unrestrictedMethod() {}
+
+        @Restriction({TEST_RESTRICTION_APPLIES})
+        public void restrictedMethod() {}
+
+        @Restriction({TEST_RESTRICTION_DOES_NOT_APPLY})
+        public void unrestrictedMethod() {}
     }
 
     @Restriction({TEST_RESTRICTION_APPLIES})
@@ -47,6 +52,7 @@ public class RestrictionSkipCheckTest {
         public RestrictedClass(String name) {
             super(name);
         }
+
         public void unannotatedMethod() {}
     }
 
@@ -55,16 +61,16 @@ public class RestrictionSkipCheckTest {
         public UnrestrictedClass(String name) {
             super(name);
         }
+
         public void unannotatedMethod() {}
     }
 
-    @Restriction({
-            TEST_RESTRICTION_APPLIES,
-            TEST_RESTRICTION_DOES_NOT_APPLY})
+    @Restriction({TEST_RESTRICTION_APPLIES, TEST_RESTRICTION_DOES_NOT_APPLY})
     private static class MultipleRestrictionsRestrictedClass extends UnannotatedBaseClass {
         public MultipleRestrictionsRestrictedClass(String name) {
             super(name);
         }
+
         public void unannotatedMethod() {}
     }
 
@@ -72,6 +78,7 @@ public class RestrictionSkipCheckTest {
         public ExtendsRestrictedClass(String name) {
             super(name);
         }
+
         @Override
         public void unannotatedMethod() {}
     }
@@ -80,50 +87,57 @@ public class RestrictionSkipCheckTest {
         public ExtendsUnrestrictedClass(String name) {
             super(name);
         }
+
         @Override
         public void unannotatedMethod() {}
     }
 
     @Test
     public void testMethodRestricted() {
-        Assert.assertTrue(new TestRestrictionSkipCheck().shouldSkip(
-                new UnannotatedBaseClass("restrictedMethod")));
+        Assert.assertTrue(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new UnannotatedBaseClass("restrictedMethod")));
     }
 
     @Test
     public void testMethodUnrestricted() {
-        Assert.assertFalse(new TestRestrictionSkipCheck().shouldSkip(
-                new UnannotatedBaseClass("unrestrictedMethod")));
+        Assert.assertFalse(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new UnannotatedBaseClass("unrestrictedMethod")));
     }
 
     @Test
     public void testClassRestricted() {
-        Assert.assertTrue(new TestRestrictionSkipCheck().shouldSkip(
-                new RestrictedClass("unannotatedMethod")));
+        Assert.assertTrue(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new RestrictedClass("unannotatedMethod")));
     }
 
     @Test
     public void testClassUnrestricted() {
-        Assert.assertFalse(new TestRestrictionSkipCheck().shouldSkip(
-                new UnrestrictedClass("unannotatedMethod")));
+        Assert.assertFalse(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new UnrestrictedClass("unannotatedMethod")));
     }
 
     @Test
     public void testMultipleRestrictionsClassRestricted() {
-        Assert.assertTrue(new TestRestrictionSkipCheck().shouldSkip(
-                new MultipleRestrictionsRestrictedClass("unannotatedMethod")));
+        Assert.assertTrue(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new MultipleRestrictionsRestrictedClass("unannotatedMethod")));
     }
 
     @Test
     public void testSuperclassRestricted() {
-        Assert.assertTrue(new TestRestrictionSkipCheck().shouldSkip(
-                new ExtendsRestrictedClass("unannotatedMethod")));
+        Assert.assertTrue(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new ExtendsRestrictedClass("unannotatedMethod")));
     }
 
     @Test
     public void testSuperclassUnrestricted() {
-        Assert.assertFalse(new TestRestrictionSkipCheck().shouldSkip(
-                new ExtendsUnrestrictedClass("unannotatedMethod")));
+        Assert.assertFalse(
+                new TestRestrictionSkipCheck()
+                        .shouldSkip(new ExtendsUnrestrictedClass("unannotatedMethod")));
     }
 }
-

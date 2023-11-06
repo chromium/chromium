@@ -108,14 +108,14 @@ TEST(IcnsEncoderTest, RoundTrip) {
   base::apple::ScopedCFTypeRef<CFURLRef> url =
       base::apple::FilePathToCFURL(icon_path);
   base::apple::ScopedCFTypeRef<CGImageSourceRef> source(
-      CGImageSourceCreateWithURL(url, nullptr));
+      CGImageSourceCreateWithURL(url.get(), nullptr));
 
   // And make sure we got back the same images that were written to the file.
-  EXPECT_EQ(3u, CGImageSourceGetCount(source));
-  for (size_t i = 0; i < CGImageSourceGetCount(source); ++i) {
+  EXPECT_EQ(3u, CGImageSourceGetCount(source.get()));
+  for (size_t i = 0; i < CGImageSourceGetCount(source.get()); ++i) {
     base::apple::ScopedCFTypeRef<CGImageRef> cg_image(
-        CGImageSourceCreateImageAtIndex(source, i, empty_dict));
-    SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image);
+        CGImageSourceCreateImageAtIndex(source.get(), i, empty_dict.get()));
+    SkBitmap bitmap = skia::CGImageToSkBitmap(cg_image.get());
     EXPECT_EQ(bitmap.width(), bitmap.height());
     EXPECT_TRUE(bitmap.width() == 32 || bitmap.width() == 48 ||
                 bitmap.width() == 128)

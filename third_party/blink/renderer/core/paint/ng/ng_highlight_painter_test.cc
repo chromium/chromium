@@ -7,7 +7,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
 #include "third_party/blink/renderer/core/paint/ng/ng_text_decoration_painter.h"
@@ -43,7 +43,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     LayoutObject& body = *GetDocument().body()->GetLayoutObject();
     const auto& block_flow = To<LayoutNGBlockFlow>(body);
     NGInlinePaintContext inline_context{};
-    NGInlineCursor cursor{block_flow};
+    InlineCursor cursor{block_flow};
     cursor.MoveToFirstLine();
     inline_context.SetLineBox(cursor);
     cursor.MoveTo(*block_flow.FirstChild());
@@ -52,7 +52,7 @@ TEST_P(NGHighlightPainterTest, FastSpellingGrammarPaintCase) {
     gfx::Rect rect{};
     PhysicalOffset physical_offset{};
     PhysicalRect physical_rect{};
-    const NGFragmentItem& text_item = *cursor.CurrentItem();
+    const FragmentItem& text_item = *cursor.CurrentItem();
     const ComputedStyle& style = text_item.Style();
     absl::optional<NGHighlightPainter::SelectionPaintState> maybe_selection;
     NGHighlightPainter::SelectionPaintState* selection = nullptr;

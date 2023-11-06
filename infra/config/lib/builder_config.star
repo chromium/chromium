@@ -634,6 +634,7 @@ def _set_builder_config_property(ctx):
         fail("There is no buildbucket configuration file to update properties")
 
     bc_state = _bc_state()
+    needs_mega_cq_mode = set()
 
     for bucket in cfg.buckets:
         if not proto.has(bucket, "swarming"):
@@ -738,23 +739,20 @@ def _set_builder_config_property(ctx):
             builder.description_html = _get_builder_mirror_description(bucket_name, builder, bc_state)
 
             rotations = get_sheriff_rotations(bucket_name, builder.name)
-            excluded_groups = [
+            excluded_rotations = [
                 # Most/all the clang bots build using clang built from HEAD.
                 # Failures on them hopefully/rarely lead to reverts of random
                 # CLs on the Chromium-side. So trybots for these aren't as
                 # critical.
                 "chromium.clang",
+                # Some GPU trybots share the same limited pool of bots, so can't
+                # handle more than a few builds at a time. Keep them out of the
+                # mega CQ for now.
+                "chromium.gpu",
+                # "cft" builders are very red.
+                "cft",
             ]
             excluded_builders = [
-                # TODO(crbug.com/1485734): Remove the Samsung builders.
-                "Android FYI Release (Samsung A13)",
-                "Android FYI Release (Samsung A23)",
-
-                # TODO(crbug.com/1486140): Remove when skylab bots are fixed.
-                "lacros-amd64-generic-rel-skylab",
-                "lacros-arm-generic-rel-skylab",
-                "lacros-arm64-generic-rel-skylab",
-
                 # TODO(crbug.com/1484233): Remove the following as trybots are
                 # created for them.
                 "android-arm64-archive-rel",
@@ -762,15 +760,48 @@ def _set_builder_config_property(ctx):
                 "lacros64-archive-rel",
                 "linux-chromeos-archive-rel",
                 "mac-arm64-dbg",
-
-                # These might be permanent exclusions since they do some
-                # perf things. See discussion on crrev.com/c/4884490.
-                "GPU FYI XR Win x64 Builder",
-                "Win10 FYI x64 Release XR Perf (NVIDIA)",
             ]
-            is_excluded = builder.name in excluded_builders or node.props.builder_group in excluded_groups
+            is_excluded = (
+                builder.name in excluded_builders or
+                any([s.key.id in excluded_rotations for s in rotations]) or
+                json.decode(builder.properties)["recipe"] != "chromium"
+            )
             if rotations and not mirroring_builders and not is_excluded:
                 fail("{} is on a sheriff/gardener rotation, but lacks a matching trybot".format(builder.name))
+            if rotations and not is_excluded:
+                for m in mirroring_builders:
+                    mirror_id = _builder_id(m)
+                    cq_identifier = "{}/{}/{}".format(
+                        mirror_id["project"],
+                        mirror_id["bucket"],
+                        mirror_id["builder"],
+                    )
+                    needs_mega_cq_mode = needs_mega_cq_mode.union([cq_identifier])
+
+    cq_config_groups = []
+    for f in ctx.output:
+        if f == "luci/commit-queue.cfg":
+            cq_config_groups = ctx.output[f].config_groups
+            break
+    for cq_group in cq_config_groups:
+        if cq_group.name != "cq":
+            continue
+        for b in cq_group.verifiers.tryjob.builders:
+            if b.name not in needs_mega_cq_mode:
+                continue
+
+            # TODO(crbug.com/1483511): Uncomment the following when CV actually
+            # supports custom run modes.
+            #if "CQ_MODE_MEGA_DRY_RUN" not in b.mode_allowlist:
+            #    b.mode_allowlist.append("CQ_MODE_MEGA_DRY_RUN")
+            #if "CQ_MODE_MEGA_FULL_RUN" not in b.mode_allowlist:
+            #    b.mode_allowlist.append("CQ_MODE_MEGA_FULL_RUN")
+
+    # Print the mega CQ bots to a txt file for debugging / parsing purposes.
+    # TODO(crbug.com/1483511): Can delete this when CV full supports custom
+    # run modes with all features needed by chrome.
+    mega_cq_bots_file = "cq-usage/mega_cq_bots.txt"
+    ctx.output[mega_cq_bots_file] = "".join(["{}\n".format(b) for b in sorted(needs_mega_cq_mode)])
 
 lucicfg.generator(_set_builder_config_property)
 

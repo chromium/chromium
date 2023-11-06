@@ -1,0 +1,121 @@
+This is a testharness.js-based test.
+Found 116 tests; 115 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[PASS] Non-fragment parsing needs no opt-in
+[PASS] innerHTML on a <a>
+[PASS] innerHTML on a <abbr>
+[PASS] innerHTML on a <address>
+[PASS] innerHTML on a <area>
+[PASS] innerHTML on a <article>
+[PASS] innerHTML on a <aside>
+[PASS] innerHTML on a <audio>
+[PASS] innerHTML on a <b>
+[PASS] innerHTML on a <base>
+[PASS] innerHTML on a <bdi>
+[PASS] innerHTML on a <bdo>
+[PASS] innerHTML on a <blockquote>
+[PASS] innerHTML on a <body>
+[PASS] innerHTML on a <br>
+[PASS] innerHTML on a <button>
+[PASS] innerHTML on a <canvas>
+[PASS] innerHTML on a <caption>
+[PASS] innerHTML on a <cite>
+[PASS] innerHTML on a <code>
+[PASS] innerHTML on a <col>
+[PASS] innerHTML on a <data>
+[PASS] innerHTML on a <datalist>
+[PASS] innerHTML on a <dd>
+[PASS] innerHTML on a <del>
+[PASS] innerHTML on a <details>
+[PASS] innerHTML on a <dfn>
+[PASS] innerHTML on a <dialog>
+[PASS] innerHTML on a <div>
+[PASS] innerHTML on a <dl>
+[PASS] innerHTML on a <dt>
+[PASS] innerHTML on a <em>
+[PASS] innerHTML on a <embed>
+[PASS] innerHTML on a <fieldset>
+[PASS] innerHTML on a <figcaption>
+[PASS] innerHTML on a <figure>
+[PASS] innerHTML on a <footer>
+[PASS] innerHTML on a <form>
+[PASS] innerHTML on a <h1>
+[PASS] innerHTML on a <h2>
+[PASS] innerHTML on a <h3>
+[PASS] innerHTML on a <h4>
+[PASS] innerHTML on a <h5>
+[PASS] innerHTML on a <h6>
+[PASS] innerHTML on a <head>
+[PASS] innerHTML on a <header>
+[PASS] innerHTML on a <hr>
+[PASS] innerHTML on a <html>
+[PASS] innerHTML on a <i>
+[PASS] innerHTML on a <img>
+[PASS] innerHTML on a <input>
+[PASS] innerHTML on a <ins>
+[PASS] innerHTML on a <kbd>
+[PASS] innerHTML on a <label>
+[PASS] innerHTML on a <legend>
+[PASS] innerHTML on a <li>
+[PASS] innerHTML on a <link>
+[PASS] innerHTML on a <main>
+[PASS] innerHTML on a <map>
+[PASS] innerHTML on a <mark>
+[PASS] innerHTML on a <menu>
+[PASS] innerHTML on a <meta>
+[PASS] innerHTML on a <meter>
+[PASS] innerHTML on a <nav>
+[PASS] innerHTML on a <object>
+[PASS] innerHTML on a <ol>
+[PASS] innerHTML on a <optgroup>
+[PASS] innerHTML on a <option>
+[PASS] innerHTML on a <output>
+[PASS] innerHTML on a <p>
+[PASS] innerHTML on a <param>
+[PASS] innerHTML on a <pre>
+[PASS] innerHTML on a <progress>
+[PASS] innerHTML on a <q>
+[PASS] innerHTML on a <rp>
+[PASS] innerHTML on a <rt>
+[PASS] innerHTML on a <ruby>
+[PASS] innerHTML on a <s>
+[PASS] innerHTML on a <samp>
+[PASS] innerHTML on a <section>
+[PASS] innerHTML on a <slot>
+[PASS] innerHTML on a <small>
+[PASS] innerHTML on a <source>
+[PASS] innerHTML on a <span>
+[PASS] innerHTML on a <strong>
+[PASS] innerHTML on a <sub>
+[PASS] innerHTML on a <sup>
+[PASS] innerHTML on a <summary>
+[PASS] innerHTML on a <table>
+[PASS] innerHTML on a <tbody>
+[PASS] innerHTML on a <td>
+[PASS] innerHTML on a <tfoot>
+[PASS] innerHTML on a <th>
+[PASS] innerHTML on a <thead>
+[PASS] innerHTML on a <time>
+[PASS] innerHTML on a <tr>
+[PASS] innerHTML on a <track>
+[PASS] innerHTML on a <u>
+[PASS] innerHTML on a <ul>
+[PASS] innerHTML on a <var>
+[PASS] innerHTML on a <video>
+[PASS] innerHTML on a <wbr>
+[PASS] innerHTML on template
+[PASS] innerHTML on template, with nested template content
+[PASS] innerHTML on shadowRoot
+[FAIL] DOMParser (includingShadowRoots is historical)
+  assert_true: Shadow root FOUND - none should be present. expected true got false
+[PASS] createHTMLDocument with innerHTML - not supported
+[PASS] createContextualFragment - not supported
+[PASS] XMLHttpRequest - not supported
+[PASS] insertAdjacentHTML on element - not supported
+[PASS] document.write allowed from synchronous script loaded from main document
+[PASS] document.write disallowed on fresh document
+[PASS] iframe
+[PASS] iframe, no sandbox
+[PASS] sandboxed iframe allows declarative Shadow DOM
+[PASS] iframe with no sandbox allows declarative Shadow DOM
+Harness: the test ran to completion.
+

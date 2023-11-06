@@ -45,11 +45,9 @@ public class AddUsernameDialogModuleTest {
     private static final String TEST_PASSWORD = "password";
     private static final String TEST_USERNAME = "username";
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock
-    AddUsernameDialogController.Delegate mBridgeDelegate;
+    @Mock AddUsernameDialogController.Delegate mBridgeDelegate;
 
     @Before
     public void setUp() {
@@ -75,11 +73,14 @@ public class AddUsernameDialogModuleTest {
 
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
         Resources r = mActivity.getResources();
-        Assert.assertEquals(dialogModel.get(ModalDialogProperties.TITLE),
+        Assert.assertEquals(
+                dialogModel.get(ModalDialogProperties.TITLE),
                 r.getString(R.string.add_username_dialog_title));
-        Assert.assertEquals(dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
+        Assert.assertEquals(
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT),
                 r.getString(R.string.add_username_dialog_add_username));
-        Assert.assertEquals(dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT),
+        Assert.assertEquals(
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT),
                 r.getString(R.string.add_username_dialog_cancel));
 
         TextInputEditText usernameInput =
@@ -87,6 +88,7 @@ public class AddUsernameDialogModuleTest {
         TextInputEditText passwordInput =
                 dialogModel.get(ModalDialogProperties.CUSTOM_VIEW).findViewById(R.id.password);
         Assert.assertTrue(usernameInput.getText().length() == 0);
+        Assert.assertTrue(usernameInput.isFocused());
         Assert.assertEquals(passwordInput.getText().toString(), TEST_PASSWORD);
     }
 

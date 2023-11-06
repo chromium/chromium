@@ -6,5 +6,5 @@ EMAIL_ADDRESS | _ctl0:cphMainBody:txtEmail | Email |  | _ctl0:cphMainBody:txtNam
 EMAIL_ADDRESS | _ctl0:cphMainBody:txtEmail0 | ReConfirm Email |  | _ctl0:cphMainBody:txtName_1
 UNKNOWN_TYPE | _ctl0:cphMainBody:txtPassword | Password must be between 4 and 8 characters, contain at least one digit and one alphabetic character, and must not contain special characters. |  | _ctl0:cphMainBody:txtName_1
 UNKNOWN_TYPE | _ctl0:cphMainBody:txtPassword0 | Password should be same as the above entered password |  | _ctl0:cphMainBody:txtName_1
-PHONE_HOME_WHOLE_NUMBER | _ctl0:cphMainBody:txtPhone | Phone |  | _ctl0:cphMainBody:txtName_1
+PHONE_HOME_CITY_AND_NUMBER | _ctl0:cphMainBody:txtPhone | Phone |  | _ctl0:cphMainBody:txtName_1
 UNKNOWN_TYPE | _ctl0:cphMainBody:txtComments | Comments: |  | _ctl0:cphMainBody:txtName_1

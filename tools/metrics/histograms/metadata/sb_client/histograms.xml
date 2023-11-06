@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-04">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestDuration" units="ms"
-    expires_after="2024-02-04">
+    expires_after="2024-04-28">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.EncryptedZipUsesAes" enum="BooleanZipHasAES"
-    expires_after="2024-02-11">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -327,12 +327,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt"
-    enum="BooleanRequested" expires_after="2024-02-11">
+    enum="BooleanRequested" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records how often users in a population consented to deep scanning are
-    actually prompted for deep scanning.
+    actually prompted for deep scanning. This is logged once per download by an
+    eligible user.
+  </summary>
+</histogram>
+
+<histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
+    enum="BooleanRequested" expires_after="2024-02-11">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records how often users in a population consented to local decryption are
+    actually prompted for this feature. This is logged once per download by an
+    eligible user.
   </summary>
 </histogram>
 
@@ -511,7 +523,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.CancelClassificationReason"
     enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2024-02-20">
+    expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -555,6 +567,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.Classifier.ReadyAfterRetryTimeout"
+    units="bool" expires_after="2024-09-07">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the success rate of renderer-side phishing classification after
+    retries when the model is not available.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ClassifyThresholdsResult"
     enum="SBClientDetectionClassifyThresholdsResult" expires_after="2024-03-17">
   <owner>andysjlim@chromium.org</owner>
@@ -562,6 +584,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the result of classification in visual TfLite model thresholds
     comparison on the browser side
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.CSDPhishingCachedDataAvailable"
+    units="BooleanAvailable" expires_after="2024-10-09">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the times we could have used the CSD images cache to reuse the
+    images for CSD-Phishing classification.
   </summary>
 </histogram>
 
@@ -619,7 +651,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2024-02-04">
+    enum="BooleanIsPhishing" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -678,7 +710,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.NetworkResult"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-02-11">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -707,7 +739,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult"
-    enum="ClientSidePhishingResult" expires_after="2024-02-04">
+    enum="ClientSidePhishingResult" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -772,7 +804,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2024-02-04">
+    enum="BooleanIsPhishing" expires_after="2024-04-28">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -801,6 +833,15 @@ chromium-metrics-reviews@google.com.
     <variant name="FlatbufferScorer" summary="Flatbuffer scorer"/>
     <variant name="ProtobufScorer" summary="Protobuf scorer"/>
   </token>
+</histogram>
+
+<histogram name="SBClientPhishing.VisualFeaturesClearReason"
+    enum="CanExtractVisualFeaturesResult" expires_after="2024-10-26">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Log the reason why CSD-Phishing pings do not contain visual features images.
+  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"

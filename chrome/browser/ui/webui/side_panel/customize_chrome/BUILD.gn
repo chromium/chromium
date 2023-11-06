@@ -7,9 +7,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(!is_android)
 
 mojom("mojo_bindings") {
-  sources = [ "customize_chrome.mojom" ]
+  sources = [
+    "customize_chrome.mojom",
+    "wallpaper_search/wallpaper_search.mojom",
+  ]
   webui_module_path = "/"
-  use_typescript_sources = true
   public_deps = [
     "//mojo/public/mojom/base",
     "//skia/public/mojom",

@@ -13,8 +13,10 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/third_party/xdg_user_dirs/xdg_user_dir_lookup.h"
+#include "base/threading/scoped_blocking_call.h"
 
 namespace {
 
@@ -55,6 +57,30 @@ FilePath GetXDGUserDirectory(const char* dir_name, const char* fallback_dir) {
     path = path.Append(fallback_dir);
   }
   return path.StripTrailingSeparators();
+}
+
+FilePath GetXDGDataWriteLocation(Environment* env) {
+  return GetXDGDirectory(env, "XDG_DATA_HOME", ".local/share");
+}
+
+std::vector<FilePath> GetXDGDataSearchLocations(Environment* env) {
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+
+  std::vector<FilePath> search_paths;
+  search_paths.push_back(GetXDGDataWriteLocation(env));
+
+  std::string xdg_data_dirs;
+  if (env->GetVar("XDG_DATA_DIRS", &xdg_data_dirs) && !xdg_data_dirs.empty()) {
+    StringTokenizer tokenizer(xdg_data_dirs, ":");
+    while (tokenizer.GetNext()) {
+      search_paths.emplace_back(tokenizer.token_piece());
+    }
+  } else {
+    search_paths.emplace_back("/usr/local/share");
+    search_paths.emplace_back("/usr/share");
+  }
+
+  return search_paths;
 }
 
 DesktopEnvironment GetDesktopEnvironment(Environment* env) {

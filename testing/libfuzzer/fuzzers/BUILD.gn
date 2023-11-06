@@ -447,10 +447,50 @@ fuzzer_test("skia_image_filter_proto_fuzzer") {
   ]
 }
 
-fuzzer_test("libyuv_scale_fuzzer") {
-  sources = [ "libyuv_scale_fuzzer.cc" ]
+# We build the libyuv_scale_fuzzer both for fuzztest
+# and libfuzzer, for education/comparison purposes.
+# Abstract the common parts:
+source_set("libyuv_scale_fuzzer_common") {
+  testonly = true
+  sources = [
+    "libyuv_scale_fuzzer.cc",
+    "libyuv_scale_fuzzer.h",
+  ]
 
-  deps = [ "//third_party/libyuv" ]
+  public_deps = [ "//third_party/libyuv" ]
+}
+
+# The libfuzzer version (which also works with other compatible
+# frameworks, e.g. centipede)
+fuzzer_test("libyuv_scale_fuzzer") {
+  sources = [ "libyuv_scale_fuzzer_libfuzzer.cc" ]
+  deps = [ ":libyuv_scale_fuzzer_common" ]
+}
+
+# This is a fuzztest fuzzer, which (for now) means we build this as
+# a unit test rather than using a fuzzing gn template such as
+# fuzzer_test.
+# This executable can be run in four modes:
+# modes:
+# ./libyuv_scale_fuzzer - runs a small amount of fuzzing as if
+#    to fit in with a unit test framework, just to look for
+#    egregious bugs
+# With the enable_fuzztest_fuzz gn arg:
+#   ./libyuv_scale_fuzzer -fuzz=    - fuzzes properly.
+# With the use_centipede gn arg:
+#   centipede --binary=libyuv_scale_fuzzer - fuzzes using centipede
+# With the use_libfuzzer gn arg:
+#   ./libyuv_scale_fuzzer - runs in a libfuzzer-compatible way
+# Note that right now this is using the plain 'test' template.
+# In time, we may choose a different option here.
+test("libyuv_scale_fuzztest") {
+  sources = [ "libyuv_scale_fuzztest.cc" ]
+  enable_fuzztest = true
+
+  deps = [
+    ":libyuv_scale_fuzzer_common",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
 
 proto_library("command_buffer_lpm_fuzzer_proto") {

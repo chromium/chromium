@@ -8,9 +8,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewPrope
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * The properties associated with rendering the entity suggestion view.
- */
+/** The properties associated with rendering the entity suggestion view. */
 @interface EntitySuggestionViewProperties {
     static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {};
 

@@ -16,9 +16,6 @@ class ShoppingService;
 
 @protocol ParcelTrackingOptInCommands;
 
-// Feature flag to enable the parcel tracking feature.
-BASE_DECLARE_FEATURE(kIOSParcelTracking);
-
 // Enum for the different values of the parcel tracking opt-in status.
 enum class IOSParcelTrackingOptInStatus {
   kNeverTrack = 0,

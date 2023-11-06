@@ -6,9 +6,11 @@
 #define COMPONENTS_METRICS_STRUCTURED_TEST_TEST_KEY_DATA_PROVIDER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "components/metrics/structured/key_data_provider.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -23,7 +25,7 @@ namespace metrics::structured {
 // created in specified path |profile_path|. If |profile_key_path| is provided
 // in the ctor, then |profile_path| provided in InitializeProfileKey will be
 // ignored.
-class TestKeyDataProvider : public KeyDataProvider {
+class TestKeyDataProvider : public KeyDataProvider, KeyDataProvider::Observer {
  public:
   explicit TestKeyDataProvider(const base::FilePath& device_key_path);
   TestKeyDataProvider(const base::FilePath& device_key_path,
@@ -31,21 +33,23 @@ class TestKeyDataProvider : public KeyDataProvider {
   ~TestKeyDataProvider() override;
 
   // KeyDataProvider:
-  KeyData* GetDeviceKeyData() override;
-  KeyData* GetProfileKeyData() override;
-  bool HasProfileKey() override;
-  bool HasDeviceKey() override;
-  void InitializeDeviceKey(base::OnceClosure callback) override;
-  void InitializeProfileKey(const base::FilePath& profile_path,
-                            base::OnceClosure callback) override;
+  bool IsReady() override;
+  absl::optional<uint64_t> GetId(const std::string& project_name) override;
+  absl::optional<uint64_t> GetSecondaryId(
+      const std::string& project_name) override;
+  KeyData* GetKeyData(const std::string& project_name) override;
+  void OnProfileAdded(const base::FilePath& profile_path) override;
   void Purge() override;
+
+  // KeyDataProvider::Observer
+  void OnKeyReady() override;
 
  private:
   base::FilePath device_key_path_;
   base::FilePath profile_key_path_;
 
-  std::unique_ptr<KeyData> device_key_data_;
-  std::unique_ptr<KeyData> profile_key_data_;
+  std::unique_ptr<KeyDataProvider> device_key_data_;
+  std::unique_ptr<KeyDataProvider> profile_key_data_;
 };
 
 }  // namespace metrics::structured

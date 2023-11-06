@@ -36,6 +36,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -108,6 +109,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -248,10 +250,10 @@ void ExtendHotseat(Browser* browser) {
 
 ash::ShelfID CreateAppShortcutItem(const ash::ShelfID& shelf_id) {
   auto* controller = ChromeShelfController::instance();
-  return controller->InsertAppItem(
+
+  return controller->CreateAppItem(
       std::make_unique<AppShortcutShelfItemController>(shelf_id),
-      ash::STATUS_CLOSED, controller->shelf_model()->item_count(),
-      ash::TYPE_PINNED_APP, /*title=*/u"");
+      ash::STATUS_CLOSED, /*pinned=*/true, /*title=*/base::EmptyString16());
 }
 
 // A class that waits for the child removal to occur on a parent view.
@@ -3082,3 +3084,79 @@ IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());
+
+class AppServiceShortcutShelfBrowserTest : public ShelfAppBrowserTest {
+ public:
+  AppServiceShortcutShelfBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::features::kCrosWebAppShortcutUiUpdate);
+  }
+  ~AppServiceShortcutShelfBrowserTest() override = default;
+
+  apps::ShortcutId CreateWebAppBasedShortcut(
+      const GURL& shortcut_url,
+      const std::u16string& shortcut_name) {
+    // Create web app based shortcut.
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = shortcut_url;
+    web_app_info->title = shortcut_name;
+    auto local_shortcut_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields=*/true);
+    return apps::GenerateShortcutId(app_constants::kChromeAppId,
+                                    local_shortcut_id);
+  }
+
+  std::string CreateWebApp(const GURL& app_url,
+                           const std::u16string& app_name) {
+    // Create web app.
+    auto web_app_info = std::make_unique<web_app::WebAppInstallInfo>();
+    web_app_info->start_url = app_url;
+    web_app_info->title = app_name;
+    web_app_info->scope = app_url;
+    auto web_app_id = web_app::test::InstallWebApp(
+        profile(), std::move(web_app_info),
+        /*overwrite_existing_manifest_fields=*/true);
+    return web_app_id;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AppServiceShortcutShelfBrowserTest,
+                       ReplaceBetweenShortcutAndWebApp) {
+  GURL url = GURL("https://example.org/");
+  apps::ShortcutId shortcut_id = CreateWebAppBasedShortcut(url, u"Shortcut");
+
+  PinAppWithIDToShelf(shortcut_id.value());
+  const ash::ShelfItem* item =
+      shelf_model()->ItemByID(ash::ShelfID(shortcut_id.value()));
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->title, u"Shortcut");
+
+  // Install a web app with the same url should replace the shortcut. The item
+  // should no longer pinned.
+  std::string app_id = CreateWebApp(url, u"App");
+  ASSERT_EQ(app_id, shortcut_id.value());
+  item = shelf_model()->ItemByID(ash::ShelfID(shortcut_id.value()));
+  ASSERT_FALSE(item);
+
+  // Pin the item to the shelf and verify the title has changed.
+  PinAppWithIDToShelf(app_id);
+  item = shelf_model()->ItemByID(ash::ShelfID(app_id));
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->title, u"App");
+
+  // Create a shortcut with the same url should replace the web app. The item
+  // should no longer pinned.
+  CreateWebAppBasedShortcut(url, u"Shortcut");
+  item = shelf_model()->ItemByID(ash::ShelfID(app_id));
+  ASSERT_FALSE(item);
+
+  // Pin the item to the shelf and verify the title has changed.
+  PinAppWithIDToShelf(shortcut_id.value());
+  item = shelf_model()->ItemByID(ash::ShelfID(shortcut_id.value()));
+  ASSERT_TRUE(item);
+  EXPECT_EQ(item->title, u"Shortcut");
+}

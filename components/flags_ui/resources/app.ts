@@ -14,7 +14,7 @@ import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util_ts.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 
 import {getTemplate} from './app.html.js';
 import {FlagsExperimentElement} from './experiment.js';
@@ -25,19 +25,18 @@ interface Tab {
   panelEl: HTMLElement;
 }
 
-// Delay in ms following a keypress, before a search is made.
-const SEARCH_DEBOUNCE_TIME_MS: number = 150;
 
 /**
  * Handles in page searching. Matches against the experiment flag name.
  */
-class FlagSearch {
+export class FlagSearch {
   private flagsAppElement: FlagsAppElement;
   private initialized: boolean = false;
   private noMatchMsg: NodeListOf<HTMLElement>;
   private searchIntervalId: number|null = null;
   private searchBox: HTMLInputElement;
-
+  // Delay in ms following a keypress, before a search is made.
+  private searchDebounceDelayMs: number = 150;
 
   constructor(el: FlagsAppElement) {
     this.flagsAppElement = el;
@@ -111,7 +110,7 @@ class FlagSearch {
   /**
    * Performs a search against the experiment title, description, permalink.
    */
-  private doSearch() {
+  async doSearch() {
     const searchTerm = this.searchBox.value.trim().toLowerCase();
 
     if (searchTerm || searchTerm === '') {
@@ -136,16 +135,21 @@ class FlagSearch {
           'hidden',
           this.highlightAllMatches(unavailableExperiments, searchTerm) > 0);
       // </if>
-      this.announceSearchResults();
+      await this.announceSearchResults();
+      this.flagsAppElement.dispatchEvent(
+          new Event('search-finished-for-testing', {
+            bubbles: true,
+            composed: true,
+          }));
     }
 
     this.searchIntervalId = null;
   }
 
-  private announceSearchResults() {
+  private announceSearchResults(): Promise<void> {
     const searchTerm = this.searchBox.value.trim().toLowerCase();
     if (!searchTerm) {
-      return;
+      return Promise.resolve();
     }
 
     const selectedTab = this.flagsAppElement.tabs.find(
@@ -154,24 +158,29 @@ class FlagSearch {
     const queryString = `#${selectedTabId} flags-experiment:not(.hidden)`;
     const total = this.flagsAppElement.$all(queryString).length;
     if (total) {
-      this.flagsAppElement.announceStatus(
+      return this.flagsAppElement.announceStatus(
           total === 1 ?
               loadTimeData.getStringF('searchResultsSingular', searchTerm) :
               loadTimeData.getStringF(
                   'searchResultsPlural', total, searchTerm));
     }
+    return Promise.resolve();
   }
 
   /**
    * Debounces the search to improve performance and prevent too many searches
    * from being initiated.
    */
-  private debounceSearch() {
+  debounceSearch() {
     if (this.searchIntervalId) {
       clearTimeout(this.searchIntervalId);
     }
     this.searchIntervalId =
-        setTimeout(this.doSearch.bind(this), SEARCH_DEBOUNCE_TIME_MS);
+        setTimeout(this.doSearch.bind(this), this.searchDebounceDelayMs);
+  }
+
+  setSearchDebounceDelayMsForTesting(delay: number) {
+    this.searchDebounceDelayMs = delay;
   }
 }
 
@@ -184,6 +193,7 @@ export class FlagsAppElement extends CustomElement {
     return getTemplate();
   }
 
+  private announceStatusDelayMs: number = 100;
   private featuresResolver: PromiseResolver<void> = new PromiseResolver();
   private flagSearch: FlagSearch = new FlagSearch(this);
   private lastChanged: HTMLElement|null = null;
@@ -214,26 +224,35 @@ export class FlagsAppElement extends CustomElement {
     this.setupRestartButton();
     // </if>
     FocusOutlineManager.forDocument(document);
-
-    // Exported on |window| since this is needed by tests.
-    Object.assign(
-        window,
-        {experimentalFeaturesReadyForTest: this.featuresResolver.promise});
-
     // Update the highlighted flag when the hash changes.
     window.addEventListener('hashchange', () => this.highlightReferencedFlag);
+  }
+
+  setAnnounceStatusDelayMsForTesting(delay: number) {
+    this.announceStatusDelayMs = delay;
+  }
+
+  setSearchDebounceDelayMsForTesting(delay: number) {
+    this.flagSearch.setSearchDebounceDelayMsForTesting(delay);
+  }
+
+  experimentalFeaturesReadyForTesting() {
+    return this.featuresResolver.promise;
   }
 
   /**
    * Cause a text string to be announced by screen readers
    * @param text The text that should be announced.
    */
-  announceStatus(text: string) {
-    this.getRequiredElement('#screen-reader-status-message').textContent = '';
-    setTimeout(() => {
-      this.getRequiredElement('#screen-reader-status-message').textContent =
-          text;
-    }, 100);
+  announceStatus(text: string): Promise<void> {
+    return new Promise((resolve) => {
+      this.getRequiredElement('#screen-reader-status-message').textContent = '';
+      setTimeout(() => {
+        this.getRequiredElement('#screen-reader-status-message').textContent =
+            text;
+        resolve();
+      }, this.announceStatusDelayMs);
+    });
   }
 
   /**

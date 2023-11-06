@@ -107,10 +107,6 @@ class V4L2StatelessVideoDecoderBackend : public V4L2VideoDecoderBackend,
     kNone,
     // Cannot create a new V4L2 surface. Waiting for surfaces to be released.
     kRanOutOfSurfaces,
-    // A VP9 superframe contains multiple subframes. Before decoding the next
-    // subframe, we need to wait for previous subframes decoded and update the
-    // context.
-    kWaitSubFrameDecoded,
   };
 
   // Callback which is called when the output buffer is not used anymore.

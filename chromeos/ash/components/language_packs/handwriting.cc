@@ -98,17 +98,4 @@ base::flat_set<std::string> ConvertDlcsWithContentToHandwritingLocales(
   return dlc_locales;
 }
 
-base::flat_set<std::string> GetHandwritingLocalesFromEnabledInputMethods(
-    InputMethodManager* const input_method_manager) {
-  const std::vector<std::string>& input_method_ids =
-      input_method_manager->GetActiveIMEState()->GetEnabledInputMethodIds();
-
-  const base::flat_set<std::string> target_hwr_locales = MapThenFilterStrings(
-      input_method_ids,
-      base::BindRepeating(MapInputMethodIdToHandwritingLocale,
-                          input_method_manager->GetInputMethodUtil()));
-
-  return target_hwr_locales;
-}
-
 }  // namespace ash::language_packs

@@ -7,8 +7,10 @@
 #include <OleCtl.h>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/values.h"
 #include "base/win/scoped_bstr.h"
 #include "components/policy/core/common/policy_map.h"

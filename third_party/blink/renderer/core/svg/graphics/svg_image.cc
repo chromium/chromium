@@ -244,16 +244,6 @@ gfx::Size SVGImage::SizeWithConfig(SizeConfig) const {
   return ToRoundedSize(intrinsic_size_);
 }
 
-static float ResolveWidthForRatio(float height,
-                                  const gfx::SizeF& intrinsic_ratio) {
-  return height * intrinsic_ratio.width() / intrinsic_ratio.height();
-}
-
-static float ResolveHeightForRatio(float width,
-                                   const gfx::SizeF& intrinsic_ratio) {
-  return width * intrinsic_ratio.height() / intrinsic_ratio.width();
-}
-
 bool SVGImage::HasIntrinsicSizingInfo() const {
   return LayoutRoot();
 }
@@ -263,7 +253,8 @@ bool SVGImage::GetIntrinsicSizingInfo(
   const LayoutSVGRoot* layout_root = LayoutRoot();
   if (!layout_root)
     return false;
-  layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info);
+  layout_root->UnscaledIntrinsicSizingInfo(intrinsic_sizing_info,
+                                           /*use_correct_viewbox=*/false);
 
   if (!intrinsic_sizing_info.has_width || !intrinsic_sizing_info.has_height) {
     // We're not using an intrinsic aspect ratio to resolve a missing
@@ -285,50 +276,10 @@ bool SVGImage::GetIntrinsicSizingInfo(
 gfx::SizeF SVGImage::ConcreteObjectSize(
     const gfx::SizeF& default_object_size) const {
   IntrinsicSizingInfo intrinsic_sizing_info;
-  if (!GetIntrinsicSizingInfo(intrinsic_sizing_info))
+  if (!GetIntrinsicSizingInfo(intrinsic_sizing_info)) {
     return gfx::SizeF();
-
-  // https://www.w3.org/TR/css3-images/#default-sizing
-  if (intrinsic_sizing_info.has_width && intrinsic_sizing_info.has_height)
-    return intrinsic_sizing_info.size;
-
-  if (intrinsic_sizing_info.has_width) {
-    if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return gfx::SizeF(intrinsic_sizing_info.size.width(),
-                        default_object_size.height());
-    }
-    return gfx::SizeF(
-        intrinsic_sizing_info.size.width(),
-        ResolveHeightForRatio(intrinsic_sizing_info.size.width(),
-                              intrinsic_sizing_info.aspect_ratio));
   }
-
-  if (intrinsic_sizing_info.has_height) {
-    if (intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-      return gfx::SizeF(default_object_size.width(),
-                        intrinsic_sizing_info.size.height());
-    }
-    return gfx::SizeF(ResolveWidthForRatio(intrinsic_sizing_info.size.height(),
-                                           intrinsic_sizing_info.aspect_ratio),
-                      intrinsic_sizing_info.size.height());
-  }
-
-  if (!intrinsic_sizing_info.aspect_ratio.IsEmpty()) {
-    // "A contain constraint is resolved by setting the concrete object size to
-    //  the largest rectangle that has the object's intrinsic aspect ratio and
-    //  additionally has neither width nor height larger than the constraint
-    //  rectangle's width and height, respectively."
-    float solution_width = ResolveWidthForRatio(
-        default_object_size.height(), intrinsic_sizing_info.aspect_ratio);
-    if (solution_width <= default_object_size.width())
-      return gfx::SizeF(solution_width, default_object_size.height());
-
-    float solution_height = ResolveHeightForRatio(
-        default_object_size.width(), intrinsic_sizing_info.aspect_ratio);
-    return gfx::SizeF(default_object_size.width(), solution_height);
-  }
-
-  return default_object_size;
+  return blink::ConcreteObjectSize(intrinsic_sizing_info, default_object_size);
 }
 
 SVGImage::DrawInfo::DrawInfo(const gfx::SizeF& container_size,

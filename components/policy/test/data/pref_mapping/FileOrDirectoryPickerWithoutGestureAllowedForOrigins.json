@@ -1,0 +1,39 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "prefs": {
+          "file_system.file_or_directory_picker_without_allowed_for_origins": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "FileOrDirectoryPickerWithoutGestureAllowedForOrigins": [
+            "https://mydomain.com",
+            "https://test.mydomain.com"
+          ]
+        },
+        "prefs": {
+          "file_system.file_or_directory_picker_without_allowed_for_origins": {
+            "value": [
+              "https://mydomain.com",
+              "https://test.mydomain.com"
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

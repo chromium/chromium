@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "customize_chrome_feature_promo_helper_unittest\.cc": [
-    "+components/user_education/test"
-  ]
-}

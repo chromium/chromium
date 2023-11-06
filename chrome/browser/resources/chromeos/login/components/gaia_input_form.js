@@ -68,8 +68,8 @@ class GaiaInputForm extends GaiaInputFormBase {
 
   /** @public */
   reset() {
-    var inputs = this.getInputs_();
-    for (var i = 0; i < inputs.length; ++i) {
+    const inputs = this.getInputs_();
+    for (let i = 0; i < inputs.length; ++i) {
       inputs[i].value = '';
       inputs[i].isInvalid = false;
     }
@@ -109,7 +109,7 @@ class GaiaInputForm extends GaiaInputFormBase {
    * @return {!Array<!Element>}
    */
   getControls_() {
-    var controls = this.getInputs_();
+    const controls = this.getInputs_();
     controls.push(this.$.button);
     return controls.concat(dom(this).querySelectorAll('gaia-button'));
   }

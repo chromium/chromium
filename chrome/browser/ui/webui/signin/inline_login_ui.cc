@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
@@ -49,6 +50,8 @@
 #include "chrome/browser/ui/webui/signin/ash/inline_login_handler_impl.h"
 #include "chrome/grit/arc_account_picker_resources.h"
 #include "chrome/grit/arc_account_picker_resources_map.h"
+#include "chrome/grit/edu_coexistence_resources.h"
+#include "chrome/grit/edu_coexistence_resources_map.h"
 #include "chrome/grit/gaia_action_buttons_resources.h"
 #include "chrome/grit/gaia_action_buttons_resources_map.h"
 #include "chrome/grit/supervision_resources.h"
@@ -132,6 +135,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
   source->AddResourcePaths(base::make_span(kGaiaActionButtonsResources,
                                            kGaiaActionButtonsResourcesSize));
   source->AddResourcePaths(
+      base::make_span(kEduCoexistenceResources, kEduCoexistenceResourcesSize));
+  source->AddResourcePaths(
       base::make_span(kSupervisionResources, kSupervisionResourcesSize));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -152,20 +157,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
     {"error_screen.js", IDR_ACCOUNT_MANAGER_COMPONENTS_ERROR_SCREEN_JS},
     // Resources for the server-based edu coexistence flow.
     {"edu-coexistence", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_HTML},
-    {"edu_coexistence_app.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_APP_JS},
-    {"edu_coexistence_ui.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_UI_JS},
-    {"edu_coexistence_controller.js",
-     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CONTROLLER_JS},
-    {"edu_coexistence_browser_proxy.js",
-     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BROWSER_PROXY_JS},
-    {"edu_coexistence_button.js",
-     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_BUTTON_JS},
-    {"edu_coexistence_offline.js",
-     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_OFFLINE_JS},
-    {"edu_coexistence_error.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_ERROR_JS},
-    {"edu_coexistence_template.js",
-     IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_TEMPLATE_JS},
-    {"edu_coexistence_css.js", IDR_EDU_COEXISTENCE_EDU_COEXISTENCE_CSS_JS},
+
     {"account_manager_signin_blocked_by_policy.svg",
      IDS_ACCOUNT_MANAGER_SIGNIN_BLOCKED_BY_POLICY_SVG},
 
@@ -266,7 +258,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
         l10n_util::GetStringFUTF16(
             message_id,
             // "add a new person" link:
-            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            chrome::kAddNewUserURL,
             // Device type:
             ui::GetChromeOSDeviceName(),
             // Settings > Accounts link:
@@ -280,7 +272,7 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
         l10n_util::GetStringFUTF16(
             IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC,
             // "add a new person" link:
-            base::ASCIIToUTF16(chrome::kAddNewUserURL),
+            chrome::kAddNewUserURL,
             // Device type:
             ui::GetChromeOSDeviceName(),
             // "Apps Settings" link:
@@ -320,7 +312,8 @@ void CreateAndAddWebUIDataSource(Profile* profile) {
                         .spec());
 
   source->OverrideContentSecurityPolicy(
-      network::mojom::CSPDirectiveName::FrameSrc, "frame-src chrome://test/;");
+      network::mojom::CSPDirectiveName::FrameSrc,
+      "frame-src chrome://webui-test/;");
 
   std::u16string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->GetGivenName();

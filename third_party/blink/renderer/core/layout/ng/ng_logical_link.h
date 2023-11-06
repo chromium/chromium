@@ -19,11 +19,11 @@ struct CORE_EXPORT NGLogicalLink {
 
  public:
   const LogicalOffset& Offset() const { return offset; }
-  const NGPhysicalFragment* get() const { return fragment; }
+  const NGPhysicalFragment* get() const { return fragment.Get(); }
 
-  explicit operator bool() const { return fragment; }
+  explicit operator bool() const { return fragment != nullptr; }
   const NGPhysicalFragment& operator*() const { return *fragment; }
-  const NGPhysicalFragment* operator->() const { return fragment; }
+  const NGPhysicalFragment* operator->() const { return fragment.Get(); }
 
   void Trace(Visitor* visitor) const { visitor->Trace(fragment); }
 

@@ -103,8 +103,12 @@ class CSSBasicShapePolygonValue final : public CSSValue {
     values_.push_back(y);
   }
 
-  CSSPrimitiveValue* GetXAt(unsigned i) const { return values_.at(i * 2); }
-  CSSPrimitiveValue* GetYAt(unsigned i) const { return values_.at(i * 2 + 1); }
+  CSSPrimitiveValue* GetXAt(unsigned i) const {
+    return values_.at(i * 2).Get();
+  }
+  CSSPrimitiveValue* GetYAt(unsigned i) const {
+    return values_.at(i * 2 + 1).Get();
+  }
   const HeapVector<Member<CSSPrimitiveValue>>& Values() const {
     return values_;
   }

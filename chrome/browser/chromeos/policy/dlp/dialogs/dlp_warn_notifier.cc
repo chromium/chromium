@@ -30,15 +30,14 @@ void DlpWarnNotifier::OnWidgetDestroying(views::Widget* widget) {
   RemoveWidget(widget);
 }
 
-void DlpWarnNotifier::ShowDlpPrintWarningDialog(
-    OnDlpRestrictionCheckedCallback callback) {
+void DlpWarnNotifier::ShowDlpPrintWarningDialog(WarningCallback callback) {
   ShowDlpWarningDialog(std::move(callback),
                        DlpWarnDialog::DlpWarnDialogOptions(
                            DlpWarnDialog::Restriction::kPrinting));
 }
 
 void DlpWarnNotifier::ShowDlpScreenCaptureWarningDialog(
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(
       std::move(callback),
@@ -47,7 +46,7 @@ void DlpWarnNotifier::ShowDlpScreenCaptureWarningDialog(
 }
 
 void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(
       std::move(callback),
@@ -56,7 +55,7 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
 }
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpScreenShareWarningDialog(
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     const DlpConfidentialContents& confidential_contents,
     const std::u16string& application_title) {
   return ShowDlpWarningDialog(std::move(callback),
@@ -70,7 +69,7 @@ int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
 }
 
 base::WeakPtr<views::Widget> DlpWarnNotifier::ShowDlpWarningDialog(
-    OnDlpRestrictionCheckedCallback callback,
+    WarningCallback callback,
     DlpWarnDialog::DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       std::make_unique<DlpWarnDialog>(std::move(callback), options),

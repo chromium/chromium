@@ -61,7 +61,7 @@ const ServerFieldType kProfileFieldTypes[] = {NAME_FIRST,
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
     base::FilePath dir;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &dir);
+    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &dir);
     return dir.AppendASCII("components")
         .AppendASCII("test")
         .AppendASCII("data");
@@ -97,7 +97,7 @@ std::string SerializeProfiles(const std::vector<AutofillProfile*>& profiles) {
     result += "\n";
     for (const ServerFieldType& type : kProfileFieldTypes) {
       std::u16string value = profile->GetRawInfo(type);
-      result += FieldTypeToStringPiece(type);
+      result += FieldTypeToStringView(type);
       result += kFieldSeparator;
       if (!value.empty()) {
         base::ReplaceFirstSubstringAfterOffset(&value, 0, u"\\n", u"\n");

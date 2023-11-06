@@ -67,12 +67,13 @@ class CORE_EXPORT BodyStreamBuffer final
   BodyStreamBuffer(const BodyStreamBuffer&) = delete;
   BodyStreamBuffer& operator=(const BodyStreamBuffer&) = delete;
 
-  ReadableStream* Stream() { return stream_; }
+  ReadableStream* Stream() { return stream_.Get(); }
 
   // Callable only when neither locked nor disturbed.
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
-      BytesConsumer::BlobSizePolicy);
-  scoped_refptr<EncodedFormData> DrainAsFormData();
+      BytesConsumer::BlobSizePolicy,
+      ExceptionState&);
+  scoped_refptr<EncodedFormData> DrainAsFormData(ExceptionState&);
   void DrainAsChunkedDataPipeGetter(
       ScriptState*,
       mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>,
@@ -102,7 +103,7 @@ class CORE_EXPORT BodyStreamBuffer final
 
   // Closes the stream if necessary, and then locks and disturbs it. Should not
   // be called if |stream_broken_| is true.
-  void CloseAndLockAndDisturb();
+  void CloseAndLockAndDisturb(ExceptionState&);
 
   bool IsAborted();
 
@@ -112,7 +113,7 @@ class CORE_EXPORT BodyStreamBuffer final
   ScriptCachedMetadataHandler* GetCachedMetadataHandler() {
     DCHECK(!IsStreamLocked());
     DCHECK(!IsStreamDisturbed());
-    return cached_metadata_handler_;
+    return cached_metadata_handler_.Get();
   }
 
   // Take the blob representing any side data associated with this body
@@ -140,11 +141,11 @@ class CORE_EXPORT BodyStreamBuffer final
 
   BytesConsumer* ReleaseHandle(ExceptionState&);
   void Abort();
-  void Close();
+  void Close(ExceptionState&);
   void GetError();
   void RaiseOOMError();
   void CancelConsumer();
-  void ProcessData();
+  void ProcessData(ExceptionState&);
   void EndLoading();
   void StopLoading();
 

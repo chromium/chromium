@@ -1,0 +1,18 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+package supervised_user;
+
+import "rendered_result.proto";
+
+message DiscoverFeed {
+  // Represents an ordered list of articles that belong to this feed.
+  // We use a repeated field, rather than a single RenderedResult for the Feed,
+  // to allow clients to layout articles as they see fit and to align with how
+  // Discover serves content.
+  repeated RenderedResult rendered_result = 1;
+}

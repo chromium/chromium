@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
+#include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_breakage_confidence_level.h"
 #include "components/content_settings/core/common/cookie_controls_status.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -33,6 +34,7 @@ class CookieControlsIconView : public PageActionIconView,
   // CookieControlsObserver:
   void OnStatusChanged(CookieControlsStatus status,
                        CookieControlsEnforcement enforcement,
+                       CookieBlocking3pcdStatus blocking_status,
                        base::Time expiration) override;
   void OnSitesCountChanged(int allowed_third_party_sites_count,
                            int blocked_third_party_sites_count) override;
@@ -53,6 +55,7 @@ class CookieControlsIconView : public PageActionIconView,
  protected:
   void OnExecuting(PageActionIconView::ExecuteSource source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  void UpdateTooltipForFocus() override;
 
  private:
   friend class CookieControlsIconViewUnitTest;
@@ -69,8 +72,11 @@ class CookieControlsIconView : public PageActionIconView,
   // even if the icon is already visible.
   void UpdateVisibilityAndAnimate(bool confidence_changed = false);
   absl::optional<int> GetLabelForStatus() const;
+  void SetLabelAndTooltip();
 
   CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+  CookieBlocking3pcdStatus blocking_status_ =
+      CookieBlocking3pcdStatus::kNotIn3pcd;
 
   CookieControlsBreakageConfidenceLevel confidence_ =
       CookieControlsBreakageConfidenceLevel::kUninitialized;

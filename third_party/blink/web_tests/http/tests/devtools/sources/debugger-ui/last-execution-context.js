@@ -6,8 +6,8 @@ import {TestRunner} from 'test_runner';
 import {SDKTestRunner} from 'sdk_test_runner';
 
 import * as Main from 'devtools/entrypoints/main/main.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests how execution context and target are selected.\n`);

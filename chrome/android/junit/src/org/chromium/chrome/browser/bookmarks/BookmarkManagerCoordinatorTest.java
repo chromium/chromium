@@ -50,42 +50,32 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link BookmarkManagerCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_NATIVE_INITIALIZATION})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    ChromeSwitches.DISABLE_NATIVE_INITIALIZATION
+})
 @EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH, ChromeFeatureList.EMPTY_STATES})
 public class BookmarkManagerCoordinatorTest {
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public JniMocker mJniMocker = new JniMocker();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
-    @Rule
-    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
-    @Mock
-    private SnackbarManager mSnackbarManager;
-    @Mock
-    private Profile mProfile;
-    @Mock
-    private LargeIconBridge.Natives mMockLargeIconBridgeJni;
-    @Mock
-    private SyncService mSyncService;
-    @Mock
-    private IdentityServicesProvider mIdentityServicesProvider;
-    @Mock
-    private SigninManager mSigninManager;
-    @Mock
-    private AccountManagerFacade mAccountManagerFacade;
-    @Mock
-    private IdentityManager mIdentityManager;
-    @Mock
-    private BookmarkModel mBookmarkModel;
-    @Mock
-    private BookmarkUiPrefs mBookmarkUiPrefs;
-    @Mock
-    private ShoppingService mShoppingService;
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
+    @Mock private SnackbarManager mSnackbarManager;
+    @Mock private Profile mProfile;
+    @Mock private LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock private SyncService mSyncService;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private SigninManager mSigninManager;
+    @Mock private AccountManagerFacade mAccountManagerFacade;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private BookmarkModel mBookmarkModel;
+    @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock private ShoppingService mShoppingService;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -104,14 +94,23 @@ public class BookmarkManagerCoordinatorTest {
         BookmarkModel.setInstanceForTesting(mBookmarkModel);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
 
-        mActivityScenarioRule.getScenario().onActivity((activity) -> {
-            mActivity = activity;
-            mCoordinator = new BookmarkManagerCoordinator(mActivity,
-                    /*openBookmarkComponentName=*/null,
-                    /*isDialogUi=*/!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity),
-                    /*isIncognito=*/false, mSnackbarManager, mProfile, mBookmarkUiPrefs);
-            mActivity.setContentView(mCoordinator.getView());
-        });
+        mActivityScenarioRule
+                .getScenario()
+                .onActivity(
+                        (activity) -> {
+                            mActivity = activity;
+                            mCoordinator =
+                                    new BookmarkManagerCoordinator(
+                                            mActivity,
+                                            /* openBookmarkComponentName= */ null,
+                                            /* isDialogUi= */ !DeviceFormFactor
+                                                    .isNonMultiDisplayContextOnTablet(mActivity),
+                                            /* isIncognito= */ false,
+                                            mSnackbarManager,
+                                            mProfile,
+                                            mBookmarkUiPrefs);
+                            mActivity.setContentView(mCoordinator.getView());
+                        });
     }
 
     @Test
@@ -134,8 +133,8 @@ public class BookmarkManagerCoordinatorTest {
         assertNotNull(mCoordinator.buildAndInitShoppingItemView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
         assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
-        assertNotNull(mCoordinator.buildAndInitCompactImprovedBookmarkRow(parent));
-        assertNotNull(mCoordinator.buildAndInitVisualImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildCompactImprovedBookmarkRow(parent));
+        assertNotNull(mCoordinator.buildVisualImprovedBookmarkRow(parent));
         assertNotNull(mCoordinator.buildSearchBoxRow(parent));
     }
 }

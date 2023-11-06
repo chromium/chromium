@@ -11,6 +11,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 _cros_components_ts_files = [
   "async_helpers/async_helpers.ts",
   "button/button.ts",
+  "card/card.ts",
   "checkbox/checkbox.ts",
   "helpers/helpers.ts",
   "lottie_renderer/lottie-renderer.ts",
@@ -23,6 +24,7 @@ _cros_components_ts_files = [
   "slider/slider.ts",
   "switch/switch.ts",
   "tag/tag.ts",
+  "textfield/textfield.ts",
 ]
 
 ts_library("cros_components__ts_library") {

@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "RebootAfterUpdate": true
+        },
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "RebootAfterUpdate": false
+        },
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "automatic_reboot.reboot_after_update": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -187,21 +187,21 @@ void ParamTraits<scoped_refptr<net::HttpResponseHeaders>>::Log(
   l->append("<HttpResponseHeaders>");
 }
 
-void ParamTraits<net::OCSPVerifyResult>::Write(base::Pickle* m,
-                                               const param_type& p) {
+void ParamTraits<bssl::OCSPVerifyResult>::Write(base::Pickle* m,
+                                                const param_type& p) {
   WriteParam(m, p.response_status);
   WriteParam(m, p.revocation_status);
 }
 
-bool ParamTraits<net::OCSPVerifyResult>::Read(const base::Pickle* m,
-                                              base::PickleIterator* iter,
-                                              param_type* r) {
+bool ParamTraits<bssl::OCSPVerifyResult>::Read(const base::Pickle* m,
+                                               base::PickleIterator* iter,
+                                               param_type* r) {
   return ReadParam(m, iter, &r->response_status) &&
          ReadParam(m, iter, &r->revocation_status);
 }
 
-void ParamTraits<net::OCSPVerifyResult>::Log(const param_type& p,
-                                             std::string* l) {
+void ParamTraits<bssl::OCSPVerifyResult>::Log(const param_type& p,
+                                              std::string* l) {
   l->append("<OCSPVerifyResult>");
 }
 

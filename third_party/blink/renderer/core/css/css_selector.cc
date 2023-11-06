@@ -139,6 +139,8 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
       return kIdSpecificity;
     case kPseudoClass:
       switch (GetPseudoType()) {
+        case kPseudoActiveViewTransition:
+          return (IdentList().empty() ? 1 : 2) * kClassLikeSpecificity;
         case kPseudoWhere:
           return 0;
         case kPseudoHost:
@@ -306,6 +308,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoViewTransitionNew:
       return kPseudoIdViewTransitionNew;
     case kPseudoActive:
+    case kPseudoActiveViewTransition:
     case kPseudoAny:
     case kPseudoAnyLink:
     case kPseudoAutofill:
@@ -399,7 +402,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
-    case kPseudoToggle:
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
@@ -560,6 +562,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
 
 const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"-webkit-any", CSSSelector::kPseudoAny},
+    {"active-view-transition", CSSSelector::kPseudoActiveViewTransition},
     {"cue", CSSSelector::kPseudoCue},
     {"dir", CSSSelector::kPseudoDir},
     {"has", CSSSelector::kPseudoHas},
@@ -575,7 +578,6 @@ const static NameToPseudoStruct kPseudoTypeWithArgumentsMap[] = {
     {"nth-of-type", CSSSelector::kPseudoNthOfType},
     {"part", CSSSelector::kPseudoPart},
     {"slotted", CSSSelector::kPseudoSlotted},
-    {"toggle", CSSSelector::kPseudoToggle},
     {"view-transition-group", CSSSelector::kPseudoViewTransitionGroup},
     {"view-transition-image-pair", CSSSelector::kPseudoViewTransitionImagePair},
     {"view-transition-new", CSSSelector::kPseudoViewTransitionNew},
@@ -650,11 +652,6 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if ((match->type == CSSSelector::kPseudoSpellingError ||
        match->type == CSSSelector::kPseudoGrammarError) &&
       !RuntimeEnabledFeatures::CSSSpellingGrammarErrorsEnabled()) {
-    return CSSSelector::kPseudoUnknown;
-  }
-
-  if (match->type == CSSSelector::kPseudoToggle &&
-      !RuntimeEnabledFeatures::CSSTogglesEnabled()) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -801,6 +798,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       [[fallthrough]];
     // For pseudo classes
     case kPseudoActive:
+    case kPseudoActiveViewTransition:
     case kPseudoAny:
     case kPseudoAnyLink:
     case kPseudoAutofill:
@@ -876,7 +874,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
-    case kPseudoToggle:
     case kPseudoTrue:
     case kPseudoUnknown:
     case kPseudoUnparsed:
@@ -1026,15 +1023,6 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
         SerializeIdentifier(Argument(), builder);
         builder.Append(')');
         break;
-      case kPseudoToggle:
-        builder.Append('(');
-        SerializeIdentifier(Argument(), builder);
-        if (const ToggleRoot::State* value = ToggleValue()) {
-          builder.Append(" ");
-          builder.Append(value->ToString());
-        }
-        builder.Append(')');
-        break;
       case kPseudoHas:
       case kPseudoNot:
         DCHECK(SelectorList());
@@ -1056,6 +1044,21 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
       case kPseudoRelativeAnchor:
         NOTREACHED();
         return false;
+      case kPseudoActiveViewTransition:
+        if (IdentList().empty()) {
+          builder.Append("(*)");
+        } else {
+          String separator = "(";
+          for (AtomicString type : IdentList()) {
+            builder.Append(separator);
+            if (separator == "(") {
+              separator = ", ";
+            }
+            SerializeIdentifier(type, builder);
+          }
+          builder.Append(')');
+        }
+        break;
       default:
         break;
     }
@@ -1065,7 +1068,7 @@ bool CSSSelector::SerializeSimpleSelector(StringBuilder& builder) const {
     switch (GetPseudoType()) {
       case kPseudoPart: {
         char separator = '(';
-        for (AtomicString part : *PartNames()) {
+        for (AtomicString part : IdentList()) {
           builder.Append(separator);
           if (separator == '(') {
             separator = ' ';
@@ -1261,13 +1264,6 @@ void CSSSelector::SetSelectorList(CSSSelectorList* selector_list) {
   data_.rare_data_->selector_list_ = selector_list;
 }
 
-void CSSSelector::SetToggle(const AtomicString& name,
-                            std::unique_ptr<ToggleRoot::State>&& value) {
-  CreateRareData();
-  data_.rare_data_->argument_ = name;
-  data_.rare_data_->toggle_value_ = std::move(value);
-}
-
 void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
   CreateRareData();
   data_.rare_data_->bits_.has_.contains_pseudo_ = true;
@@ -1328,7 +1324,6 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:
     case CSSSelector::kPseudoHostHasAppearance:
-    case CSSSelector::kPseudoToggle:
       // TODO(https://crbug.com/1346456): Many pseudos should probably be
       // added to this list.  The default: case below should also be removed
       // so that those adding new pseudos know they need to choose one path or
@@ -1540,10 +1535,10 @@ bool CSSSelector::RareData::MatchNth(unsigned unsigned_count) {
   return (NthBValue() - count) % (-NthAValue()) == 0;
 }
 
-void CSSSelector::SetPartNames(
-    std::unique_ptr<Vector<AtomicString>> part_names) {
+void CSSSelector::SetIdentList(
+    std::unique_ptr<Vector<AtomicString>> ident_list) {
   CreateRareData();
-  data_.rare_data_->part_names_ = std::move(part_names);
+  data_.rare_data_->ident_list_ = std::move(ident_list);
 }
 
 void CSSSelector::Trace(Visitor* visitor) const {

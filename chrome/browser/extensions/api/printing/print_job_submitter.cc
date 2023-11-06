@@ -253,8 +253,8 @@ base::AutoReset<bool> PrintJobSubmitter::DisablePdfFlatteningForTesting() {
 }
 
 // static
-base::AutoReset<bool> PrintJobSubmitter::SkipConfirmationDialogForTesting() {
-  return base::AutoReset<bool>(&g_skip_confirmation_dialog_for_testing, true);
+void PrintJobSubmitter::SkipConfirmationDialogForTesting() {
+  g_skip_confirmation_dialog_for_testing = true;
 }
 
 }  // namespace extensions

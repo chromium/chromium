@@ -10,7 +10,7 @@
       ]
     },
     {
-      "name": "LayoutNGTableCell TD",
+      "name": "LayoutTableCell TD",
       "bounds": [58, 64],
       "transform": 1
     }

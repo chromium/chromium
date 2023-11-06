@@ -77,8 +77,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleHstsRequest(
 // Otherwise serves a Basic Auth challenge.
 std::unique_ptr<net::test_server::HttpResponse> HandleHttpAuthRequest(
     const net::test_server::HttpRequest& request) {
-  if (request.relative_url != kHttpAuthPath)
+  if (request.relative_url != kHttpAuthPath) {
     return nullptr;
+  }
 
   auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
   if (base::Contains(request.headers, "Authorization")) {
@@ -752,7 +753,7 @@ class TrustTokensTester {
   }
 
  private:
-  raw_ptr<network::mojom::NetworkContext, DanglingUntriaged> network_context_;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
 };
 
 }  // namespace

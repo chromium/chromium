@@ -23,6 +23,11 @@ public interface TrackingProtectionDelegate {
     /** Set the value of the Do Not Track Pref. */
     void setDoNotTrack(boolean enabled);
 
+    /**
+     * @return whether the offboarding notice should be shown in the Settings.
+     */
+    boolean shouldShowSettingsOffboardingNotice();
+
     /** @return the browser context associated with the settings page. */
     BrowserContextHandle getBrowserContext();
 

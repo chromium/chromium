@@ -23,7 +23,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/mojo_web_ui_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/test/mock_media_router.h"

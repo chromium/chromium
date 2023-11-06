@@ -89,7 +89,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Element* fullscreenElement();
   Element* pictureInPictureElement();
 
-  TreeScope* ParentTreeScope() const { return parent_tree_scope_; }
+  TreeScope* ParentTreeScope() const { return parent_tree_scope_.Get(); }
 
   bool IsInclusiveAncestorTreeScopeOf(const TreeScope&) const;
 
@@ -172,7 +172,7 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   StyleSheetList& StyleSheets();
 
   V8ObservableArrayCSSStyleSheet* AdoptedStyleSheets() const {
-    return adopted_style_sheets_;
+    return adopted_style_sheets_.Get();
   }
   bool HasAdoptedStyleSheets() const;
   void SetAdoptedStyleSheetsForTesting(HeapVector<Member<CSSStyleSheet>>&);

@@ -4,7 +4,8 @@
 
 #include "google_apis/gcm/base/socket_stream.h"
 
-#include <stddef.h>
+#include <algorithm>
+#include <cstddef>
 #include <cstring>
 
 #include "base/functional/bind.h"
@@ -178,7 +179,9 @@ void SocketInputStream::RebuildBuffer() {
     DVLOG(1) << "Have " << unread_data_size
              << " unread bytes remaining, shifting.";
     // Move any remaining unread data to the start of the buffer;
-    std::memmove(io_buffer_->data(), unread_data_ptr, unread_data_size);
+    std::copy(static_cast<const char*>(unread_data_ptr),
+              static_cast<const char*>(unread_data_ptr) + unread_data_size,
+              io_buffer_->data());
   } else {
     DVLOG(1) << "Have " << unread_data_size << " unread bytes remaining.";
   }

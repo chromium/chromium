@@ -44,10 +44,17 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // Update the display configuration as given in |display_specs|. The format of
   // |display_spec| is a list of comma separated spec for each displays. Please
   // refer to the comment in |display::ManagedDisplayInfo::CreateFromSpec| for
-  // the format of the display spec.
-  // Note: To add rounded-corners properly upon startup, set it via specifying
-  // the command line switch `ash-host-window-bounds`.
-  void UpdateDisplay(const std::string& display_specs);
+  // the format of the display spec. If `from_native_platform` is true, the non
+  // native information, such as display zoom, will be ignored and instead
+  // copied from the current configuration.  Note: To add rounded-corners
+  // properly upon startup, set it via specifying the command line switch
+  // `ash-host-window-bounds`.
+  void UpdateDisplay(const std::string& display_specs,
+                     bool from_native_platform = false);
+
+  void UpdateDisplayWithDisplayInfoList(
+      const std::vector<ManagedDisplayInfo>& display_info_list,
+      bool from_native_platform = false);
 
   // Set the 1st display as an internal display and returns the display Id for
   // the internal display.

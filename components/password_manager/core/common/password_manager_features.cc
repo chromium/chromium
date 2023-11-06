@@ -76,22 +76,10 @@ BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPasswordsImportM2,
-             "PasswordsImportM2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables password reuse detection.
 BASE_FEATURE(kPasswordReuseDetectionEnabled,
              "PasswordReuseDetectionEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables different experiments that modify content and behavior of the
-// existing generated password suggestion dropdown.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
-BASE_FEATURE(kPasswordGenerationExperiment,
-             "PasswordGenerationExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // Enables showing UI which allows users to easily revert their choice to
 // never save passwords on a certain website.
@@ -124,20 +112,6 @@ BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
              "PasswordSuggestionBottomSheetV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables use of Google Mobile services for non-synced password storage.
-BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
-             "kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables use of Google Mobile services for non-synced password storage that
-// contains no passwords, so no migration will be necessary.
-// UnifiedPasswordManagerLocalPasswordsAndroidWithMigration will replace this
-// feature once UPM starts to be rolled out to local users who have saved
-// passwords.
-BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithoutMigration,
-             "kUnifiedPasswordManagerLocalPasswordsAndroidWithoutMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables showing the warning about UPM migrating local passwords.
 // The feature is limited to Canary/Dev/Beta by a check in
 // local_passwords_migration_warning_util::ShouldShowWarning.
@@ -151,10 +125,6 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
 // backend will be used to achieve similar behavior.
 BASE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly,
              "UnifiedPasswordManagerSyncUsingAndroidBackendOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPasswordsInCredMan,
-             "PasswordsInCredMan",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

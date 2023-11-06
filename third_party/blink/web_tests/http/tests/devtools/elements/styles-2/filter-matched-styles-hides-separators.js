@@ -5,6 +5,7 @@
 import {TestRunner} from 'test_runner';
 import {ElementsTestRunner} from 'elements_test_runner';
 
+import * as Platform from 'devtools/core/platform/platform.js';
 import * as Elements from 'devtools/panels/elements/elements.js';
 
 (async function() {
@@ -78,7 +79,7 @@ import * as Elements from 'devtools/panels/elements/elements.js';
     for (var i = 0; i < separators.length; ++i) {
       var separator = separators[i];
       var hidden = separator.classList.contains('hidden');
-      var text = String.sprintf('%s %s', hidden ? '[ HIDDEN ] ' : '[ VISIBLE ]', separator.deepTextContent());
+      var text = Platform.StringUtilities.sprintf('%s %s', hidden ? '[ HIDDEN ] ' : '[ VISIBLE ]', separator.deepTextContent());
       TestRunner.addResult(text);
     }
   }

@@ -49,9 +49,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
 
-/**
- * Tests for Incognito reauth view layout in Tab Switcher.
- */
+/** Tests for Incognito reauth view layout in Tab Switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID})
@@ -76,39 +74,43 @@ public class TabSwitcherIncognitoReauthViewTest {
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
+                });
     }
 
     @After
     public void tearDown() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            UserPrefs.get(Profile.getLastUsedRegularProfile())
-                    .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(Profile.getLastUsedRegularProfile())
+                            .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, false);
+                });
     }
 
     private void triggerIncognitoReauthCustomView(ChromeTabbedActivity cta) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IncognitoReauthController incognitoReauthController =
-                    cta.getRootUiCoordinatorForTesting()
-                            .getIncognitoReauthControllerSupplier()
-                            .get();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    IncognitoReauthController incognitoReauthController =
+                            cta.getRootUiCoordinatorForTesting()
+                                    .getIncognitoReauthControllerSupplier()
+                                    .get();
 
-            // Fake Chrome going background and coming back to foreground.
-            ApplicationStatus.TaskVisibilityListener visibilityListener =
-                    (ApplicationStatus.TaskVisibilityListener) incognitoReauthController;
-            visibilityListener.onTaskVisibilityChanged(cta.getTaskId(), false);
+                    // Fake Chrome going background and coming back to foreground.
+                    ApplicationStatus.TaskVisibilityListener visibilityListener =
+                            (ApplicationStatus.TaskVisibilityListener) incognitoReauthController;
+                    visibilityListener.onTaskVisibilityChanged(cta.getTaskId(), false);
 
-            StartStopWithNativeObserver observer =
-                    (StartStopWithNativeObserver) incognitoReauthController;
-            observer.onStartWithNative();
+                    StartStopWithNativeObserver observer =
+                            (StartStopWithNativeObserver) incognitoReauthController;
+                    observer.onStartWithNative();
 
-            assertTrue("Re-auth screen should be shown.",
-                    incognitoReauthController.isReauthPageShowing());
-        });
+                    assertTrue(
+                            "Re-auth screen should be shown.",
+                            incognitoReauthController.isReauthPageShowing());
+                });
     }
 
     private void openIncognitoReauth(ChromeTabbedActivity cta) {
@@ -153,7 +155,7 @@ public class TabSwitcherIncognitoReauthViewTest {
                 .check(matches(not(isDisplayed())));
 
         mRenderTestRule.render(
-                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher");
+                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher_v2");
     }
 
     @Test
@@ -163,9 +165,10 @@ public class TabSwitcherIncognitoReauthViewTest {
         openIncognitoReauth(cta);
 
         // Need to wait for contentsState to be initialized for the tab to restore correctly.
-        CriteriaHelper.pollUiThread(() -> {
-            return TabStateExtractor.from(cta.getActivityTab()).contentsState != null;
-        });
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return TabStateExtractor.from(cta.getActivityTab()).contentsState != null;
+                });
 
         mActivityTestRule.recreateActivity();
 

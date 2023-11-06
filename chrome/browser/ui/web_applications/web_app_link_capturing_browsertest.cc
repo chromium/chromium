@@ -8,6 +8,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
 #include "chrome/browser/ui/browser.h"
@@ -63,14 +65,16 @@ using ClientMode = LaunchHandler::ClientMode;
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
  public:
   WebAppLinkCapturingBrowserTest() {
-    std::vector<base::test::FeatureRef> features = {
-        blink::features::kWebAppEnableLaunchHandler};
+    std::vector<base::test::FeatureRefAndParams> features_and_params = {
+        {blink::features::kWebAppEnableLaunchHandler, {}}};
 #if !BUILDFLAG(IS_CHROMEOS)
-    features.push_back(apps::features::kDesktopPWAsLinkCapturing);
+    auto features_to_enable = apps::test::GetFeaturesToEnableLinkCapturingUX();
+    std::move(std::begin(features_to_enable), std::end(features_to_enable),
+              std::back_inserter(features_and_params));
 #endif
-    feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        features,
+        features_and_params,
         /*disabled_features=*/{});
   }
   ~WebAppLinkCapturingBrowserTest() override = default;
@@ -276,8 +280,16 @@ IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
 
 // JavaScript initiated link captures from about:blank cleans up the about:blank
 // page.
+// TODO(https://crbug.com/1497363): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_JavascriptAboutBlankNavigationCleanUp \
+  DISABLED_JavascriptAboutBlankNavigationCleanUp
+#else
+#define MAYBE_JavascriptAboutBlankNavigationCleanUp \
+  JavascriptAboutBlankNavigationCleanUp
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
-                       JavascriptAboutBlankNavigationCleanUp) {
+                       MAYBE_JavascriptAboutBlankNavigationCleanUp) {
   const auto [app_id, in_scope_1, _, scope] =
       InstallTestApp("/web_apps/basic.html");
   TurnOnLinkCapturing(app_id);
@@ -496,9 +508,6 @@ class WebAppTabStripLinkCapturingBrowserTest
     std::vector<base::test::FeatureRef> features = {
         blink::features::kDesktopPWAsTabStrip,
         features::kDesktopPWAsTabStripSettings};
-#if !BUILDFLAG(IS_CHROMEOS)
-    features.push_back(apps::features::kDesktopPWAsLinkCapturing);
-#endif
     features_.InitWithFeatures(
         /*enabled_features=*/features,
         /*disabled_features=*/{});

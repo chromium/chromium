@@ -87,6 +87,7 @@ template <typename NodeType>
 class StaticNodeTypeList;
 using StaticNodeList = StaticNodeTypeList<Node>;
 class StyleChangeReasonForTracing;
+class TextVisitor;
 class V8UnionNodeOrStringOrTrustedScript;
 class V8UnionStringOrTrustedScript;
 class WebPluginContainerImpl;
@@ -215,9 +216,9 @@ class CORE_EXPORT Node : public EventTarget {
   Element* parentElement() const;
   ContainerNode* ParentElementOrShadowRoot() const;
   ContainerNode* ParentElementOrDocumentFragment() const;
-  Node* previousSibling() const { return previous_; }
+  Node* previousSibling() const { return previous_.Get(); }
   bool HasPreviousSibling() const { return static_cast<bool>(previous_); }
-  Node* nextSibling() const { return next_; }
+  Node* nextSibling() const { return next_.Get(); }
   bool HasNextSibling() const { return static_cast<bool>(next_); }
   NodeList* childNodes();
   Node* firstChild() const;
@@ -303,7 +304,8 @@ class CORE_EXPORT Node : public EventTarget {
   const AtomicString& lookupPrefix(const AtomicString& namespace_uri) const;
   const AtomicString& lookupNamespaceURI(const String& prefix) const;
 
-  String textContent(bool convert_brs_to_newlines = false) const;
+  String textContent(bool convert_brs_to_newlines = false,
+                     TextVisitor* visitor = nullptr) const;
   virtual void setTextContent(const String&);
   V8UnionStringOrTrustedScript* textContentForBinding() const;
   virtual void setTextContentForBinding(
@@ -619,7 +621,6 @@ class CORE_EXPORT Node : public EventTarget {
 
   void SetIsLink(bool f);
 
-  virtual void SetFocused(bool flag, mojom::blink::FocusType);
   void SetHasFocusWithin(bool flag);
   virtual void SetDragged(bool flag);
 
@@ -759,18 +760,18 @@ class CORE_EXPORT Node : public EventTarget {
   // Detaches the node from the layout tree, making it invisible in the rendered
   // view. This method will remove the node's layout object from the layout tree
   // and delete it.
-  virtual void DetachLayoutTree(bool performing_reattach = false);
+  void DetachLayoutTree() { DetachLayoutTree(/*performing_reattach=*/false); }
+  virtual void DetachLayoutTree(bool performing_reattach);
 
   void ReattachLayoutTree(AttachContext&);
 
   // ---------------------------------------------------------------------------
-  // Inline ComputedStyle accessors
+  // Inline ComputedStyle accessor
   //
-  // Note that the following 'inline' functions are not defined in this header,
+  // Note that the following 'inline' function is not defined in this header,
   // but in node_computed_style.h. Please include that file if you want to use
-  // these functions.
+  // this function.
   inline const ComputedStyle* GetComputedStyle() const;
-  inline const ComputedStyle& ComputedStyleRef() const;
   bool ShouldSkipMarkingStyleDirty() const;
 
   // ---------------------------------------------------------------------------

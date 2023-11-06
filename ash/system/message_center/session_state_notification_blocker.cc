@@ -4,7 +4,6 @@
 
 #include "ash/system/message_center/session_state_notification_blocker.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/message_center/oobe_notification_constants.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -43,8 +42,8 @@ bool CalculateShouldShowNotification() {
     return false;
   }
 
-  // Do not show notifications on the lockscreen with QsRevamp.
-  if (features::IsQsRevampEnabled() && state == SessionState::LOCKED) {
+  // Do not show notifications on the lockscreen.
+  if (state == SessionState::LOCKED) {
     return false;
   }
 

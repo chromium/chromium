@@ -58,7 +58,7 @@ class GlobalCacheStorageImpl final
       caches_ = MakeGarbageCollected<CacheStorage>(
           context, GlobalFetch::ScopedFetcher::From(fetching_scope));
     }
-    return caches_;
+    return caches_.Get();
   }
 
   void Trace(Visitor* visitor) const override {

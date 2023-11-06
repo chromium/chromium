@@ -7,7 +7,18 @@
 #include <string>
 
 #include "base/logging.h"
+#include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/cert/x509_certificate.h"
+#include "net/ssl/client_cert_store.h"
+
+#if BUILDFLAG(USE_NSS_CERTS)
+#include "net/ssl/client_cert_store_nss.h"
+#elif BUILDFLAG(IS_WIN)
+#include "net/ssl/client_cert_store_win.h"
+#elif BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS)
+#include "net/ssl/client_cert_store_mac.h"
+#endif
 
 namespace remoting {
 
@@ -42,6 +53,14 @@ bool WorseThan(const std::string& issuer,
 
   return c1.valid_expiry() < c2.valid_expiry();
 }
+
+#if BUILDFLAG(IS_WIN)
+crypto::ScopedHCERTSTORE OpenLocalMachineCertStore() {
+  return crypto::ScopedHCERTSTORE(::CertOpenStore(
+      CERT_STORE_PROV_SYSTEM, 0, NULL,
+      CERT_SYSTEM_STORE_LOCAL_MACHINE | CERT_STORE_READONLY_FLAG, L"MY"));
+}
+#endif
 
 }  // namespace
 
@@ -87,6 +106,26 @@ std::unique_ptr<net::ClientCertIdentity> GetBestMatchFromCertificateList(
   }
 
   return std::move(*best_match_position);
+}
+
+std::unique_ptr<net::ClientCertStore> CreateClientCertStoreInstance() {
+#if BUILDFLAG(USE_NSS_CERTS)
+  return std::make_unique<net::ClientCertStoreNSS>(
+      net::ClientCertStoreNSS::PasswordDelegateFactory());
+#elif BUILDFLAG(IS_WIN)
+  // The network process is running as "Local Service" whose "Current User"
+  // cert store doesn't contain any certificates. Use the "Local Machine"
+  // store instead.
+  // The ACL on the private key of the machine certificate in the "Local
+  // Machine" cert store needs to allow access by "Local Service".
+  return std::make_unique<net::ClientCertStoreWin>(
+      base::BindRepeating(&OpenLocalMachineCertStore));
+#elif BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS)
+  return std::make_unique<net::ClientCertStoreMac>();
+#else
+  // OpenSSL does not use the ClientCertStore infrastructure.
+  return nullptr;
+#endif
 }
 
 }  // namespace remoting

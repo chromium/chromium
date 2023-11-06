@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/uuid.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -147,6 +148,11 @@ VirtualAuthenticator::ConstructDevice() {
       config.is_platform_authenticator =
           attachment_ == device::AuthenticatorAttachment::kPlatform;
       config.user_verification_succeeds = is_user_verified_;
+      config.advertised_algorithms = {
+          device::CoseAlgorithmIdentifier::kEdDSA,
+          device::CoseAlgorithmIdentifier::kEs256,
+          device::CoseAlgorithmIdentifier::kRs256,
+      };
       return std::make_unique<device::VirtualCtap2Device>(state_, config);
     }
     default:

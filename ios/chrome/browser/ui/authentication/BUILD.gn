@@ -19,8 +19,6 @@ source_set("authentication") {
     "signin_notification_infobar_delegate.mm",
     "signin_promo_view_mediator.h",
     "signin_promo_view_mediator.mm",
-    "signout_action_sheet_coordinator.h",
-    "signout_action_sheet_coordinator.mm",
   ]
   deps = [
     ":authentication_constants",
@@ -115,7 +113,6 @@ source_set("unit_tests") {
     "authentication_ui_util_unittest.mm",
     "re_signin_infobar_delegate_unittest.mm",
     "signin_promo_view_mediator_unittest.mm",
-    "signout_action_sheet_coordinator_unittest.mm",
   ]
   deps = [
     ":authentication",
@@ -160,6 +157,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/authentication/unified_consent:unified_consent_ui",
     "//ios/chrome/browser/unified_consent/model",
     "//ios/chrome/test:test_support",
+    "//ios/testing:protocol_fake",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

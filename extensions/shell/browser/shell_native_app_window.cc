@@ -123,7 +123,7 @@ void ShellNativeAppWindow::UpdateWindowTitle() {
 }
 
 void ShellNativeAppWindow::UpdateDraggableRegions(
-    const std::vector<DraggableRegion>& regions) {
+    const std::vector<mojom::DraggableRegionPtr>& regions) {
   NOTIMPLEMENTED();
 }
 

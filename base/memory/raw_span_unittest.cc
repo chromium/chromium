@@ -33,3 +33,17 @@ TEST(RawSpan, ConvertFromSpan) {
   EXPECT_THAT(span2, ::testing::ElementsAre(100, 101, 102));
   EXPECT_THAT(span3, ::testing::ElementsAre(100, 101, 102));
 }
+
+TEST(RawSpan, UnderstandsDanglingAttribute) {
+  // Test passes if it doesn't trip Dangling Ptr Detectors.
+  int* arr = new int[3];
+  base::raw_span<int, DisableDanglingPtrDetection> span(arr, 3u);
+  delete[] span.data();
+}
+
+TEST(RawSpan, ExtractAsDangling) {
+  // Test passes if it doesn't trip Dangling Ptr Detectors.
+  int* arr = new int[3];
+  base::raw_span<int> span(arr, 3u);
+  delete[] base::ExtractAsDanglingSpan(span).data();
+}

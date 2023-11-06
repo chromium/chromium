@@ -98,6 +98,17 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   KeepAliveURLLoaderFactoriesBase& operator=(
       const KeepAliveURLLoaderFactoriesBase&) = delete;
 
+  // Called when the BrowserContext that owns `service_` is shutting down.
+  void Shutdown() {
+    // Notifies every loader synchronously which may not have chance to start
+    // loading before shutting down.
+    for (const auto& [_, weak_ptr_loader] : weak_ptr_loaders_) {
+      if (weak_ptr_loader) {
+        weak_ptr_loader->Shutdown();
+      }
+    }
+  }
+
   // For testing only:
   size_t NumLoadersForTesting() const {
     return loader_receivers_.size() + disconnected_loaders_.size();
@@ -163,6 +174,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
     raw_loader->set_on_delete_callback(
         base::BindOnce(&KeepAliveURLLoaderFactoriesBase::RemoveLoader,
                        base::Unretained(this), receiver_id));
+    weak_ptr_loaders_.emplace(receiver_id, std::move(raw_loader->GetWeakPtr()));
 
     if (service_->loader_test_observer_) {
       raw_loader->SetObserverForTesting(     // IN-TEST
@@ -221,6 +233,7 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
 
     loader_receivers_.Remove(loader_receiver_id);
     disconnected_loaders_.erase(loader_receiver_id);
+    weak_ptr_loaders_.erase(loader_receiver_id);
   }
 
   // Guaranteed to exist, as `service_` owns this.
@@ -238,6 +251,12 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactoriesBase {
   // The key is the mojo::ReceiverId assigned by `loader_receivers_`.
   std::map<mojo::ReceiverId, std::unique_ptr<KeepAliveURLLoader>>
       disconnected_loaders_;
+
+  // Stores WeakPtr to all the instances of KeepAliveURLLoader created by this
+  // group of factories, i.e. loaders from `loader_receivers_` and
+  // `disconnected_loaders_`, to allow direct access to them when necessary.
+  std::map<mojo::ReceiverId, base::WeakPtr<KeepAliveURLLoader>>
+      weak_ptr_loaders_;
 };
 
 // A mojom::URLLoaderFactory to handle fetch keepalive requests.
@@ -304,16 +323,14 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     TRACE_EVENT("loading", "KeepAliveURLLoaderFactories::CreateLoaderAndStart",
                 "request_id", request_id);
-    // TODO(crbug.com/4905157): Update to Fetch-only after renderer switches to
-    // FetchLaterLoaderFactory for FetchLater.
-    if (!blink::features::IsKeepAliveURLLoaderServiceEnabled()) {
+    if (!base::FeatureList::IsEnabled(
+            blink::features::kKeepAliveInBrowserMigration)) {
       mojo::ReportBadMessage(
           "Unexpected call to "
           "KeepAliveURLLoaderFactories::CreateLoaderAndStart()");
       return;
     }
-    if (!base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI) &&
-        resource_request.is_fetch_later_api) {
+    if (resource_request.is_fetch_later_api) {
       mojo::ReportBadMessage(
           "Unexpected `resource_request.is_fetch_later_api` in "
           "KeepAliveURLLoaderFactories::CreateLoaderAndStart(): "
@@ -330,13 +347,8 @@ class KeepAliveURLLoaderService::KeepAliveURLLoaderFactories final
     }
 
     // `raw_loader` must only be started after the above setup.
-    // TODO(crbug.com/1465781): Move the following check to FetchLater-specific
-    // factories after renderer switches to FetchLaterLoaderFactory.
     // For non-FetchLater requests, they should be started immediately.
-    if (!resource_request.is_fetch_later_api) {
-      raw_loader->Start();
-    }
-    // For FetchLater requests, see `OnLoaderDisconnected()`.
+    raw_loader->Start();
   }
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
@@ -489,6 +501,12 @@ void KeepAliveURLLoaderService::BindFetchLaterLoaderFactory(
   fetch_later_loader_factories_->BindFactory(
       std::move(receiver), subresource_proxying_factory_bundle,
       std::move(policy_container_host));
+}
+
+void KeepAliveURLLoaderService::Shutdown() {
+  // Only fetch_later_loader_factories_ needs shutdown notification to handle
+  // its non-started loaders.
+  fetch_later_loader_factories_->Shutdown();
 }
 
 size_t KeepAliveURLLoaderService::NumLoadersForTesting() const {

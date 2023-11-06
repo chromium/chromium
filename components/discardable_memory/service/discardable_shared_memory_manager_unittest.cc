@@ -89,7 +89,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
   ASSERT_TRUE(rv);
 
   memcpy(memory.memory(), data, kDataSize);
-  memory.SetNow(base::Time::FromDoubleT(1));
+  memory.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   memory.Unlock(0, 0);
 
   ASSERT_EQ(base::DiscardableSharedMemory::SUCCESS, memory.Lock(0, 0));
@@ -119,16 +119,16 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
   ASSERT_TRUE(rv);
 
   // Enough memory for both allocations.
-  manager_->SetNow(base::Time::FromDoubleT(1));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   manager_->SetMemoryLimit(memory1.mapped_size() + memory2.mapped_size());
 
-  memory1.SetNow(base::Time::FromDoubleT(2));
+  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromDoubleT(2));
+  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory2.Unlock(0, 0);
 
   // Manager should not have to schedule another call to EnforceMemoryPolicy().
-  manager_->SetNow(base::Time::FromDoubleT(3));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
   manager_->EnforceMemoryPolicy();
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
@@ -141,13 +141,13 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
   lock_rv = memory2.Lock(0, 0);
   EXPECT_EQ(base::DiscardableSharedMemory::SUCCESS, lock_rv);
 
-  memory1.SetNow(base::Time::FromDoubleT(4));
+  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromDoubleT(5));
+  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(5));
   memory2.Unlock(0, 0);
 
   // Just enough memory for one allocation.
-  manager_->SetNow(base::Time::FromDoubleT(6));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(6));
   manager_->SetMemoryLimit(memory2.mapped_size());
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
@@ -174,23 +174,23 @@ TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
   ASSERT_TRUE(rv);
 
   // Not enough memory for one allocation.
-  manager_->SetNow(base::Time::FromDoubleT(1));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   manager_->SetMemoryLimit(memory.mapped_size() - 1);
   // We need to enforce memory policy as our memory usage is currently above
   // the limit.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
 
   manager_->set_enforce_memory_policy_pending(false);
-  manager_->SetNow(base::Time::FromDoubleT(2));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   manager_->EnforceMemoryPolicy();
   // Still need to enforce memory policy as nothing can be purged.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
 
-  memory.SetNow(base::Time::FromDoubleT(3));
+  memory.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
   memory.Unlock(0, 0);
 
   manager_->set_enforce_memory_policy_pending(false);
-  manager_->SetNow(base::Time::FromDoubleT(4));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
   manager_->EnforceMemoryPolicy();
   // Memory policy should have successfully been enforced.
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
@@ -221,7 +221,7 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   ASSERT_TRUE(rv);
 
   // Unlock and delete segment 1.
-  memory1.SetNow(base::Time::FromDoubleT(1));
+  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
   memory1.Unlock(0, 0);
   memory1.Unmap();
   memory1.Close();
@@ -229,11 +229,11 @@ TEST_F(DiscardableSharedMemoryManagerTest,
 
   // Make sure the manager is able to reduce memory after the segment 1 was
   // deleted.
-  manager_->SetNow(base::Time::FromDoubleT(2));
+  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   manager_->SetMemoryLimit(0);
 
   // Unlock segment 2.
-  memory2.SetNow(base::Time::FromDoubleT(3));
+  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
   memory2.Unlock(0, 0);
 }
 

@@ -29,12 +29,15 @@
 #include "components/viz/test/paths.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "components/viz/test/test_in_process_context_provider.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_implementation.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gr_shader_cache.h"
+#include "gpu/command_buffer/service/graphite_utils.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "ipc/common/gpu_client_ids.h"
+#include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -98,19 +101,6 @@ sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
   canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
 
   return SkImages::RasterFromBitmap(bitmap);
-}
-
-struct ReadPixelsContext {
-  std::unique_ptr<const SkImage::AsyncReadResult> async_result;
-  bool finished = false;
-};
-
-void OnReadPixelsDone(
-    void* raw_ctx,
-    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
-  ReadPixelsContext* context = reinterpret_cast<ReadPixelsContext*>(raw_ctx);
-  context->async_result = std::move(async_result);
-  context->finished = true;
 }
 
 constexpr size_t kCacheLimitBytes = 1024 * 1024;
@@ -199,10 +189,13 @@ class OopPixelTest : public testing::Test,
     auto* sii = raster_context_provider_->SharedImageInterface();
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(width, height),
-        options.target_color_params.color_space, kTopLeft_GrSurfaceOrigin,
-        kPremul_SkAlphaType, flags, "TestLabel", gpu::kNullSurfaceHandle);
+    gpu::Mailbox mailbox =
+        sii->CreateSharedImage(viz::SinglePlaneFormat::kRGBA_8888,
+                               gfx::Size(width, height),
+                               options.target_color_params.color_space,
+                               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                               flags, "TestLabel", gpu::kNullSurfaceHandle)
+            ->mailbox();
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -277,11 +270,13 @@ class OopPixelTest : public testing::Test,
       absl::optional<gfx::ColorSpace> color_space = absl::nullopt) {
     uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    gpu::Mailbox mailbox = sii->CreateSharedImage(
-        image_format, options.resource_size,
-        color_space.value_or(options.target_color_params.color_space),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags, "TestLabel",
-        gpu::kNullSurfaceHandle);
+    gpu::Mailbox mailbox =
+        sii->CreateSharedImage(
+               image_format, options.resource_size,
+               color_space.value_or(options.target_color_params.color_space),
+               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, flags,
+               "TestLabel", gpu::kNullSurfaceHandle)
+            ->mailbox();
     EXPECT_TRUE(mailbox.Verify());
     ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
@@ -1607,10 +1602,10 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
 }
 
 sk_sp<SkTextBlob> BuildTextBlob(
-    sk_sp<SkTypeface> typeface = SkTypeface::MakeDefault(),
+    sk_sp<SkTypeface> typeface = skia::DefaultTypeface(),
     bool use_lcd_text = false) {
   if (!typeface) {
-    typeface = SkTypeface::MakeFromName("monospace", SkFontStyle());
+    typeface = skia::MakeTypefaceFromName("monospace", SkFontStyle());
   }
 
   SkFont font;
@@ -1837,30 +1832,11 @@ class OopTextBlobPixelTest
                                                   GrSyncCpu::kNo);
       success = surface->readPixels(expected, 0, 0);
     } else if (context_state->graphite_context()) {
-      ReadPixelsContext context;
-      const SkIRect src_rect =
-          SkIRect::MakeXYWH(0, 0, image_size.width(), image_size.height());
-
-      auto recording = context_state->gpu_main_graphite_recorder()->snap();
-      if (recording) {
-        skgpu::graphite::InsertRecordingInfo info = {};
-        info.fRecording = recording.get();
-        context_state->graphite_context()->insertRecording(info);
-      }
-      context_state->graphite_context()->asyncRescaleAndReadPixels(
-          surface.get(), image_info, src_rect, SkImage::RescaleGamma::kSrc,
-          SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
-
-      context_state->graphite_context()->submit(
-          skgpu::graphite::SyncToCpu::kYes);
-      CHECK(context.finished);
-
-      if (context.async_result) {
-        success = true;
-        SkPixmap pixmap(image_info, context.async_result->data(0),
-                        image_info.minRowBytes());
-        expected.writePixels(pixmap);
-      }
+      success = gpu::GraphiteReadPixelsSync(
+          context_state->graphite_context(),
+          context_state->gpu_main_graphite_recorder(), surface.get(),
+          image_info, expected.pixmap().writable_addr(),
+          expected.pixmap().rowBytes(), 0, 0);
     }
 
     ASSERT_TRUE(success);
@@ -1901,7 +1877,7 @@ class OopTextBlobPixelTest
       filter = nullptr;
     }
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     if (strategy == TextBlobStrategy::kDirect) {
       // Draw text directly to the SkSurface.
@@ -1989,7 +1965,7 @@ class OopTextBlobPixelTest
                   sk_sp<PaintFilter> filter) {
     TextBlobStrategy strategy = GetTextBlobStrategy(GetParam());
 
-    auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
+    auto text_blob = BuildTextBlob(skia::DefaultTypeface(), UseLcdText());
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
@@ -2162,8 +2138,8 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   options.playback_rect = options.full_raster_rect;
   options.target_color_params.color_space = gfx::ColorSpace::CreateSRGB();
 
-  auto sk_typeface_1 = SkTypeface::MakeFromName("monospace", SkFontStyle());
-  auto sk_typeface_2 = SkTypeface::MakeFromName("roboto", SkFontStyle());
+  auto sk_typeface_1 = skia::MakeTypefaceFromName("monospace", SkFontStyle());
+  auto sk_typeface_2 = skia::MakeTypefaceFromName("roboto", SkFontStyle());
 
   auto display_item_list = base::MakeRefCounted<DisplayItemList>();
   display_item_list->StartPaint();

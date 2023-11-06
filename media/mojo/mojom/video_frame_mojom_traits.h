@@ -90,8 +90,6 @@ struct StructTraits<media::mojom::VideoFrameDataView,
   static media::mojom::VideoFrameDataPtr data(
       const scoped_refptr<media::VideoFrame>& input);
 
-  // TODO(https://crbug.com/1096727): Change VideoFrame::Metadata() to return a
-  // const &.
   static const media::VideoFrameMetadata& metadata(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->metadata();

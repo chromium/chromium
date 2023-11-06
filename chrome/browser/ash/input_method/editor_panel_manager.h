@@ -38,8 +38,9 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
         absl::optional<std::string_view> preset_query_id,
         absl::optional<std::string_view> freeform_text) = 0;
     virtual EditorMode GetEditorMode() const = 0;
+    virtual EditorOpportunityMode GetEditorOpportunityMode() const = 0;
 
-    virtual void CacheContextCaretBounds() = 0;
+    virtual void CacheContext() = 0;
   };
 
   explicit EditorPanelManager(Delegate* delegate);
@@ -55,6 +56,7 @@ class EditorPanelManager : public crosapi::mojom::EditorPanelManager {
   void StartEditingFlowWithPreset(const std::string& text_query_id) override;
   void StartEditingFlowWithFreeform(const std::string& text) override;
   void OnEditorMenuVisibilityChanged(bool visible) override;
+  void LogEditorMode(crosapi::mojom::EditorPanelMode mode) override;
 
   void BindReceiver(mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
                         pending_receiver);

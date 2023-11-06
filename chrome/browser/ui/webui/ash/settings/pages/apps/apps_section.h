@@ -10,8 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
+#include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_section.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;

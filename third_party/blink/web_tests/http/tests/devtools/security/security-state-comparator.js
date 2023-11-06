@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {SecurityTestRunner} from 'security_test_runner';
 
+import * as Security from 'devtools/panels/security/security.js';
+
 (async function() {
   TestRunner.addResult(`Tests that SecurityStateComparator correctly compares the severity of security states.\n`);
   await TestRunner.showPanel('security');
@@ -19,7 +21,7 @@ import {SecurityTestRunner} from 'security_test_runner';
 
   for (var i = 0; i < ordering.length; i++) {
     TestRunner.assertEquals(
-        Security.SecurityModel.SecurityStateComparator(ordering[i], ordering[i]), 0,
+        Security.SecurityModel.SecurityModel.SecurityStateComparator(ordering[i], ordering[i]), 0,
         'Security state comparison failed when checking that "' + ordering[i] + '" == "' + ordering[i] + '"');
   }
 
@@ -29,17 +31,17 @@ import {SecurityTestRunner} from 'security_test_runner';
     for (j = 0; j < i; j++) {
       TestRunner.addResult(
           'Sign of SecurityStateComparator("' + ordering[i] + '","' + ordering[j] + '"): ' +
-          Math.sign(Security.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: 1)');
+          Math.sign(Security.SecurityModel.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: 1)');
     }
 
     TestRunner.addResult(
         'Sign of SecurityStateComparator("' + ordering[i] + '","' + ordering[j] + '"): ' +
-        Math.sign(Security.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: 0)');
+        Math.sign(Security.SecurityModel.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: 0)');
 
     for (j = i + 1; j < ordering.length; j++) {
       TestRunner.addResult(
           'Sign of SecurityStateComparator("' + ordering[i] + '","' + ordering[j] + '"): ' +
-          Math.sign(Security.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: -1)');
+          Math.sign(Security.SecurityModel.SecurityModel.SecurityStateComparator(ordering[i], ordering[j])) + ' (expected: -1)');
     }
   }
 

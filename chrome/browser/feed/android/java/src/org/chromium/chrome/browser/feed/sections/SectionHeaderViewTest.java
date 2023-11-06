@@ -45,18 +45,13 @@ public final class SectionHeaderViewTest {
     private SectionHeaderView mSectionHeaderView;
     private Activity mActivity;
 
-    @Rule
-    public JniMocker mJniMocker = new JniMocker();
+    @Rule public JniMocker mJniMocker = new JniMocker();
 
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private Tracker mTracker;
-    @Mock
-    private UserEducationHelper mHelper;
-    @Mock
-    Runnable mScroller;
+    @Mock private Tracker mTracker;
+    @Mock private UserEducationHelper mHelper;
+    @Mock Runnable mScroller;
 
     @Before
     public void setUp() {
@@ -66,8 +61,10 @@ public final class SectionHeaderViewTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         // Build the class under test, and set up the fake UI.
-        mSectionHeaderView = (SectionHeaderView) LayoutInflater.from(mActivity).inflate(
-                R.layout.new_tab_page_multi_feed_header, null, false);
+        mSectionHeaderView =
+                (SectionHeaderView)
+                        LayoutInflater.from(mActivity)
+                                .inflate(R.layout.new_tab_page_multi_feed_header, null, false);
         ViewGroup contentView = new LinearLayout(mActivity);
         mActivity.setContentView(contentView);
         contentView.addView(mSectionHeaderView);
@@ -104,8 +101,10 @@ public final class SectionHeaderViewTest {
         MarginLayoutParams contentMarginLayoutParams =
                 (MarginLayoutParams) mainContentView.getLayoutParams();
         Assert.assertEquals(
-                mSectionHeaderView.getResources().getDimensionPixelSize(
-                        org.chromium.chrome.browser.feed.R.dimen.feed_header_top_margin),
+                mSectionHeaderView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.feed.R.dimen.feed_header_top_margin),
                 contentMarginLayoutParams.topMargin);
     }
 }

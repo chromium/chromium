@@ -17,7 +17,9 @@
 #include "ash/system/phonehub/phone_hub_tray.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/toast/toast_manager_impl.h"
+#include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
+#include "ash/system/tray/tray_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/memory/raw_ptr.h"
@@ -255,61 +257,64 @@ TEST_F(EcheTrayTest, EcheTrayIconResize) {
   EXPECT_EQ(image_width, new_image_width + 2);
 }
 
-TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged) {
+TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
       eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
   eche_tray()->ShowBubble();
 
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  auto* bubble_view = eche_tray()->get_bubble_wrapper_for_test()->bubble_view();
+
+  EXPECT_TRUE(bubble_view->GetVisible());
 
   // When any other bubble is shown we need to hide Eche.
-  eche_tray()->OnAnyBubbleVisibilityChanged(
-      reinterpret_cast<views::Widget*>(12345L), true);
+  auto test_bubble_widget = std::make_unique<TrayBubbleView>(
+      CreateInitParamsForTrayBubble(phone_hub_tray()));
+  eche_tray()->OnStatusAreaAnchoredBubbleVisibilityChanged(
+      test_bubble_widget.get(), true);
 
-  EXPECT_FALSE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  EXPECT_FALSE(bubble_view->GetVisible());
   EXPECT_FALSE(is_web_content_unloaded_);
 }
 
-// OnAnyBubbleVisibilityChanged() is called on the current bubble and hence
-// should be ignored.
-TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_SameWidget) {
+// OnStatusAreaAnchoredBubbleVisibilityChanged() is called on the current bubble
+// and hence should be ignored.
+TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged_SameWidget) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
       eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
   eche_tray()->ShowBubble();
 
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  auto* bubble_view = eche_tray()->get_bubble_wrapper_for_test()->bubble_view();
 
-  eche_tray()->OnAnyBubbleVisibilityChanged(eche_tray()->GetBubbleWidget(),
-                                            true);
+  EXPECT_TRUE(bubble_view->GetVisible());
 
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  eche_tray()->OnStatusAreaAnchoredBubbleVisibilityChanged(bubble_view, true);
+
+  EXPECT_TRUE(bubble_view->GetVisible());
 }
 
-// OnAnyBubbleVisibilityChanged() is called on some other bubble but the
-// visible parameter is false, hence we should not do anything.
-TEST_F(EcheTrayTest, OnAnyBubbleVisibilityChanged_NonVisible) {
+// OnStatusAreaAnchoredBubbleVisibilityChanged() is called on some other bubble
+// but the visible parameter is false, hence we should not do anything.
+TEST_F(EcheTrayTest, OnStatusAreaAnchoredBubbleVisibilityChanged_NonVisible) {
   eche_tray()->LoadBubble(
       GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
       eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
       eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
   eche_tray()->ShowBubble();
 
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  auto* bubble_view = eche_tray()->get_bubble_wrapper_for_test()->bubble_view();
 
-  eche_tray()->OnAnyBubbleVisibilityChanged(
-      reinterpret_cast<views::Widget*>(12345L), false);
+  EXPECT_TRUE(bubble_view->GetVisible());
 
-  EXPECT_TRUE(
-      eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
+  auto test_bubble_widget = std::make_unique<TrayBubbleView>(
+      CreateInitParamsForTrayBubble(phone_hub_tray()));
+  eche_tray()->OnStatusAreaAnchoredBubbleVisibilityChanged(
+      test_bubble_widget.get(), false);
+
+  EXPECT_TRUE(bubble_view->GetVisible());
 }
 
 TEST_F(EcheTrayTest, EcheTrayCreatesBubbleButHideFirst) {
@@ -484,14 +489,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_C) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_C, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
@@ -504,14 +509,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_V) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_V, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 
@@ -524,14 +529,14 @@ TEST_F(EcheTrayTest, AcceleratorKeyHandled_Ctrl_X) {
 
   EXPECT_TRUE(
       eche_tray()->get_bubble_wrapper_for_test()->bubble_view()->GetVisible());
-  EXPECT_FALSE(toast_manager()->IsRunning(
+  EXPECT_FALSE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 
   // Now press the ctrl+w that closes the bubble.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_X, ui::EF_CONTROL_DOWN);
 
   // Check to see if a toast is shown
-  EXPECT_TRUE(toast_manager()->IsRunning(
+  EXPECT_TRUE(toast_manager()->IsToastShown(
       "eche_tray_toast_ids.copy_paste_not_implemented"));
 }
 

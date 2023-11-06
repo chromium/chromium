@@ -1,6 +1,8 @@
 #ifndef XML_DICT_H_PRIVATE__
 #define XML_DICT_H_PRIVATE__
 
+#include <libxml/dict.h>
+
 /*
  * Values are ANDed with 0xFFFFFFFF to support platforms where
  * unsigned is larger than 32 bits. With 32-bit unsigned values,
@@ -43,10 +45,25 @@
         h2 &= 0xFFFFFFFF; \
     } while (0)
 
+typedef struct {
+    unsigned hashValue;
+    const xmlChar *name;
+} xmlHashedString;
+
 XML_HIDDEN void
 xmlInitDictInternal(void);
 XML_HIDDEN void
 xmlCleanupDictInternal(void);
+
+unsigned
+xmlDictComputeHash(const xmlDict *dict, const xmlChar *string);
+xmlHashedString
+xmlDictLookupHashed(xmlDictPtr dict, const xmlChar *name, int len);
+
+XML_HIDDEN void
+xmlInitRandom(void);
+XML_HIDDEN void
+xmlCleanupRandom(void);
 XML_HIDDEN unsigned
 xmlRandom(void);
 

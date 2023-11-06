@@ -8,6 +8,20 @@ import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 
 assert(is_chromeos_ash)
 
+source_set("config") {
+  sources = [
+    "config.cc",
+    "config.h",
+  ]
+  deps = [
+    ":constants",
+    ":scalable_iph_delegate",
+    "//ash/constants",
+    "//base",
+    "//components/feature_engagement/public",
+  ]
+}
+
 source_set("constants") {
   sources = [
     "scalable_iph_constants.cc",
@@ -22,6 +36,7 @@ source_set("scalable_iph") {
   ]
 
   deps = [
+    ":config",
     ":constants",
     ":iph_session",
     ":logger",
@@ -55,8 +70,9 @@ source_set("scalable_iph_delegate") {
   deps = [
     ":constants",
     ":iph_session",
-    "//components/keyed_service/core",
   ]
+
+  public_deps = [ "//base" ]
 }
 
 source_set("logger") {

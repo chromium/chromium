@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome_device_policy.pb.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "content/public/test/browser_test_utils.h"
 
 namespace ash {

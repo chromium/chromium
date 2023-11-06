@@ -51,9 +51,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     virtual void OnAppUpdate(const AppUpdate& update) {}
 
     // Called when the AppRegistryCache first receives a set of apps for
-    // `app_type`. This is usually when a publisher first publishes its apps but
-    // may also happen if the AppRegistryCache gets instantiated after this
-    // event (e.g. after a Lacros restart).
+    // `app_type`. This is called after reading from the AppStorage file.
     // Note that this will not be called for app types initialized prior to this
     // observer being registered. Observers should call
     // AppRegistryCache::InitializedAppTypes() at the time of starting
@@ -82,28 +80,6 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Prefer using a base::ScopedObservation for idiomatic observer behavior.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  // Notifies all observers of state-and-delta AppUpdate's (the state comes
-  // from the internal cache, the delta comes from the argument) and then
-  // merges the cached states with the deltas.
-  //
-  // Notification and merging might be delayed until after OnApps returns. For
-  // example, suppose that the initial set of states is (a0, b0, c0) for three
-  // app_id's ("a", "b", "c"). Now suppose OnApps is called with two updates
-  // (b1, c1), and when notified of b1, an observer calls OnApps again with
-  // (c2, d2). The c1 delta should be processed before the c2 delta, as it was
-  // sent first: c2 should be merged (with "newest wins" semantics) onto c1 and
-  // not vice versa. This means that processing c2 (scheduled by the second
-  // OnApps call) should wait until the first OnApps call has finished
-  // processing b1 (and then c1), which means that processing c2 is delayed
-  // until after the second OnApps call returns.
-  //
-  // The callee will consume the deltas. An apps::AppPtr has the ownership
-  // semantics of a unique_ptr, and will be deleted when out of scope. The
-  // caller presumably calls OnApps(std::move(deltas)).
-  void OnApps(std::vector<AppPtr> deltas,
-              apps::AppType app_type,
-              bool should_notify_initialized);
 
   AppType GetAppType(const std::string& app_id);
 
@@ -187,11 +163,47 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Clears all apps from the cache.
   void ReinitializeForTesting();
 
+  // Please use AppServiceProxy::OnApps if possible. This method is used to
+  // tests without Profile, e.g. unittests.
+  void OnAppsForTesting(std::vector<AppPtr> deltas,
+                        apps::AppType app_type,
+                        bool should_notify_initialized);
+
  private:
   friend class AppRegistryCacheTest;
+  friend class AppRegistryCacheWrapperTest;
   friend class PublisherTest;
   friend class AppStorage;
   friend class FakeAppStorage;
+  friend class AppStorageTest;
+  friend class AppServiceProxyAsh;
+  friend class AppServiceProxyBase;
+  friend class AppServiceProxyLacros;
+
+  // Notifies all observers of state-and-delta AppUpdate's (the state comes
+  // from the internal cache, the delta comes from the argument) and then
+  // merges the cached states with the deltas.
+  //
+  // Notification and merging might be delayed until after OnApps returns. For
+  // example, suppose that the initial set of states is (a0, b0, c0) for three
+  // app_id's ("a", "b", "c"). Now suppose OnApps is called with two updates
+  // (b1, c1), and when notified of b1, an observer calls OnApps again with
+  // (c2, d2). The c1 delta should be processed before the c2 delta, as it was
+  // sent first: c2 should be merged (with "newest wins" semantics) onto c1 and
+  // not vice versa. This means that processing c2 (scheduled by the second
+  // OnApps call) should wait until the first OnApps call has finished
+  // processing b1 (and then c1), which means that processing c2 is delayed
+  // until after the second OnApps call returns.
+  //
+  // The callee will consume the deltas. An apps::AppPtr has the ownership
+  // semantics of a unique_ptr, and will be deleted when out of scope. The
+  // caller presumably calls OnApps(std::move(deltas)).
+  //
+  // Please use AppServiceProxy::OnApps if possible. For tests without Profile,
+  // e.g. unittests, please use OnAppsForTesting.
+  void OnApps(std::vector<AppPtr> deltas,
+              apps::AppType app_type,
+              bool should_notify_initialized);
 
   void DoOnApps(std::vector<AppPtr> deltas);
 

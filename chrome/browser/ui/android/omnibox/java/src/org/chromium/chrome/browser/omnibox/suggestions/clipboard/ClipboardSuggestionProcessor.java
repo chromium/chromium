@@ -62,10 +62,11 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         super.populateModel(suggestion, model, position);
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, suggestion.isSearchSuggestion());
-        model.set(SuggestionViewProperties.TEXT_LINE_1_TEXT,
+        model.set(
+                SuggestionViewProperties.TEXT_LINE_1_TEXT,
                 new SuggestionSpannable(suggestion.getDescription()));
 
-        setupContentField(suggestion, model, /* showContent = */ false);
+        setupContentField(suggestion, model, /* showContent= */ false);
     }
 
     @Override
@@ -75,12 +76,15 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /**
      * Set the content related properties for the suggestion.
+     *
      * @param suggestion The current suggestion.
      * @param model Model representing current suggestion.
      * @param showContent Whether the contents should be shown.
      */
-    private void setupContentField(@NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model, boolean showContent) {
+    private void setupContentField(
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            boolean showContent) {
         String displayText = showContent ? suggestion.getDisplayText() : "";
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(displayText));
 
@@ -90,16 +94,22 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /**
      * Update the icon for the current suggestion.
-     * If CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is enabled, the content of the clipboard suggestion
-     * will not be shown by default until users clicked reveal button. If
-     * CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is not enabled, the content of the clipboard suggestion
-     * will be shown if it is available.
+     *
+     * <ul>
+     *   <li>If CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is enabled, the content of the clipboard
+     *       suggestion will not be shown by default until users clicked reveal button.
+     *   <li>If CLIPBOARD_SUGGESTION_CONTENT_HIDDEN is not enabled, the content of the clipboard
+     *       suggestion will be shown if it is available.
+     * </ul>
+     *
      * @param suggestion The current suggestion.
      * @param model Model representing current suggestion.
      * @param showContent Whether the contents should be shown.
      */
-    private void updateSuggestionIcon(@NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model, boolean showContent) {
+    private void updateSuggestionIcon(
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            boolean showContent) {
         if (!showContent) {
             setOmniboxDrawableState(model, getFallbackIcon(suggestion));
             return;
@@ -114,15 +124,20 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
                 if (bitmap != null) {
                     // TODO(crbug.com/1090919): This is short term solution, resize need to be
                     // handled somewhere else.
-                    if (bitmap.getWidth() > 0 && bitmap.getHeight() > 0
+                    if (bitmap.getWidth() > 0
+                            && bitmap.getHeight() > 0
                             && (bitmap.getWidth() > getDecorationImageSize()
                                     || bitmap.getHeight() > getDecorationImageSize())) {
                         float max = Math.max(bitmap.getWidth(), bitmap.getHeight());
                         float scale = ((float) getDecorationImageSize()) / max;
                         float width = bitmap.getWidth();
                         float height = bitmap.getHeight();
-                        bitmap = Bitmap.createScaledBitmap(bitmap, (int) Math.round(scale * width),
-                                (int) Math.round(scale * height), true);
+                        bitmap =
+                                Bitmap.createScaledBitmap(
+                                        bitmap,
+                                        (int) Math.round(scale * width),
+                                        (int) Math.round(scale * height),
+                                        true);
                     }
                     setOmniboxDrawableState(model, OmniboxDrawableState.forImage(mContext, bitmap));
                 }
@@ -134,26 +149,41 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /**
      * Update the action button for the current suggestion.
+     *
      * @param suggestion The current suggestion.
      * @param model Model representing current suggestion.
      * @param showContent Whether the contents should be shown.
      */
-    private void updateActionButton(@NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model, boolean showContent) {
+    private void updateActionButton(
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            boolean showContent) {
         int icon =
                 showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
-        String iconString = OmniboxResourceProvider.getString(mContext,
-                showContent ? R.string.accessibility_omnibox_conceal_clipboard_contents
-                            : R.string.accessibility_omnibox_reveal_clipboard_contents);
-        String announcementString = OmniboxResourceProvider.getString(mContext,
-                showContent ? R.string.accessibility_omnibox_conceal_button_announcement
-                            : R.string.accessibility_omnibox_reveal_button_announcement);
-        Runnable action = showContent ? ()
-                -> concealButtonClickHandler(suggestion, model)
-                : () -> revealButtonClickHandler(suggestion, model);
-        setActionButtons(model,
-                Arrays.asList(new Action(OmniboxDrawableState.forSmallIcon(mContext, icon, true),
-                        iconString, announcementString, action)));
+        String iconString =
+                OmniboxResourceProvider.getString(
+                        mContext,
+                        showContent
+                                ? R.string.accessibility_omnibox_conceal_clipboard_contents
+                                : R.string.accessibility_omnibox_reveal_clipboard_contents);
+        String announcementString =
+                OmniboxResourceProvider.getString(
+                        mContext,
+                        showContent
+                                ? R.string.accessibility_omnibox_conceal_button_announcement
+                                : R.string.accessibility_omnibox_reveal_button_announcement);
+        Runnable action =
+                showContent
+                        ? () -> concealButtonClickHandler(suggestion, model)
+                        : () -> revealButtonClickHandler(suggestion, model);
+        setActionButtons(
+                model,
+                Arrays.asList(
+                        new Action(
+                                OmniboxDrawableState.forSmallIcon(mContext, icon, true),
+                                iconString,
+                                announcementString,
+                                action)));
     }
 
     @Override
@@ -165,11 +195,14 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         // Retrieve suggestion content before propagating the Click event.
         suggestion.updateWithClipboardContent(
-                () -> { super.onSuggestionClicked(suggestion, position); });
+                () -> {
+                    super.onSuggestionClicked(suggestion, position);
+                });
     }
 
     /**
      * Handle the click event for the reveal button.
+     *
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
@@ -179,14 +212,15 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
         if (suggestion.getUrl().isEmpty()) {
             suggestion.updateWithClipboardContent(
-                    () -> setupContentField(suggestion, model, /* showContent = */ true));
+                    () -> setupContentField(suggestion, model, /* showContent= */ true));
             return;
         }
-        setupContentField(suggestion, model, /* showContent = */ true);
+        setupContentField(suggestion, model, /* showContent= */ true);
     }
 
     /**
      * Handle the click event for the conceal button.
+     *
      * @param suggestion Selected suggestion.
      * @param model Model representing current suggestion.
      */
@@ -194,6 +228,6 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     public void concealButtonClickHandler(
             @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
-        setupContentField(suggestion, model, /* showContent = */ false);
+        setupContentField(suggestion, model, /* showContent= */ false);
     }
 }

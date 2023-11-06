@@ -47,10 +47,10 @@ class CSSFilterListInterpolationType : public CSSInterpolationType {
   // defined in https://drafts.fxtf.org/filter-effects-1/#addition and
   // https://drafts.fxtf.org/filter-effects-1/#accumulation
   InterpolationValue PerformAdditiveComposition(
-      std::unique_ptr<InterpolableList> interpolable_list,
+      InterpolableList* interpolable_list,
       const InterpolableList& underlying_list) const;
   InterpolationValue PerformAccumulativeComposition(
-      std::unique_ptr<InterpolableList> interpolable_list,
+      InterpolableList* interpolable_list,
       const InterpolableList& underlying_list) const;
 };
 

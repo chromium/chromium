@@ -42,30 +42,34 @@ import org.chromium.url.GURL;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
-/**
- * Facilitates access to and updates of the cached SearchActivityPreferences.
- */
+/** Facilitates access to and updates of the cached SearchActivityPreferences. */
 public class SearchActivityPreferencesManager implements LoadListener, TemplateUrlServiceObserver {
     /** Data-only class representiing current SearchActivity preferences. */
     public static final class SearchActivityPreferences {
         /** Name of the Default Search Engine. */
         public final @Nullable String searchEngineName;
+
         /**
-         * URL of the Default Search Engine.
-         * TODO(https://crbug.com/1370563): migrate this to GURL.
+         * URL of the Default Search Engine. TODO(https://crbug.com/1370563): migrate this to GURL.
          */
         public final @Nullable String searchEngineUrl;
+
         /** Whether Voice Search functionality is available. */
         public final boolean voiceSearchAvailable;
+
         /** Whether Google Lens functionality is available. */
         public final boolean googleLensAvailable;
+
         /** Whether Incognito browsing functionality is available. */
         public final boolean incognitoAvailable;
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        public SearchActivityPreferences(@Nullable String searchEngineName,
-                @Nullable String searchEngineUrl, boolean voiceSearchAvailable,
-                boolean googleLensAvailable, boolean incognitoAvailable) {
+        public SearchActivityPreferences(
+                @Nullable String searchEngineName,
+                @Nullable String searchEngineUrl,
+                boolean voiceSearchAvailable,
+                boolean googleLensAvailable,
+                boolean incognitoAvailable) {
             this.searchEngineName = searchEngineName;
             this.searchEngineUrl = searchEngineUrl;
             this.voiceSearchAvailable = voiceSearchAvailable;
@@ -88,15 +92,23 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
 
         @Override
         public int hashCode() {
-            return Arrays.hashCode(new Object[] {searchEngineName, searchEngineUrl,
-                    voiceSearchAvailable, googleLensAvailable, incognitoAvailable});
+            return Arrays.hashCode(
+                    new Object[] {
+                        searchEngineName,
+                        searchEngineUrl,
+                        voiceSearchAvailable,
+                        googleLensAvailable,
+                        incognitoAvailable
+                    });
         }
     }
 
     /** The default/fallback value describing Voice Search availability. */
     private static final boolean DEFAULT_VOICE_SEARCH_AVAILABILITY = true;
+
     /** The default/fallback value describing Gooogle Lens availability. */
     private static final boolean DEFAULT_GOOGLE_LENS_AVAILABILITY = false;
+
     /** The default/fallback value describing Incognito browsing availability. */
     private static final boolean DEFAULT_INCOGNITO_AVAILABILITY = true;
 
@@ -106,9 +118,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     private @NonNull SearchActivityPreferences mCurrentlyLoadedPreferences;
 
     /**
-     * Initialize instance of SearchActivityPreferencesManager.
-     * Note that the class operates as a singleton, because it may - and will be invoked from
-     * multiple independent contexts.
+     * Initialize instance of SearchActivityPreferencesManager. Note that the class operates as a
+     * singleton, because it may - and will be invoked from multiple independent contexts.
      */
     private SearchActivityPreferencesManager() {}
 
@@ -124,18 +135,16 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         return sInstance;
     }
 
-    /**
-     * Returns current knowh SharedActivityPreferences values.
-     */
+    /** Returns current knowh SharedActivityPreferences values. */
     public static @NonNull SearchActivityPreferences getCurrent() {
         return get().mCurrentlyLoadedPreferences;
     }
 
     /**
-     * Fetch previously cached Search Widget details, if any.
-     * When no previous values were found, the code will initialize values to safe defaults.
+     * Fetch previously cached Search Widget details, if any. When no previous values were found,
+     * the code will initialize values to safe defaults.
      *
-     * If stored values are different than current values, the update will be propagated to
+     * <p>If stored values are different than current values, the update will be propagated to
      * registered listeners.
      */
     private static void initializeFromCache() {
@@ -144,19 +153,21 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
                 new SearchActivityPreferences(
                         manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, null),
                         manager.readString(SEARCH_WIDGET_SEARCH_ENGINE_URL, null),
-                        manager.readBoolean(SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
+                        manager.readBoolean(
+                                SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
                                 DEFAULT_VOICE_SEARCH_AVAILABILITY),
-                        manager.readBoolean(SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
+                        manager.readBoolean(
+                                SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE,
                                 DEFAULT_GOOGLE_LENS_AVAILABILITY),
-                        manager.readBoolean(SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
+                        manager.readBoolean(
+                                SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE,
                                 DEFAULT_INCOGNITO_AVAILABILITY)),
                 false);
     }
 
     /**
-     * Clear all cached preferences.
-     * If reset values are different than current values, the update will be propagated to
-     * registered listeners.
+     * Clear all cached preferences. If reset values are different than current values, the update
+     * will be propagated to registered listeners.
      */
     public static void resetCachedValues() {
         SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
@@ -169,9 +180,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     }
 
     /**
-     * Specify current SearchActivityPreferences values.
-     * If the supplied values are different than current values, the update will be propagated to
-     * registered listeners.
+     * Specify current SearchActivityPreferences values. If the supplied values are different than
+     * current values, the update will be propagated to registered listeners.
      *
      * @param prefs Current preferences.
      * @param updateStorage Whether to update on-disk cache.
@@ -184,30 +194,34 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         self.mCurrentlyLoadedPreferences = prefs;
 
         // Notify all listeners about update.
-        PostTask.postTask(TaskTraits.UI_DEFAULT, () -> {
-            // Note: it takes about 6.5ms to update a single property on debug-enabled builds.
-            if (updateStorage) {
-                SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
-                manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, prefs.searchEngineName);
-                manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_URL, prefs.searchEngineUrl);
-                manager.writeBoolean(
-                        SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE, prefs.voiceSearchAvailable);
-                manager.writeBoolean(
-                        SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, prefs.googleLensAvailable);
-                manager.writeBoolean(
-                        SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, prefs.incognitoAvailable);
-            }
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    // Note: it takes about 6.5ms to update a single property on debug-enabled
+                    // builds.
+                    if (updateStorage) {
+                        SharedPreferencesManager manager = ChromeSharedPreferences.getInstance();
+                        manager.writeString(
+                                SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, prefs.searchEngineName);
+                        manager.writeString(SEARCH_WIDGET_SEARCH_ENGINE_URL, prefs.searchEngineUrl);
+                        manager.writeBoolean(
+                                SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE,
+                                prefs.voiceSearchAvailable);
+                        manager.writeBoolean(
+                                SEARCH_WIDGET_IS_GOOGLE_LENS_AVAILABLE, prefs.googleLensAvailable);
+                        manager.writeBoolean(
+                                SEARCH_WIDGET_IS_INCOGNITO_AVAILABLE, prefs.incognitoAvailable);
+                    }
 
-            for (Consumer<SearchActivityPreferences> observer : self.mObservers) {
-                observer.accept(prefs);
-            }
-        });
+                    for (Consumer<SearchActivityPreferences> observer : self.mObservers) {
+                        observer.accept(prefs);
+                    }
+                });
     }
 
     /**
-     * Add a new preference change observer.
-     * This method guarantees that the newly added observer will instantly receive information about
-     * current preferences.
+     * Add a new preference change observer. This method guarantees that the newly added observer
+     * will instantly receive information about current preferences.
      *
      * @param observer The observer to be added.
      */
@@ -222,8 +236,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     }
 
     /**
-     * Creates the observer that will monitor for search engine changes.
-     * The native library and the browser process must have been fully loaded before calling this.
+     * Creates the observer that will monitor for search engine changes. The native library and the
+     * browser process must have been fully loaded before calling this.
      */
     public static void onNativeLibraryReady() {
         assert LibraryLoader.getInstance().isInitialized();
@@ -238,8 +252,8 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
     }
 
     /**
-     * Update feature availability.
-     * Retrieves availability information from multiple sources and updates local cache.
+     * Update feature availability. Retrieves availability information from multiple sources and
+     * updates local cache.
      *
      * @param context Current context.
      * @param permissionDelegate The delegate serving permission information.
@@ -248,21 +262,26 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
             Context context, AndroidPermissionDelegate permissionDelegate) {
         SearchActivityPreferences prefs = getCurrent();
         setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(prefs.searchEngineName, prefs.searchEngineUrl,
+                new SearchActivityPreferences(
+                        prefs.searchEngineName,
+                        prefs.searchEngineUrl,
                         VoiceRecognitionUtil.isVoiceSearchEnabled(permissionDelegate),
-                        LensController.getInstance().isLensEnabled(
-                                new LensQueryParams
-                                        .Builder(LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET, false,
-                                                DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                                        context))
-                                        .build()),
+                        LensController.getInstance()
+                                .isLensEnabled(
+                                        new LensQueryParams.Builder(
+                                                        LensEntryPoint.QUICK_ACTION_SEARCH_WIDGET,
+                                                        false,
+                                                        DeviceFormFactor
+                                                                .isNonMultiDisplayContextOnTablet(
+                                                                        context))
+                                                .build()),
                         IncognitoUtils.isIncognitoModeEnabled()),
                 true);
     }
 
     /**
-     * Retrieve the current search engine name and URL and update cached preferences.
-     * Requires that the Native libraries are initialized.
+     * Retrieve the current search engine name and URL and update cached preferences. Requires that
+     * the Native libraries are initialized.
      */
     private void updateDefaultSearchEngineInfo() {
         assert LibraryLoader.getInstance().isInitialized();
@@ -279,8 +298,10 @@ public class SearchActivityPreferencesManager implements LoadListener, TemplateU
         GURL url = new GURL(service.getSearchEngineUrlFromTemplateUrl(dseTemplateUrl.getKeyword()));
 
         setCurrentlyLoadedPreferences(
-                new SearchActivityPreferences(dseTemplateUrl.getShortName(),
-                        url.getOrigin().getSpec(), mCurrentlyLoadedPreferences.voiceSearchAvailable,
+                new SearchActivityPreferences(
+                        dseTemplateUrl.getShortName(),
+                        url.getOrigin().getSpec(),
+                        mCurrentlyLoadedPreferences.voiceSearchAvailable,
                         mCurrentlyLoadedPreferences.googleLensAvailable,
                         mCurrentlyLoadedPreferences.incognitoAvailable),
                 true);

@@ -33,9 +33,10 @@ def _get_gn_args_resolver():
             args_file: (string) The string path of an imported GN file.
             gn_args: (dict) A dict of GN arg key-value pairs.
         """
-        if args_file and dst["args_file"]:
-            fail("Each GN config can only contain a single args_file")
-        dst["args_file"] = args_file
+        if args_file:
+            if dst["args_file"]:
+                fail("Each GN config can only contain a single args_file")
+            dst["args_file"] = args_file
 
         dst["gn_args"].update(gn_args)
 

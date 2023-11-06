@@ -94,7 +94,6 @@ def _ts_library(ctx, cmd):
     tsconfig["files"].extend(definitions)
     tsconfig["references"] = [{"path": dep} for dep in deps]
     tsconfig_path = path.join(gen_dir, "tsconfig.json")
-    ctx.actions.write(tsconfig_path, bytes(json.encode(tsconfig)))
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
@@ -123,7 +122,6 @@ def _ts_definitions(ctx, cmd):
     gen_dir = ctx.fs.canonpath(gen_dir)
     tsconfig["files"] = [path.join(root_dir, f) for f in js_files]
     tsconfig_path = path.join(gen_dir, "tsconfig.definitions.json")
-    ctx.actions.write(tsconfig_path, bytes(json.encode(tsconfig)))
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
     print("_ts_definitions: tsconfig=%s, deps=%s" % (tsconfig, deps))
     ctx.actions.fix(inputs = cmd.inputs + deps)

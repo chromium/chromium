@@ -8,7 +8,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,7 +18,6 @@
 #include "media/audio/audio_opus_encoder.h"
 #include "media/audio/simple_sources.h"
 #include "media/base/audio_encoder.h"
-#include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/converting_audio_fifo.h"
 #include "media/base/status.h"
@@ -41,6 +41,11 @@
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 #include "media/filters/mac/audio_toolbox_audio_encoder.h"
+#define HAS_AAC_ENCODER 1
+#endif
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/gpu/android/ndk_audio_encoder.h"
 #define HAS_AAC_ENCODER 1
 #endif
 
@@ -156,7 +161,9 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
     return options_.sample_rate == kAudioSampleRateWithDelay;
   }
 
-  void SetUp() override {
+  void SetUp() override { CreateEncoder(); }
+
+  void CreateEncoder() {
     if (options_.codec == AudioCodec::kOpus) {
       encoder_ = std::make_unique<AudioOpusEncoder>();
       buffer_duration_ = kOpusBufferDuration;
@@ -173,6 +180,17 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
           frames_per_buffer_, options_.sample_rate);
 #elif HAS_AAC_ENCODER && BUILDFLAG(IS_MAC)
       encoder_ = std::make_unique<AudioToolboxAudioEncoder>();
+      frames_per_buffer_ = kAacFramesPerBuffer;
+      buffer_duration_ = AudioTimestampHelper::FramesToTime(
+          frames_per_buffer_, options_.sample_rate);
+#elif HAS_AAC_ENCODER && BUILDFLAG(IS_ANDROID)
+      if (!NdkAudioEncoder::IsSupported()) {
+        GTEST_SKIP() << "NDK AAC encoder not supported. Skipping test.";
+        // GTEST_SKIP() returns.
+      }
+
+      encoder_ = std::make_unique<NdkAudioEncoder>(
+          base::SequencedTaskRunner::GetCurrentDefault());
       frames_per_buffer_ = kAacFramesPerBuffer;
       buffer_duration_ = AudioTimestampHelper::FramesToTime(
           frames_per_buffer_, options_.sample_rate);
@@ -207,7 +225,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
     encoder_->Initialize(options_, std::move(output_cb), std::move(done_cb));
 
-    RunLoop();
+    task_environment_.RunUntilIdle();
     EXPECT_TRUE(called_done);
 
     if (options_.codec == AudioCodec::kOpus) {
@@ -264,6 +282,8 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 
   void FlushAndVerifyStatus(
       EncoderStatus::Codes status_code = EncoderStatus::Codes::kOk) {
+    base::RunLoop run_loop;
+
     bool flush_done = false;
     auto flush_done_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
       if (error.code() != status_code) {
@@ -272,8 +292,10 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       }
       flush_done = true;
     });
-    encoder()->Flush(std::move(flush_done_cb));
-    RunLoop();
+    encoder()->Flush(
+        std::move(flush_done_cb).Then(run_loop.QuitWhenIdleClosure()));
+
+    run_loop.Run();
     EXPECT_TRUE(flush_done);
   }
 
@@ -317,10 +339,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
                 observed_output_duration_.InMicroseconds(), acceptable_diff);
   }
 
-  void RunLoop() { run_loop_.RunUntilIdle(); }
-
   base::test::TaskEnvironment task_environment_;
-  base::RunLoop run_loop_;
 
 #if BUILDFLAG(IS_WIN)
   ::base::win::ScopedCOMInitializer com_initializer_;
@@ -364,7 +383,7 @@ TEST_P(AudioEncodersTest, InitializeTwice) {
 
   encoder_->Initialize(options_, base::DoNothing(), std::move(done_cb));
 
-  RunLoop();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(called_done);
 }
 
@@ -387,11 +406,11 @@ TEST_P(AudioEncodersTest, EncodeWithoutInitialize) {
     called_done = true;
   });
 
-  auto audio_bus = AudioBus::Create(options_.channels, /*num_frames=*/1);
+  auto audio_bus = AudioBus::Create(options_.channels, /*frames=*/1);
   encoder()->Encode(std::move(audio_bus), base::TimeTicks::Now(),
                     std::move(done_cb));
 
-  RunLoop();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(called_done);
 }
 
@@ -425,40 +444,34 @@ TEST_P(AudioEncodersTest, EncodeAndFlushTwice) {
     return;
 
   InitializeEncoder();
-  ProduceAudioAndEncode();
-  ProduceAudioAndEncode();
-  ProduceAudioAndEncode();
 
-  bool called_flush1 = false;
-  auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush1 = true;
-  });
+  constexpr int kEncodeFlushCycles = 2;
 
-  encoder()->Flush(std::move(flush_cb));
-  ProduceAudioAndEncode();
-  ProduceAudioAndEncode();
-  ProduceAudioAndEncode();
+  for (int cycle = 0; cycle < kEncodeFlushCycles; ++cycle) {
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
 
-  bool called_flush2 = false;
-  flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
-    if (error.code() != EncoderStatus::Codes::kOk)
-      FAIL() << "Expected kOk but got "
-             << EncoderStatusCodeToString(error.code());
-    called_flush2 = true;
-  });
+    {
+      base::RunLoop run_loop;
+      bool called_flush = false;
+      auto flush_cb = base::BindLambdaForTesting([&](EncoderStatus error) {
+        if (error.code() != EncoderStatus::Codes::kOk) {
+          FAIL() << "Expected kOk but got "
+                 << EncoderStatusCodeToString(error.code());
+        }
+        called_flush = true;
+      });
 
-  RunLoop();
-  EXPECT_TRUE(called_flush1);
+      encoder()->Flush(
+          std::move(flush_cb).Then(run_loop.QuitWhenIdleClosure()));
+      run_loop.Run();
+      EXPECT_TRUE(called_flush);
+    }
+  }
 
-  encoder()->Flush(std::move(flush_cb));
-
-  RunLoop();
-  EXPECT_TRUE(called_flush2);
   ValidateDoneCallbacksRun();
-  ValidateOutputDuration(/*flush_count=*/2);
+  ValidateOutputDuration(/*flush_count=*/kEncodeFlushCycles);
 }
 
 // Instead of synchronously calling `Encode`, wait until `done_cb` is invoked
@@ -480,21 +493,21 @@ TEST_P(AudioEncodersTest, ProvideInputAfterDoneCb) {
       base::BindLambdaForTesting(done_lambda);
   ProduceAudioAndEncode(base::TimeTicks(), frames_per_buffer_,
                         std::move(done_cb));
-  RunLoop();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(called_done);
 
   called_done = false;
   done_cb = base::BindLambdaForTesting(done_lambda);
   ProduceAudioAndEncode(base::TimeTicks(), frames_per_buffer_,
                         std::move(done_cb));
-  RunLoop();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(called_done);
 
   called_done = false;
   done_cb = base::BindLambdaForTesting(done_lambda);
   ProduceAudioAndEncode(base::TimeTicks(), frames_per_buffer_,
                         std::move(done_cb));
-  RunLoop();
+  task_environment_.RunUntilIdle();
   EXPECT_TRUE(called_done);
 
   FlushAndVerifyStatus();
@@ -685,7 +698,7 @@ TEST_P(AudioOpusEncoderTest, ExtraData) {
   InitializeEncoder(std::move(output_cb));
   ProduceAudioAndEncode(base::TimeTicks::Now(),
                         min_number_input_frames_needed_);
-  RunLoop();
+  task_environment_.RunUntilIdle();
 
   ASSERT_GT(extra.size(), 0u);
   EXPECT_EQ(extra[0], 'O');
@@ -739,7 +752,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode) {
     total_frames += ProduceAudioAndEncode(time);
     time += buffer_duration_;
 
-    RunLoop();
+    task_environment_.RunUntilIdle();
   }
 
   EXPECT_GE(total_frames, frames_per_buffer_);
@@ -763,7 +776,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
     const int kOpusDecoderFramesPerBuffer = AudioTimestampHelper::TimeToFrames(
         kOpusBufferDuration, kOpusDecoderSampleRate);
 
-    // Override the work done in Setup().
+    // Override the work done in CreateEncoder().
     encoder_ = std::make_unique<AudioOpusEncoder>();
     options_.bitrate_mode = bitrate_mode;
 
@@ -792,7 +805,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_BitrateMode) {
       total_frames += ProduceAudioAndEncode(time);
       time += buffer_duration_;
 
-      RunLoop();
+      task_environment_.RunUntilIdle();
     }
 
     EXPECT_GE(total_frames, frames_per_buffer_);
@@ -840,7 +853,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
   for (const AudioEncoder::OpusOptions& opus_options : kTestOpusOptions) {
     const int kOpusDecoderSampleRate = 48000;
 
-    // Override the work done in Setup().
+    // Override the work done in CreateEncoder().
     encoder_ = std::make_unique<AudioOpusEncoder>();
     options_.opus = opus_options;
     buffer_duration_ = opus_options.frame_duration;
@@ -875,7 +888,7 @@ TEST_P(AudioOpusEncoderTest, FullCycleEncodeDecode_OpusOptions) {
       total_frames += ProduceAudioAndEncode(time);
       time += buffer_duration_;
 
-      RunLoop();
+      task_environment_.RunUntilIdle();
     }
 
     EXPECT_GE(total_frames, frames_per_buffer_);
@@ -1020,6 +1033,9 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode) {
 
   FlushAndVerifyStatus();
 
+  // Let the decoder finish decoding.
+  task_environment_.RunUntilIdle();
+
   int expected_outputs = 3 + std::ceil(GetExpectedPadding() /
                                        static_cast<double>(frames_per_buffer_));
 
@@ -1037,8 +1053,8 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
     decoder_output_callback_count = 0;
     options_.bitrate_mode = bitrate_mode;
 
-    // Override the work done in Setup().
-    SetUp();
+    // Recreate the encoder to pick up changes to `options_`.
+    CreateEncoder();
 
     InitializeDecoder();
 
@@ -1059,11 +1075,50 @@ TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode_BitrateMode) {
 
     FlushAndVerifyStatus();
 
+    // Let the decoder finish decoding.
+    task_environment_.RunUntilIdle();
+
     int expected_outputs =
         3 + std::ceil(GetExpectedPadding() /
                       static_cast<double>(frames_per_buffer_));
 
     EXPECT_EQ(expected_outputs, decoder_output_callback_count);
+  }
+}
+
+// Makes sure we get extradata on the first output when we are using AAC output
+// format, and no extradata when we are using ADTS output format.
+TEST_P(AACAudioEncoderTest, AacOutputFormat) {
+  constexpr AudioEncoder::AacOutputFormat kTestAacOutputFormat[] = {
+      AudioEncoder::AacOutputFormat::AAC, AudioEncoder::AacOutputFormat::ADTS};
+
+  for (const auto& output_format : kTestAacOutputFormat) {
+    options_.aac = {output_format};
+
+    // Recreate the encoder to pick up changes to `options_`.
+    CreateEncoder();
+
+    bool first_output = true;
+    const bool needs_description =
+        output_format == AudioEncoder::AacOutputFormat::AAC;
+
+    auto encode_output_cb = [&](EncodedAudioBuffer output,
+                                MaybeDesc codec_description) {
+      if (first_output) {
+        first_output = false;
+        EXPECT_EQ(codec_description.has_value(), needs_description);
+      } else {
+        EXPECT_FALSE(codec_description);
+      }
+    };
+
+    InitializeEncoder(base::BindLambdaForTesting(encode_output_cb));
+
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+    ProduceAudioAndEncode();
+
+    FlushAndVerifyStatus();
   }
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)

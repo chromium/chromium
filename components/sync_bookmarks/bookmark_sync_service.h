@@ -14,6 +14,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/model/wipe_model_upon_sync_disabled_behavior.h"
 #include "components/sync_bookmarks/bookmark_model_type_processor.h"
+#include "components/sync_bookmarks/bookmark_model_view.h"
 
 class BookmarkUndoService;
 
@@ -51,7 +52,7 @@ class BookmarkSyncService : public KeyedService {
   void DecodeBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure,
-      bookmarks::BookmarkModel* model);
+      std::unique_ptr<sync_bookmarks::BookmarkModelView> model);
 
   // Returns the ModelTypeControllerDelegate for syncer::BOOKMARKS.
   // `favicon_service` is the favicon service used when processing updates in
@@ -71,10 +72,18 @@ class BookmarkSyncService : public KeyedService {
   // sync could be paused due to an auth error.
   bool IsTrackingMetadata() const;
 
+  // Returns the BookmarkModelView representing the subset of bookmarks that
+  // this service is dealing with (potentially sync-ing, but not necessarily).
+  // It returns null until bookmarks are loaded, i.e. until
+  // DecodeBookmarkSyncMetadata() is invoked. It must not be invoked after
+  // Shutdown(), i.e. during profile destruction.
+  sync_bookmarks::BookmarkModelView* bookmark_model_view();
+
   // For integration tests.
   void SetBookmarksLimitForTesting(size_t limit);
 
  private:
+  std::unique_ptr<BookmarkModelView> bookmark_model_view_;
   // BookmarkModelTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
   BookmarkModelTypeProcessor bookmark_model_type_processor_;

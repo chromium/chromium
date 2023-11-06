@@ -55,11 +55,14 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,81 +98,56 @@ public class PartialCustomTabTestRule implements TestRule {
     static final int DEVICE_WIDTH_COMPACT_PORTRAIT = DEVICE_HEIGHT_COMPACT;
     static final int DEVICE_HEIGHT_COMPACT_PORTRAIT = DEVICE_WIDTH_COMPACT;
 
-    @Mock
-    Activity mActivity;
-    @Mock
-    Window mWindow;
-    @Mock
-    WindowManager mWindowManager;
-    @Mock
-    Resources mResources;
-    @Mock
-    Configuration mConfiguration;
+    @Mock Activity mActivity;
+    @Mock Window mWindow;
+    @Mock WindowManager mWindowManager;
+    @Mock Resources mResources;
+    @Mock Configuration mConfiguration;
     WindowManager.LayoutParams mAttributes;
-    @Mock
-    View mDecorView;
-    @Mock
-    View mRootView;
-    @Mock
-    Display mDisplay;
-    @Mock
-    CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
-    @Mock
-    CustomTabHeightStrategy.OnActivityLayoutCallback mOnActivityLayoutCallback;
-    @Mock
-    ViewGroup mCoordinatorLayout;
-    @Mock
-    ViewGroup mContentFrame;
-    @Mock
-    FullscreenManager mFullscreenManager;
-    @Mock
-    ViewStub mHandleViewStub;
-    @Mock
-    ImageView mHandleView;
-    @Mock
-    ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock
-    LinearLayout mNavbar;
-    @Mock
-    ViewPropertyAnimator mViewAnimator;
-    @Mock
-    ImageView mSpinnerView;
-    @Mock
-    CircularProgressDrawable mSpinner;
-    @Mock
-    CustomTabToolbar mToolbarView;
-    @Mock
-    View mToolbarCoordinator;
-    @Mock
-    CustomTabDragBar mDragBar;
-    @Mock
-    View mDragHandlebar;
-    @Mock
-    GradientDrawable mDragBarBackground;
-    @Mock
-    InsetDrawable mInsetDragBarBackground;
-    @Mock
-    ColorDrawable mColorDrawable;
-    @Mock
-    PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
-    @Mock
-    DisplayMetrics mMetrics;
-    @Mock
-    ViewGroup mCompositorViewHolder;
-    @Captor
-    ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
+    @Mock TouchEventProvider mTouchEventProvider;
+    @Mock Tab mTab;
+    @Mock View mDecorView;
+    @Mock View mRootView;
+    @Mock Display mDisplay;
+    @Mock BrowserServicesIntentDataProvider mIntentData;
+    @Mock CustomTabHeightStrategy.OnResizedCallback mOnResizedCallback;
+    @Mock CustomTabHeightStrategy.OnActivityLayoutCallback mOnActivityLayoutCallback;
+    @Mock ViewGroup mCoordinatorLayout;
+    @Mock ViewGroup mContentFrame;
+    @Mock FullscreenManager mFullscreenManager;
+    @Mock ViewStub mHandleViewStub;
+    @Mock ImageView mHandleView;
+    @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock LinearLayout mNavbar;
+    @Mock ViewPropertyAnimator mViewAnimator;
+    @Mock ImageView mSpinnerView;
+    @Mock CircularProgressDrawable mSpinner;
+    @Mock CustomTabToolbar mToolbarView;
+    @Mock View mToolbarCoordinator;
+    @Mock CustomTabDragBar mDragBar;
+    @Mock View mDragHandlebar;
+    @Mock GradientDrawable mDragBarBackground;
+    @Mock InsetDrawable mInsetDragBarBackground;
+    @Mock ColorDrawable mColorDrawable;
+    @Mock PartialCustomTabHandleStrategyFactory mHandleStrategyFactory;
+    @Mock DisplayMetrics mMetrics;
+    @Mock ViewGroup mCompositorViewHolder;
+    @Captor ArgumentCaptor<View.OnAttachStateChangeListener> mAttachStateChangeListener;
 
     Context mContext;
     List<WindowManager.LayoutParams> mAttributeResults;
     DisplayMetrics mRealMetrics;
     Point mDisplaySize;
 
-    FrameLayout.LayoutParams mLayoutParams = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-    FrameLayout.LayoutParams mCoordinatorLayoutParams = new FrameLayout.LayoutParams(
-            FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
-    ViewGroup.LayoutParams mDragBarLayoutParams = new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+    FrameLayout.LayoutParams mLayoutParams =
+            new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+    FrameLayout.LayoutParams mCoordinatorLayoutParams =
+            new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
+    ViewGroup.LayoutParams mDragBarLayoutParams =
+            new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 
     private void setUp() {
         ShadowLog.stream = System.out;
@@ -214,21 +192,27 @@ public class PartialCustomTabTestRule implements TestRule {
         when(mColorDrawable.getColor()).thenReturn(2);
         when(mDragBar.getBackground()).thenReturn(mDragBarBackground);
         when(mDragBar.getLayoutParams()).thenReturn(mDragBarLayoutParams);
-        when(mHandleStrategyFactory.create(anyInt(), any(Context.class), any(BooleanSupplier.class),
-                     any(Supplier.class),
-                     any(PartialCustomTabHandleStrategy.DragEventCallback.class),
-                     any(Callback.class)))
+        when(mHandleStrategyFactory.create(
+                        anyInt(),
+                        any(Context.class),
+                        any(BooleanSupplier.class),
+                        any(Supplier.class),
+                        any(PartialCustomTabHandleStrategy.DragEventCallback.class),
+                        any(Callback.class)))
                 .thenReturn(null);
         mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
 
         mAttributeResults = new ArrayList<>();
-        doAnswer(invocation -> {
-            WindowManager.LayoutParams attributes = new WindowManager.LayoutParams();
-            attributes.copyFrom((WindowManager.LayoutParams) invocation.getArgument(0));
-            mAttributes.copyFrom(attributes);
-            mAttributeResults.add(attributes);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            WindowManager.LayoutParams attributes =
+                                    new WindowManager.LayoutParams();
+                            attributes.copyFrom(
+                                    (WindowManager.LayoutParams) invocation.getArgument(0));
+                            mAttributes.copyFrom(attributes);
+                            mAttributeResults.add(attributes);
+                            return null;
+                        })
                 .when(mWindow)
                 .setAttributes(any(WindowManager.LayoutParams.class));
 
@@ -236,20 +220,22 @@ public class PartialCustomTabTestRule implements TestRule {
         mRealMetrics.widthPixels = DEVICE_WIDTH;
         mRealMetrics.heightPixels = DEVICE_HEIGHT;
         mRealMetrics.density = DENSITY;
-        doAnswer(invocation -> {
-            DisplayMetrics displayMetrics = invocation.getArgument(0);
-            displayMetrics.setTo(mRealMetrics);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            DisplayMetrics displayMetrics = invocation.getArgument(0);
+                            displayMetrics.setTo(mRealMetrics);
+                            return null;
+                        })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
 
         mDisplaySize = new Point(DEVICE_WIDTH, DEVICE_HEIGHT - NAVBAR_HEIGHT);
-        doAnswer(invocation -> {
-            Point size = invocation.getArgument(0);
-            size.set(mDisplaySize.x, mDisplaySize.y);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            Point size = invocation.getArgument(0);
+                            size.set(mDisplaySize.x, mDisplaySize.y);
+                            return null;
+                        })
                 .when(mDisplay)
                 .getSize(any(Point.class));
         mContext = ApplicationProvider.getApplicationContext();
@@ -325,15 +311,20 @@ public class PartialCustomTabTestRule implements TestRule {
         return mAttributeResults.get(mAttributeResults.size() - 1);
     }
 
+    public float getDisplayDensity() {
+        return mActivity.getResources().getDisplayMetrics().density;
+    }
+
     public void setupDisplayMetricsInMultiWindowMode() {
         mMetrics = new DisplayMetrics();
         mMetrics.widthPixels = DEVICE_WIDTH;
         mMetrics.heightPixels = MULTIWINDOW_HEIGHT;
-        doAnswer(invocation -> {
-            DisplayMetrics displayMetrics = invocation.getArgument(0);
-            displayMetrics.setTo(mMetrics);
-            return null;
-        })
+        doAnswer(
+                        invocation -> {
+                            DisplayMetrics displayMetrics = invocation.getArgument(0);
+                            displayMetrics.setTo(mMetrics);
+                            return null;
+                        })
                 .when(mDisplay)
                 .getMetrics(any(DisplayMetrics.class));
         mDisplaySize.y = MULTIWINDOW_HEIGHT;

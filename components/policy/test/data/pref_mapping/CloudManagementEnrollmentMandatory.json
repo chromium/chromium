@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "CloudManagementEnrollmentMandatory": true
+        },
+        "prefs": {
+          "policy.cloud_management_enrollment_mandatory": {
+            "location": "local_state"
+          }
+        }
+      }
+    ]
+  }
+]

@@ -55,7 +55,7 @@ public class CloseTabDirectActionHandlerTest {
     public void setUp() throws Exception {
         // Setup an activity with two blank tabs.
         sActivityTestRule.loadUrlInNewTab(
-                "about:blank", false /* incognito */, TabLaunchType.FROM_CHROME_UI);
+                "about:blank", /* incognito= */ false, TabLaunchType.FROM_CHROME_UI);
 
         mSelector = sActivityTestRule.getActivity().getTabModelSelector();
         mHandler = new CloseTabDirectActionHandler(mSelector);
@@ -84,9 +84,12 @@ public class CloseTabDirectActionHandlerTest {
 
     private void performAction(String name) {
         List<Bundle> responses = new ArrayList<>();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            assertTrue(mHandler.performDirectAction(name, Bundle.EMPTY, (r) -> responses.add(r)));
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mHandler.performDirectAction(
+                                    name, Bundle.EMPTY, (r) -> responses.add(r)));
+                });
         assertThat(responses, Matchers.hasSize(1));
     }
 

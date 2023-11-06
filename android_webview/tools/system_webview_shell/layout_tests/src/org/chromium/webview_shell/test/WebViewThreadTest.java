@@ -23,14 +23,12 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.webview_shell.WebViewThreadTestActivity;
 
-/**
- * Tests running WebView on different threads.
- */
+/** Tests running WebView on different threads. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class WebViewThreadTest {
     private static final long TIMEOUT = scaleTimeout(4000);
-    private static final String DATA = "<html><body>Testing<script>"
-            + "console.log(\"testing\")</script></body></html>";
+    private static final String DATA =
+            "<html><body>Testing<script>" + "console.log(\"testing\")</script></body></html>";
     private static final String URL_DATA = "javascript:console.log(\"testing\")";
     private WebViewThreadTestActivity mActivity;
 
@@ -49,9 +47,7 @@ public class WebViewThreadTest {
         mActivity.finish();
     }
 
-    /**
-     * Create webview then loadData, on non-ui thread
-     */
+    /** Create webview then loadData, on non-ui thread */
     @Test
     @SmallTest
     public void testLoadDataNonUiThread() throws InterruptedException {
@@ -59,9 +55,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewNonUiThread(DATA));
     }
 
-    /**
-     * Create webview then loadUrl, on non-ui thread
-     */
+    /** Create webview then loadUrl, on non-ui thread */
     @Test
     @SmallTest
     public void testLoadUrlNonUiThread() throws InterruptedException {
@@ -69,9 +63,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadUrlWebViewNonUiThread(URL_DATA));
     }
 
-    /**
-     * Run getWebViewDatabase on a non-ui thread before creating webview on ui thread
-     */
+    /** Run getWebViewDatabase on a non-ui thread before creating webview on ui thread */
     @Test
     @SmallTest
     public void testWebViewDatabaseBeforeCreateWebView() throws InterruptedException {
@@ -80,9 +72,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-    /**
-     * Create webview on ui-thread, then getWebViewDatabase on non-ui thread
-     */
+    /** Create webview on ui-thread, then getWebViewDatabase on non-ui thread */
     @Test
     @SmallTest
     public void testWebViewDatabaseAfterCreateWebView() throws InterruptedException {
@@ -91,9 +81,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-    /**
-     * Run CookieManager.getInstance on a non-ui thread before creating webview on ui thread
-     */
+    /** Run CookieManager.getInstance on a non-ui thread before creating webview on ui thread */
     @Test
     @SmallTest
     public void testCookieManagerBeforeCreateWebView() throws InterruptedException {
@@ -102,9 +90,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-    /**
-     * Create webview on ui-thread, then run CookieManager.getInstance on non-ui thread
-     */
+    /** Create webview on ui-thread, then run CookieManager.getInstance on non-ui thread */
     @Test
     @SmallTest
     public void testCookieManagerAfterCreateWebView() throws InterruptedException {
@@ -112,7 +98,6 @@ public class WebViewThreadTest {
         CookieManager.getInstance();
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
-
 
     /**
      * Run GeolocationPermissions.getInstance on a non-ui thread before creating
@@ -126,9 +111,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-    /**
-     * Create webview on ui-thread, then run GeolocationPermissions.getInstance on non-ui thread
-     */
+    /** Create webview on ui-thread, then run GeolocationPermissions.getInstance on non-ui thread */
     @Test
     @SmallTest
     public void testGelolocationPermissionsAfterCreateWebView() throws InterruptedException {
@@ -137,10 +120,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-
-    /**
-     * Run WebStorage.getInstance on a non-ui thread before creating webview on ui thread
-     */
+    /** Run WebStorage.getInstance on a non-ui thread before creating webview on ui thread */
     @Test
     @SmallTest
     public void testWebStorageBeforeCreateWebView() throws InterruptedException {
@@ -149,10 +129,7 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-
-    /**
-     * Create webview on ui-thread, then run WebStorage.getInstance on non-ui thread
-     */
+    /** Create webview on ui-thread, then run WebStorage.getInstance on non-ui thread */
     @Test
     @SmallTest
     public void testWebStorageAfterCreateWebView() throws InterruptedException {
@@ -161,23 +138,17 @@ public class WebViewThreadTest {
         Assert.assertTrue(loadDataWebViewInUiThread(DATA));
     }
 
-    /**
-     * LoadData for webview created in non-ui thread
-     */
+    /** LoadData for webview created in non-ui thread */
     private boolean loadDataWebViewNonUiThread(final String data) throws InterruptedException {
         return mActivity.loadDataInNonUiThread(data, "text/html", null, TIMEOUT);
     }
 
-    /**
-     * LoadUrl for webview created in non-ui thread
-     */
+    /** LoadUrl for webview created in non-ui thread */
     private boolean loadUrlWebViewNonUiThread(final String url) throws InterruptedException {
         return mActivity.loadUrlInNonUiThread(url, TIMEOUT);
     }
 
-    /**
-     * LoadData for webview created in ui thread
-     */
+    /** LoadData for webview created in ui thread */
     private boolean loadDataWebViewInUiThread(final String data) throws InterruptedException {
         return mActivity.loadDataInUiThread(data, "text/html", null, TIMEOUT);
     }

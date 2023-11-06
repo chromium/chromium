@@ -14,7 +14,7 @@ import {assert} from 'chrome://resources/ash/common/assert.js';
 // </if>
 // <if expr="not chromeos_ash">
 import {assert} from 'chrome://resources/js/assert.js';
-import {$, appendParam} from 'chrome://resources/js/util_ts.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 
 // </if>
 

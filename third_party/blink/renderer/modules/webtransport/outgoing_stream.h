@@ -74,10 +74,10 @@ class MODULES_EXPORT OutgoingStream final
   WritableStream* Writable() const {
     DVLOG(1) << "OutgoingStream::writable() called";
 
-    return writable_;
+    return writable_.Get();
   }
 
-  ScriptState* GetScriptState() { return script_state_; }
+  ScriptState* GetScriptState() { return script_state_.Get(); }
 
   // Called from WebTransport via a WebTransportStream.
   void OnOutgoingStreamClosed();

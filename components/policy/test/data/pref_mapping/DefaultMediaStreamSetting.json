@@ -1,0 +1,120 @@
+[
+  {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultMediaStreamSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultMediaStreamSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "AudioCaptureAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "AudioCaptureAllowed": true,
+          "DefaultMediaStreamSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "AudioCaptureAllowed": true,
+          "DefaultMediaStreamSetting": 3
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "VideoCaptureAllowed": false
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultMediaStreamSetting": 2,
+          "VideoCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 2
+          }
+        }
+      },
+      {
+        "policies": {
+          "DefaultMediaStreamSetting": 3,
+          "VideoCaptureAllowed": true
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.media_stream": {
+            "value": 3
+          }
+        }
+      }
+    ]
+  }
+]

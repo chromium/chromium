@@ -21,9 +21,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.url.GURL;
 
-/**
- * Unit tests for {@link PartnerBrowserCustomizations}.
- */
+/** Unit tests for {@link PartnerBrowserCustomizations}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class PartnerBrowserCustomizationsUnitTest {
@@ -69,35 +67,46 @@ public class PartnerBrowserCustomizationsUnitTest {
 
         delegate.setHomepage(null);
         partnerBrowserCustomizations.refreshHomepage(delegate);
-        String serializedGurl = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        String serializedGurl =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals("", GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage(TEST_HOMEPAGE);
         partnerBrowserCustomizations.refreshHomepage(delegate);
-        serializedGurl = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        serializedGurl =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(TEST_HOMEPAGE, GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about://newtab");
         partnerBrowserCustomizations.refreshHomepage(delegate);
-        serializedGurl = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        serializedGurl =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
                 UrlConstants.NTP_NON_NATIVE_URL, GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab");
         partnerBrowserCustomizations.refreshHomepage(delegate);
-        serializedGurl = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        serializedGurl =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
                 UrlConstants.NTP_NON_NATIVE_URL, GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab/path#fragment");
         partnerBrowserCustomizations.refreshHomepage(delegate);
-        serializedGurl = ChromeSharedPreferences.getInstance().readString(
-                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        Assert.assertEquals(UrlConstants.NTP_NON_NATIVE_URL + "path#fragment",
+        serializedGurl =
+                ChromeSharedPreferences.getInstance()
+                        .readString(
+                                ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        Assert.assertEquals(
+                UrlConstants.NTP_NON_NATIVE_URL + "path#fragment",
                 GURL.deserialize(serializedGurl).getSpec());
     }
 
@@ -140,8 +149,9 @@ public class PartnerBrowserCustomizationsUnitTest {
     @SmallTest
     @Test
     public void testIsValidHomepage() {
-        Assert.assertTrue(PartnerBrowserCustomizations.isValidHomepage(
-                new GURL("chrome-native://newtab/path#fragment")));
+        Assert.assertTrue(
+                PartnerBrowserCustomizations.isValidHomepage(
+                        new GURL("chrome-native://newtab/path#fragment")));
         Assert.assertTrue(
                 PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome-native://newtab/")));
         Assert.assertTrue(
@@ -157,23 +167,28 @@ public class PartnerBrowserCustomizationsUnitTest {
         Assert.assertFalse(
                 PartnerBrowserCustomizations.isValidHomepage(new GURL("about://newtab")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(new GURL("about:newtab")));
-        Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(
-                new GURL("about:newtab/path#fragment")));
+        Assert.assertFalse(
+                PartnerBrowserCustomizations.isValidHomepage(
+                        new GURL("about:newtab/path#fragment")));
         Assert.assertFalse(
                 PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome://newtab--not")));
-        Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(
-                UrlFormatter.fixupUrl("about:newtab--not")));
+        Assert.assertFalse(
+                PartnerBrowserCustomizations.isValidHomepage(
+                        UrlFormatter.fixupUrl("about:newtab--not")));
         Assert.assertFalse(
                 PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome://history")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome://")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome:")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(new GURL("chrome")));
 
-        Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(
-                new GURL("chrome-native://bookmarks")));
+        Assert.assertFalse(
+                PartnerBrowserCustomizations.isValidHomepage(
+                        new GURL("chrome-native://bookmarks")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(new GURL("example.com")));
-        Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(
-                new GURL("content://com.android.providers.media.documents/document/video:113")));
+        Assert.assertFalse(
+                PartnerBrowserCustomizations.isValidHomepage(
+                        new GURL(
+                                "content://com.android.providers.media.documents/document/video:113")));
         Assert.assertFalse(
                 PartnerBrowserCustomizations.isValidHomepage(new GURL("ftp://example.com")));
         Assert.assertFalse(PartnerBrowserCustomizations.isValidHomepage(GURL.emptyGURL()));

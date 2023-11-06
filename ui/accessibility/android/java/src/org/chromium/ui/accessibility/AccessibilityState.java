@@ -19,6 +19,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
@@ -27,15 +28,17 @@ import android.view.autofill.AutofillManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,6 +62,18 @@ public class AccessibilityState {
 
     // Constant value to multiply animation timeouts by for pre-Q Android versions.
     private static final int ANIMATION_TIMEOUT_MULTIPLIER = 2;
+
+    // Histogram strings and constants.
+    private static final String UPDATE_ACCESSIBILITY_SERVICES_DID_POLL =
+            "Accessibility.Android.UpdateAccessibilityServices.DidPoll";
+    private static final String UPDATE_ACCESSIBILITY_SERVICES_POLL_COUNT =
+            "Accessibility.Android.UpdateAccessibilityServices.PollCount";
+    private static final String UPDATE_ACCESSIBILITY_SERVICES_POLL_TIMEOUT =
+            "Accessibility.Android.UpdateAccessibilityServices.PollTimeout";
+    private static final String UPDATE_ACCESSIBILITY_SERVICES_RUNTIME =
+            "Accessibility.Android.UpdateAccessibilityServices.Runtime";
+    private static final int MAX_RUNTIME_BUCKET = 16 * 1000; // 16,000 microseconds = 16ms.
+    private static int sPollCount;
 
     /**
      * Interface for the observers of the system's accessibility state.
@@ -444,6 +459,7 @@ public class AccessibilityState {
     }
 
     static void updateAccessibilityServices() {
+        long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false);
             fetchAccessibilityManager();
@@ -562,25 +578,30 @@ public class AccessibilityState {
         Collections.sort(runningServiceNames);
         Collections.sort(enabledServiceNames);
         if (runningServiceNames.equals(enabledServiceNames)) {
-            Log.v(TAG, "Enabled accessibility services list updated.");
+            Log.i(TAG, "Enabled accessibility services list updated.");
             sNextDelayMillis = MIN_DELAY_MILLIS;
         } else {
-            Log.v(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
-            Log.v(TAG, "Running accessibility services: " + runningServiceNames.toString());
+            Log.i(TAG, "Enabled accessibility services: " + enabledServiceNames.toString());
+            Log.i(TAG, "Running accessibility services: " + runningServiceNames.toString());
 
             // Do not inform listeners until the services agree, unless the limit set by
             // {MAX_DELAY_MILLIS} has been reached, in which case send whatever we have.
             if (sNextDelayMillis < MAX_DELAY_MILLIS) {
-                Log.v(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
+                Log.i(TAG, "Will check again after " + sNextDelayMillis + " milliseconds.");
+                RecordHistogram.recordBooleanHistogram(
+                        UPDATE_ACCESSIBILITY_SERVICES_DID_POLL, true);
                 ThreadUtils.getUiThreadHandler().postDelayed(
                         AccessibilityState::updateAccessibilityServices, sNextDelayMillis);
+                sPollCount++;
                 sNextDelayMillis *= 2;
                 return;
             } else {
-                Log.v(TAG, "Max delay reached. Send information as is.");
+                Log.i(TAG, "Max delay reached. Send information as is.");
+                RecordHistogram.recordBooleanHistogram(
+                        UPDATE_ACCESSIBILITY_SERVICES_POLL_TIMEOUT, true);
 
                 // Reset if we have reached {MAX_DELAY_MILLIS} so we do not miss later discrepancies
-                // between the sservices.
+                // between the services.
                 sNextDelayMillis = MIN_DELAY_MILLIS;
             }
         }
@@ -642,13 +663,25 @@ public class AccessibilityState {
 
         // Update all listeners that there was a state change and pass whether or not the
         // new state includes a screen reader.
-        Log.v(TAG, "Informing listeners of changes.");
+        Log.i(TAG, "Informing listeners of changes.");
         boolean isScreenReaderEnabled =
                 (0 != (screenReaderCheckEventTypeMask & SCREEN_READER_EVENT_TYPE_MASK));
         boolean isSpokenFeedbackServicePresent = (0 != (sFeedbackTypeMask & FEEDBACK_SPOKEN));
         boolean isTouchExplorationEnabled = sAccessibilityManager.isTouchExplorationEnabled();
         boolean isPerformGesturesEnabled =
                 (0 != (sCapabilitiesMask & CAPABILITY_CAN_PERFORM_GESTURES));
+
+        // Record time of this method call, and number of times polling was required.
+        RecordHistogram.recordLinearCountHistogram(
+                UPDATE_ACCESSIBILITY_SERVICES_RUNTIME,
+                (int) ((SystemClock.elapsedRealtimeNanos() / 1000) - now),
+                1,
+                MAX_RUNTIME_BUCKET,
+                100);
+        RecordHistogram.recordLinearCountHistogram(
+                UPDATE_ACCESSIBILITY_SERVICES_POLL_COUNT, sPollCount, 1, 10, 11);
+        sPollCount = 0;
+
         updateAndNotifyStateChange(new State(isScreenReaderEnabled, isTouchExplorationEnabled,
                 isPerformGesturesEnabled, isAnyAccessibilityServiceEnabled,
                 isAccessibilityToolPresent, isSpokenFeedbackServicePresent,
@@ -659,7 +692,7 @@ public class AccessibilityState {
         State oldState = sState;
         sState = newState;
 
-        Log.v(TAG, "New AccessibilityState: " + sState.toString());
+        Log.i(TAG, "New AccessibilityState: " + sState.toString());
         for (Listener listener : sListeners) {
             listener.onAccessibilityStateChanged(oldState, newState);
         }
@@ -870,7 +903,6 @@ public class AccessibilityState {
     }
 
     // ForTesting methods.
-    // clang-format off
 
     public static void setIsScreenReaderEnabledForTesting(boolean enabled) {
         if (!sInitialized) initializeForTesting();
@@ -1014,5 +1046,4 @@ public class AccessibilityState {
         sIsInTestingMode = true;
     }
 
-    // clang-format on
 }

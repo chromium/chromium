@@ -10,8 +10,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/wm_metrics.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/wm/core/window_util.h"
 
 namespace gfx {
@@ -132,7 +132,7 @@ bool IsAnyWindowDragged();
 
 // Returns the top window on MRU window list, or null if the list is empty.
 aura::Window* GetTopWindow();
-aura::Window* GetTopNonFloatedWindow();
+ASH_EXPORT aura::Window* GetTopNonFloatedWindow();
 
 // Returns the floated window for the active desk if it exists.
 ASH_EXPORT aura::Window* GetFloatedWindowForActiveDesk();
@@ -178,6 +178,15 @@ ASH_EXPORT bool IsNaturalScrollOn();
 ASH_EXPORT bool ShouldRoundThumbnailWindow(
     views::View* backdrop_view,
     const gfx::RectF& thumbnail_bounds_in_screen);
+
+// Returns true if either `kFasterSplitScreenSetup` is enabled or
+// `kSnapGroup` and `AutomaticLockGroup` is true. When this is true, snapping
+// one window will automatically start SplitViewOverviewSession.
+bool IsFasterSplitScreenOrSnapGroupArm1Enabled();
+
+// Starts SplitViewOverviewSession for `window`, if it wasn't already active.
+void MaybeStartSplitViewOverview(aura::Window* window,
+                                 WindowSnapActionSource snap_action_source);
 
 }  // namespace ash::window_util
 

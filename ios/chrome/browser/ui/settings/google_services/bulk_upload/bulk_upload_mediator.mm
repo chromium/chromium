@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/system_identity.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_consumer.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_mediator_delegate.h"
+#import "ios/chrome/browser/ui/settings/utils/password_utils.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -31,6 +32,7 @@ struct BulkUploadModelItem {
   BulkUploadType bulk_upload_type;
   int title_string_id;
   int subtitle_string_id;
+  NSString* const view_accessibility_id;
 };
 
 // List of model type to display for the bulk upload. The order will be used
@@ -41,18 +43,21 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
         BulkUploadType::kBookmark,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_TITLE,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
+        kBulkUploadTableViewBookmarksItemAccessibilityIdentifer,
     },
     {
         syncer::PASSWORDS,
         BulkUploadType::kPassword,
         IDS_IOS_BULK_UPLOAD_PASSWORD_TITLE,
         IDS_IOS_BULK_UPLOAD_BOOKMARK_SUBTITLE,
+        kBulkUploadTableViewPasswordsItemAccessibilityIdentifer,
     },
     {
         syncer::READING_LIST,
         BulkUploadType::kReadinglist,
         IDS_IOS_BULK_UPLOAD_READING_LIST_TITLE,
         IDS_IOS_BULK_UPLOAD_READING_LIST_SUBTITLE,
+        kBulkUploadTableViewReadingListItemAccessibilityIdentifer,
     },
 };
 
@@ -126,12 +131,13 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
 #pragma mark - Private
 
 - (void)save {
-  int count = 0;
-  for (BulkUploadModelItem modelItem : kBuildUploadModelItems) {
-    count += _map[modelItem.model_type].item_count;
-  }
   syncer::ModelTypeSet selectedModelTypes = [self selectedModelTypeEnumSet];
   _syncService->TriggerLocalDataMigration(selectedModelTypes);
+  int count = 0;
+  // Count items for the selected types.
+  for (syncer::ModelType model_type : selectedModelTypes) {
+    count += _map[model_type].item_count;
+  }
   const std::string email =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
@@ -200,6 +206,7 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
   bulkUploadViewItem.subtitle = subtitle;
   bulkUploadViewItem.selected =
       base::Contains(_selectedTypes, modelItem.bulk_upload_type);
+  bulkUploadViewItem.accessibilityIdentifier = modelItem.view_accessibility_id;
   return bulkUploadViewItem;
 }
 
@@ -229,7 +236,8 @@ const BulkUploadModelItem kBuildUploadModelItems[] = {
     [self save];
     return;
   }
-  _reauthenticationModule = [[ReauthenticationModule alloc] init];
+  // Use util from password_utils to create reauth module to allow easy testing.
+  _reauthenticationModule = password_manager::BuildReauthenticationModule();
   if (![_reauthenticationModule canAttemptReauth]) {
     base::RecordAction(
         base::UserMetricsAction("Signin_BulkUpload_FaceID_CannotBeStarted"));

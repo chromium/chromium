@@ -29,8 +29,10 @@
 
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
+class OmniboxTriggeredFeatureService;
 
 struct AutocompleteMatch;
+struct ProviderStateService;
 
 class MockAutocompleteProviderClient
     : public testing::NiceMock<AutocompleteProviderClient> {
@@ -119,6 +121,10 @@ class MockAutocompleteProviderClient
     return nullptr;
   }
 
+  ProviderStateService* GetProviderStateService() const override {
+    return provider_state_service_.get();
+  }
+
   MOCK_CONST_METHOD0(GetAcceptLanguages, std::string());
   MOCK_CONST_METHOD0(GetEmbedderRepresentationOfAboutScheme, std::string());
   MOCK_METHOD0(GetBuiltinURLs, std::vector<std::u16string>());
@@ -177,6 +183,7 @@ class MockAutocompleteProviderClient
   std::unique_ptr<OmniboxPedalProvider> pedal_provider_;
   std::unique_ptr<OmniboxTriggeredFeatureService>
       omnibox_triggered_feature_service_;
+  std::unique_ptr<ProviderStateService> provider_state_service_;
   MockTabMatcher tab_matcher_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;  // Not owned.
 };

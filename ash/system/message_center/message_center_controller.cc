@@ -176,14 +176,13 @@ void MessageCenterController::RemoveObserver(Observer* observer) {
 
 void MessageCenterController::OnActiveUserPrefServiceChanged(
     PrefService* prefs) {
-  if (!features::IsNotificationExperimentalShortTimeoutsEnabled() ||
-      DisableShortNotificationsForAccessibility(prefs)) {
+  if (DisableShortNotificationsForAccessibility(prefs)) {
     return;
   }
 
   message_center::PopupTimersController::SetNotificationTimeouts(
       message_center::kAutocloseShortDelaySeconds,
-      message_center::kAutocloseShortDelaySeconds);
+      message_center::kAutocloseCrosHighPriorityDelaySeconds);
 }
 
 }  // namespace ash

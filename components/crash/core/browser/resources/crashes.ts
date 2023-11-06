@@ -12,7 +12,7 @@ import './strings.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {appendParam, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {appendParam, getRequiredElement} from 'chrome://resources/js/util.js';
 
 /* Id for tracking automatic refresh of crash list.  */
 let refreshCrashListId: number|undefined = undefined;

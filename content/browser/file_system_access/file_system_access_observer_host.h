@@ -81,9 +81,9 @@ class FileSystemAccessObserverHost
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The manager which owns `watcher_manager_`.
-  const raw_ptr<FileSystemAccessManagerImpl> manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
   // The watcher manager which owns this instance.
-  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_;
+  const raw_ptr<FileSystemAccessWatcherManager> watcher_manager_ = nullptr;
   const BindingContext binding_context_;
 
   // Observations which maintain mojo pipes that send file change notifications

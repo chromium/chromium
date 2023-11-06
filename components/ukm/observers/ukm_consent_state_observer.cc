@@ -19,6 +19,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_utils.h"  // nogncheck
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 using unified_consent::UrlKeyedDataCollectionConsentHelper;
@@ -26,12 +27,21 @@ using unified_consent::UrlKeyedDataCollectionConsentHelper;
 namespace ukm {
 namespace {
 
+bool IsMsbbConsentStateAllowed() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // MGS should report only AppKM metrics.
+  return !chromeos::IsManagedGuestSession();
+#else  // !BUILDFLAG(IS_CHROMEOS)
+  return true;
+#endif
+}
+
 bool CanUploadUkmForType(syncer::SyncService* sync_service,
                          syncer::ModelType model_type,
                          bool msbb_consent) {
 #if BUILDFLAG(IS_CHROMEOS)
-  // Enable uploading of UKM for Kiosk only if MSBB consent is set.
-  if (chromeos::IsKioskSession()) {
+  // Enable uploading of UKM for Kiosk and MGS only if MSBB consent is set.
+  if (chromeos::IsKioskSession() || chromeos::IsManagedGuestSession()) {
     return msbb_consent;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -80,7 +90,7 @@ UkmConsentStateObserver::ProfileState UkmConsentStateObserver::GetProfileState(
   const bool msbb_consent =
       consent_helper->IsEnabled() || metrics::IsMsbbSettingForcedOnForUkm();
 
-  if (msbb_consent) {
+  if (msbb_consent && IsMsbbConsentStateAllowed()) {
     state.SetConsentType(MSBB);
   }
 
@@ -150,8 +160,9 @@ void UkmConsentStateObserver::UpdateUkmAllowedForAllProfiles(bool total_purge) {
 
 UkmConsentState UkmConsentStateObserver::GetPreviousStatesForAllProfiles() {
   // No profiles are being observed, no consent is possible.
-  if (previous_states_.empty())
+  if (previous_states_.empty()) {
     return UkmConsentState();
+  }
 
   // Consent for each type must be given by all profiles for metrics of that
   // type to be collected. See components/ukm/ukm_consent_state.h for details.
@@ -170,8 +181,9 @@ UkmConsentState UkmConsentStateObserver::GetPreviousStatesForAllProfiles() {
 void UkmConsentStateObserver::OnStateChanged(syncer::SyncService* sync) {
   UrlKeyedDataCollectionConsentHelper* consent_helper = nullptr;
   auto found = consent_helpers_.find(sync);
-  if (found != consent_helpers_.end())
+  if (found != consent_helpers_.end()) {
     consent_helper = found->second.get();
+  }
   UpdateProfileState(sync, consent_helper);
 }
 

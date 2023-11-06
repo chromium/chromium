@@ -79,6 +79,8 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kEnterpriseHardwarePlatform,
      "enterprise.hardwarePlatform",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kEnterpriseKioskInput, "enterprise.kioskInput",
+     APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kEnterpriseNetworkingAttributes,
      "enterprise.networkingAttributes",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},

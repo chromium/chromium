@@ -22,6 +22,9 @@
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_SUBTITLE" desc="Help text shown when there are no reachable contacts with a Google Account to select from. Nearby Share is the feature name.">
     To use Nearby Share with these contacts, add the email address linked with their Google Account to your contacts.
   </message>
+  <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_SUBTITLE_PH" desc="Feature name placeholder: Help text shown when there are no reachable contacts with a Google Account to select from.">
+    To use <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph> with these contacts, add the email address linked with their Google Account to your contacts.
+  </message>
   <message name="IDS_NEARBY_CONTACT_VISIBILITY_NO_CONTACTS_TITLE" desc="Title text shown when there are no reachable contacts with a Google Account to select from.">
     No reachable contacts
   </message>
@@ -74,6 +77,9 @@
   <message name="IDS_NEARBY_DISCOVERY_PAGE_TITLE" desc="Title of the Nearby Share device discovery page. This is where users select a device to share files with. Nearby Share is the feature name.">
     Nearby Share
   </message>
+  <message name="IDS_NEARBY_DISCOVERY_PAGE_TITLE_PH" desc="Feature name placeholder: Title of the device discovery page. This is where users select a device to share files with.">
+    <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
+  </message>
   <message name="IDS_NEARBY_DISCOVERY_PAGE_PLACEHOLDER" desc="Text shown on the Nearby Share device discovery page. This is where users select a device to share files with. This placeholder text is shown when the list of devices to share with is empty, and is meant to inform the user that we are currently looking for a device to share with.">
     Scanning for nearby devices...
   </message>
@@ -90,6 +96,9 @@
   </message>
   <message name="IDS_NEARBY_ONBOARDING_PAGE_TITLE" desc="Title of the Nearby Share onboarding page that sets up the local device for the feature. Nearby Share is the feature name.">
     Set up Nearby Share
+  </message>
+  <message name="IDS_NEARBY_ONBOARDING_PAGE_TITLE_PH" desc="Feature name placeholder: Title of the onboarding page that sets up the local device for sharing.">
+    Set up <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
   </message>
 
   <!-- One-page onboarding page -->
@@ -115,6 +124,9 @@
   <!-- Common strings -->
   <message name="IDS_NEARBY_SHARE_FEATURE_NAME" desc="This is the name of the Nearby Share feature which provides a way for nearby devices to share files, text, and urls">
     Nearby Share
+  </message>
+  <message name="IDS_NEARBY_SHARE_FEATURE_NAME_PH" desc="Feature name placeholder: This is the name of the feature which provides a way for nearby devices to share files, text, and urls">
+    <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
   </message>
   <message name="IDS_NEARBY_ACTIONS_ACCEPT" desc="Action button text to accept a transfer in the Nearby Share UI.">
     Accept
@@ -259,6 +271,9 @@
   <message name="IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_DESCRIPTION" desc="When the Nearby Share receive dialog is open, an error title telling the user that there is no available connection medium such as wifi or Bluetooth">
     To use Nearby Share, turn on Bluetooth and Wi-Fi
   </message>
+  <message name="IDS_NEARBY_HIGH_VISIBILITY_CONNECTION_MEDIUM_DESCRIPTION_PH" desc="Feature name placeholder: When the receive dialog is open, an error title telling the user that there is no available connection medium such as wifi or Bluetooth">
+    To use <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>, turn on Bluetooth and Wi-Fi
+  </message>
 
   <!-- Receive Confirmation Page Strings -->
   <message name="IDS_NEARBY_RECEIVE_CONFIRM_PAGE_TITLE" desc="The title of the recieve confirmation page which askign the user to confirm receving a share from a specific device.">
@@ -277,8 +292,11 @@
   <message name="IDS_NEARBY_ACCOUNT_ROW_LABEL" desc="Label to describe the account row which displays the user's full name and their email which will identify them when using the Nearby Share feature." is_accessibility_with_no_ui="true">
       Nearby Share settings for <ph name="USER_NAME">$1<ex>Jane Doe</ex></ph>'s device, sharing under the account <ph name="USER_EMAIL">$2<ex>example@gmail.com</ex></ph>.
   </message>
-  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_TOP" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share, and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
+  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_TOP" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
     Nearby Share uses Bluetooth scanning to find nearby devices.
+  </message>
+  <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_TOP_PH" desc="Feature name placeholder: Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to share and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
+    <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph> uses Bluetooth scanning to find nearby devices.
   </message>
   <message name="IDS_NEARBY_SETTINGS_HELP_CAPTION_BOTTOM" desc="Brief explanation shown at the bottom of the settings page. Meant to give context on what conditions have to be met to use Nearby Share, and how to toggle the high visibility state in the system tray. Provides a link with more detailed information.">
     If you're sharing with a Chromebook that is not in your contacts, make sure the Chromebook has “Nearby visibility” turned on. To turn on “Nearby visibility,” select the bottom right corner and then select to turn on “Nearby visibility.” <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
@@ -347,11 +365,17 @@
   <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE" desc="Text shown as the title of a notfication when a nearby device requests a connection via Nearby Share.">
     Receive with Nearby Share?
   </message>
+  <message name="IDS_NEARBY_NOTIFICATION_CONNECTION_REQUEST_TITLE_PH" desc="Feature name placeholder: Text shown as the title of a notfication when a nearby device requests a connection.">
+    Receive with <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>?
+  </message>
   <message name="IDS_NEARBY_NOTIFICATION_DECLINE_ACTION" desc="Text shown on the notification action to decline receiving data via Nearby Share.">
     Decline
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE" desc="Text shown as the message of a notification when a nearby device is attempting to share data via Nearby Share but the user has not yet set up the Nearby Share feature.">
     Set up Nearby Share to receive and send files with people around you
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_ONBOARDING_MESSAGE_PH" desc="Feature name placeholder: Text shown as the message of a notification when a nearby device is attempting to share data but the user has not yet set up sharing.">
+    Set up <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph> to receive and send files with people around you
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_GO_VISIBLE_MESSAGE" desc="Text shown as the message of a notification when a nearby device is attempting to share data via Nearby Share. This notification is a prompt that the user can click to become visible to nearby devices that are trying to share.">
     To receive and accept files with people around you, become visible
@@ -418,6 +442,9 @@
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SOURCE" desc="Text shown as the source of a Nearby Share notification.">
     Nearby Share
+  </message>
+  <message name="IDS_NEARBY_NOTIFICATION_SOURCE_PH" desc="Feature name placeholder: Text shown as the source of a sharing notification.">
+    <ph name="FEATURE_NAME">$1<ex>Nearby Share</ex></ph>
   </message>
   <message name="IDS_NEARBY_NOTIFICATION_SENDER_CANCELLED" desc="Text shown as the title of a notification when the sender device cancels the Nearby Share tranfer.">
     <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 2</ex></ph> cancelled the transfer

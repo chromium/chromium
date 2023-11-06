@@ -24,6 +24,7 @@ class ExtensionLocalizationThrottle : public blink::URLLoaderThrottle {
   // Creates a ExtensionLocalizationThrottle only when `request_url`
   // is a chrome-extention scheme URL.
   static std::unique_ptr<ExtensionLocalizationThrottle> MaybeCreate(
+      int render_frame_id,
       const blink::WebURL& request_url);
 
   ~ExtensionLocalizationThrottle() override;
@@ -38,10 +39,11 @@ class ExtensionLocalizationThrottle : public blink::URLLoaderThrottle {
   void ForceCreateDataPipeErrorForTest() { force_error_for_test_ = true; }
 
  private:
-  ExtensionLocalizationThrottle();
+  explicit ExtensionLocalizationThrottle(int render_frame_id);
   void DeferredCancelWithError(int error_code);
 
   bool force_error_for_test_ = false;
+  const int render_frame_id_;
   base::WeakPtrFactory<ExtensionLocalizationThrottle> weak_factory_{this};
 };
 

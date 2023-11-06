@@ -4,13 +4,9 @@
 
 #include "ash/style/icon_button.h"
 
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
-#include "ash/style/color_util.h"
 #include "ash/style/style_util.h"
-#include "ash/utility/haptics_util.h"
-#include "chromeos/constants/chromeos_features.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "base/notreached.h"
+#include "chromeos/utils/haptics_util.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,7 +15,6 @@
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -45,30 +40,84 @@ constexpr int kXSmallIconSize = 16;
 // The gap between the focus ring and the button's content.
 constexpr int kFocusRingPadding = 2;
 
+// The default toggled background and icon color IDs.
+constexpr ui::ColorId kDefaultToggledBackgroundColorId =
+    cros_tokens::kCrosSysSystemPrimaryContainer;
+constexpr ui::ColorId kDefaultToggledIconColorId =
+    cros_tokens::kCrosSysSystemOnPrimaryContainer;
+
 int GetButtonSizeOnType(IconButton::Type type) {
   switch (type) {
     case IconButton::Type::kXSmall:
+    case IconButton::Type::kXSmallProminent:
     case IconButton::Type::kXSmallFloating:
     case IconButton::Type::kXSmallProminentFloating:
       return kXSmallButtonSize;
     case IconButton::Type::kSmall:
+    case IconButton::Type::kSmallProminent:
     case IconButton::Type::kSmallFloating:
     case IconButton::Type::kSmallProminentFloating:
       return kSmallButtonSize;
     case IconButton::Type::kMedium:
+    case IconButton::Type::kMediumProminent:
     case IconButton::Type::kMediumFloating:
     case IconButton::Type::kMediumProminentFloating:
       return kMediumButtonSize;
     case IconButton::Type::kLarge:
+    case IconButton::Type::kLargeProminent:
     case IconButton::Type::kLargeFloating:
     case IconButton::Type::kLargeProminentFloating:
       return kLargeButtonSize;
   }
 }
 
+absl::optional<ui::ColorId> GetDefaultBackgroundColorId(IconButton::Type type) {
+  switch (type) {
+    case IconButton::Type::kXSmall:
+    case IconButton::Type::kSmall:
+    case IconButton::Type::kMedium:
+    case IconButton::Type::kLarge:
+      return cros_tokens::kCrosSysSystemOnBase;
+    case IconButton::Type::kXSmallProminent:
+    case IconButton::Type::kSmallProminent:
+    case IconButton::Type::kMediumProminent:
+    case IconButton::Type::kLargeProminent:
+      return cros_tokens::kCrosSysSystemPrimaryContainer;
+    default:
+      NOTREACHED() << "Floating type button does not have a background";
+      return absl::nullopt;
+  }
+}
+
+ui::ColorId GetDefaultIconColorId(IconButton::Type type, bool focused) {
+  switch (type) {
+    case IconButton::Type::kXSmall:
+    case IconButton::Type::kXSmallFloating:
+    case IconButton::Type::kSmall:
+    case IconButton::Type::kSmallFloating:
+    case IconButton::Type::kMedium:
+    case IconButton::Type::kMediumFloating:
+    case IconButton::Type::kLarge:
+    case IconButton::Type::kLargeFloating:
+      return cros_tokens::kCrosSysOnSurface;
+    case IconButton::Type::kXSmallProminent:
+    case IconButton::Type::kSmallProminent:
+    case IconButton::Type::kMediumProminent:
+    case IconButton::Type::kLargeProminent:
+      return cros_tokens::kCrosSysSystemOnPrimaryContainer;
+    case IconButton::Type::kXSmallProminentFloating:
+    case IconButton::Type::kSmallProminentFloating:
+    case IconButton::Type::kMediumProminentFloating:
+    case IconButton::Type::kLargeProminentFloating:
+      return focused ? cros_tokens::kCrosSysPrimary
+                     : cros_tokens::kCrosSysSecondary;
+  }
+}
+
 int GetIconSizeOnType(IconButton::Type type) {
   if (type == IconButton::Type::kXSmall ||
       type == IconButton::Type::kXSmallFloating ||
+      type == IconButton::Type::kXSmallProminent ||
       type == IconButton::Type::kXSmallProminentFloating) {
     return kXSmallIconSize;
   }
@@ -116,8 +165,6 @@ std::unique_ptr<views::Background> CreateThemedBackground(
 }
 
 // Create a solid color fully rounded rect background for icon button.
-// TODO(zxdan): Remove this function when the dynamic color migration work is
-// done.
 std::unique_ptr<views::Background> CreateSolidBackground(
     SkColor color,
     IconButton::Type type) {
@@ -146,7 +193,10 @@ IconButton::IconButton(PressedCallback callback,
     : views::ImageButton(std::move(callback)),
       type_(type),
       icon_(icon),
-      is_togglable_(is_togglable) {
+      is_togglable_(is_togglable),
+      background_toggled_color_(kDefaultToggledBackgroundColorId),
+      icon_color_(GetDefaultIconColorId(type, /*focused=*/false)),
+      icon_toggled_color_(kDefaultToggledIconColorId) {
   const int button_size = GetButtonSizeOnType(type);
   SetPreferredSize(gfx::Size(button_size, button_size));
 
@@ -156,15 +206,16 @@ IconButton::IconButton(PressedCallback callback,
                                    /*highlight_on_hover=*/false,
                                    /*highlight_on_focus=*/false);
 
+  if (!IsFloatingIconButton(type)) {
+    background_color_ = GetDefaultBackgroundColorId(type).value();
+  }
+
   UpdateBackground();
   UpdateVectorIcon();
 
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetOutsetFocusRingDisabled(true);
-  focus_ring->SetColorId(
-      chromeos::features::IsJellyrollEnabled()
-          ? cros_tokens::kCrosSysFocusRing
-          : static_cast<ui::ColorId>(ui::kColorAshFocusRing));
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
   if (has_border) {
     // The focus ring will have the outline padding with the bounds of the
     // buttons.
@@ -230,52 +281,27 @@ void IconButton::SetToggledVectorIcon(const gfx::VectorIcon& icon) {
   }
 }
 
-void IconButton::SetBackgroundColor(const SkColor background_color) {
-  if (background_color_ == background_color)
-    return;
-
-  background_color_ = background_color;
-  background_color_id_ = absl::nullopt;
-
-  if (GetEnabled() && !IsToggledOn())
-    UpdateBackground();
-}
-
-void IconButton::SetBackgroundToggledColor(
-    const SkColor background_toggled_color) {
-  if (!is_togglable_ || background_toggled_color == background_toggled_color_)
-    return;
-
-  background_toggled_color_ = background_toggled_color;
-  background_toggled_color_id_ = absl::nullopt;
-
-  if (GetEnabled() && IsToggledOn())
-    UpdateBackground();
-}
-
-void IconButton::SetBackgroundColorId(ui::ColorId background_color_id) {
-  if (background_color_id_ == background_color_id)
-    return;
-
-  background_color_id_ = background_color_id;
-  background_color_ = absl::nullopt;
-
-  if (GetEnabled() && !IsToggledOn())
-    UpdateBackground();
-}
-
-void IconButton::SetBackgroundToggledColorId(
-    ui::ColorId background_toggled_color_id) {
-  if (!is_togglable_ ||
-      background_toggled_color_id == background_toggled_color_id_) {
+void IconButton::SetBackgroundColor(ColorVariant background_color) {
+  if (background_color_ == background_color) {
     return;
   }
 
-  background_toggled_color_id_ = background_toggled_color_id;
-  background_toggled_color_ = absl::nullopt;
-
-  if (GetEnabled() && IsToggledOn())
+  background_color_ = background_color;
+  if (GetEnabled() && !IsToggledOn()) {
     UpdateBackground();
+  }
+}
+
+void IconButton::SetBackgroundToggledColor(
+    ColorVariant background_toggled_color) {
+  if (!is_togglable_ || background_toggled_color == background_toggled_color_) {
+    return;
+  }
+
+  background_toggled_color_ = background_toggled_color;
+  if (GetEnabled() && IsToggledOn()) {
+    UpdateBackground();
+  }
 }
 
 void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
@@ -284,68 +310,47 @@ void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
   SchedulePaint();
 }
 
-void IconButton::SetIconColor(const SkColor icon_color) {
-  if (icon_color_ == icon_color)
+void IconButton::SetIconColor(ColorVariant icon_color) {
+  if (icon_color_ == icon_color) {
     return;
-  icon_color_ = icon_color;
-  icon_color_id_ = absl::nullopt;
+  }
 
+  icon_color_ = icon_color;
   if (!IsToggledOn()) {
     UpdateVectorIcon(/*color_changes_only=*/true);
   }
 }
 
-void IconButton::SetIconToggledColor(const SkColor icon_toggled_color) {
-  if (!is_togglable_ || icon_toggled_color == icon_toggled_color_)
+void IconButton::SetIconToggledColor(ColorVariant icon_toggled_color) {
+  if (!is_togglable_ || icon_toggled_color == icon_toggled_color_) {
     return;
+  }
 
   icon_toggled_color_ = icon_toggled_color;
-  icon_toggled_color_id_ = absl::nullopt;
-
-  if (IsToggledOn())
+  if (IsToggledOn()) {
     UpdateVectorIcon(/*color_changes_only=*/true);
-}
-
-void IconButton::SetIconColorId(ui::ColorId icon_color_id) {
-  if (icon_color_id_ == icon_color_id)
-    return;
-
-  icon_color_id_ = icon_color_id;
-  icon_color_ = absl::nullopt;
-
-  if (!IsToggledOn())
-    UpdateVectorIcon(/*color_changes_only=*/true);
-}
-
-void IconButton::SetIconToggledColorId(ui::ColorId icon_toggled_color_id) {
-  if (!is_togglable_ || icon_toggled_color_id == icon_toggled_color_id_)
-    return;
-
-  icon_toggled_color_id_ = icon_toggled_color_id;
-  icon_toggled_color_ = absl::nullopt;
-
-  if (IsToggledOn())
-    UpdateVectorIcon(/*color_changes_only=*/true);
+  }
 }
 
 void IconButton::SetIconSize(int size) {
-  if (icon_size_ == size)
+  if (icon_size_ == size) {
     return;
+  }
+
   icon_size_ = size;
   UpdateVectorIcon();
 }
 
 void IconButton::SetToggled(bool toggled) {
-  if (!is_togglable_ || toggled_ == toggled)
+  if (!is_togglable_ || toggled_ == toggled) {
     return;
+  }
 
   toggled_ = toggled;
 
-  if (delegate_)
-    delegate_->OnButtonToggled(this);
-
-  if (GetEnabled())
+  if (GetEnabled()) {
     UpdateBackground();
+  }
 
   // If toggle state is changed with `toggled_`, update the icon.
   if (GetEnabled() ||
@@ -357,14 +362,30 @@ void IconButton::SetToggled(bool toggled) {
 
 void IconButton::OnFocus() {
   // Update prominent floating type button's icon color on focus.
-  if (IsProminentFloatingType(type_) && !IsToggledOn())
-    UpdateVectorIcon(/*color_changes_only=*/true);
+  if (IsProminentFloatingType(type_) && !IsToggledOn()) {
+    // If prominent floating button is still using default colors, updates its
+    // icon color on focus.
+    if (absl::holds_alternative<ui::ColorId>(icon_color_) &&
+        absl::get<ui::ColorId>(icon_color_) ==
+            GetDefaultIconColorId(type_, /*focused=*/false)) {
+      icon_color_ = GetDefaultIconColorId(type_, /*focused=*/true);
+      UpdateVectorIcon(/*color_changes_only=*/true);
+    }
+  }
 }
 
 void IconButton::OnBlur() {
   // Update prominent floating type button's icon color on blur.
-  if (IsProminentFloatingType(type_) && !IsToggledOn())
-    UpdateVectorIcon(/*color_changes_only=*/true);
+  if (IsProminentFloatingType(type_) && !IsToggledOn()) {
+    // If prominent floating button is still using default colors, updates its
+    // icon color on focus.
+    if (absl::holds_alternative<ui::ColorId>(icon_color_) &&
+        absl::get<ui::ColorId>(icon_color_) ==
+            GetDefaultIconColorId(type_, /*focused=*/true)) {
+      icon_color_ = GetDefaultIconColorId(type_, /*focused=*/false);
+      UpdateVectorIcon(/*color_changes_only=*/true);
+    }
+  }
 }
 
 void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -398,12 +419,9 @@ void IconButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
 void IconButton::NotifyClick(const ui::Event& event) {
   if (is_togglable_) {
-    haptics_util::PlayHapticToggleEffect(
+    chromeos::haptics_util::PlayHapticToggleEffect(
         !toggled_, ui::HapticTouchpadEffectStrength::kMedium);
   }
-
-  if (delegate_)
-    delegate_->OnButtonClicked(this);
 
   views::Button::NotifyClick(event);
 }
@@ -423,38 +441,14 @@ void IconButton::UpdateBackground() {
     return;
   }
 
-  // Create a themed rounded rect background when the background color is
-  // defined by a color ID. Otherwise, create a solid rounded rect background.
-  // TODO(zxdan): only use themed background when dynamic color migration work
-  // is done.
-
-  // When the button is toggled, create a background with toggled color.
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-  if (is_toggled) {
-    if (background_toggled_color_id_ || !background_toggled_color_) {
-      const ui::ColorId color_id = background_toggled_color_id_.value_or(
-          is_jellyroll_enabled ? cros_tokens::kCrosSysSystemPrimaryContainer
-                               : static_cast<ui::ColorId>(
-                                     kColorAshControlBackgroundColorActive));
-      SetBackground(CreateThemedBackground(color_id, type_));
-      return;
-    }
-    SetBackground(
-        CreateSolidBackground(background_toggled_color_.value(), type_));
-    return;
+  // Create a background according to the toggled state.
+  ColorVariant color =
+      is_toggled ? background_toggled_color_ : background_color_;
+  if (absl::holds_alternative<SkColor>(color)) {
+    SetBackground(CreateSolidBackground(absl::get<SkColor>(color), type_));
+  } else {
+    SetBackground(CreateThemedBackground(absl::get<ui::ColorId>(color), type_));
   }
-
-  // When the button is not toggled, create a background with normal color.
-  if (background_color_id_ || !background_color_) {
-    const ui::ColorId color_id = background_color_id_.value_or(
-        is_jellyroll_enabled ? cros_tokens::kCrosSysSystemOnBase
-                             : static_cast<ui::ColorId>(
-                                   kColorAshControlBackgroundColorInactive));
-    SetBackground(CreateThemedBackground(color_id, type_));
-    return;
-  }
-  SetBackground(CreateSolidBackground(background_color_.value(), type_));
-  return;
 }
 
 void IconButton::UpdateVectorIcon(bool color_changes_only) {
@@ -462,50 +456,20 @@ void IconButton::UpdateVectorIcon(bool color_changes_only) {
   const gfx::VectorIcon* icon =
       is_toggled && toggled_icon_ ? toggled_icon_.get() : icon_.get();
 
-  if (!icon)
+  if (!icon) {
     return;
+  }
 
   const int icon_size = icon_size_.value_or(GetIconSizeOnType(type_));
-  const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
 
   ui::ImageModel new_normal_image_model;
-  // When the icon color is defined by a color Id, use the color Id to create an
-  // image model. Otherwise, use the color to create an image model.
-  // TODO(zxdan): only use color Id when the dynamic color migration work is
-  // done.
-  if (is_toggled) {
-    // When the button is toggled, create an image model with toggled color.
-    if (icon_toggled_color_id_ || !icon_toggled_color_) {
-      const ui::ColorId color_id = icon_toggled_color_id_.value_or(
-          is_jellyroll_enabled
-              ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-              : static_cast<ui::ColorId>(kColorAshButtonIconColorPrimary));
-      new_normal_image_model =
-          ui::ImageModel::FromVectorIcon(*icon, color_id, icon_size);
-    } else {
-      new_normal_image_model = ui::ImageModel::FromVectorIcon(
-          *icon, icon_toggled_color_.value(), icon_size);
-    }
+  ColorVariant color = is_toggled ? icon_toggled_color_ : icon_color_;
+  if (absl::holds_alternative<SkColor>(color)) {
+    new_normal_image_model = ui::ImageModel::FromVectorIcon(
+        *icon, absl::get<SkColor>(color), icon_size);
   } else {
-    // When the button is not toggled, create an image model with normal color.
-    if (icon_color_id_ || !icon_color_) {
-      ui::ColorId default_color_id;
-      if (IsProminentFloatingType(type_)) {
-        default_color_id = HasFocus() ? cros_tokens::kCrosSysPrimary
-                                      : cros_tokens::kCrosSysSecondary;
-      } else {
-        default_color_id =
-            is_jellyroll_enabled
-                ? cros_tokens::kCrosSysOnSurface
-                : static_cast<ui::ColorId>(kColorAshButtonIconColor);
-      }
-      const ui::ColorId color_id = icon_color_id_.value_or(default_color_id);
-      new_normal_image_model =
-          ui::ImageModel::FromVectorIcon(*icon, color_id, icon_size);
-    } else {
-      new_normal_image_model =
-          ui::ImageModel::FromVectorIcon(*icon, icon_color_.value(), icon_size);
-    }
+    new_normal_image_model = ui::ImageModel::FromVectorIcon(
+        *icon, absl::get<ui::ColorId>(color), icon_size);
   }
 
   if (GetWidget()) {

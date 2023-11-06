@@ -34,23 +34,20 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 /**
  * Integration test for the Password Check component, testing the interaction between sub-components
  * of the password check feature as well as the creation and destruction of the component.
- **/
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PasswordCheckIntegrationTest {
     @Rule
     public final SettingsActivityTestRule<PasswordCheckFragmentView> mTestRule =
             new SettingsActivityTestRule<>(PasswordCheckFragmentView.class);
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public final JniMocker mJniMocker = new JniMocker();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    private PasswordCheckBridge.Natives mPasswordCheckBridge;
-    @Mock
-    private SettingsLauncher mMockSettingsLauncher;
+    @Rule public final JniMocker mJniMocker = new JniMocker();
+
+    @Mock private PasswordCheckBridge.Natives mPasswordCheckBridge;
+    @Mock private SettingsLauncher mMockSettingsLauncher;
 
     @Before
     public void setUp() {
@@ -84,14 +81,16 @@ public class PasswordCheckIntegrationTest {
 
     private Activity setUpUiLaunchedFromSettings() {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
+        fragmentArgs.putInt(
+                PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
                 PasswordCheckReferrer.PASSWORD_SETTINGS);
         return mTestRule.startSettingsActivity(fragmentArgs);
     }
 
     private Activity setUpUiLaunchedFromDialog() {
         Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
+        fragmentArgs.putInt(
+                PasswordCheckFragmentView.PASSWORD_CHECK_REFERRER,
                 PasswordCheckReferrer.LEAK_DIALOG);
         return mTestRule.startSettingsActivity(fragmentArgs);
     }

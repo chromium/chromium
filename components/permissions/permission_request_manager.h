@@ -163,6 +163,7 @@ class PermissionRequestManager
   void Deny() override;
   void Dismiss() override;
   void Ignore() override;
+  void FinalizeCurrentRequests() override;
   void OpenHelpCenterLink(const ui::Event& event) override;
   void PreIgnoreQuietPrompt() override;
   bool WasCurrentRequestAlreadyDisplayed() override;
@@ -326,9 +327,11 @@ class PermissionRequestManager
   // Finalize request.
   void ResetViewStateForCurrentRequest();
 
-  // Delete the view object, finalize requests, asynchronously show a queued
-  // request if present.
-  void FinalizeCurrentRequests(PermissionAction permission_action);
+  // Records metrics and informs embargo and autoblocker about the requests
+  // being decided. Based on |view_->ShouldFinalizeRequestAfterDecided()| it
+  // will also call |FinalizeCurrentRequests()|. Otherwise a separate
+  // |FinalizeCurrentRequests()| call must be made to release the |view_|.
+  void CurrentRequestsDecided(PermissionAction permission_action);
 
   // Cancel all pending or active requests and destroy the PermissionPrompt if
   // one exists. This is called if the WebContents is destroyed or navigates its
@@ -394,6 +397,14 @@ class PermissionRequestManager
   void DoAutoResponseForTesting();
 
   void PreIgnoreQuietPromptInternal();
+
+  // Returns true if there is a request in progress that is initiated by an
+  // embedded permission element.
+  bool IsCurrentRequestEmbeddedPermissionElementInitiated() const;
+
+  // Returns true when the current request should be finalized together with the
+  // permission decision.
+  bool ShouldFinalizeRequestAfterDecided(PermissionAction action) const;
 
   // Factory to be used to create views when needed.
   PermissionPrompt::Factory view_factory_;

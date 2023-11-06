@@ -29,6 +29,7 @@ class PasskeyCredential {
     kTouchId,
     kWindowsHello,
     kICloudKeychain,
+    kGooglePasswordManager,
     kOther,
   };
 

@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/style_scope_data.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
-#include "third_party/blink/renderer/core/dom/css_toggle_map.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/has_invalidation_flags.h"
@@ -52,7 +52,7 @@ unsigned ElementRareDataVector::GetFieldIndex(FieldId field_id) const {
 ElementRareDataField* ElementRareDataVector::GetField(FieldId field_id) const {
   if (fields_bitfield_ &
       (static_cast<BitfieldType>(1) << static_cast<unsigned>(field_id)))
-    return fields_[GetFieldIndex(field_id)];
+    return fields_[GetFieldIndex(field_id)].Get();
   return nullptr;
 }
 
@@ -303,6 +303,13 @@ void ElementRareDataVector::ClearContainerQueryData() {
   SetField(FieldId::kContainerQueryData, nullptr);
 }
 
+StyleScopeData& ElementRareDataVector::EnsureStyleScopeData() {
+  return EnsureField<StyleScopeData>(FieldId::kStyleScopeData);
+}
+StyleScopeData* ElementRareDataVector::GetStyleScopeData() const {
+  return static_cast<StyleScopeData*>(GetField(FieldId::kStyleScopeData));
+}
+
 const RegionCaptureCropId* ElementRareDataVector::GetRegionCaptureCropId()
     const {
   auto* value = GetWrappedField<std::unique_ptr<RegionCaptureCropId>>(
@@ -380,14 +387,6 @@ PopoverData& ElementRareDataVector::EnsurePopoverData() {
 }
 void ElementRareDataVector::RemovePopoverData() {
   SetField(FieldId::kPopoverData, nullptr);
-}
-
-CSSToggleMap* ElementRareDataVector::GetToggleMap() const {
-  return static_cast<CSSToggleMap*>(GetField(FieldId::kToggleMap));
-}
-CSSToggleMap& ElementRareDataVector::EnsureToggleMap(Element* owner_element) {
-  DCHECK(!GetToggleMap() || GetToggleMap()->OwnerElement() == owner_element);
-  return EnsureField<CSSToggleMap>(FieldId::kToggleMap, owner_element);
 }
 
 AnchorPositionScrollData* ElementRareDataVector::GetAnchorPositionScrollData()

@@ -475,7 +475,6 @@ template("chrome_common_apk_or_module_tmpl") {
         if (_is_monochrome) {
           # WebView needs these in the base module.
           deps += [
-            "//components/environment_integrity/android:integrity_service_bridge_public_impl_java",
             "//content/public/android:identity_credentials_public_impl_java",
           ]
         }

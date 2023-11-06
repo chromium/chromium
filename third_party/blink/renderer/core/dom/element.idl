@@ -22,6 +22,9 @@
 dictionary CheckVisibilityOptions {
   boolean checkOpacity = false;
   boolean checkVisibilityCSS = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean contentVisibilityAuto = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean opacityProperty = false;
+  [RuntimeEnabled=CheckVisibilityExtraProperties] boolean visibilityProperty = false;
 };
 
 // https://dom.spec.whatwg.org/#interface-element
@@ -97,6 +100,8 @@ dictionary CheckVisibilityOptions {
     [CEReactions, RuntimeCallStatsCounter=ElementInnerHTML, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString innerHTML;
     [CEReactions, RaisesException=Setter] attribute [LegacyNullToEmptyString, StringContext=TrustedHTML] DOMString outerHTML;
     [CEReactions, RaisesException] void insertAdjacentHTML(DOMString position, HTMLString text);
+    // https://github.com/whatwg/html/pull/9538
+    [RuntimeEnabled=HTMLUnsafeMethods,RaisesException,MeasureAs=SetHTMLUnsafe] void setHTMLUnsafe(DOMString html);
 
     // Declarative Shadow DOM getInnerHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
@@ -112,7 +117,7 @@ dictionary CheckVisibilityOptions {
     [Affects=Nothing, Measure, RuntimeCallStatsCounter=ElementGetBoundingClientRect] DOMRect getBoundingClientRect();
 
     // https://drafts.csswg.org/cssom-view/#dom-element-checkvisibility
-    [RuntimeEnabled=checkVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
+    [MeasureAs=ElementCheckVisibility] boolean checkVisibility(optional CheckVisibilityOptions options = {});
 
     // TODO(sunyunjia): Add default value for scrollIntoView() once
     // crbug.com/734599 is fixed.
@@ -154,11 +159,6 @@ dictionary CheckVisibilityOptions {
 
     // Element Timing
     [CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
-
-    // CSS Toggles
-    // See https://tabatkins.github.io/css-toggle/#dom and
-    // https://github.com/tabatkins/css-toggle/issues/26
-    [RuntimeEnabled=CSSToggles, SameObject] readonly attribute CSSToggleMap toggles;
 };
 
 Element includes ParentNode;

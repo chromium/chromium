@@ -1,0 +1,40 @@
+[
+  {
+    "os": [
+      "linux"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "system_notifications.allowed": {
+            "default_value": true,
+            "location": "user_profile"
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowSystemNotifications": true
+        },
+        "prefs": {
+          "system_notifications.allowed": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "AllowSystemNotifications": false
+        },
+        "prefs": {
+          "system_notifications.allowed": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      }
+    ]
+  }
+]

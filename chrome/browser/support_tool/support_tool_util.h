@@ -33,7 +33,7 @@ GetAllAvailableDataCollectorsOnDevice();
 
 // Returns a filepath in `target_directory` to export the support packet into.
 // The returned filename will be in format of
-// <filename_prefix>_<case_id>_YYYY_MM_DD_HH_mm. `case_id` will not be included
+// <filename_prefix>_<case_id>_UTCYYYYMMDD_HHmm. `case_id` will not be included
 // if it's empty.
 base::FilePath GetFilepathToExport(base::FilePath target_directory,
                                    const std::string& filename_prefix,

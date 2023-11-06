@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {ApplicationTestRunner} from 'application_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that frame inside crafted frame doesn't cause 'MainFrameNavigated' event and correctly attaches to frame tree. crbug/259036\n`);

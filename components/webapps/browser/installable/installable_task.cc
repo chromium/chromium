@@ -80,9 +80,9 @@ void InstallableTask::IncrementStateAndWorkOnNextTask() {
   CHECK(kInactive < state_ && state_ < kMaxState);
 
   switch (state_) {
-    case kCheckEligiblity:
+    case kCheckEligibility:
       if (params_.check_eligibility) {
-        CheckEligiblity();
+        CheckEligibility();
         return;
       }
       break;
@@ -146,8 +146,8 @@ void InstallableTask::OnWaitingForServiceWorker() {
   manager_->OnTaskPaused();
 }
 
-void InstallableTask::CheckEligiblity() {
-  auto errors = evaluator_->CheckEligiblity(web_contents_.get());
+void InstallableTask::CheckEligibility() {
+  auto errors = evaluator_->CheckEligibility(web_contents_.get());
   if (!errors.empty()) {
     errors_.insert(errors_.end(), errors.begin(), errors.end());
   }

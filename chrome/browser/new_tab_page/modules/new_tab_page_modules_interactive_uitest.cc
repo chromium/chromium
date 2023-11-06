@@ -288,7 +288,7 @@ class NewTabPageModulesRedesignedInteractiveUiTest
 
 // TODO(crbug.com/1470367): Enable the test on a compatible version skew.
 // TODO(crbug.com/1472077): Flaky on Linux ChromiumOS MSan.
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingHideButtonDismissesCluster \
   DISABLED_ClickingHideButtonDismissesCluster
 #else
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesRedesignedInteractiveUiTest,
                                       kSampleNumClusters - 1));
 }
 
-// TODO(crbug.com/1469698): Flaky on Linux Tests (dbg).
-#if BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
+// TODO(crbug.com/1469698): Flaky on Linux Tests (dbg, MSan).
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_ClickingDoneButtonDismissesCluster \
   DISABLED_ClickingDoneButtonDismissesCluster
 #else

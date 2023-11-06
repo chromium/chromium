@@ -27,9 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Tests for {@link Features}.
- */
+/** Tests for {@link Features}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class FeaturesAnnotationsTest {
@@ -60,7 +58,7 @@ public class FeaturesAnnotationsTest {
      * Tests the compatibility between the legacy {@link CommandLineFlags} annotation usage for
      * features and the new dedicated annotations.
      *
-     * If a feature is already present in the command line, it should not be removed nor alter
+     * <p>If a feature is already present in the command line, it should not be removed nor alter
      * the current feature list.
      */
     @Test
@@ -79,7 +77,8 @@ public class FeaturesAnnotationsTest {
      * Tests the compatibility between the legacy {@link CommandLineFlags} annotation usage for
      * features and the new dedicated annotations.
      *
-     * New features should be added to the existing command line, without removing the current ones.
+     * <p>New features should be added to the existing command line, without removing the current
+     * ones.
      */
     @Test
     @SmallTest
@@ -95,8 +94,10 @@ public class FeaturesAnnotationsTest {
 
     private static List<String> getFeatureList(boolean enabled) {
         String switchName = enabled ? "enable-features" : "disable-features";
-        ArrayList<String> allFeatures = new ArrayList(
-                Arrays.asList(CommandLine.getInstance().getSwitchValue(switchName).split(",")));
+        ArrayList<String> allFeatures =
+                new ArrayList(
+                        Arrays.asList(
+                                CommandLine.getInstance().getSwitchValue(switchName).split(",")));
         // To avoid interferences with features enabled or disabled outside of
         // this test class, we only return the one we set in the tests.
         ArrayList<String> relevantFeatures =

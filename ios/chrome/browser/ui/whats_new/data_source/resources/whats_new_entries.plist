@@ -104,8 +104,6 @@
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_STEP_3</string>
             </array>
-            <key>PrimaryActionTitle</key>
-            <string>IDS_IOS_WHATS_NEW_FEATURE_ADD_PASSWORDS_MANUALLY_BUTTON_TITLE</string>
             <key>PrimaryAction</key>
             <integer>3</integer>
             <key>LearnMoreUrlString</key>
@@ -139,8 +137,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_2</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_3</string>
             </array>
-            <key>PrimaryActionTitle</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE</string>
             <key>PrimaryAction</key>
             <integer>1</integer>
             <key>LearnMoreUrlString</key>
@@ -170,8 +166,6 @@
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1</string>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_2</string>
             </array>
-            <key>PrimaryActionTitle</key>
-            <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_BUTTON_TITLE</string>
             <key>PrimaryAction</key>
             <integer>4</integer>
             <key>LearnMoreUrlString</key>

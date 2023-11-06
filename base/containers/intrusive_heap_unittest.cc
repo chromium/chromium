@@ -143,8 +143,8 @@ void DoGrowingOperation(IntrusiveHeap<T>* heap) {
 // Used to determine whether or not the "take" operations can be used.
 template <typename T>
 struct NotMovable {
-  static constexpr bool value = !std::is_nothrow_move_constructible<T>::value &&
-                                std::is_copy_constructible<T>::value;
+  static constexpr bool value = !std::is_nothrow_move_constructible_v<T> &&
+                                std::is_copy_constructible_v<T>;
 };
 
 // Invokes "take" if the type is movable, otherwise invokes erase.
@@ -516,11 +516,11 @@ DEFINE_VALUE_TYPE(Value_dMc, delete, default, delete)
 // default-constructors, move-operations and copy-operations.
 template <typename ValueType, bool D, bool M, bool C>
 void ValidateValueType() {
-  static_assert(std::is_default_constructible<ValueType>::value == D, "oops");
-  static_assert(std::is_move_constructible<ValueType>::value == M, "oops");
-  static_assert(std::is_move_assignable<ValueType>::value == M, "oops");
-  static_assert(std::is_copy_constructible<ValueType>::value == C, "oops");
-  static_assert(std::is_copy_assignable<ValueType>::value == C, "oops");
+  static_assert(std::is_default_constructible_v<ValueType> == D, "oops");
+  static_assert(std::is_move_constructible_v<ValueType> == M, "oops");
+  static_assert(std::is_move_assignable_v<ValueType> == M, "oops");
+  static_assert(std::is_copy_constructible_v<ValueType> == C, "oops");
+  static_assert(std::is_copy_assignable_v<ValueType> == C, "oops");
 }
 
 // A small test element that provides its own HeapHandle storage and implements

@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.readaloud.player.mini;
 
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.readaloud.ReadAloudMiniPlayerSceneLayer;
+import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -20,24 +27,58 @@ public class MiniPlayerCoordinator {
             mModelChangeProcessor;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
+    // Compositor layer to be shown during show and hide while browser controls are
+    // resizing.
+    private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
 
-    public MiniPlayerCoordinator(ViewStub viewStub, PropertyModel model) {
-        this(viewStub, model, new MiniPlayerMediator(model));
+    /**
+     * @param activity App activity containing a placeholder FrameLayout with ID
+     *     R.id.readaloud_mini_player.
+     * @param context View-inflation-capable Context for read_aloud_playback isolated split.
+     * @param model Player UI property model.
+     */
+    public MiniPlayerCoordinator(
+            Activity activity,
+            Context context,
+            PropertyModel model,
+            BrowserControlsSizer browserControlsSizer,
+            LayoutManager layoutManager) {
+        this(
+                model,
+                new MiniPlayerMediator(model, browserControlsSizer),
+                inflateLayout(activity, context),
+                new ReadAloudMiniPlayerSceneLayer(browserControlsSizer),
+                layoutManager);
+    }
+
+    private static MiniPlayerLayout inflateLayout(Activity activity, Context context) {
+        ViewStub stub = activity.findViewById(R.id.readaloud_mini_player_stub);
+        assert stub != null;
+        stub.setLayoutResource(R.layout.readaloud_mini_player_layout);
+        stub.setLayoutInflater(LayoutInflater.from(context));
+        return (MiniPlayerLayout) stub.inflate();
     }
 
     @VisibleForTesting
-    MiniPlayerCoordinator(ViewStub viewStub, PropertyModel model, MiniPlayerMediator mediator) {
+    MiniPlayerCoordinator(
+            PropertyModel model,
+            MiniPlayerMediator mediator,
+            MiniPlayerLayout layout,
+            ReadAloudMiniPlayerSceneLayer sceneLayer,
+            LayoutManager layoutManager) {
         mModel = model;
-        mLayout = (MiniPlayerLayout) viewStub.inflate();
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(mModel, mLayout, MiniPlayerViewBinder::bind);
         mMediator = mediator;
+        mLayout = layout;
+        assert layout != null;
+        mSceneLayer = sceneLayer;
+        layoutManager.addSceneOverlay(mSceneLayer);
+
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(mModel, layout, MiniPlayerViewBinder::bind);
     }
 
     public void destroy() {
-        if (mLayout != null) {
-            mLayout.destroy();
-        }
+        mLayout.destroy();
     }
 
     /**

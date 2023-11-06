@@ -59,10 +59,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
 
-/**
- * View tests for the keyboard accessory component.
- *
- */
+/** View tests for the keyboard accessory component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
@@ -76,29 +73,35 @@ public class KeyboardAccessoryViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel = KeyboardAccessoryProperties.defaultModelBuilder()
-                             .with(SHEET_OPENER_ITEM,
-                                     new SheetOpenerBarItem(
-                                             new KeyboardAccessoryTabLayoutCoordinator
-                                                     .SheetOpenerCallbacks() {
-                                                         @Override
-                                                         public void onViewBound(View tabs) {}
-                                                         @Override
-                                                         public void onViewUnbound(View tabs) {}
-                                                     }))
-                             .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
-                             .build();
-            AsyncViewStub viewStub =
-                    mActivityTestRule.getActivity().findViewById(R.id.keyboard_accessory_stub);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel =
+                            KeyboardAccessoryProperties.defaultModelBuilder()
+                                    .with(
+                                            SHEET_OPENER_ITEM,
+                                            new SheetOpenerBarItem(
+                                                    new KeyboardAccessoryTabLayoutCoordinator
+                                                            .SheetOpenerCallbacks() {
+                                                        @Override
+                                                        public void onViewBound(View tabs) {}
 
-            mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
-            ViewProvider<KeyboardAccessoryView> provider =
-                    AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
-            LazyConstructionPropertyMcp.create(
-                    mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
-            provider.whenLoaded(mKeyboardAccessoryView::add);
-        });
+                                                        @Override
+                                                        public void onViewUnbound(View tabs) {}
+                                                    }))
+                                    .with(DISABLE_ANIMATIONS_FOR_TESTING, true)
+                                    .build();
+                    AsyncViewStub viewStub =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.keyboard_accessory_stub);
+
+                    mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
+                    ViewProvider<KeyboardAccessoryView> provider =
+                            AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
+                    LazyConstructionPropertyMcp.create(
+                            mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
+                    provider.whenLoaded(mKeyboardAccessoryView::add);
+                });
     }
 
     @Test
@@ -108,12 +111,18 @@ public class KeyboardAccessoryViewTest {
         assertNull(mKeyboardAccessoryView.poll());
 
         // After setting the visibility to true, the view should exist and be visible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModel.set(VISIBLE, true); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                });
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
         assertEquals(view.getVisibility(), View.VISIBLE);
 
         // After hiding the view, the view should still exist but be invisible.
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mModel.set(VISIBLE, false); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, false);
+                });
         assertNotEquals(view.getVisibility(), View.VISIBLE);
     }
 
@@ -127,10 +136,11 @@ public class KeyboardAccessoryViewTest {
                         new Action(GENERATE_PASSWORD_AUTOMATIC, action -> buttonClicked.set(true)),
                         R.string.password_generation_accessory_button);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mModel.set(VISIBLE, true);
-            mModel.get(BAR_ITEMS).add(testItem);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(VISIBLE, true);
+                    mModel.get(BAR_ITEMS).add(testItem);
+                });
 
         onViewWaiting(withText(R.string.password_generation_accessory_button)).perform(click());
 

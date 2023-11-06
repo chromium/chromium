@@ -7,6 +7,7 @@ import {ElementsTestRunner} from 'elements_test_runner';
 
 import * as Common from 'devtools/core/common/common.js';
 import * as ElementsModule from 'devtools/panels/elements/elements.js';
+import * as SDK from 'devtools/core/sdk/sdk.js';
 
 (async function() {
   TestRunner.addResult(`Tests that nested pseudo elements and their styles are handled properly.\n`);

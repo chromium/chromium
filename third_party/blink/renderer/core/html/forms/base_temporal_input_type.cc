@@ -42,8 +42,8 @@
 
 namespace blink {
 
-static const int kMsecPerMinute = 60 * 1000;
-static const int kMsecPerSecond = 1000;
+static constexpr int kMsecPerMinute = base::Minutes(1).InMilliseconds();
+static constexpr int kMsecPerSecond = base::Seconds(1).InMilliseconds();
 
 String BaseTemporalInputType::BadInputText() const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_BAD_INPUT_DATETIME);
@@ -170,7 +170,8 @@ String BaseTemporalInputType::SerializeWithDate(
     const absl::optional<base::Time>& value) const {
   if (!value)
     return g_empty_string;
-  return Serialize(Decimal::FromDouble(value->ToJsTimeIgnoringNull()));
+  return Serialize(
+      Decimal::FromDouble(value->InMillisecondsFSinceUnixEpochIgnoringNull()));
 }
 
 String BaseTemporalInputType::LocalizeValue(

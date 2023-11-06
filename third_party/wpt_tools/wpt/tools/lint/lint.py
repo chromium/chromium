@@ -688,7 +688,7 @@ def check_all_paths(repo_root: Text, paths: List[Text]) -> List[rules.Error]:
     """
 
     errors = []
-    for paths_fn in all_paths_lints:
+    for paths_fn in all_paths_lints():
         errors.extend(paths_fn(repo_root, paths))
     return errors
 
@@ -983,17 +983,21 @@ def lint(repo_root: Text,
 
 path_lints = [check_file_type, check_path_length, check_worker_collision, check_ahem_copy,
               check_mojom_js, check_tentative_directories, check_gitignore_file]
-all_paths_lints = [check_unique_testharness_basenames,
-                   check_unique_case_insensitive_paths]
 file_lints = [check_regexp_line, check_parsed, check_python_ast, check_script_metadata,
               check_ahem_system_font]
 
-# Don't break users of the lint that don't have git installed.
-try:
-    subprocess.check_output(["git", "--version"])
-    all_paths_lints += [check_git_ignore]
-except (subprocess.CalledProcessError, FileNotFoundError):
-    print('No git present; skipping .gitignore lint.')
+
+def all_paths_lints() -> Any:
+    paths = [check_unique_testharness_basenames,
+             check_unique_case_insensitive_paths]
+    # Don't break users of the lint that don't have git installed.
+    try:
+        subprocess.check_output(["git", "--version"])
+        paths += [check_git_ignore]
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print('No git present; skipping .gitignore lint.')
+    return paths
+
 
 if __name__ == "__main__":
     args = create_parser().parse_args()

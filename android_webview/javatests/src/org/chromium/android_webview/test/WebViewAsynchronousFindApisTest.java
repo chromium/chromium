@@ -14,13 +14,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Feature;
 
-/**
- * Tests the asynchronous find-in-page APIs in WebView.
- */
+/** Tests the asynchronous find-in-page APIs in WebView. */
 @RunWith(AwJUnit4ClassRunner.class)
 public class WebViewAsynchronousFindApisTest {
-    @Rule
-    public WebViewFindApisTestRule mActivityTestRule = new WebViewFindApisTestRule();
+    @Rule public WebViewFindApisTestRule mActivityTestRule = new WebViewFindApisTestRule();
 
     @Test
     @SmallTest
@@ -150,8 +147,8 @@ public class WebViewAsynchronousFindApisTest {
     @SmallTest
     @Feature({"AndroidWebView", "FindInPage"})
     public void testFindNextFirst() throws Throwable {
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> mActivityTestRule.contents().findNext(true));
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(() -> mActivityTestRule.contents().findNext(true));
         Assert.assertEquals(4, mActivityTestRule.findAllAsyncOnUiThread("wood"));
         Assert.assertEquals(1, mActivityTestRule.findNextOnUiThread(true));
         Assert.assertEquals(0, mActivityTestRule.findNextOnUiThread(false));

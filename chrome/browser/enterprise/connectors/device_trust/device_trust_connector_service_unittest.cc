@@ -6,9 +6,7 @@
 
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,9 +69,8 @@ class MockPolicyObserver : public DeviceTrustConnectorService::PolicyObserver {
 
 class DeviceTrustConnectorServiceTest : public testing::Test {
  protected:
-  DeviceTrustConnectorServiceTest(bool feature_enabled = true,
-                                  bool has_policy_value = true)
-      : feature_enabled_(feature_enabled), has_policy_value_(has_policy_value) {
+  explicit DeviceTrustConnectorServiceTest(bool has_policy_value = true)
+      : has_policy_value_(has_policy_value) {
     RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
 
     levels_.insert(DTCPolicyLevel::kBrowser);
@@ -84,13 +81,7 @@ class DeviceTrustConnectorServiceTest : public testing::Test {
     return std::make_unique<DeviceTrustConnectorService>(&prefs_);
   }
 
-  void InitializeFeatureFlag() {
-    feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
-                                       feature_enabled_);
-  }
-
   void InitializePrefs(const std::string& pref) {
-    InitializeFeatureFlag();
     if (has_policy_value_) {
       SetPolicy(&prefs_, pref, GetOrigins());
     }
@@ -149,10 +140,8 @@ class DeviceTrustConnectorServiceTest : public testing::Test {
     SetPolicy(&prefs_, pref);
   }
 
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::set<DTCPolicyLevel> levels_;
-  bool feature_enabled_ = true;
   bool has_policy_value_ = true;
 };
 
@@ -264,26 +253,16 @@ TEST_F(DeviceTrustConnectorServiceTest, BrowserPolicy_PolicyObserver_Notified) {
 
 class DeviceTrustConnectorServiceFlagTest
     : public DeviceTrustConnectorServiceTest,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+      public ::testing::WithParamInterface<bool> {
  protected:
   DeviceTrustConnectorServiceFlagTest()
-      : DeviceTrustConnectorServiceTest(is_flag_enabled(),
-                                        is_policy_enabled()) {}
+      : DeviceTrustConnectorServiceTest(is_policy_enabled()) {}
 
-  bool is_attestation_flow_enabled() {
-    return is_flag_enabled() && is_policy_enabled();
-  }
-
-  bool is_flag_enabled() { return std::get<0>(GetParam()); }
-  bool is_policy_enabled() { return std::get<1>(GetParam()); }
+  bool is_policy_enabled() { return GetParam(); }
 
   void TestConnectorEnabledFlow(const std::string& pref) {
     auto service = CreateService();
-    EXPECT_EQ(is_attestation_flow_enabled(), service->IsConnectorEnabled());
-
-    if (!is_flag_enabled()) {
-      return;
-    }
+    EXPECT_EQ(service->IsConnectorEnabled(), is_policy_enabled());
 
     SetPolicy(&prefs_, pref, GetOrigins());
 
@@ -311,6 +290,6 @@ TEST_P(DeviceTrustConnectorServiceFlagTest,
 
 INSTANTIATE_TEST_SUITE_P(,
                          DeviceTrustConnectorServiceFlagTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Bool());
 
 }  // namespace enterprise_connectors

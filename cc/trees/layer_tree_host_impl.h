@@ -164,6 +164,7 @@ class LayerTreeHostImplClient {
   virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) = 0;
 
   virtual void DidObserveFirstScrollDelay(
+      int source_frame_number,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) = 0;
 
@@ -302,7 +303,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   float CurrentBottomControlsShownRatio() const override;
   gfx::PointF ViewportScrollOffset() const override;
   void DidChangeBrowserControlsPosition() override;
-  void DidObserveScrollDelay(base::TimeDelta scroll_delay,
+  void DidObserveScrollDelay(int source_frame_number,
+                             base::TimeDelta scroll_delay,
                              base::TimeTicks scroll_timestamp);
   bool OnlyExpandTopControlsAtPageTop() const override;
   bool HaveRootScrollNode() const override;

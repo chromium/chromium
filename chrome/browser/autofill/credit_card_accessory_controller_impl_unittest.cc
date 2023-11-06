@@ -16,6 +16,7 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
+#include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
@@ -76,8 +77,13 @@ class TestAccessManager : public CreditCardAccessManager {
 class MockAutofillDriver : public TestContentAutofillDriver {
  public:
   using TestContentAutofillDriver::TestContentAutofillDriver;
-  MOCK_METHOD2(RendererShouldFillFieldWithValue,
-               void(const FieldGlobalId& field, const std::u16string&));
+  MOCK_METHOD(void,
+              ApplyFieldAction,
+              (mojom::ActionPersistence action_persistence,
+               mojom::TextReplacement text_replacement,
+               const FieldGlobalId& field,
+               const std::u16string&),
+              (override));
 };
 
 class CreditCardAccessoryControllerTest
@@ -307,7 +313,9 @@ TEST_P(CreditCardAccessoryControllerCardUnmaskTest, CardUnmask) {
                          .renderer_id = FieldRendererId(123)};
 
   EXPECT_CALL(autofill_driver(),
-              RendererShouldFillFieldWithValue(field_id, card.number()));
+              ApplyFieldAction(mojom::ActionPersistence::kFill,
+                               mojom::TextReplacement::kReplaceAll, field_id,
+                               card.number()));
 
   controller()->OnFillingTriggered(field_id, field);
 }

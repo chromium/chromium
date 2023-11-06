@@ -5,7 +5,7 @@
 'use strict';
 
 idl_test(
-  ['storage-buckets.tentative'],
+  ['storage-buckets'],
   ['html'],
   async (idl_array, t) => {
     idl_array.add_objects({

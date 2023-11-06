@@ -37,8 +37,7 @@ public class PolicyCacheProviderTest {
 
     private static final int SOURCE = 0;
 
-    @Mock
-    private CombinedPolicyProvider mCombinedPolicyProvider;
+    @Mock private CombinedPolicyProvider mCombinedPolicyProvider;
 
     @Before
     public void setUp() {
@@ -61,12 +60,17 @@ public class PolicyCacheProviderTest {
 
         provider.refresh();
 
-        verify(mCombinedPolicyProvider).onSettingsAvailable(eq(SOURCE), argThat(bundle -> {
-            return bundle.size() == 4 && bundle.getInt(POLICY_NAME_1) == INT_POLICY
-                    && bundle.getBoolean(POLICY_NAME_2) == BOOLEAN_POLICY
-                    && STRING_POLICY.equals(bundle.getString(POLICY_NAME_3))
-                    && DICT_POLICY.equals(bundle.getString(POLICY_NAME_4));
-        }));
+        verify(mCombinedPolicyProvider)
+                .onSettingsAvailable(
+                        eq(SOURCE),
+                        argThat(
+                                bundle -> {
+                                    return bundle.size() == 4
+                                            && bundle.getInt(POLICY_NAME_1) == INT_POLICY
+                                            && bundle.getBoolean(POLICY_NAME_2) == BOOLEAN_POLICY
+                                            && STRING_POLICY.equals(bundle.getString(POLICY_NAME_3))
+                                            && DICT_POLICY.equals(bundle.getString(POLICY_NAME_4));
+                                }));
     }
 
     @Test

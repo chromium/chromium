@@ -60,7 +60,9 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
 
   void AddHeader(const AtomicString& key, const AtomicString& value);
 
-  ExecutionContext* GetExecutionContext() const { return execution_context_; }
+  ExecutionContext* GetExecutionContext() const {
+    return execution_context_.Get();
+  }
   const AtomicString& Method() const { return method_; }
   const KURL& Url() const { return url_; }
   bool Async() const { return async_; }

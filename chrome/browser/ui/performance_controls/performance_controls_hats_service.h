@@ -15,7 +15,7 @@ class PerformanceControlsHatsService
       public performance_manager::user_tuning::UserPerformanceTuningManager::
           Observer {
  public:
-  explicit PerformanceControlsHatsService(Profile* profile);
+  PerformanceControlsHatsService(PrefService* local_state, Profile* profile);
   ~PerformanceControlsHatsService() override;
 
   // Called in response to a change in the battery saver mode pref to check
@@ -32,6 +32,7 @@ class PerformanceControlsHatsService
   void OnHighEfficiencyModeChanged() override;
 
  private:
+  raw_ptr<PrefService> local_state_;
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar local_pref_registrar_;
 };

@@ -62,6 +62,13 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void, ShowOtherError, (EnrollmentLauncher::OtherError));
   MOCK_METHOD(void, ShowEnrollmentStatus, (policy::EnrollmentStatus status));
   MOCK_METHOD(void, Shutdown, ());
+
+  base::WeakPtr<EnrollmentScreenView> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<EnrollmentScreenView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

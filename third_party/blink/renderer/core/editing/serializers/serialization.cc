@@ -655,7 +655,6 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     const String& markup,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
-    const char* method,
     bool include_shadow_roots,
     ExceptionState& exception_state) {
   DCHECK(context_element);
@@ -780,7 +779,7 @@ DocumentFragment* CreateContextualFragment(
   DCHECK(element);
 
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-      markup, element, parser_content_policy, "createContextualFragment",
+      markup, element, parser_content_policy,
       /*include_shadow_roots=*/false, exception_state);
   if (!fragment)
     return nullptr;

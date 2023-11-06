@@ -34,24 +34,23 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ScrollCaptureManagerTest {
-    @Mock
-    private Tab mTab;
-    @Mock
-    private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;
+    @Mock private Tab mTab;
+    @Mock private ScrollCaptureManagerDelegate mScrollCaptureManagerDelegateMock;
 
     private ObservableSupplierImpl<Tab> mTabSupplier;
     private ScrollCaptureManager mScrollCaptureManager;
 
-    @Rule
-    public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mTabSupplier = new ObservableSupplierImpl<>();
-            mScrollCaptureManager =
-                    new ScrollCaptureManager(mTabSupplier, mScrollCaptureManagerDelegateMock);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSupplier = new ObservableSupplierImpl<>();
+                    mScrollCaptureManager =
+                            new ScrollCaptureManager(
+                                    mTabSupplier, mScrollCaptureManagerDelegateMock);
+                });
     }
 
     @Test

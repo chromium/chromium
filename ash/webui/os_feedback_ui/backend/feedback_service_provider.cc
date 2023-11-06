@@ -72,6 +72,8 @@ void FeedbackServiceProvider::GetFeedbackContext(
   FeedbackContextPtr feedback_context = FeedbackContext::New();
   feedback_context->page_url = feedback_delegate_->GetLastActivePageUrl();
   feedback_context->email = feedback_delegate_->GetSignedInUserEmail();
+  feedback_context->wifi_debug_logs_allowed =
+      feedback_delegate_->IsWifiDebugLogsAllowed();
   feedback_context->trace_id = feedback_delegate_->GetPerformanceTraceId();
   if (features::IsLinkCrossDeviceDogfoodFeedbackEnabled()) {
     feedback_context->has_linked_cross_device_phone =

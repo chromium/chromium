@@ -19,11 +19,12 @@ import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.tasks.Task;
 
+import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -38,8 +39,6 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
-import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
-import org.chromium.content_public.browser.WebAuthenticationDelegate;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.net.GURLUtils;
@@ -70,7 +69,7 @@ public class Fido2CredentialRequest
     static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
     public static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
 
-    private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    private final FidoIntentSender mIntentSender;
     // mPlayServicesAvailable caches whether the Play Services FIDO API is
     // available.
     private final boolean mPlayServicesAvailable;
@@ -96,10 +95,12 @@ public class Fido2CredentialRequest
 
     public enum ConditionalUiState {
         NONE,
+        WAITING_FOR_RP_ID_VALIDATION,
         WAITING_FOR_CREDENTIAL_LIST,
         WAITING_FOR_SELECTION,
         REQUEST_SENT_TO_PLATFORM,
-        CANCEL_PENDING
+        CANCEL_PENDING,
+        CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE,
     }
 
     private ConditionalUiState mConditionalUiState = ConditionalUiState.NONE;
@@ -114,9 +115,9 @@ public class Fido2CredentialRequest
      *
      * @param intentSender Interface for starting {@link Intent}s from Play Services.
      * @param supportLevel Whether this code should use the privileged or non-privileged Play
-     *         Services API. (Note that a value of `NONE` is not allowed.)
+     *     Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public Fido2CredentialRequest(WebAuthenticationDelegate.IntentSender intentSender) {
+    public Fido2CredentialRequest(FidoIntentSender intentSender) {
         mIntentSender = intentSender;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
         mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);
@@ -183,14 +184,30 @@ public class Fido2CredentialRequest
         mErrorCallback = errorCallback;
 
         if (frameHost != null) {
-            int securityCheck = frameHost.performMakeCredentialWebAuthSecurityChecks(
-                    options.relyingParty.id, origin, options.isPaymentCredentialCreation);
-            if (securityCheck != AuthenticatorStatus.SUCCESS) {
-                returnErrorAndResetCallback(securityCheck);
-                return;
-            }
+            frameHost.performMakeCredentialWebAuthSecurityChecks(
+                    options.relyingParty.id,
+                    origin,
+                    options.isPaymentCredentialCreation,
+                    (result) -> {
+                        if (result != AuthenticatorStatus.SUCCESS) {
+                            returnErrorAndResetCallback(result);
+                            return;
+                        }
+                        continueMakeCredentialRequestAfterRpIdValidation(
+                                options, frameHost, maybeClientDataHash, origin);
+                    });
+        } else {
+            continueMakeCredentialRequestAfterRpIdValidation(
+                    options, frameHost, maybeClientDataHash, origin);
         }
+    }
 
+    @SuppressWarnings("NewApi")
+    private void continueMakeCredentialRequestAfterRpIdValidation(
+            PublicKeyCredentialCreationOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin origin) {
         // Attestation is only for non-discoverable credentials in the Android
         // platform authenticator and discoverable credentials aren't supported
         // on security keys. There was a bug where discoverable credentials
@@ -235,7 +252,7 @@ public class Fido2CredentialRequest
                             options,
                             convertOriginToString(origin),
                             maybeClientDataHash,
-                            callback,
+                            mMakeCredentialCallback,
                             this::returnErrorAndResetCallback);
             if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
             return;
@@ -293,16 +310,49 @@ public class Fido2CredentialRequest
         mFrameHost = frameHost;
 
         if (frameHost != null) {
-            WebAuthSecurityChecksResults webAuthSecurityChecksResults =
-                    frameHost.performGetAssertionWebAuthSecurityChecks(
-                            options.relyingPartyId, origin, payment != null);
-            if (webAuthSecurityChecksResults.securityCheckResult != AuthenticatorStatus.SUCCESS) {
-                returnErrorAndResetCallback(webAuthSecurityChecksResults.securityCheckResult);
-                return;
-            }
-            mIsCrossOrigin = webAuthSecurityChecksResults.isCrossOrigin;
+            mConditionalUiState = ConditionalUiState.WAITING_FOR_RP_ID_VALIDATION;
+            frameHost.performGetAssertionWebAuthSecurityChecks(
+                    options.relyingPartyId,
+                    origin,
+                    payment != null,
+                    (results) -> {
+                        if (mConditionalUiState
+                                == ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE) {
+                            // This request was canceled while waiting for RP ID validation to
+                            // complete.
+                            returnErrorAndResetCallback(AuthenticatorStatus.ABORT_ERROR);
+                            return;
+                        }
+                        mConditionalUiState = ConditionalUiState.NONE;
+                        if (results.securityCheckResult != AuthenticatorStatus.SUCCESS) {
+                            returnErrorAndResetCallback(results.securityCheckResult);
+                            return;
+                        }
+                        mIsCrossOrigin = results.isCrossOrigin;
+                        continueGetAssertionRequestAfterRpIdValidation(
+                                options,
+                                frameHost,
+                                maybeClientDataHash,
+                                origin,
+                                topOrigin,
+                                payment);
+                    });
+            return;
         }
 
+        mIsCrossOrigin = false;
+        continueGetAssertionRequestAfterRpIdValidation(
+                options, frameHost, maybeClientDataHash, origin, topOrigin, payment);
+    }
+
+    @SuppressWarnings("NewApi")
+    private void continueGetAssertionRequestAfterRpIdValidation(
+            PublicKeyCredentialRequestOptions options,
+            RenderFrameHost frameHost,
+            byte[] maybeClientDataHash,
+            Origin origin,
+            Origin topOrigin,
+            PaymentOptions payment) {
         boolean hasAllowCredentials =
                 options.allowCredentials != null && options.allowCredentials.length != 0;
 
@@ -322,23 +372,38 @@ public class Fido2CredentialRequest
                 && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             if (options.isConditional) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
-                mCredManHelper.startPrefetchRequest(mContext, mFrameHost, options,
-                        convertOriginToString(origin), mIsCrossOrigin,
-                        /*maybeClientDataHash=*/null, callback, this::returnErrorAndResetCallback,
-                        mBarrier, /*ignoreGpm=*/false);
+                mCredManHelper.startPrefetchRequest(
+                        mContext,
+                        mFrameHost,
+                        options,
+                        convertOriginToString(origin),
+                        mIsCrossOrigin,
+                        /* maybeClientDataHash= */ null,
+                        mGetAssertionCallback,
+                        this::returnErrorAndResetCallback,
+                        mBarrier,
+                        /* ignoreGpm= */ false);
             } else if (hasAllowCredentials && mPlayServicesAvailable) {
                 // If the allowlist contains non-discoverable credentials then
                 // the request needs to be routed directly to Play Services.
-                checkForNonDiscoverableMatch(options, origin, maybeClientDataHash);
+                checkForMatchingCredentials(options, origin, maybeClientDataHash);
             } else {
                 mCredManHelper.setNoCredentialsFallback(
                         ()
                                 -> this.maybeDispatchGetAssertionRequest(options,
                                         convertOriginToString(origin), maybeClientDataHash,
                                         /*credentialId=*/null));
-                int response = mCredManHelper.startGetRequest(mContext, mFrameHost, options,
-                        convertOriginToString(origin), mIsCrossOrigin, maybeClientDataHash,
-                        callback, this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
+                int response =
+                        mCredManHelper.startGetRequest(
+                                mContext,
+                                mFrameHost,
+                                options,
+                                convertOriginToString(origin),
+                                mIsCrossOrigin,
+                                maybeClientDataHash,
+                                mGetAssertionCallback,
+                                this::returnErrorAndResetCallback,
+                                /* ignoreGpm= */ false);
                 if (response != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(response);
             }
             return;
@@ -372,9 +437,17 @@ public class Fido2CredentialRequest
 
             if (getBarrierMode() == Barrier.Mode.BOTH) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.BOTH);
-                mCredManHelper.startPrefetchRequest(context, frameHost, options, callerOriginString,
-                        hasAllowCredentials, maybeClientDataHash, callback,
-                        this::returnErrorAndResetCallback, mBarrier, /*ignoreGpm=*/true);
+                mCredManHelper.startPrefetchRequest(
+                        mContext,
+                        frameHost,
+                        options,
+                        callerOriginString,
+                        mIsCrossOrigin,
+                        maybeClientDataHash,
+                        mGetAssertionCallback,
+                        this::returnErrorAndResetCallback,
+                        mBarrier,
+                        /* ignoreGpm= */ true);
             } else {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_FIDO_2_API);
             }
@@ -390,12 +463,22 @@ public class Fido2CredentialRequest
             return;
         }
 
+        if (hasAllowCredentials
+                && !options.isConditional
+                && getBarrierMode() == Barrier.Mode.BOTH) {
+            checkForMatchingCredentials(options, origin, maybeClientDataHash);
+            return;
+        }
         maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
     }
 
     public void cancelConditionalGetAssertion(RenderFrameHost frameHost) {
         mCredManHelper.cancelConditionalGetAssertion(frameHost);
+
         switch (mConditionalUiState) {
+            case WAITING_FOR_RP_ID_VALIDATION:
+                mConditionalUiState = ConditionalUiState.CANCEL_PENDING_RP_ID_VALIDATION_COMPLETE;
+                break;
             case WAITING_FOR_CREDENTIAL_LIST:
                 mConditionalUiState = ConditionalUiState.CANCEL_PENDING;
                 mBarrier.onFido2ApiCancelled();
@@ -571,52 +654,77 @@ public class Fido2CredentialRequest
     }
 
     /**
-     * Check whether a get() request needs routing to Play Services for a non-discoverable cred.
+     * Check whether a get() request needs routing to Play Services for a credential.
      *
-     * This function is called if a non-payments, non-conditional get() call
-     * with an allowlist is received. In this case, if any of the elements of
-     * the allowlist are non-discoverable credentials in the local platform
+     * <p>This function is called if a non-payments, non-conditional get() call with an allowlist is
+     * received.
+     *
+     * <p>When Barrier.Mode is`ONLY_CRED_MAN`, all discoverable credentials are available in
+     * CredMan. If any of the elements of the allowlist are non-discoverable credentials in the
+     * local platform authenticator then the request should be sent directly to Play Services. It is
+     * not required to dispatch the request to CredMan.
+     *
+     * <p>When Barrier.Mode is `BOTH`, some discoverable credentials may also be in Play Services.
+     * If any of the elements of the allowlist match the credentials in the local platform
      * authenticator then the request should be sent directly to Play Services.
      */
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private void checkForNonDiscoverableMatch(PublicKeyCredentialRequestOptions options,
-            Origin callerOrigin, byte[] maybeClientDataHash) {
+    private void checkForMatchingCredentials(
+            PublicKeyCredentialRequestOptions options,
+            Origin callerOrigin,
+            byte[] maybeClientDataHash) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
         assert mPlayServicesAvailable;
-        @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        assert support != CredManSupport.DISABLED;
+        Barrier.Mode mode = getBarrierMode();
+        assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
-        Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
-                (credentials)
-                        -> checkForNonDiscoverableMatchCredentialsReceived(
-                                options, callerOrigin, maybeClientDataHash, credentials),
-                (e) -> {
-                    Log.e(TAG,
-                            "FIDO2 call to enumerate non-discoverable credentials failed."
-                                    + "Dispatching to CredMan.",
-                            e);
-                    mCredManHelper.startGetRequest(mContext, mFrameHost, options,
-                            convertOriginToString(callerOrigin), mIsCrossOrigin,
-                            maybeClientDataHash, mGetAssertionCallback,
-                            this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
-                });
+        Fido2ApiCallHelper.getInstance()
+                .invokeFido2GetCredentials(
+                        options.relyingPartyId,
+                        (credentials) ->
+                                checkForMatchingCredentialsReceived(
+                                        options, callerOrigin, maybeClientDataHash, credentials),
+                        (e) -> {
+                            Log.e(
+                                    TAG,
+                                    "FIDO2 call to enumerate credentials failed. Dispatching to"
+                                            + " CredMan. Barrier.Mode = "
+                                            + mode,
+                                    e);
+                            mCredManHelper.startGetRequest(
+                                    mContext,
+                                    mFrameHost,
+                                    options,
+                                    convertOriginToString(callerOrigin),
+                                    mIsCrossOrigin,
+                                    maybeClientDataHash,
+                                    mGetAssertionCallback,
+                                    this::returnErrorAndResetCallback,
+                                    mode == Barrier.Mode.BOTH);
+                        });
     }
 
     @RequiresApi(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    private void checkForNonDiscoverableMatchCredentialsReceived(
-            PublicKeyCredentialRequestOptions options, Origin callerOrigin,
-            byte[] maybeClientDataHash, List<WebAuthnCredentialDetails> retrievedCredentials) {
+    private void checkForMatchingCredentialsReceived(
+            PublicKeyCredentialRequestOptions options,
+            Origin callerOrigin,
+            byte[] maybeClientDataHash,
+            List<WebAuthnCredentialDetails> retrievedCredentials) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
         assert mPlayServicesAvailable;
-        @CredManSupport int support = CredManSupportProvider.getCredManSupport();
-        assert support != CredManSupport.DISABLED;
+        Barrier.Mode mode = getBarrierMode();
+        assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
         for (WebAuthnCredentialDetails credential : retrievedCredentials) {
-            if (credential.mIsDiscoverable) continue;
+            // In ONLY_CRED_MAN mode, all discoverable credentials are handled by CredMan. It is not
+            // required to check for discoverable credentials.
+            if (mode == Barrier.Mode.ONLY_CRED_MAN && credential.mIsDiscoverable) {
+                continue;
+            }
 
             for (PublicKeyCredentialDescriptor allowedId : options.allowCredentials) {
                 if (allowedId.type != PublicKeyCredentialType.PUBLIC_KEY) {
@@ -635,9 +743,16 @@ public class Fido2CredentialRequest
 
         // No elements of the allowlist are local, non-discoverable credentials
         // so route to CredMan.
-        mCredManHelper.startGetRequest(mContext, mFrameHost, options,
-                convertOriginToString(callerOrigin), mIsCrossOrigin, maybeClientDataHash,
-                mGetAssertionCallback, this::returnErrorAndResetCallback, /*ignoreGpm=*/false);
+        mCredManHelper.startGetRequest(
+                mContext,
+                mFrameHost,
+                options,
+                convertOriginToString(callerOrigin),
+                mIsCrossOrigin,
+                maybeClientDataHash,
+                mGetAssertionCallback,
+                this::returnErrorAndResetCallback,
+                mode == Barrier.Mode.BOTH);
     }
 
     private void maybeDispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,

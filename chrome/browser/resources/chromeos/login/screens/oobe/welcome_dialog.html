@@ -15,10 +15,10 @@ found in the LICENSE file.
     padding-top: var(--oobe-adaptive-dialog-back-button-vertical-padding);
     width: var(--oobe-adaptive-dialog-width);
   }
-  :host(:host-context(.simon-enabled[orientation='vertical'])) {
+  :host(:host-context(.boot-animation-enabled[orientation='vertical'])) {
     padding-inline-start: calc(var(--oobe-adaptive-dialog-width) / 3);
   }
-  :host(:host-context(.simon-enabled[orientation='horizontal'])) {
+  :host(:host-context(.boot-animation-enabled[orientation='horizontal'])) {
     padding-inline-start: calc(
       var(--oobe-welcome-dialog-horizontal-padding)
       + var(--oobe-adaptive-dialog-width) / 2);
@@ -34,7 +34,7 @@ found in the LICENSE file.
     flex-grow: 1;
     min-height: 0;
   }
-  :host-context(.simon-enabled) #content {
+  :host-context(.boot-animation-enabled) #content {
     flex-grow: 0;
   }
   :host-context([orientation='vertical']) #content {
@@ -45,7 +45,7 @@ found in the LICENSE file.
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   }
-  :host-context(.simon-enabled[orientation='horizontal']) #content {
+  :host-context(.boot-animation-enabled[orientation='horizontal']) #content {
     grid-template-columns: auto;
   }
 
@@ -66,7 +66,7 @@ found in the LICENSE file.
     align-self: center;
     justify-self: center;
   }
-  :host-context(.simon-enabled[orientation='vertical']) #buttons {
+  :host-context(.boot-animation-enabled[orientation='vertical']) #buttons {
     align-items: normal;
     align-self: start;
     justify-self: start;
@@ -88,7 +88,7 @@ found in the LICENSE file.
     grid-row: 2 / span 1;
     justify-self: start;
   }
-  :host-context(.simon-enabled) #bottomButtons {
+  :host-context(.boot-animation-enabled) #bottomButtons {
     justify-self: end;
     margin-top: 72px;
   }
@@ -138,7 +138,7 @@ found in the LICENSE file.
   :host-context([orientation='vertical']) #title {
     margin-top: 40px;
   }
-  :host-context(.simon-enabled) #title {
+  :host-context(.boot-animation-enabled) #title {
     font-size: var(--oobe-welcome-header-font-size);
     line-height: var(--oobe-welcome-header-line-height);
     margin-bottom: 48px;
@@ -174,7 +174,8 @@ found in the LICENSE file.
     align-self: center;
     text-align: center;
   }
-  :host-context(.simon-enabled[orientation='vertical']) .welcome-header-text {
+  :host-context(.boot-animation-enabled[orientation='vertical'])
+  .welcome-header-text {
     align-self: auto;
     text-align: start;
   }
@@ -196,7 +197,7 @@ found in the LICENSE file.
   <h1 id="title" class="welcome-header-text">
     [[i18nDynamic(locale, 'welcomeScreenGreeting')]]
   </h1>
-  <template is="dom-if" if="[[!isSimon_]]">
+  <template is="dom-if" if="[[!isBootAnimation_]]">
     <div id="subtitle" class="welcome-header-text">
       [[i18nDynamic(locale, 'welcomeScreenGreetingSubtitle')]]
     </div>

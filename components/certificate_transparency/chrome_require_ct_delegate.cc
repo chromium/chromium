@@ -29,11 +29,11 @@
 #include "net/base/host_port_pair.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/known_roots.h"
-#include "net/cert/pki/name_constraints.h"
-#include "net/cert/pki/parse_name.h"
-#include "net/cert/pki/parsed_certificate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "third_party/boringssl/src/pki/name_constraints.h"
+#include "third_party/boringssl/src/pki/parse_name.h"
+#include "third_party/boringssl/src/pki/parsed_certificate.h"
 
 namespace certificate_transparency {
 
@@ -46,7 +46,7 @@ class OrgAttributeFilter {
   // Creates a new OrgAttributeFilter for |sequence| that begins iterating at
   // |head|. Note that |head| can be equal to |sequence.end()|, in which case,
   // there are no organizationName attributes.
-  explicit OrgAttributeFilter(const net::RDNSequence& sequence)
+  explicit OrgAttributeFilter(const bssl::RDNSequence& sequence)
       : sequence_head_(sequence.begin()), sequence_end_(sequence.end()) {
     if (sequence_head_ != sequence_end_) {
       rdn_it_ = sequence_head_->begin();
@@ -56,7 +56,7 @@ class OrgAttributeFilter {
 
   bool IsValid() const { return sequence_head_ != sequence_end_; }
 
-  const net::X509NameAttribute& GetAttribute() const {
+  const bssl::X509NameAttribute& GetAttribute() const {
     DCHECK(IsValid());
     return *rdn_it_;
   }
@@ -74,8 +74,9 @@ class OrgAttributeFilter {
   void AdvanceIfNecessary() {
     while (sequence_head_ != sequence_end_) {
       while (rdn_it_ != sequence_head_->end()) {
-        if (rdn_it_->type == net::der::Input(net::kTypeOrganizationNameOid))
+        if (rdn_it_->type == bssl::der::Input(bssl::kTypeOrganizationNameOid)) {
           return;
+        }
         ++rdn_it_;
       }
       ++sequence_head_;
@@ -85,22 +86,23 @@ class OrgAttributeFilter {
     }
   }
 
-  net::RDNSequence::const_iterator sequence_head_;
-  net::RDNSequence::const_iterator sequence_end_;
-  net::RelativeDistinguishedName::const_iterator rdn_it_;
+  bssl::RDNSequence::const_iterator sequence_head_;
+  bssl::RDNSequence::const_iterator sequence_end_;
+  bssl::RelativeDistinguishedName::const_iterator rdn_it_;
 };
 
 // Returns true if |dn_without_sequence| identifies an
 // organizationally-validated certificate, per the CA/Browser Forum's Baseline
 // Requirements, storing the parsed RDNSequence in |*out|.
-bool ParseOrganizationBoundName(net::der::Input dn_without_sequence,
-                                net::RDNSequence* out) {
-  if (!net::ParseNameValue(dn_without_sequence, out))
+bool ParseOrganizationBoundName(bssl::der::Input dn_without_sequence,
+                                bssl::RDNSequence* out) {
+  if (!bssl::ParseNameValue(dn_without_sequence, out)) {
     return false;
+  }
   for (const auto& rdn : *out) {
     for (const auto& attribute_type_and_value : rdn) {
       if (attribute_type_and_value.type ==
-          net::der::Input(net::kTypeOrganizationNameOid)) {
+          bssl::der::Input(bssl::kTypeOrganizationNameOid)) {
         return true;
       }
     }
@@ -111,11 +113,11 @@ bool ParseOrganizationBoundName(net::der::Input dn_without_sequence,
 // Returns true if the certificate identified by |leaf_rdn_sequence| is
 // considered to be issued under the same organizational authority as
 // |org_cert|.
-bool AreCertsSameOrganization(const net::RDNSequence& leaf_rdn_sequence,
+bool AreCertsSameOrganization(const bssl::RDNSequence& leaf_rdn_sequence,
                               CRYPTO_BUFFER* org_cert) {
-  std::shared_ptr<const net::ParsedCertificate> parsed_org =
-      net::ParsedCertificate::Create(bssl::UpRef(org_cert),
-                                     net::ParseCertificateOptions(), nullptr);
+  std::shared_ptr<const bssl::ParsedCertificate> parsed_org =
+      bssl::ParsedCertificate::Create(bssl::UpRef(org_cert),
+                                      bssl::ParseCertificateOptions(), nullptr);
   if (!parsed_org)
     return false;
 
@@ -124,17 +126,19 @@ bool AreCertsSameOrganization(const net::RDNSequence& leaf_rdn_sequence,
   // organizationally-bound. If so, the enforcement of nameConstraints is
   // sufficient to consider |org_cert| a match.
   if (parsed_org->has_name_constraints()) {
-    const net::NameConstraints& nc = parsed_org->name_constraints();
+    const bssl::NameConstraints& nc = parsed_org->name_constraints();
     for (const auto& permitted_name : nc.permitted_subtrees().directory_names) {
-      net::RDNSequence tmp;
+      bssl::RDNSequence tmp;
       if (ParseOrganizationBoundName(permitted_name, &tmp))
         return true;
     }
   }
 
-  net::RDNSequence org_rdn_sequence;
-  if (!net::ParseNameValue(parsed_org->normalized_subject(), &org_rdn_sequence))
+  bssl::RDNSequence org_rdn_sequence;
+  if (!bssl::ParseNameValue(parsed_org->normalized_subject(),
+                            &org_rdn_sequence)) {
     return false;
+  }
 
   // Finally, try to match the organization fields within |leaf_rdn_sequence|
   // to |org_rdn_sequence|. As |leaf_rdn_sequence| has already been checked
@@ -280,13 +284,13 @@ bool ChromeRequireCTDelegate::MatchSPKI(
   if (candidates.empty())
     return false;
 
-  std::shared_ptr<const net::ParsedCertificate> parsed_leaf =
-      net::ParsedCertificate::Create(bssl::UpRef(leaf_cert),
-                                     net::ParseCertificateOptions(), nullptr);
+  std::shared_ptr<const bssl::ParsedCertificate> parsed_leaf =
+      bssl::ParsedCertificate::Create(bssl::UpRef(leaf_cert),
+                                      bssl::ParseCertificateOptions(), nullptr);
   if (!parsed_leaf)
     return false;
   // If the leaf is not organizationally-bound, it's not a match.
-  net::RDNSequence leaf_rdn_sequence;
+  bssl::RDNSequence leaf_rdn_sequence;
   if (!ParseOrganizationBoundName(parsed_leaf->normalized_subject(),
                                   &leaf_rdn_sequence)) {
     return false;

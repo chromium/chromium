@@ -79,11 +79,10 @@ struct CORE_EXPORT PaintLayerScrollableAreaRareData final
   PaintLayerScrollableAreaRareData& operator=(
       const PaintLayerScrollableAreaRareData&) = delete;
 
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const {}
 
-  HeapLinkedHashSet<Member<PaintLayer>> sticky_layers_;
   absl::optional<cc::SnapContainerData> snap_container_data_;
-  bool snap_container_data_needs_update_ = true;
+  absl::optional<cc::SnappedTargetData> snapped_target_data_;
   Vector<gfx::Rect> tickmarks_override_;
 };
 
@@ -383,7 +382,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return HasHorizontalOverflow() || HasVerticalOverflow();
   }
 
-  LayoutCustomScrollbarPart* ScrollCorner() const { return scroll_corner_; }
+  LayoutCustomScrollbarPart* ScrollCorner() const {
+    return scroll_corner_.Get();
+  }
 
   void Resize(const gfx::Point& pos, const gfx::Vector2d& old_offset);
   gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
@@ -438,7 +439,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   PaintLayer* Layer() const override;
 
-  LayoutCustomScrollbarPart* Resizer() const { return resizer_; }
+  LayoutCustomScrollbarPart* Resizer() const { return resizer_.Get(); }
 
   gfx::Rect RectForHorizontalScrollbar() const;
   gfx::Rect RectForVerticalScrollbar() const;
@@ -488,12 +489,8 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void EnqueueForSnapUpdateIfNeeded();
 
-  void AddStickyLayer(PaintLayer*);
-  bool HasStickyLayer(PaintLayer* layer) const {
-    return rare_data_ && rare_data_->sticky_layers_.Contains(layer);
-  }
   void UpdateAllStickyConstraints();
-  void InvalidateAllStickyConstraints();
+  void EnqueueForStickyUpdateIfNeeded();
   void InvalidatePaintForStickyDescendants();
 
   // This function doesn't check background-attachment:fixed backgrounds
@@ -540,11 +537,13 @@ class CORE_EXPORT PaintLayerScrollableArea final
   const cc::SnapContainerData* GetSnapContainerData() const override;
   void SetSnapContainerData(absl::optional<cc::SnapContainerData>) override;
   bool SetTargetSnapAreaElementIds(cc::TargetSnapAreaElementIds) override;
-  bool SnapContainerDataNeedsUpdate() const override;
-  void SetSnapContainerDataNeedsUpdate(bool) override;
 
   absl::optional<gfx::PointF> GetSnapPositionAndSetTarget(
       const cc::SnapSelectionStrategy& strategy) override;
+  void SetSnappedTargetData(
+      absl::optional<cc::SnappedTargetData> data) override;
+  const cc::SnappedTargetData* GetSnappedTargetData() const override;
+  void UpdateSnappedTargetsAndEnqueueSnapChanged() override;
 
   void DisposeImpl() override;
 
@@ -652,9 +651,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   ScrollingCoordinator* GetScrollingCoordinator() const;
 
-  PaintLayerScrollableAreaRareData* RareData() { return rare_data_; }
+  PaintLayerScrollableAreaRareData* RareData() { return rare_data_.Get(); }
   const PaintLayerScrollableAreaRareData* RareData() const {
-    return rare_data_;
+    return rare_data_.Get();
   }
 
   PaintLayerScrollableAreaRareData& EnsureRareData() {

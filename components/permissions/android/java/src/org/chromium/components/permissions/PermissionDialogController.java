@@ -6,20 +6,26 @@ package org.chromium.components.permissions;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.View;
 
 import androidx.annotation.IntDef;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ObserverList;
-import org.chromium.base.annotations.CalledByNative;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -67,6 +73,8 @@ public class PermissionDialogController
     private final ObserverList<Observer> mObservers;
 
     private PropertyModel mDialogModel;
+    private PropertyModel mCustomViewModel;
+    private PropertyModelChangeProcessor mCustomViewModelChangeProcessor;
     private PropertyModel mOverlayDetectedDialogModel;
     private PermissionDialogDelegate mDialogDelegate;
     private ModalDialogManager mModalDialogManager;
@@ -177,9 +185,7 @@ public class PermissionDialogController
         assert mState == State.NOT_SHOWING;
 
         mDialogDelegate = mRequestQueue.remove(0);
-        // Use the context to access resources instead of the activity because the activity may not
-        // have the correct resources in some cases (e.g. WebLayer).
-        Context context = mDialogDelegate.getWindow().getContext().get();
+        Context context = getContext();
 
         // It's possible for the context to be null if we reach here just after the user
         // backgrounds the browser and cleanup has happened. In that case, we can't show a prompt,
@@ -203,8 +209,21 @@ public class PermissionDialogController
             return;
         }
 
-        mDialogModel = PermissionDialogModel.getModel(
-                this, mDialogDelegate, () -> showFilteredTouchEventDialog(context));
+        // Setting up the MVC model for the dialog's custom view.
+        View customView = LayoutInflaterUtils.inflate(context, R.layout.permission_dialog, null);
+        mCustomViewModel = PermissionDialogCustomViewModelFactory.getModel(mDialogDelegate);
+        mCustomViewModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mCustomViewModel, customView, PermissionDialogCustomViewBinder::bind);
+
+        // Setting up the Permission's dialog.
+        mDialogModel =
+                PermissionDialogModelFactory.getModel(
+                        this,
+                        mDialogDelegate,
+                        customView,
+                        () -> showFilteredTouchEventDialog(context));
+
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
         mState = State.PROMPT_OPEN;
     }
@@ -265,6 +284,28 @@ public class PermissionDialogController
         delegate.destroy();
     }
 
+    public void updateIcon(Bitmap icon) {
+        if (mCustomViewModel == null) {
+            return;
+        }
+
+        mCustomViewModel.set(
+                PermissionDialogCustomViewProperties.ICON,
+                new BitmapDrawable(getContext().getResources(), icon));
+        mCustomViewModel.set(PermissionDialogCustomViewProperties.ICON_TINT, null);
+    }
+
+    public int getIconSizeInPx() {
+        return getContext().getResources().getDimensionPixelSize(R.dimen.large_favicon_size);
+    }
+
+    private Context getContext() {
+        assert mDialogDelegate != null;
+        // Use the context to access resources instead of the activity because the activity may not
+        // have the correct resources in some cases (e.g. WebLayer).
+        return mDialogDelegate.getWindow().getContext().get();
+    }
+
     @Override
     public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
         // Called when the dialog is dismissed. Interacting with either button in the dialog will
@@ -272,6 +313,8 @@ public class PermissionDialogController
         // When the dialog is dismissed, the delegate's native pointers are
         // freed, and the next queued dialog (if any) is displayed.
         mDialogModel = null;
+        mCustomViewModel = null;
+        mCustomViewModelChangeProcessor.destroy();
         if (mDialogDelegate == null) {
             // We get into here if a tab navigates or is closed underneath the
             // prompt.

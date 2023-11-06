@@ -7,6 +7,7 @@
 <translation id="1073417869336441572">Chrome の改善に役立てるため、サードパーティ Cookie を許可した理由をお聞かせください。<ph name="BEGIN_LINK" />フィードバックを送信<ph name="END_LINK" /></translation>
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="1181037720776840403">削除</translation>
+<translation id="1192844206376121885"><ph name="ORIGIN" /> により保存されたデータと Cookie がすべて削除されます。</translation>
 <translation id="1201402288615127009">次へ</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> に埋め込まれたページ</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -21,10 +22,10 @@
 <translation id="1384959399684842514">ダウンロードを一時停止しました</translation>
 <translation id="1415402041810619267">URL の短縮バージョンです</translation>
 <translation id="1426410128494586442">はい</translation>
-<translation id="1446450296470737166">MIDI機器のフルコントロールを許可</translation>
 <translation id="1448064542941920355">縮小</translation>
 <translation id="1510341833810331442">サイトはデバイスにデータを保存できません</translation>
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
+<translation id="1568470248891039841">アクセスしたサイトに他のサイトのコンテンツ（画像、広告、テキストなど）が埋め込まれている場合があります。サイトを閲覧する際、それらのサイトから、保存したあなたに関する情報の使用許可を求められることがあります。<ph name="BEGIN_LINK" />埋め込みコンテンツの詳細<ph name="END_LINK" /></translation>
 <translation id="1593426485665524382">画面上部付近で新しい操作が可能になりました</translation>
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1633720957382884102">関連サイト</translation>
@@ -41,7 +42,6 @@
 <translation id="187227595286001730">関連サイトはグループでのアクティビティを確認できます</translation>
 <translation id="1887786770086287077">位置情報へのアクセスがデバイスでオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="1915307458270490472">通話を終了</translation>
-<translation id="1919345977826869612">広告</translation>
 <translation id="1919950603503897840">連絡先を選択</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
 <translation id="1979673356880165407">アクセスしたすべてのサイトでテキストと画像を拡大または縮小して表示します</translation>
@@ -59,6 +59,7 @@
 <translation id="216989819110952009">緑色の眼鏡で眼を守っていても、ドロシーと彼女の仲間たちは目が眩みました</translation>
 <translation id="2176704795966505152">メインメニューにズーム オプションを表示する</translation>
 <translation id="2182457891543959921">サイトに周囲の 3D マップの作成またはカメラ位置の追跡を許可する前に確認します（推奨）</translation>
+<translation id="2185965788978862351">サイトまたはホーム画面のアプリにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="2194856509914051091">留意事項</translation>
 <translation id="2212565012507486665">Cookie を許可</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> にカメラへのアクセスを許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でもカメラをオンにしてください。</translation>
@@ -71,7 +72,6 @@
 <translation id="2289270750774289114">サイトから近くにある Bluetooth デバイスの検出を求められたときに確認する（推奨）</translation>
 <translation id="2315043854645842844">オペレーティング システムでサポートされていないため、クライアントサイドで証明書を選択することはできません。</translation>
 <translation id="2321958826496381788">読みやすくなるまでスライダをドラッグしてください。段落をダブルタップするとテキストがこれより大きくなります。</translation>
-<translation id="2329473609445770916">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2379925928934107488">可能であれば、Chrome がダークモードを使用している場合にダークモードをサイトに適用します</translation>
 <translation id="2387895666653383613">テキストの拡大と縮小</translation>
@@ -82,6 +82,7 @@
 <translation id="2434158240863470628">ダウンロードが完了しました<ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
 <translation id="244264527810019436">シークレット モードでは、一部サイトの機能が使用できなくなる可能性があります</translation>
 <translation id="2442870161001914531">常に PC 版サイトを表示する</translation>
+<translation id="2469312991797799607">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトのデータと Cookie がすべて削除されます</translation>
 <translation id="2479148705183875116">設定に移動</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2485422356828889247">アンインストール</translation>
@@ -111,10 +112,11 @@
 <translation id="2891975107962658722">サイトによるデバイスへのデータ保存をブロックします</translation>
 <translation id="2903493209154104877">住所</translation>
 <translation id="2910701580606108292">保護されたコンテンツの再生をサイトに許可する前に確認する</translation>
-<translation id="2913331724188855103">サイトに Cookie データの保存と読み取りを許可する（推奨）</translation>
 <translation id="2932883381142163287">不正行為を報告</translation>
 <translation id="2968755619301702150">証明書ビューア</translation>
+<translation id="2979365474350987274">サードパーティ Cookie が制限されています</translation>
 <translation id="3008272652534848354">権限をリセット</translation>
+<translation id="3013291976881901233">MIDI デバイス</translation>
 <translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3069226013421428034">特定のサイトのサードパーティのログインを許可します。</translation>
 <translation id="3082992102194421695">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
@@ -129,7 +131,6 @@
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> の保存データ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> に通知の送信を許可するには、<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でも通知をオンにしてください。</translation>
 <translation id="3227137524299004712">マイク</translation>
-<translation id="3248611290851046188">このサイトでは、他のサイトが広告の表示に使用できる興味 / 関心を定義しています。また、このサイトでは Chrome からお客様の興味 / 関心に関する情報を取得して、関連性の高い広告を表示しています。</translation>
 <translation id="3277252321222022663">サイトによるセンサーへのアクセスを許可する（推奨）</translation>
 <translation id="3285500645985761267">関連サイトにグループ内のアクティビティの確認を許可する</translation>
 <translation id="3295019059349372795">第 11 章: オズの不思議なエメラルド シティ</translation>
@@ -156,7 +157,6 @@
 <translation id="3721953990244350188">非表示にして、次に実行可能なアクションを表示</translation>
 <translation id="3744111561329211289">バックグラウンド同期</translation>
 <translation id="3763247130972274048">動画の左または右をダブルタップすると 10 秒スキップします</translation>
-<translation id="3794286421982011626">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
 <translation id="3797520601150691162">ダークモードを特定のサイトに適用しません</translation>
 <translation id="3803367742635802571">アクセスするサイトが想定どおりに機能しなくなる可能性があります</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />。<ph name="TYPE_2" />。</translation>
@@ -171,6 +171,7 @@
 <translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
 <translation id="3955193568934677022">保護されたコンテンツの再生をサイトに許可する（推奨）</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
+<translation id="3974105241379491420">保存したあなたに関する情報の使用をサイトが求めることを許可する</translation>
 <translation id="3987993985790029246">リンクのコピー</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ？</translation>
 <translation id="3992684624889376114">このページについて</translation>
@@ -193,7 +194,6 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4402755511846832236">サイトによるこのデバイスのアクティブ状態の検出をブロックする</translation>
 <translation id="4412992751769744546">サードパーティの Cookie を許可</translation>
-<translation id="4428065317363009941">広告のカスタマイズ</translation>
 <translation id="4434045419905280838">ポップアップとリダイレクト</translation>
 <translation id="443552056913301231">この操作を行うと、Cookie を含むすべてのローカルデータが削除され、<ph name="ORIGIN" /> のすべての権限がリセットされます</translation>
 <translation id="4468959413250150279">特定のサイトの音声をミュートします。</translation>
@@ -229,6 +229,7 @@
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5091013926750941408">モバイルサイト</translation>
 <translation id="509133520954049755">デスクトップ ビューで表示する</translation>
+<translation id="5099358668261120049"><ph name="ORIGIN" /> またはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます。</translation>
 <translation id="5100237604440890931">折りたたまれています - クリックすると展開します。</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
@@ -245,12 +246,11 @@
 <translation id="5335288049665977812">サイトに JavaScript の実行を許可する（推奨）</translation>
 <translation id="534295439873310000">NFC デバイス</translation>
 <translation id="5344522958567249764">広告プライバシーを管理</translation>
+<translation id="5389626883706033615">保存したあなたに関する情報の使用をサイトが求めることをブロックする</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（他 1 件）}other{（他 # 件）}}</translation>
 <translation id="5403592356182871684">名前</translation>
-<translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
 <translation id="5438097262470833822">これを選択すると、<ph name="WEBSITE" /> の権限がリセットされます</translation>
 <translation id="5489227211564503167"><ph name="TOTAL_TIME" /> のうち <ph name="ELAPSED_TIME" /> 経過しました。</translation>
-<translation id="5494752089476963479">煩わしい広告や誤解を招く広告が表示されるサイトで広告をブロックする</translation>
 <translation id="5502860503640766021"><ph name="PERMISSION_1" />を許可、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="5505264765875738116">通知を送信するかどうかの確認をサイトに許可しない</translation>
 <translation id="5516455585884385570">通知設定を開く</translation>
@@ -277,6 +277,7 @@
 <translation id="5916664084637901428">ON</translation>
 <translation id="5922853908706496913">画面を共有しています</translation>
 <translation id="5922967540311291836">サードパーティの Cookie をブロックする:</translation>
+<translation id="5923512600150154850">サイトにより保存された <ph name="DATASIZE" /> のデータと Cookie が削除されます。</translation>
 <translation id="5939518447894949180">リセット</translation>
 <translation id="5964247741333118902">埋め込みコンテンツ</translation>
 <translation id="5968921426641056619">ウェブアドレスを入力</translation>
@@ -292,6 +293,7 @@
 <translation id="6177128806592000436">このサイトへの接続は保護されていません</translation>
 <translation id="6181444274883918285">サイトの例外を追加</translation>
 <translation id="6192792657125177640">例外</translation>
+<translation id="6195163219142236913">サードパーティ Cookie が制限されています</translation>
 <translation id="6196640612572343990">サードパーティの Cookie をブロックする</translation>
 <translation id="6205314730813004066">広告プライバシー</translation>
 <translation id="6207207788774442484">データを削除して権限をリセット</translation>
@@ -302,6 +304,7 @@
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
 <translation id="6320088164292336938">バイブレーション</translation>
+<translation id="6344622098450209924">トラッキング保護</translation>
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
 <translation id="640163077447496506">今日で期限切れ</translation>
@@ -332,6 +335,7 @@
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
 <translation id="6992289844737586249">サイトにマイクの使用を許可する前に確認する（推奨）</translation>
@@ -345,12 +349,14 @@
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
+<translation id="7201549776650881587">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます</translation>
 <translation id="7203150201908454328">展開表示中</translation>
 <translation id="7219254577985949841">サイトデータを削除しますか？</translation>
 <translation id="723171743924126238">画像を選択</translation>
 <translation id="7243308994586599757">画面の下の方にオプションがあります</translation>
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>
+<translation id="7284451015630589124">ブラウジング中にトラッキングされないように、サイトによるサードパーティ Cookie の使用をブロックしました。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください。</translation>
 <translation id="7302486331832100261">通知はデフォルトでブロックされています。許可するには [詳細] をタップしてください。</translation>
 <translation id="7366415735885268578">サイトの追加</translation>
 <translation id="7368695150573390554">オフライン データがすべて削除されます</translation>
@@ -363,7 +369,6 @@
 <translation id="7554752735887601236">サイトでマイクが使用されています</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="757524316907819857">サイトでの保護されたコンテンツの再生をブロックする</translation>
-<translation id="7577900504646297215">興味のあるトピックを管理</translation>
 <translation id="7594634374516752650">Bluetooth デバイスに接続されています</translation>
 <translation id="7641339528570811325">閲覧履歴データを削除…</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
@@ -430,10 +435,11 @@
 <translation id="8564613706851221529">{COUNT,plural, =1{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}other{<ph name="FPS_OWNER" /> の <ph name="FPS_MEMBERS_COUNT" /> 件のサイトで Cookie が許可されています}}</translation>
 <translation id="857943718398505171">許可（推奨）</translation>
 <translation id="8609465669617005112">上に移動</translation>
+<translation id="8649036394979866943">Chrome はほとんどのサイトに対してサードパーティ Cookie の使用を制限し、ブラウジング中のユーザーをトラッキングできないようにしています。<ph name="BEGIN_LINK" />トラッキング防止機能を管理<ph name="END_LINK" />するには、設定にアクセスしてください</translation>
 <translation id="8676374126336081632">入力内容を消去</translation>
 <translation id="8681886425883659911">煩わしい広告や誤解を招く広告が表示されることがわかっているサイトで広告がブロックされます</translation>
 <translation id="868929229000858085">連絡先を検索</translation>
-<translation id="8712637175834984815">理解した</translation>
+<translation id="8712637175834984815">OK</translation>
 <translation id="8719283222052720129"><ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で <ph name="APP_NAME" /> の権限を有効にしてください。</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8730621377337864115">完了</translation>
@@ -452,6 +458,7 @@
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">このデバイスでは NFC がオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="8928445016601307354">サイトが NFC デバイスの情報を参照および変更することをブロックする</translation>
+<translation id="8944485226638699751">制限付き</translation>
 <translation id="8958424370300090006">特定のサイトの Cookie をブロックします。</translation>
 <translation id="8959122750345127698"><ph name="URL" /> にアクセスできません</translation>
 <translation id="8986362086234534611">削除</translation>

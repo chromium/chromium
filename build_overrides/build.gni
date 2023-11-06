@@ -52,10 +52,6 @@ declare_args() {
   # to lack of toolchain support.
   gtest_enable_absl_printers = !is_nacl
 
-  # Allows third-party repositories to use C++17 for MSVC builds
-  # TODO(https://crbug.com/pdfium/1932) Remove once pdfium builds on MSVC C++20
-  msvc_use_cxx17 = false
-
   # Allow projects that wish to stay on C++17 to override Chromium's default.
   # TODO(crbug.com/1402249): evaluate removing this end of 2023
   use_cxx17 = false

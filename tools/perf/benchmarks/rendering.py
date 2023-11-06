@@ -24,8 +24,6 @@ RENDERING_BENCHMARK_UMA = [
     'Graphics.Smoothness.Checkerboarding3.AllAnimations',
     'Graphics.Smoothness.Checkerboarding3.AllInteractions',
     'Graphics.Smoothness.Checkerboarding3.AllSequences',
-    'Graphics.Smoothness.Checkerboarding3.TouchScroll',
-    'Graphics.Smoothness.Checkerboarding3.WheelScroll',
     'Graphics.Smoothness.Jank3.AllAnimations',
     'Graphics.Smoothness.Jank3.AllInteractions',
     'Graphics.Smoothness.Jank3.AllSequences',

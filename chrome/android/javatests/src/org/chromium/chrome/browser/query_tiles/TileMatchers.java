@@ -26,8 +26,9 @@ final class TileMatchers {
     /**
      * Builds a {@link Matcher} that finds a {@link View} that corresponds to a particular {@link
      * ImageTile}.
+     *
      * @param tile The {@link ImageTile} to match.
-     * @return     The {@link Matcher} instance.
+     * @return The {@link Matcher} instance.
      */
     public static Matcher<View> withTile(ImageTile tile) {
         return new BoundedMatcher<View, RelativeLayout>(RelativeLayout.class) {
@@ -48,8 +49,9 @@ final class TileMatchers {
     /**
      * Builds a {@link Matcher} that finds a {@link View} that corresponds to a particular {@link
      * ImageTile} chip.
+     *
      * @param tile The {@link ImageTile} to match.
-     * @return     The {@link Matcher} instance.
+     * @return The {@link Matcher} instance.
      */
     public static Matcher<View> withChip(QueryTile tile) {
         return new BoundedMatcher<View, ChipView>(ChipView.class) {

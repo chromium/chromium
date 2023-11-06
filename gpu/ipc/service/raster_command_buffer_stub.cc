@@ -74,12 +74,6 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
     return ContextResult::kFatalFailure;
   }
 
-  if (surface_handle_ != kNullSurfaceHandle) {
-    LOG(ERROR) << "ContextResult::kFatalFailure: "
-                  "RasterInterface clients must render offscreen.";
-    return ContextResult::kFatalFailure;
-  }
-
   if (init_params.attribs.gpu_preference != gl::GpuPreference::kLowPower ||
       init_params.attribs.context_type != CONTEXT_TYPE_OPENGLES2 ||
       init_params.attribs.bind_generates_resource) {

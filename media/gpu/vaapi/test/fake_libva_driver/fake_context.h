@@ -9,10 +9,19 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+
 namespace media::internal {
 
+class ContextDelegate;
+class FakeSurface;
+class FakeBuffer;
+
 // Class used for tracking a VAContext and all information relevant to it.
-// All objects of this class are immutable and thread safe.
+// All objects of this class are immutable, but three of the methods must be
+// synchronized externally: BeginPicture(), RenderPicture(), and EndPicture().
+// The other methods are thread-safe and may be called concurrently with any of
+// those three methods.
 class FakeContext {
  public:
   using IdType = VAContextID;
@@ -34,6 +43,11 @@ class FakeContext {
   int GetFlag() const;
   const std::vector<VASurfaceID>& GetRenderTargets() const;
 
+  void BeginPicture(const FakeSurface& surface) const;
+  void RenderPicture(
+      const std::vector<raw_ptr<const FakeBuffer>>& buffers) const;
+  void EndPicture() const;
+
  private:
   const IdType id_;
   const VAConfigID config_id_;
@@ -41,6 +55,7 @@ class FakeContext {
   const int picture_height_;
   const int flag_;
   const std::vector<VASurfaceID> render_targets_;
+  const std::unique_ptr<ContextDelegate> delegate_;
 };
 
 }  // namespace media::internal

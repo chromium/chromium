@@ -40,6 +40,7 @@ extern const char kDlpRulesList[];
 extern const char kEnterpriseMDMManagementMac[];
 extern const char kScreenTimeEnabled[];
 #endif
+extern const char kFeedbackSurveysEnabled[];
 extern const char kLastPolicyStatisticsUpdate[];
 extern const char kNativeWindowOcclusionEnabled[];
 extern const char kSafeSitesFilterBehavior[];

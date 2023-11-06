@@ -274,7 +274,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, WriteReadAndClear) {
   clock.SetNow(base::Time::Now());
 
   // Append and read back some VP9 stats.
-  VideoStats stats1(clock.Now().ToJsTimeIgnoringNull(), 240, 6, 7.2);
+  VideoStats stats1(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    240, 6, 7.2);
   VideoStatsEntry entry{stats1};
   AppendStats(kDecodeStatsKeyVp9, stats1);
   VerifyReadStats(kDecodeStatsKeyVp9, entry);
@@ -285,7 +286,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, WriteReadAndClear) {
 
   // Appending new VP9 stats.
   clock.Advance(base::Hours(1));
-  VideoStats stats2(clock.Now().ToJsTimeIgnoringNull(), 1000, 14, 6.8);
+  VideoStats stats2(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    1000, 14, 6.8);
 
   AppendStats(kDecodeStatsKeyVp9, stats2);
   VideoStatsEntry aggregate_entry{stats2, stats1};
@@ -311,29 +313,31 @@ TEST_F(WebrtcVideoStatsDBImplTest, ExpiredStatsAreNotReturned) {
   clock.SetNow(base::Time::Now());
 
   // Append and read back some VP9 stats.
-  VideoStats stats1(clock.Now().ToJsTimeIgnoringNull(), 240, 6, 7.2);
+  VideoStats stats1(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    240, 6, 7.2);
   VideoStatsEntry entry{stats1};
   AppendStats(kDecodeStatsKeyVp9, stats1);
   VerifyReadStats(kDecodeStatsKeyVp9, entry);
 
   // Appending new VP9 stats.
   clock.Advance(base::Days(2));
-  VideoStats stats2(clock.Now().ToJsTimeIgnoringNull(), 1000, 14, 6.8);
-  clock.SetNow(base::Time::FromJsTime(stats2.timestamp));
+  VideoStats stats2(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    1000, 14, 6.8);
+  clock.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(stats2.timestamp));
 
   AppendStats(kDecodeStatsKeyVp9, stats2);
   VideoStatsEntry aggregate_entry{stats2, stats1};
   VerifyReadStats(kDecodeStatsKeyVp9, aggregate_entry);
 
   // Set the clock to a date so that the first entry is expired.
-  clock.SetNow(base::Time::FromJsTime(stats1.timestamp) + base::Days(1) +
-               GetMaxTimeToKeepStats());
+  clock.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(stats1.timestamp) +
+               base::Days(1) + GetMaxTimeToKeepStats());
   VideoStatsEntry nonexpired_entry{stats2};
   VerifyReadStats(kDecodeStatsKeyVp9, nonexpired_entry);
 
   // Set the clock so that all data have expired.
-  clock.SetNow(base::Time::FromJsTime(stats2.timestamp) + base::Days(1) +
-               GetMaxTimeToKeepStats());
+  clock.SetNow(base::Time::FromMillisecondsSinceUnixEpoch(stats2.timestamp) +
+               base::Days(1) + GetMaxTimeToKeepStats());
 
   // All stats are expired. Expect null entry.
   VerifyEmptyStats(kDecodeStatsKeyVp9);
@@ -364,7 +368,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureExpireDays) {
   clock.SetNow(base::Time::Now());
 
   // Append and verify read-back.
-  VideoStats stats1(clock.Now().ToJsTimeIgnoringNull(), 240, 6, 7.2);
+  VideoStats stats1(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    240, 6, 7.2);
   VideoStatsEntry entry{stats1};
   AppendStats(kDecodeStatsKeyVp9, stats1);
   VerifyReadStats(kDecodeStatsKeyVp9, entry);
@@ -400,8 +405,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, NewStatsReplaceOldStats) {
   EXPECT_GT(kNumberOfStatsToAdd, GetMaxEntriesPerConfig());
   VideoStatsEntry entry;
   for (int i = 0; i < kNumberOfStatsToAdd; ++i) {
-    VideoStats stats(clock.Now().ToJsTimeIgnoringNull(), 240 + i, 6,
-                     7.2 + i % 3);
+    VideoStats stats(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                     240 + i, 6, 7.2 + i % 3);
     AppendStats(kDecodeStatsKeyVp9, stats);
     // Start popping the last stats entry if the number of entries has reached
     // the limit.
@@ -442,8 +447,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, ConfigureMaxEntriesPerConfig) {
   EXPECT_GT(kNumberOfStatsToAdd, GetMaxEntriesPerConfig());
   VideoStatsEntry entry;
   for (int i = 0; i < kNumberOfStatsToAdd; ++i) {
-    VideoStats stats(clock.Now().ToJsTimeIgnoringNull(), 240 + i, 6,
-                     7.2 + i % 3);
+    VideoStats stats(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                     240 + i, 6, 7.2 + i % 3);
     AppendStats(kDecodeStatsKeyVp9, stats);
     // Start popping the last stats entry if the number of entries has reached
     // the limit.
@@ -468,8 +473,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, OutOfOrderTimestampClearsOldStats) {
   constexpr int kNumberOfStatsToAdd = 5;
   VideoStatsEntry entry;
   for (int i = 0; i < kNumberOfStatsToAdd; ++i) {
-    VideoStats stats(clock.Now().ToJsTimeIgnoringNull(), 240 + i, 6,
-                     7.2 + i % 3);
+    VideoStats stats(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                     240 + i, 6, 7.2 + i % 3);
     AppendStats(kDecodeStatsKeyVp9, stats);
     entry.insert(entry.begin(), stats);
     VerifyReadStats(kDecodeStatsKeyVp9, entry);
@@ -478,7 +483,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, OutOfOrderTimestampClearsOldStats) {
 
   // Go back in time and add a new stats entry.
   clock.Advance(-base::Days(20));
-  VideoStats stats(clock.Now().ToJsTimeIgnoringNull(), 123, 5, 11.2);
+  VideoStats stats(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(), 123,
+                   5, 11.2);
   AppendStats(kDecodeStatsKeyVp9, stats);
   // Only the last appended stats should be in the database now.
   entry = {stats};
@@ -511,7 +517,8 @@ TEST_F(WebrtcVideoStatsDBImplTest, DiscardCorruptedDBData) {
   // Start with a proto that represents a valid uncorrupted and unexpired entry.
   WebrtcVideoStatsEntryProto valid_proto;
   WebrtcVideoStatsProto* valid_entry = valid_proto.add_stats();
-  valid_entry->set_timestamp(clock.Now().ToJsTimeIgnoringNull());
+  valid_entry->set_timestamp(
+      clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull());
   valid_entry->set_frames_processed(300);
   valid_entry->set_key_frames_processed(8);
   valid_entry->set_p99_processing_time_ms(11.3);
@@ -569,20 +576,24 @@ TEST_F(WebrtcVideoStatsDBImplTest, WriteAndReadCollection) {
   clock.SetNow(base::Time::Now());
 
   // Append stats for multiple resolutions.
-  VideoStats stats1(clock.Now().ToJsTimeIgnoringNull(), 240, 6, 7.2);
+  VideoStats stats1(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    240, 6, 7.2);
   VideoStatsEntry entry1{stats1};
   AppendStats(kDecodeStatsKeyVp9, stats1);
 
-  VideoStats stats2(clock.Now().ToJsTimeIgnoringNull(), 360, 7, 9.2);
+  VideoStats stats2(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    360, 7, 9.2);
   VideoStatsEntry entry2{stats2};
   AppendStats(kDecodeStatsKeyVp9FullHd, stats2);
 
-  VideoStats stats3(clock.Now().ToJsTimeIgnoringNull(), 480, 11, 13.3);
+  VideoStats stats3(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    480, 11, 13.3);
   VideoStatsEntry entry3{stats3};
   AppendStats(kDecodeStatsKeyVp94K, stats3);
 
   // Add elements that should not be returned.
-  VideoStats stats4(clock.Now().ToJsTimeIgnoringNull(), 490, 13, 15.3);
+  VideoStats stats4(clock.Now().InMillisecondsFSinceUnixEpochIgnoringNull(),
+                    490, 13, 15.3);
   AppendStats(kEncodeStatsKeyVp9, stats4);
   AppendStats(kDecodeStatsKeyVp9Hw, stats4);
 

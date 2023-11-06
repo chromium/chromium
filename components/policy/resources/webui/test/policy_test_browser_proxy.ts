@@ -1,6 +1,11 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 /**
@@ -77,8 +82,9 @@ export const LevelNamesToValues: {[key: string]: PolicyLevel} = {
 let instance: PolicyTestBrowserProxy|null = null;
 
 export class PolicyTestBrowserProxy {
-  applyTestPolicies(jsonString: string) {
-    return sendWithPromise('setLocalTestPolicies', jsonString);
+  applyTestPolicies(policies: string, profileSeparationResponse: string) {
+    return sendWithPromise(
+        'setLocalTestPolicies', policies, profileSeparationResponse);
   }
 
   revertTestPolicies() {

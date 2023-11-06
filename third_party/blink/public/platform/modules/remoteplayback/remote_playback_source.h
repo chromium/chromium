@@ -6,13 +6,17 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_REMOTE_PLAYBACK_SOURCE_H_
 
 namespace blink {
-// TODO(crbug.com/1353987): Convert Url format for Android to use
-// `remote-playback:media-element?...`.
-// The scheme for RemotePlayback Urls on both Android and Desktop.
-constexpr char kRemotePlaybackPresentationUrlScheme[] = "remote-playback";
+inline constexpr char kRemotePlaybackPresentationUrlScheme[] =
+    "remote-playback";
+// The path for RemotePlayback Urls on both Android and Desktop.
+// Needs to be in sync with
+// components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/RemotingMediaSource.java
+inline constexpr char kRemotePlaybackPresentationUrlPath[] =
+    "remote-playback:media-element";
+
 // The format for RemotePlayback Urls on desktop.
-constexpr char kRemotePlaybackDesktopUrlFormat[] =
-    "remote-playback:media-session?tab_id=%d&video_codec=%s&audio_codec=%s";
+inline constexpr char kRemotePlaybackDesktopUrlFormat[] =
+    "remote-playback:media-session?video_codec=%s&audio_codec=%s&tab_id=%d";
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_REMOTEPLAYBACK_REMOTE_PLAYBACK_SOURCE_H_

@@ -1905,11 +1905,11 @@ TEST_F(PermissionsPolicyTest,
   request_with_topics_opt_in.browsing_topics = true;
 
   network::ResourceRequest request_with_shared_storage_opt_in;
-  request_with_shared_storage_opt_in.shared_storage_writable = true;
+  request_with_shared_storage_opt_in.shared_storage_writable_eligible = true;
 
   network::ResourceRequest request_with_both_opt_in;
   request_with_both_opt_in.browsing_topics = true;
-  request_with_both_opt_in.shared_storage_writable = true;
+  request_with_both_opt_in.shared_storage_writable_eligible = true;
 
   {
     // +--------------------------------------------------------+
@@ -3198,6 +3198,8 @@ TEST_F(PermissionsPolicyTest, GetPermissionsPolicyFeatureListForUnload) {
           /*disabled_features=*/{});
       const PermissionsPolicyFeatureDefault unload_default =
           GetDefaultForUnload(origin);
+      ASSERT_EQ(GetDefaultForUnload(origin.DeriveNewOpaqueOrigin()),
+                unload_default);
       if (unload_default == PermissionsPolicyFeatureDefault::EnableForNone) {
         count++;
       } else {
@@ -3249,9 +3251,9 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedHostsEmpty) {
             UnloadDeprecationAllowedHosts());
 }
 
-// Test that the UnloadDeprecationAllowedForOrigin works correctly with an empty
-// and a non-empty allowlist.
-TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin) {
+// Test that the UnloadDeprecationAllowedForHost works correctly with
+// an empty and a non-empty allowlist.
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForHostHostLists) {
   const url::Origin http_origin1 =
       url::Origin::Create(GURL("http://testing1/"));
   const url::Origin https_origin1 =
@@ -3268,12 +3270,12 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin) {
   {
     const auto hosts = UnloadDeprecationAllowedHosts();
     // With no allowlist, every origin is allowed.
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin1, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin2, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin3, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin3, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin3.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin3.host(), hosts));
   }
 
   // Now set an allowlist and check that only the allowed domains see
@@ -3286,12 +3288,48 @@ TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin) {
         /*disabled_features=*/{});
 
     const auto hosts = UnloadDeprecationAllowedHosts();
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin1, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin1, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(http_origin2, hosts));
-    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(https_origin2, hosts));
-    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(http_origin3, hosts));
-    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(https_origin3, hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin1.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin1.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(http_origin2.host(), hosts));
+    EXPECT_TRUE(UnloadDeprecationAllowedForHost(https_origin2.host(), hosts));
+    EXPECT_FALSE(UnloadDeprecationAllowedForHost(http_origin3.host(), hosts));
+    EXPECT_FALSE(UnloadDeprecationAllowedForHost(https_origin3.host(), hosts));
+  }
+}
+
+TEST_F(PermissionsPolicyTest, UnloadDeprecationAllowedForOrigin_NonHttp) {
+  const url::Origin chrome_origin =
+      url::Origin::Create(GURL("chrome://settings"));
+  EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(chrome_origin));
+  EXPECT_FALSE(
+      UnloadDeprecationAllowedForOrigin(chrome_origin.DeriveNewOpaqueOrigin()));
+}
+
+TEST_F(PermissionsPolicyTest,
+       UnloadDeprecationAllowedForOrigin_GradualRollout) {
+  const url::Origin testing_origin =
+      url::Origin::Create(GURL("http://testing"));
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kDeprecateUnload,
+          {{features::kDeprecateUnloadPercent.name, "0"},
+           {features::kDeprecateUnloadBucket.name, "0"}}}},
+        /*disabled_features=*/{});
+    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(testing_origin));
+    EXPECT_FALSE(UnloadDeprecationAllowedForOrigin(
+        testing_origin.DeriveNewOpaqueOrigin()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kDeprecateUnload,
+          {{features::kDeprecateUnloadPercent.name, "100"},
+           {features::kDeprecateUnloadBucket.name, "0"}}}},
+        /*disabled_features=*/{});
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(testing_origin));
+    EXPECT_TRUE(UnloadDeprecationAllowedForOrigin(
+        testing_origin.DeriveNewOpaqueOrigin()));
   }
 }
 }  // namespace blink

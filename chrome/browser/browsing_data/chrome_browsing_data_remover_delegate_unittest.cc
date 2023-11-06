@@ -4081,7 +4081,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateOriginTrialsTest,
       "6upOQ4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZ"
       "SI6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
   base::Time kPersistentOriginTrialValidTime =
-      base::Time::FromJavaTime(1000000000);
+      base::Time::FromSecondsSinceUnixEpoch(1000000);
   url::Origin origin = url::Origin::Create(GURL("https://example.com"));
 
   TestingProfile* profile = GetProfile();

@@ -46,12 +46,14 @@ public class PowerBookmarkUtils {
 
     /** Returns whether the given meta is a shopping list item. */
     public static boolean isShoppingListItem(PowerBookmarkMeta meta) {
-        return ShoppingFeatures.isShoppingListEligible() && meta != null
+        return ShoppingFeatures.isShoppingListEligible()
+                && meta != null
                 && meta.hasShoppingSpecifics();
     }
 
     /**
      * Checks if the given tab is price-trackable.
+     *
      * @param tab The tab to check for price-tracking eligibility.
      * @return Whether the given tab is eligible for price-tracking.
      */
@@ -59,9 +61,7 @@ public class PowerBookmarkUtils {
         if (tab == null || tab.getWebContents() == null) return false;
         if (sPriceTrackingEligibleForTesting != null) return sPriceTrackingEligibleForTesting;
 
-        Profile profile = Profile.fromWebContents(tab.getWebContents());
-        assert profile != null;
-
+        Profile profile = tab.getProfile();
         ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
         if (service == null) return false;
 
@@ -73,6 +73,7 @@ public class PowerBookmarkUtils {
     /**
      * Unified way to get the associated {@link CommerceSubscription} for a {@link
      * PowerBookmarkMeta}.
+     *
      * @param meta The {@link PowerBookmarkMeta} to create the {@link CommerceSubscription} for.
      * @return The {@link CommerceSubsription} for the given {@link PowerBookmarkMeta}
      */
@@ -84,21 +85,25 @@ public class PowerBookmarkUtils {
     /**
      * Unified way to get the associated {@link CommerceSubscription} for a {@link
      * ShoppingSpecifics}.
+     *
      * @param shoppingSpecifics The {@link ShoppingSpecifics} to create the {@link
-     *         CommerceSubscription} for.
+     *     CommerceSubscription} for.
      * @return The {@link CommerceSubsription} for the given {@link ShoppingSpecifics}
      */
     public static @NonNull CommerceSubscription createCommerceSubscriptionForShoppingSpecifics(
             @NonNull ShoppingSpecifics shoppingSpecifics) {
         // Use UnsignedLongs to convert ProductClusterId to avoid overflow.
         UserSeenOffer seenOffer =
-                new UserSeenOffer(UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
+                new UserSeenOffer(
+                        UnsignedLongs.toString(shoppingSpecifics.getOfferId()),
                         shoppingSpecifics.getCurrentPrice().getAmountMicros(),
                         shoppingSpecifics.getCountryCode());
-        return new CommerceSubscription(SubscriptionType.PRICE_TRACK,
+        return new CommerceSubscription(
+                SubscriptionType.PRICE_TRACK,
                 IdentifierType.PRODUCT_CLUSTER_ID,
                 UnsignedLongs.toString(shoppingSpecifics.getProductClusterId()),
-                ManagementType.USER_MANAGED, seenOffer);
+                ManagementType.USER_MANAGED,
+                seenOffer);
     }
 
     /**
@@ -108,45 +113,68 @@ public class PowerBookmarkUtils {
      * @param bookmarkId The BookmarkId to check the price-tracking status of.
      * @param enabled Whether price-tracking should be enabled.
      * @param snackbarManager Manages snackbars, non-null if a message should be sent to alert the
-     *         users of price-tracking events.
+     *     users of price-tracking events.
      * @param resources Used to retrieve resources.
      * @param profile The current profile.
      * @param callback The status callback, may be called multiple times depending if the user
-     *         retries on failure.
+     *     retries on failure.
      */
-    public static void setPriceTrackingEnabledWithSnackbars(@NonNull BookmarkModel bookmarkModel,
-            @Nullable BookmarkId bookmarkId, boolean enabled, SnackbarManager snackbarManager,
-            Resources resources, Profile profile, Callback<Boolean> callback) {
+    public static void setPriceTrackingEnabledWithSnackbars(
+            @NonNull BookmarkModel bookmarkModel,
+            @Nullable BookmarkId bookmarkId,
+            boolean enabled,
+            SnackbarManager snackbarManager,
+            Resources resources,
+            Profile profile,
+            Callback<Boolean> callback) {
         // Action to retry the subscription request on failure.
         SnackbarManager.SnackbarController retrySnackbarControllerAction =
                 new SnackbarManager.SnackbarController() {
                     @Override
                     public void onAction(Object actionData) {
-                        setPriceTrackingEnabledWithSnackbars(bookmarkModel, bookmarkId, enabled,
-                                snackbarManager, resources, profile, callback);
+                        setPriceTrackingEnabledWithSnackbars(
+                                bookmarkModel,
+                                bookmarkId,
+                                enabled,
+                                snackbarManager,
+                                resources,
+                                profile,
+                                callback);
                     }
                 };
         // Wrapper which shows a snackbar and forwards the result.
-        Callback<Boolean> wrapperCallback = (success) -> {
-            Snackbar snackbar;
-            if (success) {
-                snackbar = Snackbar.make(
-                        resources.getString(enabled ? R.string.price_tracking_enabled_snackbar
-                                                    : R.string.price_tracking_disabled_snackbar),
-                        null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_PRICE_TRACKING_SUCCESS);
-            } else {
-                snackbar =
-                        Snackbar.make(resources.getString(R.string.price_tracking_error_snackbar),
-                                        retrySnackbarControllerAction, Snackbar.TYPE_NOTIFICATION,
-                                        Snackbar.UMA_PRICE_TRACKING_FAILURE)
-                                .setAction(resources.getString(
-                                                   R.string.price_tracking_error_snackbar_action),
-                                        null);
-            }
-            snackbar.setSingleLine(false);
-            snackbarManager.showSnackbar(snackbar);
-            callback.onResult(success);
-        };
+        Callback<Boolean> wrapperCallback =
+                (success) -> {
+                    Snackbar snackbar;
+                    if (success) {
+                        snackbar =
+                                Snackbar.make(
+                                        resources.getString(
+                                                enabled
+                                                        ? R.string.price_tracking_enabled_snackbar
+                                                        : R.string
+                                                                .price_tracking_disabled_snackbar),
+                                        null,
+                                        Snackbar.TYPE_NOTIFICATION,
+                                        Snackbar.UMA_PRICE_TRACKING_SUCCESS);
+                    } else {
+                        snackbar =
+                                Snackbar.make(
+                                                resources.getString(
+                                                        R.string.price_tracking_error_snackbar),
+                                                retrySnackbarControllerAction,
+                                                Snackbar.TYPE_NOTIFICATION,
+                                                Snackbar.UMA_PRICE_TRACKING_FAILURE)
+                                        .setAction(
+                                                resources.getString(
+                                                        R.string
+                                                                .price_tracking_error_snackbar_action),
+                                                null);
+                    }
+                    snackbar.setSingleLine(false);
+                    snackbarManager.showSnackbar(snackbar);
+                    callback.onResult(success);
+                };
         // Make sure the notification channel is initialized when the user tracks a product.
         // TODO(crbug.com/1382191): Add a SubscriptionsObserver in the PriceDropNotificationManager
         // and initialize the channel there.
@@ -159,6 +187,7 @@ public class PowerBookmarkUtils {
 
     /**
      * Gets the power bookmark associated with the given tab.
+     *
      * @param bookmarkModel The {@link BookmarkModel} to retrieve bookmark info.
      * @param tab The current {@link Tab} to check.
      * @return The {@link PowerBookmarkMeta} associated with the given tab or null.

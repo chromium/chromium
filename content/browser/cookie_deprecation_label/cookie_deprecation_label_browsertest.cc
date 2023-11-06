@@ -76,7 +76,19 @@ class CookieDeprecationLabelBrowserTestBase : public ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelBrowserTestBase,
+class CookieDeprecationLabelDisabledBrowserTest
+    : public CookieDeprecationLabelBrowserTestBase {
+ public:
+  CookieDeprecationLabelDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kCookieDeprecationFacilitatedTesting);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelDisabledBrowserTest,
                        FeatureDisabled_CookieDeprecationLabelHeaderNotAdded) {
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   auto response_a_a =

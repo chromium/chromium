@@ -745,6 +745,7 @@ if (is_win || is_mac || is_linux) {
       "external_constants_builder.h",
       "external_constants_builder_unittest.cc",
       "external_constants_override_unittest.cc",
+      "installer_unittest.cc",
       "lock_unittest.cc",
       "net/network_unittest.cc",
       "persisted_data_unittest.cc",
@@ -840,7 +841,7 @@ if (is_win || is_mac || is_linux) {
         "util/win_util_unittest.cc",
         "win/app_command_runner_unittest.cc",
         "win/installer/configuration_unittest.cc",
-        "win/installer/installer_unittest.cc",
+        "win/installer/installer_win_unittest.cc",
         "win/installer/msi_custom_action_unittest.cc",
         "win/installer/string_unittest.cc",
         "win/installer_api_unittest.cc",
@@ -917,6 +918,11 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
         "//third_party/ocmock",
+      ]
+
+      frameworks = [
+        "Foundation.framework",
+        "Security.framework",
       ]
 
       data += [

@@ -13,8 +13,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/views/widget/widget.h"
 
-class Browser;
-
 namespace content {
 class WebContents;
 enum class Visibility;
@@ -28,7 +26,7 @@ namespace lens {
 
 class LensRegionSearchController : public content::WebContentsObserver {
  public:
-  explicit LensRegionSearchController(Browser* browser);
+  LensRegionSearchController();
   ~LensRegionSearchController() override;
 
   // Creates and runs the drag and capture flow. When run, the user enters into
@@ -103,8 +101,6 @@ class LensRegionSearchController : public content::WebContentsObserver {
   bool in_capture_mode_ = false;
 
   std::unique_ptr<image_editor::ScreenshotFlow> screenshot_flow_;
-
-  raw_ptr<Browser> browser_ = nullptr;
 
   raw_ptr<views::Widget> bubble_widget_ = nullptr;
 

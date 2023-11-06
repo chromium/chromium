@@ -24,16 +24,16 @@ import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-/**
- * A class that handles model and view creation for the most commonly used omnibox suggestion.
- */
+/** A class that handles model and view creation for the most commonly used omnibox suggestion. */
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
 
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private boolean mOmniBoxAnswerColorReversal;
 
-    public AnswerSuggestionProcessor(Context context, SuggestionHost suggestionHost,
+    public AnswerSuggestionProcessor(
+            Context context,
+            SuggestionHost suggestionHost,
             UrlBarEditingTextStateProvider editingTextProvider,
             OmniboxImageSupplier imageSupplier) {
         super(context, suggestionHost, imageSupplier);
@@ -73,19 +73,26 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private void setStateForSuggestion(
             PropertyModel model, AutocompleteMatch suggestion, int position) {
         @AnswerType
-        int answerType = suggestion.getAnswer() == null ? AnswerType.INVALID
-                                                        : suggestion.getAnswer().getType();
+        int answerType =
+                suggestion.getAnswer() == null
+                        ? AnswerType.INVALID
+                        : suggestion.getAnswer().getType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
-        AnswerText[] details = AnswerTextNewLayout.from(mContext, suggestion,
-                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                suggestionTextColorReversal);
+        AnswerText[] details =
+                AnswerTextNewLayout.from(
+                        mContext,
+                        suggestion,
+                        mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                        suggestionTextColorReversal);
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].mText);
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_TEXT, details[1].mText);
 
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
+        model.set(
+                AnswerSuggestionViewProperties.TEXT_LINE_1_ACCESSIBILITY_DESCRIPTION,
                 details[0].mAccessibilityDescription);
-        model.set(AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
+        model.set(
+                AnswerSuggestionViewProperties.TEXT_LINE_2_ACCESSIBILITY_DESCRIPTION,
                 details[1].mAccessibilityDescription);
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_MAX_LINES, details[0].mMaxLines);
@@ -99,6 +106,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     /**
      * Checks if we need to apply color reversion on the answer suggestion.
+     *
      * @param answerType The type of a suggested answer.
      * @return true, if red/green colors should be swapped.
      */
@@ -115,9 +123,7 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         return true;
     }
 
-    /**
-     * Returns whether current Locale country is eligible for Answer color reversal.
-     */
+    /** Returns whether current Locale country is eligible for Answer color reversal. */
     @VisibleForTesting
     /* package */ boolean isCountryEligibleForColorReversal() {
         return COLOR_REVERSAL_COUNTRY_LIST.contains(LocaleUtils.getDefaultLocaleString());
@@ -162,7 +168,8 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             icon = R.drawable.ic_equals_sign_round;
         }
 
-        return icon == 0 ? super.getFallbackIcon(suggestion)
-                         : OmniboxDrawableState.forLargeIcon(mContext, icon, /*allowTint=*/false);
+        return icon == 0
+                ? super.getFallbackIcon(suggestion)
+                : OmniboxDrawableState.forLargeIcon(mContext, icon, /* allowTint= */ false);
     }
 }

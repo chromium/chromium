@@ -167,7 +167,7 @@ def make_callback_invocation_function(cg_context,
     F = FormatNode
 
     func_like = cg_context.function_like
-    return_type = ("void" if func_like.return_type.unwrap().is_void else
+    return_type = ("void" if func_like.return_type.unwrap().is_undefined else
                    blink_type_info(func_like.return_type).value_t)
     maybe_return_type = "v8::Maybe<{}>".format(return_type)
     arg_type_and_names = _make_arg_type_and_names(func_like)
@@ -222,7 +222,7 @@ def make_callback_invocation_function(cg_context,
         body.add_template_var(arg_name, arg_name)
     bind_local_vars(body, cg_context, is_construct_call)
 
-    if func_like.return_type.unwrap(typedef=True).is_void:
+    if func_like.return_type.unwrap(typedef=True).is_undefined:
         text = "v8::JustVoid()"
     else:
         text = "helper.Result<{}, {}>()".format(
@@ -373,7 +373,7 @@ def make_invoke_and_report_function(cg_context, function_name, api_func_name):
     F = FormatNode
 
     func_like = cg_context.function_like
-    if not (func_like.return_type.unwrap().is_void
+    if not (func_like.return_type.unwrap().is_undefined
             or func_like.identifier == "Function"):
         return None, None
 

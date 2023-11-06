@@ -228,10 +228,6 @@ void WiredDisplayMediaRouteProvider::GetState(GetStateCallback callback) {
   std::move(callback).Run(mojom::ProviderStatePtr());
 }
 
-void WiredDisplayMediaRouteProvider::OnDidProcessDisplayChanges() {
-  NotifySinkObservers();
-}
-
 void WiredDisplayMediaRouteProvider::OnDisplayAdded(
     const Display& new_display) {
   NotifySinkObservers();

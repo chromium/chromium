@@ -385,9 +385,7 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
         switch (WebAuthnCredManDelegate::CredManMode()) {
           case WebAuthnCredManDelegate::CredManEnabledMode::kAllCredMan:
             delegate->TriggerCredManUi(
-                WebAuthnCredManDelegate::RequestPasswords(
-                    base::FeatureList::IsEnabled(
-                        password_manager::features::kPasswordsInCredMan)));
+                WebAuthnCredManDelegate::RequestPasswords(true));
             return;
           case WebAuthnCredManDelegate::CredManEnabledMode::kNonGpmPasskeys:
             delegate->TriggerCredManUi(
@@ -510,6 +508,11 @@ void PasswordAccessoryControllerImpl::UpdateCredManReentryUi(
           autofill::AccessoryAction::CREDMAN_CONDITIONAL_UI_REENTRY);
     }
   }
+}
+
+base::WeakPtr<PasswordAccessoryController>
+PasswordAccessoryControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 PasswordAccessoryControllerImpl::LastFocusedFieldInfo::LastFocusedFieldInfo(

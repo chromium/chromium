@@ -11,12 +11,9 @@ mojom("mojo_bindings") {
     "mojo_file_system_access_test.mojom",
   ]
   webui_module_path = "/"
-  use_typescript_sources = true
 }
 
 build_webui_tests("build") {
-  resource_path_prefix = "mojo"
-
   static_files = [
     "mojo_file_system_access_test.html",
     "mojo_js_interface_broker_test_bar.html",

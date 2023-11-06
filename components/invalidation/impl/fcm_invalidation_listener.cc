@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/topic_invalidation_map.h"
 
 namespace invalidation {
 
@@ -70,7 +69,7 @@ void FCMInvalidationListener::Start(
   DoSubscriptionUpdate();
 }
 
-void FCMInvalidationListener::UpdateInterestedTopics(const Topics& topics) {
+void FCMInvalidationListener::UpdateInterestedTopics(const TopicMap& topics) {
   topics_update_requested_ = true;
   interested_topics_ = topics;
   DoSubscriptionUpdate();
@@ -97,8 +96,7 @@ void FCMInvalidationListener::InvalidationReceived(
              << expected_public_topic.value_or("<None>");
     return;
   }
-  Invalidation inv =
-      Invalidation::Init(*expected_public_topic, version, payload);
+  Invalidation inv = Invalidation(*expected_public_topic, version, payload);
   inv.SetAckHandler(weak_factory_.GetWeakPtr(),
                     base::SingleThreadTaskRunner::GetCurrentDefault());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
@@ -114,15 +112,13 @@ void FCMInvalidationListener::DispatchInvalidation(
 
   // Emit invalidation to registered handlers (if any).
   if (interested_topics_.contains(invalidation.topic())) {
-    TopicInvalidationMap topic_invalidation_map;
-    topic_invalidation_map.Insert(invalidation);
-    EmitSavedInvalidations(topic_invalidation_map);
+    EmitSavedInvalidation(invalidation);
   }
 }
 
-void FCMInvalidationListener::EmitSavedInvalidations(
-    const TopicInvalidationMap& to_emit) {
-  delegate_->OnInvalidate(to_emit);
+void FCMInvalidationListener::EmitSavedInvalidation(
+    const Invalidation& invalidation) {
+  delegate_->OnInvalidate(invalidation);
 }
 
 void FCMInvalidationListener::TokenReceived(
@@ -162,20 +158,18 @@ void FCMInvalidationListener::DoSubscriptionUpdate() {
   // Go over all stored unacked invalidations and dispatch them if their topics
   // have become interesting.
   // Note: We might dispatch invalidations for a second time here, if they were
-  // already dispatched but not acked yet.
+  // already dispatched but not acknowledged yet.
   // TODO(melandory): remove unacked invalidations for unregistered topics.
-  TopicInvalidationMap topic_invalidation_map;
   for (const auto& [topic, invalidation] : unacked_invalidations_map_) {
-    if (interested_topics_.find(topic) == interested_topics_.end()) {
+    if (!interested_topics_.contains(topic)) {
       continue;
     }
-    topic_invalidation_map.Insert(invalidation);
-  }
 
-  // There's no need to run these through DispatchInvalidations(); they've
-  // already been saved to storage (that's where we found them) so all we need
-  // to do now is emit them.
-  EmitSavedInvalidations(topic_invalidation_map);
+    // There's no need to run these through DispatchInvalidations(); they've
+    // already been saved to storage (that's where we found them) so all we need
+    // to do now is emit them.
+    EmitSavedInvalidation(invalidation);
+  }
 }
 
 void FCMInvalidationListener::StartForTest(Delegate* delegate) {
@@ -186,9 +180,9 @@ void FCMInvalidationListener::EmitStateChangeForTest(InvalidatorState state) {
   delegate_->OnInvalidatorStateChange(state);
 }
 
-void FCMInvalidationListener::EmitSavedInvalidationsForTest(
-    const TopicInvalidationMap& to_emit) {
-  EmitSavedInvalidations(to_emit);
+void FCMInvalidationListener::EmitSavedInvalidationForTest(
+    const Invalidation& invalidation) {
+  EmitSavedInvalidation(invalidation);
 }
 
 void FCMInvalidationListener::Stop() {

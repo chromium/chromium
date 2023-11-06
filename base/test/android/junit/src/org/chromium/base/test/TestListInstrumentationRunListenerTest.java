@@ -36,13 +36,12 @@ public class TestListInstrumentationRunListenerTest {
     private static class ChildClass extends ParentClass {}
 
     private static class Groups {
-        // clang-format off
         @ParameterizedCommandLineFlags({
             @Switches({"c1", "c2"}),
             @Switches({"c3", "c4"}),
         })
         public void testA() {}
-        // clang-format on
+
         @ParameterizedCommandLineFlags
         public void testB() {}
     }
@@ -57,147 +56,132 @@ public class TestListInstrumentationRunListenerTest {
 
     @Test
     public void testGetTestMethodJSON_testA() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ParentClass.class, "testA",
-                ParentClass.class.getMethod("testA").getAnnotations());
+        Description desc =
+                Description.createTestDescription(
+                        ParentClass.class,
+                        "testA",
+                        ParentClass.class.getMethod("testA").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testA',",
-            " 'annotations': {}",
-            "}"
-        );
-        // clang-format on
+        String expectedJsonString = makeJSON("{", " 'method': 'testA',", " 'annotations': {}", "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
     @Test
     public void testGetTestMethodJSON_testB() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ParentClass.class, "testB",
-                ParentClass.class.getMethod("testB").getAnnotations());
+        Description desc =
+                Description.createTestDescription(
+                        ParentClass.class,
+                        "testB",
+                        ParentClass.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "  'CommandLineFlags$Add': {",
-            "   'value': ['world']",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
+        String expectedJsonString =
+                makeJSON(
+                        "{",
+                        " 'method': 'testB',",
+                        " 'annotations': {",
+                        "  'CommandLineFlags$Add': {",
+                        "   'value': ['world']",
+                        "  }",
+                        " }",
+                        "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
-
     @Test
     public void testGetTestMethodJSONForInheritedClass() throws Throwable {
-        Description desc = Description.createTestDescription(
-                ChildClass.class, "testB",
-                ChildClass.class.getMethod("testB").getAnnotations());
+        Description desc =
+                Description.createTestDescription(
+                        ChildClass.class,
+                        "testB",
+                        ChildClass.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "   'CommandLineFlags$Add': {",
-            "    'value': ['world']",
-            "   }",
-            "  }",
-            "}"
-        );
-        // clang-format on
+        String expectedJsonString =
+                makeJSON(
+                        "{",
+                        " 'method': 'testB',",
+                        " 'annotations': {",
+                        "   'CommandLineFlags$Add': {",
+                        "    'value': ['world']",
+                        "   }",
+                        "  }",
+                        "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
     @Test
     public void testGetAnnotationJSONForParentClass() throws Throwable {
-        JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
-                Arrays.asList(ParentClass.class.getAnnotations()));
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'CommandLineFlags$Add': {",
-            "  'value': ['hello']",
-            " }",
-            "}"
-        );
-        // clang-format on
+        JSONObject json =
+                TestListInstrumentationRunListener.getAnnotationJSON(
+                        Arrays.asList(ParentClass.class.getAnnotations()));
+        String expectedJsonString =
+                makeJSON("{", " 'CommandLineFlags$Add': {", "  'value': ['hello']", " }", "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
     @Test
     public void testGetAnnotationJSONForChildClass() throws Throwable {
-        JSONObject json = TestListInstrumentationRunListener.getAnnotationJSON(
-                Arrays.asList(ChildClass.class.getAnnotations()));
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'CommandLineFlags$Add': {",
-            "  'value': ['hello']",
-            " },",
-            " 'Batch': {",
-            "  'value': 'foo'",
-            " }",
-            "}"
-        );
-        // clang-format on
+        JSONObject json =
+                TestListInstrumentationRunListener.getAnnotationJSON(
+                        Arrays.asList(ChildClass.class.getAnnotations()));
+        String expectedJsonString =
+                makeJSON(
+                        "{",
+                        " 'CommandLineFlags$Add': {",
+                        "  'value': ['hello']",
+                        " },",
+                        " 'Batch': {",
+                        "  'value': 'foo'",
+                        " }",
+                        "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
     @Test
     public void testGetTestMethodJSONGroup_testA() throws Throwable {
-        Description desc = Description.createTestDescription(
-                Groups.class, "testA", Groups.class.getMethod("testA").getAnnotations());
+        Description desc =
+                Description.createTestDescription(
+                        Groups.class, "testA", Groups.class.getMethod("testA").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testA',",
-            " 'annotations': {",
-            "  'ParameterizedCommandLineFlags': {",
-            "   'value': [",
-            "    {",
-            "     'ParameterizedCommandLineFlags$Switches': {",
-            "      'value': ['c1','c2']",
-            "     }",
-            "    },",
-            "    {",
-            "     'ParameterizedCommandLineFlags$Switches': {",
-            "      'value': ['c3','c4']",
-            "     }",
-            "    }",
-            "   ]",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
+        String expectedJsonString =
+                makeJSON(
+                        "{",
+                        " 'method': 'testA',",
+                        " 'annotations': {",
+                        "  'ParameterizedCommandLineFlags': {",
+                        "   'value': [",
+                        "    {",
+                        "     'ParameterizedCommandLineFlags$Switches': {",
+                        "      'value': ['c1','c2']",
+                        "     }",
+                        "    },",
+                        "    {",
+                        "     'ParameterizedCommandLineFlags$Switches': {",
+                        "      'value': ['c3','c4']",
+                        "     }",
+                        "    }",
+                        "   ]",
+                        "  }",
+                        " }",
+                        "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 
     @Test
     public void testGetTestMethodJSONGroup_testB() throws Throwable {
-        Description desc = Description.createTestDescription(
-                Groups.class, "testB", Groups.class.getMethod("testB").getAnnotations());
+        Description desc =
+                Description.createTestDescription(
+                        Groups.class, "testB", Groups.class.getMethod("testB").getAnnotations());
         JSONObject json = TestListInstrumentationRunListener.getTestMethodJSON(desc);
-        // clang-format off
-        String expectedJsonString = makeJSON(
-            "{",
-            " 'method': 'testB',",
-            " 'annotations': {",
-            "  'ParameterizedCommandLineFlags': {",
-            "   'value': []",
-            "  }",
-            " }",
-            "}"
-        );
-        // clang-format on
+        String expectedJsonString =
+                makeJSON(
+                        "{",
+                        " 'method': 'testB',",
+                        " 'annotations': {",
+                        "  'ParameterizedCommandLineFlags': {",
+                        "   'value': []",
+                        "  }",
+                        " }",
+                        "}");
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 }

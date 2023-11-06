@@ -16,7 +16,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/webui/settings/ash/os_settings_features_util.h"
+#include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"

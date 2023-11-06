@@ -222,9 +222,9 @@ NET_EXPORT BASE_DECLARE_FEATURE(kSameSiteDefaultChecksMethodRigorously);
 NET_EXPORT BASE_DECLARE_FEATURE(kChromeRootStoreUsed);
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 
-// When enabled, TrustStore implementations will use TRUSTED_LEAF,
+// When enabled, bssl::TrustStore implementations will use TRUSTED_LEAF,
 // TRUSTED_ANCHOR_OR_LEAF, and TRUSTED_ANCHOR as appropriate. When disabled,
-// TrustStore implementation will only use TRUSTED_ANCHOR.
+// bssl::TrustStore implementation will only use TRUSTED_ANCHOR.
 // TODO(https://crbug.com/1403034): remove this a few milestones after the
 // trusted leaf support has been launched on all relevant platforms.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(USE_NSS_CERTS) || BUILDFLAG(IS_WIN)
@@ -327,10 +327,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kTpcdSupportSettings);
 // Whether to enable the use of 3PC based on 3PCD metadata grants delivered via
 // component updater.
 NET_EXPORT BASE_DECLARE_FEATURE(kTpcdMetadataGrants);
-
-// Whether temporary storage access grants awarded by all 3PCD heuristics should
-// be considered to override cookie behavior.
-NET_EXPORT BASE_DECLARE_FEATURE(kTpcdReadHeuristicsGrants);
 
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
@@ -460,9 +456,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebTransportDraft07);
 // Enables Zstandard Content-Encoding support.
 NET_EXPORT BASE_DECLARE_FEATURE(kZstdContentEncoding);
 
-// Enables SHA-256 and username hashing support for HTTP Digest auth.
-NET_EXPORT BASE_DECLARE_FEATURE(kDigestAuthEnableSecureAlgorithms);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyPartitionedStorageAllowedByDefault);
 
 // Enables the HTTP extensible priorities "priority" header.
@@ -472,15 +465,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kPriorityHeader);
 // Enables a more efficient implementation of SpdyHeadersToHttpResponse().
 NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseUseBuilder);
 
-// Enables comparison of old and new implementations of
-// SpdyHeadersToHttpResponse at runtime and calls DumpWithoutCrashing() if they
-// differ. This is slow, so should never be enabled in Beta or Stable channels.
-// TODO(https://crbug.com/1485670): Remove this once we have run an experiment
-// for two weeks on Dev.
-NET_EXPORT BASE_DECLARE_FEATURE(kSpdyHeadersToHttpResponseVerifyCorrectness);
-
 // Enables receiving ECN bit by sockets in Chrome.
 NET_EXPORT BASE_DECLARE_FEATURE(kReceiveEcn);
+
+NET_EXPORT BASE_DECLARE_FEATURE(kNewCertPathBuilderIterationLimit);
 
 }  // namespace net::features
 

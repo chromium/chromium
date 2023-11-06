@@ -97,23 +97,26 @@ void ClientUsageTracker::GetBucketsUsage(const std::set<BucketLocator>& buckets,
 }
 
 void ClientUsageTracker::UpdateBucketUsageCache(const BucketLocator& bucket,
-                                                int64_t delta) {
+                                                absl::optional<int64_t> delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsUsageCacheEnabledForStorageKey(bucket.storage_key))
+  if (!IsUsageCacheEnabledForStorageKey(bucket.storage_key)) {
     return;
+  }
 
   auto bucket_it = cached_bucket_usage_.find(bucket);
-  if (bucket_it != cached_bucket_usage_.end()) {
+  if (bucket_it == cached_bucket_usage_.end()) {
+    return;
+  }
+
+  if (delta.has_value()) {
     // Constrain `delta` to avoid negative usage values.
     // TODO(crbug.com/463729): At least one storage API sends deltas that
     // result in negative total usage. The line below works around this bug.
     // Fix the bug, and remove the workaround.
-    delta = std::max(delta, -bucket_it->second);
-    bucket_it->second += delta;
-    return;
+    bucket_it->second += std::max(*delta, -bucket_it->second);
+  } else {
+    cached_bucket_usage_.erase(bucket_it);
   }
-  // Retrieve bucket usage and update cache.
-  GetBucketUsage(bucket, base::DoNothing());
 }
 
 void ClientUsageTracker::DeleteBucketCache(const BucketLocator& bucket) {
@@ -129,7 +132,7 @@ int64_t ClientUsageTracker::GetCachedUsage() const {
   return usage;
 }
 
-const std::map<BucketLocator, int64_t>&
+const ClientUsageTracker::BucketUsageMap&
 ClientUsageTracker::GetCachedBucketsUsage() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return cached_bucket_usage_;

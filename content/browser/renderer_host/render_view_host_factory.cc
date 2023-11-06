@@ -42,14 +42,18 @@ RenderViewHost* RenderViewHostFactory::Create(
         std::move(main_browsing_context_state), create_case);
   }
 
+  const auto frame_sink_id =
+      RenderWidgetHostImpl::DefaultFrameSinkId(*group, widget_routing_id);
   RenderViewHostImpl* view_host = new RenderViewHostImpl(
       frame_tree, group, storage_partition_config,
       RenderWidgetHostFactory::Create(
-          frame_tree, widget_delegate, group->GetSafeRef(), widget_routing_id,
+          frame_tree, widget_delegate, frame_sink_id, group->GetSafeRef(),
+          widget_routing_id,
           /*hidden=*/true, renderer_initiated_creation),
       delegate, routing_id, main_frame_routing_id,
       true /* has_initialized_audio_host */,
       std::move(main_browsing_context_state), create_case);
+  view_host->GetWidget()->SetViewIsFrameSinkIdOwner(true);
   return view_host;
 }
 

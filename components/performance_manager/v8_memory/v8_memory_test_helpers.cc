@@ -263,7 +263,8 @@ FrameNodeImpl* WebMemoryTestHarness::AddFrameNodeImpl(
   int frame_routing_id = GetNextUniqueId();
   auto frame_token = blink::LocalFrameToken();
   auto frame = CreateNode<FrameNodeImpl>(
-      process, page, parent, frame_routing_id, frame_token,
+      process, page, parent, /*fenced_frame_embedder_frame_node=*/nullptr,
+      frame_routing_id, frame_token,
       content::BrowsingInstanceId(browsing_instance_id));
   if (url) {
     frame->OnNavigationCommitted(GURL(*url), /*same document*/ true);

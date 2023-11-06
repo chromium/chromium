@@ -15,8 +15,8 @@ TEST(IOSurface, OddSizeMultiPlanar) {
   DCHECK(io_surface);
   // Plane sizes are rounded up.
   // https://crbug.com/1226056
-  EXPECT_EQ(IOSurfaceGetWidthOfPlane(io_surface, 1), 51u);
-  EXPECT_EQ(IOSurfaceGetHeightOfPlane(io_surface, 1), 50u);
+  EXPECT_EQ(IOSurfaceGetWidthOfPlane(io_surface.get(), 1), 51u);
+  EXPECT_EQ(IOSurfaceGetHeightOfPlane(io_surface.get(), 1), 50u);
 }
 
 }  // namespace

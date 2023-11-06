@@ -47,20 +47,24 @@ import java.io.IOException;
  * initialization for Clank startup.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-// clang-format off
-@CommandLineFlags.
-    Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
-@EnableFeatures({ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
-    ChromeFeatureList.START_SURFACE_ANDROID + "<Study", ChromeFeatureList.INSTANT_START})
-@Restriction({Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
-    UiRestriction.RESTRICTION_TYPE_PHONE})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "force-fieldtrials=Study/Group"
+})
+@EnableFeatures({
+    ChromeFeatureList.START_SURFACE_RETURN_TIME + "<Study,",
+    ChromeFeatureList.START_SURFACE_ANDROID + "<Study",
+    ChromeFeatureList.INSTANT_START
+})
+@Restriction({
+    Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE,
+    UiRestriction.RESTRICTION_TYPE_PHONE
+})
 public class InstantStartNewTabFromLauncherTest {
-    // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     @Before
     public void setUp() {
@@ -119,7 +123,9 @@ public class InstantStartNewTabFromLauncherTest {
 
         Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl())); });
+                () -> {
+                    Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl()));
+                });
     }
 
     private void testNewTabFromLauncherWithHomepageDisabledImpl() throws IOException {
@@ -139,12 +145,15 @@ public class InstantStartNewTabFromLauncherTest {
 
         Assert.assertFalse(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl())); });
+                () -> {
+                    Assert.assertTrue(UrlUtilities.isNTPUrl(cta.getActivityTab().getUrl()));
+                });
     }
 
     private void startNewTabFromLauncherIcon(boolean incognito) {
-        Intent intent = IntentHandler.createTrustedOpenNewTabIntent(
-                ContextUtils.getApplicationContext(), incognito);
+        Intent intent =
+                IntentHandler.createTrustedOpenNewTabIntent(
+                        ContextUtils.getApplicationContext(), incognito);
         intent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_SHORTCUT, true);
         mActivityTestRule.prepareUrlIntent(intent, null);
         mActivityTestRule.launchActivity(intent);

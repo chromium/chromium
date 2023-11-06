@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp;
 
 import android.app.Activity;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.test.filters.MediumTest;
 
@@ -51,10 +52,11 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Activity activity = getActivity();
-            activity.setContentView(R.layout.incognito_description_layout);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Activity activity = getActivity();
+                    activity.setContentView(R.layout.incognito_description_layout);
+                });
     }
 
     @Test
@@ -62,9 +64,28 @@ public class IncognitoDescriptionViewRenderTest extends BlankUiTestActivityTestC
     @Feature({"RenderTest"})
     public void testRender_IncognitoDescriptionView() throws IOException {
         View view = getActivity().findViewById(android.R.id.content);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            view.setBackgroundResource(R.color.ntp_bg_incognito);
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.setBackgroundResource(R.color.ntp_bg_incognito);
+                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
+                    cardStub.setLayoutResource(R.layout.incognito_cookie_controls_card);
+                    cardStub.inflate();
+                });
         mRenderTestRule.render(view, "incognito_description_view");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRender_IncognitoDescriptionViewTrackingProtection() throws IOException {
+        View view = getActivity().findViewById(android.R.id.content);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    view.setBackgroundResource(R.color.ntp_bg_incognito);
+                    ViewStub cardStub = getActivity().findViewById(R.id.cookie_card_stub);
+                    cardStub.setLayoutResource(R.layout.incognito_tracking_protection_card);
+                    cardStub.inflate();
+                });
+        mRenderTestRule.render(view, "incognito_description_view_tracking_protection");
     }
 }

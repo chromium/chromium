@@ -16,11 +16,12 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
+#include "content/browser/attribution_reporting/privacy_math.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace attribution_reporting {
 class EventReportWindows;
+class MaxEventLevelReports;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -35,7 +36,6 @@ namespace content {
 
 class AttributionReport;
 class AttributionTrigger;
-class StoredSource;
 
 // Storage delegate that can supplied to extend basic attribution storage
 // functionality like annotating reports. Users and subclasses must NOT assume
@@ -47,40 +47,6 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   struct OfflineReportDelayConfig {
     base::TimeDelta min;
     base::TimeDelta max;
-  };
-
-  struct FakeReport {
-    uint64_t trigger_data;
-    // A placeholder time created to align with `report_time`.
-    base::Time trigger_time;
-    base::Time report_time;
-  };
-
-  // Corresponds to `StoredSource::AttributionLogic` as follows:
-  // `absl::nullopt` -> `StoredSource::AttributionLogic::kTruthfully`
-  // empty vector -> `StoredSource::AttributionLogic::kNever`
-  // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
-  using RandomizedResponse = absl::optional<std::vector<FakeReport>>;
-
-  class CONTENT_EXPORT RandomizedResponseData {
-   public:
-    RandomizedResponseData(double rate, RandomizedResponse);
-
-    ~RandomizedResponseData();
-
-    RandomizedResponseData(const RandomizedResponseData&);
-    RandomizedResponseData& operator=(const RandomizedResponseData&);
-
-    RandomizedResponseData(RandomizedResponseData&&);
-    RandomizedResponseData& operator=(RandomizedResponseData&&);
-
-    double rate() const { return rate_; }
-
-    const RandomizedResponse& response() const { return response_; }
-
-   private:
-    double rate_;
-    RandomizedResponse response_;
   };
 
   struct ExceedsChannelCapacityLimit {};
@@ -176,7 +142,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual double GetRandomizedResponseRate(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports) const = 0;
+      attribution_reporting::MaxEventLevelReports) const = 0;
 
   using GetRandomizedResponseResult =
       base::expected<RandomizedResponseData, ExceedsChannelCapacityLimit>;
@@ -187,15 +153,12 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::EventReportWindows&,
-      int max_event_level_reports,
+      attribution_reporting::MaxEventLevelReports,
       base::Time source_time) const = 0;
 
   int GetMaxAggregatableReportsPerSource() const;
 
   AttributionConfig::DestinationRateLimit GetDestinationRateLimit() const;
-
-  uint64_t TriggerDataCardinality(
-      attribution_reporting::mojom::SourceType) const;
 
   // Returns zero or more null aggregatable reports for the given trigger.
   virtual std::vector<NullAggregatableReport> GetNullAggregatableReports(

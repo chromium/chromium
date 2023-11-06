@@ -22,6 +22,7 @@
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
+#include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_k_anonymity_manager.h"
 #include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/browser/interest_group/interest_group_update.h"
@@ -251,7 +252,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // associated with the provided owner.
   void GetInterestGroupsForOwner(
       const url::Origin& owner,
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback);
 
   // Clear out storage for the matching owning storage key. If the matcher is
   // empty then apply to all storage keys.
@@ -271,6 +272,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   virtual void EnqueueReports(
       ReportType report_type,
       std::vector<GURL> report_urls,
+      int frame_tree_node_id,
       const url::Origin& frame_origin,
       const network::mojom::ClientSecurityState& client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -368,6 +370,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       base::Uuid generation_id,
       base::OnceCallback<void(BiddingAndAuctionData)> callback);
 
+  // Get the public key to use for the auction data. The `loader` pointer must
+  // remain valid until the `callback` is called or destroyed.
   void GetBiddingAndAuctionServerKey(
       network::mojom::URLLoaderFactory* loader,
       absl::optional<url::Origin> coordinator,
@@ -404,14 +408,17 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     ReportRequest();
     ~ReportRequest();
 
-    // Used to fetch the report URL.
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader;
+    GURL report_url;
+    url::Origin frame_origin;
+    network::mojom::ClientSecurityState client_security_state;
+
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
 
     // Used for Uma histograms. These are build-time constants contained within
     // the binary, so no need for anything to own them.
     const char* name;
     int request_url_size_bytes;
+    int frame_tree_node_id;
   };
 
   struct AdAuctionDataLoaderState {
@@ -450,14 +457,18 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner,
       std::vector<std::string> left_interest_group_names);
 
-  // For a given owner, gets interest group keys along with their update urls.
+  // Gets a list of `InterestGroupUpdateParameter` for all interest groups
+  // associated with the provided owner.
+  //
   // `groups_limit` sets a limit on the maximum number of interest group keys
   // that may be returned.
+  //
+  // To be called only by `update_manager_`.
   void GetInterestGroupsForUpdate(
       const url::Origin& owner,
       int groups_limit,
-      base::OnceCallback<void(
-          std::vector<std::pair<blink::InterestGroupKey, GURL>>)> callback);
+      base::OnceCallback<void(std::vector<InterestGroupUpdateParameter>)>
+          callback);
 
   // Updates the interest group of the same name based on the information in
   // the provided group. This does not update the interest group expiration
@@ -486,8 +497,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
                           bool parse_failure);
 
   void OnGetInterestGroupsComplete(
-      base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback,
-      std::vector<StorageInterestGroup> groups);
+      base::OnceCallback<void(scoped_refptr<StorageInterestGroups>)> callback,
+      scoped_refptr<StorageInterestGroups> groups);
 
   // Dequeues and sends the first report request in `report_requests_` queue,
   // if the queue is not empty.
@@ -496,6 +507,8 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Invoked when a report request completed.
   void OnOneReportSent(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
+      int frame_tree_node_id,
+      const std::string& devtools_request_id,
       scoped_refptr<net::HttpResponseHeaders> response_headers);
 
   // Clears `report_requests_`.  Does not abort currently pending requests.
@@ -512,7 +525,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       AdAuctionDataLoaderState state,
       std::vector<url::Origin> owners,
       url::Origin owner,
-      std::vector<StorageInterestGroup> groups);
+      scoped_refptr<StorageInterestGroups> groups);
 
   // Constructs the AuctionAdata when the load is complete and calls the
   // provided callback.
@@ -525,9 +538,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       const url::Origin& owner_origin,
       const std::string& name);
 
-  // Owns and manages access to the InterestGroupStorage living on a different
-  // thread.
-  base::SequenceBound<InterestGroupStorage> impl_;
+  // Controls access to the Interest Group Database through its owned
+  // InterestGroupStorage. Returns cached values for GetInterestGroupsForOwner
+  // when available.
+  InterestGroupCachingStorage caching_storage_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;

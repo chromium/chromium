@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/map_util.h"
 #include "base/debug/alias.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -58,11 +59,12 @@ class FeatureProviderStatic {
   FeatureProviderStatic(const FeatureProviderStatic&) = delete;
   FeatureProviderStatic& operator=(const FeatureProviderStatic&) = delete;
 
-  FeatureProvider* GetFeatures(const std::string& name) const {
-    auto it = feature_providers_.find(name);
-    if (it == feature_providers_.end())
+  const FeatureProvider* GetFeatures(const std::string& name) const {
+    auto* provider = base::FindPtrOrNull(feature_providers_, name);
+    if (!provider) {
       CRASH_WITH_MINIDUMP("FeatureProvider \"" + name + "\" not found");
-    return it->second.get();
+    }
+    return provider;
   }
 
  private:
@@ -134,8 +136,7 @@ const Feature* FeatureProvider::GetBehaviorFeature(const std::string& name) {
 }
 
 const Feature* FeatureProvider::GetFeature(const std::string& name) const {
-  auto iter = features_.find(name);
-  return iter != features_.end() ? iter->second.get() : nullptr;
+  return base::FindPtrOrNull(features_, name);
 }
 
 const Feature* FeatureProvider::GetParent(const Feature& feature) const {
@@ -182,9 +183,9 @@ void FeatureProvider::AddFeature(base::StringPiece name,
   const auto& map =
       ExtensionsClient::Get()->GetFeatureDelegatedAvailabilityCheckMap();
   if (!map.empty() && feature->RequiresDelegatedAvailabilityCheck()) {
-    auto it = map.find(feature->name());
-    if (it != map.end() && !it->second.is_null()) {
-      feature->SetDelegatedAvailabilityCheckHandler(it->second);
+    auto* handler = base::FindOrNull(map, feature->name());
+    if (handler && !handler->is_null()) {
+      feature->SetDelegatedAvailabilityCheckHandler(*handler);
     }
   }
 

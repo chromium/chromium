@@ -124,9 +124,14 @@ void VideoFrameHandlerProxyLacros::OnNewBuffer(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnFrameReadyInBuffer(
     crosapi::mojom::ReadyFrameInBufferPtr buffer,
     std::vector<crosapi::mojom::ReadyFrameInBufferPtr> /*scaled_buffers*/) {
+  OnFrameReadyInBuffer(std::move(buffer));
+}
+
+void VideoFrameHandlerProxyLacros::OnFrameReadyInBuffer(
+    crosapi::mojom::ReadyFrameInBufferPtr buffer) {
   if (handler_.is_bound()) {
     if (!access_permission_proxy_map_) {
       access_permission_proxy_map_ = new AccessPermissionProxyMap();
@@ -175,11 +180,18 @@ void VideoFrameHandlerProxyLacros::OnFrameDropped(
   }
 }
 
-void VideoFrameHandlerProxyLacros::OnNewCropVersion(uint32_t crop_version) {
+void VideoFrameHandlerProxyLacros::DEPRECATED_OnNewCropVersion(
+    uint32_t crop_version) {
+  OnNewSubCaptureTargetVersion(crop_version);
+}
+
+void VideoFrameHandlerProxyLacros::OnNewSubCaptureTargetVersion(
+    uint32_t sub_capture_target_version) {
   if (handler_.is_bound()) {
-    handler_->OnNewCropVersion(crop_version);
+    handler_->OnNewSubCaptureTargetVersion(sub_capture_target_version);
   } else if (handler_in_process_) {
-    handler_in_process_->OnNewCropVersion(crop_version);
+    handler_in_process_->OnNewSubCaptureTargetVersion(
+        sub_capture_target_version);
   }
 }
 

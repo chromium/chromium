@@ -37,6 +37,10 @@ class MockAutofillClient : public autofill::TestContentAutofillClient {
   using autofill::TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(autofill::LogManager*, GetLogManager, (), (const override));
   MOCK_METHOD(bool, IsContextSecure, (), (const override));
+  MOCK_METHOD(GeoIpCountryCode,
+              GetVariationConfigCountryCode,
+              (),
+              (const override));
 };
 
 class MockPersonalDataHelper : public FastCheckoutPersonalDataHelper {
@@ -114,6 +118,8 @@ class FastCheckoutTriggerValidatorTest
         .WillByDefault(Return(true));
     ON_CALL(*pdm(), IsAutofillProfileEnabled).WillByDefault(Return(true));
     ON_CALL(*autofill_client(), IsContextSecure).WillByDefault(Return(true));
+    ON_CALL(*autofill_client(), GetVariationConfigCountryCode)
+        .WillByDefault(Return(GeoIpCountryCode("US")));
   }
 
   MockPersonalDataManager* pdm() { return pdm_.get(); }

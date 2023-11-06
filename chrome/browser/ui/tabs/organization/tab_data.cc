@@ -31,6 +31,18 @@ TabData::~TabData() {
   if (original_tab_strip_model_) {
     original_tab_strip_model_->RemoveObserver(this);
   }
+
+  for (auto& observer : observers_) {
+    observer.OnTabDataDestroyed(tab_id_);
+  }
+}
+
+void TabData::AddObserver(TabData::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TabData::RemoveObserver(TabData::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 bool TabData::IsValidForOrganizing() const {
@@ -58,6 +70,7 @@ void TabData::OnTabStripModelDestroyed(TabStripModel* tab_strip_model) {
   if (original_tab_strip_model_ == tab_strip_model) {
     original_tab_strip_model_ = nullptr;
     web_contents_ = nullptr;
+    NotifyObserversOfUpdate();
   }
 }
 
@@ -76,6 +89,7 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       const TabStripModelChange::Replace* replace = change.GetReplace();
       if (replace->old_contents == web_contents_) {
         web_contents_ = replace->new_contents;
+        NotifyObserversOfUpdate();
       }
       return;
     }
@@ -86,6 +100,7 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
            remove->contents) {
         if (removed_tab.contents == web_contents_) {
           web_contents_ = nullptr;
+          NotifyObserversOfUpdate();
         }
       }
       return;
@@ -93,5 +108,11 @@ void TabData::OnTabStripModelChanged(TabStripModel* tab_strip_model,
     default: {
       return;
     }
+  }
+}
+
+void TabData::NotifyObserversOfUpdate() {
+  for (auto& observer : observers_) {
+    observer.OnTabDataUpdated(this);
   }
 }

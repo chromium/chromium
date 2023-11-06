@@ -72,6 +72,7 @@ class PasswordAccessoryControllerImpl
       autofill::password_generation::PasswordGenerationType type) override;
   void UpdateCredManReentryUi(
       autofill::mojom::FocusedFieldType focused_field_type) override;
+  base::WeakPtr<PasswordAccessoryController> AsWeakPtr() override;
 
   // Like |CreateForWebContents|, it creates the controller and attaches it to
   // the given |web_contents|. Upon creation, a |credential_cache| is required
@@ -225,6 +226,8 @@ class PasswordAccessoryControllerImpl
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.
   ShowMigrationWarningCallback show_migration_warning_callback_;
+
+  base::WeakPtrFactory<PasswordAccessoryControllerImpl> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

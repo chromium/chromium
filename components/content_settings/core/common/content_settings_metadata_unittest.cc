@@ -15,7 +15,8 @@ namespace content_settings {
 TEST(RuleMetaDataTest, ComputeMetadata) {
   {
     base::subtle::ScopedTimeClockOverrides clock_overrides(
-        []() { return base::Time::FromDoubleT(12345); }, nullptr, nullptr);
+        []() { return base::Time::FromSecondsSinceUnixEpoch(12345); }, nullptr,
+        nullptr);
     // When no lifetime and expiration are provided, the result should also be
     // "empty".
     EXPECT_EQ(base::TimeDelta(), RuleMetaData::ComputeLifetime(
@@ -27,24 +28,25 @@ TEST(RuleMetaDataTest, ComputeMetadata) {
     EXPECT_EQ(base::Seconds(11111),
               RuleMetaData::ComputeLifetime(
                   /*lifetime=*/base::TimeDelta(),
-                  /*expiration=*/base::Time::FromDoubleT(23456)));
+                  /*expiration=*/base::Time::FromSecondsSinceUnixEpoch(23456)));
 
     // The lifetime is returned directly, if provided.
     EXPECT_EQ(base::Seconds(10),
               RuleMetaData::ComputeLifetime(
                   /*lifetime=*/base::Seconds(10),
-                  /*expiration=*/base::Time::FromDoubleT(23456)));
+                  /*expiration=*/base::Time::FromSecondsSinceUnixEpoch(23456)));
   }
 
   {
     base::subtle::ScopedTimeClockOverrides clock_overrides(
-        []() { return base::Time::FromDoubleT(23456); }, nullptr, nullptr);
+        []() { return base::Time::FromSecondsSinceUnixEpoch(23456); }, nullptr,
+        nullptr);
     // If the expiration is in the past, the computed lifetime is non-zero but
     // short.
     EXPECT_EQ(base::Microseconds(1),
               RuleMetaData::ComputeLifetime(
                   /*lifetime=*/base::TimeDelta(),
-                  /*expiration=*/base::Time::FromDoubleT(12345)));
+                  /*expiration=*/base::Time::FromSecondsSinceUnixEpoch(12345)));
   }
 }
 

@@ -45,13 +45,7 @@ class VirtualCardEnrollBubbleControllerImpl
   void ReshowBubble();
 
   // VirtualCardEnrollBubbleController:
-  std::u16string GetWindowTitle() const override;
-  std::u16string GetExplanatoryMessage() const override;
-  std::u16string GetAcceptButtonText() const override;
-  std::u16string GetDeclineButtonText() const override;
-  std::u16string GetLearnMoreLinkText() const override;
-  const VirtualCardEnrollmentFields GetVirtualCardEnrollmentFields()
-      const override;
+  const VirtualCardEnrollUiModel& GetUiModel() const override;
   VirtualCardEnrollmentBubbleSource GetVirtualCardEnrollmentBubbleSource()
       const override;
   AutofillBubbleBase* GetVirtualCardEnrollBubbleView() const override;
@@ -82,8 +76,8 @@ class VirtualCardEnrollBubbleControllerImpl
   friend class content::WebContentsUserData<
       VirtualCardEnrollBubbleControllerImpl>;
 
-  // Contains more details regarding the sort of bubble to show the users.
-  VirtualCardEnrollmentFields virtual_card_enrollment_fields_;
+  // Contains the UI assets shown in the virtual card enrollment view.
+  VirtualCardEnrollUiModel ui_model_;
 
   // Whether we should re-show the dialog when users return to the tab.
   bool reprompt_required_ = false;

@@ -15,7 +15,6 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
-#include "components/viz/common/resources/resource_settings.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/transferable_resource.h"
@@ -42,7 +41,6 @@
 #include "services/viz/public/cpp/compositing/filter_operations_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/frame_sink_id_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/local_surface_id_mojom_traits.h"
-#include "services/viz/public/cpp/compositing/resource_settings_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/returned_resource_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/selection_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/shared_quad_state_mojom_traits.h"
@@ -407,18 +405,6 @@ TEST_F(StructTraitsTest, CopyOutputRequest_CallbackRunsOnce) {
   EXPECT_EQ(0, n_called);
   result_sender_remote.FlushForTesting();
   EXPECT_EQ(1, n_called);
-}
-
-TEST_F(StructTraitsTest, ResourceSettings) {
-  constexpr bool kArbitraryBool = true;
-  ResourceSettings input;
-  input.use_gpu_memory_buffer_resources = kArbitraryBool;
-
-  ResourceSettings output;
-  mojo::test::SerializeAndDeserialize<mojom::ResourceSettings>(input, output);
-
-  EXPECT_EQ(input.use_gpu_memory_buffer_resources,
-            output.use_gpu_memory_buffer_resources);
 }
 
 TEST_F(StructTraitsTest, Selection) {

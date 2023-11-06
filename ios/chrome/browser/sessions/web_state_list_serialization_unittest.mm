@@ -9,6 +9,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -34,7 +35,8 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
     int navigation_count,
     bool has_pending_load,
     bool restore_in_progress,
-    const GURL& url) {
+    const GURL& url,
+    web::WebStateID web_state_id) {
   auto navigation_manager = std::make_unique<web::FakeNavigationManager>();
   for (int index = 0; index < navigation_count; ++index) {
     navigation_manager->AddItem(url, ui::PAGE_TRANSITION_TYPED);
@@ -53,7 +55,7 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
     }
   }
 
-  auto web_state = std::make_unique<web::FakeWebState>();
+  auto web_state = std::make_unique<web::FakeWebState>(web_state_id);
   web_state->SetNavigationManager(std::move(navigation_manager));
   web_state->SetNavigationItemCount(navigation_count);
   if (navigation_count > 0) {
@@ -65,18 +67,20 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigations(
 
 // Creates a fake WebState with some navigations.
 std::unique_ptr<web::WebState> CreateWebState() {
-  return CreateWebStateWithNavigations(1, false, false,
-                                       GURL(kChromeUIVersionURL));
+  return CreateWebStateWithNavigations(
+      1, false, false, GURL(kChromeUIVersionURL), web::WebStateID::NewUnique());
 }
 
 // Creates a fake WebState with no navigation items.
-std::unique_ptr<web::WebState> CreateWebStateWithNoNavigation() {
-  return CreateWebStateWithNavigations(0, false, false, GURL());
+std::unique_ptr<web::WebState> CreateWebStateWithNoNavigation(
+    web::WebStateID web_state_id = web::WebStateID::NewUnique()) {
+  return CreateWebStateWithNavigations(0, false, false, GURL(), web_state_id);
 }
 
 // Creates a fake WebState with no navigation items and restoration in progress.
 std::unique_ptr<web::WebState> CreateWebStateRestoreSessionInProgress() {
-  return CreateWebStateWithNavigations(0, false, true, GURL());
+  return CreateWebStateWithNavigations(0, false, true, GURL(),
+                                       web::WebStateID::NewUnique());
 }
 
 // Creates a fake WebState with no navigation items but one pending item.
@@ -96,7 +100,8 @@ std::unique_ptr<web::WebState> CreateWebStateWithPendingNavigation(
 // item is marked as pending.
 std::unique_ptr<web::WebState> CreateWebStateOnNTP(bool has_pending_load) {
   return CreateWebStateWithNavigations(1, has_pending_load, false,
-                                       GURL(kChromeUINewTabURL));
+                                       GURL(kChromeUINewTabURL),
+                                       web::WebStateID::NewUnique());
 }
 
 // Creates a fake WebState from `storage`.
@@ -105,10 +110,11 @@ std::unique_ptr<web::WebState> CreateWebStateWithSessionStorage(
   return CreateWebState();
 }
 
-// Creates a fake WebState from `session_id`.
+// Creates a fake WebState from `web_state_id`.
 std::unique_ptr<web::WebState> CreateWebStateWithWebStateID(
     web::WebStateID web_state_id) {
-  return CreateWebState();
+  return CreateWebStateWithNavigations(1, false, false,
+                                       GURL(kChromeUIVersionURL), web_state_id);
 }
 
 // Returns the unique identifier for WebState at `index` in `web_state_list`.
@@ -129,7 +135,11 @@ inline bool operator!=(const WebStateOpener& lhs, const WebStateOpener& rhs) {
          lhs.navigation_index != rhs.navigation_index;
 }
 
-using WebStateListSerializationTest = PlatformTest;
+class WebStateListSerializationTest : public PlatformTest {
+ protected:
+  // Used to verify histogram logging.
+  base::HistogramTester histogram_tester_;
+};
 
 // Tests that serializing an empty WebStateList works and results in an
 // empty serialized session and the `selectedIndex` is correctly set to
@@ -251,6 +261,96 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropNoNavigation) {
   // including the active tab (its next sibling should be selected).
   EXPECT_EQ(session_window.sessions.count, 3u);
   EXPECT_EQ(session_window.selectedIndex, 2u);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
+}
+
+// Tests that serializing a WebStateList drops tabs with similar identifiers.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropDuplicates) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  web_state_list.InsertWebState(
+      0,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      1,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      2,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(2222)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      3,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      4,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      5,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(2222)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      6,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1111)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+
+  // Serialize the session and check the serialized data is correct.
+  SessionWindowIOS* session_window = SerializeWebStateList(&web_state_list);
+
+  // Check that the duplicate items have been closed, including the active tab
+  // (its next kept sibling should be selected).
+  EXPECT_EQ(session_window.sessions.count, 3u);
+  EXPECT_EQ(session_window.selectedIndex, 2u);
+
+  // Expect a log of 4 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 4, 1);
+}
+
+// Tests that serializing a WebStateList drops the tab with no navigation when
+// also being a duplicate.
+//
+// Objective-C (legacy) variant.
+TEST_F(WebStateListSerializationTest,
+       Serialize_ObjC_DropNoNavigationAndDuplicate) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
+  web_state_list.InsertWebState(
+      0, CreateWebStateWithNoNavigation(same_web_state_id),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED |
+          WebStateList::INSERT_ACTIVATE,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      1, CreateWebStateWithWebStateID(same_web_state_id),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+
+  // Serialize the session and check the serialized data is correct.
+  SessionWindowIOS* session_window = SerializeWebStateList(&web_state_list);
+
+  // Check that the pinned tab got removed, although it was the first occurrence
+  // of the duplicates (as it had no navigation).
+  EXPECT_EQ(session_window.sessions.count, 1u);
+  EXPECT_EQ(session_window.selectedIndex, 0u);
+  CRWSessionUserData* user_data = session_window.sessions[0].userData;
+  NSNumber* pinned_state = base::apple::ObjCCast<NSNumber>(
+      [user_data objectForKey:kLegacyWebStateListPinnedStateKey]);
+  EXPECT_FALSE(pinned_state.boolValue);
+
+  // Expect a log of 0 duplicate, because the empty one got removed first.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
 }
 
 // Tests that serializing an empty WebStateList works and results in an
@@ -367,6 +467,95 @@ TEST_F(WebStateListSerializationTest, Serialize_Proto_DropNoNavigation) {
   EXPECT_EQ(storage.items_size(), 3);
   EXPECT_EQ(storage.active_index(), 2);
   EXPECT_EQ(storage.pinned_item_count(), 1);
+
+  // Expect a log of 0 duplicate.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
+}
+
+// Tests that serializing a WebStateList drops tabs with similar identifiers.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest, Serialize_Proto_DropDuplicates) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  web_state_list.InsertWebState(
+      0,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      1,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      2,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(2222)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      3,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      4,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(4444)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      5,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(2222)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+  web_state_list.InsertWebState(
+      6,
+      CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1111)),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+
+  // Serialize the session and check the serialized data is correct.
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(web_state_list, storage);
+
+  // Check that the duplicate items have been closed, including the active tab
+  // (its next kept sibling should be selected).
+  EXPECT_EQ(storage.items_size(), 3);
+  EXPECT_EQ(storage.active_index(), 2);
+  EXPECT_EQ(storage.pinned_item_count(), 1);
+
+  // Expect a log of 4 duplicates.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 4, 1);
+}
+
+// Tests that serializing a WebStateList drops the tab with no navigation when
+// also being a duplicate.
+//
+// Protobuf message variant.
+TEST_F(WebStateListSerializationTest,
+       Serialize_Proto_DropNoNavigationAndDuplicate) {
+  FakeWebStateListDelegate delegate;
+  WebStateList web_state_list(&delegate);
+  web::WebStateID same_web_state_id = web::WebStateID::NewUnique();
+  web_state_list.InsertWebState(
+      0, CreateWebStateWithNoNavigation(same_web_state_id),
+      WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_PINNED |
+          WebStateList::INSERT_ACTIVATE,
+      WebStateOpener());
+  web_state_list.InsertWebState(
+      1, CreateWebStateWithWebStateID(same_web_state_id),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+
+  // Serialize the session and check the serialized data is correct.
+  ios::proto::WebStateListStorage storage;
+  SerializeWebStateList(web_state_list, storage);
+
+  // Check that not both tabs got removed.
+  EXPECT_EQ(storage.items_size(), 1);
+  EXPECT_EQ(storage.active_index(), 0);
+  EXPECT_EQ(storage.pinned_item_count(), 0);
+
+  // Expect a log of 0 duplicate, because the empty one got removed first.
+  histogram_tester_.ExpectUniqueSample(
+      "Tabs.DroppedDuplicatesCountOnSessionSave", 0, 1);
 }
 
 // Tests deserializing into a non-empty WebStateList works when support for

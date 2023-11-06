@@ -27,7 +27,7 @@ class SnapEvent : public Event {
                            HeapVector<Member<Node>>& targets);
   SnapEvent(const AtomicString& type, HeapVector<Member<Node>>& targets);
 
-  StaticNodeList* snapTargets() { return snap_targets_; }
+  StaticNodeList* snapTargets() { return snap_targets_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(snap_targets_);

@@ -120,6 +120,9 @@ def main():
       type=str,
       help='List of product bundles to download, represented as a comma '
       'separated list.')
+  parser.add_argument('--auth',
+                      action='store_true',
+                      help='Enable additional authorization for ffx product')
   args = parser.parse_args()
 
   logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
@@ -132,6 +135,11 @@ def main():
 
   logging.debug('Getting new SDK hash')
   new_sdk_hash = common.get_hash_from_sdk()
+
+  auth_args = [
+      '--auth',
+      os.path.join(os.path.dirname(__file__), 'get_auth_token.py')
+  ] if args.auth else []
 
   for product in new_products:
     prod, board = product.split('.', 1)
@@ -148,15 +156,15 @@ def main():
         base_url = update_sdk.GetSDKOverrideGCSPath().replace('/sdk', '')
       else:
         base_url = f'gs://fuchsia/development/{new_sdk_hash}'
-      download_url = common.run_ffx_command(cmd=('product', 'lookup', product,
-                                                 new_sdk_hash, '--base-url',
-                                                 base_url),
+      download_url = common.run_ffx_command(cmd=[
+          'product', 'lookup', product, new_sdk_hash, '--base-url', base_url
+      ] + auth_args,
                                             check=True,
                                             capture_output=True).stdout.strip()
       logging.info(f'Downloading {product} from {base_url}.')
-      common.run_ffx_command(cmd=('product', 'download', download_url,
-                                  image_dir),
-                             check=True)
+      common.run_ffx_command(
+          cmd=['product', 'download', download_url, image_dir] + auth_args,
+          check=True)
 
   return 0
 

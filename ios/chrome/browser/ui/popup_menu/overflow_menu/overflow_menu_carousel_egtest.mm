@@ -71,8 +71,8 @@ void CleanupDestinationsHighlightFeaturesData() {
       resetDataForLocalStatePref:prefs::kOverflowMenuNewDestinations];
 
   // Clean up What's New destination promo data.
-  [ChromeEarlGrey removeUserDefaultObjectForKey:kWhatsNewUsageEntryKey];
-  [ChromeEarlGrey removeUserDefaultObjectForKey:kWhatsNewM116UsageEntryKey];
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kWhatsNewUsageEntryKey];
+  [ChromeEarlGrey removeUserDefaultsObjectForKey:kWhatsNewM116UsageEntryKey];
 }
 
 // Resolves the passphrase error from the Overflow Menu.

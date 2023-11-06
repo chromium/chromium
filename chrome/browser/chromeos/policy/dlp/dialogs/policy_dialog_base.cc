@@ -69,13 +69,6 @@ PolicyDialogBase::PolicyDialogBase() {
 
 PolicyDialogBase::~PolicyDialogBase() = default;
 
-void PolicyDialogBase::SetOnDlpRestrictionCheckedCallback(
-    OnDlpRestrictionCheckedCallback callback) {
-  auto split = base::SplitOnceCallback(std::move(callback));
-  SetAcceptCallback(base::BindOnce(std::move(split.first), true));
-  SetCancelCallback(base::BindOnce(std::move(split.second), false));
-}
-
 void PolicyDialogBase::SetupUpperPanel() {
   upper_panel_ = AddChildView(std::make_unique<views::View>());
   views::BoxLayout* layout =

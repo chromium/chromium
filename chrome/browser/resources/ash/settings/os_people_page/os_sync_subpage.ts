@@ -34,7 +34,7 @@ import {PageStatus, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPr
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {RouteOriginMixin} from '../route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';

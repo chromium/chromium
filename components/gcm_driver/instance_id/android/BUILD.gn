@@ -18,10 +18,10 @@ android_library("instance_id_driver_java") {
   deps = [
     "$google_play_services_package:google_play_services_iid_java",
     "//base:base_java",
-    "//base:jni_java",
     "//build/android:build_java",
     "//components/gcm_driver/android:gcm_driver_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [
@@ -39,7 +39,7 @@ android_library("instance_id_driver_test_support_java") {
   deps = [
     ":instance_id_driver_java",
     "$google_play_services_package:google_play_services_iid_java",
-    "//base:jni_java",
+    "//third_party/jni_zero:jni_zero_java",
   ]
 
   sources = [ "javatests/src/org/chromium/components/gcm_driver/instance_id/FakeInstanceIDWithSubtype.java" ]

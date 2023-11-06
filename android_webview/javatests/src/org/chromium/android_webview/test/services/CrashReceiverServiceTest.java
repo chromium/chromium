@@ -39,15 +39,17 @@ public class CrashReceiverServiceTest {
     @Test
     @MediumTest
     public void testCopyingAbortsForInvalidFds() {
-        Assert.assertFalse(CrashReceiverService.copyMinidumps(
-                0 /* uid */, new ParcelFileDescriptor[] {null, null}, Arrays.asList(null, null)));
-        Assert.assertFalse(CrashReceiverService.copyMinidumps(
-                0 /* uid */, new ParcelFileDescriptor[0], Collections.emptyList()));
+        Assert.assertFalse(
+                CrashReceiverService.copyMinidumps(
+                        /* uid= */ 0,
+                        new ParcelFileDescriptor[] {null, null},
+                        Arrays.asList(null, null)));
+        Assert.assertFalse(
+                CrashReceiverService.copyMinidumps(
+                        /* uid= */ 0, new ParcelFileDescriptor[0], Collections.emptyList()));
     }
 
-    /**
-     * Ensure deleting temporary files used when copying minidumps works correctly.
-     */
+    /** Ensure deleting temporary files used when copying minidumps works correctly. */
     @Test
     @MediumTest
     public void testDeleteFilesInDir() throws IOException {

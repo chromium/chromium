@@ -24,11 +24,13 @@ void FlossBluetoothTelephonyClient::SetPhoneOpsEnabled(
 void FlossBluetoothTelephonyClient::Init(dbus::Bus* bus,
                                          const std::string& service_name,
                                          const int adapter_index,
+                                         base::Version version,
                                          base::OnceClosure on_ready) {
   bus_ = bus;
   service_name_ = service_name;
   bluetooth_telephony_adapter_path_ =
       GenerateBluetoothTelephonyPath(adapter_index);
+  version_ = version;
 
   dbus::ObjectProxy* object_proxy =
       bus_->GetObjectProxy(service_name_, bluetooth_telephony_adapter_path_);

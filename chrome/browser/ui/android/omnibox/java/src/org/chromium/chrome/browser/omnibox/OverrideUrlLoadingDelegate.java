@@ -11,9 +11,12 @@ import org.chromium.ui.base.PageTransition;
  * LocationBar.
  */
 public interface OverrideUrlLoadingDelegate {
-    /**
-     * Returns true if the delegate will handle loading for the given parameters.
-     */
-    boolean willHandleLoadUrlWithPostData(String url, @PageTransition int transition,
-            long inputStart, String postDataType, byte[] postData, boolean incognito);
+    /** Returns true if the delegate will handle loading for the given parameters. */
+    boolean willHandleLoadUrlWithPostData(
+            String url,
+            @PageTransition int transition,
+            long inputStart,
+            String postDataType,
+            byte[] postData,
+            boolean incognito);
 }

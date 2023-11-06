@@ -564,7 +564,7 @@ TEST_F(ToolbarActionsModelUnitTest,
 TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
   Init();
 
-  const char* kManifest =
+  static constexpr char kManifest[] =
       "{"
       "  \"name\": \"%s\","
       "  \"version\": \"1.0\","

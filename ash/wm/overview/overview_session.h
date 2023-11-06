@@ -374,12 +374,20 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   }
 
   size_t num_items() const { return num_items_; }
+  void set_num_items(size_t num_items) { num_items_ = num_items; }
 
   OverviewEnterExitType enter_exit_overview_type() const {
     return enter_exit_overview_type_;
   }
+
   void set_enter_exit_overview_type(OverviewEnterExitType val) {
     enter_exit_overview_type_ = val;
+  }
+
+  OverviewEndAction overview_end_action() const { return overview_end_action_; }
+
+  void set_overview_end_action(OverviewEndAction overview_end_action) {
+    overview_end_action_ = overview_end_action;
   }
 
   OverviewWindowDragController* window_drag_controller() {
@@ -487,6 +495,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // information on how these types affect overview mode.
   OverviewEnterExitType enter_exit_overview_type_ =
       OverviewEnterExitType::kNormal;
+
+  // Stores the action that ends the overview mode.
+  OverviewEndAction overview_end_action_ = OverviewEndAction::kMaxValue;
 
   // The selected item when exiting overview mode. nullptr if no window
   // selected.

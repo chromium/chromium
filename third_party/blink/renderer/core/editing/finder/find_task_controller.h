@@ -69,7 +69,9 @@ class CORE_EXPORT FindTaskController final
                      bool aborted,
                      base::TimeTicks task_start_time);
 
-  Range* ResumeFindingFromRange() const { return resume_finding_from_range_; }
+  Range* ResumeFindingFromRange() const {
+    return resume_finding_from_range_.Get();
+  }
   int CurrentMatchCount() const { return current_match_count_; }
 
   // When invoked this will search for a given text and notify us

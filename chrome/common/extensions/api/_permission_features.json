@@ -198,7 +198,8 @@
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B",  // Secure Shell App (dev)
       "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
       "38C361D4A0726CE45D3572D65071B6BDB3092371",  // Secure Shell Ext (dev)
-      "06BE211D5F014BAB34BC22D9DDA09C63A81D828E"   // http://crbug.com/946241
+      "06BE211D5F014BAB34BC22D9DDA09C63A81D828E",  // http://crbug.com/946241
+      "1B1388598AC9A5608F43DE38316D6FB5FAD3574A"   // OneDrive FS extension
     ]
   },
   "debugger": [
@@ -288,6 +289,16 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy"
+  },
+  "enterprise.kioskInput": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"],
+    "location": "policy",
+    // TODO(b/303379531): Add support for Lacros
+    "platforms": ["chromeos"],
+    "session_types": ["kiosk"],
+    // TODO(b/307230150): Clean up API flag
+    "feature_flag": "ApiEnterpriseKioskInput"
   },
   "enterprise.platformKeys": [{
     "channel": "stable",
@@ -792,7 +803,7 @@
     ]
   },
   "readingList": {
-    "channel": "trunk",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },

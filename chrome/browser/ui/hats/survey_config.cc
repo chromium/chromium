@@ -47,6 +47,15 @@ constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+constexpr char kHatsSurveyTriggerSettingsSecurity[] = "settings-security";
+constexpr char kHatsSurveyTriggerTrackingProtectionControlImmediate[] =
+    "tracking-protection-control-immediate";
+constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentImmediate[] =
+    "tracking-protection-treatment-immediate";
+constexpr char kHatsSurveyTriggerTrackingProtectionControlDelayed[] =
+    "tracking-protection-control-delayed";
+constexpr char kHatsSurveyTriggerTrackingProtectionTreatmentDelayed[] =
+    "tracking-protection-treatment-delayed";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept[] =
     "ts-ps3-consent-accept";
 constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[] =
@@ -160,6 +169,15 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
   survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForSecurityPage,
+      kHatsSurveyTriggerSettingsSecurity,
+      /*presupplied_trigger_id=*/
+      features::kHappinessTrackingSurveysForSecurityPageTriggerId.Get(),
+      std::vector<std::string>{},
+      std::vector<std::string>{
+          "Security Page User Action", "Safe Browsing Setting Before Trigger",
+          "Safe Browsing Setting After Trigger", "Client Channel"});
+  survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
   survey_configs.emplace_back(
@@ -201,6 +219,43 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
       kHatsSurveyTriggerNtpPhotosModuleOptOut);
+
+  // Tracking Protection Sentiment Surveys
+  survey_configs.emplace_back(
+      &features::kTrackingProtectionSentimentSurvey,
+      kHatsSurveyTriggerTrackingProtectionControlImmediate,
+      features::kTrackingProtectionSentimentSurveyControlImmediateTriggerId
+          .Get(),
+      std::vector<std::string>{
+          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
+          "Topics enabled", "Fledge enabled", "Measurement enabled"},
+      std::vector<std::string>{"Seconds to acknowledge"});
+  survey_configs.emplace_back(
+      &features::kTrackingProtectionSentimentSurvey,
+      kHatsSurveyTriggerTrackingProtectionTreatmentImmediate,
+      features::kTrackingProtectionSentimentSurveyTreatmentImmediateTriggerId
+          .Get(),
+      std::vector<std::string>{
+          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
+          "Topics enabled", "Fledge enabled", "Measurement enabled"},
+      std::vector<std::string>{"Seconds to acknowledge"});
+  survey_configs.emplace_back(
+      &features::kTrackingProtectionSentimentSurvey,
+      kHatsSurveyTriggerTrackingProtectionControlDelayed,
+      features::kTrackingProtectionSentimentSurveyControlDelayedTriggerId.Get(),
+      std::vector<std::string>{
+          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
+          "Topics enabled", "Fledge enabled", "Measurement enabled"},
+      std::vector<std::string>{"Seconds to acknowledge"});
+  survey_configs.emplace_back(
+      &features::kTrackingProtectionSentimentSurvey,
+      kHatsSurveyTriggerTrackingProtectionTreatmentDelayed,
+      features::kTrackingProtectionSentimentSurveyTreatmentDelayedTriggerId
+          .Get(),
+      std::vector<std::string>{
+          "Onboarding Settings Clicked", "3P cookies blocked", "Is Mode B'",
+          "Topics enabled", "Fledge enabled", "Measurement enabled"},
+      std::vector<std::string>{"Seconds to acknowledge"});
 
   // Trust & Safety Sentiment surveys.
   survey_configs.emplace_back(

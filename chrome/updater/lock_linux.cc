@@ -17,7 +17,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -46,10 +46,13 @@ class ScopedLockImpl {
                                                    base::TimeDelta timeout);
 
  private:
-  ScopedLockImpl(raw_ptr<pthread_mutex_t> mutex, int shm_fd)
+  ScopedLockImpl(pthread_mutex_t* mutex, int shm_fd)
       : mutex_(mutex), shm_fd_(shm_fd) {}
 
-  raw_ptr<pthread_mutex_t> mutex_;
+  // This field is not a raw_ptr<> because it always points to a mmap'd
+  // region of memory outside of the PA heap. Thus, there would be overhead
+  // involved with using a raw_ptr<> but no safety gains.
+  RAW_PTR_EXCLUSION pthread_mutex_t* mutex_;
   int shm_fd_;
 };
 
@@ -143,8 +146,8 @@ std::unique_ptr<ScopedLockImpl> ScopedLockImpl::TryCreate(
 
 ScopedLockImpl::~ScopedLockImpl() {
   if (mutex_) {
-    pthread_mutex_unlock(mutex_.get());
-    munmap(mutex_.ExtractAsDangling().get(), sizeof(pthread_mutex_t));
+    pthread_mutex_unlock(mutex_);
+    munmap(mutex_, sizeof(pthread_mutex_t));
     close(shm_fd_);
   }
 }

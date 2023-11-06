@@ -20,6 +20,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -136,11 +137,13 @@ class FuchsiaVideoDecoder::OutputMailbox {
       }
       shared_image_format.SetPrefersExternalSampler();
 
-      mailbox_ =
+      auto client_shared_image =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(
               shared_image_format, gmb->GetSize(), color_space,
               kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
               "FuchsiaVideoDecoder", gmb->CloneHandle());
+      CHECK(client_shared_image);
+      mailbox_ = client_shared_image->mailbox();
     } else {
       mailbox_ =
           raster_context_provider_->SharedImageInterface()->CreateSharedImage(

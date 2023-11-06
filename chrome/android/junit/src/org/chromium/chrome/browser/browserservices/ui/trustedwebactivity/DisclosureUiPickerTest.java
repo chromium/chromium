@@ -7,9 +7,7 @@ package org.chromium.chrome.browser.browserservices.ui.trustedwebactivity;
 import static android.app.NotificationManager.IMPORTANCE_DEFAULT;
 import static android.app.NotificationManager.IMPORTANCE_NONE;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,28 +39,19 @@ import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 
-/**
- * Tests for {@link DisclosureUiPicker}.
- */
+/** Tests for {@link DisclosureUiPicker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
 public class DisclosureUiPickerTest {
-    @Rule
-    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule public TestRule mProcessor = new Features.JUnitProcessor();
 
-    @Mock
-    public DisclosureInfobar mInfobar;
-    @Mock
-    public DisclosureSnackbar mSnackbar;
-    @Mock
-    public DisclosureNotification mNotification;
+    @Mock public DisclosureInfobar mInfobar;
+    @Mock public DisclosureSnackbar mSnackbar;
+    @Mock public DisclosureNotification mNotification;
 
-    @Mock
-    public BrowserServicesIntentDataProvider mIntentDataProvider;
-    @Mock
-    public NotificationManagerProxy mNotificationManager;
-    @Mock
-    public ActivityLifecycleDispatcher mLifecycleDispatcher;
+    @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public NotificationManagerProxy mNotificationManager;
+    @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveContextWrapperTestRule =
@@ -76,9 +65,14 @@ public class DisclosureUiPickerTest {
 
         when(mIntentDataProvider.getTwaDisclosureUi()).thenReturn(TwaDisclosureUi.DEFAULT);
 
-        mPicker = new DisclosureUiPicker(new FilledLazy<>(mInfobar), new FilledLazy<>(mSnackbar),
-                new FilledLazy<>(mNotification), mIntentDataProvider, mNotificationManager,
-                mLifecycleDispatcher);
+        mPicker =
+                new DisclosureUiPicker(
+                        new FilledLazy<>(mInfobar),
+                        new FilledLazy<>(mSnackbar),
+                        new FilledLazy<>(mNotification),
+                        mIntentDataProvider,
+                        mNotificationManager,
+                        mLifecycleDispatcher);
     }
 
     @Test
@@ -119,18 +113,6 @@ public class DisclosureUiPickerTest {
 
         mPicker.onFinishNativeInitialization();
         verify(mSnackbar).showIfNeeded();
-    }
-
-    @Test
-    @Feature("TrustedWebActivities")
-    @Config(sdk = Build.VERSION_CODES.N_MR1)
-    public void doesntCheckChannelsOnPreO() {
-        setNotificationsEnabled(true);
-
-        mPicker.onFinishNativeInitialization();
-        verify(mNotification).onStartWithNative();
-
-        verify(mNotificationManager, never()).getNotificationChannel(any());
     }
 
     @Test

@@ -52,6 +52,7 @@ const gfx::VectorIcon& CookieControlsUtil::GetEnforcedIcon(
       return vector_icons::kBusinessIcon;
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return vector_icons::kSettingsIcon;
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED_NORETURN();
   }
@@ -67,6 +68,7 @@ int CookieControlsUtil::GetEnforcedTooltipTextId(
       return IDS_PAGE_INFO_PERMISSION_MANAGED_BY_POLICY;
     case CookieControlsEnforcement::kEnforcedByCookieSetting:
       return IDS_PAGE_INFO_BLOCK_THIRD_PARTY_COOKIES_MANAGED_BY_SETTINGS_TOOLTIP;
+    case CookieControlsEnforcement::kEnforcedByTpcdGrant:
     case CookieControlsEnforcement::kNoEnforcement:
       NOTREACHED_NORETURN();
   }

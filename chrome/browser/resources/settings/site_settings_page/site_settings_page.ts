@@ -8,12 +8,12 @@
  * security site settings.
  */
 
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import './recent_site_permissions.js';
 import './unused_site_permissions.js';
@@ -59,8 +59,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       route: routes.SITE_SETTINGS_AUTO_PICTURE_IN_PICTURE,
       id: Id.AUTO_PICTURE_IN_PICTURE,
       label: 'siteSettingsAutoPictureInPicture',
-      // TODO(https://crbug.com/1471051): Use real icon.
-      icon: 'settings:window-management',
+      icon: 'settings:picture-in-picture',
       enabledLabel: 'siteSettingsAutoPictureInPictureAllowed',
       disabledLabel: 'siteSettingsAutoPictureInPictureBlocked',
       shouldShow: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),

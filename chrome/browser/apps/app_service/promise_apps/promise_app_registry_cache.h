@@ -10,7 +10,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/apps/app_service/package_id.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 
 namespace apps {
 
@@ -30,6 +30,11 @@ class PromiseAppRegistryCache {
     // information on which promise app has been updated and what changes have
     // been made.
     virtual void OnPromiseAppUpdate(const PromiseAppUpdate& update) {}
+
+    // Called after a promise app gets removed from the cache. It's generally
+    // preceded by an app update with a "completed" promise app status.
+    // `id` - the promise app ID.
+    virtual void OnPromiseAppRemoved(const PackageId& id) {}
 
     // Called when the PromiseAppRegistryCache object (the thing that this
     // observer observes) will be destroyed. In response, the observer, |this|,

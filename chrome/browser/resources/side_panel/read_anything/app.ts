@@ -467,18 +467,18 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
             {});
   }
 
-  setSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
+  setSpeechSynthesisVoice(voice: SpeechSynthesisVoice|undefined) {
     this.voice = voice;
   }
 
   previewSpeechSynthesisVoice(voice: SpeechSynthesisVoice) {
     const defaultUtteranceSettings = this.defaultUtteranceSettings();
 
-    // TODO(crbug.com/1474951): Translate the utterance into the language of
-    // the voice being previewed, and remove the hard-coded string.
+    // TODO(crbug.com/1474951): Finalize the default voice preview text.
     // TODO(crbug.com/1474951): Call this.synth.cancel() to interrupt reading
     // and reset the play icon.
-    const utterance = new SpeechSynthesisUtterance('Hi. This is a preview');
+    const utterance = new SpeechSynthesisUtterance(
+        loadTimeData.getString('readingModeVoicePreviewText'));
     utterance.voice = voice;
     utterance.lang = defaultUtteranceSettings.lang;
     utterance.volume = defaultUtteranceSettings.volume;
@@ -816,6 +816,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   restoreSettingsFromPrefs() {
     if (this.isReadAloudEnabled_) {
       this.onSpeechRateChange(chrome.readingMode.speechRate);
+      this.restoreVoiceFromPrefs_();
     }
     this.updateLineSpacing(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing(chrome.readingMode.letterSpacing);
@@ -851,6 +852,31 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (toolbar instanceof ReadAnythingToolbar) {
       toolbar.restoreSettingsFromPrefs(colorSuffix);
     }
+  }
+
+  private restoreVoiceFromPrefs_() {
+    const storedLang = chrome.readingMode.speechSynthesisLanguageCode;
+    const storedVoice = chrome.readingMode.getStoredVoice(storedLang);
+    if (!storedVoice) {
+      this.setSpeechSynthesisVoice(this.defaultVoice());
+      return;
+    }
+
+    // TODO(crbug.com/1474951): Ensure various locales are handled such as
+    // "en-US" vs. "en-UK." This should be fixed by using page language instead
+    // of browser language.
+    const voices: VoicesByLanguage = this.getVoices();
+    const entry =
+        Object.entries(voices).find(([key, _]) => key.startsWith(storedLang));
+    let voice;
+    if (entry) {
+      const voicesForLang: SpeechSynthesisVoice[] = entry[1];
+      if (voicesForLang) {
+        voice = voicesForLang.find(voice => voice.name === storedVoice);
+      }
+    }
+    this.setSpeechSynthesisVoice(
+        (voice === null) ? this.defaultVoice() : voice);
   }
 
   updateLineSpacing(newLineHeight: number) {

@@ -4,11 +4,9 @@
 
 #include "ash/system/nearby_share/nearby_share_feature_pod_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/test/test_nearby_share_delegate.h"
 #include "ash/shell.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
@@ -17,14 +15,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
 // Tests manually control their session state.
-class NearbyShareFeaturePodControllerTest
-    : public NoSessionAshTestBase,
-      public testing::WithParamInterface<bool> {
+class NearbyShareFeaturePodControllerTest : public NoSessionAshTestBase {
  public:
   NearbyShareFeaturePodControllerTest() = default;
   NearbyShareFeaturePodControllerTest(NearbyShareFeaturePodControllerTest&) =
@@ -33,15 +28,7 @@ class NearbyShareFeaturePodControllerTest
       NearbyShareFeaturePodControllerTest&) = delete;
   ~NearbyShareFeaturePodControllerTest() override = default;
 
-  bool IsQsRevampEnabled() const { return GetParam(); }
-
   void SetUp() override {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-
     NoSessionAshTestBase::SetUp();
 
     test_delegate_ = static_cast<TestNearbyShareDelegate*>(
@@ -54,32 +41,20 @@ class NearbyShareFeaturePodControllerTest
   }
 
   void TearDown() override {
-    if (IsQsRevampEnabled()) {
-      tile_.reset();
-    } else {
-      button_.reset();
-    }
+    tile_.reset();
     pod_controller_.reset();
     NoSessionAshTestBase::TearDown();
   }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
-  }
+  bool IsButtonVisible() { return tile_->GetVisible(); }
 
-  bool IsButtonToggled() {
-    return IsQsRevampEnabled() ? tile_->IsToggled() : button_->IsToggled();
-  }
+  bool IsButtonToggled() { return tile_->IsToggled(); }
 
  protected:
   void SetUpButton() {
     pod_controller_ =
         std::make_unique<NearbyShareFeaturePodController>(tray_controller());
-    if (IsQsRevampEnabled()) {
-      tile_ = pod_controller_->CreateTile();
-    } else {
-      button_.reset(pod_controller_->CreateButton());
-    }
+    tile_ = pod_controller_->CreateTile();
   }
 
   UnifiedSystemTrayController* tray_controller() {
@@ -92,9 +67,7 @@ class NearbyShareFeaturePodControllerTest
 
   void PressLabel() { pod_controller_->OnLabelPressed(); }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NearbyShareFeaturePodController> pod_controller_;
-  std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 
   raw_ptr<TestNearbyShareDelegate, DanglingUntriaged | ExperimentalAsh>
@@ -103,24 +76,20 @@ class NearbyShareFeaturePodControllerTest
       nearby_share_controller_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         NearbyShareFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityNotLoggedIn) {
   SetUpButton();
   // If not logged in, it should not be visible.
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoggedIn) {
   CreateUserSessions(1);
   SetUpButton();
   // If logged in, it should be visible.
   EXPECT_TRUE(IsButtonVisible());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
   CreateUserSessions(1);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOCK_SCREEN);
 
@@ -133,7 +102,7 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLocked) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
   CreateUserSessions(1);
   BlockUserSession(UserSessionBlockReason::BLOCKED_BY_LOGIN_SCREEN);
   SetUpButton();
@@ -142,7 +111,7 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisibilityLoginScreen) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
   CreateUserSessions(1);
   test_delegate_->set_is_pod_button_visible(false);
   SetUpButton();
@@ -151,7 +120,7 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonVisiblilityHiddenByDelegate) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest,
+TEST_F(NearbyShareFeaturePodControllerTest,
        ButtonToggledByHighVisibilityEnabledEvent) {
   CreateUserSessions(1);
   SetUpButton();
@@ -162,7 +131,7 @@ TEST_P(NearbyShareFeaturePodControllerTest,
   EXPECT_FALSE(IsButtonToggled());
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
   CreateUserSessions(1);
   SetUpButton();
   test_delegate_->method_calls().clear();
@@ -180,16 +149,12 @@ TEST_P(NearbyShareFeaturePodControllerTest, ButtonPressTogglesHighVisibility) {
             test_delegate_->method_calls()[1]);
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, IconUMATracking) {
+TEST_F(NearbyShareFeaturePodControllerTest, IconUMATracking) {
   CreateUserSessions(1);
   SetUpButton();
 
   std::string histogram_prefix;
-  if (IsQsRevampEnabled()) {
-    histogram_prefix = "Ash.QuickSettings.FeaturePod.";
-  } else {
-    histogram_prefix = "Ash.UnifiedSystemView.FeaturePod.";
-  }
+  histogram_prefix = "Ash.QuickSettings.FeaturePod.";
 
   // No metrics logged before clicking on any views.
   auto histogram_tester = std::make_unique<base::HistogramTester>();
@@ -213,53 +178,13 @@ TEST_P(NearbyShareFeaturePodControllerTest, IconUMATracking) {
                                       /*expected_count=*/1);
 }
 
-TEST_P(NearbyShareFeaturePodControllerTest, LabelUMATracking) {
-  // Revamped view does not have `OnLabelPressed` action.
-  if (IsQsRevampEnabled()) {
-    return;
-  }
-
-  CreateUserSessions(1);
-  SetUpButton();
-  nearby_share_controller_->HighVisibilityEnabledChanged(true);
-
-  // No metrics logged before clicking on any views.
-  auto histogram_tester = std::make_unique<base::HistogramTester>();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*expected_count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*expected_count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*expected_count=*/0);
-
-  // Show nearby share detailed view (setting) when pressing on the label.
-  PressLabel();
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOn",
-      /*expected_count=*/0);
-  histogram_tester->ExpectTotalCount(
-      "Ash.UnifiedSystemView.FeaturePod.ToggledOff",
-      /*expected_count=*/0);
-  histogram_tester->ExpectTotalCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                     /*expected_count=*/1);
-  histogram_tester->ExpectBucketCount("Ash.UnifiedSystemView.FeaturePod.DiveIn",
-                                      QsFeatureCatalogName::kNearbyShare,
-                                      /*expected_count=*/1);
-}
-
-TEST_P(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
+TEST_F(NearbyShareFeaturePodControllerTest, ButtonEnabledStateVisibility) {
   CreateUserSessions(1);
   test_delegate_->set_is_enabled(false);
   SetUpButton();
   // If NearbyShareDelegate::IsEnabled() returns false, the button should
-  // not be visible in the revamped view.
-  if (IsQsRevampEnabled()) {
-    EXPECT_FALSE(IsButtonVisible());
-  } else {
-    EXPECT_TRUE(IsButtonVisible());
-  }
+  // not be visible.
+  EXPECT_FALSE(IsButtonVisible());
 }
 
 }  // namespace ash

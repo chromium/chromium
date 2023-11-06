@@ -61,11 +61,11 @@ TEST(VideoCaptureMetricsMacTest, LogFirstFrameWhenAsRequested) {
   // First frame equal.
   base::apple::ScopedCFTypeRef<CMSampleBufferRef> first_frame;
   status = CMSampleBufferCreate(kCFAllocatorDefault, nullptr, false, nullptr,
-                                nullptr, requested_format, 0, 0, nullptr, 0,
-                                nullptr, first_frame.InitializeInto());
+                                nullptr, requested_format.get(), 0, 0, nullptr,
+                                0, nullptr, first_frame.InitializeInto());
   ASSERT_EQ(0, status);
 
-  LogFirstCapturedVideoFrame(capture_format, first_frame);
+  LogFirstCapturedVideoFrame(capture_format, first_frame.get());
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Media.VideoCapture.Mac.Device.RequestedPixelFormat"),

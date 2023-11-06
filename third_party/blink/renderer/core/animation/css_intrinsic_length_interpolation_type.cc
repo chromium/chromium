@@ -94,7 +94,7 @@ class InheritedIntrinsicDimensionChecker
   const StyleIntrinsicLength intrinsic_dimension_;
 };
 
-std::unique_ptr<InterpolableValue>
+InterpolableValue*
 CSSIntrinsicLengthInterpolationType::CreateInterpolableIntrinsicDimension(
     const StyleIntrinsicLength& intrinsic_dimension) {
   const auto& length = intrinsic_dimension.GetLength();

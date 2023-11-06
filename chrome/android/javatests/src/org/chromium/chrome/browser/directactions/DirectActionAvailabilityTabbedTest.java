@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.directactions;
+
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import androidx.test.filters.MediumTest;
@@ -34,8 +35,7 @@ public class DirectActionAvailabilityTabbedTest {
     public ChromeTabbedActivityTestRule mTabbedActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
+    @Rule public DirectActionTestRule mDirectActionRule = new DirectActionTestRule();
 
     @Before
     public void setUp() throws Exception {
@@ -48,9 +48,19 @@ public class DirectActionAvailabilityTabbedTest {
     @MediumTest
     @Feature({"DirectActions"})
     public void testCoreDirectActionInTabbedActivity() throws Exception {
-        assertThat(DirectActionTestUtils.setupActivityAndGetDirectAction(mTabbedActivityTestRule),
-                Matchers.containsInAnyOrder("go_back", "reload", "go_forward", "bookmark_this_page",
-                        "downloads", "preferences", "open_history", "help", "new_tab", "close_tab",
+        assertThat(
+                DirectActionTestUtils.setupActivityAndGetDirectAction(mTabbedActivityTestRule),
+                Matchers.containsInAnyOrder(
+                        "go_back",
+                        "reload",
+                        "go_forward",
+                        "bookmark_this_page",
+                        "downloads",
+                        "preferences",
+                        "open_history",
+                        "help",
+                        "new_tab",
+                        "close_tab",
                         "close_all_tabs"));
     }
 }

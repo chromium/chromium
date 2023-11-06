@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/third_party/nspr/prtime.h"
 #include "base/time/time_override.h"
@@ -188,20 +189,17 @@ std::ostream& operator<<(std::ostream& os, Time time) {
   Time::Exploded exploded;
   time.UTCExplode(&exploded);
   // Can't call `UnlocalizedTimeFormatWithPattern()`/`TimeFormatAsIso8601()`
-  // since `//base` can't depend on `//base:i18n`. Use `StringPrintf()` because
-  // iostreams formatting is painful.
+  // since `//base` can't depend on `//base:i18n`.
   //
   // TODO(pkasting): Consider whether `operator<<()` should move to
   // `base/i18n/time_formatting.h` -- would let us implement in terms of
   // existing time formatting, but might be confusing.
-  return os << StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%03d UTC",
-                            exploded.year,
-                            exploded.month,
-                            exploded.day_of_month,
-                            exploded.hour,
-                            exploded.minute,
-                            exploded.second,
-                            exploded.millisecond);
+  return os << StringPrintf("%04d-%02d-%02d %02d:%02d:%02d.%06" PRId64 " UTC",
+                            exploded.year, exploded.month,
+                            exploded.day_of_month, exploded.hour,
+                            exploded.minute, exploded.second,
+                            time.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+                                Time::kMicrosecondsPerSecond);
 }
 
 // TimeTicks ------------------------------------------------------------------

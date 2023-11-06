@@ -35,7 +35,7 @@ ScrollPredictor::ScrollPredictor()
         blink::features::kFilteringScrollPrediction, "filter");
 
     input_prediction::FilterType filter_type =
-        filter_factory_->GetFilterTypeFromName(filter_name);
+        FilterFactory::GetFilterTypeFromName(filter_name);
 
     filter_factory_ = std::make_unique<FilterFactory>(
         blink::features::kFilteringScrollPrediction, predictor_type,

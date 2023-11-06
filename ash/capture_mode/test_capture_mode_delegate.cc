@@ -147,6 +147,8 @@ void TestCaptureModeDelegate::BindAudioStreamFactory(
     mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {}
 
 void TestCaptureModeDelegate::OnSessionStateChanged(bool started) {
+  is_session_active_ = started;
+
   if (on_session_state_changed_callback_)
     std::move(on_session_state_changed_callback_).Run();
 }

@@ -95,6 +95,30 @@ packager_builder(
 )
 
 packager_builder(
+    name = "3pp-win-amd64-packager",
+    description_html = "3PP Packager for Windows",
+    executable = "recipe:chromium_3pp",
+    # TODO(crbug.com/1267449): Trigger builds routinely once works fine.
+    schedule = "triggered",
+    triggered_by = [],
+    builderless = True,
+    cores = None,
+    os = os.WINDOWS_DEFAULT,
+    console_view_entry = consoles.console_view_entry(
+        category = "packager|3pp|win",
+        short_name = "amd64",
+    ),
+    contact_team_email = "chrome-browser-infra-team@google.com",
+    notifies = ["chromium-infra"],
+    properties = {
+        "$build/chromium_3pp": {
+            "platform": "win-amd64",
+            "gclient_config": "chromium",
+        },
+    },
+)
+
+packager_builder(
     name = "android-androidx-packager",
     executable = "recipe:android/androidx_packager",
     schedule = "0 7,14,22 * * * *",
@@ -125,32 +149,23 @@ packager_builder(
                 "tools/android/avd/proto/creation/android_30_google_atd_x86.textpb",
                 "tools/android/avd/proto/creation/android_30_google_atd_x64.textpb",
                 "tools/android/avd/proto/creation/android_31_google_atd_x64.textpb",
-                "tools/android/avd/proto/creation/android_32_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_32_google_atd_x64_foldable.textpb",
                 "tools/android/avd/proto/creation/android_33_google_atd_x64.textpb",
+                "tools/android/avd/proto/creation/android_34_google_apis_x64.textpb",
                 # TODO(hypan): Using more specific names for the configs below.
                 "tools/android/avd/proto/creation/generic_android19.textpb",
                 "tools/android/avd/proto/creation/generic_android22.textpb",
                 "tools/android/avd/proto/creation/generic_android23.textpb",
                 "tools/android/avd/proto/creation/generic_android24.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android24.textpb",
                 "tools/android/avd/proto/creation/generic_android25.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android25.textpb",
                 "tools/android/avd/proto/creation/generic_android26.textpb",
                 "tools/android/avd/proto/creation/generic_android27.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android27.textpb",
                 "tools/android/avd/proto/creation/generic_android28.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android28.textpb",
                 "tools/android/avd/proto/creation/generic_android29.textpb",
                 "tools/android/avd/proto/creation/generic_android30.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
                 "tools/android/avd/proto/creation/generic_android31.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android31.textpb",
                 "tools/android/avd/proto/creation/generic_android32_foldable.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
                 "tools/android/avd/proto/creation/generic_android33.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
-                "tools/android/avd/proto/creation/generic_android34.textpb",
-                "tools/android/avd/proto/creation/generic_playstore_android34.textpb",
             ],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
@@ -232,16 +247,8 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-24/google_apis/x86.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-24;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-24/google_apis_playstore/x86.yaml",
-            },
-            {
                 "sdk_package_name": "system-images;android-25;google_apis;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-25/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-25;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-25/google_apis_playstore/x86.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-26;google_apis;x86",
@@ -252,24 +259,12 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis/x86.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-27;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-27/google_apis_playstore/x86.yaml",
-            },
-            {
                 "sdk_package_name": "system-images;android-28;google_apis;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-28/google_apis/x86.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-28;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-28/google_apis_playstore/x86.yaml",
-            },
-            {
                 "sdk_package_name": "system-images;android-29;google_apis;x86",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis/x86.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-29;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-29/google_apis_playstore/x86.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-30;google_apis;x86",
@@ -282,10 +277,6 @@ packager_builder(
             {
                 "sdk_package_name": "system-images;android-30;google_atd;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_atd/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-30;google_apis_playstore;x86",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-30/google_apis_playstore/x86.yaml",
             },
             # use x86_64 since sdkmanager don't ship x86 for android-31 and above.
             {
@@ -301,20 +292,12 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_atd/x86_64.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-31;google_apis_playstore;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-31/google_apis_playstore/x86_64.yaml",
-            },
-            {
                 "sdk_package_name": "system-images;android-32;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-32/google_apis/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-32;google_atd;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-32/google_atd/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-32;google_apis_playstore;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-32/google_apis_playstore/x86_64.yaml",
             },
             {
                 "sdk_package_name": "system-images;android-33;google_apis;x86_64",
@@ -325,20 +308,8 @@ packager_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_atd/x86_64.yaml",
             },
             {
-                "sdk_package_name": "system-images;android-33;google_apis_playstore;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-33/google_apis_playstore/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-TiramisuPrivacySandbox;google_apis_playstore;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-TiramisuPrivacySandbox/google_apis_playstore/x86_64.yaml",
-            },
-            {
                 "sdk_package_name": "system-images;android-34;google_apis;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis/x86_64.yaml",
-            },
-            {
-                "sdk_package_name": "system-images;android-34;google_apis_playstore;x86_64",
-                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-34/google_apis_playstore/x86_64.yaml",
             },
         ],
     },

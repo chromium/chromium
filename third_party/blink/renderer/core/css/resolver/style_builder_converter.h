@@ -363,18 +363,6 @@ class StyleBuilderConverter {
   static double ConvertTimeValue(const StyleResolverState& state,
                                  const CSSValue& value);
 
-  static scoped_refptr<ToggleGroupList> ConvertToggleGroup(
-      const StyleResolverState&,
-      const CSSValue&);
-  static scoped_refptr<ToggleRootList> ConvertToggleRoot(
-      const StyleResolverState&,
-      const CSSValue&);
-  static scoped_refptr<ToggleTriggerList> ConvertToggleTrigger(
-      const StyleResolverState&,
-      const CSSValue&);
-  static AtomicString ConvertToggleVisibility(const StyleResolverState&,
-                                              const CSSValue&);
-
   static absl::optional<StyleOverflowClipMargin> ConvertOverflowClipMargin(
       StyleResolverState&,
       const CSSValue&);

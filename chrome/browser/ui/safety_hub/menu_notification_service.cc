@@ -7,59 +7,106 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/safety_hub/extensions_result.h"
+#include "chrome/browser/ui/safety_hub/menu_notification.h"
+#include "chrome/browser/ui/safety_hub/notification_permission_review_service.h"
+#include "chrome/browser/ui/safety_hub/safe_browsing_result.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/unused_site_permissions_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
 namespace {
-SafetyHubServiceInfoElement::SafetyHubServiceInfoElement() = default;
-SafetyHubServiceInfoElement::~SafetyHubServiceInfoElement() = default;
+SafetyHubModuleInfoElement::SafetyHubModuleInfoElement() = default;
+SafetyHubModuleInfoElement::~SafetyHubModuleInfoElement() = default;
 
-SafetyHubServiceInfoElement::SafetyHubServiceInfoElement(
+SafetyHubModuleInfoElement::SafetyHubModuleInfoElement(
     MenuNotificationPriority priority,
     base::TimeDelta interval,
-    raw_ptr<SafetyHubService> service,
+    base::RepeatingCallback<
+        std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+        result_getter,
     std::unique_ptr<SafetyHubMenuNotification> notification)
     : priority(priority),
       interval(interval),
-      service(service),
+      result_getter(result_getter),
       notification(std::move(notification)) {}
 }  // namespace
 
 SafetyHubMenuNotificationService::SafetyHubMenuNotificationService(
     PrefService* pref_service,
     UnusedSitePermissionsService* unused_site_permissions_service,
-    NotificationPermissionsReviewService* notification_permissions_service) {
+    NotificationPermissionsReviewService* notification_permissions_service,
+    extensions::CWSInfoService* extension_info_service,
+    Profile* profile) {
   pref_service_ = std::move(pref_service);
   const base::Value::Dict& stored_notifications =
       pref_service_->GetDict(safety_hub_prefs::kMenuNotificationsPrefsKey);
 
   // TODO(crbug.com/1443466): Make the interval for each service finch
   // configurable.
-  SetServiceInfoElement(SafetyHubServiceType::UNUSED_SITE_PERMISSIONS,
-                        MenuNotificationPriority::LOW, base::Days(10),
-                        unused_site_permissions_service, stored_notifications);
-  SetServiceInfoElement(SafetyHubServiceType::NOTIFICATION_PERMISSIONS,
-                        MenuNotificationPriority::LOW, base::Days(10),
-                        notification_permissions_service, stored_notifications);
+  // The Safety Hub services will be available whenever the |GetCachedResult|
+  // method is called, so it is safe to use |base::Unretained| here.
+  SetInfoElement(
+      safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS,
+      MenuNotificationPriority::LOW, base::Days(10),
+      base::BindRepeating(&SafetyHubService::GetCachedResult,
+                          base::Unretained(unused_site_permissions_service)),
+      stored_notifications);
+  SetInfoElement(
+      safety_hub::SafetyHubModuleType::NOTIFICATION_PERMISSIONS,
+      MenuNotificationPriority::LOW, base::Days(10),
+      base::BindRepeating(&SafetyHubService::GetCachedResult,
+                          base::Unretained(notification_permissions_service)),
+      stored_notifications);
+  SetInfoElement(safety_hub::SafetyHubModuleType::SAFE_BROWSING,
+                 MenuNotificationPriority::MEDIUM, base::Days(90),
+                 base::BindRepeating(&SafetyHubSafeBrowsingResult::GetResult,
+                                     base::Unretained(pref_service)),
+                 stored_notifications);
+  SetInfoElement(safety_hub::SafetyHubModuleType::EXTENSIONS,
+                 MenuNotificationPriority::LOW, base::Days(10),
+                 base::BindRepeating(&SafetyHubExtensionsResult::GetResult,
+                                     base::Unretained(extension_info_service),
+                                     profile, true),
+                 stored_notifications);
+  // Listen for changes to the Safe Browsing pref to accommodate the trigger
+  // logic.
+  registrar_.Init(pref_service);
+  registrar_.Add(
+      prefs::kSafeBrowsingEnabled,
+      base::BindRepeating(
+          &SafetyHubMenuNotificationService::OnSafeBrowsingPrefUpdate,
+          base::Unretained(this)));
 }
 
-SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() = default;
+SafetyHubMenuNotificationService::~SafetyHubMenuNotificationService() {
+  registrar_.RemoveAll();
+}
 
-absl::optional<std::pair<int, std::u16string>>
+absl::optional<MenuNotificationEntry>
 SafetyHubMenuNotificationService::GetNotificationToShow() {
-  absl::optional<ResultMap> result_map = GetResultsFromAllServices();
+  absl::optional<ResultMap> result_map = GetResultsFromAllModules();
   if (!result_map.has_value()) {
     return absl::nullopt;
   }
   std::list<SafetyHubMenuNotification*> notifications_to_be_shown;
   MenuNotificationPriority cur_highest_priority = MenuNotificationPriority::LOW;
   for (auto const& item : result_map.value()) {
-    SafetyHubServiceInfoElement* info_element =
-        service_info_map_[item.first].get();
+    SafetyHubModuleInfoElement* info_element =
+        module_info_map_[item.first].get();
     SafetyHubMenuNotification* notification = info_element->notification.get();
     notification->UpdateResult(std::move(result_map.value()[item.first]));
-    if (notification->ShouldBeShown(info_element->interval)) {
+    int max_all_time_impressions =
+        item.first == safety_hub::SafetyHubModuleType::SAFE_BROWSING ? 3 : 0;
+    if (notification->ShouldBeShown(info_element->interval,
+                                    max_all_time_impressions)) {
       // Notifications are first sorted by priority, and then by being currently
       // active.
       if (info_element->priority > cur_highest_priority ||
@@ -92,15 +139,17 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
   // The information related to showing the notification needs to be persisted
   // as well.
   SaveNotificationsToPrefs();
-  return std::make_pair(notification_to_show->GetNotificationCommandId(),
-                        notification_to_show->GetNotificationString());
+  return MenuNotificationEntry(notification_to_show->GetNotificationCommandId(),
+                               notification_to_show->GetNotificationString());
 }
 
 absl::optional<ResultMap>
-SafetyHubMenuNotificationService::GetResultsFromAllServices() {
+SafetyHubMenuNotificationService::GetResultsFromAllModules() {
   ResultMap result_map;
-  for (auto const& item : service_info_map_) {
-    auto result = item.second->service->GetCachedResult();
+  for (auto const& item : module_info_map_) {
+    CHECK(item.second->result_getter);
+    absl::optional<std::unique_ptr<SafetyHubService::Result>> result =
+        item.second->result_getter.Run();
     // If one of the cached results is unavailable, no notification is shown.
     if (!result.has_value()) {
       return absl::nullopt;
@@ -113,8 +162,8 @@ SafetyHubMenuNotificationService::GetResultsFromAllServices() {
 void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
   base::Value::Dict notifications;
   for (auto const& it : pref_dict_key_map_) {
-    SafetyHubServiceInfoElement* info_element =
-        service_info_map_.find(it.first)->second.get();
+    SafetyHubModuleInfoElement* info_element =
+        module_info_map_.find(it.first)->second.get();
     notifications.Set(it.second, info_element->notification->ToDictValue());
   }
   pref_service_->SetDict(safety_hub_prefs::kMenuNotificationsPrefsKey,
@@ -123,44 +172,45 @@ void SafetyHubMenuNotificationService::SaveNotificationsToPrefs() const {
 
 SafetyHubMenuNotification*
 SafetyHubMenuNotificationService::GetNotificationForTesting(
-    SafetyHubServiceType service_type) {
-  return service_info_map_.find(service_type)->second.get()->notification.get();
+    safety_hub::SafetyHubModuleType service_type) {
+  return module_info_map_.find(service_type)->second.get()->notification.get();
 }
 
 std::unique_ptr<SafetyHubMenuNotification>
 SafetyHubMenuNotificationService::GetNotificationFromDict(
     const base::Value::Dict& dict,
-    SafetyHubServiceType type,
-    SafetyHubService* service) const {
-  // It can be assumed that all `SafetyHubServiceType`s are in
+    safety_hub::SafetyHubModuleType& type) const {
+  // It can be assumed that all `safety_hub::SafetyHubModuleType`s are in
   // `pref_dict_key_map_`.
   const base::Value::Dict* notification_dict =
       dict.FindDict(pref_dict_key_map_.find(type)->second);
-  std::unique_ptr<SafetyHubMenuNotification> result_notification;
   if (!notification_dict) {
-    result_notification = std::make_unique<SafetyHubMenuNotification>();
-  } else {
-    result_notification =
-        SafetyHubMenuNotification::FromDictValue(*notification_dict, service);
+    auto new_notification = std::make_unique<SafetyHubMenuNotification>();
+    if (type == safety_hub::SafetyHubModuleType::SAFE_BROWSING) {
+      new_notification->SetOnlyShowAfter(base::Time::Now() + base::Days(1));
+    }
+    return new_notification;
   }
-  return result_notification;
+  return std::make_unique<SafetyHubMenuNotification>(*notification_dict, type);
 }
 
-void SafetyHubMenuNotificationService::Shutdown() {
-  for (auto const& item : service_info_map_) {
-    // Setting to nullptr to avoid dangling pointers when services are
-    // deconstructed.
-    item.second->service = nullptr;
-  }
-}
-
-void SafetyHubMenuNotificationService::SetServiceInfoElement(
-    SafetyHubServiceType type,
+void SafetyHubMenuNotificationService::SetInfoElement(
+    safety_hub::SafetyHubModuleType type,
     MenuNotificationPriority priority,
     base::TimeDelta interval,
-    SafetyHubService* service,
+    base::RepeatingCallback<
+        std::optional<std::unique_ptr<SafetyHubService::Result>>()>
+        result_getter,
     const base::Value::Dict& stored_notifications) {
-  service_info_map_[type] = std::make_unique<SafetyHubServiceInfoElement>(
-      priority, interval, service,
-      GetNotificationFromDict(stored_notifications, type, service));
+  module_info_map_[type] = std::make_unique<SafetyHubModuleInfoElement>(
+      priority, interval, result_getter,
+      GetNotificationFromDict(stored_notifications, type));
+}
+
+void SafetyHubMenuNotificationService::OnSafeBrowsingPrefUpdate() {
+  module_info_map_[safety_hub::SafetyHubModuleType::SAFE_BROWSING]
+      ->notification->SetOnlyShowAfter(base::Time::Now() + base::Days(1));
+  module_info_map_[safety_hub::SafetyHubModuleType::SAFE_BROWSING]
+      ->notification->ResetAllTimeNotificationCount();
+  SaveNotificationsToPrefs();
 }

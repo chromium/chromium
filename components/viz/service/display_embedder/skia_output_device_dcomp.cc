@@ -41,6 +41,7 @@
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 
@@ -119,7 +120,11 @@ SkiaOutputDeviceDComp::SkiaOutputDeviceDComp(
   capabilities_.number_of_buffers =
       gl::DirectCompositionRootSurfaceBufferCount();
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
-    capabilities_.supports_two_yuv_hardware_overlays = true;
+    capabilities_.allowed_yuv_overlay_count = 2;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kDirectCompositionUnlimitedOverlays)) {
+    capabilities_.allowed_yuv_overlay_count = INT_MAX;
   }
   capabilities_.supports_gpu_vsync = true;
   capabilities_.supports_dc_layers = true;

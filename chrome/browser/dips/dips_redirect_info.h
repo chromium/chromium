@@ -69,6 +69,8 @@ struct DIPSRedirectInfo {
       access_type;  // may be updated by late cookie notifications
   const ukm::SourceId source_id;
   const base::Time time;
+  // TODO(amaliev): Add the `site` string computed by GetSiteForDIPS to avoid
+  // recomputing.
 
   // These properties aren't known at the time of creation, and are filled in
   // later:
@@ -80,7 +82,8 @@ struct DIPSRedirectInfo {
   // For client redirects, the time between the previous page committing
   // and the redirect navigation starting. (For server redirects, zero)
   const base::TimeDelta client_bounce_delay;
-  // For client redirects, whether the user ever interacted with the page.
+  // For client redirects, whether the user ever interacted with the page during
+  // this navigation.
   const bool has_sticky_activation;
   // For client redirects, whether the user ever triggered a web authn assertion
   // call.

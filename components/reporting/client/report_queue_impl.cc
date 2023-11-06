@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -76,16 +77,16 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
                         StorageModuleInterface::EnqueueCallback callback) {
   // Generate record data.
   const auto record_result = std::move(record_producer).Run();
-  if (!record_result.ok()) {
-    std::move(callback).Run(record_result.status());
+  if (!record_result.has_value()) {
+    std::move(callback).Run(record_result.error());
     return;
   }
 
-  CHECK(RecordMayGoToDestination(record_result.ValueOrDie(), destination));
+  CHECK(RecordMayGoToDestination(record_result.value(), destination));
 
   // Augment data.
   Record record;
-  *record.mutable_data() = std::move(record_result.ValueOrDie());
+  *record.mutable_data() = std::move(record_result.value());
   record.set_destination(destination);
   if (reserved_space > 0L) {
     record.set_reserved_space(reserved_space);
@@ -118,7 +119,8 @@ void AddRecordToStorage(scoped_refptr<StorageModuleInterface> storage,
 
   // Calculate timestamp in microseconds - to match Spanner expectations.
   const int64_t time_since_epoch_us =
-      base::Time::Now().ToJavaTime() * base::Time::kMicrosecondsPerMillisecond;
+      base::Time::Now().InMillisecondsSinceUnixEpoch() *
+      base::Time::kMicrosecondsPerMillisecond;
   if (time_since_epoch_us > kTime2122) {
     // Unusual timestamp. Reject the record even though the record is good
     // otherwise, because we can't obtain a reasonable timestamp. We have this
@@ -395,14 +397,14 @@ void SpeculativeReportQueueImpl::AttachActualQueue(
     // Already attached, do nothing.
     return;
   }
-  if (!status_or_actual_queue.ok()) {
+  if (!status_or_actual_queue.has_value()) {
     // Failed to create actual queue.
     // Flush all pending records with this status.
-    PurgePendingProducers(status_or_actual_queue.status());
+    PurgePendingProducers(status_or_actual_queue.error());
     return;
   }
   // Actual report queue succeeded, store it (never to change later).
-  actual_report_queue_ = std::move(status_or_actual_queue.ValueOrDie());
+  actual_report_queue_ = std::move(status_or_actual_queue.value());
   EnqueuePendingRecordProducers();
 }
 

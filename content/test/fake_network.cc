@@ -117,6 +117,7 @@ bool FakeNetwork::HandleRequest(URLLoaderInterceptor::RequestParams* params) {
 
   network::URLLoaderCompletionStatus status;
   status.error_code = response_info.error_code;
+  status.decoded_body_length = response_info.body.size();
   client->OnComplete(status);
   return true;
 }

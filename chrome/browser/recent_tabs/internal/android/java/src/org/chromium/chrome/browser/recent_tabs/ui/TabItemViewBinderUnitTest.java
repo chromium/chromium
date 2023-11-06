@@ -47,13 +47,10 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabItemViewBinderUnitTest {
-    @Rule
-    public JniMocker jniMocker = new JniMocker();
+    @Rule public JniMocker jniMocker = new JniMocker();
 
-    @Mock
-    FaviconHelper.Natives mFaviconHelperJniMock;
-    @Mock
-    Profile mProfile;
+    @Mock FaviconHelper.Natives mFaviconHelperJniMock;
+    @Mock Profile mProfile;
 
     private Activity mActivity;
     private View mTabItemView;
@@ -70,24 +67,37 @@ public class TabItemViewBinderUnitTest {
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mFaviconHelper = new FaviconHelper();
-        mBindContext = new BindContext(new DefaultFaviconHelper(),
-                FaviconUtils.createCircularIconGenerator(mActivity), mFaviconHelper, mProfile);
+        mBindContext =
+                new BindContext(
+                        new DefaultFaviconHelper(),
+                        FaviconUtils.createCircularIconGenerator(mActivity),
+                        mFaviconHelper,
+                        mProfile);
 
-        mTabItemView = LayoutInflater.from(mActivity).inflate(
-                R.layout.restore_tabs_tab_item, /*root=*/null);
+        mTabItemView =
+                LayoutInflater.from(mActivity)
+                        .inflate(R.layout.restore_tabs_tab_item, /* root= */ null);
 
-        mModel = new PropertyModel.Builder(ALL_KEYS)
-                         .with(FOREIGN_SESSION_TAB,
-                                 new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0))
-                         .with(IS_SELECTED, true)
-                         .with(ON_CLICK_LISTENER,
-                                 () -> { mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED)); })
-                         .build();
+        mModel =
+                new PropertyModel.Builder(ALL_KEYS)
+                        .with(
+                                FOREIGN_SESSION_TAB,
+                                new ForeignSessionTab(JUnitTestGURLs.URL_1, "title", 32L, 0))
+                        .with(IS_SELECTED, true)
+                        .with(
+                                ON_CLICK_LISTENER,
+                                () -> {
+                                    mModel.set(IS_SELECTED, !mModel.get(IS_SELECTED));
+                                })
+                        .build();
 
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
-                mModel, mTabItemView, (tabModel, tabView, tabPropertyKey) -> {
-                    TabItemViewBinder.bind(tabModel, tabView, tabPropertyKey, mBindContext);
-                });
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel,
+                        mTabItemView,
+                        (tabModel, tabView, tabPropertyKey) -> {
+                            TabItemViewBinder.bind(tabModel, tabView, tabPropertyKey, mBindContext);
+                        });
     }
 
     @After

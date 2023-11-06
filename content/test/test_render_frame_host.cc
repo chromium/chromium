@@ -628,6 +628,8 @@ void TestRenderFrameHost::SendCommitNavigation(
         subresource_proxying_loader_factory,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         keep_alive_loader_factory,
+    mojo::PendingAssociatedRemote<blink::mojom::FetchLaterLoaderFactory>
+        fetch_later_loader_factory,
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache_remote,
     const absl::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
@@ -676,7 +678,8 @@ TestRenderFrameHost::BuildDidCommitParams(bool did_create_new_entry,
 
   // Simulate Blink assigning an item and document sequence number to the
   // navigation.
-  params->item_sequence_number = base::Time::Now().ToDoubleT() * 1000000;
+  params->item_sequence_number =
+      (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds();
   params->document_sequence_number = params->item_sequence_number + 1;
 
   // When the user hits enter in the Omnibox without changing the URL, Blink

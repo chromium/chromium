@@ -12,6 +12,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
@@ -26,6 +27,10 @@
 
 class PrefRegistrySimple;
 class PrefService;
+
+namespace base {
+class Clock;
+}  // namespace base
 
 namespace message_center {
 class Notification;
@@ -50,7 +55,8 @@ class ASH_EXPORT NightLightControllerImpl
       public aura::EnvObserver,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer,
-      public message_center::NotificationObserver {
+      public message_center::NotificationObserver,
+      public GeolocationController::Observer {
  public:
   enum class AnimationDuration {
     // Short animation (2 seconds) used for manual changes of NightLight status
@@ -61,31 +67,6 @@ class ASH_EXPORT NightLightControllerImpl
     // gradually as a result of getting into or out of the automatically
     // scheduled NightLight mode. This gives the user a smooth transition.
     kLong,
-  };
-
-  // This class enables us to inject fake values for "Now" as well as the sunset
-  // and sunrise times, so that we can reliably test the behavior in various
-  // schedule types and times.
-  class Delegate {
-   public:
-    // NightLightController owns the delegate.
-    virtual ~Delegate() = default;
-
-    // Gets the current time.
-    virtual base::Time GetNow() const = 0;
-
-    // Gets the sunset and sunrise times.
-    virtual base::Time GetSunsetTime() const = 0;
-    virtual base::Time GetSunriseTime() const = 0;
-
-    // Provides the delegate with the geoposition so that it can be used to
-    // calculate sunset and sunrise times.
-    // Returns true if |position| is different than the current known value,
-    // potentially requiring a refresh of the schedule. False otherwise.
-    virtual bool SetGeoposition(const SimpleGeoposition& position) = 0;
-
-    // Returns true if a geoposition value is available.
-    virtual bool HasGeoposition() const = 0;
   };
 
   NightLightControllerImpl();
@@ -140,9 +121,6 @@ class ASH_EXPORT NightLightControllerImpl
     return last_animation_duration_;
   }
   base::OneShotTimer* timer() { return &timer_; }
-  bool is_current_geoposition_from_cache() const {
-    return is_current_geoposition_from_cache_;
-  }
   float ambient_temperature() const { return ambient_temperature_; }
   const gfx::Vector3dF& ambient_rgb_scaling_factors() const {
     return ambient_rgb_scaling_factors_;
@@ -174,15 +152,13 @@ class ASH_EXPORT NightLightControllerImpl
   void OnDisplayConfigurationChanged() override;
 
   // aura::EnvObserver:
-  void OnWindowInitialized(aura::Window* window) override {}
   void OnHostInitialized(aura::WindowTreeHost* host) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // ash::NightLightController:
-  void SetCurrentGeoposition(const SimpleGeoposition& position) override;
-  bool GetEnabled() const override;
+  bool IsNightLightEnabled() const override;
 
   // chromeos::PowerManagerClient::Observer:
   void SuspendDone(base::TimeDelta sleep_duration) override;
@@ -193,7 +169,10 @@ class ASH_EXPORT NightLightControllerImpl
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
-  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
+  // GeolocationController::Observer:
+  void OnGeopositionChanged(bool possible_change_in_timezone) override;
+
+  void SetClockForTesting(const base::Clock* clock);
 
   // Returns the Auto Night Light notification if any is currently shown, or
   // nullptr.
@@ -218,15 +197,6 @@ class ASH_EXPORT NightLightControllerImpl
 
   // Disables showing the Auto Night Light from now on.
   void DisableShowingFutureAutoNightLightNotification();
-
-  // Called only when the active user changes in order to see if we need to use
-  // a previously cached geoposition value from the active user's prefs.
-  void LoadCachedGeopositionIfNeeded();
-
-  // Called whenever we receive a new geoposition update to cache it in all
-  // logged-in users' prefs so that it can be used later in the event of not
-  // being able to retrieve a valid geoposition.
-  void StoreCachedGeoposition(const SimpleGeoposition& position);
 
   // Refreshes the displays color transforms based on the given
   // |color_temperature|, which will be overridden to a value of 0 if NightLight
@@ -258,6 +228,7 @@ class ASH_EXPORT NightLightControllerImpl
 
   // Called when the user pref for the schedule type is changed.
   void OnScheduleTypePrefChanged();
+  void RefreshForCurrentScheduleType(bool keep_manual_toggles_during_schedules);
 
   // Called when either of the custom schedule prefs (custom start or end times)
   // are changed.
@@ -290,7 +261,7 @@ class ASH_EXPORT NightLightControllerImpl
   // AnimationDurationType::kLong.
   void ScheduleNextToggle(base::TimeDelta delay);
 
-  std::unique_ptr<Delegate> delegate_;
+  const raw_ptr<GeolocationController, ExperimentalAsh> geolocation_controller_;
 
   // The pref service of the currently active user. Can be null in
   // ash_unittests.
@@ -323,15 +294,6 @@ class ASH_EXPORT NightLightControllerImpl
   // session. After that, it is set to false.
   bool is_first_user_init_ = true;
 
-  // True if the current geoposition value used by the Delegate is from a
-  // previously cached value in the user prefs of any of the users in the
-  // current session. It is reset to false once we receive a newly-updated
-  // geoposition from the client.
-  // This is used to treat the current geoposition as temporary until we receive
-  // a valid geoposition update, and also not to let a cached geoposition value
-  // to leak to another user for privacy reasons.
-  bool is_current_geoposition_from_cache_ = false;
-
   // The registrar used to watch NightLight prefs changes in the above
   // |active_user_pref_service_| from outside ash.
   // NOTE: Prefs are how Chrome communicates changes to the NightLight settings
@@ -346,6 +308,8 @@ class ASH_EXPORT NightLightControllerImpl
   // The ambient color R, G, and B scaling factors.
   // Valid only if ambient color is enabled.
   gfx::Vector3dF ambient_rgb_scaling_factors_ = {1.f, 1.f, 1.f};
+
+  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
 
   base::WeakPtrFactory<NightLightControllerImpl> weak_ptr_factory_;
 };

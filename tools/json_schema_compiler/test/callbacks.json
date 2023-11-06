@@ -2,6 +2,9 @@
   {
     "namespace": "callbacks",
     "description": "The callbacks API.",
+    "compiler_options": {
+      "modernised_enums": true
+    },
     "types": [
       {
         "id": "Enumeration",

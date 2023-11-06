@@ -413,6 +413,11 @@ Display::Rotation ManagedDisplayInfo::GetRotation(
   return rotations_.at(source);
 }
 
+void ManagedDisplayInfo::AddZoomFactorForSize(const std::string& size,
+                                              float zoom_factor) {
+  zoom_factor_map_[size] = zoom_factor;
+}
+
 void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   DCHECK(id_ == native_info.id_);
   port_display_id_ = native_info.port_display_id_;

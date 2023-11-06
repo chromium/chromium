@@ -46,14 +46,16 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
-#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/layout/table/layout_table_row.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
+
+using mojom::blink::FormControlType;
 
 namespace {
 
@@ -545,8 +547,9 @@ bool TextIteratorAlgorithm<Strategy>::SupportsAltText(const Node& node) {
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(element);
   if (html_input_element &&
-      html_input_element->type() == input_type_names::kImage)
+      html_input_element->FormControlType() == FormControlType::kInputImage) {
     return true;
+  }
   return false;
 }
 
@@ -603,8 +606,8 @@ bool TextIteratorAlgorithm<Strategy>::ShouldEmitTabBeforeNode(
     return false;
 
   // Want a tab before every cell other than the first one
-  const auto* rc = To<LayoutNGTableCell>(r);
-  const LayoutNGTable* t = rc->Table();
+  const auto* rc = To<LayoutTableCell>(r);
+  const LayoutTable* t = rc->Table();
   return t && !t->IsFirstCell(*rc);
 }
 
@@ -662,7 +665,7 @@ static bool ShouldEmitNewlinesBeforeAndAfterNode(const Node& node) {
   // Need to make an exception for table row elements, because they are neither
   // "inline" or "LayoutBlock", but we want newlines for them.
   if (r->IsTableRow()) {
-    const LayoutNGTable* t = To<LayoutNGTableRow>(r)->Table();
+    const LayoutTable* t = To<LayoutTableRow>(r)->Table();
     if (t && !t->IsInline()) {
       return true;
     }

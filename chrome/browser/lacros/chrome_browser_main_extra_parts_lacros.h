@@ -29,7 +29,6 @@ class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkChangeManagerBridge;
-class StandaloneBrowserTestController;
 class TabletModePageBehavior;
 class UiMetricRecorderLacros;
 class VpnExtensionTrackerLacros;
@@ -47,6 +46,7 @@ class ReadWriteCardsManager;
 
 namespace crosapi {
 class ClipboardHistoryLacros;
+class DeskProfilesLacros;
 class SearchControllerLacros;
 class TaskManagerLacros;
 class WebAppProviderBridgeLacros;
@@ -60,6 +60,10 @@ class ScreenOrientationDelegate;
 namespace drive {
 class DriveFsNativeMessageHostBridge;
 }  // namespace drive
+
+namespace guest_os {
+class VmSkForwardingService;
+}
 
 namespace video_conference {
 class VideoConferenceManagerClientImpl;
@@ -162,14 +166,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Receives extension events from ash.
   std::unique_ptr<LacrosExtensionAppsController> extensions_controller_;
 
-  // A test controller that is registered with the ash-chrome's test controller
-  // service over crosapi to let tests running in ash-chrome control this Lacros
-  // instance. It is only instantiated in Linux builds AND only when Ash's test
-  // controller is available (practically, just test binaries), so this will
-  // remain null in production builds.
-  std::unique_ptr<StandaloneBrowserTestController>
-      standalone_browser_test_controller_;
-
   // Receiver of field trial updates.
   std::unique_ptr<FieldTrialObserver> field_trial_observer_;
 
@@ -212,6 +208,13 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Caches the clipboard history item descriptors in Lacros. Used only when
   // the clipboard history refresh feature is enabled.
   std::unique_ptr<crosapi::ClipboardHistoryLacros> clipboard_history_lacros_;
+
+  // Forwards messages between VMs and the gnubbyd extension.
+  std::unique_ptr<guest_os::VmSkForwardingService> vm_sk_forwarding_service_;
+
+  // Observes profile information updates and sends summary info to ash. Used
+  // only when the desk profiles feature is enabled.
+  std::unique_ptr<crosapi::DeskProfilesLacros> desk_profiles_lacros_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

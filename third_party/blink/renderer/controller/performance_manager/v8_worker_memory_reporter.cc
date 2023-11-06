@@ -68,10 +68,7 @@ class WorkerMeasurementDelegate : public v8::MeasureMemoryDelegate {
 
   // v8::MeasureMemoryDelegate overrides.
   bool ShouldMeasure(v8::Local<v8::Context> context) override { return true; }
-  void MeasurementComplete(
-      const std::vector<std::pair<v8::Local<v8::Context>, size_t>>&
-          context_sizes,
-      size_t unattributed_size) override;
+  void MeasurementComplete(v8::MeasureMemoryDelegate::Result result) override;
 
  private:
   void NotifyMeasurementSuccess(
@@ -93,15 +90,15 @@ WorkerMeasurementDelegate::~WorkerMeasurementDelegate() {
 }
 
 void WorkerMeasurementDelegate::MeasurementComplete(
-    const std::vector<std::pair<v8::Local<v8::Context>, size_t>>& context_sizes,
-    size_t unattributed_size) {
+    v8::MeasureMemoryDelegate::Result result) {
   DCHECK(worker_thread_->IsCurrentThread());
   WorkerOrWorkletGlobalScope* global_scope = worker_thread_->GlobalScope();
   DCHECK(global_scope);
-  DCHECK_LE(context_sizes.size(), 1u);
-  size_t bytes = unattributed_size;
-  for (auto& context_size : context_sizes) {
-    bytes += context_size.second;
+  DCHECK_LE(result.contexts.size(), 1u);
+  DCHECK_LE(result.sizes_in_bytes.size(), 1u);
+  size_t bytes = result.unattributed_size_in_bytes;
+  for (size_t size : result.sizes_in_bytes) {
+    bytes += size;
   }
   auto* worker_global_scope = To<WorkerGlobalScope>(global_scope);
   auto memory_usage =

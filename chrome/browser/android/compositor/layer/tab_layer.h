@@ -73,7 +73,6 @@ class TabLayer : public Layer {
                      bool anonymize_toolbar,
                      int toolbar_textbox_resource_id,
                      int toolbar_textbox_background_color,
-                     float toolbar_y_offset,
                      float content_offset);
 
   bool is_incognito() const { return incognito_; }

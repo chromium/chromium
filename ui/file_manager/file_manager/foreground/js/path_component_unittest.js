@@ -6,7 +6,7 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {fakeDriveVolumeId, fakeMyFilesVolumeId, MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {MockFileSystem} from '../../common/js/mock_entry.js';
-import {str} from '../../common/js/util.js';
+import {str} from '../../common/js/translations.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 import {PathComponent} from './path_component.js';
@@ -17,19 +17,31 @@ export async function testComputeComponentsFromEntry() {
       MockVolumeManager.resolveLocalFileSystemURL.bind(null, volumeManager);
   const driveVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DRIVE);
+  if (!driveVolumeInfo) {
+    throw new Error('Failed to get the drive volume info');
+  }
   await driveVolumeInfo.resolveDisplayRoot();
   let fs = /** @type {!MockFileSystem} */ (driveVolumeInfo.fileSystem);
 
+  /**
+   * @param {string} path
+   * @param {Array<Array<any>>} components
+   */
   async function validate(path, components) {
     fs.populate([path]);
     const result = PathComponent.computeComponentsFromEntry(
+        // @ts-ignore: error TS2345: Argument of type 'FileSystemEntry |
+        // undefined' is not assignable to parameter of type 'FileSystemEntry |
+        // FilesAppEntry'.
         fs.entries[path], volumeManager);
     assertEquals(components.length, result.length);
     for (let i = 0; i < components.length; i++) {
       const c = components[i];
-      assertEquals(c[0], result[i].name);
-      const entry = await result[i].resolveEntry();
-      assertEquals(c[1], entry.toURL());
+      // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
+      assertEquals(c[0], result[i]?.name);
+      const entry = await result[i]?.resolveEntry();
+      // @ts-ignore: error TS18048: 'c' is possibly 'undefined'.
+      assertEquals(c[1], entry?.toURL());
     }
   }
 
@@ -119,6 +131,9 @@ export async function testComputeComponentsFromEntry() {
 
   const downloadsVolumeInfo = volumeManager.getCurrentProfileVolumeInfo(
       VolumeManagerCommon.VolumeType.DOWNLOADS);
+  if (!downloadsVolumeInfo) {
+    throw new Error('Failed to get the drive volume info');
+  }
   fs = /** @type {!MockFileSystem} */ (downloadsVolumeInfo.fileSystem);
 
   // Downloads.

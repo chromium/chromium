@@ -258,6 +258,8 @@ class ScreenLocker
 
   void UpdateFingerprintStateForUser(const user_manager::User* user);
 
+  void OnEndFingerprintAuthSession(bool success);
+
   // Helper to transform internal enum UnlockType to
   // session_manager::UnlockType, used by the reporting team to report
   // lock/unlock events.

@@ -23,4 +23,16 @@ public final class ByteBufferTestUtils {
             Assert.assertEquals(expected[i], actual.get());
         }
     }
+
+    /**
+     * Verifies two ByteBuffers are equal.
+     *
+     * @param expected ByteBuffer to compare to.
+     * @param actual ByteBuffer acquired by test code.
+     */
+    public static void verifyByteBuffer(ByteBuffer expected, ByteBuffer actual) {
+        expected.rewind();
+        actual.rewind();
+        Assert.assertTrue(expected.equals(actual));
+    }
 }

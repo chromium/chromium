@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/toolbar_controller_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
@@ -23,10 +26,13 @@ constexpr int kBrowserContentAllowedMinimumWidth =
 class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
  public:
   ToolbarControllerInteractiveTest() {
+    ToolbarControllerUtil::SetPreventOverflowForTesting(false);
     scoped_feature_list_.InitWithFeatures({features::kResponsiveToolbar}, {});
   }
 
   void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->StartAcceptingConnections();
     InteractiveBrowserTest::SetUpOnMainThread();
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser());
     toolbar_controller_ = const_cast<ToolbarController*>(
@@ -46,6 +52,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
     overflow_button_ = nullptr;
     toolbar_controller_ = nullptr;
     browser_view_ = nullptr;
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
@@ -78,12 +85,34 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   // width.
   void MaybeAddDummyButtonsToToolbarView() {
     while (GetOverflowThresholdWidth() <= kBrowserContentAllowedMinimumWidth) {
-      auto button = std::make_unique<ToolbarButton>();
-      button->SetPreferredSize(dummy_button_size_);
-      button->SetMinSize(dummy_button_size_);
-      button->SetAccessibleName(u"dummybutton");
-      button->SetVisible(true);
-      toolbar_container_view_->AddChildView(std::move(button));
+      toolbar_container_view_->AddChildView(CreateADummyButton());
+    }
+  }
+
+  std::unique_ptr<ToolbarButton> CreateADummyButton() {
+    auto button = std::make_unique<ToolbarButton>();
+    button->SetPreferredSize(dummy_button_size_);
+    button->SetMinSize(dummy_button_size_);
+    button->SetAccessibleName(u"dummybutton");
+    button->SetVisible(true);
+    return button;
+  }
+
+  // Forces `id` to overflow by filling toolbar with dummy buttons.
+  void AddDummyButtonsToToolbarTillElementOverflows(ui::ElementIdentifier id) {
+    // The element must be in toolbar.
+    const auto* element = toolbar_controller_->FindToolbarElementWithId(
+        toolbar_container_view_, id);
+    ASSERT_NE(element, nullptr);
+
+    // This element must have been managed by controller.
+    EXPECT_TRUE(std::find(element_ids_.begin(), element_ids_.end(), id) !=
+                element_ids_.end());
+
+    SetBrowserWidth(kBrowserContentAllowedMinimumWidth);
+    while (element->GetVisible()) {
+      toolbar_container_view_->AddChildView(CreateADummyButton());
+      toolbar_container_view_->parent()->Layout();
     }
   }
 
@@ -92,13 +121,13 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
   auto CheckMenuMatchesOverflowedElements() {
     return Steps(Check(base::BindLambdaForTesting([this]() {
       const ui::SimpleMenuModel* menu = GetOverflowMenu();
-      std::vector<const views::View*> overflowed_elements =
+      std::vector<ui::ElementIdentifier> overflowed_elements =
           GetOverflowedElements();
       EXPECT_NE(menu, nullptr);
       EXPECT_GT(menu->GetItemCount(), size_t(0));
       EXPECT_EQ(menu->GetItemCount(), overflowed_elements.size());
       for (size_t i = 0; i < menu->GetItemCount(); ++i) {
-        if (menu->GetLabelAt(i).compare(toolbar_controller_->GenerateMenuText(
+        if (menu->GetLabelAt(i).compare(toolbar_controller_->GetMenuText(
                 overflowed_elements[i])) != 0) {
           return false;
         }
@@ -107,12 +136,29 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
     })));
   }
 
+  auto ActivateMenuItemWithElementId(ui::ElementIdentifier id) {
+    return Do(base::BindLambdaForTesting([=]() {
+      int command_id = -1;
+      for (size_t i = 0; i < element_ids_.size(); ++i) {
+        if (element_ids_[i] == id) {
+          command_id = i;
+          break;
+        }
+      }
+      auto* menu = const_cast<ui::SimpleMenuModel*>(GetOverflowMenu());
+      auto index = menu->GetIndexOfCommandId(command_id);
+      EXPECT_TRUE(index.has_value());
+      menu->ActivatedAt(index.value());
+    }));
+  }
+
   void SetBrowserWidth(int width) {
     browser_view_->SetSize({width, browser_view_->size().height()});
   }
 
   const views::View* FindToolbarElementWithId(ui::ElementIdentifier id) const {
-    return toolbar_controller_->FindToolbarElementWithId(id);
+    return toolbar_controller_->FindToolbarElementWithId(
+        toolbar_container_view_, id);
   }
 
   const views::View* overflow_button() const { return overflow_button_; }
@@ -121,7 +167,7 @@ class ToolbarControllerInteractiveTest : public InteractiveBrowserTest {
     return element_ids_;
   }
   int overflow_threshold_width() const { return overflow_threshold_width_; }
-  std::vector<const views::View*> GetOverflowedElements() {
+  std::vector<ui::ElementIdentifier> GetOverflowedElements() {
     return toolbar_controller_->GetOverflowedElements();
   }
   const ui::SimpleMenuModel* GetOverflowMenu() {
@@ -168,13 +214,26 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
   SetBrowserWidth(overflow_threshold_width());
   EXPECT_FALSE(overflow_button()->GetVisible());
 
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonShown"));
+
   // Resize browser a bit narrower. Should see overflow.
   SetBrowserWidth(overflow_threshold_width() - 1);
   EXPECT_TRUE(overflow_button()->GetVisible());
 
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonShown"));
+
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonHidden"));
+
   // Resize browser back to threshold width. Should not see overflow.
   SetBrowserWidth(overflow_threshold_width());
   EXPECT_FALSE(overflow_button()->GetVisible());
+
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonHidden"));
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
@@ -232,4 +291,38 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
                   PressButton(kToolbarOverflowButtonElementId),
                   WaitForActivate(kToolbarOverflowButtonElementId),
                   CheckMenuMatchesOverflowedElements());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolbarControllerInteractiveTest,
+                       ActivateActionElementFromMenu) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabPageElementId);
+  const auto back_url = embedded_test_server()->GetURL("/back");
+  const auto forward_url = embedded_test_server()->GetURL("/forward");
+  base::UserActionTester user_action_tester;
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(0, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.MenuItemActivated.ForwardButton"));
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabPageElementId),
+      NavigateWebContents(kPrimaryTabPageElementId, back_url),
+      NavigateWebContents(kPrimaryTabPageElementId, forward_url),
+      PressButton(kToolbarBackButtonElementId),
+      WaitForWebContentsNavigation(kPrimaryTabPageElementId, back_url),
+      EnsurePresent(kToolbarForwardButtonElementId),
+      Do(base::BindLambdaForTesting([this]() {
+        AddDummyButtonsToToolbarTillElementOverflows(
+            kToolbarForwardButtonElementId);
+      })),
+      WaitForHide(kToolbarForwardButtonElementId),
+      PressButton(kToolbarOverflowButtonElementId),
+      ActivateMenuItemWithElementId(kToolbarForwardButtonElementId),
+
+      // Forward navigation is triggered after activating menu item.
+      WaitForWebContentsNavigation(kPrimaryTabPageElementId, forward_url));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "ResponsiveToolbar.OverflowButtonActivated"));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(
+                "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }

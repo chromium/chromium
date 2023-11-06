@@ -373,8 +373,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void recordDismissalConditions(@DismissReason int dismissReason) {
         if (mTab == null) return;
 
-        Profile profile = Profile.fromWebContents(mTab.getWebContents());
-        if (profile == null) return;
+        Profile profile = mTab.getProfile();
         boolean a11ySettingSelected =
                 UserPrefs.get(profile).getBoolean(Pref.READER_FOR_ACCESSIBILITY);
 

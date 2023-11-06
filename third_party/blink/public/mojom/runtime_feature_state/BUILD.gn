@@ -6,11 +6,11 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 
 mojom("runtime_feature_state") {
-  sources = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom" ]
+  sources = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom" ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
 
-  parser_deps = [ ":generate_runtime_feature_state" ]
+  parser_deps = [ ":generate_runtime_feature" ]
 
   export_class_attribute = "BLINK_COMMON_EXPORT"
   export_define = "BLINK_COMMON_IMPLEMENTATION=1"
@@ -23,9 +23,8 @@ mojom("runtime_feature_state") {
   generate_java = true
 }
 
-blink_python_runner("generate_runtime_feature_state") {
-  script =
-      "../../../renderer/build/scripts/make_runtime_feature_state_mojom_defs.py"
+blink_python_runner("generate_runtime_feature") {
+  script = "../../../renderer/build/scripts/make_runtime_feature_mojom_defs.py"
 
   args = [
     rebase_path(
@@ -37,9 +36,10 @@ blink_python_runner("generate_runtime_feature_state") {
         root_build_dir),
   ]
 
-  inputs = scripts_for_json5_files + [
-             "../../../renderer/platform/runtime_enabled_features.json5",
-             "../../../renderer/build/scripts/templates/runtime_feature_state.mojom.tmpl",
-           ]
-  outputs = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_feature_state/runtime_feature_state.mojom" ]
+  inputs =
+      scripts_for_json5_files + [
+        "../../../renderer/platform/runtime_enabled_features.json5",
+        "../../../renderer/build/scripts/templates/runtime_feature.mojom.tmpl",
+      ]
+  outputs = [ "$root_gen_dir/third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom" ]
 }

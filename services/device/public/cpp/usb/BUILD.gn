@@ -29,6 +29,8 @@ source_set("usb") {
     generated_ids,
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
   deps = [
     ":usb_device_ids",
     "//services/device/public/mojom:usb",

@@ -32,6 +32,8 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
@@ -168,6 +170,14 @@ GetDataOwner::GetOwningOriginOrHost<browsing_data::SharedWorkerInfo>(
     const browsing_data::SharedWorkerInfo& shared_worker_info) const {
   DCHECK_EQ(BrowsingDataModel::StorageType::kSharedWorker, storage_type_);
   return GetOwnerBasedOnScheme(shared_worker_info.storage_key.origin());
+}
+
+template <>
+BrowsingDataModel::DataOwner
+GetDataOwner::GetOwningOriginOrHost<net::CanonicalCookie>(
+    const net::CanonicalCookie& cookie) const {
+  DCHECK_EQ(BrowsingDataModel::StorageType::kCookie, storage_type_);
+  return cookie.DomainWithoutDot();
 }
 
 // Helper which allows the lifetime management of a deletion action to occur
@@ -349,6 +359,21 @@ void StorageRemoverHelper::Visitor::operator()<
   }
 }
 
+template <>
+void StorageRemoverHelper::Visitor::operator()<net::CanonicalCookie>(
+    const net::CanonicalCookie& cookie) {
+  if (types.Has(BrowsingDataModel::StorageType::kCookie)) {
+    helper->storage_partition_->GetCookieManagerForBrowserProcess()
+        ->DeleteCanonicalCookie(
+            cookie,
+            base::BindOnce([](base::OnceClosure callback,
+                              bool deleted) { std::move(callback).Run(); },
+                           helper->GetCompleteCallback()));
+  } else {
+    NOTREACHED();
+  }
+}
+
 void RemoveBrowsingDataEntries(
     const BrowsingDataModel::DataKeyEntries& browsing_data_entries,
     std::unique_ptr<StorageRemoverHelper> storage_remover_helper,
@@ -491,6 +516,16 @@ void OnSharedDictionaryUsageLoaded(
   std::move(loaded_callback).Run();
 }
 
+void OnCookiesLoaded(BrowsingDataModel* model,
+                     base::OnceClosure loaded_callback,
+                     const net::CookieList& cookie_list) {
+  for (const auto& cookie : cookie_list) {
+    model->AddBrowsingData(cookie, BrowsingDataModel::StorageType::kCookie, 0,
+                           1);
+  }
+  std::move(loaded_callback).Run();
+}
+
 void OnDelegateDataLoaded(
     BrowsingDataModel* model,
     base::OnceClosure loaded_callback,
@@ -532,6 +567,11 @@ absl::optional<net::SchemefulSite> GetThirdPartyPartitioningSite(
             if (net::SchemefulSite(key.frame_origin()) !=
                 key.top_frame_site()) {
               top_level_site = key.top_frame_site();
+            }
+          },
+          [&](const net::CanonicalCookie& cookie) {
+            if (cookie.IsThirdPartyPartitioned()) {
+              top_level_site = cookie.PartitionKey()->site();
             }
           },
       },
@@ -811,8 +851,9 @@ bool BrowsingDataModel::IsBlockedByThirdPartyCookieBlocking(
     case BrowsingDataModel::StorageType::kSessionStorage:
     case BrowsingDataModel::StorageType::kQuotaStorage:
     case BrowsingDataModel::StorageType::kSharedWorker:
+    case BrowsingDataModel::StorageType::kCookie:
       return true;
-    case (BrowsingDataModel::StorageType::kExtendedDelegateRange):
+    case BrowsingDataModel::StorageType::kExtendedDelegateRange:
       NOTREACHED_NORETURN();
   }
 }
@@ -831,6 +872,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
       base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi);
   bool is_migrate_storage_to_bdm_enabled = base::FeatureList::IsEnabled(
       browsing_data::features::kMigrateStorageToBDM);
+  bool is_cookies_tree_model_deprecated = base::FeatureList::IsEnabled(
+      browsing_data::features::kDeprecateCookiesTreeModel);
 
   base::RepeatingClosure completion =
       base::BindRepeating([](const base::OnceClosure&) {},
@@ -880,6 +923,11 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
         base::BindOnce(&OnQuotaStorageLoaded, this, completion));
     storage_partition_->GetDOMStorageContext()->GetLocalStorageUsage(
         base::BindOnce(&OnLocalStorageLoaded, this, completion));
+  }
+
+  if (is_cookies_tree_model_deprecated) {
+    storage_partition_->GetCookieManagerForBrowserProcess()->GetAllCookies(
+        base::BindOnce(&OnCookiesLoaded, this, completion));
   }
 
   // Data loaded from non-components storage types via the delegate.

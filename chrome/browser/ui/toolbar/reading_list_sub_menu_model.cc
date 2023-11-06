@@ -8,6 +8,9 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ReadingListSubMenuModel,
+                                      kReadingListMenuShowUI);
+
 ReadingListSubMenuModel::ReadingListSubMenuModel(
     ui::SimpleMenuModel::Delegate* delegate)
     : SimpleMenuModel(delegate) {
@@ -17,6 +20,9 @@ ReadingListSubMenuModel::ReadingListSubMenuModel(
   AddItemWithStringIdAndIcon(IDC_READING_LIST_MENU_SHOW_UI,
                              IDS_READING_LIST_MENU_SHOW_UI,
                              ui::ImageModel::FromVectorIcon(kReadLaterIcon));
+  SetElementIdentifierAt(
+      GetIndexOfCommandId(IDC_READING_LIST_MENU_SHOW_UI).value(),
+      kReadingListMenuShowUI);
 }
 
 ReadingListSubMenuModel::~ReadingListSubMenuModel() = default;

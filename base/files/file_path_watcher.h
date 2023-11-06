@@ -8,18 +8,20 @@
 #define BASE_FILES_FILE_PATH_WATCHER_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/containers/enum_set.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-
-class FilePath;
 
 // This class lets you register interest in changes on a FilePath.
 // The callback will get called whenever the file or directory referenced by the
@@ -34,6 +36,50 @@ class FilePath;
 // Must be destroyed on the sequence that invokes Watch().
 class BASE_EXPORT FilePathWatcher {
  public:
+  // Type of change which occurred on the affected. Note that this may differ
+  // from the watched path, e.g. in the case of recursive watches.
+  enum class ChangeType {
+    kUnsupported,  // The implementation does not support change types.
+    kCreated,
+    kDeleted,
+    kModified,  // Includes modifications to either file contents or attributes.
+    kMoved
+  };
+
+  // Path type of the affected path. Note that this may differ from the watched
+  // path, e.g. in the case of recursive watches.
+  enum class FilePathType {
+    kUnknown,  // The implementation could not determine the path type or does
+               // not support path types.
+    kDirectory,
+    kFile,
+  };
+
+  // Information about the file system change. This information should be as
+  // specific as the underlying platform allows. For example, when watching
+  // directory foo/, creating file foo/bar.txt should be reported as a change
+  // with a `kCreated` change type and a `kFile` path type rather than as a
+  // modification to directory foo/. Due to limitations on some platforms, this
+  // is not always possible. Callers should treat this information a strong
+  // hint, but still be capable of handling events where this information is not
+  // known given the limitations on some platforms.
+  struct ChangeInfo {
+    FilePathType file_path_type = FilePathType::kUnknown;
+    ChangeType change_type = ChangeType::kUnsupported;
+    // Can be used to associate related events. For example, renaming a file may
+    // trigger separate "moved from" and "moved to" events with the same
+    // `cookie` value.
+    //
+    // TODO(https://crbug.com/1425601): This is currently only used to associate
+    // `kMoved` events, and requires all consumers to implement the same logic
+    // to coalesce these events. Consider upstreaming this event coalesing logic
+    // to the platform-specific implementations and then replacing `cookie` with
+    // the file path that the file was moved from, if this is known.
+    absl::optional<uint32_t> cookie;
+  };
+
+  // TODO(https://crbug.com/1425601): Rename this now that this class declares
+  // other types of Types.
   enum class Type {
     // Indicates that the watcher should watch the given path and its
     // ancestors for changes. If the path does not exist, its ancestors will
@@ -74,6 +120,9 @@ class BASE_EXPORT FilePathWatcher {
   // that case, the callback won't be invoked again.
   using Callback =
       base::RepeatingCallback<void(const FilePath& path, bool error)>;
+  // Same as above, but includes more information about the change, if known.
+  using CallbackWithChangeInfo = RepeatingCallback<
+      void(const ChangeInfo&, const FilePath& path, bool error)>;
 
   // Used internally to encapsulate different members on different platforms.
   class PlatformDelegate {
@@ -91,10 +140,18 @@ class BASE_EXPORT FilePathWatcher {
                                      Type type,
                                      const Callback& callback) = 0;
 
-    // A new, more general API. It can deal with multiple options.
+    // A more general API which can deal with multiple options.
     [[nodiscard]] virtual bool WatchWithOptions(const FilePath& path,
                                                 const WatchOptions& options,
                                                 const Callback& callback);
+
+    // Watches the specified `path` according to the given `options`.
+    // `callback` is invoked for each subsequent modification, with a
+    // `ChangeInfo` populated with the fields supported by the implementation.
+    [[nodiscard]] virtual bool WatchWithChangeInfo(
+        const FilePath& path,
+        const WatchOptions& options,
+        const CallbackWithChangeInfo& callback);
 
     // Stop watching. This is called from FilePathWatcher's dtor in order to
     // allow to shut down properly while the object is still alive.
@@ -144,10 +201,17 @@ class BASE_EXPORT FilePathWatcher {
   // FileDescriptorWatcher.
   bool Watch(const FilePath& path, Type type, const Callback& callback);
 
-  // A new, more general API. It can deal with multiple options.
+  // A more general API which can deal with multiple options.
   bool WatchWithOptions(const FilePath& path,
                         const WatchOptions& options,
                         const Callback& callback);
+
+  // Same as above, but `callback` includes more information about the change,
+  // if known. On platforms for which change information is not supported,
+  // `callback` is called with a dummy `ChangeInfo`.
+  bool WatchWithChangeInfo(const FilePath& path,
+                           const WatchOptions& options,
+                           const CallbackWithChangeInfo& callback);
 
  private:
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);

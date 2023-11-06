@@ -268,8 +268,8 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_LOADING" desc="Label informing the user that the activation code is currently being verified.">
     Verifying activation code...
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_VERIFYING_ACTIVATION_CODE" desc="Label informing the user that the activation code is currently being verified, and that it may take a couple of minutes before it is complete.">
-    Verifying activation code. This may take a few minutes.
+  <message name="IDS_CELLULAR_SETUP_ESIM_PROFILE_INSTALLING_MESSAGE" desc="Label informing the user that an eSIM profile is being added, and that it may take a couple of minutes before it is complete.">
+    Adding eSIM profile. This may take a few minutes.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_SCAN_QR_CODE_INVALID" desc="Label informing the user that the code used to install an eSIM profile is invalid.">
     Invalid code. Please try again.
@@ -289,8 +289,11 @@
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_INPUT" desc="Label for the input used to enter the confirmation code to activate an eSIM profile.">
     Confirmation code
   </message>
-  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR_LEGACY" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
     Unable to connect to this profile. For technical support, please contact your carrier.
+  </message>
+  <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_ERROR" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is invalid and to contact their carrier.">
+    Unable to install this profile. For technical support, please contact your carrier.
   </message>
   <message name="IDS_CELLULAR_SETUP_ESIM_PAGE_CONFIRMATION_CODE_LOADING" desc="Message, informing the user the confirmation code entered to activate an eSIM profile is currently being verified.">
     Verifying confirmation code...
@@ -853,8 +856,8 @@
   <message name="IDS_OOBE_USER_CREATION_CHILD_USE_BUTTON_DESCRIPTION" desc="The description of the button that leads to set up device for child.">
     Use your child’s Google Account or a school account. You can also set parental controls.
   </message>
-  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for work or school.">
-    For work or school
+  <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_LABEL" desc="The label of the button that leads to set up device for work.">
+    For work
   </message>
   <message name="IDS_OOBE_USER_CREATION_ENROLL_USE_BUTTON_DESCRIPTION"  desc="The description of the button that leads to set up device for work or shcool.">
    Use your organization’s email address
@@ -1438,26 +1441,23 @@
   <message name="IDS_LOGIN_QUICK_START_SETUP_SIGNIN_SCREEN_ENTRY_POINT" desc="A label on the button. Used on OOBE's sign-in screen to allow the user to initiate the Quick Start flow which allows them to set up their Chromebook using an existing Android phone.">
     Sign in with Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device.">
-    Set up with your Android phone
+  <message name="IDS_LOGIN_QUICK_START_SETUP_QR_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device using a QR code.">
+    Scan the QR code with your Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_QR_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to scan the QR code.">
-    Follow the instructions on your phone to scan the QR code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  <message name="IDS_LOGIN_QUICK_START_SETUP_PIN_TITLE" desc="A title used on OOBE's Quick Start screen for setting up a Chromebook using an Android device using a PIN code.">
+    Verify the code on your Android phone
   </message>
-  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE_PIN_CODE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device prompting the user to verify the code shown on the screen.">
-    Follow the instructions on your phone to verify the code. Make sure your phone's Bluetooth and Wi-Fi are turned on.
+  <message name="IDS_LOGIN_QUICK_START_SETUP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start screen for setting up a Chromebook using an Android device.">
+    Easily set up your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone. You can add your Wi-Fi and Google Account without manually entering your passwords.
     <ph name="BR">&lt;br&gt;</ph>
     <ph name="BR">&lt;br&gt;</ph>
-    You can use your phone to add your Wi-Fi and Google Account info to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
-    <ph name="BR">&lt;br&gt;</ph>
-    <ph name="BR">&lt;br&gt;</ph>
-    Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+    Visible as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$2<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_TURN_ON_WIFI_AND_BLT" desc="A message telling the user to turn on their phone's Bluetooth and WiFi when setting up their Chromebook using an Android phone.">
+    Turn on your phone’s Bluetooth and Wi-Fi
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_SETUP_CONTENT_FOOTER_FOLLOW_INSTRUCTIONS" desc="A message telling the user to follow instructions on their phone when setting up when setting up their Chromebook using an Android phone.">
+    Follow instructions on your phone to verify the code
   </message>
   <message name="IDS_LOGIN_QUICK_START_WIFI_TRANSFER_TITLE" desc="A title used on OOBE's Quick Start screen when WiFi credentials are being transferred to the Chromebook from the Android device.">
     Connecting to Wi-Fi...
@@ -1477,7 +1477,7 @@
   <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_TITLE" desc="A title used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Getting Google Account info...
   </message>
-  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the  user's credentails are being transferred from the Android device to ChromeOS.">
+  <message name="IDS_LOGIN_QUICK_START_ACCOUNT_TRANSFER_STEP_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user's credentails are being transferred from the Android device to ChromeOS.">
     Transfering Google Account info from your Android phone
   </message>
   <message name="IDS_LOGIN_QUICK_START_SETUP_FROM_SIGNIN_SCREEN_TITLE" desc="A title used on OOBE's Quick Start screen for signing-in into their Chromebook using an Android device prompting the user to scan a QR code.">
@@ -1488,6 +1488,18 @@
     <ph name="BR">&lt;br&gt;</ph>
     <ph name="BR">&lt;br&gt;</ph>
     Visible to nearby devices as <ph name="QUICK_START_DEVICE_DISPLAY_NAME">$1<ex>Chromebook (123)</ex></ph>...
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_TITLE" desc="A title used on Quick Start's enable bluetooth dialog which is shown before starting the quick start flow since bluetooth is needed for transferring the user's credentails from the Android device to ChromeOS.">
+    Turn on Bluetooth?
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CONTENT" desc="The content shown on Quick Start's enable blutooth dialog.">
+    To set up with your Android phone, your Chromebook's Bluetooth needs to be on
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_CANCEL" desc="A lable on the button of the enable bluetooth dialog. It lets the user prevent the bluetooth from being enabled and hence does not continue the Quick Start flow.">
+    Cancel
+  </message>
+  <message name="IDS_LOGIN_QUICK_START_BLUETOOTH_DIALOG_ENABLE" desc="A lable on the button of the enable bluetooth dialog. It lets the user allow turning on the bluetooth automatically to continue with the Quick Start flow.">
+    Turn on
   </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
     Swipe up to get started
@@ -1695,13 +1707,19 @@
   <message name="IDS_LOGIN_CONFIRM_PASSWORD_TITLE" desc="Title for the confirm password dialog.">
     Please re-enter your password to update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> profile.
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title local password setup dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_TITLE" desc="Title for the local password setup dialog.">
     Set <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title local password setup done dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_TITLE" desc="Title for the local password reset dialog.">
+    Reset <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_TITLE" desc="Title for the local password setup done dialog.">
     Your password is set
   </message>
-  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle local password setup done dialog.">
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_RESET_DONE_TITLE" desc="Title for the local password reset done dialog.">
+    Your password has been updated
+  </message>
+  <message name="IDS_LOGIN_LOCAL_PASSWORD_SETUP_DONE_SUBTITLE" desc="Subitle for the local password setup done dialog.">
     You can use this password to sign in to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
   <message name="IDS_LOGIN_MANUAL_PASSWORD_TITLE" desc="Title for the manual password setting dialog.">
@@ -3840,6 +3858,12 @@
   <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps, and a child account is in use.">
     Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password. <ph name="BEGIN_LINK1">&lt;a href="#" id="learn-more-link-backup-restore"&gt;</ph>Learn More<ph name="END_LINK1">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
+  <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_LABEL" desc="This string is spoken when ChromeVox focuses the checkbox to enable Backup and Restore for Android apps in the opt-in dialog." is_accessibility_with_no_ui="true">
+    Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.
+  </message>
+  <message name="IDS_ARC_OPT_IN_DIALOG_BACKUP_RESTORE_CHILD_LABEL" desc="This string is spoken when ChromeVox focuses the checkbox to enable Backup and Restore for Android apps in the opt-in dialog, and a child account is in use." is_accessibility_with_no_ui="true">
+    Back up to Google Drive. Easily restore data or switch device at any time. This backup includes app data. Backups are uploaded to Google and encrypted using your child's Google Account password.
+  </message>
   <message name="IDS_ARC_OOBE_BACKUP_RESTORE" desc="Message in the opt-in dialog for users to enable Backup and Restore for Android apps.">
     Back up to Google Drive. Easily restore your data or switch device at any time. Your backup includes app data. Your backups are uploaded to Google and encrypted using your Google Account password.
   </message>
@@ -4261,6 +4285,12 @@
   </message>
   <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
     Try “Hey Google, what song is this?” or “Hey Google, what's on my screen?”
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_NEW" desc="Message to illustrate the use cases for assistant related info.">
+    You could ask “Hey Google, what song is this?”
+  </message>
+  <message name="IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD_NEW" desc="Message to illustrate the use cases for assistant related info, when a child account is in use.">
+    Try “Hey Google, what song is this?”
   </message>
   <message name="IDS_ASSISTANT_CONTINUE_BUTTON" desc="Continue button for asssitant optin flow.">
     Continue
@@ -4803,9 +4833,6 @@
   </message>
   <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
     Settings
-  </message>
-  <message name="IDS_INTERNAL_APP_CONTINUOUS_READING" desc="The default title of Chrome browser to allow users to seamlessly continue reading a web page when they switch from phones or tablets to Chromebook.">
-    Continue reading in Chrome
   </message>
 
   <!-- Launcher Settings shortcuts -->
@@ -6552,6 +6579,12 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_CONFIRM_PLACEHOLDER" desc="Placeholder text for the input where the user should enter a new local password for a second time for confirmation.">
     Confirm password
   </message>
+  <message name="IDS_AUTH_SETUP_SHOW_PASSWORD" desc="A tooltip on a button that reveals the password.">
+    Show password
+  </message>
+  <message name="IDS_AUTH_SETUP_HIDE_PASSWORD" desc="A tooltip on a button that hides the password that is being shown.">
+    Hide password
+  </message>
   <message name="IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_MIN_CHARS_HINT" desc="The hint about the minimal length of a password when the user sets a new password.">
     Password must be at least 8 characters
   </message>
@@ -6659,6 +6692,11 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_ASH_EMOJI_PICKER_COPY_GIF_TO_CLIPBOARD" translateable="false" desc="Message shown to users when they click a gif in emoji picker.">
     GIF not supported. Copied to clipboard.
+  </message>
+
+  <!-- Strings for orca-->
+  <message name="IDS_ACCNAME_ORCA" desc="The name for the orca feature in the task manager (this is a code name)">
+    Orca
   </message>
 
   <!-- Strings for Custom Tab UI -->
@@ -7300,6 +7338,17 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_PROMP_REMOVE_SHORTCUT_BUTTON"
     desc="Text for the remove button on the shortcut removal prompt">
     Remove
+  </message>
+
+  <!-- Remote activity notification dialog -->
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_TITLE" desc="Title text displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
+    Maintenance is done
+  </message>
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_DESCRIPTION" desc="Detailed description displayed to inform the user a remote admin had taken control of the ChromeOS device for maintenance.">
+    Your administrator has logged out. You're in control now.
+  </message>
+  <message name="IDS_REMOTE_ACTIVITY_NOTIFICATION_BUTTON_LABEL" desc="Button label for describing that the device is available for use and user can click on the button to remove the full screen notification.">
+    Continue to use the device
   </message>
 
 </grit-part>

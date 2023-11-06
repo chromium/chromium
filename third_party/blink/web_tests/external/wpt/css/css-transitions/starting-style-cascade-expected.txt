@@ -1,8 +1,9 @@
 This is a testharness.js-based test.
-PASS Overridden @starting-style - order of appearance
-PASS @starting-style with higher specificity
-PASS Starting style does not inherit from parent starting style
-PASS Starting style inheriting from parent's after-change style
-FAIL Starting style inheriting from parent's after-change style while parent transitioning assert_equals: Transition started from parent's after-change style color expected "rgb(0, 192, 0)" but got "rgb(0, 160, 0)"
+[PASS] Overridden @starting-style - order of appearance
+[PASS] @starting-style with higher specificity
+[PASS] Starting style does not inherit from parent starting style
+[PASS] Starting style inheriting from parent's after-change style
+[FAIL] Starting style inheriting from parent's after-change style while parent transitioning
+  assert_equals: Transition started from parent's after-change style color expected "rgb(0, 192, 0)" but got "rgb(0, 160, 0)"
 Harness: the test ran to completion.
 

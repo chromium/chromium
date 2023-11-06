@@ -113,6 +113,7 @@ static_library("phonehub") {
     "ping_manager_impl.h",
     "pref_names.cc",
     "pref_names.h",
+    "public/cpp/attestation_certificate_generator.cc",
     "public/cpp/attestation_certificate_generator.h",
     "recent_app_click_observer.h",
     "recent_apps_interaction_handler.cc",

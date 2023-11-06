@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/save_password_progress_logger.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
@@ -259,7 +260,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithStandardProtection) {
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
   EXPECT_TRUE(delegate().leak_check());
-  EXPECT_TRUE(CanStartLeakCheck(*pref_service()));
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
@@ -276,7 +277,7 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
   EXPECT_TRUE(delegate().leak_check());
-  EXPECT_TRUE(CanStartLeakCheck(*pref_service()));
+  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
@@ -289,7 +290,7 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
   EXPECT_FALSE(delegate().leak_check());
-  EXPECT_FALSE(CanStartLeakCheck(*pref_service()));
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
@@ -302,7 +303,7 @@ TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
   delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form);
 
   EXPECT_FALSE(delegate().leak_check());
-  EXPECT_FALSE(CanStartLeakCheck(*pref_service()));
+  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, LeakDetectionDoneWithFalseResult) {

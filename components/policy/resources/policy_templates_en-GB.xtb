@@ -146,7 +146,7 @@
 <translation id="1160939557934457296">Disable proceeding from the Safe Browsing warning page</translation>
 <translation id="1189817621108632689">Allows you to set a list of URL patterns that specify sites which are not allowed to display images.
 
-          If this policy is left not set, the global default value will be used for all sites, either from the 'DefaultImagesSetting' policy if it is set, or from the user's personal configuration. 
+          If this policy is left not set, the global default value will be used for all sites, either from the 'DefaultImagesSetting' policy if it is set, or from the user's personal configuration.
 
           Note: This policy was erroneously enabled on Android, but this functionality has never been fully supported on Android.</translation>
 <translation id="1194005076170619046">If enabled, a big, red logout button is shown in the system tray while a session is active and the screen is not locked.
@@ -1318,7 +1318,13 @@
           If this policy is set to a non-empty string, that string will be used as the name of the <ph name="PRODUCT_NAME" /> destination. Otherwise, the destination name will be the device name. If this policy is not set, the destination name will be the device name, and the owner of the device (or a user from the domain managing the device) will be allowed to change it. The name is limited to 24 characters.</translation>
 <translation id="3335468714959531450">Allows you to set a list of URL patterns that specify sites which are allowed to set cookies.
 
-          If this policy is left not set, the global default value will be used for all sites, either from the 'DefaultCookiesSetting' policy if it is set, or from the user's personal configuration.
+          URL patterns may be a single URL indicating that the site may use cookies on all top-level sites.
+
+          Patterns may also be two URLs delimited by a comma. The first specifies the site that should be allowed to use cookies. The second specifies the top-level site that the first value should be applied on.
+
+          If you use a pair of URLs, the first value in the pair supports * but the second value does not. Using * for the first value indicates that all sites may use cookies when the second URL is the top-level site.
+
+          If this policy is left not set the global default value will be used for all sites either from the 'DefaultCookiesSetting' or 'BlockThirdPartyCookies' policies if they are set, or the user's personal configuration otherwise.
 
           Also see policies 'CookiesBlockedForUrls' and 'CookiesSessionOnlyForUrls'. Note: There must be no conflicting URL patterns between these three policies – it is not specified as to which policy takes precedence.</translation>
 <translation id="3373364525435227558">Sets one or more recommended locales for a managed session, allowing users to easily choose one of these locales.
@@ -3833,7 +3839,7 @@
       Managed bookmarks are not synced to the user account and can't be modified by extensions.</translation>
 <translation id="8078366200175825572">Allows you to set a list of URL patterns that specify sites which are not allowed to set cookies.
 
-          If this policy is left not set, the global default value will be used for all sites, either from the 'DefaultCookiesSetting' policy if it is set, or from the user's personal configuration. 
+          If this policy is left not set, the global default value will be used for all sites, either from the 'DefaultCookiesSetting' policy if it is set, or from the user's personal configuration.
 
           Also see policies 'CookiesAllowedForUrls' and 'CookiesSessionOnlyForUrls'. Note: There must be no conflicting URL patterns between these three policies – it is not specified as to which policy takes precedence.</translation>
 <translation id="8099880303030573137">Idle delay when running on battery power</translation>

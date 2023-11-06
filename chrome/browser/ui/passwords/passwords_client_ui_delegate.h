@@ -82,8 +82,8 @@ class PasswordsClientUIDelegate {
   // Called when the password will be saved automatically, but we still wish to
   // visually inform the user that the save has occured.
   virtual void OnAutomaticPasswordSave(
-      std::unique_ptr<password_manager::PasswordFormManagerForUI>
-          form_manager) = 0;
+      std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
+      bool is_update_confirmation) = 0;
 
   // Called when a form is autofilled with login information, so we can manage
   // password credentials for the current site which are stored in

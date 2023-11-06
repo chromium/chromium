@@ -24,7 +24,7 @@ base::CallbackListSubscription AppFetcher::RegisterForAppUpdates(
   return base::CallbackListSubscription();
 }
 
-void AppFetcher::GetIcon(const std::string& app_id,
+void AppFetcher::GetIcon(const std::string& icon_id,
                          int32_t size_hint_in_dip,
                          GetIconCallback callback) {
   NOTREACHED();
@@ -91,7 +91,7 @@ base::CallbackListSubscription AppFetcherManager::RegisterForAppUpdates(
   }
 }
 
-void AppFetcherManager::GetIcon(const std::string& app_id,
+void AppFetcherManager::GetIcon(const std::string& icon_id,
                                 int32_t size_hint_in_dip,
                                 ResultType result_type,
                                 GetIconCallback callback) {
@@ -109,12 +109,12 @@ void AppFetcherManager::GetIcon(const std::string& app_id,
     case ResultType::kGameSearchCatalog:
       if (base::FeatureList::IsEnabled(kAlmanacGameMigration)) {
         DCHECK(almanac_fetcher_);
-        almanac_fetcher_->GetIcon(app_id, size_hint_in_dip,
+        almanac_fetcher_->GetIcon(icon_id, size_hint_in_dip,
                                   std::move(callback));
         return;
       }
       DCHECK(game_fetcher_);
-      game_fetcher_->GetIcon(app_id, size_hint_in_dip, std::move(callback));
+      game_fetcher_->GetIcon(icon_id, size_hint_in_dip, std::move(callback));
       return;
   }
 }

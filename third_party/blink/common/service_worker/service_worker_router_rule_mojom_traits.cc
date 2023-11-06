@@ -19,21 +19,11 @@ bool StructTraits<
   return true;
 }
 
-bool StructTraits<blink::mojom::ServiceWorkerRouterConditionObjectDataView,
-                  blink::ServiceWorkerRouterConditionObject>::
-    Read(blink::mojom::ServiceWorkerRouterConditionObjectDataView data,
-         blink::ServiceWorkerRouterConditionObject* out) {
-  if (!data.ReadConditions(&out->conditions)) {
-    return false;
-  }
-  return true;
-}
-
 bool StructTraits<blink::mojom::ServiceWorkerRouterOrConditionDataView,
                   blink::ServiceWorkerRouterOrCondition>::
     Read(blink::mojom::ServiceWorkerRouterOrConditionDataView data,
          blink::ServiceWorkerRouterOrCondition* out) {
-  if (!data.ReadObjects(&out->objects)) {
+  if (!data.ReadConditions(&out->conditions)) {
     return false;
   }
   return true;
@@ -55,54 +45,24 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterRequestConditionDataView,
   return true;
 }
 
-blink::mojom::ServiceWorkerRouterConditionDataView::Tag
-UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
-            blink::ServiceWorkerRouterCondition>::
-    GetTag(const blink::ServiceWorkerRouterCondition& data) {
-  switch (data.type) {
-    case blink::ServiceWorkerRouterCondition::Type::kUrlPattern:
-      return blink::mojom::ServiceWorkerRouterCondition::Tag::kUrlPattern;
-    case blink::ServiceWorkerRouterCondition::Type::kRequest:
-      return blink::mojom::ServiceWorkerRouterCondition::Tag::kRequest;
-    case blink::ServiceWorkerRouterCondition::Type::kRunningStatus:
-      return blink::mojom::ServiceWorkerRouterCondition::Tag::kRunningStatus;
-    case blink::ServiceWorkerRouterCondition::Type::kOr:
-      return blink::mojom::ServiceWorkerRouterCondition::Tag::kOrCondition;
-  }
-}
-
-bool UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
-                 blink::ServiceWorkerRouterCondition>::
+bool StructTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
+                  blink::ServiceWorkerRouterCondition>::
     Read(blink::mojom::ServiceWorkerRouterConditionDataView data,
          blink::ServiceWorkerRouterCondition* out) {
-  switch (data.tag()) {
-    case blink::mojom::ServiceWorkerRouterCondition::Tag::kUrlPattern:
-      out->type = blink::ServiceWorkerRouterCondition::Type::kUrlPattern;
-      if (!data.ReadUrlPattern(&out->url_pattern)) {
-        return false;
-      }
-      return true;
-    case blink::mojom::ServiceWorkerRouterCondition::Tag::kRequest:
-      out->type = blink::ServiceWorkerRouterCondition::Type::kRequest;
-      if (!data.ReadRequest(&out->request)) {
-        return false;
-      }
-      return true;
-    case blink::mojom::ServiceWorkerRouterCondition::Tag::kRunningStatus:
-      out->type = blink::ServiceWorkerRouterCondition::Type::kRunningStatus;
-      if (!data.ReadRunningStatus(&out->running_status)) {
-        return false;
-      }
-      return true;
-    case blink::mojom::ServiceWorkerRouterCondition::Tag::kOrCondition:
-      out->type = blink::ServiceWorkerRouterCondition::Type::kOr;
-      if (!data.ReadOrCondition(&out->or_condition)) {
-        return false;
-      }
-      return true;
+  auto&& [url_pattern, request, running_status, or_condition] = out->get();
+  if (!data.ReadUrlPattern(&url_pattern)) {
+    return false;
   }
-
-  return false;
+  if (!data.ReadRequest(&request)) {
+    return false;
+  }
+  if (!data.ReadRunningStatus(&running_status)) {
+    return false;
+  }
+  if (!data.ReadOrCondition(&or_condition)) {
+    return false;
+  }
+  return true;
 }
 
 bool StructTraits<blink::mojom::ServiceWorkerRouterCacheSourceDataView,
@@ -162,7 +122,7 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterRuleDataView,
                   blink::ServiceWorkerRouterRule>::
     Read(blink::mojom::ServiceWorkerRouterRuleDataView data,
          blink::ServiceWorkerRouterRule* out) {
-  if (!data.ReadConditions(&out->conditions)) {
+  if (!data.ReadCondition(&out->condition)) {
     return false;
   }
   if (!data.ReadSources(&out->sources)) {

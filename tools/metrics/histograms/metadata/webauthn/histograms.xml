@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.Android.CredManModalRequests"
-    enum="CredManGetRequestEnum" expires_after="2024-01-01">
+    enum="CredManGetRequestEnum" expires_after="2024-04-28">
   <owner>derinel@google.com</owner>
   <owner>kenrb@chromium.org</owner>
   <summary>
@@ -183,6 +183,13 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of passkeys available for a Conditional UI get request.
   </summary>
+</histogram>
+
+<histogram name="WebAuthentication.GetAssertion.Result"
+    enum="WebAuthenticationGetAssertionResult" expires_after="2024-10-01">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>Records the result of a get assertion request.</summary>
 </histogram>
 
 <histogram name="WebAuthentication.GetAssertionRequestTransport"

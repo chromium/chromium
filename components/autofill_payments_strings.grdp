@@ -8,7 +8,7 @@
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="The label for cancel button used in autofill credit card upload save bubble on desktop.">
       No thanks
     </message>
-    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_NO_THANKS" desc="The text label for `No thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
+    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS" desc="The text label for `No thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
       No thanks
     </message>
   </if>
@@ -19,7 +19,7 @@
     <message name="IDS_AUTOFILL_NO_THANKS_DESKTOP_UPLOAD_SAVE" desc="In Title Case: The label for cancel button used in autofill credit card upload save bubble on desktop.">
       No Thanks
     </message>
-    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_NO_THANKS" desc="The text label for `No Thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
+    <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_NO_THANKS" desc="The text label for `No Thanks` button used in autofill prompt IBAN (International Bank Account Number) local save bubble on desktop.">
       No Thanks
     </message>
   </if>
@@ -217,11 +217,10 @@
   <message name="IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation text for the Autofill save CVC prompt that offers to upload CVC to the Sync server for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission.">
     This card's CVC will be encrypted and saved in your Google Account for faster checkout
   </message>
-
+  <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to the server. The prompt will be shown on both the Desktop bubble and the Android bottom sheet.">
+    To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
+  </message>
   <if expr="is_android">
-    <message name="IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD" desc="Explanation for the effect of the Autofill save card prompt when the card is to be saved along with the CVC by uploading it to Google Payments. The prompt will be shown in a bottom sheet on Android devices.">
-      To pay faster next time, save your card, encrypted security code, and billing address in your Google Account
-    </message>
     <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
       Save
     </message>
@@ -548,6 +547,18 @@
       Google Chrome is trying to verify it's you so it can fill in your payment info.
     </message>
   </if>
+  <if expr="is_ios">
+    <if expr="_google_chrome">
+      <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
+        Verify it's you so Google Chrome can fill in your payment info.
+      </message>
+    </if>
+    <if expr="not _google_chrome">
+      <message name="IDS_PAYMENTS_AUTOFILL_FILLING_MANDATORY_REAUTH" desc="Text that appears in the payments autofill mandatory re-authentication popup as the sublabel, asking the user to authenticate using biometric or device unlock before filling.">
+        Verify it's you so Chromium can fill in your payment info.
+      </message>
+    </if>
+  </if>
 
   <!-- WebAuthn fingerprint opt-in dialog -->
   <!-- Desktop only -->
@@ -630,7 +641,7 @@
   <message name="IDS_AUTOFILL_SAVE_IBAN_LABEL" desc="Text to show for the Autofill prompt IBAN (International Bank Account Number) label where user can see the IBAN to be saved.">
     IBAN
   </message>
-  <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_LOCAL_SAVE_ACCEPT" desc="The text label for `Save` button used in autofill prompt IBAN (International Bank Account Number) save bubble on desktop.">
+  <message name="IDS_AUTOFILL_SAVE_IBAN_BUBBLE_SAVE_ACCEPT" desc="The text label for `Save` button used in autofill prompt IBAN (International Bank Account Number) save bubble on desktop.">
     Save
   </message>
   <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_NICKNAME" desc="Text to show for the autofill prompt IBAN (International Bank Account Number) save bubble where user can enter nickname optionally.">
@@ -647,6 +658,12 @@
   </message>
   <message name="IDS_AUTOFILL_MANAGE_SAVED_PAYMENT_METHODS" desc="Text to show for the button in the save IBAN (International Bank Account Number) manage bubble, or in the save card manager bubble which appears after either IBAN or credit card had been saved. The user will be redirected to chrome://settings/payments if the 'Manage payment methods' button is clicked.">
     Manage payment methods
+  </message>
+  <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER" desc="Title text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
+    Save IBAN to Google Account?
+  </message>
+  <message name="IDS_AUTOFILL_UPLOAD_IBAN_PROMPT_EXPLANATION" desc="Explanation text for the Autofill save IBAN (International Bank Account Number) to the GPay server prompt when a user submits a form with a valid IBAN.">
+    To pay faster next time, save your IBAN to your Google Account
   </message>
 
   <!-- Mandatory Reauth related strings - start -->
@@ -992,18 +1009,21 @@
     Save security codes
   </message>
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_SUBLABEL" desc="Sublabel for the payments settings page toggle that enables the user to store and use CVC for payments autofill." formatter_data="android_java">
-    Checkout faster when your CVCs are saved
+    Check out faster when your CVCs are saved
   </message>
   <if expr="not is_android">
     <!-- This sublabel has hyperlink encoding present in it. This is to trigger the modal popup which would bulk delete all the CVCs. -->
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_CVC_STORAGE_WITH_DELETE_LINK_SUBLABEL" desc="Sublabel for the payments settings page that would bulk delete all the CVCs when clicked on it. that enables the user to store and use CVC for payments autofill. There is also a hyperlinked text which bulk deletes all the CVC data. This sublabel is used when we have CVC data present on the local DB.">
-      Checkout faster when your CVCs are saved. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Delete saved security codes<ph name="LINK_END">&lt;/a&gt;</ph>
+      Check out faster when your CVCs are saved. <ph name="LINK_BEGIN">&lt;a href="#"&gt;</ph>Delete saved security codes<ph name="LINK_END">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_TITLE" desc="Title for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
       Delete saved security codes?
     </message>
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_BULK_REMOVE_CVC_DESCRIPTION" desc="Description for the modal dialog when the user is trying to bulk remove/delete all the CVCs stored locally and on Google servers.">
       All security codes saved on your device and in Google Account will be deleted
+    </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY" desc="Tag present on each entry in the credit card list on the payments settings page if that entry has a cvc saved to it.">
+      CVC saved
     </message>
   </if>
   <if expr="is_android">

@@ -110,7 +110,8 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     memcpy(data_to_pass->data(), data.data(), data.size());
     int rv = entry_->WriteData(index, offset, data_to_pass.get(), data.size(),
                                base::BindOnce(&SimpleCacheEntry::OnDataWritten,
@@ -136,7 +137,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
     int rv = entry_->ReadData(
         index, offset, buffer.get(), length,
         base::BindOnce(&SimpleCacheEntry::OnDataRead,
@@ -158,7 +159,8 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<WriteDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto data_to_pass = base::MakeRefCounted<net::IOBuffer>(data.size());
+    auto data_to_pass =
+        base::MakeRefCounted<net::IOBufferWithSize>(data.size());
     memcpy(data_to_pass->data(), data.data(), data.size());
     int rv =
         entry_->WriteSparseData(offset, data_to_pass.get(), data.size(),
@@ -183,7 +185,7 @@ class SimpleCacheEntry : public network::mojom::SimpleCacheEntry {
         base::MakeRefCounted<base::RefCountedData<ReadDataCallback>>();
     callback_holder->data = std::move(callback);
 
-    auto buffer = base::MakeRefCounted<net::IOBuffer>(length);
+    auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(length);
     int rv = entry_->ReadSparseData(
         offset, buffer.get(), length,
         base::BindOnce(&SimpleCacheEntry::OnDataRead,
@@ -758,6 +760,14 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
     system_task_ptr->Start(std::move(results_cb));
   }
 
+  void SetIPv6ProbeResult(bool success,
+                          SetIPv6ProbeResultCallback callback) override {
+    network::NetworkService::GetNetworkServiceForTesting()
+        ->host_resolver_manager()
+        ->SetLastIPv6ProbeResultForTesting(success);
+    std::move(callback).Run();
+  }
+
 #if BUILDFLAG(IS_LINUX)
   void GetAddressMapCacheLinux(
       GetAddressMapCacheLinuxCallback callback) override {
@@ -767,6 +777,21 @@ class NetworkServiceTestHelper::NetworkServiceTestImpl
                             address_map_owner->GetOnlineLinks());
   }
 #endif  // BUILDFLAG(IS_LINUX)
+
+  void AllowsGSSAPILibraryLoad(
+      AllowsGSSAPILibraryLoadCallback callback) override {
+    bool allow_gssapi_library_load;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+    allow_gssapi_library_load =
+        network::NetworkService::GetNetworkServiceForTesting()
+            ->http_auth_dynamic_network_service_params_for_testing()
+            ->allow_gssapi_library_load;
+#else
+    allow_gssapi_library_load = true;
+#endif
+
+    std::move(callback).Run(allow_gssapi_library_load);
+  }
 
  private:
   void OnMemoryPressure(

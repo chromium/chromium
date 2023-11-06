@@ -148,8 +148,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // Loader used to retrieve results for non-prefetch requests.
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
-  // Loader used to retrieve results for prefetch requests.
-  std::unique_ptr<network::SimpleURLLoader> prefetch_loader_;
+  // Loader used to retrieve results for ZPS prefetch requests on NTP.
+  std::unique_ptr<network::SimpleURLLoader> ntp_prefetch_loader_;
+
+  // Loader used to retrieve results for ZPS prefetch requests on SRP/Web.
+  std::unique_ptr<network::SimpleURLLoader> srp_web_prefetch_loader_;
 
   // The list of experiment stats corresponding to |matches_|.
   SearchSuggestionParser::ExperimentStatsV2s experiment_stats_v2s_;

@@ -41,15 +41,15 @@ public class ChromeBundleSmokeTest {
 
     public ChromeUiAutomatorTestRule mRule = new ChromeUiAutomatorTestRule();
     public ChromeUiApplicationTestRule mChromeUiRule = new ChromeUiApplicationTestRule();
-    @Rule
-    public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
+    @Rule public final TestRule mChain = RuleChain.outerRule(mChromeUiRule).around(mRule);
 
     private String mPackageName;
 
     @Before
     public void setUp() {
-        mPackageName = InstrumentationRegistry.getArguments().getString(
-                ChromeUiApplicationTestRule.PACKAGE_NAME_ARG);
+        mPackageName =
+                InstrumentationRegistry.getArguments()
+                        .getString(ChromeUiApplicationTestRule.PACKAGE_NAME_ARG);
         Assert.assertNotNull("Must specify bundle under test", mPackageName);
         try {
             UiAutomatorUtils.getInstance().launchApplication(mPackageName);

@@ -13,7 +13,6 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy, BrowserProxyImpl, DataCollectorItem, SupportTokenGenerationResult} from './browser_proxy.js';
@@ -63,9 +62,9 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
         type: String,
         value: '',
       },
-      hideTokenButton_: {
+      selectAll_: {
         type: Boolean,
-        value: () => !loadTimeData.getBoolean('enableCopyTokenButton'),
+        value: false,
       },
     };
   }
@@ -74,9 +73,9 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
   private generatedResult_: string;
   private errorMessage_: string;
   private buttonDisabled_: boolean;
-  private hideTokenButton_: boolean;
   private copiedToastMessage_: string;
   private dataCollectors_: DataCollectorItem[];
+  private selectAll_: boolean;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   override connectedCallback() {
@@ -120,6 +119,14 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
     }
   }
 
+  private getSelectAllButtonLabel_(selectAllClicked: boolean): string {
+    if (selectAllClicked) {
+      return this.i18n('selectNone');
+    } else {
+      return this.i18n('selectAll');
+    }
+  }
+
   private onUrlGenerationResult_(result: SupportTokenGenerationResult) {
     this.showGenerationResult(result, this.i18n('linkCopied'));
   }
@@ -140,6 +147,17 @@ export class UrlGeneratorElement extends UrlGeneratorElementBase {
 
   private onErrorMessageToastCloseClicked_() {
     this.$.errorMessageToast.hide();
+  }
+
+  private onSelectAllClick_() {
+    this.selectAll_ = !this.selectAll_;
+    // Update this.dataCollectors_ to reflect the selection choice.
+    for (let index = 0; index < this.dataCollectors_.length; index++) {
+      // Mutate the array observably. See:
+      // https://polymer-library.polymer-project.org/3.0/docs/devguide/data-system#make-observable-changes
+      this.set(`dataCollectors_.${index}.isIncluded`, this.selectAll_);
+    }
+    this.onDataCollectorItemChange_();
   }
 }
 

@@ -27,8 +27,6 @@
 
 namespace blink {
 
-class AffineTransform;
-class GraphicsContext;
 class SVGMaskElement;
 
 class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
@@ -55,7 +53,7 @@ class LayoutSVGResourceMasker final : public LayoutSVGResourceContainer {
     return kResourceType;
   }
 
-  PaintRecord CreatePaintRecord(const AffineTransform&, GraphicsContext&);
+  PaintRecord CreatePaintRecord();
 
  private:
   absl::optional<PaintRecord> cached_paint_record_;

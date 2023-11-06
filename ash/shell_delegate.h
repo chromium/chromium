@@ -37,6 +37,7 @@ class BackGestureContextualNudgeController;
 class BackGestureContextualNudgeDelegate;
 class CaptureModeDelegate;
 class ClipboardHistoryControllerDelegate;
+class DeskProfilesDelegate;
 class GameDashboardDelegate;
 class MediaNotificationProvider;
 class NearbyShareController;
@@ -197,6 +198,10 @@ class ASH_EXPORT ShellDelegate {
   using ShouldExitFullscreenCallback = base::OnceCallback<void(bool)>;
   virtual void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback);
+
+  // Returns the DeskProfilesDelegate, or nullptr if it isn't available. The
+  // delegate (when available) is owned by `CrosapiAsh`.
+  virtual DeskProfilesDelegate* GetDeskProfilesDelegate();
 };
 
 }  // namespace ash

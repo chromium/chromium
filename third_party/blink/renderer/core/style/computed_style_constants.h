@@ -223,6 +223,8 @@ enum class EFillRepeat : unsigned {
   kSpaceFill
 };
 
+enum class EFillMaskMode : unsigned { kAlpha, kLuminance, kMatchSource };
+
 enum class EFillLayerType : unsigned { kBackground, kMask };
 
 // CSS3 Background Values
@@ -464,6 +466,29 @@ enum class GeometryBox {
   kFillBox,
   kStrokeBox,
   kViewBox
+};
+
+// https://drafts.fxtf.org/css-masking/#typedef-compositing-operator
+enum class CompositingOperator : unsigned {
+  // <compositing-operator> = add | subtract | intersect | exclude
+  kAdd,
+  kSubtract,
+  kIntersect,
+  kExclude,
+
+  // The following are non-standard values used by -webkit-mask-composite.
+  kClear,
+  kCopy,
+  kSourceOver,
+  kSourceIn,
+  kSourceOut,
+  kSourceAtop,
+  kDestinationOver,
+  kDestinationIn,
+  kDestinationOut,
+  kDestinationAtop,
+  kXOR,
+  kPlusLighter
 };
 
 }  // namespace blink

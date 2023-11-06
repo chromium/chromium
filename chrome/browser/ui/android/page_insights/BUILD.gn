@@ -9,23 +9,22 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActionHandlerImpl.java",
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsCoordinator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoader.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsLoggingParametersImpl.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediator.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSheetContent.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSurfaceScopeDependencyProviderImpl.java",
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java",
+    "java/src/org/chromium/chrome/browser/page_insights/TapInterceptingLinearLayout.java",
   ]
-
-  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
     ":proto_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
@@ -35,6 +34,7 @@ android_library("java") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/util:java",
     "//chrome/browser/xsurface:java",
     "//chrome/browser/xsurface_provider:java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -49,15 +49,12 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.page_insights"
-}
-
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaChecker.java" ]
 }
 
 android_resources("java_resources") {
@@ -77,24 +74,25 @@ android_resources("java_resources") {
 
 proto_java_library("proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/page_insights/proto"
-  sources = [ "$proto_path/page_insights.proto" ]
+  sources = [
+    "$proto_path/config.proto",
+    "$proto_path/page_insights.proto",
+  ]
 }
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsActivatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsDataLoaderTest.java",
     "java/src/org/chromium/chrome/browser/page_insights/PageInsightsMediatorTest.java",
-    "java/src/org/chromium/chrome/browser/page_insights/PageInsightsSwaaCheckerUnitTest.java",
   ]
   deps = [
     ":java",
-    ":jni_headers",
     ":proto_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
@@ -104,19 +102,22 @@ robolectric_library("junit") {
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/util:java",
     "//chrome/browser/xsurface:java",
     "//chrome/browser/xsurface_provider:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
     "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/share/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/dom_distiller/core/android:dom_distiller_core_java",
     "//components/optimization_guide/proto:optimization_guide_proto_java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
-    "//third_party/android_deps:com_google_protobuf_protobuf_javalite_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
@@ -143,6 +144,7 @@ android_library("unit_device_javatests") {
     "//base:base_java_test_support",
     "//base:base_shared_preferences_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
@@ -164,6 +166,7 @@ android_library("unit_device_javatests") {
     "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit:junit",

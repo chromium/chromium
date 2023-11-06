@@ -44,7 +44,7 @@ class CORE_EXPORT MimeClassInfo final : public GarbageCollected<MimeClassInfo> {
   const String& Type() const { return type_; }
   const String& Description() const { return description_; }
   const Vector<String>& Extensions() const { return extensions_; }
-  const PluginInfo* Plugin() const { return plugin_; }
+  const PluginInfo* Plugin() const { return plugin_.Get(); }
 
  private:
   friend class PluginData;

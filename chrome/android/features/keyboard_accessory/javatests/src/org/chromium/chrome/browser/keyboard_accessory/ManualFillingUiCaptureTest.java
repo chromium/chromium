@@ -43,8 +43,7 @@ public class ManualFillingUiCaptureTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public final ScreenShooter mScreenShooter = new ScreenShooter();
+    @Rule public final ScreenShooter mScreenShooter = new ScreenShooter();
 
     private final ManualFillingTestHelper mHelper = new ManualFillingTestHelper(mActivityTestRule);
 
@@ -70,7 +69,8 @@ public class ManualFillingUiCaptureTest {
         mScreenShooter.shoot("AccessoryBarV2");
 
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
                         actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
         waitForSuggestionsInSheet();
@@ -99,7 +99,8 @@ public class ManualFillingUiCaptureTest {
         mScreenShooter.shoot("AccessoryBarV2RTL");
 
         whenDisplayed(withId(R.id.bar_items_view))
-                .perform(scrollTo(isKeyboardAccessoryTabLayout()),
+                .perform(
+                        scrollTo(isKeyboardAccessoryTabLayout()),
                         actionOnItem(isKeyboardAccessoryTabLayout(), selectTabAtPosition(0)));
 
         waitForSuggestionsInSheet();

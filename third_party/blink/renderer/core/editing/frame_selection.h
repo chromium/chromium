@@ -52,8 +52,8 @@ class LocalFrame;
 class FrameCaret;
 class GranularityStrategy;
 class GraphicsContext;
-class NGInlineCursor;
-class NGInlineCursorPosition;
+class InlineCursor;
+class InlineCursorPosition;
 class NGPhysicalBoxFragment;
 class Range;
 class SelectionEditor;
@@ -77,7 +77,7 @@ enum class SelectSoftLineBreak { kNotSelected, kSelected };
 // This is return type of ComputeLayoutSelectionStatus(cursor).
 // This structure represents how the fragment is selected.
 // |start|, |end| : Selection start/end offset. This offset is based on
-//   the text of NGInlineNode of a parent block thus
+//   the text of InlineNode of a parent block thus
 //   |fragemnt.StartOffset <= start <= end <= fragment.EndOffset|.
 // |start| == |end| means this fragment is not selected.
 // |line_break| : This value represents If this fragment is selected and
@@ -140,7 +140,7 @@ class CORE_EXPORT FrameSelection final
   bool IsAvailable() const;
   // You should not call |document()| when |!isAvailable()|.
   Document& GetDocument() const;
-  LocalFrame* GetFrame() const { return frame_; }
+  LocalFrame* GetFrame() const { return frame_.Get(); }
   Element* RootEditableElementOrDocumentElement() const;
   wtf_size_t CharacterIndexForPoint(const gfx::Point&) const;
 
@@ -312,9 +312,9 @@ class CORE_EXPORT FrameSelection final
   LayoutTextSelectionStatus ComputeLayoutSelectionStatus(
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
-      const NGInlineCursor& cursor) const;
+      const InlineCursor& cursor) const;
   SelectionState ComputePaintingSelectionStateForCursor(
-      const NGInlineCursorPosition& position) const;
+      const InlineCursorPosition& position) const;
 
   void Trace(Visitor*) const override;
 

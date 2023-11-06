@@ -39,17 +39,13 @@ using bookmarks::BookmarkNode;
 // it with test data.
 class BookmarkEditorViewTest : public testing::Test {
  public:
-  BookmarkEditorViewTest() : model_(nullptr) {}
-
   void SetUp() override {
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         BookmarkModelFactory::GetInstance(),
         BookmarkModelFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
-
-    model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
-    bookmarks::test::WaitForBookmarkModelToLoad(model_);
+    bookmarks::test::WaitForBookmarkModelToLoad(model());
 
     AddTestData();
   }
@@ -58,7 +54,8 @@ class BookmarkEditorViewTest : public testing::Test {
   std::string base_path() const { return "file:///c:/tmp/"; }
 
   const BookmarkNode* GetNode(const std::string& name) {
-    return model_->GetMostRecentlyAddedUserNodeForURL(GURL(base_path() + name));
+    return model()->GetMostRecentlyAddedUserNodeForURL(
+        GURL(base_path() + name));
   }
 
   BookmarkNode* GetMutableNode(const std::string& name) {
@@ -127,12 +124,14 @@ class BookmarkEditorViewTest : public testing::Test {
     editor_->ExecuteCommandDelete(std::move(non_empty_folder_confirmation_cb));
   }
 
+  BookmarkModel* model() {
+    return BookmarkModelFactory::GetForBrowserContext(profile_.get());
+  }
+
   views::TreeView* tree_view() const { return editor_->tree_view_; }
   BookmarkEditorView* editor() const { return editor_.get(); }
 
   content::BrowserTaskEnvironment task_environment_;
-
-  raw_ptr<BookmarkModel, DanglingUntriaged> model_;
   std::unique_ptr<TestingProfile> profile_;
 
  private:
@@ -149,24 +148,23 @@ class BookmarkEditorViewTest : public testing::Test {
   //   OF1
   //     of1a
   void AddTestData() {
-    const BookmarkNode* bb_node = model_->bookmark_bar_node();
+    const BookmarkNode* bb_node = model()->bookmark_bar_node();
     std::string test_base = base_path();
-    model_->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
-    const BookmarkNode* f1 = model_->AddFolder(bb_node, 1, u"F1");
-    model_->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
-    const BookmarkNode* f11 = model_->AddFolder(f1, 1, u"F11");
-    model_->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
-    model_->AddFolder(bb_node, 2, u"F2");
+    model()->AddURL(bb_node, 0, u"a", GURL(test_base + "a"));
+    const BookmarkNode* f1 = model()->AddFolder(bb_node, 1, u"F1");
+    model()->AddURL(f1, 0, u"f1a", GURL(test_base + "f1a"));
+    const BookmarkNode* f11 = model()->AddFolder(f1, 1, u"F11");
+    model()->AddURL(f11, 0, u"f11a", GURL(test_base + "f11a"));
+    model()->AddFolder(bb_node, 2, u"F2");
 
     // Children of the other node.
-    model_->AddURL(model_->other_node(), 0, u"oa", GURL(test_base + "oa"));
+    model()->AddURL(model()->other_node(), 0, u"oa", GURL(test_base + "oa"));
     const BookmarkNode* of1 =
-        model_->AddFolder(model_->other_node(), 1, u"OF1");
-    model_->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
+        model()->AddFolder(model()->other_node(), 1, u"OF1");
+    model()->AddURL(of1, 0, u"of1a", GURL(test_base + "of1a"));
   }
 
   ChromeTestViewsDelegate<> views_delegate_;
-
   std::unique_ptr<BookmarkEditorView> editor_;
 };
 
@@ -179,7 +177,7 @@ TEST_F(BookmarkEditorViewTest, ModelsMatch) {
   BookmarkEditorView::EditorNode* editor_root = editor_tree_model()->GetRoot();
   // The root should have two or three children: bookmark bar, other bookmarks
   // and conditionally mobile bookmarks.
-  ASSERT_EQ(model_->mobile_node()->IsVisible() ? 3u : 2u,
+  ASSERT_EQ(model()->mobile_node()->IsVisible() ? 3u : 2u,
             editor_root->children().size());
 
   BookmarkEditorView::EditorNode* bb_node = editor_root->children()[0].get();
@@ -207,7 +205,7 @@ TEST_F(BookmarkEditorViewTest, EditTitleKeepsPosition) {
 
   ApplyEdits(editor_tree_model()->GetRoot()->children().front().get());
 
-  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
   ASSERT_EQ(u"new_a", bb_node->children().front()->GetTitle());
   // The URL shouldn't have changed.
   ASSERT_TRUE(GURL(base_path() + "a") == bb_node->children().front()->url());
@@ -225,7 +223,7 @@ TEST_F(BookmarkEditorViewTest, EditURLKeepsPosition) {
 
   ApplyEdits(editor_tree_model()->GetRoot()->children().front().get());
 
-  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
   ASSERT_EQ(u"a", bb_node->children().front()->GetTitle());
   // The URL should have changed.
   ASSERT_TRUE(GURL(base_path() + "new_a") ==
@@ -241,7 +239,7 @@ TEST_F(BookmarkEditorViewTest, ChangeParent) {
 
   ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
-  const BookmarkNode* other_node = model_->other_node();
+  const BookmarkNode* other_node = model()->other_node();
   ASSERT_EQ(u"a", other_node->children()[2]->GetTitle());
   ASSERT_TRUE(GURL(base_path() + "a") == other_node->children()[2]->url());
 }
@@ -258,7 +256,7 @@ TEST_F(BookmarkEditorViewTest, ChangeParentAndURL) {
 
   ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
-  const BookmarkNode* other_node = model_->other_node();
+  const BookmarkNode* other_node = model()->other_node();
   ASSERT_EQ(u"a", other_node->children()[2]->GetTitle());
   ASSERT_TRUE(GURL(base_path() + "new_a") == other_node->children()[2]->url());
   ASSERT_TRUE(node_time == other_node->children()[2]->date_added());
@@ -281,7 +279,7 @@ TEST_F(BookmarkEditorViewTest, MoveToNewParent) {
   // Parent the node to "F21".
   ApplyEdits(f2);
 
-  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
   const BookmarkNode* mf2 = bb_node->children()[1].get();
 
   // F2 in the model should have two children now: F21 and the node edited.
@@ -299,7 +297,7 @@ TEST_F(BookmarkEditorViewTest, MoveToNewParent) {
 
 // Brings up the editor, creating a new URL on the bookmark bar.
 TEST_F(BookmarkEditorViewTest, NewURL) {
-  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
 
   CreateEditor(profile_.get(), bb_node,
                BookmarkEditor::EditDetails::AddNodeInFolder(bb_node, 1, GURL(),
@@ -323,7 +321,7 @@ TEST_F(BookmarkEditorViewTest, NewURL) {
 TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(
-                   model_->other_node()->children().front().get()),
+                   model()->other_node()->children().front().get()),
                BookmarkEditorView::NO_TREE);
 
   SetURLText(UTF8ToUTF16(GURL(base_path() + "a").spec()));
@@ -331,7 +329,7 @@ TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
 
   ApplyEdits(nullptr);
 
-  const BookmarkNode* other_node = model_->other_node();
+  const BookmarkNode* other_node = model()->other_node();
   ASSERT_EQ(2u, other_node->children().size());
 
   const BookmarkNode* new_node = other_node->children().front().get();
@@ -344,14 +342,14 @@ TEST_F(BookmarkEditorViewTest, ChangeURLNoTree) {
 TEST_F(BookmarkEditorViewTest, ChangeTitleNoTree) {
   CreateEditor(profile_.get(), nullptr,
                BookmarkEditor::EditDetails::EditNode(
-                   model_->other_node()->children().front().get()),
+                   model()->other_node()->children().front().get()),
                BookmarkEditorView::NO_TREE);
 
   SetTitleText(u"new_a");
 
   ApplyEdits(nullptr);
 
-  const BookmarkNode* other_node = model_->other_node();
+  const BookmarkNode* other_node = model()->other_node();
   ASSERT_EQ(2u, other_node->children().size());
 
   const BookmarkNode* new_node = other_node->children().front().get();
@@ -362,7 +360,7 @@ TEST_F(BookmarkEditorViewTest, ChangeTitleNoTree) {
 // Edits the bookmark and ensures resulting URL keeps the same scheme, even
 // when userinfo is present in the URL
 TEST_F(BookmarkEditorViewTest, EditKeepsScheme) {
-  const BookmarkNode* kBBNode = model_->bookmark_bar_node();
+  const BookmarkNode* kBBNode = model()->bookmark_bar_node();
 
   const GURL kUrl = GURL("http://javascript:scripttext@example.com/");
 
@@ -389,7 +387,7 @@ TEST_F(BookmarkEditorViewTest, EditKeepsScheme) {
 
 // Creates a new folder.
 TEST_F(BookmarkEditorViewTest, NewFolder) {
-  const BookmarkNode* bb_node = model_->bookmark_bar_node();
+  const BookmarkNode* bb_node = model()->bookmark_bar_node();
   BookmarkEditor::EditDetails details =
       BookmarkEditor::EditDetails::AddFolder(bb_node, 1);
   BookmarkEditor::EditDetails::BookmarkData url_data;
@@ -422,13 +420,13 @@ TEST_F(BookmarkEditorViewTest, NewFolder) {
 // in then the editor is initially created showing.
 TEST_F(BookmarkEditorViewTest, MoveFolder) {
   BookmarkEditor::EditDetails details = BookmarkEditor::EditDetails::AddFolder(
-      model_->bookmark_bar_node(), static_cast<size_t>(-1));
+      model()->bookmark_bar_node(), static_cast<size_t>(-1));
   BookmarkEditor::EditDetails::BookmarkData url_data;
   url_data.title = u"z";
   url_data.url = GURL(base_path() + "x");
   details.bookmark_data.children.push_back(url_data);
-  CreateEditor(profile_.get(), model_->bookmark_bar_node(),
-               details, BookmarkEditorView::SHOW_TREE);
+  CreateEditor(profile_.get(), model()->bookmark_bar_node(), details,
+               BookmarkEditorView::SHOW_TREE);
 
   SetTitleText(u"new_F");
 
@@ -436,8 +434,8 @@ TEST_F(BookmarkEditorViewTest, MoveFolder) {
   ApplyEdits(editor_tree_model()->GetRoot()->children()[1].get());
 
   // Make sure the folder we edited is still there.
-  ASSERT_EQ(3u, model_->other_node()->children().size());
-  const BookmarkNode* new_node = model_->other_node()->children()[2].get();
+  ASSERT_EQ(3u, model()->other_node()->children().size());
+  const BookmarkNode* new_node = model()->other_node()->children()[2].get();
   EXPECT_EQ(BookmarkNode::FOLDER, new_node->type());
   EXPECT_EQ(u"new_F", new_node->GetTitle());
   // The node should have one child.
@@ -452,7 +450,8 @@ TEST_F(BookmarkEditorViewTest, MoveFolder) {
 // Verifies the title of a new folder is updated correctly if ApplyEdits() is
 // is invoked while focus is still on the text field.
 TEST_F(BookmarkEditorViewTest, NewFolderTitleUpdatedOnCommit) {
-  const BookmarkNode* parent = model_->bookmark_bar_node()->children()[2].get();
+  const BookmarkNode* parent =
+      model()->bookmark_bar_node()->children()[2].get();
 
   CreateEditor(profile_.get(), parent,
                BookmarkEditor::EditDetails::AddNodeInFolder(parent, 1, GURL(),
@@ -571,8 +570,8 @@ TEST_F(BookmarkEditorViewTest, ConcurrentDeleteDuringConfirmationDialog) {
       base::BindLambdaForTesting([=](const bookmarks::BookmarkNode* node) {
         // Before the user confirms the deletion, something else (e.g.
         // extension) could delete the very same bookmark.
-        this->model_->Remove(f11,
-                             bookmarks::metrics::BookmarkEditSource::kOther);
+        this->model()->Remove(f11,
+                              bookmarks::metrics::BookmarkEditSource::kOther);
         // Mimic the user confirming the deletion.
         return true;
       }));

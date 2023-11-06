@@ -46,8 +46,8 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/script_injection_tracker.h"
 #include "extensions/common/api/content_scripts.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -233,7 +233,9 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithContextType, ExtensionIframe) {
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_iframe")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptExtensionProcess) {
+// TODO(crbug.com/1488987): Very flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
+                       DISABLED_ContentScriptExtensionProcess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("content_scripts/extension_process"))
       << message_;
@@ -1384,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, MhtmlIframe) {
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(
       {
-        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "name": "ScriptInjectionTrackerBrowserTest - Declarative",
         "version": "1.0",
         "manifest_version": 3,
         "host_permissions": ["http://foo.com/*", "file://*"],
@@ -1636,7 +1638,7 @@ bool ContentScriptRelatedFrameTest::DidScriptRunInFrame(
     //   EXPECT_EQ(did_run, DidProcessRunContentScriptFromExtension(...))
     // because even if the given frame didn't have the script run, another frame
     // in the process may have.
-    EXPECT_TRUE(ContentScriptTracker::DidProcessRunContentScriptFromExtension(
+    EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
         *host->GetProcess(), extension_id_));
   }
 

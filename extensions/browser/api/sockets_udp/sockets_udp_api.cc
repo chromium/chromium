@@ -235,7 +235,8 @@ ExtensionFunction::ResponseAction SocketsUdpSendFunction::Work() {
   EXTENSION_FUNCTION_VALIDATE(params_);
   io_buffer_size_ = params_->data.size();
 
-  io_buffer_ = base::MakeRefCounted<net::IOBuffer>(params_->data.size());
+  io_buffer_ =
+      base::MakeRefCounted<net::IOBufferWithSize>(params_->data.size());
   base::ranges::copy(params_->data, io_buffer_->data());
 
   ResumableUDPSocket* socket = GetUdpSocket(params_->socket_id);

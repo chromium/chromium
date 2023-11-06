@@ -269,14 +269,6 @@ class TestAutofillClientTemplate : public T {
 
   void ShowAutofillSettings(PopupType popup_type) override {}
 
-  void ShowUnmaskPrompt(
-      const autofill::CreditCard& card,
-      const autofill::CardUnmaskPromptOptions& card_unmask_prompt_options,
-      base::WeakPtr<autofill::CardUnmaskDelegate> delegate) override {}
-
-  void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override {}
-
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override {
     return form_data_importer_->GetVirtualCardEnrollmentManager();
   }
@@ -327,25 +319,21 @@ class TestAutofillClientTemplate : public T {
   void ConfirmSaveIbanLocally(
       const Iban& iban,
       bool should_show_prompt,
-      AutofillClient::LocalSaveIbanPromptCallback callback) override {
+      AutofillClient::SaveIbanPromptCallback callback) override {
     confirm_save_iban_locally_called_ = true;
     offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
   }
 
-  void ShowWebauthnOfferDialog(
-      AutofillClient::WebauthnDialogCallback offer_dialog_callback) override {}
-
-  void ShowWebauthnVerifyPendingDialog(
-      AutofillClient::WebauthnDialogCallback verify_pending_dialog_callback)
-      override {}
-
-  void UpdateWebauthnOfferDialogWithError() override {}
+  void ConfirmUploadIbanToCloud(
+      const Iban& iban,
+      const LegalMessageLines& legal_message_lines,
+      bool should_show_prompt,
+      AutofillClient::SaveIbanPromptCallback callback) override {
+    confirm_upload_iban_to_cloud_called_ = true;
+    offer_to_save_iban_bubble_was_shown_ = should_show_prompt;
+  }
 
   bool CloseWebauthnDialog() override { return true; }
-
-  void OfferVirtualCardOptions(
-      const std::vector<CreditCard*>& candidates,
-      base::OnceCallback<void(const std::string&)> callback) override {}
 
 #else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -434,8 +422,7 @@ class TestAutofillClientTemplate : public T {
   }
 
   void UpdateAutofillPopupDataListValues(
-      const std::vector<std::u16string>& values,
-      const std::vector<std::u16string>& labels) override {}
+      base::span<const SelectOption> options) override {}
 
   std::vector<Suggestion> GetPopupSuggestions() const override { return {}; }
 
@@ -483,7 +470,7 @@ class TestAutofillClientTemplate : public T {
 
   bool IsPasswordManagerEnabled() override { return true; }
 
-  void DidFillOrPreviewForm(mojom::AutofillActionPersistence action_persistence,
+  void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override {}
 
@@ -622,11 +609,6 @@ class TestAutofillClientTemplate : public T {
 
   void set_should_save_autofill_profiles(bool value) {
     should_save_autofill_profiles_ = value;
-  }
-
-  void Reset() {
-    confirm_save_iban_locally_called_ = false;
-    offer_to_save_iban_bubble_was_shown_ = false;
   }
 
   bool ConfirmSaveCardLocallyWasCalled() {
@@ -795,6 +777,7 @@ class TestAutofillClientTemplate : public T {
   bool confirm_save_credit_card_to_cloud_called_ = false;
 
   bool confirm_save_iban_locally_called_ = false;
+  bool confirm_upload_iban_to_cloud_called_ = false;
 
   bool autofill_error_dialog_shown_ = false;
 

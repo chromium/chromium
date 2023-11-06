@@ -113,6 +113,7 @@ void NetworkDetailedView::OnInfoClicked() {
   if (info_bubble_tracker_.view()) {
     info_bubble_tracker_.view()->GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kCloseButtonClicked);
+    return;
   }
 
   auto info_bubble = std::make_unique<NetworkInfoBubble>(

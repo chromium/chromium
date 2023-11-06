@@ -74,6 +74,10 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/trusted_vault/features.h"
+#endif
+
 using content::WebContents;
 using l10n_util::GetStringFUTF16;
 using l10n_util::GetStringUTF16;
@@ -439,6 +443,9 @@ void PeopleHandler::OnExtendedAccountInfoRemoved(const AccountInfo& info) {
 base::Value::List PeopleHandler::GetStoredAccountsList() {
   base::Value::List accounts;
   bool populate_accounts_list = false;
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   populate_accounts_list =
       AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_);
@@ -449,7 +456,8 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   if (populate_accounts_list) {
     // If dice is enabled, show all the accounts.
     for (const auto& account : signin_ui_util::GetOrderedAccountsForDisplay(
-             profile_, /*restrict_to_accounts_eligible_for_sync=*/true)) {
+             identity_manager,
+             /*restrict_to_accounts_eligible_for_sync=*/true)) {
       accounts.Append(GetAccountValue(account));
     }
     return accounts;
@@ -462,7 +470,6 @@ base::Value::List PeopleHandler::GetStoredAccountsList() {
   // Chrome OS) or Lacros main profile (sync with a different account than the
   // device account is not allowed), then show only the primary account,
   // whether or not that account has consented to sync.
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
       identity_manager->GetPrimaryAccountInfo(ConsentLevel::kSignin));
   if (!primary_account_info.IsEmpty())
@@ -718,6 +725,15 @@ void PeopleHandler::HandlePauseSync(const base::Value::List& args) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void PeopleHandler::HandleStartKeyRetrieval(const base::Value::List& args) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(
+          trusted_vault::kChromeOSTrustedVaultUseWebUIDialog)) {
+    OpenDialogForSyncKeyRetrieval(
+        profile_, syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
+    return;
+  }
+#endif
+
   Browser* browser = chrome::FindBrowserWithTab(web_ui()->GetWebContents());
   if (!browser)
     return;

@@ -47,10 +47,13 @@ class ArcAdbdMonitorBridge
   // ConnectionObserver<mojom::AdbdMonitorInstance> overrides:
   void OnConnectionReady() override;
 
-  // Enable adb-over-usb and start the support daemon for testing.
+  // Enables adb-over-usb for testing.
   void EnableAdbOverUsbForTesting();
-  void OnStartArcVmAdbdTesting(chromeos::VoidDBusMethodCallback callback);
-  void OnStopArcVmAdbdTesting(chromeos::VoidDBusMethodCallback callback);
+
+  // Mostly the same as |AdbdStarted| / |AdbdStopped|, but takes a callback for
+  // testing.
+  void OnAdbdStartedForTesting(chromeos::VoidDBusMethodCallback callback);
+  void OnAdbdStoppedForTesting(chromeos::VoidDBusMethodCallback callback);
 
   static void EnsureFactoryBuilt();
 

@@ -63,7 +63,7 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
     //   frame.
     SECURITY_DCHECK(!frame_ ||
                     (frame_->DomWindow() == this && frame_->GetPage()));
-    return frame_;
+    return frame_.Get();
   }
 
   // GarbageCollected overrides:

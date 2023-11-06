@@ -1,0 +1,22 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash",
+      "chromeos_lacros",
+      "fuchsia"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "DefaultFileSystemWriteGuardSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.file_system_write_guard": {}
+        }
+      }
+    ]
+  }
+]

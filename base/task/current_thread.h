@@ -215,7 +215,7 @@ class BASE_EXPORT CurrentUIThread : public CurrentThread {
 
 #if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
   static_assert(
-      std::is_base_of<WatchableIOMessagePumpPosix, MessagePumpForUI>::value,
+      std::is_base_of_v<WatchableIOMessagePumpPosix, MessagePumpForUI>,
       "CurrentThreadForUI::WatchFileDescriptor is supported only"
       "by MessagePumpLibevent and MessagePumpGlib implementations.");
   bool WatchFileDescriptor(int fd,

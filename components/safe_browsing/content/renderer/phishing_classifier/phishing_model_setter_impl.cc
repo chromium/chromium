@@ -83,6 +83,17 @@ void PhishingModelSetterImpl::SetPhishingFlatBufferModel(
   }
 }
 
+void PhishingModelSetterImpl::AttachImageEmbeddingModel(
+    base::File image_embedding_model) {
+  Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
+
+  if (!scorer) {
+    return;
+  }
+
+  scorer->AttachImageEmbeddingModel(std::move(image_embedding_model));
+}
+
 void PhishingModelSetterImpl::ClearScorer() {
   ScorerStorage::GetInstance()->ClearScorer();
 }

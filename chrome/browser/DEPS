@@ -139,7 +139,6 @@ include_rules = [
   "+components/embedder_support",
   "+components/encrypted_messages",
   "+components/enterprise",
-  "+components/environment_integrity/android",
   "+components/error_page/content/browser",
   "+components/exo",
   "+components/external_intents",
@@ -237,6 +236,7 @@ include_rules = [
   "+components/optimization_guide",
   "+components/optimization_guide/optimization_guide_internals",
   "+components/origin_trials",
+  "+components/os_crypt/async",
   "+components/os_crypt/sync",
   "+components/ownership",
   "+components/page_image_service",
@@ -417,6 +417,7 @@ include_rules = [
   "+media/base",  # For media switches
   "+media/capabilities", # For InMemoryVideoDecodeStatsDB
   "+media/cdm",
+  "+media/gpu/buildflags.h",
   "+media/remoting/device_capability_checker.h",
   "+media/capture",
   "+media/midi",  # For midi switches
@@ -607,7 +608,6 @@ specific_include_rules = {
     "+components/services/storage/shared_storage/shared_storage_manager.h",
   ],
   "render_view_context_menu_browsertest.cc" : [
-    "+components/compose/buildflags.h",
     "+third_party/libwebp/src/src/webp/decode.h",
   ],
   "webauth_interactive_uitest.cc": [

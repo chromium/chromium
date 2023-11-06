@@ -1,9 +1,11 @@
 This is a testharness.js-based test.
-PASS undefined
-PASS null
-PASS number
-PASS boolean
-FAIL symbol assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL object coercion (abrupt completion) assert_unreached: Should have rejected: undefined Reached unreachable code
+[PASS] undefined
+[PASS] null
+[PASS] number
+[PASS] boolean
+[FAIL] symbol
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] object coercion (abrupt completion)
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

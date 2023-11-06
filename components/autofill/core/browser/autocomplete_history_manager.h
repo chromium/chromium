@@ -15,7 +15,7 @@
 #include "components/autofill/core/browser/autofill_subject.h"
 #include "components/autofill/core/browser/single_field_form_filler.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/webdata/autofill_entry.h"
+#include "components/autofill/core/browser/webdata/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -82,7 +82,7 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   // Sends the autocomplete |suggestions| to the |query_handler|'s handler for
   // display in the associated Autofill popup. The parameter may be empty if
   // there are no new autocomplete additions.
-  void SendSuggestions(const std::vector<AutofillEntry>& entries,
+  void SendSuggestions(const std::vector<AutocompleteEntry>& entries,
                        const QueryHandler& query_handler);
 
   // Cancels all outstanding queries and clears out the |pending_queries_| map.
@@ -134,8 +134,8 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // Cached results of the last batch of autocomplete suggestions.
   // Key are the suggestions' values, and values are the associated
-  // AutofillEntry.
-  std::map<std::u16string, AutofillEntry> last_entries_;
+  // AutocompletEntry.
+  std::map<std::u16string, AutocompleteEntry> last_entries_;
 
   // Whether the service is associated with an off-the-record browser context.
   bool is_off_the_record_ = false;

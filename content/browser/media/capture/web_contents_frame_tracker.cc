@@ -29,6 +29,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_util.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -431,24 +432,33 @@ void WebContentsFrameTracker::SetWebContentsAndContextFromRoutingId(
   OnPossibleTargetChange();
 }
 
-void WebContentsFrameTracker::Crop(
-    const base::Token& crop_id,
-    uint32_t crop_version,
-    base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
+void WebContentsFrameTracker::ApplySubCaptureTarget(
+    media::mojom::SubCaptureTargetType type,
+    const base::Token& target_token,
+    uint32_t sub_capture_target_version,
+    base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+        callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  if (crop_version_ >= crop_version) {
+  if (sub_capture_target_version_ >= sub_capture_target_version) {
     // This will trigger a BadMessage from MediaStreamDispatcherHost.
     // (MediaStreamDispatcherHost knows the capturer, whereas here we know
     // the capturee.)
     std::move(callback).Run(
-        media::mojom::CropRequestResult::kNonIncreasingCropVersion);
+        media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion);
     return;
   }
 
-  crop_id_ = crop_id;
-  crop_version_ = crop_version;
+  if (type != media::mojom::SubCaptureTargetType::kCropTarget) {
+    // TODO(crbug.com/1418194): Implement.
+    std::move(callback).Run(
+        media::mojom::ApplySubCaptureTargetResult::kNotImplemented);
+    return;
+  }
+
+  crop_id_ = target_token;
+  sub_capture_target_version_ = sub_capture_target_version;
 
   // If we don't have a target yet, we can store the crop ID but cannot actually
   // crop yet.
@@ -461,18 +471,21 @@ void WebContentsFrameTracker::Crop(
   device_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const viz::VideoCaptureTarget& target, uint32_t crop_version,
-             base::OnceCallback<void(media::mojom::CropRequestResult)> callback,
+          [](const viz::VideoCaptureTarget& target,
+             uint32_t sub_capture_target_version,
+             base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+                 callback,
              base::WeakPtr<WebContentsVideoCaptureDevice> device) {
             if (!device) {
               std::move(callback).Run(
-                  media::mojom::CropRequestResult::kErrorGeneric);
+                  media::mojom::ApplySubCaptureTargetResult::kErrorGeneric);
               return;
             }
-            device->OnTargetChanged(target, crop_version);
-            std::move(callback).Run(media::mojom::CropRequestResult::kSuccess);
+            device->OnTargetChanged(target, sub_capture_target_version);
+            std::move(callback).Run(
+                media::mojom::ApplySubCaptureTargetResult::kSuccess);
           },
-          target, crop_version_, std::move(callback), device_));
+          target, sub_capture_target_version_, std::move(callback), device_));
 }
 
 void WebContentsFrameTracker::SetWebContentsAndContextForTesting(
@@ -515,7 +528,7 @@ void WebContentsFrameTracker::OnPossibleTargetChange() {
     device_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WebContentsVideoCaptureDevice::OnTargetChanged, device_,
-                       std::move(target), crop_version_));
+                       std::move(target), sub_capture_target_version_));
   }
 
   // Note: MouseCursorOverlayController runs on the UI thread. SetTargetView()

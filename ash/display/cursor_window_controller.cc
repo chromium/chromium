@@ -9,6 +9,7 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/constants/ash_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/curtain/security_curtain_controller.h"
@@ -248,12 +249,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 
 CursorWindowController::CursorWindowController()
     : delegate_(new CursorWindowDelegate()),
-      is_cursor_motion_blur_enabled_(
-          base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kAshEnableCursorMotionBlur)),
-      // TODO(b/296641218): Find another way to make sure gpu process is fully
-      // initialized first before updating cursor view.
-      start_time_(base::TimeTicks::Now()) {}
+      is_fast_ink_enabled_(features::IsFastInkForSoftwareCursorEnabled()) {}
 
 CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
@@ -292,10 +288,6 @@ void CursorWindowController::SetCursorColor(SkColor cursor_color) {
 }
 
 bool CursorWindowController::ShouldEnableCursorCompositing() {
-  if (CanEnableMotionBlur()) {
-    return true;
-  }
-
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kForceShowCursor)) {
     return false;
@@ -518,7 +510,7 @@ void CursorWindowController::SetContainer(aura::Window* container) {
   bounds_in_screen_ = display_.bounds();
   rotation_ = display_.rotation();
 
-  if (CanEnableMotionBlur()) {
+  if (is_fast_ink_enabled_) {
     UpdateCursorView();
   } else {
     delegate_->SetCursorWindow(nullptr);
@@ -614,11 +606,9 @@ void CursorWindowController::UpdateCursorImage() {
   delegate_->SetCursorImage(images[0].size(), images);
 
   if (cursor_view_widget_) {
-    // TODO(b/303325856): cursor view doesn't support animated cursor
-    // images.
     static_cast<CursorView*>(cursor_view_widget_->GetContentsView())
-        ->SetCursorImage(delegate_->cursor_images()[0], delegate_->size(),
-                         hot_point_);
+        ->SetCursorImages(delegate_->cursor_images(), delegate_->size(),
+                          hot_point_);
   }
   if (cursor_window_) {
     cursor_window_->SetBounds(gfx::Rect(delegate_->size()));
@@ -649,19 +639,13 @@ void CursorWindowController::UpdateCursorView() {
     return;
   }
 
-  cursor_view_widget_ =
-      CursorView::Create(aura::Env::GetInstance()->last_mouse_location(),
-                         is_cursor_motion_blur_enabled_, container_);
+  cursor_view_widget_ = CursorView::Create(
+      aura::Env::GetInstance()->last_mouse_location(), container_);
   UpdateCursorImage();
 }
 
 const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
   return delegate_->cursor_images()[0];
-}
-
-bool CursorWindowController::CanEnableMotionBlur() const {
-  return is_cursor_motion_blur_enabled_ &&
-         base::TimeTicks::Now() - start_time_ > base::Seconds(5);
 }
 
 }  // namespace ash

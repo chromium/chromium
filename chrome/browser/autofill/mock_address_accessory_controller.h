@@ -47,6 +47,13 @@ class MockAddressAccessoryController
               (autofill::AccessoryAction toggled_action, bool enabled),
               (override));
   MOCK_METHOD(void, RefreshSuggestions, (), (override));
+
+  base::WeakPtr<AddressAccessoryController> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockAddressAccessoryController> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_MOCK_ADDRESS_ACCESSORY_CONTROLLER_H_

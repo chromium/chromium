@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/test/base/js2gtest.gni")
+import("//chrome/test/base/ash/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/polymer/html_to_js.gni")
@@ -61,6 +61,7 @@ js_type_check("closure_compile_local") {
     ":pin_setup",
     ":placeholder",
     ":recommend_apps",
+    ":remote_activity_notification",
     ":saml_confirm_password",
     ":signin_fatal_error",
     ":smart_privacy_protection",
@@ -473,6 +474,7 @@ js_library("oobe_reset") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/oobe_reset.js" ]
   deps = [
     "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:multi_step_behavior",
     "../../components/behaviors:oobe_dialog_host_behavior",
     "../../components/behaviors:oobe_i18n_behavior",
     "../../components/buttons:oobe_text_button",
@@ -481,6 +483,7 @@ js_library("oobe_reset") {
     "//ash/webui/common/resources:util",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list = [ "//ui/webui/resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer_externs.js" ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -618,6 +621,19 @@ js_library("recommend_apps") {
     "//ash/webui/common/resources:load_time_data.m",
   ]
   externs_list = [ "$externs_path/webview_tag.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("remote_activity_notification") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/remote_activity_notification.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/buttons:oobe_text_button",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
   extra_deps = [ ":web_components" ]
 }
 
@@ -801,6 +817,7 @@ html_to_js("web_components") {
     "pin_setup.js",
     "placeholder.js",
     "recommend_apps.js",
+    "remote_activity_notification.js",
     "saml_confirm_password.js",
     "signin_fatal_error.js",
     "smart_privacy_protection.js",

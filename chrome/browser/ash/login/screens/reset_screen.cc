@@ -380,7 +380,7 @@ void ResetScreen::OnPowerwash() {
         base::Seconds(10));
   } else {
     VLOG(1) << "Starting Powerwash";
-    SessionManagerClient::Get()->StartDeviceWipe();
+    SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
   }
 }
 

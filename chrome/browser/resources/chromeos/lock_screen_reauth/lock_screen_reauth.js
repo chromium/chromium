@@ -221,7 +221,7 @@ class LockReauth extends LockReauthBase {
   }
 
   /**
-   * Loads the authentication parameter into the iframe.
+   * Loads the authentication parameters.
    * @param {!Object} data authenticator parameters bag.
    */
   loadAuthenticator(data) {

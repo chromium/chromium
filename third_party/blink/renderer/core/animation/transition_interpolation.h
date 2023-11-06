@@ -77,13 +77,17 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
 
   const PropertyHandle& GetProperty() const final { return property_; }
 
-  std::unique_ptr<TypedInterpolationValue> GetInterpolatedValue() const;
+  TypedInterpolationValue* GetInterpolatedValue() const;
 
   void Interpolate(int iteration, double fraction) final;
 
   void Trace(Visitor* visitor) const override {
+    visitor->Trace(start_);
+    visitor->Trace(end_);
+    visitor->Trace(merge_);
     visitor->Trace(compositor_start_);
     visitor->Trace(compositor_end_);
+    visitor->Trace(cached_interpolable_value_);
     Interpolation::Trace(visitor);
   }
 
@@ -101,7 +105,7 @@ class CORE_EXPORT TransitionInterpolation : public Interpolation {
 
   mutable absl::optional<double> cached_fraction_;
   mutable int cached_iteration_ = 0;
-  mutable std::unique_ptr<InterpolableValue> cached_interpolable_value_;
+  mutable Member<InterpolableValue> cached_interpolable_value_;
 };
 
 template <>

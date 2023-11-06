@@ -254,7 +254,7 @@ void AddSuccessAndFailureCallbacks(
     APIRequestHandler& request_handler,
     binding::ResultModifierFunction result_modifier,
     base::WeakPtr<APIBindingHooks> weak_ptr,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     APIBindingHooks::RequestResult& result) {
   DCHECK(!arguments->empty());
 
@@ -345,7 +345,7 @@ APIBindingHooks::RequestResult APIBindingHooks::RunHooks(
     const std::string& method_name,
     v8::Local<v8::Context> context,
     const APISignature* signature,
-    std::vector<v8::Local<v8::Value>>* arguments,
+    v8::LocalVector<v8::Value>* arguments,
     const APITypeReferenceMap& type_refs) {
   binding::ResultModifierFunction result_modifier;
   // Easy case: a native custom hook.
@@ -490,7 +490,7 @@ void APIBindingHooks::CompleteHandleRequest(int request_id,
     DCHECK(error->IsString());
 
     // In the case of an error we don't respond with any arguments.
-    std::vector<v8::Local<v8::Value>> response_list;
+    v8::LocalVector<v8::Value> response_list(arguments->isolate());
     request_handler_->CompleteRequest(
         request_id, response_list,
         gin::V8ToString(arguments->isolate(), error));
@@ -528,10 +528,9 @@ void APIBindingHooks::SetDelegate(
   delegate_ = std::move(delegate);
 }
 
-bool APIBindingHooks::UpdateArguments(
-    v8::Local<v8::Function> function,
-    v8::Local<v8::Context> context,
-    std::vector<v8::Local<v8::Value>>* arguments) {
+bool APIBindingHooks::UpdateArguments(v8::Local<v8::Function> function,
+                                      v8::Local<v8::Context> context,
+                                      v8::LocalVector<v8::Value>* arguments) {
   v8::Local<v8::Value> result;
   {
     v8::TryCatch try_catch(context->GetIsolate());
@@ -546,10 +545,9 @@ bool APIBindingHooks::UpdateArguments(
     }
     result = maybe_result.ToLocalChecked();
   }
-  std::vector<v8::Local<v8::Value>> new_args;
-  if (result.IsEmpty() ||
-      !gin::Converter<std::vector<v8::Local<v8::Value>>>::FromV8(
-          context->GetIsolate(), result, &new_args)) {
+  v8::LocalVector<v8::Value> new_args(context->GetIsolate());
+  if (result.IsEmpty() || !gin::Converter<v8::LocalVector<v8::Value>>::FromV8(
+                              context->GetIsolate(), result, &new_args)) {
     return false;
   }
   arguments->swap(new_args);

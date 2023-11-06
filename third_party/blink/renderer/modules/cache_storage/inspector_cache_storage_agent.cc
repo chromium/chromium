@@ -328,7 +328,8 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
 
     next_request_response.response_status = response->status_code;
     next_request_response.response_status_text = response->status_text;
-    next_request_response.response_time = response->response_time.ToDoubleT();
+    next_request_response.response_time =
+        response->response_time.InSecondsFSinceUnixEpoch();
     next_request_response.response_type = response->response_type;
     for (const auto& header : response->headers) {
       next_request_response.response_headers.Set(AtomicString(header.key),

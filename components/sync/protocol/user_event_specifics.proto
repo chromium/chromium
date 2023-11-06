@@ -16,7 +16,6 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "components/sync/protocol/user_consent_types.proto";
 import "components/sync/protocol/gaia_password_reuse.proto";
 
 message UserEventSpecifics {
@@ -93,80 +92,6 @@ message UserEventSpecifics {
     optional Interaction interaction = 3;
   }
 
-  // User consented to the usage of a feature or denied/revoked a consent.
-  // This is not used anymore; consents were migrated to a separate data type.
-  // The message has to stay though since the server must keep supporting legacy
-  // consent formats like this.
-  // Next id: 14
-  message UserConsent {
-    option deprecated = true;
-
-    // =========================================================================
-    // Fields common to all Chrome User Consents.
-    // =========================================================================
-
-    // The UI language Chrome is using, represented as the IETF language tag
-    // defined in BCP 47. The region subtag is not included when it adds no
-    // distinguishing information to the language tag (e.g. both "en-US"
-    // and "fr" are correct here).
-    optional string locale = 4;
-
-    // The local time on the client when the user consent was recorded. The time
-    // as measured by client is given in microseconds since Windows epoch. This
-    // is needed since user consent recording may happen when a client is
-    // offline.
-    optional int64 client_consent_time_usec = 12;
-
-    // =========================================================================
-    // The specific consent type. Add new User Consent types to
-    // user_consent_types.proto.
-    // =========================================================================
-
-    oneof consent {
-      UserConsentTypes.SyncConsent sync_consent = 7;
-
-      UserConsentTypes.ArcBackupAndRestoreConsent
-          arc_backup_and_restore_consent = 8;
-
-      UserConsentTypes.ArcGoogleLocationServiceConsent
-          arc_location_service_consent = 9;
-
-      UserConsentTypes.ArcPlayTermsOfServiceConsent
-          arc_play_terms_of_service_consent = 10;
-
-      UserConsentTypes.UnifiedConsent unified_consent = 13;
-    }
-    reserved "arc_metrics_and_usage_consent";
-    reserved 11;
-
-    reserved 6;
-    reserved "account_id";
-
-    // =========================================================================
-    // Deprecated fields. Please do not use them !
-    // =========================================================================
-
-    // Which feature does the consent apply to?
-    enum Feature {
-      FEATURE_UNSPECIFIED = 0;
-      CHROME_SYNC = 1;
-      PLAY_STORE = 2;
-      BACKUP_AND_RESTORE = 3;
-      GOOGLE_LOCATION_SERVICE = 4;
-      CHROME_UNIFIED_CONSENT = 5;
-      // TODO(markusheintz): ASSISTANT_ACTIVITY_CONTROL was only added as
-      // emergency fallback. Remove if not needed.
-      ASSISTANT_ACTIVITY_CONTROL = 6;
-    }
-    optional Feature feature = 1 [deprecated = true];
-    // Ids of the strings of the consent text presented to the user.
-    repeated int32 description_grd_ids = 2 [deprecated = true];
-    // Id of the string of the UI element the user clicked when consenting.
-    optional int32 confirmation_grd_id = 3 [deprecated = true];
-    // Was the consent for |feature| given or not given (denied/revoked)?
-    optional UserConsentTypes.ConsentStatus status = 5 [deprecated = true];
-  }
-
   // Logged when the user logs into Google, and at least once per 28d.
   message GaiaPasswordCaptured {
     enum EventTrigger {
@@ -201,12 +126,15 @@ message UserEventSpecifics {
     Test test_event = 8;
     LanguageDetection language_detection_event = 10 [deprecated = true];
     Translation translation_event = 11 [deprecated = true];
-    UserConsent user_consent = 12 [deprecated = true];
     // Happens when a user types their Google account password on another site.
     GaiaPasswordReuse gaia_password_reuse_event = 104;
     GaiaPasswordCaptured gaia_password_captured_event = 15;
     FlocIdComputed floc_id_computed_event = 16;
   }
+
   reserved "field_trial_event";
   reserved 9;
+
+  reserved "user_consent";
+  reserved 12;
 }

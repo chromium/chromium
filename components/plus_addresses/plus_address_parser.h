@@ -22,11 +22,12 @@ class PlusAddressParser {
   //         "facet": string,
   //         "plusEmail": {
   //           "plusAddress": string,
+  //           "plusMode": string,
   //         }
   //       }
   //   }
   //  This method returns nullopt otherwise or if `response` is an error.
-  static absl::optional<std::string> ParsePlusAddressFromV1Create(
+  static absl::optional<PlusProfile> ParsePlusProfileFromV1Create(
       const data_decoder::DataDecoder::ValueOrError response);
 
   //   If `response` is present, it should fit this schema (in TS notation):
@@ -36,6 +37,7 @@ class PlusAddressParser {
   //         "facet": string,
   //         "plusEmail": {
   //           "plusAddress": string,
+  //           "plusMode": string,
   //         }
   //       }[]
   //   }
@@ -47,17 +49,12 @@ class PlusAddressParser {
       const data_decoder::DataDecoder::ValueOrError response);
 
  private:
-  // Simple structure used only by this class to simplify parsing logic.
-  struct PlusProfile {
-    const std::string facet;
-    const std::string plus_address;
-  };
-
   // Create a PlusProfile for `dict` if it fits this schema (in TS notation):
   // {
   //   "facet": string,
   //   "plusEmail": {
-  //     "plusAddress": string
+  //     "plusAddress": string,
+  //     "plusMode": string,
   //   }
   // }
   // Returns nullopt if none of the values are parsed.
@@ -70,6 +67,7 @@ class PlusAddressParser {
   //   "facet": string,
   //   "plusEmail": {
   //     "plusAddress": string
+  //     "plusMode": string,
   //   }
   // }[]
   // The returned list only contains PlusProfiles which could be parsed.

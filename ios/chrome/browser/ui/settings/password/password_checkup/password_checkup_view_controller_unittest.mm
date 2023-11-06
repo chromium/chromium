@@ -10,7 +10,7 @@
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
-#import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_affiliation_service_factory.h"
@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
-#import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_commands.h"
@@ -43,7 +43,8 @@ using password_manager::TestPasswordStore;
 using password_manager::WarningType;
 
 // Test fixture for testing PasswordCheckupViewController class.
-class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
+class PasswordCheckupViewControllerTest
+    : public LegacyChromeTableViewControllerTest {
  protected:
   PasswordCheckupViewControllerTest() = default;
 
@@ -54,7 +55,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
         /*enabled_features=*/{password_manager::features::kIOSPasswordCheckup},
         /*disabled_features=*/{});
 
-    ChromeTableViewControllerTest::SetUp();
+    LegacyChromeTableViewControllerTest::SetUp();
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -97,7 +98,7 @@ class PasswordCheckupViewControllerTest : public ChromeTableViewControllerTest {
             .get());
   }
 
-  ChromeTableViewController* InstantiateController() override {
+  LegacyChromeTableViewController* InstantiateController() override {
     return [[PasswordCheckupViewController alloc]
         initWithStyle:ChromeTableViewStyle()];
   }

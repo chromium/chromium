@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -303,18 +304,22 @@ bool HttpAuthCache::Remove(
   return false;
 }
 
-void HttpAuthCache::ClearEntriesAddedBetween(base::Time begin_time,
-                                             base::Time end_time) {
-  if (begin_time.is_min() && end_time.is_max()) {
+void HttpAuthCache::ClearEntriesAddedBetween(
+    base::Time begin_time,
+    base::Time end_time,
+    base::RepeatingCallback<bool(const GURL&)> url_matcher) {
+  if (begin_time.is_min() && end_time.is_max() && !url_matcher) {
     ClearAllEntries();
     return;
   }
-  base::EraseIf(entries_,
-                [begin_time, end_time](EntryMap::value_type& entry_map_pair) {
-                  Entry& entry = entry_map_pair.second;
-                  return entry.creation_time_ >= begin_time &&
-                         entry.creation_time_ < end_time;
-                });
+  base::EraseIf(entries_, [begin_time, end_time,
+                           url_matcher](EntryMap::value_type& entry_map_pair) {
+    Entry& entry = entry_map_pair.second;
+    return entry.creation_time_ >= begin_time &&
+           entry.creation_time_ < end_time &&
+           (url_matcher ? url_matcher.Run(entry.scheme_host_port().GetURL())
+                        : true);
+  });
 }
 
 void HttpAuthCache::ClearAllEntries() {

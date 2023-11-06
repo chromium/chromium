@@ -75,13 +75,9 @@ bool CC_EXPORT LayerShouldBeSkippedForDrawPropertiesComputation(
     LayerImpl* layer,
     const PropertyTrees* property_trees);
 
-bool CC_EXPORT IsLayerBackFaceVisible(LayerImpl* layer,
-                                      int transform_tree_index,
-                                      const PropertyTrees* property_trees);
-
-bool CC_EXPORT IsLayerBackFaceVisible(Layer* layer,
-                                      int transform_tree_index,
-                                      const PropertyTrees* property_trees);
+bool CC_EXPORT
+IsLayerBackFaceVisibleForTesting(const LayerImpl* layer,
+                                 const PropertyTrees* property_trees);
 
 #if DCHECK_IS_ON()
 // Checks and logs if double background blur exists in any layers. Returns

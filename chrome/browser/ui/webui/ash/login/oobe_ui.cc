@@ -103,6 +103,7 @@
 #include "chrome/browser/ui/webui/ash/login/quick_start_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recommend_apps_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/recovery_eligibility_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
 #include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
@@ -151,6 +152,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "remoting/host/chromeos/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -193,7 +195,6 @@ constexpr char kLogo24PX1XSvgPath[] = "logo_24px-1x.svg";
 constexpr char kLogo24PX2XSvgPath[] = "logo_24px-2x.svg";
 constexpr char kSyncConsentIcons[] = "sync-consent-icons.html";
 constexpr char kSyncConsentIconsJs[] = "sync-consent-icons.m.js";
-// Project Simon TODO(b/269117729) - Rename with final names.
 constexpr char kWelcomeBackdrop[] = "internal_assets/welcome_backdrop.svg";
 #endif
 
@@ -208,7 +209,7 @@ void AddProductLogoResources(content::WebUIDataSource* source) {
   source->AddResourcePath(kProductLogoPath, IDR_PRODUCT_LOGO_64);
 }
 
-void AddProjectSimonResources(content::WebUIDataSource* source) {
+void AddBootAnimationResources(content::WebUIDataSource* source) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath(kWelcomeBackdrop, IDR_CROS_OOBE_WELCOME_BACKDROP);
 #endif
@@ -309,8 +310,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
                      features::IsOobeJellyModalEnabled());
-  // TODO (b/269117729) Cleanup OobeSimon
-  source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
+  source->AddBoolean("isBootAnimationEnabled",
+                     features::IsBootAnimationEnabled());
   source->AddBoolean("isOobeAssistantEnabled",
                      !features::IsOobeSkipAssistantEnabled());
   source->AddBoolean("isOobeGaiaInfoScreenEnabled",
@@ -345,10 +346,14 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isPasswordlessGaiaEnabledForConsumers",
                      features::IsPasswordlessGaiaEnabledForConsumers());
 
+  source->AddBoolean("isRemoteActivityNotificationEnabled",
+                     base::FeatureList::IsEnabled(
+                         remoting::features::kEnableCrdAdminRemoteAccessV2));
+
   // Configure shared resources
   AddProductLogoResources(source);
-  if (ash::features::IsOobeSimonEnabled()) {
-    AddProjectSimonResources(source);
+  if (ash::features::IsBootAnimationEnabled()) {
+    AddBootAnimationResources(source);
   }
 
   quick_unlock::AddFingerprintResources(source);
@@ -568,6 +573,12 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<CryptohomeRecoveryScreenHandler>());
 
+  if (base::FeatureList::IsEnabled(
+          remoting::features::kEnableCrdAdminRemoteAccessV2)) {
+    AddScreenHandler(
+        std::make_unique<RemoteActivityNotificationScreenHandler>());
+  }
+
   Profile* const profile = Profile::FromWebUI(web_ui());
   // Set up the chrome://theme/ source, for Chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
@@ -771,9 +782,8 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
   if (features::IsOobeJellyModalEnabled()) {
     oobeClasses += "jelly-modal-enabled ";
   }
-  // TODO (b/269117729) Cleanup OobeSimon
-  if (features::IsOobeSimonEnabled()) {
-    oobeClasses += "simon-enabled ";
+  if (features::IsBootAnimationEnabled()) {
+    oobeClasses += "boot-animation-enabled ";
   }
   localized_strings.Set("oobeClasses", oobeClasses);
 

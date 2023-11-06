@@ -33,7 +33,7 @@ class CONTENT_EXPORT OriginTrialStateHostImpl
 
   // mojom::OriginTrialStateHost methods
   void ApplyFeatureDiffForOriginTrial(
-      base::flat_map<::blink::mojom::RuntimeFeatureState,
+      base::flat_map<::blink::mojom::RuntimeFeature,
                      ::blink::mojom::OriginTrialFeatureStatePtr>
           origin_trial_features) override;
   void EnablePersistentTrial(

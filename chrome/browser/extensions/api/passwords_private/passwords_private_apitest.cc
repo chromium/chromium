@@ -28,12 +28,19 @@
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/switches.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/time_format.h"
+
+using policy::PolicyMap;
+using testing::NiceMock;
 
 namespace extensions {
 
@@ -63,7 +70,26 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
                                                            test_delegate_);
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    ExtensionApiTest::SetUpInProcessBrowserTestFixture();
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
+  void UpdateProviderPolicy(const PolicyMap& policy) {
+    PolicyMap policy_with_defaults = policy.Clone();
+#if BUILDFLAG(IS_CHROMEOS)
+    SetEnterpriseUsersDefaults(&policy_with_defaults);
+#endif
+    policy_provider_.UpdateChromePolicy(policy_with_defaults);
+  }
+
  protected:
+  NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
+
   bool RunPasswordsSubtest(const std::string& subtest) {
     const std::string extension_url = "main.html?" + subtest;
     return RunExtensionTest("passwords_private",
@@ -175,6 +201,34 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, AddPasswordWhenOperationFails) {
   EXPECT_TRUE(RunPasswordsSubtest("addPasswordWhenOperationFails")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       AddPasswordOperationDisabledByPolicy) {
+  // Set kPasswordManagerEnabled policy which corresponds to
+  // password_manager::prefs::kCredentialsEnableService.
+  PolicyMap policies;
+  policies.Set(policy::key::kPasswordManagerEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_TRUE(RunPasswordsSubtest("addPasswordOperationDisabledByPolicy"))
+      << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
+                       ImportPasswordsOperationDisabledByPolicy) {
+  // Set kPasswordManagerEnabled policy which corresponds to
+  // password_manager::prefs::kCredentialsEnableService.
+  PolicyMap policies;
+  policies.Set(policy::key::kPasswordManagerEnabled,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+
+  EXPECT_TRUE(RunPasswordsSubtest("importPasswordsOperationDisabledByPolicy"))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,

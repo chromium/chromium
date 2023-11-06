@@ -543,13 +543,15 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButtonVisibleLongQuery) {
   PressAndReleaseKey(ui::VKEY_A);
 
   EXPECT_TRUE(GetSearchPage()->GetVisible());
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   for (int i = 0; i < 100; ++i) {
     PressAndReleaseKey(ui::VKEY_A);
   }
   // Close button should be visible for long queries and within search box
   // view bounds.
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box_view->GetBoundsInScreen().Contains(
       search_box_view->close_button()->GetBoundsInScreen()));
 }
@@ -623,13 +625,13 @@ TEST_F(AppListBubbleViewTest, SearchBoxShowsAssistantButton) {
 
   // By default the assistant button is visible.
   SearchBoxView* view = GetSearchBoxView();
-  EXPECT_TRUE(view->assistant_button()->GetVisible());
-  EXPECT_FALSE(view->close_button()->GetVisible());
+  EXPECT_TRUE(view->assistant_button_container()->GetVisible());
+  EXPECT_FALSE(view->filter_and_close_button_container()->GetVisible());
 
   // Typing text shows the close button instead.
   PressAndReleaseKey(ui::VKEY_A);
-  EXPECT_FALSE(view->assistant_button()->GetVisible());
-  EXPECT_TRUE(view->close_button()->GetVisible());
+  EXPECT_FALSE(view->assistant_button_container()->GetVisible());
+  EXPECT_TRUE(view->filter_and_close_button_container()->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, ClickingAssistantButtonShowsAssistantPage) {
@@ -678,7 +680,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   // Close button is visible after typing text.
   SearchBoxView* search_box_view = GetSearchBoxView();
   search_box_view->GetWidget()->LayoutRootViewIfNecessary();
-  EXPECT_TRUE(search_box_view->close_button()->GetVisible());
+  EXPECT_TRUE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_FALSE(search_box_view->search_box()->GetText().empty());
 
   // Clicking the close button clears the search, but the search box is still
@@ -686,7 +689,8 @@ TEST_F(AppListBubbleViewTest, SearchBoxCloseButton) {
   LeftClickOn(search_box_view->close_button());
   EXPECT_EQ(std::vector<std::u16string>({u""}),
             app_list_client->GetAndResetPastSearchQueries());
-  EXPECT_FALSE(search_box_view->close_button()->GetVisible());
+  EXPECT_FALSE(
+      search_box_view->filter_and_close_button_container()->GetVisible());
   EXPECT_TRUE(search_box_view->search_box()->GetText().empty());
   EXPECT_TRUE(search_box_view->search_box()->HasFocus());
   EXPECT_TRUE(search_box_view->is_search_box_active());
@@ -1642,8 +1646,8 @@ class AppListBubbleViewWithQsRevampTest
                      ->IsBubbleShown()
                : GetPrimaryUnifiedSystemTray()->IsMessageCenterBubbleShown();
   }
-
-  bool IsQsRevampEnabled() { return GetParam(); }
+  // TODO(b/305075031) clean up after the flag is removed.
+  bool IsQsRevampEnabled() { return true; }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

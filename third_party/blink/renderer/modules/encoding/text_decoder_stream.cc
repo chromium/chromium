@@ -64,7 +64,7 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
                      static_cast<uint32_t>(array_piece.ByteLength()),
                      WTF::FlushBehavior::kDoNotFlush, controller,
                      exception_state);
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
   // Implements the "encode and flush" algorithm.
@@ -73,10 +73,10 @@ class TextDecoderStream::Transformer final : public TransformStreamTransformer {
     DecodeAndEnqueue(nullptr, 0u, WTF::FlushBehavior::kDataEOF, controller,
                      exception_state);
 
-    return ScriptPromise::CastUndefined(script_state_);
+    return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
-  ScriptState* GetScriptState() override { return script_state_; }
+  ScriptState* GetScriptState() override { return script_state_.Get(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(script_state_);

@@ -6,9 +6,7 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
-#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/ptr_util.h"
@@ -29,20 +27,9 @@ constexpr gfx::Size kDisplaySize{1024, 768};
 
 }  // namespace
 
-// Tests are parameterized by feature QsRevamp.
-class PrivacyScreenFeaturePodControllerTest
-    : public AshTestBase,
-      public testing::WithParamInterface<bool> {
+class PrivacyScreenFeaturePodControllerTest : public AshTestBase {
  public:
-  PrivacyScreenFeaturePodControllerTest() {
-    if (IsQsRevampEnabled()) {
-      feature_list_.InitAndEnableFeature(features::kQsRevamp);
-    } else {
-      feature_list_.InitAndDisableFeature(features::kQsRevamp);
-    }
-  }
-
-  bool IsQsRevampEnabled() const { return GetParam(); }
+  PrivacyScreenFeaturePodControllerTest() = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -63,18 +50,13 @@ class PrivacyScreenFeaturePodControllerTest
   void TearDown() override {
     display_change_observer_.reset();
     tile_.reset();
-    button_.reset();
     controller_.reset();
     AshTestBase::TearDown();
   }
 
   void CreateButton() {
     controller_ = std::make_unique<PrivacyScreenFeaturePodController>();
-    if (IsQsRevampEnabled()) {
-      tile_ = controller_->CreateTile();
-    } else {
-      button_ = base::WrapUnique(controller_->CreateButton());
-    }
+    tile_ = controller_->CreateTile();
   }
 
   // Sets up the internal display to support privacy screen.
@@ -96,18 +78,13 @@ class PrivacyScreenFeaturePodControllerTest
     display_change_observer_->OnDisplayModeChanged(outputs);
   }
 
-  bool IsButtonVisible() {
-    return IsQsRevampEnabled() ? tile_->GetVisible() : button_->GetVisible();
-  }
+  bool IsButtonVisible() { return tile_->GetVisible(); }
 
-  bool IsButtonToggled() {
-    return IsQsRevampEnabled() ? tile_->IsToggled() : button_->IsToggled();
-  }
+  bool IsButtonToggled() { return tile_->IsToggled(); }
 
   void PressIcon() { controller_->OnIconPressed(); }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<display::test::ActionLogger> logger_;
   raw_ptr<display::test::TestNativeDisplayDelegate,
@@ -118,15 +95,10 @@ class PrivacyScreenFeaturePodControllerTest
   std::unique_ptr<display::DisplaySnapshot> owned_snapshot_;
 
   std::unique_ptr<PrivacyScreenFeaturePodController> controller_;
-  std::unique_ptr<FeaturePodButton> button_;
   std::unique_ptr<FeatureTile> tile_;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp,
-                         PrivacyScreenFeaturePodControllerTest,
-                         testing::Bool());
-
-TEST_P(PrivacyScreenFeaturePodControllerTest, NormalDisplay) {
+TEST_F(PrivacyScreenFeaturePodControllerTest, NormalDisplay) {
   ASSERT_FALSE(Shell::Get()->privacy_screen_controller()->IsSupported());
 
   // With a display that does not support privacy screen, the button is hidden.
@@ -134,7 +106,7 @@ TEST_P(PrivacyScreenFeaturePodControllerTest, NormalDisplay) {
   EXPECT_FALSE(IsButtonVisible());
 }
 
-TEST_P(PrivacyScreenFeaturePodControllerTest, PrivacyScreenDisplay) {
+TEST_F(PrivacyScreenFeaturePodControllerTest, PrivacyScreenDisplay) {
   CreateDisplayWithPrivacyScreen();
   auto* privacy_screen_controller = Shell::Get()->privacy_screen_controller();
   ASSERT_TRUE(privacy_screen_controller->IsSupported());

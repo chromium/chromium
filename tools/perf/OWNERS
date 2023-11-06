@@ -1,6 +1,7 @@
 # Overall OWNERS
 johnchen@chromium.org
 wenbinzhang@google.com
+maxqli@google.com
 
 # For gtest perf tests, perf data upload, and functional tests
 bsheedy@chromium.org

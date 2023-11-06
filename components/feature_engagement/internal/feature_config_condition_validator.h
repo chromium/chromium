@@ -17,6 +17,7 @@ class AvailabilityModel;
 struct Comparator;
 struct EventConfig;
 class EventModel;
+class TimeProvider;
 
 // A ConditionValidator that uses the FeatureConfigs as the source of truth.
 class FeatureConfigConditionValidator : public ConditionValidator {
@@ -39,7 +40,7 @@ class FeatureConfigConditionValidator : public ConditionValidator {
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
       const Configuration* configuration,
-      uint32_t current_day) const override;
+      const TimeProvider& current_day) const override;
   void NotifyIsShowing(
       const base::Feature& feature,
       const FeatureConfig& config,

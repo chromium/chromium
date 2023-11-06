@@ -82,10 +82,12 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
       media::VideoCaptureDevice::TakePhotoCallback callback) = 0;
   virtual void MaybeSuspendDevice() = 0;
   virtual void ResumeDevice() = 0;
-  virtual void Crop(
-      const base::Token& crop_id,
-      uint32_t crop_version,
-      base::OnceCallback<void(media::mojom::CropRequestResult)> callback) = 0;
+  virtual void ApplySubCaptureTarget(
+      media::mojom::SubCaptureTargetType type,
+      const base::Token& target,
+      uint32_t sub_capture_target_version,
+      base::OnceCallback<void(media::mojom::ApplySubCaptureTargetResult)>
+          callback) = 0;
   virtual void RequestRefreshFrame() = 0;
 
   // Methods for specific types of devices.

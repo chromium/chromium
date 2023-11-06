@@ -6,15 +6,15 @@
 
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
-#include "net/der/parse_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/pki/parse_values.h"
 
 namespace net::test {
 
 TEST(TimeConversionsTest, EncodeTimeAsGeneralizedTime) {
   // Fri, 24 Jun 2016 17:04:54 GMT
   base::Time time = base::Time::UnixEpoch() + base::Seconds(1466787894);
-  der::GeneralizedTime generalized_time;
+  bssl::der::GeneralizedTime generalized_time;
   ASSERT_TRUE(EncodeTimeAsGeneralizedTime(time, &generalized_time));
   EXPECT_EQ(2016, generalized_time.year);
   EXPECT_EQ(6, generalized_time.month);
@@ -55,7 +55,7 @@ TEST(TimeConversionsTest, EncodeTimeAsGeneralizedTime) {
 }
 
 TEST(TimeConversionsTest, GeneralizedTimeToTime) {
-  der::GeneralizedTime generalized_time;
+  bssl::der::GeneralizedTime generalized_time;
   generalized_time.year = 2016;
   generalized_time.month = 6;
   generalized_time.day = 24;
@@ -78,7 +78,7 @@ TEST(TimeConversionsTest, GeneralizedTimeToTime) {
 
 // A time from before the Windows epoch should work.
 TEST(TimeConversionsTest, TimeBeforeWindowsEpoch) {
-  der::GeneralizedTime generalized_time;
+  bssl::der::GeneralizedTime generalized_time;
   generalized_time.year = 1570;
   generalized_time.month = 1;
   generalized_time.day = 1;
@@ -100,7 +100,7 @@ TEST(TimeConversionsTest, TimeBeforeWindowsEpoch) {
 
 // A time in seconds larger than a 32 bit signed integer should work.
 TEST(TimeConversionsTest, TimeAfter32BitPosixMaxYear) {
-  der::GeneralizedTime generalized_time;
+  bssl::der::GeneralizedTime generalized_time;
   generalized_time.year = 2039;
   generalized_time.month = 1;
   generalized_time.day = 1;

@@ -21,8 +21,8 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline.h"
 
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text.h"
@@ -64,7 +64,7 @@ LayoutSVGInline::LayoutSVGInline(Element* element) : LayoutInline(element) {
 
 bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     return cursor.IsNotNull();
   }
@@ -72,17 +72,18 @@ bool LayoutSVGInline::IsObjectBoundingBoxValid() const {
 }
 
 // static
-void LayoutSVGInline::ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
                                                  gfx::RectF& bounds) {
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
-    const NGFragmentItem& item = *cursor.CurrentItem();
-    if (item.Type() == NGFragmentItem::kSvgText) {
+    const FragmentItem& item = *cursor.CurrentItem();
+    if (item.Type() == FragmentItem::kSvgText) {
       bounds.Union(cursor.Current().ObjectBoundingBox(cursor));
-    } else if (NGInlineCursor descendants = cursor.CursorForDescendants()) {
+    } else if (InlineCursor descendants = cursor.CursorForDescendants()) {
       for (; descendants; descendants.MoveToNext()) {
-        const NGFragmentItem& descendant_item = *descendants.CurrentItem();
-        if (descendant_item.Type() == NGFragmentItem::kSvgText)
+        const FragmentItem& descendant_item = *descendants.CurrentItem();
+        if (descendant_item.Type() == FragmentItem::kSvgText) {
           bounds.Union(descendants.Current().ObjectBoundingBox(cursor));
+        }
       }
     }
   }
@@ -92,7 +93,7 @@ gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
   gfx::RectF bounds;
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     cursor.MoveToIncludingCulledInline(*this);
     ObjectBoundingBoxForCursor(cursor, bounds);
   }
@@ -130,11 +131,11 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
-    NGInlineCursor cursor;
+    InlineCursor cursor;
     for (cursor.MoveToIncludingCulledInline(*this); cursor;
          cursor.MoveToNextForSameLayoutObject()) {
-      const NGFragmentItem& item = *cursor.CurrentItem();
-      if (item.Type() == NGFragmentItem::kSvgText) {
+      const FragmentItem& item = *cursor.CurrentItem();
+      if (item.Type() == FragmentItem::kSvgText) {
         quads.push_back(LocalToAbsoluteQuad(
             gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                 *this, cursor.Current().ObjectBoundingBox(cursor))),
@@ -180,7 +181,8 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
 
   if (diff.NeedsFullLayout()) {
     // The boundaries affect mask clip and clip path mask/clip.
-    if (StyleRef().MaskerResource() || StyleRef().HasClipPath()) {
+    const ComputedStyle& style = StyleRef();
+    if (style.HasMaskForSVG() || style.HasClipPath()) {
       SetNeedsPaintPropertyUpdate();
     }
     SetNeedsBoundariesUpdate();

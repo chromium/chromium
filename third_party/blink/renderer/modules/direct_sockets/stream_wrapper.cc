@@ -32,12 +32,12 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
       : UnderlyingSourceBase(readable_stream_wrapper->GetScriptState()),
         readable_stream_wrapper_(readable_stream_wrapper) {}
 
-  ScriptPromise Start(ScriptState* script_state) override {
+  ScriptPromise Start(ScriptState* script_state, ExceptionState&) override {
     readable_stream_wrapper_->SetController(Controller());
     return ScriptPromise::CastUndefined(script_state);
   }
 
-  ScriptPromise pull(ScriptState* script_state) override {
+  ScriptPromise Pull(ScriptState* script_state, ExceptionState&) override {
     readable_stream_wrapper_->Pull();
     return ScriptPromise::CastUndefined(script_state);
   }
@@ -218,7 +218,7 @@ WritableStreamWrapper::WritableStreamWrapper(ScriptState* script_state)
     : StreamWrapper(script_state) {}
 
 bool WritableStreamWrapper::Locked() const {
-  return WritableStream::IsLocked(writable_);
+  return WritableStream::IsLocked(writable_.Get());
 }
 
 void WritableStreamWrapper::Trace(Visitor* visitor) const {

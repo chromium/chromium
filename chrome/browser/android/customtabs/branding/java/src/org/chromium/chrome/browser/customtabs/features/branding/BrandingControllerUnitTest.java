@@ -47,38 +47,36 @@ import org.chromium.ui.widget.ToastManager;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Unit test for {@link BrandingController} and {@link SharedPreferencesBrandingTimeStorage}.
- */
+/** Unit test for {@link BrandingController} and {@link SharedPreferencesBrandingTimeStorage}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
+@Config(
+        manifest = Config.NONE,
         shadows = {ShadowSystemClock.class, ShadowPostTask.class, ShadowToast.class})
 @LooperMode(Mode.PAUSED)
 public class BrandingControllerUnitTest {
     private static final int TEST_BRANDING_CADENCE = 10_000;
     private static final int TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 1000;
 
-    @Rule
-    public MockitoRule mTestRule = MockitoJUnit.rule();
-    @Rule
-    public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
+    @Rule public MockitoRule mTestRule = MockitoJUnit.rule();
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    @Mock
-    ToolbarBrandingDelegate mToolbarBrandingDelegate;
+    @Mock ToolbarBrandingDelegate mToolbarBrandingDelegate;
 
     private BrandingController mBrandingController;
     private ShadowPostTask.TestImpl mShadowPostTaskImpl;
 
     @Before
     public void setup() {
-        mShadowPostTaskImpl = new ShadowPostTask.TestImpl() {
-            final Handler mHandler = new Handler(Looper.getMainLooper());
+        mShadowPostTaskImpl =
+                new ShadowPostTask.TestImpl() {
+                    final Handler mHandler = new Handler(Looper.getMainLooper());
 
-            @Override
-            public void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
-                mHandler.postDelayed(task, delay);
-            }
-        };
+                    @Override
+                    public void postDelayedTask(
+                            @TaskTraits int taskTraits, Runnable task, long delay) {
+                        mHandler.postDelayed(task, delay);
+                    }
+                };
         ShadowPostTask.setTestImpl(mShadowPostTaskImpl);
 
         SystemClock.setCurrentTimeMillis(TimeUtils.currentTimeMillis());
@@ -188,7 +186,9 @@ public class BrandingControllerUnitTest {
                 .assertShownRegularLocationBar(true);
 
         // BrandingController.TOTAL_BRANDING_DELAY_MS - TEST_MAX_TOOLBAR_BLANK_TIMEOUT = 800
-        assertEquals("Toast duration is different.", Toast.LENGTH_LONG,
+        assertEquals(
+                "Toast duration is different.",
+                Toast.LENGTH_LONG,
                 ShadowToast.getLatestToast().getDuration());
     }
 
@@ -287,9 +287,12 @@ public class BrandingControllerUnitTest {
     class BrandingCheckTester {
         public BrandingCheckTester newBrandingController() {
             Context context = ContextUtils.getApplicationContext();
-            mBrandingController = new BrandingController(
-                    new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
-                    context.getPackageName(), "appName", null);
+            mBrandingController =
+                    new BrandingController(
+                            new ContextThemeWrapper(context, R.style.Theme_Chromium_Activity),
+                            context.getPackageName(),
+                            "appName",
+                            null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
             mToolbarBrandingDelegate = mock(ToolbarBrandingDelegate.class);
@@ -313,13 +316,17 @@ public class BrandingControllerUnitTest {
         }
 
         public BrandingCheckTester assertBrandingDecisionMade(@BrandingDecision Integer decision) {
-            assertEquals("BrandingDecision is different.", decision,
+            assertEquals(
+                    "BrandingDecision is different.",
+                    decision,
                     mBrandingController.getBrandingDecisionForTest());
             return this;
         }
 
         public BrandingCheckTester assertShownToastBranding(boolean shown) {
-            assertEquals("Toast shown count does not match.", shown ? 1 : 0,
+            assertEquals(
+                    "Toast shown count does not match.",
+                    shown ? 1 : 0,
                     ShadowToast.shownToastCount());
             ToastManager.resetForTesting();
             return this;
@@ -350,7 +357,8 @@ public class BrandingControllerUnitTest {
     private void assertTotalNumberOfPackageRecorded(int sample) {
         String histogram = "CustomTabs.Branding.NumberOfClients";
         assertEquals(
-                String.format(Locale.US, "<%s> not recorded for count <%d>", histogram, sample), 1,
+                String.format(Locale.US, "<%s> not recorded for count <%d>", histogram, sample),
+                1,
                 RecordHistogram.getHistogramValueCountForTesting(histogram, sample));
     }
 }

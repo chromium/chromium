@@ -31,7 +31,7 @@ constexpr char kNeverExpireFileName[] = "flag-never-expire-list.json";
 // interpreted as a JSON value.
 base::Value ReadFileContentsAsJSON(const std::string& filename) {
   base::FilePath metadata_path;
-  base::PathService::Get(base::DIR_SOURCE_ROOT, &metadata_path);
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &metadata_path);
   JSONFileValueDeserializer deserializer(
       metadata_path.AppendASCII("chrome").AppendASCII("browser").AppendASCII(
           filename));
@@ -98,7 +98,6 @@ bool IsValidLookingOwner(base::StringPiece owner) {
   // Per the specification at the top of flag-metadata.json, an owner is one of:
   // 1) A string containing '@', which is treated as a full email address
   // 2) A string beginning with '//', which is a path to an OWNERS file
-  // 3) Any other string, which is the username part of an @chromium.org email
 
   const size_t at_pos = owner.find("@");
   if (at_pos != std::string::npos) {
@@ -119,23 +118,7 @@ bool IsValidLookingOwner(base::StringPiece owner) {
     return base::EndsWith(owner, "OWNERS");
   }
 
-  // Otherwise, look for something that seems like the username part of an
-  // @chromium.org email. The criteria here is that it must look like an RFC5322
-  // "atom", which is neatly defined as any printable character *outside* a
-  // specific set:
-  //   https://tools.ietf.org/html/rfc5322#section-3.2.3
-  //
-  // Note two extra wrinkles here:
-  // 1) while '.' IS NOT allowed in atoms by RFC5322 gmail and other mail
-  //    handlers do allow it, so this does not reject '.'.
-  // 2) while '/' IS allowed in atoms by RFC5322, this is not commonly done, and
-  //    checking for it here detects another common syntax error - namely
-  //    writing:
-  //      "owners": [ "foo/bar/OWNERS" ]
-  //    where
-  //      "owners": [ "//foo/bar/OWNERS" ]
-  //    is meant.
-  return owner.find_first_of(R"(()<>[]:;@\,/)") == std::string::npos;
+  return false;
 }
 
 std::string NormalizeName(const std::string& name) {

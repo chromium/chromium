@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/base_paths.h"
+#include "base/callback_list.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -23,7 +24,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -97,25 +97,25 @@ namespace content {
 namespace {
 
 #if BUILDFLAG(IS_POSIX)
-// Environment variable pointing to credential cache file.
+// Environment variable pointing to Kerberos credential cache file.
 constexpr char kKrb5CCEnvName[] = "KRB5CCNAME";
 // Environment variable pointing to Kerberos config file.
 constexpr char kKrb5ConfEnvName[] = "KRB5_CONFIG";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-constexpr char kKrb5CCFilePrefix[] = "FILE:";
-constexpr char kKrb5Directory[] = "kerberos";
-constexpr char kKrb5CCFile[] = "krb5cc";
-constexpr char kKrb5ConfFile[] = "krb5.conf";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
+// File paths to the Kerberos credentials cache and configuration. The `FILE:`
+// prefix describes the type of credentials cache used. The `/home/chronos/user`
+// subpath corresponds to a bind mount of the active user.
+constexpr char kKrb5CCFilePath[] = "FILE:/home/chronos/user/kerberos/krb5cc";
+constexpr char kKrb5ConfFilePath[] = "/home/chronos/user/kerberos/krb5.conf";
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool g_force_create_network_service_directly = false;
 mojo::Remote<network::mojom::NetworkService>* g_network_service_remote =
     nullptr;
 network::NetworkConnectionTracker* g_network_connection_tracker;
 bool g_network_service_is_responding = false;
-base::Time g_last_network_service_crash;
 
 // A directory name that is created below the http cache path and passed to the
 // network context when creating a network context with cache enabled.
@@ -338,22 +338,6 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
   return *storage;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-base::FilePath GetKerberosDir() {
-  base::FilePath dir;
-  base::PathService::Get(base::DIR_HOME, &dir);
-  return dir.Append(kKrb5Directory);
-}
-
-std::string GetKrb5CCEnvValue() {
-  return kKrb5CCFilePrefix + GetKerberosDir().Append(kKrb5CCFile).value();
-}
-
-std::string GetKrb5ConfEnvValue() {
-  return GetKerberosDir().Append(kKrb5ConfFile).value();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   TRACE_EVENT0("loading", "CreateInProcessNetworkService");
@@ -413,17 +397,20 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_POSIX)
-  // Send Kerberos environment variables to the network service.
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the network service is always out of process (unless
+  // --single-process is set on the command-line). In any case, we set Kerberos
+  // environment variables during the service initialization.
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
+                                               kKrb5CCFilePath));
+  network_service_params->environment.push_back(
+      network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
+                                               kKrb5ConfFilePath));
+#elif BUILDFLAG(IS_POSIX)
+  // Send Kerberos environment variables to the network service, if it's running
+  // in another process.
   if (IsOutOfProcessNetworkService()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5CCEnvName,
-                                                 GetKrb5CCEnvValue()));
-    network_service_params->environment.push_back(
-        network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName,
-                                                 GetKrb5ConfEnvValue()));
-#else
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     std::string value;
     if (env->HasVar(kKrb5CCEnvName)) {
@@ -436,7 +423,6 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
       network_service_params->environment.push_back(
           network::mojom::EnvironmentVariable::New(kKrb5ConfEnvName, value));
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -482,18 +468,17 @@ void BindNetworkChangeManagerReceiver(
   GetNetworkService()->GetNetworkChangeManager(std::move(receiver));
 }
 
-base::RepeatingClosureList& GetCrashHandlersList() {
-  static base::NoDestructor<base::RepeatingClosureList> s_list;
+base::RepeatingCallbackList<void(bool)>& GetProcessGoneHandlersList() {
+  static base::NoDestructor<base::RepeatingCallbackList<void(bool)>> s_list;
   return *s_list;
 }
 
-void OnNetworkServiceCrash() {
+void OnNetworkServiceProcessGone(bool crashed) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(g_network_service_remote);
   DCHECK(g_network_service_remote->is_bound());
-  DCHECK(!g_network_service_remote->is_connected());
-  g_last_network_service_crash = base::Time::Now();
-  GetCrashHandlersList().Notify();
+  DCHECK(!crashed || !g_network_service_remote->is_connected());
+  GetProcessGoneHandlersList().Notify(crashed);
 }
 
 // Parses the desired granularity of NetLog capturing specified by the command
@@ -561,11 +546,6 @@ int64_t GetNetMaximumFileSizeFromCommandLine(
   return max_size_bytes;
 }
 
-base::RepeatingClosure& OnNetworkServiceRestartedCbStorage() {
-  static base::SequenceLocalStorageSlot<base::RepeatingClosure> restarted_cb;
-  return restarted_cb.GetOrCreateValue();
-}
-
 }  // namespace
 
 class NetworkServiceInstancePrivate {
@@ -607,7 +587,7 @@ network::mojom::NetworkService* GetNetworkService() {
         mojo::PendingReceiver<network::mojom::NetworkService> receiver =
             g_network_service_remote->BindNewPipeAndPassReceiver();
         g_network_service_remote->set_disconnect_handler(
-            base::BindOnce(&OnNetworkServiceCrash));
+            base::BindOnce(&OnNetworkServiceProcessGone, /*crashed=*/true));
         if (IsInProcessNetworkService()) {
           CreateInProcessNetworkService(std::move(receiver));
         } else {
@@ -733,12 +713,12 @@ network::mojom::NetworkService* GetNetworkService() {
   return g_network_service_remote->get();
 }
 
-base::CallbackListSubscription RegisterNetworkServiceCrashHandler(
-    base::RepeatingClosure handler) {
+base::CallbackListSubscription RegisterNetworkServiceProcessGoneHandler(
+    NetworkServiceProcessGoneHandler handler) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   DCHECK(!handler.is_null());
 
-  return GetCrashHandlersList().Add(std::move(handler));
+  return GetProcessGoneHandlersList().Add(std::move(handler));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -816,14 +796,7 @@ void ShutDownNetworkService() {
 void RestartNetworkService() {
   ShutDownNetworkService();
   GetNetworkService();
-  if (OnNetworkServiceRestartedCbStorage()) {
-    OnNetworkServiceRestartedCbStorage().Run();
-  }
-}
-
-void OnRestartNetworkServiceForTesting(base::RepeatingClosure on_restart) {
-  DCHECK(!OnNetworkServiceRestartedCbStorage() || !on_restart);
-  OnNetworkServiceRestartedCbStorage() = std::move(on_restart);
+  OnNetworkServiceProcessGone(/*crashed=*/false);
 }
 
 namespace {

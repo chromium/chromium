@@ -35,7 +35,7 @@ class CORE_EXPORT Subscriber final : public ScriptWrappable,
   void error(ScriptState*, ScriptValue);
 
   // API attributes.
-  AbortSignal* signal() { return signal_; }
+  AbortSignal* signal() { return signal_.Get(); }
 
   void Trace(Visitor*) const override;
 

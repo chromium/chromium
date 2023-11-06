@@ -62,11 +62,17 @@ class TestTargetConfig : public TargetConfig {
   }
   JobLevel GetJobLevel() const override { return sandbox::JobLevel{}; }
   void SetJobMemoryLimit(size_t memory_limit) override {}
-  ResultCode AddRule(SubSystem subsystem,
-                     Semantics semantics,
-                     const wchar_t* pattern) override {
+  ResultCode AllowFileAccess(FileSemantics semantics,
+                             const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }
+  ResultCode AllowNamedPipes(const wchar_t* pattern) override {
+    return SBOX_ALL_OK;
+  }
+  ResultCode AllowExtraDlls(const wchar_t* pattern) override {
+    return SBOX_ALL_OK;
+  }
+  ResultCode SetFakeGdiInit() override { return SBOX_ALL_OK; }
   void AddDllToUnload(const wchar_t* dll_name) override {
     blocklisted_dlls_.push_back(dll_name);
   }

@@ -18,7 +18,7 @@ namespace ash {
 class FeatureTile;
 class UnifiedSystemTrayController;
 
-// Controller of a feature pod button that launches screen capture.
+// Controller of a feature tile that launches screen capture.
 class ASH_EXPORT CaptureModeFeaturePodController
     : public FeaturePodControllerBase {
  public:
@@ -35,7 +35,6 @@ class ASH_EXPORT CaptureModeFeaturePodController
   static bool CalculateButtonVisibility();
 
   // FeaturePodControllerBase:
-  FeaturePodButton* CreateButton() override;
   std::unique_ptr<FeatureTile> CreateTile(bool compact = false) override;
   QsFeatureCatalogName GetCatalogName() override;
   void OnIconPressed() override;
@@ -44,9 +43,6 @@ class ASH_EXPORT CaptureModeFeaturePodController
   const raw_ptr<UnifiedSystemTrayController,
                 DanglingUntriaged | ExperimentalAsh>
       tray_controller_;
-
-  raw_ptr<FeaturePodButton, DanglingUntriaged | ExperimentalAsh> button_ =
-      nullptr;
 
   base::WeakPtrFactory<CaptureModeFeaturePodController> weak_ptr_factory_{this};
 };

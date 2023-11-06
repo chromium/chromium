@@ -30,19 +30,20 @@ import org.chromium.content_public.browser.WebContents;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/**
- * End-to-end tests for WebXR's behavior when multiple tabs are involved.
- */
+/** End-to-end tests for WebXR's behavior when multiple tabs are involved. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=LogJsConsoleMessages", "force-webxr-runtime=cardboard"})
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=LogJsConsoleMessages",
+    "force-webxr-runtime=cardboard"
+})
 public class WebXrVrCardboardTabTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             VrCardboardTestRuleUtils.generateDefaultTestRuleParameters();
-    @Rule
-    public RuleChain mRuleChain;
+
+    @Rule public RuleChain mRuleChain;
 
     private ChromeActivityTestRule mTestRule;
     private WebXrVrTestFramework mWebXrVrTestFramework;
@@ -57,9 +58,7 @@ public class WebXrVrCardboardTabTest {
         mWebXrVrTestFramework = new WebXrVrTestFramework(mTestRule);
     }
 
-    /**
-     * Tests that non-focused tabs don't get WebXR rAFs called.
-     */
+    /** Tests that non-focused tabs don't get WebXR rAFs called. */
     @Test
     @MediumTest
     @Restriction({RESTRICTION_TYPE_VIEWER_NON_DAYDREAM})

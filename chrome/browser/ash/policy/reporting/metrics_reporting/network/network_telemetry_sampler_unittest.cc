@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_manager.h"
@@ -180,8 +179,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
   ::ash::NetworkHandlerTestHelper network_handler_test_helper_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {

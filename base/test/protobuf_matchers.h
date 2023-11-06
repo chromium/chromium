@@ -9,7 +9,7 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
-namespace base {
+namespace base::test {
 
 // Matcher that verifies two protobufs contain the same data.
 MATCHER_P(EqualsProto,
@@ -34,6 +34,6 @@ MATCHER_P(EqualsProto,
   return true;
 }
 
-}  // namespace base
+}  // namespace base::test
 
 #endif  // BASE_TEST_PROTOBUF_MATCHERS_H_

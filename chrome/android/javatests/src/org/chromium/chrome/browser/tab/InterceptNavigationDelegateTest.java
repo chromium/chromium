@@ -44,9 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-/**
- * Tests for InterceptNavigationDelegate
- */
+/** Tests for InterceptNavigationDelegate */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
@@ -100,43 +98,62 @@ public class InterceptNavigationDelegateTest {
     }
 
     private void waitTillExpectedCallsComplete(int count, long timeout) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat(mNavParamHistory.size(), Matchers.is(count));
-        }, timeout, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(mNavParamHistory.size(), Matchers.is(count));
+                },
+                timeout,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     @Before
     public void setUp() throws Exception {
         mActivity = sActivityTestRule.getActivity();
         final Tab tab = mActivity.getActivityTab();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            InterceptNavigationDelegateClientImpl client =
-                    new InterceptNavigationDelegateClientImpl(tab);
-            InterceptNavigationDelegateImpl delegate = new InterceptNavigationDelegateImpl(client) {
-                @Override
-                public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle,
-                        GURL escapedUrl, boolean hiddenCrossFrame, boolean isSandboxedFrame) {
-                    mNavParamHistory.add(navigationHandle);
-                    return super.shouldIgnoreNavigation(
-                            navigationHandle, escapedUrl, hiddenCrossFrame, isSandboxedFrame);
-                }
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InterceptNavigationDelegateClientImpl client =
+                            new InterceptNavigationDelegateClientImpl(tab);
+                    InterceptNavigationDelegateImpl delegate =
+                            new InterceptNavigationDelegateImpl(client) {
+                                @Override
+                                public boolean shouldIgnoreNavigation(
+                                        NavigationHandle navigationHandle,
+                                        GURL escapedUrl,
+                                        boolean hiddenCrossFrame,
+                                        boolean isSandboxedFrame) {
+                                    mNavParamHistory.add(navigationHandle);
+                                    return super.shouldIgnoreNavigation(
+                                            navigationHandle,
+                                            escapedUrl,
+                                            hiddenCrossFrame,
+                                            isSandboxedFrame);
+                                }
 
-                @Override
-                public GURL handleSubframeExternalProtocol(GURL escapedUrl,
-                        @PageTransition int transition, boolean hasUserGesture,
-                        Origin initiatorOrigin) {
-                    mSubframeExternalProtocolCalled.notifyCalled();
-                    if (mSubframeRedirectTarget != null) return mSubframeRedirectTarget;
-                    return super.handleSubframeExternalProtocol(
-                            escapedUrl, transition, hasUserGesture, initiatorOrigin);
-                }
-            };
-            client.initializeWithDelegate(delegate);
-            delegate.setExternalNavigationHandler(new TestExternalNavigationHandler());
-            delegate.associateWithWebContents(tab.getWebContents());
-        });
-        mTestServer = EmbeddedTestServer.createAndStartServer(
-                ApplicationProvider.getApplicationContext());
+                                @Override
+                                public GURL handleSubframeExternalProtocol(
+                                        GURL escapedUrl,
+                                        @PageTransition int transition,
+                                        boolean hasUserGesture,
+                                        Origin initiatorOrigin) {
+                                    mSubframeExternalProtocolCalled.notifyCalled();
+                                    if (mSubframeRedirectTarget != null) {
+                                        return mSubframeRedirectTarget;
+                                    }
+                                    return super.handleSubframeExternalProtocol(
+                                            escapedUrl,
+                                            transition,
+                                            hasUserGesture,
+                                            initiatorOrigin);
+                                }
+                            };
+                    client.initializeWithDelegate(delegate);
+                    delegate.setExternalNavigationHandler(new TestExternalNavigationHandler());
+                    delegate.associateWithWebContents(tab.getWebContents());
+                });
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
     }
 
     @Test

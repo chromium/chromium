@@ -155,9 +155,7 @@ class FeatureListQueryProcessorTest : public testing::Test {
             .value = 0},
     };
 
-    EXPECT_CALL(*signal_database_,
-                GetAllSamples(StartTime(bucket_duration, 2), clock_.Now(), _))
-        .WillOnce(RunOnceCallback<2>(samples));
+    EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
 
     // After retrieving the samples, they should be processed and aggregated.
     EXPECT_CALL(
@@ -306,9 +304,7 @@ TEST_F(FeatureListQueryProcessorTest, SingleUserAction) {
           .time = clock_.Now(),
           .value = 0},
   };
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 2), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<2>(samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
 
   // After retrieving the samples, they should be processed and aggregated.
   EXPECT_CALL(
@@ -360,9 +356,7 @@ TEST_F(FeatureListQueryProcessorTest, LatestOrDefaultUmaFeature) {
           .value = 3},
   };
 
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 2), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<2>(samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples()).WillOnce(Return(&samples));
 
   // After retrieving the samples, they should be processed and aggregated.
   EXPECT_CALL(*feature_aggregator_,
@@ -515,9 +509,8 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
           .time = clock_.Now(),
           .value = 5},
   };
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 4), clock_.Now(), _))
-      .WillRepeatedly(RunOnceCallback<2>(user_action_samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples())
+      .WillRepeatedly(Return(&user_action_samples));
   EXPECT_CALL(
       *feature_aggregator_,
       Process(proto::SignalType::USER_ACTION,
@@ -547,13 +540,9 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithOutputs) {
   // The input tensor should contain all three values: 3, 6, and 4.
   ExpectProcessedFeatureList(false, ModelProvider::Request{3, 6, 4});
 
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 2), clock_.Now(), _))
-      .WillRepeatedly(RunOnceCallback<2>(user_action_samples));
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 5), clock_.Now(), _))
-      .Times(2)
-      .WillRepeatedly(RunOnceCallback<2>(user_action_samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples())
+      .Times(3)
+      .WillRepeatedly(Return(&user_action_samples));
 
   // Output is also enum histogram
   EXPECT_CALL(
@@ -637,9 +626,8 @@ TEST_F(FeatureListQueryProcessorTest, SkipCollectionOnlyUmaFeatures) {
           .time = clock_.Now(),
           .value = 3},
   };
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 1), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<2>(user_action_samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples())
+      .WillOnce(Return(&user_action_samples));
   EXPECT_CALL(
       *feature_aggregator_,
       Process(proto::SignalType::USER_ACTION,
@@ -722,9 +710,8 @@ TEST_F(FeatureListQueryProcessorTest, FilteredEnumSamples) {
           .time = clock_.Now(),
           .value = 5},
   };
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 4), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<2>(histogram_enum_samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples())
+      .WillOnce(Return(&histogram_enum_samples));
   // The executor must first filter the enum samples.
   std::vector<SignalDatabase::DbEntry> filtered_enum_samples{
       SignalDatabase::DbEntry{
@@ -867,9 +854,8 @@ TEST_F(FeatureListQueryProcessorTest, MultipleUmaFeaturesWithMultipleBuckets) {
           .time = clock_.Now() - bucket_duration * 3 - kTwoSeconds,
           .value = 11},
   };
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(StartTime(bucket_duration, 4), clock_.Now(), _))
-      .WillOnce(RunOnceCallback<2>(user_action_samples));
+  EXPECT_CALL(*signal_database_, GetAllSamples())
+      .WillOnce(Return(&user_action_samples));
   EXPECT_CALL(*feature_aggregator_,
               Process(proto::SignalType::USER_ACTION,
                       base::HashMetricName(user_action_name),
@@ -927,9 +913,9 @@ TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
           .value = 0},
   };
   // Without observation time.
-  EXPECT_CALL(*signal_database_, GetAllSamples(start_time, prediction_time, _))
+  EXPECT_CALL(*signal_database_, GetAllSamples())
       .Times(1)
-      .WillRepeatedly(RunOnceCallback<2>(user_action_samples));
+      .WillRepeatedly(Return(&user_action_samples));
   EXPECT_CALL(*feature_aggregator_,
               Process(proto::SignalType::USER_ACTION,
                       base::HashMetricName(output_user_action_name),
@@ -945,10 +931,9 @@ TEST_F(FeatureListQueryProcessorTest, SingleUmaOutputWithObservationTime) {
       FeatureListQueryProcessor::ProcessOption::kOutputsOnly);
 
   // With observation time.
-  EXPECT_CALL(*signal_database_,
-              GetAllSamples(prediction_time, observation_time, _))
+  EXPECT_CALL(*signal_database_, GetAllSamples())
       .Times(1)
-      .WillRepeatedly(RunOnceCallback<2>(user_action_samples));
+      .WillRepeatedly(Return(&user_action_samples));
   EXPECT_CALL(*feature_aggregator_,
               Process(proto::SignalType::USER_ACTION,
                       base::HashMetricName(output_user_action_name),

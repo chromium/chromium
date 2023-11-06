@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 
+#include "third_party/blink/renderer/core/layout/exclusions/exclusion_space.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
+#include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/ng/exclusions/ng_exclusion_space.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
@@ -32,14 +32,12 @@ const NGLayoutResult& NGBoxFragmentBuilder::LayoutResultForPropagation(
     return layout_result;
   }
 
-  const NGPhysicalLineBoxFragment* line =
-      DynamicTo<NGPhysicalLineBoxFragment>(&fragment);
+  const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment);
   if (!line || !line->IsBlockInInline() || !items_builder_) {
     return layout_result;
   }
 
-  const NGLogicalLineItems& line_items =
-      items_builder_->LogicalLineItems(*line);
+  const auto& line_items = items_builder_->GetLogicalLineItems(*line);
   DCHECK(line_items.BlockInInlineLayoutResult());
   return *line_items.BlockInInlineLayoutResult();
 }
@@ -65,7 +63,7 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
   if (!has_inflow_child_break_inside_)
     has_inflow_child_break_inside_ = !child.IsFloatingOrOutOfFlowPositioned();
 
-  if (auto* child_inline_node = DynamicTo<NGInlineNode>(child)) {
+  if (auto* child_inline_node = DynamicTo<InlineNode>(child)) {
     if (!last_inline_break_token_) {
       // In some cases we may want to break before the first line in the
       // fragment. This happens if there's a tall float before the line, or, as
@@ -85,16 +83,16 @@ void NGBoxFragmentBuilder::AddBreakBeforeChild(
           // If there is an inline break token, it will always be the last
           // child.
           last_inline_break_token_ =
-              DynamicTo<NGInlineBreakToken>(child_tokens.back().Get());
+              DynamicTo<InlineBreakToken>(child_tokens.back().Get());
           if (last_inline_break_token_)
             return;
         }
       }
 
       // We're at the beginning of the inline formatting context.
-      last_inline_break_token_ = NGInlineBreakToken::Create(
-          *child_inline_node, /* style */ nullptr, NGInlineItemTextIndex(),
-          NGInlineBreakToken::kDefault);
+      last_inline_break_token_ = InlineBreakToken::Create(
+          *child_inline_node, /* style */ nullptr, InlineItemTextIndex(),
+          InlineBreakToken::kDefault);
     }
     return;
   }
@@ -118,13 +116,11 @@ void NGBoxFragmentBuilder::AddResult(
   const NGLayoutResult* result_for_propagation = &child_layout_result;
 
   if (!fragment.IsBox() && items_builder_) {
-    if (const NGPhysicalLineBoxFragment* line =
-            DynamicTo<NGPhysicalLineBoxFragment>(&fragment)) {
+    if (const auto* line = DynamicTo<PhysicalLineBoxFragment>(&fragment)) {
       if (UNLIKELY(line->IsBlockInInline() && has_block_fragmentation_)) {
         // If this line box contains a block-in-inline, propagate break data
         // from the block-in-inline.
-        const NGLogicalLineItems& line_items =
-            items_builder_->LogicalLineItems(*line);
+        const auto& line_items = items_builder_->GetLogicalLineItems(*line);
         result_for_propagation = line_items.BlockInInlineLayoutResult();
         DCHECK(result_for_propagation);
       }
@@ -143,15 +139,10 @@ void NGBoxFragmentBuilder::AddResult(
            child_layout_result.IsSelfCollapsing(), relative_offset,
            inline_container);
   if (margins) {
-    if (RuntimeEnabledFeatures::LayoutNGNoCopyBackEnabled()) {
-      const auto& box_fragment = To<NGPhysicalBoxFragment>(fragment);
-      if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
-        box_fragment.GetMutableForContainerLayout().SetMargins(
-            margins->ConvertToPhysical(GetWritingDirection()));
-      }
-    } else {
-      To<LayoutBox>(fragment.GetMutableLayoutObject())
-          ->SetMargin((*margins).ConvertToPhysical(GetWritingDirection()));
+    const auto& box_fragment = To<NGPhysicalBoxFragment>(fragment);
+    if (!margins->IsEmpty() || !box_fragment.Margins().IsZero()) {
+      box_fragment.GetMutableForContainerLayout().SetMargins(
+          margins->ConvertToPhysical(GetWritingDirection()));
     }
   }
 
@@ -348,8 +339,9 @@ void NGBoxFragmentBuilder::MoveChildrenInBlockDirection(LayoutUnit delta) {
     descendant.fixedpos_containing_block.IncreaseBlockOffset(delta);
   }
 
-  if (NGFragmentItemsBuilder* items_builder = ItemsBuilder())
+  if (FragmentItemsBuilder* items_builder = ItemsBuilder()) {
     items_builder->MoveChildrenInBlockDirection(delta);
+  }
 }
 
 void NGBoxFragmentBuilder::PropagateBreakInfo(
@@ -557,11 +549,6 @@ const NGLayoutResult* NGBoxFragmentBuilder::ToBoxFragment(
     }
   }
 
-  if (!has_floating_descendants_for_paint_ && items_builder_) {
-    has_floating_descendants_for_paint_ =
-        items_builder_->HasFloatingDescendantsForPaint();
-  }
-
   const NGPhysicalBoxFragment* fragment =
       NGPhysicalBoxFragment::Create(this, block_or_line_writing_mode);
   fragment->CheckType();
@@ -574,7 +561,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     const LayoutObject* object) const {
   DCHECK(object);
 
-  if (const NGFragmentItemsBuilder* items_builder = items_builder_) {
+  if (const FragmentItemsBuilder* items_builder = items_builder_) {
     if (auto offset = items_builder->LogicalOffsetFor(*object))
       return *offset;
     // Out-of-flow objects may be in |FragmentItems| or in |children_|.
@@ -590,7 +577,7 @@ LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     // something with split inlines, and nested oof/fixed descendants maybe.
     if (child.fragment->IsLineBox()) {
       const auto& line_box_fragment =
-          To<NGPhysicalLineBoxFragment>(*child.fragment);
+          To<PhysicalLineBoxFragment>(*child.fragment);
       for (const auto& line_box_child : line_box_fragment.Children()) {
         if (line_box_child->GetLayoutObject() == object) {
           return child.offset + line_box_child.Offset().ConvertToLogical(

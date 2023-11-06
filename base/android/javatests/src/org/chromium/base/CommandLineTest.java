@@ -16,23 +16,28 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 
-/**
- * Test class for command lines.
- */
+/** Test class for command lines. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Tests java -> native transition")
 public class CommandLineTest {
     // A reference command line. Note that switch2 is [brea\d], switch3 is [and "butter"],
     // and switch4 is [a "quoted" 'food'!]
-    static final String[] INIT_SWITCHES = {"init_command", "--switch", "Arg", "--switch2=brea\\d",
-            "--switch3=and \"butter\"", "--switch4=a \"quoted\" 'food'!", "--",
-            "--actually_an_arg"};
+    static final String[] INIT_SWITCHES = {
+        "init_command",
+        "--switch",
+        "Arg",
+        "--switch2=brea\\d",
+        "--switch3=and \"butter\"",
+        "--switch4=a \"quoted\" 'food'!",
+        "--",
+        "--actually_an_arg"
+    };
 
     // The same command line, but in quoted string format.
     static final char[] INIT_SWITCHES_BUFFER =
             ("init_command --switch Arg --switch2=brea\\d --switch3=\"and \\\"butt\"er\\\"   "
-                    + "--switch4='a \"quoted\" \\'food\\'!' "
-                    + "-- --actually_an_arg")
+                            + "--switch4='a \"quoted\" \\'food\\'!' "
+                            + "-- --actually_an_arg")
                     .toCharArray();
 
     static final String CL_ADDED_SWITCH = "zappo-dappo-doggy-trainer";

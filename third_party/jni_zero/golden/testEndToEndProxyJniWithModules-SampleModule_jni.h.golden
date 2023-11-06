@@ -13,7 +13,8 @@
 
 #include <jni.h>
 
-#include "base/android/jni_generator/jni_generator_helper.h"
+#include "third_party/jni_zero/jni_export.h"
+#include "third_party/jni_zero/jni_zero_helper.h"
 
 
 // Step 1: Forward declarations.
@@ -25,7 +26,7 @@
 // Step 3: Method stubs.
 static jboolean JNI_SampleModule_Bar(JNIEnv* env, jint a);
 
-JNI_GENERATOR_EXPORT jboolean Java_J_module_1N_MaOHChCD(
+JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N_MaOHChCD(
     JNIEnv* env,
     jclass jcaller,
     jint a) {
@@ -34,7 +35,7 @@ JNI_GENERATOR_EXPORT jboolean Java_J_module_1N_MaOHChCD(
 
 static void JNI_SampleModule_Foo(JNIEnv* env);
 
-JNI_GENERATOR_EXPORT void Java_J_module_1N_MF1ZO_1It(
+JNI_BOUNDARY_EXPORT void Java_J_module_1N_MF1ZO_1It(
     JNIEnv* env,
     jclass jcaller) {
   return JNI_SampleModule_Foo(env);

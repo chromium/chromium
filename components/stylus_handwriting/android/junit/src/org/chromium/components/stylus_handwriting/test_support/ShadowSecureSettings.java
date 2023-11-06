@@ -32,4 +32,8 @@ public class ShadowSecureSettings {
         }
         return "";
     }
+
+    public static void setHandwritingEnabled(boolean value) {
+        sHandwritingEnabled = value ? 1 : 0;
+    }
 }

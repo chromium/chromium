@@ -63,7 +63,6 @@ bool ExternalInstallOptions::operator==(
         options.disable_if_arc_supported,
         options.disable_if_tablet_form_factor,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        options.bypass_service_worker_check,
         options.require_manifest,
         options.install_as_shortcut,
         options.force_reinstall,
@@ -114,7 +113,6 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
   root.Set("additional_search_terms",
            ConvertStringList(additional_search_terms));
   root.Set("app_info_factory", static_cast<bool>(app_info_factory));
-  root.Set("bypass_service_worker_check", bypass_service_worker_check);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("disable_if_arc_supported", disable_if_arc_supported);
   root.Set("disable_if_tablet_form_factor", disable_if_tablet_form_factor);
@@ -188,8 +186,6 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.is_disabled = install_options.is_disabled;
   params.handles_file_open_intents = install_options.handles_file_open_intents;
 
-  params.bypass_service_worker_check =
-      install_options.bypass_service_worker_check;
   params.require_manifest = install_options.require_manifest;
   params.install_as_shortcut = install_options.install_as_shortcut;
 

@@ -3,106 +3,243 @@
 // found in the LICENSE file.
 
 #include "content/browser/file_system_access/file_system_access_lock_manager.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ref.h"
+#include "base/types/optional_ref.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "content/public/browser/disallow_activation_reason.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace content {
 
-using EntryLocator = FileSystemAccessLockManager::EntryLocator;
 using LockHandle = FileSystemAccessLockManager::LockHandle;
 using LockType = FileSystemAccessLockManager::LockType;
 
-// This class represents an active lock on an entry locator. The lock is kept
-// alive when there is some `LockHandle` to it. The lock is released when all
-// its `LockHandle`s have been destroyed.
+// This class represents an active lock on the `path_component`. The lock is
+// kept alive when there is some `LockHandle` to it. The lock is released when
+// all its `LockHandle`s have been destroyed.
 class Lock {
  public:
-  Lock(base::WeakPtr<FileSystemAccessLockManager> lock_manager,
-       const EntryLocator& entry_locator,
+  Lock(const base::FilePath::StringType& path_component,
        const LockType& type,
-       scoped_refptr<LockHandle> parent_lock)
-      : lock_manager_(lock_manager),
-        entry_locator_(entry_locator),
+       const LockType& exclusive_lock_type,
+       base::optional_ref<Lock> parent_lock)
+      : path_component_(path_component),
         type_(type),
+        exclusive_lock_type_(exclusive_lock_type),
         parent_lock_(std::move(parent_lock)) {}
 
-  ~Lock() = default;
+  virtual ~Lock() = default;
 
   Lock(Lock const&) = delete;
   Lock& operator=(Lock const&) = delete;
 
-  const EntryLocator& locator() const { return entry_locator_; }
+  const base::FilePath::StringType& path_component() const {
+    return path_component_;
+  }
 
   const LockType& type() const { return type_; }
 
-  bool IsExclusive() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return type_ == lock_manager_->exclusive_lock_type_;
-  }
+  bool IsExclusive() const { return type_ == exclusive_lock_type_; }
 
   // Returns whether this lock is contentious with `type`.
   bool IsContentious(LockType type) { return type != type_ || IsExclusive(); }
 
-  scoped_refptr<LockHandle> CreateLockHandle() {
+  Lock* GetChild(const base::FilePath::StringType& path_component) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (!lock_handle_) {
-      // The lock is owned by the caller or its child lock. A raw pointer is
-      // stored in `lock_handle_` to be able to increase the refcount when a new
-      // shared lock is requested for this `Lock`.
-      //
-      // It is safe to store raw pointers in `lock_handle_` because when a lock
-      // is destroyed, `this` is destroyed. This means that it will be a valid
-      // object for the lifetime of `Lock`, and is therefore safe to
-      // dereference.
-      lock_handle_ = new LockHandle(weak_factory_.GetWeakPtr());
+    auto child_lock_it = child_locks_.find(path_component);
+    return child_lock_it != child_locks_.end() ? child_lock_it->second.get()
+                                               : nullptr;
+  }
+
+  // Get the child if it exists. If it doesn't, creates it if it can. Otherwise
+  // return null.
+  Lock* GetOrCreateChild(const base::FilePath::StringType& path_component,
+                         LockType lock_type) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    Lock* child = GetChild(path_component);
+
+    if (!child) {
+      return CreateChild(path_component, lock_type);
     }
 
-    return base::WrapRefCounted<LockHandle>(lock_handle_);
+    if (!child->IsContentious(lock_type)) {
+      return child;
+    }
+
+    // Evict on contention is only enabled when FSA Locking Scheme is enabled.
+    bool evict_on_contention = base::FeatureList::IsEnabled(
+        blink::features::kFileSystemAccessLockingScheme);
+
+    // Start eviction if we can.
+    if (evict_on_contention) {
+      child->IsEvictableAndStartEviction();
+    }
+    return nullptr;
   }
+
+  scoped_refptr<LockHandle> CreateLockHandle(
+      const GlobalRenderFrameHostId& frame_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    // Insert `frame_id` if needed.
+    if (!frame_id_lock_handles_.contains(frame_id)) {
+      // The lock handle is owned by the caller or the lock handle of a child
+      // lock. A raw ref is stored in `frame_id_lock_handles_` to be able to
+      // increase the refcount when a new lock handle is created for this.
+      //
+      // It is safe to store raw refs in `frame_id_lock_handles_` because when
+      // the lock handle is destroyed, it's entry in the map is erased. This
+      // means that any raw ref in the map points to a valid object, and is
+      // therefore safe to dereference.
+      scoped_refptr<LockHandle> parent_lock_handle =
+          parent_lock_.has_value() ? parent_lock_->CreateLockHandle(frame_id)
+                                   : nullptr;
+      frame_id_lock_handles_.emplace(
+          frame_id,
+          base::raw_ref<LockHandle>::from_ptr(new LockHandle(
+              weak_factory_.GetWeakPtr(), parent_lock_handle, frame_id)));
+    }
+
+    return base::WrapRefCounted<LockHandle>(
+        &frame_id_lock_handles_.at(frame_id).get());
+  }
+
+ protected:
+  virtual void DestroySelf() { parent_lock_->ReleaseChild(path_component_); }
 
  private:
   friend class FileSystemAccessLockManager::LockHandle;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  // Called by a `LockHandle` when its destroyed.
-  void LockHandleDestroyed() {
+  Lock* CreateChild(const base::FilePath::StringType& path_component,
+                    LockType lock_type) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // ReleaseLock will destroy `this`.
-    lock_manager_->ReleaseLock(entry_locator_);
+    Lock* child_lock =
+        new Lock(path_component, lock_type, exclusive_lock_type_, this);
+    child_locks_.emplace(path_component, base::WrapUnique<Lock>(child_lock));
+    return child_lock;
   }
 
-  // The FileSystemAccessLockManager that created this instance. Used on
-  // destruction to release the lock on the file.
-  base::WeakPtr<FileSystemAccessLockManager> lock_manager_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  std::unique_ptr<Lock> TakeChild(
+      const base::FilePath::StringType& path_component) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    auto child_node = child_locks_.extract(path_component);
+    if (child_node.empty()) {
+      return nullptr;
+    }
+    return std::move(child_node.mapped());
+  }
 
-  // The handle that holds this lock.
-  raw_ptr<LockHandle> lock_handle_ = nullptr;
+  void ReleaseChild(const base::FilePath::StringType& path_component) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Locator of the file or directory associated with this lock. It is used to
-  // unlock the lock on release.
-  const EntryLocator entry_locator_;
+    size_t count_removed = child_locks_.erase(path_component);
+
+    CHECK_EQ(1u, count_removed);
+  }
+
+  bool IsHeldOnlyByInactivePages() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    for (const auto& [frame_id, _lock_handle] : frame_id_lock_handles_) {
+      RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+      // Frames without an associated render frame host (e.g. Service Workers,
+      // Shared Workers) cannot be evicted from the BFCache and are therefore
+      // considered active.
+      if (!rfh || rfh->IsActive()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Returns if this lock can be evicted. If it can, it starts evicting this
+  // lock by evicting the pages that hold it.
+  bool IsEvictableAndStartEviction() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (IsHeldOnlyByInactivePages()) {
+      // Evict the lock holders.
+      for (const auto& [frame_id, _lock_handle] : frame_id_lock_handles_) {
+        RenderFrameHost* rfh = RenderFrameHost::FromID(frame_id);
+        if (rfh) {
+          rfh->IsInactiveAndDisallowActivation(
+              content::DisallowActivationReasonId::
+                  kFileSystemAccessLockingContention);
+        }
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // Called by a `LockHandle` when its destroyed.
+  void LockHandleDestroyed(const GlobalRenderFrameHostId& frame_id) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    CHECK(frame_id_lock_handles_.contains(frame_id));
+
+    frame_id_lock_handles_.erase(frame_id);
+
+    // If nothing is holding this lock, release it.
+    if (frame_id_lock_handles_.empty()) {
+      // `DestroySelf` will destroy `this`.
+      DestroySelf();
+    }
+  }
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // A map of frame ids to the lock handle for that frame.
+  base::flat_map<GlobalRenderFrameHostId, raw_ref<LockHandle>>
+      frame_id_lock_handles_;
+
+  // The file path component of what we're locking within our parent `Lock`.
+  const base::FilePath::StringType path_component_;
 
   const LockType type_;
 
-  // When a file or directory is locked, it acquires a shared lock on its
-  // parent directory, which acquires a shared lock on its parent, and so
-  // forth. When this instance goes away, the associated ancestor locks are
-  // automatically released. May be null if this instance represents the root
-  // of its file system.
-  const scoped_refptr<LockHandle> parent_lock_;
+  const LockType exclusive_lock_type_;
+
+  // The parent `Lock` which created `this`. May not hold a value if this
+  // instance represents the root of its file system. When it is not null, it is
+  // safe to dereference since `parent_lock_` owns `this`.
+  base::optional_ref<Lock> parent_lock_;
+
+  // The map of path components to the respective children.
+  std::map<base::FilePath::StringType, std::unique_ptr<Lock>> child_locks_;
 
   base::WeakPtrFactory<Lock> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };
 
+class RootLock : public Lock {
+ public:
+  explicit RootLock(
+      base::WeakPtr<FileSystemAccessLockManager> lock_manager,
+      const FileSystemAccessLockManager::RootLocator& root_locator)
+      : Lock({},
+             lock_manager->ancestor_lock_type_,
+             lock_manager->exclusive_lock_type_,
+             /*parent_lock=*/absl::nullopt),
+        lock_manager_(lock_manager),
+        root_locator_(root_locator) {}
+
+ private:
+  void DestroySelf() override { lock_manager_->ReleaseRoot(root_locator_); }
+
+  base::WeakPtr<FileSystemAccessLockManager> lock_manager_;
+  FileSystemAccessLockManager::RootLocator root_locator_;
+};
+
 // static
-EntryLocator EntryLocator::FromFileSystemURL(
+FileSystemAccessLockManager::RootLocator
+FileSystemAccessLockManager::RootLocator::FromFileSystemURL(
     const storage::FileSystemURL& url) {
   absl::optional<storage::BucketLocator> maybe_bucket_locator = absl::nullopt;
   EntryPathType path_type;
@@ -124,37 +261,44 @@ EntryLocator EntryLocator::FromFileSystemURL(
                 storage::FileSystemType::kFileSystemTypeExternal);
       path_type = EntryPathType::kExternal;
   }
-  return EntryLocator(path_type, url.path(), maybe_bucket_locator);
+  return RootLocator(path_type, maybe_bucket_locator);
 }
 
-EntryLocator::EntryLocator(
+FileSystemAccessLockManager::RootLocator::RootLocator(
     const EntryPathType& type,
-    const base::FilePath& path,
     const absl::optional<storage::BucketLocator>& bucket_locator)
-    : type(type), path(path), bucket_locator(bucket_locator) {
+    : type(type), bucket_locator(bucket_locator) {
   // Files in the sandboxed file system must have a `bucket_locator`. See the
-  // comment in `EntryLocator::FromFileSystemURL()`. Files outside of the
+  // comment in `RootLocator::FromFileSystemURL()`. Files outside of the
   // sandboxed file system should not be keyed by StorageKey to ensure that
   // locks apply across sites. i.e. separate sites cannot hold their own
   // exclusive locks to the same file.
   DCHECK_EQ(type == EntryPathType::kSandboxed, bucket_locator.has_value());
 }
-EntryLocator::EntryLocator(const EntryLocator&) = default;
-EntryLocator::~EntryLocator() = default;
+FileSystemAccessLockManager::RootLocator::RootLocator(const RootLocator&) =
+    default;
+FileSystemAccessLockManager::RootLocator::~RootLocator() = default;
 
-bool EntryLocator::operator<(const EntryLocator& other) const {
-  return std::tie(type, path, bucket_locator) <
-         std::tie(other.type, other.path, other.bucket_locator);
+bool FileSystemAccessLockManager::RootLocator::operator<(
+    const RootLocator& other) const {
+  return std::tie(type, bucket_locator) <
+         std::tie(other.type, other.bucket_locator);
 }
 
-LockHandle::LockHandle(base::WeakPtr<Lock> lock)
-    : lock_(lock), type_(lock->type()), is_exclusive_(lock->IsExclusive()) {}
+LockHandle::LockHandle(base::WeakPtr<Lock> lock,
+                       scoped_refptr<LockHandle> parent_lock_handle,
+                       const GlobalRenderFrameHostId& frame_id)
+    : lock_(lock),
+      type_(lock->type()),
+      is_exclusive_(lock->IsExclusive()),
+      parent_lock_handle_(std::move(parent_lock_handle)),
+      frame_id_(frame_id) {}
 
 LockHandle::~LockHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (lock_) {
-    lock_->LockHandleDestroyed();
-  }
+  CHECK(lock_);
+  // May destroy `lock_`.
+  lock_->LockHandleDestroyed(frame_id_);
 }
 
 FileSystemAccessLockManager::FileSystemAccessLockManager(
@@ -162,72 +306,93 @@ FileSystemAccessLockManager::FileSystemAccessLockManager(
 
 FileSystemAccessLockManager::~FileSystemAccessLockManager() = default;
 
-scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLock(
+bool FileSystemAccessLockManager::IsContentious(
     const storage::FileSystemURL& url,
     LockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  EntryLocator entry_locator = EntryLocator::FromFileSystemURL(url);
-  return TakeLockImpl(entry_locator, lock_type);
-}
+  Lock* lock = GetRootLock(RootLocator::FromFileSystemURL(url));
+  if (!lock) {
+    // If there's no root lock, then it's not contentious.
+    return false;
+  }
 
-scoped_refptr<LockHandle> FileSystemAccessLockManager::TakeLockImpl(
-    const EntryLocator& entry_locator,
-    LockType lock_type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto lock_it = locks_.find(entry_locator);
-  Lock* existing_lock =
-      lock_it != locks_.end() ? lock_it->second.get() : nullptr;
-
-  if (!existing_lock) {
-    // Recursively try to acquire shared locks on all parent directories. If any
-    // parent directories are locked, lock acquisition should fail.
-    scoped_refptr<LockHandle> parent_lock;
-    auto parent_path = entry_locator.path.DirName();
-    if (parent_path != entry_locator.path) {
-      EntryLocator parent_entry_locator{entry_locator.type, parent_path,
-                                        entry_locator.bucket_locator};
-      parent_lock = TakeLockImpl(parent_entry_locator, ancestor_lock_type_);
-      if (!parent_lock) {
-        return nullptr;
-      }
+  auto base_component = url.path().BaseName().value();
+  for (const auto& component : url.path().GetComponents()) {
+    LockType component_lock_type =
+        component == base_component ? lock_type : ancestor_lock_type_;
+    lock = lock->GetChild(component);
+    if (!lock) {
+      // If there's no lock, then it's not contentious.
+      return false;
+    } else if (lock->IsContentious(component_lock_type)) {
+      return true;
     }
-
-    // There are no locks on the file, we can take any type of lock.
-    std::unique_ptr<Lock> new_lock =
-        std::make_unique<Lock>(weak_factory_.GetWeakPtr(), entry_locator,
-                               lock_type, std::move(parent_lock));
-
-    // The lock handle is owned by the caller or its child lock.
-    scoped_refptr<LockHandle> lock_handle = new_lock->CreateLockHandle();
-
-    // The lock is stored in `locks_` for future calls of `TakeLockImpl` to get
-    // the existing lock.
-    locks_.emplace(std::move(entry_locator), std::move(new_lock));
-
-    return lock_handle;
   }
 
-  if (lock_type != existing_lock->type() || lock_type == exclusive_lock_type_) {
-    // There is an existing lock, and either it's not the same type as the
-    // requested lock or it's an exclusive lock. Therefore it is not possible to
-    // take a new lock.
-    return nullptr;
-  }
-
-  // The existing lock is not in contention with the requested lock, so return a
-  // handle to it.
-  return existing_lock->CreateLockHandle();
+  // Nothing along the path was contentious, so there is no contention.
+  return false;
 }
 
-void FileSystemAccessLockManager::ReleaseLock(
-    const EntryLocator& entry_locator) {
+void FileSystemAccessLockManager::TakeLock(
+    const GlobalRenderFrameHostId& frame_id,
+    const storage::FileSystemURL& url,
+    LockType lock_type,
+    TakeLockCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  size_t count_removed = locks_.erase(entry_locator);
+  // GetOrCreateRootLock should always succeed.
+  Lock* lock = GetOrCreateRootLock(RootLocator::FromFileSystemURL(url));
+  CHECK(lock);
+
+  // Attempt to take a lock on all components in the path.
+  auto base_component = url.path().BaseName().value();
+  for (const auto& component : url.path().GetComponents()) {
+    // Take `lock_type` on the base and ancestor locks on the ancestors.
+    LockType component_lock_type =
+        component == base_component ? lock_type : ancestor_lock_type_;
+    lock = lock->GetOrCreateChild(component, component_lock_type);
+
+    if (!lock) {
+      // Couldn't take lock due to contention with a lock in `url`'s path held
+      // by an active page.
+      //
+      // No locks have been created yet, so no cleanup is necessary.
+      std::move(callback).Run(nullptr);
+      return;
+    }
+  }
+
+  // Successfully created the lock and passing a lock handle to the callback.
+  std::move(callback).Run(lock->CreateLockHandle(frame_id));
+}
+
+void FileSystemAccessLockManager::ReleaseRoot(const RootLocator& root_locator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t count_removed = root_locks_.erase(root_locator);
 
   DCHECK_EQ(1u, count_removed);
+}
+
+RootLock* FileSystemAccessLockManager::GetRootLock(
+    const RootLocator& root_locator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto root_lock_it = root_locks_.find(root_locator);
+  return root_lock_it != root_locks_.end() ? root_lock_it->second.get()
+                                           : nullptr;
+}
+
+RootLock* FileSystemAccessLockManager::GetOrCreateRootLock(
+    const RootLocator& root_locator) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RootLock* root_lock = GetRootLock(root_locator);
+  if (!root_lock) {
+    root_lock = new RootLock(weak_factory_.GetWeakPtr(), root_locator);
+    root_locks_.emplace(std::move(root_locator),
+                        base::WrapUnique<RootLock>(root_lock));
+  }
+  return root_lock;
 }
 
 FileSystemAccessLockManager::LockType

@@ -913,7 +913,7 @@ std::set<int> PrerenderHostRegistry::CancelHosts(
 
         std::unique_ptr<PrerenderNewTabHandle> handle = std::move(iter->second);
         prerender_new_tab_handle_by_frame_tree_node_id_.erase(iter);
-        // TODO(crbug.com/1350676, crbug.com/4849669): perform NotifyCancel.
+        NotifyCancel(host_id, reason);
         handle->CancelPrerendering(reason);
         cancelled_ids.insert(host_id);
       }
@@ -1163,13 +1163,15 @@ std::vector<FrameTree*> PrerenderHostRegistry::GetPrerenderFrameTrees() {
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
   for (auto& iter : prerender_host_by_frame_tree_node_id_) {
-    if (iter.second->GetInitialUrl() == prerendering_url)
+    if (iter.second->IsUrlMatch(prerendering_url)) {
       return iter.second.get();
+    }
   }
   for (auto& iter : prerender_new_tab_handle_by_frame_tree_node_id_) {
     PrerenderHost* host = iter.second->GetPrerenderHostForTesting();  // IN-TEST
-    if (host && host->GetInitialUrl() == prerendering_url)
+    if (host && host->IsUrlMatch(prerendering_url)) {
       return host;
+    }
   }
   return nullptr;
 }
@@ -1519,14 +1521,19 @@ int PrerenderHostRegistry::FindHostToActivateInternal(
   // Compare navigation params from activation with the navigation params
   // from the initial prerender navigation. If they don't match, the navigation
   // should not activate the prerendered page.
-  if (!host->AreInitialPrerenderNavigationParamsCompatibleWithNavigation(
-          navigation_request)) {
+  if (std::unique_ptr<PrerenderMismatchedHeaders> mismatched_headers =
+          host->CheckInitialPrerenderNavigationParamsCompatibleWithNavigation(
+              navigation_request)) {
     // TODO(https://crbug.com/1328365): Report a detailed reason to devtools.
     // Currently users have to check
     // Prerender.Experimental.ActivationNavigationParamsMatch.
     // TODO(lingqi): We'd better cancel all hosts.
-    CancelHost(host->frame_tree_node_id(),
-               PrerenderFinalStatus::kActivationNavigationParameterMismatch);
+
+    PrerenderCancellationReason reason = PrerenderCancellationReason::
+        BuildForActivationNavigationParameterMismatch(
+            std::move(mismatched_headers));
+
+    CancelHost(host->frame_tree_node_id(), reason);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
 

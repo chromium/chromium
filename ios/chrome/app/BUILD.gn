@@ -13,6 +13,7 @@ import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/app/chrome_app.gni")
 import("//ios/chrome/features.gni")
+import("//ios/features.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 declare_args() {
@@ -115,7 +116,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:signin_util",
     "//ios/chrome/browser/signin:test_support",
-    "//ios/chrome/browser/tabs",
+    "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/first_run:constants",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/safe_mode",
@@ -330,7 +331,7 @@ source_set("first_run_app_state_agent") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",
     "//ios/chrome/browser/browsing_data/model",
-    "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/public/commands:commands",
@@ -381,6 +382,7 @@ source_set("feed_app_agent") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/browser/ui/ntp/metrics:constants",
   ]
   frameworks = [
     "BackgroundTasks.framework",
@@ -475,13 +477,13 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/default_browser/model:utils",
-    "//ios/chrome/browser/download",
-    "//ios/chrome/browser/download/background_service:background_service",
-    "//ios/chrome/browser/external_files",
+    "//ios/chrome/browser/download/model",
+    "//ios/chrome/browser/download/model/background_service:background_service",
+    "//ios/chrome/browser/external_files/model",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/geolocation",
+    "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/mailto_handler",
     "//ios/chrome/browser/mailto_handler:mailto_handler_factory",
@@ -496,10 +498,10 @@ source_set("app_internal") {
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/screenshot/model",
-    "//ios/chrome/browser/search_engines",
-    "//ios/chrome/browser/search_engines:extension_search_engine_data_updater",
-    "//ios/chrome/browser/search_engines:search_engines_util",
-    "//ios/chrome/browser/sessions:session_service",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/search_engines/model:extension_search_engine_data_updater",
+    "//ios/chrome/browser/search_engines/model:search_engines_util",
+    "//ios/chrome/browser/sessions:session_util",
     "//ios/chrome/browser/share_extension/model",
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -636,6 +638,21 @@ source_set("multitasking_test_app_delegate") {
     "//ios/chrome/browser/shared/coordinator/scene",
     "//ios/third_party/material_components_ios",
   ]
+}
+
+if (ios_partition_alloc_enabled) {
+  ios_framework_bundle("early_partition_alloc_framework") {
+    output_name = "EarlyMallocZoneRegistration"
+    sources = [ "early_pa_registration.cc" ]
+    info_plist = "//ios/chrome/app/resources/ChromeMainInfo.plist"
+    extra_substitutions =
+        [ "BUNDLE_IDENTIFIER=$ios_app_bundle_id_prefix.$output_name" ]
+
+    deps = [
+      "//base/allocator:early_zone_registration_apple",
+      "//base/allocator/partition_allocator:buildflags",
+    ]
+  }
 }
 
 chrome_app("chrome") {

@@ -16,6 +16,7 @@
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_drop_target.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
@@ -252,9 +253,9 @@ TEST_F(OverviewWindowDragControllerTest, DropTargetBoundsTest) {
         event_generator, by_touch, /*drop=*/false);
     EXPECT_TRUE(overview_controller->InOverviewSession());
 
-    auto* drop_target_widget = overview_grid->drop_target_widget();
-    EXPECT_TRUE(drop_target_widget);
-    EXPECT_EQ(gfx::RectF(drop_target_widget->GetWindowBoundsInScreen()),
+    OverviewDropTarget* drop_target = overview_grid->drop_target();
+    EXPECT_TRUE(drop_target);
+    EXPECT_EQ(gfx::RectF(drop_target->item_widget()->GetWindowBoundsInScreen()),
               target_bounds_before_dragging);
     if (by_touch) {
       event_generator->ReleaseTouch();

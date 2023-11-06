@@ -15,10 +15,7 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes, SyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
-
-// <if expr="chromeos_lacros">
 import {loadTimeData} from 'chrome://settings/settings.js';
-// </if>
 
 // clang-format on
 
@@ -294,6 +291,17 @@ suite('SyncControlsManagedTest', async function() {
         syncControls.shadowRoot!.querySelectorAll('cr-policy-indicator');
     assertTrue(policyIndicators.length > 0);
     for (const indicator of policyIndicators) {
+      // On Lacros, if kSyncChromeOSAppsToggleSharing is enabled, syncing of Apps
+      // is controlled via the OS, not the browser. So in that case, the policy
+      // indicator should not be visible here.
+      // <if expr="chromeos_lacros">
+      if (indicator.id === 'appsSyncPolicyIndicator') {
+        const showSyncSettingsRevamp =
+            loadTimeData.getBoolean('showSyncSettingsRevamp');
+        assertEquals(isVisible(indicator), !showSyncSettingsRevamp);
+        continue;
+      }
+      // </if>
       assertTrue(isVisible(indicator));
     }
 
@@ -324,5 +332,95 @@ suite('SyncControlsManagedTest', async function() {
       assertFalse(control.checked);
     }
     browserProxy.resetResolver('setSyncDatatypes');
+  });
+});
+
+suite('AutofillAndPaymentsToggles', async function() {
+  let autofillCheckbox: CrToggleElement;
+  let paymentsCheckbox: CrToggleElement;
+
+  setup(async function() {
+    setupRouterWithSyncRoutes();
+    const browserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(browserProxy);
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const syncControls = document.createElement('settings-sync-controls');
+    document.body.appendChild(syncControls);
+
+    webUIListenerCallback('sync-prefs-changed', getSyncAllPrefs());
+    flush();
+
+    await waitBeforeNextRender(syncControls);
+    const customizeSync: CrRadioButtonElement =
+        syncControls.shadowRoot!.querySelector(
+            'cr-radio-button[name="customize-sync"]')!;
+    autofillCheckbox =
+        syncControls.shadowRoot!.querySelector('#autofillCheckbox')!;
+    paymentsCheckbox =
+        syncControls.shadowRoot!.querySelector('#paymentsCheckbox')!;
+    assertTrue(!!customizeSync);
+    assertTrue(!!autofillCheckbox);
+    assertTrue(!!paymentsCheckbox);
+
+    customizeSync.click();
+    flush();
+    assertTrue(customizeSync.checked);
+    assertTrue(autofillCheckbox.checked);
+    assertTrue(paymentsCheckbox.checked);
+  });
+
+  test('CoupledAutofillPaymentsToggles', async function() {
+    loadTimeData.overrideValues({
+      syncDecoupleAddressPaymentSettings: false,
+    });
+
+    // Disable Autofill sync.
+    autofillCheckbox.click();
+    flush();
+    assertFalse(autofillCheckbox.checked);
+    assertFalse(paymentsCheckbox.checked);
+    assertTrue(paymentsCheckbox.disabled);
+
+    // Enable Autofill sync.
+    autofillCheckbox.click();
+    flush();
+    assertTrue(autofillCheckbox.checked);
+    assertTrue(paymentsCheckbox.checked);
+    assertFalse(paymentsCheckbox.disabled);
+
+    // Disable Payment methods sync.
+    paymentsCheckbox.click();
+    flush();
+    assertTrue(autofillCheckbox.checked);
+    assertFalse(paymentsCheckbox.checked);
+    assertFalse(paymentsCheckbox.disabled);
+  });
+
+  test('DecoupledAutofillPaymentsToggles', async function() {
+    loadTimeData.overrideValues({
+      syncDecoupleAddressPaymentSettings: true,
+    });
+
+    // Disable Autofill sync.
+    autofillCheckbox.click();
+    flush();
+    assertFalse(autofillCheckbox.checked);
+    assertTrue(paymentsCheckbox.checked);
+    assertFalse(paymentsCheckbox.disabled);
+
+    // Disable Payment methods sync.
+    paymentsCheckbox.click();
+    flush();
+    assertFalse(autofillCheckbox.checked);
+    assertFalse(paymentsCheckbox.checked);
+    assertFalse(paymentsCheckbox.disabled);
+
+    // Enable Autofill sync.
+    autofillCheckbox.click();
+    flush();
+    assertTrue(autofillCheckbox.checked);
+    assertFalse(paymentsCheckbox.checked);
+    assertFalse(paymentsCheckbox.disabled);
   });
 });

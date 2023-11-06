@@ -52,21 +52,26 @@ namespace {
 class TimePeriodMatcher : public MatcherInterface<const em::TimePeriod&> {
  public:
   explicit TimePeriodMatcher(const em::TimePeriod& time_period)
-      : start_(base::Time::FromJavaTime(time_period.start_timestamp())),
-        end_(base::Time::FromJavaTime(time_period.end_timestamp())) {}
+      : start_(base::Time::FromMillisecondsSinceUnixEpoch(
+            time_period.start_timestamp())),
+        end_(base::Time::FromMillisecondsSinceUnixEpoch(
+            time_period.end_timestamp())) {}
 
   bool MatchAndExplain(const em::TimePeriod& time_period,
                        MatchResultListener* listener) const override {
     bool start_timestamp_equal =
-        time_period.start_timestamp() == start_.ToJavaTime();
+        time_period.start_timestamp() == start_.InMillisecondsSinceUnixEpoch();
     if (!start_timestamp_equal) {
       *listener << " |start_timestamp| is "
-                << base::Time::FromJavaTime(time_period.start_timestamp());
+                << base::Time::FromMillisecondsSinceUnixEpoch(
+                       time_period.start_timestamp());
     }
-    bool end_timestamp_equal = time_period.end_timestamp() == end_.ToJavaTime();
+    bool end_timestamp_equal =
+        time_period.end_timestamp() == end_.InMillisecondsSinceUnixEpoch();
     if (!end_timestamp_equal) {
       *listener << " |end_timestamp| is "
-                << base::Time::FromJavaTime(time_period.end_timestamp());
+                << base::Time::FromMillisecondsSinceUnixEpoch(
+                       time_period.end_timestamp());
     }
     return start_timestamp_equal && end_timestamp_equal;
   }
@@ -112,8 +117,8 @@ auto EqApp(const std::string& app_id,
 
 auto MakeActivity(const base::Time& start_time, const base::Time& end_time) {
   em::TimePeriod time_period;
-  time_period.set_start_timestamp(start_time.ToJavaTime());
-  time_period.set_end_timestamp(end_time.ToJavaTime());
+  time_period.set_start_timestamp(start_time.InMillisecondsSinceUnixEpoch());
+  time_period.set_end_timestamp(end_time.InMillisecondsSinceUnixEpoch());
   return time_period;
 }
 
@@ -142,8 +147,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
     apps::AppType app_type = app->app_type;
     std::vector<apps::AppPtr> deltas;
     deltas.push_back(std::move(app));
-    GetCache().OnApps(std::move(deltas), app_type,
-                      /*should_notify_initialized=*/false);
+    AppServiceProxy()->OnApps(std::move(deltas), app_type,
+                              /*should_notify_initialized=*/false);
   }
 
   void PushApp(const std::string& app_id,
@@ -204,9 +209,8 @@ class AppInfoGeneratorTest : public ::testing::Test {
     app_registrar_ = &provider->GetRegistrarMutable();
   }
 
-  apps::AppRegistryCache& GetCache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->AppRegistryCache();
+  apps::AppServiceProxy* AppServiceProxy() {
+    return apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   }
 
   apps::InstanceRegistry& GetInstanceRegistry() {
@@ -241,9 +245,10 @@ class AppInfoGeneratorTest : public ::testing::Test {
 
   static auto EqActivity(const base::Time& start_time,
                          const base::Time& end_time) {
-    return AllOf(
-        Property(&em::TimePeriod::start_timestamp, start_time.ToJavaTime()),
-        Property(&em::TimePeriod::end_timestamp, end_time.ToJavaTime()));
+    return AllOf(Property(&em::TimePeriod::start_timestamp,
+                          start_time.InMillisecondsSinceUnixEpoch()),
+                 Property(&em::TimePeriod::end_timestamp,
+                          end_time.InMillisecondsSinceUnixEpoch()));
   }
 
   base::Time MakeLocalTime(const std::string& time_string) {

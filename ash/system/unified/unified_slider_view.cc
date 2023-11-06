@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
@@ -63,39 +62,6 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
                                      bool read_only,
                                      QuickSettingsSlider::Style slider_style)
     : icon_(&icon), callback_(callback), is_togglable_(is_togglable) {
-  if (!features::IsQsRevampEnabled()) {
-    button_ = AddChildView(std::make_unique<IconButton>(
-        std::move(callback), IconButton::Type::kMedium, &icon,
-        accessible_name_id,
-        /*is_togglable=*/true,
-        /*has_border=*/true));
-
-    slider_ = AddChildView(CreateSlider(listener, read_only, slider_style));
-
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal, kUnifiedSliderRowPadding,
-        kUnifiedSliderViewSpacing));
-
-    // Prevent an accessibility event while initiallizing this view. Typically
-    // the first update of the slider value is conducted by the caller function
-    // to reflect the current value.
-    slider_->SetEnableAccessibilityEvents(false);
-
-    slider_->GetViewAccessibility().OverrideName(
-        l10n_util::GetStringUTF16(accessible_name_id));
-    slider_->SetBorder(views::CreateEmptyBorder(kUnifiedSliderPadding));
-    slider_->SetPreferredSize(gfx::Size(0, kTrayItemSize));
-    layout->SetFlexForView(slider_, 1);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-
-    // Adds a layer to set it non-opaque. Otherwise the previous draw of thumb
-    // will stay.
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    return;
-  }
-
   slider_ = AddChildView(CreateSlider(listener, read_only, slider_style));
   slider_->SetBorder(views::CreateEmptyBorder(kQsSliderBorder));
   // Sets `slider_` to have a `BoxLayout` to align the child view
@@ -116,7 +82,7 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
       &icon, accessible_name_id,
       /*is_togglable=*/true,
       /*has_border=*/true));
-  slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
+  slider_button_->SetIconColor(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   // The `slider_button_` should be focusable by the ChromeVox.
   slider_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   // `slider_button_` should disable event processing if it's not togglable.
@@ -163,11 +129,9 @@ void UnifiedSliderView::SetSliderValue(float value, bool by_user) {
 UnifiedSliderView::~UnifiedSliderView() = default;
 
 void UnifiedSliderView::OnEvent(ui::Event* event) {
-  const bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
-
   // If `slider_button_` is not togglable, pressing the return key should not
   // trigger the clicking callback.
-  if (is_qs_revamp_enabled && !is_togglable_) {
+  if (!is_togglable_) {
     views::View::OnEvent(event);
     return;
   }
@@ -182,7 +146,7 @@ void UnifiedSliderView::OnEvent(ui::Event* event) {
 
   // Only handles press event to avoid handling the event again when the key is
   // released.
-  if (is_qs_revamp_enabled && key_code == ui::VKEY_RETURN &&
+  if (key_code == ui::VKEY_RETURN &&
       key_event->type() == ui::EventType::ET_KEY_PRESSED) {
     slider_button_->NotifyClick(*event);
     return;
